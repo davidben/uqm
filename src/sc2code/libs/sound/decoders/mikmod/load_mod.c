@@ -289,7 +289,7 @@ static UBYTE *ConvertTrack(MODNOTE *n)
 /* Loads all patterns of a modfile and converts them into the 3 byte format. */
 static BOOL ML_LoadPatterns(void)
 {
-	int t, s, tracks = 0;
+	unsigned int t, s, tracks = 0;
 
 	if (!AllocPatterns())
 		return 0;
