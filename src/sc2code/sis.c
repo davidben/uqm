@@ -476,7 +476,7 @@ DrawFlagshipStats (void)
 	*/
 	leading -= 3;
 	t.pStr = buf;
-	t.baseline.x = SIS_SCREEN_WIDTH / 3 + 10; //wild-assed guess, but it worked
+	t.baseline.x = SIS_SCREEN_WIDTH / 6; //wild-assed guess, but it worked
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_RIGHT;
 	t.CharCount = (COUNT)~0;
@@ -489,19 +489,35 @@ DrawFlagshipStats (void)
 	   inevitable "let's translate it into Suomi, Klingon and Esperanto"
 	   project easier? */
 
-	wsprintf (buf, "%6.6s: %-7.7s", "nose", guns[15]);
+	wsprintf (buf, "nose:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%6.6s: %-7.7s", "spread", guns[14]);
+	wsprintf (buf, "spread:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%6.6s: %-7.7s", "side", guns[13]);
+	wsprintf (buf, "side:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%6.6s: %-7.7s", "tail", guns[0]);
+	wsprintf (buf, "tail:");
 	font_DrawText (&t);
 
-	t.baseline.x = r.extent.width - 2;
+	t.baseline.x += 5;
+	t.baseline.y = r.corner.y + leading + 3;
+	t.align = ALIGN_LEFT;
+
+	wsprintf (buf, "%-7.7s", guns[15]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%-7.7s", guns[14]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%-7.7s", guns[13]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%-7.7s", guns[0]);
+	font_DrawText (&t);
+
+	t.baseline.x = r.extent.width - 25;
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_RIGHT;
 
@@ -509,16 +525,31 @@ DrawFlagshipStats (void)
 			BUILD_COLOR_RGBA (0x00, 0x44, 0x64, 0xFF),
 			BUILD_COLOR_RGBA (0x58, 0x9C, 0xBC, 0xFF));
 
-	wsprintf (buf, "%20.20s: %4d", "maximum velocity", thrust);
+	wsprintf (buf, "maximum velocity:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%20.20s: %4d", "turning rate", turning);
+	wsprintf (buf, "turning rate:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%20.20s: %4d", "combat energy", dynamo);
+	wsprintf (buf, "combat energy:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%20.20s: %4d", "maximum fuel", (fuel / FUEL_TANK_SCALE));
+	wsprintf (buf, "maximum fuel:");
+	font_DrawText (&t);
+
+	t.baseline.x = r.extent.width - 2;
+	t.baseline.y = r.corner.y + leading + 3;
+
+	wsprintf (buf, "%4lu", thrust);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%4lu", turning);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%4lu", dynamo);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
 	font_DrawText (&t);
 
 	SetContextFontEffect (0, 0, 0);
