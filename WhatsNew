@@ -36,6 +36,8 @@ NEW FEATURES
 - Quit option available in GAME menu
 - New Main Menu graphics: Setup (not yet implemented) and Quit are
   options at the Main Menu now
+- Cubic resampling in high quality audio mode
+- PC-style alien outtakes when game is completed
 
 BUGFIXES
 - Text entry doesn't freeze up lander reports anymore
@@ -59,6 +61,11 @@ BUGFIXES
 - Menu glitches when leaving the "GAME" menu are gone
 - Druuge transactions no longer baselessly increase crew cost
 - Lander speed has been retimed to match 3DO
+- Audio resampling works now correctly (less cracklings)
+- MixSDL buffer underrun handling fixed
+- Some memory leaks have been eliminated
+- Fixes and speed improvements on bilinear, biadapt, biadv scalers
+- Various minor graphics glitch fixes
 
 INTERNAL CHANGES
 
