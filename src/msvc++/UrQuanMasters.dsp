@@ -3256,6 +3256,7 @@ SOURCE=..\sc2code\collide.h
 # Begin Source File
 
 SOURCE=..\sc2code\colors.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\comm.c
