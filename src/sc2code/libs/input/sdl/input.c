@@ -132,8 +132,6 @@ TFB_InitInput (int driver, int flags)
 	(void)driver;
 	(void)flags;
 
-	atexit (TFB_UninitInput);
-
 	GamePaused = GameExiting = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
