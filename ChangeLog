@@ -1,4 +1,5 @@
 0.2:
+- Negative shift warnings removed, from Fizban
 - Displaying correct lander images, from fOSSiL.
 - 3D planet now uses phong lighting, from PhracturedBlue
 - Put save data and temporary files in a seperate dir - SvdB
