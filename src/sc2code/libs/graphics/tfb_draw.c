@@ -263,7 +263,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 		img->NormalImg = TFB_DrawCanvas_ToScreenFormat (canvas);
 	}
 
-	img->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (img->NormalImg);
+	img->ScaledImg = NULL;
 
 	return img;
 }
@@ -303,6 +303,8 @@ TFB_DrawImage_FixScaling (TFB_Image *image, int target)
 	if ((old.width != image->extent.width) || (old.height != image->extent.height) || image->dirty)
 	{
 		image->dirty = FALSE;
+		if (!image->ScaledImg)
+			image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg);
 		TFB_DrawCanvas_Rescale (image->NormalImg, image->ScaledImg, image->extent);
 	}
 	/*

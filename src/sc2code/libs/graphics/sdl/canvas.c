@@ -162,14 +162,12 @@ TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent
 	return new_surf;
 }
 
-#define TFB_SCALETARGET_FACTOR 4
-
 TFB_Canvas
 TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas)
 {
 	SDL_Surface *src = (SDL_Surface *)canvas;
-	SDL_Surface *newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w * TFB_SCALETARGET_FACTOR,
-				src->h * TFB_SCALETARGET_FACTOR,
+	SDL_Surface *newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w,
+				src->h,
 				src->format->BitsPerPixel,
 				src->format->Rmask,
 				src->format->Gmask,
@@ -288,6 +286,12 @@ TFB_DrawCanvas_Rescale (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT si
 	if (size.width > 320 || size.height > 240)
 	{
 		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to be larger than the screen!  Failing.\n");
+		return;
+	}
+	if (size.width > dst->w || size.height > dst->h) 
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to scale image to size %d %d when dest_canvas has only dimensions of %d %d!  Failing.\n",
+			size.width, size.height, dst->w, dst->h);
 		return;
 	}
 
