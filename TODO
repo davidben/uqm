@@ -110,8 +110,6 @@ Implementation bugs (low priority):
   And is the speed correct?
 - Transitions aren't synced always; there should be a way to ensure everything
   so far queued is drawn before the transition starts
-- Lines and colouring of planet surface when scanning bugs
-  (is too choppy and fast)
 
 Stuff still to do (large):
 - add a Key Jamming program
