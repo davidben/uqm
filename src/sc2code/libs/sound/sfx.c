@@ -37,12 +37,18 @@ PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin,
 	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER,
 			tfb_sample->buffer[0]);
 	TFBSound_SourcePlay (soundSource[channel].handle);
+	/* ignored arguments */
+	(void)sample_length;
+	(void)loop_begin;
+	(void)loop_length;
+	(void)priority;
 }
 
 void
 StopChannel (COUNT channel, unsigned char Priority)
 {
 	StopSource (channel);
+	(void)Priority; // ignored
 }
 
 static void
@@ -84,6 +90,7 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 {
 	TFBSound_Sourcef (soundSource[channel].handle, TFBSOUND_GAIN, 
 		(volume / (float)MAX_VOLUME) * sfxVolumeScale);
+	(void)priority; // ignored
 }
 
 // Status: Ignored
@@ -98,6 +105,7 @@ GetSampleAddress (SOUND sound)
 COUNT
 GetSampleLength (SOUND sound)
 {
+	(void)sound;
 	return 0;
 }
 
@@ -105,12 +113,16 @@ GetSampleLength (SOUND sound)
 void
 SetChannelRate (COUNT channel, DWORD rate_hz, unsigned char priority)
 {
+	(void) channel;
+	(void) rate_hz;
+	(void) priority;
 }
 
 // Status: Ignored
 COUNT
 GetSampleRate (SOUND sound)
 {
+	(void) sound;
 	return 0;
 }
 
@@ -127,6 +139,7 @@ _GetSoundBankData (FILE *fp, DWORD length)
 	TFB_SoundSample *sndfx[MAX_FX];
 	STRING_TABLE Snd;
 
+	(void) length;  // ignored
 	opos = ftell (fp);
 
 	{

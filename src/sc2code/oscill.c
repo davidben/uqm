@@ -39,7 +39,10 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
 		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
 		TFB_DrawImage_Image (f->image, 0, 0, 0, NULL, scope_bg);
 		scope_init = 1;
-	}	
+	}
+	/* remove compiler warnings */
+	(void) x;
+	(void) y;
 }
 
 void

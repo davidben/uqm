@@ -295,6 +295,7 @@ void rZF_nearestneighbor (SDL_Surface *src, SDL_Surface *dst, int  use_weight)
 	for (y = 0; y < dst->h; y++)
 	{
 		if (y)
+		{
 			if (!(y & 0x03))
 			{
 				yptr += src->w;
@@ -303,8 +304,9 @@ void rZF_nearestneighbor (SDL_Surface *src, SDL_Surface *dst, int  use_weight)
 				if (use_weight)
 					pry = prob_weight;
 			}
-			else if (use_weight )
+			else if (use_weight)
 				pry += 12;
+		}
 		for (x = 0; x < dst->w; x++)
 		{
 			Uint32 p;
@@ -386,7 +388,7 @@ void rZF_continuous (SDL_Surface *src, SDL_Surface *dst)
 			putpix (dst, 0, dy, pnew);
 		}
 	}
-	for ( x = 0; x < src->w; x++)
+	for (x = 0; x < src->w; x++)
 	{
 		p10 = getpix (src, x, 0);
 		if (x == src->w - 1)
@@ -421,7 +423,7 @@ void rZF_continuous (SDL_Surface *src, SDL_Surface *dst)
 			int fromx, fromx4;
 			int dy1;
 			Uint32 p00;
-			char cpl[3][3] = {0,0,0,0,0,0,0,0,0};
+			char cpl[3][3] = {{0,0,0},{0,0,0},{0,0,0}};
 			if (x == src->w)
 				fromx = 0;
 			else

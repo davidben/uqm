@@ -475,6 +475,7 @@ ThraddCulture (RESPONSE_REF R)
 static void
 ThraddWorship (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	SET_GAME_STATE (THRADD_VISITS, 0);
 	SET_GAME_STATE (THRADD_MANNER, 1);
 	SET_GAME_STATE (THRADD_STACK_1, 0);

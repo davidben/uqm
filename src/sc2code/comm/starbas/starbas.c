@@ -140,6 +140,7 @@ ByeBye (RESPONSE_REF R)
 {
 	BYTE b0, b1, b2, b3;
 
+	(void) R;  // ignored
 	b0 = GET_GAME_STATE (STARBASE_BULLETS0);
 	b1 = GET_GAME_STATE (STARBASE_BULLETS1);
 	b2 = GET_GAME_STATE (STARBASE_BULLETS2);
@@ -1741,7 +1742,7 @@ SellMinerals (RESPONSE_REF R)
 			TimeIn = GetTimeCounter ();
 		}
 
-		if (amount = GLOBAL_SIS (ElementAmounts[i]))
+		if ((amount = GLOBAL_SIS (ElementAmounts[i])) != 0)
 		{
 			total += amount * GLOBAL (ElementWorth[i]);
 			do

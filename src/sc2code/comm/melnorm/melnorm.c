@@ -532,6 +532,7 @@ DoRescue (RESPONSE_REF R)
 	SIZE dx, dy;
 	COUNT fuel_required;
 
+	(void) R;  // ignored
 	dx = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x))
 			- SOL_X;
 	dy = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y))
@@ -1771,6 +1772,7 @@ DoMelnormeHate (RESPONSE_REF R)
 {
 	BYTE hate_count;
 
+	(void) R;  // ignored
 	hate_count = GET_GAME_STATE (MELNORME_HATE_COUNT);
 	switch (hate_count++)
 	{

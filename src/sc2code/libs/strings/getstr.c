@@ -271,9 +271,6 @@ _GetStringData (FILE *fp, DWORD length)
 
 					lpStringOffs = lpST->StringOffsets;
 					lpClipOffs = &lpST->StringOffsets[lpST->StringCount + 1];
-					{
-						long foo = (lpST->StringCount + 1) << ((lpST->flags & HAS_SOUND_CLIPS) ? 1 : 0);
-					}
 					lpTSOffs = &lpST->StringOffsets[(lpST->StringCount + 1)
 						<< ((lpST->flags & HAS_SOUND_CLIPS) ? 1 : 0)];
 					for (n = 0; n < (int)lpST->StringCount; 

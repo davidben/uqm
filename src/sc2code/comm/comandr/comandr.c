@@ -441,6 +441,7 @@ static void RevealSelf (RESPONSE_REF R);
 static void
 TellProbe (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	NPCPhrase (THAT_WAS_PROBE);
 	DISABLE_PHRASE (what_was_red_thing);
 

@@ -227,6 +227,7 @@ ExitConversation (RESPONSE_REF R)
 static void
 FormAlliance (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	NPCPhrase_cb (ALLY_WITH_US0, &SelectAlienZOQ);
 	NPCPhrase_cb (ALLY_WITH_US1, &SelectAlienPIK);
 	NPCPhrase_cb (ALLY_WITH_US2, &SelectAlienZOQ);

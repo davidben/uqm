@@ -318,6 +318,7 @@ ExplainDefeat (RESPONSE_REF R)
 static void
 RealizeMistake (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	NPCPhrase (DGRUNTI);
 	SET_GAME_STATE (SHOFIXTI_STACK1, 0);
 	SET_GAME_STATE (SHOFIXTI_STACK3, 0);
@@ -347,6 +348,7 @@ RealizeMistake (RESPONSE_REF R)
 static void
 Hostile (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	switch (GET_GAME_STATE (SHOFIXTI_STACK1))
 	{
 		case 0:

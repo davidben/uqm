@@ -407,6 +407,7 @@ static void OrzNeutral (RESPONSE_REF R);
 static void
 WhereAndrosyn (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	NPCPhrase (DISEMBLE_ABOUT_ANDROSYN);
 	DISABLE_PHRASE (where_androsyn);
 

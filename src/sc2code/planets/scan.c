@@ -110,7 +110,6 @@ PrintCoarseScanPC (void)
 	SIZE temp;
 	TEXT t;
 	RECT r;
-	STAMP s;
 	UNICODE buf[40];
 
 	SetSemaphore (GraphicsSem);

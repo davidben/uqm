@@ -135,7 +135,6 @@ InitSIS (void)
 				{
 					HSTARSHIP hMasterShip;
 					STARSHIPPTR MasterShipPtr;
-					extern QUEUE master_q;
 					
 					hMasterShip = FindMasterShip (ship_ref);
 					MasterShipPtr = LockStarShip (&master_q, hMasterShip);

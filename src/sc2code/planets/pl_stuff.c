@@ -61,8 +61,9 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 	RECT r,  *rp = NULL;
 	CONTEXT OldContext;
 
+	(void)da; // ignored
 
-	// If thiis frame hasn' been generted, generate it
+	// If this frame hasn't been generted, generate it
 	if (! pSolarSysState->isPFADefined[x]) {
 		RenderLevelMasks (x);
 		pSolarSysState->isPFADefined[x] = 1;

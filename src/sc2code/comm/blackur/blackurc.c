@@ -272,6 +272,7 @@ CombatIsInevitable (RESPONSE_REF R)
 static void
 Frenzy (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	switch (GET_GAME_STATE (KOHR_AH_REASONS))
 	{
 		case 0:
@@ -367,6 +368,7 @@ KohrAhStory (RESPONSE_REF R)
 static void
 DieHuman (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	switch (GET_GAME_STATE (KOHR_AH_REASONS))
 	{
 		case 0:

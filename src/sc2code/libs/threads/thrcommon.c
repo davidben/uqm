@@ -553,6 +553,7 @@ ClearSemaphore (Semaphore sem)
 			sem_name = SemMon[i].Name;
 			if (SemMon[i].Thread && SemMon[i].Thread != NativeThreadID ())
 #if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+			{
 				if (ThreadNameNative (SemMon[i].Thread) == NULL)
 					fprintf( stderr, "Freeing %s Semaphore in '%s' set by defunct thread '%s'!\n",
 						sem_name, 
@@ -563,6 +564,7 @@ ClearSemaphore (Semaphore sem)
 						sem_name, 
 						ThreadNameNative (NativeThreadID ()),
 						ThreadNameNative (SemMon[i].Thread));
+			}
 			SemMon[i].ThreadName[0] = 0;
 #else
 				fprintf (stderr, "Freeing %s Semaphore that was set by a different thread\n",

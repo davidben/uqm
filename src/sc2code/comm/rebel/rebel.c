@@ -301,14 +301,9 @@ Rebels (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, any_ships))
 	{
 		if (GET_GAME_STATE (YEHAT_SHIP_MONTH)
-				&& ((NumVisits = (GLOBAL (GameClock.year_index) - START_YEAR)
-				- GET_GAME_STATE (YEHAT_SHIP_YEAR)) < 0
-				|| (NumVisits == 0
-				&& (NumVisits = GLOBAL (GameClock.month_index) -
-				GET_GAME_STATE (YEHAT_SHIP_MONTH)) < 0
-				|| (NumVisits == 0
-				&& GLOBAL (GameClock.day_index) <
-				GET_GAME_STATE (YEHAT_SHIP_DAY)))))
+		    && ((NumVisits = (GLOBAL (GameClock.year_index) - START_YEAR) - GET_GAME_STATE (YEHAT_SHIP_YEAR)) < 0
+			|| ((NumVisits == 0 && (NumVisits = GLOBAL (GameClock.month_index) - GET_GAME_STATE (YEHAT_SHIP_MONTH)) < 0) 
+			    || (NumVisits == 0 && GLOBAL (GameClock.day_index) < GET_GAME_STATE (YEHAT_SHIP_DAY)))))
 			NPCPhrase (NO_SHIPS_YET);
 		else if ((NumVisits = ActivateStarShip (YEHAT_SHIP, FEASIBILITY_STUDY)) == 0)
 			NPCPhrase (NO_ROOM);

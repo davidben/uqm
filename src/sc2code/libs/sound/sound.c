@@ -162,6 +162,9 @@ get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
 BOOLEAN
 InitSound (int argc, char* argv[])
 {
+	/* Quell compiler warnings */
+	(void)argc;
+	(void)argv;
 	return TRUE;
 }
 

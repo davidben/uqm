@@ -667,6 +667,7 @@ InitialSyreen (RESPONSE_REF R)
 static void
 PlanAmbush (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	NPCPhrase (OK_FOUND_VAULT);
 
 	SET_GAME_STATE (MYCON_AMBUSH, 1);

@@ -154,6 +154,7 @@ static LOCDATA slylandro_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
+	(void) R;  // ignored
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 
 	switch (GET_GAME_STATE (SLYLANDRO_HOME_VISITS))

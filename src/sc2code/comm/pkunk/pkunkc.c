@@ -86,14 +86,9 @@ ShipsReady (void)
 	SIZE i;
 
 	return (GET_GAME_STATE (PKUNK_MANNER) == 3
-			&& !((i = (GLOBAL (GameClock.year_index) - START_YEAR)
-			- GET_GAME_STATE (PKUNK_SHIP_YEAR)) < 0
-			|| (i == 0
-			&& (i = GLOBAL (GameClock.month_index) -
-			GET_GAME_STATE (PKUNK_SHIP_MONTH)) < 0
-			|| (i == 0
-			&& GLOBAL (GameClock.day_index) <
-			GET_GAME_STATE (PKUNK_SHIP_DAY)))));
+		&& !((i = (GLOBAL (GameClock.year_index) - START_YEAR) - GET_GAME_STATE (PKUNK_SHIP_YEAR)) < 0
+		     || ((i == 0 && (i = GLOBAL (GameClock.month_index) - GET_GAME_STATE (PKUNK_SHIP_MONTH)) < 0)
+			 || (i == 0 && GLOBAL (GameClock.day_index) < GET_GAME_STATE (PKUNK_SHIP_DAY)))));
 }
 
 static void
@@ -815,6 +810,7 @@ static void
 PkunkMigrate (RESPONSE_REF R)
 {
 	BYTE ReasonMask;
+	(void) R;  // ignored
 
 	ReasonMask = GET_GAME_STATE (PKUNK_REASONS);
 	if (!(ReasonMask & GOOD_REASON_1))
