@@ -579,7 +579,16 @@ zip_mount(uio_Handle *handle, int flags) {
 			handle, NULL, uio_GPDir_COMPLETE);
 
 	rootDirHandle = uio_PRoot_getRootDirHandle(result);
-	zip_fillDirStructure(rootDirHandle->extra, handle);
+	if (zip_fillDirStructure(rootDirHandle->extra, handle) == -1) {
+		int saveErrno = errno;
+#ifdef DEBUG
+		fprintf(stderr, "Error: failed to read the zip directory "
+				"structure - %d.\n", errno);
+#endif
+		uio_GPRoot_umount(result);
+		errno = saveErrno;
+		return NULL;
+	}
 	
 	return result;
 }

@@ -36,8 +36,12 @@ Bugs:
 - 'openDir(repository, "dir/")' will have the trailing '/'
   in the dirHandle, which will cause problems.
 - uio_rename() doesn't work on directories
-  uio_GetPhysicalAccess() needs to be changed so that it works the same on
+  uio_getPhysicalAccess() needs to be changed so that it works the same on
   dirs as on files. stat() can be cleaned up too then.
+- uio_getPhysicalAccess() will not return ENOENT when (only) the last
+  component does not exist, even when O_RDONLY is used.
+  For O_RDRW, O_CREAT should probably be checked too (function description
+  needs to be updated too then).
 
 Extra features (not necessary for UQM):
 - Make functions to use for uio_malloc, uio_free and uio_realloc

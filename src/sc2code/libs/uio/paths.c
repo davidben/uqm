@@ -142,10 +142,17 @@ getPreviousPathComponent(const char *dir,
 		(*startComp)--;
 }
 
+// Combine two parts of a paths into a new path.
+// The new path starts with a '/' only when the first part does.
+// The first path may (but doesn't have to) end on a '/', or may be empty.
+// Pre: the second path doesn't start with a '/'
 char *
 joinPaths(const char *first, const char *second) {
 	char *result, *resPtr;
 	size_t firstLen, secondLen;
+
+	if (first[0] == '\0')
+		return uio_strdup(second);
 	
 	firstLen = strlen(first);
 	if (first[firstLen - 1] == '/')
@@ -153,6 +160,46 @@ joinPaths(const char *first, const char *second) {
 	secondLen = strlen(second);
 	result = uio_malloc(firstLen + secondLen + 2);
 	resPtr = result;
+
+	memcpy(resPtr, first, firstLen);
+	resPtr += firstLen;
+
+	*resPtr = '/';
+	resPtr++;
+
+	memcpy(resPtr, second, secondLen);
+	resPtr += secondLen;
+
+	*resPtr = '\0';
+	return result;
+}
+
+// Combine two parts of a paths into a new path, 
+// The new path will always start with a '/'.
+// The first path may (but doesn't have to) end on a '/', or may be empty.
+// Pre: the second path doesn't start with a '/'
+char *
+joinPathsAbsolute(const char *first, const char *second) {
+	char *result, *resPtr;
+	size_t firstLen, secondLen;
+
+	if (first[0] == '\0') {
+		secondLen = strlen(second);
+		result = uio_malloc(secondLen + 2);
+		result[0] = '/';
+		memcpy(&result[1], second, secondLen);
+		return result;
+	}
+
+	firstLen = strlen(first);
+	if (first[firstLen - 1] == '/')
+		firstLen--;
+	secondLen = strlen(second);
+	result = uio_malloc(firstLen + secondLen + 3);
+	resPtr = result;
+
+	*resPtr = '/';
+	resPtr++;
 
 	memcpy(resPtr, first, firstLen);
 	resPtr += firstLen;

@@ -87,6 +87,9 @@ int uio_unmountDir(uio_MountHandle *mountHandle);
 // Unmount all previously mounted dirs.
 int uio_unmountAllDirs(uio_Repository *repository);
 
+// Get the filesystem identifier for a mounted directory.
+uio_FileSystemID uio_getMountFileSystemType(uio_MountHandle *mountHandle);
+
 // Open a file
 uio_Handle *uio_open(uio_DirHandle *dir, const char *file, int flags,
 		mode_t mode);
@@ -114,6 +117,9 @@ int uio_lseek(uio_Handle *handle, off_t offset, int whence);
 ssize_t uio_write(uio_Handle *handle, const void *buf, size_t count);
 
 int uio_unlink(uio_DirHandle *dirHandle, const char *path);
+
+int uio_getFileLocation(uio_DirHandle *dir, const char *inPath,
+		int flags, uio_MountHandle **mountHandle, char **outPath);
 
 // Get a directory handle.
 uio_DirHandle *uio_openDir(uio_Repository *repository, const char *path,

@@ -39,6 +39,7 @@ void getPreviousPathComponent(const char *dir, const char **startComp,
 		const char **endComp);
 #define getPreviousPath0Component getPreviousPathComponent
 char *joinPaths(const char *first, const char *second);
+char *joinPathsAbsolute(const char *first, const char *second);
 
 uio_bool validPathName(const char *path, size_t len);
 

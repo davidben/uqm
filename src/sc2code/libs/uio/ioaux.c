@@ -260,26 +260,38 @@ copyError(int error,
  *              extraFlags - either 0 or uio_GPA_NOWRITE
  *              		When 0, the path will be created if it doesn't
  *              		exist in the writing location, but does exist
- *                      in the reading location. With uio_GPA_NOWRITE, it
- *                      won't be created, and -1 will be returned and errno
- *                      will be set to ENOENT.
+ *              		in the reading location. With uio_GPA_NOWRITE, it
+ *              		won't be created, and -1 will be returned and errno
+ *              		will be set to ENOENT.
  *              mountInfoReadPtr - pointer to location where the pointer
  *              		to the MountInfo structure for the reading location
  *              		should be stored.
  *              readPDirHandlePtr - pointer to the location where the pointer
  *              		to the PDirHandle used for reading should be stored.
+ *              readPRootPath - pointer to the location where the pointer
+ *              		to the physical path to the reading location 
+ *              		is to be stored.
+ *              		The caller is responsible for freeing this.
+ *              		Ignored if NULL.
  *              mountInfoWritePtr - pointer to location where the pointer
  *              		to the MountInfo structure for the writing location
  *              		should be stored.
  *              writePDirHandlePtr - pointer to the location where the pointer
  *              		to the PDirHandle used for writing should be stored.
  *              		NULL if O_RDONLY was specified.
- *                      If this is the same dir as the one refered
- *                      to by readPDirHandlePtr, the handles will be the
- *                      same too.
- *              restPtr - pointer to a newly created string with as contents
- *              		the last component of 'path'.
+ *              		If this is the same dir as the one refered
+ *              		to by readPDirHandlePtr, the handles will be the
+ *              		same too.
+ *              writePRootPath - pointer to the location where the pointer
+ *              		to the physical path to the writing location 
+ *              		is to be stored.
  *              		The caller is responsible for freeing this.
+ *              		Ignored if NULL.
+ *              restPtr - pointer to the location where a newly created
+ *              		string with as contents the last component of 'path'
+ *              		is to be stored.
+ *              		The caller is responsible for freeing this.
+ *              		Ignored if NULL.
  * Returns:     0 - success
  *              -1 - failure (errno set)
  * NB:          This is the function that would most benefit from
@@ -291,10 +303,13 @@ int
 uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		int flags, int extraFlags,
 		uio_MountInfo **mountInfoReadPtr, uio_PDirHandle **readPDirHandlePtr,
+		char **readPRootPathPtr,
 		uio_MountInfo **mountInfoWritePtr, uio_PDirHandle **writePDirHandlePtr,
+		char **writePRootPathPtr,
 		char **restPtr) {
 	char *fullPath;  // path from dirHandle with 'path' added
 	const char *pRootPath;  // path from the pRoot of a physical tree
+	const char *readPRootPath, *writePRootPath;
 	const char *rest, *readRest;
 	uio_MountTree *tree;
 	uio_MountTreeItem *item;
@@ -317,8 +332,10 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 
 	readItem = NULL;
 	readPDirHandle = NULL;
+	readPRootPath = NULL;
 	writeItem = NULL;
 	writePDirHandle = NULL;
+	writePRootPath = NULL;
 	readRest = NULL;
 			// Satisfy compiler.
 	entryExists = false;
@@ -356,6 +373,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 				if (readPDirHandle != NULL)
 					uio_PDirHandle_unref(readPDirHandle);
 				readPDirHandle = pDirHandle;
+				readPRootPath = pRootPath;
 				readRest = rest;
 				entryExists = true;
 				break;
@@ -365,6 +383,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 					readItem = item;
 					assert(readPDirHandle == NULL);
 					readPDirHandle = pDirHandle;
+					readPRootPath = pRootPath;
 					readRest = rest;
 					continue;
 				}
@@ -399,6 +418,9 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		// write access is not needed
 		*mountInfoReadPtr = readItem->mountInfo;
 		*readPDirHandlePtr = readPDirHandle;
+		if (readPRootPathPtr != NULL)
+			*readPRootPathPtr = joinPathsAbsolute(
+					readItem->mountInfo->dirName, readPRootPath);
 		// Don't touch mountInfoWritePtr and writePDirHandlePtr.
 		// they'd be NULL.
 		*restPtr = uio_strdup(readRest);
@@ -419,13 +441,20 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		// The read directory is usable as write directory too.
 		*mountInfoReadPtr = readItem->mountInfo;
 		*readPDirHandlePtr = readPDirHandle;
+		if (readPRootPathPtr != NULL)
+			*readPRootPathPtr = joinPathsAbsolute(
+					readItem->mountInfo->dirName, readPRootPath);
 		*mountInfoWritePtr = writeItem->mountInfo;
 				// writeItem == readItem
 		uio_PDirHandle_ref(readPDirHandle);
 		*writePDirHandlePtr = readPDirHandle;
 				// No copy&paste error, the read PDirHandle is the write
 				// pDirHandle too.
-		*restPtr = uio_strdup(readRest);
+		if (writePRootPathPtr != NULL)
+			*writePRootPathPtr = joinPathsAbsolute(
+					writeItem->mountInfo->dirName, writePRootPath);
+		if (restPtr != NULL)
+			*restPtr = uio_strdup(readRest);
 		uio_free(fullPath);
 		return 0;
 	}
@@ -490,9 +519,16 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 	
 	*mountInfoReadPtr = readItem->mountInfo;
 	*readPDirHandlePtr = readPDirHandle;
+	if (readPRootPathPtr != NULL)
+		*readPRootPathPtr = joinPathsAbsolute(
+				readItem->mountInfo->dirName, readPRootPath);
 	*mountInfoReadPtr = writeItem->mountInfo;
 	*writePDirHandlePtr = writePDirHandle;
-	*restPtr = uio_strdup(rest);
+	if (writePRootPathPtr != NULL)
+		*writePRootPathPtr = joinPathsAbsolute(
+				writeItem->mountInfo->dirName, writePRootPath);
+	if (restPtr != NULL)
+		*restPtr = uio_strdup(rest);
 	uio_free(fullPath);
 	return 0;
 }

@@ -25,6 +25,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
+#ifdef __unix__
+#	include <sys/wait.h>
+#endif
 
 #include "debug.h"
 #include "uioport.h"
@@ -58,6 +61,7 @@ void unInitRepository(void);
 
 static int debugCmdCat(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdCd(DebugContext *debugContext, int argc, char *argv[]);
+static int debugCmdExec(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdExit(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdLs(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdMem(DebugContext *debugContext, int argc, char *argv[]);
@@ -87,6 +91,7 @@ debugMountOne(uio_Repository *destRep, const char *mountPoint,
 DebugCommand debugCommands[] = {
 	{ "cat", debugCmdCat },
 	{ "cd", debugCmdCd },
+	{ "exec", debugCmdExec },
 	{ "exit", debugCmdExit },
 	{ "fwritetest", debugCmdFwriteTest },
 	{ "ls", debugCmdLs },
@@ -294,12 +299,12 @@ makeArgs(char *lineBuf, int *argc, char ***argv) {
 	numArg = 0;
 	ptr = lineBuf;
 	while(1) {
-		while (isspace(*ptr))
+		while (isspace((int) *ptr))
 			ptr++;
 		if (*ptr == '\0')
 			break;
 		numArg++;
-		while (!isspace(*ptr))
+		while (!isspace((int) *ptr))
 			ptr++;
 	}
 
@@ -307,13 +312,13 @@ makeArgs(char *lineBuf, int *argc, char ***argv) {
 	numArg = 0;
 	ptr = lineBuf;
 	while(1) {
-		while (isspace(*ptr))
+		while (isspace((int) *ptr))
 			ptr++;
 		if (*ptr == '\0')
 			break;
 		args[numArg] = ptr;
 		numArg++;
-		while (!isspace(*ptr))
+		while (!isspace((int) *ptr))
 			ptr++;
 		if (*ptr == '\0')
 			break;
@@ -422,6 +427,114 @@ debugCmdCd(DebugContext *debugContext, int argc, char *argv[]) {
 	uio_closeDir(debugContext->cwd);
 	debugContext->cwd = newWd;
 	return 0;
+}
+
+static int
+debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
+	int i;
+	char **newArgs;
+	int errCode = 0;
+
+	if (argc < 2) {
+		fprintf(debugContext->err, "Invalid number of arguments.\n");
+		return 1;
+	}
+
+	newArgs = uio_malloc(argc * sizeof (char *));
+	newArgs[0] = argv[1];
+	
+	for (i = 2; i < argc; i++) {
+		int retVal;
+		uio_FileSystemID fsID;
+		uio_MountHandle *mountHandle;
+		
+		retVal = uio_getFileLocation(debugContext->cwd, argv[i], O_RDONLY,
+				&mountHandle, &newArgs[i - 1]);
+		if (retVal == -1) {
+			// No match; we keep what's typed litterally.
+			newArgs[i - 1] = argv[i];
+			continue;
+		}
+		
+		fsID = uio_getMountFileSystemType(mountHandle);
+		if (fsID != uio_FSTYPE_STDIO) {
+			// Wrong file system type.
+			fprintf(debugContext->err,
+					"Cannot execute: %s is not in a stdio filesystem.\n",
+					argv[i]);
+			errCode = 0;
+			argc = i + 1;
+			goto err;
+		}
+	}
+	newArgs[argc - 1] = NULL;
+
+	fprintf(debugContext->err, "Executing: %s", newArgs[0]);
+	for (i = 1; i < argc - 1; i++)
+		fprintf(debugContext->err, " %s", newArgs[i]);
+	fprintf(debugContext->err, "\n");
+
+#ifdef __unix__
+	{
+		pid_t pid;
+		
+		pid = fork();
+		switch (pid) {
+			case -1:
+				fprintf(debugContext->err, "Error: fork() failed: %s.\n",
+						strerror(errno));
+				break;
+			case 0:
+				// child
+				execvp(newArgs[0], newArgs);
+				fprintf(debugContext->err, "Error: execvp() failed: %s.\n",
+						strerror(errno));
+				_exit(EXIT_FAILURE);
+				break;
+			default: {
+				// parent
+				int status;
+				pid_t retVal;
+
+				while (1) {
+					retVal = waitpid(pid, &status, 0);
+					if (retVal != -1)
+						break;
+					if (errno != EINTR) {
+						fprintf(debugContext->err, "Error: waitpid() "
+								"failed: %s\n", strerror(errno));
+						break;
+					}
+				}
+				if (retVal == -1)
+					break;
+
+				if (WIFEXITED(status)) {
+					fprintf(debugContext->err, "Exit status: %d\n",
+							WEXITSTATUS(status));
+				} else if (WIFSIGNALED(status)) {
+					fprintf(debugContext->err, "Terminated on signal %d.\n",
+							WTERMSIG(status));
+				} else {
+					fprintf(debugContext->err, "Error: weird exit status.\n");
+				}
+				break;
+			}
+		}
+	}
+#else
+	fprintf(debugContext->err, "Cannot execute: not supported on this "
+			"platform.\n");
+#endif
+
+err:
+	for (i = 1; i < argc; i++) {
+		if (argv[i] != newArgs[i - 1])
+			uio_free(newArgs[i - 1]);
+	}
+	uio_free(newArgs);
+
+	return errCode;
 }
 
 static int

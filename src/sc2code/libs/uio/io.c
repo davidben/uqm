@@ -325,6 +325,11 @@ uio_unmountAllDirs(uio_Repository *repository) {
 	return 0;
 }
 
+uio_FileSystemID
+uio_getMountFileSystemType(uio_MountHandle *mountHandle) {
+	return mountHandle->mountInfo->fsID;
+}
+
 int
 uio_close(uio_Handle *handle) {
 	uio_Handle_unref(handle);
@@ -340,15 +345,15 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 	int retVal;
 
 	if (uio_getPhysicalAccess(oldDir, oldPath, O_RDONLY, 0,
-			&oldReadMountInfo, &oldPReadDir,
-			NULL, NULL, &oldName) == -1) {
+			&oldReadMountInfo, &oldPReadDir, NULL,
+			NULL, NULL, NULL, &oldName) == -1) {
 		// errno is set
 		return -1;
 	}
 
 	if (uio_getPhysicalAccess(newDir, newPath, O_WRONLY | O_CREAT | O_EXCL,
-			uio_GPA_NOWRITE, &newReadMountInfo, &newPReadDir,
-			&newWriteMountInfo, &newPWriteDir, &newName) == -1) {
+			uio_GPA_NOWRITE, &newReadMountInfo, &newPReadDir, NULL,
+			&newWriteMountInfo, &newPWriteDir, NULL, &newName) == -1) {
 		int saveErrno = errno;
 		uio_PDirHandle_unref(oldPReadDir);
 		uio_free(oldName);
@@ -423,8 +428,8 @@ uio_stat(uio_DirHandle *dir, const char *path, struct stat *statBuf) {
 	int result;
 
 	if (uio_getPhysicalAccess(dir, path, O_RDONLY, 0,
-			&readMountInfo, &pReadDir,
-			NULL, NULL, &name) == -1) {
+			&readMountInfo, &pReadDir, NULL,
+			NULL, NULL, NULL, &name) == -1) {
 		if (uio_statDir(dir, path, statBuf) == -1) {
 			// errno is set
 			return -1;
@@ -513,8 +518,8 @@ uio_mkdir(uio_DirHandle *dir, const char *path, mode_t mode) {
 	uio_PDirHandle *newDirHandle;
 
 	if (uio_getPhysicalAccess(dir, path, O_WRONLY | O_CREAT | O_EXCL, 0,
-			&readMountInfo, &pReadDir,
-			&writeMountInfo, &pWriteDir, &name) == -1) {
+			&readMountInfo, &pReadDir, NULL,
+			&writeMountInfo, &pWriteDir, NULL, &name) == -1) {
 		// errno is set
 		if (errno == EISDIR)
 			errno = EEXIST;
@@ -552,8 +557,8 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 	uio_Handle *handle;
 	
 	if (uio_getPhysicalAccess(dir, path, flags, 0,
-			&readMountInfo, &readPDirHandle,
-			&writeMountInfo, &writePDirHandle, &name) == -1) {
+			&readMountInfo, &readPDirHandle, NULL,
+			&writeMountInfo, &writePDirHandle, NULL, &name) == -1) {
 		// errno is set
 		return NULL;
 	}
@@ -879,6 +884,104 @@ err:
 		return -1;
 	}
 }
+
+// inPath and *outPath may point to the same location
+int
+uio_getFileLocation(uio_DirHandle *dir, const char *inPath,
+		int flags, uio_MountHandle **mountHandle, char **outPath) {
+	uio_PDirHandle *readPDirHandle, *writePDirHandle;
+	uio_MountInfo *readMountInfo, *writeMountInfo, *mountInfo;
+	char *name;
+	char *readPRootPath, *writePRootPath, *pRootPath;
+	
+	if (uio_getPhysicalAccess(dir, inPath, flags, 0,
+			&readMountInfo, &readPDirHandle, &readPRootPath,
+			&writeMountInfo, &writePDirHandle, &writePRootPath,
+			&name) == -1) {
+		// errno is set
+		return -1;
+	}
+
+	// TODO: This code is partly the same as the code in uio_open().
+	//       probably some code could be put in a seperate function.
+	if ((flags & O_ACCMODE) == O_RDONLY) {
+		// WritePDirHandle is not filled in.
+		uio_PDirHandle_unref(readPDirHandle);
+		pRootPath = readPRootPath;
+		mountInfo = readMountInfo;
+	} else if (readPDirHandle == writePDirHandle) {
+		// In general, the dirs can be the same even when the handles are
+		// not the same. But here it works, because uio_getPhysicalAccess
+		// guarantees it.
+		uio_PDirHandle_unref(readPDirHandle);
+		uio_PDirHandle_unref(writePDirHandle);
+		pRootPath = readPRootPath;
+		mountInfo = readMountInfo;
+		uio_free(writePRootPath);
+	} else {
+		// need to write
+		uio_PDirEntryHandle *entry;
+		
+		entry = uio_getPDirEntryHandle(readPDirHandle, name);
+		if (entry != NULL) {
+			// file already exists
+			uio_PDirEntryHandle_unref(entry);
+			if ((flags & O_CREAT) == O_CREAT &&
+					(flags & O_EXCL) == O_EXCL) {
+				uio_free(name);
+				uio_PDirHandle_unref(readPDirHandle);
+				uio_free(readPRootPath);
+				uio_PDirHandle_unref(writePDirHandle);
+				uio_free(writePRootPath);
+				errno = EEXIST;
+				return -1;
+			}
+			if ((flags & O_TRUNC) == O_TRUNC) {
+				// No use copying the file to the writable dir.
+				// As it doesn't exists there, O_TRUNC needs to be turned off
+				// though.
+				flags &= ~O_TRUNC;
+			} else {
+				// file needs to be copied
+				if (uio_copyFilePhysical(readPDirHandle, name, writePDirHandle,
+							name) == -1) {
+					int saveErrno = errno;
+					uio_free(name);
+					uio_PDirHandle_unref(readPDirHandle);
+					uio_free(readPRootPath);
+					uio_PDirHandle_unref(writePDirHandle);
+					uio_free(writePRootPath);
+					errno = saveErrno;
+					return -1;
+				}
+			}
+		} else {
+			// file does not exist
+			if (((flags & O_ACCMODE) == O_RDONLY) ||
+					(flags & O_CREAT) != O_CREAT) {
+				uio_free(name);
+				uio_PDirHandle_unref(readPDirHandle);
+				uio_free(readPRootPath);
+				uio_PDirHandle_unref(writePDirHandle);
+				uio_free(writePRootPath);
+				errno = ENOENT;
+				return -1;
+			}
+		}
+		uio_PDirHandle_unref(readPDirHandle);
+		uio_PDirHandle_unref(writePDirHandle);
+		pRootPath = writePRootPath;
+		mountInfo = writeMountInfo;
+		uio_free(readPRootPath);
+	}
+	
+	uio_free(name);
+
+	*mountHandle = mountInfo->mountHandle;
+	*outPath = pRootPath;
+	return 0;
+}
+
 
 // *** begin dirList stuff *** //
 
