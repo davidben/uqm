@@ -77,6 +77,8 @@ Glitches (don't crash the game, medium priority):
 - Selling bio data gives an incomplete message: 'The 1000' [nothing].
 - When out of fuel: "Fill all my fuel tanks to maximum capacity" ->
   "Your ship's capacity is insufficient to hold that much fuel"
+- Melee zooming may bug a little, ship sometimes flashes as big and then
+  small again etc
 
 Implementation bugs (low priority):
 
