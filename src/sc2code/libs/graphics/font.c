@@ -355,4 +355,3 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
 	return &page->charDesc[ch - page->firstChar];
 }
 
-
