@@ -1,4 +1,5 @@
 0.2:
+- Autopilot indicator no longer blinking on starmap and combat
 - Entering a star system lockup/messed graphics fixed
 - Position of planet info icons/texts is now correct and centered
 - Yehat had no subtitles.
