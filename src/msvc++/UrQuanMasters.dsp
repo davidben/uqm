@@ -3353,5 +3353,33 @@ SOURCE=..\..\doc\devel\script
 # End Source File
 # End Group
 # End Group
+# Begin Group "Resources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE="..\res\kohr-ah1.ico"
+# End Source File
+# Begin Source File
+
+SOURCE=..\res\sis1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\res\starcon2.ico
+# End Source File
+# Begin Source File
+
+SOURCE="..\res\ur-quan1.ico"
+# End Source File
+# Begin Source File
+
+SOURCE="..\res\ur-quan2.ico"
+# End Source File
+# Begin Source File
+
+SOURCE=..\res\UrQuanMasters.rc
+# End Source File
+# End Group
 # End Target
 # End Project
