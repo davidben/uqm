@@ -997,10 +997,7 @@ DoTextEntry (PMELEE_STATE pMS)
 		right = TRUE;
 		break;
 	default:
-		/* This really should use isprint, but for some
-		 * ungodly reason some machines refuse to accept
-		 * anything as printable */
-		if ((ch >= 32) && (ch < 127) && (len + pStr - pBaseStr < (int)(max_chars)))
+		if (isprint (ch) && (len + pStr - pBaseStr < (int)(max_chars)))
 		{
 			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
 			*pStr++ = ch;
@@ -1134,6 +1131,49 @@ RetrySave:
 	return (save_fp != 0);
 }
 
+static void
+DeleteCurrentShip (PMELEE_STATE pMS)
+{
+	RECT r;
+	HSTARSHIP hStarShip;
+	STARSHIPPTR StarShipPtr;
+	int CurIndex;
+
+	CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+	hStarShip = GetStarShipFromIndex (&master_q, CurIndex);
+	StarShipPtr = LockStarShip (&master_q, hStarShip);
+	if (StarShipPtr)
+	{
+		pMS->star_bucks[pMS->side] -=
+			StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+		UnlockStarShip (&master_q, hStarShip);
+	
+		pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
+	
+		SetSemaphore (GraphicsSem);
+		GetShipBox (&r, pMS->side, pMS->row, pMS->col);
+		RepairMeleeFrame (&r);
+
+		DrawTeamString (pMS, 4);
+		ClearSemaphore (GraphicsSem);
+	}
+}
+
+static void
+AdvanceCursor (PMELEE_STATE pMS)
+{
+	if (++pMS->col == NUM_MELEE_COLUMNS)
+	{
+		if (++pMS->row < NUM_MELEE_ROWS)
+			pMS->col = 0;
+		else
+		{
+			pMS->col = NUM_MELEE_COLUMNS - 1;
+			pMS->row = NUM_MELEE_ROWS - 1;
+		}
+	}
+}
+
 static BOOLEAN
 DoEdit (PMELEE_STATE pMS)
 {
@@ -1169,6 +1209,11 @@ DoEdit (PMELEE_STATE pMS)
 			pMS->Initialized = -1;
 		TFB_ResetControls ();
 		DoPickShip (pMS);
+	}
+	else if (pMS->row < NUM_MELEE_ROWS && CurrentMenuState.del)
+	{
+		DeleteCurrentShip (pMS);
+		AdvanceCursor (pMS);
 	}
 	else
 	{
@@ -1284,23 +1329,7 @@ DoPickShip (PMELEE_STATE pMS)
 			pMS->CurIndex = 0;
 		else if (pMS->CurIndex != (BYTE)~0)
 		{
-			RECT r;
-			HSTARSHIP hStarShip;
-
-			hStarShip = GetStarShipFromIndex (&master_q, pMS->CurIndex);
-			StarShipPtr = LockStarShip (&master_q, hStarShip);
-			pMS->star_bucks[pMS->side] -=
-					StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-			UnlockStarShip (&master_q, hStarShip);
-
-			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
-
-			SetSemaphore (GraphicsSem);
-			GetShipBox (&r, pMS->side, pMS->row, pMS->col);
-			RepairMeleeFrame (&r);
-
-			DrawTeamString (pMS, 4);
-			ClearSemaphore (GraphicsSem);
+			DeleteCurrentShip (pMS);
 		}
 
 		if (pMS->Initialized == 0)
@@ -1317,16 +1346,7 @@ DoPickShip (PMELEE_STATE pMS)
 			SetSemaphore (GraphicsSem);
 			Deselect (EDIT_MELEE);
 			pMS->Initialized = TRUE;
-			if (++pMS->col == NUM_MELEE_COLUMNS)
-			{
-				if (++pMS->row < NUM_MELEE_ROWS)
-					pMS->col = 0;
-				else
-				{
-					pMS->col = NUM_MELEE_COLUMNS - 1;
-					pMS->row = NUM_MELEE_ROWS - 1;
-				}
-			}
+			AdvanceCursor (pMS);
 			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
 			ClearSemaphore (GraphicsSem);
 
@@ -1352,16 +1372,7 @@ DoPickShip (PMELEE_STATE pMS)
 			DrawTeamString (pMS, 4);
 			DrawShipBox (pMS, FALSE);
 			ClearSemaphore (GraphicsSem);
-			if (++pMS->col == NUM_MELEE_COLUMNS)
-			{
-				if (++pMS->row < NUM_MELEE_ROWS)
-					pMS->col = 0;
-				else
-				{
-					pMS->col = NUM_MELEE_COLUMNS - 1;
-					pMS->row = NUM_MELEE_ROWS - 1;
-				}
-			}
+			AdvanceCursor (pMS);
 		}
 
 		{

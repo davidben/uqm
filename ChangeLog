@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Added a Menu-Delete key for the Super-Melee menu (#123) - Michael
 - Added support for positional (stereo) sound effects, currently
   works only with OpenAL -Mika
 - Fixed screen transitions from homeworld conversations (bug #348) -Michael
