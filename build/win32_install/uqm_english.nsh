@@ -13,25 +13,34 @@ LicenseData /LANG=${LANG_ENGLISH} "..\..\COPYING"
 LangString InstTypeFullName ${LANG_ENGLISH} "Full"
 LangString InstTypeUpgradeName ${LANG_ENGLISH} "Upgrade"
 LangString SecUQMName ${LANG_ENGLISH} "Ur-Quan Masters (required)"
-LangString SecUpgradeName ${LANG_ENGLISH} "Upgrade Data from ${OLD_VERSION}"
-LangString SecContentName ${LANG_ENGLISH} "Install All data"
+LangString SecContentName ${LANG_ENGLISH} "Install data files"
+LangString SecVoiceName ${LANG_ENGLISH} "Install voice files"
+LangString Sec3doMusicName ${LANG_ENGLISH} "Install 3DO Music"
+LangString SubSecUpgradeName ${LANG_ENGLISH} "Upgrade from ${OLD_VERSION}"
+LangString SecUpgradeName ${LANG_ENGLISH} "Upgrade data files"
+LangString SecVUpgradeName ${LANG_ENGLISH} "Upgrade voice files"
 LangString SecSupportDLLName ${LANG_ENGLISH} "Graphics/Sound libs"
 LangString SecSDLName ${LANG_ENGLISH} "SDL"
-LangString SecVoiceName ${LANG_ENGLISH} "Voice"
+LangString SecVoiceDLLName ${LANG_ENGLISH} "Voice"
+LangString SecMoveSaveName ${LANG_ENGLISH} "Move Save Games"
 LangString SecStartMenuName ${LANG_ENGLISH} "Start Menu Shortcuts"
 LangString SecDesktopIconName ${LANG_ENGLISH} "Desktop Icon"
 
 LangString SecUQMDesc ${LANG_ENGLISH} "Install uqm.exe and other required files"
-LangString SecUpgradeDesc ${LANG_ENGLISH} "Download the upgrade uqm from a previous ${OLD_VERSION} (or later) install.  NOTE:  aborting an upgrade can leave your uqm install corrupted"
+LangString SecUpgradeDesc ${LANG_ENGLISH} "Download the upgrade data-files from a previous ${OLD_VERSION} (or later) install."
+LangString SecVUpgradeDesc ${LANG_ENGLISH} "Download the upgrade voices from a previous ${OLD_VERSION} (or later) install."
 LangString SecContentDesc ${LANG_ENGLISH} "Download all data files needed to play uqm."
+LangString SecVoiceDesc ${LANG_ENGLISH} "Download all voice files needed to play uqm."
+LangString Sec3doMusicDesc ${LANG_ENGLISH} "Download optional music from the 3do version."
 LangString SecSupportDLLDesc ${LANG_ENGLISH} "Install Support .dll files needed to play Ur-Quan Masters"
 LangString SecSDLDesc ${LANG_ENGLISH} "Install SDL and SDL_image libraries for graphics and sound support"
-LangString SecVoiceDesc ${LANG_ENGLISH} "Install OggVorbis libraries for playing voice"
+LangString SecVoiceDLLDesc ${LANG_ENGLISH} "Install OggVorbis libraries for playing voice"
+LangString SecMoveSaveDesc ${LANG_ENGLISH} "Move SavedGames from ${OLD_VERSION} location to new location"
 LangString SecStartMenuDesc ${LANG_ENGLISH} "Create shortcuts in the start menu"
 LangString SecDesktopIconDesc ${LANG_ENGLISH} "Add a desktop icon for quick access to UrQuan Masters"
   
 ;Page titles
-LangString PageDownloadTitle ${LANG_ENGLISH} ": Download options"
+LangString PageDownloadTitle ${LANG_ENGLISH} "Download options"
 LangString PageDownloadSubTitle ${LANG_ENGLISH} "Some components have to be downloaded"
 
 ;Download dialog
@@ -59,6 +68,10 @@ LangString DownloadExtractFailedBox ${LANG_ENGLISH} "Failed to extract contents 
 ; Mirror problems
 LangString DownloadMirrorBroken ${LANG_ENGLISH} "Failed to parse mirror file"
 LangString DownloadMirrorBrokenDlg ${LANG_ENGLISH} "There were problems reading the mirror file.  We wil not be able to install downloaded content.  You can retrieve the files directly from http://sc2.sourceforge.net"
+;Move Saved Games
+LangString MoveSaveAlreadyExists ${LANG_ENGLISH} "Saved games already exist in $R0. We will not overwrite them!"
+LangString MoveSaveBadCopy ${LANG_ENGLISH} "Error while copying saved games to $R0!"
+
 ;Uninstaller
 LangString un.QuestionDeleteRegistry ${LANG_ENGLISH} "Delete all Registry keys created by Ur-Quan Masters?"
 

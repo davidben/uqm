@@ -6,7 +6,7 @@ alternatively, steps 3 and 4 can be completed on a linux machine (which
 will probably work better anyway)
 
 The following additional tools are required:
-NSIS 2.0b0 or newer: nsis.sourceforge.net
+NSIS 2.0b1 or newer: nsis.sourceforge.net
 NSIS 'ZipDLL' http://nsis.sourceforge.net/archive/download.php?file=ZipDLL.zip
 NSIS 'unTGZ' http://nsis.sourceforge.net/archive/viewpage.php?pageid=84
 
@@ -14,66 +14,77 @@ Optionally:
 upx 1.90 or newer: http://upx.sourceforge.net/#unstable
 resource hacker: http://www.users.on.net/johnson/resourcehacker/
 
-1) Compile uqm.exe
-
-2) If you have upx, run it  on uqm.exe as follows:
-    upx --best --crp-ms=100000 uqm.exe
-
-3) Update the 'upgrade' reference.
+0) Update the 'upgrade' reference.
+   NOTE:  Only run this step if you are building an official release!  If you
+          are building a development release, or anything not sanctioned by the
+          UQM developers, you do not need to run this.
    The UQM installer can install either a 'full' version of the content dir
    or an 'upgrade' from a previous version.  The last official version was
-   0.1 as of Jan 31, 2003.  To build the upgrade, it is necessary to determine
+   0.1 as of Feb 14, 2003.  To build the upgrade, it is necessary to determine
    what has changed since the previous release.  Each release is taggged in
    the CVS repository with something like 'version_0_1'.  A perl script is
    included which can build a list of file versions tagged with a specific tag.
-   The procedure is:
-      cvs log -h > logfile
-      build_contour.pl logfile version_0_1 >content_0_1
+   The command is:
+      ./build_contour.pl version_0_1 contour_0_1
+      (NOTE that this may take a very long time to run, as it is fetching the
+            CVS log for each file in the content directory)
    This will generate a reference contour to compare the current CVS build
    against.  This only needs to be done once (after each release)
 
-4) Build content .zip files and content.nsh
+1) Compile uqm.exe
+
+1a) If you have upx, run it  on uqm.exe as follows:
+    upx --best --crp-ms=100000 uqm.exe
+
+2) Build content .zip files and content.nsh
      For this procedure, you must have no modifications in the content tree.
      having additional files won't cause any issues, but there can't be any
      modified files.
      use the 'full' option when building a production release where you plan
      to create a full content directory rather than just the upgrade zip
-      ./build_archives.pl 0.2 content_0_1 [full]
+      ./build_archives.pl 0.2 contour_0_1 [full]
      This will generate .zip files of the content directory:
-        uqm_0_2_upgrade_0_1.zip
+        uqm-0.1_to_0.2-content.zip
+        uqm-0.1_to_0.2-voice.zip
      and (if 'full' is specified)
-        uqm_0_2_content.zip
+        uqm-0.2-content.zip
+        uqm-0.2-voice.zip
+        uqm-0.2-3domusic.zip
      These files should be uploaded to the disrtibution web page
 
-     It will also generate content.nsh which is a list of all files in the
-     content directory, for use in building the uninstaller
+     It will also generate content.nsh which contains a list of files for the
+     uninstaller, as well as the file-size of each of the archives, for use in
+     the installer
 
-     Lastly, this script will display the sizes of the uncompressed archives
-     which are needed for the next step
-
-5) Modify the install script:
+3) Modify the install script:
      Edit uqm.nsi, and change the following variables:
        MUI_VERSION: The version you are building
        OLD_VERSION: The earliest version that can be upgraded from
-       MIRROR_LOCATION: Where the mirror file lives (probbaly ok as is)
-       NO_MIRROR_LOCATION: Where to get non-mirrored files from
        FULL_NEEDS_UPGRADE: This parameter is set if a 'full' build requires
                            both the 'content' archive pak along with the
                            'upgrade' archive pak.  In general, only official
                            builds wil have this set to '0'  all other builds
                            ahould leave it at '1'
-       CONTENT_USE_MIRROR: Whether to use the mirror for the 'content' archive
-       CONTENT_PACKAGE_FILE: the name of the 'content' file (from step 4)
-       CONTENT_TYPE_ZIP/CONTENT_TYPE_TGZ: set the correct define
-       CONTENT_SIZE: The size of the content archive  (uncompressed)
+     also, there are 5 sections:
+       CONTENT, VOICE, THREEDO, UPGRADE, and VUPGRADE, which represent how to 
+       retreive the data-files, voice-files, 3do music files, upgrade to the 
+       data files, and upgrade to the voice files respectively).  These 
+       variables are:
 
-       UPGRADE_USE_MIRROR: Whether to use the mirror for the 'upgrade' archive
-       UPGRADE_PACKAGE_FILE: the name of the 'upgrade' file (from step 4)
-       UPGRADE_TYPE_ZIP/CONTENT_TYPE_TGZ: set the correct define
-       UPGRADE_SIZE: The size of the upgrade archive  (uncompressed)
+       <...>_USE_MIRROR:   Whether the 'LOCATION' is pointing to a mirror file
+                           or a directory for direct-download.  The mirror file
+                           contains a list of directries (http) where the data-
+                           file can be downloaded from.
+       <...>_LOCATION:     The path (http) to retrieve the data-file or mirror-
+                           file from (depending on the value of 'USE_MIRROR')
+       <...>_PACKAGE_FILE: The name of the data-file to retreive
+       <...>_TYPE:         The type of archiver used (must be "zip" or "tgz")
+       <...>_ROOT:         The directory to unpack the data-file archive into
+     It should only be bnecessary to modify the first two variables 
+     (USE_MIRROR and LOCATION)
 
-6) run NSIS to build the installer:
+4) run NSIS to build the installer:
      makensis uqm.nsi
    the installer expects all the dlls to be in the same directory as uqm.exe
 
-7) you should be done.
+5) you should be done.

@@ -1,6 +1,4 @@
 Things stiill needing doing of rthe installer:
- - Support for moving save-game files to the correct location
  - untgz.dll doesn't support error checking yet
- - suppot different mirror files for upgrade and full innstalls
  - check md5 sums on downloaded files
  - the uninstaller doesn't seem to get everything

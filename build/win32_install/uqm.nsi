@@ -1,5 +1,5 @@
 !define MUI_PRODUCT "The Ur-Quan Masters" ;Define your own software name here
-!define MUI_VERSION "0.13" ;Define your own software version here
+!define MUI_VERSION "0.2" ;Define your own software version here
 !define OLD_VERSION "0.1" ; The earliest version that we can upgrade from
 
 !define DEFAULT_UPGRADE 1 ;  Define if the default install should be 'upgrade'
@@ -10,24 +10,41 @@
 !define FULL_NEEDS_UPGRADE 1
 
 !define CONTENT_USE_MIRROR 1
-;!define CONTENT_PACKAGE_FILE "uqm_0_1_3_content.tgz"
-!define CONTENT_PACKAGE_FILE "uqm-0.1-content-full.tgz"
-;!define CONTENT_TYPE_ZIP
-!define CONTENT_TYPE_TGZ
-!define CONTENT_ROOT ""
-!define CONTENT_SIZE 148454
+!define CONTENT_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
+!define CONTENT_PACKAGE_FILE "uqm-${MUI_VERSION}-content.zip"
+!define CONTENT_TYPE "zip"
+!define CONTENT_ROOT "\content"
 
-;!define UPGRADE_USE_MIRROR 1
-!define UPGRADE_PACKAGE_FILE "uqm_0_1_3_upgrade0_1.tgz"
-;!define UPGRADE_TYPE_ZIP
-!define UPGRADE_TYPE_TGZ
+!define VOICE_USE_MIRROR 1
+!define VOICE_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
+!define VOICE_PACKAGE_FILE "uqm-${MUI_VERSION}-voice.zip"
+!define VOICE_TYPE "zip"
+!define VOICE_ROOT "\content"
+
+!define THREEDO_USE_MIRROR 1
+!define THREEDO_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
+!define THREEDO_PACKAGE_FILE "uqm-${MUI_VERSION}-3domusic.zip"
+!define THREEDO_TYPE "zip"
+!define THREEDO_ROOT "\content"
+
+!define UPGRADE_USE_MIRROR 0
+!define UPGRADE_LOCATION "http://sc2.sourceforge.net/install_files/"
+!define UPGRADE_PACKAGE_FILE "uqm-${OLD_VERSION}_to_${MUI_VERSION}-content.zip"
+!define UPGRADE_TYPE "zip"
 !define UPGRADE_ROOT "\content"
-!define UPGRADE_SIZE 1324
 
+!define VUPGRADE_USE_MIRROR 0
+!define VUPGRADE_LOCATION "http://sc2.sourceforge.net/install_files/"
+!define VUPGRADE_PACKAGE_FILE "uqm-${OLD_VERSION}_to_${MUI_VERSION}-voice.zip"
+!define VUPGRADE_TYPE "zip"
+!define VUPGRADE_ROOT "\content"
 ;--------------------------------
 
-!include "${NSISDIR}\Contrib\Modern UI\System.nsh"
+!include "MUI.nsh"
 
+!verbose 3
+!include "content.nsh"
+!verbose 4
 ;--------------------------------
 ;Configuration
 
@@ -35,9 +52,9 @@
   !packhdr temp.dat "upx.exe --best --crp-ms=100000 temp.dat"
   ;SetCompressor bzip2 
   ;Interface
+  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern2.exe"
   ;!define MUI_ICON "uqm.ico"
   ;!define MUI_UNICON "uninstall.ico"
-
   !define MUI_LICENSEPAGE
   !define MUI_COMPONENTSPAGE
   !define MUI_DIRECTORYPAGE
@@ -88,11 +105,9 @@
 
 ;--------------------------------
 ;Modern UI system
-
-!undef MUI_DIRECTORYPAGE
+!define MUI_CUSTOMFUNCTION_DIRECTORY_PRE SetDirectory
+!define MUI_CUSTOMFUNCTION_DIRECTORY_SHOW SetDirectoryDialog
 !insertmacro MUI_SYSTEM
-!define MUI_DIRECTORYPAGE  
-
 ;--------------------------------
 ;Installer Sections
 
@@ -144,25 +159,16 @@ SectionIn 2
 
   AddSize ${CONTENT_SIZE}
 
-  SetOutPath "$INSTDIR\content"
+  ; $0 = download file name
+  ; $1 = web site for download or mirror
+  ; $2 = install directory
+  ; $3 = use mirror
+  ; $4 = archive type ("zip" or "tgz")
   StrCpy $0 ${CONTENT_PACKAGE_FILE}
-  !ifdef CONTENT_USE_MIRROR
-    StrCpy $1 ${MIRROR_LOCATION}
-    StrCpy $3 1
-  !else
-    StrCpy $1 ${NO_MIRROR_LOCATION}
-    StrCpy $3 0
-  !endiF
+  StrCpy $1 ${CONTENT_LOCATION}
   StrCpy $2 "$INSTDIR${CONTENT_ROOT}"
-  !ifdef CONTENT_TYPE_ZIP
-    StrCpy $4 "zip"
-  !else 
-    !ifdef CONTENT_TYPE_TGZ
-      StrCpy $4 "tgz"
-    !else
-      !error "Content file type unknown"
-    !endif
-  !endif
+  StrCpy $3 ${CONTENT_USE_MIRROR}
+  StrCpy $4 ${CONTENT_TYPE}
   call DownloadAndExtract
   Pop $0
   StrCmp $0 success content_ok content_failure
@@ -175,50 +181,139 @@ SectionIn 2
   
 SectionEnd
 
-Section $(SecUpgradeName) SecUpgrade
-  !ifdef FULL_NEEDS_UPGRADE 
-    SectionIn 1 2
-  !else
-    !ifndef DEFAULT_UPGRADE
-      SectionIn 2
-    !else
-      SectionIn 1
-    !endif
-  !endif
+Section $(SecVoiceName) SecVoice
+!ifndef DEFAULT_UPGRADE
+SectionIn 1
+!else
+SectionIn 2
+!endif
 
-  AddSize ${UPGRADE_SIZE}
+  AddSize ${VOICE_SIZE}
 
-  StrCpy $R1 0
-  SetOutPath $INSTDIR\content
-  StrCpy $0 ${UPGRADE_PACKAGE_FILE}
-  !ifdef UPGRADE_USE_MIRROR
-    StrCpy $1 ${MIRROR_LOCATION}
-    StrCpy $3 1
-  !else
-    StrCpy $1 ${NO_MIRROR_LOCATION}
-    StrCpy $3 0
-  !endiF
-  StrCpy $2 "$INSTDIR${UPGRADE_ROOT}"
-  !ifdef UPGRADE_TYPE_ZIP
-    StrCpy $4 "zip"
-  !else 
-    !ifdef UPGRADE_TYPE_TGZ
-      StrCpy $4 "tgz"
-    !else
-      !error "Upgrade file type unknown"
-    !endif
-  !endif
+  ; $0 = download file name
+  ; $1 = web site for download or mirror
+  ; $2 = install directory
+  ; $3 = use mirror
+  ; $4 = archive type ("zip" or "tgz")
+  StrCpy $0 ${VOICE_PACKAGE_FILE}
+  StrCpy $1 ${VOICE_LOCATION}
+  StrCpy $2 "$INSTDIR${VOICE_ROOT}"
+  StrCpy $3 ${VOICE_USE_MIRROR}
+  StrCpy $4 ${VOICE_TYPE}
   call DownloadAndExtract
   Pop $0
-  StrCmp $0 success upgrade_ok upgrade_failure
- upgrade_ok:
-  StrCpy $0 "upgrade"
-  goto upgrade_end
- upgrade_failure:
+  StrCmp $0 success voice_ok voice_failure
+ voice_ok:
+  StrCpy $0 "voice"
+  goto voice_end
+ voice_failure:
   StrCpy $0 ""
- upgrade_end:
-  
+ voice_end:
+ 
 SectionEnd
+
+Section $(Sec3doMusicName) Sec3doMusic
+!ifndef DEFAULT_UPGRADE
+SectionIn 1
+!else
+SectionIn 2
+!endif
+
+  AddSize ${THREEDO_SIZE}
+
+  ; $0 = download file name
+  ; $1 = web site for download or mirror
+  ; $2 = install directory
+  ; $3 = use mirror
+  ; $4 = archive type ("zip" or "tgz")
+  StrCpy $0 ${THREEDO_PACKAGE_FILE}
+  StrCpy $1 ${THREEDO_LOCATION}
+  StrCpy $2 "$INSTDIR${THREEDO_ROOT}"
+  StrCpy $3 ${THREEDO_USE_MIRROR}
+  StrCpy $4 ${THREEDO_TYPE}
+  call DownloadAndExtract
+  Pop $0
+  StrCmp $0 success threedo_ok threedo_failure
+ threedo_ok:
+  StrCpy $0 "3domusic"
+  goto threedo_end
+ threedo_failure:
+  StrCpy $0 ""
+ threedo_end:
+ 
+SectionEnd
+
+SubSection $(SubSecUpgradeName) SubSecUpgrade
+  Section $(SecUpgradeName) SecUpgrade
+    !ifdef FULL_NEEDS_UPGRADE 
+      SectionIn 1 2
+    !else
+      !ifndef DEFAULT_UPGRADE
+        SectionIn 2
+      !else
+        SectionIn 1
+      !endif
+    !endif
+
+    AddSize ${UPGRADE_SIZE}
+
+    ; $0 = download file name
+    ; $1 = web site for download or mirror
+    ; $2 = install directory
+    ; $3 = use mirror
+    ; $4 = archive type ("zip" or "tgz")
+    StrCpy $0 ${UPGRADE_PACKAGE_FILE}
+    StrCpy $1 ${UPGRADE_LOCATION}
+    StrCpy $2 "$INSTDIR${UPGRADE_ROOT}"
+    StrCpy $3 ${UPGRADE_USE_MIRROR}
+    StrCpy $4 ${UPGRADE_TYPE}
+    call DownloadAndExtract
+    Pop $0
+    StrCmp $0 success upgrade_ok upgrade_failure
+   upgrade_ok:
+    StrCpy $0 "upgrade"
+    goto upgrade_end
+   upgrade_failure:
+    StrCpy $0 ""
+   upgrade_end:
+  
+  SectionEnd
+
+  Section $(SecVUpgradeName) SecVUpgrade
+    !ifdef FULL_NEEDS_UPGRADE 
+      SectionIn 1 2
+    !else
+      !ifndef DEFAULT_UPGRADE
+        SectionIn 2
+      !else
+        SectionIn 1
+      !endif
+    !endif
+
+    AddSize ${VUPGRADE_SIZE}
+
+    ; $0 = download file name
+    ; $1 = web site for download or mirror
+    ; $2 = install directory
+    ; $3 = use mirror
+    ; $4 = archive type ("zip" or "tgz")
+    StrCpy $0 ${VUPGRADE_PACKAGE_FILE}
+    StrCpy $1 ${VUPGRADE_LOCATION}
+    StrCpy $2 "$INSTDIR${VUPGRADE_ROOT}"
+    StrCpy $3 ${VUPGRADE_USE_MIRROR}
+    StrCpy $4 ${VUPGRADE_TYPE}
+    call DownloadAndExtract
+    Pop $0
+    StrCmp $0 success vupgrade_ok vupgrade_failure
+   vupgrade_ok:
+    StrCpy $0 "vupgrade"
+    goto vupgrade_end
+   vupgrade_failure:
+    StrCpy $0 ""
+   vupgrade_end:
+  
+  SectionEnd
+SubSectionEnd
 
 SubSection $(SecSupportDLLName) SecSupportDLL
 
@@ -239,7 +334,7 @@ SectionIn 2
   File "..\..\SDL_image.dll"
 SectionEnd
 
-Section $(SecVoiceName) SecVoice
+Section $(SecVoiceDLLName) SecVoiceDLL
 !ifndef DEFAULT_UPGRADE
 SectionIn 1
 !else
@@ -255,6 +350,35 @@ SectionIn 2
 SectionEnd
 
 SubSectionEnd
+
+Section $(SecMoveSaveName) SecMoveSave
+SectionIn 1 2
+  IfFileExists "$INSTDIR\content\starcon2.0*" +2
+    return
+  ReadEnvStr $R0 "APPDATA"
+  StrCmp $R0 "" 0 MoveSave
+    ReadEnvStr $R0 "USERPROFILE"
+    StrCmp $R0 "" MoveSaveLastResort
+    StrCpy $R0 "$R0\Application Data"
+    IfFileExists "$R0\*.*" MoveSave
+   MoveSaveLastResort:
+      StrCpy $R0 "$INSTDIR\userdata"
+      IfFileExists "$R0\*.*" MoveSave
+      CreateDirectory $R0
+   MoveSave:
+      StrCpy $R0 "$R0\uqm\save"
+      IfFileExists "$R0\starcon2.0*" 0 MoveSaveContinue
+        MessageBox MB_OK|MB_ICONEXCLAMATION $(MoveSaveAlreadyExists)
+        return
+   MoveSaveContinue:
+      CreateDirectory $R0
+      ClearErrors
+      CopyFiles /FILESONLY "$INSTDIR\content\starcon2.0*" "$R0\"
+      IfErrors +3
+        Delete "$INSTDIR\content\starcon2.0*"
+        return
+      MessageBox MB_OK|MB_ICONEXCLAMATION $(MoveSaveBadCopy)
+SectionEnd
 
 Section $(SecStartMenuName) SecStartMenu
 SectionIn 1 2
@@ -311,11 +435,10 @@ FunctionEnd
 Function DownloadOptions
   Push $0
   Call CheckDownloadDialog
-  IntCmp $0 1 +2
+  StrCmp $0 "" 0 +2
     Return
-  Pop $0
+  Push $0
   !insertmacro MUI_HEADER_TEXT $(PageDownloadTitle) $(PageDownloadSubTitle)
-
 
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 1" text $(DownloadDialog1)
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 3" text $(DownloadDialog3)
@@ -323,10 +446,9 @@ Function DownloadOptions
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 5" text $(DownloadDialog5)
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 6" text $(DownloadDialog6)
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 8" text $(DownloadDialog8)
-
-  StrCpy $R1 ""
-  StrCpy $R1 $(SecContentName)
+  Pop $R1
   !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 2" text $R1
+  Pop $0
 
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "download.ini"
 FunctionEnd
@@ -336,7 +458,7 @@ Function SetDirectoryDialog
 
   Push $0
   Call CheckDownloadDialog
-  IntCmp $0 0 buttoninst
+  StrCmp $0 "" buttoninst
   StrCpy $R0 $(DownloadDialogNext2)
   goto buttondone
  buttoninst:
@@ -349,22 +471,56 @@ FunctionEnd
 
 Function CheckDownloadDialog
   Push $R0
+  Push $R1
+  Push $2
+  StrCpy $2 ""
+  StrCpy $R1 ", "
   SectionGetFlags ${SecContent} $R0
   Intop $R0 $R0 & "0x1"
+  IntCmp $R0 0 dlchk_voice
+    StrCpy $R0 $(SecContentName)
+    StrCpy $2 $R0
+ dlchk_voice:
+  SectionGetFlags ${SecVoice} $R0
+  Intop $R0 $R0 & "0x1"
+  IntCmp $R0 0 dlchk_3domusic
+    StrLen $R0 $2
+    IntCmp $R0 0 +2
+      StrCpy $2 $2$R1
+    StrCpy $R0 $(SecVoiceName)
+    StrCpy $2 $2$R0
+ dlchk_3domusic:
+  SectionGetFlags ${Sec3doMusic} $R0
+  Intop $R0 $R0 & "0x1"
   IntCmp $R0 0 dlchk_upg
-    Pop $R0
-    StrCpy $0 1
-    Return
+    StrLen $R0 $2
+    IntCmp $R0 0 +2
+      StrCpy $2 $2$R1
+    StrCpy $R0 $(Sec3doMusicName)
+    StrCpy $2 $2$R0
  dlchk_upg:
   SectionGetFlags ${SecUpgrade} $R0
   Intop $R0 $R0 & "0x1"
+  IntCmp $R0 0 dlchk_vupg
+    StrLen $R0 $2
+    IntCmp $R0 0 +2
+      StrCpy $2 $2$R1
+    StrCpy $R0 $(SecUpgradeName)
+    StrCpy $2 $2$R0
+ dlchk_vupg:
+  SectionGetFlags ${SecVUpgrade} $R0
+  Intop $R0 $R0 & "0x1"
   IntCmp $R0 0 dlchk_end
-    Pop $R0
-    StrCpy $0 1
-    Return
+    StrLen $R0 $2
+    IntCmp $R0 0 +2
+      StrCpy $2 $2$R1
+    StrCpy $R0 $(SecVUpgradeName)
+    StrCpy $2 $2$R0
   dlchk_end:
+   StrCpy $0 $2
+   Pop $2
+   Pop $R1
    Pop $R0
-   StrCpy $0 0
    Return
 FunctionEnd
 
@@ -376,10 +532,14 @@ FunctionEnd
 !insertmacro MUI_FUNCTIONS_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecUQM} $(SecUQMDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecUpgrade} $(SecUpgradeDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecVUpgrade} $(SecVUpgradeDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecContent} $(SecContentDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecVoice} $(SecVoiceDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Sec3doMusic} $(Sec3doMusicDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecSupportDLL} $(SecSupportDLLDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecSDL} $(SecSDLDesc)
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecVoice} $(SecVoiceDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecVoiceDLL} $(SecVoiceDLLDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecMoveSave} $(SecMoveSaveDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(SecStartMenuDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopIcon} $(SecDesktopIconDesc)
 !insertmacro MUI_FUNCTIONS_DESCRIPTION_END
@@ -414,7 +574,9 @@ Section "Uninstall"
   Delete "$INSTDIR\ogg.dll"
 
   ; Remove content dir
-  !include "content.nsh"
+  !verbose 3
+  !insertmacro REMOVE_CONTENT
+  !verbose 4
 
   ; MUST REMOVE UNINSTALLER, too
   Delete $INSTDIR\uninstall.exe
@@ -447,4 +609,3 @@ SectionEnd
 ;Written by Joost Verburg
 ;and FileZilla installation
 ;written by Tim Kosse (mailto:tim.kosse@gmx.de)
-

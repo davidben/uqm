@@ -1,20 +1,24 @@
 #! /usr/bin/perl -w
 
 if (scalar (@ARGV) != 2) {
-  print STDERR "$0 cvs_log_file cvs_tag\n";
+  print STDERR "$0 cvs_tag output_contour_file\n";
   exit 1;
 }
 
-$file = shift @ARGV;
 $ver = shift @ARGV;
+$file = shift @ARGV;
 if ($ver =~ /(\d+_\d+\S*)$/) {
   $vernum = $1;
+  $vernum =~ s/_/./g;
 } else {
   print STDERR "Couldn't parse the cvs-tag for a release version\n";
-  $vernum = "0_0";
+  $vernum = "0.0";
 }
-print "$vernum\n";
-open FH, $file || die "Couldn't find file $file\n";
+open FH1, ">$file" or die "Couldn't write  to $file\n";
+print FH1 "$vernum\n";
+chdir "../../content";
+open FH, "cvs log -h|" or die "Couldn't run 'cvs log -h'\n";
+$file = "";
 while (<FH>) {
   chomp;
   if (/Working file: (.+)\s*$/) {
@@ -24,9 +28,10 @@ while (<FH>) {
     $head = $1;
   }
   if (/\s+${ver}:\s+(\S+)/) {
-    print "$file : $1\n";
+    print FH1 "$file : $1\n";
     $file = "";
     $head = "";
   }
 }
 close FH;
+close FH1;
