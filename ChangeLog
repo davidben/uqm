@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Removed a place where you could ask for repairs when you shouldn't 
+  (bug #432), from Nic
 - Can use F10 to quit during splash screen as well as main menu -Michael
 - Fixed starship location when being teleported from Procyon to
   the Earth Starbase after the Precursor bomb is installed. - Svdb

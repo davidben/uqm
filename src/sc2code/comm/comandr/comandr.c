@@ -249,25 +249,25 @@ NoRadioactives (RESPONSE_REF R)
 			ClearSemaphore (GraphicsSem);
 		}
 
-		if (GLOBAL_SIS (NumLanders) == 0)
-		{
-			if (GET_GAME_STATE (LANDERS_LOST))
-				Response (i_lost_another_lander, NoRadioactives);
-			else
-				Response (i_lost_my_lander, NoRadioactives);
-		}
-		if (GLOBAL_SIS (FuelOnBoard) < 2 * FUEL_TANK_SCALE)
-		{
-			if (GET_GAME_STATE (GIVEN_FUEL_BEFORE))
-				Response (need_fuel_again, NoRadioactives);
-			else
-				Response (need_fuel, NoRadioactives);
-		}
-
 		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
 			GiveRadios (NULL_PTR);
 		else
 		{
+			if (GLOBAL_SIS (NumLanders) == 0)
+			{
+				if (GET_GAME_STATE (LANDERS_LOST))
+					Response (i_lost_another_lander, NoRadioactives);
+				else
+					Response (i_lost_my_lander, NoRadioactives);
+			}
+			if (GLOBAL_SIS (FuelOnBoard) < 2 * FUEL_TANK_SCALE)
+			{
+				if (GET_GAME_STATE (GIVEN_FUEL_BEFORE))
+					Response (need_fuel_again, NoRadioactives);
+				else
+					Response (need_fuel, NoRadioactives);
+			}
+	
 			Response (ok_i_will_get_radios, ByeBye);
 			if (PHRASE_ENABLED (where_can_i_get_radios))
 			{
