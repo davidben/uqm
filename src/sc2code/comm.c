@@ -35,7 +35,7 @@ void Slider (void);
 
 
 #define MAX_RESPONSES 8
-#define BACKGROUND_VOL (MAX_VOLUME >> 1)
+#define BACKGROUND_VOL speechVolumeScale == 0.0f ? MAX_VOLUME : (MAX_VOLUME >> 1)
 #define FOREGROUND_VOL MAX_VOLUME
 
 #define SLIDER_Y 107
