@@ -14,8 +14,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef UQMVERSION_H
+#define UQMVERSION_H 
 
 #define UQM_MAJOR_VERSION 0
 #define UQM_MINOR_VERSION 14
@@ -23,5 +23,5 @@
 /* The final version is interpreted as:
    printf ("%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
 */
-#endif
 
+#endif

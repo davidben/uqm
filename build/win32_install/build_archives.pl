@@ -15,9 +15,9 @@ if (! defined ($file) || scalar(@ARGV)) {
 #  print STDERR "$0 cvs_log_file cvs_tag [full]\n";
   exit 1;
 }
-# fetch the version from version.h
-if (-f "../../src/version.h") {
-  open (FH, "../../src/version.h") or die "couldn't read version.h\n";
+# fetch the version from uqmversion.h
+if (-f "../../src/uqmversion.h") {
+  open (FH, "../../src/uqmversion.h") or die "couldn't read uqmversion.h\n";
   while (<FH>) {
     if (/^\s*\#define\s+UQM_MAJOR_VERSION\s+(\d+)/) {
       $major = $1;
@@ -31,11 +31,11 @@ if (-f "../../src/version.h") {
   }
   close FH;
   if (!defined ($major) || !defined ($minor) || !defined ($extra)) {
-    die "Error reading version.h\n";
+    die "Error reading uqmversion.h\n";
   }
   $version = "$major.${minor}${extra}";
 } else {
-  die "couldn't find version.h\n";
+  die "couldn't find uqmversion.h\n";
 }
 
 if (! defined ($do_full)) {

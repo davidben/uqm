@@ -3320,7 +3320,7 @@ SOURCE=..\options.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\version.h
+SOURCE=..\uqmversion.h
 # End Source File
 # Begin Source File
 

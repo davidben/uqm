@@ -25,7 +25,7 @@
 #include "primitives.h"
 #include "dcqueue.h"
 #include "options.h"
-#include "version.h"
+#include "uqmversion.h"
 #include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
 #include "bbox.h"

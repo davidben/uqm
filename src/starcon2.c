@@ -36,7 +36,7 @@
 #include "file.h"
 #include "port.h"
 #include "options.h"
-#include "version.h"
+#include "uqmversion.h"
 #include "comm.h"
 
 #if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)

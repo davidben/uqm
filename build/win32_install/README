@@ -31,7 +31,7 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
    This will generate a reference contour to compare the current CVS build
    against.  This only needs to be done once (after each release)
 
-1) Compile uqm.exe.  Note that version.h defines the version of UQM to build,
+1) Compile uqm.exe.  Note that uqmversion.h defines the version of UQM to build,
    and should be set appropriately before compiling
 
 2) Build content .zip files and content.nsh
@@ -42,7 +42,7 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
      to create a full content directory rather than just the upgrade zip
       ./build_archives.pl contour_0_1 [full]
      This will generate .zip files of the content directory (assuming
-     version.h defines the version as 0.2):
+     uqmversion.h defines the version as 0.2):
         uqm-0.1_to_0.2-content.zip
         uqm-0.1_to_0.2-voice.zip
      and (if 'full' is specified)
@@ -111,8 +111,8 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
                            ubx.  this may break the game and/or installer, and
                            is not recomended.
        MUI_VERSION:        The version of UQM you are building.  This parameter
-                           is normally auto-defined by readinng version.h, but
-                           can be manually overridden if needed.
+                           is normally auto-defined by readinng uqmversion.h, 
+                           but can be manually overridden if needed.
 
 4) run NSIS to build the installer:
      makensis uqm.nsi
