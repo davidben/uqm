@@ -57,6 +57,7 @@ struct options_struct {
 	int width;
 	int height;
 	int bpp;
+	const char *configDir;
 	const char *contentDir;
 	const char **addons;
 	int numAddons;
@@ -105,6 +106,7 @@ main (int argc, char *argv[])
 		/* .width = */              640,
 		/* .height = */             480,
 		/* .bpp = */                16,
+		/* .configDir = */          NULL,
 		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
 		/* .numAddons = */          0,
@@ -192,7 +194,7 @@ main (int argc, char *argv[])
 	initIO();
 	prepareContentDir (options.contentDir, options.addons);
 	HFree ((void *) options.addons);
-	prepareConfigDir ();
+	prepareConfigDir (options.configDir);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 	initTempDir();
@@ -241,7 +243,7 @@ enum
 	ADDON_OPT
 };
 
-static const char *optString = "+r:d:foc:b:spn:?hM:S:T:m:q:ug:l:";
+static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -252,6 +254,7 @@ static struct option longOptions[] =
 	{"meleescale", 1, NULL, 'b'},
 	{"scanlines", 0, NULL, 's'},
 	{"fps", 0, NULL, 'p'},
+	{"configdir", 1, NULL, 'C'},
 	{"contentdir", 1, NULL, 'n'},
 	{"help", 0, NULL, 'h'},
 	{"musicvol", 1, NULL, 'M'},
@@ -325,6 +328,9 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			break;
 
 		switch (c) {
+			case 'C':
+				options->configDir = optarg;
+				break;
 			case 'r':
 			{
 				int width, height;
@@ -647,6 +653,7 @@ usage (FILE *out)
 	fprintf (out, "  -p, --fps (default off)\n");
 	fprintf (out, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
 			"causes no change)\n");
+	fprintf (out, "  -C, --configdir=CONFIGDIR\n");
 	fprintf (out, "  -n, --contentdir=CONTENTDIR\n");
 	fprintf (out, "  -M, --musicvol=VOLUME (0-100, default 100)\n");
 	fprintf (out, "  -S, --sfxvol=VOLUME (0-100, default 100)\n");

@@ -143,25 +143,38 @@ prepareContentDir (const char *contentDirName, const char **addons)
 }
 
 void
-prepareConfigDir (void) {
+prepareConfigDir (const char *configDirName) {
 	char buf[PATH_MAX];
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_MountHandle *contentHandle;
 
-	if (expandPath (buf, PATH_MAX - 13, CONFIGDIR, EP_ALL_SYSTEM) == -1)
-	{
-		// Doesn't have to be fatal, but might mess up things when saving
-		// config files.
-		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
-		exit (EXIT_FAILURE);
+	if (configDirName == NULL) {
+		configDirName = getenv("UQM_CONFIG_DIR");
+
+		if (configDirName == NULL)
+			configDirName = CONFIGDIR;
+
+		if (expandPath (buf, PATH_MAX - 13, configDirName, EP_ALL_SYSTEM)
+				== -1)
+		{
+			// Doesn't have to be fatal, but might mess up things when saving
+			// config files.
+			fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+			exit (EXIT_FAILURE);
+		}
+		configDirName = buf;
 	}
 
+	// Set the environment variable UQM_CONFIG_DIR so UQM_MELEE_DIR
+	// and UQM_SAVE_DIR can refer to it.
+	setenv("UQM_CONFIG_DIR", configDirName, 1);
+
 	// Create the path upto the config dir, if not already existing.
-	if (mkdirhier (buf) == -1)
+	if (mkdirhier (configDirName) == -1)
 		exit (EXIT_FAILURE);
 
 	contentHandle = uio_mountDir (repository, "/",
-			uio_FSTYPE_STDIO, NULL, NULL, buf, autoMount,
+			uio_FSTYPE_STDIO, NULL, NULL, configDirName, autoMount,
 			uio_MOUNT_TOP, NULL);
 	if (contentHandle == NULL) {
 		fprintf (stderr, "Fatal error: Could not mount config dir: %s\n",
@@ -180,7 +193,13 @@ prepareConfigDir (void) {
 void
 prepareSaveDir (void) {
 	char buf[PATH_MAX];
-	if (expandPath (buf, PATH_MAX - 13, SAVEDIR, EP_ALL_SYSTEM) == -1)
+	const char *saveDirName;
+
+	saveDirName = getenv("UQM_SAVE_DIR");
+	if (saveDirName == NULL)
+		saveDirName = SAVEDIR;
+	
+	if (expandPath (buf, PATH_MAX - 13, saveDirName, EP_ALL_SYSTEM) == -1)
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
@@ -188,14 +207,19 @@ prepareSaveDir (void) {
 		exit (EXIT_FAILURE);
 	}
 
+	saveDirName = buf;
+	setenv("UQM_SAVE_DIR", saveDirName, 1);
+
 	// Create the path upto the save dir, if not already existing.
-	if (mkdirhier (buf) == -1)
+	if (mkdirhier (saveDirName) == -1)
 		exit (EXIT_FAILURE);
 #ifdef DEBUG
-	fprintf(stderr, "Saved games are kept in %s.\n", buf);
+	fprintf(stderr, "Saved games are kept in %s.\n", saveDirName);
 #endif
 
 	saveDir = uio_openDirRelative (configDir, "save", 0);
+			// TODO: this doesn't work if the save dir is not
+			//       "save" in the config dir.
 	if (saveDir == NULL) {
 		fprintf (stderr, "Fatal error: Could not open save dir: %s\n",
 				strerror (errno));
@@ -206,8 +230,13 @@ prepareSaveDir (void) {
 void
 prepareMeleeDir (void) {
 	char buf[PATH_MAX];
+	const char *meleeDirName;
 
-	if (expandPath (buf, PATH_MAX - 13, MELEEDIR, EP_ALL_SYSTEM) == -1)
+	meleeDirName = getenv("UQM_MELEE_DIR");
+	if (meleeDirName == NULL)
+		meleeDirName = MELEEDIR;
+	
+	if (expandPath (buf, PATH_MAX - 13, meleeDirName, EP_ALL_SYSTEM) == -1)
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
@@ -215,11 +244,16 @@ prepareMeleeDir (void) {
 		exit (EXIT_FAILURE);
 	}
 
+	meleeDirName = buf;
+	setenv("UQM_MELEE_DIR", meleeDirName, 1);
+
 	// Create the path upto the save dir, if not already existing.
-	if (mkdirhier (buf) == -1)
+	if (mkdirhier (meleeDirName) == -1)
 		exit (EXIT_FAILURE);
 
 	meleeDir = uio_openDirRelative (configDir, "teams", 0);
+			// TODO: this doesn't work if the save dir is not
+			//       "teams" in the config dir.
 	if (meleeDir == NULL) {
 		fprintf (stderr, "Fatal error: Could not open melee teams dir: %s\n",
 				strerror (errno));

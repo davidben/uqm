@@ -296,12 +296,52 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					break;
 				}
 #endif
-#if 0
+#ifndef WIN32
 				case '$':
-					/* Environment variable substitution for Unix */
-					// not implemented
-					// Should accept both $BLA_123 and ${BLA}
+				{
+					const char *end;
+					char *envName;
+					size_t envNameLen;
+					const char *envVar;
+					size_t envVarLen;
+
+					src++;
+					if (*src == '{')
+					{
+						src++;
+						end = strchr(src, '}');
+						if (end == NULL)
+						{
+							errno = EINVAL;
+							return -1;
+						}
+						envNameLen = end - src;
+						end++;  // Skip the '}'
+					}
+					else
+					{
+						end = src;
+						while ((*end >= 'A' && *end <= 'Z') ||
+								(*end >= 'a' && *end <= 'z') ||
+								(*end >= '0' && *end <= '9') ||
+								*end == '_')
+							end++;
+						envNameLen = end - src;
+					}
+
+					envName = HMalloc (envNameLen + 1);
+					memcpy (envName, src, envNameLen + 1);
+					envName[envNameLen] = '\0';
+					envVar = getenv (envName);
+					HFree (envName);
+
+					envVarLen = strlen (envVar);
+					CHECKLEN (buf, envVarLen);
+					memcpy (bufptr, envVar, envVarLen);
+					bufptr += envVarLen;
+					src = end;
 					break;
+				}
 #endif
 				default:
 					CHECKLEN(buf, 1);

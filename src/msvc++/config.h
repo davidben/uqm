@@ -15,14 +15,14 @@
 //#define USERDIR "../userdata/"
 #define USERDIR "%APPDATA%/uqm/"
 
-/* Directory where supermelee teams will be stored */
-#define MELEEDIR USERDIR "teams/"
-
-/* Directory where save games will be stored */
-#define SAVEDIR USERDIR "save/"
-
 /* Directory where config files will be stored */
 #define CONFIGDIR USERDIR
+
+/* Directory where supermelee teams will be stored */
+#define MELEEDIR "%UQM_CONFIG_DIR%/teams/"
+
+/* Directory where save games will be stored */
+#define SAVEDIR "%UQM_CONFIG_DIR%/save/"
 
 /* Define if words are stored with the most significant byte first */
 #undef WORDS_BIGENDIAN
