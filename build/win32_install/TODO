@@ -1,4 +1,8 @@
 Things stiill needing doing of rthe installer:
  - untgz.dll doesn't support error checking yet
  - check md5 sums on downloaded files
- - the uninstaller doesn't seem to get everything
+ - Read previous install directory from registry
+ - Allow users to choose mirror, rather than randomly choosing one
+ - Only read mirror file once, if only 1 is used.
+ - use uqm icon for the installer
+

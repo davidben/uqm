@@ -1,6 +1,8 @@
 !define MUI_PRODUCT "The Ur-Quan Masters" ;Define your own software name here
 
+!echo "Loading options.nsh file..."
 !include "options.nsh"
+!echo "Loading content.nsh file..."
 !include "content.nsh"
 
 ; ***************** content **********************
@@ -418,7 +420,7 @@ SubSectionEnd
 Section $(SecMoveSaveName) SecMoveSave
 SectionIn 1 2
   IfFileExists "$INSTDIR\content\starcon2.0*" +2
-    return
+    goto MoveSaveEnd
   ReadEnvStr $R0 "APPDATA"
   StrCmp $R0 "" 0 MoveSave
     ReadEnvStr $R0 "USERPROFILE"
@@ -433,15 +435,16 @@ SectionIn 1 2
       StrCpy $R0 "$R0\uqm\save"
       IfFileExists "$R0\starcon2.0*" 0 MoveSaveContinue
         MessageBox MB_OK|MB_ICONEXCLAMATION $(MoveSaveAlreadyExists)
-        return
+        goto MoveSaveEnd
    MoveSaveContinue:
       CreateDirectory $R0
       ClearErrors
       CopyFiles /FILESONLY "$INSTDIR\content\starcon2.0*" "$R0\"
       IfErrors +3
         Delete "$INSTDIR\content\starcon2.0*"
-        return
+        goto MoveSaveEnd
       MessageBox MB_OK|MB_ICONEXCLAMATION $(MoveSaveBadCopy)
+   MoveSaveEnd:
 SectionEnd
 
 Section $(SecStartMenuName) SecStartMenu
@@ -655,6 +658,7 @@ Section "Uninstall"
   Delete "$INSTDIR\ogg.dll"
 
   ; Remove content dir
+  !echo "Adding 'Remove content' commands. Please wait..."
   !verbose 3
   !insertmacro REMOVE_CONTENT
   !verbose 4
