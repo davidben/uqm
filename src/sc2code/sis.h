@@ -261,6 +261,9 @@ extern COUNT GetLBayCapacity (PPOINT ppt);
 extern COUNT GetSBayCapacity (PPOINT ppt);
 extern DWORD GetFTankCapacity (PPOINT ppt);
 extern COUNT CountSISPieces (BYTE piece_type);
+
+extern BOOLEAN DoMenuChooser (INPUT_STATE InputState, PMENU_STATE pMS, 
+		BYTE BaseState);
 extern void DrawMenuStateStrings (BYTE beg_index, SWORD NewState);
 extern void DoMenuOptions (void);
 extern void DrawFlagshipName (BOOLEAN InStatusArea);

@@ -275,7 +275,10 @@ DrawStatusMessage (UNICODE *pStr)
 		else if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
 			wsprintf (buf, "%lu RU", GLOBAL_SIS (ResUnits));
 		else
-			wstrcpy (buf, "@ RU");
+			if (optWhichMenu == OPT_PC)
+				wstrcpy (buf, "UNLIMITED RU");
+			else
+				wstrcpy (buf, "\x7f RU");
 		pStr = buf;
 	}
 	else if (pStr == 0)

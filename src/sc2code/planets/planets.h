@@ -179,6 +179,7 @@ typedef SOLARSYS_STATE *PSOLARSYS_STATE;
 extern PSOLARSYS_STATE pSolarSysState;
 
 extern void LoadPlanet (BOOLEAN IsDefined);
+void DrawPlanet(int x, int y, int dy, unsigned int rgb);
 extern void FreePlanet (void);
 
 extern void ExploreSolarSys (void);
