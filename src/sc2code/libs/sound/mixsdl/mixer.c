@@ -1187,6 +1187,10 @@ mixSDL_GenBuffers (uint32 n, mixSDL_Object *pbufobj)
 		buf->size = 0;
 		buf->next = 0;
 		buf->orgdata = 0;
+		buf->orgfreq = 0;
+		buf->orgsize = 0;
+		buf->orgchannels = 0;
+		buf->orgchansize = 0;
 
 		*pbufobj = (mixSDL_Object) buf;
 	}
@@ -1322,22 +1326,21 @@ mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
 	}
 	else
 	{
-		/* All buffers are converted when filled
-		 * so we simply return mixer values
+		/* Return original buffer values
 		 */
 		switch (pname)
 		{
 		case MIX_FREQUENCY:
-			*value = mixer_spec.freq;
+			*value = buf->orgfreq;
 			break;
 		case MIX_BITS:
-			*value = mixer_chansize << 3;
+			*value = buf->orgchansize << 3;
 			break;
 		case MIX_CHANNELS:
-			*value = mixer_spec.channels;
+			*value = buf->orgchannels;
 			break;
 		case MIX_SIZE:
-			*value = buf->size;
+			*value = buf->orgsize;
 			break;
 		case MIX_DATA:
 			*value = (mixSDL_Object) buf->orgdata;
@@ -1404,7 +1407,12 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 			HFree (buf->data);
 		buf->data = 0;
 		buf->size = 0;
+		/* Store original buffer values for OpenAL compatibility */
 		buf->orgdata = data;
+		buf->orgfreq = freq;
+		buf->orgsize = size;
+		buf->orgchannels = MIX_FORMAT_CHANS (format);
+		buf->orgchansize = MIX_FORMAT_BPC (format);
 
 		conv.srcsamples = size / MIX_FORMAT_SAMPSIZE (format);
 		conv.dstsamples = (uint32)

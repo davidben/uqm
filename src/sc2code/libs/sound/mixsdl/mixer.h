@@ -144,7 +144,13 @@ typedef struct _mixSDL_Buffer
 	mixSDL_BufferState state;
 	uint8 *data;
 	uint32 size;
+	/* original buffer values for OpenAL compat */
 	void* orgdata;
+	uint32 orgfreq;
+	uint32 orgsize;
+	uint32 orgchannels;
+	uint32 orgchansize;
+	/* next buffer in chain */
 	struct _mixSDL_Buffer *next;
 
 } mixSDL_Buffer;
