@@ -115,6 +115,8 @@ case "$2" in
 		build_install
 		;;
 	*)
+		usage 1>&2
+		exit 1;
 		;;
 esac
 
