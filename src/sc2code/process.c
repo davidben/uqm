@@ -822,8 +822,7 @@ CalcDisplayCoord (COORD c, COORD orgc, BYTE reduction)
 static inline COORD
 CalcDisplayCoord (COORD c, COORD orgc, SIZE reduction)
 {
-	/* correcting rounding error here */
-	return (((c - orgc) << ZOOM_SHIFT) + (reduction >> 1)) / reduction;
+	return ((c - orgc) << ZOOM_SHIFT) / reduction;
 }
 #endif /* OLD_ZOOM */
 
