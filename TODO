@@ -86,6 +86,8 @@ Glitches (don't crash the game, medium priority):
   sometimes working properly, sometimes being way too fast
 - Some font characters are wrong, atleast in the planet scan screen
   when compared to 3DO
+- When there are more than one page of saved supermelee teams, the last
+  entries will be wrong.
 
 Implementation bugs (low priority):
 - Scaling code problems:
