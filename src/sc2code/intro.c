@@ -22,7 +22,9 @@
 #include "setup.h"
 #include "sounds.h"
 #include "fmv.h"
+#include "resinst.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"
 //#include "libs/vidlib.h"
 #include "libs/inplib.h"
@@ -46,6 +48,10 @@ typedef struct
 	FRAME Frame;
 	MUSIC_REF MusicRef;
 	BOOLEAN Batched;
+	FRAME SisFrame;
+	FRAME RotatedFrame;
+	int LastDrawKind;
+	int LastAngle;
 	COUNT OperIndex;
 	COLOR TextFadeColor;
 	COLOR TextColor;
@@ -174,6 +180,103 @@ Present_UnbatchGraphics (PRESENTATION_INPUT_STATE* pPIS, BOOLEAN bYield)
 	}
 }
 
+static void
+Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
+{
+#define MODULE_YOFS_P  (-79)
+#define DRIVE_TOP_Y_P  (DRIVE_TOP_Y + MODULE_YOFS_P)
+#define JET_TOP_Y_P    (JET_TOP_Y + MODULE_YOFS_P)
+#define MODULE_TOP_Y_P (MODULE_TOP_Y + MODULE_YOFS_P)
+	CONTEXT	OldContext;
+	FRAME SisFrame;
+	FRAME ModuleFrame;
+	FRAME SkelFrame;
+	STAMP s;
+	RECT r;
+	HOT_SPOT hs;
+	int slot;
+	COUNT piece;
+
+	LockMutex (GraphicsLock);
+	OldContext = SetContext (OffScreenContext);
+
+	SkelFrame = CaptureDrawable (LoadCelFile ("slides/ending/sis_skel.ani"));
+	ModuleFrame = CaptureDrawable (LoadGraphic (SISMODS_MASK_PMAP_ANIM));
+	/* TODO: fix this eventually;
+	 * we need to load *all* gfx resources from this package
+	 * otherwise we will leave the package hanging, literally
+	 */
+	DestroyDrawable (LoadGraphic (OUTFIT_PMAP_ANIM));
+
+	GetFrameRect (SkelFrame, &r);
+	SisFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP, r.extent.width, r.extent.height, 1
+			));
+	SetContextFGFrame (SisFrame);
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (1, 1, 1), 7));
+	DrawFilledRectangle (&r);
+
+	s.frame = SetAbsFrameIndex (SkelFrame, 0);
+	s.origin.x = 0;
+	s.origin.y = 0;
+	DrawStamp (&s);
+
+	for (slot = 0; slot < NUM_DRIVE_SLOTS; ++slot)
+	{
+		piece = GLOBAL_SIS (DriveSlots[slot]);
+		if (piece < EMPTY_SLOT)
+		{
+			s.origin.x = DRIVE_TOP_X;
+			s.origin.y = DRIVE_TOP_Y_P;
+			s.origin.x += slot * SHIP_PIECE_OFFSET;
+			s.frame = SetAbsFrameIndex (ModuleFrame, piece);
+			DrawStamp (&s);
+		}
+	}
+	for (slot = 0; slot < NUM_JET_SLOTS; ++slot)
+	{
+		piece = GLOBAL_SIS (JetSlots[slot]);
+		if (piece < EMPTY_SLOT)
+		{
+			s.origin.x = JET_TOP_X;
+			s.origin.y = JET_TOP_Y_P;
+			s.origin.x += slot * SHIP_PIECE_OFFSET;
+			s.frame = SetAbsFrameIndex (ModuleFrame, piece);
+			DrawStamp (&s);
+		}
+	}
+	for (slot = 0; slot < NUM_MODULE_SLOTS; ++slot)
+	{
+		piece = GLOBAL_SIS (ModuleSlots[slot]);
+		if (piece < EMPTY_SLOT)
+		{
+			s.origin.x = MODULE_TOP_X;
+			s.origin.y = MODULE_TOP_Y_P;
+			s.origin.x += slot * SHIP_PIECE_OFFSET;
+			s.frame = SetAbsFrameIndex (ModuleFrame, piece);
+			DrawStamp (&s);
+		}
+	}
+
+	DestroyDrawable (ReleaseDrawable (SkelFrame));
+	DestroyDrawable (ReleaseDrawable (ModuleFrame));
+
+	hs.x = r.extent.width / 2;
+	hs.y = r.extent.height / 2;
+	SetFrameHot (SisFrame, hs);
+
+	/* TODO: this is a hack to get it to work
+	 * anyone know how to do this better? */
+	TFB_DrawCanvas_SetTransparentColor (
+			((PFRAME_DESC)SisFrame)->image->NormalImg, 8, 8, 8, TRUE);
+
+	SetContext (OldContext);
+	FlushGraphics ();
+	UnlockMutex (GraphicsLock);
+
+	pPIS->SisFrame = SisFrame;
+}
+
 static BOOLEAN
 DoPresentation (PVOID pIS)
 {
@@ -200,7 +303,7 @@ DoPresentation (PVOID pIS)
 			return TRUE;
 		}
 
-		SleepThread (ONE_SECOND / 20);
+		SleepThread (ONE_SECOND / 84);
 		return TRUE;
 	}
 
@@ -236,16 +339,18 @@ DoPresentation (PVOID pIS)
 				UnlockMutex (GraphicsLock);
 			}
 		}
-		if (strcmp (Opcode, "FONT") == 0)
+		else if (strcmp (Opcode, "FONT") == 0)
 		{	/* set font */
 			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
 			if (pPIS->Font)
 				DestroyFont (ReleaseFont (pPIS->Font));
 			pPIS->Font = CaptureFont ((FONT_REF) LoadFontFile (pPIS->Buffer));
 
-			LockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				LockMutex (GraphicsLock);
 			SetContextFont (pPIS->Font);
-			UnlockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "ANI") == 0)
 		{	/* set ani */
@@ -332,9 +437,11 @@ DoPresentation (PVOID pIS)
 			pPIS->LinesCount = ParseTextLines (pPIS->TextLines,
 					MAX_TEXT_LINES, pPIS->Buffer);
 			
-			LockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				LockMutex (GraphicsLock);
 			GetContextFontLeading (&leading);
-			UnlockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				UnlockMutex (GraphicsLock);
 			switch (pPIS->TextVPos)
 			{
 			case 'T': /* top */
@@ -355,12 +462,14 @@ DoPresentation (PVOID pIS)
 				pPIS->TextLines[i].baseline.y = y;
 			}
 
-			LockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				LockMutex (GraphicsLock);
 			SetContextClipping (TRUE);
 			for (i = 0; i < pPIS->LinesCount; ++i)
 				DrawTracedText (pPIS->TextLines + i,
 						pPIS->TextColor, pPIS->TextBackColor);
-			UnlockMutex (GraphicsLock);
+			if (!pPIS->Batched)
+				UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "TFI") == 0)
 		{	/* text fade-in */
@@ -436,21 +545,91 @@ DoPresentation (PVOID pIS)
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
 		}
+		else if (strcmp (Opcode, "SAVEBG") == 0)
+		{	/* save background */
+			TFB_DrawScreen_Copy (&pPIS->clip_r,
+					TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
+		}
+		else if (strcmp (Opcode, "RESTBG") == 0)
+		{	/* restore background */
+			TFB_DrawScreen_Copy (&pPIS->clip_r,
+					TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
+		}
 		else if (strcmp (Opcode, "DRAW") == 0)
 		{	/* draw a graphic */
-			int index;
-			if (1 == sscanf (pStr, "%d", &index))
-			{
-				STAMP s;
+#define PRES_DRAW_INDEX 0
+#define PRES_DRAW_SIS   1
+			int cargs;
+			int draw_what;
+			int index, x, y, scale, angle;
+			char ImgName[16];
+			int OldScale;
+			STAMP s;
 
-				s.frame = SetAbsFrameIndex (pPIS->Frame, (COUNT)index);
-				s.origin.x = 0;
-				s.origin.y = 0;
-				LockMutex (GraphicsLock);
-				SetContextClipping (TRUE);
-				DrawStamp (&s);
-				UnlockMutex (GraphicsLock);
+			if (1 == sscanf (pStr, "%15s", ImgName)
+					&& strcmp (strupr (ImgName), "SIS") == 0)
+			{
+				draw_what = PRES_DRAW_SIS;
+				cargs = sscanf (pStr, "%*s %d %d %d %d",
+							&x, &y, &scale, &angle) + 1;
 			}
+			else
+			{
+				draw_what = PRES_DRAW_INDEX;
+				cargs = sscanf (pStr, "%d %d %d %d %d",
+							&index, &x, &y, &scale, &angle);
+			}
+
+			if (cargs < 1)
+			{
+				fprintf (stderr, "Bad DRAW command '%s'\n", pStr);
+				continue;
+			}
+			if (cargs < 5)
+				angle = 0;
+			if (cargs < 4)
+				scale = GSCALE_IDENTITY;
+			if (cargs < 3)
+			{
+				x = 0;
+				y = 0;
+			}
+
+			if (draw_what == PRES_DRAW_INDEX)
+			{	/* draw stamp by index */
+				s.frame = SetAbsFrameIndex (pPIS->Frame, (COUNT)index);
+			}
+			else if (draw_what == PRES_DRAW_SIS)
+			{	/* draw dynamic SIS image with player's modules */
+				if (!pPIS->SisFrame)
+					Present_GenerateSIS (pPIS);
+
+				s.frame = SetAbsFrameIndex (pPIS->SisFrame, 0);
+			}
+			if (angle != 0)
+			{
+				if (angle != pPIS->LastAngle
+						|| draw_what != pPIS->LastDrawKind)
+				{
+					DestroyDrawable (ReleaseDrawable (pPIS->RotatedFrame));
+					pPIS->RotatedFrame = CaptureDrawable (
+							RotateFrame (s.frame, DEGREES_TO_ANGLE (angle)));
+					pPIS->LastAngle = angle;
+					pPIS->LastDrawKind = draw_what;
+				}
+				s.frame = pPIS->RotatedFrame;
+			}
+			s.origin.x = x;
+			s.origin.y = y;
+			if (!pPIS->Batched)
+				LockMutex (GraphicsLock);
+			OldScale = GetGraphicScale ();
+			SetGraphicScale (scale);
+			SetContextClipping (TRUE);
+			DrawStamp (&s);
+			SetGraphicScale (OldScale);
+			if (!pPIS->Batched)
+				UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "BATCH") == 0)
 		{	/* batch graphics */
@@ -529,7 +708,7 @@ ShowPresentation (const char *name)
 	/* paint black rect over screen	*/
 	SetContextForeGroundColor (BUILD_COLOR (
 			MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
-	DrawFilledRectangle (&r);	
+	DrawFilledRectangle (&r);
 	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
@@ -538,7 +717,11 @@ ShowPresentation (const char *name)
 	pis.InputFunc = DoPresentation;
 	pis.Font = 0;
 	pis.Frame = 0;
+	pis.RotatedFrame = 0;
+	pis.LastDrawKind = -1;
+	pis.LastAngle = 0;
 	pis.MusicRef = 0;
+	pis.SisFrame = 0;
 	pis.Batched = FALSE;
 	pis.TextVPos = 'B';
 	pis.LastSyncTime = pis.StartTime = GetTimeCounter ();
@@ -550,6 +733,7 @@ ShowPresentation (const char *name)
 	FadeMusic (MAX_VOLUME, 0);
 
 	DestroyMusic (pis.MusicRef);
+	DestroyDrawable (ReleaseDrawable (pis.RotatedFrame));
 	DestroyDrawable (ReleaseDrawable (pis.Frame));
 	DestroyFont (ReleaseFont (pis.Font));
 	DestroyStringTable (ReleaseStringTable (pis.SlideShow));
