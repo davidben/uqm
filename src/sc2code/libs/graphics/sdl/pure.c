@@ -1,5 +1,4 @@
 //Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -98,6 +97,35 @@ typedef union
 		)
 #endif
 
+// RGB -> YUV transformation
+// the RGB vector is multiplied by the transformation matrix
+// to get the YUV vector
+static const double YUV_matrix[3][3] =
+{
+	/*         Y        U        V    */
+	/* R */ {0.2989, -0.1687,  0.5000},
+	/* G */ {0.5867, -0.3312, -0.4183},
+	/* B */ {0.1144,  0.5000, -0.0816}
+};
+
+typedef enum
+{
+	YUV_XFORM_R = 0,
+	YUV_XFORM_G = 1,
+	YUV_XFORM_B = 2,
+	YUV_XFORM_Y = 0,
+	YUV_XFORM_U = 1,
+	YUV_XFORM_V = 2
+} RGB_YUV_INDEX;
+
+// pre-computed transformations for 8 bits per channel
+static int RGB_to_YUV[/*RGB*/ 3][/*YUV*/ 3][ /*mult-res*/ 256];
+// double to int rounding error correction
+#define YUV_ERR_CORR 0.4999
+
+static void Scale_PrepYUV();
+
+
 static SDL_Surface *
 Create_Screen (SDL_Surface *template)
 {
@@ -159,7 +187,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 			fprintf (stderr, "Screen resolution of %dx%d not supported under pure SDL, using 640x480\n", width, height);
 	}
 
-	videomode_flags |= SDL_ANYFORMAT;
+	//videomode_flags |= SDL_ANYFORMAT;
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		videomode_flags |= SDL_FULLSCREEN;
 
@@ -212,7 +240,29 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
+	// pre-compute the RGB->YUV transformations
+	Scale_PrepYUV();
+
 	return 0;
+}
+
+// pre-compute the RGB->YUV transformations
+static void
+Scale_PrepYUV()
+{
+	int i1;
+
+	for (i1 = 0; i1 < 3; i1++) // enum R,G,B
+	{
+		int i2;
+		for (i2 = 0; i2 < 3; i2++) // enum Y,U,V
+		{
+			int i3;
+			for (i3 = 0; i3 < 256; i3++) // enum possible channel vals
+				RGB_to_YUV[i1][i2][i3] = (int)
+						(YUV_matrix[i1][i2] * i3 + YUV_ERR_CORR);
+		}
+	}
 }
 
 // expands the given rectangle in all directions by 'expansion'
@@ -266,6 +316,95 @@ Scale_BlendPixels (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 			((((pix1 & fmt->Bmask) +
 			   (pix2 & fmt->Bmask)
 			) >> 1) & fmt->Bmask);
+}
+
+// compare pixels by their RGB
+__inline__ int
+Scale_GetRGBDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
+{
+	Uint32 c;
+	int delta;
+
+	c = (((pix1 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss)
+			- (((pix2 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss);
+	delta = c * c;
+
+	c = (((pix1 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss)
+			- (((pix2 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss);
+	delta += c * c;
+
+	c = (((pix1 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss)
+			- (((pix2 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss);
+	delta += c * c;
+
+	return delta;
+}
+
+// compare pixels by their YUVs
+__inline__ int
+Scale_GetYUVDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
+{
+	Uint32 r1, g1, b1, r2, g2, b2;
+	int compd, delta;
+
+	r1 = ((pix1 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss;
+	g1 = ((pix1 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
+	b1 = ((pix1 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
+	r2 = ((pix2 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss;
+	g2 = ((pix2 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
+	b2 = ((pix2 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
+
+	// compare Ys
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b2];
+	if (compd < 0)
+		compd = -compd;
+	// Y is 2-4 times more important than U or V
+	delta = compd << 1;
+
+	// compare Us
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_U][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_U][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_U][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_U][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_U][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_U][b2];
+	if (compd < 0)
+		compd = -compd;
+	delta += compd;
+	
+	// compare Vs
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_V][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_V][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_V][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_V][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_V][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_V][b2];
+	if (compd < 0)
+		compd = -compd;
+	delta += compd;
+
+	return delta;
+}
+
+// retrieve the Y (intensity) component of pixel's YUV
+__inline__ int
+Scale_GetPixY (SDL_PixelFormat* fmt, Uint32 pix)
+{
+	Uint32 r, g, b;
+	
+	r = ((pix & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss;
+	g = ((pix & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
+	b = ((pix & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
+
+	// compare Ys
+	return RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b];
 }
 
 // biadapt scaling to 2x
@@ -894,11 +1033,1445 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	}
 }
 
+// advanced biadapt scaling to 2x
+static void
+Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
+{
+	int x, y;
+	const int w = src->w, h = src->h, dw = dst->w;
+	int xend, yend;
+	int dsrc, ddst;
+	SDL_Rect region = *r;
+	SDL_Rect limits;
+	SDL_PixelFormat *fmt = dst->format;
+	// for clarity purposes, the 'pixels' array here is transposed
+	Uint32 pixels[4][4];
+	static int resolve_coord[][2] = 
+	{
+		{0, -1}, {1, -1}, { 2, 0}, { 2, 1},
+		{1,  2}, {0,  2}, {-1, 1}, {-1, 0},
+		{100, 100}	// term
+	};
+
+	// these macros are for clarity; they make the current pixel (0,0)
+	// and allow to access pixels in all directions
+	#define PIX(x, y)   (pixels[1 + (x)][1 + (y)])
+	#define SRC(x, y)   (src_p + (x) + ((y) * w))
+	// commonly used operations, for clarity also
+	// others are defined at their respective bpp levels
+	#define BIADAPT_RGBHIGH   8000
+	#define BIADAPT_YUVLOW      30
+	#define BIADAPT_YUVMED      70
+	#define BIADAPT_YUVHIGH    130
+
+	#define BIADAPT_CMPRGB(p1, p2) \
+			Scale_GetRGBDelta (fmt, p1, p2)
+	// high tolerance pixel comparison
+	#define BIADAPT_CMPRGB_HIGH(p1, p2) \
+			(p1 == p2 || BIADAPT_CMPRGB (p1, p2) <= BIADAPT_RGBHIGH)
+
+	#define BIADAPT_CMPYUV(p1, p2) \
+			Scale_GetYUVDelta (fmt, p1, p2)
+	// low tolerance pixel comparison
+	#define BIADAPT_CMPYUV_LOW(p1, p2) \
+			(p1 == p2 || BIADAPT_CMPYUV (p1, p2) <= BIADAPT_YUVLOW)
+	// medium tolerance pixel comparison
+	#define BIADAPT_CMPYUV_MED(p1, p2) \
+			(p1 == p2 || BIADAPT_CMPYUV (p1, p2) <= BIADAPT_YUVMED)
+	// high tolerance pixel comparison
+	#define BIADAPT_CMPYUV_HIGH(p1, p2) \
+			(p1 == p2 || BIADAPT_CMPYUV (p1, p2) <= BIADAPT_YUVHIGH)
+
+	// expand updated region if necessary
+	// pixels neighbooring the updated region may
+	// change as a result of updates
+	limits.x = 0;
+	limits.y = 0;
+	limits.w = src->w;
+	limits.h = src->h;
+	Scale_ExpandRect (&region, 2, &limits);
+
+	xend = region.x + region.w;
+	yend = region.y + region.h;
+	dsrc = w - region.w;
+	ddst = (dw - region.w) * 2;
+
+	switch (fmt->BytesPerPixel)
+	{
+	case 2: // 16bpp scaling
+	#define BIADAPT_GETPIX(p)        ( *(Uint16 *)(p) )
+	#define BIADAPT_SETPIX(p, c)     ( *(Uint16 *)(p) = (c) )
+	#define BIADAPT_BUF              Uint16
+	{
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// pixel eqaulity counter
+				int cmatch;
+
+				// most pixels will fall into 'all 4 equal'
+				// pattern, so we check it first
+				cmatch = 0;
+
+				PIX (0, 0) = BIADAPT_GETPIX (SRC (0, 0));
+				
+				BIADAPT_SETPIX (dst_p, PIX (0, 0));
+
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					PIX (0, 1) = BIADAPT_GETPIX (SRC (0, 1));
+
+					if (PIX (0, 0) == PIX (0, 1))
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						cmatch |= 1;
+					}
+				}
+				else
+				{
+					// last pixel in column - propagate
+					PIX (0, 1) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					cmatch |= 1;
+					
+				}
+
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					PIX (1, 0) = BIADAPT_GETPIX (SRC (1, 0));
+
+					if (PIX (0, 0) == PIX (1, 0))
+					{
+						BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+						cmatch |= 2;
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					PIX (1, 0) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+					cmatch |= 2;
+				}
+
+				if (cmatch == 3)
+				{
+					if (y + 1 < h || x + 1 < w)
+					{
+						// last pixel in row/column and nearest
+						// neighboor is identical
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+
+					// check pixel to the bottom-right
+					PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+
+					if (PIX (0, 0) == PIX (1, 1))
+					{
+						// all 4 are equal - propagate
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+				}
+
+				// some neighnoors are different, lets check them
+
+				if (x > 0)
+					PIX (-1, 0) = BIADAPT_GETPIX (SRC (-1, 0));
+				else
+					PIX (-1, 0) = PIX (0, 0);
+
+				if (x + 2 < w)
+					PIX (2, 0) = BIADAPT_GETPIX (SRC (2, 0));
+				else
+					PIX (2, 0) = PIX (1, 0);
+				
+				if (y + 1 < h)
+				{
+					if (x > 0)
+						PIX (-1, 1) = BIADAPT_GETPIX (SRC (-1, 1));
+					else
+						PIX (-1, 1) = PIX (0, 1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = BIADAPT_GETPIX (SRC (2, 1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = PIX (1, 1);
+					}
+					else
+					{
+						PIX (1, 1) = PIX (0, 1);
+						PIX (2, 1) = PIX (0, 1);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 1) = PIX (-1, 0);
+					PIX (1, 1) = PIX (1, 0);
+					PIX (2, 1) = PIX (2, 0);
+				}
+
+				if (y + 2 < h)
+				{
+					PIX (0, 2) = BIADAPT_GETPIX (SRC (0, 2));
+
+					if (x > 0)
+						PIX (-1, 2) = BIADAPT_GETPIX (SRC (-1, 2));
+					else
+						PIX (-1, 2) = PIX (0, 2);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = BIADAPT_GETPIX (SRC (2, 2));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = PIX (1, 2);
+					}
+					else
+					{
+						PIX (1, 2) = PIX (0, 2);
+						PIX (2, 2) = PIX (0, 2);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 2) = PIX (-1, 1);
+					PIX (0, 2) = PIX (0, 1);
+					PIX (1, 2) = PIX (1, 1);
+					PIX (2, 2) = PIX (2, 1);
+				}
+
+				if (y > 0)
+				{
+					PIX (0, -1) = BIADAPT_GETPIX (SRC (0, -1));
+
+					if (x > 0)
+						PIX (-1, -1) = BIADAPT_GETPIX (SRC (-1, -1));
+					else
+						PIX (-1, -1) = PIX (0, -1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = BIADAPT_GETPIX (SRC (2, -1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = PIX (1, -1);
+					}
+					else
+					{
+						PIX (1, -1) = PIX (0, -1);
+						PIX (2, -1) = PIX (0, -1);
+					}
+				}
+				else
+				{
+					PIX (-1, -1) = PIX (-1, 0);
+					PIX (0, -1) = PIX (0, 0);
+					PIX (1, -1) = PIX (1, 0);
+					PIX (2, -1) = PIX (2, 0);
+				}
+
+				// check pixel below the current one
+				if (!(cmatch & 1))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+						cmatch |= 1;
+					}
+					// detect a 2:1 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (-1, 0)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (2, 1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) ||
+
+							(PIX (0, 0) == PIX (1, 0)
+							&& PIX (0, 0) == PIX (-1, 1)
+							&& PIX (0, 0) == PIX (2, -1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					}
+					// detect a 2:1 line going across the pixel below current
+					else if ( (PIX (0, 1) == PIX (-1, 0)
+							&& PIX (0, 1) == PIX (1, 1)
+							&& PIX (0, 1) == PIX (2, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 2))))) ||
+
+							(PIX (0, 1) == PIX (1, 0)
+							&& PIX (0, 1) == PIX (-1, 1)
+							&& PIX (0, 1) == PIX (2, 0) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+					}
+					else
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+				}
+
+				dst_p++;
+
+				// check pixel to the right from the current one
+				if (!(cmatch & 2))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (1, 0)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+						cmatch |= 2;
+					}
+					// detect a 1:2 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (1, -1)
+							&& PIX (0, 0) == PIX (0, 1)
+							&& PIX (0, 0) == PIX (-1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))))) ||
+
+							(PIX (0, 0) == PIX (0, -1)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) )
+
+					{
+						BIADAPT_SETPIX (dst_p, PIX (0, 0));
+					}
+					// detect a 1:2 line going across the pixel to the right
+					else if ( (PIX (1, 0) == PIX (1, -1)
+							&& PIX (1, 0) == PIX (0, 1)
+							&& PIX (1, 0) == PIX (0, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))))) ||
+							
+							(PIX (1, 0) == PIX (0, -1)
+							&& PIX (1, 0) == PIX (1, 1)
+							&& PIX (1, 0) == PIX (2, 2) &&
+							
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p, PIX (1, 0));
+					}
+					else
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+				}
+
+				if (PIX (0, 0) == PIX (1, 1) && PIX (1, 0) == PIX (0, 1))
+				{
+					// diagonals are equal
+					int *coord;
+					int cl, cr;
+					Uint32 clr;
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 2;
+					for (coord = resolve_coord[0]; *coord < 100; coord += 2)
+					{
+						clr = PIX (coord[0], coord[1]);
+
+						if (BIADAPT_CMPYUV_MED (clr, PIX (0, 0)))
+							cl++;
+						else if (BIADAPT_CMPYUV_MED (clr, PIX (1, 0)))
+							cr++;
+					}
+
+					// least count wins
+					if (cl > cr)
+						clr = PIX (1, 0);
+					else if (cr > cl)
+						clr = PIX (0, 0);
+					else
+						clr = Scale_BlendPixels (fmt,
+								PIX (0, 0), PIX (1, 0));
+
+					BIADAPT_SETPIX (dst_p + dw, clr);
+					continue;
+				}
+
+				if (cmatch == 3
+						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
+						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 1), PIX (1, 0))
+							);
+					continue;
+				}
+				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+					continue;
+				}
+
+				// check pixel to the bottom-right
+				if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1))
+						&& BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					if (Scale_GetPixY (fmt, PIX (0, 0))
+							> Scale_GetPixY (fmt, PIX (1, 0)))
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 1))
+								);
+					}
+					else
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (1, 0), PIX (0, 1))
+								);
+					}
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1)))
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (1, 0), PIX (0, 1))
+							);
+				}
+				else
+				{
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((PIX (0, 0) & fmt->Rmask) +
+							   (PIX (0, 1) & fmt->Rmask) +
+							   (PIX (1, 0) & fmt->Rmask) +
+							   (PIX (1, 1) & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((PIX (0, 0) & fmt->Gmask) +
+							   (PIX (0, 1) & fmt->Gmask) +
+							   (PIX (1, 0) & fmt->Gmask) +
+							   (PIX (1, 1) & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((PIX (0, 0) & fmt->Bmask) +
+							   (PIX (0, 1) & fmt->Bmask) +
+							   (PIX (1, 0) & fmt->Bmask) +
+							   (PIX (1, 1) & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
+				}
+			}
+		}
+		break;
+	}
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+
+	case 3: // 24bpp scaling
+	#define BIADAPT_GETPIX(p)        GET_PIX_24BIT(p)
+	#define BIADAPT_SETPIX(p, c)     SET_PIX_24BIT(p, c)
+	#define BIADAPT_BUF              PIXEL_24BIT
+	{
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// pixel eqaulity counter
+				int cmatch;
+
+				// most pixels will fall into 'all 4 equal'
+				// pattern, so we check it first
+				cmatch = 0;
+
+				PIX (0, 0) = BIADAPT_GETPIX (SRC (0, 0));
+				
+				BIADAPT_SETPIX (dst_p, PIX (0, 0));
+
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					PIX (0, 1) = BIADAPT_GETPIX (SRC (0, 1));
+
+					if (PIX (0, 0) == PIX (0, 1))
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						cmatch |= 1;
+					}
+				}
+				else
+				{
+					// last pixel in column - propagate
+					PIX (0, 1) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					cmatch |= 1;
+					
+				}
+
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					PIX (1, 0) = BIADAPT_GETPIX (SRC (1, 0));
+
+					if (PIX (0, 0) == PIX (1, 0))
+					{
+						BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+						cmatch |= 2;
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					PIX (1, 0) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+					cmatch |= 2;
+				}
+
+				if (cmatch == 3)
+				{
+					if (y + 1 < h || x + 1 < w)
+					{
+						// last pixel in row/column and nearest
+						// neighboor is identical
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+
+					// check pixel to the bottom-right
+					PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+
+					if (PIX (0, 0) == PIX (1, 1))
+					{
+						// all 4 are equal - propagate
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+				}
+
+				// some neighnoors are different, lets check them
+
+				if (x > 0)
+					PIX (-1, 0) = BIADAPT_GETPIX (SRC (-1, 0));
+				else
+					PIX (-1, 0) = PIX (0, 0);
+
+				if (x + 2 < w)
+					PIX (2, 0) = BIADAPT_GETPIX (SRC (2, 0));
+				else
+					PIX (2, 0) = PIX (1, 0);
+				
+				if (y + 1 < h)
+				{
+					if (x > 0)
+						PIX (-1, 1) = BIADAPT_GETPIX (SRC (-1, 1));
+					else
+						PIX (-1, 1) = PIX (0, 1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = BIADAPT_GETPIX (SRC (2, 1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = PIX (1, 1);
+					}
+					else
+					{
+						PIX (1, 1) = PIX (0, 1);
+						PIX (2, 1) = PIX (0, 1);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 1) = PIX (-1, 0);
+					PIX (1, 1) = PIX (1, 0);
+					PIX (2, 1) = PIX (2, 0);
+				}
+
+				if (y + 2 < h)
+				{
+					PIX (0, 2) = BIADAPT_GETPIX (SRC (0, 2));
+
+					if (x > 0)
+						PIX (-1, 2) = BIADAPT_GETPIX (SRC (-1, 2));
+					else
+						PIX (-1, 2) = PIX (0, 2);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = BIADAPT_GETPIX (SRC (2, 2));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = PIX (1, 2);
+					}
+					else
+					{
+						PIX (1, 2) = PIX (0, 2);
+						PIX (2, 2) = PIX (0, 2);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 2) = PIX (-1, 1);
+					PIX (0, 2) = PIX (0, 1);
+					PIX (1, 2) = PIX (1, 1);
+					PIX (2, 2) = PIX (2, 1);
+				}
+
+				if (y > 0)
+				{
+					PIX (0, -1) = BIADAPT_GETPIX (SRC (0, -1));
+
+					if (x > 0)
+						PIX (-1, -1) = BIADAPT_GETPIX (SRC (-1, -1));
+					else
+						PIX (-1, -1) = PIX (0, -1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = BIADAPT_GETPIX (SRC (2, -1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = PIX (1, -1);
+					}
+					else
+					{
+						PIX (1, -1) = PIX (0, -1);
+						PIX (2, -1) = PIX (0, -1);
+					}
+				}
+				else
+				{
+					PIX (-1, -1) = PIX (-1, 0);
+					PIX (0, -1) = PIX (0, 0);
+					PIX (1, -1) = PIX (1, 0);
+					PIX (2, -1) = PIX (2, 0);
+				}
+
+				// check pixel below the current one
+				if (!(cmatch & 1))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+						cmatch |= 1;
+					}
+					// detect a 2:1 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (-1, 0)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (2, 1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) ||
+
+							(PIX (0, 0) == PIX (1, 0)
+							&& PIX (0, 0) == PIX (-1, 1)
+							&& PIX (0, 0) == PIX (2, -1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					}
+					// detect a 2:1 line going across the pixel below current
+					else if ( (PIX (0, 1) == PIX (-1, 0)
+							&& PIX (0, 1) == PIX (1, 1)
+							&& PIX (0, 1) == PIX (2, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 2))))) ||
+
+							(PIX (0, 1) == PIX (1, 0)
+							&& PIX (0, 1) == PIX (-1, 1)
+							&& PIX (0, 1) == PIX (2, 0) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+					}
+					else
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+				}
+
+				dst_p++;
+
+				// check pixel to the right from the current one
+				if (!(cmatch & 2))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (1, 0)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+						cmatch |= 2;
+					}
+					// detect a 1:2 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (1, -1)
+							&& PIX (0, 0) == PIX (0, 1)
+							&& PIX (0, 0) == PIX (-1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))))) ||
+
+							(PIX (0, 0) == PIX (0, -1)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) )
+
+					{
+						BIADAPT_SETPIX (dst_p, PIX (0, 0));
+					}
+					// detect a 1:2 line going across the pixel to the right
+					else if ( (PIX (1, 0) == PIX (1, -1)
+							&& PIX (1, 0) == PIX (0, 1)
+							&& PIX (1, 0) == PIX (0, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))))) ||
+							
+							(PIX (1, 0) == PIX (0, -1)
+							&& PIX (1, 0) == PIX (1, 1)
+							&& PIX (1, 0) == PIX (2, 2) &&
+							
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p, PIX (1, 0));
+					}
+					else
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+				}
+
+				if (PIX (0, 0) == PIX (1, 1) && PIX (1, 0) == PIX (0, 1))
+				{
+					// diagonals are equal
+					int *coord;
+					int cl, cr;
+					Uint32 clr;
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 2;
+					for (coord = resolve_coord[0]; *coord < 100; coord += 2)
+					{
+						clr = PIX (coord[0], coord[1]);
+
+						if (BIADAPT_CMPYUV_MED (clr, PIX (0, 0)))
+							cl++;
+						else if (BIADAPT_CMPYUV_MED (clr, PIX (1, 0)))
+							cr++;
+					}
+
+					// least count wins
+					if (cl > cr)
+						clr = PIX (1, 0);
+					else if (cr > cl)
+						clr = PIX (0, 0);
+					else
+						clr = Scale_BlendPixels (fmt,
+								PIX (0, 0), PIX (1, 0));
+
+					BIADAPT_SETPIX (dst_p + dw, clr);
+					continue;
+				}
+
+				if (cmatch == 3
+						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
+						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 1), PIX (1, 0))
+							);
+					continue;
+				}
+				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+					continue;
+				}
+
+				// check pixel to the bottom-right
+				if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1))
+						&& BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					if (Scale_GetPixY (fmt, PIX (0, 0))
+							> Scale_GetPixY (fmt, PIX (1, 0)))
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 1))
+								);
+					}
+					else
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (1, 0), PIX (0, 1))
+								);
+					}
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1)))
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (1, 0), PIX (0, 1))
+							);
+				}
+				else
+				{
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((PIX (0, 0) & fmt->Rmask) +
+							   (PIX (0, 1) & fmt->Rmask) +
+							   (PIX (1, 0) & fmt->Rmask) +
+							   (PIX (1, 1) & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((PIX (0, 0) & fmt->Gmask) +
+							   (PIX (0, 1) & fmt->Gmask) +
+							   (PIX (1, 0) & fmt->Gmask) +
+							   (PIX (1, 1) & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((PIX (0, 0) & fmt->Bmask) +
+							   (PIX (0, 1) & fmt->Bmask) +
+							   (PIX (1, 0) & fmt->Bmask) +
+							   (PIX (1, 1) & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
+				}
+			}
+		}
+		break;
+	}
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+
+	case 4: // 32bpp scaling
+	#define BIADAPT_GETPIX(p)        ( *(Uint32 *)(p) )
+	#define BIADAPT_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
+	#define BIADAPT_BUF              Uint32
+	{
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// pixel eqaulity counter
+				int cmatch;
+
+				// most pixels will fall into 'all 4 equal'
+				// pattern, so we check it first
+				cmatch = 0;
+
+				PIX (0, 0) = BIADAPT_GETPIX (SRC (0, 0));
+				
+				BIADAPT_SETPIX (dst_p, PIX (0, 0));
+
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					PIX (0, 1) = BIADAPT_GETPIX (SRC (0, 1));
+
+					if (PIX (0, 0) == PIX (0, 1))
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						cmatch |= 1;
+					}
+				}
+				else
+				{
+					// last pixel in column - propagate
+					PIX (0, 1) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					cmatch |= 1;
+					
+				}
+
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					PIX (1, 0) = BIADAPT_GETPIX (SRC (1, 0));
+
+					if (PIX (0, 0) == PIX (1, 0))
+					{
+						BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+						cmatch |= 2;
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					PIX (1, 0) = PIX (0, 0);
+					BIADAPT_SETPIX (dst_p + 1, PIX (0, 0));
+					cmatch |= 2;
+				}
+
+				if (cmatch == 3)
+				{
+					if (y + 1 < h || x + 1 < w)
+					{
+						// last pixel in row/column and nearest
+						// neighboor is identical
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+
+					// check pixel to the bottom-right
+					PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+
+					if (PIX (0, 0) == PIX (1, 1))
+					{
+						// all 4 are equal - propagate
+						dst_p++;
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						continue;
+					}
+				}
+
+				// some neighnoors are different, lets check them
+
+				if (x > 0)
+					PIX (-1, 0) = BIADAPT_GETPIX (SRC (-1, 0));
+				else
+					PIX (-1, 0) = PIX (0, 0);
+
+				if (x + 2 < w)
+					PIX (2, 0) = BIADAPT_GETPIX (SRC (2, 0));
+				else
+					PIX (2, 0) = PIX (1, 0);
+				
+				if (y + 1 < h)
+				{
+					if (x > 0)
+						PIX (-1, 1) = BIADAPT_GETPIX (SRC (-1, 1));
+					else
+						PIX (-1, 1) = PIX (0, 1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = BIADAPT_GETPIX (SRC (2, 1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 1) = BIADAPT_GETPIX (SRC (1, 1));
+						PIX (2, 1) = PIX (1, 1);
+					}
+					else
+					{
+						PIX (1, 1) = PIX (0, 1);
+						PIX (2, 1) = PIX (0, 1);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 1) = PIX (-1, 0);
+					PIX (1, 1) = PIX (1, 0);
+					PIX (2, 1) = PIX (2, 0);
+				}
+
+				if (y + 2 < h)
+				{
+					PIX (0, 2) = BIADAPT_GETPIX (SRC (0, 2));
+
+					if (x > 0)
+						PIX (-1, 2) = BIADAPT_GETPIX (SRC (-1, 2));
+					else
+						PIX (-1, 2) = PIX (0, 2);
+
+					if (x + 2 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = BIADAPT_GETPIX (SRC (2, 2));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, 2) = BIADAPT_GETPIX (SRC (1, 2));
+						PIX (2, 2) = PIX (1, 2);
+					}
+					else
+					{
+						PIX (1, 2) = PIX (0, 2);
+						PIX (2, 2) = PIX (0, 2);
+					}
+				}
+				else
+				{
+					// last pixel in column
+					PIX (-1, 2) = PIX (-1, 1);
+					PIX (0, 2) = PIX (0, 1);
+					PIX (1, 2) = PIX (1, 1);
+					PIX (2, 2) = PIX (2, 1);
+				}
+
+				if (y > 0)
+				{
+					PIX (0, -1) = BIADAPT_GETPIX (SRC (0, -1));
+
+					if (x > 0)
+						PIX (-1, -1) = BIADAPT_GETPIX (SRC (-1, -1));
+					else
+						PIX (-1, -1) = PIX (0, -1);
+
+					if (x + 2 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = BIADAPT_GETPIX (SRC (2, -1));
+					}
+					else if (x + 1 < w)
+					{
+						PIX (1, -1) = BIADAPT_GETPIX (SRC (1, -1));
+						PIX (2, -1) = PIX (1, -1);
+					}
+					else
+					{
+						PIX (1, -1) = PIX (0, -1);
+						PIX (2, -1) = PIX (0, -1);
+					}
+				}
+				else
+				{
+					PIX (-1, -1) = PIX (-1, 0);
+					PIX (0, -1) = PIX (0, 0);
+					PIX (1, -1) = PIX (1, 0);
+					PIX (2, -1) = PIX (2, 0);
+				}
+
+				// check pixel below the current one
+				if (!(cmatch & 1))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+						cmatch |= 1;
+					}
+					// detect a 2:1 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (-1, 0)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (2, 1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) ||
+
+							(PIX (0, 0) == PIX (1, 0)
+							&& PIX (0, 0) == PIX (-1, 1)
+							&& PIX (0, 0) == PIX (2, -1) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					}
+					// detect a 2:1 line going across the pixel below current
+					else if ( (PIX (0, 1) == PIX (-1, 0)
+							&& PIX (0, 1) == PIX (1, 1)
+							&& PIX (0, 1) == PIX (2, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 2))))) ||
+
+							(PIX (0, 1) == PIX (1, 0)
+							&& PIX (0, 1) == PIX (-1, 1)
+							&& PIX (0, 1) == PIX (2, 0) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, -1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (-1, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (0, 2))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+					}
+					else
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (0, 1))
+								);
+				}
+
+				dst_p++;
+
+				// check pixel to the right from the current one
+				if (!(cmatch & 2))
+				{
+					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (1, 0)) <= BIADAPT_YUVLOW)
+					{
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+						cmatch |= 2;
+					}
+					// detect a 1:2 line going across the current pixel
+					else if ( (PIX (0, 0) == PIX (1, -1)
+							&& PIX (0, 0) == PIX (0, 1)
+							&& PIX (0, 0) == PIX (-1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 1))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))))) ||
+
+							(PIX (0, 0) == PIX (0, -1)
+							&& PIX (0, 0) == PIX (1, 1)
+							&& PIX (0, 0) == PIX (1, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (-1, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (0, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 2))))) )
+
+					{
+						BIADAPT_SETPIX (dst_p, PIX (0, 0));
+					}
+					// detect a 1:2 line going across the pixel to the right
+					else if ( (PIX (1, 0) == PIX (1, -1)
+							&& PIX (1, 0) == PIX (0, 1)
+							&& PIX (1, 0) == PIX (0, 2) &&
+
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))))) ||
+							
+							(PIX (1, 0) == PIX (0, -1)
+							&& PIX (1, 0) == PIX (1, 1)
+							&& PIX (1, 0) == PIX (2, 2) &&
+							
+							((!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (-1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (0, 1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, 2))) ||
+							(!BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (1, -1))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 0))
+							&& !BIADAPT_CMPRGB_HIGH (PIX (1, 0), PIX (2, 1))))) )
+					{
+						BIADAPT_SETPIX (dst_p, PIX (1, 0));
+					}
+					else
+						BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 0))
+								);
+				}
+
+				if (PIX (0, 0) == PIX (1, 1) && PIX (1, 0) == PIX (0, 1))
+				{
+					// diagonals are equal
+					int *coord;
+					int cl, cr;
+					Uint32 clr;
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 2;
+					for (coord = resolve_coord[0]; *coord < 100; coord += 2)
+					{
+						clr = PIX (coord[0], coord[1]);
+
+						if (BIADAPT_CMPYUV_MED (clr, PIX (0, 0)))
+							cl++;
+						else if (BIADAPT_CMPYUV_MED (clr, PIX (1, 0)))
+							cr++;
+					}
+
+					// least count wins
+					if (cl > cr)
+						clr = PIX (1, 0);
+					else if (cr > cl)
+						clr = PIX (0, 0);
+					else
+						clr = Scale_BlendPixels (fmt,
+								PIX (0, 0), PIX (1, 0));
+
+					BIADAPT_SETPIX (dst_p + dw, clr);
+					continue;
+				}
+
+				if (cmatch == 3
+						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
+						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 1), PIX (1, 0))
+							);
+					continue;
+				}
+				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
+				{
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+					continue;
+				}
+
+				// check pixel to the bottom-right
+				if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1))
+						&& BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					if (Scale_GetPixY (fmt, PIX (0, 0))
+							> Scale_GetPixY (fmt, PIX (1, 0)))
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (0, 0), PIX (1, 1))
+								);
+					}
+					else
+					{
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, PIX (1, 0), PIX (0, 1))
+								);
+					}
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (0, 0), PIX (1, 1)))
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (0, 0), PIX (1, 1))
+							);
+				}
+				else if (BIADAPT_CMPYUV_HIGH (PIX (1, 0), PIX (0, 1)))
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+							fmt, PIX (1, 0), PIX (0, 1))
+							);
+				}
+				else
+				{
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((PIX (0, 0) & fmt->Rmask) +
+							   (PIX (0, 1) & fmt->Rmask) +
+							   (PIX (1, 0) & fmt->Rmask) +
+							   (PIX (1, 1) & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((PIX (0, 0) & fmt->Gmask) +
+							   (PIX (0, 1) & fmt->Gmask) +
+							   (PIX (1, 0) & fmt->Gmask) +
+							   (PIX (1, 1) & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((PIX (0, 0) & fmt->Bmask) +
+							   (PIX (0, 1) & fmt->Bmask) +
+							   (PIX (1, 0) & fmt->Bmask) +
+							   (PIX (1, 1) & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
+				}
+			}
+		}
+		break;
+	}
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+	}
+
+	#undef BIADAPT_CMPRGB
+	#undef BIADAPT_CMPRGB_HIGH
+	#undef BIADAPT_CMPYUV
+	#undef BIADAPT_CMPYUV_LOW
+	#undef BIADAPT_CMPYUV_MED
+	#undef BIADAPT_CMPYUV_HIGH
+
+	#undef PIX
+	#undef SRC
+}
+
+
 // nearest neighbor scaling to 2x
 static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, h = src->h, dw = dst->w;
+	const int w = src->w, dw = dst->w;
 	const int x0 = r->x, y0 = r->y, rw = r->w, rh = r->h;
 	const int ds = w-rw, dd = (dw-rw) * 2;
 
@@ -927,30 +2500,36 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	}
 	case 3:
 	{
-		Uint8 *src_p = (Uint8 *)src->pixels, *dst_p = (Uint8 *)dst->pixels, *src_p2;
+		PIXEL_24BIT *src_p = (PIXEL_24BIT *)src->pixels;
+		PIXEL_24BIT *dst_p = (PIXEL_24BIT *)dst->pixels;
+		PIXEL_24BIT *src_p2;
+		const int dd = dw - rw * 2; // override
 		Uint32 pixval_32;
-		for (y = 0; y < h; ++y)
+		src_p += w*y0 + x0;
+		dst_p += (dw*y0 + x0) * 2;
+		for (y = 0; y < rh; ++y)
 		{
 			src_p2 = src_p;			
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < rw; ++x, ++src_p)
 			{
-				pixval_32 = *(Uint32*)src_p;
-				src_p += 3;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 3;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 3;
+				pixval_32 = GET_PIX_24BIT (src_p);
+				SET_PIX_24BIT (dst_p, pixval_32);
+				dst_p++;
+				SET_PIX_24BIT (dst_p, pixval_32);
+				dst_p++;
 			}
+			dst_p += dd;
 			src_p = src_p2;
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < rw; ++x, ++src_p)
 			{
-				pixval_32 = *(Uint32*)src_p;
-				src_p += 3;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 3;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 3;
+				pixval_32 = GET_PIX_24BIT (src_p);
+				SET_PIX_24BIT (dst_p, pixval_32);
+				dst_p++;
+				SET_PIX_24BIT (dst_p, pixval_32);
+				dst_p++;
 			}
+			dst_p += dd;
+			src_p += ds;
 		}
 		break;
 	}
@@ -1298,6 +2877,8 @@ TFB_Pure_SwapBuffers ()
 			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
 		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
 			Scale_BiAdaptFilter (backbuffer, SDL_Video, &updated);
+		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+			Scale_BiAdaptAdvFilter (backbuffer, SDL_Video, &updated);
 		else
 			Scale_Nearest (backbuffer, SDL_Video, &updated);
 
