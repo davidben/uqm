@@ -166,8 +166,9 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			fprintf (stderr, "_GetSoundBankData: Bad file!\n");
 		}
 
-		if (ftell (fp) - opos >= length)
-			break;
+		// pkunk insult fix 2002/11/12 (ftell shouldn't be needed for loop to terminate)
+		/*if (ftell (fp) - opos >= length)
+			break;*/
 	}
 #ifdef WIN32
 	_setmode (fileno (fp), omode);
