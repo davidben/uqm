@@ -51,6 +51,8 @@ Create_Screen ()
 		fprintf (stderr, "Couldn't create screen buffer: %s\n", SDL_GetError());
 		exit (-1);
 	}
+
+	return result;
 }
 
 int
