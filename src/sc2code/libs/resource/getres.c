@@ -303,7 +303,13 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 				if (fp == NULL)
 				{
 #if 1 // def DEBUG
-					fprintf (stderr, "Can't open '%s'\n", file_buf);
+					// HACK: added the 'if' here as not to scare people
+					//       with the warning for this workaround.
+					//       It will go with the new resource system.
+					//       (together with the rest of this file)
+					if (strcmp(file_buf, "ignored.key") != 0) {
+						fprintf (stderr, "Can't open '%s'\n", file_buf);
+					}
 #endif /* DEBUG */
 				}
 				else
