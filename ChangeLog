@@ -1,6 +1,6 @@
 Changes towards version 0.4:
 - Fixed menu sounds in full-game battle ship selection box (bug #566) -Alex
-- Added '--version' - Svdb
+- Added '--version' - SvdB
 - Fixed a bad memory access which could occur when the code relies
   on CharCount for determining the end of a string (bug #701). - SvdB
 - Battle planet images now have corrected transparency info, so there
@@ -41,7 +41,7 @@ Changes towards version 0.4:
 - Added dumping planet info to uqmdebug.c - SvdB
 - Check language.txt for locale, from Zap
 - Make it possible to specify the config dir on the command line.
-  (bug #645) - Svdb
+  (bug #645) - SvdB
 - Speech .txt and .ts corrections, from Nic. - SvdB
 - Made the unix build scripts more portable. Removed some small
   bugs. - SvdB
@@ -148,7 +148,7 @@ Changes towards version 0.4:
 - Obsolete "register" keywords removed -Michael
 
 Changes towards version 0.3:
-- Dirty hack to avoid a warning about the "ignored.key" hack - Svdb
+- Dirty hack to avoid a warning about the "ignored.key" hack - SvdB
 - Typo 'natually' fixed in Arilou speech - SvdB
 - uio: Fixed a bug which could cause spurious warnings when using .zip files
   generated from DOS/Windows - SvdB
@@ -203,7 +203,7 @@ Changes towards version 0.3:
   (bug #432), from Nic
 - Can use F10 to quit during splash screen as well as main menu -Michael
 - Fixed starship location when being teleported from Procyon to
-  the Earth Starbase after the Precursor bomb is installed. - Svdb
+  the Earth Starbase after the Precursor bomb is installed. - SvdB
 - Crew death on planet is now counted properly in all cases (bug #70) -Mika
 - Fixed lockup in 'save failed' alert box (bug #397), from ghakko
 - Fixed glitch in Pkunk animation (bug #354), from Paxtez
