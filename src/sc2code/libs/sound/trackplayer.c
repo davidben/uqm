@@ -34,6 +34,8 @@ static TFB_SoundTag *last_tag = NULL;
 static TFB_SoundSample *sound_sample = NULL;
 static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
+static TFB_SoundChain *last_ts_chain = NULL; //last element in the chain with a subtitle
+
 static Mutex track_mutex; //protects tcur and tct
 void recompute_track_pos (TFB_SoundSample *sample, 
 						  TFB_SoundChain *first_chain, sint32 offset);
@@ -156,6 +158,8 @@ StopTrack ()
 	{
 		destroy_soundchain (first_chain);
 		first_chain = NULL;
+		last_chain = NULL;
+		last_ts_chain = NULL;
 	}
 	if (sound_sample)
 	{
@@ -381,18 +385,47 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 			{
 				int slen1, slen2;
 				UNICODE *oTT;
+				int num_pages = 0, page_counter;
+				sint32 time_stamps[50];
 
-				oTT = (UNICODE *)last_tag->data;
+				if (! last_ts_chain || !last_ts_chain->tag.data)
+				{
+					fprintf (stderr, 
+						"SpliceTrack(): Tried to append a subtitle to a NULL string\n");
+					return;
+				}
+				split_text = SplitSubPages (TrackText, time_stamps, &num_pages);
+				if (! split_text)
+				{
+					fprintf (stderr, "SpliceTrack(): Failed to parse sutitles\n");
+					return;
+				}
+				oTT = (UNICODE *)last_ts_chain->tag.data;
 				slen1 = wstrlen (oTT);
-				slen2 = wstrlen (TrackText);
-				last_tag->data = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&((UNICODE *)last_tag->data)[slen1], TrackText);
+				slen2 = wstrlen (split_text[0]);
+				last_ts_chain->tag.data = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&((UNICODE *)last_ts_chain->tag.data)[slen1], split_text[0]);
+				HFree (split_text[0]);
+				for (page_counter = 1; page_counter < num_pages; page_counter++)
+				{
+					if (! last_ts_chain->next)
+					{
+						fprintf (stderr, "SpliceTrack(): More text pages than timestamps!\n");
+						break;
+					}
+					last_ts_chain = last_ts_chain->next;
+					last_ts_chain->tag.data = split_text[page_counter];
+				}
 			}
 		}
 		else
 		{
-			int num_pages, page_counter;
+			int num_pages = 0, num_timestamps = 0, page_counter;
 			sint32 time_stamps[50];
+			int i;
+
+			for (i = 0; i < 50; i++)
+				time_stamps[i] = -1000;
 
 			split_text = SplitSubPages (TrackText, time_stamps, &num_pages);
 			if (! split_text)
@@ -418,11 +451,15 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
 
 			if (TimeStamp)
-				if ((GetTimeStamps (TimeStamp, time_stamps) + 1) != num_pages)
+			{
+				num_timestamps = GetTimeStamps (TimeStamp, time_stamps) + 1;
+				if (num_timestamps < num_pages)
 					fprintf (stderr, "SpliceTrack(): number of timestamps doesn't match number of pages!\n");
-
+			}
+			else
+				num_timestamps = num_pages;
 			startTime = 0;
-			for (page_counter = 0; page_counter < num_pages; page_counter++)
+			for (page_counter = 0; page_counter < num_timestamps; page_counter++)
 			{
 				if (! sound_sample)
 				{
@@ -463,7 +500,11 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
 						// last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
 						last_chain->tag.value = tct - 1;
-						last_chain->tag.data = (void *)split_text[page_counter];
+						if (page_counter < num_pages)
+						{
+							last_chain->tag.data = (void *)split_text[page_counter];
+							last_ts_chain = last_chain;
+						}
 						last_chain->tag.callback = cb;
 						last_tag = &last_chain->tag;
 					}
