@@ -102,11 +102,22 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	{
 		COUNT col_cells;
 		UNICODE *pLastStr;
+		UNICODE *pTempStr;
+		COUNT lf_pos;
 
 		pLastStr = t.pStr;
 
+		// scan for LFs in the remaining string
+		// trailing LF will be ignored
+		for (lf_pos = StrLen, pTempStr = t.pStr;
+				lf_pos && *pTempStr != '\n';
+				--lf_pos, ++pTempStr)
+			;
+
 		col_cells = 0;
-		if (row_cells == NUM_CELL_ROWS - 1 && StrLen > NUM_CELL_COLS)
+		// check if the remaining text fits on current screen
+		if (row_cells == NUM_CELL_ROWS - 1
+				&& (StrLen > NUM_CELL_COLS || lf_pos > 1))
 		{
 			col_cells = (NUM_CELL_COLS >> 1) - (end_page_len >> 1);
 			t.pStr = end_page_buf;
