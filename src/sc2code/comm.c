@@ -25,6 +25,7 @@
 #include "options.h"
 #include "comm.h"
 #include "libs/sound/sound.h"
+#include "endian.h"
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);
@@ -571,19 +572,9 @@ xform_PLUT_step (SIZE TDelta)
 			DWORD v0, v1, val;
 			float f = (control->TOrig - control->TTotal) / (float)control->TOrig;
 			COLORMAPPTR oldmap = (COLORMAPPTR) pOldCMap;
-					
-			v0 = MAKE_DWORD
-				(
-					MAKE_WORD (oldmap[3], oldmap[2]),
-					MAKE_WORD (oldmap[1], oldmap[0])
-				);
 
-
-			v1 = MAKE_DWORD
-				(
-					MAKE_WORD (ColorMapPtr[3], ColorMapPtr[2]),
-					MAKE_WORD (ColorMapPtr[1], ColorMapPtr[0])
-				);
+			v0 = UQM_SwapBE32 (*(DWORD *)oldmap);
+			v1 = UQM_SwapBE32 (*(DWORD *)ColorMapPtr);
 
 			ColorMapPtr += sizeof (DWORD);
 			
@@ -618,12 +609,7 @@ xform_PLUT_step (SIZE TDelta)
 			val = (val << 5) | (c0 & 0x1F);
 
 			*pOldCMap++;
-			*pCurCMap++ = MAKE_DWORD 
-				(
-					MAKE_WORD ((val >> 24 ) & 0xff, (val >> 16) & 0xff),
-					MAKE_WORD ((val >> 8  ) & 0xff, (val >> 0 ) & 0xff)
-				);
-
+			*pCurCMap++ = UQM_SwapBE32 (val);
 		}
 		ColorChange = TRUE;
 	}
