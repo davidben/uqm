@@ -22,6 +22,7 @@
 #include "pure.h"
 #include "opengl.h"
 #include "primitives.h"
+#include "graphics/drawcmd.h"
 
 int batch_depth = 0;
 static const BOOLEAN pausing_transition = TRUE; // change to FALSE for non-pausing version

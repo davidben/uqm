@@ -78,21 +78,6 @@ typedef struct tfb_imagestruct
 	UBYTE data[TFB_IMAGESTRUCT_SIZE];
 } TFB_ImageStruct;
 
-enum
-{
-	TFB_DRAWCOMMANDTYPE_LINE,
-	TFB_DRAWCOMMANDTYPE_RECTANGLE,
-	TFB_DRAWCOMMANDTYPE_IMAGE,
-
-	TFB_DRAWCOMMANDTYPE_COPY,
-	TFB_DRAWCOMMANDTYPE_COPYTOIMAGE,
-
-	TFB_DRAWCOMMANDTYPE_SCISSORENABLE,
-	TFB_DRAWCOMMANDTYPE_SCISSORDISABLE,
-
-	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
-	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
-};
 
 typedef struct tfb_palette
 {
@@ -102,28 +87,7 @@ typedef struct tfb_palette
 	UBYTE unused;
 } TFB_Palette;
 
-typedef struct tfb_drawcommand
-{
-	int Type;
-	int x;
-	int y;
-	int w;
-	int h;
-	TFB_ImageStruct *image;
-	int r;
-	int g;
-	int b;
-	TFB_Palette Palette[256];
-	BOOLEAN UsePalette;
-	BOOLEAN UseScaling;
-	int BlendNumerator;
-	int BlendDenominator;
-	DWORD thread;
-	SCREEN srcBuffer;
-	SCREEN destBuffer;
-} TFB_DrawCommand;
-
-// Drawing commands (native to the queue)
+// Drawing commands
 
 void TFB_Draw_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN dest);
 void TFB_Draw_Rect (PRECT rect, int r, int g, int b, SCREEN dest);
@@ -133,38 +97,6 @@ void TFB_Draw_CopyToImage (TFB_ImageStruct *img, PRECT lpRect, SCREEN src);
 void TFB_Draw_DeleteImage (TFB_ImageStruct *img);
 void TFB_Draw_WaitForSignal (void);
 
-// Queue Stuff
-
-typedef struct tfb_drawcommandqueue
-{
-	int Front;
-	int Back;
-	int InsertionPoint;
-	int Batching;
-	volatile int FullSize;
-	volatile int Size;
-} TFB_DrawCommandQueue;
-
-void TFB_DrawCommandQueue_Create (void);
-
-void TFB_BatchGraphics (void);
-
-void TFB_UnbatchGraphics (void);
-
-void TFB_BatchReset (void);
-
-void TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command);
-
-int TFB_DrawCommandQueue_Pop (TFB_DrawCommand* Command);
-
-void TFB_DrawCommandQueue_Clear (void);
-
-extern TFB_DrawCommandQueue DrawCommandQueue;
-
-// The TFB_Enqueue* functions are necessary, because only the 
-// main thread can draw to the window.
-
-void TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand);
 void TFB_FlushGraphics (void); // Only call from main thread!!
 
 // CCB Stuff

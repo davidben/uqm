@@ -253,6 +253,10 @@ SOURCE=..\sc2code\libs\graphics\drawable.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\drawcmd.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\filegfx.c
 # End Source File
 # Begin Source File

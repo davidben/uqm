@@ -19,6 +19,7 @@
 #include "libs/graphics/gfxintrn.h"
 #include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/drawcmd.h"
 
 PDISPLAY_INTERFACE _pCurDisplay; //Not a function. Probably has to be initialized...
 

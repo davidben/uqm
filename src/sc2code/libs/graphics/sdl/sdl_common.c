@@ -26,6 +26,7 @@
 #include "dcqueue.h"
 #include "options.h"
 #include "SDL_thread.h"
+#include "libs/graphics/drawcmd.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;

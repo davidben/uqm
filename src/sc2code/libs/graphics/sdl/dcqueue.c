@@ -21,6 +21,7 @@
 #include "sdl_common.h"
 #include "libs/threadlib.h"
 #include "SDL_thread.h"
+#include "libs/graphics/drawcmd.h"
 
 Semaphore DCQ_sem;
 
@@ -131,6 +132,24 @@ TFB_BatchReset (void)
 	Unlock_DCQ ();
 }
 
+// Wait for the queue to be emptied.
+static void
+TFB_WaitForSpace (int requested_slots)
+{
+	int old_depth, i;
+	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, Requested = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize, requested_slots);
+	// Restore the DCQ locking level.  I *think* this is
+	// always 1, but...
+	TFB_BatchReset ();
+	old_depth = DCQ_locking_depth;
+	for (i = 0; i < old_depth; i++)
+		Unlock_DCQ ();
+	WaitCondVar (RenderingCond);
+	for (i = 0; i < old_depth; i++)
+		Lock_DCQ ();
+	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
+}
+
 // Draw Command Queue Stuff
 
 void
@@ -154,18 +173,7 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 	Lock_DCQ ();
 	while (DrawCommandQueue.FullSize >= DCQ_MAX - 1)
 	{
-		int old_depth, i;
-		fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
-		// Restore the DCQ locking level.  I *think* this is
-		// always 1, but...
-		TFB_BatchReset ();
-		old_depth = DCQ_locking_depth;
-		for (i = 0; i < old_depth; i++)
-			Unlock_DCQ ();
-		WaitCondVar (RenderingCond);
-		for (i = 0; i < old_depth; i++)
-			Lock_DCQ ();
-		fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
+		TFB_WaitForSpace (1);
 	}
 	DCQ[DrawCommandQueue.InsertionPoint] = *Command;
 	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1) % DCQ_MAX;
