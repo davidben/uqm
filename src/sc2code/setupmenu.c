@@ -505,6 +505,7 @@ void
 SetGlobalOptions (GLOBALOPTS *opts)
 {
 	int NewGfxFlags = GfxFlags;
+#if 0   // Conditioned out until graphics reinitialization works.
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BILINEAR;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPT;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPTADV;
@@ -527,6 +528,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		/* OPTVAL_NO_SCALE has no equivalent in gfxflags. */
 		break;
 	}
+#endif
 	if (opts->scanlines) {
 		NewGfxFlags |= TFB_GFXFLAGS_SCANLINES;
 	} else {
