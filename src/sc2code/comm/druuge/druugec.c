@@ -129,6 +129,7 @@ static LOCDATA druuge_desc =
 		8, 8, /* FrameRate */
 		10, 10, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static COUNT SlaveryCount = 0;

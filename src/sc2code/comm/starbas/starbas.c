@@ -130,6 +130,7 @@ static LOCDATA commander_desc =
 		12, 8, /* FrameRate */
 		14, 10, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static DWORD CurBulletinMask;

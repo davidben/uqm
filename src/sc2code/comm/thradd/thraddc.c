@@ -113,6 +113,7 @@ static LOCDATA thradd_desc =
 		8, 0, /* FrameRate */
 		10, 0, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static int

@@ -20,6 +20,9 @@
 #include "commglue.h"
 #include "libs/sound/trackplayer.h"
 #include <stdarg.h>
+#include <assert.h>
+
+int NPCNumberPhrase (int number, UNICODE **ptrack);
 
 void
 NPCPhrase (int index)
@@ -61,7 +64,14 @@ NPCPhrase (int index)
 			if (index < 0)
 			{
 				if (index > UNREASONABLE_NUMBER)
+				{
+					if (CommData.AlienNumberSpeech)
+					{
+						NPCNumberPhrase (-index, NULL);
+						return;
+					}
 					sprintf (numbuf, "%d", -index);
+				}
 				else
 				{
 					COUNT i;
@@ -95,6 +105,110 @@ NPCPhrase (int index)
 	}
 
 	SpliceTrack (pClip, pStr, pTimeStamp);
+}
+
+int
+NPCNumberPhrase (int number, UNICODE **ptrack)
+{
+#define MAX_NUMBER_TRACKS 20
+	NUMBER_SPEECH speech = CommData.AlienNumberSpeech;
+	COUNT i;
+	int queued = 0;
+	int toplevel = 0;
+	UNICODE *TrackNames[MAX_NUMBER_TRACKS];
+	UNICODE numbuf[32];
+
+	if (!speech)
+		return 0;
+
+	if (!ptrack)
+	{
+		toplevel = 1;
+		sprintf (numbuf, "%d", number);
+		ptrack = TrackNames;
+	}
+
+	for (i = 0; i < speech->NumDigits; ++i)
+	{
+		SPEECH_DIGIT* dig = speech->Digits + i;
+		int quot;
+
+		quot = number / dig->Divider;
+	
+		if (quot == 0)
+			continue;
+		quot -= dig->Subtrahend;
+		if (quot < 0)
+			continue;
+
+		if (dig->StrDigits)
+		{
+			COUNT index;
+
+			assert (quot < 10);
+			index = dig->StrDigits[quot];
+			if (index == 0)
+				continue;
+			index -= 1;
+
+			*ptrack++ = GetStringSoundClip (SetAbsStringTableIndex (
+					CommData.ConversationPhrases, index
+					));
+			queued++;
+		}
+		else
+		{
+			int ctracks = NPCNumberPhrase (quot, ptrack);
+			ptrack += ctracks;
+			queued += ctracks;
+		}
+
+		if (dig->Names != 0)
+		{
+			SPEECH_DIGITNAME* name;
+
+			for (name = dig->Names; name->Divider; ++name)
+			{
+				if (number % name->Divider <= name->MaxRemainder)
+				{
+					*ptrack++ = GetStringSoundClip (
+							SetAbsStringTableIndex (
+							CommData.ConversationPhrases,
+							(COUNT) (name->StrIndex - 1)
+							));
+					queued++;
+					break;
+				}
+			}
+		}
+		else if (dig->CommonNameIndex != 0)
+		{
+			*ptrack++ = GetStringSoundClip (SetAbsStringTableIndex (
+					CommData.ConversationPhrases,
+					(COUNT) (dig->CommonNameIndex - 1)
+					));
+			queued++;
+		}
+
+		number %= dig->Divider;
+	}
+
+	if (toplevel)
+	{
+		if (queued == 0)
+		{	// nothing queued, say "zero"
+			*ptrack++ = GetStringSoundClip (SetAbsStringTableIndex (
+					CommData.ConversationPhrases,
+					speech->Digits[speech->NumDigits - 1].StrDigits[0]
+					));
+			
+		}
+		*ptrack++ = NULL; // term
+		
+		SpliceMultiTrack (TrackNames, numbuf);
+	}
+	
+	return queued;
 }
 
 void

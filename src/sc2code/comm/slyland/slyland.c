@@ -85,6 +85,21 @@ static LOCDATA slylandro_desc =
 			(1 << 2) /* BlockMask */
 		},
 	},
+	{ /* AlienTransitionDesc - empty */
+		0, /* StartIndex */
+		0, /* NumFrames */
+		0, /* AnimFlags */
+		0, 0, /* FrameRate */
+		0, 0, /* RestartRate */
+	},
+	{ /* AlienTalkDesc - empty */
+		0, /* StartIndex */
+		0, /* NumFrames */
+		0, /* AnimFlags */
+		0, 0, /* FrameRate */
+		0, 0, /* RestartRate */
+	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static RESPONSE_REF threat = 0,

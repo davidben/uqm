@@ -49,6 +49,64 @@ typedef ANIMATION_DESC *PANIMATION_DESC;
 
 #define MAX_ANIMATIONS 20
 
+// general numbers-speech generator info
+// should accomodate most common base-10 languages
+// many languages require various plural forms
+// for digit names like "hundred"
+// possibly needs reworking for others
+typedef struct
+{
+	// an array of these structs must be in ascending remainder order
+	// terminate the array with Divider == 0
+
+	// digit divider, i.e. 1, 10, 100, etc.
+	int Divider;
+	// maximum remainder for this name
+	// name will be used if Number % Divider <= MaxRemainder
+	int MaxRemainder;
+	// string table index for this name
+	// i.e. "hundred" in English
+	COUNT StrIndex;
+} SPEECH_DIGITNAME;
+
+typedef struct
+{
+	// digit divider, i.e. 1, 10, 100, etc.
+	int Divider;
+	// digit sub, i.e. 10 for teens
+	// subtracted from the value to get an index into StrDigits
+	int Subtrahend;
+	// ptr to 10 indices for this digit
+	// index is string table ptr when > 0
+	//       is invalid (should not happen) or
+	//       is a a 'skip digit' indicator when == 0 
+	// StrDigits can be NULL, in which case
+	// the value is interpreted recursively
+	COUNT *StrDigits;
+	// digit Names, can be NULL, in which case
+	// CommonNameIndex is used
+	SPEECH_DIGITNAME *Names;
+	// common digit name string table index
+	// i.e. "hundred" in English
+	COUNT CommonNameIndex;
+} SPEECH_DIGIT;
+
+// this accomodates up to "billions" in english
+#define MAX_SPEECH_DIGITS 7
+
+typedef struct
+{
+	// slots used in Digits array
+	COUNT NumDigits;
+	// slots for each digit in numbers
+	// teens is exception
+	// 0-9, 10-19, ..20-90, ..100-900, etc.
+	SPEECH_DIGIT Digits[MAX_SPEECH_DIGITS];
+} NUMBER_SPEECH_DESC;
+typedef NUMBER_SPEECH_DESC *PNUMBER_SPEECH_DESC;
+#define NUMBER_SPEECH_DESCPTR PNUMBER_SPEECH_DESC
+typedef NUMBER_SPEECH_DESC *NUMBER_SPEECH;
+
 typedef struct
 {
 	void (*init_encounter_func) (void);
@@ -69,6 +127,7 @@ typedef struct
 	ANIMATION_DESC AlienTransitionDesc;
 	ANIMATION_DESC AlienTalkDesc;
 
+	NUMBER_SPEECH AlienNumberSpeech;
 	TEXT AlienTextTemplate;
 } LOCDATA;
 typedef LOCDATA *PLOCDATA;

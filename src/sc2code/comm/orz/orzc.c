@@ -148,6 +148,7 @@ static LOCDATA orz_desc =
 		8, 8, /* FrameRate */
 		10, ONE_SECOND * 3 / 8, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static void

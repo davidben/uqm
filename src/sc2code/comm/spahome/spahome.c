@@ -149,6 +149,21 @@ static LOCDATA spahome_desc =
 			(1 << 12), /* BlockMask */
 		},
 	},
+	{ /* AlienTransitionDesc - empty */
+		0, /* StartIndex */
+		0, /* NumFrames */
+		0, /* AnimFlags */
+		0, 0, /* FrameRate */
+		0, 0, /* RestartRate */
+	},
+	{ /* AlienTalkDesc - empty */
+		0, /* StartIndex */
+		0, /* NumFrames */
+		0, /* AnimFlags */
+		0, 0, /* FrameRate */
+		0, 0, /* RestartRate */
+	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static void

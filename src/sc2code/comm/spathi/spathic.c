@@ -101,7 +101,6 @@ static LOCDATA spathi_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
-#ifdef NEVER
 	{
 		0, /* StartIndex */
 		0, /* NumFrames */
@@ -109,14 +108,24 @@ static LOCDATA spathi_desc =
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
 	},
-	{
+#ifdef NEVER
+	{ /* AlienTalkDesc */
 		29, /* StartIndex */
 		5, /* NumFrames */
 		0, /* AnimFlags */
 		8, 0, /* FrameRate */
 		10, 0, /* RestartRate */
 	},
+#else
+	{ /* AlienTalkDesc - empty */
+		0, /* StartIndex */
+		0, /* NumFrames */
+		0, /* AnimFlags */
+		0, 0, /* FrameRate */
+		0, 0, /* RestartRate */
+	},
 #endif /* NEVER */
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static void

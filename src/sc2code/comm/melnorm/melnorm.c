@@ -33,6 +33,8 @@ void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
 #define NUM_ALIEN_RACE_ITEMS 16
 #define NUM_TECH_ITEMS 13
 
+static NUMBER_SPEECH_DESC melnorme_numbers_english;
+
 static LOCDATA melnorme_desc =
 {
 	NULL_PTR, /* init_encounter_func */
@@ -92,7 +94,93 @@ static LOCDATA melnorme_desc =
 		8, 0, /* FrameRate */
 		10, 0, /* RestartRate */
 	},
+	&melnorme_numbers_english, /* AlienNumberSpeech - default */
 };
+
+static COUNT melnorme_digit_names[] =
+{
+	ENUMERATE_ZERO,
+	ENUMERATE_ONE,
+	ENUMERATE_TWO,
+	ENUMERATE_THREE,
+	ENUMERATE_FOUR,
+	ENUMERATE_FIVE,
+	ENUMERATE_SIX,
+	ENUMERATE_SEVEN,
+	ENUMERATE_EIGHT,
+	ENUMERATE_NINE
+};
+
+static COUNT melnorme_teen_names[] =
+{
+	ENUMERATE_TEN,
+	ENUMERATE_ELEVEN,
+	ENUMERATE_TWELVE,
+	ENUMERATE_THIRTEEN,
+	ENUMERATE_FOURTEEN,
+	ENUMERATE_FIFTEEN,
+	ENUMERATE_SIXTEEN,
+	ENUMERATE_SEVENTEEN,
+	ENUMERATE_EIGHTEEN,
+	ENUMERATE_NINETEEN
+};
+
+static COUNT melnorme_tens_names[] =
+{
+	0, /* invalid */
+	0, /* skip digit */
+	ENUMERATE_TWENTY,
+	ENUMERATE_THIRTY,
+	ENUMERATE_FOURTY,
+	ENUMERATE_FIFTY,
+	ENUMERATE_SIXTY,
+	ENUMERATE_SEVENTY,
+	ENUMERATE_EIGHTY,
+	ENUMERATE_NINETY
+};
+
+static NUMBER_SPEECH_DESC melnorme_numbers_english =
+{
+	5, /* NumDigits */
+	{
+		{ /* 1000-999999 */
+			1000, /* Divider */
+			0, /* Subtrahend */
+			NULL, /* StrDigits - recurse */
+			NULL, /* Names - not used */
+			ENUMERATE_THOUSAND /* CommonIndex */
+		},
+		{ /* 100-999 */
+			100, /* Divider */
+			0, /* Subtrahend */
+			melnorme_digit_names, /* StrDigits */
+			NULL, /* Names - not used */
+			ENUMERATE_HUNDRED /* CommonIndex */
+		},
+		{ /* 20-99 */
+			10, /* Divider */
+			0, /* Subtrahend */
+			melnorme_tens_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		},
+		{ /* 10-19 */
+			1, /* Divider */
+			10, /* Subtrahend */
+			melnorme_teen_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		},
+		{ /* 0-9 */
+			1, /* Divider */
+			0, /* Subtrahend */
+			melnorme_digit_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		}
+	}
+};
+
 
 static void DoFirstMeeting (RESPONSE_REF R);
 
@@ -1047,6 +1135,7 @@ DoSell (RESPONSE_REF R)
 	BYTE num_new_rainbows;
 	UWORD rainbow_mask;
 	SIZE added_credit;
+	int what_to_sell_queued = 0;
 
 	rainbow_mask = MAKE_WORD (
 			GET_GAME_STATE (RAINBOW_WORLD0),
@@ -1074,7 +1163,13 @@ DoSell (RESPONSE_REF R)
 			NPCPhrase (SOLD_LIFE_DATA2);
 			NPCPhrase (-(int)added_credit);
 			NPCPhrase (SOLD_LIFE_DATA3);
-			AlienTalkSegue ((COUNT)~0);
+			// queue WHAT_TO_SELL before talk-segue
+			if (num_new_rainbows)
+			{
+				NPCPhrase (WHAT_TO_SELL);
+				what_to_sell_queued = 1;
+			}
+			AlienTalkSegue (1);
 
 			DrawCargoStrings ((BYTE)~0, (BYTE)~0);
 			SleepThread (ONE_SECOND / 2);
@@ -1129,7 +1224,8 @@ DoSell (RESPONSE_REF R)
 
 	if (GLOBAL_SIS (TotalBioMass) || num_new_rainbows)
 	{
-		NPCPhrase (WHAT_TO_SELL);
+		if (!what_to_sell_queued)
+			NPCPhrase (WHAT_TO_SELL);
 
 		if (GLOBAL_SIS (TotalBioMass))
 			Response (sell_life_data, DoSell);

@@ -89,6 +89,7 @@ static LOCDATA mycon_desc =
 		8, 0, /* FrameRate */
 		10, 0, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static BYTE MadeChoice = 0;

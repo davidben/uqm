@@ -133,6 +133,7 @@ static LOCDATA shofixti_desc =
 		6, 0, /* FrameRate */
 		8, 0, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static RESPONSE_REF shofixti_name;

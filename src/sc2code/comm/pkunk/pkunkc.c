@@ -77,6 +77,7 @@ static LOCDATA pkunk_desc =
 		8, 20, /* FrameRate */
 		10, ONE_SECOND / 2, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static BOOLEAN

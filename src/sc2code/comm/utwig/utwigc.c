@@ -166,6 +166,7 @@ static LOCDATA utwig_desc =
 		6, 6, /* FrameRate */
 		14, ONE_SECOND / 2, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static void

@@ -93,6 +93,7 @@ static LOCDATA chmmr_desc =
 		1, 0, /* FrameRate */
 		1, 0, /* RestartRate */
 	},
+	NULL_PTR, /* AlienNumberSpeech - none */
 };
 
 static void
