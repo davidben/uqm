@@ -41,7 +41,7 @@ typedef struct
 } TFB_SoundTag;
 
 // forward-declare
-typedef struct tfb_soundsample;
+struct tfb_soundsample;
 
 typedef struct tfb_soundcallbacks
 {
