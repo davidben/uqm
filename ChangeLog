@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Alien dialog fixes: Talking Pet, Utwig, Mycon, Syreen -fOSSiL
 - Updated all game, menu, melee and weapon sounds to original 3DO
   ones (extracted using various tools); some sounds were simply
   wrong: menu - "device success", weapons - arilou, slylandro, thraddash;
