@@ -609,7 +609,7 @@ xform_PLUT_step (SIZE TDelta)
 			c0 += (SIZE)((c1 - c0) * f);
 			val = (val << 5) | (c0 & 0x1F);
 
-			*pOldCMap++;
+			pOldCMap++;
 			*pCurCMap++ = UQM_SwapBE32 (val);
 		}
 		ColorChange = TRUE;
