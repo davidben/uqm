@@ -29,6 +29,8 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "bbox.h"
+#include "port.h"
+#include "libs/uio.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
@@ -135,7 +137,7 @@ TFB_ProcessEvents ()
 	if (ImmediateInputState.debug)
 	{
 		FlushInput ();
-		fprintf (stderr, "This would enter debug mode if we had one yet, but we don't.\n");
+		uio_debugInteractive(stdin, stdout, stderr);
 	}
 }
 
