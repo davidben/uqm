@@ -79,13 +79,13 @@ Introduction (void)
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap (
 			(COLORMAPPTR) xform_buf, ONE_SECOND / 120));
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;
 	s.frame = CaptureDrawable (LoadGraphic (TITLE_ANIM));
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);

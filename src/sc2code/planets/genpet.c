@@ -85,7 +85,7 @@ ZapToUrquanEncounter (void)
 		dx = (SIZE)square_root ((long)dx * dx + (long)dy * dy)
 				+ (FUEL_TANK_SCALE >> 1);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, -dx, 0);
 		if (GLOBAL_SIS (FuelOnBoard) < 5 * FUEL_TANK_SCALE)
 		{
@@ -95,7 +95,7 @@ ZapToUrquanEncounter (void)
 		}
 		DrawSISMessage (NULL_PTR);
 		DrawHyperCoords (EncounterPtr->SD.star_pt);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		UnlockEncounter (hEncounter);
 	}

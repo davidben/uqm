@@ -172,9 +172,9 @@ GenerateMycon (BYTE control)
 								break;
 
 							SET_GAME_STATE (SUN_DEVICE_UNGUARDED, 1);
-							LockCrossThreadMutex (GraphicsLock);
+							LockMutex (GraphicsLock);
 							RepairSISBorder ();
-							UnlockCrossThreadMutex (GraphicsLock);
+							UnlockMutex (GraphicsLock);
 						}
 					}
 				}

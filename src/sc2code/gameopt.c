@@ -163,9 +163,9 @@ FeedbackSetting (BYTE which_setting)
 			break;
 	}
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 static void 
 FeedbackQuit (BYTE which_setting)
@@ -182,9 +182,9 @@ FeedbackQuit (BYTE which_setting)
 			break;
 	}
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN DoSettings (PMENU_STATE pMS);
@@ -199,7 +199,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	FONT Font;
 	static BOOLEAN DoNaming (PMENU_STATE pMS);
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	rel_index = (COUNT)(which_string - pMS->first_item.y);
 
@@ -276,7 +276,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		TextRect (&lf, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			return (FALSE);
 		}
 
@@ -310,7 +310,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		SetFlashRect (&r, (FRAME)0);
 	}
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	return (TRUE);
 }
 
@@ -436,9 +436,9 @@ DoNaming (PMENU_STATE pMS)
 		pMS->CurString = (STRING)&GD[0];
 		DrawDescriptionString (pMS, pMS->CurState, 1);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		EnableCharacterMode ();
 		DoInput (pMS, TRUE);
@@ -513,9 +513,9 @@ DoSettings (PMENU_STATE pMS)
 			|| (CurrentMenuState.select
 			&& pMS->CurState == EXIT_MENU_SETTING))
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL_PTR);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		pMS->CurState = SETTINGS;
 		pMS->InputFunc = DoGameOptions;
@@ -582,9 +582,9 @@ DoQuitMenu (PMENU_STATE pMS)
 			|| (CurrentMenuState.select
 			&& pMS->CurState == NO_QUIT_MENU))
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL_PTR);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		pMS->CurState = QUIT_GAME;
 		pMS->InputFunc = DoGameOptions;
@@ -858,9 +858,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			InitLander ((unsigned char)(pSD->Flags | OVERRIDE_LANDER_FLAGS));
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
@@ -1002,7 +1002,7 @@ DoPickGame (PMENU_STATE pMS)
 			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 41);
 		}
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 Restart:
@@ -1037,7 +1037,7 @@ Restart:
 		prev_save = pMS->CurState;
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
 		{
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			if (pMS->delta_item == SAVE_GAME)
 			{
 				STAMP MsgStamp;
@@ -1056,13 +1056,13 @@ Restart:
 					SetFlashRect (NULL_PTR, (FRAME)0);
 					DrawStamp (&MsgStamp);
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					
 					SaveProblem ();
 
 					pMS->Initialized = FALSE;
 					NewState = pMS->CurState;
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					BatchGraphics ();
 					goto Restart;
 				}
@@ -1088,7 +1088,7 @@ Restart:
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
 			}
 			SetFlashRect (NULL_PTR, (FRAME)0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			pMS->ModuleFrame = 0;
 			pMS->CurState = (BYTE)pMS->delta_item;
@@ -1137,7 +1137,7 @@ Restart:
 			TEXT t;
 			BYTE i, SHIFT;
 			UNICODE buf[80],buf2[15];
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 
 			BatchGraphics ();
 			if (((SUMMARY_DESC *)pMS->CurString)[NewState].year_index != 0)
@@ -1245,7 +1245,7 @@ ChangeGameSelection:
 				UnbatchGraphics ();
 			}
 			SetFlashRect (0, (FRAME)0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 
@@ -1268,7 +1268,7 @@ PickGame (PMENU_STATE pMS)
 		TaskSwitch ();
 	}
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 
 	DlgStamp.origin.x = 0;
@@ -1284,11 +1284,11 @@ PickGame (PMENU_STATE pMS)
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPickGame;
 	pMS->CurString = (STRING)&desc_array[0];
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	DoInput (pMS, TRUE);
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	pMS->Initialized = -1;
 	pMS->InputFunc = DoGameOptions;
 
@@ -1340,7 +1340,7 @@ PickGame (PMENU_STATE pMS)
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
 	SetContext (OldContext);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	return (retval);
 }

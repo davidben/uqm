@@ -1418,7 +1418,7 @@ rotate_planet_task (void *data)
 			// The PauseRotate needs to be placed after the lock,
 			// to guarantee that PauseRotate doesn't change while waiting
 			// to acquire the graphics lock
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			if (*(volatile UBYTE *)&pSS->PauseRotate !=1
 //			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -1441,7 +1441,7 @@ rotate_planet_task (void *data)
 			} else
 				view_index++;
 
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			// If this frame hasn't been generted, generate it
 			if (! pSolarSysState->Orbit.isPFADefined[x]) {
 				RenderLevelMasks (x);

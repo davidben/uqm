@@ -348,7 +348,7 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-	GraphicsLock = CreateCrossThreadMutex ("Graphics");
+	GraphicsLock = CreateMutex (/*"Graphics"*/);
 	RenderingCond = CreateCondVar ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);

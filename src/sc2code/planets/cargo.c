@@ -69,7 +69,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 	CONTEXT OldContext;
 	UNICODE rt_amount_buf[10];
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	OldContext = SetContext (StatusContext);
 	SetContextFont (TinyFont);
@@ -272,7 +272,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 	UnbatchGraphics ();
 	SetContext (OldContext);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN
@@ -299,9 +299,9 @@ DoDiscardCargo (PMENU_STATE pMS)
 	}
 	else if (cancel)
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		ClearSISRect (DRAW_SIS_DISPLAY);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		return (FALSE);
 	}
@@ -312,10 +312,10 @@ DoDiscardCargo (PMENU_STATE pMS)
 			--GLOBAL_SIS (ElementAmounts[pMS->CurState - 1]);
 			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(pMS->CurState - 1));
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			--GLOBAL_SIS (TotalElementMass);
 			ShowRemainingCapacity ();
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 	else
@@ -336,9 +336,9 @@ DoDiscardCargo (PMENU_STATE pMS)
 		{
 SelectCargo:
 			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawStatusMessage (GAME_STRING (NewState - 1 + (CARGO_STRING_BASE + 2)));
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			pMS->CurState = NewState;
 		}
@@ -354,9 +354,9 @@ Cargo (PMENU_STATE pMS)
 	--pMS->Initialized;
 	pMS->CurState = 1;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	DrawStatusMessage ((UNICODE *)~0);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	DoInput ((PVOID)pMS, TRUE);
 

@@ -119,7 +119,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 		TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
 		SetContext (OldContext);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		UpdateInputState ();
 		PressState = AnyButtonPress (TRUE);
@@ -142,7 +142,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			ConfirmExit ();
 		*/
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 
 		return (0);
 	}
@@ -243,7 +243,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				col = new_col;
 
 				PlaySoundEffect (MenuSounds, 0, NotPositional (), NULL, 0);
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 ChangeSelection:
 				flash_rect.corner.x = PICK_X_OFFS
 						+ ((ICON_WIDTH + 2) * col);
@@ -293,12 +293,12 @@ ChangeSelection:
 						UnlockStarShip (&race_q[which_player], hBattleShip);
 					}
 				}
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 		}
 	}
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetFlashRect (NULL_PTR, (FRAME)0);
 	
 	if (hBattleShip == 0)

@@ -322,9 +322,9 @@ LoadHyperspace (void)
 	{
 		if (LOBYTE (LastActivity) == 0)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			DrawSISFrame ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 		}
 		else
 		{
@@ -360,9 +360,9 @@ LoadHyperspace (void)
 BOOLEAN
 FreeHyperspace (void)
 {
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	SuspendGameClock ();
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	{
 		FRAME F;
@@ -1601,7 +1601,7 @@ UnbatchGraphics ();
 	OldContext = SetContext (SpaceContext);
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	SuspendGameClock ();
 
 	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
@@ -1610,13 +1610,13 @@ UnbatchGraphics ();
 	MenuState.CurState = STARMAP + 1;
 
 	DrawMenuStateStrings (PM_STARMAP, STARMAP);
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetFlashRect ((PRECT)~0L, (FRAME)0);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	DoInput ((PVOID)&MenuState, TRUE);
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetFlashRect (NULL_PTR, (FRAME)0);
 
 	SetContext (SpaceContext);
@@ -1624,10 +1624,10 @@ UnbatchGraphics ();
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
 		ClearSISRect (CLEAR_SIS_RADAR);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		WaitForNoInput (ONE_SECOND / 2);
 		ResumeGameClock ();
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 	}
 
 	SetContextBackGroundColor (OldColor);

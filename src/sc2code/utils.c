@@ -159,7 +159,7 @@ PauseGame (void)
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	OldHot = SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
@@ -174,9 +174,9 @@ PauseGame (void)
 	// Releasing the lock lets the rotate_planet_task
 	// draw a frame.  PauseRotate can still allow one more frame
 	// to be drawn, so it is safer to just not release the lock
-	//UnlockCrossThreadMutex (GraphicsLock);
+	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
-	//LockCrossThreadMutex (GraphicsLock);
+	//LockMutex (GraphicsLock);
 
 	while (ImmediateInputState.pause)
 		TaskSwitch ();
@@ -208,7 +208,7 @@ PauseGame (void)
 			do_subtitles ((void *)~0);
 	}
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	TaskSwitch ();
 	GLOBAL (CurrentActivity) &= ~CHECK_PAUSE;

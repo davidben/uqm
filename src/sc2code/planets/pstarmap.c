@@ -73,7 +73,7 @@ flash_cursor_func(void *data)
 		CONTEXT OldContext;
 
 		TimeIn = GetTimeCounter ();
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 
 		if (c == 0x00 || c == 0x1A)
@@ -86,7 +86,7 @@ flash_cursor_func(void *data)
 		SetContextForeGroundColor (OldColor);
 
 		SetContext (OldContext);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + (ONE_SECOND >> 4));
 	}
 	FinishTask (task);
@@ -254,7 +254,7 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	}
 	else
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		draw_cursor = TRUE;
 	}
 
@@ -528,7 +528,7 @@ wprintf ("%s\n", buf);
 	}
 
 	if (draw_cursor)
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -558,9 +558,9 @@ EraseCursor (COORD curs_x, COORD curs_y)
 #else /* NEW */
 	r.extent.height += r.corner.y & 1;
 	r.corner.y &= ~1;
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	DrawStarMap (0, &r);
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 #endif /* OLD */
 }
 
@@ -730,11 +730,11 @@ DoMoveCursor (PMENU_STATE pMS)
 			}
 			else
 			{
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				EraseCursor (pt.x, pt.y);
 				// ClearDrawable ();
 				DrawCursor (s.origin.x, s.origin.y);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 
 UpdateCursorInfo:
@@ -798,7 +798,7 @@ UpdateCursorInfo:
 					fuel_required = 0;
 				else
 					fuel_required = square_root (f) + (FUEL_TANK_SCALE >> 1);
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				DrawHyperCoords (pMenuState->first_item);
 				if (last_buf == (UNICODE) ~0
 						|| (buf[0] && !last_buf) || (!buf[0] && last_buf))
@@ -811,7 +811,7 @@ UpdateCursorInfo:
 						fuel_required / FUEL_TANK_SCALE,
 						(fuel_required % FUEL_TANK_SCALE) / 10);
 				DrawStatusMessage (buf);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 		}
 	}
@@ -1106,7 +1106,7 @@ DoStarMap (void)
 	if (MenuState.first_item.x == ~0 && MenuState.first_item.y == ~0)
 		MenuState.first_item = universe;
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	TaskSwitch ();
 
 	MenuState.InputFunc = DoMoveCursor;
@@ -1117,7 +1117,7 @@ DoStarMap (void)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		UpdateMap ();
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	
 	DrawStarMap (0, (PRECT)-1);
 	transition_pending = FALSE;
@@ -1132,7 +1132,7 @@ DoStarMap (void)
 			UNIVERSE_TO_DISPY (pMenuState->first_item.y)
 			);
 	UnbatchGraphics ();
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	OldMenuSounds = MenuSounds;
 	MenuSounds = 0;
@@ -1142,7 +1142,7 @@ DoStarMap (void)
 
 	pMenuState = 0;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	DrawHyperCoords (universe);
 	DrawSISMessage (NULL_PTR);
@@ -1166,7 +1166,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 	else
 	{
 		BOOLEAN select = CurrentMenuState.select;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		while (*(volatile BYTE *)&pMS->CurState == 0
 				&& (*(volatile SIZE *)&pMS->Initialized & 1)
 				&& !(GLOBAL (CurrentActivity)
@@ -1174,11 +1174,11 @@ DoFlagshipCommands (PMENU_STATE pMS)
 				| CHECK_ABORT | CHECK_LOAD))
 				&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			TaskSwitch ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 		}
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		if (pMS->CurState)
 		{
@@ -1199,9 +1199,9 @@ DoFlagshipCommands (PMENU_STATE pMS)
 				{
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
-						LockCrossThreadMutex (GraphicsLock);
+						LockMutex (GraphicsLock);
 						SetFlashRect (NULL_PTR, (FRAME)0);
-						UnlockCrossThreadMutex (GraphicsLock);
+						UnlockMutex (GraphicsLock);
 					}
 
 					switch (NewState - 1)
@@ -1247,7 +1247,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 						{
 							BOOLEAN AutoPilotSet;
 
-							LockCrossThreadMutex (GraphicsLock);
+							LockMutex (GraphicsLock);
 							if (++pMS->Initialized > 3) {
 								pSolarSysState->PauseRotate = 1;
 								RepairSISBorder ();
@@ -1258,7 +1258,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
 									|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 							{
-								UnlockCrossThreadMutex (GraphicsLock);
+								UnlockMutex (GraphicsLock);
 								return (FALSE);
 							}
 							else if (pMS->Initialized <= 3)
@@ -1266,16 +1266,16 @@ DoFlagshipCommands (PMENU_STATE pMS)
 								ZoomSystem ();
 								--pMS->Initialized;
 							}
-							UnlockCrossThreadMutex (GraphicsLock);
+							UnlockMutex (GraphicsLock);
 
 							if (!AutoPilotSet && pMS->Initialized >= 3)
 							{
 								LoadPlanet (FALSE);
 								--pMS->Initialized;
 								pSolarSysState->PauseRotate = 0;
-								LockCrossThreadMutex (GraphicsLock);
+								LockMutex (GraphicsLock);
 								SetFlashRect ((PRECT)~0L, (FRAME)0);
-								UnlockCrossThreadMutex (GraphicsLock);
+								UnlockMutex (GraphicsLock);
 								break;
 							}
 						}
@@ -1291,17 +1291,17 @@ DoFlagshipCommands (PMENU_STATE pMS)
 							else if (pMS->flash_task)
 							{
 								FreePlanet ();
-								LockCrossThreadMutex (GraphicsLock);
+								LockMutex (GraphicsLock);
 								LoadSolarSys ();
 								ValidateOrbits ();
 								ZoomSystem ();
-								UnlockCrossThreadMutex (GraphicsLock);
+								UnlockMutex (GraphicsLock);
 							}
 
-							LockCrossThreadMutex (GraphicsLock);
+							LockMutex (GraphicsLock);
 							pMS->CurState = 0;
 							FlushInput ();
-							UnlockCrossThreadMutex (GraphicsLock);
+							UnlockMutex (GraphicsLock);
 							break;
 					}
 				
@@ -1309,9 +1309,9 @@ DoFlagshipCommands (PMENU_STATE pMS)
 						;
 					else if (pMS->CurState)
 					{
-						LockCrossThreadMutex (GraphicsLock);
+						LockMutex (GraphicsLock);
 						SetFlashRect ((PRECT)~0L, (FRAME)0);
-						UnlockCrossThreadMutex (GraphicsLock);
+						UnlockMutex (GraphicsLock);
 						if (select)
 						{
 							if (optWhichMenu != OPT_PC)
@@ -1322,9 +1322,9 @@ DoFlagshipCommands (PMENU_STATE pMS)
 					}
 					else
 					{
-						LockCrossThreadMutex (GraphicsLock);
+						LockMutex (GraphicsLock);
 						SetFlashRect (NULL_PTR, (FRAME)0);
-						UnlockCrossThreadMutex (GraphicsLock);
+						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 					}
 				}

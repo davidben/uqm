@@ -339,18 +339,18 @@ FreeSolarSys (void)
 		{			
 			ConcludeTask (pSolarSysState->MenuState.flash_task);
 			pSolarSysState->MenuState.flash_task = 0;
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{
 				extern void SaveFlagshipState (void);
 
 				SaveFlagshipState ();
 			}
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	SetContext (SpaceContext);
 
@@ -358,7 +358,7 @@ FreeSolarSys (void)
 
 //    FreeIPData ();
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1024,7 +1024,7 @@ int IPtask_func(void* data)
 		RECT r;
 
 		InnerSystem = FALSE;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		while ((pSolarSysState->MenuState.Initialized > 1
 				|| (GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | END_INTERPLANETARY
@@ -1033,15 +1033,15 @@ int IPtask_func(void* data)
 				&& !Task_ReadState (task, TASK_EXIT))
 		{
 			select = cancel = FALSE;
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			TaskSwitch ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			NextTime = GetTimeCounter ();
 		}
 
 		if (Task_ReadState (task, TASK_EXIT))
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			break;
 		}
 
@@ -1163,7 +1163,7 @@ TheMess:
 		}
 
 		SetContext (OldContext);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		if (Task_ReadState (task, TASK_EXIT))
 		{
@@ -1190,20 +1190,20 @@ TheMess:
 			MenuTransition = DEBOUNCE_DELAY;
 			SuspendGameClock ();
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawStatusMessage (NULL_PTR);
 			if (LastActivity == CHECK_LOAD)
 				pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
 			else
 			{
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 				DrawMenuStateStrings (PM_STARMAP, STARMAP);
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				pSolarSysState->MenuState.CurState = STARMAP + 1;
 			}
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 			FlushInput ();
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 	FinishTask (task);
@@ -1213,10 +1213,10 @@ TheMess:
 static void
 DrawInnerSystem (void)
 {
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	DrawSISTitle (GLOBAL_SIS (PlanetName));
 	DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 
 BOOLEAN
@@ -1276,7 +1276,7 @@ StartGroups:
 		{
 			DrawMenuStateStrings (PM_STARMAP, -(PM_NAVIGATE - PM_SCAN));
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			RepairSISBorder ();
 
 			InitDisplayList ();
@@ -1293,7 +1293,7 @@ StartGroups:
 			pSolarSysState->MenuState.flash_task =
 					AssignTask (IPtask_func, 6144,
 					"flash solar system menu");
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			if (!PLRPlaying ((MUSIC_REF)~0) && LastActivity != CHECK_LOAD)
 			{
@@ -1308,14 +1308,14 @@ StartGroups:
 						draw_sys_flags &= ~UNBATCH_SYS;
 						UnbatchGraphics ();
 					}
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					while (pSolarSysState->SunDesc[0].radius == (MAX_ZOOM_RADIUS << 1))
 					{
-						UnlockCrossThreadMutex (GraphicsLock);
+						UnlockMutex (GraphicsLock);
 						TaskSwitch ();
-						LockCrossThreadMutex (GraphicsLock);
+						LockMutex (GraphicsLock);
 					}
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 				}
 			}
@@ -1368,11 +1368,11 @@ StartGroups:
 		else
 		{
 			DrawMenuStateStrings (PM_SCAN, SCAN);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			pSolarSysState->MenuState.CurState = SCAN + 1;
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 			FlushInput ();
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 }
@@ -1383,11 +1383,11 @@ InitSolarSys (void)
 	BOOLEAN InnerSystem;
 	BOOLEAN Reentry;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	LoadIPData ();
 	LoadLanderData ();
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	pSolarSysState->MenuState.InputFunc = DoFlagshipCommands;
 
@@ -1440,9 +1440,9 @@ InitSolarSys (void)
 			}
 			else
 			{
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				ClearSISRect (DRAW_SIS_DISPLAY);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 
 				LastActivity &= ~CHECK_LOAD;
 			}
@@ -1451,12 +1451,12 @@ InitSolarSys (void)
 		// Enabled graphics synchronization again, as in 3DO code originally.
 		// This should fix the 'entering star' lockup/messed graphics problems.
 		// 2002/11/30 by Mika
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawSISMessage (NULL_PTR);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);
 		SetContextBackGroundColor (BLACK_COLOR);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		if (InnerSystem)
 		{
@@ -1473,9 +1473,9 @@ InitSolarSys (void)
 		}
 		else
 		{
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawHyperCoords (CurStarDescPtr->star_pt); /* Adjust position */
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 					/* force a redraw */
 			pSolarSysState->SunDesc[0].radius = MAX_ZOOM_RADIUS << 1;

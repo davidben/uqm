@@ -35,7 +35,7 @@ flash_ship_task(void *data)
 		COLOR OldColor;
 		CONTEXT OldContext;
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		s.origin = pMenuState->first_item;
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 				&GLOBAL (built_ship_q),
@@ -55,7 +55,7 @@ flash_ship_task(void *data)
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);
 		SetContext (OldContext);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + ONE_SECOND / 15);
 		TimeIn = GetTimeCounter ();
 	}
@@ -212,9 +212,9 @@ DoModifyRoster (PMENU_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		pMS->CurFrame = 0;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		RosterCleanup (pMS);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		return (FALSE);
 	}
@@ -231,24 +231,24 @@ DoModifyRoster (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 
 		pMS->CurState = NewState = 0;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetContext (StatusContext);
 		goto SelectSupport;
 	}
 	else if (cancel && !(pMS->CurState & SHIP_TOGGLE))
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		RosterCleanup (pMS);
 		pMS->CurFrame = 0;
 		DrawStatusMessage (NULL_PTR);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		return (FALSE);
 	}
 	else if (select || cancel)
 	{
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		pMS->CurState ^= SHIP_TOGGLE;
 		if (!(pMS->CurState & SHIP_TOGGLE))
 			SetFlashRect (NULL_PTR, (FRAME)0);
@@ -263,7 +263,7 @@ DoModifyRoster (PMENU_STATE pMS)
 			SetContext (StatusContext);
 			SetFlashRect (&r, (FRAME)0);
 		}
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (pMS->CurState & SHIP_TOGGLE)
 	{
@@ -272,9 +272,9 @@ DoModifyRoster (PMENU_STATE pMS)
 			sy = -1;
 			if (GLOBAL_SIS (CrewEnlisted))
 			{
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				DeltaSupportCrew (1);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 		}
 		else if (down)
@@ -283,9 +283,9 @@ DoModifyRoster (PMENU_STATE pMS)
 			if (GLOBAL_SIS (CrewEnlisted)
 					< GetCPodCapacity (NULL_PTR))
 			{
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				DeltaSupportCrew (-1);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 		}
 	}
@@ -335,7 +335,7 @@ DoModifyRoster (PMENU_STATE pMS)
 
 		if (NewState != pMS->CurState)
 		{
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			SetContext (StatusContext);
 			s.origin = pMS->first_item;
 			StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
@@ -354,7 +354,7 @@ SelectSupport:
 			pMS->CurFrame = (FRAME)MatchSupportShip (pMS);
 
 			DeltaSupportCrew (0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			pMS->CurState = NewState;
 		}

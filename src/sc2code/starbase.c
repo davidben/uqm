@@ -256,12 +256,12 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 	{
 		//CONTEXT OldContext;
 		
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawStamp (&s);
 		s.frame = IncFrameIndex (s.frame);
 		if (s.frame == pMenuState->CurFrame)
 			s.frame = IncFrameIndex (s.frame);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		
 		SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
 		TimeIn = GetTimeCounter ();
@@ -287,7 +287,7 @@ DoStarBase (PMENU_STATE pMS)
 		LastActivity &= ~CHECK_LOAD;
 		pMS->InputFunc = DoStarBase;
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 
 		if (pMS->hMusic)
@@ -306,7 +306,7 @@ DoStarBase (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		SetContext (ScreenContext);
 
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		s.origin.x = s.origin.y = 0;
 s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
@@ -314,7 +314,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 		pMS->CurFrame = s.frame;
 		pMS->hMusic = LoadMusicInstance (STARBASE_MUSIC);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		SetContextBackGroundColor (BLACK_COLOR);
@@ -334,7 +334,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 		UnbatchGraphics ();
 		pMS->flash_task = AssignTask (rotate_starbase, 4096,
 				"rotate starbase");
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (CurrentMenuState.select
 			|| GET_GAME_STATE (MOONBASE_ON_SHIP)
@@ -410,9 +410,9 @@ ExitStarBase:
 
 		if (NewState != pMS->CurState)
 		{
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawBaseStateStrings (pMS->CurState, NewState);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			pMS->CurState = NewState;
 		}
 	}

@@ -44,7 +44,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoPickBattleShip;
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 
 		goto ChangeSelection;
 	}
@@ -84,7 +84,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 			else if (new_row == NUM_PICK_SHIP_ROWS)
 				new_row = 0;
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 
 #ifdef NEVER
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x1D));
@@ -211,7 +211,7 @@ ChangeSelection:
 
 			SetFlashRect ((RECT *)0, (FRAME)0);
 			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 	}
 
@@ -247,11 +247,11 @@ OldContext = SetContext (SpaceContext);
 		MenuState.flash_rect1.corner = pick_r.corner;
 		MenuState.flash_rect1.extent.width = 0;
 
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		pMenuState = &MenuState;
 		DoInput ((PVOID)&MenuState, TRUE);
 		pMenuState = 0;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 
 		SetFlashRect (NULL_PTR, (FRAME)0);
 

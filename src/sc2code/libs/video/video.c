@@ -83,7 +83,7 @@ VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN uninit)
 
 	TFB_FadeClearScreen ();
 	FlushInput ();
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	// play video in the center of the screen
 	if (TFB_PlayVideo (VidRef, (SCREEN_WIDTH - vid->w) / 2,
@@ -96,7 +96,7 @@ VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN uninit)
 	{
 		ret = NO_FMV;
 	}
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	/* dodge compiler warnings */
 	(void) loopname;

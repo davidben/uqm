@@ -69,12 +69,12 @@ TFB_FadeClearScreen ()
 			(COLORMAPPTR) xform_buf, ONE_SECOND / 2));
 	
 	// paint black rect over screen	
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextForeGroundColor (BUILD_COLOR (
 			MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
 	DrawFilledRectangle (&r);	
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	// fade in black rect instantly
 	xform_buf[0] = FadeAllToColor;
@@ -152,12 +152,12 @@ ac_video_play_task (void* data)
 		// draw the frame
 		if (ret > 0)
 		{
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			SetContext (ScreenContext);
 			TFB_DrawScreen_Image (vid->frame,
 					vid->dst_rect.corner.x, vid->dst_rect.corner.y,
 					GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			FlushGraphics (); // needed to prevent half-frame updates
 		}
 
@@ -209,12 +209,12 @@ video_play_task (void* data)
 		SleepThreadUntil (vid->frame_time);
 		vid->cur_frame = vid->decoder->cur_frame;
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetContext (ScreenContext);
 		TFB_DrawScreen_Image (vid->frame,
 				vid->dst_rect.corner.x, vid->dst_rect.corner.y,
 				GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates
 
 		ret = VideoDecoder_Decode (vid->decoder);

@@ -89,7 +89,7 @@ int clock_task_func(void* data)
 				}
 			}
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawStatusMessage (NULL_PTR);
 			{
 				HEVENT hEvent;
@@ -114,7 +114,7 @@ int clock_task_func(void* data)
 					FreeEvent (hEvent);
 				}
 			}
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 
 		OnAutoPilot = (BOOLEAN)(
@@ -126,7 +126,7 @@ int clock_task_func(void* data)
 		{
 			DWORD num_ticks;
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			num_ticks = GetTimeCounter () - LastTime;
 			if (!OnAutoPilot)
 			{
@@ -159,7 +159,7 @@ int clock_task_func(void* data)
 				cycle_index = (cycle_index + 1) % NUM_CYCLES;
 				delay_count = NUM_DELAYS;
 			}
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			LastPilot = OnAutoPilot;
 			LastTime += num_ticks;

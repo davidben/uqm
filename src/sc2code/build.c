@@ -205,10 +205,10 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 								
 								if (ShipRemoved)
 								{
-									LockCrossThreadMutex (GraphicsLock);
+									LockMutex (GraphicsLock);
 									DeltaSISGauges (UNDEFINED_DELTA,
 											UNDEFINED_DELTA, UNDEFINED_DELTA);
-									UnlockCrossThreadMutex (GraphicsLock);
+									UnlockMutex (GraphicsLock);
 								}
 							}
 						}
@@ -293,10 +293,10 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 								);
 					}
 
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					DeltaSISGauges (UNDEFINED_DELTA,
 							UNDEFINED_DELTA, UNDEFINED_DELTA);
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					return (i);
 				}
 				break;

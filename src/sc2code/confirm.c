@@ -105,7 +105,7 @@ DoConfirmExit (void)
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	if (in_confirm)
 	{
 		result = FALSE;
@@ -134,9 +134,9 @@ DoConfirmExit (void)
 		// Releasing the lock lets the rotate_planet_task
 		// draw a frame.  PauseRotate can still allow one more frame
 		// to be drawn, so it is safer to just not release the lock
-		//UnlockCrossThreadMutex (GraphicsLock);
+		//UnlockMutex (GraphicsLock);
 		FlushGraphics ();
-		//LockCrossThreadMutex (GraphicsLock);
+		//LockMutex (GraphicsLock);
 
 		GLOBAL (CurrentActivity) |= CHECK_ABORT;
 		FlushInput ();
@@ -181,7 +181,7 @@ DoConfirmExit (void)
 		FlushInput ();
 		SetContext (oldContext);
 	}
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();

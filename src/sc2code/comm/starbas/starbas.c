@@ -1654,9 +1654,9 @@ NormalStarbase (RESPONSE_REF R)
 			NPCPhrase (GLOBAL_SHIP_NAME);
 			NPCPhrase (STARBASE_IS_READY_C);
 
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, 0, 2500);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			SET_GAME_STATE (STARBASE_MONTH,
 					GLOBAL (GameClock.month_index));
 			SET_GAME_STATE (STARBASE_DAY,
@@ -1765,9 +1765,9 @@ SellMinerals (RESPONSE_REF R)
 					Sleepy = FALSE;
 					GLOBAL_SIS (ElementAmounts[i]) = 0;
 					GLOBAL_SIS (TotalElementMass) -= amount;
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					DeltaSISGauges (0, 0, amount * GLOBAL (ElementWorth[i]));
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					break;
 				}
 				
@@ -1776,10 +1776,10 @@ SellMinerals (RESPONSE_REF R)
 				TaskSwitch ();
 				TimeIn = GetTimeCounter ();
 				DrawCargoStrings ((BYTE)i, (BYTE)i);
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				ShowRemainingCapacity ();
 				DeltaSISGauges (0, 0, GLOBAL (ElementWorth[i]));
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			} while (--amount);
 		}
 		if (Sleepy) {
@@ -1789,9 +1789,9 @@ SellMinerals (RESPONSE_REF R)
 	}
 	SleepThread (ONE_SECOND / 2);
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	ClearSISRect (DRAW_SIS_DISPLAY);
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 // DrawStorageBays (FALSE);
 
 	if (total < 1000)

@@ -61,7 +61,7 @@ void
 LoadPlanet (BOOLEAN IsDefined)
 {
 	STAMP s;
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	BatchGraphics ();
 	SetTransitionSource (NULL);
@@ -106,9 +106,9 @@ LoadPlanet (BOOLEAN IsDefined)
 	{
 		if (LOBYTE (LastActivity) == 0)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			DrawSISFrame ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 		}
 		else
 		{
@@ -146,7 +146,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		LoadIntoExtraScreen (&r);
 	}
 	
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	if (!PLRPlaying ((MUSIC_REF)~0))
 	{
@@ -173,7 +173,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT;
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		oldContext = SetContext (SpaceContext);
 		DrawStarBackGround (TRUE);
 		SetContext (oldContext);
@@ -183,7 +183,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		ScreenTransition (3, &r);  // How does this work?
 		UnbatchGraphics ();
 		LoadIntoExtraScreen (&r);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -201,7 +201,7 @@ FreePlanet (void)
 	}
 
 	StopMusic ();
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	for (i = 0; i < sizeof (pSolarSysState->PlanetSideFrame)
 			/ sizeof (pSolarSysState->PlanetSideFrame[0]); ++i)
@@ -253,6 +253,6 @@ FreePlanet (void)
 	pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
 	pSolarSysState->PauseRotate = 0;
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 

@@ -216,10 +216,10 @@ NoRadioactives (RESPONSE_REF R)
 		{
 			NPCPhrase (HERE_IS_A_NEW_LANDER);
 			++GLOBAL_SIS (NumLanders);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawLanders ();
 			DeltaSISGauges (4, 0, 0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			SET_GAME_STATE (LANDERS_LOST, 1);
 		}
@@ -227,26 +227,26 @@ NoRadioactives (RESPONSE_REF R)
 		{
 			NPCPhrase (HERE_IS_ANOTHER_LANDER);
 			++GLOBAL_SIS (NumLanders);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawLanders ();
 			DeltaSISGauges (4, 0, 0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 		else if (PLAYER_SAID (R, need_fuel))
 		{
 			NPCPhrase (GIVE_FUEL);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 
 			SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 		}
 		else if (PLAYER_SAID (R, need_fuel_again))
 		{
 			NPCPhrase (GIVE_FUEL_AGAIN);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 
 		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
@@ -284,10 +284,10 @@ AskAfterRadios (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_A_NEW_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		SET_GAME_STATE (LANDERS_LOST, 1);
 	}
@@ -295,26 +295,26 @@ AskAfterRadios (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_ANOTHER_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (PLAYER_SAID (R, need_fuel))
 	{
 		NPCPhrase (GIVE_FUEL);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 	}
 	else if (PLAYER_SAID (R, need_fuel_again))
 	{
 		NPCPhrase (GIVE_FUEL_AGAIN);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (PLAYER_SAID (R, where_get_radios))
 	{
@@ -384,10 +384,10 @@ TellMoonBase (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_A_NEW_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		SET_GAME_STATE (LANDERS_LOST, 1);
 	}
@@ -395,26 +395,26 @@ TellMoonBase (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_ANOTHER_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (PLAYER_SAID (R, need_fuel))
 	{
 		NPCPhrase (GIVE_FUEL);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 	}
 	else if (PLAYER_SAID (R, need_fuel_again))
 	{
 		NPCPhrase (GIVE_FUEL_AGAIN);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (PLAYER_SAID (R, we_are_here_to_help))
 	{
@@ -576,9 +576,9 @@ GiveRadios (RESPONSE_REF R)
 		NPCPhrase (FUEL_UP1);		
 		AlienTalkSegue (1);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		CommData.AlienAmbientArray[2].AnimFlags |= ANIM_DISABLED;
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)

@@ -47,9 +47,9 @@ DoSelectAction (PMENU_STATE pMS)
 				if (pMS->Initialized)
 				{
 					DrawMenuStateStrings (PM_CONVERSE, pMS->CurState);
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					SetFlashRect ((PRECT)~0L, (FRAME)0);
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 				}
 				return ((BOOLEAN)pMS->Initialized);
 			default:
@@ -173,7 +173,7 @@ InitEncounter (void)
 	extern FRAME planet[];
 	MUSIC_REF MR;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	hOldIndex = SetResourceIndex (hResIndex);
 
@@ -183,12 +183,12 @@ InitEncounter (void)
 	MR = LoadMusicInstance (REDALERT_MUSIC);
 	PlayMusic (MR, FALSE, 1);
 	SegueFrame = CaptureDrawable (LoadGraphic (SEGUE_PMAP_ANIM));
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	while (PLRPlaying (MR))
 		TaskSwitch ();
 	StopMusic ();
 	DestroyMusic (MR);
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	s.origin.x = s.origin.y = 0;
 
 	SetTransitionSource (NULL);
@@ -300,7 +300,7 @@ InitEncounter (void)
 
 	SetResourceIndex (hOldIndex);
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	{
 		MENU_STATE MenuState;
@@ -309,15 +309,15 @@ InitEncounter (void)
 		MenuState.Initialized = FALSE;
 
 		DrawMenuStateStrings (PM_CONVERSE, MenuState.CurState = HAIL);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		DoInput ((PVOID)&MenuState, TRUE);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetFlashRect (NULL_PTR, (FRAME)0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		return (MenuState.CurState);
 	}
@@ -357,10 +357,10 @@ DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
 	{
 		for (i = 0; i < (SIZE) NUM_FADES; ++i)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			if (AnyButtonPress (TRUE))
 				i = NUM_FADES - 1;
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 
 			SetContextForeGroundColor (fade_cycle[i]);
 			font_DrawText (&t1);
@@ -373,10 +373,10 @@ DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
 	{
 		for (i = NUM_FADES - 1; i >= 0; --i)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			if (AnyButtonPress (TRUE))
 				i = 0;
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 
 			SetContextForeGroundColor (fade_cycle[i]);
 			font_DrawText (&t1);
@@ -397,7 +397,7 @@ UninitEncounter (void)
 
 	ships_killed = 0;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	free_gravity_well ();
 
 	if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
@@ -478,9 +478,9 @@ UninitEncounter (void)
 					VictoryState = 0;
 				else
 				{
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					DrawSISFrame ();
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 
 					DrawSISMessage (NULL_PTR);
 					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
@@ -601,9 +601,9 @@ UninitEncounter (void)
 								Time = GetTimeCounter ();
 								for (j = 0; j < NUM_SHIP_FADES; ++j)
 								{
-									UnlockCrossThreadMutex (GraphicsLock);
+									UnlockMutex (GraphicsLock);
 									Sleepy = (BOOLEAN)!AnyButtonPress (TRUE);
-									LockCrossThreadMutex (GraphicsLock);
+									LockMutex (GraphicsLock);
 									if (!Sleepy)
 										break;
 
@@ -637,10 +637,10 @@ UninitEncounter (void)
 
 			FlushInput ();
 			Time = GetTimeCounter () + (ONE_SECOND * 3);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			while (!(AnyButtonPress (TRUE)) && GetTimeCounter () < Time)
 				TaskSwitch ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			if (!CurrentInputState.p1_escape)
 			{
 				DrawFadeText (str1, str2, FALSE, &scavenge_r);
@@ -668,11 +668,11 @@ UninitEncounter (void)
 							&scavenge_r
 							);
 					Time = GetTimeCounter () + ONE_SECOND * 2;
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 					while (!(AnyButtonPress (TRUE))
 							&& GetTimeCounter () < Time)
 						TaskSwitch ();
-					LockCrossThreadMutex (GraphicsLock);
+					LockMutex (GraphicsLock);
 					if (!CurrentInputState.p1_escape)
 						DrawFadeText (str1, str2, FALSE, &scavenge_r);
 				}
@@ -691,7 +691,7 @@ UninitEncounter (void)
 		}
 	}
 ExitUninitEncounter:
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	return (ships_killed);
 }
@@ -705,7 +705,7 @@ EncounterBattle (void)
 	extern BOOLEAN LoadSC2Data (void);
 	extern BOOLEAN FreeSC2Data (void);
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	SET_GAME_STATE (BATTLE_SEGUE, 1);
 
@@ -741,9 +741,9 @@ EncounterBattle (void)
 
 	GameSounds = CaptureSound (LoadSound (GAME_SOUNDS));
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	Battle ();
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	DestroySound (ReleaseSound (GameSounds));
 	GameSounds = 0;
@@ -769,6 +769,6 @@ EncounterBattle (void)
 
 	SetResourceIndex (hLastIndex);
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 

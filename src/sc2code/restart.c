@@ -53,7 +53,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	TEXT t;
 	UNICODE buf[64];
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	r.corner.x = r.corner.y = r.extent.width = r.extent.height = 0;
 	SetContextClipRect (&r);
@@ -76,7 +76,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	SetContextForeGroundColor (WHITE_COLOR);
 	font_DrawText (&t);
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	(void) OldState;  /* Satisfying compiler (unused parameter) */
 }
 
@@ -155,9 +155,9 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				break;
 		}
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SetFlashRect (NULL_PTR, (FRAME)0);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		return (FALSE);
 	}
@@ -282,18 +282,18 @@ LastActivity = WON_LAST_BATTLE;
 			BatchGraphics ();
 			ClearDrawable ();
 			FlushColorXForms ();
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			DrawStamp (&s);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			UnbatchGraphics ();
 
 			FlushInput ();
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			DoInput ((PVOID)&MenuState, TRUE);
 			
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			SetFlashRect ((PRECT)0, (FRAME)0);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			DestroyDrawable (ReleaseDrawable (s.frame));
 			
 			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)

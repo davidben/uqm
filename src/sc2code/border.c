@@ -40,7 +40,7 @@ DrawSISFrame (void)
 {
 	RECT r;
 
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 
 	BatchGraphics ();
@@ -186,6 +186,6 @@ DrawSISFrame (void)
 	ClearSISRect (DRAW_SIS_DISPLAY);
 	UnbatchGraphics ();
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 }
 

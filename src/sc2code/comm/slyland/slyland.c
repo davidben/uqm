@@ -208,9 +208,9 @@ CombatIsInevitable (RESPONSE_REF R)
 
 		NPCPhrase (DESTRUCT_SEQUENCE);
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, 0, race_bounty[SLYLANDRO_SHIP] >> 3);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
 	else

@@ -59,9 +59,9 @@ int arilou_gate_task(void* data)
 				counter = 0;
 		}
 
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 		SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 
 		UnlockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
@@ -980,9 +980,9 @@ sc = _simple_count;
 							(int)_simple_count - (int)sc);
 #endif //TESTING
 
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				SetFlashRect (NULL_PTR, (FRAME)0);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 
 				LastActivity = GLOBAL (CurrentActivity);
 

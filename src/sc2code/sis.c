@@ -73,9 +73,9 @@ ClearSISRect (BYTE ClearFlags)
 
 	if (ClearFlags & CLEAR_SIS_RADAR)
 	{
-		UnlockCrossThreadMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings ((BYTE)~0, 1);
-		LockCrossThreadMutex (GraphicsLock);
+		LockMutex (GraphicsLock);
 #ifdef NEVER
 		r.corner.x = RADAR_X - 1;
 		r.corner.y = RADAR_Y - 1;
@@ -812,7 +812,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				SUPPORT_SHIP_PTS
 			};
 
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
 					pship_pos = ship_pos;
 					hStarShip; hStarShip = hNextShip, ++pship_pos)
@@ -828,16 +828,16 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				s.origin.x = pship_pos->x;
 				s.origin.y = pship_pos->y;
 				s.frame = StarShipPtr->ShipInfo.icons;
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				DrawStamp (&s);
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 
 				UnlockStarShip (
 						&GLOBAL (built_ship_q),
 						hStarShip
 						);
 			}
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 		}
 	}
 
@@ -1313,7 +1313,7 @@ int flash_rect_func(void *data)
 								&tmp_rect, strength, 4);
 				}
 			}
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 			OldContext = SetContext (ScreenContext);
 			SetContextClipRect (&cached_rect);
 			// flash changed_can't be modified while GraphicSem is held
@@ -1321,7 +1321,7 @@ int flash_rect_func(void *data)
 				DrawStamp (pStamp);
 			SetContextClipRect (NULL_PTR); // this will flush whatever
 			SetContext (OldContext);
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 		}
 		FlushGraphics ();
 		SleepThreadUntil (TimeIn + WaitTime);
@@ -1391,9 +1391,9 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect1.extent.width = 0;
 		if (flash_task)
 		{
-			UnlockCrossThreadMutex (GraphicsLock);
+			UnlockMutex (GraphicsLock);
 			ConcludeTask (flash_task);
-			LockCrossThreadMutex (GraphicsLock);
+			LockMutex (GraphicsLock);
 		}
 	}
 	else

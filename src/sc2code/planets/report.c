@@ -94,7 +94,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	last_c = *pStr;
 
 	Sleepy = TRUE;
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
 	goto InitPageCell;
@@ -148,9 +148,9 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						font_DrawText (&t);
 					else
 					{
-						LockCrossThreadMutex (GraphicsLock);
+						LockMutex (GraphicsLock);
 						font_DrawText (&t);
-						UnlockCrossThreadMutex (GraphicsLock);
+						UnlockMutex (GraphicsLock);
 
 						PlaySound (ReadOutSounds, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 
@@ -174,7 +174,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 							else if (AnyButtonPress (TRUE))
 							{
 								Sleepy = FALSE;
-								LockCrossThreadMutex (GraphicsLock);
+								LockMutex (GraphicsLock);
 								BatchGraphics ();
 								break;
 							}
@@ -198,7 +198,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			if (!Sleepy)
 			{
 				UnbatchGraphics ();
-				UnlockCrossThreadMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
 			}
 
 			if (WaitAnyButtonOrQuit (TRUE))
@@ -210,17 +210,17 @@ InitPageCell:
 			row_cells = 0;
 			if (StrLen)
 			{
-				LockCrossThreadMutex (GraphicsLock);
+				LockMutex (GraphicsLock);
 				if (!Sleepy)
 					BatchGraphics ();
 				ClearReportArea();
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0, 0x1F, 0), 0xFF));
 				if (Sleepy)
-					UnlockCrossThreadMutex (GraphicsLock);
+					UnlockMutex (GraphicsLock);
 			}
 		}
 	}
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 }
 
 void
@@ -268,11 +268,11 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 #endif /* OLD */
 	SetContext (OldContext);
 
-	UnlockCrossThreadMutex (GraphicsLock);
+	UnlockMutex (GraphicsLock);
 	FlushInput ();
 	while (AnyButtonPress (TRUE))
 		TaskSwitch ();
-	LockCrossThreadMutex (GraphicsLock);
+	LockMutex (GraphicsLock);
 
 	if (pMenuState)
 		pMenuState->flash_rect0.corner = old_curs;
