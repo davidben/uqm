@@ -44,39 +44,6 @@ TFBSound_GetError (void)
 		return (mixSDL_GetError ());
 }
 
-bool 
-TFBSound_OpenAudio (uint32 freq, uint32 format, uint32 chunksize)
-{
-	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
-	{
-		fprintf (stderr, "OpenAudio is not supported for openAL\n");
-		return (0);
-	}
-	else
-		return (mixSDL_OpenAudio (freq, format, chunksize));
-}
-
-void
-TFBSound_CloseAudio (void)
-{
-	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
-		fprintf (stderr, "CloseAudio is not supported for openAL\n");
-	else
-		mixSDL_CloseAudio ();
-}
-
-bool
-TFBSound_QuerySpec (uint32 *freq, uint32 *format, uint32 *channels)
-{
-	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
-	{
-		fprintf (stderr, "QuerySpec is not supported for openAL\n");
-		return (0);
-	}
-	else
-		return (mixSDL_QuerySpec (freq, format, channels));
-}
-
 /*************************************************
  *  Sources
  */
@@ -87,7 +54,7 @@ TFBSound_GenSources (uint32 n, mixSDL_Object *psrcobj)
 	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
 		alGenSources (n, (ALuint *)psrcobj);
 	else
-		mixSDL_GenSources (n, (TFBSound_Object *)psrcobj);
+		mixSDL_GenSources (n, (mixSDL_Object *)psrcobj);
 }
 
 void TFBSound_DeleteSources (uint32 n, TFBSound_Object *psrcobj)

@@ -454,10 +454,6 @@ SOURCE=..\sc2code\libs\sound\openal\mixer.h
 
 SOURCE=..\sc2code\libs\sound\openal\sound_openal.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\sound_openal.h
-# End Source File
 # End Group
 # Begin Group "decoders"
 

@@ -59,10 +59,6 @@ typedef const int TFBSound_BufferProp;
  */
 uint32 TFBSound_GetError (void);
 
-bool TFBSound_OpenAudio (uint32 freq, uint32 format, uint32 chunksize);
-void TFBSound_CloseAudio (void);
-bool TFBSound_QuerySpec (uint32 *freq, uint32 *format, uint32 *channels);
-
 /*************************************************
  *  Sources
  */

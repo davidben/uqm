@@ -28,9 +28,6 @@
  *  General interface
  */
 #define TFBSound_GetError         mixSDL_GetError
-#define TFBSound_OpenAudio        mixSDL_OpenAudio
-#define TFBSound_CloseAudio       mixSDL_CloseAudio
-#define TFBSound_QuerySpec        mixSDL_QuerySpec
 
 /*************************************************
  *  Sources
