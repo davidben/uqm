@@ -29,6 +29,8 @@ BOOLEAN SaveProblem (void);
 //End Added by Chris
 
 #define MAX_SAVED_GAMES 10
+#define SUMMARY_X_OFFS 14
+#define SUMMARY_SIDE_OFFS 7
 
 static PMENU_STATE pLocMenuState;
 
@@ -532,7 +534,7 @@ DrawCargo (COUNT redraw_state)
 		if (redraw_state == 2)
 		{
 			SetContextForeGroundColor (BLACK_COLOR);
-			r.corner.x = 1;
+			r.corner.x = 1 + SUMMARY_X_OFFS;
 			r.corner.y = 12;
 			r.extent.width = ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1) - r.corner.x;
 			r.extent.height = 62 - r.corner.y;
@@ -540,16 +542,19 @@ DrawCargo (COUNT redraw_state)
 			GetFrameRect (SetRelFrameIndex (
 					pLocMenuState->ModuleFrame, MAX_SAVED_GAMES * 2 + 1
 					), &r);
+			r.extent.width += SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			DrawFilledRectangle (&r);
 		}
 		else
 		{
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = 0;
+			s.origin.y = 0;
 			s.frame = SetAbsFrameIndex (pLocMenuState->ModuleFrame,
 					GetFrameCount (pLocMenuState->ModuleFrame) - 1);
 			if (!pLocMenuState->Initialized)
 			{
 				DrawStamp (&s);
+				s.origin.x = SUMMARY_X_OFFS + 1;
 				s.frame = DecFrameIndex (s.frame);
 				if (pLocMenuState->delta_item == SAVE_GAME)
 					s.frame = DecFrameIndex (s.frame);
@@ -575,10 +580,10 @@ DrawCargo (COUNT redraw_state)
 				);
 		if (redraw_state == 2
 				|| (redraw_state == 1
-				&& !(((SUMMARY_DESC *)pLocMenuState->CurString)
-				[pLocMenuState->CurState].Flags & AFTER_BOMB_INSTALLED)))
+				/*&& !(((SUMMARY_DESC *)pLocMenuState->CurString)
+				[pLocMenuState->CurState].Flags & AFTER_BOMB_INSTALLED)*/))
 		{
-			s.origin.x = 7;
+			s.origin.x = 7 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
 			s.origin.y = 17;
 			for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
 			{
@@ -592,7 +597,7 @@ DrawCargo (COUNT redraw_state)
 				s.origin.y += 12;
 			}
 		}
-		s.origin.x = 24;
+		s.origin.x = 24 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS;
 		s.origin.y = 68;
 		s.frame = SetAbsFrameIndex (s.frame, 68);
 		DrawStamp (&s);
@@ -617,7 +622,7 @@ DrawCargo (COUNT redraw_state)
 		r.extent.width = 23;
 		r.extent.height = SHIP_NAME_HEIGHT;
 		SetContextFont (StarConFont);
-		t.baseline.x = 33;
+		t.baseline.x = 33 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
 		t.baseline.y = 20;
 		t.align = ALIGN_RIGHT;
 		t.pStr = buf;
@@ -638,7 +643,7 @@ DrawCargo (COUNT redraw_state)
 			font_DrawText (&t);
 			t.baseline.y += 12;
 		}
-		t.baseline.x = 50;
+		t.baseline.x = 50 + SUMMARY_X_OFFS;
 		t.baseline.y = 71;
 		SetContextForeGroundColor (BLACK_COLOR);
 		r.corner.x = t.baseline.x - r.extent.width + 1;
@@ -689,7 +694,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		GetContextClipRect (&OldRect);
 
 		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1) +
-				SAFE_X - 16;
+				SAFE_X - 16 + SUMMARY_X_OFFS;
 //		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1);
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = STATUS_WIDTH;
@@ -717,7 +722,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		{
 			BYTE j;
 
-			s.origin.x = 140;
+			s.origin.x = 140 + SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			for (j = 0; j < 4; ++j)
 			{
 				if ((i << 2) + j >= pSD->NumDevices)
@@ -741,17 +746,19 @@ ShowSummary (SUMMARY_DESC *pSD)
 		UnbatchGraphics ();
 
 		SetContextFont (StarConFont);
-		t.baseline.x = 173;
+		t.baseline.x = 173 + SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 		t.align = ALIGN_CENTER;
 		t.CharCount = (COUNT)~0;
 		t.pStr = buf;
 		if (pSD->Flags & AFTER_BOMB_INSTALLED)
 		{
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 6;
+			s.origin.y = 0;
 			s.frame = SetRelFrameIndex (
 					pLocMenuState->ModuleFrame, MAX_SAVED_GAMES * 2
 					);
 			DrawStamp (&s);
+			s.origin.x = SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			s.frame = IncFrameIndex (s.frame);
 			DrawStamp (&s);
 		}
@@ -759,7 +766,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		{
 			SetContext (RadarContext);
 			GetContextClipRect (&OldRect);
-			r.corner.x = SIS_ORG_X + 10;
+			r.corner.x = SIS_ORG_X + 10 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS;
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
@@ -798,9 +805,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 		r.extent.height = 7;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
-		t.baseline.x = r.corner.x + (SIS_MESSAGE_WIDTH >> 1);
+		t.baseline.x = /*r.corner.x + (SIS_MESSAGE_WIDTH >> 1)*/ 6;
 		t.baseline.y = r.corner.y + (r.extent.height - 1);
-		t.align = ALIGN_CENTER;
+		t.align = ALIGN_LEFT;
 		t.pStr = buf;
 		r.corner.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 		r.corner.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
@@ -840,6 +847,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
+		t.align = ALIGN_CENTER;
 		t.baseline.x = SIS_SCREEN_WIDTH - 57 + 1 + (SIS_TITLE_WIDTH >> 1);
 		if (pSD->Activity == IN_STARBASE)
 			wstrcpy (buf, GAME_STRING (STARBASE_STRING_BASE));
@@ -922,7 +930,8 @@ Restart:
 	{
 		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
-		s.origin.x = s.origin.y = 0;
+		s.origin.x = SUMMARY_X_OFFS;
+		s.origin.y = 0;
 		s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState);
 		DrawStamp (&s);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
@@ -1045,13 +1054,15 @@ RetrySave:
 			}
 
 			SetFlashRect (NULL_PTR, (FRAME)0);
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = SUMMARY_X_OFFS;
+			s.origin.y = 0;
 			s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState);
 			DrawStamp (&s);
 ChangeGameSelection:
 			pMS->CurState = NewState;
 			ShowSummary (&((SUMMARY_DESC *)pMS->CurString)[pMS->CurState]);
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = SUMMARY_X_OFFS;
+			s.origin.y = 0;
 			s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState + MAX_SAVED_GAMES);
 			DrawStamp (&s);
 
@@ -1078,7 +1089,7 @@ ChangeGameSelection:
 				UnbatchGraphics ();
 			}
 
-			r.corner.x = 3 + (NewState * 21);
+			r.corner.x = 3 + (NewState * 21) + SUMMARY_X_OFFS;
 			r.corner.y = 176;
 			r.extent.width = 18;
 			r.extent.height = 18;
