@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Fixed Orz .mod file, from fOSSiL
 - Added vertical alignment for subtitles (text runs off screen fix)-from Nic
 - Updated infinity text/symbol for RUs - from fOSSiL, Nic
 - Split away DCQ-specific code into its own header file
@@ -20,7 +21,7 @@ Changes towards version 0.2:
 - Check for a deadlock in savedgames and try to continue -PhracturedBlue
 - Added an option ('-a') to display 'PC-style' coarse-scan -PhracturedBlue
 - Fixed deadlock races in new FlushGraphics method -PhracturedBlue
-- FlushGraphics now waits and notifies on a per-thread level
+- FlushGraphics now waits and notifies on a per-thread level - McMartin
 - No longer using SHGetFolderPath on Windows - SvdB
 - Key repeat is now enabled when typing text, from slayne
 - Capital letter bug in new input code fixed, from slayne
