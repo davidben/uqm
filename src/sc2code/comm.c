@@ -1335,6 +1335,9 @@ SpewPhrases (COUNT wait_track)
 
 	do
 	{
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+			break;
+		
 		ClearSemaphore (GraphicsSem);
 		/* FIXME: is this a ramnant of 128-tick clock?
 		 * with 120-tick clock this will sleep for 1 tick --
