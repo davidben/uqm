@@ -149,6 +149,8 @@ DoConfirmExit (void)
 			GameExiting = FALSE;
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 		}
+		ExitRequested = FALSE;
+		GamePaused = FALSE;
 		FlushInput ();
 		SetContext (oldContext);
 	}

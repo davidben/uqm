@@ -84,6 +84,11 @@ DWORD InTime;
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
+	/* Cancel any presses of the Pause or Exit keys. */
+	GamePaused = FALSE;
+	ExitRequested = FALSE;
+
+
 	if (!pMS->Initialized)
 	{
 		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
@@ -129,10 +134,6 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		ClearSemaphore (GraphicsSem);
-
-		/* Cancel any presses of the Pause or Exit keys. */
-		GamePaused = FALSE;
-		ExitRequested = FALSE;
 
 		return (FALSE);
 	}
