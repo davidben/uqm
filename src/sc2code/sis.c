@@ -544,7 +544,14 @@ DrawFlagshipStats (void)
 	wsprintf (buf, "%4u", 1 + TURN_WAIT - turn_wait);
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%4u", 240 * energy_regeneration / energy_wait);
+	{
+		unsigned int energy_per_10_sec =
+				(((100 * BATTLE_FRAME_RATE * energy_regeneration) /
+				(1 + energy_wait)) + 5) / 10;
+		wsprintf (buf, "%2u.%1u",
+				energy_per_10_sec / 10,
+				energy_per_10_sec % 10);
+	}
 	font_DrawText (&t);
 	t.baseline.y += leading;
 	wsprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
