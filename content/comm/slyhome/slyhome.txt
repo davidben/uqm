@@ -1,4 +1,4 @@
-#(HELLO_1)	slyho000.wav
+#(HELLO_1)	slyho000.ogg
 Hello visitor!
 We are the Slylandro. I am Content To Hover
 a Slylandro Speaker.
@@ -6,23 +6,23 @@ Your presence here fills us with excitement!
 We have gotten so few visitors over these many Drahn.
 We hope you can stay to talk with us for a time.
 
-#(HELLO_2)	slyho001.wav
+#(HELLO_2)	slyho001.ogg
 You return with great speed.
 In the last five Drahn, we have had only one visitor.
 and now you have come twice in but a single Drahnasa.
 How wonderful!
 
-#(HELLO_3)	slyho002.wav
+#(HELLO_3)	slyho002.ogg
 Welcome back human Traveller!
 We hope your journeys have brought you new insights
 that you will share with us.
 
-#(HELLO_4)	slyho003.wav
+#(HELLO_4)	slyho003.ogg
 Welcome back human Traveller!
 We hope your journeys have brought you new insights
 that you will share with us.
 
-#(RECALL_PROGRAM_1)	slyho004.wav
+#(RECALL_PROGRAM_1)	slyho004.ogg
 Ah! human Traveller. We have news.
 One of our probes finally returned home
 and we have been able to reconfigure it
@@ -38,7 +38,7 @@ I am
 #(we_are_us2)
 . What the heck are you?
 
-#(TERRIBLY_EXCITING)	slyho005.wav
+#(TERRIBLY_EXCITING)	slyho005.ogg
 Oh, this is terribly exciting!
 We will be happy to tell you about ourselves
 if you will please, please do the same.
@@ -54,7 +54,7 @@ but inform other races of our presence here as well!
 #(happy_to_tell_more)
 Exactly how long is a `Drahn'?
 
-#(TELL_MORE)	slyho006.wav
+#(TELL_MORE)	slyho006.ogg
 The Drahn is our primary unit of time.
 It lasts for an interval equivalent to
 four million rotations of our planet.
@@ -64,7 +64,7 @@ Now please... our turn! Will you tell us about yourselves?!
 #(would_you_like_to_know_more)
 We would be happy to tell you more about our people.
 
-#(YES_TELL_MORE)	slyho007.wav
+#(YES_TELL_MORE)	slyho007.ogg
 Yes! Yes! Please do!
 Who ARE you?! Where are you from? Why have you come here?
 Do you know of any other intelligent races?
@@ -73,7 +73,7 @@ Please! Tell us everything, EVERYTHING!
 #(we_come_from_earth)
 Most of us come from a large, rocky world called Earth.
 
-#(OK_EARTH)	slyho008.wav
+#(OK_EARTH)	slyho008.ogg
 Yes! That seems to be the pattern.
 Just about everyone who comes by here
 says they developed on a world a lot like that.
@@ -86,7 +86,7 @@ so maybe there are others like us Slylandro out there somewhere.
 #(we_explore)
 We travel the galaxy in starships, seeking knowledge and contact with other sentients.
 
-#(OK_EXPLORE)	slyho009.wav
+#(OK_EXPLORE)	slyho009.ogg
 That must be great! To leave your planet, and roam the stars!
 You don't know how monotonous living on a gas giant for three or four Drahn can be.
 Clouds, clouds, clouds. Wind. Lightning. Clouds, clouds, clouds. That's it!
@@ -100,7 +100,7 @@ so generally, that's what we think the clouds look like.
 #(we_fight_urquan)
 Our primary objective right now is to free ourselves from the Evil Ur-Quan.
 
-#(URQUAN_NICE_GUYS)	slyho010.wav
+#(URQUAN_NICE_GUYS)	slyho010.ogg
 The Ur-Quan?! The long brownish guys from the Milieu with all the eyes and arms?
 They used to come visit us regularly about three Drahns ago.
 They told us about all the interesting things they found from their scouting missions.
@@ -109,7 +109,7 @@ They were really nice! Why do you fight with them?
 #(not_same_urquan)
 I think you are confused. Those aren't the Ur-Quan we're talking about. Ours are green.
 
-#(PERSONALITY_CHANGE)	slyho011.wav
+#(PERSONALITY_CHANGE)	slyho011.ogg
 But the Ur-Quan were such good guys!
 They had lots of interesting things to tell us about
 and they never got impatient with our questions.
@@ -119,7 +119,7 @@ like turning green and evil.
 #(we_gather)
 We are particularly interested in studying unusual planets and life forms.
 
-#(MAYBE_INTERESTED)	slyho012.wav
+#(MAYBE_INTERESTED)	slyho012.ogg
 Oh! Then you should go check out a planet orbiting a blue star not too far from here.
 I think there is another blue star right next to it.
 We can't desribe exactly where it is, but the people who told us about it
@@ -130,13 +130,13 @@ there were only ten of the planets in this part of the galaxy.
 #(enough_about_me)
 That's enough about us, for now.
 
-#(OK_ENOUGH_YOU)	slyho013.wav
+#(OK_ENOUGH_YOU)	slyho013.ogg
 Okay, but please, can we talk about you some more later?
 
 #(what_other_visitors)
 Probes? What probes are you talking about?
 
-#(VISITORS)	slyho014.wav
+#(VISITORS)	slyho014.ogg
 You know, it's funny. We hadn't heard from the outside galaxy in a whole Drahnasa
 and then the Melnorme come by and sell us a probe
 and just a few hundred rotations later, YOU show up!
@@ -151,7 +151,7 @@ anyway, in exchange for our information, they gave us a probe vessel.
 #(any_other_visitors)
 Tell me about the other races who have visited you over the years.
 
-#(LONG_AGO)	slyho015.wav
+#(LONG_AGO)	slyho015.ogg
 Years? Oh.. you mean Drahn.
 Well, let's see... there was the Melnorme just a few rotations back
 then we go all the way back over three Drahn ago to the Ur-Quan
@@ -160,7 +160,7 @@ and the other Milieu guys... the Yuli and the Drann, I think.
 #(what_about_sentient_milieu)
 Milieu? What is the Milieu and who are the Yuli and the Drall?
 
-#(MET_TAALO_THEY_ARE_FROM)	slyho016.wav
+#(MET_TAALO_THEY_ARE_FROM)	slyho016.ogg
 Hmmm... let me remember... that was a long, long time ago... I was only a nymph then
 ah, yes... that's it!
 The Sentient Milieu was a cooperative association of sentient alien species
@@ -172,7 +172,7 @@ then suddenly the visits stopped and we haven't heard from them since.
 #(who_else)
 Were there any other visitors here besides the Melnorme and Milieu races?
 
-#(PRECURSORS)	slyho017.wav
+#(PRECURSORS)	slyho017.ogg
 Yes, there was another race... a highly sophisticated species of shaggy giants
 who made repeated trips to our world over a period of several Drahn.
 They even installed a broadcasting satellite in orbit around our world
@@ -183,7 +183,7 @@ I'm sorry, I can't remember their names. It was a long long time ago.
 #(precursors_yow)
 Yow! That sounds like the Precursors! What else can you tell us about this race?
 
-#(ABOUT_PRECURSORS)	slyho018.wav
+#(ABOUT_PRECURSORS)	slyho018.ogg
 I wish I knew more of the information you seek, Traveller
 but we last saw the Shaggy Ones just over 39 Drahn ago
 and very little from that era has remained intact in our history chants.
@@ -202,7 +202,7 @@ and they didn't tell us exactly where `somewhere' was.
 #(must_know_more)
 This is EXTREMELY important to us! Don't you know any more?
 
-#(ALL_WE_KNOW)	slyho019.wav
+#(ALL_WE_KNOW)	slyho019.ogg
 No, I have told you... one moment, Joyous Lifting transmits.
   
 Joyous Lifting has remembered something else
@@ -218,20 +218,20 @@ That is all we can remember.
 #(who_are_you)
 Pardon me, but who exactly are you again?
 
-#(WE_ARE_SLY)	slyho020.wav
+#(WE_ARE_SLY)	slyho020.ogg
 We are the Slylandro, a race of kind, curious gas bag people.
 
 #(like_more_about_you)
 Hmmm. Sounds interesting! Tell us more.
 
-#(SURE_KNOW_WHAT)	slyho021.wav
+#(SURE_KNOW_WHAT)	slyho021.ogg
 Certainly, provided you share with us similar information.
 What would you like to know?
 
 #(what_about_home)
 Tell us about your home... this gas giant planet.
 
-#(ABOUT_HOME)	slyho022.wav
+#(ABOUT_HOME)	slyho022.ogg
 Our planet, which we call Source, has no solid surface as yours likely does.
 Our `world' is the five hundred kilometer band of atmosphere in which we can survive.
 Below this are the Depths... a dark and hostile region
@@ -246,7 +246,7 @@ we grow giddy and behave inappropriately.
 #(what_about_culture)
 What can you tell us about your culture?
 
-#(ABOUT_CULTURE)	slyho023.wav
+#(ABOUT_CULTURE)	slyho023.ogg
 We have an egalitarian society here. All are equal.
 Of course, that doesn't stop some people from being stupid fools or jerks.
 But on a world as huge as Source, where there are no barriers to restrict your travel
@@ -260,7 +260,7 @@ and dragged them down to the Depths.
 #(what_about_history)
 What about your history?
 
-#(ABOUT_HISTORY)	slyho024.wav
+#(ABOUT_HISTORY)	slyho024.ogg
 Since we possess no technology, we have no permanent way to record the passing of events.
 Instead we use the History Chants... long songs whose rhythms and patterns
 help prevent the introduction of error into the record.
@@ -274,7 +274,7 @@ until ships from the Sentient Milieu arrived.
 #(what_about_biology)
 Tell us about your biology.
 
-#(ABOUT_BIOLOGY)	slyho025.wav
+#(ABOUT_BIOLOGY)	slyho025.ogg
 Our world, which we call Source has been home to our species for many thousands of Drahn.
 We evolved from simpler, unimodular beings who thrive in atmospheric convection cells.
 At first, we were little more than mindless consumers
@@ -288,13 +288,13 @@ we are the only species here to achieve intelligence.
 #(enough_info)
 Thank you. That's sufficient for now.
 
-#(OK_ENOUGH_INFO)	slyho026.wav
+#(OK_ENOUGH_INFO)	slyho026.ogg
 My pleasure. Now let's talk about you and your peoples.
 
 #(where_are_you)
 What are those glowy bits inside of you?
 
-#(DOWN_HERE)	slyho027.wav
+#(DOWN_HERE)	slyho027.ogg
 OH MY! I forgot! You creatures see in the visual range and can see our... well
 our, er... well, WE can't see them
 Ehhh... Ahem... What I mean to say is... they are... well we use them for
@@ -305,14 +305,14 @@ Look, I'd rather if you didn't ask about them, okay?
 #(thats_impossible_1)
 I said... WHAT ARE THOSE GLOWY THINGS IN SIDE OF YOU?!
 
-#(NO_ITS_NOT_1)	slyho028.wav
+#(NO_ITS_NOT_1)	slyho028.ogg
 Great. Now you've done it! Just look at Sullen Plummet.
 You've embarrassed her so badly that she can't even regulate her ballast.
 
 #(thats_impossible_2)
 Look, I'm sorry I asked about your... glowy bits.
 
-#(NO_ITS_NOT_2)	slyho029.wav
+#(NO_ITS_NOT_2)	slyho029.ogg
 That's okay. Actually, your explicit questions
 have put Sullen Plummet in an unusual and intriguing mood.
 I will explore this change more fully when this conversation is over.
@@ -320,16 +320,16 @@ I will explore this change more fully when this conversation is over.
 #(bye)
 Goodbye Slylandro gas bags.
 
-#(GOODBYE_1)	slyho030.wav
+#(GOODBYE_1)	slyho030.ogg
 Goodbye human fluid sack!
 
-#(GOODBYE_2)	slyho031.wav
+#(GOODBYE_2)	slyho031.ogg
 Goodbye human fluid sack!
 
 #(what_are_probes)
 Can you give me details about your probes?
 
-#(PROBES_ARE)	slyho032.wav
+#(PROBES_ARE)	slyho032.ogg
 Sure, if you are interested. In exchange for information about the life on Source
 the Melnorme offered to give us a remote exploration probe.
 It would roam the galaxy gathering information and contacting alien races
@@ -339,7 +339,7 @@ and reveal to us everything it had learned!
 #(know_more_probe)
 Is that it? The probe can't do anything else?
 
-#(OK_WHAT_MORE_PROBE)	slyho033.wav
+#(OK_WHAT_MORE_PROBE)	slyho033.ogg
 Oh yeah! How could I forget... this is the REALLY neat part!
 The probe was self-replicating!
 When it wasn't recording data, it would pulverize rocks and stuff
@@ -351,7 +351,7 @@ and then we should see an increasing number thereafter.
 #(where_probes_from)
 Where exactly did you say you got your probe from?
 
-#(PROBES_FROM_MELNORME)	slyho034.wav
+#(PROBES_FROM_MELNORME)	slyho034.ogg
 From the Melnorme Traveller-Traders.
 It was catalog item 2418... Remote Self-Replicating Robot Explorer Probe
 the economy model.
@@ -359,7 +359,7 @@ the economy model.
 #(why_sell)
 Why did the Melnorme sell it to you?
 
-#(SELL_FOR_INFO)	slyho035.wav
+#(SELL_FOR_INFO)	slyho035.ogg
 The Melnorme traded it to us for data on the life in Source.
 They said the information was unique, and was worth
 oh, I don't really understand their units of exchange
@@ -370,13 +370,13 @@ catalog item 2418... Remote Self-Replicating Robot Explorer Probe.
 #(how_long_ago)
 How long ago did you get the probe?
 
-#(FIFTY_THOUSAND_ROTATIONS)	slyho036.wav
+#(FIFTY_THOUSAND_ROTATIONS)	slyho036.ogg
 Two or three hundred rotations, I guess.
 
 #(whats_probes_mission)
 What was the probe's program?
 
-#(SEEK_OUT_NEW_LIFE)	slyho037.wav
+#(SEEK_OUT_NEW_LIFE)	slyho037.ogg
 It was sent on a 500 rotation mission!...
 ...to seek out new life and new civilizations...to boldly go where no
 catalog item 2418... Remote Self-Replicating Robot Explorer Probe
@@ -385,7 +385,7 @@ had gone before!
 #(if_only_one)
 Can you explain the probe's replication ability?
 
-#(THEY_REPLICATE)	slyho038.wav
+#(THEY_REPLICATE)	slyho038.ogg
 Well, we're not hardware people, so we only know the theory.
 What happens is that while the probe is exploring space
 whenever it's not doing something more important
@@ -399,13 +399,13 @@ by now there should be hundreds of probes, maybe even thousands!
 #(enough_probe)
 I've heard enough, thanks.
 
-#(OK_ENOUGH_PROBE)	slyho039.wav
+#(OK_ENOUGH_PROBE)	slyho039.ogg
 Okay, what else can we talk about?
 
 #(why_probe_always_attack)
 Well why then do your probes attack our ships?
 
-#(ONLY_DEFEND)	slyho040.wav
+#(ONLY_DEFEND)	slyho040.ogg
 Our probes DO NOT attack!
 They have only defensive capabilities.
 Offensive behavior is NOT part of the instructions we programmed into the probe.
@@ -414,13 +414,13 @@ To do so would be reprehensible!
 #(talk_more_probe_attack)
 Can we talk a little bit more about the probe's program?
 
-#(NO_PROBLEM_BUT_SURE)	slyho041.wav
+#(NO_PROBLEM_BUT_SURE)	slyho041.ogg
 Sure. What would you like to know?
 
 #(tell_me_about_basics)
 Would you explain the general outline of the probe's program?
 
-#(BASIC_COMMANDS)	slyho042.wav
+#(BASIC_COMMANDS)	slyho042.ogg
 Sure. It was a difficult task for us, since we'd never done anything like that before
 but for the most part we just adjusted its standard program which went something like
     SCAN (for targets, as defined in Target List).
@@ -448,7 +448,7 @@ That's it.
 #(tell_basics_again)
 What's the general outline of the probe's program again?
 
-#(OK_BASICS_AGAIN)	slyho043.wav
+#(OK_BASICS_AGAIN)	slyho043.ogg
 The program was...
     SCAN (for targets, as defined in Target List).
     IF (no current target).
@@ -474,7 +474,7 @@ and here are the tables used by the program.
 #(what_effect)
 What is the effect of the Priority Settings on Behavior?
 
-#(AFFECTS_BEHAVIOR)	slyho044.wav
+#(AFFECTS_BEHAVIOR)	slyho044.ogg
 I'm pretty sure the way it works is that every time a behavior is completed or interrupted
 the program selects a new behavior based on the defined Behavior Target Priorities
 and what kind of Target is currently selected... I think.
@@ -483,7 +483,7 @@ A really high priority would cause a probe to focus its attention on that behavi
 #(how_does_probe_defend)
 You mentioned the probe's defensive capabilities. Elaborate.
 
-#(ONLY_SELF_DEFENSE)	slyho045.wav
+#(ONLY_SELF_DEFENSE)	slyho045.ogg
 That behavior was hard-coded by the Melnorme.
 We couldn't mess with it.
 Essentially, the probe will only fire its weapons if it has been attacked
@@ -492,14 +492,14 @@ and cannot communicate with the attacker.
 #(combat_behavior)
 And when defending itself, it uses its lightning weapon?
 
-#(MISSILE_BATTERIES)	slyho046.wav
+#(MISSILE_BATTERIES)	slyho046.ogg
 No. The probe is armed with a battery of missiles.
 It doesn't use its electrical discharge device in combat.
 
 #(what_missile_batteries)
 What missile batteries? It always attacked us with lightning bolts!
 
-#(LIGHTNING_ONLY_FOR_HARVESTING)	slyho047.wav
+#(LIGHTNING_ONLY_FOR_HARVESTING)	slyho047.ogg
 That's impossible! Its inconceivable!
 The electrical discharge device is used only for breaking down raw replication materials
 into their component compounds for easy gathering.
@@ -507,7 +507,7 @@ into their component compounds for easy gathering.
 #(tell_me_about_rep_1)
 Would you tell me about the `Replication' behavior?
 
-#(ABOUT_REP)	slyho048.wav
+#(ABOUT_REP)	slyho048.ogg
 I'd be glad to! You see, the probe has the capability
 to seek out raw materials, process the raw materials into component compounds
 collect the compounds, and then when it has a sufficient supply
@@ -518,7 +518,7 @@ and crank it up so that there would be more probes sooner.
 #(what_set_priority)
 Uh... what priority did you assign to replication?
 
-#(MAXIMUM)	slyho049.wav
+#(MAXIMUM)	slyho049.ogg
 Well, the factory setting was two, in between Movement at one
 and Analyze Data at three. I told Joyous Lifting to set it a bit higher
 let me ask him what he set it to...
@@ -529,40 +529,40 @@ the highest setting on the dial.
 #(enough_problem)
 Let's talk more about this later on.
 
-#(OK_ENOUGH_PROBLEM)	slyho050.wav
+#(OK_ENOUGH_PROBLEM)	slyho050.ogg
 Okay.
 
 #(probe_has_bug)
 Your probe DOES destroy ships and I can prove it!
 
-#(NO_IT_DOESNT)	slyho051.wav
+#(NO_IT_DOESNT)	slyho051.ogg
 No! It cannot! It is not programmed for hostile behavior!
 What is your reasoning?!
 
 #(tell_me_about_attack)
 Think about what a probe does when it meets a ship.
 
-#(ATTACK_NO_PROBLEM)	slyho052.wav
+#(ATTACK_NO_PROBLEM)	slyho052.ogg
 Space ships are the probe's highest priority
 because we want more than anything to make friendly contact with alien races.
 
 #(tell_me_about_rep_2)
 Think about a probe's Replication behavior.
 
-#(REP_NO_PROBLEM)	slyho053.wav
+#(REP_NO_PROBLEM)	slyho053.ogg
 The probe seeks raw materials, and processes them in preparation for Replication.
 
 #(what_about_rep_priorities)
 Think about the effect of changing the replication behavior's priority.
 
-#(MAXIMUM_SO_WHAT)	slyho054.wav
+#(MAXIMUM_SO_WHAT)	slyho054.ogg
 The answer is simple... it would spend more of its time seeking raw materials
 for its replication process. So what?
 
 #(think_about_rep_priorities)
 Now, what will it do to a ship, given that its Replication priority is set to maximum?
 
-#(UH_OH)	slyho055.wav
+#(UH_OH)	slyho055.ogg
 I don't see what you are getting at, but I'll play along with you.
 Like I said, alien ships are THE top priority target.
 Once a probe scanned a ship, it would instantly move toward it.
@@ -585,7 +585,7 @@ How can we stop the probes from destroying all life in the galaxy?!
 #(hunt_them_down)
 Someone is going to have to hunt them all down and destroy them.
 
-#(GROW_TOO_FAST)	slyho056.wav
+#(GROW_TOO_FAST)	slyho056.ogg
 No, that would never work!
 The probes will replicate too fast!
 As soon as you destroyed one, two would take its place!
@@ -593,14 +593,14 @@ As soon as you destroyed one, two would take its place!
 #(sue_melnorme)
 Well to begin with, if I were you, I'd sue the Melnorme.
 
-#(SIGNED_WAIVER)	slyho057.wav
+#(SIGNED_WAIVER)	slyho057.ogg
 Sorry. The Melnorme made us agree to a formal Waiver of Damages
 in case something like this happened.
 
 #(recall_signal)
 Couldn't you broadcast some kind of recall signal?
 
-#(NOT_THIS_MODEL)	slyho058.wav
+#(NOT_THIS_MODEL)	slyho058.ogg
 No, not catalog item 2418
 (Remote Self-Replicating Robot Explorer Probe).
 The model with the recall transmitter was catalog item 2419
@@ -609,7 +609,7 @@ and the Melnorme said it was out of stock.
 #(mega_self_destruct)
 I don't suppose you have some kind of Mega-Self-Destruct Code, or something?
 
-#(WHY_YES_THERE_IS)	slyho059.wav
+#(WHY_YES_THERE_IS)	slyho059.ogg
 WHY YES, THERE IS!
 You're a genius, Traveller! What didn't we remember that!?
 Oh... there's a problem though! How are we going to transmit the code?

@@ -21,6 +21,7 @@
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
 #include "SDL_mixer.h"
+#include "SDL_sound.h"
 
 int 
 TFB_InitSound (int driver, int flags, int frequency)
@@ -38,12 +39,18 @@ TFB_InitSound (int driver, int flags, int frequency)
 
 	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 2048))
 	{
-		fprintf (stderr, "Unable to open audio!\n");
+		fprintf (stderr, "Unable to open audio: %s\n", Mix_GetError());
 		exit (-1);
 	}
 
 	atexit (Mix_CloseAudio);
 
+	if (!Sound_Init())
+	{
+		fprintf(stderr, "Sound_Init() failed: %s\n", Sound_GetError());
+		exit (-1);
+	}
+	
 	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
 
 	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
@@ -105,7 +112,7 @@ int
 GetSoundInfo (int *length, int *offset)
 		// Umm... How does it know which sound?
 {
-	fprintf (stderr, "Unimplemented function activated: GetSoundInfo()\n");
+	//fprintf (stderr, "Unimplemented function activated: GetSoundInfo()\n");
 	*length = 1;
 	*offset = 0;
 	return 1;

@@ -131,8 +131,7 @@ Questions:
   which we can free when no more memory is available, to allow an emergency
   save.
 - How about an ISO image for a self-contained linux CD which boots into SC2?
-- Currently speechs and mod music doesn't sound very good as SDL_mixer
-  doesn't interpolate them in any way.. 11khz data really needs that,
-  compare the wavs to winamp for example.
-  Should we add that functionality to SDL_mixer ourselves, or implement
-  all mixing from scratch using only base SDL audio, or what?
+- SDL_mixer really doesn't seem to meet our needs.. should we
+  a) write our own mixing routines
+  b) look for alternatives (OpenAL perhaps?)
+  c) what?

@@ -1,4 +1,4 @@
-#(INIT_HELLO)	orz000.wav
+#(INIT_HELLO)	orz000.ogg
 (MESSAGE FROM TRANSLATION COMPUTER: INCOMING MESSAGE EXTREMELY UNORTHODOX IN COMPOSITION.
 TRANSLATION INCLUDES MANY LINGUAL BEST-FITS. FOR CLARITY BEST-FITS ARE DENOTED BY ASTERISK PAIRS.
 OVERALL ACCURACY OF TRANSLATION: UNKNOWN.
@@ -7,7 +7,7 @@ OVERALL ACCURACY OF TRANSLATION: UNKNOWN.
 #(who_you)
 Who are you? What can you tell us about yourselves?
 
-#(WE_ARE_ORZ)	orz001.wav
+#(WE_ARE_ORZ)	orz001.ogg
 Who are you? You are not Orz! We are Orz! Orz are happy *people energy* from the outside.
 Inside is good. So much good that Orz will always *germinate*.
 Can you come together with Orz for *parties*?
@@ -15,7 +15,7 @@ Can you come together with Orz for *parties*?
 #(why_here)
 Okay, right. Uh... maybe you could tell me why you are here.
 
-#(HERE_BECAUSE)	orz002.wav
+#(HERE_BECAUSE)	orz002.ogg
 Here is *bright* and *smooth*. The other place is *hurt* Orz too much tired for keeping together.
 Other place is **Frumple**. Orz are here now, but almost not yet.
 Soon Orz are really here! You are help Orz with *parties*.
@@ -23,48 +23,48 @@ Orz looking for you, and find you. So much joy!!
 Now *smooth* place all the time, and after now never going back to outside.
 Never!!
 
-#(ALLIED_HOMEWORLD_HELLO_1)	orz003.wav
+#(ALLIED_HOMEWORLD_HELLO_1)	orz003.ogg
 Hello to our *house*. Do you feel *better* yet?
 If you are *campers* you will enjoy *the change*, but maybe not yet.
 It is best if many happy Orz are coming to your *house*.
 Let's *spitting* the fun words for several *pieces* and then surprising things!!!
 
-#(ALLIED_HOMEWORLD_HELLO_2)	orz004.wav
+#(ALLIED_HOMEWORLD_HELLO_2)	orz004.ogg
 This is my *house*. Do you want to know a *secret*? Do not *think* it to *not campers*.
 You are so many *lonely* *juicy* *bubbles*. It is so sad.
 Now that you are *campers* you will have more *parties*
 and no more *sad* *lonely* *bubbles*.
 This is the *secret*.
 
-#(ALLIED_HOMEWORLD_HELLO_3)	orz005.wav
+#(ALLIED_HOMEWORLD_HELLO_3)	orz005.ogg
 Happy to come to my *house* some more times. I am Orz.
 I do not have the name because I am Orz. Orz is the name.
 Do you want to *squirt*?
 If you want to, then you do. It is best, I know it.
 
-#(ALLIED_HOMEWORLD_HELLO_4)	orz006.wav
+#(ALLIED_HOMEWORLD_HELLO_4)	orz006.ogg
 Happy to come to my *house* some more times. I am Orz.
 I do not have the name because I am Orz. Orz is the name.
 Do you want to *squirt*?
 If you want to, then you do. It is best, I know it.
 
-#(ALLIED_SPACE_HELLO_1)	orz007.wav
+#(ALLIED_SPACE_HELLO_1)	orz007.ogg
 Oh, the *alliance* *party* *campers* are in the *now space*.
 It is *happy spices*. Why are you there?
 Of course because also the Orz are in the *now space*.
 So I am waiting for you to *spit*. It is a pleasure.
 
-#(ALLIED_SPACE_HELLO_2)	orz008.wav
+#(ALLIED_SPACE_HELLO_2)	orz008.ogg
 *Campers* like to say `hello' when they *smell* the Orz.
 We have learned this. It is *no function* but Orz want to make *campers* happy everyday.
 Okay... Hello!! Now you are happy I am sure.
 
-#(ALLIED_SPACE_HELLO_3)	orz009.wav
+#(ALLIED_SPACE_HELLO_3)	orz009.ogg
 I am *expanding!* It is so much *squishy* to *smell* you!
 *Campers* are the best! I have *anticipation* and then what?
 Better parties in *the middle* for sure.
 
-#(ALLIED_SPACE_HELLO_4)	orz010.wav
+#(ALLIED_SPACE_HELLO_4)	orz010.ogg
 I am *expanding!* It is so much *squishy* to *smell* you!
 *Campers* are the best! I have *anticipation* and then what?
 Better parties in *the middle* for sure.
@@ -72,7 +72,7 @@ Better parties in *the middle* for sure.
 #(whats_up_ally)
 Uh.....Hi there. Its good to see you again....I think.
 
-#(GENERAL_INFO_ALLY_1)	orz011.wav
+#(GENERAL_INFO_ALLY_1)	orz011.ogg
 That is *funny*. You think you *see* Orz but Orz are not *light reflections*.
 Maybe you think Orz are *many bubbles* too. It is such a joke.
 Orz are not *many bubbles* like *campers*. Orz are just Orz.
@@ -82,14 +82,14 @@ but it is really *fingers*.
 Maybe you do not even *smell*? That is sad.
 *Smelling* *pretty colors* is the best *game*.
 
-#(GENERAL_INFO_ALLY_2)	orz012.wav
+#(GENERAL_INFO_ALLY_2)	orz012.ogg
 Perhaps you have not been to the *Playground*.
 The *Playground* is for Taalo and for Orz, but *Campers* can go.
 It more fun than several.
 The *Playground* is 372.1, 261.9 your *silly* numbers.
 You can go there for too much fun.
 
-#(GENERAL_INFO_ALLY_3)	orz013.wav
+#(GENERAL_INFO_ALLY_3)	orz013.ogg
 Hello! I will say again for extra enjoyment. So much a fun game.
 Hello! Hello! Next I will *spit* *slow time* words to you for better *dancing*.
 Do you know? Orz can *dance* very well.
@@ -99,7 +99,7 @@ These are best for letting go near *heavy space* planet bodies.
 Then GO! GO! can going fastest to enter ships of the *other*.
 Then it is *happy time*.
 
-#(GENERAL_INFO_ALLY_4)	orz014.wav
+#(GENERAL_INFO_ALLY_4)	orz014.ogg
 Even more *pleasant combinations*. I am *successful* the most.
 Perhaps after the biggest *party* you will understanding the Orz
 and I can showing you other *levels*.
@@ -110,7 +110,7 @@ We are *friends* now. Never be afraid to *open* enough and *spread the wax*.
 #(more_about_you)
 I'm afraid I'm still not exactly clear on who you are and where you're from.
 
-#(ABOUT_US_1)	orz015.wav
+#(ABOUT_US_1)	orz015.ogg
 You are a *silly* *camper*. I am always Orz.
 If I was not Orz, then I would not be, but of course I am Orz.
 We are from *outside*. Also the Arilou *quick babies* are from *outside*.
@@ -121,7 +121,7 @@ We can not have *parties* when Arilou always *jumping in front*.
 It makes Orz *frumple* so much.
 These are *fat* words. Do you want to play this some more?
 
-#(ABOUT_US_2)	orz016.wav
+#(ABOUT_US_2)	orz016.ogg
 I will tell again the many *pieces*. You do not know *special things*.
 Here is some. *Time* is not one but many.
 *Space* is many. *Colors* are many. You are so *sticky*.
@@ -131,7 +131,7 @@ This is soon.
 Orz are trying to *pull* the Androsynth, but they are so *silly*, they do not want.
 Arilou can *slide*. Also Taalo. Many can *slide*, but Orz are better of course.
 
-#(ABOUT_US_3)	orz017.wav
+#(ABOUT_US_3)	orz017.ogg
 Here is *good news*!
 Six or nine *pieces* ago, myself the Orz did not even *smell* your *level*.
 Can you believe? It is so silly! It is such a *happy town*.
@@ -148,7 +148,7 @@ Where are the Taalo? There they are. It is too much fun.
 We are too happy, in this *slow time* *heavy space*. It is a better *level* for games.
 This is the everything story. Now you know.
 
-#(ABOUT_US_4)	orz018.wav
+#(ABOUT_US_4)	orz018.ogg
 I am already telling the everything story. It is too much.
 You do not asking about us the many.
 Next it is the *party* and you will *become*.
@@ -160,7 +160,7 @@ I am too *tired* the *silly* word *game*.
 #(where_androsyn)
 Our charts show this as Androsynth space. Do you know what happened to them?
 
-#(DISEMBLE_ABOUT_ANDROSYN)	orz019.wav
+#(DISEMBLE_ABOUT_ANDROSYN)	orz019.ogg
 Androsynth are not here. Orz are here.
 You are not the same too much like Androsynth. You are *happy campers*.
 Do you want to see our surprising *toys*? No!! Do Not!!
@@ -170,7 +170,7 @@ No more Androsynth stories.
 #(must_know_about_androsyn)
 What happened?? Dammit, what did you do to the Androsynth?!!
 
-#(KNOW_TOO_MUCH)	orz020.wav
+#(KNOW_TOO_MUCH)	orz020.ogg
 Nnnnnngaaaa!!!! I am *squeezing* the *juice*.
 You have become too close. You are *sick* for the last time!
 Nnnnnnggggaaaaaa!! It is not enough for *happy days* I am sure.
@@ -180,7 +180,7 @@ Androsynth are not the story!!
 #(dont_really_care)
 Uh, that's okay. I didn't really care about them so much anyway.
 
-#(YOU_ARE_OUR_FRIENDS)	orz021.wav
+#(YOU_ARE_OUR_FRIENDS)	orz021.ogg
 Ahaa! I am told other Orz *cousins* you are *connected* for *camping*.
 I am so right!
 It is happiest days to not care about Androsynth anything.
@@ -190,7 +190,7 @@ I am so right. I will tell them again.
 #(about_andro_1)
 Now please don't take this the wrong way, but what did happen to the Androsynth?
 
-#(FORGET_ANDRO_1)	orz022.wav
+#(FORGET_ANDRO_1)	orz022.ogg
 I am say best word *frumple*. Maybe you do not know.
 *Frumple* be *round* and yet *lumpy*. So bad!!!
 The asking about Androsynth is so *frumple* we are not happy.
@@ -201,7 +201,7 @@ No more Androsynth is better.
 #(about_andro_2)
 Just tell me this. Are we in for the same fate as them?
 
-#(FORGET_ANDRO_2)	orz023.wav
+#(FORGET_ANDRO_2)	orz023.ogg
 You are not same. You are *happy campers*, but already you know.
 I will not talking about *silly Androsynth*, now is stop asking.
 If you are say the question another time
@@ -212,58 +212,58 @@ You are not so *silly*!
 #(about_andro_3)
 Okay, okay. Now this isn't really a question, but let's say you WERE going to talk about the Androsynth. If you were, what would you say?
 
-#(BLEW_IT)	orz024.wav
+#(BLEW_IT)	orz024.ogg
 Nnnnnggggaaaahhhhh!!!!!! It is *dancing*!!!!
 
-#(NEUTRAL_HOMEWORLD_HELLO_1)	orz025.wav
+#(NEUTRAL_HOMEWORLD_HELLO_1)	orz025.ogg
 This is my *house.* Did you come to *play*?.
 Do not be sad if you are *other*. We can still have a *party*.
 There are never enough *campers*.
 
-#(NEUTRAL_HOMEWORLD_HELLO_2)	orz026.wav
+#(NEUTRAL_HOMEWORLD_HELLO_2)	orz026.ogg
 You want to *take* *silly* words in *slow time*. It is okay.
 I will *spit* words and then perhaps it is the *party*.
 Welcome to my *house* or *other house*.
 It is a joke! Only it is my *house*.
 
-#(NEUTRAL_HOMEWORLD_HELLO_3)	orz027.wav
+#(NEUTRAL_HOMEWORLD_HELLO_3)	orz027.ogg
 Again you have come to my *house*. It is the same time.
 Why are you coming? Do you always the *slow time*?
 I am surprised!
 Oh well. Now is for *fun time*, not worrying.
 
-#(NEUTRAL_HOMEWORLD_HELLO_4)	orz028.wav
+#(NEUTRAL_HOMEWORLD_HELLO_4)	orz028.ogg
 Again you have come to my *house*. It is the same time.
 Why are you coming? Do you always the *slow time*? I am surprised!
 Oh well. Now is for *fun time*, not worrying.
 
-#(NEUTRAL_SPACE_HELLO_1)	orz029.wav
+#(NEUTRAL_SPACE_HELLO_1)	orz029.ogg
 Hello extremely! I hope you like to *Play*.
 Some *campers* are not so good for *games*.
 Is it time for *playing* yet?
 
-#(NEUTRAL_SPACE_HELLO_2)	orz030.wav
+#(NEUTRAL_SPACE_HELLO_2)	orz030.ogg
 Pleasant *combinations*! We have been *anticipating* about you.
 Do you like *parties*? We do several times, and so much the better.
 
-#(NEUTRAL_SPACE_HELLO_3)	orz031.wav
+#(NEUTRAL_SPACE_HELLO_3)	orz031.ogg
 So much *juicy*! Let's have *party time* sooner.
 
-#(NEUTRAL_SPACE_HELLO_4)	orz032.wav
+#(NEUTRAL_SPACE_HELLO_4)	orz032.ogg
 Hi. You seem like good *campers*.
 Perhaps we can do *snappy fun* with you everytime.
 
 #(hostile_1)
 Do not attempt any hostilities or you will be immediately destroyed.
 
-#(HOSTILITY_IS_BAD_1)	orz033.wav
+#(HOSTILITY_IS_BAD_1)	orz033.ogg
 If you are *sick* you should have a *party*.
 We can come and *play* at your *house*.
 
 #(hostile_2)
 We have no time for childish nonsense. We require information. Comply at once.
 
-#(HOSTILITY_IS_BAD_2)	orz034.wav
+#(HOSTILITY_IS_BAD_2)	orz034.ogg
 *Extra sick fish* need *special training* for extra *fun*.
 We will have a *happy party* now.
 
@@ -276,14 +276,14 @@ Greetings. I am Captain
 #(we_are_vindicator2)
 . We are having some difficulty translating your messages.
 
-#(NICE_TO_MEET_YOU)	orz035.wav
+#(NICE_TO_MEET_YOU)	orz035.ogg
 Yes, of course. Difficulty. Problems are difficult.
 Let's be *special* together. *Spicy games* are always fun.
 
 #(seem_like_nice_guys)
 You seem like friendly fellows. Perhaps you could aid us in our mission?
 
-#(ARE_NICE_WANT_ALLY)	orz036.wav
+#(ARE_NICE_WANT_ALLY)	orz036.ogg
 Yes. Yes. We are too friendly.
 Extremely happy *sisters* should correct each other for *celebration*.
 So much enjoyment!
@@ -292,7 +292,7 @@ Shall we come to your *house* so that we can be *relatives*?
 #(talk_about_alliance)
 We have reconsidered the idea of an alliance between our peoples.
 
-#(OK_TALK_ALLIANCE)	orz037.wav
+#(OK_TALK_ALLIANCE)	orz037.ogg
 So much the better! Orz have been waiting for *alliance* time.
 I will show you the inside.
 It is so good that you will never leave.
@@ -302,7 +302,7 @@ Yes! Yes! Reconsider is best.
 #(yes_alliance)
 Uh....I presume you are talking about an alliance. Yes, we are very interested.
 
-#(GREAT)	orz038.wav
+#(GREAT)	orz038.ogg
 Jumping *peppers*!! This is smiley time!
 You are *campers* after all!!
 We will start *alliance* *parties* for better enjoyment!
@@ -310,7 +310,7 @@ We will start *alliance* *parties* for better enjoyment!
 #(no_alliance)
 I am not quite sure, but I think the answer is no.
 
-#(MAYBE_LATER)	orz039.wav
+#(MAYBE_LATER)	orz039.ogg
 Disappointing *conclusions*.
 Maybe we can play *alliance* another happy day.
 I will tell *Orz puppies* to wait for *camping*.
@@ -318,7 +318,7 @@ I will tell *Orz puppies* to wait for *camping*.
 #(decide_later)
 No point in rushing into anything. Let us think about it some more.
 
-#(OK_LATER)	orz040.wav
+#(OK_LATER)	orz040.ogg
 Yes! Think and then do! You will tell us soon. Soon is now.
 *Parties* can be so much fun for other reasons.
 *Alliance* is good.
@@ -326,7 +326,7 @@ Yes! Think and then do! You will tell us soon. Soon is now.
 #(why_so_trusting)
 You seem very... uh, trusting. Why is that?
 
-#(TRUSTING_BECAUSE)	orz041.wav
+#(TRUSTING_BECAUSE)	orz041.ogg
 We are not trusting. We like to be *together*.
 Do you want to be *together* with us?
 Always the other *sad animals* go away, but first we have lots of fun.
@@ -340,7 +340,7 @@ I am tired.
 #(bye_neutral)
 Well, it's been.... uh... well, I'm afraid I have to go now. Do you understand?
 
-#(GOODBYE_NEUTRAL)	orz042.wav
+#(GOODBYE_NEUTRAL)	orz042.ogg
 Going. Yes. Orz is go with you same place for *party*.
 Nobody is forget.
 Next is *alliance* *party*. Always promise is good to keep.
@@ -349,27 +349,27 @@ You are not even aware, and then everyone is so happy.
 You are not forget. Alliance is promise.
 Orz are wait.
 
-#(ANGRY_SPACE_HELLO_1)	orz043.wav
+#(ANGRY_SPACE_HELLO_1)	orz043.ogg
 Orz are find you! You do not *play* with Orz so it is not even *happy town*.
 Orz are think that *dissolving* is a better chance for you.
 This is a good plan. Orz are accomplishing this for better *games*.
 Now is time for *dissolving*.
 
-#(ANGRY_SPACE_HELLO_2)	orz044.wav
+#(ANGRY_SPACE_HELLO_2)	orz044.ogg
 So many times Orz are say 'Hello, we are Orz', but next is always same.
 Certainly you are *silly cows*.
 Now is try again for *dissolving*. Of course this is best for extra fun.
 After dissolved, *silly cows* will not be *frumple*
 and Orz will have *special sauce*, not the *juice*.
 
-#(ANGRY_HOMEWORLD_HELLO_1)	orz045.wav
+#(ANGRY_HOMEWORLD_HELLO_1)	orz045.ogg
 You have come to our *house* but we cannot *play* the fun *games* with you.
 Nnnnngggaaahhh!!
 You are not even *campers*. Why are you coming to our *house*?
 We cannot *smell* you even a little.
 So much trouble in *slow time* is not the best.
 
-#(ANGRY_HOMEWORLD_HELLO_2)	orz046.wav
+#(ANGRY_HOMEWORLD_HELLO_2)	orz046.ogg
 You are not *connected*! Too many times I speak the *silly* words in *slow time*.
 No more speaking.
 Next you must *dissolve* and *become* the second time.
@@ -378,7 +378,7 @@ Orz will help you *dissolving*.
 #(whats_up_angry)
 You appear to be upset. Have I offended you somehow?
 
-#(GENERAL_INFO_ANGRY_1)	orz047.wav
+#(GENERAL_INFO_ANGRY_1)	orz047.ogg
 Orz is upset! Not one the many!
 We are *squeezing* the *juice*!
 You are showing that you are not *happy campers*
@@ -386,7 +386,7 @@ and so Orz cannot have the *party*.
 Orz need *party* or there is no fun and we are *frumple* everyday.
 This is so sad, Orz is upset of course.
 
-#(GENERAL_INFO_ANGRY_2)	orz048.wav
+#(GENERAL_INFO_ANGRY_2)	orz048.ogg
 Too many times explaining the silly words.
 How many time? One? Two? Three? Seven?
 Orz are ready to find new *friends*. You do not want to *play*.
@@ -395,7 +395,7 @@ Do not coming to our *house*.
 #(were_sorry)
 I'm not sure what I said wrong, but in any event, I'm sorry.
 
-#(APOLOGY_ACCEPTED)	orz049.wav
+#(APOLOGY_ACCEPTED)	orz049.ogg
 *Sorry* is good fun. Yes, we are see it is the *game*.
 You are strangest *campers*, but Orz is understand now.
 We will come to your *house* and we will be *sorry* too.
@@ -427,25 +427,25 @@ That's it! I've had it! You're dead.
 #(insult_8)
 That's it! I've had it! You're dead.
 
-#(INSULTED_1)	orz050.wav
+#(INSULTED_1)	orz050.ogg
 *Dangerous* is not the way! Orz are happy *fun* days all the time.
 *Silly cow* is so strange Orz think.
 Next *silly cow* are *dissolving* and no more word making in *slow time*.
 Then *happy days* are here again.
 
-#(INSULTED_2)	orz051.wav
+#(INSULTED_2)	orz051.ogg
 Orz are not *dissolve*! Why is the *silly cow* say Orz are *dissolving*?
 Too much crazy perhaps. You are so sick even for a *party*.
 Again I am *squeezing* the *juice*. Nnnggaaaahhh!!
 It does not even helping.
 
-#(INSULTED_3)	orz052.wav
+#(INSULTED_3)	orz052.ogg
 We are not *dead*. Orz is never *dead*.
 Orz is thinking *silly cow* are want to *dance*.
 Orz can *dance* very well *in between*
 but not as much fun as *parties*.
 
-#(INSULTED_4)	orz053.wav
+#(INSULTED_4)	orz053.ogg
 We are not *dead*. Orz is never *dead*.
 Orz is thinking *silly cow* are want to *dance*.
 Orz can *dance* very well *in between*
@@ -454,34 +454,34 @@ but not as much fun as *parties*.
 #(bye_angry)
 You are just too darn strange. I'm out of here.
 
-#(GOODBYE_ANGRY)	orz054.wav
+#(GOODBYE_ANGRY)	orz054.ogg
 Orz cannot be *strange*. Orz is Orz. Strange is other thing.
 You are the *silliest cow* even more so.
 At least you can *dance* with Orz.
 After the *dancing* Orz think you will make good *special sauce*.
 Maybe even for other Orz *party*, so do not be sad.
 
-#(ANGRY_TAALO_HELLO_1)	orz055.wav
+#(ANGRY_TAALO_HELLO_1)	orz055.ogg
 Who is it? It is the *not Campers*.
 Maybe you have come to Taalo *playground* for a *Picnic*.
 No!!! It is not the case! *Silly Cows* can never have a *picnic*.
 Of course. Not even a party.
 If you are gone, Orz can have fun some more.
 
-#(ANGRY_TAALO_HELLO_2)	orz056.wav
+#(ANGRY_TAALO_HELLO_2)	orz056.ogg
 I am not expecting, and then what? Again the *Silly Cows*.
 You think that the *Playground* is a *fun* place?
 I will explain. It is not.
 Now it is explained. Of course you understand.
 It is enough talking the words. You are leaving.
 
-#(FRIENDLY_ALLIED_TAALO_HELLO_1)	orz057.wav
+#(FRIENDLY_ALLIED_TAALO_HELLO_1)	orz057.ogg
 Happy *pieces*! I am *squirting nice colors*!
 Why? The reason.
 *Camper friends* have come to Taalo *Playground*.
 Why are you coming to this?
 
-#(FRIENDLY_ALLIED_TAALO_HELLO_2)	orz058.wav
+#(FRIENDLY_ALLIED_TAALO_HELLO_2)	orz058.ogg
 I *smell* you so much. *Campers* are pleasant.
 You are coming again to the *Playground*.
 We can have extra fun for future *parties* in *quick time*.
@@ -489,13 +489,13 @@ We can have extra fun for future *parties* in *quick time*.
 #(demand_to_land)
 I demand that you allow us to pass so that we can land on the surface.
 
-#(NO_DEMAND)	orz059.wav
+#(NO_DEMAND)	orz059.ogg
 NNNNgggggaaahhhhh!!!!!! You are *frumple*! You are silly!!
 Is this happy? NO!!! I cannot *spit* words with *Cows*!
 There is no demanding!
 We will *dance* now for several *pieces*.
 
-#(ASK_NICELY)	orz060.wav
+#(ASK_NICELY)	orz060.ogg
 You are not *spitting* happy words. Demand is not happy.
 If you want to going onto *Playground* then *happy words* are best.
 Do you understand the most?
@@ -504,14 +504,14 @@ It is so simple.
 #(why_you_here)
 Why are you here at this planet?
 
-#(ANGRY_EXPLANATION)	orz061.wav
+#(ANGRY_EXPLANATION)	orz061.ogg
 This answer is not for *Silly Cows*.
 You do not know Taalo. Taalo are not the *friends*.
 You are coming to the *Playground* and then making words.
 Always you make Orz *squeezing juice*. We do not have enough.
 I do not want to *smell* you now.
 
-#(FRIENDLY_EXPLANATION)	orz062.wav
+#(FRIENDLY_EXPLANATION)	orz062.ogg
 I will tell. This is Taalo *Playground*. Do you know?
 Taalo is not anymore the *heavy space*. Many *camper* lives they are not here.
 To *play* with Taalo, Orz must *spread* into *Pretty Space*.
@@ -522,7 +522,7 @@ You cannot going to *Pretty Space*, too bad.
 #(what_is_this_place)
 What do you mean by `Playground'? Can you explain some more?
 
-#(FRIENDLY_PLACE)	orz063.wav
+#(FRIENDLY_PLACE)	orz063.ogg
 Yes. Yes. You say words, then I say.
 It is fun *in between*. More fun than *dancing*.
 Many *gravity centers* in *heavy space* make good *party places*.
@@ -535,7 +535,7 @@ Now Dnyarri are sleeping, so Orz can *chase* them.
 Then we can have a *party*. They are even better *campers* than you.
 Do not feeling bad. You are good enough *campers*, but not yet.
 
-#(ANGRY_PLACE)	orz064.wav
+#(ANGRY_PLACE)	orz064.ogg
 Why explaining? You are not a *camper*! You are too *hard*!
 If you want *words with fluid* then you must be *campers*!
 Of course you are so silly. That is too much. Do not asking about *playgrounds*.
@@ -545,13 +545,13 @@ Silly name is Gamma Vulpeculae.
 #(may_we_land)
 Would you mind if we did a bit of exploring on the planet's surface?
 
-#(SURE_LAND)	orz065.wav
+#(SURE_LAND)	orz065.ogg
 You are ask if Orz are upset? Orz are not upset.
 You are *happy campers*. Certainly you are only *slow time* *walkers*.
 It is not fun on the surface in *slow time*.
 If you want to go, that is okay.
 
-#(ALLIES_CAN_VISIT)	orz066.wav
+#(ALLIES_CAN_VISIT)	orz066.ogg
 Only *campers* can go to the *playground*.
 *Alliance parties* are often a good idea for better *parties*.
 Even for *picnics*.
@@ -560,7 +560,7 @@ Do you want to be *campers* for the *friendly days*?
 #(make_alliance)
 All right, all right. We'll be `campers'. How do we do that?
 
-#(CANT_ALLY_HERE)	orz067.wav
+#(CANT_ALLY_HERE)	orz067.ogg
 *Jumping Peppers!* I am *squirting* more *nice colors*.
 It is the best way!
 You will be very happy *campers*. Do not be *terrified*.
@@ -572,7 +572,7 @@ We are so busy here for starting the *campers*!
 #(why_busy)
 What are you busy doing?
 
-#(BUSY_BECAUSE)	orz068.wav
+#(BUSY_BECAUSE)	orz068.ogg
 Busy is because Orz have reason. It is secret for *campers*.
 You must going quickly to my *house*.
 It is too bad you cannot **HYUIVBHJHG** there
@@ -586,27 +586,27 @@ Well, it's been swell, but I really should be going now.
 #(bye_ally)
 I could stay and talk all day, but I'm afraid I must go. Farewell, allies!
 
-#(GOODBYE_ALLY)	orz069.wav
+#(GOODBYE_ALLY)	orz069.ogg
 Yes! We do! Goodbye is the *Game*. Hello!! I am only joke.
 It is funny enough. Do not forget to *enjoy the sauce*!!!
 
-#(FRIENDLY_TAALO_GOODBYE)	orz070.wav
+#(FRIENDLY_TAALO_GOODBYE)	orz070.ogg
 I am so sad myself. You are not here and then I do not think of *parties*.
 Oh well. It is so much excitement for the next time.
 You must leave now so then you must come back.
 Yes. I understand very well.
 
-#(ANGRY_TAALO_GOODBYE)	orz071.wav
+#(ANGRY_TAALO_GOODBYE)	orz071.ogg
 Finally you are *absorbing*. I am tired of *spitting* the meaning.
 Go. It is *happy days* after you are gone.
 Then I will have enough *juice*.
 So much the better.
 
-#(HOSTILE_HELLO_1)	orz072.wav
+#(HOSTILE_HELLO_1)	orz072.ogg
 Nnnnnngaaaa!!!! I am *squeezing* the *juice*.
 More and more *juice!*
 You are *sick* for the last time!
 
-#(HOSTILE_HELLO_2)	orz073.wav
+#(HOSTILE_HELLO_2)	orz073.ogg
 Nnnnnggggaaaahhhhh!!!!!! It is *dancing*!!!!
 

@@ -70,6 +70,7 @@ SDL_VERSION=1.2.2
 AM_PATH_SDL($SDL_VERSION, , AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
 AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR([Your system is missing libSDL_image!]),`sdl-config --libs`)
+AC_CHECK_LIB(SDL_sound, main, , AC_MSG_ERROR([Your system is missing libSDL_sound!]),`sdl-config --libs`)
 #AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
 #AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR([Your system is missing SDL_mixer.h!]))
 
