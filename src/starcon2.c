@@ -93,6 +93,7 @@ main (int argc, char *argv[])
 	};
 
 	int option_index = 0, c;
+	const char *optstring = "r:d:foc:b:spn:?hM:S:T:m:q:ug:l:";
 	static struct option long_options[] = 
 	{
 		{"res", 1, NULL, 'r'},
@@ -129,7 +130,7 @@ main (int argc, char *argv[])
 		option.  If it was given, redirect stderr to the named file
 	*/
 	opterr = 0;
-	while ((c = getopt_long (argc, argv, "l:", long_options, 0)) != -1)
+	while ((c = getopt_long (argc, argv, optstring, long_options, 0)) != -1)
 	{
 		switch (c) {
 			case 'l':
@@ -176,7 +177,8 @@ main (int argc, char *argv[])
 	addons[0] = NULL;
 	numAddons = 0;
 	
-	while ((c = getopt_long(argc, argv, "r:d:foc:b:spn:?hM:S:T:m:q:ug:l:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, optstring, long_options,
+			&option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
