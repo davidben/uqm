@@ -712,6 +712,8 @@ PickPlanetSide (PMENU_STATE pMS)
 		SetSemaphore (GraphicsSem);
 		DrawStatusMessage (NULL_PTR);
 		ClearSemaphore (GraphicsSem);
+
+		FlushInput ();
 		if (pMenuState->flash_task)
 		{
 			ConcludeTask (pMenuState->flash_task);

@@ -237,6 +237,11 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 		}
 	} while ((*((PINPUT_STATE_DESC)pInputState)->InputFunc)
 			(pInputState));
+	if (resetInput)
+	{
+		TFB_ResetControls ();
+	}
+
 }
 
 BATTLE_INPUT_STATE
