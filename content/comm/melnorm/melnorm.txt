@@ -3,7 +3,6 @@ I am Trade Master Greenish in command of the Melnorme starship
 `Inevitably Successful in All Circumstances.' 
 I bid you a formal welcome, Captain.
 
-melno004.wav
 Though we Melnorme have just recently arrived in this region of space
 we have long desired to make contact with your species 
 and look forward to an extended profitable relationship.
@@ -30,7 +29,6 @@ We gather information from a thousand secret sources in space and time.
 Our charge for revealing even one of these sources would be so high 
 that your species would be in debt to us for centuries."  ;
 
-melno030.wav
 
 #(what_about_yourselves)
 What can you tell us about yourselves?
@@ -189,11 +187,6 @@ much to the native Algolites sincere
 though short-lived
 regret.
 #(excuse_2)
-melno189.wav
-melno190.wav
-melno191.wav
-melno192.wav
-melno193.wav
 Let's just forget our battle ever happened, ok?
 #(NO_EXCUSE_2)	MELNO026.wav
 No.

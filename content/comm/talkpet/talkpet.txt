@@ -71,7 +71,6 @@ I thought that perhaps I could let you live
 but now I fear you know too much.
 My plans for revenge are far too important
 to be be ruined by a simple, interfering dolt like yourself.
-talkp073.wav
  -<GO KILL YOURSELF IN BATTLE!>-\r
 
 #(HYPNOTIZE_AGAIN_1)	TALKP008.wav

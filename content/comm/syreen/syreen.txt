@@ -69,23 +69,6 @@ Are the Ur-Quan finally defeated?
 Simply put, Captain...what do you want from us?
 
 #(we_here_to_help)
-syree071.wav
-syree072.wav
-syree073.wav
-syree074.wav
-syree075.wav
-syree076.wav
-syree077.wav
-syree078.wav
-syree079.wav
-syree080.wav
-syree081.wav
-syree082.wav
-syree083.wav
-syree084.wav
-syree085.wav
-syree086.wav
-syree087.wav
 We have come here to free you from slavery to the Ur-Quan!
 
 #(NO_NEED_HELP)	SYREE011.wav
