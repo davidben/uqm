@@ -15,7 +15,6 @@ You're back? Har! Har! Har! More fun! More fun!
 #(HWLD_PRE_ZOMBIE_HELLO_4)	umgah003.wav
 Howdy human Earthling! Back for more fun?
 
-
 #(SPACE_PRE_ZOMBIE_HELLO_1)	umgah004.wav
 Well bloat my belly! It a human Earthling!
 Har! Har! Har! Haven't seen a human Earthling since... since
@@ -40,7 +39,6 @@ Har! Har! Har!... fooled ya, didn't I?
 #(SPACE_PRE_ZOMBIE_HELLO_4)	umgah007.wav
 Yo! Human Earthling! What up?!
 
-	
 #(UNKNOWN_ZOMBIE_HELLO_1)	umgah008.wav
 HELLO. HUMAN. EARTHLING.
 HAR.
@@ -57,7 +55,6 @@ HAR.
 WE. FUNNY. UMGAH. SO. FUNNY.
 HAR.
 
-
 #(DESTROY_INTERFERER_1)	umgah012.wav
 THE. HUMAN. INTERFERES. WITH. PLAN.
 KILL. IT.
@@ -72,7 +69,6 @@ ELIMINATE. HUMAN.
 #(DESTROY_INTERFERER_4)	umgah015.wav
 DESTROY. HUMAN. IMMEDIATELY.
 
-
 #(REVEALED_ZOMBIE_HELLO_1)	umgah016.wav
 HUMAN. KNOWS. TOO. MUCH. IT. MUST. NOT. ESCAPE.
 
@@ -84,7 +80,6 @@ CEASE. HOSTILITIES. WE. HAVE. CHANGED. OUR. MINDS. WE. LIKE. YOU. COME. CLOSER.
 
 #(REVEALED_ZOMBIE_HELLO_4)	umgah019.wav
 RESISTANCE. IS. USELESS. HUMAN. EARTHLING.
-
 
 #(HOSTILE_HELLO_1)	umgah020.wav
 Hello human Earthling savior!
@@ -111,7 +106,6 @@ Har! Har! Har! What a sad coincidence, eh, Captain King?
 #(HOSTILE_HELLO_4)	umgah023.wav
 Ho-ho! Human Earthling has returned to claim its reward!
 What reward you ask? Why this reward, of course!
-
 
 #(REWARD_AT_HOMEWORLD_1)	umgah024.wav
 Hurray! Hurray! It human Earthling! Our Savior!!
@@ -194,7 +188,7 @@ What `Big Plan'?
 We never quite sure about details of `Big Plan', except it involved getting revenge
 and mean LOTS of revenge...
 against Ur-Quan masters.
-	
+
 #(any_jokes)
 Why the Ur-Quan? What did it have against them?
 
@@ -265,8 +259,6 @@ you now glamorous and exciting... Great Enemy!
 We give you some our Drone ships to make even more interesting!
 Yes! This going to be LOTS more fun!
 Here... let me show you.
-
-
 
 #(whats_up_pre_zombie)
 Umgah! Reveal your secrets!
@@ -405,7 +397,6 @@ WHEN. HE. IS. A. SLAVE. MASTER.
 Uh... that wasn't very funny. Can't you do better?
 
 #(JOKE_2)	umgah052.wav
-
 BETTER. JOKE. YES. BETTER. JOKE. HERE. IT. IS
 WHAT. YOU. GET. WHEN. COMBINE. DEUTERIUM. PELLET. TERRAWATT. LASER.
 AND. PRIMITIVE. EARTH. LEADER. FROM. ASIAN. STEPPES.

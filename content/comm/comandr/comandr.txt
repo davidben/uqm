@@ -103,7 +103,7 @@ or all the other supplies are pretty damn pointless, since we'll be too dead to 
 #(DONT_KNOW_WHO_YOU_ARE) coman019.wav
 Look, I don't know who you are or why you're here
 but right now the only thing I'm worried about
- is saving the lives of the 1900 men and women aboard this starbase
+is saving the lives of the 1900 men and women aboard this starbase
 and right now you're our only hope.
 I can't keep the transmitter on too much longer -- we need the power for heat and air
 so if you don't have any radioactives on board your vessel
@@ -174,7 +174,7 @@ I have to be sure that you and your ship have what it takes to oppose the Hierar
 I'll make you a deal.
 If you can eliminate the alien base on the moon, and get rid of that threat, at least
 I will seriously consider your offer.
- 
+
 #(ACKNOWLEDGE_SECRET) coman028.wav
 Hmmm... you know, come to think of it
 there were some rumors that Corridor Nine, the special operations division of Star Control
@@ -414,8 +414,8 @@ Er... we destroyed it! Yessiree, blew it to bits.
 Uh, I meant a different red thing. Never mind.
 
 #(take_care_of_base_again)
-   "Now we're ready to take care of the moon base, Commander. Goodbye.
+Now we're ready to take care of the moon base, Commander. Goodbye.
 
 #(goodbye_commander)
-   "Goodbye Commander.
+Goodbye Commander.
 

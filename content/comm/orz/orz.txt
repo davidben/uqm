@@ -210,8 +210,7 @@ I am clear!!
 You are not so *silly*!
 
 #(about_andro_3)
-Okay, okay. Now this isn't really a question, but let's say you WERE going "
-to talk about the Androsynth. If you were, what would you say?
+Okay, okay. Now this isn't really a question, but let's say you WERE going to talk about the Androsynth. If you were, what would you say?
 
 #(BLEW_IT)	orz024.wav
 Nnnnnggggaaaahhhhh!!!!!! It is *dancing*!!!!
@@ -350,7 +349,6 @@ You are not even aware, and then everyone is so happy.
 You are not forget. Alliance is promise.
 Orz are wait.
 
-
 #(ANGRY_SPACE_HELLO_1)	orz043.wav
 Orz are find you! You do not *play* with Orz so it is not even *happy town*.
 Orz are think that *dissolving* is a better chance for you.
@@ -361,7 +359,7 @@ Now is time for *dissolving*.
 So many times Orz are say 'Hello, we are Orz', but next is always same.
 Certainly you are *silly cows*.
 Now is try again for *dissolving*. Of course this is best for extra fun.
-After dissolved, *silly cows * will not be *frumple*
+After dissolved, *silly cows* will not be *frumple*
 and Orz will have *special sauce*, not the *juice*.
 
 #(ANGRY_HOMEWORLD_HELLO_1)	orz045.wav

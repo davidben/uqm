@@ -18,9 +18,6 @@ Katana
 #(katana)
 Tanaka
 
-
-
-
 #(HOSTILE_KATANA_1)	shofi000.wav
 I, Katana the Warrior, have travelled for long years through space to finally come home
 only to witness you blasting my brother to atoms!
@@ -98,6 +95,7 @@ Kyaiee!
 
 #(dont_know)
 Don't you know the war is over?
+
 #(NEVER)	shofi015.wav
 For me, Tanaka the Warrior, it will never be over.
 Kyaiee!
@@ -171,8 +169,7 @@ I am Captain
 . Cease aggression immediately!
 
 #(i_am_nice)
-I am the nice, friendly ally
-WHO YOU'VE BEEN TRYING TO KILL -- YOU IDIOT, MORON RATHEAD!
+I am the nice, friendly ally WHO YOU'VE BEEN TRYING TO KILL -- YOU IDIOT, MORON RATHEAD!
 
 #(i_am_guy)
 I am the guy who called you donkey-breath, you violent little varmint.
@@ -219,8 +216,7 @@ No, wait, Shofixti! I have an important duty for you to perform.
 What might that be?
 
 #(need_you_for_duty)
-Shofixti, I am now your new commander. I order you not to kill yourself. 
-You are to remain here and guard your solar system.
+Shofixti, I am now your new commander. I order you not to kill yourself.  You are to remain here and guard your solar system.
 
 #(OK_WILL_BE_SENTRY)	shofi031.wav
 Very well, Captain. I will do as you have ordered.

@@ -155,7 +155,7 @@ Uh, that was just kind of a misunderstanding.
 #(JUST_MISUNDERSTANDING0)	spaho020.wav
 Of course Captain 
 #(JUST_MISUNDERSTANDING1)	spaho021.wav
- we realize that misunderstandings happen... occasionally.
+, we realize that misunderstandings happen... occasionally.
 Let us just hope that no similar `misunderstanding' causes us to open fire on you
 with our planetary defense batteries.
 
@@ -166,7 +166,7 @@ As a gesture of good will, could you spare some mineral resources?
 No.
 
 #(resources_please)
-	"Now that our alliance is firmly established, could you please transport "
+Now that our alliance is firmly established, could you please transport
 large quantities of valuable minerals to our ship?
 
 #(SORRY_NO_RESOURCES)	spaho023.wav
@@ -209,7 +209,7 @@ the gelatinous Umgah pranksters
 the multi-legged, super-violent Ilwrath who are fanatical in their worship of Dogar and Kazon
 the Thraddash - a weak and obnoxious race from the Draconis group of stars
 the humanoid clones you call Androsynth, though they have been strangely absent for some years
-	"the vain VUX, commanded by the brilliant and eccentric general ZEX"
+the vain VUX, commanded by the brilliant and eccentric general ZEX
 and the mysterious Mycon, who ramble endlessly about people, places and events from long ago
 as though they happened just today.
 If there are other Hierarchy races, we are not aware of them.
@@ -484,7 +484,7 @@ The job is incomplete until their presence is scoured from the surface of Spathi
 
 #(YOU_LIED_2)	spaho060.wav
 What kind of fools do you take us for?
-	"Your lying is pointless."
+Your lying is pointless.
 From this day forward we are enemies forever!
 
 #(bye_from_party_1)
@@ -539,8 +539,7 @@ We cannot simply say, `Hurrah!' and form an alliance with you this very moment.
 Surely you see that?
 
 #(return_beasts)
-You know, those creatures aren't dead. We have them in suspended animation.
-How would you like us to return them to the surface?
+You know, those creatures aren't dead. We have them in suspended animation.  How would you like us to return them to the surface?
 
 #(WHAT_RELATIONSHIP)	spaho068.wav
 NO!... er,... no... please!
@@ -625,7 +624,7 @@ Maybe if you get the opportunity Captain, you can try to ask the question again.
 Developments?! What developments!? Whatever are you talking about, Captain?
 Are you implying we are up to something -- that we have some kind of secret plan!?
 How wrong you are, Captain! Our feelings are injured by your unwarranted accusation.
-Apologies would be appropriate at this time
+Apologies would be appropriate at this time.
 
 #(GENERAL_INFO_5)	spaho079.wav
 No Captain, no news.

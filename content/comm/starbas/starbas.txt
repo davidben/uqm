@@ -129,7 +129,6 @@ Not too much today, Captain
 #(LIGHT_LOAD_G1) 
 . I hope you have better luck next time.
 
-
 #(MEDIUM_LOAD_A0) starb031.wav
 Not a bad job, Captain 
 #(MEDIUM_LOAD_A1)
@@ -165,8 +164,6 @@ A fair haul, Captain
 #(MEDIUM_LOAD_G1) 
 . Maybe you should consider adding a storage bay so you can gather larger loads.
 
-
-
 #(HEAVY_LOAD_A0) starb038.wav
 Excellent work, Captain 
 #(HEAVY_LOAD_A1)
@@ -201,7 +198,6 @@ Captain
 More fuel for the fire, eh, Captain 
 #(HEAVY_LOAD_G1) 
 ?  That last load should keep it blazing!
-
 
 #(STARBASE_IS_READY_A) starb045.wav
 I have good news to report, Captain.
@@ -338,7 +334,6 @@ I expect mineral yields would be exceptional on planets in such solar systems.
 Also remember, since making planetfall requires fuel
 you will want to be careful to note the gravity of each world before you dispatch a lander.
 Some worlds simply do not have the resources to offset the cost of a landing.
-	
 
 #(ABOUT_ALIENS) starb061.wav
 That all depends on who you meet, doesn't it, Captain?
@@ -527,7 +522,6 @@ before, after, and during battle.
 The Arilou intimated that they had a relationship with the Umgah before the Ur-Quan arrived
 but I don't know any details.
 
-
 #(ABOUT_ANDROSYNTH) starb088.wav
 When I was flying combat missions along the Coreward Front
 there was nothing we feared more than an Androsynth Hit-And-Run Squadron.
@@ -540,7 +534,7 @@ Our grandparents had kept them as slaves for nearly 50 years.
 The starship Far Voyager, under the command of Captain Jeffry L. Rand, encountered the VUX near Beta Mira.
 Although the details are hazy, it is generally accepted that Rand offended the VUX starship Commander
 with an inadvertent insult.
- The resulting tension delayed the VUX entry into the Alliance long enough
+The resulting tension delayed the VUX entry into the Alliance long enough
 for the Ur-Quan to enter the region in force and subjugate the VUX.
 With the VUX on their side, the Hierarchy grew strong enough to attack the Alliance
 the rest, as they say, is history.
@@ -644,7 +638,7 @@ and were attacking the VUX, who only the Yehat knew even existed.
 Our first contact with the VUX took place in 2119, and it was the biggest single mistake we made during the War.
 After defeating the VUX, the Ur-Quan fleets ran smack into the combined might of the Yehat and Shofixti
 supported by the first wave of our cruisers.
- Again the Ur-Quan turned away from the hard spot to attack the weak, though we just thought they were running away.
+Again the Ur-Quan turned away from the hard spot to attack the weak, though we just thought they were running away.
 In fact, the Ur-Quan had found another independent alien race, the Mycon, in the Brahe constellation.
 We don't know much about that battle, but it was over quickly, and with its end
 brought the return of the Ur-Quan fleets, now swollen with a hundred devastating Mycon Podships.
@@ -708,7 +702,6 @@ when I was transferred up here to be the new commander of this starbase.
 
 #(OK_ENOUGH_WAR) starb100.wav
 Would you like information on any other aspect of history?
-
 
 #(STARBASE_BULLETIN_TAIL) starb101.wav
 That's all for now, Captain.
@@ -801,7 +794,7 @@ Due to the broadcast's wide dispersion, we cannot discern its content.
 
 #(STARBASE_BULLETIN_13) starb115.wav
 We have made a formal alliance with the Chmmr.
-Their ships can now be built in our shipyards.;
+Their ships can now be built in our shipyards.
 
 #(STARBASE_BULLETIN_14) starb116.wav
 The Shofixti have returned!
@@ -823,7 +816,6 @@ and I'm afraid their populations seems to be growing geometrically.
 If this continues, in a year space will be crawling with these things!
 I recommend you treat this as a serious problem now, before it becomes a disaster.
 Discover who is creating these probes and stop them from creating any more.
-
 
 #(STARBASE_BULLETIN_18) starb119.wav
 This seems strange to me, and I considered not even bringing it up
@@ -889,7 +881,6 @@ A THOUSAND, Captain!
 Crew are quickly becoming a valuable commodity, Captain
 and I expect their RU cost will reflect this.
 
-
 #(STARBASE_BULLETIN_30) starb125.wav
 I can't believe what I've just heard!
 Captain, you're a heinous slave-trader!
@@ -918,7 +909,7 @@ The hazards and benefits of this process are impossible to ascertain without fie
 
 #(ABOUT_TALKPET) starb130.wav
 SUBJECT: Talking Pet Lifeform.
-DATA: This creature is physiologically identical to the so-called Ur-Quan `Talking Pet 'with one notable exception.
+DATA: This creature is physiologically identical to the so-called Ur-Quan `Talking Pet' with one notable exception.
 It is highly intelligent, and evidences strong psychic capabilities.
 In initial AIQR tests rated it well above human super-genius
 though immediately after we made this shocking assessment
@@ -1251,8 +1242,6 @@ otherwise your weapon re-energizing delays will be your undoing in combat
 
 #(NEED_POINT) starb190.wav
 I suggest you invest in one or more point-defense laser batteries.
-
-
 
 #(have_minerals)
 Commander, I have minerals to offload.

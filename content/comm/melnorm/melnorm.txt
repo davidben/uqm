@@ -2,7 +2,6 @@
 I am Trade Master Greenish in command of the Melnorme starship
 `Inevitably Successful in All Circumstances.' 
 I bid you a formal welcome, Captain.
-
 Though we Melnorme have just recently arrived in this region of space
 we have long desired to make contact with your species 
 and look forward to an extended profitable relationship.
@@ -22,20 +21,22 @@ Even before our first meeting, we knew of you, Captain.
 Though your struggle to free Earth shall be a long and difficult challenge
 fraught with great danger and mystery
 we have great confidence in you and your abilities.
+
 #(how_know)
 How did you know about us before meeting us?
 
 #(KNOW_BECAUSE)	melno004.wav
 We gather information from a thousand secret sources in space and time.
 Our charge for revealing even one of these sources would be so high 
-that your species would be in debt to us for centuries."  ;
-
+that your species would be in debt to us for centuries.
 
 #(what_about_yourselves)
 What can you tell us about yourselves?
+
 #(NO_TALK_ABOUT_OURSELVES)	melno005.wav
 Our origins and purposes are, frankly, mysterious and due to several unavoidable factors
 we are unable to discuss ourselves in any great detail.
+
 #(what_factors)
 What are these 'unavoidable factors'?
 
@@ -53,6 +54,7 @@ for a nominal sum of Credits.
 
 #(what_about_universe)
 Do you have any information which might be useful to us?
+
 #(NO_FREE_LUNCH)	melno007.wav
 Absolutely. 
 Our primary trade good IS information.
@@ -61,14 +63,18 @@ which I am certain would be of incalculable value to you!
 We can discuss the details of this VERY significant information
 later, when we have established normal trading procedures
 at which time we shall also discuss the nature of our fees.
+
 #(giving_is_good_1)
 Fees! Surely your culture is far beyond such pettiness as money?
+
 #(GIVING_IS_BAD_1)	melno008.wav
 You are of course correct.
 We long ago abandoned currency,
 and now only deal with commodities that have intrinsic value, such as valuable information
+
 #(giving_is_good_2)
 But our cause is just! Isn't altruism the highest pinnacle of morality?
+
 #(GIVING_IS_BAD_2)	melno009.wav
 No, it is not.
 In fact, in our culture, `giving'
@@ -76,25 +82,26 @@ with no fair exchange of goods or services,
 is considered vulgar and inappropriate.
 
 Please do not mention this subject again.
+
 #(get_on_with_business)
 Shall we begin trading now?
+
 #(trade_is_for_the_weak)
 `Trade' is for the weak.  We TAKE what we want!
+
 #(WERE_NOT_AFRAID)	melno010.wav
 We reel with inchoate fear, and are thrown into a sudden panic.  
 Being peaceful by nature
-we would no doubt be unprepared for your sudden hostility
+We would no doubt be unprepared for your sudden hostility
 were it not for the excellent weapon system we bought from the Keel-Verezy just last month.
 A weapon system which is fully locked on your command bridge, by the way.
 
 #(no_trade_now)
 We cannot continue this conversation. Goodbye.
+
 #(OK_NO_TRADE_NOW_BYE)	melno011.wav
 When you wish to trade with us, seek any supergiant star system.
 We shall be there.
-
-/*------------------------------------------------------------------*/
-
 
 #(HELLO_AND_DOWN_TO_BUSINESS_1)	melno012.wav
 Yes, let us get down to business.
@@ -146,8 +153,6 @@ Welcome back, Captain! You are our favorite customer.
 #(whats_my_credit)
 What's my Credit balance, if you please?
 
-/*------------------------------------------------------------------*/
-
 #(HELLO_SLIGHTLY_ANGRY_1)	melno022.wav
 So
 the violent one has returned.
@@ -165,6 +170,7 @@ We require a formal apology.
 
 #(explore_relationship)
 Can we discuss establishing an alliance?
+
 #(EXAMPLE_OF_RELATIONSHIP)	melno025.wav
 Your question reveals a certain lack of understanding
 about the nature of friendly, inter-species relationships. 
@@ -177,6 +183,7 @@ Is this clear?
 
 #(excuse_1)
 Look, mistakes happen.  Don't get so bent out of shape!
+
 #(NO_EXCUSE_1)	melno026.wav
 The Spathi once used a similar excuse
 after an unfortunate incident at their base on Algol IV.
@@ -187,18 +194,23 @@ and the entire atmosphere was stripped off the planet
 much to the native Algolites sincere
 though short-lived
 regret.
+
 #(excuse_2)
 Let's just forget our battle ever happened, ok?
+
 #(NO_EXCUSE_2)	melno027.wav
 No.
+
 #(excuse_3)
 What do you want from me, a formal apology?
+
 #(NO_EXCUSE_3)	melno028.wav
 There is a small possibility that an apology would set things right.
 But it would have to be genuine.
 
 #(we_apologize)
 I apologize. I'm sorry. Please forgive me, I beg you.
+
 #(APOLOGY_ACCEPTED) melno029.wav
 Well
 since you put it so nicely
@@ -209,6 +221,7 @@ Or the next time we won't be such nice guys.
 
 #(so_we_can_attack)
 This seems like a great opportunity to attack you again.
+
 #(DECEITFUL_HUMAN) melno030.wav
 Deceitful human!
 
@@ -235,6 +248,7 @@ We won't!
 
 #(well_if_thats_the_way_you_feel)
 Die, eye-freak.
+
 #(you_hate_us_so_we_go_away)
 Goodbye.
 
@@ -259,7 +273,7 @@ This has been known to happen.
 However
 as a gesture of good will, and in the spirit of friendship, we offer our assistance!
 For a nominal fee.
-	
+
 #(RESCUE_AGAIN_1) melno038.wav
 Once more we find ourselves in a position to help you.
 How wonderful.
@@ -297,7 +311,7 @@ Would you like us to help you at this time?
 Yes, I would appreciate your assistance. What is your fee?
 
 #(no_help)
-I don't need your help at this time. Maybe later, though.";
+I don't need your help at this time. Maybe later, though.
 
 #(RESCUE_OFFER)	melno045.wav
 You have no Credit balance in our mercantile computer
@@ -351,9 +365,11 @@ either make a sincere apology to us, or depart.
 
 #(beg_forgiveness)
 We beg your forgiveness for our unwarranted aggression.
+
 #(LOTS_TO_MAKE_UP_FOR)	melno055.wav
 Even if we were to accept your words as truth
 you have a lot to make up for.
+
 #(you_are_so_right)
 We stand prepared to make reparations for our previous conduct.
 
@@ -377,6 +393,7 @@ Do you accept?
 
 #(ok_strip_me)
 Ok, it's a deal, but ONLY the non-essentials!
+
 #(no_strip_now)
 What kind of sucker do you think I am? Forget it!
 
@@ -387,21 +404,23 @@ It's not worth stripping.
 Removal of non-essential equipment is complete.
 We are satisfied with the exchange, and believe that we can now pursue
 a productive business relationship.
-We shall forget the mistakes you made in the past. Mostly."  ;
+We shall forget the mistakes you made in the past. Mostly.
 
 #(bye_melnorme_pissed_off)
 Goodbye.
+
 #(MELNORME_PISSED_OFF_GOODBYE)	melno059.wav
 Good riddance.
 
 #(fight_some_more)
 Prepare to be destroyed.
+
 #(OK_FIGHT_SOME_MORE)	melno060.wav
 No, YOU prepare to be destroyed!
 
-
 #(why_blue_light)
 Why did your bridge just turn blue?
+
 #(BLUE_IS_MAD)	melno061.wav
 To us, blue ambience signifies a response to an unexpected threat
 it shows that we are under emotional distress
@@ -410,6 +429,7 @@ it also lets us see our weapon consoles more clearly.
 
 #(we_strong_1)
 We have no fear of you, Melnorme!
+
 #(YOU_NOT_STRONG_1) melno062.wav
 You should.
 Once the Dramya thought they could steal from us.
@@ -417,10 +437,13 @@ You don't see too many Dramya around these days, do you?
 
 #(we_strong_2)
 We have the most powerful ship in this part of the galaxy.
+
 #(YOU_NOT_STRONG_2) melno063.wav
 Perhaps that is true, but you have only one ship.
+
 #(we_strong_3)
 Why shouldn't we just take what we want from you by force?
+
 #(YOU_NOT_STRONG_3)	melno064.wav
 Because it's against the law, and besides
 if you steal from us, the other Melnorme ships will have to raise their prices
@@ -446,8 +469,6 @@ Let's just test out that weapon system, shall we?... IN COMBAT!
 
 #(YOU_GIVE_US_NO_CHOICE) melno067.wav
 You give us no choice.
-/*--------------------------------------------------------------------*/
-
 
 #(TRADING_INFO)	melno068.wav
 Since this is your first time trading with us, let me explain how our system works.
@@ -487,6 +508,7 @@ We appreciate your intentions, but you have nothing we wish to buy.
 
 #(WHAT_TO_SELL)	melno072.wav
 What would you like to sell, Captain?
+
 #(OK_DONE_SELLING) melno073.wav
 As you wish.
 
@@ -497,10 +519,10 @@ I have some data on alien lifeforms.
 The 
 
 #(SOLD_LIFE_DATA2) melno074.wav
-units of biological data we downloaded from your ship earn you
+ units of biological data we downloaded from your ship earn you 
 
 #(SOLD_LIFE_DATA3) melno074.wav
-Credits.
+ Credits.
 
 #(sell_rainbow_locations)
 I wish to sell you Rainbow world locations.
@@ -509,11 +531,11 @@ I wish to sell you Rainbow world locations.
 Your ship's log indicates that you discovered the whereabouts of 
 
 #(SOLD_RAINBOW_LOCATIONS2)	melno076.wav
-Rainbow worlds which so fascinate us.
-In exchange, we will give you
+ of the Rainbow worlds which so fascinate us.
+In exchange, we will give you 
 
 #(SOLD_RAINBOW_LOCATIONS3)	melno076.wav
-Credits.
+ Credits.
 	     
 #(sell_precursor_find)
 We found a Precursor artifact. Do you want it?
@@ -535,7 +557,6 @@ To earn Credits you must sell us the items we desire, which are:
 biological data on alien lifeforms
 and the coordinates of certain strange worlds whose radiant energies defy all scanners
 producing a rainbow-like image.
-
 
 #(WHAT_TO_BUY)	melno078.wav
 What trade items would you like to buy today?
@@ -579,24 +600,24 @@ I am done buying fuel.
 #(FRIENDLY_GOODBYE)	melno083.wav
 It has been a pleasure dealing with you, Captain.
 We look forward to your next visit.
-/*------------------------------------------------------------------*/
+
 #(CREDIT_IS0)	melno086.wav
-"Your present balance is 
+Your present balance is 
 #(CREDIT_IS1)	melno087.wav
-" Credits.
+ Credits.
 
 #(NEED_MORE_CREDIT0)	melno084.wav
 Unfortunately this purchase requires 
 #(NEED_MORE_CREDIT1)	melno084.wav
-additional Credits.
+ additional Credits.
 
-/*------------------------------------------------------------------*/
 #(BUY_FUEL_INTRO)	melno085.wav
 As you know, we carry a large supply of fuel on board which is compatible with your engine system.
 We will be happy to sell this substance to you at a cost of 1 Credit per unit.
+
 #(NO_ROOM_FOR_FUEL)	melno086.wav
 Your ship's capacity is insufficient to hold that much fuel.
-/*------------------------------------------------------------------*/
+
 #(buy_info)
 I wish to buy information.
 
@@ -618,7 +639,6 @@ I am done buying information.
 #(no_buy_info)
 I do not wish to buy information at this time.
 
-
 #(BUY_INFO_INTRO)	melno087.wav
 As you know, in our many centuries of star-trading
 we Melnorme have come to learn much about what happens in our galaxy
@@ -629,14 +649,13 @@ per informative fact.
 No refunds.
 
 #(OK_BUY_INFO)	melno093.wav
-I wish to purchase information.
+Good!  I wish to SELL information.
 
 #(OK_NO_BUY_INFO)	melno089.wav
 What else would you like to buy?
 
 #(OK_DONE_BUYING_INFO)	melno090.wav
 What else would you like to buy?
-	      
 
 #(OK_BUY_EVENT_1)	melno091.wav
 While you probably believe that the Shofixti are extinct
@@ -658,7 +677,7 @@ included as part of General ZEX's bizarre and beloved menagerie.
 Fortunately for you, Captain, ZEX is considered... well... perverse, by his fellow VUX.
 This is because ZEX actually enjoys the presence of human beings.
 To acquire the Shofixti females, you will have to appease ZEX, or kill him.
-	
+
 #(OK_BUY_EVENT_2)	melno092.wav
 The Ur-Quan are presently at war with a race called the Kohr-Ah.
 They are fighting within a large spherical region of space centered around the Crateris star group.
@@ -725,7 +744,6 @@ Fortunately for us all, the Utwig did not pay the Druuge's requested price -- th
 and instead gave them a collection of `historical oddments and genuine artifacts'
 which to this day, the Druuge are trying to unload on unwary buyers.
 
-
 #(OK_BUY_EVENT_8)	melno098.wav
 The Utwig, who live in the Aquarii constellation, have grown very depressed of late.
 They accidentally broke the supposed `Ultron' sold to them by the felonious Druuge.
@@ -751,7 +769,7 @@ which will be of great use to you.
 In addition, the Zoq-Fot-Pik met the Chenjesu early on in the war, and are eager to make allies
 who can protect them from their enemies. 
 In case you are interested, the Zoq-Fot-Pik homeworld is at
-/coordinates 400.0:543.7, planet I.
+coordinates 400.0:543.7, planet I.
 
 #(OK_BUY_ALIEN_RACE_2)	melno100.wav
 The Ilwrath are presently attacking the Pkunk in the Lacaille and Krueger constellations.
@@ -770,7 +788,6 @@ The Pkunk may be unwilling to make a formal alliance with you
 but we have confidence that if you explain yourself honestly
 they will help your efforts against the Ur-Quan.
 
-	
 #(OK_BUY_ALIEN_RACE_4)	melno102.wav
 The creatures presently fighting the Ur-Quan are called the Kohr-Ah.
 They are an Ur-Quan sub-species who split off from the main species many thousands of years ago.
@@ -792,7 +809,6 @@ Hoy! -- they almost give away fuel!
 Do not fall for their tricks! There are hidden costs -- secret tariffs!
 So that you may avoid them, I will tell you that their main trade world is Zeta Persei I.
 Why are you smiling, Captain?
-	
 
 #(OK_BUY_ALIEN_RACE_6)	melno104.wav
 The Burvixese race evolved on the planet Arcturus I.
@@ -809,7 +825,6 @@ When the Burvixese were kind enough to warn the Druuge that a hostile alien race
 was homing in on their HyperWave's radiations, the Druuge shut down all their transmitters
 and erected a powerful HyperWave beacon on the surface of the Burvixese moon.
 The Kohr-Ah changed course, attacked the poor Burvixese and sadly, destroyed them all.
-
 
 #(OK_BUY_ALIEN_RACE_7)	melno105.wav
 The Thraddash are an arrogant, stubborn, and thick-skinned species
@@ -846,7 +861,7 @@ but involves dimensions far more alien than HyperSpace.
 They had just made a major breakthrough when they were suddenly wiped out by a race called the Orz
 who appeared seemingly out of nowhere.
 Actually, we don't know what the Orz did to the Androsynth -- they're just all gone.
-	
+
 #(OK_BUY_ALIEN_RACE_11)	melno109.wav
 The Ariloulaleelay are a mysterious race of IDF beings
 IDF meaning, Inter-Dimensional Fatigue
@@ -858,7 +873,6 @@ on the humans aboard the starbase, many of whom are now members of your crew.
 Though the Ariloulaleelay always smile and are never overtly hostile
 we believe that they have a secret agenda which somehow involves your planet, Earth.
 These secret plans may or may not cause grief and woe to you Earthlings.
-
 
 #(OK_BUY_ALIEN_RACE_12)	melno110.wav
 Just under 20 years ago, the brave and suicidal Shofixti annihilated their species
@@ -877,7 +891,6 @@ which has somehow turned hostile and attacks everything it detects.
 If such encounters have angered you, Captain, please do NOT address your concerns to us.
 We possess a formal Waiver of Damages, authorized by a Slylandro Speaker
 and are in no way responsible for the situation.
-
 
 #(OK_BUY_ALIEN_RACE_14)	melno112.wav
 The cowardly Spathi live at the single planet orbiting Epsilon Gruis.
@@ -914,7 +927,6 @@ when they destroyed their own star system to slow down the Ur-Quan Armada.
 Captain, you have heard all that we have to say about aliens indigenous to this region.
 Should we learn more in the near future, we shall be certain to sell it to you.
 
-
 #(OK_BUY_HISTORY_1)	melno115.wav
 Almost twenty-five thousand of your years ago, there existed near this region of space
 an association of starfaring races called the `Sentient Milieu'.
@@ -938,7 +950,7 @@ They explained the purpose of the Sentient Milieu, and offered the Ur-Quan membe
 The Ur-Quan recognized the benefits that such a system provided
 and once more conquered the hunting beast within themselves
 to become cooperative, productive members of the Milieu. This lasted for several thousands of years.
-	
+
 #(OK_BUY_HISTORY_3)	melno117.wav
 Just over twenty thousand years ago
 when your ancestors were learning to chart the course of the moon and stars on animal horns
@@ -971,7 +983,6 @@ However, at the time of their devastation they had completed a device
 which they thought would give other races psychic immunity like their own.
 What happened to this device, this shield? It's hard to say.
 Maybe it was destroyed in the attack on their homeworld, maybe not.
-
 
 #(OK_BUY_HISTORY_5)	melno119.wav
 In the Dnyarri's new empire, the Ur-Quan were the favored slaves.
@@ -1032,7 +1043,6 @@ acting as translators, making physical contact with other species
 whom the Ur-Quan now considered grossly inferior to themselves and revolting.
 The second decision -- how to ensure their freedom permanently -- caused great turmoil.
 
-
 #(OK_BUY_HISTORY_8)	melno122.wav
 Following the successful Ur-Quan slave revolt
 the Ur-Quan met to decide how to ensure their freedom.
@@ -1049,7 +1059,6 @@ you must remember that the Ur-Quan had been unwilling slaves for millenia
 and that each of them had to remain in agony for years in order to defeat the Dnyarri.
 The followers of Kzer-Za and Kohr-Ah were all on the brink of madness
 but neither side would submit, and so they fought a bloody civil war.
-
 
 #(OK_BUY_HISTORY_9)	melno123.wav
 This is the last historical item we have for sale.
@@ -1074,14 +1083,11 @@ in a large area centered near the Crateris constellation.
 If the Kohr-Ah win this battle, Captain, the Kzer-Za will stand aside and let them kill us all.
 We believe it is your destiny to prevent this from happening.
 
-
 #(INFO_ALL_GONE)	melno124.wav
 We regret to say that you have exhausted our supply of genuinely valuable information.
 However we DO have many thousands of useless facts and that we will gladly sell you
 at a substantial discount. Are you interested?
 We thought not.
-
-
 
 #(buy_new_tech)
 I would like to buy the technology you described.
@@ -1120,7 +1126,6 @@ Would you like to purchase anything else?
 
 #(OK_DONE_BUYING_FUEL)	melno130.wav
 Would you like to purchase anything else?
-
 
 #(NEW_TECH_1)	melno131.wav
 The technology we are now offering includes plans for building
@@ -1174,7 +1179,6 @@ The technology we are now offering is plans for building
 The technology we are now offering includes details on how to develop
 Shiva Furnace modules which generate energy for your combat batteries
 twice as fast as your standard dynamos.
-
 
 #(OK_BUY_NEW_TECH_1)	melno144.wav
 Please remember that these weapons consume energy from your combat batteries
@@ -1258,43 +1262,43 @@ If I may say so, you have been an excellent customer. Thank you!
 We come in peace, representing 
 
 #(STRIP_HEAD)	melno159.wav
-We will take
+We will take 
 
 #(LANDERS)	melno160.wav
-of your Planet Landers
+ of your Planet Landers
 
 #(THRUSTERS)	melno161.wav
-of your Fusion Thrusters
+ of your Fusion Thrusters
 
 #(JETS)	melno162.wav
-of your Turning Jets
+ of your Turning Jets
 
 #(PODS)	melno163.wav
-of your empty Crew Pods
+ of your empty Crew Pods
 
 #(BAYS)	melno164.wav
-of your empty Storage Bays
+ of your empty Storage Bays
 
 #(DYNAMOS)	melno165.wav
-of your Dynamo modules
+ of your Dynamo modules
 
 #(FURNACES)	melno166.wav
-of your Shiva Furnaces
+ of your Shiva Furnaces
 
 #(GUNS)	melno167.wav
-of your Ion-Bolt Guns
+ of your Ion-Bolt Guns
 
 #(BLASTERS)	melno168.wav
-of your Blasters
+ of your Blasters
 
 #(CANNONS)	melno169.wav
-of your Hellbore Cannons
+ of your Hellbore Cannons
 
 #(TRACKERS)	melno170.wav
-of your Auto-Tracking modules
+ of your Auto-Tracking modules
 
 #(DEFENSES)	melno171.wav
-of your Point-Defense Lasers
+ of your Point-Defense Lasers
 
 #(name_1)
 The New Alliance of Free Stars!

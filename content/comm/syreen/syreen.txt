@@ -113,7 +113,6 @@ Our lives are at stake, and so are yours. If the Ur-Quan discover that you have 
 I don't know what they will do to us... much less to you!
 Now get serious... please.
 
-
 #(know_about_deep_children)
 Tanala, have you ever heard of the `Deep Children?'
 
@@ -415,11 +414,10 @@ We may never see each other again.
 But for now, at least, there's this...
 
 #(bye_after_vault)
-I'll miss you, Tanala.
+I'll miss you, Talana.
 
 #(GOODBYE_AFTER_VAULT)	syree039.wav
 Don't worry, my human. We will be together again... some day.
-
 
 #(HELLO_AFTER_AMBUSH_1)	syree040.wav
 SUCCESS, Captain! The Mycons' fleet is in shambles!
@@ -482,7 +480,6 @@ overseeing repairs to our fleet of Penetrator starships
 and preparing some kind of defensive system for this starbase.
 If and when the Ur-Quan return here, we want to have a little surprise ready for them.
 
-
 #(whats_up_after_ambush)
 So, what's new Tanala?
 
@@ -532,7 +529,7 @@ Good luck, Captain.
 
 #(what_do_i_get_for_this)
 So what do I get for this, eh? Hmm? Eh?
-	
+
 #(GRATITUDE)	syree055.wav
 You will receive more gratitude than you know what to do with, Captain.
 
@@ -558,10 +555,8 @@ Then we shall destroy them.
 #(bye_before_ambush)
 Good luck, Tanala.
 
-
 #(GOODBYE_BEFORE_AMBUSH)	syree059.wav
 Same to you, my human.
-
 
 #(what_about_us)
 I guess what I mean is... What about us, Tanala?
@@ -614,10 +609,9 @@ But if you want me to keep my hands off... I can use other... things...
 #(OK_WONT_USE_HANDS1)	syree072.wav
 ...like this over here...
 #(OK_WONT_USE_HANDS2)	syree073.wav
-and this right here...r
+and this right here...
 #(OK_WONT_USE_HANDS3)	syree074.wav
 and this right about here.
-
 
 #(why_lights_off)
 Ahh... why are the lights off?
@@ -646,7 +640,6 @@ Very funny. Look, I'd be more comfortable if we just turned the lights back on.
 
 #(JUST_RELAX)	syree080.wav
 Just relax, my silly human Captain. Let me take care of everything.
-
 
 #(what_happens_if_i_touch_this)
 Hmmm... what happens if I do this?
@@ -696,4 +689,3 @@ you must go!
 But you will remain always in my mind and heart
 and deep within me, I know that someday, when all this madness has come to an end
 we will be together like this... again.
-

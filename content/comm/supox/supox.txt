@@ -194,28 +194,21 @@ We're off now! See you later, Supox friends.
 #(GOODBYE_NEUTRAL)	supox027.wav
 May Sunlight and Water always fall upon you.
 
-
-/*------------------------------------------------------------------------------------------------*/
-
-
 #(ABOUT_BATTLE)	supox028.wav
 Hello Captain.
 We fought the Kohr-Ah and, well, perhaps it's better to say
- that the Kohr-Ah killed us.
+that the Kohr-Ah killed us.
 Our buddies the Utwig did some pretty serious damage
- to several fleets, but we mostly just watched helplessly.
+to several fleets, but we mostly just watched helplessly.
 The Ur-Quan did not seem to realize
- that we were helping them, and as often as not they attacked us too!
+that we were helping them, and as often as not they attacked us too!
 We may have delayed the outcome of the fight, but it still seems clear that the Kohr-Ah are winning.
-
 
 #(HELLO_BEFORE_KOHRAH_SPACE_1)	supox029.wav
 Hello Fellow Warriors. We go to uproot our enemies!
 
-
 #(HELLO_BEFORE_KOHRAH_SPACE_2)	supox030.wav
 Greetings Garden Guardians. We shall block the Kohr-Ah's sunlight and frost their leaves!
-
 
 #(HELLO_DURING_KOHRAH_SPACE_1)	supox031.wav
 Human! Your presence here is comforting, but perhaps you had better leave the area
@@ -230,8 +223,6 @@ Ah, our human friend... we are so tired... the battle so difficult...
 
 #(HELLO_AFTER_KOHRAH_SPACE_2)	supox034.wav
 Hello again faunal comrade. We are spent, and must grow new bark.
-
-
 
 #(whats_up_after_space)
 Tell me more about the battle with the Kohr-Ah.
@@ -263,7 +254,6 @@ Goodbye Supox. Thanks for everything.
 #(GOODBYE_AFTER_SPACE)	supox038.wav
 Fare thee well.
 
-
 #(whats_up_before_space)
 So what are you doing?
 
@@ -273,7 +263,6 @@ Our destination is Antares, where we shall face the Kohr-Ah in battle!
 
 #(GENERAL_INFO_BEFORE_SPACE_2)	supox040.wav
 We make our way to an epic confrontation with the Kohr-Ah!
-
 
 #(what_now_before_space)
 So what should we do now?
@@ -289,7 +278,6 @@ G'bye plant dudes.
 
 #(GOODBYE_BEFORE_SPACE)	supox042.wav
 Wish us luck, human.
-
 
 #(how_went_war)
 What happened at Antares? Describe the struggle.
@@ -350,7 +338,7 @@ Two leaves pull water from the same root.
 
 #(HOW_HELP)	supox050.wav
 Such wisdom! Your meanings run deep, we ponder their significance.
-Ah, yes! You wish us to give you assistance... such as our fighting ships!\r
+Ah, yes! You wish us to give you assistance... such as our fighting ships!
 
 #(DONT_NEED)	supox051.wav
 Yet, you seem to possess a fleet in concert with your need.
@@ -391,17 +379,16 @@ Goodbye Leafy Ones.
 #(GOODBYE_ALLIED_HOMEWORLD)	supox055.wav
 Farewell Friendly Folk.
 
-
 #(name_1)
-The New Alliance of Free Stars!
+The New Alliance of Free Stars
 
 #(name_2)
-The Concordance of Alien Nations!
+The Concordance of Alien Nations
 
 #(name_3)
-The United Federation of Worlds!
+The United Federation of Worlds
 
 #(name_40)
 The Empire of 
 #(name_41)
-!
+ 

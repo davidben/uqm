@@ -12,13 +12,13 @@ What does it do, you ask?
 I haven't the slightest idea.
 
 #(name_1)
-The New Alliance of Free Stars!
+The New Alliance of Free Stars
 
 #(name_2)
-The Concordance of Alien Nations!
+The Concordance of Alien Nations
 
 #(name_3)
-The United Federation of Worlds!
+The United Federation of Worlds
 
 #(name_40)
 The Empire of 
@@ -102,7 +102,7 @@ Ah. So once again you come to our region of space.
 All are welcome to our nest. We are Pkunk, we cannot help but love all.
 Share our joy. Share our love. Are we not Pkunk?
 Yes, I said we were and so we are.  Ha ha!!
-I must laugh and sing for the shear joy of it!
+I must laugh and sing for the sheer joy of it!
 This is our way.
 
 #(FRIENDLY_SPACE_HELLO_7)	pkunk011.wav
@@ -112,7 +112,6 @@ What wisdom do you seek today?
 #(FRIENDLY_SPACE_HELLO_8)	pkunk012.wav
 Hello human! We are warm and fuzzy with the news of your return.
 What wisdom do you seek today?
-
 
 #(NEUTRAL_HOMEWORLD_HELLO_1)	pkunk013.wav
 Auspicious portents and serendipitous omens have foretold your arrival.
@@ -134,7 +133,6 @@ What wisdom do you seek today?
 #(NEUTRAL_HOMEWORLD_HELLO_4)	pkunk016.wav
 Hello human! We are warm and fuzzy with the news of your return.
 What wisdom do you seek today?
-
 
 #(FRIENDLY_HOMEWORLD_HELLO_1)	pkunk017.wav
 Captain. We have been expecting you, of course. In fact, you are here because
@@ -172,8 +170,8 @@ What wisdom do you seek today?
 Hello human! We are warm and fuzzy with the news of your return.
 What wisdom do you seek today?
 
-
-#(whats_up_neutral)We are seekers of truth. Enlighten us!
+#(whats_up_neutral)
+We are seekers of truth. Enlighten us!
 
 #(GENERAL_INFO_NEUTRAL_1)	pkunk025.wav
 Since you are a perceptive individual, you have noticed that we are physiologically similar to the Yehat.
@@ -199,7 +197,6 @@ the powers of crystal energy
 regression into past lives
 the truth behind crop circles
 and in doing so we have been Transformed!
-
 
 #(GENERAL_INFO_NEUTRAL_4)	pkunk028.wav
 You may wonder about our name... Pkunk.
@@ -253,7 +250,6 @@ destroy all life in this region. Captain, they are winning now. If there is
 anything you can do to stop them, you must do it... please! Okay, that's all I
 wanted to say.
 
-
 #(SPIRITUAL_PROBLEMS_1)	pkunk034.wav
 We welcome you to our space, perversely misguided spirits of hostile intent that you are.
 Perhaps it is simply that your species does not comprehend such subtle concepts
@@ -289,7 +285,7 @@ if only you would admit to your emotional depravity.
 
 #(HATE_YOU_FOREVER_1)	pkunk038.wav
 Wait! Say nothing, loathsome creature of dark and unnatural vibrations
-lest you disturb my peaceful and loving state of mind.\n
+lest you disturb my peaceful and loving state of mind.
 Ah... but it is too late.  I must quickly destroy you
 so that I may return to my state of compassionate bliss.
 
@@ -315,7 +311,7 @@ So it is you!
 Once again your negative energy threatens to overwhelm my delicate senses.
 I reel.
 Almost I am unable to press the button to activate my ship's armaments.
-	"The pain, the agony!"
+The pain, the agony!
 For the sake of all that is good and lovely, I must reach the button
 must reach it!...
 
@@ -391,8 +387,7 @@ the end of the road, while you are still leaving the driveway -- but we are all
 travellers together.
 
 #(try_to_be_nicer)
-	"Well, I feel pretty bad about killing you guys and stuff. I'll try not to blow "
-up any more of your ships.
+Well, I feel pretty bad about killing you guys and stuff. I'll try not to blow up any more of your ships.
 
 #(CANT_ASK_FOR_MORE)	pkunk054.wav
 That's all anyone can do... try. We absolve you of your past wrong-doings.
@@ -474,8 +469,7 @@ Of course we already know the answer to this next question too, but we enjoy con
 Why have you come here?
 
 #(we_here_to_help)
-We have come to your homeworld to offer you aid and assistance.
-This vessel and its crew are at your service.
+We have come to your homeworld to offer you aid and assistance.  This vessel and its crew are at your service.
 
 #(NEED_HELP)	pkunk064.wav
 I am forming a psychic link with you.
@@ -497,8 +491,7 @@ Well, be that as it may, we are sympathetic to your concerns.
 We were not always the mystical, aloof and yet caring, enlightened beings that we are now.
 
 #(exploring_universe)
-We are on a five year mission, to seek out new life and new civilizations
-to boldly go where no.....well you get the idea.  We're kind of exploring.
+We are on a five year mission, to seek out new life and new civilizations to boldly go where no.....well you get the idea.  We're kind of exploring.
 
 #(SENSE_DEEPER_CONFLICT)	pkunk066.wav
 I sense a deeper reason, a deeper conflict.
@@ -508,8 +501,7 @@ A conflicting deeper thing.......uh, I'm not really sure what I sense.
 Are you sure there isn't something you want to say to me?
 
 #(fun_cruise)
-	"Oh ....uh, no reason.  We thought we'd just take this baby out for a little cruise "
-and would you look at where we ended up.
+Oh ....uh, no reason.  We thought we'd just take this baby out for a little cruise and would you look at where we ended up.
 
 #(REPRESS)	pkunk067.wav
 My telepathic sensors are telling me that you are repressing something.
@@ -590,7 +582,7 @@ Avoid being disincarnated before your soul is adequately prepared for the transf
 #(WAR_GOES_4)	pkunk074.wav
 Seek the path of the trumble cart.
 Heavily laden, it rocks and weaves, but does it turn over?
-Only occasionally. You see?\n
+Only occasionally. You see?
 Also, one other bit of advice, Captain.
 For mundane material concerns, seek the help of the one-eyed beings.
 They may be found in supergiant stellar systems.
@@ -827,7 +819,7 @@ We will provide you with all of the crew, ships, and resources that you desire.
 We will give you.....wait!  I sense that you are offended by our crass material offer.
 Yes, I am ashamed.  Any war mongering species could offer this... we are Pkunk!...Children of the Stellar Breeze!
 We shall give you what all others could not! The greatest of gifts!  We shall give you our love.
-	"Ah, you are speechless.  Do not talk now.  I can feel the energy connecting us."
+Ah, you are speechless.  Do not talk now.  I can feel the energy connecting us.
 Let us part while the silence remains. Farewell...
 
 #(INIT_NO_ROOM)	pkunk102.wav
@@ -842,7 +834,7 @@ not as a material gift, mind you, we give you 4 of our meager ships, fully crewe
 Good luck!
 
 #(suit_yourself)
-Suit yourself
+Suit yourself.
 
 #(GOODBYE_MIGRATION)	pkunk104.wav
 And now we return to the golden path. Our Yehat brethren await.

@@ -7,7 +7,7 @@ Tell us of this world.
 #(BYE_AND_DIE_HOMEWORLD)	mycon001.wav
 You impede the flow of Juffo-Wup through the Universe.
 We will now remove this clog.
-We will now aid Juffo-Wup by eliminating you!.
+We will now aid Juffo-Wup by eliminating you!
 
 #(RAMBLE_1)	mycon002.wav
 A single spore lands, finds nourishment in decay and attains maturity..
@@ -117,7 +117,7 @@ whose offspring seek to transform the Non to Void
 the fields grow tighter, and tighter
 the bass rumble of the generators rises gradually to a high burning scream
 sudden silence and a flash of light announce release
- the hot pulsing subsides slowly.
+the hot pulsing subsides slowly.
 
 #(RAMBLE_25)	mycon026.wav
 The Deep Children fall from the Void, gathering speed for the penetration
@@ -376,7 +376,6 @@ You must be removed.
 
 #(how_goes_implanting)
 Have you visited the planet I told you about?
-
 
 #(UNFORSEEN_DELAYS)	mycon061.wav
 We have experienced unforeseen delays implanting Deep Children beneath the crust of Organon 1.

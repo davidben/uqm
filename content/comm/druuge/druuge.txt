@@ -60,7 +60,7 @@ The Proctor continued. `You Druuge of the Crimson Corporation desire an object o
 And with that we were led to a small vault.
 The Proctor ceremoniously opened the door of the vault
 and explained that because we had been of such great service, ALL of the treasures within were now ours!
- Inside we found a hodge-podge of ancient and useless artifacts
+Inside we found a hodge-podge of ancient and useless artifacts
 a glowing rod, an absurd trident and more such junk.
 I could see no way to salvage the disastrous situation at that time.
 But when I heard of you, your travels, and your foolish quest for freedom
@@ -132,7 +132,6 @@ We will sell you fuel, ancient artifacts, even our own Mauler starships!
 All that we ask in return is that you assign some of your crew to serving here at our trade world
 on a permanent basis.
 
-
 #(i_will_never_trade_crew)
 I will never sell my crew to be your slaves.
 
@@ -167,7 +166,7 @@ sharing every duty.
 
 #(THIS_FOR_SALE)	druug016.wav
 Excellent! Let us begin.
-Our inventory presently includes 
+Our inventory presently includes...
 
 #(HAVE_SPHERE)	druug017.wav
 The Rosy Sphere! An ancient Precursor artifact of unrivaled beauty and mystery.
@@ -212,7 +211,7 @@ I can tell that already you are realizing the true scope of this artifact's powe
 I stride to the Sphere's containment vessel and pull it slowly from its ancient cradle.
 The dust of centuries has made a gentle weld... there! It has come free.
 Now, into your hands I place the ancient sphere. Do you feel that, Captain?
- Has the warmth already penetrated the skin of your hands into your soul?
+Has the warmth already penetrated the skin of your hands into your soul?
 Well it soon shall, Captain. Just keep trying.
 
 #(repeat_what_to_sell)
@@ -276,10 +275,9 @@ who we later learned called themselves the `Kohr-Ah'.
 #(GOODBYE_FROM_SPACE)	druug032.wav
 Until we meet again.
 
-
 #(HSTL_TRADE_WORLD_HELLO_1)	druug033.wav
 What, you wish to rob our Trade World, eh? Not today, boyo!
-	
+
 #(HSTL_TRADE_WORLD_HELLO_2)	druug034.wav
 You made a mistake returning here, Captain.
 We know your true colors. You are a blackheart.
@@ -296,7 +294,7 @@ You are undone, and must pay the price for your wretched deeds!
 #(INITIAL_TRADE_WORLD_HELLO)	druug037.wav
 Attention alien starship.
 You have arrived at the Central Trade World of the Crimson Corporation
- Home of the Druuge.
+Home of the Druuge.
 Be welcome and take advantage of our excellent deals.
 
 #(SSQ_TRADE_WORLD_HELLO_1)	druug038.wav
@@ -421,8 +419,6 @@ Are you sure?... as you wish.
 #(OK_DONE_SELLING)	druug058.wav
 Very well.
 
-
-
 #(bye)
 I will leave now.
 
@@ -465,7 +461,6 @@ I will sell the Egg Case fragments to you.
 #(sell_spawner)
 I will sell the Portal Spawner to you.
 
-
 #(BOUGHT_MAIDENS)	druug059.wav
 I will purchase the fertile Shofixti adolescents.
 
@@ -474,7 +469,6 @@ I accept the deal for the Mycon Deep Child eggcase.
 
 #(BOUGHT_CASTER)	druug061.wav
 I will buy the Hyperwave 'Caster.
-
 
 #(YOU_GET)	druug062.wav
 In exchange, you shall receive 
@@ -498,15 +492,15 @@ You have five seconds to vacate the premises before I am forced to remove you by
 Time's up!
 
 #(DEAL_FOR_STATED_SHIPS)	druug067.wav
- the agreed-upon number of ships.
+the agreed-upon number of ships.
 
 #(DEAL_FOR_LESS_SHIPS)	druug068.wav
- less than the number of ships I originally offered
+less than the number of ships I originally offered
 because you have no room for the the full amount in your fleet!
 Unfortunately for you, I'm afraid, but legal I assure you.
 
 #(DEAL_FOR_NO_SHIPS)	druug069.wav
- the number of ships which can be added to your fleet
+the number of ships which can be added to your fleet
 and according to my scan of your task force, that is none.
 A serious mistake on your part captain, I'm afraid, but a great boon for the Firm.
 With such a fine deal under my belt, perhaps I should take the rest of the day off.
@@ -517,7 +511,7 @@ We are now hooking up the fuel lines to fill your tanks.
 Hmm.. Ah, yes. The job is done. Now let's see how much was transferred... It was 
 
 #(FUEL1)
-units of fuel.
+ units of fuel.
 
 #(HIDEOUS_DEAL)	druug071.wav
 Aieee! I am ruined! You have sucked my full tanks until they are dry!

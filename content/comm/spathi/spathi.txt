@@ -117,7 +117,7 @@ Just tell me the coordinates, alien dog-slime!
 #(FAKE_COORDINATES)	spath010.wav
 Hmmm... I see
 Very well then, your threats have convinced me to reveal this secret
-Spathiwa is the 1st planet out from the star at HyperSpace (570.4, 979.5)\r
+Spathiwa is the 1st planet out from the star at HyperSpace (570.4, 979.5)
 
 #(TOO_SCARY)	spath011.wav
 You've got so many ships in your fleet, that instead of joining you
@@ -132,7 +132,6 @@ I want to believe you, I really do, but the risk to my people is just too great.
 Anyway I think I just forgot the coordinates -- let me see if I can remember them
 nope!
 I'm afraid they're gone forever, so torturing me would just be a waste of your time.
-
 
 #(what_doing_on_pluto_1)
 What are you doing here on Pluto?
@@ -212,7 +211,6 @@ and with the assistance of some kind strangers
 had been relieved of my funds and convinced to join the navy
 where I have been unpleasantly employed for the last 25 years.
 
-
 #(STATIONED_ON_EARTH_MOON)	spath018.wav
 Originally, we were stationed on Earth's moon, which made us Spathi a bit uneasy
 because with each passing day we grew more and more worried about the sneaky Earthlings making a surprise attack
@@ -223,7 +221,6 @@ and decided to make a strategic redeployment to Mars.
 Later on we decided it would be prudent to relocate to Jupiter's moon, Ganymede
 then later Saturn's moon, Titan
 and finally here to Pluto.
-
 
 #(what_blaze_of_glory)
 What do you mean, 'blaze of glory'?  What happened to the Shofixti?
@@ -247,7 +244,6 @@ So we rigged up some old service androids and ordered them to drive around on th
 endlessly pushing around the same piles of dirt.
 In addition, we connected the base's local radio transmitter to an audio Melnorme FunRom
 called `Winky's Happy Night', hoping that they would think we were still there.
-
 
 #(what_about_ilwrath)
 What happened to the Ilwrath stationed in this system?
@@ -386,8 +382,6 @@ We understand that sometimes these tragic misunderstandings happen. We grieve, b
 #(THANKS_FOR_FORGIVENESS)	spath034.wav
 Whew, thanks! For a minute there, I thought you were going to kill me!
 
-/* ----------- From Here on down, the phrases are for the Spathi in Space conversations --------*/
-
 #(HATE_YOU_FOREVER_SPACE)	spath035.wav
 I fear to face you in combat, but I know if I do not, you will just grow stronger with each passing week.
 Therfore I must face you now.
@@ -418,7 +412,6 @@ Hello friend Hunam! How nice to see you again. Kill any one today?
 What! The viewscreen? What are you...oh.
 Hello Friend Hunam! How are you? We are just fine, real swell. No problems at all! Just fine. No problems at all!
 
-
 #(INIT_ALLIED_HELLO_SPACE)	spath042.wav
 Hello Captain Ally Hunam! We are here in this place at this time
 just like you -- how wonderful.
@@ -436,7 +429,6 @@ Thank you.
 
 #(give_info_space)
 Spathi - though we are not on the best of terms, would you please give me some information?
-
 
 #(HERES_SOME_INFO)	spath044.wav
 Gladly, and here it is - now listen carefully for I will only say it once.
@@ -550,7 +542,7 @@ But the worst was yet to come.
 Our leaders were called into the command chamber of Ur-Quan Lord 1's dreadnought
 where they were read a long and complicated document explaining the choices given new slaves.
 When our leaders heard the term `forever encased' and `impenetrable shield'
-  they grew over-excited, I'm afraid, and made a fatal error.
+they grew over-excited, I'm afraid, and made a fatal error.
 The decision was to be transmitted to the Ur-Quan via one of two rods, one colored black, the other white.
 Our leader handed the white rod to one of the Ur-Quan's servants, signifying `Fallow' Slavery
 but the servant somehow exchanged rods and handed the Ur-Quan Lord a black rod
@@ -571,7 +563,7 @@ We can best be described as `Meta-Mollusks'
 possessing the best qualities of both the clam and the Dravatz, which is not native to your world.
 We are intelligent and clever, though you would never call us cunning.
 Each day when we awaken we call forth the traditional Spathi prayer
-  Oh God...Please don't let me die today! Tomorrow would be so much better!
+Oh God...Please don't let me die today! Tomorrow would be so much better!
 
 #(what_you_really_want)
 But what do you really want out of this great mystery called `Life'?
@@ -628,7 +620,7 @@ Evil squid -- Prepare to Die!
 I can't believe this!
 Not only is the Hunam alien unreasonably hostile but he doesn't even know his biological analogs!
 We are much more closely related to Earth clams and
-what was that, Weapons Officer? His ship approaches with shields up and weapons armed..."
+what was that, Weapons Officer? His ship approaches with shields up and weapons armed...
 Yipes!
 
 #(whats_up_space_2)
@@ -676,8 +668,8 @@ Same to you.
 #(OK_WE_FIGHT_AT_PLUTO)	spath071.wav
 My ichors pulse through my body with unusual ferocity!
 Your arrogance has whipped me into a violent frenzy
-and I am compelled to engage you in preemptive-defensive action." 
-Now you shall never learn my important secrets"
+and I am compelled to engage you in preemptive-defensive action.
+Now you shall never learn my important secrets
 such as the location of the Orange Giant star around which my home planet orbits
 oops -- dang! -- you made me give that away!
 Captain, if you somehow survive my attack, I have one sincere hope 

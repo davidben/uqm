@@ -147,7 +147,7 @@ and they wanted to study us, if we didn't mind.
 In fact, the Melnorme said they would PAY us for the right to do so.
 I guess they are biology nuts, or something
 anyway, in exchange for our information, they gave us a probe vessel.
-	
+
 #(any_other_visitors)
 Tell me about the other races who have visited you over the years.
 
@@ -444,7 +444,6 @@ and here are the tables used by the program.
         Seek Replication Materials (999).
         Move to Current Target (1).
 That's it.
-
 
 #(tell_basics_again)
 What's the general outline of the probe's program again?

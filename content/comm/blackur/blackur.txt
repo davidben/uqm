@@ -77,7 +77,6 @@ Prepare for the cleansing.
 We are the Ur-Quan Kohr-Ah.
 Prepare for the cleansing.
 
-
 #(why_kill_all_1)
 What is this madness!? Why are you trying to kill everyone?
 
@@ -141,7 +140,6 @@ If you eliminate all non-Ur-Quan sentient races, including yourselves
 then we will stop.
 We have made this offer before. No one accepts.
 So we cleanse.
-
 
 #(bye_frenzy_1)
 We leave now. We will stop you, somehow.
@@ -215,7 +213,6 @@ We were nothing more than tools.
 Never again will anyone enslave our people.
 We cleanse the galaxy of such threats.
 
-
 #(why_do_you_destroy)
 Kohr-Ah, tell us about yourselves.
 
@@ -232,7 +229,6 @@ here we met the Taalo... the only species we ever called `friend'.
 Our association with the Taalo and the Milieu lasted for three thousand years.
 We, the Ur-Quan who could not tolerate the presence of others
 became the Milieu's scouts, their solitary explorers.
-
 	
 #(relationship_with_urquan)
 Who were the Taalo?
@@ -332,7 +328,6 @@ Stop that gross blinking!
 #(DIE_HUMAN)	black038.wav
 The time has come. You require cleansing.
 
-
 #(plead_1)
 Please don't destroy this ship. We mean you no harm!
 
@@ -369,7 +364,6 @@ Today you are nothing... insignificant.
 But if allowed to bloom and grow
 someday... someday, you might represent a threat to our freedom and security.
 So we cleanse.
-
 
 #(bye)
 I've heard enough of your madness for now. Goodbye.

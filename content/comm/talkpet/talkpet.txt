@@ -38,7 +38,7 @@ You don't fool me! You've turned them into zombie-blobbies!... or something.
 Argh! Why didn't you leave when you had the chance?
 Now I've got to kill you in some really sneaky way
 so that no one will guess I was the agent of your demise.
--<GET LOST IN A BAD NEIGHBORHOOD!>-\r
+-<GET LOST IN A BAD NEIGHBORHOOD!>-
 
 #(we_are_vindicator0)
 I am Captain of the starship 
@@ -60,7 +60,7 @@ You could have left well enough alone. You could have departed this planet alive
 but NO!
 I am afraid you have stuck your stiff, protruberant sensing organ into one too many dark holes, Captain,
 and now you shall pay the price!
--<GO GET YOURSELF KILLED!>-\r
+-<GO GET YOURSELF KILLED!>-
 
 #(bye_at_umgah)
 Look, ah... whoever you are. I'll just be leaving now.
@@ -71,34 +71,34 @@ I thought that perhaps I could let you live
 but now I fear you know too much.
 My plans for revenge are far too important
 to be be ruined by a simple, interfering dolt like yourself.
- -<GO KILL YOURSELF IN BATTLE!>-\r
+-<GO KILL YOURSELF IN BATTLE!>-
 
 #(HYPNOTIZE_AGAIN_1)	talkp008.wav
 Argh! Why aren't you dead? What a bummer.
 I will remedy this situation
-<FIND SOMEONE WHO WILL KILL YOU!>\r
+<FIND SOMEONE WHO WILL KILL YOU!>
 
 #(HYPNOTIZE_AGAIN_2)	talkp009.wav
 You are interfering with my plans of revenge against the Ur-Quan.
 The penalty for this transgression is death, specifically yours!
-<GO AWAY FAR AWAY AND PICK A FIGHT!>\r
+<GO AWAY FAR AWAY AND PICK A FIGHT!>
 
 #(HYPNOTIZE_AGAIN_3)	talkp010.wav
 Why do you keep returning!? Never mind, don't answer.
-<LEAVE AND FIND SOMEONE TO KILL YOU!>\r
+<LEAVE AND FIND SOMEONE TO KILL YOU!>
 
 #(HYPNOTIZE_AGAIN_4)	talkp011.wav
 You're back again!
 You are as stupid as you are durable.
 Perhaps this time, you will accomplish your own demise.
-<GO KILL YOURSELF!>\r
+<GO KILL YOURSELF!>
 
 #(HYPNO_TAIL)	talkp012.wav
  
 
 #(CANT_COMPEL)	talkp013.wav
 Aieee!  I cannot compel you!?
-	"Your mind is closed to me -- how can this be?!"
+Your mind is closed to me -- how can this be?!
 I am forced to resort to more primitive measures
 Umgah commander, summon your ten combat ships and attack this intruder instantly!
 
@@ -376,8 +376,6 @@ What is it?
 #(HELLO_AS_DEVICE_8)	talkp040.wav
 This had better be important.
 
-
-
 #(CYBORG_PEP_TALK)	talkp041.wav
 You've made it, Captain! The Sa-Matra is defenseless.
 Now all you have to do is maneuver your ship next to the Sa-Matra and initiate the bomb sequence.\n
@@ -399,7 +397,7 @@ When the field is down, bring in your flagship, move into the asteroid shell
 and then press the big red button on your controls that starts the detonation sequence.
 Your escape pod will eject automatically. Just hope you're far enough away before the ship blows.
 Ok, human, this is it! The last battle, your final moment of triumph!
-Don't screw up.\n
+Don't screw up.
 And in case you're wondering, I'm not going with you, Captain. I'm staying on board.
 Why, you ask?
 BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!
@@ -410,19 +408,19 @@ I sense the presence of my ancient slaves.
 It is time, Captain.
 
 #(HAVENT_GOT_EVERYTHING)	talkp044.wav
-You are not yet ready to face the Ur-Quan in a final confrontation, Captain\r
+You are not yet ready to face the Ur-Quan in a final confrontation, Captain
 
 #(NEED_BOMB)	talkp045.wav
-You still need a weapon of sufficient destructive force to destroy the Sa-Matra\r
+You still need a weapon of sufficient destructive force to destroy the Sa-Matra
 
 #(SOUP_UP_BOMB)	talkp046.wav
-The power of the Utwig's bomb must be increased\r
+The power of the Utwig's bomb must be increased
 
 #(SOUP_UP_FLEET)	talkp047.wav
-You must strengthen your fleet\r
+You must strengthen your fleet
 
 #(SOUP_UP_FLAGSHIP)	talkp048.wav
-Your flagship needs additional improvements\r
+Your flagship needs additional improvements
 
 #(COMEBACK_WHEN_READY)	talkp049.wav
 This must be done before you are ready to attack.
@@ -451,7 +449,7 @@ I'm scared, Dnyarri. What if this doesn't work?
 'I'm scared, Dnyarri. What if this doesn't work?'
 My species have waited two hundred centuries for this moment
 SO STOP BLUBBERING!
-Let's get to work
+Let's get to work.
 
 #(compel_that_ship)
 Dnyarri. There is a nearby ship which is annoying me. Compel it to self-destruct.
@@ -586,7 +584,6 @@ I've heard enough.
 
 #(OK_ENOUGH_INFO)	talkp072.wav
 That's good, I was getting sleepy.
-
 
 #(UMGAH_ALL_GONE)	talkp073.wav
 Such great plans, such fine dreams... now, all ground to dust.

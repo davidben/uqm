@@ -52,7 +52,7 @@ which make them unique and special... especially to me!
 I have a complete variety of beasts from as far away as Procyon and Vega.
 No, this is not just some `zoo'!
 I have worked diligently for many years to craft my menagerie, to gradually improve it.
-	"Perhaps you can't tell, but I am rather proud of it!"
+Perhaps you can't tell, but I am rather proud of it!
 Alas, there is one creature, one GORGEOUS animal which I do not yet possess.
 I would give almost ANYTHING for that creature, Captain.
 
@@ -87,10 +87,8 @@ We have translated `Linch-Nas-Ploh' to mean approximately
 I am afraid this is all that I know.
 I hope it is sufficient.
 
-
 #(i_have_beast)
 Commander ZEX, we have captured the hideous monster from Delta Lyncis. Let us make an exchange.
-  
 
 #(GIVE_BEAST)	vux010.wav
 Ah, a most excellent piece of news! My chiton rasps and moistens with excitement!
@@ -152,11 +150,10 @@ Really, Captain! My honor is impugned!
 You have maligned me and I am deeply hurt.
 I thought we had built some trust between us, different though we may be
 but no, I perceive now the same bigotry and misunderstanding
-	"which brought our two species to war!"
+which brought our two species to war!
 This was our chance to cement a good relationship between Human and VUX.
 With my influence, the High Council could easily have been swayed to view
 the Human cause in a more favorable light.
-
 
 #(why_dont_you_attack)
 Admiral Zex, why don't you attack us, as all other VUX have?
@@ -197,7 +194,6 @@ so they sent me out here... a hero's exile! Where  I won't `poison' the minds of
 with my `bizarre' ideas and `perverted' lifestyle. Hmmph... bigoted fools.
 You see, Captain, we are not all that different, you and I.
 We are different from the majority of VUX, and so we, in VUX eyes, are both monsters.
-
 
 #(take_by_force)
 We require the Shofixti Maidens. We are prepared to use force if necessary.
@@ -250,7 +246,6 @@ Goodbye, Commander ZEX.
 
 #(GOODBYE_ZEX)	vux022.wav
 Goodbye, beautiful human. I hope we can meet someday as friends... perhaps even more.
-
 
 #(HOMEWORLD_HELLO_1)	vux023.wav
 Welcome to the end of your life, courtesy of VUX technology.
@@ -344,7 +339,7 @@ our ability to see beyond even the most bizarre and disgusting face like yours
 but that insult was so low, so totally reprehensible that we will never forget it.
 Yes, to be honest, that event pretty much fixed our attitude setting at `ABHOR'.
 I suspect we will despise you forever.
-	
+
 #(if_we_apologize)
 What if we apologized? Could we talk truce then?
 
@@ -367,14 +362,13 @@ Besides, we have decided that you are just too disgusting to live
 so we have decided to vaporize you.
 
 #(apology_1)
-	"Let's try that again. We, The People Of Earth, Really Truly Apologize For "
-The Stupid Insult Made By Captain Rand!
+Let's try that again. We, The People Of Earth, Really Truly Apologize For The Stupid Insult Made By Captain Rand!
 
 #(NOT_ACCEPTED_1)	vux037.wav
 No. That didn't cut it either.
 
 #(apology_2)
-You were RIGHT!. We WERE wrong. We see it all so clearly now!
+You were RIGHT! We WERE wrong. We see it all so clearly now!
 
 #(NOT_ACCEPTED_2)	vux038.wav
 I don't think your heart is in it.

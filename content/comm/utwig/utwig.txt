@@ -39,7 +39,6 @@ In a fit of depression I find it necessary to vent my irreconcilable frustration
 I normally do not engage in such fervent activities
 but I now find myself inspired to do my best to annihilate you with expediency.
 
-
 #(NEUTRAL_HOMEWORLD_HELLO_1)	utwig008.wav
 Normally we would not bother to acknowledge your presence
 but you find us in a state of moderate depression
@@ -77,7 +76,6 @@ We are the stewards of the Bomb.
 We keep it from those who would use it unwisely.
 In addition, we are prepared to act under the direction of the Proctorate
 should we decide to make a final atonement for our most grievous blunder.
-
 
 #(what_about_bomb)
 Hmm, this must be a pretty special Bomb to have all of you keeping an eye on it.
@@ -159,7 +157,7 @@ Whoa there, hold your horses! Look at this! We've got your Ultron!
 Taunting us buys you nothing except to steel our resolve to end your existence.
 In fact, we will humor you in your little game.
 You have seconds to show us whatever bric-a-brac you possess.
-We will then commence with the cessation of your existence.\r
+We will then commence with the cessation of your existence.
 
 #(TRICKED_US_1)	utwig024.wav
 I expected no less.
@@ -172,7 +170,7 @@ How dare you flaunt the collective embarrassment of the Utwig?!
 You will now pay for your severe breach of etiquette!
 
 #(we_are_vindicator0)
-This is Captain, 
+This is Captain 
 #(we_are_vindicator1)
 , representing 
 
@@ -363,7 +361,7 @@ Hey guys, guess what we've got! We've got THE ULTRON! Wanna see it?
 #(DONT_WANT_TO_LOOK)	utwig036.wav
 Gaaah! Should I set my gaze upon such a sight I might suffer sleepless nights for years on end!
 It is a symbol of the collective Utwig failure.
-It is our ultimate tragedy!\r
+It is our ultimate tragedy!
 
 #(SICK_TRICK_1)	utwig037.wav
 Why do you flaunt the husk which once was the Ultron?
@@ -385,20 +383,19 @@ As do we. Go now with neither malice nor joy.
 #(TOO_LATE)	utwig040.wav
 TOO LATE 
 
-
 #(name_1)
-The New Alliance of Free Stars!
+The New Alliance of Free Stars
 
 #(name_2)
-The Concordance of Alien Nations!
+The Concordance of Alien Nations
 
 #(name_3)
-The United Federation of Worlds!
+The United Federation of Worlds
 
 #(name_40)
 The Empire of 
 #(name_41)
-!
+ 
 
 #(HAPPY_DAYS)	utwig041.wav
 AAAHHH!! Every divot, every crack on Its surface is etched forever in my soul!
@@ -417,7 +414,7 @@ Indeed, it seems that you should proceed to the second moon of the sixth planet 
 and take what you find there; we no longer have need for it
 but the Ultron reveals that YOU will!
 I thank you for your part in the grand scheme. We now recover that which is ours via destiny
-and proceed to perform our essential service for the universe.\r
+and proceed to perform our essential service for the universe.
 
 #(OK_ATTACK_KOHRAH)	utwig042.wav
 BUT WAIT!!
@@ -431,7 +428,6 @@ We attack... YOUR ENEMIES... the Ur-Quan and the Kohr-Ah!...
 ...no, that's not quite right either... what? Oh, okay.
 We must strike ONLY the black ships... only the Kohr-Ah!
 Now, Captain, we must leave to prepare our battle fleets. Wish us luck!
-
 
 #(whats_up_after_space)
 Tell us what events have transpired since we last met.
@@ -489,7 +485,7 @@ that will pursue the invaders with the intent of foiling their plan of doom.
 #(GENERAL_INFO_BEFORE_SPACE_2)	utwig048.wav
 We have determined that the Kohr-Ah are engaging in battle the species that you call Ur-Quan.
 We are unable to determine the cause of this conflict.
-Even meticulous employment of the Ultron in this matter has yielded only minimal insight.\n
+Even meticulous employment of the Ultron in this matter has yielded only minimal insight.
 In any case, after interpreting the direction provided by the Ultron
 we must let the two species cancel each other out via attrition through combat.
 
@@ -532,7 +528,7 @@ Even as I speak, brave Utwig and noble Supox launch themselves against the merci
 We continue to refine our tactics.
 Alas, the Kohr-Ah are winning their war with the Ur-Quan.
 We grow uncomfortable with the success that the Kohr-Ah currently enjoy
-so we fight only the Kohr-Ah in hopes of weakening their stand against the Ur-Quan.\n
+so we fight only the Kohr-Ah in hopes of weakening their stand against the Ur-Quan.
 The Ur-Quan complicate matters by blasting our vessels with fusion bolts
 thus we have made it a policy to avoid Ur-Quan ships whenever possible.
 
@@ -688,7 +684,7 @@ Feel confident that we are using the Ultron to this end.
 Material aid from you would tilt the balance in the favor of Good.
 
 #(HOW_HELP)	utwig071.wav
-Hmm... a reasonable request. Give us a second while we consult the Ultimate.\r
+Hmm... a reasonable request. Give us a second while we consult the Ultimate.
 
 #(DONT_NEED)	utwig072.wav
 The Ultron confirms the evidence of our ocularities

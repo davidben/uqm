@@ -28,7 +28,6 @@ Ah well. To answer your question, we chose to cease our efforts with the Allianc
 when it seemed that there was no longer any threat to our Earthlings.
 I am pleased to see that you, from outside the slave shield, survived. You seem healthy.
 
-
 #(miffed_by_hello)
 I'll be. It's the Arilou. Why the hell did you run out on the Alliance of Free Stars? What happened?
 
@@ -44,12 +43,11 @@ For your safety of course.
 
 #(FRIENDLY_SPACE_HELLO_1)	arilo004.wav
 Ah... our human friend. Please, let us chat a while.
- It has been so many years since I last visited your Earth
+It has been so many years since I last visited your Earth
 so long since I glided across your open fields under the light of a full moon.
 Tell me of Earth. Tell me what I have... oh, I forget myself... how silly.
 You were born on the distant world Unzervalt.
 I have visited there much more recently.
-
 
 #(FRIENDLY_SPACE_HELLO_2)	arilo005.wav
 Hello my clever child. We have met again and I am pleased.
@@ -76,7 +74,7 @@ and we were curious about its progress.
 #(FRDLY_HOMEWORLD_HELLO_2)	arilo009.wav
 Welcome back to Falayalaralfali, Captain.
 Perhaps, in the fullness of time we will let you visit the surface of our world.
- There are many beauties here unmatched anywhere... the Mountain Clouds of Thought
+There are many beauties here unmatched anywhere... the Mountain Clouds of Thought
 the Tangible Wish... the Dark. Unfortunately, you are not yet... acclimated.
 Premature exposure to these would render you... numb.
 
@@ -179,7 +177,6 @@ The Mycon change and reform worlds with their Deep Children.
 These changes affect others unfortunately.
 The fate of your world and your heart relate to these matters.
 
-/* Set appropriate flag */
 #(ARILOU_HINTS_3)	arilo021.wav
 The carnate forces of Ur-Quan and Kohr-Ah are twined about the memory of pain.
 They respond to these words.
@@ -201,7 +198,6 @@ If you have found the Ur-Quan Warp Pod, this prospect can be made a reality.
 #(GOT_PART_YET_2)	arilo025.wav
 We are so eager to give you our means to traverse reality.
 Have you obtained the Warp Pod yet?
-
 
 #(INIT_ANGRY_HWLD_HELLO)	arilo026.wav
 You have found our world. We did not see this

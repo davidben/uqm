@@ -39,7 +39,6 @@ a message suggesting that your species do as we chenjesu and mmrnmhrm planned to
 we would accept the ur-quan's demands and become slaves
 until such a time as we found a way to destroy or neutralize the sa-matra.
 
-	
 #(need_help)
 We are struggling against the Ur-Quan. Can't you help us?
 
@@ -75,7 +74,7 @@ what you describe is theoretically possible
 but it would pose a great danger to us
 the process must be executed as planned... or it may fail catastrophically
 we would be destroyed.
-	
+
 #(need_advice)
 We really need advice from you.
 
@@ -114,13 +113,12 @@ the neutralization of the sa-matra, the ur-quan's nearly invincible battle platf
 #(what_about_sun_device)
 I er... borrowed a device from the Mycon. Do you know what it is?
 
-
 #(ABOUT_SUN_DEVICE)	chmmr012.wav
 we do not recognize this device
 but it appears to be a precursor tool which can radiate a great amount of energy.
 
 #(what_about_samatra)
-What more can you tell me about this Sa-Matra
+What more can you tell me about this Sa-Matra?
 
 #(ABOUT_SAMATRA)	chmmr013.wav
 we only glimpsed it once, when it devastated our most powerful fleet
@@ -129,7 +127,7 @@ with a host of unusual weapons protruding from its scabrous hull
 but the most dangerous feature of the sa-matra was its annihilation toroids...
 with this weapon they could vaporize ships from the far side of a solar system
 or cut broad swaths of devastation across a planet in seconds.
-	
+
 #(enough_advice)
 Thanks! That's enough advice for now.
 
@@ -144,9 +142,8 @@ Goodbye Chenjesu. Goodbye Mmrnmhrm.
 goodbye once and future ally, human... when the process is complete and we emerge from our chrysalis
 i shall tell your grandchildren of our conversation this day.
 
-
 #(WE_ARE_FREE)	chmmr016.wav
-WE ARE FREE!"
+WE ARE FREE!
 YOU HAVE FLOODED OUR SYNTHESIS MECHANISMS WITH A WEALTH OF RADIANT ENERGY.
 WHAT WAS SUPPOSED TO TAKE DECADES HAS BEEN ACCOMPLISHED IN SECONDS.
 THE PROCESS IS INCOMPLETE, YET WE HAVE EMERGED.
@@ -240,8 +237,7 @@ THE NEUTRALIZATION OF THE SA-MATRA, THE UR-QUAN'S NEARLY INVINCIBLE BATTLE PLATF
 RETURN WHEN YOU HAVE GATHERED THE RESOURCES WE HAVE DESCRIBED.
 
 #(YOU_ARE_READY)	chmmr027.wav
-YOU ARE READY
-
+YOU ARE READY...
 
 #(further_assistance)
 Can you give us further assistance now?
@@ -299,7 +295,7 @@ YOUR VESSEL WILL BE TOTALLY ANNIHILATED.
 Whoa. Gee, that's bad. I don't suppose there's anything we can do to change that, is there?
 
 #(DEAD_SILENCE)	chmmr035.wav
-  
+NO.  
 
 #(other_assistance)
 Can you provide us with any other assistance?
@@ -334,7 +330,7 @@ YES. WE HAVE REACHED TWO CONCLUSIONS
 ONE: THE LOCATION OF THE SA-MATRA CAN BE CONFINED TO THE STARS IN THE CRATERIS CONSTELLATION.
 SEEK THE VEHICLE IN THIS REGION.
 TWO: BECAUSE THE UR-QUAN LOST SO MANY SHIPS WHEN THE SHOFIXTI CAUSED THEIR OWN SUN TO FLARE
-THE KOHR-AR'S FORCES ARE GROSSLY SUPERIOR TO THE UR-QUAN.
+THE KOHR-AH'S FORCES ARE GROSSLY SUPERIOR TO THE UR-QUAN.
 IF THE WAR IS NOT YET OVER BETWEEN THE UR-QUAN AND THE KOHR-AH, IT SHALL BE SOON
 WITH THE KOHR-AH VICTORIOUS. WHEN THIS HAPPENS THE KOHR-AH WILL MOVE THROUGH SPACE
 DESTROYING ALL INTELLIGENT RACES ONE BY ONE UNTIL NONE REMAIN.

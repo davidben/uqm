@@ -91,7 +91,6 @@ to commit some vile treason and dirty our Queen's good name. Isn't this true?
 AWK! Do not be answering! We know the truth.
 We will not let ye pass!
 
-
 #(SPACE_HELLO_1)	yehat010.wav
 BRAK! What am I seeing on my view screen!? HOOT!
 It is none other than the flattened old face of our friends the human!
@@ -240,8 +239,6 @@ we will be letting you go in peace.
 AWK! You are causing us sorrow, human, sorrow indeed
 because now we must obey the commands of our Queen and destroy you.
 
-
-
 #(shofixti_alive_1)
 This may come as a shock, but the Shofixti are reborn.
 
@@ -300,7 +297,6 @@ we shall TEAR THE QUEEN FROM HER THRONE!
 The two-thousand year reign of the Veep-Neep Queens IS OVER!
 THE REVOLUTION HAS BEGUN!
 
-
 #(ROYALIST_SPACE_HELLO_1)	yehat031.wav
 HOOT! Human... ye shall never be fully comprehending the damage you are doing now to our Yehat culture.
 For fully TWO THOUSAND YEARS there has been peace between the Clans!...
@@ -349,18 +345,17 @@ Goodbye Royalist fool!
 #(GOODBYE_AND_DIE_ROYALIST)	yehat038.wav
 Now ye must pay fer yer crimes, human!
 
-
 #(name_1)
-The New Alliance of Free Stars!
+The New Alliance of Free Stars
 
 #(name_2)
-The Concordance of Alien Nations!
+The Concordance of Alien Nations
 
 #(name_3)
-The United Federation of Worlds!
+The United Federation of Worlds
 
 #(name_40)
 The Empire of 
 #(name_41)
-!
+ 
 

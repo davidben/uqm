@@ -635,7 +635,6 @@ So, what do you think of the Ur-Quan anyway?
 Okay, so help me understand this. You consider yourselves Evil?
 
 #(but_evil_is_defined)
-But `evil' is defined as deviation from established values.
-If your entire society behaves evilly, then aren't you all, in fact, good?
+But `evil' is defined as deviation from established values.  If your entire society behaves evilly, then aren't you all, in fact, good?
 
 

@@ -29,7 +29,6 @@ Inferior Aliens. You have once again intruded upon the territory of the Thraddas
 This is a patrolled region of space. Your presence here is considered an act of War!
 How wonderful!
 
-
 #(HOSTILE_HOMEWORLD_HELLO_1)	thrad004.wav
 HA! View the stupid weak alien who has appeared here at our homeworld!
 What do you desire, creature? Our Friendship? Our submission?!
@@ -47,7 +46,7 @@ Now what do you wish of us before we attack?
 
 #(HOSTILE_HOMEWORLD_HELLO_2)	thrad005.wav
 Attention cowardly alien human thing!
-You escaped our instructional session, SNORT! But this time things are different.\n
+You escaped our instructional session, SNORT! But this time things are different.
 We, the Ur-Quan slaves of Culture Nineteen,
 have engaged in a long-term build-up of weapons, assuring us that we shall prevail!
 If you wish merely to count coup, seek our ships in space.
@@ -66,7 +65,6 @@ of trying to conquer our homeworld through direct attack?
 It is impossible! SNORT! We Thraddash will toast your tootsies.
 Your charred bodies will be fertilizer for our fodderland.
 A great fight, resulting in a glorious Thraddash victory, awaits you here!
-
 
 #(whats_up_hostile_1)
 Thraddash of Culture Nineteen: we sense a bit of hostility here. Why?
@@ -92,7 +90,6 @@ who wiped out Culture Twelve's army, thus beginning the long and glorious Cultur
 SNORT! Now THAT'S hostility!
 We, on the other hand, merely want to kill you.
 
-
 #(GENERAL_INFO_HOSTILE_2)	thrad009.wav
 Brutal!? You don't know the MEANING of brutal until you've heard the story of Culture Three!
 How brutal WAS Culture Three you ask?
@@ -111,8 +108,6 @@ To you, an inferior alien, this may seem bluntly stupid -- the product of a sick
 SNORT! You couldn't be more right!
 Culture Three was, as you can well understand, only the third Thraddash Culture
 and was therefore far from the tempered perfection you have encountered here and now.
-
-	
 
 #(GENERAL_INFO_HOSTILE_3)	thrad010.wav
 NO! We will not answer any more of your foolish questions!
@@ -213,8 +208,7 @@ you might find some way to use that information against our masters.
 So forget it! No secrets!
 
 #(got_idea)
-	"Hey, I've got an idea! Why don't you go impress your Ur-Quan masters AND "
-show-off your Afterburner modification by attacking the Ur-Quan's enemy!?
+Hey, I've got an idea! Why don't you go impress your Ur-Quan masters AND show-off your Afterburner modification by attacking the Ur-Quan's enemy!?
 
 #(GOOD_IDEA)	thrad016.wav
 WHAT FOOLISH STUPIDITY! HARG! HARG! HARG!
@@ -284,7 +278,6 @@ Begone Stupid, Ugly Ones!
 SNARL!
 Leave before we break from our guard posts and give you a good Thraddashing!
 
-
 #(submit_1)
 Your blustering does not impress me. We have requirements which you will fulfill, NOW!
 
@@ -303,7 +296,6 @@ I have secret weapons of great power. Submit, or I shall evaporate your planet.
 HARG! HARG! HARG!
 We like secret weapons!
 We will now give you the opportunity to give them to us.
-
 
 #(be_friends_1)
 We wish nothing from you, save your friendship.
@@ -423,7 +415,6 @@ You were going to steal it, WEREN'T YOU? SNARL!
 You are sneaky and deceptive, just like the vile Culture Sixteeners!
 You shall suffer their same fate -- OBLIVION!
 
-
 #(bye_hostile_helix)
 We have decided to leave. Goodbye.
 
@@ -444,7 +435,7 @@ This makes us mad, EXTREMELY mad!
 Prepare to meet thy Doom, alien Thief!
 
 #(AMAZING_PERFORMANCE)	thrad041.wav
-	"Admirable! Admirable! We have never witnessed such awesome combat capabilities!"
+Admirable! Admirable! We have never witnessed such awesome combat capabilities!
 You have destroyed so many of us! We are humbled in your presence!
 We thought you were a weakling, a coward, a pitiful sniveling wimp.
 We were wrong, so wrong! WHIMPER!
@@ -456,17 +447,17 @@ Just as they say, first impressions are SO important!
 So tell us, please! Tell us how WE should present ourselves.
 
 #(IMPRESSIVE_PERFORMANCE)	thrad042.wav
-	"Well, Humans have some backbone after all, but not as much as the Ur-Quan."
+Well, Humans have some backbone after all, but not as much as the Ur-Quan.
 A Human ship is a poor second to the Ur-Quan Dreadnought.
 Your weapons do not have the killing strength of an Ur-Quan fusion blast.
 SNORT! The Ur-Quan are still your betters.
 
 #(ADEQUATE_PERFORMANCE)	thrad043.wav
 Perhaps Humans can fight after all, if our reports are accurate.
-	"We will test this hypothesis in the laboratory of life -- IN GLORIOUS BATTLE!"
+We will test this hypothesis in the laboratory of life -- IN GLORIOUS BATTLE!
 Your puny, inadequate weaponry is no match for the Thraddash Mark 6 Blaster
 with its 4 Megawatt energy discharge.
-	"Nor can your slow, bloated tubs compare to our Flash Turbo-Boosted warships!"
+Nor can your slow, bloated tubs compare to our Flash Turbo-Boosted warships!
 We have nothing to fear!
 
 #(HELLO_POLITE_1)	thrad044.wav
@@ -486,8 +477,7 @@ As always, we will be most pleased to enter into meaningful discourse with your 
 Greetings and salutations! We trust that all is well with you
 and that your stay will be pleasant and beneficial.
 
-
-#(HELLO_RHYME_1)	thrad048.wav		  
+#(HELLO_RHYME_1)	thrad048.wav
 We are the rhyming simons
 blancmange rhymes with orange
 space is the place
@@ -497,7 +487,7 @@ SNORT! This is hard!
 
 #(HELLO_RHYME_2)	thrad049.wav		   
 Blood is red, bruises are blue
-When strangers come here, we run them through!\n
+When strangers come here, we run them through!
 HARG! HARG! HARG!
 Good one, eh?
 
@@ -541,7 +531,6 @@ Attention! This is the starship Overwhelmer.
 
 #(HELLO_LIKE_YOU_4)	thrad057.wav
 I am commander Dthunk.
-
 
 #(WELCOME_SPACE0)	thrad058.wav
 We of 
@@ -725,7 +714,7 @@ Not knowing what a penguin was, my subordinate spun to face the vidscreen
 his hydraulic holster snapping his weapon into his hand.
 BLAM! BLAM! BLAM!
 The penguin, the vidscreen, and a large section of the wall were destroyed.
-You see, Captain. Perhaps we are not suited to being wacky\n
+You see, Captain. Perhaps we are not suited to being wacky
 and SNIFF!... that was my only penguin.
 
 #(WACKY_GOES_2)	thrad082.wav
@@ -876,7 +865,7 @@ The United Federation of Worlds
 #(name_40)
 The Empire of 
 #(name_41)
-!
+ 
 
 #(HAVING_FUN_WITH_ILWRATH_1)	thrad102.wav
 Oh! The Glory of these many battles!

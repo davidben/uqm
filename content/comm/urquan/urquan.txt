@@ -132,7 +132,6 @@ Look, ah... this was all a mistake. A weird mistake. Bye!
 Your insolence knows no bounds!
 You will be punished.
 
-
 #(SUBSEQUENT_URQUAN_WAKE_UP)	urqua016.wav
 ...and again you have violated our great battlefield
 interfered with our Doctrinal War!
@@ -322,7 +321,6 @@ I will leave now.
 Your independence is too dangerous for us to tolerate.
 You shall be punished.
 
-
 #(whats_up_1)
 Why do you wish to enslave us?
 
@@ -339,7 +337,7 @@ and then, you will revere and even love us for this gift.
 
 #(whats_up_2)
 You didn't answer my question. What's your problem?
- 
+
 #(GENERAL_INFO_2)	urqua040.wav
 You have intruded upon the battleground of our Doctrinal conflict with the Kohr-Ah.
 This is not tolerable.
@@ -378,6 +376,5 @@ If you interfere with us here, we may lose the Doctrinal conflict with the Kohr-
 If we are defeated, you are defeated as well.
 The Kohr-Ah will be unleashed. They will begin a genocidal orgy, cleansing all known sentience.
 They will crack the slave shield around Earth and reduce the surface of your blue world to cinders.
-
 
 
