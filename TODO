@@ -7,7 +7,6 @@ into the cvs tree. Note that v1.0 will pretty much be a straight port,
 with no gameplay-altering features added.
 
 Serious bugs (crash the game, high priority):
-- The game crashes when there's no sound driver available
 - loading an old game crashes the game (at least on Linux).
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
@@ -18,8 +17,6 @@ Serious bugs (crash the game, high priority):
   unusual - EVERY line by the ZFP is like that.)
 
 Glitches (don't crash the game, medium priority):
-- When fast forwarding voices, sound stops. (SDL_mixer cannot start a sample
-  from anywhere but the start)
 - pressing arrow keys in the main menu moves the selection in the
   wrong direction (both left, right and up, down)
 - The melnorme don't charge for fuel when you ask "fill 'er up"
@@ -49,7 +46,7 @@ Glitches (don't crash the game, medium priority):
   landing position (and so 'flashes' when crossfade ends)
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
-- Melnorme graphics are corrupt.
+- Melnorme (battle) graphics are corrupt.
 - Shofixti doesn't work in melee.
 - In melee, after battle, the game crashes.
   The ship icon is used when already freed. This happens because the old
@@ -77,7 +74,7 @@ Glitches (don't crash the game, medium priority):
   - Some unimplemented functions (for oscilloscope and dialogue seeking)
   - Occasionally some speech oggs don't play
   - When mod music is looping, there's some volume fade at the end of tune,
-    then it starts playing again. Should this happen? (modplug only?)
+    then it starts playing again. This shouldn't happen? (modplug only?)
   - Stock SDL_sound package for VC is outdated and win32 users have to get
     few new .dll's to ensure proper operation
     - Perhaps we should integrate mikmod to our code and use vorbis libs
@@ -88,9 +85,7 @@ Glitches (don't crash the game, medium priority):
 
 
 Implementation bugs (low priority):
-- The main thread is still created by a direct all to the SDL function,
-  instead of through the thread lib. It would cause a crash otherwise.
-  Probably the memlib isn't initialised then (which the thread lib uses).
+
 
 Stuff still to do (large):
 - add a Key Jamming program
@@ -141,8 +136,6 @@ Questions:
 - Is there some way to automatically do CRLF translations on commits,
   with the -t and -f options in cvswrapper disabled by sourceforge?
 - What is the displist stuff for? Is it needed at all?
-- Do we want another utils/ dir? It could be useful, to put all the conversion
-  tools we use(d).
 - are there still threads killing themselves instead of just exiting?
   Answer: "find . -name \*.c | xargs grep Killthread" says "no."
 - w_memlib used (now commented out) MS Windows functions to show messages
