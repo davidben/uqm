@@ -73,6 +73,9 @@ Glitches (don't crash the game, medium priority):
   (doesn't draw background so leaves trails, etc)
 - Currently some sound effects are perhaps from PC version.. 3DO ones should be
   extracted to check/fix this
+- When saving game in the Outfit Starship menu is done, and game goes
+  back to the outfit, screen doesn't reset itself
+  - Probably happens on some other situations too
 
 Implementation bugs (low priority):
 - Scaling code problems:
