@@ -1,4 +1,5 @@
-0.2:
+Changes towards version 0.2:
+- No longer using SHGetFolderPath on Windows - SvdB
 - Key repeat is now enabled when typing text, from slayne
 - Capital letter bug in new input code fixed, from slayne
 - Oscilloscope now reacts to music when speech is disabled (OpenAL) -Mika
