@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Moved image scaling to DCQ thread; fixes scale-out-of-sync problem 
+  in melee -Mika
 - Fix lockup in cyborg melee (fixes 204 and 218) from chmmravatar
 - Added -g option to control gamma correction, from chmmravatar
 - Restored the CondBank to actually use condition variables properly

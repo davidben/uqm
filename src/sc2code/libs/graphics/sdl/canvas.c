@@ -49,9 +49,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	targetRect.x = x;
 	targetRect.y = y;
 
-	if (scale != 0 && scale != 256)
+	if (scale != 0 && scale != GetGraphicScaleIdentity ())
 	{
-		// TFB_DrawImage_FixScaling (img, scale);
+		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
 	}
 	else
@@ -92,9 +92,9 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	targetRect.x = x;
 	targetRect.y = y;
 
-	if (scale != 0 && scale != 256)
+	if (scale != 0 && scale != GetGraphicScaleIdentity ())
 	{
-		// TFB_DrawImage_FixScaling (img, scale);
+		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
 	}
 	else
@@ -206,9 +206,9 @@ TFB_DrawCanvas_New_Scaled (TFB_Canvas src, int scale)
 {
 	SDL_Surface *new_surf;
 
-	new_surf = zoomSurface ((SDL_Surface *)src, scale / 256.0f, 
-			scale / 256.0f, SMOOTHING_OFF);
-
+	new_surf = zoomSurface ((SDL_Surface *)src, scale / (float)GetGraphicScaleIdentity (),
+			scale / (float)GetGraphicScaleIdentity (), SMOOTHING_OFF);
+	
 	if (new_surf)
 	{
 		if (!TFB_DrawCanvas_IsPaletted (new_surf))

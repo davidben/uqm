@@ -510,11 +510,6 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int y = DC.data.image.y;
 
 				LockMutex (DC_image->mutex);
-				if (DC.data.image.scale)
-					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
-				else
-					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
-
 				if (DC.data.image.UsePalette)
 				{
 					pal = palette;
@@ -529,6 +524,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 						DC.data.image.scale, pal,
 						SDL_Screens[DC.data.image.destBuffer]);
 
+				LockMutex (DC_image->mutex);
+				if (DC.data.image.scale)
+					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+				else
+					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+				UnlockMutex (DC_image->mutex);
+
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
@@ -537,14 +539,17 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.filledimage.x;
 				int y = DC.data.filledimage.y;
 
+				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
+						DC.data.filledimage.scale, DC.data.filledimage.r, DC.data.filledimage.g,
+						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
+
+				LockMutex (DC_image->mutex);
 				if (DC.data.filledimage.scale)
 					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
 				else
 					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+				UnlockMutex (DC_image->mutex);
 
-				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
-						DC.data.filledimage.scale, DC.data.filledimage.r, DC.data.filledimage.g,
-						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
@@ -616,8 +621,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				TFB_BBox_RegisterPoint (src.x, src.y);
 				TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
-
-
+				
 				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest);
 				break;
 			}
