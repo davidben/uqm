@@ -104,7 +104,10 @@ Glitches (don't crash the game, medium priority):
   for a little moment which causes black track on planet to be seen
 - Moving crosshair in planet screen leaves a light trace to the image
   in OpenGL mode (SDL surface format conversion problem)
-
+- You seem to be able to do certain things before you're supposed to
+  - saying the phrase 'What you are doing it wrong'
+  - demanding the Shofixti Maidens from Zex
+  Probably the negative shift for GET_STATE and SET_STATE
 
 Implementation bugs (low priority):
 - Scaling code problems:
