@@ -820,6 +820,7 @@ DoModifyShips (PMENU_STATE pMS)
 				else if (select || cancel)
 				{					
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
+							&& hStarShip != 0
 							&& StarShipPtr->ShipInfo.crew_level == 0)
 					{
 						SetFlashRect (NULL_PTR, (FRAME)0);
