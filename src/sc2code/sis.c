@@ -552,8 +552,8 @@ DrawFlagshipStats (void)
 	t.baseline.y += leading;
 	{
 		unsigned int energy_per_10_sec =
-				(((100 * BATTLE_FRAME_RATE * energy_regeneration) /
-				(1 + energy_wait)) + 5) / 10;
+				(((100 * ONE_SECOND * energy_regeneration) /
+				((1 + energy_wait) * BATTLE_FRAME_RATE)) + 5) / 10;
 		wsprintf (buf, "%2u.%1u",
 				energy_per_10_sec / 10,
 				energy_per_10_sec % 10);
