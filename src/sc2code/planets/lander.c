@@ -1458,14 +1458,14 @@ InitPlanetSide (void)
 	pt = pSolarSysState->MenuState.first_item;
 
 	// Jitter the X landing point.
-	pt.x -= RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	pt.x -= RANDOM_MISS - (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
 	if (pt.x < 0)
 		pt.x += (MAP_WIDTH << MAG_SHIFT);
 	else if (pt.x >= (MAP_WIDTH << MAG_SHIFT))
 		pt.x -= (MAP_WIDTH << MAG_SHIFT);
 
 	// Jitter the Y landing point.
-	pt.y -= RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	pt.y -= RANDOM_MISS - (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
 	if (pt.y < 0)
 		pt.y = 0;
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
