@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- Syreen ships become available when Talana says they are (bug #264) -Alex
+- The infinity symbol is correctly printed for gas giant atmosphere
+  in coarse scan screen (bug #239) -Alex
 - Prevent Syreen crew above 12 getting thrown out the airlock in
   Roster screen (bug #184); from chmmravatar, Alex
 - Lander report messages now use the entire panel (bug #36), from chmmravatar
