@@ -22,6 +22,5 @@
 
 Uint32
 SDLWrapper_GetTimeCounter (void) {
-	return SDL_GetTicks () * ONE_SECOND / 1000.0;
+	return (Uint32)(SDL_GetTicks () * ONE_SECOND / 1000.0);
 }
-
