@@ -1123,8 +1123,11 @@ CountSISPieces (BYTE piece_type)
 Task flash_task = 0;
 RECT flash_rect;
 static FRAME flash_frame;
+static FRAME flash_screen_frame = 0;
 static int flash_changed;
 Mutex flash_mutex = 0;
+void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, 
+					   RECT *rdst, int num,int denom);
 
 int flash_rect_func(void *data)
 {
@@ -1134,7 +1137,7 @@ int flash_rect_func(void *data)
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	RECT cached_rect, framesize_rect;
-	FRAME cached_frame;
+	FRAME cached_frame, cached_screen_frame;
 	Task task = (Task)data;
 	int cached[CACHE_SIZE];
 	STAMP cached_stamp[CACHE_SIZE];
@@ -1159,9 +1162,10 @@ int flash_rect_func(void *data)
 		{
 			cached_rect = flash_rect;
 			cached_frame = flash_frame;
+			cached_screen_frame = flash_screen_frame;
 			flash_changed = 0;
 			UnlockMutex (flash_mutex);
-			//  Wait for the ExtraScreen to get initialized
+			//  Wait for the  flash_screen_frame to get initialized
 			FlushGraphics ();
 			if (cached_frame)
 				GetFrameRect (cached_frame, &framesize_rect);
@@ -1175,17 +1179,16 @@ int flash_rect_func(void *data)
 		}
 		else
 			UnlockMutex (flash_mutex);
-		SetSemaphore (GraphicsSem);
-		OldContext = SetContext (ScreenContext);
 		
 		if (cached_rect.extent.width)
 		{
-			BatchGraphics ();
-			SetContextClipRect (&cached_rect);
+			STAMP *pStamp;
 			if (cached_frame)
 			{
 #define MIN_F_STRENGTH -3
 #define MAX_F_STRENGTH 3
+				int num = 0, denom = 0;
+
 				if ((fstrength += incr) > MAX_F_STRENGTH)
 				{
 					fstrength = MAX_F_STRENGTH - 1;
@@ -1197,37 +1200,38 @@ int flash_rect_func(void *data)
 					incr = 1;
 				}
 				if (cached[fstrength - MIN_F_STRENGTH])
-					DrawStamp (&cached_stamp[fstrength - MIN_F_STRENGTH]);
+					pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
 				else
 				{
+					RECT tmp_rect = framesize_rect;
+					pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
+					cached[fstrength - MIN_F_STRENGTH] = 1;
+					pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
+							framesize_rect.extent.width, framesize_rect.extent.height, 1));
+					pStamp->origin.x = framesize_rect.corner.x;
+					pStamp->origin.y = framesize_rect.corner.y;
+					tmp_rect.corner.x = 0;
+					tmp_rect.corner.y = 0;
+
 					if (fstrength != NORMAL_F_STRENGTH)
 					{
-						STAMP s;
-
-						ClearBackGround (&framesize_rect);
-
-						SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
-					
-						s.origin.x = s.origin.y = 0;
-						s.frame = cached_frame;
-						DrawStamp (&s);
+						arith_frame_blit (cached_frame, &tmp_rect, pStamp->frame, NULL,
+								fstrength > 0 ? fstrength : -fstrength, 16);
 
 						if (fstrength < 0)
-							SetGraphicStrength (-8, 8); // add to -(partial mask)
+						{
+							num = -8;
+							denom = 8;
+						}
 						else
-							SetGraphicStrength (8, -8); // add to (partial mask)
+						{
+							num = 8;
+							denom = -8;
+						}
 					}
 
-					DrawFromExtraScreen (&framesize_rect);
-					SetGraphicStrength (4, 4);
-					{
-						STAMP *pStamp;
-						pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
-						cached[fstrength - MIN_F_STRENGTH] = 1;
-						pStamp->origin.x = framesize_rect.corner.x;
-						pStamp->origin.y = framesize_rect.corner.y;
-						pStamp->frame = CaptureDrawable (LoadDisplayPixmap (&framesize_rect, (FRAME)0));
-					}
+					arith_frame_blit (cached_screen_frame, &framesize_rect, pStamp->frame, 
+							&tmp_rect, num, denom);
 				}
 			}
 			else
@@ -1237,30 +1241,34 @@ int flash_rect_func(void *data)
 				if ((strength += 2) > MAX_STRENGTH)
 					strength = MIN_STRENGTH;
 				if (cached[strength - MIN_STRENGTH])
-					DrawStamp (&cached_stamp[strength - MIN_STRENGTH]);
+					pStamp = &cached_stamp[strength - MIN_STRENGTH];
 				else
 				{
-					SetGraphicStrength (strength, 4);
-					DrawFromExtraScreen (&cached_rect);
-					SetGraphicStrength (4, 4);
+					RECT tmp_rect = cached_rect;
+					pStamp = &cached_stamp[strength - MIN_STRENGTH];
+					cached[strength - MIN_STRENGTH] = 1;
+					pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
+							cached_rect.extent.width, cached_rect.extent.height, 1));
+					pStamp->origin.x = 0;
+					pStamp->origin.y = 0;
+					tmp_rect.corner.x = 0;
+					tmp_rect.corner.y = 0;
 
-					{
-						STAMP *pStamp;
-						pStamp = &cached_stamp[strength - MIN_STRENGTH];
-						cached[strength - MIN_STRENGTH] = 1;
-						pStamp->origin.x = 0;
-						pStamp->origin.y = 0;
-						pStamp->frame = CaptureDrawable (LoadDisplayPixmap (&cached_rect, (FRAME)0));
-					}
+					arith_frame_blit (cached_screen_frame, &tmp_rect, pStamp->frame, 
+							&tmp_rect, 4, 4);
+					if (strength != 4)
+						arith_frame_blit (cached_screen_frame, &tmp_rect, pStamp->frame, 
+								&tmp_rect, strength, 4);
 				}
 			}
-			
+			SetSemaphore (GraphicsSem);
+			OldContext = SetContext (ScreenContext);
+			SetContextClipRect (&cached_rect);
+			DrawStamp (pStamp);
 			SetContextClipRect (NULL_PTR); // this will flush whatever
-							
-			UnbatchGraphics ();
+			SetContext (OldContext);
+			ClearSemaphore (GraphicsSem);
 		}
-		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
 		FlushGraphics ();
 		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
@@ -1340,12 +1348,25 @@ SetFlashRect (PRECT pRect, FRAME f)
 			|| old_r.corner.y != flash_rect.corner.y
 			|| old_f != flash_frame))
 	{
-		DrawFromExtraScreen (&old_r);
+		if (flash_screen_frame)
+		{
+			STAMP old_s;
+			old_s.origin.x = old_r.corner.x;
+			old_s.origin.y = old_r.corner.y;
+			old_s.frame = flash_screen_frame;
+			DrawStamp (&old_s);
+			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
+			flash_screen_frame = 0;
+		}
+		else
+			fprintf (stderr, "couldn't locate flash_screen_rect\n");
 	}
 	
 	if (flash_rect.extent.width)
 	{
-		LoadIntoExtraScreen (&flash_rect);
+		if (flash_screen_frame)
+			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
+		flash_screen_frame = CaptureDrawable (LoadDisplayPixmap (&flash_rect, (FRAME)0));
 	}
 	LockMutex (flash_mutex);
 	flash_changed = 1;
