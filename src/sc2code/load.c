@@ -148,6 +148,12 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		GLOBAL (avail_race_q) = avail_q;
 		GLOBAL (npc_built_ship_q) = npc_q;
 		GLOBAL (built_ship_q) = player_q;
+		// It shouldn't be possible to ever save with TimeCounter != 0
+		// But if it does happen, it needs to be reset to 0, since on load
+		// the clock semaphore is gauranteed to be 0
+		if (GLOBAL (GameClock.TimeCounter) != 0)
+			fprintf (stderr, "Warning: Game clock wasn't stopped during save, Savegame may be corrupt!\n");
+		GLOBAL (GameClock.TimeCounter) = 0;
 
 		LoadShipQueue (fh, &GLOBAL (avail_race_q), FALSE);
 		if (!(NextActivity & START_INTERPLANETARY))
