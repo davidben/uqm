@@ -27,10 +27,21 @@
 #include <unistd.h>
 #endif
 
+#define DEBUG_TRACK_SEM
+
+#ifdef DEBUG_TRACK_SEM
+// Define all semaphores to be tracked in SemList.  Make sure it is NULL terminated
+// Make that  semthread is the same length  as SemList, and is initialized as all 0's
+extern Semaphore GraphicsSem;
+static Semaphore *SemList[] = {&GraphicsSem, NULL};
+Uint32 semthread[] = {0, 0};
+#endif
+
 #ifdef THREAD_QUEUE
 static volatile Thread threadQueue = NULL;
 static Semaphore threadQueueSemaphore;
 #endif
+
 
 struct ThreadStartInfo
 {
@@ -307,25 +318,79 @@ DestroySemaphore (Semaphore sem)
 int
 SetSemaphore (Semaphore sem)
 {
-	return NativeSetSemaphore ((NativeSemaphore) sem);
+	int i;
+
+	i = NativeSetSemaphore ((NativeSemaphore) sem);
+#ifdef DEBUG_TRACK_SEM
+	if (i != 0)
+		fprintf(stderr, "WARNING: SetSemaphore did not return 0, this could be bad!\n");
+	for (i = 0; SemList[i] != NULL; i++)
+		if (*SemList[i] == sem)
+		{
+			semthread[i] = SDL_ThreadID ();
+			break;
+		}
+#endif
+	return i;
 }
 
 int
 TrySetSemaphore (Semaphore sem)
 {
-	return NativeTrySetSemaphore ((NativeSemaphore) sem);
+	int i;
+
+	i = NativeTrySetSemaphore ((NativeSemaphore) sem);
+#ifdef DEBUG_TRACK_SEM
+	if (i == 0)
+		for (i = 0; SemList[i] != NULL; i++)
+			if (*SemList[i] == sem)
+			{
+				semthread[i] = SDL_ThreadID ();
+				break;
+			}
+#endif
+	return (i);
 }
 
 int
 TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout)
 {
-	return NativeTimeoutSetSemaphore ((NativeSemaphore) sem,
-			timeout);
+	int i;
+
+	i = NativeTimeoutSetSemaphore ((NativeSemaphore) sem, timeout);
+#ifdef DEBUG_TRACK_SEM
+	if (i == 0)
+		for (i = 0; SemList[i] != NULL; i++)
+			if (*SemList[i] == sem)
+			{
+				semthread[i] = SDL_ThreadID ();
+				break;
+			}
+#endif
+	return (i);
 }
 
 void
 ClearSemaphore (Semaphore sem)
 {
+	int i;
+#ifdef DEBUG_TRACK_SEM
+	Uint32 semval = SDL_SemValue (sem);
+	if (semval != 0)
+	{
+		fprintf (stderr, "WARNING: trying to clear a free semaphore (value=%d)\n", semval);
+		// Should we unset the Semaphore twice?  Perhaps not.
+		return;
+	}
+	for (i = 0;SemList[i] != NULL; i++)
+		if (*SemList[i] == sem)
+		{
+			if (! semthread[i] && semthread[i] != SDL_ThreadID ())
+				fprintf( stderr, "WARNING: tried to free a Semaphore held by another thread!\n");
+			semthread[i] = 0;
+			break;
+		}
+#endif
 	NativeClearSemaphore ((NativeSemaphore) sem);
 }
 

@@ -539,6 +539,7 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			BatchGraphics ();
 			DrawSISFrame ();
+			SetSemaphore(GraphicsSem);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 2));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 
@@ -572,7 +573,6 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 						GLOBAL_SIS (ModuleSlots[num_frames])) < EMPTY_SLOT)
 					DrawShipPiece (pMS, which_piece, num_frames, FALSE);
 			}
-
 			RedistributeFuel ();
 			DisplayLanders (pMS);
 			if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 3)
@@ -596,8 +596,11 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 					DrawStamp ((PSTAMP)&s);
 			}
 
+			ClearSemaphore(GraphicsSem);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
+			SetSemaphore(GraphicsSem);
 			DrawFlagshipName (FALSE);
+			ClearSemaphore(GraphicsSem);
 
 {
 	RECT r;

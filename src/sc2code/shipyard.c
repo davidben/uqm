@@ -1070,9 +1070,10 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 			BatchGraphics ();
 
 			DrawSISFrame ();
+			SetSemaphore(GraphicsSem);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 3));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
-
+			ClearSemaphore(GraphicsSem);
 			DrawBluePrint (pMS);
 			pMS->ModuleFrame = s.frame;
 

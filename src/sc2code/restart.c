@@ -220,7 +220,9 @@ LastActivity = WON_LAST_BATTLE;
 			BatchGraphics ();
 			ClearDrawable ();
 			FlushColorXForms ();
+			SetSemaphore (GraphicsSem);
 			DrawStamp (&s);
+			ClearSemaphore (GraphicsSem);
 			UnbatchGraphics ();
 
 			FlushInput ();
