@@ -293,7 +293,6 @@ void getpixelarray(Uint32 *map, FRAMEPTR FramePtr, int width, int height)
 
 FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type)
 {
-	UBYTE FrameType;
 	FRAMEPTR NewFrame;
 	int x, y;
 	int width, height;
@@ -307,10 +306,7 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 
 	width = GetFrameWidth (FramePtr);
 	height = GetFrameHeight (FramePtr);
-	FrameType = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
-			->FlagsAndIndex) >> FTYPE_SHIFT;
-	NewFrame = CaptureDrawable (
-				CreateDrawable (FrameType, (SIZE)width, (SIZE)height, 1));
+	NewFrame = CaptureDrawable (CreateDrawable (RAM_DRAWABLE, (SIZE)width, (SIZE)height, 1));
 	tfbOrigImg = FramePtr->image;
 	OrigImg = (SDL_Surface *)tfbOrigImg->NormalImg;
 	SDL_LockSurface (OrigImg);
