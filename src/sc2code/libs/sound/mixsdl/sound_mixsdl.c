@@ -85,19 +85,19 @@ TFB_mixSDL_InitSound (int driver, int flags)
 	{
 		audio_quality = MIX_QUALITY_HIGH;
 		audio_rate = 44100;
-		audio_bufsize = 2048;
+		audio_bufsize = 3072;
 	}
 	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
 	{
 		audio_quality = MIX_QUALITY_LOW;
 		audio_rate = 22050;
-		audio_bufsize = 1024;
+		audio_bufsize = 1536;
 	}
 	else
 	{
 		audio_quality = MIX_QUALITY_DEFAULT;
 		audio_rate = 44100;
-		audio_bufsize = 2048;
+		audio_bufsize = 3072;
 	}
 
 	fprintf (stderr, "Initializing MixSDL mixer.\n");
@@ -199,17 +199,17 @@ TFB_NoSound_InitSound (int driver, int flags)
 	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
 	{
 		audio_rate = 44100;
-		audio_bufsize = 2048;
+		audio_bufsize = 3072;
 	}
 	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
 	{
 		audio_rate = 22050;
-		audio_bufsize = 1024;
+		audio_bufsize = 1536;
 	}
 	else
 	{
 		audio_rate = 44100;
-		audio_bufsize = 2048;
+		audio_bufsize = 3072;
 	}
 
 	fprintf (stderr, "Initializing MixSDL mixer.\n");
