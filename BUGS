@@ -88,6 +88,17 @@ The bugs reported but not yet verified:
   together with the ships in the player's fleet, the modules that are drawn
   inside the flagship are off by one pixel to the left.
 
+- First, I had saved my game while at the planet/scan menu (I do not know
+  which planet or moon I was on).  I loaded it the next day and tried to get
+  minerals while avoiding various hazards.  I managed to get the minerals, but
+  was hit heavily by the hazards.  The moment I pressed Escape, I noticed I
+  had THIRTEEN empty crew slot circles for the Lander at the time (as opposed
+  to twelve like it should have) - an extra empty circle appeared to the left
+  of the bottom row of crew circles.  My Lander was not destroyed, and the
+  minerals I had gathered were still intact and added to my cargo total. 
+  Moreover, the crew of the Vindicator was refilled to my maximum of 50 -- I
+  had 40 when I saved and loaded at the beginning of this point.  "
+
 - < badalex> ok, im in hyper space right? and lets say one of those 
              probes comes to me... so we start the melee and i select a 
              ship, that all works, but after a select a ship the select a 

@@ -14,36 +14,37 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Eventually this should include all configuration stuff, 
- * for now there's few options which indicate 3do/pc flavors.
- * By Mika Kolehmainen.
- */
+// Contains file handling code
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef _FILE_H
 
-#define UQM_MAJOR_VERSION 0
-#define UQM_MINOR_VERSION 12
-
-enum
-{
-	MUSIC_3DO,
-	MUSIC_PC,
-};
-extern int optWhichMusic;
-
-extern BOOLEAN optSubtitles;
-
-BOOLEAN FileExists (const char *filename);
-
-extern char *configDir;
-extern char *meleeDir;
-extern char *saveDir;
-
-void prepareConfigDir(void);
-void prepareMeleeDir(void);
-void prepareSaveDir(void);
-
+/* Make sure we have PATH_MAX */
+#ifdef WIN32
+#	include <stdlib.h>
+#	define PATH_MAX  _MAX_PATH
+#else
+	/* PATH_MAX is per POSIX defined in <limits.h> */
+#	include <limits.h>
 #endif
+#ifdef WIN32
+#	include <direct.h>
+#	define access _access
+#	define F_OK 0
+#	define W_OK 2
+#	define R_OK 4
+#	define mkdir _mkdir
+#	define rmdir _rmdir
+#else
+#	include <unistd.h>
+#endif
+
+void initTempDir (void);
+void unInitTempDir (void);
+char *tempFilePath (const char *filename);
+int mkdirhier (const char *path);
+const char *getHomeDir (void);
+int createDirectory(const char *dir, int mode);
+int expandPath(char *dest, size_t len, const char *src);
+
+#endif  /* _FILE_H */
 

@@ -1,6 +1,11 @@
+#ifndef _PORT_H
+#define _PORT_H
+
+#include "config.h"
+
 #ifdef WIN32
-#define HAVE_STRICMP
-#define HAVE_STRUPR
+#define alloca _alloca
+#define snprintf _snprintf
 #endif
 
 #ifndef HAVE_STRICMP
@@ -10,4 +15,6 @@
 #ifndef HAVE_STRUPR
 char *strupr (char *str);
 #endif
+
+#endif  /* _PORT_H */
 

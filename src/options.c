@@ -20,19 +20,72 @@
  * By Mika Kolehmainen.
  */
 
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "compiler.h"
 #include "options.h"
+#include "file.h"
 
 int optWhichMusic = MUSIC_3DO;
+char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
 
-BOOLEAN FileExists (char *filename)
+BOOLEAN FileExists (const char *filename)
 {
     FILE *fp;
-    if ((fp = fopen(filename, "rb")) == NULL)
+    if ((fp = fopen (filename, "rb")) == NULL)
         return FALSE;
 
     fclose (fp);
     return TRUE;
 }
+
+void
+prepareConfigDir (void) {
+	configDir = malloc (PATH_MAX - 13);
+	if (expandPath (configDir, PATH_MAX - 13, CONFIGDIR) == -1)
+	{
+		// Doesn't have to be fatal, but might mess up things when saving
+		// config files.
+		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		exit (EXIT_FAILURE);
+	}
+	configDir = realloc (configDir, strlen (configDir) + 1);
+
+	// Create the path upto the config dir, if not already existing.
+	mkdirhier (configDir);
+}
+
+void
+prepareSaveDir (void) {
+	saveDir = malloc (PATH_MAX - 13);
+	if (expandPath (saveDir, PATH_MAX - 13, SAVEDIR) == -1)
+	{
+		// Doesn't have to be fatal, but might mess up things when saving
+		// config files.
+		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		exit (EXIT_FAILURE);
+	}
+	saveDir = realloc (saveDir, strlen (saveDir) + 1);
+
+	// Create the path upto the save dir, if not already existing.
+	mkdirhier (saveDir);
+}
+
+void
+prepareMeleeDir (void) {
+	meleeDir = malloc (PATH_MAX - 13);
+	if (expandPath (meleeDir, PATH_MAX - 13, MELEEDIR) == -1)
+	{
+		// Doesn't have to be fatal, but might mess up things when saving
+		// config files.
+		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		exit (EXIT_FAILURE);
+	}
+	meleeDir = realloc (meleeDir, strlen (meleeDir) + 1);
+
+	// Create the path upto the save dir, if not already existing.
+	mkdirhier (meleeDir);
+}
+

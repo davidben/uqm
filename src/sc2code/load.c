@@ -19,6 +19,8 @@
 #include "starcon.h"
 #include "declib.h"
 #include "libs/tasklib.h"
+#include "options.h"
+#include "file.h"
 
 ACTIVITY NextActivity;
 
@@ -85,10 +87,10 @@ BOOLEAN
 LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 {
 	FILE *in_fp;
-	char buf[256];
+	char buf[256], file[PATH_MAX];
 
-	sprintf (buf, "starcon2.%02u", which_game);
-	in_fp = OpenResFile (buf, "rb");
+	sprintf (file, "%sstarcon2.%02u", saveDir, which_game);
+	in_fp = OpenResFile (file, "rb");
 	if (in_fp)
 	{
 		FILE *fp;
@@ -221,7 +223,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			}
 		}
 
-		fp = OpenResFile (STARINFO_FILE, "wb");
+		fp = OpenResFile (tempFilePath (STARINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -240,7 +242,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			CloseResFile (fp);
 		}
 
-		fp = OpenResFile (DEFGRPINFO_FILE, "wb");
+		fp = OpenResFile (tempFilePath (DEFGRPINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -259,7 +261,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			CloseResFile (fp);
 		}
 
-		fp = OpenResFile (RANDGRPINFO_FILE, "wb");
+		fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;

@@ -16,11 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef WIN32
-#include <unistd.h>
-#include "config.h"
-#else
-#include <direct.h>
+#ifdef HAVE_UNISTD_H
+#	include <unistd.h>
+#endif
+#ifdef WIN32
+#	include <direct.h>
+#endif
+#ifdef HAVE_CONFIG_H
+#	include "config.h"
 #endif
 
 #ifdef HAVE_GETOPT_H
@@ -33,16 +36,19 @@
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
+#include "file.h"
+#include "port.h"
 #include "options.h"
+
 #if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)
 #	include <SDL.h>
 			// Including this is actually necessary on OSX.
 #endif
 
-void
+static void
 CDToContentDir (char *contentdir)
 {
-	char *testfile = "starcon.txt";
+	const char *testfile = "starcon.txt";
 
 	if (!FileExists (testfile))
 	{
@@ -50,7 +56,7 @@ CDToContentDir (char *contentdir)
 				(chdir ("content") || !FileExists (testfile)) &&
 				(chdir ("../../content") || !FileExists (testfile))) {
 			fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
-			exit(-1);
+			exit(EXIT_FAILURE);
 		}
 	}
 }
@@ -64,7 +70,6 @@ main (int argc, char *argv[])
 	int width = 640, height = 480, bpp = 16;
 	int vol;
 	char contentdir[1000];
-	char str[1000];
 
 	int option_index = 0, c;
 	static struct option long_options[] = 
@@ -81,8 +86,8 @@ main (int argc, char *argv[])
 		{"musicvol", 1, NULL, 'M'},
 		{"sfxvol", 1, NULL, 'S'},
 		{"speechvol", 1, NULL, 'T'},
-        {"3domusic", 0, NULL, 'e'},
-        {"pcmusic", 0, NULL, 'm'},
+		{"3domusic", 0, NULL, 'e'},
+		{"pcmusic", 0, NULL, 'm'},
 		{"audioquality", 1, NULL, 'q'},
 		{"nosubtitles", 0, NULL, 'u'},
 		{0, 0, 0, 0}
@@ -114,16 +119,15 @@ main (int argc, char *argv[])
 				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
 			break;
 			case 'c':
-				sscanf(optarg, "%s", str);
-				if (!strcmp (str, "bilinear"))
+				if (!strcmp (optarg, "bilinear"))
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_BILINEAR;
 				}
-				else if (!strcmp (str, "sai"))
+				else if (!strcmp (optarg, "sai"))
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_SAI;
 				}
-				else if (!strcmp (str, "supersai"))
+				else if (!strcmp (optarg, "supersai"))
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_SUPERSAI;
 				}
@@ -161,25 +165,24 @@ main (int argc, char *argv[])
 					vol = 100;
 				speechVolumeScale = vol / 100.0f;
 			break;
-            case 'e':
-                optWhichMusic = MUSIC_3DO;
-            break;
-            case 'm':
-                optWhichMusic = MUSIC_PC;
-            break;
+			case 'e':
+				optWhichMusic = MUSIC_3DO;
+			break;
+			case 'm':
+				optWhichMusic = MUSIC_PC;
+			break;
 			case 'q':
-				sscanf(optarg, "%s", str);
-				if (!strcmp (str, "high"))
+				if (!strcmp (optarg, "high"))
 				{
 					soundflags &= ~(TFB_SOUNDFLAGS_MQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
 					soundflags |= TFB_SOUNDFLAGS_HQAUDIO;
 				}
-				else if (!strcmp (str, "medium"))
+				else if (!strcmp (optarg, "medium"))
 				{
 					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
 					soundflags |= TFB_SOUNDFLAGS_MQAUDIO;
 				}
-				else if (!strcmp (str, "low"))
+				else if (!strcmp (optarg, "low"))
 				{
 					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_MQAUDIO);
 					soundflags |= TFB_SOUNDFLAGS_LQAUDIO;
@@ -204,8 +207,8 @@ main (int argc, char *argv[])
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
-                printf("  -e, --3domusic (default)\n");
-                printf("  -m, --pcmusic\n");
+				printf("  -e, --3domusic (default)\n");
+				printf("  -m, --pcmusic\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
 			    printf("  -u, --nosubtitles\n");
 				return 0;
@@ -213,8 +216,12 @@ main (int argc, char *argv[])
 		}
 	}
 	
+	initTempDir();
 	CDToContentDir (contentdir);
-    
+	prepareConfigDir();
+	prepareMeleeDir();
+	prepareSaveDir();
+	
 	InitThreadSystem ();
 	InitTimeSystem ();
 	InitTaskSystem ();
@@ -236,5 +243,7 @@ main (int argc, char *argv[])
 		TFB_FlushGraphics ();
 	}
 
-	exit(0);
+	unInitTempDir();
+	exit(EXIT_SUCCESS);
 }
+

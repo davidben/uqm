@@ -145,7 +145,7 @@ LoadDirEntryTable (PSTR pattern, PCOUNT pnum_entries)
 #include <unistd.h>
 #include <fnmatch.h>
 #include <ctype.h>
-#include <sys/param.h>
+#include <limits.h>
 
 DIRENTRY_REF
 LoadDirEntryTable (PSTR pattern, PCOUNT pnum_entries)
@@ -154,10 +154,10 @@ LoadDirEntryTable (PSTR pattern, PCOUNT pnum_entries)
 	STRING_TABLE StringTable;
 	STRING_TABLEPTR lpST;
 	PDWORD lpLastOffs;
-	PSTR slash;     // Pointer inside pattern to the last /
-	SBYTE path[MAXPATHLEN + 1];  // buffer for a filename with path
-	PSTR file;       // Pointer inside path to the filename
-	size_t pathlen;  // length of path, excluding last / and filename
+	PSTR slash;            // Pointer inside pattern to the last /
+	SBYTE path[PATH_MAX];  // buffer for a filename with path
+	PSTR file;             // Pointer inside path to the filename
+	size_t pathlen;        // length of path, excluding last / and filename
 
 	slash = (PSTR) strrchr ((const char *) pattern, '/');
 	if (slash == NULL)

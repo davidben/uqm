@@ -18,10 +18,13 @@
 
 #include "starcon.h"
 #include "declib.h"
+#include "file.h"
+#include "options.h"
 
 void FreeSC2Data (void);
 
 BOOLEAN LoadSC2Data (void);
+
 
 static void
 SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
@@ -306,7 +309,7 @@ RetrySave:
 		FRAME frame;
 		POINT pt;
 		STAR_DESC SD;
-		char buf[256];
+		char buf[256], file[PATH_MAX];
 		extern void SaveFlagshipState (void);
 
 		success = TRUE;
@@ -378,7 +381,7 @@ RetrySave:
 			}
 		}
 
-		fp = OpenResFile (STARINFO_FILE, "rb");
+		fp = OpenResFile (tempFilePath (STARINFO_FILE), "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -396,7 +399,7 @@ RetrySave:
 			CloseResFile (fp);
 		}
 
-		fp = OpenResFile (DEFGRPINFO_FILE, "rb");
+		fp = OpenResFile (tempFilePath (DEFGRPINFO_FILE), "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -414,7 +417,7 @@ RetrySave:
 			CloseResFile (fp);
 		}
 
-		fp = OpenResFile (RANDGRPINFO_FILE, "rb");
+		fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -436,9 +439,9 @@ RetrySave:
 
 		flen = cclose (fh);
 
-		sprintf (buf, "starcon2.%02u", which_game);
-//		fprintf (stderr, "'%s' is %lu bytes long\n", buf, flen + sizeof (*summary_desc));
-		if (flen && (out_fp = (PVOID)OpenResFile (buf, "wb")))
+		sprintf (file, "%sstarcon2.%02u", saveDir, which_game);
+//		fprintf (stderr, "'%s' is %lu bytes long\n", file, flen + sizeof (*summary_desc));
+		if (flen && (out_fp = (PVOID)OpenResFile (file, "wb")))
 		{
 			PrepareSummary (summary_desc);
 
@@ -457,7 +460,7 @@ RetrySave:
 			success = FALSE;
 			
 		if (!success)
-			DeleteResFile (buf);
+			DeleteResFile (file);
 	}
 
 	mem_unlock (h);

@@ -88,6 +88,8 @@ Glitches (don't crash the game, medium priority):
   when compared to 3DO
 - When there are more than one page of saved supermelee teams, the last
   entries will be wrong.
+- Temp files don't get deleted if the game is exited in full game mode.
+  (and the temp dir doesn't get deleted if it's not empty)
 
 Implementation bugs (low priority):
 - Scaling code problems:

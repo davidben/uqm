@@ -20,6 +20,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include "file.h"
 
 //#define DEBUG
 
@@ -35,7 +36,7 @@ InitGroupInfo (BOOLEAN FirstTime)
 {
 	PVOID fp;
 
-	fp = OpenResFile (RANDGRPINFO_FILE, "wb");
+	fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 	if (fp)
 	{
 		GROUP_HEADER GH;
@@ -48,7 +49,8 @@ InitGroupInfo (BOOLEAN FirstTime)
 		CloseResFile (fp);
 	}
 
-	if (FirstTime && (fp = OpenResFile (DEFGRPINFO_FILE, "wb")))
+	if (FirstTime && (fp = OpenResFile (tempFilePath (DEFGRPINFO_FILE),
+			"wb")))
 	{
 		PutResFileChar (0, fp);
 
@@ -59,8 +61,8 @@ InitGroupInfo (BOOLEAN FirstTime)
 void
 UninitGroupInfo (void)
 {
-	unlink (DEFGRPINFO_FILE);
-	unlink (RANDGRPINFO_FILE);
+	unlink (tempFilePath (DEFGRPINFO_FILE));
+	unlink (tempFilePath (RANDGRPINFO_FILE));
 }
 
 void
@@ -347,10 +349,9 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenResFile (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
-			"r+b"
-			);
+	fp = OpenResFile (tempFilePath (
+			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
+			"r+b");
 	if (fp)
 	{
 		BYTE RaceType, NumShips;
@@ -386,7 +387,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				fprintf (stderr, "GetGroupInfo: battle groups out of date %u/%u/%u!\n",
 						month_index, day_index, year_index);
 #endif /* DEBUG */
-				fp = OpenResFile (RANDGRPINFO_FILE, "wb");
+				fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 				GH.NumGroups = 0;
 				GH.star_index = (COUNT)~0;
 				GH.GroupOffset[0] = 0;
@@ -615,10 +616,9 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenResFile (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
-			"r+b"
-			);
+	fp = OpenResFile (tempFilePath (
+			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
+			"r+b");
 	if (fp)
 	{
 		GROUP_HEADER GH;

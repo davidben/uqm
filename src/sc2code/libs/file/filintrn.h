@@ -14,36 +14,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Eventually this should include all configuration stuff, 
- * for now there's few options which indicate 3do/pc flavors.
- * By Mika Kolehmainen.
- */
+// Contains code handling temporary files and dirs
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef _FILEINTRN_H
 
-#define UQM_MAJOR_VERSION 0
-#define UQM_MINOR_VERSION 12
+#include "../file.h"
 
-enum
-{
-	MUSIC_3DO,
-	MUSIC_PC,
-};
-extern int optWhichMusic;
+void CreateDirectory (const char *dir, int mode);
+void RemoveTempDir (void);
 
-extern BOOLEAN optSubtitles;
-
-BOOLEAN FileExists (const char *filename);
-
-extern char *configDir;
-extern char *meleeDir;
-extern char *saveDir;
-
-void prepareConfigDir(void);
-void prepareMeleeDir(void);
-void prepareSaveDir(void);
-
-#endif
+#endif  /* _FILEINTRN_H */
 

@@ -20,13 +20,14 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include "file.h"
 
 void
 InitPlanetInfo (void)
 {
 	PVOID fp;
 
-	fp = OpenResFile (STARINFO_FILE, "wb");
+	fp = OpenResFile (tempFilePath (STARINFO_FILE), "wb");
 	if (fp)
 	{
 		DWORD offset;
@@ -48,7 +49,7 @@ InitPlanetInfo (void)
 void
 UninitPlanetInfo (void)
 {
-	unlink (STARINFO_FILE);
+	unlink (tempFilePath (STARINFO_FILE));
 }
 
 void
@@ -59,7 +60,7 @@ GetPlanetInfo (void)
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] =
 			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] =
 			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN] = 0;
-	fp = OpenResFile (STARINFO_FILE, "rb");
+	fp = OpenResFile (tempFilePath (STARINFO_FILE), "rb");
 	if (fp)
 	{
 		COUNT star_index, planet_index, moon_index;
@@ -106,7 +107,7 @@ PutPlanetInfo (void)
 {
 	PVOID fp;
 
-	fp = OpenResFile (STARINFO_FILE, "r+b");
+	fp = OpenResFile (tempFilePath (STARINFO_FILE), "r+b");
 	if (fp)
 	{
 		COUNT i;

@@ -19,6 +19,8 @@
 #include <ctype.h>
 #include "starcon.h"
 #include "melee.h"
+#include "options.h"
+#include "file.h"
 
 //Added by Chris
 
@@ -1014,11 +1016,18 @@ static void
 LoadTeamList (PMELEE_STATE pMS, UNICODE *pbuf)
 {
 	COUNT num_entries;
+	char dir[PATH_MAX];
+	char file[PATH_MAX];
+	char *loc_buf;
 
+	sprintf (dir, "%s*.mle", meleeDir);
+	strcpy (file, meleeDir);
+	loc_buf = file + strlen (file);
+	
 GetNewList:
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
 	pMS->TeamDE = CaptureDirEntryTable (
-			LoadDirEntryTable ("*.mle", &num_entries)
+			LoadDirEntryTable (dir, &num_entries)
 			);
 
 	pMS->CurIndex = 0;
@@ -1027,10 +1036,9 @@ GetNewList:
 		int status;
 		FILE *load_fp;
 		TEAM_IMAGE TI;
-		UNICODE loc_buf[60];
 
 		GetDirEntryContents (pMS->TeamDE, (STRINGPTR)loc_buf, FALSE);
-		if ((load_fp = OpenResFile (loc_buf, "rb")) == 0)
+		if ((load_fp = OpenResFile (file, "rb")) == 0)
 			status = -1;
 		else
 		{
@@ -1042,7 +1050,7 @@ GetNewList:
 		}
 		if (status == -1)
 		{
-			DeleteResFile (loc_buf);
+			DeleteResFile (file);
 			goto GetNewList;
 		}
 
@@ -1060,15 +1068,19 @@ static BOOLEAN
 DoSaveTeam (PMELEE_STATE pMS)
 {
 	STAMP MsgStamp;
-	UNICODE buf[60];
+	char buf[PATH_MAX];
+	char *file;
 	FILE *save_fp;
 	CONTEXT OldContext;
+
+	strcpy(buf, meleeDir);
+	file = buf + strlen (buf);
+	sprintf (file, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
 
 RetrySave:
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
-	wsprintf (buf, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
 	save_fp = OpenResFile (buf, "wb");
 	if (save_fp)
 	{
@@ -1094,7 +1106,7 @@ RetrySave:
 			goto RetrySave;
 	}
 
-	LoadTeamList (pMS, buf);
+	LoadTeamList (pMS, file);
 
 	if (save_fp)
 	{
