@@ -1066,6 +1066,7 @@ TheMess:
 					pSolarSysState->PlanetDesc);
 			if (InnerSystem)
 			{
+				SetTransitionSource (NULL);
 				BatchGraphics ();
 				if (draw_sys_flags & DRAW_REFRESH)
 				{
@@ -1075,6 +1076,7 @@ TheMess:
 			}
 			else if (draw_sys_flags & DRAW_REFRESH)
 			{
+				SetTransitionSource (NULL);
 				BatchGraphics ();
 				DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 			}
@@ -1088,7 +1090,6 @@ TheMess:
 		if (old_radius)
 			ScaleSystem ();
 
-		SetTransitionSource (NULL);
 		BatchGraphics ();
 		if (!(draw_sys_flags & DRAW_REFRESH)) // don't repair from Extra or draw ship if forcing repair
 		{
@@ -1369,8 +1370,8 @@ InitSolarSys (void)
 
 	SetSemaphore (GraphicsSem);
 
-LoadIPData ();
-LoadLanderData ();
+	LoadIPData ();
+	LoadLanderData ();
 	ClearSemaphore (GraphicsSem);
 
 	pSolarSysState->MenuState.InputFunc = DoFlagshipCommands;
