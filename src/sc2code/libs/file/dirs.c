@@ -39,8 +39,8 @@
 #define APPDATA_FALLBACK
 
 
-static char *expandPathAbsolute (char *dest, size_t destLen, char first,
-		int what);
+static char *expandPathAbsolute (char *dest, size_t destLen,
+		const char *src, int what);
 
 
 int
@@ -210,7 +210,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		
 			if (what & EP_ABSOLUTE) {
 				dest = expandPathAbsolute (dest, destend - dest,
-						home[0], what);
+						home, what);
 				if (dest == NULL)
 				{
 					// errno is set
@@ -230,7 +230,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	
 	if (what & EP_ABSOLUTE)
 	{
-		destptr = expandPathAbsolute (destptr, destend - destptr, src[0],
+		destptr = expandPathAbsolute (destptr, destend - destptr, src,
 				what);
 		if (destptr == NULL)
 		{
@@ -362,9 +362,13 @@ expandPath (char *dest, size_t len, const char *src, int what)
 // helper for expandPath, expanding an absolute path
 // returns a pointer to the end of the filled in part of dest.
 static char *
-expandPathAbsolute (char *dest, size_t destLen, char first, int what)
+expandPathAbsolute (char *dest, size_t destLen, const char *src, int what)
 {
-	if (first == '/' || ((what & EP_SLASHES) && first == '\\')) {
+	if (src[0] == '/' || ((what & EP_SLASHES) && src[0] == '\\')
+#ifdef WIN32
+			|| (isalpha(src[0]) && (src[1] == ':'))
+#endif
+			) {
 		// Path is already absolute; nothing to do
 		return dest;
 	}
