@@ -96,6 +96,10 @@ case "$OSNAME" in
 		LIB_opengl_CFLAGS=""
 		LIB_opengl_LDFLAGS="-lopengl32"
 		;;
+	Darwin)
+		LIB_opengl_CFLAGS=""
+		LIB_opengl_LDFLAGS="-framework OpenGL"
+		;;
 	*)
 		LIB_opengl_CFLAGS=""
 		LIB_opengl_LDFLAGS="-lGL"
@@ -127,6 +131,6 @@ LIB_vorbisfile_VERSION=""
 
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""
-LIB_zlib_LDFLAGS=""
+LIB_zlib_LDFLAGS="-lz"
 LIB_zlib_VERSION=""
 
