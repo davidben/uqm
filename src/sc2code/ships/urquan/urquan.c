@@ -302,15 +302,15 @@ fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 		hFighterElement = AllocElement ();
 		if (hFighterElement)
 		{
-			COUNT PI, travel_facing;
+			COUNT primIndex, travel_facing;
 			SIZE delta_facing;
 			ELEMENTPTR FighterElementPtr;
 
 			LockElement (hFighterElement, &FighterElementPtr);
-			PI = FighterElementPtr->PrimIndex;
+			primIndex = FighterElementPtr->PrimIndex;
 			*FighterElementPtr = *ElementPtr0;
-			FighterElementPtr->PrimIndex = PI;
-			(GLOBAL (DisplayArray))[PI] =
+			FighterElementPtr->PrimIndex = primIndex;
+			(GLOBAL (DisplayArray))[primIndex] =
 					(GLOBAL (DisplayArray))[ElementPtr0->PrimIndex];
 			FighterElementPtr->state_flags &= ~PRE_PROCESS;
 			FighterElementPtr->state_flags |= CHANGING;
