@@ -46,13 +46,13 @@ reconst (void)
 		for (k = j - 1; f < _lpCurCodeDesc->freq[k]; k--)
 			;
 		k++;
-		l = (j - k) << 1;
+		l = (j - k);
 		
-		memmove ((PBYTE)&_lpCurCodeDesc->freq[k + 1],
-				(PBYTE)&_lpCurCodeDesc->freq[k], l);
+		memmove (_lpCurCodeDesc->freq + k + 1, _lpCurCodeDesc->freq + k,
+				sizeof(_lpCurCodeDesc->freq[0]) * l);
 		_lpCurCodeDesc->freq[k] = f;
-		memmove ((PBYTE)&_lpCurCodeDesc->son[k + 1],
-				(PBYTE)&_lpCurCodeDesc->son[k], l);
+		memmove (_lpCurCodeDesc->son + k + 1, _lpCurCodeDesc->son + k,
+				sizeof(_lpCurCodeDesc->son[0]) * l);
 		_lpCurCodeDesc->son[k] = i;
 	}
 	/* connect parent nodes */
