@@ -132,6 +132,32 @@ StopTrack ()
 }
 
 void
+SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
+{
+	if (TrackText)
+	{
+		if (tct)
+		{
+			int slen1, slen2;
+			UNICODE *oTT;
+
+			oTT = track_clip[tct - 1].text;
+			slen1 = wstrlen (oTT);
+			slen2 = wstrlen (TrackText);
+			if (track_clip[tct - 1].text_spliced)
+				track_clip[tct - 1].text = HRealloc (oTT, slen1 + slen2 + 1);
+			else
+			{
+				track_clip[tct - 1].text = HMalloc (slen1 + slen2 + 1);
+				wstrcpy (track_clip[tct - 1].text, oTT);
+				track_clip[tct - 1].text_spliced = 1;
+			}
+			wstrcpy (&track_clip[tct - 1].text[slen1], TrackText);
+		}
+	}
+}
+
+void
 SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 {
 	if (TrackText)
