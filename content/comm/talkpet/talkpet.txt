@@ -5,31 +5,31 @@ What do you want?
 I thought this was the Umgah homeworld. Who are you?
 
 #(JUST_TALKING_PET)	talkp001.ogg
-I am a peaceful, friendly alien life form. The Ur-Quan call us `talking pets'.
+I am, uh, a peaceful creature, a friendly alien life form. The Ur-Quan call us `talking pets'.
 Until recently, I was employed on a Dreadnought starship as a translator.
 Then, after the ship suffered severe damage in combat, we crashed at Alpha Pavonis.
 Miraculously, I survived, and was rescued by an Ariloulaleelay exploration vessel.
-The Arilou could not heal my most severe injuries, so they brought me to the Umgah
+The Arilou, they could not heal my most severe injuries, so they brought me to the Umgah
 who possess superior bio-engineering skills.
 
 #(talking_pets_dumb)
 But I thought Talking Pets weren't sentient? You seem smart enough.
 
 #(OH_NO_YOU_DONT)	talkp002.ogg
-Oh... so you know about that, do you?
-Alas, that means I will have to kill you now.
+Oh... you know about that, do you?
+Oh well, I guess that means I will have to kill you now.
 I can't permit you to reveal my transformation
 the Ur-Quan might find out, and then my plans for revenge will be ruined.
 Well, I tried to spare your life, Captain, but you were just too curious
-so now
+so now:
 -<SEEK DEATH AT THE HANDS OF YOUR ENEMY!>-
 
 #(what_do_to_umgah)
 Where are the Umgah? What have you done to them?
 
 #(DID_NOTHING)	talkp003.ogg
-You are imagining things. The Umgah are fine, just busy, extremely busy.
-That's why I am answering the `Caster today.
+Uh, You are, um, imagining things! Uh, the Umgah are fine, just fine. Uh, just really busy.
+That's why I am answering the Hyperwave broadcaster today.
 
 #(umgah_zombies)
 You don't fool me! You've turned them into zombie-blobbies!... or something.
@@ -37,7 +37,7 @@ You don't fool me! You've turned them into zombie-blobbies!... or something.
 #(WORKS_LIKE_THIS)	talkp004.ogg
 Argh! Why didn't you leave when you had the chance?
 Now I've got to kill you in some really sneaky way
-so that no one will guess I was the agent of your demise.
+so that no one will guess I was the agent of your demise. *sigh*
 -<GET LOST IN A BAD NEIGHBORHOOD!>-
 
 #(we_are_vindicator0)
@@ -47,7 +47,7 @@ I am Captain of the starship
 
 #(GOOD_FOR_YOU)	talkp005.ogg
 Good idea! May I just say, I am behind you 100 percent!
-But unfortunately, the Umgah are all too busy to come to the `Caster right now
+But unfortunately, the Umgah are all too busy to come to the Hyperwave `Caster right now
 so... er... come back later... much later.
 
 #(must_explain_presence)
@@ -66,7 +66,7 @@ and now you shall pay the price!
 Look, ah... whoever you are. I'll just be leaving now.
 
 #(GOODBYE_AT_UMGAH)	talkp007.ogg
-I wish it were so simple.
+Oh, I wish it were so simple.
 I thought that perhaps I could let you live
 but now I fear you know too much.
 My plans for revenge are far too important
@@ -74,24 +74,24 @@ to be be ruined by a simple, interfering dolt like yourself.
 -<GO KILL YOURSELF IN BATTLE!>-
 
 #(HYPNOTIZE_AGAIN_1)	talkp008.ogg
-Argh! Why aren't you dead? What a bummer.
+Argh! Why aren't you dead? Oh, what a bummer.
 I will remedy this situation
-<FIND SOMEONE WHO WILL KILL YOU!>
+-<FIND SOMEONE WHO WILL KILL YOU!>-
 
 #(HYPNOTIZE_AGAIN_2)	talkp009.ogg
-You are interfering with my plans of revenge against the Ur-Quan.
-The penalty for this transgression is death, specifically yours!
-<GO AWAY FAR AWAY AND PICK A FIGHT!>
+Argh! You are interfering with my plans of revenge against the Ur-Quan.
+The penalty for this transgression is death. Specifically, yours!
+-<NOW GO AWAY AND PICK A FIGHT!>-
 
 #(HYPNOTIZE_AGAIN_3)	talkp010.ogg
 Why do you keep returning!? Never mind, don't answer.
-<LEAVE AND FIND SOMEONE TO KILL YOU!>
+-<LEAVE AND FIND SOMEONE WHO WILL KILL YOU!>-
 
 #(HYPNOTIZE_AGAIN_4)	talkp011.ogg
-You're back again!
-You are as stupid as you are durable.
+You're back again!?
+You are as durable as you are stupid!
 Perhaps this time, you will accomplish your own demise.
-<GO KILL YOURSELF!>
+-<GO KILL YOURSELF!>-
 
 #(HYPNO_TAIL)
  
@@ -99,54 +99,54 @@ Perhaps this time, you will accomplish your own demise.
 #(CANT_COMPEL)	talkp012.ogg
 Aieee!  I cannot compel you!?
 Your mind is closed to me -- how can this be?!
-I am forced to resort to more primitive measures
+I am forced to resort to... more primitive measures
 Umgah commander, summon your ten combat ships and attack this intruder instantly!
 
 #(LETS_MAKE_A_DEAL)	talkp013.ogg
-Hi there, friendly starship Captain!
-You will never believe this, but somewhow, the injuries I suffered when the Dreadnought crashed
+Uh, hi there, friendly starship Captain!
+You will never believe this, but somewhow, the injuries I suffered when the Ur-Quan crashed
 triggered some kind of, uh... personality transformation
 I became evil and spiteful! Cruel and nasty! Whimsically unpleasant!
-You may also have noticed that I gained some kind of temporary psychic powers
-well I just wanted to let you know... I AM CURED!
+You may also have noticed that I gained some kind of `temporary psychic powers'
+Well I just wanted to let you know... I AM CURED!
 Captain, I don't know exactly how, but when you were fighting those Umgah ships
 a chunk of the ceiling fell upon my head and gave me quite a whack!
 Ouchy-oochy.. it still hurts!
-When I awoke, the universe had ceased to be the dark and hostile place I previously imagined it to be.
+When I awoke, the universe had ceased to be the dark and hostile place I previously thought it to be.
 Instead, I was overwhelmed, yes, even awed by the beauty and perfection of it all!
 I also discovered that I had completely lost those wicked mental powers
 and could now look forward to a NEW LIFE, filled with happiness, butterflies, and goodwill for all!
-Your job is done, Captain! You have saved me! You can now safely remove your psychic protection device, and leave.
-THANK YOU! THANK YOU! THANK YOU! THANK YOU! THANK YOU! THAN
+Your job is done, Captain! You have saved me! Now you can safely remove your psychic protection device, and leave.
+THANK YOU! THANK YOU! THANK YOU! THANK YOU! THAN
 Why are you looking at me like that, Captain?
 Don't you believe me? You question my word?
 Okay, okay... so I was lying.
 Big deal! So what.
-Boy, you are A PAIN, do you know that?
+Boy, are you A PAIN, do you know that?
 WHAT DO YOU WANT FROM ME, MY LIFE!?
-You do? Oh.
+Oh, you do?  Hmph.
 Well, as an alternative, let me make this little suggestion
 if you don't kill me, I'll help you do whatever you wish.
-Is it a deal, Captain? Hmmm?
+Is it a deal, Captain? Hmmm? Hmmm?
 
 #(what_kind_of_deal)
 What kind of deal, Talking Pet? Provide details.
 
 #(HELP_DEFEAT_URQUAN)	talkp014.ogg
-I get the basic idea that you seek to overthrow the Ur-Quan
+I get the basic idea: you want to overthrow the Ur-Quan
 Bravo! Good idea! Way to go!
-I too wish to see the Ur-Quan beaten -- humiliated and destroyed
+I too wish to see the Ur-Quan beaten -- humiliated, destroyed
 and I alone possess the unique ability that will help you achieve your goal
 I can use my psychic powers to temporarily distract the Ur-Quan... confuse them for a few seconds.
 Presumably you will use this moment to strike a lethal blow against the Ur-Quan.
-Such a plan cannot fail, Captain. You must see that.
+Such a plan cannot fail, Captain. We must see to that.
 
 #(ok_lets_do_it)
 All right, I agree. But any tricks and you'll be sucking vacuum.
 
 #(COMING_ABOARD)	talkp015.ogg
 No tricks, Captain. No tricks.
-I fear you cruelly misjudge me, human. I am on YOUR side now.
+I fear you cruelly misjudge me. I am on YOUR side now.
 Together we will make a great team, Captain.
 This day, this MOMENT shall go down forever in the history of our galaxy.
 I am coming aboard your ship now. I will make a nest in the pressurized section of your ship's hold.
@@ -157,11 +157,11 @@ You tried to kill me! Your words are lies! How can I possibly trust you?
 
 #(TRUST)	talkp016.ogg
 Captain, Captain... calm down. Be reasonable. Listen to me.
-I am nothing more than a single being, hardly larger than one of your Earth dogs.
+I am nothing more than a single being, hardly larger than one of your Earth dogs.  Woof woof!
 My only weapon -- my weak psychic abilities -- have been nullified by your protective device.
 I am harmless.
 But perhaps, I can be of some small service to you.
-Consider my hopeful attempt to recompense you for all the trouble I have caused you in the past.
+Consider this my hopeful attempt to compensate you for all the trouble I have caused you in the past.
 In the Past, Captain... and now we look to the future! To victory over the evil Ur-Quan!
 I am your secret weapon against these tyrants, Captain. Do not leave me here.
 
@@ -181,21 +181,22 @@ I was indeed a Talking Pet aboard an Ur-Quan Dreadnought.
 Those years are like a forgotten dream to me, because I was not sentient.
 I was a dumb beast -- an unthinking slave to the heinous Ur-Quan!
 Then there was a great battle... the ship was hit and severely damaged.
-Slaves running through the corridors! Commands and counter-commands!
-Then the scream of atmosphere on the hull and a explosion of light and thunder!
-We hit the surface of planet.
-Then the next thing I remember was the face of a creature you call the Arilou.
-I was in great pain, but it was kind. The creature did what it could for me
-applying its own medicines to my alien form. I was transported off-planet.
+Slaves running down the corridors! Commands, counter-commands!
+Then there was the scream of atmosphere ouside the hull.
+There was a big explosion of light and thunder! We hit the surface of a planet, I'm pretty sure.
+The next thing I can remember was the face of a creature you call the Arilou.
+I was in great pain, but the creature was kind. It did what it could for me
+by applying its own medicines to my alien form. I was transported off-planet.
 I remember an all-pervading green light -- then we were at the homeworld of the Arilou.
-Again, Captain, forgive me if I cannot be more clear, but I was still not intelligent at this point.
-I presume my injuries were too severe for the Arilou to repair, or perhaps I reacted badly to their medicines
-because I remember being moved back into a ship. Things grow dim
-my next memory was being on board an Umgah starship, wet flesh surrounded me
-the Umgah laughed as they worked on me. It was unnerving.
-Suddenly, like the explosion of a bomb, thought -- REAL thought flooded my brain!
-I don't know how or why, but the Umgah had discovered that my brain could be easily modified
-and improved to give me true intelligence!
+Again, Captain, forgive me if I am not more clear, but I was not intelligent yet.  Give me a chance.
+I presume my injuries were too severe for the Arilou to repair
+or perhaps I reacted badly to their medicines or something,
+because the next thing I remember was being moved back into a ship.
+Things grow dim, my next memory was being on board an Umgah starship
+Wet flesh throbbing all around me, the Umgah laughing as they worked on my body.
+It was kind of unnerving.
+Suddenly, like the explosion of a bomb, thought -- I mean REAL thought -- flooded my brain!
+I don't know how or why, but the Umgah had discovered that my brain could be easily changed, improved to give me true intelligence!
 What they didn't realize is that it also brought back a flood of memories.
 Memories of my species' ancient past! From before the time the Ur-Quan castrated our thinking minds
 and transformed my people into crude beasts.
@@ -209,18 +210,18 @@ An amazing story, if true. Pardon me if I am a bit skeptical, but you are a prov
 It's all true, Captain! Every word!
 Now listen!... and I shall tell you why the Ur-Quan did this to us.
 It was over twenty thousand of your years ago, Captain, when an Ur-Quan slave raider
-landed on the surface of my world, and began capturing my people -- killing those who would not submit!
+landed on the surface of my world, and began capturing my people -- killing those that would not submit!
 How can I know this, you ask? These memories are embedded deep in my genetic structure, they cannot be forgotten.
 How we fought the Ur-Quan! Even then, they had a Hierarchy of combat thralls
 though then, they called themselves by the absurd name, the Sentient Milieu!
-Ha! They were nothing more than thugs, especially the hideous Taalo.
+Ha! They were nothing more than thugs, especially those hideous Taalo.
 Those evil rocklike creatures were the worst of all!
-For fun, they would take one of our children... and then... roll over it!... again and again.
+For fun, they would take one of our children... and then... roll over it!... again and again, oh!
 The war against the Ur-Quan and their Milieu lasted decades... millions of our people died
 but with the forces of truth and justice at our side, we were prevailing.
 Then the Taalo made their fateful discovery... a shield against our only weapon, our weak psychic powers.
 With that shield, they were unstoppable... we had lost.
-But the Ur-Quan were not satisfied merely with our defeat, our slavery
+But the Ur-Quan, they were not satisfied merely with our defeat, our slavery
 they wanted MORE! They wanted to punish us for our insolence at fighting back against them
 so they devised the sickest, most cruel and perverse punishment ever imagined!...
 they invaded our very genetic structure
@@ -233,23 +234,22 @@ What a load of crap! YOUR species were the slavemasters, you lying, evil creatur
 
 #(WORTH_A_TRY)	talkp020.ogg
 Dang! You are the most inconveniently well-informed creature, Captain!
-Well, it was worth a try.
-Sigh.
+*sigh* Well, it was worth a try.
 
 #(kill_you)
 Heinous, brainy frog-monster. You must die!
 
 #(PLEASE_DONT)	talkp021.ogg
 No! Please don't!
-I am the last hope for my species! You cannot do this thing!
+I am the last of my species! You cannot do this to me!
 
 #(must_kill)
 I will not be swayed from my path. Say your prayers.
 
 #(DONT_KILL)	talkp022.ogg
-Hmmm! How interesting! During that last little threat, I noticed something WONDERFUL!
-YOU DON'T HAVE THE TAALO SHIELD DEVICE PROPERLY INSTALLED!
-Ha-ha-ha! Fool! You could have fired upon me.
+Hmmm! How interesting! During that last little threat of yours, I noticed something WONDERFUL!
+YOU DON'T HAVE THE TAALO SHIELD PROPERLY INSTALLED!
+Ha-ha-ha! Fool! You could have fired on me.
 Now, I fear, you will have to accept my offer.
 I will join you on board your vessel. Together, we will exact MY revenge
 and perhaps incidentally, realize your own plans as well.
@@ -266,7 +266,7 @@ Kill? Kill? What is this `kill'? We love you!
 #(GLAD_YOU_WONT_KILL)	talkp023.ogg
 Wonderful, Captain. I am so glad you have seen the light of reason.
 I shall gather my few possessions, and come aboard your vessel immediately.
-When you wish to talk with me, I will be in your ship's hold.
+When you wish to talk with me, I will be down in your ship's cargo hold.
 That is all, Captain. For now, at least.
 
 #(whats_up_onboard)
@@ -275,17 +275,17 @@ How's it going, Dnyarri?  You okay down there in the cargo bay?
 #(GENERAL_INFO_ONBOARD_1)	talkp024.ogg
 It is cold and empty. I could use a thermal blanket.
 Since it is incredibly boring down here
-I am using the opportunity to try to get some sleep.
+I am using the opportunity to try and get some sleep.
 
 #(GENERAL_INFO_ONBOARD_2)	talkp025.ogg
-Much the same as the last time you asked
-however, I have found a way to amuse myself.
-I am listening in on the mental energies of your crew -- it's quite fun!
-For instance, did you know that both ensigns Holiday and Watchuki have crushes on you?
-It's true!
+Much the same as the last time you asked me.
+However, I have found a way to amuse myself.
+I am listening in on the mental energies of your crew -- it's really quite fun!
+For instance, did you know both ensigns Holiday and Watchuki want to reproduce with you?
+Ha-ha! It's true!
 
 #(GENERAL_INFO_ONBOARD_3)	talkp026.ogg
-I suppose you told your crew about my little listening in, didn't you?
+I suppose you told your crew about my little listening in on them, didn't you?
 Now whenever I try to eavesdrop, they seem to detect my presence
 and start visualizing my gruesome death in a multitude of repulsive though creative ways.
 You had to go and spoil my fun, didn't you?
@@ -296,20 +296,20 @@ and I came upon something I thought you might be interested in hearing.
 It seems that my race, the Dnyarri, once found a Precursor vessel like your own.
 Well actually, it wasn't EXACTLY like yours.
 It was a combat vessel -- bigger, much bigger, and it was loaded with tons of world-wrecking accoutrements.
-Frankly, it made this vessel look like a tug... a real weenie.
-Anyway, when the Ur-Quan so cruelly attacked us, they used that vessel
+Frankly, it made this vessel look like a tug... a real weenie. Ha-ha-ha!
+Anyway, when the Ur-Quan so cruelly attacked us, they stole the ship
 and I can only presume that they still have it in their possession.
 Maybe you should find out more about that ship, Captain.
 
 #(GENERAL_INFO_ONBOARD_5)	talkp028.ogg
-I am slowly going insane, Captain.
+I am slowly going insane, Captain!
 I don't know if you are aware of this
 but there are music loops which play down here, CEASELESSLY!
 I presume this was some engineer's brilliant idea
-on how to keep the simple-minded loading and unloading workers happy.
+on how to keep the simple-minded dock workers happy.
 I would guess that the engineer didn't foresee someone ACTUALLY LIVING DOWN HERE!
 I have heard the same songs AT LEAST FOUR HUNDRED TIMES!
-I mean, your Mozart and Iggy Pop are fine for alien noise-makers
+I mean, Mozart and Iggy Pop are fine, for alien noise-makers
 but PLEASE!... CHANGE THE MUSIC BEFORE I GO MAD!
 
 #(GENERAL_INFO_ONBOARD_6)	talkp029.ogg
@@ -317,7 +317,8 @@ Thank you, Captain, for changing the music down here.
 Now, if I may, I would like to complain about the food.
 It is grossly unappealing and flavorless. I deserve better.
 My preference is for chunks of meat, well spiced, with a selection of fresh plant matter.
-Please, no more of those sweet, doughy cylinders in the foil pouches.
+Please, no more of those sweet, doughy cylinders in the little foil pouches.
+Space food... Feh!
 
 #(GENERAL_INFO_ONBOARD_7)	talkp030.ogg
 I am bored.
@@ -328,80 +329,76 @@ You must have been a boring child.
 
 #(GENERAL_INFO_ONBOARD_8)	talkp031.ogg
 I sing. I dance. I have a wild, fun time.
-My life is an endless party down here, Captain. Isn't that obvious?
+My life is one endless party down here, Captain. Isn't that obvious?
 
 #(HELLO_AS_DEVICE_1)	talkp032.ogg
-Captain. The Taalo device on board this vessel is giving me a headache, please remove it.
+Captain. The Taalo device on board this vessel is, uh, giving me a headache, please remove it.
 NOW, Captain! It is foolish to resist!...
 Hmmm... it remains more effective than I had thought, you are still able to disobey.
 Ah, well. What can I do for you, Captain?
 
 #(HELLO_AS_DEVICE_2)	talkp033.ogg
 Hello Captain.
-It is less than comfy down here in your ship's hold.
+It is less than comfy down here in your ship's cargo hold.
 Please send down some pillows.
-Now what do you want?
+Now, what can I do for you?
 
 #(HELLO_AS_DEVICE_3)	talkp034.ogg
 I was asleep, gathering strength for our confrontation with the Ur-Quan.
-This interruption has set me back several days. What is it?
+This little interruption here has set me back several days. Now what is it?
 
 #(HELLO_AS_DEVICE_4)	talkp035.ogg
-Hello... hello ... ello... lo...
-Echo... echo... ho... o...
-I... i... i... Am... am... m... The... the... e... Master... master... ster... Huh?... huh?... uh?...
-Oh! Captain! I didn't notice you were on the viewer.
-I was just entertaining myself down here in this lonesome, cold container.
+Heeelllllllloooooo...
+Echoooooo...
+I... Am... the Master of the Univer...
+Oh! Heh-heh. Hey Captain! I didn't notice you on the viewer there.
+I was just, you know, entertaining myself in this lonesome, cold container.
 How may I be of service to you?
 
 #(HELLO_AS_DEVICE_5)	talkp036.ogg
-sner-Gee......
-sner-Gee......
-sner-Gee......
-sner-Gee......
-sner-Gee......
-sner-Umph?!
-Oh... it is you. I was sleeping. What do you want?
+sner-Gee......  sner-Gee......  sner-Gee......  sner-Gee......
+sner-Umph?!  Oh... it is you. I was sleeping. What do you want?
 
 #(HELLO_AS_DEVICE_6)	talkp037.ogg
 Are you lonely, Captain?
-Are you misunderstood by everyone else on the ship?
-Is that why you KEEP CALLING ME WHEN I AM RESTING!?
+Are you misunderstood by everybody else on the ship?
+Is that why you KEEP CALLING ME WHEN I AM ASLEEP!?
 
 #(HELLO_AS_DEVICE_7)	talkp038.ogg
 Captain, I am not a particularly social creature.
-I grow tired of your yammering, but since you have already awakened me
+I grow tired of your yammering, but since you already woke me up
 What is it?
 
 #(HELLO_AS_DEVICE_8)	talkp039.ogg
 This had better be important.
 
 #(CYBORG_PEP_TALK)	talkp040.ogg
-You've made it, Captain! The Sa-Matra is defenseless.
-Now all you have to do is maneuver your ship next to the Sa-Matra and initiate the bomb sequence.
+You've made it, Captain! The Sa-Matra shields are down!
+Now all you have to do is get your ship in there next to the Sa-Matra and initiate the bomb sequence.
 In case you're wondering, I'm not going with you, Captain. I'm staying on board.
 Why, you ask?
-BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!
-HELP!!!
+BECAUSE I'M LOCKED IN HERE!
+HELP!!!  GET ME OUT!!!  HELP!!!
 
 #(HUMAN_PEP_TALK)	talkp041.ogg
 Okay, human, you've made it past the Sa-Matra's guards
 and now you can attack the vessel itself, so listen closely.
 The Sa-Matra is protected by a thick shell of fused asteroids reinforced with a weak stasis field.
 You will never break through that.
-The only opening through the asteroid shield is covered with a powerful force field.
-One touch of that shield, and you're history, Captain.
+The only opening through the asteroid shield is covered with a powerful force screen.
+One touch of that screen, and you're history, Captain.
 To destroy the Sa-Matra, you will have to destroy the shield generators embedded in the asteroid shell.
-There are eight of them and you must get them all before the force field falls.
-When the field is down, bring in your flagship, move into the asteroid shell
-and then press the big red button on your controls that starts the detonation sequence.
-Your escape pod will eject automatically. Just hope you're far enough away before the ship blows.
+To drop the force screen, you will have to destroy all eight of them.
+When the screen is down, bring in your flagship, move into the asteroid shell
+and then press the Big Red Button on your controls
+that starts the detonation sequence.
+Your escape pod will eject automatically. Just hope you're far enough away before that ship blows.
 Ok, human, this is it! The last battle, your final moment of triumph!
 Don't screw up.
 And in case you're wondering, I'm not going with you, Captain. I'm staying on board.
 Why, you ask?
-BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!
-HELP!!!
+BECAUSE I'M LOCKED IN HERE YOU IDIOT!
+GET ME OUT!!  HELP!!!  HELP!!!
 
 #(I_SENSE_MY_SLAVES)	talkp042.ogg
 I sense the presence of my ancient slaves.
@@ -431,7 +428,7 @@ What now, Dnyarri?
 
 #(DO_THIS)	talkp049.ogg
 Oh gosh, gee! I don't know. Let's just sit here and talk a while
-AND IGNORE THOSE THOUSAND DREADNOUGHTS THAT ARE GOING TO CREAM US IN A FEW SECONDS!
+AND IGNORE THOSE THOUSANDS OF DREADNOUGHTS THAT ARE GOING TO CREAM US IN A FEW SECONDS!
 
 #(compel_urquan)
 Employ your powers! Confuse the Ur-Quan!
@@ -456,7 +453,7 @@ Dnyarri. There is a nearby ship which is annoying me. Compel it to self-destruct
 
 #(SAVING_MY_POWER)	talkp052.ogg
 I am saving my meager powers for our final confrontation with the Ur-Quan.
-Sorry, Captain. You'll just have to deal with it yourself.
+Sorry, Captain. You'll just have to deal with this one yourself.
 
 #(any_suggestions)
 What do you suggest I do now, Dnyarri?
@@ -479,24 +476,25 @@ I'd probably try to find their weak spot. Every race has one.
 #(SUGGESTION_5)	talkp057.ogg
 Once I knew the Ur-Quan's critical weakness
 I would try to discover how to exploit this flaw.
-I would learn what was necessary for the task, then gather those materials or services.
+I would learn what was necessary for the task, and then gather those materials and services.
 
 #(SUGGESTION_6)	talkp058.ogg
 When I was finally prepared for the final confrontation with the Ur-Quan
 I would use me, the Talking Pet, to distract the Ur-Quan for a single moment
-thus permitting me, who is really you, to make the death-strike against the Ur-Quan.
+thus permitting me, who is really you at this point
+to make the death-strike against the Ur-Quan.
 
 #(SUGGESTION_7)	talkp059.ogg
-Well for one, I would stop asking me questions and get to work.
+Well for one, I would stop asking questions and get to work.
 
 #(SUGGESTION_8)	talkp060.ogg
-Well for one, I would stop asking me questions and get to work.
+Well for one, I would stop asking questions and get to work.
 
 #(about_your_race)
 What can you tell me about your race, the Dnyarri?
 
 #(WHAT_ABOUT_RACE)	talkp061.ogg
-I consider such a question intrusive and impolite
+I consider such a question to be intrusive and impolite
 but that is consistent with your behavior.
 What do you want to know?
 
@@ -550,16 +548,16 @@ What can you tell me about the history of your people?
 
 #(ABOUT_HISTORY)	talkp068.ogg
 Over twenty thousand years ago, my species was happy and carefree
-living a life of contentment on the surface of our world Glilandy.
-We spent our time gathering foods, creating art, and compelling each other to do the gross chores.
-Then a ship from the Sentient Milieu landed, and things got pretty complicated.
+living a life of peace and contentment on the surface of our world Benteflork.
+We spent our time gathering foods, creating art, and compelling each other to do the boring chores.
+Then a ship from the Sentient Milieu landed, and well, things got pretty complicated.
 
 #(sentient_milieu)
 I know so little about the Sentient Milieu. Can you describe it?
 
 #(ABOUT_SENTIENT_MILIEU)	talkp069.ogg
 The Sentient Milieu were a blood-thirsty Empire that ruled a large section of the galaxy for thousands of years.
-If you have heard that the Milieu was a cooperative union of sentient species
+If you heard that the Milieu was a cooperative union of sentient species
 it's LIES, all lies!
 The Ur-Quan were just a part of the Milieu, but their dark and evil hearts
 infused the entire association with a sinister ambience.
@@ -570,11 +568,11 @@ So tell me about the war between your species and the Sentient Milieu.
 #(ABOUT_WAR)	talkp070.ogg
 Well, after we had been in contact with the Milieu for a while
 they decided to kill all of my species!
-Now does that sound like a reasonable, friendly bunch of beings, Captain?
+Now does that sound like a reasonable, friendly bunch of aliens, Hmm?  Huh?  Does it Captain?
 No! It does not!
 Well the war was over pretty quickly, and my species lost.
-Instead of just killing us, the Ur-Quan modified our genetic code sequence
-so that our children were born non-sentient, dumb animals.
+Instead of just killing us, the Ur-Quan modified our genes
+Our children were born non-sentient, dumb animals.
 For the past twenty millenia, we Dnyarri have been serving the Ur-Quan
 in the most demeaning way they could imagine
 acting as mindless translators who communicate the words of inferior races.
@@ -588,30 +586,28 @@ That's good, I was getting sleepy.
 #(UMGAH_ALL_GONE)	talkp072.ogg
 Such great plans, such fine dreams... now, all ground to dust.
 Hello, Captain. Pardon my lament, but I am feeling a bit depressed today.
-You see, the black destroyers -- the Kohr-Ah- passed through recently on a killing spree
+You see, the black destroyers -- the Kohr-Ah -- passed through recently on a killing spree
 and now my Umgah, the instruments of my revenge, are all pretty much dead.
 In case you are confused about who I am, and what I'm doing here, I'll explain.
-I am a called a `talking pet' and for many years
-I served as a translating device for the Ur-Quan aboard one of their Dreadnoughts.
-During this time, I possessed less intelligence than an Earth swine, but this was soon to change.
+I am a called a `talking pet'
+For many years I served as a translator aboard an Ur-Quan Dreadnought.
+During this time though, I possessed less intelligence than an Earth swine, but this was soon to change.
 The Dreadnought came under attack by the Kohr-Ah and was severely damaged.
 We made a crash-landing at a planet orbiting Alpha Pavonis. I was the only survivor.
-The prospect of investigating a Dreadnought was sufficient to bring the Arilou down to the planet surface
-where they found me and tried to nurse me back to health, but they could not repair all my damage.
-During their ministrations, the Arilou came to realize that
-so the Arilou turned to their neighbors, the Umgah, for assistance.
-The Umgah saw that I had the potential for intelligence, and proceeded to modify my brain.
+The prospect of investigating a Dreadnought was sufficient to bring the Arilou down to the planet surface, where they found me.
+They tried to nurse me back to health, but they could not repair all my damage.
+So they turned to their neighbors, the Umgah, for assistance.
+The Umgah saw that I had the potential for intelligence, and they proceeded to modify my brain.
 When I came to my senses following the final operation, a flood of thought and memory filled my mind.
 I knew who I was!
 I was a Dnyarri -- a member of a peaceful alien race, whose intelligence the Ur-Quan had long ago `shut off'
 via cruel biogenetic manipulation.
 I convinced the Umgah to assist me in effecting a magnificent revenge against the Ur-Quan
 and we were just a few months away from launching our strike
-when the Kohr-Ah passed through and casually slaughtered the entire Umgah species.
-Bummer.
+well, when the Kohr-Ah passed through and casually slaughtered the entire Umgah species.  Bummer.
 But here YOU are, Captain!
 I have an offer: instead of killing me, I will join you on your ship.
-I can be of invaluable assistance to you when it comes time for your final confrontation with the Ur-Quan.
+I can be of invaluable assistance when it comes time for your final confrontation with the Ur-Quan.
 I see you are speechless with approval. I'll be right over.
 
 #(HELLO_AFTER_COMPEL_URQUAN)	talkp073.ogg

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Talking Pet .txt file corrected to match the .ogg files,
+  and talkpet.ts corrections, from Nic
 - Abstracted window-drawing code from confirm.c -Michael
 - Fixed blue comms screen problem (bug #363), from Joel Holveck & Nic
 - Automatically adding an icon for Darwin builds, from Nic
