@@ -39,7 +39,7 @@
  *  Interface Types
  */
 
-typedef unsigned int TFBSound_Object;
+typedef intptr_t TFBSound_Object;
 typedef int TFBSound_IntVal;
 typedef const int TFBSound_SourceProp;
 typedef const int TFBSound_BufferProp;

@@ -23,6 +23,12 @@
 #include "types.h"
 #include "SDL_byteorder.h"
 
+#ifdef _MSC_VER
+#	include <stddef.h>
+#else
+#	include <stdint.h>
+#endif
+
 /**
  * The interface heavily influenced by OpenAL
  * to the point where you should use OpenAL's
@@ -158,7 +164,7 @@ typedef enum
  *  Interface Types
  */
 
-typedef unsigned int mixSDL_Object;
+typedef intptr_t mixSDL_Object;
 typedef int mixSDL_IntVal;
 
 typedef struct _mixSDL_Buffer
