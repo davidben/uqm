@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Unix build: Make it possible to use another directory than the current
+  one for putting the build data in (such as build.vars, config.state,
+  the obj/ dir, and the final binary). - SvdB
 - Fixed various odd behaviors when loading from HyperSpace (bug #587), 
   from Nic and Michael
 - Added new 'triscan' scaler; derived from scale2x[.sf.net] -Alex

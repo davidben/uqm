@@ -14,7 +14,7 @@ uqm_CFLAGS="$uqm_CFLAGS -I src -I src/sc2code -I src/sc2code/libs"
 # Stuff to install under the directory for libraries, as specified during
 # config.
 uqm_INSTALL_LIBS="executable"
-uqm_INSTALL_LIB_executable_SRC="$uqm_NAME"
+uqm_INSTALL_LIB_executable_SRC="$BUILD_WORK/$uqm_NAME"
 uqm_INSTALL_LIB_executable_DEST=uqm/uqm
 uqm_INSTALL_LIB_executable_MODE="0755"
 
@@ -28,7 +28,7 @@ uqm_INSTALL_SHARED_content_MODE="go+rX"
 # Stuff to install under the directory for binaries, as specified during
 # config.
 uqm_INSTALL_BINS=wrapper
-uqm_INSTALL_BIN_wrapper_SRC="build/unix/uqm"
+uqm_INSTALL_BIN_wrapper_SRC="$BUILD_WORK/uqm-wrapper"
 uqm_INSTALL_BIN_wrapper_DEST="uqm"
 uqm_INSTALL_BIN_wrapper_MODE="0755"
 

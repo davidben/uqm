@@ -22,10 +22,14 @@
 # Read in the functions we need
 . build/unix/build_functions
 
+if [ -z "$BUILD_WORK" ]; then
+	BUILD_WORK=.
+fi
+
 # Read in the config settings that affect the build, if present.
 # Don't reread for every dir when recursing.
-if [ -e build.vars -a -z "$BUILD_COMMAND" ]; then
-	. ./build.vars
+if [ -e "$BUILD_WORK/build.vars" -a -z "$BUILD_COMMAND" ]; then
+	. "$BUILD_WORK/build.vars"
 fi
 
 # Read in the Makeinfo file for the dir currently being processed

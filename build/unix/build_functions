@@ -63,7 +63,7 @@ build_do_recursive() {
 
 # Build dependancy information for one file
 build_dependancies() {
-	eval echo -n \${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
+	eval echo -n \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
 	eval \$MKDEPEND "\${${BUILD_PROJECT}_CFLAGS}" "\$1"
 }
 
@@ -80,9 +80,9 @@ build_rec_dependancies() {
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	OFILES=`build_do_recursive build_collect_o_files :`
 
-	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME}"
+	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
 	{
-		eval echo -n "target-\${${BUILD_PROJECT}_NAME}:"
+		eval echo -n "\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}:"
 		for OFILE in $OFILES $EXTRA_OFILES; do
 			echo -n " $OFILE"
 		done
@@ -93,12 +93,12 @@ build_rec_dependancies() {
 
 # Output the .o file for a .c file.
 build_collect_o_files() {
-	eval echo "\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+	eval echo "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
 }
 
 # Output the extra .o file with the complete path
 build_collect_extra_o_files() {
-	eval echo "\${${BUILD_PROJECT}_OBJS}\$1"
+	eval echo "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$1"
 }
 
 # Recursively collect .o-files
@@ -123,25 +123,26 @@ build_config() {
 build_compile() {
 	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
 			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
-			DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}" \
-			\$MAKE -f Makefile.build "target-\${${BUILD_PROJECT}_NAME}"
+			DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}" \
+			\$MAKE -f Makefile.build "\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}"
 }
 
 # Description: Remove the .o file for one .c file
 # Arguments:   $1 - the .c file
 build_clean_file() {
-	eval rm -f -- "\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+	eval rm -f -- "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
 }
 
 build_clean_dir() {
-	eval rmdir -- "\${${BUILD_PROJECT}_OBJS}\${1}" 2> /dev/null
+	eval rmdir -- "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1}" 2> /dev/null
 	return 0
 }
 
 build_clean() {
 	local DEPEND_FILE
-	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}"
-	rm -f "$DEPEND_FILE" build.vars config.state src/config.h
+	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}"
+	rm -f "$DEPEND_FILE" "$BUILD_WORK/build.vars" \
+			"$BUILD_WORK/config.state" "$BUILD_WORK/config_unix.h"
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	export BUILD_FILES_VAR
 	build_do_recursive build_clean_file build_clean_dir
@@ -164,10 +165,10 @@ build_distclean() {
 # Description: check if the config files are present and load them.
 #              If they're not present, remake them.
 build_check_config() {
-	[ ! -e build.vars -o -n "$BUILD_RUN_CONFIG" ] || return
+	[ ! -e "$BUILD_WORK/build.vars" -o -n "$BUILD_RUN_CONFIG" ] || return
 
 	build_config || exit $?
-	. ./build.vars
+	. "$BUILD_WORK/build.vars"
 	. "${BUILD_REC_PATH:=./}Makeinfo"
 	unset BUILD_RUN_CONFIG
 }
@@ -175,7 +176,7 @@ build_check_config() {
 # Description: check if the necessary .depend file is present,
 #              if not, build it.
 build_check_dependencies() {
-	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME}"
+	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
 	[ ! -e "$DEPEND_FILE" -o -n "$BUILD_RUN_DEPEND" ] || return
 
 	build_rec_dependancies || exit $?

@@ -350,11 +350,15 @@ EOF
 #                   source, and the filename without .in as target.
 #                   If a filename doesn't end on .in, that filename is used
 #                   as target, and the filename with .in attached as source.
+#              $3 - A path to which the input file names are relative
+#              $4 - A path to which the output file names are relative
 substitute_vars() {
-	local VARS VAR VALUE FILES FILE
+	local VARS VAR VALUE FILES FILE SRC_PATH DST_PATH
 
 	eval VARS=\"\$$1\"
 	eval FILES=\"\$$2\"
+	SRC_PATH="$3"
+	DST_PATH="$4"
 
 	for VAR in $VARS; do
 		# Escape all / in VAR so that we can use / as seperator char for sed
@@ -367,9 +371,9 @@ EOF
 
 	for FILE in $FILES; do
 		FILE="${FILE%.in}"
-		cp -p -- "$FILE".in "$FILE"
+		cp -p -- "$SRC_PATH/$FILE".in "$DST_PATH/$FILE"
 				# The copy is done so that the file modes are equal.
-		$SED -f "${TEMPFILE}.sed" < "$FILE".in > "$FILE"
+		$SED -f "${TEMPFILE}.sed" < "$SRC_PATH/$FILE".in > "$DST_PATH/$FILE"
 	done
 	rm -- "${TEMPFILE}.sed"
 }

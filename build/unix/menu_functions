@@ -600,6 +600,13 @@ menu_process_check() {
 	fi
 }
 
+# Description: Start processing a menu
+# Arguments:   $1 - the type of the main menu
+#              $2 - the name of the main menu
+#              $3 - the path to the file to load and save the settings from/to
+#                   (the file does not have to exist; in this case nothing is
+#                   loaded)
+#                   if the argument is empty, nothing is saved nor loaded
 do_menu() {
 	local MENU_TYPE START_MENU SAVE_FILE
 	
@@ -607,15 +614,15 @@ do_menu() {
 	START_MENU="$2"
 	SAVE_FILE="$3"
 
-	if [ -n "$SAVE_FILE" -a -e config.state ]; then
-		. config.state
+	if [ -n "$SAVE_FILE" -a -e "$SAVE_FILE" ]; then
+		. "$SAVE_FILE"
 	fi
 	menu_init "$MENU_TYPE" "$START_MENU"
 	menu_handle "$MENU_TYPE" "$START_MENU"
 	echo
 	if [ -n "$SAVE_FILE" ]; then
 		echo "Saving choices..."
-		menu_save "$MENU_TYPE" "$START_MENU" > config.state
+		menu_save "$MENU_TYPE" "$START_MENU" > "$SAVE_FILE"
 	fi
 #	echo "Propagating choices..."
 	menu_process "$MENU_TYPE" "$START_MENU"
