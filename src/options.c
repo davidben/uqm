@@ -62,6 +62,9 @@ prepareSaveDir (void) {
 
 	// Create the path upto the save dir, if not already existing.
 	mkdirhier (saveDir);
+//#ifdef DEBUG
+	fprintf(stderr, "Saved games are kept in %s.\n", saveDir);
+//#endif
 }
 
 void
