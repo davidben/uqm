@@ -55,6 +55,7 @@ UninitOscilloscope (void)
 		TFB_DrawImage_Delete (scope_surf);
 		scope_surf = NULL;
 	}
+	scope_init = 0;
 }
 
 // draws the oscilloscope
