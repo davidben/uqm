@@ -1,8 +1,0 @@
-# Text map for intro/intro3.pxt
-# Records: 5
-
-"20 years have passed..."
-"We, the survivors of the research mission have colonized this world."
-"We continued our investigation of the underground city..."
-"And we have discovered its purpose..."
-"It is a factory."
