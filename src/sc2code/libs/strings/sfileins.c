@@ -18,17 +18,26 @@
 
 #include "strintrn.h"
 
+extern char *_cur_resfile_name;
+
 STRING_TABLE
 LoadStringTableFile (PVOID pStr)
 {
 	FILE *fp;
+
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
 
 	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
+		_cur_resfile_name = pStr;
 		hData = _GetStringData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 
 		return (BUILD_STRING_TABLE (hData));

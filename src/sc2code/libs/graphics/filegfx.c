@@ -18,16 +18,25 @@
 
 #include "gfxintrn.h"
 
+extern char *_cur_resfile_name;
+
 DWORD
 LoadCelFile (PVOID pStr)
 {
 	FILE *fp;
 
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
+
 	if ((fp = res_OpenResFile (pStr, "rb")) != NULL)
 	{
 		MEM_HANDLE hData;
 
+		_cur_resfile_name = pStr;
 		hData = _GetCelData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 		return ((DWORD)hData);
 	}
@@ -40,11 +49,18 @@ LoadFontFile (PVOID pStr)
 {
 	FILE *fp;
 
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
+	
 	if ((fp = res_OpenResFile (pStr, "rb")) != NULL)
 	{
 		MEM_HANDLE hData;
 
+		_cur_resfile_name = pStr;
 		hData = _GetFontData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 		return ((DWORD)hData);
 	}

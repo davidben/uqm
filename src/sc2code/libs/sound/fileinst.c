@@ -18,17 +18,26 @@
 
 #include "sndintrn.h"
 
+extern char *_cur_resfile_name;
+
 SOUND_REF
 LoadSoundFile (PVOID pStr)
 {
 	FILE *fp;
+
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
 
 	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
+		_cur_resfile_name = pStr;
 		hData = _GetSoundBankData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
 
 		res_CloseResFile (fp);
 
@@ -43,12 +52,19 @@ LoadMusicFile (PVOID pStr)
 {
 	FILE *fp;
 
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
+
 	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
+		_cur_resfile_name = pStr;
 		hData = _GetMusicData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
 
 		res_CloseResFile (fp);
 
