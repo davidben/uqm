@@ -77,6 +77,7 @@ void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r,
 void TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
 void TFB_DrawScreen_WaitForSignal (void);
+void TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height, int bpp);
 void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
 void TFB_FlushPaletteCache (void);
 

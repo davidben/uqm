@@ -677,7 +677,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
 			ClearSemaphore (DC.data.sendsignal.sem);
 			break;
-		}		
+		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
+			fprintf (stderr, "TODO: REINITVIDEO command set.  Not yet implemented.\n");
+			break;
+		}
 	}
 	
 	if (livelock_deterrence)

@@ -209,6 +209,19 @@ TFB_DrawScreen_WaitForSignal (void)
 }
 
 void
+TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height, int bpp)
+{
+	TFB_DrawCommand DrawCommand;
+	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_REINITVIDEO;
+	DrawCommand.data.reinitvideo.driver = driver;
+	DrawCommand.data.reinitvideo.flags = flags;
+	DrawCommand.data.reinitvideo.width = width;
+	DrawCommand.data.reinitvideo.height = height;
+	DrawCommand.data.reinitvideo.bpp = bpp;
+	TFB_EnqueueDrawCommand(&DrawCommand);
+}
+
+void
 TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest)
 {
 	LockMutex (dest->mutex);

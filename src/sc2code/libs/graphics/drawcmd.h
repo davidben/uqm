@@ -38,6 +38,7 @@ enum
 	TFB_DRAWCOMMANDTYPE_SETMIPMAP,
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
 	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
+	TFB_DRAWCOMMANDTYPE_REINITVIDEO,
 };
 
 typedef struct tfb_dc_line
@@ -112,6 +113,11 @@ typedef struct tfb_dc_signal
 	Semaphore sem;
 } TFB_DrawCommand_SendSignal;
 
+typedef struct tfb_dc_reinit_video
+{
+	int driver, flags, width, height, bpp;
+} TFB_DrawCommand_ReinitVideo;
+
 typedef struct tfb_drawcommand
 {
 	int Type;
@@ -127,6 +133,7 @@ typedef struct tfb_drawcommand
 		TFB_DrawCommand_SetMipmap setmipmap;
 		TFB_DrawCommand_DeleteImage deleteimage;
 		TFB_DrawCommand_SendSignal sendsignal;
+		TFB_DrawCommand_ReinitVideo reinitvideo;
 	} data;
 } TFB_DrawCommand;
 
