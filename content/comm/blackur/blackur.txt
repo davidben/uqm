@@ -333,7 +333,7 @@ Please don't destroy this ship. We mean you no harm!
 
 #(PLEADING_IS_USELESS_1)	black039.ogg
 In the twenty thousand years of our Mission
-we have heard more pleas for mercy that you can possibly imagine.
+we have heard more pleas for mercy than you can possibly imagine.
 Civilizations which saw their doom before them called upon their geniuses to calm us
 to no avail.
 
@@ -361,8 +361,8 @@ We have NO enemy
 beyond the Kzer-Za, our partners in the eternal conflict.
 You are simply... a spore, a seed.
 Today you are nothing... insignificant.
-But if allowed to bloom and grow
-someday... someday, you might represent a threat to our freedom and security.
+But if allowed to bloom and grow someday...
+someday, you might represent a threat to our freedom and security.
 So we cleanse.
 
 #(bye)
