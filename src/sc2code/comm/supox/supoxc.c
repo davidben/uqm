@@ -447,9 +447,11 @@ NeutralSupox (RESPONSE_REF R)
 			break;
 		case 3:
 			pStr[0] = are_you_copying;
+			pStr[1] = 0;
 			break;
 		case 4:
 			pStr[0] = why_copy;
+			pStr[1] = 0;
 			break;
 	}
 	NumVisits = GET_GAME_STATE (ULTRON_CONDITION);

@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Don't allow the reply "Symbionts, how interesting!" in the Supox
+  conversation until they mentioned they were Symbionts. (bug #528),
+  from Nic
 - Not initialising the various systems when -h/-? is supplied (bug #656),
   from Nic
 - F10 works when playing the intro (bug #665), from fOSSiL
