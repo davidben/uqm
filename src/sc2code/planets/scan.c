@@ -154,13 +154,14 @@ PrintCoarseScan (void)
 	DrawText (&t);
 
 	s.origin.x = s.origin.y = 0;
+	s.origin.x = 16 - SAFE_X;
 	s.frame = SetAbsFrameIndex (SpaceJunkFrame, 20);
 	DrawStamp (&s);
 
 	ClearSemaphore (GraphicsSem);
 
-#define LEFT_SIDE_BASELINE_X 27
-#define RIGHT_SIDE_BASELINE_X ((SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X) + ((SAFE_X << 1) - 32))
+#define LEFT_SIDE_BASELINE_X (27 + (16 - SAFE_X))
+#define RIGHT_SIDE_BASELINE_X (SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X)
 #define SCAN_BASELINE_Y 25
 
 	t.baseline.x = LEFT_SIDE_BASELINE_X;
