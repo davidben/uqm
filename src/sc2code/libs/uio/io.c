@@ -208,7 +208,7 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 	}
 
 	assert(handler->mount != NULL);
-	pRoot = handler->mount(handle, flags);
+	pRoot = (handler->mount)(handle, flags);
 	if (pRoot == NULL) {
 		int savedErrno;
 
@@ -390,7 +390,7 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 		errno = ENOSYS;
 		return -1;
 	}
-	retVal = oldReadMountInfo->pDirHandle->pRoot->handler->rename(
+	retVal = (oldReadMountInfo->pDirHandle->pRoot->handler->rename)(
 			oldPReadDir, oldName, newPReadDir, newName);
 	if (retVal == -1) {
 		int savedErrno = errno;
@@ -417,7 +417,7 @@ uio_fstat(uio_Handle *handle, struct stat *statBuf) {
 		errno = ENOSYS;
 		return -1;
 	}
-	return handle->root->handler->fstat(handle, statBuf);
+	return (handle->root->handler->fstat)(handle, statBuf);
 }
 
 int
@@ -444,7 +444,7 @@ uio_stat(uio_DirHandle *dir, const char *path, struct stat *statBuf) {
 		return -1;
 	}
 
-	result = pReadDir->pRoot->handler->stat(pReadDir, name, statBuf);
+	result = (pReadDir->pRoot->handler->stat)(pReadDir, name, statBuf);
 	uio_PDirHandle_unref(pReadDir);
 	uio_free(name);
 	return result;
@@ -506,7 +506,7 @@ uio_statOneDir(uio_PDirHandle *pDirHandle, struct stat *statBuf) {
 		errno = ENOSYS;
 		return -1;
 	}
-	return pDirHandle->pRoot->handler->stat(pDirHandle, ".", statBuf);
+	return (pDirHandle->pRoot->handler->stat)(pDirHandle, ".", statBuf);
 			// sets errno on error
 }
 
@@ -534,7 +534,7 @@ uio_mkdir(uio_DirHandle *dir, const char *path, mode_t mode) {
 		return -1;
 	}
 
-	newDirHandle = pWriteDir->pRoot->handler->mkdir(pWriteDir, name, mode);
+	newDirHandle = (pWriteDir->pRoot->handler->mkdir)(pWriteDir, name, mode);
 	if (newDirHandle == NULL) {
 		int savedErrno = errno;
 		uio_free(name);
@@ -620,7 +620,7 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 		pDirHandle = writePDirHandle;
 	}
 
-	handle = pDirHandle->pRoot->handler->open(pDirHandle, name, flags, mode);
+	handle = (pDirHandle->pRoot->handler->open)(pDirHandle, name, flags, mode);
 			// Also adds a new entry to the physical dir if appropriate.
 	if (handle == NULL) {
 		int savedErrno = errno;
@@ -687,7 +687,7 @@ uio_closeDir(uio_DirHandle *dirHandle) {
 
 ssize_t
 uio_read(uio_Handle *handle, void *buf, size_t count) {
-	return handle->root->handler->read(handle, buf, count);
+	return (handle->root->handler->read)(handle, buf, count);
 }
 
 int
@@ -747,7 +747,7 @@ uio_rmdir(uio_DirHandle *dirHandle, const char *path) {
 			goto err;
 		}
 
-		if (pDirHandle->pRoot->handler->rmdir(pDirHandle, name) == -1) {
+		if ((pDirHandle->pRoot->handler->rmdir)(pDirHandle, name) == -1) {
 			// errno is set
 			goto err;
 		}
@@ -790,7 +790,7 @@ uio_lseek(uio_Handle *handle, off_t offset, int whence) {
 		errno = ENOSYS;
 		return -1;
 	}
-	return handle->root->handler->seek(handle, offset, whence);
+	return (handle->root->handler->seek)(handle, offset, whence);
 }
 
 ssize_t
@@ -799,7 +799,7 @@ uio_write(uio_Handle *handle, const void *buf, size_t count) {
 		errno = ENOSYS;
 		return -1;
 	}
-	return handle->root->handler->write(handle, buf, count);
+	return (handle->root->handler->write)(handle, buf, count);
 }
 
 int
@@ -857,7 +857,7 @@ uio_unlink(uio_DirHandle *dirHandle, const char *path) {
 			goto err;
 		}
 
-		if (pDirHandle->pRoot->handler->unlink(pDirHandle, name) == -1) {
+		if ((pDirHandle->pRoot->handler->unlink)(pDirHandle, name) == -1) {
 			// errno is set
 			goto err;
 		}
@@ -1518,7 +1518,7 @@ uio_Handle_new(uio_PRoot *root, uio_NativeHandle native, int openFlags) {
 
 void
 uio_Handle_delete(uio_Handle *handle) {
-	handle->root->handler->close(handle);
+	(handle->root->handler->close)(handle);
 	uio_PRoot_unrefHandle(handle->root);
 	uio_Handle_free(handle);
 }

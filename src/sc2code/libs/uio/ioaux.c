@@ -162,17 +162,17 @@ uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
 		return -1;
 	}
 
-	fromHandle = fromHandler->open(fromDir, fromName, O_RDONLY, 0);
+	fromHandle = (fromHandler->open)(fromDir, fromName, O_RDONLY, 0);
 	if (fromHandle == NULL) {
 		// errno is set
 		return -1;
 	}
 
-	if (fromHandler->fstat(fromHandle, &statBuf) == -1)
+	if ((fromHandler->fstat)(fromHandle, &statBuf) == -1)
 		return copyError(errno, fromHandler, fromHandle,
 				toHandler, NULL, NULL, NULL, NULL);
 
-	toHandle = toHandler->open(toDir, toName, O_WRONLY | O_CREAT | O_EXCL,
+	toHandle = (toHandler->open)(toDir, toName, O_WRONLY | O_CREAT | O_EXCL,
 			statBuf.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 	if (toHandle == NULL)
 		return copyError(errno, fromHandler, fromHandle,
@@ -182,7 +182,7 @@ uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
 			// not allocated on the stack, as this function may be called
 			// from a thread with little stack space.
 	while (1) {
-		numInBuf = fromHandler->read(fromHandle, buf, BUFSIZE);
+		numInBuf = (fromHandler->read)(fromHandle, buf, BUFSIZE);
 		if (numInBuf == -1)
 		{
 			if (errno == EINTR)
@@ -195,7 +195,7 @@ uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
 
 		bufPtr = buf;
 		do {
-			numWritten = toHandler->write(toHandle, bufPtr, numInBuf);
+			numWritten = (toHandler->write)(toHandle, bufPtr, numInBuf);
 			if (numWritten == -1)
 			{
 				if (errno == EINTR)
@@ -209,8 +209,8 @@ uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
 	}
 
 	uio_free(buf);
-	toHandler->close(toHandle);
-	fromHandler->close(fromHandle);
+	(toHandler->close)(toHandle);
+	(fromHandler->close)(fromHandle);
 	return 0;
 }
 
@@ -231,13 +231,13 @@ copyError(int error,
 #endif
 
 	if (fromHandle != NULL)
-		fromHandler->close(fromHandle);
+		(fromHandler->close)(fromHandle);
 	
 	if (toHandle != NULL)
-		toHandler->close(toHandle);
+		(toHandler->close)(toHandle);
 	
 	if (toName != NULL)
-		toHandler->unlink(toDir, toName);
+		(toHandler->unlink)(toDir, toName);
 	
 	if (buf != NULL)
 		uio_free(buf);
