@@ -31,7 +31,7 @@
 #include "bbox.h"
 #include "port.h"
 #include "libs/uio.h"
-#include "debug.h"
+#include "uqmdebug.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;

@@ -21,7 +21,7 @@
 #include "options.h"
 #include "controls.h"
 #include "libs/inplib.h"
-#include "debug.h"
+#include "uqmdebug.h"
 
 //Added by Chris
 

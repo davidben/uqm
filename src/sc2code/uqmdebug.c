@@ -14,10 +14,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef DEBUG
+		/* This file is not even looked at in the unix debug build,
+		 * but MSVC will compile and link it.
+		 */
+
 #include <stdio.h>
 
 #include "starcon.h"
-#include "debug.h"
+#include "uqmdebug.h"
 
 static void dumpEventCallback (EVENTPTR eventPtr, void *arg);
 static void dumpStarCallback(STAR_DESC *star, void *arg);
@@ -547,5 +552,7 @@ dumpPlanet(FILE *out, const PLANET_DESC *planet, UWORD flags)
 
 	(void) flags;
 }
+
+#endif  /* DEBUG */
 
 

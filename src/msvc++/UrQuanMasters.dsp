@@ -3265,16 +3265,14 @@ SOURCE=..\sc2code\credits.h
 
 SOURCE=..\sc2code\cyborg.c
 # End Source File
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
 # Begin Source File
 
-SOURCE=..\sc2code\debug.c
+SOURCE=..\sc2code\uqmdebug.c
 # End Source File
 # End Source File
-!ENDIF
 # Begin Source File
 
-SOURCE=..\sc2code\debug.h
+SOURCE=..\sc2code\uqmdebug.h
 # Begin Source File
 
 SOURCE=..\sc2code\demo.c

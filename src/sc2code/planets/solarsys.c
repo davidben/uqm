@@ -19,7 +19,7 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 #include "controls.h"
-#include "debug.h"
+#include "uqmdebug.h"
 
 //#define DEBUG_SOLARSYS
 

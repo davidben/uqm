@@ -11,6 +11,6 @@ uqm_CFILES="battle.c border.c build.c cleanup.c clock.c collide.c comm.c
 		trans.c util.c velocity.c weapon.c"
 
 if [ "$DEBUG" = 1 ]; then
-	uqm_CFILES="$uqm_CFILES debug.c"
+	uqm_CFILES="$uqm_CFILES uqmdebug.c"
 fi
 
