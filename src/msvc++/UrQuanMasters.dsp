@@ -220,14 +220,6 @@ SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
 # End Source File
 # Begin Source File
