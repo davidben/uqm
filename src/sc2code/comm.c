@@ -1133,6 +1133,7 @@ int ambient_anim_task(void* data)
 								}
 								FrameRate = 0;
 							}
+							TransitionFrame = NULL;
 						}
 					}
 					TalkFrameChanged = TRUE;
