@@ -1253,7 +1253,10 @@ Rewind:
 				else
 				{
 					CommData.AlienFrame = F;
-					return (FALSE);
+					if (! which_track)
+						return (FALSE);
+					else
+						return (TRUE);
 				}
 				ContinuityBreak = FALSE;
 			}
@@ -1276,6 +1279,7 @@ Rewind:
 void
 AlienTalkSegue (COUNT wait_track)
 {
+	BOOLEAN abort;
 	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
 			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
 		return;
@@ -1370,12 +1374,12 @@ AlienTalkSegue (COUNT wait_track)
 		}
 	}
 
-	if (!SpewPhrases (wait_track) || wait_track == (COUNT)~0)
+	if (!(abort = SpewPhrases (wait_track)) || wait_track == (COUNT)~0)
 		FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 	else
 		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
 
-	if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
+	if (wait_track == (COUNT)~0 || ! abort || CommData.AlienTalkDesc.NumFrames)
 	{
 		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 		if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
