@@ -177,6 +177,7 @@ Scale_ExpandRect (SDL_Rect* rect, int expansion, SDL_Rect* limits)
 typedef struct _BLEND_PARAMS
 {
 	int shift_bits;
+	int pre_shift;
 	Uint32 low_mask;
 	Uint32 high_mask;
 } BLEND_PARAMS;
@@ -185,7 +186,11 @@ typedef struct _BLEND_PARAMS
 __inline__ Uint32
 Scale_BlendPixels_2 (BLEND_PARAMS bp, Uint32 pix1, Uint32 pix2)
 {
-	return  (pix1 & pix2 & bp.low_mask) +
+	return  
+		/*	lower bits can be safely ignored - the error is minimal
+			expression that calcs them is left for posterity
+			(pix1 & pix2 & bp.low_mask) +
+		*/
 			((pix1 & bp.high_mask) >> 1) + ((pix2 & bp.high_mask) >> 1);
 }
 
@@ -194,9 +199,13 @@ __inline__ Uint32
 Scale_BlendPixels_4 (BLEND_PARAMS bp, Uint32 pix1, Uint32 pix2,
 						Uint32 pix3, Uint32 pix4)
 {
-	return	((((pix1 & bp.low_mask) + (pix2 & bp.low_mask) +
+	return
+		/*	lower bits can be safely ignored - the error is minimal
+			expression that calcs them is left for posterity
+			((((pix1 & bp.low_mask) + (pix2 & bp.low_mask) +
 			   (pix3 & bp.low_mask) + (pix4 & bp.low_mask)
 			  ) >> 2) & bp.low_mask) +
+		*/
 			((pix1 & bp.high_mask) >> 2) + ((pix2 & bp.high_mask) >> 2) +
 			((pix3 & bp.high_mask) >> 2) + ((pix4 & bp.high_mask) >> 2);
 }
@@ -220,6 +229,43 @@ Scale_CalcBlendMasks (SDL_PixelFormat* fmt, unsigned int npixels,
 					(mask << fmt->Bshift);
 
 	pbp->high_mask = (fmt->Rmask | fmt->Gmask | fmt->Bmask) ^ pbp->low_mask;
+}
+
+// compute channel masks for N-pixel blending
+// N must be a power of 2 and generally should not be more than 2^(B/2),
+// where B is the number of bits/channel
+// although, blending weights may dictate other conditions
+__inline__ void
+Scale_CalcChannelMasks (SDL_PixelFormat* fmt, unsigned int npixels,
+						BLEND_PARAMS* pbp)
+{
+	Uint32 masks[3] = {fmt->Rmask, fmt->Gmask, fmt->Bmask};
+	int i, swapped = 1;
+
+	// this just does an integer log-base-2(npixels)
+	for (pbp->shift_bits = 0, npixels >>= 1; npixels != 0; npixels >>= 1)
+		pbp->shift_bits++;
+	
+	// buble-sort masks
+	while (swapped)
+	{
+		swapped = 0;
+		for (i = 0; i < 2; ++i)
+		{
+			if (masks[i] < masks[i + 1])
+			{
+				Uint32 tval = masks[i];
+				masks[i] = masks[i + 1];
+				masks[i + 1] = tval;
+				swapped++;
+			}
+		}
+	}
+
+	pbp->high_mask = masks[0] | masks[2];
+	pbp->low_mask = masks[1];
+
+	pbp->pre_shift = pbp->high_mask >= (Uint32)1 << (32 - pbp->shift_bits);
 }
 
 // compare pixels by their RGB
@@ -2395,21 +2441,73 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	}
 }
 
+// bilinear weighted blend of four pixels
+__inline__ Uint32
+Scale_BlendPixels_bilinear (BLEND_PARAMS bp, Uint32* p, const Uint32* w)
+{
+	if (bp.pre_shift)
+	{	// high pre-shifted version
+		return	(((((p[0] & bp.high_mask) >> 4) * w[0]) +
+				  (((p[1] & bp.high_mask) >> 4) * w[1]) +
+				  (((p[2] & bp.high_mask) >> 4) * w[2]) +
+				  (((p[3] & bp.high_mask) >> 4) * w[3]))
+				 & bp.high_mask) |
+				(((((p[0] & bp.low_mask) * w[0]) +
+				   ((p[1] & bp.low_mask) * w[1]) +
+				   ((p[2] & bp.low_mask) * w[2]) +
+				   ((p[3] & bp.low_mask) * w[3]))
+				 >> 4) & bp.low_mask);
+	}
+	else
+	{	// high post-shifted version
+		return	(((((p[0] & bp.high_mask) * w[0]) +
+				   ((p[1] & bp.high_mask) * w[1]) +
+				   ((p[2] & bp.high_mask) * w[2]) +
+				   ((p[3] & bp.high_mask) * w[3]))
+				 >> 4) & bp.high_mask) |
+				(((((p[0] & bp.low_mask) * w[0]) +
+				   ((p[1] & bp.low_mask) * w[1]) +
+				   ((p[2] & bp.low_mask) * w[2]) +
+				   ((p[3] & bp.low_mask) * w[3]))
+				 >> 4) & bp.low_mask);
+	}
+}
+
 // bilinear scaling to 2x
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
-	int x, y, i = 0, j, fa, fb, fc, fd;
+	int x, y, i = 0, j;
 	const int w = dst->w, h = dst->h;
+	int drx, dry;
+	int xend, yend;
+	int dsrc, ddst;
+	SDL_Rect *region = r;
+	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
+	BLEND_PARAMS blend16;
 
-	// TODO: support for partial updates, expand weight matrix in the code
+	// expand updated region if necessary
+	// pixels neighbooring the updated region may
+	// change as a result of updates
+	limits.x = 0;
+	limits.y = 0;
+	limits.w = src->w;
+	limits.h = src->h;
+	Scale_ExpandRect (region, 1, &limits);
+
+	drx = 2 * region->x;
+	dry = 2 * region->y;
+	xend = 2 * (region->x + region->w);
+	yend = 2 * (region->y + region->h);
+	dsrc = src->w - region->w;
+	ddst = dst->w - 2 * region->w;
+
+	// precompute the blending masks and shifts
+	Scale_CalcChannelMasks (fmt, 16, &blend16);
+
+	// TODO: expand weight matrix in the code
 	//       so that compiler can optimize the mults?
 	
-	r->x = 0;
-	r->y = 0;
-	r->w = src->w;
-	r->h = src->h;
-
 	switch (dst->format->BytesPerPixel)
 	{
 	case 2:
@@ -2418,7 +2516,11 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint16 *dst_p = (Uint16 *) dst->pixels;
 		Uint32 p[4];
 
-		for (y = 0; y < h; ++y)
+		// move ptrs to the first updated pixel
+		src_p += src->w * region->y + region->x;
+		dst_p += (dst->w * region->y + region->x) * 2;
+
+		for (y = dry; y < yend; ++y, dst_p += ddst)
 		{
 			src_p2 = src_p;
 			j = i;
@@ -2429,7 +2531,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 			else
 				p[2] = 0;
 
-			for (x = 0; x < w; ++x)
+			for (x = drx; x < xend; ++x, ++dst_p)
 			{
 				if (j == i)
 				{
@@ -2456,24 +2558,9 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					}
 				}
 
-				fa = bilinear_table[j][0];
-				fb = bilinear_table[j][1];
-				fc = bilinear_table[j][2];
-				fd = bilinear_table[j][3];
-
-				*dst_p++ = 
-					(((((p[0] & fmt->Rmask) * fa) +
-					((p[1] & fmt->Rmask) * fb) +
-					((p[2] & fmt->Rmask) * fc) +
-					((p[3] & fmt->Rmask) * fd)) >> 4) & fmt->Rmask) |
-					(((((p[0] & fmt->Gmask) * fa) +
-					((p[1] & fmt->Gmask) * fb) +
-					((p[2] & fmt->Gmask) * fc) +
-					((p[3] & fmt->Gmask) * fd)) >> 4) & fmt->Gmask) |
-					(((((p[0] & fmt->Bmask) * fa) +
-					((p[1] & fmt->Bmask) * fb) +
-					((p[2] & fmt->Bmask) * fc) +
-					((p[3] & fmt->Bmask) * fd)) >> 4) & fmt->Bmask);
+				*dst_p = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j]
+						);
 
 				if (j & 2)
 				{
@@ -2490,6 +2577,9 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 			if (!i)
 				src_p = src_p2;
+			else
+				src_p += dsrc;
+
 			i = !i;
 		}
 
@@ -2497,9 +2587,77 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	}
 	case 3:
 	{
-		// 24bpp mode bilinear scaling isn't implemented currently
-		// it would probably be too slow to be useful anyway
-		Scale_Nearest (src, dst, r);
+		PIXEL_24BIT *src_p = (PIXEL_24BIT *) src->pixels, *src_p2;
+		PIXEL_24BIT *dst_p = (PIXEL_24BIT *) dst->pixels;
+		Uint32 p[4];
+
+		// move ptrs to the first updated pixel
+		src_p += src->w * region->y + region->x;
+		dst_p += (dst->w * region->y + region->x) * 2;
+
+		for (y = dry; y < yend; ++y, dst_p += ddst)
+		{
+			src_p2 = src_p;
+			j = i;
+
+			p[0] = GET_PIX_24BIT (src_p);
+			if (y < h - 2)
+				p[2] = GET_PIX_24BIT (src_p + src->w);
+			else
+				p[2] = 0;
+
+			for (x = drx; x < xend; ++x, ++dst_p)
+			{
+				if (j == i)
+				{
+					if (y < h - 2)
+					{
+						if (x < w - 2)
+						{
+							p[1] = GET_PIX_24BIT (src_p + 1);
+							p[3] = GET_PIX_24BIT (src_p + src->w + 1);
+						}
+						else
+						{
+							p[1] = 0;
+							p[3] = 0;
+						}
+					}
+					else
+					{
+						if (x < w - 2)
+							p[1] = GET_PIX_24BIT (src_p + 1);
+						else
+							p[1] = 0;
+						p[3] = 0;
+					}
+				}
+
+				SET_PIX_24BIT (dst_p, Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j]
+						));
+
+				if (j & 2)
+				{
+					j = i;
+					src_p++;
+					p[0] = p[1];
+					p[2] = p[3];
+				}
+				else
+				{
+					j = i | 2;
+				}
+			}
+
+			if (!i)
+				src_p = src_p2;
+			else
+				src_p += dsrc;
+
+			i = !i;
+		}
+
 		break;
 	}
 	case 4:
@@ -2508,7 +2666,11 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 *dst_p = (Uint32 *) dst->pixels;
 		Uint32 p[4];
 
-		for (y = 0; y < h; ++y)
+		// move ptrs to the first updated pixel
+		src_p += src->w * region->y + region->x;
+		dst_p += (dst->w * region->y + region->x) * 2;
+
+		for (y = dry; y < yend; ++y, dst_p += ddst)
 		{
 			src_p2 = src_p;
 			j = i;
@@ -2519,7 +2681,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 			else
 				p[2] = 0;
 
-			for (x = 0; x < w; ++x)
+			for (x = drx; x < xend; ++x, ++dst_p)
 			{
 				if (j == i)
 				{
@@ -2546,25 +2708,10 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					}
 				}
 
-				fa = bilinear_table[j][0];
-				fb = bilinear_table[j][1];
-				fc = bilinear_table[j][2];
-				fd = bilinear_table[j][3];
-
-				*dst_p++ = 
-					(((((((p[0] & fmt->Rmask) >> fmt->Rshift) * fa) +
-					(((p[1] & fmt->Rmask) >> fmt->Rshift) * fb) +
-					(((p[2] & fmt->Rmask) >> fmt->Rshift) * fc) +
-					(((p[3] & fmt->Rmask) >> fmt->Rshift) * fd)) >> 4) << fmt->Rshift) & fmt->Rmask) |
-					(((((((p[0] & fmt->Gmask) >> fmt->Gshift) * fa) +
-					(((p[1] & fmt->Gmask) >> fmt->Gshift) * fb) +
-					(((p[2] & fmt->Gmask) >> fmt->Gshift) * fc) +
-					(((p[3] & fmt->Gmask) >> fmt->Gshift) * fd)) >> 4) << fmt->Gshift) & fmt->Gmask) |
-					(((((((p[0] & fmt->Bmask) >> fmt->Bshift) * fa) +
-					(((p[1] & fmt->Bmask) >> fmt->Bshift) * fb) +
-					(((p[2] & fmt->Bmask) >> fmt->Bshift) * fc) +
-					(((p[3] & fmt->Bmask) >> fmt->Bshift) * fd)) >> 4) << fmt->Bshift) & fmt->Bmask);
-
+				*dst_p = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j]
+						);
+				
 				if (j & 2)
 				{
 					j = i;
@@ -2580,6 +2727,9 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 			if (!i)
 				src_p = src_p2;
+			else
+				src_p += dsrc;
+
 			i = !i;
 		}
 
