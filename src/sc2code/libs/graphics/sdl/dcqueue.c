@@ -24,7 +24,7 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
 
-Semaphore DCQ_sem;
+static Mutex DCQ_lock;
 
 // variables for making the DCQ lock re-entrant
 static int DCQ_locking_depth = 0;
@@ -44,11 +44,11 @@ _lock (void)
 	Uint32 current_thread = SDL_ThreadID ();
 	if (DCQ_locking_thread != current_thread)
 	{
-		SetSemaphore (DCQ_sem);
+		LockMutex (DCQ_lock);
 		DCQ_locking_thread = current_thread;
 	}
 	++DCQ_locking_depth;
-	// fprintf (stderr, "DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+	// fprintf (stderr, "DCQ_lock locking depth: %i\n", DCQ_locking_depth);
 }
 
 // Wait for the queue to be emptied.
@@ -90,11 +90,11 @@ Unlock_DCQ (void)
 	else
 	{
 		--DCQ_locking_depth;
-		// fprintf (stderr, "DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+		// fprintf (stderr, "DCQ_lock locking depth: %i\n", DCQ_locking_depth);
 		if (!DCQ_locking_depth)
 		{
 			DCQ_locking_thread = 0;
-			ClearSemaphore (DCQ_sem);
+			UnlockMutex (DCQ_lock);
 		}
 	}
 }
@@ -167,7 +167,7 @@ TFB_DrawCommandQueue_Create()
 		DCQ_locking_depth = 0;
 		DCQ_locking_thread = 0;
 
-		DCQ_sem = CreateSemaphore(1, "DCQ");
+		DCQ_lock = CreateMutex ();
 }
 
 void
