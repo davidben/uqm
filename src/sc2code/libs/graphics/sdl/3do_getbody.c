@@ -299,6 +299,84 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
 	return (map);
 
 }
+
+FRAMEPTR Build_Gradiated_Font (FRAMEPTR FramePtr, Uint32 from, Uint32 to)
+{
+	UBYTE type;
+	FRAMEPTR NewFrame;
+	int x, y;
+	int width, height;
+	Uint32 color, clear;
+	BYTE from_r, from_g, from_b, from_a;
+	BYTE to_r, to_g, to_b, to_a;
+	int clrstep_r, clrstep_g, clrstep_b, clrstep_a;
+	TFB_Image *tfbImg, *tfbOrigImg;
+	SDL_Surface *img, *OrigImg;
+	PutPixelFn putpix;
+	GetPixelFn getpix;
+
+	width = GetFrameWidth (FramePtr);
+	height = GetFrameHeight (FramePtr);
+	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+			->FlagsAndIndex) >> FTYPE_SHIFT;
+	NewFrame = CaptureDrawable (
+				CreateDrawable (type, (SIZE)width, (SIZE)height, 1));
+	tfbOrigImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	OrigImg = tfbOrigImg->NormalImg;
+	SDL_LockSurface (OrigImg);
+
+	tfbImg = (TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs);
+	img = tfbImg->NormalImg;
+	SDL_LockSurface (img);
+
+	putpix = putpixel_for (img);
+	getpix = getpixel_for (OrigImg);
+
+	from_r = (from >> 24);
+	from_g = (from >> 16) & 0xFF;
+	from_b = (from >> 8) & 0xFF;
+	from_a = from & 0xFF;
+
+	to_r = (to >> 24);
+	to_g = (to >> 16) & 0xFF;
+	to_b = (to >> 8) & 0xFF;
+	to_a = to & 0xFF;
+
+	clrstep_r = (to_r - from_r) /  (height - 5);
+	clrstep_g = (to_g - from_g) /  (height - 5);
+	clrstep_b = (to_b - from_b) /  (height - 5);
+	clrstep_a = (to_a - from_a) /  (height - 5);
+	clear = SDL_MapRGBA (img->format, 0, 0, 0, 0);
+
+	for (y = 0; y < 2; y++)
+		for (x = 0; x < width; x++)
+			putpix (img, x, y, clear);
+
+	width--;
+	for (; y < height - 1; y++)
+	{
+		color = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
+		from_r += clrstep_r;
+		from_g += clrstep_g;
+		from_b += clrstep_b;
+		from_a += clrstep_a;
+		for (x = 0; x < width; x++)
+			if (getpix (OrigImg, x, y) == 1)
+				putpix (img, x, y, color);
+			else
+				putpix (img, x, y, clear);
+		putpix (img, x, y, clear);
+	}
+
+	width++;
+	for (x = 0; x < width; x++)
+		putpix (img, x, y, clear);
+	SDL_UnlockSurface (img);
+	SDL_UnlockSurface (OrigImg);
+	SetFrameHotSpot (NewFrame, GetFrameHotSpot (FramePtr));
+	return (NewFrame);
+
+}
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
 // r,g,b,a values supplied
 Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)

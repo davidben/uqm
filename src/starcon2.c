@@ -87,8 +87,7 @@ main (int argc, char *argv[])
 		{"pcmusic", 0, NULL, 'm'},
 		{"audioquality", 1, NULL, 'q'},
 		{"nosubtitles", 0, NULL, 'u'},
-		{"pcscan", 0, NULL, 'a'},
-		{"pcmenu", 0, NULL, 'b'},
+		{"pcopt", 1, NULL, 'a'},
 		{0, 0, 0, 0}
 	};
 
@@ -102,7 +101,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:uab", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:ua:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -187,10 +186,21 @@ main (int argc, char *argv[])
 			    optSubtitles = FALSE;
 			break;
 			case 'a':
-				optPCscan = TRUE;
-			break;
-			case 'b':
-				optPCmenu = TRUE;
+				{
+					char *thisopt, *optptr = optarg;
+					while (thisopt = strtok (optptr, ","))
+					{
+						optptr= NULL;
+						if (!strcmp (thisopt, "m") || !strcmp (thisopt, "menu"))
+							optPCmenu = TRUE;
+						else if (!strcmp (thisopt, "s") || !strcmp (thisopt, "scan"))
+								optPCscan = TRUE;
+						else if (!strcmp (thisopt, "f") || !strcmp (thisopt, "font"))
+							optPCfonts = TRUE;
+						else
+							printf ("\nUnknown PC option: %s\n", thisopt);
+					}
+				}
 			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
@@ -211,9 +221,12 @@ main (int argc, char *argv[])
 				printf("  -e, --3domusic (default)\n");
 				printf("  -m, --pcmusic\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
-			    printf("  -u, --nosubtitles\n");
-				printf("  -a  --pcscan\n");
-				printf("  -b  --pcmenu\n");
+				printf("  -u, --nosubtitles\n");
+				printf("  -a  --pcopt=font,menu,scan\n");
+				printf("      options are comma seperated (no spaces)\n");
+				printf("      font (or 'f') : use PC fonts\n");
+				printf("      menu (or 'm') : use text menus\n");
+				printf("      scan (or 's') : use text for coarse-scan (not hierogliphics)\n");
 				return 0;
 			break;
 		}

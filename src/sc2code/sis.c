@@ -378,8 +378,15 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	t.baseline.y = r.corner.y + (SHIP_NAME_HEIGHT - InStatusArea);
 	t.align = ALIGN_CENTER;
 	t.CharCount = (COUNT)~0;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
+	if (optPCfonts)
+		SetContextGradientFont(
+			BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
+			BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
+	else
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 	DrawText (&t);
+	if (optPCfonts)
+		SetContextGradientFont(0, 0);
 
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);

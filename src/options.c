@@ -33,6 +33,7 @@ char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
 BOOLEAN optPCscan = FALSE;
 BOOLEAN optPCmenu = FALSE;
+BOOLEAN optPCfonts = FALSE;
 
 void
 prepareConfigDir (void) {

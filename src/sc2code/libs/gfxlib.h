@@ -47,6 +47,7 @@ typedef COLOR *PCOLOR;
 #define COLOR_32k(c) (UWORD)((COLOR)(c)>>8)
 #define COLOR_256(c) LOBYTE((COLOR)c)
 #define MAKE_RGB15(r,g,b) (UWORD)(((r)<<10)|((g)<<5)|(b))
+#define BUILD_COLOR_RGBA(r,g,b,a) (DWORD)(((r)<<24)|((g)<<16)|((b)<<8)|(a))
 
 typedef BYTE CREATE_FLAGS;
 #define WANT_MASK (CREATE_FLAGS)(1 << 0)
@@ -329,6 +330,7 @@ extern DWORD LoadFontFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
 extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
+extern void SetContextGradientFont (DWORD from, DWORD to);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT_REF FontRef);
 extern FONT CaptureFont (FONT_REF FontRef);

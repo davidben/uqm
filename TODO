@@ -90,6 +90,9 @@ Implementation bugs (low priority):
   nearest neighbor.
 - PC Menu still has some issues
   - Still using 3DO menu hierarchy, so menu text isn't identical to PC
+-PC Font issues:
+  - Update 'CREW' and 'FUEL' fonts to be identical to PC 
+  - Correct Lander text font color to be the same as PC
 
 Stuff still to do (large):
 - add some way to configure your keys

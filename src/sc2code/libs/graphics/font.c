@@ -18,7 +18,27 @@
 
 #include "gfxintrn.h"
 
+extern FRAME Build_Gradiated_Font (FRAME FramePtr, DWORD from, DWORD to);
+
 static BYTE char_delta_array[MAX_DELTAS];
+static struct {
+	BOOLEAN Use;
+	DWORD from;
+	DWORD to;
+} FontGrad = {0,0,0};
+
+void SetContextGradientFont (DWORD from, DWORD to)
+{
+	if (from == to)
+		FontGrad.Use = 0;
+	else
+	{
+		FontGrad.Use = 1;
+		FontGrad.from = from;
+		FontGrad.to = to;
+	}
+}
+
 
 FONT
 SetContextFont (FONT Font)
@@ -200,7 +220,10 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		TEXTPTR TextPtr;
 		PRIMITIVE locPrim;
 
-		SetPrimType (&locPrim, STAMPFILL_PRIM);
+		if (FontGrad.Use)
+			SetPrimType (&locPrim, STAMP_PRIM);
+		else
+			SetPrimType (&locPrim, STAMPFILL_PRIM);
 		SetPrimColor (&locPrim, _get_context_fg_color ());
 
 		TextPtr = &PrimPtr->Object.Text;
@@ -233,7 +256,19 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				r.extent.height = GetFrameHeight (locPrim.Object.Stamp.frame);
 				_save_stamp.origin = r.corner;
 				if (BoxIntersect (&r, pClipRect, &r))
-					DrawGraphicsFunc (&r, &locPrim);
+				{
+					if (FontGrad.Use)
+					{
+						FRAME origFrame = locPrim.Object.Stamp.frame;
+						locPrim.Object.Stamp.frame = Build_Gradiated_Font(
+							locPrim.Object.Stamp.frame,  FontGrad.from, FontGrad.to);
+						DrawGraphicsFunc (&r, &locPrim);
+						DestroyDrawable (ReleaseDrawable (locPrim.Object.Stamp.frame));
+						locPrim.Object.Stamp.frame = origFrame;
+					}
+					else
+						DrawGraphicsFunc (&r, &locPrim);
+				}
 
 				locPrim.Object.Stamp.origin.x += GetFrameWidth (locPrim.Object.Stamp.frame);
 #if 0

@@ -39,6 +39,8 @@ extern BOOLEAN optPCscan;
 
 extern BOOLEAN optPCmenu;
 
+extern BOOLEAN optPCfonts;
+
 extern char *configDir;
 extern char *meleeDir;
 extern char *saveDir;
