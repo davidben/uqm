@@ -17,6 +17,7 @@
  */
 
 #include "gfxintrn.h"
+#include "misc.h"
 
 FRAMEPTR _CurFramePtr;
 
@@ -78,6 +79,36 @@ CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth, PSIZE pheight)
 }
 
 DRAWABLE
+AllocDrawable (COUNT n) 
+{
+	DRAWABLE Drawable;
+	Drawable = (DRAWABLE)mem_allocate ((MEM_SIZE)(sizeof (DRAWABLE_DESC)), 
+			MEM_ZEROINIT | MEM_GRAPHICS,
+			DRAWABLE_PRIORITY, MEM_SIMPLE);
+	if (Drawable)
+	{
+		DRAWABLEPTR DrawablePtr;
+		int i;
+		DrawablePtr = LockDrawable (Drawable);
+		DrawablePtr->Frame = (FRAMEPTR)HMalloc ((MEM_SIZE)(sizeof (FRAME_DESC) * n));
+
+		/* Zero out the newly allocated frames, since HMalloc doesn't have MEM_ZEROINIT. */
+		for (i = 0; i < n; i++) {
+			FRAMEPTR F;
+			F = &DrawablePtr->Frame[i];
+			F->parent = DrawablePtr;
+			F->TypeIndexAndFlags = 0;
+			F->image = 0;
+			F->Bounds = 0;
+			F->HotSpot.x = F->HotSpot.y = 0;
+		}
+		
+		UnlockDrawable (Drawable);
+	}
+	return Drawable;
+}
+
+DRAWABLE
 CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 		num_frames)
 {
@@ -107,58 +138,6 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 	return (0);
 }
 
-DRAWABLE
-CopyDrawable (DRAWABLE Drawable)
-{
-	DRAWABLEPTR DrawablePtr;
-
-	DrawablePtr = LockDrawable (Drawable);
-	if (DrawablePtr)
-	{
-		DRAWABLE CopyDrawable;
-		DWORD size;
-
-		if (TYPE_GET (DrawablePtr->Frame[0].TypeIndexAndFlags) == SCREEN_DRAWABLE)
-			CopyDrawable = 0;
-		else if ((CopyDrawable = AllocDrawable (1,
-				(size = mem_get_size ((MEM_HANDLE)Drawable))
-				- sizeof (DRAWABLE_DESC))))
-		{
-			DRAWABLEPTR CopyDrawablePtr;
-
-			if ((CopyDrawablePtr = LockDrawable (CopyDrawable)) == 0)
-			{
-				FreeDrawable (CopyDrawable);
-				CopyDrawable = 0;
-			}
-			else
-			{
-				PBYTE lpDst, lpSrc;
-
-				lpDst = (PBYTE)CopyDrawablePtr;
-				lpSrc = (PBYTE)DrawablePtr;
-				do
-				{
-					COUNT num_bytes;
-
-					num_bytes = size >= 0x7FFF ? 0x7FFF : (COUNT)size;
-					memcpy (lpDst, lpSrc, num_bytes);
-					lpDst += num_bytes;
-					lpSrc += num_bytes;
-					size -= num_bytes;
-				} while (size);
-				CopyDrawablePtr->hDrawable = (MEM_HANDLE)CopyDrawable;
-				UnlockDrawable (CopyDrawable);
-			}
-		}
-		UnlockDrawable (Drawable);
-
-		return (CopyDrawable);
-	}
-
-	return (0);
-}
-
 BOOLEAN
 DestroyDrawable (DRAWABLE Drawable)
 {
@@ -170,6 +149,7 @@ DestroyDrawable (DRAWABLE Drawable)
 	DrawablePtr = LockDrawable (Drawable);
 	if (DrawablePtr)
 	{
+		HFree (DrawablePtr->Frame);
 		UnlockDrawable (Drawable);
 		FreeDrawable (Drawable);
 

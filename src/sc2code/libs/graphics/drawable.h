@@ -69,15 +69,16 @@ typedef struct
 	HOT_SPOT HotSpot;
 	DWORD Bounds;
 	TFB_Image *image;
+	struct _drawable_desc *parent;
 } FRAME_DESC;
 typedef FRAME_DESC *PFRAME_DESC;
 
-typedef struct
+typedef struct _drawable_desc
 {
 	MEM_HANDLE hDrawable;
 
 	UWORD FlagsAndIndex;
-	FRAME_DESC Frame[1];
+	FRAME_DESC *Frame;
 } DRAWABLE_DESC;
 typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
@@ -94,19 +95,13 @@ typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 #define FRAMEPTR PFRAME_DESC
 #define COUNTPTR PCOUNT
 
-#define AllocDrawable(n,dc) \
-	(DRAWABLE)mem_allocate ((MEM_SIZE)(sizeof (DRAWABLE_DESC) \
-			+ (sizeof (FRAME_DESC) * ((n) - 1))) + (dc), \
-			MEM_ZEROINIT | MEM_GRAPHICS, \
-			DRAWABLE_PRIORITY, MEM_SIMPLE)
+extern DRAWABLE AllocDrawable (COUNT num_frames);
 #define LockDrawable(D) ((DRAWABLEPTR)mem_lock (GetDrawableHandle (D)))
 #define UnlockDrawable(D) mem_unlock (GetDrawableHandle (D))
 #define FreeDrawable(D) _ReleaseCelData (GetDrawableHandle (D))
 #define GetDrawableHandle(D) ((MEM_HANDLE)LOWORD (D))
 #define GetDrawableIndex(D) ((COUNT)HIWORD (D))
-#define GetFrameParentDrawable(F) ((DRAWABLEPTR)((PBYTE)((F) \
-										-((int)INDEX_GET((F)->TypeIndexAndFlags)-1)) \
-										-sizeof(DRAWABLE_DESC)))
+#define GetFrameParentDrawable(F) (F)->parent
 
 #define NULL_DRAWABLE (DRAWABLE)NULL_PTR
 

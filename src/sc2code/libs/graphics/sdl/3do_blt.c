@@ -62,7 +62,7 @@ alloc_image (COUNT NumFrames, DRAWABLE_TYPE DrawableType, CREATE_FLAGS
 	(void)flags;
 	(void)width;
 	(void)height;
-	return AllocDrawable (NumFrames, 0);
+	return AllocDrawable (NumFrames);
 }
 
 static DISPLAY_INTERFACE DisplayInterface =

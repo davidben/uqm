@@ -256,7 +256,6 @@ extern DRAWABLE CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth,
 		PSIZE pheight);
 extern DRAWABLE CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width,
 		SIZE height, COUNT num_frames);
-extern DRAWABLE CopyDrawable (DRAWABLE Drawable);
 extern BOOLEAN DestroyDrawable (DRAWABLE Drawable);
 extern BOOLEAN GetFrameRect (FRAME Frame, PRECT pRect);
 

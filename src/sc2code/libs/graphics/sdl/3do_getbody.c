@@ -461,7 +461,7 @@ _GetCelData (FILE *fp, DWORD length)
 #endif
 
 	Drawable = 0;
-	if (cel_ct && (Drawable = AllocDrawable (cel_ct, 0)))
+	if (cel_ct && (Drawable = AllocDrawable (cel_ct)))
 	{
 		DRAWABLEPTR DrawablePtr;
 

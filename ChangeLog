@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- The DRAWABLE_DESC datatype now uses separately allocated arrays for
+  animation frames instead of doing pointer arithmetic between it and
+  FRAME_DESCs --McMartin
 - Date on the green bar now has floating period between day and
   the year like in PC version (bug #307 part 5) -Mika
 - AWARE_OF_SAMATRA flag is now written as well as read (closes #113), 
