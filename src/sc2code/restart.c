@@ -130,6 +130,10 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		ClearSemaphore (GraphicsSem);
 
+		/* Cancel any presses of the Pause or Exit keys. */
+		GamePaused = FALSE;
+		ExitRequested = FALSE;
+
 		return (FALSE);
 	}
 	else
