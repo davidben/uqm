@@ -1,5 +1,7 @@
 Changes towards version 0.4:
-- Accept spaces in --contentdir argument. - SvdB
+- Extra fallback for the unlikely situation that $HOME isn't set on a
+  unix system. (#493) - SvdB
+- Accept spaces in --contentdir argument (#492) - SvdB
 - Separated and abstracted sound buffer-tagging and trackplayer
   clip/subtitle chaining -Alex
 - Abstracted the recursive mutexes in MixSDL and DCQ code -Michael

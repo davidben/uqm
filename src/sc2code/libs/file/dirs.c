@@ -31,6 +31,8 @@
 #ifdef WIN32
 #	include <direct.h>
 #	include <ctype.h>
+#else
+#	include <pwd.h>
 #endif
 
 /* Try to find a suitable value for %APPDATA% if it isn't defined on
@@ -158,11 +160,27 @@ mkdirhier (const char *path)
 }
 
 // Get the user's home dir
-// returns a pointer to a static buffer
+// returns a pointer to a static buffer from either getenv() or getpwuid().
 const char *
 getHomeDir (void)
 {
+#ifdef WIN32
 	return getenv ("HOME");
+#else
+	const char *home;
+	struct passwd *pw;
+
+	home = getenv ("HOME");
+	if (home != NULL)
+		return home;
+
+	pw = getpwuid (getuid ());
+	if (pw == NULL)
+		return NULL;
+	// NB: pw points to a static buffer.
+
+	return pw->pw_name;
+#endif
 }
 
 // Expand ~/ in a path, and replaces \ by / on Windows.
