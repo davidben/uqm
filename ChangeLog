@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Updated .cvsignore commands, from Nic
 - Fixed a keyrepeatbug from when the player cancels out of the
   Starmap in IP -Michael
 - IP_taskfunc now uses PulsedInputState instead of handling its
