@@ -558,7 +558,7 @@ SDL_Surface *random16xZoomSurfaceRGBA (SDL_Surface *src)
 	return (dst);
 }
 
-void buildLanderView (FRAMEPTR FramePtr)
+void scale16xRandomizeFrame (FRAMEPTR FramePtr)
 {
 	TFB_Image *tfbImg;
 

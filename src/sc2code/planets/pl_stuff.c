@@ -33,7 +33,7 @@ void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
 
 void fill_frame_rgb (FRAMEPTR FramePtr, DWORD color, int x0, int y0, int x, int y);
 
-void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int add_sub);
+void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int num, int denom);
 
 extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
 
@@ -174,7 +174,7 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 			{
 			pSolarSysState->Tint_rgb=rgb;
 			// Buffer the topoMap to the tintFrame;
-			add_sub_frame (s.frame, NULL, tintFrame[0], NULL, 0);
+			arith_frame_blit (s.frame, NULL, tintFrame[0], NULL, 0, 0);
 			r = (rgb & (0x1f << 10)) >> 8;
 			g = (rgb & (0x1f << 5)) >> 3;
 			b = (rgb & 0x1f) << 2;
@@ -207,9 +207,9 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 		if (dy <= frameh) {
 
 #ifdef USE_ADDITIVE_SCAN_BLIT
-			add_sub_frame (tintFrame[1], psrect, tintFrame[0], pdrect, 1);
+			arith_frame_blit (tintFrame[1], psrect, tintFrame[0], pdrect, 0, -1);
 #else
-			add_sub_frame (tintFrame[1], psrect, tintFrame[0], pdrect, 0);
+			arith_frame_blit (tintFrame[1], psrect, tintFrame[0], pdrect, 0, 0);
 #endif
 		}
 		s.frame = tintFrame[0];

@@ -47,9 +47,9 @@ FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
 
 void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0, int x, int y);
 
-void add_sub_frame (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int add_sub);
+void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int num, int denom);
 
-void buildLanderView(FRAME FramePtr);
+void scale16xRandomizeFrame(FRAME FramePtr);
 
 DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
@@ -540,18 +540,20 @@ static void CreateShieldMask ()
 	pSolarSysState->ShieldFrame = ShieldFrame;
 	{
 		// Applythe shield to the topo data
-		UBYTE a, blit_type;
+		UBYTE a;
+		int blit_type;
 		FRAME tintFrame = pSolarSysState->TintFrame;
 #ifdef USE_ALPHA_SHIELD
 		a = 200;
 		blit_type = 0;
 #else
+		//additive_blit
 		a = 255;
-		blit_type = 1;
+		blit_type = -1;
 #endif
 		p = frame_mapRGBA (tintFrame, 255, 0, 0, a);
 		fill_frame_rgb (tintFrame, p, 0, 0, 0, 0);
-		add_sub_frame (tintFrame, NULL, pSolarSysState->TopoFrame, NULL, blit_type);
+		arith_frame_blit (tintFrame, NULL, pSolarSysState->TopoFrame, NULL, 0, blit_type);
 	}
 
 }
@@ -1300,7 +1302,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	// from lpTopoData instead of the FRAMPTR though
 	x = MAP_WIDTH + MAP_HEIGHT;
 	y = MAP_HEIGHT;
-	buildLanderView(pSolarSysState->TopoFrame);
+	scale16xRandomizeFrame(pSolarSysState->TopoFrame);
 	pSolarSysState->lpTopoMap = getpixelarray (
 			pSolarSysState->TopoFrame, x, y
 			);

@@ -209,7 +209,8 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
 }
-void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int add_sub)
+
+void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int num,int denom)
 {
 	int add = 0, sub = 0;
 	TFB_Image *srcImg, *dstImg;
@@ -221,14 +222,6 @@ void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst
 	LockMutex (dstImg->mutex);
 	src = srcImg->NormalImg;
 	dst = dstImg->NormalImg;
-	if (rsrc)
-	{
-		srcRect.x = rsrc->corner.x;
-		srcRect.y = rsrc->corner.y;
-		srcRect.w = rsrc->extent.width;
-		srcRect.h = rsrc->extent.height;
-		srp = &srcRect;
-	}
 	if (rdst)
 	{
 		dstRect.x = rdst->corner.x;
@@ -237,17 +230,32 @@ void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst
 		dstRect.h = rdst->extent.height;
 		drp = &dstRect;
 	}
-	if (add_sub > 0)
+	if (rsrc)
 	{
-		add = -1;
-		sub = 1;
-	} 
-	else if (add_sub < 0) 
-	{
-		add = 1;
-		sub = -1;
+		srcRect.x = rsrc->corner.x;
+		srcRect.y = rsrc->corner.y;
+		srcRect.w = rsrc->extent.width;
+		srcRect.h = rsrc->extent.height;
+		srp = &srcRect;
 	}
-	TFB_BlitSurface (src, srp, dst, drp, sub, add);
+	else if (GetFrameHotX (srcFrame) || GetFrameHotY (srcFrame))
+	{
+		if (rdst)
+		{
+			dstRect.x -= GetFrameHotX (srcFrame);
+			dstRect.y -= GetFrameHotY (srcFrame);
+		}
+		else
+		{
+			dstRect.x = -GetFrameHotX (srcFrame);
+			dstRect.y = -GetFrameHotY (srcFrame);
+			dstRect.w = GetFrameWidth (srcFrame);
+			dstRect.h = GetFrameHeight (srcFrame);
+			drp =&dstRect;
+		}
+
+	}
+	TFB_BlitSurface (src, srp, dst, drp, num, denom);
 	UnlockMutex (srcImg->mutex);
 	UnlockMutex (dstImg->mutex);
 }
