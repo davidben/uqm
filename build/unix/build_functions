@@ -133,10 +133,13 @@ build_reconfig() {
 	if [ ! -e "$BUILD_WORK/config.state" ]; then
 		echo "*** Warning: file 'config.state' not found - using defaults."
 	fi
+
 	config_requirements
 	eval "${TARGET}_requirements"
+	eval "${TARGET}_prepare_config"
 	eval "${TARGET}_load_config"
 	build_process_config
+
 	echo "Reconfiguring complete..." 1>&2
 }
 
