@@ -19,13 +19,13 @@
 #ifndef _UNITS_H
 #define _UNITS_H
 
-#define ZOOM_SHIFT 8
-#define MAX_ZOOM_OUT (4 << ZOOM_SHIFT)
-
 #define MAX_REDUCTION 3
 #define MAX_VIS_REDUCTION 2
 #define REDUCTION_SHIFT 1
 #define NUM_VIEWS (MAX_VIS_REDUCTION + 1)
+
+#define ZOOM_SHIFT 8
+#define MAX_ZOOM_OUT (1 << ZOOM_SHIFT + MAX_REDUCTION - 1)
 
 #define ONE_SHIFT 2
 #define BACKGROUND_SHIFT 3
