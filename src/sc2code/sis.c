@@ -136,7 +136,7 @@ DrawHyperCoords (POINT universe)
 {
 	UNICODE buf[20];
 
-	wsprintf (buf, "%03u.%01u:%03u.%01u",
+	wsprintf (buf, "%03u.%01u : %03u.%01u",
 			universe.x / 10, universe.x % 10,
 			universe.y / 10, universe.y % 10);
 

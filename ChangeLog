@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- There's now space before and after : in coordinates (bug #307 part 6),
+  from Paxtez
+- Star coordinates no longer shimmy (bug #331), from chmmravatar
 - The DRAWABLE_DESC datatype now uses separately allocated arrays for
   animation frames instead of doing pointer arithmetic between it and
   FRAME_DESCs --McMartin

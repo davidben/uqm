@@ -854,7 +854,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		else if (pSD->Activity == IN_PLANET_ORBIT)
 			wstrcpy (buf, GLOBAL_SIS (PlanetName));
 		else
-			wsprintf (buf, "%03u.%01u:%03u.%01u",
+			wsprintf (buf, "%03u.%01u : %03u.%01u",
 					r.corner.x / 10, r.corner.x % 10,
 					r.corner.y / 10, r.corner.y % 10);
 		t.CharCount = (COUNT)~0;
