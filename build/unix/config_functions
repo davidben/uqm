@@ -386,12 +386,14 @@ EOF
 # Some initialisations
 HAVE_SYMBOLS=""
 
-# Requirements for the config program itself
-have_program sed || exit 1
-SED="$PROG_sed_FILE"
-have_program tr || exit 1
-TR="$PROG_tr_FILE"
-have_program make || exit 1
-MAKE="$PROG_make_FILE"
+config_requirements() {
+	# Requirements for the config program itself
+	have_program sed || exit 1
+	SED="$PROG_sed_FILE"
+	have_program tr || exit 1
+	TR="$PROG_tr_FILE"
+	have_program make || exit 1
+	MAKE="$PROG_make_FILE"
+}
 
 

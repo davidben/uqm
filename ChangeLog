@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Restructuring of the unix build scripts.
+  Also, interrupted dependency builds are now detected. - SvdB
 - Unix build: Make it possible to use another directory than the current
   one for putting the build data in (such as build.vars, config.state,
   the obj/ dir, and the final binary). - SvdB

@@ -95,6 +95,9 @@ export "${BUILD_PROJECT}_CFLAGS" "${BUILD_PROJECT}_LDFLAGS"
 eval ${BUILD_PROJECT}_OBJS=\${${BUILD_PROJECT}_OBJS%/}/
 export "${BUILD_PROJECT}_OBJS"
 
+# Load the configuration functions
+. build/unix/build.config
+
 if [ $# -lt 2 ]; then
 	build_check_config
 	build_check_dependencies
@@ -108,6 +111,10 @@ case "$2" in
 		;;
 	config)
 		build_config
+		build_process_config
+		;;
+	reprocess_config)
+		build_reconfig
 		;;
 	depend)
 		build_check_config
@@ -124,4 +131,5 @@ case "$2" in
 		exit 1;
 		;;
 esac
+
 

@@ -603,28 +603,49 @@ menu_process_check() {
 # Description: Start processing a menu
 # Arguments:   $1 - the type of the main menu
 #              $2 - the name of the main menu
-#              $3 - the path to the file to load and save the settings from/to
-#                   (the file does not have to exist; in this case nothing is
-#                   loaded)
-#                   if the argument is empty, nothing is saved nor loaded
 do_menu() {
 	local MENU_TYPE START_MENU SAVE_FILE
 	
-	MENU_TYPE="$1"
-	START_MENU="$2"
-	SAVE_FILE="$3"
+	MENU_TYPE=$1
+	START_MENU=$2
 
-	if [ -n "$SAVE_FILE" -a -e "$SAVE_FILE" ]; then
-		. "$SAVE_FILE"
-	fi
 	menu_init "$MENU_TYPE" "$START_MENU"
 	menu_handle "$MENU_TYPE" "$START_MENU"
 	echo
-	if [ -n "$SAVE_FILE" ]; then
-		echo "Saving choices..."
-		menu_save "$MENU_TYPE" "$START_MENU" > "$SAVE_FILE"
-	fi
-#	echo "Propagating choices..."
-	menu_process "$MENU_TYPE" "$START_MENU"
 }
+
+# Description: Load the menu settings from file
+# Arguments:   $1 - the type of the menu (currently ignored)
+#              $2 - the name of the menu (currently ignored)
+#              $3 - the name of the file to load from
+# Returns:     0 - if the file was loaded successfully
+#              1 - if the file did not exist
+menu_load() {
+	SAVE_FILE=$3
+
+	if [ ! -e "$SAVE_FILE" ]; then
+		return 1
+	fi
+
+	. "$SAVE_FILE"
+	return 0
+}
+
+# Description: Save the menu settings to file
+# Arguments:   $1 - the type of the menu
+#              $2 - the name of the menu
+#              $3 - the name of the file to save to
+# Returns:     0 - if the file was saved successfully
+menu_save() {
+	MENU_TYPE=$1
+	START_MENU=$2
+	SAVE_FILE=$3
+
+	echo "Saving choices..."
+	menu_save "$MENU_TYPE" "$START_MENU" > "$SAVE_FILE"
+	return 0
+}
+
+
+
 

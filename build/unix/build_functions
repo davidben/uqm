@@ -73,6 +73,10 @@ build_rec_dependancies() {
 
 	echo "Building dependancy information..." 1>&2
 
+	# Remove the old dependency file, if it exists.
+	# The .tmp file is used to detect interrupted dependency builds.
+	rm -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
+
 	BUILD_FILES_VAR=${BUILD_PROJECT}_EXTRA_OFILES
 	export BUILD_FILES_VAR
 	EXTRA_OFILES=`build_do_recursive build_collect_extra_o_files :`
@@ -88,7 +92,8 @@ build_rec_dependancies() {
 		done
 		echo
 		build_do_recursive build_dependancies :
-	} > "$DEPEND_FILE"
+	} > "$DEPEND_FILE".tmp
+	mv -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
 }
 
 # Output the .o file for a .c file.
@@ -114,17 +119,38 @@ build_rec_collect_o_files() {
 }
 
 # Start the configure program.
+# $1 = target
 build_config() {
-	$SH build/unix/build.config
+	config_requirements
+	eval "${TARGET}_requirements"
+	eval "${TARGET}_prepare_config"
+	eval "${TARGET}_do_config"
+}
+
+build_reconfig() {
+	if [ ! -e "$BUILD_WORK/config.state" ]; then
+		echo "*** Warning: file 'config.state' not found - using defaults."
+	fi
+	config_requirements
+	eval "${TARGET}_requirements"
+	build_process_config
+	echo "Reconfiguring complete..." 1>&2
+}
+
+# Process the configuration information
+build_process_config() {
+	eval "${TARGET}_process_config"
 }
 
 # Compile the lot.
 # With the depend info set up, we can leave everything to make.
 build_compile() {
+	eval "${TARGET}_pre_build"
 	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
 			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
 			DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}" \
 			\$MAKE -f Makefile.build "\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}"
+	eval "${TARGET}_post_build"
 }
 
 # Description: Remove the .o file for one .c file
@@ -165,12 +191,12 @@ build_distclean() {
 # Description: check if the config files are present and load them.
 #              If they're not present, remake them.
 build_check_config() {
-	[ ! -e "$BUILD_WORK/build.vars" -o -n "$BUILD_RUN_CONFIG" ] || return
+	[ ! -e "$BUILD_WORK/build.vars" ] || return
 
 	build_config || exit $?
+	build_process_config
 	. "$BUILD_WORK/build.vars"
 	. "${BUILD_REC_PATH:=./}Makeinfo"
-	unset BUILD_RUN_CONFIG
 }
 
 # Description: check if the necessary .depend file is present,
@@ -265,6 +291,8 @@ installsome() {
 # Install the program
 build_install() {
 	local SRC DEST MODE OWNER
+	
+	eval "${TARGET}_pre_install"
 
 	local LIB LIBS LIBDIR
 	echo "Installing system-dependant data..." 1>&2
@@ -304,6 +332,8 @@ build_install() {
 		eval OWNER="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_OWNER}"
 		installsome "$SRC" "$DEST" "$MODE" "$OWNER"
 	done
+
+	eval "${TARGET}_post_install"
 }
 
 
