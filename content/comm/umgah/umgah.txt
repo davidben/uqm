@@ -134,14 +134,14 @@ Yup! That's right! You guys owe me BIG time.
 Gentle blobbies, please calm yourselves. We act solely from largesse. Rewards are unnecessary.
 
 #(GIVE_LIFEDATA)	umgah027.ogg
-No! No! You too humble! We must reward your deeds of courage!
+We must reward your deeds of courage!
 Killing Talking Pet was a feat none of our species could perform!
 You superior! You Hero!
 HAIL! HAIL! HAIL!
 We MUST reward you!... but what do we have to give?
-Protoplasm?... no, not easily appreciated.
+Protoplasm?... no, no, not easily appreciated.
 Vigorous esters?... no, too common.
-HAVE IT! GENETIC MODIFICATION!! YES! IT PERFECT GIFT!!
+HAVE IT! HAVE IT! GENETIC MODIFICATION!! YES! IT PERFECT GIFT!!
 Listen human Earthling! We add some extra eyes! A few tentacles!
 Other organs of whatever size and shape you desire!!
 What?! You not want more organs?... You sure?... How strange... how sad.
@@ -150,14 +150,13 @@ Huh? What you say?
 You want Biological Data?! Just plain raw Biological Data?
 What you do with it?
 Oh, well, you Hero. Whatever you want, you get.
-We hope one thousand units sufficient.
 
 #(THANKS)	umgah028.ogg
 HAIL! HAIL! HAIL!
-You right! We do owe you! We MUST reward you!... but what we have to give?
-Protoplasm?... no, not easily appreciated.
-Vigorous esters?... no, too common
-HAVE IT! GENETIC MODIFICATION!! YES! IT PERFECT GIFT!!
+You right! We do owe you! We MUST reward you!... but what do we have to give?
+Protoplasm?... no, no, not easily appreciated.
+Vigorous esters?... no, too common.
+HAVE IT! HAVE IT! GENETIC MODIFICATION!! YES! IT PERFECT GIFT!!
 Listen human Earthling! We add some extra eyes! A few tentacles!
 Other organs of whatever size and shape you desire!!
 What?! You not want more organs?... How strange... how sad.
@@ -166,7 +165,6 @@ Huh? What did you say?
 You want Biological Data?! Just plain raw Biological Data?
 What you do with it?
 Oh, well, you Hero. Whatever you want, you get.
-We hope one thousand units sufficient.
 
 #(what_do_with_tpet)
 So how did that Talking Pet get control of your species?
