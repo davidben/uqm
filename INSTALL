@@ -13,7 +13,9 @@ For Windows:
 Microsoft Visual C++ 6 or 7 (or MinGW+MSYS, see INSTALL.mingw for that)
 
 For Mac OS X:
-Xcode Tools
+Apple Developer Tools (for Mac OS X 10.2 and older)
+	http://connect.apple.com/
+Xcode Tools (for Mac OS X 10.3)
 	http://developer.apple.com/tools/macosxtools.html
 
 Additionally, The Ur-Quan Masters requires the following libraries:
