@@ -105,6 +105,12 @@ case "$2" in
 		build_check_config
 		build_rec_dependancies
 		;;
+	install)
+		build_check_config
+		build_check_dependencies
+		build_check_compile
+		build_install
+		;;
 	*)
 		;;
 esac

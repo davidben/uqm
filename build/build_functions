@@ -157,9 +157,47 @@ build_check_config() {
 # Description: check if the necessary .depend file is present,
 #              if not, build it.
 build_check_dependencies() {
-	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}"
+	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME}"
 	[ ! -e "$DEPEND_FILE" -o -n "$BUILD_RUN_DEPEND" ] || return
 
 	build_rec_dependancies || exit $?
+}
+
+# Description: check if the program is compiled, and otherwise compile
+build_check_compile() {
+	local NAME
+	eval NAME="\${${BUILD_PROJECT}_NAME}"
+	[ ! -e "$NAME" ] || return
+
+	build_compile || exit $?
+}
+
+# Install the program
+build_install() {
+	local BINS LIBS SRC DEST BINDIR LIBDIR
+
+	echo "Installing libraries..." 2>&1
+	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"
+	eval LIBDIR="\${${BUILD_PROJECT}_INSTALL_LIBDIR%/}/"
+	for LIB in $LIBS; do
+		eval SRC="\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_SRC%/}"
+		eval DEST="\$LIBDIR\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_DEST%/}"
+		if [ ! -d "$DEST" ]; then
+			mkdir -p -- "$DEST"
+		fi
+		cp -r -- "$SRC" "$DEST"
+	done
+
+	echo "Installing binaries..." 2>&1
+	eval BINS="\${${BUILD_PROJECT}_INSTALL_BINS}"
+	eval BINDIR="\${${BUILD_PROJECT}_INSTALL_BINDIR%/}/"
+	for BIN in $BINS; do
+		eval SRC="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_SRC%/}"
+		eval DEST="\$BINDIR\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_DEST%/}"
+		if [ ! -d "$DEST" ]; then
+			mkdir -p -- "$DEST"
+		fi
+		cp -r -- "$SRC" "$DEST"
+	done
 }
 
