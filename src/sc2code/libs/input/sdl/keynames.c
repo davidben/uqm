@@ -16,7 +16,7 @@
  * specially, and we cannot treat them as normal keys.  Pain, 
  * tragedy. */
 
-typedef struct _keyname {
+typedef struct vcontrol_keyname {
 	/* const */ char *name;
 	int code;
 } keyname;

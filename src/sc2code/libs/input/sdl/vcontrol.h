@@ -43,7 +43,7 @@ void VControl_ResetInput (void);
  * Only one name table may be registered at a time; subsequent calls
  * replace the previous values. */
 
-typedef struct _vcontrol_namebinding {
+typedef struct vcontrol_namebinding {
 	char *name;
 	int *target;
 } VControl_NameBinding;
@@ -60,5 +60,19 @@ void VControl_Dump (FILE *out);
 int VControl_ReadConfiguration (uio_Stream *in);
 int VControl_GetErrorCount (void);
 int VControl_GetValidCount (void);
+
+/* Iterator control.  Start an iteration with StartIter or
+   StartIterByName; then call NextBindingName with a char array of at
+   least 40 bytes in size until it returns 0.  Produces names. */
+
+void VControl_StartIter (int *target);
+void VControl_StartIterByName (char *targetname);
+int  VControl_NextBindingName (char *buffer);
+
+/* Tracking the "last interesting event."  Used to poll to find new
+   control keys. */
+
+void VControl_ClearEvent (void);
+int  VControl_GetLastEvent (SDL_Event *e);
 
 #endif
