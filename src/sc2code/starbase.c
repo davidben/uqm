@@ -367,6 +367,7 @@ ExitStarBase:
 		pMS->Initialized = FALSE;
 		if (pMS->CurState == TALK_COMMANDER)
 		{
+			FlushInput ();
 			InitCommunication (COMMANDER_CONVERSATION);
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 		}
