@@ -1,4 +1,5 @@
 0.2:
+- Dialog choices doesn't go off rectangle in right anymore, from wjp
 - When saving in planet scan screen, screen is now redrawn, from slayne
 - Commas causing pixels to appear in planetary reports fixed, from slayne
 - Team names switching when selecting next ship to fight fixed, from slayne
