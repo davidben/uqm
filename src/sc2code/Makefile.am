@@ -8,7 +8,7 @@ INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/sc2code \
 	-I$(top_srcdir)/src/sc2code/libs \
-	@SDL_CFLAGS@ @SMPEG_CFLAGS@
+	@SDL_CFLAGS@
 
 noinst_LTLIBRARIES = libsc2.la
 

@@ -1,6 +1,6 @@
 #CFLAGS =
 
-INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
+INCLUDES = @SDL_CFLAGS@ \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/sc2code \
 	-I$(top_srcdir)/src/sc2code/libs 

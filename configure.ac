@@ -67,59 +67,56 @@ AC_CHECK_FUNCS([strupr])
 
 # Check for SDL
 SDL_VERSION=1.2.2
-SMPEG_VERSION=0.4.0
 AM_PATH_SDL($SDL_VERSION, , AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
-AM_PATH_SMPEG($SMPEG_VERSION, , AC_MSG_ERROR([*** smpeg version $SMPEG_VERSION not found!]))
 AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
 AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR([Your system is missing libSDL_image!]),`sdl-config --libs`)
-AC_CHECK_LIB(smpeg, main, , AC_MSG_ERROR([Your system is missing libsmpeg!]),`smpeg-config --libs`)
 #AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
 #AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR([Your system is missing SDL_mixer.h!]))
 
 # Select platform dependent OpenGL libs.. (tweak your platform here)
 case "$target" in
-    *-*-linux-gnu*)
-        SYS_GL_LIBS="-lGL"
-        ;;
-    *-*-cygwin* | *-*-mingw32*)
-        SYS_GL_LIBS="-lopengl32"
-	SYS_GL_CFLAGS="-DGL_VERSION_1_2"
-        ;;
-    *-*-beos*)
-        SYS_GL_LIBS="-lGL"
-        ;;
-    *-*-darwin*)
-        SYS_GL_LIBS=""
-        ;;
-    *-*-freebsd*)
-        AC_PATH_X
-	if test x$no_x != xyes; then
-            CFLAGS="$CFLAGS -L $x_libraries"
-        fi
-	SYS_GL_LIBS="-lGL"
-	;;
-    *)
-        if test x$have_x = xyes; then
-            CFLAGS="$CFLAGS $X_CFLAGS"
-            SYS_GL_LIBS="$X_LIBS -lGL"
-        else
-            SYS_GL_LIBS="-lGL"
-        fi
-        ;;
+	*-*-linux-gnu*)
+		SYS_GL_LIBS="-lGL"
+		;;
+	*-*-cygwin* | *-*-mingw32*)
+		SYS_GL_LIBS="-lopengl32"
+		SYS_GL_CFLAGS="-DGL_VERSION_1_2"
+		;;
+	*-*-beos*)
+		SYS_GL_LIBS="-lGL"
+		;;
+	*-*-darwin*)
+		SYS_GL_LIBS=""
+		;;
+	*-*-freebsd*)
+		AC_PATH_X
+		if test x$no_x != xyes; then
+			CFLAGS="$CFLAGS -L $x_libraries"
+		fi
+		SYS_GL_LIBS="-lGL"
+		;;
+	*)
+		if test x$have_x = xyes; then
+			CFLAGS="$CFLAGS $X_CFLAGS"
+			SYS_GL_LIBS="$X_LIBS -lGL"
+		else
+			SYS_GL_LIBS="-lGL"
+		fi
+		;;
 esac
 
 # Check for OpenGL
 AC_MSG_CHECKING(for OpenGL support)
 have_opengl=no
 AC_TRY_COMPILE([
- #if defined(__APPLE__) && defined(__MACH__)
- #include <OpenGL/gl.h>
- #else
- #include <GL/gl.h>
- #endif
+#if defined(__APPLE__) && defined(__MACH__)
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 ],[
 ],[
-have_opengl=yes
+	have_opengl=yes
 ])
 AC_MSG_RESULT($have_opengl)
 GL_LIBS=$SYS_GL_LIBS
@@ -127,26 +124,26 @@ AC_SUBST(GL_LIBS)
 
 # Figure out which math library to use
 case "$target" in
-    *-*-linux-gnu*)
-        MATHLIB=""
-        ;;
-    *-*-cygwin* | *-*-mingw32*)
-        MATHLIB=""
-        ;;
-    *-*-beos*)
-        MATHLIB=""
-        ;;
-    *-*-darwin*)
-        MATHLIB=""
-        ;;
-    *)
-        MATHLIB="-lm"
-        AC_PATH_X
-        AC_PATH_XTRA
-        if test x$have_x = xyes; then
-            CFLAGS="$CFLAGS $X_CFLAGS"
-        fi
-        ;;
+	*-*-linux-gnu*)
+		MATHLIB=""
+		;;
+	*-*-cygwin* | *-*-mingw32*)
+		MATHLIB=""
+		;;
+	*-*-beos*)
+		MATHLIB=""
+		;;
+	*-*-darwin*)
+		MATHLIB=""
+		;;
+	*)
+		MATHLIB="-lm"
+		AC_PATH_X
+		AC_PATH_XTRA
+		if test x$have_x = xyes; then
+			CFLAGS="$CFLAGS $X_CFLAGS"
+		fi
+		;;
 esac
 AC_SUBST(MATHLIB)
 
@@ -163,16 +160,32 @@ AM_PROG_LIBTOOL
 # LIBADD_DL=-dlopen
 
 # Internationalization support
-# AM_GNU_GETTEXT  
+# AM_GNU_GETTEXT
 
 # supported languages:
 # ALL_LINGUAS=""
 
 # Set PACKAGE_LOCALE_DIR in config.h.
 if test "x${prefix}" = "xNONE"; then
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale$", "Locale files")
+	AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale$", "Locale files")
 else
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale", "Locale files")
+	AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale", "Locale files")
+fi
+
+# --------------------------------------------------------------------------
+# User selectable features (conditionals)
+
+AC_ARG_ENABLE(debug,
+	[  --enable-debug          Turn on debugging],
+	[case "${enableval}" in
+	 yes) debug=true ; AC_DEFINE(DEBUG,,Include debugging code) ;;
+	 no)  debug=false ;;
+	 *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+	esac],
+	[debug=false])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+if [ "x$debug" = "xtrue" ]; then
+	CFLAGS="$CFLAGS -g"
 fi
 
 # --------------------------------------------------------------------------
@@ -185,30 +198,30 @@ AM_CONFIG_HEADER(config.h)
 # autogen.sh runs. 
 
 AC_CONFIG_FILES([
-  Makefile
-  src/Makefile 
-  src/sc2code/Makefile
-  src/sc2code/libs/Makefile
-  src/sc2code/libs/decomp/Makefile
-  src/sc2code/libs/memory/Makefile
-  src/sc2code/libs/strings/Makefile
-  src/sc2code/libs/resource/Makefile
-  src/sc2code/libs/math/Makefile
-  src/sc2code/libs/input/Makefile
-  src/sc2code/libs/input/sdl/Makefile
-  src/sc2code/libs/sound/Makefile
-  src/sc2code/libs/sound/sdl/Makefile
-  src/sc2code/libs/graphics/Makefile
-  src/sc2code/libs/graphics/sdl/Makefile
-  src/sc2code/libs/task/Makefile
-  src/sc2code/libs/threads/Makefile
-  src/sc2code/libs/threads/sdl/Makefile
-  src/sc2code/libs/time/Makefile
-  src/sc2code/libs/time/sdl/Makefile
-  src/sc2code/libs/video/Makefile
-  src/sc2code/planets/Makefile
-  src/sc2code/ships/Makefile
-  src/sc2code/comm/Makefile
+	Makefile
+	src/Makefile 
+	src/sc2code/Makefile
+	src/sc2code/libs/Makefile
+	src/sc2code/libs/decomp/Makefile
+	src/sc2code/libs/memory/Makefile
+	src/sc2code/libs/strings/Makefile
+	src/sc2code/libs/resource/Makefile
+	src/sc2code/libs/math/Makefile
+	src/sc2code/libs/input/Makefile
+	src/sc2code/libs/input/sdl/Makefile
+	src/sc2code/libs/sound/Makefile
+	src/sc2code/libs/sound/sdl/Makefile
+	src/sc2code/libs/graphics/Makefile
+	src/sc2code/libs/graphics/sdl/Makefile
+	src/sc2code/libs/task/Makefile
+	src/sc2code/libs/threads/Makefile
+	src/sc2code/libs/threads/sdl/Makefile
+	src/sc2code/libs/time/Makefile
+	src/sc2code/libs/time/sdl/Makefile
+	src/sc2code/libs/video/Makefile
+	src/sc2code/planets/Makefile
+	src/sc2code/ships/Makefile
+	src/sc2code/comm/Makefile
 ])
 
 AC_OUTPUT
