@@ -59,9 +59,11 @@ JumpTrack (int abort)
 	do_subtitles ((void *)~0, (void *)~0, 1);
 
 	if (abort)
+	{
 		LockMutex (track_mutex);
 		tcur = tct;
 		UnlockMutex(track_mutex);
+	}
 }
 
 void
