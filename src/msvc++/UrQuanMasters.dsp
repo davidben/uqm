@@ -335,6 +335,14 @@ SOURCE=..\sc2code\libs\graphics\tfb_prim.c
 
 SOURCE=..\sc2code\libs\graphics\tfb_prim.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\widgets.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\widgets.h
+# End Source File
 # End Group
 # Begin Group "input"
 
@@ -3468,6 +3476,14 @@ SOURCE=..\sc2code\settings.c
 # Begin Source File
 
 SOURCE=..\sc2code\setup.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\setupmenu.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\setupmenu.h
 # End Source File
 # Begin Source File
 
