@@ -515,7 +515,7 @@ Intro (void)
 
 				construct_response (shared_phrase_buf,
 						i_am_captain0,
-							(vararg_dcl)GLOBAL_SIS (CommanderName),
+						GLOBAL_SIS (CommanderName),
 						i_am_captain1,
 						GLOBAL_SIS (ShipName),
 						i_am_captain2,

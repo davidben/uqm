@@ -723,7 +723,7 @@ HomeWorld (RESPONSE_REF R)
 		case 0:
 			construct_response (shared_phrase_buf,
 					we_are_us0,
-						(vararg_dcl)GLOBAL_SIS (CommanderName),
+					GLOBAL_SIS (CommanderName),
 					we_are_us1,
 					GLOBAL_SIS (ShipName),
 					we_are_us2,

@@ -4,7 +4,7 @@ SUBDIRS = decomp graphics input math memory resource sound strings \
 noinst_HEADERS = \
 	compiler.h declib.h gfxlib.h inplib.h mathlib.h \
 	memlib.h reslib.h sndlib.h strlib.h tasklib.h threadlib.h \
-	timelib.h vargs.h vidlib.h misc.h
+	timelib.h vidlib.h misc.h
 
 INCLUDES = @SDL_CFLAGS@ \
 	-I$(top_srcdir)/src \

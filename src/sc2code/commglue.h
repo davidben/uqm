@@ -19,8 +19,6 @@
 #ifndef _COMMGLUE_H
 #define _COMMGLUE_H
 
-#include "libs/vargs.h"
-
 extern LOCDATA CommData;
 extern int cur_comm;
 extern UNICODE shared_phrase_buf[256];
@@ -61,8 +59,7 @@ extern void NPCPhrase (int index);
 
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 
-extern void construct_response (UNICODE *buf, RESPONSE_REF R, vararg_dcl
-		c_args, ...);
+extern void construct_response (UNICODE *buf, RESPONSE_REF R, ...);
 
 extern LOCDATAPTR init_race (RESOURCE comm_id);
 

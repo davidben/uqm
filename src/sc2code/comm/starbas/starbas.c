@@ -917,7 +917,7 @@ TellStarBase (RESPONSE_REF R)
 			construct_response (
 					buf0,
 					tell_me_about_modules0,
-					(vararg_dcl)GLOBAL_SIS (ShipName),
+					GLOBAL_SIS (ShipName),
 					tell_me_about_modules1,
 					0
 					);
@@ -933,7 +933,7 @@ TellStarBase (RESPONSE_REF R)
 			construct_response (
 					shared_phrase_buf,
 					tell_me_about_fuel0,
-					(vararg_dcl)GLOBAL_SIS (ShipName),
+					GLOBAL_SIS (ShipName),
 					tell_me_about_fuel1,
 					0
 					);

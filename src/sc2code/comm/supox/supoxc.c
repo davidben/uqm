@@ -406,7 +406,7 @@ NeutralSupox (RESPONSE_REF R)
 		case 0:
 			construct_response (shared_phrase_buf,
 					i_am0,
-						(vararg_dcl)GLOBAL_SIS (CommanderName),
+					GLOBAL_SIS (CommanderName),
 					i_am1,
 					0);
 			pStr[0] = i_am0;
@@ -415,7 +415,7 @@ NeutralSupox (RESPONSE_REF R)
 		case 1:
 			construct_response (shared_phrase_buf,
 					my_ship0,
-					(vararg_dcl)GLOBAL_SIS (ShipName),
+					GLOBAL_SIS (ShipName),
 					my_ship1,
 					0);
 			pStr[0] = my_ship0;
@@ -429,7 +429,7 @@ NeutralSupox (RESPONSE_REF R)
 				construct_response (
 						shared_phrase_buf,
 						from_alliance0,
-						(vararg_dcl)buf,
+						buf,
 						from_alliance1,
 						0
 						);

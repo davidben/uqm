@@ -1398,7 +1398,7 @@ yack0_respond (void)
 			construct_response (
 					shared_phrase_buf,
 					we_are_from_alliance0,
-					(vararg_dcl)buf,
+					buf,
 					(RESPONSE_REF)-1
 					);
 			DoResponsePhrase (we_are_from_alliance0, DoFirstMeeting, shared_phrase_buf);

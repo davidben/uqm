@@ -20,7 +20,6 @@
 #define _CODERES_H
 
 #include "reslib.h"
-#include "vargs.h"
 
 extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
 extern BOOLEAN InstallCodeResType (COUNT code_type);

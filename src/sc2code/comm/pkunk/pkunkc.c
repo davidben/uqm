@@ -294,7 +294,7 @@ DiscussConquer (RESPONSE_REF R)
 		construct_response (
 				shared_phrase_buf,
 				conquer_because_1,
-				(vararg_dcl)buf,
+				buf,
 				(RESPONSE_REF)-1
 				);
 		DoResponsePhrase (conquer_because_1, DiscussConquer, shared_phrase_buf);
@@ -607,7 +607,7 @@ PkunkHome (RESPONSE_REF R)
 	{
 		construct_response (shared_phrase_buf,
 				we_are_vindicator0,
-					(vararg_dcl)GLOBAL_SIS (CommanderName),
+				GLOBAL_SIS (CommanderName),
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,

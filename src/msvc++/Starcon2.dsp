@@ -574,10 +574,6 @@ SOURCE=..\sc2code\libs\timelib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\vargs.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\vidlib.h
 # End Source File
 # End Group

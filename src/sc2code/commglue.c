@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "libs/sound/trackplayer.h"
+#include <stdarg.h>
 
 void
 NPCPhrase (int index)
@@ -106,13 +107,12 @@ GetAllianceName (UNICODE *buf, RESPONSE_REF name_1)
 }
 
 void
-construct_response (UNICODE *buf, RESPONSE_REF R, vararg_dcl c_args,
-		...)
+construct_response (UNICODE *buf, RESPONSE_REF R, ...)
 {
 	UNICODE *name;
-	vararg_list vlist;
+	va_list vlist;
 
-	vararg_start (vlist, c_args);
+	va_start (vlist, R);
 	do
 	{
 		COUNT len;
@@ -122,18 +122,18 @@ construct_response (UNICODE *buf, RESPONSE_REF R, vararg_dcl c_args,
 		wstrcpy (buf, (UNICODE *)GetStringAddress (S));
 		len = wstrlen (buf);
 		buf += len;
-		name = vararg_val (vlist, UNICODE *);
+		name = va_arg (vlist, UNICODE *);
 		if (name)
 		{
 			len = wstrlen (name);
 			wstrncpy (buf, name, len);
 			buf += len;
 
-			if ((R = vararg_val (vlist, RESPONSE_REF)) == (RESPONSE_REF)-1)
+			if ((R = va_arg (vlist, RESPONSE_REF)) == (RESPONSE_REF)-1)
 				name = 0;
 		}
 	} while (name);
-	vararg_end (vlist);
+	va_end (vlist);
 	
 	*buf = '\0';
 }

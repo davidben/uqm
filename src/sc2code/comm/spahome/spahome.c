@@ -853,7 +853,7 @@ SpathiPassword (RESPONSE_REF R)
 	{
 		construct_response (shared_phrase_buf,
 				we_are_vindicator0,
-					(vararg_dcl)GLOBAL_SIS (CommanderName),
+				GLOBAL_SIS (CommanderName),
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,

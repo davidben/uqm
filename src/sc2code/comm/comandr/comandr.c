@@ -127,7 +127,7 @@ ByeBye (RESPONSE_REF R)
 
 		construct_response (shared_phrase_buf,
 				name_40,
-					(vararg_dcl)GLOBAL_SIS (CommanderName),
+				GLOBAL_SIS (CommanderName),
 				name_41,
 				0);
 
@@ -524,7 +524,7 @@ RevealSelf (RESPONSE_REF R)
 			{
 				construct_response (shared_phrase_buf,
 						we_are_vindicator0,
-							(vararg_dcl)GLOBAL_SIS (CommanderName),
+						GLOBAL_SIS (CommanderName),
 						we_are_vindicator1,
 						GLOBAL_SIS (ShipName),
 						we_are_vindicator2,
@@ -630,7 +630,7 @@ Intro (void)
 			construct_response (
 					shared_phrase_buf,
 					no_but_well_help0,
-					(vararg_dcl)GLOBAL_SIS (ShipName),
+					GLOBAL_SIS (ShipName),
 					no_but_well_help1,
 					0
 					);

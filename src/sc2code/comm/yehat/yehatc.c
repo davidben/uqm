@@ -360,7 +360,7 @@ YehatHome (RESPONSE_REF R)
 		construct_response (
 				shared_phrase_buf,
 				i_demand_you_ally_homeworld0,
-				(vararg_dcl)GLOBAL_SIS (CommanderName),
+				GLOBAL_SIS (CommanderName),
 				i_demand_you_ally_homeworld1,
 				buf,
 				i_demand_you_ally_homeworld2,
@@ -486,7 +486,7 @@ YehatSpace (RESPONSE_REF R)
 			construct_response (
 					shared_phrase_buf,
 					i_demand_you_ally_space0,
-					(vararg_dcl)GLOBAL_SIS (CommanderName),
+					GLOBAL_SIS (CommanderName),
 					i_demand_you_ally_space1,
 					GLOBAL_SIS (ShipName),
 					i_demand_you_ally_space2,
