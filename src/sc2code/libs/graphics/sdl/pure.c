@@ -24,8 +24,6 @@
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
-static int gfx_flags;
-static int last_fade_amount = 255, last_transition_amount = 255;
 
 static SDL_Surface *
 Create_Screen (SDL_Surface *template)
@@ -47,7 +45,6 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	int i;
 
 	GraphicsDriver = driver;
-	gfx_flags = flags;
 
 	fprintf (stderr, "Initializing SDL (pure).\n");
 
@@ -147,8 +144,12 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
-static void ScanLines (SDL_Surface *dst)
+static void ScanLines (SDL_Surface *dst, SDL_Rect *r)
 {
+	const int rx = r->x * 2;
+	const int rw = r->w * 2;
+	const int ry1 = r->y * 2;
+	const int ry2 = ry1 + r->h * 2;
 	Uint8 *pixels = (Uint8 *) dst->pixels;
 	SDL_PixelFormat *fmt = dst->format;
 	int x, y;
@@ -157,10 +158,10 @@ static void ScanLines (SDL_Surface *dst)
 	{
 	case 2:
 	{
-		for (y = 0; y < dst->h; y += 2)
+		for (y = ry1; y < ry2; y += 2)
 		{
-			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch];
-			for (x = 0; x < dst->w; ++x)
+			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch + (rx << 1)];
+			for (x = 0; x < rw; ++x)
 			{
 				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
 					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
@@ -171,12 +172,12 @@ static void ScanLines (SDL_Surface *dst)
 	}
 	case 3:
 	{
-		for (y = 0; y < dst->h; y += 2)
+		for (y = ry1; y < ry2; y += 2)
 		{
-			Uint8 *p = (Uint8 *) &pixels[y * dst->pitch];
+			Uint8 *p = (Uint8 *) &pixels[y * dst->pitch + rx * 3];
 			Uint32 pixval;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			for (x = 0; x < dst->w; ++x)
+			for (x = 0; x < rw; ++x)
 			{
 				pixval = p[0] << 16 | p[1] << 8 | p[2];
 				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
@@ -188,7 +189,7 @@ static void ScanLines (SDL_Surface *dst)
 				p += 3;
 			}
 #else
-			for (x = 0; x < dst->w; ++x)
+			for (x = 0; x < rw; ++x)
 			{
 				pixval = p[0] | p[1] << 8 | p[2] << 16;
 				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
@@ -205,10 +206,10 @@ static void ScanLines (SDL_Surface *dst)
 	}
 	case 4:
 	{
-		for (y = 0; y < dst->h; y += 2)
+		for (y = ry1; y < ry2; y += 2)
 		{
-			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch];
-			for (x = 0; x < dst->w; ++x)
+			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch + (rx << 2)];
+			for (x = 0; x < rw; ++x)
 			{
 				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
 					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
@@ -223,12 +224,15 @@ static void ScanLines (SDL_Surface *dst)
 void
 TFB_Pure_SwapBuffers (int force_full_redraw)
 {
+	static int last_fade_amount = 255, last_transition_amount = 255;
 	int fade_amount = FadeAmount;
 	int transition_amount = TransitionAmount;
 	SDL_Rect updated;
 
-	if (last_fade_amount != 255 || last_transition_amount != 255)
+	if (fade_amount != 255 || transition_amount != 255 ||
+		last_fade_amount != 255 || last_transition_amount != 255)
 		force_full_redraw = 1;
+	
 	last_fade_amount = fade_amount;
 	last_transition_amount = transition_amount;
 
@@ -285,17 +289,17 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 		SDL_LockSurface (SDL_Video);
 		SDL_LockSurface (backbuffer);
 
-		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
+		if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
 			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
-		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
+		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 			Scale_BiAdaptFilter (backbuffer, SDL_Video, &updated);
-		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 			Scale_BiAdaptAdvFilter (backbuffer, SDL_Video, &updated);
 		else
 			Scale_Nearest (backbuffer, SDL_Video, &updated);
 
-		if (gfx_flags & TFB_GFXFLAGS_SCANLINES)
-			ScanLines (SDL_Video);
+		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
+			ScanLines (SDL_Video, &updated);
 		
 		SDL_UnlockSurface (backbuffer);
 		SDL_UnlockSurface (SDL_Video);
