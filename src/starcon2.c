@@ -286,7 +286,7 @@ main (int argc, char *argv[])
 			break;
 			case ADDON_OPT:
 				numAddons++;
-				addons = HRealloc(addons,
+				addons = HRealloc ((void*)addons,
 						(numAddons + 1) * sizeof (const char *));
 				addons[numAddons - 1] = optarg;
 				addons[numAddons] = NULL;
@@ -339,7 +339,7 @@ main (int argc, char *argv[])
 	
 	initIO();
 	prepareContentDir (contentdir, addons);
-	HFree (addons);
+	HFree ((void*)addons);
 	prepareConfigDir ();
 	prepareMeleeDir ();
 	prepareSaveDir ();
