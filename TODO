@@ -88,6 +88,8 @@ Glitches (don't crash the game, medium priority):
     - This always happens, regardless of game state.  This is a bug in
       both predecessors as well.
   Probably the negative shift for GET_STATE and SET_STATE
+- Planet scan speed varies between computers, and behaves weirdly too,
+  sometimes working properly, sometimes being way too fast
 
 Implementation bugs (low priority):
 - Scaling code problems:
