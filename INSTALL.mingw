@@ -4,44 +4,44 @@ Instructions for building UQM in Windows with MinGW and MSYS
 First, download and install the latest version of MinGW and then MSYS.
 (You can get them from <http://www.mingw.org/>).
 
-You'll need all the libraries described in the INSTALL file in CVS.  You
-don't have to build SDL_mixer yourself -- just download OpenAL.
-
-You should get  the 'mingw' development build for SDL, and follow the
-instructions to install it into mingw.  All others will be either for win32 
-or VC
+You'll need all the libraries described in the INSTALL file in CVS.
+You should get the 'mingw' development build for SDL, and follow the
+instructions to install it into mingw. All others will be either for win32 
+or VC.
 
 These are the files you need to download:
 
 http://www.libsdl.org/release/SDL-devel-1.2.5a-mingw32.tar.gz
-http://www.libsdl.org/projects/SDL_image/release/SDL_image-devel-1.2.2-VC6.zip
+http://www.libsdl.org/projects/SDL_image/release/SDL_image-devel-1.2.3-VC6.zip
 ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
+http://gnuwin32.sourceforge.net/downlinks/zlib-lib-zip.htm
 
-you can now do either of the following:
+
+You can now do either of the following:
 1) Copy the DLLs for each library to \[MinGW]\lib.  Copy the header files for
-each library to \[MinGW]\include, (where [MinGW] is the directory where you
-installed MinGW) except for the Ogg Vorbis headers -- copy the folders (ogg
-and vorbis) containing the header files to the include directory.
+   each library to \[MinGW]\include, (where [MinGW] is the directory where you
+   installed MinGW) except for the Ogg Vorbis headers -- copy the folders (ogg
+   and vorbis) containing the header files to the include directory.
 
-2) within MSYS set C_INSTALL_PATH and LIBRARY_PATH to point at all of the 
-respective include and library dirs where you installed them.  i.e. something 
-like:
-export C_INCLUDE_PATH=/mingw/include/SDL:/c/VClibs/SDL_image-1.2.2/include/:/c/VClibs/OpenAL\ 1.0\ SDK/Include/:/c/VClibs/oggvorbis-win32sdk-1.0/include/
+2) Within MSYS set C_INSTALL_PATH and LIBRARY_PATH to point at all of the 
+   respective include and library dirs where you installed them.
+   i.e. something like:
 
-export LIBRARY_PATH=/c/VClibs/SDL_image-1.2.2/lib/:/c/VClibs/OpenAL\ 1.0\ SDK/libs/:/c/VClibs/oggvorbis-win32sdk-1.0/lib/
+   export C_INCLUDE_PATH=/mingw/include/SDL:/c/VClibs/SDL_image-1.2.3/include/:/c/VClibs/OpenAL\ 1.0\ SDK/Include/:/c/VClibs/oggvorbis-win32sdk-1.0/include/:c/VClibs/zlib/include/
+   export LIBRARY_PATH=/c/VClibs/SDL_image-1.2.3/lib/:/c/VClibs/OpenAL\ 1.0\ SDK/libs/:/c/VClibs/oggvorbis-win32sdk-1.0/lib/:c/VClibs/zlib/lib/
 
-NOTE:  If you use the 2nd methood above, you need to include the path to SDL in C_INCLUDE_PATH (but not in LIBRARY_PATH)
+NOTE:  If you use the 2nd method above, you need to include the path to SDL
+in C_INCLUDE_PATH (but not in LIBRARY_PATH)
 
-The Ogg Vorbis headers want a header that is not included with MinGW.  To get
-this file, download
-<ftp://ftp.xraylith.wisc.edu/pub/khan/gnu-win32/cygwin/egcs-1.1.2/egcs-1.1.2-mingw-extra.tar.gz>
-and extract it to your MinGW directory.
+The Ogg Vorbis headers want a header that is not included with MinGW. To get
+this file, download <http://sc2.sourceforge.net/misc/_G_config.h>
+and put it to \[MinGW]\include.
 
-Now you're ready to build.  Start up MSYS (the installer put an icon in your
-Start menu and on the desktop).
+Now you're ready to build. Start up MSYS (the installer put an icon in your
+Start Menu and on the desktop).
 
-cd to the UQM directory.  It'll be at /[drive letter]/[path to uqm].
+cd to the UQM directory. It'll be at /[drive letter]/[path to uqm].
 
 ./build.sh uqm config
 
@@ -55,5 +55,4 @@ and lastly:
 If you did everything correctly, it should ow build successfully.
 
 To run the built executable, you should copy all the required DLLs to the
-same directory the executable is in, or copy them to your Windows
-directory.
+same directory the executable is in, or copy them to your Windows directory.
