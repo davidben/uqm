@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Thread code refactoring: only the main thread will actually spawn 
+  threads, and thread IDs are properly recycled with SDL_WaitThead () 
+  once they're done.  (With luck, this will fix bug #561) -Michael
 - Sound code refactoring: core api is now virtualized,
   MixSDL is divided to generic mixer and driver entities - Mika
 - Optimized MixSDL mixing and resampling routines

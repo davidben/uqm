@@ -18,22 +18,139 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 #include "libs/misc.h"
 #include "thrcommon.h"
 
+#define LIFECYCLE_SIZE 8
+typedef struct {
+	ThreadFunction func;
+	void *data;
+	SDWORD stackSize;
+	Semaphore sem;
+	Thread value;
+#ifdef NAMED_SYNCHRO
+	const char *name;
+#endif
+} SpawnRequest_struct;
+
+typedef SpawnRequest_struct *SpawnRequest;
+
+static Mutex        lifecycleMutex;
+static SpawnRequest pendingBirth[LIFECYCLE_SIZE];
+static Thread       pendingDeath[LIFECYCLE_SIZE];
+
 void
 InitThreadSystem (void)
 {
+	int i;
 	NativeInitThreadSystem ();
+	for (i = 0; i < LIFECYCLE_SIZE; i++)
+	{
+		pendingBirth[i] = NULL;
+		pendingDeath[i] = NULL;
+	}
+	lifecycleMutex = CreateMutex ("Thread Lifecycle Mutex", SYNC_CLASS_RESOURCE);
 }
 
 void
 UnInitThreadSystem (void)
 {
 	NativeUnInitThreadSystem ();
+	DestroyMutex (lifecycleMutex);
 }
+
+static Thread
+FlagStartThread (SpawnRequest s)
+{
+	int i;
+	LockMutex (lifecycleMutex);
+	for (i = 0; i < LIFECYCLE_SIZE; i++)
+	{
+		if (pendingBirth[i] == NULL)
+		{
+			pendingBirth[i] = s;
+			UnlockMutex (lifecycleMutex);
+			if (s->sem)
+			{
+				Thread result;
+				SetSemaphore (s->sem);
+				DestroySemaphore (s->sem);
+				result = s->value;
+				HFree (s);
+				return result;
+			}
+			return NULL;
+		}
+	}
+	fprintf (stderr, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.\n", LIFECYCLE_SIZE);
+	exit (-1);
+}
+
+void
+FinishThread (Thread thread)
+{
+	int i;
+	LockMutex (lifecycleMutex);
+	for (i = 0; i < LIFECYCLE_SIZE; i++)
+	{
+		if (pendingDeath[i] == NULL)
+		{
+			pendingDeath[i] = thread;
+			UnlockMutex (lifecycleMutex);
+			return;
+		}
+	}
+	fprintf (stderr, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.\n", LIFECYCLE_SIZE);
+	exit (-1);
+}
+
+/* Only call from main thread! */
+void
+ProcessThreadLifecycles (void)
+{
+	int i;
+	LockMutex (lifecycleMutex);
+	for (i = 0; i < LIFECYCLE_SIZE; i++)
+	{
+		SpawnRequest s = pendingBirth[i];
+		if (s != NULL)
+		{
+#ifdef NAMED_SYNCHRO
+			s->value = NativeCreateThread (s->func, s->data, s->stackSize, s->name);
+#else
+			s->value = NativeCreateThread (s->func, s->data, s->stackSize);
+#endif
+			if (s->sem)
+			{
+				ClearSemaphore (s->sem);
+				/* The spawning thread's FlagStartThread will clean up s */
+			}
+			else
+			{
+				/* The thread value has been lost to the game logic.  We must
+				   clean up s ourself. */
+				HFree (s);
+			}
+			pendingBirth[i] = NULL;
+		}
+	}
+
+	for (i = 0; i < LIFECYCLE_SIZE; i++)
+	{
+		Thread t = pendingDeath[i];
+		if (t != NULL)
+		{
+			WaitThread (t, NULL);
+			pendingDeath[i] = NULL;	
+			DestroyThread (t);
+		}
+	}
+	UnlockMutex (lifecycleMutex);
+}
+
 
 /* The Create routines look different based on whether NAMED_SYNCHRO
    is defined or not. */
@@ -42,7 +159,25 @@ UnInitThreadSystem (void)
 Thread
 CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name)
 {
-	return NativeCreateThread (func, data, stackSize, name);
+	SpawnRequest s = HMalloc(sizeof (SpawnRequest_struct));
+	s->func = func;
+	s->data = data;
+	s->stackSize = stackSize;
+	s->name = name;
+	s->sem = CreateSemaphore (0, "SpawnRequest semaphore", SYNC_CLASS_RESOURCE);
+	return FlagStartThread (s);
+}
+
+void
+StartThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name)
+{
+	SpawnRequest s = HMalloc(sizeof (SpawnRequest_struct));
+	s->func = func;
+	s->data = data;
+	s->stackSize = stackSize;
+	s->name = name;
+	s->sem = NULL;
+	FlagStartThread (s);
 }
 
 Mutex
@@ -74,7 +209,23 @@ CreateCondVar_Core (const char *name, DWORD syncClass)
 Thread
 CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize)
 {
-	return NativeCreateThread (func, data, stackSize);
+	SpawnRequest s = HMalloc(sizeof (SpawnRequest_struct));
+	s->func = func;
+	s->data = data;
+	s->stackSize = stackSize;
+	s->sem = CreateSemaphore (0, "SpawnRequest semaphore", SYNC_CLASS_RESOURCE);
+	return FlagStartThread (s);
+}
+
+void
+StartThread_Core (ThreadFunction func, void *data, SDWORD stackSize)
+{
+	SpawnRequest s = HMalloc(sizeof (SpawnRequest_struct));
+	s->func = func;
+	s->data = data;
+	s->stackSize = stackSize;
+	s->sem = NULL;
+	FlagStartThread (s);
 }
 
 Mutex
@@ -101,6 +252,12 @@ CreateCondVar_Core (void)
 	return NativeCreateCondVar ();
 }
 #endif
+
+void
+DestroyThread (Thread t)
+{
+	NativeDestroyThread (t);
+}
 
 ThreadLocal *
 CreateThreadLocal (void)

@@ -849,6 +849,9 @@ EventHandler (BYTE selector)
 
 #define DEBUG_PSYTRON 0
 
+/* TODO: Remove these declarations once threading is gone. */
+extern int snddriver, soundflags;
+
 int Starcon2Main(void* blah)
 {
 #if DEBUG_PSYTRON || CREATE_JOURNAL
@@ -882,7 +885,10 @@ while (--ac > 0)
 }
 }
 #endif //DEBUG_PSYTRON || CREATE_JOURNAL
-				
+
+/* TODO: Put initAudio back in main where it belongs once threading is gone */
+initAudio (snddriver, soundflags);
+
 	if (LoadKernel (0,0))
 	{
 		extern BOOLEAN StartGame (void);

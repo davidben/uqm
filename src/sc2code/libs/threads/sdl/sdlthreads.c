@@ -220,9 +220,16 @@ ThreadHelper (void *startInfo) {
 
 	UnQueueThread (thread);
 	DestroyThreadLocal (thread->localData);
-	HFree (thread);
+	FinishThread (thread);
+	/* Destroying the thread is the responsibility of ProcessThreadLifecycles() */
 	return result;
 }
+
+void
+DestroyThread_SDL (Thread t)
+{
+	HFree (t);
+}	
 
 Thread
 CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize

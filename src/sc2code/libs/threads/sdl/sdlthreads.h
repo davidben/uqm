@@ -50,6 +50,7 @@ void SleepThread_SDL (TimeCount sleepTime);
 void SleepThreadUntil_SDL (TimeCount wakeTime);
 void TaskSwitch_SDL (void);
 void WaitThread_SDL (Thread thread, int *status);
+void DestroyThread_SDL (Thread thread);
 
 void DestroyMutex_SDL (Mutex m);
 void LockMutex_SDL (Mutex m);
@@ -79,6 +80,7 @@ int  GetRecursiveMutexDepth_SDL (RecursiveMutex m);
 #define NativeSleepThreadUntil SleepThreadUntil_SDL
 #define NativeTaskSwitch TaskSwitch_SDL
 #define NativeWaitThread WaitThread_SDL
+#define NativeDestroyThread DestroyThread_SDL
 
 #define NativeCreateMutex CreateMutex_SDL
 #define NativeDestroyMutex DestroyMutex_SDL

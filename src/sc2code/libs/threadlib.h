@@ -77,6 +77,11 @@ enum
 	SYNC_CLASS_RESOURCE = (1 << 3)     /* Involves system resources (_MemoryLock) */
 };
 
+/* Note.  NEVER call CreateThread from the main thread, or deadlocks
+   are guaranteed.  Use StartThread instead (which doesn't wait around
+   for the main thread to actually create the thread and return
+   it). */
+
 #ifdef NAMED_SYNCHRO
 /* Logical OR of all classes we want to track. */
 #define TRACK_CONTENTION_CLASSES (SYNC_CLASS_TOPLEVEL)
@@ -84,6 +89,7 @@ enum
 /* Prototypes with the "name" field */
 
 Thread CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
+void StartThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
 Semaphore CreateSemaphore_Core (DWORD initial, const char *name, DWORD syncClass);
 Mutex CreateMutex_Core (const char *name, DWORD syncClass);
 RecursiveMutex CreateRecursiveMutex_Core (const char *name, DWORD syncClass);
@@ -93,6 +99,8 @@ CondVar CreateCondVar_Core (const char *name, DWORD syncClass);
 
 #define CreateThread(func, data, stackSize, name) \
 	CreateThread_Core ((func), (data), (stackSize), (name))
+#define StartThread(func, data, stackSize, name) \
+	StartThread_Core ((func), (data), (stackSize), (name))
 #define CreateSemaphore(initial, name, syncClass) \
 	CreateSemaphore_Core ((initial), (name), (syncClass))
 #define CreateMutex(name, syncClass) \
@@ -106,6 +114,7 @@ CondVar CreateCondVar_Core (const char *name, DWORD syncClass);
 
 /* Prototypes without the "name" field. */
 Thread CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize);
+void StartThread_Core (ThreadFunction func, void *data, SDWORD stackSize);
 Semaphore CreateSemaphore_Core (DWORD initial);
 Mutex CreateMutex_Core (void);
 RecursiveMutex CreateRecursiveMutex_Core (void);
@@ -117,6 +126,8 @@ CondVar CreateCondVar_Core (void);
 
 #define CreateThread(func, data, stackSize, name) \
 	CreateThread_Core ((func), (data), (stackSize))
+#define StartThread(func, data, stackSize, name) \
+	StartThread_Core ((func), (data), (stackSize))
 #define CreateSemaphore(initial, name, syncClass) \
 	CreateSemaphore_Core ((initial))
 #define CreateMutex(name, syncClass) \
@@ -134,8 +145,12 @@ ThreadLocal *GetMyThreadLocal (void);
 
 void SleepThread (TimePeriod timePeriod);
 void SleepThreadUntil (TimeCount wakeTime);
+void DestroyThread (Thread);
 void TaskSwitch (void);
 void WaitThread (Thread thread, int *status);
+
+void FinishThread (Thread);
+void ProcessThreadLifecycles (void);
 
 #ifdef PROFILE_THREADS
 void PrintThreadsStats (void);

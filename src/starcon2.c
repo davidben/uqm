@@ -44,6 +44,10 @@
 			// Including this is actually necessary on OSX.
 #endif
 
+/* TODO: Remove these (making them local to main() ) once threading is
+   gone. */
+
+int snddriver, soundflags;
 
 static int
 Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt)
@@ -66,9 +70,7 @@ int
 main (int argc, char *argv[])
 {
 	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
-	int snddriver = audio_DRIVER_MIXSDL;
 	int gfxflags = 0;
-	int soundflags = audio_QUALITY_MEDIUM;
 	int width = 640, height = 480, bpp = 16;
 	int vol;
 	int val;
@@ -119,6 +121,14 @@ main (int argc, char *argv[])
 		{"addon", 1, NULL, ADDON_OPT},
 		{0, 0, 0, 0}
 	};
+
+	/* TODO: Once threading is gone, these become local variables
+	   again.  In the meantime, they must be global so that
+	   initAudio (in StarCon2Main) can see them.  initAudio needed
+	   to be moved there because calling AssignTask in the main
+	   thread doesn't work */
+	snddriver = audio_DRIVER_MIXSDL;
+	soundflags = audio_QUALITY_MEDIUM;
 
 	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n"
 	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
@@ -357,14 +367,18 @@ main (int argc, char *argv[])
 	init_communication ();
 	if (gammaset) 
 		TFB_SetGamma (gamma);
-	initAudio (snddriver, soundflags);
+	/* TODO: Once threading is gone, restore initAudio here.
+	   initAudio calls AssignTask, which currently blocks on
+	   ProcessThreadLifecycles... */
+	// initAudio (snddriver, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
-	AssignTask (Starcon2Main, 1024, "Starcon2Main");
+	StartThread (Starcon2Main, NULL, 1024, "Starcon2Main");
 
 	for (;;)
 	{
 		TFB_ProcessEvents ();
+		ProcessThreadLifecycles ();
 		TFB_FlushGraphics ();
 	}
 
