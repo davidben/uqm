@@ -107,6 +107,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	SDL_Screen = SDL_DisplayFormat (test_extra);
 	ExtraScreen = SDL_DisplayFormat (test_extra);
+	TransitionScreen = SDL_DisplayFormat (test_extra);
 
 	fade_white = SDL_DisplayFormat (test_extra);
 	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
@@ -132,12 +133,25 @@ void
 TFB_Pure_SwapBuffers ()
 {
 	SDL_Surface *backbuffer = SDL_Screen;
-	int fade_amount = TFB_GetFadeAmount ();
+	int fade_amount = FadeAmount;
+	int transition_amount = TransitionAmount;
 
-	if (fade_amount != 255)
+	if (transition_amount != -1)
 	{
 		backbuffer = fade_temp;
 		SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
+		
+		SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
+		SDL_BlitSurface (TransitionScreen, &TransitionClipRect, backbuffer, &TransitionClipRect);
+	}
+
+	if (fade_amount != 255)
+	{
+		if (transition_amount == -1)
+		{
+			backbuffer = fade_temp;
+			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
+		}
 
 		if (fade_amount < 255)
 		{

@@ -29,6 +29,11 @@
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
 SDL_Surface *ExtraScreen;
+SDL_Surface *TransitionScreen;
+
+
+volatile int TransitionAmount = -1;
+SDL_Rect TransitionClipRect;
 
 BOOLEAN ShowFPS = FALSE;
 volatile int continuity_break;
@@ -319,13 +324,22 @@ TFB_FlushGraphics () // Only call from main thread!!
 	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
 	{
 		static int last_fade = 255;
-		int current_fade = TFB_GetFadeAmount();			
+		static int last_transition = -1;
+		int current_fade = FadeAmount;
+		int current_transition = TransitionAmount;
 		
-		if (current_fade != 255 && current_fade != last_fade)
+		if ((current_fade != 255 && current_fade != last_fade) ||
+			(current_transition != -1 && current_transition != last_transition))
+		{
 			TFB_SwapBuffers(); // if fading, redraw every frame
+		}
         else
-            SDL_Delay(5);
+		{
+            SDL_Delay(1);
+		}
+		
 		last_fade = current_fade;
+		last_transition = current_transition;
         
 		return;
 	}

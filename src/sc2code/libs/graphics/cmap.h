@@ -51,8 +51,8 @@ enum
 };
 
 extern DWORD* _varPLUTs;
+extern volatile int FadeAmount;
 
-int TFB_GetFadeAmount (void);
 BOOLEAN TFB_HasColorMap (void);
 int TFB_GetColorMapType (void);
 void TFB_ReleaseColorMap (void);

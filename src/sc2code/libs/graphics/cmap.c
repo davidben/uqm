@@ -31,7 +31,8 @@ static struct
 	} tc;
 } TaskControl;
 
-static int cur = FADE_NORMAL_INTENSITY, end, XForming;
+volatile int FadeAmount = FADE_NORMAL_INTENSITY;
+static volatile int end, XForming;
 
 DWORD* _varPLUTs;
 static unsigned int varPLUTsize = VARPLUTS_SIZE;
@@ -41,22 +42,17 @@ static TFB_Palette cmap_rgb[256];
 static int cmap_type = 0;
 
 
-int TFB_GetFadeAmount ()
-{
-	return cur;
-}
-
-BOOLEAN TFB_HasColorMap ()
+BOOLEAN TFB_HasColorMap (void)
 {
 	return has_colormap;
 }
 
-int TFB_GetColorMapType ()
+int TFB_GetColorMapType (void)
 {
 	return cmap_type;
 }
 
-void TFB_ReleaseColorMap ()
+void TFB_ReleaseColorMap (void)
 {
 	//fprintf (stderr, "TFB_ReleaseColorMap()\n");
 	has_colormap = FALSE;
@@ -172,8 +168,8 @@ SetColorMap (COLORMAPPTR map, int type)
 	return TRUE;
 }
 
-static
-int xform_clut_task (void *data)
+static int 
+xform_clut_task (void *data)
 {
 	SIZE TDelta, TTotal;
 	DWORD CurTime;
@@ -197,8 +193,8 @@ int xform_clut_task (void *data)
 			if (!XForming || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
 				TDelta = TTotal;
 
-			cur += (end - cur) * TDelta / TTotal;
-			//fprintf (stderr, "xform_clut_task cur %d\n", cur);
+			FadeAmount += (end - FadeAmount) * TDelta / TTotal;
+			//fprintf (stderr, "xform_clut_task FadeAmount %d\n", FadeAmount);
 		} while (TTotal -= TDelta && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
@@ -243,7 +239,7 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 			(TaskControl.tc.XFormTask = AssignTask (xform_clut_task,
 					1024, "transform colormap")) == 0)
 	{
-		cur = end;
+		FadeAmount = end;
 		TimeOut = GetTimeCounter ();
 	}
 	else

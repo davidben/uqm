@@ -19,8 +19,12 @@
 #ifdef GFXMODULE_SDL
 
 #include "sdl_common.h"
+#include "pure.h"
+#include "opengl.h"
 
 int batch_depth = 0;
+
+static Task transition_task;
 
 
 //Status: Not entirely unimplemented!
@@ -79,11 +83,13 @@ FlushGraphics (void)
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
 {
+	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
 }
 
 void
 SetGraphicGrabOther (int grab_other)
 {
+	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
 }
 
 // Status: Unimplemented
@@ -91,14 +97,72 @@ void
 SetGraphicStrength (int numerator, int denominator)
 		// I just hope numerator always = denominator...
 { 
-	//fprintf (stderr, "Unimplemented function activated: SetGraphicsStrength(), %d %d\n",numerator,denominator);
+	//fprintf (stderr, "SetGraphicsStrength, %d %d\n",numerator, denominator);
 }
 
-//Status: Unimplemented
-void
-ScreenTransition (int TransType, PRECT pRect) //TransType==3
+static int
+transition_task_func (void *data)
 {
-	//fprintf (stderr, "Unimplemented function activated: ScreenTransition()\n");
+	const float TRANSITION_SPEED = 2.5f;
+	Uint32 last_time = 0, current_time, delta_time, add_amount;
+	Task task = (Task)data;
+	
+	last_time = SDL_GetTicks ();
+	TransitionAmount = 0;
+
+	for (;;)
+	{
+		SleepThread (10);
+
+		current_time = SDL_GetTicks ();
+		delta_time = current_time - last_time;
+		last_time = current_time;
+		
+		add_amount = (Uint32)(delta_time / TRANSITION_SPEED);
+		if (TransitionAmount + add_amount >= 255)
+			break;
+
+		TransitionAmount += add_amount;
+	}
+	
+	TransitionAmount = -1;
+	FinishTask (task);
+	return 0;
+}
+
+// Status: Implemented
+void
+ScreenTransition (int TransType, PRECT pRect)
+{
+	//fprintf(stderr, "ScreenTransition %d\n", TransType);
+
+	if (TransitionAmount == -1)
+	{
+		if (pRect)
+		{
+			TransitionClipRect.x = pRect->corner.x;
+			TransitionClipRect.y = pRect->corner.y;
+			TransitionClipRect.w = pRect->extent.width;
+			TransitionClipRect.h = pRect->extent.height;
+		}
+		else
+		{
+			TransitionClipRect.x = TransitionClipRect.y = 0;
+			TransitionClipRect.w = ScreenWidth;
+			TransitionClipRect.h = ScreenHeight;
+		}
+
+		SDL_BlitSurface (SDL_Screen, &TransitionClipRect, TransitionScreen, &TransitionClipRect);
+
+#ifdef HAVE_OPENGL
+		if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
+		{
+			TFB_GL_UploadTransitionScreen ();
+		}
+#endif
+
+		transition_task = AssignTask (transition_task_func, 1024, "screen transition");
+	}
 }
 
 void

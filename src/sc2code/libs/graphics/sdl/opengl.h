@@ -22,7 +22,8 @@
 #include "libs/graphics/sdl/sdl_common.h"
 
 int TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp);
-void TFB_GL_SwapBuffers ();
+void TFB_GL_UploadTransitionScreen (void);
+void TFB_GL_SwapBuffers (void);
 SDL_Surface* TFB_GL_DisplayFormatAlpha (SDL_Surface *surface);
 
 

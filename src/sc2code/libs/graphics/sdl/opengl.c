@@ -24,7 +24,9 @@ static SDL_Surface *format_conv_surf;
 
 static int ScreenFilterMode;
 static unsigned int DisplayTexture;
+static unsigned int TransitionTexture;
 static BOOLEAN tveffect;
+static BOOLEAN upload_transitiontexture = FALSE;
 
 
 int
@@ -55,33 +57,33 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidthActual = width;
 	ScreenHeightActual = height;
 
-	switch(bpp) {
+	switch (bpp) {
 		case 8:
 			fprintf (stderr, "bpp of 8 not supported under OpenGL\n");
 			exit(-1);
 
 		case 15:
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+			SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 5);
+			SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 5);
+			SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 5);
 			break;
 
 		case 16:
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+			SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 5);
+			SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 6);
+			SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 5);
 			break;
 
 		case 24:
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 8);
 			break;
 
 		case 32:
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 8);
+			SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 8);
 			break;
 	}
 
@@ -100,7 +102,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		fprintf (stderr, "Couldn't set OpenGL %ix%ix%i video mode: %s\n",
 				ScreenWidthActual, ScreenHeightActual, bpp,
 				SDL_GetError ());
-		exit(-1);
+		exit (-1);
 	}
 	else
 	{
@@ -109,27 +111,34 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 				SDL_GetVideoSurface()->format->BitsPerPixel);
 
 		fprintf (stderr, "OpenGL renderer: %s version: %s\n",
-				glGetString(GL_RENDERER), glGetString(GL_VERSION));
+				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
+	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
 
 	if (SDL_Screen == NULL)
 	{
-		fprintf (stderr, "Couldn't create back buffer: %s\n",
-				SDL_GetError());
-		exit(-1);
+		fprintf (stderr, "Couldn't create back buffer: %s\n", SDL_GetError());
+		exit (-1);
 	}
 
-	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
+	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
 
 	if (ExtraScreen == NULL)
 	{
-		fprintf (stderr, "Couldn't create workspace buffer: %s\n",
-				SDL_GetError());
-		exit(-1);
+		fprintf (stderr, "Couldn't create workspace buffer: %s\n", SDL_GetError());
+		exit (-1);
+	}
+
+	TransitionScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
+		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+
+	if (TransitionScreen == NULL)
+	{
+		fprintf (stderr, "Couldn't create transition buffer: %s\n", SDL_GetError());
+		exit (-1);
 	}
 
 	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
@@ -137,8 +146,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (format_conv_surf == NULL)
 	{
-		fprintf (stderr, "Couldn't create format_conv_surf: %s\n",
-				SDL_GetError());
+		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
 		exit(-1);
 	}
 
@@ -160,84 +168,134 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	glDisable (GL_DITHER);
 	glDepthMask(GL_FALSE);
 
-	glGenTextures(1,&DisplayTexture);
-	glBindTexture(GL_TEXTURE_2D, DisplayTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures (1, &DisplayTexture);
+	glBindTexture (GL_TEXTURE_2D, DisplayTexture);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	glGenTextures (1, &TransitionTexture);
+	glBindTexture (GL_TEXTURE_2D, TransitionTexture);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 	return 0;
 }
 
+void TFB_GL_UploadTransitionScreen (void)
+{
+	upload_transitiontexture = TRUE;
+}
+
 void
-TFB_GL_TVEffect()
+TFB_GL_TVEffect (void)
 {
 	int y;
 
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_DST_COLOR, GL_ONE);
-	glColor3f(0.5, 0.5, 0.5);
+	glDisable (GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_DST_COLOR, GL_ONE);
+	glColor3f (0.5, 0.5, 0.5);
 
 	for (y = 0; y < ScreenHeightActual; y += 2)
 	{
-		glBegin(GL_LINES);
-		glVertex2i(0, y);
-		glVertex2i(ScreenWidthActual, y);
-		glEnd();
+		glBegin (GL_LINES);
+		glVertex2i (0, y);
+		glVertex2i (ScreenWidthActual, y);
+		glEnd ();
 	}
 }
 
 void
-TFB_GL_DrawQuad ()
+TFB_GL_DrawQuad (void)
 {
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin (GL_TRIANGLE_FAN);
 
-	glTexCoord2f(0, 0);
-	glVertex2i(0, 0);
+	glTexCoord2f (0, 0);
+	glVertex2i (0, 0);
 
-	glTexCoord2f(ScreenWidth / 512.0f, 0);
-	glVertex2i(ScreenWidthActual, 0);
+	glTexCoord2f (ScreenWidth / 512.0f, 0);
+	glVertex2i (ScreenWidthActual, 0);
 	
-	glTexCoord2f(ScreenWidth / 512.0f, ScreenHeight / 256.0f);
-	glVertex2i(ScreenWidthActual, ScreenHeightActual);
+	glTexCoord2f (ScreenWidth / 512.0f, ScreenHeight / 256.0f);
+	glVertex2i (ScreenWidthActual, ScreenHeightActual);
 
-	glTexCoord2f(0, ScreenHeight / 256.0f);
-	glVertex2i(0, ScreenHeightActual);
+	glTexCoord2f (0, ScreenHeight / 256.0f);
+	glVertex2i (0, ScreenHeightActual);
 
-	glEnd();
+	glEnd ();
 }
 
 void 
-TFB_GL_SwapBuffers ()
+TFB_GL_SwapBuffers (void)
 {
 	int fade_amount;
+	int transition_amount;
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
 	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
 		
-	glBindTexture(GL_TEXTURE_2D, DisplayTexture);
+	glBindTexture (GL_TEXTURE_2D, DisplayTexture);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
 
-	SDL_LockSurface(SDL_Screen);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ScreenWidth,ScreenHeight, GL_RGBA, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
-	SDL_UnlockSurface(SDL_Screen);
+	glEnable (GL_TEXTURE_2D);
+	glDisable (GL_BLEND);
+	glColor4f (1, 1, 1, 1);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
+	SDL_LockSurface (SDL_Screen);
+	glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
+		GL_RGB, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
+	SDL_UnlockSurface (SDL_Screen);
 
-	glDisable(GL_BLEND);
-	glEnable(GL_TEXTURE_2D);
-	glColor4f(1,1,1,1);
-	
 	TFB_GL_DrawQuad ();
 
-	fade_amount = TFB_GetFadeAmount ();
+	transition_amount = TransitionAmount;
+	if (transition_amount != -1)
+	{
+		float scale_x = (ScreenWidthActual / (float)ScreenWidth);
+		float scale_y = (ScreenHeightActual / (float)ScreenHeight);
+
+		glBindTexture(GL_TEXTURE_2D, TransitionTexture);
+		
+		if (upload_transitiontexture) 
+		{
+			SDL_LockSurface (TransitionScreen);
+			glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
+				GL_RGB, GL_UNSIGNED_BYTE, TransitionScreen->pixels);
+			SDL_UnlockSurface (TransitionScreen);
+
+			upload_transitiontexture = FALSE;
+		}
+
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
+
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f (1, 1, 1, (255 - transition_amount) / 255.0f);
+		
+		glScissor (
+			(GLint) (TransitionClipRect.x * scale_x),
+			(GLint) ((ScreenHeight - (TransitionClipRect.y + TransitionClipRect.h)) * scale_y),
+			(GLsizei) (TransitionClipRect.w * scale_x),
+			(GLsizei) (TransitionClipRect.h * scale_y)
+		);
+		
+		glEnable (GL_SCISSOR_TEST);
+		TFB_GL_DrawQuad ();
+		glDisable (GL_SCISSOR_TEST);
+	}
+
+	fade_amount = FadeAmount;
 	if (fade_amount != 255)
 	{
 		float c;
@@ -245,27 +303,25 @@ TFB_GL_SwapBuffers ()
 		if (fade_amount < 255)
 		{
 			c = fade_amount / 255.0f;
-			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			glBlendFunc (GL_DST_COLOR, GL_ZERO);
 		}
 		else
 		{
 			c = (fade_amount - 255) / 255.0f;
-			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendFunc (GL_ONE, GL_ONE);
 		}
 
-		glColor3f(c, c, c);
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-
-		//fprintf (stderr, "fade_amount %d c %f\n",fade_amount, c);
+		glDisable (GL_TEXTURE_2D);
+		glEnable (GL_BLEND);
+		glColor4f (c, c, c, 1);
 
 		TFB_GL_DrawQuad ();
 	}
 
 	if (tveffect)
-		TFB_GL_TVEffect();
+		TFB_GL_TVEffect ();
 
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapBuffers ();
 }
 
 SDL_Surface* 

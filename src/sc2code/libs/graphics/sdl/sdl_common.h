@@ -31,6 +31,10 @@
 extern SDL_Surface *SDL_Video;
 extern SDL_Surface *SDL_Screen;
 extern SDL_Surface *ExtraScreen;
+extern SDL_Surface *TransitionScreen;
+
+extern volatile int TransitionAmount;
+extern SDL_Rect TransitionClipRect;
 
 extern volatile int continuity_break;
 extern BOOLEAN ShowFPS;
