@@ -92,7 +92,8 @@ Implementation bugs (low priority):
   - Support for PC hierarchies is now availiable, but only the main 'navigate'
     and 'scan' menus have been converted.  Lots more to do
 -PC Font issues:
-  - Lander font isn't correct (for PC or 3DO)
+  - The lander report messages should possibly be modified to use up the entire
+    lander pane
   - The PC version has text about the ship in the Outfit screen (Velocity etc)
     but we don't have that yet.
 
