@@ -1582,11 +1582,44 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				SetSemaphore (GraphicsSem);
+				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+				if (CommData.AlienTalkDesc.NumFrames)
+				{
+					if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+					{
+						CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
+						if (CommData.AlienTransitionDesc.NumFrames)
+							CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
+					}
+					
+					CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
+					if (CommData.AlienTalkDesc.NumFrames)
+						CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
+					while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
+					{
+						ClearSemaphore (GraphicsSem);
+						TaskSwitch ();
+						SetSemaphore (GraphicsSem);
+					}
+				}
+				
 				SpewPhrases (0);
+				
+				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+				if (CommData.AlienTalkDesc.NumFrames)
+				{
+					if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
+						CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
+				}
+
 				ClearSemaphore (GraphicsSem);
 				FlushInput ();
 				while (AnyButtonPress (TRUE))
 					TaskSwitch ();
+				do
+					TaskSwitch ();
+				while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
 				TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
