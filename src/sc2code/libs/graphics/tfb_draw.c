@@ -263,8 +263,6 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 		img->NormalImg = TFB_DrawCanvas_ToScreenFormat (canvas);
 	}
 
-	img->ScaledImg = NULL;
-
 	return img;
 }
 
