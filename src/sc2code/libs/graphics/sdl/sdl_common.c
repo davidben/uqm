@@ -275,29 +275,6 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	dst_getpix = getpixel_for (dst);
 	putpix = putpixel_for (dst);
 
-	if (SDL_MUSTLOCK(src))
-	{
-		if (SDL_LockSurface (src) == -1)
-		{
-			printf("Couldn't lock src!\n");
-		}
-		else
-		{
-			printf("Locked src.\n");
-		}
-	}
-	if (SDL_MUSTLOCK(dst))
-	{
-		if (SDL_LockSurface (dst) == -1)
-		{
-			printf("Couldn't lock dst!\n");
-		}
-		else
-		{
-			printf("Locked dst.\n");
-		}
-	}
-
 	if (blend_denom < 0)
 	{
 		// additive blit: dst = src + dst
@@ -408,14 +385,6 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 			}
 		}
 	}
-	if (SDL_MUSTLOCK(dst))
-	{
-		SDL_UnlockSurface (dst);
-	}
-	if (SDL_MUSTLOCK(src))
-	{
-		SDL_UnlockSurface (src);
-	}
 }
 
 void
@@ -443,7 +412,6 @@ TFB_ComputeFPS ()
 void
 TFB_FlushGraphics () // Only call from main thread!!
 {
-	int semval;
 	int commands_handled;
 	BOOLEAN livelock_deterrence;
 	BOOLEAN done;
