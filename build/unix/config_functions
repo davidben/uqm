@@ -365,6 +365,8 @@ EOF
 
 	for FILE in $FILES; do
 		FILE="${FILE%.in}"
+		cp -p -- "$FILE".in "$FILE"
+				# The copy is done so that the file modes are equal.
 		$SED -f "${TEMPFILE}.sed" < "$FILE".in > "$FILE"
 	done
 	rm -- "${TEMPFILE}.sed"
