@@ -1,8 +1,6 @@
-THE UR-QUAN MASTERS
+THE UR-QUAN MASTERS v0.2 alpha -- homepage: http://sc2.sf.net/
 
-version 0.1 alpha
-
-Welcome to the first release of the Ur-Quan Masters port.  This
+Welcome to the second release of the Ur-Quan Masters port.  This
 document will tell you everything you need to play, even if you've
 never played the original.
 
@@ -40,10 +38,8 @@ faster as well -- but it also may not work on older cards.
 
 	-c           (or --scale=mode)
 
-Graphics scaling mode (bilinear, sai or supersai). Default is none.
+Graphics scaling mode (bilinear, biadapt or biadv). Default is none.
 Try these to get smoother graphics with cost on performance.
-Sai and supersai only works with depth of 16bpp for now.
-Under OpenGL, bilinear is only one that's implemented currently.
 
 	-s           (or --scanlines)
 
@@ -71,7 +67,8 @@ Set sound effects volume (0-100).
 
 	-T           (or --speechvol)
 
-Set speech volume (0-100).
+Set speech volume (0-100). If set to 0, game runs in 'no speech' mode and 
+oscilloscope reacts to the music.
 
 	-m 3do       (or --3domusic)
 
@@ -140,24 +137,26 @@ Scroll voice-over/subtitles smoothly while holding down left/right arrow keys
 This is an alpha release.  That means several things.  First, it means
 that you're an alpha tester.  Be proud.  Second, it means that the
 game is likely to crash with great frequency.  Upon finding a problem,
-we'd like you to report it in our forum, but before you do, please do
-the following:
+we'd like you to report it, but before you do, please do the following:
 
 - Try to isolate what causes it: "Crashes with a null dereference
   about half the time when firing and taunting with a Pkunk" is better
   than "Melee doesn't work."  If the game crashes, notice what error
   is produced; if the game hangs, check to see if the game-exit key
-  (the backquote `) works.
+  (F12) works.
 
-- Check the TODO file in the top directory to make sure that we don't
-  already know about it.
+- Go to the bug database at http://uqm.stack.nl/cgi-bin/bugs/index.cgi
+  and post a report of the problem there. Search the database first if
+  it has been already posted; if we get many duplicate reports, processing
+  them eats our time from actual development. If it's been reported, and
+  you have more information, feel free to confirm that you've reproduced it
+  by adding a comment to the report. If ten people have already confirmed it,
+  though, it's probably best to treat it as duly reported.
 
-- Go to the Ur-Quan Masters forums at http://sc2.sf.net/ and post a
-  description of the crash in the Technical Issues and Bugs forum.
-  Check the posts on that forum first, to see if it's already been
-  reported.  If it's been reported, and you have more information, feel
-  free to confirm that you've reproduced it.  If ten people have already
-  confirmed it, though, it's probably best to treat it as duly reported.
+- If your issue is more like "support request" than bug report and you
+  want help from other users, then posting it to our forum might be
+  more appropriate: http://uqm.stack.nl/cgi-bin/yabb/YaBB.pl
+  
 
 
 			   THE STORY SO FAR
@@ -462,14 +461,14 @@ SPACE:                   Up one level
 Arrow Keys:              Move the crosshair
 ENTER:                   Select destination
 SPACE:                   Main menu
-Numpad +:                Zoom in
-Numpad -:                Zoom out
+RIGHT SHIFT:             Zoom in
+LEFT SHIFT:              Zoom out
 
 	Space Combat
 
 UP or ENTER:             Thrust
 LEFT and RIGHT:          Steer
-SPACE:                   Fire Primary Weapon
+SPACE or RIGHT SHIFT:    Fire Primary Weapon
 CONTROL:                 Fire Secondary Weapon
 SPACE with RIGHT SHIFT
 	OR
@@ -497,6 +496,6 @@ A:                       Fire Secondary Weapon
 
 UP:                      Thrust
 LEFT and RIGHT:          Steer
-RSHIFT:                  Fire Primary Weapon
+RIGHT SHIFT:             Fire Primary Weapon
 CTRL:                    Fire Secondary Weapon
 
