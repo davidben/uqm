@@ -121,6 +121,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 
 		DrawCommand->image = (TFB_ImageStruct*) img; //TFB_Image
+		DrawCommand->UsePalette = FALSE;
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
 		{
@@ -142,9 +143,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			DrawCommand->UsePalette = TRUE;
 		}
 		else
-		{			
-			DrawCommand->UsePalette = FALSE;
-
+		{
 			// NOTE: following code for colormaps is experimental			
 			if (img->NormalImg->format->BytesPerPixel == 1)
 			{
@@ -178,12 +177,6 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			}
 		}
 
-		current_colormap = 0;
-
-		/*DrawCommand->Qualifier = (TYPE_GET (GetFrameParentDrawable (
-			SrcFramePtr)->FlagsAndIndex) >> FTYPE_SHIFT) &
-			MAPPED_TO_DISPLAY;*/
-
 		TFB_EnqueueDrawCommand(DrawCommand);
 	}
 	else
@@ -216,6 +209,8 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		SDL_mutexV (dst_img->mutex);
 	}
 
+	current_colormap = 0;
+
 	SDL_mutexV (img->mutex);
 }
 
@@ -224,6 +219,8 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
 	int r, g, b;
 	DWORD c32k;
+
+	current_colormap = 0;
 
 	c32k = GetPrimColor (PrimPtr) >> 8; //shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
@@ -288,7 +285,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 static void
 cmap_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
-// printf ("Unimplemented function activated: cmap_blt()\n");
+	printf ("Unimplemented function activated: cmap_blt()\n");
 }
 
 static void
@@ -297,6 +294,8 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	int x1,y1,x2,y2;
 	int r, g, b;
 	DWORD c32k;
+
+	current_colormap = 0;
 
 	c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
@@ -333,6 +332,8 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 static void
 read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 {
+	current_colormap = 0;
+
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) != SCREEN_DRAWABLE
 			|| TYPE_GET (DstFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE
 			|| !(TYPE_GET (GetFrameParentDrawable (DstFramePtr)
