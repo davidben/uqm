@@ -44,7 +44,7 @@ extern uio_DirHandle *configDir;
 extern uio_DirHandle *saveDir;
 extern uio_DirHandle *meleeDir;
 
-void prepareContentDir (char *contentDirName, const char **addons);
+void prepareContentDir (const char *contentDirName, const char **addons);
 void prepareConfigDir(void);
 void prepareMeleeDir(void);
 void prepareSaveDir(void);

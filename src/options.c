@@ -55,7 +55,7 @@ static void mountDirZips (uio_MountHandle *contentHandle,
 		uio_DirHandle *dirHandle);
 
 void
-prepareContentDir (char *contentDirName, const char **addons)
+prepareContentDir (const char *contentDirName, const char **addons)
 {
 	const char *testfile = "version";
 	char cwd[PATH_MAX];

@@ -72,7 +72,7 @@ main (int argc, char *argv[])
 	int width = 640, height = 480, bpp = 16;
 	int vol;
 	int val;
-	char contentdir[1000];
+	const char *contentDir;
 	float gamma = 1.0;
 	int gammaset = 0;
 	const char **addons;
@@ -127,11 +127,11 @@ main (int argc, char *argv[])
 			__DATE__, __TIME__);
 
 #ifdef CONTENTDIR
-	strcpy (contentdir, CONTENTDIR);
+	contentDir = CONTENTDIR;
 #elif defined (win32)
-	strcpy (contentdir, "../../content");
+	contentDir = "../../content";
 #else
-	strcpy (contentdir, "content");
+	contentDir = "content";
 #endif
 
 	/* InitThreadSystem should come before anything else.
@@ -187,7 +187,7 @@ main (int argc, char *argv[])
 				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
 			break;
 			case 'n':
-				sscanf(optarg, "%s", contentdir);
+				contentDir = optarg;
 			break;
 			case 'M':
 				sscanf(optarg, "%d", &vol);
@@ -338,7 +338,7 @@ main (int argc, char *argv[])
 	}
 	
 	initIO();
-	prepareContentDir (contentdir, addons);
+	prepareContentDir (contentDir, addons);
 	HFree ((void*)addons);
 	prepareConfigDir ();
 	prepareMeleeDir ();
