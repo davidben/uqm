@@ -51,19 +51,14 @@ TFB_Draw_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN dest)
 	TFB_DrawCommand DC;
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_LINE;
-	DC.x = x1;
-	DC.y = y1;
-	DC.w = x2;
-	DC.h = y2;
-	DC.r = r;
-	DC.g = g;
-	DC.b = b;
-	DC.image = 0;
-	DC.UsePalette = FALSE;
-	DC.destBuffer = dest;
-
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.line.x1 = x1;
+	DC.data.line.y1 = y1;
+	DC.data.line.x2 = x2;
+	DC.data.line.y2 = y2;
+	DC.data.line.r = r;
+	DC.data.line.g = g;
+	DC.data.line.b = b;
+	DC.data.line.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -83,19 +78,14 @@ TFB_Draw_Rect (PRECT rect, int r, int g, int b, SCREEN dest)
 	}
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_RECTANGLE;
-	DC.x = rect->corner.x;
-	DC.y = rect->corner.y;
-	DC.w = rect->extent.width;
-	DC.h = rect->extent.height;
-	DC.r = r;
-	DC.g = g;
-	DC.b = b;
-	DC.image = 0;
-	DC.UsePalette = FALSE;
-	DC.destBuffer = dest;
-
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.rect.x = rect->corner.x;
+	DC.data.rect.y = rect->corner.y;
+	DC.data.rect.w = rect->extent.width;
+	DC.data.rect.h = rect->extent.height;
+	DC.data.rect.r = r;
+	DC.data.rect.g = g;
+	DC.data.rect.b = b;
+	DC.data.rect.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -106,13 +96,10 @@ TFB_Draw_SetPalette (int index, int r, int g, int b)
 	TFB_DrawCommand DC;
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_SETPALETTE;
-	DC.r = r;
-	DC.g = g;
-	DC.b = b;
-	DC.index = index;
-	DC.image = 0;
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.setpalette.r = r;
+	DC.data.setpalette.g = g;
+	DC.data.setpalette.b = b;
+	DC.data.setpalette.index = index;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -140,10 +127,10 @@ TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 	TFB_DrawCommand DC;
 	
 	DC.Type = TFB_DRAWCOMMANDTYPE_IMAGE;
-	DC.image = img;
-	DC.x = x;
-	DC.y = y;
-	DC.UseScaling = scaled;
+	DC.data.image.image = img;
+	DC.data.image.x = x;
+	DC.data.image.y = y;
+	DC.data.image.UseScaling = scaled;
 
 	if (palette != NULL)
 	{
@@ -165,17 +152,17 @@ TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 			}
 		}
 		// if (changed) { fprintf (stderr, "Actually changing palette! "); }
-		DC.UsePalette = TRUE;
+		DC.data.image.UsePalette = TRUE;
 	} 
 	else
 	{
 		Lock_DCQ (1);
-		DC.UsePalette = FALSE;
+		DC.data.image.UsePalette = FALSE;
 	}
 
-	DC.destBuffer = dest;
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.image.destBuffer = dest;
+	DC.data.image.BlendNumerator = BlendNumerator;
+	DC.data.image.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 	Unlock_DCQ ();
@@ -187,16 +174,16 @@ TFB_Draw_FilledImage (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, int r,
 	TFB_DrawCommand DC;
 	
 	DC.Type = TFB_DRAWCOMMANDTYPE_FILLEDIMAGE;
-	DC.image = img;
-	DC.x = x;
-	DC.y = y;
-	DC.UseScaling = scaled;
-	DC.r = r;
-	DC.g = g;
-	DC.b = b;
-	DC.destBuffer = dest;
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.filledimage.image = img;
+	DC.data.filledimage.x = x;
+	DC.data.filledimage.y = y;
+	DC.data.filledimage.UseScaling = scaled;
+	DC.data.filledimage.r = r;
+	DC.data.filledimage.g = g;
+	DC.data.filledimage.b = b;
+	DC.data.filledimage.destBuffer = dest;
+	DC.data.filledimage.BlendNumerator = BlendNumerator;
+	DC.data.filledimage.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -207,15 +194,15 @@ TFB_Draw_CopyToImage (TFB_ImageStruct *img, PRECT lpRect, SCREEN src)
 	TFB_DrawCommand DC;
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_COPYTOIMAGE;
-	DC.x = lpRect->corner.x;
-	DC.y = lpRect->corner.y;
-	DC.w = lpRect->extent.width;
-	DC.h = lpRect->extent.height;
-	DC.image = img;
-	DC.srcBuffer = src;
+	DC.data.copytoimage.x = lpRect->corner.x;
+	DC.data.copytoimage.y = lpRect->corner.y;
+	DC.data.copytoimage.w = lpRect->extent.width;
+	DC.data.copytoimage.h = lpRect->extent.height;
+	DC.data.copytoimage.image = img;
+	DC.data.copytoimage.srcBuffer = src;
 	
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.copytoimage.BlendNumerator = BlendNumerator;
+	DC.data.copytoimage.BlendDenominator = BlendDenominator;
 	
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -235,16 +222,15 @@ TFB_Draw_Copy (PRECT r, SCREEN src, SCREEN dest)
 	}
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_COPY;
-	DC.x = r->corner.x;
-	DC.y = r->corner.y;
-	DC.w = r->extent.width;
-	DC.h = r->extent.height;
-	DC.image = 0;
-	DC.srcBuffer = src;
-	DC.destBuffer = dest;
+	DC.data.copy.x = r->corner.x;
+	DC.data.copy.y = r->corner.y;
+	DC.data.copy.w = r->extent.width;
+	DC.data.copy.h = r->extent.height;
+	DC.data.copy.srcBuffer = src;
+	DC.data.copy.destBuffer = dest;
 
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
+	DC.data.copy.BlendNumerator = BlendNumerator;
+	DC.data.copy.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -257,7 +243,7 @@ TFB_Draw_DeleteImage (TFB_ImageStruct *img)
 		TFB_DrawCommand DC;
 
 		DC.Type = TFB_DRAWCOMMANDTYPE_DELETEIMAGE;
-		DC.image = img;
+		DC.data.deleteimage.image = img;
 
 		TFB_EnqueueDrawCommand (&DC);
 	}
@@ -268,7 +254,6 @@ TFB_Draw_WaitForSignal (void)
 {
 	TFB_DrawCommand DrawCommand;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_SENDSIGNAL;
-	DrawCommand.image = 0;
 	// We need to lock the mutex before enqueueing the DC to prevent races 
 	LockSignalMutex ();
 	Lock_DCQ (1);

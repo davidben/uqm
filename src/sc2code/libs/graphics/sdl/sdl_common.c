@@ -525,7 +525,6 @@ TFB_FlushGraphics () // Only call from main thread!!
 	while (!done)
 	{
 		TFB_DrawCommand DC;
-		TFB_Image *DC_image;
 
 		if (!TFB_DrawCommandQueue_Pop (&DC))
 		{
@@ -542,24 +541,20 @@ TFB_FlushGraphics () // Only call from main thread!!
 			Lock_DCQ (-1);
 		}
 
-		DC_image = (TFB_Image*) DC.image;
-		if (DC_image)
-			LockMutex (DC_image->mutex);
-		
 		switch (DC.Type)
 		{
 		case TFB_DRAWCOMMANDTYPE_SETPALETTE:
 			{
-				int index = DC.index;
+				int index = DC.data.setpalette.index;
 				if (index < 0 || index > 255)
 				{
 					fprintf(stderr, "DCQ panic: Tried to set palette #%i", index);
 				}
 				else
 				{
-					palette[index].r = DC.r & 0xFF;
-					palette[index].g = DC.g & 0xFF;
-					palette[index].b = DC.b & 0xFF;
+					palette[index].r = DC.data.setpalette.r & 0xFF;
+					palette[index].g = DC.data.setpalette.g & 0xFF;
+					palette[index].b = DC.data.setpalette.b & 0xFF;
 				}
 				break;
 			}
@@ -567,25 +562,26 @@ TFB_FlushGraphics () // Only call from main thread!!
 			{
 				SDL_Rect targetRect;
 				SDL_Surface *surf;
-
+				TFB_Image *DC_image = (TFB_Image *)DC.data.image.image;
 
 				if (DC_image == 0)
 				{
-					fprintf (stderr, "TFB_FlushGraphics(): error, DC_image == 0\n");
+					fprintf (stderr, "DCQ ERROR: IMAGE passed null image ptr\n");
 					break;
 				}
 
-				targetRect.x = DC.x;
-				targetRect.y = DC.y;
+				LockMutex (DC_image->mutex);
+				targetRect.x = DC.data.image.x;
+				targetRect.y = DC.data.image.y;
 
-				if (DC.UseScaling)
+				if (DC.data.image.UseScaling)
 					surf = DC_image->ScaledImg;
 				else
 					surf = DC_image->NormalImg;
 
 				if (surf->format->palette)
 				{
-					if (DC.UsePalette)
+					if (DC.data.image.UsePalette)
 					{
 						SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
 					}
@@ -595,7 +591,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 					}
 				}
 
-				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.destBuffer], &targetRect, DC.BlendNumerator, DC.BlendDenominator);
+				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.data.image.destBuffer], &targetRect, DC.data.image.BlendNumerator, DC.data.image.BlendDenominator);
+				UnlockMutex (DC_image->mutex);
 
 				break;
 			}
@@ -605,32 +602,33 @@ TFB_FlushGraphics () // Only call from main thread!!
 				SDL_Surface *surf;
 				int i;
 				TFB_Palette pal[256];
-
+				TFB_Image *DC_image = (TFB_Image *)DC.data.filledimage.image;
 
 				if (DC_image == 0)
 				{
-					fprintf (stderr, "TFB_FlushGraphics(): error, DC_image == 0\n");
+					fprintf (stderr, "DCQ ERROR: FILLEDIMAGE passed null image ptr\n");
 					break;
 				}
+				LockMutex (DC_image->mutex);
 
-				targetRect.x = DC.x;
-				targetRect.y = DC.y;
+				targetRect.x = DC.data.filledimage.x;
+				targetRect.y = DC.data.filledimage.y;
 
-				if (DC.UseScaling)
+				if (DC.data.filledimage.UseScaling)
 					surf = DC_image->ScaledImg;
 				else
 					surf = DC_image->NormalImg;
 				
 				for (i = 0; i < 256; i++)
 				{
-					pal[i].r = DC.r;
-					pal[i].g = DC.g;
-					pal[i].b = DC.b;
+					pal[i].r = DC.data.filledimage.r;
+					pal[i].g = DC.data.filledimage.g;
+					pal[i].b = DC.data.filledimage.b;
 				}
 				SDL_SetColors (surf, (SDL_Color*)pal, 0, 256);
 
-				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.destBuffer], &targetRect, DC.BlendNumerator, DC.BlendDenominator);
-
+				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.data.filledimage.destBuffer], &targetRect, DC.data.filledimage.BlendNumerator, DC.data.filledimage.BlendDenominator);
+				UnlockMutex (DC_image->mutex);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
@@ -641,15 +639,20 @@ TFB_FlushGraphics () // Only call from main thread!!
 				PutPixelFn screen_plot;
 
 				screen_plot = putpixel_for (SDL_Screen);
-				color = SDL_MapRGB (SDL_Screen->format, DC.r, DC.g, DC.b);
+				color = SDL_MapRGB (SDL_Screen->format, DC.data.line.r, DC.data.line.g, DC.data.line.b);
 
-				x1 = DC.x;
-				x2 = DC.w;
-				y1 = DC.y;
-				y2 = DC.h;
+				x1 = DC.data.line.x1;
+				x2 = DC.data.line.x2;
+				y1 = DC.data.line.y1;
+				y2 = DC.data.line.y2;
 				
 				SDL_GetClipRect(SDL_Screen, &r);
 				
+				/* Danger, Will Robinson!  This code
+				   looks VERY suspicious.  It will end
+				   up changing the slope of the
+				   line! */
+
 				if (x1 < r.x)
 					x1 = r.x;
 				else if (x1 > r.x + r.w)
@@ -670,30 +673,30 @@ TFB_FlushGraphics () // Only call from main thread!!
 				else if (y2 > r.y + r.h)
 					y2 = r.y + r.h;
 
-				SDL_LockSurface (SDL_Screens[DC.destBuffer]);
-				line (x1, y1, x2, y2, color, screen_plot, SDL_Screens[DC.destBuffer]);
-				SDL_UnlockSurface (SDL_Screens[DC.destBuffer]);
+				SDL_LockSurface (SDL_Screens[DC.data.line.destBuffer]);
+				line (x1, y1, x2, y2, color, screen_plot, SDL_Screens[DC.data.line.destBuffer]);
+				SDL_UnlockSurface (SDL_Screens[DC.data.line.destBuffer]);
 
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
 				SDL_Rect r;
-				r.x = DC.x;
-				r.y = DC.y;
-				r.w = DC.w;
-				r.h = DC.h;
+				r.x = DC.data.rect.x;
+				r.y = DC.data.rect.y;
+				r.w = DC.data.rect.w;
+				r.h = DC.data.rect.h;
 
-				SDL_FillRect(SDL_Screens[DC.destBuffer], &r, SDL_MapRGB(SDL_Screen->format, DC.r, DC.g, DC.b));
+				SDL_FillRect(SDL_Screens[DC.data.rect.destBuffer], &r, SDL_MapRGB(SDL_Screen->format, DC.data.rect.r, DC.data.rect.g, DC.data.rect.b));
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
 			{
 				SDL_Rect r;
-				r.x = DC.x;
-				r.y = DC.y;
-				r.w = DC.w;
-				r.h = DC.h;
+				r.x = DC.data.scissor.x;
+				r.y = DC.data.scissor.y;
+				r.w = DC.data.scissor.w;
+				r.h = DC.data.scissor.h;
 				
 				SDL_SetClipRect(SDL_Screen, &r);
 				break;
@@ -704,50 +707,67 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC.x;
-				src.y = dest.y = DC.y;
-				src.w = DC.w;
-				src.h = DC.h;
+				TFB_Image *DC_image = (TFB_Image *)DC.data.copytoimage.image;
+
+				if (DC_image == 0)
+				{
+					fprintf (stderr, "DCQ ERROR: COPYTOIMAGE passed null image ptr\n");
+					break;
+				}
+				LockMutex (DC_image->mutex);
+
+				src.x = dest.x = DC.data.copytoimage.x;
+				src.y = dest.y = DC.data.copytoimage.y;
+				src.w = DC.data.copytoimage.w;
+				src.h = DC.data.copytoimage.h;
 
 				dest.x = 0;
 				dest.y = 0;
-				TFB_BlitSurface(SDL_Screens[DC.srcBuffer], &src, DC_image->NormalImg, &dest, DC.BlendNumerator, DC.BlendDenominator);
+				TFB_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer], &src, DC_image->NormalImg, &dest, DC.data.copytoimage.BlendNumerator, DC.data.copytoimage.BlendDenominator);
+				UnlockMutex (DC_image->mutex);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_COPY:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC.x;
-				src.y = dest.y = DC.y;
-				src.w = DC.w;
-				src.h = DC.h;
+				src.x = dest.x = DC.data.copy.x;
+				src.y = dest.y = DC.data.copy.y;
+				src.w = DC.data.copy.w;
+				src.h = DC.data.copy.h;
 
-				TFB_BlitSurface(SDL_Screens[DC.srcBuffer], &src, SDL_Screens[DC.destBuffer], &dest, DC.BlendNumerator, DC.BlendDenominator);
+				TFB_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest, DC.data.copy.BlendNumerator, DC.data.copy.BlendDenominator);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
-			SDL_FreeSurface (DC_image->NormalImg);
+			{
+				TFB_Image *DC_image = (TFB_Image *)DC.data.deleteimage.image;
+
+				if (DC_image == 0)
+				{
+					fprintf (stderr, "DCQ ERROR: DELETEIMAGE passed null image ptr\n");
+					break;
+				}
+				LockMutex (DC_image->mutex);
+
+				SDL_FreeSurface (DC_image->NormalImg);
 			
-			if (DC_image->ScaledImg) {
-				//fprintf (stderr, "DELETEIMAGE to ScaledImg %x, size %d %d\n",DC_image->ScaledImg,DC_image->ScaledImg->w,DC_image->ScaledImg->h);
-				SDL_FreeSurface (DC_image->ScaledImg);
+				if (DC_image->ScaledImg) {
+					SDL_FreeSurface (DC_image->ScaledImg);
+				}
+
+				if (DC_image->Palette)
+					HFree (DC_image->Palette);
+
+				UnlockMutex (DC_image->mutex);
+				DestroyMutex (DC_image->mutex);
+			
+				HFree (DC_image);
+				break;
 			}
-
-			if (DC_image->Palette)
-				HFree (DC_image->Palette);
-
-			UnlockMutex (DC_image->mutex);
-			DestroyMutex (DC_image->mutex);
-			
-			HFree (DC_image);
-			DC_image = 0;
-			break;
 		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
-			SignalThread (DC.thread);
+			SignalThread (DC.data.sendsignal.thread);
 			break;
 		}		
-		if (DC_image)
-			UnlockMutex (DC_image->mutex);
 	}
 	
 	if (livelock_deterrence)

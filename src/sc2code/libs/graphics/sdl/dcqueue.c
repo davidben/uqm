@@ -231,7 +231,9 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 		return;
 	}
 
-	DrawCommand->thread = CurrentThreadID ();
+	if (DrawCommand->Type == TFB_DRAWCOMMANDTYPE_SENDSIGNAL)
+		DrawCommand->data.sendsignal.thread = CurrentThreadID ();
+
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
 			&& TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -250,20 +252,19 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 
 			scissor_rect = _pCurContext->ClipRect;
 
-			DC.Type = scissor_rect.extent.width
-					? (DC.x = scissor_rect.corner.x,
-					DC.y=scissor_rect.corner.y,
-					DC.w=scissor_rect.extent.width,
-					DC.h=scissor_rect.extent.height),
-					TFB_DRAWCOMMANDTYPE_SCISSORENABLE
-					: TFB_DRAWCOMMANDTYPE_SCISSORDISABLE;
-
-			DC.image = 0;
-			DC.UsePalette = FALSE;
-			
-			DC.BlendNumerator = BlendNumerator;
-			DC.BlendDenominator = BlendDenominator;
-
+			if (scissor_rect.extent.width)
+			{
+				DC.Type = TFB_DRAWCOMMANDTYPE_SCISSORENABLE;
+				DC.data.scissor.x = scissor_rect.corner.x;
+				DC.data.scissor.y = scissor_rect.corner.y;
+				DC.data.scissor.w = scissor_rect.extent.width;
+				DC.data.scissor.h = scissor_rect.extent.height;
+			}
+			else
+			{
+				DC.Type = TFB_DRAWCOMMANDTYPE_SCISSORDISABLE;
+			}
+				
 			TFB_EnqueueDrawCommand(&DC);
 		}
 	}

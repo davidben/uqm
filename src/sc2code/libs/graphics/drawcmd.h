@@ -37,27 +37,92 @@ enum
 	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
 };
 
-typedef struct tfb_drawcommand
+typedef struct tfb_dc_line
 {
-	int Type;
-	int x;
-	int y;
-	int w;
-	int h;
+	int x1, y1, x2, y2;
+	int r, g, b;
+	SCREEN destBuffer;
+} TFB_DrawCommand_Line;
+
+typedef struct tfb_dc_rect
+{
+	int x, y, w, h;
+	int r, g, b;
+	SCREEN destBuffer;
+} TFB_DrawCommand_Rect;
+
+typedef struct tfb_dc_img
+{
 	TFB_ImageStruct *image;
-	int r;
-	int g;
-	int b;
-	int index;
-	int BlendNumerator;
-	int BlendDenominator;
-	DWORD thread;
-	SCREEN srcBuffer;
+	int x, y;
+	int BlendNumerator, BlendDenominator;
 	SCREEN destBuffer;
 	BOOLEAN UsePalette;
 	BOOLEAN UseScaling;
-} TFB_DrawCommand;
+} TFB_DrawCommand_Image;
 
+typedef struct tfb_dc_filledimg
+{
+	TFB_ImageStruct *image;
+	int x, y;
+	int r, g, b;
+	int BlendNumerator, BlendDenominator;
+	SCREEN destBuffer;
+	BOOLEAN UseScaling;
+} TFB_DrawCommand_FilledImage;
+
+typedef struct tfb_dc_copy
+{
+	int x, y, w, h;
+	int BlendNumerator, BlendDenominator;
+	SCREEN srcBuffer, destBuffer;
+} TFB_DrawCommand_Copy;
+
+typedef struct tfb_dc_copyimg
+{
+	TFB_ImageStruct *image;
+	int x, y, w, h;
+	int BlendNumerator, BlendDenominator;
+	SCREEN srcBuffer;
+} TFB_DrawCommand_CopyToImage;
+
+typedef struct tfb_dc_scissor
+{
+	int x, y, w, h;
+} TFB_DrawCommand_Scissor;
+
+typedef struct tfb_dc_setpal
+{
+	int index;
+	int r, g, b;
+} TFB_DrawCommand_SetPalette;
+
+typedef struct tfb_dc_delimg
+{
+	TFB_ImageStruct *image;
+} TFB_DrawCommand_DeleteImage;
+
+typedef struct tfb_dc_signal
+{
+	DWORD thread;
+} TFB_DrawCommand_SendSignal;
+
+typedef struct tfb_drawcommand
+{
+	int Type;
+	union {
+		TFB_DrawCommand_Line line;
+		TFB_DrawCommand_Rect rect;
+		TFB_DrawCommand_Image image;
+		TFB_DrawCommand_FilledImage filledimage;
+		TFB_DrawCommand_Copy copy;
+		TFB_DrawCommand_CopyToImage copytoimage;
+		TFB_DrawCommand_Scissor scissor;
+		TFB_DrawCommand_SetPalette setpalette;
+		TFB_DrawCommand_DeleteImage deleteimage;
+		TFB_DrawCommand_SendSignal sendsignal;
+	} data;
+} TFB_DrawCommand;
 
 // Queue Stuff
 
