@@ -381,7 +381,7 @@ We now terminate communication in a civil, yet efficient manner.
 As do we. Go now with neither malice nor joy.
 
 #(TOO_LATE)	utwig040.ogg
-TOO LATE 
+It is too late.
 
 #(name_1)
 The New Alliance of Free Stars
@@ -696,4 +696,6 @@ Further assistance would be redundant.
 Just so. The Ultron has hummed its assent.
 Take possession of four of our Jugger craft instantly.
 
-
+#(NO_ULTRON_AT_BOMB)	utwig074.ogg
+We are the stewards of the Bomb.
+Taunting us buys you nothing. Go now!
