@@ -652,6 +652,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					else if (InputState & DEVICE_BUTTON2)
 					{
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
+						SetFlashRect ((PRECT)~0L, (FRAME)0);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 					}
 					else if (InputState & DEVICE_BUTTON1)
