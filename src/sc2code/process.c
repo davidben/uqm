@@ -19,6 +19,8 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 
+#define GSCALE_SHIFT 2 // controls the number of discrete scaling steps
+
 COUNT DisplayFreeList;
 PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 extern POINT SpaceOrg;
@@ -1104,7 +1106,7 @@ if (clear)
 	COUNT index, scale;
 	
 	CALC_ZOOM_STUFF (&index, &scale);
-	SetGraphicScale (scale);
+	SetGraphicScale ((scale >> GSCALE_SHIFT) << GSCALE_SHIFT);
 }
 			DrawBatch (DisplayArray, DisplayLinks, 0);//BATCH_BUILD_PAGE);
 SetGraphicScale (0);

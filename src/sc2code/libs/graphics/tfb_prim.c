@@ -46,9 +46,8 @@ void
 TFB_Prim_Rect (PRECT r, TFB_Palette *color)
 {
 	RECT arm;
-	int gscale, gscale_identity;
+	int gscale;
 	gscale = GetGraphicScale ();
-	gscale_identity = GetGraphicScaleIdentity ();
 	arm = *r;
 	arm.extent.width = r->extent.width;
 	arm.extent.height = 1;
@@ -56,10 +55,10 @@ TFB_Prim_Rect (PRECT r, TFB_Palette *color)
 	arm.extent.height = r->extent.height;
 	arm.extent.width = 1;
 	TFB_Prim_FillRect (&arm, color);
-	arm.corner.x += ((r->extent.width * gscale) / gscale_identity) - 1;
+	arm.corner.x += ((r->extent.width * gscale) / GSCALE_IDENTITY) - 1;
 	TFB_Prim_FillRect (&arm, color);
 	arm.corner.x = r->corner.x;
-	arm.corner.y += ((r->extent.height * gscale) / gscale_identity) - 1;
+	arm.corner.y += ((r->extent.height * gscale) / GSCALE_IDENTITY) - 1;
 	arm.extent.width = r->extent.width;
 	arm.extent.height = 1;
 	TFB_Prim_FillRect (&arm, color);	
@@ -69,7 +68,7 @@ void
 TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 {
 	RECT rect;
-	int gscale, gscale_identity;
+	int gscale;
 
 	rect.corner.x = r->corner.x - _CurFramePtr->HotSpot.x;
 	rect.corner.y = r->corner.y - _CurFramePtr->HotSpot.y;
@@ -77,11 +76,10 @@ TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 	rect.extent.height = r->extent.height;
 
 	gscale = GetGraphicScale ();
-	gscale_identity = GetGraphicScaleIdentity ();
-	if (gscale != gscale_identity)
+	if (gscale != GSCALE_IDENTITY)
 	{
-		rect.extent.width = (rect.extent.width * gscale) / gscale_identity;
-		rect.extent.height = (rect.extent.height * gscale) / gscale_identity;
+		rect.extent.width = (rect.extent.width * gscale) / GSCALE_IDENTITY;
+		rect.extent.height = (rect.extent.height * gscale) / GSCALE_IDENTITY;
 		rect.corner.x += (r->extent.width -
 				  rect.extent.width) >> 1;
 		rect.corner.y += (r->extent.height -
@@ -118,7 +116,7 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	TFB_Image *img;
 	BOOLEAN paletted;
 	TFB_Palette palette[256];
-	int gscale, gscale_identity;
+	int gscale;
 
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
 	if (!SrcFramePtr)
@@ -128,7 +126,6 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	}
 	img = SrcFramePtr->image;
 	gscale = GetGraphicScale ();
-	gscale_identity = GetGraphicScaleIdentity ();
 	
 	if (!img)
 	{
@@ -142,12 +139,12 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	y = stmp->origin.y - _CurFramePtr->HotSpot.y - SrcFramePtr->HotSpot.y;
 	paletted = FALSE;
 
-	if (gscale != GetGraphicScaleIdentity ())
+	if (gscale != GSCALE_IDENTITY)
 	{
 		x += (SrcFramePtr->HotSpot.x *
-		      (gscale_identity - gscale)) / gscale_identity;
+		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
 		y += (SrcFramePtr->HotSpot.y *
-		      (gscale_identity - gscale)) / gscale_identity;
+		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
 	}
 
 	if (TFB_DrawCanvas_IsPaletted(img->NormalImg) && img->colormap_index != -1)
@@ -177,7 +174,7 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	PFRAME_DESC SrcFramePtr;
 	TFB_Image *img;
 	int r, g, b;
-	int gscale, gscale_identity;
+	int gscale;
 
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
 	if (!SrcFramePtr)
@@ -187,7 +184,6 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	}
 	img = SrcFramePtr->image;
 	gscale = GetGraphicScale ();
-	gscale_identity = GetGraphicScaleIdentity ();
 
 	if (!img)
 	{
@@ -203,12 +199,12 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	g = color->g;
 	b = color->b;
 
-	if (gscale != gscale_identity)
+	if (gscale != GSCALE_IDENTITY)
 	{
 		x += (SrcFramePtr->HotSpot.x *
-		      (gscale_identity - gscale)) / gscale_identity;
+		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
 		y += (SrcFramePtr->HotSpot.y *
-		      (gscale_identity - gscale)) / gscale_identity;
+		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
 	}
 
 	UnlockMutex (img->mutex);

@@ -21,29 +21,18 @@
 #include "sdl_common.h"
 #include "graphics/tfb_draw.h"
 
-#define GSCALE_SHIFT 2 // controls the number of scale steps
-#define GSCALE_IDENTITY (256 >> GSCALE_SHIFT) // 'identity scale'
-
 static int gscale = GSCALE_IDENTITY;
 
 void
 SetGraphicScale (int scale)
 {
-	gscale = scale >> GSCALE_SHIFT;
-	if (gscale == 0)
-		gscale = GSCALE_IDENTITY;
+	gscale = (scale ? scale : GSCALE_IDENTITY);
 }
 
 int
 GetGraphicScale ()
 {
 	return gscale;
-}
-
-int
-GetGraphicScaleIdentity (void) 
-{
-	return GSCALE_IDENTITY;
 }
 
 static void

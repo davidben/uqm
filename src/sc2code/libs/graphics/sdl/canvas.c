@@ -48,7 +48,7 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	targetRect.x = x;
 	targetRect.y = y;
 
-	if (scale != 0 && scale != GetGraphicScaleIdentity ())
+	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
 		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
@@ -99,7 +99,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	targetRect.x = x;
 	targetRect.y = y;
 
-	if (scale != 0 && scale != GetGraphicScaleIdentity ())
+	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
 		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
@@ -273,8 +273,8 @@ void
 TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, int scale, PEXTENT size)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
-	size->width = (int) (src->w * scale / (float)GetGraphicScaleIdentity ());
-	size->height = (int) (src->h * scale / (float)GetGraphicScaleIdentity ());
+	size->width = (int) (src->w * scale / (float)GSCALE_IDENTITY);
+	size->height = (int) (src->h * scale / (float)GSCALE_IDENTITY);
 }
 
 void

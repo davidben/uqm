@@ -84,7 +84,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	DC.data.image.image = img;
 	DC.data.image.x = x;
 	DC.data.image.y = y;
-	DC.data.image.scale = (scale == GetGraphicScaleIdentity ()) ? 0 : scale;
+	DC.data.image.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
 
 
 	if (palette != NULL)
@@ -130,7 +130,7 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	DC.data.filledimage.image = img;
 	DC.data.filledimage.x = x;
 	DC.data.filledimage.y = y;
-	DC.data.filledimage.scale = (scale == GetGraphicScaleIdentity ()) ? 0 : scale;
+	DC.data.filledimage.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
 	DC.data.filledimage.r = r;
 	DC.data.filledimage.g = g;
 	DC.data.filledimage.b = b;
