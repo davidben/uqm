@@ -79,8 +79,7 @@ typedef struct
 
 typedef struct melee_state
 {
-	BOOLEAN (*InputFunc) (INPUT_STATE InputState, struct melee_state *
-			pInputState);
+	BOOLEAN (*InputFunc) (struct melee_state *pInputState);
 	COUNT MenuRepeatDelay;
 
 	BOOLEAN Initialized;

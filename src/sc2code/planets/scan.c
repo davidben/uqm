@@ -20,6 +20,7 @@
 #include "lifeform.h"
 #include "libs/graphics/gfx_common.h"
 #include "options.h"
+#include "controls.h"
 //Added by Chris
 
 void
@@ -646,11 +647,14 @@ flash_planet_loc_func(void *data)
 	return(0);
 }
 
-static BOOLEAN DoScan (INPUT_STATE InputState, PMENU_STATE pMS);
+static BOOLEAN DoScan (PMENU_STATE pMS);
 
 static BOOLEAN
-PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
+PickPlanetSide (PMENU_STATE pMS)
 {
+	BOOLEAN select, cancel;
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		if (pMenuState->flash_task)
@@ -661,16 +665,16 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 		goto ExitPlanetSide;
 	}
 
-	pMS->MenuRepeatDelay = 0;
 	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = PickPlanetSide;
+		SetMenuRepeatDelay (0, 0, 0);
 		if (pMS->CurFrame == 0)
 		{
 			pMS->CurFrame = (FRAME)MenuSounds;
 			MenuSounds = 0;
 		}
-		if (!(InputState & DEVICE_BUTTON1))
+		if (!select)
 		{
 			RECT r;
 
@@ -698,7 +702,7 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 					2048, "flash planet location");
 		}
 	}
-	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+	else if (select || cancel)
 	{
 		STAMP s;
 
@@ -714,7 +718,7 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 			pMenuState->flash_task = 0;
 		}
 
-		if (!(InputState & DEVICE_BUTTON1))
+		if (!select)
 			SetPlanetLoc (pSolarSysState->MenuState.first_item);
 		else
 		{
@@ -803,16 +807,21 @@ ExitPlanetSide:
 
 		pMS->InputFunc = DoScan;
 		pMS->CurState = DISPATCH_SHUTTLE;
-		pMS->MenuRepeatDelay = MENU_REPEAT_DELAY;
+		SetDefaultMenuRepeatDelay ();
 	}
 	else
 	{
-		SIZE dx, dy;
+		SIZE dx = 0, dy = 0;
 		POINT new_pt;
 
 		new_pt = pSolarSysState->MenuState.first_item;
 
-		dx = GetInputXComponent (InputState) << MAG_SHIFT;
+		if (CurrentMenuState.left) dx = -1;
+		if (CurrentMenuState.right) dx = 1;
+		if (CurrentMenuState.up) dy = -1;
+		if (CurrentMenuState.down) dy = 1;
+
+		dx = dx << MAG_SHIFT;
 		if (dx)
 		{
 			new_pt.x += dx;
@@ -821,7 +830,7 @@ ExitPlanetSide:
 			else if (new_pt.x >= (MAP_WIDTH << MAG_SHIFT))
 				new_pt.x -= (MAP_WIDTH << MAG_SHIFT);
 		}
-		dy = GetInputYComponent (InputState) << MAG_SHIFT;
+		dy = dy << MAG_SHIFT;
 		if (dy)
 		{
 			new_pt.y += dy;
@@ -935,11 +944,12 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 }
 
 static BOOLEAN
-DoScan (INPUT_STATE InputState, PMENU_STATE
-		pMS)
+DoScan (PMENU_STATE pMS)
 {
-	//STAMP s;
 	DWORD TimeIn, WaitTime;
+	BOOLEAN select, cancel;
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
@@ -948,9 +958,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoScan;
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| ((InputState & DEVICE_BUTTON1)
-			&& pMS->CurState == EXIT_SCAN))
+	else if (cancel || (select && pMS->CurState == EXIT_SCAN))
 	{
 		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
@@ -964,11 +972,11 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (select)
 	{
 		BYTE min_scan, max_scan;
 		RECT r;
-		INPUT_STATE PressState, ButtonState;
+		BOOLEAN PressState, ButtonState;
 
 		if (pMS->CurState == DISPATCH_SHUTTLE)
 		{
@@ -1009,7 +1017,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 		
 			pMS->Initialized = FALSE;
 			pMS->CurFrame = 0;
-			return (PickPlanetSide (InputState, pMS));
+			return (PickPlanetSide (pMS));
 		}
 
 		pSolarSysState->MenuState.Initialized += 4;
@@ -1102,7 +1110,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			if (PressState)
 			{
 				PressState = ButtonState;
-				ButtonState = 0;
+				ButtonState = FALSE;
 			}
 			if (ButtonState)
 				i = -i;
@@ -1153,7 +1161,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 	else if (!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity !=
 			GAS_GIANT_ATMOSPHERE)
-		DoMenuChooser (InputState, pMS, PM_MIN_SCAN);
+		DoMenuChooser (pMS, PM_MIN_SCAN);
 
 	return (TRUE);
 }

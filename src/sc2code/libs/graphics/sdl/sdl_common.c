@@ -27,6 +27,7 @@
 #include "uqmversion.h"
 #include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/input/sdl/vcontrol.h"
 #include "bbox.h"
 
 SDL_Surface *SDL_Video;
@@ -102,18 +103,12 @@ TFB_ProcessEvents ()
 
 	while (SDL_PollEvent (&Event))
 	{
+		/* Run through the InputEvent filter. */
+		ProcessInputEvent (&Event);
+		/* Handle Graphics events. */
 		switch (Event.type) {
 			case SDL_ACTIVEEVENT:    /* Loose/gain visibility */
 				// TODO
-				break;
-			case SDL_KEYDOWN:        /* Key pressed */
-			case SDL_KEYUP:          /* Key released */
-				ProcessKeyboardEvent (&Event);
-				break;
-			case SDL_JOYAXISMOTION:  /* Joystick axis motion */
-			case SDL_JOYBUTTONDOWN:  /* Joystick button pressed */
-			case SDL_JOYBUTTONUP:    /* Joystick button released */
-				ProcessJoystickEvent (&Event);
 				break;
 			case SDL_QUIT:
 				exit (0);
@@ -128,6 +123,8 @@ TFB_ProcessEvents ()
 				break;
 		}
 	}
+	if (ImmediateInputState.abort)
+		exit (0);
 }
 
 void

@@ -19,6 +19,8 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 #include "options.h"
+#include "controls.h"
+#include "libs/inplib.h"
 
 //Added by Chris
 
@@ -597,7 +599,7 @@ ZoomStarMap (SIZE dir)
 }
 
 static BOOLEAN
-DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
+DoMoveCursor (PMENU_STATE pMS)
 {
 #define MIN_ACCEL_DELAY (ONE_SECOND / 60)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
@@ -615,15 +617,18 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 				);
 		pMS->InputFunc = DoMoveCursor;
 
+		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY);
+
 		pMS->flash_task = AssignTask (flash_cursor_func, 2048,
 				"flash location on star map");
 		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+		
 		last_buf = ~0;
 		buf[0] = '\0';
 		goto UpdateCursorInfo;
 	}
-	else if (InputState & DEVICE_BUTTON2)
+	else if (CurrentMenuState.cancel)
 	{
 		if (pMS->flash_task)
 		{
@@ -633,7 +638,7 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		GLOBAL (autopilot) = pMS->first_item;
 
@@ -646,27 +651,24 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 		SIZE ZoomIn, ZoomOut;
 
 		ZoomIn = ZoomOut = 0;
-		if (InputState & DEVICE_LEFTSHIFT)
+		if (CurrentMenuState.zoom_in)
 			ZoomIn = 1;
-		else if (InputState & DEVICE_RIGHTSHIFT)
+		else if (CurrentMenuState.zoom_out)
 			ZoomOut = 1;
 
 		ZoomStarMap (ZoomOut - ZoomIn);
 
-		sx = GetInputXComponent (InputState);
-		sy = GetInputYComponent (InputState);
+		sx = sy = 0;
+		if (CurrentMenuState.left)  sx = -1;
+		if (CurrentMenuState.right) sx =  1;
+		if (CurrentMenuState.up)    sy = -1;
+		if (CurrentMenuState.down)  sy =  1;
+
 		if (sx == 0 && sy == 0)
 		{
-			extern INPUT_STATE OldInputState;
-
-			if (OldInputState == 0)
-				pMS->CurState = MAX_ACCEL_DELAY;
 		}
 		else
 		{
-			if (pMS->CurState > MIN_ACCEL_DELAY)
-				pMS->CurState -= STEP_ACCEL_DELAY;
-
 			pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 			pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
 
@@ -1098,7 +1100,7 @@ DoStarMap (void)
 
 	MenuState.InputFunc = DoMoveCursor;
 	MenuState.Initialized = FALSE;
-	MenuState.CurState = MAX_ACCEL_DELAY;
+	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY);
 
 	transition_pending = TRUE;
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
@@ -1123,6 +1125,7 @@ DoStarMap (void)
 
 	OldMenuSounds = MenuSounds;
 	MenuSounds = 0;
+
 	DoInput ((PVOID)&MenuState);
 	MenuSounds = OldMenuSounds;
 
@@ -1143,7 +1146,7 @@ DoStarMap (void)
 }
 
 BOOLEAN
-DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
+DoFlagshipCommands (PMENU_STATE pMS)
 {
 	if (!(pMS->Initialized & 1))
 	{
@@ -1151,6 +1154,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else
 	{
+		BOOLEAN select = CurrentMenuState.select;
 		SetSemaphore (GraphicsSem);
 		while (((PMENU_STATE volatile)pMS)->CurState == 0
 				&& (((PMENU_STATE volatile)pMS)->Initialized & 1)
@@ -1171,14 +1175,14 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 			BYTE NewState;
 			// For some reason, DoFlagshipCommands uses CurState a bit differently
 			pMS->CurState --;
-			DoMenu = DoMenuChooser (InputState, pMS, 
+			DoMenu = DoMenuChooser (pMS, 
 				(BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN));
 			pMS->CurState ++;
 
 			if (!DoMenu) {
 
 				NewState = pMS->CurState;
-				if ((InputState & DEVICE_BUTTON1) || LastActivity == CHECK_LOAD)
+				if (select || LastActivity == CHECK_LOAD)
 				{
 					CONTEXT OldContext;
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
@@ -1199,7 +1203,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 
 							pMenuState = pMS;
 							if (!Devices (pMS))
-								InputState &= ~DEVICE_BUTTON1;
+								select = FALSE;
 							pMenuState = 0;
 							if (GET_GAME_STATE (PORTAL_COUNTER))
 								return (FALSE);
@@ -1217,7 +1221,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 							extern BOOLEAN Roster (void);
 
 							if (!Roster ())
-								InputState &= ~DEVICE_BUTTON1;
+								select = FALSE;
 							break;
 						}
 						case GAME_MENU:
@@ -1312,7 +1316,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						SetSemaphore (GraphicsSem);
 						SetFlashRect ((PRECT)~0L, (FRAME)0);
 						ClearSemaphore (GraphicsSem);
-						if (InputState & DEVICE_BUTTON1)
+						if (select)
 						{
 							if (optWhichMenu != OPT_PC)
 								pMS->CurState = (NAVIGATION) + 1;

@@ -159,9 +159,6 @@ extern SIZE screen_width, screen_height;
 extern FRAME Screen, RadarFrame;
 extern FONT StarConFont, MicroFont, TinyFont;
 extern BOOLEAN PagingEnabled;
-extern INPUT_REF ArrowInput, ComputerInput, NormalInput, SerialInput,
-						JoystickInput[NUM_PLAYERS], KeyboardInput[NUM_PLAYERS],
-						CombinedInput[NUM_PLAYERS], PlayerInput[NUM_PLAYERS];
 extern FRAME ActivityFrame;
 extern SOUND MenuSounds, GameSounds;
 extern QUEUE race_q[NUM_PLAYERS];
@@ -184,17 +181,11 @@ extern void SetFlashRect (PRECT pRect, FRAME f);
 extern void DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR
 		TopLeftColor, COLOR BottomRightColor, BOOLEAN FillInterior, COLOR
 		InteriorColor);
-extern INPUT_STATE ConfirmExit (void);
+extern BOOLEAN ConfirmExit (void);
 extern DWORD SeedRandomNumbers (void);
 extern BOOLEAN StarConDiskError (PSTR pFileName);
 extern void ReportDiskError (PSTR pFileName, DISK_ERROR ErrorCondition);
 extern void DoInput (PVOID pInputState);
-extern INPUT_STATE game_input (INPUT_REF InputRef, INPUT_STATE
-		InputState);
-extern INPUT_STATE combined_input0 (INPUT_REF InputRef, INPUT_STATE
-		InputState);
-extern INPUT_STATE combined_input1 (INPUT_REF InputRef, INPUT_STATE
-		InputState);
 extern BOOLEAN Battle (void);
 extern void EncounterBattle (void);
 extern void SetPlayerInput (void);
@@ -230,6 +221,7 @@ extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT pOrg, SIZE width,
 
 extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
 extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
+extern volatile BOOLEAN GamePaused, GameExiting, ExitRequested;
 
 //Added by Chris
 

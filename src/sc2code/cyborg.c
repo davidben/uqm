@@ -1008,7 +1008,7 @@ Avoid (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 	(void) EvalDescPtr;  /* Satisfying compiler (unused parameter) */
 }
 
-INPUT_STATE
+BATTLE_INPUT_STATE
 tactical_intelligence (void)
 {
 	ELEMENTPTR ShipPtr;
@@ -1325,22 +1325,19 @@ StarShipPtr->ship_input_state &= ~SPECIAL;
 
 	StarShipPtr->ShipFacing = ShipFacing;
 	{
-		INPUT_STATE InputState;
+		BATTLE_INPUT_STATE InputState;
 
 		InputState = 0;
 		if (StarShipPtr->ship_input_state & LEFT)
-			SetInputXComponent (&InputState, -1);
+			InputState |= BATTLE_LEFT;
 		else if (StarShipPtr->ship_input_state & RIGHT)
-			SetInputXComponent (&InputState, 1);
+			InputState |= BATTLE_RIGHT;
 		if (StarShipPtr->ship_input_state & THRUST)
-			SetInputYComponent (&InputState, -1);
+			InputState |= BATTLE_THRUST;
 		if (StarShipPtr->ship_input_state & WEAPON)
-			InputState |= DEVICE_BUTTON2;
+			InputState |= BATTLE_WEAPON;
 		if (StarShipPtr->ship_input_state & SPECIAL)
-			InputState |= DEVICE_BUTTON3;
-		if (InputState)
-			SetInputDevType (&InputState, JOYSTICK_DEVICE);
-
+			InputState |= BATTLE_SPECIAL;
 		return (InputState);
 	}
 }

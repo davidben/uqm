@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -275,9 +276,14 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 }
 
 static BOOLEAN
-DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
+DoDiscardCargo (PMENU_STATE pMS)
 {
 	BYTE NewState;
+	BOOLEAN select, cancel, back, forward;
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
+	back = CurrentMenuState.up || CurrentMenuState.left;
+	forward = CurrentMenuState.down || CurrentMenuState.right;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -291,7 +297,7 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->CurState = (BYTE)~0;
 		goto SelectCargo;
 	}
-	else if (InputState & DEVICE_BUTTON2)
+	else if (cancel)
 	{
 		SetSemaphore (GraphicsSem);
 		ClearSISRect (DRAW_SIS_DISPLAY);
@@ -299,7 +305,7 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (select)
 	{
 		if (GLOBAL_SIS (ElementAmounts[pMS->CurState - 1]))
 		{
@@ -315,14 +321,12 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 	else
 	{
 		NewState = pMS->CurState - 1;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (back)
 		{
 			if (NewState-- == 0)
 				NewState = NUM_ELEMENT_CATEGORIES - 1;
 		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (forward)
 		{
 			if (++NewState == NUM_ELEMENT_CATEGORIES)
 				NewState = 0;

@@ -21,6 +21,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
 #include "options.h"
+#include "controls.h"
 
 extern Task flash_task;
 extern RECT flash_rect;
@@ -434,7 +435,7 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 }
 
 BOOLEAN
-DoMenuChooser (INPUT_STATE InputState, PMENU_STATE pMS, BYTE BaseState)
+DoMenuChooser (PMENU_STATE pMS, BYTE BaseState)
 {
 	{
 
@@ -443,13 +444,11 @@ DoMenuChooser (INPUT_STATE InputState, PMENU_STATE pMS, BYTE BaseState)
 		BOOLEAN useAltMenu = FALSE;
 		if (optWhichMenu == OPT_PC)
 			useAltMenu = GetAlternateMenu (&BaseState, &NewState);
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.left || CurrentMenuState.up)
 			NewState = PreviousMenuState (BaseState, NewState);
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.right || CurrentMenuState.down)
 			NewState = NextMenuState (BaseState, NewState);
-		else if (useAltMenu && InputState & DEVICE_BUTTON1)
+		else if (useAltMenu && CurrentMenuState.select)
 		{
 			NewState = ConvertAlternateMenu (BaseState, NewState);
 			if (NewState == ALT_MANIFEST)

@@ -34,8 +34,7 @@ typedef BYTE STARBASE_STATE;
 
 typedef struct menu_state
 {
-	BOOLEAN (*InputFunc) (INPUT_STATE InputState, struct menu_state
-			*pMS);
+	BOOLEAN (*InputFunc) (struct menu_state *pMS);
 	COUNT MenuRepeatDelay;
 
 	SIZE Initialized;
@@ -48,10 +47,8 @@ typedef struct menu_state
 
 	FRAME ModuleFrame;
 	Task flash_task;
-	RECT flash_rect0,
-						flash_rect1;
-	FRAME flash_frame0,
-						flash_frame1;
+	RECT flash_rect0, flash_rect1;
+	FRAME flash_frame0, flash_frame1;
 
 	MUSIC_REF hMusic;
 } MENU_STATE;
@@ -60,9 +57,9 @@ typedef MENU_STATE *PMENU_STATE;
 extern PMENU_STATE pMenuState;
 
 extern void VisitStarBase (void);
-extern BOOLEAN DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS);
-extern BOOLEAN DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS);
-extern BOOLEAN DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS);
+extern BOOLEAN DoStarBase (PMENU_STATE pMS);
+extern BOOLEAN DoOutfit (PMENU_STATE pMS);
+extern BOOLEAN DoShipyard (PMENU_STATE pMS);
 extern void DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT
 		which_slot, BOOLEAN DrawBluePrint);
 

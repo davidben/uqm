@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "melee.h"
+#include "controls.h"
 #include "libs/graphics/gfx_common.h"
 
 //Added by Chris
@@ -600,12 +601,20 @@ CrewTransaction (SIZE crew_delta)
  * ships per row number must divide 0xf0 without remainder
  */
 static BOOLEAN
-DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
+DoModifyShips (PMENU_STATE pMS)
 {
 #define MODIFY_CREW_FLAG (1 << 8)
 	RECT r;
 	HSTARSHIP hStarShip, hNextShip;
 	SHIP_FRAGMENTPTR StarShipPtr;
+	BOOLEAN select, cancel;
+#ifdef WANT_SHIP_SPINS
+	BOOLEAN special;
+
+	special = CurrentMenuState.special;
+#endif /* WANT_SHIP_SPINS */
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -626,11 +635,13 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else
 	{
-		SBYTE dx, dy;
+		SBYTE dx = 0, dy = 0;
 		BYTE NewState;
 
-		dx = GetInputXComponent (InputState);
-		dy = GetInputYComponent (InputState);
+		if (CurrentMenuState.right) dx = 1;
+		if (CurrentMenuState.left) dx = -1;
+		if (CurrentMenuState.up) dy = -1;
+		if (CurrentMenuState.down) dy = 1;
 		NewState = pMS->CurState;
 		if (pMS->delta_item & MODIFY_CREW_FLAG)
 		{
@@ -666,9 +677,9 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 		}
 
 #ifdef WANT_SHIP_SPINS
-		if ((InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2 | DEVICE_BUTTON3))
+		if (select || cancel || special
 #else
-		if ((InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+		if (select || cancel
 #endif
 				|| NewState != pMS->CurState
 				|| ((pMS->delta_item & MODIFY_CREW_FLAG) && (dx || dy)))
@@ -697,7 +708,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 			SetSemaphore (GraphicsSem);
 
 #ifdef WANT_SHIP_SPINS
-			if (InputState & DEVICE_BUTTON3)
+			if (special)
 			{
 				HSTARSHIP hSpinShip;
 				
@@ -716,9 +727,8 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 			}
 			else
 #endif
-			if ((InputState & DEVICE_BUTTON1)
-					|| ((pMS->delta_item & MODIFY_CREW_FLAG)
-					&& (dx || dy || (InputState & DEVICE_BUTTON2))))
+			if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
+					&& (dx || dy || cancel)))
 			{
 				COUNT ShipCost[] =
 				{
@@ -737,13 +747,13 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 						DrawRaceStrings (0);
 						return (TRUE);
 					}
-					else if (InputState & DEVICE_BUTTON2)
+					else if (cancel)
 					{
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
 						SetFlashRect ((PRECT)~0L, (FRAME)0);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 					}
-					else if (InputState & DEVICE_BUTTON1)
+					else if (select)
 					{
 						Index = GetIndexFromStarShip (
 								&GLOBAL (avail_race_q),
@@ -803,7 +813,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					SetSemaphore (GraphicsSem);
 					goto ChangeFlashRect;
 				}
-				else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+				else if (select || cancel)
 				{					
 					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
 						goto ChangeFlashRect;
@@ -989,7 +999,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					CrewTransaction (crew_delta);
 				}
 			}
-			else if (InputState & DEVICE_BUTTON2)
+			else if (cancel)
 			{
 				ClearSemaphore (GraphicsSem);
 
@@ -1183,10 +1193,14 @@ EndHangarAnim (PMENU_STATE pMS)
 }
 
 BOOLEAN
-DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
+DoShipyard (PMENU_STATE pMS)
 {
+	BOOLEAN select, cancel;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		goto ExitShipyard;
+
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
 
 	if (!pMS->Initialized)
 	{
@@ -1260,9 +1274,7 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		pMS->Initialized = TRUE;
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| ((InputState & DEVICE_BUTTON1)
-			&& pMS->CurState == SHIPYARD_EXIT))
+	else if (cancel || (select && pMS->CurState == SHIPYARD_EXIT))
 	{
 ExitShipyard:
 		SetSemaphore (GraphicsSem);
@@ -1276,12 +1288,12 @@ ExitShipyard:
 
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (select)
 	{
 		if (pMS->CurState != SHIPYARD_SAVELOAD)
 		{
 			pMS->Initialized = FALSE;
-			DoModifyShips (InputState, pMS);
+			DoModifyShips (pMS);
 		}
 		else
 		{
@@ -1296,7 +1308,7 @@ ExitShipyard:
 		}
 	}
 	else
-		DoMenuChooser (InputState, pMS, PM_CREW);
+		DoMenuChooser (pMS, PM_CREW);
 
 	return (TRUE);
 }

@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -764,7 +765,7 @@ flagship_inertial_thrust (register COUNT CurrentAngle)
 extern void DrawIPRadar (BOOLEAN FirstTime);
 
 static void
-UndrawShip (INPUT_STATE InputState)
+UndrawShip (void)
 {
 	COUNT index;
 	SIZE radius, delta_x, delta_y;
@@ -776,13 +777,17 @@ UndrawShip (INPUT_STATE InputState)
 	DrawIPRadar (FALSE);
 #endif /* SHOW_RADAR */
 
-	delta_x = GetInputXComponent (InputState);
-//    delta_y = GetInputYComponent (InputState);
-	if (InputState & DEVICE_BUTTON1)
+	if (CurrentInputState.p1_thrust)
 		delta_y = -1;
 	else
-			delta_y = GetInputYComponent (InputState);
+		delta_y = 0;
 
+	delta_x = 0;
+	if (CurrentInputState.p1_left)
+		delta_x -= 1;
+	if (CurrentInputState.p1_right)
+		delta_x += 1;
+		
 	if (delta_x || delta_y < 0)
 	{
 		GLOBAL (autopilot.x) =
@@ -995,15 +1000,20 @@ int IPtask_func(void* data)
 #define DEBOUNCE_DELAY ((ONE_SECOND >> 1) / IP_FRAME_RATE)
 	BYTE MenuTransition;
 	DWORD NextTime;
-	INPUT_STATE InputState;
 	Task task = (Task) data;
+	BOOLEAN cancel, select;
 
 	TaskSwitch ();
 
 	if (LastActivity != CHECK_LOAD)
-		InputState = 0;
+	{
+		cancel = select = FALSE;
+	}
 	else
-		InputState = DEVICE_BUTTON2;
+	{
+		cancel = TRUE;
+		select = FALSE;
+	}
 
 	MenuTransition = 0;
 	NextTime = GetTimeCounter ();
@@ -1022,7 +1032,7 @@ int IPtask_func(void* data)
 				|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
 				&& !Task_ReadState (task, TASK_EXIT))
 		{
-			InputState = 0;
+			select = cancel = FALSE;
 			ClearSemaphore (GraphicsSem);
 			TaskSwitch ();
 			SetSemaphore (GraphicsSem);
@@ -1039,7 +1049,7 @@ int IPtask_func(void* data)
 		if (pSolarSysState->MenuState.CurState
 				|| pSolarSysState->MenuState.Initialized == 0)
 		{
-			InputState = 0;
+			select = cancel = FALSE;
 			if (draw_sys_flags & DRAW_REFRESH)
 				goto TheMess;
 		}
@@ -1048,12 +1058,12 @@ int IPtask_func(void* data)
 			if (MenuTransition)
 			{
 				if (MenuTransition < DEBOUNCE_DELAY
-						&& !(InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2)))
+						&& !(cancel || select))
 					MenuTransition = 0;
 				else
 				{
 					--MenuTransition;
-					InputState &= ~(DEVICE_BUTTON1 | DEVICE_BUTTON2);
+					cancel = select = FALSE;
 				}
 			}
 
@@ -1082,9 +1092,9 @@ TheMess:
 			}
 			
 			if (MenuTransition < DEBOUNCE_DELAY)
-				UndrawShip (InputState);
+				UndrawShip ();
 			if (pSolarSysState->MenuState.Initialized != 1)
-				InputState = 0;
+				select = cancel = FALSE;
 		}
 		
 		if (old_radius)
@@ -1160,19 +1170,20 @@ TheMess:
 			break;
 		}
 
-		if (!(InputState & DEVICE_BUTTON2))
+		if (!cancel)
 		{
 			SleepThreadUntil (NextTime + IP_FRAME_RATE);
 			NextTime = GetTimeCounter ();
 			if (pSolarSysState->MenuState.CurState
 					|| pSolarSysState->MenuState.Initialized != 1)
-				InputState = 0;
+				cancel = select = 0;
 			else
-				InputState = GetInputState (NormalInput);
-			JournalInput (InputState);
-			
-			if (InputState & DEVICE_EXIT)
-				InputState = ConfirmExit ();
+			{
+				UpdateInputState ();
+				cancel = ImmediateMenuState.cancel;
+				select = ImmediateMenuState.select;
+			}
+			// JournalInput (InputState);
 		}
 		else
 		{

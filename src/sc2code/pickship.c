@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 #define NUM_PICK_SHIP_ROWS 2
 #define NUM_PICK_SHIP_COLUMNS 6
@@ -30,7 +31,7 @@
 #define FLAGSHIP_HEIGHT 48
 
 static BOOLEAN
-DoPickBattleShip (INPUT_STATE InputState, PMENU_STATE pMS)
+DoPickBattleShip (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -47,7 +48,7 @@ DoPickBattleShip (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		goto ChangeSelection;
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		if ((HSTARSHIP)pMS->CurFrame)
 			return (FALSE);
@@ -55,9 +56,14 @@ DoPickBattleShip (INPUT_STATE InputState, PMENU_STATE pMS)
 	else
 	{
 		COORD new_row, new_col;
+		int dx = 0, dy = 0;
+		if (CurrentMenuState.right) dx = 1;
+		if (CurrentMenuState.left) dx = -1;
+		if (CurrentMenuState.up) dy = -1;
+		if (CurrentMenuState.down) dy = 1;
 
-		new_col = pMS->first_item.x + GetInputXComponent (InputState);
-		new_row = pMS->first_item.y + GetInputYComponent (InputState);
+		new_col = pMS->first_item.x + dx;
+		new_row = pMS->first_item.y + dy;
 		if (new_row != pMS->first_item.y
 				|| new_col != pMS->first_item.x)
 		{

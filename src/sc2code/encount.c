@@ -17,9 +17,10 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 static BOOLEAN
-DoSelectAction (INPUT_STATE InputState, PMENU_STATE pMS)
+DoSelectAction (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -31,7 +32,7 @@ DoSelectAction (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoSelectAction;
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		switch (pMS->CurState)
 		{
@@ -54,7 +55,7 @@ DoSelectAction (INPUT_STATE InputState, PMENU_STATE pMS)
 				printf ("Unknown option: %d\n", pMS->CurState);
 		}
 	}
-    DoMenuChooser (InputState, pMS, PM_CONVERSE);
+	DoMenuChooser (pMS, PM_CONVERSE);
 	return (TRUE);
 }
 
@@ -629,8 +630,6 @@ UninitEncounter (void)
 
 		if (VictoryState)
 		{
-			INPUT_STATE InputState;
-
 #ifdef NEVER
 			DestroyDrawable (ReleaseDrawable (s.frame));
 #endif /* NEVER */
@@ -638,13 +637,13 @@ UninitEncounter (void)
 			FlushInput ();
 			Time = GetTimeCounter () + (ONE_SECOND * 3);
 			ClearSemaphore (GraphicsSem);
-			while (!(InputState = AnyButtonPress (TRUE)) && GetTimeCounter () < Time)
-				;
+			while (!(AnyButtonPress (TRUE)) && GetTimeCounter () < Time)
+				TaskSwitch ();
 			SetSemaphore (GraphicsSem);
-			if (GetInputUNICODE (InputState) != 0x1B) /* Escape key */
+			if (!CurrentInputState.p1_escape)
 			{
 				DrawFadeText (str1, str2, FALSE, &scavenge_r);
-				if (GetInputUNICODE (InputState) != 0x1B) /* Escape key */
+				if (!CurrentInputState.p1_escape)
 				{
 					SetContextForeGroundColor (BLACK_COLOR);
 					r.corner.x = scavenge_r.corner.x + 10;
@@ -669,11 +668,11 @@ UninitEncounter (void)
 							);
 					Time = GetTimeCounter () + ONE_SECOND * 2;
 					ClearSemaphore (GraphicsSem);
-					while (!(InputState = AnyButtonPress (TRUE))
+					while (!(AnyButtonPress (TRUE))
 							&& GetTimeCounter () < Time)
-						;
+						TaskSwitch ();
 					SetSemaphore (GraphicsSem);
-					if (GetInputUNICODE (InputState) != 0x1B) /* Escape key */
+					if (!CurrentInputState.p1_escape)
 						DrawFadeText (str1, str2, FALSE, &scavenge_r);
 				}
 			}
@@ -754,8 +753,8 @@ EncounterBattle (void)
 	if (GLOBAL (glob_flags) & CYBORG_ENABLED)
 	{
 		nth_frame = MAKE_WORD (0, 0);
-		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING,
-		PlayerInput[0] = NormalInput;
+		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
+		PlayerInput[0] = HumanInput[0];
 	}
 
 	SetResourceIndex (hResIndex);

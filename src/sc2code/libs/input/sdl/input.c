@@ -18,36 +18,124 @@
 
 #ifdef GFXMODULE_SDL
 
+#include <assert.h>
+#include <errno.h>
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/input/input_common.h"
+#include "libs/input/sdl/vcontrol.h"
+#include "controls.h"
+#include "libs/file.h"
+#include "options.h"
 
-static Uint8 KeyboardDown[SDLK_LAST];
+
 #define KBDBUFSIZE (1 << 8)
 static int kbdhead=0, kbdtail=0;
 static UNICODE kbdbuf[KBDBUFSIZE];
 
-static int nJoysticks = 0;
-static SDL_Joystick **Joysticks = 0;
-
-static UBYTE **JoybuttonDown = 0;
-static SWORD **JoyaxisValues = 0;
-
-static BOOLEAN (* PauseFunc) (void) = 0;
 static BOOLEAN InputInitialized = FALSE;
 UWORD UNICODEToKBD (UNICODE which_key);
 
-UNICODE PauseKey = 0;
-UNICODE ExitKey = 0;
-UNICODE AbortKey = 0;
+static BOOLEAN _in_character_mode = FALSE;
+
+static VControl_NameBinding control_names[] = {
+	{ "Menu-Up", (int *)&ImmediateMenuState.up },
+	{ "Menu-Down", (int *)&ImmediateMenuState.down },
+	{ "Menu-Left", (int *)&ImmediateMenuState.left },
+	{ "Menu-Right", (int *)&ImmediateMenuState.right },
+	{ "Menu-Select", (int *)&ImmediateMenuState.select },
+	{ "Menu-Cancel", (int *)&ImmediateMenuState.cancel },
+	{ "Menu-Special", (int *)&ImmediateMenuState.special },
+	{ "Menu-Page-Up", (int *)&ImmediateMenuState.page_up },
+	{ "Menu-Page-Down", (int *)&ImmediateMenuState.page_down },
+	{ "Menu-Zoom-In", (int *)&ImmediateMenuState.zoom_in },
+	{ "Menu-Zoom-Out", (int *)&ImmediateMenuState.zoom_out },
+	{ "Player-1-Thrust", (int *)&ImmediateInputState.p1_thrust },
+	{ "Player-1-Left", (int *)&ImmediateInputState.p1_left },
+	{ "Player-1-Right", (int *)&ImmediateInputState.p1_right },
+	{ "Player-1-Weapon", (int *)&ImmediateInputState.p1_weapon },
+	{ "Player-1-Special", (int *)&ImmediateInputState.p1_special },
+	{ "Player-1-Escape", (int *)&ImmediateInputState.p1_escape },
+	{ "Player-2-Thrust", (int *)&ImmediateInputState.p2_thrust },
+	{ "Player-2-Left", (int *)&ImmediateInputState.p2_left },
+	{ "Player-2-Right", (int *)&ImmediateInputState.p2_right },
+	{ "Player-2-Weapon", (int *)&ImmediateInputState.p2_weapon },
+	{ "Player-2-Special", (int *)&ImmediateInputState.p2_special },
+	{ "Lander-Thrust", (int *)&ImmediateInputState.lander_thrust },
+	{ "Lander-Left", (int *)&ImmediateInputState.lander_left },
+	{ "Lander-Right", (int *)&ImmediateInputState.lander_right },
+	{ "Lander-Weapon", (int *)&ImmediateInputState.lander_weapon },
+	{ "Lander-Escape", (int *)&ImmediateInputState.lander_escape },
+	{ "Pause", (int *)&ImmediateInputState.pause },
+	{ "Exit", (int *)&ImmediateInputState.exit },
+	{ "Abort", (int *)&ImmediateInputState.abort }};
+
+
+static void
+initKeyConfig(void) {
+	char userFile[PATH_MAX];    /* System-wide key config */
+	int cb;
+	
+	cb = snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir);
+	assert (cb != -1);
+			// Verified before: strlen (configDir) <= PATH_MAX - 13
+	
+	if (fileExists (userFile)) {
+		FILE *fp;
+		int errors;
+		/* Should this really be an OpenResFile?  The user
+		 * won't be putting his configuration data in a .zip,
+		 * will he? */
+		fp = res_OpenResFile (userFile, "rt");
+		errors = VControl_ReadConfiguration (fp);
+		res_CloseResFile (fp);
+		if (errors)
+		{
+			fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
+			/* This code should go away in 0.3; it's just
+			 * to force people to upgrade and forestall a 
+			 * bunch of "none of my keys work anymore" bugs.
+			 */
+			if (errors > 5)
+			{
+				fprintf (stderr, "Hey!  you haven't updated your keys.cfg to use the new system, have you?\nDelete %s and try again.\n", userFile);
+			}
+			else
+			{
+				fprintf (stderr, "Repair your %s file to continue.\n", userFile);
+			}
+
+			exit (1);
+		}		
+	} else {
+		FILE *fp = fopen (userFile, "wt");
+		TFB_CreateDefaultConfig ();
+		
+		if (fp == NULL) 
+		{
+			fprintf(stderr, "Warning: Could not copy default key config "
+					"to %s: %s.\n", userFile, strerror (errno));
+		} 
+		else
+		{
+			fprintf(stderr, "Copying default key config file to %s.\n",
+					userFile);
+			VControl_Dump (fp);
+			fclose (fp);
+		}
+	}
+}
 
 int 
 TFB_InitInput (int driver, int flags)
 {
 	int i;
+	int nJoysticks;
 	(void)driver;
 	(void)flags;
 
 	atexit (TFB_UninitInput);
+
+	GamePaused = GameExiting = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
 	
@@ -62,33 +150,24 @@ TFB_InitInput (int driver, int flags)
 	nJoysticks = SDL_NumJoysticks ();
 	if (nJoysticks > 0)
 	{
-		Joysticks = HMalloc(sizeof(SDL_Joystick*) * nJoysticks);
-		JoybuttonDown = HMalloc(sizeof(UBYTE*) * nJoysticks);
-		JoyaxisValues = HMalloc(sizeof(SWORD*) * nJoysticks);
 		fprintf (stderr, "The names of the joysticks are:\n");
 		for(i = 0; i < nJoysticks; i++)
 		{
 			fprintf (stderr, "    %s\n", SDL_JoystickName (i));
-			Joysticks[i] = SDL_JoystickOpen (i);
-			JoybuttonDown[i] = HMalloc(sizeof(UBYTE) * 
-					SDL_JoystickNumButtons(Joysticks[i]));
-			memset(JoybuttonDown[i], 0, sizeof(UBYTE) *
-					SDL_JoystickNumButtons(Joysticks[i]));
-			JoyaxisValues[i] = HMalloc(sizeof(SWORD) *
-					SDL_JoystickNumAxes(Joysticks[i]));
-			memset(JoyaxisValues[i], 0, sizeof(SWORD) *
-					SDL_JoystickNumAxes(Joysticks[i]));
-			fprintf (stderr, "    %i axes, %i buttons\n", 
-					SDL_JoystickNumAxes(Joysticks[i]),
-					SDL_JoystickNumButtons(Joysticks[i]));
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 	}
 
-	for (i = 0; i < SDLK_LAST; i++)
-	{
-		KeyboardDown[i] = FALSE;
-	}
+	_in_character_mode = FALSE;
+
+	/* Prepare the Virtual Controller system. */
+	VControl_Init ();
+	VControl_RegisterNameTable (control_names);
+
+	initKeyConfig ();
+	
+	VControl_ResetInput ();
+	InputInitialized = TRUE;
 
 	return 0;
 }
@@ -96,103 +175,151 @@ TFB_InitInput (int driver, int flags)
 void
 TFB_UninitInput (void)
 {
-	int j;
-	for (j = 0; j < nJoysticks; ++j)
-	{
-		HFree(JoyaxisValues[j]);
-		HFree(JoybuttonDown[j]);
-		SDL_JoystickClose(Joysticks[j]);
-		Joysticks[j] = 0;
-	}
-	HFree(Joysticks);
+	VControl_Uninit ();
 }
 
 void
-ProcessKeyboardEvent(const SDL_Event *Event)
+TFB_CreateDefaultConfig (void)
 {
-	SDLKey k = Event->key.keysym.sym;
-        UNICODE map_key;
+	/* Generate the default control structures.  Arrow keys have
+	 * the expected effect.  ENTER is menu select, SPACE is menu
+	 * cancel.  In combat or on planet surfaces, move with the
+	 * arrow keys, or thrust with ENTER, fire with SPACE or right
+	 * SHIFT, and do your special with right CTRL.  Escaping is
+	 * handled by the ESCAPE key.  Player 2 flies with W-A-D,
+	 * fires with T, and does his special with Y.  Pause is F1,
+	 * Exit is F10, and Abort is F12.  Zooming may be done with
+	 * Page Up or Page Down, or with the + and - keys on the
+	 * numeric keypad.
+	 *
+	 * All references to "the arrow keys" or "ENTER" may use the
+	 * numeric keypad. */
+	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateMenuState.up);
+	VControl_AddKeyBinding (SDLK_DOWN,       (int *)&ImmediateMenuState.down);
+	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateMenuState.left);
+	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateMenuState.right);
+	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateMenuState.select);
+	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateMenuState.up);
+	VControl_AddKeyBinding (SDLK_KP2,        (int *)&ImmediateMenuState.down);
+	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateMenuState.left);
+	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateMenuState.right);
+	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateMenuState.select);
+	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateMenuState.cancel);
+	VControl_AddKeyBinding (SDLK_PAGEUP,     (int *)&ImmediateMenuState.page_up);
+	VControl_AddKeyBinding (SDLK_PAGEDOWN,   (int *)&ImmediateMenuState.page_down);
+	VControl_AddKeyBinding (SDLK_KP9,        (int *)&ImmediateMenuState.page_up);
+	VControl_AddKeyBinding (SDLK_KP3,        (int *)&ImmediateMenuState.page_down);
+	VControl_AddKeyBinding (SDLK_PAGEUP,     (int *)&ImmediateMenuState.zoom_in);
+	VControl_AddKeyBinding (SDLK_PAGEDOWN,   (int *)&ImmediateMenuState.zoom_out);
+	VControl_AddKeyBinding (SDLK_KP_PLUS,    (int *)&ImmediateMenuState.zoom_in);
+	VControl_AddKeyBinding (SDLK_KP_MINUS,   (int *)&ImmediateMenuState.zoom_out);
+
+	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateInputState.p1_thrust);
+	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateInputState.p1_thrust);
+	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateInputState.p1_thrust);
+	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateInputState.p1_thrust);
+	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateInputState.p1_left);
+	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateInputState.p1_left);
+	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateInputState.p1_right);
+	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateInputState.p1_right);
+	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateInputState.p1_weapon);
+	VControl_AddKeyBinding (SDLK_RSHIFT,     (int *)&ImmediateInputState.p1_weapon);
+	VControl_AddKeyBinding (SDLK_RCTRL,      (int *)&ImmediateInputState.p1_special);
+	VControl_AddKeyBinding (SDLK_ESCAPE,     (int *)&ImmediateInputState.p1_escape);
+
+	VControl_AddKeyBinding (SDLK_w,          (int *)&ImmediateInputState.p2_thrust);
+	VControl_AddKeyBinding (SDLK_a,          (int *)&ImmediateInputState.p2_left);
+	VControl_AddKeyBinding (SDLK_d,          (int *)&ImmediateInputState.p2_right);
+	VControl_AddKeyBinding (SDLK_t,          (int *)&ImmediateInputState.p2_weapon);
+	VControl_AddKeyBinding (SDLK_y,          (int *)&ImmediateInputState.p2_special);
+
+	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateInputState.lander_thrust);
+	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateInputState.lander_thrust);
+	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateInputState.lander_thrust);
+	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateInputState.lander_thrust);
+	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateInputState.lander_left);
+	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateInputState.lander_left);
+	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateInputState.lander_right);
+	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateInputState.lander_right);
+	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateInputState.lander_weapon);
+	VControl_AddKeyBinding (SDLK_RSHIFT,     (int *)&ImmediateInputState.lander_weapon);
+	VControl_AddKeyBinding (SDLK_ESCAPE,     (int *)&ImmediateInputState.lander_escape);
+
+	VControl_AddKeyBinding (SDLK_F1,         (int *)&ImmediateInputState.pause);
+	VControl_AddKeyBinding (SDLK_F10,        (int *)&ImmediateInputState.exit);
+	VControl_AddKeyBinding (SDLK_F12,        (int *)&ImmediateInputState.abort);
+}
+
+void
+EnableCharacterMode (void)
+{
+	kbdhead = kbdtail = 0;
+	_in_character_mode = TRUE;
+	VControl_ResetInput ();
+	
+}
+
+void
+DisableCharacterMode (void)
+{
+	VControl_ResetInput ();
+	_in_character_mode = FALSE;
+	kbdhead = kbdtail = 0;
+}
+
+UNICODE
+GetCharacter (void)
+{
+	UNICODE result;
+	while (kbdhead == kbdtail)
+		TaskSwitch ();
+	result = kbdbuf[kbdhead];
+	kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
+	return result;
+}	
+
+void
+ProcessInputEvent(const SDL_Event *Event)
+{
 	if (!InputInitialized)
 		return;
-	if (!Event->key.keysym.unicode &&
-			(k == SDLK_CAPSLOCK ||
-			k == SDLK_NUMLOCK))
-		return;
-
-	if (Event->type == SDL_KEYDOWN)
+	if (!_in_character_mode)
 	{
+		VControl_HandleEvent (Event);
+	}
+	else
+	{
+		SDLKey k = Event->key.keysym.sym;
+		UNICODE map_key;
+		if (Event->type != SDL_KEYDOWN)
+			return;
+		if (!Event->key.keysym.unicode &&
+				(k == SDLK_CAPSLOCK ||
+				k == SDLK_NUMLOCK))
+			return;
 		if (Event->key.keysym.unicode != 0)
 			map_key = (UNICODE) Event->key.keysym.unicode;
 		else
 			map_key = KBDToUNICODE(k);
+	
 		kbdbuf[kbdtail] = map_key;
 		kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
 		if (kbdtail == kbdhead)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-		if (map_key == AbortKey)
-			exit(0);
-		//Store the actual key (without nay shift/ctrl modifiers)
-		//since the modifiers can't be retreived on a key-up
-		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] |= 0x3;
-	}
-	else
-	{
-		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] &= (~0x1);
 	}
 }
 
 void
-ProcessJoystickEvent (const SDL_Event* Event)
+TFB_ResetControls (void)
 {
-	if (!InputInitialized)
-		return;
-
-	switch (Event->type)
-	{
-		case SDL_JOYAXISMOTION:
-			JoyaxisValues[Event->jaxis.which][Event->jaxis.axis] = Event->jaxis.value;
-			break;
-		case SDL_JOYBUTTONDOWN:
-			JoybuttonDown[Event->jbutton.which][Event->jbutton.button] |= 0x3;
-			break;
-		case SDL_JOYBUTTONUP:
-			JoybuttonDown[Event->jbutton.which][Event->jbutton.button] &= (~0x1);
-			break;
-	}
-}
-
-extern BOOLEAN
-InitInput (BOOLEAN (*PFunc) (void), UNICODE Pause, UNICODE Exit, UNICODE Abort)
-{
-	PauseFunc = PFunc;
-	PauseKey = Pause;
-	ExitKey = Exit;
-	AbortKey = Abort;
-	InputInitialized = TRUE;
-	return (TRUE);
-}
-
-//Status: Ignored
-BOOLEAN
-UninitInput (void) // Looks like it'll be empty
-{
-	BOOLEAN ret;
-
-	// fprintf (stderr, "Unimplemented function activated: UninitInput()\n");
-	ret = TRUE;
-	return (ret);
+	VControl_ResetInput ();
 }
 
 void
 FlushInput (void)
 {
-	int i;
-	kbdtail = kbdhead = 0;
-	for (i = 0; i < SDLK_LAST; ++i)
-	{
-		if (KeyboardDown[i] == 0x2)
-		    KeyboardDown[i] &= ~0x2;
-	}
+	TFB_ResetControls ();
+	GameExiting = ExitRequested = FALSE;
 }
 
 // Translates from SDLKeys to values defined in inplib.h
@@ -329,238 +456,6 @@ UNICODEToKBD (UNICODE which_key)
 		default:
 			return which_key;
 	}
-}
-
-UNICODE
-GetUNICODEKey (void)
-{
-	if (kbdtail != kbdhead)
-	{
-		UNICODE ch;
-
-		ch = kbdbuf[kbdhead];
-		kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-		return (ch);
-	}
-	return (0);
-}
-
-BOOLEAN
-KeyDown (UNICODE which_scan)
-{
-	UWORD i;
-
-	i = UNICODEToKBD(which_scan);
-	if (KeyboardDown[i] != 0)
-	{
-		KeyboardDown[i] &= (~0x2);
-		return TRUE;
-	}
-	else
-		return FALSE;
-}
-
-INPUT_STATE
-AnyButtonPress (BOOLEAN DetectSpecial)
-{
-	int i,j;
-
-	if (DetectSpecial)
-	{
-		if (KeyDown (PauseKey) && PauseFunc)
-			PauseFunc();
-	}
-
-	for (i = 0; i < SDLK_LAST; ++i)
-	{
-		if (KeyboardDown[i])
-		{
-			KeyboardDown[i] &= ~0x2;
-			return (DEVICE_BUTTON1);
-		}
-	}
-	for (j = 0; j < nJoysticks; ++j)
-	{
-		for (i = 0; i < SDL_JoystickNumButtons(Joysticks[j]); ++i)
-		{
-			if (JoybuttonDown[j][i])
-			{
-				JoybuttonDown[j][i] &= ~0x2;
-				return (DEVICE_BUTTON1);
-			}
-		}
-	}
-	return (0);
-}
-
-BOOLEAN
-_joystick_port_active(COUNT port) //SDL handles this nicely.
-{
-	return SDL_JoystickOpened(port);
-}
-
-INPUT_STATE
-_get_pause_exit_state (void)
-{
-	INPUT_STATE InputState;
-
-	InputState = 0;
-	if (KeyDown (PauseKey) && PauseFunc)
-	{
-		PauseFunc();
-	}
-	else if (KeyDown (ExitKey))
-	{
-		InputState = DEVICE_EXIT;
-	}
-	return (InputState);
-}
-
-INPUT_STATE
-_get_serial_keyboard_state (INPUT_REF ref, INPUT_STATE InputState)
-{
-	Uint16 key;
-	(void) ref;
-
-	if ((key = GetUNICODEKey ()) == '\r')
-		key = '\n';
-	if (key != 0)
-	{
-		SetInputUNICODE (&InputState, key);
-		SetInputDevType (&InputState, KEYBOARD_DEVICE);
-	}
-	else
-		InputState = 0;
-
-	return (InputState);
-}
-
-static BOOLEAN
-GetKeyboardDown (UWORD value)
-{
-	if (KEYISCHORD(value))
-	{
-		int k1, k2;
-		k1 = KeyDown(KEYGETKEY(value));
-		k2 = KeyDown(KEYGETCHORD(value));
-		if (k1 && k2)
-			return TRUE;
-	}
-	else
-	{
-		if (KeyDown(KEYGETKEY(value)))
-			return TRUE;
-	}
-	return FALSE;
-}
-
-INPUT_STATE
-_get_joystick_keyboard_state (INPUT_REF InputRef, INPUT_STATE InputState)
-{
-	SBYTE dx, dy;
-	UWORD* KeyEquivalentPtr;
-
-	KeyEquivalentPtr = GetInputDeviceKeyEquivalentPtr (InputRef);
-	dx = (SBYTE)(GetKeyboardDown (KeyEquivalentPtr[1]) -
-			GetKeyboardDown (KeyEquivalentPtr[0]));
-	SetInputXComponent (&InputState, dx);
-
-	KeyEquivalentPtr += 2;
-	dy = (SBYTE)(GetKeyboardDown (KeyEquivalentPtr[1]) -
-			GetKeyboardDown (KeyEquivalentPtr[0]));
-	SetInputYComponent (&InputState, dy);
-
-	KeyEquivalentPtr += 2;
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_BUTTON1;
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_BUTTON2;
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_BUTTON3;
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_BUTTON4;
-
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_LEFTSHIFT;
-	if (GetKeyboardDown (*KeyEquivalentPtr++))
-		InputState |= DEVICE_RIGHTSHIFT;
-
-	if (InputState)
-		SetInputDevType (&InputState, JOYSTICK_DEVICE);
-
-	return (InputState);
-}
-
-static BOOLEAN
-GetJoystickDown (int port, UWORD map, UWORD threshold)
-{
-	int axis, sign;
-	if (JOYISAXIS(map))
-	{
-		axis = JOYGETVALUE(map);
-		sign = JOYGETSIGN(map);
-		if ((sign * JoyaxisValues[port][axis]) > threshold)
-			return TRUE;
-	}
-	else
-	{
-		if (JOYISCHORD(map))
-		{
-			UBYTE b1 = JoybuttonDown[port][JOYGETVALUE(map)];
-			UBYTE b2 = JoybuttonDown[port][JOYGETCHORD(map)];
-			JoybuttonDown[port][JOYGETVALUE(map)] &= (~0x2);
-			JoybuttonDown[port][JOYGETCHORD(map)] &= (~0x2);
-			if (b1 && b2)
-				return TRUE;
-		}
-		else if (JoybuttonDown[port][JOYGETVALUE(map)])
-		{
-			JoybuttonDown[port][JOYGETVALUE(map)] &= (~0x2);
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
-INPUT_STATE
-_get_joystick_state (INPUT_REF ref, INPUT_STATE InputState)
-{
-	SBYTE dx, dy;
-	UWORD *JoystickButtons = GetInputDeviceJoystickButtonPtr(ref);
-	UWORD threshold = GetInputDeviceJoystickThreshold(ref);
-	int port = GetInputDeviceJoystickPort(ref);
-
-	if (GetJoystickDown(port, JoystickButtons[0], threshold))
-		dx = -1;
-	else if (GetJoystickDown(port, JoystickButtons[1], threshold))
-		dx = 1;
-	else
-		dx = 0;
-	
-	if (GetJoystickDown(port, JoystickButtons[2], threshold))
-		dy = -1;
-	else if (GetJoystickDown(port, JoystickButtons[3], threshold))
-		dy = 1;
-	else
-		dy = 0;
-
-	SetInputXComponent(&InputState, dx);
-	SetInputYComponent(&InputState, dy);
-
-	if (GetJoystickDown(port, JoystickButtons[4], threshold))
-		InputState |= DEVICE_BUTTON1;
-	if (GetJoystickDown(port, JoystickButtons[5], threshold))
-		InputState |= DEVICE_BUTTON2;
-	if (GetJoystickDown(port, JoystickButtons[6], threshold))
-		InputState |= DEVICE_BUTTON3;
-	if (GetJoystickDown(port, JoystickButtons[7], threshold))
-		InputState |= DEVICE_LEFTSHIFT;
-	if (GetJoystickDown(port, JoystickButtons[8], threshold))
-		InputState |= DEVICE_RIGHTSHIFT;
-
-	if (InputState)
-		SetInputDevType(&InputState, JOYSTICK_DEVICE);
-	return InputState;
 }
 
 #endif

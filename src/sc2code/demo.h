@@ -26,11 +26,6 @@
 #define CREATE_JOURNAL 0
 #endif /* CREATE_JOURNAL */
 
-extern INPUT_STATE demo_input (INPUT_REF InputRef, INPUT_STATE
-		InputState);
-
-extern INPUT_REF DemoInput;
-
 #if !(DEMO_MODE || CREATE_JOURNAL)
 
 #define OpenJournal SeedRandomNumbers

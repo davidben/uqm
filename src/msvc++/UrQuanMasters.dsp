@@ -342,6 +342,26 @@ SOURCE=..\sc2code\libs\input\sdl\input.c
 
 SOURCE=..\sc2code\libs\input\sdl\input.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\keynames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\keynames.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\vcontrol.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\vcontrol.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\vcontrol_malloc.h
+# End Source File
 # End Group
 # Begin Source File
 
@@ -2968,6 +2988,10 @@ SOURCE=..\sc2code\commglue.h
 # Begin Source File
 
 SOURCE=..\sc2code\confirm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\controls.h
 # End Source File
 # Begin Source File
 

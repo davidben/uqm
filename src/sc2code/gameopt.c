@@ -21,6 +21,8 @@
 #include "commglue.h"
 #include "options.h"
 #include "libs/graphics/gfx_common.h"
+#include "inplib.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -86,7 +88,7 @@ enum
 	SETTINGS
 };
 
-static BOOLEAN DoGameOptions (INPUT_STATE InputState, PMENU_STATE pMS);
+static BOOLEAN DoGameOptions (PMENU_STATE pMS);
 
 enum
 {
@@ -156,7 +158,7 @@ FeedbackSetting (BYTE which_setting)
 	ClearSemaphore (GraphicsSem);
 }
 
-static BOOLEAN DoSettings (INPUT_STATE InputState, PMENU_STATE pMS);
+static BOOLEAN DoSettings (PMENU_STATE pMS);
 
 static BOOLEAN
 DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
@@ -166,7 +168,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	TEXT lf;
 	COLOR BackGround, ForeGround;
 	FONT Font;
-	static BOOLEAN DoNaming (INPUT_STATE InputState, PMENU_STATE pMS);
+	static BOOLEAN DoNaming (PMENU_STATE pMS);
 
 	SetSemaphore (GraphicsSem);
 
@@ -255,12 +257,11 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		pchar_deltas = char_deltas;
 		for (i = pMS->first_item.x; i > 0; --i)
 			text_r.corner.x += (SIZE)*pchar_deltas++;
-		if (SerialInput)
-		{
-			if ((COUNT)pMS->first_item.x < lf.CharCount) /* end of line */
-				--text_r.corner.x;
-			text_r.extent.width = 1;
-		}
+		if ((COUNT)pMS->first_item.x < lf.CharCount) /* end of line */
+			--text_r.corner.x;
+		text_r.extent.width = 1;
+#if 0
+		/* This is code that's a remnant of non-keyboard systems */
 		else
 		{
 			if ((COUNT)pMS->first_item.x == lf.CharCount) /* end of line */
@@ -268,6 +269,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 			else
 				text_r.extent.width = (SIZE)*pchar_deltas;
 		}
+#endif
 		text_r.corner.y = r.corner.y;
 		text_r.extent.height = r.extent.height;
 		SetContextForeGroundColor (BLACK_COLOR);
@@ -284,15 +286,23 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 }
 
 static UWORD
-DoTextEntry (PMENU_STATE pMS, INPUT_STATE InputState)
+DoTextEntry (PMENU_STATE pMS)
 {
 	UWORD ch;
 	UNICODE *pStr, *pBaseStr;
 	COUNT len;
+	BOOLEAN left = FALSE, right = FALSE;
 
 	pBaseStr = ((GAME_DESC *)pMS->CurString)[pMS->CurState - pMS->first_item.y];
 	pStr = &pBaseStr[pMS->first_item.x];
 	len = wstrlen (pStr);
+
+	ch = GetCharacter ();
+
+#if 0
+	/* This code goes away, but is listed here anyway just in case someone decides
+	   to port this to a keyboardless platform later */
+	   
 	if (SerialInput)
 	{
 		ch = GetInputUNICODE (GetInputState (SerialInput));
@@ -301,46 +311,60 @@ DoTextEntry (PMENU_STATE pMS, INPUT_STATE InputState)
 	{
 		extern UWORD GetJoystickChar (INPUT_STATE InputState);
 
-		ch = GetJoystickChar (InputState);
+		ch = GetJoystickChar ();
 	}
+#endif
 
 	switch (ch)
 	{
-		case 0x7F:
-			if (len)
-			{
-				memmove (pStr, pStr + 1, len * sizeof (*pStr));
-				len = (COUNT)~0;
-			}
-			break;
-		case '\b':
-			if (pMS->first_item.x)
-			{
-				memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
-				--pMS->first_item.x;
-
-				len = (COUNT)~0;
-			}
-			break;
-		default:
-			if (isprint (ch) && len + (pStr - pBaseStr) < MAX_DESC_CHARS)
-			{
-				if (SerialInput)
-				{
-					memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
-					*pStr++ = ch;
-					++pMS->first_item.x;
-				}
-				else
-				{
-					*pStr = ch;
-					if (len == 0)
-						*(pStr + 1) = '\0';
-				}
-
-				len = (COUNT)~0;
-			}
-			break;
+	case SK_DELETE:
+		if (len)
+		{
+			memmove (pStr, pStr + 1, len * sizeof (*pStr));
+			len = (COUNT)~0;
+		}
+		break;
+	case '\b':
+		if (pMS->first_item.x)
+		{
+			memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
+			--pMS->first_item.x;
+			
+			len = (COUNT)~0;
+		}
+		break;
+	case SK_LF_ARROW:
+		left = TRUE;
+		break;
+	case SK_RT_ARROW:
+		right = TRUE;
+		break;
+	default:
+		/* This really should use isprint, but for some
+		 * ungodly reason some machines refuse to accept
+		 * anything as printable */
+		if (!isascii (ch)) {
+			fprintf (stderr, "%d is not ascii, it says.\n", ch);
+		}
+		if (!isprint (ch)) {
+			fprintf (stderr, "%d is not printable, it says.\n", ch);
+		}
+		if (isprint (ch) && (len + (pStr - pBaseStr) < MAX_DESC_CHARS))
+		{
+			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
+			if (len == 0)
+				*(pStr + 1) = '\0';
+			*pStr++ = ch;
+			++pMS->first_item.x;
+#if 0
+			/* Joystick letter-entry mode */
+				*pStr = ch;
+				if (len == 0)
+					*(pStr + 1) = '\0';
+#endif			
+			len = (COUNT)~0;
+		}
+		break;
 	}
 
 	if (len == (COUNT)~0)
@@ -352,7 +376,7 @@ DoTextEntry (PMENU_STATE pMS, INPUT_STATE InputState)
 			--pMS->first_item.x;
 		}
 	}
-	else if (GetInputXComponent (InputState) < 0)
+	else if (left)
 	{
 		if (pMS->first_item.x)
 		{
@@ -360,7 +384,7 @@ DoTextEntry (PMENU_STATE pMS, INPUT_STATE InputState)
 			DrawDescriptionString (pMS, pMS->CurState, 1);
 		}
 	}
-	else if (GetInputXComponent (InputState) > 0)
+	else if (right)
 	{
 		if (len)
 		{
@@ -373,7 +397,7 @@ DoTextEntry (PMENU_STATE pMS, INPUT_STATE InputState)
 }
 
 static BOOLEAN
-DoNaming (INPUT_STATE InputState, PMENU_STATE pMS)
+DoNaming (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -396,7 +420,9 @@ DoNaming (INPUT_STATE InputState, PMENU_STATE pMS)
 		DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
 		ClearSemaphore (GraphicsSem);
 
+		EnableCharacterMode ();
 		DoInput (pMS);
+		DisableCharacterMode ();
 
 		pMS->InputFunc = DoSettings;
 		pMS->CurState = (BYTE)pMS->delta_item;
@@ -408,18 +434,18 @@ DoNaming (INPUT_STATE InputState, PMENU_STATE pMS)
 	{
 		UWORD ch;
 
-		if (pMS->Initialized == 1 && SerialInput)
+		if (pMS->Initialized == 1)
 		{
 			FlushInput ();
 			pMS->Initialized = 2;
 			return (TRUE);
 		}
 
-		ch = DoTextEntry (pMS, InputState);
+		ch = DoTextEntry (pMS);
 
-		if (ch == '\n' || ch == 0x1B)
+		if (ch == '\n' || ch == '\r' || ch == 0x1B)
 		{
-			if (ch == '\n')
+			if (ch == '\n' || ch == '\r')
 			{
 				if (pMS->delta_item == CHANGE_CAPTAIN_SETTING)
 					wstrcpy (GLOBAL_SIS (CommanderName),
@@ -448,7 +474,7 @@ DoNaming (INPUT_STATE InputState, PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
+DoSettings (PMENU_STATE pMS)
 {
 	BYTE cur_speed;
 
@@ -463,8 +489,8 @@ DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoSettings;
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| ((InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.cancel
+			|| (CurrentMenuState.select
 			&& pMS->CurState == EXIT_MENU_SETTING))
 	{
 		SetSemaphore (GraphicsSem);
@@ -475,7 +501,7 @@ DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->InputFunc = DoGameOptions;
 		pMS->Initialized = 0;
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		switch (pMS->CurState)
 		{
@@ -513,8 +539,8 @@ DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		FeedbackSetting (pMS->CurState);
 	}
-	else if (DoMenuChooser (InputState, pMS, PM_SOUND_ON))
-			FeedbackSetting (pMS->CurState);
+	else if (DoMenuChooser (pMS, PM_SOUND_ON))
+		FeedbackSetting (pMS->CurState);
 
 	return (TRUE);
 }
@@ -883,7 +909,7 @@ LoadGameDescriptions (SUMMARY_DESC *pSD)
 }
 
 static BOOLEAN
-DoPickGame (INPUT_STATE InputState, PMENU_STATE pMS)
+DoPickGame (PMENU_STATE pMS)
 {
 	BYTE NewState;
 	STAMP s;
@@ -926,7 +952,7 @@ Restart:
 		pMS->Initialized = TRUE;
 		goto ChangeGameSelection;
 	}
-	else if (InputState & DEVICE_BUTTON2)
+	else if (CurrentMenuState.cancel)
 	{
 		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
@@ -953,7 +979,7 @@ Restart:
 		}
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		pSD = &((SUMMARY_DESC *)pMS->CurString)[pMS->CurState];
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
@@ -1021,12 +1047,12 @@ RetrySave:
 	else
 	{
 		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0)
+		if (CurrentMenuState.left)
 		{
 			if (NewState-- == 0)
 				NewState = MAX_SAVED_GAMES - 1;
 		}
-		else if (GetInputXComponent (InputState) > 0)
+		else if (CurrentMenuState.right)
 		{
 			if (++NewState == MAX_SAVED_GAMES)
 				NewState = 0;
@@ -1103,8 +1129,7 @@ ChangeGameSelection:
 }
 
 static BOOLEAN
-PickGame (PMENU_STATE
-		pMS)
+PickGame (PMENU_STATE pMS)
 {
 	BOOLEAN retval;
 	CONTEXT OldContext;
@@ -1197,17 +1222,14 @@ PickGame (PMENU_STATE
 }
 
 static BOOLEAN
-DoGameOptions
-		(INPUT_STATE
-		InputState,
-		PMENU_STATE
-		pMS)
+DoGameOptions (PMENU_STATE pMS)
 {
+	BOOLEAN force_select = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
 	if (LastActivity == CHECK_LOAD)
-		InputState = DEVICE_BUTTON1;
+		force_select = TRUE;
 
 	if (pMS->Initialized <= 0)
 	{
@@ -1218,14 +1240,14 @@ DoGameOptions
 		pMS->Initialized = 1;
 		pMS->InputFunc = DoGameOptions;
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| ((InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.cancel
+			|| (CurrentMenuState.select
 			&& pMS->CurState == SETTINGS + 1))
 	{
 		pMS->CurState = SETTINGS + 1;
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select || force_select)
 	{
 		switch (pMS->CurState)
 		{
@@ -1241,7 +1263,7 @@ DoGameOptions
 		}
 	}
 	else
-		DoMenuChooser (InputState, pMS, PM_SAVE_GAME);
+		DoMenuChooser (pMS, PM_SAVE_GAME);
 
 	return (TRUE);
 }

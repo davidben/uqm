@@ -42,7 +42,7 @@ Introduction (void)
 	BYTE xform_buf[1];
 	STAMP s;
 	DWORD TimeOut;
-	INPUT_STATE InputState;
+	BOOLEAN InputState;
 
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap (

@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ctype.h>
 #include "starcon.h"
 #include "commglue.h"
 #include "libs/sound/trackplayer.h"
@@ -26,11 +27,17 @@ void WaitForNoInput (SIZE Duration);
 
 //End Added by Chris
 
-INPUT_STATE
+/* TODO: Replace the TO EXIT PRESS B code with a 'real' confirmation
+   screen.  To avoid confusion (especially now that there is no
+   in-game model of the 3DO controller exits are currently always
+   confirmed. */
+
+BOOLEAN
 ConfirmExit (void)
 {
-	INPUT_STATE InputState;
-
+#if 0
+	BOOLEAN result;
+	fprintf (stderr, "Confirming Exit!\n");
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
 	else if (CommData.ConversationPhrases && PlayingTrack ())
@@ -38,13 +45,17 @@ ConfirmExit (void)
 
 	SetSemaphore (GraphicsSem);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		InputState = DEVICE_EXIT;
+	{
+		result = FALSE;
+		ExitRequested = FALSE;
+	}
 	else
 	{
 		RECT r;
 		STAMP s;
 		FRAME F;
 		CONTEXT oldContext;
+		UNICODE response;
 
 		oldContext = SetContext (ScreenContext);
 
@@ -63,38 +74,32 @@ ConfirmExit (void)
 		FlushGraphics ();
 		//SetSemaphore (GraphicsSem);
 
-		{
-			INPUT_STATE PressState;
-
-			GLOBAL (CurrentActivity) |= CHECK_ABORT;
-
-			PressState = GetInputState (NormalInput);
-			do
-			{
-				TaskSwitch ();
-				InputState = GetInputState (NormalInput);
-				if (PressState)
-				{
-					PressState = InputState;
-					InputState = 0;
-				}
-			} while (!InputState);
-		}
+		/* Possible bug... ConfirmExit is assuming
+		 * CharacterMode is off. */
+		EnableCharacterMode ();
+		GLOBAL (CurrentActivity) |= CHECK_ABORT;
+		do {
+			response = toupper (GetCharacter ());
+		} while (response != 'Y' && response != 'N');
+		DisableCharacterMode ();
+		ExitRequested = FALSE;
 
 		s.frame = F;
 		DrawStamp (&s);
 		DestroyDrawable (ReleaseDrawable (s.frame));
-
-		if (InputState & DEVICE_BUTTON2)
-			InputState = DEVICE_EXIT;
+		if (response == 'Y')
+		{
+			GameExiting = TRUE;
+			result = TRUE;
+		}		
 		else
 		{
-			InputState = 0;
+			result = FALSE;
+			GameExiting = FALSE;
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			WaitForNoInput (ONE_SECOND / 4);
 			FlushInput ();
 		}
-
 		SetContext (oldContext);
 	}
 	ClearSemaphore (GraphicsSem);
@@ -104,7 +109,13 @@ ConfirmExit (void)
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();
 
-	return (InputState);
+	fprintf (stderr, "Exit was %sconfirmed.\n", result ? "" : "NOT ");
+	return (result);
+#endif
+	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	ExitRequested = FALSE;
+	GameExiting = TRUE;
+	return TRUE;
 }
 
 

@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
+#include "controls.h"
 
 PMENU_STATE pMenuState;
 
@@ -271,7 +272,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 }
 
 BOOLEAN
-DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
+DoStarBase (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 	{
@@ -335,7 +336,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 				"rotate starbase");
 		ClearSemaphore (GraphicsSem);
 	}
-	else if ((InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select
 			|| GET_GAME_STATE (MOONBASE_ON_SHIP)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
@@ -395,14 +396,12 @@ ExitStarBase:
 		STARBASE_STATE NewState;
 
 		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.left || CurrentMenuState.up)
 		{
 			if (NewState-- == TALK_COMMANDER)
 				NewState = DEPART_BASE;
 		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.right || CurrentMenuState.down)
 		{
 			if (NewState++ == DEPART_BASE)
 				NewState = TALK_COMMANDER;

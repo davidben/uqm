@@ -17,21 +17,23 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 SIZE cur_player;
 
-INPUT_STATE
-computer_intelligence (INPUT_REF InputRef, INPUT_STATE InputState)
+BATTLE_INPUT_STATE
+computer_intelligence (void)
 {
-	if (InputState || LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-		return (InputState);
+	BATTLE_INPUT_STATE InputState;
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
+		return (0);
 
 	if (CyborgDescPtr)
 	{
 		if (PlayerControl[cur_player] & CYBORG_CONTROL)
 			InputState = tactical_intelligence ();
 		else
-			InputState = GetInputState (CombinedInput[cur_player]);
+			InputState = (*(HumanInput[cur_player])) ();
 	}
 	else if (!(PlayerControl[cur_player] & PSYTRON_CONTROL))
 		InputState = 0;
@@ -42,12 +44,11 @@ computer_intelligence (INPUT_REF InputRef, INPUT_STATE InputState)
 			case SUPER_MELEE:
 			{
 				SleepThread (ONE_SECOND >> 1);
-				InputState = DEVICE_BUTTON1; /* pick a random ship */
+				InputState = BATTLE_WEAPON; /* pick a random ship */
 				break;
 			}
 		}
 	}
-	(void) InputRef;  /* Satisfying compiler (unused parameter) */
 	return (InputState);
 }
 

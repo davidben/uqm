@@ -25,6 +25,7 @@
 #include "options.h"
 #include "comm.h"
 #include "libs/sound/sound.h"
+#include "controls.h"
 #include "endian_uqm.h"
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
@@ -51,8 +52,7 @@ volatile BOOLEAN summary = FALSE;
 
 typedef struct encounter_state
 {
-	BOOLEAN (*InputFunc) (INPUT_STATE InputState, struct encounter_state
-			*pES);
+	BOOLEAN (*InputFunc) (struct encounter_state *pES);
 	COUNT MenuRepeatDelay;
 
 	COUNT Initialized;
@@ -1299,7 +1299,6 @@ SpewPhrases (COUNT wait_track)
 	BOOLEAN ContinuityBreak;
 	DWORD TimeIn;
 	COUNT which_track;
-	INPUT_STATE InputState, LastInputState = (INPUT_STATE)~0;
 	FRAME F;
 	BOOLEAN passed = TRUE;
 
@@ -1310,7 +1309,6 @@ SpewPhrases (COUNT wait_track)
 	if (wait_track == 0)
 	{
 		wait_track = which_track = (COUNT)~0;
-		InputState = 0;
 		goto Rewind;
 	}
 
@@ -1348,13 +1346,11 @@ SpewPhrases (COUNT wait_track)
 #if DEMO_MODE || CREATE_JOURNAL
 		InputState = 0;
 #else /* !(DEMO_MODE || CREATE_JOURNAL) */
-		InputState = GetInputState (NormalInput);
+		UpdateInputState ();
 #endif
-		if (InputState & DEVICE_EXIT)
-			InputState = ConfirmExit ();
 
 		SetSemaphore (GraphicsSem);
-		if (InputState & (DEVICE_BUTTON2 | DEVICE_EXIT))
+		if (CurrentMenuState.cancel)
 		{
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
 			JumpTrack ();
@@ -1365,11 +1361,21 @@ SpewPhrases (COUNT wait_track)
 
 		if (which_track)
 		{
-			if (GetInputXComponent (InputState) > 0)
+			BOOLEAN left=FALSE, right=FALSE;
+			if (optSmoothScroll == OPT_PC)
+			{
+				left = CurrentMenuState.left;
+				right = CurrentMenuState.right;
+			}
+			else if (optSmoothScroll == OPT_3DO)
+			{
+				left = ImmediateMenuState.left;
+				right = ImmediateMenuState.right;
+			}
+			if (right)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
-				if (optSmoothScroll == OPT_PC && InputState != LastInputState
-						&& !FastForward_Page ())
+				if (optSmoothScroll == OPT_PC && !FastForward_Page ())
 				{
 					SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
 					JumpTrack ();
@@ -1382,11 +1388,11 @@ SpewPhrases (COUNT wait_track)
 				ContinuityBreak = TRUE;
 				CommData.AlienFrame = 0;
 			}
-			else if (GetInputXComponent (InputState) < 0)
+			else if (left)
 			{
 Rewind:
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
-				if (optSmoothScroll == OPT_PC && InputState != LastInputState)
+				if (optSmoothScroll == OPT_PC)
 					FastReverse_Page ();
 				else if (optSmoothScroll == OPT_3DO)
 					FastReverse_Smooth ();
@@ -1414,7 +1420,6 @@ Rewind:
 					|| wait_track == (COUNT)~0)
 				CommData.AlienFrame = F;
 		}
-		LastInputState = InputState;
 	} while (ContinuityBreak
 			|| ((which_track = PlayingTrack ()) && which_track <= wait_track));
 
@@ -1545,7 +1550,7 @@ AlienTalkSegue (COUNT wait_track)
 }
 
 static BOOLEAN
-DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
+DoCommunication (PENCOUNTER_STATE pES)
 {
 	if (!(CommData.AlienTransitionDesc.AnimFlags & (TALK_INTRO | TALK_DONE)))
 	{
@@ -1564,7 +1569,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 		{
 			SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 			TimeIn = GetTimeCounter ();
-			if (GetInputXComponent (GetInputState (NormalInput)) < 0)
+			// Warning!  This used to re-gather input data to check for rewind.
+			UpdateInputState ();
+			if (CurrentMenuState.left)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				SetSemaphore (GraphicsSem);
@@ -1625,7 +1632,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			ClearSemaphore (GraphicsSem);
 		}
 
-		if (InputState & DEVICE_BUTTON1)
+		if (CurrentMenuState.select)
 		{
 			pES->phrase_buf_index =
 					pES->response_list[pES->cur_response].response_text.CharCount;
@@ -1647,7 +1654,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			(*pES->response_list[pES->cur_response].response_func)
 					(pES->response_list[pES->cur_response].response_ref);
 		}
-		else if (InputState & DEVICE_BUTTON2 && 
+		else if (CurrentMenuState.cancel && 
 				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		{
 			extern TFB_SoundChain *first_chain;
@@ -1800,7 +1807,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 		else
 		{
 			response = pES->cur_response;
-			if (GetInputXComponent (InputState) < 0)
+			if (CurrentMenuState.left)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				SetSemaphore (GraphicsSem);
@@ -1848,10 +1855,10 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					TaskSwitch ();
 				while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
 			}
-			else if (GetInputYComponent (InputState) < 0)
+			else if (CurrentMenuState.up)
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
 						% pES->num_responses);
-			else if (GetInputYComponent (InputState) > 0)
+			else if (CurrentMenuState.down)
 				response = (BYTE)((BYTE)(response + 1)
 						% pES->num_responses);
 

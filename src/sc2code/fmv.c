@@ -83,7 +83,7 @@ Introduction (void)
 	BYTE xform_buf[1];
 	STAMP s;
 	DWORD TimeOut;
-	INPUT_STATE InputState;
+	BOOLEAN InputState;
 
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap (
@@ -111,6 +111,7 @@ Introduction (void)
 				//
 		}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+	GameExiting = FALSE;
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 

@@ -20,6 +20,7 @@
 #include "declib.h"
 #include "file.h"
 #include "options.h"
+#include "controls.h"
 
 void FreeSC2Data (void);
 
@@ -207,8 +208,8 @@ SaveProblem (void)
 {
 	BOOLEAN manage;
 	STAMP s;
-	INPUT_STATE InputState;
 	CONTEXT OldContext;
+	BOOLEAN cont;
 	
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (SpaceContext);
@@ -216,20 +217,23 @@ SaveProblem (void)
 	SaveProblemMessage (&s);
 
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	GameExiting = TRUE;
 
 	while (AnyButtonPress (FALSE));
 	do
 	{
-		InputState = GetInputState (NormalInput);
-		if (InputState & DEVICE_BUTTON1)
+		cont = FALSE;
+		UpdateInputState ();
+		if (CurrentMenuState.select)
 			manage = TRUE;
-		else if (InputState & DEVICE_BUTTON3)
+		else if (CurrentMenuState.special)
 			manage = FALSE;
 		else
-			InputState = 0;
-	} while (!InputState);
+			cont = TRUE;
+	} while (cont);
 
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+	GameExiting = FALSE;
 
 	BatchGraphics ();
 	DrawStamp (&s);

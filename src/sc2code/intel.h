@@ -19,6 +19,8 @@
 #ifndef _INTEL_H
 #define _INTEL_H
 
+#include "controls.h"
+
 typedef enum
 {
 	PURSUE = 0,
@@ -58,9 +60,8 @@ enum
 
 extern STARSHIPPTR CyborgDescPtr;
 
-extern INPUT_STATE computer_intelligence (INPUT_REF InputRef, INPUT_STATE
-		InputState);
-extern INPUT_STATE tactical_intelligence (void);
+extern BATTLE_INPUT_STATE computer_intelligence (void);
+extern BATTLE_INPUT_STATE tactical_intelligence (void);
 extern void ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR
 		ObjectsOfConcern, COUNT ConcernCounter);
 extern BOOLEAN ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr,

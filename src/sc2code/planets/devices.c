@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 static COUNT
 lpstrchr (UNICODE *pStr, UNICODE ch)
@@ -420,9 +421,14 @@ DeviceFailed (BYTE which_device)
 }
 
 static BOOLEAN
-DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
+DoManipulateDevices (PMENU_STATE pMS)
 {
 	BYTE NewState;
+	BOOLEAN select, cancel, back, forward;
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
+	back = CurrentMenuState.up || CurrentMenuState.left;
+	forward = CurrentMenuState.down || CurrentMenuState.right;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -436,11 +442,11 @@ DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
 		NewState = pMS->CurState;
 		goto SelectDevice;
 	}
-	else if (InputState & DEVICE_BUTTON2)
+	else if (cancel)
 	{
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (select)
 	{
 		UWORD status;
 
@@ -465,8 +471,7 @@ DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		NewTop = pMS->first_item.y;
 		NewState = pMS->CurState - 1;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (back)
 		{
 			if (NewState-- == 0)
 				NewState = 0;
@@ -474,8 +479,7 @@ DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
 			if ((SIZE)NewState < NewTop && (NewTop -= MAX_VIS_DEVICES) < 0)
 				NewTop = 0;
 		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (forward)
 		{
 			if (++NewState == (BYTE)pMS->first_item.x)
 				NewState = (BYTE)(pMS->first_item.x - 1);
@@ -619,7 +623,8 @@ Devices (PMENU_STATE pMS)
 		pMS->first_item.y = 0;
 
 		pMS->CurFrame = (FRAME)DeviceMap;
-		DoManipulateDevices (0, pMS); /* to make sure it's initialized */
+		TFB_ResetControls ();
+		DoManipulateDevices (pMS); /* to make sure it's initialized */
 		DoInput ((PVOID)pMS);
 		pMS->CurFrame = 0;
 

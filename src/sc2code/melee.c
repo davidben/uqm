@@ -23,6 +23,7 @@
 #include "melee.h"
 #include "options.h"
 #include "file.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -103,11 +104,11 @@ extern QUEUE master_q;
 extern DWORD InTime;
 PMELEE_STATE volatile pMeleeState;
 
-static BOOLEAN DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS);
-static BOOLEAN DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS);
-static BOOLEAN DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS);
+static BOOLEAN DoMelee (PMELEE_STATE pMS);
+static BOOLEAN DoEdit (PMELEE_STATE pMS);
+static BOOLEAN DoPickShip (PMELEE_STATE pMS);
 static void DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState);
-static BOOLEAN DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS);
+static BOOLEAN DoLoadTeam (PMELEE_STATE pMS);
 static void DrawFileStrings (PMELEE_STATE pMS, int HiLiteState);
 
 static void
@@ -355,12 +356,11 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		pchar_deltas = char_deltas;
 		for (i = pMS->CurIndex; i > 0; --i)
 			text_r.corner.x += (SIZE)*pchar_deltas++;
-		if (SerialInput)
-		{
-			if (pMS->CurIndex < lfText.CharCount) /* end of line */
-				--text_r.corner.x;
-			text_r.extent.width = 1;
-		}
+		if (pMS->CurIndex < lfText.CharCount) /* end of line */
+			--text_r.corner.x;
+		text_r.extent.width = 1;
+#if 0
+		/* Code for keyboardless systems */
 		else
 		{
 			if (pMS->CurIndex == lfText.CharCount) /* end of line */
@@ -368,6 +368,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 			else
 				text_r.extent.width = (SIZE)*pchar_deltas;
 		}
+#endif
 		++text_r.corner.x;
 		++text_r.corner.y;
 		text_r.extent.height -= 2;
@@ -842,11 +843,11 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 }
 
 static BOOLEAN
-DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
+DoLoadTeam (PMELEE_STATE pMS)
 {
 	SIZE index;
 
-	if (InputState & DEVICE_EXIT)
+	if (GameExiting)
 		return (FALSE);
 
 	if (!pMS->Initialized)
@@ -865,9 +866,9 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 		pMS->InputFunc = DoLoadTeam;
 		ClearSemaphore (GraphicsSem);
 	}
-	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+	else if (CurrentMenuState.select | CurrentMenuState.cancel)
 	{
-		if (!(InputState & DEVICE_BUTTON2))
+		if (!CurrentMenuState.cancel)
 		{
 			pMS->TeamImage[pMS->side] = pMS->FileList[
 					pMS->CurIndex - pMS->TopTeamIndex
@@ -893,7 +894,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		NewTop = pMS->TopTeamIndex;
 		index = old_index = pMS->CurIndex;
-		if (GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.up)
 		{
 			if (index-- == 0)
 				index = 0;
@@ -901,7 +902,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 			if (index < NewTop && (NewTop -= MAX_VIS_TEAMS) < 0)
 				NewTop = 0;
 		}
-		else if (GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.down)
 		{
 			if ((int)index < (int)GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - 1)
 				++index;
@@ -909,7 +910,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 			if ((int)index > (int)pMS->BotTeamIndex)
 				NewTop = index;
 		}
-		else if (InputState & DEVICE_LEFTSHIFT)
+		else if (CurrentMenuState.page_up)
 		{
 			if ((index -= MAX_VIS_TEAMS) < 0)
 				index = NewTop = 0;
@@ -919,7 +920,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 					NewTop = 0;
 			}
 		}
-		else if (InputState & DEVICE_RIGHTSHIFT)
+		else if (CurrentMenuState.page_down)
 		{
 			if ((int)(index += MAX_VIS_TEAMS) <
 					(int)(GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT))
@@ -954,11 +955,12 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 }
 
 static UWORD
-DoTextEntry (PMELEE_STATE pMS, INPUT_STATE InputState)
+DoTextEntry (PMELEE_STATE pMS)
 {
 	UWORD ch;
 	UNICODE *pStr, *pBaseStr;
 	COUNT len, max_chars;
+	BOOLEAN left = FALSE, right = FALSE;
 
 	if (pMS->MeleeOption == EDIT_MELEE)
 	{
@@ -966,61 +968,52 @@ DoTextEntry (PMELEE_STATE pMS, INPUT_STATE InputState)
 		max_chars = MAX_TEAM_CHARS;
 	}
 
-	if (SerialInput)
-	{
-		ch = GetInputUNICODE (GetInputState (SerialInput));
-	}
-	else
-	{
-		extern UWORD GetJoystickChar (INPUT_STATE InputState);
-
-		ch = GetJoystickChar (InputState);
-	}
+	ch = GetCharacter ();
 
 	pStr = &pBaseStr[pMS->CurIndex];
 	len = wstrlen (pStr);
 	switch (ch)
 	{
-		case 0x7F:
-			if (len)
-			{
-				memmove (pStr, pStr + 1, len * sizeof (*pStr));
-				len = (COUNT)~0;
-			}
-			break;
-		case '\b':
-			if (pMS->CurIndex)
-			{
-				memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
-				--pMS->CurIndex;
-
-				len = (COUNT)~0;
-			}
-			break;
-		default:
-			if (isprint (ch) && len + pStr - pBaseStr < (int)(max_chars))
-			{
-				if (SerialInput)
-				{
-					memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
-					*pStr++ = ch;
-					++pMS->CurIndex;
-				}
-				else
-				{
-					*pStr = ch;
-					if (len == 0)
-						*(pStr + 1) = '\0';
-				}
-
-				len = (COUNT)~0;
-			}
-			break;
+	case SK_DELETE:
+		if (len)
+		{
+			memmove (pStr, pStr + 1, len * sizeof (*pStr));
+			len = (COUNT)~0;
+		}
+		break;
+	case '\b':
+		if (pMS->CurIndex)
+		{
+			memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
+			--pMS->CurIndex;
+			
+			len = (COUNT)~0;
+		}
+		break;
+	case SK_LF_ARROW:
+		left = TRUE;
+		break;
+	case SK_RT_ARROW:
+		right = TRUE;
+		break;
+	default:
+		/* This really should use isprint, but for some
+		 * ungodly reason some machines refuse to accept
+		 * anything as printable */
+		if ((ch >= 32) && (ch < 127) && (len + pStr - pBaseStr < (int)(max_chars)))
+		{
+			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
+			*pStr++ = ch;
+			++pMS->CurIndex;
+			
+			len = (COUNT)~0;
+		}
+		break;
 	}
 
 	if (len == (COUNT)~0)
 		DrawTeamString (pMS, 1);
-	else if (GetInputXComponent (InputState) < 0)
+	else if (left)
 	{
 		if (pMS->CurIndex)
 		{
@@ -1028,7 +1021,7 @@ DoTextEntry (PMELEE_STATE pMS, INPUT_STATE InputState)
 			DrawTeamString (pMS, 1);
 		}
 	}
-	else if (GetInputXComponent (InputState) > 0)
+	else if (right)
 	{
 		if (len)
 		{
@@ -1142,11 +1135,10 @@ RetrySave:
 }
 
 static BOOLEAN
-DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
+DoEdit (PMELEE_STATE pMS)
 {
-	if (InputState & DEVICE_EXIT)
+	if (GameExiting)
 		return (FALSE);
-
 	if (!pMS->Initialized)
 	{
 		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
@@ -1156,8 +1148,8 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 		pMS->InputFunc = DoEdit;
 	}
 	else if ((pMS->row < NUM_MELEE_ROWS || pMS->CurIndex == (BYTE)~0)
-			&& ((InputState & DEVICE_BUTTON2)
-			|| (GetInputXComponent (InputState) > 0
+			&& (CurrentMenuState.cancel
+			|| (CurrentMenuState.right
 			&& (pMS->col == NUM_MELEE_COLUMNS - 1 || pMS->row == NUM_MELEE_ROWS))))
 	{
 		SetSemaphore (GraphicsSem);
@@ -1169,13 +1161,14 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 		InTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
-			&& (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON3)))
+			&& (CurrentMenuState.select || CurrentMenuState.special))
 	{
-		if (InputState & DEVICE_BUTTON1)
+		if (CurrentMenuState.select)
 			pMS->Initialized = 0;
 		else
 			pMS->Initialized = -1;
-		DoPickShip (0, pMS);
+		TFB_ResetControls ();
+		DoPickShip (pMS);
 	}
 	else
 	{
@@ -1189,45 +1182,47 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 		{
 			if (pMS->CurIndex != (BYTE)~0)
 			{
+				UNICODE ch;
 				SetSemaphore (GraphicsSem);
-				if (pMS->Initialized == 1 && SerialInput)
+				if (pMS->Initialized == 1)
 				{
 					FlushInput ();
 					pMS->Initialized = 2;
 				}
-				else if ((SerialInput == 0 && (InputState & DEVICE_BUTTON2))
-						|| DoTextEntry (pMS, InputState) == '\n')
+				else if (((ch = DoTextEntry (pMS)) == '\n') || (ch == '\r'))
 				{
 					pMS->CurIndex = (BYTE)~0;
 					DrawTeamString (pMS, 4);
 					pMS->Initialized = 1;
+					DisableCharacterMode ();
 				}
 				ClearSemaphore (GraphicsSem);
 				return (TRUE);
 			}
-			else if (InputState & DEVICE_BUTTON1)
+			else if (CurrentMenuState.select)
 			{
 				pMS->CurIndex = 0;
 				SetSemaphore (GraphicsSem);
 				DrawTeamString (pMS, 1);
 				ClearSemaphore (GraphicsSem);
+				EnableCharacterMode ();
 				return (TRUE);
 			}
 		}
 
 		{
-			if (GetInputXComponent (InputState) < 0)
+			if (CurrentMenuState.left)
 			{
 				if (col-- == 0)
 					col = 0;
 			}
-			else if (GetInputXComponent (InputState) > 0)
+			else if (CurrentMenuState.right)
 			{
 				if (++col == NUM_MELEE_COLUMNS)
 					col = NUM_MELEE_COLUMNS - 1;
 			}
 
-			if (GetInputYComponent (InputState) < 0)
+			if (CurrentMenuState.up)
 			{
 				if (row-- == 0)
 				{
@@ -1240,7 +1235,7 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 					}
 				}
 			}
-			else if (GetInputYComponent (InputState) > 0)
+			else if (CurrentMenuState.down)
 			{
 				if (row++ == NUM_MELEE_ROWS)
 				{
@@ -1276,11 +1271,11 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 }
 
 static BOOLEAN
-DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
+DoPickShip (PMELEE_STATE pMS)
 {
 	STARSHIPPTR StarShipPtr;
 
-	if (InputState & DEVICE_EXIT)
+	if (GameExiting)
 		return (FALSE);
 
 	if (pMS->Initialized <= 0)
@@ -1338,11 +1333,11 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
 	}
-	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+	else if (CurrentMenuState.select || CurrentMenuState.cancel)
 	{
 		pMS->InputFunc = 0; /* disable ship flashing */
 
-		if (!(InputState & DEVICE_BUTTON2))
+		if (!CurrentMenuState.cancel)
 		{
 			HSTARSHIP hStarShip;
 			
@@ -1385,7 +1380,7 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		return (TRUE);
 	}
-	else if (InputState & DEVICE_BUTTON3)
+	else if (CurrentMenuState.special)
 	{
 		DoShipSpin (pMS->CurIndex, (MUSIC_REF)0);
 	
@@ -1397,25 +1392,25 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		NewStarShip = pMS->CurIndex;
 
-		if (GetInputXComponent (InputState) < 0)
+		if (CurrentMenuState.left)
 		{
 			if (NewStarShip-- % NUM_PICK_COLS == 0)
 				NewStarShip += NUM_PICK_COLS;
 		}
-		else if (GetInputXComponent (InputState) > 0)
+		else if (CurrentMenuState.right)
 		{
 			if (++NewStarShip % NUM_PICK_COLS == 0)
 				NewStarShip -= NUM_PICK_COLS;
 		}
 		
-		if (GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.up)
 		{
 			if (NewStarShip >= NUM_PICK_COLS)
 				NewStarShip -= NUM_PICK_COLS;
 			else
 				NewStarShip += NUM_PICK_COLS * (NUM_PICK_ROWS - 1);
 		}
-		else if (GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.down)
 		{
 			if (NewStarShip < NUM_PICK_COLS * (NUM_PICK_ROWS - 1))
 				NewStarShip += NUM_PICK_COLS;
@@ -1590,14 +1585,11 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 }
 
 static BOOLEAN
-DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
+DoMelee (PMELEE_STATE pMS)
 {
-	if (InputState)
-	{
-		if (InputState & DEVICE_EXIT)
-			return (FALSE);
-		InTime = GetTimeCounter ();
-	}
+	BOOLEAN force_select = FALSE;
+	if (GameExiting)
+		return (FALSE);
 
 	if (!pMS->Initialized)
 	{
@@ -1613,34 +1605,36 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 		}
 		InTime = GetTimeCounter ();
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| GetInputXComponent (InputState) < 0)
+	else if (CurrentMenuState.cancel || CurrentMenuState.left)
 	{
 		SetSemaphore (GraphicsSem);
+		InTime = GetTimeCounter ();
 		Deselect (pMS->MeleeOption);
 		ClearSemaphore (GraphicsSem);
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
-		if (InputState & DEVICE_BUTTON2)
+		if (CurrentMenuState.cancel)
 			pMS->side = pMS->row = pMS->col = 0;
 		else
 			pMS->side = 0,
 			pMS->row = NUM_MELEE_ROWS - 1,
 			pMS->col = NUM_MELEE_COLUMNS - 1;
-		DoEdit (InputState, pMS);
+		DoEdit (pMS);
 	}
 	else
 	{
 		MELEE_OPTIONS NewMeleeOption;
 
 		NewMeleeOption = pMS->MeleeOption;
-		if (GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.up)
 		{
+			InTime = GetTimeCounter ();
 			if (NewMeleeOption-- == CONTROLS_TOP)
 				NewMeleeOption = CONTROLS_TOP;
 		}
-		else if (GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.down)
 		{
+			InTime = GetTimeCounter ();
 			if (NewMeleeOption++ == CONTROLS_BOT)
 				NewMeleeOption = CONTROLS_BOT;
 		}
@@ -1648,7 +1642,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 		if ((PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
 				&& GetTimeCounter () - InTime > ONE_SECOND * 10)
 		{
-			InputState = DEVICE_BUTTON1;
+			force_select = TRUE;
 			NewMeleeOption = START_MELEE;
 		}
 
@@ -1661,7 +1655,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 			ClearSemaphore (GraphicsSem);
 		}
 
-		if (InputState & DEVICE_BUTTON1)
+		if (CurrentMenuState.select || force_select)
 		{
 			switch (pMS->MeleeOption)
 			{
@@ -1721,7 +1715,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 				case LOAD_BOT:
 					pMS->Initialized = FALSE;
 					pMS->side = pMS->MeleeOption == LOAD_TOP ? 0 : 1;
-					DoLoadTeam (InputState, pMS);
+					DoLoadTeam (pMS);
 					break;
 				case SAVE_TOP:
 				case SAVE_BOT:

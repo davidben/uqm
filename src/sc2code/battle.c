@@ -18,6 +18,7 @@
 
 #include "libs/graphics/gfx_common.h"
 //#include "starcon.h"
+#include "controls.h"
 
 QUEUE disp_q;
 SIZE battle_counter;
@@ -33,6 +34,7 @@ ProcessInput (void)
 			&& GET_GAME_STATE (STARBASE_AVAILABLE)
 			&& !GET_GAME_STATE (BOMB_CARRIER)
 			);
+	UpdateInputState ();
 	for (cur_player = NUM_SIDES - 1; cur_player >= 0; --cur_player)
 	{
 		HSTARSHIP hBattleShip, hNextShip;
@@ -40,7 +42,7 @@ ProcessInput (void)
 		for (hBattleShip = GetHeadLink (&race_q[cur_player]);
 				hBattleShip != 0; hBattleShip = hNextShip)
 		{
-			INPUT_STATE InputState;
+			BATTLE_INPUT_STATE InputState;
 			STARSHIPPTR StarShipPtr;
 
 			StarShipPtr = LockStarShip (&race_q[cur_player], hBattleShip);
@@ -50,12 +52,10 @@ ProcessInput (void)
 			{
 				CyborgDescPtr = StarShipPtr;
 
-				InputState = GetInputState (PlayerInput[cur_player]);
+				InputState = (*(PlayerInput[cur_player]))();
 #if CREATE_JOURNAL
 				JournalInput (InputState);
 #endif /* CREATE_JOURNAL */
-				if (InputState & DEVICE_EXIT)
-					InputState = ConfirmExit ();
 
 #ifdef TESTING
 if ((InputState & DEVICE_BUTTON3)
@@ -73,25 +73,19 @@ if ((InputState & DEVICE_BUTTON3)
 				CyborgDescPtr->ship_input_state = 0;
 				if (CyborgDescPtr->RaceDescPtr->ship_info.crew_level)
 				{
-					if (GetInputXComponent (InputState) < 0)
+					
+					if (InputState & BATTLE_LEFT)
 						CyborgDescPtr->ship_input_state |= LEFT;
-					else if (GetInputXComponent (InputState) > 0)
+					else if (InputState & BATTLE_RIGHT)
 						CyborgDescPtr->ship_input_state |= RIGHT;
-					if (GetInputYComponent (InputState) < 0
-							|| (InputState & DEVICE_BUTTON1))
+					if (InputState & BATTLE_THRUST)
 						CyborgDescPtr->ship_input_state |= THRUST;
-					if (InputState & (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
+					if (InputState & BATTLE_WEAPON)
 						CyborgDescPtr->ship_input_state |= WEAPON;
-					if (InputState & (DEVICE_BUTTON3 | DEVICE_LEFTSHIFT))
+					if (InputState & BATTLE_SPECIAL)
 						CyborgDescPtr->ship_input_state |= SPECIAL;
 
-					if (CanRunAway
-							&& cur_player == 0
-							&& ((PlayerControl[cur_player] & HUMAN_CONTROL)
-							|| (InputState = GetInputState (NormalInput)))
-							&& ((InputState & (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
-							    == (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT)
-							||  (InputState & DEVICE_BUTTON4)))
+					if (CanRunAway && cur_player == 0 && (InputState & BATTLE_ESCAPE))
 					{
 						ELEMENTPTR ElementPtr;
 

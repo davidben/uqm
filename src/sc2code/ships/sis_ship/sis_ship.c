@@ -19,6 +19,7 @@
 #include "reslib.h"
 #include "ships/sis_ship/resinst.h"
 #include "starcon.h"
+#include "controls.h"
 
 #define MAX_TRACKING 3
 #define MAX_DEFENSE 8
@@ -275,7 +276,7 @@ sis_hyper_postprocess (PELEMENT ElementPtr)
 	GLOBAL (velocity) = ElementPtr->velocity;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	if ((StarShipPtr->cur_status_flags & WEAPON)
+	if (((StarShipPtr->cur_status_flags & WEAPON) || CurrentMenuState.cancel)
 			&& StarShipPtr->special_counter == 0)
 	{
 #define MENU_DELAY 10

@@ -30,14 +30,14 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 {
 	COUNT ships_left, row, col;
 	DWORD NewTime, OldTime, LastTime;
-	INPUT_STATE OldInputState;
+	BATTLE_INPUT_STATE OldInputState;
 	HSTARSHIP hBattleShip, hNextShip;
 	STARSHIPPTR StarShipPtr;
 	RECT flash_rect;
-    TEXT t;
-    UNICODE buf[10];
-    STAMP s;
-    CONTEXT OldContext;
+	TEXT t;
+	UNICODE buf[10];
+	STAMP s;
+	CONTEXT OldContext;
 
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		return (0);
@@ -52,7 +52,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 		cur_bucks = 0;
 		for (hBattleShip = GetHeadLink (&race_q[which_player]);
-			hBattleShip != 0; hBattleShip = hNextShip)
+				hBattleShip != 0; hBattleShip = hNextShip)
 		{
 			StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
 			if (StarShipPtr == LastStarShipPtr)
@@ -110,7 +110,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	if (LOBYTE (battle_counter) == 0 || HIBYTE (battle_counter) == 0)
 	{
 		DWORD TimeOut;
-		INPUT_STATE PressState, ButtonState;
+		BOOLEAN PressState, ButtonState;
 
 		s.origin.y = PICK_Y_OFFS - 9 + (which_player * PICK_SIDE_OFFS);
 		s.frame = SetAbsFrameIndex (PickMeleeFrame,
@@ -121,6 +121,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
 
+		UpdateInputState ();
 		PressState = AnyButtonPress (TRUE);
 		do
 		{
@@ -128,16 +129,18 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			if (PressState)
 			{
 				PressState = ButtonState;
-				ButtonState = 0;
+				ButtonState = FALSE;
 			}
 		} while (!ButtonState
 				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
 				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut));
 
+		/*
 		if (ButtonState)
 			ButtonState = GetInputState (NormalInput);
 		if (ButtonState & DEVICE_EXIT)
 			ConfirmExit ();
+		*/
 
 		SetSemaphore (GraphicsSem);
 
@@ -169,25 +172,23 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	goto ChangeSelection;
 	for (;;)
 	{
-		INPUT_STATE InputState;
+		BATTLE_INPUT_STATE InputState;
 
 		SleepThread (ONE_SECOND / 120);
 		NewTime = GetTimeCounter ();
 		
-		InputState = GetInputState (PlayerInput[which_player]);
+		UpdateInputState ();
+		InputState = (*(PlayerInput[which_player])) ();
 		if (InputState)
 			LastTime = NewTime;
 		else if (!(PlayerControl[1 - which_player] & PSYTRON_CONTROL)
 				&& NewTime - LastTime >= ONE_SECOND * 3)
-			InputState = GetInputState (PlayerInput[1 - which_player]);
-		if (InputState & DEVICE_EXIT)
+		  InputState = (*(PlayerInput[1 - which_player])) ();
+		if (GameExiting)
 		{
-			if (ConfirmExit ())
-			{
-				hBattleShip = 0;
-				break;
-			}
-			continue;
+			hBattleShip = 0;
+			GameExiting = FALSE;
+			break;
 		}
 
 		if (InputState == OldInputState
@@ -199,11 +200,12 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			OldTime = NewTime;
 		}
 
-		if (InputState & DEVICE_BUTTON1)
+		if (InputState & BATTLE_WEAPON || CurrentMenuState.select)
 		{
 			if (hBattleShip || (col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
 			{
 				GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+				GameExiting = FALSE;
 				break;
 			}
 		}
@@ -213,22 +215,22 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 			new_row = row;
 			new_col = col;
-			if (GetInputXComponent (InputState) < 0)
+			if ((InputState & BATTLE_LEFT) || CurrentMenuState.left)
 			{
 				if (new_col-- == 0)
 					new_col = NUM_MELEE_COLS_ORIG;
 			}
-			else if (GetInputXComponent (InputState) > 0)
+			else if ((InputState & BATTLE_RIGHT) || CurrentMenuState.right)
 			{
 				if (new_col++ == NUM_MELEE_COLS_ORIG)
 					new_col = 0;
 			}
-			if (GetInputYComponent (InputState) < 0)
+			if ((InputState & BATTLE_THRUST) || CurrentMenuState.up)
 			{
 				if (new_row-- == 0)
 					new_row = NUM_MELEE_ROWS - 1;
 			}
-			else if (GetInputYComponent (InputState) > 0)
+			else if (CurrentMenuState.down)
 			{
 				if (++new_row == NUM_MELEE_ROWS)
 					new_row = 0;

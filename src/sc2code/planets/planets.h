@@ -155,9 +155,7 @@ typedef struct solarsys_state
 	MENU_STATE MenuState;
 
 	COUNT WaitIntersect;
-	PLANET_DESC SunDesc[MAX_SUNS],
-						PlanetDesc[MAX_PLANETS],
-						MoonDesc[MAX_MOONS];
+	PLANET_DESC SunDesc[MAX_SUNS], PlanetDesc[MAX_PLANETS], MoonDesc[MAX_MOONS];
 	PPLANET_DESC pBaseDesc, pOrbitalDesc;
 	SIZE FirstPlanetIndex, LastPlanetIndex;
 
@@ -200,8 +198,7 @@ extern void FillOrbits (BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN
 		TypesDefined);
 extern void ScanSystem (void);
 extern void ChangeSolarSys (void);
-extern BOOLEAN DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE
-		pMS);
+extern BOOLEAN DoFlagshipCommands (PMENU_STATE pMS);
 extern void ZoomSystem (void);
 extern void LoadSolarSys (void);
 extern void InitLander (BYTE LanderFlags);

@@ -19,9 +19,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-UNICODE GetUNICODEKey (void);
 void FlushInput (void);
-void ProcessKeyboardEvent (const SDL_Event *Event);
-void ProcessJoystickEvent (const SDL_Event *Event);
+void ProcessInputEvent (const SDL_Event *Event);
 
 #endif

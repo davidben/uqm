@@ -38,12 +38,7 @@ typedef struct link
 } LINK;
 typedef LINK *PLINK;
 
-#ifndef _INPINTRN_H
-/* This ifndef is temporary to avoid a collision with inpintrn.h
-   This shouldn't be necessary, but SDL_wrappper.h isn't set up correctly
-   at the moment. */
 typedef PBYTE BYTEPTR;
-#endif
 typedef PUWORD WORDPTR;
 typedef PVOID VOIDPTR;
 typedef PLINK LINKPTR;

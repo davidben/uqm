@@ -20,6 +20,7 @@
 #include "lander.h"
 #include "lifeform.h"
 #include "libs/graphics/gfx_common.h"
+#include "controls.h"
 
 //define SPIN_ON_LAUNCH to let the planet spin while
 // the lander animation is playing
@@ -1549,7 +1550,7 @@ InitPlanetSide (void)
 }
 
 static BOOLEAN
-DoPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
+DoPlanetSide (PMENU_STATE pMS)
 {
 #define NUM_LANDING_DELTAS 10
 #define SHUTTLE_TURN_WAIT 2
@@ -1588,10 +1589,8 @@ SetVelocityComponents (
 	}
 	else if (pMS->delta_item == 0
 			|| (HIBYTE (pMS->delta_item) 
-			&& ((InputState & (DEVICE_BUTTON3 | DEVICE_LEFTSHIFT | DEVICE_BUTTON4))
-			|| (
-			(PPLANETSIDE_DESC)pMenuState->ModuleFrame
-			)->InTransit)))
+			&& (CurrentInputState.lander_escape
+			|| ((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit)))
 	{
 		if (pMS->delta_item || pMS->CurState > EXPLOSION_LIFE + 60)
 			return (FALSE);
@@ -1651,16 +1650,21 @@ SetVelocityComponents (
 			index = GetFrameIndex (LanderFrame[0]);
 			if (LONIBBLE (pMS->CurState))
 				pMS->CurState -= MAKE_BYTE (1, 0);
-			else if ((dx = GetInputXComponent (InputState)))
+			else if (CurrentInputState.lander_left || CurrentInputState.lander_right)
 			{
-				if (dx < 0)
+				if (CurrentInputState.lander_left)
+				{
+					dx = -1;
 					--index;
+				}
 				else
+				{
+					dx = +1;
 					++index;
+				}
 
 				index = NORMALIZE_FACING (index);
-				LanderFrame[0] =
-						SetAbsFrameIndex (LanderFrame[0], index);
+				LanderFrame[0] = SetAbsFrameIndex (LanderFrame[0], index);
 
 				dx = FACING_TO_ANGLE (index);
 				if (!GET_GAME_STATE (IMPROVED_LANDER_SPEED))
@@ -1688,8 +1692,7 @@ SetVelocityComponents (
 						);
 			}
 
-			if (!(InputState & DEVICE_BUTTON1)
-					&& GetInputYComponent (InputState) >= 0)
+			if (!CurrentInputState.lander_thrust)
 				dx = dy = 0;
 			else
 				GetNextVelocityComponents (
@@ -1698,7 +1701,7 @@ SetVelocityComponents (
 
 			if (HINIBBLE (pMS->CurState))
 				pMS->CurState -= MAKE_BYTE (0, 1);
-			else if (InputState & (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
+			else if (CurrentInputState.lander_weapon)
 			{
 				HELEMENT hWeaponElement;
 
@@ -1727,8 +1730,7 @@ SetVelocityComponents (
 							index + ANGLE_TO_FACING (FULL_CIRCLE)
 							);
 
-					if (!(InputState & DEVICE_BUTTON1)
-							&& GetInputYComponent (InputState) >= 0)
+					if (!CurrentInputState.lander_thrust)
 						wdx = wdy = 0;
 					else
 						GetCurrentVelocityComponents (

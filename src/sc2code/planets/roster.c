@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "controls.h"
 
 int
 flash_ship_task(void *data)
@@ -199,13 +200,14 @@ RosterCleanup (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
+DoModifyRoster (PMENU_STATE pMS)
 {
 	BYTE NewState;
 	SBYTE sx, sy;
 	RECT r;
 	STAMP s;
 	SHIP_FRAGMENTPTR StarShipPtr;
+	BOOLEAN select, cancel, up, down, horiz;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -217,6 +219,12 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 		return (FALSE);
 	}
 
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
+	up = CurrentMenuState.up;
+	down = CurrentMenuState.down;
+	horiz = CurrentMenuState.left || CurrentMenuState.right;
+
 	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = DoModifyRoster;
@@ -227,8 +235,7 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 		SetContext (StatusContext);
 		goto SelectSupport;
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			&& !(pMS->CurState & SHIP_TOGGLE))
+	else if (cancel && !(pMS->CurState & SHIP_TOGGLE))
 	{
 		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
@@ -239,7 +246,7 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		return (FALSE);
 	}
-	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+	else if (select || cancel)
 	{
 		SetSemaphore (GraphicsSem);
 		pMS->CurState ^= SHIP_TOGGLE;
@@ -260,8 +267,9 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else if (pMS->CurState & SHIP_TOGGLE)
 	{
-		if ((sy = GetInputYComponent (InputState)) < 0)
+		if (up)
 		{
+			sy = -1;
 			if (GLOBAL_SIS (CrewEnlisted))
 			{
 				SetSemaphore (GraphicsSem);
@@ -269,8 +277,9 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 				ClearSemaphore (GraphicsSem);
 			}
 		}
-		else if (sy > 0)
+		else if (down)
 		{
+			sy = 1;
 			if (GLOBAL_SIS (CrewEnlisted)
 					< GetCPodCapacity (NULL_PTR))
 			{
@@ -286,7 +295,7 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		NewState = pMS->CurState;
 		sx = (SBYTE)((pMS->delta_item + 1) >> 1);
-		if (GetInputXComponent (InputState))
+		if (horiz)
 		{
 			pship_pos = (PPOINT)pMS->flash_frame1;
 			if (NewState == (BYTE)(sx - 1))
@@ -305,15 +314,17 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 					--NewState;
 			}
 		}
-		else if ((sy = GetInputYComponent (InputState)) > 0)
+		else if (down)
 		{
+			sy = 1;
 			if (++NewState == (BYTE)pMS->delta_item)
 				NewState = (BYTE)(sx - 1);
 			else if (NewState == (BYTE)sx)
 				NewState = 0;
 		}
-		else if (sy < 0)
+		else if (up)
 		{
+			sy = -1;
 			if (NewState == 0)
 				NewState += sx - 1;
 			else if (NewState == (BYTE)sx)

@@ -20,6 +20,7 @@
 #include "commglue.h"
 #include "comm.h"
 #include "libs/sound/trackplayer.h"
+#include "controls.h"
 
 void
 DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR TopLeftColor, COLOR
@@ -107,7 +108,7 @@ SeedRandomNumbers (void)
 void
 WaitForNoInput (SIZE Duration)
 {
-	INPUT_STATE PressState;
+	BOOLEAN PressState;
 
 	PressState = AnyButtonPress (FALSE);
 	if (Duration < 0)
@@ -121,7 +122,7 @@ WaitForNoInput (SIZE Duration)
 	
 	{
 		DWORD TimeOut;
-		INPUT_STATE ButtonState;
+		BOOLEAN ButtonState;
 
 		TimeOut = GetTimeCounter () + Duration;
 		do
@@ -177,14 +178,16 @@ PauseGame (void)
 	FlushGraphics ();
 	//SetSemaphore (GraphicsSem);
 
-	while (KeyDown (PauseKey))
+	while (ImmediateInputState.pause)
 		TaskSwitch ();
 
-	FlushInput ();
-
-	// Wait for the pause key to be pressed again
-	while (!KeyDown (PauseKey))
+	while (!ImmediateInputState.pause)
 		TaskSwitch ();
+
+	while (ImmediateInputState.pause)
+		TaskSwitch ();
+
+	GamePaused = FALSE;
 
 	s.frame = F;
 	DrawStamp (&s);

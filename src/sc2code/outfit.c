@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 #include "options.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -162,19 +163,23 @@ DisplayLanders (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
+DoInstallModule (PMENU_STATE pMS)
 {
 	extern void DrawFlagshipStats (void);
 
 	BYTE NewState, new_slot_piece, old_slot_piece;
 	SIZE FirstItem, LastItem;
-	//STAMP s;
+	BOOLEAN select, cancel, motion;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		pMS->InputFunc = DoOutfit;
 		return (TRUE);
 	}
+
+	select = CurrentMenuState.select;
+	cancel = CurrentMenuState.cancel;
+	motion = CurrentMenuState.left || CurrentMenuState.right || CurrentMenuState.up || CurrentMenuState.down;
 
 	FirstItem = 0;
 	switch (NewState = pMS->CurState)
@@ -187,19 +192,16 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 			break;
 		case FUSION_THRUSTER:
 		case EMPTY_SLOT + 0:
-			old_slot_piece =
-					GLOBAL_SIS (DriveSlots[pMS->delta_item]);
+			old_slot_piece = GLOBAL_SIS (DriveSlots[pMS->delta_item]);
 			LastItem = NUM_DRIVE_SLOTS - 1;
 			break;
 		case TURNING_JETS:
 		case EMPTY_SLOT + 1:
-			old_slot_piece =
-					GLOBAL_SIS (JetSlots[pMS->delta_item]);
+			old_slot_piece = GLOBAL_SIS (JetSlots[pMS->delta_item]);
 			LastItem = NUM_JET_SLOTS - 1;
 			break;
 		default:
-			old_slot_piece =
-					GLOBAL_SIS (ModuleSlots[pMS->delta_item]);
+			old_slot_piece = GLOBAL_SIS (ModuleSlots[pMS->delta_item]);
 			if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 				FirstItem = NUM_BOMB_MODULES;
 			LastItem = NUM_MODULE_SLOTS - 1;
@@ -225,10 +227,10 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		goto InitFlash;
 	}
-	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
+	else if (select || cancel)
 	{
 		new_slot_piece = pMS->CurState;
-		if (InputState & DEVICE_BUTTON1)
+		if (select)
 		{
 			if (new_slot_piece < EMPTY_SLOT)
 			{
@@ -273,7 +275,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		SetFlashRect (NULL_PTR, (FRAME)0);
 
-		if (InputState & DEVICE_BUTTON1)
+		if (select)
 		{
 			if (new_slot_piece >= EMPTY_SLOT && old_slot_piece >= EMPTY_SLOT)
 			{
@@ -330,7 +332,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 				}
 			}
 
-			InputState &= ~DEVICE_BUTTON2;
+			cancel = FALSE;
 		}
 
 		if (pMS->CurState < EMPTY_SLOT)
@@ -340,11 +342,11 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 				pMS->CurState = EMPTY_SLOT + 3;
 			else if (pMS->CurState > EMPTY_SLOT + 2)
 				pMS->CurState = EMPTY_SLOT + 2;
-			if (InputState & DEVICE_BUTTON2)
+			if (cancel)
 				new_slot_piece = pMS->CurState;
 			goto InitFlash;
 		}
-		else if (!(InputState & DEVICE_BUTTON2))
+		else if (!cancel)
 		{
 			pMS->CurState = new_slot_piece;
 			goto InitFlash;
@@ -362,19 +364,16 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 		}
 		ClearSemaphore (GraphicsSem);
 	}
-	else if (InputState)
+	else if (motion)
 	{
 		SIZE NewItem;
 
 		NewItem = NewState < EMPTY_SLOT ? pMS->CurState : pMS->delta_item;
 		do
 		{
-			SBYTE dy;
-
-			dy = GetInputYComponent (InputState);
-			if (NewState >= EMPTY_SLOT && dy)
+			if (NewState >= EMPTY_SLOT && (CurrentMenuState.up || CurrentMenuState.down))
 			{
-				if (dy < 0)
+				if (CurrentMenuState.up)
 				{
 					if (NewState-- == EMPTY_SLOT)
 						NewState = EMPTY_SLOT + 3;
@@ -388,18 +387,18 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 				if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 				{
 					if (NewState == EMPTY_SLOT + 3)
-						NewState = dy < 0 ? EMPTY_SLOT + 2 : EMPTY_SLOT;
+						NewState = CurrentMenuState.up ? EMPTY_SLOT + 2 : EMPTY_SLOT;
 					if (NewState == EMPTY_SLOT + 2)
 						NewItem = NUM_BOMB_MODULES;
 				}
 				pMS->delta_item = NewItem;
 			}
-			else if (GetInputXComponent (InputState) < 0 || dy < 0)
+			else if (CurrentMenuState.left || CurrentMenuState.up)
 			{
 				if (NewItem-- == FirstItem)
 					NewItem = LastItem;
 			}
-			else if (GetInputXComponent (InputState) > 0 || dy > 0)
+			else if (CurrentMenuState.right || CurrentMenuState.down)
 			{
 				if (NewItem++ == LastItem)
 					NewItem = FirstItem;
@@ -512,14 +511,13 @@ InitFlash:
 	return (TRUE);
 }
 void
-ChangeFuelQuantity (INPUT_STATE InputState)
+ChangeFuelQuantity ()
 {
 	RECT r;
 	
 	r.extent.height = 1;
 	
-	if (GetInputXComponent (InputState) < 0
-		|| GetInputYComponent (InputState) < 0)
+	if (CurrentMenuState.left || CurrentMenuState.up)
 	{
 		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
@@ -545,8 +543,7 @@ ChangeFuelQuantity (INPUT_STATE InputState)
 		}
 		ClearSemaphore (GraphicsSem);
 	}
-	else if (GetInputXComponent (InputState) > 0
-		|| GetInputYComponent (InputState) > 0)
+	else if (CurrentMenuState.right || CurrentMenuState.down)
 	{
 		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
@@ -571,7 +568,7 @@ ChangeFuelQuantity (INPUT_STATE InputState)
 }
 
 BOOLEAN
-DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
+DoOutfit (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		goto ExitOutfit;
@@ -691,8 +688,8 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		SetContext (StatusContext);
 	}
-	else if ((InputState & DEVICE_BUTTON2)
-			|| ((InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.cancel
+			|| (CurrentMenuState.select
 			&& pMS->CurState == OUTFIT_EXIT))
 	{
 		if (pMS->CurState == OUTFIT_DOFUEL)
@@ -713,7 +710,7 @@ ExitOutfit:
 			return (FALSE);
 		}
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		switch (pMS->CurState)
 		{
@@ -743,7 +740,7 @@ ExitOutfit:
 					pMS->delta_item = NUM_BOMB_MODULES;
 				pMS->first_item.y = 0;
 				pMS->Initialized = 0;
-				DoInstallModule (InputState, pMS);
+				DoInstallModule (pMS);
 				break;
 			case OUTFIT_SAVELOAD:
 				if (GameOptions () == 0)
@@ -758,9 +755,9 @@ ExitOutfit:
 	else
 	{
 		if (pMS->CurState == OUTFIT_DOFUEL)
-			ChangeFuelQuantity(InputState);
+			ChangeFuelQuantity ();
 		else
-			DoMenuChooser (InputState, pMS, PM_FUEL);
+			DoMenuChooser (pMS, PM_FUEL);
 	}
 
 	return (TRUE);

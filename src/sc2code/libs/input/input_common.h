@@ -30,5 +30,6 @@ enum
 
 int TFB_InitInput (int driver, int flags);
 void TFB_UninitInput (void);
+void TFB_CreateDefaultConfig (void);
 
 #endif

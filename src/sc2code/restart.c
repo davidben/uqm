@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "uqmversion.h"
+#include "controls.h"
 
 //Added by Chris
 
@@ -81,7 +82,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 DWORD InTime;
 
 static BOOLEAN
-DoRestart (INPUT_STATE InputState, PMENU_STATE pMS)
+DoRestart (PMENU_STATE pMS)
 {
 	if (!pMS->Initialized)
 	{
@@ -97,7 +98,10 @@ DoRestart (INPUT_STATE InputState, PMENU_STATE pMS)
 #ifdef TESTING
 else if (InputState & DEVICE_EXIT) return (FALSE);
 #endif /* TESTING */
-	else if (InputState == 0)
+	else if (!(CurrentMenuState.up || CurrentMenuState.down ||
+			CurrentMenuState.left || CurrentMenuState.right ||
+			CurrentMenuState.select))
+
 	{
 		if (GetTimeCounter () - InTime < ONE_SECOND * 15)
 			return (TRUE);
@@ -105,7 +109,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		GLOBAL (CurrentActivity) = (ACTIVITY)~0;
 		return (FALSE);
 	}
-	else if (InputState & DEVICE_BUTTON1)
+	else if (CurrentMenuState.select)
 	{
 		switch (pMS->CurState)
 		{
@@ -133,14 +137,12 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		BYTE NewState;
 
 		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (CurrentMenuState.left || CurrentMenuState.up)
 		{
 			if (NewState-- == START_NEW_GAME)
 				NewState = PLAY_SUPER_MELEE;
 		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (CurrentMenuState.right || CurrentMenuState.down)
 		{
 			if (NewState++ == PLAY_SUPER_MELEE)
 				NewState = START_NEW_GAME;
