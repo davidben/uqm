@@ -1204,11 +1204,12 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 
 	BatchGraphics ();
 
+	// Display planet area, accounting for horizontal wrapping if
+	// near the edges.
 	{
 		STAMP s;
 
 		ClearDrawable ();
-
 		s.origin.x = -new_pt.x + (SURFACE_WIDTH >> 1);
 		s.origin.y = -new_pt.y + (SURFACE_HEIGHT >> 1);
 		s.frame = pSolarSysState->TopoFrame;
@@ -1452,24 +1453,26 @@ InitPlanetSide (void)
 	SetContext (SpaceContext);
 	AnimateLaunch (LanderFrame[5], FALSE);
 
+	// Adjust pSolarSysState->MenuState.first_item by a random jitter.
 #define RANDOM_MISS 64
-	pt.x = pSolarSysState->MenuState.first_item.x
-			- RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	pt = pSolarSysState->MenuState.first_item;
+
+	// Jitter the X landing point.
+	pt.x -= RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
 	if (pt.x < 0)
 		pt.x += (MAP_WIDTH << MAG_SHIFT);
 	else if (pt.x >= (MAP_WIDTH << MAG_SHIFT))
 		pt.x -= (MAP_WIDTH << MAG_SHIFT);
 
-	pt.y = pSolarSysState->MenuState.first_item.y
-			- RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	// Jitter the Y landing point.
+	pt.y -= RANDOM_MISS + (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
 	if (pt.y < 0)
 		pt.y = 0;
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
 		pt.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
 
+	// Put this back in as our original menu choice.
 	pSolarSysState->MenuState.first_item = pt;
-	pt.x >>= MAG_SHIFT;
-	pt.y >>= MAG_SHIFT;
 
 #ifdef NEVER
 	SetContext (ScanContext);
@@ -1484,14 +1487,9 @@ InitPlanetSide (void)
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 
-	pt.x = pSolarSysState->MenuState.first_item.x - (SURFACE_WIDTH >> 1); // was SPACE_
-	if (pt.x < 0)
-		pt.x += MAP_WIDTH << MAG_SHIFT;
-	pt.y = pSolarSysState->MenuState.first_item.y - (SURFACE_HEIGHT >> 1); // was SPACE_
-
 	{
 		RECT r;
-	
+
 		r.corner.x = SURFACE_X;
 		r.corner.y = SURFACE_Y;
 		r.extent.width = SURFACE_WIDTH;
@@ -1504,16 +1502,22 @@ InitPlanetSide (void)
 		{
 			STAMP s;
 
+			// Note - This code is the same as in ScrollPlanetSize,
+			// Display planet area, accounting for horizontal wrapping if
+			// near the edges.
 			ClearDrawable ();
-
 			s.origin.x = -pt.x + (SURFACE_WIDTH >> 1);
 			s.origin.y = -pt.y + (SURFACE_HEIGHT >> 1);
 			s.frame = pSolarSysState->TopoFrame;
 			SetGraphicScale (1 << (MAG_SHIFT + 8));
 			DrawStamp (&s);
+			s.origin.x += MAP_WIDTH << MAG_SHIFT;
+			DrawStamp (&s);
+			s.origin.x -= MAP_WIDTH << (MAG_SHIFT + 1);
+			DrawStamp (&s);
 			SetGraphicScale (0);
 		}
-		
+
 		ScreenTransition (3, &r);
 		UnbatchGraphics ();
 

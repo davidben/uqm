@@ -58,6 +58,10 @@ EraseCoarseScan (void)
 {
 	RECT r, tr;
 	extern FRAME SpaceJunkFrame;
+	const int leftScanWidth   = 60;
+	const int rightScanWidth  = 60;
+	const int leftScanOffset  = 20;
+	const int rightScanOffset = 45;
 
 	SetSemaphore (GraphicsSem);
 	SetContext (SpaceContext);
@@ -70,12 +74,13 @@ EraseCoarseScan (void)
 
 	GetFrameRect (SetAbsFrameIndex (SpaceJunkFrame, 20), &tr);
 	r = tr;
-	r.extent.width = 70;
+	r.corner.x += leftScanOffset;
+	r.extent.width = leftScanWidth;
 	RepairBackRect (&r);
 
 	r = tr;
-	r.corner.x += (r.extent.width - 70);
-	r.extent.width = 70;
+	r.corner.x += (r.extent.width - rightScanOffset);
+	r.extent.width = rightScanWidth;
 	RepairBackRect (&r);
 
 	ClearSemaphore (GraphicsSem);
