@@ -93,7 +93,8 @@ main (int argc, char *argv[])
 		CSCAN_OPT = 1000,
 		MENU_OPT,
 		FONT_OPT,
-		SCROLL_OPT
+		SCROLL_OPT,
+		SOUND_OPT
 	};
 
 	int option_index = 0, c;
@@ -103,7 +104,6 @@ main (int argc, char *argv[])
 		{"bpp", 1, NULL, 'd'},
 		{"fullscreen", 0, NULL, 'f'},
 		{"opengl", 0, NULL, 'o'},
-		{"openal", 0, NULL, 'a'},
 		{"scale", 1, NULL, 'c'},
 		{"scanlines", 0, NULL, 's'},
 		{"fps", 0, NULL, 'p'},
@@ -120,6 +120,7 @@ main (int argc, char *argv[])
 		{"menu", 1, NULL, MENU_OPT},
 		{"font", 1, NULL, FONT_OPT},
 		{"scroll", 1, NULL, SCROLL_OPT},
+		{"sound", 1, NULL, SOUND_OPT},
 		{0, 0, 0, 0}
 	};
 
@@ -133,7 +134,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foac:spn:?hM:S:T:m:q:u", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:u", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -148,9 +149,6 @@ main (int argc, char *argv[])
 			case 'o':
 				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
 			break;
-			case 'a':
-				snddriver = TFB_SOUNDDRIVER_OPENAL;
-				break;
 			case 'c':
 				if (!strcmp (optarg, "bilinear"))
 				{
@@ -248,6 +246,20 @@ main (int argc, char *argv[])
 						long_options[option_index].name)) != -1)
 					optSmoothScroll = val;
 			break;
+			case SOUND_OPT:
+				if (!strcmp (optarg, "openal"))
+				{
+					snddriver = TFB_SOUNDDRIVER_OPENAL;
+				}
+				else if (!strcmp (optarg, "none"))
+				{
+					snddriver = TFB_SOUNDDRIVER_NOSOUND;
+				}
+				else if (!strcmp (optarg, "mixsdl"))
+				{
+					snddriver = TFB_SOUNDDRIVER_MIXSDL;
+				}
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -257,7 +269,6 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -a, --openal (default off)\n");
 				printf("  -c, --scale=mode (bilinear, biadapt or biadv, default is none)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
@@ -266,6 +277,7 @@ main (int argc, char *argv[])
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
+				printf("  --sound=DRIVER (openal, mixsdl, none; default mixsdl)\n");
 				printf("  -u, --nosubtitles\n");
 				printf("The following options can take either '3do' or 'pc' as an option:\n");
 				printf("  -m, --music : Music version (default 3do)\n");
