@@ -132,38 +132,8 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 void
 TFB_Pure_SwapBuffers ()
 {
-	SDL_Surface *backbuffer = SDL_Screen;
 	int fade_amount = FadeAmount;
 	int transition_amount = TransitionAmount;
-
-	if (transition_amount != 255)
-	{
-		backbuffer = fade_temp;
-		SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
-		
-		SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
-		SDL_BlitSurface (TransitionScreen, &TransitionClipRect, backbuffer, &TransitionClipRect);
-	}
-
-	if (fade_amount != 255)
-	{
-		if (transition_amount == 255)
-		{
-			backbuffer = fade_temp;
-			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
-		}
-
-		if (fade_amount < 255)
-		{
-			SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
-			SDL_BlitSurface (fade_black, NULL, backbuffer, NULL);
-		}
-		else
-		{
-			SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
-			SDL_BlitSurface (fade_white, NULL, backbuffer, NULL);
-		}
-	}
 
 	if (ScreenWidth == 320 && ScreenHeight == 240 &&
 		ScreenWidthActual == 640 && ScreenHeightActual == 480)
@@ -172,7 +142,37 @@ TFB_Pure_SwapBuffers ()
 
 		int x, y;
 		Uint8 *src_p, *src_p2, *dst_p;
+		SDL_Surface *backbuffer = SDL_Screen;
 		
+		if (transition_amount != 255)
+		{
+			backbuffer = fade_temp;
+			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
+
+			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
+			SDL_BlitSurface (TransitionScreen, &TransitionClipRect, backbuffer, &TransitionClipRect);
+		}
+
+		if (fade_amount != 255)
+		{
+			if (transition_amount == 255)
+			{
+				backbuffer = fade_temp;
+				SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
+			}
+
+			if (fade_amount < 255)
+			{
+				SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
+				SDL_BlitSurface (fade_black, NULL, backbuffer, NULL);
+			}
+			else
+			{
+				SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
+				SDL_BlitSurface (fade_white, NULL, backbuffer, NULL);
+			}
+		}
+
 		SDL_LockSurface (SDL_Video);
 		SDL_LockSurface (backbuffer);
 
@@ -186,7 +186,7 @@ TFB_Pure_SwapBuffers ()
 			Uint8 pixval_8;
 			for (y = 0; y < 240; ++y)
 			{
-				src_p2 = src_p;			
+				src_p2 = dst_p;
 				for (x = 0; x < 320; ++x)
 				{
 					pixval_8 = *src_p++;
@@ -194,13 +194,11 @@ TFB_Pure_SwapBuffers ()
 					*dst_p++ = pixval_8;
 					*dst_p++ = pixval_8;
 				}
-				src_p = src_p2;
-				for (x = 0; x < 320; ++x)
+				for (x = 0; x < 160; ++x)
 				{
-					pixval_8 = *src_p++;
-
-					*dst_p++ = pixval_8;
-					*dst_p++ = pixval_8;
+					*(Uint32*)dst_p = *(Uint32*)src_p2;
+					dst_p += 4;
+					src_p2 += 4;
 				}
 			}
 			break;
@@ -210,27 +208,22 @@ TFB_Pure_SwapBuffers ()
 			Uint16 pixval_16;
 			for (y = 0; y < 240; ++y)
 			{
-				src_p2 = src_p;			
+				src_p2 = dst_p;
 				for (x = 0; x < 320; ++x)
 				{
-					pixval_16 = *(Uint16*)src_p++;
-					src_p++;
+					pixval_16 = *(Uint16*)src_p;
+					src_p += 2;
 
-					*(Uint16*)dst_p++ = pixval_16;
-					dst_p++;
-					*(Uint16*)dst_p++ = pixval_16;
-					dst_p++;
+					*(Uint16*)dst_p = pixval_16;
+					dst_p += 2;
+					*(Uint16*)dst_p = pixval_16;
+					dst_p += 2;
 				}
-				src_p = src_p2;
 				for (x = 0; x < 320; ++x)
 				{
-					pixval_16 = *(Uint16*)src_p++;
-					src_p++;
-
-					*(Uint16*)dst_p++ = pixval_16;
-					dst_p++;
-					*(Uint16*)dst_p++ = pixval_16;
-					dst_p++;
+					*(Uint32*)dst_p = *(Uint32*)src_p2;
+					dst_p += 4;
+					src_p2 += 4;
 				}
 			}
 			break;
@@ -270,7 +263,7 @@ TFB_Pure_SwapBuffers ()
 			Uint32 pixval_32;
 			for (y = 0; y < 240; ++y)
 			{
-				src_p2 = src_p;			
+				src_p2 = src_p;
 				for (x = 0; x < 320; ++x)
 				{
 					pixval_32 = *(Uint32*)src_p;
@@ -280,7 +273,7 @@ TFB_Pure_SwapBuffers ()
 					dst_p += 4;
 					*(Uint32*)dst_p = pixval_32;
 					dst_p += 4;
-				}
+				}				
 				src_p = src_p2;
 				for (x = 0; x < 320; ++x)
 
@@ -304,7 +297,28 @@ TFB_Pure_SwapBuffers ()
 	else
 	{
 		// resolution is 320x240 so we can blit directly
-		SDL_BlitSurface (backbuffer, NULL, SDL_Video, NULL);
+
+		SDL_BlitSurface (SDL_Screen, NULL, SDL_Video, NULL);
+
+		if (transition_amount != 255)
+		{
+			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
+			SDL_BlitSurface (TransitionScreen, &TransitionClipRect, SDL_Video, &TransitionClipRect);
+		}
+
+		if (fade_amount != 255)
+		{
+			if (fade_amount < 255)
+			{
+				SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
+				SDL_BlitSurface (fade_black, NULL, SDL_Video, NULL);
+			}
+			else
+			{
+				SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
+				SDL_BlitSurface (fade_white, NULL, SDL_Video, NULL);
+			}
+		}
 	}
 
 	SDL_UpdateRect (SDL_Video, 0, 0, 0, 0);
