@@ -152,14 +152,14 @@ if [ -d "${PREFIX}/lib/uqm/content" ]; then
 	else
 		UQM_OLDVERSION=0.1
 	fi
-	if [ `expr "$UQM_VERSION" ">" "$UQM_OLDVERSION"` = "0" ]; then
+	if [ `expr "$UQM_VERSION" ">" "$UQM_OLDVERSION"` = "1" ]; then
 		# NB: 'expr' echoes '1' for true, while sh uses '0'
 		echo "Hey! I see you've got an old version there."
 		echo "You'll be happy to know this one is even better."
 		echo "(yes, this is a hardcoded string in the installer)"
 		echo
 		UQM_INSTALL=UPGRADE
-	elif [ `expr "$UQM_VERSION" "<" "$UQM_OLDVERSION"` = "0" ]; then
+	elif [ `expr "$UQM_VERSION" "<" "$UQM_OLDVERSION"` = "1" ]; then
 		UQM_INSTALL=DOWNGRADE
 	else
 		UQM_INSTALL=REINSTALL
