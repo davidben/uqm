@@ -259,7 +259,7 @@ TFB_GL_SwapBuffers (void)
 	TFB_GL_DrawQuad ();
 
 	transition_amount = TransitionAmount;
-	if (transition_amount != -1)
+	if (transition_amount != 255)
 	{
 		float scale_x = (ScreenWidthActual / (float)ScreenWidth);
 		float scale_y = (ScreenHeightActual / (float)ScreenHeight);

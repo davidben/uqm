@@ -23,8 +23,7 @@
 #include "opengl.h"
 
 int batch_depth = 0;
-
-static Task transition_task;
+static const BOOLEAN pausing_transition = TRUE; // change to FALSE for non-pausing version
 
 
 //Status: Not entirely unimplemented!
@@ -103,12 +102,12 @@ SetGraphicStrength (int numerator, int denominator)
 static int
 transition_task_func (void *data)
 {
-	const float TRANSITION_SPEED = (31.0f / 60.0f);
+	const float DURATION = (31.0f / 60.0f); // in seconds
 	Uint32 last_time = 0, current_time, delta_time, add_amount;
 	Task task = (Task)data;
-	
-	last_time = SDL_GetTicks ();
+
 	TransitionAmount = 0;
+	last_time = SDL_GetTicks ();
 
 	for (;;)
 	{
@@ -118,15 +117,18 @@ transition_task_func (void *data)
 		delta_time = current_time - last_time;
 		last_time = current_time;
 		
-		add_amount = (Uint32)((delta_time / 1000.0f / TRANSITION_SPEED) * 255);
+		add_amount = (Uint32) ((delta_time / 1000.0f / DURATION) * 255);
 		if (TransitionAmount + add_amount >= 255)
 			break;
 
 		TransitionAmount += add_amount;
 	}
 	
-	TransitionAmount = -1;
-	FinishTask (task);
+	TransitionAmount = 255;
+
+	if (!pausing_transition)
+		FinishTask (task);
+
 	return 0;
 }
 
@@ -134,34 +136,48 @@ transition_task_func (void *data)
 void
 ScreenTransition (int TransType, PRECT pRect)
 {
+	Task transition_task;
+
 	//fprintf(stderr, "ScreenTransition %d\n", TransType);
 
-	if (TransitionAmount == -1)
-	{
-		if (pRect)
-		{
-			TransitionClipRect.x = pRect->corner.x;
-			TransitionClipRect.y = pRect->corner.y;
-			TransitionClipRect.w = pRect->extent.width;
-			TransitionClipRect.h = pRect->extent.height;
-		}
-		else
-		{
-			TransitionClipRect.x = TransitionClipRect.y = 0;
-			TransitionClipRect.w = ScreenWidth;
-			TransitionClipRect.h = ScreenHeight;
-		}
+	if (TransitionAmount != 255)
+		return;
 
-		SDL_BlitSurface (SDL_Screen, &TransitionClipRect, TransitionScreen, &TransitionClipRect);
+	if (pRect)
+	{
+		TransitionClipRect.x = pRect->corner.x;
+		TransitionClipRect.y = pRect->corner.y;
+		TransitionClipRect.w = pRect->extent.width;
+		TransitionClipRect.h = pRect->extent.height;
+	}
+	else
+	{
+		TransitionClipRect.x = TransitionClipRect.y = 0;
+		TransitionClipRect.w = ScreenWidth;
+		TransitionClipRect.h = ScreenHeight;
+	}
+
+	SDL_BlitSurface (SDL_Screen, &TransitionClipRect, TransitionScreen, &TransitionClipRect);
 
 #ifdef HAVE_OPENGL
-		if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
-		{
-			TFB_GL_UploadTransitionScreen ();
-		}
+	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
+	{
+		TFB_GL_UploadTransitionScreen ();
+	}
 #endif
+	
+	if (pausing_transition)
+	{
+		TransitionAmount = 0;
+		FlushGraphics ();
+	}
 
-		transition_task = AssignTask (transition_task_func, 1024, "screen transition");
+	transition_task = AssignTask (transition_task_func, 1024, "screen transition");
+
+	if (pausing_transition)
+	{
+		WaitThread (transition_task->thread, NULL);
+		FinishTask (transition_task);
 	}
 }
 

@@ -32,7 +32,7 @@ SDL_Surface *ExtraScreen;
 SDL_Surface *TransitionScreen;
 
 
-volatile int TransitionAmount = -1;
+volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
 
 BOOLEAN ShowFPS = FALSE;

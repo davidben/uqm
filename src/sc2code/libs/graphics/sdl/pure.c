@@ -136,7 +136,7 @@ TFB_Pure_SwapBuffers ()
 	int fade_amount = FadeAmount;
 	int transition_amount = TransitionAmount;
 
-	if (transition_amount != -1)
+	if (transition_amount != 255)
 	{
 		backbuffer = fade_temp;
 		SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
@@ -147,7 +147,7 @@ TFB_Pure_SwapBuffers ()
 
 	if (fade_amount != 255)
 	{
-		if (transition_amount == -1)
+		if (transition_amount == 255)
 		{
 			backbuffer = fade_temp;
 			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
