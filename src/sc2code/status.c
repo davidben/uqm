@@ -115,8 +115,8 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 	TEXT t;
 	UNICODE buf[10];
 
-	t.baseline.x = 10;
-	t.baseline.y = 168;
+	t.baseline.x = BATTLE_CREW_X;
+	t.baseline.y = BATTLE_CREW_Y - SAFE_Y;
 	t.align = ALIGN_LEFT;
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
