@@ -49,7 +49,6 @@ TFB_InitInput (int driver, int flags)
 	atexit (TFB_UninitInput);
 
 	SDL_EnableUNICODE(1);
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
