@@ -1,7 +1,8 @@
-!define MUI_PRODUCT "Ur-Quan Masters" ;Define your own software name here
+!define MUI_PRODUCT "The Ur-Quan Masters" ;Define your own software name here
 !define MUI_VERSION "0.13" ;Define your own software version here
 !define OLD_VERSION "0.1" ; The earliest version that we can upgrade from
 
+!define DEFAULT_UPGRADE 1 ;  Define if the default install should be 'upgrade'
 !define MIRROR_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
 !define NO_MIRROR_LOCATION "http://sc2.sourceforge.net/install_files/"
 
@@ -95,8 +96,14 @@
 ;--------------------------------
 ;Installer Sections
 
-InstType $(InstTypeFullName)
-InstType $(InstTypeUpgradeName)
+
+!ifndef DEFAULT_UPGRADE
+  InstType $(InstTypeFullName)
+  InstType $(InstTypeUpgradeName)
+!else
+  InstType $(InstTypeUpgradeName)
+  InstType $(InstTypeFullName)
+!endif
 
 Section !$(SecUQMName) SecUQM
 SectionIn 1 2 RO
@@ -129,7 +136,11 @@ SectionIn 1 2 RO
 SectionEnd
 
 Section $(SecContentName) SecContent
+!ifndef DEFAULT_UPGRADE
 SectionIn 1
+!else
+SectionIn 2
+!endif
 
   AddSize ${CONTENT_SIZE}
 
@@ -168,7 +179,11 @@ Section $(SecUpgradeName) SecUpgrade
   !ifdef FULL_NEEDS_UPGRADE 
     SectionIn 1 2
   !else
-    SectionIn 2
+    !ifndef DEFAULT_UPGRADE
+      SectionIn 2
+    !else
+      SectionIn 1
+    !endif
   !endif
 
   AddSize ${UPGRADE_SIZE}
@@ -208,7 +223,11 @@ SectionEnd
 SubSection $(SecSupportDLLName) SecSupportDLL
 
 Section $(SecSDLName) SecSDL
+!ifndef DEFAULT_UPGRADE
 SectionIn 1
+!else
+SectionIn 2
+!endif
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
@@ -221,7 +240,11 @@ SectionIn 1
 SectionEnd
 
 Section $(SecVoiceName) SecVoice
+!ifndef DEFAULT_UPGRADE
 SectionIn 1
+!else
+SectionIn 2
+!endif
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR

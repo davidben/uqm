@@ -16,11 +16,6 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
 
 1) Compile uqm.exe
 
-This doesn't seem to work.  If someone can figure outhow to add an icon,
-please update these directions
-#2) Use resource hacker or some other program to  attach the uqm icon:
-#    reshacker -modify uqm.exe,uqm.exe,build\\win32_install\\uqm.ico,icongroup,100,0
-
 2) If you have upx, run it  on uqm.exe as follows:
     upx --best --crp-ms=100000 uqm.exe
 
@@ -62,9 +57,11 @@ please update these directions
        OLD_VERSION: The earliest version that can be upgraded from
        MIRROR_LOCATION: Where the mirror file lives (probbaly ok as is)
        NO_MIRROR_LOCATION: Where to get non-mirrored files from
-       FULL_NEEDS_UPGRADE: If you built the 'content' archive, set  to '0'
-                           otherwise set to '1' (i.e. official builds should
-                           have this set  to '0' dev builds set to '1')
+       FULL_NEEDS_UPGRADE: This parameter is set if a 'full' build requires
+                           both the 'content' archive pak along with the
+                           'upgrade' archive pak.  In general, only official
+                           builds wil have this set to '0'  all other builds
+                           ahould leave it at '1'
        CONTENT_USE_MIRROR: Whether to use the mirror for the 'content' archive
        CONTENT_PACKAGE_FILE: the name of the 'content' file (from step 4)
        CONTENT_TYPE_ZIP/CONTENT_TYPE_TGZ: set the correct define
