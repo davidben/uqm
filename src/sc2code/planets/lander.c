@@ -28,10 +28,11 @@
 
 // PLANET_SIDE_RATE governs how fast the lander,
 // bio and planet effects will be
-// currently: 30 fps
-// with current ONE_SECOND=120 definition,
-// it can only be 60, 40 and 30 fps
-#define PLANET_SIDE_RATE (ONE_SECOND / 40)
+// We're using the 3DO speed, which is 35 FPS
+// The PC speed was 30 FPS.
+// Remember that all values need to evenly divide
+// ONE_SECOND.
+#define PLANET_SIDE_RATE (ONE_SECOND / 35)
 
 //Added by Chris
 

@@ -21,11 +21,12 @@
 
 #include "libs/compiler.h"
 
-// The *minimum* value for ONE_SECOND is 120
-// If increasing the value by only a factor of ~2..4
-// make it an *exact multiple* of 120
+/* ONE_SECOND is the LCM of all the fractions of a second the game uses.
+ * Battle is 24 FPS, Landers are 35 FPS, most UI-level things are 15 FPS,
+ * The Interplanetary flight is 30 FPS.  Thus, the minimum value for
+ * ONE_SECOND is 840. */
 #if TIMELIB == SDL
-#	define ONE_SECOND 120
+#	define ONE_SECOND 840
 #endif
 
 typedef DWORD TimeCount;
