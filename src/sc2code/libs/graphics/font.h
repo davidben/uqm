@@ -19,19 +19,39 @@
 #ifndef _FONT_H
 #define _FONT_H
 
-#define FIRST_CHAR (UNICODE)' '
-// keep MAX_CHARS under 256 for now
-#define MAX_CHARS  255
-	// MAX_CHARS gets cast to UNICODE in a few places and is used in math
-	// UNICODE is defined to BYTE, all strings attached
 #define MAX_DELTAS 100
+
+typedef struct FontPage
+{
+	struct FontPage *next;
+	wchar_t pageStart;
+	wchar_t firstChar;
+	size_t numChars;
+	FRAME_DESC *charDesc;
+} FONT_PAGE;
+typedef FONT_PAGE *PFONT_PAGE;
+
+static inline FONT_PAGE *
+AllocFontPage (int numChars)
+{
+	FONT_PAGE *result = HMalloc (sizeof (FONT_PAGE));
+	result->charDesc = HCalloc (numChars * sizeof *result->charDesc);
+	return result;
+}
+
+static inline void
+FreeFontPage (FONT_PAGE *page)
+{
+	HFree (page->charDesc);
+	HFree (page);
+}
 
 typedef struct
 {
 	FONT_REF FontRef;
 
 	BYTE Leading;
-	FRAME_DESC CharDesc[MAX_CHARS];
+	FONT_PAGE *fontPages;
 } FONT_DESC;
 typedef FONT_DESC *PFONT_DESC;
 

@@ -324,8 +324,21 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 static inline FRAME_DESC *
 getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
-	if (ch > MAX_CHARS)
-		return NULL;
-	return &fontPtr->CharDesc[ch - FIRST_CHAR];
+	wchar_t pageStart = ch & 0xff00;
+
+	FONT_PAGE *page = fontPtr->fontPages;
+	for (;;)
+	{
+		if (page == NULL)
+			return NULL;
+
+		if (page->pageStart == pageStart)
+			break;
+
+		page = page->next;
+	}
+
+	return &page->charDesc[ch - page->firstChar];
 }
+
 

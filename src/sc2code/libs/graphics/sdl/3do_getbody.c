@@ -29,6 +29,7 @@
 #include "sdluio.h"
 #include "libs/file.h"
 #include "libs/reslib.h"
+#include "../font.h"
 #include "primitives.h"
 
 
@@ -105,9 +106,8 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 }
 
 static void
-process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
+processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 {
-	int hx, hy;
 	int x,y;
 	Uint8 r,g,b,a;
 	Uint32 p;
@@ -117,26 +117,25 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	PutPixelFn putpix;
 
 	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
-	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
+	INDEX_SET (FramePtr->TypeIndexAndFlags, charInd);
+			// XXX: Is this still relevant?
 
-	hx = hy = 0;
-
-	SDL_LockSurface (img[cel_ct]);
+	SDL_LockSurface (surf);
 
 	// convert 32-bit png font to indexed
 
-	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img[cel_ct]->w, img[cel_ct]->h, 
-		8, 0, 0, 0, 0);
+	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, surf->w, surf->h,
+			8, 0, 0, 0, 0);
 
-	getpix = getpixel_for (img[cel_ct]);
+	getpix = getpixel_for (surf);
 	putpix = putpixel_for (new_surf);
 
-	for (y = 0; y < img[cel_ct]->h; ++y)
+	for (y = 0; y < surf->h; ++y)
 	{
-		for (x = 0; x < img[cel_ct]->w; ++x)
+		for (x = 0; x < surf->w; ++x)
 		{
-			p = getpix (img[cel_ct], x, y);
-			SDL_GetRGBA (p, img[cel_ct]->format, &r, &g, &b, &a);
+			p = getpix (surf, x, y);
+			SDL_GetRGBA (p, surf->format, &r, &g, &b, &a);
 
 			if (r == 0 && g == 0 && b == 0)
 				putpix (new_surf, x, y, 0);
@@ -145,7 +144,9 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 		}
 	}
 
-	colors[0].r = colors[0].g = colors[0].b = 0;
+	colors[0].r = 0;
+	colors[0].g = 0;
+	colors[0].b = 0;
 	for (x = 1; x < 256; ++x)
 	{
 		colors[x].r = 255;
@@ -156,20 +157,38 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	SDL_SetColors (new_surf, colors, 0, 256);
 	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
 
-	SDL_UnlockSurface (img[cel_ct]);
-	SDL_FreeSurface (img[cel_ct]);
+	SDL_UnlockSurface (surf);
+	SDL_FreeSurface (surf);
 
-	img[cel_ct] = new_surf;
+	FramePtr->image = TFB_DrawImage_New (new_surf);
+	surf = FramePtr->image->NormalImg;
 	
-	FramePtr->image = TFB_DrawImage_New (img[cel_ct]);
-	img[cel_ct] = FramePtr->image->NormalImg;
+	SetFrameBounds (FramePtr, surf->w + 1, surf->h + 1);
+			// XXX: why the +1?
+			// I brought it into this function from the only calling
+			// function, but I don't know why it was there in the first
+			// place.
 	
-        FramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
-	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
+	{
+		// This tunes the font positioning to be about what it should
+		// TODO: prolly needs a little tweaking still
+
+		int tune_amount = 0;
+
+		if (surf->h == 8)
+			tune_amount = -1;
+		else if (surf->h == 9)
+			tune_amount = -2;
+		else if (surf->h > 9)
+			tune_amount = -3;
+
+		FramePtr->HotSpot = MAKE_HOT_SPOT (0, surf->h + tune_amount);
+	}
 }
 
-//stretch_frame
-// create a new frame of size neww x newh, and blit a scaled version FramePtr into it 
+// stretch_frame
+// create a new frame of size neww x newh, and blit a scaled version FramePtr
+// into it.
 // destroy the old frame if 'destroy' is 1
 FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 {
@@ -181,8 +200,7 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
-				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1)
-					);
+				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1));
 	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
 	src = tfbImg->NormalImg;
@@ -222,7 +240,8 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 	UnlockMutex (tfbImg->mutex);
 }
 
-void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int y)
+void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0,
+		int x, int y)
 {
 	SDL_Surface *img;
 	TFB_Image *tfbImg;
@@ -570,143 +589,219 @@ _ReleaseCelData (MEM_HANDLE handle)
 	return (TRUE);
 }
 
+typedef struct BuildCharDesc {
+	SDL_Surface *surface;
+	wchar_t index;
+} BuildCharDesc;
+
+int
+compareBCDIndex(const BuildCharDesc *bcd1, const BuildCharDesc *bcd2) {
+	return (int) bcd1->index - (int) bcd2->index;
+}
+
 MEM_HANDLE
 _GetFontData (uio_Stream *fp, DWORD length)
 {
-	DWORD cel_ct;
-	COUNT num_entries;
-	FONT_REF FontRef;
-	DIRENTRY FontDir;
-	BOOLEAN found_chars;
-#define MAX_CELS 256
-	SDL_Surface *img[MAX_CELS] = { 0 };
-	char pattern[PATH_MAX];
-	
-	if (_cur_resfile_name == 0)
-		return (0);
+	COUNT numDirEntries;
+	FONT_REF fontRef = 0;
+	DIRENTRY fontDir = 0;
+	BuildCharDesc *bcds = NULL;
+	size_t numBCDs = 0;
+	int dirEntryI;
+	uio_DirHandle *fontDirHandle = NULL;
+	FONTPTR fontPtr;
 
-	found_chars = FALSE;
-	FontDir = CaptureDirEntryTable (LoadDirEntryTable (contentDir,
-				_cur_resfile_name, ".", match_MATCH_SUBSTRING,
-				&num_entries));
-	while (num_entries--)
+	if (_cur_resfile_name == 0)
+		goto err;
+
+	fontDir = CaptureDirEntryTable (LoadDirEntryTable (contentDir,
+			_cur_resfile_name, ".", match_MATCH_SUBSTRING, &numDirEntries));
+	if (fontDir == 0)
+		goto err;
+
+	fontDirHandle = uio_openDirRelative (contentDir, _cur_resfile_name, 0);
+	if (fontDirHandle == NULL)
+		goto err;
+		
+	bcds = HMalloc (numDirEntries * sizeof (BuildCharDesc));
+	if (bcds == NULL)
+		goto err;
+
+	// Load the surfaces for all dir Entries
+	for (dirEntryI = 0; dirEntryI < numDirEntries; dirEntryI++)
 	{
 		char *char_name;
+		unsigned int charIndex;
+		SDL_Surface *surface;
 
-		char_name = GetDirEntryAddress (SetAbsDirEntryTableIndex (FontDir, num_entries));
-		if (sscanf (char_name, "%u.", (unsigned int*) &cel_ct) == 1
-				&& cel_ct >= FIRST_CHAR
-				&& img[cel_ct -= FIRST_CHAR] == 0
-				&& sprintf (pattern, "%s/%s", _cur_resfile_name, char_name)
-				&& (img[cel_ct] = sdluio_loadImage (contentDir, pattern)))
-		{
-			if (img[cel_ct]->w > 0
-					&& img[cel_ct]->h > 0
-					&& img[cel_ct]->format->BitsPerPixel >= 8)
-				found_chars = TRUE;
-			else
-			{
-				SDL_FreeSurface (img[cel_ct]);
-				img[cel_ct] = 0;
-			}
+		char_name = GetDirEntryAddress (SetAbsDirEntryTableIndex (
+				fontDir, dirEntryI));
+		if (sscanf (char_name, "%u.", &charIndex) != 1)
+			continue;
+			
+		if (charIndex > 0xffff)
+			continue;
+
+		surface = sdluio_loadImage (fontDirHandle, char_name);
+		if (surface == NULL)
+			continue;
+
+		if (surface->w == 0 || surface->h == 0 ||
+				surface->format->BitsPerPixel < 8) {
+			SDL_FreeSurface (surface);
+			continue;
 		}
-		
+
+		bcds[numBCDs].surface = surface;
+		bcds[numBCDs].index = charIndex;
+		numBCDs++;
 	}
-	DestroyDirEntryTable (ReleaseDirEntryTable (FontDir));
+	uio_closeDir (fontDirHandle);
+	DestroyDirEntryTable (ReleaseDirEntryTable (fontDir));
 
-	FontRef = 0;
-	if (found_chars && (FontRef = AllocFont (0)))
+#if 0
+	if (numBCDs == 0)
+		goto err;
+#endif
+
+	// sort on the character index
+	qsort (bcds, numBCDs, sizeof (BuildCharDesc),
+			(int (*)(const void *, const void *)) compareBCDIndex);
+
+	fontRef = AllocFont (0);
+	if (fontRef == 0)
+		goto err;
+
+	fontPtr = LockFont (fontRef);
+	if (fontPtr == NULL)
+		goto err;
+	
+	fontPtr->FontRef = fontRef;
+	fontPtr->Leading = 0;
+
 	{
-		FONTPTR FontPtr;
-
-		cel_ct = MAX_CELS; // MAX_CHARS;
-		if ((FontPtr = LockFont (FontRef)) == 0)
+		size_t startBCD = 0;
+		int pageStart;
+		FONT_PAGE **pageEndPtr = &fontPtr->fontPages;
+		while (startBCD < numBCDs)
 		{
-			while (cel_ct--)
-			{
-				if (img[cel_ct])
-					SDL_FreeSurface (img[cel_ct]);
-			}
+			// Process one character page.
+			size_t endBCD;
+			pageStart = bcds[startBCD].index & 0xff00;
 
-			mem_release (FontRef);
-			FontRef = 0;
-		}
-		else
-		{
-			FRAMEPTR FramePtr;
+			endBCD = startBCD;
+			while (endBCD < numBCDs &&
+					(bcds[endBCD].index & 0xff00) == pageStart)
+				endBCD++;
 
-			FontPtr->FontRef = FontRef;
-			FontPtr->Leading = 0;
-			FramePtr = &FontPtr->CharDesc[cel_ct];
-			while (--FramePtr, cel_ct--)
 			{
-				if (img[cel_ct])
+				size_t bcdI;
+				int numChars = bcds[endBCD - 1].index + 1
+						- bcds[startBCD].index;
+				FONT_PAGE *page = AllocFontPage (numChars);
+				page->pageStart = pageStart;
+				page->firstChar = bcds[startBCD].index;
+				page->numChars = numChars;
+				*pageEndPtr = page;
+				pageEndPtr = &page->next;
+
+				for (bcdI = startBCD; bcdI < endBCD; bcdI++)
 				{
-					process_font (FramePtr, img, cel_ct);
-					SetFrameBounds (FramePtr, GetFrameWidth (FramePtr) + 1, GetFrameHeight (FramePtr) + 1);
-					
-					if (img[0])
+					// Process one character.
+					BuildCharDesc *bcd = &bcds[bcdI];
+					FRAME_DESC *destFrame =
+							&page->charDesc[bcd->index - page->firstChar];
+				
+					if (destFrame->image != NULL)
 					{
-						// This tunes the font positioning to be about what it should
-						// TODO: prolly needs a little tweaking still
-
-						int tune_amount = 0;
-
-						if (img[0]->h == 8)
-							tune_amount = -1;
-						else if (img[0]->h == 9)
-							tune_amount = -2;
-						else if (img[0]->h > 9)
-							tune_amount = -3;
-
-						FramePtr->HotSpot = MAKE_HOT_SPOT (0, img[0]->h + tune_amount);
+						// There's already an image for this character.
+#ifdef DEBUG
+						fprintf (stderr, "Duplicate image for characted %d "
+								"for font %s.\n", (int) bcd->index,
+								_cur_resfile_name);
+#endif
+						SDL_FreeSurface (bcd->surface);
+						continue;
 					}
 					
-					if (GetFrameHeight (FramePtr) > FontPtr->Leading)
-						FontPtr->Leading = GetFrameHeight (FramePtr);
+					processFontChar (destFrame, bcd->surface,
+							bcd->index - page->firstChar);
+					// bcd->surface is handed over to destFrame.
+					// Don't access it through bcd->surface any more.
+					// It may be freed from within ProcessFontChar().
+
+					if (GetFrameHeight (destFrame) > fontPtr->Leading)
+						fontPtr->Leading = GetFrameHeight (destFrame);
 				}
 			}
-			++FontPtr->Leading;
 
-			UnlockFont (FontRef);
+			startBCD = endBCD;
 		}
+		*pageEndPtr = NULL;
 	}
+
+	fontPtr->Leading++;
+	UnlockFont (fontRef);
+
+	HFree (bcds);
+
 	(void) fp;  /* Satisfying compiler (unused parameter) */
 	(void) length;  /* Satisfying compiler (unused parameter) */
-	return (FontRef);
+	return fontRef;
+
+err:
+	if (fontRef != 0)
+		mem_release (fontRef);
+	
+	if (bcds != NULL)
+	{
+		size_t bcdI;
+		for (bcdI = 0; bcdI < numBCDs; bcdI++)
+			SDL_FreeSurface (bcds[bcdI].surface);
+		HFree (bcds);
+	}
+	
+	if (fontDirHandle != NULL)
+		uio_closeDir (fontDirHandle);
+	
+	if (fontDir != 0)
+		DestroyDirEntryTable (ReleaseDirEntryTable (fontDir));
+	return 0;
 }
 
 BOOLEAN
 _ReleaseFontData (MEM_HANDLE handle)
 {
-	FONTPTR FontPtr;
-
-	if ((FontPtr = LockFont (handle)) == 0)
-		return (FALSE);
+	FONTPTR font = LockFont (handle);
+	if (font == NULL)
+		return FALSE;
 
 	{
-		int cel_ct;
-		FRAMEPTR FramePtr;
+		FONT_PAGE *page;
+		FONT_PAGE *nextPage;
 
-		cel_ct = MAX_CHARS;
-
-		FramePtr = &FontPtr->CharDesc[cel_ct];
-		while (--FramePtr, cel_ct--)
+		for (page = font->fontPages; page != NULL; page = nextPage)
 		{
-			TFB_Image *img = FramePtr->image;
-			if (img)
+			size_t charI;
+			for (charI = 0; charI < page->numChars; charI++)
 			{
-				FramePtr->image = NULL;
-
-				TFB_DrawScreen_DeleteImage (img);
+				FRAME_DESC *frame = &page->charDesc[charI];
+				
+				if (frame->image == NULL)
+					continue;
+				
+				TFB_DrawScreen_DeleteImage (frame->image);
 			}
+		
+			nextPage = page->next;
+			FreeFontPage (page);
 		}
 	}
 
 	UnlockFont (handle);
 	mem_release (handle);
 
-	return (TRUE);
+	return TRUE;
 }
 
 // _request_drawable was in libs/graphics/drawable.c before modularization
