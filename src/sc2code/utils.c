@@ -214,3 +214,18 @@ PauseGame (void)
 	GLOBAL (CurrentActivity) &= ~CHECK_PAUSE;
 	return (TRUE);
 }
+
+// Waits for a new button to be pressed
+// and returns TRUE if Quit was selected
+BOOLEAN
+WaitAnyButtonOrQuit (BOOLEAN CheckSpecial)
+{
+	while (AnyButtonPress (TRUE))
+		TaskSwitch ();
+
+	while (!AnyButtonPress (TRUE) &&
+			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+		TaskSwitch ();
+
+	return (GLOBAL (CurrentActivity) & CHECK_ABORT) != 0;
+}

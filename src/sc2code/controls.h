@@ -64,6 +64,7 @@ void ResetKeyRepeat (void);
 BOOLEAN PauseGame (void);
 BOOLEAN DoConfirmExit (void);
 void TFB_Abort (void);
+BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
 
 BATTLE_INPUT_STATE p1_combat_summary (void);
 BATTLE_INPUT_STATE p2_combat_summary (void);
