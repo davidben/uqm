@@ -10,5 +10,5 @@ Making a release binary:
   the template to use.
 
   	build/unix_installer/buildinstaller.sh uqm-0.2-linux-dynamic.sh \
-  			"content.tgz"
+  			"build/unix_installer/template"
 
