@@ -570,7 +570,7 @@ uio_getPathPhysicalDirs(uio_DirHandle *dirHandle, const char *path,
 // ENOENT if some component didn't exist
 // ENOTDIR is some component exists, but is not a dir
 // something else (like EPATHTOOLONG) for internal errors
-// 'resolvedPath' will be set to the absolute path as returned by
+// On success, 'resolvedPath' will be set to the absolute path as returned by
 // uio_resolvePath.
 int
 uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
@@ -626,12 +626,14 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 				fprintf(stderr, "Warning: Unknown error from "
 						"uio_walkPhysicalPath: %s\n", strerror(retVal));
 #endif
+				uio_free(*resolvedPath);
 				errno = retVal;
 				return -1;
 		}
 	}
 	
 	// No match, exit with ENOENT.
+	uio_free(*resolvedPath);
 	errno = ENOENT;
 	return -1;
 }
