@@ -132,7 +132,7 @@
 #(disease) 
 #(JUST_RELAX) 
 #(what_happens_if_i_touch_this) 
-#(THIS_HAPPENS0) 1973,1482
+#(THIS_HAPPENS0) 1543,1772,1272,1492,1953
 #(THIS_HAPPENS1) 
 #(are_you_sure_this_is_ok) 
 #(YES_SURE) 2774,2674

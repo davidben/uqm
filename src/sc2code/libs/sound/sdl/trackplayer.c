@@ -154,7 +154,6 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					track_clip[tct - 1].text_spliced = 1;
 				}
 				wstrcpy (&track_clip[tct - 1].text[slen1], TrackText);
-				track_clip[tct - 1].timestamp = 0;
 			}
 		}
 		else if (tct < MAX_CLIPS)
