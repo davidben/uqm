@@ -3228,6 +3228,10 @@ SOURCE=..\sc2code\weapon.h
 # End Group
 # Begin Source File
 
+SOURCE=config.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\port.c
 # End Source File
 # Begin Source File
