@@ -89,6 +89,7 @@ main (int argc, char *argv[])
 	int val;
 	char contentdir[1000];
 	float gamma = 1.0;
+	int gammaset = 0;
 
 	enum
 	{
@@ -229,6 +230,7 @@ main (int argc, char *argv[])
 			break;
 			case 'g':
 				sscanf(optarg, "%f", &gamma);
+				gammaset = 1;
 			break;
 			case CSCAN_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
@@ -320,7 +322,8 @@ main (int argc, char *argv[])
 	init_communication ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
-	TFB_SetGamma (gamma);
+	if (gammaset) 
+		TFB_SetGamma (gamma);
 	TFB_InitSound (snddriver, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
