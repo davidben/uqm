@@ -62,9 +62,7 @@ Glitches (don't crash the game, medium priority):
   - Slylandro probe lightning bolt sound shouldn't be same as lightning on planets
 - After saving the game, the screen is not always redrawn
   - outfit starship
-  - orbit around planet
   - possibly other situations
-- Team names are switched when selecting next ship to fight with.
 - Druuge speech file 'druuge011.ogg' contains earlier bad take.
   (save original sample for posterity).
 - Captains portraits in melee aren't updated after a battle.
@@ -85,9 +83,6 @@ Glitches (don't crash the game, medium priority):
   until the game is quit. It still functions, it just has the last 3-or-so
   seconds after the melee ended repeating over and over in the background.
   - Probably happens in some other situations too
-- When getting the planetary reports on the surface (atleast Moon),
-  when changing pages at the 'more' prompt, commas are not erased completely
-  (due to being out of char box or so), thus leaving highlighted pixels
 - The 3DO image for the Precursor ship is used for the 'upgrade starbase',
   while the PC image is better (no cut-off nose).
 - When orbiting earth, and going to starmap and then back with space without

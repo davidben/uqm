@@ -1,4 +1,7 @@
 0.2:
+- When saving in planet scan screen, screen is now redrawn, from slayne
+- Commas causing pixels to appear in planetary reports fixed, from slayne
+- Team names switching when selecting next ship to fight fixed, from slayne
 - More memory leak fixes in 3do_getbody.c, from PhracturedBlue
 - Fixed memory leak in _ReleaseCelData, from PhracturedBlue.
 - Fixed mutex deadlock in 3do_blt.c, from tamlin
