@@ -29,18 +29,21 @@ static int track_pos_changed = 0; // set whenever  ff, frev is enabled
 
 
 #define MAX_CLIPS 50
-
+#define is_sample_playing(samp) (((samp)->read_chain_ptr && (samp)->play_chain_ptr) ||\
+			(!(samp)->read_chain_ptr && (samp)->decoder))
 static TFB_SoundSample *sound_sample = NULL;
 static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
 static UNICODE *TrackTextArray[MAX_CLIPS]; //storage for subtitlle text
 static Mutex track_mutex; //protects tcur and tct
 
+//JumpTrack currently aborts the current track. However, it doesn't clear the
+//data-structures as StopTrack does.  this allows for rewind even after the
+//track has finished playing
+//Question:  Should 'abort' call StopTrack?
 void
 JumpTrack (int abort)
 {
-	speech_advancetrack = FALSE;
-
 	if (sound_sample)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -64,51 +67,50 @@ JumpTrack (int abort)
 	}
 }
 
+//advance to the next track and start playing
+// we no longer support advancing tracks this way.  Instead this should just start playing
+// a stream.
 void
-advance_track (int channel_finished)
+PlayTrack (void)
 {
-	if (channel_finished <= 0)
+	if (sound_sample && (sound_sample->read_chain_ptr || sound_sample->decoder))
 	{
- 		if (sound_sample->read_chain_ptr || sound_sample->decoder)
-  		{
-  			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
- 			PlayStream (sound_sample,
- 					SPEECH_SOURCE, false,
- 					speechVolumeScale != 0.0f, !track_pos_changed);
-			track_pos_changed = 0;
-  			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-  		}
-  		else if (channel_finished == 0)
-  		{
-  			no_voice = 1;
-  		}
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PlayStream (sound_sample,
+				SPEECH_SOURCE, false,
+				speechVolumeScale != 0.0f, !track_pos_changed);
+		track_pos_changed = 0;
+ 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	}
+	else
+	{
+		no_voice = 1;
 	}
 }
 
+// ResumeTrack should resume a paused track, or start a stopped track, and do nothing
+// for a playing track
 void
 ResumeTrack ()
 {
-	if (sound_sample && sound_sample->read_chain_ptr)
+	if (sound_sample && (sound_sample->read_chain_ptr || sound_sample->decoder))
 	{
+		// Only try to start the track if there is something to play
 		TFBSound_IntVal state;
+		BOOLEAN playing;
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		TFBSound_GetSourcei (soundSource[SPEECH_SOURCE].handle, TFBSOUND_SOURCE_STATE, &state);
-
-		if (!track_pos_changed && !soundSource[SPEECH_SOURCE].stream_should_be_playing && 
-			state == TFBSOUND_PAUSED)
+		playing = PlayingStream (SPEECH_SOURCE);
+		if (!track_pos_changed && !playing && state == TFBSOUND_PAUSED)
 		{
 			ResumeStream (SPEECH_SOURCE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
-		else if (!no_voice)
+		else if (!no_voice && ! playing)
 		{
-			if (tcur == 0)
-			{
-				speech_advancetrack = TRUE;
-			}
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			advance_track (-1);
+			PlayTrack ();
 		}
 		else
 		{
@@ -120,7 +122,9 @@ ResumeTrack ()
 COUNT
 PlayingTrack ()
 {
-	if (sound_sample->decoder)
+	// this is not a great way to detect whether the track is playing,
+	// but as it should work during fast-forward/rewind, 'PlayingStream' can't be used
+	if (is_sample_playing (sound_sample))
 	{
 		int last_track, last_page;
 		LockMutex (track_mutex);
@@ -150,7 +154,6 @@ void
 StopTrack ()
 {
 	int i;
-	speech_advancetrack = FALSE;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -186,6 +189,8 @@ DoTrackTag (TFB_SoundTag *tag)
 	if (tag->type == MIX_BUFFER_TAG_TEXT)
 	{
 		LockMutex (track_mutex);
+		if (tag->callback)
+			tag->callback ();
 		tcur = ((int)tag->value) >> 8;
 		cur_page = ((int)tag->value) & 0xFF;
 		UnlockMutex (track_mutex);
@@ -308,7 +313,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 }
 
 void
-SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
+SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*cb) ())
 {
 	unsigned long startTime;
 	if (TrackText)
@@ -372,6 +377,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					sound_sample->decoder = decoder;
 					first_chain = last_chain = sound_sample->read_chain_ptr;
 					sound_sample->length = 0;
+					sound_sample->play_chain_ptr = 0;
 				}
 				else
 				{
@@ -395,6 +401,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					{
 						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
 						last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
+						last_chain->tag.callback = cb;
 					}
 					no_page_break = 0;
 				}
@@ -428,6 +435,8 @@ void
 recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, sint32 offset)
 {
 	TFB_SoundChain *cur_chain = first_chain;
+	if (! sample)
+		return;
 	while (cur_chain->next &&
 			(sint32)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
 		cur_chain = cur_chain->next;

@@ -39,6 +39,7 @@ typedef struct
 	TFBSound_Object buf_name;
 	int type;
 	void *value;
+	void (*callback) ();
 } TFB_SoundTag;
 
 enum

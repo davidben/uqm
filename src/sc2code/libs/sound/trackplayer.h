@@ -30,7 +30,7 @@ void FastForward_Page();
 void FastReverse_Smooth();
 void FastReverse_Page();
 void StopTrack();
-void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp);
+void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, void (*cb) ());
 void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 int GetSoundData (void *data);
 int GetSoundInfo (int max_len);

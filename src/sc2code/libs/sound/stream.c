@@ -17,8 +17,6 @@
 #include <assert.h>
 #include "sound.h"
 
-bool speech_advancetrack = FALSE;
-
 void
 PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bool rewind)
 {	
@@ -184,7 +182,6 @@ StreamDecoderTaskFunc (void *data)
 		{
 			TFBSound_IntVal processed, queued;
 			TFBSound_IntVal state;
-			bool do_speech_advancetrack = false;
 
 			LockMutex (soundSource[i].stream_mutex);
 
@@ -213,8 +210,6 @@ StreamDecoderTaskFunc (void *data)
 						{
 							soundSource[i].sample->decoder = NULL;
 							soundSource[i].sample->read_chain_ptr = NULL;
- 							if (speech_advancetrack)
-								do_speech_advancetrack = true;
  						}
  					}
 					else
@@ -404,16 +399,6 @@ StreamDecoderTaskFunc (void *data)
 			}
 
 			UnlockMutex (soundSource[i].stream_mutex);
-
-			if (i == SPEECH_SOURCE)
-			{
-				if (do_speech_advancetrack)
-				{
-					fprintf (stderr, "StreamDecoderTaskFunc(): calling advance_track\n");
-					do_speech_advancetrack = false;
-					advance_track (0);
-				}
-			}
 		}
 	}
 

@@ -55,7 +55,8 @@ extern void DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC
 		response_func, UNICODE *ContstructStr);
 extern void DoNPCPhrase (UNICODE *pStr);
 
-extern void NPCPhrase (int index);
+extern void NPCPhrase_cb (int index, void (*cb) ());
+#define NPCPhrase(index) NPCPhrase_cb ((index), NULL)
 
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 

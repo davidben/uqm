@@ -25,7 +25,7 @@
 int NPCNumberPhrase (int number, UNICODE **ptrack);
 
 void
-NPCPhrase (int index)
+NPCPhrase_cb (int index,  void (*cb) ())
 {
 	UNICODE *pStr, numbuf[100];
 	void *pClip, *pTimeStamp;
@@ -59,6 +59,10 @@ NPCPhrase (int index)
 			pClip = 0;
 			pTimeStamp = 0;
 			break;
+		}
+		case 0:
+		{
+			return;
 		}
 		default:
 			if (index < 0)
@@ -104,7 +108,7 @@ NPCPhrase (int index)
 			break;
 	}
 
-	SpliceTrack (pClip, pStr, pTimeStamp);
+	SpliceTrack (pClip, pStr, pTimeStamp, cb);
 }
 
 int
