@@ -388,8 +388,6 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 	COUNT i;
 	STAMP s;
 	ANIMATION_DESCPTR ADPtr;
-	if (summary)
-		return;
 
 	s.origin.x = -SAFE_X;
 	s.origin.y = 0;
@@ -885,7 +883,7 @@ int ambient_anim_task(void* data)
 
 		pSeq = &Sequencer[i];
 		ADPtr = &CommData.AlienAmbientArray[i];
-		while (i-- && !Task_ReadState (task, TASK_EXIT) && !summary)
+		while (i-- && !Task_ReadState (task, TASK_EXIT))
 		{
 			--ADPtr;
 			--pSeq;
@@ -1023,8 +1021,7 @@ int ambient_anim_task(void* data)
 		if (CanTalk
 				&& ADPtr->NumFrames
 				&& (ADPtr->AnimFlags & WAIT_TALKING)
-				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING)
-				&& !summary)
+				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
 		{
 			BOOLEAN done = 0;
 			for (i = 0; i < CommData.NumAnimations; i++)
@@ -1194,7 +1191,7 @@ int ambient_anim_task(void* data)
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				ColorChange = FALSE;
-				ClearSub = FALSE;
+				ClearSub = TRUE;
 				CheckSub = 1;
 			}
 			if (Change || ClearSub)
