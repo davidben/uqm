@@ -368,7 +368,7 @@ static BOOLEAN ColorChange;
 static BOOLEAN volatile XFormFlush;
 static COUNT volatile NumXFormTasks;
 
-int xform_PLUT_task(void* data)
+int xform_PLUT_task (void* data)
 {
 	COLORMAPPTR CurMapPtr;
 	Task task = (Task) data;
@@ -379,21 +379,23 @@ int xform_PLUT_task(void* data)
 	CurMapPtr = TaskControl.CMapPtr;
 
 	{
-		SIZE TDelta, TTotal;
+		BYTE i;
+		SIZE TDelta, TTotal, TTotalOrig;
 		DWORD CurTime;
+		DWORD OldCMap[NUMBER_OF_PLUT_UINT32s], *pOldCMap, *pCurCMap;
 
-		TTotal = TaskControl.Ticks;
+		pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*CurMapPtr * PLUT_BYTE_SIZE));
+		pOldCMap = OldCMap;
+		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; ++i)
+			*pOldCMap++ = *pCurCMap++;
+
+		TTotal = TTotalOrig = TaskControl.Ticks;
 		TaskControl.CMapPtr = 0;
 		CurTime = GetTimeCounter ();
 		do
 		{
-//#define NUMBER_OF_PLUTVALS 32
-//#define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
-			BYTE i;
 			DWORD StartTime;
-			DWORD *pCurCMap;
 			COLORMAPPTR ColorMapPtr;
-			extern DWORD *_varPLUTs;
 
 			StartTime = CurTime;
 			SleepThread (2);
@@ -403,55 +405,73 @@ int xform_PLUT_task(void* data)
 
 			ColorMapPtr = CurMapPtr;
 			pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
+			pOldCMap = OldCMap;
+
 			ColorMapPtr += 2;
 			i = NUMBER_OF_PLUT_UINT32s;
-if (_varPLUTs)
-			do
-			{
-				SIZE c0, c1;
-				DWORD v0, v1, val;
+			if (_varPLUTs)
+				do
+				{
+					SIZE c0, c1;
+					DWORD v0, v1, val;
+					float f = (TTotalOrig - TTotal) / (float)TTotalOrig;
+					COLORMAPPTR oldmap = (COLORMAPPTR) pOldCMap;
+					
+					v0 = MAKE_DWORD
+					(
+						MAKE_WORD (oldmap[3], oldmap[2]),
+						MAKE_WORD (oldmap[1], oldmap[0])
+					);
 
-				v0 = *pCurCMap;
-				v1 = MAKE_DWORD (
+
+					v1 = MAKE_DWORD
+					(
 						MAKE_WORD (ColorMapPtr[3], ColorMapPtr[2]),
 						MAKE_WORD (ColorMapPtr[1], ColorMapPtr[0])
-						);
-				ColorMapPtr += sizeof (DWORD);
+					);
 
-				c0 = (v0 >> (10 + 16)) & 0x1F;
-				c1 = (v1 >> (10 + 16)) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (c0 & 0x1F) | (1 << 5);
-				
-				c0 = (v0 >> (5 + 16)) & 0x1F;
-				c1 = (v1 >> (5 + 16)) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (val << 5) | (c0 & 0x1F);
+					ColorMapPtr += sizeof (DWORD);
 
-				c0 = (v0 >> (0 + 16)) & 0x1F;
-				c1 = (v1 >> (0 + 16)) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (val << 5) | (c0 & 0x1F);
+					c0 = (SIZE)((v0 >> (10 + 16)) & 0x1F);
+					c1 = (SIZE)((v1 >> (10 + 16)) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (c0 & 0x1F) | (1 << 5);
 
-				c0 = (v0 >> 10) & 0x1F;
-				c1 = (v1 >> 10) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (val << (5 + 1)) | (c0 & 0x1F) | (1 << 5);
-				
-				c0 = (v0 >> 5) & 0x1F;
-				c1 = (v1 >> 5) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (val << 5) | (c0 & 0x1F);
+					c0 = (SIZE)((v0 >> (5 + 16)) & 0x1F);
+					c1 = (SIZE)((v1 >> (5 + 16)) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (val << 5) | (c0 & 0x1F);
 
-				c0 = (v0 >> 0) & 0x1F;
-				c1 = (v1 >> 0) & 0x1F;
-				c0 += ((c1 - c0) * TDelta) / TTotal;
-				val = (val << 5) | (c0 & 0x1F);
+					c0 = (SIZE)((v0 >> (0 + 16)) & 0x1F);
+					c1 = (SIZE)((v1 >> (0 + 16)) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (val << 5) | (c0 & 0x1F);
 
-				*pCurCMap++ = val;
-			} while (--i);
+					c0 = (SIZE)((v0 >> 10) & 0x1F);
+					c1 = (SIZE)((v1 >> 10) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (val << (5 + 1)) | (c0 & 0x1F) | (1 << 5);
 
-			ColorChange = TRUE;
+					c0 = (SIZE)((v0 >> 5) & 0x1F);
+					c1 = (SIZE)((v1 >> 5) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (val << 5) | (c0 & 0x1F);
+
+					c0 = (SIZE)((v0 >> 0) & 0x1F);
+					c1 = (SIZE)((v1 >> 0) & 0x1F);
+					c0 += (SIZE)((c1 - c0) * f);
+					val = (val << 5) | (c0 & 0x1F);
+
+					*pOldCMap++;
+					*pCurCMap++ = MAKE_DWORD 
+					(
+						MAKE_WORD ((val >> 24 ) & 0xff, (val >> 16) & 0xff),
+						MAKE_WORD ((val >> 8  ) & 0xff, (val >> 0 ) & 0xff)
+					);
+
+				} while (--i);
+
+				ColorChange = TRUE;
 
 		} while (TTotal -= TDelta && !Task_ReadState (task, TASK_EXIT));
 	}
@@ -481,8 +501,6 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	if (ColorMapPtr)
 	{
 		DWORD TimeOut;
-
-		TimeInterval = 0; // added by Mika
 
 		FlushPLUTXForms ();
 
