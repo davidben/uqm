@@ -539,26 +539,6 @@ SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch_common.c
 # End Group
 # End Group
 # End Group
-# Begin Group "sdlmixer"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\modfuncs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\play.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\sound.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\trackplayer.c
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\fileinst.c
