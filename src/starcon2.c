@@ -16,10 +16,42 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef WIN32
+#include <unistd.h>
+#else
+#include <direct.h>
+#endif
+
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
+
+
+BOOLEAN FileExists (char *filename)
+{
+    FILE *fp;
+    if ((fp = fopen(filename, "rb")) == NULL)
+        return FALSE;
+
+    fclose (fp);
+    return TRUE;
+}
+
+void
+CDToContentDir (char *contentdir)
+{
+    char *testfile = "starcon.txt";
+    
+    if (!FileExists (testfile))
+    {
+        if (chdir(contentdir) || !FileExists (testfile))
+        {
+            fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
+            exit(-1);
+        }
+    }
+}
 
 int
 main (int argc, char *argv[])
@@ -29,6 +61,13 @@ main (int argc, char *argv[])
 	int gfxflags = 0;
 	int width = 640, height = 480, bpp = 16;
 	int frequency = 44100;
+    char contentdir[1000];
+
+#ifndef WIN32
+    strcpy (contentdir, "content");
+#else
+	strcpy (contentdir, "../../content");
+#endif
 
 	// TODO: proper commandline parser, this is just a quick hack
 	for (i=1;i<argc;++i) 
@@ -68,8 +107,15 @@ main (int argc, char *argv[])
 		{
 			gfxflags |= TFB_GFXFLAGS_TVEFFECT;
 		}
+        else if (!strcmp(argv[i],"-content"))
+        {
+            i++;
+            sscanf(argv[i], "%s", contentdir);
+        }
 	}
 
+    CDToContentDir (contentdir);
+    
 	InitThreadSystem ();
 	InitTimeSystem ();
 	InitTaskSystem ();

@@ -323,9 +323,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		
 		if (current_fade != 255 && current_fade != last_fade)
 			TFB_SwapBuffers(); // if fading, redraw every frame
+        else
+            SDL_Delay(5);
 		last_fade = current_fade;
-
-		SDL_Delay(5);
+        
 		return;
 	}
 
@@ -390,6 +391,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			{
 				SDL_Rect targetRect;
 				SDL_Surface *surf;
+
 
 				if (DC_image == 0)
 				{
