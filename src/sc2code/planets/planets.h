@@ -166,6 +166,7 @@ typedef struct solarsys_state
 	FRAME *PlanetFrameArray;
 	FRAME ScaleFrame[2];
 	FRAME ShieldFrame;
+	FRAME TintFrame;
 	BYTE *isPFADefined;
 	DWORD **lpTopoMap;
 } SOLARSYS_STATE;

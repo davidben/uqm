@@ -751,10 +751,56 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 {
 #if 1
 	STAMP s;
+	UBYTE a=128;
 	s.origin.x = x;
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
 	DrawStamp (&s);
+	if (pSolarSysState->ShieldFrame!=0)
+	{
+		rgb=0x1f<<10;
+		dy=GetFrameHeight(s.frame);
+		a=200;
+	}
+	if (rgb)
+	{
+		UBYTE r,g,b;
+		DWORD **rgba,p;
+		COUNT i,j,framew;
+		FRAME tintFrame=pSolarSysState->TintFrame;
+		if(tintFrame !=0)
+		{
+			DestroyDrawable (ReleaseDrawable (tintFrame));
+			tintFrame=0;
+		}
+		framew=GetFrameWidth(s.frame);
+		tintFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, framew, (UWORD)dy, 1)
+				);
+		rgba=(DWORD **)HMalloc(sizeof(DWORD *)*(dy));
+		r=(rgb&(0x1f<<10))>>8;
+		g=(rgb&(0x1f<<5))>>3;
+		b=(rgb&0x1f)<<2;
+		p=frame_mapRGBA(tintFrame,r,g,b,a);
+		for(i=0;i<dy;i++)
+		{
+			rgba[i]=(DWORD *)HMalloc(sizeof(DWORD)*framew);
+			for(j=0;j<framew;j++)
+				rgba[i][j]=p;
+		}
+		process_rgb_bmp(tintFrame,rgba,framew,dy);
+		SetFrameHot (tintFrame, MAKE_HOT_SPOT (0, 0));
+		for (i=0;i<dy;i++)
+			HFree(rgba[i]);
+		HFree(rgba);
+		s.frame = tintFrame;
+		DrawStamp (&s);
+	}
+
+
+				
+
+		
 #else
 	if (rgb || !pshield_ccb->ccb_HDY)
 	{

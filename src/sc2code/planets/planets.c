@@ -228,6 +228,11 @@ FreePlanet (void)
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
 		pSolarSysState->ShieldFrame=0;
 	}
+	if(pSolarSysState->TintFrame != 0)
+	{
+		DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
+		pSolarSysState->TintFrame=0;
+	}
 	if(pSolarSysState->lpTopoMap!=0) {
 		for(i=0;pSolarSysState->lpTopoMap[i]!=NULL;i++) {
 			free(pSolarSysState->lpTopoMap[i]);
