@@ -104,8 +104,8 @@ Implementation bugs (low priority):
   - opengl misses all other modes than bilinear
     - do them with software and/or pixel shader hw?
 - 3D planet view when entering orbit is now done, but there's some things
-  which could make it look nicer, like better lighting, antialiasing/filtering, 
-  better slave shield and removing occasional 'pops'
+  which could make it look nicer, like better lighting, better slave shield 
+  and removing occasional pops/discontinuities
 
 Stuff still to do (large):
 - add a Key Jamming program
