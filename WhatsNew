@@ -43,6 +43,7 @@ NEW FEATURES
 - 2 more ship slots in melee, as the PC Star Control 2 had.
 - All the standard melee teams from the Star Control 2 PC version.
 - Support for 50 savegames, instead of just 10
+- 'CREW'/'BATT' instead of icons in melee when using PC menus
 
 BUGFIXES
 - Text entry doesn't freeze up lander reports anymore

@@ -126,7 +126,7 @@ Default.
 
 	--menu pc
 
-Use PC style menus (text).
+Use PC style menus (text) and 'CREW'/'BATT' in melee instead of icons.
 
 	--menu 3do
 
