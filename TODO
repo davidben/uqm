@@ -76,6 +76,8 @@ Glitches (don't crash the game, medium priority):
   back to the outfit, screen doesn't reset itself
   - Probably happens on some other situations too
 - Team names are switched when selecting next ship to fight with.
+- Win32 version runs a bit faster than it should, due to some problems
+  with timer accuracies
 
 Implementation bugs (low priority):
 - Scaling code problems:
