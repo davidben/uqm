@@ -108,7 +108,7 @@ blazer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 {
 #define BLAZER_OFFSET 10
 	BYTE old_offs;
-	SIZE old_crew_level;
+	BYTE old_crew_level;
 	COUNT old_life;
 
 	old_crew_level = ElementPtr0->crew_level;

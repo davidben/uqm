@@ -338,9 +338,9 @@ utwig_preprocess (PELEMENT ElementPtr)
 		else
 			c = 0x7a;
 		if (c <= 0x2f && c >= 0x2a)
-				color_index = c - 0x2a;
+				color_index = (COUNT)c - 0x2a;
 		else /* color is between 0x7a and 0x7f */
-				color_index = (c - 0x7a) + (NUM_TAB_COLORS >> 1);
+				color_index = (COUNT)(c - 0x7a) + (NUM_TAB_COLORS >> 1);
 		SetPrimColor (lpPrim, color_tab[color_index]);
 
 		ElementPtr->life_span = NORMAL_LIFE + 1;

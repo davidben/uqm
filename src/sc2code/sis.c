@@ -620,7 +620,7 @@ DrawStorageBays (BOOLEAN Refresh)
 		r.extent.width = 2;
 	}
 
-	i = CountSISPieces (STORAGE_BAY);
+	i = (BYTE)CountSISPieces (STORAGE_BAY);
 	if (i)
 	{
 		COUNT j;

@@ -422,11 +422,11 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 						COLOR c32k;
 
 						c32k = COLOR_32k (c);
-						r = (c32k >> (5 * 2)) & 0x1F;
+						r = (BYTE)((c32k >> (5 * 2)) & 0x1F);
 						if ((r += 0x03) > 0x1F) r = 0x1F;
-						g = (c32k >> (5 * 1)) & 0x1F;
+						g = (BYTE)((c32k >> (5 * 1)) & 0x1F);
 						if ((g += 0x03) > 0x1F) g = 0x1F;
-						b = (c32k >> (5 * 0)) & 0x1F;
+						b = (BYTE)((c32k >> (5 * 0)) & 0x1F);
 						if ((b += 0x03) > 0x1F) b = 0x1F;
 
 						SetContextForeGroundColor (

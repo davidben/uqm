@@ -831,7 +831,7 @@ Intro (void)
 
 	if (!GET_GAME_STATE (MET_ORZ_BEFORE))
 	{
-		COUNT N;
+		BYTE N;
 
 		SET_GAME_STATE (MET_ORZ_BEFORE, 1);
 

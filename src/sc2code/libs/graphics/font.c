@@ -230,9 +230,9 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		else
 			SetPrimType (&locPrim, STAMPFILL_PRIM);
 		c32k = _get_context_fg_color () >> 8;
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 
 		TextPtr = &PrimPtr->Object.Text;
 		locPrim.Object.Stamp.origin.x = _save_stamp.origin.x;

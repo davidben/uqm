@@ -85,7 +85,7 @@ GetFrameIndex (FRAMEPTR FramePtr)
 	if (FramePtr == 0)
 		return (0);
 
-	return (INDEX_GET (FramePtr->TypeIndexAndFlags));
+	return ((UWORD)INDEX_GET (FramePtr->TypeIndexAndFlags));
 }
 
 FRAME
@@ -121,7 +121,7 @@ SetRelFrameIndex (FRAMEPTR FramePtr, SIZE FrameOffs)
 				;
 		}
 
-		FrameOffs = (INDEX_GET (FramePtr->TypeIndexAndFlags) + FrameOffs) % num_frames;
+		FrameOffs = ((SWORD)INDEX_GET (FramePtr->TypeIndexAndFlags) + FrameOffs) % num_frames;
 		FramePtr = (FRAMEPTR)&DrawablePtr->Frame[FrameOffs];
 	}
 
@@ -150,7 +150,7 @@ IncFrameIndex (FRAMEPTR FramePtr)
 		return (0);
 
 	DrawablePtr = GetFrameParentDrawable (FramePtr);
-	if (INDEX_GET (FramePtr->TypeIndexAndFlags) < INDEX_GET (DrawablePtr->FlagsAndIndex))
+	if (INDEX_GET (FramePtr->TypeIndexAndFlags) < (DWORD)INDEX_GET (DrawablePtr->FlagsAndIndex))
 		return ((FRAME)++FramePtr);
 	else
 		return ((FRAME)DrawablePtr->Frame);

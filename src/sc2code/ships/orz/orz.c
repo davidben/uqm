@@ -333,9 +333,9 @@ ion_preprocess (PELEMENT ElementPtr)
 		else if (Color == 0x7E)
 			Color = 0x7F;
 		if (Color <= 0x2f && Color >= 0x2a)
-				color_index = Color - 0x2a;
+				color_index = (COUNT)Color - 0x2a;
 		else /* color is between 0x7a and 0x7f */
-				color_index = (Color - 0x7a) + (NUM_TAB_COLORS >> 1);
+				color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
 		SetPrimColor (&(GLOBAL (DisplayArray))[
 				ElementPtr->PrimIndex
 				], color_tab[color_index]);

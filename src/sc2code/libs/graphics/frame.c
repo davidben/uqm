@@ -90,9 +90,9 @@ ClearBackGround (PRECT pClipRect)
 	DWORD c32k;
 
 	c32k = _get_context_bg_color () >> 8; //shift out color index
-	color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-	color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-	color.b = (c32k << (8 - 5)) & 0xF8;
+	color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+	color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+	color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 	TFB_Prim_FillRect (pClipRect, &color);
 }
 
@@ -156,9 +156,9 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 			{
 				case POINT_PRIM:
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-					color.b = (c32k << (8 - 5)) & 0xF8;
+					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 					
 					TFB_Prim_Point (&lpWorkPrim->Object.Point, &color);
 					break;
@@ -167,16 +167,16 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 					break;
 				case STAMPFILL_PRIM:
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-					color.b = (c32k << (8 - 5)) & 0xF8;
+					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, &color);
 					break;
 				case LINE_PRIM:
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-					color.b = (c32k << (8 - 5)) & 0xF8;
+					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 
 					TFB_Prim_Line (&lpWorkPrim->Object.Line, &color);
 					break;
@@ -191,15 +191,15 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 					break;
 				case RECT_PRIM:
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-					color.b = (c32k << (8 - 5)) & 0xF8;
+					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, &color);
 				case RECTFILL_PRIM:
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-					color.b = (c32k << (8 - 5)) & 0xF8;
+					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, &color);
 					break;
 			}
@@ -245,9 +245,9 @@ DrawPoint (PPOINT lpPoint)
 		DWORD c32k;
 		
 		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 		
 		TFB_Prim_Point (lpPoint, &color);
 		_CurFramePtr->HotSpot = OldHot;
@@ -266,9 +266,9 @@ DrawRectangle (PRECT lpRect)
 		DWORD c32k;
 		
 		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 		
 		TFB_Prim_Rect (lpRect, &color);  
 		_CurFramePtr->HotSpot = OldHot;
@@ -287,9 +287,9 @@ DrawFilledRectangle (PRECT lpRect)
 		DWORD c32k;
 		
 		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 		
 		TFB_Prim_FillRect (lpRect, &color);  
 		_CurFramePtr->HotSpot = OldHot;
@@ -308,9 +308,9 @@ DrawLine (PLINE lpLine)
 		DWORD c32k;
 
 		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 		
 		TFB_Prim_Line (lpLine, &color);
 		_CurFramePtr->HotSpot = OldHot;
@@ -342,9 +342,9 @@ DrawFilledStamp (PSTAMP stmp)
 		DWORD c32k;
 		
 		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-		color.b = (c32k << (8 - 5)) & 0xF8;
+		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
+		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
+		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
 		TFB_Prim_StampFill (stmp, &color);
 		_CurFramePtr->HotSpot = OldHot;
 	}

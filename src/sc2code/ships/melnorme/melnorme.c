@@ -539,7 +539,7 @@ initialize_test_pump_up (PELEMENT ShipPtr, HELEMENT PumpUpArray[])
 static void
 melnorme_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
-	COUNT old_count;
+	BYTE old_count;
 	STARSHIPPTR StarShipPtr;
 	PEVALUATE_DESC lpEvalDesc;
 
