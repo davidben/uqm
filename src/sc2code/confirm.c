@@ -30,11 +30,8 @@ INPUT_STATE
 ConfirmExit (void)
 {
 	INPUT_STATE InputState;
-	BOOLEAN ClockActive;
 
-	ClockActive = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE
-			&& GameClockRunning ());
-	if (ClockActive)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
@@ -105,7 +102,7 @@ ConfirmExit (void)
 	}
 	ClearSemaphore (GraphicsSem);
 
-	if (ClockActive)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();

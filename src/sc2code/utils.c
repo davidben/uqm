@@ -141,7 +141,6 @@ PauseGame (void)
 {
 	RECT r;
 	STAMP s;
-	BOOLEAN ClockActive;
 	CONTEXT OldContext;
 	FRAME F;
 	HOT_SPOT OldHot;
@@ -153,11 +152,7 @@ PauseGame (void)
 		
 	GLOBAL (CurrentActivity) |= CHECK_PAUSE;
 
-	ClockActive = (BOOLEAN)(
-			LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE
-			&& GameClockRunning ()
-			);
-	if (ClockActive)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
@@ -201,7 +196,7 @@ PauseGame (void)
 	FlushInput ();
 	ClearSemaphore (GraphicsSem);
 
-	if (ClockActive)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();

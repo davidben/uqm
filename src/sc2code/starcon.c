@@ -902,8 +902,7 @@ extern COUNT _simple_count;
 
 sc = _simple_count;
 #endif //TESTING
-				if (GameClockRunning ())
-					SuspendGameClock ();
+				SuspendGameClock ();
 
 				if (!((GLOBAL (CurrentActivity) | NextActivity) & CHECK_LOAD))
 					ZeroVelocityComponents (

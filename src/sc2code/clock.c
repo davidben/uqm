@@ -20,6 +20,8 @@
 
 #define IsLeapYear(yi) (!((yi) & 3) && (((yi) % 100) || ((yi) % 400)))
 
+static Mutex clock_mutex;
+
 int clock_task_func(void* data)
 {
 	BOOLEAN LastPilot;
@@ -170,7 +172,7 @@ InitGameClock (void)
 {
 	if (!InitQueue (&GLOBAL (GameClock.event_q), NUM_EVENTS, sizeof (EVENT)))
 		return (FALSE);
-
+	clock_mutex = CreateMutex ();
 	GLOBAL (GameClock.month_index) = 2;
 	GLOBAL (GameClock.day_index) = 17;
 	GLOBAL (GameClock.year_index) = START_YEAR; /* Feb 17, START_YEAR */
@@ -189,13 +191,13 @@ UninitGameClock (void)
 {
 	if (GLOBAL (GameClock.clock_task))
 	{
-		if (!GameClockRunning ())
-			ResumeGameClock ();
+		ResumeGameClock ();
 
 		ConcludeTask (GLOBAL (GameClock.clock_task));
 		
 		GLOBAL (GameClock.clock_task) = 0;
 	}
+	DestroyMutex (clock_mutex);
 
 	UninitQueue (&GLOBAL (GameClock.event_q));
 
@@ -205,21 +207,25 @@ UninitGameClock (void)
 void
 SuspendGameClock (void)
 {
+	LockMutex (clock_mutex);
 	if (GameClockRunning ())
 	{
 		SetSemaphore (GLOBAL (GameClock.clock_sem));
 		GLOBAL (GameClock.TimeCounter) = 0;
 	}
+	UnlockMutex (clock_mutex);
 }
 
 void
 ResumeGameClock (void)
 {
+	LockMutex (clock_mutex);
 	if (!GameClockRunning ())
 	{
 		GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
 		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 	}
+	UnlockMutex (clock_mutex);
 }
 
 BOOLEAN

@@ -362,8 +362,7 @@ BOOLEAN
 FreeHyperspace (void)
 {
 	ClearSemaphore (GraphicsSem);
-	if (GameClockRunning ())
-		SuspendGameClock ();
+	SuspendGameClock ();
 	SetSemaphore (GraphicsSem);
 
 	{
