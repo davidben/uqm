@@ -1,4 +1,5 @@
 0.2:
+- Hyperspace saving crash introduced by prev. patches fixed, from slayne
 - Precursor ship crew count is now placed correctly in melee, from wjp
 - Dialog choices doesn't go off rectangle in right anymore, from wjp
 - When saving in planet scan screen, screen is now redrawn, from slayne
