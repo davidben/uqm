@@ -101,9 +101,11 @@ Implementation bugs (low priority):
   and removing occasional pops/discontinuities
   - Rotation and zooming isn't now as smooth as before after condition
     variable DCQ patch
-- DrawCommandQueue is gratuitously dynamically allocated, should be static
+    - This is because of the fact that all FlushGraphics routines wait on
+      one lone condition variable -- we need one per thread, effectively.
 - Transitions (crossfades) aren't perhaps correctly done always, syncing
   might be wrong etc.
+  - Condition variable DCQ patch should have fixed this.  Confirm?
 
 Stuff still to do (large):
 - add a Key Jamming program

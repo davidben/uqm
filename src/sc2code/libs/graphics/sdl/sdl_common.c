@@ -523,9 +523,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 	BOOLEAN livelock_deterrence;
 	BOOLEAN done;
 
-	// This is technically a locking violation on DrawCommandQueue->Size,
+	// This is technically a locking violation on DrawCommandQueue.Size,
 	// but it is likely to not be very destructive.
-	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
+	if (DrawCommandQueue.Size == 0)
 	{
 		static int last_fade = 255;
 		static int last_transition = 255;
@@ -571,12 +571,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 	commands_handled = 0;
 	livelock_deterrence = FALSE;
 
-	if (DrawCommandQueue->FullSize > DCQ_FORCE_BREAK_SIZE)
+	if (DrawCommandQueue.FullSize > DCQ_FORCE_BREAK_SIZE)
 	{
 		TFB_BatchReset ();
 	}
 
-	if (DrawCommandQueue->Size > DCQ_FORCE_SLOWDOWN_SIZE)
+	if (DrawCommandQueue.Size > DCQ_FORCE_SLOWDOWN_SIZE)
 	{
 		Lock_DCQ ();
 		livelock_deterrence = TRUE;
@@ -588,14 +588,14 @@ TFB_FlushGraphics () // Only call from main thread!!
 		TFB_DrawCommand DC;
 		TFB_Image *DC_image;
 
-		if (!TFB_DrawCommandQueue_Pop (DrawCommandQueue, &DC))
+		if (!TFB_DrawCommandQueue_Pop (&DC))
 		{
 			// the Queue is now empty.
 			break;
 		}
 
 		++commands_handled;
-		if (!livelock_deterrence && commands_handled + DrawCommandQueue->Size > DCQ_LIVELOCK_MAX)
+		if (!livelock_deterrence && commands_handled + DrawCommandQueue.Size > DCQ_LIVELOCK_MAX)
 		{
 			// fprintf (stderr, "Initiating livelock deterrence!\n");
 			livelock_deterrence = TRUE;
@@ -768,7 +768,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			TFB_SwapBuffers ();
 			break;
 		case TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS:
-			TFB_DrawCommandQueue_Clear (DrawCommandQueue);
+			TFB_DrawCommandQueue_Clear ();
 		}		
 		if (DC_image)
 			UnlockMutex (DC_image->mutex);

@@ -35,7 +35,7 @@ static Uint32 DCQ_locking_thread = 0;
 #define DCQ_MAX 16384
 TFB_DrawCommand DCQ[DCQ_MAX];
 
-TFB_DrawCommandQueue *DrawCommandQueue;
+TFB_DrawCommandQueue DrawCommandQueue;
 
 // DCQ Synchronization: SDL-specific implementation of re-entrant
 // locks to protect the Draw Command Queue.  Lock is re-entrant to
@@ -78,20 +78,20 @@ Unlock_DCQ (void)
 static void
 Synchronize_DCQ (void)
 {
-	if (!DrawCommandQueue->Batching)
+	if (!DrawCommandQueue.Batching)
 	{
-		int front = DrawCommandQueue->Front;
-		int back  = DrawCommandQueue->InsertionPoint;
-		DrawCommandQueue->Back = DrawCommandQueue->InsertionPoint;
+		int front = DrawCommandQueue.Front;
+		int back  = DrawCommandQueue.InsertionPoint;
+		DrawCommandQueue.Back = DrawCommandQueue.InsertionPoint;
 		if (front <= back)
 		{
-			DrawCommandQueue->Size = (back - front);
+			DrawCommandQueue.Size = (back - front);
 		}
 		else
 		{
-			DrawCommandQueue->Size = (back + DCQ_MAX - front);
+			DrawCommandQueue.Size = (back + DCQ_MAX - front);
 		}
-		DrawCommandQueue->FullSize = DrawCommandQueue->Size;
+		DrawCommandQueue.FullSize = DrawCommandQueue.Size;
 	}
 }
 
@@ -99,7 +99,7 @@ void
 TFB_BatchGraphics (void)
 {
 	Lock_DCQ ();
-	DrawCommandQueue->Batching++;
+	DrawCommandQueue.Batching++;
 	Unlock_DCQ ();
 }
 
@@ -107,9 +107,9 @@ void
 TFB_UnbatchGraphics (void)
 {
 	Lock_DCQ ();
-	if (DrawCommandQueue->Batching)
+	if (DrawCommandQueue.Batching)
 	{
-		DrawCommandQueue->Batching--;
+		DrawCommandQueue.Batching--;
 	}
 	Synchronize_DCQ ();
 	Unlock_DCQ ();
@@ -122,43 +122,36 @@ void
 TFB_BatchReset (void)
 {
 	Lock_DCQ ();
-	DrawCommandQueue->Batching = 0;
+	DrawCommandQueue.Batching = 0;
 	Synchronize_DCQ ();
 	Unlock_DCQ ();
 }
 
 // Draw Command Queue Stuff
-// TODO: Make this be statically allocated, too.  We only ever have one DCQ, after all.
 
-TFB_DrawCommandQueue*
+void
 TFB_DrawCommandQueue_Create()
 {
-		TFB_DrawCommandQueue* myQueue;
-		
-		myQueue = (TFB_DrawCommandQueue*) HMalloc(
-				sizeof(TFB_DrawCommandQueue));
-
-		myQueue->Back = 0;
-		myQueue->Front = 0;
-		myQueue->InsertionPoint = 0;
-		myQueue->Batching = 0;
-		myQueue->FullSize = 0;
-		myQueue->Size = 0;
+		DrawCommandQueue.Back = 0;
+		DrawCommandQueue.Front = 0;
+		DrawCommandQueue.InsertionPoint = 0;
+		DrawCommandQueue.Batching = 0;
+		DrawCommandQueue.FullSize = 0;
+		DrawCommandQueue.Size = 0;
+		DCQ_locking_depth = 0;
+		DCQ_locking_thread = 0;
 
 		DCQ_sem = CreateSemaphore(1);
-
-		return (myQueue);
 }
 
 void
-TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
-		TFB_DrawCommand* Command)
+TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 {
 	Lock_DCQ ();
-	while (myQueue->FullSize >= DCQ_MAX - 1)
+	while (DrawCommandQueue.FullSize >= DCQ_MAX - 1)
 	{
 		int old_depth, i;
-		fprintf (stderr, "DCQ overload (Size = %d).  Sleeping until renderer is done.\n", myQueue->Size);
+		fprintf (stderr, "DCQ overload (Size = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size);
 		// Restore the DCQ locking level.  I *think* this is
 		// always 1, but...
 		old_depth = DCQ_locking_depth;
@@ -167,54 +160,54 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		WaitCondVar (RenderingCond);
 		for (i = 0; i < old_depth; i++)
 			Lock_DCQ ();
-		fprintf (stderr, "DCQ clear (Size = %d).  Continuing.\n", myQueue->Size);
+		fprintf (stderr, "DCQ clear (Size = %d).  Continuing.\n", DrawCommandQueue.Size);
 	}
-	DCQ[myQueue->InsertionPoint] = *Command;
-	myQueue->InsertionPoint = (myQueue->InsertionPoint + 1) % DCQ_MAX;
-	myQueue->FullSize++;
+	DCQ[DrawCommandQueue.InsertionPoint] = *Command;
+	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1) % DCQ_MAX;
+	DrawCommandQueue.FullSize++;
 	Synchronize_DCQ ();
 	Unlock_DCQ ();
 }
 
 int
-TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target)
+TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 {
 	Lock_DCQ ();
 
-	if (myQueue->Size == 0)
+	if (DrawCommandQueue.Size == 0)
 	{
 		Unlock_DCQ ();
 		return (0);
 	}
 
-	if (myQueue->Front == myQueue->Back && myQueue->Size != DCQ_MAX)
+	if (DrawCommandQueue.Front == DrawCommandQueue.Back && DrawCommandQueue.Size != DCQ_MAX)
 	{
 		fprintf (stderr, "Augh!  Assertion failure in DCQ!  Front == Back, Size != DCQ_MAX\n");
-		myQueue->Size = 0;
+		DrawCommandQueue.Size = 0;
 		Unlock_DCQ ();
 		return (0);
 	}
 
-	*target = DCQ[myQueue->Front];
-	myQueue->Front = (myQueue->Front + 1) % DCQ_MAX;
+	*target = DCQ[DrawCommandQueue.Front];
+	DrawCommandQueue.Front = (DrawCommandQueue.Front + 1) % DCQ_MAX;
 
-	myQueue->Size--;
-	myQueue->FullSize--;
+	DrawCommandQueue.Size--;
+	DrawCommandQueue.FullSize--;
 	Unlock_DCQ ();
 
 	return 1;
 }
 
 void
-TFB_DrawCommandQueue_Clear (TFB_DrawCommandQueue *myQueue)
+TFB_DrawCommandQueue_Clear ()
 {
 	Lock_DCQ ();
-	myQueue->Size = 0;
-	myQueue->Front = 0;
-	myQueue->Back = 0;
-	myQueue->Batching = 0;
-	myQueue->FullSize = 0;
-	myQueue->InsertionPoint = 0;
+	DrawCommandQueue.Size = 0;
+	DrawCommandQueue.Front = 0;
+	DrawCommandQueue.Back = 0;
+	DrawCommandQueue.Batching = 0;
+	DrawCommandQueue.FullSize = 0;
+	DrawCommandQueue.InsertionPoint = 0;
 	Unlock_DCQ ();
 }
 
@@ -262,7 +255,7 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 		}
 	}
 
-	TFB_DrawCommandQueue_Push (DrawCommandQueue, DrawCommand);
+	TFB_DrawCommandQueue_Push (DrawCommand);
 }
 
 #endif

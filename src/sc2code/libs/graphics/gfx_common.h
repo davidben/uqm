@@ -124,7 +124,7 @@ typedef struct tfb_drawcommandqueue
 	volatile int Size;
 } TFB_DrawCommandQueue;
 
-TFB_DrawCommandQueue *TFB_DrawCommandQueue_Create (void);
+void TFB_DrawCommandQueue_Create (void);
 
 void TFB_BatchGraphics (void);
 
@@ -132,15 +132,13 @@ void TFB_UnbatchGraphics (void);
 
 void TFB_BatchReset (void);
 
-void TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
-		TFB_DrawCommand* Command);
+void TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command);
 
-int TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue* myQueue,
-		TFB_DrawCommand* Command);
+int TFB_DrawCommandQueue_Pop (TFB_DrawCommand* Command);
 
-void TFB_DrawCommandQueue_Clear (TFB_DrawCommandQueue* myQueue);
+void TFB_DrawCommandQueue_Clear (void);
 
-extern TFB_DrawCommandQueue *DrawCommandQueue;
+extern TFB_DrawCommandQueue DrawCommandQueue;
 
 // The TFB_Enqueue* functions are necessary, because only the 
 // main thread can draw to the window.
