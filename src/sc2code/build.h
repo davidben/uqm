@@ -75,7 +75,8 @@ extern void OutlineShipStatus (COORD y);
 extern void InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect);
 extern void DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta,
 		SIZE energy_delta);
-extern void DrawBattleCrewAmount (BOOLEAN CountPlayer);
+extern void DrawBattleCrewAmount (STARSHIPPTR StarShipPtr,
+		BOOLEAN CountPlayer);
 
 #endif /* _BUILD_H */
 

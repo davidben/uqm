@@ -384,7 +384,8 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 					GLOBAL_SIS (CrewEnlisted) = 0;
 				}
 
-				DrawBattleCrewAmount ((BOOLEAN)(death_count == 0));
+				DrawBattleCrewAmount (StarShipPtr,
+						(BOOLEAN)(death_count == 0));
 			}
 
 			SetContextForeGroundColor (BLACK_COLOR);

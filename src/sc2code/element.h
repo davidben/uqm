@@ -21,6 +21,7 @@
 
 #include "battle.h"
 #include "displist.h"
+#include "units.h"
 #include "velocity.h"
 #include "libs/gfxlib.h"
 
@@ -36,7 +37,7 @@
 #define TINY_TEXT_HEIGHT 9
 
 #define BATTLE_CREW_X 10
-#define BATTLE_CREW_Y 184
+#define BATTLE_CREW_Y (64 - SAFE_Y)
 
 #define NORMAL_LIFE 1
 

@@ -114,7 +114,7 @@ CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, ELEMENT_FLAGS
 }
 
 void
-DrawBattleCrewAmount (BOOLEAN CountPlayer)
+DrawBattleCrewAmount (STARSHIPPTR StarShipPtr, BOOLEAN CountPlayer)
 {
 #define MAX_CREW_DIGITS 3
 	RECT r;
@@ -124,7 +124,9 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 	t.baseline.x = BATTLE_CREW_X + 2;
 	if (optWhichMenu == OPT_PC)
 			t.baseline.x -= 8;
-	t.baseline.y = BATTLE_CREW_Y - SAFE_Y;
+	t.baseline.y = BATTLE_CREW_Y +
+			((StarShipPtr->RaceDescPtr->ship_info.ship_flags & GOOD_GUY) ?
+			GOOD_GUY_YOFFS : BAD_GUY_YOFFS);
 	t.align = ALIGN_LEFT;
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
@@ -134,9 +136,7 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 	r.extent.width = 6 * MAX_CREW_DIGITS + 6;
 	r.extent.height = 5;
 
-	wsprintf (buf, "%u",
-			GLOBAL_SIS (CrewEnlisted)
-			+ (CountPlayer ? 1 : 0));
+	wsprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted) + (CountPlayer ? 1 : 0));
 	SetContextFont (StarConFont);
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
@@ -254,7 +254,7 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 			t.align = ALIGN_CENTER;
 			t.pStr = GLOBAL_SIS (CommanderName);
 			t.CharCount = (COUNT)~0;
-			DrawBattleCrewAmount (TRUE);
+			DrawBattleCrewAmount (StarShipPtr, TRUE);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
 			SetContextFont (TinyFont);
 			font_DrawText (&t);
