@@ -3087,6 +3087,11 @@ SOURCE=..\starcon2.c
 # Begin Group "Doc"
 # PROP Default_Filter ""
 
+# Begin Source File
+
+SOURCE=..\..\TODO
+# End Source File
+
 # Begin Group "Devel"
 # PROP Default_Filter ""
 
