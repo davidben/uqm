@@ -61,7 +61,7 @@ typedef struct
 
 static const char* wava_GetName (void);
 static bool wava_InitModule (int flags, const TFB_DecoderFormats*);
-static void wava_TermModule ();
+static void wava_TermModule (void);
 static uint32 wava_GetStructSize (void);
 static int wava_GetError (THIS_PTR);
 static bool wava_Init (THIS_PTR);
@@ -123,7 +123,7 @@ wava_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-wava_TermModule ()
+wava_TermModule (void)
 {
 	// no specific module term
 }

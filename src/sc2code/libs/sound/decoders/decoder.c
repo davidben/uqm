@@ -42,7 +42,7 @@ extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
 
 static const char* bufa_GetName (void);
 static bool bufa_InitModule (int flags, const TFB_DecoderFormats*);
-static void bufa_TermModule ();
+static void bufa_TermModule (void);
 static uint32 bufa_GetStructSize (void);
 static int bufa_GetError (THIS_PTR);
 static bool bufa_Init (THIS_PTR);
@@ -85,7 +85,7 @@ typedef struct tfb_bufsounddecoder
 
 static const char* nula_GetName (void);
 static bool nula_InitModule (int flags, const TFB_DecoderFormats*);
-static void nula_TermModule ();
+static void nula_TermModule (void);
 static uint32 nula_GetStructSize (void);
 static int nula_GetError (THIS_PTR);
 static bool nula_Init (THIS_PTR);
@@ -692,7 +692,7 @@ bufa_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-bufa_TermModule ()
+bufa_TermModule (void)
 {
 	// this should never be called
 	fprintf (stderr, "bufa_TermModule(): dead function called\n");
@@ -820,7 +820,7 @@ nula_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-nula_TermModule ()
+nula_TermModule (void)
 {
 	// this should never be called
 	fprintf (stderr, "nula_TermModule(): dead function called\n");
