@@ -443,15 +443,22 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		TFB_GL_ScanLines ();
 
 	SDL_GL_SwapBuffers ();
-
-	/* remove compiler warning */
-	(void) force_full_redraw;
 }
 
 SDL_Surface* 
 TFB_GL_DisplayFormatAlpha (SDL_Surface *surface)
 {
-	return SDL_ConvertSurface (surface, format_conv_surf->format, surface->flags);
+	SDL_Surface* newsurf;
+	
+	newsurf = SDL_ConvertSurface (surface, format_conv_surf->format, surface->flags);
+	// SDL_SRCCOLORKEY and SDL_SRCALPHA cannot work at the same time,
+	// so we need to disable one of them
+	if ((surface->flags & SDL_SRCCOLORKEY) && newsurf
+			&& (newsurf->flags & SDL_SRCCOLORKEY)
+			&& (newsurf->flags & SDL_SRCALPHA))
+		SDL_SetAlpha (newsurf, 0, 255);
+
+	return newsurf;
 }
 
 #endif

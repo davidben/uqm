@@ -474,13 +474,14 @@ TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size)
 void
 TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT size)
 {
+#define NNS_MAX_DIMS 600	
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
 	int x, y, sx, sy, *csax, *csay, csx, csy;
-	int saspace[602];
+	int saspace[NNS_MAX_DIMS];
 	int *sax, *say;
 
-	if (size.width + size.height > 600)
+	if (size.width + size.height > NNS_MAX_DIMS)
 	{
 		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to unreasonable size!  Failing.\n");
 		return;
@@ -492,25 +493,28 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 		return;
 	}
 
-	sx = (int) (65536.0 * (float) src->w / (float) size.width);
-	sy = (int) (65536.0 * (float) src->h / (float) size.height);
+	sx = sy = 0;
+	if (size.width  > 1)
+		sx = 65536 * (src->w - 1) / (size.width  - 1);
+	if (size.height > 1)
+		sy = 65536 * (src->h - 1) / (size.height - 1);
 
 	sax = saspace;
-	say = saspace + size.width + 1;
+	say = saspace + size.width;
 	/*
 	 * Precalculate row increments 
+	 * We start with a value in 0..0.5 range to shift the bigger
+	 * jumps towards the center of the image
 	 */
-	csx = 0;
 	csax = sax;
-	for (x = 0; x <= size.width; x++) {
+	for (x = 0, csx = 0x6000; x < size.width; x++) {
 		*csax = csx >> 16;
 		csax++;
 		csx &= 0xffff;
 		csx += sx;
 	}
-	csy = 0;
 	csay = say;
-	for (y = 0; y <= size.height; y++) {
+	for (y = 0, csy = 0x6000; y < size.height; y++) {
 		*csay = csy >> 16;
 		csay++;
 		csy &= 0xffff;
@@ -529,17 +533,17 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 
 		csay = say;
 		for (y = 0; y < size.height; ++y) {
+			csp += (*csay) * src->pitch;
 			sp = csp;
 			dp = cdp;
 			csax = sax;
 			for (x = 0; x < size.width; ++x) {
+				sp += *csax;
 				*dp = *sp;
 				++csax;
-				sp += *csax;
 				++dp;
 			}
 			++csay;
-			csp += (*csay) * src->pitch;
 			cdp += dst->pitch;
 		}
 	}	
@@ -556,17 +560,17 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 
 		csay = say;
 		for (y = 0; y < size.height; ++y) {
+			csp += (*csay) * sgap;
 			sp = csp;
 			dp = cdp;
 			csax = sax;
 			for (x = 0; x < size.width; ++x) {
+				sp += *csax;
 				*dp = *sp;
 				++csax;
-				sp += *csax;
 				++dp;
 			}
 			++csay;
-			csp += (*csay) * sgap;
 			cdp += dgap;
 		}
 	}
@@ -804,6 +808,14 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 		int fsy1 = (int)(65536.0f * (float)mipmap->h / h);
 		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
 		int x, y;
+		Uint32 ck0 = 0; // 0 means alpha=0 too, so it's safe
+		Uint32 ck1 = 0;
+
+		// use colorkeys where appropriate
+		if (src->flags & SDL_SRCCOLORKEY)
+			ck0 = src->format->colorkey;
+		if (mipmap->flags & SDL_SRCCOLORKEY)
+			ck1 = mipmap->format->colorkey;
 
 		SDL_LockSurface(src);
 		SDL_LockSurface(dst);
@@ -839,10 +851,19 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				{						
 					SDL_GetRGBA (*src_p0, src->format, &r0[0], &g0[0], &b0[0], &a0[0]);
 					SDL_GetRGBA (*(src_p0 + 1), src->format, &r0[1], &g0[1], &b0[1], &a0[1]);
+					if (src_p0[0] == ck0)
+						a0[0] = 0;
+					if (src_p0[1] == ck0)
+						a0[1] = 0;
+
 					if ((sy0 >> 16) <= src->h - 2)
 					{
 						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
 						SDL_GetRGBA (*(src_p0 + src->w + 1), src->format, &r0[3], &g0[3], &b0[3], &a0[3]);
+						if (src_p0[src->w] == ck0)
+							a0[2] = 0;
+						if (src_p0[src->w + 1] == ck0)
+							a0[3] = 0;
 					}
 					else
 					{
@@ -859,6 +880,8 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				else
 				{
 					SDL_GetRGBA (*src_p0, src->format, &r0[0], &g0[0], &b0[0], &a0[0]);
+					if (src_p0[0] == ck0)
+						a0[0] = 0;
 					r0[1] = r0[0];
 					g0[1] = g0[0];
 					b0[1] = b0[0];
@@ -866,6 +889,8 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					if ((sy0 >> 16) <= src->h - 2)
 					{
 						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
+						if (src_p0[src->w] == ck0)
+							a0[2] = 0;
 						r0[3] = r0[2];
 						g0[3] = g0[2];
 						b0[3] = b0[2];
@@ -884,10 +909,19 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				{						
 					SDL_GetRGBA (*src_p1, mipmap->format, &r1[0], &g1[0], &b1[0], &a1[0]);
 					SDL_GetRGBA (*(src_p1 + 1), mipmap->format, &r1[1], &g1[1], &b1[1], &a1[1]);
+					if (src_p1[0] == ck1)
+						a1[0] = 0;
+					if (src_p1[1] == ck1)
+						a1[1] = 0;
+
 					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
 						SDL_GetRGBA (*(src_p1 + mipmap->w) , mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
 						SDL_GetRGBA (*(src_p1 + mipmap->w + 1), mipmap->format, &r1[3], &g1[3], &b1[3], &a1[3]);
+						if (src_p1[mipmap->w] == ck1)
+							a1[2] = 0;
+						if (src_p1[mipmap->w + 1] == ck1)
+							a1[3] = 0;
 					}
 					else
 					{
@@ -904,6 +938,8 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				else
 				{
 					SDL_GetRGBA (*src_p1, mipmap->format, &r1[0], &g1[0], &b1[0], &a1[0]);
+					if (src_p1[0] == ck1)
+						a1[0] = 0;
 					r1[1] = r1[0];
 					g1[1] = g1[0];
 					b1[1] = b1[0];
@@ -911,6 +947,8 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
 						SDL_GetRGBA (*(src_p1 + mipmap->w), mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
+						if (src_p1[mipmap->w] == ck1)
+							a1[2] = 0;
 						r1[3] = r1[2];
 						g1[3] = g1[2];
 						b1[3] = b1[2];

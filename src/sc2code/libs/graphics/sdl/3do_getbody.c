@@ -50,10 +50,24 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	TYPE_SET (FramePtr->TypeIndexAndFlags, ROM_DRAWABLE);
 	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
 
+	// handle transparency cases
 	if (img[cel_ct]->format->palette)
-	{
+	{	// indexed color image
 		if (ani[cel_ct].transparent_color != -1)
-		    SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, ani[cel_ct].transparent_color);
+		    SDL_SetColorKey (img[cel_ct], SDL_SRCCOLORKEY,
+					ani[cel_ct].transparent_color);
+	}
+	else if (img[cel_ct]->format->BitsPerPixel > 8)
+	{	// special transparency cases for truecolor images
+		if (ani[cel_ct].transparent_color == 0)
+			// make RGB=0,0,0 transparent
+		    SDL_SetColorKey (img[cel_ct], SDL_SRCCOLORKEY,
+					SDL_MapRGB (img[cel_ct]->format, 0, 0, 0));
+	}
+	if (ani[cel_ct].transparent_color == -1)
+	{	// enforce -1 to mean 'no transparency'
+		SDL_SetColorKey (img[cel_ct], 0, 0);
+		// set transparent_color == -2 to use PNG tRNS transparency
 	}
 	
 	hx = ani[cel_ct].hotspot_x;

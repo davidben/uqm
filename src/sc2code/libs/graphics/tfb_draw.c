@@ -331,7 +331,6 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	TFB_Canvas dst;
 	EXTENT size;
 	TFB_Image* newimg;
-	int r, g, b;
 
 	/* sanity check */
 	if (!img->NormalImg)
@@ -352,13 +351,6 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	TFB_DrawCanvas_Rotate (img->NormalImg, dst, angle, size);
 	
 	newimg = TFB_DrawImage_New (dst);
-	if (newimg && TFB_DrawCanvas_GetTransparentColor (
-			newimg->NormalImg, &r, &g, &b))
-	{	/* reset colorkey info to clear potential SRCALPHA */
-		TFB_DrawCanvas_SetTransparentColor (newimg->NormalImg,
-				r, g, b, FALSE);
-	}
-
 	return newimg;
 }
 
