@@ -23,7 +23,7 @@
 
 //define SPIN_ON_LAUNCH to let the planet spin while
 // the lander animation is playing
-#undef SPIN_ON_LAUNCH
+#define SPIN_ON_LAUNCH
 
 // PLANET_SIDE_RATE governs how fast the lander,
 // bio and planet effects will be

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Planet spin on lander launch/return is now enabled -PhracturedBlue
+- Fix skipping after planet scan, landing (closes bug 31) -PhracturedBlue
 - Decelerate when entering orbit to give a smoother effect -PhracturedBlue
 - fix subtitle text overlap issues (bug 232)
 - 'Esc' now leaves planet surface (bug233) -PhracturedBlue

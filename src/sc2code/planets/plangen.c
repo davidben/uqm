@@ -1436,7 +1436,9 @@ rotate_planet_task (void *data)
 					++pSS->MenuState.Initialized;
 				}
 				x += i;
-			}
+			} else
+				view_index++;
+
 			ClearSemaphore (GraphicsSem);
 			// If this frame hasn't been generted, generate it
 			if (! pSolarSysState->isPFADefined[x]) {
