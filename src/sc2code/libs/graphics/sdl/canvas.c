@@ -487,14 +487,14 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	{
 		SDL_Color *srcpal = src->format->palette->colors;
 		SDL_Color *mmpal = mipmap->format->palette->colors;
-		Uint32 fsx0 = (int)(65536.0f * (float)src->w / w);
-		Uint32 fsy0 = (int)(65536.0f * (float)src->h / h);
-		Uint32 fsx1 = (int)(65536.0f * (float)mipmap->w / w);
-		Uint32 fsy1 = (int)(65536.0f * (float)mipmap->h / h);
-		Uint32 ck0 = src->format->colorkey;
-		Uint32 ck1 = mipmap->format->colorkey;
+		int fsx0 = (int)(65536.0f * (float)src->w / w);
+		int fsy0 = (int)(65536.0f * (float)src->h / h);
+		int fsx1 = (int)(65536.0f * (float)mipmap->w / w);
+		int fsy1 = (int)(65536.0f * (float)mipmap->h / h);
 		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
 		int x, y;
+		Uint32 ck0 = src->format->colorkey;
+		Uint32 ck1 = mipmap->format->colorkey;
 
 		SDL_LockSurface(src);
 		SDL_LockSurface(dst);
