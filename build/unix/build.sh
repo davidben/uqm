@@ -20,7 +20,7 @@
 # You shouldn't need to change this file if your project changes.
 
 # Read in the functions we need
-. build/build_functions
+. build/unix/build_functions
 
 # Read in the config settings that affect the build, if present.
 # Don't reread for every dir when recursing.

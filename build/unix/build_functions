@@ -115,7 +115,7 @@ build_rec_collect_o_files() {
 
 # Start the configure program.
 build_config() {
-	$SH build/build.config
+	$SH build/unix/build.config
 }
 
 # Compile the lot.
@@ -192,16 +192,17 @@ build_check_compile() {
 
 # Install the program
 build_install() {
-	local BINS LIBS SRC DEST BINDIR LIBDIR
+	local BINS LIBS SRC DEST DESTDIR BINDIR LIBDIR
 
 	echo "Installing libraries..." 2>&1
 	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"
 	eval LIBDIR="\${${BUILD_PROJECT}_INSTALL_LIBDIR%/}/"
 	for LIB in $LIBS; do
 		eval SRC="\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_SRC%/}"
-		eval DEST="\$LIBDIR\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_DEST%/}"
-		if [ ! -d "$DEST" ]; then
-			mkdir -p -- "$DEST"
+		eval DEST="\$LIBDIR\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_DEST}"
+		DESTDIR="${DEST%/*}"
+		if [ ! -d "$DESTDIR" ]; then
+			mkdir -p -- "$DESTDIR"
 		fi
 		cp -r -- "$SRC" "$DEST"
 	done
@@ -211,9 +212,10 @@ build_install() {
 	eval BINDIR="\${${BUILD_PROJECT}_INSTALL_BINDIR%/}/"
 	for BIN in $BINS; do
 		eval SRC="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_SRC%/}"
-		eval DEST="\$BINDIR\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_DEST%/}"
-		if [ ! -d "$DEST" ]; then
-			mkdir -p -- "$DEST"
+		eval DEST="\$BINDIR\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_DEST}"
+		DESTDIR="${DEST%/*}"
+		if [ ! -d "$DESTDIR" ]; then
+			mkdir -p -- "$DESTDIR"
 		fi
 		cp -r -- "$SRC" "$DEST"
 	done

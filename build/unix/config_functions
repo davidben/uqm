@@ -373,7 +373,7 @@ EOF
 
 
 # Include information about programs we can detect
-. build/config_proginfo
+. build/unix/config_proginfo
 
 # Some initialisations
 HAVE_SYMBOLS=""

@@ -22,5 +22,5 @@
 SH="${SH:-/bin/sh}"
 export SH
 
-$SH build/build.sh "$@"
+$SH build/unix/build.sh "$@"
 
