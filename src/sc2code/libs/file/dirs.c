@@ -345,7 +345,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		strcpy (destptr, src);
 	}
 	
-	if (EP_SLASHES)
+	if (what & EP_SLASHES)
 	{
 		/* Replacing backslashes in path by slashes. */
 		destptr = dest;
