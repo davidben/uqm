@@ -132,7 +132,7 @@ xform_clut_task (void *data)
 
 			FadeAmount += (end - FadeAmount) * TDelta / TTotal;
 			//fprintf (stderr, "xform_clut_task FadeAmount %d\n", FadeAmount);
-		} while (TTotal -= TDelta && (!Task_ReadState (task, TASK_EXIT)));
+		} while ((TTotal -= TDelta) && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
 	XForming = FALSE;
