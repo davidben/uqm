@@ -981,9 +981,10 @@ DoModifyShips (PMENU_STATE pMS)
 						UnlockStarShip (
 								&GLOBAL (built_ship_q), hStarShip
 								);
-					if ((pMS->delta_item != MODIFY_CREW_FLAG)
-							&& (pMS->delta_item != 0))
-						pMS->delta_item = MODIFY_CREW_FLAG;
+						
+						// clear out the bought ship index
+						// so that flash rects work correctly
+						pMS->delta_item &= MODIFY_CREW_FLAG;
 					}
 					CrewTransaction (crew_delta);
 				}
