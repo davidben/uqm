@@ -837,8 +837,11 @@ because surely only fools would let themselves be known by such a name!
 Once again, Great Teacher, you have shown your wisdom. We thank you.
 From this day forward, we are the Fat Obstreperous Jerks!
 
-#(the_slave_empire)
-It will be 
+#(the_slave_empire0)
+It will be `The Glorious Slave Empire of 
+
+#(the_slave_empire1)
+'!
 
 #(OK_SLAVE)	thrad098.ogg
 Ulp!  Well... you're the one with the big starship
@@ -851,7 +854,7 @@ Fat Obstreperous Jerks
 Culture Twenty
 
 #(SLAVE_EMPIRE)	thrad101.ogg
-The Glorious Slave Empire of 
+The Glorious Slave Empire
 
 #(name_1)
 The New Alliance of Free Stars 

@@ -430,7 +430,7 @@ ThraddDemeanor (RESPONSE_REF R)
 
 		SET_GAME_STATE (THRADD_CULTURE, 2);
 	}
-	else if (PLAYER_SAID (R, the_slave_empire))
+	else if (PLAYER_SAID (R, the_slave_empire0))
 	{
 		SET_GAME_STATE (THRADD_CULTURE, 3);
 
@@ -473,9 +473,16 @@ ThraddCulture (RESPONSE_REF R)
 	}
 	NPCPhrase (WHAT_NAME_FOR_CULTURE);
 
+	construct_response (
+			shared_phrase_buf,
+			the_slave_empire0,
+			GLOBAL_SIS (CommanderName),
+			the_slave_empire1,
+			0);
+
 	Response (you_decide, ThraddDemeanor);
 	Response (fat, ThraddDemeanor);
-	Response (the_slave_empire, ThraddDemeanor);
+	DoResponsePhrase (the_slave_empire0, ThraddDemeanor, shared_phrase_buf);
 }
 
 static void
