@@ -65,6 +65,15 @@ mkdirhier (const char *path)
 	ptr = buf;
 	pathstart = path;
 
+#ifdef WIN32
+	// driveletter + semicolon on Windows.
+	if (isalpha(pathstart[0]) && pathstart[1] == ':')
+	{
+		*(ptr++) = *(pathstart++);
+		*(ptr++) = *(pathstart++);
+	}
+#endif
+
 	if (*pathstart == '/') {
 		*ptr = '/';
 		ptr++;

@@ -45,7 +45,8 @@ prepareConfigDir (void) {
 	configDir = realloc (configDir, strlen (configDir) + 1);
 
 	// Create the path upto the config dir, if not already existing.
-	mkdirhier (configDir);
+	if (mkdirhier (configDir) == -1)
+		exit (EXIT_FAILURE);
 }
 
 void
@@ -61,7 +62,8 @@ prepareSaveDir (void) {
 	saveDir = realloc (saveDir, strlen (saveDir) + 1);
 
 	// Create the path upto the save dir, if not already existing.
-	mkdirhier (saveDir);
+	if (mkdirhier (saveDir) == -1)
+		exit (EXIT_FAILURE);
 //#ifdef DEBUG
 	fprintf(stderr, "Saved games are kept in %s.\n", saveDir);
 //#endif
@@ -80,6 +82,7 @@ prepareMeleeDir (void) {
 	meleeDir = realloc (meleeDir, strlen (meleeDir) + 1);
 
 	// Create the path upto the save dir, if not already existing.
-	mkdirhier (meleeDir);
+	if (mkdirhier (meleeDir) == -1)
+		exit (EXIT_FAILURE);
 }
 
