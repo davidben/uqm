@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- OpenGL mode now fully supports partial screen updates -Mika
 - Fixed melee ship selection-box bugs -fOSSiL
 - Added a 4th button to starcon.key 'Esc' now emergency-escapes -PBlue
 - Biadapt and biadv scalers now work in OpenGL mode too -Mika

@@ -273,13 +273,18 @@ TFB_GL_SwapBuffers (void)
 {
 	int fade_amount;
 	int transition_amount;
+	SDL_Rect updated;
+
+	updated.x = TFB_BBox.region.corner.x;
+	updated.y = TFB_BBox.region.corner.y;
+	updated.w = TFB_BBox.region.extent.width;
+	updated.h = TFB_BBox.region.extent.height;
 
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
 	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
 	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-		
+	glLoadIdentity ();		
 	glBindTexture (GL_TEXTURE_2D, DisplayTexture);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
@@ -291,26 +296,34 @@ TFB_GL_SwapBuffers (void)
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 	{
-		SDL_Rect updated;
-		updated.x = TFB_BBox.region.corner.x;
-		updated.y = TFB_BBox.region.corner.y;
-		updated.w = TFB_BBox.region.extent.width;
-		updated.h = TFB_BBox.region.extent.height;
+		SDL_Rect limits;
 
 		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 			Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
 		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 			Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
 
+		limits.x = 0;
+		limits.y = 0;
+		limits.w = ScreenWidth;
+		limits.h = ScreenHeight;
+		Scale_ExpandRect (&updated, 2, &limits);
+
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
+		glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
+		glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x * 2);
 		SDL_LockSurface (scaled_display);
-		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth * 2, ScreenHeight * 2,
+		glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2, updated.w * 2, updated.h * 2,
 			GL_RGBA, GL_UNSIGNED_BYTE, scaled_display->pixels);
 		SDL_UnlockSurface (scaled_display);
 	}
 	else
 	{
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
+		glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y);
+		glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x);
 		SDL_LockSurface (SDL_Screen);
-		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
+		glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y, updated.w, updated.h,
 			GL_RGBA, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
 		SDL_UnlockSurface (SDL_Screen);
 	}
@@ -330,15 +343,18 @@ TFB_GL_SwapBuffers (void)
 			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
 				GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 			{
-				SDL_Rect updated;
-				updated.x = updated.y = 0;
-				updated.w = ScreenWidth;
-				updated.h = ScreenHeight;
+				SDL_Rect r;
+				r.x = r.y = 0;
+				r.w = ScreenWidth;
+				r.h = ScreenHeight;
 				if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
-					Scale_BiAdaptFilter (TransitionScreen, scaled_transition, &updated);
+					Scale_BiAdaptFilter (TransitionScreen, scaled_transition, &r);
 				else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-					Scale_BiAdaptAdvFilter (TransitionScreen, scaled_transition, &updated);
+					Scale_BiAdaptAdvFilter (TransitionScreen, scaled_transition, &r);
 
+				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
+				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+				glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
 				SDL_LockSurface (scaled_transition);
 				glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth * 2, ScreenHeight * 2,
 					GL_RGBA, GL_UNSIGNED_BYTE, scaled_transition->pixels);
@@ -346,6 +362,9 @@ TFB_GL_SwapBuffers (void)
 			}
 			else
 			{
+				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
+				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+				glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
 				SDL_LockSurface (TransitionScreen);
 				glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
 					GL_RGBA, GL_UNSIGNED_BYTE, TransitionScreen->pixels);
@@ -357,18 +376,15 @@ TFB_GL_SwapBuffers (void)
 
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
-
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f (1, 1, 1, (255 - transition_amount) / 255.0f);
-		
+		glColor4f (1, 1, 1, (255 - transition_amount) / 255.0f);		
 		glScissor (
 			(GLint) (TransitionClipRect.x * scale_x),
 			(GLint) ((ScreenHeight - (TransitionClipRect.y + TransitionClipRect.h)) * scale_y),
 			(GLsizei) (TransitionClipRect.w * scale_x),
 			(GLsizei) (TransitionClipRect.h * scale_y)
-		);
-		
+		);		
 		glEnable (GL_SCISSOR_TEST);
 		TFB_GL_DrawQuad ();
 		glDisable (GL_SCISSOR_TEST);
