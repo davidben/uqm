@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fix position of blinking save/load in melee, from Paxtez
 - New packaging/io system. - SvdB
 - Exit confirmation dialog is prettier and safer, from Paxtez
 - Exiting from the main menu with F10 now exits the game -Michael
