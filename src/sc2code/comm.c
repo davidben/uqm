@@ -1726,7 +1726,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 
+				CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
 				SpewPhrases (0);
+				CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					RefreshResponses (pES);
