@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- Extra 2 ship slots in supermelee, as in the PC SC2, and all the PC
+  default teams, from chmmravatar (bug #248)
+  NOTE: this breaks old team saves!
 - Made functions for GET_GAME_STATE and SET_GAME_STATE - SvdB
 - Fixed bug with entering closing portals (bug #108) - SvdB+chmmravatar
 - Mouse cursor is now hidden in fullscreen mode (bug #173) -Mika

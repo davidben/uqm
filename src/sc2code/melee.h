@@ -53,8 +53,8 @@ enum
 };
 
 #define NUM_MELEE_ROWS 2
-// #define NUM_MELEE_COLUMNS 7
-#define NUM_MELEE_COLUMNS 6
+#define NUM_MELEE_COLUMNS 7
+//#define NUM_MELEE_COLUMNS 6
 #define ICON_WIDTH 16
 #define ICON_HEIGHT 16
 
@@ -62,9 +62,9 @@ extern FRAME PickMeleeFrame;
 
 #define PICK_BG_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x0F), 0x1)
 
-#define MAX_TEAM_CHARS 15
+#define MAX_TEAM_CHARS 30
 #define MAX_VIS_TEAMS 5
-#define NUM_PREBUILT 5
+#define NUM_PREBUILT 15
 #define NUM_PICK_COLS 5
 #define NUM_PICK_ROWS 5
 

@@ -55,17 +55,18 @@ enum
 	EDIT_MELEE
 };
 
-#define MELEE_X_OFFS 4
+#define MELEE_X_OFFS 2
 #define MELEE_Y_OFFS 21
 #define MELEE_BOX_WIDTH 34
 #define MELEE_BOX_HEIGHT 34
 #define MELEE_BOX_SPACE 1
 
+#define MENU_X_OFFS 29
 #define NAME_AREA_HEIGHT 7
-#define MELEE_WIDTH 133
+#define MELEE_WIDTH 149
 #define MELEE_HEIGHT (48 + NAME_AREA_HEIGHT)
 
-#define INFO_ORIGIN_X 3
+#define INFO_ORIGIN_X 4
 #define INFO_WIDTH 58
 #define TEAM_INFO_ORIGIN_Y 3
 #define TEAM_INFO_HEIGHT (SHIP_INFO_HEIGHT + 75)
@@ -575,7 +576,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&OldRect);
 	r = OldRect;
-	r.corner.x += ((SAFE_X << 1) - 32);
+	r.corner.x += ((SAFE_X << 1) - 32) + MENU_X_OFFS;
 	r.corner.y += 76;
 	r.extent.height = SHIP_INFO_HEIGHT;
 	SetContextClipRect (&r);
@@ -1757,12 +1758,14 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[0].ShipList[0][3] = MELEE_URQUAN;
 	pMS->PreBuiltList[0].ShipList[0][4] = MELEE_MELNORME;
 	pMS->PreBuiltList[0].ShipList[0][5] = MELEE_ORZ;
-	pMS->PreBuiltList[0].ShipList[1][0] = MELEE_SPATHI;
-	pMS->PreBuiltList[0].ShipList[1][1] = MELEE_SYREEN;
-	pMS->PreBuiltList[0].ShipList[1][2] = MELEE_UTWIG;
+	pMS->PreBuiltList[0].ShipList[0][6] = MELEE_SPATHI;
+	pMS->PreBuiltList[0].ShipList[1][0] = MELEE_SYREEN;
+	pMS->PreBuiltList[0].ShipList[1][1] = MELEE_UTWIG;
+	pMS->PreBuiltList[0].ShipList[1][2] = (BYTE)~0;
 	pMS->PreBuiltList[0].ShipList[1][3] = (BYTE)~0;
 	pMS->PreBuiltList[0].ShipList[1][4] = (BYTE)~0;
 	pMS->PreBuiltList[0].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[0].ShipList[1][6] = (BYTE)~0;
 
 	wstrcpy (pMS->PreBuiltList[1].TeamName, GAME_STRING (MELEE_STRING_BASE + 5));
 	pMS->PreBuiltList[1].ShipList[0][0] = MELEE_ARILOU;
@@ -1771,12 +1774,14 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[1].ShipList[0][3] = MELEE_KOHR_AH;
 	pMS->PreBuiltList[1].ShipList[0][4] = MELEE_MYCON;
 	pMS->PreBuiltList[1].ShipList[0][5] = MELEE_YEHAT;
-	pMS->PreBuiltList[1].ShipList[1][0] = MELEE_PKUNK;
-	pMS->PreBuiltList[1].ShipList[1][1] = MELEE_SUPOX;
-	pMS->PreBuiltList[1].ShipList[1][2] = MELEE_THRADDASH;
-	pMS->PreBuiltList[1].ShipList[1][3] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[1].ShipList[1][4] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[1].ShipList[0][6] = MELEE_PKUNK;
+	pMS->PreBuiltList[1].ShipList[1][0] = MELEE_SUPOX;
+	pMS->PreBuiltList[1].ShipList[1][1] = MELEE_THRADDASH;
+	pMS->PreBuiltList[1].ShipList[1][2] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[1].ShipList[1][3] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[1].ShipList[1][4] = (BYTE)~0;
 	pMS->PreBuiltList[1].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[1].ShipList[1][6] = (BYTE)~0;
 
 	wstrcpy (pMS->PreBuiltList[2].TeamName, GAME_STRING (MELEE_STRING_BASE + 6));
 	pMS->PreBuiltList[2].ShipList[0][0] = MELEE_ANDROSYNTH;
@@ -1785,12 +1790,14 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[2].ShipList[0][3] = MELEE_MELNORME;
 	pMS->PreBuiltList[2].ShipList[0][4] = MELEE_EARTHLING;
 	pMS->PreBuiltList[2].ShipList[0][5] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[2].ShipList[1][0] = MELEE_SUPOX;
-	pMS->PreBuiltList[2].ShipList[1][1] = MELEE_ORZ;
-	pMS->PreBuiltList[2].ShipList[1][2] = MELEE_SPATHI;
-	pMS->PreBuiltList[2].ShipList[1][3] = MELEE_ILWRATH;
-	pMS->PreBuiltList[2].ShipList[1][4] = MELEE_VUX;
+	pMS->PreBuiltList[2].ShipList[0][6] = MELEE_SUPOX;
+	pMS->PreBuiltList[2].ShipList[1][0] = MELEE_ORZ;
+	pMS->PreBuiltList[2].ShipList[1][1] = MELEE_SPATHI;
+	pMS->PreBuiltList[2].ShipList[1][2] = MELEE_ILWRATH;
+	pMS->PreBuiltList[2].ShipList[1][3] = MELEE_VUX;
+	pMS->PreBuiltList[2].ShipList[1][4] = (BYTE)~0;
 	pMS->PreBuiltList[2].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[2].ShipList[1][6] = (BYTE)~0;
 
 	wstrcpy (pMS->PreBuiltList[3].TeamName, GAME_STRING (MELEE_STRING_BASE + 7));
 	pMS->PreBuiltList[3].ShipList[0][0] = MELEE_CHENJESU;
@@ -1799,12 +1806,14 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[3].ShipList[0][3] = MELEE_CHMMR;
 	pMS->PreBuiltList[3].ShipList[0][4] = MELEE_KOHR_AH;
 	pMS->PreBuiltList[3].ShipList[0][5] = MELEE_KOHR_AH;
+	pMS->PreBuiltList[3].ShipList[0][6] = MELEE_URQUAN;
 	pMS->PreBuiltList[3].ShipList[1][0] = MELEE_URQUAN;
-	pMS->PreBuiltList[3].ShipList[1][1] = MELEE_URQUAN;
+	pMS->PreBuiltList[3].ShipList[1][1] = MELEE_UTWIG;
 	pMS->PreBuiltList[3].ShipList[1][2] = MELEE_UTWIG;
-	pMS->PreBuiltList[3].ShipList[1][3] = MELEE_UTWIG;
+	pMS->PreBuiltList[3].ShipList[1][3] = (BYTE)~0;
 	pMS->PreBuiltList[3].ShipList[1][4] = (BYTE)~0;
 	pMS->PreBuiltList[3].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[3].ShipList[1][6] = (BYTE)~0;
 
 	wstrcpy (pMS->PreBuiltList[4].TeamName, GAME_STRING (MELEE_STRING_BASE + 8));
 	pMS->PreBuiltList[4].ShipList[0][0] = MELEE_URQUAN;
@@ -1813,12 +1822,174 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[4].ShipList[0][3] = MELEE_SYREEN;
 	pMS->PreBuiltList[4].ShipList[0][4] = MELEE_ZOQFOTPIK;
 	pMS->PreBuiltList[4].ShipList[0][5] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[4].ShipList[1][0] = MELEE_EARTHLING;
-	pMS->PreBuiltList[4].ShipList[1][1] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[4].ShipList[1][2] = MELEE_MELNORME;
-	pMS->PreBuiltList[4].ShipList[1][3] = MELEE_DRUUGE;
-	pMS->PreBuiltList[4].ShipList[1][4] = MELEE_PKUNK;
-	pMS->PreBuiltList[4].ShipList[1][5] = MELEE_ORZ;
+	pMS->PreBuiltList[4].ShipList[0][6] = MELEE_EARTHLING;
+	pMS->PreBuiltList[4].ShipList[1][0] = MELEE_KOHR_AH;
+	pMS->PreBuiltList[4].ShipList[1][1] = MELEE_MELNORME;
+	pMS->PreBuiltList[4].ShipList[1][2] = MELEE_DRUUGE;
+	pMS->PreBuiltList[4].ShipList[1][3] = MELEE_PKUNK;
+	pMS->PreBuiltList[4].ShipList[1][4] = MELEE_ORZ;
+	pMS->PreBuiltList[4].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[4].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[5].TeamName, "Ford's Fighters");
+	pMS->PreBuiltList[5].ShipList[0][0] = MELEE_CHMMR;
+	pMS->PreBuiltList[5].ShipList[0][1] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[5].ShipList[0][2] = MELEE_MELNORME;
+	pMS->PreBuiltList[5].ShipList[0][3] = MELEE_SUPOX;
+	pMS->PreBuiltList[5].ShipList[0][4] = MELEE_UTWIG;
+	pMS->PreBuiltList[5].ShipList[0][5] = MELEE_UMGAH;
+	pMS->PreBuiltList[5].ShipList[0][6] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][0] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][1] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][2] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[5].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[6].TeamName, "Leyland's Lashers");
+	pMS->PreBuiltList[6].ShipList[0][0] = MELEE_ANDROSYNTH;
+	pMS->PreBuiltList[6].ShipList[0][1] = MELEE_EARTHLING;
+	pMS->PreBuiltList[6].ShipList[0][2] = MELEE_MYCON;
+	pMS->PreBuiltList[6].ShipList[0][3] = MELEE_ORZ;
+	pMS->PreBuiltList[6].ShipList[0][4] = MELEE_URQUAN;
+	pMS->PreBuiltList[6].ShipList[0][5] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[0][6] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][0] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][1] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][2] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[6].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[7].TeamName, "The Gregorizers 200");
+	pMS->PreBuiltList[7].ShipList[0][0] = MELEE_ANDROSYNTH;
+	pMS->PreBuiltList[7].ShipList[0][1] = MELEE_CHMMR;
+	pMS->PreBuiltList[7].ShipList[0][2] = MELEE_DRUUGE;
+	pMS->PreBuiltList[7].ShipList[0][3] = MELEE_MELNORME;
+	pMS->PreBuiltList[7].ShipList[0][4] = MELEE_EARTHLING;
+	pMS->PreBuiltList[7].ShipList[0][5] = MELEE_KOHR_AH;
+	pMS->PreBuiltList[7].ShipList[0][6] = MELEE_SUPOX;
+	pMS->PreBuiltList[7].ShipList[1][0] = MELEE_ORZ;
+	pMS->PreBuiltList[7].ShipList[1][1] = MELEE_PKUNK;
+	pMS->PreBuiltList[7].ShipList[1][2] = MELEE_SPATHI;
+	pMS->PreBuiltList[7].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[7].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[7].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[7].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[8].TeamName, "300 point Armada!");
+	pMS->PreBuiltList[8].ShipList[0][0] = MELEE_ANDROSYNTH;
+	pMS->PreBuiltList[8].ShipList[0][1] = MELEE_CHMMR;
+	pMS->PreBuiltList[8].ShipList[0][2] = MELEE_CHENJESU;
+	pMS->PreBuiltList[8].ShipList[0][3] = MELEE_DRUUGE;
+	pMS->PreBuiltList[8].ShipList[0][4] = MELEE_EARTHLING;
+	pMS->PreBuiltList[8].ShipList[0][5] = MELEE_KOHR_AH;
+	pMS->PreBuiltList[8].ShipList[0][6] = MELEE_MELNORME;
+	pMS->PreBuiltList[8].ShipList[1][0] = MELEE_MYCON;
+	pMS->PreBuiltList[8].ShipList[1][1] = MELEE_ORZ;
+	pMS->PreBuiltList[8].ShipList[1][2] = MELEE_PKUNK;
+	pMS->PreBuiltList[8].ShipList[1][3] = MELEE_SPATHI;
+	pMS->PreBuiltList[8].ShipList[1][4] = MELEE_SUPOX;
+	pMS->PreBuiltList[8].ShipList[1][5] = MELEE_URQUAN;
+	pMS->PreBuiltList[8].ShipList[1][6] = MELEE_YEHAT;
+
+	wstrcpy (pMS->PreBuiltList[9].TeamName, "Little Dudes with Attitudes");
+	pMS->PreBuiltList[9].ShipList[0][0] = MELEE_UMGAH;
+	pMS->PreBuiltList[9].ShipList[0][1] = MELEE_THRADDASH;
+	pMS->PreBuiltList[9].ShipList[0][2] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[9].ShipList[0][3] = MELEE_EARTHLING;
+	pMS->PreBuiltList[9].ShipList[0][4] = MELEE_VUX;
+	pMS->PreBuiltList[9].ShipList[0][5] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[9].ShipList[0][6] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][0] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][1] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][2] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[9].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[10].TeamName, "New Alliance Ships");
+	pMS->PreBuiltList[10].ShipList[0][0] = MELEE_ARILOU;
+	pMS->PreBuiltList[10].ShipList[0][1] = MELEE_CHMMR;
+	pMS->PreBuiltList[10].ShipList[0][2] = MELEE_EARTHLING;
+	pMS->PreBuiltList[10].ShipList[0][3] = MELEE_ORZ;
+	pMS->PreBuiltList[10].ShipList[0][4] = MELEE_PKUNK;
+	pMS->PreBuiltList[10].ShipList[0][5] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[10].ShipList[0][6] = MELEE_SUPOX;
+	pMS->PreBuiltList[10].ShipList[1][0] = MELEE_SYREEN;
+	pMS->PreBuiltList[10].ShipList[1][1] = MELEE_UTWIG;
+	pMS->PreBuiltList[10].ShipList[1][2] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[10].ShipList[1][3] = MELEE_YEHAT;
+	pMS->PreBuiltList[10].ShipList[1][4] = MELEE_DRUUGE;
+	pMS->PreBuiltList[10].ShipList[1][5] = MELEE_THRADDASH;
+	pMS->PreBuiltList[10].ShipList[1][6] = MELEE_SPATHI;
+
+	wstrcpy (pMS->PreBuiltList[11].TeamName, "Old Alliance Ships");
+	pMS->PreBuiltList[11].ShipList[0][0] = MELEE_ARILOU;
+	pMS->PreBuiltList[11].ShipList[0][1] = MELEE_CHENJESU;
+	pMS->PreBuiltList[11].ShipList[0][2] = MELEE_EARTHLING;
+	pMS->PreBuiltList[11].ShipList[0][3] = MELEE_MMRNMHRM;
+	pMS->PreBuiltList[11].ShipList[0][4] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[11].ShipList[0][5] = MELEE_SYREEN;
+	pMS->PreBuiltList[11].ShipList[0][6] = MELEE_YEHAT;
+	pMS->PreBuiltList[11].ShipList[1][0] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][1] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][2] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[11].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[12].TeamName, "Old Hierarchy Ships");
+	pMS->PreBuiltList[12].ShipList[0][0] = MELEE_ANDROSYNTH;
+	pMS->PreBuiltList[12].ShipList[0][1] = MELEE_ILWRATH;
+	pMS->PreBuiltList[12].ShipList[0][2] = MELEE_MYCON;
+	pMS->PreBuiltList[12].ShipList[0][3] = MELEE_SPATHI;
+	pMS->PreBuiltList[12].ShipList[0][4] = MELEE_UMGAH;
+	pMS->PreBuiltList[12].ShipList[0][5] = MELEE_URQUAN;
+	pMS->PreBuiltList[12].ShipList[0][6] = MELEE_VUX;
+	pMS->PreBuiltList[12].ShipList[1][0] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][1] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][2] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][3] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][4] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][5] = (BYTE)~0;
+	pMS->PreBuiltList[12].ShipList[1][6] = (BYTE)~0;
+
+	wstrcpy (pMS->PreBuiltList[13].TeamName, "Star Control 1");
+	pMS->PreBuiltList[13].ShipList[0][0] = MELEE_ANDROSYNTH;
+	pMS->PreBuiltList[13].ShipList[0][1] = MELEE_ARILOU;
+	pMS->PreBuiltList[13].ShipList[0][2] = MELEE_CHENJESU;
+	pMS->PreBuiltList[13].ShipList[0][3] = MELEE_EARTHLING;
+	pMS->PreBuiltList[13].ShipList[0][4] = MELEE_ILWRATH;
+	pMS->PreBuiltList[13].ShipList[0][5] = MELEE_MMRNMHRM;
+	pMS->PreBuiltList[13].ShipList[0][6] = MELEE_MYCON;
+	pMS->PreBuiltList[13].ShipList[1][0] = MELEE_SHOFIXTI;
+	pMS->PreBuiltList[13].ShipList[1][1] = MELEE_SPATHI;
+	pMS->PreBuiltList[13].ShipList[1][2] = MELEE_SYREEN;
+	pMS->PreBuiltList[13].ShipList[1][3] = MELEE_UMGAH;
+	pMS->PreBuiltList[13].ShipList[1][4] = MELEE_URQUAN;
+	pMS->PreBuiltList[13].ShipList[1][5] = MELEE_VUX;
+	pMS->PreBuiltList[13].ShipList[1][6] = MELEE_YEHAT;
+
+	wstrcpy (pMS->PreBuiltList[14].TeamName, "Star Control 2");
+	pMS->PreBuiltList[14].ShipList[0][0] = MELEE_CHMMR;
+	pMS->PreBuiltList[14].ShipList[0][1] = MELEE_DRUUGE;
+	pMS->PreBuiltList[14].ShipList[0][2] = MELEE_KOHR_AH;
+	pMS->PreBuiltList[14].ShipList[0][3] = MELEE_MELNORME;
+	pMS->PreBuiltList[14].ShipList[0][4] = MELEE_ORZ;
+	pMS->PreBuiltList[14].ShipList[0][5] = MELEE_PKUNK;
+	pMS->PreBuiltList[14].ShipList[0][6] = MELEE_SLYLANDRO;
+	pMS->PreBuiltList[14].ShipList[1][0] = MELEE_SUPOX;
+	pMS->PreBuiltList[14].ShipList[1][1] = MELEE_THRADDASH;
+	pMS->PreBuiltList[14].ShipList[1][2] = MELEE_UTWIG;
+	pMS->PreBuiltList[14].ShipList[1][3] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[14].ShipList[1][4] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[14].ShipList[1][5] = MELEE_ZOQFOTPIK;
+	pMS->PreBuiltList[14].ShipList[1][6] = MELEE_ZOQFOTPIK;
 }
 
 void

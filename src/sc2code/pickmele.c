@@ -19,7 +19,7 @@
 #include "starcon.h"
 #include "melee.h"
 
-#define NUM_MELEE_COLS_ORIG 6
+#define NUM_MELEE_COLS_ORIG NUM_MELEE_COLUMNS
 #define PICK_X_OFFS 57
 #define PICK_Y_OFFS 24
 #define PICK_SIDE_OFFS 100
