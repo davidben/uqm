@@ -3,7 +3,7 @@ Changes towards version 0.3:
 - Two dialogue spots where visit count could run away patched; fixes bug 
   #333, from Stas Sergeev
 - EventHandler checks CurStarDescPtr before dereferencing it (bug #347)
-- Oscilloscope now has borders (bug #307 part 4) -Mika
+- Oscilloscope/mini-map now has borders (bug #307 part 4) -Mika
 - Flashing rects are no longer constrained to even-numbered pixels on the
   y axis; fixes bug #255, from Nic
 - Fixed minor glitches in main window borders (bug #307 parts 1,2,3) -Mika

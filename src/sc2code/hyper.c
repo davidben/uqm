@@ -1520,7 +1520,40 @@ SeedUniverse (void)
 	s.origin.y = RADAR_HEIGHT >> 1;
 	s.frame = blip_frame;
 	DrawStamp (&s);
-	
+
+	{
+		// draws borders to mini-map
+		
+		RECT r;
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xE, 0xE, 0xE), 0x00));
+		r.corner.x = 0;
+		r.corner.y = 0;
+		r.extent.width = RADAR_WIDTH - 1;
+		r.extent.height = 1;
+		DrawFilledRectangle (&r);
+		r.extent.width = 1;
+		r.extent.height = RADAR_HEIGHT - 1;
+		DrawFilledRectangle (&r);
+
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x6, 0x6, 0x6), 0x00));
+		r.corner.x = RADAR_WIDTH - 1;
+		r.corner.y = 1;
+		r.extent.height = RADAR_HEIGHT - 1;
+		DrawFilledRectangle (&r);
+		r.corner.x = 1;
+		r.corner.y = RADAR_HEIGHT - 1;
+		r.extent.width = RADAR_WIDTH - 2;
+		r.extent.height = 1;
+		DrawFilledRectangle (&r);
+
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x00));
+		r.corner.x = 0;
+		DrawPoint (&r.corner);
+		r.corner.x = RADAR_WIDTH - 1;
+		r.corner.y = 0;
+		DrawPoint (&r.corner);
+	}
+
 	UnbatchGraphics ();
 
 	SetContext (StatusContext);
