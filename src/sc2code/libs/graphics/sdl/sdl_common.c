@@ -764,7 +764,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			DC_image = 0;
 			break;
 		case TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS:
-			done = TRUE;			
+			// done = TRUE;			
+			TFB_SwapBuffers ();
 			break;
 		case TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS:
 			TFB_DrawCommandQueue_Clear (DrawCommandQueue);
@@ -778,7 +779,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		Unlock_DCQ ();
 	}
 
-	TFB_SwapBuffers();
+	TFB_SwapBuffers ();
         BroadcastCondVar (RenderingCond);
 }
 
