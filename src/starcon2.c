@@ -51,7 +51,8 @@ struct options_struct {
 	const char *logFile;
 	enum {
 		runMode_normal,
-		runMode_usage
+		runMode_usage,
+		runMode_version,
 	} runMode;
 	int gfxDriver;
 	int gfxFlags;
@@ -147,6 +148,13 @@ main (int argc, char *argv[])
 			fprintf (stderr, "argv[%d] = [%s]\n", i, argv[i]);
 	}
 
+	if (options.runMode == runMode_version)
+	{
+   		printf ("%d.%d%s\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+				UQM_EXTRA_VERSION);
+		return EXIT_SUCCESS;
+	}
+	
 	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n"
 	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
 			"for details see the included 'COPYING' file.\n\n",
@@ -158,7 +166,7 @@ main (int argc, char *argv[])
 		usage (stdout, &options);
 		return EXIT_SUCCESS;
 	}
-	
+
 	/* mem_init () uses mutexes.  Mutex creation cannot use
 	   the memory system until the memory system is rewritten
 	   to rely on a thread-safe allocator.
@@ -249,7 +257,7 @@ enum
 	ADDON_OPT
 };
 
-static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:";
+static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:v";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -272,6 +280,7 @@ static struct option longOptions[] =
 	{"gamma", 1, NULL, 'g'},
 	{"logfile", 1, NULL, 'l'},
 	{"intro", 1, NULL, 'i'},
+	{"version", 0, NULL, 'v'},
 
 	//  options with no short equivalent:
 	{"cscan", 1, NULL, CSCAN_OPT},
@@ -309,6 +318,9 @@ preParseOptions(int argc, char *argv[], struct options_struct *options)
 			case '?':
 			case 'h':
 				options->runMode = runMode_usage;
+				return EXIT_SUCCESS;
+			case 'v':
+				options->runMode = runMode_version;
 				return EXIT_SUCCESS;
 		}
 	}

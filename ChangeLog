@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Added '--version' - Svdb
 - Fixed a bad memory access which could occur when the code relies
   on CharCount for determining the end of a string (bug #701). - SvdB
 - Battle planet images now have corrected transparency info, so there
