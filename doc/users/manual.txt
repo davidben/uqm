@@ -480,7 +480,11 @@ ESCAPE:                  Emergency Warp Escape
 UP:                      Forward
 LEFT and RIGHT:          Steer
 SPACE:                   Fire stun bolt
-CONTROL:                 Blast off
+CONTROL
+  OR
+LEFT_SHIFT
+  OR
+ESCAPE:                  Blast off
 
 
 			   MELEE CONTROLS SUMMARY

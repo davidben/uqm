@@ -1586,7 +1586,8 @@ SetVelocityComponents (
 #endif
 	}
 	else if (pMS->delta_item == 0
-			|| (HIBYTE (pMS->delta_item) && ((InputState & (DEVICE_BUTTON3 | DEVICE_LEFTSHIFT))
+			|| (HIBYTE (pMS->delta_item) 
+			&& ((InputState & (DEVICE_BUTTON3 | DEVICE_LEFTSHIFT | DEVICE_BUTTON4))
 			|| (
 			(PPLANETSIDE_DESC)pMenuState->ModuleFrame
 			)->InTransit)))
