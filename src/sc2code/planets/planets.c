@@ -260,6 +260,7 @@ FreePlanet (void)
 			pSolarSysState->SysInfo.PlanetInfo.LanderFont
 			));
 	pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
+	pSolarSysState->PauseRotate = 0;
 
 	ClearSemaphore (GraphicsSem);
 }

@@ -1248,8 +1248,10 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						BOOLEAN AutoPilotSet;
 
 						SetSemaphore (GraphicsSem);
-						if (++pMS->Initialized > 3)
+						if (++pMS->Initialized > 3) {
+							pSolarSysState->PauseRotate = 1;
 							RepairSISBorder ();
+						}
 
 						AutoPilotSet = DoStarMap ();
 
@@ -1270,6 +1272,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						{
 							LoadPlanet (FALSE);
 							--pMS->Initialized;
+							pSolarSysState->PauseRotate = 0;
 							SetSemaphore (GraphicsSem);
 							SetFlashRect ((PRECT)~0L, (FRAME)0);
 							ClearSemaphore (GraphicsSem);
