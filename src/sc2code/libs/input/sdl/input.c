@@ -49,6 +49,7 @@ TFB_InitInput (int driver, int flags)
 	atexit (TFB_UninitInput);
 
 	SDL_EnableUNICODE(1);
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
@@ -116,7 +117,7 @@ ProcessKeyboardEvent(const SDL_Event *Event)
 	if (Event->type == SDL_KEYDOWN)
 	{
 		if (Event->key.keysym.unicode != 0)
-			kbdbuf[kbdtail] = Event->key.keysym.unicode;
+			kbdbuf[kbdtail] = (UNICODE) Event->key.keysym.unicode;
 		else
 			kbdbuf[kbdtail] = KBDToUNICODE(k);
 		kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
@@ -401,18 +402,21 @@ _get_pause_exit_state (void)
 	return (InputState);
 }
 
-// Status: Unimplemented
 INPUT_STATE
 _get_serial_keyboard_state (INPUT_REF ref, INPUT_STATE InputState)
-		// I hope these are defined somewhere...
 {
 	Uint16 key;
 	(void) ref;
 
 	if ((key = GetUNICODEKey ()) == '\r')
 		key = '\n';
-	SetInputUNICODE (&InputState, key);
-	SetInputDevType (&InputState, KEYBOARD_DEVICE);
+	if (key != 0)
+	{
+		SetInputUNICODE (&InputState, key);
+		SetInputDevType (&InputState, KEYBOARD_DEVICE);
+	}
+	else
+		InputState = 0;
 
 	return (InputState);
 }
