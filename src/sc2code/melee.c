@@ -1855,9 +1855,12 @@ Melee (void)
 		{
 			FILE *load_fp;
 			char configFile[PATH_MAX];
+			int res;
 
-			assert (snprintf (configFile, PATH_MAX, "%smelee.cfg",
-					configDir) != -1);
+			res = snprintf (configFile, PATH_MAX, "%smelee.cfg", configDir);
+			assert (res != -1);
+					// strlen (configDir) is supposed to be checked to be
+					// <= PATH_MAX - 13
 			load_fp = res_OpenResFile (configFile, "rb");
 			if (load_fp)
 			{
@@ -1904,10 +1907,13 @@ Melee (void)
 			FILE *save_fp;
 			BOOLEAN err;
 			char configFile[PATH_MAX];
+			int res;
 
 			err = FALSE;
-			assert (snprintf (configFile, PATH_MAX, "%smelee.cfg",
-					configDir) != -1);
+			res = snprintf (configFile, PATH_MAX, "%smelee.cfg", configDir);
+			assert (res != -1);
+					// strlen (configDir) is supposed to be checked to be
+					// <= PATH_MAX - 13
 			save_fp = res_OpenResFile (configFile, "wb");
 			if (save_fp)
 			{
