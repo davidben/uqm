@@ -154,7 +154,7 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command)
 {
 	Lock_DCQ ();
-	if (myQueue->Size < DCQ_MAX - 1)
+	if (myQueue->FullSize < DCQ_MAX - 1)
 	{
 		DCQ[myQueue->InsertionPoint] = *Command;
 		myQueue->InsertionPoint = (myQueue->InsertionPoint + 1) % DCQ_MAX;
