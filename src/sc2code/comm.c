@@ -1566,6 +1566,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 
 			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 
+			CommData.AlienTalkDesc.AnimFlags &= ~PAUSE_TALKING;
 			CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
 			pES->num_responses = 0;
 			(*pES->response_list[pES->cur_response].response_func)
@@ -1593,7 +1594,6 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			DrawSISComWindow ();
 			FeedbackPlayerPhrase (pES->phrase_buf);
 			summary = TRUE;
-			CommData.AlienTransitionDesc.AnimFlags |= PAUSE_TALKING;
 			ClearSemaphore (GraphicsSem);
 			CurTime = GetTimeCounter ();
 			SleepThreadUntil (CurTime + ONE_SECOND / 30);
@@ -1714,7 +1714,6 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			RefreshResponses (pES);
 			ClearSemaphore (GraphicsSem);
 			ColorChange = TRUE;
-			CommData.AlienTransitionDesc.AnimFlags &= ~(PAUSE_TALKING);
 			summary = FALSE;
 			FlushInput ();
 			while (AnyButtonPress (TRUE))
@@ -1729,6 +1728,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 
+				CommData.AlienTalkDesc.AnimFlags &= ~PAUSE_TALKING;
 				CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
 				SpewPhrases (0);
 				CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
