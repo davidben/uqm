@@ -15,6 +15,7 @@ GNU Automake - a Makefile generator
 	Debian package: automake
 
 GNU Libtool - generic shared library support
+	version 1.4 or higher
         http://www.gnu.org/software/libtool/
         ftp://ftp.gnu.org/pub/gnu/libtool/
 	Debian package: libtool
