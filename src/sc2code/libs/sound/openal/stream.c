@@ -21,6 +21,10 @@
 
 #include "sound.h"
 
+#if 0 && !defined (WIN32) // && !defined (MacOS and BEOS too)
+#include <AL/alext.h>
+#endif
+
 BOOLEAN speech_advancetrack = FALSE;
 
 
@@ -49,9 +53,26 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
 		if (decoded_bytes == 0)
 			break;
 
+#if 0 && !defined (WIN32) // && !defined (MacOS and BeOS too)
+		// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
+	   	
+		if (sample->decoder->format == AL_FORMAT_STEREO8 ||
+			sample->decoder->format == AL_FORMAT_STEREO16)
+		{
+			alBufferWriteData_LOKI (sample->buffer[i], sample->decoder->format, sample->decoder->buffer,
+									decoded_bytes, sample->decoder->frequency,
+									sample->decoder->format);
+		}
+		else
+		{
+			alBufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
+						  decoded_bytes, sample->decoder->frequency);
+		}
+#else
 		alBufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
 			decoded_bytes, sample->decoder->frequency);
-
+#endif
+		
 		alSourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
 
 		if (sample->decoder->error)
@@ -198,9 +219,27 @@ StreamDecoderTaskFunc (void *data)
 
 				if (decoded_bytes > 0)
 				{
+#if 0 && !defined (WIN32) // && !defined (MacOS and BeOS too)
+					// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
+	   	
+					if (soundSource[i].sample->decoder->format == AL_FORMAT_STEREO8 ||
+						soundSource[i].sample->decoder->format == AL_FORMAT_STEREO16)
+					{
+						alBufferWriteData_LOKI (buffer, soundSource[i].sample->decoder->format, soundSource[i].sample->decoder->buffer,
+												decoded_bytes, soundSource[i].sample->decoder->frequency,
+												soundSource[i].sample->decoder->format);
+					}
+					else
+					{
+						alBufferData (buffer, soundSource[i].sample->decoder->format, 
+									  soundSource[i].sample->decoder->buffer, decoded_bytes, 
+									  soundSource[i].sample->decoder->frequency);
+					}
+#else
 					alBufferData (buffer, soundSource[i].sample->decoder->format, 
 						soundSource[i].sample->decoder->buffer, decoded_bytes, 
 						soundSource[i].sample->decoder->frequency);
+#endif
 
 					if ((error = alGetError()) != AL_NO_ERROR)
 					{
