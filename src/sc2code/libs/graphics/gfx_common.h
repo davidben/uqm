@@ -28,8 +28,6 @@
 #include "libs/vidlib.h"
 #include "libs/misc.h"
 
-#define TFB_WINDOW_CAPTION "The Ur-Quan Masters"
-
 // driver for TFB_InitGraphics
 enum
 {

@@ -24,6 +24,7 @@
 #include "rotozoom.h"
 #include "primitives.h"
 #include "dcqueue.h"
+#include "options.h"
 #include "SDL_thread.h"
 
 SDL_Surface *SDL_Video;
@@ -68,7 +69,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	SDL_EnableUNICODE (1);
-	SDL_WM_SetCaption (TFB_WINDOW_CAPTION, NULL);
+	SDL_WM_SetCaption (UQM_VERSION_STRING, NULL);
 
 	if (flags & TFB_GFXFLAGS_SHOWFPS)
 		ShowFPS = TRUE;

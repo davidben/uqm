@@ -79,6 +79,9 @@ main (int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
+	sprintf (UQM_VERSION_STRING, "The Ur-Quan Masters v%d.%d (compiled %s %s)", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
+	fprintf (stderr, "%s\n", UQM_VERSION_STRING);
+
 #ifndef WIN32
 	strcpy (contentdir, "content");
 #else
@@ -164,8 +167,7 @@ main (int argc, char *argv[])
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
 			case 'h':
-				printf("\nThe Ur-Quan Masters\n");
-				printf("Options:\n");
+				printf("\nOptions:\n");
 				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, others work only with --opengl)\n");
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
