@@ -3256,6 +3256,10 @@ SOURCE=..\options.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\starcon2.c
 # End Source File
 # End Group
