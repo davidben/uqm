@@ -116,6 +116,8 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	SDL_FreeSurface (test_extra);
 
+
+
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
 		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
@@ -144,7 +146,7 @@ TFB_Pure_SwapBuffers ()
 		}
 		else
 		{
-			SDL_SetAlpha (fade_white, SDL_SRCALPHA, 255 - (255 - fade_amount));
+			SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
 			SDL_BlitSurface (fade_white, NULL, backbuffer, NULL);
 		}
 	}
@@ -267,6 +269,7 @@ TFB_Pure_SwapBuffers ()
 				}
 				src_p = src_p2;
 				for (x = 0; x < 320; ++x)
+
 				{
 					pixval_32 = *(Uint32*)src_p;
 					src_p += 4;
