@@ -49,6 +49,8 @@ void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0, int x, int y);
 
 void add_sub_frame (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int add_sub);
 
+void buildLanderView(FRAME FramePtr);
+
 DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
 #define NUM_BATCH_POINTS 64
@@ -1298,6 +1300,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	// from lpTopoData instead of the FRAMPTR though
 	x = MAP_WIDTH + MAP_HEIGHT;
 	y = MAP_HEIGHT;
+	buildLanderView(pSolarSysState->TopoFrame);
 	pSolarSysState->lpTopoMap = getpixelarray (
 			pSolarSysState->TopoFrame, x, y
 			);

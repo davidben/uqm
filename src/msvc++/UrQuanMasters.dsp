@@ -196,6 +196,10 @@ SOURCE=..\sc2code\libs\graphics\sdl\pure.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
 # End Source File
 # Begin Source File
