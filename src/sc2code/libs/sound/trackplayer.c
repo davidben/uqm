@@ -495,6 +495,15 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					//	last_chain->decoder->frequency,
 					//	last_chain->decoder->format);
 
+					if (last_chain->decoder->type == SOUNDDECODER_NULL &&
+						speechVolumeScale != 0.0f)
+					{
+						/* No voice ogg available so zeroing speech volume to
+						   ensure proper operation of oscilloscope and music fading */
+						speechVolumeScale = 0.0f;
+						fprintf (stderr, "SpliceTrack(): no voice ogg available so setting speech volume to zero\n");
+					}
+
 					sound_sample->length += last_chain->decoder->length;
 					if (! no_page_break)
 					{

@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Absence of voice files is now automatically detected (bug #309) -Mika
 - Fixed Commander Hayes mouth movement before radioactives are given
   (bug #343) -Mika
 - Fix glitches in slylandro probe animation (bugs #398, #399), from Paxtez
