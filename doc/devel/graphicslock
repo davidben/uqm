@@ -1,0 +1,104 @@
+HOW TO NOT GET HOSED BY DOUBLE-LOCK/UNLOCKS WITH GraphicsLock
+
+For the kinds of modifications you're likely to be doing, there only a
+few functions that you must take care to ensure that you hold
+GraphicsLock before calling.  There are also some general guidelines.
+
+GENERAL GUIDELINES
+
+- Don't hold the GraphicsLock in Generate* functions.
+
+- Always hold it while doing ship operations - they're all only called
+  by RedrawQueue. (preprocess, postprocess, etc.)
+
+- On ConcludeTask, you must not be holding *anything* or you could
+  cause a deadlock if the thread you're waiting to conclude needs
+  whatever lock you hold before it can safely exit.  It is
+  acceptable to hold the GraphicsLock when merely calling
+  Task_SetState.
+
+Specific Guidelines:
+
+Always hold the GraphicsLock when calling...
+
+- SetFlashRect in sis.c; this changes which part of the screen is
+  flashing.  Very common.
+
+- RedrawQueue in process.c; this is for updating all the the graphics
+  for ship animations.
+
+- GetMeleeStarShip in pickmele.c.  That this is extern at all is
+  probably a sign of lousy code organization.
+
+- DoMenuOptions in hyper.c; this is a consequence of being called from
+  a ship operation when in hyperspace, which means that it must assume
+  that it's called with the GraphicsLock held.
+
+- DoDiscoveryReport in planets/report.c; this is called by the
+  Generate* functions, which always start out not holding the Lock.
+
+- ClearSISRect and DeltaSISGauges in sis.c; you might call these if
+  working on code that modifies fuel or crew somehow.
+
+THE GORY DETAILS
+
+[functionname] means that the function is static and demands lockedness.
+<functionname> means that the function is static and demands unlockedness.
+*functionname* means that the function is extern and demands lockedness
+(functionname) means that the function is extern and demands unlockedness.
+
+This information is incomplete, and the result of a fairly informal
+hand-analysis of the code.  In the case of extern-requires-lock,
+context and calling sites have been tracked so that all such functions
+are reached.
+
+battle.c:   (Battle) 
+border.c:   (DrawSISFrame) 
+build.c:    (ActivateStarShip)
+clock.c:    (clock_task_func)
+comm.c:     (ambient_anim_task) [SpewPhrases] (AlienTalkSegue)
+            <DoCommunication> [HailAlien] (InitCommunication)
+confirm.c:  (DoConfirmExit)
+credits.c:  (Credits) (OutTakes) 
+encount.c:  <DoSelectAction> (InitEncounter) [DrawFadeText]
+            (UninitEncounter) (EncounterBattle)
+fmv.c:      (Introduction)
+gameopt.c:  <FeedbackSetting> <FeedbackQuit> <DrawDescriptionString>
+            <DoNaming> <DoSettings> <DoQuitMenu> [ShowSummary]
+            <DoPickGame> <PickGame>
+hyper.c:    *LoadHyperspace* *FreeHyperspace* *DoMenuOptions*
+init.c:     *InitShips* *UninitShips*
+melee.c:    [DrawPickFrame] (flash_selection_func) <DrawMeleeShipStrings>
+            <DoLoadTeam> <DoSaveTeam> <DoEdit> <DoPickShip>
+            <FreeMeleeInfo> <DoMelee>
+menu.c:     (DrawMenuStateStrings) 
+outfit.c:   <DoInstallModule> (ChangeFuelQuantity) (DoOutfit)
+pickmele.c: *GetMeleeStarShip*
+pickship.c: <DoPickBattleShip> [GetArmadaStarShip]
+process.c:  *RedrawQueue*
+restart.c:  <DrawRestartMenu> <DoRestart> (StartGame)
+save.c:     (SaveProblem) 
+ship.c:     *ship_preprocess*
+shipyard.c: (hangar_anim_func) <DrawRaceStrings> <ShowCombatShip>
+            [CrewTransaction] <DoModifyShips> <DrawBluePrint>
+            (DoShipyard)
+sis.c:      *ClearSISRect* *DeltaSISGauges* (flash_rect_func)
+            *SetFlashRect*
+starbase.c: (rotate_starbase) (DoStarBase)
+starcon.c:  (arilou_gate_task) (Starcon2Main)
+utils.c:    (PauseGame)
+cargo.c:    (DrawCargoStrings) <DoDiscardCargo> (Cargo)
+devices.c:  <DrawDevices> <DoManipulateDevices> (Devices)
+lander.c:   <ScrollPlanetSide> [AnimateLaunch] <InitPlanetSide>
+            <ReturnToOrbit> (PlanetSide) (InitLander)
+planets.c:  (LoadPlanet) (FreePlanet) 
+plangen.c:  (rotate_planet_task)
+pstarmap.c: (flash_cursor_func) (DrawStarMap) [EraseCursor]
+            <DoMoveCursor> [DoStarMap] (DoFlagshipCommands)
+report.c:   [MakeReport] *DoDiscoveryReport*
+roster.c:   (flash_ship_task) <DoModifyRoster> 
+scan.c:     <EraseCoarseScan> <PrintCoarseScanPC> <PrintCoarseScan3DO>
+            <SetPlanetLoc> (flash_planet_loc_func) <PickPlanetSide>
+            <DoScan> (ScanSystem)
+solarsys.c: <FreeSolarSys> (IPtask_func) <DrawInnerSystem>
+            (ChangeSolarSys) <InitSolarSys>
