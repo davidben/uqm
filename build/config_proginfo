@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+OSNAME=`uname -s`
+
 # Describe the programs (possibly) used:
 PROG_gcc_NAME="GNU C compiler"
 PROG_gcc_FILE="gcc"
@@ -27,11 +29,14 @@ PROG_sed_ACTION=""
 PROG_sed_VERSION=''
 
 PROG_make_NAME="Make"
-if [ `uname` = 'FreeBSD' ]; then
-	PROG_make_FILE="gmake"
-else
-	PROG_make_FILE="make"
-fi
+case "$OSNAME" in
+	FreeBSD|OpenBSD)
+		PROG_make_FILE="gmake"
+		;;
+	*)
+		PROG_make_FILE="make"
+		;;
+esac
 PROG_make_ACTION=""
 PROG_make_VERSION=''
 
@@ -48,8 +53,6 @@ PROG_windres_VERSION='windres --version'
 
 # Describe the libaries (possibly) used:
 LIB_SDL_NAME="Simple DirectMedia Layer"
-
-OSNAME=`uname -s`
 
 case "$OSNAME" in
 	FreeBSD)  LIB_SDL_CFLAGS='$(sdl11-config --cflags)' ;;
@@ -107,7 +110,7 @@ LIB_vorbis_VERSION=""
 
 LIB_vorbisfile_NAME="Vorbisfile"
 case "$OSNAME" in
-	FreeBSD)
+	FreeBSD|OpenBSD)
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
 		;;
