@@ -1,0 +1,393 @@
+THE UR-QUAN MASTERS
+
+version 0.1 alpha
+
+Welcome to the first release of the Ur-Quan Masters port.  This
+document will tell you everything you need to play, even if you've
+never played the original.
+
+For those of you who have played the original, read the first section
+(starting the game) and the last section (control summary), and you'll
+be good to go.
+
+STARTING THE GAME
+
+Simply invoke UQM.EXE from the content directory to run the game.
+This will use the default settings, which are 3DO music, 640x480
+windowed mode, and pure SDL graphics drivers.  You may pass various
+command line options to customize your experience:
+
+	-r 320x240   (or --res)
+
+Sets the screen resolution.  Unless --opengl is set, the only valid
+values are 640x480 and 320x240
+
+       -d 24         (or --bpp)
+
+Sets the color depth.  If you don't set this, the game should
+autodetect an appropriate value.  Valid values are 16, 24, and 32.
+
+	-f           (or --fullscreen)
+
+Uses full screen mode.  Pretty straightforward.  Usually good to
+combine with -r 320x240.
+
+	-o           (or --opengl)
+
+Use OpenGL drivers.  This produces higher-quality graphics, and may be
+faster as well -- but it also may not work on older cards.
+
+	-b           (or --bilinear)
+
+Enable bilinear filtering in OpenGL mode.  Produces less pixelated
+graphics with a bit of a performance penalty.
+
+	-p           (or --fps)
+
+Print fps information in the status window.
+
+	-tv          (or --tv)
+
+Simulates interlaced displays.
+
+	-c           (or --contentdir)
+
+Set the directory where the game will seek its data.
+
+	-h           (or --help)
+
+Display a help message.
+
+	-M           (or --musicvol)
+
+Set music volume (0-100).
+
+	-S           (or --sfxvol)
+
+Set sound effects volume (0-100).
+
+	-T           (or --speechvol)
+
+Set speech volume (0-100).
+
+	-e           (or --3domusic)
+
+Use the 3DO remixed soundtrack for songs that were in fact remixed.
+The default.
+
+	-m           (or --pcmusic)
+
+Use the .MOD based PC soundtrack everywhere.
+
+	-q           (or --audioquality)
+
+Can be "high", "medium", or "low".  Specifies how nice the audio
+sounds.  Slower machines should lower the audio quality.
+
+			   THE STORY SO FAR
+
+For the past decade, Earth and the rest of the Alliance of Free Stars
+has fought the Ur-Quan and their Hierarchy of Battle Thralls.  In the
+course of the War, the Earthlings discovered a factory world by the
+'Precursors' - an impossibly advanced that disappeared tens of
+thousands of years ago.  This colony, Unzervalt (aka Vela I), lost all
+contact with Earth shortly after landfall.
+
+You are Captain Zelnick, a human that was born on Unzervalt and who
+possesses a remarkable knack for Precursor technology.  You were the
+one who worked out how to activate the Precursor installation.
+
+It was a factory for building starships.  However, Unzervalt is
+mineral-poor, and there were not enough materials available to
+construct a complete vessel.  Your task is to command this craft, the
+Vindicator, and return to Earth to tell them of the abandoned colony.
+Also, if the War with the Ur-Quan continues, you must fight for Earth
+and the Alliance as best you can.
+
+There is a great deal more to this story.  Asking Starbase Commander
+Hayes for background information will give you most of it.
+
+		      INTERPLANETARY EXPLORATION
+
+When in a Solar system, use the thrust and steering controls to move
+about the system.  Intersecting a planet will move you to the
+planetary system; flying over a planet or moon will then put you into
+orbit.  From there you can talk to the inhabitants, or, if the planet
+is uninhabited, send a lander down to gather minerals, investigate
+energy readings, or capture life forms.
+
+			    PLANET LANDING
+
+To land on a planet, you need to achieve orbit, then fill a planet
+lander with crew and send them down.  You will usually want to scan
+the planet first.  Mineral scans will indicate easily harvestable
+mineral ores and other resources.  Energy scans will indicate unusual
+installations, which will effectively always be worth investigating.
+Biological scans will show where life forms are on the surface.
+
+Minerals are necessary for building up and maintaining your flagship,
+so harvest them wherever you can.  There are nine varieties, each
+color coded:
+
+COMMON ELEMENTS (carbon, nitrogen) are cyan. Worth 1 resource unit
+(RU) each.
+
+CORROSIVES (chlorine, iodine) are red.  2 RU per unit.
+
+BASE METALS (iron, tin) are grey.  These are common, and usually worth
+harvesting, but not terribly valuable.  3 RU per unit.
+
+NOBLE GASSES (argon, xenon) are blue, and 4 RU each.
+
+RARE EARTHS (lanthanum, ytterbium) are green.  5 RU per.
+
+PRECIOUS ELEMENTS (gold, silver) are yellow.  6 RU per.
+
+RADIOACTIVES (uranium, astatine) are orange.  8 RU per.
+
+EXOTICS (antimatter, magnetic monopoles) are purple, and a princely 20
+RU per cargo unit.
+
+Minerals may be unloaded at Earth Starbase by talking to Commander
+Hayes, which will give you RU that you may spend to upgrade your
+flagship.
+
+However, there are many hazards on planetary surfaces.  Life forms are
+often hostile, and need to be subdued with your stunner or evaded.
+Earthquakes (expanding circles) can hurt your crew, lightning may
+crisp them, or lava flows and hotspots can fry them.  Be careful,
+especially on hotter or more seismically and atmospherically active
+worlds.  If your crew level starts dropping dramatically, flee quickly
+with the ESCAPE key!
+
+Stunned life forms may be captured and analyzed by your planet
+landers.  The information you gain from this may not be immediately
+useful, but it will eventually come in handy.
+
+Landing on a planet costs fuel, and the heavier the planet, the more
+fuel it requires. Make sure you don't spend so much fuel exploring
+planets that you can't get back to Sol!
+
+			 INTERSTELLAR TRAVEL
+
+When you leave a solar system, you will push up into HyperSpace.  In
+HyperSpace you can travel great distances quickly, but you must
+continuously thrust to move.  Otherwise, you will gradually slow to a
+stop.
+
+While you can fly about in HyperSpace just like you do in a star
+system, the Galaxy is LARGE, and you will usually want to use the
+Auto-Pilot.  To use the Auto-Pilot, select "Starmap" on the menu.
+This will show you a map of the quadrant (the galactic Core is in the
+upper right corner).  To fly to a location, move the cursor there and
+press Enter.  Then press Space to engage the Auto-Pilot.
+
+			      DIPLOMACY
+
+When you encounter an alien starship, you will usually get a picture
+of their task force and a chance to choose between conversation and
+fighting.  If you choose to fight, you will transition immediately to
+space combat (below).  Otherwise, you will talk first.  If talks go
+poorly, space combat will likely ensue.
+
+If the task force shows ships streaming off in all directions, you
+have reached a fortified world, and there are an unlimited number of
+starships facing you.  You cannot win such a fight - if combat ensues,
+you will need to warp out.
+
+			     SPACE COMBAT
+
+When combat begins, you are prompted to select a ship from your task
+force.  A one-on-one space combat then begins, and continues until
+either the enemy fleet is destroyed (in which case you salvage the
+wrecks and continue the game), your flagship is destroyed (ending the
+game), or your flagship warps out of combat (consuming 5 fuel units
+but ending the encounter).
+
+Each ship has two major stats: Crew and Combat Battery.  Crew are
+effectively hit points.  Getting hit by weapons kills crew, and if all
+crew are eliminated, the craft is destroyed.  Firing weapons typically
+requires energy from the combat batteries, which is replaced over
+time.  The precise speed of energy regeneration and cost of weapons
+fire varies by ship.
+
+Space flight is *mostly* inertial (you'll drift if you stop
+thrusting), but each ship has a maximum velocity that can only be
+exceeding by "gravity whipping" around the planet.  Don't hit the
+planet unless you want to take LOTS of damage.
+
+Each ship has a primary and secondary weapon mode, unique to that
+race's craft.  The descriptions of those follow.
+
+			  SHIP DESCRIPTIONS
+
+			 Androsynth Guardian
+Primary weapon: Fires homing acid bubble clouds.
+Secondary weapon: Transforms into the 'Blazer', a comet that does
+considerable damage by ramming its opponents.
+
+			 Ariloulaleelay Skiff
+Primary weapon: Auto-aiming, short-range laser
+Secondary weapon: Random teleport
+Note: The Skiff is inertialess, and stops instantly when thrust is
+removed.
+
+			  Chenjesu Broodhome
+Primary weapon: Crystal Shard.  Will travel until the fire button is
+released, then shatters.
+Secondary weapon: De-energizing Offensive Guided Interceptor.
+Launches an autonomous DOGI that rams the opponent to drain their
+combat batteries.
+
+			     Chmmr Avatar
+Primary weapon: Immensely powerful short-range laser
+Secondary weapon: Tractor beam.
+Note: Has three orbiting "ZapSats" that attack anything that gets in
+range.
+
+			    Druuge Mauler
+Primary weapon: Long range, high-recoil cannon
+Secondary weapon: Sets one crew on fire to gain combat energy.
+
+			  Earthling Cruiser
+Primary weapon: Homing nuclear missile
+Secondary weapon: Point-defense laser
+
+			   Ilwrath Avenger
+Primary weapon: Short-range flamethrower
+Secondary weapon: Cloaking device
+
+			   Kohr-Ah Marauder 
+Primary weapon: Spinning blades that stop and home when the fire
+button is released
+Secondary weapon: Fiery Ring of Inevitable and Eternal Destruction
+(F.R.I.E.D.), a short-range corona of energy that blocks shots and
+inflicts lots of damage
+
+			   Melnorme Trader
+Primary weapon: Charged shot.  The longer the fire button is held, the
+stronger the shot.
+Secondary weapon: Confusion beam that scrambles enemy controls.
+
+			   Mmrnmhrm X-Form
+Primary weapon:  Lasers (X-form) or homing missiles (Y-form).
+Secondary weapon:  Switch between X-Form and Y-Form.
+
+			    Mycon Podship
+Primary weapon:  Homing Plasmoid.
+Secondary weapon:  Regenerate 4 crew.
+
+			     Orz Nemesis
+Primary weapon:  Howitzer cannon.
+Secondary weapon: Secondary with left and right arrows rotates the
+primary cannon.  Secondary with Primary launches space marines that
+invade the enemy ship and kill their crew.
+
+			      Pkunk Fury
+Primary weapon:  Three-way cannon
+Secondary weapon: Fling insults at opponent.  This is the only way the
+Pkunk can regenerate combat energy.
+Note: On occasion, a destroyed Fury will be resurrected with full fuel
+and power.
+
+			    Shofixti Scout
+Primary weapon:  Energy Dart.
+Secondary weapon: Glory Device.  When pressed three times, the ship
+will self-destruct, inflicting vast damage on nearby vessels.
+
+			   Slylandro Probe
+Primary weapon:  Lighting weapon.
+Secondary weapon: Absorb a nearby asteroid and convert to combat
+power.  This is the only way the Probe can recharge.
+Note: The Probe is inertialess and always in motion.  Pressing thrust
+will reverse its direction.
+
+			    Spathi Eluder
+Primary weapon:  Simple forward cannon.
+Secondary weapon: Backward Utilized Tracking Torpedo (B.U.T.T.), a
+homing missile fired from the rear of the vessel.
+
+Alpha release warning: Since collisions are only using bounding boxes
+right now, the B.U.T.T. missile is far more likely to hit you on
+launch than your opponent.
+
+			     Supox Blade
+Primary weapon: Forward firing glob weapon
+Secondary weapon: Secondary + left or right will cause you to drift
+laterally, while Secondary + thrust will make you fly backwards.  This
+cancels your current velocity, so be careful!
+
+			  Syreen Penetrator
+Primary weapon: Particle Beam Stiletto.
+Secondary weapon: "Syreen Call" - psychic attack that induces enemy
+crew to jump ship, where you (or your opponent) may capture them to
+add to your complement
+
+			   Thraddash Torch
+Primary weapon:  Straightforward blaster cannon.
+Secondary weapon: Afterburner.  The afterburner exhaust does more
+damage then the blaster, so use it as a weapon!
+
+			     Umgah Drone
+Primary weapon:  Anti-Matter cone.  Does not require combat batteries to use.
+Secondary weapon:  Fly backwards suddenly and at high speed.
+Note: The Drone only recharges batteries if you do not fire for a long
+time, and then the energy all returns in one lump.
+
+			 Ur-Quan Dreadnought
+Primary weapon:  Fusion Blast.
+Secondary weapon: Launches autonomous fighters to harry the enemy.
+When they run low on fuel, they will fly back to the Dreadnought.
+Catch them before they expire.  Each fighter requires one crew to
+pilot it, so take care not to weaken the core ship.
+
+			     Utwig Jugger
+Primary weapon: Six-shot cannon.  Requires no combat battery energy to fire.
+Secondary weapon: Force shield.  Absorbing hits re-energizes your
+batteries.  When the batteries are exhausted, the shield is
+permanently disabled until combat ends.
+
+			     VUX Intruder
+Primary weapon: Gigawatt laser.
+Secondary weapon: Limpet mines that track enemy ships and slow them
+down dramatically if they hit.
+
+			   Yehat Terminator
+Primary weapon: Twin autocannons.
+Secondary weapon: Force shield.
+
+			 Zoq-Fot-Pik Stinger
+Primary weapon: Anti-matter spray gun.
+Secondary weapon: "Tongue attack", a point-blank range attack that
+does grievous damage.
+
+
+			   CONTROLS SUMMARY
+
+	Space flight
+
+UP or ENTER:        Thrust
+LEFT and RIGHT:     Steer
+SPACE:              Main menu
+
+	Menus
+
+Arrow Keys:         Scroll through selections
+ENTER:              Make selection
+SPACE:              Up one level
+
+	Space Combat
+
+UP or ENTER:        Thrust
+LEFT and RIGHT:     Steer
+SPACE:              Fire Primary Weapon
+ESCAPE:             Fire Secondary Weapon
+Numpad + and SPACE: Emergency Warp Escape
+
+
+	Planet Exploration
+
+UP:                 Forward
+LEFT and RIGHT:     Steer
+SPACE:              Fire stun bolt
+ESCAPE:             Blast off
