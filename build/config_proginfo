@@ -82,14 +82,18 @@ LIB_SDL_image_VERSION=""
 
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
-LIB_openal_LDFLAGS="-lopenal"
+if [ `uname` = 'FreeBSD' ]; then
+      LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal"
+else
+      LIB_openal_LDFLAGS="-lopenal"
+fi
 LIB_openal_VERSION=""
 
 
 LIB_opengl_NAME="OpenGL"
 if [ `uname` = 'FreeBSD' ]; then
 	LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
-	LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXaw -pthreads -lGL"
+	LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXaw -pthread -lGL"
 else
 	LIB_opengl_CFLAGS=""
 	LIB_opengl_LDFLAGS="-lGL"
