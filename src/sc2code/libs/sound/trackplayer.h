@@ -19,7 +19,7 @@
 #ifndef TRACKPLAYER_H
 #define TRACKPLAYER_H
 
-#define ACCEL_SCROLL_SPEED 30
+#define ACCEL_SCROLL_SPEED 300
 
 void ResumeTrack(void);
 void PauseTrack(void);
