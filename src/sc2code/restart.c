@@ -42,7 +42,9 @@ enum
 {
 	START_NEW_GAME = 0,
 	LOAD_SAVED_GAME,
-	PLAY_SUPER_MELEE
+	PLAY_SUPER_MELEE,
+	SETUP_GAME,
+	QUIT_GAME
 };
 
 static void
@@ -123,6 +125,8 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 	}
 	else if (CurrentMenuState.select)
 	{
+		BYTE fade_buf[1];
+
 		switch (pMS->CurState)
 		{
 			case LOAD_SAVED_GAME:
@@ -135,6 +139,20 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				break;
 			case PLAY_SUPER_MELEE:
 				GLOBAL (CurrentActivity) = SUPER_MELEE;
+				break;
+			case SETUP_GAME:
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);	
+				InTime = GetTimeCounter ();
+				return TRUE;
+				break;
+			case QUIT_GAME:
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+				fade_buf[0] = FadeAllToBlack;
+				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+
+				GLOBAL (CurrentActivity) = CHECK_ABORT;
 				break;
 		}
 
@@ -149,17 +167,16 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		BYTE NewState;
 
 		NewState = pMS->CurState;
-		if (CurrentMenuState.left || CurrentMenuState.up)
+		if (CurrentMenuState.up)
 		{
 			if (NewState-- == START_NEW_GAME)
-				NewState = PLAY_SUPER_MELEE;
+				NewState = QUIT_GAME;
 		}
-		else if (CurrentMenuState.right || CurrentMenuState.down)
+		else if (CurrentMenuState.down)
 		{
-			if (NewState++ == PLAY_SUPER_MELEE)
+			if (NewState++ == QUIT_GAME)
 				NewState = START_NEW_GAME;
 		}
-
 		if (NewState != pMS->CurState)
 		{
 			DrawRestartMenu (pMS->CurState, NewState, pMS->CurFrame);

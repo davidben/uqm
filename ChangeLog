@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- New main menu graphics from MarkVera, Paxtez, Nic (bug #393)
 - Removed a place where you could ask for repairs when you shouldn't 
   (bug #432), from Nic
 - Can use F10 to quit during splash screen as well as main menu -Michael
