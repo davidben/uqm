@@ -235,7 +235,8 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 		sptr = (TFB_SoundSample **)((BYTE *)fxTab + fxTab->StringOffsets[0]);
 		while (snd_ct--)
 		{
-			Sound_FreeSample ((*sptr)->decoder);
+            if ((*sptr)->decoder)
+			    Sound_FreeSample ((*sptr)->decoder);
 			alDeleteBuffers (NUM_SOUNDBUFFERS, (*sptr)->buffer);
 			HFree (*sptr);
 			*sptr++ = 0;

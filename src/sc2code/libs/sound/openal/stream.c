@@ -21,7 +21,7 @@
 
 #include "sound.h"
 
-BOOLEAN speech_callback = FALSE;
+BOOLEAN speech_advancetrack = FALSE;
 
 
 void
@@ -115,9 +115,10 @@ StreamDecoderTaskFunc (void *data)
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
 			ALuint processed;
-			//ALuint queued;
+			ALuint queued;
 			ALint state;
 			ALboolean finished = AL_FALSE;
+			ALboolean do_speech_advancetrack = AL_FALSE;
 
 			LockMutex (soundSource[i].stream_mutex);
 
@@ -142,7 +143,13 @@ StreamDecoderTaskFunc (void *data)
 				}
 			}
 
-			//alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
+			alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
+            if (queued != NUM_SOUNDBUFFERS)
+            {
+                fprintf (stderr, "StreamDecoderTaskFunc(): warning, queued %d != NUM_SOUNDBUFFERS %d\n",
+                    queued, NUM_SOUNDBUFFERS);
+            }
+            
 			//fprintf (stderr, "StreamDecoderTaskFunc(): source %d, processed %d queued %d\n", i, processed, queued);
 
 			while (processed && !finished)
@@ -161,14 +168,15 @@ StreamDecoderTaskFunc (void *data)
 				}
 
 				decoded_bytes = Sound_Decode (soundSource[i].sample->decoder);
+                //fprintf (stderr, "StreamDecoderTaskFunc(): decoded_bytes %d, source %d\n", decoded_bytes, i);
 
 				if (soundSource[i].sample->decoder->flags & SOUND_SAMPLEFLAG_EOF)
 				{
-					if (i == SPEECH_SOURCE && speech_callback)
+					if (i == SPEECH_SOURCE && speech_advancetrack)
 					{
-						advance_track (0);
 						finished = AL_TRUE;
 						soundSource[i].stream_should_be_playing = FALSE;
+						do_speech_advancetrack = AL_TRUE;
 					}
 					else
 					{
@@ -228,6 +236,16 @@ StreamDecoderTaskFunc (void *data)
 			}
 
 			UnlockMutex (soundSource[i].stream_mutex);
+
+			if (i == SPEECH_SOURCE)
+			{
+				if (do_speech_advancetrack)
+				{
+					//fprintf (stderr, "StreamDecoderTaskFunc(): calling advance_track\n");
+					do_speech_advancetrack = AL_FALSE;
+					advance_track (0);
+				}
+			}
 		}
 	}
 

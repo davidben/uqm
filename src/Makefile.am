@@ -9,7 +9,7 @@ INCLUDES = @SDL_CFLAGS@ \
 
 bin_PROGRAMS = sc2
 
-sc2_SOURCES = port.c starcon2.c
+sc2_SOURCES = port.c starcon2.c options.c
 sc2_LDADD = sc2code/libsc2.la @SDL_LIBS@ @GL_LIBS@
-noinst_HEADERS = port.h
+noinst_HEADERS = port.h options.h
 

@@ -72,7 +72,6 @@ Glitches (don't crash the game, medium priority):
   - Occasional clipping/popping/etc artifacts
     - Maybe caused by buggy soundcard drivers also
   - Some unimplemented functions (for oscilloscope and dialogue seeking)
-  - Occasionally some speech oggs don't play
   - When mod music is looping, there's some volume fade at the end of tune,
     then it starts playing again. This shouldn't happen? (modplug only?)
   - Stock SDL_sound package for VC is outdated and win32 users have to get

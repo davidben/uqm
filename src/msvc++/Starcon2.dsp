@@ -3092,6 +3092,14 @@ SOURCE=..\port.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\options.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\options.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\starcon2.c
 # End Source File
 # End Group

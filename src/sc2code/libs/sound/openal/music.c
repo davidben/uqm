@@ -20,6 +20,7 @@
 #ifdef SOUNDMODULE_OPENAL
 
 #include "sound.h"
+#include "options.h"
 
 static MUSIC_REF curMusicRef;
 
@@ -102,7 +103,7 @@ DestroyMusic (MUSIC_REF MusicRef)
 
 void
 SetMusicVolume (COUNT Volume)
-{	
+{
 	float f = (Volume / (ALfloat)MAX_VOLUME) * musicVolumeScale;
 	musicVolume = Volume;
 	alSourcef (soundSource[MUSIC_SOURCE].handle, AL_GAIN, f);
@@ -128,11 +129,36 @@ _GetMusicData (FILE *fp, DWORD length)
 		}		
 		else
 		{
-			*pmus = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			
-			if (((*pmus)->decoder = Sound_NewSampleFromFile (_cur_resfile_name, NULL, 4096)) == 0)
+            char filename[1000];
+
+            *pmus = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
+            strcpy (filename, _cur_resfile_name);
+
+            switch (optWhichMusic)
+            {
+                default:
+                case MUSIC_3DO:
+                {
+                    char threedoname[1000];
+                    
+                    strcpy (threedoname, filename);
+                    strcpy (&threedoname[strlen (threedoname)-3], "ogg");
+                    if (FileExists (threedoname))
+                    {
+                        strcpy (filename, threedoname);
+                    }                    
+                    break;   
+                }
+                case MUSIC_PC:
+                {
+                    break;
+                }            
+            }
+
+            fprintf (stderr, "_GetMusicData(): loading %s\n", filename);                        			
+			if (((*pmus)->decoder = Sound_NewSampleFromFile (filename, NULL, 4096)) == 0)
 			{
-				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", _cur_resfile_name);
+				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
 
 				UnlockMusicData (h);
 				mem_release (h);

@@ -33,7 +33,7 @@
 #endif
 
 
-#define NUM_SOUNDBUFFERS 8
+#define NUM_SOUNDBUFFERS 10
 #define FIRST_SFX_SOURCE 0
 #define LAST_SFX_SOURCE 4
 #define MUSIC_SOURCE (LAST_SFX_SOURCE + 1)

@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
+/* By Mika Kolehmainen, 2002-10-23
  */
 
 #ifndef STREAM_H
@@ -27,7 +27,7 @@ void ResumeStream (ALuint source);
 BOOLEAN PlayingStream (ALuint source);
 int StreamDecoderTaskFunc (void *data);
 
-extern BOOLEAN speech_callback;
+extern BOOLEAN speech_advancetrack;
 void advance_track (int channel_finished);
 
 #endif

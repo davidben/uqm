@@ -64,6 +64,7 @@ TFB_InitSound (int driver, int flags, int frequency)
 	fprintf (stderr, "    renderer:    %s\n", alGetString (AL_RENDERER));
 	fprintf (stderr, "    device:      %s\n",
 		alcGetString (alcDevice, ALC_DEFAULT_DEVICE_SPECIFIER));
+    fprintf (stderr, "    extensions:  %s\n", alGetString (AL_EXTENSIONS));
 
 	fprintf (stderr, "Initializing SDL_sound.\n");
 	if (!Sound_Init())

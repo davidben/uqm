@@ -38,7 +38,7 @@ static struct
 void
 JumpTrack (int abort)
 {
-	speech_callback = FALSE;
+	speech_advancetrack = FALSE;
 
 	if (track_clip[tcur].sample)
 	{
@@ -85,12 +85,10 @@ ResumeTrack ()
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		alGetSourcei (soundSource[SPEECH_SOURCE].handle, AL_SOURCE_STATE, &state);
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 
 		if (!soundSource[SPEECH_SOURCE].stream_should_be_playing && 
 			state == AL_PAUSED)
 		{
-			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			ResumeStream (SPEECH_SOURCE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
@@ -98,9 +96,14 @@ ResumeTrack ()
 		{
 			if (tcur == 0)
 			{
-				speech_callback = TRUE;
+				speech_advancetrack = TRUE;
 			}
+			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			advance_track (-1);
+		}
+		else
+		{
+			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
 	}
 }
@@ -133,7 +136,7 @@ PlayingTrack ()
 void
 StopTrack ()
 {
-	speech_callback = FALSE;
+	speech_advancetrack = FALSE;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -223,8 +226,12 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText)
 void
 PauseTrack ()
 {
-	/*if (tcur < tct && track_clip[tcur].chunk)
-		Mix_Pause (VOICE_CHANNEL);*/
+	if (tcur < tct && track_clip[tcur].sample)
+	{
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PauseStream (SPEECH_SOURCE);
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	}
 }
 
 void

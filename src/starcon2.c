@@ -28,16 +28,8 @@
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
+#include "options.h"
 
-BOOLEAN FileExists (char *filename)
-{
-    FILE *fp;
-    if ((fp = fopen(filename, "rb")) == NULL)
-        return FALSE;
-
-    fclose (fp);
-    return TRUE;
-}
 
 void
 CDToContentDir (char *contentdir)
@@ -80,6 +72,8 @@ main (int argc, char *argv[])
 		{"musicvol", 1, NULL, 'M'},
 		{"sfxvol", 1, NULL, 'S'},
 		{"speechvol", 1, NULL, 'T'},
+        {"3domusic", 0, NULL, 'e'},
+        {"pcmusic", 0, NULL, 'm'},
 		{0, 0, 0, 0}
 	};
 
@@ -89,7 +83,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "../../content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?hM:S:T:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?hM:S:T:em", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -143,6 +137,12 @@ main (int argc, char *argv[])
 					vol = 100;
 				speechVolumeScale = vol / 100.0f;
 			break;
+            case 'e':
+                optWhichMusic = MUSIC_3DO;
+            break;
+            case 'm':
+                optWhichMusic = MUSIC_PC;
+            break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -161,6 +161,8 @@ main (int argc, char *argv[])
 				printf("  -M, --musicvol=VOLUME (0-100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100)\n");
+                printf("  -e, --3domusic\n");
+                printf("  -m, --pcmusic\n");
 				return 0;
 			break;
 		}
