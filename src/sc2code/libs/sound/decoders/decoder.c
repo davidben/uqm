@@ -415,6 +415,12 @@ uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			else
 				buffer_size = decoder->buffer_size;
 
+			if (buffer_size == 0)
+			{	// nothing more to decode
+				decoder->error = SOUNDDECODER_EOF;
+				return 0;
+			}
+
 			while (decoded_bytes < buffer_size)
 			{	
 				/* Produce output in requested byte-order */
