@@ -66,6 +66,7 @@ BUGFIXES
 - Some memory leaks have been eliminated
 - Fixes and speed improvements on bilinear, biadapt, biadv scalers
 - Various minor graphics glitch fixes
+- Crew death on planet is now counted properly in all cases
 
 INTERNAL CHANGES
 
