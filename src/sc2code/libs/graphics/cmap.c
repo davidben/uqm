@@ -41,11 +41,6 @@ static TFB_Palette cmap_rgb[256];
 static int cmap_type = 0;
 
 
-int TFB_GetFadeStatus ()
-{
-	return XForming;
-}
-
 int TFB_GetFadeAmount ()
 {
 	return cur;

@@ -20,6 +20,10 @@
 
 #include "libs/graphics/sdl/pure.h"
 
+static SDL_Surface *fade_black;
+static SDL_Surface *fade_white;
+static SDL_Surface *fade_temp;
+
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -53,15 +57,16 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
+	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly with fades/scaling
 	if (width == 320 && height == 240)
 	{
-		videomode_flags = SDL_HWSURFACE;
+		videomode_flags = SDL_SWSURFACE;
 		ScreenWidthActual = 320;
 		ScreenHeightActual = 240;
 	}
 	else
 	{
-		videomode_flags = SDL_SWSURFACE; // cannot be HWSURFACE because of our scaling routine
+		videomode_flags = SDL_SWSURFACE;
 		ScreenWidthActual = 640;
 		ScreenHeightActual = 480;
 
@@ -96,26 +101,20 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (test_extra == NULL)
 	{
-		printf("Couldn't create back buffer: %s\n",
-			SDL_GetError());
+		printf("Couldn't create back buffer: %s\n", SDL_GetError());
 		exit(-1);
 	}
 
-	SDL_Screen = SDL_DisplayFormat(test_extra);
-	SDL_FreeSurface(test_extra);
+	SDL_Screen = SDL_DisplayFormat (test_extra);
+	ExtraScreen = SDL_DisplayFormat (test_extra);
 
-	test_extra = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+	fade_white = SDL_DisplayFormat (test_extra);
+	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
+	fade_black = SDL_DisplayFormat (test_extra);
+	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
+	fade_temp = SDL_DisplayFormat (test_extra);
 
-	if (test_extra == NULL)
-	{
-		printf("Couldn't create workspace buffer: %s\n",
-			SDL_GetError());
-		exit(-1);
-	}
-
-	ExtraScreen = SDL_DisplayFormat(test_extra);
-	SDL_FreeSurface(test_extra);
+	SDL_FreeSurface (test_extra);
 
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
@@ -130,21 +129,41 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 void
 TFB_Pure_SwapBuffers ()
 {
+	SDL_Surface *backbuffer = SDL_Screen;
+	int fade_amount = TFB_GetFadeAmount ();
+
+	if (fade_amount != 255)
+	{
+		backbuffer = fade_temp;
+		SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
+
+		if (fade_amount < 255)
+		{
+			SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
+			SDL_BlitSurface (fade_black, NULL, backbuffer, NULL);
+		}
+		else
+		{
+			SDL_SetAlpha (fade_white, SDL_SRCALPHA, 255 - (255 - fade_amount));
+			SDL_BlitSurface (fade_white, NULL, backbuffer, NULL);
+		}
+	}
+
 	if (ScreenWidth == 320 && ScreenHeight == 240 &&
 		ScreenWidthActual == 640 && ScreenHeightActual == 480)
 	{
-		// scales SDL_Screen to SDL_Video (640x480)
+		// scales 320x240 backbuffer to 640x480
 
 		int x, y;
 		Uint8 *src_p, *src_p2, *dst_p;
 		
 		SDL_LockSurface (SDL_Video);
-		SDL_LockSurface (SDL_Screen);
+		SDL_LockSurface (backbuffer);
 
-		src_p = SDL_Screen->pixels;
+		src_p = backbuffer->pixels;
 		dst_p = SDL_Video->pixels;
 
-		switch (SDL_Screen->format->BytesPerPixel)
+		switch (backbuffer->format->BytesPerPixel)
 		{
 		case 1:
 		{
@@ -262,13 +281,13 @@ TFB_Pure_SwapBuffers ()
 		}
 		}
 
-		SDL_UnlockSurface (SDL_Screen);
+		SDL_UnlockSurface (backbuffer);
 		SDL_UnlockSurface (SDL_Video);
 	}
 	else
 	{
 		// resolution is 320x240 so we can blit directly
-		SDL_BlitSurface (SDL_Screen, NULL, SDL_Video, NULL);
+		SDL_BlitSurface (backbuffer, NULL, SDL_Video, NULL);
 	}
 
 	SDL_UpdateRect (SDL_Video, 0, 0, 0, 0);
