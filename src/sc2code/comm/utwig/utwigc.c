@@ -195,7 +195,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
 		{
-			NPCPhrase (NULL_PHRASE /* NO_ULTRON_AT_BOMB */);
+			NPCPhrase (NO_ULTRON_AT_BOMB);
 
 			SET_GAME_STATE (REFUSED_ULTRON_AT_BOMB, 1);
 		}
