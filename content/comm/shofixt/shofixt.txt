@@ -97,7 +97,7 @@ Kyaiee!
 Don't you know the war is over?
 
 #(NEVER)	shofi017.ogg
-For me, Tanaka the Warrior, it will never be over.
+For me it will never be over.
 Kyaiee!
 
 #(look0)
@@ -219,8 +219,9 @@ What might that be?
 Shofixti, I am now your new commander. I order you not to kill yourself.  You are to remain here and guard your solar system.
 
 #(OK_WILL_BE_SENTRY)	shofi033.ogg
-Very well, Captain. I will do as you have ordered.
-I will remain here until you have further orders.
+To fight again? Against the Ur-Quan?
+Yes.  But no
+I cannot leave my homeworld unguarded. I will remain here and keep a solitary vigil.
 Goodbye.
 
 #(dont_do_it)
@@ -303,35 +304,47 @@ vile battle thralls. I await the return of the hero Daikon and the rebirth of my
 Where is your life-filled homeworld, Kyabetsu?
 
 #(BLEW_IT_UP)	shofi039.ogg
-We blew up the sun, heh, heh, heh!
+My people blue up the sun, heh, heh, heh!
+Or at least they caused it to flare like a nova, destroying the many hundreds of
+Hierarchy vessels that had invaded our system to enslave the Shofixti.
 
 #(how_survive)
 If your sun went nova, how did you survive?
 
 #(NOT_HERE)	shofi040.ogg
-I wasn't here when they made the sun nova.
-I was off close to the coreward front.
-I had been cut off from my squadron, and had to travel home alone.
+I wasn't here when they made the sun flare.
+I was assigned to a Yahat squadron as a forward scout performing a deep recon in Mycon space.
+We were sent to investigate reports of unusual Mycon activity around Beta Brahe.
+I was the first ship to enter the system. My scanners showed a small fleet showed a
+small fleet of Mycon vessels clustered around the planet conducting a test of some a device.
+The unit was small, not even half the size of a ship. When the Mycon activated it
+a glow began radiating outward. I crept closer, to get a better look.
+Suddenly there was a flare, like a newborn sun, blinding me and overloading my sensors.
+When I recovered my vision, hours later, the Mycon and their device were gone.
+I was able to affect repairs to my ship and depart the systems but I had been
+cut off from my squadron, and had to travel home alone.
 
 #(what_happened)
 So what happened to your ship?
 
 #(MET_VUX)	shofi041.ogg
-The shortest, straight-line path home from the front was through VUX space.
-Unfortunately, a VUX Intruder was able to affix some of those vile limpet things to my ship
+On my way home, I encountered a VUX Intruder.
+Before I destroyed it, the VUX was able to affix some of those vile limpet things to my ship
 and I had to return home at a greatly diminished speed.
 I did find one thing interesting though as I skimmed through the edge of Yehat space.
 I dropped into Zeta Sextantis to re-charge some of my depleted energy cells
 so I moved into the extreme inner system. There, right next to the sun
-I found a very strange planet... it messed up my sensor somehow
+I found a very strange planet... it messed up my sensors somehow
 that's why I couldn't recognize your ship at first.
-I'd never seen a planet like that before, so maybe you should check it out?
+I'd never seen a planet like that before, so maybe you should investigate?
 
 #(glory_device)
 When we were fighting, why didn't you use your Glory Device?
 
 #(SWITCH_BROKE)	shofi042.ogg
-The switch broke.
+During my battle with the VUX, I decided to employ the weapon.
+I guess I used too much gusto
+and the switch broke.
 
 #(bye)
 Goodbye, Tanaka.
