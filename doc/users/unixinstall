@@ -10,9 +10,10 @@ If you haven't done so already, download the content .zip files packages
 that you want, from where you got this source package.
 You'll need uqm-0.2-content.zip; uqm-0.2-3domusic.zip (music from the 3DO
 version) and uqm-0.2-voice.zip (spoken alien dialogs) are optional.
-Unpack those .zip files in the top dir of the source tree
-(the dir with (among others) COPYING, src/, build.vars.in):
-Something like 'unzip /path/to/uqm-0.2-content.tgz'.
+Create a 'content' dir in the top of the source tree (the dir with
+(among others) COPYING, src/, build.vars.in), and unpack those .zip
+files there.
+Something like 'unzip /path/to/uqm-0.2-content.zip'.
 
 3.
 Run './build.sh uqm'
