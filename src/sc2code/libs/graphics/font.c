@@ -22,8 +22,11 @@
 
 extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to,
 		BYTE type);
+static wchar_t getNextChar(const unsigned char **ptr);
+static inline FRAME_DESC *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
 
 static BYTE char_delta_array[MAX_DELTAS];
+		// XXX: This does not seem to be used.
 
 static FONTEFFECT FontEffect = {0,0,0,0};
 
@@ -138,8 +141,8 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 	{
 		COORD top_y, bot_y;
 		SIZE width;
-		UNICODE next_ch;
-		const UNICODE *pStr;
+		wchar_t next_ch;
+		const unsigned char *pStr;
 
 		if (pdelta == 0)
 		{
@@ -148,36 +151,39 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 				num_chars = MAX_DELTAS;
 		}
 
-		top_y = bot_y = 0;
+		top_y = 0;
+		bot_y = 0;
 		width = 0;
 		pStr = lpText->pStr;
-		if ((next_ch = *pStr++) == '\0')
+		next_ch = getNextChar (&pStr);
+		if (next_ch == '\0')
 			num_chars = 0;
-		next_ch -= FIRST_CHAR;
 		while (num_chars--)
 		{
-			UNICODE ch;
+			wchar_t ch;
 			SIZE last_width;
+			FRAME_DESC *charFrame;
 
-				last_width = width;
+			last_width = width;
 
 			ch = next_ch;
-			if ((next_ch = *pStr++) == '\0')
+			next_ch = getNextChar (&pStr);
+			if (next_ch == '\0')
 				num_chars = 0;
-			next_ch -= FIRST_CHAR;
-			if (ch < (UNICODE) MAX_CHARS &&
-					GetFrameWidth (&FontPtr->CharDesc[ch]))
+
+			charFrame = getCharFrame (FontPtr, ch);
+			if (charFrame != NULL && GetFrameWidth (charFrame))
 			{
 				COORD y;
 
-				y = -(FontPtr->CharDesc[ch]).HotSpot.y;
+				y = -charFrame->HotSpot.y;
 				if (y < top_y)
 					top_y = y;
-				y += GetFrameHeight (&FontPtr->CharDesc[ch]);
+				y += GetFrameHeight (charFrame);
 				if (y > bot_y)
 					bot_y = y;
 
-				width += GetFrameWidth (&FontPtr->CharDesc[ch]);
+				width += GetFrameWidth (charFrame);
 #if 0
 				if (num_chars && next_ch < (UNICODE) MAX_CHARS
 						&& !(FontPtr->KernTab[ch]
@@ -226,11 +232,12 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
 	FONTPTR FontPtr;
 
-	if ((FontPtr = _CurFontPtr) != 0)
+	FontPtr = _CurFontPtr;
+	if (FontPtr != 0)
 	{
 		COUNT num_chars;
-		UNICODE next_ch;
-		const UNICODE *pStr;
+		wchar_t next_ch;
+		const unsigned char *pStr;
 		TEXTPTR TextPtr;
 		PRIMITIVE locPrim;
 		TFB_Palette color;
@@ -251,19 +258,20 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		num_chars = TextPtr->CharCount;
 
 		pStr = TextPtr->pStr;
-		if ((next_ch = *pStr++) == '\0')
+		next_ch = getNextChar (&pStr);
+		if (next_ch == '\0')
 			num_chars = 0;
-		next_ch -= FIRST_CHAR;
 		while (num_chars--)
 		{
-			UNICODE ch;
+			wchar_t ch;
 
 			ch = next_ch;
-			if ((next_ch = *pStr++) == '\0')
+			next_ch = getNextChar (&pStr);
+			if (next_ch == '\0')
 				num_chars = 0;
-			next_ch -= FIRST_CHAR;
-			locPrim.Object.Stamp.frame = &FontPtr->CharDesc[ch];
-			if (ch < (UNICODE) MAX_CHARS &&
+
+			locPrim.Object.Stamp.frame = getCharFrame (FontPtr, ch);
+			if (locPrim.Object.Stamp.frame != NULL &&
 					GetFrameWidth (locPrim.Object.Stamp.frame))
 			{
 				RECT r;
@@ -281,17 +289,19 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 					{
 						FRAME origFrame = locPrim.Object.Stamp.frame;
 						locPrim.Object.Stamp.frame = Build_Font_Effect(
-							locPrim.Object.Stamp.frame, 
-							FontEffect.from, FontEffect.to, FontEffect.type);
+								locPrim.Object.Stamp.frame, FontEffect.from,
+								FontEffect.to, FontEffect.type);
 						TFB_Prim_Stamp (&locPrim.Object.Stamp);
-						DestroyDrawable (ReleaseDrawable (locPrim.Object.Stamp.frame));
+						DestroyDrawable (ReleaseDrawable (
+								locPrim.Object.Stamp.frame));
 						locPrim.Object.Stamp.frame = origFrame;
 					}
 					else
 						TFB_Prim_StampFill (&locPrim.Object.Stamp, &color);
 				}
 
-				locPrim.Object.Stamp.origin.x += GetFrameWidth (locPrim.Object.Stamp.frame);
+				locPrim.Object.Stamp.origin.x += GetFrameWidth (
+						locPrim.Object.Stamp.frame);
 #if 0
 				if (num_chars && next_ch < (UNICODE) MAX_CHARS
 						&& !(FontPtr->KernTab[ch]
@@ -302,3 +312,107 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 	}
 }
+
+static inline FRAME_DESC *
+getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
+	if (ch > MAX_CHARS)
+		return NULL;
+	return &fontPtr->CharDesc[ch - FIRST_CHAR];
+}
+
+// Get one character from a UTF-8 encoded string.
+// *ptr will point to the start of the next character.
+// Returns 0 if the encoding is bad. This can be distinguished from the
+// '\0' character by checking whether **ptr == '\0'.
+static wchar_t
+getNextChar(const unsigned char **ptr) {
+	wchar_t result;
+
+	if (**ptr < 0x80) {
+		// 0xxxxxxx, regular ASCII
+		result = **ptr;
+		(*ptr)++;
+
+		return result;
+	}
+
+	if ((**ptr & 0xe0) == 0xc0) {
+		// 110xxxxx; 10xxxxxx must follow
+		// Value between 0x00000080 and 0x0000007f (inclusive)
+		result = **ptr & 0x1f;
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if (result < 0x00000080) {
+			// invalid encoding - must reject
+			goto err;
+		}
+		return result;
+	}
+
+	if ((**ptr & 0xf0) == 0xe0) {
+		// 1110xxxx; 10xxxxxx 10xxxxxx must follow
+		// Value between 0x00000800 and 0x000007ff (inclusive)
+		result = **ptr & 0x0f;
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if (result < 0x00000800) {
+			// invalid encoding - must reject
+			goto err;
+		}
+		return result;
+	}
+
+	if ((**ptr & 0xf8) == 0xf0) {
+		// 11110xxx; 10xxxxxx 10xxxxxx 10xxxxxx must follow
+		// Value between 0x00010000 and 0x0010ffff (inclusive)
+		result = **ptr & 0x07;
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if ((**ptr & 0xc0) != 0x80)
+			goto err;
+		result = (result << 6) | ((**ptr) & 0x3f);
+		(*ptr)++;
+		
+		if (result < 0x00010000) {
+			// invalid encoding - must reject
+			goto err;
+		}
+		return result;
+	}
+	
+err:
+	fprintf(stderr, "Warning: Invalid UTF8 sequence.\n");
+	
+	// Resynchronise (skip everything starting with 0x10xxxxxx):
+	while ((**ptr & 0xc0) == 0x80)
+		*ptr++;
+	
+	return 0;
+}
+
+
