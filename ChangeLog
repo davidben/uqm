@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Colormap format (.ct files) changed to allow for richer graphics.
+  First step towards importing some of the original DOS gfx.
+  See bug #314 for more info. -Alex
 - Better dependency checking in unix build scripts - SvdB
 - Many options menu changes: left-justified categories, and the ability 
   to change driver/resolution/bpp/scaler in real time, and updates are
