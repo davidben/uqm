@@ -18,15 +18,16 @@
 
 #ifndef WIN32
 #include <unistd.h>
+#include <getopt.h>
 #else
 #include <direct.h>
+#include "getopt/getopt.h"
 #endif
 
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
-
 
 BOOLEAN FileExists (char *filename)
 {
@@ -56,65 +57,85 @@ CDToContentDir (char *contentdir)
 int
 main (int argc, char *argv[])
 {
-	int i;
 	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
 	int gfxflags = 0;
 	int width = 640, height = 480, bpp = 16;
 	int frequency = 44100;
-    char contentdir[1000];
+	char contentdir[1000];
+
+	int option_index = 0, c;
+	static struct option long_options[] = 
+	{
+		{"res", 1, NULL, 'r'},
+		{"bpp", 1, NULL, 'd'},
+		{"fullscreen", 0, NULL, 'f'},
+		{"opengl", 0, NULL, 'o'},
+		{"bilinear", 0, NULL, 'b'},
+		{"frequency", 1, NULL, 'q'},
+		{"fps", 0, NULL, 'p'},
+		{"tv", 0, NULL, 't'},
+		{"contentdir", 1, NULL, 'c'},
+		{"help", 0, NULL, 'h'},
+		{0, 0, 0, 0}
+	};
 
 #ifndef WIN32
-    strcpy (contentdir, "content");
+	strcpy (contentdir, "content");
 #else
 	strcpy (contentdir, "../../content");
 #endif
 
-	// TODO: proper commandline parser, this is just a quick hack
-	for (i=1;i<argc;++i) 
+	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?h", long_options, &option_index)) != -1)
 	{
-		if (!strcmp(argv[i],"-res")) 
-		{
-			i++;
-			sscanf(argv[i],"%dx%d",&width,&height);
+		switch (c) {
+			case 'r':
+				sscanf(optarg, "%dx%d", &width, &height);
+			break;
+			case 'd':
+				sscanf(optarg, "%d", &bpp);
+			break;
+			case 'f':
+				gfxflags |= TFB_GFXFLAGS_FULLSCREEN;
+			break;
+			case 'o':
+				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
+			break;
+			case 'b':
+				gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
+			break;
+			case 'q':
+				sscanf(optarg, "%d", &frequency);
+			break;
+			case 'p':
+				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
+			break;
+			case 't':
+				gfxflags |= TFB_GFXFLAGS_TVEFFECT;
+			break;
+			case 'c':
+				sscanf(optarg, "%s", contentdir);
+			break;
+			default:
+				printf ("\nOption %s not found!\n", long_options[option_index].name);
+			case '?':
+			case 'h':
+				printf("\nThe Ur-Quan Masters\n");
+				printf("Options:\n");
+				printf("  -r, --res=WIDTHxHEIGHT\n");
+				printf("  -d, --bpp=BITSPERPLANE\n");
+				printf("  -f, --fullscreen\n");
+				printf("  -o, --opengl\n");
+				printf("  -b, --bilinear\n");
+				printf("  -q, --frequency=FREQUENCY\n");
+				printf("  -p, --fps\n");
+				printf("  -t, --tv\n");
+				printf("  -c, --contentdir=CONTENTDIR\n");
+				return 0;
+			break;
 		}
-		else if (!strcmp(argv[i],"-bpp")) 
-		{
-			i++;
-			sscanf(argv[i],"%d",&bpp);
-		}
-		else if (!strcmp(argv[i],"-fullscreen")) 
-		{
-			gfxflags |= TFB_GFXFLAGS_FULLSCREEN;
-		}
-		else if (!strcmp(argv[i],"-opengl")) 
-		{
-			gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
-		}
-		else if (!strcmp(argv[i],"-bilinear")) 
-		{
-			gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
-		}
-		else if (!strcmp(argv[i],"-frequency"))
-		{
-			i++;
-			sscanf(argv[i],"%d",&frequency);
-		}
-		else if (!strcmp(argv[i],"-fps"))
-		{
-			gfxflags |= TFB_GFXFLAGS_SHOWFPS;
-		}
-		else if (!strcmp(argv[i],"-tv"))
-		{
-			gfxflags |= TFB_GFXFLAGS_TVEFFECT;
-		}
-        else if (!strcmp(argv[i],"-content"))
-        {
-            i++;
-            sscanf(argv[i], "%s", contentdir);
-        }
 	}
-
-    CDToContentDir (contentdir);
+	
+	CDToContentDir (contentdir);
     
 	InitThreadSystem ();
 	InitTimeSystem ();
