@@ -86,6 +86,22 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter ""
+# Begin Group "getopt"
+# Begin Source File
+
+SOURCE=..\getopt\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\getopt\getopt1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\getopt\getopt.h
+# End Source File
+# End Group
+
+# PROP Default_Filter ""
 # Begin Group "sc2code"
 
 # PROP Default_Filter ""
