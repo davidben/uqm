@@ -144,7 +144,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 				TimeOut = GetTimeCounter ();
 				while (word_chars--)
 				{
-					if (!Sleepy)
+					if (!Sleepy || (GLOBAL (CurrentActivity) & CHECK_ABORT))
 						font_DrawText (&t);
 					else
 					{
@@ -156,7 +156,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 
 						if (t.pStr[0] == ',')
 							TimeOut += ONE_SECOND / 4;
-						if (t.pStr[0] == '.')
+						if (t.pStr[0] == '.' || t.pStr[0] == '!' || t.pStr[0] == '?')
 							TimeOut += ONE_SECOND / 2;
 						else
 							TimeOut += ONE_SECOND / 20;
@@ -201,11 +201,9 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 				ClearSemaphore (GraphicsSem);
 			}
 
-			while (AnyButtonPress (TRUE))
-				TaskSwitch ();
+			if (WaitAnyButtonOrQuit (TRUE))
+				break;
 
-			while (!AnyButtonPress (TRUE))
-				TaskSwitch ();
 InitPageCell:
 			ButtonState = 1;
 			t.baseline.y = r.extent.height + 1;
