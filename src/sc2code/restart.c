@@ -222,7 +222,9 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		}
 		if (NewState != pMS->CurState)
 		{
+			BatchGraphics ();
 			DrawRestartMenu (pMS->CurState, NewState, pMS->CurFrame);
+			UnbatchGraphics ();
 			pMS->CurState = NewState;
 		}
 	}

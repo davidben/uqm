@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Version number in the main menu does not blink anymore when the
+  menu selection is changed (bug #672), from Nic
 - Massive amount of file restructuring and cleanups. Need many more. - SvdB
 - Added Intro and Ending slide shows (bug #46); use "-i pc" -Alex
 - Cross-fades in OpenGL mode with complex scalers fixed (bug #674) -Alex
