@@ -23,7 +23,7 @@
 #define OPTIONS_H
 
 #define UQM_MAJOR_VERSION 0
-#define UQM_MINOR_VERSION 13
+#define UQM_MINOR_VERSION 14
 
 #define OPT_3DO 0x01
 #define OPT_PC  0x02
