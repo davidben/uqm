@@ -1,5 +1,5 @@
 default:
-	./build sc2
+	./build.sh sc2
 
 %.rc.o:
 	@DIR=$(dir $@); \

@@ -11,6 +11,8 @@ quithandler() {
 
 trap quithandler INT
 
+umask 022
+
 cat << EOF
 -== The Ur-Quan Masters installation ==-
 

@@ -4,6 +4,9 @@
 - PROG_*_DETECT, LIB_*_DETECT
 - static compilation
 - error message for './build.sh uqm asdasddsa'
+- option to (re)generate files from config.state
+  (useful for automatic building)
+- generating tags files
 
 some docs
   - sc2_LDFLAGS etc are only relevant in the top dir

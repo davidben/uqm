@@ -54,7 +54,7 @@ chmod -R go+rX "${TEMPDIR}/attach"
 
 echo "Making tar.gz file for everything except from the content."
 echo "Using maximum compression; this may take a moment."
-tar -c -C "${TEMPDIR}/attach/" . | gzip -9 > "${TEMPDIR}/attach.tar.gz"
+tar -c -C "${TEMPDIR}/attach/" -f - . | gzip -9 > "${TEMPDIR}/attach.tar.gz"
 
 {
 	cat << EOF
