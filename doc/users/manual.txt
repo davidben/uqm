@@ -86,6 +86,10 @@ Use the .MOD based PC soundtrack everywhere.
 Can be "high", "medium", or "low".  Specifies how nice the audio
 sounds.  Slower machines should lower the audio quality.
 
+	-u           (or --nosubtitles)
+	
+Disables subtitles.
+
 			   THE STORY SO FAR
 
 For the past decade, Earth and the rest of the Alliance of Free Stars

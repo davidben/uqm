@@ -77,6 +77,7 @@ main (int argc, char *argv[])
         {"3domusic", 0, NULL, 'e'},
         {"pcmusic", 0, NULL, 'm'},
 		{"audioquality", 1, NULL, 'q'},
+		{"nosubtitles", 0, NULL, 'u'},
 		{0, 0, 0, 0}
 	};
 
@@ -90,7 +91,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:u", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -177,6 +178,9 @@ main (int argc, char *argv[])
 					soundflags |= TFB_SOUNDFLAGS_LQAUDIO;
 				}
 			break;
+		    case 'u':
+			    optSubtitles = FALSE;
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -196,6 +200,7 @@ main (int argc, char *argv[])
                 printf("  -e, --3domusic (default)\n");
                 printf("  -m, --pcmusic\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
+			    printf("  -u, --nosubtitles\n");
 				return 0;
 			break;
 		}

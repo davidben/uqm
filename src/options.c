@@ -25,7 +25,7 @@
 #include "options.h"
 
 int optWhichMusic = MUSIC_3DO;
-
+BOOLEAN optSubtitles = TRUE;
 
 BOOLEAN FileExists (char *filename)
 {

@@ -21,6 +21,7 @@
 #include "libs/sound/trackplayer.h"
 #include "starcon.h"
 #include "commglue.h"
+#include "options.h"
 
 void InitOscilloscope (int x, int y, int width, int height,
 		void *f);
@@ -1854,6 +1855,10 @@ do_subtitles (UNICODE *pStr)
 {
 	static DWORD TimeOut;
 
+	// TODO: proper disabling of subtitles, this one prolly isn't 'safe'
+	if (optSubtitles == FALSE)
+	    return 0;
+	
 	if (pStr == 0)
 		return (subtitle_state = NEXT_SUBTITLE);
 	else if (pStr == (void *)~0)

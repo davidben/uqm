@@ -33,6 +33,8 @@ enum
 };
 extern int optWhichMusic;
 
+extern BOOLEAN optSubtitles;
+
 BOOLEAN FileExists (char *filename);
 
 #endif
