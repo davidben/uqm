@@ -55,7 +55,19 @@ LoadKeyConfig (FILE *fp, DWORD length)
 
 	ReadResFile (buf, 1, sizeof (buf), fp);
 
-	for (i = 0, pbuf = buf; i < NUM_PLAYERS; ++i, pbuf += 10)
+	// new temporary melee keys 2002/11/22
+	// mapped as left, right, thrust, ?, ?, fire, special, ?, ?
+	KeyboardInput[0] = CaptureInputDevice 
+	(
+		CreateJoystickKeyboardDevice (SK_LF_ARROW, SK_RT_ARROW, SK_UP_ARROW, 0, 0, SK_RT_SHIFT, SK_CTL, 0, 0x1b)
+	);
+	KeyboardInput[1] = CaptureInputDevice 
+	(
+		CreateJoystickKeyboardDevice ('s', 'f', 'e', 0, 0, 'q', 'a', 0, 0x1b)
+	);
+
+	// old melee key code
+	/*for (i = 0, pbuf = buf; i < NUM_PLAYERS; ++i, pbuf += 10)
 	{
 		KeyboardInput[i] = CaptureInputDevice (
 				CreateJoystickKeyboardDevice (
@@ -65,7 +77,7 @@ LoadKeyConfig (FILE *fp, DWORD length)
 						)
 				);
 
-	}
+	}*/
 
 	(void) length;  /* Satisfying compiler (unused parameter) */
 	return (NULL_HANDLE);
