@@ -95,6 +95,7 @@ enum
 	GENERAL_INFO_3,
 	whats_up_4,
 	GENERAL_INFO_4,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

@@ -383,4 +383,12 @@ and now we have eliminated the Starbase orbiting your planet Earth as well.
 Your efforts to resist us are futile. 
 You are defeated!
   
+#(OUT_TAKES) black045.ogg
+We are the the Ur-Quan Kohr-Ah...
+...The followers of the Path of Now and Forever!
+You are filth. We shall cleanse.
+You WILL be annigilated... I mean annihigated.. damn!
+CUT! CUT! Let's start over!
+Hey, mister director... can you PLEASE think of SOME other word besides...
+...agnigilate... I mean, oh what's the use. I give up.
   

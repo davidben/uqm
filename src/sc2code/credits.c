@@ -18,6 +18,8 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/sound/sound_common.h"
+#include "oscill.h"
 
 //Added by Chris
 
@@ -115,4 +117,40 @@ FreeHyperData ();
 	}
 }
 
+void
+OutTakes (void)
+{
+	RECT r;
+	float oldvolume = speechVolumeScale;
 
+	speechVolumeScale = 0.0f;
+	sliderDisabled = TRUE;
+
+	SetSemaphore (GraphicsSem);
+	SetContext (ScreenContext);
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	r.corner.x = r.corner.y = 0;
+	r.extent.width = SCREEN_WIDTH;
+	r.extent.height = SCREEN_HEIGHT;
+	DrawFilledRectangle (&r);	
+	ClearSemaphore (GraphicsSem);
+
+	InitCommunication (ZOQFOTPIK_CONVERSATION);
+	InitCommunication (TALKING_PET_CONVERSATION);
+	InitCommunication (ORZ_CONVERSATION);
+	InitCommunication (UTWIG_CONVERSATION);
+	InitCommunication (THRADD_CONVERSATION);
+	InitCommunication (SUPOX_CONVERSATION);
+	InitCommunication (SYREEN_CONVERSATION);
+	InitCommunication (SHOFIXTI_CONVERSATION);
+	InitCommunication (PKUNK_CONVERSATION);
+	InitCommunication (YEHAT_CONVERSATION);
+	InitCommunication (DRUUGE_CONVERSATION);
+	InitCommunication (URQUAN_CONVERSATION);
+	InitCommunication (VUX_CONVERSATION);
+	InitCommunication (BLACKURQ_CONVERSATION);
+	InitCommunication (ARILOU_CONVERSATION);
+
+	speechVolumeScale = oldvolume;
+	sliderDisabled = FALSE;
+}

@@ -740,7 +740,6 @@ Intro (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-#ifdef NOT_YET
 		NPCPhrase_cb (OUT_TAKES0, &SelectAlienZOQ);
 		NPCPhrase_cb (OUT_TAKES1, &SelectAlienPIK);
 		NPCPhrase_cb (OUT_TAKES2, &SelectAlienZOQ);
@@ -756,21 +755,6 @@ Intro (void)
 		NPCPhrase_cb (OUT_TAKES12, &SelectAlienZOQ);
 		NPCPhrase_cb (OUT_TAKES13, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-#else /* YET */
-		NPCPhrase_cb (WE_ARE0, &SelectAlienZOQ);
-		NPCPhrase_cb (WE_ARE1, &SelectAlienPIK);
-		NPCPhrase_cb (WE_ARE2, &SelectAlienZOQ);
-		NPCPhrase_cb (WE_ARE3, &SelectAlienPIK);
-		NPCPhrase_cb (WE_ARE4, &SelectAlienZOQ);
-		NPCPhrase_cb (WE_ARE5, &SelectAlienPIK);
-		NPCPhrase_cb (WE_ARE6, &SelectAlienZOQ);
-		NPCPhrase_cb (WE_ARE7, &SelectAlienPIK);
-		NPCPhrase_cb (SCOUT_HELLO0, &SelectAlienZOQ);
-		NPCPhrase_cb (SCOUT_HELLO1, &SelectAlienPIK);
-		NPCPhrase_cb (SCOUT_HELLO2, &SelectAlienZOQ);
-		NPCPhrase_cb (SCOUT_HELLO3, &SelectAlienPIK);
-		ZFPTalkSegue ((COUNT)~0);
-#endif /* NOT_YET */
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 		goto ExitIntro;
 	}

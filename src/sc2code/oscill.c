@@ -92,6 +92,7 @@ static STAMP sliderStamp;
 static STAMP buttonStamp;
 static BOOLEAN sliderChanged = FALSE;
 int sliderSpace;  // slider width - button width
+BOOLEAN sliderDisabled = FALSE;
 
 /*
  * Initialise the communication progress bar
@@ -128,6 +129,9 @@ Slider (void)
 {
 	int offs;
 	static int last_offs = -1;
+
+	if (sliderDisabled)
+		return;
 	
 	if ((offs = GetSoundInfo (sliderSpace)) != last_offs ||sliderChanged)
 	{

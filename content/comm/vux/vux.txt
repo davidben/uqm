@@ -513,4 +513,11 @@ For the good of the whole, I will now erase your putrid presence.
 #(GOODBYE_AND_DIE_HOSTILE_SPACE_4)	vux059.ogg
 We have no choice. You are too wretched. We shall eliminate you.
 
+#(OUT_TAKES) vux060.ogg
+Oh no! It's one of those ultra-gross humans again!
+Quick, hide your eye!
+AGGH! Look at the pulpy red thing in its mouth...
+...how it wriggles and writhes like a wet blood worm...
+...and plays over the hard white nubs that protrude from its headbone!
+I think I'm going to be sick.
 

@@ -119,6 +119,7 @@ enum
 	report1,
 	NOTHING_NEW0,
 	NOTHING_NEW1,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

@@ -502,4 +502,11 @@ G'bye.
 #(GOODBYE_ANGRY_SPACE)	arilo059.ogg
 When you have resolved your conflict, we shall speak again.
 
+#(OUT_TAKES) arilo060.ogg
+Do you really believe Project Bluebook revealed EVERYTHING the Army Air Corps knew?
+Do you know what REALLY happened at Roswell, New Mexico in the late 1940's?
+Have you even heard about the Men in Black?
+Do you have any friends who have `missing days'?
+Do you sleep with your window unlocked?
+Be seeing you...
 

@@ -987,3 +987,13 @@ Sorry.
 #(FORTUNE_IS_8)	pkunk122.ogg
 We have exhausted our capacity to foretell your future, Captain. Sorry.
 
+#(OUT_TAKES) pkunk124.ogg
+Ah, a final parting with our favorite seeker of enlightenment... how sad.
+But wait! This doesn't have to be the end!
+We have established a conduit from the reams of our Harmonic Awareness directly to you!
+You can use this channel to ask us questions about your past lives, or your future destiny!
+Just call 1-900-PKUNKRA...
+...That's 1-900-PKUNKRA, 24 hours a day!
+Only two bucks per minute.
+(children under 18 must have parental permission before calling.)
+

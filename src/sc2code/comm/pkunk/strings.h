@@ -205,6 +205,7 @@ enum
 	FORTUNE_IS_6,
 	FORTUNE_IS_7,
 	FORTUNE_IS_8,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

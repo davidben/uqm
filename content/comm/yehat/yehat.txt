@@ -358,4 +358,12 @@ The United Federation of Worlds
 The Empire of 
 #(name_41)
  
+#(OUT_TAKES) yehat039.ogg
+So, I suppose you are wondering what I'm doing at this control console...
+...well, I guess I can tell you now.
+I'm writing a screenplay!
+It's an existential thriller!
+Kind of a cross between a Woody Allen angst-fest mixed with some of Tobe Hooper's best work.
+But actually, this is just my way of getting my wing in the door, you see...
+...what I really want to do is DIRECT!
 

@@ -699,3 +699,17 @@ Take possession of four of our Jugger craft instantly.
 #(NO_ULTRON_AT_BOMB)	utwig074.ogg
 We are the stewards of the Bomb.
 Taunting us buys you nothing. Go now!
+
+#(OUT_TAKES)	utwig075.ogg
+Hello again, heroic humanoid!
+Ever since you returned the Ultron to us...
+...everything has been WONDERFUL... just perfect!
+Within just two days our factories will begin churning out...
+...appropriate facial appliances, and I have already picked ou my first mask...
+...the Domino of Unrivaled Merriment!
+Yes, we are all ecstatic... even the High Proctor gambols...
+...as she performs the Exultant Caper of Revelation!
+Look how she leaps with the Ultron held high!
+How she twirls, how she slips and tosses the Ultron into the air... OH NOOooooo!!!
+(CRASH!!)
+

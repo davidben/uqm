@@ -126,6 +126,7 @@ enum
 	FAIR_DEAL,
 	GOOD_DEAL,
 	FINE_DEAL,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

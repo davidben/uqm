@@ -392,3 +392,12 @@ The United Federation of Worlds
 The Empire of 
 #(name_41)
  
+
+#(OUT_TAKES)	supox056.ogg
+Whew! I'm glad that's all over.
+That was tough, playing second banana to the Utwig.
+Now I'm hungry, but I'm sick and tired of sunlight, sunlight, sunlight!
+I want some REAL food!!!
+Like a hamburger or a steak... better yet...
+...how about a dog!
+

@@ -138,6 +138,7 @@ enum
 	DONT_NEED,
 	HAVE_4_SHIPS,
 	NO_ULTRON_AT_BOMB,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

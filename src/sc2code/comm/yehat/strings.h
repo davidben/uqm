@@ -96,6 +96,7 @@ enum
 	name_3,
 	name_40,
 	name_41,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

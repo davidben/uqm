@@ -610,3 +610,10 @@ You are *sick* for the last time!
 #(HOSTILE_HELLO_2)	orz073.ogg
 Nnnnnggggaaaahhhhh!!!!!! It is *dancing*!!!!
 
+#(OUT_TAKES) orz074.ogg
+*Happy campers* are the best. It is *happy*
+HOLD IT! I'm getting sick of this stupid dialog!
+Who wrote this stuff -- a five year old?
+Okay, okay. I'll try it again *sigh*...
+...*Happy* campers are best. It is good to *smell* you again...
+

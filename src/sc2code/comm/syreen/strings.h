@@ -152,6 +152,7 @@ enum
 	THEN_STOP_TALKING,
 	LATER,
 	SEX_GOODBYE,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

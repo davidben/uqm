@@ -97,6 +97,7 @@ enum
 	bye,
 	GOODBYE_AND_DIE,
 	GAME_OVER_DUDE,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

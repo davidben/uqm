@@ -118,6 +118,7 @@ enum
 	APOLOGIZE_AT_HOMEWORLD,
 	bye_angry_space,
 	GOODBYE_ANGRY_SPACE,
+	OUT_TAKES,
 };
 
 #endif /* _STRINGS_H */

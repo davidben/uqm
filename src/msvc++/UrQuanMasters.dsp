@@ -2975,6 +2975,10 @@ SOURCE=..\sc2code\credits.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\credits.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\cyborg.c
 # End Source File
 # Begin Source File
@@ -3132,6 +3136,10 @@ SOURCE=..\sc2code\nameref.h
 # Begin Source File
 
 SOURCE=..\sc2code\oscill.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\oscill.h
 # End Source File
 # Begin Source File
 

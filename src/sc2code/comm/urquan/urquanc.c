@@ -396,7 +396,7 @@ Intro (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-// NPCPhrase (OUT_TAKES);
+		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 		goto ExitIntro;
