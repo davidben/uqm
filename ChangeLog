@@ -1,4 +1,5 @@
 0.2:
+- Bucks print from wrong team in melee ship selection box fixed, from fOSSiL
 - Autopilot works in Quasispace when without fuel, from fOSSiL.
 - Negative shift warnings removed, from Fizban
 - Displaying correct lander images, from fOSSiL.
