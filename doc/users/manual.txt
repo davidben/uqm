@@ -73,12 +73,12 @@ Set sound effects volume (0-100).
 
 Set speech volume (0-100).
 
-	-e           (or --3domusic)
+	-m 3do       (or --3domusic)
 
 Use the 3DO remixed soundtrack for songs that were in fact remixed.
 The default.
 
-	-m           (or --pcmusic)
+	-m pc        (or --pcmusic)
 
 Use the .MOD based PC soundtrack everywhere.
 
@@ -90,6 +90,33 @@ sounds.  Slower machines should lower the audio quality.
 	-u           (or --nosubtitles)
 	
 Disables subtitles.
+
+	--cscan pc
+
+Use PC style planet information when scanning (text).
+
+	--cscan 3do
+
+Use 3DO style planet information when scanning (pictograms).
+Default.
+
+	--menu pc
+
+Use PC style menus (text).
+
+	--menu 3do
+
+Use 3DO style menus (pictograms).
+Default.
+
+	--font pc
+
+Use PC style fonts and colors.
+
+	--font 3do
+
+Use 3DO style fonts and colors.
+Default.
 
 			     BUG REPORTS
 
@@ -396,61 +423,61 @@ does grievous damage.
 
 			   GENERAL GAME CONTROLS SUMMARY
 
-F1                  Pause game
-F10                 Exit game, confirm with SPACE
-`                   Emergency exit
+F1                       Pause game
+F10                      Exit game, confirm with SPACE
+F12                      Emergency exit
 
 			   FULL GAME CONTROLS SUMMARY
 
 	Space flight
 
-UP or ENTER:        Thrust
-LEFT and RIGHT:     Steer
-SPACE:              Main menu
+UP or ENTER:             Thrust
+LEFT and RIGHT:          Steer
+SPACE:                   Main menu
 
 	Menus
 
-Arrow Keys:         Scroll through selections
-ENTER:              Make selection
-SPACE:              Up one level
+Arrow Keys:              Scroll through selections
+ENTER:                   Make selection
+SPACE:                   Up one level
 
 	Star Map
-Arrow Keys:         Move the crosshair
-Enter:              Select destination
-Space:              Main menu
-Numpad +:           Zoom in
-Numpad -:           Zoom out
+Arrow Keys:              Move the crosshair
+ENTER:                   Select destination
+SPACE:                   Main menu
+Numpad +:                Zoom in
+Numpad -:                Zoom out
 
 	Space Combat
 
-UP or ENTER:        Thrust
-LEFT and RIGHT:     Steer
-SPACE:              Fire Primary Weapon
-ESCAPE:             Fire Secondary Weapon
-Numpad + and SPACE: Emergency Warp Escape
+UP or ENTER:             Thrust
+LEFT and RIGHT:          Steer
+SPACE:                   Fire Primary Weapon
+CONTROL:                 Fire Secondary Weapon
+SPACE with RIGHT SHIFT:  Emergency Warp Escape
 
 
 	Planet Exploration
 
-UP:                 Forward
-LEFT and RIGHT:     Steer
-SPACE:              Fire stun bolt
-ESCAPE:             Blast off
+UP:                      Forward
+LEFT and RIGHT:          Steer
+SPACE:                   Fire stun bolt
+CONTROL:                 Blast off
 
 
 			   MELEE CONTROLS SUMMARY
 
 	Top Player
 
-E:                  Thrust
-S and F:            Steer
-Q:                  Fire Primary Weapon
-A:                  Fire Secondary Weapon
+E:                       Thrust
+S and F:                 Steer
+Q:                       Fire Primary Weapon
+A:                       Fire Secondary Weapon
 
 	Bottom Player
 
-UP:                 Thrust
-LEFT and RIGHT:     Steer
-RSHIFT:             Fire Primary Weapon
-CTRL:               Fire Secondary Weapon
+UP:                      Thrust
+LEFT and RIGHT:          Steer
+RSHIFT:                  Fire Primary Weapon
+CTRL:                    Fire Secondary Weapon
 
