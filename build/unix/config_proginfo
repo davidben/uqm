@@ -114,6 +114,10 @@ case "$OSNAME" in
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
 		;;
+	QNX)
+		LIB_vorbisfile_CFLAGS=""
+		LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis -logg -lm"
+		;;
 	*)
 		LIB_vorbisfile_CFLAGS=""
 		LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis"
