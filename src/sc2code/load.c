@@ -44,16 +44,17 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 			if (pQueue == &GLOBAL (avail_race_q))
 			{
 				hStarShip = GetStarShipFromIndex (pQueue, Index);
+				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
 				Offset = 0;
 			}
 			else
 			{
 				hStarShip = CloneShipFragment (Index, pQueue, 0);
+				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
 				Offset = (PBYTE)&FragPtr->ShipInfo
 						- (PBYTE)&FragPtr->RaceDescPtr;
 			}
 
-			FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
 			Ptr = ((PBYTE)&FragPtr->ShipInfo) - Offset;
 			cread ((PBYTE)Ptr,
 					((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
