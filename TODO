@@ -15,6 +15,8 @@ Serious bugs (crash the game, high priority):
 - When trying to skip past a a speech that's composed of multiple parts,
   the game hangs.  (NOTE: This isn't true for the Zoq-Fot-Pik, which is
   unusual - EVERY line by the ZFP is like that.)
+- Lockups during conversations (often when heavy color table transformatins
+  are going on.
 
 Glitches (don't crash the game, medium priority):
 - pressing arrow keys in the main menu moves the selection in the
@@ -69,6 +71,12 @@ Glitches (don't crash the game, medium priority):
   - Linux OpenAL implementation sucks, so for now we are using SDL_mixer
     on that platform.
   - Volume levels aren't maybe exactly as they should
+- Color table transformations are very slow.
+- Circles of influence aren't shown the first time (after load?) a player
+  examines the starmap.
+- Selling bio data gives an incomplete message: 'The 1000' [nothing].
+- When out of fuel: "Fill all my fuel tanks to maximum capacity" ->
+  "Your ship's capacity is insufficient to hold that much fuel"
 
 Implementation bugs (low priority):
 
