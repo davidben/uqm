@@ -7,5 +7,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+/* An internal Apple class used to setup Apple menus */
+@interface NSAppleMenuController:NSObject {}
+- (void)controlMenu:(NSMenu *)aMenu;
+@end
+
 @interface SDLMain : NSObject
+@end
+
+@interface SDLApplication : NSApplication
 @end

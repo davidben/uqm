@@ -20,14 +20,6 @@ static int gArgc;
 static char **gArgv;
 static BOOL gFinderLaunch;
 
-/* An internal Apple class used to setup Apple menus */
-@interface NSAppleMenuController:NSObject {}
-- (void)controlMenu:(NSMenu *)aMenu;
-@end
-
-@interface SDLApplication : NSApplication
-@end
-
 @implementation SDLApplication
 /* Invoked from the Quit menu item */
 - (void)terminate:(id)sender
@@ -66,8 +58,7 @@ basename (char *path)
 }
 
 /* Set the working directory to the .app's parent directory */
-- (void)
-setupWorkingDirectory:(BOOL)shouldChdir
+- (void) setupWorkingDirectory:(BOOL)shouldChdir
 {
 	char origindir[PATH_MAX];
 	char *c;
@@ -88,8 +79,8 @@ setupWorkingDirectory:(BOOL)shouldChdir
 	if (chdir (origindir) != 0)
 		abort ();
 	/* then chdir to the .app's parent */
-	if (chdir ("../../../") != 0)
-		abort ();
+	if ( chdir ("../Resources/") != 0 )
+		abort();
 }
 
 void
@@ -199,16 +190,15 @@ CustomApplicationMain (int argc, char **argv)
 }
 
 /* Called when the internal event loop has just started running */
-- (void)
-applicationDidFinishLaunching: (NSNotification *) note
+- (void) applicationDidFinishLaunching: (NSNotification *) note
 {
 	int status;
 
-	/* allow Cocoa to hear keystrokes like Command-Q, etc. */
-	setenv ("SDL_ENABLEAPPEVENTS", "1", 1);
-
 	/* Set the working directory to the .app's parent directory */
 	[self setupWorkingDirectory:gFinderLaunch];
+
+	/* allow Cocoa to hear keystrokes like Command-Q, etc. */
+	setenv ("SDL_ENABLEAPPEVENTS", "1", 1);
 
 	/* Hand off to main application code */
 	status = SDL_main (gArgc, gArgv);
@@ -222,8 +212,7 @@ applicationDidFinishLaunching: (NSNotification *) note
 
 @implementation NSString (ReplaceSubString)
 
-- (NSString *)
-stringByReplacingRange:(NSRange)aRange with:(NSString *)aString
+- (NSString *) stringByReplacingRange:(NSRange)aRange with:(NSString *)aString
 {
 	unsigned int bufferSize;
 	unsigned int selfLen = [self length];
@@ -272,8 +261,8 @@ main (int argc, char **argv)
 	/* Copy the arguments into a global variable */
 	int i;
 
-	/* This is passed if we are launched by double-clicking */
-	if (argc >= 2 && strcmp (argv[1], "-psn") == 0) {
+	/* If we are launched by double-clicking, argv[1] is "-psn_<some_number> */
+	if ( argc >= 2 && strncmp (argv[1], "-psn_", 5) == 0 ) {
 		gArgc = 1;
 		gFinderLaunch = YES;
 	} else {
