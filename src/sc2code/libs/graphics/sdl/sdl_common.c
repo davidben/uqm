@@ -158,10 +158,10 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 					  SDL_Rect *dstrect, int blend_numer, int blend_denom)
 {
 	BOOLEAN has_colorkey;
-	int x, y, x1, y1, x2, y2, dst_x2, dst_y2, colorkey, nr, ng, nb;
+	int x, y, x1, y1, x2, y2, dst_x2, dst_y2, nr, ng, nb;
 	int srcx, srcy, w, h;
 	Uint8 sr, sg, sb, dr, dg, db;
-	Uint32 src_pixval, dst_pixval;
+	Uint32 src_pixval, dst_pixval, colorkey;
 	GetPixelFn src_getpix, dst_getpix;
 	PutPixelFn putpix;
 	SDL_Rect fulldst;
