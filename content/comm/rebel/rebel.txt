@@ -1,70 +1,70 @@
-#(REBEL_HELLO_1)	REBEL000.wav
+#(REBEL_HELLO_1)	rebel000.wav
 HOOT! Welcome to ye, human friend and ally!
 The revolution has begun and, BRAAK!... Clans flock to our cause!
 
-#(REBEL_HELLO_2)	REBEL001.wav
+#(REBEL_HELLO_2)	rebel001.wav
 Greetings friend from Earth, BRAAK!
 The head of our revolution, Cheep-Guava, has led us to many great victories.
 We have cleaned the Royalist traitors from five star systems!
 
-#(REBEL_HELLO_3)	REBEL002.wav
+#(REBEL_HELLO_3)	rebel002.wav
 BRAAK! A greeting to ye, Captain!
 We hope yer battles have been fierce and yer enemies, HOOT!.. are left in ruin.
 Now what can we be doing fer ye?
 
-#(REBEL_HELLO_4)	REBEL003.wav
+#(REBEL_HELLO_4)	rebel003.wav
 Hello Captain. What are you needing from us this day? BRAAK!
 
 #(how_goes_revolution)
 How is the revolution going?
 
-#(REBEL_REVOLUTION_1)	REBEL004.wav
+#(REBEL_REVOLUTION_1)	rebel004.wav
 We have cleaned the Royalist traitors from five systems
 and even the Veep-Kreep Clan is joining with us against the false Queen!
 
-#(REBEL_REVOLUTION_2)	REBEL005.wav
+#(REBEL_REVOLUTION_2)	rebel005.wav
 It is a sad thing, this battle that has pitched Clan against Clan, ship against ship
 I myself have sent three Royalist Terminators and their brave crew to the Great Beyond!
 AWK! What a waste.
 We pray that the struggle ends quickly.
 
-#(REBEL_REVOLUTION_3)	REBEL006.wav
+#(REBEL_REVOLUTION_3)	rebel006.wav
 Though we have taken grave losses -- lost brave and true shipmates
 the enemy -- the fake Queen and her cronies,  have suffered far worse.
 
-#(REBEL_REVOLUTION_4)	REBEL007.wav
+#(REBEL_REVOLUTION_4)	rebel007.wav
 Our victory is in sight, just beyond the next battle
 or perhaps the next.
 
 #(any_ships)
 Do you have any ships available to join our fleet?
 
-#(NO_ROOM)	REBEL008.wav
+#(NO_ROOM)	rebel008.wav
 The question is moot, HOOT!... is it not, since ye have no room fer such ships in yer fleet.
 
-#(HAVE_ALL_SHIPS)	REBEL009.wav
+#(HAVE_ALL_SHIPS)	rebel009.wav
 We are honored to help ye, Captain!
 We shall attach four Terminators to yer fleet immediately.
 
-#(HAVE_FEW_SHIPS)	REBEL010.wav
+#(HAVE_FEW_SHIPS)	rebel010.wav
 We are happy assisting ye, Captain.
 We shall provide ye with enough of our Terminator vessels to complete yer fleet.
 Fight well with them, Captain. They are our best and brightest.
 
-#(NO_SHIPS_YET)	REBEL011.wav
+#(NO_SHIPS_YET)	rebel011.wav
 AWK! Alas, as yet we have no ships which we can be making available to ye at this time.
 However, if ye return at a later date, perhaps then we shall have something fer ye.
 
 #(give_info_rebels)
 Would you share some information with us?
 
-#(WHAT_INFO)	REBEL012.wav
+#(WHAT_INFO)	rebel012.wav
 Of course! What knowledge do ye seek?
 
 #(what_about_royalty)
 Can you tell me about your Royal Family?
 
-#(ABOUT_ROYALTY)	REBEL013.wav
+#(ABOUT_ROYALTY)	rebel013.wav
 The FALSE Royals, ye should say, Captain!
 To understand our relationship with the Veep-Neep Queens, ye must first learn a bit of our history.
 In the ancient past, we Yehat were little more than a collection of warring Clans.
@@ -94,7 +94,7 @@ and we shall fight Clan against Clan until only the bloody feathers remain.
 #(what_about_war)
 Tell me about the end of the War.
 
-#(ABOUT_WAR)	REBEL014.wav
+#(ABOUT_WAR)	rebel014.wav
 I will describe these events, Captain.
 They make fer a tale, Captain, wrought with sadness... and heroism!... and betrayal.
 After the Chenjesu, Mmrnmhrm and yer species were defeated
@@ -117,7 +117,7 @@ and the Dreadnoughts moved toward the homeworld.
 #(what_about_urquan)
 How were the Shofixti defeated?
 
-#(ABOUT_URQUAN)	REBEL015.wav
+#(ABOUT_URQUAN)	rebel015.wav
 As we abandoned the Shofixti to the oncoming Ur-Quan armada
 we watched the situation on the sterile displays of our long-range sensors.
 Suddenly the screens flared and went black... burnt out! We ran to the windows
@@ -144,7 +144,7 @@ like a miniature super nova.
 #(what_about_vux)
 Do you know anything about the VUX?
 
-#(ABOUT_VUX)	REBEL016.wav
+#(ABOUT_VUX)	rebel016.wav
 The grotesque monsters? They are an effete and bigoted race, unworthy prey
 with one exception... General ZEX.
 He commanded the entire VUX fleet during the Great War
@@ -159,7 +159,7 @@ We have heard that he spends his time pursuing his hobby, though we do not know 
 #(what_about_clue)
 How can we defeat the Ur-Quan? 
 
-#(ABOUT_CLUE)	REBEL017.wav
+#(ABOUT_CLUE)	rebel017.wav
 If I were ye, brave human, I'd probably be seeking the focus of the Ur-Quan's power
 and do whatever is necessary to destroy it.
 We may have a hint as to just what that weak spot is.
@@ -175,16 +175,16 @@ but ye are never going to defeat the Ur-Quan Hierarchy until ye eliminate their 
 #(enough_info)
 That's sufficient information for now.
 
-#(OK_ENOUGH_INFO)	REBEL018.wav
+#(OK_ENOUGH_INFO)	rebel018.wav
 If you need to know anything more, just ask.
 
 #(bye_rebel)
 Goodbye brave rebels. Viva la Revolution!
 
-#(GOODBYE_REBEL)	REBEL019.wav
+#(GOODBYE_REBEL)	rebel019.wav
 Goodbye human comrade. Fight well!
 
-#(YEHAT_CAVALRY)	REBEL020.wav
+#(YEHAT_CAVALRY)	rebel020.wav
 Greetings human friend! We know ye are about to be attacking the Sa-Matra
 and probably don't like being interrupted, but we have important news!...
 The Rebellion is WON! We are VICTORIOUS!
@@ -203,12 +203,12 @@ Now, Captain, together we can attack the Sa-Matra! BRAAK! HOOT! HOOT!
 #(what_about_pkunk_rebel)
 We have encountered an offshoot of your species, the Pkunk. Tell us about them.
 
-#(PKUNK_ABSORBED_REBEL)	REBEL021.wav
+#(PKUNK_ABSORBED_REBEL)	rebel021.wav
 The Pkunk have been absorbed. They are no more.
 This is how it should be.
 Now the matter is settled, human. Do not be bringing it up again... BRAAK!
 
-#(HATE_PKUNK_REBEL)	REBEL022.wav
+#(HATE_PKUNK_REBEL)	rebel022.wav
 BRAAAK! CLACK!! HISS!! CLACK!!
 The cowards live?!! HISS!! It is unbelievable!!
 AWK! It is a SAD, SAD day to be hearing this thing from ye, human.

@@ -1,4 +1,4 @@
-#(SORRY_ABOUT_THAT)	SPAT0000.wav
+#(SORRY_ABOUT_THAT)	spath000.wav
 Attention big, mean, hostile alien vessel hovering overhead in an obvious attack posture:
 This is Spathi Captain Fwiffo.
 I know you are going to torture me, so let's just get this over with right now.
@@ -14,7 +14,7 @@ I hope nobody got hurt!
 #(identify)
 Attention alien vessel: Identify yourself or be destroyed!
 
-#(I_FWIFFO)	SPAT0001.wav
+#(I_FWIFFO)	spath001.wav
 Of course, of course!
 As I said, I am Captain Fwiffo of the Spathi voidship StarRunner.
 Our sensors have tracked your entry into this system
@@ -27,7 +27,7 @@ who stationed us here to watch over the Earthlings.
 #(hi_there)
 Hi there friend!  We come in peace and mean you no harm.
 
-#(ARE_YOU_SURE)	SPAT0002.wav
+#(ARE_YOU_SURE)	spath002.wav
 Are you sure?
 Because your statement is often just a more polite way of saying
 `Attention alien vessel: Identify yourself or be destroyed.'
@@ -44,14 +44,14 @@ You attacked our lander -- killed our crew! Prepare to die.
 #(we_fight_2)
 Enough of your slimy yammering. We fight!
 
-#(OK_WONT)	SPAT0003.wav
+#(OK_WONT)	spath003.wav
 Uh, okay... sure, we won't!
 Just remember though -- this offer may be revoked at any time.
 
 #(do_cultural)
 We suggest you immediately perform whatever cultural practices are customary to your species preceding death.
 
-#(WEZZY_WEZZAH)	SPAT0004.wav
+#(WEZZY_WEZZAH)	spath004.wav
 Certainly, most gracious destroyer, as is well known, before departing this mortal helix
 all Spathi must complete the short, poignant ritual of Wezzy-Wezzah to be assured of a secure afterlife
 and by allowing us to fulfill this requirement, you too shall be granted immortality in our beautiful afterworld
@@ -63,7 +63,7 @@ Die slugboy!
 #(begin_ritual)
 You may begin your ritual, and if I might make a small suggestion: be done in less than 2 minutes.
 
-#(MUST_DO_RITUAL_AT_HOME)	SPAT0005.wav
+#(MUST_DO_RITUAL_AT_HOME)	spath005.wav
 Grief and woe -- certainly a destroyer of innocents as well-travelled as yourself
 must know that the formalities of Wezzy-Wezzah are invalid unless
 performed on the large moon orbiting our homeworld, Spathiwa
@@ -74,7 +74,7 @@ Shall we go there now?
 #(you_wont_die_yet)
 Because I am compassionate, you will not die until you have exhausted your usefulness.
 
-#(ETERNAL_GRATITUDE)	SPAT0006.wav
+#(ETERNAL_GRATITUDE)	spath006.wav
 My eternal gratitude is yours, oh devastator of helpless beings.
 It's times like these that I am forced to feel almost, though not quite, sorry
 that the Ur-Quan so thoroughly defeated and humiliated your species.
@@ -85,7 +85,7 @@ We fight!
 #(pay_for_crimes)
 Now you must pay for the crimes of your craven masters, the evil Ur-Quan.
 
-#(CLUTCH_MAVEN)	SPAT0007.wav
+#(CLUTCH_MAVEN)	spath007.wav
 In this difficult situation I am reminded of what my clutch maven once said to me before my first molting.
 `Sometimes the enemy is so swift and the path so treacherous that you can run no further.
 It is then that you must turn and resolve to fight
@@ -95,7 +95,7 @@ but you never know when you are going to get lucky, so go for it!'
 #(you_may_live)
 I find myself moved by your deep commitment to your rituals and ancestral ways.  You may live.
 
-#(HONEST_AND_FRIENDLY)	SPAT0008.wav
+#(HONEST_AND_FRIENDLY)	spath008.wav
 That settles it, for now I am certain that you are an honest and friendly being
 who is forced entirely through unfortunate circumstance - the unreasonable hostility of the Universe
 to travel the galaxy in a ship which, according to my sensors
@@ -104,7 +104,7 @@ is best suited to conducting planetary-scale genocide.
 #(what_are_coordinates)
 We'd be delighted to accompany you to your homeworld.  What are its HyperSpace coordinates?
 
-#(COORDINATES_ARE)	SPAT0009.wav
+#(COORDINATES_ARE)	spath009.wav
 My most wonderful planet Spathiwa circles a safe distance from the orange giant star Yuffo
 which is at HyperSpace coordinates
 hey -- wait a minute!
@@ -114,19 +114,19 @@ so that you can visit it with devastation?!
 #(tell_me_coordinates)
 Just tell me the coordinates, alien dog-slime!
 
-#(FAKE_COORDINATES)	SPAT0010.wav
+#(FAKE_COORDINATES)	spath010.wav
 Hmmm... I see
 Very well then, your threats have convinced me to reveal this secret
 Spathiwa is the 1st planet out from the star at HyperSpace (570.4, 979.5)\r
 
-#(TOO_SCARY)	SPAT0011.wav
+#(TOO_SCARY)	spath011.wav
 You've got so many ships in your fleet, that instead of joining you
 I think I'll just run away.
 
 #(youve_got_me_all_wrong)
 No, no, no!  You've got me all wrong.  I promise I'll be nice.
 
-#(SORRY_NO_COORDS)	SPAT0012.wav
+#(SORRY_NO_COORDS)	spath012.wav
 Er... I just don't know.
 I want to believe you, I really do, but the risk to my people is just too great.
 Anyway I think I just forgot the coordinates -- let me see if I can remember them
@@ -137,7 +137,7 @@ I'm afraid they're gone forever, so torturing me would just be a waste of your t
 #(what_doing_on_pluto_1)
 What are you doing here on Pluto?
 
-#(ABOUT_20_YEARS_AGO)	SPAT0013.wav
+#(ABOUT_20_YEARS_AGO)	spath013.wav
 About 20 years ago, this region of space was dominated by a loose confederation known as the Alliance of Free Stars,
 which was composed of the aliens native to these parts who didn't want to be enslaved.
 They made a valiant effort against the superior Ur-Quan forces
@@ -147,7 +147,7 @@ right up to the point at which the Ur-Quan totally defeated - indeed, annihilate
 #(what_doing_on_pluto_2)
 So, what ARE you doing here on Pluto?
 
-#(WHEN_URQUAN_ARRIVED)	SPAT0014.wav
+#(WHEN_URQUAN_ARRIVED)	spath014.wav
 When the Ur-Quan armada entered this system to subjugate formally the Earthlings,
 the Ur-Quan presented the humans with the standard slave options:
 join the Hierarchy as combat thralls, and retain some autonomy, including the right to travel through space
@@ -161,7 +161,7 @@ to create the so-called Earthguard, and stationed them at a base on Earth's moon
 #(where_are_urquan)
 Where are the Ur-Quan now?
 
-#(URQUAN_LEFT)	SPAT0015.wav
+#(URQUAN_LEFT)	spath015.wav
 Our masters don't really keep us very well informed about their goings on
 so all that we know is that immediately after the subjugation of the last Alliance race
 the Yehat, I think
@@ -171,7 +171,7 @@ commanding us to obey the slave laws or face their wrath when they returned.
 #(what_about_other_races)
 Do you know anything about other alien races?
 
-#(ABOUT_OTHER_RACES)	SPAT0016.wav
+#(ABOUT_OTHER_RACES)	spath016.wav
 We know only bits and pieces of what happened to each race; for instance,
 when defeated, the Yehat joined the Hierarchy as combat thralls,
 while the Syreen chose to be slave shielded on a planet in the BugSquirt star system.
@@ -184,7 +184,7 @@ TELL ME what you are doing on Pluto, NOW!
 #(what_about_yourself)
 What about yourself, Fwiffo?
 
-#(ABOUT_MYSELF)	SPAT0017.wav
+#(ABOUT_MYSELF)	spath017.wav
 Me? You mean me, personally? How nice of you to ask!
 I was born a poor, green encrustling, the youngest child of a family of 18,487.
 My male parent had to work hard to support us, very hard
@@ -213,7 +213,7 @@ had been relieved of my funds and convinced to join the navy
 where I have been unpleasantly employed for the last 25 years.
 
 
-#(STATIONED_ON_EARTH_MOON)	SPAT0018.wav
+#(STATIONED_ON_EARTH_MOON)	spath018.wav
 Originally, we were stationed on Earth's moon, which made us Spathi a bit uneasy
 because with each passing day we grew more and more worried about the sneaky Earthlings making a surprise attack
 though the Ilwrath kept telling us that was impossible
@@ -228,7 +228,7 @@ and finally here to Pluto.
 #(what_blaze_of_glory)
 What do you mean, 'blaze of glory'?  What happened to the Shofixti?
 
-#(BLAZE_IS)	SPAT0019.wav
+#(BLAZE_IS)	spath019.wav
 The Shofixti were half feral, as you know, having been uplifted by the Yehat
 just a few decades before the start of the war.
 Given their habit of detonating those suicidal, so-called 'Glory Devices' in combat
@@ -240,7 +240,7 @@ destroying the entire planetary system, and not incidentally dozens of Ur-Quan D
 #(what_about_moonbase)
 What is happening at the base on Luna then?
 
-#(SET_UP_BASE)	SPAT0020.wav
+#(SET_UP_BASE)	spath020.wav
 We decided that if the Earthlings figured out we had abandoned the base on Luna
 they would be more likely to try something sneaky.
 So we rigged up some old service androids and ordered them to drive around on the lunar surface in bulldozers,
@@ -252,7 +252,7 @@ called `Winky's Happy Night', hoping that they would think we were still there.
 #(what_about_ilwrath)
 What happened to the Ilwrath stationed in this system?
 
-#(ABOUT_ILWRATH)	SPAT0021.wav
+#(ABOUT_ILWRATH)	spath021.wav
 The Ilwrath contingent were supposed to be the toughest ridge-crest, er
 the most rigid flipper, no
 ah yes - the BACKBONE of the Earthguard force; but they departed the system en masse
@@ -268,7 +268,7 @@ What happened to the other Spathi ships?
 #(really_thousands)
 Hundreds? Come on.
 
-#(SPATHI_ARE)	SPAT0022.wav
+#(SPATHI_ARE)	spath022.wav
 Over the past years, it became necessary to redeploy strategically some of our Earthguard forces
 to our homeworld in case of a sudden surprise attack by a vicious, unrelenting alien race which we Spathi call
 The Ultimate Evil!
@@ -276,7 +276,7 @@ The Ultimate Evil!
 #(what_enemy)
 Who or what is this 'Ultimate Evil'?
 
-#(ENEMY_IS)	SPAT0023.wav
+#(ENEMY_IS)	spath023.wav
 As yet, the Ultimate Evil remains largely unmanifest, and its powers and exact intentions are still a bit obscure
 since it lurks just outside the range of even the most sensitive, long-range detectors
 which we feel gives conclusive evidence as to The Ultimate Evil's nefarious intent.
@@ -284,7 +284,7 @@ which we feel gives conclusive evidence as to The Ultimate Evil's nefarious inte
 #(when_ilwrath)
 When do you expect the Ilwrath to return?
 
-#(THEN_ILWRATH)	SPAT0024.wav
+#(THEN_ILWRATH)	spath024.wav
 Well, when they were pushing up into HyperSpace 18 years ago, we asked them that very question
 and I think they said something to the effect of
 'Real Soon'.
@@ -292,7 +292,7 @@ and I think they said something to the effect of
 #(why_you_here)
 Why are you still here, Captain Fwiffo?
 
-#(DREW_SHORT_STRAW)	SPAT0025.wav
+#(DREW_SHORT_STRAW)	spath025.wav
 Since it was our most powerful and unforgiving masters, the Ur-Quan, who stationed us here
 we knew it would be grossly stupid to disobey them completely
 but we decided that it would be okay to send just one ship home.
@@ -306,7 +306,7 @@ there must always be one Spathi who picks the short Ta Puun stick.
 #(how_many_crew)
 How many crew do you have aboard?
 
-#(JUST_ME)	SPAT0026.wav
+#(JUST_ME)	spath026.wav
 I am undone! You are far too clever for a poor Spathi like me
 and now I must submit to your superior, alien intellect.
 I guess I am not revealing any truly important secrets if I tell you
@@ -316,7 +316,7 @@ due to the needs of my homeworld in their resistance against the Ultimate Evil
 and in fact my vessel is somewhat understaffed right now
 seeing as how I am the only Spathi on board, which is a bit frightening as I am sure you can understand.
 
-#(THOUSANDS)	SPAT0027.wav
+#(THOUSANDS)	spath027.wav
 Dozens- that is to say, scores and perhaps even hundreds of my brethren stride through the corridors
 of this specially modified, super-efficient, mass-destruction-oriented starship
 which could lay siege to an entire planetary system should we choose to do so
@@ -325,7 +325,7 @@ which, fortunately for you, we have decided not to do, today.
 #(full_of_monsters)
 The galaxy teems with threatening monsters.  Are you happy here -- alone and vulnerable?
 
-#(HOW_TRUE)	SPAT0028.wav
+#(HOW_TRUE)	spath028.wav
 How true, Captain, how true!
 In truth, just between us, during the past seven years, I have been quite ill at ease
 yet now I find myself enjoying your company, this witty dialog
@@ -336,7 +336,7 @@ who threatened me with death.
 #(join_us)
 I'm sure you'd feel a lot safer if you were with us.  Come on, Fwiffo, join our fleet!
 
-#(WILL_JOIN)	SPAT0029.wav
+#(WILL_JOIN)	spath029.wav
 Happy days and jubilation!
 I discard all prejudice and hesitations and accept and celebrate your offer of protection
 and your undying commitment to my well-being!
@@ -348,7 +348,7 @@ and are also apt to talk themselves out of allying with a totally unknown alien
 which I, having been left here alone, cannot do.
 Welcome me aboard, captain!
 
-#(WONT_JOIN_1)	SPAT0030.wav
+#(WONT_JOIN_1)	spath030.wav
 Well... I really want to
 but I am just not sure that under the present circumstances
 joining you in your exciting and also dangerous space-adventures would be the best course of action right now
@@ -359,7 +359,7 @@ Thanks for the offer, though.
 #(give_ship_or_die)
 Give us your ship or you will be destroyed!
 
-#(WONT_JOIN_2)	SPAT0031.wav
+#(WONT_JOIN_2)	spath031.wav
 You build a strong case, Captain.
 Here I am, alone and undefended on the surface of a hostile alien world.
 Above me you hover in orbit, encrusted with beam guns, missile launchers and other, more dreadful weapons.
@@ -370,11 +370,11 @@ But then a wicked voice whispers:
 And for reasons beyond my understanding, Captain, this voice overwhelms the other
 and so I must remain here...largely against my will.
 
-#(WONT_JOIN_3)	SPAT0032.wav
+#(WONT_JOIN_3)	spath032.wav
 Twice before you have asked this question, Captain. Will the third time be the charm?
 Alas, I fear not.
 
-#(GEE_THANKS)	SPAT0033.wav
+#(GEE_THANKS)	spath033.wav
 Gee, thanks.
 
 #(changed_mind)
@@ -383,47 +383,47 @@ I've changed my mind. We'll attack you.
 #(youre_forgiven)
 We understand that sometimes these tragic misunderstandings happen. We grieve, but are not bitter.
 
-#(THANKS_FOR_FORGIVENESS)	SPAT0034.wav
+#(THANKS_FOR_FORGIVENESS)	spath034.wav
 Whew, thanks! For a minute there, I thought you were going to kill me!
 
 /* ----------- From Here on down, the phrases are for the Spathi in Space conversations --------*/
 
-#(HATE_YOU_FOREVER_SPACE)	SPAT0035.wav
+#(HATE_YOU_FOREVER_SPACE)	spath035.wav
 I fear to face you in combat, but I know if I do not, you will just grow stronger with each passing week.
 Therfore I must face you now.
 I set the thrusters to maximum, close my eye, and begin pressing the fire stud wildly.
 
-#(INIT_ANGRY_HELLO_SPACE)	SPAT0036.wav
+#(INIT_ANGRY_HELLO_SPACE)	spath036.wav
 You are mean, cruel and deceitful. I suspect you are an Ilwrath in ape's clothing.
 What do you want?
 
-#(SUBSEQUENT_ANGRY_HELLO_SPACE)	SPAT0037.wav
+#(SUBSEQUENT_ANGRY_HELLO_SPACE)	spath037.wav
 Ah, Mister Nasty is back. I wonder what he wants today? Peace, Happiness, Joy for all?
 No, I fear, death and unmitigated destruction is his traditional fare.
 Am I correct?
 
-#(INIT_NEUTRAL_HELLO_SPACE)	SPAT0038.wav
+#(INIT_NEUTRAL_HELLO_SPACE)	spath038.wav
 Surprise and Terror!
 I am greeted by the smooth and hostile face of our old enemy, the Hootmans
 no... the Huge-glands, no, I remember, the Hunams!
 
-#(SUBSEQUENT_NEUTRAL_HELLO_SPACE)	SPAT0039.wav
+#(SUBSEQUENT_NEUTRAL_HELLO_SPACE)	spath039.wav
 Hello, Hunam, what would you like to threaten me about today?
 
-#(INIT_FRIENDLY_HELLO_SPACE)	SPAT0040.wav
+#(INIT_FRIENDLY_HELLO_SPACE)	spath040.wav
 Hello friend Hunam! How nice to see you again. Kill any one today?
 
-#(SUBSEQUENT_FRIENDLY_HELLO_SPACE)	SPAT0041.wav
+#(SUBSEQUENT_FRIENDLY_HELLO_SPACE)	spath041.wav
 ...No! No! Weapons Officer, don't fire! It's the Hunam again, you idiot!
 What! The viewscreen? What are you...oh.
 Hello Friend Hunam! How are you? We are just fine, real swell. No problems at all! Just fine. No problems at all!
 
 
-#(INIT_ALLIED_HELLO_SPACE)	SPAT0042.wav
+#(INIT_ALLIED_HELLO_SPACE)	spath042.wav
 Hello Captain Ally Hunam! We are here in this place at this time
 just like you -- how wonderful.
 
-#(SUBSEQUENT_ALLIED_HELLO_SPACE)	SPAT0043.wav
+#(SUBSEQUENT_ALLIED_HELLO_SPACE)	spath043.wav
 Ah, Hunam! I was just wondering... is Tuffa-Yuf still alive?
 Have you seen him, is he well?
 He was sent to your Earth Starbase a while ago
@@ -438,14 +438,14 @@ Thank you.
 Spathi - though we are not on the best of terms, would you please give me some information?
 
 
-#(HERES_SOME_INFO)	SPAT0044.wav
+#(HERES_SOME_INFO)	spath044.wav
 Gladly, and here it is - now listen carefully for I will only say it once.
 Do not ask favors of people you routinely ambush and murder.
 
 #(we_sorry_space)
 Hey, look. We've made mistakes, I admit it! But we'll just be friends, hmmm?
 
-#(APOLOGIZE_AT_HOMEWORLD)	SPAT0045.wav
+#(APOLOGIZE_AT_HOMEWORLD)	spath045.wav
 My soul is warmed by your sincere and heartfelt words.
 It is decided -- we shall be friends forever.
 However, I soon must go about my duties, and sadly we may never see each other again.
@@ -458,26 +458,26 @@ Goodbye...friend.
 #(we_fight_again_space)
 This battle stuff is fun! Let's do some more of it!
 
-#(OK_FIGHT_AGAIN_SPACE)	SPAT0046.wav
+#(OK_FIGHT_AGAIN_SPACE)	spath046.wav
 Aghk! You are twisted and perverse! You deserve to die.
 
 #(bye_angry_space)
 Don't go away mad, Spathi. Just go away.
 
-#(GOODBYE_ANGRY_SPACE)	SPAT0047.wav
+#(GOODBYE_ANGRY_SPACE)	spath047.wav
 I would like to suggest a new plan for you, Hunam:
 depart this region of space, and never return.
 
 #(look_weird)
 Man! You look weird -- all those claws and your gooey eyeball. Yuck!
 
-#(YOU_LOOK_WEIRD)	SPAT0048.wav
+#(YOU_LOOK_WEIRD)	spath048.wav
 Beauty is in the eye of the beholder.
 
 #(no_look_really_weird)
 No, it's not. You are plain, dog ugly.
 
-#(NO_YOU_LOOK_REALLY_WEIRD)	SPAT0049.wav
+#(NO_YOU_LOOK_REALLY_WEIRD)	spath049.wav
 Oh yeah? Oh YEAH!?
 Well...
 You are too.
@@ -485,7 +485,7 @@ You are too.
 #(come_in_peace)
 We are on a peaceful mission through the Cosmos.
 
-#(AGAINST_NATURE)	SPAT0050.wav
+#(AGAINST_NATURE)	spath050.wav
 Two aspects of your last statement defy the course of nature as I know it.
 First
 `Peace' as you call it, is an illusion.
@@ -496,7 +496,7 @@ Peaceful missions through the Cosmos rarely require weapons large enough to punc
 #(prepare_to_die)
 Are you prepared to die today, Spathi?
 
-#(ALWAYS_PREPARED)	SPAT0051.wav
+#(ALWAYS_PREPARED)	spath051.wav
 We Spathi are always prepared to die, we know just what to do.
 It goes something like this
 AIEEEE! No! Please be merciful! Not my claw! Please, no! I beg of you! The Pain! NO!
@@ -504,14 +504,14 @@ AIEEEE! No! Please be merciful! Not my claw! Please, no! I beg of you! The Pain!
 #(since_friendly_give_stuff)
 Since we are now friends, it is customary for you to give us things.
 
-#(GIVE_ADVICE)	SPAT0052.wav
+#(GIVE_ADVICE)	spath052.wav
 Certainly, perhaps beginning with some advice.
 Don't presume we are stupid.
 
 #(whats_up_space_1)
 Friend Spathi, what important facts can you relate?
 
-#(GENERAL_INFO_SPACE_1)	SPAT0053.wav
+#(GENERAL_INFO_SPACE_1)	spath053.wav
 I guess the only event of importance I know about concerns the low and stupid Umgah
 whose pranks we must suffer on a regular basis.
 At least we have removed one source of their annoying jokes -- an unusually strong Hyperwave 'Caster
@@ -526,20 +526,20 @@ thus ending their attempts at sick levity.
 #(bye_friendly_space)
 Goodbye, Spathi, I hope you remain well.
 
-#(GOODBYE_FRIENDLY_SPACE)	SPAT0054.wav
+#(GOODBYE_FRIENDLY_SPACE)	spath054.wav
 Goodbye, Hunam, I hope you aren't eaten by monsters.
 
 #(looking_for_a_few_good_squids)
 Let me be frank. We seek allies.
 
-#(URQUAN_SLAVES)	SPAT0055.wav
+#(URQUAN_SLAVES)	spath055.wav
 In case you have not forgotten, we are bonded to the Ur-Quan as slaves.
 The punishment for the plan you propose can be described as `Death'.
 
 #(why_slaves)
 That brings up a good point. If you are such cowards, why do you fight for the Ur-Quan?
 
-#(UMGAH_TRICK)	SPAT0056.wav
+#(UMGAH_TRICK)	spath056.wav
 This is a sad tale, so do not even try to contain your tears.
 After the Ur-Quan demolished the Ilwrath, they turned the force of their Armada against us Spathi.
 The term `rapidly subjugated' would best describe what happened next.
@@ -566,7 +566,7 @@ was an Umgah.
 #(tell_us_about_you)
 What can you tell us of your species?
 
-#(ABOUT_US)	SPAT0057.wav
+#(ABOUT_US)	spath057.wav
 We can best be described as `Meta-Mollusks'
 possessing the best qualities of both the clam and the Dravatz, which is not native to your world.
 We are intelligent and clever, though you would never call us cunning.
@@ -576,14 +576,14 @@ Each day when we awaken we call forth the traditional Spathi prayer
 #(what_you_really_want)
 But what do you really want out of this great mystery called `Life'?
 
-#(WANT_THIS)	SPAT0058.wav
+#(WANT_THIS)	spath058.wav
 I want to live forever, with no pain whatsoever, owning vast personal property plus a company of nubiles.
 If this is in your power to give, I beg of you to do so.
 
 #(how_about_alliance)
 Under the circumstances, I think it would be best if you allied with Earth immediately.
 
-#(SURE)	SPAT0059.wav
+#(SURE)	spath059.wav
 Sure, consider it done. Allies to the bitter end.
   
 NOT!
@@ -591,40 +591,40 @@ NOT!
 #(part_in_peace)
 We leave as we came, in peace.
 
-#(KEEP_IT_SECRET)	SPAT0060.wav
+#(KEEP_IT_SECRET)	spath060.wav
 Look, can we keep this as a secret between the two of us?
 It's really rather embarrassing.
 
 #(heard_youre_cowards)
 We have heard that you are a race of cowards. Is this true?
 
-#(DARN_TOOTIN)	SPAT0061.wav
+#(DARN_TOOTIN)	spath061.wav
 Yes, absolutely, and with no qualifications.
 This system has kept us alive for millenia, and we see no reason to change it now.
 
 #(wanna_fight)
 Wanna fight?
 
-#(YES_WE_DO)	SPAT0062.wav
+#(YES_WE_DO)	spath062.wav
 Er... Yeah, we do.
 
 #(so_lets_fight)
 So let us fight.
 
-#(OK_LETS_FIGHT)	SPAT0063.wav
+#(OK_LETS_FIGHT)	spath063.wav
 Okay, let's fight. Here we go. We're rarin' to fight.
 
 #(so_lets_fight_already)
 So let's fight, already!
 
-#(DONT_REALLY_WANT_TO_FIGHT)	SPAT0064.wav
+#(DONT_REALLY_WANT_TO_FIGHT)	spath064.wav
 Oh! Um... we changed our minds. We don't want to. Sorry.
 (Pwappy, you idiot! I told you that wouldn't work!)
 
 #(attack_you_now)
 Evil squid -- Prepare to Die!
 
-#(YIPES)	SPAT0065.wav
+#(YIPES)	spath065.wav
 I can't believe this!
 Not only is the Hunam alien unreasonably hostile but he doesn't even know his biological analogs!
 We are much more closely related to Earth clams and
@@ -634,7 +634,7 @@ Yipes!
 #(whats_up_space_2)
 Hi folks, what's new?
 
-#(GENERAL_INFO_SPACE_2)	SPAT0066.wav
+#(GENERAL_INFO_SPACE_2)	spath066.wav
 Very little, I'm afraid. We've just been watching the stars.
 You know, actually there was something that happened
 last month on the 17th; we saw a new star appear between the Circini and Chandrasekhar star clusters.
@@ -645,14 +645,14 @@ I hope it comes back.
 #(give_us_info_from_space)
 Allies, grant us the boon of your wisdom.
 
-#(GET_INFO_FROM_SPATHIWA)	SPAT0067.wav
+#(GET_INFO_FROM_SPATHIWA)	spath067.wav
 Stuck as we are, here out in deep space, we learn little of interest.
 I suggest you consult the more interesting folk at Spathiwa.
 
 #(give_us_resources_space)
 Please share your mineral wealth with us, as allies.
 
-#(GET_RESOURCES_FROM_SPATHIWA)	SPAT0068.wav
+#(GET_RESOURCES_FROM_SPATHIWA)	spath068.wav
 As you wish. Our waste recycling unit is at your disposal.
 There you will find quantities of methane, sulfurous gas, and some interesting organic compounds.
 Feel free, take all you want.
@@ -660,7 +660,7 @@ Feel free, take all you want.
 #(what_do_for_fun)
 What do you guys do for fun out here in deep space?
 
-#(DO_THIS_FOR_FUN)	SPAT0069.wav
+#(DO_THIS_FOR_FUN)	spath069.wav
 We used to be bored, but then we bought this cool entertainment product.
 It simulated a grand adventure through a thousand parsecs of hostile space
 where we met interesting aliens, uncovered the secrets of a long-lost superior race
@@ -670,10 +670,10 @@ never mind, I can tell you aren't really interested.
 #(bye_ally_space)
 Goodbye, Friend Spathi. I hope your journey is a safe one.
 
-#(GOODBYE_ALLY_SPACE)	SPAT0070.wav
+#(GOODBYE_ALLY_SPACE)	spath070.wav
 Same to you.
 
-#(OK_WE_FIGHT_AT_PLUTO)	SPAT0071.wav
+#(OK_WE_FIGHT_AT_PLUTO)	spath071.wav
 My ichors pulse through my body with unusual ferocity!
 Your arrogance has whipped me into a violent frenzy
 and I am compelled to engage you in preemptive-defensive action." 

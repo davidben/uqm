@@ -1,120 +1,120 @@
-#(BEFORE_WE_GO_ON_1) STARB000.WAV
+#(BEFORE_WE_GO_ON_1) starb000.wav
  Before we go on, I have something important to tell you
-#(BEFORE_WE_GO_ON_2) STARB001.WAV
+#(BEFORE_WE_GO_ON_2) starb001.wav
  There is something I think you should know about
-#(BEFORE_WE_GO_ON_3) STARB002.WAV
+#(BEFORE_WE_GO_ON_3) starb002.wav
  By the way, we thought you should know
-#(BEFORE_WE_GO_ON_4) STARB003.WAV
+#(BEFORE_WE_GO_ON_4) starb003.wav
  Before we proceed, I wanted to let you know
-#(BEFORE_WE_GO_ON_5) STARB004.WAV
+#(BEFORE_WE_GO_ON_5) starb004.wav
  I have some information I think you should hear
-#(BEFORE_WE_GO_ON_6) STARB005.WAV
+#(BEFORE_WE_GO_ON_6) starb005.wav
  We've been waiting for you to return to inform you of a new situation
-#(BEFORE_WE_GO_ON_7) STARB006.WAV
+#(BEFORE_WE_GO_ON_7) starb006.wav
  I know you're busy, but I have some news
 
-#(NORMAL_HELLO_A0) STARB007.WAV
+#(NORMAL_HELLO_A0) starb007.wav
 Welcome back, Captain 
 #(NORMAL_HELLO_A1)
 .
 
-#(NORMAL_HELLO_B0) STARB008.WAV
+#(NORMAL_HELLO_B0) starb008.wav
 Greetings, Captain 
 #(NORMAL_HELLO_B1) 
 . I am ready to assist you.
 
-#(NORMAL_HELLO_C0) STARB009.WAV
+#(NORMAL_HELLO_C0) starb009.wav
 It's good to see you again, Captain 
 #(NORMAL_HELLO_C1)
 .
 
-#(NORMAL_HELLO_D0) STARB010.WAV
+#(NORMAL_HELLO_D0) starb010.wav
 Ah, Captain 
 #(NORMAL_HELLO_D1) 
 , I'm glad you're back.
 
-#(NORMAL_HELLO_E0) STARB011.WAV
+#(NORMAL_HELLO_E0) starb011.wav
 Hello Captain 
 #(NORMAL_HELLO_E1)
 .
 
-#(NORMAL_HELLO_F0) STARB012.WAV
+#(NORMAL_HELLO_F0) starb012.wav
 I am at your disposal, Captain 
 #(NORMAL_HELLO_F1)
 .
 
-#(NORMAL_HELLO_G0) STARB013.WAV
+#(NORMAL_HELLO_G0) starb013.wav
 Captain 
 #(NORMAL_HELLO_G1) 
 . I'm glad you made it back in one piece.
 
-#(NORMAL_HELLO_H0) STARB014.WAV
+#(NORMAL_HELLO_H0) starb014.wav
 I hope the battle fares well, Captain 
 #(NORMAL_HELLO_H1)
 .
 
-#(RETURN_HELLO) STARB015.WAV
+#(RETURN_HELLO) starb015.wav
 Yes, Captain?
 
 #(NORMAL_HELLO_TAIL)
  
 
-#(NORMAL_GOODBYE_A0) STARB016.WAV
+#(NORMAL_GOODBYE_A0) starb016.wav
 Goodbye, Captain 
 #(NORMAL_GOODBYE_A1)
 .
-#(NORMAL_GOODBYE_B0) STARB017.WAV
+#(NORMAL_GOODBYE_B0) starb017.wav
 Bring back lots of minerals, Captain 
 #(NORMAL_GOODBYE_B1)
 .
-#(NORMAL_GOODBYE_C0) STARB018.WAV
+#(NORMAL_GOODBYE_C0) starb018.wav
 Return soon, Captain 
 #(NORMAL_GOODBYE_C1)
 .
-#(NORMAL_GOODBYE_D0) STARB019.WAV
+#(NORMAL_GOODBYE_D0) starb019.wav
 Farewell Captain 
 #(NORMAL_GOODBYE_D1)
 .
-#(NORMAL_GOODBYE_E0) STARB020.WAV
+#(NORMAL_GOODBYE_E0) starb020.wav
 Try to avoid getting gruesomely killed, Captain 
 #(NORMAL_GOODBYE_E1)
 .
-#(NORMAL_GOODBYE_F0) STARB021.WAV
+#(NORMAL_GOODBYE_F0) starb021.wav
 We shall await your return, Captain 
 #(NORMAL_GOODBYE_F1)
 .
-#(NORMAL_GOODBYE_G0) STARB022.WAV
+#(NORMAL_GOODBYE_G0) starb022.wav
 Blow up an Ur-Quan for me, Captain 
 #(NORMAL_GOODBYE_G1)
 .
-#(NORMAL_GOODBYE_H0) STARB023.WAV
+#(NORMAL_GOODBYE_H0) starb023.wav
 Be careful out there, Captain 
 #(NORMAL_GOODBYE_H1)
 .
 
-#(LIGHT_LOAD_A0) STARB024.WAV
+#(LIGHT_LOAD_A0) starb024.wav
 The more minerals you bring us, Captain 
 #(LIGHT_LOAD_A1) 
 , the faster you will be able to tackle the Ur-Quan.
 
 
-#(LIGHT_LOAD_B0) STARB025.WAV
+#(LIGHT_LOAD_B0) starb025.wav
 Light load this time, Captain 
 #(LIGHT_LOAD_B1)
 ?
 
-#(LIGHT_LOAD_C0) STARB026.WAV
+#(LIGHT_LOAD_C0) starb026.wav
 Another small load, Captain 
 
-#(LIGHT_LOAD_C1) STARB027.WAV
+#(LIGHT_LOAD_C1) starb027.wav
 ? Well, I suppose something is better than nothing.
 
-#(LIGHT_LOAD_D0) STARB028.WAV
+#(LIGHT_LOAD_D0) starb028.wav
 I don't mean to criticize, Captain 
 #(LIGHT_LOAD_D1) 
 , but it would be more efficient if you could return with larger loads.
 
-#(LIGHT_LOAD_E0) STARB029.WAV
+#(LIGHT_LOAD_E0) starb029.wav
 Pretty small amounts, 
 #(LIGHT_LOAD_E1)
 .
@@ -124,86 +124,86 @@ Captain
 #(LIGHT_LOAD_F1) 
 . Bringing these small amounts of minerals is not cost-effective. Try getting larger loads.
 
-#(LIGHT_LOAD_G0) STARB030.WAV
+#(LIGHT_LOAD_G0) starb030.wav
 Not too much today, Captain 
 #(LIGHT_LOAD_G1) 
 . I hope you have better luck next time.
 
 
-#(MEDIUM_LOAD_A0) STARB031.WAV
+#(MEDIUM_LOAD_A0) starb031.wav
 Not a bad job, Captain 
 #(MEDIUM_LOAD_A1)
 .
 
-#(MEDIUM_LOAD_B0) STARB032.WAV
+#(MEDIUM_LOAD_B0) starb032.wav
 Good work, Captain 
 #(MEDIUM_LOAD_B1)
 .
 
-#(MEDIUM_LOAD_C0) STARB033.WAV
+#(MEDIUM_LOAD_C0) starb033.wav
 Thanks, Captain 
 #(MEDIUM_LOAD_C1)
 .
 
-#(MEDIUM_LOAD_D0) STARB034.WAV
+#(MEDIUM_LOAD_D0) starb034.wav
 Keep it coming, Captain 
 #(MEDIUM_LOAD_D1)
 .
 
-#(MEDIUM_LOAD_E0) STARB035.WAV
+#(MEDIUM_LOAD_E0) starb035.wav
 Pretty fair load, Captain 
 #(MEDIUM_LOAD_E1)
 . Can you do better next time?
 
-#(MEDIUM_LOAD_F0) STARB036.WAV
+#(MEDIUM_LOAD_F0) starb036.wav
 Don't stop now, Captain 
 #(MEDIUM_LOAD_F1) 
 . We'll use every bit you bring us.
 
-#(MEDIUM_LOAD_G0) STARB037.WAV
+#(MEDIUM_LOAD_G0) starb037.wav
 A fair haul, Captain 
 #(MEDIUM_LOAD_G1) 
 . Maybe you should consider adding a storage bay so you can gather larger loads.
 
 
 
-#(HEAVY_LOAD_A0) STARB038.WAV
+#(HEAVY_LOAD_A0) starb038.wav
 Excellent work, Captain 
 #(HEAVY_LOAD_A1)
 !
 
-#(HEAVY_LOAD_B0) STARB039.WAV
+#(HEAVY_LOAD_B0) starb039.wav
 This will really help, Captain 
 #(HEAVY_LOAD_B1)
 .
 
-#(HEAVY_LOAD_C0) STARB040.WAV
+#(HEAVY_LOAD_C0) starb040.wav
 A fine job, Captain 
 #(HEAVY_LOAD_C1)
 !
 
-#(HEAVY_LOAD_D0) STARB041.WAV
+#(HEAVY_LOAD_D0) starb041.wav
 Wow, 
 #(HEAVY_LOAD_D1)
 , you really hit the mother lode this time!
 
-#(HEAVY_LOAD_E0) STARB042.WAV
+#(HEAVY_LOAD_E0) starb042.wav
 If you can keep this up, 
 #(HEAVY_LOAD_E1) 
 , we'll turn that flagship of yours into a genuine Dreadnought-Killer.
 
-#(HEAVY_LOAD_F0) STARB043.WAV
+#(HEAVY_LOAD_F0) starb043.wav
 Captain 
 #(HEAVY_LOAD_F1) 
 , you are to be commended. Keep up the good work!
 
-#(HEAVY_LOAD_G0 ) STARB044.WAV
+#(HEAVY_LOAD_G0 ) starb044.wav
 More fuel for the fire, eh, Captain 
 #(HEAVY_LOAD_G1) 
 ?  That last load should keep it blazing!
 
 
-#(STARBASE_IS_READY_A) STARB045.WAV
+#(STARBASE_IS_READY_A) starb045.wav
 I have good news to report, Captain.
 We have successfully integrated the Precursor technology from your ship into our fabricator system
 and as you can see, we have already begun minor repairs on the 
@@ -220,30 +220,30 @@ Captain, I know you're eager to get to work, so I'm keeping this lecture short.
 If you have any questions -- how this Starbase works, what resources we need
 or just some background information on the galaxy at large -- don't hesitate to ask.
 
-#(WHAT_KIND_OF_INFO) STARB046.WAV
+#(WHAT_KIND_OF_INFO) starb046.wav
 Certainly, Captain. What do you need to know?
 
-#(WHICH_FUNCTION) STARB047.WAV
+#(WHICH_FUNCTION) starb047.wav
 We can modify your Precursor starship, build additional combat vessels
 and supply you with fuel and crew.
 
-#(WHICH_HISTORY) STARB048.WAV
+#(WHICH_HISTORY) starb048.wav
 What aspect of history, Captain?
 
-#(WHICH_MISSION) STARB049.WAV
+#(WHICH_MISSION) starb049.wav
 Can you be more specific?
 
-#(OK_NO_NEED_INFO) STARB050.WAV
+#(OK_NO_NEED_INFO) starb050.wav
 Fine. Is there anything else you need?
 
-#(ABOUT_FUEL) STARB051.WAV
+#(ABOUT_FUEL) starb051.wav
 This base was designed to service Hierarchy ships.
 Fortunately, your flagship uses the same stabilized antimatter technology as the Hierarchy vessels
 and we will be able to synthesize what you need.
 However, due to the size of your ship, we will have to produce enormous quantities of fuel
 which will be a substantial drain on our resources.
 
-#(ABOUT_MODULES) STARB052.WAV
+#(ABOUT_MODULES) starb052.wav
 Our engineers and Precursor specialists agree with the scientists from your world
 that your starship was built to be a 'workhorse' vehicle
 which can be easily reconfigured for different missions
@@ -262,7 +262,7 @@ if put in the second slot, it fires two shots spread to the left and right of ce
 if put in the third slot, it fires two shots directly left and right
 and if put in the last or rear slot, it fires a single shot straight backwards.
 
-#(ABOUT_CREW0) STARB053.WAV
+#(ABOUT_CREW0) starb053.wav
 We have almost 2000 highly-motivated, skilled professionals aboard this starbase
 and every single one of them wants a berth aboard the 
 #(ABOUT_CREW1)
@@ -273,7 +273,7 @@ the RU cost will remain constant; but we have only so many warm bodies on this s
 and if your needs for crew grow beyond a certain point
 the cost will go up dramatically.
 
-#(ABOUT_SHIPS) STARB054.WAV
+#(ABOUT_SHIPS) starb054.wav
 Our shipyard facilities are sophisticated and fully automated,
 permitting a handful of starbase personnel to do the same job
 as five-hundred, vac-suited construction workers. However,
@@ -288,7 +288,7 @@ but she secretly made copies of the blueprint disks, and has kept them with her 
 These disks contain all the data we need to build as many Earthling Cruisers as you want
 provided you, Captain, can supply the large amounts of mineral resources required to build the vessels.
 
-#(ABOUT_RU) STARB055.WAV
+#(ABOUT_RU) starb055.wav
 As you know, Captain, we have committed the entire output of this station to your needs
 to building your flagship and your battle fleet into the strongest force possible; however
 our resources are very limited, and we feel YOU must decide
@@ -302,7 +302,7 @@ To acquire more RU, you must bring resources back to the starbase.
 These resources can be either in the form of mineral ores which you have gathered from planet surfaces
 or the already-refined metals and other valuable materials from the wreckage of enemy starships.
 
-#(ABOUT_MINERALS) STARB056.WAV
+#(ABOUT_MINERALS) starb056.wav
 The most straight-forward way to accumulate Resource Units
 is to bring mineral ores back to this starbase.
 There are probably enough resources in just the nearby dozen stars	
@@ -312,19 +312,19 @@ I would also recommend that you build several additional Storage Bays.
 When gathering minerals, focus on 'cleaning-out' one star system at a time.
 This way, you minimize the cost of travel through HyperSpace.
 
-#(ABOUT_LIFE) STARB057.WAV
+#(ABOUT_LIFE) starb057.wav
 While I respect the search for abstract knowledge
 frankly, Captain, in our present circumstances I don't see much use for such data here.
 Perhaps you can make use of biological information somewhere else.
 I just don't know.
 
-#(OK_ENOUGH_STARBASE) STARB058.WAV
+#(OK_ENOUGH_STARBASE) starb058.wav
 What else can I tell you?
 
-#(OK_ENOUGH_MISSION) STARB059.WAV
+#(OK_ENOUGH_MISSION) starb059.wav
 What else can I tell you?
 
-#(GET_MINERALS) STARB060.WAV
+#(GET_MINERALS) starb060.wav
 You can find such minerals on almost any planet surface,
 but the quality and density will vary depending on the type of planet you're on.
 Base metals are probably the most common minerals you'll find, but they aren't particularly valuable.
@@ -340,7 +340,7 @@ you will want to be careful to note the gravity of each world before you dispatc
 Some worlds simply do not have the resources to offset the cost of a landing.
 	
 
-#(ABOUT_ALIENS) STARB061.WAV
+#(ABOUT_ALIENS) starb061.wav
 That all depends on who you meet, doesn't it, Captain?
 In all seriousness, if you encounter the Ilwrath, VUX, Androsynth, or other Hierarchy battle thrall
 I wouldn't hold out much hope for a peaceful encounter.
@@ -350,12 +350,12 @@ If you can find Alliance races who are in a position to help us
 you MUST convince them to join with us!
 Their assistance may be crucial to our success.
 
-#(MUST_DEFEAT) STARB062.WAV
+#(MUST_DEFEAT) starb062.wav
 Captain, I wish I had an easy answer, but I don't.
 The only way I can see regaining Earth's freedom, as well as that of our Alliance allies
 ..is to destroy the Ur-Quan and their armada of battle thralls entirely.
 
-#(DEFEAT_LIKE_SO) STARB063.WAV
+#(DEFEAT_LIKE_SO) starb063.wav
 To defeat our enemies, we will need awesome strength, both in your flagship and fleet
 as well as the assistance of powerful new allies.
 Though combat will be unavoidable, and sometimes necessary to achieve our goals
@@ -363,12 +363,12 @@ I am certain that your wits will be at least as important as your weapons.
 You will need to explore this region of space, gathering resources and information wherever you go.
 I suspect your quest will lead you across a thousand light years.
 
-#(FIND_URQUAN) STARB064.WAV
+#(FIND_URQUAN) starb064.wav
 I don't know, Captain,
 but I suspect their battle thralls know more than we do;
 so I suggest you try to gather information from them, perhaps by force.
 
-#(FIGHT_URQUAN) STARB065.WAV
+#(FIGHT_URQUAN) starb065.wav
 At first, your ship will be far too vulnerable to permit frontal assaults on the Ur-Quan.
 Even when your ship is at full power, we are faced with the reality
 that the Hierarchy has THOUSANDS of ships
@@ -382,7 +382,7 @@ You need to find out if that rumor was true, Captain
 because if the Ur-Quan do have such a weapon, we will have to find some way to stop it
 or all our efforts are for naught.
 
-#(ALLY_LIKE_SO) STARB066.WAV
+#(ALLY_LIKE_SO) starb066.wav
 If you encounter an unknown alien race, proceed carefully and diplomatically --
 -- we need all the friends we can get, and we certainly can't afford any more enemies. 
 Remember, Captain, with your Precursor starship, you hold a 'stick' of awesome power
@@ -390,34 +390,34 @@ but there will be situations when dealing with an alien race
 where a 'carrot' will serve far better than a stick.
 But first you must determine what 'carrot' the alien wants.
 
-#(STRONG_LIKE_SO) STARB067.WAV
+#(STRONG_LIKE_SO) starb067.wav
 You need to accumulate enough resources so that we can build up your flagship
 and assemble a strong fleet. I would also recommend
 that you acquire blueprints for other, more powerful ships than our trusty Cruiser.
 I suspect that aliens will not give you such 'prints unless you form an alliance with them.
 
-#(OK_ENOUGH_DEFEAT) STARB068.WAV
+#(OK_ENOUGH_DEFEAT) starb068.wav
 What else can we discuss?
 
-#(WHICH_ALIEN) STARB069.WAV
+#(WHICH_ALIEN) starb069.wav
 Which group of aliens?
 
-#(WHICH_WAR) STARB070.WAV
+#(WHICH_WAR) starb070.wav
 What about the War?
 
-#(WHICH_ANCIENT) STARB071.WAV
+#(WHICH_ANCIENT) starb071.wav
 We have some data on this subject.  What do you want to know about?
 
-#(OK_ENOUGH_HISTORY) STARB072.WAV
+#(OK_ENOUGH_HISTORY) starb072.wav
 Sure. Anything else?
 
-#(WHICH_ALLIANCE) STARB073.WAV
+#(WHICH_ALLIANCE) starb073.wav
 Okay, which race?
 
-#(WHICH_HIERARCHY) STARB074.WAV
+#(WHICH_HIERARCHY) starb074.wav
 Which species?
 
-#(ABOUT_OTHER) STARB075.WAV
+#(ABOUT_OTHER) starb075.wav
 None that we had made formal contact with.
 The Chenjesu implied that they had met at least 2 other starfaring species
 one near the Giclas constellation, and the other directly coreward from Procyon.
@@ -426,10 +426,10 @@ but like so much else with the Arilou, they never revealed the whole story.
 I am sure there are hundreds more alien races in our galaxy,
 but beyond what I have just told you, your guess is as good as mine.
 
-#(OK_ENOUGH_ALIENS) STARB076.WAV
+#(OK_ENOUGH_ALIENS) starb076.wav
 Would you like information on any other aspect of history?
 
-#(ABOUT_SHOFIXTI) STARB077.WAV
+#(ABOUT_SHOFIXTI) starb077.wav
 The Shofixti are a race of intelligent marsupials who had been `civilized' for only a few decades when the War began.
 They were discovered in the Delta Gorno star system by the Yehat
 who adopted and then `uplifted' the Shofixti, giving them advanced technology and cultural definition.
@@ -439,19 +439,19 @@ You know, I once flew as a observer aboard one of their ships
 routine patrol, we never even saw the enemy
 but I could never stop thinking about the `Glory Device' it had strapped to the bottom of its hull.
 
-#(ABOUT_YEHAT) STARB078.WAV
+#(ABOUT_YEHAT) starb078.wav
 The Yehat are a race of ancient warrior clans who have been traveling the stars for many centuries.
 The clans are highly competitive and sometimes even wage war on each other;
 but the clans are all loyal to the Queen and her royal family, known as the Veep-Zeeps.
 The Veep-Zeeps have been in power for over 2,000 years, and it is said that during their rule
 the Yehat have never lost a battle.
 
-#(ABOUT_ARILOU) STARB079.WAV
+#(ABOUT_ARILOU) starb079.wav
 I like to think I'm not a bigoted person, Captain, especially when it comes to allies
 but there is just something about those Arilou that gives me the creeps.
 Maybe it's because of the way they just stare, stare, stare, never saying anything, and keep smiling all the while.
 
-#(ABOUT_CHENJESU) STARB080.WAV
+#(ABOUT_CHENJESU) starb080.wav
 The Chenjesu were the leaders of the Alliance, even though they refused to formally accept the title.
 I don't know if their silicon-based biology is just plain superior to our old carbon models
 or if their fantastic intellects were the product of an ancient, peaceful culture.
@@ -459,7 +459,7 @@ Whatever the reason, I'd rather be taking orders from a Chenjesu than any other 
 When the Ur-Quan made their blitzkrieg move and took down the Chenjesu and Mmrnmhrm
 we all pretty much knew what the outcome of the War was going to be.
 
-#(ABOUT_MMRNMHRM) STARB081.WAV
+#(ABOUT_MMRNMHRM) starb081.wav
 We didn't really get much of a chance to learn about those mechanical beings,
 but I'll tell you what I know.
 They are the product of a distant, unknown culture
@@ -470,7 +470,7 @@ My personal guess as to why they were sent here is that they are the leading edg
 and once the Mmrnmhrm have tamed enough new worlds, the genuine colonists -- whoever they are
 will arrive to claim their due.
 
-#(ABOUT_SYREEN) COMAN082 .WAV
+#(ABOUT_SYREEN) starb082.wav
 Most raw recruits see the Syreen as nothing more than warm, breathing pin-ups.
 Warm they are, and yes, they do breathe most magnificently
 but Captain, they are far more than simple joy units.
@@ -482,10 +482,10 @@ We were shipmates... friends... during the last part of the War
 but now, that's all in the past.
 What is your next question, Captain?
 
-#(OK_ENOUGH_ALLIANCE) STARB083.WAV
+#(OK_ENOUGH_ALLIANCE) starb083.wav
 What other group of aliens are you interested in?
 
-#(ABOUT_URQUAN) STARB084.WAV
+#(ABOUT_URQUAN) starb084.wav
 Our enemy is cunning, relentless and possesses technology superior to all but, perhaps
 that found aboard your starship.
 The Ur-Quan are born, live and die for one purpose only:
@@ -497,7 +497,7 @@ I'd sure like to know what made those wormy bastards as twisted as they are
 and I'd like to know why they keep on the move, never stop longer than it takes
 to enslave whoever they find.
 
-#(ABOUT_MYCON) STARB085.WAV
+#(ABOUT_MYCON) starb085.wav
 The Mycon are hard to get a handle on.
 In fact, I'm not sure any human has ever had a real conversation with a Mycon.
 What we know of them we have learned from their corpses, which, I may add
@@ -507,7 +507,7 @@ This is probably because the Mycon only thrive in temperatures close to the melt
 As far as we know, the Mycon are the only race to actively seek out the Ur-Quan
 in order to become combat slaves.
 
-#(ABOUT_SPATHI) STARB086.WAV
+#(ABOUT_SPATHI) starb086.wav
 Imagine facing a cowardly, mobile clam armed with a howitzer
 and you've got good idea of what it's like dealing with a Spathi.
 Although they tend to avoid battles as much as their masters will allow
@@ -518,7 +518,7 @@ painted their ships black with bright red stripes
 and formed the `Black Spathi Squadron', dedicated to performing brave and hostile deeds.
 Like I said, I'd have to see it to believe it.
 
-#(ABOUT_UMGAH) STARB087.WAV
+#(ABOUT_UMGAH) starb087.wav
 It's unfortunate that the Umgah fell to the Ur-Quan so early in the War
 because I suspect we would have gotten along well with those big blob creatures;
 at the very least it would have been entertaining.
@@ -528,7 +528,7 @@ The Arilou intimated that they had a relationship with the Umgah before the Ur-Q
 but I don't know any details.
 
 
-#(ABOUT_ANDROSYNTH) STARB088.WAV
+#(ABOUT_ANDROSYNTH) starb088.wav
 When I was flying combat missions along the Coreward Front
 there was nothing we feared more than an Androsynth Hit-And-Run Squadron.
 Their Blazer starships were more than a match for our cruisers.
@@ -536,7 +536,7 @@ In addition, I think each of us aboard ship knew deep down in our hearts
 that the Androsynth had damn good reasons for hating us.
 Our grandparents had kept them as slaves for nearly 50 years.
 
-#(ABOUT_VUX) STARB089.WAV
+#(ABOUT_VUX) starb089.wav
 The starship Far Voyager, under the command of Captain Jeffry L. Rand, encountered the VUX near Beta Mira.
 Although the details are hazy, it is generally accepted that Rand offended the VUX starship Commander
 with an inadvertent insult.
@@ -545,7 +545,7 @@ for the Ur-Quan to enter the region in force and subjugate the VUX.
 With the VUX on their side, the Hierarchy grew strong enough to attack the Alliance
 the rest, as they say, is history.
 
-#(ABOUT_ILWRATH) STARB090.WAV
+#(ABOUT_ILWRATH) starb090.wav
 I still have nightmares about one of the Spiders -- an Ilwrath --
 taking me prisoner -- using me in one of their sick sacrifices to Dogar and Kazon
 their twin gods of destruction and torment.
@@ -553,10 +553,10 @@ Those guys were almost as scary as the Androsynth to those of us on deep-space p
 Their Avenger starships could appear out of nowhere and melt a Cruiser down to slag in seconds.
 Luckily for us, the bulk of the Ilwrath fleet was thrown against the Chenjesu and Mmrnmhrm.
 
-#(OK_ENOUGH_HIERARCHY) STARB091.WAV
+#(OK_ENOUGH_HIERARCHY) starb091.wav
 What other group of aliens are you interested in?
 
-#(ABOUT_PRECURSORS) STARB092.WAV
+#(ABOUT_PRECURSORS) starb092.wav
 Hell, you probably know more about them than I do, but here goes... about 200,000 years ago
 when our great-to-the-nth-grandparents were just starting to play with stone knives and bearskins
 a starfaring species suddenly appeared on the galactic scene and spread like wildfire.
@@ -575,7 +575,7 @@ they vanished, poof! As far as we can tell, it took less than a decade to happen
 No dead bodies, no ruined spaceships, no melted planets or other signs of a struggle.
 It's like they all got up one day and disintegrated themselves.
 
-#(ABOUT_OLD_RACES) STARB093.WAV
+#(ABOUT_OLD_RACES) starb093.wav
 You mean besides the Precursors? Well, the only information I have is second-hand
 based on some research by a Chenjesu historian that I read at the Academy.
 Tzzz-Tzer-Tzak, the historian, found some evidence that there was a group of alien races
@@ -586,7 +586,7 @@ The presence of the hostile Androsynth in that part of space
 severely limited Tzzz-Tzer-Tzak's research.
 He never even found out the race's name.
 
-#(ABOUT_ALIENS_ON_EARTH) STARB094.WAV
+#(ABOUT_ALIENS_ON_EARTH) starb094.wav
 Yes, there is.
 Aside from the Precursor relics we have found on Earth --
 -- often in museums, mislabeled as 'modern art' --
@@ -611,10 +611,10 @@ and by that time the War was occupying everyone's attention.
 We never got a chance to confront the Ariloulaleelay about what they did to us and why.
 I wonder if we ever will?
 
-#(OK_ENOUGH_ANCIENT) STARB095.WAV
+#(OK_ENOUGH_ANCIENT) starb095.wav
 Would you like information on any other aspect of history?
 
-#(URQUAN_STARTED_WAR) STARB096.WAV
+#(URQUAN_STARTED_WAR) starb096.wav
 Earth got involved late in the game, in 2112, when the Chenjesu arrived in our solar system for the first time
 so let's back up a few years to 2098
 when the Chenjesu's super-sensitive receivers detected a strange signal from the Ophiuchi constellation.
@@ -636,7 +636,7 @@ The timing seemed unusual and the Arilou were definitely weird, looking like the
 but we were so busy cranking up our moth-balled heavy industry
 that we didn't really pay it much attention at the time.
 
-#(WAR_WAS_LIKE_SO) STARB097.WAV
+#(WAR_WAS_LIKE_SO) starb097.wav
 At the start of the war, here on Earth we were working like crazy
 churning out hundreds of heavy Cruisers and smaller support vehicles.
 The Ur-Quan were busy too.  Unbeknownst to us, they had moved down toward the Luyten star group
@@ -652,7 +652,7 @@ The last entrants to the conflict were the Syreen, a race of space gypsies
 who had escaped the Hierarchy by moving their vast fleet of slow-moving habitats into human space in 2122.
 With the sides set, the last Ur-Quan offensive began.
 
-#(LOST_WAR_BECAUSE) STARB098.WAV
+#(LOST_WAR_BECAUSE) starb098.wav
 The Ur-Quan came roaring through VUX space, and tried to push past the Indi and Mira star systems.
 Their onslaught was barely repulsed and our counter-attack made hardly a dent in Hierarchy forces
 but we held the line -- The Coreward front remained intact.
@@ -674,7 +674,7 @@ Moscow, Beijing, Tokyo, London, Buenos Aires, and Washington.
 We'd lost the War and we knew it, but the Ur-Quan decided to make it real clear --
 -- and that's why if you check our most recent maps, you won't find Buenos Aires.
 
-#(AFTER_WAR) STARB099.WAV
+#(AFTER_WAR) starb099.wav
 After the UN submitted their formal surrender
 we were given a week to decide what kind of slaves we wanted to be.
 The Ur-Quan demanded that the decision be made through popular vote.
@@ -706,24 +706,24 @@ and our contact with the outside world stopped.
 The next time I saw the stars was 8 years ago,
 when I was transferred up here to be the new commander of this starbase.
 
-#(OK_ENOUGH_WAR) STARB100.WAV
+#(OK_ENOUGH_WAR) starb100.wav
 Would you like information on any other aspect of history?
 
 
-#(STARBASE_BULLETIN_TAIL) STARB101.WAV
+#(STARBASE_BULLETIN_TAIL) starb101.wav
 That's all for now, Captain.
 
-#(BETWEEN_BULLETINS) STARB102.WAV
+#(BETWEEN_BULLETINS) starb102.wav
 also
 
-#(STARBASE_BULLETIN_1) STARB103.WAV
+#(STARBASE_BULLETIN_1) starb103.wav
 Captain, a delegation of Spathi has just arrived here under orders from their High Council
 to form an alliance and assist us against the Hierarchy!
 They have provided fabricator blueprint data for their 'Eluder' spacecraft
 and promise a steady supply of captains for as many ships as we build.
 Excellent work, Captain!
 
-#(STARBASE_BULLETIN_2) STARB104.WAV
+#(STARBASE_BULLETIN_2) starb104.wav
 It would appear that your diplomatic efforts have struck gold, Captain.
 We have been contacted by a race called the Zoq-Fot-Pik
 who wish to fulfill their part of 'the Unification' --
@@ -732,19 +732,19 @@ They have sent us specifications for their Stinger-class attack vessels
 as well as a large number of Zoq-Fot-Pik commanding officers.
 You're doing a fine job, Captain.
 
-#(STARBASE_BULLETIN_3) STARB105.WAV
+#(STARBASE_BULLETIN_3) starb105.wav
 A race of plant creatures called the Supox have arrived in your absence, Captain.
 They offered use of their ship designs and will supply as many starship captains as we require.
 I, of course, accepted their offer immediately.
 Captain, if you continue to build such strong alliances as this one
 we will surely win our battle against the Ur-Quan!
 
-#(STARBASE_BULLETIN_4) STARB106.WAV
+#(STARBASE_BULLETIN_4) starb106.wav
 Not long ago, a small Utwig fleet arrived here at the starbase.
 After spending a few days setting up our fabricators to build their Jugger starships
 they departed to join their fellow Utwig and Supox allies against the Kohr-Ah.
 
-#(STARBASE_BULLETIN_5) STARB107.WAV
+#(STARBASE_BULLETIN_5) starb107.wav
 We have been invaded by an alien race calling themselves the `Orz', though so far the invasion is a friendly one.
 The fishlike creatures have been stomping around the base in their robotic walking exoskeletons
 which look like combat vac-suits, if you ask me.
@@ -752,7 +752,7 @@ Based on the summary reports I've seen on their `Nemesis' ship design, I have bu
 I like it!
 I'd say we have quite a nasty little surprise in store for the Ur-Quan the next time you tangle with them.
 
-#(STARBASE_BULLETIN_6) STARB108.WAV
+#(STARBASE_BULLETIN_6) starb108.wav
 Good news, Captain!
 With no announcement, a small fleet of Ariloulaleelay popped into space adjacent to our starbase
 scaring the hell out of the Deep-Radar operator, I might add.
@@ -760,7 +760,7 @@ You probably know I don't much care for Arilou -- personal reasons
 but right now I could kiss every one of those pale little weirdoes
 because they gave us three Skiff vessels!
 
-#(STARBASE_BULLETIN_7) STARB109.WAV
+#(STARBASE_BULLETIN_7) starb109.wav
 We are receiving a priority distress call from the Zoq-Fot Homeworld at Alpha Tucanae.
 The signal was urgent but extremely weak. The only portions of the transmission we can be sure of are:
 `HELP!'
@@ -771,51 +771,51 @@ The signal was urgent but extremely weak. The only portions of the transmission 
 and finally
 `HELP!'
 
-#(STARBASE_BULLETIN_8) STARB110.WAV
+#(STARBASE_BULLETIN_8) starb110.wav
 A previously unknown alien race has made contact with our base over the past few days.
 They call themselves the Melnorme, and are anxious to initiate trading relations with us.
 If we are interested, they suggest making a rendezvous at Alpha Centauri.
 
-#(STARBASE_BULLETIN_9) STARB111.WAV
+#(STARBASE_BULLETIN_9) starb111.wav
 The Melnorme returned to the starbase, wondering when you will meet them.
 They seemed friendly but were unwilling to deal with us,
 claiming that we had no data they consider valuable.
 They said to make contact with them in any supergiant star system.
 
-#(STARBASE_BULLETIN_10) STARB112.WAV
+#(STARBASE_BULLETIN_10) starb112.wav
 Our deep-space monitoring team has detected faint alien signals coming from
 Uranus
 or somewhere in that general direction.
 The emanations are definitely being generated from within the solar system
 and could represent the presence of a Hierarchy spy.
 
-#(STARBASE_BULLETIN_11) STARB113.WAV
+#(STARBASE_BULLETIN_11) starb113.wav
 We have a major situation Captain!
 As of a few days ago, all Spathi starship captains have vanished from our starbase.
 We do not know how or why, but until we receive replacements from Spathiwa
 you will be unable to commission any additional Spathi Eluder vessels for your fleet.
 
-#(STARBASE_BULLETIN_12) STARB114.WAV
+#(STARBASE_BULLETIN_12) starb114.wav
 We are being bathed in broad-beam HyperWave transmission from the direction of the Rigel star system.
 Due to the broadcast's wide dispersion, we cannot discern its content.
 
-#(STARBASE_BULLETIN_13) STARB115.WAV
+#(STARBASE_BULLETIN_13) starb115.wav
 We have made a formal alliance with the Chmmr.
 Their ships can now be built in our shipyards.;
 
-#(STARBASE_BULLETIN_14) STARB116.WAV
+#(STARBASE_BULLETIN_14) starb116.wav
 The Shofixti have returned!
 Their ships can now be built in our shipyards
 and their many volunteers are swelling our ranks
 lowering the resource cost for new crew.
 
-#(STARBASE_BULLETIN_15) STARB117.WAV
+#(STARBASE_BULLETIN_15) starb117.wav
 We have detected a minute but measurable disturbance in the InterSpace fabric
 at approximate TrueSpace coordinate 100:50.
 Our scientists speculate that this disturbance may be caused by many thousands of HyperWarp penetrations
 all in phase -- as though a huge fleet of ships were on the move.
 
-#(STARBASE_BULLETIN_16) STARB118.WAV
+#(STARBASE_BULLETIN_16) starb118.wav
 In the log of your voyage from Unzervalt, I read that you encountered a tumbling,
 red probe that attacked the Tobermoon, killing Captain Burton.
 Over the past few months we have monitored an increasing number of these probes entering the system,
@@ -825,7 +825,7 @@ I recommend you treat this as a serious problem now, before it becomes a disaste
 Discover who is creating these probes and stop them from creating any more.
 
 
-#(STARBASE_BULLETIN_18) STARB119.WAV
+#(STARBASE_BULLETIN_18) starb119.wav
 This seems strange to me, and I considered not even bringing it up
 but not long ago, six of my people fell unconscious at exactly the same moment for no apparent reason.
 When they awoke hours later, they reported being overwhelmed by a feeling
@@ -833,7 +833,7 @@ a feeling that something VERY wrong had taken place.
 The Med Techs couldn't find anything wrong with these crew members, but they discovered one correlation.
 All six of them have exceptionally high esper ratings.
 
-#(STARBASE_BULLETIN_19) STARB120.WAV
+#(STARBASE_BULLETIN_19) starb120.wav
 In the two weeks which have passed since the Chmmr began work on your vessel
 they have attached the Utwig bomb to your ship, and have also put in place
 their own crystalline amplification devices to boost dramatically the power of the weapon.
@@ -847,7 +847,7 @@ But here's the good news
 The Chmmr have provided us with an unbelievable wealth of minerals and other resources.
 We no longer have limits on what we can build for your flagship, or your fleet.
 
-#(STARBASE_BULLETIN_22) STARB121.WAV
+#(STARBASE_BULLETIN_22) starb121.wav
 I have somber news.
 For weeks now we have been scanning space in the direction of the Tucanae stars
 hoping to hear some word from our Zoq-Fot-Pik allies
@@ -856,7 +856,7 @@ We did receive an alien broadcast however -- it rang through space like an elect
 I think the best way to describe it would be
 exultant.
 
-#(STARBASE_BULLETIN_27) STARB122.WAV
+#(STARBASE_BULLETIN_27) starb122.wav
 Captain, I have an unpleasant topic to discuss with you, but this needs to be resolved right away.
 There is some kind of wild rumor blowing around the starbase
 that you have sold your own crew to the Druuge as slaves.
@@ -865,7 +865,7 @@ Look Captain, I know you would never do anything like that, and I'm sorry I even
 but now I can assure everyone that this is just one of those damn fool lies that gets passed around during wartime.
 Thank you for your patience, Captain.
 
-#(STARBASE_BULLETIN_28) STARB123.WAV
+#(STARBASE_BULLETIN_28) starb123.wav
 I have just received incontrovertible evidence
 that you HAVE been selling members of your own crew to the Druuge.
 Captain, how could you!? Don't you know what the Druuge will use those men and women for?
@@ -879,7 +879,7 @@ With the word out on what you have done, it's going to be pretty damn hard to re
 for your next trip.
 I expect the RU cost for crew will sky-rocket.
 
-#(STARBASE_BULLETIN_29) STARB124.WAV
+#(STARBASE_BULLETIN_29) starb124.wav
 Well Captain, we have another problem.
 Your efforts on our behalf have been amazing, I truly believe that we may win this struggle
 but these achievements have not been gained without a price.
@@ -890,7 +890,7 @@ Crew are quickly becoming a valuable commodity, Captain
 and I expect their RU cost will reflect this.
 
 
-#(STARBASE_BULLETIN_30) STARB125.WAV
+#(STARBASE_BULLETIN_30) starb125.wav
 I can't believe what I've just heard!
 Captain, you're a heinous slave-trader!
 Your exchanges with the Druuge have become a horror story throughout the entire starbase.
@@ -898,16 +898,16 @@ If anyone here is stupid enough to join your crew, I expect the RU cost will be 
 If you weren't our only hope for freedom, Captain, I'd kill you where you stand.
 As it is, expect me to bring charges against you when this is all over.
 
-#(DEVICE_HEAD) STARB126.WAV
+#(DEVICE_HEAD) starb126.wav
 Certainly, their analysis reads as follows:
 
-#(BETWEEN_DEVICES) STARB127.WAV
+#(BETWEEN_DEVICES) starb127.wav
 The next entry in the analysis is:
 
-#(DEVICE_TAIL) STARB128.WAV
+#(DEVICE_TAIL) starb128.wav
 That's the end of our scientists' report.
 
-#(ABOUT_PORTAL) STARB129.WAV
+#(ABOUT_PORTAL) starb129.wav
 SUBJECT: QuasiSpace Portal Spawner.
 DATA: Device is a hybrid of different alien technologies, including Arilou and Ur-Quan elements.
 Our tests show that this device temporarily creates a weakness in the fabric between HyperSpace
@@ -916,7 +916,7 @@ and since the unit's power supply is self-contained, we cannot estimate how long
 SUMMARY: Use of this device will permit a starship to make transit to a different dimension.
 The hazards and benefits of this process are impossible to ascertain without field study.
 
-#(ABOUT_TALKPET) STARB130.WAV
+#(ABOUT_TALKPET) starb130.wav
 SUBJECT: Talking Pet Lifeform.
 DATA: This creature is physiologically identical to the so-called Ur-Quan `Talking Pet 'with one notable exception.
 It is highly intelligent, and evidences strong psychic capabilities.
@@ -930,7 +930,7 @@ we talked about roses, daisies, and other pretty flowers!
 SUMMARY: Everything's okay! We have nothing to worry about with this cuddly little guy.
 Not one thing!
 
-#(ABOUT_BOMB) STARB131.WAV
+#(ABOUT_BOMB) starb131.wav
 SUBJECT: Utwig Bomb Device.
 DATA: Analysis has yielded little about this device
 largely because of our technicians' unwillingness to open it, or even remove the bomb from your ship.
@@ -944,7 +944,7 @@ DO NOT ACTIVATE THIS DEVICE! LEAVE IT ALONE!
 Any experimentation should be conducted AT LEAST 12 AU from this starbase
 preferably a bit further.
 
-#(ABOUT_SUN) STARB132.WAV
+#(ABOUT_SUN) starb132.wav
 SUBJECT: Sun Device.
 DATA: The unit contains a power generator whose output magnitude is simply mind-croggeling.
 When activated, the device radiates visible light equivalent to less than 1/100 of 1% of our sun
@@ -952,7 +952,7 @@ however, when placed close to a planet, perhaps in orbit, its brilliance would r
 SUMMARY: Another Precursor tool whose function is to replace or augment a sun
 by radiating a huge amount of energy in the orange-yellow spectral band.
 
-#(ABOUT_MAIDENS) STARB133.WAV
+#(ABOUT_MAIDENS) starb133.wav
 SUBJECT: Shofixti Maidens.
 DATA: Subjects appear to be 16 Shofixti females, all in young adulthood.
 Subjects appear to be in good condition, with little or no freezer burn or other degeneration.
@@ -962,14 +962,14 @@ Until such a time as we feel we can induce artificial parthenogenesis
 or otherwise give the Shofixti sexual viability, our recommendation is to keep them as they are
 asleep.
 
-#(ABOUT_SPHERE) STARB134.WAV
+#(ABOUT_SPHERE) starb134.wav
 SUBJECT: Rosy Sphere Device.
 DATA: The specimen is 5 centimeters in diameter, perfectly smooth
 and composed of a blood-red translucent substance.
 Tests show that it has atypical ferro-magnetic properties, but is utterly non-conductive.
 SUMMARY: Probably a Precursor tool -- function unknown.
 
-#(ABOUT_HELIX) STARB135.WAV
+#(ABOUT_HELIX) starb135.wav
 SUBJECT: Aqua Helix Device.
 DATA: This device is composed of a light blue, super-hard substance which rates Mohs-13.
 The object is composed of a flat ribbon of homogenous material approximately 1 meter in length
@@ -977,14 +977,14 @@ and it is twisted in a perfect helix.
 Deep radar and nucleo-magnetic scans reveal little about its interior.
 SUMMARY: Unknown design. Unknown origin. Unknown function.
 
-#(ABOUT_SPINDLE) STARB136.WAV
+#(ABOUT_SPINDLE) starb136.wav
 SUBJECT: Clear Spindle Device.
 DATA: The object in question has no clear use or means of activation
 but does have super-conductive characteristics between 18 and 22 degrees C.
 We suspect that it is of Precursor manufacture, but we cannot be certain without extended study.
 SUMMARY: In all likelihood, this object is a part of a larger device whose capabilities remain unknown.
 
-#(ABOUT_ULTRON_0) STARB137.WAV
+#(ABOUT_ULTRON_0) starb137.wav
 SUBJECT: Ultron Device.
 We put this thing through every test we've got, and came up with the same results as if we'd used a fork
 nothing, zero, zip.
@@ -992,7 +992,7 @@ If this thing ever functioned -- which we doubt -- it certainly won't now.
 Age and physical stress have long since robbed it of whatever `mystical powers' it might once have had.
 SUMMARY: In the future, please don't waste our valuable time on junk like this so-called `Ultron.'
 
-#(ABOUT_ULTRON_1) STARB138.WAV
+#(ABOUT_ULTRON_1) starb138.wav
 SUBJECT: Ultron Device.
 DATA: At first we thought this was a piece of junk -- in fact it may still be just that
 but when you submitted it to us, we infused it with gamma radiation
@@ -1001,14 +1001,14 @@ recorded from the `Empties', the `Singing Hoops', and `the Big Dud'
 which were all found in the Precursor burrows on Procyon.
 SUMMARY: We are now convinced that this is a Precursor tool, but it remains dysfunctional.
 
-#(ABOUT_ULTRON_2) STARB139.WAV
+#(ABOUT_ULTRON_2) starb139.wav
 SUBJECT: Ultron Device.
 DATA: The Ultron is partially functional, and we can detect energy emission from the device.
 We suspect that the unit requires additional minor repairs before achieving full functionality
 and until that time, we cannot make an assessment of its capabilities.
 SUMMARY: A single additional replacement part should bring the Ultron to life.
 
-#(ABOUT_ULTRON_3) STARB140.WAV
+#(ABOUT_ULTRON_3) starb140.wav
 SUBJECT: Ultron.
 DATA: We have determined that the so-called `Ultron' is in fact the `Appendages of Dawn'
 described in the Precursor fragment found on Rigel in 2123.
@@ -1019,21 +1019,21 @@ nor do those of the allied species we have tested.
 SUMMARY: Perhaps the Utwig, who claim to understand this device, can shed some light
 on its true function and power.
 
-#(ABOUT_UCASTER) STARB141.WAV
+#(ABOUT_UCASTER) starb141.wav
 SUBJECT: HyperWave Broad`Caster - Umgah Design.
 DATA: This unit is capable of generating intense HyperWave transmissions
 without revealing itself as their source. It is otherwise similar to our own `Casters.
 SUMMARY: This thing would be great for practical jokes. You could scream `Boo!' from the Oort Cloud
 and scare the pants, or whatever, off everyone in the system.
 
-#(ABOUT_BCASTER) STARB142.WAV
+#(ABOUT_BCASTER) starb142.wav
 SUBJECT: HyperWave Broad`Caster - Unknown Design.
 DATA: This technology is new to us, and though a bit primitive by Alliance standards
 is capable of generating a VERY strong signal.
 SUMMARY: Should you wish to send a message across a solar system, or through a mile of steel
 this baby would do just fine.
 
-#(ABOUT_SHIELD) STARB143.WAV
+#(ABOUT_SHIELD) starb143.wav
 SUBJECT: Taalo Device.
 DATA: Whoever the Taalo were, they were clever -- way past us, probably even beyond the Chenjesu.
 As far as I can tell, with all our equipment, this thing is
@@ -1046,7 +1046,7 @@ SUMMARY: If you keep this Taalo rock device thing on board your vessel
 I'll bet you are immune to any form of psychic attack
 or at least mostly immune.
 
-#(ABOUT_EGGCASE_0) STARB144.WAV
+#(ABOUT_EGGCASE_0) starb144.wav
 SUBJECT: Mycon Egg Case.
 DATA: We didn't really know Mycons came from eggs, but our analysis of this sheath
 shows that its genetic analog is nearly the same as that recorded from Mycon tissue samples during the War.
@@ -1056,17 +1056,17 @@ we know Mycons range in height from .5 to 3.5 meters
 but our reconstruction of the whole egg case shows it to be over 25 meters high!
 SUMMARY: If a Mycon came out of this, it is probably really big.
 
-#(ABOUT_SHUTTLE) STARB145.WAV
+#(ABOUT_SHUTTLE) starb145.wav
 SUBJECT: Syreen Pilot Shuttle.
 DATA: As yet, the field research team has failed to report back to their group leaders.
 When we called them, they described being deep in study
 and wished to attend to a few important details before returning to the base.
 SUMMARY: Several group leaders have volunteered to assist the field team to `help them where they can.'
 
-#(ABOUT_VUXBEAST0) STARB146.WAV
+#(ABOUT_VUXBEAST0) starb146.wav
 SUBJECT: Hostile Alien Creature.
 
-#(ABOUT_VUXBEAST1) STARB191.WAV
+#(ABOUT_VUXBEAST1) starb191.wav
 DATA: This is newly-promoted, junior scientist Hawkins reporting.
 Dr. Chu -- he's the leader of this section -- he's still in the sick bay.
 He's been there ever since that thing took a swipe at him when he got too close to the cage.
@@ -1084,14 +1084,14 @@ SUMMARY: The sooner you get that thing off this starbase
 the less likely it is that that thing will get loose and kill us all.
 Uh... guess that's it.
 
-#(ABOUT_DESTRUCT) STARB147.WAV
+#(ABOUT_DESTRUCT) starb147.wav
 SUBJECT: Slylandro Probe Destruct Code Sequence.
 DATA: This is a complex sequence of program instructions
 using an encryption sequence similar in some ways to the Rolling-Phung algorithm.
 SUMMARY: When a Slylandro Probe approaches, open a hailing frequency, wait for a response
 and then transmit the code.
 
-#(ABOUT_WARPPOD) STARB148.WAV
+#(ABOUT_WARPPOD) starb148.wav
 SUBJECT: Ur-Quan Warp Pod.
 DATA: This unit appears to be the core for the starboard warp pod of an Ur-Quan Dreadnought.
 It is surprisingly similar to our own warp cores
@@ -1099,71 +1099,71 @@ but it generates a much stronger, tighter field than the equipment we have on ou
 SUMMARY: For us, the Warp Pod is little more than a curiosity
 though you may find some useful application for it in the future.
 
-#(ABOUT_ARTIFACT_2) STARB149.WAV
+#(ABOUT_ARTIFACT_2) starb149.wav
 SUBJECT: Wimbli's Trident Device.
 DATA: I presume this device is named `Wimbli's Trident'
 because of the name, `Wimbli', crudely etched into its base.
 SUMMARY: To be honest, Captain, I believe that the Druuge robbed you blind.
 
-#(ABOUT_ARTIFACT_3) STARB150.WAV
+#(ABOUT_ARTIFACT_3) starb150.wav
 SUBJECT: Glowing Rod Device.
 DATA: We had high hopes for this device, Captain, because of the constant, pulsing aura it generated.
 However, I am afraid after investigating the object, and locating its concealed batteries slot
 we had conclude that this was nothing more than a well-crafted toy.
 SUMMARY: In the future, Captain, I would be very careful what I bought from the Druuge.
 
-#(LETS_SEE) STARB151.WAV
+#(LETS_SEE) starb151.wav
 Hmm... let's see...
 
-#(GO_GET_MINERALS) STARB152.WAV
+#(GO_GET_MINERALS) starb152.wav
 I guess I'd go gather more minerals to build up a good supply of resource units.
 
-#(IMPROVE_FLAGSHIP_WITH_RU) STARB153.WAV
+#(IMPROVE_FLAGSHIP_WITH_RU) starb153.wav
 Use the Resource Units you have accumulated to improve your flagship.
 
-#(GOT_OK_FLAGSHIP) STARB154.WAV
+#(GOT_OK_FLAGSHIP) starb154.wav
 Your flagship is in pretty good shape
 
-#(GO_ALLY_WITH_ALIENS) STARB155.WAV
+#(GO_ALLY_WITH_ALIENS) starb155.wav
 You should investigate building alliances with non-hostile alien races.
 Their assistance is crucial to our success.
 
-#(MADE_SOME_ALLIES) STARB156.WAV
+#(MADE_SOME_ALLIES) starb156.wav
 You have established several successful alliances with alien races
 
-#(GET_SHIPS_BY_MINING_OR_ALLIANCE) STARB157.WAV
+#(GET_SHIPS_BY_MINING_OR_ALLIANCE) starb157.wav
 Build up your fleet of combat vessels.
 Their additional strength and the flexibility granted by their various powers
 will greatly enhance your ability to survive in space.
 
-#(GOT_OK_FLEET) STARB158.WAV
+#(GOT_OK_FLEET) starb158.wav
 You've assembled a good-sized fleet of combat ships
 
-#(BUY_COMBAT_SHIPS) STARB159.WAV
+#(BUY_COMBAT_SHIPS) starb159.wav
 You need to build combat escorts and assemble a fleet to accompany you through space.
 
-#(GO_LEARN_ABOUT_URQUAN) STARB160.WAV
+#(GO_LEARN_ABOUT_URQUAN) starb160.wav
 We must find a chink in the Ur-Quan's armor --
 -- a weakness that will allow us to focus our strength in such a way
 that we can destroy their entire empire in a single, bold stroke.
 
-#(MAKE_FLAGSHIP_AWESOME) COMAN1161.WAV
+#(MAKE_FLAGSHIP_AWESOME) starb161.wav
 My guess is you need to further upgrade your flagship
 to make it more than a match for any enemy ship you might encounter.
 
-#(KNOW_ABOUT_SAMATRA) STARB162.WAV
+#(KNOW_ABOUT_SAMATRA) starb162.wav
 You know the Ur-Quan's Achilles' heel -- their Sa-Matra super-starship
 
-#(GOT_AWESOME_FLAGSHIP) STARB163.WAV
+#(GOT_AWESOME_FLAGSHIP) starb163.wav
 You have constructed a flagship of unrivaled power
 
-#(GOT_BOMB) STARB164.WAV
+#(GOT_BOMB) starb164.wav
 You've got the bomb from the Utwig
 
-#(FIND_WAY_TO_DESTROY_SAMATRA) STARB165.WAV
+#(FIND_WAY_TO_DESTROY_SAMATRA) starb165.wav
 You must find some way to destroy the Ur-Quan supership, the Sa-Matra.
 
-#(MUST_INCREASE_BOMB_STRENGTH) STARB166.WAV
+#(MUST_INCREASE_BOMB_STRENGTH) starb166.wav
 Although the bomb you got from the Utwig is horrendously powerful
 I'm afraid our computer projections show that the explosion will not be sufficient
 to break through the Sa-Matra's defenses.
@@ -1173,83 +1173,83 @@ This will greatly increase the force of the explosion.
 Perhaps the Chenjesu, with their superior scientific knowledge, could have done this
 but unfortunately, we do not possess the technology to achieve this modification at the present time.
 
-#(MUST_ACQUIRE_AWESOME_FLEET) STARB167.WAV
+#(MUST_ACQUIRE_AWESOME_FLEET) starb167.wav
 I'm certain you need to assemble a more powerful fleet of combat ships before you face the Sa-Matra.
 
-#(MUST_ELIMINATE_URQUAN_GUARDS) STARB168.WAV
+#(MUST_ELIMINATE_URQUAN_GUARDS) starb168.wav
 You must figure out how to eliminate or destroy the Ur-Quan and Kohr-Ah ships guarding the Sa-Matra.
 
-#(CHMMR_IMPROVED_BOMB) COMAN0169.WAV
+#(CHMMR_IMPROVED_BOMB) starb169.wav
 The Chmmr have modified your ship to route its weapon power through the Utwig bomb
 
-#(GOT_AWESOME_FLEET) STARB170.WAV
+#(GOT_AWESOME_FLEET) starb170.wav
 You have amassed a powerful fleet of combat ships
 
-#(GO_DESTROY_SAMATRA) STARB171.WAV
+#(GO_DESTROY_SAMATRA) starb171.wav
 Go attack the Ur-Quan Sa-Matra vessel!
 Although I'm sure it will be a difficult battle
 you have everything you need to achieve victory.
 
-#(GOOD_LUCK_AGAIN) STARB172.WAV
+#(GOOD_LUCK_AGAIN) starb172.wav
 We're all depending on you.  Goodbye, and good luck.
 
-#(IMPROVE_1) STARB173.WAV
+#(IMPROVE_1) starb173.wav
 You need to build up and balance the strength of your flagship; specifically, I would
 
-#(IMPROVE_2) STARB174.WAV
+#(IMPROVE_2) starb174.wav
 My guess is you need to further upgrade your flagship
 to make it more than a match for any enemy ship you might encounter.
 
-#(NEED_THRUSTERS_1) STARB175.WAV
+#(NEED_THRUSTERS_1) starb175.wav
 Add thrusters up to say, 5 or 6.
 Speed is essential in combat, but it will also pay off over the long haul in HyperSpace
 and if you prefer to avoid confrontation, nothing beats a great pair of legs.
 
-#(NEED_THRUSTERS_2) STARB176.WAV
+#(NEED_THRUSTERS_2) starb176.wav
 Maximize your ship's thrusters. You will need the speed when you finally confront the Ur-Quan.
 
-#(NEED_TURN_1) STARB177.WAV
+#(NEED_TURN_1) starb177.wav
 Add turning jets for increased maneuverability
 
-#(NEED_TURN_2) STARB178.WAV
+#(NEED_TURN_2) starb178.wav
 Maximize rotation speed by filling your turning jet slots
 
-#(NEED_GUNS_1) STARB179.WAV
+#(NEED_GUNS_1) starb179.wav
 Add enough weapons to defend yourself if you are caught without escort ships
 
-#(NEED_GUNS_2) STARB180.WAV
+#(NEED_GUNS_2) starb180.wav
 Take advantage of your ship's capacity for combat by increasing its firepower.
 Add more weaponry
 
-#(NEED_CREW_1) STARB181.WAV
+#(NEED_CREW_1) starb181.wav
 You need more crew, at least 50, to make productive voyages into space
 
-#(NEED_CREW_2) STARB182.WAV
+#(NEED_CREW_2) starb182.wav
 You need even more crew, perhaps as many as 200, to face the challenges ahead
 
-#(NEED_FUEL_1) STARB183.WAV
+#(NEED_FUEL_1) starb183.wav
 You need additional fuel, at least 50 units
 
-#(NEED_FUEL_2) STARB184.WAV
+#(NEED_FUEL_2) starb184.wav
 You need large quantities of fuel, at least 150 units
 
-#(NEED_STORAGE_1) STARB185.WAV
+#(NEED_STORAGE_1) starb185.wav
 Increase your cargo capacity by adding more Storage Bays to your flagship
 
-#(NEED_LANDERS_2) STARB186.WAV
+#(NEED_LANDERS_2) starb186.wav
 You need at least one lander
 
-#(NEED_LANDERS_1) STARB187.WAV
+#(NEED_LANDERS_1) starb187.wav
 Build more landers
 
-#(NEED_DYNAMOS_1) STARB188.WAV
+#(NEED_DYNAMOS_1) starb188.wav
 Your weapons will be underpowered in combat if you do not have at least 1 dynamo
 
-#(NEED_DYNAMOS_2) STARB189.WAV
+#(NEED_DYNAMOS_2) starb189.wav
 You need more dynamo power;
 otherwise your weapon re-energizing delays will be your undoing in combat
 
-#(NEED_POINT) STARB190.WAV
+#(NEED_POINT) starb190.wav
 I suggest you invest in one or more point-defense laser batteries.
 
 

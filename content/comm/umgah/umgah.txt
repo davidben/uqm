@@ -1,35 +1,35 @@
-#(HWLD_PRE_ZOMBIE_HELLO_1)	UMGAH000.wav
+#(HWLD_PRE_ZOMBIE_HELLO_1)	umgah000.wav
 Why HELLO human Earthling! Har! Har! Har!
 Must say, your appearance here comes as quite surprise to us!
 We never expected to see any of you ever again
 after Ur-Quan masters put your species under slave shield!
 
-#(HWLD_PRE_ZOMBIE_HELLO_2)	UMGAH001.wav
+#(HWLD_PRE_ZOMBIE_HELLO_2)	umgah001.wav
 Hey look everybody! Human Earthling came back!
 Har! Har! Har! Wonder if we'll kill him this time?
 Har! Har! Har! 
 
-#(HWLD_PRE_ZOMBIE_HELLO_3)	UMGAH002.wav
+#(HWLD_PRE_ZOMBIE_HELLO_3)	umgah002.wav
 You're back? Har! Har! Har! More fun! More fun!
 
-#(HWLD_PRE_ZOMBIE_HELLO_4)	UMGAH003.wav
+#(HWLD_PRE_ZOMBIE_HELLO_4)	umgah003.wav
 Howdy human Earthling! Back for more fun?
 
 
-#(SPACE_PRE_ZOMBIE_HELLO_1)	UMGAH004.wav
+#(SPACE_PRE_ZOMBIE_HELLO_1)	umgah004.wav
 Well bloat my belly! It a human Earthling!
 Har! Har! Har! Haven't seen a human Earthling since... since
 why heck! NEVER seen a human Earthling!
 What coincidence!
 
-#(SPACE_PRE_ZOMBIE_HELLO_2)	UMGAH005.wav
+#(SPACE_PRE_ZOMBIE_HELLO_2)	umgah005.wav
 Hi there human! How old fluid sacks today?
 What?! You don't HAVE fluid sacks?
 Har! Har! Har! What do you call your mate then?!! Har! Har! Har!...
 you don't HAVE mate?
 THAT'S EVEN FUNNIER! Har! Har! Har!
 
-#(SPACE_PRE_ZOMBIE_HELLO_3)	UMGAH006.wav
+#(SPACE_PRE_ZOMBIE_HELLO_3)	umgah006.wav
 Hi there, human Earthling! What'cha here for today?
 What? Can't quite hear you? You have to speak up!
 Hey! What problem here?
@@ -37,68 +37,68 @@ Human Earthling making fun of me?
 THIS SOME KIND OF STUPID HUMAN EARTHLING TRICK? BECAUSE IF IS
 Har! Har! Har!... fooled ya, didn't I?
 
-#(SPACE_PRE_ZOMBIE_HELLO_4)	UMGAH007.wav
+#(SPACE_PRE_ZOMBIE_HELLO_4)	umgah007.wav
 Yo! Human Earthling! What up?!
 
 	
-#(UNKNOWN_ZOMBIE_HELLO_1)	UMGAH008.wav
+#(UNKNOWN_ZOMBIE_HELLO_1)	umgah008.wav
 HELLO. HUMAN. EARTHLING.
 HAR.
 
-#(UNKNOWN_ZOMBIE_HELLO_2)	UMGAH009.wav
+#(UNKNOWN_ZOMBIE_HELLO_2)	umgah009.wav
 HAPPY. GREETINGS. AND. WELCOME. EARTHLING. HUMAN.
 HAR.
 
-#(UNKNOWN_ZOMBIE_HELLO_3)	UMGAH010.wav
+#(UNKNOWN_ZOMBIE_HELLO_3)	umgah010.wav
 WHAT. SO. FUNNY. HUMAN. EARTHLING. YOUR. FACE. FUNNY. THING.
 HAR.
 
-#(UNKNOWN_ZOMBIE_HELLO_4)	UMGAH011.wav
+#(UNKNOWN_ZOMBIE_HELLO_4)	umgah011.wav
 WE. FUNNY. UMGAH. SO. FUNNY.
 HAR.
 
 
-#(DESTROY_INTERFERER_1)	UMGAH012.wav
+#(DESTROY_INTERFERER_1)	umgah012.wav
 THE. HUMAN. INTERFERES. WITH. PLAN.
 KILL. IT.
 
-#(DESTROY_INTERFERER_2)	UMGAH013.wav
+#(DESTROY_INTERFERER_2)	umgah013.wav
 STOP. THE. HUMAN. DESTROY. VESSEL.
 
-#(DESTROY_INTERFERER_3)	UMGAH014.wav
+#(DESTROY_INTERFERER_3)	umgah014.wav
 NO. DELAYS. IN. PLAN. TOLERATED.
 ELIMINATE. HUMAN.
 
-#(DESTROY_INTERFERER_4)	UMGAH015.wav
+#(DESTROY_INTERFERER_4)	umgah015.wav
 DESTROY. HUMAN. IMMEDIATELY.
 
 
-#(REVEALED_ZOMBIE_HELLO_1)	UMGAH016.wav
+#(REVEALED_ZOMBIE_HELLO_1)	umgah016.wav
 HUMAN. KNOWS. TOO. MUCH. IT. MUST. NOT. ESCAPE.
 
-#(REVEALED_ZOMBIE_HELLO_2)	UMGAH017.wav
+#(REVEALED_ZOMBIE_HELLO_2)	umgah017.wav
 HUMAN. EARTHLING. CEASE. MOTION. AND. DE-ENERGIZE. SHIP. SO. WE. CAN. GIVE. GIFT.
 
-#(REVEALED_ZOMBIE_HELLO_3)	UMGAH018.wav
+#(REVEALED_ZOMBIE_HELLO_3)	umgah018.wav
 CEASE. HOSTILITIES. WE. HAVE. CHANGED. OUR. MINDS. WE. LIKE. YOU. COME. CLOSER.
 
-#(REVEALED_ZOMBIE_HELLO_4)	UMGAH019.wav
+#(REVEALED_ZOMBIE_HELLO_4)	umgah019.wav
 RESISTANCE. IS. USELESS. HUMAN. EARTHLING.
 
 
-#(HOSTILE_HELLO_1)	UMGAH020.wav
+#(HOSTILE_HELLO_1)	umgah020.wav
 Hello human Earthling savior!
 Although we appreciate your efforts on our behalf
 we really hate `Eternal Gratitude' stuff, so we've decided to kill you now.
 Har! Har! Har! We pretty crazy blobbies, no?!
 
-#(HOSTILE_HELLO_2)	UMGAH021.wav
+#(HOSTILE_HELLO_2)	umgah021.wav
 Well pop my pupae! It human Earthling again!
 It just doesn't learn, does it? To Arms! To Arms!... wait a minute! Don't HAVE any arms!
 AIEE!! MY ARMS!! WHO HAS STOLEN MY ARMS!!! AIEEE!! ARM THIEF!!!
 Har! Har! Har!... Never HAD any arms! Har! Har! Har!
 
-#(HOSTILE_HELLO_3)	UMGAH022.wav
+#(HOSTILE_HELLO_3)	umgah022.wav
 Look, we all decided that our treating you this way
 and by that mean, attacking you without mercy all time
 well, we decided that it just plain unfair.
@@ -108,24 +108,24 @@ Braankk!!
 What that sound, officer Flubbo? It was? You sure? King-Killing Horn?
 Har! Har! Har! What a sad coincidence, eh, Captain King?
 
-#(HOSTILE_HELLO_4)	UMGAH023.wav
+#(HOSTILE_HELLO_4)	umgah023.wav
 Ho-ho! Human Earthling has returned to claim its reward!
 What reward you ask? Why this reward, of course!
 
 
-#(REWARD_AT_HOMEWORLD_1)	UMGAH024.wav
+#(REWARD_AT_HOMEWORLD_1)	umgah024.wav
 Hurray! Hurray! It human Earthling! Our Savior!!
 Oh hurry, human Earthling, HURRY! Your reward awaits at our homeworld!
 In case you have forgotten, that at Beta Orionis!
 Hurry, human Earthling, HURRY!
 (Har! Har! Har!)
 
-#(REWARD_AT_HOMEWORLD_2)	UMGAH025.wav
+#(REWARD_AT_HOMEWORLD_2)	umgah025.wav
 Hust! Hust! You must make haste, human Earthling!
 Sooner you go to our homeworld at Beta Orionis
 sooner you shall receive your reward!
 
-#(POST_ZOMBIE_HWLD_HELLO)	UMGAH026.wav
+#(POST_ZOMBIE_HWLD_HELLO)	umgah026.wav
 HAIL! HAIL! Human Earthling! GREAT HERO HAS RETURNED!
 Oh, my lipids quivering just looking at him on monitor!
 What smile! What sparkling eyes! What nice bony structure!
@@ -139,7 +139,7 @@ Yup! That's right! You guys owe me BIG time.
 #(our_largesse)
 Gentle blobbies, please calm yourselves. We act solely from largesse. Rewards are unnecessary.
 
-#(GIVE_LIFEDATA)	UMGAH027.wav
+#(GIVE_LIFEDATA)	umgah027.wav
 No! No! You too humble! We must reward your deeds of courage!
 Killing Talking Pet was a feat none of our species could perform!
 You superior! You Hero!
@@ -158,7 +158,7 @@ What you do with it?
 Oh, well, you Hero. Whatever you want, you get.
 We hope one thousand units sufficient.
 
-#(THANKS)	UMGAH028.wav
+#(THANKS)	umgah028.wav
 HAIL! HAIL! HAIL!
 You right! We do owe you! We MUST reward you!... but what we have to give?
 Protoplasm?... no, not easily appreciated.
@@ -177,7 +177,7 @@ We hope one thousand units sufficient.
 #(what_do_with_tpet)
 So how did that Talking Pet get control of your species?
 
-#(TRICK_URQUAN)	UMGAH029.wav
+#(TRICK_URQUAN)	umgah029.wav
 Well Ariloulaleelay, who kind of our neighbors, gave us Talking Pet
 hoping we could heal it more severe injuries, which we did.
 While we working on it, we do routine brain structure scan
@@ -198,7 +198,7 @@ against Ur-Quan masters.
 #(any_jokes)
 Why the Ur-Quan? What did it have against them?
 
-#(SURE)	UMGAH030.wav
+#(SURE)	umgah030.wav
 We don't know, but whatever it was, must been pretty bad
 because Talking Pet mad... REAL mad! How mad, you ask?
 Blowing up planets and eating juveniles mad! That how mad.
@@ -209,14 +209,14 @@ maybe even worse than death.
 #(what_before_tpet)
 So what should I do with the Talking Pet?
 
-#(TRKD_SPATHI_AND_ILWRATH)	UMGAH031.wav
+#(TRKD_SPATHI_AND_ILWRATH)	umgah031.wav
 You mean, CORPSE of Talking Pet, don't you Captain?!
 DID kill it, didn't you?!
 
 #(where_caster)
 Er... yeah! That's right. Real dead. So what should I do with its corpse?
 
-#(SPATHI_TOOK_THEM)	UMGAH032.wav
+#(SPATHI_TOOK_THEM)	umgah032.wav
 Hmmm... as general rule, corpses aren't too much fun.
 When we were first starting to mess with its brain
 our intention to get it smart enough to accept orders from us
@@ -230,7 +230,7 @@ before those spoil-sport Spathi stole super cool HyperWave `Caster.
 #(so_what_for_now)
 So, since I'm your Great Hero Guy, tell me all your secrets.
 
-#(DO_THIS_NOW)	UMGAH033.wav
+#(DO_THIS_NOW)	umgah033.wav
 Secrets, huh? You want secrets? OUR SECRETS!? YOU MADE FATAL MISTAKE, HUMAN!!
 ... Har! Har! Har! Good joke, eh? Scared you!
 Sure! We'll tell our secrets. Now let me see... what ARE secrets?
@@ -253,7 +253,7 @@ It kind of against Ur-Quan Laws, and not want get Mycons mad at us.
 #(bye_post_zombie)
 Well, your Great Hero must leave now, but rest assured, I'll be back.
 
-#(FUNNY_IDEA)	UMGAH034.wav
+#(FUNNY_IDEA)	umgah034.wav
 You know, Great Hero... I getting this funny feeling.
 Would like to know what feeling is? Good, I tell you.
 My feeling that Great Hero stuff... well, boring... not funny at all.
@@ -271,7 +271,7 @@ Here... let me show you.
 #(whats_up_pre_zombie)
 Umgah! Reveal your secrets!
 
-#(GENERAL_INFO_PRE_ZOMBIE)	UMGAH035.wav
+#(GENERAL_INFO_PRE_ZOMBIE)	umgah035.wav
 Okay, since you ask so nicely, we will tell you a thing or two.
 For instance, did know that even now we performing surgery on Talking Pet?
 Arilou found it alone and dying in wreck of Ur-Quan Dreadnought on Alpha Pavonis .
@@ -282,20 +282,20 @@ provided we make few minor genetic modifications.
 #(evil_blobbies_give_up)
 Evil blobbies. You must submit to our overwhelming power!
 
-#(NOT_EVIL_BLOBBIES)	UMGAH036.wav
+#(NOT_EVIL_BLOBBIES)	umgah036.wav
 Har! Har! Har! GOOD JOKE!!
 We use it on someone else real soon.
 
 #(evil_blobbies_must_die)
 No! I was serious. You ARE evil blobbies. You MUST die.
 
-#(OH_NO_WE_WONT)	UMGAH037.wav
+#(OH_NO_WE_WONT)	umgah037.wav
 Har! Har! Har! Even funnier!
 
 #(can_we_be_friends)
 Look, I know we've had our differences in the past, but can't we be friends?
 
-#(SURE_FRIENDS)	UMGAH038.wav
+#(SURE_FRIENDS)	umgah038.wav
 Sure! Sure! Friends for sure!
 Who cares about boring old Ur-Quan and their slave laws? Har! Har! Har!
 Here we come to say hello to new friends!
@@ -304,7 +304,7 @@ Here we come to say hello to new friends!
 #(want_to_defeat_urquan)
 Here's our credo: Freedom from Ur-Quan! What do you say?
 
-#(FINE_BY_US)	UMGAH039.wav
+#(FINE_BY_US)	umgah039.wav
 Har! Har! Har! Freedom very good thing!
 It so much easier to make good jokes without boring old Ur-Quan slave laws!
 We wanting to pull a real good one on those stupid nosers from Draconis for long time
@@ -315,38 +315,38 @@ Big waves! Big waves! Har! Har! Har!
 #(bye_pre_zombie)
 Well Umgah. It has been fascinating, but I must go.
 
-#(GOODBYE_PRE_ZOMBIE)	UMGAH040.wav
+#(GOODBYE_PRE_ZOMBIE)	umgah040.wav
 Har! Har! Har! Hey wait human Earthling! Here best part!
 
 #(threat)
 Evil blobbies, your craven nature is revealed! Submit!
 
-#(NO_THREAT)	UMGAH041.wav
+#(NO_THREAT)	umgah041.wav
 IF. COMPREHEND. TRUE. NATURE. MUST. BE. ELIMINATED.
 
 #(whats_up_zombies)
 So Umgah, what have you been up to these past twenty years?
 
-#(GENERAL_INFO_ZOMBIE)	UMGAH042.wav
+#(GENERAL_INFO_ZOMBIE)	umgah042.wav
 NOTHING. HAPPEN. LAST. TWENTY. YEARS. VERY. BORING.
 
 #(how_goes_tpet)
 So how goes your work on that Talking Pet?
 
-#(WHAT_TPET)	UMGAH043.wav
+#(WHAT_TPET)	umgah043.wav
 WHAT. TALKING. PET. DO. NOT. UNDERSTAND. REFERENCE.
 
 #(you_told_us)
 You told us you were modifying a Talking Pet, didn't you?
 
-#(SADLY_IT_DIED)	UMGAH044.wav
+#(SADLY_IT_DIED)	umgah044.wav
 SADLY. IT. DIED.
 NO. MORE. TALK. ABOUT. IT.
 
 #(dont_believe)
 You know, I just don't believe you. What are you hiding?
 
-#(THEN_DIE)	UMGAH045.wav
+#(THEN_DIE)	umgah045.wav
 HUMAN. POSSESSES. FORBIDDEN. KNOWLEDGE.
 NO. INTERFERENCE. IN. PLAN. CAN. BE. TOLERATED.
 HUMAN. MUST. BE. ELIMINATED.
@@ -354,20 +354,20 @@ HUMAN. MUST. BE. ELIMINATED.
 #(bye_unknown)
 If I try to leave, are you going to attack me?
 
-#(GOODBYE_UNKNOWN)	UMGAH046.wav
+#(GOODBYE_UNKNOWN)	umgah046.wav
 NO. LEAVE.
 
 #(evil_blobbies)
 You are evil blobbies, I say! Avast!
 
-#(YES_VERY_EVIL)	UMGAH047.wav
+#(YES_VERY_EVIL)	umgah047.wav
 YES. WE. ARE. VERY. EVIL.
 YOUR. BEST. PLAN. IS. TO. DEPART. AND. NEVER. RETURN.
 
 #(give_up_or_die)
 Surrender to me HERE and NOW or I shall vaporize you!
 
-#(NOT_GIVE_UP)	UMGAH048.wav
+#(NOT_GIVE_UP)	umgah048.wav
 HUMAN. INTERFERENCE. REACHES. INTOLERABLE. LEVEL.
 PLAN. MUST. NOT. BE. DELAYED.
 ELIMINATE. HUMAN.
@@ -381,21 +381,21 @@ I am Captain
 #(we_vindicator2)
 . What is your response?
 
-#(GOOD_FOR_YOU_1)	UMGAH049.wav
+#(GOOD_FOR_YOU_1)	umgah049.wav
 WE. RESPOND. WITH. APPROPRIATE. AWE. AND. RESPECT.
 NOW. GO. AWAY.
 
 #(come_in_peace)
 Our message is Peace Between All Species!... blobbies included.
 
-#(GOOD_FOR_YOU_2)	UMGAH050.wav
+#(GOOD_FOR_YOU_2)	umgah050.wav
 YES. PEACE. GOOD. WE. WANT. PEACE. ALSO.
 DEMONSTRATE. PEACE. NOW. BY. DEPARTING. OUR. SPACE. IMMEDIATELY. 
 
 #(know_any_jokes)
 Umgah humor is renowned across space, so... know any good jokes?!
 
-#(JOKE_1)	UMGAH051.wav
+#(JOKE_1)	umgah051.wav
 JOKE. YES. JOKE. HERE. IS. JOKE.
 WHEN. IS. A. SLAVE. NOT. A. SLAVE.
 ANSWER.
@@ -404,7 +404,7 @@ WHEN. HE. IS. A. SLAVE. MASTER.
 #(better_joke)
 Uh... that wasn't very funny. Can't you do better?
 
-#(JOKE_2)	UMGAH052.wav
+#(JOKE_2)	umgah052.wav
 
 BETTER. JOKE. YES. BETTER. JOKE. HERE. IT. IS
 WHAT. YOU. GET. WHEN. COMBINE. DEUTERIUM. PELLET. TERRAWATT. LASER.
@@ -415,7 +415,7 @@ KHAN. FUSION.
 #(not_very_funny)
 Ugh! That wasn't a very good joke either. I don't think you guys are very funny.
 
-#(YES_WE_ARE)	UMGAH053.wav
+#(YES_WE_ARE)	umgah053.wav
 UMGAH. ARE. FUNNY. WE. ARE. UMGAH. WE. ARE FUNNY.
 THERE. IS. NO. ALTERNATIVE.
 
@@ -428,6 +428,6 @@ The Arilou told us they had given it to you... they did, right?
 #(bye_zombie)
 Goodbye Umgah. I wish I could say it's been fun.
 
-#(GOODBYE_ZOMBIE)	UMGAH054.wav
+#(GOODBYE_ZOMBIE)	umgah054.wav
 GOODBYE. HUMAN. EARTHLING. DO. NOT. RETURN.
 

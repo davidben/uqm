@@ -1,66 +1,66 @@
-#(WE_ARE0)	ZOQFO000.wav
+#(WE_ARE0)	zoqfo000.wav
 Attention starship!
 We are the Zoq-Fot-Pik.
-#(WE_ARE1)	ZOQFO001.wav
+#(WE_ARE1)	zoqfo001.wav
 Make no hostile actions!
-#(WE_ARE2)	ZOQFO002.wav
+#(WE_ARE2)	zoqfo002.wav
 We come in peace, and with good will.
-#(WE_ARE3)	ZOQFO003.wav
+#(WE_ARE3)	zoqfo003.wav
 But if you make one false move, you're vapor!
-#(WE_ARE4)	ZOQFO004.wav
+#(WE_ARE4)	zoqfo004.wav
 Don't worry, my companion is just a bit nervous
-#(WE_ARE5)	ZOQFO005.wav
+#(WE_ARE5)	zoqfo005.wav
 No, I'm not!
-#(WE_ARE6)	ZOQFO006.wav
+#(WE_ARE6)	zoqfo006.wav
 and argumentative.
-#(WE_ARE7)	ZOQFO007.wav
+#(WE_ARE7)	zoqfo007.wav
 No, I'm not.
 
-#(SCOUT_HELLO0)	ZOQFO008.wav
+#(SCOUT_HELLO0)	zoqfo008.wav
 We are a scout vessel
 dispatched from our homeworld.
-#(SCOUT_HELLO1)	ZOQFO009.wav
+#(SCOUT_HELLO1)	zoqfo009.wav
 We have travelled far
 through hostile, uncharted space
 to find you.
 We hail from the green dwarf star at coordinates
 ziggerfau-gerrrnuf, Ah-ah, Pahoy-hoy.
-#(SCOUT_HELLO2)	ZOQFO010.wav
+#(SCOUT_HELLO2)	zoqfo010.wav
 No, you idiot, in their coordinate system!
-#(SCOUT_HELLO3)	ZOQFO011.wav
+#(SCOUT_HELLO3)	zoqfo011.wav
 Oh!
 Er
 Coordinates 400.0 : 543.7.
 
-#(INIT_HOME_HELLO0)	ZOQFO012.wav
+#(INIT_HOME_HELLO0)	zoqfo012.wav
 You have arrived at our homeworld.
-#(INIT_HOME_HELLO1)	ZOQFO013.wav
+#(INIT_HOME_HELLO1)	zoqfo013.wav
 And we've got a billion ships here!
-#(INIT_HOME_HELLO2)	ZOQFO014.wav
+#(INIT_HOME_HELLO2)	zoqfo014.wav
 We are fortunate that you have found us in our time of need.
-#(INIT_HOME_HELLO3)	ZOQFO015.wav
+#(INIT_HOME_HELLO3)	zoqfo015.wav
 So don't even think of trying to attack us!
 
 
 #(which_fot)
 Which one of you creatures is the Fot?
 
-#(HE_IS0)	ZOQFO016.wav
+#(HE_IS0)	zoqfo016.wav
 He is.
-#(HE_IS1)	ZOQFO017.wav
+#(HE_IS1)	zoqfo017.wav
 No, she is!
-#(HE_IS2)	ZOQFO018.wav
+#(HE_IS2)	zoqfo018.wav
 No, I'm not!
-#(HE_IS3)	ZOQFO019.wav
+#(HE_IS3)	zoqfo019.wav
 Yes, you are.
-#(HE_IS4)	ZOQFO020.wav
+#(HE_IS4)	zoqfo020.wav
 Cripes! We've been through this a million times!
-#(HE_IS5)	ZOQFO021.wav
+#(HE_IS5)	zoqfo021.wav
 That doesn't change anything. You're the Fot!
-#(HE_IS6)	ZOQFO022.wav
+#(HE_IS6)	zoqfo022.wav
 Faugh!
 Well, Captain, as you can see, this is a point of some contention.
-#(HE_IS7)	ZOQFO023.wav
+#(HE_IS7)	zoqfo023.wav
 Fot!
 
 #(we_are_vindicator0)
@@ -70,97 +70,97 @@ We are
 #(we_are_vindicator2)
  from Earth.  What are your intentions?
 
-#(WE_GLAD0)	ZOQFO024.wav
+#(WE_GLAD0)	zoqfo024.wav
 Hurrah!
 Then we've finally found our saviors!
-#(WE_GLAD1)	ZOQFO025.wav
+#(WE_GLAD1)	zoqfo025.wav
 Maybe.
-#(WE_GLAD2)	ZOQFO026.wav
+#(WE_GLAD2)	zoqfo026.wav
 At last, our search is over!
 It is just as the great Crystal ones promised!
-#(WE_GLAD3)	ZOQFO027.wav
+#(WE_GLAD3)	zoqfo027.wav
 They look sneaky.
 I think they're lying.
-#(WE_GLAD4)	ZOQFO028.wav
+#(WE_GLAD4)	zoqfo028.wav
 Quiet, fool!
 Can't you see our nightmare is over!?
 This ship is from the Great Crystal One's fabled Alliance
 the Alliance of Free Stars!
-#(WE_GLAD5)	ZOQFO029.wav
+#(WE_GLAD5)	zoqfo029.wav
 Maybe.
 
 #(quiet_toadies)
 SILENCE BLATHERING TOADIES! We are your new masters.
 
-#(TOLD_YOU0)	ZOQFO030.wav
+#(TOLD_YOU0)	zoqfo030.wav
 We are disappointed.
-#(TOLD_YOU1)	ZOQFO031.wav
+#(TOLD_YOU1)	zoqfo031.wav
 See! I TOLD you!
-#(TOLD_YOU2)	ZOQFO032.wav
+#(TOLD_YOU2)	zoqfo032.wav
 We had hoped that our species could be friends.
-#(TOLD_YOU3)	ZOQFO033.wav
+#(TOLD_YOU3)	zoqfo033.wav
 Never in a million years! Just look at their beady eyes!
-#(TOLD_YOU4)	ZOQFO034.wav
+#(TOLD_YOU4)	zoqfo034.wav
 But in the spirit of understanding...
-#(TOLD_YOU5)	ZOQFO035.wav
+#(TOLD_YOU5)	zoqfo035.wav
 Oh, no! You're not even considering...
-#(TOLD_YOU6)	ZOQFO036.wav
+#(TOLD_YOU6)	zoqfo036.wav
 ...We will forgive you this transgression.
-#(TOLD_YOU7)	ZOQFO037.wav
+#(TOLD_YOU7)	zoqfo037.wav
 Sheesh! What a pushover you are!
 
 #(your_race)
 Before we go on, can you tell us more about your species?
 
-#(YEARS_AGO0)	ZOQFO038.wav
+#(YEARS_AGO0)	zoqfo038.wav
 In our ancient past, four species evolved intelligence on our homeworld.
-#(YEARS_AGO1)	ZOQFO039.wav	
+#(YEARS_AGO1)	zoqfo039.wav	
 Simultaneously.
-#(YEARS_AGO2)	ZOQFO040.wav
+#(YEARS_AGO2)	zoqfo040.wav
 They were the Zoq
-#(YEARS_AGO3)	ZOQFO041.wav
+#(YEARS_AGO3)	zoqfo041.wav
 the Fot
-#(YEARS_AGO4)	ZOQFO042.wav
+#(YEARS_AGO4)	zoqfo042.wav
 the Pik
-#(YEARS_AGO5)	ZOQFO043.wav
+#(YEARS_AGO5)	zoqfo043.wav
 and the Zebranky.
-#(YEARS_AGO6)	ZOQFO044.wav
+#(YEARS_AGO6)	zoqfo044.wav
 We three, the Zoq, Fot, and Pik evolved in such a way
 as to acquire sustenance from many sources
-#(YEARS_AGO7)	ZOQFO045.wav
+#(YEARS_AGO7)	zoqfo045.wav
 from airborne zooplankton
-#(YEARS_AGO8)	ZOQFO046.wav
+#(YEARS_AGO8)	zoqfo046.wav
 from solar and ambient energies
-#(YEARS_AGO9)	ZOQFO047.wav
+#(YEARS_AGO9)	zoqfo047.wav
 and from rocky fungal clingers.
-#(YEARS_AGO10)	ZOQFO048.wav
+#(YEARS_AGO10)	zoqfo048.wav
 Our favorite!
-#(YEARS_AGO11)	ZOQFO049.wav
+#(YEARS_AGO11)	zoqfo049.wav
 The Zebranky also consumed a variety of foods
 namely: the Zoq
 the Fot
 and the Pik.
-#(YEARS_AGO12)	ZOQFO050.wav
+#(YEARS_AGO12)	zoqfo050.wav
 To survive the predations of the Zebranky
 we banded together
 annihilated the Zebranky
-#(YEARS_AGO13)	ZOQFO051.wav
+#(YEARS_AGO13)	zoqfo051.wav
 and formed the cooperative union you now encounter.
 
 #(where_from)
 What do you seek from us?
 
-#(TRAVELED_FAR0)	ZOQFO052.wav
+#(TRAVELED_FAR0)	zoqfo052.wav
 We are a relatively peaceful group of species.
-#(TRAVELED_FAR1)	ZOQFO053.wav
+#(TRAVELED_FAR1)	zoqfo053.wav
 Unless we're angry.
-#(TRAVELED_FAR2)	ZOQFO054.wav
+#(TRAVELED_FAR2)	zoqfo054.wav
 So we find ourselves in need of help.
-#(TRAVELED_FAR3)	ZOQFO055.wav
+#(TRAVELED_FAR3)	zoqfo055.wav
 We only need a LITTLE!
-#(TRAVELED_FAR4)	ZOQFO056.wav
+#(TRAVELED_FAR4)	zoqfo056.wav
 Because of our desperate situation.
-#(TRAVELED_FAR5)	ZOQFO057.wav
+#(TRAVELED_FAR5)	zoqfo057.wav
 `Desperate' is too strong a word.
 I think `troublesome' is more like it.
 
@@ -169,63 +169,63 @@ I think `troublesome' is more like it.
 What `nightmare' are you talking about? What's the matter?
 
 
-#(UNDER_ATTACK0)	ZOQFO058.wav
+#(UNDER_ATTACK0)	zoqfo058.wav
 Our planets are under attack from an invading horde!
-#(UNDER_ATTACK1)	ZOQFO059.wav
+#(UNDER_ATTACK1)	zoqfo059.wav
 We do not know who they are, or why they are here.
-#(UNDER_ATTACK2)	ZOQFO060.wav
+#(UNDER_ATTACK2)	zoqfo060.wav
 We are being blown to bits.
-#(UNDER_ATTACK3)	ZOQFO061.wav
+#(UNDER_ATTACK3)	zoqfo061.wav
 Fleets of alien ships appear out of nowhere\n
 then unleash terrible destructive energies.
-#(UNDER_ATTACK4)	ZOQFO062.wav
+#(UNDER_ATTACK4)	zoqfo062.wav
 Fortunately
-#(UNDER_ATTACK5)	ZOQFO063.wav
+#(UNDER_ATTACK5)	zoqfo063.wav
 they release these energies on each other.
-#(UNDER_ATTACK6)	ZOQFO064.wav
+#(UNDER_ATTACK6)	zoqfo064.wav
 Unfortunately
-#(UNDER_ATTACK7)	ZOQFO065.wav
+#(UNDER_ATTACK7)	zoqfo065.wav
 they favor combat near strong gravity wells.
 Their stray shots regularly strike the surface of our planets\n
 often with tragic results.
-#(UNDER_ATTACK8)	ZOQFO066.wav
+#(UNDER_ATTACK8)	zoqfo066.wav
 Fortunately
-#(UNDER_ATTACK9)	ZOQFO067.wav
+#(UNDER_ATTACK9)	zoqfo067.wav
 they have never found our homeworld, only our colony planets.
-#(UNDER_ATTACK10)	ZOQFO068.wav
+#(UNDER_ATTACK10)	zoqfo068.wav
 Unfortunately
-#(UNDER_ATTACK11)	ZOQFO069.wav
+#(UNDER_ATTACK11)	zoqfo069.wav
 all of our colonies have perished as a consequence.
 
 #(tough_luck)
 Hey, space is a tough place where wimps eat flaming plasma death.
 
-#(NOT_HELPFUL0)	ZOQFO070.wav
+#(NOT_HELPFUL0)	zoqfo070.wav
 Oh, dear.
-#(NOT_HELPFUL1)	ZOQFO071.wav
+#(NOT_HELPFUL1)	zoqfo071.wav
 I told you he looked like a creep!
-#(NOT_HELPFUL2)	ZOQFO072.wav
+#(NOT_HELPFUL2)	zoqfo072.wav
 No! We must try to understand.
 His ways are not like our own.
-#(NOT_HELPFUL3)	ZOQFO073.wav
+#(NOT_HELPFUL3)	zoqfo073.wav
 You mean his WHOLE SPECIES are jerks?
-#(NOT_HELPFUL4)	ZOQFO074.wav
+#(NOT_HELPFUL4)	zoqfo074.wav
 Let us give him one more chance.
-#(NOT_HELPFUL5)	ZOQFO075.wav
+#(NOT_HELPFUL5)	zoqfo075.wav
 Just look at him. He's a killer, I tell you.
 
 #(what_look_like)
 Who is attacking you? What do they look like?
 
-#(LOOK_LIKE0)	ZOQFO076.wav
+#(LOOK_LIKE0)	zoqfo076.wav
 Some of the vessels are huge, green battleships
 which launch wave after wave of small fighters.
-#(LOOK_LIKE1)	ZOQFO077.wav
+#(LOOK_LIKE1)	zoqfo077.wav
 The other ships are black as space
 and their hulls are carved with strange alien writing.
-#(LOOK_LIKE2)	ZOQFO078.wav
+#(LOOK_LIKE2)	zoqfo078.wav
 In combat the two ships seem evenly matched.
-#(LOOK_LIKE3)	ZOQFO079.wav
+#(LOOK_LIKE3)	zoqfo079.wav
 One fires blasts of fusion energy
 while the other launches spinning projectiles.
 
@@ -233,28 +233,28 @@ while the other launches spinning projectiles.
 #(valuable_info)
 You have given us valuable information. Goodbye.
 
-#(GOODBYE0)	ZOQFO080.wav
+#(GOODBYE0)	zoqfo080.wav
 If you must go now, we understand.
-#(GOODBYE1)	ZOQFO081.wav
+#(GOODBYE1)	zoqfo081.wav
 That's it?! You're leaving?!!
-#(GOODBYE2)	ZOQFO082.wav
+#(GOODBYE2)	zoqfo082.wav
 We hope that on your next visit
 we can establish a mutual assistance pact.
-#(GOODBYE3)	ZOQFO083.wav
+#(GOODBYE3)	zoqfo083.wav
 I can't believe that he's just leaving us here!
 ...what a jerk.
 
 #(all_very_interesting)
 Yes, yes, that's all very interesting, but now we are going to attack you!
 
-#(SEE_TOLD_YOU0)	ZOQFO084.wav
+#(SEE_TOLD_YOU0)	zoqfo084.wav
 What?
-#(SEE_TOLD_YOU1)	ZOQFO085.wav
+#(SEE_TOLD_YOU1)	zoqfo085.wav
 See! I told you.!...
 ...but would you listen... NO!
-#(SEE_TOLD_YOU2)	ZOQFO086.wav
+#(SEE_TOLD_YOU2)	zoqfo086.wav
 I don't understand!
-#(SEE_TOLD_YOU3)	ZOQFO087.wav
+#(SEE_TOLD_YOU3)	zoqfo087.wav
 So what does all your nicey-nice to the alien get us?
 Nothing! That's what!
 You should have done what I said
@@ -264,23 +264,23 @@ and told him we were the Precursors.
 #(how_can_i_help)
 We want to help. What can we do?
 
-#(ALLY_WITH_US0)	ZOQFO088.wav
+#(ALLY_WITH_US0)	zoqfo088.wav
 We would like to establish
 a formal mutual-assistance pact
 with your species.
-#(ALLY_WITH_US1)	ZOQFO089.wav
+#(ALLY_WITH_US1)	zoqfo089.wav
 One of those `You scratch my vent
 I'll scratch your flipper' set-ups.
-#(ALLY_WITH_US2)	ZOQFO090.wav
+#(ALLY_WITH_US2)	zoqfo090.wav
 And as a sign of our good faith
 we will provide you with skilled Captains
 and plans for building our `Stinger' starships.
-#(ALLY_WITH_US3)	ZOQFO091.wav
+#(ALLY_WITH_US3)	zoqfo091.wav
 In return, if the bad guys find our homeworld
 you'll rush over here and vaporize 'em.
-#(ALLY_WITH_US4)	ZOQFO092.wav
+#(ALLY_WITH_US4)	zoqfo092.wav
 That is, essentially, correct.
-#(ALLY_WITH_US5)	ZOQFO093.wav
+#(ALLY_WITH_US5)	zoqfo093.wav
 Great deal, eh?
 	"You can't afford to pass it up!"
 So what do you say?
@@ -288,31 +288,31 @@ So what do you say?
 #(decide_later)
 Uh... I need to consult with our, er... our Grand-High Poobah!
 
-#(PLEASE_HURRY0)	ZOQFO094.wav
+#(PLEASE_HURRY0)	zoqfo094.wav
 Please hurry back with word from your Poobah.
 Millions of lives are at stake!
-#(PLEASE_HURRY1)	ZOQFO095.wav
+#(PLEASE_HURRY1)	zoqfo095.wav
 Not the least of which is mine.
 
-#(EMMISSARIES0)	ZOQFO096.wav
+#(EMMISSARIES0)	zoqfo096.wav
 These are the words we have prayed for!
-#(EMMISSARIES1)	ZOQFO097.wav
+#(EMMISSARIES1)	zoqfo097.wav
 Hey! This trip's not a waste after all!
-#(EMMISSARIES2)	ZOQFO098.wav
+#(EMMISSARIES2)	zoqfo098.wav
 More than anything, we seek an ally
 to help us survive in this hostile universe.
-#(EMMISSARIES3)	ZOQFO099.wav
+#(EMMISSARIES3)	zoqfo099.wav
 We are having some problems of that general nature.
-#(EMMISSARIES4)	ZOQFO100.wav
+#(EMMISSARIES4)	zoqfo100.wav
 But we are only emissaries.
 You must meet with our leaders.
 They are wiser... more powerful beings!
-#(EMMISSARIES5)	ZOQFO101.wav
+#(EMMISSARIES5)	zoqfo101.wav
 They look just like us, though.
-#(EMMISSARIES6)	ZOQFO102.wav
+#(EMMISSARIES6)	zoqfo102.wav
 Fly to the star called Alpha Tucanae.
 The planet closest to the sun is our home.
-#(EMMISSARIES7)	ZOQFO103.wav
+#(EMMISSARIES7)	zoqfo103.wav
 And if possible, hurry.
 
 
@@ -320,18 +320,18 @@ And if possible, hurry.
 	"You are under attack by the Ur-Quan, our enemy as well. "
 Therefore, speaking for all the People of Earth, I accept your offer.
 
-#(WE_ALLY0)	ZOQFO104.wav
+#(WE_ALLY0)	zoqfo104.wav
 How wonderful!
-#(WE_ALLY1)	ZOQFO105.wav
+#(WE_ALLY1)	zoqfo105.wav
 Hurray!
-#(WE_ALLY2)	ZOQFO106.wav
+#(WE_ALLY2)	zoqfo106.wav
 How marvelous!
-#(WE_ALLY3)	ZOQFO107.wav
+#(WE_ALLY3)	zoqfo107.wav
 Yee-ha!
-#(WE_ALLY4)	ZOQFO108.wav
+#(WE_ALLY4)	zoqfo108.wav
 Captain, we shall begin fulfilling our commitment at once!
 We will begin transporting our officers to your base immediately!
-#(WE_ALLY5)	ZOQFO109.wav
+#(WE_ALLY5)	zoqfo109.wav
 Why, heck!
 Maybe I'll even make the trip to your planet!
 I'd make a good starship captain, Captain!
@@ -342,7 +342,7 @@ with a thrusting stinger tongue attack!
 #(never)
 What? Protect you failures? No way! You're too lame!
 
-#(WE_ENEMIES0)	ZOQFO110.wav
+#(WE_ENEMIES0)	zoqfo110.wav
 We have revealed ourselves to you.
 We have held out our appendages to you in friendship!...
 ...and you have treated us like dead Zebrankys.
@@ -350,152 +350,152 @@ It takes a great deal to anger one of my species, Captain
 BUT YOU HAVE JUST SUCCEEDED!
 Attention Shipmates! Man the spray gun! Hoist the tongue!
 PREPARE FOR BATTLE!
-#(WE_ENEMIES1)	ZOQFO111.wav
+#(WE_ENEMIES1)	zoqfo111.wav
 Yeah.
 Let's toast those creeps!
 
 
-#(HOSTILE_HELLO_10)	ZOQFO112.wav
+#(HOSTILE_HELLO_10)	zoqfo112.wav
 Coming here was pointless, human.
 Our species are at war.
-#(HOSTILE_HELLO_11)	ZOQFO113.wav
+#(HOSTILE_HELLO_11)	zoqfo113.wav
 Right!
 Prepare to die, alien scum!
 
-#(HOSTILE_HELLO_20)	ZOQFO114.wav
+#(HOSTILE_HELLO_20)	zoqfo114.wav
 If you had allied with us, Captain
-#(HOSTILE_HELLO_21)	ZOQFO115.wav
+#(HOSTILE_HELLO_21)	zoqfo115.wav
 Which you didn't!
-#(HOSTILE_HELLO_22)	ZOQFO116.wav
+#(HOSTILE_HELLO_22)	zoqfo116.wav
 We would gladly tell you what we have learned
-#(HOSTILE_HELLO_23)	ZOQFO117.wav
+#(HOSTILE_HELLO_23)	zoqfo117.wav
 Which we won't!
-#(HOSTILE_HELLO_24)	ZOQFO118.wav
+#(HOSTILE_HELLO_24)	zoqfo118.wav
 Regarding the two warring alien factions\n
 the Ur-Quan and their siblings, the Kohr-Ah.
-#(HOSTILE_HELLO_25)	ZOQFO119.wav
+#(HOSTILE_HELLO_25)	zoqfo119.wav
 But now you'll NEVER know!
 	
 
-#(HOSTILE_HELLO_30)	ZOQFO120.wav
+#(HOSTILE_HELLO_30)	zoqfo120.wav
 With whatever remaining forces we have
 we will do our best to destroy you.
-#(HOSTILE_HELLO_31)	ZOQFO121.wav
+#(HOSTILE_HELLO_31)	zoqfo121.wav
 Yeah! And she means it too!
 
-#(HOSTILE_HELLO_40)	ZOQFO122.wav
+#(HOSTILE_HELLO_40)	zoqfo122.wav
 Your villainy is beyond possible forgiveness!
 We are compelled by our anger to destroy you.
-#(HOSTILE_HELLO_41)	ZOQFO123.wav
+#(HOSTILE_HELLO_41)	zoqfo123.wav
 He's probably just gonna run away again.
 The coward!
 
 
-#(NEUTRAL_HOME_HELLO_10)	ZOQFO124.wav
+#(NEUTRAL_HOME_HELLO_10)	zoqfo124.wav
 Ah! It is the alien from the Chenjesu's Alliance!
-#(NEUTRAL_HOME_HELLO_11)	ZOQFO125.wav
+#(NEUTRAL_HOME_HELLO_11)	zoqfo125.wav
 Just look at those weapon pods on his ship.
-#(NEUTRAL_HOME_HELLO_12)	ZOQFO126.wav
+#(NEUTRAL_HOME_HELLO_12)	zoqfo126.wav
 We hope that during this visit
 we can make clear to your species
 the benefits of a mutual-assistance pact.
-#(NEUTRAL_HOME_HELLO_13)	ZOQFO127.wav
+#(NEUTRAL_HOME_HELLO_13)	zoqfo127.wav
 But we're also armed to the teeth
 so don't try stealing our atmosphere or anything sneaky like that!
 
 
-#(NEUTRAL_HOME_HELLO_20)	ZOQFO128.wav
+#(NEUTRAL_HOME_HELLO_20)	zoqfo128.wav
 Once more, the Alliance starship has returned.
-#(NEUTRAL_HOME_HELLO_21)	ZOQFO129.wav
+#(NEUTRAL_HOME_HELLO_21)	zoqfo129.wav
 Yeah. I bet THIS is the time they try to trick us.
-#(NEUTRAL_HOME_HELLO_22)	ZOQFO130.wav
+#(NEUTRAL_HOME_HELLO_22)	zoqfo130.wav
 Alien Captain, do you bring word from your Leaders?
-#(NEUTRAL_HOME_HELLO_23)	ZOQFO131.wav
+#(NEUTRAL_HOME_HELLO_23)	zoqfo131.wav
 If he does, I bet it's something like
 Submit or be Eaten!
 
 
-#(ALLIED_HOME_HELLO_10)	ZOQFO132.wav
+#(ALLIED_HOME_HELLO_10)	zoqfo132.wav
 Hello friend and ally!
-#(ALLIED_HOME_HELLO_11)	ZOQFO133.wav
+#(ALLIED_HOME_HELLO_11)	zoqfo133.wav
 Got any presents for us?
-#(ALLIED_HOME_HELLO_12)	ZOQFO134.wav
+#(ALLIED_HOME_HELLO_12)	zoqfo134.wav
 We hope your struggle against the Ur-Quan goes well!
-#(ALLIED_HOME_HELLO_13)	ZOQFO135.wav
+#(ALLIED_HOME_HELLO_13)	zoqfo135.wav
 Darn! He never gives us anything.
 
 
-#(ALLIED_HOME_HELLO_20)	ZOQFO136.wav
+#(ALLIED_HOME_HELLO_20)	zoqfo136.wav
 Welcome back to our world.
-#(ALLIED_HOME_HELLO_21)	ZOQFO137.wav
+#(ALLIED_HOME_HELLO_21)	zoqfo137.wav
 Yeah, welcome back to our world!
-#(ALLIED_HOME_HELLO_22)	ZOQFO138.wav
+#(ALLIED_HOME_HELLO_22)	zoqfo138.wav
 I just said that.
-#(ALLIED_HOME_HELLO_23)	ZOQFO139.wav
+#(ALLIED_HOME_HELLO_23)	zoqfo139.wav
 So? It doesn't mean I can't say it too.
 Besides, you always get to talk first.
 That's not fair!
-#(ALLIED_HOME_HELLO_24)	ZOQFO140.wav
+#(ALLIED_HOME_HELLO_24)	zoqfo140.wav
 Sorry, that's just the way it is.
-#(ALLIED_HOME_HELLO_25)	ZOQFO141.wav
+#(ALLIED_HOME_HELLO_25)	zoqfo141.wav
 Well why?! That doesn't make sense.
-#(ALLIED_HOME_HELLO_26)	ZOQFO142.wav
+#(ALLIED_HOME_HELLO_26)	zoqfo142.wav
 Look, don't ask me.
 I think it's something technical.
-#(ALLIED_HOME_HELLO_27)	ZOQFO143.wav
+#(ALLIED_HOME_HELLO_27)	zoqfo143.wav
 Yeah, right. I'm so sure.
 What a lame excuse.
 
-#(ALLIED_HOME_HELLO_30)	ZOQFO144.wav
+#(ALLIED_HOME_HELLO_30)	zoqfo144.wav
 Greetings Captain.
 What can your allies do for you?
-#(ALLIED_HOME_HELLO_31)	ZOQFO145.wav
+#(ALLIED_HOME_HELLO_31)	zoqfo145.wav
 Your favorite allies!
 
-#(ALLIED_HOME_HELLO_40)	ZOQFO146.wav
+#(ALLIED_HOME_HELLO_40)	zoqfo146.wav
 Hello human ally.
 We are at your service.
-#(ALLIED_HOME_HELLO_41)	ZOQFO147.wav
+#(ALLIED_HOME_HELLO_41)	zoqfo147.wav
 What do you want?
 
-#(THANKS_FOR_RESCUE0)	ZOQFO148.wav
+#(THANKS_FOR_RESCUE0)	zoqfo148.wav
 Our Savior! Our Savior!
 You have rescued us from certain destruction!
-#(THANKS_FOR_RESCUE1)	ZOQFO149.wav
+#(THANKS_FOR_RESCUE1)	zoqfo149.wav
 Howee-baby! That was a close one!
-#(THANKS_FOR_RESCUE2)	ZOQFO150.wav
+#(THANKS_FOR_RESCUE2)	zoqfo150.wav
 The black ship appeared in orbit several days ago
 and began raining down bolts of destructive energy
 on the surface of our planet!
-#(THANKS_FOR_RESCUE3)	ZOQFO151.wav
+#(THANKS_FOR_RESCUE3)	zoqfo151.wav
 Fortunately
-#(THANKS_FOR_RESCUE4)	ZOQFO152.wav
+#(THANKS_FOR_RESCUE4)	zoqfo152.wav
 We were able to focus our planetary shields
 to deflect the energy blasts away from our cities.
-#(THANKS_FOR_RESCUE5)	ZOQFO153.wav
+#(THANKS_FOR_RESCUE5)	zoqfo153.wav
 Unfortunately
-#(THANKS_FOR_RESCUE6)	ZOQFO154.wav
+#(THANKS_FOR_RESCUE6)	zoqfo154.wav
 Large sections of our planet's beautiful wilderness
 have been annihilated... entire ecosystems destroyed.
-#(THANKS_FOR_RESCUE7)	ZOQFO155.wav
+#(THANKS_FOR_RESCUE7)	zoqfo155.wav
 Oh! That makes me REALLY mad!
 I mean, attacking helpless, intelligent, alien species
 that's one thing
 but toasting our cute little wood Jukes and tree Narfs
 that's really low!
-#(THANKS_FOR_RESCUE8)	ZOQFO156.wav
+#(THANKS_FOR_RESCUE8)	zoqfo156.wav
 If the black ship had been accompanied by others of its kind
 we wouldn't have been able stop the rain of destruction.
 They would have killed us all.
-#(THANKS_FOR_RESCUE9)	ZOQFO157.wav
+#(THANKS_FOR_RESCUE9)	zoqfo157.wav
 Well in that case, better those Jukes and Narfs than us, right?
-#(THANKS_FOR_RESCUE10)	ZOQFO158.wav
+#(THANKS_FOR_RESCUE10)	zoqfo158.wav
 Captain, it is clear that in matters of war
 you are more capable than ourselves.
 With this in mind, we would like to give you
 our four finest starships and crew.
 I hope they bring you many victories.
-#(THANKS_FOR_RESCUE11)	ZOQFO159.wav
+#(THANKS_FOR_RESCUE11)	zoqfo159.wav
 Try not to lose them all right away.
 	
 
@@ -510,252 +510,252 @@ See ya.
 #(whats_up_homeworld)
 So, what's happening around here?
 
-#(GENERAL_INFO_10)	ZOQFO160.wav
+#(GENERAL_INFO_10)	zoqfo160.wav
 We had a close call last week.
-#(GENERAL_INFO_11)	ZOQFO161.wav
+#(GENERAL_INFO_11)	zoqfo161.wav
 One of those black ships was snooping around the system.
-#(GENERAL_INFO_12)	ZOQFO162.wav
+#(GENERAL_INFO_12)	zoqfo162.wav
 But before it got to our world
 some of the Green ships warped in
 destroyed the black vessel
 and then left immediately.
-#(GENERAL_INFO_13)	ZOQFO163.wav
+#(GENERAL_INFO_13)	zoqfo163.wav
 We got lucky.
 
 
-#(GENERAL_INFO_20)	ZOQFO164.wav
+#(GENERAL_INFO_20)	zoqfo164.wav
 It's been pretty quiet, Captain.\n
 Nothing new to report.
-#(GENERAL_INFO_21)	ZOQFO165.wav
+#(GENERAL_INFO_21)	zoqfo165.wav
 Are you CRAZY?! What about the Frungy Championships!?
-#(GENERAL_INFO_22)	ZOQFO166.wav
+#(GENERAL_INFO_22)	zoqfo166.wav
 Why should we tell the Earth Captain about that?
 He wouldn't be interested.
-#(GENERAL_INFO_23)	ZOQFO167.wav
+#(GENERAL_INFO_23)	zoqfo167.wav
 Oh, yeah? How do you know?
-#(GENERAL_INFO_24)	ZOQFO168.wav
+#(GENERAL_INFO_24)	zoqfo168.wav
 Because I'M not even interested.
 Nobody with any brains is interested in Frungy!
-#(GENERAL_INFO_25)	ZOQFO169.wav
+#(GENERAL_INFO_25)	zoqfo169.wav
 Well what about me, huh?
 I LOVE Frungy! It's the Sport of Kings!
-#(GENERAL_INFO_26)	ZOQFO170.wav
+#(GENERAL_INFO_26)	zoqfo170.wav
   
-#(GENERAL_INFO_27)	ZOQFO171.wav
+#(GENERAL_INFO_27)	zoqfo171.wav
 Oh, all right
 he wouldn't know any of the teams anyway.
 
 
-#(GENERAL_INFO_30)	ZOQFO172.wav
+#(GENERAL_INFO_30)	zoqfo172.wav
 Although this may not pertain to the Ur-Quan
 we have received an interesting report
 from one of our deep space scouts.
-#(GENERAL_INFO_31)	ZOQFO173.wav
+#(GENERAL_INFO_31)	zoqfo173.wav
 She found a strange metal door-thing
 embedded in the surface of an alien planet.
-#(GENERAL_INFO_32)	ZOQFO174.wav
+#(GENERAL_INFO_32)	zoqfo174.wav
 Although she and her crew spent many days
 trying to open the door
-#(GENERAL_INFO_33)	ZOQFO175.wav
+#(GENERAL_INFO_33)	zoqfo175.wav
 they failed utterly to so much as budge it.
-#(GENERAL_INFO_34)	ZOQFO176.wav
+#(GENERAL_INFO_34)	zoqfo176.wav
 The reported location of this alien artifact
 is Epsilon Camelopardalis I-A.
-#(GENERAL_INFO_35)	ZOQFO177.wav
+#(GENERAL_INFO_35)	zoqfo177.wav
 Go open it!
 I bet there's something cool inside!
 
-#(GENERAL_INFO_40)	ZOQFO178.wav
+#(GENERAL_INFO_40)	zoqfo178.wav
 We may not have told you this before, Captain
 but my species is somewhat sensitive
 to certain meta-psychic vibrations.
-#(GENERAL_INFO_41)	ZOQFO179.wav
+#(GENERAL_INFO_41)	zoqfo179.wav
 Oh, no! Not this mental stuff again!
-#(GENERAL_INFO_42)	ZOQFO180.wav
+#(GENERAL_INFO_42)	zoqfo180.wav
 Although my friend's species
 has difficulty understanding our powers
 I can guarantee you, Captain
 that our limited abilities are quite real.
-#(GENERAL_INFO_43)	ZOQFO181.wav
+#(GENERAL_INFO_43)	zoqfo181.wav
 Oh, yeah! Remember that time
 you said you could fix our broken chronometers
 with your `sympathetic psionic waves'?
 More like `pathetic waves' if you ask me!
 Nyark! Nyark! Nyark!
-#(GENERAL_INFO_44)	ZOQFO182.wav
+#(GENERAL_INFO_44)	zoqfo182.wav
 Even through all this negative energy, Captain
 we have discovered that...
-#(GENERAL_INFO_45)	ZOQFO183.wav
+#(GENERAL_INFO_45)	zoqfo183.wav
 ...and THEN there was the time
 you said you could bend dorfs with just your...
-#(GENERAL_INFO_46)	ZOQFO184.wav
+#(GENERAL_INFO_46)	zoqfo184.wav
 SHUT UP!
-#(GENERAL_INFO_47)	ZOQFO185.wav
+#(GENERAL_INFO_47)	zoqfo185.wav
 ...sorry.
-#(GENERAL_INFO_48)	ZOQFO186.wav
+#(GENERAL_INFO_48)	zoqfo186.wav
 As I was saying, before I was so RUDELY interrupted!...
-#(GENERAL_INFO_49)	ZOQFO187.wav
+#(GENERAL_INFO_49)	zoqfo187.wav
 I said I was sorry.
-#(GENERAL_INFO_410)	ZOQFO188.wav
+#(GENERAL_INFO_410)	zoqfo188.wav
 Our most talented Seers have detected
 some ominous and powerful meta-psychic signals
 from the direction of the Orionis constellation.
-#(GENERAL_INFO_411)	ZOQFO189.wav
+#(GENERAL_INFO_411)	zoqfo189.wav
 Faker.
 
 
 #(any_war_news)
 Any news about the war between the two alien races?
 
-#(UTWIG_DELAY0)	ZOQFO190.wav
+#(UTWIG_DELAY0)	zoqfo190.wav
 Our scouts have witnessed an exciting event
 in the Horologii star system.
-#(UTWIG_DELAY1)	ZOQFO191.wav
+#(UTWIG_DELAY1)	zoqfo191.wav
 Yeah! Big news!
-#(UTWIG_DELAY2)	ZOQFO192.wav
+#(UTWIG_DELAY2)	zoqfo192.wav
 Two alien races have entered that region of space
 from the coreward direction.
-#(UTWIG_DELAY3)	ZOQFO193.wav
+#(UTWIG_DELAY3)	zoqfo193.wav
 One of the races looks like big talkin' weeds
 and the other wears a funny mask.
-#(UTWIG_DELAY4)	ZOQFO194.wav
+#(UTWIG_DELAY4)	zoqfo194.wav
 And they are attacking our enemies!
-#(UTWIG_DELAY5)	ZOQFO195.wav
+#(UTWIG_DELAY5)	zoqfo195.wav
 Well, ONE of our enemies, anyway.
-#(UTWIG_DELAY6)	ZOQFO196.wav
+#(UTWIG_DELAY6)	zoqfo196.wav
 Yes, the new aliens seem to be confining their hostilities
 to the sinister Kohr-Ah.
-#(UTWIG_DELAY7)	ZOQFO197.wav
+#(UTWIG_DELAY7)	zoqfo197.wav
 Actually, that's good news.
-#(UTWIG_DELAY8)	ZOQFO198.wav
+#(UTWIG_DELAY8)	zoqfo198.wav
 By focusing on the Kohr-Ah
 who have been winning their war up to this point
-#(UTWIG_DELAY9)	ZOQFO199.wav
+#(UTWIG_DELAY9)	zoqfo199.wav
 They've been plastering the Ur-Quan.
-#(UTWIG_DELAY10)	ZOQFO200.wav
+#(UTWIG_DELAY10)	zoqfo200.wav
 The balance of power has been equalized somewhat
-#(UTWIG_DELAY11)	ZOQFO201.wav
+#(UTWIG_DELAY11)	zoqfo201.wav
 But the Kohr-Ah will STILL probably win!
-#(UTWIG_DELAY12)	ZOQFO202.wav
+#(UTWIG_DELAY12)	zoqfo202.wav
 But we estimate that the efforts of these new alien races
 has delayed the Kohr-Ah's eventual victory
 by nine to twelve months.
-#(UTWIG_DELAY13)	ZOQFO203.wav
+#(UTWIG_DELAY13)	zoqfo203.wav
 Still, it's better than nothing!
 
-#(KOHRAH_WINNING0)	ZOQFO204.wav
+#(KOHRAH_WINNING0)	zoqfo204.wav
 We have modified a few of our Stinger starships
 for long-range reconnaissance missions.
-#(KOHRAH_WINNING1)	ZOQFO205.wav
+#(KOHRAH_WINNING1)	zoqfo205.wav
 We strapped a bunch of fuel tanks on their hulls.
-#(KOHRAH_WINNING2)	ZOQFO206.wav
+#(KOHRAH_WINNING2)	zoqfo206.wav
 The scouts were ordered to investigate the progress of the war
 between the green ships, who we now know as the `Ur-Quan'
 and the black ships, flown by the `Kohr-Ah'.
-#(KOHRAH_WINNING3)	ZOQFO207.wav
+#(KOHRAH_WINNING3)	zoqfo207.wav
 We sent out ten... two came back
-#(KOHRAH_WINNING4)	ZOQFO208.wav
+#(KOHRAH_WINNING4)	zoqfo208.wav
 But the information they gathered was worth the cost.
-#(KOHRAH_WINNING5)	ZOQFO209.wav
+#(KOHRAH_WINNING5)	zoqfo209.wav
 Unless you were one of the scouts, I suppose?
 Nyark! Nyark! Nyark!
-#(KOHRAH_WINNING6)	ZOQFO210.wav
+#(KOHRAH_WINNING6)	zoqfo210.wav
 SHUT UP!
-#(KOHRAH_WINNING7)	ZOQFO211.wav
+#(KOHRAH_WINNING7)	zoqfo211.wav
 ...sorry.
-#(KOHRAH_WINNING8)	ZOQFO212.wav
+#(KOHRAH_WINNING8)	zoqfo212.wav
 Anyway, as I was saying, the intelligence they gathered
 indicates that the Kohr-Ah will win their war
 sometime near the beginning of the year 2158.
-#(KOHRAH_WINNING9)	ZOQFO213.wav
+#(KOHRAH_WINNING9)	zoqfo213.wav
 Unless someone evens up the alien forces
 by destroying about a bazillion Kohr-Ah ships.
 
 
-#(URQUAN_NEARLY_GONE0)	ZOQFO214.wav
+#(URQUAN_NEARLY_GONE0)	zoqfo214.wav
 Our reconnaissance ships have returned once more
-#(URQUAN_NEARLY_GONE1)	ZOQFO215.wav
+#(URQUAN_NEARLY_GONE1)	zoqfo215.wav
 With bad news.
-#(URQUAN_NEARLY_GONE2)	ZOQFO216.wav
+#(URQUAN_NEARLY_GONE2)	zoqfo216.wav
 Based on what they have seen
 the Kohr-Ah will defeat the Ur-Quan
 in less than six months.
-#(URQUAN_NEARLY_GONE3)	ZOQFO217.wav
+#(URQUAN_NEARLY_GONE3)	zoqfo217.wav
 Bummer.
-#(URQUAN_NEARLY_GONE4)	ZOQFO218.wav
+#(URQUAN_NEARLY_GONE4)	zoqfo218.wav
 And based on our last encounter with the Kohr-Ah
 we expect that when they win their war with the Ur-Quan
 the Kohr-Ah will move through this entire region of space
 destroying all intelligent life.
-#(URQUAN_NEARLY_GONE5)	ZOQFO219.wav
+#(URQUAN_NEARLY_GONE5)	zoqfo219.wav
 Major bummer!
 
-#(KOHRAH_FRENZY0)	ZOQFO220.wav
+#(KOHRAH_FRENZY0)	zoqfo220.wav
 I fear we have received our last scouting reports, Captain.
-#(KOHRAH_FRENZY1)	ZOQFO221.wav
+#(KOHRAH_FRENZY1)	zoqfo221.wav
 Poor Yip, Tun and Haffy! I'll really miss those guys!
-#(KOHRAH_FRENZY2)	ZOQFO222.wav
+#(KOHRAH_FRENZY2)	zoqfo222.wav
 Although none of our scouts returned home alive
-#(KOHRAH_FRENZY3)	ZOQFO223.wav
+#(KOHRAH_FRENZY3)	zoqfo223.wav
 ...and Jiff... and Fod... and (sniff!)...
 ...my best pal, Rogi!
-#(KOHRAH_FRENZY4)	ZOQFO224.wav
+#(KOHRAH_FRENZY4)	zoqfo224.wav
 They were able to send a last message.
 The Kohr-Ah have won their war against the Ur-Quan
 and they have begun their hideous death march.
-#(KOHRAH_FRENZY5)	ZOQFO225.wav
+#(KOHRAH_FRENZY5)	zoqfo225.wav
 (sniff!)
-#(KOHRAH_FRENZY6)	ZOQFO226.wav
+#(KOHRAH_FRENZY6)	zoqfo226.wav
 The only piece of knowledge we have
 that may help you defeat them
 is a fragment of a transmission we received
 from our agent Buppo who was in the Crateris constellation.
-#(KOHRAH_FRENZY7)	ZOQFO227.wav
+#(KOHRAH_FRENZY7)	zoqfo227.wav
 They got Buppo too?!...(SOB!)
-#(KOHRAH_FRENZY8)	ZOQFO228.wav
+#(KOHRAH_FRENZY8)	zoqfo228.wav
 He reported that the Kohr-Ah had something
 `big, dangerous and important as hell'
 in one of the nearby star systems.
 That was all we got before Buppo's signal was cut off.
-#(KOHRAH_FRENZY9)	ZOQFO229.wav
+#(KOHRAH_FRENZY9)	zoqfo229.wav
 (SOB!)
-#(KOHRAH_FRENZY10)	ZOQFO230.wav
+#(KOHRAH_FRENZY10)	zoqfo230.wav
 You have got to stop the Kohr-Ah, Captain!...
 ...before they kill us all.
-#(KOHRAH_FRENZY11)	ZOQFO231.wav
+#(KOHRAH_FRENZY11)	zoqfo231.wav
 (sniff!)
 
 
-#(NO_WAR_NEWS0)	ZOQFO232.wav
+#(NO_WAR_NEWS0)	zoqfo232.wav
 No. We have nothing new to report.
-#(NO_WAR_NEWS1)	ZOQFO233.wav
+#(NO_WAR_NEWS1)	zoqfo233.wav
 Nope! Not a thing.
 
 
 #(i_want_alliance)
 I have travelled here to seek an alliance between our peoples.
 
-#(GOOD0)	ZOQFO234.wav
+#(GOOD0)	zoqfo234.wav
 How wonderful! We accept!
-#(GOOD1)	ZOQFO235.wav
+#(GOOD1)	zoqfo235.wav
 Hurray!
-#(GOOD2)	ZOQFO236.wav
+#(GOOD2)	zoqfo236.wav
 How marvelous!
-#(GOOD3)	ZOQFO237.wav
+#(GOOD3)	zoqfo237.wav
 Yee-ha!
-#(GOOD4)	ZOQFO238.wav
+#(GOOD4)	zoqfo238.wav
 Captain, we are delighted that your people have made this choice!
-#(GOOD5)	ZOQFO239.wav
+#(GOOD5)	zoqfo239.wav
 Now WE won't get slaughtered!
-#(GOOD6)	ZOQFO240.wav
+#(GOOD6)	zoqfo240.wav
 In exchange for our cooperation helping you with captains and ship designs
 all that we ask for is your protection.
-#(GOOD7)	ZOQFO241.wav
+#(GOOD7)	zoqfo241.wav
 So we don't get slaughtered!
-#(GOOD8)	ZOQFO242.wav
+#(GOOD8)	zoqfo242.wav
 We shall begin fulfilling our commitment at once!
 We will transport officers and our Stinger design to your base immediately!
-#(GOOD9)	ZOQFO243.wav
+#(GOOD9)	zoqfo243.wav
 Why, heck!
 Maybe I'll even make the trip to your planet!
 I'd make a good starship captain, Captain!
@@ -766,48 +766,48 @@ with a thrusting stinger tongue attack!
 #(want_specific_info)
 I would like some specific information.
 
-#(WHAT_SPECIFIC_INFO0)	ZOQFO244.wav
+#(WHAT_SPECIFIC_INFO0)	zoqfo244.wav
 Sure. What do you want to know?
-#(WHAT_SPECIFIC_INFO1)	ZOQFO245.wav
+#(WHAT_SPECIFIC_INFO1)	zoqfo245.wav
 Just ask away!
 
 #(enough_info)
 That's enough info for now, thanks!
 
-#(OK_ENOUGH_INFO)	ZOQFO246.wav
+#(OK_ENOUGH_INFO)	zoqfo246.wav
 Anything else?
 
 #(what_about_others)
 What do you know about other alien races?
 
-#(ABOUT_OTHERS0)	ZOQFO247.wav
+#(ABOUT_OTHERS0)	zoqfo247.wav
 Not much, to tell the truth.
-#(ABOUT_OTHERS1)	ZOQFO248.wav
+#(ABOUT_OTHERS1)	zoqfo248.wav
 This space exploration stuff is kinda new to us.
-#(ABOUT_OTHERS2)	ZOQFO249.wav
+#(ABOUT_OTHERS2)	zoqfo249.wav
 Besides the green alien ships...
-#(ABOUT_OTHERS3)	ZOQFO250.wav
+#(ABOUT_OTHERS3)	zoqfo250.wav
 Which have only tried to kill us.
-#(ABOUT_OTHERS4)	ZOQFO251.wav
+#(ABOUT_OTHERS4)	zoqfo251.wav
 ...and the black alien ships...
-#(ABOUT_OTHERS5)	ZOQFO252.wav
+#(ABOUT_OTHERS5)	zoqfo252.wav
 Which have actually been QUITE SUCCESSFUL at killing us.
-#(ABOUT_OTHERS6)	ZOQFO253.wav
+#(ABOUT_OTHERS6)	zoqfo253.wav
 The only other starships we have encountered
 are strange tumbling red probes
 which profess to be on a peaceful mission
-#(ABOUT_OTHERS7)	ZOQFO254.wav
+#(ABOUT_OTHERS7)	zoqfo254.wav
 But then attack like slavering Zebrankys.
-#(ABOUT_OTHERS8)	ZOQFO255.wav
+#(ABOUT_OTHERS8)	zoqfo255.wav
 We believe that the probes are actually robotic scouts
 which have suffered some kind of malfunction
 resulting in their aberrant behavior.
-#(ABOUT_OTHERS9)	ZOQFO256.wav
+#(ABOUT_OTHERS9)	zoqfo256.wav
 And what's worse, they are multiplying.
-#(ABOUT_OTHERS10)	ZOQFO257.wav
+#(ABOUT_OTHERS10)	zoqfo257.wav
 Yes, that's true.
 The probes seem to be replicating at a geometric rate.
-#(ABOUT_OTHERS11)	ZOQFO258.wav
+#(ABOUT_OTHERS11)	zoqfo258.wav
 AIEE! That means if there was only one last week
 then next month... ah
 wait a minute... let me calculate
@@ -816,123 +816,123 @@ uh
 uh
 That means, next month there will be
 ...A WHOLE MESS OF THOSE THINGS!
-#(ABOUT_OTHERS12)	ZOQFO259.wav
+#(ABOUT_OTHERS12)	zoqfo259.wav
 By back-tracing the probes' course paths
 we have been able to calculate
 that the source of the probes
 is somewhere on a direct line
 that includes our star, and Epsilon Muscae.
-#(ABOUT_OTHERS13)	ZOQFO260.wav
+#(ABOUT_OTHERS13)	zoqfo260.wav
 Go get 'em, Captain!
 
 #(what_about_zebranky)
 Tell me more about your people.
 
-#(ABOUT_ZEBRANKY0)	ZOQFO261.wav
+#(ABOUT_ZEBRANKY0)	zoqfo261.wav
 Ah! Cultural exchange. A good idea.
-#(ABOUT_ZEBRANKY1)	ZOQFO262.wav
+#(ABOUT_ZEBRANKY1)	zoqfo262.wav
 Yeah! Let's tell him about Frungy!
-#(ABOUT_ZEBRANKY2)	ZOQFO263.wav
+#(ABOUT_ZEBRANKY2)	zoqfo263.wav
 Be quiet, you fool! He asked a serious question!
 He doesn't want to know about Frungy.
-#(ABOUT_ZEBRANKY3)	ZOQFO264.wav
+#(ABOUT_ZEBRANKY3)	zoqfo264.wav
 How do you know? What makes you so smart?
 You never even asked him if he wants to know about Frungy.
 Why, I'll bet right now he's wondering
 `What is this wonderful sport, Frungy?', `How is it played?'
 `What kind of equipment do you need to play Frungy?'
 and `I wonder who's ahead in the Frungy Championships?'
-#(ABOUT_ZEBRANKY4)	ZOQFO265.wav
+#(ABOUT_ZEBRANKY4)	zoqfo265.wav
 AUGH! Will you just SHUT UP ABOUT FRUNGY?!
 If you say another word about that STUPID GAME
 I'm going to lose control and blow a cloud of spores at you!
-#(ABOUT_ZEBRANKY5)	ZOQFO266.wav
+#(ABOUT_ZEBRANKY5)	zoqfo266.wav
 Yech! Okay, okay. Don't blow your sac.
 I won't mention Frungy again, I promise.
-#(ABOUT_ZEBRANKY6)	ZOQFO267.wav
+#(ABOUT_ZEBRANKY6)	zoqfo267.wav
 Well, Captain, as you can probably see
 our culture's predominant trait
 its greatest strength AND weakness
 is the diverse interactions between Zoq, Fot, and Pik.
-#(ABOUT_ZEBRANKY7)	ZOQFO268.wav
+#(ABOUT_ZEBRANKY7)	zoqfo268.wav
 FRUNGY! FRUNGY! FRUNGY!
 
 #(what_about_past)
 What was your history like?
 
-#(ABOUT_PAST0)	ZOQFO269.wav
+#(ABOUT_PAST0)	zoqfo269.wav
 Our past? Quite a broad topic for this short conversation
 but we'll share a key piece of our history with you.
-#(ABOUT_PAST1)	ZOQFO270.wav
+#(ABOUT_PAST1)	zoqfo270.wav
 After we killed off the last Zebranky
 we faced an interesting question.
-#(ABOUT_PAST2)	ZOQFO271.wav
+#(ABOUT_PAST2)	zoqfo271.wav
 Should we proceed, and establish a culture
 which would advance in art, technology and social sophistication?...
-#(ABOUT_PAST3)	ZOQFO272.wav
+#(ABOUT_PAST3)	zoqfo272.wav
 ...Or should we just go back into the forest
 and kick back and enjoy ourselves
 knowing that a Zebranky wasn't gonna jump out of a bush and eat us!
-#(ABOUT_PAST4)	ZOQFO273.wav
+#(ABOUT_PAST4)	zoqfo273.wav
 Well, we DID go back into the forest.
 We stayed there for about five thousand years and had a great time
-#(ABOUT_PAST5)	ZOQFO274.wav
+#(ABOUT_PAST5)	zoqfo274.wav
 Then, one stormy day, a Zoq, a Fot, and a Pik were walking up a steep path
 looking for something good to eat, when a bolt of lightning struck nearby.
 With a huge flash of light, the bolt of energy
 carved a strangely-shaped chunk of granite out of a cliff.
-#(ABOUT_PAST6)	ZOQFO275.wav
+#(ABOUT_PAST6)	zoqfo275.wav
 It was a disk, with a hole in the middle!
 As the rock began to roll down the hill, toward the three terrified beings
 some dry grass got caught in its hole, and since the rock was still hot
 the grass caught on fire.
-#(ABOUT_PAST7)	ZOQFO276.wav
+#(ABOUT_PAST7)	zoqfo276.wav
 When the rock finally got to the Zoq, the Fot, and the Pik
 they simultaneously discovered the Wheel, Fire, and Religion
 thus catapulting them on to the road of progress
-#(ABOUT_PAST8)	ZOQFO277.wav
+#(ABOUT_PAST8)	zoqfo277.wav
 Which has led us to this day, Captain.
 Oh! How did the flaming wheel give religion to our Culture, you ask?
-#(ABOUT_PAST9)	ZOQFO278.wav
+#(ABOUT_PAST9)	zoqfo278.wav
 I will explain.
 You see, when it got to the threesome, the flaming wheel was going at a pretty good clip
 and it ran smack into the Zoq, killing him.
-#(ABOUT_PAST10)	ZOQFO279.wav
+#(ABOUT_PAST10)	zoqfo279.wav
 The Fot and the Pik felt so bad
 they really liked that Zoq!...
 ...that they decided the Zoq hadn't really died when the wheel flattened him
 he had just gone to `a better place.'
-#(ABOUT_PAST11)	ZOQFO280.wav
+#(ABOUT_PAST11)	zoqfo280.wav
 Presumably one without lethal flaming wheels.
 
 #(what_about_stinger)
 Can you describe your `Stinger' starship?
 
-#(ABOUT_STINGER0)	ZOQFO281.wav
+#(ABOUT_STINGER0)	zoqfo281.wav
 The Stinger is the peak of our technological prowess.
-#(ABOUT_STINGER1)	ZOQFO282.wav
+#(ABOUT_STINGER1)	zoqfo282.wav
 It's totally awesome!
-#(ABOUT_STINGER2)	ZOQFO283.wav
+#(ABOUT_STINGER2)	zoqfo283.wav
 These vessels are cheap to build
 and can be quite effective in short range combat.
-#(ABOUT_STINGER3)	ZOQFO284.wav
+#(ABOUT_STINGER3)	zoqfo284.wav
 They turn on a... on a
 well a small round thing that's REAL small!
-#(ABOUT_STINGER4)	ZOQFO285.wav
+#(ABOUT_STINGER4)	zoqfo285.wav
 Remember though, against most ships
 the Stinger must close distance immediately
 and give unrelenting tongue attacks
 until either the enemy or the Stinger are destroyed.
-#(ABOUT_STINGER5)	ZOQFO286.wav
+#(ABOUT_STINGER5)	zoqfo286.wav
 Yeah! The tonguing is the best part!
 
 
 #(what_about_guy_in_back)
 Does that guy in back ever say anything?
 
-#(ABOUT_GUY0)	ZOQFO287.wav
+#(ABOUT_GUY0)	zoqfo287.wav
 Nope.
-#(ABOUT_GUY1)	ZOQFO288.wav
+#(ABOUT_GUY1)	zoqfo288.wav
 Not a word.
 
 #(name_1)

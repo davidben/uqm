@@ -21,25 +21,25 @@ Tanaka
 
 
 
-#(HOSTILE_KATANA_1)	SHOFI000.WAV
+#(HOSTILE_KATANA_1)	shofi000.wav
 I, Katana the Warrior, have travelled for long years through space to finally come home
 only to witness you blasting my brother to atoms!
 Now you die!
 
-#(HOSTILE_KATANA_2)	SHOFI001.WAV
+#(HOSTILE_KATANA_2)	shofi001.wav
 The Ur-Quan has returned! How unusually brave
 for a leprous, non-functional sex organ, like yourself.
 
-#(HOSTILE_KATANA_3)	SHOFI002.WAV
+#(HOSTILE_KATANA_3)	shofi002.wav
 Evil murderer, you think to taunt me.
 Ha! And again I say, Ha!
 I have faced far worse than you
 You pitiful imitation of six-weeks dead Dhrang!
 
-#(HOSTILE_KATANA_4)	SHOFI003.WAV
+#(HOSTILE_KATANA_4)	shofi003.wav
 I swear by the hero, Daikon, this time I will kill you.
 
-#(HOSTILE_TANAKA_1)	SHOFI004.WAV
+#(HOSTILE_TANAKA_1)	shofi004.wav
 Attention huge alien vessel!
 Though most of my sensory instruments are malfunctioning
 my mass indicator shows the huge size vessel
@@ -51,54 +51,54 @@ all six of my sisters
 in fact, my entire species.
 Prepare to die!
 
-#(HOSTILE_TANAKA_2)	SHOFI005.WAV
+#(HOSTILE_TANAKA_2)	shofi005.wav
 Ah, so the cowardly slug-spawn has returned!
 You were most fortunate last time, you hideous, pouchless freak
 but this time I shall surely destroy your vessel
 you slithering eater of putrid hairballs.
 
-#(HOSTILE_TANAKA_3)	SHOFI006.WAV
+#(HOSTILE_TANAKA_3)	shofi006.wav
 I see you're back for even more humiliation, you flatulent, Ur-Quan pus-cup.
 
-#(HOSTILE_TANAKA_4)	SHOFI007.WAV
+#(HOSTILE_TANAKA_4)	shofi007.wav
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_5)	SHOFI008.WAV
+#(HOSTILE_TANAKA_5)	shofi008.wav
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_6)	SHOFI009.WAV
+#(HOSTILE_TANAKA_6)	shofi009.wav
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_7)	SHOFI010.WAV
+#(HOSTILE_TANAKA_7)	shofi010.wav
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_8)	SHOFI011.WAV
+#(HOSTILE_TANAKA_8)	shofi011.wav
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
 #(dont_attack)
 Don't attack -- we're not the Ur-Quan! We're your allies!
 
-#(TYPICAL_PLOY)	SHOFI012.WAV
+#(TYPICAL_PLOY)	shofi012.wav
 A typical Ur-Quan gambit... which has failed.
 And now I howl the scream of death -- Kyaiee!
 
 #(hey_stop)
 Hey, stop shooting! Someone could get hurt!
 
-#(ONLY_STOP)	SHOFI013.WAV
+#(ONLY_STOP)	shofi013.wav
 I will only stop when you are dead.
 Kyaiee!
 
 #(look_you_are)
 Look, you're getting me REALLY pissed-off!  Stop attacking and talk!
 
-#(TOO_BAD)	SHOFI014.WAV
+#(TOO_BAD)	shofi014.wav
 Too bad.
 Kyaiee!
 
 #(dont_know)
 Don't you know the war is over?
-#(NEVER)	SHOFI015.WAV
+#(NEVER)	shofi015.wav
 For me, Tanaka the Warrior, it will never be over.
 Kyaiee!
 
@@ -107,14 +107,14 @@ Look
 #(look1)
 , the war is over -- really!
 
-#(FOR_YOU)	SHOFI016.WAV
+#(FOR_YOU)	shofi016.wav
 For you perhaps, fat cowardly lard-log.
 Kyaiee!
 
 #(no_bloodshed)
 There is no point in further bloodshed.
 
-#(YES_BLOODSHED)	SHOFI017.WAV
+#(YES_BLOODSHED)	shofi017.wav
 Oh yes there is!
 When you have shed enough blood, You Will Die!
 Kyaiee!
@@ -122,40 +122,40 @@ Kyaiee!
 #(dont_want_to_fight)
 Gee, if that's the way you feel, then I'll be on my way.
 
-#(MUST_FIGHT_YOU_URQUAN_1)	SHOFI018.WAV
+#(MUST_FIGHT_YOU_URQUAN_1)	shofi018.wav
 Oh no you don't
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_2)	SHOFI019.WAV
+#(MUST_FIGHT_YOU_URQUAN_2)	shofi019.wav
 Oh no you don't
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_3)	SHOFI020.WAV
+#(MUST_FIGHT_YOU_URQUAN_3)	shofi020.wav
 Oh no you don't
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_4)	SHOFI021.WAV
+#(MUST_FIGHT_YOU_URQUAN_4)	shofi021.wav
 Oh no you don't
 Kyaiee!
 
 #(no_one_insults)
 No one insults us like that you toothless, piebald, impotent roof-rabbit!
 
-#(YOU_LIMP)	SHOFI022.WAV
+#(YOU_LIMP)	shofi022.wav
 You limp, bloodless sack of decaying flesh Ur-Quan! You die!
 Kyaiee!
 
 #(mighty_words)
 Those are mighty words from a dripping, snout-rotted little furball!
 
-#(HANG_YOUR)	SHOFI023.WAV
+#(HANG_YOUR)	shofi023.wav
 I will hang your withered reproductive organs from my posterior monitor!
 Kyaiee!
 
 #(donkey_breath)
 Look donkey breath - one more insult and it's vapor city for you!
 
-#(DGRUNTI)	SHOFI024.WAV
+#(DGRUNTI)	shofi024.wav
 Why you wallowing, phlegm-filled Dgrunti belly-licker, you
 hey
 Ur-Quans never insulted me before!
@@ -177,21 +177,21 @@ WHO YOU'VE BEEN TRYING TO KILL -- YOU IDIOT, MORON RATHEAD!
 #(i_am_guy)
 I am the guy who called you donkey-breath, you violent little varmint.
 
-#(SO_SORRY)	SHOFI025.WAV
+#(SO_SORRY)	shofi025.wav
 Oh. I am sorriest
 I must be reprimanded.
 When we report back to Star Control...
 
-#(MUST_UNDERSTAND)	SHOFI026.WAV
+#(MUST_UNDERSTAND)	shofi026.wav
 Hyai! What a fool I am!
 When you failed to launch fighter craft, I should have guessed.
 Just one of those mistakes you make in war...
 
-#(NICE_BUT_WHAT_IS_DONKEY)	SHOFI027.WAV
+#(NICE_BUT_WHAT_IS_DONKEY)	shofi027.wav
 Ah, Earth humor! Very funny . Ha-ha-ha!
 But what is don...
 
-#(IS_DEFEAT_TRUE)	SHOFI028.WAV
+#(IS_DEFEAT_TRUE)	shofi028.wav
 Suddenly your words ring in my ears...`the war is over.'
 Captain, is this true? Have the Ur-Quan been destroyed?
 Has the ultimate sacrifice of my people resulted in freedom for the Alliance?
@@ -205,7 +205,7 @@ I'm sorry to be the one to tell you, but the Alliance got its butt blasted.
 #(clobbered)
 Er... maybe we should talk about this later.
 
-#(VERY_SAD_KILL_SELF)	SHOFI029.WAV
+#(VERY_SAD_KILL_SELF)	shofi029.wav
 HYAIEEE!
 GYAIEEE!
 IEEE!
@@ -215,14 +215,14 @@ I must die!!!!
 #(important_duty)
 No, wait, Shofixti! I have an important duty for you to perform.
 
-#(WHAT_DUTY)	SHOFI030.WAV
+#(WHAT_DUTY)	shofi030.wav
 What might that be?
 
 #(need_you_for_duty)
 Shofixti, I am now your new commander. I order you not to kill yourself. 
 You are to remain here and guard your solar system.
 
-#(OK_WILL_BE_SENTRY)	SHOFI031.WAV
+#(OK_WILL_BE_SENTRY)	shofi031.wav
 Very well, Captain. I will do as you have ordered.
 I will remain here until you have further orders.
 Goodbye.
@@ -230,7 +230,7 @@ Goodbye.
 #(dont_do_it)
 Don't do it, old Warrior! You still have much to live for!
 
-#(YES_I_DO_IT)	SHOFI032.WAV
+#(YES_I_DO_IT)	shofi032.wav
 Like what?!
 My race is dead. My world is an airless rock. And I've seen all my FunRoms at least a hundred times.
 My life is over.
@@ -241,7 +241,7 @@ Unless you want to annihilate me yourself.
 #(go_ahead)
 Fine. Go ahead. Kill yourself, you violent little weasel.
 
-#(ON_SECOND_THOUGHT)	SHOFI033.WAV
+#(ON_SECOND_THOUGHT)	shofi033.wav
 Wait! I have had a sudden realization!
 If you are here, in such an amazing ship
 that means there is yet hope to defeat the evil Ur-Quan pus-dogs!
@@ -260,7 +260,7 @@ I can give you the opportunity to replenish your species.
 #(hope_you_have)
 Shofixti, I have something a lot better than FunRoms. Are you interested?
 
-#(SOUNDS_GREAT_BUT_HOW)	SHOFI034.WAV
+#(SOUNDS_GREAT_BUT_HOW)	shofi034.wav
 I am intrigued, Captain, but what are you talking about?
 
 #(females)
@@ -272,7 +272,7 @@ We can make available a bevy of fecund Shofixti nubiles.
 #(rat_babes)
 What would you say to rat-babes galore?
 
-#(LEAPING_HAPPINESS)	SHOFI035.WAV
+#(LEAPING_HAPPINESS)	shofi035.wav
 Great leaping mounds of happiness!
 You shall be honored forever, Captain, as the savior of the Shofixti race!
 I have been granted the ultimate reward, er..  duty.
@@ -289,7 +289,7 @@ Farewell
 #(bye1)
 .
 
-#(GOODBYE0)	SHOFI036.WAV
+#(GOODBYE0)	shofi036.wav
 Goodbye Captain 
 #(GOODBYE1)
 .
@@ -299,20 +299,20 @@ So what were you doing here
 #(why_here1)
 ?
 
-#(I_GUARD)	SHOFI037.WAV
+#(I_GUARD)	shofi037.wav
 I guard the homeworld. I seek revenge against its destroyers, the Ur-Quan and their
 vile battle thralls. I await the return of the hero Daikon and the rebirth of my species.
 
 #(where_world)
 Where is your life-filled homeworld, Kyabetsu?
 
-#(BLEW_IT_UP)	SHOFI038.WAV
+#(BLEW_IT_UP)	shofi038.wav
 We blew up the sun, heh, heh, heh!
 
 #(how_survive)
 If your sun went nova, how did you survive?
 
-#(NOT_HERE)	SHOFI039.WAV
+#(NOT_HERE)	shofi039.wav
 I wasn't here when they made the sun nova.
 I was off close to the coreward front.
 I had been cut off from my squadron, and had to travel home alone.
@@ -320,7 +320,7 @@ I had been cut off from my squadron, and had to travel home alone.
 #(what_happened)
 So what happened to your ship?
 
-#(MET_VUX)	SHOFI040.WAV
+#(MET_VUX)	shofi040.wav
 The shortest, straight-line path home from the front was through VUX space.
 Unfortunately, a VUX Intruder was able to affix some of those vile limpet things to my ship
 and I had to return home at a greatly diminished speed.
@@ -334,16 +334,16 @@ I'd never seen a planet like that before, so maybe you should check it out?
 #(glory_device)
 When we were fighting, why didn't you use your Glory Device?
 
-#(SWITCH_BROKE)	SHOFI041.WAV
+#(SWITCH_BROKE)	shofi041.wav
 The switch broke.
 
 #(bye)
 Goodbye, Tanaka.
 
-#(GOODBYE)	SHOFI042.WAV
+#(GOODBYE)	shofi042.wav
 Good hunting.
 
-#(FRIENDLY_HELLO0)	SHOFI043.WAV
+#(FRIENDLY_HELLO0)	shofi043.wav
 Greetings Captain 
 #(FRIENDLY_HELLO1)
 . It is good to see you and the 
@@ -355,7 +355,7 @@ What's your report
 #(report1)
 ?
 
-#(NOTHING_NEW0)	SHOFI044.WAV
+#(NOTHING_NEW0)	shofi044.wav
 Nothing new to report 
 #(NOTHING_NEW1)
 , sir.

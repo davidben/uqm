@@ -1,117 +1,117 @@
-#(TELL_US_ABOUT_WORLD)	MYCON000.wav
+#(TELL_US_ABOUT_WORLD)	mycon000.wav
 Your suggestion is appropriate.
 Acceptable new worlds are a priority for the rapid and complete spread of Juffo-Wup.
 We wish to know more for suitability assessment.
 Tell us of this world.
 
-#(BYE_AND_DIE_HOMEWORLD)	MYCON001.wav
+#(BYE_AND_DIE_HOMEWORLD)	mycon001.wav
 You impede the flow of Juffo-Wup through the Universe.
 We will now remove this clog.
 We will now aid Juffo-Wup by eliminating you!.
 
-#(RAMBLE_1)	MYCON002.wav
+#(RAMBLE_1)	mycon002.wav
 A single spore lands, finds nourishment in decay and attains maturity..
 In turn it exhales a cloud of life, a thousand spores land... so progresses Juffo-Wup.
 
-#(RAMBLE_2)	MYCON003.wav
+#(RAMBLE_2)	mycon003.wav
 Our bodies seethe with the passion of our genes.
 A thousand of your species do not possess the richness in one of my cells.
 
-#(RAMBLE_3)	MYCON004.wav
+#(RAMBLE_3)	mycon004.wav
 I fill with my parents parents parents parents parents parents parents
 I am they -- they are us. Then, and now.
 
-#(RAMBLE_4)	MYCON005.wav
+#(RAMBLE_4)	mycon005.wav
 The Deep Children are part of Juffo-Wup -- home builders.
 The dwellers in the Mohorovichic.
 
-#(RAMBLE_5)	MYCON006.wav
+#(RAMBLE_5)	mycon006.wav
 I am Dugee
 I am the purity monitor
 I choose what buds are permitted to mature.
 and which must be eradicated.
 I died of general misfunction 57,283 years ago.
 
-#(RAMBLE_6)	MYCON007.wav
+#(RAMBLE_6)	mycon007.wav
 A cold rock, spinning silently in the Void, a womb for the Children.
 
-#(RAMBLE_7)	MYCON008.wav
+#(RAMBLE_7)	mycon008.wav
 Pulsing hot liquid flows through my outstretched tendrils, sending thrills into my interior.
 The moment has come. I swell and burst.
 Above me a cloud of whispering life whirls through the air.
 I am content.
 
-#(RAMBLE_8)	MYCON009.wav
+#(RAMBLE_8)	mycon009.wav
 The Juffo-Wup is strong in this place.
 
-#(RAMBLE_9)	MYCON010.wav
+#(RAMBLE_9)	mycon010.wav
 Your simple sexual process produces random mosaics of genetic instructions
 yet with the simplicity of breath, I modify my own patterns.
 You humans improve a tool and double your capabilities.
 We Mycon improve ourselves and increase a thousand-fold.
 
-#(RAMBLE_10)	MYCON011.wav
+#(RAMBLE_10)	mycon011.wav
 The Deep Children!
 Spears of light in the darkness! 
 Their discarded husks speak of joy to come.
 
-#(RAMBLE_11)	MYCON012.wav
+#(RAMBLE_11)	mycon012.wav
 I have chosen my offsprings' memories carefully from my set of remembrances
 the sweet and warm times of my existence and those of my parents parents parents
 the bits of a million lifetimes coalesced into a birth gift of complete awareness.
 
-#(RAMBLE_12)	MYCON013.wav
+#(RAMBLE_12)	mycon013.wav
 In the dark they grow, the deep fire feeds the Children.
 Their birth breathes warmth across a cold world.
 
-#(RAMBLE_13)	MYCON014.wav
+#(RAMBLE_13)	mycon014.wav
 `...the system requires more energy. A convenient source lies beneath the crust...'
 
-#(RAMBLE_14)	MYCON015.wav
+#(RAMBLE_14)	mycon015.wav
 We look to Juffo-Wup for direction, and it provides the pattern
 endless expansion with purity of achievement and intolerance of error.
 
-#(RAMBLE_15)	MYCON016.wav
+#(RAMBLE_15)	mycon016.wav
 I am Shloosh
 I was incinerated fourteen thousand Earth years ago
 I live now, for but a moment
 and then, I am gone.
 
-#(RAMBLE_16)	MYCON017.wav
+#(RAMBLE_16)	mycon017.wav
 `...incorporation of dense amphibole fibers ensure survival in environmental extremes...'
 
-#(RAMBLE_17)	MYCON018.wav
+#(RAMBLE_17)	mycon018.wav
 I yearn for magma
 the flowing warm basalts
 the red glow of the lava pools.
 
-#(RAMBLE_18)	MYCON019.wav
+#(RAMBLE_18)	mycon019.wav
 When we encounter the Non, we must absorb the Non or reject the Non so that it is no longer Non.
 
-#(RAMBLE_19)	MYCON020.wav
+#(RAMBLE_19)	mycon020.wav
 `...entry of noise into the signal is unavoidable. We must include a filtering mechanism...'
 
-#(RAMBLE_20)	MYCON021.wav
+#(RAMBLE_20)	mycon021.wav
 Cessation of an individual is unavoidable
 a consequence of existence
 yet with the birth of life, individuality is transferred in part
 and may occasionally gain dominance for an interval
 achieving a kind of shared immortality.
 
-#(RAMBLE_21)	MYCON022.wav
+#(RAMBLE_21)	mycon022.wav
 `...Survival is a priority. Expansion is a priority. Processing is a priority...'
 
-#(RAMBLE_22)	MYCON023.wav
+#(RAMBLE_22)	mycon023.wav
 Juffo-Wup acknowledges the existence of un-Voidable Non
 when we are faced with such, we join, absorb and wait for our opportunity
 to learn the weakness that will allow us to Void the Non.
 
-#(RAMBLE_23)	MYCON024.wav
+#(RAMBLE_23)	mycon024.wav
 At times, I meet another, who shares with me the life of parent inside the mind
 and if we speak this fragment is predominant in the both of us
 self meets self with occasionally enlightening results.
 
-#(RAMBLE_24)	MYCON025.wav
+#(RAMBLE_24)	mycon025.wav
 The Podships thrum with the plasma containment field
 whose offspring seek to transform the Non to Void
 the fields grow tighter, and tighter
@@ -119,40 +119,40 @@ the bass rumble of the generators rises gradually to a high burning scream
 sudden silence and a flash of light announce release
  the hot pulsing subsides slowly.
 
-#(RAMBLE_25)	MYCON026.wav
+#(RAMBLE_25)	mycon026.wav
 The Deep Children fall from the Void, gathering speed for the penetration
 The tough casing warms as it passes through the atmosphere, glowing white as it hits the surface
 solid rock flows like liquid, and the child slips into the warm, safe depths beneath the crust.
 
-#(RAMBLE_26)	MYCON027.wav
+#(RAMBLE_26)	mycon027.wav
 `...look... think... act... look... learn... remember... teach...look... think...'
 
-#(RAMBLE_27)	MYCON028.wav
+#(RAMBLE_27)	mycon028.wav
 The implantation fleet has assembled in orbit above the green world
 the patterns of weakness reveal the point of introduction.
 The Child is prepared for its birthing trip.
 Release!
 
-#(RAMBLE_28)	MYCON029.wav
+#(RAMBLE_28)	mycon029.wav
 I am Gussh
 I attend the birthing nodes
 I died 343 Earth years ago
 I do not know how.
 
-#(RAMBLE_29)	MYCON030.wav
+#(RAMBLE_29)	mycon030.wav
 When Juffo-Wup is complete
 when at last there is no Void or Non
 when the Creators return
 then we can finally rest.
 
-#(RAMBLE_30)	MYCON031.wav
+#(RAMBLE_30)	mycon031.wav
 Darkness is Void
 Juffo-Wup is light.
 
-#(RAMBLE_31)	MYCON032.wav
+#(RAMBLE_31)	mycon032.wav
 `... planetary transformer biot 94-18: take your place at the dais...'
 
-#(RAMBLE_32)	MYCON033.wav
+#(RAMBLE_32)	mycon033.wav
 You are the Non. You must go now, and never return.
 
 #(question_1)
@@ -206,7 +206,7 @@ You're not paying any attention to me, are you?
 #(bye_space)
 Don't trouble yourself. I'll see myself out.
 
-#(BYE_AND_DIE_SPACE)	MYCON034.wav
+#(BYE_AND_DIE_SPACE)	mycon034.wav
 Juffo-Wup fills in my fibers and I grow turgid. Violent action ensues.
 
 #(gonna_die)
@@ -239,58 +239,58 @@ Helloo? Ugly! Can you hear me?
 #(come_in_peace)
 Mycon. Please try to understand. We wish peace between our peoples.
 
-#(HELLO_HOMEWORLD_1)	MYCON035.wav
+#(HELLO_HOMEWORLD_1)	mycon035.wav
 Juffo-Wup is All... omni-existent, spreading and changing the Non into Juffo-Wup.
 You are the Non, who must become Juffo-Wup or Void.
 We are the agents of Juffo-Wup.
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_2)	MYCON036.wav
+#(HELLO_HOMEWORLD_2)	mycon036.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_3)	MYCON037.wav
+#(HELLO_HOMEWORLD_3)	mycon037.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_4)	MYCON038.wav
+#(HELLO_HOMEWORLD_4)	mycon038.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_5)	MYCON039.wav
+#(HELLO_HOMEWORLD_5)	mycon039.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_6)	MYCON040.wav
+#(HELLO_HOMEWORLD_6)	mycon040.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_7)	MYCON041.wav
+#(HELLO_HOMEWORLD_7)	mycon041.wav
 We are the Mycon.
 
-#(HELLO_HOMEWORLD_8)	MYCON042.wav
+#(HELLO_HOMEWORLD_8)	mycon042.wav
 We are the Mycon.
 
-#(HELLO_SPACE_1)	MYCON043.wav
+#(HELLO_SPACE_1)	mycon043.wav
 We are part of Juffo-Wup.
 Juffo-Wup is the hot light in the darkness.
 All else is unfulfilled Void.
 We are the Mycon.
 
-#(HELLO_SPACE_2)	MYCON044.wav
+#(HELLO_SPACE_2)	mycon044.wav
 We are the Mycon.
 
-#(HELLO_SPACE_3)	MYCON045.wav
+#(HELLO_SPACE_3)	mycon045.wav
 We are the Mycon.
 
-#(HELLO_SPACE_4)	MYCON046.wav
+#(HELLO_SPACE_4)	mycon046.wav
 We are the Mycon.
 
-#(HELLO_SPACE_5)	MYCON047.wav
+#(HELLO_SPACE_5)	mycon047.wav
 We are the Mycon.
 
-#(HELLO_SPACE_6)	MYCON048.wav
+#(HELLO_SPACE_6)	mycon048.wav
 We are the Mycon.
 
-#(HELLO_SPACE_7)	MYCON049.wav
+#(HELLO_SPACE_7)	mycon049.wav
 We are the Mycon.
 
-#(HELLO_SPACE_8)	MYCON050.wav
+#(HELLO_SPACE_8)	mycon050.wav
 We are the Mycon.
 
 #(lets_be_friends)
@@ -305,16 +305,16 @@ Heinous fungus! Submit to our will!
 #(bye_sun_device)
 bye sun device
 
-#(GOODBYE_SUN_DEVICE)	MYCON051.wav
+#(GOODBYE_SUN_DEVICE)	mycon051.wav
 GOODBYE SUN DEVICE
 
-#(RESPONSE_1)	MYCON052.wav
+#(RESPONSE_1)	mycon052.wav
 This is good.
 
-#(RESPONSE_2)	MYCON053.wav
+#(RESPONSE_2)	mycon053.wav
 This is good.
 
-#(RESPONSE_3)	MYCON054.wav
+#(RESPONSE_3)	mycon054.wav
 This is good.
 
 #(clue_1)
@@ -329,16 +329,16 @@ The sun gently warms the surface.
 #(what_about_shattered)
 Why are the Shattered Worlds found only in your region of space?
 
-#(ABOUT_SHATTERED)	MYCON055.wav
+#(ABOUT_SHATTERED)	mycon055.wav
 These are the homes of the Deep Children.
 
-#(HELLO_SUN_DEVICE_WORLD_1)	MYCON056.wav
+#(HELLO_SUN_DEVICE_WORLD_1)	mycon056.wav
 This is a special place
 filled with Juffo-Wup.
 We must not allow it to be soiled by the Non.
 You must go. Now.
 
-#(HELLO_SUN_DEVICE_WORLD_2)	MYCON057.wav
+#(HELLO_SUN_DEVICE_WORLD_2)	mycon057.wav
 You have returned to our special place.
 This is not permissible.
 Leave.
@@ -346,7 +346,7 @@ Leave.
 #(whats_up_sun_device)
 What makes this world so special to you?
 
-#(GENERAL_INFO_SUN_DEVICE)	MYCON058.wav
+#(GENERAL_INFO_SUN_DEVICE)	mycon058.wav
 Juffo-Wup is the power of life... hot warmth in the cold Void. 
 It flows through all things, binding them together, making them one.
 You are Non-Juffo-Wup, you cannot understand.
@@ -358,7 +358,7 @@ You are the Non. The pod is not for you. You must leave.
 #(like_to_land)
 I have business on this world.  Move aside.
 
-#(NEVER_LET_LAND)	MYCON059.wav
+#(NEVER_LET_LAND)	mycon059.wav
 Juffo-Wup flows through Time and Space. It cannot be stopped by mere energy blasts.
 However, you are Non -- not part of Juffo-Wup.
 You CAN be destroyed by energy blasts.
@@ -370,7 +370,7 @@ Goodbye fungus-boys!
 #(i_have_a_cunning_plan)
 There is a world at the star Organon. I believe it is perfect for your Deep Children.
 
-#(DIE_LIAR)	MYCON060.wav
+#(DIE_LIAR)	mycon060.wav
 You are an obstruction to Juffo-Wup.
 You must be removed.
 
@@ -378,19 +378,19 @@ You must be removed.
 Have you visited the planet I told you about?
 
 
-#(UNFORSEEN_DELAYS)	MYCON061.wav
+#(UNFORSEEN_DELAYS)	mycon061.wav
 We have experienced unforeseen delays implanting Deep Children beneath the crust of Organon 1.
 However, Juffo-Wup is inevitable.  The Deep Children WILL be born.
 
-#(DIE_THIEF)	MYCON062.wav
+#(DIE_THIEF)	mycon062.wav
 You have taken something from us which we value... which is important to Juffo-Wup.
 Return the Solar Manipulator.
 
-#(DIE_THIEF_AGAIN)	MYCON063.wav
+#(DIE_THIEF_AGAIN)	mycon063.wav
 You have taken something from us which we value... which is important to Juffo-Wup.
 Return the Solar Manipulator.
 
-#(GOODBYE_AND_DIE)	MYCON064.wav
+#(GOODBYE_AND_DIE)	mycon064.wav
 Juffo-Wup is All
 but you are not a part of Juffo-Wup
 therefore you must cease existence.
@@ -402,7 +402,7 @@ We shall make you cease to exist, for Juffo-Wup.
 #(RAMBLE_TAIL)
   
 
-#(WE_GO_TO_IMPLANT)	MYCON067.wav
+#(WE_GO_TO_IMPLANT)	mycon067.wav
 If your words are true, we will gladly spread Juffo-Wup to a new world!
 We will assemble the Birthing Fleet and send them to this planet.
 We will send many ships to protect the Children as they grow.

@@ -1,12 +1,12 @@
-#(AMBUSH_IS_FIRST_HELLO)	DRUUG000.wav
+#(AMBUSH_IS_FIRST_HELLO)	druug000.wav
 We are the Druuge of the Crimson Corporation. The planet you approach belongs to us.
 All other claims are hereby rendered invalid and uncontestable.
 Depart.
 
-#(INIT_BOMB_WORLD_HELLO)	DRUUG001.wav
+#(INIT_BOMB_WORLD_HELLO)	druug001.wav
 Fancy meeting you here, Captain!
 
-#(SUBSEQ_BOMB_WORLD_HELLO)	DRUUG002.wav
+#(SUBSEQ_BOMB_WORLD_HELLO)	druug002.wav
 The treasure on this world is our property! It belongs to the Crimson Corporation.
 Your presence here can only be interpreted
 as an attempt to deprive us of what is rightfully ours!
@@ -16,7 +16,7 @@ Or prepare to suffer the severe consequences.
 #(whats_up_at_bomb_planet)
 Druuge starship captain. Justify your presence here.
 
-#(GEN_INFO_AT_BOMB_PLANET)	DRUUG003.wav
+#(GEN_INFO_AT_BOMB_PLANET)	druug003.wav
 We, the appointed representatives of the Crimson Corporation merely come to obtain
 the fair and reasonable payment for our goods!
 We travelled to this region of space years ago to sell the useless Ultron device to the Utwig.
@@ -37,7 +37,7 @@ provided you leave now!
 #(we_get_bomb)
 This Precursor artifact does not belong to you. It is rightfully ours. Stand aside.
 
-#(NOT_GET_BOMB)	DRUUG004.wav
+#(NOT_GET_BOMB)	druug004.wav
 LIAR!
 It is WE who are the genuine owners! Not you, Captain.
 Those many years ago, when we offered the Ultron to the Utwig
@@ -71,7 +71,7 @@ Now GO! And do not return.
 #(then_we_take_bomb)
 Regardless of your feelings in this matter,  we will now take the device.
 
-#(FIGHT_FOR_BOMB)	DRUUG005.wav
+#(FIGHT_FOR_BOMB)	druug005.wav
 No! You will not!
 We know your soul, young Captain. It is no brighter than ours!
 We acknowledge our greed. We revel in it.
@@ -81,13 +81,13 @@ But now you stand in our way. You will not be moved.
 Therefore, we will add your true name to our Ledger of Hatred, but first
 Die, child, DIE!
 
-#(GOODBYE_FROM_BOMB_PLANET)	DRUUG006.wav
+#(GOODBYE_FROM_BOMB_PLANET)	druug006.wav
 Your appreciation of this difficult situation does you credit.
 
-#(NOT_ENOUGH_ROOM)	DRUUG007.wav
+#(NOT_ENOUGH_ROOM)	druug007.wav
 You don't have enough room in your fleet for the ships we want to give you.
 
-#(TRADE_FOR_SPHERE)	DRUUG008.wav
+#(TRADE_FOR_SPHERE)	druug008.wav
 Captain! A special deal, a bargain unequalled!
 Instead of the usual payment we would give for this item
 what would you say to a different exchange?
@@ -99,7 +99,7 @@ What is your response?
 #(no_way)
 Thanks, but no thanks.
 
-#(OK_REGULAR_DEAL)	DRUUG009.wav
+#(OK_REGULAR_DEAL)	druug009.wav
 Very well, we can understand your trepidation.
 We have been unfair in springing this offer on you so suddenly.
 Perhaps we can offer the deal again, in the future
@@ -108,14 +108,14 @@ when you have had time to think about it.
 #(way)
 I accept this unusual offer.
 
-#(OK_HERES_SPHERE)	DRUUG010.wav
+#(OK_HERES_SPHERE)	druug010.wav
 Ha-ha! You are indeed a wise young human!
 The Rosy Sphere is yours.
 
 #(whats_the_sphere_again)
 Tell me more about this Artifact, this Rosy Sphere.
 
-#(SPHERE_IS)	DRUUG011.wav
+#(SPHERE_IS)	druug011.wav
 Its genesis is lost in antiquity, along with the race who created it
 the marvelous Precursors!
 Note how the device glows, how it throbs... pulsing slowly... bright... then dark...
@@ -125,7 +125,7 @@ Vast brutal wars have been fought over its possession.
 The offer we make to you here today is quite unique!
 Do not make a hasty choice.
 
-#(WE_SELL_FOR_CREW)	DRUUG012.wav
+#(WE_SELL_FOR_CREW)	druug012.wav
 Since this is your first time trading with us, Captain
 allow me to explain our standard operating procedures.
 We will sell you fuel, ancient artifacts, even our own Mauler starships!
@@ -136,7 +136,7 @@ on a permanent basis.
 #(i_will_never_trade_crew)
 I will never sell my crew to be your slaves.
 
-#(YOUR_LOSS)	DRUUG013.wav
+#(YOUR_LOSS)	druug013.wav
 This a great loss for us both, but we will not make an exception in your case.
 However, please try to be receptive to what I am about to say.
 We have taken the liberty of entering your ships's computer system
@@ -149,7 +149,7 @@ Should you change your mind, we will always be ready to work with you, Captain.
 #(isnt_this_slave_trading)
 Gee, isn't this kind of like... slave trading?
 
-#(NO_SLAVE_TRADE)	DRUUG014.wav
+#(NO_SLAVE_TRADE)	druug014.wav
 No, no no, Captain! Slaves have no choice in their destiny, no freedom.
 We would never accept the permanent assignment of one of your people
 unless we knew that they had granted you the rights to make such a deal.
@@ -157,7 +157,7 @@ unless we knew that they had granted you the rights to make such a deal.
 #(what_do_with_crew)
 Well, what would my crew members do here?
 
-#(HAVE_FUN)	DRUUG015.wav
+#(HAVE_FUN)	druug015.wav
 People as skilled as your flagship's crew will receive immediate posts in our starfleet.
 They will serve alongside our own Druuge starship personnel
 sharing every duty.
@@ -165,50 +165,50 @@ sharing every duty.
 #(im_ready_to_buy)
 ...I am ready to make purchases.
 
-#(THIS_FOR_SALE)	DRUUG016.wav
+#(THIS_FOR_SALE)	druug016.wav
 Excellent! Let us begin.
 Our inventory presently includes 
 
-#(HAVE_SPHERE)	DRUUG017.wav
+#(HAVE_SPHERE)	druug017.wav
 The Rosy Sphere! An ancient Precursor artifact of unrivaled beauty and mystery.
 Yours for the amazing bargain of only 100 crew.
 
-#(HAVE_ART_2)	DRUUG018.wav
+#(HAVE_ART_2)	druug018.wav
 The Glowing Rod! What unearthly powers will you gain
 when you hold this coruscating staff high above your head and scream, `Kyeee! Lykeee-lieee!'
 And it can be yours for only 100 crew.
 
-#(HAVE_ART_1)	DRUUG019.wav
+#(HAVE_ART_1)	druug019.wav
 The Trident of Wimbli! Not just one, but fully THREE mystic prongs give this artifact
 its awesome capabilities. Are you strong enough to master its power? Or will it master you?
 Cost? 100 crew.
 
-#(SHIPS_AND_FUEL)	DRUUG020.wav
+#(SHIPS_AND_FUEL)	druug020.wav
 As always, we also have an unlimited supply of exceptionally high-performance starship fuel
 at a cost of ten crew for ten units of fuel
 as well as a freshly assembled Mauler starship
 which we will trade for 100 of your crew.
 
-#(BOUGHT_SHIP)	DRUUG021.wav
+#(BOUGHT_SHIP)	druug021.wav
 Good choice. Your fleet swells with power!
 With the purchase of additional Mauler vessels, you would be nigh invincible!
 
-#(BOUGHT_FUEL)	DRUUG022.wav
+#(BOUGHT_FUEL)	druug022.wav
 The fuel has been transferred to your vehicle.
 I expect you will notice the immediate benefits of our secret fuel additives.
 
-#(BOUGHT_ART_2)	DRUUG023.wav
+#(BOUGHT_ART_2)	druug023.wav
 So fortunate for you! So sad for me. I fear this relic of the glorious past
 was all that kept me from ending my life to leave this vale of tears.
 Now what shall I do?
 
-#(BOUGHT_ART_1)	DRUUG024.wav
+#(BOUGHT_ART_1)	druug024.wav
 Ho-ho, Captain! Do not point the prongs at me in such a carefree manner!
 I might have been accidentally incinerated, or transported to a hostile dimension.
 You wield the Trident with authority, Captain.
 I can tell that already you are realizing the true scope of this artifact's powers.
 
-#(BOUGHT_SPHERE)	DRUUG025.wav
+#(BOUGHT_SPHERE)	druug025.wav
 I stride to the Sphere's containment vessel and pull it slowly from its ancient cradle.
 The dust of centuries has made a gentle weld... there! It has come free.
 Now, into your hands I place the ancient sphere. Do you feel that, Captain?
@@ -218,14 +218,14 @@ Well it soon shall, Captain. Just keep trying.
 #(repeat_what_to_sell)
 Uh, could you repeat what you have to sell?
 
-#(INIT_SPACE_HELLO)	DRUUG026.wav
+#(INIT_SPACE_HELLO)	druug026.wav
 Greetings friend and fellow explorer.
 I am an Officer of the Crimson Corporation.
 We are the Druuge.
 We are delighted to make your acquaintance, and hope that we can do business together.
 Should your desires be similar, please hurry to our main trading world at Zeta Persei I.
 
-#(SUBSEQUENT_SPACE_HELLO)	DRUUG027.wav
+#(SUBSEQUENT_SPACE_HELLO)	druug027.wav
 Ah, the young starship captain from Earth!
 We hope your adventures have brought you wealth.
 How can we be of service?
@@ -233,12 +233,12 @@ How can we be of service?
 #(whats_up_in_space)
 What can you tell us of your culture, your species?
 
-#(GENERAL_INFO_IN_SPACE_1)	DRUUG028.wav
+#(GENERAL_INFO_IN_SPACE_1)	druug028.wav
 More than a culture, Captain, we are an organization -- the Crimson Corporation!
 Our corporation seeks only to improve our quality of life
 and does so via the `Dribble-Down' effect.
 
-#(GENERAL_INFO_IN_SPACE_2)	DRUUG029.wav
+#(GENERAL_INFO_IN_SPACE_2)	druug029.wav
 You wish to know more about us? Excellent! 
 After all, knowledge should be free, eh Captain?!
 Let's see... about us
@@ -251,7 +251,7 @@ this means any ex-employee is instantly trespassing and is guilty of stealing Co
 such as air and sunlight. The only appropriate penalty for theft
 is to feed the furnace.
 
-#(GENERAL_INFO_IN_SPACE_3)	DRUUG030.wav
+#(GENERAL_INFO_IN_SPACE_3)	druug030.wav
 You know, Captain, we have heard that there is a race called the Melnorme
 which has recently entered this part of the galaxy.
 We understand that they sell fuel for gross profit
@@ -261,7 +261,7 @@ How criminal.
 Just an aside, Captain. We thought you might like to know
 that the resources which can be salvaged from a Melnorme wreck are phenomenal.
 
-#(GENERAL_INFO_IN_SPACE_4)	DRUUG031.wav
+#(GENERAL_INFO_IN_SPACE_4)	druug031.wav
 More information, Captain? You have learned so much about us already!
 Very well.
 You may be interested to know that we recently diverted the onslaught of a hostile alien race.
@@ -273,56 +273,56 @@ We devised a brilliant plan, implemented it perfectly
 and were thus spared gruesome death at the hands of the aliens
 who we later learned called themselves the `Kohr-Ah'.
 
-#(GOODBYE_FROM_SPACE)	DRUUG032.wav
+#(GOODBYE_FROM_SPACE)	druug032.wav
 Until we meet again.
 
 
-#(HSTL_TRADE_WORLD_HELLO_1)	DRUUG033.wav
+#(HSTL_TRADE_WORLD_HELLO_1)	druug033.wav
 What, you wish to rob our Trade World, eh? Not today, boyo!
 	
-#(HSTL_TRADE_WORLD_HELLO_2)	DRUUG034.wav
+#(HSTL_TRADE_WORLD_HELLO_2)	druug034.wav
 You made a mistake returning here, Captain.
 We know your true colors. You are a blackheart.
 
-#(HOSTILE_SPACE_HELLO_1)	DRUUG035.wav
+#(HOSTILE_SPACE_HELLO_1)	druug035.wav
 Villains! Pilferers! Crooks!
 Look to your souls. Make your peace.
 You are about to die.
 
-#(HOSTILE_SPACE_HELLO_2)	DRUUG036.wav
+#(HOSTILE_SPACE_HELLO_2)	druug036.wav
 Foul pirate! We know of your violence and thievery.
 You are undone, and must pay the price for your wretched deeds!
 
-#(INITIAL_TRADE_WORLD_HELLO)	DRUUG037.wav
+#(INITIAL_TRADE_WORLD_HELLO)	druug037.wav
 Attention alien starship.
 You have arrived at the Central Trade World of the Crimson Corporation
  Home of the Druuge.
 Be welcome and take advantage of our excellent deals.
 
-#(SSQ_TRADE_WORLD_HELLO_1)	DRUUG038.wav
+#(SSQ_TRADE_WORLD_HELLO_1)	druug038.wav
 It's always pleasant to see you again, Captain.
 Are you here today to buy or sell?
 
-#(SSQ_TRADE_WORLD_HELLO_2)	DRUUG039.wav
+#(SSQ_TRADE_WORLD_HELLO_2)	druug039.wav
 Ah! It is the young human in the giant alien spacecraft.
 
-#(SSQ_TRADE_WORLD_HELLO_3)	DRUUG040.wav
+#(SSQ_TRADE_WORLD_HELLO_3)	druug040.wav
 We welcome you to our Trade World once again, Captain.
 We are at your service.
 
-#(SSQ_TRADE_WORLD_HELLO_4)	DRUUG041.wav
+#(SSQ_TRADE_WORLD_HELLO_4)	druug041.wav
 Hello Captain. Back so soon?
 
 #(whats_up_at_trade_world)
 What can you tell us about this trade world?
 
-#(GEN_INFO_AT_TRADE_WORLD_1)	DRUUG042.wav
+#(GEN_INFO_AT_TRADE_WORLD_1)	druug042.wav
 This is the heart of our operation, the vital core of the Crimson Corporation.
 A million deals are made here each day, perhaps more.
 You would be wise to take advantage of all our services, Captain.
 You will not find better deals anywhere.
 
-#(GEN_INFO_AT_TRADE_WORLD_2)	DRUUG043.wav
+#(GEN_INFO_AT_TRADE_WORLD_2)	druug043.wav
 While I am sure, Captain, that you would never make this foolish mistake
 I still feel I should warn you about one of our laws, specifically 
 Druuge Statute 3429 - subsection A86, Definition of Starship Derelicts.
@@ -332,14 +332,14 @@ usually because someone will try to take the unarmed ship by force.
 Therefore any unarmed vessel in our space is defined as a derelict
 and is available for salvage by anyone who finds it.
 
-#(GEN_INFO_AT_TRADE_WORLD_3)	DRUUG044.wav
+#(GEN_INFO_AT_TRADE_WORLD_3)	druug044.wav
 In case it has not been made clear to you, Captain
 aside from your crew, there are certain items which we are willing to trade for.
 Specifically, these include: Vortex Spawners, HyperWave `Casters
 and the tough, fungal mats discarded by the Mycon Deep Children
 as they penetrate a planet's crust.
 
-#(GEN_INFO_AT_TRADE_WORLD_4)	DRUUG045.wav
+#(GEN_INFO_AT_TRADE_WORLD_4)	druug045.wav
 You may be surprised to learn that we are deeply spiritual beings, Captain.
 We worship our god with great enthusiasm.
 You want details? Why certainly.
@@ -369,56 +369,56 @@ We, the undersigned, hereby swear to fulfill our obligations as defined above.
 Signed, The Druuge.
 (God, being omni-present and all-knowing is considered to have signed this document, by default.)
 
-#(SCAN_MAIDENS)	DRUUG046.wav
+#(SCAN_MAIDENS)	druug046.wav
 It has come to our attention that you have female Shofixti creatures on board your ship.
 We have the means to fertilze these creatures artificially
 allowing us to produce a hybrid beast to attend our furnaces.
 We must have those females, Captain!
 We are prepared to offer you fully six of our devastating Mauler starships in exchange.
 
-#(SCAN_FRAGMENTS)	DRUUG047.wav
+#(SCAN_FRAGMENTS)	druug047.wav
 We know that you have Mycon Deep Child egg case fragments aboard your vessel.
 Would you consider trading them to us for a shiny new Mauler starship?
 
-#(SCAN_DRUUGE_CASTER)	DRUUG048.wav
+#(SCAN_DRUUGE_CASTER)	druug048.wav
 Our sensors reveal that you have one of our more powerful HyperWave `Casters on board your ship.
 Have no fear, Captain. It was abandoned on the Burvixese moon
 and by our law it belongs to you; however
 we are fond of the device and wish to regain it through trade.
 Give us the `Caster, and we will give you all the fuel your ship can hold.
 
-#(SCAN_ARILOU_SPAWNER)	DRUUG049.wav
+#(SCAN_ARILOU_SPAWNER)	druug049.wav
 We note you possess a Vortex Spawner.
 In exchange for the simple device we will give you three Mauler starships
 and fill your fuel tanks, at no extra charge.
 
-#(ENOUGH_FRAGMENTS)	DRUUG050.wav
+#(ENOUGH_FRAGMENTS)	druug050.wav
 We have scanned additional Mycon Egg cases on your ship
 however, we have a sufficient supply, and do not intend to make further purchases of this commodity.
 
-#(READY_TO_BUY)	DRUUG051.wav
+#(READY_TO_BUY)	druug051.wav
 We are prepared to make a deal.
 
-#(READY_TO_SELL)	DRUUG052.wav
+#(READY_TO_SELL)	druug052.wav
 Excellent! Let us begin.
 Our inventory presently includes:
 
-#(BYE_FROM_TRADE_WORLD_1)	DRUUG053.wav
+#(BYE_FROM_TRADE_WORLD_1)	druug053.wav
 Return soon, Captain. Your patronage is appreciated.
 
-#(BYE_FROM_TRADE_WORLD_2)	DRUUG054.wav
+#(BYE_FROM_TRADE_WORLD_2)	druug054.wav
 Until next time, captain.
 
-#(NOT_ENOUGH_CREW)	DRUUG055.wav
+#(NOT_ENOUGH_CREW)	druug055.wav
 Unfortunately, Captain, you do not have enough crew to make this purchase.
 
-#(EXCHANGE_MADE)	DRUUG056.wav
+#(EXCHANGE_MADE)	druug056.wav
 The agreed-upon exchange is hereby enacted.
 
-#(OK_DONE_BUYING)	DRUUG057.wav
+#(OK_DONE_BUYING)	druug057.wav
 Are you sure?... as you wish.
 
-#(OK_DONE_SELLING)	DRUUG058.wav
+#(OK_DONE_SELLING)	druug058.wav
 Very well.
 
 
@@ -466,52 +466,52 @@ I will sell the Egg Case fragments to you.
 I will sell the Portal Spawner to you.
 
 
-#(BOUGHT_MAIDENS)	DRUUG059.wav
+#(BOUGHT_MAIDENS)	druug059.wav
 I will purchase the fertile Shofixti adolescents.
 
-#(BOUGHT_FRAGMENTS)	DRUUG060.wav
+#(BOUGHT_FRAGMENTS)	druug060.wav
 I accept the deal for the Mycon Deep Child eggcase.
 
-#(BOUGHT_CASTER)	DRUUG061.wav
+#(BOUGHT_CASTER)	druug061.wav
 I will buy the Hyperwave 'Caster.
 
 
-#(YOU_GET)	DRUUG062.wav
+#(YOU_GET)	druug062.wav
 In exchange, you shall receive 
 
-#(YOU_ALSO_GET)	DRUUG063.wav
+#(YOU_ALSO_GET)	druug063.wav
 In addition, as agreed, we will also give you 
 
-#(BOUGHT_SPAWNER)	DRUUG064.wav
+#(BOUGHT_SPAWNER)	druug064.wav
 I will take the QuasiSpace Portal Spawner.
 
-#(SALVAGE_YOUR_SHIP_1)	DRUUG065.wav
+#(SALVAGE_YOUR_SHIP_1)	druug065.wav
 I note that your ship is unarmed and unescorted.
 Therefore, by Druuge law, your ship is deemed derelict, and is subject to the laws of salvage.
 While I would prefer to take your ship intact, alas, I suspect you will force me to sell it as scrap.
 
-#(SALVAGE_YOUR_SHIP_2)	DRUUG066.wav
+#(SALVAGE_YOUR_SHIP_2)	druug066.wav
 Under the authority of Druuge Statute 3429, subsection A86
 `Definition of Starship Derelicts'
 I hereby declare your undefended vessel as my salvaged property.
 You have five seconds to vacate the premises before I am forced to remove you by force
 Time's up!
 
-#(DEAL_FOR_STATED_SHIPS)	DRUUG067.wav
+#(DEAL_FOR_STATED_SHIPS)	druug067.wav
  the agreed-upon number of ships.
 
-#(DEAL_FOR_LESS_SHIPS)	DRUUG068.wav
+#(DEAL_FOR_LESS_SHIPS)	druug068.wav
  less than the number of ships I originally offered
 because you have no room for the the full amount in your fleet!
 Unfortunately for you, I'm afraid, but legal I assure you.
 
-#(DEAL_FOR_NO_SHIPS)	DRUUG069.wav
+#(DEAL_FOR_NO_SHIPS)	druug069.wav
  the number of ships which can be added to your fleet
 and according to my scan of your task force, that is none.
 A serious mistake on your part captain, I'm afraid, but a great boon for the Firm.
 With such a fine deal under my belt, perhaps I should take the rest of the day off.
 
-#(FUEL0)	DRUUG070.wav
+#(FUEL0)	druug070.wav
 All the fuel your ship can hold.
 We are now hooking up the fuel lines to fill your tanks.
 Hmm.. Ah, yes. The job is done. Now let's see how much was transferred... It was 
@@ -519,7 +519,7 @@ Hmm.. Ah, yes. The job is done. Now let's see how much was transferred... It was
 #(FUEL1)
 units of fuel.
 
-#(HIDEOUS_DEAL)	DRUUG071.wav
+#(HIDEOUS_DEAL)	druug071.wav
 Aieee! I am ruined! You have sucked my full tanks until they are dry!
 Cruel Monster! Bloated Villain! Slicer of innocent throats!
 What shall I tell the Manager?! My spouse?!
@@ -527,24 +527,24 @@ I shall certainly be assigned to tend the furnaces.
 I shall burn in the atomic fires!
 Aieee!
 
-#(BAD_DEAL)	DRUUG072.wav
+#(BAD_DEAL)	druug072.wav
 This will look very bad on my record, Captain. You have hurt me deeply.
 I had expected an understanding between trading partners, between equals
 but NO! The moment my back is turned, you fill your bloated tanks far beyond a reasonable limit.
 I have learned an important lesson from you today
 One I shall never forget.
 
-#(FAIR_DEAL)	DRUUG073.wav
+#(FAIR_DEAL)	druug073.wav
 You have received a fair exchange for your device, Captain.
 Perhaps more than fair for you.
 I will not be able to brag about this exchange, but then again
 I need not worry about feeding the furnace.
 
-#(GOOD_DEAL)	DRUUG074.wav
+#(GOOD_DEAL)	druug074.wav
 Well done, Captain. Quite a fair exchange. Good job.
 (hee-hee-hee).
 
-#(FINE_DEAL)	DRUUG075.wav
+#(FINE_DEAL)	druug075.wav
 Ha-ha, yes! Yes! Yes! Yes! Yes! Yes!
 A fine deal, Captain. An excellent bargain... for me!
 Ho-ho-ho! When I offered you all the fuel you could hold, you could have drained every drop I had.
