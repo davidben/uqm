@@ -1,1 +1,1 @@
-uqm_CFILES="mixer.c sound.c music.c sfx.c stream.c trackplayer.c"
+uqm_CFILES="mixer.c sound_mixsdl.c"

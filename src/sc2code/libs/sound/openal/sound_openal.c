@@ -16,17 +16,15 @@
 
 /* OpenAL specific code by Mika Kolehmainen, 2002-10-23
  */
-
 #ifdef SOUNDMODULE_OPENAL
 
-#include "sound.h"
+#include "libs/sound/sound.h"
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;
 ALfloat listenerPos[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerVel[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerOri[] = {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
-TFB_SoundSource soundSource[NUM_SOUNDSOURCES];
 static Task StreamDecoderTask;
 
 
@@ -142,118 +140,5 @@ TFB_UninitSound (void)
 
 	SoundDecoder_Uninit ();
 }
-
-void
-StopSound (void)
-{
-	int i;
-
-	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
-	{
-		alSourceRewind (soundSource[i].handle);
-	}
-}
-
-BOOLEAN
-SoundPlaying (void)
-{
-	int i;
-
-	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
-	{
-		TFB_SoundSample *sample;
-		sample = soundSource[i].sample;
-		if (sample && sample->decoder)
-		{
-			BOOLEAN result;
-			LockMutex (soundSource[i].stream_mutex);
-			result = PlayingStream (i);
-			UnlockMutex (soundSource[i].stream_mutex);
-			if (result)
-				return TRUE;
-		}
-		else
-		{
-			ALint state;
-			alGetSourcei (soundSource[i].handle, AL_SOURCE_STATE, &state);
-			if (state == AL_PLAYING)
-				return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-
-TFB_SoundChain *
-create_soundchain (TFB_SoundDecoder *decoder, float startTime)
-{
-	TFB_SoundChain *chain;
-	chain = (TFB_SoundChain *)HMalloc (sizeof (TFB_SoundChain));
-	chain->decoder = decoder;
-	chain->next =NULL;
-	chain->start_time = startTime;
-	chain->tag.buf_name = 0;
-	chain->tag.type = 0;
-	return (chain);
-}
-
-void
-destroy_soundchain (TFB_SoundChain *chain)
-{
-	while (chain->next)
-	{
-		TFB_SoundChain *tmp_chain = chain->next;
-		chain->next = chain->next->next;
-		if (tmp_chain->decoder)
-			SoundDecoder_Free (tmp_chain->decoder);
-		HFree (tmp_chain);
-	}
-	SoundDecoder_Free (chain->decoder);
-	HFree (chain);
-}
-
-TFB_SoundChain *
-get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
-{
-	TFB_SoundChain *prev_chain;
-	prev_chain = first_chain;
-	if (prev_chain == current_chain)
-		return (prev_chain);
-	while (prev_chain->next)
-	{
-		if (prev_chain->next == current_chain)
-			return (prev_chain);
-		prev_chain = prev_chain->next;
-	}
-	return (first_chain);
-}
-
-// Status: Ignored
-BOOLEAN
-InitSound (int argc, char* argv[])
-{
-	return TRUE;
-}
-
-// Status: Ignored
-void
-UninitSound (void)
-{
-}
-
-void SetSFXVolume (float volume)
-{
-	int i;
-	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
-	{
-		alSourcef (soundSource[i].handle, AL_GAIN, volume);
-	}	
-}
-
-void SetSpeechVolume (float volume)
-{
-	alSourcef (soundSource[SPEECH_SOURCE].handle, AL_GAIN, volume);
-}
-
 
 #endif

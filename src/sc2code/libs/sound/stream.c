@@ -17,11 +17,10 @@
 /* By Mika Kolehmainen, 2002-10-23
  */
 
-#ifdef SOUNDMODULE_MIXSDL
+#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
 
 #include <assert.h>
 #include "sound.h"
-#include "mixer.h"
 
 bool speech_advancetrack = FALSE;
 
@@ -49,7 +48,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 	soundSource[source].sample = sample;
 	soundSource[source].sample->play_chain_ptr = sample->read_chain_ptr;
 	soundSource[source].sample->decoder->looping = looping;
-	mixSDL_Sourcei (soundSource[source].handle, MIX_LOOPING, false);
+	TFBSound_Sourcei (soundSource[source].handle, TFBSOUND_LOOPING, false);
 
 	if (scope)
 	{
@@ -73,9 +72,9 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 		if (decoded_bytes == 0)
 			break;
 
-		mixSDL_BufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
+		TFBSound_BufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
 			decoded_bytes, sample->decoder->frequency);
-		mixSDL_SourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
+		TFBSound_SourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
 
 		if (scope)
 		{
@@ -114,7 +113,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 	soundSource[source].sbuf_lasttime = GetTimeCounter ();
 	soundSource[source].start_time = (sint32)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
-	mixSDL_SourcePlay (soundSource[source].handle);
+	TFBSound_SourcePlay (soundSource[source].handle);
 }
 
 void
@@ -136,16 +135,16 @@ StopStream (uint32 source)
 	soundSource[source].sbuf_size = 0;
 	soundSource[source].sbuf_offset = 0;
 
-	mixSDL_SourceStop (soundSource[source].handle);
-	mixSDL_GetSourcei (soundSource[source].handle, MIX_BUFFERS_PROCESSED, &processed);
-	mixSDL_GetSourcei (soundSource[source].handle, MIX_BUFFERS_QUEUED, &queued);
+	TFBSound_SourceStop (soundSource[source].handle);
+	TFBSound_GetSourcei (soundSource[source].handle, TFBSOUND_BUFFERS_PROCESSED, &processed);
+	TFBSound_GetSourcei (soundSource[source].handle, TFBSOUND_BUFFERS_QUEUED, &queued);
 
 	//fprintf (stderr, "StopStream(): source %d processed %d queued %d num_buffers %d\n", source, processed, queued, soundSource[source].sample->num_buffers);
 	
 	if (processed != 0)
 	{
 		buffer = (uint32 *) HMalloc (sizeof (uint32) * processed);
-		mixSDL_SourceUnqueueBuffers (soundSource[source].handle, processed, buffer);
+		TFBSound_SourceUnqueueBuffers (soundSource[source].handle, processed, buffer);
 		HFree (buffer);
 	}
 }
@@ -155,7 +154,7 @@ PauseStream (uint32 source)
 {
 	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = FALSE;
-	mixSDL_SourcePause (soundSource[source].handle);
+	TFBSound_SourcePause (soundSource[source].handle);
 }
 
 void
@@ -163,7 +162,7 @@ ResumeStream (uint32 source)
 {
 	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = TRUE;
-	mixSDL_SourcePlay (soundSource[source].handle);
+	TFBSound_SourcePlay (soundSource[source].handle);
 }
 
 BOOLEAN
@@ -177,7 +176,7 @@ StreamDecoderTaskFunc (void *data)
 {
 	Task task = (Task)data;
 	int i;
-	mixSDL_Object last_buffer[NUM_SOUNDSOURCES];
+	TFBSound_Object last_buffer[NUM_SOUNDSOURCES];
 
 	for (i = 0; i < NUM_SOUNDSOURCES; i++)
 		last_buffer[i] = 0;
@@ -190,7 +189,7 @@ StreamDecoderTaskFunc (void *data)
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
 			uint32 processed, queued;
-			mixSDL_Object state;
+			TFBSound_Object state;
 			bool do_speech_advancetrack = false;
 
 			LockMutex (soundSource[i].stream_mutex);
@@ -204,13 +203,13 @@ StreamDecoderTaskFunc (void *data)
 				continue;
 			}
 
-			mixSDL_GetSourcei (soundSource[i].handle, MIX_BUFFERS_PROCESSED, &processed);
-			mixSDL_GetSourcei (soundSource[i].handle, MIX_BUFFERS_QUEUED, &queued);
+			TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_BUFFERS_PROCESSED, &processed);
+			TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_BUFFERS_QUEUED, &queued);
 
 			if (processed == 0)
 			{
-				mixSDL_GetSourcei (soundSource[i].handle, MIX_SOURCE_STATE, &state);			
-				if (state != MIX_PLAYING)
+				TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_SOURCE_STATE, &state);			
+				if (state != TFBSOUND_PLAYING)
 				{
 					if (queued == 0 && soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
 					{
@@ -228,7 +227,7 @@ StreamDecoderTaskFunc (void *data)
  					{
 						fprintf (stderr, "StreamDecoderTaskFunc(): buffer underrun when playing %s, source %d\n",
 								soundSource[i].sample->decoder->filename, i);
-						mixSDL_SourcePlay (soundSource[i].handle);
+						TFBSound_SourcePlay (soundSource[i].handle);
 					}
 				}
 			}
@@ -238,15 +237,15 @@ StreamDecoderTaskFunc (void *data)
 			while (processed)
 			{
 				uint32 error;
-				mixSDL_Object buffer;
+				TFBSound_Object buffer;
 				uint32 decoded_bytes;
 				uint32 buf_num;
 
-				mixSDL_GetError (); // clear error state
+				TFBSound_GetError (); // clear error state
 
-				mixSDL_SourceUnqueueBuffers (soundSource[i].handle, 1, &buffer);
+				TFBSound_SourceUnqueueBuffers (soundSource[i].handle, 1, &buffer);
 
-				if ((error = mixSDL_GetError()) != MIX_NO_ERROR)
+				if ((error = TFBSound_GetError()) != TFBSOUND_NO_ERROR)
 				{
 					fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceUnqueueBuffers: %x, file %s, source %d\n", error, soundSource[i].sample->decoder->filename, i);
 					break;
@@ -271,7 +270,7 @@ StreamDecoderTaskFunc (void *data)
 				{
 					uint32 buf_size;
 					soundSource[i].sbuf_lasttime = GetTimeCounter ();
-					mixSDL_GetBufferi(buffer, MIX_SIZE, &buf_size);
+					TFBSound_GetBufferi(buffer, TFBSOUND_SIZE, &buf_size);
 					soundSource[i].sbuf_offset += buf_size;
 					if (soundSource[i].sbuf_offset > soundSource[i].sbuf_size)
 						soundSource[i].sbuf_offset -= soundSource[i].sbuf_size;
@@ -330,19 +329,38 @@ StreamDecoderTaskFunc (void *data)
 
 				if (decoded_bytes > 0)
 				{
-					mixSDL_BufferData (buffer, soundSource[i].sample->decoder->format, 
-						soundSource[i].sample->decoder->buffer, decoded_bytes, 
-						soundSource[i].sample->decoder->frequency);
-
-					if ((error = mixSDL_GetError()) != MIX_NO_ERROR)
+#if defined SOUNDMODULE_OPENAL && !defined (WIN32) // && !defined (MacOS and BeOS too)
+					// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
+	   	
+					if (soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO8 ||
+						soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO16)
 					{
-						fprintf (stderr, "StreamDecoderTaskFunc(): mixSDL error after mixSDL_BufferData: %x, file %s, source %d, decoded_bytes %d\n", 
+						TFBSound_BufferData_Linux (buffer, soundSource[i].sample->decoder->format, 
+							soundSource[i].sample->decoder->buffer, decoded_bytes,
+							soundSource[i].sample->decoder->frequency,
+							soundSource[i].sample->decoder->format);
+					}
+					else
+					{
+						TFBSound_BufferData (buffer, soundSource[i].sample->decoder->format, 
+							soundSource[i].sample->decoder->buffer, decoded_bytes, 
+							soundSource[i].sample->decoder->frequency);
+					}
+#else
+					TFBSound_BufferData (buffer, soundSource[i].sample->decoder->format, 
+						soundSource[i].sample->decoder->buffer, decoded_bytes,
+						soundSource[i].sample->decoder->frequency);
+#endif
+
+					if ((error = TFBSound_GetError()) != TFBSOUND_NO_ERROR)
+					{
+						fprintf (stderr, "StreamDecoderTaskFunc(): TFBSound error after TFBSound_BufferData: %x, file %s, source %d, decoded_bytes %d\n", 
 							error, soundSource[i].sample->decoder->filename, i, decoded_bytes);
 					}
 					else
 					{
 						last_buffer[i] = buffer;
-						mixSDL_SourceQueueBuffers (soundSource[i].handle, 1, &buffer);
+						TFBSound_SourceQueueBuffers (soundSource[i].handle, 1, &buffer);
 						
 						if (soundSource[i].sbuffer)
 						{
@@ -380,9 +398,9 @@ StreamDecoderTaskFunc (void *data)
 							}
 						}
 
-						if ((error = mixSDL_GetError()) != MIX_NO_ERROR)
+						if ((error = TFBSound_GetError()) != TFBSOUND_NO_ERROR)
 						{
-							fprintf (stderr, "StreamDecoderTaskFunc(): mixSDL error after mixSDL_SourceQueueBuffers: %x, file %s, source %d, decoded_bytes %d\n", 
+							fprintf (stderr, "StreamDecoderTaskFunc(): TFBSound error after TFBSound_SourceQueueBuffers: %x, file %s, source %d, decoded_bytes %d\n", 
 								error, i, soundSource[i].sample->decoder->filename, decoded_bytes);
 						}
 					}

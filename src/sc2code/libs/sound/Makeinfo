@@ -9,5 +9,5 @@ else
 	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_SDL"
 fi
 
-uqm_CFILES="fileinst.c resinst.c sound_common.c"
+uqm_CFILES="fileinst.c resinst.c sound_common.c sound.c sfx.c music.c stream.c trackplayer.c"
 

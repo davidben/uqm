@@ -17,7 +17,7 @@
 /* OpenAL specific code by Mika Kolehmainen, 2002-10-23
  */
 
-#ifdef SOUNDMODULE_MIXSDL
+#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
 
 #ifdef WIN32
 #include <io.h>
@@ -33,24 +33,24 @@ PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin,
 {
 	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;	
 	soundSource[channel].sample = tfb_sample;
-	mixSDL_SourceRewind (soundSource[channel].handle);
-	mixSDL_Sourcei (soundSource[channel].handle, MIX_BUFFER, tfb_sample->buffer[0]);
-	mixSDL_SourcePlay (soundSource[channel].handle);
+	TFBSound_SourceRewind (soundSource[channel].handle);
+	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER, tfb_sample->buffer[0]);
+	TFBSound_SourcePlay (soundSource[channel].handle);
 }
 
 void
 StopChannel(COUNT channel, unsigned char Priority)
 {
-	mixSDL_SourceRewind (soundSource[channel].handle);
+	TFBSound_SourceRewind (soundSource[channel].handle);
 }
 
 BOOLEAN
 ChannelPlaying (COUNT WhichChannel)
 {
-	mixSDL_Object state;
+	TFBSound_Object state;
 	
-	mixSDL_GetSourcei (soundSource[WhichChannel].handle, MIX_SOURCE_STATE, &state);
-	if (state == MIX_PLAYING)
+	TFBSound_GetSourcei (soundSource[WhichChannel].handle, TFBSOUND_SOURCE_STATE, &state);
+	if (state == TFBSOUND_PLAYING)
 		return TRUE;
 	return FALSE;
 }
@@ -60,7 +60,7 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 		// I wonder what this whole priority business is...
 		// I can probably ignore it.
 {
-	mixSDL_Sourcef (soundSource[channel].handle, MIX_GAIN, 
+	TFBSound_Sourcef (soundSource[channel].handle, TFBSOUND_GAIN, 
 		(volume / (float)MAX_VOLUME) * sfxVolumeScale);
 }
 
@@ -152,10 +152,10 @@ _GetSoundBankData (FILE *fp, DWORD length)
 				//fprintf (stderr, "_GetSoundBankData(): decoded_bytes %d\n", decoded_bytes);
 				
 				sndfx[snd_ct]->num_buffers = 1;
-				sndfx[snd_ct]->buffer = (mixSDL_Object *) HMalloc (
-						sizeof (mixSDL_Object) * sndfx[snd_ct]->num_buffers);
-				mixSDL_GenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
-				mixSDL_BufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format,
+				sndfx[snd_ct]->buffer = (TFBSound_Object *) HMalloc (
+						sizeof (TFBSound_Object) * sndfx[snd_ct]->num_buffers);
+				TFBSound_GenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
+				TFBSound_BufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format,
 					sndfx[snd_ct]->decoder->buffer, decoded_bytes,
 					sndfx[snd_ct]->decoder->frequency);
 
@@ -246,7 +246,7 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 
             if ((*sptr)->decoder)
 			    SoundDecoder_Free ((*sptr)->decoder);
-			mixSDL_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
+			TFBSound_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
 			HFree ((*sptr)->buffer);
 			HFree (*sptr);
 			*sptr++ = 0;

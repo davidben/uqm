@@ -22,7 +22,11 @@
 #include "libs/strings/strintrn.h"
 #include "libs/sound/sndintrn.h"
 #include "libs/sound/sound_common.h"
-#include "mixer.h"
+#if defined SOUNDMODULE_MIXSDL
+#include "mixsdl/sound_mixsdl.h"
+#elif  defined SOUNDMODULE_OPENAL
+#include "openal/sound_openal.h"
+#endif
 #include "libs/sound/decoders/decoder.h"
 
 
@@ -35,7 +39,7 @@
 
 typedef struct
 {
-	mixSDL_Object buf_name;
+	TFBSound_Object buf_name;
 	int type;
 	void *value;
 } TFB_SoundTag;
@@ -61,7 +65,7 @@ typedef struct tfb_soundsample
 	TFB_SoundChain *read_chain_ptr; // points to chain read poistion
 	TFB_SoundChain *play_chain_ptr; // points to chain playing position
 	float length; // total length of decoder chain in seconds
-	mixSDL_Object *buffer;
+	TFBSound_Object *buffer;
 	uint32 num_buffers;
 	TFB_SoundTag **buffer_tag;
 } TFB_SoundSample;
@@ -70,7 +74,7 @@ typedef struct tfb_soundsample
 typedef struct tfb_soundsource
 {
 	TFB_SoundSample *sample;
-	mixSDL_Object handle;
+	TFBSound_Object handle;
 	bool stream_should_be_playing;
 	Mutex stream_mutex;
 	sint32 start_time;

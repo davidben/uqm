@@ -17,12 +17,8 @@
  */
 
 #ifdef SOUNDMODULE_MIXSDL
-
 #include "libs/graphics/sdl/sdl_common.h"
-#include "libs/sound/sound_common.h"
-#include "sound.h"
-
-TFB_SoundSource soundSource[NUM_SOUNDSOURCES];
+#include "libs/sound/sound.h"
 static Task StreamDecoderTask;
 
 int 
@@ -132,118 +128,6 @@ TFB_UninitSound (void)
 
 	SoundDecoder_Uninit ();
 	mixSDL_CloseAudio ();
-}
-
-void
-StopSound (void)
-{
-	int i;
-
-	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
-	{
-		mixSDL_SourceRewind (soundSource[i].handle);
-	}
-}
-
-BOOLEAN
-SoundPlaying (void)
-{
-	int i;
-
-	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
-	{
-		TFB_SoundSample *sample;
-		sample = soundSource[i].sample;
-		if (sample && sample->decoder)
-		{
-			BOOLEAN result;
-			LockMutex (soundSource[i].stream_mutex);
-			result = PlayingStream (i);
-			UnlockMutex (soundSource[i].stream_mutex);
-			if (result)
-				return TRUE;
-		}
-		else
-		{
-			uint32 state;
-			mixSDL_GetSourcei (soundSource[i].handle, MIX_SOURCE_STATE, &state);
-			if (state == MIX_PLAYING)
-				return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-
-TFB_SoundChain *
-create_soundchain (TFB_SoundDecoder *decoder, float startTime)
-{
-	TFB_SoundChain *chain;
-	chain = (TFB_SoundChain *)HMalloc (sizeof (TFB_SoundChain));
-	chain->decoder = decoder;
-	chain->next =NULL;
-	chain->start_time = startTime;
-	chain->tag.buf_name = 0;
-	chain->tag.type = 0;
-	return (chain);
-}
-
-void
-destroy_soundchain (TFB_SoundChain *chain)
-{
-	while (chain->next)
-	{
-		TFB_SoundChain *tmp_chain = chain->next;
-		chain->next = chain->next->next;
-		if (tmp_chain->decoder)
-			SoundDecoder_Free (tmp_chain->decoder);
-		HFree (tmp_chain);
-	}
-	SoundDecoder_Free (chain->decoder);
-	HFree (chain);
-}
-
-TFB_SoundChain *
-get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
-{
-	TFB_SoundChain *prev_chain;
-	prev_chain = first_chain;
-	if (prev_chain == current_chain)
-		return (prev_chain);
-	while (prev_chain->next)
-	{
-		if (prev_chain->next == current_chain)
-			return (prev_chain);
-		prev_chain = prev_chain->next;
-	}
-	return (first_chain);
-}
-
-// Status: Ignored
-BOOLEAN
-InitSound (int argc, char* argv[])
-{
-	return TRUE;
-}
-
-// Status: Ignored
-void
-UninitSound (void)
-{
-}
-
-void SetSFXVolume (float volume)
-{
-	int i;
-	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
-	{
-		mixSDL_Sourcef (soundSource[i].handle, MIX_GAIN, volume);
-	}	
-}
-
-void SetSpeechVolume (float volume)
-{
-	mixSDL_Sourcef (soundSource[SPEECH_SOURCE].handle, MIX_GAIN, volume);
 }
 
 #endif

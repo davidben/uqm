@@ -1,1 +1,1 @@
-uqm_CFILES="music.c sfx.c sound.c stream.c trackplayer.c"
+uqm_CFILES="sound_openal.c"

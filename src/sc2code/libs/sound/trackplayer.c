@@ -14,10 +14,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
+/* Originally: OpenAL specific code by Mika Kolehmainen, 2002-10-23
+ * Adapted for MixSDL
  */
 
-#ifdef SOUNDMODULE_OPENAL
+#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
 
 #include <assert.h>
 #include "sound.h"
@@ -72,20 +73,19 @@ advance_track (int channel_finished)
 {
 	if (channel_finished <= 0)
 	{
-		if (sound_sample->read_chain_ptr || sound_sample->decoder)
-		{
-			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			PlayStream (sound_sample,
-					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f,
-					!track_pos_changed);
+ 		if (sound_sample->read_chain_ptr || sound_sample->decoder)
+  		{
+  			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+ 			PlayStream (sound_sample,
+ 					SPEECH_SOURCE, false,
+ 					speechVolumeScale != 0.0f, !track_pos_changed);
 			track_pos_changed = 0;
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		}
-		else if (channel_finished == 0)
-		{
-			no_voice = 1;
-		}
+  			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+  		}
+  		else if (channel_finished == 0)
+  		{
+  			no_voice = 1;
+  		}
 	}
 }
 
@@ -94,13 +94,13 @@ ResumeTrack ()
 {
 	if (sound_sample && sound_sample->read_chain_ptr)
 	{
-		ALint state;
+		uint32 state;
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		alGetSourcei (soundSource[SPEECH_SOURCE].handle, AL_SOURCE_STATE, &state);
+		TFBSound_GetSourcei (soundSource[SPEECH_SOURCE].handle, TFBSOUND_SOURCE_STATE, &state);
 
 		if (!track_pos_changed && !soundSource[SPEECH_SOURCE].stream_should_be_playing && 
-			state == AL_PAUSED)
+			state == TFBSOUND_PAUSED)
 		{
 			ResumeStream (SPEECH_SOURCE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -172,7 +172,7 @@ StopTrack ()
 	if (sound_sample)
 	{
 		DestroyMutex (track_mutex);
-		alDeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+		TFBSound_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 		HFree (sound_sample->buffer);
 		HFree (sound_sample->buffer_tag);
 		HFree (sound_sample);
@@ -186,7 +186,7 @@ StopTrack ()
 void 
 DoTrackTag (TFB_SoundTag *tag)
 {
-	if (tag->type == AL_BUFFER_TAG_TEXT)
+	if (tag->type == MIX_BUFFER_TAG_TEXT)
 	{
 		LockMutex (track_mutex);
 		tcur = ((int)tag->value) >> 8;
@@ -196,7 +196,7 @@ DoTrackTag (TFB_SoundTag *tag)
 }
 
 int 
-GetTimeStamps(UNICODE *TimeStamps, unsigned long *time_stamps)
+GetTimeStamps(UNICODE *TimeStamps, uint32 *time_stamps)
 {
 	int pos;
 	int num = 0;
@@ -297,7 +297,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	{
 		TrackTextArray[tct] = HMalloc (slen + 1);
 		wstrcpy (TrackTextArray[tct++], TrackText);
-		begin_chain->tag.type = AL_BUFFER_TAG_TEXT;
+		begin_chain->tag.type = MIX_BUFFER_TAG_TEXT;
 		begin_chain->tag.value = (void *)((tct - 1) << 8);
 	}
 	no_page_break = 1;
@@ -333,7 +333,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 		else
 		{
 			int num_pages, cur_page;
-			unsigned long time_stamps[50];
+			uint32 time_stamps[50];
 
 			if (no_page_break && tct)
 			{
@@ -368,8 +368,8 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					sound_sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
 					sound_sample->num_buffers = 8;
 					sound_sample->buffer_tag = HMalloc (sizeof (TFB_SoundTag *) * sound_sample->num_buffers);
-					sound_sample->buffer = HMalloc (sizeof (ALuint) * sound_sample->num_buffers);
-					alGenBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
+					TFBSound_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					decoder = SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[cur_page]);
 					sound_sample->read_chain_ptr = create_soundchain (decoder, 0.0);
 					sound_sample->decoder = decoder;
@@ -396,7 +396,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					sound_sample->length += last_chain->decoder->length;
 					if (! no_page_break)
 					{
-						last_chain->tag.type = AL_BUFFER_TAG_TEXT;
+						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
 						last_chain->tag.value = (void *)(((tct - 1) << 8) | cur_page);
 					}
 					no_page_break = 0;
@@ -404,7 +404,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 				else
 				{
 					fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
-					alDeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					TFBSound_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					destroy_soundchain (first_chain);
 					first_chain = NULL;
 					HFree (sound_sample->buffer);
@@ -428,15 +428,15 @@ PauseTrack ()
 }
 
 void
-recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, ALint offset)
+recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, sint32 offset)
 {
 	TFB_SoundChain *cur_chain = first_chain;
 	while (cur_chain->next &&
-			(ALint)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
+			(sint32)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
 		cur_chain = cur_chain->next;
 	if (cur_chain->tag.type)
 		DoTrackTag (&cur_chain->tag);
-	if ((ALint)((cur_chain->start_time + cur_chain->decoder->length) * (float)ONE_SECOND) < offset)
+	if ((sint32)((cur_chain->start_time + cur_chain->decoder->length) * (float)ONE_SECOND) < offset)
 	{
 		sample->read_chain_ptr = NULL;
 		sample->decoder = NULL;
@@ -445,7 +445,7 @@ recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, ALint
 	{
 		sample->read_chain_ptr = cur_chain;
 		SoundDecoder_Seek(sample->read_chain_ptr->decoder,
-				(ALuint)(1000 * (offset / (float)ONE_SECOND - cur_chain->start_time)));
+				(uint32)(1000 * (offset / (float)ONE_SECOND - cur_chain->start_time)));
 	}
 }
 
@@ -454,12 +454,12 @@ FastReverse_Smooth ()
 {
 	if (sound_sample)
 	{
-		ALint offset;
+		sint32 offset;
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
 		track_pos_changed = 1;
 		soundSource[SPEECH_SOURCE].start_time += ACCEL_SCROLL_SPEED;
-		if (soundSource[SPEECH_SOURCE].start_time > (ALint)GetTimeCounter())
+		if (soundSource[SPEECH_SOURCE].start_time > (sint32)GetTimeCounter())
 		{
 			soundSource[SPEECH_SOURCE].start_time = GetTimeCounter();
 			offset = 0;
@@ -485,8 +485,8 @@ FastReverse_Page ()
 		{
 			sound_sample->read_chain_ptr = prev_chain;
 			PlayStream (sound_sample,
-					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f, AL_TRUE);
+					SPEECH_SOURCE, false,
+					speechVolumeScale != 0.0f, true);
 		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
@@ -497,7 +497,7 @@ FastForward_Smooth ()
 {
 	if (sound_sample)
 	{
-		ALint offset;
+		sint32 offset;
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
 		soundSource[SPEECH_SOURCE].start_time -= ACCEL_SCROLL_SPEED;
@@ -523,8 +523,8 @@ FastForward_Page ()
 		{
 			sound_sample->read_chain_ptr = cur_ptr->next;
 			PlayStream (sound_sample,
-					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f, AL_TRUE);
+					SPEECH_SOURCE, false,
+					speechVolumeScale != 0.0f, true);
 		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
@@ -546,18 +546,19 @@ GetSoundData (void *data)
 		{
 			float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].sbuf_lasttime) / 
 				(float)ONE_SECOND;
-			int delta = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
+			long delta = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
 				sample->decoder->frequency * 2.0f);
-			unsigned long pos, i;
+			unsigned long pos;
+			int i;
 			UBYTE *scopedata = (UBYTE *) data;
 			UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
 
 			assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
-			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == AL_FORMAT_MONO16);
+			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == TFBSOUND_FORMAT_MONO16);
 
 			if (delta < 0)
 			{
-				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
 				delta = 0;
 			}
 			else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
@@ -615,12 +616,13 @@ GetSoundData (void *data)
 				(float)ONE_SECOND;
 			int delta = (int) (played_time * (float)soundSource[MUSIC_SOURCE].
 				sample->decoder->frequency * 4.0f);
-			unsigned long pos, i, step;
+			unsigned long pos;
+			int i, step;
 			UBYTE *scopedata = (UBYTE *) data;
 			UBYTE *sbuffer = soundSource[MUSIC_SOURCE].sbuffer;
 
 			assert (soundSource[MUSIC_SOURCE].sample->decoder->frequency >= 11025);
-			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == AL_FORMAT_STEREO16);
+			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == TFBSOUND_FORMAT_STEREO16);
 
 			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency / 11025 * 16;
 			if (step % 2 == 1)
@@ -639,7 +641,7 @@ GetSoundData (void *data)
 
 			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[MUSIC_SOURCE].total_decoded, delta);
 
-			pos = soundSource[MUSIC_SOURCE].sbuf_offset + delta;
+			pos = soundSource[SPEECH_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;
 
@@ -682,12 +684,12 @@ GetSoundData (void *data)
 int
 GetSoundInfo (int max_len)
 {	
-	ALuint length, offset;
+	uint32 length, offset;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	if (soundSource[SPEECH_SOURCE].sample)
 	{
-		length = (ALuint) (soundSource[SPEECH_SOURCE].sample->length * (float)ONE_SECOND);
-		offset = (ALuint) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
+		length = (uint32) (soundSource[SPEECH_SOURCE].sample->length * (float)ONE_SECOND);
+		offset = (uint32) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
 	}
 	else
 	{

@@ -17,7 +17,7 @@
 /* OpenAL specific code by Mika Kolehmainen, 2002-10-23
  */
 
-#ifdef SOUNDMODULE_OPENAL
+#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
 
 #include "sound.h"
 #include "options.h"
@@ -35,8 +35,7 @@ PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
 	{
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, 
-			speechVolumeScale == 0.0f ? AL_TRUE : AL_FALSE, 
-			AL_TRUE);
+			speechVolumeScale == 0.0f, true);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		
 		curMusicRef = MusicRef;
@@ -107,9 +106,9 @@ DestroyMusic (MUSIC_REF MusicRef)
 void
 SetMusicVolume (COUNT Volume)
 {
-	float f = (Volume / (ALfloat)MAX_VOLUME) * musicVolumeScale;
+	float f = (Volume / (float)MAX_VOLUME) * musicVolumeScale;
 	musicVolume = Volume;
-	alSourcef (soundSource[MUSIC_SOURCE].handle, AL_GAIN, f);
+	TFBSound_Sourcef (soundSource[MUSIC_SOURCE].handle, TFBSOUND_GAIN, f);
 }
 
 MEM_HANDLE
@@ -136,7 +135,7 @@ _GetMusicData (FILE *fp, DWORD length)
 
             *pmus = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
             (*pmus)->buffer_tag = 0;
-			(*pmus)->read_chain_ptr = NULL;
+            (*pmus)->read_chain_ptr = NULL;
             strcpy (filename, _cur_resfile_name);
 
             switch (optWhichMusic)
@@ -175,8 +174,8 @@ _GetMusicData (FILE *fp, DWORD length)
 					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
 
 				(*pmus)->num_buffers = 64;
-				(*pmus)->buffer = (ALuint *) HMalloc (sizeof (ALuint) * (*pmus)->num_buffers);
-				alGenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
+				(*pmus)->buffer = (TFBSound_Object *) HMalloc (sizeof (TFBSound_Object) * (*pmus)->num_buffers);
+				TFBSound_GenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 			}
 		}
 
@@ -209,7 +208,7 @@ _ReleaseMusicData (MEM_HANDLE handle)
 
 		(*pmus)->decoder = NULL;
 		SoundDecoder_Free (decoder);
-		alDeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
+		TFBSound_DeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 		HFree ((*pmus)->buffer);
 	}
 	HFree (*pmus);
