@@ -146,7 +146,6 @@ Stuff still to do (medium size):
 - try to speed up resource loading. It looks to be much slower now
   than it needs to be.
 - Convert bulky media files into more compact representations
-- planet surface smoothing
 - Proper uninitialization of everything when quitting
   - Currently pretty nonexistant, got only some atexit callbacks
 - Option to display the planet statistics as text instead of images?

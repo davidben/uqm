@@ -1,4 +1,5 @@
 0.2:
+- Planet surface is now smoothed, from PhracturedBlue
 - Implemented scanlines in pure SDL mode - Mika
 - Star sizes and colors are now correct in solar system, from fOSSiL
 - Captain portraits in melee are now updated properly after battle and
