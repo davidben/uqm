@@ -30,20 +30,20 @@ typedef struct tfb_videoclip
 	TFB_VideoDecoder *decoder; // decoder to read from
 	float length; // total length of clip seconds
 	uint32 w, h;
-	RECT dst_rect; // destination screen rect
-	RECT src_rect; // source rect
-	
+
+	// video player data
+	RECT dst_rect;     // destination screen rect
+	RECT src_rect;     // source rect
 	MUSIC_REF hAudio;
 	Task play_task;
 	uint32 frame_time; // time when next frame should be rendered
-	TFB_Image* frame;
-	uint32 cur_frame;
+	TFB_Image* frame;  // frame preped and optimized for rendering
+	uint32 cur_frame;  // index of frame currently displayed
 	uint32 max_frame_wait;
 	bool playing;
 
 	Mutex guard;
-	CondVar frame_lock;
-	uint32 want_frame;
+	uint32 want_frame; // audio-signaled desired frame index
 
 	void* data; // user-defined data
 

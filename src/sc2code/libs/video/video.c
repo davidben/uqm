@@ -28,9 +28,13 @@ InitVideo (BOOLEAN useCDROM)
 		//useCDROM doesn't really apply to us
 {
 	TFB_VideoFormat fmt;
+	
 	TFB_GetScreenFormat (&fmt);
-	return VideoDecoder_Init (0, fmt.BitsPerPixel, fmt.Rmask,
-			fmt.Gmask, fmt.Bmask, fmt.Amask);
+	if (!VideoDecoder_Init (0, fmt.BitsPerPixel, fmt.Rmask,
+			fmt.Gmask, fmt.Bmask, fmt.Amask))
+		return FALSE;
+
+	return TFB_InitVideoPlayer ();
 	
 	(void)useCDROM;  /* dodge compiler warning */
 }
@@ -38,6 +42,7 @@ InitVideo (BOOLEAN useCDROM)
 void
 UninitVideo ()
 {
+	TFB_UninitVideoPlayer ();
 	VideoDecoder_Uninit ();
 }
 
@@ -128,7 +133,6 @@ _init_video_file(PVOID pStr)
 	vid->w = vid->decoder->w;
 	vid->h = vid->decoder->h;
 	vid->guard = CreateMutex ("video guard", SYNC_CLASS_VIDEO);
-	vid->frame_lock = CreateCondVar ("frame lock", SYNC_CLASS_VIDEO);
 
 	return (VIDEO_REF) vid;
 }
@@ -143,7 +147,6 @@ DestroyVideo (VIDEO_REF VideoRef)
 
 	VideoDecoder_Free (vid->decoder);
 	DestroyMutex (vid->guard);
-	DestroyCondVar (vid->frame_lock);
 	HFree (vid);
 	
 	return TRUE;

@@ -58,6 +58,21 @@ typedef struct
 
 } VIDEO_INPUT_STATE;
 
+bool
+TFB_InitVideoPlayer ()
+{
+	// creation probably needs better handling
+	vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock",
+			SYNC_CLASS_VIDEO);
+	return vp_interthread_lock != 0;
+}
+
+void
+TFB_UninitVideoPlayer ()
+{
+	DestroySemaphore (vp_interthread_lock);
+}
+
 void
 TFB_FadeClearScreen ()
 {
@@ -81,8 +96,10 @@ TFB_FadeClearScreen ()
 	XFormColorMap ((COLORMAPPTR) xform_buf, 0);
 }
 
+// audio-synced video playback task
+// the frame rate and timing is dictated by the audio
 int
-ac_video_play_task (void* data)
+as_video_play_task (void* data)
 {
 	Task task = (Task) data;
 	volatile TFB_VideoClip* vid;
@@ -104,6 +121,23 @@ ac_video_play_task (void* data)
 
 	clagged = 0;
 
+	// this works like so (audio-synced):
+	//  1. you call VideoDecoder_Seek() [when necessary] and
+	//     VideoDecoder_Decode()
+	//  2. wait till the audio signals it's time for this frame
+	//     or the maximum inter-frame timeout elapses; the timeout
+	//     is necessary because the audio signaling is not precise
+	//	   (see vp_AudioStart, vp_AudioEnd, vp_BufferTag)
+	//  3. output the frame; if the timeout elapsed, increment the
+	//     the lag counter
+	//  4. set the next frame timeout; lag counter increases the
+	//     timeout to allow audio to catch up
+	//  5. on a seek operation, the audio stream is moved to the
+	//     correct position and then the audio signals the frame
+	//     that should be rendered
+	//  The system of timeouts and lag counts should make the video
+	//  *relatively* smooth
+	//
 	ret = VideoDecoder_Decode (vid->decoder);
 	TimeOut = GetTimeCounter () + vid->decoder->max_frame_wait *
 			ONE_SECOND / 1000;
@@ -175,6 +209,8 @@ ac_video_play_task (void* data)
 	return 0;
 }
 
+// audio-independent video playback task
+// the frame rate and timing is dictated by the video decoder
 int
 video_play_task (void* data)
 {
@@ -281,29 +317,30 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 
 		if (!vid->hAudio)
 		{
-			fprintf (stderr, "TFB_PlayVideo: Cannot load sound-track for audio-synced video\n");
+			fprintf (stderr, "TFB_PlayVideo: "
+					"Cannot load sound-track for audio-synced video\n");
 			return false;
 		}
 
 		// nasty hack for now
 		LockMusicData (vid->hAudio, &pmus);
-		(*pmus)->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * (*pmus)->num_buffers);
+		(*pmus)->buffer_tag = HCalloc (
+				sizeof (TFB_SoundTag) * (*pmus)->num_buffers);
 		(*pmus)->callbacks = vp_AudioCBs;
 		(*pmus)->data = vid;	// hijack data ;)
 		UnlockMusicData (vid->hAudio);
 	}
 
-	// creation probably needs better handling
-	if (!vp_interthread_lock)
-		vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock", SYNC_CLASS_VIDEO);
 	SetSemaphore (vp_interthread_lock);
 	vp_interthread_clip = vid;
 
 	vid->playing = true;
 	if (vid->decoder->audio_synced)
-		vid->play_task = AssignTask (ac_video_play_task, 4096, "a/c video player");
+		vid->play_task = AssignTask (
+				as_video_play_task, 4096, "a/s video player");
 	else
-		vid->play_task = AssignTask (video_play_task, 4096, "video player");
+		vid->play_task = AssignTask (
+				video_play_task, 4096, "video player");
 
 	if (!vid->play_task)
 	{
@@ -392,7 +429,7 @@ TFB_DoVideoInput (PVOID pIS)
 
 			TaskSwitch ();
 		}
-		// non a/c decoder seeking is not supported yet
+		// non a/s decoder seeking is not supported yet
 	}
 
 	return TRUE;
