@@ -186,7 +186,19 @@ Scale_BlendPixels (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 			 ) >> 1) & fmt->Gmask) |
 			((((pix1 & fmt->Bmask) +
 			   (pix2 & fmt->Bmask)
-			) >> 1) & fmt->Bmask);
+			 ) >> 1) & fmt->Bmask);
+}
+
+// blends two pixels with ratio 50% - 50% (safe for 32bpp surfaces)
+__inline__ Uint32
+Scale_BlendPixels_32bpp_safe (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
+{
+	return ((((((pix1 & fmt->Rmask) >> fmt->Rshift) +
+			((pix2 & fmt->Rmask) >> fmt->Rshift)) >> 1) << fmt->Rshift) & fmt->Rmask) |
+			((((((pix1 & fmt->Gmask) >> fmt->Gshift) +
+			((pix2 & fmt->Gmask) >> fmt->Gshift)) >> 1) << fmt->Gshift) & fmt->Gmask) |
+			((((((pix1 & fmt->Bmask) >> fmt->Bshift) +
+			((pix2 & fmt->Bmask) >> fmt->Bshift)) >> 1) << fmt->Bshift) & fmt->Bmask);
 }
 
 // compare pixels by their RGB
@@ -706,6 +718,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	#define BIADAPT_GETPIX(p)        ( *(Uint32 *)(p) )
 	#define BIADAPT_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
 	#define BIADAPT_BUF              Uint32
+	#define Scale_BlendPixels Scale_BlendPixels_32bpp_safe
 	{
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
@@ -899,7 +912,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	#undef BIADAPT_GETPIX
 	#undef BIADAPT_SETPIX
 	#undef BIADAPT_BUF
-	#undef BIADAPT_CLR
+	#undef Scale_BlendPixels
 
 	}
 }
@@ -1877,6 +1890,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	#define BIADAPT_GETPIX(p)        ( *(Uint32 *)(p) )
 	#define BIADAPT_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
 	#define BIADAPT_BUF              Uint32
+	#define Scale_BlendPixels Scale_BlendPixels_32bpp_safe
 	{
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
@@ -2324,6 +2338,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	#undef BIADAPT_GETPIX
 	#undef BIADAPT_SETPIX
 	#undef BIADAPT_BUF
+	#undef Scale_BlendPixels
 	}
 
 	#undef BIADAPT_CMPRGB
@@ -2585,18 +2600,18 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				fd = bilinear_table[j][3];
 
 				*dst_p++ = 
-					(((((p[0] & fmt->Rmask) * fa) +
-					((p[1] & fmt->Rmask) * fb) +
-					((p[2] & fmt->Rmask) * fc) +
-					((p[3] & fmt->Rmask) * fd)) >> 4) & fmt->Rmask) |
-					(((((p[0] & fmt->Gmask) * fa) +
-					((p[1] & fmt->Gmask) * fb) +
-					((p[2] & fmt->Gmask) * fc) +
-					((p[3] & fmt->Gmask) * fd)) >> 4) & fmt->Gmask) |
-					(((((p[0] & fmt->Bmask) * fa) +
-					((p[1] & fmt->Bmask) * fb) +
-					((p[2] & fmt->Bmask) * fc) +
-					((p[3] & fmt->Bmask) * fd)) >> 4) & fmt->Bmask);
+					(((((((p[0] & fmt->Rmask) >> fmt->Rshift) * fa) +
+					(((p[1] & fmt->Rmask) >> fmt->Rshift) * fb) +
+					(((p[2] & fmt->Rmask) >> fmt->Rshift) * fc) +
+					(((p[3] & fmt->Rmask) >> fmt->Rshift) * fd)) >> 4) << fmt->Rshift) & fmt->Rmask) |
+					(((((((p[0] & fmt->Gmask) >> fmt->Gshift) * fa) +
+					(((p[1] & fmt->Gmask) >> fmt->Gshift) * fb) +
+					(((p[2] & fmt->Gmask) >> fmt->Gshift) * fc) +
+					(((p[3] & fmt->Gmask) >> fmt->Gshift) * fd)) >> 4) << fmt->Gshift) & fmt->Gmask) |
+					(((((((p[0] & fmt->Bmask) >> fmt->Bshift) * fa) +
+					(((p[1] & fmt->Bmask) >> fmt->Bshift) * fb) +
+					(((p[2] & fmt->Bmask) >> fmt->Bshift) * fc) +
+					(((p[3] & fmt->Bmask) >> fmt->Bshift) * fd)) >> 4) << fmt->Bshift) & fmt->Bmask);
 
 				if (j & 2)
 				{
