@@ -1735,8 +1735,8 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					{
 						t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 						t.align = ALIGN_CENTER;
-						t.pStr = "-MORE-";
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x04, 0xBB, 0x04), 0x01));
+						t.pStr = "_MORE_";
+						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 						SetSemaphore (GraphicsSem);
 						font_DrawText (&t);
 						ClearSemaphore (GraphicsSem);
@@ -1769,8 +1769,8 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					
 					t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 					t.align = ALIGN_CENTER;
-					t.pStr = "-MORE-";
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x04, 0xBB, 0x04), 0x01));
+					t.pStr = "_MORE_";
+					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 					SetSemaphore (GraphicsSem);
 					font_DrawText (&t);
 					ClearSemaphore (GraphicsSem);
