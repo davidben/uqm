@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Install location for content on unix systems is now ${prefix}/share/uqm
+  instead of ${prefix}/lib/uqm - SvdB
 - New main menu graphics from MarkVera, Paxtez, Nic (bug #393)
 - Removed a place where you could ask for repairs when you shouldn't 
   (bug #432), from Nic
