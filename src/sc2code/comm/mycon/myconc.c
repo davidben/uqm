@@ -258,6 +258,7 @@ CombatIsInevitable (RESPONSE_REF R)
 		else
 			NPCPhrase (BYE_AND_DIE_HOMEWORLD);
 	}
+	MadeChoice = 0;
 }
 
 static void
