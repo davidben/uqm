@@ -27,6 +27,7 @@
 #include "options.h"
 #include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
+#include "bbox.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
@@ -521,6 +522,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 		livelock_deterrence = TRUE;
 	}
 
+	TFB_BBox_Reset ();
+	TFB_BBox_GetClipRect (SDL_Screens[0]);
+
 	done = FALSE;
 	while (!done)
 	{
@@ -560,8 +564,15 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
-				TFB_Image *DC_image = (TFB_Image *)DC.data.image.image;
+				TFB_Image *DC_image = DC.data.image.image;
 				TFB_Palette *pal;
+				int x = DC.data.image.x;
+				int y = DC.data.image.y;
+
+				if (DC.data.image.UseScaling)
+					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+				else
+					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
 
 				if (DC.data.image.UsePalette)
 				{
@@ -572,7 +583,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 					pal = DC_image->Palette;
 				}
 
-				TFB_DrawCanvas_Image (DC_image, DC.data.image.x, DC.data.image.y,
+				TFB_DrawCanvas_Image (DC_image, x, y,
 						DC.data.image.UseScaling, pal,
 						SDL_Screens[DC.data.image.destBuffer],
 						DC.data.image.BlendNumerator, DC.data.image.BlendDenominator);
@@ -581,6 +592,15 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
 			{
+				TFB_Image *DC_image = DC.data.filledimage.image;
+				int x = DC.data.filledimage.x;
+				int y = DC.data.filledimage.y;
+
+				if (DC.data.filledimage.UseScaling)
+					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+				else
+					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+
 				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
 						DC.data.filledimage.UseScaling, DC.data.filledimage.r, DC.data.filledimage.g,
 						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer],
@@ -589,6 +609,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
 			{
+				TFB_BBox_RegisterPoint (DC.data.line.x1, DC.data.line.y1);
+				TFB_BBox_RegisterPoint (DC.data.line.x2, DC.data.line.y2);
 				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1, 
 						DC.data.line.x2, DC.data.line.y2, 
 						DC.data.line.r, DC.data.line.g, DC.data.line.b,
@@ -597,6 +619,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
+				TFB_BBox_RegisterRect (&DC.data.rect.rect);
 				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r, 
 						DC.data.rect.g, DC.data.rect.b, 
 						SDL_Screens[DC.data.rect.destBuffer]);
@@ -606,21 +629,24 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
 			{
 				SDL_Rect r;
-				r.x = DC.data.scissor.x;
-				r.y = DC.data.scissor.y;
-				r.w = DC.data.scissor.w;
-				r.h = DC.data.scissor.h;
-				
+				r.x = TFB_BBox.clip.corner.x = DC.data.scissor.x;
+				r.y = TFB_BBox.clip.corner.y = DC.data.scissor.y;
+				r.w = TFB_BBox.clip.extent.width = DC.data.scissor.w;
+				r.h = TFB_BBox.clip.extent.height = DC.data.scissor.h;
 				SDL_SetClipRect(SDL_Screens[0], &r);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
 			SDL_SetClipRect(SDL_Screens[0], NULL);
+			TFB_BBox.clip.corner.x = 0;
+			TFB_BBox.clip.corner.y = 0;
+			TFB_BBox.clip.extent.width = ScreenWidth;
+			TFB_BBox.clip.extent.height = ScreenHeight;
 			break;
 		case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
 			{
 				SDL_Rect src, dest;
-				TFB_Image *DC_image = (TFB_Image *)DC.data.copytoimage.image;
+				TFB_Image *DC_image = DC.data.copytoimage.image;
 
 				if (DC_image == 0)
 				{
@@ -647,6 +673,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 				src.y = dest.y = DC.data.copy.y;
 				src.w = DC.data.copy.w;
 				src.h = DC.data.copy.h;
+
+				TFB_BBox_RegisterPoint (src.x, src.y);
+				TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
+
 
 				TFB_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest, DC.data.copy.BlendNumerator, DC.data.copy.BlendDenominator);
 				break;

@@ -164,6 +164,14 @@ SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\bbox.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\bbox.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\canvas.c
 # End Source File
 # Begin Source File

@@ -20,6 +20,7 @@
 
 #include "pure.h"
 #include "primitives.h"
+#include "bbox.h"
 
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
@@ -831,10 +832,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 }
 
 // nearest neighbor scaling to 2x
-static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
+static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
 	const int w = src->w, h = src->h, dw = dst->w;
+	const int x0 = r->x, y0 = r->y, rw = r->w, rh = r->h;
+	const int ds = w-rw, dd = (dw-rw) * 2;
 
 	switch (dst->format->BytesPerPixel)
 	{
@@ -842,9 +845,11 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 	{
 		Uint16 *src_p = (Uint16 *)src->pixels, *dst_p = (Uint16 *)dst->pixels;
 		Uint16 pixval_16;
-		for (y = 0; y < h; ++y)
+		src_p += w*y0 + x0;
+		dst_p += (dw*y0 + x0) * 2;
+		for (y = 0; y < rh; ++y)
 		{
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < rw; ++x)
 			{
 				pixval_16 = *src_p++;
 				dst_p[dw] = pixval_16;
@@ -852,7 +857,8 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 				dst_p[dw] = pixval_16;
 				*dst_p++ = pixval_16;
 			}
-			dst_p += dw;
+			dst_p += dd;
+			src_p += ds;
 		}
 		break;
 	}
@@ -889,9 +895,11 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 	{
 		Uint32 *src_p = (Uint32 *)src->pixels, *dst_p = (Uint32 *)dst->pixels;
 		Uint32 pixval_32;
-		for (y = 0; y < h; ++y)
+		src_p += w*y0 + x0;
+		dst_p += (dw*y0 + x0) * 2;
+		for (y = 0; y < rh; ++y)
 		{
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < rw; ++x)
 			{
 				pixval_32 = *src_p++;
 				dst_p[dw] = pixval_32;
@@ -899,7 +907,8 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 				dst_p[dw] = pixval_32;
 				*dst_p++ = pixval_32;
 			}
-			dst_p += dw;
+			dst_p += dd;
+			src_p += ds;
 		}
 		break;
 	}
@@ -907,7 +916,7 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 }
 
 // bilinear scaling to 2x
-static void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst)
+static void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y, i = 0, j, fa, fb, fc, fd;
 	const int w = dst->w, h = dst->h;
@@ -1002,7 +1011,7 @@ static void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst)
 	{
 		// 24bpp mode bilinear scaling isn't implemented currently
 		// it would probably be too slow to be useful anyway
-		Scale_Nearest (src, dst);
+		Scale_Nearest (src, dst, r);
 		break;
 	}
 	case 4:
@@ -1169,6 +1178,19 @@ TFB_Pure_SwapBuffers ()
 {
 	int fade_amount = FadeAmount;
 	int transition_amount = TransitionAmount;
+	SDL_Rect updated;
+
+	updated.x = TFB_BBox.region.corner.x;
+	updated.y = TFB_BBox.region.corner.y;
+	updated.w = TFB_BBox.region.extent.width;
+	updated.h = TFB_BBox.region.extent.height;
+		
+	if ((transition_amount != 255) || (fade_amount != 255))
+	{
+		updated.x = updated.y = 0;
+		updated.w = ScreenWidth;
+		updated.h = ScreenHeight;
+	}
 
 	if (ScreenWidth == 320 && ScreenHeight == 240 &&
 		ScreenWidthActual == 640 && ScreenHeightActual == 480)
@@ -1210,11 +1232,11 @@ TFB_Pure_SwapBuffers ()
 		SDL_LockSurface (backbuffer);
 		
 		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
-			Scale_BilinearFilter (backbuffer, SDL_Video);
+			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
 		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
 			Scale_BiAdaptFilter (backbuffer, SDL_Video);
 		else
-			Scale_Nearest (backbuffer, SDL_Video);
+			Scale_Nearest (backbuffer, SDL_Video, &updated);
 
 		if (gfx_flags & TFB_GFXFLAGS_SCANLINES)
 			ScanLines (SDL_Video);
@@ -1226,7 +1248,7 @@ TFB_Pure_SwapBuffers ()
 	{
 		// resolution is 320x240 so we can blit directly
 
-		SDL_BlitSurface (SDL_Screen, NULL, SDL_Video, NULL);
+		SDL_BlitSurface (SDL_Screen, &updated, SDL_Video, &updated);
 
 		if (transition_amount != 255)
 		{

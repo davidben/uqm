@@ -37,11 +37,6 @@ typedef struct tfb_palette
 	UBYTE unused;
 } TFB_Palette;
 
-// This code will be replaced with appropriately modularized stuff
-// later However, right now the code that uses it in graphics/sdl
-// assumes these are all SDL_Surface *s.  I need to rewrite them to
-// make them use the DrawCanvas commands.  -- Michael
-
 typedef struct tfb_image
 {
 	TFB_Canvas NormalImg;
