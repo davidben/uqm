@@ -402,11 +402,13 @@ StartFinalPass:
 				else if (AnyButtonPress (FALSE))
 				{
 					if (YankedStarShipPtr == 0)
+					{
 						AllDoorsFinished = TRUE;
+					}
 					else
 					{
-						pship_win_info->lfdoor_s.origin.x =
-								pship_win_info->rtdoor_s.origin.x = 0;
+						pship_win_info->lfdoor_s.origin.x = 0;
+						pship_win_info->rtdoor_s.origin.x = 0;
 						AllDoorsFinished = TRUE;
 					}
 					goto StartFinalPass;
@@ -424,7 +426,7 @@ StartFinalPass:
 					ClearDrawable ();
 					DrawStamp (&pship_win_info->ship_s);
 					ShowShipCrew (pship_win_info->StarShipPtr, &r);
-					if (!AllDoorsFinished)
+					if (!AllDoorsFinished || YankedStarShipPtr)
 					{
 						DrawStamp (&pship_win_info->lfdoor_s);
 						DrawStamp (&pship_win_info->rtdoor_s);
