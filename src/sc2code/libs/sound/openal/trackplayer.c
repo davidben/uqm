@@ -265,7 +265,8 @@ GetSoundData (void *data)
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 
 	if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder &&
-		PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer)
+		PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer &&
+		soundSource[SPEECH_SOURCE].sbuf_size > 0)
 	{
 		float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time) / 
 			(float)ONE_SECOND;
@@ -284,7 +285,7 @@ GetSoundData (void *data)
 			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
 			delta = 0;
 		}
-		else if (delta > soundSource[SPEECH_SOURCE].sbuf_size * 2)
+		else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
 		{
 			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
 		    delta = 0;
