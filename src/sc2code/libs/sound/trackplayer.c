@@ -124,7 +124,7 @@ PlayingTrack ()
 {
 	// this is not a great way to detect whether the track is playing,
 	// but as it should work during fast-forward/rewind, 'PlayingStream' can't be used
-	if (is_sample_playing (sound_sample))
+	if (sound_sample && is_sample_playing (sound_sample))
 	{
 		int last_track, last_page;
 		LockMutex (track_mutex);
