@@ -46,7 +46,7 @@ graphics with a bit of a performance penalty.
 
 Print fps information in the status window.
 
-	-tv          (or --tv)
+	-s          (or --scanlines)
 
 Simulates interlaced displays.
 
