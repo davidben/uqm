@@ -802,6 +802,8 @@ extern void RetrieveStarMap (void);
 #define wstrupr strupr
 #define wstrncpy strncpy
 #define wstricmp stricmp
+#define wstrtoul strtoul
+#define wstrcspn strcspn
 
 #endif /* _GLOBDATA_H */
 

@@ -42,8 +42,6 @@ Glitches (don't crash the game, medium priority):
   small again (some 3DO owner should check does this happen in original)
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
-- Subtitles in conversation will sometimes hang off the end (e.g. the 
-  Ilwrath reacting to the Ur-Quan Drone).
 - ZFP graphics synchronisation messed up when fast forwarding speech
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
@@ -96,7 +94,17 @@ Implementation bugs (low priority):
     lander pane
   - The PC version has text about the ship in the Outfit screen (Velocity etc)
     but we don't have that yet.
-
+- Voice-over subtitle synchrinzation issues:
+  - alignment seems worse with sdl_mixer than openAL.  Hard to tell for sure
+  - Many clips don't match the text/can't be synced well.  A partial list:
+	black031.ogg black041.ogg black044.ogg yehat008.ogg yehat015.ogg
+	yehat021.ogg yehat023.ogg supox002.ogg supox003.ogg supox028.ogg
+	vux001.ogg utwig072.ogg umgah027.ogg talkp068.ogg spaho007.ogg
+	syree012.ogg syree021.ogg syree028.ogg syree069.ogg orz000.ogg
+  - Should be skip forward/back one frame (using arrows?), and keep text synced
+    may only be possible using openAL though
+  - More work should be done to better sync the text we have.
+Match timing between subtitles and speech clips
 Stuff still to do (large):
 - add some way to configure your keys
   (assigned to mstr)
@@ -125,8 +133,7 @@ Stuff still to do (large):
   Some packaging will be used. (possibilities: zlib, physfs
   (http://icculus.org/physfs/), zziplib (http://zziplib.sourceforge.net/))
   (assigned to Meep-Eep)
-- Match timing between subtitles and speech clips
-  - also, currently the subtitles sometimes overlap
+- currently the subtitles sometimes overlap
   (depends on new resource system)
 - add some way to configure the PC/3DO/other choices.
   - music should be selectable track by track

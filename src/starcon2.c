@@ -61,6 +61,12 @@ CDToContentDir (char *contentdir)
 static int
 Check_PC_3DO_opt (char *value, DWORD mask, char *opt)
 {
+	if (value == NULL)
+	{
+		fprintf (stderr, "option '%s' requires a value!\n",opt);
+		return -1;
+	}
+
 	if ((mask & OPT_3DO) && strcmp (value, "3do") == 0)
 		return OPT_3DO;
 	if ((mask & OPT_PC) && strcmp (value, "pc") == 0)

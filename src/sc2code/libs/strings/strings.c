@@ -186,6 +186,39 @@ GetStringSoundClip (STRING String)
 }
 
 STRINGPTR
+GetStringTimeStamp (STRING String)
+{
+	STRINGPTR StringAddr;
+	STRING_TABLE StringTable;
+
+	if ((StringTable = GetStringTable (String)) == 0)
+		StringAddr = 0;
+	else
+	{
+		COUNT StringIndex;
+		STRING_TABLEPTR StringTablePtr;
+		int offset;
+
+		StringIndex = STRING_INDEX (String);
+		LockStringTable (StringTable, &StringTablePtr);
+		offset = (StringTablePtr->flags & HAS_SOUND_CLIPS) ? 1 : 0;
+		if (!(StringTablePtr->flags & HAS_TIMESTAMP)
+				|| ((StringIndex += (StringTablePtr->StringCount + 1) << offset),
+						StringTablePtr->StringOffsets[StringIndex + 1]
+								== StringTablePtr->StringOffsets[StringIndex]))
+			StringAddr = 0;
+		else
+		{
+			StringAddr = (STRINGPTR)StringTablePtr;
+			((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
+		}
+		UnlockStringTable (StringTable);
+	}
+
+	return (StringAddr);
+}
+
+STRINGPTR
 GetStringAddress (STRING String)
 {
 	STRINGPTR StringAddr;

@@ -25,7 +25,7 @@ void
 NPCPhrase (int index)
 {
 	UNICODE *pStr, numbuf[100];
-	void *pClip;
+	void *pClip, *pTimeStamp;
 
 	switch (index)
 	{
@@ -74,6 +74,7 @@ NPCPhrase (int index)
 				}
 				pStr = numbuf;
 				pClip = 0;
+				pTimeStamp = 0;
 			}
 			else
 			{
@@ -83,11 +84,14 @@ NPCPhrase (int index)
 				pClip = GetStringSoundClip (
 						SetAbsStringTableIndex (CommData.ConversationPhrases, index - 1)
 						);
+				pTimeStamp = GetStringTimeStamp (
+						SetAbsStringTableIndex (CommData.ConversationPhrases, index - 1)
+						);
 			}
 			break;
 	}
 
-	SpliceTrack (pClip, pStr);
+	SpliceTrack (pClip, pStr, pTimeStamp);
 }
 
 void

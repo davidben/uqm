@@ -1,0 +1,108 @@
+#(TELL_US_ABOUT_WORLD) 3295,8182,4626
+#(BYE_AND_DIE_HOMEWORLD) 4827,3935
+#(RAMBLE_1) 8652
+#(RAMBLE_2) 4516
+#(RAMBLE_3) 6379
+#(RAMBLE_4) 5778
+#(RAMBLE_5) 1813,2614,3795,2994
+#(RAMBLE_6) 
+#(RAMBLE_7) 10285,5668,6179
+#(RAMBLE_8) 
+#(RAMBLE_9) 8893,6790,5387
+#(RAMBLE_10) 1933,3305
+#(RAMBLE_11) 8111,9144
+#(RAMBLE_12) 4967
+#(RAMBLE_13) 
+#(RAMBLE_14) 5427
+#(RAMBLE_15) 1813,4015,2364
+#(RAMBLE_16) 
+#(RAMBLE_17) 2344,2253
+#(RAMBLE_18) 
+#(RAMBLE_19) 
+#(RAMBLE_20) 4787,2563,7441,4787
+#(RAMBLE_21) 
+#(RAMBLE_22) 7190,8973
+#(RAMBLE_23) 8393,5828
+#(RAMBLE_24) 4626,5548,3155,7110,4657
+#(RAMBLE_25) 6980,7711
+#(RAMBLE_26) 
+#(RAMBLE_27) 6590,5177,3866
+#(RAMBLE_28) 1662,3004,4156
+#(RAMBLE_29) 2574,4186,2023
+#(RAMBLE_30) 1883
+#(RAMBLE_31) 
+#(RAMBLE_32) 
+#(question_1) 
+#(question_2) 
+#(question_3) 
+#(question_4) 
+#(question_5) 
+#(question_6) 
+#(question_7) 
+#(question_8) 
+#(question_9) 
+#(question_10) 
+#(question_11) 
+#(question_12) 
+#(question_13) 
+#(question_14) 
+#(question_15) 
+#(question_16) 
+#(bye_space) 
+#(BYE_AND_DIE_SPACE) 
+#(gonna_die) 
+#(insult_1) 
+#(insult_2) 
+#(insult_3) 
+#(insult_4) 
+#(insult_5) 
+#(insult_6) 
+#(insult_7) 
+#(insult_8) 
+#(come_in_peace) 
+#(HELLO_HOMEWORLD_1) 8963,5899,3895
+#(HELLO_HOMEWORLD_2) 
+#(HELLO_HOMEWORLD_3) 
+#(HELLO_HOMEWORLD_4) 
+#(HELLO_HOMEWORLD_5) 
+#(HELLO_HOMEWORLD_6) 
+#(HELLO_HOMEWORLD_7) 
+#(HELLO_HOMEWORLD_8) 
+#(HELLO_SPACE_1) 2904,4046,3705
+#(HELLO_SPACE_2) 
+#(HELLO_SPACE_3) 
+#(HELLO_SPACE_4) 
+#(HELLO_SPACE_5) 
+#(HELLO_SPACE_6) 
+#(HELLO_SPACE_7) 
+#(HELLO_SPACE_8) 
+#(lets_be_friends) 
+#(came_to_homeworld) 
+#(submit_to_us) 
+#(bye_sun_device) 
+#(GOODBYE_SUN_DEVICE) 
+#(RESPONSE_1) 
+#(RESPONSE_2) 
+#(RESPONSE_3) 
+#(clue_1) 
+#(clue_2) 
+#(clue_3) 
+#(what_about_shattered) 
+#(ABOUT_SHATTERED) 
+#(HELLO_SUN_DEVICE_WORLD_1) 2223,2384,4246
+#(HELLO_SUN_DEVICE_WORLD_2) 2774,2814
+#(whats_up_sun_device) 
+#(GENERAL_INFO_SUN_DEVICE) 6119,6369,6109,5929,4706,4888
+#(like_to_land) 
+#(NEVER_LET_LAND) 8242,4797,3876
+#(bye_homeworld) 
+#(i_have_a_cunning_plan) 
+#(DIE_LIAR) 3435
+#(how_goes_implanting) 
+#(UNFORSEEN_DELAYS) 8583
+#(DIE_THIEF) 6359
+#(DIE_THIEF_AGAIN) 6470
+#(GOODBYE_AND_DIE) 2363,3405,3555
+#(AMBUSH_TAIL) 
+#(RAMBLE_TAIL) 
+#(WE_GO_TO_IMPLANT) 6089,4106,4667,2623,5388,4857,2854,6059

@@ -23,7 +23,7 @@
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 
-extern int do_subtitles (UNICODE *pStr);
+extern int do_subtitles (UNICODE *pStr, UNICODE *TimeStamp);
 
 static int tct, tcur, no_voice;
 
@@ -32,6 +32,7 @@ static struct
 {
 	int text_spliced;
 	UNICODE *text;
+	UNICODE *timestamp;
 	TFB_SoundSample *sample;
 } track_clip[MAX_CLIPS];
 
@@ -49,7 +50,7 @@ JumpTrack (int abort)
 	}
 
 	no_voice = 1;
-	do_subtitles ((void *)~0);
+	do_subtitles ((void *)~0, 0);
 
 	if (abort)
 		tcur = tct;
@@ -68,7 +69,7 @@ advance_track (int channel_finished)
 			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, AL_FALSE, 
 				speechVolumeScale == 0.0f ? AL_FALSE : AL_TRUE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			do_subtitles (0);
+			do_subtitles (0, 0);
 		}
 		else if (channel_finished == 0)
 		{
@@ -115,8 +116,8 @@ PlayingTrack ()
 {
 	if (tcur < tct)
 	{
-		if (do_subtitles (track_clip[tcur].text) || 
-			(no_voice && ++tcur < tct && do_subtitles (0)))
+		if (do_subtitles (track_clip[tcur].text, track_clip[tcur].timestamp) || 
+			(no_voice && ++tcur < tct && do_subtitles (0, 0)))
 		{
 			return (tcur + 1);
 		}
@@ -170,11 +171,11 @@ StopTrack ()
 	}
 	tct = tcur = 0;
 	no_voice = 0;
-	do_subtitles (0);
+	do_subtitles (0, 0);
 }
 
 void
-SpliceTrack (UNICODE *TrackName, UNICODE *TrackText)
+SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 {
 	if (TrackText)
 	{
@@ -204,6 +205,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText)
 			track_clip[tct].text = TrackText;
 			track_clip[tct].text_spliced = 0;
 
+			track_clip[tct].timestamp = TimeStamp;
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
 
 			track_clip[tct].sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));

@@ -1945,9 +1945,10 @@ RaceCommunication (void)
 }
 
 int
-do_subtitles (UNICODE *pStr)
+do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 {
 	static DWORD TimeOut;
+	static unsigned long *cur_sub_ts;
 
 	// TODO: proper disabling of subtitles, this one prolly isn't 'safe'
 	if (optSubtitles == FALSE)
@@ -1981,6 +1982,8 @@ do_subtitles (UNICODE *pStr)
 			UNICODE ch;
 			COUNT numchars;
 			static UNICODE alien_phrase_buf[4096];
+			UNICODE *s;
+			static unsigned long subtitle_frames_ts[50];
 
 			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
 			numchars = 0;
@@ -2001,6 +2004,27 @@ do_subtitles (UNICODE *pStr)
 					numchars += 6;
 				}
 			} while ((*CommData.AlienTextTemplate.pStr++ = ch));
+			if (s = pTimeStamp)
+			{
+				int pos;
+				cur_sub_ts = subtitle_frames_ts;
+				while (*s && (pos = wstrcspn (s, ",")))
+				{
+					UNICODE valStr[10];
+					wstrncpy (valStr, s, pos);
+					valStr[pos] = '\0';
+					*cur_sub_ts++ = wstrtoul(valStr,NULL,10);
+					s += pos;
+					if (*s)
+						s++;
+				}
+				*cur_sub_ts = 0;
+				TimeOut = GetTimeCounter ();
+			}
+			else
+				subtitle_frames_ts[0] = 0;
+			cur_sub_ts = subtitle_frames_ts;
+
 			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
 			CommData.AlienTextTemplate.CharCount = 0;
 #if 0
@@ -2029,17 +2053,29 @@ do_subtitles (UNICODE *pStr)
 
 			CommData.AlienTextTemplate.CharCount = t.pStr - CommData.AlienTextTemplate.pStr;
 
-			read_speed = speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK];
-			talk_length = ONE_SECOND * CommData.AlienTextTemplate.CharCount / MODERATE_SPEED;
-			if (read_speed)
+			if (*cur_sub_ts)
 			{
-				silence_length = ONE_SECOND
-						* (CommData.AlienTextTemplate.CharCount + MODERATE_SPEED) / read_speed;
-				if (silence_length < talk_length)
-					talk_length = silence_length;
-				silence_length -= talk_length;
+				// We found subtitle timestamps, let's use them
+				// timestamps are stored as time per frame in milliseconds
+				talk_length = *cur_sub_ts++ * ONE_SECOND /1000;
+				silence_length = 0;
+				TimeOut += talk_length;
+				//sprintf (stderr, "Sound length is %d\n", talk_length);
 			}
-			TimeOut = GetTimeCounter () + talk_length;
+			else
+			{
+				read_speed = speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK];
+				talk_length = ONE_SECOND * CommData.AlienTextTemplate.CharCount / MODERATE_SPEED;
+				if (read_speed)
+				{
+					silence_length = ONE_SECOND
+							* (CommData.AlienTextTemplate.CharCount + MODERATE_SPEED) / read_speed;
+					if (silence_length < talk_length)
+						talk_length = silence_length;
+					silence_length -= talk_length;
+				}
+				TimeOut = GetTimeCounter () + talk_length;
+			}
 			subtitle_state = SPACE_SUBTITLE;
 			break;
 		}

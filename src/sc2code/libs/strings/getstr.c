@@ -54,11 +54,13 @@ _GetStringData (FILE *fp, DWORD length)
 #ifdef WIN32
 			int omode;
 #endif
-			int n, path_len;
+			int n, path_len, num_data_sets;
 			DWORD opos,
 						slen[MAX_STRINGS], StringOffs, tot_string_size,
-						clen[MAX_STRINGS], ClipOffs, tot_clip_size;
-			char CurrentLine[1024], clip_path[1024], *strdata, *clipdata;
+						clen[MAX_STRINGS], ClipOffs, tot_clip_size,
+						tslen[MAX_STRINGS], TSOffs, tot_ts_size;
+			char CurrentLine[1024], clip_path[1024], *strdata, *clipdata, *ts_data;
+			FILE *timestamp_fp = NULL;
 
 			if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
 				return (0);
@@ -86,12 +88,28 @@ _GetStringData (FILE *fp, DWORD length)
 				path_len = strlen (clip_path);
 			}
 
+			{
+				// try to open the timestamp file
+				char ts_file_name[1024];
+				strcpy (ts_file_name, _cur_resfile_name);
+				s = strrchr (ts_file_name, '.');
+				s += 2;
+				*s++ = 's';
+				*s = '\0';
+				if ((timestamp_fp = fopen (ts_file_name, "rb")))
+				{
+					fprintf (stderr, "Found timestamp file: %s\n", ts_file_name);
+					if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
+						return (0);
+				}
+			}
+
 			opos = ftell (fp);
 #ifdef WIN32
 			omode = _setmode (fileno (fp), O_TEXT);
 #endif
 			n = -1;
-			StringOffs = ClipOffs = 0;
+			StringOffs = ClipOffs = TSOffs = 0;
 			while (fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
 			{
 				int l;
@@ -115,6 +133,48 @@ _GetStringData (FILE *fp, DWORD length)
 						}
 
 						slen[++n] = 0;
+						// now lets check for timestamp data
+						if (timestamp_fp)
+						{
+							char TimeStampLine[1024], *tsptr;
+							BOOLEAN ts_ok = FALSE;
+							fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
+							if (TimeStampLine[0] == '#')
+							{
+								tslen[n] = 0;
+								if ((tsptr = strstr (TimeStampLine,s)) 
+										&& (tsptr += strlen(s))
+										&& (++tsptr))
+								{
+									ts_ok = TRUE;
+									while (! strcspn(tsptr," \t\n") && *tsptr)
+										tsptr++;
+									if (*tsptr)
+									{
+										l = strlen (tsptr)  + 1;
+										if (TSOffs + l > tot_ts_size
+											&& (ts_data = HRealloc (ts_data,
+												tot_ts_size += POOL_SIZE)) == 0)
+										{
+											HFree (strdata);
+											return (0);
+										}
+										strcpy (&ts_data[TSOffs], tsptr);
+										TSOffs += l;
+										tslen[n] = l;
+									}
+								}
+							}
+							if (! ts_ok)
+							{
+								// timestamp data is invalid, remove all of it
+								fprintf (stderr,  "Invalid timestamp data for '%s'.  Disabling timestamps\n", s);
+								HFree (ts_data);
+								fclose (timestamp_fp);
+								timestamp_fp = NULL;
+								TSOffs = 0;
+							}
+						}
 						clen[n] = 0;
 						s = strtok (NULL, " \t\n)");
 						if (s)
@@ -142,82 +202,108 @@ _GetStringData (FILE *fp, DWORD length)
 							&& (strdata = HRealloc (strdata,
 									tot_string_size += POOL_SIZE)) == 0)
 					{
-						HFree (clipdata);
-						return (0);
+							HFree (clipdata);
+							return (0);
+						}
+
+						if (slen[n])
+						{
+							--slen[n];
+							--StringOffs;
+						}
+						s = &strdata[StringOffs];
+						slen[n] += l;
+						StringOffs += l;
+
+						strcpy (s, CurrentLine);
 					}
 
-					if (slen[n])
+					if ((int)ftell (fp) - (int)opos >= (int)length)
+						break;
+				}
+	#ifdef WIN32
+				_setmode (fileno (fp), omode);
+	#endif
+				if (n >= 0)
+				{
+					while (slen[n] > 1 && strdata[StringOffs - 2] == '\n')
 					{
 						--slen[n];
 						--StringOffs;
+						strdata[StringOffs - 1] = '\0';
 					}
-					s = &strdata[StringOffs];
-					slen[n] += l;
-					StringOffs += l;
-
-					strcpy (s, CurrentLine);
 				}
 
-				if ((int)ftell (fp) - (int)opos >= (int)length)
-					break;
-			}
-#ifdef WIN32
-			_setmode (fileno (fp), omode);
-#endif
-			if (n >= 0)
-			{
-				while (slen[n] > 1 && strdata[StringOffs - 2] == '\n')
+				if (timestamp_fp)
+					fclose (timestamp_fp);
+
+				hData = 0;
+				num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;
+				if (++n && (hData = AllocStringTable (
+								(sizeof (STRING_TABLE_DESC) - sizeof (DWORD))
+										+ (sizeof (DWORD) * ((n + 1) * num_data_sets))
+										+ StringOffs
+										+ ClipOffs
+										+ TSOffs
+								)))
 				{
-					--slen[n];
-					--StringOffs;
-					strdata[StringOffs - 1] = '\0';
-				}
-			}
+					PDWORD lpStringOffs, lpClipOffs, lpTSOffs;
+					STRING_TABLEPTR lpST;
 
-			hData = 0;
-			if (++n && (hData = AllocStringTable (
-							(sizeof (STRING_TABLE_DESC) - sizeof (DWORD))
-									+ (sizeof (DWORD) * ((n + 1) << (ClipOffs ? 1 : 0)))
-									+ StringOffs
-									+ ClipOffs
-							)))
-			{
-				PDWORD lpStringOffs, lpClipOffs;
-				STRING_TABLEPTR lpST;
+					LockStringTable (hData, &lpST);
+					lpST->StringCount = n;
+					lpST->flags = 0;
+					if (ClipOffs)
+						lpST->flags |= HAS_SOUND_CLIPS;
+					if (TSOffs)
+						lpST->flags |= HAS_TIMESTAMP;
 
-				LockStringTable (hData, &lpST);
-				lpST->StringCount = n;
-				lpST->flags = 0;
-				if (ClipOffs)
-					lpST->flags |= HAS_SOUND_CLIPS;
+					memcpy (&lpST->StringOffsets[(n + 1) * num_data_sets], strdata, StringOffs);
+					memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets] + StringOffs,
+							clipdata, ClipOffs);
+					memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets] 
+						+ StringOffs + ClipOffs, ts_data, TSOffs);
+					TSOffs = ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets]
+									- (BYTE *)lpST) + StringOffs + ClipOffs;
+					ClipOffs = TSOffs - ClipOffs;
+					StringOffs = ClipOffs - StringOffs;
 
-				memcpy (&lpST->StringOffsets[(n + 1) << (ClipOffs ? 1 : 0)], strdata, StringOffs);
-				memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) << (ClipOffs ? 1 : 0)] + StringOffs,
-						clipdata, ClipOffs);
-				ClipOffs = ((BYTE *)&lpST->StringOffsets[(n + 1) << (ClipOffs ? 1 : 0)]
-								- (BYTE *)lpST) + StringOffs;
-				StringOffs = ClipOffs - StringOffs;
-
-				for (n = 0, lpStringOffs = lpST->StringOffsets,
-								lpClipOffs = &lpST->StringOffsets[lpST->StringCount + 1];
-						n < (int)lpST->StringCount; ++n, ++lpStringOffs, ++lpClipOffs)
-				{
-					*lpStringOffs = StringOffs;
-					StringOffs += slen[n];
-					if (lpST->flags & HAS_SOUND_CLIPS)
+					lpStringOffs = lpST->StringOffsets;
+					lpClipOffs = &lpST->StringOffsets[lpST->StringCount + 1];
 					{
-						*lpClipOffs = ClipOffs;
-						ClipOffs += clen[n];
+						long foo = (lpST->StringCount + 1) << ((lpST->flags & HAS_SOUND_CLIPS) ? 1 : 0);
 					}
+					lpTSOffs = &lpST->StringOffsets[(lpST->StringCount + 1)
+						<< ((lpST->flags & HAS_SOUND_CLIPS) ? 1 : 0)];
+					for (n = 0; n < (int)lpST->StringCount; 
+						++n, ++lpStringOffs, ++lpClipOffs, ++lpTSOffs)
+					{
+						*lpStringOffs = StringOffs;
+						StringOffs += slen[n];
+						if (lpST->flags & HAS_SOUND_CLIPS)
+						{
+							*lpClipOffs = ClipOffs;
+							ClipOffs += clen[n];
+						}
+						if (lpST->flags & HAS_TIMESTAMP)
+						{
+							*lpTSOffs = TSOffs;
+							TSOffs += tslen[n];
+						}
+
+					}
+					*lpStringOffs = StringOffs;
+					if (lpST->flags & HAS_SOUND_CLIPS)
+						*lpClipOffs = ClipOffs;
+					if (lpST->flags & HAS_TIMESTAMP)
+						*lpTSOffs = TSOffs;
+
+					UnlockStringTable (hData);
 				}
-				*lpStringOffs = StringOffs;
-				if (lpST->flags & HAS_SOUND_CLIPS)
-					*lpClipOffs = ClipOffs;
 
-				UnlockStringTable (hData);
-			}
-
-			HFree (strdata);
+				HFree (strdata);
+				HFree (clipdata);
+				HFree (ts_data);
 
 			return (hData);
 		}

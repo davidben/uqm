@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Voice-over / subtitle synch is done - PhracturedBlue
 - Optimized DCQ to be much smaller and faster
 - Added stat data in outfit screen (use --font=pc) - from Nic
 - Added fixed introx.mod, from fOSSiL

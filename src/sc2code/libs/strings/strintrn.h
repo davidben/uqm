@@ -34,6 +34,7 @@ typedef struct string_table
 typedef STRING_TABLE_DESC *PSTRING_TABLE_DESC;
 
 #define HAS_SOUND_CLIPS (1 << 0)
+#define HAS_TIMESTAMP (1 << 1)
 #define STRING_TABLEPTR PSTRING_TABLE_DESC
 
 #define AllocStringTable(s) AllocResourceData((s),MEM_SOUND)

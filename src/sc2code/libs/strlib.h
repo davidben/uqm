@@ -41,6 +41,7 @@ extern STRING SetRelStringTableIndex (STRING String, SIZE
 extern COUNT GetStringLength (STRING String);
 extern STRINGPTR GetStringAddress (STRING String);
 extern STRINGPTR GetStringSoundClip (STRING String);
+extern STRINGPTR GetStringTimeStamp (STRING String);
 extern BOOLEAN GetStringContents (STRING String, STRINGPTR StringBuf,
 		BOOLEAN AppendSpace);
 
