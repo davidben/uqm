@@ -1,6 +1,7 @@
 Changes towards version 0.2:
+- Added '-a' switch to go between OpenAL and MixSDL at runtime -PBlue
 - Melnorme will pronounce numbers now -fOSSiL
-- Added icons to win32 builds (MSVC only for now)
+- Added icons to win32 builds (MSVC and mingw) -fOSSiL
 - Removed the GraphicStrength code, since all that is handled with
   an arithmetic blit routine outside of the drawing thread
 - Added an improved version of biadapt scaling filter,
