@@ -70,6 +70,7 @@ _GetStringData (FILE *fp, DWORD length)
 				HFree (strdata);
 				return (0);
 			}
+			ts_data = NULL;
 
 			{
 				char *s1, *s2;
@@ -303,7 +304,8 @@ _GetStringData (FILE *fp, DWORD length)
 
 				HFree (strdata);
 				HFree (clipdata);
-				HFree (ts_data);
+				if (ts_data)
+					HFree (ts_data);
 
 			return (hData);
 		}
