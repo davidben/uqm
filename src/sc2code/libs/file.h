@@ -47,6 +47,9 @@
 #	define unlink _unlink
 #elif defined (__MINGW32__)
 #	define ssize_t int
+#	define S_IRWXU (S_IREAD | S_IWRITE | S_IEXEC)
+#	define S_IRWXG 0
+#	define S_IRWXO 0
 #else
 #	include <unistd.h>
 #endif
