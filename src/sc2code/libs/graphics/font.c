@@ -160,7 +160,7 @@ TextRect (PTEXT lpText, register PRECT pRect, PBYTE pdelta)
 			{
 				register COORD y;
 
-				y = -((FRAME_DESC)FontPtr->CharDesc[ch]).HotSpot.y;
+				y = -(FontPtr->CharDesc[ch]).HotSpot.y;
 				if (y < top_y)
 					top_y = y;
 				y += GetFrameHeight (&FontPtr->CharDesc[ch]);
