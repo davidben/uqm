@@ -269,8 +269,8 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 												(
 														(
 																which_ship == SPATHI_SHIP &&
-																								GET_GAME_STATE (FOUND_PLUTO_SPATHI)
-														) == 1 ? 1 : 0
+																								GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1
+														) ? 1 : 0
 												)
 										)
 								);
