@@ -91,6 +91,8 @@ typedef SDL_cond *NativeCondVar;
 extern void SDLWrapper_WaitCondVar (CondVar candvar);
 #define NativeWaitCondVar(condvar) \
 		SDLWrapper_WaitCondVar ((condvar))
+#define NativeWaitProtectedCondVar(condvar, mutex) \
+		SDL_CondWait ((condvar), (mutex))
 #define NativeSignalCondVar(condvar) \
 		SDL_CondSignal ((condvar))
 #define NativeBroadcastCondVar(condvar) \

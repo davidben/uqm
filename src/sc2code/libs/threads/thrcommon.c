@@ -608,27 +608,39 @@ CreateCondVar ()
 {
 	return NativeCreateCondVar ();
 }
-void DestroyCondVar (CondVar cv)
+
+void
+DestroyCondVar (CondVar cv)
 {
-	NativeDestroyCondVar (cv);
+	NativeDestroyCondVar ((CondVar)cv);
 }
 
-void WaitCondVar (CondVar cv)
+void
+WaitCondVar (CondVar cv)
 {
-	NativeWaitCondVar (cv);
+	NativeWaitCondVar ((NativeCondVar)cv);
 }
 
-void SignalCondVar (CondVar cv)
+void
+WaitProtectedCondVar (CondVar cv, Mutex m)
 {
-	NativeSignalCondVar (cv);
+	NativeWaitProtectedCondVar ((NativeCondVar)cv, (NativeMutex)m);
 }
 
-void BroadcastCondVar (CondVar cv)
+void
+SignalCondVar (CondVar cv)
 {
-	NativeBroadcastCondVar (cv);
+	NativeSignalCondVar ((NativeCondVar)cv);
 }
 
-DWORD CurrentThreadID ()
+void
+BroadcastCondVar (CondVar cv)
+{
+	NativeBroadcastCondVar ((NativeCondVar)cv);
+}
+
+DWORD
+CurrentThreadID ()
 {
 	return (DWORD)NativeThreadID ();
 }

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Restored the CondBank to actually use condition variables properly
+  (resolves a race condition under OpenBSD)
 - Removed aspects of the legacy graphics code that are never used or that
   are redundant.  More 'C-like' use of the PRIMITIVE datatype.
 - Fix various graphics glitches during  dialog.  Especially Spathi Eye,and ZFP

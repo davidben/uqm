@@ -137,13 +137,14 @@ typedef void *CondVar;
 extern CondVar CreateCondVar (void);
 extern void DestroyCondVar (CondVar);
 extern void WaitCondVar (CondVar);
+extern void WaitProtectedCondVar (CondVar, Mutex);
 extern void SignalCondVar (CondVar);
 extern void BroadcastCondVar (CondVar);
 
 extern DWORD CurrentThreadID (void);
 
-extern void LockSignalMutex(void);
-extern void WaitForSignal (void);
+extern int  FindSignalChannel ();
+extern void WaitForSignal (int);
 extern void SignalThread (DWORD);
 
 #endif  /* _THREADLIB_H */

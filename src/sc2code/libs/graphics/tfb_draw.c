@@ -197,14 +197,14 @@ void
 TFB_DrawScreen_WaitForSignal (void)
 {
 	TFB_DrawCommand DrawCommand;
+	int channel;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_SENDSIGNAL;
-	// We need to lock the mutex before enqueueing the DC to prevent races 
-	LockSignalMutex ();
 	Lock_DCQ (1);
+	channel = FindSignalChannel ();
 	TFB_BatchReset ();
 	TFB_EnqueueDrawCommand(&DrawCommand);
 	Unlock_DCQ();
-	WaitForSignal ();
+	WaitForSignal (channel);
 }
 
 void
