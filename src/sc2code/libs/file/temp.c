@@ -123,7 +123,7 @@ mountTempDir(const char *name) {
 		return -1;
 	}
 
-	tempDir = uio_openDir (repository, "/tmp/", 0);
+	tempDir = uio_openDir (repository, "/tmp", 0);
 	if (tempDir == NULL) {
 		int saveErrno = errno;
 		fprintf (stderr, "Fatal error: Could not open temp dir: %s\n",
