@@ -106,6 +106,8 @@ Glitches (don't crash the game, medium priority):
   while the PC image is better (no cut-off nose).
 - When orbiting earth, and going to starmap and then back with space without
   selecting a destination, crashes
+- Under some conditions, the direction the ship is facing in Hyperspace
+  isn't restored when loading.
 - When exiting from planet surface with lander, the 3d planet isn't updated
   for a little moment which causes black track on planet to be seen
 
@@ -190,6 +192,7 @@ Stuff still to do (small):
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
 - Scanlines not implemented yet for pure mode
+- add some icon in the cvs tree
 
 Questions:
 - remove src/sc2code/test.c?

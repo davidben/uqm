@@ -57,11 +57,6 @@ The bugs reported but not yet verified:
   set course for a system that apears in range, you will run out of fuel
   before you get there. "
 
-- "i was at autopilot, and just saved the game.
-  after quitting the game and reloading to save, it continues to fly to
-  sol(the location I have set to auto pilot) only it flies like it flies
-  right, instead of down. probably the flagship images prob"
-
 - "For some odd reason, the new graphical menus are constantly freezing on
   me.  I've played 15 times so far.  10 times it froze while I was trying to
   use the menu (in regular, Bilateral, and Sai graphics modes), once while I
@@ -77,4 +72,27 @@ The bugs reported but not yet verified:
   credits, it will say "You need [#] additional credits." when it should say
   "You need [#] credits." (eg. for new technology, it says "You need 150
   additional credits." no matter how many you have between 1-149.)"
+
+- 1.) Using default graphics, windowed mode is is "empty".  Workaround is
+      fullscreen or using opengl.
+      AMD k62, 192RAM, win98se.  ATI Rage128, dx8.1.  Attach dxdiag.txt?
+  3.) Game settings: Setting the sound to "off" makes a boink, setting to "on"
+      doesn't. Seems the opposite would be more intuitive.  3D0 version
+      check?
+  5.) Lander "Report" text pages have green dots.
+  6.) Harvesting: When choosing a landing site, the cursor stays black, making
+      it hard to see on dark planet surface areas.
+  7.) Starmap: expanding spheres of influence circles look cut off, choppy.
+  8.) Lander shots are being blocked by earthquake rings.  3D0 version check? 
+
+- After the player gives the Syreen the Mycon egg sack, shouldn't there be
+  a break in communication?  Talana says "Leave us, we have work to do" and I
+  seem to recall from the PC version that there was a cutoff there which
+  brought you back to the space navigation screen. When I played through this,
+  there was no break and it immediately jumped to the next communication with
+  the Syreen, in which she relates her plans for getting the Penetrators back.
+
+- On the upper-right-hand corner of the screen, where the flagship is drawn
+  together with the ships in the player's fleet, the modules that are drawn
+  inside the flagship are off by one pixel to the left.
 
