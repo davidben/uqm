@@ -24,20 +24,178 @@
 #define PICK_Y_OFFS 24
 #define PICK_SIDE_OFFS 100
 
+typedef struct getmelee_struct {
+	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);
+	COUNT MenuRepeatDelay;
+	BOOLEAN Initialized;
+	HSTARSHIP hBattleShip;
+	COUNT row, col, ships_left, which_player;
+	RECT flash_rect;
+} GETMELEE_STATE;
+
+
+/* TODO: Include player timeouts */
+static BOOLEAN
+DoGetMelee (GETMELEE_STATE *gms)
+{
+	BOOLEAN left, right, up, down, select;
+	HSTARSHIP hNextShip;
+	COUNT which_player = gms->which_player;
+
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+
+	if (!gms->Initialized)
+	{
+		gms->Initialized = TRUE;
+		gms->row = 0;
+		gms->col = NUM_MELEE_COLS_ORIG;
+
+		goto ChangeSelection;
+	}
+
+	SleepThread (ONE_SECOND / 120);
+	
+	if (PlayerInput[which_player] == ComputerInput)
+	{
+		/* TODO: Make this a frame-by-frame thing.  This code is currently copied
+		*        from intel.c's computer_intelligence */
+		SleepThread (ONE_SECOND >> 1);
+		left = right = up = down = FALSE;
+		select = TRUE;		
+	}
+	else if (which_player == 0)
+	{
+		left = PulsedInputState.key[KEY_P1_LEFT] || PulsedInputState.key[KEY_MENU_LEFT];
+		right = PulsedInputState.key[KEY_P1_RIGHT] || PulsedInputState.key[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[KEY_P1_THRUST] || PulsedInputState.key[KEY_MENU_UP];
+		down = PulsedInputState.key[KEY_P1_DOWN] || PulsedInputState.key[KEY_MENU_DOWN];
+		select = PulsedInputState.key[KEY_P1_WEAPON] || PulsedInputState.key[KEY_MENU_SELECT];
+	}
+	else
+	{
+		left = PulsedInputState.key[KEY_P2_LEFT] || PulsedInputState.key[KEY_MENU_LEFT];
+		right = PulsedInputState.key[KEY_P2_RIGHT] || PulsedInputState.key[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[KEY_P2_THRUST] || PulsedInputState.key[KEY_MENU_UP];
+		down = PulsedInputState.key[KEY_P2_DOWN] || PulsedInputState.key[KEY_MENU_DOWN];
+		select = PulsedInputState.key[KEY_P2_WEAPON] || PulsedInputState.key[KEY_MENU_SELECT];
+	}
+
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+	{
+		gms->hBattleShip = 0;
+		GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+		return FALSE;
+	}
+
+	if (select)
+	{
+		if (gms->hBattleShip || (gms->col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
+		{
+			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+			return FALSE;
+		}
+	}
+	else
+	{
+		COUNT new_row, new_col;
+		
+		new_row = gms->row;
+		new_col = gms->col;
+		if (left)
+		{
+			if (new_col-- == 0)
+				new_col = NUM_MELEE_COLS_ORIG;
+		}
+		else if (right)
+		{
+			if (new_col++ == NUM_MELEE_COLS_ORIG)
+				new_col = 0;
+		}
+		if (up)
+		{
+			if (new_row-- == 0)
+				new_row = NUM_MELEE_ROWS - 1;
+		}
+		else if (down)
+		{
+			if (++new_row == NUM_MELEE_ROWS)
+				new_row = 0;
+		}
+		
+		if (new_row != gms->row || new_col != gms->col)
+		{
+			COUNT ship_index;
+			
+			gms->row = new_row;
+			gms->col = new_col;
+			
+			PlaySoundEffect (MenuSounds, 0, NotPositional (), NULL, 0);
+ChangeSelection:
+			LockMutex (GraphicsLock);
+			gms->flash_rect.corner.x = PICK_X_OFFS
+				+ ((ICON_WIDTH + 2) * gms->col);
+			gms->flash_rect.corner.y = PICK_Y_OFFS
+				+ ((ICON_HEIGHT + 2) * gms->row)
+				+ ((1 - which_player) * PICK_SIDE_OFFS);
+			SetFlashRect (&gms->flash_rect, (FRAME)0);
+			
+			gms->hBattleShip = GetHeadLink (&race_q[which_player]);
+			if (gms->col == NUM_MELEE_COLS_ORIG)
+			{
+				if (gms->row)
+					gms->hBattleShip = 0;
+				else
+				{
+					ship_index = (COUNT)TFB_Random () % gms->ships_left;
+					for (gms->hBattleShip = GetHeadLink (&race_q[which_player]);
+					     gms->hBattleShip != 0; gms->hBattleShip = hNextShip)
+					{
+						STARSHIPPTR StarShipPtr = LockStarShip (&race_q[which_player], gms->hBattleShip);
+						if (StarShipPtr->RaceResIndex && ship_index-- == 0)
+						{
+							UnlockStarShip (&race_q[which_player], gms->hBattleShip);
+							break;
+						}
+						hNextShip = _GetSuccLink (StarShipPtr);
+						UnlockStarShip (&race_q[which_player], gms->hBattleShip);
+					}
+				}
+			}
+			else
+			{
+				ship_index = (gms->row * NUM_MELEE_COLS_ORIG) + gms->col;
+				for (gms->hBattleShip = GetHeadLink (&race_q[which_player]);
+				     gms->hBattleShip != 0; gms->hBattleShip = hNextShip)
+				{
+					STARSHIPPTR StarShipPtr = LockStarShip (&race_q[which_player], gms->hBattleShip);
+					if (StarShipPtr->ShipFacing == ship_index)
+					{
+						hNextShip = gms->hBattleShip;
+						if (StarShipPtr->RaceResIndex == 0)
+							gms->hBattleShip = 0;
+						UnlockStarShip (&race_q[which_player], hNextShip);
+						break;
+					}
+					hNextShip = _GetSuccLink (StarShipPtr);
+					UnlockStarShip (&race_q[which_player], gms->hBattleShip);
+				}
+			}
+			UnlockMutex (GraphicsLock);
+		}
+	}
+	return TRUE;
+}
 
 HSTARSHIP
 GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 {
-	COUNT ships_left, row, col;
-	DWORD NewTime, OldTime, LastTime;
-	BATTLE_INPUT_STATE OldInputState;
-	HSTARSHIP hBattleShip, hNextShip;
-	STARSHIPPTR StarShipPtr;
-	RECT flash_rect;
+	COUNT ships_left;
 	TEXT t;
 	UNICODE buf[10];
 	STAMP s;
 	CONTEXT OldContext;
+	GETMELEE_STATE gmstate;
+	STARSHIPPTR StarShipPtr;
 
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		return (0);
@@ -49,6 +207,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	if (LastStarShipPtr == 0 || LastStarShipPtr->special_counter == 0)
 	{
 		COUNT	cur_bucks;
+		HSTARSHIP hBattleShip, hNextShip;
 
 		cur_bucks = 0;
 		for (hBattleShip = GetHeadLink (&race_q[which_player]);
@@ -61,11 +220,11 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 				LastStarShipPtr->RaceResIndex = 0;
 
-				col = LastStarShipPtr->ShipFacing;
+				gmstate.col = LastStarShipPtr->ShipFacing;
 				s.origin.x = 3
-					+ ((ICON_WIDTH + 2) * (col % NUM_MELEE_COLS_ORIG));
+					+ ((ICON_WIDTH + 2) * (gmstate.col % NUM_MELEE_COLS_ORIG));
 				s.origin.y = 9
-					+ ((ICON_HEIGHT + 2) * (col / NUM_MELEE_COLS_ORIG));
+					+ ((ICON_HEIGHT + 2) * (gmstate.col / NUM_MELEE_COLS_ORIG));
 				s.frame = SetAbsFrameIndex (status, 3);
 				DrawStamp (&s);
 				s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
@@ -78,15 +237,15 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			UnlockStarShip (&race_q[which_player], hBattleShip);
 		}
 
-		GetFrameRect (s.frame, &flash_rect);
-		flash_rect.extent.width -= 4;
-		t.baseline.x = flash_rect.extent.width;
-		flash_rect.corner.x = flash_rect.extent.width - (6 * 3);
-		flash_rect.corner.y = 2;
-		flash_rect.extent.width = (6 * 3);
-		flash_rect.extent.height = 7 - 2;
+		GetFrameRect (s.frame, &gmstate.flash_rect);
+		gmstate.flash_rect.extent.width -= 4;
+		t.baseline.x = gmstate.flash_rect.extent.width;
+		gmstate.flash_rect.corner.x = gmstate.flash_rect.extent.width - (6 * 3);
+		gmstate.flash_rect.corner.y = 2;
+		gmstate.flash_rect.extent.width = (6 * 3);
+		gmstate.flash_rect.extent.height = 7 - 2;
 		SetContextForeGroundColor (PICK_BG_COLOR);
-		DrawFilledRectangle (&flash_rect);
+		DrawFilledRectangle (&gmstate.flash_rect);
 
 		wsprintf (buf, "%d", cur_bucks);
 		t.baseline.y = 7;
@@ -121,7 +280,6 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 
-		UpdateInputState ();
 		PressState = AnyButtonPress (TRUE);
 		do
 		{
@@ -134,13 +292,6 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		} while (!ButtonState
 				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
 				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut));
-
-		/*
-		if (ButtonState)
-			ButtonState = GetInputState (NormalInput);
-		if (ButtonState & DEVICE_EXIT)
-			ConfirmExit ();
-		*/
 
 		LockMutex (GraphicsLock);
 
@@ -157,166 +308,42 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		FlushColorXForms ();
 	}
 
-	row = 0;
-	col = NUM_MELEE_COLS_ORIG;
 	if (which_player == 0)
 		ships_left = LOBYTE (battle_counter);
 	else
 		ships_left = HIBYTE (battle_counter);
 
-	flash_rect.extent.width = (ICON_WIDTH + 2);
-	flash_rect.extent.height = (ICON_HEIGHT + 2);
+	gmstate.flash_rect.extent.width = (ICON_WIDTH + 2);
+	gmstate.flash_rect.extent.height = (ICON_HEIGHT + 2);
+	gmstate.InputFunc = DoGetMelee;
+	SetDefaultMenuRepeatDelay ();
+	gmstate.Initialized = FALSE;
+	gmstate.ships_left = ships_left;
+	gmstate.which_player = which_player;
 
-	NewTime = OldTime = LastTime = GetTimeCounter ();
-	OldInputState = 0;
-	goto ChangeSelection;
-	for (;;)
-	{
-		BATTLE_INPUT_STATE InputState;
-
-		SleepThread (ONE_SECOND / 120);
-		NewTime = GetTimeCounter ();
-		
-		UpdateInputState ();
-		InputState = (*(PlayerInput[which_player])) ();
-		if (InputState)
-			LastTime = NewTime;
-		else if (!(PlayerControl[1 - which_player] & PSYTRON_CONTROL)
-				&& NewTime - LastTime >= ONE_SECOND * 3)
-		  InputState = (*(PlayerInput[1 - which_player])) ();
-		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		{
-			hBattleShip = 0;
-			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-			break;
-		}
-
-		if (InputState == OldInputState
-				&& NewTime - OldTime < (DWORD)MENU_REPEAT_DELAY)
-			InputState = 0;
-		else
-		{
-			OldInputState = InputState;
-			OldTime = NewTime;
-		}
-
-		if (InputState & BATTLE_WEAPON || PulsedInputState.key[KEY_MENU_SELECT])
-		{
-			if (hBattleShip || (col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
-			{
-				GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-				break;
-			}
-		}
-		else
-		{
-			COUNT new_row, new_col;
-
-			new_row = row;
-			new_col = col;
-			if ((InputState & BATTLE_LEFT) || PulsedInputState.key[KEY_MENU_LEFT])
-			{
-				if (new_col-- == 0)
-					new_col = NUM_MELEE_COLS_ORIG;
-			}
-			else if ((InputState & BATTLE_RIGHT) || PulsedInputState.key[KEY_MENU_RIGHT])
-			{
-				if (new_col++ == NUM_MELEE_COLS_ORIG)
-					new_col = 0;
-			}
-			if ((InputState & BATTLE_THRUST) || PulsedInputState.key[KEY_MENU_UP])
-			{
-				if (new_row-- == 0)
-					new_row = NUM_MELEE_ROWS - 1;
-			}
-			else if ((InputState & BATTLE_DOWN) || PulsedInputState.key[KEY_MENU_DOWN])
-			{
-				if (++new_row == NUM_MELEE_ROWS)
-					new_row = 0;
-			}
-
-			if (new_row != row || new_col != col)
-			{
-				COUNT ship_index;
-
-				row = new_row;
-				col = new_col;
-
-				PlaySoundEffect (MenuSounds, 0, NotPositional (), NULL, 0);
-				LockMutex (GraphicsLock);
-ChangeSelection:
-				flash_rect.corner.x = PICK_X_OFFS
-						+ ((ICON_WIDTH + 2) * col);
-				flash_rect.corner.y = PICK_Y_OFFS
-						+ ((ICON_HEIGHT + 2) * row)
-						+ ((1 - which_player) * PICK_SIDE_OFFS);
-				SetFlashRect (&flash_rect, (FRAME)0);
-
-				hBattleShip = GetHeadLink (&race_q[which_player]);
-				if (col == NUM_MELEE_COLS_ORIG)
-				{
-					if (row)
-						hBattleShip = 0;
-					else
-					{
-						ship_index = (COUNT)TFB_Random () % ships_left;
-						for (hBattleShip = GetHeadLink (&race_q[which_player]);
-								hBattleShip != 0; hBattleShip = hNextShip)
-						{
-							StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
-							if (StarShipPtr->RaceResIndex && ship_index-- == 0)
-							{
-								UnlockStarShip (&race_q[which_player], hBattleShip);
-								break;
-							}
-							hNextShip = _GetSuccLink (StarShipPtr);
-							UnlockStarShip (&race_q[which_player], hBattleShip);
-						}
-					}
-				}
-				else
-				{
-					ship_index = (row * NUM_MELEE_COLS_ORIG) + col;
-					for (hBattleShip = GetHeadLink (&race_q[which_player]);
-							hBattleShip != 0; hBattleShip = hNextShip)
-					{
-						StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
-						if (StarShipPtr->ShipFacing == ship_index)
-						{
-							hNextShip = hBattleShip;
-							if (StarShipPtr->RaceResIndex == 0)
-								hBattleShip = 0;
-							UnlockStarShip (&race_q[which_player], hNextShip);
-							break;
-						}
-						hNextShip = _GetSuccLink (StarShipPtr);
-						UnlockStarShip (&race_q[which_player], hBattleShip);
-					}
-				}
-				UnlockMutex (GraphicsLock);
-			}
-		}
-	}
+	UnlockMutex (GraphicsLock);
+	ResetKeyRepeat ();
+	DoInput ((PVOID)&gmstate, TRUE);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL_PTR, (FRAME)0);
 	
-	if (hBattleShip == 0)
+	if (gmstate.hBattleShip == 0)
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 	else
 	{
-		StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
+		StarShipPtr = LockStarShip (&race_q[which_player], gmstate.hBattleShip);
 		OwnStarShip (StarShipPtr,
 				1 << which_player, StarShipPtr->captains_name_index);
 		StarShipPtr->captains_name_index = 0;
-		UnlockStarShip (&race_q[which_player], hBattleShip);
+		UnlockStarShip (&race_q[which_player], gmstate.hBattleShip);
 
 		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0, NotPositional (), NULL, 0);
 
 		WaitForSoundEnd (0);
 	}
 
-	return (hBattleShip);
+	return (gmstate.hBattleShip);
 }
 
 
