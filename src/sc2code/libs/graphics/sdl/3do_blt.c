@@ -52,8 +52,8 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			GetFrameHotX (_CurFramePtr);
 		DrawCommand.y = pClipRect->corner.y -
 			GetFrameHotY (_CurFramePtr);
-		DrawCommand.w = img->NormalImg->clip_rect.w;
-		DrawCommand.h = img->NormalImg->clip_rect.h;
+		DrawCommand.w = img->NormalImg->w;
+		DrawCommand.h = img->NormalImg->h;
 
 		if (gscale != 0 && gscale != 256)
 		{
@@ -88,7 +88,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 				if (new_surf) 
 				{
-					if (new_surf->format->BytesPerPixel > 1)
+					if (!new_surf->format->palette)
 					{
 						img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
 						if (img->ScaledImg)
@@ -157,7 +157,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	}
 	else
 	{
-		SDL_Rect SDL_SrcRect, SDL_DstRect;
+		SDL_Rect SDL_DstRect;
 		TFB_Image *dst_img;
 
 		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
@@ -165,19 +165,14 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		
 		LockMutex (dst_img->mutex);
 
-		SDL_SrcRect.x = (short) img->NormalImg->clip_rect.x;
-		SDL_SrcRect.y = (short) img->NormalImg->clip_rect.y;
-		SDL_SrcRect.w = (short) img->NormalImg->clip_rect.w;
-		SDL_SrcRect.h = (short) img->NormalImg->clip_rect.h;
-
 		SDL_DstRect.x = (short) pClipRect->corner.x -
-						GetFrameHotX (_CurFramePtr) + SDL_SrcRect.x;
+						GetFrameHotX (_CurFramePtr);
 		SDL_DstRect.y = (short) pClipRect->corner.y -
-						GetFrameHotY (_CurFramePtr) + SDL_SrcRect.y;
+						GetFrameHotY (_CurFramePtr);
 
 		SDL_BlitSurface (
 			img->NormalImg,
-			&SDL_SrcRect,
+			NULL,
 			dst_img->NormalImg,
 			&SDL_DstRect
 		);

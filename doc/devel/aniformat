@@ -1,6 +1,6 @@
 For *.ani, *.sml, *.med, *.big files, each line is in following format:
 
-filename transparent_color colormap_index clip_x clip_y clip_w clip_h hotspot_x hotspot_y
+filename transparent_color colormap_index hotspot_x hotspot_y
 
 Filename is string, all others are ints, -1 means value not used.
 This information is parsed in libs/graphics/sdl/3do_getbody.c

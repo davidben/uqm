@@ -45,7 +45,7 @@ enum
 
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
-void TFB_UninitGraphics ();
+void TFB_UninitGraphics (void);
 void TFB_ProcessEvents (void);
 
 // 3DO Graphics Stuff

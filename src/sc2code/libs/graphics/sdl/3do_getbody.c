@@ -30,10 +30,6 @@ typedef struct anidata
 {
 	int transparent_color;
 	int colormap_index;
-	int clip_x;
-	int clip_y;
-	int clip_w;
-	int clip_h;
 	int hotspot_x;
 	int hotspot_y;
 } AniData;
@@ -54,24 +50,12 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	{
 		if (ani[cel_ct].transparent_color != -1)
 			SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, ani[cel_ct].transparent_color);
-
-		if (ani[cel_ct].clip_x != -1)
-			img[cel_ct]->clip_rect.x = ani[cel_ct].clip_x;
-		if (ani[cel_ct].clip_y != -1)
-			img[cel_ct]->clip_rect.y = ani[cel_ct].clip_y;
-		if (ani[cel_ct].clip_w != -1)
-			img[cel_ct]->clip_rect.w = ani[cel_ct].clip_w;
-		if (ani[cel_ct].clip_h != -1)
-			img[cel_ct]->clip_rect.h = ani[cel_ct].clip_h;
 		
 		if (ani[cel_ct].hotspot_x != -1)
 			hx = ani[cel_ct].hotspot_x;
 		if (ani[cel_ct].hotspot_y != -1)
 			hy = ani[cel_ct].hotspot_y;
 	}
-
-	hx -= img[cel_ct]->clip_rect.x;
-	hy -= img[cel_ct]->clip_rect.y;
 	
 	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;	
 
@@ -79,18 +63,8 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
 	img[cel_ct] = tfbimg->NormalImg;
 
-	hx += img[cel_ct]->clip_rect.x;
-	hy += img[cel_ct]->clip_rect.y;
-
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
-	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
-
-#if 0
-	fprintf (stderr, "\thot[%d, %d], rect[%d, %d, %d, %d]\n",
-			hx, hy,
-			img[cel_ct]->clip_rect.x, img[cel_ct]->clip_rect.y,
-			img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
-#endif
+	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
 }
 
 static void
@@ -149,18 +123,12 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	SDL_FreeSurface (img[cel_ct]);
 
 	img[cel_ct] = new_surf;
-
-	hx -= img[cel_ct]->clip_rect.x;
-	hy -= img[cel_ct]->clip_rect.y;
 	
 	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;
 	img[cel_ct] = ((TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs))->NormalImg;
-
-	hx += img[cel_ct]->clip_rect.x;
-	hy += img[cel_ct]->clip_rect.y;
 	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
-	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
+	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
 }
 
 MEM_HANDLE
@@ -208,11 +176,6 @@ _GetCelData (FILE *fp, DWORD length)
 		sscanf (CurrentLine, "%s %d %d %d %d", &filename[n], 
 			&ani[cel_ct].transparent_color, &ani[cel_ct].colormap_index, 
 			&ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
-
-		ani[cel_ct].clip_x = -1;
-		ani[cel_ct].clip_y = -1;
-		ani[cel_ct].clip_w = -1;
-		ani[cel_ct].clip_h = -1;
 	
 		if ((img[cel_ct] = IMG_Load (filename)) && img[cel_ct]->w > 0 && 
 			img[cel_ct]->h > 0 && img[cel_ct]->format->BitsPerPixel >= 8) 
@@ -385,14 +348,14 @@ _GetFontData (FILE *fp, DWORD length)
 
 						int tune_amount = 0;
 
-						if (img[0]->clip_rect.h == 8)
+						if (img[0]->h == 8)
 							tune_amount = -1;
-						else if (img[0]->clip_rect.h == 9)
+						else if (img[0]->h == 9)
 							tune_amount = -2;
-						else if (img[0]->clip_rect.h > 9)
+						else if (img[0]->h > 9)
 							tune_amount = -3;
 
-						SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (0, img[0]->clip_rect.h + tune_amount));
+						SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (0, img[0]->h + tune_amount));
 					}
 					
 					if (GetFrameHeight (FramePtr) > FontPtr->Leading)

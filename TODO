@@ -7,16 +7,16 @@ into the cvs tree. Note that v1.0 will pretty much be a straight port,
 with no gameplay-altering features added.
 
 Serious bugs (crash the game, high priority):
-- loading an old game crashes the game (at least on Linux).
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
+  - Often more probable when heavy color table transformations are going on
 - Script bugs where a voice is expected yet not specified appear to make
   the game catatonic (e.g. ZoqFotPik's "Good bye Captain."  "See ya.")
 - When trying to skip past a a speech that's composed of multiple parts,
   the game hangs.  (NOTE: This isn't true for the Zoq-Fot-Pik, which is
   unusual - EVERY line by the ZFP is like that.)
-- Lockups during conversations (often when heavy color table transformatins
-  are going on.
+- Load/save code doesn't work perfectly, hangs sometimes when after loading
+  trying to enter some star first time etc
 
 Glitches (don't crash the game, medium priority):
 - pressing arrow keys in the main menu moves the selection in the
@@ -25,31 +25,13 @@ Glitches (don't crash the game, medium priority):
   Instead, they pay you a Credit.
 - Autopilot indicator keeps blinking when entering combat, when autopilot
   was on.
-- savegames created in a game from debug and release compiles are not
-  interchangable
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
-- Outfit Starship's module graphics look reasonably in the lbm/ directory
-  but are hideously scrambled when you're trying to buy them.
-- Shipyard is using the PC background but the 3DO layout.
-- Shipyard's PC background is not animating.
-- Palette is probably corrupted on some things
-  - Because not all 3DO colormap entries map correctly to png files
-    (those images originate from pc version? or converted badly? etc)
-  - Most can be fixed by changing colormap_index to -1 from
-    *.ani, *.sml, *.med, *.big files where corrupted image is listed, so
-	it only uses png file's palette and not 3DO one (prevents palette
-	effects from working, though)
-  - See doc/devel/aniformat
-  - Specific problems because of this:
-    - In quasispace, sis ship should be colored as green, not red
 - When landing to planet surface, crossfaded image is wrong compared to
   landing position (and so 'flashes' when crossfade ends)
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
-- Melnorme (battle) graphics are corrupt.
-- Shofixti doesn't work in melee.
 - In melee, after battle, the game crashes.
   The ship icon is used when already freed. This happens because the old
   3DO code used to save the entire selection window as one image, while
@@ -72,13 +54,16 @@ Glitches (don't crash the game, medium priority):
     on that platform.
   - Volume levels aren't maybe exactly as they should
 - Color table transformations are very slow.
+  - We should try to get rid of excessive creation of new threads
 - Circles of influence aren't shown the first time (after load?) a player
   examines the starmap.
 - Selling bio data gives an incomplete message: 'The 1000' [nothing].
 - When out of fuel: "Fill all my fuel tanks to maximum capacity" ->
   "Your ship's capacity is insufficient to hold that much fuel"
 - Melee zooming may bug a little, ship sometimes flashes as big and then
-  small again etc
+  small again (some 3DO owner should check does this happen in original)
+- Earth color can vary between different runs, it should be always blue
+  when not being near of it
 
 Implementation bugs (low priority):
 

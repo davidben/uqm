@@ -140,99 +140,35 @@ TFB_LoadImage (SDL_Surface *img)
 	TFB_Image *myImage;
 
 	myImage = (TFB_Image*) HMalloc (sizeof (TFB_Image));
-	myImage->mutex = CreateMutex();
+	myImage->mutex = CreateMutex ();
 	myImage->ScaledImg = NULL;
-	myImage->Palette = NULL;
 	myImage->colormap_index = -1;
 	
-	if (img->format->BytesPerPixel == 1)
+	if (img->format->palette)
 	{
-		int x,y;
-		Uint8 *src_p,*dst_p;
-		SDL_Surface *full_surf;
-		SDL_Rect SDL_DstRect;
-
-		full_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img->clip_rect.w, img->clip_rect.h, 
-			8, 0, 0, 0, 0);
-
-		SDL_DstRect.x = SDL_DstRect.y = 0;
-
-		SDL_LockSurface(img);
-		SDL_LockSurface(full_surf);
-
-		src_p = (Uint8*)img->pixels;
-		dst_p = (Uint8*)full_surf->pixels;
-	
-		for (y = img->clip_rect.y; y < img->clip_rect.y + img->clip_rect.h; ++y)
-		{
-			for (x = img->clip_rect.x; x < img->clip_rect.x + img->clip_rect.w; ++x)
-			{
-				dst_p[(y - img->clip_rect.y) * full_surf->pitch + (x - img->clip_rect.x)]=
-					src_p[y * img->pitch + x];
-			}
-		}
-
-		full_surf->clip_rect.x = full_surf->clip_rect.y = 0;
-		full_surf->clip_rect.w = img->clip_rect.w;
-	    full_surf->clip_rect.h = img->clip_rect.h;
-		
+		int i;		
 		myImage->Palette = (SDL_Color*) HMalloc (sizeof (SDL_Color) * 256);
-
-		for (x = 0; x < 256; ++x)
+		for (i = 0; i < 256; ++i)
 		{
-			myImage->Palette[x].r = img->format->palette->colors[x].r;
-			myImage->Palette[x].g = img->format->palette->colors[x].g;
-			myImage->Palette[x].b = img->format->palette->colors[x].b;
+			myImage->Palette[i].r = img->format->palette->colors[i].r;
+			myImage->Palette[i].g = img->format->palette->colors[i].g;
+			myImage->Palette[i].b = img->format->palette->colors[i].b;
 		}
-
-		SDL_SetColors (full_surf, myImage->Palette, 0, 256);
-
-		if (img->flags & SDL_SRCCOLORKEY)
-		{
-			SDL_SetColorKey (full_surf, SDL_SRCCOLORKEY, img->format->colorkey);
-		}
-
-		SDL_UnlockSurface(full_surf);
-		SDL_UnlockSurface(img);
-
-		SDL_FreeSurface (img);
-		img = full_surf;
+		myImage->NormalImg = img;
 	}
-	else if (img->format->BytesPerPixel == 2 || img->format->BytesPerPixel == 3) {
-		SDL_Surface *full_surf;
-		SDL_Rect SDL_DstRect;
-
-		full_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img->clip_rect.w, img->clip_rect.h, 
-			32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-
-		SDL_DstRect.x = SDL_DstRect.y = 0;
-
-		SDL_BlitSurface (img, &img->clip_rect, full_surf, &SDL_DstRect);
-
-		full_surf->clip_rect.x = full_surf->clip_rect.y = 0;
-		full_surf->clip_rect.w = img->clip_rect.w;
-	    full_surf->clip_rect.h = img->clip_rect.h;
-		
-		SDL_FreeSurface (img);
-		img = full_surf;
-	}
-
-	if (img->format->BytesPerPixel > 1)
+	else
 	{
+		myImage->Palette = NULL;
 		myImage->NormalImg = TFB_DisplayFormatAlpha (img);
 		if (myImage->NormalImg)
 		{
-			SDL_FreeSurface(img);
+			SDL_FreeSurface (img);
 		}
 		else
 		{
 			fprintf (stderr, "TFB_LoadImage(): TFB_DisplayFormatAlpha failed\n");
 			myImage->NormalImg = img;
 		}
-	}
-	else
-	{
-		myImage->NormalImg = img;
 	}
 
 	return(myImage);
@@ -689,7 +625,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				else
 					surf = DC_image->NormalImg;
 
-				if (surf->format->BytesPerPixel == 1)
+				if (surf->format->palette)
 				{
 					if (DC.UsePalette)
 					{
