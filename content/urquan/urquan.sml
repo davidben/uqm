@@ -1,16 +1,16 @@
-urqs0001.png 242 21 157 96 7 9 160 100
-urqs0002.png 242 21 156 96 8 8 160 100
-urqs0003.png 242 21 156 97 8 7 160 100
-urqs0004.png 242 21 156 97 8 8 160 100
-urqs0005.png 242 21 156 97 9 7 160 100
-urqs0006.png 242 21 157 97 8 8 160 100
-urqs0007.png 242 21 156 96 8 8 160 100
-urqs0008.png 242 21 156 96 8 8 160 100
-urqs0009.png 242 21 157 96 7 9 160 100
-urqs0010.png 242 21 156 96 8 8 160 100
-urqs0011.png 242 21 156 96 8 8 160 100
-urqs0012.png 242 21 156 96 8 8 160 100
-urqs0013.png 242 21 156 97 9 7 160 100
-urqs0014.png 242 21 156 96 8 8 160 100
-urqs0015.png 242 21 156 96 8 8 160 100
-urqs0016.png 242 21 156 96 8 8 160 100
+urquan.sml.0.png 0 21 3 4
+urquan.sml.1.png 0 21 4 4
+urquan.sml.2.png 0 21 4 3
+urquan.sml.3.png 0 21 4 3
+urquan.sml.4.png 0 21 4 3
+urquan.sml.5.png 0 21 3 3
+urquan.sml.6.png 0 21 4 4
+urquan.sml.7.png 0 21 4 4
+urquan.sml.8.png 0 21 3 4
+urquan.sml.9.png 0 21 4 4
+urquan.sml.10.png 0 21 4 4
+urquan.sml.11.png 0 21 4 4
+urquan.sml.12.png 0 21 4 3
+urquan.sml.13.png 0 21 4 4
+urquan.sml.14.png 0 21 4 4
+urquan.sml.15.png 0 21 4 4

@@ -1,16 +1,16 @@
-stim0001.png 0 8 160 93 1 5 160 100
-stim0002.png 0 8 161 93 3 5 160 100
-stim0003.png 0 8 162 94 5 5 160 100
-stim0004.png 0 8 163 98 5 2 160 100
-stim0005.png 0 8 163 100 6 1 160 100
-stim0006.png 0 8 163 101 5 2 160 100
-stim0007.png 0 8 162 102 5 5 160 100
-stim0008.png 0 8 161 103 3 5 160 100
-stim0009.png 0 8 160 103 1 5 160 100
-stim0010.png 0 8 158 103 3 5 160 100
-stim0011.png 0 8 154 102 5 5 160 100
-stim0012.png 0 8 153 101 5 2 160 100
-stim0013.png 0 8 152 100 6 1 160 100
-stim0014.png 0 8 153 98 5 2 160 100
-stim0015.png 0 8 154 94 5 5 160 100
-stim0016.png 0 8 157 93 3 5 160 100
+stimed.0.png 0 8 0 7
+stimed.1.png 0 8 -1 7
+stimed.2.png 0 8 -2 6
+stimed.3.png 0 8 -3 2
+stimed.4.png 0 8 -3 0
+stimed.5.png 0 8 -3 -1
+stimed.6.png 0 8 -2 -2
+stimed.7.png 0 8 -1 -3
+stimed.8.png 0 8 0 -3
+stimed.9.png 0 8 2 -3
+stimed.10.png 0 8 6 -2
+stimed.11.png 0 8 7 -1
+stimed.12.png 0 8 8 0
+stimed.13.png 0 8 7 2
+stimed.14.png 0 8 6 6
+stimed.15.png 0 8 3 7

@@ -1,16 +1,16 @@
-utws0001.png 252 22 156 96 9 8 160 100
-utws0002.png 252 22 156 97 9 7 160 100
-utws0003.png 252 22 157 97 7 7 160 100
-utws0004.png 252 22 157 97 8 8 160 100
-utws0005.png 252 22 157 96 8 9 160 100
-utws0006.png 252 22 157 96 8 8 160 100
-utws0007.png 252 22 157 97 7 7 160 100
-utws0008.png 252 22 156 97 9 7 160 100
-utws0009.png 252 22 156 97 9 8 160 100
-utws0010.png 252 22 156 97 9 7 160 100
-utws0011.png 252 22 157 97 7 7 160 100
-utws0012.png 252 22 156 96 8 8 160 100
-utws0013.png 252 22 156 96 8 9 160 100
-utws0014.png 252 22 156 97 8 8 160 100
-utws0015.png 252 22 157 97 7 7 160 100
-utws0016.png 252 22 156 97 9 7 160 100
+utwig.sml.0.png 0 22 4 4
+utwig.sml.1.png 0 22 4 3
+utwig.sml.2.png 0 22 3 3
+utwig.sml.3.png 0 22 3 3
+utwig.sml.4.png 0 22 3 4
+utwig.sml.5.png 0 22 3 4
+utwig.sml.6.png 0 22 3 3
+utwig.sml.7.png 0 22 4 3
+utwig.sml.8.png 0 22 4 3
+utwig.sml.9.png 0 22 4 3
+utwig.sml.10.png 0 22 3 3
+utwig.sml.11.png 0 22 4 4
+utwig.sml.12.png 0 22 4 4
+utwig.sml.13.png 0 22 4 3
+utwig.sml.14.png 0 22 3 3
+utwig.sml.15.png 0 22 4 3

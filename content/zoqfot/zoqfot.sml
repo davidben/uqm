@@ -1,16 +1,16 @@
-zoqs0001.png 225 26 157 98 7 7 160 100
-zoqs0002.png 225 26 156 97 8 8 160 100
-zoqs0003.png 225 26 156 97 8 8 160 100
-zoqs0004.png 225 26 156 97 8 8 160 100
-zoqs0005.png 225 26 156 97 7 7 160 100
-zoqs0006.png 225 26 156 96 8 8 160 100
-zoqs0007.png 225 26 156 96 8 8 160 100
-zoqs0008.png 225 26 156 96 8 8 160 100
-zoqs0009.png 225 26 157 96 7 7 160 100
-zoqs0010.png 225 26 157 96 8 8 160 100
-zoqs0011.png 225 26 157 96 8 8 160 100
-zoqs0012.png 225 26 157 96 8 8 160 100
-zoqs0013.png 225 26 158 97 7 7 160 100
-zoqs0014.png 225 26 157 97 8 8 160 100
-zoqs0015.png 225 26 157 97 8 8 160 100
-zoqs0016.png 225 26 157 97 8 8 160 100
+zoqfot.sml.0.png 0 26 3 2
+zoqfot.sml.1.png 0 26 4 3
+zoqfot.sml.2.png 0 26 4 3
+zoqfot.sml.3.png 0 26 4 3
+zoqfot.sml.4.png 0 26 4 3
+zoqfot.sml.5.png 0 26 4 4
+zoqfot.sml.6.png 0 26 4 4
+zoqfot.sml.7.png 0 26 4 4
+zoqfot.sml.8.png 0 26 3 4
+zoqfot.sml.9.png 0 26 3 4
+zoqfot.sml.10.png 0 26 3 4
+zoqfot.sml.11.png 0 26 3 4
+zoqfot.sml.12.png 0 26 2 3
+zoqfot.sml.13.png 0 26 3 3
+zoqfot.sml.14.png 0 26 3 3
+zoqfot.sml.15.png 0 26 3 3

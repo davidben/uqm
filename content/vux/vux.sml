@@ -1,16 +1,16 @@
-vuxs0001.png 255 23 158 97 5 6 160 100
-vuxs0002.png 164 23 158 97 5 6 160 100
-vuxs0003.png 255 23 158 98 6 6 160 100
-vuxs0004.png 164 23 158 98 6 5 160 100
-vuxs0005.png 255 23 158 98 6 5 160 100
-vuxs0006.png 164 23 158 98 6 5 160 100
-vuxs0007.png 255 23 158 98 6 6 160 100
-vuxs0008.png 164 23 158 98 5 6 160 100
-vuxs0009.png 255 23 158 98 5 6 160 100
-vuxs0010.png 164 23 158 98 5 6 160 100
-vuxs0011.png 255 23 157 98 6 6 160 100
-vuxs0012.png 164 23 157 98 6 5 160 100
-vuxs0013.png 164 23 157 98 6 5 160 100
-vuxs0014.png 164 23 157 98 6 5 160 100
-vuxs0015.png 255 23 157 97 6 6 160 100
-vuxs0016.png 164 23 158 97 5 6 160 100
+vux.sml.0.png 0 23 2 3
+vux.sml.1.png 0 23 2 3
+vux.sml.2.png 0 23 2 2
+vux.sml.3.png 0 23 2 2
+vux.sml.4.png 0 23 2 2
+vux.sml.5.png 0 23 2 2
+vux.sml.6.png 0 23 2 2
+vux.sml.7.png 0 23 2 2
+vux.sml.8.png 0 23 2 2
+vux.sml.9.png 0 23 2 2
+vux.sml.10.png 0 23 3 2
+vux.sml.11.png 0 23 3 2
+vux.sml.12.png 0 23 3 2
+vux.sml.13.png 0 23 3 2
+vux.sml.14.png 0 23 3 3
+vux.sml.15.png 0 23 2 3

@@ -1,16 +1,16 @@
-figs0001.png 225 28 160 99 1 2 160 100
-figs0002.png 225 28 160 99 1 2 160 100
-figs0003.png 225 28 159 99 2 2 160 100
-figs0004.png 225 28 159 100 2 2 160 100
-figs0005.png 225 28 159 100 2 1 160 100
-figs0006.png 225 28 159 100 2 1 160 100
-figs0007.png 225 28 159 99 2 2 160 100
-figs0008.png 225 28 159 99 2 2 160 100
-figs0009.png 225 28 160 99 1 2 160 100
-figs0010.png 225 28 159 99 1 2 160 100
-figs0011.png 225 28 159 99 2 2 160 100
-figs0012.png 225 28 159 99 2 2 160 100
-figs0013.png 225 28 159 100 2 1 160 100
-figs0014.png 225 28 159 100 2 1 160 100
-figs0015.png 225 28 159 99 2 2 160 100
-figs0016.png 225 28 159 99 2 2 160 100
+fight.sml.0.png 0 28 0 1
+fight.sml.1.png 0 28 0 1
+fight.sml.2.png 0 28 1 1
+fight.sml.3.png 0 28 1 0
+fight.sml.4.png 0 28 1 0
+fight.sml.5.png 0 28 1 0
+fight.sml.6.png 0 28 1 1
+fight.sml.7.png 0 28 1 1
+fight.sml.8.png 0 28 0 1
+fight.sml.9.png 0 28 1 1
+fight.sml.10.png 0 28 1 1
+fight.sml.11.png 0 28 1 1
+fight.sml.12.png 0 28 1 0
+fight.sml.13.png 0 28 1 0
+fight.sml.14.png 0 28 1 1
+fight.sml.15.png 0 28 1 1

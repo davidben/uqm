@@ -1,48 +1,48 @@
-cons0001.png 9 28 157 90 7 9 160 100
-cons0002.png 9 28 160 91 7 9 160 100
-cons0003.png 9 28 161 92 8 8 160 100
-cons0004.png 9 28 161 94 10 7 160 100
-cons0005.png 9 28 162 97 9 7 160 100
-cons0006.png 9 28 161 100 10 7 160 100
-cons0007.png 9 28 161 101 8 8 160 100
-cons0008.png 9 28 161 101 7 9 160 100
-cons0009.png 9 28 157 102 7 9 160 100
-cons0010.png 9 28 154 101 7 9 160 100
-cons0011.png 9 28 152 101 8 8 160 100
-cons0012.png 9 28 150 100 10 7 160 100
-cons0013.png 9 28 150 97 9 7 160 100
-cons0014.png 9 28 150 94 10 7 160 100
-cons0015.png 9 28 152 92 8 8 160 100
-cons0016.png 9 28 154 91 7 9 160 100
-cons0017.png 9 28 157 90 7 9 160 100
-cons0018.png 9 28 160 91 7 9 160 100
-cons0019.png 9 28 161 92 8 8 160 100
-cons0020.png 9 28 161 94 10 7 160 100
-cons0021.png 9 28 162 97 9 7 160 100
-cons0022.png 9 28 161 100 10 7 160 100
-cons0023.png 9 28 161 101 8 8 160 100
-cons0024.png 9 28 161 101 7 9 160 100
-cons0025.png 9 28 157 102 7 9 160 100
-cons0026.png 9 28 154 101 7 9 160 100
-cons0027.png 9 28 152 101 8 8 160 100
-cons0028.png 9 28 150 100 10 7 160 100
-cons0029.png 9 28 150 97 9 7 160 100
-cons0030.png 9 28 150 94 10 7 160 100
-cons0031.png 9 28 152 92 8 8 160 100
-cons0032.png 9 28 154 91 7 9 160 100
-cons0033.png 9 28 157 90 7 9 160 100
-cons0034.png 9 28 160 91 7 9 160 100
-cons0035.png 9 28 161 92 8 8 160 100
-cons0036.png 9 28 161 94 10 7 160 100
-cons0037.png 9 28 162 97 9 7 160 100
-cons0038.png 9 28 161 100 10 7 160 100
-cons0039.png 9 28 161 101 8 8 160 100
-cons0040.png 9 28 161 101 7 9 160 100
-cons0041.png 9 28 157 102 7 9 160 100
-cons0042.png 9 28 154 101 7 9 160 100
-cons0043.png 9 28 152 101 8 8 160 100
-cons0044.png 9 28 150 100 10 7 160 100
-cons0045.png 9 28 150 97 9 7 160 100
-cons0046.png 9 28 150 94 10 7 160 100
-cons0047.png 9 28 152 92 8 8 160 100
-cons0048.png 9 28 154 91 7 9 160 100
+cone.sml.0.png 1 28 3 10
+cone.sml.1.png 1 28 0 9
+cone.sml.2.png 1 28 -1 8
+cone.sml.3.png 1 28 -1 6
+cone.sml.4.png 1 28 -2 3
+cone.sml.5.png 1 28 -1 0
+cone.sml.6.png 1 28 -1 -1
+cone.sml.7.png 1 28 -1 -1
+cone.sml.8.png 1 28 3 -2
+cone.sml.9.png 1 28 6 -1
+cone.sml.10.png 1 28 8 -1
+cone.sml.11.png 1 28 10 0
+cone.sml.12.png 1 28 10 3
+cone.sml.13.png 1 28 10 6
+cone.sml.14.png 1 28 8 8
+cone.sml.15.png 1 28 6 9
+cone.sml.16.png 1 28 3 10
+cone.sml.17.png 1 28 0 9
+cone.sml.18.png 1 28 -1 8
+cone.sml.19.png 1 28 -1 6
+cone.sml.20.png 1 28 -2 3
+cone.sml.21.png 1 28 -1 0
+cone.sml.22.png 1 28 -1 -1
+cone.sml.23.png 1 28 -1 -1
+cone.sml.24.png 1 28 3 -2
+cone.sml.25.png 1 28 6 -1
+cone.sml.26.png 1 28 8 -1
+cone.sml.27.png 1 28 10 0
+cone.sml.28.png 1 28 10 3
+cone.sml.29.png 1 28 10 6
+cone.sml.30.png 1 28 8 8
+cone.sml.31.png 1 28 6 9
+cone.sml.32.png 1 28 3 10
+cone.sml.33.png 1 28 0 9
+cone.sml.34.png 1 28 -1 8
+cone.sml.35.png 1 28 -1 6
+cone.sml.36.png 1 28 -2 3
+cone.sml.37.png 1 28 -1 0
+cone.sml.38.png 1 28 -1 -1
+cone.sml.39.png 1 28 -1 -1
+cone.sml.40.png 1 28 3 -2
+cone.sml.41.png 1 28 6 -1
+cone.sml.42.png 1 28 8 -1
+cone.sml.43.png 1 28 10 0
+cone.sml.44.png 1 28 10 3
+cone.sml.45.png 1 28 10 6
+cone.sml.46.png 1 28 8 8
+cone.sml.47.png 1 28 6 9

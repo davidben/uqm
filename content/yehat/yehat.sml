@@ -1,16 +1,16 @@
-yehs0001.png 13 24 158 99 5 3 160 100
-yehs0002.png 13 24 158 98 5 4 160 100
-yehs0003.png 13 24 158 98 5 4 160 100
-yehs0004.png 13 24 159 98 4 4 160 100
-yehs0005.png 13 24 159 98 3 4 160 100
-yehs0006.png 13 24 158 99 4 4 160 100
-yehs0007.png 13 24 158 99 5 4 160 100
-yehs0008.png 13 24 158 99 5 4 160 100
-yehs0009.png 13 24 158 99 5 3 160 100
-yehs0010.png 13 24 158 99 5 4 160 100
-yehs0011.png 13 24 158 99 5 4 160 100
-yehs0012.png 13 24 158 98 4 4 160 100
-yehs0013.png 13 24 158 98 3 4 160 100
-yehs0014.png 13 24 158 98 4 4 160 100
-yehs0015.png 13 24 158 98 5 4 160 100
-yehs0016.png 13 24 158 98 5 4 160 100
+yehat.sml.0.png 0 24 2 1
+yehat.sml.1.png 0 24 2 2
+yehat.sml.2.png 0 24 2 2
+yehat.sml.3.png 0 24 1 2
+yehat.sml.4.png 0 24 1 2
+yehat.sml.5.png 0 24 2 1
+yehat.sml.6.png 0 24 2 1
+yehat.sml.7.png 0 24 2 1
+yehat.sml.8.png 0 24 2 1
+yehat.sml.9.png 0 24 2 1
+yehat.sml.10.png 0 24 2 1
+yehat.sml.11.png 0 24 2 2
+yehat.sml.12.png 0 24 2 2
+yehat.sml.13.png 0 24 2 2
+yehat.sml.14.png 0 24 2 2
+yehat.sml.15.png 0 24 2 2

@@ -1,4 +1,4 @@
-lims0001.png 0 28 160 100 1 1 160 100
-lims0002.png 0 28 160 100 1 1 160 100
-lims0003.png 0 28 160 100 1 1 160 100
-lims0004.png 0 28 160 100 1 1 160 100
+limpets.sml.0.png 0 28 0 0
+limpets.sml.1.png 0 28 0 0
+limpets.sml.2.png 0 28 0 0
+limpets.sml.3.png 0 28 0 0

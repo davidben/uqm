@@ -1,24 +1,24 @@
-fuss0001.png 225 28 159 99 3 4 160 100
-fuss0002.png 225 28 159 100 2 3 160 100
-fuss0003.png 225 28 158 100 3 3 160 100
-fuss0004.png 225 28 158 100 3 2 160 100
-fuss0005.png 225 28 158 99 4 3 160 100
-fuss0006.png 225 28 158 99 3 2 160 100
-fuss0007.png 225 28 158 98 3 3 160 100
-fuss0008.png 225 28 159 98 2 3 160 100
-fuss0009.png 225 28 159 98 3 4 160 100
-fuss0010.png 225 28 160 98 2 3 160 100
-fuss0011.png 225 28 160 98 3 3 160 100
-fuss0012.png 225 28 160 99 3 2 160 100
-fuss0013.png 225 28 159 99 4 3 160 100
-fuss0014.png 225 28 160 100 3 2 160 100
-fuss0015.png 225 28 160 100 3 3 160 100
-fuss0016.png 225 28 160 100 2 3 160 100
-fuss0017.png 225 28 157 97 7 7 160 100
-fuss0018.png 225 28 157 97 7 7 160 100
-fuss0019.png 225 28 156 96 9 9 160 100
-fuss0020.png 225 28 155 95 11 11 160 100
-fuss0021.png 225 28 155 95 11 11 160 100
-fuss0022.png 225 28 154 94 13 12 160 100
-fuss0023.png 225 28 154 93 13 14 160 100
-fuss0024.png 225 28 153 92 14 16 160 100
+fusion.sml.0.png 0 28 1 1
+fusion.sml.1.png 0 28 1 0
+fusion.sml.2.png 0 28 2 0
+fusion.sml.3.png 0 28 2 0
+fusion.sml.4.png 0 28 2 1
+fusion.sml.5.png 0 28 2 1
+fusion.sml.6.png 0 28 2 2
+fusion.sml.7.png 0 28 1 2
+fusion.sml.8.png 0 28 1 2
+fusion.sml.9.png 0 28 0 2
+fusion.sml.10.png 0 28 0 2
+fusion.sml.11.png 0 28 0 1
+fusion.sml.12.png 0 28 1 1
+fusion.sml.13.png 0 28 0 0
+fusion.sml.14.png 0 28 0 0
+fusion.sml.15.png 0 28 0 0
+fusion.sml.16.png 0 28 3 3
+fusion.sml.17.png 0 28 3 3
+fusion.sml.18.png 0 28 4 4
+fusion.sml.19.png 0 28 5 5
+fusion.sml.20.png 0 28 5 5
+fusion.sml.21.png 0 28 6 6
+fusion.sml.22.png 0 28 6 7
+fusion.sml.23.png 0 28 7 8

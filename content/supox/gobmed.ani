@@ -1,21 +1,21 @@
-gobm0001.png 13 17 160 100 1 5 160 100
-gobm0002.png 13 17 158 100 3 5 160 100
-gobm0003.png 13 17 157 100 4 4 160 100
-gobm0004.png 13 17 156 100 5 3 160 100
-gobm0005.png 13 17 156 100 5 1 160 100
-gobm0006.png 13 17 156 98 5 3 160 100
-gobm0007.png 13 17 157 97 4 4 160 100
-gobm0008.png 13 17 158 96 3 5 160 100
-gobm0009.png 13 17 160 96 1 5 160 100
-gobm0010.png 13 17 160 96 3 5 160 100
-gobm0011.png 13 17 160 97 4 4 160 100
-gobm0012.png 13 17 160 98 5 3 160 100
-gobm0013.png 13 17 160 100 5 1 160 100
-gobm0014.png 13 17 160 100 5 3 160 100
-gobm0015.png 13 17 160 100 4 4 160 100
-gobm0016.png 13 17 160 100 3 5 160 100
-gobm0017.png 13 17 159 99 3 3 160 100
-gobm0018.png 13 17 158 97 5 5 160 100
-gobm0019.png 13 17 157 96 7 7 160 100
-gobm0020.png 13 17 156 95 9 9 160 100
-gobm0021.png 13 17 155 94 11 11 160 100
+gobmed.0.png 0 17 0 0
+gobmed.1.png 0 17 2 0
+gobmed.2.png 0 17 3 0
+gobmed.3.png 0 17 4 0
+gobmed.4.png 0 17 4 0
+gobmed.5.png 0 17 4 2
+gobmed.6.png 0 17 3 3
+gobmed.7.png 0 17 2 4
+gobmed.8.png 0 17 0 4
+gobmed.9.png 0 17 0 4
+gobmed.10.png 0 17 0 3
+gobmed.11.png 0 17 0 2
+gobmed.12.png 0 17 0 0
+gobmed.13.png 0 17 0 0
+gobmed.14.png 0 17 0 0
+gobmed.15.png 0 17 0 0
+gobmed.16.png 0 17 1 1
+gobmed.17.png 0 17 2 3
+gobmed.18.png 0 17 3 4
+gobmed.19.png 0 17 4 5
+gobmed.20.png 0 17 5 6

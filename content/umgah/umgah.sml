@@ -1,16 +1,16 @@
-umgs0001.png 225 20 159 98 3 4 160 100
-umgs0002.png 225 20 158 98 4 4 160 100
-umgs0003.png 225 20 158 98 4 4 160 100
-umgs0004.png 225 20 158 98 4 4 160 100
-umgs0005.png 225 20 158 99 4 3 160 100
-umgs0006.png 225 20 158 98 4 4 160 100
-umgs0007.png 225 20 158 98 4 4 160 100
-umgs0008.png 225 20 158 98 4 4 160 100
-umgs0009.png 225 20 159 98 3 4 160 100
-umgs0010.png 225 20 158 98 4 4 160 100
-umgs0011.png 225 20 158 98 4 4 160 100
-umgs0012.png 225 20 158 98 4 4 160 100
-umgs0013.png 225 20 158 99 4 3 160 100
-umgs0014.png 225 20 158 98 4 4 160 100
-umgs0015.png 225 20 158 98 4 4 160 100
-umgs0016.png 225 20 158 98 4 4 160 100
+umgah.sml.0.png 0 20 1 2
+umgah.sml.1.png 0 20 2 2
+umgah.sml.2.png 0 20 2 2
+umgah.sml.3.png 0 20 2 2
+umgah.sml.4.png 0 20 2 1
+umgah.sml.5.png 0 20 2 2
+umgah.sml.6.png 0 20 2 2
+umgah.sml.7.png 0 20 2 2
+umgah.sml.8.png 0 20 1 2
+umgah.sml.9.png 0 20 2 2
+umgah.sml.10.png 0 20 2 2
+umgah.sml.11.png 0 20 2 2
+umgah.sml.12.png 0 20 2 1
+umgah.sml.13.png 0 20 2 2
+umgah.sml.14.png 0 20 2 2
+umgah.sml.15.png 0 20 2 2

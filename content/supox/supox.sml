@@ -1,16 +1,16 @@
-sups0001.png 13 17 159 96 3 8 160 100
-sups0002.png 13 17 157 97 6 7 160 100
-sups0003.png 13 17 157 97 7 7 160 100
-sups0004.png 13 17 157 98 7 6 160 100
-sups0005.png 13 17 157 99 8 3 160 100
-sups0006.png 13 17 157 97 7 6 160 100
-sups0007.png 13 17 157 97 7 7 160 100
-sups0008.png 13 17 157 97 6 7 160 100
-sups0009.png 13 17 159 97 3 8 160 100
-sups0010.png 13 17 158 97 6 7 160 100
-sups0011.png 13 17 157 97 7 7 160 100
-sups0012.png 13 17 157 97 7 6 160 100
-sups0013.png 13 17 156 99 8 3 160 100
-sups0014.png 13 17 157 97 7 6 160 100
-sups0015.png 13 17 157 96 7 7 160 100
-sups0016.png 13 17 158 96 6 7 160 100
+supox.sml.0.png 0 17 1 4
+supox.sml.1.png 0 17 3 3
+supox.sml.2.png 0 17 3 3
+supox.sml.3.png 0 17 3 2
+supox.sml.4.png 0 17 3 1
+supox.sml.5.png 0 17 3 3
+supox.sml.6.png 0 17 3 3
+supox.sml.7.png 0 17 3 3
+supox.sml.8.png 0 17 1 3
+supox.sml.9.png 0 17 2 3
+supox.sml.10.png 0 17 3 3
+supox.sml.11.png 0 17 3 3
+supox.sml.12.png 0 17 4 1
+supox.sml.13.png 0 17 3 3
+supox.sml.14.png 0 17 3 4
+supox.sml.15.png 0 17 2 4

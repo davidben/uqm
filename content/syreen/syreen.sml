@@ -1,16 +1,16 @@
-syrs0001.png 13 18 158 95 5 10 160 100
-syrs0002.png 13 18 156 96 7 9 160 100
-syrs0003.png 13 18 156 96 9 9 160 100
-syrs0004.png 13 18 155 97 11 7 160 100
-syrs0005.png 13 18 156 98 12 5 160 100
-syrs0006.png 13 18 155 96 11 7 160 100
-syrs0007.png 13 18 156 96 9 9 160 100
-syrs0008.png 13 18 156 96 7 9 160 100
-syrs0009.png 13 18 158 96 5 10 160 100
-syrs0010.png 13 18 157 96 7 9 160 100
-syrs0011.png 13 18 156 96 9 9 160 100
-syrs0012.png 13 18 155 96 11 7 160 100
-syrs0013.png 13 18 153 98 12 5 160 100
-syrs0014.png 13 18 155 98 11 7 160 100
-syrs0015.png 13 18 156 96 9 9 160 100
-syrs0016.png 13 18 158 96 7 9 160 100
+syreen.sml.0.png 0 18 2 5
+syreen.sml.1.png 0 18 4 4
+syreen.sml.2.png 0 18 4 4
+syreen.sml.3.png 0 18 5 3
+syreen.sml.4.png 0 18 4 2
+syreen.sml.5.png 0 18 5 4
+syreen.sml.6.png 0 18 4 4
+syreen.sml.7.png 0 18 4 4
+syreen.sml.8.png 0 18 2 4
+syreen.sml.9.png 0 18 3 4
+syreen.sml.10.png 0 18 4 4
+syreen.sml.11.png 0 18 5 4
+syreen.sml.12.png 0 18 7 2
+syreen.sml.13.png 0 18 5 2
+syreen.sml.14.png 0 18 4 4
+syreen.sml.15.png 0 18 2 4

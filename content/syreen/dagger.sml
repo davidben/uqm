@@ -1,16 +1,16 @@
-dags0001.png 9 28 160 99 1 3 160 100
-dags0002.png 9 28 159 99 2 3 160 100
-dags0003.png 9 28 159 99 3 3 160 100
-dags0004.png 9 28 159 100 3 2 160 100
-dags0005.png 9 28 159 100 3 1 160 100
-dags0006.png 9 28 159 99 3 2 160 100
-dags0007.png 9 28 159 99 3 3 160 100
-dags0008.png 9 28 159 99 2 3 160 100
-dags0009.png 9 28 160 99 1 3 160 100
-dags0010.png 9 28 160 99 2 3 160 100
-dags0011.png 9 28 159 99 3 3 160 100
-dags0012.png 9 28 159 99 3 2 160 100
-dags0013.png 9 28 159 100 3 1 160 100
-dags0014.png 9 28 159 100 3 2 160 100
-dags0015.png 9 28 159 99 3 3 160 100
-dags0016.png 9 28 159 99 2 3 160 100
+dagger.sml.0.png 0 28 0 1
+dagger.sml.1.png 0 28 1 1
+dagger.sml.2.png 0 28 1 1
+dagger.sml.3.png 0 28 1 0
+dagger.sml.4.png 0 28 1 0
+dagger.sml.5.png 0 28 1 1
+dagger.sml.6.png 0 28 1 1
+dagger.sml.7.png 0 28 1 1
+dagger.sml.8.png 0 28 0 1
+dagger.sml.9.png 0 28 0 1
+dagger.sml.10.png 0 28 1 1
+dagger.sml.11.png 0 28 1 1
+dagger.sml.12.png 0 28 1 0
+dagger.sml.13.png 0 28 1 0
+dagger.sml.14.png 0 28 1 1
+dagger.sml.15.png 0 28 1 1

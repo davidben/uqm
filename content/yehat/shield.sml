@@ -1,16 +1,16 @@
-shis0001.png 11 24 156 97 9 7 160 100
-shis0002.png 11 24 156 96 9 8 160 100
-shis0003.png 11 24 156 96 9 8 160 100
-shis0004.png 11 24 157 96 8 8 160 100
-shis0005.png 11 24 157 96 7 8 160 100
-shis0006.png 11 24 156 97 8 8 160 100
-shis0007.png 11 24 156 97 9 8 160 100
-shis0008.png 11 24 156 97 9 8 160 100
-shis0009.png 11 24 156 97 9 7 160 100
-shis0010.png 11 24 156 97 9 8 160 100
-shis0011.png 11 24 156 97 9 8 160 100
-shis0012.png 11 24 156 96 8 8 160 100
-shis0013.png 11 24 156 96 7 8 160 100
-shis0014.png 11 24 156 96 8 8 160 100
-shis0015.png 11 24 156 96 9 8 160 100
-shis0016.png 11 24 156 96 9 8 160 100
+shield.sml.0.png 0 24 4 3
+shield.sml.1.png 0 24 4 4
+shield.sml.2.png 0 24 4 4
+shield.sml.3.png 0 24 3 4
+shield.sml.4.png 0 24 3 4
+shield.sml.5.png 0 24 4 3
+shield.sml.6.png 0 24 4 3
+shield.sml.7.png 0 24 4 3
+shield.sml.8.png 0 24 4 3
+shield.sml.9.png 0 24 4 3
+shield.sml.10.png 0 24 4 3
+shield.sml.11.png 0 24 4 4
+shield.sml.12.png 0 24 4 4
+shield.sml.13.png 0 24 4 4
+shield.sml.14.png 0 24 4 4
+shield.sml.15.png 0 24 4 4

@@ -1,16 +1,16 @@
-thrs0001.png 13 19 158 98 6 6 160 100
-thrs0002.png 13 19 157 97 7 7 160 100
-thrs0003.png 13 19 157 97 7 7 160 100
-thrs0004.png 13 19 156 97 8 7 160 100
-thrs0005.png 13 19 157 98 6 6 160 100
-thrs0006.png 13 19 156 97 8 7 160 100
-thrs0007.png 13 19 157 97 7 7 160 100
-thrs0008.png 13 19 157 97 7 7 160 100
-thrs0009.png 13 19 157 97 6 6 160 100
-thrs0010.png 13 19 157 97 7 7 160 100
-thrs0011.png 13 19 157 97 7 7 160 100
-thrs0012.png 13 19 157 97 8 7 160 100
-thrs0013.png 13 19 158 97 6 6 160 100
-thrs0014.png 13 19 157 97 8 7 160 100
-thrs0015.png 13 19 157 97 7 7 160 100
-thrs0016.png 13 19 158 97 7 7 160 100
+thradd.sml.0.png 0 19 2 2
+thradd.sml.1.png 0 19 3 3
+thradd.sml.2.png 0 19 3 3
+thradd.sml.3.png 0 19 4 3
+thradd.sml.4.png 0 19 3 2
+thradd.sml.5.png 0 19 4 3
+thradd.sml.6.png 0 19 3 3
+thradd.sml.7.png 0 19 3 3
+thradd.sml.8.png 0 19 3 3
+thradd.sml.9.png 0 19 3 3
+thradd.sml.10.png 0 19 3 3
+thradd.sml.11.png 0 19 3 3
+thradd.sml.12.png 0 19 2 3
+thradd.sml.13.png 0 19 3 3
+thradd.sml.14.png 0 19 3 3
+thradd.sml.15.png 0 19 2 3
