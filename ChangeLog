@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Fixed Melnrome repeating "Please do not mention this subject again"
+  text (bug #145) -fOSSiL
 - Fixed load/save screen leaving characters when having more
   than 1000 units of some type of resources (bug #75) -fOSSiL
 - Lowered Drawable memory footprint, made Frame safer - Martin
