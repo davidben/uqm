@@ -26,7 +26,7 @@ static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
 static int gfx_flags;
 
-static const UBYTE bilinear_table[4][4] = 
+static const Uint32 bilinear_table[4][4] = 
 {
 	{ 9, 3, 3, 1 },
 	{ 3, 1, 9, 3 },
@@ -39,7 +39,7 @@ typedef union
 	struct
 	{
 		Uint8 c1, c2, c3;
-	};
+	} bchan;
 	Uint8 channels[3];
 } PIXEL_24BIT;
 
@@ -51,6 +51,11 @@ typedef union
 // least 32 bits at once; or if it is not aligned then we
 // are not at the beginning of the buffer and can read 1 byte
 // before (p)
+//
+// WARNING!! Do not call these macros like so:
+//		SET_PIX_24BIT (dst_p++, pixel)
+// The pre-increment or post-increment will be done
+// several times
 //
 #	define GET_PIX_24BIT(p) \
 		( ((Uint32)(p)) & 3 ? \
@@ -87,7 +92,7 @@ typedef union
 			) : \
 			( *(Uint32 *)(p) = \
 				(*(Uint32 *)(p) & 0xff000000) | \
-				((c) && 0x00ffffff) \
+				((c) & 0x00ffffff) \
 			) \
 		)
 #endif
@@ -742,7 +747,7 @@ static void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst)
 	{
 		Uint16 *src_p = (Uint16 *) src->pixels, *src_p2;
 		Uint16 *dst_p = (Uint16 *) dst->pixels;
-		Uint16 p[4];
+		Uint32 p[4];
 
 		for (y = 0; y < h; ++y)
 		{
