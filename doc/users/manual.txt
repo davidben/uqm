@@ -1,6 +1,6 @@
-THE UR-QUAN MASTERS v0.2 alpha -- homepage: http://sc2.sf.net/
+THE UR-QUAN MASTERS v0.3 alpha -- homepage: http://sc2.sf.net/
 
-Welcome to the second release of the Ur-Quan Masters port.  This
+Welcome to the third release of the Ur-Quan Masters port.  This
 document will tell you everything you need to play, even if you've
 never played the original.
 
@@ -21,7 +21,7 @@ various command line options to customize your experience:
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240
 
-	-d 24         (or --bpp)
+	-d 32         (or --bpp)
 
 Sets the color depth.  If you don't set this, the game should
 autodetect an appropriate value.  Valid values are 16, 24, and 32.
@@ -458,7 +458,7 @@ does grievous damage.
 			   GENERAL GAME CONTROLS SUMMARY
 
 F1                       Pause game
-F10                      Exit game, confirm with SPACE
+F10                      Exit game
 F12                      Emergency exit
 
 			   FULL GAME CONTROLS SUMMARY
@@ -475,33 +475,35 @@ Arrow Keys:              Scroll through selections
 ENTER:                   Make selection
 SPACE:                   Up one level
 
+	Conversations
+
+LEFT and RIGHT:          Rewind/Forward
+UP and DOWN:             Scroll through selections
+ENTER:                   Make selection
+SPACE:                   Skip, Show/Hide summary
+
 	Star Map
+
 Arrow Keys:              Move the crosshair
 ENTER:                   Select destination
 SPACE:                   Main menu
-RIGHT SHIFT:             Zoom in
-LEFT SHIFT:              Zoom out
+Keypad +:                Zoom in
+Keypad -:                Zoom out
 
 	Space Combat
 
 UP or ENTER:             Thrust
 LEFT and RIGHT:          Steer
-SPACE or RIGHT SHIFT:    Fire Primary Weapon
-CONTROL:                 Fire Secondary Weapon
-SPACE with RIGHT SHIFT
-	OR
+RIGHT SHIFT:             Fire Primary Weapon
+RIGHT CTRL:              Fire Secondary Weapon
 ESCAPE:                  Emergency Warp Escape
 
 
 	Planet Exploration
 
-UP:                      Forward
+UP or ENTER:             Forward
 LEFT and RIGHT:          Steer
-SPACE:                   Fire stun bolt
-CONTROL
-  OR
-LEFT_SHIFT
-  OR
+RIGHT SHIFT:             Fire stun bolt
 ESCAPE:                  Blast off
 
 
@@ -516,13 +518,13 @@ A:                       Fire Secondary Weapon
 
 	Bottom Player
 
-UP:                      Thrust
+UP or ENTER:             Thrust
 LEFT and RIGHT:          Steer
 RIGHT SHIFT:             Fire Primary Weapon
-CTRL:                    Fire Secondary Weapon
+RIGHT CTRL:              Fire Secondary Weapon
 
 
-These controls are configurable by editing the key.cfg file which will
+These controls are configurable by editing the keys.cfg file which will
 be automatically generated in your personal directory for uqm data the
 first time you start the game.
 The location of this directory varies per system.
@@ -534,10 +536,10 @@ This is usually in one of the following locations:
 - "C:\Windows\Profiles\YourName\Application Data\"
   (Windows 95/98/SE with separate users)
 - "C:\Documents and Settings\YourName\Application Data\"
-  (Windows NT/XP)
+  (Windows NT/2k/XP)
 On Unix systems this personal uqm data is stored in "~/.uqm".
 
 Later versions of The Ur-Quan Masters will include a key configuration
-tool.  In the meantime, the "starcon.key" file in the root fo the
+tool.  In the meantime, the "starcon.key" file in the root of the
 content directory has information about how to add support for
 joysticks or remap keys.
