@@ -988,19 +988,23 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 								// enqueues drawcommand to assign next (smaller) zoom
 								// level image as mipmap, needed for trilinear scaling
 
-								TFB_DrawCommand DC;								
-								TFB_Image *mmimg =
-									((PFRAME_DESC)SetEquFrameIndex (
+								PFRAME_DESC frame = 
+									(PFRAME_DESC)SetAbsFrameIndex (
 									ElementPtr->next.image.farray
 									[index + 1],
-									ElementPtr->next.image.frame))->image;
-								
-								DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
-								DC.data.setmipmap.image = ((PFRAME_DESC)ElementPtr->next.image.frame)->image;
-								LockMutex (mmimg->mutex);
-								DC.data.setmipmap.mipmap = mmimg->NormalImg;
-								UnlockMutex (mmimg->mutex);
-								TFB_EnqueueDrawCommand (&DC);
+									GetFrameIndex (ElementPtr->next.image.frame));
+
+								if (frame && frame->image)
+								{
+									TFB_DrawCommand DC;
+									TFB_Image *mmimg = frame->image;
+									DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
+									DC.data.setmipmap.image = ((PFRAME_DESC)ElementPtr->next.image.frame)->image;
+									LockMutex (mmimg->mutex);
+									DC.data.setmipmap.mipmap = mmimg->NormalImg;
+									UnlockMutex (mmimg->mutex);
+									TFB_EnqueueDrawCommand (&DC);
+								}
 							}
 #endif
 						}
