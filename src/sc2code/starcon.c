@@ -31,6 +31,10 @@ enum
 	OPENING
 };
 
+// Open or close the periodically occuring QuasiSpace portal.
+// A seperate thread is always inside this function when the player
+// is in hyperspace. This thread awakens every BATTLE_FRAME_RATE seconds.
+// It then changes the appearant portal size when necessary.
 int arilou_gate_task(void* data)
 {
 	BYTE counter;
@@ -60,7 +64,7 @@ int arilou_gate_task(void* data)
 		ClearSemaphore (GraphicsSem);
 
 		ClearSemaphore (GLOBAL (GameClock.clock_sem));
-		SleepThreadUntil (TimeIn + (ONE_SECOND / BATTLE_FRAME_RATE));
+		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
 		TimeIn = GetTimeCounter ();
 	}
 	FinishTask (task);
