@@ -19,10 +19,6 @@
 #ifndef _COMPILER_H
 #define _COMPILER_H
 
-#ifdef HAVE_CONFIG_H
-#    include "config.h"
-#endif
-
 typedef unsigned char     BYTE;
 typedef BYTE            *PBYTE;
 typedef unsigned char     UBYTE;

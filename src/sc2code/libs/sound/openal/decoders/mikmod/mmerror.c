@@ -36,10 +36,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "mikmod_internals.h"
 
 CHAR *_mm_errmsg[MMERR_MAX+1] =

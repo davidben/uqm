@@ -20,8 +20,5 @@
 
 #include "../file.h"
 
-void CreateDirectory (const char *dir, int mode);
-void RemoveTempDir (void);
-
 #endif  /* _FILEINTRN_H */
 

@@ -28,10 +28,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "mikmod_internals.h"
 
 void MikMod_RegisterAllLoaders_internal(void)

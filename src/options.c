@@ -26,20 +26,11 @@
 #include "compiler.h"
 #include "options.h"
 #include "file.h"
+#include "config.h"
 
 int optWhichMusic = MUSIC_3DO;
 char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
-
-BOOLEAN FileExists (const char *filename)
-{
-    FILE *fp;
-    if ((fp = fopen (filename, "rb")) == NULL)
-        return FALSE;
-
-    fclose (fp);
-    return TRUE;
-}
 
 void
 prepareConfigDir (void) {

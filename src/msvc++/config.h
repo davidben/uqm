@@ -12,7 +12,8 @@
 #define CONTENTDIR "../content"
 
 /* Directory where game data will be stored */
-#define USERDIR "../userdata/"
+//#define USERDIR "../userdata/"
+#define USERDIR "%APPDATA%/uqm/"
 
 /* Directory where supermelee teams will be stored */
 #define MELEEDIR USERDIR "teams/"

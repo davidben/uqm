@@ -29,10 +29,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "mikmod_internals.h"
 
 static	int sl_rlength;

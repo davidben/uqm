@@ -28,10 +28,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif

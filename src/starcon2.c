@@ -22,9 +22,6 @@
 #ifdef WIN32
 #	include <direct.h>
 #endif
-#ifdef HAVE_CONFIG_H
-#	include "config.h"
-#endif
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -50,11 +47,11 @@ CDToContentDir (char *contentdir)
 {
 	const char *testfile = "starcon.txt";
 
-	if (!FileExists (testfile))
+	if (!fileExists (testfile))
 	{
-		if ((chdir (contentdir) || !FileExists (testfile)) &&
-				(chdir ("content") || !FileExists (testfile)) &&
-				(chdir ("../../content") || !FileExists (testfile))) {
+		if ((chdir (contentdir) || !fileExists (testfile)) &&
+				(chdir ("content") || !fileExists (testfile)) &&
+				(chdir ("../../content") || !fileExists (testfile))) {
 			fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
 			exit(EXIT_FAILURE);
 		}

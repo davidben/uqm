@@ -30,10 +30,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <string.h>
 #include <stdarg.h>
 #ifdef SUNOS

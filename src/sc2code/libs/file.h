@@ -38,13 +38,18 @@
 #	include <unistd.h>
 #endif
 
+// for BOOLEAN
+#include "compiler.h"
+
 void initTempDir (void);
 void unInitTempDir (void);
 char *tempFilePath (const char *filename);
 int mkdirhier (const char *path);
 const char *getHomeDir (void);
-int createDirectory(const char *dir, int mode);
-int expandPath(char *dest, size_t len, const char *src);
+int createDirectory (const char *dir, int mode);
+int expandPath (char *dest, size_t len, const char *src);
+BOOLEAN fileExists (const char *name);
+int getUserDataDir (char *dir, size_t len);
 
 #endif  /* _FILE_H */
 

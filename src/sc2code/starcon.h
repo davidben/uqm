@@ -41,9 +41,7 @@ extern int ScreenHeight;
 #define SIS_SCREEN_WIDTH (SPACE_WIDTH - 14)
 #define SIS_SCREEN_HEIGHT (SPACE_HEIGHT - 13)
 
-#ifdef HAVE_CONFIG_H
-#    include "config.h"
-#endif
+#include "config.h"
 #include "../port.h"
 #include <stdlib.h>
 #include <math.h>

@@ -28,10 +28,6 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "mikmod_internals.h"
 
 /* Same as malloc, but sets error variable _mm_error when fails */

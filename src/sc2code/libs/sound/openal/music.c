@@ -143,7 +143,7 @@ _GetMusicData (FILE *fp, DWORD length)
                     
                     strcpy (threedoname, filename);
                     strcpy (&threedoname[strlen (threedoname)-3], "ogg");
-                    if (FileExists (threedoname))
+                    if (fileExists (threedoname))
                     {
                         strcpy (filename, threedoname);
                     }                    

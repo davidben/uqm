@@ -35,8 +35,6 @@ extern int optWhichMusic;
 
 extern BOOLEAN optSubtitles;
 
-BOOLEAN FileExists (const char *filename);
-
 extern char *configDir;
 extern char *meleeDir;
 extern char *saveDir;
