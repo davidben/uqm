@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Added a 4th button to starcon.key 'Esc' now emergency-escapes -PBlue
 - Biadapt and biadv scalers now work in OpenGL mode too -Mika
 - Fixed lockup when fastforwarding through orz comm -PBlue
 - A new windows installer is now in builds/win32_install -PBlue

@@ -82,10 +82,11 @@ typedef enum
 #define DEVICE_BUTTON1 ((INPUT_STATE)1 << 19)
 #define DEVICE_BUTTON2 ((INPUT_STATE)1 << 20)
 #define DEVICE_BUTTON3 ((INPUT_STATE)1 << 21)
-#define DEVICE_PAUSE ((INPUT_STATE)1 << 22)
-#define DEVICE_EXIT ((INPUT_STATE)1 << 23)
-#define DEVICE_LEFTSHIFT ((INPUT_STATE)1 << 24)
-#define DEVICE_RIGHTSHIFT ((INPUT_STATE)1 << 25)
+#define DEVICE_BUTTON4 ((INPUT_STATE)1 << 22)
+#define DEVICE_PAUSE ((INPUT_STATE)1 << 23)
+#define DEVICE_EXIT ((INPUT_STATE)1 << 24)
+#define DEVICE_LEFTSHIFT ((INPUT_STATE)1 << 25)
+#define DEVICE_RIGHTSHIFT ((INPUT_STATE)1 << 26)
 
 extern BOOLEAN InitInput (BOOLEAN (*PauseFunc) (void), UNICODE Pause,
 		UNICODE Exit, UNICODE Abort);
@@ -93,10 +94,10 @@ extern BOOLEAN UninitInput (void);
 extern INPUT_DEVICE CreateSerialKeyboardDevice (void);
 extern INPUT_DEVICE CreateJoystickKeyboardDevice (UWORD lfkey, UWORD
 		rtkey, UWORD topkey, UWORD botkey, UWORD but1key, UWORD
-		but2key, UWORD but3key, UWORD shift1key, UWORD shift2key);
+		but2key, UWORD but3key, UWORD but4key, UWORD shift1key, UWORD shift2key);
 extern INPUT_DEVICE CreateJoystickDevice (COUNT port, UWORD threshold,
 		UWORD left, UWORD right, UWORD up, UWORD down, 
-		UWORD but1, UWORD but2, UWORD but3, UWORD s1, UWORD s2);
+		UWORD but1, UWORD but2, UWORD but3, UWORD but4, UWORD s1, UWORD s2);
 extern INPUT_DEVICE CreateInternalDevice (INPUT_STATE (*input_func)
 		(INPUT_REF InputRef, INPUT_STATE InputState));
 extern BOOLEAN DestroyInputDevice (INPUT_DEVICE InputDevice);

@@ -126,6 +126,8 @@ static UWORD ParseKeyString(char* line)
 		return SK_KEYPAD_PLUS;
 	else if (!strcmp(key, "KP-"))
 		return SK_KEYPAD_MINUS;
+	else if (!strcmp(key, "Esc"))
+		return 27; //Escape is stadard ASCII 27
 	else
 		return key[0];
 }
@@ -133,7 +135,7 @@ static UWORD ParseKeyString(char* line)
 static MEM_HANDLE
 LoadKeyConfig (FILE *fp, DWORD length)
 {
-	UWORD buf[18];
+	UWORD buf[20];
 	int p;
 	int i;
 	char line[256];
@@ -166,7 +168,7 @@ LoadKeyConfig (FILE *fp, DWORD length)
 		int joyThresh = 0;
 		memset(buf, 0xFF, sizeof(buf));
 		// Read in 9 inputs
-		for (i = 0; i < 9; ++i)
+		for (i = 0; i < 10; ++i)
 		{
 			// Look for valid lines
 			for (;;)
@@ -243,13 +245,13 @@ LoadKeyConfig (FILE *fp, DWORD length)
 		}
 		KeyboardInput[p] = CaptureInputDevice (
 			CreateJoystickKeyboardDevice(buf[0], buf[1], buf[2], buf[3], buf[4],
-				buf[5], buf[6], buf[7], buf[8])
+				buf[5], buf[6], buf[7], buf[8], buf[9])
 			);
 		if (joyN != -1)
 		{
 			JoystickInput[p] = CaptureInputDevice (
-				CreateJoystickDevice(joyN, joyThresh, buf[9], buf[10], buf[11], 
-					buf[12], buf[13], buf[14], buf[15], buf[16], buf[17])
+				CreateJoystickDevice(joyN, joyThresh, buf[10], buf[11], buf[12], 
+					buf[13], buf[14], buf[15], buf[16], buf[17], buf[18], buf[19])
 				);
 		}
 		else

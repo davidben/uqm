@@ -469,6 +469,8 @@ _get_joystick_keyboard_state (INPUT_REF InputRef, INPUT_STATE InputState)
 		InputState |= DEVICE_BUTTON2;
 	if (GetKeyboardDown (*KeyEquivalentPtr++))
 		InputState |= DEVICE_BUTTON3;
+	if (GetKeyboardDown (*KeyEquivalentPtr++))
+		InputState |= DEVICE_BUTTON4;
 
 	if (GetKeyboardDown (*KeyEquivalentPtr++))
 		InputState |= DEVICE_LEFTSHIFT;

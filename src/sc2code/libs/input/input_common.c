@@ -49,7 +49,7 @@ CreateSerialKeyboardDevice (void)
 INPUT_DEVICE
 CreateJoystickKeyboardDevice (UWORD lfkey, UWORD rtkey, UWORD
 		topkey, UWORD botkey, UWORD but1key, UWORD but2key, UWORD
-		but3key, UWORD shift1key, UWORD shift2key)
+		but3key, UWORD but4key, UWORD shift1key, UWORD shift2key)
 {
 	INPUT_DEVICE InputDevice;
 
@@ -69,7 +69,7 @@ CreateJoystickKeyboardDevice (UWORD lfkey, UWORD rtkey, UWORD
 			SetInputDeviceInputFunc (InputPtr, _get_joystick_keyboard_state);
 			SetInputDeviceKeyEquivalents (InputPtr,
 					lfkey, rtkey, topkey, botkey,
-					but1key, but2key, but3key,
+					but1key, but2key, but3key, but4key,
 					shift1key, shift2key);
 
 			UnlockInputDevice (InputDevice);
@@ -81,8 +81,8 @@ CreateJoystickKeyboardDevice (UWORD lfkey, UWORD rtkey, UWORD
 
 INPUT_DEVICE
 CreateJoystickDevice (COUNT port, UWORD threshold, UWORD left, UWORD right, 
-		UWORD top, UWORD bottom, UWORD but1, UWORD but2, UWORD but3, UWORD s1,
-		UWORD s2)
+		UWORD top, UWORD bottom, UWORD but1, UWORD but2, UWORD but3, UWORD but4,
+		UWORD s1, UWORD s2)
 {
 	INPUT_DEVICE InputDevice;
 
@@ -104,7 +104,7 @@ CreateJoystickDevice (COUNT port, UWORD threshold, UWORD left, UWORD right,
 			SetInputDeviceInputFunc (InputPtr, _get_joystick_state);
 			SetInputDeviceJoystickPort (InputPtr, port);
 			SetInputDeviceJoystickButtons (InputPtr, left, right, top, bottom,
-					but1, but2, but3, s1, s2);
+					but1, but2, but3, but4, s1, s2);
 			SetInputDeviceJoystickThreshold(InputPtr, threshold);
 
 			UnlockInputDevice (InputDevice);

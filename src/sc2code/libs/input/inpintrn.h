@@ -21,7 +21,7 @@
 
 #include "inplib.h"
 
-#define NUM_INPUTS 9
+#define NUM_INPUTS 10
 /*
  * Inputs
  * 0 - Left
@@ -31,8 +31,9 @@
  * 4 - Button 1
  * 5 - Button 2
  * 6 - Button 3
- * 7 - Left shift
- * 8 - Right shift
+ * 7 - Button 4
+ * 8 - Left shift
+ * 9 - Right shift
  */
 
 typedef struct inp_dev
@@ -73,7 +74,7 @@ typedef PBYTE BYTEPTR;
 
 #define SetInputDeviceHandle(i,h) \
 		((INPUT_DESCPTR)(i))->ThisDevice = (h)
-#define SetInputDeviceKeyEquivalents(i,l,r,t,b,b1,b2,b3,s1,s2) \
+#define SetInputDeviceKeyEquivalents(i,l,r,t,b,b1,b2,b3,b4,s1,s2) \
 		(((INPUT_DESCPTR)(i))->device.key_equivalent[0] = (l), \
 		((INPUT_DESCPTR)(i))->device.key_equivalent[1] = (r), \
 		((INPUT_DESCPTR)(i))->device.key_equivalent[2] = (t), \
@@ -81,9 +82,10 @@ typedef PBYTE BYTEPTR;
 		((INPUT_DESCPTR)(i))->device.key_equivalent[4] = (b1), \
 		((INPUT_DESCPTR)(i))->device.key_equivalent[5] = (b2), \
 		((INPUT_DESCPTR)(i))->device.key_equivalent[6] = (b3), \
-		((INPUT_DESCPTR)(i))->device.key_equivalent[7] = (s1), \
-		((INPUT_DESCPTR)(i))->device.key_equivalent[8] = (s2))
-#define SetInputDeviceJoystickButtons(i,l,r,t,b,b1,b2,b3,s1,s2) \
+		((INPUT_DESCPTR)(i))->device.key_equivalent[7] = (b4), \
+		((INPUT_DESCPTR)(i))->device.key_equivalent[8] = (s1), \
+		((INPUT_DESCPTR)(i))->device.key_equivalent[9] = (s2))
+#define SetInputDeviceJoystickButtons(i,l,r,t,b,b1,b2,b3,b4,s1,s2) \
 		(((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[0] = l, \
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[1] = r, \
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[2] = t, \
@@ -91,8 +93,9 @@ typedef PBYTE BYTEPTR;
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[4] = b1, \
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[5] = b2, \
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[6] = b3, \
-		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[7] = s1, \
-		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[8] = s2)
+		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[7] = b4, \
+		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[8] = s1, \
+		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_buttons[9] = s2)
 #define SetInputDeviceJoystickPort(i,p) \
 		((INPUT_DESCPTR)(i))->device.joystick_info.joystick_port = (p)
 #define SetInputDeviceJoystickThreshold(i,t) \

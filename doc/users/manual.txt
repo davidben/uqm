@@ -467,7 +467,9 @@ UP or ENTER:             Thrust
 LEFT and RIGHT:          Steer
 SPACE:                   Fire Primary Weapon
 CONTROL:                 Fire Secondary Weapon
-SPACE with RIGHT SHIFT:  Emergency Warp Escape
+SPACE with RIGHT SHIFT
+	OR
+ESCAPE:                  Emergency Warp Escape
 
 
 	Planet Exploration

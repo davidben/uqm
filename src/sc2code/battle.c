@@ -89,8 +89,9 @@ if ((InputState & DEVICE_BUTTON3)
 							&& cur_player == 0
 							&& ((PlayerControl[cur_player] & HUMAN_CONTROL)
 							|| (InputState = GetInputState (NormalInput)))
-							&& (InputState & (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
-							== (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
+							&& ((InputState & (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT))
+							    == (DEVICE_BUTTON2 | DEVICE_RIGHTSHIFT)
+							||  (InputState & DEVICE_BUTTON4)))
 					{
 						ELEMENTPTR ElementPtr;
 
