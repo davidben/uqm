@@ -75,6 +75,8 @@ main (int argc, char *argv[])
 	char contentdir[1000];
 	float gamma = 1.0;
 	int gammaset = 0;
+	const char **addons;
+	int numAddons;
 
 	enum
 	{
@@ -83,7 +85,8 @@ main (int argc, char *argv[])
 		FONT_OPT,
 		SCROLL_OPT,
 		SOUND_OPT,
-		STEREOSFX_OPT
+		STEREOSFX_OPT,
+		ADDON_OPT
 	};
 
 	int option_index = 0, c;
@@ -113,6 +116,7 @@ main (int argc, char *argv[])
 		{"scroll", 1, NULL, SCROLL_OPT},
 		{"sound", 1, NULL, SOUND_OPT},
 		{"stereosfx", 0, NULL, STEREOSFX_OPT},
+		{"addon", 1, NULL, ADDON_OPT},
 		{0, 0, 0, 0}
 	};
 
@@ -130,6 +134,17 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
+	/* InitThreadSystem should come before anything else.
+	 * The memory system uses semaphores.
+	 * Everything else uses the memory system.
+	 */
+	InitThreadSystem ();
+	mem_init ();
+
+	addons = HMalloc(1 * sizeof (const char *));
+	addons[0] = NULL;
+	numAddons = 0;
+	
 	while ((c = getopt_long(argc, argv, "r:d:foc:b:spn:?hM:S:T:m:q:ug:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
@@ -269,48 +284,62 @@ main (int argc, char *argv[])
 			case STEREOSFX_OPT:
 				optStereoSFX = TRUE;
 			break;
+			case ADDON_OPT:
+				numAddons++;
+				addons = HRealloc(addons,
+						(numAddons + 1) * sizeof (const char *));
+				addons[numAddons - 1] = optarg;
+				addons[numAddons] = NULL;
+				break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
 			case 'h':
-				printf("\nOptions:\n");
-				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, bigger works only with --opengl)\n");
+				printf("Options:\n");
+				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
+						"works only with --opengl)\n");
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=MODE (bilinear, biadapt or biadv, default is none)\n");
-				printf("  -b, --meleescale=MODE (nearest or trilinear, default is trilinear)\n");
+				printf("  -c, --scale=MODE (bilinear, biadapt or biadv, "
+						"default is none)\n");
+				printf("  -b, --meleescale=MODE (nearest or trilinear, "
+						"default is trilinear)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
-				printf("  -g, --gamma=CORRECTIONVALUE (default 1.0, which causes no change)\n");
+				printf("  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
+						"causes no change)\n");
 				printf("  -n, --contentdir=CONTENTDIR\n");
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
-				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
+				printf("  -q, --audioquality=QUALITY (high, medium or low, "
+						"default medium)\n");
 				printf("  -u, --nosubtitles\n");
-				printf("  --sound=DRIVER (openal, mixsdl, none; default mixsdl)\n");
-				printf("  --stereosfx (enables positional sound effects, currently only for openal)\n");
-				printf("The following options can take either '3do' or 'pc' as an option:\n");
+				printf("  --addon <addon> (using a specific addon; "
+						"may be specified multiple times)\n");
+				printf("  --sound=DRIVER (openal, mixsdl, none; default "
+						"mixsdl)\n");
+				printf("  --stereosfx (enables positional sound effects, "
+						"currently only for openal)\n");
+				printf("The following options can take either '3do' or 'pc' "
+						"as an option:\n");
 				printf("  -m, --music : Music version (default 3do)\n");
-				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");
-				printf("  --menu      : menu type, pc=text, 3do=graphical (default 3do)\n");
+				printf("  --cscan     : coarse-scan display, pc=text, "
+						"3do=hieroglyphs (default 3do)\n");
+				printf("  --menu      : menu type, pc=text, 3do=graphical "
+						"(default 3do)\n");
 				printf("  --font      : font types and colors (default pc)\n");
-				printf("  --scroll    : ff/frev during comm.  pc=per-page, 3do=smooth (default pc)\n");
+				printf("  --scroll    : ff/frev during comm.  pc=per-page, "
+						"3do=smooth (default pc)\n");
 				return 0;
 			break;
 		}
 	}
 	
-	/* InitThreadSystem should come before anything else.
-	 * The memory system uses semaphores.
-	 * Everything else uses the memory system.
-	 */
-	InitThreadSystem ();
-	mem_init ();
-
 	initIO();
-	prepareContentDir (contentdir);
+	prepareContentDir (contentdir, addons);
+	HFree (addons);
 	prepareConfigDir ();
 	prepareMeleeDir ();
 	prepareSaveDir ();

@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- added '--addon <addon>' - SvdB
 - keys.cfg from incompatible control scheme version is now renamed
   automatically to keys.old -Mika
 - Added warranty message in the console on startup, SvdB

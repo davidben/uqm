@@ -50,10 +50,12 @@ extern uio_DirHandle *rootDir;
 
 
 static void mountContentDir (uio_Repository *repository,
-		const char *contentPath);
+		const char *contentPath, const char **addons);
+static void mountDirZips (uio_MountHandle *contentHandle,
+		uio_DirHandle *dirHandle);
 
 void
-prepareContentDir (char *contentDirName)
+prepareContentDir (char *contentDirName, const char **addons)
 {
 	const char *testfile = "version";
 	char cwd[PATH_MAX];
@@ -72,7 +74,7 @@ prepareContentDir (char *contentDirName)
 				"directory.\n");
 		exit (EXIT_FAILURE);
 	}
-	mountContentDir (repository, cwd);
+	mountContentDir (repository, cwd, addons);
 }
 
 void
@@ -161,9 +163,10 @@ prepareMeleeDir (void) {
 }
 
 static void
-mountContentDir (uio_Repository *repository, const char *contentPath) {
+mountContentDir (uio_Repository *repository, const char *contentPath,
+		const char **addons) {
 	uio_MountHandle *contentHandle;
-	uio_DirHandle *packagesDir;
+	uio_DirHandle *packagesDir, *addonsDir, *addonDir;
 	static uio_AutoMount *autoMount[] = { NULL };
 
 	contentHandle = uio_mountDir (repository, "/",
@@ -185,29 +188,73 @@ mountContentDir (uio_Repository *repository, const char *contentPath) {
 	packagesDir = uio_openDir (repository, "/packages", 0);
 	if (packagesDir == NULL) {
 		// No packages dir means no packages to load.
+		if (addons[0] != NULL) {
+			// addons were specified, but there's no /packages dir,
+			// let alone a /packages/addons dir.
+			fprintf (stderr, "Warning: There's no 'packages/addons' "
+					"directory in the 'content' directory;\n\t'--addon' "
+					"options are ignored.\n");
+		}
 		return;
 	}
 
-	{
-		uio_DirList *dirList;
+	mountDirZips (contentHandle, packagesDir);
 
-		dirList = uio_getDirList(packagesDir, "", ".zip", match_MATCH_SUFFIX);
-		if (dirList != NULL) {
-			int i;
+	// NB: note the difference between addonsDir and addonDir.
+	//     the former is the dir 'packages/addons', the latter a directory
+	//     in that dir.
+	addonsDir = uio_openDirRelative (packagesDir, "addons", 0);
+	if (addonsDir == NULL) {
+		// No addon dir found.
+		fprintf (stderr, "Warning: There's no 'packages/addons' "
+				"directory in the 'content' directory;\n\t'--addon' "
+				"options are ignored.\n");
+		uio_closeDir (packagesDir);
+		return;
+	}
 			
-			for (i = 0; i < dirList->numNames; i++) {
-				if (uio_mountDir (repository, "/", uio_FSTYPE_ZIP,
-						packagesDir, dirList->names[i], "/", autoMount,
-						uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
-						contentHandle) == NULL) {
-					fprintf(stderr, "Warning: Could not mount '%s': %s.\n",
-							dirList->names[i], strerror(errno));
-				}
+	uio_closeDir (packagesDir);
+
+	for (; *addons != NULL; addons++)
+	{
+		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
+		if (addonDir == NULL) {
+			fprintf (stderr, "Warning: directory 'packages/addons/%s' "
+					"not found; addon skipped.\n", *addons);
+			continue;
+		}
+		
+		mountDirZips (contentHandle, addonDir);
+
+		uio_closeDir (addonDir);
+	}
+
+	uio_closeDir (addonsDir);
+}
+
+static void
+mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
+{
+	static uio_AutoMount *autoMount[] = { NULL };
+	uio_DirList *dirList;
+
+	dirList = uio_getDirList (dirHandle, "", ".zip", match_MATCH_SUFFIX);
+	if (dirList != NULL) {
+		int i;
+		
+		for (i = 0; i < dirList->numNames; i++) {
+			if (uio_mountDir (repository, "/", uio_FSTYPE_ZIP,
+					dirHandle, dirList->names[i], "/", autoMount,
+					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
+					contentHandle) == NULL) {
+				fprintf (stderr, "Warning: Could not mount '%s': %s.\n",
+						dirList->names[i], strerror (errno));
 			}
 		}
-		uio_freeDirList (dirList);
 	}
-	uio_closeDir(packagesDir);
+	uio_freeDirList (dirList);
 }
+
+
 
 
