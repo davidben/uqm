@@ -94,6 +94,7 @@ Glitches (don't crash the game, medium priority):
   - saying the phrase 'What you are doing it wrong'
   - demanding the Shofixti Maidens from Zex
   Probably the negative shift for GET_STATE and SET_STATE
+- comm.c color transform speed is too fast when compared to PC version
 
 Implementation bugs (low priority):
 - Scaling code problems:
