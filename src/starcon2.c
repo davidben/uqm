@@ -308,11 +308,11 @@ main (int argc, char *argv[])
 	mem_init ();
 
 	initIO();
-	initTempDir();
 	prepareContentDir (contentdir);
 	prepareConfigDir ();
 	prepareMeleeDir ();
 	prepareSaveDir ();
+	initTempDir();
 	
 	InitTimeSystem ();
 	InitTaskSystem ();
