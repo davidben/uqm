@@ -497,7 +497,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 {
 	DRAWABLEPTR DrawablePtr;
 	int cel_ct;
-	FRAMEPTR FramePtr;
+	FRAMEPTR FramePtr = NULL;
 
 	if ((DrawablePtr = LockDrawable (handle)) == 0)
 		return (FALSE);
@@ -506,25 +506,28 @@ _ReleaseCelData (MEM_HANDLE handle)
 
 	if (DrawablePtr->Frame)
 	{
-		FramePtr = &DrawablePtr->Frame[cel_ct];
-		if (TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) != SCREEN_DRAWABLE)
+		FramePtr = DrawablePtr->Frame;
+		if (TYPE_GET (FramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 		{
-			while (--FramePtr, cel_ct--)
-			{
-				TFB_Image *img = FramePtr->image;
-				if (img)
-				{
-					FramePtr->image = NULL;
-					TFB_DrawScreen_DeleteImage (img);
-				}
-			}
+			FramePtr = NULL;
 		}
-		HFree (DrawablePtr->Frame);
-		DrawablePtr->Frame = NULL;
 	}
 
 	UnlockDrawable (handle);
-	mem_release (handle);
+	if (mem_release (handle) && FramePtr)
+	{
+		int i;
+		for (i = 0; i < cel_ct; i++)
+		{
+			TFB_Image *img = FramePtr[i].image;
+			if (img)
+			{
+				FramePtr[i].image = NULL;
+				TFB_DrawScreen_DeleteImage (img);
+			}
+		}
+		HFree (FramePtr);
+	}
 
 	return (TRUE);
 }
