@@ -42,6 +42,9 @@ int GfxFlags = 0;
 
 static TFB_Palette palette[256];
 
+#define FPS_PERIOD 1000
+int RenderedFrames = 0;
+
 int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
@@ -426,10 +429,14 @@ TFB_ComputeFPS ()
 	last_time = current_time;
 	
 	fps_counter += delta_time;
-	if (fps_counter > 1000)
+	if (fps_counter > FPS_PERIOD)
 	{
+		fprintf (stderr, "fps %.2f, effective %.2f\n",
+				(float)FPS_PERIOD / delta_time,
+				1000.0 * RenderedFrames / fps_counter);
+
 		fps_counter = 0;
-		fprintf (stderr, "fps %.2f\n",1.0 / (delta_time / 1000.0));
+		RenderedFrames = 0;
 	}
 }
 
@@ -658,7 +665,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 	}
 
 	TFB_SwapBuffers ();
-        BroadcastCondVar (RenderingCond);
+	RenderedFrames++;
+	BroadcastCondVar (RenderingCond);
 }
 
 #endif
