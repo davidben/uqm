@@ -812,7 +812,7 @@ int ambient_anim_task(void* data)
 	FRAME TalkFrame;
 	FRAME ResetTalkFrame = NULL;
 	FRAME TransitionFrame = NULL;
-	FRAME AnimFrame[MAX_ANIMATIONS];
+	FRAME AnimFrame[MAX_ANIMATIONS + 1];
 	COUNT i;
 	DWORD LastTime;
 	FRAME CommFrame;
