@@ -25,7 +25,7 @@
 # Read in the config settings that affect the build, if present.
 # Don't reread for every dir when recursing.
 if [ -e build.vars -a -z "$BUILD_COMMAND" ]; then
-	. build.vars
+	. ./build.vars
 fi
 
 # Read in the Makeinfo file for the dir currently being processed
