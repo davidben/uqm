@@ -1123,15 +1123,28 @@ CountSISPieces (BYTE piece_type)
 Task flash_task = 0;
 RECT flash_rect;
 static FRAME flash_frame;
+static int flash_changed;
+Mutex flash_mutex = 0;
 
 int flash_rect_func(void *data)
 {
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
+#define CACHE_SIZE 10
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
+	RECT new_rect;
+	FRAME new_frame;
 	Task task = (Task)data;
+	int cached[CACHE_SIZE];
+	STAMP cached_stamp[CACHE_SIZE];
+	int i;
 
+	for (i = 0; i < CACHE_SIZE; i++)
+	{
+		cached[i] = 0;
+		cached_stamp[i].frame = 0;
+	}
 	fstrength = NORMAL_F_STRENGTH;
 	incr = 1;
 	strength = NORMAL_STRENGTH;
@@ -1141,14 +1154,33 @@ int flash_rect_func(void *data)
 	{
 		CONTEXT OldContext;
 
+		LockMutex (flash_mutex);
+		if (flash_changed)
+		{
+			new_rect = flash_rect;
+			new_frame = flash_frame;
+			flash_changed = 0;
+			UnlockMutex (flash_mutex);
+			//  Wait for the ExtraScreen to get initialized
+			FlushGraphics ();
+			for (i = 0; i < CACHE_SIZE; i++)
+			{
+				cached[i] = 0;
+				if(cached_stamp[i].frame)
+					DestroyDrawable (ReleaseDrawable (cached_stamp[i].frame));
+				cached_stamp[i].frame = 0;
+			}
+		}
+		else
+			UnlockMutex (flash_mutex);
 		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (ScreenContext);
 		
-		if (flash_rect.extent.width)
+		if (new_rect.extent.width)
 		{
 			BatchGraphics ();
-			SetContextClipRect (&flash_rect);
-			if (flash_frame)
+			SetContextClipRect (&new_rect);
+			if (new_frame)
 			{
 #define MIN_F_STRENGTH -3
 #define MAX_F_STRENGTH 3
@@ -1162,26 +1194,39 @@ int flash_rect_func(void *data)
 					fstrength = MIN_F_STRENGTH + 1;
 					incr = 1;
 				}
-				
-				if (fstrength != NORMAL_F_STRENGTH)
+				if (cached[fstrength - MIN_F_STRENGTH])
+					DrawStamp (&cached_stamp[fstrength - MIN_F_STRENGTH]);
+				else
 				{
-					STAMP s;
+					if (fstrength != NORMAL_F_STRENGTH)
+					{
+						STAMP s;
 
-					ClearDrawable ();
+						ClearDrawable ();
 
-					SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
+						SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
 					
-					s.origin.x = s.origin.y = 0;
-					s.frame = flash_frame;
-					DrawStamp (&s);
+						s.origin.x = s.origin.y = 0;
+						s.frame = new_frame;
+						DrawStamp (&s);
 
-					if (fstrength < 0)
-						SetGraphicStrength (-8, 8); // add to -(partial mask)
-					else
-						SetGraphicStrength (8, -8); // add to (partial mask)
+						if (fstrength < 0)
+							SetGraphicStrength (-8, 8); // add to -(partial mask)
+						else
+							SetGraphicStrength (8, -8); // add to (partial mask)
+					}
+
+					DrawFromExtraScreen (&new_rect);
+					SetGraphicStrength (4, 4);
+					{
+						STAMP *pStamp;
+						pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
+						cached[fstrength - MIN_F_STRENGTH] = 1;
+						pStamp->origin.x = 0;
+						pStamp->origin.y = 0;
+						pStamp->frame = CaptureDrawable (LoadDisplayPixmap (&new_rect, (FRAME)0));
+					}
 				}
-
-				DrawFromExtraScreen (&flash_rect);
 			}
 			else
 			{
@@ -1189,15 +1234,27 @@ int flash_rect_func(void *data)
 #define MAX_STRENGTH 6
 				if ((strength += 2) > MAX_STRENGTH)
 					strength = MIN_STRENGTH;
-					
-				SetGraphicStrength (strength, 4);
-				DrawFromExtraScreen (&flash_rect);
+				if (cached[strength - MIN_STRENGTH])
+					DrawStamp (&cached_stamp[strength - MIN_STRENGTH]);
+				else
+				{
+					SetGraphicStrength (strength, 4);
+					DrawFromExtraScreen (&new_rect);
+					SetGraphicStrength (4, 4);
+
+					{
+						STAMP *pStamp;
+						pStamp = &cached_stamp[strength - MIN_STRENGTH];
+						cached[strength - MIN_STRENGTH] = 1;
+						pStamp->origin.x = 0;
+						pStamp->origin.y = 0;
+						pStamp->frame = CaptureDrawable (LoadDisplayPixmap (&new_rect, (FRAME)0));
+					}
+				}
 			}
 			
 			SetContextClipRect (NULL_PTR); // this will flush whatever
-			
-			SetGraphicStrength (4, 4);
-				
+							
 			UnbatchGraphics ();
 		}
 		SetContext (OldContext);
@@ -1218,7 +1275,10 @@ SetFlashRect (PRECT pRect, FRAME f)
 	RECT clip_r, temp_r, old_r;
 	CONTEXT OldContext;
 	FRAME old_f;
+	int create_flash = 0;
 
+	if (! flash_mutex);
+		flash_mutex = CreateMutex ();
 	if (pRect != (PRECT)~0L)
 	{
 		GetContextClipRect (&clip_r);
@@ -1265,12 +1325,8 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.corner.y += clip_r.corner.y;
 		flash_rect.extent.height += flash_rect.corner.y & 1;
 		flash_rect.corner.y &= ~1;
+		create_flash = 1;
 
-		if (flash_task == 0)
-		{
-			flash_task = AssignTask (flash_rect_func, 2048,
-					"flash rectangle");
-		}
 	}
 	
 	flash_frame = f;
@@ -1288,6 +1344,17 @@ SetFlashRect (PRECT pRect, FRAME f)
 	if (flash_rect.extent.width)
 	{
 		LoadIntoExtraScreen (&flash_rect);
+	}
+	LockMutex (flash_mutex);
+	flash_changed = 1;
+	UnlockMutex (flash_mutex);
+	// we create the thread after the LoadIntoExtraScreen
+	// so there is no race between the FlushGraphics in flash_task
+	// and the Enqueue in LoadIntoExtraScreen
+	if (create_flash && flash_task == 0)
+	{
+		flash_task = AssignTask (flash_rect_func, 2048,
+				"flash rectangle");
 	}
 
 	SetContext (OldContext);
