@@ -57,6 +57,7 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 	FRAME pFrame[2];
 	COUNT i, num_frames;
 	static COUNT scale_amt = PLANET_INIT_ZOOM_SIZE;
+	static UBYTE zoom_from = 0;
 	RECT r,  *rp = NULL;
 	CONTEXT OldContext;
 
@@ -77,7 +78,8 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
 		rp = &r;
-
+		if (scale_amt == PLANET_INIT_ZOOM_SIZE)
+			zoom_from |= Random () & 0x03;
 		//  we're zooming in, take care of scaling the frames
 		for (i=0; i < num_frames; i++)
 		{
@@ -104,12 +106,13 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		//Translate the planet so it comes from the bottom right corner
 		if (scale_amt > MAP_HEIGHT) 
 			scale_amt=MAP_HEIGHT;
-		dx += dx * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
-		dy += dy * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
+		dx += ((zoom_from & 0x01) ? 1 : -1) * dx * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
+		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
 		if (scale_amt == MAP_HEIGHT)
 		{
 			scale_amt = PLANET_INIT_ZOOM_SIZE;
 			zoom = 0;
+			zoom_from = 0;
 		}
 	}
 	SetSemaphore (GraphicsSem);
