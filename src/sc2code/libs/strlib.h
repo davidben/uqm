@@ -23,6 +23,8 @@
 #include "port.h"
 #include "libs/uio.h"
 
+#include <stddef.h>
+
 typedef DWORD STRING_TABLE;
 typedef DWORD STRING;
 typedef PBYTE STRINGPTR;
