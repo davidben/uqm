@@ -227,11 +227,11 @@ TFB_CreateDefaultConfig (void)
 	VControl_AddKeyBinding (SDLK_RCTRL,      (int *)&ImmediateInputState.p1_special);
 	VControl_AddKeyBinding (SDLK_ESCAPE,     (int *)&ImmediateInputState.p1_escape);
 
-	VControl_AddKeyBinding (SDLK_w,          (int *)&ImmediateInputState.p2_thrust);
-	VControl_AddKeyBinding (SDLK_a,          (int *)&ImmediateInputState.p2_left);
-	VControl_AddKeyBinding (SDLK_d,          (int *)&ImmediateInputState.p2_right);
-	VControl_AddKeyBinding (SDLK_t,          (int *)&ImmediateInputState.p2_weapon);
-	VControl_AddKeyBinding (SDLK_y,          (int *)&ImmediateInputState.p2_special);
+	VControl_AddKeyBinding (SDLK_e,          (int *)&ImmediateInputState.p2_thrust);
+	VControl_AddKeyBinding (SDLK_s,          (int *)&ImmediateInputState.p2_left);
+	VControl_AddKeyBinding (SDLK_f,          (int *)&ImmediateInputState.p2_right);
+	VControl_AddKeyBinding (SDLK_q,          (int *)&ImmediateInputState.p2_weapon);
+	VControl_AddKeyBinding (SDLK_a,          (int *)&ImmediateInputState.p2_special);
 
 	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateInputState.lander_thrust);
 	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateInputState.lander_thrust);

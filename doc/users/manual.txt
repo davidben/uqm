@@ -517,9 +517,9 @@ RIGHT SHIFT:             Fire Primary Weapon
 CTRL:                    Fire Secondary Weapon
 
 
-These controls are configurable by editing the key.cfg file which will be
-copied to your personal directory for uqm data the first time you start the
-game.
+These controls are configurable by editing the key.cfg file which will
+be automatically generated in your personal directory for uqm data the
+first time you start the game.
 The location of this directory varies per system.
 On Microsoft Windows systems this is a folder named 'uqm' in the
 application data folder for the current user.
@@ -531,5 +531,8 @@ This is usually in one of the following locations:
 - "C:\Documents and Settings\YourName\Application Data\"
   (Windows NT/XP)
 On Unix systems this personal uqm data is stored in "~/.uqm".
-Later versions of The Ur-Quan Masters will include a key configuration tool.
 
+Later versions of The Ur-Quan Masters will include a key configuration
+tool.  In the meantime, the "starcon.key" file in the root fo the
+content directory has information about how to add support for
+joysticks or remap keys.
