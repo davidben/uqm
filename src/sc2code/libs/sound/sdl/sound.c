@@ -24,6 +24,8 @@
 #ifdef WIN32
 #include <SDL_mixer.h>
 #pragma comment (lib, "SDL_mixer.lib")
+#elif defined __FreeBSD__
+#include <SDL_mixer.h>
 #else
 #include <SDL/SDL_mixer.h>
 #endif
