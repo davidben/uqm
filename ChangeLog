@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Not initialising the various systems when -h/-? is supplied (bug #656),
+  from Nic
 - F10 works when playing the intro (bug #665), from fOSSiL
 - Game clock counter overflow fix (bug #668) - [collective effort]
 - Cocoa hooks for MacOS X, from Nic

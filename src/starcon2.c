@@ -147,6 +147,12 @@ main (int argc, char *argv[])
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
 
+	if (options.runMode == runMode_usage)
+	{
+		usage (stdout);
+		return EXIT_SUCCESS;
+	}
+	
 	/* mem_init () uses mutexes.  Mutex creation cannot use
 	   the memory system until the memory system is rewritten
 	   to rely on a thread-safe allocator.
@@ -162,13 +168,6 @@ main (int argc, char *argv[])
 		return optionsResult;
 	}
 
-	if (options.runMode == runMode_usage)
-	{
-		usage(stdout);
-		// TODO: various uninitialisations
-		return EXIT_SUCCESS;
-	}
-	
 
 	/* TODO: Once threading is gone, these become local variables
 	   again.  In the meantime, they must be global so that
@@ -283,9 +282,10 @@ static int
 preParseOptions(int argc, char *argv[], struct options_struct *options)
 {
 	/*
-		"pre-process" the cmdline args looking for a -l ("logfile")
-		option.  If it was given, redirect stderr to the named file
-	*/
+	 *	"pre-process" the cmdline args looking for a -l ("logfile")
+	 *	option.  If it was given, redirect stderr to the named file.
+	 *	Also handle the switches were normal operation is inhibited.
+	 */
 	opterr = 0;
 	for (;;)
 	{
@@ -300,6 +300,10 @@ preParseOptions(int argc, char *argv[], struct options_struct *options)
 				options->logFile = optarg;
 				break;
 			}
+			case '?':
+			case 'h':
+				options->runMode = runMode_usage;
+				return EXIT_SUCCESS;
 		}
 	}
 	optind = 1;
@@ -533,10 +537,6 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 							longOptions[optionIndex].name);
 				badArg = TRUE;
 				break;
-			case '?':
-			case 'h':
-				options->runMode = runMode_usage;
-				return EXIT_SUCCESS;
 			break;
 		}
 	}
