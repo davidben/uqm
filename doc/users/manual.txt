@@ -540,6 +540,6 @@ This is usually in one of the following locations:
 On Unix systems this personal uqm data is stored in "~/.uqm".
 
 Later versions of The Ur-Quan Masters will include a key configuration
-tool.  In the meantime, the "starcon.key" file in the root of the
-content directory has information about how to add support for
-joysticks or remap keys.
+tool.  In the meantime, the keys.cfg has a bunch of comments in it
+that should help you set up your joystick and remap key controls to
+your satisfaction.
