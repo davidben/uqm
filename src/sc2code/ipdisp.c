@@ -156,7 +156,7 @@ ip_group_preprocess (PELEMENT ElementPtr)
 	target_loc = GET_GROUP_DEST (StarShipPtr);
 	if (!(task & (IGNORE_FLAGSHIP | REFORM_GROUP)))
 	{
-		if (target_loc == 0)
+		if (target_loc == 0 && task != FLEE)
 		{
 				/* if intercepting flagship */
 			target_loc = flagship_loc;
