@@ -69,6 +69,7 @@ advance_track (int channel_finished)
 			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, AL_FALSE, 
 				speechVolumeScale == 0.0f ? AL_FALSE : AL_TRUE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+			do_subtitles (~0, 0);
 			do_subtitles (0, 0);
 		}
 		else if (channel_finished == 0)

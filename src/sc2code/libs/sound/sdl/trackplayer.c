@@ -64,6 +64,7 @@ advance_track (int channel_finished)
 		if (tcur < tct)
 		{
 			Mix_PlayChannel (VOICE_CHANNEL, track_clip[tcur].chunk, 0);
+			do_subtitles (~0, 0);
 			do_subtitles (0, 0);
 		}
 		else if (channel_finished == VOICE_CHANNEL)

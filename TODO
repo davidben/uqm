@@ -58,7 +58,6 @@ Glitches (don't crash the game, medium priority):
 - "device used successfully" and "device usage failed" sounds are identical
   (the failure one)
 - spathi blink and other spathi animation may go out of sync
-- subtitles may go past the bottom boundary
 - If you win a Melee, and then are blown up yourself, the sound loops 
   until the game is quit. It still functions, it just has the last 3-or-so
   seconds after the melee ended repeating over and over in the background.
@@ -133,8 +132,6 @@ Stuff still to do (large):
   Some packaging will be used. (possibilities: zlib, physfs
   (http://icculus.org/physfs/), zziplib (http://zziplib.sourceforge.net/))
   (assigned to Meep-Eep)
-- currently the subtitles sometimes overlap
-  (depends on new resource system)
 - add some way to configure the PC/3DO/other choices.
   - music should be selectable track by track
   (depends on new resource system)
