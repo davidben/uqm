@@ -460,48 +460,46 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		CONTEXT OldContext;
 		int j;
 
-		SetSemaphore (GraphicsSem);
-		OldContext = SetContext (OffScreenContext);
-		SetContextFGFrame (Screen);
-		SetContextBackGroundColor (BLACK_COLOR);
 
 		AllDoorsFinished = FALSE;
 		r.corner.x = r.corner.y = 0;
 		r.extent.width = SHIP_WIN_WIDTH;
 		r.extent.height = SHIP_WIN_HEIGHT;
 		ButtonState = AnyButtonPress (FALSE) ? 1 : 0;
+		if (ButtonState)
+		{
+			while (ButtonState)
+				if (!AnyButtonPress (FALSE))
+					ButtonState = 0;
+				else
+					TaskSwitch();
+		}
 		TimeIn = GetTimeCounter ();
 
 		for (j = 0; (j < SHIP_WIN_FRAMES) && !AllDoorsFinished; j++)
 		{
-			ClearSemaphore (GraphicsSem);
 			SleepThreadUntil (TimeIn + ONE_SECOND / 24);
 			TimeIn = GetTimeCounter ();
+			if (AnyButtonPress (FALSE))
+			{
+				if (YankedStarShipPtr != 0)
+				{
+					ship_win_info[0].lfdoor_s.origin.x = 0;
+					ship_win_info[0].rtdoor_s.origin.x = 0;
+				}
+				AllDoorsFinished = TRUE;
+				while (AnyButtonPress (FALSE))
+					TaskSwitch();
+			}
 			SetSemaphore (GraphicsSem);
+			OldContext = SetContext (OffScreenContext);
+			SetContextFGFrame (Screen);
+			SetContextBackGroundColor (BLACK_COLOR);
+
 			BatchGraphics ();
-StartFinalPass:
 			pship_win_info = &ship_win_info[0];
 			for (i = 0; i < num_ships; ++i)
 			{
-				if (ButtonState)
-				{
-					if (!AnyButtonPress (FALSE))
-						ButtonState = 0;
-				}
-				else if (AnyButtonPress (FALSE))
-				{
-					if (YankedStarShipPtr == 0)
-					{
-						AllDoorsFinished = TRUE;
-					}
-					else
-					{
-						pship_win_info->lfdoor_s.origin.x = 0;
-						pship_win_info->rtdoor_s.origin.x = 0;
-						AllDoorsFinished = TRUE;
-					}
-					goto StartFinalPass;
-				}
 
 				{
 					RECT ClipRect;
@@ -535,11 +533,10 @@ StartFinalPass:
 			}
 
 			UnbatchGraphics ();
+			SetContextClipRect (NULL_PTR);
+			SetContext (OldContext);
+			ClearSemaphore (GraphicsSem);
 		}
-
-		SetContextClipRect (NULL_PTR);
-		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
 	}
 }
 
@@ -759,7 +756,9 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 						{
 							ShowCombatShip ((COUNT)pMS->CurState, (SHIP_FRAGMENTPTR)0);
 							//Reset flash rectangle
+							SetSemaphore (GraphicsSem);
 							SetFlashRect ((PRECT)~0L, (FRAME)0);
+							ClearSemaphore (GraphicsSem);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
 							SetSemaphore (GraphicsSem);
