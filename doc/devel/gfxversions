@@ -1,4 +1,5 @@
 Chnages between DOS and 3DO graphics.
+[Unless stated otherwise, UQM does things 3DO way]
 
 ----------------------------------------------------------------------
 Melee
@@ -50,7 +51,8 @@ that define planet color.
 2. Many changes in Planet Rotation (scan view)
 
 3. Suns
-On DOS, suns have different colors; on 3DO, they are all yellow.
+On DOS, suns have different colors; on 3DO, they are all yellow; UQM has
+been patched to render suns in different colors like DOS.
 
 ----------------------------------------------------------------------
 Misc
