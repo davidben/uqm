@@ -1223,15 +1223,17 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						
 						if (LOBYTE (GLOBAL(CurrentActivity)) == IN_INTERPLANETARY)
 						{
+							SetSemaphore(GraphicsSem);
 							ClearSISRect(DRAW_SIS_DISPLAY);
+							ClearSemaphore(GraphicsSem);
 							DrawSISFrame();
+							SetSemaphore(GraphicsSem);
 							RepairSISBorder();
 							DrawSISMessage(NULL_PTR);
 							DrawSISTitle(GLOBAL_SIS(PlanetName));
 							DrawStarBackGround(TRUE);
 							OldContext = SetContext(SpaceContext);
 							SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
-							SetSemaphore(GraphicsSem);
 							BatchGraphics();
 							DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
 							UnbatchGraphics();

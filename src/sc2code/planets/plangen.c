@@ -93,6 +93,7 @@ RenderTopography (BOOLEAN Reconstruct)
 				pSolarSysState->PlanetFrameArray[2], 1
 				);
 #endif
+		s.frame = pSolarSysState->TopoFrame;
 		DrawStamp (&s);
 	}
 	else
