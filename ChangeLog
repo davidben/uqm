@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Added support for PC-style 3-step melee zooming; -b=pc|step option;
+  (bug #694) -Alex
 - Melee team building pick-ship box is now generated with actual ship
   icons (bug #692) -Alex
 - Setup Menu no longer crashes or misbehaves on custom resolutions (bug 
