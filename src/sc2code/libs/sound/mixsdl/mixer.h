@@ -149,8 +149,7 @@ typedef struct _mixSDL_Buffer
 
 } mixSDL_Buffer;
 
-#define mixSDL_bufMagic 0x4D495842
-		// 'MIXB'
+#define mixSDL_bufMagic 0x4258494DU /* MIXB in LSB */
 
 typedef struct
 {
@@ -168,8 +167,7 @@ typedef struct
 
 } mixSDL_Source;
 
-#define mixSDL_srcMagic 0x4D495853
-		// 'MIXS'
+#define mixSDL_srcMagic 0x5358494DU /* MIXS in LSB */
 
 /*************************************************
  *  General interface
