@@ -66,7 +66,7 @@ new_ship (PELEMENT DeadShipPtr)
 				DeadStarShipPtr->RaceDescPtr->ship_info.var2;
 		DeadStarShipPtr->special_counter =
 				DeadStarShipPtr->RaceDescPtr->ship_info.crew_level;
-		if (DeadStarShipPtr)
+		if (DeadStarShipPtr->special_counter)
 		{
 			StopMusic ();
 			DeadStarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
