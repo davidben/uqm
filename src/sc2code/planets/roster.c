@@ -169,7 +169,9 @@ RosterCleanup (PMENU_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		Task_SetState (pMS->flash_task, TASK_EXIT);
+		UnlockMutex (GraphicsLock);
+		ConcludeTask (pMS->flash_task);
+		LockMutex (GraphicsLock);
 		pMS->flash_task = 0;
 	}
 
@@ -211,10 +213,10 @@ DoModifyRoster (PMENU_STATE pMS)
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
-		pMS->CurFrame = 0;
 		LockMutex (GraphicsLock);
 		RosterCleanup (pMS);
 		UnlockMutex (GraphicsLock);
+		pMS->CurFrame = 0;
 
 		return (FALSE);
 	}
