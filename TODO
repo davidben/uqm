@@ -43,8 +43,7 @@ Glitches (don't crash the game, medium priority):
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
 - Subtitles in conversation will sometimes hang off the end (e.g. the 
-  Ilwrath reacting to the Ur-Quan Drone) or not appear at all (e.g. the 
-  Yehat).
+  Ilwrath reacting to the Ur-Quan Drone).
 - ZFP graphics synchronisation messed up when fast forwarding speech
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
