@@ -70,6 +70,7 @@ findFileInDirs (const char *locs[], int numLocs, const char *file)
 	char path[PATH_MAX];
 	size_t fileLen;
 
+	fileLen = strlen (file);
 	for (locI = 0; locI < numLocs; locI++)
 	{
 		size_t locLen;
