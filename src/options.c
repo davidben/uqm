@@ -99,7 +99,7 @@ prepareConfigDir (void) {
 			uio_FSTYPE_STDIO, NULL, NULL, buf, autoMount,
 			uio_MOUNT_TOP, NULL);
 	if (contentHandle == NULL) {
-		fprintf (stderr, "Fatal error: Couldn't mount content dir: %s\n",
+		fprintf (stderr, "Fatal error: Couldn't mount config dir: %s\n",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
