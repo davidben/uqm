@@ -1,33 +1,27 @@
-/**
- * OpenAL cross platform audio library
- * Copyright (C) 1999-2000 by authors.
- * This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Library General Public
- *  License as published by the Free Software Foundation; either
- *  version 2 of the License, or (at your option) any later version.
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Library General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- *  License along with this library; if not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA  02111-1307, USA.
- * Or go to http://www.gnu.org/copyleft/lgpl.html
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* NOTE by Mika: Wav loader, (c) Creative, taken from their OpenAL
- *               implementation and modified.
- */
+/* Loader for .wav files */
 
 #ifndef WAV_H
 #define WAV_H
 
 #include "types.h"
 
-/* loads the WAV file in little endian byte order */
-void LoadWAVFile (char *file, uint32 *format, void **data, uint32 *size, uint32 *freq, bool *loop);
+void LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
+				  uint32 *freq, bool want_big_endian);
 
 #endif

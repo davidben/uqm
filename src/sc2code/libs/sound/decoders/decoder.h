@@ -79,7 +79,7 @@ enum
 };
 
 extern TFB_DecoderFormats decoder_formats;
-
+void SoundDecoder_SwapWords (uint16* data, uint32 size);
 sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats* formats);
 void SoundDecoder_Uninit (void);
 TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size, 

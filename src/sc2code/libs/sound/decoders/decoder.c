@@ -505,24 +505,11 @@ uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 	{
 		case SOUNDDECODER_WAV:
 		{
-			bool loop;
-
 			LoadWAVFile (decoder->filename ,&decoder->format, &decoder->buffer, 
-				&decoder->buffer_size, &decoder->frequency, &loop);
+				&decoder->buffer_size, &decoder->frequency, decoder_formats.want_big_endian);
 			
 			if (decoder->buffer_size != 0)
 			{
-
-				/* WAVs are loaded in little-endian order
-				 * may need to do a word-swap 
-				 */
-				if (decoder_formats.want_big_endian &&
-						(decoder->format == decoder_formats.stereo16
-						|| decoder->format == decoder_formats.mono16))
-				{
-					SoundDecoder_SwapWords (
-							decoder->buffer, decoder->buffer_size);
-				}
 				decoder->type = SOUNDDECODER_BUF;
 				decoder->data = decoder->buffer;
 				decoder->pos = 0;
