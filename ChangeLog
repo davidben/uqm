@@ -1,4 +1,6 @@
 0.2:
+- 3D planet is now zoomed randomly from any corner, from PhracturedBlue
+- Flagship thrusters and modules one-pixel place fix, from TDuck
 - Earth topo map is now tinted as should, from PhracturedBlue
 - Fixed planet stuff when leaving surface with lander, from PhracturedBlue
 - RotatePlanet now holds GraphicsSem a shorter time, from PhracturedBlue
