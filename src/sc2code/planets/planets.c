@@ -64,6 +64,7 @@ LoadPlanet (BOOLEAN IsDefined)
 	SetSemaphore (GraphicsSem);
 
 	BatchGraphics ();
+	SetTransitionSource (NULL);
 	if (!(LastActivity & CHECK_LOAD))
 		DrawStarBackGround (TRUE);
 
@@ -176,7 +177,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		BatchGraphics();
 		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
 		UnbatchGraphics();
-		ScreenTransition (3, &r);
+		ScreenTransition (3, &r);  // How does this work?
 		UnbatchGraphics ();
 		LoadIntoExtraScreen (&r);
 		ClearSemaphore (GraphicsSem);

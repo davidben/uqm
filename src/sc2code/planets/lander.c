@@ -1515,6 +1515,7 @@ InitPlanetSide (void)
 		SetContextClipRect (&r);
 		SetContextClipping (TRUE);
 
+		SetTransitionSource (&r);
 		BatchGraphics ();
 		
 		{
@@ -1856,6 +1857,7 @@ ReturnToOrbit (PRECT pRect)
 	OldContext = SetContext (SpaceContext);
 	SetContextClipRect (pRect);
 
+	SetTransitionSource (pRect);
 	BatchGraphics ();
 	DrawStarBackGround (TRUE);
 	SetContext (ScanContext);

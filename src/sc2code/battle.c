@@ -188,7 +188,7 @@ Battle (void)
 	if (num_ships)
 	{
 		DWORD NextTime;
-BOOLEAN first_time;
+		BOOLEAN first_time;
 
 		GLOBAL (CurrentActivity) |= IN_BATTLE;
 		battle_counter = MAKE_WORD (
@@ -204,27 +204,30 @@ BOOLEAN first_time;
 
 		BattleSong (TRUE);
 		NextTime = 0;
-first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
+		first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
 		do
 		{
 			extern UWORD nth_frame;
+			RECT r;
 
-BatchGraphics ();
+			if (first_time)
+			{
+				r.corner.x = SIS_ORG_X;
+				r.corner.y = SIS_ORG_Y;
+				r.extent.width = SIS_SCREEN_WIDTH;
+				r.extent.height = SIS_SCREEN_HEIGHT;
+				SetTransitionSource (&r);
+			}
+			BatchGraphics ();
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 				SeedUniverse ();
 			RedrawQueue (TRUE);
-if (first_time)
-{
-	RECT r;
-	
-	first_time = FALSE;
-	r.corner.x = SIS_ORG_X;
-	r.corner.y = SIS_ORG_Y;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = SIS_SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
-UnbatchGraphics ();
+			if (first_time)
+			{
+				first_time = FALSE;
+				ScreenTransition (3, &r);
+			}
+			UnbatchGraphics ();
 			ClearSemaphore (GraphicsSem);
 			if (nth_frame)
 				TaskSwitch ();

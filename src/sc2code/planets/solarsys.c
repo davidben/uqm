@@ -490,6 +490,7 @@ ShowPlanet:
 					GenerateMoons ();
 
 					NewWaitPlanet = 0;
+					SetTransitionSource (NULL);
 					BatchGraphics ();
 					SetGraphicGrabOther (1);
 					DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
@@ -673,7 +674,12 @@ void
 ZoomSystem (void)
 {
 	RECT r;
+	r.corner.x = SIS_ORG_X;
+	r.corner.y = SIS_ORG_Y;
+	r.extent.width = SIS_SCREEN_WIDTH;
+	r.extent.height = SIS_SCREEN_HEIGHT;
 
+	SetTransitionSource (&r);
 	BatchGraphics ();
 	if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
 		DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
@@ -684,10 +690,6 @@ ZoomSystem (void)
 
 		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 	}
-	r.corner.x = SIS_ORG_X;
-	r.corner.y = SIS_ORG_Y;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = SIS_SCREEN_HEIGHT;
 	ScreenTransition (3, &r);
 	UnbatchGraphics ();
 	LoadIntoExtraScreen (&r);
@@ -974,9 +976,10 @@ ScaleSystem (void)
 	CONTEXT OldContext;
 	
 	OldContext = SetContext (SpaceContext);
+	GetContextClipRect (&r);
+	SetTransitionSource (&r);
 	BatchGraphics ();
 	DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
-	GetContextClipRect (&r);
 	ScreenTransition (3, &r);
 	UnbatchGraphics ();
 	LoadIntoExtraScreen (&r);
@@ -1085,8 +1088,8 @@ TheMess:
 		if (old_radius)
 			ScaleSystem ();
 
+		SetTransitionSource (NULL);
 		BatchGraphics ();
-		
 		if (!(draw_sys_flags & DRAW_REFRESH)) // don't repair from Extra or draw ship if forcing repair
 		{
 			CONTEXT OldContext;
@@ -1405,6 +1408,7 @@ LoadLanderData ();
 
 	if (pSolarSysState->MenuState.Initialized == 0)
 	{
+		SetTransitionSource (NULL);
 		BatchGraphics ();
 		draw_sys_flags |= UNBATCH_SYS;
 		

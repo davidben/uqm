@@ -268,6 +268,11 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 		SetFrameHot (Screen,
 				MAKE_HOT_SPOT (pClipRect->corner.x, pClipRect->corner.y));
 	}
+
+	if (transition_pending)
+	{
+		SetTransitionSource (NULL);
+	}
 	BatchGraphics ();
 	
 	which_space = GET_GAME_STATE (ARILOU_SPACE_SIDE);

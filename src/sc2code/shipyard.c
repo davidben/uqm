@@ -1205,6 +1205,7 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
 
+			SetTransitionSource (NULL);
 			BatchGraphics ();
 
 			DrawSISFrame ();
@@ -1237,15 +1238,15 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 			
 			SetContextFont (TinyFont);
 
-{
-	RECT r;
-
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
+			{
+				RECT r;
+				
+				r.corner.x = 0;
+				r.corner.y = 0;
+				r.extent.width = SCREEN_WIDTH;
+				r.extent.height = SCREEN_HEIGHT;
+				ScreenTransition (3, &r);
+			}
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			BeginHangarAnim (pMS);

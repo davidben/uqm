@@ -169,7 +169,7 @@ InitEncounter (void)
 	STAMP s;
 	TEXT t;
 	extern FRAME planet[];
-MUSIC_REF MR;
+	MUSIC_REF MR;
 
 	SetSemaphore (GraphicsSem);
 
@@ -178,17 +178,18 @@ MUSIC_REF MR;
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 
-MR = LoadMusicInstance (REDALERT_MUSIC);
-PlayMusic (MR, FALSE, 1);
+	MR = LoadMusicInstance (REDALERT_MUSIC);
+	PlayMusic (MR, FALSE, 1);
 	SegueFrame = CaptureDrawable (LoadGraphic (SEGUE_PMAP_ANIM));
-ClearSemaphore (GraphicsSem);
-while (PLRPlaying (MR))
-	TaskSwitch ();
-StopMusic ();
-DestroyMusic (MR);
-SetSemaphore (GraphicsSem);
+	ClearSemaphore (GraphicsSem);
+	while (PLRPlaying (MR))
+		TaskSwitch ();
+	StopMusic ();
+	DestroyMusic (MR);
+	SetSemaphore (GraphicsSem);
 	s.origin.x = s.origin.y = 0;
-	
+
+	SetTransitionSource (NULL);
 	BatchGraphics ();
 	
 	SetContextBackGroundColor (BLACK_COLOR);
@@ -293,6 +294,7 @@ SetSemaphore (GraphicsSem);
 
 	UnbatchGraphics ();
 	DestroyDrawable (ReleaseDrawable (SegueFrame));
+	ScreenTransition (3, NULL);
 
 	SetResourceIndex (hOldIndex);
 

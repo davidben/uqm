@@ -600,6 +600,7 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 					LoadGraphic (OUTFIT_PMAP_ANIM)
 					);
 
+			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
 			SetSemaphore(GraphicsSem);

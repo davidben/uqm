@@ -909,6 +909,7 @@ DoPickGame (INPUT_STATE InputState, PMENU_STATE pMS)
 		}
 
 		SetSemaphore (GraphicsSem);
+		SetTransitionSource (NULL);
 		BatchGraphics ();
 Restart:
 		SetContext (SpaceContext);
@@ -927,20 +928,20 @@ Restart:
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
 		ClearSemaphore (GraphicsSem);
 
-pMS->ModuleFrame = 0;
+		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
-ResumeMusic ();
-if (pSolarSysState)
-{
+		ResumeMusic ();
+		if (pSolarSysState)
+		{
 #define DRAW_REFRESH (1 << 5)
 #define REPAIR_SCAN (1 << 6)
-	extern BYTE draw_sys_flags;
+			extern BYTE draw_sys_flags;
 
-	if (pSolarSysState->MenuState.Initialized < 3)
-		draw_sys_flags |= DRAW_REFRESH;
-	else if (pSolarSysState->MenuState.Initialized == 4)
-		draw_sys_flags |= REPAIR_SCAN;
-}
+			if (pSolarSysState->MenuState.Initialized < 3)
+				draw_sys_flags |= DRAW_REFRESH;
+			else if (pSolarSysState->MenuState.Initialized == 4)
+				draw_sys_flags |= REPAIR_SCAN;
+		}
 		return (FALSE);
 	}
 	else if (InputState & DEVICE_BUTTON1)
@@ -980,26 +981,21 @@ RetrySave:
 					goto Restart;
 				}
 				ResumeMusic ();
-if (pSolarSysState)
-{
+				if (pSolarSysState)
+				{
 #define DRAW_REFRESH (1 << 5)
 #define REPAIR_SCAN (1 << 6)
-	extern BYTE draw_sys_flags;
-
-	if (pSolarSysState->MenuState.Initialized < 3)
-		draw_sys_flags |= DRAW_REFRESH;
-	else if (pSolarSysState->MenuState.Initialized == 4)
-		draw_sys_flags |= REPAIR_SCAN;
-}
+					extern BYTE draw_sys_flags;
+					
+					if (pSolarSysState->MenuState.Initialized < 3)
+						draw_sys_flags |= DRAW_REFRESH;
+					else if (pSolarSysState->MenuState.Initialized == 4)
+						draw_sys_flags |= REPAIR_SCAN;
+				}
 			}
 			else
 			{
-				extern BOOLEAN
-						LoadGame
-						(COUNT
-						which_game,
-						SUMMARY_DESC
-						*summary_desc);
+				extern BOOLEAN LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc);
 
 				ConfirmSaveLoad (0);
 				if (LoadGame ((COUNT)pMS->CurState, NULL_PTR))
@@ -1008,7 +1004,7 @@ if (pSolarSysState)
 			SetFlashRect (NULL_PTR, (FRAME)0);
 			ClearSemaphore (GraphicsSem);
 
-pMS->ModuleFrame = 0;
+			pMS->ModuleFrame = 0;
 			pMS->CurState = (BYTE)pMS->delta_item;
 			return (FALSE);
 		}
@@ -1029,7 +1025,9 @@ pMS->ModuleFrame = 0;
 
 		if (NewState != pMS->CurState)
 		{
+			RECT r;
 			SetSemaphore (GraphicsSem);
+
 			BatchGraphics ();
 			if (((SUMMARY_DESC *)pMS->CurString)[NewState].year_index != 0)
 			{
@@ -1070,26 +1068,22 @@ ChangeGameSelection:
 			{
 				if (first_time)
 				{
-					RECT r;
-	
 					r.corner.x = SIS_ORG_X;
 					r.corner.y = SIS_ORG_Y;
 					r.extent.width = SIS_SCREEN_WIDTH;
 					r.extent.height = SIS_SCREEN_HEIGHT;
+
 					ScreenTransition (3, &r);
 				}
 				UnbatchGraphics ();
 			}
 
-			{
-				RECT r;
-				
-				r.corner.x = 3 + (NewState * 21);
-				r.corner.y = 176;
-				r.extent.width = 18;
-				r.extent.height = 18;
-				SetFlashRect (&r, (FRAME)0);
-			}
+			r.corner.x = 3 + (NewState * 21);
+			r.corner.y = 176;
+			r.extent.width = 18;
+			r.extent.height = 18;
+			SetFlashRect (&r, (FRAME)0);
+
 			ClearSemaphore (GraphicsSem);
 		}
 	}
@@ -1153,6 +1147,7 @@ PickGame (PMENU_STATE
 				|| !(pSolarSysState
 				&& pSolarSysState->MenuState.Initialized < 3))
 		{
+			SetTransitionSource (&DlgRect);
 			BatchGraphics ();
 			DrawStamp(&DlgStamp);
 			ScreenTransition (3, &DlgRect);

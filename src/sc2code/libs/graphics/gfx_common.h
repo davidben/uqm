@@ -56,6 +56,7 @@ void SetGraphicGrabOther (int grab_other);
 void SetGraphicScale (int scale);
 int  GetGraphicScale (void);
 void SetGraphicUseOtherExtra (int other);
+void SetTransitionSource (PRECT pRect);
 void ScreenTransition (int transition, PRECT pRect);
 
 extern float FrameRate;

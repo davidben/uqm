@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- Crossfade code now explicitly caches the screen to transition from, and
+  thus no longer glitches.  The code needed a slight rewrite, but this
+  does fix bug #33 -McMartin
 - Melee scaling is now trilinear by default, but it's still possible to
   choose nearest neighbour with --meleescale; fixes #34 -Mika
 - Minimum scaling extent is now 1,1; fixes mostly small-objects-disappearing

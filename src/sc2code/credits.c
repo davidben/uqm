@@ -84,6 +84,7 @@ FreeHyperData ();
 	TimeIn = GetTimeCounter ();
 	for (i = 1; i < NUM_CREDITS; ++i)
 	{
+		SetTransitionSource (&r);
 		BatchGraphics ();
 		s.frame = f[0];
 		DrawStamp (&s);

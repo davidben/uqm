@@ -114,6 +114,12 @@ transition_task_func (void *data)
 	return 0;
 }
 
+void
+SetTransitionSource (PRECT pRect)
+{
+	TFB_DrawScreen_Copy(pRect, TFB_SCREEN_MAIN, TFB_SCREEN_TRANSITION);
+}
+
 // Status: Implemented
 void
 ScreenTransition (int TransType, PRECT pRect)
@@ -139,8 +145,6 @@ ScreenTransition (int TransType, PRECT pRect)
 		TransitionClipRect.w = ScreenWidth;
 		TransitionClipRect.h = ScreenHeight;
 	}
-
-	SDL_BlitSurface (SDL_Screen, &TransitionClipRect, TransitionScreen, &TransitionClipRect);
 
 #ifdef HAVE_OPENGL
 	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)

@@ -1492,7 +1492,9 @@ static BOOLEAN
 DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 {
 	if (!(CommData.AlienTransitionDesc.AnimFlags & (TALK_INTRO | TALK_DONE)))
+	{
 		AlienTalkSegue ((COUNT)~0);
+	}
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		;
@@ -1719,7 +1721,8 @@ HailAlien (void)
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
 
-BatchGraphics ();
+		SetTransitionSource (NULL);
+		BatchGraphics ();
 		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 		{
 			r.corner.x = (SCREEN_WIDTH - SIS_SCREEN_WIDTH) >> 1;

@@ -314,20 +314,21 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 		pMS->hMusic = LoadMusicInstance (STARBASE_MUSIC);
 
 		SetSemaphore (GraphicsSem);
+		SetTransitionSource (NULL);
 		BatchGraphics ();
 		SetContextBackGroundColor (BLACK_COLOR);
 		ClearDrawable ();
 		DrawStamp (&s);
 		DrawBaseStateStrings ((STARBASE_STATE)~0, pMS->CurState);
-{
-	RECT r;
-
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
+		{
+			RECT r;
+			
+			r.corner.x = 0;
+			r.corner.y = 0;
+			r.extent.width = SCREEN_WIDTH;
+			r.extent.height = SCREEN_HEIGHT;
+			ScreenTransition (3, &r);
+		}
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
 		pMS->flash_task = AssignTask (rotate_starbase, 4096,
