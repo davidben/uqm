@@ -67,6 +67,7 @@ BUGFIXES
 - Fixes and speed improvements on bilinear, biadapt, biadv scalers
 - Various minor graphics glitch fixes
 - Crew death on planet is now counted properly in all cases
+- Mouse cursor is now hidden in fullscreen mode
 
 INTERNAL CHANGES
 
