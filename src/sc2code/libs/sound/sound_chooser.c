@@ -49,7 +49,7 @@ TFBSound_GetError (void)
  */
 
 void
-TFBSound_GenSources (uint32 n, mixSDL_Object *psrcobj)
+TFBSound_GenSources (uint32 n, TFBSound_Object *psrcobj)
 {
 	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
 		alGenSources (n, (ALuint *)psrcobj);
