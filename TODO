@@ -90,7 +90,6 @@ Implementation bugs (low priority):
 - Melee scaling currently causes some very small objects like Ur-Quan fighters
   to disappear sometimes. The scaling should be made trilinear instead of
   nearest neighbor.
-- Biadapt scaling has some problems for 24bpp mode
 
 Stuff still to do (large):
 - add some way to configure your keys
