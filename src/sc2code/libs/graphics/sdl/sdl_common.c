@@ -90,8 +90,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
 	SDL_WM_SetCaption (caption, NULL);
 
-	//if (flags & TFB_GFXFLAGS_FULLSCREEN)
-	//	SDL_ShowCursor (SDL_DISABLE);
+	if (flags & TFB_GFXFLAGS_FULLSCREEN)
+		SDL_ShowCursor (SDL_DISABLE);
 
 	TFB_FlushPaletteCache ();
 	TFB_DrawCanvas_Initialize ();
