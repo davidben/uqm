@@ -1,8 +1,10 @@
 Changes towards version 0.3:
+- Fix Syreen, KohrAh and Slylandro ship effects to not be screen
+  size dependant (corolary to bug 93) - PhracturedBlue
 - Line clipping is now handled correctly; fixes #28 (one pixel corruptions)
   and #198 (beam weapons changing direction) -Mika
 - Vux warps in close (fixes bug 93) -from Nic
-- Fixed lockup on lander-report (Bug #144 annd 187?)
+- Fixed lockup on lander-report (Bug #144 annd 187?) - PhracturedBlue
 - Version # is now printed in the main menu, from Nic
 - Added PC Shipyard + Hangar power lines animation;
   (closes #176) -fOSSiL
