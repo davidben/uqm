@@ -13,8 +13,34 @@ Some of the most important differences between this system and autoconf:
 - it builds faster, mostly because libtool isn't used.
 
 
-The menu
---------
+The files
+---------
+
+These are the files in the directory with the build script.
+Of these files only build.config should be modified for a specific build.
+For unknown dependancies, additions to config_proginfo might need to be
+made. The other files should not be modified.
+Only build.sh is to be called directly.
+
+ansi                ansi colour definitions.
+build.config        configuration options for the program to build.
+                    It contains the description of the configuration
+                    menu, and specifies the dependancies.
+                    The format of the menu description is listed briefly
+                    below.
+build.sh            the sh script that is to be called for configuration,
+                    building, and installation.
+build_functions     auxiliary functions to build.sh for building.
+config_functions    auxiliary functions to build.sh for configuration.
+config_proginfo     contains descriptions of dependancies.
+                    The information in this file is used in particular for
+                    detecting if those libraries and other external programs
+                    are present.
+menu_functions      auxiliary functions to build.sh for menus.
+
+
+The menu (from build.config)
+----------------------------
 
 There are three types of menu items.
 
@@ -79,11 +105,11 @@ There are three types of menu items.
       The current value, either 'CHECKED' or 'UNCHECKED'.
     - CHECK_${NAME}_FIXED (optional)
       A string that evaluates to 0 if this checkbox may not be changed.
-      
 
 
-Program info
-------------
+
+Program info (from config_proginfo)
+-----------------------------------
 
 Information about programs used should be supplied in the following form:
   - PROG_${PROGRAM}_NAME
@@ -107,8 +133,8 @@ Information about programs used should be supplied in the following form:
     <empty> if the program hasn't been verified to be present
 
 
-Library info
-------------
+Library info (from config_proginfo)
+-----------------------------------
 
 Information about libraries used should be supplied in the following form:
   - LIB_${LIB}_NAME
@@ -131,4 +157,5 @@ Information about libraries used should be supplied in the following form:
     0 if the library has been verified to be present
     1 if the library has been verified to be not present
     <empty> if the library hasn't been verified to be present
+
 
