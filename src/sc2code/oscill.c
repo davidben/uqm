@@ -16,13 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//#include "Portfolio.h" //3DO Library we don't get access to
-//#include "Init3DO.h"
-//#include "Parse3DO.h"
-//#include "Utils3DO.h"
-//#include "filefunctions.h"
-//#include "BlockFile.h"
-
 #include "libs/graphics/gfx_common.h"
 
 //Added by Chris
@@ -172,95 +165,52 @@ Oscilloscope (int32 grab_data)
 #endif
 }
 
-static CCB slider_cels[2];
+static STAMP sliderStamp;
+static STAMP buttonStamp;
+int32 sliderSpace;  // slider width - button width
 
+/*
+ * Initialise the communication progress bar
+ * x - x location of slider
+ * y - y location of slider
+ * width - width of slider
+ * height - height of slider
+ * bwidth - width of button indicating current progress
+ * bheight - height of button indicating progress
+ * f - image for the slider
+ */                        
 void
 InitSlider (int32 x, int32 y, int32 width, int32 height,
-		int32 bwidth, int32 bheight, void *f)
-// int32 bwidth, int32 bheight, FRAME_DESC *f)
+		int32 bwidth, int32 bheight, FRAME f)
 {
-#if 0
-#define SLIDER_X x
-#define SLIDER_Y y
-#define SLIDER_WIDTH width
-#define SLIDER_HEIGHT height
-#define BUTTON_WIDTH bwidth
-#define BUTTON_HEIGHT bheight
-	int32 i;
-	CCB *ccb;
-	uint32 *cel_plut;
-
-	cel_plut = GET_VAR_PLUT ((f->TypeIndexAndFlags >> 16) & 0xFF);
-
-slider_cels[0].ccb_Width = SLIDER_X;
-slider_cels[0].ccb_Height = SLIDER_WIDTH;
-slider_cels[0].ccb_SourcePtr = (void *)((uchar *)f + f->DataOffs);
-slider_cels[1].ccb_Width = BUTTON_WIDTH;
-		
-	ccb = slider_cels;
-	for (i = 0; i < 2; i++, ccb++)
-	{
-		ccb->ccb_Flags = CEL_FLAGS | CCB_PACKED | CCB_LDPLUT;
-
-		ccb->ccb_HDX = 1 << 20;
-		ccb->ccb_HDY = 0;
-		ccb->ccb_VDX = 0;
-		ccb->ccb_VDY = 1 << 16;
-
-		ccb->ccb_PIXC = PIXC_CODED8;
-		ccb->ccb_PLUTPtr = cel_plut;
-		if (i == 0)
-		{
-			ccb->ccb_XPos = SLIDER_X << 16;
-			ccb->ccb_YPos = SLIDER_Y << 16;
-			ccb->ccb_PRE0 =
-					PRE0_LITERAL |
-					((SLIDER_HEIGHT - PRE0_VCNT_PREFETCH) << PRE0_VCNT_SHIFT) |
-					(PRE0_BPP_8 << PRE0_BPP_SHIFT);
-		}
-		else
-		{
-			ccb->ccb_XPos = SLIDER_X << 16;
-			ccb->ccb_YPos = (SLIDER_Y - ((BUTTON_HEIGHT - SLIDER_HEIGHT) >> 1)) << 16;
-			ccb->ccb_PRE0 =
-					PRE0_LITERAL |
-					((BUTTON_HEIGHT - PRE0_VCNT_PREFETCH) << PRE0_VCNT_SHIFT) |
-					(PRE0_BPP_8 << PRE0_BPP_SHIFT);
-		}
-
-		ccb->ccb_NextPtr = ccb + 1;
-	}
-#endif
+	sliderStamp.origin.x = x;
+	sliderStamp.origin.y = y;
+	sliderStamp.frame = f;
+	buttonStamp.origin.x = x;
+	buttonStamp.origin.y = y - ((bheight - height) >> 1);
+	sliderSpace = width - bwidth;
 }
 
 void
-SetSliderImage (void *f)
-//SetSliderImage (FRAME_DESC *f)
+SetSliderImage (FRAME f)
 {
-#if 0
-	slider_cels[1].ccb_SourcePtr = (void *)((uchar *)f + f->DataOffs);
-#endif
+	buttonStamp.frame = f;
 }
 
 void
 Slider (void)
 {
-#if 0
-#undef SLIDER_X
-#undef SLIDER_WIDTH
-#undef BUTTON_WIDTH
-#define SLIDER_X slider_cels[0].ccb_Width
-#define SLIDER_WIDTH slider_cels[0].ccb_Height
-#define BUTTON_WIDTH slider_cels[1].ccb_Width
 	int32 len, offs;
 	
 	if (GetSoundInfo (&len, &offs))
 	{
-		if (offs > len) offs = len;
-
-		slider_cels[1].ccb_XPos = (SLIDER_X + ((SLIDER_WIDTH - BUTTON_WIDTH) * offs / len)) << 16;
-		add_cels (slider_cels, &slider_cels[1]);
+		if (offs > len)
+			offs = len;
+		buttonStamp.origin.x = sliderStamp.origin.x + sliderSpace * offs / len;
+		BatchGraphics ();
+		DrawStamp (&sliderStamp);
+		DrawStamp (&buttonStamp);
+		UnbatchGraphics ();
 	}
-#endif
 }
 

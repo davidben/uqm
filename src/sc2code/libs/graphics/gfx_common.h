@@ -45,8 +45,8 @@ enum
 
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
-int TFB_CreateGamePlayThread ();
-void TFB_ProcessEvents ();
+int TFB_CreateGamePlayThread (void);
+void TFB_ProcessEvents (void);
 
 // 3DO Graphics Stuff
 
@@ -56,7 +56,7 @@ void SetGraphicStrength (int numer, int denom);
 void SetGraphicGrabOther (int grab_other);
 void SetGraphicScale (int scale);
 void SetGraphicUseOtherExtra (int other);
-void *GetScreenBitmap ();
+void *GetScreenBitmap (void);
 void ScreenTransition (int transition, PRECT pRect);
 
 extern float FrameRate;
@@ -120,13 +120,13 @@ typedef struct tfb_drawcommandqueue
 	volatile int Size;
 } TFB_DrawCommandQueue;
 
-TFB_DrawCommandQueue *TFB_DrawCommandQueue_Create ();
+TFB_DrawCommandQueue *TFB_DrawCommandQueue_Create (void);
 
-void TFB_BatchGraphics ();
+void TFB_BatchGraphics (void);
 
-void TFB_UnbatchGraphics ();
+void TFB_UnbatchGraphics (void);
 
-void TFB_BatchReset ();
+void TFB_BatchReset (void);
 
 void TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command);
@@ -140,7 +140,7 @@ extern TFB_DrawCommandQueue *DrawCommandQueue;
 // main thread can draw to the window.
 
 void TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand);
-void TFB_FlushGraphics (); // Only call from main thread!!
+void TFB_FlushGraphics (void); // Only call from main thread!!
 
 // CCB Stuff
 

@@ -52,10 +52,10 @@ enum
 
 extern DWORD* _varPLUTs;
 
-int TFB_GetFadeAmount ();
-BOOLEAN TFB_HasColorMap ();
-int TFB_GetColorMapType ();
-void TFB_ReleaseColorMap ();
+int TFB_GetFadeAmount (void);
+BOOLEAN TFB_HasColorMap (void);
+int TFB_GetColorMapType (void);
+void TFB_ReleaseColorMap (void);
 BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst);
 
 #endif
