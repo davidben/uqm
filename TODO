@@ -157,13 +157,6 @@ Stuff still to do (large):
 Stuff still to do (medium size):
 - oscilloscope
 - loading teams in melee
-- pixel-perfect collision checks
-  Currently bounding boxes are used for checks, causing (among others)
-  Spathi and Mycon to frequently hit themselves, and making the Sa-Matra
-  indestructable.
-- remove libtool dependancy
-  This will probably mean the empty dummy.c files can be removed too.
-  (note that src/sc2code/dummy.c DOES contain data)
 - lines and colouring of planet surface display when scanning.
   Its speed isn't correct either.
 - get all code to compile without warnings, when the most strict
@@ -192,7 +185,6 @@ Stuff still to do (small):
 - add some icon in the cvs tree
 
 Questions:
-- remove src/sc2code/test.c?
 - Is there some way to automatically do CRLF translations on commits,
   with the -t and -f options in cvswrapper disabled by sourceforge?
 - What is the displist stuff for? Is it needed at all?

@@ -21,6 +21,7 @@
 #include "sdl_common.h"
 #include "pure.h"
 #include "opengl.h"
+#include "primitives.h"
 
 int batch_depth = 0;
 static const BOOLEAN pausing_transition = TRUE; // change to FALSE for non-pausing version
@@ -297,15 +298,47 @@ _init_video_file(PVOID pStr)
 	return (ret);
 }
 
-// Status: Unimplemented
+// Status: Implemented
 BOOLEAN
 _image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
-		// This is a biggie.
 {
 	BOOLEAN ret;
+	SDL_Surface *img1, *img2;
+	int img1w, img1xpos, img1ypos, img2w, img2xpos, img2ypos;
+	int x,y;
+	Uint32 img1colourkey, img2colourkey;
+	GetPixelFn getpixel1, getpixel2;
 
-// fprintf (stderr, "Unimplemented function activated: _image_intersect()\n");
-	ret = TRUE;
+	/* Image is (TFB_IMAGE*)(box1->FramePtr + box1->FramePtr->DataOffs) */
+	img1 = ((TFB_Image*)((BYTE*)(box1->FramePtr) + box1->FramePtr->DataOffs))->NormalImg;
+	img2 = ((TFB_Image*)((BYTE*)(box2->FramePtr) + box2->FramePtr->DataOffs))->NormalImg;
+	
+	getpixel1 = getpixel_for(img1);
+	getpixel2 = getpixel_for(img2);
+
+	img1w = img1->w;
+	img1xpos = box1->Box.corner.x;
+	img1ypos = box1->Box.corner.y;
+	img1colourkey = img1->format->colorkey;
+
+	img2w = img2->w;
+	img2xpos = box2->Box.corner.x;
+	img2ypos = box2->Box.corner.y;
+	img2colourkey = img2->format->colorkey;
+
+	for (y = rect->corner.y; y < rect->corner.y + rect->extent.height; ++y)
+	{
+		for (x = rect->corner.x; x < rect->corner.x + rect->extent.width; ++x)
+		{
+			if ((getpixel1(img1, x - img1xpos, y - img1ypos) != img1colourkey) &&
+					(getpixel2(img2, x - img2xpos, y - img2ypos) != img2colourkey))
+			{
+				return TRUE;
+			}
+		}
+	}
+	ret = FALSE;
+
 	return (ret);
 }
 
