@@ -174,8 +174,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SleepThread (ONE_SECOND / 120);
 		NewTime = GetTimeCounter ();
 		
-		if ((InputState = GetInputState (PlayerInput[which_player])) == 0)
-			InputState = GetInputState (ArrowInput);
+		InputState = GetInputState (PlayerInput[which_player]);
 		if (InputState)
 			LastTime = NewTime;
 		else if (!(PlayerControl[1 - which_player] & PSYTRON_CONTROL)
