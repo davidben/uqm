@@ -1409,7 +1409,7 @@ InitPlanetSide (void)
 	Time = GetTimeCounter ();
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_SHOT))
-		s.frame = SetAbsFrameIndex (s.frame, 59);
+		s.frame = SetAbsFrameIndex (s.frame, 58);
 	else
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 2);
@@ -1444,7 +1444,7 @@ InitPlanetSide (void)
 		SleepThreadUntil (Time + (ONE_SECOND / 15));
 		Time = GetTimeCounter ();
 
-		s.frame = SetAbsFrameIndex (s.frame, 58);
+		s.frame = SetAbsFrameIndex (s.frame, 59);
 		SetSemaphore (GraphicsSem);
 		DrawStamp (&s);
 		ClearSemaphore (GraphicsSem);
@@ -2131,11 +2131,11 @@ InitLander (BYTE LanderFlags)
 			else
 			{
 				capacity_shift = 1;
-				s.frame = SetAbsFrameIndex (s.frame, 58);
+				s.frame = SetAbsFrameIndex (s.frame, 59);
 				DrawStamp (&s);
 			}
 			if (LanderFlags & (1 << (4 + 2)))
-				s.frame = SetAbsFrameIndex (s.frame, 57);
+				s.frame = SetAbsFrameIndex (s.frame, 58);
 			else
 				s.frame = SetAbsFrameIndex (s.frame,
 						(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 2);
