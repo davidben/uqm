@@ -48,12 +48,12 @@ ilwarth
 
 ipanims
   ipanims/land_awa.wav      Lander takes of from the planet surface                     
-  ipanims/land_bit.wav      ??                                                          
+  ipanims/land_bit.wav      Lander gets bitten by bio (teeth clank)
     (vux/limpet_bite.wav)
-  ipanims/land_can.wav      ??                                                          
+  ipanims/land_can.wav      Bio canned by stun shot (weird sound)
   ipanims/land_die.wav      Lander explodes (long explosion)                            
     (lbm/shipdies.wav)
-  ipanims/land_ful.wav      No fuel to launch lander ("burp")                           
+  ipanims/land_ful.wav      Lander cargo hold full, cannot pick up ("burp")
   ipanims/land_get.wav      Lander picks up item/mineral (sounds like somone sucking)   
   ipanims/land_hit.wav      Lander gets hit by something (snappy sound)                 
   ipanims/land_hot.wav      Firelava hot hum on planet surface                          
