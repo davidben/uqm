@@ -149,7 +149,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
+		GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
 	{
 		scaled_display = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth * 2,
 			ScreenHeight * 2, 32, R_MASK, G_MASK, B_MASK, 0x00000000);
@@ -180,7 +181,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
+		GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
 		ScreenFilterMode = GL_LINEAR;
 	else
 		ScreenFilterMode = GL_NEAREST;
@@ -296,12 +298,15 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		updated.h = TFB_BBox.region.extent.height;
 
 		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-			GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+			GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
+			GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
 		{
 			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 				Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
 			else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 				Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
+			else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+				Scale_TriScanFilter (SDL_Screen, scaled_display, &updated);
 
 			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
 			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
@@ -335,7 +340,8 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		if (upload_transitiontexture) 
 		{
 			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-				GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+				GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
+				GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
 			{
 				SDL_Rect r;
 				r.x = r.y = 0;
@@ -345,6 +351,8 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 					Scale_BiAdaptFilter (TransitionScreen, scaled_transition, &r);
 				else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 					Scale_BiAdaptAdvFilter (TransitionScreen, scaled_transition, &r);
+				else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+					Scale_TriScanFilter (TransitionScreen, scaled_transition, &r);
 
 				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
 				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
