@@ -25,20 +25,20 @@ typedef struct _vcontrol_keypool {
 typedef struct _vcontrol_joystick_axis {
 	keybinding *neg, *pos;
 	int polarity;
-} axis;
+} axis_type;
 
 typedef struct _vcontrol_joystick_hat {
 	keybinding *left, *right, *up, *down;
 	Uint8 last;
-} hat;
+} hat_type;
 
 typedef struct _vcontrol_joystick {
 	SDL_Joystick *stick;
 	int numaxes, numbuttons, numhats;
 	int threshold;
-	axis *axes;
+	axis_type *axes;
 	keybinding **buttons;
-	hat *hats;
+	hat_type *hats;
 } joystick;
 
 static keybinding *bindings[SDLK_LAST];
@@ -109,9 +109,9 @@ _create_joystick (int index)
 		x->numaxes = axes;
 		x->numbuttons = buttons;
 		x->numhats = hats;
-		x->axes = vctrl_malloc (sizeof (axis) * axes);
+		x->axes = vctrl_malloc (sizeof (axis_type) * axes);
 		x->buttons = vctrl_malloc (sizeof (keybinding *) * buttons);
-		x->hats = vctrl_malloc (sizeof (hat) * hats);
+		x->hats = vctrl_malloc (sizeof (hat_type) * hats);
 		for (j = 0; j < axes; j++)
 		{
 			x->axes[j].neg = x->axes[j].pos = NULL;
