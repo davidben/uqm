@@ -687,11 +687,11 @@ _GetFontData (uio_Stream *fp, DWORD length)
 		{
 			// Process one character page.
 			size_t endBCD;
-			pageStart = bcds[startBCD].index & 0xff00;
+			pageStart = bcds[startBCD].index & CHARACTER_PAGE_MASK;
 
 			endBCD = startBCD;
 			while (endBCD < numBCDs &&
-					(bcds[endBCD].index & 0xff00) == pageStart)
+					(bcds[endBCD].index & CHARACTER_PAGE_MASK) == pageStart)
 				endBCD++;
 
 			{

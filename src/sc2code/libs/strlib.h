@@ -51,6 +51,14 @@ extern BOOLEAN GetStringContents (STRING String, STRINGPTR StringBuf,
 		BOOLEAN AppendSpace);
 
 wchar_t getCharFromString(const unsigned char **ptr);
+wchar_t getCharFromStringN(const unsigned char **ptr,
+		const unsigned char *end);
+unsigned char *getLineFromString(const unsigned char *start,
+		const unsigned char **end, const unsigned char **startNext);
+size_t utf8StringCount(const unsigned char *start);
+size_t utf8StringCountN(const unsigned char *start,
+		const unsigned char *end);
+unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
 
 #endif /* _STRLIB_H */
 

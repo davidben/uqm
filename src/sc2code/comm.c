@@ -49,6 +49,8 @@ static void xform_PLUT_step (SIZE TDelta);
 static void FlushPLUTXForms (void);
 static int ambient_anim_task (void *data);
 
+static BOOLEAN getLineWithinWidth(TEXT *pText,
+		 const unsigned char **startNext, SIZE maxWidth, COUNT maxChars);
 
 #define MAX_RESPONSES 8
 #define BACKGROUND_VOL speechVolumeScale == 0.0f ? MAX_VOLUME : (MAX_VOLUME >> 1)
@@ -125,61 +127,30 @@ static Mutex subtitle_mutex;
 static const UNICODE * volatile last_subtitle;
 static TFB_Image *subtitle_cache;
 
-/* _count_lines - mostly stolen from add_text, just sees how many lines
-                  a given input string would take to display given the
-                  line wrapping information */
-static int _count_lines (PTEXT pText) 
+/* _count_lines - sees how many lines a given input string would take to
+ * display given the line wrapping information
+ */
+static int _count_lines (PTEXT pText)
 {
-	COUNT maxchars = (COUNT)~0;
-	UNICODE ch;
-	const UNICODE *pStr;
 	SIZE text_width;
-	int num = 0;
+	COUNT maxchars = (COUNT)~0;
+	const unsigned char *pStr;
+	int numLines = 0;
+	BOOLEAN eol;
 
 	text_width = CommData.AlienTextWidth;
 	SetContextFont (CommData.AlienFont);
 
 	pStr = pText->pStr;
-
 	do
 	{
-		++num;
+		++numLines;
 		pText->pStr = pStr;
-		pText->CharCount = 1;
-
-		{
-			BOOLEAN eot;
-			RECT r, old_r;
-			COUNT OldCount;
-
-			GetContextClipRect (&r);
-			eot = FALSE;
-			do
-			{
-				old_r = r;
-				OldCount = pText->CharCount;
-				while (!(eot = (BOOLEAN)(
-						(ch = *++pStr) == '\0'
-						|| ch == '\n'
-						|| ch == '\r'
-						|| (COUNT)(pStr - pText->pStr) >= maxchars
-						)) && ch != ' ')
-					;
-				pText->CharCount = pStr - pText->pStr;
-				TextRect (pText, &r, NULL_PTR);
-			} while (!eot && r.extent.width < text_width);
-
-			if (r.extent.width >= text_width)
-			{
-				pText->CharCount = OldCount;
-				r = old_r;
-			}
-		}
-		pStr = pText->pStr + pText->CharCount;
-	} while ((ch = *pStr++) != '\0' && ch != '\n' && ch != '\r' && maxchars);
+		eol = getLineWithinWidth(pText, &pStr, text_width, maxchars);
+	} while (!eol && maxchars);
 	pText->pStr = pStr;
 
-	return (num);
+	return numLines;
 }
 
 static COORD
@@ -189,11 +160,11 @@ add_text (int status, PTEXT pTextIn)
 	TEXT locText;
 	PTEXT pText;
 	SIZE leading;
-	wchar_t ch;
 	const unsigned char *pStr;
 	SIZE text_width;
 	int num_lines = 0;
 	static COORD last_baseline;
+	BOOLEAN eol;
 	
 	BatchGraphics ();
 
@@ -255,7 +226,7 @@ add_text (int status, PTEXT pTextIn)
 		maxchars = pTextIn->CharCount;
 		locText = *pTextIn;
 		locText.baseline.x -= 8;
-		locText.CharCount = 1;
+		locText.CharCount = (COUNT)~0;
 		locText.pStr = "*";
 		font_DrawText (&locText);
 
@@ -274,7 +245,8 @@ add_text (int status, PTEXT pTextIn)
 			pText->baseline.y -= (leading * num_lines);
 		else if (CommData.AlienTextTemplate.valign == VALIGN_MIDDLE)
 			pText->baseline.y -= ((leading * num_lines) / 2);
-		if (pText->baseline.y < 0) pText->baseline.y = 0;
+		if (pText->baseline.y < 0)
+			pText->baseline.y = 0;
 	}
 
 	do
@@ -282,93 +254,49 @@ add_text (int status, PTEXT pTextIn)
 		pText->pStr = pStr;
 		pText->baseline.y += leading;
 
+		eol = getLineWithinWidth(pText, &pStr, text_width, maxchars);
+
+		maxchars -= pText->CharCount;
+		if (maxchars != 0)
+			--maxchars;
+		numchars += pText->CharCount;
+		
+		if (status <= 0)
 		{
-			BOOLEAN eot;
-			RECT r, old_r;
-			COUNT oldCount;
-			const unsigned char *oldPStr;
-			wchar_t oldCh;
-			COUNT charCount;
+			if (pText->baseline.y < SIS_SCREEN_HEIGHT)
+				font_DrawText (pText);
 
-			GetContextClipRect (&r);
-			oldCount = 1;
-			charCount = 0;
-			ch = '\0';
-			for (;;)
+			if (status < -4 && pText->baseline.y >= -status - 10)
 			{
-				old_r = r;
-				oldPStr = pStr;
-				oldCh = ch;
-			
-				for (;;)
-				{
-					ch = getCharFromString (&pStr);
-					eot = ch == '\0' || ch == '\n' || ch == '\r'
-							|| charCount >= maxchars;
-					if (eot || ch == ' ')
-						break;
-					charCount++;
-				}
-
-				oldCount = pText->CharCount;
-				pText->CharCount = charCount;
-				TextRect (pText, &r, NULL_PTR);
-				if (eot || r.extent.width >= text_width)
-					break;
-				charCount++;
-						// For the space in between words.
-			}
-
-			if (r.extent.width >= text_width)
-			{
-				pText->CharCount = oldCount;
-				pStr = oldPStr;
-				r = old_r;
-				ch = oldCh;
-			}
-
-			maxchars -= pText->CharCount;
-			if (maxchars != 0)
-				--maxchars;
-			numchars += pText->CharCount;
-			
-			if (status <= 0)
-			{
-				if (pText->baseline.y < SIS_SCREEN_HEIGHT)
-					font_DrawText (pText);
-
-				if (status < -4 && pText->baseline.y >= -status - 10)
-				{
-					++pStr;
-					break;
-				}
-			}
-			else
-			{
-				SetContextForeGroundColor (CommData.AlienTextBColor);
-
-				--pText->baseline.x;
-				font_DrawText (pText);
-
-				++pText->baseline.x;
-				--pText->baseline.y;
-				font_DrawText (pText);
-
-				++pText->baseline.x;
-				++pText->baseline.y;
-				font_DrawText (pText);
-
-				--pText->baseline.x;
-				++pText->baseline.y;
-				font_DrawText (pText);
-
-				SetContextForeGroundColor (CommData.AlienTextFColor);
-
-				--pText->baseline.y;
-				font_DrawText (pText);
+				++pStr;
+				break;
 			}
 		}
-	} while (ch != '\0' && ch != '\n' && ch != '\r' && maxchars);
+		else
+		{
+			SetContextForeGroundColor (CommData.AlienTextBColor);
+
+			--pText->baseline.x;
+			font_DrawText (pText);
+
+			++pText->baseline.x;
+			--pText->baseline.y;
+			font_DrawText (pText);
+
+			++pText->baseline.x;
+			++pText->baseline.y;
+			font_DrawText (pText);
+
+			--pText->baseline.x;
+			++pText->baseline.y;
+			font_DrawText (pText);
+
+			SetContextForeGroundColor (CommData.AlienTextFColor);
+
+			--pText->baseline.y;
+			font_DrawText (pText);
+		}
+	} while (!eol && maxchars);
 	pText->pStr = pStr;
 
 	if (status == 1)
@@ -389,6 +317,70 @@ add_text (int status, PTEXT pTextIn)
 
 	UnbatchGraphics ();
 	return (pText->baseline.y);
+}
+
+static BOOLEAN
+getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
+		SIZE maxWidth, COUNT maxChars) {
+	BOOLEAN eol;
+			// The end of the line of text has been reached.
+	BOOLEAN done;
+			// We cannot add any more words.
+	RECT rect;
+	COUNT oldCount;
+	const unsigned char *ptr;
+	const unsigned char *wordStart;
+	wchar_t ch;
+	COUNT charCount;
+
+	//GetContextClipRect (&rect);
+
+	eol = FALSE;	
+	done = FALSE;
+	oldCount = 1;
+	charCount = 0;
+	ch = '\0';
+	ptr = pText->pStr;
+	for (;;)
+	{
+		wordStart = ptr;
+
+		// Scan one word.
+		for (;;)
+		{
+			if (*ptr == '\0')
+			{
+				eol = TRUE;
+				done = TRUE;
+				break;
+			}
+			ch = getCharFromString (&ptr);
+			eol = ch == '\0' || ch == '\n' || ch == '\r';
+			done = eol || charCount >= maxChars;
+			if (done || ch == ' ')
+				break;
+			charCount++;
+		}
+
+		oldCount = pText->CharCount;
+		pText->CharCount = charCount;
+		TextRect (pText, &rect, NULL_PTR);
+		
+		if (rect.extent.width >= maxWidth)
+		{
+			pText->CharCount = oldCount;
+			*startNext = wordStart;
+			return FALSE;
+		}
+
+		if (done)
+		{
+			*startNext = ptr;
+			return eol;
+		}
+		charCount++;
+				// For the space in between words.
+	}
 }
 
 static void
@@ -1641,11 +1633,14 @@ DoCommunication (PENCOUNTER_STATE pES)
 
 		if (PulsedInputState.key[KEY_MENU_SELECT])
 		{
-			pES->phrase_buf_index =
-					pES->response_list[pES->cur_response].response_text.CharCount;
-			wstrncpy (pES->phrase_buf,
-					pES->response_list[pES->cur_response].response_text.pStr,
-					pES->phrase_buf_index);
+			const unsigned char *end;
+			PTEXT response_text =
+					&pES->response_list[pES->cur_response].response_text;
+			end = skipUTF8Chars(response_text->pStr,
+					 response_text->CharCount);
+			pES->phrase_buf_index = end - response_text->pStr;
+			memcpy(pES->phrase_buf, response_text->pStr,
+					 pES->phrase_buf_index);
 			pES->phrase_buf[pES->phrase_buf_index++] = '\0';
 
 			LockMutex (GraphicsLock);
@@ -1943,7 +1938,7 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 	pEntry->response_ref = R;
 	pEntry->response_text.pStr = ConstructStr;
 	if (pEntry->response_text.pStr)
-		pEntry->response_text.CharCount = wstrlen (ConstructStr);
+		pEntry->response_text.CharCount = (COUNT)~0;
 	else
 	{
 		STRING locString;
@@ -2395,7 +2390,9 @@ do_subtitles (UNICODE *pStr)
 			CommData.AlienTextTemplate.pStr = pStr;
 			t = CommData.AlienTextTemplate;
 
-			CommData.AlienTextTemplate.CharCount = t.pStr - CommData.AlienTextTemplate.pStr;
+			CommData.AlienTextTemplate.CharCount =
+					utf8StringCountN(CommData.AlienTextTemplate.pStr,
+					t.pStr);
 			subtitle_state = WAIT_SUBTITLE;
 			break;
 		}

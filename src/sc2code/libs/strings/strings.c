@@ -144,10 +144,23 @@ GetStringLength (STRING String)
 
 		StringIndex = STRING_INDEX (String);
 		LockStringTable (StringTable, &StringTablePtr);
+
+		{
+			STRINGPTR start;
+			STRINGPTR end;
+
+			start = (STRINGPTR) ((BYTE *) StringTablePtr +
+					StringTablePtr->StringOffsets[StringIndex]);
+			end = (STRINGPTR) ((BYTE *) StringTablePtr +
+					StringTablePtr->StringOffsets[StringIndex + 1]);
+			StringLength = utf8StringCountN(start, end);
+		}
+
+#if 0
 		StringLength = (COUNT)(
 				StringTablePtr->StringOffsets[StringIndex + 1]
-				- StringTablePtr->StringOffsets[StringIndex]
-				);
+				- StringTablePtr->StringOffsets[StringIndex]);
+#endif
 		UnlockStringTable (StringTable);
 	}
 

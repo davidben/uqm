@@ -324,7 +324,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 static inline FRAME_DESC *
 getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
-	wchar_t pageStart = ch & 0xff00;
+	wchar_t pageStart = ch & CHARACTER_PAGE_MASK;
 
 	FONT_PAGE *page = fontPtr->fontPages;
 	for (;;)
