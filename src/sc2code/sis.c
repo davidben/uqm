@@ -1137,7 +1137,7 @@ int flash_rect_func(void *data)
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	RECT cached_rect, framesize_rect;
-	FRAME cached_frame, cached_screen_frame;
+	FRAME cached_frame, cached_screen_frame = 0;
 	Task task = (Task)data;
 	int cached[CACHE_SIZE];
 	STAMP cached_stamp[CACHE_SIZE];
@@ -1160,13 +1160,21 @@ int flash_rect_func(void *data)
 		LockMutex (flash_mutex);
 		if (flash_changed)
 		{
+			RECT screen_rect;
 			cached_rect = flash_rect;
 			cached_frame = flash_frame;
-			cached_screen_frame = flash_screen_frame;
+			if (cached_screen_frame)
+				DestroyDrawable (ReleaseDrawable (cached_screen_frame));
 			flash_changed = 0;
-			UnlockMutex (flash_mutex);
 			//  Wait for the  flash_screen_frame to get initialized
 			FlushGraphics ();
+			GetFrameRect (flash_screen_frame, &screen_rect);
+			cached_screen_frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
+					screen_rect.extent.width, screen_rect.extent.height, 1));
+			screen_rect.corner.x = screen_rect.corner.y = 0;
+			arith_frame_blit (flash_screen_frame, &screen_rect, 
+					cached_screen_frame, NULL, 0, 0);
+			UnlockMutex (flash_mutex);
 			if (cached_frame)
 				GetFrameRect (cached_frame, &framesize_rect);
 			for (i = 0; i < CACHE_SIZE; i++)
@@ -1264,7 +1272,9 @@ int flash_rect_func(void *data)
 			SetSemaphore (GraphicsSem);
 			OldContext = SetContext (ScreenContext);
 			SetContextClipRect (&cached_rect);
-			DrawStamp (pStamp);
+			// flash changed_can't be modified while GraphicSem is held
+			if (! flash_changed)
+				DrawStamp (pStamp);
 			SetContextClipRect (NULL_PTR); // this will flush whatever
 			SetContext (OldContext);
 			ClearSemaphore (GraphicsSem);
@@ -1273,8 +1283,20 @@ int flash_rect_func(void *data)
 		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
 	}
+	{
+		if (cached_screen_frame)
+			DestroyDrawable (ReleaseDrawable (cached_screen_frame));
 
+		for (i = 0; i < CACHE_SIZE; i++)
+		{
+			if(cached_stamp[i].frame)
+				DestroyDrawable (ReleaseDrawable (cached_stamp[i].frame));
+		}
+	}
+	LockMutex (flash_mutex);
 	flash_task = 0;
+	UnlockMutex (flash_mutex);
+
 	FinishTask (task);
 	return(0);
 }
@@ -1289,6 +1311,10 @@ SetFlashRect (PRECT pRect, FRAME f)
 
 	if (! flash_mutex);
 		flash_mutex = CreateMutex ();
+
+	old_r = flash_rect;
+	old_f = flash_frame;
+		
 	if (pRect != (PRECT)~0L)
 	{
 		GetContextClipRect (&clip_r);
@@ -1297,27 +1323,24 @@ SetFlashRect (PRECT pRect, FRAME f)
 	else
 	{
 		//Don't flash when using the PC menu
-		if (optWhichMenu == OPT_PC) {
-			if (flash_task)
-			{
-				ClearSemaphore (GraphicsSem);
-				ConcludeTask (flash_task);
-				SetSemaphore (GraphicsSem);
-			}
-			return;
+ 		if (optWhichMenu == OPT_PC)
+ 		{
+ 			OldContext = SetContext (ScreenContext);
+ 			pRect = 0;
+ 		}
+ 		else
+ 		{
+ 			OldContext = SetContext (StatusContext);
+ 			GetContextClipRect (&clip_r);
+ 			pRect = &temp_r;
+ 			temp_r.corner.x = RADAR_X - clip_r.corner.x;
+ 			temp_r.corner.y = RADAR_Y - clip_r.corner.y;
+ 			temp_r.extent.width = RADAR_WIDTH;
+ 			temp_r.extent.height = RADAR_HEIGHT;
+ 			SetContext (ScreenContext);
 		}
-		OldContext = SetContext (StatusContext);
-		GetContextClipRect (&clip_r);
-		pRect = &temp_r;
-		temp_r.corner.x = RADAR_X - clip_r.corner.x;
-		temp_r.corner.y = RADAR_Y - clip_r.corner.y;
-		temp_r.extent.width = RADAR_WIDTH;
-		temp_r.extent.height = RADAR_HEIGHT;
-		SetContext (ScreenContext);
 	}
 
-	old_r = flash_rect;
-	old_f = flash_frame;
 	if (pRect == 0 || pRect->extent.width == 0)
 	{
 		flash_rect.extent.width = 0;
