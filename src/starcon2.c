@@ -191,14 +191,16 @@ main (int argc, char *argv[])
 	sfxVolumeScale = options.sfxVolumeScale;
 	speechVolumeScale = options.speechVolumeScale;
 
-	initIO();
+	initIO ();
 	prepareContentDir (options.contentDir, options.addons);
 	HFree ((void *) options.addons);
 	prepareConfigDir (options.configDir);
 	prepareMeleeDir ();
 	prepareSaveDir ();
-	initTempDir();
-	
+	initTempDir ();
+
+	initLanguage ();
+
 	InitTimeSystem ();
 	InitTaskSystem ();
 

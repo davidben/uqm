@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <locale.h>
 #include "port.h"
 #include "libs/graphics/gfx_common.h"
 #include "compiler.h"
@@ -30,6 +31,7 @@
 #include "file.h"
 #include "config.h"
 #include "libs/uio.h"
+#include "libs/strlib.h"
 
 int optWhichMusic;
 int optWhichCoarseScan;
@@ -354,6 +356,23 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 	uio_freeDirList (dirList);
 }
 
+void
+initLanguage (void)
+{
+	STRING_TABLE langDef;
+	STRING locString;
+	UNICODE *str;
 
+	langDef = LoadStringTableFile (contentDir, "language.txt");
+	if (!langDef)
+		return;
+
+	locString = SetAbsStringTableIndex (langDef, 0);
+	str = GetStringAddress (locString);
+	if (str)
+		setlocale (LC_ALL, str);
+
+	DestroyStringTable (langDef);
+}
 
 

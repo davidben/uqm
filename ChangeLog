@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Check language.txt for locale, from Zap
 - Make it possible to specify the config dir on the command line.
   (bug #645) - Svdb
 - Speech .txt and .ts corrections, from Nic. - SvdB
