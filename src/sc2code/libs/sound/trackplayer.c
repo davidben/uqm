@@ -713,7 +713,7 @@ GetSoundData (void *data)
 
 			assert (pos >= 0);
 
-			for (i = 0; i < RADAR_WIDTH; ++i)
+			for (i = 0; i < RADAR_WIDTH - 2; ++i)
 			{
 				SDWORD s;
 
@@ -726,7 +726,7 @@ GetSoundData (void *data)
 				}
 
 				s = *(SWORD*) (&sbuffer[pos]);
-				s = (s / 1260) + (RADAR_HEIGHT >> 1);
+				s = (s / 1360) + (RADAR_HEIGHT >> 1);
 				if (s < 0)
 					s = 0;
 				else if (s >= RADAR_HEIGHT)
@@ -785,7 +785,7 @@ GetSoundData (void *data)
 
 			assert (pos >= 0);
 
-			for (i = 0; i < RADAR_WIDTH; ++i)
+			for (i = 0; i < RADAR_WIDTH - 2; ++i)
 			{
 				SDWORD s;
 
@@ -799,7 +799,7 @@ GetSoundData (void *data)
 
 				s = (*(SWORD*)(&sbuffer[pos])) + (*(SWORD*)(&sbuffer[pos + 2]));
 				
-				s = (s / 1260) + (RADAR_HEIGHT >> 1);
+				s = (s / 1800) + (RADAR_HEIGHT >> 1);
 				if (s < 0)
 					s = 0;
 				else if (s >= RADAR_HEIGHT)

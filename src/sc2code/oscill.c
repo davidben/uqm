@@ -24,7 +24,7 @@ static FRAMEPTR scope_frame;
 static int scope_init = 0;
 static TFB_Image *scope_bg = NULL;
 static TFB_Image *scope_surf = NULL;
-static UBYTE scope_data[RADAR_WIDTH];
+static UBYTE scope_data[RADAR_WIDTH - 2];
 
 void
 InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
@@ -77,8 +77,8 @@ Oscilloscope (DWORD grab_data)
 		r = scope_surf->Palette[238].r;
 		g = scope_surf->Palette[238].g;
 		b = scope_surf->Palette[238].b;
-		for (i = 0; i < RADAR_WIDTH - 1; ++i)
-			TFB_DrawImage_Line (i, scope_data[i], i + 1, scope_data[i + 1], r, g, b, scope_surf);
+		for (i = 0; i < RADAR_WIDTH - 3; ++i)
+			TFB_DrawImage_Line (i + 1, scope_data[i], i + 2, scope_data[i + 1], r, g, b, scope_surf);
 	}
 	TFB_DrawImage_Image (scope_surf, 0, 0, 0, NULL, scope_frame->image);
 
