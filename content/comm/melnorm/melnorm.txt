@@ -515,26 +515,26 @@ As you wish.
 #(sell_life_data)
 I have some data on alien lifeforms.
 
-#(SOLD_LIFE_DATA1) melno074.ogg
+#(SOLD_LIFE_DATA1)	melno074.ogg
 The 
 
-#(SOLD_LIFE_DATA2)
+#(SOLD_LIFE_DATA2)	melno203.ogg
  units of biological data we downloaded from your ship earn you 
 
-#(SOLD_LIFE_DATA3)
+#(SOLD_LIFE_DATA3)	melno204.ogg
  Credits.
 
 #(sell_rainbow_locations)
 I wish to sell you Rainbow world locations.
 
-#(SOLD_RAINBOW_LOCATIONS1) melno075.ogg
+#(SOLD_RAINBOW_LOCATIONS1)	melno075.ogg
 Your ship's log indicates that you discovered the whereabouts of 
 
-#(SOLD_RAINBOW_LOCATIONS2)
+#(SOLD_RAINBOW_LOCATIONS2)	melno205.ogg
  of the Rainbow worlds which so fascinate us.
 In exchange, we will give you 
 
-#(SOLD_RAINBOW_LOCATIONS3)
+#(SOLD_RAINBOW_LOCATIONS3)	melno204.ogg
  Credits.
 	     
 #(sell_precursor_find)
@@ -601,14 +601,14 @@ I am done buying fuel.
 It has been a pleasure dealing with you, Captain.
 We look forward to your next visit.
 
-#(CREDIT_IS0)	melno086.ogg
+#(CREDIT_IS0)
 Your present balance is 
-#(CREDIT_IS1)	melno087.ogg
+#(CREDIT_IS1)
  Credits.
 
 #(NEED_MORE_CREDIT0)	melno084.ogg
 Unfortunately this purchase requires 
-#(NEED_MORE_CREDIT1)	melno084.ogg
+#(NEED_MORE_CREDIT1)	melno206.ogg
  additional Credits.
 
 #(BUY_FUEL_INTRO)	melno085.ogg
@@ -1365,3 +1365,44 @@ sixteen
 #(END_LIST_WITH_AND)	melno188.ogg
 and
 
+#(ENUMERATE_ZERO)
+zero
+
+#(ENUMERATE_SEVENTEEN)	melno190.ogg
+seventeen
+
+#(ENUMERATE_EIGHTEEN)	melno191.ogg
+eighteen
+
+#(ENUMERATE_NINETEEN)	melno192.ogg
+nineteen
+
+#(ENUMERATE_TWENTY)	melno193.ogg
+twenty
+
+#(ENUMERATE_THIRTY)	melno194.ogg
+thirty
+
+#(ENUMERATE_FOURTY)	melno195.ogg
+fourty
+
+#(ENUMERATE_FIFTY)	melno196.ogg
+fifty
+
+#(ENUMERATE_SIXTY)	melno197.ogg
+sixty
+
+#(ENUMERATE_SEVENTY)	melno198.ogg
+seventy
+
+#(ENUMERATE_EIGHTY)	melno199.ogg
+eighty
+
+#(ENUMERATE_NINETY)	melno200.ogg
+ninety
+
+#(ENUMERATE_HUNDRED)	melno201.ogg
+hundred
+
+#(ENUMERATE_THOUSAND)	melno202.ogg
+thousand
