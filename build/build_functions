@@ -132,14 +132,16 @@ build_clean() {
 }
 
 build_cleanall() {
+	export BUILD_PROJECT
 	for TARGET in $TARGETS; do
-		build_clean "$TARGET"
+		BUILD_PROJECT="$TARGET"
+		build_clean
 	done
+	BUILD_PROJECT=""
 }
 
 build_distclean() {
 	build_cleanall
-	rm configure
 }
 
 
