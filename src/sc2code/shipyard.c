@@ -831,7 +831,8 @@ DoModifyShips (PMENU_STATE pMS)
 						RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
 						FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
 						// refresh SIS display
-						DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
+						DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
+								UNDEFINED_DELTA);
 						DrawStatusMessage ((UNICODE *)~0);
 						r.corner.x = pMS->flash_rect0.corner.x;
 						r.corner.y = pMS->flash_rect0.corner.y;
@@ -910,8 +911,10 @@ DoModifyShips (PMENU_STATE pMS)
 								if (StarShipPtr->ShipInfo.crew_level > 0)
 									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
 								else
-									DeltaSISGauges (UNDEFINED_DELTA,UNDEFINED_DELTA,
-										-(COUNT)ShipCost[GET_RACE_ID (StarShipPtr)]);
+									DeltaSISGauges (0, 0,
+											-(COUNT)ShipCost[
+											GET_RACE_ID (StarShipPtr)
+											]);
 								++StarShipPtr->ShipInfo.crew_level;
 								crew_delta = 1;
 								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
@@ -962,8 +965,10 @@ DoModifyShips (PMENU_STATE pMS)
 											- (crew_bought ==
 											CREW_EXPENSE_THRESHOLD ? 2 : 0));
 								else
-									DeltaSISGauges (UNDEFINED_DELTA,UNDEFINED_DELTA,
-										(COUNT)ShipCost[GET_RACE_ID (StarShipPtr)]);
+									DeltaSISGauges (0, 0,
+											(COUNT)ShipCost[
+											GET_RACE_ID (StarShipPtr)
+											]);
 								crew_delta = -1;
 								--StarShipPtr->ShipInfo.crew_level;
 							}
