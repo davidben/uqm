@@ -98,5 +98,11 @@ typedef unsigned short mode_t;
 #define snprintf _snprintf
 #endif
 
+// setenv()
+#ifndef HAVE_SETENV
+int setenv (const char *name, const char *value, int overwrite);
+#endif
+
 #endif  /* _PORT_H */
+
 

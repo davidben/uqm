@@ -335,10 +335,14 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					envVar = getenv (envName);
 					HFree (envName);
 
-					envVarLen = strlen (envVar);
-					CHECKLEN (buf, envVarLen);
-					memcpy (bufptr, envVar, envVarLen);
-					bufptr += envVarLen;
+					if (envVar != NULL)
+					{
+						envVarLen = strlen (envVar);
+						CHECKLEN (buf, envVarLen);
+						memcpy (bufptr, envVar, envVarLen);
+						bufptr += envVarLen;
+					}
+
 					src = end;
 					break;
 				}

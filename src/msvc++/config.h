@@ -9,7 +9,7 @@
 #define _CONFIG_H
 
 /* Directory where the UQM game data is located */
-#define CONTENTDIR "../content"
+#define CONTENTDIR "../content/"
 
 /* Directory where game data will be stored */
 //#define USERDIR "../userdata/"
@@ -19,13 +19,16 @@
 #define CONFIGDIR USERDIR
 
 /* Directory where supermelee teams will be stored */
-#define MELEEDIR "%UQM_CONFIG_DIR%/teams/"
+#define MELEEDIR "%UQM_CONFIG_DIR%teams/"
 
 /* Directory where save games will be stored */
-#define SAVEDIR "%UQM_CONFIG_DIR%/save/"
+#define SAVEDIR "%UQM_CONFIG_DIR%save/"
 
 /* Define if words are stored with the most significant byte first */
 #undef WORDS_BIGENDIAN
+
+/* Defined if your system has setenv of its own */
+#define HAVE_SETENV
 
 /* Defined if your system has strupr of its own */
 #define HAVE_STRUPR

@@ -22,6 +22,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 #include "port.h"
 
 #ifndef HAVE_STRUPR
@@ -39,4 +40,42 @@ strupr (char *str)
 	return str;
 }
 #endif
+
+#ifndef HAVE_SETENV
+int
+setenv (const char *name, const char *value, int overwrite)
+{
+	char *string, *ptr;
+	size_t nameLen, valueLen;
+
+	if (!overwrite)
+	{
+		char *old;
+
+		old = getenv (name);
+		if (old != NULL)
+			return 0;
+	}
+
+	nameLen = strlen (name);	
+	valueLen = strlen (value);
+
+	string = malloc (nameLen + valueLen + 2);
+			// "NAME=VALUE\0"
+			// putenv() does NOT make a copy, but uses the string passed.
+
+	ptr = string;
+
+	strcpy (string, name);
+	ptr += nameLen;
+
+	*ptr = '=';
+	ptr++;
+	
+	strcpy (ptr, value);
+	
+	return putenv (string);
+}
+#endif
+
 
