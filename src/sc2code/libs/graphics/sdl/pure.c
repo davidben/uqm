@@ -21,9 +21,9 @@
 #include "bbox.h"
 #include "2xscalers.h"
 
-static SDL_Surface *fade_black;
-static SDL_Surface *fade_white;
-static SDL_Surface *fade_temp;
+static SDL_Surface *fade_black = NULL;
+static SDL_Surface *fade_white = NULL;
+static SDL_Surface *fade_temp = NULL;
 
 static SDL_Surface *
 Create_Screen (SDL_Surface *template)
@@ -37,31 +37,13 @@ Create_Screen (SDL_Surface *template)
 }
 
 int
-TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 {
-	char VideoName[256];
-	int videomode_flags;
+	int i, videomode_flags;
 	SDL_Surface *test_extra;
-	int i;
 
 	GraphicsDriver = driver;
 	ScreenColorDepth = bpp;
-
-	fprintf (stderr, "Initializing Pure-SDL graphics.\n");
-
-	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	fprintf (stderr, "SDL driver used: %s\n", VideoName);
-			// Set the environment variable SDL_VIDEODRIVER to override
-			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
-			//            ggi, aalib
-			// For Windows: directx (default), windib
-
-	fprintf (stderr, "SDL initialized.\n");
-
-	fprintf (stderr, "Initializing Screen.\n");
-
-	ScreenWidth = 320;
-	ScreenHeight = 240;
 
 	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly with fades/scaling
 	if (width == 320 && height == 240)
@@ -118,20 +100,61 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
 
+	if (fade_white)
+	{
+		SDL_FreeSurface (fade_white);
+		fade_white = NULL;
+	}
 	fade_white = Create_Screen(test_extra);
 	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
+	if (fade_black)
+	{
+		SDL_FreeSurface (fade_black);
+		fade_black = NULL;
+	}
 	fade_black = Create_Screen(test_extra);
 	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
+	if (fade_temp)
+	{
+		SDL_FreeSurface (fade_temp);
+		fade_temp = NULL;
+	}
 	fade_temp = Create_Screen(test_extra);
-	
+
 	SDL_FreeSurface (test_extra);
-	
+
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
 		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
 			SDL_Video->format->BytesPerPixel,SDL_Screen->format->BytesPerPixel);
 		exit(-1);
 	}
+
+	return 0;
+}
+
+int
+TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
+{
+	char VideoName[256];
+
+	fprintf (stderr, "Initializing Pure-SDL graphics.\n");
+
+	SDL_VideoDriverName (VideoName, sizeof (VideoName));
+	fprintf (stderr, "SDL driver used: %s\n", VideoName);
+			// Set the environment variable SDL_VIDEODRIVER to override
+			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
+			//            ggi, aalib
+			// For Windows: directx (default), windib
+
+	fprintf (stderr, "SDL initialized.\n");
+
+	fprintf (stderr, "Initializing Screen.\n");
+
+	ScreenWidth = 320;
+	ScreenHeight = 240;
+
+	TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
 
 	// pre-compute the RGB->YUV transformations
 	Scale_PrepYUV();

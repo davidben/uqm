@@ -74,6 +74,42 @@ TFB_PreInit (void)
 }
 
 int
+TFB_ReInitGraphics (int driver, int flags, int width, int height, int bpp)
+{
+	int result;
+	char caption[200];
+
+	GfxFlags = flags;
+
+	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
+	{
+#ifdef HAVE_OPENGL
+		result = TFB_GL_ConfigureVideo (driver, flags, width, height, bpp);
+#else
+		driver = TFB_GFXDRIVER_SDL_PURE;
+		fprintf (stderr, "OpenGL support not compiled in, so using pure "
+				"sdl driver\n");
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
+#endif
+	}
+	else
+	{
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
+	}
+
+	sprintf (caption, "The Ur-Quan Masters v%d.%d%s", 
+			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
+	SDL_WM_SetCaption (caption, NULL);
+
+	if (flags & TFB_GFXFLAGS_FULLSCREEN)
+		SDL_ShowCursor (SDL_DISABLE);
+	else
+		SDL_ShowCursor (SDL_ENABLE);
+
+	return result;
+}
+
+int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
 	int result;
@@ -696,9 +732,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 			ClearSemaphore (DC.data.sendsignal.sem);
 			break;
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
-			fprintf (stderr, "TODO: REINITVIDEO command sent.  Not yet implemented.  Pester McMartin.\n");
-			fprintf (stderr, "      Request: %dx%d %dbpp %s Flags: %08x\n", DC.data.reinitvideo.width, DC.data.reinitvideo.height, DC.data.reinitvideo.bpp, DC.data.reinitvideo.driver ? "Pure-SDL" : "OpenGL", DC.data.reinitvideo.flags);
-
+			TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
+					    DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
+					    DC.data.reinitvideo.bpp);
 			break;
 		}
 	}

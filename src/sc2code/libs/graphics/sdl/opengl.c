@@ -22,9 +22,9 @@
 #include "bbox.h"
 #include "2xscalers.h"
 
-static SDL_Surface *format_conv_surf;
-static SDL_Surface *scaled_display;
-static SDL_Surface *scaled_transition;
+static SDL_Surface *format_conv_surf = NULL;
+static SDL_Surface *scaled_display = NULL;
+static SDL_Surface *scaled_transition = NULL;
 
 static int ScreenFilterMode;
 static GLuint DisplayTexture;
@@ -59,23 +59,11 @@ Create_Screen (void)
 }
 
 int
-TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 {
-	char VideoName[256];
 	int i, videomode_flags, texture_width, texture_height;
-
 	GraphicsDriver = driver;
 	ScreenColorDepth = bpp;
-
-	fprintf (stderr, "Initializing SDL with OpenGL support.\n");
-
-	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	fprintf (stderr, "SDL driver used: %s\n", VideoName);
-	fprintf (stderr, "SDL initialized.\n");
-	fprintf (stderr, "Initializing Screen.\n");
-
-	ScreenWidth = 320;
-	ScreenHeight = 240;
 	ScreenWidthActual = width;
 	ScreenHeightActual = height;
 
@@ -133,33 +121,27 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
-	{
-		SDL_Screens[i] = Create_Screen ();
-	}
-
-	SDL_Screen = SDL_Screens[0];
-	TransitionScreen = SDL_Screens[2];
-
-	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
-		R_MASK, G_MASK, B_MASK, A_MASK);
-	if (format_conv_surf == NULL)
-	{
-		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
-		exit(-1);
-	}
-
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
 	{
+		if (scaled_display)
+		{
+			SDL_FreeSurface (scaled_display);
+			scaled_display = NULL;
+		}
 		scaled_display = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth * 2,
 			ScreenHeight * 2, 32, R_MASK, G_MASK, B_MASK, 0x00000000);
 		if (scaled_display == NULL)
 		{
 			fprintf (stderr, "Couldn't create scaled_display: %s\n", SDL_GetError());
 			exit(-1);
-		}		
+		}
+		if (scaled_transition)
+		{
+			SDL_FreeSurface (scaled_transition);
+			scaled_transition = NULL;
+		}
 		scaled_transition = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth * 2,
 			ScreenHeight * 2, 32, R_MASK, G_MASK, B_MASK, 0x00000000);
 		if (scaled_transition == NULL)
@@ -177,8 +159,18 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		texture_height = 256;
 	}
 
-	// pre-compute the RGB->YUV transformations
-	Scale_PrepYUV();
+	if (format_conv_surf)
+	{
+		SDL_FreeSurface (format_conv_surf);
+		format_conv_surf = NULL;
+	}
+	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
+		R_MASK, G_MASK, B_MASK, A_MASK);
+	if (format_conv_surf == NULL)
+	{
+		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
+		exit(-1);
+	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
@@ -192,6 +184,15 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		scanlines = TRUE;
 	else
 		scanlines = FALSE;
+
+	/* TODO: This leaks */
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+	{
+		SDL_Screens[i] = Create_Screen ();
+	}
+
+	SDL_Screen = SDL_Screens[0];
+	TransitionScreen = SDL_Screens[2];
 
 	glViewport (0, 0, ScreenWidthActual, ScreenHeightActual);
 	glClearColor (0,0,0,0);
@@ -214,6 +215,29 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	return 0;
+}
+
+int
+TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
+{
+	char VideoName[256];
+
+	fprintf (stderr, "Initializing SDL with OpenGL support.\n");
+
+	SDL_VideoDriverName (VideoName, sizeof (VideoName));
+	fprintf (stderr, "SDL driver used: %s\n", VideoName);
+	fprintf (stderr, "SDL initialized.\n");
+	fprintf (stderr, "Initializing Screen.\n");
+
+	ScreenWidth = 320;
+	ScreenHeight = 240;
+
+	TFB_GL_ConfigureVideo (driver, flags, width, height, bpp);
+
+	// pre-compute the RGB->YUV transformations
+	Scale_PrepYUV();
 
 	return 0;
 }

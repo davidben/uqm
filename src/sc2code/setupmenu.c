@@ -706,7 +706,9 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	    (NewDriver != GraphicsDriver) ||
 	    (NewGfxFlags != GfxFlags)) 
 	{
+		FlushGraphics ();
 		TFB_DrawScreen_ReinitVideo (NewDriver, NewGfxFlags, NewWidth, NewHeight, NewDepth);
+		FlushGraphics ();
 	}
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;
 	// optWhichMusic = (opts->music == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
@@ -714,4 +716,5 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichFonts = (opts->text == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichCoarseScan = (opts->cscan == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optSmoothScroll = (opts->scroll == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
+
 }
