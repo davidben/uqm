@@ -132,15 +132,21 @@ int clock_task_func(void* data)
 			}
 			else
 			{
-				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT)
+				if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT))
 						&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 				{
-					CONTEXT OldContext;
+					// 2002/11/30 this additional 'if' fixes autopilot indicator blinking on combat/starmap
+					// TODO: is there a better (more exact) way of determining if player is in starmap menu or not?
+					if (LOBYTE (GLOBAL (CurrentActivity)) != IN_ENCOUNTER &&
+						(!pMenuState || (pMenuState && pMenuState->InputFunc == DoFlagshipCommands)))
+					{
+						CONTEXT OldContext;
 
-					OldContext = SetContext (OffScreenContext);
-					SetContextForeGroundColor (cycle_tab[cycle_index]);
-					DrawSISMessage ((UNICODE *)~0L);
-					SetContext (OldContext);
+						OldContext = SetContext (OffScreenContext);
+						SetContextForeGroundColor (cycle_tab[cycle_index]);
+						DrawSISMessage ((UNICODE *)~0L);
+						SetContext (OldContext);
+					}
 				}
 
 				cycle_index = (cycle_index + 1) % NUM_CYCLES;
