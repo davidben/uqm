@@ -17,6 +17,8 @@ Serious bugs (crash the game, high priority):
   unusual - EVERY line by the ZFP is like that.)
 - Load/save code doesn't work perfectly, hangs sometimes when after loading
   trying to enter some star first time etc
+- OpenGL mode might cause lockups when entering a star system, while
+  pure SDL mode does not; can others confirm this?
 
 Glitches (don't crash the game, medium priority):
 - The melnorme don't charge for fuel when you ask "fill 'er up"
@@ -69,6 +71,8 @@ Glitches (don't crash the game, medium priority):
 - Melee menu's 5x5 ship selection grid doesn't show up always
   - On win32, works with release build, not debug
   - On linux, works with SDL_mixer, not OpenAL
+- When entering to star system, graphics might go wild
+  (doesn't draw background so leaves trails, etc)
 
 Implementation bugs (low priority):
 - Scaling code problems:
