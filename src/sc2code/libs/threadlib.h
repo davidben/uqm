@@ -21,7 +21,11 @@
 #define _THREADLIB_H
 
 #define THREADLIB SDL
+
+/*
+This is now a compile-time define
 #define DEBUG_TRACK_SEM
+*/
 
 #ifdef DEBUG
 #	ifndef DEBUG_THREADS
