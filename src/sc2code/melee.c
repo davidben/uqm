@@ -17,8 +17,10 @@
  */
 
 #include <ctype.h>
+#include <sys/param.h>
 #include "starcon.h"
 #include "melee.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -566,6 +568,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&OldRect);
 	r = OldRect;
+	r.corner.x += ((SAFE_X << 1) - 32);
 	r.corner.y += 76;
 	r.extent.height = SHIP_INFO_HEIGHT;
 	SetContextClipRect (&r);
@@ -589,17 +592,17 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 		t.align = ALIGN_CENTER;
 		if (pMS->row < NUM_MELEE_ROWS)
 		{
-			t.pStr = GAME_STRING (MELEE_STRING_BASE + 0);
+			t.pStr = GAME_STRING (MELEE_STRING_BASE + 0);  // "Empty"
 			t.CharCount = (COUNT)~0;
 			DrawText (&t);
-			t.pStr = GAME_STRING (MELEE_STRING_BASE + 1);
+			t.pStr = GAME_STRING (MELEE_STRING_BASE + 1);  // "Slot"
 		}
 		else
 		{
-			t.pStr = GAME_STRING (MELEE_STRING_BASE + 2);
+			t.pStr = GAME_STRING (MELEE_STRING_BASE + 2);  // "Team"
 			t.CharCount = (COUNT)~0;
 			DrawText (&t);
-			t.pStr = GAME_STRING (MELEE_STRING_BASE + 3);
+			t.pStr = GAME_STRING (MELEE_STRING_BASE + 3);  // "Name"
 		}
 		t.baseline.y += TINY_TEXT_HEIGHT;
 		t.CharCount = (COUNT)~0;
@@ -1754,8 +1757,10 @@ Melee (void)
 		LoadMeleeInfo (&MenuState);
 		{
 			FILE *load_fp;
-
-			load_fp = OpenResFile ("melee.cfg", "rb");
+			char file[MAXPATHLEN];
+			
+			sprintf (file, "%smelee.cfg", configDir);
+			load_fp = OpenResFile (file, "rb");
 			if (load_fp)
 			{
 				int status;
@@ -1800,10 +1805,12 @@ Melee (void)
 
 		{
 			FILE *save_fp;
+			char file[MAXPATHLEN];
 			BOOLEAN err;
 				
 			err = FALSE;
-			save_fp = OpenResFile ("melee.cfg", "wb");
+			sprintf (file, "%smelee.cfg", configDir);
+			save_fp = OpenResFile (file, "wb");
 			if (save_fp)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
