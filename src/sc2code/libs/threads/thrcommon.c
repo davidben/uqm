@@ -147,9 +147,9 @@ static char *ThreadNameNative (Uint32 native)
 {
 	volatile Thread ptr;
 
-	ptr = threadQueue;
 	if (threadQueueSemaphore)
 		NativeSetSemaphore (threadQueueSemaphore);
+	ptr = threadQueue;
 	while (ptr && NativeGetThreadID (ptr->native) != native)
 	{
 		ptr = ptr->next;
