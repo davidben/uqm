@@ -3231,6 +3231,14 @@ SOURCE=..\starcon2.c
 
 SOURCE=..\..\TODO
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\ChangeLog
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\BUGS
+# End Source File
 
 # Begin Group "Devel"
 # PROP Default_Filter ""
