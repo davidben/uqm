@@ -335,7 +335,7 @@ _encode_cleanup (void)
 				_lpCurCodeDesc->StreamIndex += 4;
 						/* rewind */
 				if (_lpCurCodeDesc->StreamType == FILE_STREAM)
-					SeekResFile ((FILE *)_Stream,
+					SeekResFile ((uio_Stream *)_Stream,
 							-(int)_lpCurCodeDesc->StreamIndex, SEEK_CUR);
 				else /* _lpCurCodeDesc->StreamType == MEMORY_STREAM */
 					_Stream = (PBYTE)((BYTE *)_Stream

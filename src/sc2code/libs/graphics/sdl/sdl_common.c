@@ -44,7 +44,7 @@ int GfxFlags = 0;
 
 static TFB_Palette palette[256];
 
-#define FPS_PERIOD 1000
+#define FPS_PERIOD 100
 int RenderedFrames = 0;
 
 void

@@ -125,3 +125,8 @@ case "$OSNAME" in
 esac
 LIB_vorbisfile_VERSION=""
 
+LIB_zlib_NAME="zlib"
+LIB_zlib_CFLAGS=""
+LIB_zlib_LDFLAGS=""
+LIB_zlib_VERSION=""
+

@@ -38,6 +38,8 @@
 #endif
 
 #include "mikmod_build.h"
+#include "port.h"
+#include "libs/uio.h"
 
 #ifdef macintosh
 #ifndef __MWERKS__
@@ -142,13 +144,13 @@ extern void _mm_delete_rwops_reader (MREADER*);
 #endif /* USE_RWOPS */
 /* End SDL_RWops compatability */
 
-extern MREADER* _mm_new_file_reader(FILE* fp);
+extern MREADER* _mm_new_file_reader(uio_Stream* fp);
 extern void _mm_delete_file_reader(MREADER*);
 
-extern MWRITER* _mm_new_file_writer(FILE *fp);
+extern MWRITER* _mm_new_file_writer(uio_Stream *fp);
 extern void _mm_delete_file_writer(MWRITER*);
 
-extern BOOL _mm_FileExists(CHAR *fname);
+extern BOOL _mm_FileExists(uio_DirHandle *dir,CHAR *fname);
 
 #define _mm_write_SBYTE(x,y) y->Put(y,(int)x)
 #define _mm_write_UBYTE(x,y) y->Put(y,(int)x)
@@ -169,7 +171,7 @@ extern BOOL _mm_FileExists(CHAR *fname);
 
 extern void _mm_iobase_setcur(MREADER*);
 extern void _mm_iobase_revert(void);
-extern FILE *_mm_fopen(CHAR*,CHAR*);
+extern uio_Stream *_mm_fopen(uio_DirHandle *,CHAR*,CHAR*);
 extern void _mm_write_string(CHAR*,MWRITER*);
 extern int  _mm_read_string (CHAR*,int,MREADER*);
 

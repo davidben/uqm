@@ -30,12 +30,13 @@
 #include "libs/compiler.h"
 #include "misc.h"
 
-static char *tempDir;
+static char *tempDirName;
+uio_DirHandle *tempDir;
 
 static void
 removeTempDir (void)
 {
-	rmdir (tempDir);
+	rmdir (tempDirName);
 }
 
 // Try if the null-terminated path 'dir' to a directory is valid
@@ -52,7 +53,10 @@ tryTempDir (char *buf, size_t buflen, const char *dir)
 	
 	if (dir == NULL)
 		return EINVAL;
-		
+	
+	if (dir[0] == '\0')
+		return EINVAL;
+
 	len = strlen (dir);
 	haveSlash = (dir[len - 1] == '/'
 #ifdef WIN32
@@ -63,6 +67,17 @@ tryTempDir (char *buf, size_t buflen, const char *dir)
 		return ENAMETOOLONG;
 	
 	strcpy (buf, dir);
+#if 0
+	//def WIN32
+	{
+		char *bufPtr;
+		for (bufPtr = buf; *bufPtr != '\0'; bufPtr++)
+		{
+			if (*bufPtr == '\\')
+				*bufPtr = '/';
+		}
+	}
+#endif
 	if (!haveSlash)
 	{
 		buf[len] = '/';
@@ -71,20 +86,52 @@ tryTempDir (char *buf, size_t buflen, const char *dir)
 	}
 	if (access (buf, R_OK | W_OK) == -1)
 		return errno;
+
 	return 0;
 }
 
 static void
 getTempDir (char *buf, size_t buflen) {
+	char cwd[PATH_MAX];
+	
 	if (tryTempDir (buf, buflen, getenv("TMP")) &&
 			tryTempDir (buf, buflen, getenv("TEMP")) &&
 			tryTempDir (buf, buflen, "/tmp/") &&
-			tryTempDir (buf, buflen, "./"))
+			tryTempDir (buf, buflen, getcwd (cwd, sizeof cwd)))
 	{
 		fprintf (stderr, "Fatal Error: Cannot find a suitable location "
 				"to store temporary files.\n");
-		exit(EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
+}
+
+// Sets the global var 'tempDir'
+static int
+mountTempDir(const char *name) {
+	static uio_AutoMount *autoMount[] = { NULL };
+	uio_MountHandle *tempHandle;
+	extern uio_Repository *repository;
+
+	tempHandle = uio_mountDir (repository, "/tmp/",
+			uio_FSTYPE_STDIO, NULL, NULL, name, autoMount,
+			uio_MOUNT_TOP, NULL);
+	if (tempHandle == NULL) {
+		int saveErrno = errno;
+		fprintf (stderr, "Fatal error: Couldn't mount temp dir '%s': "
+				"%s\n", name, strerror (errno));
+		errno = saveErrno;
+		return -1;
+	}
+
+	tempDir = uio_openDir (repository, "/", 0);
+	if (tempDir == NULL) {
+		int saveErrno = errno;
+		fprintf (stderr, "Fatal error: Could not open temp dir: %s\n",
+				strerror (errno));
+		errno = saveErrno;
+		return -1;
+	}
+	return 0;
 }
 
 #define NUM_TEMP_RETRIES 16
@@ -95,27 +142,29 @@ initTempDir (void) {
 	DWORD num;
 	int i;
 	char *tempPtr;
-			// Pointer to the location in the tempDir string where the
+			// Pointer to the location in the tempDirName string where the
 			// path to the temp dir ends and the dir starts.
 
-	tempDir = HMalloc (PATH_MAX);
-	getTempDir (tempDir, PATH_MAX - 21);
+	tempDirName = HMalloc (PATH_MAX);
+	getTempDir (tempDirName, PATH_MAX - 21);
 			// reserve 8 chars for dirname, 1 for slash, and 12 for filename
-	len = strlen(tempDir);
+	len = strlen(tempDirName);
 
 	num = ((DWORD) time (NULL));
 //	num = GetTimeCounter () % 0xffffffff;
-	tempPtr = tempDir + len;
+	tempPtr = tempDirName + len;
 	i = NUM_TEMP_RETRIES;
 	while (i--)
 	{
 		sprintf (tempPtr, "%08lx", num + i);
-		if (createDirectory (tempDir, 0700) == -1)
+		if (createDirectory (tempDirName, 0700) == -1)
 			continue;
 		
 		// Success, we've got a temp dir.
-		tempDir = HRealloc (tempDir, len + 9);
+		tempDirName = HRealloc (tempDirName, len + 9);
 		atexit (removeTempDir);
+		if (mountTempDir (tempDirName) == -1)
+			exit (EXIT_FAILURE);
 		return;
 	}
 	
@@ -127,7 +176,7 @@ initTempDir (void) {
 
 void
 unInitTempDir (void) {
-	// nothing at the moment.
+	uio_closeDir(tempDir);
 	// the removing of the dir is handled via atexit
 }
 
@@ -137,10 +186,11 @@ char *
 tempFilePath (const char *filename) {
 	static char file[PATH_MAX];
 	
-	if (snprintf(file, PATH_MAX, "%s/%s", tempDir, filename) == -1) {
-		fprintf(stderr, "Path to temp file too long.\n");
-		exit(EXIT_FAILURE);
+	if (snprintf (file, PATH_MAX, "%s/%s", tempDirName, filename) == -1) {
+		fprintf (stderr, "Path to temp file too long.\n");
+		exit (EXIT_FAILURE);
 	}
 	return file;
 }
+
 

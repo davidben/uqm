@@ -16,12 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "port.h"
 #include "starcon.h"
+#include "libs/uio.h"
 
 FRAME stars_in_space,
 				asteroid[NUM_VIEWS],
 				blast[NUM_VIEWS],
 				explosion[NUM_VIEWS];
+
+uio_Repository *repository;
+uio_DirHandle *rootDir;
+
 
 BOOLEAN
 load_animation (PFRAME pixarray, DWORD big_res, DWORD med_res, DWORD
@@ -267,4 +273,27 @@ InitGlobData (void)
 	// 2 and 1, which doesn't actually do anything
 	(GLOBAL (GameClock)).clock_sem = CreateSemaphore(0,  "Clock");
 }
+
+int
+initIO (void)
+{
+	uio_init ();
+	repository = uio_openRepository (0);
+
+	rootDir = uio_openDir(repository, "/", 0);
+	if (rootDir == NULL) {
+		fprintf(stderr, "Could not open '/' dir.\n");
+		return -1;
+	}
+	return 0;
+}
+
+void
+uninitIO (void)
+{
+	uio_closeDir (rootDir);
+	uio_closeRepository (repository);
+	uio_unInit ();
+}
+
 

@@ -54,7 +54,7 @@ do \
 #define DoLoad(pRH, t,fp,len) (*(pRH)->TypeList[t-1].func_vectors.load_func)(fp,len)
 #define DoFree(pRH, t,h) (*(pRH)->TypeList[t-1].func_vectors.free_func)(h)
 
-extern MEM_HANDLE _GetResFileData (FILE *res_fp, DWORD flen);
+extern MEM_HANDLE _GetResFileData (uio_Stream *res_fp, DWORD flen);
 #define IsIndexType(pRH, t) ((pRH)->TypeList[t-1].func_vectors.load_func \
 										==_GetResFileData)
 

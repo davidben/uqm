@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /D "HAVE_ZIP" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zlib.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
 
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /D "HAVE_ZIP" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zlib.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -217,6 +217,14 @@ SOURCE=..\sc2code\libs\graphics\sdl\pure.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdluio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdluio.h
 # End Source File
 # Begin Source File
 
@@ -814,8 +822,188 @@ SOURCE=..\sc2code\libs\timelib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\vidlib.h
+SOURCE=..\sc2code\libs\uio.h
 # End Source File
+# Begin Group "uio"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\charhashtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\charhashtable.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\debug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\debug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\defaultfs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\defaultfs.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\fileblock.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\fileblock.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\fstypes.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\fstypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\gphys.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\gphys.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\hashtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\hashtable.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\io.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\io.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\ioaux.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\ioaux.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\iointrn.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\match.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\match.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\mem.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\memdebug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\memdebug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\mount.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\mount.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\mounttree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\mounttree.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\paths.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\paths.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\physical.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\physical.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uiostream.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uiostream.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uioport.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uioutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uioutils.h
+# End Source File
+# Begin Group "stdio"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\stdio\stdio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\stdio\stdio.h
+# End Source File
+# End Group
+# Begin Group "zip"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\zip\zip.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\zip\zip.h
+# End Source File
+# End Group
+# End Group
 # End Group
 # Begin Group "comm"
 

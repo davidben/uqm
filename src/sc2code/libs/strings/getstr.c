@@ -18,6 +18,7 @@
 
 #include "strintrn.h"
 #include "libs/graphics/gfx_common.h"
+#include "options.h"
 #ifdef WIN32
 #include <io.h>
 #endif
@@ -39,7 +40,7 @@ dword_convert (PDWORD dword_array, COUNT num_dwords)
 }
 
 MEM_HANDLE
-_GetStringData (FILE *fp, DWORD length)
+_GetStringData (uio_Stream *fp, DWORD length)
 {
 	MEM_HANDLE hData;
 
@@ -51,16 +52,13 @@ _GetStringData (FILE *fp, DWORD length)
 		{
 #define MAX_STRINGS 2048
 #define POOL_SIZE 4096
-#ifdef WIN32
-			int omode;
-#endif
 			int n, path_len, num_data_sets;
 			DWORD opos,
 						slen[MAX_STRINGS], StringOffs, tot_string_size,
 						clen[MAX_STRINGS], ClipOffs, tot_clip_size,
 						tslen[MAX_STRINGS], TSOffs, tot_ts_size;
 			char CurrentLine[1024], clip_path[1024], *strdata, *clipdata, *ts_data;
-			FILE *timestamp_fp = NULL;
+			uio_Stream *timestamp_fp = NULL;
 
 			if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
 				return (0);
@@ -97,7 +95,8 @@ _GetStringData (FILE *fp, DWORD length)
 				s += 2;
 				*s++ = 's';
 				*s = '\0';
-				if ((timestamp_fp = fopen (ts_file_name, "rb")))
+				if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
+						"rb")))
 				{
 					fprintf (stderr, "Found timestamp file: %s\n", ts_file_name);
 					if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
@@ -105,13 +104,10 @@ _GetStringData (FILE *fp, DWORD length)
 				}
 			}
 
-			opos = ftell (fp);
-#ifdef WIN32
-			omode = _setmode (fileno (fp), O_TEXT);
-#endif
+			opos = uio_ftell (fp);
 			n = -1;
 			StringOffs = ClipOffs = TSOffs = 0;
-			while (fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+			while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
 			{
 				int l;
 
@@ -139,7 +135,7 @@ _GetStringData (FILE *fp, DWORD length)
 						{
 							char TimeStampLine[1024], *tsptr;
 							BOOLEAN ts_ok = FALSE;
-							fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
+							uio_fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
 							if (TimeStampLine[0] == '#')
 							{
 								tslen[n] = 0;
@@ -171,7 +167,7 @@ _GetStringData (FILE *fp, DWORD length)
 								// timestamp data is invalid, remove all of it
 								fprintf (stderr,  "Invalid timestamp data for '%s'.  Disabling timestamps\n", s);
 								HFree (ts_data);
-								fclose (timestamp_fp);
+								uio_fclose (timestamp_fp);
 								timestamp_fp = NULL;
 								TSOffs = 0;
 							}
@@ -219,12 +215,9 @@ _GetStringData (FILE *fp, DWORD length)
 						strcpy (s, CurrentLine);
 					}
 
-					if ((int)ftell (fp) - (int)opos >= (int)length)
+					if ((int)uio_ftell (fp) - (int)opos >= (int)length)
 						break;
 				}
-	#ifdef WIN32
-				_setmode (fileno (fp), omode);
-	#endif
 				if (n >= 0)
 				{
 					while (slen[n] > 1 && strdata[StringOffs - 2] == '\n')
@@ -236,7 +229,7 @@ _GetStringData (FILE *fp, DWORD length)
 				}
 
 				if (timestamp_fp)
-					fclose (timestamp_fp);
+					uio_fclose (timestamp_fp);
 
 				hData = 0;
 				num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;

@@ -36,7 +36,7 @@ InitGroupInfo (BOOLEAN FirstTime)
 {
 	PVOID fp;
 
-	fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+	fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "wb");
 	if (fp)
 	{
 		GROUP_HEADER GH;
@@ -49,8 +49,7 @@ InitGroupInfo (BOOLEAN FirstTime)
 		res_CloseResFile (fp);
 	}
 
-	if (FirstTime && (fp = res_OpenResFile (tempFilePath (DEFGRPINFO_FILE),
-			"wb")))
+	if (FirstTime && (fp = res_OpenResFile (tempDir, DEFGRPINFO_FILE, "wb")))
 	{
 		PutResFileChar (0, fp);
 
@@ -349,8 +348,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = res_OpenResFile (tempFilePath (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
+	fp = res_OpenResFile (tempDir,
+			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
 			"r+b");
 	if (fp)
 	{
@@ -387,7 +386,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				fprintf (stderr, "GetGroupInfo: battle groups out of date %u/%u/%u!\n",
 						month_index, day_index, year_index);
 #endif /* DEBUG */
-				fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+				fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "wb");
 				GH.NumGroups = 0;
 				GH.star_index = (COUNT)~0;
 				GH.GroupOffset[0] = 0;
@@ -616,8 +615,8 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = res_OpenResFile (tempFilePath (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
+	fp = res_OpenResFile (tempDir,
+			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
 			"r+b");
 	if (fp)
 	{

@@ -666,27 +666,24 @@ GetTeamValue (TEAM_IMAGE *pTI)
 }
 
 static int
-ReadTeamImage (TEAM_IMAGE *pTI, FILE *load_fp)
+ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp)
 {
 	return (ReadResFile (pTI, sizeof (*pTI), 1, load_fp) == 1 ? 0 : -1);
 }
 
 static int
 LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
-		UNICODE* pFilePath, UNICODE** ppFileName)
+		UNICODE* pFilePath)
 {
-	UNICODE file[PATH_MAX];	// local buf if needed
+	UNICODE file[NAME_MAX];	// local buf if needed
 	UNICODE *pfile;
-	UNICODE *loc_buf;
-	FILE *load_fp;
+	uio_Stream *load_fp;
 	int status;
 
 	pfile = pFilePath != NULL_PTR ? pFilePath : file;
-	strcpy (pfile, meleeDir);
-	loc_buf = pfile + strlen (pfile);
 
-	GetDirEntryContents (DirEntry, (STRINGPTR)loc_buf, FALSE);
-	if ((load_fp = res_OpenResFile (pfile, "rb")) == 0)
+	GetDirEntryContents (DirEntry, (STRINGPTR)pfile, FALSE);
+	if ((load_fp = res_OpenResFile (meleeDir, pfile, "rb")) == 0)
 		status = -1;
 	else
 	{
@@ -696,9 +693,6 @@ LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
 			status = ReadTeamImage (pTI, load_fp);
 		res_CloseResFile (load_fp);
 	}
-
-	if (pFilePath != NULL_PTR && ppFileName != NULL_PTR)
-		*ppFileName = loc_buf;
 
 	return status;
 }
@@ -790,8 +784,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 							pMS->TeamDE, bot - NUM_PREBUILT
 							);
 					if (-1 == LoadTeamImage (pMS->TeamDE,
-							&pMS->FileList[bot - top], NULL_PTR, NULL_PTR
-							))
+							&pMS->FileList[bot - top], NULL_PTR))
 					{
 						pMS->FileList[bot - top] = pMS->PreBuiltList[0];
 					}
@@ -1031,7 +1024,7 @@ DoTextEntry (PMELEE_STATE pMS)
 }
 
 static int
-WriteTeamImage (TEAM_IMAGE *pTI, FILE *save_fp)
+WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp)
 {
 	return (WriteResFile (pTI, sizeof (*pTI), 1, save_fp));
 }
@@ -1040,17 +1033,13 @@ static void
 LoadTeamList (PMELEE_STATE pMS, UNICODE *pbuf)
 {
 	COUNT num_entries;
-	char dir[PATH_MAX];
-	char file[PATH_MAX];
-	UNICODE *loc_buf;
+	char file[NAME_MAX];
 
-	sprintf (dir, "%s*.mle", meleeDir);
-	
 GetNewList:
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
 	pMS->TeamDE = CaptureDirEntryTable (
-			LoadDirEntryTable (dir, &num_entries)
-			);
+			LoadDirEntryTable (meleeDir, "", ".mle", match_MATCH_SUFFIX,
+			&num_entries));
 
 	pMS->CurIndex = 0;
 	while (num_entries--)
@@ -1058,15 +1047,15 @@ GetNewList:
 		int status;
 		TEAM_IMAGE TI;
 
-		status = LoadTeamImage(pMS->TeamDE, &TI, file, &loc_buf);
+		status = LoadTeamImage(pMS->TeamDE, &TI, file);
 
 		if (status == -1)
 		{
-			DeleteResFile (file);
+			DeleteResFile (meleeDir, file);
 			goto GetNewList;
 		}
 
-		if (pbuf && wstricmp (loc_buf, pbuf) == 0)
+		if (pbuf && wstricmp (file, pbuf) == 0)
 		{
 			pMS->CurIndex = GetDirEntryTableIndex (pMS->TeamDE) + NUM_PREBUILT;
 			pbuf = 0;
@@ -1080,20 +1069,17 @@ static BOOLEAN
 DoSaveTeam (PMELEE_STATE pMS)
 {
 	STAMP MsgStamp;
-	char buf[PATH_MAX];
-	char *file;
-	FILE *save_fp;
+	char file[NAME_MAX];
+	uio_Stream *save_fp;
 	CONTEXT OldContext;
 
-	strcpy(buf, meleeDir);
-	file = buf + strlen (buf);
 	sprintf (file, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
 
 RetrySave:
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
-	save_fp = res_OpenResFile (buf, "wb");
+	save_fp = res_OpenResFile (meleeDir, file, "wb");
 	if (save_fp)
 	{
 		BOOLEAN err;
@@ -1113,7 +1099,7 @@ RetrySave:
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
 
-		DeleteResFile (buf);
+		DeleteResFile (meleeDir, file);
 		if (SaveProblem ())
 			goto RetrySave;
 	}
@@ -1858,15 +1844,9 @@ Melee (void)
 		GameSounds = CaptureSound (LoadSound (GAME_SOUNDS));
 		LoadMeleeInfo (&MenuState);
 		{
-			FILE *load_fp;
-			char configFile[PATH_MAX];
-			int res;
+			uio_Stream *load_fp;
 
-			res = snprintf (configFile, PATH_MAX, "%smelee.cfg", configDir);
-			assert (res != -1);
-					// strlen (configDir) is supposed to be checked to be
-					// <= PATH_MAX - 13
-			load_fp = res_OpenResFile (configFile, "rb");
+			load_fp = res_OpenResFile (configDir, "melee.cfg", "rb");
 			if (load_fp)
 			{
 				int status;
@@ -1909,17 +1889,11 @@ Melee (void)
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
 		{
-			FILE *save_fp;
+			uio_Stream *save_fp;
 			BOOLEAN err;
-			char configFile[PATH_MAX];
-			int res;
 
 			err = FALSE;
-			res = snprintf (configFile, PATH_MAX, "%smelee.cfg", configDir);
-			assert (res != -1);
-					// strlen (configDir) is supposed to be checked to be
-					// <= PATH_MAX - 13
-			save_fp = res_OpenResFile (configFile, "wb");
+			save_fp = res_OpenResFile (configDir, "melee.cfg", "wb");
 			if (save_fp)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
@@ -1938,7 +1912,7 @@ Melee (void)
 				
 			if (err)
 			{
-				DeleteResFile ("melee.cfg");
+				DeleteResFile (configDir, "melee.cfg");
 			}
 		}
 		FreeMeleeInfo (&MenuState);

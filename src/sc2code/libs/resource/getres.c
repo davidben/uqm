@@ -18,6 +18,7 @@
 
 #include "resintrn.h"
 #include "port.h"
+#include "options.h"
 
 char *_cur_resfile_name;
 
@@ -156,7 +157,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 {
 	BOOLEAN DanglingOpen;
 	MEM_HANDLE hList;
-	FILE *fp;
+	uio_Stream *fp;
 	COUNT t, num_types, num_instances;
 	DWORD file_offs, data_len;
 	RES_HANDLE_LISTPTR ResourceHandleListPtr;
@@ -221,7 +222,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 			fp = ResHeaderPtr->res_fp;
 		else
 		{
-			fp = res_OpenResFile (file_buf, "rb");
+			fp = res_OpenResFile (contentDir, file_buf, "rb");
 			if (fp)
 				DanglingOpen = TRUE;
 		}
@@ -298,7 +299,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 			{
 				get_resource_filename (ResHeaderPtr, file_buf, (COUNT)data_len);
 
-				fp = res_OpenResFile (file_buf, "rb");
+				fp = res_OpenResFile (contentDir, file_buf, "rb");
 				if (fp == NULL)
 				{
 #if 1 // def DEBUG

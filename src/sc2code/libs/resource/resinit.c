@@ -17,6 +17,7 @@
  */
 
 #include "resintrn.h"
+#include "options.h"
 
 static MEM_HANDLE hIndexList;
 
@@ -83,7 +84,7 @@ _sub_index_list (MEM_HANDLE hRH)
 }
 
 MEM_HANDLE
-_GetResFileData (FILE *res_fp, DWORD flen)
+_GetResFileData (uio_Stream *res_fp, DWORD flen)
 {
 	UWORD lo_word, hi_word;
 	DWORD res_offs, remainder;
@@ -250,17 +251,17 @@ UninitResourceSystem (void)
 MEM_HANDLE
 OpenResourceIndexFile (PVOID resfile)
 {
-	FILE *res_fp;
+	uio_Stream *res_fp;
 	char fullname[256];
 
 	strcpy (fullname, resfile);
-	if ((res_fp = res_OpenResFile (fullname, "rb")) == 0)
+	if ((res_fp = res_OpenResFile (contentDir, fullname, "rb")) == 0)
 	{
 		sprintf (fullname, "%s.pkg", (char *) resfile);
-		if ((res_fp = res_OpenResFile (fullname, "rb")) == 0)
+		if ((res_fp = res_OpenResFile (contentDir, fullname, "rb")) == 0)
 		{
 			sprintf (fullname, "%s.ndx", (char *) resfile);
-			res_fp = res_OpenResFile (fullname, "rb");
+			res_fp = res_OpenResFile (contentDir, fullname, "rb");
 		}
 	}
 
@@ -315,7 +316,7 @@ CloseResourceIndex (MEM_HANDLE hRH)
 {
 	if (UnlockResourceHeader (hRH))
 	{
-		FILE *res_fp;
+		uio_Stream *res_fp;
 		INDEX_HEADERPTR ResHeaderPtr;
 
 		ResHeaderPtr = LockResourceHeader (hRH);
@@ -379,7 +380,7 @@ CloseResourceIndex (MEM_HANDLE hRH)
 
 BOOLEAN
 InstallResTypeVectors (COUNT res_type, 
-		MEM_HANDLE (*load_func) (FILE *fp, DWORD len),
+		MEM_HANDLE (*load_func) (uio_Stream *fp, DWORD len),
 		BOOLEAN (*free_func) (MEM_HANDLE handle))
 {
 	INDEX_HEADERPTR ResHeaderPtr;

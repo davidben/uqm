@@ -43,6 +43,7 @@ extern int ScreenHeight;
 
 #include "config.h"
 #include "../port.h"
+#include "libs/file.h"
 #include <stdlib.h>
 #include "gfxlib.h"
 #include "inplib.h"
@@ -166,15 +167,9 @@ extern Semaphore GraphicsSem;
 extern CondVar RenderingCond;
 extern STRING GameStrings;
 
-typedef enum
-{
-	PACKAGE_ERROR,
-	LOAD_ERROR,
-	SAVE_ERROR
-} DISK_ERROR;
-
 extern void Introduction (void);
-extern BOOLEAN TheftProtection (BOOLEAN WaitForInput);
+int initIO (void);
+void uninitIO (void);
 
 extern void SetFlashRect (PRECT pRect, FRAME f);
 
@@ -183,8 +178,6 @@ extern void DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR
 		InteriorColor);
 extern BOOLEAN ConfirmExit (void);
 extern DWORD SeedRandomNumbers (void);
-extern BOOLEAN StarConDiskError (PSTR pFileName);
-extern void ReportDiskError (PSTR pFileName, DISK_ERROR ErrorCondition);
 extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
 extern BOOLEAN Battle (void);
 extern void EncounterBattle (void);

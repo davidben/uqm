@@ -20,7 +20,7 @@
 #include "declib.h"
 
 MEM_HANDLE
-GetResourceData (FILE *fp, DWORD length, MEM_FLAGS mem_flags)
+GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 {
 	MEM_HANDLE RData;
 	DECODE_REF fh;

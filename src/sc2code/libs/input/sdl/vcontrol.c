@@ -906,18 +906,18 @@ _next_token (parse_state *state)
 }
 
 static void
-_next_line (parse_state *state, FILE *in)
+_next_line (parse_state *state, uio_Stream *in)
 {
 	int i, ch = 0;
 	state->linenum++;
 	for (i = 0; i < LINE_SIZE-1; i++)
 	{
-		if (feof (in))
+		if (uio_feof (in))
 		{
 			break;
 		}
-		ch = fgetc (in);
-		if (ch == '#' || ch == '\n' || ch == -1)
+		ch = uio_fgetc (in);
+		if (ch == '#' || ch == '\n' || ch == EOF)
 		{
 			/* If this line is blank or all commented, include some
 			 * whitespace.  This lets us detect EOF as a completely
@@ -933,9 +933,9 @@ _next_line (parse_state *state, FILE *in)
 	}
 	state->line[i] = '\0';
 	/* Skip to end of line */
-	while (ch != '\n' && !feof (in))
+	while (ch != '\n' && !uio_feof (in))
 	{
-		ch = fgetc (in);
+		ch = uio_fgetc (in);
 	}
 	state->token[0] = 0;
 	state->index = 0;
@@ -1180,7 +1180,7 @@ _parse_config_line (parse_state *state)
 }
 
 int
-VControl_ReadConfiguration (FILE *in)
+VControl_ReadConfiguration (uio_Stream *in)
 {
 	parse_state ps;
 	int errors;

@@ -17,20 +17,21 @@
  */
 
 #include "sndintrn.h"
+#include "options.h"
 
 extern char *_cur_resfile_name;
 
 SOUND_REF
 LoadSoundFile (PVOID pStr)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
 	// FIXME: this theoretically needs a mechanism to prevent races
 	if (_cur_resfile_name)
 		// something else is loading resources atm
 		return 0;
 
-	fp = res_OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (contentDir, pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
@@ -50,14 +51,14 @@ LoadSoundFile (PVOID pStr)
 MUSIC_REF
 LoadMusicFile (PVOID pStr)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
 	// FIXME: this theoretically needs a mechanism to prevent races
 	if (_cur_resfile_name)
 		// something else is loading resources atm
 		return 0;
 
-	fp = res_OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (contentDir, pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;

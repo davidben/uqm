@@ -22,6 +22,9 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include "port.h"
+#include "libs/uio.h"
+
 #define OPT_3DO 0x01
 #define OPT_PC  0x02
 #define OPT_ALL 0xFF
@@ -36,10 +39,12 @@ extern int optMeleeScale;
 extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
 
-extern char *configDir;
-extern char *meleeDir;
-extern char *saveDir;
+extern uio_DirHandle *contentDir;
+extern uio_DirHandle *configDir;
+extern uio_DirHandle *saveDir;
+extern uio_DirHandle *meleeDir;
 
+void prepareContentDir (char *contentDirName);
 void prepareConfigDir(void);
 void prepareMeleeDir(void);
 void prepareSaveDir(void);

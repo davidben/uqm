@@ -17,20 +17,21 @@
  */
 
 #include "gfxintrn.h"
+#include "options.h"
 
 extern char *_cur_resfile_name;
 
 DWORD
 LoadCelFile (PVOID pStr)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
 	// FIXME: this theoretically needs a mechanism to prevent races
 	if (_cur_resfile_name)
 		// something else is loading resources atm
 		return 0;
 
-	if ((fp = res_OpenResFile (pStr, "rb")) != NULL)
+	if ((fp = res_OpenResFile (contentDir, pStr, "rb")) != NULL)
 	{
 		MEM_HANDLE hData;
 

@@ -3,6 +3,8 @@
 #ifndef _VCONTROL_H_
 #define _VCONTROL_H_
 
+#include "port.h"
+#include "libs/uio.h"
 
 /* Initialization routines */
 void VControl_Init (void);
@@ -51,6 +53,6 @@ void VControl_RegisterNameTable (VControl_NameBinding *table);
 /* Dump a configuration file corresponding to the current bindings and names. */
 void VControl_Dump (FILE *out);
 /* Read a configuration file.  Returns number of errors encountered. */
-int VControl_ReadConfiguration (FILE *in);
+int VControl_ReadConfiguration (uio_Stream *in);
 
 #endif

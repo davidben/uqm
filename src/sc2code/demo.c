@@ -87,7 +87,7 @@ OpenJournal (void)
 	else
 #endif /* CREATE_JOURNAL */
 	{
-		FILE *fp;
+		uio_Stream *fp;
 
 		if (fp = res_OpenResFile ("starcon.jnl", "rb"))
 		{
@@ -114,7 +114,7 @@ CloseJournal (void)
 {
 	if (journal_fh)
 	{
-		FILE *fp;
+		uio_Stream *fp;
 
 		cclose (journal_fh);
 		journal_fh = 0;

@@ -19,6 +19,7 @@
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 #include "comm.h"
+#include "options.h"
 
 static int tct;               //total number of subtitle tracks
 static int tcur;              //currently playing subtitle track
@@ -316,7 +317,8 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	fprintf (stderr, "SpliceMultiTrack(): loading...\n");
 	for (tracks = 0; *TrackNames && tracks < MAX_MULTI_TRACKS; TrackNames++, tracks++)
 	{
-		track_decs[tracks] = SoundDecoder_Load (*TrackNames, 32768, 0, - 3 * TEXT_SPEED);
+		track_decs[tracks] = SoundDecoder_Load (contentDir, *TrackNames,
+				32768, 0, - 3 * TEXT_SPEED);
 		if (track_decs[tracks])
 		{
 			fprintf (stderr, "  track: %s, decoder: %s, rate %d format %x\n",
@@ -471,7 +473,8 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					sound_sample->buffer_tag = HMalloc (sizeof (TFB_SoundTag *) * sound_sample->num_buffers);
 					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
 					TFBSound_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
-					decoder = SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[page_counter]);
+					decoder = SoundDecoder_Load (contentDir, TrackName, 4096,
+							startTime, time_stamps[page_counter]);
 					sound_sample->read_chain_ptr = create_soundchain (decoder, 0.0);
 					sound_sample->decoder = decoder;
 					first_chain = last_chain = sound_sample->read_chain_ptr;
@@ -481,7 +484,8 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				else
 				{
 					TFB_SoundDecoder *decoder;
-					decoder =  SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[page_counter]);
+					decoder =  SoundDecoder_Load (contentDir, TrackName, 4096,
+							startTime, time_stamps[page_counter]);
 					last_chain->next = create_soundchain (decoder, sound_sample->length);
 					last_chain = last_chain->next;
 				}

@@ -27,11 +27,16 @@
 #include <string.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
+#include "port.h"
 #include "libs/misc.h"
+#include "libs/uio.h"
 #include "decoder.h"
 #include "wav.h"
 #include "libs/sound/sound_common.h"
 #include "mikmod/mikmod.h"
+
+extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
+		// Can't '#include "libs/file.h"' due to some type conflicts.
 
 MIKMODAPI extern struct MDRIVER drv_openal;
 
@@ -42,35 +47,25 @@ static char *decoder_info_nul = "None";
 
 TFB_DecoderFormats decoder_formats;
 
-static int file_exists (char *filename)
-{
-    FILE *fp;
-    if ((fp = fopen(filename, "rb")) == NULL)
-        return 0;
-
-    fclose (fp);
-    return 1;
-}
-
 static size_t ogg_read (void *ptr, size_t size, size_t nmemb, void *datasource)
 {
-	return fread (ptr, size, nmemb, datasource);
+	return uio_fread ((uio_Stream *) ptr, size, nmemb, datasource);
 }
 
 static int ogg_seek (void *datasource, ogg_int64_t offset, int whence)
 {
 	long off = (long) offset;
-	return fseek (datasource, off, whence);
+	return uio_fseek ((uio_Stream *) datasource, off, whence);
 }
 
 static int ogg_close (void *datasource)
 {
-	return fclose (datasource);
+	return uio_fclose ((uio_Stream *) datasource);
 }
 
 static long ogg_tell(void *datasource)
 {
-	return ftell (datasource);
+	return uio_ftell ((uio_Stream *) datasource);
 }
 
 static const ov_callbacks ogg_callbacks = 
@@ -152,13 +147,13 @@ void SoundDecoder_Uninit (void)
 	MikMod_Exit ();
 }
 
-TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size, 
-									 uint32 startTime, sint32 runTime)
+TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir, char *filename,
+		uint32 buffer_size, uint32 startTime, sint32 runTime)
 {	
 	int i;
 
 	i = strlen (filename) - 3;
-	if (!file_exists (filename))
+	if (!fileExists2 (dir, filename))
 	{
 		if (runTime)
 		{
@@ -180,6 +175,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 
 			decoder->decoder_info = decoder_info_nul;
 			decoder->type = SOUNDDECODER_NULL;
+			decoder->dir = dir;
 			decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 			strcpy (decoder->filename, filename);
 			decoder->data = NULL;
@@ -208,6 +204,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 		decoder->length = 0; // FIXME should be calculated
 		decoder->decoder_info = decoder_info_wav;
 		decoder->type = SOUNDDECODER_WAV;
+		decoder->dir = dir;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		decoder->start_sample = 0;
 		decoder->end_sample = 0;
@@ -223,7 +220,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 		
 		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as mod\n", filename);
 
-		mod = Player_Load (filename, 4, 0);
+		mod = Player_Load (dir, filename, 4, 0);
 		if (!mod)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): couldn't load %s\n", filename);
@@ -245,6 +242,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 		decoder->length = 0; // FIXME way to obtain this from mikmod?
 		decoder->decoder_info = decoder_info_mod;
 		decoder->type = SOUNDDECODER_MOD;
+		decoder->dir = dir;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		decoder->start_sample = 0;
 		decoder->end_sample = 0;
@@ -257,7 +255,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 	else if (!strcmp (&filename[i], "ogg"))
 	{
 		int rc;
-		FILE *vfp;
+		uio_Stream *vfp;
 		OggVorbis_File *vf;
 		vorbis_info *vinfo;
 		TFB_SoundDecoder *decoder;
@@ -270,22 +268,20 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 			fprintf (stderr, "SoundDecoder_Load(): couldn't allocate mem for OggVorbis_File\n");
 			return NULL;
 		}
-		if ((vfp = fopen (filename, "r")) == NULL)
+
+		vfp = uio_fopen (dir, filename, "rb");
+		if (vfp == NULL)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): couldn't open %s\n", filename);
 			HFree (vf);
 			return NULL;
 		}
 
-#ifdef WIN32
-		_setmode( _fileno(vfp), _O_BINARY);
-#endif
-
 		rc = ov_open_callbacks (vfp, vf, NULL, 0, ogg_callbacks);
 		if (rc != 0)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): ov_open_callbacks failed for %s, error code %d\n", filename, rc);
-			fclose (vfp);
+			uio_fclose (vfp);
 			HFree (vf);
 			return NULL;
 		}
@@ -330,6 +326,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 
 		decoder->decoder_info = decoder_info_ogg;
 		decoder->type = SOUNDDECODER_OGG;
+		decoder->dir = dir;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 		decoder->data = vf;
@@ -506,8 +503,9 @@ uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 	{
 		case SOUNDDECODER_WAV:
 		{
-			LoadWAVFile (decoder->filename ,&decoder->format, &decoder->buffer, 
-				&decoder->buffer_size, &decoder->frequency, decoder_formats.want_big_endian);
+			LoadWAVFile (decoder->dir, decoder->filename, &decoder->format,
+					&decoder->buffer, &decoder->buffer_size,
+					&decoder->frequency, decoder_formats.want_big_endian);
 			
 			if (decoder->buffer_size != 0)
 			{

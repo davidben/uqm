@@ -21,7 +21,9 @@
 #ifndef DECODER_H
 #define DECODER_H
 
+#include "port.h"
 #include "types.h"
+#include "uio.h"
 
 #ifdef WIN32
 #pragma comment (lib, "vorbisfile.lib")
@@ -51,6 +53,7 @@ typedef struct tfb_sounddecoder
 
 	// semi-private
 	sint32 type;
+	uio_DirHandle *dir;
 	char *filename;
 	void *data;
 	uint32 pos;
@@ -82,8 +85,8 @@ extern TFB_DecoderFormats decoder_formats;
 void SoundDecoder_SwapWords (uint16* data, uint32 size);
 sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats* formats);
 void SoundDecoder_Uninit (void);
-TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size, 
-									 uint32 startTime, sint32 runTime);
+TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir,
+		char *filename, uint32 buffer_size, uint32 startTime, sint32 runTime);
 uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
 float SoundDecoder_GetTime (TFB_SoundDecoder *decoder);

@@ -31,6 +31,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "port.h"
+#include "libs/uio.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -324,8 +326,8 @@ typedef struct SAMPLE {
 
 /* Sample functions */
 
-MIKMODAPI extern SAMPLE *Sample_Load(CHAR*);
-MIKMODAPI extern SAMPLE *Sample_LoadFP(FILE*);
+MIKMODAPI extern SAMPLE *Sample_Load(uio_DirHandle*,CHAR*);
+MIKMODAPI extern SAMPLE *Sample_LoadFP(uio_Stream*);
 MIKMODAPI extern SAMPLE *Sample_LoadGeneric(MREADER*);
 MIKMODAPI extern void   Sample_Free(SAMPLE*);
 MIKMODAPI extern SBYTE  Sample_Play(SAMPLE*,ULONG,UBYTE);
@@ -527,10 +529,10 @@ MIKMODAPI extern struct MLOADER load_xm;  /* FastTracker 2 (by Triton) */
 MIKMODAPI extern MODULE* Player_LoadRW(SDL_RWops*,int,BOOL);
 #endif /* USE_RWOPS */
 /* End SDL_RWops compatability */
-MIKMODAPI extern MODULE* Player_Load(CHAR*,int,BOOL);
-MIKMODAPI extern MODULE* Player_LoadFP(FILE*,int,BOOL);
+MIKMODAPI extern MODULE* Player_Load(uio_DirHandle *, CHAR*,int,BOOL);
+MIKMODAPI extern MODULE* Player_LoadFP(uio_Stream*,int,BOOL);
 MIKMODAPI extern MODULE* Player_LoadGeneric(MREADER*,int,BOOL);
-MIKMODAPI extern CHAR*   Player_LoadTitle(CHAR*);
+MIKMODAPI extern CHAR*   Player_LoadTitle(uio_DirHandle*,CHAR*);
 MIKMODAPI extern void    Player_Free(MODULE*);
 MIKMODAPI extern void    Player_Start(MODULE*);
 MIKMODAPI extern BOOL    Player_Active(void);

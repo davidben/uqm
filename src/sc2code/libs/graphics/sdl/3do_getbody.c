@@ -23,8 +23,12 @@
 #endif
 #include <fcntl.h>
 
+#include "port.h"
 #include "sdl_common.h"
 #include "primitives.h"
+#include "sdluio.h"
+#include "libs/file.h"
+#include "options.h"
 
 typedef struct anidata
 {
@@ -415,11 +419,8 @@ Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 }
 
 MEM_HANDLE
-_GetCelData (FILE *fp, DWORD length)
+_GetCelData (uio_Stream *fp, DWORD length)
 {
-#ifdef WIN32
-	int omode;
-#endif
 	int cel_ct, n;
 	DWORD opos;
 	char CurrentLine[1024], filename[1024];
@@ -428,7 +429,7 @@ _GetCelData (FILE *fp, DWORD length)
 	AniData ani[MAX_CELS];
 	DRAWABLE Drawable;
 	
-	opos = ftell (fp);
+	opos = uio_ftell (fp);
 
 	{
 		char *s1, *s2;
@@ -446,37 +447,38 @@ _GetCelData (FILE *fp, DWORD length)
 		}
 	}
 
-#ifdef WIN32
-	omode = _setmode (fileno (fp), O_TEXT);
-#endif
 	cel_ct = 0;
-	while (fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_ct < MAX_CELS)
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_ct < MAX_CELS)
 	{
-		/*char fnamestr[1000];
-		sscanf(CurrentLine, "%s", fnamestr);
-		fprintf (stderr, "imgload %s\n",fnamestr);*/
-		
 		sscanf (CurrentLine, "%s %d %d %d %d", &filename[n], 
 			&ani[cel_ct].transparent_color, &ani[cel_ct].colormap_index, 
 			&ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
 	
-		if ((img[cel_ct] = IMG_Load (filename)) && img[cel_ct]->w > 0 && 
-			img[cel_ct]->h > 0 && img[cel_ct]->format->BitsPerPixel >= 8) 
+		img[cel_ct] = sdluio_loadImage (contentDir, filename);
+		if (img[cel_ct] == NULL)
 		{
-			++cel_ct;
+			const char *err;
+
+			err = SDL_GetError();
+			fprintf (stderr, "_GetCelData: Unable to load image!\n");
+			if (err != NULL)
+				fprintf (stderr, "SDL reports: %s\n", err);
+			SDL_FreeSurface (img[cel_ct]);
 		}
-		else if (img[cel_ct]) 
+		else if (img[cel_ct]->w < 0 || img[cel_ct]->h < 0 ||
+				img[cel_ct]->format->BitsPerPixel < 8)
 		{
 			fprintf (stderr, "_GetCelData: Bad file!\n");
 			SDL_FreeSurface (img[cel_ct]);
 		}
+		else
+		{
+			++cel_ct;
+		}
 
-		if ((int)ftell (fp) - (int)opos >= (int)length)
+		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
 			break;
 	}
-#ifdef WIN32
-	_setmode (fileno (fp), omode);
-#endif
 
 	Drawable = 0;
 	if (cel_ct && (Drawable = AllocDrawable (cel_ct)))
@@ -555,7 +557,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 }
 
 MEM_HANDLE
-_GetFontData (FILE *fp, DWORD length)
+_GetFontData (uio_Stream *fp, DWORD length)
 {
 	DWORD cel_ct;
 	COUNT num_entries;
@@ -564,14 +566,15 @@ _GetFontData (FILE *fp, DWORD length)
 	BOOLEAN found_chars;
 #define MAX_CELS 256
 	SDL_Surface *img[MAX_CELS] = { 0 };
-	char pattern[1024];
+	char pattern[PATH_MAX];
 	
 	if (_cur_resfile_name == 0)
 		return (0);
-	sprintf (pattern, "%s/*.*", _cur_resfile_name);
 
 	found_chars = FALSE;
-	FontDir = CaptureDirEntryTable (LoadDirEntryTable (pattern, &num_entries));
+	FontDir = CaptureDirEntryTable (LoadDirEntryTable (contentDir,
+				_cur_resfile_name, ".", match_MATCH_SUBSTRING,
+				&num_entries));
 	while (num_entries--)
 	{
 		char *char_name;
@@ -581,7 +584,7 @@ _GetFontData (FILE *fp, DWORD length)
 				&& cel_ct >= FIRST_CHAR
 				&& img[cel_ct -= FIRST_CHAR] == 0
 				&& sprintf (pattern, "%s/%s", _cur_resfile_name, char_name)
-				&& (img[cel_ct] = IMG_Load (pattern)))
+				&& (img[cel_ct] = sdluio_loadImage (contentDir, pattern)))
 		{
 			if (img[cel_ct]->w > 0
 					&& img[cel_ct]->h > 0

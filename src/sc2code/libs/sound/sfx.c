@@ -165,11 +165,8 @@ GetSampleRate (SOUND sound)
 }
 
 MEM_HANDLE
-_GetSoundBankData (FILE *fp, DWORD length)
+_GetSoundBankData (uio_Stream *fp, DWORD length)
 {
-#ifdef WIN32
-	int omode;
-#endif
 	int snd_ct, n;
 	DWORD opos;
 	char CurrentLine[1024], filename[1024];
@@ -178,7 +175,7 @@ _GetSoundBankData (FILE *fp, DWORD length)
 	STRING_TABLE Snd;
 
 	(void) length;  // ignored
-	opos = ftell (fp);
+	opos = uio_ftell (fp);
 
 	{
 		char *s1, *s2;
@@ -197,11 +194,9 @@ _GetSoundBankData (FILE *fp, DWORD length)
 		}
 	}
 
-#ifdef WIN32
-	omode = _setmode (fileno (fp), O_TEXT);
-#endif
 	snd_ct = 0;
-	while (fgets (CurrentLine, sizeof (CurrentLine), fp) && snd_ct < MAX_FX)
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) &&
+			snd_ct < MAX_FX)
 	{
 		if (sscanf(CurrentLine, "%s", &filename[n]) == 1)
 		{
@@ -211,7 +206,8 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			sndfx[snd_ct]->buffer_tag = 0;
 			sndfx[snd_ct]->read_chain_ptr = NULL;
 
-			sndfx[snd_ct]->decoder = SoundDecoder_Load (filename, 4096, 0, 0);
+			sndfx[snd_ct]->decoder = SoundDecoder_Load (contentDir,
+					filename, 4096, 0, 0);
 			if (!sndfx[snd_ct]->decoder)
 			{
 				fprintf (stderr, "_GetSoundBankData(): couldn't load %s\n", filename);
@@ -244,12 +240,9 @@ _GetSoundBankData (FILE *fp, DWORD length)
 		}
 
 		// pkunk insult fix 2002/11/12 (ftell shouldn't be needed for loop to terminate)
-		/*if (ftell (fp) - opos >= length)
+		/*if (uio_ftell (fp) - opos >= length)
 			break;*/
 	}
-#ifdef WIN32
-	_setmode (fileno (fp), omode);
-#endif
 
 	Snd = 0;
 	if (snd_ct && (Snd = AllocStringTable (

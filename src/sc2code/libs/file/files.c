@@ -22,18 +22,32 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "port.h"
+#include "uio.h"
 #include "config.h"
 #include "types.h"
 #include "filintrn.h"
 #include "misc.h"
 
-static int copyError(int srcFd, int dstFd, const char *unlinkPath,
-		uint8 *buf);
+static int copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,
+		uio_DirHandle *unlinkHandle, const char *unlinkPath, uint8 *buf);
 
-BOOLEAN
+bool
 fileExists (const char *name)
 {
 	return access (name, F_OK) == 0;
+}
+
+bool
+fileExists2(uio_DirHandle *dir, const char *fileName)
+{
+	uio_Stream *stream;
+
+	stream = uio_fopen (dir, fileName, "rb");
+	if (stream == NULL)
+		return 0;
+
+	uio_fclose (stream);
+	return 1;
 }
 
 /*
@@ -48,49 +62,59 @@ fileExists (const char *name)
  * remove the copy.
  */
 int
-copyFile (const char *srcName, const char *newName)
+copyFile (uio_DirHandle *srcDir, const char *srcName,
+		uio_DirHandle *dstDir, const char *newName)
 {
-	int src, dst;
+	uio_Handle *src, *dst;
 	struct stat sb;
 #define BUFSIZE 65536
 	uint8 *buf, *bufPtr;
 	ssize_t numInBuf, numWritten;
 	
-	src = open (srcName, O_RDONLY);
-	if (src == -1)
+	src = uio_open (srcDir, srcName, O_RDONLY
+#ifdef WIN32
+			| O_BINARY
+#endif
+			, 0);
+	if (src == NULL)
 		return -1;
 	
-	if (fstat (src, &sb) == -1)
-		return copyError (src, -1, NULL, NULL);
+	if (uio_fstat (src, &sb) == -1)
+		return copyError (src, NULL, NULL, NULL, NULL);
 	
-	dst = open (newName, O_WRONLY | O_CREAT | O_EXCL,
-			sb.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-	if (dst == -1)
-		return copyError (src, -1, NULL, NULL);
+	dst = uio_open (dstDir, newName, O_WRONLY | O_CREAT | O_EXCL
+#ifdef WIN32
+			| O_BINARY
+#endif
+			, sb.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+	if (dst == NULL)
+		return copyError (src, NULL, NULL, NULL, NULL);
 	
 	buf = HMalloc(BUFSIZE);
 			// This was originally a statically allocated buffer,
 			// but as this function might be run from a thread with
 			// a small Stack, this is better.
-	while (1) {
-		numInBuf = read (src, buf, BUFSIZE);
+	while (1)
+	{
+		numInBuf = uio_read (src, buf, BUFSIZE);
 		if (numInBuf == -1)
 		{
 			if (errno == EINTR)
 				continue;
-			return copyError (src, dst, newName, buf);
+			return copyError (src, dst, dstDir, newName, buf);
 		}
 		if (numInBuf == 0)
 			break;
 		
 		bufPtr = buf;
-		do {
-			numWritten = write (dst, bufPtr, numInBuf);
+		do
+		{
+			numWritten = uio_write (dst, bufPtr, numInBuf);
 			if (numWritten == -1)
 			{
 				if (errno == EINTR)
 					continue;
-				return copyError (src, dst, newName, buf);
+				return copyError (src, dst, dstDir, newName, buf);
 			}
 			numInBuf -= numWritten;
 			bufPtr += numWritten;
@@ -98,22 +122,23 @@ copyFile (const char *srcName, const char *newName)
 	}
 	
 	HFree(buf);
-	close(src);
-	close(dst);
+	uio_close(src);
+	uio_close(dst);
 	errno = 0;
 	return 0;
 }
 
 /*
- * Closes srcFd if it's not -1.
- * Closes dstFd if it's not -1.
- * Removes unlinkpath if it's not NULL.
+ * Closes srcHandle if it's not -1.
+ * Closes dstHandle if it's not -1.
+ * Removes unlinkpath from the unlinkHandle dir if it's not NULL.
  * Frees 'buf' if not NULL.
  * Always returns -1.
  * errno is what was before the call.
  */
 static int
-copyError(int srcFd, int dstFd, const char *unlinkPath, uint8 *buf)
+copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,
+		uio_DirHandle *unlinkHandle, const char *unlinkPath, uint8 *buf)
 {
 	int savedErrno;
 
@@ -123,14 +148,14 @@ copyError(int srcFd, int dstFd, const char *unlinkPath, uint8 *buf)
 	fprintf (stderr, "Error while copying: %s\n", strerror (errno))
 #endif
 
-	if (srcFd >= 0)
-		close (srcFd);
+	if (srcHandle != NULL)
+		uio_close (srcHandle);
 	
-	if (dstFd >= 0)
-		close (dstFd);
+	if (dstHandle != NULL)
+		uio_close (dstHandle);
 	
 	if (unlinkPath != NULL)
-		unlink (unlinkPath);
+		uio_unlink (unlinkHandle, unlinkPath);
 	
 	if (buf != NULL)
 		HFree(buf);

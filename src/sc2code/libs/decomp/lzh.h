@@ -69,10 +69,10 @@ typedef struct
 typedef LZHCODE_DESC *PLZHCODE_DESC;
 
 #define InChar() (_StreamType == FILE_STREAM ? \
-								GetResFileChar ((FILE *)_Stream) : \
+								GetResFileChar ((uio_Stream *)_Stream) : \
 								(int)*_Stream++)
 #define OutChar(c) (_StreamType == FILE_STREAM ? \
-								PutResFileChar ((c), (FILE *)_Stream) : \
+								PutResFileChar ((c), (uio_Stream *)_Stream) : \
 								(*_Stream++ = (BYTE)(c)))
 
 

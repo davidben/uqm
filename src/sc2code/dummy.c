@@ -35,7 +35,7 @@ LoadCodeResFile (PSTR pStr)
 }
 
 static MEM_HANDLE
-GetCodeResData (FILE *fp, DWORD length)
+GetCodeResData (uio_Stream *fp, DWORD length)
 {
 enum
 {

@@ -1,2 +1,2 @@
 uqm_SUBDIRS="decomp file graphics input math memory resource sound strings
-		task threads time video"
+		task threads time uio video"

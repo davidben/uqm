@@ -44,21 +44,6 @@
 			// Including this is actually necessary on OSX.
 #endif
 
-static void
-CDToContentDir (char *contentdir)
-{
-	const char *testfile = "starcon.txt";
-
-	if (!fileExists (testfile))
-	{
-		if ((chdir (contentdir) || !fileExists (testfile)) &&
-				(chdir ("content") || !fileExists (testfile)) &&
-				(chdir ("../../content") || !fileExists (testfile))) {
-			fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-}
 
 static int
 Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt)
@@ -322,11 +307,12 @@ main (int argc, char *argv[])
 	InitThreadSystem ();
 	mem_init ();
 
+	initIO();
 	initTempDir();
-	CDToContentDir (contentdir);
-	prepareConfigDir();
-	prepareMeleeDir();
-	prepareSaveDir();
+	prepareContentDir (contentdir);
+	prepareConfigDir ();
+	prepareMeleeDir ();
+	prepareSaveDir ();
 	
 	InitTimeSystem ();
 	InitTaskSystem ();
@@ -350,6 +336,7 @@ main (int argc, char *argv[])
 	}
 
 	unInitTempDir();
+	uninitIO();
 	exit(EXIT_SUCCESS);
 }
 

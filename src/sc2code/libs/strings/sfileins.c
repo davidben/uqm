@@ -16,26 +16,28 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "port.h"
 #include "strintrn.h"
+#include "uio.h"
 
 extern char *_cur_resfile_name;
 
 STRING_TABLE
-LoadStringTableFile (PVOID pStr)
+LoadStringTableFile (uio_DirHandle *dir, char *fileName)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
 	// FIXME: this theoretically needs a mechanism to prevent races
 	if (_cur_resfile_name)
 		// something else is loading resources atm
 		return 0;
 
-	fp = res_OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (dir, fileName, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
-		_cur_resfile_name = pStr;
+		_cur_resfile_name = fileName;
 		hData = _GetStringData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);

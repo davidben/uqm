@@ -76,47 +76,47 @@ static VControl_NameBinding control_names[] = {
 
 static void
 initKeyConfig(void) {
-	char userFile[PATH_MAX];    /* System-wide key config */
-	int cb;
-	FILE *fp;
+	uio_Stream *fp;
 	int errors;
 	
-	cb = snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir);
-	assert (cb != -1);
-			// Verified before: strlen (configDir) <= PATH_MAX - 13
-	
-	if (fileExists (userFile)) {
-		fp = res_OpenResFile (userFile, "rt");
-	} else {
-                if (copyFile ("starcon.key", userFile) == -1) 
+	fp = res_OpenResFile (configDir, "keys.cfg", "rt");
+	if (fp == NULL)
+	{
+		if (copyFile (contentDir, "starcon.key",
+				configDir, "keys.cfg") == -1)
 		{
-                        fprintf(stderr, "Warning: Could not copy default key config "
-                                        "to %s: %s.\n", userFile, strerror (errno));
-                } 
+			fprintf(stderr, "Warning: Could not copy default key config "
+					"to user config dir: %s.\n", strerror (errno));
+		}
 		else
 		{
-                        fprintf(stderr, "Copying default key config file to %s.\n",
-                                        userFile);
+			fprintf(stderr, "Copying default key config file to user "
+					"config dir.\n");
 		}
-		fp = res_OpenResFile ("starcon.key", "rt");
+		fp = res_OpenResFile (contentDir, "starcon.key", "rt");
 	}
 	errors = VControl_ReadConfiguration (fp);
 	res_CloseResFile (fp);
 	if (errors)
 	{
-		fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
+		fprintf (stderr, "%d errors encountered in key configuration "
+				"file.\n", errors);
 		/* This code should go away in 0.3; it's just
 		 * to force people to upgrade and forestall a 
 		 * bunch of "none of my keys work anymore" bugs.
 		 */
 		if (errors > 5)
 		{
-			fprintf (stderr, "Hey!  you haven't updated your keys.cfg to use the new system, have you?\nDelete %s and try again.\n", userFile);
-			fprintf (stderr, "If you've done that and it STILL doesn't work, make sure your content/starcon.key is up to date.\n");
+			fprintf (stderr, "Hey!  you haven't updated your keys.cfg to "
+					"use the new system, have you?\nDelete keys.cfg and "
+					"try again.\n");
+			fprintf (stderr, "If you've done that and it STILL doesn't "
+					"work, make sure your content/starcon.key is up to"
+					"date.\n");
 		}
 		else
 		{
-			fprintf (stderr, "Repair your %s file to continue.\n", userFile);
+			fprintf (stderr, "Repair your keys.cfg file to continue.\n");
 		}
 		
 		exit (1);

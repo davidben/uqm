@@ -24,33 +24,31 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "port.h"
 #include "resintrn.h"
+#include "libs/uio.h"
 
-FILE *
-res_OpenResFile (PVOID filename, const char *mode)
+uio_Stream *
+res_OpenResFile (uio_DirHandle *dir, const char *filename, const char *mode)
 {
-	FILE *fp;
+	uio_Stream *fp;
 	struct stat sb;
 
-#ifdef WIN32
-	if (stat (filename, &sb) == 0 && (sb.st_mode & _S_IFDIR))
-#else
-	if (stat (filename, &sb) == 0 && S_ISDIR(sb.st_mode))
-#endif
-		return ((FILE *) ~0);
+	if (uio_stat (dir, filename, &sb) == 0 && S_ISDIR(sb.st_mode))
+		return ((uio_Stream *) ~0);
 
-	fp = fopen (filename, mode);
+	fp = uio_fopen (dir, filename, mode);
 
 	return (fp);
 }
 
 BOOLEAN
-res_CloseResFile (FILE *fp)
+res_CloseResFile (uio_Stream *fp)
 {
 	if (fp)
 	{
-		if (fp != (FILE *)~0)
-			fclose (fp);
+		if (fp != (uio_Stream *)~0)
+			uio_fclose (fp);
 		return (TRUE);
 	}
 
@@ -58,85 +56,80 @@ res_CloseResFile (FILE *fp)
 }
 
 BOOLEAN
-DeleteResFile (PVOID filename)
+DeleteResFile (uio_DirHandle *dir, const char *filename)
 {
-	return (remove (filename) == 0);
+	return (uio_unlink (dir, filename) == 0);
 }
 
 int
-ReadResFile (PVOID lpBuf, COUNT size, COUNT count, FILE *fp)
+ReadResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp)
 {
 	int retval;
 
-	retval = fread (lpBuf, size, count, fp);
+	retval = uio_fread (lpBuf, size, count, fp);
 
 	return (retval);
 }
 
 int
-WriteResFile (PVOID lpBuf, COUNT size, COUNT count, FILE *fp)
+WriteResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp)
 {
 	int retval;
 
-	retval = fwrite (lpBuf, size, count, fp);
+	retval = uio_fwrite (lpBuf, size, count, fp);
 
 	return (retval);
 }
 
 int
-GetResFileChar (FILE *fp)
+GetResFileChar (uio_Stream *fp)
 {
 	int retval;
 
-	retval = getc (fp);
+	retval = uio_getc (fp);
 
 	return (retval);
 }
 
 int
-PutResFileChar (char ch, FILE *fp)
+PutResFileChar (char ch, uio_Stream *fp)
 {
 	int retval;
 
-	retval = putc (ch, fp);
-
+	retval = uio_putc (ch, fp);
 	return (retval);
 }
 
 long
-SeekResFile (FILE *fp, long offset, int whence)
+SeekResFile (uio_Stream *fp, long offset, int whence)
 {
 	long retval;
 
-	retval = fseek (fp, offset, whence);
+	retval = uio_fseek (fp, offset, whence);
 
 	return (retval);
 }
 
 long
-TellResFile (FILE *fp)
+TellResFile (uio_Stream *fp)
 {
 	long retval;
 
-	retval = ftell (fp);
+	retval = uio_ftell (fp);
 
 	return (retval);
 }
 
 long
-LengthResFile (FILE *fp)
+LengthResFile (uio_Stream *fp)
 {
-if (fp == (FILE *)~0)
-	return (1);
-#ifdef WIN32
-	return filelength (fileno (fp));
-#else
-	{
-		struct stat sb;
-		if (fstat(fileno(fp), &sb) == -1)
-			return 1;
-		return sb.st_size;
-	}
-#endif
+	struct stat sb;
+
+	if (fp == (uio_Stream *)~0)
+		return (1);
+	if (uio_fstat(uio_streamHandle(fp), &sb) == -1)
+		return 1;
+	return sb.st_size;
 }
+
 

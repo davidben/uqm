@@ -19,9 +19,11 @@
 #ifndef WAV_H
 #define WAV_H
 
+#include "port.h"
 #include "types.h"
+#include "uio.h"
 
-void LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
-				  uint32 *freq, bool want_big_endian);
+void LoadWAVFile (uio_DirHandle *dir, const char *file, uint32 *format,
+		void **data, uint32 *size, uint32 *freq, bool want_big_endian);
 
 #endif

@@ -307,7 +307,7 @@ RetrySave:
 	}
 	else
 	{
-		FILE *fp;
+		uio_Stream *fp;
 		DWORD flen;
 		COUNT num_links;
 		FRAME frame;
@@ -385,7 +385,7 @@ RetrySave:
 			}
 		}
 
-		fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "rb");
+		fp = res_OpenResFile (tempDir, STARINFO_FILE, "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -403,7 +403,7 @@ RetrySave:
 			res_CloseResFile (fp);
 		}
 
-		fp = res_OpenResFile (tempFilePath (DEFGRPINFO_FILE), "rb");
+		fp = res_OpenResFile (tempDir, DEFGRPINFO_FILE, "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -421,7 +421,7 @@ RetrySave:
 			res_CloseResFile (fp);
 		}
 
-		fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "rb");
+		fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "rb");
 		if (fp)
 		{
 			flen = LengthResFile (fp);
@@ -443,9 +443,9 @@ RetrySave:
 
 		flen = cclose (fh);
 
-		sprintf (file, "%sstarcon2.%02u", saveDir, which_game);
+		sprintf (file, "starcon2.%02u", which_game);
 //		fprintf (stderr, "'%s' is %lu bytes long\n", file, flen + sizeof (*summary_desc));
-		if (flen && (out_fp = (PVOID)res_OpenResFile (file, "wb")))
+		if (flen && (out_fp = (PVOID)res_OpenResFile (saveDir, file, "wb")))
 		{
 			PrepareSummary (summary_desc);
 
@@ -456,7 +456,7 @@ RetrySave:
 				success = FALSE;
 
 			mem_unlock (h);
-			if (res_CloseResFile ((FILE *)out_fp) == 0)
+			if (res_CloseResFile ((uio_Stream *)out_fp) == 0)
 				success = FALSE;
 
 		}
@@ -464,7 +464,7 @@ RetrySave:
 			success = FALSE;
 			
 		if (!success)
-			DeleteResFile (file);
+			DeleteResFile (saveDir, file);
 	}
 
 	mem_unlock (h);

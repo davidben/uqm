@@ -48,7 +48,7 @@ typedef FONT_DESC *PFONT_DESC;
 
 extern FONTPTR _CurFontPtr;
 
-extern MEM_HANDLE _GetFontData (FILE *fp, DWORD length);
+extern MEM_HANDLE _GetFontData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseFontData (MEM_HANDLE handle);
 
 #endif /* _FONT_H */

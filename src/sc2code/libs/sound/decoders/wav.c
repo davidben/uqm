@@ -53,52 +53,52 @@ typedef struct
 
 
 void
-LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
-			 uint32 *freq, bool want_big_endian)
+LoadWAVFile (uio_DirHandle *dir, const char *file, uint32 *format,
+		void **data, uint32 *size, uint32 *freq, bool want_big_endian)
 {
 	WAVChunkHdr_Struct ChunkHdr;
 	WAVFileHdr_Struct FileHdr;
 	WAVFmtHdr_Struct FmtHdr;
-	FILE *fp;
+	uio_Stream *fp;
 	
 	*format = decoder_formats.mono16;
 	*data = NULL;
 	*size = 0;
 	*freq = 22050;
 	
-	fp = fopen (file, "rb");
+	fp = uio_fopen (dir, file, "rb");
 	if (fp)
 	{
-		fread(&FileHdr.Id, 4, 1, fp);
+		uio_fread(&FileHdr.Id, 4, 1, fp);
 		FileHdr.Id = UQM_SwapLE32 (FileHdr.Id);
-		fread(&FileHdr.Size, 4, 1, fp);
+		uio_fread(&FileHdr.Size, 4, 1, fp);
 		FileHdr.Size = UQM_SwapLE32 (FileHdr.Size);
-		fread(&FileHdr.Type, 4, 1, fp);
+		uio_fread(&FileHdr.Type, 4, 1, fp);
 		FileHdr.Type = UQM_SwapLE32 (FileHdr.Type);
 
 		FileHdr.Size = ((FileHdr.Size + 1) & ~1) - 4;
 		while (FileHdr.Size != 0)
 		{
-			if (!fread (&ChunkHdr.Id, 4, 1, fp))
+			if (!uio_fread (&ChunkHdr.Id, 4, 1, fp))
 				break;
 			ChunkHdr.Id = UQM_SwapLE32 (ChunkHdr.Id);
-			if (!fread (&ChunkHdr.Size, 4, 1, fp))
+			if (!uio_fread (&ChunkHdr.Size, 4, 1, fp))
 				break;
 			ChunkHdr.Size = UQM_SwapLE32 (ChunkHdr.Size);
 
 			if (ChunkHdr.Id == FMT)
 			{
-				fread (&FmtHdr.Format, 2, 1, fp);
+				uio_fread (&FmtHdr.Format, 2, 1, fp);
 				FmtHdr.Format = UQM_SwapLE16 (FmtHdr.Format);
-				fread (&FmtHdr.Channels, 2, 1, fp);
+				uio_fread (&FmtHdr.Channels, 2, 1, fp);
 				FmtHdr.Channels = UQM_SwapLE16 (FmtHdr.Channels);
-				fread (&FmtHdr.SamplesPerSec, 4, 1, fp);
+				uio_fread (&FmtHdr.SamplesPerSec, 4, 1, fp);
 				FmtHdr.SamplesPerSec = UQM_SwapLE32 (FmtHdr.SamplesPerSec);
-				fread (&FmtHdr.BytesPerSec, 4, 1, fp);
+				uio_fread (&FmtHdr.BytesPerSec, 4, 1, fp);
 				FmtHdr.BytesPerSec = UQM_SwapLE32 (FmtHdr.BytesPerSec);
-				fread (&FmtHdr.BlockAlign, 2, 1, fp);
+				uio_fread (&FmtHdr.BlockAlign, 2, 1, fp);
 				FmtHdr.BlockAlign = UQM_SwapLE16 (FmtHdr.BlockAlign);
-				fread (&FmtHdr.BitsPerSample, 2, 1, fp);
+				uio_fread (&FmtHdr.BitsPerSample, 2, 1, fp);
 				FmtHdr.BitsPerSample = UQM_SwapLE16 (FmtHdr.BitsPerSample);
 
 				if (FmtHdr.Format == 0x0001)
@@ -112,12 +112,12 @@ LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
 						: decoder_formats.stereo16)
 						);
 					*freq = FmtHdr.SamplesPerSec;
-					fseek (fp, ChunkHdr.Size - 16, SEEK_CUR);
+					uio_fseek (fp, ChunkHdr.Size - 16, SEEK_CUR);
 				} 
 				else
 				{
 					fprintf (stderr, "LoadWAVFile(): unsupported format %x\n", FmtHdr.Format);
-					fclose (fp);
+					uio_fclose (fp);
 					return;
 				}
 			}
@@ -125,18 +125,18 @@ LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
 			{
 				*size = ChunkHdr.Size;
 				if ((*data = HMalloc (ChunkHdr.Size + 31)))
-					fread (*data, FmtHdr.BlockAlign, ChunkHdr.Size / FmtHdr.BlockAlign, fp);
+					uio_fread (*data, FmtHdr.BlockAlign, ChunkHdr.Size / FmtHdr.BlockAlign, fp);
 				memset(((char *)*data) + ChunkHdr.Size, 0, 31);
 			}
 			else
 			{
-				fseek(fp, ChunkHdr.Size, SEEK_CUR);
+				uio_fseek(fp, ChunkHdr.Size, SEEK_CUR);
 			}
 
-			fseek (fp, ChunkHdr.Size & 1, SEEK_CUR);
+			uio_fseek (fp, ChunkHdr.Size & 1, SEEK_CUR);
 			FileHdr.Size -= (((ChunkHdr.Size + 1) & ~1) + 8);
 		}
-		fclose(fp);
+		uio_fclose(fp);
 	}
 
 	if (want_big_endian &&
@@ -148,3 +148,4 @@ LoadWAVFile (const char *file, uint32 *format, void **data, uint32 *size,
 	if (*size == 0)
 		fprintf (stderr, "LoadWAVFile(): loading %s failed!\n", file);
 }
+

@@ -46,7 +46,7 @@ typedef STRING_TABLE_DESC *PSTRING_TABLE_DESC;
 #define BUILD_STRING(h,i) ((STRING_TABLE)MAKE_DWORD(h,i))
 #define BUILD_STRING_TABLE(h) (STRING_TABLE)(h)
 
-extern MEM_HANDLE _GetStringData (FILE *fp, DWORD length);
+extern MEM_HANDLE _GetStringData (uio_Stream *fp, DWORD length);
 
 #endif /* _STRINTRN_H */
 

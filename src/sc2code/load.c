@@ -76,7 +76,7 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 }
 
 BOOLEAN
-LoadSummary (FILE *in_fp)
+LoadSummary (uio_Stream *in_fp)
 {
 	SUMMARY_DESC S;
 
@@ -86,14 +86,14 @@ LoadSummary (FILE *in_fp)
 BOOLEAN
 LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 {
-	FILE *in_fp;
+	uio_Stream *in_fp;
 	char buf[256], file[PATH_MAX];
 
-	sprintf (file, "%sstarcon2.%02u", saveDir, which_game);
-	in_fp = res_OpenResFile (file, "rb");
+	sprintf (file, "starcon2.%02u", which_game);
+	in_fp = res_OpenResFile (saveDir, file, "rb");
 	if (in_fp)
 	{
-		FILE *fp;
+		uio_Stream *fp;
 		DECODE_REF fh;
 		COUNT num_links;
 		Semaphore clock_sem;
@@ -229,7 +229,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			}
 		}
 
-		fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "wb");
+		fp = res_OpenResFile (tempDir, STARINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -248,7 +248,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			res_CloseResFile (fp);
 		}
 
-		fp = res_OpenResFile (tempFilePath (DEFGRPINFO_FILE), "wb");
+		fp = res_OpenResFile (tempDir, DEFGRPINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -267,7 +267,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			res_CloseResFile (fp);
 		}
 
-		fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+		fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;

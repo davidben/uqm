@@ -1,0 +1,110 @@
+#include "sdluio.h"
+
+#include "port.h"
+#include "libs/uio.h"
+#include "SDL.h"
+#include "SDL_image.h"
+#include "SDL_error.h"
+#include "SDL_rwops.h"
+#include "libs/misc.h"
+
+static SDL_RWops *sdluio_makeRWops (uio_Stream *stream);
+
+#if 0
+// For use for initialisation, using structure assignment.
+static SDL_RWops sdluio_templateRWops =
+{
+	.seek = sdluio_seek,
+	.read = sdluio_read,
+	.write = sdluio_write,
+	.close = sdluio_close,
+};
+#endif
+
+SDL_Surface *
+sdluio_loadImage (uio_DirHandle *dir, const char *fileName) {
+	uio_Stream *stream;
+	SDL_RWops *rwops;
+	SDL_Surface *result;
+
+	stream = uio_fopen (dir, fileName, "rb");
+	if (stream == NULL)
+	{
+		SDL_SetError ("Couldn't open %s", fileName);
+		return NULL;
+	}
+	rwops = sdluio_makeRWops (stream);
+	result = IMG_Load_RW (rwops, 1);
+	return result;
+}
+	
+
+int
+sdluio_seek (SDL_RWops *context, int offset, int whence) {
+	if (uio_fseek ((uio_Stream *) context->hidden.unknown.data1, offset,
+				whence) == -1)
+	{
+		SDL_SetError ("Error seeking in uio_Stream");
+		return -1;
+	}
+	return uio_ftell ((uio_Stream *) context->hidden.unknown.data1);
+}
+
+int
+sdluio_read (SDL_RWops *context, void *ptr, int size, int maxnum) {
+	size_t numRead;
+	
+	numRead = uio_fread (ptr, (size_t) size, (size_t) maxnum,
+			(uio_Stream *) context->hidden.unknown.data1);
+	if (numRead == 0 && uio_ferror ((uio_Stream *)
+				context->hidden.unknown.data1))
+	{
+		SDL_SetError ("Error reading from uio_Stream");
+		return 0;
+	}
+	return (int) numRead;
+}
+
+int
+sdluio_write (SDL_RWops *context, const void *ptr, int size, int num) {
+	size_t numWritten;
+
+	numWritten = uio_fwrite (ptr, (size_t) size, (size_t) num,
+			(uio_Stream *) context->hidden.unknown.data1);
+	if (numWritten == 0 && uio_ferror ((uio_Stream *)
+				context->hidden.unknown.data1))
+	{
+		SDL_SetError ("Error writing to uio_Stream");
+		return 0;
+	}
+	return (size_t) numWritten;
+}
+
+int
+sdluio_close (SDL_RWops *context) {
+	int result;
+	
+	result = uio_fclose ((uio_Stream *) context->hidden.unknown.data1);
+	HFree (context);
+	return result;
+}
+
+static SDL_RWops *
+sdluio_makeRWops (uio_Stream *stream) {
+	SDL_RWops *result;
+	
+	result = HMalloc (sizeof (SDL_RWops));
+#if 0
+	*(struct SDL_RWops *) result = sdluio_templateRWops;
+			// structure assignment
+#endif
+	result->seek = sdluio_seek;
+	result->read = sdluio_read;
+	result->write = sdluio_write;
+	result->close = sdluio_close;
+	result->hidden.unknown.data1 = (void *) stream;
+	return result;
+}
+
+
+

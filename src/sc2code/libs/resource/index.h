@@ -23,7 +23,7 @@
 
 typedef struct
 {
-	MEM_HANDLE (*load_func) (FILE *fp, DWORD len);
+	MEM_HANDLE (*load_func) (uio_Stream *fp, DWORD len);
 	BOOLEAN (*free_func) (MEM_HANDLE handle);
 } RES_VECTORS;
 
@@ -50,7 +50,7 @@ typedef BYTE RES_FLAGS;
 
 typedef struct
 {
-	FILE *res_fp;
+	uio_Stream *res_fp;
 
 	DWORD packmem_list_offs;
 	DWORD path_list_offs;

@@ -143,7 +143,7 @@ SAMPLE* Sample_LoadGeneric(MREADER* reader)
 	return result;
 }
 
-SAMPLE* Sample_LoadFP(FILE *fp)
+SAMPLE* Sample_LoadFP(uio_Stream *fp)
 {
 	SAMPLE* result=NULL;
 	MREADER* reader;
@@ -155,15 +155,15 @@ SAMPLE* Sample_LoadFP(FILE *fp)
 	return result;
 }
 
-SAMPLE* Sample_Load(CHAR* filename)
+SAMPLE* Sample_Load(uio_DirHandle* dir,CHAR* filename)
 {
-	FILE *fp;
+	uio_Stream *fp;
 	SAMPLE *si=NULL;
 
 	if(!(md_mode & DMODE_SOFT_SNDFX)) return NULL;
-	if((fp=_mm_fopen(filename,"rb"))) {
+	if((fp=_mm_fopen(dir,filename,"rb"))) {
 		si = Sample_LoadFP(fp);
-		fclose(fp);
+		uio_fclose(fp);
 	}
 	return si;
 }

@@ -122,7 +122,7 @@ extern DRAWABLE _request_drawable (COUNT NumFrames, DRAWABLE_TYPE
 extern INTERSECT_CODE _clip_line (PRECT pClipRect, PBRESENHAM_LINE
 		pLine);
 
-extern MEM_HANDLE _GetCelData (FILE *fp, DWORD length);
+extern MEM_HANDLE _GetCelData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseCelData (MEM_HANDLE handle);
 
 typedef PPRIMITIVE PRIMITIVEPTR;

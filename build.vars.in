@@ -28,6 +28,7 @@ uqm_INSTALL_LIBDIR="@INSTALL_LIBDIR@"
 # Non-exported files only where build.vars is explicitely included.
 uqm_SOUNDMODULE="@SOUNDMODULE@"
 uqm_HAVE_OPENGL="@HAVE_OPENGL@"
+uqm_USE_ZIP_IO="@USE_ZIP_IO@"
 WINDRES="@WINDRES@"
-export uqm_SOUNDMODULE uqm_HAVE_OPENGL WINDRES
+export uqm_SOUNDMODULE uqm_HAVE_OPENGL uqm_USE_ZIP_IO WINDRES
 

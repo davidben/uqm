@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "melee.h"
 #include "controls.h"
+#include "options.h"
 #include "libs/graphics/gfx_common.h"
 
 //Added by Chris
@@ -1215,7 +1216,7 @@ DoShipyard (PMENU_STATE pMS)
 					);
 
 			pMS->CurString = CaptureColorMap (LoadColorMapFile (
-					"lbm/dockpani.ct"));
+					contentDir, "lbm/dockpani.ct"));
 
 			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
 

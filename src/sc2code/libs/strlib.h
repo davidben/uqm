@@ -20,6 +20,8 @@
 #define _STRLIB_H
 
 #include "compiler.h"
+#include "port.h"
+#include "libs/uio.h"
 
 typedef DWORD STRING_TABLE;
 typedef DWORD STRING;
@@ -27,7 +29,8 @@ typedef PBYTE STRINGPTR;
 
 extern BOOLEAN InstallStringTableResType (COUNT string_type);
 extern STRING_TABLE LoadStringTableInstance (DWORD res);
-extern STRING_TABLE LoadStringTableFile (PVOID pStr);
+extern STRING_TABLE LoadStringTableFile (uio_DirHandle *dir,
+		char *fileName);
 extern BOOLEAN DestroyStringTable (STRING_TABLE StringTable);
 extern STRING CaptureStringTable (STRING_TABLE StringTable);
 extern STRING_TABLE ReleaseStringTable (STRING String);

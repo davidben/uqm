@@ -107,7 +107,7 @@ SetMusicVolume (COUNT Volume)
 }
 
 MEM_HANDLE
-_GetMusicData (FILE *fp, DWORD length)
+_GetMusicData (uio_Stream *fp, DWORD length)
 {
 	MEM_HANDLE h;
 	extern char *_cur_resfile_name;
@@ -142,20 +142,21 @@ _GetMusicData (FILE *fp, DWORD length)
                     
                     strcpy (threedoname, filename);
                     strcpy (&threedoname[strlen (threedoname)-3], "ogg");
-                    if (fileExists (threedoname))
+                    if (fileExists2 (contentDir, threedoname))
                     {
                         strcpy (filename, threedoname);
-                    }                    
-                    break;   
+                    }
+                    break;
                 }
                 case OPT_PC:
                 {
                     break;
-                }            
+                }
             }
 
-            fprintf (stderr, "_GetMusicData(): loading %s\n", filename);                        			
-			if (((*pmus)->decoder = SoundDecoder_Load (filename, 4096, 0, 0)) == 0)
+            fprintf (stderr, "_GetMusicData(): loading %s\n", filename);
+			if (((*pmus)->decoder = SoundDecoder_Load (contentDir, filename,
+							4096, 0, 0)) == 0)
 			{
 				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
 

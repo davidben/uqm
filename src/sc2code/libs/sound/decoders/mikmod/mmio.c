@@ -142,23 +142,23 @@ void _mm_delete_rwops_reader (MREADER* reader)
 
 */
 
-FILE* _mm_fopen(CHAR* fname,CHAR* attrib)
+uio_Stream* _mm_fopen(uio_DirHandle* dir,CHAR* fname,CHAR* attrib)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
-	if(!(fp=fopen(fname,attrib))) {
+	if(!(fp=uio_fopen(dir,fname,attrib))) {
 		_mm_errno = MMERR_OPENING_FILE;
 		if(_mm_errorhandler) _mm_errorhandler();
 	}
 	return fp;
 }
 
-BOOL _mm_FileExists(CHAR* fname)
+BOOL _mm_FileExists(uio_DirHandle* dir,CHAR* fname)
 {
-	FILE *fp;
+	uio_Stream *fp;
 
-	if(!(fp=fopen(fname,"r"))) return 0;
-	fclose(fp);
+	if(!(fp=uio_fopen(dir, fname,"rb"))) return 0;
+	uio_fclose(fp);
 
 	return 1;
 }
@@ -179,37 +179,37 @@ void _mm_iobase_revert(void)
 /*========== File Reader */
 
 typedef struct MFILEREADER {
-	MREADER core;
-	FILE*   file;
+	MREADER     core;
+	uio_Stream* file;
 } MFILEREADER;
 
 static BOOL _mm_FileReader_Eof(MREADER* reader)
 {
-	return feof(((MFILEREADER*)reader)->file);
+	return uio_feof(((MFILEREADER*)reader)->file);
 }
 
 static BOOL _mm_FileReader_Read(MREADER* reader,void* ptr,size_t size)
 {
-	return fread(ptr,size,1,((MFILEREADER*)reader)->file);
+	return uio_fread(ptr,size,1,((MFILEREADER*)reader)->file);
 }
 
 static int _mm_FileReader_Get(MREADER* reader)
 {
-	return fgetc(((MFILEREADER*)reader)->file);
+	return uio_fgetc(((MFILEREADER*)reader)->file);
 }
 
 static BOOL _mm_FileReader_Seek(MREADER* reader,long offset,int whence)
 {
-	return fseek(((MFILEREADER*)reader)->file,
+	return uio_fseek(((MFILEREADER*)reader)->file,
 				 (whence==SEEK_SET)?offset+_mm_iobase:offset,whence);
 }
 
 static long _mm_FileReader_Tell(MREADER* reader)
 {
-	return ftell(((MFILEREADER*)reader)->file)-_mm_iobase;
+	return uio_ftell(((MFILEREADER*)reader)->file)-_mm_iobase;
 }
 
-MREADER *_mm_new_file_reader(FILE* fp)
+MREADER *_mm_new_file_reader(uio_Stream* fp)
 {
 	MFILEREADER* reader=(MFILEREADER*)_mm_malloc(sizeof(MFILEREADER));
 	if (reader) {
@@ -231,31 +231,31 @@ void _mm_delete_file_reader (MREADER* reader)
 /*========== File Writer */
 
 typedef struct MFILEWRITER {
-	MWRITER core;
-	FILE*   file;
+	MWRITER     core;
+	uio_Stream* file;
 } MFILEWRITER;
 
 static BOOL _mm_FileWriter_Seek(MWRITER* writer,long offset,int whence)
 {
-	return fseek(((MFILEWRITER*)writer)->file,offset,whence);
+	return uio_fseek(((MFILEWRITER*)writer)->file,offset,whence);
 }
 
 static long _mm_FileWriter_Tell(MWRITER* writer)
 {
-	return ftell(((MFILEWRITER*)writer)->file);
+	return uio_ftell(((MFILEWRITER*)writer)->file);
 }
 
 static BOOL _mm_FileWriter_Write(MWRITER* writer,void* ptr,size_t size)
 {
-	return (fwrite(ptr,size,1,((MFILEWRITER*)writer)->file)==size);
+	return (uio_fwrite(ptr,size,1,((MFILEWRITER*)writer)->file)==size);
 }
 
 static BOOL _mm_FileWriter_Put(MWRITER* writer,int value)
 {
-	return fputc(value,((MFILEWRITER*)writer)->file);
+	return uio_fputc(value,((MFILEWRITER*)writer)->file);
 }
 
-MWRITER *_mm_new_file_writer(FILE* fp)
+MWRITER *_mm_new_file_writer(uio_Stream* fp)
 {
 	MFILEWRITER* writer=(MFILEWRITER*)_mm_malloc(sizeof(MFILEWRITER));
 	if (writer) {
