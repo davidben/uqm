@@ -1,5 +1,8 @@
 Changes towards version 0.4:
 - Downgraded the GraphicsLock to an ordinary Mutex -Michael
+- Added movie player; only movies defined are intro and ending;
+  only .duk decoder present (.duk audio decoder mostly derived
+  from decoder by SvdB) -Alex
 - Extra fallback for the unlikely situation that $HOME isn't set on a
   unix system. (#493) - SvdB
 - Accept spaces in --contentdir argument (#492) - SvdB
