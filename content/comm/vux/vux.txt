@@ -13,7 +13,7 @@ Captain, it is good to see you again.
 You Humans are so interesting, so... beautiful.
 You know, I have many pictures of your species!
 I keep them on my walls to... inspire me.
-	
+
 #(ZEX_HELLO_3)	vux002.ogg
 Captain! You are back so soon!
 We had better be discreet (hee! hee!), or my countrymen will begin whispering about us.
