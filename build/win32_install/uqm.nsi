@@ -179,9 +179,9 @@ SectionIn 1 2 RO
   SetOutPath $INSTDIR
   ; Put file there
   File "..\..\uqm.exe"
-  File "..\..\WhatsNew"
+  File /oname=WhatsNew.txt "..\..\WhatsNew"
   File "..\..\doc\users\manual.txt"
-  File "..\..\COPYING"
+  File /oname=COPYING.txt "..\..\COPYING"
   ; Write the installation path into the registry
   WriteRegStr HKCU "Software\${MUI_PRODUCT}" "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\${MUI_PRODUCT}" "Install_Dir" "$INSTDIR"
@@ -398,6 +398,19 @@ SectionIn 2
   File "..\..\ogg.dll"
 SectionEnd
 
+Section $(SecOpenALName) SecOpenAL
+!ifndef DEFAULT_UPGRADE
+SectionIn 1
+!else
+SectionIn 2
+!endif
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  ; Put file there
+  File "..\..\OpenAL32.dll"
+SectionEnd
+
 SubSectionEnd
 
 Section $(SecMoveSaveName) SecMoveSave
@@ -434,6 +447,9 @@ SectionIn 1 2
   CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\uqm.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\manual.lnk" "$INSTDIR\manual.txt"
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\WhatsNew.lnk" "$INSTDIR\WhatsNew.txt"
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\COPYING.lnk" "$INSTDIR\COPYING.txt"
   
 SectionEnd
 
@@ -463,7 +479,7 @@ Function .onSelChange
   Push $0
     SectionGetFlags ${SecContent} $0
     IntOp $0 $0 & 1
-    IntCmp $0 0 sel_change_done
+    IntCmp $0 0 sel_change_voice
     SectionGetFlags ${SecUpgrade} $0
   !ifdef FULL_NEEDS_UPGRADE 
     IntOp $0 $0 | 1
@@ -471,6 +487,17 @@ Function .onSelChange
     IntOp $0 $0 & 0xFFFFFFFE
   !endif
     SectionSetFlags ${SecUpgrade} $0
+  sel_change_voice:
+    SectionGetFlags ${SecVoice} $0
+    IntOp $0 $0 & 1
+    IntCmp $0 0 sel_change_done
+    SectionGetFlags ${SecVUpgrade} $0
+  !ifdef FULL_NEEDS_UPGRADE 
+    IntOp $0 $0 | 1
+  !else
+    IntOp $0 $0 & 0xFFFFFFFE
+  !endif
+    SectionSetFlags ${SecVUpgrade} $0
   sel_change_done:
    Pop $0
 FunctionEnd
@@ -587,6 +614,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${Sec3doMusic} $(Sec3doMusicDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecSupportDLL} $(SecSupportDLLDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecSDL} $(SecSDLDesc)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenAL} $(SecOpenALDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecVoiceDLL} $(SecVoiceDLLDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecMoveSave} $(SecMoveSaveDesc)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(SecStartMenuDesc)
@@ -607,14 +635,15 @@ Section "Uninstall"
 
   ; remove files
   Delete "$INSTDIR\uqm.exe"
-  Delete "$INSTDIR\WhatsNew"
+  Delete "$INSTDIR\WhatsNew.txt"
   Delete "$INSTDIR\manual.txt"
-  Delete "$INSTDIR\COPYING"
+  Delete "$INSTDIR\COPYING.txt"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\zlib.dll"
   Delete "$INSTDIR\libpng1.dll"
   Delete "$INSTDIR\jpeg.dll"
   Delete "$INSTDIR\SDL_image.dll"
+  Delete "$INSTDIR\OpenAL32.dll"
   Delete "$INSTDIR\vorbisfile.dll"
   Delete "$INSTDIR\vorbis.dll"
   Delete "$INSTDIR\ogg.dll"

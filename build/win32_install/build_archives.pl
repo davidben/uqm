@@ -6,15 +6,16 @@ $use_zip = 1;
 
 $make_archive = 1;
 
-$file = shift @ARGV;
+$contour_file = shift @ARGV;
 $tag = shift @ARGV;
 $do_full = shift @ARGV;
-if (! defined ($file) || scalar(@ARGV)) {
+if (! defined ($contour_file) || scalar(@ARGV)) {
   print STDERR "$0 contour_file [full]\n";
 #  print STDERR "  or\n";
 #  print STDERR "$0 cvs_log_file cvs_tag [full]\n";
   exit 1;
 }
+
 # fetch the version from uqmversion.h
 if (-f "../../src/uqmversion.h") {
   open (FH, "../../src/uqmversion.h") or die "couldn't read uqmversion.h\n";
@@ -74,7 +75,7 @@ if ($tag) {
   # log is made by doing:
   #   cd content
   #   cvs log -h > logfile
-  open FH, $file || die "Couldn't read cvs-log '$file'\n";
+  open FH, $contour_file || die "Couldn't read cvs-log '$contour_file'\n";
   print "Reading revisions from cvs-log file\n";
   while (<FH>) {
     chomp;
@@ -109,7 +110,7 @@ if ($tag) {
   chdir "../../content";
 } else {
   print "Reading revisions from local cvs repository\n";
-  open FH, $file || die "Couldn't read contour '$file'\n";
+  open FH, $contour_file || die "Couldn't read contour '$contour_file'\n";
   chdir "../../content";
   find (\&find_callback, ".");
   # use a contour file and the 'CVS' directories to determine the file list
