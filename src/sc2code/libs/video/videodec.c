@@ -109,7 +109,7 @@ VideoDecoder_Load (uio_DirHandle *dir, const char *filename)
 		return NULL;
 	}
 
-	decoder = (TFB_VideoDecoder*) HCalloc (sizeof (*decoder));
+	decoder = (TFB_VideoDecoder*) HCalloc (dinfo->funcs->GetStructSize ());
 	decoder->funcs = dinfo->funcs;
 	if (!decoder->funcs->Init (decoder, &vd_vidfmt))
 	{

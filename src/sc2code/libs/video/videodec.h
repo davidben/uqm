@@ -24,20 +24,21 @@
 // forward-declare
 typedef struct tfb_videodecoder TFB_VideoDecoder;
 
-#define _THIS TFB_VideoDecoder*
+#define THIS_PTR TFB_VideoDecoder*
 
 typedef struct tfb_videodecoderfunc
 {
-	int (* GetError) (_THIS);
-	bool (* Init) (_THIS, TFB_PixelFormat* fmt);
-	void (* Term) (_THIS);
-	bool (* Open) (_THIS, uio_DirHandle *dir, const char *filename);
-	void (* Close) (_THIS);
-	int (* DecodeNext) (_THIS);
-	uint32 (* SeekFrame) (_THIS, uint32 frame);
-	float (* SeekTime) (_THIS, float time);
-	uint32 (* GetFrame) (_THIS);
-	float (* GetTime) (_THIS);
+	uint32 (* GetStructSize) (void);
+	int (* GetError) (THIS_PTR);
+	bool (* Init) (THIS_PTR, TFB_PixelFormat* fmt);
+	void (* Term) (THIS_PTR);
+	bool (* Open) (THIS_PTR, uio_DirHandle *dir, const char *filename);
+	void (* Close) (THIS_PTR);
+	int (* DecodeNext) (THIS_PTR);
+	uint32 (* SeekFrame) (THIS_PTR, uint32 frame);
+	float (* SeekTime) (THIS_PTR, float time);
+	uint32 (* GetFrame) (THIS_PTR);
+	float (* GetTime) (THIS_PTR);
 
 } TFB_VideoDecoderFuncs;
 
@@ -46,17 +47,17 @@ typedef struct tfb_videodecoderfunc
 typedef struct tfb_videocallbacks
 {
 	// any decoder calls this
-	void* (* GetCanvasLine) (_THIS, uint32 line);
+	void* (* GetCanvasLine) (THIS_PTR, uint32 line);
 	// non-audio-driven decoders call this to figure out
 	// when the next frame should be drawn
-	uint32 (* GetTicks) (_THIS);
+	uint32 (* GetTicks) (THIS_PTR);
 	// non-audio-driven decoders call this to inform
 	// the player when the next frame should be drawn
-	bool (* SetTimer) (_THIS, uint32 msecs);
+	bool (* SetTimer) (THIS_PTR, uint32 msecs);
 
 } TFB_VideoCallbacks;
 
-#undef _THIS
+#undef THIS_PTR
 
 struct tfb_videodecoder
 {
@@ -72,8 +73,6 @@ struct tfb_videodecoder
 	bool audio_synced;
 	// decoder callbacks
 	TFB_VideoCallbacks callbacks;
-	// decoder-defined data - don't mess with
-	void *dec_data;
 
 	// other - public
 	bool looping;
