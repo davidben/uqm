@@ -28,6 +28,10 @@ extern int ScreenHeight;
 
 #define SCREEN_WIDTH ScreenWidth
 #define SCREEN_HEIGHT ScreenHeight
+#define SAFE_X 0
+		/* Left and right screen margin to be left unused */
+#define SAFE_Y 0
+		/* Top and bottom screen margin to be left unused */
 #define SIS_ORG_X (7 + SAFE_X)
 #define SIS_ORG_Y (10 + SAFE_Y)
 #define STATUS_WIDTH 64
