@@ -19,11 +19,21 @@
 #ifdef GFXMODULE_SDL
 
 #include "pure.h"
+#include "primitives.h"
 
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
 static int gfx_flags;
+
+static const UBYTE bilinear_table[4][4] = 
+{
+	{ 9, 3, 3, 1 },
+	{ 3, 1, 9, 3 },
+	{ 3, 9, 1, 3 },
+	{ 1, 3, 3, 9 }
+};
+
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -126,42 +136,21 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
-static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, const int numlines)
+static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 {
 	int x, y;
-	Uint8 *src_p2;
+	const int w = src->w, h = src->h;
+	Uint8 *src_p = (Uint8 *) src->pixels, *dst_p = (Uint8 *)dst->pixels, *src_p2;
 
-	switch (bytesperpixel)
+	switch (dst->format->BytesPerPixel)
 	{
-	case 1:
-	{
-		Uint8 pixval_8;
-		for (y = 0; y < numlines; ++y)
-		{
-			src_p2 = dst_p;
-			for (x = 0; x < 320; ++x)
-			{
-				pixval_8 = *src_p++;
-
-				*dst_p++ = pixval_8;
-				*dst_p++ = pixval_8;
-			}
-			for (x = 0; x < 160; ++x)
-			{
-				*(Uint32*)dst_p = *(Uint32*)src_p2;
-				dst_p += 4;
-				src_p2 += 4;
-			}
-		}
-		break;
-	}
 	case 2:
 	{
 		Uint16 pixval_16;
-		for (y = 0; y < numlines; ++y)
+		for (y = 0; y < h; ++y)
 		{
 			src_p2 = dst_p;
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 			{
 				pixval_16 = *(Uint16*)src_p;
 				src_p += 2;
@@ -171,7 +160,7 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 				*(Uint16*)dst_p = pixval_16;
 				dst_p += 2;
 			}
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 			{
 				*(Uint32*)dst_p = *(Uint32*)src_p2;
 				dst_p += 4;
@@ -185,10 +174,10 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 		// FIXME: this one might have endian issues
 
 		Uint32 pixval_32;
-		for (y = 0; y < numlines; ++y)
+		for (y = 0; y < h; ++y)
 		{
 			src_p2 = src_p;			
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 			{
 				pixval_32 = *(Uint32*)src_p;
 				src_p += 3;
@@ -199,7 +188,7 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 				dst_p += 3;
 			}
 			src_p = src_p2;
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 			{
 				pixval_32 = *(Uint32*)src_p;
 				src_p += 3;
@@ -215,10 +204,10 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 	case 4:
 	{
 		Uint32 pixval_32;
-		for (y = 0; y < numlines; ++y)
+		for (y = 0; y < h; ++y)
 		{
 			src_p2 = src_p;
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 			{
 				pixval_32 = *(Uint32*)src_p;
 				src_p += 4;
@@ -229,7 +218,7 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 				dst_p += 4;
 			}				
 			src_p = src_p2;
-			for (x = 0; x < 320; ++x)
+			for (x = 0; x < w; ++x)
 
 			{
 				pixval_32 = *(Uint32*)src_p;
@@ -241,6 +230,174 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 				dst_p += 4;
 			}
 		}
+		break;
+	}
+	}
+}
+
+static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
+{
+	int x, y, i = 0, j, fa, fb, fc, fd;
+	const int w = dst->w, h = dst->h;
+	SDL_PixelFormat *fmt = dst->format;
+
+	switch (dst->format->BytesPerPixel)
+	{
+	case 2:
+	{
+		Uint16 *src_p = (Uint16 *) src->pixels, *src_p2;
+		Uint16 *dst_p = (Uint16 *) dst->pixels;
+		Uint16 p[4];
+
+		for (y = 0; y < h; ++y)
+		{
+			src_p2 = src_p;
+			j = i;
+
+			for (x = 0; x < w; ++x)
+			{
+				p[0] = src_p[0];
+				if (y < h - 2)
+				{
+					p[2] = src_p[src->w];					
+					if (x < w - 2)
+					{
+						p[3] = src_p[src->w + 1];
+						p[1] = src_p[1];
+					}
+					else
+					{
+						p[3] = p[2];
+						p[1] = p[0];
+					}
+				}
+				else
+				{
+					if (x < w - 2)
+						p[1] = src_p[1];
+					else
+						p[1] = p[0];
+					p[2] = p[0];
+					p[3] = p[1];
+				}
+
+				fa = bilinear_table[j][0];
+				fb = bilinear_table[j][1];
+				fc = bilinear_table[j][2];
+				fd = bilinear_table[j][3];
+
+				*dst_p++ = 
+					(((((p[0] & fmt->Rmask) * fa) +
+					((p[1] & fmt->Rmask) * fb) +
+					((p[2] & fmt->Rmask) * fc) +
+					((p[3] & fmt->Rmask) * fd)) >> 4) & fmt->Rmask) |
+					(((((p[0] & fmt->Gmask) * fa) +
+					((p[1] & fmt->Gmask) * fb) +
+					((p[2] & fmt->Gmask) * fc) +
+					((p[3] & fmt->Gmask) * fd)) >> 4) & fmt->Gmask) |
+					(((((p[0] & fmt->Bmask) * fa) +
+					((p[1] & fmt->Bmask) * fb) +
+					((p[2] & fmt->Bmask) * fc) +
+					((p[3] & fmt->Bmask) * fd)) >> 4) & fmt->Bmask);
+
+				if (j & 2)
+				{
+					j = i;
+					src_p++;
+				}
+				else
+				{
+					j = i | 2;
+				}
+			}
+
+			if (!i)
+				src_p = src_p2;
+			i = !i;
+		}
+
+		break;
+	}
+	case 3:
+	{
+		// 24bpp mode bilinear scaling isn't implemented currently
+		// it would probably be too slow to be useful anyway
+		Scale_Nearest (src, dst);
+		break;
+	}
+	case 4:
+	{
+		Uint32 *src_p = (Uint32 *) src->pixels, *src_p2;
+		Uint32 *dst_p = (Uint32 *) dst->pixels;
+		Uint32 p[4];
+
+		for (y = 0; y < h; ++y)
+		{
+			src_p2 = src_p;
+			j = i;
+
+			for (x = 0; x < w; ++x)
+			{
+				p[0] = src_p[0];
+				if (y < h - 2)
+				{
+					p[2] = src_p[src->w];					
+					if (x < w - 2)
+					{
+						p[3] = src_p[src->w + 1];
+						p[1] = src_p[1];
+					}
+					else
+					{
+						p[3] = p[2];
+						p[1] = p[0];
+					}
+				}
+				else
+				{
+					if (x < w - 2)
+						p[1] = src_p[1];
+					else
+						p[1] = p[0];
+					p[2] = p[0];
+					p[3] = p[1];
+				}
+
+				fa = bilinear_table[j][0];
+				fb = bilinear_table[j][1];
+				fc = bilinear_table[j][2];
+				fd = bilinear_table[j][3];
+
+				*dst_p++ = 
+					(((((p[0] & fmt->Rmask) * fa) +
+					((p[1] & fmt->Rmask) * fb) +
+					((p[2] & fmt->Rmask) * fc) +
+					((p[3] & fmt->Rmask) * fd)) >> 4) & fmt->Rmask) |
+					(((((p[0] & fmt->Gmask) * fa) +
+					((p[1] & fmt->Gmask) * fb) +
+					((p[2] & fmt->Gmask) * fc) +
+					((p[3] & fmt->Gmask) * fd)) >> 4) & fmt->Gmask) |
+					(((((p[0] & fmt->Bmask) * fa) +
+					((p[1] & fmt->Bmask) * fb) +
+					((p[2] & fmt->Bmask) * fc) +
+					((p[3] & fmt->Bmask) * fd)) >> 4) & fmt->Bmask);
+
+				if (j & 2)
+				{
+					j = i;
+					src_p++;
+				}
+				else
+				{
+					j = i | 2;
+				}
+			}
+
+			if (!i)
+				src_p = src_p2;
+			i = !i;
+		}
+
 		break;
 	}
 	}
@@ -261,9 +418,9 @@ static void ScanLines (SDL_Surface *dst)
 			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch];
 			for (x = 0; x < dst->w; ++x)
 			{
-				*p++ = ((((*p & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
-					((((*p & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
-					((((*p & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+					((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
 			}
 		}
 		break;
@@ -278,9 +435,9 @@ static void ScanLines (SDL_Surface *dst)
 			for (x = 0; x < dst->w; ++x)
 			{
 				pixval = p[0] << 16 | p[1] << 8 | p[2];
-				pixval = ((((pixval & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
-					((((pixval & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
-					((((pixval & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+					((((pixval & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+					((((pixval & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
 				p[0] = (pixval >> 16) & 0xff;
 				p[1] = (pixval >> 8) & 0xff;
 				p[2] = pixval & 0xff;
@@ -290,9 +447,9 @@ static void ScanLines (SDL_Surface *dst)
 			for (x = 0; x < dst->w; ++x)
 			{
 				pixval = p[0] | p[1] << 8 | p[2] << 16;
-				pixval = ((((pixval & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
-					((((pixval & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
-					((((pixval & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+					((((pixval & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+					((((pixval & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
 				p[0] = pixval & 0xff;
 				p[1] = (pixval >> 8) & 0xff;
 				p[2] = (pixval >> 16) & 0xff;
@@ -309,9 +466,9 @@ static void ScanLines (SDL_Surface *dst)
 			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch];
 			for (x = 0; x < dst->w; ++x)
 			{
-				*p++ = ((((*p & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
-					((((*p & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
-					((((*p & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+					((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
 			}
 		}
 		break;
@@ -362,9 +519,12 @@ TFB_Pure_SwapBuffers ()
 		}
 
 		SDL_LockSurface (SDL_Video);
-		SDL_LockSurface (backbuffer);		
+		SDL_LockSurface (backbuffer);
 		
-		Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
+		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
+			Scale_Bilinear (backbuffer, SDL_Video);
+		else
+			Scale_Nearest (backbuffer, SDL_Video);
 
 		if (gfx_flags & TFB_GFXFLAGS_SCANLINES)
 			ScanLines (SDL_Video);
