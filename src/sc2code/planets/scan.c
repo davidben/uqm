@@ -1158,7 +1158,7 @@ DoScan (PMENU_STATE pMS)
 			
 		pSolarSysState->MenuState.Initialized -= 4;
 		pSolarSysState->PauseRotate = 0;
-		WaitForNoInput (ONE_SECOND / 2);
+		FlushInput ();
 	}
 	else if (!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity !=
