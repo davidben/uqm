@@ -216,6 +216,8 @@ FreePlanet (void)
 	for(i=0;i<255;i++) {
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray[i]));
 	}
+	free(pSolarSysState->PlanetFrameArray);
+	free(pSolarSysState->isPFADefined);
 	for(i=0;i<2;i++) {
 		if(pSolarSysState->ScaleFrame[i]) {
 			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
@@ -226,14 +228,13 @@ FreePlanet (void)
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
 		pSolarSysState->ShieldFrame=0;
 	}
-	if(pSolarSysState->lpTopoMap!=NULL) {
+	if(pSolarSysState->lpTopoMap!=0) {
 		for(i=0;pSolarSysState->lpTopoMap[i]!=NULL;i++) {
 			free(pSolarSysState->lpTopoMap[i]);
 		}
 		free(pSolarSysState->lpTopoMap);
+		pSolarSysState->lpTopoMap=0;
 	}
-	free(pSolarSysState->PlanetFrameArray);
-	free(pSolarSysState->isPFADefined);
 
 	DestroyContext (ReleaseContext (TaskContext));
 	TaskContext = 0;

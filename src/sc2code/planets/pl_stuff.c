@@ -532,6 +532,7 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 			COUNT frameh,this_scale;
 			if(pSolarSysState->ScaleFrame[i]) {
 				DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
+				pSolarSysState->ScaleFrame[i]=0;
 			}
 			frameh=GetFrameHeight(pFrame[i]);
 			this_scale=frameh*scale_amt/MAP_HEIGHT;
