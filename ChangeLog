@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Minimum scaling extent is now 1,1; fixes mostly small-objects-disappearing
+  problem in melee, from chmmravatar
 - Fixed a long standing memory leak relating  to planet surface -PhracturedBlue
 - Scaled images no longer allocate/free memory all the time -McMartin
 - Planet spin on lander launch/return is now enabled -PhracturedBlue
