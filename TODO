@@ -41,13 +41,10 @@ Glitches (don't crash the game, medium priority):
   small again (some 3DO owner should check does this happen in original)
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
-- ZFP graphics synchronisation messed up when fast forwarding speech
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
   - Slylandro probe lightning bolt sound shouldn't be same as lightning on
     planets
-- Druuge speech file 'druuge011.ogg' contains earlier bad take.
-  (save original sample for posterity).
 - Win32 version runs a bit faster than it should, due to some problems
   with timer accuracies
   - Also there have been complaints about insanely fast combat, could this
@@ -99,8 +96,14 @@ Implementation bugs (low priority):
 	syree012.ogg syree021.ogg syree028.ogg syree069.ogg orz000.ogg
   - black041.ogg is wrong (identical to black042.ogg)
   - More work should be done to better sync the text we have.
-- Slider doesn't track the audio very well
-
+  - ZFP graphics synchronisation messed up when fast forwarding speech
+  - Druuge speech file 'druuge011.ogg' contains earlier bad take.
+    (save original sample for posterity).
+- Slider issues
+  - It should be possible to rewind (using back arrows) after the audio
+    voice-over stopped
+  - Slider does not always change to the 'stop' icon after playing 
+    (espeically if fast-forwarding past the end of the track)
 Stuff still to do (large):
 - add some way to configure your keys
   (assigned to mstr)
@@ -117,8 +120,6 @@ Stuff still to do (large):
   extensive poking around the 3DO game to make sure that the Human Captain's
   lines are all correct, too.
 - Intro and end credits (both 3DO and PC version ones)
-- add an install program (in particularly for Windows).
-  How to handle the libraries?
 - new resource system. This should enable us to fix a lot of conversation
   bugs, such as:
   - In the dialog with the commander, your and the commanders sentences are
@@ -150,8 +151,6 @@ Stuff still to do (small):
 - update the current types.h draft for target platforms as needed 
 - Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while yellow on PC.
   (add switch?)
-- '-T 0' option to turn speech off doesn't work when using SDL_mixer.
-- add some icon for the game in the cvs tree
 
 Questions:
 - Is there some way to automatically do CRLF translations on commits,
