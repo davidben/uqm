@@ -82,14 +82,17 @@ static const ov_callbacks ogg_callbacks =
 	ogg_tell,
 };
 
-/* change endianness of 16bit words */
+/* change endianness of 16bit words
+ * Only works optimal when 'data' is aligned on a 32 bits boundary.
+ */
 void
 SoundDecoder_SwapWords (uint16* data, uint32 size)
 {
 	uint32 fsize = size & (~3U);
 
 	size -= fsize;
-	for (data; fsize; fsize -= 4, data += 2)
+	fsize >>= 2;
+	for (; fsize; fsize--, data += 2)
 	{
 		uint32 v = *(uint32*)data;
 		*(uint32*)data = ((v & 0x00ff00ff) << 8)

@@ -75,7 +75,7 @@ advance_track (int channel_finished)
 				PlayDecodedClip (track_clip[tcur].sample,
 						SPEECH_SOURCE, false);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			do_subtitles (~0, 0);
+			do_subtitles ((UNICODE *) ~0, 0);
 			do_subtitles (0, 0);
 		}
 		else if (channel_finished == 0)
