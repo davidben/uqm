@@ -428,6 +428,10 @@ SOURCE=..\sc2code\libs\resource\resintrn.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\openal\mixer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\openal\music.c
 # End Source File
 # Begin Source File
@@ -454,520 +458,122 @@ SOURCE=..\sc2code\libs\sound\openal\stream.h
 
 SOURCE=..\sc2code\libs\sound\openal\trackplayer.c
 # End Source File
+# End Group
 # Begin Group "decoders"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\decoder.c
+SOURCE=..\sc2code\libs\sound\decoders\decoder.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\decoder.h
+SOURCE=..\sc2code\libs\sound\decoders\decoder.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\wav.c
+SOURCE=..\sc2code\libs\sound\decoders\wav.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\wav.h
+SOURCE=..\sc2code\libs\sound\decoders\wav.h
 # End Source File
 # Begin Group "mikmod"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\drv_nos.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\drv_nos.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\drv_openal.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\drv_openal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\load_mod.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\load_mod.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mdreg.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mdreg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mdriver.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mdriver.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod.h
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod_build.h
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod_build.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod_internal.h
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod_internal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mloader.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mloader.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mlreg.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mlreg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mlutil.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mlutil.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmalloc.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mmalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmerror.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mmerror.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmio.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mmio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\munitrk.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\munitrk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mplayer.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mplayer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mwav.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mwav.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\npertab.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\npertab.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\sloader.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\sloader.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch2.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch_common.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch_common.c
 # End Source File
-# End Group
 # End Group
 # End Group
 # Begin Group "mixsdl"
 
 # PROP Default_Filter ""
-# Begin Group "decoders - mixsdl"
-
-# PROP Default_Filter ""
-# Begin Group "mikmod - mixsdl"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\drv_nos.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\drv_openal.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\load_mod.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mdreg.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mdriver.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mikmod.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mikmod_build.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mikmod_internals.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mloader.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mlreg.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mlutil.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mmalloc.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mmerror.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mmio.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mplayer.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\munitrk.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\mwav.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\npertab.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\sloader.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\virtch.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\virtch2.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\mikmod\virtch_common.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\decoder.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\decoder.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\wav.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\decoders\wav.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\mixsdl\mixer.c
