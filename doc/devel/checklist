@@ -24,5 +24,8 @@ Checklist for releases:
 - add a new entry for the release in the bugs database
 - test on all relevant platforms
 - update the home page
+  - news
+  - download
+- send a mail to sc2-announce
 
 
