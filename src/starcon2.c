@@ -112,6 +112,7 @@ main (int argc, char *argv[])
 		{"nosubtitles", 0, NULL, 'u'},
 		{"music", 1, NULL, 'm'},
 		{"gamma", 1, NULL, 'g'},
+		{"logfile", 1, NULL, 'l'},
 		//  options with no short equivalent
 		{"cscan", 1, NULL, CSCAN_OPT},
 		{"menu", 1, NULL, MENU_OPT},
@@ -128,7 +129,7 @@ main (int argc, char *argv[])
 		option.  If it was given, redirect stderr to the named file
 	*/
 	opterr = 0;
-	while ((c = getopt_long (argc, argv, "l:", NULL, 0)) != -1)
+	while ((c = getopt_long (argc, argv, "l:", long_options, 0)) != -1)
 	{
 		switch (c) {
 			case 'l':
@@ -349,7 +350,7 @@ main (int argc, char *argv[])
 				printf("  -q, --audioquality=QUALITY (high, medium or low, "
 						"default medium)\n");
 				printf("  -u, --nosubtitles\n");
-				printf("  -l FILE (sends console output to logfile FILE)\n");
+				printf("  -l, --logfile=FILE (sends console output to logfile FILE)\n");
 				printf("  --addon <addon> (using a specific addon; "
 						"may be specified multiple times)\n");
 				printf("  --sound=DRIVER (openal, mixsdl, none; default "

@@ -65,6 +65,11 @@ Print fps information in the status window.
 
 Set the directory where the game will seek its data.
 
+	-l               (or --logfile)
+
+Set a file to receive the diagnostic information that would otherwise go 
+to the console.
+
 	-h               (or --help)
 
 Display a help message.
