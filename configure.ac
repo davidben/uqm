@@ -184,7 +184,7 @@ AC_ARG_ENABLE(debug,
 	esac],
 	[debug=false])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
-if [ "x$debug" = "xtrue" ]; then
+if test "x$debug" = "xtrue"; then
 	CFLAGS="$CFLAGS -g"
 fi
 
