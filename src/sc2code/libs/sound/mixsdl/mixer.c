@@ -1873,7 +1873,7 @@ mixSDL_Resample_frac (mixSDL_Convertion *conv)
 		if (stereo)
 		{
 			samp = sampr + (sint32) (delta * (nextsampr - sampr));
-			mixSDL_PutConvSample (&dst, dstbpc, flags, sampr);
+			mixSDL_PutConvSample (&dst, dstbpc, flags, samp);
 		}
 		
 		dstpos += convrate;
