@@ -378,7 +378,7 @@ ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr, COUNT
 			w = *WeaponPtr;
 			if (w)
 			{
-				EPtr = LockElement (w, &EPtr);
+				LockElement (w, &EPtr);
 				if (EPtr->state_flags & APPEARING)
 				{
 					EPtr->next = EPtr->current;

@@ -311,7 +311,7 @@ ship_postprocess (PELEMENT ElementPtr)
 				{
 					ELEMENTPTR EPtr;
 
-					EPtr = LockElement (w, &EPtr);
+					LockElement (w, &EPtr);
 					SetElementStarShip (EPtr, StarShipPtr);
 					if (!played_sfx)
 					{
