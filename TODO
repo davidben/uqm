@@ -21,6 +21,13 @@ Serious bugs (crash the game, high priority):
   It looks like the same bug is present for the full game, though it isn't
   fatal there (the memory is freed but not yet overwritten).
 - loading an old game crashes the game (at least on Linux).
+- Communication screens nonrepeatably but inevitably hang the system.  This
+  is probably a deadlock issue.
+- Script bugs where a voice is expected yet not specified appear to make
+  the game catatonic (e.g. ZoqFotPik's "Good bye Captain."  "See ya.")
+- When trying to skip past a a speech that's composed of multiple parts,
+  the game hangs.  (NOTE: This isn't true for the Zoq-Fot-Pik, which is
+  unusual - EVERY line by the ZFP is like that.)
 
 Glitches (don't crash the game, medium priority):
 - When fast forwarding voices, sound stops. (SDL_mixer cannot start a sample
@@ -28,7 +35,7 @@ Glitches (don't crash the game, medium priority):
 - pressing arrow keys in the main menu moves the selection in the
   wrong direction (both left, right and up, down)
 - The melnorme don't charge for fuel when you ask "fill 'er up"
-  Instead, they pay you the money.
+  Instead, they pay you a Credit.
 - Autopilot indicator keeps blinking when entering combat, when autopilot
   was on.
 - savegames created in a game from debug and release compiles are not
@@ -38,6 +45,14 @@ Glitches (don't crash the game, medium priority):
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
+- Outfit Starship's module graphics look reasonably in the lbm/ directory
+  but are hideously scrambled when you're trying to buy them.
+- Shipyard is using the PC background but the 3DO layout.
+- Shipyard's PC background is not animating.
+- When selling biological data to the Melnorme, the palette for your SIS
+  display is scrambled.
+- QuasiSpace coloration is off - the shinies and your ship are red instead
+  of blackish
 
 Implementation bugs (low priority):
 - The main thread is still created by a direct all to the SDL function,
@@ -48,15 +63,23 @@ Stuff still to do (large):
 - add a Key Jamming program
 - add some way to configure your keys
 - add some way to configure the PC/3DO choices.
+- Actually implement the differences between PC and 3DO versions, including
+  the alternate scripts (even the basic dialogue is not identical)
 - make stuff endian-safe
   In particularly 24-bits scaling is known to be unsafe.
 - 3d planet view when entering orbit
 - some packaging system for resources. zlib looks like something
   which is suitable for this.
+- reconcile all of the differences between the voice (3DO) script and the
+  text script, then do it all again for the PC version.  This will involve
+  extensive poking around the 3DO game to make sure that the Human Captain's
+  lines are all correct, too.
+- Match timing between subtitles and speech clips
 
 Stuff still to do (medium size):
 - oscilloscope
 - loading teams in melee
+- pixel-perfect collision checks
 - remove libtool dependancy
   This will probably mean the empty dummy.c files can be removed too.
   (note that src/sc2code/dummy.c DOES contain data)
@@ -68,6 +91,7 @@ Stuff still to do (medium size):
   checks are performed (not just -W -Wall in gcc)
 - try to speed up resource loading. It looks to be much slower now
   than it needs to be.
+- Convert bulky media files into more compact representations
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
@@ -85,6 +109,7 @@ Questions:
 - Do we want another utils/ dir? It could be useful, to put all the conversion
   tools we use(d).
 - are there still threads killing themselves instead of just exiting?
+  Answer: "find . -name \*.c | xargs grep Killthread" says "no."
 - w_memlib used (now commented out) MS Windows functions to show messages
   when memory couldn't be allocated. If we want to have those return, some
   work will have to be done. If not, there's some dead code to remove.
@@ -96,5 +121,3 @@ Questions:
   which we can free when no more memory is available, to allow an emergency
   save.
 - How about an ISO image for a self-contained linux CD which boots into SC2?
-
-
