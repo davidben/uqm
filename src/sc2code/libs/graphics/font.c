@@ -163,9 +163,12 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 		bot_y = 0;
 		width = 0;
 		pStr = lpText->pStr;
-		next_ch = getCharFromString (&pStr);
-		if (next_ch == '\0')
-			num_chars = 0;
+		if (num_chars > 0)
+		{
+			next_ch = getCharFromString (&pStr);
+			if (next_ch == '\0')
+				num_chars = 0;
+		}
 		while (num_chars--)
 		{
 			wchar_t ch;
@@ -175,11 +178,14 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 			last_width = width;
 
 			ch = next_ch;
-			next_ch = getCharFromString (&pStr);
-			if (next_ch == '\0')
+			if (num_chars > 0)
 			{
-				lpText->CharCount -= num_chars;
-				num_chars = 0;
+				next_ch = getCharFromString (&pStr);
+				if (next_ch == '\0')
+				{
+					lpText->CharCount -= num_chars;
+					num_chars = 0;
+				}
 			}
 
 			charFrame = getCharFrame (FontPtr, ch);
@@ -241,83 +247,91 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
 	FONTPTR FontPtr;
 
-	FontPtr = _CurFontPtr;
-	if (FontPtr != 0)
-	{
-		COUNT num_chars;
-		wchar_t next_ch;
-		const unsigned char *pStr;
-		TEXTPTR TextPtr;
-		PRIMITIVE locPrim;
-		TFB_Palette color;
-		DWORD c32k;
+	COUNT num_chars;
+	wchar_t next_ch;
+	const unsigned char *pStr;
+	TEXTPTR TextPtr;
+	PRIMITIVE locPrim;
+	TFB_Palette color;
 
-		if (FontEffect.Use)
-			SetPrimType (&locPrim, STAMP_PRIM);
-		else
-			SetPrimType (&locPrim, STAMPFILL_PRIM);
-		c32k = _get_context_fg_color () >> 8;
+	FontPtr = _CurFontPtr;
+	if (FontPtr == NULL)
+		return;
+	
+	if (FontEffect.Use)
+		SetPrimType (&locPrim, STAMP_PRIM);
+	else
+		SetPrimType (&locPrim, STAMPFILL_PRIM);
+
+	{
+		DWORD c32k = _get_context_fg_color () >> 8;
 		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
 		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
 		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+	}
 
-		TextPtr = &PrimPtr->Object.Text;
-		locPrim.Object.Stamp.origin.x = _save_stamp.origin.x;
-		locPrim.Object.Stamp.origin.y = TextPtr->baseline.y;
-		num_chars = TextPtr->CharCount;
+	TextPtr = &PrimPtr->Object.Text;
+	locPrim.Object.Stamp.origin.x = _save_stamp.origin.x;
+	locPrim.Object.Stamp.origin.y = TextPtr->baseline.y;
+	num_chars = TextPtr->CharCount;
+	if (num_chars == 0)
+		return;
 
-		pStr = TextPtr->pStr;
-		next_ch = getCharFromString (&pStr);
-		if (next_ch == '\0')
-			num_chars = 0;
-		while (num_chars--)
+	pStr = TextPtr->pStr;
+
+	next_ch = getCharFromString (&pStr);
+	if (next_ch == '\0')
+		num_chars = 0;
+	while (num_chars--)
+	{
+		wchar_t ch;
+
+		ch = next_ch;
+		if (num_chars > 0)
 		{
-			wchar_t ch;
-
-			ch = next_ch;
 			next_ch = getCharFromString (&pStr);
 			if (next_ch == '\0')
 				num_chars = 0;
+		}
 
-			locPrim.Object.Stamp.frame = getCharFrame (FontPtr, ch);
-			if (locPrim.Object.Stamp.frame != NULL &&
-					GetFrameWidth (locPrim.Object.Stamp.frame))
+		locPrim.Object.Stamp.frame = getCharFrame (FontPtr, ch);
+		if (locPrim.Object.Stamp.frame != NULL &&
+				GetFrameWidth (locPrim.Object.Stamp.frame))
+		{
+			RECT r;
+
+			r.corner.x = locPrim.Object.Stamp.origin.x
+					- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.x;
+			r.corner.y = locPrim.Object.Stamp.origin.y
+					- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.y;
+			r.extent.width = GetFrameWidth (locPrim.Object.Stamp.frame);
+			r.extent.height = GetFrameHeight (locPrim.Object.Stamp.frame);
+			_save_stamp.origin = r.corner;
+			if (BoxIntersect (&r, pClipRect, &r))
 			{
-				RECT r;
-
-				r.corner.x = locPrim.Object.Stamp.origin.x
-						- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.x;
-				r.corner.y = locPrim.Object.Stamp.origin.y
-						- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.y;
-				r.extent.width = GetFrameWidth (locPrim.Object.Stamp.frame);
-				r.extent.height = GetFrameHeight (locPrim.Object.Stamp.frame);
-				_save_stamp.origin = r.corner;
-				if (BoxIntersect (&r, pClipRect, &r))
+				if (FontEffect.Use)
 				{
-					if (FontEffect.Use)
-					{
-						FRAME origFrame = locPrim.Object.Stamp.frame;
-						locPrim.Object.Stamp.frame = Build_Font_Effect(
-								locPrim.Object.Stamp.frame, FontEffect.from,
-								FontEffect.to, FontEffect.type);
-						TFB_Prim_Stamp (&locPrim.Object.Stamp);
-						DestroyDrawable (ReleaseDrawable (
-								locPrim.Object.Stamp.frame));
-						locPrim.Object.Stamp.frame = origFrame;
-					}
-					else
-						TFB_Prim_StampFill (&locPrim.Object.Stamp, &color);
+					FRAME origFrame = locPrim.Object.Stamp.frame;
+					locPrim.Object.Stamp.frame = Build_Font_Effect(
+							locPrim.Object.Stamp.frame, FontEffect.from,
+							FontEffect.to, FontEffect.type);
+					TFB_Prim_Stamp (&locPrim.Object.Stamp);
+					DestroyDrawable (ReleaseDrawable (
+							locPrim.Object.Stamp.frame));
+					locPrim.Object.Stamp.frame = origFrame;
 				}
-
-				locPrim.Object.Stamp.origin.x += GetFrameWidth (
-						locPrim.Object.Stamp.frame);
-#if 0
-				if (num_chars && next_ch < (UNICODE) MAX_CHARS
-						&& !(FontPtr->KernTab[ch]
-						& (FontPtr->KernTab[next_ch] >> 2)))
-					locPrim.Object.Stamp.origin.x -= FontPtr->KernAmount;
-#endif
+				else
+					TFB_Prim_StampFill (&locPrim.Object.Stamp, &color);
 			}
+
+			locPrim.Object.Stamp.origin.x += GetFrameWidth (
+					locPrim.Object.Stamp.frame);
+#if 0
+			if (num_chars && next_ch < (UNICODE) MAX_CHARS
+					&& !(FontPtr->KernTab[ch]
+					& (FontPtr->KernTab[next_ch] >> 2)))
+				locPrim.Object.Stamp.origin.x -= FontPtr->KernAmount;
+#endif
 		}
 	}
 }
