@@ -168,7 +168,11 @@ BuildGroups (void)
 						|| (HIWORD (rand_val) % (i + BestPercent)) < i))
 				{
 					if (TemplatePtr->ShipInfo.actual_strength == (COUNT)~0)
+					{
+						// XXX: BUG: This code is never reached.
+						//      When actual_strength == ~0, i is always 0.
 						i = 4;
+					}
 
 					BestPercent = i;
 					BestIndex = Index;
