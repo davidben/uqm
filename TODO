@@ -12,9 +12,9 @@ Serious bugs (crash the game, high priority):
   - Often more probable when heavy color table transformations are going on
 - Load/save code doesn't work perfectly, hangs sometimes when after loading
   trying to enter some star first time etc
-- In OpenGL mode on Windows lockups frequently occur when entering a
-  star system. Sometimes, no lockup occurs, but the graphics are messed up
-  (doesn't draw background so leaves trails, etc).
+- In OpenGL mode (and also pure, but not so often) on Windows lockups frequently 
+  occur when entering a star system. Sometimes, no lockup occurs, but the graphics 
+  are messed up (doesn't draw background so leaves trails, etc).
   - This appears to occur more frequently when autopilot is on.
   - Could be related to load/save code too
 
