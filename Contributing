@@ -108,12 +108,6 @@ Getting the patches committed:
       - 3DO historical code
       - *nix build system
       - General issues (particularly on *nix)
-    Geoffrey Hausheer (uqm-devel at phracturedblue.com), PhracturedBlue
-     at #sc2
-      - Graphics
-      - Sound (particularly subtitling and other speech stuff)
-      - Threading
-      - General issues
     Mika Kolehmainen (mimakole at cc.jyu.fi), Gwl at #sc2
       - Graphics
       - Sound
