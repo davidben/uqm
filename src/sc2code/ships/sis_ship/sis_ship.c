@@ -198,7 +198,8 @@ LeaveAutoPilot:
 				&ElementPtr->velocity,
 				&dx, &dy
 				);
-		if (GLOBAL_SIS (FuelOnBoard)
+		if ((GLOBAL_SIS (FuelOnBoard)
+				|| GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
 				&& (int)facing == (int)StarShipPtr->ShipFacing)
 		{
 			StarShipPtr->cur_status_flags |= SHIP_AT_MAX_SPEED;
