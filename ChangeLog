@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fixed small graphics glitch and NULL Stamp draw attempt in menu code
+  (part of bug #26) -Mika
 - Absence of voice files is now automatically detected (bug #309) -Mika
 - Fixed Commander Hayes mouth movement before radioactives are given
   (bug #343) -Mika

@@ -1195,7 +1195,6 @@ DoFlagshipCommands (PMENU_STATE pMS)
 				NewState = pMS->CurState;
 				if (select || LastActivity == CHECK_LOAD)
 				{
-					CONTEXT OldContext;
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
 						SetSemaphore (GraphicsSem);
@@ -1237,28 +1236,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 						}
 						case GAME_MENU:
 							if (GameOptions () == 0)
-								return (FALSE);
-						
-							if (LOBYTE (GLOBAL(CurrentActivity)) == IN_INTERPLANETARY)
-							{
-								SetSemaphore(GraphicsSem);
-								ClearSISRect(DRAW_SIS_DISPLAY);
-								ClearSemaphore(GraphicsSem);
-								DrawSISFrame();
-								SetSemaphore(GraphicsSem);
-								RepairSISBorder();
-								DrawSISMessage(NULL_PTR);
-								DrawSISTitle(GLOBAL_SIS(PlanetName));
-								DrawStarBackGround(TRUE);
-								OldContext = SetContext(SpaceContext);
-								BatchGraphics();
-								DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
-								UnbatchGraphics();
-								SetContext(OldContext);
-								ClearSemaphore(GraphicsSem);
-							}
-// else
-// DrawMenuStateStrings (PM_SCAN, ROSTER + 1);
+								return (FALSE);						
 							break;
 						case STARMAP:
 						{
