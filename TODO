@@ -13,7 +13,7 @@ Serious bugs (crash the game, high priority):
 Glitches (don't crash the game, medium priority):
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
-  the frame counter to 10 times per second and start with -ttl.
+  the frame counter to 10 times per second and start with --fps
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
 - In melee, after battle, the game crashes.
@@ -73,8 +73,6 @@ Glitches (don't crash the game, medium priority):
     - This always happens, regardless of game state.  This is a bug in
       both predecessors as well.
   Probably the negative shift for GET_STATE and SET_STATE
-- Planet scan speed varies between computers, and behaves weirdly too,
-  sometimes working properly, sometimes being way too fast
 - Some font characters are wrong, atleast in the planet scan screen
   when compared to 3DO
 - When there are more than one page of saved supermelee teams, the last
@@ -107,7 +105,6 @@ Stuff still to do (large):
 - Actually implement the differences between PC and 3DO versions, including
   the alternate scripts (even the basic dialogue is not identical)
 - make stuff endian-safe
-  In particularly 24-bits scaling is known to be unsafe.
   Furthermore, saving and loading games uses cread and cwrite, which is
   not endian-safe, and which is writing out values of heap pointers.  This
   really should be cleaned up just in general and made endian safe to boot.
