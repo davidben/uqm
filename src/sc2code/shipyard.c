@@ -1277,8 +1277,8 @@ DoShipyard (PMENU_STATE pMS)
 	else if (cancel || (select && pMS->CurState == SHIPYARD_EXIT))
 	{
 ExitShipyard:
-		SetSemaphore (GraphicsSem);
 		EndHangarAnim (pMS);
+		SetSemaphore (GraphicsSem);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
 		pMS->CurFrame = 0;
