@@ -3269,7 +3269,6 @@ SOURCE=..\sc2code\cyborg.c
 
 SOURCE=..\sc2code\uqmdebug.c
 # End Source File
-# End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\uqmdebug.h
