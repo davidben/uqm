@@ -39,8 +39,5 @@ typedef struct
 } CODE_REF;
 typedef CODE_REF *PCODE_REF;
 
-#define ORG_OFFSET (((sizeof (CODE_REF) + (PARAGRAPH_SIZE - 1)) \
-								/ PARAGRAPH_SIZE) * PARAGRAPH_SIZE)
-
 #endif /* _CODERES_H */
 
