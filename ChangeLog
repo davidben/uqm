@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Subtitles are now hidden after alien has finished talking (bug #312),
+  from chmmravatar
 - Fix for mycon portrait (bug #183), from Nic
 - Fix glitch when rewinding after alien has stopped talking (bug #311),
   from chmmravatar

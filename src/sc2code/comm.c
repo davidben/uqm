@@ -104,6 +104,7 @@ enum
 };
 static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
+int do_subtitles (UNICODE *pStr);
 
 /* _count_lines - mostly stolen from add_text, just sees how many lines
                   a given input string would take to display given the
@@ -1322,6 +1323,7 @@ SpewPhrases (COUNT wait_track)
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
 			JumpTrack ();
 			CommData.AlienFrame = F;
+			do_subtitles ((void *)~0);
 			return (FALSE);
 		}
 
@@ -1374,6 +1376,7 @@ Rewind:
 			|| ((which_track = PlayingTrack ()) && which_track <= wait_track));
 
 	CommData.AlienFrame = F;
+	do_subtitles ((void *)~0);
 
 	if (wait_track == (COUNT)~0)
 		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
