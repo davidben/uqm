@@ -133,6 +133,7 @@ enum
 	enough_info,
 	OK_ENOUGH_INFO,
 	UMGAH_ALL_GONE,
+	HELLO_AFTER_COMPEL_URQUAN,
 };
 
 #endif /* _STRINGS_H */

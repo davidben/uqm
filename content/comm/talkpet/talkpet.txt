@@ -614,3 +614,7 @@ I have an offer: instead of killing me, I will join you on your ship.
 I can be of invaluable assistance to you when it comes time for your final confrontation with the Ur-Quan.
 I see you are speechless with approval. I'll be right over.
 
+#(HELLO_AFTER_COMPEL_URQUAN)	talkp073.ogg
+WHAT ARE YOU DOING, IDIOT!!
+DON'T TALK TO ME!
+GO ATTACK THE SA-MATRA!!
