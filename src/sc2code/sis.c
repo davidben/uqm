@@ -980,6 +980,19 @@ GetCPodCapacity (PPOINT ppt)
 					GLOBAL_SIS (CrewEnlisted))
 			{
 				COUNT pod_remainder, which_row;
+				COLOR crew_rows[] =
+				{
+					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E,0x09), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1B,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x18,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x15,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x12,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x10,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0D,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0A,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x07,0x00), 0x65),
+				};
 
 				pod_remainder = GLOBAL_SIS (CrewEnlisted) - capacity;
 
@@ -987,10 +1000,12 @@ GetCPodCapacity (PPOINT ppt)
 				which_row = pod_remainder / CREW_PER_ROW;
 				ppt->y = 34 - (which_row << 1);
 
-// For Now.
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65)
-						);
+				if (optWhichFonts == OPT_PC)
+					SetContextForeGroundColor (crew_rows[which_row]);
+				else
+					SetContextForeGroundColor (
+							BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65)
+					);
 			}
 
 			capacity += CREW_POD_CAPACITY;
