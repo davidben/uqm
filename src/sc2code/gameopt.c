@@ -30,10 +30,11 @@ void SaveProblem (void);
 
 //End Added by Chris
 
-#define MAX_SAVED_GAMES 10
+#define MAX_SAVED_GAMES 50
 #define SUMMARY_X_OFFS 14
 #define SUMMARY_SIDE_OFFS 7
 #define MAX_NAME_CHARS 15
+#define SAVES_PER_PAGE 5  //Should divide evenly into MAX_SAVED_GAMES for 'Per-Page' Scrolling
 
 static PMENU_STATE pLocMenuState;
 
@@ -628,8 +629,7 @@ DrawCargo (COUNT redraw_state)
 			r.extent.height = 62 - r.corner.y;
 			DrawFilledRectangle (&r);
 			GetFrameRect (SetRelFrameIndex (
-					pLocMenuState->ModuleFrame, MAX_SAVED_GAMES * 2 + 1
-					), &r);
+					pLocMenuState->ModuleFrame, 1), &r);
 			r.extent.width += SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			DrawFilledRectangle (&r);
 		}
@@ -758,7 +758,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 				GetFrameCount (pLocMenuState->ModuleFrame) - 4);
 		DrawStamp (&s);
 		r.corner.x = 2;
-		r.corner.y = 141;
+		r.corner.y = 139;
 		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
@@ -843,8 +843,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 			s.origin.x = SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 6;
 			s.origin.y = 0;
 			s.frame = SetRelFrameIndex (
-					pLocMenuState->ModuleFrame, MAX_SAVED_GAMES * 2
-					);
+					pLocMenuState->ModuleFrame, 0);
 			DrawStamp (&s);
 			s.origin.x = SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			s.frame = IncFrameIndex (s.frame);
@@ -888,7 +887,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		font_DrawText (&t);
 		
 		r.corner.x = 2;
-		r.corner.y = 141;
+		r.corner.y = 139;
 		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
@@ -947,7 +946,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 					r.corner.y / 10, r.corner.y % 10);
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
-		
+
 		SetContext (OldContext);
 
 		GLOBAL (built_ship_q) = player_q;
@@ -974,7 +973,6 @@ static BOOLEAN
 DoPickGame (PMENU_STATE pMS)
 {
 	BYTE NewState;
-	STAMP s;
 	SUMMARY_DESC *pSD;
 	BOOLEAN first_time;
 
@@ -1016,15 +1014,6 @@ Restart:
 	}
 	else if (CurrentMenuState.cancel)
 	{
-		SetSemaphore (GraphicsSem);
-		SetFlashRect (NULL_PTR, (FRAME)0);
-		s.origin.x = SUMMARY_X_OFFS;
-		s.origin.y = 0;
-		s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState);
-		DrawStamp (&s);
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
-		ClearSemaphore (GraphicsSem);
-
 		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
 		ResumeMusic ();
@@ -1107,20 +1096,45 @@ Restart:
 	else
 	{
 		NewState = pMS->CurState;
-		if (CurrentMenuState.left)
+		if (CurrentMenuState.left || CurrentMenuState.page_up)
 		{
-			if (NewState-- == 0)
+			if (NewState == 0)
+				NewState = MAX_SAVED_GAMES - 1;
+			else if ((NewState - SAVES_PER_PAGE) > 0)
+				NewState -= SAVES_PER_PAGE;
+			else 
+				NewState = 0;
+		}
+		else if (CurrentMenuState.right || CurrentMenuState.page_down)
+		{
+			if (NewState == MAX_SAVED_GAMES - 1)
+				NewState = 0;
+			else if ((NewState + SAVES_PER_PAGE) < MAX_SAVED_GAMES - 1)
+				NewState += SAVES_PER_PAGE;
+			else 
 				NewState = MAX_SAVED_GAMES - 1;
 		}
-		else if (CurrentMenuState.right)
+		else if (CurrentMenuState.up)
 		{
-			if (++NewState == MAX_SAVED_GAMES)
+			if (NewState == 0)
+				NewState = MAX_SAVED_GAMES - 1;
+			else
+				NewState--;
+		}
+		else if (CurrentMenuState.down)
+		{
+			if (NewState == MAX_SAVED_GAMES - 1)
 				NewState = 0;
+			else
+				NewState++;
 		}
 
 		if (NewState != pMS->CurState)
 		{
 			RECT r;
+			TEXT t;
+			BYTE i, SHIFT;
+			UNICODE buf[80],buf2[15];
 			SetSemaphore (GraphicsSem);
 
 			BatchGraphics ();
@@ -1139,18 +1153,9 @@ Restart:
 					DrawCargo (3);
 			}
 
-			SetFlashRect (NULL_PTR, (FRAME)0);
-			s.origin.x = SUMMARY_X_OFFS;
-			s.origin.y = 0;
-			s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState);
-			DrawStamp (&s);
 ChangeGameSelection:
 			pMS->CurState = NewState;
 			ShowSummary (&((SUMMARY_DESC *)pMS->CurString)[pMS->CurState]);
-			s.origin.x = SUMMARY_X_OFFS;
-			s.origin.y = 0;
-			s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState + MAX_SAVED_GAMES);
-			DrawStamp (&s);
 
 			if (LastActivity == CHECK_LOAD)
 			{
@@ -1174,13 +1179,67 @@ ChangeGameSelection:
 				}
 				UnbatchGraphics ();
 			}
+			SetContextFont (TinyFont);
+			r.extent.width = SIS_SCREEN_WIDTH;
+			r.extent.height = 83-SAFE_Y;
+			r.corner.x = 1;
+			r.corner.y = 152+SAFE_Y;
+			SetContextForeGroundColor (BLACK_COLOR);
+			DrawFilledRectangle (&r);
 
-			r.corner.x = 4 + (NewState * 21) + SUMMARY_X_OFFS;
-			r.corner.y = 176;
-			r.extent.width = 18;
-			r.extent.height = 18;
-			SetFlashRect (&r, (FRAME)0);
+			t.CharCount = (COUNT)~0;
+			t.pStr = buf;
+			t.align = ALIGN_LEFT;
+#if 0
+			/* This code will return in modified form later. */
+			if (optSmoothScroll == OPT_3DO)  // 'Smooth' Scrolling
+			{
+				if (NewState <= (SAVES_PER_PAGE / 2))
+					SHIFT = NewState;
+				else if ((NewState > (SAVES_PER_PAGE / 2)) &&
+						(NewState < (MAX_SAVED_GAMES - (SAVES_PER_PAGE / 2))))
+					SHIFT = (SAVES_PER_PAGE / 2);
+				else //if (NewState >= (MAX_SAVED_GAMES - (SAVES_PER_PAGE / 2)))
+					SHIFT = SAVES_PER_PAGE - (MAX_SAVED_GAMES - NewState) ;
+			}
+			else         // 'Per-Page'  Scrolling
+#endif
+				SHIFT = NewState - ((NewState / SAVES_PER_PAGE) * SAVES_PER_PAGE);
+			for (i = 0; i < SAVES_PER_PAGE; i++)
+			{
+				SetContextForeGroundColor ((i == SHIFT) ?
+						(BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)):
+						(BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)));
+				r.extent.width = 15;
+				if (MAX_SAVED_GAMES > 99)
+					r.extent.width += 5;
+				r.extent.height = 9;
+				r.corner.x = 8 + SAFE_X;
+				r.corner.y = 159 + SAFE_Y + (i * 13);
+				DrawRectangle (&r);
 
+				t.baseline.x = r.corner.x + 3;
+				t.baseline.y = r.corner.y + 7;
+				wsprintf (buf, "%02i", NewState - SHIFT + i);
+				font_DrawText (&t);
+
+				r.extent.width = 204 - SAFE_X;
+				r.corner.x = 30 + SAFE_X;
+				DrawRectangle (&r);
+
+				t.baseline.x = r.corner.x + 3;
+				if (((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index == 0)
+					wsprintf (buf, "Empty Slot");
+				else
+				{
+					DateToString (buf2,
+							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].month_index,
+							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].day_index,
+							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index);
+					wsprintf (buf, "Saved Game - Date: %s",buf2);
+				}
+				font_DrawText (&t);
+			}
 			ClearSemaphore (GraphicsSem);
 		}
 	}

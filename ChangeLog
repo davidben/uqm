@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Support for up to 50 savegames, from Paxtez
 - Action names are properly null-terminated, stops a crash for some
   bad keys.cfg types -Michael
 - added '--addon <addon>' - SvdB
