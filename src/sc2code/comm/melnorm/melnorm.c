@@ -232,7 +232,7 @@ ShipWorth (void)
 static COUNT rescue_fuel = 0;
 static SIS_STATE SIS_copy =
 {
-	0,
+	.log_x = 0,
 };
 
 static BOOLEAN
