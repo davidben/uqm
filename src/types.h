@@ -23,7 +23,11 @@
 #define _TYPES_H
 
 #ifdef _MSC_VER
-#	include <stddef.h>
+#	if (_MSC_VER >= 1300)
+#		include <stddef.h>
+#	else
+		typedef int intptr_t;
+#	endif
 #else
 #	include <stdint.h>
 #endif
