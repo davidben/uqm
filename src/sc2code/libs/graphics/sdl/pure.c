@@ -87,7 +87,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 			fprintf (stderr, "Screen resolution of %dx%d not supported under pure SDL, using 640x480\n", width, height);
 	}
 
-	//videomode_flags |= SDL_ANYFORMAT;
+	videomode_flags |= SDL_ANYFORMAT;
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		videomode_flags |= SDL_FULLSCREEN;
 
