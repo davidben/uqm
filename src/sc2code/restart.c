@@ -20,6 +20,8 @@
 #include "uqmversion.h"
 #include "controls.h"
 #include "credits.h"
+#include "libs/graphics/gfx_common.h"
+#include "setupmenu.h"
 
 //Added by Chris
 
@@ -45,6 +47,30 @@ enum
 	SETUP_GAME,
 	QUIT_GAME
 };
+
+static void
+DrawRestartMenuGraphic (PMENU_STATE pMS)
+{
+	RECT r;
+	STAMP s;
+
+	s.frame = CaptureDrawable (
+		LoadGraphic (RESTART_PMAP_ANIM)
+		);
+	pMS->CurFrame = s.frame;
+	GetFrameRect (s.frame, &r);
+	s.origin.x = (SCREEN_WIDTH - r.extent.width) >> 1;
+	s.origin.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
+	
+	SetContextBackGroundColor (BLACK_COLOR);
+	BatchGraphics ();
+	ClearDrawable ();
+	FlushColorXForms ();
+	LockMutex (GraphicsLock);
+	DrawStamp (&s);
+	UnlockMutex (GraphicsLock);
+	UnbatchGraphics ();
+}
 
 static void
 DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
@@ -140,11 +166,19 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				GLOBAL (CurrentActivity) = SUPER_MELEE;
 				break;
 			case SETUP_GAME:
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);	
+				LockMutex (GraphicsLock);
+				SetFlashRect (NULL_PTR, (FRAME)0);
+				UnlockMutex (GraphicsLock);
+				SetupMenu ();
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 				InTime = GetTimeCounter ();
+				SetTransitionSource (NULL);
+				BatchGraphics ();
+				DrawRestartMenuGraphic (pMS);
+				DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
+				ScreenTransition (3, NULL);
+				UnbatchGraphics ();
 				return TRUE;
-				break;
 			case QUIT_GAME:
 				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
 						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
@@ -264,29 +298,10 @@ LastActivity = WON_LAST_BATTLE;
 		LastActivity = NextActivity = 0;
 
 		{
-			RECT r;
-			STAMP s;
-
-			s.frame = CaptureDrawable (
-					LoadGraphic (RESTART_PMAP_ANIM)
-					);
-			MenuState.CurFrame = s.frame;
-			GetFrameRect (s.frame, &r);
-			s.origin.x = (SCREEN_WIDTH - r.extent.width) >> 1;
-			s.origin.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
 			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
 			if (TimeOut == ONE_SECOND / 8)
 				SleepThread (ONE_SECOND * 3);
-
-			SetContextBackGroundColor (BLACK_COLOR);
-			BatchGraphics ();
-			ClearDrawable ();
-			FlushColorXForms ();
-			LockMutex (GraphicsLock);
-			DrawStamp (&s);
-			UnlockMutex (GraphicsLock);
-			UnbatchGraphics ();
-
+			DrawRestartMenuGraphic (&MenuState);
 			FlushInput ();
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
@@ -295,7 +310,7 @@ LastActivity = WON_LAST_BATTLE;
 			LockMutex (GraphicsLock);
 			SetFlashRect ((PRECT)0, (FRAME)0);
 			UnlockMutex (GraphicsLock);
-			DestroyDrawable (ReleaseDrawable (s.frame));
+			DestroyDrawable (ReleaseDrawable (MenuState.CurFrame));
 			
 			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
 				goto TimedOut;

@@ -6,7 +6,7 @@ uqm_CFILES="battle.c border.c build.c cleanup.c clock.c collide.c comm.c
 		hyper.c init.c intel.c intro.c ipdisp.c load.c loadship.c
 		master.c melee.c menu.c misc.c oscill.c outfit.c pickmele.c
 		pickship.c plandata.c process.c restart.c save.c settings.c
-		setup.c ship.c shipstat.c shipyard.c sis.c starbase.c
+		setup.c setupmenu.c ship.c shipstat.c shipyard.c sis.c starbase.c
 		starcon.c starmap.c state.c status.c tactrans.c
 		trans.c util.c velocity.c weapon.c"
 
