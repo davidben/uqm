@@ -108,7 +108,7 @@ DrawSISFrame (void)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 		r.corner.y = 1;
 		r.extent.width = 1;
-		r.extent.height = SAFE_Y + 7;
+		r.extent.height = SAFE_Y + 8;
 		r.corner.x = SIS_ORG_X - 1;
 		DrawFilledRectangle (&r);
 		r.corner.x = SIS_ORG_X + SIS_SCREEN_WIDTH - 57 - 1;
@@ -143,7 +143,7 @@ DrawSISFrame (void)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
 		r.corner.y = 1;
 		r.extent.width = 1;
-		r.extent.height = SAFE_Y + 7;
+		r.extent.height = SAFE_Y + 8;
 		r.corner.x = SIS_ORG_X + (SIS_SCREEN_WIDTH - 69);
 		DrawFilledRectangle (&r);
 		r.corner.x = SIS_ORG_X + SIS_SCREEN_WIDTH;
