@@ -1162,8 +1162,6 @@ mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp, bool left)
 			/* buffer invalid, go next */
 			buf->state = MIX_BUF_PROCESSED;
 			src->curbufofs = 0;
-			src->curbufdelta = 0;
-			src->prevqueued = src->nextqueued;
 			src->nextqueued = src->nextqueued->next;
 			src->cprocessed++;
 			continue;
@@ -1219,7 +1217,6 @@ mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp, bool left)
 			/* buffer exhausted, go next */
 			buf->state = MIX_BUF_PROCESSED;
 			src->curbufofs = 0;
-			src->curbufdelta = 0;
 			src->prevqueued = src->nextqueued;
 			src->nextqueued = src->nextqueued->next;
 			src->cprocessed++;
