@@ -18,6 +18,7 @@
 
 #include <ctype.h>
 #include "starcon.h"
+#include "libs/graphics/drawable.h"
 #include "melee.h"
 #include "options.h"
 #include "file.h"
@@ -57,6 +58,10 @@ enum
 #define MELEE_BOX_WIDTH 34
 #define MELEE_BOX_HEIGHT 34
 #define MELEE_BOX_SPACE 1
+
+#define NAME_AREA_HEIGHT 7
+#define MELEE_WIDTH 133
+#define MELEE_HEIGHT (48 + NAME_AREA_HEIGHT)
 
 #define INFO_ORIGIN_X 3
 #define INFO_WIDTH 58
@@ -1433,13 +1438,34 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 static void
 LoadMeleeInfo (PMELEE_STATE pMS)
 {
-	PickMeleeFrame = CaptureDrawable (
+    STAMP	s;
+    CONTEXT	OldContext;
+
+	// reverting to original behavior
+    OldContext = SetContext (OffScreenContext);
+
+    DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
+    PickMeleeFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2
+			));
+    s.origin.x = s.origin.y = 0;
+    s.frame = CaptureDrawable (
 			LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM)
 			);
+    SetContextFGFrame (PickMeleeFrame);
+    DrawStamp (&s);
+
+    s.frame = IncFrameIndex (s.frame);
+    SetContextFGFrame (IncFrameIndex (PickMeleeFrame));
+    DrawStamp (&s);
+    DestroyDrawable (ReleaseDrawable (s.frame));
+	
 	MeleeFrame = CaptureDrawable (
 			LoadGraphic (MELEE_SCREEN_PMAP_ANIM)
 			);
 	
+    SetContext (OldContext);
+
 	InitSpace ();
 
 	LoadTeamList (pMS, 0);
@@ -1462,8 +1488,103 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 
 	DestroyDrawable (ReleaseDrawable (MeleeFrame));
 	MeleeFrame = 0;
-	DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
-	PickMeleeFrame = 0;
+}
+
+static
+BuildAndDrawShipList (PMELEE_STATE pMS)
+{
+	COUNT i;
+	CONTEXT OldContext;
+
+	OldContext = SetContext (OffScreenContext);
+
+	for (i = 0; i < NUM_SIDES; ++i)
+	{
+		COUNT j, side;
+		RECT r;
+		TEXT t;
+		STAMP s;
+		UNICODE buf[10];
+
+		side = !i;
+
+		s.frame = SetAbsFrameIndex (PickMeleeFrame, side);
+		SetContextFGFrame (s.frame);
+
+		GetFrameRect (s.frame, &r);
+		t.baseline.x = r.extent.width >> 1;
+		t.baseline.y = r.extent.height
+				- NAME_AREA_HEIGHT + 4;
+		r.corner.x += 2;
+		r.corner.y += 2;
+		r.extent.width -= (2 * 2) + (ICON_WIDTH + 2) + 1;
+		r.extent.height -= (2 * 2) + NAME_AREA_HEIGHT;
+		SetContextForeGroundColor (PICK_BG_COLOR);
+		DrawFilledRectangle (&r);
+		r.corner.x += 2;
+		r.extent.width += (ICON_WIDTH + 2) - (2 * 2);
+		r.corner.y += r.extent.height;
+		r.extent.height = NAME_AREA_HEIGHT;
+		DrawFilledRectangle (&r);
+		t.align = ALIGN_CENTER;
+		t.pStr = pMS->TeamImage[i].TeamName;
+		t.CharCount = (COUNT)~0;
+		SetContextFont (TinyFont);
+		SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
+		font_DrawText (&t);
+
+		wsprintf (buf, "%d", pMS->star_bucks[i]);
+		t.baseline.x = 4;
+		t.baseline.y = 7;
+		t.align = ALIGN_LEFT;
+		t.pStr = buf;
+		t.CharCount = (COUNT)~0;
+		SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x4, 0x5, 0x1F), 0x4B));
+		font_DrawText (&t);
+									
+		for (j = 0; j < NUM_MELEE_ROWS; ++j)
+		{
+			COUNT k;
+
+			for (k = 0; k < NUM_MELEE_COLUMNS; ++k)
+			{
+				BYTE StarShip;
+
+				if ((StarShip = pMS->TeamImage[i].ShipList[j][k]) != (BYTE)~0)
+				{
+					BYTE ship_cost;
+					HSTARSHIP hStarShip, hBuiltShip;
+					STARSHIPPTR StarShipPtr, BuiltShipPtr;
+
+					hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+					StarShipPtr = LockStarShip (&master_q, hStarShip);
+					hBuiltShip = Build (&race_q[side],
+							StarShipPtr->RaceResIndex,
+							1 << side,
+							NameCaptain (&race_q[side], StarShipPtr));
+					s.origin.x = 4 + ((ICON_WIDTH + 2) * k);
+					s.origin.y = 10 + ((ICON_HEIGHT + 2) * j);
+					s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+					DrawStamp (&s);
+					ship_cost = StarShipPtr->RaceDescPtr->
+							ship_info.ship_cost;
+					UnlockStarShip (&master_q, hStarShip);
+
+					BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
+					BuiltShipPtr->ShipFacing = (j * NUM_MELEE_COLUMNS) + k;
+					BuiltShipPtr->special_counter = ship_cost;
+					BuiltShipPtr->captains_name_index =
+							StarShipCaptain (BuiltShipPtr);
+					BuiltShipPtr->RaceDescPtr = StarShipPtr->RaceDescPtr;
+					UnlockStarShip (&race_q[side], hBuiltShip);
+				}
+			}
+		}
+	}
+
+	SetContext (OldContext);
 }
 
 static BOOLEAN
@@ -1568,60 +1689,9 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 					}
 					do
 					{
-						COUNT i;
-
-						SetContext (OffScreenContext);
-						for (i = 0; i < NUM_SIDES; ++i)
-						{
-							COUNT j, side;
-
-							side = !i;
-							for (j = 0; j < NUM_MELEE_ROWS; ++j)
-							{
-								COUNT k;
-
-								for (k = 0; k < NUM_MELEE_COLUMNS; ++k)
-								{
-									BYTE StarShip;
-
-									if ((StarShip = pMS->TeamImage[i].ShipList[j][k]) != (BYTE)~0)
-									{
-										BYTE ship_cost;
-										HSTARSHIP hStarShip, hBuiltShip;
-										STARSHIPPTR StarShipPtr,
-														BuiltShipPtr;
-
-										hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-										StarShipPtr = LockStarShip (
-												&master_q, hStarShip
-												);
-										hBuiltShip = Build (&race_q[side],
-												StarShipPtr->RaceResIndex,
-												1 << side,
-												NameCaptain (&race_q[side], StarShipPtr));
-										ship_cost = StarShipPtr->RaceDescPtr->
-												ship_info.ship_cost;
-										UnlockStarShip (
-												&master_q, hStarShip
-												);
-
-										BuiltShipPtr = LockStarShip (
-												&race_q[side], hBuiltShip
-												);
-										BuiltShipPtr->ShipFacing =
-												(j * NUM_MELEE_COLUMNS) + k;
-										BuiltShipPtr->special_counter = ship_cost;
-										BuiltShipPtr->captains_name_index =
-												StarShipCaptain (BuiltShipPtr);
-										BuiltShipPtr->RaceDescPtr =
-												StarShipPtr->RaceDescPtr;
-										UnlockStarShip (
-												&race_q[side], hBuiltShip
-												);
-									}
-								}
-							}
-						}
+						SetSemaphore (GraphicsSem);
+						BuildAndDrawShipList (pMS);
+						ClearSemaphore (GraphicsSem);
 
 						while (SoundPlaying ())
 							;
@@ -1857,6 +1927,9 @@ Melee (void)
 		FreeMeleeInfo (&MenuState);
 		DestroySound (ReleaseSound (GameSounds));
 		GameSounds = 0;
+
+		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
+		PickMeleeFrame = 0;
 
 		FlushInput ();
 	}

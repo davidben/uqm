@@ -24,117 +24,6 @@
 #define PICK_Y_OFFS 24
 #define PICK_SIDE_OFFS 100
 
-#define NAME_AREA_HEIGHT 7
-#define MELEE_WIDTH 133
-#define MELEE_HEIGHT (48 + NAME_AREA_HEIGHT)
-
-static void
-DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
-{
-	TEXT t;
-	UNICODE buf[10];
-	STAMP s;
-	RECT r;
-
-	GetFrameRect (PickMeleeFrame, &r);
-	r.corner.x = PICK_X_OFFS - 3;
-	r.corner.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
-
-	s.origin = r.corner;
-	s.frame = PickMeleeFrame;
-	DrawStamp (&s);
-
-	t.baseline.x = r.corner.x + (r.extent.width >> 1);
-	t.baseline.y = r.corner.y + (r.extent.height - NAME_AREA_HEIGHT + 4);
-	r.corner.x += 2;
-	r.corner.y += 2;
-	r.extent.width -= (2 * 2) + (ICON_WIDTH + 2) + 1;
-	r.extent.height -= (2 * 2) + NAME_AREA_HEIGHT;
-	SetContextForeGroundColor (PICK_BG_COLOR);
-	DrawFilledRectangle (&r);
-	r.corner.x += 2;
-	r.extent.width += (ICON_WIDTH + 2) - (2 * 2);
-	r.corner.y += r.extent.height;
-	r.extent.height = NAME_AREA_HEIGHT;
-	DrawFilledRectangle (&r);
-	t.align = ALIGN_CENTER;
-	t.pStr = pMeleeState->TeamImage[1 - which_player].TeamName;
-	t.CharCount = (COUNT)~0;
-	SetContextFont (TinyFont);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
-	font_DrawText (&t);
-
-	r.corner.x = PICK_X_OFFS - 3;
-	r.corner.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
-
-	wsprintf (buf, "%d", pMeleeState->star_bucks[1 - which_player]);
-	t.baseline.x = r.corner.x + 4;
-	t.baseline.y = r.corner.y + 7;
-	t.align = ALIGN_LEFT;
-	t.pStr = buf;
-	t.CharCount = (COUNT)~0;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x4, 0x5, 0x1F), 0x4B));
-	font_DrawText (&t);
-
-	if (LastStarShipPtr == 0 || LastStarShipPtr->special_counter == 0)
-	{
-		COUNT cur_bucks;
-		HSTARSHIP hBattleShip, hNextShip;
-
-		cur_bucks = 0;
-		for (hBattleShip = GetHeadLink (&race_q[which_player]);
-				hBattleShip != 0; hBattleShip = hNextShip)
-		{
-			int col;
-			STARSHIPPTR StarShipPtr;
-
-			StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
-			if (StarShipPtr == LastStarShipPtr)
-				LastStarShipPtr->RaceResIndex = 0;
-
-			col = StarShipPtr->ShipFacing;
-			s.origin.x = r.corner.x + 4
-					+ ((ICON_WIDTH + 2) * (col % NUM_MELEE_COLS_ORIG));
-			s.origin.y = r.corner.y + 10
-					+ ((ICON_HEIGHT + 2) * (col / NUM_MELEE_COLS_ORIG));
-			s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
-			DrawStamp (&s);
-
-			if (StarShipPtr->RaceResIndex)
-				cur_bucks += StarShipPtr->special_counter;
-			else
-			{
-				extern FRAME status;
-
-				// Draw the X through destroyed ships
-				--s.origin.x;
-				--s.origin.y;
-				s.frame = SetAbsFrameIndex (status, 3);
-				DrawStamp (&s);
-			}
-			hNextShip = _GetSuccLink (StarShipPtr);
-			UnlockStarShip (&race_q[which_player], hBattleShip);
-		}
-
-		r.extent.width -= 4;
-		t.baseline.x = r.corner.x + r.extent.width;
-		t.baseline.y = r.corner.y + 7;
-		r.corner.x += r.extent.width - (6 * 3);
-		r.corner.y += 2;
-		r.extent.width = (6 * 3);
-		r.extent.height = 7 - 2;
-		SetContextForeGroundColor (PICK_BG_COLOR);
-		DrawFilledRectangle (&r);
-
-		wsprintf (buf, "%d", cur_bucks);
-		t.align = ALIGN_RIGHT;
-		t.pStr = buf;
-		t.CharCount = (COUNT)~0;
-		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-		font_DrawText (&t);
-	}
-}
 
 HSTARSHIP
 GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
@@ -145,22 +34,91 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	HSTARSHIP hBattleShip, hNextShip;
 	STARSHIPPTR StarShipPtr;
 	RECT flash_rect;
+    TEXT t;
+    UNICODE buf[10];
+    STAMP s;
+    CONTEXT OldContext;
 
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		return (0);
 
-	SetContext (SpaceContext);
+	s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
 
-	DrawMeleeFrame (LastStarShipPtr, which_player);
+	OldContext = SetContext (OffScreenContext);
+	SetContextFGFrame (s.frame);
+	if (LastStarShipPtr == 0 || LastStarShipPtr->special_counter == 0)
+	{
+		COUNT	cur_bucks;
+
+		cur_bucks = 0;
+		for (hBattleShip = GetHeadLink (&race_q[which_player]);
+			hBattleShip != 0; hBattleShip = hNextShip)
+		{
+			StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
+			if (StarShipPtr == LastStarShipPtr)
+			{
+				extern FRAME status;
+
+				LastStarShipPtr->RaceResIndex = 0;
+
+				col = LastStarShipPtr->ShipFacing;
+				s.origin.x = 3
+					+ ((ICON_WIDTH + 2) * (col % NUM_MELEE_COLS_ORIG));
+				s.origin.y = 9
+					+ ((ICON_HEIGHT + 2) * (col / NUM_MELEE_COLS_ORIG));
+				s.frame = SetAbsFrameIndex (status, 3);
+				DrawStamp (&s);
+				s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
+			}
+			else if (StarShipPtr->RaceResIndex)
+			{
+				cur_bucks += StarShipPtr->special_counter;
+			}
+			hNextShip = _GetSuccLink (StarShipPtr);
+			UnlockStarShip (&race_q[which_player], hBattleShip);
+		}
+
+		GetFrameRect (s.frame, &flash_rect);
+		flash_rect.extent.width -= 4;
+		t.baseline.x = flash_rect.extent.width;
+		flash_rect.corner.x = flash_rect.extent.width - (6 * 3);
+		flash_rect.corner.y = 2;
+		flash_rect.extent.width = (6 * 3);
+		flash_rect.extent.height = 7 - 2;
+		SetContextForeGroundColor (PICK_BG_COLOR);
+		DrawFilledRectangle (&flash_rect);
+
+		wsprintf (buf, "%d", cur_bucks);
+		t.baseline.y = 7;
+		t.align = ALIGN_RIGHT;
+		t.pStr = buf;
+		t.CharCount = (COUNT)~0;
+		SetContextFont (TinyFont);
+		SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
+		font_DrawText (&t);
+	}
+
+	SetContext (SpaceContext);
+	
+	s.origin.x = PICK_X_OFFS - 3;
+	s.origin.y = PICK_Y_OFFS - 9
+		+ ((1 - which_player) * PICK_SIDE_OFFS);
+
+	DrawStamp (&s);
 
 	if (LOBYTE (battle_counter) == 0 || HIBYTE (battle_counter) == 0)
 	{
 		DWORD TimeOut;
 		INPUT_STATE PressState, ButtonState;
 
-		DrawMeleeFrame (LastStarShipPtr, 1 - which_player);
+		s.origin.y = PICK_Y_OFFS - 9 + (which_player * PICK_SIDE_OFFS);
+		s.frame = SetAbsFrameIndex (PickMeleeFrame,
+				(COUNT) (1 - which_player));
+		DrawStamp (&s);
 
 		TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
+		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
 
 		PressState = AnyButtonPress (TRUE);
