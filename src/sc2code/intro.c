@@ -30,12 +30,13 @@ void LoadMasterShipList (void);
 void
 DoFMV (char *name, char *loopname, BOOLEAN uninit)
 {
-	MEM_HANDLE vidref = 0;
-	VidPlay (vidref, loopname, uninit);
-	while(VidPlaying ())
-		;
-	VidStop();
-	(void) name;
+	VIDEO_REF VidRef;
+
+	VidRef = LoadVideoFile (name);
+	VidPlay (VidRef, loopname, uninit);
+	VidDoInput ();
+	VidStop ();
+	DestroyVideo (VidRef);
 }
 
 /* //Already defined in fmv.c

@@ -92,6 +92,7 @@ Introduction (void)
 	LoadMasterShipList ();
 	FlushInput ();
 	InitGameKernel ();
+
 	while ((GetTimeCounter () <= TimeOut) &&
 	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
@@ -132,10 +133,7 @@ Introduction (void)
 
 	if (InputState == 0)
 	{
-		static BOOLEAN play_intro = TRUE;
-		
-		DoFMV (play_intro ? "intro" : "drumall", NULL, TRUE);
-		play_intro = !play_intro;
+		DoFMV ("slides/intro/intro.duk", NULL, TRUE);
 	}
 }
 
@@ -147,7 +145,7 @@ Victory (void)
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
-	DoFMV ("victory", NULL, TRUE);
+	DoFMV ("slides/ending/victory.duk", NULL, TRUE);
 		
 	xform_buf[0] = FadeAllToBlack;
 	XFormColorMap ((COLORMAPPTR)xform_buf, 0);

@@ -207,7 +207,7 @@ extern void StopVid (void);
 extern void PlayVid (MEM_HANDLE VidRef, BOOLEAN Continuous);
 extern MEM_HANDLE LoadVidFile (PSTR pStr);
 extern MEM_HANDLE LoadVidInstance (DWORD res);
-extern MEM_HANDLE VidPlaying (void);
+//extern MEM_HANDLE VidPlaying (void); // superseeded by VIDEO_REF version
 extern BOOLEAN DestroyVid (MEM_HANDLE VidRef);
 
 extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT pOrg, SIZE width,

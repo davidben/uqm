@@ -883,13 +883,13 @@ while (--ac > 0)
 }
 #endif //DEBUG_PSYTRON || CREATE_JOURNAL
 				
-		Logo ();
-	
 	if (LoadKernel (0,0))
 	{
 		extern BOOLEAN StartGame (void);
 
 		fprintf (stderr, "We've loaded the Kernel\n");
+	
+		Logo ();
 
 // OpenJournal ();
 		while (StartGame ())
