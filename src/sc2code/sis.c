@@ -1309,7 +1309,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 	FRAME old_f;
 	int create_flash = 0;
 
-	if (! flash_mutex);
+	if (! flash_mutex)
 		flash_mutex = CreateMutex ();
 
 	old_r = flash_rect;
