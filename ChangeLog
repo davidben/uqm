@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Crew death on planet is now counted properly in all cases (bug #70) -Mika
 - Fixed lockup in 'save failed' alert box (bug #397), from ghakko
 - Fixed glitch in Pkunk animation (bug #354), from Paxtez
 - Fixed Kohr-Ah final defeat message repeating (bug #426) -Mika

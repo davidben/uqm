@@ -421,6 +421,8 @@ DeltaLanderCrew (SIZE crew_delta, COUNT which_disaster)
 		ShieldFlags = GET_GAME_STATE (LANDER_SHIELDS);
 		ShieldFlags &= 1 << which_disaster;
 		crew_delta = HIBYTE (pMenuState->delta_item);
+		if (crew_delta < 1)
+			return;
 		if (ShieldFlags && (BYTE)TFB_Random () < 256 * 95 / 100)
 			pMenuState->delta_item = SHIELD_BIT;
 		else
