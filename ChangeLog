@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Freeze planetary simulation at beginning of landing sequence to stop
+  event bursts (bug #80) -Michael
 - Extra 2 ship slots in supermelee, as in the PC SC2, and all the PC
   default teams, from chmmravatar (bug #248)
   NOTE: this breaks old team saves!

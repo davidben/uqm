@@ -1958,10 +1958,8 @@ PlanetSide (PMENU_STATE pMS)
 		else
 			TimeIn += ONE_SECOND / 60;
 
-		do
-		{
-			ScrollPlanetSide (0, 0, index);
-		} while (GetTimeCounter () < TimeIn);
+		ScrollPlanetSide (0, 0, index);
+		SleepThreadUntil (TimeIn);
 	}
 	PSD.InTransit = FALSE;
 
