@@ -908,7 +908,7 @@ _next_token (parse_state *state)
 static void
 _next_line (parse_state *state, FILE *in)
 {
-	int i, ch;
+	int i, ch = 0;
 	state->linenum++;
 	for (i = 0; i < LINE_SIZE-1; i++)
 	{
