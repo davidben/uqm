@@ -40,42 +40,42 @@ static LOCDATA syreen_desc =
 			5, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			7, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			9, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			11, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			13, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			15, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 12), /* BlockMask */
 		},
@@ -83,14 +83,14 @@ static LOCDATA syreen_desc =
 			17, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			19, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 13),
 		},
@@ -98,14 +98,14 @@ static LOCDATA syreen_desc =
 			21, /* StartIndex */
 			6, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			27, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 10, ONE_SECOND * 3, /* RestartRate */
 			(1 << 14), /* BlockMask */
 		},
@@ -113,21 +113,21 @@ static LOCDATA syreen_desc =
 			31, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			37, /* StartIndex */
 			4, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
-			8, 8, /* RestartRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* RestartRate */
 		},
 		{
 			41, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 8, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 10, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5), /* BlockMask */
 		},
@@ -136,7 +136,7 @@ static LOCDATA syreen_desc =
 			4, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			20, 0, /* FrameRate */
+			ONE_SECOND / 6, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND, /* RestartRate */
 			(1 << 7) | (1 << 14), /* BlockMask */
 		},
@@ -145,7 +145,7 @@ static LOCDATA syreen_desc =
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			16, 8, /* FrameRate */
+			ONE_SECOND * 2 / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 10, ONE_SECOND,/* RestartRate */
 			(1 << 9) | (1 << 13), /* BlockMask */
 		},
@@ -161,8 +161,8 @@ static LOCDATA syreen_desc =
 		1, /* StartIndex */
 		4, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

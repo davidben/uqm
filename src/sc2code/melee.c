@@ -1684,7 +1684,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 						
 						SleepThreadUntil (XFormColorMap (
 								(COLORMAPPTR)black_buf, ONE_SECOND / 2
-								) + 2);
+								) + ONE_SECOND / 60);
 						FlushColorXForms ();
 					}
 					do
@@ -1708,7 +1708,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 						
 							SleepThreadUntil (XFormColorMap (
 									(COLORMAPPTR)black_buf, ONE_SECOND / 2
-									) + 2);
+									) + ONE_SECOND / 60);
 							FlushColorXForms ();
 						}
 					} while (0 /* !(GLOBAL (CurrentActivity) & CHECK_ABORT) */);

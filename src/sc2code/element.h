@@ -19,7 +19,7 @@
 #ifndef _ELEMENT_H
 #define _ELEMENT_H
 
-#define BATTLE_FRAME_RATE 5
+#define BATTLE_FRAME_RATE (ONE_SECOND / 24)
 
 #define SHIP_INFO_HEIGHT 65
 #define CAPTAIN_XOFFS 4

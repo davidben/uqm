@@ -55,7 +55,7 @@ flash_ship_task(void *data)
 		SetContextForeGroundColor (OldColor);
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
-		SleepThreadUntil (TimeIn + 8);
+		SleepThreadUntil (TimeIn + ONE_SECOND / 15);
 		TimeIn = GetTimeCounter ();
 	}
 	FinishTask (task);

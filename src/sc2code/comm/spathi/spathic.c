@@ -40,7 +40,7 @@ static LOCDATA spathi_desc =
 			1, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			0, ONE_SECOND, /* RestartRate */
 			(1 << 1), /* BlockMask */
 		},
@@ -48,31 +48,31 @@ static LOCDATA spathi_desc =
 			7, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
-			6, 0, /* RestartRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* RestartRate */
 			(1 << 0), /* BlockMask */
 		},
 		{
 			16, /* StartIndex */
 			4, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			12, 8, /* FrameRate */
-			12, 8, /* RestartRate */
+			ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 15, /* RestartRate */
 			(1 << 4), /* BlockMask */
 		},
 		{
 			20, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			(1 << 5)
 		},
 		{
 			24, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 2), /* BlockMask */
 		},
@@ -82,7 +82,7 @@ static LOCDATA spathi_desc =
 			34, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 3), /* BlockMask */
 		},
@@ -90,14 +90,14 @@ static LOCDATA spathi_desc =
 			38, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			41, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
@@ -113,8 +113,8 @@ static LOCDATA spathi_desc =
 		29, /* StartIndex */
 		5, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 #else
 	{ /* AlienTalkDesc - empty */

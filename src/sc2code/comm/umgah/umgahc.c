@@ -40,7 +40,7 @@ static LOCDATA umgah_desc =
 			5, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5),
 		},
@@ -48,7 +48,7 @@ static LOCDATA umgah_desc =
 			8, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 6),
 		},
@@ -56,7 +56,7 @@ static LOCDATA umgah_desc =
 			11, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 7),
 		},
@@ -64,7 +64,7 @@ static LOCDATA umgah_desc =
 			13, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 8),
 		},
@@ -72,7 +72,7 @@ static LOCDATA umgah_desc =
 			15, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 9),
 		},
@@ -80,7 +80,7 @@ static LOCDATA umgah_desc =
 			17, /* StartIndex */
 			3, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			14, 0, /* FrameRate */
+			ONE_SECOND * 7 / 60, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND * 3, /* RestartRate */
 			(1 << 0),
 		},
@@ -88,7 +88,7 @@ static LOCDATA umgah_desc =
 			20, /* StartIndex */
 			3, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			14, 0, /* FrameRate */
+			ONE_SECOND * 7 / 60, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND * 3, /* RestartRate */
 			(1 << 1),
 		},
@@ -96,7 +96,7 @@ static LOCDATA umgah_desc =
 			23, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			14, 0, /* FrameRate */
+			ONE_SECOND * 7 / 60, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND * 3, /* RestartRate */
 			(1 << 2),
 		},
@@ -104,7 +104,7 @@ static LOCDATA umgah_desc =
 			25, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			14, 0, /* FrameRate */
+			ONE_SECOND * 7 / 60, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND * 3, /* RestartRate */
 			(1 << 3),
 		},
@@ -112,7 +112,7 @@ static LOCDATA umgah_desc =
 			27, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			14, 0, /* FrameRate */
+			ONE_SECOND * 7 / 60, 0, /* FrameRate */
 			ONE_SECOND * 3, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4),
 		},
@@ -120,35 +120,35 @@ static LOCDATA umgah_desc =
 			29, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			32, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			35, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			40, /* StartIndex */
 			6, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
-			12, 0, /* RestartRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* RestartRate */
 		},
 		{
 			46, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			24, 0, /* FrameRate */
+			ONE_SECOND / 5, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 15), /* BlockMask */
 		},
@@ -156,7 +156,7 @@ static LOCDATA umgah_desc =
 			48, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			24, 0, /* FrameRate */
+			ONE_SECOND / 5, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 14), /* BlockMask */
 		},
@@ -172,8 +172,8 @@ static LOCDATA umgah_desc =
 		1, /* StartIndex */
 		4, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

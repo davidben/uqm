@@ -149,7 +149,8 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		BYTE fade_buf[] = {FadeAllToColor};
 						
 		SleepThreadUntil (XFormColorMap
-				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + 2);
+				((COLORMAPPTR) fade_buf, ONE_SECOND / 2)
+				+ ONE_SECOND / 60);
 		FlushColorXForms ();
 	}
 
@@ -170,7 +171,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	{
 		INPUT_STATE InputState;
 
-		SleepThread (1);
+		SleepThread (ONE_SECOND / 120);
 		NewTime = GetTimeCounter ();
 		
 		if ((InputState = GetInputState (PlayerInput[which_player])) == 0)

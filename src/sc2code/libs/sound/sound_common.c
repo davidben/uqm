@@ -58,7 +58,7 @@ fade_task (void *data)
 	StartTime = CurTime = GetTimeCounter ();
 	do
 	{
-		SleepThreadUntil (CurTime + 1);
+		SleepThreadUntil (CurTime + ONE_SECOND / 120);
 		CurTime = GetTimeCounter ();
 		if ((TDelta = (SIZE) (CurTime - StartTime)) > TTotal)
 			TDelta = TTotal;

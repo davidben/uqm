@@ -41,22 +41,22 @@ static LOCDATA commander_desc =
 			1, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Running light */
 			10, /* StartIndex */
 			30, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
 		},
 		{
 			1, /* StartIndex */
 			3, /* NumFrames */
 			RANDOM_ANIM | COLORXFORM_ANIM,/* AnimFlags */
-			0, 4, /* FrameRate */
-			0, 8, /* RestartRate */
+			0, ONE_SECOND / 30, /* FrameRate */
+			0, ONE_SECOND / 15, /* RestartRate */
 		},
 	},
 	{
@@ -70,8 +70,8 @@ static LOCDATA commander_desc =
 		4, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
-		12, 8, /* FrameRate */
-		14, 10, /* RestartRate */
+		ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
+		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

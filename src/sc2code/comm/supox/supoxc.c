@@ -41,28 +41,28 @@ static LOCDATA supox_desc =
 			5, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			12, 12, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			9, /* StartIndex */
 			10, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			19, /* StartIndex */
 			10, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			29, /* StartIndex */
 			13, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
@@ -77,8 +77,8 @@ static LOCDATA supox_desc =
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

@@ -397,7 +397,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		for (j = 0; (j < SHIP_WIN_FRAMES) && !AllDoorsFinished; j++)
 		{
 			ClearSemaphore (GraphicsSem);
-			SleepThreadUntil (TimeIn + 5);
+			SleepThreadUntil (TimeIn + ONE_SECOND / 24);
 			TimeIn = GetTimeCounter ();
 			SetSemaphore (GraphicsSem);
 			BatchGraphics ();

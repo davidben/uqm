@@ -49,63 +49,63 @@ static LOCDATA commander_desc =
 			1, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Running light */
 			10, /* StartIndex */
 			30, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
 		},
 		{ /* Arc welder 0 */
 			40, /* StartIndex */
 			7, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 1 */
 			47, /* StartIndex */
 			8, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 2 */
 			55, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 3 */
 			61, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 4 */
 			67, /* StartIndex */
 			7, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 5 */
 			74, /* StartIndex */
 			11, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Arc welder 6 */
 			85, /* StartIndex */
 			10, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			3, 0, /* FrameRate */
+			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
 		},
 		{ /* Flagship picture */
@@ -127,8 +127,8 @@ static LOCDATA commander_desc =
 		4, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
-		12, 8, /* FrameRate */
-		14, 10, /* RestartRate */
+		ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
+		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

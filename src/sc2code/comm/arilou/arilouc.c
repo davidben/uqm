@@ -40,7 +40,7 @@ static LOCDATA arilou_desc =
 			4, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 1) | (1L << 16)
 		},
@@ -48,7 +48,7 @@ static LOCDATA arilou_desc =
 			13, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 0) | (1L << 16)
 		},
@@ -56,7 +56,7 @@ static LOCDATA arilou_desc =
 			22, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1L << 16)
 		},
@@ -64,7 +64,7 @@ static LOCDATA arilou_desc =
 			31, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4)
 		},
@@ -72,7 +72,7 @@ static LOCDATA arilou_desc =
 			40, /* StartIndex */
 			10, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 3)
 		},
@@ -80,7 +80,7 @@ static LOCDATA arilou_desc =
 			50, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 7)
 		},
@@ -88,14 +88,14 @@ static LOCDATA arilou_desc =
 			59, /* StartIndex */
 			8, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			67, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5)
 		},
@@ -103,7 +103,7 @@ static LOCDATA arilou_desc =
 			76, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 9)
 		},
@@ -111,7 +111,7 @@ static LOCDATA arilou_desc =
 			85, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 8)
 		},
@@ -119,14 +119,14 @@ static LOCDATA arilou_desc =
 			94, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			103, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 13)
 		},
@@ -134,14 +134,14 @@ static LOCDATA arilou_desc =
 			112, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			121, /* StartIndex */
 			8, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 11)
 		},
@@ -149,7 +149,7 @@ static LOCDATA arilou_desc =
 			129, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1L << 15)
 		},
@@ -157,7 +157,7 @@ static LOCDATA arilou_desc =
 			138, /* StartIndex */
 			8, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 14)
 		},
@@ -165,7 +165,7 @@ static LOCDATA arilou_desc =
 			146, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 0) | (1 << 1) | (1 << 2)
 		},
@@ -173,21 +173,21 @@ static LOCDATA arilou_desc =
 			155, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			157, /* StartIndex */
 			2, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			159, /* StartIndex */
 			4, /* NumFrames */
 			CIRCULAR_ANIM | WAIT_TALKING,/* AnimFlags */
-			10, 0, /* FrameRate */
+			ONE_SECOND / 12, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
@@ -202,8 +202,8 @@ static LOCDATA arilou_desc =
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

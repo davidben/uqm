@@ -40,29 +40,29 @@ static LOCDATA thradd_desc =
 			8, /* StartIndex */
 			4, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
-			8, 8, /* RestartRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* RestartRate */
 			(1 << 4), /* BlockMask */
 		},
 		{
 			12, /* StartIndex */
 			9, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			21, /* StartIndex */
 			6, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			27, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4), /* BlockMask */
 		},
@@ -71,7 +71,7 @@ static LOCDATA thradd_desc =
 			12, /* NumFrames */
 			CIRCULAR_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			10, 0, /* FrameRate */
+			ONE_SECOND / 12, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND, /* RestartRate */
 			(1 << 0) | (1 << 3) | (1 << 5),
 		},
@@ -79,7 +79,7 @@ static LOCDATA thradd_desc =
 			42, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 4, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4) | (1 << 6), /* BlockMask */
 		},
@@ -87,7 +87,7 @@ static LOCDATA thradd_desc =
 			47, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 4, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5), /* BlockMask */
 		},
@@ -95,8 +95,8 @@ static LOCDATA thradd_desc =
 			52, /* StartIndex */
 			4, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
-			6, 0, /* RestartRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* RestartRate */
 		},
 	},
 	{
@@ -110,8 +110,8 @@ static LOCDATA thradd_desc =
 		1, /* StartIndex */
 		7, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

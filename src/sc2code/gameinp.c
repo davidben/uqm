@@ -58,7 +58,7 @@ DoInput (PVOID pInputState)
 				InputState = 0;
 			else
 			{
-#define ACCELERATION_INCREMENT 10
+#define ACCELERATION_INCREMENT (ONE_SECOND / 12)
 				if (InputState != OldInputState)
 					((PINPUT_STATE_DESC)pInputState)->MenuRepeatDelay =
 							MENU_REPEAT_DELAY;

@@ -53,7 +53,7 @@ static LOCDATA melnorme_desc =
 			6, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			10, 0, /* FrameRate */
+			ONE_SECOND / 12, 0, /* FrameRate */
 			ONE_SECOND * 4, ONE_SECOND * 4,/* RestartRate */
 			(1 << 1), /* BlockMask */
 		},
@@ -61,7 +61,7 @@ static LOCDATA melnorme_desc =
 			11, /* StartIndex */
 			9, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND * 4, ONE_SECOND * 4,/* RestartRate */
 			(1 << 0), /* BlockMask */
 		},
@@ -69,14 +69,14 @@ static LOCDATA melnorme_desc =
 			20, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 8, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			22, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			12, 8, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
@@ -91,8 +91,8 @@ static LOCDATA melnorme_desc =
 		1, /* StartIndex */
 		5, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	&melnorme_numbers_english, /* AlienNumberSpeech - default */
 };

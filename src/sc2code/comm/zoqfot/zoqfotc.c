@@ -57,21 +57,21 @@ static LOCDATA zoqfot_desc =
 			4, /* NumFrames */
 			YOYO_ANIM /* AnimFlags */
 			| WAIT_TALKING,
-			5, 0, /* FrameRate */
+			ONE_SECOND / 24, 0, /* FrameRate */
 			0, ONE_SECOND * 10, /* RestartRate */
 		},
 		{ /* Blow smoke */
 			5, /* StartIndex */
 			5, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			7, 0, /* FrameRate */
+			ONE_SECOND * 7 / 120, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
 		},
 		{ /* Gulp */
 			10, /* StartIndex */
 			8, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 10, /* RestartRate */
 		},
 	},
@@ -79,15 +79,15 @@ static LOCDATA zoqfot_desc =
 		FOT_TO_ZOQ, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
-		4, 0, /* FrameRate */
+		ONE_SECOND / 30, 0, /* FrameRate */
 		0, 0, /* RestartRate */
 	},
 	{
 		ZOQ_TALK_INDEX, /* StartIndex */
 		ZOQ_TALK_FRAMES, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

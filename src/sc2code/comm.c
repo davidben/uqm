@@ -824,7 +824,7 @@ int ambient_anim_task(void* data)
 		BOOLEAN Change, CanTalk;
 		DWORD CurTime, ElapsedTicks;
 
-		SleepThreadUntil (LastTime + 1);
+		SleepThreadUntil (LastTime + ONE_SECOND / 120);
 
 		SetSemaphore (GraphicsSem);
 		BatchGraphics ();
@@ -1200,6 +1200,12 @@ SpewPhrases (COUNT wait_track)
 	do
 	{
 		ClearSemaphore (GraphicsSem);
+		/* FIXME: is this a ramnant of 128-tick clock?
+		 * with 120-tick clock this will sleep for 1 tick --
+		 * for 1/120th of a second; if ONE_SECOND is upgraded
+		 * it will probably sleep for 2/120th of a second.
+		 * Might need to be fixed.
+		 */
 		SleepThreadUntil (TimeIn + (ONE_SECOND / 64));
 		TimeIn = GetTimeCounter ();
 #if DEMO_MODE || CREATE_JOURNAL
@@ -1403,11 +1409,11 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 	{
 		DWORD TimeIn, TimeOut;
 
-		TimeOut = FadeMusic (0, ONE_SECOND * 3) + 2;
+		TimeOut = FadeMusic (0, ONE_SECOND * 3) + ONE_SECOND / 60;
 		TimeIn = GetTimeCounter ();
 		do
 		{
-			SleepThreadUntil (TimeIn + 1);
+			SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 			TimeIn = GetTimeCounter ();
 			if (GetInputXComponent (GetInputState (NormalInput)) < 0)
 			{
@@ -1417,7 +1423,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				ClearSemaphore (GraphicsSem);
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
-				TimeOut = FadeMusic (0, ONE_SECOND * 2) + 2;
+				TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
 				TimeIn = GetTimeCounter ();
 			}
 		} while (TimeIn <= TimeOut);
@@ -1532,7 +1538,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 	StopMusic ();
 	StopSound ();
 	StopTrack ();
-	SleepThreadUntil (FadeMusic (FOREGROUND_VOL, 0) + 2);
+	SleepThreadUntil (FadeMusic (FOREGROUND_VOL, 0) + ONE_SECOND / 60);
 
 	return (FALSE);
 }

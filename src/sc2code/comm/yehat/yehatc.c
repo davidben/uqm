@@ -41,7 +41,7 @@ static LOCDATA yehat_desc =
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			12, 12, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND / 4, ONE_SECOND / 2,/* RestartRate */
 			(1 << 6) | (1 << 7),
 		},
@@ -50,7 +50,7 @@ static LOCDATA yehat_desc =
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			12, 12, /* FrameRate */
+			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND / 4, ONE_SECOND / 2,/* RestartRate */
 			(1 << 6) | (1 << 7),
 		},
@@ -58,7 +58,7 @@ static LOCDATA yehat_desc =
 			10, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4) | (1 << 14),
 		},
@@ -66,7 +66,7 @@ static LOCDATA yehat_desc =
 			13, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5),
 		},
@@ -74,7 +74,7 @@ static LOCDATA yehat_desc =
 			16, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 2) | (1 << 14),
 		},
@@ -82,7 +82,7 @@ static LOCDATA yehat_desc =
 			21, /* StartIndex */
 			5, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 3),
 		},
@@ -91,7 +91,7 @@ static LOCDATA yehat_desc =
 			2, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 0) | (1 << 1),
 		},
@@ -100,7 +100,7 @@ static LOCDATA yehat_desc =
 			2, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 0) | (1 << 1),
 		},
@@ -108,50 +108,50 @@ static LOCDATA yehat_desc =
 			30, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			33, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			36, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			39, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			42, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			45, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 4, /* FrameRate */
-			4, 4, /* RestartRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			48, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 2) | (1 << 4),
 		},
@@ -167,8 +167,8 @@ static LOCDATA yehat_desc =
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

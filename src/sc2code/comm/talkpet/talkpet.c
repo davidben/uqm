@@ -41,7 +41,7 @@ static LOCDATA talkpet_desc =
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
@@ -49,28 +49,28 @@ static LOCDATA talkpet_desc =
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			13, /* StartIndex */
 			3, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			16, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			8, 8, /* FrameRate */
+			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			18, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 13) /* BlockMask */
 		},
@@ -78,7 +78,7 @@ static LOCDATA talkpet_desc =
 			21, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			6, 0, /* FrameRate */
+			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 12) | (1 << 14), /* BlockMask */
 		},
@@ -86,42 +86,42 @@ static LOCDATA talkpet_desc =
 			24, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			26, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			28, /* StartIndex */
 			4, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			32, /* StartIndex */
 			3, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			35, /* StartIndex */
 			5, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			40, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
@@ -129,7 +129,7 @@ static LOCDATA talkpet_desc =
 			6, /* NumFrames */
 			CIRCULAR_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5), /* BlockMask */
 		},
@@ -137,7 +137,7 @@ static LOCDATA talkpet_desc =
 			48, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4), /* BlockMask */
 		},
@@ -145,7 +145,7 @@ static LOCDATA talkpet_desc =
 			50, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5), /* BlockMask */
 		},
@@ -154,7 +154,7 @@ static LOCDATA talkpet_desc =
 			2, /* NumFrames */
 			RANDOM_ANIM
 					| WAIT_TALKING, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 	},
@@ -169,8 +169,8 @@ static LOCDATA talkpet_desc =
 		1, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };
@@ -267,11 +267,11 @@ RESPONSE_FUNC  RespFunc;
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), 0);
-		SleepThread (1);
+		SleepThread (ONE_SECOND / 120);
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), 0);
-		SleepThread (1);
+		SleepThread (ONE_SECOND / 120);
 	}
 
 	Response (R, RespFunc);
@@ -540,11 +540,11 @@ KillPet (RESPONSE_REF R)
 			XFormPLUT (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 					), 0);
-			SleepThread (1);
+			SleepThread (ONE_SECOND / 120);
 			XFormPLUT (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 					), 0);
-			SleepThread (1);
+			SleepThread (ONE_SECOND / 120);
 		}
 	}
 

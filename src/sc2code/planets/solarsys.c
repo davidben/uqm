@@ -990,7 +990,7 @@ ScaleSystem (void)
 
 int IPtask_func(void* data)
 {
-#define IP_FRAME_RATE 4
+#define IP_FRAME_RATE  (ONE_SECOND / 30)
 #define DEBOUNCE_DELAY ((ONE_SECOND >> 1) / IP_FRAME_RATE)
 	BYTE MenuTransition;
 	DWORD NextTime;

@@ -837,7 +837,7 @@ ExitPlanetSide:
 
 			TimeIn = GetTimeCounter ();
 			SetPlanetLoc (new_pt);
-			SleepThreadUntil (TimeIn + 3);
+			SleepThreadUntil (TimeIn + ONE_SECOND / 40);
 		}
 	}
 

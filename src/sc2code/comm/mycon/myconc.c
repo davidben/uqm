@@ -40,38 +40,38 @@ static LOCDATA mycon_desc =
 			12, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			9, 0, /* FrameRate */
-			9, 0, /* RestartRate */
+			ONE_SECOND * 3 / 40, 0, /* FrameRate */
+			ONE_SECOND * 3 / 40, 0, /* RestartRate */
 			(1 << 1), /* BlockMask */
 		},
 		{
 			18, /* StartIndex */
 			4, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			9, 0, /* FrameRate */
-			9, 0, /* RestartRate */
+			ONE_SECOND * 3 / 40, 0, /* FrameRate */
+			ONE_SECOND * 3 / 40, 0, /* RestartRate */
 			(1 << 0), /* BlockMask */
 		},
 		{
 			22, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			9, 0, /* FrameRate */
-			9, 0, /* RestartRate */
+			ONE_SECOND * 3 / 40, 0, /* FrameRate */
+			ONE_SECOND * 3 / 40, 0, /* RestartRate */
 		},
 		{
 			28, /* StartIndex */
 			5, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			9, 0, /* FrameRate */
-			9, 0, /* RestartRate */
+			ONE_SECOND * 3 / 40, 0, /* FrameRate */
+			ONE_SECOND * 3 / 40, 0, /* RestartRate */
 		},
 		{
 			33, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			9, 0, /* FrameRate */
-			9, 0, /* RestartRate */
+			ONE_SECOND * 3 / 40, 0, /* FrameRate */
+			ONE_SECOND * 3 / 40, 0, /* RestartRate */
 		},
 	},
 	{
@@ -86,8 +86,8 @@ static LOCDATA mycon_desc =
 		11, /* NumFrames */
 		0, /* AnimFlags */
 		0, /* AnimFlags */
-		8, 0, /* FrameRate */
-		10, 0, /* RestartRate */
+		ONE_SECOND / 15, 0, /* FrameRate */
+		ONE_SECOND / 12, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

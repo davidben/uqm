@@ -125,7 +125,7 @@ xform_clut_task (void *data)
 			DWORD StartTime;
 
 			StartTime = CurTime;
-			SleepThreadUntil (CurTime + 2);
+			SleepThreadUntil (CurTime + ONE_SECOND / 60);
 			CurTime = GetTimeCounter ();
 			if (!XForming || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
 				TDelta = TTotal;

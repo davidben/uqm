@@ -21,6 +21,9 @@
 
 #include "libs/compiler.h"
 
+// The *minimum* value for ONE_SECOND is 120
+// If increasing the value by only a factor of ~2..4
+// make it an *exact multiple* of 120
 #if TIMELIB == SDL
 #	define ONE_SECOND 120
 #endif

@@ -18,6 +18,11 @@
 
 #include "starcon.h"
 
+// the running of the game-clock is based on game framerates
+// *not* on the system (or translated) timer
+// and is hard-coded to the original 24 fps
+#define CLOCK_BASE_FRAMERATE 24
+
 #define IsLeapYear(yi) (!((yi) & 3) && (((yi) % 100) || ((yi) % 400)))
 
 static Mutex clock_mutex;
@@ -30,7 +35,7 @@ int clock_task_func(void* data)
 	{
 		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
 	};
-	COUNT cycle_index, delay_count;
+	DWORD cycle_index, delay_count;
 	COLOR cycle_tab[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0xA, 0x14, 0x18), 0x5B),
@@ -42,7 +47,7 @@ int clock_task_func(void* data)
 		BUILD_COLOR (MAKE_RGB15 (0x0, 0x7, 0xB), 0x61),
 	};
 #define NUM_CYCLES (sizeof (cycle_tab) / sizeof (cycle_tab[0]))
-#define NUM_DELAYS 9
+#define NUM_DELAYS (ONE_SECOND * 3 / 40) // 9 @ 120 ticks/second
 	Task task = (Task) data;
 
 	LastPilot = FALSE;
@@ -119,7 +124,7 @@ int clock_task_func(void* data)
 				);
 		if (OnAutoPilot || OnAutoPilot != LastPilot)
 		{
-			COUNT num_ticks;
+			DWORD num_ticks;
 
 			SetSemaphore (GraphicsSem);
 			num_ticks = GetTimeCounter () - LastTime;
@@ -161,7 +166,7 @@ int clock_task_func(void* data)
 		}
 		
 		ClearSemaphore (GLOBAL (GameClock).clock_sem);
-		SleepThreadUntil (TimeIn + 1);
+		SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 	}
 	FinishTask (task);
 	return(0);
@@ -241,7 +246,7 @@ SetGameClockRate (COUNT seconds_per_day)
 
 //if (GLOBAL (GameClock.clock_sem)) fprintf (stderr, "%u\n", GLOBAL (GameClock.clock_sem));
 	SetSemaphore (GLOBAL (GameClock.clock_sem));
-	new_day_in_ticks = (SIZE)(seconds_per_day * (ONE_SECOND / 5));
+	new_day_in_ticks = (SIZE)(seconds_per_day * CLOCK_BASE_FRAMERATE);
 	if (GLOBAL (GameClock.day_in_ticks) == 0)
 		new_tick_count = new_day_in_ticks;
 	else if (GLOBAL (GameClock.tick_count) <= 0)

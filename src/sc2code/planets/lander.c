@@ -25,6 +25,13 @@
 // the lander animation is playing
 #undef SPIN_ON_LAUNCH
 
+// PLANET_SIDE_RATE governs how fast the lander,
+// bio and planet effects will be
+// currently: 30 fps
+// with current ONE_SECOND=120 definition,
+// it can only be 60, 40 and 30 fps
+#define PLANET_SIDE_RATE (ONE_SECOND / 40)
+
 //Added by Chris
 
 void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
@@ -590,7 +597,7 @@ CheckObjectCollision (COUNT index)
 								do
 								{
 									DeltaLanderCrew (-1, LANDER_INJURED);
-									SleepThreadUntil (TimeIn + 6);
+									SleepThreadUntil (TimeIn + ONE_SECOND / 20);
 									TimeIn = GetTimeCounter();
 								} while (HIBYTE (pMenuState->delta_item) && --which_node);
 							}
@@ -1198,7 +1205,8 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 				pSolarSysState->MenuState.flash_rect1.corner.x,
 				pSolarSysState->MenuState.flash_rect1.corner.y
 				));
-		TimeIn = GetTimeCounter() + 2;
+		// planet-side rate is set here
+		TimeIn = GetTimeCounter () + PLANET_SIDE_RATE;
 		pSolarSysState->MenuState.flash_rect1.corner.x = LOWORD (TimeIn);
 		pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
 	}
@@ -1397,7 +1405,7 @@ InitPlanetSide (void)
 	for (num_crew = 0; num_crew < (NUM_CREW_COLS * NUM_CREW_ROWS)
 			&& GLOBAL_SIS (CrewEnlisted); ++num_crew)
 	{
-		SleepThreadUntil (Time + 4);
+		SleepThreadUntil (Time + ONE_SECOND / 30);
 		Time = GetTimeCounter ();
 		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (-1, 0, 0);
@@ -1944,7 +1952,7 @@ PlanetSide (PMENU_STATE pMS)
 		if (index == 0)
 			TimeIn += ONE_SECOND;
 		else
-			TimeIn += 2;
+			TimeIn += ONE_SECOND / 60;
 
 		do
 		{
@@ -1953,7 +1961,7 @@ PlanetSide (PMENU_STATE pMS)
 	}
 	PSD.InTransit = FALSE;
 
-	TimeIn += 2;
+	TimeIn += ONE_SECOND / 30;
 	pSolarSysState->MenuState.flash_rect1.corner.x = LOWORD (TimeIn);
 	pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
 
@@ -1998,7 +2006,7 @@ PlanetSide (PMENU_STATE pMS)
 				if (index == 0)
 					TimeIn += (ONE_SECOND >> 1);
 				else
-					TimeIn += 2;
+					TimeIn += ONE_SECOND / 60;
 
 				do
 				{

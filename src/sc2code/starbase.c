@@ -481,7 +481,7 @@ TimePassage:
 					;
 
 				ResumeGameClock ();
-				SleepThread (2);
+				SleepThread (ONE_SECOND / 60);
 				SuspendGameClock ();
 			}
 		}

@@ -85,11 +85,9 @@ Introduction (void)
 	DWORD TimeOut;
 	INPUT_STATE InputState;
 
-		int TempInt;
-
 	xform_buf[0] = FadeAllToBlack;
-		TempInt = XFormColorMap ((COLORMAPPTR) xform_buf, 1);
-	SleepThreadUntil (TempInt);
+	SleepThreadUntil (XFormColorMap (
+			(COLORMAPPTR) xform_buf, ONE_SECOND / 120));
 	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;

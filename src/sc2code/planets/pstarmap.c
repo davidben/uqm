@@ -602,6 +602,7 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 {
 #define MIN_ACCEL_DELAY (ONE_SECOND / 60)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
+#define STEP_ACCEL_DELAY (ONE_SECOND / 120)
 	STAMP s;
 	UNICODE buf[30];
 	static UNICODE last_buf;
@@ -665,7 +666,7 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 		else
 		{
 			if (pMS->CurState > MIN_ACCEL_DELAY)
-				--pMS->CurState;
+				pMS->CurState -= STEP_ACCEL_DELAY;
 
 			pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 			pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);

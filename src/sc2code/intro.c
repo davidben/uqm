@@ -45,7 +45,8 @@ Introduction (void)
 	INPUT_STATE InputState;
 
 	xform_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, 1));
+	SleepThreadUntil (XFormColorMap (
+			(COLORMAPPTR)xform_buf, ONE_SECOND / 120));
 	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;

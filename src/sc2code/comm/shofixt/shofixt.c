@@ -40,35 +40,35 @@ static LOCDATA shofixti_desc =
 			5, /* StartIndex */
 			15, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
-			4, 0, /* RestartRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* RestartRate */
 		},
 		{
 			20, /* StartIndex */
 			3, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			(ONE_SECOND >> 1), (ONE_SECOND >> 1) * 3, /* RestartRate */
 		},
 		{
 			23, /* StartIndex */
 			3, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
-			12, 0, /* FrameRate */
+			ONE_SECOND / 10, 0, /* FrameRate */
 			(ONE_SECOND >> 1), (ONE_SECOND >> 1) * 3, /* RestartRate */
 		},
 		{
 			26, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			4, 0, /* FrameRate */
+			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 		{
 			29, /* StartIndex */
 			4, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
-			8, 0, /* FrameRate */
+			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 		},
 
@@ -76,46 +76,46 @@ static LOCDATA shofixti_desc =
 			33, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			39, /* StartIndex */
 			7, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 			(1 << 7), /* BlockMask */
 		},
 		{
 			46, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 			(1 << 6), /* BlockMask */
 		},
 		{
 			52, /* StartIndex */
 			4, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 		},
 		{
 			56, /* StartIndex */
 			7, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 			(1 << 10), /* BlockMask */
 		},
 		{
 			63, /* StartIndex */
 			6, /* NumFrames */
 			CIRCULAR_ANIM, /* AnimFlags */
-			6, 4, /* FrameRate */
-			6, 4, /* RestartRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
+			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
 			(1 << 9), /* BlockMask */
 		},
 	},
@@ -130,8 +130,8 @@ static LOCDATA shofixti_desc =
 		1, /* StartIndex */
 		4, /* NumFrames */
 		0, /* AnimFlags */
-		6, 0, /* FrameRate */
-		8, 0, /* RestartRate */
+		ONE_SECOND / 20, 0, /* FrameRate */
+		ONE_SECOND / 15, 0, /* RestartRate */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
 };

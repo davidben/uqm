@@ -178,7 +178,8 @@ TryAgain:
 
 			SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 0);
 
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf, ONE_SECOND / 8) + 2);
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf,
+					ONE_SECOND / 8) + ONE_SECOND / 60);
 			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 			ClearDrawable ();
 			FlushColorXForms ();
