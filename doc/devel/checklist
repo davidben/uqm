@@ -1,0 +1,25 @@
+Checklist for releases:
+- make a final build in release mode
+- make sure the permissions in the .zip files are ok (0644 for data files
+  and 0755 for executables and dirs)
+- for the source archive:
+  - use a clean cvs dir (no .# files)
+  - exclude the CVS dirs themselves from the archive
+- Clean up the Changelog file
+- make sure the documentation files are up-to-date
+  - Whatsnew
+  - doc/users/manual.txt
+  - doc/users/unixinstall
+  - Contributing
+  - AUTHORS
+  - INSTALL
+  - unix man pages (in the future)
+- update the 'version' file in the content is up-to-date
+- update 'uqmversion.h'
+- make a new tag for the cvs repository
+- provide md5 sums for the released files
+- add a new entry for the release in the bugs database
+- test on all relevant platforms
+- update the home page
+
+
