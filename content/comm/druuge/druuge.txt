@@ -322,7 +322,7 @@ You will not find better deals anywhere.
 
 #(GEN_INFO_AT_TRADE_WORLD_2)	druug043.wav
 While I am sure, Captain, that you would never make this foolish mistake
-I still feel I should warn you about one of our laws, specifically 
+I still feel I should warn you about one of our laws, specifically
 Druuge Statute 3429 - subsection A86, Definition of Starship Derelicts.
 Simply put, Captain, this statute recognizes that the universe is an inherently hostile place
 and any ship which is unable to defend itself incites violence

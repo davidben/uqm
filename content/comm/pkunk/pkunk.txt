@@ -31,14 +31,14 @@ Seekers of the deepest truths, askers of interesting and significant questions.
 Even now a question of great transcendental significance comes unbidden to our minds.
 Who are you and what do you want?'
 
-#(NEUTRAL_SPACE_HELLO_2)	pkunk002.wav
+#(NEUTRAL_SPACE_HELLO_3)	pkunk002.wav
 Greetings and various apropos felicitations!  We are Pkunk.
 Hatchlings of light, spritual soul beings of the vast cosmic oneness
 wayfarers on the river of destiny, students of the mystical dimensions
 purveyors of blissful love, birdlike manifestations of glorious light energies from the astral plane.
 How about yourselves?
 
-#(NEUTRAL_SPACE_HELLO_3)	pkunk003.wav
+#(NEUTRAL_SPACE_HELLO_2)	pkunk003.wav
 Do not be frightened.  We are powerful creatures, yes
 but we could not hurt you anymore than we could squish the helpless Pootworm.
 We love the Pootworm.  We are one with the Pootworm.  We are one with you.
@@ -58,11 +58,11 @@ release yourself to tears of joy!
 Go. Go now, young one. Go quickly!
 
 #(FRIENDLY_SPACE_HELLO_1)	pkunk005.wav
-Whoopdy Dee and Trolly Bazoo!  What a good day I am having.  First 
-my nest mate surprises me with extra fat and spicy grubs for
-earlymeal, and then I am complimented on my fine display of
-ceremonial tongs.  To top it off, I encounter the human friend, loved
-by all Pkunk.  Can things get any better?
+Whoopdy Dee and Trolly Bazoo!  What a good day I am having.
+First, my nest mate surprises me with extra fat and spicy grubs for earlymeal
+and then I am complimented on my fine display of ceremonial tongs.
+To top it off, I encounter the human friend, loved by all Pkunk.
+Can things get any better?
 
 #(FRIENDLY_SPACE_HELLO_2)	pkunk006.wav
 The stars are in auspicious alignment, the various significant moons

@@ -47,9 +47,13 @@ When multiple records are used to define a single speech line (as
 often happens when they say your name, for instance), only the first
 line has an audio file associated with it.
 
-Lines that do not end in a punctuation mark have a "..." added to the
-end of them by the communications code - keep that in mind when
-debugging the subtitles.
+Lines that do not end in a punctuation mark or a space have a "..."
+added to the end of them by the communications code.  If the previous
+line had "..." appended to it and this line does not START with a
+space, this line will have "..." prepended to it.  The "scriptcheck"
+tool looks for all cases where "..." does not occur in midsentence.
+When editing the script files, check your intended results against
+this.
 
 The .h files (src/sc2code/comm)
 -------------------------------
@@ -63,6 +67,11 @@ is no relation whatsoever between the identifiers in the record and in
 the enum (though it would be reasonably straightforward to generate
 the strings.h files from the .txt files) The values of the enum are
 used in the {racec}.c files in the same directory.
+
+The scriptcheck utility also checks for proper correlation between the
+.h file and the associated .txt file.  It assumes that one enum value
+is listed per line, and that the general format of the file matches
+the current one.
 
 Types of script bugs
 --------------------

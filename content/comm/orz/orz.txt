@@ -233,9 +233,9 @@ I am surprised!
 Oh well. Now is for *fun time*, not worrying.
 
 #(NEUTRAL_HOMEWORLD_HELLO_4)	orz028.wav
-Again you have come to my *house*. It is the same time. Why are 
-you coming? Do you always the *slow time*? I am surprised! Oh 
-well. Now is for *fun time*, not worrying.
+Again you have come to my *house*. It is the same time.
+Why are you coming? Do you always the *slow time*? I am surprised!
+Oh well. Now is for *fun time*, not worrying.
 
 #(NEUTRAL_SPACE_HELLO_1)	orz029.wav
 Hello extremely! I hope you like to *Play*.

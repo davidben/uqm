@@ -21,7 +21,7 @@
 
 enum
 {
-	null_phrase,
+	NULL_PHRASE,
 	killed_fwiffo,
 	POOR_FWIFFO,
 	fwiffo_fine,

@@ -193,7 +193,7 @@ Captain
 #(HEAVY_LOAD_F1) 
 , you are to be commended. Keep up the good work!
 
-#(HEAVY_LOAD_G0 ) starb044.wav
+#(HEAVY_LOAD_G0) starb044.wav
 More fuel for the fire, eh, Captain 
 #(HEAVY_LOAD_G1) 
 ?  That last load should keep it blazing!
@@ -305,7 +305,7 @@ or already-refined metals and other valuable materials from the wreckage of enem
 #(ABOUT_MINERALS) starb056.wav
 The most straightforward way you can accumulate Resource Units
 is to bring mineral ores back to this starbase.
-There are probably enough resources in just the nearby dozen stars	
+There are probably enough resources in just the nearby dozen stars
 to build your ship into a powerful battleship, or
 to create a strong task force of combat vessels.
 I would also recommend that you build several additional Storage Bays.

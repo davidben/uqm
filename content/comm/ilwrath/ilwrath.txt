@@ -153,12 +153,12 @@ When I Present Them With The Twisted Wreckage Of Your Ship And Your Many Charred
 #(CAME_FROM) ilwra023.wav
 Since You Will Soon Be Dead, I Will Gladly Explain.
 We Have Spent Many Years Gleefully Preying On The Pkunk.
-They Are A Pitiful, Easily-killed Species...
-And We Would Have Continued In This Divine Worship Of Dogar And Kazon...
+They Are A Pitiful, Easily-killed Species
+And We Would Have Continued In This Divine Worship Of Dogar And Kazon
 But We Required Additional Crew Members And Repairs To Our Cloaking Device.
 So We Departed The Giclas Constellation And Set Course For Home.
 But Before We Had Reached Our Region Of Space, We Detected The Passage Of A Nearby Vessel - The Ur-Quan Drone.
-It Informed Us About You... So Here We Are. 
+It Informed Us About You... So Here We Are.
 And Now, YOU DIE!
 
 #(WHO_BLASTS_WHO) ilwra024.wav

@@ -27,7 +27,7 @@ How did you know about us before meeting us?
 
 #(KNOW_BECAUSE)	melno004.wav
 We gather information from a thousand secret sources in space and time.
-Our charge for revealing even one of these sources would be so high 
+Our charge for revealing even one of these sources would be so high
 that your species would be in debt to us for centuries.
 
 #(what_about_yourselves)
@@ -115,7 +115,7 @@ I had itchy pods this morning, Captain, and here you are!
 #(HELLO_AND_DOWN_TO_BUSINESS_4)	melno015.wav
 What a coincidence! I was just talking about you with a Keel-Verezy captain. 
 He/she/they expressed great interest in your explorations and struggles against the Ur-Quan
-but, like all Verezy, I'm afraid he/she/they were hesitant to introduce themselves for fear of 
+but, like all Verezy, I'm afraid he/she/they were hesitant to introduce themselves for fear of
 well
 frightening you. 
 In any event, it is our pleasure to meet you once again.
@@ -214,7 +214,7 @@ I apologize. I'm sorry. Please forgive me, I beg you.
 #(APOLOGY_ACCEPTED) melno029.wav
 Well
 since you put it so nicely
-you seem so genuinely repentant	
+you seem so genuinely repentant
 we'll give you another chance to become trading partners with us.
 But don't ever attack us again
 Or the next time we won't be such nice guys.
@@ -242,7 +242,7 @@ What do you want from us this time?
 Never mind, we don't want to know.
 
 #(HELLO_HATE_YOU_3) melno034.wav
-We will hate you forever 
+We will hate you forever.
 It is no use coming back here in the hopes that we will ever change our minds.
 We won't!
 
@@ -295,7 +295,7 @@ snicker
 Out of fuel again, eh, Captain?
 
 #(CHANGED_MIND)	melno043.wav
-Have you changed your mind 
+Have you changed your mind
 and decided to accept our offer of assistance?
 
 #(no_changed_mind)
