@@ -500,7 +500,7 @@ I have some items I would like to sell.
 
 #(TURNED_PURPLE_BECAUSE)	melno070.ogg
 That's a good question with a very interesting answer!
-The fee for this information is 12,000 Credits.
+The fee for this information is 12,000,000 Credits.
 
 #(NOTHING_TO_SELL)	melno071.ogg
 We appreciate your intentions, but you have nothing we wish to buy.
