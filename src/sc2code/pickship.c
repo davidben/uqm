@@ -43,7 +43,7 @@ DoPickBattleShip (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoPickBattleShip;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 
 		goto ChangeSelection;
 	}
@@ -78,7 +78,7 @@ DoPickBattleShip (INPUT_STATE InputState, PMENU_STATE pMS)
 			else if (new_row == NUM_PICK_SHIP_ROWS)
 				new_row = 0;
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 
 #ifdef NEVER
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x1D));
@@ -204,7 +204,7 @@ ChangeSelection:
 			}
 
 			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 
@@ -240,11 +240,11 @@ OldContext = SetContext (SpaceContext);
 		MenuState.flash_rect1.corner = pick_r.corner;
 		MenuState.flash_rect1.extent.width = 0;
 
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		pMenuState = &MenuState;
 		DoInput ((PVOID)&MenuState);
 		pMenuState = 0;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 
 		SetFlashRect (NULL_PTR, (FRAME)0);
 

@@ -131,7 +131,8 @@ WaitForNoInput (SIZE Duration)
 				PressState = ButtonState;
 				ButtonState = 0;
 			}
-		} while (!ButtonState && TaskSwitch () <= TimeOut);
+		} while (!ButtonState &&
+				(TaskSwitch (), GetTimeCounter ()) <= TimeOut);
 	}
 }
 
@@ -161,7 +162,7 @@ PauseGame (void)
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	OldHot = SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
@@ -196,7 +197,7 @@ PauseGame (void)
 
 	WaitForNoInput (ONE_SECOND / 4);
 	FlushInput ();
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	if (ClockActive)
 		ResumeGameClock ();

@@ -41,7 +41,7 @@ computer_intelligence (INPUT_REF InputRef, INPUT_STATE InputState)
 		{
 			case SUPER_MELEE:
 			{
-				SleepTask (GetTimeCounter () + (ONE_SECOND >> 1));
+				SleepThread (ONE_SECOND >> 1);
 				InputState = DEVICE_BUTTON1; /* pick a random ship */
 				break;
 			}

@@ -45,21 +45,21 @@ Introduction (void)
 	INPUT_STATE InputState;
 
 	xform_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)xform_buf, 1));
-	SetSemaphore (&GraphicsSem);
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, 1));
+	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;
 	s.frame = CaptureDrawable (LoadGraphic (TITLE_ANIM));
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	FlushInput ();
 
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
 	LoadMasterShipList ();
-	SleepTask (TimeOut);
+	SleepThreadUntil (TimeOut);
 	
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
 	TimeOut += ONE_SECOND * 3;
@@ -67,7 +67,7 @@ Introduction (void)
 		;
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	xform_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	if (InputState == 0)
 		DoFMV ("intro", NULL);
@@ -83,7 +83,7 @@ Victory (void)
 	BYTE xform_buf[1];
 
 	xform_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	DoFMV ("victory", NULL);
 		

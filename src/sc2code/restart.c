@@ -48,7 +48,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 {
 	RECT r;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	r.corner.x = r.corner.y = r.extent.width = r.extent.height = 0;
 	SetContextClipRect (&r);
@@ -57,7 +57,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	r.extent.width = SCREEN_WIDTH;
 	r.extent.height = SCREEN_HEIGHT;
 	SetFlashRect (&r, SetAbsFrameIndex (f, NewState + 1));
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	(void) OldState;  /* Satisfying compiler (unused parameter) */
 }
 
@@ -74,7 +74,7 @@ DoRestart (INPUT_STATE InputState, PMENU_STATE pMS)
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
 				
-			SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
 		}
 	}
 #ifdef TESTING
@@ -105,9 +105,9 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				break;
 		}
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
@@ -178,7 +178,7 @@ TryAgain:
 
 			SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 0);
 
-			SleepTask (XFormColorMap ((COLORMAPPTR)white_buf, ONE_SECOND / 8) + 2);
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf, ONE_SECOND / 8) + 2);
 			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 			ClearDrawable ();
 			FlushColorXForms ();
@@ -212,9 +212,9 @@ LastActivity = WON_LAST_BATTLE;
 			GetFrameRect (s.frame, &r);
 			s.origin.x = (SCREEN_WIDTH - r.extent.width) >> 1;
 			s.origin.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
-			SleepTask (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
 			if (TimeOut == ONE_SECOND / 8)
-				SleepTask (GetTimeCounter () + ONE_SECOND * 3);
+				SleepThread (ONE_SECOND * 3);
 
 			SetContextBackGroundColor (BLACK_COLOR);
 			BatchGraphics ();
@@ -226,9 +226,9 @@ LastActivity = WON_LAST_BATTLE;
 			FlushInput ();
 			DoInput ((PVOID)&MenuState);
 			
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)0, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DestroyDrawable (ReleaseDrawable (s.frame));
 			
 			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
@@ -251,7 +251,7 @@ if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 			TimeOut = XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND / 2);
 		}
 		
-		SleepTask (TimeOut);
+		SleepThreadUntil (TimeOut);
 		FlushColorXForms ();
 
 		SeedRandomNumbers ();

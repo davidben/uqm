@@ -21,7 +21,7 @@
 
 extern int _music_volume;
 
-static TASK FadeTask;
+static Thread FadeTask;
 static SIZE TTotal;
 static SIZE volume_end;
 
@@ -35,7 +35,8 @@ fade_task (void *data)
 	StartTime = CurTime = GetTimeCounter ();
 	do
 	{
-		CurTime = SleepTask (CurTime + 1);
+		SleepThreadUntil (CurTime + 1);
+		CurTime = GetTimeCounter ();
 		if ((TDelta = (SIZE) (CurTime - StartTime)) > TTotal)
 			TDelta = TTotal;
 
@@ -66,7 +67,8 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 		TTotal = 1; /* prevent divide by zero and negative fade */
 	volume_end = end_vol;
 		
-	if (TTotal > 1 && (FadeTask = AddTask (fade_task, 0)))
+	if (TTotal > 1 && (FadeTask = CreateThread (fade_task, NULL, 0,
+			"fade music")))
 	{
 		TimeOut = GetTimeCounter () + TTotal + 1;
 	}

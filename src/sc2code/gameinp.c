@@ -37,7 +37,8 @@ DoInput (PVOID pInputState)
 	((PINPUT_STATE_DESC)pInputState)->MenuRepeatDelay = MENU_REPEAT_DELAY;
 	do
 	{
-		NewTime = TaskSwitch ();
+		TaskSwitch ();
+		NewTime = GetTimeCounter ();
 
 		InputState = GetInputState (NormalInput);
 

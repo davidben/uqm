@@ -59,7 +59,7 @@ typedef struct encounter_state
 		RESPONSE_FUNC response_func;
 	} response_list[MAX_RESPONSES];
 
-	TASK AnimTask;
+	Thread AnimTask;
 
 	COUNT phrase_buf_index;
 	UNICODE phrase_buf[512];
@@ -361,7 +361,7 @@ static struct
 {
 	COLORMAPPTR CMapPtr;
 	SIZE Ticks;
-	TASK XFormTask;
+	Thread XFormTask;
 } TaskControl;
 
 static BOOLEAN ColorChange;
@@ -371,9 +371,8 @@ static COUNT volatile NumXFormTasks;
 int xform_PLUT_task(void* blah)
 {
 	COLORMAPPTR CurMapPtr;
-	TASK T;
 
-	while ((T = TaskControl.XFormTask) == 0)
+	while (TaskControl.XFormTask == 0)
 		TaskSwitch ();
 	TaskControl.XFormTask = 0;
 	CurMapPtr = TaskControl.CMapPtr;
@@ -396,7 +395,8 @@ int xform_PLUT_task(void* blah)
 			extern DWORD *_varPLUTs;
 
 			StartTime = CurTime;
-			CurTime = SleepTask (GetTimeCounter () + 2);
+			SleepThread (2);
+			CurTime = GetTimeCounter ();
 			if (XFormFlush || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
 				TDelta = TTotal;
 
@@ -456,7 +456,6 @@ if (_varPLUTs)
 	}
 
 	--NumXFormTasks;
-	DeleteTask (T);
 	(void) blah;  /* Satisfying compiler (unused parameter) */
 	return(0);
 }
@@ -488,16 +487,9 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 		TaskControl.CMapPtr = ColorMapPtr;
 		if ((TaskControl.Ticks = TimeInterval) <= 0)
 			TaskControl.Ticks = 1; /* prevent divide by zero and negative fade */
-		if
-		(
-				TimeInterval == 0 ||
-				(
-						TaskControl.XFormTask = AddTask
-						(
-								xform_PLUT_task, 1024
-						)
-				) == 0
-		)
+		if (TimeInterval == 0 || (TaskControl.XFormTask =
+				CreateThread (xform_PLUT_task, NULL, 1024,
+				"transform palette")) == 0)
 		{
 			SetColorMap (ColorMapPtr, TFB_COLORMAP_COMM);
 			ColorChange = TRUE;
@@ -701,10 +693,10 @@ DWORD LastOscillTime;
 	while ((CommFrame = CommData.AlienFrame) == 0)
 		TaskSwitch ();
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	memset ((PSTR)&DisplayArray[0], 0, sizeof (DisplayArray));
 	SetUpSequence (Sequencer);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	ActiveMask = 0;
 	TalkAlarm = 0;
@@ -716,9 +708,10 @@ LastOscillTime = LastTime;
 		BOOLEAN Change, CanTalk;
 		DWORD CurTime, ElapsedTicks;
 
-		SleepTask (LastTime + 1);
+		SleepThreadUntil (LastTime + 1);
 
-		CurTime = SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
+		CurTime = GetTimeCounter ();
 		ElapsedTicks = CurTime - LastTime;
 		LastTime = CurTime;
 
@@ -1038,7 +1031,7 @@ if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
 	LastOscillTime = CurTime;
 	UpdateSpeechGraphics (FALSE);
 }
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */
 	return(0);
@@ -1070,15 +1063,15 @@ SpewPhrases (COUNT wait_track)
 		if (wait_track == 1 || wait_track == (COUNT)~0)
 		{
 			ResumeTrack ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			do
 			{
 				TaskSwitch ();
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				which_track = PlayingTrack ();
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			} while (!which_track);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 		}
 	}
 	else if (which_track <= wait_track)
@@ -1086,8 +1079,9 @@ SpewPhrases (COUNT wait_track)
 
 	do
 	{
-		ClearSemaphore (&GraphicsSem);
-		TimeIn = SleepTask (TimeIn + (ONE_SECOND / 64));
+		ClearSemaphore (GraphicsSem);
+		SleepThreadUntil (TimeIn + (ONE_SECOND / 64));
+		TimeIn = GetTimeCounter ();
 #if DEMO_MODE || CREATE_JOURNAL
 		InputState = 0;
 #else /* !(DEMO_MODE || CREATE_JOURNAL) */
@@ -1096,7 +1090,7 @@ SpewPhrases (COUNT wait_track)
 		if (InputState & DEVICE_EXIT)
 			InputState = ConfirmExit ();
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		if (InputState & (DEVICE_BUTTON2 | DEVICE_EXIT))
 		{
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
@@ -1152,7 +1146,7 @@ AlienTalkSegue (COUNT wait_track)
 			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
 		return;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (!pCurInputState->Initialized)
 	{
@@ -1210,11 +1204,12 @@ UnbatchGraphics ();
 
 			TimeOut = GetTimeCounter () + (ONE_SECOND >> 1);
 /* if (CommData.NumAnimations) */
-				pCurInputState->AnimTask = AddTask (ambient_anim_task, 3072);
+				pCurInputState->AnimTask = CreateThread (ambient_anim_task,
+						NULL, 3072, "ambient animations");
 
-			ClearSemaphore (&GraphicsSem);
-			SleepTask (TimeOut);
-			SetSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
+			SleepThreadUntil (TimeOut);
+			SetSemaphore (GraphicsSem);
 		}
 
 		LastActivity &= ~CHECK_LOAD;
@@ -1235,9 +1230,9 @@ if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
 
 	while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
 	{
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		TaskSwitch ();
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 	}
 }
 
@@ -1253,7 +1248,7 @@ if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
 		CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
 }
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	do
 		TaskSwitch ();
@@ -1276,13 +1271,14 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 		TimeIn = GetTimeCounter ();
 		do
 		{
-			TimeIn = SleepTask (TimeIn + 1);
+			SleepThreadUntil (TimeIn + 1);
+			TimeIn = GetTimeCounter ();
 			if (GetInputXComponent (GetInputState (NormalInput)) < 0)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SpewPhrases (0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
 				TimeOut = FadeMusic (0, ONE_SECOND * 2) + 2;
@@ -1297,9 +1293,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 		if (pES->top_response == (BYTE)~0)
 		{
 			pES->top_response = 0;
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			RefreshResponses (pES);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		if (InputState & DEVICE_BUTTON1)
@@ -1311,11 +1307,11 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					pES->phrase_buf_index);
 			pES->phrase_buf[pES->phrase_buf_index++] = '\0';
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			FeedbackPlayerPhrase (pES->phrase_buf);
 			StopTrack ();
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 
@@ -1330,7 +1326,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			if (GetInputXComponent (InputState) < 0)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 				SpewPhrases (0);
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -1338,7 +1334,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					RefreshResponses (pES);
 					FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 				}
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 			else if (GetInputYComponent (InputState) < 0)
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
@@ -1351,7 +1347,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			{
 				COORD y;
 
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				BatchGraphics ();
 				add_text (-2, &pES->response_list[pES->cur_response].response_text);
 
@@ -1369,18 +1365,18 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					RefreshResponses (pES);
 				}
 				UnbatchGraphics ();
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 		}
 		
 		return (TRUE);
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (pES->AnimTask)
 	{
-		DeleteTask (pES->AnimTask);
+		KillThread (pES->AnimTask);
 		pES->AnimTask = 0;
 	}
 	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
@@ -1389,7 +1385,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 	DestroyContext (ReleaseContext (TaskContext));
 	TaskContext = 0;
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	FlushPLUTXForms ();
 	ColorChange = FALSE;
@@ -1398,7 +1394,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 	StopMusic ();
 	StopSound ();
 	StopTrack ();
-	SleepTask (FadeMusic (FOREGROUND_VOL, 0) + 2);
+	SleepThreadUntil (FadeMusic (FOREGROUND_VOL, 0) + 2);
 
 	return (FALSE);
 }
@@ -1502,15 +1498,15 @@ BatchGraphics ();
 			if (pMenuState == 0)
 			{
 				RepairSISBorder ();
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawMenuStateStrings ((BYTE)~0, (BYTE)~0);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 			}
 			else /* in starbase */
 			{
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawSISFrame ();
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				if (GET_GAME_STATE (STARBASE_AVAILABLE))
 				{
 					DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 1));
@@ -1527,7 +1523,7 @@ BatchGraphics ();
 		DrawSISComWindow ();
 	}
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	LastActivity |= CHECK_LOAD; /* prevent spurious input */
 	(*CommData.init_encounter_func) ();
@@ -1535,7 +1531,7 @@ BatchGraphics ();
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 		(*CommData.uninit_encounter_func) ();
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic ((MUSIC_REF)CommData.AlienSong);
@@ -1559,7 +1555,7 @@ InitCommunication (RESOURCE which_comm)
 	MEM_HANDLE hOldIndex, hIndex;
 	LOCDATAPTR LocDataPtr;
 	
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (LastActivity & CHECK_LOAD)
 	{
@@ -1568,9 +1564,9 @@ InitCommunication (RESOURCE which_comm)
 		{
 			if (LOBYTE (LastActivity) == 0)
 			{
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawSISFrame ();
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 			}
 			else
 			{
@@ -1628,7 +1624,7 @@ InitCommunication (RESOURCE which_comm)
 			CommData = *LocDataPtr;
 	}
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 0)
 		status = HAIL;
@@ -1642,7 +1638,7 @@ InitCommunication (RESOURCE which_comm)
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (status == HAIL)
 	{
@@ -1656,7 +1652,7 @@ InitCommunication (RESOURCE which_comm)
 	SetResourceIndex (hOldIndex);
 	CloseResourceIndex (hIndex);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	status = 0;
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))

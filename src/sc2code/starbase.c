@@ -253,14 +253,15 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 	{
 		//CONTEXT OldContext;
 		
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawStamp (&s);
 		s.frame = IncFrameIndex (s.frame);
 		if (s.frame == pMenuState->CurFrame)
 			s.frame = IncFrameIndex (s.frame);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		
-		TimeIn = SleepTask (TimeIn + (ONE_SECOND / 20));
+		SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
+		TimeIn = GetTimeCounter ();
 	}
 
 	(void) blah;  /* Satisfying compiler (unused parameter) */
@@ -283,7 +284,7 @@ DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
 		LastActivity &= ~CHECK_LOAD;
 		pMS->InputFunc = DoStarBase;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 
 		if (pMS->hMusic)
@@ -295,7 +296,7 @@ DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		if (pMS->flash_task)
 		{
-			DeleteTask (pMS->flash_task);
+			KillThread (pMS->flash_task);
 			pMS->flash_task = 0;
 		}
 
@@ -303,7 +304,7 @@ DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
 		SetContext (ScreenContext);
 		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		s.origin.x = s.origin.y = 0;
 s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
@@ -311,7 +312,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 		pMS->CurFrame = s.frame;
 		pMS->hMusic = LoadMusicInstance (STARBASE_MUSIC);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		BatchGraphics ();
 		SetContextBackGroundColor (BLACK_COLOR);
 		ClearDrawable ();
@@ -328,23 +329,24 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 }
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
-		pMS->flash_task = AddTask (rotate_starbase, 4096);
-		ClearSemaphore (&GraphicsSem);
+		pMS->flash_task = CreateThread (rotate_starbase, NULL, 4096,
+				"rotate starbase");
+		ClearSemaphore (GraphicsSem);
 	}
 	else if ((InputState & DEVICE_BUTTON1)
 			|| GET_GAME_STATE (MOONBASE_ON_SHIP)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
 ExitStarBase:
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		if (pMS->flash_task)
 		{
-			DeleteTask (pMS->flash_task);
+			KillThread (pMS->flash_task);
 			pMS->flash_task = 0;
 		}
 		DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 		pMS->CurFrame = 0;
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		StopMusic ();
 		if (pMS->hMusic)
 		{
@@ -408,9 +410,9 @@ ExitStarBase:
 
 		if (NewState != pMS->CurState)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawBaseStateStrings (pMS->CurState, NewState);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			pMS->CurState = NewState;
 		}
 	}
@@ -470,14 +472,14 @@ VisitStarBase (void)
 TimePassage:
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 			clut_buf[0] = FadeAllToBlack;
-			SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
 			for (i = 0; i < LOST_DAYS; ++i)
 			{
 				while (ClockTick () > 0)
 					;
 
 				ResumeGameClock ();
-				SleepTask (GetTimeCounter () + 2);
+				SleepThread (2);
 				SuspendGameClock ();
 			}
 		}

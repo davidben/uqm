@@ -68,7 +68,7 @@ FreeHyperData ();
 	if (hMusic)
 		PlayMusic (hMusic, TRUE, 1);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	GetContextClipRect (&r);
 	s.origin.x = s.origin.y = 0;
@@ -79,7 +79,7 @@ FreeHyperData ();
 	UnbatchGraphics ();
 	
 	fade_buf[0] = FadeAllToColor;
-	SleepTask (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 	
 	TimeIn = GetTimeCounter ();
 	for (i = 1; i < NUM_CREDITS; ++i)
@@ -93,17 +93,18 @@ FreeHyperData ();
 		UnbatchGraphics ();
 		DestroyDrawable (ReleaseDrawable (f[i]));
 		
-		TimeIn = SleepTask (TimeIn + ONE_SECOND * 5);
+		SleepThreadUntil (TimeIn + ONE_SECOND * 5);
+		TimeIn = GetTimeCounter ();
 	}
 	
 	DestroyDrawable (ReleaseDrawable (f[0]));
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	while (!AnyButtonPress (FALSE));
 	while (AnyButtonPress (FALSE));
 	
 	fade_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 	FlushColorXForms ();
 	
 	if (hMusic)

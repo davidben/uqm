@@ -69,7 +69,7 @@ flash_cursor_func(void *blah)
 		CONTEXT OldContext;
 
 		TimeIn = GetTimeCounter ();
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (SpaceContext);
 
 		if (c == 0x00 || c == 0x1A)
@@ -82,8 +82,8 @@ flash_cursor_func(void *blah)
 		SetContextForeGroundColor (OldColor);
 
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
-		SleepTask (TimeIn + (ONE_SECOND >> 4));
+		ClearSemaphore (GraphicsSem);
+		SleepThreadUntil (TimeIn + (ONE_SECOND >> 4));
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */
 	return (0);
@@ -249,7 +249,7 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	}
 	else
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		draw_cursor = TRUE;
 	}
 
@@ -523,7 +523,7 @@ wprintf ("%s\n", buf);
 	}
 
 	if (draw_cursor)
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 }
 
 static void
@@ -553,9 +553,9 @@ EraseCursor (COORD curs_x, COORD curs_y)
 #else /* NEW */
 	r.extent.height += r.corner.y & 1;
 	r.corner.y &= ~1;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	DrawStarMap (0, &r);
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 #endif /* OLD */
 }
 
@@ -571,7 +571,7 @@ ZoomStarMap (SIZE dir)
 			pMenuState->flash_rect1.corner = pMenuState->first_item;
 
 			DrawStarMap (0, NULL_PTR);
-			SleepTask (GetTimeCounter () + (ONE_SECOND >> 3));
+			SleepThread (ONE_SECOND >> 3);
 		}
 	}
 	else if (dir < 0)
@@ -588,7 +588,7 @@ ZoomStarMap (SIZE dir)
 			--pMenuState->delta_item;
 
 			DrawStarMap (0, NULL_PTR);
-			SleepTask (GetTimeCounter () + (ONE_SECOND >> 3));
+			SleepThread (ONE_SECOND >> 3);
 		}
 	}
 }
@@ -611,7 +611,8 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 				);
 		pMS->InputFunc = DoMoveCursor;
 
-		pMS->flash_task = AddTask (flash_cursor_func, 2048);
+		pMS->flash_task = CreateThread (flash_cursor_func, NULL, 2048,
+				"flash location on star map");
 		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
 		last_buf = ~0;
@@ -620,13 +621,13 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else if (InputState & DEVICE_BUTTON2)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		if (pMS->flash_task)
 		{
-			DeleteTask (pMS->flash_task);
+			KillThread (pMS->flash_task);
 			pMS->flash_task = 0;
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
@@ -725,11 +726,11 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 			}
 			else
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				EraseCursor (pt.x, pt.y);
 				// ClearDrawable ();
 				DrawCursor (s.origin.x, s.origin.y);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 
 UpdateCursorInfo:
@@ -793,7 +794,7 @@ UpdateCursorInfo:
 					fuel_required = 0;
 				else
 					fuel_required = square_root (f) + (FUEL_TANK_SCALE >> 1);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				DrawHyperCoords (pMenuState->first_item);
 				if (last_buf == (UNICODE) ~0
 						|| (buf[0] && !last_buf) || (!buf[0] && last_buf))
@@ -806,7 +807,7 @@ UpdateCursorInfo:
 						fuel_required / FUEL_TANK_SCALE,
 						(fuel_required % FUEL_TANK_SCALE) / 10);
 				DrawStatusMessage (buf);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 		}
 	}
@@ -1090,7 +1091,7 @@ DoStarMap (void)
 	if (MenuState.first_item.x == ~0 && MenuState.first_item.y == ~0)
 		MenuState.first_item = universe;
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	TaskSwitch ();
 
 	MenuState.InputFunc = DoMoveCursor;
@@ -1101,7 +1102,7 @@ DoStarMap (void)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		UpdateMap ();
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	
 	DrawStarMap (0, (PRECT)-1);
 	transition_pending = FALSE;
@@ -1116,7 +1117,7 @@ DoStarMap (void)
 			UNIVERSE_TO_DISPY (pMenuState->first_item.y)
 			);
 	UnbatchGraphics ();
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	OldMenuSounds = MenuSounds;
 	MenuSounds = 0;
@@ -1125,7 +1126,7 @@ DoStarMap (void)
 
 	pMenuState = 0;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	DrawHyperCoords (universe);
 	DrawSISMessage (NULL_PTR);
@@ -1148,7 +1149,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		while (((PMENU_STATE volatile)pMS)->CurState == 0
 				&& (((PMENU_STATE volatile)pMS)->Initialized & 1)
 				&& !(GLOBAL (CurrentActivity)
@@ -1156,11 +1157,11 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 				| CHECK_ABORT | CHECK_LOAD))
 				&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 		{
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			TaskSwitch ();
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		if (pMS->CurState)
 		{
@@ -1171,9 +1172,9 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 			{
 				if (NewState != SCAN + 1 && NewState != (ROSTER + 1) + 1)
 				{
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 				}
 
 				switch (NewState - 1)
@@ -1224,7 +1225,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					{
 						BOOLEAN AutoPilotSet;
 
-						SetSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
 						if (++pMS->Initialized > 3)
 							RepairSISBorder ();
 
@@ -1233,7 +1234,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
 								|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 						{
-							ClearSemaphore (&GraphicsSem);
+							ClearSemaphore (GraphicsSem);
 							return (FALSE);
 						}
 						else if (pMS->Initialized <= 3)
@@ -1241,15 +1242,15 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 							ZoomSystem ();
 							--pMS->Initialized;
 						}
-						ClearSemaphore (&GraphicsSem);
+						ClearSemaphore (GraphicsSem);
 
 						if (!AutoPilotSet && pMS->Initialized >= 3)
 						{
 							LoadPlanet (FALSE);
 							--pMS->Initialized;
-							SetSemaphore (&GraphicsSem);
+							SetSemaphore (GraphicsSem);
 							SetFlashRect ((PRECT)~0L, (FRAME)0);
-							ClearSemaphore (&GraphicsSem);
+							ClearSemaphore (GraphicsSem);
 							break;
 						}
 					}
@@ -1265,15 +1266,15 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						else if (pMS->flash_task)
 						{
 							FreePlanet ();
-							SetSemaphore (&GraphicsSem);
+							SetSemaphore (GraphicsSem);
 							LoadSolarSys ();
 							ZoomSystem ();
-							ClearSemaphore (&GraphicsSem);
+							ClearSemaphore (GraphicsSem);
 						}
 
-						SetSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
 						pMS->CurState = 0;
-						ClearSemaphore (&GraphicsSem);
+						ClearSemaphore (GraphicsSem);
 						break;
 				}
 				
@@ -1281,9 +1282,9 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					;
 				else if (pMS->CurState)
 				{
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					SetFlashRect ((PRECT)~0L, (FRAME)0);
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					if (InputState & DEVICE_BUTTON1)
 					{
 						pMS->CurState = (ROSTER + 2) + 1;
@@ -1292,9 +1293,9 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 				}
 				else
 				{
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					DrawMenuStateStrings (PM_SCAN, ROSTER + 2);
 				}
 			}

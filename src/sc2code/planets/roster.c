@@ -33,7 +33,7 @@ flash_ship_task(void *blah)
 		COLOR OldColor;
 		CONTEXT OldContext;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		s.origin = pMenuState->first_item;
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 				&GLOBAL (built_ship_q),
@@ -53,8 +53,9 @@ flash_ship_task(void *blah)
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
-		TimeIn = SleepTask (TimeIn + 8);
+		ClearSemaphore (GraphicsSem);
+		SleepThreadUntil (TimeIn + 8);
+		TimeIn = GetTimeCounter ();
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */
 	return(0);
@@ -166,7 +167,7 @@ RosterCleanup (PMENU_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		DeleteTask (pMS->flash_task);
+		KillThread (pMS->flash_task);
 		pMS->flash_task = 0;
 	}
 
@@ -208,9 +209,9 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		pMS->CurFrame = 0;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		RosterCleanup (pMS);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
@@ -221,25 +222,25 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 
 		pMS->CurState = NewState = 0;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (StatusContext);
 		goto SelectSupport;
 	}
 	else if ((InputState & DEVICE_BUTTON2)
 			&& !(pMS->CurState & SHIP_TOGGLE))
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		RosterCleanup (pMS);
 		pMS->CurFrame = 0;
 		DrawStatusMessage (NULL_PTR);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
 	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		pMS->CurState ^= SHIP_TOGGLE;
 		if (!(pMS->CurState & SHIP_TOGGLE))
 			SetFlashRect (NULL_PTR, (FRAME)0);
@@ -254,7 +255,7 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 			SetContext (StatusContext);
 			SetFlashRect (&r, (FRAME)0);
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (pMS->CurState & SHIP_TOGGLE)
 	{
@@ -262,9 +263,9 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 		{
 			if (GLOBAL_SIS (CrewEnlisted))
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				DeltaSupportCrew (1);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 		}
 		else if (sy > 0)
@@ -272,9 +273,9 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 			if (GLOBAL_SIS (CrewEnlisted)
 					< GetCPodCapacity (NULL_PTR))
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				DeltaSupportCrew (-1);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 		}
 	}
@@ -322,7 +323,7 @@ DoModifyRoster (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		if (NewState != pMS->CurState)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetContext (StatusContext);
 			s.origin = pMS->first_item;
 			StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
@@ -341,13 +342,14 @@ SelectSupport:
 			pMS->CurFrame = (FRAME)MatchSupportShip (pMS);
 
 			DeltaSupportCrew (0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			pMS->CurState = NewState;
 		}
 
 		if (pMS->flash_task == 0)
-			pMS->flash_task = AddTask (flash_ship_task, 2048);
+			pMS->flash_task = CreateThread (flash_ship_task, NULL, 2048,
+					"flash roster menu");
 	}
 
 	return (TRUE);

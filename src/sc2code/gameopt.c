@@ -137,9 +137,9 @@ FeedbackSetting (BYTE which_setting)
 			break;
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	DrawStatusMessage (buf);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static BOOLEAN DoSettings (INPUT_STATE InputState, PMENU_STATE pMS);
@@ -154,7 +154,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	FONT Font;
 	static BOOLEAN DoNaming (INPUT_STATE InputState, PMENU_STATE pMS);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	rel_index = (COUNT)(which_string - pMS->first_item.y);
 
@@ -231,7 +231,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		TextRect (&lf, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
 		{
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			return (FALSE);
 		}
 
@@ -265,7 +265,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		SetFlashRect (&r, (FRAME)0);
 	}
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	return (TRUE);
 }
 
@@ -378,9 +378,9 @@ DoNaming (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->CurString = (STRING)&GD[0];
 		DrawDescriptionString (pMS, pMS->CurState, 1);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		DoInput (pMS);
 
@@ -453,9 +453,9 @@ DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
 			|| ((InputState & DEVICE_BUTTON1)
 			&& pMS->CurState == EXIT_MENU_SETTING))
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawStatusMessage (NULL_PTR);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		pMS->CurState = SETTINGS;
 		pMS->InputFunc = DoGameOptions;
@@ -799,9 +799,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			InitLander ((unsigned char)(pSD->Flags | OVERRIDE_LANDER_FLAGS));
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
@@ -932,7 +932,7 @@ DoPickGame (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->CurState = NewState = 0;
 
 		pMS->InputFunc = DoPickGame;
-		SleepTask ((DWORD)pMS->CurFrame);
+		SleepThreadUntil ((DWORD)pMS->CurFrame);
 		pMS->CurFrame = 0;
 		PauseMusic ();
 		StopSound ();
@@ -944,7 +944,7 @@ DoPickGame (INPUT_STATE InputState, PMENU_STATE pMS)
 			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 38);
 		}
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		BatchGraphics ();
 Restart:
 		SetContext (SpaceContext);
@@ -955,13 +955,13 @@ Restart:
 	}
 	else if (InputState & DEVICE_BUTTON2)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		s.origin.x = s.origin.y = 0;
 		s.frame = SetRelFrameIndex (pMS->ModuleFrame, pMS->CurState);
 		DrawStamp (&s);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
@@ -985,7 +985,7 @@ if (pSolarSysState)
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
 		{
 RetrySave:
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			if (pMS->delta_item == SAVE_GAME)
 			{
 				STAMP MsgStamp;
@@ -1004,14 +1004,14 @@ RetrySave:
 					SetFlashRect (NULL_PTR, (FRAME)0);
 					DrawStamp (&MsgStamp);
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					
 					if (SaveProblem ())
 						goto RetrySave;
 
 					pMS->Initialized = FALSE;
 					NewState = pMS->CurState;
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					BatchGraphics ();
 					goto Restart;
 				}
@@ -1042,7 +1042,7 @@ if (pSolarSysState)
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
 			}
 			SetFlashRect (NULL_PTR, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 pMS->ModuleFrame = 0;
 			pMS->CurState = (BYTE)pMS->delta_item;
@@ -1065,7 +1065,7 @@ pMS->ModuleFrame = 0;
 
 		if (NewState != pMS->CurState)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			BatchGraphics ();
 			if (((SUMMARY_DESC *)pMS->CurString)[NewState].year_index != 0)
 			{
@@ -1126,7 +1126,7 @@ ChangeGameSelection:
 				r.extent.height = 18;
 				SetFlashRect (&r, (FRAME)0);
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 
@@ -1149,7 +1149,7 @@ PickGame (PMENU_STATE
 		TaskSwitch ();
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (SpaceContext);
 	OldFrame = SetContextBGFrame (NULL_PTR);
 	OldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
@@ -1157,11 +1157,11 @@ PickGame (PMENU_STATE
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPickGame;
 	pMS->CurString = (STRING)&desc_array[0];
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	DoInput (pMS);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	pMS->Initialized = -1;
 	pMS->InputFunc = DoGameOptions;
 
@@ -1214,7 +1214,7 @@ if (CommData.ConversationPhrases
 	SetContextDrawState (OldDrawState);
 	SetContextBGFrame (OldFrame);
 	SetContext (OldContext);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	return (retval);
 }

@@ -190,9 +190,9 @@ CombatIsInevitable (RESPONSE_REF R)
 
 		NPCPhrase (DESTRUCT_SEQUENCE);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, 0, race_bounty[SLYLANDRO_SHIP] >> 3);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
 	else

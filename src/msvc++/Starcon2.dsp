@@ -478,6 +478,54 @@ SOURCE=..\sc2code\libs\strings\strintrn.h
 SOURCE=..\sc2code\libs\video\vfileins.c
 # End Source File
 # End Group
+# Begin Group "threads"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\thrcommon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\thrcommon.h
+# End Source File
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.h
+# End Source File
+# End Group
+# End Group
+# Begin Group "time"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\timecommon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\timecommon.h
+# End Source File
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\sdl\sdltime.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\sdl\sdltime.h
+# End Source File
+# End Group
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\compiler.h
@@ -520,7 +568,11 @@ SOURCE=..\sc2code\libs\strlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\timlib.h
+SOURCE=..\sc2code\libs\threadlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\timelib.h
 # End Source File
 # Begin Source File
 

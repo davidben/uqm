@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "coderes.h"
+#include "libs/threadlib.h"
 #include "libs/graphics/gfx_common.h"
 
 //Added by Chris
@@ -43,7 +44,7 @@ INPUT_REF ArrowInput, ComputerInput, NormalInput, SerialInput,
 QUEUE race_q[NUM_PLAYERS];
 SOUND MenuSounds, GameSounds;
 FRAME ActivityFrame, status, flagship_status, misc_data;
-SEMAPHORE GraphicsSem;
+Semaphore GraphicsSem;
 STRING GameStrings;
 
 static MEM_HANDLE

@@ -49,7 +49,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	SetGraphicUseOtherExtra (1);
 	LoadIntoExtraScreen (0);
 	clut_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
 	FlushColorXForms ();
 	
 	if (hMusic)
@@ -73,7 +73,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 		PlayMusic (hMusic, TRUE, 1);
 		
 	clut_buf[0] = FadeAllToColor;
-	SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
 	FlushColorXForms ();
 }
 
@@ -88,36 +88,33 @@ Introduction (void)
 		int TempInt;
 
 	xform_buf[0] = FadeAllToBlack;
-		TempInt=XFormColorMap((COLORMAPPTR)xform_buf, 1);
-	SleepTask(TempInt);
-	SetSemaphore (&GraphicsSem);
+		TempInt = XFormColorMap ((COLORMAPPTR) xform_buf, 1);
+	SleepThreadUntil (TempInt);
+	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;
 	s.frame = CaptureDrawable (LoadGraphic (TITLE_ANIM));
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	FlushInput ();
 
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
 	LoadMasterShipList ();
-	SleepTask (TimeOut);
+	SleepThreadUntil (TimeOut);
 	
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
 	TimeOut += ONE_SECOND * 3;
-	while
-		(
-				!(InputState = AnyButtonPress (FALSE)) &&
-				TaskSwitch () <= TimeOut
-		)
+	while (!(InputState = AnyButtonPress (FALSE)) &&
+				(TaskSwitch (), GetTimeCounter ()) <= TimeOut)
 		{
 				//
 		}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	xform_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	if (InputState == 0)
 	{
@@ -136,7 +133,7 @@ Victory (void)
 	BYTE xform_buf[1];
 
 	xform_buf[0] = FadeAllToBlack;
-	SleepTask (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	DoFMV ("victory", NULL, TRUE);
 		

@@ -89,7 +89,7 @@ typedef struct melee_state
 	TEAM_IMAGE TeamImage[NUM_SIDES];
 	COUNT star_bucks[NUM_SIDES];
 	COUNT CurIndex;
-	TASK flash_task;
+	Thread flash_task;
 	TEAM_IMAGE FileList[MAX_VIS_TEAMS];
 	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
 } MELEE_STATE;

@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,29 +17,20 @@
 #ifndef _TIMLIB_H
 #define _TIMLIB_H
 
-#include "memlib.h"
+#define TIMELIB SDL
 
-#define ONE_SECOND 120
+#include "libs/compiler.h"
 
-typedef void *TASK;
+#if TIMELIB == SDL
+#	define ONE_SECOND 120
+#endif
 
-typedef void *SEMAPHORE;
-typedef SEMAPHORE *PSEMAPHORE;
+typedef DWORD TimeCount;
+typedef DWORD TimePeriod;
 
-typedef int (*TASK_FUNC) (void *Blah);
-extern TASK AddTask (TASK_FUNC TaskFunc, COUNT TaskStack);
-extern void DeleteTask (TASK Task);
-extern DWORD SetSemaphore (PSEMAPHORE pSem);
-extern void ClearSemaphore (PSEMAPHORE pSem);
-extern void SuspendTasking (void);
-extern void ResumeTasking (void);
-extern DWORD SleepTask (DWORD wake_time);
-#define TaskSwitch() SleepTask(0L)
+extern void InitTimeSystem (void);
+extern void UnInitTimeSystem (void);
+extern TimeCount GetTimeCounter (void);
 
-extern void InitTimer (void);
-extern void UninitTimer (void);
-extern DWORD GetTimeCounter (void);
-extern void WaitVBlank (void);
-
-#endif /* _TIMLIB_H */
+#endif  /* _TIMLIB_H */
 

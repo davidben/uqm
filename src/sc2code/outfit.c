@@ -215,7 +215,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		pMS->InputFunc = DoInstallModule;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 
 		SetContext (SpaceContext);
 		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
@@ -266,7 +266,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 			}
 		}
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 
 		SetFlashRect (NULL_PTR, (FRAME)0);
@@ -348,15 +348,15 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 		else
 		{
 			SetContext (StatusContext);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (InputState)
 	{
@@ -405,7 +405,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 				|| (NewItem >= GUN_WEAPON && NewItem <= CANNON_WEAPON
 				&& pMS->delta_item > 0 && pMS->delta_item < 13)));
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		if (NewState < EMPTY_SLOT)
 		{
 			if (NewItem != pMS->CurState)
@@ -502,7 +502,7 @@ InitFlash:
 			else
 				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 
 	return (TRUE);
@@ -611,9 +611,9 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			GLOBAL_SIS (FuelOnBoard) =
 					(GLOBAL_SIS (FuelOnBoard)
@@ -631,9 +631,9 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 		if (pMS->CurState == OUTFIT_DOFUEL)
 		{
 			pMS->CurState = OUTFIT_FUEL;
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 		else
 		{
@@ -655,18 +655,18 @@ ExitOutfit:
 				RECT r;
 
 				pMS->CurState = OUTFIT_DOFUEL;
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
 				SetFlashRect (&r, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				break;
 			}
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				break;
 			case OUTFIT_MODULES:
 				pMS->CurState = EMPTY_SLOT + 2;
@@ -682,9 +682,9 @@ ExitOutfit:
 				if (GameOptions () == 0)
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				break;
 		}
 	}
@@ -701,7 +701,7 @@ ExitOutfit:
 		{
 			if (NewState == OUTFIT_DOFUEL)
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetContext (SpaceContext);
 				if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
 						&& GLOBAL_SIS (ResUnits) >=
@@ -723,7 +723,7 @@ ExitOutfit:
 					GetGaugeRect (&r, FALSE);
 					SetFlashRect (&r, (FRAME)0);
 				}
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 			else if (NewState-- == OUTFIT_FUEL)
 				NewState = OUTFIT_EXIT;
@@ -733,7 +733,7 @@ ExitOutfit:
 		{
 			if (NewState == OUTFIT_DOFUEL)
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetContext (SpaceContext);
 				if (GLOBAL_SIS (FuelOnBoard))
 				{
@@ -751,7 +751,7 @@ ExitOutfit:
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
 				SetFlashRect (&r, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 			else if (NewState++ == OUTFIT_EXIT)
 				NewState = OUTFIT_FUEL;

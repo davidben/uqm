@@ -80,7 +80,7 @@ void
 SetGraphicStrength (int numerator, int denominator)
 		// I just hope numerator always = denominator...
 { 
-	//printf("Unimplemented function activated: SetGrahicsStrength(), %d %d\n",numerator,denominator);
+	//printf("Unimplemented function activated: SetGraphicsStrength(), %d %d\n",numerator,denominator);
 }
 
 //Status: Unimplemented
@@ -211,59 +211,5 @@ _image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
 	return (ret);
 }
 
-//Status: Implemented!
-DWORD
-GetTimeCounter () //I wonder if it's ms, ticks, or seconds...
-{
-	DWORD ret;
-
-	ret = (DWORD) (SDL_GetTicks () * ONE_SECOND / 1000.0);
-	return (ret);
-}
-
-DWORD
-SetSemaphore (SEMAPHORE *sem)
-{
-	SDL_SemWait (*sem);
-	return (GetTimeCounter ());
-}
-
-void
-ClearSemaphore (SEMAPHORE *sem)
-{
-	SDL_SemPost (*sem);
-}
-
-TASK
-AddTask (TASK_FUNC arg1, COUNT arg2)
-{
-	return (SDL_CreateThread ((int (*)(void *)) arg1, NULL));
-}
-
-void
-DeleteTask (TASK T)
-{
-	SDL_KillThread (T);
-}
-
-DWORD
-SleepTask (DWORD wake_time)
-{
-	DWORD t;
-
-	if (wake_time == 0)
-	{
-		SDL_Delay (5);
-		return (GetTimeCounter ());
-	}
-
-	t = GetTimeCounter ();
-	if (wake_time <= t)
-		SDL_Delay (0);
-	else
-		SDL_Delay ((wake_time - t) * 1000 / ONE_SECOND);
-
-	return (GetTimeCounter ());
-}
 
 #endif

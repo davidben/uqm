@@ -71,9 +71,9 @@ ClearSISRect (BYTE ClearFlags)
 
 	if (ClearFlags & CLEAR_SIS_RADAR)
 	{
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		DrawMenuStateStrings ((BYTE)~0, (BYTE)~0);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 #ifdef NEVER
 		r.corner.x = RADAR_X - 1;
 		r.corner.y = RADAR_Y - 1;
@@ -584,7 +584,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				SUPPORT_SHIP_PTS
 			};
 
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
 					pship_pos = ship_pos;
 					hStarShip; hStarShip = hNextShip, ++pship_pos)
@@ -600,16 +600,16 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				s.origin.x = pship_pos->x;
 				s.origin.y = pship_pos->y;
 				s.frame = StarShipPtr->ShipInfo.icons;
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				DrawStamp (&s);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				UnlockStarShip (
 						&GLOBAL (built_ship_q),
 						hStarShip
 						);
 			}
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 		}
 	}
 
@@ -923,7 +923,7 @@ CountSISPieces (BYTE piece_type)
 	return (num_pieces);
 }
 
-static TASK flash_task;
+static Thread flash_task;
 static RECT flash_rect;
 static FRAME flash_frame;
 
@@ -945,7 +945,7 @@ int flash_rect_func(void *blah)
 	{
 		CONTEXT OldContext;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (ScreenContext);
 		
 		if (flash_rect.extent.width)
@@ -1008,17 +1008,18 @@ int flash_rect_func(void *blah)
 			UnbatchGraphics ();
 		}
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		// Michael: 
 		// "This is too frequent for a binary flash, so we slow it down.
 		//  eventually once we get better alpha control we can do the fading
 		//  effect again."
-		// TimeIn = SleepTask (TimeIn + (ONE_SECOND / 16));
-		TimeIn = SleepTask (TimeIn + (ONE_SECOND / 4));
+		// SleepThreadUntil (TimeIn + (ONE_SECOND / 16));
+		SleepThreadUntil (TimeIn + (ONE_SECOND / 4));
+		TimeIn = GetTimeCounter ();
 	}
 
 	(void) blah;  /* Satisfying compiler (unused parameter) */
-		return(0);
+	return(0);
 }
 
 void
@@ -1052,7 +1053,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.extent.width = 0;
 		if (flash_task)
 		{
-			DeleteTask (flash_task);
+			KillThread (flash_task);
 			flash_task = 0;
 		}
 	}
@@ -1066,7 +1067,8 @@ SetFlashRect (PRECT pRect, FRAME f)
 
 		if (flash_task == 0)
 		{
-			flash_task = AddTask (flash_rect_func, 2048);
+			flash_task = CreateThread (flash_rect_func, NULL, 2048,
+					"flash rectangle");
 		}
 	}
 	
@@ -1131,7 +1133,7 @@ DrawMenuStateStrings (BYTE beg_index, BYTE NewState)
 	if (NewState <= end_index - beg_index)
 		s.frame = SetAbsFrameIndex (PlayFrame, beg_index + NewState);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
 	s.origin.x = RADAR_X - r.corner.x;
@@ -1183,7 +1185,7 @@ DrawMenuStateStrings (BYTE beg_index, BYTE NewState)
 			&& flash_rect.extent.height == RADAR_HEIGHT)
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
 	SetContext (OldContext);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 void

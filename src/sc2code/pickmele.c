@@ -160,7 +160,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		DrawMeleeFrame (LastStarShipPtr, 1 - which_player);
 
 		TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		PressState = AnyButtonPress (TRUE);
 		do
@@ -173,14 +173,14 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			}
 		} while (!ButtonState
 				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				|| TaskSwitch () < TimeOut));
+				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut));
 
 		if (ButtonState)
 			ButtonState = GetInputState (NormalInput);
 		if (ButtonState & DEVICE_EXIT)
 			ConfirmExit ();
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 
 		return (0);
 	}
@@ -189,9 +189,8 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	{
 		BYTE fade_buf[] = {FadeAllToColor};
 						
-		SleepTask (XFormColorMap (
-				(COLORMAPPTR)fade_buf, ONE_SECOND / 2
-				) + 2);
+		SleepThreadUntil (XFormColorMap
+				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + 2);
 		FlushColorXForms ();
 	}
 
@@ -212,7 +211,8 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	{
 		INPUT_STATE InputState;
 
-		NewTime = SleepTask (GetTimeCounter () + 1);
+		SleepThread (1);
+		NewTime = GetTimeCounter ();
 		
 		if ((InputState = GetInputState (PlayerInput[which_player])) == 0)
 			InputState = GetInputState (ArrowInput);
@@ -283,7 +283,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				col = new_col;
 
 				PlaySoundEffect (MenuSounds, 0, 0);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 ChangeSelection:
 				flash_rect.corner.x = PICK_X_OFFS
 						+ ((ICON_WIDTH + 2) * col);
@@ -333,12 +333,12 @@ ChangeSelection:
 						UnlockStarShip (&race_q[which_player], hBattleShip);
 					}
 				}
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 		}
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetFlashRect (NULL_PTR, (FRAME)0);
 	
 	if (hBattleShip == 0)

@@ -45,7 +45,7 @@ typedef struct menu_state
 	SIZE delta_item;
 
 	FRAME ModuleFrame;
-	TASK flash_task;
+	Thread flash_task;
 	RECT flash_rect0,
 						flash_rect1;
 	FRAME flash_frame0,

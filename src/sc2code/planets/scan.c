@@ -59,7 +59,7 @@ EraseCoarseScan (void)
 	RECT r, tr;
 	extern FRAME SpaceJunkFrame;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (SpaceContext);
 
 	r.corner.x = (SIS_SCREEN_WIDTH >> 1) - (160 >> 1);
@@ -78,7 +78,7 @@ EraseCoarseScan (void)
 	r.extent.width = 70;
 	RepairBackRect (&r);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static void
@@ -91,7 +91,7 @@ PrintCoarseScan (void)
 	UNICODE buf[40];
 	extern FRAME SpaceJunkFrame;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (SpaceContext);
 
 	if (CurStarDescPtr->Index == SOL_DEFINED)
@@ -157,7 +157,7 @@ PrintCoarseScan (void)
 	s.frame = SetAbsFrameIndex (SpaceJunkFrame, 20);
 	DrawStamp (&s);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 #define LEFT_SIDE_BASELINE_X 27
 #define RIGHT_SIDE_BASELINE_X (SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X)
@@ -167,7 +167,7 @@ PrintCoarseScan (void)
 	t.baseline.y = SCAN_BASELINE_Y;
 	t.align = ALIGN_LEFT;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
 			+ (EARTH_RADIUS >> 1)) / EARTH_RADIUS);
@@ -178,9 +178,9 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
 		wsprintf (buf, "|");
@@ -196,26 +196,26 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	wsprintf (buf, "%d^", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	wsprintf (buf, "<%u>", pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Weather + 1));
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	wsprintf (buf, "<%u>",
 			PLANSIZE (
@@ -224,13 +224,13 @@ PrintCoarseScan (void)
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1));
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	t.baseline.x = RIGHT_SIDE_BASELINE_X;
 	t.baseline.y = SCAN_BASELINE_Y;
 	t.align = ALIGN_RIGHT;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	{
 		DWORD tr;
@@ -249,9 +249,9 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius) >= 10 * 100)
 		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
@@ -260,9 +260,9 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity) >= 10 * 100)
 		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
@@ -275,9 +275,9 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.AxialTilt) < 0)
 		temp = -temp;
@@ -285,9 +285,9 @@ PrintCoarseScan (void)
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.RotationPeriod < 240 * 10)
 	{
@@ -302,7 +302,7 @@ PrintCoarseScan (void)
 	}
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static void
@@ -315,7 +315,7 @@ SetPlanetLoc (POINT new_pt)
 	new_pt.x >>= MAG_SHIFT;
 	new_pt.y >>= MAG_SHIFT;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (ScanContext);
 	s.origin.x = pMenuState->flash_rect0.corner.x - (FLASH_WIDTH >> 1);
 	s.origin.y = pMenuState->flash_rect0.corner.y - (FLASH_HEIGHT >> 1);
@@ -329,7 +329,7 @@ SetPlanetLoc (POINT new_pt)
 	r.extent.width = FLASH_WIDTH;
 	r.extent.height = FLASH_HEIGHT;
 	LoadDisplayPixmap (&r, pMenuState->flash_frame0);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	
 	TaskSwitch ();
 }
@@ -354,7 +354,8 @@ flash_planet_loc_func(void *blah)
 		DWORD T;
 		CONTEXT OldContext;
 
-		T = SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
+		T = GetTimeCounter ();
 		if (p.Object.Stamp.origin.x != pMenuState->flash_rect0.corner.x
 				|| p.Object.Stamp.origin.y != pMenuState->flash_rect0.corner.y)
 		{
@@ -365,7 +366,7 @@ flash_planet_loc_func(void *blah)
 		{
 			if (T < TimeIn)
 			{
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				TaskSwitch ();
 
 				continue;
@@ -383,7 +384,7 @@ flash_planet_loc_func(void *blah)
 		SetContext (OldContext);
 
 		TimeIn = T + (ONE_SECOND >> 4);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		
 		TaskSwitch ();
 	}
@@ -400,9 +401,9 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 	{
 		if (pMenuState->flash_task)
 		{
-			SetSemaphore (&GraphicsSem);
-			DeleteTask (pMenuState->flash_task);
-			ClearSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
+			KillThread (pMenuState->flash_task);
+			ClearSemaphore (GraphicsSem);
 			pMenuState->flash_task = 0;
 		}
 		goto ExitPlanetSide;
@@ -423,7 +424,7 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			pMS->Initialized = TRUE;
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetContext (ScanContext);
 			pMenuState->flash_rect0.corner.x =
 					pSolarSysState->MenuState.first_item.x >> MAG_SHIFT;
@@ -437,11 +438,12 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 			LoadDisplayPixmap (&r, pMenuState->flash_frame0);
 
 			SetFlashRect (NULL_PTR, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			InitLander (0);
 
-			pMenuState->flash_task = AddTask (flash_planet_loc_func, 2048);
+			pMenuState->flash_task = CreateThread (flash_planet_loc_func,
+					NULL, 2048, "flash planet location");
 		}
 	}
 	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
@@ -451,14 +453,14 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 		MenuSounds = (SOUND)pMS->CurFrame;
 		pMS->CurFrame = 0;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawStatusMessage (NULL_PTR);
 		if (pMenuState->flash_task)
 		{
-			DeleteTask (pMenuState->flash_task);
+			KillThread (pMenuState->flash_task);
 			pMenuState->flash_task = 0;
 		}
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		if (!(InputState & DEVICE_BUTTON1))
 			SetPlanetLoc (pSolarSysState->MenuState.first_item);
@@ -475,13 +477,13 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			EraseCoarseScan ();
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
 			SetContext (ScanContext);
 			s.origin = pMenuState->flash_rect0.corner;
 			s.frame = SetAbsFrameIndex (misc_data, FLASH_INDEX);
 			DrawStamp (&s);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			PlanetSide (pMS);
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -493,13 +495,13 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 				extern ACTIVITY NextActivity;
 				extern void SaveFlagshipState (void);
 
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				if (pMenuState->flash_task)
 				{
-					DeleteTask (pMenuState->flash_task);
+					KillThread (pMenuState->flash_task);
 					pMenuState->flash_task = 0;
 				}
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				NextActivity |= CHECK_LOAD; /* fake a load game */
 				GLOBAL (CurrentActivity) |= START_ENCOUNTER;
@@ -535,9 +537,9 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 		}
 
 		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 ExitPlanetSide:
 		if (pMS->CurFrame)
@@ -581,7 +583,7 @@ ExitPlanetSide:
 
 			TimeIn = GetTimeCounter ();
 			SetPlanetLoc (new_pt);
-			SleepTask (TimeIn + 3);
+			SleepThreadUntil (TimeIn + 3);
 		}
 	}
 
@@ -697,12 +699,12 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			|| ((InputState & DEVICE_BUTTON1)
 			&& pMS->CurState == EXIT_SCAN))
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 		BatchGraphics ();
 		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
 		UnbatchGraphics ();
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		EraseCoarseScan ();
 // DrawMenuStateStrings (PM_SCAN, SCAN);
@@ -739,17 +741,17 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 					GAME_STRING (NAVIGATION_STRING_BASE + 5),
 					fuel_required / FUEL_TANK_SCALE,
 					((fuel_required % FUEL_TANK_SCALE) + 5) / 10);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawStatusMessage (buf);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetContext (ScanContext);
 			BatchGraphics ();
 			DrawPlanet (0, 0, 0, 0);
 			DrawScannedObjects (FALSE);
 			UnbatchGraphics ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		
 			pMS->Initialized = FALSE;
 			pMS->CurFrame = 0;
@@ -780,7 +782,7 @@ pSolarSysState->MenuState.Initialized += 4;
 		pMS->delta_item = (SIZE)pSolarSysState->CurNode;
 		t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 		r.corner.x = 0;
 		r.corner.y = t.baseline.y - 10;
@@ -810,7 +812,7 @@ pSolarSysState->MenuState.Initialized += 4;
 		DrawText (&t);
 
 		SetContext (ScanContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 	{
 		DWORD rgb;
@@ -828,11 +830,11 @@ pSolarSysState->MenuState.Initialized += 4;
 				break;
 		}
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		BatchGraphics ();
 		DrawPlanet (0, 0, 0, 0);
 		UnbatchGraphics ();
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		PressState = AnyButtonPress (TRUE);
 		for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
@@ -845,21 +847,21 @@ pSolarSysState->MenuState.Initialized += 4;
 			}
 			if (ButtonState)
 				i = MAP_HEIGHT + NUM_FLASH_COLORS;
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			BatchGraphics ();
 			DrawPlanet (0, 0, i, rgb);
 			if (pMS->delta_item)
 				DrawScannedStuff (i, min_scan);
 			UnbatchGraphics ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			
-			SleepTask (GetTimeCounter () + 2);
+			SleepThread (2);
 		}
 	}
 
 		} while (++min_scan <= max_scan);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 		r.corner.x = 0;
 		r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
@@ -872,12 +874,12 @@ pSolarSysState->MenuState.Initialized += 4;
 		{
 			DrawPlanet (0, 0, 0, 0);
 			DrawScannedObjects (FALSE);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState = DISPATCH_SHUTTLE);
 		}
 		else
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			
 pSolarSysState->MenuState.Initialized -= 4;
 		WaitForNoInput (ONE_SECOND / 2);
@@ -952,7 +954,7 @@ ScanSystem (void)
 		pSolarSysState->MenuState.first_item.x = (MAP_WIDTH >> 1) << MAG_SHIFT;
 		pSolarSysState->MenuState.first_item.y = (MAP_HEIGHT >> 1) << MAG_SHIFT;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		ScanContext = CaptureContext (CreateContext ());
 		SetContext (ScanContext);
 		MenuState.flash_rect0.extent.width = FLASH_WIDTH;
@@ -968,7 +970,7 @@ ScanSystem (void)
 		r.extent.height = MAP_HEIGHT;
 		SetContextClipRect (&r);
 		DrawScannedObjects (FALSE);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 
 	DrawMenuStateStrings (PM_MIN_SCAN, MenuState.CurState);
@@ -981,12 +983,12 @@ ScanSystem (void)
 
 	if (ScanContext)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 		DestroyDrawable (ReleaseDrawable (MenuState.flash_frame0));
 		DestroyContext (ReleaseContext (ScanContext));
 		ScanContext = 0;
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 }
 

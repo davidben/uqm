@@ -69,6 +69,8 @@ main (int argc, char *argv[])
 		}
 	}
 
+	InitThreadSystem ();
+	InitTimeSystem ();
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, frequency);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);

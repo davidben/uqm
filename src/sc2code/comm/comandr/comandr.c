@@ -21,6 +21,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "comm/comandr/strings.h"
+#include "libs/graphics/gfx_common.h"
 
 static LOCDATA commander_desc =
 {
@@ -203,10 +204,10 @@ NoRadioactives (RESPONSE_REF R)
 		{
 			NPCPhrase (HERE_IS_A_NEW_LANDER);
 			++GLOBAL_SIS (NumLanders);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawLanders ();
 			DeltaSISGauges (4, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			SET_GAME_STATE (LANDERS_LOST, 1);
 		}
@@ -214,26 +215,26 @@ NoRadioactives (RESPONSE_REF R)
 		{
 			NPCPhrase (HERE_IS_ANOTHER_LANDER);
 			++GLOBAL_SIS (NumLanders);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawLanders ();
 			DeltaSISGauges (4, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 		else if (PLAYER_SAID (R, need_fuel))
 		{
 			NPCPhrase (GIVE_FUEL);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 		}
 		else if (PLAYER_SAID (R, need_fuel_again))
 		{
 			NPCPhrase (GIVE_FUEL_AGAIN);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		if (GLOBAL_SIS (NumLanders) == 0)
@@ -265,10 +266,10 @@ AskAfterRadios (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_A_NEW_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		SET_GAME_STATE (LANDERS_LOST, 1);
 	}
@@ -276,26 +277,26 @@ AskAfterRadios (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_ANOTHER_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (PLAYER_SAID (R, need_fuel))
 	{
 		NPCPhrase (GIVE_FUEL);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 	}
 	else if (PLAYER_SAID (R, need_fuel_again))
 	{
 		NPCPhrase (GIVE_FUEL_AGAIN);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (PLAYER_SAID (R, where_get_radios))
 	{
@@ -365,10 +366,10 @@ TellMoonBase (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_A_NEW_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		SET_GAME_STATE (LANDERS_LOST, 1);
 	}
@@ -376,26 +377,26 @@ TellMoonBase (RESPONSE_REF R)
 	{
 		NPCPhrase (HERE_IS_ANOTHER_LANDER);
 		++GLOBAL_SIS (NumLanders);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DrawLanders ();
 		DeltaSISGauges (4, 0, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (PLAYER_SAID (R, need_fuel))
 	{
 		NPCPhrase (GIVE_FUEL);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		SET_GAME_STATE (GIVEN_FUEL_BEFORE, 1);
 	}
 	else if (PLAYER_SAID (R, need_fuel_again))
 	{
 		NPCPhrase (GIVE_FUEL_AGAIN);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, 5 * FUEL_TANK_SCALE, 0);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (PLAYER_SAID (R, we_are_here_to_help))
 	{
@@ -556,13 +557,13 @@ GiveRadios (RESPONSE_REF R)
 		NPCPhrase (FUEL_UP1);
 		
 		AlienTalkSegue (1);
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		CommData.AlienAmbientArray[2].AnimFlags |= ANIM_DISABLED;
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), 0);
 		TFB_ReleaseColorMap ();
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		AlienTalkSegue ((COUNT)~0);
 
 		RevealSelf (NULL_PTR);

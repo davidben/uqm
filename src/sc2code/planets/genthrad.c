@@ -166,9 +166,9 @@ GenerateThradd (BYTE control)
 							|| (!GET_GAME_STATE (HELIX_UNPROTECTED)
 							&& (BYTE)(GET_GAME_STATE (THRADD_MISSION) - 1) >= 3))
 						break;
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					RepairSISBorder ();
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 				}
 
 				if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED

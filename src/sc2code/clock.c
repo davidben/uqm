@@ -56,7 +56,8 @@ int clock_task_func(void* blah)
 				 * can be halted. (e.g. during battle
 				 * or communications)
 				 */
-		TimeIn = SetSemaphore (&GLOBAL (GameClock).clock_sem);
+		SetSemaphore (GLOBAL (GameClock).clock_sem);
+		TimeIn = GetTimeCounter ();
 
 		if (GLOBAL (GameClock).tick_count <= 0
 				&& (GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks) > 0)
@@ -79,7 +80,7 @@ int clock_task_func(void* blah)
 				}
 			}
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawStatusMessage (NULL_PTR);
 			{
 				HEVENT hEvent;
@@ -104,7 +105,7 @@ int clock_task_func(void* blah)
 					FreeEvent (hEvent);
 				}
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		OnAutoPilot = (BOOLEAN)(
@@ -116,7 +117,8 @@ int clock_task_func(void* blah)
 		{
 			COUNT num_ticks;
 
-			num_ticks = (COUNT)(SetSemaphore (&GraphicsSem) - LastTime);
+			SetSemaphore (GraphicsSem);
+			num_ticks = GetTimeCounter () - LastTime;
 			if (!OnAutoPilot)
 			{
 				DrawSISMessage (NULL_PTR);
@@ -142,14 +144,14 @@ int clock_task_func(void* blah)
 				cycle_index = (cycle_index + 1) % NUM_CYCLES;
 				delay_count = NUM_DELAYS;
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			LastPilot = OnAutoPilot;
 			LastTime += num_ticks;
 		}
 		
-		ClearSemaphore (&GLOBAL (GameClock).clock_sem);
-		SleepTask (TimeIn + 1);
+		ClearSemaphore (GLOBAL (GameClock).clock_sem);
+		SleepThreadUntil (TimeIn + 1);
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */
 	return(0);
@@ -167,7 +169,8 @@ InitGameClock (void)
 	GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks = 0;
 	SuspendGameClock ();
 	if ((GLOBAL (GameClock.clock_task) =
-			AddTask (clock_task_func, 2048)) == 0)
+			CreateThread (clock_task_func, NULL, 2048,
+			"game clock")) == 0)
 		return (FALSE);
 
 	return (TRUE);
@@ -181,9 +184,9 @@ UninitGameClock (void)
 		if (!GameClockRunning ())
 			ResumeGameClock ();
 
-		SetSemaphore (&GLOBAL (GameClock.clock_sem));
-		DeleteTask (GLOBAL (GameClock.clock_task));
-		ClearSemaphore (&GLOBAL (GameClock.clock_sem));
+		SetSemaphore (GLOBAL (GameClock.clock_sem));
+		KillThread (GLOBAL (GameClock.clock_task));
+		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 
 		GLOBAL (GameClock.clock_task) = 0;
 	}
@@ -196,7 +199,7 @@ UninitGameClock (void)
 void
 SuspendGameClock (void)
 {
-	SetSemaphore (&GLOBAL (GameClock.clock_sem));
+	SetSemaphore (GLOBAL (GameClock.clock_sem));
 	GLOBAL (GameClock.TimeCounter) = 0;
 }
 
@@ -204,7 +207,7 @@ void
 ResumeGameClock (void)
 {
 	GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
-	ClearSemaphore (&GLOBAL (GameClock.clock_sem));
+	ClearSemaphore (GLOBAL (GameClock.clock_sem));
 }
 
 BOOLEAN
@@ -219,7 +222,7 @@ SetGameClockRate (COUNT seconds_per_day)
 	SIZE new_day_in_ticks, new_tick_count;
 
 //if (GLOBAL (GameClock.clock_sem)) printf ("%u\n", GLOBAL (GameClock.clock_sem));
-	SetSemaphore (&GLOBAL (GameClock.clock_sem));
+	SetSemaphore (GLOBAL (GameClock.clock_sem));
 	new_day_in_ticks = (SIZE)(seconds_per_day * (ONE_SECOND / 5));
 	if (GLOBAL (GameClock.day_in_ticks) == 0)
 		new_tick_count = new_day_in_ticks;
@@ -230,7 +233,7 @@ SetGameClockRate (COUNT seconds_per_day)
 		new_tick_count = 1;
 	GLOBAL (GameClock.day_in_ticks) = new_day_in_ticks;
 	GLOBAL (GameClock.tick_count) = new_tick_count;
-	ClearSemaphore (&GLOBAL (GameClock.clock_sem));
+	ClearSemaphore (GLOBAL (GameClock.clock_sem));
 }
 
 BOOLEAN

@@ -95,7 +95,7 @@ GenerateChmmr (BYTE control)
 			{
 				RECT r;
 
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 
 				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
 						CaptureFont (
@@ -130,7 +130,7 @@ GenerateChmmr (BYTE control)
 						));
 				pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
 
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				break;
 			}
 		default:

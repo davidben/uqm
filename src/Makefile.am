@@ -1,11 +1,6 @@
-
-# Automake template file.
-# Written by Mudry <mudry@user.sf.net>, protected by GNU GPL.
-# CVS $ Id: $
-
 SUBDIRS = sc2code
 
-CFLAGS = -Wall
+#CFLAGS =
 
 INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
 	-I$(top_srcdir)/src \

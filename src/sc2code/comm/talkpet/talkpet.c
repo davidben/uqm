@@ -266,11 +266,11 @@ RESPONSE_FUNC  RespFunc;
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), 0);
-		SleepTask (GetTimeCounter () + 1);
+		SleepThread (1);
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), 0);
-		SleepTask (GetTimeCounter () + 1);
+		SleepThread (1);
 	}
 
 	Response (R, RespFunc);
@@ -539,11 +539,11 @@ KillPet (RESPONSE_REF R)
 			XFormPLUT (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 					), 0);
-			SleepTask (GetTimeCounter () + 1);
+			SleepThread (1);
 			XFormPLUT (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 					), 0);
-			SleepTask (GetTimeCounter () + 1);
+			SleepThread (1);
 		}
 	}
 

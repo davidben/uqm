@@ -27,8 +27,8 @@ AM_MAINTAINER_MODE
 
 # Configurables
 
-CFLAGS="$CFLAGS -g -DHAVE_OPENGL -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
-CPPFLAGS="$CPPFLAGS -g -DHAVE_OPENGL -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
+CFLAGS="$CFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
+CPPFLAGS="$CPPFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
 
 # These defines seem to be missing, and they are added here as a workaround.
 
@@ -198,6 +198,10 @@ AC_CONFIG_FILES([
   src/sc2code/libs/sound/sdl/Makefile
   src/sc2code/libs/graphics/Makefile
   src/sc2code/libs/graphics/sdl/Makefile
+  src/sc2code/libs/threads/Makefile
+  src/sc2code/libs/threads/sdl/Makefile
+  src/sc2code/libs/time/Makefile
+  src/sc2code/libs/time/sdl/Makefile
   src/sc2code/libs/video/Makefile
   src/sc2code/planets/Makefile
   src/sc2code/ships/Makefile

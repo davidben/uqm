@@ -217,9 +217,9 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (NOT_ENOUGH_ROOM);
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (-SHIP_CREW_COST, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SlaveryCount += SHIP_CREW_COST;
 			ActivateStarShip (DRUUGE_SHIP, 1);
 
@@ -233,9 +233,9 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
 			SET_GAME_STATE (ROSY_SPHERE, 1);
@@ -249,9 +249,9 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ARTIFACT_2_ON_SHIP, 1);
 
@@ -264,9 +264,9 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ARTIFACT_3_ON_SHIP, 1);
 
@@ -280,10 +280,10 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (-FUEL_CREW_COST,
 					FUEL_CREW_COST * FUEL_TANK_SCALE, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SlaveryCount += FUEL_CREW_COST;
 
 			NPCPhrase (BOUGHT_FUEL);
@@ -439,14 +439,14 @@ DoTransaction (RESPONSE_REF R)
 			capacity -= GLOBAL_SIS (FuelOnBoard);
 			f = (COUNT)((capacity + (FUEL_TANK_SCALE >> 1)) / FUEL_TANK_SCALE);
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			while (capacity > 0x3FFFL)
 			{
 				DeltaSISGauges (0, 0x3FFF, 0);
 				capacity -= 0x3FFF;
 			}
 			DeltaSISGauges (0, (SIZE)capacity, 0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			NPCPhrase (FUEL0);
 			NPCPhrase (-(int)f);

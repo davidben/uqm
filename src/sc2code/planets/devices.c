@@ -39,7 +39,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	RECT r;
 	PBYTE pDeviceMap;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	SetContext (StatusContext);
 	SetContextFont (TinyFont);
@@ -173,7 +173,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		DrawText (&t);
 	}
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static UWORD
@@ -211,7 +211,7 @@ DeviceFailed (BYTE which_device)
 				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3),
 						0, GAME_SOUND_PRIORITY);
 				fade_buf[0] = FadeAllToWhite;
-				SleepTask (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
+				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
 						+ (ONE_SECOND * 2));
 				if (CurStarDescPtr->Index != CHMMR_DEFINED
 						|| pSolarSysState->pOrbitalDesc !=
@@ -444,7 +444,7 @@ DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
 	{
 		UWORD status;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		status = DeviceFailed (
 				((PBYTE)pMS->CurFrame)[pMS->CurState - 1]
 				);
@@ -455,7 +455,7 @@ DoManipulateDevices (INPUT_STATE InputState, PMENU_STATE pMS)
 		else if (HIBYTE (status) == 0)
 			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3),
 					0, GAME_SOUND_PRIORITY);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return ((BOOLEAN)NewState);
 	}
@@ -629,9 +629,9 @@ Devices (PMENU_STATE pMS)
 		if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
 				&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			ClearSISRect (DRAW_SIS_DISPLAY);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			if (!GET_GAME_STATE (PORTAL_COUNTER)
 					&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)

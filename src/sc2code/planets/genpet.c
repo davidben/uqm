@@ -66,14 +66,14 @@ ZapToUrquanEncounter (void)
 			COUNT i;
 			BYTE black_buf[] = {FadeAllToBlack};
 
-			SleepTask (XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND * 2));
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND * 2));
 			for (i = 0; i < LOST_DAYS; ++i)
 			{
 				while (ClockTick () > 0)
 					;
 
 				ResumeGameClock ();
-				SleepTask (GetTimeCounter () + 2);
+				SleepThread (2);
 				SuspendGameClock ();
 			}
 		}
@@ -85,7 +85,7 @@ ZapToUrquanEncounter (void)
 		dx = (SIZE)square_root ((long)dx * dx + (long)dy * dy)
 				+ (FUEL_TANK_SCALE >> 1);
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DeltaSISGauges (0, -dx, 0);
 		if (GLOBAL_SIS (FuelOnBoard) < 5 * FUEL_TANK_SCALE)
 		{
@@ -95,7 +95,7 @@ ZapToUrquanEncounter (void)
 		}
 		DrawSISMessage (NULL_PTR);
 		DrawHyperCoords (EncounterPtr->SD.star_pt);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		UnlockEncounter (hEncounter);
 	}

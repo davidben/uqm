@@ -1,13 +1,8 @@
-
-# Automake template file.
-# Written by Mudry <mudry@user.sf.net>, protected by GNU GPL.
-# CVS $ Id: $
-
 SUBDIRS = ships libs planets comm
 
 # We build the core SC2 code as a static library.
 
-CFLAGS = -W -Wall
+#CFLAGS =
 
 INCLUDES = \
 	-I$(top_srcdir)/src \

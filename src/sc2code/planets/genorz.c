@@ -333,9 +333,9 @@ GenerateOrz (BYTE control)
 						if (OrzSurvivors)
 							break;
 
-						SetSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
 						RepairSISBorder ();
-						ClearSemaphore (&GraphicsSem);
+						ClearSemaphore (GraphicsSem);
 					}
 				}
 

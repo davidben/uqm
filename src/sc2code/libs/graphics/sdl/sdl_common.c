@@ -303,7 +303,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		//       cannot currently use SDL_SemWait because it would break
 		//       the usage of continuity_break
 
-		semval = SDL_SemWaitTimeout (GraphicsSem, 100);
+		semval = TimeoutSetSemaphore (GraphicsSem, ONE_SECOND / 10);
 		if (semval != 0 && !continuity_break)
 			return;
 		continuity_break = 0;

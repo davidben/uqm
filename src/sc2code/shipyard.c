@@ -127,7 +127,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
@@ -181,7 +181,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 
 	SetFlashRect ((PRECT)~0L, (FRAME)0);
 	SetContext (OldContext);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 #define SHIP_WIN_WIDTH 34
@@ -369,7 +369,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		RECT r;
 		CONTEXT OldContext;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (OffScreenContext);
 		SetContextFGFrame (Screen);
 		SetContextBackGroundColor (BLACK_COLOR);
@@ -382,7 +382,8 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		TimeIn = GetTimeCounter ();
 		do
 		{
-			TimeIn = SleepTask (TimeIn + 5);
+			SleepThreadUntil (TimeIn + 5);
+			TimeIn = GetTimeCounter ();
 			BatchGraphics ();
 StartFinalPass:
 			pship_win_info = &ship_win_info[0];
@@ -439,7 +440,7 @@ StartFinalPass:
 
 		SetContextClipRect (NULL_PTR);
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 }
 
@@ -468,9 +469,9 @@ CrewTransaction (SIZE crew_delta)
 			{
 				GLOBAL (CrewCost) += 2;
 
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 			}
 		}
 		else
@@ -480,9 +481,9 @@ CrewTransaction (SIZE crew_delta)
 			{
 				GLOBAL (CrewCost) -= 2;
 
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 			}
 		}
 		if (!(ActivateStarShip (
@@ -516,7 +517,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->CurState = MAKE_BYTE (0, 0xF);
 		pMS->delta_item = 0;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
 		goto ChangeFlashRect;
 	}
@@ -584,7 +585,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 						);
 			}
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 
 #ifdef WANT_SHIP_SPINS
 			if (InputState & DEVICE_BUTTON3)
@@ -620,7 +621,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					COUNT Index;
 
 // SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 					{
 						pMS->delta_item = MODIFY_CREW_FLAG;
@@ -646,7 +647,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 							ShowCombatShip ((COUNT)pMS->CurState, (SHIP_FRAGMENTPTR)0);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
-							SetSemaphore (&GraphicsSem);
+							SetSemaphore (GraphicsSem);
 							DeltaSISGauges (
 									UNDEFINED_DELTA, UNDEFINED_DELTA, -((int)ShipCost[Index])
 									);
@@ -657,7 +658,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 							r.extent.height = 5;
 							SetContext (SpaceContext);
 							SetFlashRect (&r, (FRAME)0);
-							ClearSemaphore (&GraphicsSem);
+							ClearSemaphore (GraphicsSem);
 						}
 							
 						return (TRUE);
@@ -685,7 +686,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 						
 						return (TRUE);
 					}
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					goto ChangeFlashRect;
 				}
 				else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
@@ -838,9 +839,9 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 							ResUnits += crew_bought * GLOBAL (CrewCost);
 
 							SetFlashRect (NULL_PTR, (FRAME)0);
-							ClearSemaphore (&GraphicsSem);
+							ClearSemaphore (GraphicsSem);
 							ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);
-							SetSemaphore (&GraphicsSem);
+							SetSemaphore (GraphicsSem);
 							pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
 							SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 
@@ -874,13 +875,13 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 			}
 			else if (InputState & DEVICE_BUTTON2)
 			{
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				pMS->InputFunc = DoShipyard;
 				DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				return (TRUE);
 			}
@@ -910,7 +911,7 @@ ChangeFlashRect:
 				}
 				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 
@@ -923,7 +924,7 @@ DrawBluePrint (PMENU_STATE pMS)
 	COUNT num_frames;
 	STAMP s;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (SpaceContext);
 
 	pMS->ModuleFrame = CaptureDrawable (
@@ -1034,7 +1035,7 @@ DrawBluePrint (PMENU_STATE pMS)
 	DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 	pMS->ModuleFrame = 0;
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 BOOLEAN
@@ -1067,7 +1068,7 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetContext (SpaceContext);
 			SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 			s.origin.x = s.origin.y = 0;
@@ -1087,12 +1088,12 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENTPTR)0);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		pMS->Initialized = TRUE;
@@ -1102,10 +1103,10 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 			&& pMS->CurState == SHIPYARD_EXIT))
 	{
 ExitShipyard:
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
@@ -1121,9 +1122,9 @@ ExitShipyard:
 			if (GameOptions () == 0)
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 	else

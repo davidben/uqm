@@ -196,10 +196,10 @@ ship_preprocess (register PELEMENT ElementPtr)
 			InitIntersectStartPoint (ElementPtr);
 			InitIntersectEndPoint (ElementPtr);
 
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			ResumeGameClock ();
 			SetGameClockRate (HYPERSPACE_CLOCK_RATE);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 
 			if (hyper_transition (ElementPtr))
 				return;

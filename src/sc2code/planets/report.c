@@ -88,7 +88,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 
 	Sleepy = TRUE;
 	page_cells = 0;
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	FlushInput ();
 	goto InitPageCell;
@@ -131,9 +131,9 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						DrawText (&t);
 					else
 					{
-						SetSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
 						DrawText (&t);
-						ClearSemaphore (&GraphicsSem);
+						ClearSemaphore (GraphicsSem);
 
 						PlaySound (ReadOutSounds, GAME_SOUND_PRIORITY);
 
@@ -146,7 +146,8 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						if (word_chars == 0)
 							TimeOut += ONE_SECOND / 20;
 
-						while (TaskSwitch () < TimeOut)
+						TaskSwitch();
+						while (GetTimeCounter () < TimeOut)
 						{
 							if (ButtonState)
 							{
@@ -156,10 +157,11 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 							else if (AnyButtonPress (TRUE))
 							{
 								Sleepy = FALSE;
-								SetSemaphore (&GraphicsSem);
+								SetSemaphore (GraphicsSem);
 								BatchGraphics ();
 								break;
 							}
+							TaskSwitch();
 						}
 					}
 					++t.pStr;
@@ -179,7 +181,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			if (!Sleepy)
 			{
 				UnbatchGraphics ();
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			}
 
 			while (AnyButtonPress (TRUE))
@@ -193,17 +195,17 @@ InitPageCell:
 			row_cells = 0;
 			if (StrLen)
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				if (!Sleepy)
 					BatchGraphics ();
 				ClearReportArea (page_cells++);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0, 0x1F, 0), 0xFF));
 				if (Sleepy)
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 			}
 		}
 	}
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 }
 
 void
@@ -243,11 +245,11 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 #endif /* OLD */
 	SetContext (OldContext);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	FlushInput ();
 	while (AnyButtonPress (TRUE))
 		TaskSwitch ();
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (pMenuState)
 		pMenuState->flash_rect0.corner = old_curs;

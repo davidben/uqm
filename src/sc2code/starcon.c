@@ -40,7 +40,7 @@ int arilou_gate_task(void* Blah)
 	counter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
 	for (;;)
 	{
-		SetSemaphore (&GLOBAL (GameClock.clock_sem));
+		SetSemaphore (GLOBAL (GameClock.clock_sem));
 
 		if (GET_GAME_STATE (ARILOU_SPACE) == OPENING)
 		{
@@ -53,12 +53,13 @@ int arilou_gate_task(void* Blah)
 				counter = 0;
 		}
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
-		ClearSemaphore (&GLOBAL (GameClock.clock_sem));
-		TimeIn = SleepTask (TimeIn + BATTLE_FRAME_RATE);
+		ClearSemaphore (GLOBAL (GameClock.clock_sem));
+		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
+		TimeIn = GetTimeCounter ();
 	}
 
 	(void) Blah;  /* Satisfying compiler (unused parameter) */
@@ -951,25 +952,26 @@ if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
 				}
 				else
 				{
-					TASK ArilouTask;
+					Thread ArilouTask;
 					
 					GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0);
 
-					ArilouTask = AddTask (arilou_gate_task, 128);
+					ArilouTask = CreateThread (arilou_gate_task, NULL, 128,
+							"arilou gate (?)");
 
 					TaskSwitch ();
 
 					Battle ();
 					if (ArilouTask)
-						DeleteTask (ArilouTask);
+						KillThread (ArilouTask);
 				}
 #ifdef TESTING
 if (_simple_count != sc) printf ("%d difference!\n", (int)_simple_count - (int)sc);
 #endif //TESTING
 
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				SetFlashRect (NULL_PTR, (FRAME)0);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				LastActivity = GLOBAL (CurrentActivity);
 

@@ -1639,9 +1639,9 @@ NormalStarbase (RESPONSE_REF R)
 			NPCPhrase (GLOBAL_SHIP_NAME);
 			NPCPhrase (STARBASE_IS_READY_C);
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DeltaSISGauges (0, 0, 2500);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			SET_GAME_STATE (STARBASE_MONTH,
 					GLOBAL (GameClock.month_index));
 			SET_GAME_STATE (STARBASE_DAY,
@@ -1730,7 +1730,8 @@ SellMinerals (RESPONSE_REF R)
 		if (i == 0)
 		{
 			DrawCargoStrings ((BYTE)~0, (BYTE)~0);
-			TimeIn = SleepTask (GetTimeCounter () + (ONE_SECOND / 2));
+			SleepThread (ONE_SECOND / 2);
+			TimeIn = GetTimeCounter ();
 			DrawCargoStrings ((BYTE)0, (BYTE)0);
 		}
 		else if (Sleepy)
@@ -1749,30 +1750,33 @@ SellMinerals (RESPONSE_REF R)
 					Sleepy = FALSE;
 					GLOBAL_SIS (ElementAmounts[i]) = 0;
 					GLOBAL_SIS (TotalElementMass) -= amount;
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					DeltaSISGauges (0, 0, amount * GLOBAL (ElementWorth[i]));
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					break;
 				}
 				
 				--GLOBAL_SIS (ElementAmounts[i]);
 				--GLOBAL_SIS (TotalElementMass);
-				TimeIn = TaskSwitch ();
+				TaskSwitch ();
+				TimeIn = GetTimeCounter ();
 				DrawCargoStrings ((BYTE)i, (BYTE)i);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				ShowRemainingCapacity ();
 				DeltaSISGauges (0, 0, GLOBAL (ElementWorth[i]));
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 			} while (--amount);
 		}
-		if (Sleepy)
-			TimeIn = SleepTask (TimeIn + (ONE_SECOND / 4));
+		if (Sleepy) {
+			SleepThreadUntil (TimeIn + (ONE_SECOND / 4));
+			TimeIn = GetTimeCounter ();
+		}
 	}
-	SleepTask (GetTimeCounter () + (ONE_SECOND / 2));
+	SleepThread (ONE_SECOND / 2);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	ClearSISRect (DRAW_SIS_DISPLAY);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 // DrawStorageBays (FALSE);
 
 	if (total < 1000)

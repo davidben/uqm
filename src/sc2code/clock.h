@@ -54,8 +54,8 @@ typedef struct
 	BYTE day_index, month_index;
 	COUNT year_index;
 	SIZE tick_count, day_in_ticks;
-	void *clock_sem;
-	TASK clock_task;
+	Semaphore clock_sem;
+	Thread clock_task;
 	DWORD TimeCounter;
 
 	QUEUE event_q;

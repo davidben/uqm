@@ -39,7 +39,7 @@ ConfirmExit (void)
 	else if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		InputState = DEVICE_EXIT;
 	else
@@ -98,7 +98,7 @@ ConfirmExit (void)
 		SetContextDrawState (oldDrawState);
 		SetContext (oldContext);
 	}
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	if (ClockActive)
 		ResumeGameClock ();

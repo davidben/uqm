@@ -62,7 +62,7 @@ LoadPlanet (BOOLEAN IsDefined)
 {
 	STAMP s;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	BatchGraphics ();
 	if (!(LastActivity & CHECK_LOAD))
@@ -103,9 +103,9 @@ LoadPlanet (BOOLEAN IsDefined)
 	{
 		if (LOBYTE (LastActivity) == 0)
 		{
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DrawSISFrame ();
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 		}
 		else
 		{
@@ -146,7 +146,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		LoadIntoExtraScreen (&r);
 	}
 	
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	if (!PLRPlaying ((MUSIC_REF)~0))
 	{
@@ -156,7 +156,8 @@ LoadPlanet (BOOLEAN IsDefined)
 		if (pSolarSysState->MenuState.flash_task == 0)
 		{
 			pSolarSysState->MenuState.flash_task =
-					AddTask (rotate_planet_task, 4096);
+					CreateThread (rotate_planet_task, NULL, 4096,
+					"rotate planets");
 
 			while (pSolarSysState->MenuState.Initialized == 2)
 				TaskSwitch ();
@@ -171,11 +172,11 @@ LoadPlanet (BOOLEAN IsDefined)
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		ScreenTransition (3, &r);
 		UnbatchGraphics ();
 		LoadIntoExtraScreen (&r);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 }
 
@@ -184,11 +185,11 @@ FreePlanet (void)
 {
 	COUNT i;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	if (pSolarSysState->MenuState.flash_task)
 	{
-		DeleteTask (pSolarSysState->MenuState.flash_task);
+		KillThread (pSolarSysState->MenuState.flash_task);
 		pSolarSysState->MenuState.flash_task = 0;
 	}
 
@@ -226,6 +227,6 @@ FreePlanet (void)
 			));
 	pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 

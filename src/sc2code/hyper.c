@@ -317,9 +317,9 @@ LoadHyperspace (void)
 	{
 		if (LOBYTE (LastActivity) == 0)
 		{
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DrawSISFrame ();
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 		}
 		else
 		{
@@ -356,10 +356,10 @@ LoadHyperspace (void)
 BOOLEAN
 FreeHyperspace (void)
 {
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	if (GameClockRunning ())
 		SuspendGameClock ();
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	{
 		FRAME F;
@@ -1547,7 +1547,7 @@ UnbatchGraphics ();
 	OldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	SuspendGameClock ();
 
 	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
@@ -1556,13 +1556,13 @@ UnbatchGraphics ();
 	MenuState.CurState = STARMAP + 1;
 
 	DrawMenuStateStrings (PM_SCAN, STARMAP);
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetFlashRect ((PRECT)~0L, (FRAME)0);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	DoInput ((PVOID)&MenuState);
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetFlashRect (NULL_PTR, (FRAME)0);
 
 	SetContext (SpaceContext);
@@ -1571,10 +1571,10 @@ UnbatchGraphics ();
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
 		ClearSISRect (CLEAR_SIS_RADAR);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		WaitForNoInput (ONE_SECOND / 2);
 		ResumeGameClock ();
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 	}
 
 	SetContextBackGroundColor (OldColor);

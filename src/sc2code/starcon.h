@@ -45,11 +45,12 @@ extern int ScreenHeight;
 #include <math.h>
 #include "gfxlib.h"
 #include "inplib.h"
-#include "timlib.h"
+#include "timelib.h"
 #include "sndlib.h"
 #include "strlib.h"
 #include "mathlib.h"
 #include "reslib.h"
+#include "threadlib.h"
 #include "restypes.h"
 #include "resinst.h"
 #include "displist.h"
@@ -163,7 +164,7 @@ extern INPUT_REF ArrowInput, ComputerInput, NormalInput, SerialInput,
 extern FRAME ActivityFrame;
 extern SOUND MenuSounds, GameSounds;
 extern QUEUE race_q[NUM_PLAYERS];
-extern SEMAPHORE GraphicsSem;
+extern Semaphore GraphicsSem;
 extern STRING GameStrings;
 
 typedef enum

@@ -26,7 +26,8 @@
 //#include "utils.h"
 //#include "pcwin.h"
 #include "compiler.h"
-#include "timlib.h"
+#include "libs/threadlib.h"
+#include "libs/memlib.h"
 
 #define GetToolFrame() 1
 
@@ -43,7 +44,7 @@ BOOLEAN leak_debug;
 int leak_idx = -1;
 int leak_size = -1;
 #endif
-void *_MemorySem;
+Semaphore _MemorySem;
 
 #define MAX_EXTENTS 100000
 
@@ -277,7 +278,7 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 {
 	szMemoryNode *node;
 
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 
 #ifdef MEM_DEBUG
 	CheckMemory();
@@ -307,11 +308,11 @@ if (node->size == leak_size)
 	node = node;
 #endif /* LEAK_DEBUG */
 
-		ClearSemaphore (&_MemorySem);
+		ClearSemaphore (_MemorySem);
 		return (node->handle);
 	}
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 	(void) priority;  /* Satisfying compiler (unused parameter) */
 	(void) usage;  /* Satisfying compiler (unused parameter) */
 	return (0);
@@ -342,13 +343,13 @@ if (node->size == leak_size)
 MEM_SIZE
 mem_get_size (MEM_HANDLE h)
 {
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
-		ClearSemaphore (&_MemorySem);
+		ClearSemaphore (_MemorySem);
 		return ((int)extents[h - 1].size);
 	}
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 
 	return (0);
 }
@@ -382,7 +383,7 @@ mem_init (void)
 {
 	int i;
 
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 
 	freeListHead = &extents[0];
 	for (i=0; i<MAX_EXTENTS; i++)
@@ -394,7 +395,7 @@ mem_init (void)
 	}
 	extents[MAX_EXTENTS-1].next = NULL;
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 
 	return TRUE;
 }
@@ -424,7 +425,7 @@ mem_uninit(void)
 {
 	int i;
 
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 
 	for (i=0; i<MAX_EXTENTS; i++)
 	{
@@ -444,7 +445,7 @@ fflush (stdout);
 	}
 	freeListHead = 0;
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 
 	return (TRUE);
 }
@@ -477,7 +478,7 @@ mem_release(MEM_HANDLE h)
 	if (h == 0)
 		return (TRUE);
 
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 
 	--h;
 	if (h < 0 || h >= MAX_EXTENTS)
@@ -498,11 +499,11 @@ if (leak_debug) printf ("free %d: %08x\n",
 		extents[h].handle = -1;
 		extents[h].next = freeListHead;
 		freeListHead = &extents[h];
-		ClearSemaphore (&_MemorySem);
+		ClearSemaphore (_MemorySem);
 		return TRUE;
 	}
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 	return FALSE;
 }
 
@@ -532,16 +533,16 @@ if (leak_debug) printf ("free %d: %08x\n",
 void *
 mem_simple_access(MEM_HANDLE h)
 {
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
 		++extents[h - 1].refcount;
-		ClearSemaphore (&_MemorySem);
+		ClearSemaphore (_MemorySem);
 		return (extents[h - 1].memory);
 	}
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 	return (0);
 }
 
@@ -571,16 +572,16 @@ mem_simple_access(MEM_HANDLE h)
 MEM_BOOL
 mem_simple_unaccess(MEM_HANDLE h)
 {
-	SetSemaphore (&_MemorySem);
+	SetSemaphore (_MemorySem);
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
 		if (extents[h - 1].refcount)
 			--extents[h - 1].refcount;
-		ClearSemaphore (&_MemorySem);
+		ClearSemaphore (_MemorySem);
 		return (1);
 	}
 
-	ClearSemaphore (&_MemorySem);
+	ClearSemaphore (_MemorySem);
 	return (0);
 }
 

@@ -214,9 +214,9 @@ DrawPickFrame (PMELEE_STATE pMS)
 				+ (ship_r.extent.height - r.extent.height));
 	SetFrameHot (F, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
 	DrawMeleeIcon (27);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 }
 
 static void
@@ -507,19 +507,21 @@ int flash_selection_func(void* blah)
 #define FLASH_RATE (ONE_SECOND / 8)
 		CONTEXT OldContext;
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (SpaceContext);
 		Deselect (pMeleeState->MeleeOption);
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
-		TimeIn = SleepTask (TimeIn + FLASH_RATE);
+		ClearSemaphore (GraphicsSem);
+		SleepThreadUntil (TimeIn + FLASH_RATE);
+		TimeIn = GetTimeCounter ();
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (SpaceContext);
 		Select (pMeleeState->MeleeOption);
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
-		TimeIn = SleepTask (TimeIn + FLASH_RATE);
+		ClearSemaphore (GraphicsSem);
+		SleepThreadUntil (TimeIn + FLASH_RATE);
+		TimeIn = GetTimeCounter ();
 	}
 
 	(void) blah;  /* Satisfying compiler (unused parameter) */
@@ -545,7 +547,8 @@ InitMelee (PMELEE_STATE pMS)
 	r.corner.x = r.corner.y = 0;
 	RepairMeleeFrame (&r);
 	
-	pMS->flash_task = AddTask (flash_selection_func, 2048);
+	pMS->flash_task = CreateThread (flash_selection_func, NULL, 2048,
+			"flash melee selection");
 }
 
 static void
@@ -556,7 +559,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	STARSHIPPTR StarShipPtr;
 	CONTEXT OldContext;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&OldRect);
@@ -614,7 +617,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static COUNT
@@ -809,7 +812,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 	if (!pMS->Initialized)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		Select (pMS->MeleeOption);
 		if ((pMS->TopTeamIndex = pMS->CurIndex) == (COUNT)~0)
 			pMS->TopTeamIndex = pMS->CurIndex = 0;
@@ -821,7 +824,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 		DrawFileStrings (pMS, -1);
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoLoadTeam;
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
 	{
@@ -839,9 +842,9 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 			RECT r;
 			
 			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 28), &r);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			RepairMeleeFrame (&r);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 		InTime = GetTimeCounter ();
 	}
@@ -895,7 +898,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		if (index != old_index)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			if ((int)NewTop == (int)pMS->TopTeamIndex)
 				Deselect (pMS->MeleeOption);
 			else
@@ -904,7 +907,7 @@ DoLoadTeam (INPUT_STATE InputState, PMELEE_STATE pMS)
 				DrawFileStrings (pMS, -1);
 			}
 			pMS->CurIndex = index;
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 
@@ -1059,7 +1062,7 @@ DoSaveTeam (PMELEE_STATE pMS)
 	CONTEXT OldContext;
 
 RetrySave:
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
 	wsprintf (buf, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
@@ -1081,7 +1084,7 @@ RetrySave:
 		DrawStamp (&MsgStamp);
 		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		DeleteResFile (buf);
 		if (SaveProblem ())
@@ -1095,7 +1098,7 @@ RetrySave:
 		DrawStamp (&MsgStamp);
 		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 	}
 	
 	return (save_fp != 0);
@@ -1120,12 +1123,12 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 			|| (GetInputXComponent (InputState) > 0
 			&& (pMS->col == NUM_MELEE_COLUMNS - 1 || pMS->row == NUM_MELEE_ROWS))))
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		Deselect (EDIT_MELEE);
 		pMS->CurIndex = (COUNT)~0;
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		InTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
@@ -1149,7 +1152,7 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 		{
 			if (pMS->CurIndex != (BYTE)~0)
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				if (pMS->Initialized == 1 && SerialInput)
 				{
 					FlushInput ();
@@ -1162,15 +1165,15 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 					DrawTeamString (pMS, 4);
 					pMS->Initialized = 1;
 				}
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				return (TRUE);
 			}
 			else if (InputState & DEVICE_BUTTON1)
 			{
 				pMS->CurIndex = 0;
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				DrawTeamString (pMS, 1);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				return (TRUE);
 			}
 		}
@@ -1217,7 +1220,7 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		if (col != pMS->col || row != pMS->row || side != pMS->side)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			Deselect (EDIT_MELEE);
 			pMS->side = side;
 			pMS->row = row;
@@ -1226,7 +1229,7 @@ DoEdit (INPUT_STATE InputState, PMELEE_STATE pMS)
 				pMS->CurIndex = (BYTE)~0;
 			else
 				pMS->CurIndex = pMS->TeamImage[side].ShipList[row][col];
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
@@ -1260,26 +1263,26 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 			RepairMeleeFrame (&r);
 
 			DrawTeamString (pMS, 4);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		if (pMS->Initialized == 0)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			Deselect (EDIT_MELEE);
 			pMS->InputFunc = DoPickShip;
 			DrawPickFrame (pMS);
 			pMS->Initialized = TRUE;
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			Deselect (EDIT_MELEE);
 			pMS->Initialized = TRUE;
 			if (++pMS->col == NUM_MELEE_COLUMNS)
@@ -1293,7 +1296,7 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 				}
 			}
 			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
@@ -1313,10 +1316,10 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 			UnlockStarShip (&master_q, hStarShip);
 
 			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = pMS->CurIndex;
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawTeamString (pMS, 4);
 			DrawShipBox (pMS, FALSE);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			if (++pMS->col == NUM_MELEE_COLUMNS)
 			{
 				if (++pMS->row < NUM_MELEE_ROWS)
@@ -1333,9 +1336,9 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 			RECT r;
 			
 			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			RepairMeleeFrame (&r);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
@@ -1385,10 +1388,10 @@ DoPickShip (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		if (NewStarShip != pMS->CurIndex)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			Deselect (EDIT_MELEE);
 			pMS->CurIndex = NewStarShip;
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DrawMeleeShipStrings (pMS, NewStarShip);
 		}
 	}
@@ -1416,9 +1419,9 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		SetSemaphore (&GraphicsSem);
-		DeleteTask (pMS->flash_task);
-		ClearSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
+		KillThread (pMS->flash_task);
+		ClearSemaphore (GraphicsSem);
 		pMS->flash_task = 0;
 	}
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
@@ -1446,9 +1449,9 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 	{
 		pMS->Initialized = TRUE;
 		pMS->MeleeOption = START_MELEE;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		InitMelee (pMS);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
 				
@@ -1459,9 +1462,9 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 	else if ((InputState & DEVICE_BUTTON2)
 			|| GetInputXComponent (InputState) < 0)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		Deselect (pMS->MeleeOption);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
 		if (InputState & DEVICE_BUTTON2)
@@ -1497,11 +1500,11 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 		if (NewMeleeOption != pMS->MeleeOption)
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			Deselect (pMS->MeleeOption);
 			pMS->MeleeOption = NewMeleeOption;
 			Select (pMS->MeleeOption);
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 
 		if (InputState & DEVICE_BUTTON1)
@@ -1518,16 +1521,16 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 
 					if (pMS->flash_task)
 					{
-						SetSemaphore (&GraphicsSem);
-						DeleteTask (pMS->flash_task);
-						ClearSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
+						KillThread (pMS->flash_task);
+						ClearSemaphore (GraphicsSem);
 						pMS->flash_task = 0;
 					}
 					
 					{
 						BYTE black_buf[] = {FadeAllToBlack};
 						
-						SleepTask (XFormColorMap (
+						SleepThreadUntil (XFormColorMap (
 								(COLORMAPPTR)black_buf, ONE_SECOND / 2
 								) + 2);
 						FlushColorXForms ();
@@ -1602,7 +1605,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 						{
 							BYTE black_buf[] = {FadeAllToBlack};
 						
-							SleepTask (XFormColorMap (
+							SleepThreadUntil (XFormColorMap (
 									(COLORMAPPTR)black_buf, ONE_SECOND / 2
 									) + 2);
 							FlushColorXForms ();

@@ -68,7 +68,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 	CONTEXT OldContext;
 	UNICODE rt_amount_buf[10];
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	OldContext = SetContext (StatusContext);
 	SetContextFont (TinyFont);
@@ -271,7 +271,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 	UnbatchGraphics ();
 	SetContext (OldContext);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static BOOLEAN
@@ -293,9 +293,9 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else if (InputState & DEVICE_BUTTON2)
 	{
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		ClearSISRect (DRAW_SIS_DISPLAY);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}
@@ -306,10 +306,10 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 			--GLOBAL_SIS (ElementAmounts[pMS->CurState - 1]);
 			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(pMS->CurState - 1));
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			--GLOBAL_SIS (TotalElementMass);
 			ShowRemainingCapacity ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 	else
@@ -332,9 +332,9 @@ DoDiscardCargo (INPUT_STATE InputState, PMENU_STATE pMS)
 		{
 SelectCargo:
 			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawStatusMessage (GAME_STRING (NewState - 1 + (CARGO_STRING_BASE + 2)));
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			pMS->CurState = NewState;
 		}
@@ -350,9 +350,9 @@ Cargo (PMENU_STATE pMS)
 	--pMS->Initialized;
 	pMS->CurState = 1;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	DrawStatusMessage ((UNICODE *)~0);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	DoInput ((PVOID)pMS);
 

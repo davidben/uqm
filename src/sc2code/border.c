@@ -42,7 +42,7 @@ DrawSISFrame (void)
 {
 	RECT r;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
@@ -189,6 +189,6 @@ DrawSISFrame (void)
 	ClearSISRect (DRAW_SIS_DISPLAY);
 	UnbatchGraphics ();
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 

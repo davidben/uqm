@@ -21,18 +21,18 @@
 
 static struct
 {
-    COLORMAPPTR CMapPtr;
-    SIZE Ticks;
-    union
-    {
+	COLORMAPPTR CMapPtr;
+	SIZE Ticks;
+	union
+	{
 		COUNT NumCycles;
-		TASK XFormTask;
-    } tc;
+		Thread XFormTask;
+	} tc;
 } TaskControl;
 
 UBYTE _batch_flags;
 DWORD* _varPLUTs;
-static unsigned int	varPLUTsize = VARPLUTS_SIZE;
+static unsigned int varPLUTsize = VARPLUTS_SIZE;
 
 static BOOLEAN has_colormap = FALSE;
 static TFB_Palette cmap_rgb[256];
@@ -135,29 +135,29 @@ BatchColorMap (COLORMAPPTR ColorMapPtr)
 BOOLEAN
 SetColorMap (COLORMAPPTR map, int type)
 {
-    int start, end, bytes;
+	int start, end, bytes;
 	UBYTE *colors = (UBYTE*)map;
 	UBYTE *vp;
 	
 	if (!map)
 		return TRUE;
 
-    start = *colors++;
-    end = *colors++;
-    if (start > end)
+	start = *colors++;
+	end = *colors++;
+	if (start > end)
 		return TRUE;
 	
-    bytes = (end - start + 1) * PLUT_BYTE_SIZE;
+	bytes = (end - start + 1) * PLUT_BYTE_SIZE;
 
-    if (!_varPLUTs)
-    {
-		if (!(_varPLUTs = (unsigned int*) HMalloc (bytes)))
-		    return TRUE;
+	if (!_varPLUTs)
+	{
+		if (!(_varPLUTs = (DWORD *) HMalloc (bytes)))
+			return TRUE;
 		varPLUTsize = bytes;
-    }
+	}
 	
-    vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);
-    
+	vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);
+	
 	memcpy (vp, colors, bytes);
 	cmap_type = type;
 	TFB_ColorMapToRGB (vp);
@@ -170,16 +170,16 @@ SetColorMap (COLORMAPPTR map, int type)
 void
 _threedo_set_colors (UBYTE *colors, unsigned int indices)
 {
-    int i, start, end;
-    //unsigned int *ce;
+	int i, start, end;
+	//unsigned int *ce;
 
-    start = (int)LOBYTE (indices);
-    end = (int)HIBYTE (indices);
+	start = (int)LOBYTE (indices);
+	end = (int)HIBYTE (indices);
 
-    //ce = colorEntries;
-    for (i = start; i <= end; i++)
-    {
-		UBYTE	r, g, b;
+	//ce = colorEntries;
+	for (i = start; i <= end; i++)
+	{
+		UBYTE r, g, b;
 
 		r = (*colors << 2) | (*colors >> 4);
 		++colors;
@@ -187,23 +187,23 @@ _threedo_set_colors (UBYTE *colors, unsigned int indices)
 		++colors;
 		b = (*colors << 2) | (*colors >> 4);
 		++colors;
-	
-		//*ce++ = MakeCLUTColorEntry (i, r, g, b);
-    }
-    
-    //ceCt = end - start + 1;
 
-    //_threedo_add_task (TASK_SET_CLUT);
-    //_batch_flags |= CYCLE_PENDING;
+		//*ce++ = MakeCLUTColorEntry (i, r, g, b);
+	}
+	
+	//ceCt = end - start + 1;
+
+	//_threedo_add_task (Thread_SET_CLUT);
+	//_batch_flags |= CYCLE_PENDING;
 }
 
 static int
 color_cycle (void *foo)
 {
-	UWORD	color_beg, color_len, color_indices;
-	COUNT	Cycles, CycleCount;
-	DWORD	TimeIn, SleepTicks;
-	COLORMAPPTR	BegMapPtr, CurMapPtr;
+	UWORD color_beg, color_len, color_indices;
+	COUNT Cycles, CycleCount;
+	DWORD TimeIn, SleepTicks;
+	COLORMAPPTR BegMapPtr, CurMapPtr;
 
 	Cycles = CycleCount = TaskControl.tc.NumCycles;
 	BegMapPtr = TaskControl.CMapPtr;
@@ -228,7 +228,8 @@ color_cycle (void *foo)
 			CurMapPtr = BegMapPtr;
 		}
 
-		TimeIn = SleepTask (TimeIn + SleepTicks);
+		SleepThreadUntil (TimeIn + SleepTicks);
+		TimeIn = GetTimeCounter ();
 
 		if (TaskControl.CMapPtr)
 		{
@@ -244,7 +245,7 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 {
 	if (ColorMapPtr && Cycles && ColorMapPtr[0] <= ColorMapPtr[1])
 	{
-		TASK	T;
+		Thread T;
 
 		while (TaskControl.CMapPtr)
 		{
@@ -256,11 +257,12 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 		if ((TaskControl.Ticks = TimeInterval) <= 0)
 			TaskControl.Ticks = 1;
 
-		if (T = AddTask (color_cycle, 0))
+		T = CreateThread (color_cycle, NULL, 0, "color cycle");
+		if (T)
 		{
 			_batch_flags |= ENABLE_CYCLE;
 			do
-			TaskSwitch ();
+				TaskSwitch ();
 			while (TaskControl.CMapPtr);
 		}
 		TaskControl.CMapPtr = 0;
@@ -274,34 +276,34 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 void 
 StopCycleColorMap (CYCLE_REF CycleRef)
 {
-	TASK	T;
+	Thread T;
 
-	if (T = (TASK)CycleRef)
+	T = (Thread) CycleRef;
+	if (T)
 	{
 		TaskControl.CMapPtr = (COLORMAPPTR)1;
 		while (TaskControl.CMapPtr)
 			TaskSwitch ();
 
 		_batch_flags &= ~ENABLE_CYCLE;
-		DeleteTask (T);
+		KillThread (T);
 	}
 }
 
-#define NO_INTENSITY		0x00
-#define NORMAL_INTENSITY	0xff
-#define FULL_INTENSITY		(0xff * 32)
+#define NO_INTENSITY      0x00
+#define NORMAL_INTENSITY  0xff
+#define FULL_INTENSITY    (0xff * 32)
 
 static int cur = NORMAL_INTENSITY, end, XForming;
 
 static
 int xform_clut_task (void *foo)
 {
-	TASK	T;
-	SIZE	TDelta, TTotal;
-	DWORD	CurTime;
+	SIZE TDelta, TTotal;
+	DWORD CurTime;
 
 	XForming = TRUE;
-	while ((T = TaskControl.tc.XFormTask) == 0)
+	while (TaskControl.tc.XFormTask == 0)
 		TaskSwitch ();
 	TTotal = TaskControl.Ticks;
 	TaskControl.tc.XFormTask = 0;
@@ -310,10 +312,11 @@ int xform_clut_task (void *foo)
 		CurTime = GetTimeCounter ();
 		do
 		{
-			DWORD	StartTime;
+			DWORD StartTime;
 
 			StartTime = CurTime;
-			CurTime = SleepTask (CurTime + 2);
+			SleepThreadUntil (CurTime + 2);
+			CurTime = GetTimeCounter ();
 			if (!XForming || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
 				TDelta = TTotal;
 
@@ -323,8 +326,8 @@ int xform_clut_task (void *foo)
 	}
 
 	XForming = FALSE;
-	DeleteTask (T);
 
+	(void) foo;  /* Satisfying compiler (unused parameter) */
 	return 0;
 }
 
@@ -332,8 +335,8 @@ int xform_clut_task (void *foo)
 DWORD
 XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
-	BYTE	what;
-	DWORD	TimeOut;
+	BYTE what;
+	DWORD TimeOut;
 
 	//printf ("Partially implemented function activated: XFormColorMap()\n");
 
@@ -342,7 +345,8 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	if (ColorMapPtr == (COLORMAPPTR)0)
 		return (0);
 
-	switch (what = *ColorMapPtr)
+	what = *ColorMapPtr;
+	switch (what)
 	{
 	case FadeAllToBlack:
 	case FadeSomeToBlack:
@@ -363,8 +367,10 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	//if (what == FadeAllToBlack || what == FadeAllToWhite || what == FadeAllToColor)
 	//_threedo_enable_fade ();
 
-	if ((TaskControl.Ticks = TimeInterval) <= 0
-		|| (TaskControl.tc.XFormTask = AddTask (xform_clut_task, 1024)) == 0)
+	TaskControl.Ticks = TimeInterval;
+	if (TaskControl.Ticks <= 0 ||
+			(TaskControl.tc.XFormTask = CreateThread (xform_clut_task,
+					NULL, 1024, "transform colormap")) == 0)
 	{
 		//_threedo_change_clut (end);
 		TimeOut = GetTimeCounter ();

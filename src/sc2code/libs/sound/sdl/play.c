@@ -19,7 +19,6 @@
 #ifdef SOUNDMODULE_SDL
 
 #include "libs/sound/sndintrn.h"
-#include "timlib.h"
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"

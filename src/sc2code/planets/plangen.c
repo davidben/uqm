@@ -947,7 +947,7 @@ rotate_planet_task(void *blah)
 		{
 			CONTEXT OldContext;
 			
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
@@ -974,9 +974,10 @@ rotate_planet_task(void *blah)
 				}
 				x += i;
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
-			TimeIn = SleepTask (TimeIn + (ONE_SECOND * 5 / MAP_WIDTH));
+			SleepThreadUntil (TimeIn + (ONE_SECOND * 5 / MAP_WIDTH));
+			TimeIn = GetTimeCounter ();
 		} while (--view_index);
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */

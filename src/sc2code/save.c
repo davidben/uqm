@@ -207,7 +207,7 @@ SaveProblem (void)
 	INPUT_STATE InputState;
 	CONTEXT OldContext;
 	
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (SpaceContext);
 	
 	SaveProblemMessage (&s);
@@ -234,18 +234,18 @@ SaveProblem (void)
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 	
 	if (manage)
 	{
 		BYTE clut_buf[1];
 
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);
-		 ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
    
 		clut_buf[0] = FadeAllToBlack;
-		SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
+		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
 		FlushColorXForms ();
 
 #if 0
@@ -255,7 +255,7 @@ SaveProblem (void)
 #endif
 
 		clut_buf[0] = FadeAllToColor;
-		SleepTask (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
+		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
 		FlushColorXForms ();
 	}
 	else
@@ -263,7 +263,7 @@ SaveProblem (void)
 #if 0
 		CleanNVRAM ();
 #endif
-		SleepTask (GetTimeCounter () + (ONE_SECOND / 4));
+		SleepThreadUntil (GetTimeCounter () + (ONE_SECOND / 4));
 	}
 
 	return (manage);

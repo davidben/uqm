@@ -264,4 +264,6 @@ InitGlobData (void)
 	GLOBAL (glob_flags) = (BYTE)i;
 
 	GLOBAL (DisplayArray) = DisplayArray;
+	(GLOBAL (GameClock)).clock_sem = CreateSemaphore(1);
 }
+

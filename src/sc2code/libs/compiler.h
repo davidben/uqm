@@ -31,6 +31,8 @@ typedef signed short      SWORD;
 typedef SWORD           *PSWORD;
 typedef unsigned long     DWORD;
 typedef DWORD           *PDWORD;
+typedef signed long       SDWORD;
+typedef SDWORD          *PSDWORD;
 
 typedef SBYTE           *PSTR;
 
@@ -60,12 +62,12 @@ typedef enum
 } BOOLEAN;
 typedef BOOLEAN *PBOOLEAN;
 
-typedef void     (*PVOIDFUNC) ();
-typedef BOOLEAN  (*PBOOLFUNC) ();
-typedef BYTE     (*PBYTEFUNC) ();
-typedef UWORD    (*PUWORDFUNC) ();
-typedef SWORD    (*PSWORDFUNC) ();
-typedef DWORD    (*PDWORDFUNC) ();
+typedef void     (*PVOIDFUNC) (void);
+typedef BOOLEAN  (*PBOOLFUNC) (void);
+typedef BYTE     (*PBYTEFUNC) (void);
+typedef UWORD    (*PUWORDFUNC) (void);
+typedef SWORD    (*PSWORDFUNC) (void);
+typedef DWORD    (*PDWORDFUNC) (void);
 
 #define MAKE_BYTE(lo, hi)   ((BYTE) (((BYTE) (hi) << (BYTE) 4) | (BYTE) (lo)))
 #define MAKE_WORD(lo, hi)   ((UWORD) ((BYTE) (hi) << 8) | (BYTE) (lo))

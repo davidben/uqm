@@ -330,8 +330,8 @@ FreeSolarSys (void)
 			FreePlanet ();
 		else
 		{
-			SetSemaphore (&GraphicsSem);
-			DeleteTask (pSolarSysState->MenuState.flash_task);
+			SetSemaphore (GraphicsSem);
+			KillThread (pSolarSysState->MenuState.flash_task);
 			pSolarSysState->MenuState.flash_task = 0;
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{
@@ -339,11 +339,11 @@ FreeSolarSys (void)
 
 				SaveFlagshipState ();
 			}
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 	SetContext (SpaceContext);
 	SetContextBGFrame ((FRAME)0);
@@ -352,7 +352,7 @@ FreeSolarSys (void)
 
 //    FreeIPData ();
 
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static void
@@ -1009,7 +1009,7 @@ int IPtask_func(void* blah)
 		RECT r;
 
 		InnerSystem = FALSE;
-		SetSemaphore (&GraphicsSem);
+		SetSemaphore (GraphicsSem);
 		while (pSolarSysState->MenuState.Initialized > 1
 				|| (GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | END_INTERPLANETARY
@@ -1017,9 +1017,10 @@ int IPtask_func(void* blah)
 				|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
 		{
 			InputState = 0;
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			TaskSwitch ();
-			NextTime = SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
+			NextTime = GetTimeCounter ();
 		}
 
 		OldContext = SetContext (StatusContext);
@@ -1139,11 +1140,12 @@ TheMess:
 		}
 
 		SetContext (OldContext);
-		ClearSemaphore (&GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		if (!(InputState & DEVICE_BUTTON2))
 		{
-			NextTime = SleepTask (NextTime + IP_FRAME_RATE);
+			SleepThreadUntil (NextTime + IP_FRAME_RATE);
+			NextTime = GetTimeCounter ();
 			if (pSolarSysState->MenuState.CurState
 					|| pSolarSysState->MenuState.Initialized != 1)
 				InputState = 0;
@@ -1159,20 +1161,20 @@ TheMess:
 			MenuTransition = DEBOUNCE_DELAY;
 			SuspendGameClock ();
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawStatusMessage (NULL_PTR);
 			if (LastActivity == CHECK_LOAD)
 				pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
 			else
 			{
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 				DrawMenuStateStrings (PM_SCAN, STARMAP);
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				pSolarSysState->MenuState.CurState = STARMAP + 1;
 			}
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 			FlushInput ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */
@@ -1182,10 +1184,10 @@ TheMess:
 static void
 DrawInnerSystem (void)
 {
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 	DrawSISTitle (GLOBAL_SIS (PlanetName));
 	DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 }
 
 static BOOLEAN
@@ -1245,7 +1247,7 @@ StartGroups:
 		{
 			DrawMenuStateStrings (PM_SCAN, PM_NAVIGATE - PM_SCAN);
 
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			RepairSISBorder ();
 
 			InitDisplayList ();
@@ -1260,8 +1262,9 @@ StartGroups:
 			CheckIntersect (TRUE);
 			
 			pSolarSysState->MenuState.flash_task =
-					AddTask (IPtask_func, 6144);
-			ClearSemaphore (&GraphicsSem);
+					CreateThread (IPtask_func, NULL, 6144,
+					"flash solar system menu");
+			ClearSemaphore (GraphicsSem);
 
 			if (!PLRPlaying ((MUSIC_REF)~0) && LastActivity != CHECK_LOAD)
 			{
@@ -1276,14 +1279,14 @@ StartGroups:
 						draw_sys_flags &= ~UNBATCH_SYS;
 						UnbatchGraphics ();
 					}
-					SetSemaphore (&GraphicsSem);
+					SetSemaphore (GraphicsSem);
 					while (pSolarSysState->SunDesc[0].radius == (MAX_ZOOM_RADIUS << 1))
 					{
-						ClearSemaphore (&GraphicsSem);
+						ClearSemaphore (GraphicsSem);
 						TaskSwitch ();
-						SetSemaphore (&GraphicsSem);
+						SetSemaphore (GraphicsSem);
 					}
-					ClearSemaphore (&GraphicsSem);
+					ClearSemaphore (GraphicsSem);
 					XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 				}
 			}
@@ -1332,11 +1335,11 @@ StartGroups:
 		else
 		{
 			DrawMenuStateStrings (PM_SCAN, SCAN);
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			pSolarSysState->MenuState.CurState = SCAN + 1;
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 			FlushInput ();
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 		}
 	}
 }
@@ -1347,11 +1350,11 @@ InitSolarSys (void)
 	BOOLEAN InnerSystem;
 	BOOLEAN Reentry;
 
-	SetSemaphore (&GraphicsSem);
+	SetSemaphore (GraphicsSem);
 
 LoadIPData ();
 LoadLanderData ();
-	ClearSemaphore (&GraphicsSem);
+	ClearSemaphore (GraphicsSem);
 
 	pSolarSysState->MenuState.InputFunc = DoFlagshipCommands;
 
@@ -1403,22 +1406,22 @@ LoadLanderData ();
 			}
 			else
 			{
-				SetSemaphore (&GraphicsSem);
+				SetSemaphore (GraphicsSem);
 				ClearSISRect (DRAW_SIS_DISPLAY);
-				ClearSemaphore (&GraphicsSem);
+				ClearSemaphore (GraphicsSem);
 
 				LastActivity &= ~CHECK_LOAD;
 			}
 		}
 
-// SetSemaphore (&GraphicsSem);
+// SetSemaphore (GraphicsSem);
 		DrawSISMessage (NULL_PTR);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);
 		SetContextBGFrame ((FRAME)0);
 		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 		SetContextBackGroundColor (BLACK_COLOR);
-// ClearSemaphore (&GraphicsSem);
+// ClearSemaphore (GraphicsSem);
 
 		if (InnerSystem)
 		{
@@ -1435,9 +1438,9 @@ LoadLanderData ();
 		}
 		else
 		{
-			SetSemaphore (&GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawHyperCoords (CurStarDescPtr->star_pt); /* Adjust position */
-			ClearSemaphore (&GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 					/* force a redraw */
 			pSolarSysState->SunDesc[0].radius = MAX_ZOOM_RADIUS << 1;
