@@ -1,0 +1,699 @@
+#(HELLO_BEFORE_AMBUSH_1)	SYREE000.wav
+Attention unidentified space vessel!
+Be Warned! This slave world and its inhabitants belong to the Ur-Quan.
+I am Starbase Commander Talana of the slave planet Gaia.
+Your ship is not responding to standard Hierarchy identification sequences.
+You are therefore classed as Independent and... WHAT?!
+Is my monitor display correct?!
+Is that a human commanding that vessel?
+Who are you guys?
+
+#(HELLO_BEFORE_AMBUSH_2)	SYREE001.wav
+Hello again, pleasant Human.
+It warms me to greet you again.
+
+#(HELLO_BEFORE_AMBUSH_3)	SYREE002.wav
+Welcome back, Earthling.
+What do you wish of us?
+
+#(HELLO_BEFORE_AMBUSH_4)	SYREE003.wav
+Yes, Captain?
+
+#(we_are_vice_squad)
+We're the Ethics Police. Justify that costume... Immediately!
+
+#(OK_VICE)	SYREE004.wav
+Huh? What ARE you talking about?
+This is the uniform of a Syreen Commander.
+The climate aboard this starbase is maintained at a constant 22 degrees C.
+What are we supposed to wear in here... parkas?
+
+#(we_are_the_one_for_you_baby)
+I am the right one for you, baby!
+
+#(MAYBE_CAPTAIN)	SYREE005.wav
+Ah, yes... I had almost forgotten the sophistication of human social graces.
+Manners were never the Earthlings' strong point, were they?
+Your species' undeniable appeal can be found... elsewhere.
+
+#(we_are_vindicator0)
+I am Captain 
+
+#(we_are_vindicator1)
+ of the flagship 
+
+#(we_are_vindicator2)
+.
+
+#(WELCOME_VINDICATOR0)	SYREE006.wav
+Hello Captain 
+
+#(WELCOME_VINDICATOR1)	SYREE007.wav
+ from the Starship 
+
+#(WELCOME_VINDICATOR2)	SYREE008.wav
+.
+
+#(we_are_impressed)
+We're... we're.. we're greatly impressed!
+
+#(SO_AM_I_CAPTAIN)	SYREE009.wav
+So am I, Captain. So am I.
+Earthlings are so... so... earthy!
+
+#(HOW_CAN_YOU_BE_HERE)	SYREE010.wav
+But you haven't answered my question fully.
+Why are you here? Where are you from?
+Has the slave shield been lifted from Earth?
+Are the Ur-Quan finally defeated?
+Simply put, Captain...what do you want from us?
+
+#(we_here_to_help)
+We have come here to free you from slavery to the Ur-Quan!
+
+#(NO_NEED_HELP)	SYREE011.wav
+Look friend, I appreciate your offer, but we don't want your help.
+Why? I'll tell you why
+because we're not going to do anything to antagonize the Ur-Quan. That's why.
+We may not like slavery, but it's a damn sight better than our alternatives.
+Below us we have a beautiful world... maybe it's not Syra, but at least it's a home.
+That's a lot more than we ever had before the War... before the Ur-Quan became our masters.
+
+#(we_need_help)
+To be honest, we need your help to destroy the Ur-Quan.
+
+#(CANT_GIVE_HELP)	SYREE012.wav
+Look Captain... I like you... even though you're an obnoxious human... I like you.
+In another time, we might have become good friends... perhaps more
+but that's a fantasy, and my job is dealing with reality.
+We're not going to do anything to jeopardize what we've got here.
+We've come too far... lost too much, to ever risk losing Gaia, our new home.
+Don't get all judgmental on me, Captain... you don't know what we've been through.
+
+#(i_need_you)
+Hey, baby... what I need is you!
+
+#(OK_NEED)	SYREE013.wav
+Look. Human. Get this through your head.
+Under other circumstances, I might be interested in your antics, you're kind of cute
+but we've got a serious situation here and we don't have time to fool around.
+Our lives are at stake, and so are yours. If the Ur-Quan discover that you have been here
+I don't know what they will do to us... much less you!
+Now get serious... please.
+
+#(i_need_touch_o_vision)
+What I need right now, is a Touch-o-Vision.
+
+#(TOUCH_O_VISION)	SYREE014.wav
+Why only fantasize, Captain, when you can... no... wait a minute. What am I saying!?
+Look. Human. Get this through your head.
+Under other circumstances, I might be interested in your antics, you're kind of cute
+but we've got a serious situation here and we don't have time to fool around.
+Our lives are at stake, and so are yours. If the Ur-Quan discover that you have been here
+I don't know what they will do to us... much less to you!
+Now get serious... please.
+
+
+#(know_about_deep_children)
+Tanala, have you ever heard of the `Deep Children?'
+
+#(WHAT_ABOUT_DEEP_CHILDREN)	SYREE015.wav
+Yes, I think so. Aren't they part of the Mycon religion somehow?
+We have recordings of Mycon HyperWave transmissions from the War... pretty weird stuff.
+The Mycons just kind of.. rambled, never making much sense.
+They talked a lot about the `Deep Children', and `Spears of Light'
+but we couldn't ever understand what they were talking about.
+
+#(mycons_involved)
+What if I told you that Mycon Deep Children shatter planet crusts... like your Syra?
+
+#(WHAT_PROOF)	SYREE016.wav
+What?! What did you say?!
+Human, you had better not be joking. Syra is not a subject for Earth humor.
+Now what do you mean, shatter planet crusts? How?
+That IS what happened to Syra, yes, but we presumed it was a natural cataclysm... a meteor.
+Do you have proof that it was something else... these Deep Children?
+
+#(have_no_proof)
+I don't have proof YET, but I am certain the Mycons destroyed your world.
+
+#(NEED_PROOF)	SYREE017.wav
+Captain, if what you say is true, it would turn my world upside down.
+You have no sorrow to match what each of us Syreen feels every day of our lives
+when we remember what we have lost... Syra... our Eden.
+The very idea that the Mycons, or any alien race, may have been responsible for Syra's destruction
+fills me with BURNING RAGE!... then I want to lash out and STRIKE the viewer!
+It it were true, none of us here would rest until we had avenged ourselves on the perpetrators.
+We would find some way leave this starbase, locate our starships, and hunt down the evil monsters!
+Captain, if you ever gather proof of what you say, you MUST inform us immediately.
+but until then... do not mention the subject again. It is too painful.
+
+#(have_proof)
+Tanala. I have brought proof that the Mycon Deep Children destroyed your world Syra.
+
+#(SEE_PROOF)	SYREE018.wav
+Let me see this proof, Captain!
+
+#(look_at_egg_sacks)
+Look at these fungal egg sacks. We found them near a crustal puncture on a shattered world.
+
+#(HORRIBLE_TRUTH)	SYREE019.wav
+Great gods! These fragments... they are IDENTICAL to the debris we found near the punctures on Syra!
+We never guessed that the fragments might be organic!
+To have survived re-entry!... nothing organic would remain!... unless
+UNLESS, it was genetically constructed for this purpose!
+AND ONLY THE MYCONS POSSESS THIS CAPABILITY!!
+We will make further tests. Genetic comparisons. Compositional analysis.
+If what you have suggested is true... THE MYCONS WILL PAY DEARLY FOR THEIR CRIMES!!!
+Now LEAVE US, Captain!
+We have work to do.
+
+#(what_doing_here)
+So, Commander Tanala, what are you doing here?
+
+#(OUR_NEW_WORLD)	SYREE020.wav
+When the Ur-Quan conquered us, over twenty years ago
+I was only a young girl living in Habitat Thirty-One.
+My older sister, Diani, was a starship officer in the Space Patrol
+she was part of the final defense at Raynet... she didn't make it back.
+When the Ur-Quan caught us in open space, we all thought we were going to die
+but then, instead of killing us, the Ur-Quan offered us a choice
+we could join the ranks of their combat thralls, or we could be slave-shielded on our homeworld.
+Like the people of Earth, we choose peace. We became fallow slaves.
+When the Ur-Quan told us to return to our homeworld, we explained that we had none.
+Ur-Quan Master Nine explained that they had encountered this situation before
+and if we would provide them with a list of our requirements
+they would use their extensive astronomical datastores to find a planet for us!
+So we told them about Syra... about the color of its sky... about the abundant, varied lifeforms
+about the fertility of the soil and seas.
+Less than an hour later, we received a terse message from Master Nine
+we were to proceed to these coordinates and disembark. This was to be our new home.
+I don't know how, or why, but our new world, Gaia, was everything we described, and more.
+We'd been searching for a home planet for seventy-five years
+and in the end, it was our enemies who gave one to us.
+I grew up on a small island off the main continent, and like all my people
+we lived each day under the sick, red glow of the slave shield.
+When the Ur-Quan arrived seven years ago to refurbish and recrew this starbase
+I was selected as the new commander.
+
+#(what_about_war)
+So what happened to you at the end of the war?
+
+#(ABOUT_WAR)	SYREE021.wav
+When we first met your people, we'd been wandering through the stars for almost seventy five years
+ever since the death of Syra... our home planet.
+We joined your Alliance, and I use the word `joined' loosely, because we had no other choice.
+The VUX were raiding our slow Habitat columns, and we had nowhere else to go.
+We fought for survival, Captain. Nothing more.
+When your people on Earth were defeated, the Alliance just plain fell apart.
+The Yehat and Shofixti retreated to their native stars and didn't want us to follow.
+The Arilou, those creepy little weasels, just plain bugged out -- vanished
+leaving us alone, with nowhere to go, smack in the path of the oncoming Ur-Quan Armada.
+What were we supposed to do? Fight? Two-thirds of our Habitat fleet was unarmed!
+Many aren't even super-luminal.
+We were going to be annihilated if we resisted, and we knew it.
+When the Ur-Quan surrounded us and started giving orders that all ended with, `Or Die!'
+we took them at face value. We obeyed.
+In exchange they gave us Gaia, the planet below.
+It's a beautiful world, Captain. I wish I could show it to you.
+So don't misunderstand me. We love our freedom as much as anybody else
+but we've got a good life here, and we don't want to lose it.
+
+#(help_us)
+If you love freedom and hate the Ur-Quan, why won't you help us?
+
+#(WONT_HELP)	SYREE022.wav
+Like I said before, Captain, we would like to help
+but we are unwilling to risk losing Gaia.
+Unless you can find a much more compelling reason for us to get involved
+you are on your own.
+
+#(what_about_history)
+Would you tell me a bit about your people and your culture?
+
+#(BEFORE_WAR)	SYREE023.wav
+Our bodies are very similar, Captain. Ha! ha! Except for... certain parts...I mean
+What I am trying to say is that our SPECIES are almost identical
+almost too close a match to be just a coincidence.
+Well our cultural development is also mostly parallel.
+Like you Earthlings, we evolved a society from primitive tribes
+whose main function were to protect themselves from the large reptiles native to our old world.
+The main difference between our two sets of cultures... the split in the paths of our development
+occurred in what would have been your prehistory, say 5000 BCE.
+In your world, the agricultural communities which formed from hunter-gatherer tribes
+were conquered by the more primitive but also more aggressive, migratory herding peoples.
+This led to a particular kind of sexual and political dominance structure
+which pervaded almost all of your Earth Cultures until the early Twenty First century.
+On Syra, our only primitive migratory tribes were confined to our mountainous regions.
+Their herd beasts, the Yma, did not do well in the agricultural basins and plains
+therefore, the two cultures were isolated until much later
+when the technological superiority of the farmers curtailed any major conflict.
+
+#(what_about_homeworld)
+What was Syra like?
+
+#(ABOUT_HOMEWORLD)	SYREE024.wav
+It was our paradise, Captain, our Eden.
+Earth is the only world we know of whose variety and richness of life even comes close to Syra.
+Again, like so many other things about our two species, our worlds were very much the same
+at least before you began encasing yours in concrete and plastic.
+Syra's gravity was a bit lighter than Earth's, and its day was fifty percent longer.
+Our diurnal cycle is therefore different from yours.
+We spend twenty hours awake, followed by ten hours of sleep... or at least... horizontal.
+
+#(what_happened)
+What happened to Syra?
+
+#(DONT_KNOW_HOW)	SYREE025.wav
+Ah... the death of our world. This subject is very difficult for us, Captain
+but I will try to recount those sad days.
+Like your solar system, ours had a large population of comets and asteroids.
+Large meteor impacts, though rare, were not unheard of on our planet.
+So it was not a total shock when an asteroid penetrated our atmosphere and hit the surface.
+What was odd was that unlike most other meteors, this one was not pulverized on impact.
+It penetrated the crust, and indeed went all the way through to the mantle
+causing a major caldera... kind of a super volcano.
+The earthquakes caused by the impact were severe.
+The magma pumped out of the caldera wreaked significant damage on the nearby terrain
+but within a few weeks, it had cooled, forming a solid rock bandage over the wound.
+Within a few months we had cleaned up the mess, the caldera was calming down nicely
+and things were pretty much back to normal.
+Then, just over a year after the impact, all hell broke loose on the surface of Syra.
+Huge calderas were opening all over... not just around the meteor impact, but everywhere!
+The scope of the disaster is impossible to imagine
+Entire cities sliding into oceans of molten lava
+kilometer-wide sections of land being instantly pulverized by cataclysmic explosions
+and clouds of poison gas and superheated steam which created a death shroud around Syra.
+
+#(what_about_outfit)
+Come on now, isn't that outfit, knife included, a bit absurd?
+
+#(HOPE_YOU_LIKE_IT)	SYREE026.wav
+Maybe some other time, Captain, I can show you the hidden functionality of my uniform
+knife included!
+
+#(where_mates)
+What happened to the males of your species?
+
+#(MATES_KILLED)	SYREE027.wav
+When Syra was destroyed, the only people who survived were in orbit
+and most of them were members of our newly established, mostly female, Space Patrol.
+From their ships, their orbital platforms and their lunar outposts they watched Syra die.
+Within three days after the cataclysm began, the surface temperature of Syra had risen by almost 75 degrees
+to above the boiling point of water.
+It became clear that Syra, our paradise, our Eden, was gone.
+The survivors spent years in orbit. They made a few missions to the surface
+and actually found a handful of survivors, but their main activity was preparations for departure.
+The Space Patrol fitted makeshift drive units to anything that could hold air
+orbital factories, research pods, even hotels. When the fleet was ready, they left orbit and never looked back.
+The final population of our species was less than ten thousand, with only five hundred males
+but they were the best and brightest of our people.
+For the next seventy five years, our people wandered at sub-light speed through the stars
+looking for a new home.
+
+#(get_lonely)
+Don't you ever get... lonely? Hmmm?
+
+#(MAKE_OUT_ALL_RIGHT)	SYREE028.wav
+Ha! ha! ha! Don't worry about us, Captain!
+We make out all right with just us females.
+
+#(bye)
+Goodbye, Commander Tanala. I will be back.
+
+#(GOODBYE)	SYREE029.wav
+Until then, Earthling.
+
+#(MUST_ACT)	SYREE030.wav
+Captain. The secret of the Mycon's monstrous murder of our planet has changed the attitudes of many of my people.
+We will not sit here and do nothing while the Mcyon fiends are free to roam the galaxy, perpetrating their evil.\n
+You wanted our cooperation in fighting the Ur-Quan. You've got it... provided
+you first help us seek our revenge against the Mycon race... help us to destroy them!
+
+#(whats_next_step)
+Okay. So what do you want us to do?
+
+#(OPEN_VAULT)	SYREE031.wav
+Our first step is to get some mobility.
+We have some fine starship officers on board, and they are all eager to go after the Mycons
+but without our Penetrator starships, we're totally ineffectual.
+So our first step HAS to be recovering our Space Patrol combat fleet.
+We know that the Ur-Quan didn't destroy them... they never waste anything
+but we believe they have sealed them in some kind of deep vault in the surface of an alien planet.
+
+#(where_is_it)
+Do you know where your ships are?
+
+#(DONT_KNOW_WHERE)	SYREE032.wav
+No, that's your job.
+But maybe we have some clues to help you find them.
+The starship officers who flew the Penetrators to the vault did so with total sensor black-out.
+The only thing they could use for navigation was the presence of the Dreadnought fleet surrounding them.
+When they arrived at their destination and lowered their ships into the immense vault
+they were transported to the Dreadnoughts and only caught a split-second glimpse of the outside world.
+As far as they could tell, the sun was either red or orange. Based on their trip-time calculations
+the farthest they could have travelled is about 200 standard Hyperspace distance units.
+
+#(been_there)
+I've already been there. The vault is on the moon of Epsilon Camelopardalis I, but I couldn't open it.
+
+#(GREAT)	SYREE033.wav
+Wonderful! Then the job is already almost complete!
+
+#(GIVE_SHUTTLE)	SYREE034.wav
+Captain! We have assembled a small team of our most skilled officers.
+we will send them to your ship on board their own small shuttle.
+We feel that in the interests of efficiency, we keep our officers away from your crew
+at least until the mission is over.
+As soon as you arrive at the Vault, our people will take over, figure out a way to open the Vault
+and bring our Penetrators back here.
+
+#(im_on_my_way)
+Very well then, Commander Tanala. I'm on my way.
+
+#(doing_this_for_you)
+Just remember, I'm doing this for you Sweet Cakes!
+
+#(if_i_die)
+If I die... just remember that I... I... really like you!
+
+#(GOOD_LUCK)	SYREE035.wav
+Good luck, brave Earthling. When your mission is successful
+maybe then we can... get to know each other better.
+
+#(OK_FOUND_VAULT)	SYREE036.wav
+Good, now we can proceed with our plan for REVENGE against the Mycon!
+From our analysis of the Deep Child fragments you showed to us
+and a review of the recorded Mycon transmissions from the War
+we have established the kind of world the Mycons desire for their hideous Deep Children.
+They need a planet like your Earth... or our Syra... one rich in water and oxygen
+and possessing a molten, active mantle.
+Our plan is to lure the Mycons to such a planet, and then attack them when they least expect it.
+We know of just such a world.
+When the Ur-Quan were analyzing their mass of planetary data to find a new home for my people
+one of the close candidates, ranked just below Gaia, was a blue world orbiting close to the star, Organon.
+Captain, we need your services again. Here is what you must do.
+You must go to the Mycon and tell them of this world.
+They will find that the world is suitable, and when they go to Organon
+we shall be there... waiting for them.
+Then we shall destroy them.
+
+#(what_now)
+Are you sure the Mycon are going to fall for this? Why should they believe me?
+
+#(HERES_THE_PLAN)	SYREE037.wav
+For all their evil, Captain, the Mycon are a naive race.
+They have great difficulty understanding deception.
+If you tell them what they wish to hear, they will believe you.
+
+#(whats_my_reward)
+So! What if I die doing all this dangerous stuff? What about... us?
+
+#(HERES_REWARD)	SYREE038.wav
+I'm afraid BOTH our duties will be dangerous, Captain.
+We may never see each other again.
+But for now, at least, there's this...
+
+#(bye_after_vault)
+I'll miss you, Tanala.
+
+#(GOODBYE_AFTER_VAULT)	SYREE039.wav
+Don't worry, my human. We will be together again... some day.
+
+
+#(HELLO_AFTER_AMBUSH_1)	SYREE040.wav
+SUCCESS, Captain! The Mycons' fleet is in shambles!
+JUSTICE IS OURS!
+We have revenged ourselves against the heinous Mycons!
+Oh! They fell for our trap so completely!
+When they approached Organon I, we were hiding behind its moon.
+As they approached, their ships broke combat formation
+in preparation for their hideous implanting ceremony.
+We waited until they were fully dispersed around the planet then we attacked!
+The standard Mycon tactic would have been to speed out of orbit using a gravity whip maneuver
+but the Podships refused to abandon their slow-moving Deep Children spore pods.
+They remained in the gravity well, and WE SLICED THEM TO RIBBONS!
+They must have lost a dozen ships to their own stupidity... running into their own Plasmoids!
+The rest?... well we took care of most of them... in our own special way.
+and Captain, now that we have taken our revenge on the Mycon
+we give you our starship officers and Penetrator designs so that you can add our ships
+to your fleet.
+
+#(HELLO_AFTER_AMBUSH_2)	SYREE041.wav
+Hello brave Earthling. Your return is welcome.
+My people, the Syreen, shall be forever in your debt.
+In fact, many of my officers wish to thank you... personally... for your efforts on our behalf.
+I suggest you set aside a week sometime in the near future
+so that you can properly receive your hero's welcome aboard this starbase.
+
+#(HELLO_AFTER_AMBUSH_3)	SYREE042.wav
+Oh, Captain! The flush of victory still has my body quivering!
+For so many years we have dreamed of putting the death of our beloved homeworld behind us
+and now this has finally come to pass!
+We no longer live in the past... caught in memories of what COULD have been.
+Now each of us plans for the future... toward the bright tomorrow!
+And you know what, Captain?
+I have plans... Plans you would be most interested in hearing
+but I shall save them for later... when we can meet... privately.
+
+#(HELLO_AFTER_AMBUSH_4)	SYREE043.wav
+Ah! My beautiful Captain from Earth!
+What can I do for you... please tell me.
+
+#(what_now_after_ambush)
+Is there anything else I can do to you - um! - I mean, do FOR you.
+
+#(DO_THIS_AFTER_AMBUSH)	SYREE044.wav
+Captain, the next step is to pull down the slave shield from our planet.
+In my opinion, the only people who could do that are the Chenjesu
+and as far as I know, they are under a shield of their own.
+Actually... I'm just dodging the real issue, Captain.
+Your agenda really has only one item... Destroy the Ur-Quan Hierarchy!
+How to do that? I'm not sure
+but I know you can't take them head-on, even with that amazing ship of yours.
+You will have to find their weak spot, and then strike it with everything you've got.
+
+#(what_about_you)
+So what happens to you now?
+
+#(ABOUT_ME)	SYREE045.wav
+I expect I'm going to be pretty busy for the next few months
+overseeing repairs to our fleet of Penetrator starships
+and preparing some kind of defensive system for this starbase.
+If and when the Ur-Quan return here, we want to have a little surprise ready for them.
+
+
+#(whats_up_after_ambush)
+So, what's new Tanala?
+
+#(GENERAL_INFO_AFTER_AMBUSH_1)	SYREE046.wav
+Not a great deal, Captain. You seem to be the biggest source of excitement around here.
+I've had requests from just about every officer under my command
+to be transferred to your Earth Starbase to serve under you.
+If I wasn't running this Starbase, I'd be first in line.
+
+#(GENERAL_INFO_AFTER_AMBUSH_2)	SYREE047.wav
+We have been intercepting a concentration of Hierarchy broadcasts
+but we cannot translate their content.
+They all appear to be originating from the direction of the Horologii constellation.
+
+#(GENERAL_INFO_AFTER_AMBUSH_3)	SYREE048.wav
+Nothing new to report, Captain.
+
+#(GENERAL_INFO_AFTER_AMBUSH_4)	SYREE049.wav
+Nothing new to report, Captain.
+
+#(bye_after_ambush)
+Goodbye Tanala.
+
+#(GOODBYE_AFTER_AMBUSH)	SYREE050.wav
+Goodbye my human.
+
+#(FOUND_VAULT_YET_1)	SYREE051.wav
+Have you found the ship vault yet?
+
+#(FOUND_VAULT_YET_2)	SYREE052.wav
+Any success finding our ships, Captain?
+
+#(vault_hint)
+Er... no. Have you got any idea where it is, even a guess?
+
+#(OK_HINT)	SYREE053.wav
+Only that the vault is at a red or maybe orange star, and not too far from our position.
+
+#(found_vault)
+Yes! We found it on the moon of Epsilon Camelopardalis I.
+
+#(bye_before_vault)
+Goodbye, Tanala. I'm off to find the vault!
+
+#(GOODBYE_BEFORE_VAULT)	SYREE054.wav
+Good luck, Captain.
+
+#(what_do_i_get_for_this)
+So what do I get for this, eh? Hmm? Eh?
+	
+#(GRATITUDE)	SYREE055.wav
+You will receive more gratitude than you know what to do with, Captain.
+
+#(not_sure)
+Uh... I'm just not sure. This sounds dangerous.
+
+#(PLEASE)	SYREE056.wav
+Please, Captain, we need your help!
+
+#(READY_FOR_AMBUSH)	SYREE057.wav
+We will wait here for the Mycons.
+
+#(repeat_plan)
+Could you repeat the plan again?
+
+#(OK_REPEAT_PLAN)	SYREE058.wav
+Ok, here's the plan, again.
+You must go to the Mycons and tell them about a world at the Organon star system.
+Tell them that you have found the perfect world for their hideous Deep Children.
+We will hide there and wait for them in ambush.
+Then we shall destroy them.
+
+#(bye_before_ambush)
+Good luck, Tanala.
+
+
+#(GOODBYE_BEFORE_AMBUSH)	SYREE059.wav
+Same to you, my human.
+
+
+#(what_about_us)
+I guess what I mean is... What about us, Tanala?
+
+#(ABOUT_US)	SYREE060.wav
+I'm afraid our duties will keep us apart, Captain
+But for now, at least, there's this...
+
+#(MORE_COMFORTABLE0)	SYREE061.wav
+That's more like it... now 
+#(MORE_COMFORTABLE1)	SYREE062.wav
+, let me help you off with this
+yes... now aren't you a lot more comfortable?
+
+#(in_the_spirit)
+I see! Well, in the spirit of interspecies communication, let me just say, COWABUNGA!
+
+#(OK_SPIRIT0)	SYREE063.wav
+Oooh! Say that word again!
+It makes me feel so excited!
+It makes me want to do something nice for you
+#(OK_SPIRIT1)	SYREE064.wav
+like this...
+#(OK_SPIRIT2)	SYREE065.wav
+and this...
+#(OK_SPIRIT3)	SYREE066.wav
+and especially, this!
+
+#(what_in_mind)
+Hey... what have you got in mind here?
+
+#(SOMETHING_LIKE_THIS0)	SYREE067.wav
+Well to start off, I thought we'd do something like this
+unless your species isn't limber enough
+#(SOMETHING_LIKE_THIS1)	SYREE068.wav
+and then I thought we could move on to something a bit more like... Mmmm... this.
+#(SOMETHING_LIKE_THIS2)	SYREE069.wav
+and after you had recovered, I thought this might be fun!
+#(SOMETHING_LIKE_THIS3)	SYREE070.wav
+and if you're still conscious, I thought we could try this
+even though I've never done it before!
+
+#(hands_off)
+Hey! Hands off lady! I'm not THAT kind of Captain.
+
+#(OK_WONT_USE_HANDS0)	SYREE071.wav
+Oh, Captain... I would never think of doing something unpleasant to you
+quite the opposite in fact.
+But if you want me to keep my hands off... I can use other... things...
+#(OK_WONT_USE_HANDS1)	SYREE072.wav
+...like this over here...
+#(OK_WONT_USE_HANDS2)	SYREE073.wav
+and this right here...r
+#(OK_WONT_USE_HANDS3)	SYREE074.wav
+and this right about here.
+
+
+#(why_lights_off)
+Ahh... why are the lights off?
+
+#(LIGHTS_OFF_BECAUSE0)	SYREE075.wav
+Because, my darling, if the light was on, I couldn't do this...
+#(LIGHTS_OFF_BECAUSE1)	SYREE076.wav
+or this...
+#(LIGHTS_OFF_BECAUSE2)	SYREE077.wav
+or this...
+#(LIGHTS_OFF_BECAUSE3)	SYREE078.wav
+or, umm... this.
+
+#(evil_monster)
+You're not going to turn into some weird alien monster now, and bite my head off, are you?
+
+#(NOT_EVIL_MONSTER)	SYREE079.wav
+Ha!-ha!-ha! An alien monster? Me?
+ME?! WHY CAAPTAIN! WHYEVER DOO YOOU SAAY THAAAT!!!
+REEAARRGGGG!!!!
+  
+...just kidding!
+
+#(disease)
+Very funny. Look, I'd be more comfortable if we just turned the lights back on.
+
+#(JUST_RELAX)	SYREE080.wav
+Just relax, my silly human Captain. Let me take care of everything.
+
+
+#(what_happens_if_i_touch_this)
+Hmmm... what happens if I do this?
+
+#(THIS_HAPPENS0)	SYREE081.wav
+...mmm
+MMMm!...
+Oh, 
+
+#(THIS_HAPPENS1)	SYREE082.wav
+! MMMmm!!...
+...MMMMMmmmmmm!!!...
+...Mmmmm
+does that answer your question?
+
+#(are_you_sure_this_is_ok)
+Are you sure this is okay? I'm nervous.
+
+#(YES_SURE)	SYREE083.wav
+Please don't worry, my darling human
+we have all the time in the world
+and my door locks securely.
+
+#(boy_they_never_taught)
+Boy-oh-boy! They never taught me stuff like this back at Unzervalt!
+
+#(THEN_LET_ME_TEACH)	SYREE084.wav
+Then let me teach you what you need to know
+we will begin with the fundamentals of basic Syreen physiology...
+
+#(not_much_more_to_say)
+Hmm, uh.. well, uh, I guess I don't have much more to say, do I?
+
+#(THEN_STOP_TALKING)	SYREE085.wav
+Then stop wasting your lips on words, you silly fool
+and come here!...
+
+#(LATER)	SYREE086.wav
+(...)  
+(...later...)
+(...much later...)
+(...quite a good bit later...)
+
+#(SEX_GOODBYE)	SYREE087.wav
+Goodbye Captain, darling... we each have our jobs to do now
+you must go!
+But you will remain always in my mind and heart
+and deep within me, I know that someday, when all this madness has come to an end
+we will be together like this... again.
+
