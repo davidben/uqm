@@ -106,6 +106,12 @@ Getting the patches committed:
       - 3DO historical code
       - *nix build system
       - General issues (particularly on *nix)
+    Geoffrey Hausheer (tcpaiqgvnmbf28f001 at sneakemail.com), PhracturedBlue
+     at #sc2
+      - Graphics
+      - Sound (particularly subtitling and other speech stuff)
+      - Threading
+      - General issues
     Mika Kolehmainen (mimakole at cc.jyu.fi), Gwl at #sc2
       - Graphics
       - Sound
@@ -114,6 +120,10 @@ Getting the patches committed:
       - Threading
       - Alien communications code
       - Graphics
+      - General issues
+    Alex Volkov (codepro at usa.net), fOSSiL at #sc2
+      - Graphics
+      - Sound (particularly MixSDL)
       - General issues
 - Only submit code that can be used under the GPL. By submitting code you
   hold the copyright to, you agree that it can be used under the term of
