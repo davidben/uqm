@@ -767,16 +767,17 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 		UBYTE r,g,b;
 		DWORD **rgba,p;
 		COUNT i,j,framew;
-		FRAME tintFrame=pSolarSysState->TintFrame;
-		if(tintFrame !=0)
+		FRAME tintFrame;
+		if(pSolarSysState->TintFrame !=0)
 		{
-			DestroyDrawable (ReleaseDrawable (tintFrame));
-			tintFrame=0;
+			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
+			pSolarSysState->TintFrame=0;
 		}
 		framew=GetFrameWidth(s.frame);
 		tintFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, framew, (UWORD)dy, 1)
 				);
+		pSolarSysState->TintFrame=tintFrame;
 		rgba=(DWORD **)HMalloc(sizeof(DWORD *)*(dy));
 		r=(rgb&(0x1f<<10))>>8;
 		g=(rgb&(0x1f<<5))>>3;
