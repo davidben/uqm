@@ -13,6 +13,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "misc.h"
 #include "rotozoom.h"
 
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
