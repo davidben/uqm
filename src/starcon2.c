@@ -116,7 +116,9 @@ main (int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n", 
+	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n"
+	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
+			"for details see the included 'COPYING' file.\n\n",
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
 
