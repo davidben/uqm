@@ -21,6 +21,10 @@
 #include "libs/timelib.h"
 
 Uint32
-SDLWrapper_GetTimeCounter (void) {
-	return (Uint32)(SDL_GetTicks () * ONE_SECOND / 1000.0);
+SDLWrapper_GetTimeCounter (void)
+{
+	Uint32 ticks = SDL_GetTicks ();
+	return (ticks / 1000) * ONE_SECOND + ((ticks % 1000) * ONE_SECOND / 1000);
+	// Use the following instead when confirming "random" lockup bugs (see #668)
+	//return ticks * ONE_SECOND / 1000;
 }
