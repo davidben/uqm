@@ -743,6 +743,10 @@ SOURCE=..\sc2code\libs\strings\strings.c
 
 SOURCE=..\sc2code\libs\strings\strintrn.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\strings\unicode.c
+# End Source File
 # End Group
 # Begin Group "video"
 

@@ -188,8 +188,8 @@ add_text (int status, PTEXT pTextIn)
 	TEXT locText;
 	PTEXT pText;
 	SIZE leading;
-	UNICODE ch;
-	const UNICODE *pStr;
+	wchar_t ch;
+	const unsigned char *pStr;
 	SIZE text_width;
 	int num_lines = 0;
 	static COORD last_baseline;
@@ -238,13 +238,16 @@ add_text (int status, PTEXT pTextIn)
 		switch (status)
 		{
 			case -3:
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 				break;
 			case -2:
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 				break;
 			case -1:
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1A, 0x1A, 0x1A), 0x12));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x1A, 0x1A, 0x1A), 0x12));
 				break;
 		}
 
@@ -252,8 +255,7 @@ add_text (int status, PTEXT pTextIn)
 		locText = *pTextIn;
 		locText.baseline.x -= 8;
 		locText.CharCount = 1;
-		ch = '*';
-		locText.pStr = &ch;
+		locText.pStr = "*";
 		font_DrawText (&locText);
 
 		locText = *pTextIn;
@@ -264,7 +266,8 @@ add_text (int status, PTEXT pTextIn)
 	numchars = 0;
 	pStr = pText->pStr;
 
-	if (status > 0 && (CommData.AlienTextTemplate.valign & (VALIGN_MIDDLE|VALIGN_BOTTOM))) {
+	if (status > 0 && (CommData.AlienTextTemplate.valign & (
+				VALIGN_MIDDLE|VALIGN_BOTTOM))) {
 		num_lines = _count_lines(pText);
 		if (CommData.AlienTextTemplate.valign == VALIGN_BOTTOM)
 			pText->baseline.y -= (leading * num_lines);
@@ -276,38 +279,55 @@ add_text (int status, PTEXT pTextIn)
 	do
 	{
 		pText->pStr = pStr;
-		pText->CharCount = 1;
 		pText->baseline.y += leading;
 
 		{
 			BOOLEAN eot;
 			RECT r, old_r;
-			COUNT OldCount;
+			COUNT oldCount;
+			const unsigned char *oldPStr;
+			wchar_t oldCh;
+			COUNT charCount;
 
 			GetContextClipRect (&r);
-			eot = FALSE;
-			do
+			oldCount = 1;
+			charCount = 0;
+			ch = '\0';
+			for (;;)
 			{
 				old_r = r;
-				OldCount = pText->CharCount;
-				while (!(eot = (BOOLEAN)(
-						(ch = *++pStr) == '\0'
-						|| ch == '\n'
-						|| ch == '\r'
-						|| (COUNT)(pStr - pText->pStr) >= maxchars
-						)) && ch != ' ')
-					;
-				pText->CharCount = pStr - pText->pStr;
+				oldPStr = pStr;
+				oldCh = ch;
+			
+				for (;;)
+				{
+					ch = getCharFromString (&pStr);
+					eot = ch == '\0' || ch == '\n' || ch == '\r'
+							|| charCount >= maxchars;
+					if (eot || ch == ' ')
+						break;
+					charCount++;
+				}
+
+				oldCount = pText->CharCount;
+				pText->CharCount = charCount;
 				TextRect (pText, &r, NULL_PTR);
-			} while (!eot && r.extent.width < text_width);
+				if (eot || r.extent.width >= text_width)
+					break;
+				charCount++;
+						// For the space in between words.
+			}
 
 			if (r.extent.width >= text_width)
 			{
-				pText->CharCount = OldCount;
+				pText->CharCount = oldCount;
+				pStr = oldPStr;
 				r = old_r;
+				ch = oldCh;
 			}
 
-			if (maxchars -= pText->CharCount)
+			maxchars -= pText->CharCount;
+			if (maxchars != 0)
 				--maxchars;
 			numchars += pText->CharCount;
 			
@@ -316,8 +336,7 @@ add_text (int status, PTEXT pTextIn)
 				if (pText->baseline.y < SIS_SCREEN_HEIGHT)
 					font_DrawText (pText);
 
-				pStr = pText->pStr + pText->CharCount;
-				if(status < -4 && pText->baseline.y >= -status - 10)
+				if (status < -4 && pText->baseline.y >= -status - 10)
 				{
 					++pStr;
 					break;
@@ -346,11 +365,9 @@ add_text (int status, PTEXT pTextIn)
 
 				--pText->baseline.y;
 				font_DrawText (pText);
-
-				pStr = pText->pStr + pText->CharCount;
 			}
 		}
-	} while ((ch = *pStr++) != '\0' && ch != '\n' && ch != '\r' && maxchars);
+	} while (ch != '\0' && ch != '\n' && ch != '\r' && maxchars);
 	pText->pStr = pStr;
 
 	if (status == 1)
@@ -363,7 +380,8 @@ add_text (int status, PTEXT pTextIn)
 		// restores background
 		TFB_DrawScreen_Copy (&r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
 		// draws cached subtitle
-		TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0,
+				TFB_SCREEN_MAIN);
 		
 		last_baseline = pText->baseline.y;
 	}

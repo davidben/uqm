@@ -22,7 +22,6 @@
 
 extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to,
 		BYTE type);
-static wchar_t getNextChar(const unsigned char **ptr);
 static inline FRAME_DESC *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
 
 static BYTE char_delta_array[MAX_DELTAS];
@@ -134,28 +133,37 @@ GetContextFontLeading (PSIZE pheight)
 BOOLEAN
 TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 {
-	COUNT num_chars;
 	FONTPTR FontPtr;
 
-	if ((FontPtr = _CurFontPtr) != 0 && (num_chars = lpText->CharCount))
+	FontPtr = _CurFontPtr;
+	if (FontPtr != 0 && lpText->CharCount != 0)
 	{
 		COORD top_y, bot_y;
 		SIZE width;
 		wchar_t next_ch;
 		const unsigned char *pStr;
-
+		COUNT num_chars;
+	
+		num_chars = lpText->CharCount;
+		/* At this point lpText->CharCount contains the *maximum* number of
+		 * characters that lpText->pStr may contain.
+		 * After the while loop below, it will contain the actual number.
+		 */
 		if (pdelta == 0)
 		{
 			pdelta = char_delta_array;
 			if (num_chars > MAX_DELTAS)
+			{
 				num_chars = MAX_DELTAS;
+				lpText->CharCount = MAX_DELTAS;
+			}
 		}
 
 		top_y = 0;
 		bot_y = 0;
 		width = 0;
 		pStr = lpText->pStr;
-		next_ch = getNextChar (&pStr);
+		next_ch = getCharFromString (&pStr);
 		if (next_ch == '\0')
 			num_chars = 0;
 		while (num_chars--)
@@ -167,9 +175,12 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 			last_width = width;
 
 			ch = next_ch;
-			next_ch = getNextChar (&pStr);
+			next_ch = getCharFromString (&pStr);
 			if (next_ch == '\0')
+			{
+				lpText->CharCount -= num_chars;
 				num_chars = 0;
+			}
 
 			charFrame = getCharFrame (FontPtr, ch);
 			if (charFrame != NULL && GetFrameWidth (charFrame))
@@ -194,8 +205,6 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 
 			*pdelta++ = (BYTE)(width - last_width);
 		}
-
-		lpText->CharCount = pStr - lpText->pStr - 1;
 
 		if (width > 0 && (bot_y -= top_y) > 0)
 		{
@@ -258,7 +267,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		num_chars = TextPtr->CharCount;
 
 		pStr = TextPtr->pStr;
-		next_ch = getNextChar (&pStr);
+		next_ch = getCharFromString (&pStr);
 		if (next_ch == '\0')
 			num_chars = 0;
 		while (num_chars--)
@@ -266,7 +275,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			wchar_t ch;
 
 			ch = next_ch;
-			next_ch = getNextChar (&pStr);
+			next_ch = getCharFromString (&pStr);
 			if (next_ch == '\0')
 				num_chars = 0;
 
@@ -319,100 +328,4 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
 		return NULL;
 	return &fontPtr->CharDesc[ch - FIRST_CHAR];
 }
-
-// Get one character from a UTF-8 encoded string.
-// *ptr will point to the start of the next character.
-// Returns 0 if the encoding is bad. This can be distinguished from the
-// '\0' character by checking whether **ptr == '\0'.
-static wchar_t
-getNextChar(const unsigned char **ptr) {
-	wchar_t result;
-
-	if (**ptr < 0x80) {
-		// 0xxxxxxx, regular ASCII
-		result = **ptr;
-		(*ptr)++;
-
-		return result;
-	}
-
-	if ((**ptr & 0xe0) == 0xc0) {
-		// 110xxxxx; 10xxxxxx must follow
-		// Value between 0x00000080 and 0x0000007f (inclusive)
-		result = **ptr & 0x1f;
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if (result < 0x00000080) {
-			// invalid encoding - must reject
-			goto err;
-		}
-		return result;
-	}
-
-	if ((**ptr & 0xf0) == 0xe0) {
-		// 1110xxxx; 10xxxxxx 10xxxxxx must follow
-		// Value between 0x00000800 and 0x000007ff (inclusive)
-		result = **ptr & 0x0f;
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if (result < 0x00000800) {
-			// invalid encoding - must reject
-			goto err;
-		}
-		return result;
-	}
-
-	if ((**ptr & 0xf8) == 0xf0) {
-		// 11110xxx; 10xxxxxx 10xxxxxx 10xxxxxx must follow
-		// Value between 0x00010000 and 0x0010ffff (inclusive)
-		result = **ptr & 0x07;
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if ((**ptr & 0xc0) != 0x80)
-			goto err;
-		result = (result << 6) | ((**ptr) & 0x3f);
-		(*ptr)++;
-		
-		if (result < 0x00010000) {
-			// invalid encoding - must reject
-			goto err;
-		}
-		return result;
-	}
-	
-err:
-	fprintf(stderr, "Warning: Invalid UTF8 sequence.\n");
-	
-	// Resynchronise (skip everything starting with 0x10xxxxxx):
-	while ((**ptr & 0xc0) == 0x80)
-		*ptr++;
-	
-	return 0;
-}
-
 

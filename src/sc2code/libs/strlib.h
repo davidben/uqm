@@ -48,5 +48,8 @@ extern STRINGPTR GetStringTimeStamp (STRING String);
 extern BOOLEAN GetStringContents (STRING String, STRINGPTR StringBuf,
 		BOOLEAN AppendSpace);
 
+wchar_t getCharFromString(const unsigned char **ptr);
+
 #endif /* _STRLIB_H */
+
 
