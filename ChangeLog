@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Decelerate when entering orbit to give a smoother effect -PhracturedBlue
 - fix subtitle text overlap issues (bug 232)
 - 'Esc' now leaves planet surface (bug233) -PhracturedBlue
 - Fix race on exiting starbase (bug 230) -PracturedBlue

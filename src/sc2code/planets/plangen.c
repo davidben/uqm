@@ -40,7 +40,7 @@ void SetPlanetTilt (int da);
 
 void RepairBackRect (PRECT pRect);
 
-int RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from);
+PRECT RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT r);
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
@@ -1368,7 +1368,8 @@ rotate_planet_task (void *data)
 	COORD init_x;
 	DWORD TimeIn;
 	PSOLARSYS_STATE pSS;
-	BOOLEAN repair, zooming;
+	BOOLEAN zooming;
+	RECT r, *repair = &r;
 	UBYTE zoom_from;
 	COUNT zoom_arr[50];
 	COUNT zoom_amt, frame_num = 0, zoom_frames;
@@ -1376,7 +1377,7 @@ rotate_planet_task (void *data)
 
 	Task task = (Task) data;
 
-	repair = FALSE;
+	r.extent.width = 0;
 	zooming = TRUE;
 
 	pSS = pSolarSysState;
@@ -1425,7 +1426,7 @@ rotate_planet_task (void *data)
 					pSS->PauseRotate = 1;
 
 				repair = RotatePlanet (x, SIS_SCREEN_WIDTH >> 1,
-						(148 - SIS_ORG_Y) >> 1, zoom_amt, zoom_from
+						(148 - SIS_ORG_Y) >> 1, zoom_amt, zoom_from, repair
 						);
 
 				if (!repair && zooming)

@@ -54,7 +54,6 @@ PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from)
 {
 	FRAME pFrame[2];
 	COUNT i, num_frames;
-	COUNT scale_amt;
 
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
 	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
@@ -84,13 +83,13 @@ PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from)
 	}
 }
 
-int
-RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from)
+PRECT
+RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoomr)
 {
 	STAMP s;
 	FRAME pFrame[2];
 	COUNT i, num_frames;
-	RECT r,  *rp = NULL;
+	RECT *rp = NULL;
 	CONTEXT OldContext;
 
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
@@ -99,11 +98,8 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from)
 		pFrame[1] = pSolarSysState->ShieldFrame;
 	if (scale_amt)
 	{	
-		r.corner.x = 0;
-		r.corner.y = 0;
-		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
-		rp = &r;
+		if(zoomr->extent.width)
+			rp = zoomr;
 		//  we're zooming in, take care of scaling the frames
 		for (i=0; i < num_frames; i++)
 			pFrame[i] = pSolarSysState->ScaleFrame[i];
@@ -140,8 +136,13 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from)
 	}
 	//ClearSemaphore (GraphicsSem);
 	if (scale_amt && scale_amt != MAP_HEIGHT)
-		return 1;
-	return 0;
+	{
+		GetFrameRect (pFrame[num_frames - 1], zoomr);
+		zoomr->corner.x += dx;
+		zoomr->corner.y += dy;
+		return zoomr;
+	}
+	return NULL;
 }
 
 void
