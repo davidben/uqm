@@ -24,9 +24,9 @@
 #endif
 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+#	include <getopt.h>
 #else
-#include "getopt/getopt.h"
+#	include "getopt/getopt.h"
 #endif
 
 #include "libs/graphics/gfx_common.h"
@@ -44,126 +44,112 @@
 			// Including this is actually necessary on OSX.
 #endif
 
-/* TODO: Remove these (making them local to main() ) once threading is
-   gone. */
+struct options_struct {
+	const char *logFile;
+	enum {
+		runMode_normal,
+		runMode_usage
+	} runMode;
+	int gfxDriver;
+	int gfxFlags;
+	int soundDriver;
+	int soundFlags;
+	int width;
+	int height;
+	int bpp;
+	const char *contentDir;
+	const char **addons;
+	int numAddons;
+	int gammaSet;
+	float gamma;
+	int whichMusic;
+	int whichCoarseScan;
+	int whichMenu;
+	int whichFonts;
+	int smoothScroll;
+	int meleeScale;
+	BOOLEAN subTitles;
+	BOOLEAN stereoSFX;
+	float musicVolumeScale;
+	float sfxVolumeScale;
+	float speechVolumeScale;
+};
 
+static int preParseOptions(int argc, char *argv[],
+		struct options_struct *options);
+static int parseOptions(int argc, char *argv[],
+		struct options_struct *options);
+static void usage (FILE *out);
+static int parseIntOption (const char *str, int *result,
+		const char *optName);
+static int parseFloatOption (const char *str, float *f,
+		const char *optName);
+static int parseVolume (const char *str, float *vol, const char *optName);
+static int InvalidArgument(const char *supplied, const char *opt_name);
+static int Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt,
+		int *result);
+
+/* TODO: Remove these global variables once threading is gone. */
 int snddriver, soundflags;
-
-static int
-Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt)
-{
-	if (value == NULL)
-	{
-		fprintf (stderr, "option '%s' requires a value!\n", opt);
-		return -1;
-	}
-
-	if ((mask & OPT_3DO) && strcmp (value, "3do") == 0)
-		return OPT_3DO;
-	if ((mask & OPT_PC) && strcmp (value, "pc") == 0)
-		return OPT_PC;
-	fprintf (stderr, "Unknown option '%s %s' found!", opt, value);
-	return -1;
-}
 
 int
 main (int argc, char *argv[])
 {
-	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
-	int gfxflags = 0;
-	int width = 640, height = 480, bpp = 16;
-	int vol;
-	int val;
-	const char *contentDir;
-	float gamma = 1.0;
-	int gammaset = 0;
-	const char **addons;
-	int numAddons;
-	int i;
-
-	enum
-	{
-		CSCAN_OPT = 1000,
-		MENU_OPT,
-		FONT_OPT,
-		SCROLL_OPT,
-		SOUND_OPT,
-		STEREOSFX_OPT,
-		ADDON_OPT
+	struct options_struct options = {
+		/* .logFile = */            NULL,
+		/* .runMode = */            runMode_normal,
+		/* .gfxdriver = */          TFB_GFXDRIVER_SDL_PURE,
+		/* .gfxflags = */           0,
+		/* .soundDriver = */        audio_DRIVER_MIXSDL,
+		/* .soundFlags = */         audio_QUALITY_MEDIUM,
+		/* .width = */              640,
+		/* .height = */             480,
+		/* .bpp = */                16,
+#ifdef CONTENTDIR
+		/* .contentDir = */         CONTENTDIR,
+#elif defined (win32)
+		/* .contentDir = */         "../../content",
+#else
+		/* .contentDir = */         "content",
+#endif
+		/* .addons = */             NULL,
+		/* .numAddons = */          0,
+		/* .gammaSet = */           0,
+		/* .gamma = */              0.0f,
+		/* .whichMusic = */         OPT_3DO,
+		/* .whichCoarseScan = */    OPT_3DO,
+		/* .whichMenu = */          OPT_3DO,
+		/* .whichFont = */          OPT_PC,
+		/* .smoothScroll = */       OPT_PC,
+		/* .meleeScale = */         TFB_SCALE_TRILINEAR,
+		/* .subtitles = */          TRUE,
+		/* .stereoSFX = */          FALSE,
+		/* .musicVolumeScale = */   1.0f,
+		/* .sfxVolumeScale = */     1.0f,
+		/* .speechVolumeScale = */  1.0f,
 	};
 
-	int option_index = 0, c;
-	const char *optstring = "r:d:foc:b:spn:?hM:S:T:m:q:ug:l:";
-	static struct option long_options[] = 
+	int optionsResult;
+	optionsResult = preParseOptions(argc, argv, &options);
+	if (optionsResult != 0)
 	{
-		{"res", 1, NULL, 'r'},
-		{"bpp", 1, NULL, 'd'},
-		{"fullscreen", 0, NULL, 'f'},
-		{"opengl", 0, NULL, 'o'},
-		{"scale", 1, NULL, 'c'},
-		{"meleescale", 1, NULL, 'b'},
-		{"scanlines", 0, NULL, 's'},
-		{"fps", 0, NULL, 'p'},
-		{"contentdir", 1, NULL, 'n'},
-		{"help", 0, NULL, 'h'},
-		{"musicvol", 1, NULL, 'M'},
-		{"sfxvol", 1, NULL, 'S'},
-		{"speechvol", 1, NULL, 'T'},
-		{"audioquality", 1, NULL, 'q'},
-		{"nosubtitles", 0, NULL, 'u'},
-		{"music", 1, NULL, 'm'},
-		{"gamma", 1, NULL, 'g'},
-		{"logfile", 1, NULL, 'l'},
-		//  options with no short equivalent
-		{"cscan", 1, NULL, CSCAN_OPT},
-		{"menu", 1, NULL, MENU_OPT},
-		{"font", 1, NULL, FONT_OPT},
-		{"scroll", 1, NULL, SCROLL_OPT},
-		{"sound", 1, NULL, SOUND_OPT},
-		{"stereosfx", 0, NULL, STEREOSFX_OPT},
-		{"addon", 1, NULL, ADDON_OPT},
-		{0, 0, 0, 0}
-	};
-
-	/*
-		"pre-process" the cmdline args looking for a -l ("logfile")
-		option.  If it was given, redirect stderr to the named file
-	*/
-	opterr = 0;
-	while ((c = getopt_long (argc, argv, optstring, long_options, 0)) != -1)
-	{
-		switch (c) {
-			case 'l':
-				freopen (optarg, "w", stderr);
-				for (i = 0; i < argc; ++i)
-						fprintf (stderr, "argv[%d] = [%s]\n", i, argv[i]);
-				break;
-		}
+		// TODO: various uninitialisations
+		return optionsResult;
 	}
-	opterr = optind = 1;
 
-	/* TODO: Once threading is gone, these become local variables
-	   again.  In the meantime, they must be global so that
-	   initAudio (in StarCon2Main) can see them.  initAudio needed
-	   to be moved there because calling AssignTask in the main
-	   thread doesn't work */
-	snddriver = audio_DRIVER_MIXSDL;
-	soundflags = audio_QUALITY_MEDIUM;
+	if (options.logFile != NULL)
+	{
+		int i;
+		freopen (options.logFile, "w", stderr);
+		for (i = 0; i < argc; ++i)
+			fprintf (stderr, "argv[%d] = [%s]\n", i, argv[i]);
+	}
 
 	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n"
 	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
 			"for details see the included 'COPYING' file.\n\n",
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
-
-#ifdef CONTENTDIR
-	contentDir = CONTENTDIR;
-#elif defined (win32)
-	contentDir = "../../content";
-#else
-	contentDir = "content";
-#endif
-
 
 	/* mem_init () uses mutexes.  Mutex creation cannot use
 	   the memory system until the memory system is rewritten
@@ -173,214 +159,45 @@ main (int argc, char *argv[])
 	mem_init ();
 	InitThreadSystem ();
 
-	addons = HMalloc(1 * sizeof (const char *));
-	addons[0] = NULL;
-	numAddons = 0;
-	
-	while ((c = getopt_long(argc, argv, optstring, long_options,
-			&option_index)) != -1)
+	optionsResult = parseOptions(argc, argv, &options);
+	if (optionsResult != 0)
 	{
-		switch (c) {
-			case 'r':
-				sscanf(optarg, "%dx%d", &width, &height);
-			break;
-			case 'd':
-				sscanf(optarg, "%d", &bpp);
-			break;
-			case 'f':
-				gfxflags |= TFB_GFXFLAGS_FULLSCREEN;
-			break;
-			case 'o':
-				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
-			break;
-			case 'c':
-				if (!strcmp (optarg, "bilinear"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_BILINEAR;
-				}
-				else if (!strcmp (optarg, "biadapt"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_BIADAPT;
-				}
-				else if (!strcmp (optarg, "biadv"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
-				}
-				else if (!strcmp (optarg, "triscan"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_TRISCAN;
-				}
-			break;
-			case 'b':
-				if (!strcmp (optarg, "nearest"))
-					optMeleeScale = TFB_SCALE_NEAREST;
-				else if (!strcmp (optarg, "trilinear"))
-					optMeleeScale = TFB_SCALE_TRILINEAR;
-			break;
-			case 's':
-				gfxflags |= TFB_GFXFLAGS_SCANLINES;
-			break;
-			case 'p':
-				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
-			break;
-			case 'n':
-				contentDir = optarg;
-			break;
-			case 'M':
-				sscanf(optarg, "%d", &vol);
-				if (vol < 0)
-					vol = 0;
-				if (vol > 100)
-					vol = 100;
-				musicVolumeScale = vol / 100.0f;
-			break;
-			case 'S':
-				sscanf(optarg, "%d", &vol);
-				if (vol < 0)
-					vol = 0;
-				if (vol > 100)
-					vol = 100;
-				sfxVolumeScale = vol / 100.0f;
-			break;
-			case 'T':
-				sscanf(optarg, "%d", &vol);
-				if (vol < 0)
-					vol = 0;
-				if (vol > 100)
-					vol = 100;
-				speechVolumeScale = vol / 100.0f;
-			break;
-			case 'q':
-				if (!strcmp (optarg, "high"))
-				{
-					soundflags &= ~(audio_QUALITY_MEDIUM|audio_QUALITY_LOW);
-					soundflags |= audio_QUALITY_HIGH;
-				}
-				else if (!strcmp (optarg, "medium"))
-				{
-					soundflags &= ~(audio_QUALITY_HIGH|audio_QUALITY_LOW);
-					soundflags |= audio_QUALITY_MEDIUM;
-				}
-				else if (!strcmp (optarg, "low"))
-				{
-					soundflags &= ~(audio_QUALITY_HIGH|audio_QUALITY_MEDIUM);
-					soundflags |= audio_QUALITY_LOW;
-				}
-			break;
-		    case 'u':
-			    optSubtitles = FALSE;
-			break;
-			case 'm':
-				if ((val = Check_PC_3DO_opt (optarg, 
-						OPT_PC | OPT_3DO, 
-						long_options[option_index].name)) != -1)
-					optWhichMusic = val;
-			break;
-			case 'g':
-				sscanf(optarg, "%f", &gamma);
-				gammaset = 1;
-			break;
-			case 'l':
-				// -l is a no-op on the second pass..
-				break;
-			case CSCAN_OPT:
-				if ((val = Check_PC_3DO_opt (optarg, 
-						OPT_PC | OPT_3DO, 
-						long_options[option_index].name)) != -1)
-					optWhichCoarseScan = val;
-			break;
-			case MENU_OPT:
-				if ((val = Check_PC_3DO_opt (optarg, 
-						OPT_PC | OPT_3DO, 
-						long_options[option_index].name)) != -1)
-					optWhichMenu = val;
-			break;
-			case FONT_OPT:
-				if ((val = Check_PC_3DO_opt (optarg, 
-						OPT_PC | OPT_3DO, 
-						long_options[option_index].name)) != -1)
-					optWhichFonts = val;
-			break;
-			case SCROLL_OPT:
-				if ((val = Check_PC_3DO_opt (optarg, 
-						OPT_PC | OPT_3DO, 
-						long_options[option_index].name)) != -1)
-					optSmoothScroll = val;
-			break;
-			case SOUND_OPT:
-				if (!strcmp (optarg, "openal"))
-				{
-					snddriver = audio_DRIVER_OPENAL;
-				}
-				else if (!strcmp (optarg, "none"))
-				{
-					snddriver = audio_DRIVER_NOSOUND;
-				}
-				else if (!strcmp (optarg, "mixsdl"))
-				{
-					snddriver = audio_DRIVER_MIXSDL;
-				}
-			break;
-			case STEREOSFX_OPT:
-				optStereoSFX = TRUE;
-			break;
-			case ADDON_OPT:
-				numAddons++;
-				addons = HRealloc ((void*)addons,
-						(numAddons + 1) * sizeof (const char *));
-				addons[numAddons - 1] = optarg;
-				addons[numAddons] = NULL;
-				break;
-			default:
-				printf ("\nOption %s not found!\n", long_options[option_index].name);
-			case '?':
-			case 'h':
-				printf("Options:\n");
-				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
-						"works only with --opengl)\n");
-				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
-				printf("  -f, --fullscreen (default off)\n");
-				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
-						"default is none)\n");
-				printf("  -b, --meleescale=MODE (nearest or trilinear, "
-						"default is trilinear)\n");
-				printf("  -s, --scanlines (default off)\n");
-				printf("  -p, --fps (default off)\n");
-				printf("  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
-						"causes no change)\n");
-				printf("  -n, --contentdir=CONTENTDIR\n");
-				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
-				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
-				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
-				printf("  -q, --audioquality=QUALITY (high, medium or low, "
-						"default medium)\n");
-				printf("  -u, --nosubtitles\n");
-				printf("  -l, --logfile=FILE (sends console output to logfile FILE)\n");
-				printf("  --addon <addon> (using a specific addon; "
-						"may be specified multiple times)\n");
-				printf("  --sound=DRIVER (openal, mixsdl, none; default "
-						"mixsdl)\n");
-				printf("  --stereosfx (enables positional sound effects, "
-						"currently only for openal)\n");
-				printf("The following options can take either '3do' or 'pc' "
-						"as an option:\n");
-				printf("  -m, --music : Music version (default 3do)\n");
-				printf("  --cscan     : coarse-scan display, pc=text, "
-						"3do=hieroglyphs (default 3do)\n");
-				printf("  --menu      : menu type, pc=text, 3do=graphical "
-						"(default 3do)\n");
-				printf("  --font      : font types and colors (default pc)\n");
-				printf("  --scroll    : ff/frev during comm.  pc=per-page, "
-						"3do=smooth (default pc)\n");
-				return 0;
-			break;
-		}
+		// TODO: various uninitialisations
+		return optionsResult;
+	}
+
+	if (options.runMode == runMode_usage)
+	{
+		usage(stdout);
+		// TODO: various uninitialisations
+		return EXIT_SUCCESS;
 	}
 	
+
+	/* TODO: Once threading is gone, these become local variables
+	   again.  In the meantime, they must be global so that
+	   initAudio (in StarCon2Main) can see them.  initAudio needed
+	   to be moved there because calling AssignTask in the main
+	   thread doesn't work */
+	snddriver = options.soundDriver;
+	soundflags = options.soundFlags;
+
+	// Fill in global variables:
+	optWhichMusic = options.whichMusic;
+	optWhichCoarseScan = options.whichCoarseScan;
+	optWhichMenu = options.whichMenu;
+	optWhichFonts = options.whichFonts;
+	optSmoothScroll = options.smoothScroll;
+	optMeleeScale = options.meleeScale;
+	optSubtitles = options.subTitles;
+	optStereoSFX = options.stereoSFX;
+	musicVolumeScale = options.musicVolumeScale;
+	sfxVolumeScale = options.sfxVolumeScale;
+	speechVolumeScale = options.speechVolumeScale;
+
 	initIO();
-	prepareContentDir (contentDir, addons);
-	HFree ((void*)addons);
+	prepareContentDir (options.contentDir, options.addons);
+	HFree ((void *) options.addons);
 	prepareConfigDir ();
 	prepareMeleeDir ();
 	prepareSaveDir ();
@@ -389,13 +206,16 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-	GraphicsLock = CreateMutex ("Graphics", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-	RenderingCond = CreateCondVar ("DCQ empty", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	GraphicsLock = CreateMutex ("Graphics",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	RenderingCond = CreateCondVar ("DCQ empty",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
-	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
+	TFB_InitGraphics (options.gfxDriver, options.gfxFlags,
+			options.width, options.height, options.bpp);
+	if (options.gammaSet)
+		TFB_SetGamma (options.gamma);
 	init_communication ();
-	if (gammaset) 
-		TFB_SetGamma (gamma);
 	/* TODO: Once threading is gone, restore initAudio here.
 	   initAudio calls AssignTask, which currently blocks on
 	   ProcessThreadLifecycles... */
@@ -411,8 +231,486 @@ main (int argc, char *argv[])
 		TFB_FlushGraphics ();
 	}
 
-	unInitTempDir();
-	uninitIO();
-	exit(EXIT_SUCCESS);
+	unInitTempDir ();
+	uninitIO ();
+	exit (EXIT_SUCCESS);
 }
+
+enum
+{
+	CSCAN_OPT = 1000,
+	MENU_OPT,
+	FONT_OPT,
+	SCROLL_OPT,
+	SOUND_OPT,
+	STEREOSFX_OPT,
+	ADDON_OPT
+};
+
+static const char *optString = "+r:d:foc:b:spn:?hM:S:T:m:q:ug:l:";
+static struct option longOptions[] = 
+{
+	{"res", 1, NULL, 'r'},
+	{"bpp", 1, NULL, 'd'},
+	{"fullscreen", 0, NULL, 'f'},
+	{"opengl", 0, NULL, 'o'},
+	{"scale", 1, NULL, 'c'},
+	{"meleescale", 1, NULL, 'b'},
+	{"scanlines", 0, NULL, 's'},
+	{"fps", 0, NULL, 'p'},
+	{"contentdir", 1, NULL, 'n'},
+	{"help", 0, NULL, 'h'},
+	{"musicvol", 1, NULL, 'M'},
+	{"sfxvol", 1, NULL, 'S'},
+	{"speechvol", 1, NULL, 'T'},
+	{"audioquality", 1, NULL, 'q'},
+	{"nosubtitles", 0, NULL, 'u'},
+	{"music", 1, NULL, 'm'},
+	{"gamma", 1, NULL, 'g'},
+	{"logfile", 1, NULL, 'l'},
+
+	//  options with no short equivalent:
+	{"cscan", 1, NULL, CSCAN_OPT},
+	{"menu", 1, NULL, MENU_OPT},
+	{"font", 1, NULL, FONT_OPT},
+	{"scroll", 1, NULL, SCROLL_OPT},
+	{"sound", 1, NULL, SOUND_OPT},
+	{"stereosfx", 0, NULL, STEREOSFX_OPT},
+	{"addon", 1, NULL, ADDON_OPT},
+	{0, 0, 0, 0}
+};
+
+static int
+preParseOptions(int argc, char *argv[], struct options_struct *options)
+{
+	/*
+		"pre-process" the cmdline args looking for a -l ("logfile")
+		option.  If it was given, redirect stderr to the named file
+	*/
+	opterr = 0;
+	for (;;)
+	{
+		int c = getopt_long (argc, argv, optString, longOptions, 0);
+		if (c == -1)
+			break;
+
+		switch (c)
+		{
+			case 'l':
+			{
+				options->logFile = optarg;
+				break;
+			}
+		}
+	}
+	optind = 1;
+	return 0;
+}
+
+static int
+parseOptions(int argc, char *argv[], struct options_struct *options)
+{
+	int optionIndex = 0;
+	BOOLEAN badArg = 0;
+
+	options->addons = HMalloc(1 * sizeof (const char *));
+	options->addons[0] = NULL;
+	options->numAddons = 0;
+
+	if (argc == 0)
+	{
+		fprintf (stderr, "Error: Bad command line.\n");
+		return EXIT_FAILURE;
+	}
+
+	while (!badArg)
+	{
+		int c;
+		c = getopt_long(argc, argv, optString, longOptions, &optionIndex);
+		if (c == -1)
+			break;
+
+		switch (c) {
+			case 'r':
+			{
+				int width, height;
+				if (sscanf (optarg, "%dx%d", &width, &height) != 2)
+				{
+					fprintf (stderr, "Error: invalid argument specified "
+							"as resolution.\n");
+					badArg = TRUE;
+					break;
+				}
+				options->width = width;
+				options->height = height;
+				break;
+			}
+			case 'd':
+			{
+				int bpp;
+				int err = parseIntOption(optarg, &bpp, "bpp");
+				if (err)
+				{
+					badArg = TRUE;
+					break;
+				}
+				if (bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32)
+				{
+					fprintf (stderr, "Error: Invalid value specified for "
+							"bpp; it should be either 8, 16, 24, or 32.\n");
+					badArg = TRUE;
+					break;
+				}
+				options->bpp = bpp;
+				break;
+			}
+			case 'f':
+				options->gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
+				break;
+			case 'o':
+				options->gfxDriver = TFB_GFXDRIVER_SDL_OPENGL;
+				break;
+			case 'c':
+				if (!strcmp (optarg, "bilinear"))
+					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
+				else if (!strcmp (optarg, "biadapt"))
+					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPT;
+				else if (!strcmp (optarg, "biadv"))
+					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
+				else if (!strcmp (optarg, "triscan"))
+					options->gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+				else
+				{
+					InvalidArgument(optarg, "--scale or -c");
+					badArg = TRUE;
+				}
+				break;
+			case 'b':
+				if (!strcmp (optarg, "nearest"))
+					options->meleeScale = TFB_SCALE_NEAREST;
+				else if (!strcmp (optarg, "trilinear"))
+					options->meleeScale = TFB_SCALE_TRILINEAR;
+				else
+				{
+					InvalidArgument(optarg, "--meleescale or -b");
+					badArg = TRUE;
+				}
+				break;
+			case 's':
+				options->gfxFlags |= TFB_GFXFLAGS_SCANLINES;
+				break;
+			case 'p':
+				options->gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
+				break;
+			case 'n':
+				options->contentDir = optarg;
+				break;
+			case 'M':
+			{
+				int err = parseVolume(optarg, &options->musicVolumeScale,
+						"music volume");
+				if (err)
+					badArg = TRUE;
+				break;
+			}
+			case 'S':
+			{
+				int err = parseVolume(optarg, &options->sfxVolumeScale,
+						"sfx volume");
+				if (err)
+					badArg = TRUE;
+				break;
+			}
+			case 'T':
+			{
+				int err = parseVolume(optarg, &options->speechVolumeScale,
+						"speech volume");
+				if (err)
+					badArg = TRUE;
+				break;
+			}
+			case 'q':
+				if (!strcmp (optarg, "high"))
+				{
+					options->soundFlags &=
+							~(audio_QUALITY_MEDIUM | audio_QUALITY_LOW);
+					options->soundFlags |= audio_QUALITY_HIGH;
+				}
+				else if (!strcmp (optarg, "medium"))
+				{
+					options->soundFlags &=
+							~(audio_QUALITY_MEDIUM | audio_QUALITY_LOW);
+					options->soundFlags |= audio_QUALITY_MEDIUM;
+				}
+				else if (!strcmp (optarg, "low"))
+				{
+					options->soundFlags &=
+							~(audio_QUALITY_MEDIUM | audio_QUALITY_LOW);
+					options->soundFlags |= audio_QUALITY_LOW;
+				}
+				else
+				{
+					InvalidArgument(optarg, "--audioquality or -q");
+					badArg = TRUE;
+				}
+				break;
+			case 'u':
+				options->subTitles = FALSE;
+				break;
+			case 'm':
+			{
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichMusic) == -1)
+					badArg = TRUE;
+				break;
+			}
+			case 'g':
+			{
+				int err = parseFloatOption(optarg, &options->gamma,
+						"gamma correction");
+				if (err)
+					badArg = TRUE;
+				else
+					options->gammaSet = TRUE;
+				break;
+			}
+			case 'l':
+				// -l is a no-op on the second pass..
+				break;
+			case CSCAN_OPT:
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichCoarseScan) == -1)
+					badArg = TRUE;
+				break;
+			case MENU_OPT:
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichMenu) == -1)
+					badArg = TRUE;
+				break;
+			case FONT_OPT:
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichFonts) == -1)
+					badArg = TRUE;
+				break;
+			case SCROLL_OPT:
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->smoothScroll) == -1)
+					badArg = TRUE;
+				break;
+			case SOUND_OPT:
+				if (!strcmp (optarg, "openal"))
+					options->soundDriver = audio_DRIVER_OPENAL;
+				else if (!strcmp (optarg, "none"))
+					options->soundDriver = audio_DRIVER_NOSOUND;
+				else if (!strcmp (optarg, "mixsdl"))
+					options->soundDriver = audio_DRIVER_MIXSDL;
+				else
+				{
+					fprintf (stderr, "Error: Invalid sound driver "
+							"specified.\n");
+					badArg = TRUE;
+				}
+				break;
+			case STEREOSFX_OPT:
+				options->stereoSFX = TRUE;
+				break;
+			case ADDON_OPT:
+				options->numAddons++;
+				options->addons = HRealloc ((void *) options->addons,
+						(options->numAddons + 1) * sizeof (const char *));
+				options->addons[options->numAddons - 1] = optarg;
+				options->addons[options->numAddons] = NULL;
+				break;
+			default:
+				fprintf (stderr, "Error: Invalid option '%s' not found.\n",
+							longOptions[optionIndex].name);
+				badArg = TRUE;
+				break;
+			case '?':
+			case 'h':
+				options->runMode = runMode_usage;
+				return EXIT_SUCCESS;
+			break;
+		}
+	}
+
+	if (optind != argc)
+	{
+		fprintf (stderr, "\nError: Extra arguments found on the command "
+				"line.\n");
+		badArg = TRUE;
+	}
+
+	if (badArg)
+	{
+		fprintf (stderr, "Run with -h to see the allowed arguments.\n");
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+static int
+parseVolume (const char *str, float *vol, const char *optName)
+{
+	char *endPtr;
+	int intVol;
+
+	if (str[0] == '\0')
+	{
+		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		return -1;
+	}
+	intVol = (int) strtol(str, &endPtr, 10);
+	if (*endPtr != '\0')
+	{
+		fprintf (stderr, "Error: Junk characters in volume specified "
+				"for '%s'.\n", optName);
+		return -1;
+	}
+
+	if (intVol < 0)
+	{
+		*vol = 0.0f;
+		return 0;
+	}
+
+	if (intVol > 100)
+	{
+		*vol = 1.0f;
+		return 0;
+	}
+
+	*vol = intVol / 100.0f;
+	return 0;
+}
+
+static int
+parseIntOption (const char *str, int *result, const char *optName)
+{
+	char *endPtr;
+	float temp;
+
+	if (str[0] == '\0')
+	{
+		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		return -1;
+	}
+	temp = (float) strtol(str, &endPtr, 10);
+	if (*endPtr != '\0')
+	{
+		fprintf (stderr, "Error: Junk characters in argument '%s'.\n",
+				optName);
+		return -1;
+	}
+
+	*result = temp;
+	return 0;
+}
+
+static int
+parseFloatOption (const char *str, float *f, const char *optName)
+{
+	char *endPtr;
+	float temp;
+
+	if (str[0] == '\0')
+	{
+		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		return -1;
+	}
+	temp = (float) strtod(str, &endPtr);
+	if (*endPtr != '\0')
+	{
+		fprintf (stderr, "Error: Junk characters in argument '%s'.\n",
+				optName);
+		return -1;
+	}
+
+	*f = temp;
+	return 0;
+}
+
+static void
+usage (FILE *out)
+{
+	fprintf (out, "Options:\n");
+	fprintf (out, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
+			"works only with --opengl)\n");
+	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 16)\n");
+	fprintf (out, "  -f, --fullscreen (default off)\n");
+	fprintf (out, "  -o, --opengl (default off)\n");
+	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
+			"default is none)\n");
+	fprintf (out, "  -b, --meleescale=MODE (nearest or trilinear, "
+			"default is trilinear)\n");
+	fprintf (out, "  -s, --scanlines (default off)\n");
+	fprintf (out, "  -p, --fps (default off)\n");
+	fprintf (out, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
+			"causes no change)\n");
+	fprintf (out, "  -n, --contentdir=CONTENTDIR\n");
+	fprintf (out, "  -M, --musicvol=VOLUME (0-100, default 100)\n");
+	fprintf (out, "  -S, --sfxvol=VOLUME (0-100, default 100)\n");
+	fprintf (out, "  -T, --speechvol=VOLUME (0-100, default 100)\n");
+	fprintf (out, "  -q, --audioquality=QUALITY (high, medium or low, "
+			"default medium)\n");
+	fprintf (out, "  -u, --nosubtitles\n");
+	fprintf (out, "  -l, --logfile=FILE (sends console output to logfile "
+			"FILE)\n");
+	fprintf (out, "  --addon <addon> (using a specific addon; "
+			"may be specified multiple times)\n");
+	fprintf (out, "  --sound=DRIVER (openal, mixsdl, none; default "
+			"mixsdl)\n");
+	fprintf (out, "  --stereosfx (enables positional sound effects, "
+			"currently only for openal)\n");
+	fprintf (out, "The following options can take either '3do' or 'pc' "
+			"as an option:\n");
+	fprintf (out, "  -m, --music : Music version (default 3do)\n");
+	fprintf (out, "  --cscan     : coarse-scan display, pc=text, "
+			"3do=hieroglyphs (default 3do)\n");
+	fprintf (out, "  --menu      : menu type, pc=text, 3do=graphical "
+			"(default 3do)\n");
+	fprintf (out, "  --font      : font types and colors (default pc)\n");
+	fprintf (out, "  --scroll    : ff/frev during comm.  pc=per-page, "
+			"3do=smooth (default pc)\n");
+}
+
+static int
+InvalidArgument(const char *supplied, const char *opt_name)
+{
+	fprintf(stderr, "Invalid argument '%s' to option %s.\n",
+			supplied, opt_name);
+	fprintf (stderr, "Use -h to see the allowed arguments.\n");
+	return EXIT_FAILURE;
+}
+
+static int
+Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
+		int *result)
+{
+	if (value == NULL)
+	{
+		fprintf (stderr, "Error: option '%s' requires a value.\n", optName);
+		return -1;
+	}
+
+	if ((mask & OPT_3DO) && strcmp (value, "3do") == 0)
+	{
+		*result = OPT_3DO;
+		return 0;
+	}
+	if ((mask & OPT_PC) && strcmp (value, "pc") == 0)
+	{
+		*result = OPT_PC;
+		return 0;
+	}
+	fprintf (stderr, "Error: Invalid option '%s %s' found.", optName, value);
+	return -1;
+}
+
 

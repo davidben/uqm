@@ -31,15 +31,15 @@
 #include "config.h"
 #include "libs/uio.h"
 
-int optWhichMusic = OPT_3DO;
-int optWhichCoarseScan = OPT_3DO;
-int optWhichMenu = OPT_3DO;
-int optWhichFonts = OPT_PC;
-int optSmoothScroll = OPT_PC;
-int optMeleeScale = TFB_SCALE_TRILINEAR;
+int optWhichMusic;
+int optWhichCoarseScan;
+int optWhichMenu;
+int optWhichFonts;
+int optSmoothScroll;
+int optMeleeScale;
 
-BOOLEAN optSubtitles = TRUE;
-BOOLEAN optStereoSFX = FALSE;
+BOOLEAN optSubtitles;
+BOOLEAN optStereoSFX;
 uio_DirHandle *contentDir;
 uio_DirHandle *configDir;
 uio_DirHandle *saveDir;

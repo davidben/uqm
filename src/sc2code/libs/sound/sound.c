@@ -23,9 +23,9 @@ static SIZE TTotal;
 static SIZE volume_end;
 
 int musicVolume = (MAX_VOLUME >> 1);
-float musicVolumeScale = 1.0f;
-float sfxVolumeScale = 1.0f;
-float speechVolumeScale = 1.0f;
+float musicVolumeScale;
+float sfxVolumeScale;
+float speechVolumeScale;
 TFB_SoundSource soundSource[NUM_SOUNDSOURCES];
 
 
