@@ -31,4 +31,6 @@ For .ct files an item is as follows:
            2       bits 0-4: blue value
                    bits 5-9: green value
                    bits 10-15: red value
+The full palette contains 256 values, which are the original 32 values
+    multiplied by 1 to 8.
 
