@@ -49,6 +49,7 @@ uio_fopen(uio_DirHandle *dir, const char *path, const char *mode) {
 	int openFlags;
 	uio_Handle *handle;
 	uio_Stream *stream;
+	int i;
 	
 	switch (*mode) {
 		case 'r':
@@ -66,20 +67,30 @@ uio_fopen(uio_DirHandle *dir, const char *path, const char *mode) {
 	}
 	mode++;
 
-	// 'b' may either be the second or the third character.
-	if (*mode == 'b') {
-		mode++;
+	// C'89 says 'b' may either be the second or the third character.
+	// If someone specifies both 'b' and 't', he/she is out of luck.
+	i = 2;
+	while (i-- && (*mode != '\0')) {
+		switch (*mode) {
+			case 'b':
 #ifdef WIN32
-		openFlags |= O_BINARY;
+				openFlags |= O_BINARY;
 #endif
-		if (*mode == '+') {
-			mode++;
-			openFlags = (openFlags & ~O_ACCMODE) | O_RDWR;
+				break;
+			case 't':
+#ifdef WIN32
+				openFlags |= O_TEXT;
+#endif
+				break;
+			case '+':
+				openFlags = (openFlags & ~O_ACCMODE) | O_RDWR;
+				break;
+			default:
+				i = 0;
+					// leave the while loop
+				break;
 		}
-	} else
-	if (*mode == '+') {
 		mode++;
-		openFlags = (openFlags & ~O_ACCMODE) | O_RDWR;
 	}
 
 	// Any characters in the mode string that might follow are ignored.
@@ -404,13 +415,27 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 		return 0;
 	}
 
+	// TODO: It's possible that uio_Stream_flushBuffer just seeked back
+	//       from the end of the part written, to the end of the part
+	//       read. This seek will just undo that effect, so there's room
+	//       for optimisation here.
+	//       (decouple stream->seekLow from stream->readEnd by adding
+	//       a seekHigh var?)
+	if (uio_lseek(stream->handle, stream->seekLow -
+			(stream->readEnd - stream->bufPtr), SEEK_SET) == -1) {
+		// errno is set
+		return 0;
+	}
+	stream->seekLow -= (stream->readEnd - stream->bufPtr);
+	
 	bytesWritten = uio_write(stream->handle, buf, bytesToWrite);
 	if (bytesWritten != bytesToWrite) {
 		stream->status = uio_Stream_STATUS_ERROR;
 		if (bytesWritten == -1)
 			return 0;
 	}
-	stream->seekLow += stream->readEnd - stream->bufPtr + bytesWritten;
+	stream->seekLow += bytesWritten;
+	// TODO: readStart is no longer aligned on a block.
 	stream->readStart = stream->buf;
 	stream->bufPtr = stream->buf;
 	stream->readEnd = stream->buf;
