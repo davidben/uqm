@@ -268,7 +268,7 @@ Scale_CalcChannelMasks (SDL_PixelFormat* fmt, unsigned int npixels,
 	pbp->pre_shift = pbp->high_mask >= (Uint32)1 << (32 - pbp->shift_bits);
 }
 
-// compare pixels by their RGB
+// compute the RGB distance between 2 pixels
 __inline__ int
 Scale_GetRGBDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 {
@@ -290,7 +290,7 @@ Scale_GetRGBDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 	return delta;
 }
 
-// compare pixels by their YUVs
+// compute the YUV distance between 2 pixels
 __inline__ int
 Scale_GetYUVDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 {
@@ -304,7 +304,7 @@ Scale_GetYUVDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 	g2 = ((pix2 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
 	b2 = ((pix2 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
 
-	// compare Ys
+	// compute Y delta
 	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r1]
 			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g1]
 			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b1]
@@ -316,7 +316,7 @@ Scale_GetYUVDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 	// Y is 2-4 times more important than U or V
 	delta = compd << 1;
 
-	// compare Us
+	// compute U delta
 	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_U][r1]
 			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_U][g1]
 			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_U][b1]
@@ -327,7 +327,7 @@ Scale_GetYUVDelta (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 		compd = -compd;
 	delta += compd;
 	
-	// compare Vs
+	// compute V delta
 	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_V][r1]
 			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_V][g1]
 			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_V][b1]
@@ -355,6 +355,63 @@ Scale_GetPixY (SDL_PixelFormat* fmt, Uint32 pix)
 	return RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r]
 			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g]
 			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b];
+}
+
+// compare 2 pixels with respect to their YUV representations
+// tolerance set by toler arg
+// returns true: close; false: distant (-gt toler)
+__inline__ bool
+Scale_CmpYUV (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2, int toler)
+{
+	Uint32 r1, g1, b1, r2, g2, b2;
+	int compd, delta;
+
+	r1 = ((pix1 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss;
+	g1 = ((pix1 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
+	b1 = ((pix1 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
+	r2 = ((pix2 & fmt->Rmask) >> fmt->Rshift) << fmt->Rloss;
+	g2 = ((pix2 & fmt->Gmask) >> fmt->Gshift) << fmt->Gloss;
+	b2 = ((pix2 & fmt->Bmask) >> fmt->Bshift) << fmt->Bloss;
+
+	// compute Y delta
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_Y][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_Y][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_Y][b2];
+	if (compd < 0)
+		compd = -compd;
+	// Y is 2-4 times more important than U or V
+	delta = compd << 1;
+	if (delta > toler)
+		return false;
+
+	// compute U delta
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_U][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_U][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_U][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_U][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_U][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_U][b2];
+	if (compd < 0)
+		compd = -compd;
+	delta += compd;
+	if (delta > toler)
+		return false;
+	
+	// compute V delta
+	compd = RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_V][r1]
+			+ RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_V][g1]
+			+ RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_V][b1]
+			- RGB_to_YUV [YUV_XFORM_R][YUV_XFORM_V][r2]
+			- RGB_to_YUV [YUV_XFORM_G][YUV_XFORM_V][g2]
+			- RGB_to_YUV [YUV_XFORM_B][YUV_XFORM_V][b2];
+	if (compd < 0)
+		compd = -compd;
+	delta += compd;
+
+	return delta <= toler;
 }
 
 // biadapt scaling to 2x
@@ -2348,6 +2405,361 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	#undef PIX
 	#undef SRC
+}
+
+
+// triscan scaling to 2x
+// derivative of scale2x -- scale2x.sf.net
+void
+Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
+{
+	int x, y;
+	const int w = src->w, h = src->h, dw = dst->w;
+	int xend, yend;
+	int dsrc, ddst;
+	SDL_Rect *region = r;
+	SDL_Rect limits;
+	SDL_PixelFormat *fmt = dst->format;
+	BLEND_PARAMS blend2;
+	bool eqflag;
+	// for clarity purposes, the 'pixels' array here is transposed
+	Uint32 pixels[3][3];
+
+	// these macros are for clarity; they make the current pixel (0,0)
+	// and allow to access pixels in all directions
+	#define PIX(x, y)   (pixels[1 + (x)][1 + (y)])
+	#define SRC(x, y)   (src_p + (x) + ((y) * w))
+
+	#define TRISCAN_YUV_MED     100
+
+	#define TRISCAN_CMPYUV_T(p1, p2, toler) \
+			Scale_CmpYUV (fmt, p1, p2, toler)
+	// medium tolerance pixel comparison
+	#define TRISCAN_CMPYUV(p1, p2) \
+			(p1 == p2 || TRISCAN_CMPYUV_T (p1, p2, TRISCAN_YUV_MED))
+	#define TRISCAN_CMPYUV_FLAG(p1, p2) \
+			((eqflag = true, p1 == p2) || \
+			 (eqflag = false, TRISCAN_CMPYUV_T (p1, p2, TRISCAN_YUV_MED)))
+
+	// expand updated region if necessary
+	// pixels neighbooring the updated region may
+	// change as a result of updates
+	limits.x = 0;
+	limits.y = 0;
+	limits.w = src->w;
+	limits.h = src->h;
+	Scale_ExpandRect (region, 1, &limits);
+
+	xend = region->x + region->w;
+	yend = region->y + region->h;
+	dsrc = w - region->w;
+	ddst = (dw - region->w) * 2;
+
+	// precompute the blending masks and shifts
+	Scale_CalcBlendMasks (fmt, 2, &blend2);
+
+	switch (fmt->BytesPerPixel)
+	{
+	case 2: // 16bpp scaling
+	#define TRISCAN_GETPIX(p)        ( *(Uint16 *)(p) )
+	#define TRISCAN_SETPIX(p, c)     ( *(Uint16 *)(p) = (c) )
+	#define TRISCAN_BUF              Uint16
+	{
+		TRISCAN_BUF *src_p = (TRISCAN_BUF *)src->pixels;
+		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
+		
+		// move ptrs to the first updated pixel
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
+
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			PIX (0, 0) = PIX (1, 0) = TRISCAN_GETPIX (SRC (0, 0));
+
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// copy already fetched pixels as we move across
+				PIX (-1, 0) = PIX (0, 0);
+				PIX ( 0, 0) = PIX (1, 0);
+				
+				PIX (0, -1) = y > 0     ? TRISCAN_GETPIX (SRC (0, -1))
+						: PIX(0, 0);
+				PIX (0,  1) = y + 1 < h ? TRISCAN_GETPIX (SRC (0,  1))
+						: PIX(0, 0);
+				PIX (1,  0) = x + 1 < w ? TRISCAN_GETPIX (SRC (1,  0))
+						: PIX(0, 0);
+				
+				if (!TRISCAN_CMPYUV(PIX (0, -1), PIX (0, 1)) &&
+					!TRISCAN_CMPYUV(PIX (-1, 0), PIX (1, 0)))
+				{
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+					++dst_p;
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+				}
+				else
+				{
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					++dst_p;
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+				}
+			}
+		}
+		break;
+	}
+	#undef TRISCAN_GETPIX
+	#undef TRISCAN_SETPIX
+	#undef TRISCAN_BUF
+
+	case 3: // 24bpp scaling
+	#define TRISCAN_GETPIX(p)        GET_PIX_24BIT(p)
+	#define TRISCAN_SETPIX(p, c)     SET_PIX_24BIT(p, c)
+	#define TRISCAN_BUF              PIXEL_24BIT
+	{
+		TRISCAN_BUF *src_p = (TRISCAN_BUF *)src->pixels;
+		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
+		
+		// move ptrs to the first updated pixel
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
+
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			PIX (0, 0) = PIX (1, 0) = TRISCAN_GETPIX (SRC (0, 0));
+
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// copy already fetched pixels as we move across
+				PIX (-1, 0) = PIX (0, 0);
+				PIX ( 0, 0) = PIX (1, 0);
+				
+				PIX (0, -1) = y > 0     ? TRISCAN_GETPIX (SRC (0, -1))
+						: PIX(0, 0);
+				PIX (0,  1) = y + 1 < h ? TRISCAN_GETPIX (SRC (0,  1))
+						: PIX(0, 0);
+				PIX (1,  0) = x + 1 < w ? TRISCAN_GETPIX (SRC (1,  0))
+						: PIX(0, 0);
+				
+				if (!TRISCAN_CMPYUV(PIX (0, -1), PIX (0, 1)) &&
+					!TRISCAN_CMPYUV(PIX (-1, 0), PIX (1, 0)))
+				{
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+					++dst_p;
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+				}
+				else
+				{
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					++dst_p;
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+				}
+			}
+		}
+		break;
+	}
+	#undef TRISCAN_GETPIX
+	#undef TRISCAN_SETPIX
+	#undef TRISCAN_BUF
+
+	case 4: // 32bpp scaling
+	#define TRISCAN_GETPIX(p)        ( *(Uint32 *)(p) )
+	#define TRISCAN_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
+	#define TRISCAN_BUF              Uint32
+	{
+		TRISCAN_BUF *src_p = (TRISCAN_BUF *)src->pixels;
+		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
+		
+		// move ptrs to the first updated pixel
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
+
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		{
+			PIX (0, 0) = PIX (1, 0) = TRISCAN_GETPIX (SRC (0, 0));
+
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
+			{
+				// copy already fetched pixels as we move across
+				PIX (-1, 0) = PIX (0, 0);
+				PIX ( 0, 0) = PIX (1, 0);
+				
+				PIX (0, -1) = y > 0     ? TRISCAN_GETPIX (SRC (0, -1))
+						: PIX(0, 0);
+				PIX (0,  1) = y + 1 < h ? TRISCAN_GETPIX (SRC (0,  1))
+						: PIX(0, 0);
+				PIX (1,  0) = x + 1 < w ? TRISCAN_GETPIX (SRC (1,  0))
+						: PIX(0, 0);
+				
+				if (!TRISCAN_CMPYUV(PIX (0, -1), PIX (0, 1)) &&
+					!TRISCAN_CMPYUV(PIX (-1, 0), PIX (1, 0)))
+				{
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (-1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+					++dst_p;
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, -1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, -1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p, PIX (0, 0));
+
+					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
+					{
+						if (eqflag)
+							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+						else
+							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+									blend2, PIX (1, 0), PIX (0, 1))
+									);
+					}
+					else
+						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+
+				}
+				else
+				{
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					++dst_p;
+					TRISCAN_SETPIX (dst_p, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+				}
+			}
+		}
+		break;
+	}
+	#undef TRISCAN_GETPIX
+	#undef TRISCAN_SETPIX
+	#undef TRISCAN_BUF
+	}
+	#undef TRISCAN_CMPYUV_FLAG
+	#undef TRISCAN_CMPYUV
+	#undef TRISCAN_CMPYUV_T
 }
 
 

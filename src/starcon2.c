@@ -204,6 +204,10 @@ main (int argc, char *argv[])
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
 				}
+				else if (!strcmp (optarg, "triscan"))
+				{
+					gfxflags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+				}
 			break;
 			case 'b':
 				if (!strcmp (optarg, "nearest"))
@@ -335,7 +339,7 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=MODE (bilinear, biadapt or biadv, "
+				printf("  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
 						"default is none)\n");
 				printf("  -b, --meleescale=MODE (nearest or trilinear, "
 						"default is trilinear)\n");

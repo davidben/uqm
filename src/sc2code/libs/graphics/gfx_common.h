@@ -41,6 +41,7 @@ enum
 #define TFB_GFXFLAGS_SCALE_BILINEAR     (1<<3)
 #define TFB_GFXFLAGS_SCALE_BIADAPT      (1<<4)
 #define TFB_GFXFLAGS_SCALE_BIADAPTADV   (1<<5)
+#define TFB_GFXFLAGS_SCALE_TRISCAN      (1<<6)
 
 void TFB_PreInit (void);
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);

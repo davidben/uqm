@@ -291,6 +291,8 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 			Scale_BiAdaptFilter (backbuffer, SDL_Video, &updated);
 		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 			Scale_BiAdaptAdvFilter (backbuffer, SDL_Video, &updated);
+		else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+			Scale_TriScanFilter (backbuffer, SDL_Video, &updated);
 		else
 			Scale_Nearest (backbuffer, SDL_Video, &updated);
 

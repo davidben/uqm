@@ -23,5 +23,6 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
+void Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 
 #endif
