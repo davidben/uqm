@@ -130,7 +130,7 @@ TFB_InitSound (int driver, int flags)
 				"This may happen when a soundcard is "
 				"not present or not available.\n"
 				"NOTICE: Try running UQM with '--sound=none' option\n");
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 
 	return ret;
