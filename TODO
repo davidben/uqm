@@ -10,10 +10,9 @@ Serious bugs (crash the game, high priority):
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
   - Often more probable when heavy color table transformations are going on
-- Load/save code doesn't work perfectly, hangs sometimes when after loading
-  trying to enter some star first time etc
-- OpenGL causes lockups when entering a star system, while
-  pure SDL mode does not (only happens when using autopilot?)
+- Occasional lockups when entering a star system
+  (only happens when using autopilot?)
+  - Could be related to load/save code too
 
 Glitches (don't crash the game, medium priority):
 - The melnorme don't charge for fuel when you ask "fill 'er up"
