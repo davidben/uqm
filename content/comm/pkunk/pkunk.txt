@@ -398,7 +398,7 @@ helping others. You see?
 
 #(VISIT_OUR_HOMEWORLD)	pkunk055.ogg
 If you wish our assistance, you should consult with our wise ones
-at our homeworld. It's coordinates are 52.2, 52.5.
+at our homeworld. Its coordinates are 52.2, 52.5.
 
 #(CAN_BE_FRIENDS)	pkunk056.ogg
 Now that we've cleared the air and can completely trust each other, we'll just
