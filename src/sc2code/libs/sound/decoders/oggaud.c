@@ -34,7 +34,7 @@
 
 static const char* ova_GetName (void);
 static bool ova_InitModule (int flags, const TFB_DecoderFormats*);
-static void ova_TermModule ();
+static void ova_TermModule (void);
 static uint32 ova_GetStructSize (void);
 static int ova_GetError (THIS_PTR);
 static bool ova_Init (THIS_PTR);
@@ -123,7 +123,7 @@ ova_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-ova_TermModule ()
+ova_TermModule (void)
 {
 	// no specific module term
 }

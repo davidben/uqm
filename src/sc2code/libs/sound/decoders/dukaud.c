@@ -36,7 +36,7 @@
 
 static const char* duka_GetName (void);
 static bool duka_InitModule (int flags, const TFB_DecoderFormats*);
-static void duka_TermModule ();
+static void duka_TermModule (void);
 static uint32 duka_GetStructSize (void);
 static int duka_GetError (THIS_PTR);
 static bool duka_Init (THIS_PTR);
@@ -349,7 +349,7 @@ duka_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-duka_TermModule ()
+duka_TermModule (void)
 {
 	// no specific module term
 }

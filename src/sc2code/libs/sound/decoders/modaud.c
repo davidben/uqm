@@ -34,7 +34,7 @@
 
 static const char* moda_GetName (void);
 static bool moda_InitModule (int flags, const TFB_DecoderFormats*);
-static void moda_TermModule ();
+static void moda_TermModule (void);
 static uint32 moda_GetStructSize (void);
 static int moda_GetError (THIS_PTR);
 static bool moda_Init (THIS_PTR);
@@ -126,7 +126,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 }
 
 static void
-moda_TermModule ()
+moda_TermModule (void)
 {
 	MikMod_Exit ();
 }
