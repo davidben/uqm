@@ -55,6 +55,12 @@
 #	undef HAVE_NATIVE_64
 #endif
 
+typedef enum
+{
+	false = 0,
+	true
+} bool;
+
 /* If it isn't char, what is it ?!*/
 typedef unsigned char      uint8;
 typedef signed char        sint8;
@@ -101,7 +107,7 @@ typedef struct
  * error during compile, if the actual size of a type is wrong
  */
 #define UQM_COMPILE_TIME_ASSERT(name, x) \
-	typedef int UQM_dummy_##name## [(x) * 2 - 1]
+	typedef int UQM_dummy_##name [(x) * 2 - 1]
 
 UQM_COMPILE_TIME_ASSERT(uint8, sizeof(uint8) == 1);
 UQM_COMPILE_TIME_ASSERT(uint16, sizeof(uint16) == 2);
