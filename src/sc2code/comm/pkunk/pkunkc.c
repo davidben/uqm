@@ -56,7 +56,7 @@ static LOCDATA pkunk_desc =
 		},
 		{
 			11, /* StartIndex */
-			4, /* NumFrames */
+			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
