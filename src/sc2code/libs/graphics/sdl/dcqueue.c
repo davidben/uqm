@@ -91,6 +91,7 @@ Synchronize_DCQ (void)
 		{
 			DrawCommandQueue->Size = (back + DCQ_MAX - front);
 		}
+		DrawCommandQueue->FullSize = DrawCommandQueue->Size;
 	}
 }
 
