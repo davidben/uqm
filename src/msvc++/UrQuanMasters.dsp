@@ -323,6 +323,14 @@ SOURCE=..\sc2code\libs\graphics\resgfx.c
 
 SOURCE=..\sc2code\libs\graphics\stamp.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\tfb_draw.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\tfb_draw.h
+# End Source File
 # End Group
 # Begin Group "input"
 
