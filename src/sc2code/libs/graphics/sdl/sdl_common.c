@@ -84,6 +84,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	//	SDL_ShowCursor (SDL_DISABLE);
 
 	TFB_FlushPaletteCache ();
+	TFB_DrawCanvas_Initialize ();
 
 	return 0;
 }

@@ -7,6 +7,17 @@
 
 typedef SDL_Surface *NativeCanvas;
 
+static Uint8 btable[256][256];
+
+void
+TFB_DrawCanvas_Initialize (void)
+{
+	int i, j;
+	for (i = 0; i < 256; ++i)
+		for (j = 0; j < 256; ++j)
+			btable[j][i] = (j * i) >> 8;
+}
+
 void
 TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas target)
 {
@@ -450,21 +461,19 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 void
 TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, TFB_Canvas src_mipmap, EXTENT size)
 {
-	// TODO: this can be optimized a lot..
-	// - make everything integer-only, use lookup tables, read/modify
-	//   pixels directly instead of SDL_GetRGB(), etc.
-
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
 	SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
+	SDL_PixelFormat *dstfmt = dst->format;
+	const int dstopaque = 0xff << dstfmt->Ashift;
 	const int w = size.width, h = size.height;
 	const int ALPHA_THRESHOLD = 128;
 	
-	float ratio = ((float)w / src->w) * 2.0f - 1.0f;
-	if (ratio < 0.0f)
-		ratio = 0.0f;
-	if (ratio > 1.0f)
-		ratio = 1.0f;
+	int ratio = (int)(256.0f * (((float)w / src->w) * 2.0f - 1.0f));
+	if (ratio < 0)
+		ratio = 0;
+	if (ratio > 256)
+		ratio = 256;
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
@@ -476,174 +485,190 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	if (src->format->BytesPerPixel == 1 && dst->format->BytesPerPixel == 4 &&
 		mipmap->format->BytesPerPixel == 1)
 	{
-		float fsx0 = (float)src->w / w;
-		float fsy0 = (float)src->h / h;
-		float fsx1 = (float)mipmap->w / w;
-		float fsy1 = (float)mipmap->h / h;
-		float v0 = 0.0f;
-		float v1 = 0.0f;
+		SDL_Color *srcpal = src->format->palette->colors;
+		SDL_Color *mmpal = mipmap->format->palette->colors;
+		Uint32 fsx0 = (int)(65536.0f * (float)src->w / w);
+		Uint32 fsy0 = (int)(65536.0f * (float)src->h / h);
+		Uint32 fsx1 = (int)(65536.0f * (float)mipmap->w / w);
+		Uint32 fsy1 = (int)(65536.0f * (float)mipmap->h / h);
 		Uint32 ck0 = src->format->colorkey;
 		Uint32 ck1 = mipmap->format->colorkey;
+		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
 		int x, y;
-		
+
 		SDL_LockSurface(src);
 		SDL_LockSurface(dst);
 		SDL_LockSurface(mipmap);
 		
 		for (y = 0; y < h; ++y)
 		{
-			float u0 = 0.0f;
-			float u1 = 0.0f;
-			int iv0 = (int)v0;
-			int iv1 = (int)v1;
-			float decy0 = v0 - iv0;
-			float decy1 = v1 - iv1;
+			Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w;
+			Uint8 *src_a0 = (Uint8 *)src->pixels + (sy0 >> 16) * src->pitch;
+			Uint8 *src_a1 = (Uint8 *)mipmap->pixels + (sy1 >> 16) * mipmap->pitch;
 
 			for (x = 0; x < w; ++x)
 			{
-				int iu0 = (int)u0;
-				int iu1 = (int)u1;
-				float decx0 = u0 - iu0;
-				float decx1 = u1 - iu1;
-				float ul0 = (1.0f - decx0) * (1.0f - decy0);
-				float ul1 = (1.0f - decx1) * (1.0f - decy1);
-				float ur0 = decx0 * (1.0f - decy0);
-				float ur1 = decx1 * (1.0f - decy1);
-				float ll0 = (1.0f - decx0) * decy0;
-				float ll1 = (1.0f - decx1) * decy1;
-				float lr0 = decx0 * decy0;
-				float lr1 = decx1 * decy1;
+				Uint8 u0 = (sx0 >> 8) & 0xff;
+				Uint8 u1 = (sx1 >> 8) & 0xff;
+				Uint8 v0 = (sy0 >> 8) & 0xff;
+				Uint8 v1 = (sy1 >> 8) & 0xff;
+				Uint8 ul0 = btable[255 - u0][255 - v0];
+				Uint8 ul1 = btable[255 - u1][255 - v1];
+				Uint8 ur0 = btable[u0][255 - v0];
+				Uint8 ur1 = btable[u1][255 - v1];
+				Uint8 ll0 = btable[255 - u0][v0];
+				Uint8 ll1 = btable[255 - u1][v1];
+				Uint8 lr0 = btable[u0][v0];
+				Uint8 lr1 = btable[u1][v1];
 
 				Uint8 r0[5], r1[5], g0[5], g1[5], b0[5], b1[5], a0[5], a1[5];
 				Uint8 c;
 				
-				Uint8 *src_p0 = (Uint8 *)src->pixels + iv0 * src->pitch + iu0;
-				Uint8 *src_p1 = (Uint8 *)mipmap->pixels + iv1 * mipmap->pitch + iu1;
-				Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w + x;
-				
-				if (iu0 <= src->w - 2)
+				Uint8 *src_p0 = src_a0 + (sx0 >> 16);
+				Uint8 *src_p1 = src_a1 + (sx1 >> 16);
+
+				if ((sx0 >> 16) <= src->w - 2)
 				{						
 					a0[0] = ((c = *src_p0) == ck0) ? 0 : 255;
-					SDL_GetRGB (c, src->format, &r0[0], &g0[0], &b0[0]);
+					r0[0] = srcpal[c].r;
+					g0[0] = srcpal[c].g;
+					b0[0] = srcpal[c].b;
 					a0[1] = ((c = *(src_p0 + 1)) == ck0) ? 0 : 255;
-					SDL_GetRGB (c, src->format, &r0[1], &g0[1], &b0[1]);
-					if (iv0 <= src->h - 2)
+					r0[1] = srcpal[c].r;
+					g0[1] = srcpal[c].g;
+					b0[1] = srcpal[c].b;
+
+					if ((sy0 >> 16) <= src->h - 2)
 					{
 						a0[2] = ((c = *(src_p0 + src->pitch)) == ck0) ? 0 : 255;
-						SDL_GetRGB (c, src->format, &r0[2], &g0[2], &b0[2]);
+						r0[2] = srcpal[c].r;
+						g0[2] = srcpal[c].g;
+						b0[2] = srcpal[c].b;
 						a0[3] = ((c = *(src_p0 + src->pitch + 1)) == ck0) ? 0 : 255;
-						SDL_GetRGB (c, src->format, &r0[3], &g0[3], &b0[3]);
+						r0[3] = srcpal[c].r;
+						g0[3] = srcpal[c].g;
+						b0[3] = srcpal[c].b;
 					}
 					else
 					{
+						a0[2] = a0[0];
 						r0[2] = r0[0];
 						g0[2] = g0[0];
 						b0[2] = b0[0];
-						a0[2] = a0[0];
+						a0[3] = a0[1];
 						r0[3] = r0[1];
 						g0[3] = g0[1];
 						b0[3] = b0[1];
-						a0[3] = a0[1];
 					}
 				}
 				else
 				{
-					a0[0] = ((c = *src_p0) == ck0) ? 0 : 255;
-					SDL_GetRGB (c, src->format, &r0[0], &g0[0], &b0[0]);
-					r0[1] = r0[0];
-					g0[1] = g0[0];
-					b0[1] = b0[0];
-					a0[1] = a0[0];
-					if (iv0 <= src->h - 2)
+					a0[0] = a0[1] = ((c = *src_p0) == ck0) ? 0 : 255;
+					r0[0] = r0[1] = srcpal[c].r;
+					g0[0] = g0[1] = srcpal[c].g;
+					b0[0] = b0[1] = srcpal[c].b;
+					if ((sy0 >> 16) <= src->h - 2)
 					{
-						a0[2] = ((c = *(src_p0 + src->pitch)) == ck0) ? 0 : 255;
-						SDL_GetRGB (c, src->format, &r0[2], &g0[2], &b0[2]);
-						r0[3] = r0[2];
-						g0[3] = g0[2];
-						b0[3] = b0[2];
-						a0[3] = a0[2];
+						a0[2] = a0[3] = ((c = *(src_p0 + src->pitch)) == ck0) ? 0 : 255;
+						r0[2] = r0[3] = srcpal[c].r;
+						g0[2] = g0[3] = srcpal[c].g;
+						b0[2] = b0[3] = srcpal[c].b;
 					}
 					else
 					{
+						a0[2] = a0[3] = a0[0];
 						r0[2] = r0[3] = r0[0];
 						g0[2] = g0[3] = g0[0];
 						b0[2] = b0[3] = b0[0];
-						a0[2] = a0[3] = a0[0];
 					}
 				}
 
-				if (iu1 <= mipmap->w - 2)
+				if ((sx1 >> 16) <= mipmap->w - 2)
 				{						
 					a1[0] = ((c = *src_p1) == ck1) ? 0 : 255;
-					SDL_GetRGB (c, mipmap->format, &r1[0], &g1[0], &b1[0]);
+					r1[0] = mmpal[c].r;
+					g1[0] = mmpal[c].g;
+					b1[0] = mmpal[c].b;
 					a1[1] = ((c = *(src_p1 + 1)) == ck1) ? 0 : 255;
-					SDL_GetRGB (c, mipmap->format, &r1[1], &g1[1], &b1[1]);
-					if (iv1 <= mipmap->h - 2)
+					r1[1] = mmpal[c].r;
+					g1[1] = mmpal[c].g;
+					b1[1] = mmpal[c].b;
+
+					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
 						a1[2] = ((c = *(src_p1 + mipmap->pitch)) == ck1) ? 0 : 255;
-						SDL_GetRGB (c, mipmap->format, &r1[2], &g1[2], &b1[2]);
+						r1[2] = mmpal[c].r;
+						g1[2] = mmpal[c].g;
+						b1[2] = mmpal[c].b;
 						a1[3] = ((c = *(src_p1 + mipmap->pitch + 1)) == ck1) ? 0 : 255;
-						SDL_GetRGB (c, mipmap->format, &r1[3], &g1[3], &b1[3]);
+						r1[3] = mmpal[c].r;
+						g1[3] = mmpal[c].g;
+						b1[3] = mmpal[c].b;
 					}
 					else
 					{
+						a1[2] = a1[0];
 						r1[2] = r1[0];
 						g1[2] = g1[0];
 						b1[2] = b1[0];
-						a1[2] = a1[0];
+						a1[3] = a1[1];
 						r1[3] = r1[1];
 						g1[3] = g1[1];
 						b1[3] = b1[1];
-						a1[3] = a1[1];
 					}
 				}
 				else
 				{
-					a1[0] = ((c = *src_p1) == ck1) ? 0 : 255;
-					SDL_GetRGB (c, mipmap->format, &r1[0], &g1[0], &b1[0]);
-					r1[1] = r1[0];
-					g1[1] = g1[0];
-					b1[1] = b1[0];
-					a1[1] = a1[0];
-					if (iv1 <= mipmap->h - 2)
+					a1[0] = a1[1] = ((c = *src_p1) == ck1) ? 0 : 255;
+					r1[0] = r1[1] = mmpal[c].r;
+					g1[0] = g1[1] = mmpal[c].g;
+					b1[0] = b1[1] = mmpal[c].b;
+					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
-						a1[2] = ((c = *(src_p1 + mipmap->pitch)) == ck1) ? 0 : 255;
-						SDL_GetRGB (c, mipmap->format, &r1[2], &g1[2], &b1[2]);
-						r1[3] = r1[2];
-						g1[3] = g1[2];
-						b1[3] = b1[2];
-						a1[3] = a1[2];
+						a1[2] = a1[3] = ((c = *(src_p1 + mipmap->pitch)) == ck1) ? 0 : 255;
+						r1[2] = r1[3] = mmpal[c].r;
+						g1[2] = g1[3] = mmpal[c].g;
+						b1[2] = b1[3] = mmpal[c].b;
 					}
 					else
 					{
+						a1[2] = a1[3] = a1[0];
 						r1[2] = r1[3] = r1[0];
 						g1[2] = g1[3] = g1[0];
 						b1[2] = b1[3] = b1[0];
-						a1[2] = a1[3] = a1[0];
 					}
 				}
 
-				r0[4] = (Uint8)(ul0 * r0[0] + ur0 * r0[1] + ll0 * r0[2] + lr0 * r0[3]);
-				g0[4] = (Uint8)(ul0 * g0[0] + ur0 * g0[1] + ll0 * g0[2] + lr0 * g0[3]);
-				b0[4] = (Uint8)(ul0 * b0[0] + ur0 * b0[1] + ll0 * b0[2] + lr0 * b0[3]);
-				a0[4] = (Uint8)(ul0 * a0[0] + ur0 * a0[1] + ll0 * a0[2] + lr0 * a0[3]);
+				a0[4] = ((ul0 * a0[0]) >> 8) + ((ur0 * a0[1]) >> 8) + ((ll0 * a0[2]) >> 8) + ((lr0 * a0[3]) >> 8);
+				a1[4] = ((ul1 * a1[0]) >> 8) + ((ur1 * a1[1]) >> 8) + ((ll1 * a1[2]) >> 8) + ((lr1 * a1[3]) >> 8);
+				
+				if ((((a0[4] - a1[4]) * ratio) >> 8) + a1[4] > ALPHA_THRESHOLD)
+				{
+					r0[4] = ((ul0 * r0[0]) >> 8) + ((ur0 * r0[1]) >> 8) + ((ll0 * r0[2]) >> 8) + ((lr0 * r0[3]) >> 8);
+					g0[4] = ((ul0 * g0[0]) >> 8) + ((ur0 * g0[1]) >> 8) + ((ll0 * g0[2]) >> 8) + ((lr0 * g0[3]) >> 8);
+					b0[4] = ((ul0 * b0[0]) >> 8) + ((ur0 * b0[1]) >> 8) + ((ll0 * b0[2]) >> 8) + ((lr0 * b0[3]) >> 8);
 
-				r1[4] = (Uint8)(ul1 * r1[0] + ur1 * r1[1] + ll1 * r1[2] + lr1 * r1[3]);
-				g1[4] = (Uint8)(ul1 * g1[0] + ur1 * g1[1] + ll1 * g1[2] + lr1 * g1[3]);
-				b1[4] = (Uint8)(ul1 * b1[0] + ur1 * b1[1] + ll1 * b1[2] + lr1 * b1[3]);
-				a1[4] = (Uint8)(ul1 * a1[0] + ur1 * a1[1] + ll1 * a1[2] + lr1 * a1[3]);
+					r1[4] = ((ul1 * r1[0]) >> 8) + ((ur1 * r1[1]) >> 8) + ((ll1 * r1[2]) >> 8) + ((lr1 * r1[3]) >> 8);
+					g1[4] = ((ul1 * g1[0]) >> 8) + ((ur1 * g1[1]) >> 8) + ((ll1 * g1[2]) >> 8) + ((lr1 * g1[3]) >> 8);
+					b1[4] = ((ul1 * b1[0]) >> 8) + ((ur1 * b1[1]) >> 8) + ((ll1 * b1[2]) >> 8) + ((lr1 * b1[3]) >> 8);
 
-				*dst_p = SDL_MapRGBA(dst->format,
-					(Uint8)((r0[4] - r1[4]) * ratio + r1[4]),
-					(Uint8)((g0[4] - g1[4]) * ratio + g1[4]),
-					(Uint8)((b0[4] - b1[4]) * ratio + b1[4]),
-					(Uint8)(((a0[4] - a1[4]) * ratio + a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
+					*dst_p++ =
+						(((((r0[4] - r1[4]) * ratio) >> 8) + r1[4]) << dstfmt->Rshift) |
+						(((((g0[4] - g1[4]) * ratio) >> 8) + g1[4]) << dstfmt->Gshift) |
+						(((((b0[4] - b1[4]) * ratio) >> 8) + b1[4]) << dstfmt->Bshift) |
+						dstopaque;
+				}
+				else
+				{
+					*dst_p++ = 0;
+				}
 
-				u0 += fsx0;
-				u1 += fsx1;
+				sx0 += fsx0;
+				sx1 += fsx1;
 			}
-			v0 += fsy0;
-			v1 += fsy1;
+			sx0 = sx1 = 0;
+			sy0 += fsy0;
+			sy1 += fsy1;
 		}
 
 		SDL_UnlockSurface(mipmap);
@@ -653,53 +678,48 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	else if (src->format->BytesPerPixel == 4 && dst->format->BytesPerPixel == 4 &&
 		mipmap->format->BytesPerPixel == 4)
 	{
-		float fsx0 = (float)src->w / w;
-		float fsy0 = (float)src->h / h;
-		float fsx1 = (float)mipmap->w / w;
-		float fsy1 = (float)mipmap->h / h;
-		float v0 = 0.0f;
-		float v1 = 0.0f;
+		Uint32 fsx0 = (int)(65536.0f * (float)src->w / w);
+		Uint32 fsy0 = (int)(65536.0f * (float)src->h / h);
+		Uint32 fsx1 = (int)(65536.0f * (float)mipmap->w / w);
+		Uint32 fsy1 = (int)(65536.0f * (float)mipmap->h / h);
+		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
 		int x, y;
-		
+
 		SDL_LockSurface(src);
 		SDL_LockSurface(dst);
 		SDL_LockSurface(mipmap);
 		
 		for (y = 0; y < h; ++y)
 		{
-			float u0 = 0.0f;
-			float u1 = 0.0f;
-			int iv0 = (int)v0;
-			int iv1 = (int)v1;
-			float decy0 = v0 - iv0;
-			float decy1 = v1 - iv1;
+			Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w;
+			Uint32 *src_a0 = (Uint32 *)src->pixels + (sy0 >> 16) * src->w;
+			Uint32 *src_a1 = (Uint32 *)mipmap->pixels + (sy1 >> 16) * mipmap->w;
 
 			for (x = 0; x < w; ++x)
 			{
-				int iu0 = (int)u0;
-				int iu1 = (int)u1;
-				float decx0 = u0 - iu0;
-				float decx1 = u1 - iu1;
-				float ul0 = (1.0f - decx0) * (1.0f - decy0);
-				float ul1 = (1.0f - decx1) * (1.0f - decy1);
-				float ur0 = decx0 * (1.0f - decy0);
-				float ur1 = decx1 * (1.0f - decy1);
-				float ll0 = (1.0f - decx0) * decy0;
-				float ll1 = (1.0f - decx1) * decy1;
-				float lr0 = decx0 * decy0;
-				float lr1 = decx1 * decy1;
+				Uint8 u0 = (sx0 >> 8) & 0xff;
+				Uint8 u1 = (sx1 >> 8) & 0xff;
+				Uint8 v0 = (sy0 >> 8) & 0xff;
+				Uint8 v1 = (sy1 >> 8) & 0xff;
+				Uint8 ul0 = btable[255 - u0][255 - v0];
+				Uint8 ul1 = btable[255 - u1][255 - v1];
+				Uint8 ur0 = btable[u0][255 - v0];
+				Uint8 ur1 = btable[u1][255 - v1];
+				Uint8 ll0 = btable[255 - u0][v0];
+				Uint8 ll1 = btable[255 - u1][v1];
+				Uint8 lr0 = btable[u0][v0];
+				Uint8 lr1 = btable[u1][v1];
 
 				Uint8 r0[5], r1[5], g0[5], g1[5], b0[5], b1[5], a0[5], a1[5];
 				
-				Uint32 *src_p0 = (Uint32 *)src->pixels + iv0 * src->w + iu0;
-				Uint32 *src_p1 = (Uint32 *)mipmap->pixels + iv1 * mipmap->w + iu1;
-				Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w + x;
-				
-				if (iu0 <= src->w - 2)
+				Uint32 *src_p0 = src_a0 + (sx0 >> 16);
+				Uint32 *src_p1 = src_a1 + (sx1 >> 16);
+
+				if ((sx0 >> 16) <= src->w - 2)
 				{						
 					SDL_GetRGBA (*src_p0, src->format, &r0[0], &g0[0], &b0[0], &a0[0]);
 					SDL_GetRGBA (*(src_p0 + 1), src->format, &r0[1], &g0[1], &b0[1], &a0[1]);
-					if (iv0 <= src->h - 2)
+					if ((sy0 >> 16) <= src->h - 2)
 					{
 						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
 						SDL_GetRGBA (*(src_p0 + src->w + 1), src->format, &r0[3], &g0[3], &b0[3], &a0[3]);
@@ -723,7 +743,7 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					g0[1] = g0[0];
 					b0[1] = b0[0];
 					a0[1] = a0[0];
-					if (iv0 <= src->h - 2)
+					if ((sy0 >> 16) <= src->h - 2)
 					{
 						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
 						r0[3] = r0[2];
@@ -740,11 +760,11 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					}
 				}
 
-				if (iu1 <= mipmap->w - 2)
+				if ((sx1 >> 16) <= mipmap->w - 2)
 				{						
 					SDL_GetRGBA (*src_p1, mipmap->format, &r1[0], &g1[0], &b1[0], &a1[0]);
 					SDL_GetRGBA (*(src_p1 + 1), mipmap->format, &r1[1], &g1[1], &b1[1], &a1[1]);
-					if (iv1 <= mipmap->h - 2)
+					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
 						SDL_GetRGBA (*(src_p1 + mipmap->w) , mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
 						SDL_GetRGBA (*(src_p1 + mipmap->w + 1), mipmap->format, &r1[3], &g1[3], &b1[3], &a1[3]);
@@ -768,7 +788,7 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					g1[1] = g1[0];
 					b1[1] = b1[0];
 					a1[1] = a1[0];
-					if (iv1 <= mipmap->h - 2)
+					if ((sy1 >> 16) <= mipmap->h - 2)
 					{
 						SDL_GetRGBA (*(src_p1 + mipmap->w), mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
 						r1[3] = r1[2];
@@ -785,27 +805,36 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 					}
 				}
 
-				r0[4] = (Uint8)(ul0 * r0[0] + ur0 * r0[1] + ll0 * r0[2] + lr0 * r0[3]);
-				g0[4] = (Uint8)(ul0 * g0[0] + ur0 * g0[1] + ll0 * g0[2] + lr0 * g0[3]);
-				b0[4] = (Uint8)(ul0 * b0[0] + ur0 * b0[1] + ll0 * b0[2] + lr0 * b0[3]);
-				a0[4] = (Uint8)(ul0 * a0[0] + ur0 * a0[1] + ll0 * a0[2] + lr0 * a0[3]);
-
-				r1[4] = (Uint8)(ul1 * r1[0] + ur1 * r1[1] + ll1 * r1[2] + lr1 * r1[3]);
-				g1[4] = (Uint8)(ul1 * g1[0] + ur1 * g1[1] + ll1 * g1[2] + lr1 * g1[3]);
-				b1[4] = (Uint8)(ul1 * b1[0] + ur1 * b1[1] + ll1 * b1[2] + lr1 * b1[3]);
-				a1[4] = (Uint8)(ul1 * a1[0] + ur1 * a1[1] + ll1 * a1[2] + lr1 * a1[3]);
+				a0[4] = ((ul0 * a0[0]) >> 8) + ((ur0 * a0[1]) >> 8) + ((ll0 * a0[2]) >> 8) + ((lr0 * a0[3]) >> 8);
+				a1[4] = ((ul1 * a1[0]) >> 8) + ((ur1 * a1[1]) >> 8) + ((ll1 * a1[2]) >> 8) + ((lr1 * a1[3]) >> 8);
 				
-				*dst_p = SDL_MapRGBA(dst->format,
-					(Uint8)((r0[4] - r1[4]) * ratio + r1[4]),
-					(Uint8)((g0[4] - g1[4]) * ratio + g1[4]),
-					(Uint8)((b0[4] - b1[4]) * ratio + b1[4]),
-					(Uint8)(((a0[4] - a1[4]) * ratio + a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
+				if ((((a0[4] - a1[4]) * ratio) >> 8) + a1[4] > ALPHA_THRESHOLD)
+				{
+					r0[4] = ((ul0 * r0[0]) >> 8) + ((ur0 * r0[1]) >> 8) + ((ll0 * r0[2]) >> 8) + ((lr0 * r0[3]) >> 8);
+					g0[4] = ((ul0 * g0[0]) >> 8) + ((ur0 * g0[1]) >> 8) + ((ll0 * g0[2]) >> 8) + ((lr0 * g0[3]) >> 8);
+					b0[4] = ((ul0 * b0[0]) >> 8) + ((ur0 * b0[1]) >> 8) + ((ll0 * b0[2]) >> 8) + ((lr0 * b0[3]) >> 8);
 
-				u0 += fsx0;
-				u1 += fsx1;
+					r1[4] = ((ul1 * r1[0]) >> 8) + ((ur1 * r1[1]) >> 8) + ((ll1 * r1[2]) >> 8) + ((lr1 * r1[3]) >> 8);
+					g1[4] = ((ul1 * g1[0]) >> 8) + ((ur1 * g1[1]) >> 8) + ((ll1 * g1[2]) >> 8) + ((lr1 * g1[3]) >> 8);
+					b1[4] = ((ul1 * b1[0]) >> 8) + ((ur1 * b1[1]) >> 8) + ((ll1 * b1[2]) >> 8) + ((lr1 * b1[3]) >> 8);
+
+					*dst_p++ =
+						(((((r0[4] - r1[4]) * ratio) >> 8) + r1[4]) << dstfmt->Rshift) |
+						(((((g0[4] - g1[4]) * ratio) >> 8) + g1[4]) << dstfmt->Gshift) |
+						(((((b0[4] - b1[4]) * ratio) >> 8) + b1[4]) << dstfmt->Bshift) |
+						dstopaque;
+				}
+				else
+				{
+					*dst_p++ = 0;
+				}
+
+				sx0 += fsx0;
+				sx1 += fsx1;
 			}
-			v0 += fsy0;
-			v1 += fsy1;
+			sx0 = sx1 = 0;
+			sy0 += fsy0;
+			sy1 += fsy1;
 		}
 
 		SDL_UnlockSurface(mipmap);

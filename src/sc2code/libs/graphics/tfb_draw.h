@@ -100,5 +100,6 @@ TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i);
+void TFB_DrawCanvas_Initialize (void);
 
 #endif
