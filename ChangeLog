@@ -1,5 +1,6 @@
 Changes towards version 0.3:
-- Syreen ships become available when Talana says they are (bug #264) -Alex
+- Syreen ships become available when Talana says they are
+  (bug #264); from Nic, Alex
 - The infinity symbol is correctly printed for gas giant atmosphere
   in coarse scan screen (bug #239) -Alex
 - Prevent Syreen crew above 12 getting thrown out the airlock in
