@@ -28,6 +28,15 @@ static unsigned int TransitionTexture;
 static BOOLEAN scanlines;
 static BOOLEAN upload_transitiontexture = FALSE;
 
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define R_MASK 0x00ff0000
+#define G_MASK 0x0000ff00
+#define B_MASK 0x000000ff
+#else
+#define R_MASK 0x000000ff
+#define G_MASK 0x0000ff00
+#define B_MASK 0x00ff0000
+#endif
 
 int
 TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -114,7 +123,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (SDL_Screen == NULL)
 	{
@@ -123,7 +132,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (ExtraScreen == NULL)
 	{
@@ -132,7 +141,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	TransitionScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (TransitionScreen == NULL)
 	{
@@ -141,7 +150,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (format_conv_surf == NULL)
 	{
