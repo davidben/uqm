@@ -47,6 +47,15 @@ SDL_Surface* TFB_GL_DisplayFormatAlpha (SDL_Surface *surface);
 #endif
 #endif
 
+#ifndef WINAPI
+#define GLUT_WINAPI_DEFINED
+#if __MINGW32__ || (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED)
+#define WINAPI    __stdcall
+#else
+#define WINAPI
+#endif
+#endif
+
 /* This is from Win32's <winnt.h> */
 #ifndef CALLBACK
 #if (defined(_M_MRX000) || defined(_M_IX86) || defined(_M_ALPHA) || defined(_M_PPC)) && !defined(MIDL_PASS)
