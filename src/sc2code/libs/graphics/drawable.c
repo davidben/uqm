@@ -149,7 +149,6 @@ DestroyDrawable (DRAWABLE Drawable)
 	DrawablePtr = LockDrawable (Drawable);
 	if (DrawablePtr)
 	{
-		HFree (DrawablePtr->Frame);
 		UnlockDrawable (Drawable);
 		FreeDrawable (Drawable);
 

@@ -508,18 +508,22 @@ _ReleaseCelData (MEM_HANDLE handle)
 
 	cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex)+1;
 
-	FramePtr = &DrawablePtr->Frame[cel_ct];
-	if (!(TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) & SCREEN_DRAWABLE))
+	if (DrawablePtr->Frame)
 	{
-		while (--FramePtr, cel_ct--)
+		FramePtr = &DrawablePtr->Frame[cel_ct];
+		if (TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) != SCREEN_DRAWABLE)
 		{
-			TFB_Image *img = FramePtr->image;
-			if (img)
+			while (--FramePtr, cel_ct--)
 			{
-				FramePtr->image = NULL;
-				TFB_DrawScreen_DeleteImage (img);
+				TFB_Image *img = FramePtr->image;
+				if (img)
+				{
+					FramePtr->image = NULL;
+					TFB_DrawScreen_DeleteImage (img);
+				}
 			}
 		}
+		HFree (DrawablePtr->Frame);
 	}
 
 	UnlockDrawable (handle);
