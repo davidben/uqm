@@ -3312,7 +3312,7 @@ SOURCE=..\types.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\endian.h
+SOURCE=..\endian_uqm.h
 # End Source File
 # Begin Source File
 

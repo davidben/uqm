@@ -23,7 +23,7 @@
 #include "libs/misc.h"
 #include "wav.h"
 #include "decoder.h"
-#include "endian.h"
+#include "endian_uqm.h"
 
 #define FMT  0x20746D66 /* "fmt " */
 #define DATA 0x61746164 /* "data" */

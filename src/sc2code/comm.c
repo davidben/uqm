@@ -25,7 +25,7 @@
 #include "options.h"
 #include "comm.h"
 #include "libs/sound/sound.h"
-#include "endian.h"
+#include "endian_uqm.h"
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);
