@@ -186,38 +186,107 @@ build_check_compile() {
 	local NAME
 	eval NAME="\${${BUILD_PROJECT}_NAME}"
 	[ ! -e "$NAME" ] || return
-
+~
 	build_compile || exit $?
+}
+
+# Make a directory path, with mode and owner specified.
+# $1 - name of directory path
+# $2 - mode of the directories (may be empty)
+# $3 - owner of the directories (may be empty)
+mkdirhier() {
+	local REST DIR MODE OWNER
+	REST="$1"
+	MODE="$2"
+	OWNER="$3"
+	case "$REST" in
+		/*)
+			REST="${REST%/}"
+			DIR="/"
+			;;
+		*)
+			DIR=""
+			;;
+	esac
+	case "$REST" in
+		*/)
+			;;
+		*)
+			REST="${REST}/"
+			;;
+	esac
+	while [ -n "$REST" ]; do
+		DIR="$DIR${REST%%/*}"
+		REST="${REST#*/}"
+		if [ ! -d "$DIR" ]; then
+			mkdir "$DIR"
+			[ -n "$MODE" ] && chmod "$MODE" -- "$DIR"
+			[ -n "$OWNER" ] && chown "$OWNER" -- "$DIR"
+		fi
+		DIR="${DIR}/"
+	done
+}
+
+# Install a file or directory
+# $1 - Source file/directory
+# $2 - Destination directory/file
+# $3 - Mode of destination file/directory
+# $4 - Owner of destination file/directory
+installsome() {
+	local SRC DEST MODE OWNDER DESTDIR SRCNAME
+	SRC="$1"
+	DEST="$2"
+	MODE="$3"
+	OWNDER="$4"
+
+	DESTDIR="${DEST%/*}"
+	if [ ! -d "$DESTDIR" ]; then
+		mkdirhier "$DESTDIR" 0755
+	fi
+	SRCNAME="${SRC##*/}"
+	cp -pr -- "$SRC" "$DEST"
+	if [ -n "$MODE" ]; then
+		if [ -d "$DEST" ]; then
+			chmod -R "$MODE" "${DEST}${SRCNAME}"
+		else
+			chmod "$MODE" "$DEST"
+		fi
+	fi
+	if [ -n "$OWNER" ]; then
+		if [ -d "$DEST" ]; then
+			chown -R "$OWNER" "${DEST}${SRCNAME}"
+		else
+			chown "$OWNER" "$DEST"
+		fi
+	fi
 }
 
 # Install the program
 build_install() {
-	local BINS LIBS SRC DEST DESTDIR BINDIR LIBDIR
+	local BINS LIBS SRC SRCNAME DEST MODE OWNER BINDIR LIBDIR
 
 	echo "Installing libraries..." 2>&1
 	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"
 	eval LIBDIR="\${${BUILD_PROJECT}_INSTALL_LIBDIR%/}/"
+	mkdirhier "$LIBDIR" 0755
 	for LIB in $LIBS; do
 		eval SRC="\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_SRC%/}"
 		eval DEST="\$LIBDIR\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_DEST}"
-		DESTDIR="${DEST%/*}"
-		if [ ! -d "$DESTDIR" ]; then
-			mkdir -p -- "$DESTDIR"
-		fi
-		cp -pr -- "$SRC" "$DEST"
+		eval MODE="\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_MODE}"
+		eval OWNER="\${${BUILD_PROJECT}_INSTALL_LIB_${LIB}_OWNER}"
+		installsome "$SRC" "$DEST" "$MODE" "$OWNER"
 	done
 
 	echo "Installing binaries..." 2>&1
 	eval BINS="\${${BUILD_PROJECT}_INSTALL_BINS}"
 	eval BINDIR="\${${BUILD_PROJECT}_INSTALL_BINDIR%/}/"
+	mkdirhier "$BINDIR" 0755
 	for BIN in $BINS; do
 		eval SRC="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_SRC%/}"
 		eval DEST="\$BINDIR\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_DEST}"
-		DESTDIR="${DEST%/*}"
-		if [ ! -d "$DESTDIR" ]; then
-			mkdir -p -- "$DESTDIR"
-		fi
-		cp -pr -- "$SRC" "$DEST"
+		eval MODE="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_MODE}"
+		eval OWNER="\${${BUILD_PROJECT}_INSTALL_BIN_${BIN}_OWNER}"
+		installsome "$SRC" "$DEST" "$MODE" "$OWNER"
 	done
 }
 

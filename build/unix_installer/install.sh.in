@@ -242,7 +242,13 @@ for PACKAGE in `selected_packages`; do
 	COMPFILE="$(package_filename $PACKAGE)"
 	eval LOCATION="\$UQM_PACKAGE_${PACKAGE}_LOCATION"
 	unzip -od "${PREFIX}${LOCATION}" "$COMPFILE"
+
+	# Next line is a workaround, as the content zips have files
+	# with the wrong permissions in them. Should be fixed for the
+	# next release.
+	chmod go+rX "${PREFIX}${LOCATION}"
 done
+
 
 echo "Unpacking other stuff..."
 tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$PREFIX"
