@@ -272,15 +272,15 @@ buzzsaw_postprocess (PELEMENT ElementPtr)
 	hElement = AllocElement ();
 	if (hElement)
 	{
-		COUNT PI;
+		COUNT primIndex;
 		ELEMENTPTR ListElementPtr;
 		STARSHIPPTR StarShipPtr;
 
 		LockElement (hElement, &ListElementPtr);
-		PI = ListElementPtr->PrimIndex;
+		primIndex = ListElementPtr->PrimIndex;
 		*ListElementPtr = *ElementPtr;
-		ListElementPtr->PrimIndex = PI;
-		(GLOBAL (DisplayArray))[PI] =
+		ListElementPtr->PrimIndex = primIndex;
+		(GLOBAL (DisplayArray))[primIndex] =
 				(GLOBAL (DisplayArray))[ElementPtr->PrimIndex];
 		ListElementPtr->current = ListElementPtr->next;
 		InitIntersectStartPoint (ListElementPtr);
