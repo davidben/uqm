@@ -403,7 +403,7 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 			MODULE *mod = (MODULE *)decoder->data;
 			Player_Start (mod);
 			Player_SetPosition (0);
-			fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
+			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
@@ -416,7 +416,7 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s, error code %d\n", decoder->filename, err);
 				break;
 			}
-			fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
+			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
