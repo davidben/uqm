@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Vux warps in close (fixes bug 93) -from Nic
 - Fixed lockup on lander-report (Bug #144 annd 187?)
 - Version # is now printed in the main menu, from Nic
 - Added PC Shipyard + Hangar power lines animation;

@@ -315,8 +315,8 @@ vux_preprocess (PELEMENT ElementPtr)
 
 			do
 			{
-#define MAXX_ENTRY_DIST DISPLAY_TO_WORLD (SPACE_HEIGHT << 1)
-#define MAXY_ENTRY_DIST DISPLAY_TO_WORLD (SPACE_HEIGHT << 1)
+#define MAXX_ENTRY_DIST (LASER_RANGE << 1)
+#define MAXY_ENTRY_DIST (LASER_RANGE << 1)
 				SIZE dx, dy;
 
 				ElementPtr->current.location.x =
