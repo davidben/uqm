@@ -167,13 +167,11 @@ DoConfirmExit (void)
 		DestroyDrawable (ReleaseDrawable (s.frame));
 		if (response)
 		{
-			GameExiting = TRUE;
 			result = TRUE;
 		}		
 		else
 		{
 			result = FALSE;
-			GameExiting = FALSE;
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 		}
 		ExitRequested = FALSE;

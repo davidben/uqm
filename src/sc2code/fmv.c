@@ -102,7 +102,6 @@ Introduction (void)
 				//
 		}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-	GameExiting = FALSE;
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 

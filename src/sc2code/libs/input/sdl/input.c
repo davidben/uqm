@@ -132,7 +132,7 @@ TFB_InitInput (int driver, int flags)
 	(void)driver;
 	(void)flags;
 
-	GamePaused = GameExiting = ExitRequested = FALSE;
+	GamePaused = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
 	

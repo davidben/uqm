@@ -217,7 +217,6 @@ SaveProblem (void)
 	SaveProblemMessage (&s);
 
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
-	GameExiting = TRUE;
 
 	while (AnyButtonPress (FALSE));
 	do
@@ -233,7 +232,6 @@ SaveProblem (void)
 	} while (cont);
 
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-	GameExiting = FALSE;
 
 	BatchGraphics ();
 	DrawStamp (&s);

@@ -101,7 +101,7 @@ DoRestart (PMENU_STATE pMS)
 #ifdef TESTING
 else if (InputState & DEVICE_EXIT) return (FALSE);
 #endif /* TESTING */
-	else if (GameExiting)
+	else if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		return (FALSE);
 	}
@@ -251,7 +251,7 @@ LastActivity = WON_LAST_BATTLE;
 			UnbatchGraphics ();
 
 			FlushInput ();
-			GameExiting = FALSE;
+			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			DoInput ((PVOID)&MenuState, TRUE);
 			
 			SetSemaphore (GraphicsSem);
@@ -259,13 +259,13 @@ LastActivity = WON_LAST_BATTLE;
 			ClearSemaphore (GraphicsSem);
 			DestroyDrawable (ReleaseDrawable (s.frame));
 			
-			if (GameExiting)
+			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
+				goto TimedOut;
+
+			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 			{
 				TFB_Abort ();
 			}
-
-			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
-				goto TimedOut;
 
 			TimeOut = XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND / 2);
 		}

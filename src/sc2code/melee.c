@@ -840,7 +840,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 {
 	SIZE index;
 
-	if (GameExiting)
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
 	if (!pMS->Initialized)
@@ -1163,7 +1163,7 @@ AdvanceCursor (PMELEE_STATE pMS)
 static BOOLEAN
 DoEdit (PMELEE_STATE pMS)
 {
-	if (GameExiting)
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 	if (!pMS->Initialized)
 	{
@@ -1306,7 +1306,7 @@ DoPickShip (PMELEE_STATE pMS)
 {
 	STARSHIPPTR StarShipPtr;
 
-	if (GameExiting)
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
 	if (pMS->Initialized <= 0)
@@ -1585,7 +1585,7 @@ static BOOLEAN
 DoMelee (PMELEE_STATE pMS)
 {
 	BOOLEAN force_select = FALSE;
-	if (GameExiting)
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
 	if (!pMS->Initialized)

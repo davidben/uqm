@@ -184,10 +184,10 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		else if (!(PlayerControl[1 - which_player] & PSYTRON_CONTROL)
 				&& NewTime - LastTime >= ONE_SECOND * 3)
 		  InputState = (*(PlayerInput[1 - which_player])) ();
-		if (GameExiting)
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		{
 			hBattleShip = 0;
-			GameExiting = FALSE;
+			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			break;
 		}
 
@@ -205,7 +205,6 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			if (hBattleShip || (col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
 			{
 				GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-				GameExiting = FALSE;
 				break;
 			}
 		}

@@ -215,7 +215,7 @@ extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT pOrg, SIZE width,
 
 extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
 extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
-extern volatile BOOLEAN GamePaused, GameExiting, ExitRequested;
+extern volatile BOOLEAN GamePaused, ExitRequested;
 
 //Added by Chris
 

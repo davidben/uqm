@@ -19,4 +19,4 @@
 #include "input_common.h"
 #include "inpintrn.h"
 
-volatile BOOLEAN ExitRequested, GameExiting, GamePaused;
+volatile BOOLEAN ExitRequested, GamePaused;

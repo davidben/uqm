@@ -597,7 +597,6 @@ DoQuitMenu (PMENU_STATE pMS)
 			case YES_QUIT_MENU:
 				GLOBAL (CurrentActivity) |= CHECK_ABORT;
 				ExitRequested = FALSE;
-				GameExiting = TRUE;
 				break;
 		}
 		FeedbackQuit (pMS->CurState);
