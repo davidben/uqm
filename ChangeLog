@@ -1,4 +1,8 @@
 Changes towards version 0.3:
+- Fix glitch when rewinding after alien has stopped talking (bug #311),
+  from chmmravatar
+- Music levels no longer drop in conversations when using -T 0
+  (partial fix for bug #309), from chmmravatar
 - Added PC-style conversation summaries (bug #310), from chmmravatar
 - Pressing pause key now stops dialog correctly (bug #167), from chmmravatar
 - Fix some glitches in load/save screen (bug #163), from chmmravatar
