@@ -59,8 +59,22 @@ DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 //RADIUS^2
 #define RADIUS_2 (RADIUS * RADIUS)
 #define DIAMETER (TWORADIUS + 1)
-#define PHONG_BITS 24
-#define GET_PHONG(val, ph) ((((val)<<PHONG_BITS)-((val)*ph))>>PHONG_BITS)
+#define DIFFUSE_BITS 24
+
+//#define GET_LIGHT(val, dif, sp) \
+//	( (UBYTE)min ((sp) + \
+//		( ( ( (DWORD)(val) << DIFFUSE_BITS ) - (DWORD)(val) * (dif) ) >> DIFFUSE_BITS ) \
+//		, 255) )
+UBYTE GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
+{
+	DWORD i = (DWORD)val << DIFFUSE_BITS;
+	i -= val * dif;
+	i >>= DIFFUSE_BITS;
+	i += sp;
+	if (i > 255)
+		i = 255;
+	return ((UBYTE)i);
+}
 
 #ifndef M_TWOPI
   #ifndef M_PI
@@ -72,7 +86,8 @@ DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 #define M_DEG2RAD (M_TWOPI / 360.0)
 #endif
 
-DWORD phong[DIAMETER][DIAMETER];
+DWORD light_diff[DIAMETER][DIAMETER];
+UBYTE light_spec[DIAMETER][DIAMETER];
 typedef struct 
 {
 	POINT p[4];
@@ -80,6 +95,9 @@ typedef struct
 } MAP3D_POINT;
 MAP3D_POINT map_rotate[DIAMETER][DIAMETER];
 //POINT map_rotate[DIAMETER][DIAMETER];
+typedef struct {
+	double x, y, z;
+} POINT3;
 
 void
 RenderTopography (BOOLEAN Reconstruct)
@@ -204,68 +222,110 @@ RenderTopography (BOOLEAN Reconstruct)
 	SetContext (OldContext);
 }
 
+void P3mult (POINT3 *res, POINT3 *vec,  double cnst)
+{
+	res->x = vec->x * cnst;
+	res->y = vec->y * cnst;
+	res->z = vec->z * cnst;
+}
+void P3sub (POINT3 *res, POINT3 *v1,  POINT3 *v2)
+{
+	res->x = v1->x - v2->x;
+	res->y = v1->y - v2->y;
+	res->z = v1->z - v2->z;
+}
+double P3dot (POINT3 *v1, POINT3 *v2) 
+{
+	return (v1->x * v2->x + v1->y * v2->y + v1->z * v2->z);
+}
+void P3norm (POINT3 *res, POINT3 *vec) 
+{
+	double mag = sqrt (P3dot (vec, vec));
+	P3mult (res, vec, 1/mag);
+}
+
 // RenderPhongMask builds a shadow map for the rotating planet
 //  loc indicates the planets position relavtive to the sun
 static void
 RenderPhongMask (POINT loc)
 {
-	POINT pt, light;
+	POINT pt;
+	POINT3 light, view;
 	double lrad;
-	int lmag;
 	DWORD step;
-	double lmag2;
 	int y, x;
 
-#define LIGHT_MULT 0.8
-#define AMBIENT_LIGHT 0.05
-#define LIGHT_RADIUS 1.6
-	light.x = (int)(LIGHT_MULT * RADIUS * 
-		cos (atan2 (-(double)loc.y, -(double)loc.x)));
-	light.y = (int)(LIGHT_MULT * RADIUS * 
-		sin (atan2 (-(double)loc.y, -(double)loc.x)));
-//	light.x=(int)(RADIUS*0.8);
-//	light.y=(int)(-RADIUS*0.6);
-//	fprintf(stderr,"light: (%d,%d)->(%d,%d)\n",loc.x,loc.y,light.x,light.y);
-	lmag = (int)(LIGHT_RADIUS * RADIUS);
-	lmag2 = lmag * lmag;
-	step = 1 << PHONG_BITS;
+#define LIGHT_INTENS 0.4
+#define AMBIENT_LIGHT 0.1
+#define MSHI 2
+#define LIGHT_Z 1.2
+	// lrad is the distance from the sun to the planet
+	lrad = sqrt (loc.x * loc.x + loc.y * loc.y);
+	// light is the sun's position.  the z-coordinate is whatever
+	// looks good
+	light.x = -((double)loc.x);
+	light.y = -((double)loc.y);
+	light.z = LIGHT_Z * lrad;
+	P3norm (&light, &light);
+	// always view along the z-axis
+	// ideally use a view point, and have the view change per pixel
+	// but that is too much effort for now.
+	// the view MUST be normalized!
+	view.x = 0;
+	view.y = 0;
+	view.z = 1.0;
+	step = 1 << DIFFUSE_BITS;
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, y++)
 	{
-		int y_2, deltay_2;
+		DWORD y_2;
 		y_2 = y * y;
-		deltay_2 = (y - light.y) * (y - light.y);
 		for (pt.x = 0, x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, x++)
 		{
-			int rad;
-			DWORD stepint;
-			double lrad2;
-			double intens;
-			rad = x * x + y_2;
-			if (rad <= RADIUS_2) 
+			DWORD x_2, rad_2, stepint;
+			POINT3 norm, rvec;
+			double diff, spec = 0.0, fb;
+			x_2 = x * x;
+			rad_2 = x_2 + y_2;
+			if (rad_2 <= RADIUS_2) 
 			{
-				lrad = ((x - light.x) * (x - light.x) + deltay_2);
-				lrad2 = lrad;
-				//lrad2=pow(lrad,1);
-				if (lrad2 >= lmag2)
-					intens = AMBIENT_LIGHT;
+				// norm is the sphere's surface normal.
+				norm.x = (double)x;
+				norm.y = (double)y;
+				norm.z = (sqrt (RADIUS_2 - x_2) * sqrt (RADIUS_2 - y_2)) / RADIUS;
+				P3norm(&norm,&norm);
+				// diffuse component is norm dot light
+				diff =P3dot (&norm, &light);
+				// negative diffuse is bad
+				if(diff < 0)
+					diff = 0.0;
+				// specular highlight is the phong equation: (rvec dot view)^MSHI
+				// where rvec = (2*diff)*norm - light (reflection of light around norm)
+				P3mult (&rvec,&norm,2 * diff);
+				P3sub (&rvec, &rvec, &light);
+				fb = P3dot (&rvec, &view);
+				if (fb > 0.0)
+					spec = LIGHT_INTENS * pow (fb, MSHI);
 				else
-				{
-					intens = 1 * cos ((M_PI / 2) * (double)lrad2 / (double)lmag2);
-					if (intens < AMBIENT_LIGHT)
-						intens = AMBIENT_LIGHT;
-				}
-				stepint = step - (DWORD)(intens * step + 0.5);
-				if(rad > (RADIUS - 1) * (RADIUS - 1)) 
+					spec = 0;
+				// adjust for the ambient light
+				if (diff < AMBIENT_LIGHT)
+					diff = AMBIENT_LIGHT;
+				// stepint allows us multiply by a ratio without usig  floating-point
+				// instead of color*diff, we use ((color << 24) - stepint*color) >> 24
+				stepint = step - (DWORD)(diff * step + 0.5);
+				// Now we antialias the edge of the spere to look nice
+				if(rad_2 > (RADIUS - 1) * (RADIUS - 1)) 
 				{
 					DWORD r;
-					r = rad - (RADIUS - 1) * (RADIUS - 1);
+					r = rad_2 - (RADIUS - 1) * (RADIUS - 1);
 					stepint += (step >> 7) * (r + 1);
 					if (stepint > step) 
 						stepint = step;
 				}
 			} else
-				stepint = step;
-			phong[pt.y][pt.x] = (int)stepint;
+				stepint = 1 << 31;
+			light_diff[pt.y][pt.x] = (DWORD)stepint;
+			light_spec[pt.y][pt.x] = (UBYTE)(spec*255);
 		}
 	}
 }
@@ -512,7 +572,6 @@ RenderLevelMasks (int offset)
 	clock_t t1;
 	t1 = clock ();
 #endif
-
 	rgba = (DWORD *)HMalloc (sizeof (DWORD *) * (DIAMETER) * (DIAMETER));
 	p_rgba = rgba;
 	// Choose the correct Frame to wrte to
@@ -523,12 +582,14 @@ RenderLevelMasks (int offset)
 		for (pt.x = 0,  x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x)
 		{
 			UBYTE c[3];
-			int ph;
+			DWORD diffus;
+			UBYTE spec;
 			COUNT i;
 			DWORD p1[4];
 			MAP3D_POINT *ppt = &map_rotate[pt.y][pt.x];
-			ph = phong[pt.y][pt.x];
-			if (ph < 1 << PHONG_BITS)
+			diffus = light_diff[pt.y][pt.x];
+			spec = light_spec[pt.y][pt.x];
+			if (diffus < 1 << DIFFUSE_BITS)
 			{
 				if (ppt->m[0] == 0) 
 				{
@@ -544,18 +605,18 @@ RenderLevelMasks (int offset)
 					for (i = 1; i < 4; i++)
 						c[i-1] = get_avg_rgb (p1, ppt->m, i);
 				}
-			// Apply the lightinng model.  This also bounds the sphere to make it circular
+			// Apply the lighting model.  This also bounds the sphere to make it circular
 				if (pSolarSysState->ShieldFrame)
 				{
-					c[2] = GET_PHONG (255, ph);
-					c[1] = GET_PHONG (c[1] >> 1, ph);
-					c[0] = GET_PHONG (c[0] >> 1, ph);
+					c[2] = GET_LIGHT (255, diffus, spec);
+					c[1] = GET_LIGHT ((UBYTE)(c[1] >> 1), diffus, spec);
+					c[0] = GET_LIGHT ((UBYTE)(c[0] >> 1), diffus, spec);
 				} 
 				else
 				{
-					c[2] = GET_PHONG (c[2], ph);
-					c[1] = GET_PHONG (c[1], ph);
-					c[0] = GET_PHONG (c[0], ph);
+					c[2] = GET_LIGHT (c[2], diffus, spec);
+					c[1] = GET_LIGHT (c[1], diffus, spec);
+					c[0] = GET_LIGHT (c[0], diffus, spec);
 				}
 				*p_rgba++ = frame_mapRGBA (
 					MaskFrame, c[2], c[1], c[0], (UBYTE)255);
