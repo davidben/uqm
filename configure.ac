@@ -70,13 +70,13 @@ SDL_VERSION=1.2.2
 SMPEG_VERSION=0.4.0
 AM_PATH_SDL($SDL_VERSION, , AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 AM_PATH_SMPEG($SMPEG_VERSION, , AC_MSG_ERROR([*** smpeg version $SMPEG_VERSION not found!]))
-AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR(Your system is missing libSDL_mixer!),`sdl-config --libs`)
-AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR(Your system is missing libSDL_image!),`sdl-config --libs`)
-AC_CHECK_LIB(smpeg, main, , AC_MSG_ERROR(Your system is missing libsmpeg!),`smpeg-config --libs`)
-AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR(Your system is missing SDL_image.h!))
-AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR(Your system is missing SDL_mixer.h!))
+AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
+AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR([Your system is missing libSDL_image!]),`sdl-config --libs`)
+AC_CHECK_LIB(smpeg, main, , AC_MSG_ERROR([Your system is missing libsmpeg!]),`smpeg-config --libs`)
+AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
+AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR([Your system is missing SDL_mixer.h!]))
 
-# Select platform dependent OpenGL libs.. (tweak your patform here)
+# Select platform dependent OpenGL libs.. (tweak your platform here)
 case "$target" in
     *-*-linux-gnu*)
         SYS_GL_LIBS="-lGL"
