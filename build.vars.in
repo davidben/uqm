@@ -16,20 +16,20 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 COMPILE=gcc
-MKDEPEND="gcc -MM"
-MAKE="@MAKE@"
-uqm_CFLAGS="@CFLAGS@"
-uqm_LDFLAGS="@LDFLAGS@"
-DEBUG="@DEBUG@"
-uqm_INSTALL_BINDIR="@INSTALL_BINDIR@"
-uqm_INSTALL_LIBDIR="@INSTALL_LIBDIR@"
-uqm_INSTALL_SHAREDIR="@INSTALL_SHAREDIR@"
+MKDEPEND='gcc -MM'
+MAKE='@MAKE@'
+uqm_CFLAGS='@CFLAGS@'
+uqm_LDFLAGS='@LDFLAGS@'
+DEBUG='@DEBUG@'
+uqm_INSTALL_BINDIR='@INSTALL_BINDIR@'
+uqm_INSTALL_LIBDIR='@INSTALL_LIBDIR@'
+uqm_INSTALL_SHAREDIR='@INSTALL_SHAREDIR@'
 
 # Exported variables are available from all the Makeinfo files
 # Non-exported files only where build.vars is explicitely included.
-uqm_SOUNDMODULE="@SOUNDMODULE@"
-uqm_HAVE_OPENGL="@HAVE_OPENGL@"
-uqm_USE_ZIP_IO="@USE_ZIP_IO@"
-WINDRES="@WINDRES@"
+uqm_SOUNDMODULE='@SOUNDMODULE@'
+uqm_HAVE_OPENGL='@HAVE_OPENGL@'
+uqm_USE_ZIP_IO='@USE_ZIP_IO@'
+WINDRES='@WINDRES@'
 export uqm_SOUNDMODULE uqm_HAVE_OPENGL uqm_USE_ZIP_IO WINDRES
 
