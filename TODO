@@ -47,7 +47,8 @@ Glitches (don't crash the game, medium priority):
 - ZFP graphics synchronisation messed up when fast forwarding speech
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
-  - Slylandro probe lightning bolt sound shouldn't be same as lightning on planets
+  - Slylandro probe lightning bolt sound shouldn't be same as lightning on
+    planets
 - Druuge speech file 'druuge011.ogg' contains earlier bad take.
   (save original sample for posterity).
 - Win32 version runs a bit faster than it should, due to some problems
@@ -101,25 +102,20 @@ Implementation bugs (low priority):
   nearest neighbor.
 
 Stuff still to do (large):
-- add a Key Jamming program
 - add some way to configure your keys
-- add some way to configure the PC/3DO/other choices.
-  - music should be selectable track by track
+  (assigned to mstr)
+- add a Key Jamming program
+  (assigned to mstr)
 - Actually implement the differences between PC and 3DO versions, including
   the alternate scripts (even the basic dialogue is not identical)
 - make stuff endian-safe
   Furthermore, saving and loading games uses cread and cwrite, which is
   not endian-safe, and which is writing out values of heap pointers.  This
   really should be cleaned up just in general and made endian safe to boot.
-- some packaging system for resources. zlib looks like something
-  which is suitable for this.
-  Addition: Physfs looks just what we want: http://icculus.org/physfs/
 - reconcile all of the differences between the voice (3DO) script and the
   text script, then do it all again for the PC version.  This will involve
   extensive poking around the 3DO game to make sure that the Human Captain's
   lines are all correct, too.
-- Match timing between subtitles and speech clips
-  - also, currently the subtitles sometimes overlap
 - Intro and end credits (both 3DO and PC version ones)
 - add an install program (in particularly for Windows).
   How to handle the libraries?
@@ -130,6 +126,15 @@ Stuff still to do (large):
   - In the dialog with the commander, your and the commanders sentences are
     mixed up in some places.
   - The Mycons can actually say "Bye sun device"
+  Some packaging will be used. (possibilities: zlib, physfs
+  (http://icculus.org/physfs/), zziplib (http://zziplib.sourceforge.net/))
+  (assigned to Meep-Eep)
+- Match timing between subtitles and speech clips
+  - also, currently the subtitles sometimes overlap
+  (depends on new resource system)
+- add some way to configure the PC/3DO/other choices.
+  - music should be selectable track by track
+  (depends on new resource system)
 
 Stuff still to do (medium size):
 - get all code to compile without warnings, when the most strict
@@ -142,6 +147,7 @@ Stuff still to do (medium size):
 - Option to display the planet statistics as text instead of images?
 - Rewrite game pausing to be an event-level thing
 - SaI and SuperSAI scaling (previous code wasn't GPL compatible)
+  (assigned to Gwl)
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
@@ -155,7 +161,7 @@ Stuff still to do (small):
 - Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
-- add some icon in the cvs tree
+- add some icon for the game in the cvs tree
 
 Questions:
 - Is there some way to automatically do CRLF translations on commits,
