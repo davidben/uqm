@@ -1,5 +1,7 @@
 0.2:
-- Added some corrected mods, from fOSSiL, extracted using Mudrony's scripts.
+- Added files for intro and ending sequence, from fOSSiL; extracted using
+  Mudrony's scripts plus his own work.
+- Added some corrected mods, from fOSSiL; extracted using Mudrony's scripts.
 - Replaced add_sub_frame with arith_frame_blit -PhracturedBlue
 - Crosshair in orbit leaving light trace to image in OpenGL mode fixed -Mika
 - Planet scan should now take ~2secs on all computers -PhracturedBlue
