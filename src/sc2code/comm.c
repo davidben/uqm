@@ -198,7 +198,7 @@ add_text (int status, PTEXT pTextIn)
 			// saves background to extra screen
 			TFB_DrawScreen_Copy (&r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 			// fills screen with transparent color
-			TFB_DrawScreen_Rect (&r, 0, 0, 255, TFB_SCREEN_MAIN);
+			TFB_DrawScreen_Rect (&r, 0, 0, 128, TFB_SCREEN_MAIN);
 
 			last_subtitle = pTextIn->pStr;
 		}
@@ -527,7 +527,7 @@ init_communication (void)
 	canvas = TFB_DrawCanvas_New_TrueColor (SIS_SCREEN_WIDTH,
 		SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, FALSE);
 	subtitle_cache = TFB_DrawImage_New (canvas);
-	TFB_DrawCanvas_SetTransparentColor (subtitle_cache->NormalImg, 0, 0, 255, TRUE);
+	TFB_DrawCanvas_SetTransparentColor (subtitle_cache->NormalImg, 0, 0, 128, TRUE);
 }
 
 void

@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Fixed blue comms screen problem (bug #363), from Joel Holveck & Nic
 - Automatically adding an icon for Darwin builds, from Nic
 - Fixed Roster-F10-Quit bug (#591), - Michael
 - Restructured starcon2.c, with better checks for argument parsing,
