@@ -25,7 +25,7 @@ CFG=UrQuanMasters - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
@@ -48,7 +48,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zlib.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 
@@ -72,7 +72,7 @@ LINK32=link.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zlib.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
@@ -87,21 +87,21 @@ LINK32=link.exe
 
 # PROP Default_Filter ""
 # Begin Group "getopt"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\getopt\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\getopt\getopt1.c
+SOURCE=..\getopt\getopt.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\getopt\getopt.h
+SOURCE=..\getopt\getopt1.c
 # End Source File
 # End Group
-
-# PROP Default_Filter ""
 # Begin Group "sc2code"
 
 # PROP Default_Filter ""
@@ -220,19 +220,19 @@ SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\sdluio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\sdluio.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdluio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdluio.h
 # End Source File
 # End Group
 # Begin Source File
@@ -478,46 +478,6 @@ SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.h
 # Begin Group "decoders"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\decoder.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\decoder.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\wav.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\wav.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\dukaud.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\dukaud.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\modaud.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\modaud.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\oggaud.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\oggaud.h
-# End Source File
 # Begin Group "mikmod"
 
 # PROP Default_Filter ""
@@ -579,11 +539,11 @@ SOURCE=..\sc2code\libs\sound\decoders\mikmod\mmio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\mikmod\munitrk.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mplayer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\mikmod\mplayer.c
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\munitrk.c
 # End Source File
 # Begin Source File
 
@@ -610,6 +570,46 @@ SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch2.c
 SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch_common.c
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\decoder.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\decoder.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\dukaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\dukaud.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\modaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\modaud.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\oggaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\oggaud.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\wav.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\wav.h
+# End Source File
 # End Group
 # Begin Group "mixer"
 
@@ -665,27 +665,19 @@ SOURCE=..\sc2code\libs\sound\fileinst.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\resinst.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sndintrn.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\trackplayer.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\trackint.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\sound\music.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\resinst.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\sfx.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sndintrn.h
 # End Source File
 # Begin Source File
 
@@ -705,7 +697,15 @@ SOURCE=..\sc2code\libs\sound\stream.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\trackint.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\trackplayer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\trackplayer.h
 # End Source File
 # End Group
 # Begin Group "strings"
@@ -737,6 +737,14 @@ SOURCE=..\sc2code\libs\strings\strintrn.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sc2code\libs\video\dukvid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\dukvid.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\video\vfileins.c
 # End Source File
 # Begin Source File
@@ -762,14 +770,6 @@ SOURCE=..\sc2code\libs\video\vidplayer.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\video\vidplayer.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\video\dukvid.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\video\dukvid.h
 # End Source File
 # End Group
 # Begin Group "threads"
@@ -828,69 +828,33 @@ SOURCE=..\sc2code\libs\time\timecommon.h
 SOURCE=..\sc2code\libs\task\tasklib.c
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\sc2code\libs\compiler.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\declib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\file.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\gfxlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\inplib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\mathlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\memlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\misc.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\reslib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sndlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\strlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\tasklib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\threadlib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\timelib.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio.h
-# End Source File
 # Begin Group "uio"
 
 # PROP Default_Filter ""
+# Begin Group "stdio"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\stdio\stdio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\stdio\stdio.h
+# End Source File
+# End Group
+# Begin Group "zip"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\zip\zip.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\zip\zip.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\charhashtable.c
@@ -1021,19 +985,19 @@ SOURCE=..\sc2code\libs\uio\physical.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uiostream.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\uiostream.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\uio\types.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\uioport.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uiostream.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\uiostream.h
 # End Source File
 # Begin Source File
 
@@ -1051,31 +1015,71 @@ SOURCE=..\sc2code\libs\uio\utils.c
 
 SOURCE=..\sc2code\libs\uio\utils.h
 # End Source File
-# Begin Group "stdio"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\stdio\stdio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\stdio\stdio.h
-# End Source File
 # End Group
-# Begin Group "zip"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\zip\zip.c
+SOURCE=..\sc2code\libs\compiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\zip\zip.h
+SOURCE=..\sc2code\libs\declib.h
 # End Source File
-# End Group
-# End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\file.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\gfxlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\inplib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mathlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\memlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\misc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\reslib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sndlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\strlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\tasklib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threadlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\timelib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\vidlib.h
+# End Source File
 # End Group
 # Begin Group "comm"
 
@@ -3267,17 +3271,6 @@ SOURCE=..\sc2code\cyborg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\uqmdebug.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\uqmdebug.h
-# Begin Source File
-
-SOURCE=..\sc2code\demo.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\demo.h
 # End Source File
 # Begin Source File
@@ -3562,6 +3555,14 @@ SOURCE=..\sc2code\units.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\uqmdebug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\uqmdebug.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\util.c
 # End Source File
 # Begin Source File
@@ -3587,11 +3588,7 @@ SOURCE=config.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\port.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\port.h
+SOURCE=..\endian_uqm.h
 # End Source File
 # Begin Source File
 
@@ -3603,7 +3600,15 @@ SOURCE=..\options.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\uqmversion.h
+SOURCE=..\port.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\port.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\starcon2.c
 # End Source File
 # Begin Source File
 
@@ -3611,33 +3616,15 @@ SOURCE=..\types.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\endian_uqm.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\starcon2.c
+SOURCE=..\uqmversion.h
 # End Source File
 # End Group
-
 # Begin Group "Doc"
+
 # PROP Default_Filter ""
-
-# Begin Source File
-
-SOURCE=..\..\TODO
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\ChangeLog
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\BUGS
-# End Source File
-
 # Begin Group "Devel"
-# PROP Default_Filter ""
 
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\..\doc\devel\files
@@ -3651,6 +3638,18 @@ SOURCE=..\..\doc\devel\glossary
 SOURCE=..\..\doc\devel\script
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\BUGS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\ChangeLog
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\TODO
+# End Source File
 # End Group
 # Begin Group "Resources"
 
@@ -3666,6 +3665,14 @@ SOURCE=..\res\sis1.ico
 # Begin Source File
 
 SOURCE=..\res\starcon2.ico
+# End Source File
+# Begin Source File
+
+SOURCE="..\res\ur-quan-icon-alpha.ico"
+# End Source File
+# Begin Source File
+
+SOURCE="..\res\ur-quan-icon-std.ico"
 # End Source File
 # Begin Source File
 
