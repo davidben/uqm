@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Sound decoders refactoring: decoders are now virtualized,
+  the high-level decoding code is unified and any format is
+  theoretically streamable -Alex
 - Patches to enforce the invariant that the GraphicsLock is held when 
   SetFlashRect is called (bug #504) -Michael
 - Major refactoring of threadlib; see doc/devel/threads -Michael
