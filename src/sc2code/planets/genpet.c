@@ -188,7 +188,7 @@ GenerateTalkingPet (BYTE control)
 					}
 					pSolarSysState->MenuState.Initialized -= 2;
 				}
-
+		
 				if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 				{
 					BOOLEAN UmgahSurvivors;
@@ -202,7 +202,16 @@ GenerateTalkingPet (BYTE control)
 						ZapToUrquanEncounter ();
 					else if (GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES)
 							&& !UmgahSurvivors)
+					{
+						// Defeated the zombie fleet.
 						InitCommunication (TALKING_PET_CONVERSATION);
+					}
+					else if (!(ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
+					{
+						// The Kohr-Ah have destroyed the Umgah, but the
+						// talking pet survived.
+						InitCommunication (TALKING_PET_CONVERSATION);
+					}
 
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 					GetGroupInfo (0L, 0);
