@@ -19,6 +19,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "encount.h"
+#include "gameopt.h"
 #include "gamestr.h"
 #include "globdata.h"
 #include "options.h"
@@ -57,8 +58,8 @@ void RepairBackRect (PRECT pRect);
 
 static BOOLEAN transition_pending;
 
-int
-flash_cursor_func(void *data)
+static int
+flash_cursor_func (void *data)
 {
 	BYTE c, val;
 	POINT universe;

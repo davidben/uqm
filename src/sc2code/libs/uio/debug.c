@@ -555,7 +555,7 @@ err:
 			uio_releaseStdioAccess(handles[i]);
 	}
 	uio_free(handles);
-	uio_free(newArgs);
+	uio_free((void *) newArgs);
 	uio_closeDir(tempDir);
 
 	return errCode;

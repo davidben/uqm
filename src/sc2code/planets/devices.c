@@ -33,7 +33,7 @@
 //#define DEBUG_DEVICES
 
 static COUNT
-lpstrchr (UNICODE *pStr, UNICODE ch)
+lpstrchr (const UNICODE *pStr, UNICODE ch)
 {
 	COUNT skip_chars;
 
@@ -131,7 +131,8 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			if (OldDevice != NewDevice)
 			{
 				t.baseline.y = cy;
-				t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
+				t.pStr = GAME_STRING (pDeviceMap[OldDevice] +
+						DEVICE_STRING_BASE + 1);
 				t.CharCount = lpstrchr (t.pStr, ' ');
 				font_DrawText (&t);
 				t.baseline.y += 7;

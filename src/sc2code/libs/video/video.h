@@ -51,4 +51,6 @@ typedef struct tfb_videoclip
 
 } TFB_VideoClip;
 
+extern VIDEO_REF _init_video_file(const char *pStr);
+
 #endif // _UQM_VIDEO_H

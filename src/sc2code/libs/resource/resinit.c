@@ -87,7 +87,9 @@ MEM_HANDLE
 _GetResFileData (uio_Stream *res_fp, DWORD flen)
 {
 	UWORD lo_word, hi_word;
-	DWORD res_offs, remainder;
+	DWORD res_offs;
+	DWORD remainder = 0;
+			// Initialisation is to keep the compiler quiet.
 	MEM_SIZE HeaderSize;
 	INDEX_HEADER h;
 	INDEX_HEADERPTR ResHeaderPtr;
@@ -249,18 +251,20 @@ UninitResourceSystem (void)
 }
 
 MEM_HANDLE
-OpenResourceIndexFile (PVOID resfile)
+OpenResourceIndexFile (const char *resfile)
 {
 	uio_Stream *res_fp;
 	char fullname[256];
 
 	strcpy (fullname, resfile);
-	if ((res_fp = res_OpenResFile (contentDir, fullname, "rb")) == 0)
+	res_fp = res_OpenResFile (contentDir, fullname, "rb");
+	if (res_fp == 0)
 	{
-		sprintf (fullname, "%s.pkg", (char *) resfile);
-		if ((res_fp = res_OpenResFile (contentDir, fullname, "rb")) == 0)
+		sprintf (fullname, "%s.pkg", resfile);
+		res_fp = res_OpenResFile (contentDir, fullname, "rb");
+		if (res_fp == 0)
 		{
-			sprintf (fullname, "%s.ndx", (char *) resfile);
+			sprintf (fullname, "%s.ndx", resfile);
 			res_fp = res_OpenResFile (contentDir, fullname, "rb");
 		}
 	}

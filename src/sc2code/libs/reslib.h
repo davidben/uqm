@@ -69,8 +69,7 @@ extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 extern MEM_HANDLE InitResourceSystem (const char *resfile,
 		COUNT resindex_type, BOOLEAN (*FileErrorFunc) (const char *filename));
 extern BOOLEAN UninitResourceSystem (void);
-extern BOOLEAN InstallResTypeVectors (
-		COUNT res_type,
+extern BOOLEAN InstallResTypeVectors (COUNT res_type,
 		MEM_HANDLE (*load_func) (uio_Stream *fp, DWORD len),
 		BOOLEAN (*free_func) (MEM_HANDLE handle));
 extern MEM_HANDLE res_GetResource (RESOURCE res);
@@ -78,15 +77,13 @@ extern MEM_HANDLE res_DetachResource (RESOURCE res);
 extern BOOLEAN FreeResource (RESOURCE res);
 extern COUNT CountResourceTypes (void);
 
-extern MEM_HANDLE OpenResourceIndexFile (PVOID
-		resfile);
-extern MEM_HANDLE OpenResourceIndexInstance (DWORD
-		res);
+extern MEM_HANDLE OpenResourceIndexFile (const char *resfile);
+extern MEM_HANDLE OpenResourceIndexInstance (DWORD res);
 extern MEM_HANDLE SetResourceIndex (MEM_HANDLE hRH);
 extern BOOLEAN CloseResourceIndex (MEM_HANDLE hRH);
 
-extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD
-		length, MEM_FLAGS mem_flags);
+extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD length,
+		MEM_FLAGS mem_flags);
 
 #define RESOURCE_PRIORITY DEFAULT_MEM_PRIORITY
 #define RESOURCE_DATAPTR PBYTE

@@ -110,8 +110,8 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	while (StrLen)
 	{
 		COUNT col_cells;
-		UNICODE *pLastStr;
-		UNICODE *pTempStr;
+		const UNICODE *pLastStr;
+		const UNICODE *pTempStr;
 		COUNT lf_pos;
 
 		pLastStr = t.pStr;
@@ -137,7 +137,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 		do
 		{
 			COUNT word_chars;
-			UNICODE *pStr;
+			const UNICODE *pStr;
 
 			pStr = t.pStr;
 			while (isgraph (*pStr))
@@ -166,7 +166,8 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 
 						if (t.pStr[0] == ',')
 							TimeOut += ONE_SECOND / 4;
-						if (t.pStr[0] == '.' || t.pStr[0] == '!' || t.pStr[0] == '?')
+						if (t.pStr[0] == '.' || t.pStr[0] == '!' ||
+								t.pStr[0] == '?')
 							TimeOut += ONE_SECOND / 2;
 						else
 							TimeOut += ONE_SECOND / 20;

@@ -95,17 +95,17 @@ extern int ScreenHeight;
 static inline COORD
 logxToUniverse (long lx)
 {
-	return (lx * ((MAX_X_UNIVERSE + 1) >> 4)) * 10
-			/ ((long) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH);
+	return (COORD) ((lx * ((MAX_X_UNIVERSE + 1) >> 4)) * 10
+			/ ((long) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH));
 }
 #define LOGX_TO_UNIVERSE(lx) \
 		logxToUniverse (lx)
 static inline COORD
 logyToUniverse (long ly)
 {
-	return MAX_Y_UNIVERSE -
+	return (COORD) (MAX_Y_UNIVERSE -
 			(COORD)(((long) (ly) * ((MAX_Y_UNIVERSE + 1) >> 4))
-			/ ((long) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT));
+			/ ((long) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT)));
 }
 #define LOGY_TO_UNIVERSE(ly) \
 		logyToUniverse (ly)

@@ -105,8 +105,8 @@ TFB_FadeClearScreen (void)
 
 // audio-synced video playback task
 // the frame rate and timing is dictated by the audio
-int
-as_video_play_task (void* data)
+static int
+as_video_play_task (void *data)
 {
 	Task task = (Task) data;
 	volatile TFB_VideoClip* vid;
@@ -218,8 +218,8 @@ as_video_play_task (void* data)
 
 // audio-independent video playback task
 // the frame rate and timing is dictated by the video decoder
-int
-video_play_task (void* data)
+static int
+video_play_task (void *data)
 {
 	Task task = (Task) data;
 	TFB_VideoClip* vid;
@@ -397,7 +397,7 @@ TFB_VideoPlaying (VIDEO_REF VidRef)
 	return vid->playing;
 }
 
-BOOLEAN
+static BOOLEAN
 TFB_DoVideoInput (PVOID pIS)
 {
 	VIDEO_INPUT_STATE* pVIS = (VIDEO_INPUT_STATE*) pIS;
@@ -528,6 +528,6 @@ vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer)
 	//TFB_VideoClip* vid = sample->data;
 
 	TFB_TagBuffer (sample, buffer,
-			(void*) SoundDecoder_GetFrame (sample->decoder));
+			(void *) SoundDecoder_GetFrame (sample->decoder));
 }
 

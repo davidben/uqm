@@ -22,6 +22,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "file.h"
+#include "fmv.h"
 #include "gamestr.h"
 #include "globdata.h"
 #include "intel.h"

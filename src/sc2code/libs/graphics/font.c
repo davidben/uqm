@@ -138,7 +138,8 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 	{
 		COORD top_y, bot_y;
 		SIZE width;
-		UNICODE next_ch, *pStr;
+		UNICODE next_ch;
+		const UNICODE *pStr;
 
 		if (pdelta == 0)
 		{
@@ -164,7 +165,8 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 			if ((next_ch = *pStr++) == '\0')
 				num_chars = 0;
 			next_ch -= FIRST_CHAR;
-			if (ch < MAX_CHARS && GetFrameWidth (&FontPtr->CharDesc[ch]))
+			if (ch < (UNICODE) MAX_CHARS &&
+					GetFrameWidth (&FontPtr->CharDesc[ch]))
 			{
 				COORD y;
 
@@ -177,7 +179,7 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 
 				width += GetFrameWidth (&FontPtr->CharDesc[ch]);
 #if 0
-				if (num_chars && next_ch < MAX_CHARS
+				if (num_chars && next_ch < (UNICODE) MAX_CHARS
 						&& !(FontPtr->KernTab[ch]
 						& (FontPtr->KernTab[next_ch] >> 2)))
 					width -= FontPtr->KernAmount;
@@ -227,7 +229,8 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	if ((FontPtr = _CurFontPtr) != 0)
 	{
 		COUNT num_chars;
-		UNICODE next_ch, *pStr;
+		UNICODE next_ch;
+		const UNICODE *pStr;
 		TEXTPTR TextPtr;
 		PRIMITIVE locPrim;
 		TFB_Palette color;
@@ -260,7 +263,8 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				num_chars = 0;
 			next_ch -= FIRST_CHAR;
 			locPrim.Object.Stamp.frame = &FontPtr->CharDesc[ch];
-			if (ch < MAX_CHARS && GetFrameWidth (locPrim.Object.Stamp.frame))
+			if (ch < (UNICODE) MAX_CHARS &&
+					GetFrameWidth (locPrim.Object.Stamp.frame))
 			{
 				RECT r;
 
@@ -289,7 +293,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 				locPrim.Object.Stamp.origin.x += GetFrameWidth (locPrim.Object.Stamp.frame);
 #if 0
-				if (num_chars && next_ch < MAX_CHARS
+				if (num_chars && next_ch < (UNICODE) MAX_CHARS
 						&& !(FontPtr->KernTab[ch]
 						& (FontPtr->KernTab[next_ch] >> 2)))
 					locPrim.Object.Stamp.origin.x -= FontPtr->KernAmount;
