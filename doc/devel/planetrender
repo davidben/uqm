@@ -21,7 +21,11 @@ because it needs to produce a series of ring-like structures with
 The topographical map is a rectangle with each pixel representing an
 elevation level relative to 0, so the topography is expressed in terms
 of elevation relative to base elevation. Base elevation is applied to
-the generated map.
+the generated map. Topography is created with elevations -128..127,
+and base elevations, currently, range from 100 to 200 (plandata.c) for
+normal worlds and are always 29 for gas giants. Since the gas giants
+do not have a real topography or a surface to speak of, their surfaces
+are rather simulated with elevations.
 
 At this point, the elevation levels are translated to the actual colors
 using the xlat table and color map. First, the elevation is translated
@@ -39,4 +43,11 @@ per instance in each file.
 The colormap files (.ct) seem to be in original DOS format. Probably
 because they do not translate to the CLUT system very well. The colormaps
 are carefully crafted and synchronized across all planet types to make
-the entire system function properly.
+the entire system function properly. They are composed of 4 gradients of
+different hue, 32 colors each (4*32=128 colors). Gradients go from the
+most intense color to near black. For the most planet types, the three
+colormaps per instance are all the same, so that the way a planet
+surface looks does not change with the surface temperature. Notable
+exceptions are: h2o_cts_ (water world) and mtl_cts_ (metal world); there
+could be others as no byte-identical examination was done.
+
