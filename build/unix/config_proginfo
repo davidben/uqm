@@ -43,7 +43,7 @@ PROG_echon_ACTION=""
 PROG_echon_VERSION=''
 PROG_echon_DETECT="echon_detect"
 echon_detect() {
-	local TEST
+	local TEST LOCATIONS LOCATION
 	
 	# Default echo (probably builtin)
 	TEST=`echo -n X`
@@ -53,11 +53,16 @@ echon_detect() {
 	fi
 
 	# External echo
-	TEST=`/bin/echo -n X`
-	if [ "$TEST" = X ]; then
-		PROG_echon_FILE="/bin/echo -n"
-		return 0;
-	fi
+	LOCATIONS="/bin/ /usr/ucb/"
+	for LOCATION in $LOCATIONS; do
+		if [ -x ${LOCATION}echo ]; then
+			TEST=`${LOCATION}echo -n X`
+			if [ "$TEST" = X ]; then
+				PROG_echon_FILE="${LOCATION}echo -n"
+				return 0;
+			fi
+		fi
+	done
 
 	# Using printf as echo
 	TEST=`printf %s X`
