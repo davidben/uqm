@@ -1271,18 +1271,12 @@ RemoveElement (HLINK hLink)
 			for (i = 0; i <= NUM_FX_CHANNELS; ++i)
 			{
 				if ((PosObj = GetPositionalObject (i)) == ElementPtr)
-				{
 					SetPositionalObject (i, NULL);
-					break;
-				}
 			}
 			for (i = 0; i < num_sounds; ++i)
 			{
 				if (sound_posobj[i] == ElementPtr)
-				{
 					sound_posobj[i] = NULL;
-					break;
-				}
 			}
 		}
 		UnlockElement (hLink);
