@@ -27,8 +27,8 @@ static SDL_Surface *scaled_display;
 static SDL_Surface *scaled_transition;
 
 static int ScreenFilterMode;
-static unsigned int DisplayTexture;
-static unsigned int TransitionTexture;
+static GLuint DisplayTexture;
+static GLuint TransitionTexture;
 static BOOLEAN scanlines;
 static BOOLEAN upload_transitiontexture = FALSE;
 
