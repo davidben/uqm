@@ -797,7 +797,7 @@ UpdateCursorInfo:
 				if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
 					fuel_required = 0;
 				else
-					fuel_required = square_root (f) + (FUEL_TANK_SCALE >> 1);
+					fuel_required = square_root (f) + (FUEL_TANK_SCALE / 20);
 				LockMutex (GraphicsLock);
 				DrawHyperCoords (pMenuState->first_item);
 				if (last_buf == (UNICODE) ~0
