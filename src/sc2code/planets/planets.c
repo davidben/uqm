@@ -211,7 +211,6 @@ FreePlanet (void)
 	pSolarSysState->hTopoData = 0;
 	DestroyDrawable (ReleaseDrawable (pSolarSysState->TopoFrame));
 	pSolarSysState->TopoFrame = 0;
-	TFB_ReleaseColorMap ();
 	DestroyColorMap (ReleaseColorMap (pSolarSysState->OrbitalCMap));
 	pSolarSysState->OrbitalCMap = 0;
 

@@ -48,10 +48,11 @@ typedef struct tfb_image
 	SDL_Surface *NormalImg;
 	SDL_Surface *ScaledImg;
 	SDL_Color *Palette;
+	int colormap_index;
 	int scale;
 	Mutex mutex;
 	UBYTE pad[sizeof(TFB_ImageStruct)-sizeof(SDL_Surface*)-sizeof(SDL_Surface*)-
-		sizeof(SDL_Color*)-sizeof(int)-sizeof(Mutex)];
+		sizeof(SDL_Color*)-sizeof(int)-sizeof(int)-sizeof(Mutex)];
 } TFB_Image;
 
 TFB_Image *TFB_LoadImage (SDL_Surface *img);

@@ -41,21 +41,9 @@
 #define FADE_NORMAL_INTENSITY  255
 #define FADE_FULL_INTENSITY    510
 
-enum
-{
-	TFB_COLORMAP_NONE,
-	TFB_COLORMAP_HYPERSPACE,
-	TFB_COLORMAP_QUASISPACE,
-	TFB_COLORMAP_PLANET,
-	TFB_COLORMAP_COMM
-};
-
 extern DWORD* _varPLUTs;
 extern volatile int FadeAmount;
 
-BOOLEAN TFB_HasColorMap (void);
-int TFB_GetColorMapType (void);
-void TFB_ReleaseColorMap (void);
-BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst);
+void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index);
 
 #endif

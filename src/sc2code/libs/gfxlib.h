@@ -366,7 +366,7 @@ extern BOOLEAN DestroyOverlayWindow (FRAME Display, DRAWABLE Drawable);
 extern void ScrollDisplay (FRAME Display, COORD x, COORD y);
 
 extern BOOLEAN ReadColorMap (COLORMAPPTR ColorMapPtr);
-extern BOOLEAN SetColorMap (COLORMAPPTR ColorMapPtr, int type);
+extern BOOLEAN SetColorMap (COLORMAPPTR ColorMapPtr);
 extern BOOLEAN BatchColorMap (COLORMAPPTR ColorMapPtr);
 extern CYCLE_REF CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles,
 		SIZE TimeInterval);

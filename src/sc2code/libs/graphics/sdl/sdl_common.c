@@ -148,6 +148,7 @@ TFB_LoadImage (SDL_Surface *img)
 	myImage->mutex = CreateMutex();
 	myImage->ScaledImg = NULL;
 	myImage->Palette = NULL;
+	myImage->colormap_index = -1;
 	
 	if (img->format->BytesPerPixel == 1)
 	{

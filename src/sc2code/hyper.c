@@ -336,12 +336,12 @@ LoadHyperspace (void)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 	{
 		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0x00), 0x2F));
-		SetColorMap (GetColorMapAddress (hypercmaps[0]), TFB_COLORMAP_HYPERSPACE);
+		SetColorMap (GetColorMapAddress (hypercmaps[0]));
 	}
 	else
 	{
 		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1A, 0x00), 0x2F));
-		SetColorMap (GetColorMapAddress (hypercmaps[1]), TFB_COLORMAP_QUASISPACE);
+		SetColorMap (GetColorMapAddress (hypercmaps[1]));
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 		SET_GAME_STATE (BROADCASTER_RESPONSE, 0);
 	}

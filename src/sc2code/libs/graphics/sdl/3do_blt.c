@@ -143,22 +143,10 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 		else
 		{
-			if (TFB_HasColorMap() && img->NormalImg->format->BytesPerPixel == 1)
+			if (img->NormalImg->format->palette && img->colormap_index != -1)
 			{
-				// TODO: this currently uses a hack to avoid corrupting sun colors..
-				//       why sun won't work properly with colormaps, should be traced later
-
-				int type = TFB_GetColorMapType();
-
-				if (type != TFB_COLORMAP_PLANET ||
-					(type == TFB_COLORMAP_PLANET && (img->Palette[255].r != 248 || 
-					img->Palette[255].g != 248 || img->Palette[255].b != 248)))
-				{
-					if (TFB_CopyRGBColorMap(DrawCommand.Palette))
-					{
-						DrawCommand.UsePalette = TRUE;
-					}
-				}
+				TFB_ColorMapToRGB (DrawCommand.Palette, img->colormap_index);
+				DrawCommand.UsePalette = TRUE;
 			}
 		}
 

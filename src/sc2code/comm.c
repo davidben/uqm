@@ -493,7 +493,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 				AssignTask (xform_PLUT_task, 1024,
 				"transform palette")) == 0)
 		{
-			SetColorMap (ColorMapPtr, TFB_COLORMAP_COMM);
+			SetColorMap (ColorMapPtr);
 			ColorChange = TRUE;
 			TimeOut = GetTimeCounter ();
 		}
@@ -1155,7 +1155,7 @@ AlienTalkSegue (COUNT wait_track)
 
 	if (!pCurInputState->Initialized)
 	{
-		SetColorMap (GetColorMapAddress (CommData.AlienColorMap), TFB_COLORMAP_COMM);
+		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
 		DrawAlienFrame (CommData.AlienFrame, NULL_PTR);
 UpdateSpeechGraphics (TRUE);
 
@@ -1542,7 +1542,6 @@ BatchGraphics ();
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic ((MUSIC_REF)CommData.AlienSong);
-	TFB_ReleaseColorMap ();
 	DestroyColorMap (ReleaseColorMap (CommData.AlienColorMap));
 	DestroyFont (ReleaseFont (CommData.AlienFont));
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));

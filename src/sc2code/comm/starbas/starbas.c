@@ -1721,8 +1721,6 @@ SellMinerals (RESPONSE_REF R)
 	BOOLEAN Sleepy;
 	RESPONSE_REF pStr1, pStr2;
 
-	TFB_ReleaseColorMap();
-
 	total = 0;
 	Sleepy = TRUE;
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)

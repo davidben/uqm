@@ -37,31 +37,14 @@ static volatile int end, XForming;
 DWORD* _varPLUTs;
 static unsigned int varPLUTsize = VARPLUTS_SIZE;
 
-static BOOLEAN has_colormap = FALSE;
-static TFB_Palette cmap_rgb[256];
-static int cmap_type = 0;
 
-
-BOOLEAN TFB_HasColorMap (void)
-{
-	return has_colormap;
-}
-
-int TFB_GetColorMapType (void)
-{
-	return cmap_type;
-}
-
-void TFB_ReleaseColorMap (void)
-{
-	//fprintf (stderr, "TFB_ReleaseColorMap()\n");
-	has_colormap = FALSE;
-}
-
-void TFB_ColorMapToRGB (UBYTE *colors)
+void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
 {
 	DWORD i, k, cval;
 	UBYTE j, r, g, b;
+	UBYTE *colors;
+
+	colors = (UBYTE*)_varPLUTs + (colormap_index * PLUT_BYTE_SIZE);	
 
 	for (i = 0; i < 32;)
 	{
@@ -76,9 +59,9 @@ void TFB_ColorMapToRGB (UBYTE *colors)
 		{
 			k = ((j << 5) + i);
 
-			cmap_rgb[k].r = r * (j + 1);
-			cmap_rgb[k].g = g * (j + 1);
-			cmap_rgb[k].b = b * (j + 1);
+			pal[k].r = r * (j + 1);
+			pal[k].g = g * (j + 1);
+			pal[k].b = b * (j + 1);
 		}
 
 		++i;
@@ -90,51 +73,23 @@ void TFB_ColorMapToRGB (UBYTE *colors)
 		for (j = 0; j < 8; ++j)
 		{
 			k = ((j << 5) + i);
-			cmap_rgb[k].r = r * (j + 1);
-			cmap_rgb[k].g = g * (j + 1);
-			cmap_rgb[k].b = b * (j + 1);
+			pal[k].r = r * (j + 1);
+			pal[k].g = g * (j + 1);
+			pal[k].b = b * (j + 1);
 		}
 
 		++i;
 	}
 }
 
-BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst)
-{
-	if (cmap_type == TFB_COLORMAP_HYPERSPACE ||
-		cmap_type == TFB_COLORMAP_QUASISPACE)
-	{
-		// TODO: some special colormaps still not implemented
-		return FALSE;
-
-	}
-	else if (cmap_type == TFB_COLORMAP_PLANET)
-	{
-		int i;
-
-		for (i = 0; i < 32; ++i)
-		{
-			dst[251-i].r = cmap_rgb[255-i].r;
-			dst[251-i].g = cmap_rgb[255-i].g;
-			dst[251-i].b = cmap_rgb[255-i].b;
-		}
-	}
-	else 
-	{
-		memcpy(dst, cmap_rgb, sizeof(TFB_Palette) * 256);
-	}
-
-	return TRUE;
-}
-
 BOOLEAN
 BatchColorMap (COLORMAPPTR ColorMapPtr)
 {
-	return (SetColorMap (ColorMapPtr, TFB_COLORMAP_NONE));
+	return (SetColorMap (ColorMapPtr));
 }
 
 BOOLEAN
-SetColorMap (COLORMAPPTR map, int type)
+SetColorMap (COLORMAPPTR map)
 {
 	int start, end, bytes;
 	UBYTE *colors = (UBYTE*)map;
@@ -157,14 +112,10 @@ SetColorMap (COLORMAPPTR map, int type)
 		varPLUTsize = bytes;
 	}
 	
-	vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);
-	
+	vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);	
 	memcpy (vp, colors, bytes);
-	cmap_type = type;
-	TFB_ColorMapToRGB (vp);
-	has_colormap = TRUE;
 
-	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n",vp, map, bytes, start, end);
+	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n", vp, map, bytes, start, end);
 	return TRUE;
 }
 

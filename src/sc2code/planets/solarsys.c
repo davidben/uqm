@@ -115,7 +115,6 @@ FreeIPData (void)
 	SISIPFrame = 0;
 	DestroyDrawable (ReleaseDrawable (SunFrame));
 	SunFrame = 0;
-	TFB_ReleaseColorMap ();
 	DestroyColorMap (ReleaseColorMap (OrbitalCMap));
 	OrbitalCMap = 0;
 	DestroyDrawable (ReleaseDrawable (OrbitalFrame));
@@ -576,7 +575,7 @@ if (!(draw_sys_flags & DRAW_PLANETS))
 		SetColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (OrbitalCMap,
 				PLANCOLOR (Type))
-				), TFB_COLORMAP_PLANET);
+				));
 
 		Size = PLANSIZE (Type);
 		if (denom == 2 || xnumer > (COUNT)DISPLAY_FACTOR)
@@ -626,13 +625,10 @@ if (!(draw_sys_flags & DRAW_PLANETS))
 		if (index < NUMBER_OF_PLANET_TYPES
 				&& (pPlanetDesc->data_index & PLANET_SHIELDED))
 		{
-			TFB_ReleaseColorMap();
 			s.frame = SetAbsFrameIndex (SpaceJunkFrame, 17);
 			DrawStamp (&s);
 		}
 	}
-
-	TFB_ReleaseColorMap();
 }
 
 static void
@@ -1699,10 +1695,8 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 			SetColorMap (GetColorMapAddress (
 					SetAbsColorMapIndex (OrbitalCMap,
 					PLANCOLOR (PlanData[pCurDesc->data_index].Type))
-					), TFB_COLORMAP_PLANET);
+					));
 			DrawStamp (&pCurDesc->image);
-
-			TFB_ReleaseColorMap();
 
 			if (index == pSolarSysState->LastPlanetIndex)
 				break;

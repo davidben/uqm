@@ -560,7 +560,6 @@ GiveRadios (RESPONSE_REF R)
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), 0);
-		TFB_ReleaseColorMap ();
 		ClearSemaphore (GraphicsSem);
 		AlienTalkSegue ((COUNT)~0);
 

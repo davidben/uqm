@@ -157,7 +157,7 @@ LoadKernel (int argc, char *argv[])
 		COLORMAP ColorMapTab;
 
 		ColorMapTab = CaptureColorMap (LoadColorMap (STARCON_COLOR_MAP));
-		SetColorMap (GetColorMapAddress (ColorMapTab), TFB_COLORMAP_NONE);
+		SetColorMap (GetColorMapAddress (ColorMapTab));
 		DestroyColorMap (ReleaseColorMap (ColorMapTab));
 	}
 

@@ -26,15 +26,84 @@
 #include "sdl_common.h"
 #include "primitives.h"
 
-// following stuff was in libs/graphics/getbody.c before modularization
+typedef struct anidata
+{
+	int transparent_color;
+	int colormap_index;
+	int clip_x;
+	int clip_y;
+	int clip_w;
+	int clip_h;
+	int hotspot_x;
+	int hotspot_y;
+} AniData;
 
 
 extern char *_cur_resfile_name;
 
 static void
-process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct, BOOLEAN is_font)
+process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 {
-	int hx, hy, h;
+	TFB_Image *tfbimg;
+	int hx = 0, hy = 0;
+
+	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
+	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
+
+	if (img[cel_ct]->format->palette)
+	{
+		if (ani[cel_ct].transparent_color != -1)
+			SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, ani[cel_ct].transparent_color);
+
+		if (ani[cel_ct].clip_x != -1)
+			img[cel_ct]->clip_rect.x = ani[cel_ct].clip_x;
+		if (ani[cel_ct].clip_y != -1)
+			img[cel_ct]->clip_rect.y = ani[cel_ct].clip_y;
+		if (ani[cel_ct].clip_w != -1)
+			img[cel_ct]->clip_rect.w = ani[cel_ct].clip_w;
+		if (ani[cel_ct].clip_h != -1)
+			img[cel_ct]->clip_rect.h = ani[cel_ct].clip_h;
+		
+		if (ani[cel_ct].hotspot_x != -1)
+			hx = ani[cel_ct].hotspot_x;
+		if (ani[cel_ct].hotspot_y != -1)
+			hy = ani[cel_ct].hotspot_y;
+	}
+
+	hx -= img[cel_ct]->clip_rect.x;
+	hy -= img[cel_ct]->clip_rect.y;
+	
+	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;	
+
+	tfbimg = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
+	tfbimg->colormap_index = ani[cel_ct].colormap_index;
+	img[cel_ct] = tfbimg->NormalImg;
+
+	hx += img[cel_ct]->clip_rect.x;
+	hy += img[cel_ct]->clip_rect.y;
+
+	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
+	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
+
+#if 0
+	fprintf (stderr, "\thot[%d, %d], rect[%d, %d, %d, %d]\n",
+			hx, hy,
+			img[cel_ct]->clip_rect.x, img[cel_ct]->clip_rect.y,
+			img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
+#endif
+}
+
+static void
+process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
+{
+	int hx, hy;
+	int x,y;
+	Uint8 r,g,b,a;
+	Uint32 p;
+	SDL_Color colors[256];
+	SDL_Surface *new_surf;				
+	GetPixelFn getpix;
+	PutPixelFn putpix;
 
 	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
 	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
@@ -43,157 +112,43 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct, BOOLEAN is_fon
 
 	SDL_LockSurface (img[cel_ct]);
 
-	if (is_font)
+	// convert 32-bit png font to indexed
+
+	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img[cel_ct]->w, img[cel_ct]->h, 
+		8, 0, 0, 0, 0);
+
+	getpix = getpixel_for (img[cel_ct]);
+	putpix = putpixel_for (new_surf);
+
+	for (y = 0; y < img[cel_ct]->h; ++y)
 	{
-		// convert 32-bit png font to indexed
-
-		int x,y;
-		Uint8 r,g,b,a;
-		Uint32 p;
-		SDL_Color colors[256];
-
-		SDL_Surface *new_surf;				
-		GetPixelFn getpix;
-		PutPixelFn putpix;
-
-		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img[cel_ct]->w, img[cel_ct]->h, 
-			8, 0, 0, 0, 0);
-
-		getpix = getpixel_for (img[cel_ct]);
-		putpix = putpixel_for (new_surf);
-
-		for (y = 0; y < img[cel_ct]->h; ++y)
+		for (x = 0; x < img[cel_ct]->w; ++x)
 		{
-			for (x = 0; x < img[cel_ct]->w; ++x)
-			{
-				p = getpix (img[cel_ct], x, y);
-				SDL_GetRGBA (p, img[cel_ct]->format, &r, &g, &b, &a);
+			p = getpix (img[cel_ct], x, y);
+			SDL_GetRGBA (p, img[cel_ct]->format, &r, &g, &b, &a);
 
-				if (a)
-					putpix (new_surf, x, y, 1);
-				else
-					putpix (new_surf, x, y, 0);
-			}
-		}
-		
-		colors[0].r = colors[0].g = colors[0].b = 0;
-		for (x = 1; x < 256; ++x)
-		{
-			colors[x].r = 255;
-			colors[x].g = 255;
-			colors[x].b = 255;
-		}
-
-		SDL_SetColors (new_surf, colors, 0, 256);
-		SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
-
-		SDL_UnlockSurface (img[cel_ct]);
-		SDL_FreeSurface (img[cel_ct]);
-
-		img[cel_ct] = new_surf;
-
-		SDL_LockSurface (img[cel_ct]);
-	}
-	else if (img[cel_ct]->w >= 3 && (h = img[cel_ct]->h))
-	{
-		if (img[cel_ct]->format->palette)
-		{
-			int w;
-			BYTE *pixel, *p, Cknockout, Chotx, Choty;
-
-			img[cel_ct]->clip_rect.x = img[cel_ct]->w;
-			img[cel_ct]->clip_rect.y = img[cel_ct]->h;
-			img[cel_ct]->clip_rect.w = img[cel_ct]->clip_rect.h = 0;
-			p = pixel = img[cel_ct]->pixels;
-			Cknockout = *p++;
-			Chotx = *p;
-			*p++ = Cknockout;
-			Choty = *p;
-			*p++ = Cknockout;
-			SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, Cknockout);
-			do
-			{
-				w = img[cel_ct]->w - (p - pixel);
-				if (w)
-				{
-					int x, y;
-					BYTE opval;
-
-					opval = Cknockout;
-					do
-					{
-						BYTE pval;
-
-						pval = *p;
-						if (pval == Chotx)
-						{
-							*p = Cknockout;
-							hx = img[cel_ct]->w - w;
-						}
-						if (pval == Choty)
-						{
-							*p = Cknockout;
-							hy = img[cel_ct]->h - h;
-						}
-
-						pval = *p;
-						if (pval == Cknockout)
-						{
-							if (opval != Cknockout)
-							{
-								x = img[cel_ct]->w - w;
-								if (x > img[cel_ct]->clip_rect.x + img[cel_ct]->clip_rect.w)
-									img[cel_ct]->clip_rect.w = x - img[cel_ct]->clip_rect.x;
-								y = img[cel_ct]->h - h;
-								if (y >= img[cel_ct]->clip_rect.y + img[cel_ct]->clip_rect.h)
-									img[cel_ct]->clip_rect.h = y - img[cel_ct]->clip_rect.y + 1;
-							}
-						}
-						else
-						{
-							if (opval == Cknockout)
-							{
-								x = img[cel_ct]->w - w;
-								if (x < img[cel_ct]->clip_rect.x)
-								{
-									if (img[cel_ct]->clip_rect.w == 0)
-										img[cel_ct]->clip_rect.w = 1;
-									else
-										img[cel_ct]->clip_rect.w += img[cel_ct]->clip_rect.x - x;
-									img[cel_ct]->clip_rect.x = x;
-								}
-								y = img[cel_ct]->h - h;
-								if (y < img[cel_ct]->clip_rect.y)
-								{
-									if (img[cel_ct]->clip_rect.h == 0)
-										img[cel_ct]->clip_rect.h = 1;
-									else
-										img[cel_ct]->clip_rect.h += img[cel_ct]->clip_rect.y - y;
-									img[cel_ct]->clip_rect.y = y;
-								}
-							}
-						}
-						opval = pval;
-					} while (++p, --w);
-					if (opval != Cknockout)
-					{
-						x = img[cel_ct]->w - w;
-						if (x > img[cel_ct]->clip_rect.x + img[cel_ct]->clip_rect.w)
-							img[cel_ct]->clip_rect.w = x - img[cel_ct]->clip_rect.x;
-						y = img[cel_ct]->h - h;
-						if (y >= img[cel_ct]->clip_rect.y + img[cel_ct]->clip_rect.h)
-							img[cel_ct]->clip_rect.h = y - img[cel_ct]->clip_rect.y + 1;
-					}
-				}
-				p = (pixel += img[cel_ct]->pitch);
-			} while (--h);
-		}
-		else
-		{
+			if (a)
+				putpix (new_surf, x, y, 1);
+			else
+				putpix (new_surf, x, y, 0);
 		}
 	}
+
+	colors[0].r = colors[0].g = colors[0].b = 0;
+	for (x = 1; x < 256; ++x)
+	{
+		colors[x].r = 255;
+		colors[x].g = 255;
+		colors[x].b = 255;
+	}
+
+	SDL_SetColors (new_surf, colors, 0, 256);
+	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
 
 	SDL_UnlockSurface (img[cel_ct]);
+	SDL_FreeSurface (img[cel_ct]);
+
+	img[cel_ct] = new_surf;
 
 	hx -= img[cel_ct]->clip_rect.x;
 	hy -= img[cel_ct]->clip_rect.y;
@@ -206,14 +161,6 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct, BOOLEAN is_fon
 	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
 	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
-
-#if 0
-	fprintf (stderr, "\thot[%d, %d], rect[%d, %d, %d, %d]\n",
-			hx, hy,
-			img[cel_ct]->clip_rect.x, img[cel_ct]->clip_rect.y,
-			img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
-#endif
-
 }
 
 MEM_HANDLE
@@ -227,6 +174,7 @@ _GetCelData (FILE *fp, DWORD length)
 	char CurrentLine[1024], filename[1024];
 #define MAX_CELS 256
 	SDL_Surface *img[MAX_CELS];
+	AniData ani[MAX_CELS];
 	DRAWABLE Drawable;
 	
 	opos = ftell (fp);
@@ -256,21 +204,22 @@ _GetCelData (FILE *fp, DWORD length)
 		/*char fnamestr[1000];
 		sscanf(CurrentLine, "%s", fnamestr);
 		fprintf (stderr, "imgload %s\n",fnamestr);*/
-
-		if
-		(
-				sscanf(CurrentLine, "%s", &filename[n]) == 1
-				&& (img[cel_ct] = IMG_Load (filename))
-				&& img[cel_ct]->w > 0
-				&& img[cel_ct]->h > 0
-				&& img[cel_ct]->format->BitsPerPixel >= 8
-		)
+		
+		sscanf (CurrentLine, "%s %d %d %d %d %d %d %d %d", &filename[n], 
+			&ani[cel_ct].transparent_color, &ani[cel_ct].colormap_index, 
+			&ani[cel_ct].clip_x, &ani[cel_ct].clip_y, &ani[cel_ct].clip_w, 
+			&ani[cel_ct].clip_h, &ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
+	
+		if ((img[cel_ct] = IMG_Load (filename)) && img[cel_ct]->w > 0 && 
+			img[cel_ct]->h > 0 && img[cel_ct]->format->BitsPerPixel >= 8) 
+		{
 			++cel_ct;
-		else if (img[cel_ct])
-			fprintf (stderr, "_GetCelData: Bad file!\n"),
-					SDL_FreeSurface (img[cel_ct]);
-		
-		
+		}
+		else if (img[cel_ct]) 
+		{
+			fprintf (stderr, "_GetCelData: Bad file!\n");
+			SDL_FreeSurface (img[cel_ct]);
+		}
 
 		if ((int)ftell (fp) - (int)opos >= (int)length)
 			break;
@@ -303,7 +252,7 @@ _GetCelData (FILE *fp, DWORD length)
 
 			FramePtr = &DrawablePtr->Frame[cel_ct];
 			while (--FramePtr, cel_ct--)
-				process_image (FramePtr, img, cel_ct, FALSE);
+				process_image (FramePtr, img, ani, cel_ct);
 
 			UnlockDrawable (Drawable);
 		}
@@ -422,7 +371,7 @@ _GetFontData (FILE *fp, DWORD length)
 			{
 				if (img[cel_ct])
 				{
-					process_image (FramePtr, img, cel_ct, TRUE);
+					process_font (FramePtr, img, cel_ct);
 					SetFrameBounds (FramePtr, GetFrameWidth (FramePtr) + 1, GetFrameHeight (FramePtr) + 1);
 					
 					if (img[0])
