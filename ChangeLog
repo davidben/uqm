@@ -1,4 +1,10 @@
 0.2:
+- Fixed typo in Thraddash text, from Dan Plimak.
+- Make HMalloc abort when no memory available, from Abaddon.
+- Replace malloc() calls by HMalloc, from Abaddon.
+- #include <SDL.h> in main program, for OSX, from Max Horn.
+- Use sources for getopt() for all systems that don't support it, not only
+  for Windows, from Max Horn.
 - Planet code cleanups, from PhracturedBlue
 - Changed some types to SDLKey in input.c to prevent overflows, from tamlin
 - Slider now moves in communications (OpenAL)

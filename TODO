@@ -185,4 +185,7 @@ Questions:
   If we want, we could allocate a block of reserve memory at the start,
   which we can free when no more memory is available, to allow an emergency
   save.
+- If we want, we could allocate a block of reserve memory at the start,
+  which we can free when no more memory is available, to allow an emergency
+  save.
 - How about an ISO image for a self-contained linux CD which boots into SC2?
