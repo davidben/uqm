@@ -463,7 +463,8 @@ vp_GetCanvasLine (TFB_VideoDecoder* decoder, uint32 line)
 static uint32
 vp_GetTicks (TFB_VideoDecoder* decoder)
 {
-	return GetTimeCounter () * 1000 / ONE_SECOND;
+	uint32 ctr = GetTimeCounter ();
+	return (ctr / ONE_SECOND) * 1000 + ((ctr % ONE_SECOND) * 1000) / ONE_SECOND;
 
 	(void)decoder; // gobble up compiler warning
 }
