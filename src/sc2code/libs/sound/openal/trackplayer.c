@@ -311,11 +311,11 @@ GetSoundData (void *data)
 			}
 
 			s = *(SWORD*) (&sbuffer[pos]);
-			s = (s / 1236) + (RADAR_HEIGHT >> 1);
+			s = (s / 1260) + (RADAR_HEIGHT >> 1);
 			if (s < 0)
 				s = 0;
-			else if (s > RADAR_HEIGHT)
-				s = RADAR_HEIGHT;
+			else if (s >= RADAR_HEIGHT)
+				s = RADAR_HEIGHT - 1;
 			scopedata[i] = (UBYTE) s;
 
 			pos += 2;
