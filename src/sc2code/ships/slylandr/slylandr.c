@@ -307,7 +307,8 @@ PELEMENT ElementPtr;
 				&& !GRAVITY_MASS (ObjPtr->mass_points)
 				&& CollisionPossible (ObjPtr, ElementPtr))
 		{
-#define HARVEST_RANGE (SPACE_HEIGHT * 3 / 8)
+//HARVEST_RANGE was originally (SPACE_HEIGHT * 3 / 8)
+#define HARVEST_RANGE (208 * 3 / 8)
 			SIZE dx, dy;
 
 			if ((dx = ObjPtr->next.location.x

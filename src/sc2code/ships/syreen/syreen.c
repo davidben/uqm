@@ -186,17 +186,18 @@ spawn_crew (PELEMENT ElementPtr)
 					dy = -dy;
 				dx = WORLD_TO_DISPLAY (dx);
 				dy = WORLD_TO_DISPLAY (dy);
-				if (dx <= SPACE_HEIGHT && dy <= SPACE_HEIGHT
+#define ABANDONER_RANGE 208 /* originally SPACE_HEIGHT */
+				if (dx <= ABANDONER_RANGE && dy <= ABANDONER_RANGE
 						&& (d_squared = (DWORD)((UWORD)dx * (UWORD)dx)
 						+ (DWORD)((UWORD)dy * (UWORD)dy)) <=
-						(DWORD)((UWORD)SPACE_HEIGHT * (UWORD)SPACE_HEIGHT))
+						(DWORD)((UWORD)ABANDONER_RANGE * (UWORD)ABANDONER_RANGE))
 				{
 #define MAX_ABANDONERS 8
 					COUNT crew_loss;
 
 					crew_loss = ((MAX_ABANDONERS
-							* (SPACE_HEIGHT - square_root (d_squared)))
-							/ SPACE_HEIGHT) + 1;
+							* (ABANDONER_RANGE - square_root (d_squared)))
+							/ ABANDONER_RANGE) + 1;
 					if (crew_loss >= ObjPtr->crew_level)
 						crew_loss = ObjPtr->crew_level - 1;
 

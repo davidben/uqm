@@ -164,7 +164,7 @@ buzztrack_preprocess (PELEMENT ElementPtr)
 		}
 		else
 		{
-#define ACTIVATE_RANGE SPACE_WIDTH
+#define ACTIVATE_RANGE 224 /* Originally SPACE_WIDTH */
 			SIZE delta_x, delta_y;
 			ELEMENTPTR eptr;
 
