@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Quit confirmation fixes: lander reports, conversation summaries,
+  outtakes, end credits; font effect properly set/saved/restored;
+  (bugs #454, #465, #466); from chmmravatar
 - Obsolete "register" keywords removed -Michael
 
 Changes towards version 0.3:
