@@ -280,11 +280,11 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 		decoder->frequency = vinfo->rate;
 		decoder->looping = false;
 		decoder->error = SOUNDDECODER_OK;
-		decoder->length = (float) ov_time_total (vf, -1);
+		decoder->length = (float) ov_time_total (vf, -1) - (startTime / 1000.0f);
 		if (runTime && runTime / 1000.0 < decoder->length)
 			decoder->length = (float)(runTime / 1000.0);
 
-		decoder->start_sample = decoder->frequency * startTime/1000;
+		decoder->start_sample = decoder->frequency * startTime / 1000;
 		decoder->end_sample = decoder->start_sample + 
 				(unsigned long)(decoder->length * decoder->frequency);
 		if (decoder->start_sample)
