@@ -81,9 +81,53 @@ FlushGraphics ()
 	TFB_DrawScreen_WaitForSignal ();
 }
 
+static void
+ExpandRect (PRECT rect, int expansion)
+{
+	if (rect->corner.x - expansion >= 0)
+	{
+		rect->extent.width += expansion;
+		rect->corner.x -= expansion;
+	}
+	else
+	{
+		rect->extent.width += rect->corner.x;
+		rect->corner.x = 0;
+	}
+
+	if (rect->corner.y - expansion >= 0)
+	{
+		rect->extent.height += expansion;
+		rect->corner.y -= expansion;
+	}
+	else
+	{
+		rect->extent.height += rect->corner.y;
+		rect->corner.y = 0;
+	}
+
+	if (rect->corner.x + rect->extent.width + expansion <= SCREEN_WIDTH)
+		rect->extent.width += expansion;
+	else
+		rect->extent.width = SCREEN_WIDTH - rect->corner.x;
+
+	if (rect->corner.y + rect->extent.height + expansion <= SCREEN_HEIGHT)
+		rect->extent.height += expansion;
+	else
+		rect->extent.height = SCREEN_HEIGHT - rect->corner.y;
+}
+
 void
 SetTransitionSource (PRECT pRect)
 {
+	RECT ActualRect;
+
+	if (pRect)
+	{	/* expand the rect to accomodate scalers in OpenGL mode */
+		ActualRect = *pRect;
+		pRect = &ActualRect;
+		ExpandRect (&ActualRect, 2);
+	}
 	TFB_DrawScreen_Copy(pRect, TFB_SCREEN_MAIN, TFB_SCREEN_TRANSITION);
 }
 
