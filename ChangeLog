@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Misc .ani fixes; Fixes asteroid destruction crash (bugs 150, 155, 158)
+  and somewhat fixes Mycon potrait (bug #183) -fOSSiL
 - Moved image scaling to DCQ thread; fixes scale-out-of-sync problem 
   in melee -Mika
 - Fix lockup in cyborg melee (fixes 204 and 218) from chmmravatar
