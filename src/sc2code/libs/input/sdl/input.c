@@ -49,7 +49,8 @@ TFB_InitInput (int driver, int flags)
 	atexit (TFB_UninitInput);
 
 	SDL_EnableUNICODE(1);
-
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
 		fprintf (stderr, "Couldn't initialize joystick subsystem: %s\n", SDL_GetError());
@@ -177,7 +178,13 @@ UninitInput (void) // Looks like it'll be empty
 void
 FlushInput (void)
 {
+	int i;
 	kbdtail = kbdhead = 0;
+	for (i = 0; i < SDLK_LAST; ++i)
+	{
+		if (KeyboardDown[i] == 0x2)
+		    KeyboardDown[i] &= ~0x2;
+	}
 }
 
 // Translates from SDLKeys to values defined in inplib.h
