@@ -27,6 +27,7 @@ Glitches (don't crash the game, medium priority):
   the frame counter to 10 times per second and start with -ttl.
 - When landing to planet surface, crossfaded image is wrong compared to
   landing position (and so 'flashes' when crossfade ends)
+  - Orbit screen has also other transition problems
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
 - In melee, after battle, the game crashes.
@@ -84,8 +85,6 @@ Glitches (don't crash the game, medium priority):
 - Captains portraits in melee aren't updated after a battle.
 - Win32 version runs a bit faster than it should, due to some problems
   with timer accuracies
-- Missing earth missing surface map.
-  eartmap.ani wasn't in the 3DO release. So how was it handled there?
 - precursor ships' crew count is misplaced in melee (SAFE_Y)
 - Dialog choices sometimes exceed the rectangle they're supposed to be
   bounded by. (SAFE_X?)
@@ -115,6 +114,9 @@ Implementation bugs (low priority):
   - bilinear is only implemented under opengl
   - opengl misses all other modes than bilinear
     - do them with software and/or pixel shader hw?
+- 3D planet view when entering orbit is now done, but there's some things
+  which could make it look nicer, like better lighting, antialiasing/filtering, 
+  better slave shield and removing occasional 'pops'
 
 Stuff still to do (large):
 - add a Key Jamming program
@@ -128,7 +130,6 @@ Stuff still to do (large):
   Furthermore, saving and loading games uses cread and cwrite, which is
   not endian-safe, and which is writing out values of heap pointers.  This
   really should be cleaned up just in general and made endian safe to boot.
-- 3d planet view when entering orbit
 - some packaging system for resources. zlib looks like something
   which is suitable for this.
   Addition: Physfs looks just what we want: http://icculus.org/physfs/
