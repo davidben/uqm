@@ -20,28 +20,33 @@
  */
 
 #include "video.h"
-#include "libs/sndlib.h"
-#include "libs/sound/sound.h"
 #include "dukvid.h"
-#include "endian_uqm.h"
 #include <stdio.h>
+#include "libs/uio.h"
+#include "endian_uqm.h"
 
 #define THIS_PTR    TFB_VideoDecoder* This
 
-uint32 dukv_GetStructSize (void);
-int dukv_GetError (THIS_PTR);
-bool dukv_Init (THIS_PTR, TFB_PixelFormat* fmt);
-void dukv_Term (THIS_PTR);
-bool dukv_Open (THIS_PTR, uio_DirHandle *dir, const char *filename);
-void dukv_Close (THIS_PTR);
-int dukv_DecodeNext (THIS_PTR);
-uint32 dukv_SeekFrame (THIS_PTR, uint32 frame);
-float dukv_SeekTime (THIS_PTR, float time);
-uint32 dukv_GetFrame (THIS_PTR);
-float dukv_GetTime (THIS_PTR);
+static const char* dukv_GetName (void);
+static bool dukv_InitModule (int flags);
+static void dukv_TermModule (void);
+static uint32 dukv_GetStructSize (void);
+static int dukv_GetError (THIS_PTR);
+static bool dukv_Init (THIS_PTR, TFB_PixelFormat* fmt);
+static void dukv_Term (THIS_PTR);
+static bool dukv_Open (THIS_PTR, uio_DirHandle *dir, const char *filename);
+static void dukv_Close (THIS_PTR);
+static int dukv_DecodeNext (THIS_PTR);
+static uint32 dukv_SeekFrame (THIS_PTR, uint32 frame);
+static float dukv_SeekTime (THIS_PTR, float time);
+static uint32 dukv_GetFrame (THIS_PTR);
+static float dukv_GetTime (THIS_PTR);
 
 TFB_VideoDecoderFuncs dukv_DecoderVtbl = 
 {
+	dukv_GetName,
+	dukv_InitModule,
+	dukv_TermModule,
 	dukv_GetStructSize,
 	dukv_GetError,
 	dukv_Init,
@@ -107,7 +112,7 @@ typedef struct tfb_duckvideodecoder
 #define DUCK_MAX_FRAME_SIZE  0x8000U
 #define DUCK_END_OF_SEQUENCE 1
 
-void
+static void
 dukv_DecodeFrame (uint8* src_p, uint32* dst_p, uint32 wb, uint32 hb,
 		TFB_DuckVideoDeltas* deltas)
 {
@@ -205,7 +210,7 @@ dukv_DecodeFrame (uint8* src_p, uint32* dst_p, uint32 wb, uint32 hb,
 	}
 }
 
-void
+static void
 dukv_DecodeFrameV3 (uint8* src_p, uint32* dst_p, uint32 wb, uint32 hb,
 		TFB_DuckVideoDeltas* deltas)
 {
@@ -270,7 +275,7 @@ dukv_DecodeFrameV3 (uint8* src_p, uint32* dst_p, uint32 wb, uint32 hb,
 	}
 }
 
-bool
+static bool
 dukv_OpenStream (TFB_DuckVideoDecoder* dukv)
 {
 	char filename[280];
@@ -278,10 +283,10 @@ dukv_OpenStream (TFB_DuckVideoDecoder* dukv)
 	strcat (strcpy (filename, dukv->basename), ".duk");
 
 	return (dukv->stream =
-			res_OpenResFile (dukv->basedir, filename, "rb")) != NULL;
+			uio_fopen (dukv->basedir, filename, "rb")) != NULL;
 }
 
-bool
+static bool
 dukv_ReadFrames (TFB_DuckVideoDecoder* dukv)
 {
 	char filename[280];
@@ -290,20 +295,23 @@ dukv_ReadFrames (TFB_DuckVideoDecoder* dukv)
 
 	strcat (strcpy (filename, dukv->basename), ".frm");
 
-	if (!(fp = res_OpenResFile (dukv->basedir, filename, "rb")))
+	if (!(fp = uio_fopen (dukv->basedir, filename, "rb")))
 		return false;
 
-	dukv->cframes = LengthResFile (fp) / sizeof (uint32);
+	// get number of frames
+	uio_fseek (fp, 0, SEEK_END);
+	dukv->cframes = uio_ftell (fp) / sizeof (uint32);
+	uio_fseek (fp, 0, SEEK_SET);
 	dukv->frames = (uint32*) HMalloc (dukv->cframes * sizeof (uint32));
 
-	if ((uint32)ReadResFile (dukv->frames, sizeof (uint32), dukv->cframes,
+	if (uio_fread (dukv->frames, sizeof (uint32), dukv->cframes,
 			fp) != dukv->cframes)
 	{
 		HFree (dukv->frames);
 		dukv->frames = 0;
 		return 0;
 	}
-	res_CloseResFile (fp);
+	uio_fclose (fp);
 
 	for (i = 0; i < dukv->cframes; ++i)
 		dukv->frames[i] = UQM_SwapBE32 (dukv->frames[i]);
@@ -311,7 +319,7 @@ dukv_ReadFrames (TFB_DuckVideoDecoder* dukv)
 	return true;
 }
 
-bool
+static bool
 dukv_ReadVectors (TFB_DuckVideoDecoder* dukv, uint8* vectors)
 {
 	uio_Stream *fp;
@@ -320,16 +328,16 @@ dukv_ReadVectors (TFB_DuckVideoDecoder* dukv, uint8* vectors)
 
 	strcat (strcpy (filename, dukv->basename), ".tbl");
 
-	if (!(fp = res_OpenResFile (dukv->basedir, filename, "rb")))
+	if (!(fp = uio_fopen (dukv->basedir, filename, "rb")))
 		return false;
 	
-	ret = ReadResFile (vectors, NUM_VEC_ITEMS * NUM_VECTORS, 1, fp);
-	res_CloseResFile (fp);
+	ret = uio_fread (vectors, NUM_VEC_ITEMS, NUM_VECTORS, fp);
+	uio_fclose (fp);
 
-	return ret;
+	return ret == NUM_VECTORS;
 }
 
-bool
+static bool
 dukv_ReadHeader (TFB_DuckVideoDecoder* dukv, sint32* pl, sint32* pc)
 {
 	uio_Stream *fp;
@@ -340,11 +348,11 @@ dukv_ReadHeader (TFB_DuckVideoDecoder* dukv, sint32* pl, sint32* pc)
 
 	strcat (strcpy (filename, dukv->basename), ".hdr");
 
-	if (!(fp = res_OpenResFile (dukv->basedir, filename, "rb")))
+	if (!(fp = uio_fopen (dukv->basedir, filename, "rb")))
 		return false;
 	
-	ret = ReadResFile (&hdr, sizeof (hdr), 1, fp);
-	res_CloseResFile (fp);
+	ret = uio_fread (&hdr, sizeof (hdr), 1, fp);
+	uio_fclose (fp);
 	if (!ret)
 		return false;
 
@@ -364,7 +372,7 @@ dukv_ReadHeader (TFB_DuckVideoDecoder* dukv, sint32* pl, sint32* pc)
 	return true;
 }
 
-sint32
+static sint32
 dukv_make_delta (sint32* protos, bool is_chroma, int i1, int i2)
 {
 	sint32 d1, d2;
@@ -383,7 +391,7 @@ dukv_make_delta (sint32* protos, bool is_chroma, int i1, int i2)
 	}
 }
 
-sint32
+static sint32
 dukv_make_corr (sint32* protos, bool is_chroma, int i1, int i2)
 {
 	sint32 d1, d2;
@@ -400,7 +408,7 @@ dukv_make_corr (sint32* protos, bool is_chroma, int i1, int i2)
 	}
 }
 
-void
+static void
 dukv_DecodeVector (uint8* vec, sint32* p, bool is_chroma, sint32* deltas)
 {
 	int citems = vec[0];
@@ -419,7 +427,7 @@ dukv_DecodeVector (uint8* vec, sint32* p, bool is_chroma, sint32* deltas)
 	
 }
 
-void
+static void
 dukv_InitDeltas (TFB_DuckVideoDecoder* dukv, uint8* vectors,
 		sint32* pl, sint32* pc)
 {
@@ -433,7 +441,7 @@ dukv_InitDeltas (TFB_DuckVideoDecoder* dukv, uint8* vectors,
 	}
 }
 
-__inline__ uint32
+static __inline__ uint32
 dukv_PixelConv (uint16 pix, const TFB_PixelFormat* fmt)
 {
 	uint32 r, g, b;
@@ -448,7 +456,7 @@ dukv_PixelConv (uint16 pix, const TFB_PixelFormat* fmt)
 		((b >> fmt->Bloss) << fmt->Bshift);
 }
 
-void
+static void
 dukv_RenderFrame (THIS_PTR)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -524,19 +532,40 @@ dukv_RenderFrame (THIS_PTR)
 
 }
 
-uint32
+static const char*
+dukv_GetName (void)
+{
+	return "DukVid";
+}
+
+static bool
+dukv_InitModule (int flags)
+{
+	// no flags are defined for now
+	return true;
+	
+	(void)flags; // dodge compiler warning
+}
+
+static void
+dukv_TermModule (void)
+{
+	// do an extensive search on the word 'nothing'
+}
+
+static uint32
 dukv_GetStructSize (void)
 {
 	return sizeof (TFB_DuckVideoDecoder);
 }
 
-int
+static int
 dukv_GetError (THIS_PTR)
 {
 	return This->error;
 }
 
-bool
+static bool
 dukv_Init (THIS_PTR, TFB_PixelFormat* fmt)
 {
 	This->format = fmt;
@@ -544,7 +573,7 @@ dukv_Init (THIS_PTR, TFB_PixelFormat* fmt)
 	return true;
 }
 
-void
+static void
 dukv_Term (THIS_PTR)
 {
 	//TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -552,7 +581,7 @@ dukv_Term (THIS_PTR)
 	dukv_Close (This);
 }
 
-bool
+static bool
 dukv_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -595,7 +624,7 @@ dukv_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	return true;
 }
 
-void
+static void
 dukv_Close (THIS_PTR)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -612,7 +641,7 @@ dukv_Close (THIS_PTR)
 	}
 	if (dukv->stream)
 	{
-		res_CloseResFile (dukv->stream);
+		uio_fclose (dukv->stream);
 		dukv->stream = NULL;
 	}
 	if (dukv->inbuf)
@@ -627,7 +656,7 @@ dukv_Close (THIS_PTR)
 	}
 }
 
-int
+static int
 dukv_DecodeNext (THIS_PTR)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -639,8 +668,8 @@ dukv_DecodeNext (THIS_PTR)
 	if (!dukv->stream || dukv->iframe >= dukv->cframes)
 		return 0;
 
-	SeekResFile (dukv->stream, dukv->frames[dukv->iframe], SEEK_SET);
-	if (ReadResFile (&fh, sizeof (fh), 1, dukv->stream) != 1)
+	uio_fseek (dukv->stream, dukv->frames[dukv->iframe], SEEK_SET);
+	if (uio_fread (&fh, sizeof (fh), 1, dukv->stream) != 1)
 	{
 		dukv->last_error = dukve_EOF;
 		return 0;
@@ -654,8 +683,8 @@ dukv_DecodeNext (THIS_PTR)
 		return -1;
 	}
 
-	SeekResFile (dukv->stream, vofs, SEEK_CUR);
-	if ((uint32)ReadResFile (dukv->inbuf, 1, vsize, dukv->stream) != vsize)
+	uio_fseek (dukv->stream, vofs, SEEK_CUR);
+	if (uio_fread (dukv->inbuf, 1, vsize, dukv->stream) != vsize)
 	{
 		dukv->last_error = dukve_EOF;
 		return 0;
@@ -676,7 +705,7 @@ dukv_DecodeNext (THIS_PTR)
 	return 1;
 }
 
-uint32
+static uint32
 dukv_SeekFrame (THIS_PTR, uint32 frame)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -687,7 +716,7 @@ dukv_SeekFrame (THIS_PTR, uint32 frame)
 	return dukv->iframe = frame;
 }
 
-float
+static float
 dukv_SeekTime (THIS_PTR, float time)
 {
 	//TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -696,7 +725,7 @@ dukv_SeekTime (THIS_PTR, float time)
 	return (float) dukv_SeekFrame (This, frame) / DUCK_GENERAL_FPS;
 }
 
-uint32
+static uint32
 dukv_GetFrame (THIS_PTR)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
@@ -704,7 +733,7 @@ dukv_GetFrame (THIS_PTR)
 	return dukv->iframe;
 }
 
-float
+static float
 dukv_GetTime (THIS_PTR)
 {
 	TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;

@@ -28,6 +28,9 @@ typedef struct tfb_videodecoder TFB_VideoDecoder;
 
 typedef struct tfb_videodecoderfunc
 {
+	const char* (* GetName) (void);
+	bool (* InitModule) (int flags);
+	void (* TermModule) ();
 	uint32 (* GetStructSize) (void);
 	int (* GetError) (THIS_PTR);
 	bool (* Init) (THIS_PTR, TFB_PixelFormat* fmt);
@@ -81,7 +84,6 @@ struct tfb_videodecoder
 	sint32 error;
 	float pos; // position in seconds
 	uint32 cur_frame;
-	const char *decoder_info;
 
 	// semi-private
 	uio_DirHandle *dir;
@@ -97,6 +99,13 @@ enum
 	VIDEODECODER_EOF,
 };
 
+typedef struct TFB_RegVideoDecoder TFB_RegVideoDecoder;
+
+TFB_RegVideoDecoder* VideoDecoder_Register (const char* fileext,
+		TFB_VideoDecoderFuncs* decvtbl);
+void VideoDecoder_Unregister (TFB_RegVideoDecoder* regdec);
+const TFB_VideoDecoderFuncs* VideoDecoder_Lookup (const char* fileext);
+
 bool VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 		uint32 Bmask, uint32 Amask);
 void VideoDecoder_Uninit (void);
@@ -107,6 +116,7 @@ float VideoDecoder_Seek (TFB_VideoDecoder *decoder, float time_pos);
 uint32 VideoDecoder_SeekFrame (TFB_VideoDecoder *decoder, uint32 frame_pos);
 void VideoDecoder_Rewind (TFB_VideoDecoder *decoder);
 void VideoDecoder_Free (TFB_VideoDecoder *decoder);
+const char* VideoDecoder_GetName (TFB_VideoDecoder *decoder);
 
 
 #endif // _VIDEODEC_H
