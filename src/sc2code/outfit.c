@@ -517,7 +517,7 @@ ChangeFuelQuantity ()
 	
 	r.extent.height = 1;
 	
-	if (CurrentMenuState.left || CurrentMenuState.up)
+	if (CurrentMenuState.up)
 	{
 		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
@@ -543,7 +543,7 @@ ChangeFuelQuantity ()
 		}
 		ClearSemaphore (GraphicsSem);
 	}
-	else if (CurrentMenuState.right || CurrentMenuState.down)
+	else if (CurrentMenuState.down)
 	{
 		SetSemaphore (GraphicsSem);
 		SetContext (SpaceContext);
