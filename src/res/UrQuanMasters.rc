@@ -1,0 +1,20 @@
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#ifdef _WIN32
+LANGUAGE 0x09, 0x01
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+101                ICON    DISCARDABLE     "ur-quan1.ICO"
+102                ICON    DISCARDABLE     "sis1.ICO"
+103                ICON    DISCARDABLE     "ur-quan2.ICO"
+104                ICON    DISCARDABLE     "kohr-ah1.ICO"
+105                ICON    DISCARDABLE     "starcon2.ICO"
