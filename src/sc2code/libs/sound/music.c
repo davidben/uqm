@@ -128,9 +128,7 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 		{
             char filename[1000];
 
-            *pmus = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-            (*pmus)->buffer_tag = 0;
-            (*pmus)->read_chain_ptr = NULL;
+            *pmus = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
             strcpy (filename, _cur_resfile_name);
 
             switch (optWhichMusic)
@@ -206,6 +204,8 @@ _ReleaseMusicData (MEM_HANDLE handle)
 		SoundDecoder_Free (decoder);
 		TFBSound_DeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 		HFree ((*pmus)->buffer);
+		if ((*pmus)->buffer_tag)
+			HFree ((*pmus)->buffer_tag);
 	}
 	HFree (*pmus);
 

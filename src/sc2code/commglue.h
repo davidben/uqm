@@ -19,6 +19,8 @@
 #ifndef _COMMGLUE_H
 #define _COMMGLUE_H
 
+#include "libs/sound/trackplayer.h"
+
 extern LOCDATA CommData;
 extern int cur_comm;
 extern UNICODE shared_phrase_buf[256];
@@ -55,7 +57,7 @@ extern void DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC
 		response_func, UNICODE *ContstructStr);
 extern void DoNPCPhrase (UNICODE *pStr);
 
-extern void NPCPhrase_cb (int index, void (*cb) (void));
+extern void NPCPhrase_cb (int index, TFB_TrackCB cb);
 #define NPCPhrase(index) NPCPhrase_cb ((index), NULL)
 
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);

@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
+#include "libs/sound/trackint.h"
 #include "comm.h"
 #include "options.h"
 
@@ -26,11 +27,9 @@ static int tcur;              //currently playing subtitle track
 static UNICODE *cur_page = 0; //current page of subtitle track 
 static int no_page_break = 0;
 static int track_pos_changed = 0; // set whenever  ff, frev is enabled
-static TFB_SoundTag *last_tag = NULL;
+static TFB_SoundChain *cur_text_chain = NULL;  //current link w/ subbies
 
 #define MAX_CLIPS 50
-#define is_sample_playing(samp) (((samp)->read_chain_ptr && (samp)->play_chain_ptr) ||\
-			(!(samp)->read_chain_ptr && (samp)->decoder))
 static TFB_SoundSample *sound_sample = NULL;
 TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
@@ -39,6 +38,22 @@ static TFB_SoundChain *last_ts_chain = NULL; //last element in the chain with a 
 static Mutex track_mutex; //protects tcur and tct
 void recompute_track_pos (TFB_SoundSample *sample, 
 						  TFB_SoundChain *first_chain, sint32 offset);
+bool is_sample_playing(TFB_SoundSample* samp);
+
+// stream callbacks
+static bool OnTrackStart (TFB_SoundSample* sample);
+static bool OnChunkEnd (TFB_SoundSample* sample, TFBSound_Object buffer);
+static void OnTrackEnd (TFB_SoundSample* sample);
+static void OnTrackTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
+
+static TFB_SoundCallbacks trackCBs =
+{
+	OnTrackStart,
+	OnChunkEnd,
+	OnTrackEnd,
+	OnTrackTag,
+	NULL
+};
 
 //JumpTrack currently aborts the current track. However, it doesn't clear the
 //data-structures as StopTrack does.  this allows for rewind even after the
@@ -47,23 +62,26 @@ void recompute_track_pos (TFB_SoundSample *sample,
 void
 JumpTrack (void)
 {
-	if (sound_sample)
-	{
-		uint32 cur_time;
-		sint32 total_length = (sint32)((last_chain->start_time + 
-				last_chain->decoder->length) * (float)ONE_SECOND);
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PauseStream (SPEECH_SOURCE);
-		cur_time = GetTimeCounter();
-		soundSource[SPEECH_SOURCE].start_time = 
-				(sint32)cur_time - total_length;
-		track_pos_changed = 1;
-		sound_sample->play_chain_ptr = last_chain;
-		recompute_track_pos(sound_sample, first_chain, total_length);
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PlayingTrack();
+	TFB_SoundChainData* scd;
+	uint32 cur_time;
+	sint32 total_length = (sint32)((last_chain->start_time + 
+			last_chain->decoder->length) * (float)ONE_SECOND);
+
+	if (!sound_sample)
 		return;
-	}
+
+	scd = (TFB_SoundChainData*) sound_sample->data;
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	PauseStream (SPEECH_SOURCE);
+	cur_time = GetTimeCounter();
+	soundSource[SPEECH_SOURCE].start_time = 
+			(sint32)cur_time - total_length;
+	track_pos_changed = 1;
+	scd->play_chain_ptr = last_chain;
+	recompute_track_pos(sound_sample, first_chain, total_length);
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	PlayingTrack();
 }
 
 //advance to the next track and start playing
@@ -72,7 +90,14 @@ JumpTrack (void)
 void
 PlayTrack (void)
 {
-	if (sound_sample && (sound_sample->read_chain_ptr || sound_sample->decoder))
+	TFB_SoundChainData* scd;
+
+	if (!sound_sample)
+		return;
+
+	scd = (TFB_SoundChainData*) sound_sample->data;
+
+	if (scd->read_chain_ptr || sound_sample->decoder)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PlayStream (sound_sample,
@@ -88,7 +113,14 @@ PlayTrack (void)
 void
 ResumeTrack ()
 {
-	if (sound_sample && (sound_sample->read_chain_ptr || sound_sample->decoder))
+	TFB_SoundChainData* scd;
+
+	if (!sound_sample)
+		return;
+
+	scd = (TFB_SoundChainData*) sound_sample->data;
+
+	if (scd->read_chain_ptr || sound_sample->decoder)
 	{
 		// Only try to start the track if there is something to play
 		TFBSound_IntVal state;
@@ -169,6 +201,7 @@ StopTrack ()
 		TFBSound_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 		HFree (sound_sample->buffer);
 		HFree (sound_sample->buffer_tag);
+		HFree (sound_sample->data);
 		HFree (sound_sample);
 		sound_sample = NULL;
 	}
@@ -177,18 +210,90 @@ StopTrack ()
 	do_subtitles ((void *)~0);
 }
 
-void 
-DoTrackTag (TFB_SoundTag *tag)
+bool is_sample_playing(TFB_SoundSample* sample)
 {
-	if (tag->type == MIX_BUFFER_TAG_TEXT)
+	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+
+	return (scd->read_chain_ptr && scd->play_chain_ptr)
+			|| (!scd->read_chain_ptr && sample->decoder);
+}
+
+static void
+DoTrackTag (TFB_SoundChain *chain)
+{
+	LockMutex (track_mutex);
+	if (chain->callback)
+		chain->callback ();
+	tcur = chain->track_num;
+	cur_page = (UNICODE *) chain->text;
+	UnlockMutex (track_mutex);
+}
+
+static bool
+OnTrackStart (TFB_SoundSample* sample)
+{
+	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+
+	if (!scd->read_chain_ptr && !sample->decoder)
+		return false;
+
+	if (scd->read_chain_ptr)
 	{
-		LockMutex (track_mutex);
-		if (tag->callback)
-			tag->callback ();
-		tcur = tag->value;
-		cur_page = (UNICODE *)tag->data;
-		UnlockMutex (track_mutex);
+		sample->decoder = scd->read_chain_ptr->decoder;
+		sample->offset = (sint32) (scd->read_chain_ptr->start_time * (float)ONE_SECOND);
 	}
+	else
+		sample->offset = 0;
+
+	scd->play_chain_ptr = scd->read_chain_ptr;
+
+	if (scd->read_chain_ptr && scd->read_chain_ptr->tag_me)
+		DoTrackTag(scd->read_chain_ptr);
+
+	return true;
+}
+
+static bool
+OnChunkEnd (TFB_SoundSample* sample, TFBSound_Object buffer)
+{
+	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+
+	if (!scd->read_chain_ptr || !scd->read_chain_ptr->next)
+		return false;
+
+	scd->read_chain_ptr = scd->read_chain_ptr->next;
+	sample->decoder = scd->read_chain_ptr->decoder;
+	SoundDecoder_Rewind (sample->decoder);
+	fprintf (stderr, "Switching to stream %s at pos %d\n",
+			sample->decoder->filename, sample->decoder->start_sample);
+	
+	if (sample->buffer_tag && scd->read_chain_ptr->tag_me)
+	{
+		TFB_TagBuffer (sample, buffer, scd->read_chain_ptr);
+	}
+
+	return true;
+}
+
+static void
+OnTrackEnd (TFB_SoundSample* sample)
+{
+	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+
+	sample->decoder = NULL;
+	scd->read_chain_ptr = NULL;
+}
+
+static void
+OnTrackTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
+{
+	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+	TFB_SoundChain* chain = (TFB_SoundChain*) tag->data;
+
+	TFB_ClearBufferTag (tag);
+	DoTrackTag (chain);
+
+	scd->play_chain_ptr = scd->read_chain_ptr;
 }
 
 int
@@ -360,18 +465,19 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	if (tct)
 	{
 		int slen1;
-		slen1 = wstrlen ((UNICODE *)last_tag->data);
-		last_tag->data = HRealloc ((UNICODE *)last_tag->data, slen1 + slen + 1);
-		wstrcpy (&((UNICODE *)last_tag->data)[slen1], TrackText);
+		slen1 = wstrlen ((UNICODE *)cur_text_chain->text);
+		cur_text_chain->text = HRealloc (
+				(UNICODE *)cur_text_chain->text, slen1 + slen + 1);
+		wstrcpy (&((UNICODE *)cur_text_chain->text)[slen1], TrackText);
 	}
 	else
 	{
-		begin_chain->tag.data = HMalloc (slen + 1);
-		wstrcpy ((UNICODE *)begin_chain->tag.data, TrackText);
-		last_tag = &begin_chain->tag;
+		begin_chain->text = HMalloc (slen + 1);
+		wstrcpy ((UNICODE *)begin_chain->text, TrackText);
+		cur_text_chain = begin_chain;
+		begin_chain->tag_me = 1;
+		begin_chain->track_num = tct;
 		tct++;
-		begin_chain->tag.type = MIX_BUFFER_TAG_TEXT;
-		begin_chain->tag.value = tct - 1;
 	}
 	no_page_break = 1;
 	
@@ -384,7 +490,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 }
 
 void
-SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*cb) (void))
+SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_TrackCB cb)
 {
 	unsigned long startTime;
 	UNICODE **split_text = NULL;
@@ -399,7 +505,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				int num_pages = 0, page_counter;
 				sint32 time_stamps[50];
 
-				if (! last_ts_chain || !last_ts_chain->tag.data)
+				if (!last_ts_chain || !last_ts_chain->text)
 				{
 					fprintf (stderr, 
 						"SpliceTrack(): Tried to append a subtitle to a NULL string\n");
@@ -411,11 +517,11 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					fprintf (stderr, "SpliceTrack(): Failed to parse sutitles\n");
 					return;
 				}
-				oTT = (UNICODE *)last_ts_chain->tag.data;
+				oTT = (UNICODE *)last_ts_chain->text;
 				slen1 = wstrlen (oTT);
 				slen2 = wstrlen (split_text[0]);
-				last_ts_chain->tag.data = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&((UNICODE *)last_ts_chain->tag.data)[slen1], split_text[0]);
+				last_ts_chain->text = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&((UNICODE *)last_ts_chain->text)[slen1], split_text[0]);
 				HFree (split_text[0]);
 				for (page_counter = 1; page_counter < num_pages; page_counter++)
 				{
@@ -425,7 +531,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 						break;
 					}
 					last_ts_chain = last_ts_chain->next;
-					last_ts_chain->tag.data = split_text[page_counter];
+					last_ts_chain->text = split_text[page_counter];
 				}
 			}
 		}
@@ -449,11 +555,11 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				int slen1, slen2;
 				UNICODE *oTT;
 
-				oTT = (UNICODE *)last_tag->data;
+				oTT = (UNICODE *)cur_text_chain->text;
 				slen1 = wstrlen (oTT);
 				slen2 = wstrlen (split_text[0]);
-				last_tag->data = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&((UNICODE *)last_tag->data)[slen1], split_text[0]);
+				cur_text_chain->text = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&((UNICODE *)cur_text_chain->text)[slen1], split_text[0]);
 				HFree (split_text[0]);
 			}
 			else
@@ -475,19 +581,24 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				if (! sound_sample)
 				{
 					TFB_SoundDecoder *decoder;
+					TFB_SoundChainData* scd;
+
 					track_mutex = CreateMutex();
 					sound_sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
+					scd = (TFB_SoundChainData *) HCalloc (sizeof (TFB_SoundChainData));
+					sound_sample->data = scd;
+					sound_sample->callbacks = trackCBs;
 					sound_sample->num_buffers = 8;
-					sound_sample->buffer_tag = HMalloc (sizeof (TFB_SoundTag *) * sound_sample->num_buffers);
+					sound_sample->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * sound_sample->num_buffers);
 					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
 					TFBSound_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					decoder = SoundDecoder_Load (contentDir, TrackName, 4096,
 							startTime, time_stamps[page_counter]);
-					sound_sample->read_chain_ptr = create_soundchain (decoder, 0.0);
+					scd->read_chain_ptr = create_soundchain (decoder, 0.0);
 					sound_sample->decoder = decoder;
-					first_chain = last_chain = sound_sample->read_chain_ptr;
+					first_chain = last_chain = scd->read_chain_ptr;
 					sound_sample->length = 0;
-					sound_sample->play_chain_ptr = 0;
+					scd->play_chain_ptr = 0;
 				}
 				else
 				{
@@ -525,16 +636,16 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					sound_sample->length += last_chain->decoder->length;
 					if (! no_page_break)
 					{
-						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
+						last_chain->tag_me = 1;
 						// last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
-						last_chain->tag.value = tct - 1;
+						last_chain->track_num = tct - 1;
 						if (page_counter < num_pages)
 						{
-							last_chain->tag.data = (void *)split_text[page_counter];
+							last_chain->text = (void *)split_text[page_counter];
 							last_ts_chain = last_chain;
 						}
-						last_chain->tag.callback = cb;
-						last_tag = &last_chain->tag;
+						last_chain->callback = cb;
+						cur_text_chain = last_chain;
 					}
 					no_page_break = 0;
 				}
@@ -568,27 +679,32 @@ PauseTrack ()
 void
 recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, sint32 offset)
 {
+	TFB_SoundChainData* scd;
 	TFB_SoundChain *cur_chain = first_chain;
+
 	if (! sample)
 		return;
+
+	scd = (TFB_SoundChainData*) sample->data;
+
 	while (cur_chain->next &&
 			(sint32)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
 	{
-		if (cur_chain->tag.type)
-			DoTrackTag (&cur_chain->tag);
+		if (cur_chain->tag_me)
+			DoTrackTag (cur_chain);
 		cur_chain = cur_chain->next;
 	}
-	if (cur_chain->tag.type)
-		DoTrackTag (&cur_chain->tag);
+	if (cur_chain->tag_me)
+		DoTrackTag (cur_chain);
 	if ((sint32)((cur_chain->start_time + cur_chain->decoder->length) * (float)ONE_SECOND) < offset)
 	{
-		sample->read_chain_ptr = NULL;
+		scd->read_chain_ptr = NULL;
 		sample->decoder = NULL;
 	}
 	else
 	{
-		sample->read_chain_ptr = cur_chain;
-		SoundDecoder_Seek(sample->read_chain_ptr->decoder,
+		scd->read_chain_ptr = cur_chain;
+		SoundDecoder_Seek(scd->read_chain_ptr->decoder,
 				(uint32)(1000 * (offset / (float)ONE_SECOND - cur_chain->start_time)));
 	}
 }
@@ -630,12 +746,14 @@ FastReverse_Page ()
 {
 	if (sound_sample)
 	{
+		TFB_SoundChainData* scd = (TFB_SoundChainData*) sound_sample->data;
 		TFB_SoundChain *prev_chain;
+
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		prev_chain = get_previous_chain(first_chain, sound_sample->play_chain_ptr);
+		prev_chain = get_previous_chain (first_chain, scd->play_chain_ptr);
 		if (prev_chain)
 		{
-			sound_sample->read_chain_ptr = prev_chain;
+			scd->read_chain_ptr = prev_chain;
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, false,
 					speechVolumeScale != 0.0f, true);
@@ -674,13 +792,15 @@ FastForward_Page ()
 {
 	if (sound_sample)
 	{
-		TFB_SoundChain *cur_ptr = sound_sample->play_chain_ptr;
+		TFB_SoundChainData* scd = (TFB_SoundChainData*) sound_sample->data;
+		TFB_SoundChain *cur_ptr = scd->play_chain_ptr;
+
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		while (cur_ptr->next && ! cur_ptr->next->tag.type)
+		while (cur_ptr->next && !cur_ptr->next->tag_me)
 			cur_ptr = cur_ptr->next;
 		if (cur_ptr->next)
 		{
-			sound_sample->read_chain_ptr = cur_ptr->next;
+			scd->read_chain_ptr = cur_ptr->next;
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, false,
 					speechVolumeScale != 0.0f, true);
@@ -867,4 +987,52 @@ GetSoundInfo (int max_len)
 	if (offset > length)
 		return max_len;
 	return (int)(max_len * offset / length);
+}
+
+TFB_SoundChain *
+create_soundchain (TFB_SoundDecoder *decoder, float startTime)
+{
+	TFB_SoundChain *chain;
+	chain = (TFB_SoundChain *)HMalloc (sizeof (TFB_SoundChain));
+	chain->decoder = decoder;
+	chain->next = NULL;
+	chain->start_time = startTime;
+	chain->tag_me = 0;
+	chain->text = 0;
+	return (chain);
+}
+
+void
+destroy_soundchain (TFB_SoundChain *chain)
+{
+	while (chain->next)
+	{
+		TFB_SoundChain *tmp_chain = chain->next;
+		chain->next = chain->next->next;
+		if (tmp_chain->decoder)
+			SoundDecoder_Free (tmp_chain->decoder);
+		if (tmp_chain->text)
+			HFree (tmp_chain->text);
+		HFree (tmp_chain);
+	}
+	SoundDecoder_Free (chain->decoder);
+	HFree (chain);
+}
+
+TFB_SoundChain *
+get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
+{
+	TFB_SoundChain *prev_chain, *last_valid = NULL;
+	prev_chain = first_chain;
+	if (prev_chain == current_chain)
+		return (prev_chain);
+	while (prev_chain->next)
+	{
+		if (prev_chain->tag_me)
+			last_valid = prev_chain;
+		if (prev_chain->next == current_chain)
+			return (last_valid);
+		prev_chain = prev_chain->next;
+	}
+	return (first_chain);
 }

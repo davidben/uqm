@@ -19,6 +19,8 @@
 #ifndef TRACKPLAYER_H
 #define TRACKPLAYER_H
 
+typedef void (*TFB_TrackCB) (void);
+
 #define ACCEL_SCROLL_SPEED 300
 
 void ResumeTrack(void);
@@ -30,7 +32,7 @@ int FastForward_Page(void);
 void FastReverse_Smooth(void);
 void FastReverse_Page(void);
 void StopTrack(void);
-void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, void (*cb) (void));
+void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, TFB_TrackCB cb);
 void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 int GetSoundData (void *data);
 int GetSoundInfo (int max_len);

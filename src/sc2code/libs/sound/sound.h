@@ -26,7 +26,6 @@
 #endif
 #include "decoders/decoder.h"
 
-
 #define FIRST_SFX_SOURCE 0
 #define LAST_SFX_SOURCE 4
 #define MUSIC_SOURCE (LAST_SFX_SOURCE + 1)
@@ -36,37 +35,39 @@
 
 typedef struct
 {
+	int in_use;
 	TFBSound_Object buf_name;
-	int type;
-	uint32 value;
-	void *data;
-	void (*callback) (void);
+	void *data; // user-defined data
 } TFB_SoundTag;
 
-enum
-{
-	MIX_BUFFER_TAG_TEXT = 1,
-	MIX_BUFFER_TAG_TEXTPAGE
-};
+// forward-declare
+typedef struct tfb_soundsample;
 
-typedef struct tfb_soundchain
+typedef struct tfb_soundcallbacks
 {
-	TFB_SoundDecoder *decoder; // points at the decoder to read from
-	float start_time;
-	TFB_SoundTag tag;
-	struct tfb_soundchain *next;
-} TFB_SoundChain;
+	// return TRUE to continue, FALSE to abort
+	bool (* OnStartStream) (struct tfb_soundsample*);
+	// return TRUE to continue, FALSE to abort
+	bool (* OnEndChunk) (struct tfb_soundsample*, TFBSound_Object);
+	// return TRUE to continue, FALSE to abort
+	void (* OnEndStream) (struct tfb_soundsample*);
+	// tagged buffer callback
+	void (* OnTaggedBuffer) (struct tfb_soundsample*, TFB_SoundTag*);
+	// buffer just queued
+	void (* OnQueueBuffer) (struct tfb_soundsample*, TFBSound_Object);
+} TFB_SoundCallbacks;
 
 // audio data
 typedef struct tfb_soundsample
 {
 	TFB_SoundDecoder *decoder; // decoder to read from
-	TFB_SoundChain *read_chain_ptr; // points to chain read poistion
-	TFB_SoundChain *play_chain_ptr; // points to chain playing position
 	float length; // total length of decoder chain in seconds
 	TFBSound_Object *buffer;
 	uint32 num_buffers;
-	TFB_SoundTag **buffer_tag;
+	TFB_SoundTag *buffer_tag;
+	sint32 offset; // initial offset
+	void* data; // user-defined data
+	TFB_SoundCallbacks callbacks; // user-defined callbacks
 } TFB_SoundSample;
 
 // equivalent to channel in legacy sound code
@@ -97,10 +98,5 @@ void CleanSource (int iSource);
 
 void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
-void DoTrackTag (TFB_SoundTag *tag);
-
-TFB_SoundChain *create_soundchain (TFB_SoundDecoder *decoder, float startTime);
-void destroy_soundchain (TFB_SoundChain *chain);
-TFB_SoundChain *get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain);
 
 #include "stream.h"

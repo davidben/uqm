@@ -23,23 +23,24 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 	uint32 i, pos = 0;
 	sint32 offset = 0;
 
-	if (!sample || (!sample->read_chain_ptr && !sample->decoder))
+	if (!sample)
 		return;
 
 	StopStream (source);
-	if (sample->read_chain_ptr)
-	{
-		sample->decoder = sample->read_chain_ptr->decoder;
-		offset = (sint32) (sample->read_chain_ptr->start_time * (float)ONE_SECOND);
-	}
-	else
-		offset= 0;
+	if (sample->callbacks.OnStartStream &&
+		!sample->callbacks.OnStartStream (sample))
+		return; // callback failed
+
+	if (sample->buffer_tag)
+		memset (sample->buffer_tag, 0,
+				sample->num_buffers * sizeof (sample->buffer_tag[0]));
+
+	offset = sample->offset;
 	if (rewind)
 		SoundDecoder_Rewind (sample->decoder);
 	else
 		offset += (sint32)(SoundDecoder_GetTime (sample->decoder) * (float)ONE_SECOND);
 	soundSource[source].sample = sample;
-	soundSource[source].sample->play_chain_ptr = sample->read_chain_ptr;
 	soundSource[source].sample->decoder->looping = looping;
 	TFBSound_Sourcei (soundSource[source].handle, TFBSOUND_LOOPING, false);
 
@@ -48,25 +49,22 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 		soundSource[source].sbuffer = HMalloc (PAD_SCOPE_BYTES);
 	}
 
-	if (sample->read_chain_ptr && sample->read_chain_ptr->tag.type)
-	{
-		DoTrackTag(&sample->read_chain_ptr->tag);
-	}
 	for (i = 0; i < sample->num_buffers; ++i)
 	{
 		uint32 decoded_bytes;
-		if (sample->buffer_tag)
-			sample->buffer_tag[i] = 0;
+
 		decoded_bytes = SoundDecoder_Decode (sample->decoder);
 		//fprintf (stderr, "PlayStream(): source %d filename:%s start: %d position:%d bytes %d\n", source, 
 		//		sample->decoder->filename, sample->decoder->start_sample, 
 		//		sample->decoder->pos, decoded_bytes);
 		if (decoded_bytes == 0)
 			break;
-
+		
 		TFBSound_BufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
 			decoded_bytes, sample->decoder->frequency);
 		TFBSound_SourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
+		if (sample->callbacks.OnQueueBuffer)
+			sample->callbacks.OnQueueBuffer (sample, sample->buffer[i]);
 
 		if (scope)
 		{
@@ -80,27 +78,13 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 
 		if (sample->decoder->error)
 		{
-			if (sample->decoder->error == SOUNDDECODER_EOF &&
-				sample->read_chain_ptr && sample->read_chain_ptr->next)
-			{
-				sample->read_chain_ptr = sample->read_chain_ptr->next;
-				sample->decoder = sample->read_chain_ptr->decoder;
-				SoundDecoder_Rewind (sample->decoder);
-				fprintf (stderr, "Switching to stream %s at pos %d\n",
-						sample->decoder->filename, sample->decoder->start_sample);
-				if (sample->buffer_tag && sample->read_chain_ptr->tag.type)
-				{
-					sample->buffer_tag[i] = &sample->read_chain_ptr->tag;
-					sample->read_chain_ptr->tag.buf_name = sample->buffer[i];
-				}
-			}
-			else
+			if (sample->decoder->error != SOUNDDECODER_EOF ||
+					!sample->callbacks.OnEndChunk ||
+					!sample->callbacks.OnEndChunk (sample, sample->buffer[i]))
 				break;
 		}
 	}
-	if (sample->buffer_tag)
-		for ( ; i <sample->num_buffers; ++i)
-			sample->buffer_tag[i] = 0;
+
 	soundSource[source].sbuf_size = pos + PAD_SCOPE_BYTES;
 	soundSource[source].sbuf_start = pos;
 	soundSource[source].sbuf_lasttime = GetTimeCounter ();
@@ -148,6 +132,50 @@ PlayingStream (uint32 source)
 	return soundSource[source].stream_should_be_playing;
 }
 
+TFB_SoundTag*
+TFB_FindTaggedBuffer (TFB_SoundSample* sample, TFBSound_Object buffer)
+{
+	uint32 buf_num;
+
+	for (buf_num = 0;
+			buf_num < sample->num_buffers &&
+			(!sample->buffer_tag[buf_num].in_use ||
+			 sample->buffer_tag[buf_num].buf_name != buffer
+			);
+			buf_num++)
+		;
+	
+	return buf_num < sample->num_buffers ?
+			&sample->buffer_tag[buf_num] : NULL;
+}
+
+void
+TFB_TagBuffer (TFB_SoundSample* sample, TFBSound_Object buffer, void* data)
+{
+	uint32 buf_num;
+
+	for (buf_num = 0;
+			buf_num < sample->num_buffers &&
+			sample->buffer_tag[buf_num].in_use &&
+			sample->buffer_tag[buf_num].buf_name != buffer;
+			buf_num++)
+		;
+
+	if (buf_num >= sample->num_buffers)
+		return; // no empty slot
+
+	sample->buffer_tag[buf_num].in_use = 1;
+	sample->buffer_tag[buf_num].buf_name = buffer;
+	sample->buffer_tag[buf_num].data = data;
+}
+
+void
+TFB_ClearBufferTag (TFB_SoundTag* ptag)
+{
+	ptag->in_use = 0;
+	ptag->buf_name = 0;
+}
+
 int
 StreamDecoderTaskFunc (void *data)
 {
@@ -191,11 +219,8 @@ StreamDecoderTaskFunc (void *data)
 					{
 						fprintf (stderr, "StreamDecoderTaskFunc(): finished playing %s, source %d\n", soundSource[i].sample->decoder->filename, i);
 						soundSource[i].stream_should_be_playing = FALSE;
-						if (i == SPEECH_SOURCE)
-						{
-							soundSource[i].sample->decoder = NULL;
-							soundSource[i].sample->read_chain_ptr = NULL;
- 						}
+						if (soundSource[i].sample->callbacks.OnEndStream)
+							soundSource[i].sample->callbacks.OnEndStream (soundSource[i].sample);
  					}
 					else
  					{
@@ -213,7 +238,6 @@ StreamDecoderTaskFunc (void *data)
 				uint32 error;
 				TFBSound_Object buffer;
 				uint32 decoded_bytes;
-				uint32 buf_num;
 
 				TFBSound_GetError (); // clear error state
 
@@ -225,20 +249,13 @@ StreamDecoderTaskFunc (void *data)
 					break;
 				}
 
-				if (i == SPEECH_SOURCE)
+				if (soundSource[i].sample->callbacks.OnTaggedBuffer)
 				{
-					for (buf_num = 0; buf_num < soundSource[i].sample->num_buffers; buf_num++)
+					TFB_SoundTag* tag = TFB_FindTaggedBuffer (soundSource[i].sample, buffer);
+					if (tag)
 					{
-						TFB_SoundTag *cur_tag = soundSource[i].sample->buffer_tag[buf_num];
-						if (cur_tag && cur_tag->buf_name == buffer)
-						{
-							//	...do tag stuff ...
-							DoTrackTag (cur_tag);
-							soundSource[i].sample->buffer_tag[buf_num] = NULL;
-							soundSource[i].sample->play_chain_ptr = soundSource[i].sample->read_chain_ptr;
-							cur_tag->buf_name = 0;
-							break;
-						}
+						soundSource[i].sample->callbacks.OnTaggedBuffer (
+								soundSource[i].sample, tag);
 					}
 				}
 				{
@@ -255,29 +272,9 @@ StreamDecoderTaskFunc (void *data)
 				{
 					if (soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
 					{
-						if (soundSource[i].sample->read_chain_ptr && 
-								soundSource[i].sample->read_chain_ptr->next)
-						{
-							soundSource[i].sample->read_chain_ptr = soundSource[i].sample->read_chain_ptr->next;
-							soundSource[i].sample->decoder = soundSource[i].sample->read_chain_ptr->decoder;
-							SoundDecoder_Rewind (soundSource[i].sample->decoder);
-							fprintf (stderr, "Switching to stream %s at pos %d\n",
-									soundSource[i].sample->decoder->filename,
-									soundSource[i].sample->decoder->start_sample);
-							if (i == SPEECH_SOURCE)
-							{
-								for (buf_num = 0; buf_num < soundSource[i].sample->num_buffers; buf_num++)
-								{
-									if (soundSource[i].sample->buffer_tag[buf_num] == 0)
-									{
-										soundSource[i].sample->buffer_tag[buf_num] = &soundSource[i].sample->read_chain_ptr->tag;
-										soundSource[i].sample->read_chain_ptr->tag.buf_name = last_buffer[i];
-										break;
-									}
-								}
-							}
-						}
-						else
+						if (!soundSource[i].sample->callbacks.OnEndChunk ||
+								!soundSource[i].sample->callbacks.OnEndChunk (
+									soundSource[i].sample, last_buffer[i]))
 						{
 							//fprintf (stderr, "StreamDecoderTaskFunc(): decoder->error is eof for %s\n", soundSource[i].sample->decoder->filename);
 							processed--;
@@ -335,6 +332,10 @@ StreamDecoderTaskFunc (void *data)
 					{
 						last_buffer[i] = buffer;
 						TFBSound_SourceQueueBuffers (soundSource[i].handle, 1, &buffer);
+						// do OnQueue callback
+						if (soundSource[i].sample->callbacks.OnQueueBuffer)
+							soundSource[i].sample->callbacks.OnQueueBuffer (
+									soundSource[i].sample, buffer);
 						
 						if (soundSource[i].sbuffer)
 						{

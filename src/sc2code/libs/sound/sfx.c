@@ -202,9 +202,7 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 		{
 			fprintf (stderr, "_GetSoundBankData(): loading %s\n", filename);
 
-			sndfx[snd_ct] = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			sndfx[snd_ct]->buffer_tag = 0;
-			sndfx[snd_ct]->read_chain_ptr = NULL;
+			sndfx[snd_ct] = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
 
 			sndfx[snd_ct]->decoder = SoundDecoder_Load (contentDir,
 					filename, 4096, 0, 0);
@@ -317,6 +315,8 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 			    SoundDecoder_Free ((*sptr)->decoder);
 			TFBSound_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
 			HFree ((*sptr)->buffer);
+			if ((*sptr)->buffer_tag)
+				HFree ((*sptr)->buffer_tag);
 			HFree (*sptr);
 			*sptr++ = 0;
 		}

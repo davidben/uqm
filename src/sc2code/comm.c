@@ -25,6 +25,7 @@
 #include "options.h"
 #include "comm.h"
 #include "libs/sound/sound.h"
+#include "libs/sound/trackint.h"
 #include "controls.h"
 #include "endian_uqm.h"
 
@@ -1661,7 +1662,6 @@ DoCommunication (PENCOUNTER_STATE pES)
 		else if (CurrentMenuState.cancel && 
 				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		{
-			extern TFB_SoundChain *first_chain;
 			TFB_SoundChain *curr;
 			RECT r;
 			TEXT t;
@@ -1703,7 +1703,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 
 			for (curr = first_chain; curr != NULL; curr = curr->next)
 			{
-				temp = curr->tag.data;
+				temp = curr->text;
 				if (temp == NULL)
 					continue;
 				// fprintf (stderr, "%s\n", temp);

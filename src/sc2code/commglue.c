@@ -18,14 +18,13 @@
 
 #include "starcon.h"
 #include "commglue.h"
-#include "libs/sound/trackplayer.h"
 #include <stdarg.h>
 #include <assert.h>
 
 int NPCNumberPhrase (int number, UNICODE **ptrack);
 
 void
-NPCPhrase_cb (int index,  void (*cb) (void))
+NPCPhrase_cb (int index,  TFB_TrackCB cb)
 {
 	UNICODE *pStr, numbuf[100];
 	void *pClip, *pTimeStamp;
