@@ -153,7 +153,11 @@ TFB_mixSDL_UninitSound (void)
 {
 	int i;
 
-	ConcludeTask (StreamDecoderTask);
+	if (StreamDecoderTask)
+	{
+		ConcludeTask (StreamDecoderTask);
+		StreamDecoderTask = NULL;
+	}
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{
