@@ -86,6 +86,8 @@ Stuff still to do (large):
   lines are all correct, too.
 - Match timing between subtitles and speech clips
 - Intro and end credits (both 3DO and PC version ones)
+- add an install program (in particularly for Windows).
+  How to handle the libraries?
 
 Stuff still to do (medium size):
 - oscilloscope
@@ -94,15 +96,14 @@ Stuff still to do (medium size):
 - remove libtool dependancy
   This will probably mean the empty dummy.c files can be removed too.
   (note that src/sc2code/dummy.c DOES contain data)
-- better command-line parsing
-  getoptlong is usable if we include the source to getoptlong for non-gnu
-  systems.
-- lines and colouring of planet surface display when scanning
+- lines and colouring of planet surface display when scanning.
+  Its speed isn't correct either.
 - get all code to compile without warnings, when the most strict
   checks are performed (not just -W -Wall in gcc)
 - try to speed up resource loading. It looks to be much slower now
   than it needs to be.
 - Convert bulky media files into more compact representations
+- planet surface smoothing
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
