@@ -28,8 +28,10 @@
 #	else
 		typedef int intptr_t;
 #	endif
-#else
+#elif defined (__linux__)
 #	include <stdint.h>
+#else
+#	include <inttypes.h>
 #endif
 
 #if defined(__MACOS__)
