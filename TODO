@@ -19,8 +19,6 @@ Serious bugs (crash the game, high priority):
   trying to enter some star first time etc
 
 Glitches (don't crash the game, medium priority):
-- pressing arrow keys in the main menu moves the selection in the
-  wrong direction (both left, right and up, down)
 - The melnorme don't charge for fuel when you ask "fill 'er up"
   Instead, they pay you a Credit.
 - Autopilot indicator keeps blinking when entering combat, when autopilot
