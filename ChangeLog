@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fixed a dialog glitch on Slylandro homeworld (#442) -Michael
 - Freeze planetary simulation at beginning of landing sequence to stop
   event bursts (bug #80) -Michael
 - Extra 2 ship slots in supermelee, as in the PC SC2, and all the PC
