@@ -114,18 +114,25 @@ typedef struct tfb_drawcommandqueue
 {
 	int Front;
 	int Back;
+	int InsertionPoint;
+	int Batching;
+	volatile int FullSize;
 	volatile int Size;
 } TFB_DrawCommandQueue;
 
 TFB_DrawCommandQueue *TFB_DrawCommandQueue_Create ();
+
+void TFB_BatchGraphics ();
+
+void TFB_UnbatchGraphics ();
+
+void TFB_BatchReset ();
 
 void TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command);
 
 int TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command);
-
-void TFB_DeallocateDrawCommand (TFB_DrawCommand* Command);
 
 extern TFB_DrawCommandQueue *DrawCommandQueue;
 

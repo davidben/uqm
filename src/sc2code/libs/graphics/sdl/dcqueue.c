@@ -19,16 +19,114 @@
 #ifdef GFXMODULE_SDL
 
 #include "sdl_common.h"
+#include "libs/threadlib.h"
 
-SDL_mutex *DCQ_mutex;
+Semaphore DCQ_sem;
 
-#define DCQ_MAX 4096
+// variables for making the DCQ lock re-entrant
+static int DCQ_locking_depth = 0;
+static Uint32 DCQ_locking_thread = 0;
+
+// Maximum size of the DCQ.  The larger the DCQ, the larger frameskips
+// become tolerable before initiating livelock deterrence and game
+// slowdown.  Other constants for controlling the frameskip/slowdown
+// balance may be found in sdl_common.c near TFB_FlushGraphics.
+#define DCQ_MAX 16384
 TFB_DrawCommand DCQ[DCQ_MAX];
 
 TFB_DrawCommandQueue *DrawCommandQueue;
 
+// DCQ Synchronization: SDL-specific implementation of re-entrant
+// locks to protect the Draw Command Queue.  Lock is re-entrant to
+// allow livelock deterrence to be written much more cleanly.
+
+void
+Lock_DCQ (void)
+{
+	Uint32 current_thread = SDL_ThreadID ();
+	if (DCQ_locking_thread != current_thread)
+	{
+		SetSemaphore (DCQ_sem);
+		DCQ_locking_thread = current_thread;
+	}
+	++DCQ_locking_depth;
+	// printf("DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+}
+
+void
+Unlock_DCQ (void)
+{
+	Uint32 current_thread = SDL_ThreadID ();
+	if (DCQ_locking_thread != current_thread)
+	{
+		printf("%8x attempted to unlock the DCQ when it didn't hold it!\n", current_thread);
+	}
+	else
+	{
+		--DCQ_locking_depth;
+		// printf("DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+		if (!DCQ_locking_depth)
+		{
+			DCQ_locking_thread = 0;
+			ClearSemaphore (DCQ_sem);
+		}
+	}
+}
+
+// Always have the DCQ locked when calling this.
+static void
+Synchronize_DCQ (void)
+{
+	if (!DrawCommandQueue->Batching)
+	{
+		int front = DrawCommandQueue->Front;
+		int back  = DrawCommandQueue->InsertionPoint;
+		DrawCommandQueue->Back = DrawCommandQueue->InsertionPoint;
+		if (front <= back)
+		{
+			DrawCommandQueue->Size = (back - front);
+		}
+		else
+		{
+			DrawCommandQueue->Size = (back + DCQ_MAX - front);
+		}
+	}
+}
+
+void
+TFB_BatchGraphics (void)
+{
+	Lock_DCQ ();
+	DrawCommandQueue->Batching++;
+	Unlock_DCQ ();
+}
+
+void
+TFB_UnbatchGraphics (void)
+{
+	Lock_DCQ ();
+	if (DrawCommandQueue->Batching)
+	{
+		DrawCommandQueue->Batching--;
+	}
+	Synchronize_DCQ ();
+	Unlock_DCQ ();
+}
+
+// Cancel all pending batch operations, making them unbatched.  This will
+// cause a small amount of flicker when invoked, but prevents 
+// batching problems from freezing the game.
+void
+TFB_BatchReset (void)
+{
+	Lock_DCQ ();
+	DrawCommandQueue->Batching = 0;
+	Synchronize_DCQ ();
+	Unlock_DCQ ();
+}
 
 // Draw Command Queue Stuff
+// TODO: Make this be statically allocated, too.  We only ever have one DCQ, after all.
 
 TFB_DrawCommandQueue*
 TFB_DrawCommandQueue_Create()
@@ -40,9 +138,11 @@ TFB_DrawCommandQueue_Create()
 
 		myQueue->Back = 0;
 		myQueue->Front = 0;
+		myQueue->InsertionPoint = 0;
+		myQueue->Batching = 0;
 		myQueue->Size = 0;
 
-		DCQ_mutex = SDL_CreateMutex();
+		DCQ_sem = CreateSemaphore(1);
 
 		return (myQueue);
 }
@@ -51,29 +151,30 @@ void
 TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command)
 {
-	SDL_mutexP(DCQ_mutex);
-	if (myQueue->Size < DCQ_MAX)
+	Lock_DCQ ();
+	if (myQueue->Size < DCQ_MAX - 1)
 	{
-		DCQ[myQueue->Back] = *Command;
-		myQueue->Back = (myQueue->Back + 1) % DCQ_MAX;
-		myQueue->Size++;
+		DCQ[myQueue->InsertionPoint] = *Command;
+		myQueue->InsertionPoint = (myQueue->InsertionPoint + 1) % DCQ_MAX;
+		myQueue->FullSize++;
+		Synchronize_DCQ ();
 	}
 	else
 	{
-		TFB_DeallocateDrawCommand(Command);
+		printf("DCQ overload.  Adjust your livelock deterrence constants!\n");
 	}
 
-	SDL_mutexV(DCQ_mutex);
+	Unlock_DCQ ();
 }
 
 int
 TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target)
 {
-	SDL_mutexP(DCQ_mutex);
+	Lock_DCQ ();
 
 	if (myQueue->Size == 0)
 	{
-		SDL_mutexV(DCQ_mutex);
+		Unlock_DCQ ();
 		return (0);
 	}
 
@@ -81,7 +182,7 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target
 	{
 		printf("Augh!  Assertion failure in DCQ!  Front == Back, Size != DCQ_MAX\n");
 		myQueue->Size = 0;
-		SDL_mutexV(DCQ_mutex);
+		Unlock_DCQ ();
 		return (0);
 	}
 
@@ -89,15 +190,10 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target
 	myQueue->Front = (myQueue->Front + 1) % DCQ_MAX;
 
 	myQueue->Size--;
-	SDL_mutexV(DCQ_mutex);
+	myQueue->FullSize--;
+	Unlock_DCQ ();
 
 	return 1;
-}
-
-void
-TFB_DeallocateDrawCommand (TFB_DrawCommand* Command)
-{
-	//HFree(Command);
 }
 
 void
@@ -122,23 +218,22 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 				_pCurContext->ClipRect.extent.height)
 		{
 			// Enqueue command to set the glScissor spec
-			TFB_DrawCommand DC_auto;
-			TFB_DrawCommand* DC = &DC_auto;
+			TFB_DrawCommand DC;
 
 			scissor_rect = _pCurContext->ClipRect;
 
-			DC->Type = scissor_rect.extent.width
-					? (DC->x = scissor_rect.corner.x,
-					DC->y=scissor_rect.corner.y,
-					DC->w=scissor_rect.extent.width,
-					DC->h=scissor_rect.extent.height),
+			DC.Type = scissor_rect.extent.width
+					? (DC.x = scissor_rect.corner.x,
+					DC.y=scissor_rect.corner.y,
+					DC.w=scissor_rect.extent.width,
+					DC.h=scissor_rect.extent.height),
 					TFB_DRAWCOMMANDTYPE_SCISSORENABLE
 					: TFB_DRAWCOMMANDTYPE_SCISSORDISABLE;
 
-			DC->image = 0;
-			DC->UsePalette = FALSE;
+			DC.image = 0;
+			DC.UsePalette = FALSE;
 			
-			TFB_EnqueueDrawCommand(DC);
+			TFB_EnqueueDrawCommand(&DC);
 		}
 	}
 

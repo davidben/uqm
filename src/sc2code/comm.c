@@ -711,6 +711,7 @@ LastOscillTime = LastTime;
 		SleepThreadUntil (LastTime + 1);
 
 		SetSemaphore (GraphicsSem);
+		BatchGraphics ();
 		CurTime = GetTimeCounter ();
 		ElapsedTicks = CurTime - LastTime;
 		LastTime = CurTime;
@@ -1031,6 +1032,7 @@ if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
 	LastOscillTime = CurTime;
 	UpdateSpeechGraphics (FALSE);
 }
+		UnbatchGraphics ();
 		ClearSemaphore (GraphicsSem);
 	}
 	(void) blah;  /* Satisfying compiler (unused parameter) */

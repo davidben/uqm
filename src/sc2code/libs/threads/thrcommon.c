@@ -218,9 +218,15 @@ CreateThreadAux (ThreadFunction func, void *data, SDWORD stackSize
  *            from being removed from the queue and from displaying the
  *            'killed' debug message.
  */
+
+/* 17 Sep: Added a TFB_BatchReset call.  If a thread is killed while
+ *         batching stuff, we don't want this to freeze the game.
+ *         Better safe than sorry!  --Michael
+ */
 void
 KillThread (Thread thread)
-{
+{	
+	TFB_BatchReset ();
 	NativeKillThread (thread->native);
 #ifdef DEBUG_THREADS
 	fprintf (stderr, "Thread '%s' killed.\n", ThreadName (thread));
@@ -240,7 +246,7 @@ WaitThread (Thread thread, int *status)
 void
 SleepThread (TimePeriod timePeriod)
 {
-	return NativeSleepThread (timePeriod);
+	NativeSleepThread (timePeriod);
 }
 
 void
@@ -300,7 +306,9 @@ DestroySemaphore (Semaphore sem)
 int
 SetSemaphore (Semaphore sem)
 {
-	return NativeSetSemaphore ((NativeSemaphore) sem);
+	int result;
+	result = NativeSetSemaphore ((NativeSemaphore) sem);
+	return result;
 }
 
 int

@@ -287,11 +287,33 @@ TFB_ComputeFPS ()
 	}
 }
 
+// Livelock deterrance constants.  Because the entire screen is rarely
+// refreshed, we may not drop draw commands on the floor with abandon.
+// Furthermore, if the main program is queuing commands at a speed
+// comparable to our processing of the commands, we never finish and
+// the game freezes.  Thus, if the queue starts out larger than
+// DCQ_FORCE_SLOWDOWN_SIZE, or DCQ_LIVELOCK_MAX commands find
+// themselves being processed in one go, livelock deterrence is
+// enabled, and TFB_FlushGraphics locks the DCQ until it has processed
+// all entries.  If batched but pending commands exceed DCQ_FORCE_BREAK_SIZE,
+// a continuity break is performed.  This will effectively slow down the 
+// game logic, a fate we seek to avoid - however, it seems to be unavoidable
+// on slower machines.  Even there, it's seems nonexistent outside of
+// communications screens.  --Michael
+
+#define DCQ_FORCE_SLOWDOWN_SIZE 1024
+#define DCQ_FORCE_BREAK_SIZE 4096
+#define DCQ_LIVELOCK_MAX 2048
+
 void
 TFB_FlushGraphics () // Only call from main thread!!
 {
 	int semval;
+	int commands_handled;
+	BOOLEAN livelock_deterrence;
 
+	// This is technically a locking violation on DrawCommandQueue->Size,
+	// but it is likely to not be very destructive.
 	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
 	{
 		SDL_Delay(5);
@@ -302,41 +324,58 @@ TFB_FlushGraphics () // Only call from main thread!!
 		// TODO: a more optimal way of getting the lock on GraphicsSem..
 		//       cannot currently use SDL_SemWait because it would break
 		//       the usage of continuity_break
+		// Michael asks: Why are we locking, then releasing, the GraphicsSem?
 
 		semval = TimeoutSetSemaphore (GraphicsSem, ONE_SECOND / 10);
-		if (semval != 0 && !continuity_break)
+		if (semval != 0)
 			return;
-		continuity_break = 0;
-
-		if (semval == 0)
+		else
 			SDL_SemPost (GraphicsSem);
 	}
-	else
-	{
-		continuity_break = 0;
-	}
+	continuity_break = 0;
 
 	if (ShowFPS)
 		TFB_ComputeFPS ();
 
-	while (DrawCommandQueue->Size > 0)
+	commands_handled = 0;
+	livelock_deterrence = FALSE;
+
+	if (DrawCommandQueue->FullSize > DCQ_FORCE_BREAK_SIZE)
 	{
-		TFB_DrawCommand DC_real;
+		TFB_BatchReset ();
+	}
+
+	if (DrawCommandQueue->Size > DCQ_FORCE_SLOWDOWN_SIZE)
+	{
+		Lock_DCQ ();
+		livelock_deterrence = TRUE;
+	}
+
+	while (TRUE)
+	{
+		TFB_DrawCommand DC;
 		TFB_Image *DC_image;
 
-		TFB_DrawCommand* DC = &DC_real;
-
-		if (!TFB_DrawCommandQueue_Pop (DrawCommandQueue, DC))
+		if (!TFB_DrawCommandQueue_Pop (DrawCommandQueue, &DC))
 		{
-			printf ("Woah there coyboy! Trouble with TFB_Queues...\n");
-			continue;
+			// the Queue is now empty.
+			break;
 		}
 
-		DC_image = (TFB_Image*) DC->image;
+		++commands_handled;
+		if (!livelock_deterrence && commands_handled + DrawCommandQueue->Size > DCQ_LIVELOCK_MAX)
+		{
+			// printf("Initiating livelock deterrence!\n");
+			livelock_deterrence = TRUE;
+			
+			Lock_DCQ ();
+		}
+
+		DC_image = (TFB_Image*) DC.image;
 		if (DC_image)
 			SDL_mutexP (DC_image->mutex);
 		
-		switch (DC->Type)
+		switch (DC.Type)
 		{
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
@@ -349,10 +388,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 					break;
 				}
 
-				targetRect.x = DC->x;
-				targetRect.y = DC->y;
+				targetRect.x = DC.x;
+				targetRect.y = DC.y;
 
-				if ((DC->w != DC_image->NormalImg->w || DC->h != DC_image->NormalImg->h) && 
+				if ((DC.w != DC_image->NormalImg->w || DC.h != DC_image->NormalImg->h) && 
 					DC_image->ScaledImg)
 					surf = DC_image->ScaledImg;
 				else
@@ -360,9 +399,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				if (surf->format->BytesPerPixel == 1)
 				{
-					if (DC->UsePalette)
+					if (DC.UsePalette)
 					{
-						SDL_SetColors (surf, (SDL_Color*)DC->Palette, 0, 256);
+						SDL_SetColors (surf, (SDL_Color*)DC.Palette, 0, 256);
 					}
 					else
 					{
@@ -382,12 +421,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 				PutPixelFn screen_plot;
 
 				screen_plot = putpixel_for (SDL_Screen);
-				color = SDL_MapRGB (SDL_Screen->format, DC->r, DC->g, DC->b);
+				color = SDL_MapRGB (SDL_Screen->format, DC.r, DC.g, DC.b);
 
-				x1 = DC->x;
-				x2 = DC->w;
-				y1 = DC->y;
-				y2 = DC->h;
+				x1 = DC.x;
+				x2 = DC.w;
+				y1 = DC.y;
+				y2 = DC.h;
 				
 				SDL_GetClipRect(SDL_Screen, &r);
 				
@@ -420,21 +459,21 @@ TFB_FlushGraphics () // Only call from main thread!!
 			case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
 				SDL_Rect r;
-				r.x = DC->x;
-				r.y = DC->y;
-				r.w = DC->w;
-				r.h = DC->h;
+				r.x = DC.x;
+				r.y = DC.y;
+				r.w = DC.w;
+				r.h = DC.h;
 
-				SDL_FillRect(SDL_Screen, &r, SDL_MapRGB(SDL_Screen->format, DC->r, DC->g, DC->b));
+				SDL_FillRect(SDL_Screen, &r, SDL_MapRGB(SDL_Screen->format, DC.r, DC.g, DC.b));
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
 			{
 				SDL_Rect r;
-				r.x = DC->x;
-				r.y = DC->y;
-				r.w = DC->w;
-				r.h = DC->h;
+				r.x = DC.x;
+				r.y = DC.y;
+				r.w = DC.w;
+				r.h = DC.h;
 				
 				SDL_SetClipRect(SDL_Screen, &r);
 				break;
@@ -445,10 +484,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC->x;
-				src.y = dest.y = DC->y;
-				src.w = DC->w;
-				src.h = DC->h;
+				src.x = dest.x = DC.x;
+				src.y = dest.y = DC.y;
+				src.w = DC.w;
+				src.h = DC.h;
 
 				if (DC_image == 0) 
 				{
@@ -465,10 +504,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC->x;
-				src.y = dest.y = DC->y;
-				src.w = DC->w;
-				src.h = DC->h;
+				src.x = dest.x = DC.x;
+				src.y = dest.y = DC.y;
+				src.w = DC.w;
+				src.h = DC.h;
 				SDL_BlitSurface(ExtraScreen, &src, SDL_Screen, &dest);
 				break;
 			}
@@ -493,10 +532,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 		
 		if (DC_image)
 			SDL_mutexV (DC_image->mutex);
-
-		TFB_DeallocateDrawCommand (DC);
 	}
 	
+	if (livelock_deterrence)
+	{
+		Unlock_DCQ ();
+	}
+
 	TFB_SwapBuffers();
 }
 
