@@ -284,6 +284,11 @@ GetSoundData (void *data)
 			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
 			delta = 0;
 		}
+		else if (delta > soundSource[SPEECH_SOURCE].sbuf_size * 2)
+		{
+			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+		    delta = 0;
+		}
 		
 		//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
 
