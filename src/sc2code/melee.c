@@ -1469,9 +1469,7 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		LockMutex (GraphicsLock);
-		Task_SetState (pMS->flash_task, TASK_EXIT);
-		UnlockMutex (GraphicsLock);
+		ConcludeTask (pMS->flash_task);
 		pMS->flash_task = 0;
 	}
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
@@ -1665,9 +1663,7 @@ DoMelee (PMELEE_STATE pMS)
 
 					if (pMS->flash_task)
 					{
-						LockMutex (GraphicsLock);
-						Task_SetState (pMS->flash_task, TASK_EXIT);
-						UnlockMutex (GraphicsLock);
+						ConcludeTask (pMS->flash_task);
 						pMS->flash_task = 0;
 					}
 					
