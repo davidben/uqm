@@ -1172,7 +1172,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 			if ((InputState & DEVICE_BUTTON1) || LastActivity == CHECK_LOAD)
 			{
 				CONTEXT OldContext;
-				if (NewState != SCAN + 1 && NewState != (ROSTER + 1) + 1)
+				if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 				{
 					SetSemaphore (GraphicsSem);
 					SetFlashRect (NULL_PTR, (FRAME)0);
@@ -1217,7 +1217,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 							InputState &= ~DEVICE_BUTTON1;
 						break;
 					}
-					case ROSTER + 1:
+					case GAME_MENU:
 						if (GameOptions () == 0)
 							return (FALSE);
 						
@@ -1274,7 +1274,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 							break;
 						}
 					}
-					case ROSTER + 2:
+					case NAVIGATION:
 						if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 							return (FALSE);
 
@@ -1307,8 +1307,8 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					ClearSemaphore (GraphicsSem);
 					if (InputState & DEVICE_BUTTON1)
 					{
-						pMS->CurState = (ROSTER + 2) + 1;
-						DrawMenuStateStrings (PM_SCAN, ROSTER + 2);
+						pMS->CurState = (NAVIGATION) + 1;
+						DrawMenuStateStrings (PM_SCAN, NAVIGATION);
 					}
 				}
 				else
@@ -1316,7 +1316,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					SetSemaphore (GraphicsSem);
 					SetFlashRect (NULL_PTR, (FRAME)0);
 					ClearSemaphore (GraphicsSem);
-					DrawMenuStateStrings (PM_SCAN, ROSTER + 2);
+					DrawMenuStateStrings (PM_SCAN, NAVIGATION);
 				}
 			}
 			else
@@ -1328,12 +1328,12 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						|| GetInputYComponent (InputState) < 0)
 				{
 					if (NewState-- == (BYTE)(FirstState + 1))
-						NewState = (ROSTER + 2) + 1;
+						NewState = (NAVIGATION) + 1;
 				}
 				else if (GetInputXComponent (InputState) > 0
 						|| GetInputYComponent (InputState) > 0)
 				{
-					if (NewState++ == (ROSTER + 2) + 1)
+					if (NewState++ == (NAVIGATION) + 1)
 						NewState = (BYTE)(FirstState + 1);
 				}
 
