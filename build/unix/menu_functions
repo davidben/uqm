@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-MENU_ITEM_TYPES="MENU CHOICE INPUT"
+MENU_ITEM_TYPES="MENU CHOICE INPUT CHECK"
 
 MENU_ITEM_TYPE_MENU_INIT=menu_init_menu
 MENU_ITEM_TYPE_MENU_PRINT_VALUE=menu_print_value_menu
@@ -35,6 +35,11 @@ MENU_ITEM_TYPE_INPUT_HANDLER=menu_handle_input
 MENU_ITEM_TYPE_INPUT_SAVE=menu_save_input
 MENU_ITEM_TYPE_INPUT_PROCESS=menu_process_input
 
+MENU_ITEM_TYPE_CHECK_INIT=menu_init_check
+MENU_ITEM_TYPE_CHECK_PRINT_VALUE=menu_print_value_check
+MENU_ITEM_TYPE_CHECK_HANDLER=menu_handle_check
+MENU_ITEM_TYPE_CHECK_SAVE=menu_save_check
+MENU_ITEM_TYPE_CHECK_PROCESS=menu_process_check
 
 # Description: Check if a string can be used as a path.
 #              No checks are done if the path really exists.
@@ -121,7 +126,7 @@ menu_init_choice() {
 # Description: Initialise this input menu
 # Arguments:   $1 - the name of the input menu
 menu_init_input() {
-	local MENU TEMP_VALUE TEMP_DEFAULT
+	local MENU TEMP_VALUE
 	MENU="$1"
 	eval TEMP_VALUE="\$INPUT_${MENU}_VALUE"
 	if [ -z "$TEMP_VALUE" ]; then
@@ -129,6 +134,32 @@ menu_init_input() {
 		eval INPUT_${MENU}_VALUE="\$TEMP_VALUE"
 	fi
 	eval INPUT_${MENU}_OLD_VALUE="\$TEMP_VALUE"
+}
+
+# Description: Initialise this checkbox
+# Arguments:   $1 - the name of the checkbox
+menu_init_check() {
+	local CHECKBOX TEMP_VALUE TEMP_DEFAULT
+	CHECKBOX="$1"
+	eval TEMP_VALUE="\$CHECK_${CHECKBOX}_VALUE"
+	eval TEMP_DEFAULT="\$CHECK_${CHECKBOX}_DEFAULT"
+
+	# Make sure the default is either 'CHECKED' or 'UNCHECKED'
+	case "$TEMP_DEFAULT" in
+		yes|Yes|YES|checked|Checked|CHECKED|1|true|True|TRUE)
+			TEMP_DEFAULT=CHECKED
+			;;
+		*)
+			TEMP_DEFAULT=UNCHECKED
+			;;
+	esac
+	eval CHECK_${CHECKBOX}_DEFAULT="\$TEMP_DEFAULT"
+
+	if [ -z "$TEMP_VALUE" ]; then
+		TEMP_VALUE="$TEMP_DEFAULT"
+		eval CHECK_${CHECKBOX}_VALUE="\$TEMP_DEFAULT"
+	fi
+	eval CHECK_${CHECKBOX}_OLD_VALUE="\$TEMP_VALUE"
 }
 
 # Description: Print the string describing the value of a menu item.
@@ -142,7 +173,7 @@ menu_print_value() {
 	"$PRINT_VALUE" "$2"
 }
 
-# Description: Print the string describing the value this menu
+# Description: Print the string describing the value of this menu
 # Arguments:   $1 - the name of the menu item
 # Outputs:     The string describing the value of this menu
 menu_print_value_menu() {
@@ -165,11 +196,33 @@ EOF
 # Arguments:   $1 - the name of the input menu item
 # Outputs:     The value of the given input menu
 menu_print_value_input() {
-	local TEMP_VALUE TEMP_TITLE
+	local TEMP_VALUE
 	eval TEMP_VALUE="\$INPUT_$1_VALUE"
 	cat << EOF
 $TEMP_VALUE
 EOF
+}
+
+# Description: Print the value of this checkbox
+# Arguments:   $1 - the name of the checkbox item
+# Outputs:     The value of the given checkbox
+menu_print_value_check() {
+	local TEMP_VALUE TEMP_DEFAULT
+	eval TEMP_VALUE="\$CHECK_$1_VALUE"
+	eval TEMP_DEFAULT="\$CHECK_$1_DEFAULT"
+	if [ "$TEMP_VALUE" = "CHECKED" ]; then
+		if [ "$TEMP_DEFAULT" = "CHECKED" ]; then
+			echo "Yes (default)"
+		else
+			echo "Yes"
+		fi
+	else
+		if [ "$TEMP_DEFAULT" = "CHECKED" ]; then
+			echo "No"
+		else
+			echo "No (default)"
+		fi
+	fi
 }
 
 # Description: Print the string describing the value of a menu item.
@@ -370,6 +423,21 @@ EOF
 	eval "INPUT_${ITEM}_VALUE"=\"\$NEW_VALUE\"
 }
 
+# Description: Process an checkbox-type menu item
+# Arguments:   $1 - The name of the checkbox
+menu_handle_check() {
+	local ITEM OLD_VALUE NEW_VALUE
+
+	ITEM="$1"
+	eval OLD_VALUE="\$CHECK_${ITEM}_VALUE"
+	if [ "$OLD_VALUE" = "CHECKED" ]; then
+		NEW_VALUE="UNCHECKED"
+	else
+		NEW_VALUE="CHECKED"
+	fi
+	eval "CHECK_${ITEM}_VALUE"=\"\$NEW_VALUE\"
+}
+
 # Description: echo the current state of a menu item in a form that can be
 #              executed to restore the state.
 # Arguments:   $1 - the type of menu item
@@ -422,6 +490,19 @@ INPUT_${MENU}_VALUE='$TEMP_VALUE'
 EOF
 }
 
+# Description: echo the current state of an check box in a form that can be
+#              executed to restore the state.
+# Arguments:   $1 - the name of the checkbox
+# Outputs:     The string describing the value of the checkbox
+menu_save_check() {
+	local CHECKBOX TEMP_VALUE
+	CHECKBOX="$1"
+	eval TEMP_VALUE="\$CHECK_${CHECKBOX}_VALUE"
+	cat << EOF
+CHECK_${CHECKBOX}_VALUE='$TEMP_VALUE'
+EOF
+}
+
 # Description: Perform the actions associated with the choice made for a
 #              menu items.
 # Arguments:   $1 - the type of menu item
@@ -466,17 +547,35 @@ menu_process_input() {
 	:
 }
 
+# Description: Perform the actions associated with the status of a
+#              check box.
+# Arguments:   $1 - the name of the check box
+menu_process_check() {
+	local CHECKBOX TEMP_VALUE TEMP_ACTION
+	CHECKBOX="$1"
+	eval TEMP_VALUE="\$CHECK_${CHECKBOX}_VALUE"
+	eval TEMP_ACTION="\$CHECK_${CHECKBOX}_OPTION_${TEMP_VALUE}_ACTION"
+	if [ -n "$TEMP_ACTION" ]; then
+		$TEMP_ACTION
+	fi
+}
+
 do_menu() {
-	if [ -e config.state ]; then
+	local START_MENU SAVE_FILE
+	
+	START_MENU="$1"
+	SAVE_FILE="$2"
+	if [ -n "$SAVE_FILE" -a -e config.state ]; then
 		. config.state
 	fi
-	menu_init MENU "$@"
-	menu_handle MENU "$@"
+	menu_init MENU "$1"
+	menu_handle MENU "$1"
 	echo
-	echo "Saving configuration..."
-	menu_save MENU "$@" > config.state
-	echo "Propagating configuration..."
-	menu_process MENU "$@"
-	echo "Configuration complete."
+	if [ -n "$SAVE_FILE" ]; then
+		echo "Saving choices..."
+		menu_save MENU "$1" > config.state
+	fi
+	echo "Propagating choices..."
+	menu_process MENU "$1"
 }
 
