@@ -1,4 +1,4 @@
-To build The Urquan Masters, you need at least the following software:
+To build The Ur-Quan Masters, you need at least the following software:
 
 For Linux version:
 GCC - GNU C Compiler
@@ -12,9 +12,11 @@ GNU Make
 For Windows version:
 Microsoft Visual C++ 6 or 7
 
-Additionally, The Urquan Masters requires the following libraries:
+Additionally, The Ur-Quan Masters requires the following libraries:
+(Dependancies can differ between different OS's)
 
 OpenGL v1.2 (if HAVE_OPENGL is defined, which is the default)
+    Win32 users should have all by default, following is for Linux version:
 	http://www.xfree86.org/
 	Debian package: xlibmesa-dev OR nvidia-glx OR <vendor specific>
 	XFree86 4.x comes with Mesa, which is a clone.
@@ -28,23 +30,32 @@ SDL v1.2
 	Homepage: www.libsdl.org
 	Debian package: libsdl1.2-dev (and various runtime debs)
 
-SDL-image
+SDL_image
 	An image loading library used with SDL.
 	Homepage: http://www.libsdl.org/projects/SDL_image/
 	Download: http://www.libsdl.org/projects/SDL_image/release/
+	Debian packages: libsdl-image1.2 libsdl-image1.2-dev
 
-SDL-sound
+SDL_mixer (Linux only)
+	A simple audio mixer library used with SDL.
+	Homepage: http://www.libsdl.org/projects/SDL_mixer/	
+	Download: http://www.libsdl.org/projects/SDL_mixer/
+	          Until version 1.2.5 is officially released, you'll have to 
+			  compile this directly from CVS (with ogg support):
+			  cvs -z3 -d:pserver:guest@libsdl.org:/home/sdlweb/libsdl.org/cvs co SDL_mixer
+	Debian packages: libsdl-mixer1.2 libsdl-mixer1.2-dev
+
+SDL_sound (Win32 only)
 	An audio format decoder library.
 	Homepage: http://www.icculus.org/SDL_sound/
 	Download: http://www.icculus.org/SDL_sound/downloads/
-	Win32 users maybe need to get few updated dll's from: http://www.cc.jyu.fi/~mimakole/sc2/sdl_sound_dlls.zip
+	You maybe need to get few updated dll's from: http://www.cc.jyu.fi/~mimakole/sc2/sdl_sound_dlls.zip
 	If compiling this yourself, be sure ogg vorbis and libmikmod (or libmodplug) support is compiled in.
 	
-OpenAL
+OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org
-	Linux download via CVS: http://opensource.creative.com
-	Win32 SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
+	SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 
 
 If you find these aren't enough, or if you know the names
