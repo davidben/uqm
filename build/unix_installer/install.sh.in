@@ -240,7 +240,6 @@ echo "Unpacking packages..."
 for COMPFILE in `selected_components`; do
 	echo "- $COMPFILE"
 	unzip -od "$PREFIX" "$COMPFILE"
-	gzip -dc "$COMPFILE" | tar -xf - -C "$PREFIX"/
 done
 
 echo "Unpacking other stuff..."
