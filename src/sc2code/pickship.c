@@ -22,6 +22,7 @@
 #include "pickmele.h"
 #include "races.h"
 #include "resinst.h"
+#include "settings.h"
 #include "setup.h"
 #include "sounds.h"
 #include "libs/mathlib.h"
@@ -46,7 +47,9 @@ DoPickBattleShip (PMENU_STATE pMS)
 		pMS->CurFrame = 0;
 		return (FALSE);
 	}
-			
+
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+	
 	if (!pMS->Initialized)
 	{
 		pMS->Initialized = TRUE;
@@ -59,7 +62,11 @@ DoPickBattleShip (PMENU_STATE pMS)
 	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		if ((HSTARSHIP)pMS->CurFrame)
+		{
+			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
+					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			return (FALSE);
+		}
 	}
 	else
 	{
@@ -91,6 +98,9 @@ DoPickBattleShip (PMENU_STATE pMS)
 				new_row = NUM_PICK_SHIP_ROWS - 1;
 			else if (new_row == NUM_PICK_SHIP_ROWS)
 				new_row = 0;
+
+			PlaySoundEffect (MenuSounds, 0, NotPositional (),
+					NULL, GAME_SOUND_PRIORITY);
 
 			LockMutex (GraphicsLock);
 
