@@ -28,22 +28,13 @@
 
 #ifdef WIN32
 #	include <direct.h>
-
-// this would lead to conflicts
-//#	include <shlobj.h>
-typedef void *HWND;
-typedef void *HANDLE;
-typedef char *LPTSTR;
-typedef long HRESULT;
-#define SUCCEEDED(Status) ((HRESULT) (Status) >= 0)
-HRESULT __stdcall SHGetFolderPathA (HWND hwndOwner, int nFolder,
-		HANDLE hToken, DWORD dwFlags, LPTSTR pszPath);
-#define SHGetFolderPath SHGetFolderPathA
-#define CSIDL_APPDATA  0x001a  // <user name>\Application Data
-#define CSIDL_FLAG_CREATE  0x8000
-		// combine with CSIDL_ value to force folder creation in
-		// SHGetFolderPath()
 #endif
+
+/* Try to find a suitable value for %APPDATA% if it isn't defined on
+ * Windows.
+ */
+#define APPDATA_FALLBACK
+
 
 int
 createDirectory(const char *dir, int mode)
@@ -167,10 +158,11 @@ getHomeDir (void)
 int
 expandPath (char *dest, size_t len, const char *src)
 {
-	const char *destend;
+	char *destend;
+	char *destptr;
 
 #define CHECKLEN(n) \
-		if (dest + (n) > destend) \
+		if (destptr + (n) >= destend) \
 		{ \
 			errno = ENAMETOOLONG; \
 			return -1; \
@@ -178,6 +170,7 @@ expandPath (char *dest, size_t len, const char *src)
 		else \
 			(void) 0
 
+	destptr = dest;
 	destend = dest + len;
 	if (src[0] == '~')
 	{
@@ -199,8 +192,8 @@ expandPath (char *dest, size_t len, const char *src)
 		homelen = strlen (home);
 		
 		CHECKLEN (homelen);
-		memcpy (dest, home, homelen);
-		dest += homelen;
+		memcpy (destptr, home, homelen);
+		destptr += homelen;
 		src++;  /* skip the ~ */
 	}
 
@@ -208,14 +201,6 @@ expandPath (char *dest, size_t len, const char *src)
 	{
 		switch (*src)
 		{
-#ifdef WIN32
-			case '\\':
-				/* Replaces backslashes in path by slashes in Windows. */
-				CHECKLEN(1);
-				*(dest++) = '/';
-				src++;
-				break;
-#endif
 #ifdef WIN32
 			case '%':
 			{
@@ -242,26 +227,56 @@ expandPath (char *dest, size_t len, const char *src)
 
 				if (envVar == NULL)
 				{
-#if 1
-					if (strncmp (src, "APPDATA", envNameLen) == 0)
+#ifdef APPDATA_FALLBACK
+					if (strncmp (src, "APPDATA", envNameLen) != 0)
 					{
-						// fallback for when the APPDATA env var is not set
-						if (getUserDataDir (dest, destend - dest) == -1)
-							return -1;
-						dest += strlen (dest);
+						// Substitute an empty string
 						src = end + 1;
 						break;
 					}
-#endif
+
+					// fallback for when the APPDATA env var is not set
+					// Using SHGetFolderPath or SHGetSpecialFolderPath
+					// is problematic (not everywhere available).
+					fprintf(stderr, "Warning: %%APPDATA%% is not set. "
+							"Falling back to \"%%USERPROFILE%%\\Application "
+							"Data\"\n");
+					envVar = getenv ("USERPROFILE");
+					if (envVar != NULL)
+					{
+#define APPDATA_STRING "\\Application Data"
+						envVarLen = strlen (envVar);
+						CHECKLEN (envVarLen + sizeof (APPDATA_STRING) - 1);
+						strcpy (destptr, envVar);
+						destptr += envVarLen;
+						strcpy (destptr, APPDATA_STRING);
+						destptr += sizeof (APPDATA_STRING) - 1;
+						src = end + 1;
+						break;
+					}
+					
+					// fallback to "../userdata"
+					fprintf(stderr, "Warning: %%USERPROFILE%% is not set. "
+							"Falling back to \"..\\userdata\" for %%APPDATA%%"
+							"\n");
+#define APPDATA_FALLBACK_STRING "..\\userdata"
+					CHECKLEN (sizeof (APPDATA_FALLBACK_STRING) - 1);
+					strcpy (destptr, APPDATA_FALLBACK_STRING);
+					destptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
+					src = end + 1;
+					break;
+
+#else  /* !defined (APPDATA_FALLBACK) */
 					// Substitute an empty string
 					src = end + 1;
 					break;
+#endif  /* APPDATA_FALLBACK */
 				}
 
 				envVarLen = strlen (envVar);
 				CHECKLEN (envVarLen);
-				strcpy (dest, envVar);
-				dest += envVarLen;
+				strcpy (destptr, envVar);
+				destptr += envVarLen;
 				src = end + 1;
 				break;
 			}
@@ -270,55 +285,31 @@ expandPath (char *dest, size_t len, const char *src)
 			case '$':
 				/* Environment variable substitution for Unix */
 				// not implemented
+				// Should accept both $BLA_123 and ${BLA}
 				break;
 #endif
 			default:
 				CHECKLEN(1);
-				*(dest++) = *(src++);
+				*(destptr++) = *(src++);
 				break;
 		}
 	}
-	*dest = '\0';
-	return 0;
-}
-
-// returns 0 on success, and fills dir with the path to the dir where there
-// user data is stored.
-// return -1 on error, and sets errno.
-int
-getUserDataDir (char *dir, size_t len)
-{
+	*destptr = '\0';
+	
 #ifdef WIN32
-	char buf[PATH_MAX];
-	
-	if (!SUCCEEDED (SHGetFolderPath(NULL,
-			CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, buf)))
+	/* Replacing backslashes in path by slashes in Windows. */
+	destptr = dest;
+	while (*destptr != '\0')
 	{
-		errno = ENOENT;
-		return -1;
+		if (*destptr == '\\')
+		{
+				*destptr = '/';
+				break;
+		}
+		destptr++;
 	}
-	
-	if (strlen (buf) >= len)
-	{
-		errno = ENAMETOOLONG;
-		return -1;
-	}
-	
-	strcpy (dir, buf);
+#endif
 	return 0;
-#else
-	const char *homeDir;
-	homeDir = getHomeDir();
-	
-	if (strlen (homeDir) >= len)
-	{
-		errno = ENAMETOOLONG;
-		return -1;
-	}
-	
-	strcpy (dir, homeDir);
-	return 0;
-#endif	
 }
 
 BOOLEAN
