@@ -306,7 +306,8 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 
 	width = GetFrameWidth (FramePtr);
 	height = GetFrameHeight (FramePtr);
-	NewFrame = CaptureDrawable (CreateDrawable (RAM_DRAWABLE, (SIZE)width, (SIZE)height, 1));
+	NewFrame = CaptureDrawable (CreateDrawable ((CREATE_FLAGS)RAM_DRAWABLE, 
+			(SIZE)width, (SIZE)height, 1));
 	tfbOrigImg = FramePtr->image;
 	OrigImg = (SDL_Surface *)tfbOrigImg->NormalImg;
 	SDL_LockSurface (OrigImg);

@@ -1904,8 +1904,13 @@ ExploreSolarSys (void)
 
 		universe.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 		universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+		CurStarDescPtr = FindStar (0, &universe, 1, 1);
+		/*
+		// The following code used to be there, but the test is
+		// pointless.  Maybe we should panic here?
 		if ((CurStarDescPtr = FindStar (0, &universe, 1, 1)) == 0)
 			;
+		*/
 	}
 	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (CurStarDescPtr->star_pt.x);
 	GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (CurStarDescPtr->star_pt.y);

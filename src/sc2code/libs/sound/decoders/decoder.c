@@ -427,7 +427,7 @@ uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 				if (rc < 0)
 				{
 					decoder->error = SOUNDDECODER_ERROR;
-					fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %d\n", decoder->filename, rc);
+					fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %ld\n", decoder->filename, rc);
 					return decoded_bytes;
 				}
 				if (rc == 0 || (close_on_done && buffer_size == (decoded_bytes + rc)))
@@ -568,7 +568,7 @@ uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 				{
 					decoder->error = SOUNDDECODER_ERROR;
 					fprintf (stderr, "SoundDecoder_DecodeAll(): "
-							"error decoding %s, code %d\n",
+							"error decoding %s, code %ld\n",
 							decoder->filename, rc);
 					return decoded_bytes;
 				}

@@ -696,7 +696,7 @@ GetSoundData (void *data)
 
 			if (delta < 0)
 			{
-				fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				fprintf (stderr, "GetSoundData(): something's messed with timing, delta %ld\n", delta);
 				delta = 0;
 			}
 			else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
@@ -711,7 +711,8 @@ GetSoundData (void *data)
 			if (pos % 2 == 1)
 				pos++;
 
-			assert (pos >= 0);
+			// pos is an unsigned data type; this assertion cannot fail!
+			// assert (pos >= 0);
 
 			for (i = 0; i < RADAR_WIDTH - 2; ++i)
 			{
@@ -783,7 +784,8 @@ GetSoundData (void *data)
 			if (pos % 2 == 1)
 				pos++;
 
-			assert (pos >= 0);
+			// pos is an unsigned type; this assertion cannot fail!
+			// assert (pos >= 0);
 
 			for (i = 0; i < RADAR_WIDTH - 2; ++i)
 			{

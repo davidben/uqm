@@ -30,15 +30,6 @@ void LoadMasterShipList (void);
 
 //End Added by Chris
 
-static void
-DoFMV (char *name, char *loopname, BOOLEAN uninit)
-{
-	VidPlay ((MEM_HANDLE)name, loopname, uninit);
-	while (VidPlaying ())
-		;
-	VidStop ();
-}
-
 void
 DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {

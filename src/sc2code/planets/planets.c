@@ -79,12 +79,15 @@ LoadPlanet (BOOLEAN IsDefined)
 
 		pPlanetDesc = pSolarSysState->pOrbitalDesc;
 
+
+		/* 
 		if (pPlanetDesc->data_index & PLANET_SHIELDED)
-			; /* pSolarSysState->PlanetSideFrame[2] = CaptureDrawable (
+			pSolarSysState->PlanetSideFrame[2] = CaptureDrawable (
 					LoadGraphic (PLANET_SHIELDED_MASK_PMAP_ANIM)
-					); */
-// else if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity != GAS_GIANT_ATMOSPHERE)
-// LoadLanderData ();
+					);
+		else if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity != GAS_GIANT_ATMOSPHERE)
+			LoadLanderData ();
+		*/
 
 		{
 			extern void GeneratePlanetMask (PPLANET_DESC

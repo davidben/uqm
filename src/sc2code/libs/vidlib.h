@@ -43,6 +43,9 @@ extern BOOLEAN DestroyVideo (VIDEO_REF VideoRef);
 extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN
 		uninit);
 extern void VidStop (void);
+
+void DoFMV (char *name, char *loopname, BOOLEAN uninit);
+
 /*
 extern BOOLEAN VidPlaying (void);*/
 

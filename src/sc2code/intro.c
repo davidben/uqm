@@ -28,13 +28,16 @@ void LoadMasterShipList (void);
 //End Added by Chris
 
 void
-DoFMV (char *name, char *loopname)
+DoFMV (char *name, char *loopname, BOOLEAN uninit)
 {
-		VidPlay((MEM_HANDLE)name, loopname,FALSE);
-		while(VidPlaying ())
+	MEM_HANDLE vidref = 0;
+	VidPlay (vidref, loopname, uninit);
+	while(VidPlaying ())
 		;
-		VidStop();
+	VidStop();
+	(void) name;
 }
+
 /* //Already defined in fmv.c
 void
 Introduction (void)
@@ -71,7 +74,7 @@ Introduction (void)
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	if (InputState == 0)
-		DoFMV ("intro", NULL);
+		DoFMV ("intro", NULL, FALSE);
 	
 	InitGameKernel ();
 }
@@ -86,7 +89,7 @@ Victory (void)
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
-	DoFMV ("victory", NULL);
+	DoFMV ("victory", NULL, TRUE);
 		
 	InitGameKernel ();
 }

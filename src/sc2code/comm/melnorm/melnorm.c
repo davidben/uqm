@@ -230,10 +230,10 @@ ShipWorth (void)
 }
 
 static COUNT rescue_fuel = 0;
-static SIS_STATE SIS_copy =
-{
-	.log_x = 0,
-};
+
+/* We're relying on this large, #define-dependent-size structure to be
+   automatically initialized to 0 across the board here. */
+static SIS_STATE SIS_copy;
 
 static BOOLEAN
 StripShip (COUNT fuel_required)

@@ -375,7 +375,7 @@ StreamDecoderTaskFunc (void *data)
 						if ((error = TFBSound_GetError()) != TFBSOUND_NO_ERROR)
 						{
 							fprintf (stderr, "StreamDecoderTaskFunc(): TFBSound error after TFBSound_SourceQueueBuffers: %x, file %s, source %d, decoded_bytes %d\n", 
-								error, i, soundSource[i].sample->decoder->filename, decoded_bytes);
+								error, soundSource[i].sample->decoder->filename, i, decoded_bytes);
 						}
 					}
 				}

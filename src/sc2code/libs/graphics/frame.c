@@ -142,7 +142,6 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 			register GRAPHICS_PRIM PrimType;
 			PPRIMITIVE lpWorkPrim;
 			RECT ClipRect;
-			FRAMEPTR SrcFramePtr;
 			TFB_Palette color;
 			DWORD c32k;
 
