@@ -699,6 +699,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 
 	if (pSD->year_index == 0)
 	{
+		// Unused save slot, draw 'Empty Game' message.
 		s.origin.x = s.origin.y = 0;
 		s.frame = SetAbsFrameIndex (pLocMenuState->ModuleFrame,
 				GetFrameCount (pLocMenuState->ModuleFrame) - 4);
@@ -712,6 +713,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 	}
 	else
 	{
+		// Game slot used, draw information about save game.
 		BYTE i;
 		RECT OldRect;
 		TEXT t;
@@ -726,7 +728,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 		OldContext = SetContext (StatusContext);
 		GetContextClipRect (&OldRect);
 
-		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1);
+		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1) +
+				SAFE_X - 16;
+//		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1);
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = STATUS_WIDTH;
 		r.extent.height = STATUS_HEIGHT;
