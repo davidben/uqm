@@ -1490,7 +1490,7 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 	MeleeFrame = 0;
 }
 
-static
+static void
 BuildAndDrawShipList (PMELEE_STATE pMS)
 {
 	COUNT i;
