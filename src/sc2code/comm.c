@@ -479,7 +479,7 @@ static struct {
 	XFORM_CONTROL TaskControl[MAX_XFORMS];
 	volatile int XFormCurrent, XFormInsertPoint;
 	volatile BOOLEAN XFormsPending;
-	Semaphore XFormSem;
+	Mutex XFormLock;
 } XFormControl;
 
 void
@@ -487,19 +487,19 @@ init_xform_control (void)
 {
 	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
 	XFormControl.XFormsPending = FALSE;
-	XFormControl.XFormSem = CreateSemaphore (1, "XForm");
+	XFormControl.XFormLock = CreateMutex ();
 }
 
 void
 uninit_xform_control (void)
 {
-	DestroySemaphore (XFormControl.XFormSem);
+	DestroyMutex (XFormControl.XFormLock);
 }
 
 void
 xform_complete (void)
 {
-	SetSemaphore (XFormControl.XFormSem);
+	LockMutex (XFormControl.XFormLock);
 	if (XFormControl.XFormsPending)
 	{
 		SetColorMap (XFormControl.TaskControl[XFormControl.XFormCurrent].CMapPtr);
@@ -512,7 +512,7 @@ xform_complete (void)
 			XFormControl.XFormsPending = FALSE;
 		}
 	}
-	ClearSemaphore (XFormControl.XFormSem);
+	UnlockMutex (XFormControl.XFormLock);
 }
 
 void
@@ -646,13 +646,13 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 
 		// FlushPLUTXForms ();
 
-		SetSemaphore (XFormControl.XFormSem);
+		LockMutex (XFormControl.XFormLock);
 		while (XFormControl.XFormsPending
 				&& (XFormControl.XFormInsertPoint == XFormControl.XFormCurrent))
 		{
-			ClearSemaphore (XFormControl.XFormSem);
+			UnlockMutex (XFormControl.XFormLock);
 			FlushPLUTXForms ();
-			SetSemaphore (XFormControl.XFormSem);
+			LockMutex (XFormControl.XFormLock);
 		}
 		
 		control = &XFormControl.TaskControl[XFormControl.XFormInsertPoint];
@@ -672,7 +672,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 
 		XFormControl.XFormsPending = TRUE;
 
-		ClearSemaphore (XFormControl.XFormSem);		
+		UnlockMutex (XFormControl.XFormLock);		
 
 	}
 
