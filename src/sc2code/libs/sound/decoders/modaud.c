@@ -23,6 +23,7 @@
 #include "libs/misc.h"
 #include "port.h"
 #include "types.h"
+#include "endian_uqm.h"
 #include "uio.h"
 #include "decoder.h"
 #include "mikmod/mikmod.h"
@@ -88,7 +89,12 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 
 	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
 	{
+#ifndef WORDS_BIGENDIAN
 		md_mode = DMODE_HQMIXER|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
+#else
+		// disable hqmixer on big endian machines (workaround for bug #166)
+		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
+#endif
 	    md_mixfreq = 44100;
 		md_reverb = 1;
 	}
