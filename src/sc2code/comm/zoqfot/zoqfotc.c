@@ -932,6 +932,7 @@ init_zoqfot_comm (void)
 	zoqfot_desc.uninit_encounter_func = uninit_zoqfot;
 
 	zoqfot_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	zoqfot_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	zoqfot_desc.AlienTextWidth = (SIS_TEXT_WIDTH >> 1) - TEXT_X_OFFS;
 
 	if ((ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
