@@ -32,10 +32,12 @@ NPCPhrase (int index)
 		case GLOBAL_PLAYER_NAME:
 			pStr = GLOBAL_SIS (CommanderName);
 			pClip = 0;
+			pTimeStamp = 0;
 			break;
 		case GLOBAL_SHIP_NAME:
 			pStr = GLOBAL_SIS (ShipName);
 			pClip = 0;
+			pTimeStamp = 0;
 			break;
 		case GLOBAL_PLAYER_LOCATION:
 		{
@@ -52,6 +54,7 @@ NPCPhrase (int index)
 					(SIZE)(dx / 10), (COUNT)(adx % 10));
 			pStr = numbuf;
 			pClip = 0;
+			pTimeStamp = 0;
 			break;
 		}
 		default:
