@@ -80,7 +80,7 @@ GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
 	return (TRUE);
 }
 
-static void
+void
 ClearBackGround (PRECT pClipRect)
 {
 	if (_get_context_bg_func ())

@@ -319,6 +319,7 @@ extern void DrawBatch (PPRIMITIVE pBasePrim, PRIM_LINKS PrimLinks,
 extern void BatchGraphics (void);
 extern void UnbatchGraphics (void);
 extern void FlushGraphics (void);
+extern void ClearBackGround (PRECT pClipRect);
 extern void ClearDrawable (void);
 extern CONTEXT_REF CreateContext (void);
 extern BOOLEAN DestroyContext (CONTEXT_REF ContextRef);
