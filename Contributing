@@ -73,6 +73,11 @@ Making changes:
 - Your code shouldn't cause any compile-time or runtime-warnings. We know
   the current source is far from warning-free, but those should be removed
   eventually and we don't want to make it worse.
+- Don't add comment lines saying things like "This line added by <me>".
+  These comments only foul the code and don't add anything for people
+  reading it. You'll still be credited in the Changelog, and for large
+  contributions (or many small ones) in the authors list. We have
+  CVS for when we need to find out when what changes were made.
 
 Making the patches:
 - One issue per patch.
