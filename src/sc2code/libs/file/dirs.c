@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "port.h"
 #include "config.h"
 #include "filintrn.h"
@@ -36,6 +37,10 @@
  * Windows.
  */
 #define APPDATA_FALLBACK
+
+
+static char *expandPathAbsolute (char *dest, size_t destLen, char first,
+		int what);
 
 
 int
@@ -162,8 +167,10 @@ getHomeDir (void)
 
 // Expand ~/ in a path, and replaces \ by / on Windows.
 // Environment variable parsing could be added here if we need it.
+// Returns 0 on success.
+// Returns -1 on failure, setting errno.
 int
-expandPath (char *dest, size_t len, const char *src)
+expandPath (char *dest, size_t len, const char *src, int what)
 {
 	char *destend;
 	char *destptr;
@@ -179,140 +186,217 @@ expandPath (char *dest, size_t len, const char *src)
 
 	destptr = dest;
 	destend = dest + len;
-	if (src[0] == '~')
-	{
-		const char *home;
-		size_t homelen;
-		
-		if (src[1] != '/')
-		{
-			errno = EINVAL;
-			return -1;
-		}
 
-		home = getHomeDir ();
-		if (home == NULL)
-		{
-			errno = ENOENT;
-			return -1;
-		}
-		homelen = strlen (home);
-		
-		CHECKLEN (homelen);
-		memcpy (destptr, home, homelen);
-		destptr += homelen;
-		src++;  /* skip the ~ */
-	}
-
-	while (*src != '\0')
+	if (what & EP_HOME)
 	{
-		switch (*src)
+		if (src[0] == '~')
 		{
-#ifdef WIN32
-			case '%':
+			const char *home;
+			size_t homelen;
+			
+			if (src[1] != '/')
 			{
-				/* Environment variable substitution in Windows */
-				const char *end;     // end of env var name in src
-				const char *envVar;
-				char *envName;
-				size_t envNameLen, envVarLen;
-				
-				src++;
-				end = strchr (src, '%');
-				if (end == NULL)
+				errno = EINVAL;
+				return -1;
+			}
+
+			home = getHomeDir ();
+			if (home == NULL)
+			{
+				errno = ENOENT;
+				return -1;
+			}
+			homelen = strlen (home);
+		
+			if (what & EP_ABSOLUTE) {
+				dest = expandPathAbsolute (dest, destend - dest,
+						home[0], what);
+				if (dest == NULL)
 				{
-					errno = EINVAL;
+					// errno is set
 					return -1;
 				}
-				
-				envNameLen = end - src;
-				envName = HMalloc (envNameLen + 1);
-				memcpy (envName, src, envNameLen + 1);
-				envName[envNameLen] = '\0';
-				envVar = getenv (envName);
-				HFree (envName);
+				what &= ~EP_ABSOLUTE;
+						// The part after the '~' should not be seen
+						// as absolute.
+			}
 
-				if (envVar == NULL)
+			CHECKLEN (homelen);
+			memcpy (destptr, home, homelen);
+			destptr += homelen;
+			src++;  /* skip the ~ */
+		}
+	}
+	
+	if (what & EP_ABSOLUTE)
+	{
+		destptr = expandPathAbsolute (destptr, destend - destptr, src[0],
+				what);
+		if (destptr == NULL)
+		{
+			// errno is set
+			return -1;
+		}
+	}
+	
+	if (what & EP_ENVVARS)
+	{
+		while (*src != '\0')
+		{
+			switch (*src)
+			{
+#ifdef WIN32
+				case '%':
 				{
-#ifdef APPDATA_FALLBACK
-					if (strncmp (src, "APPDATA", envNameLen) != 0)
+					/* Environment variable substitution in Windows */
+					const char *end;     // end of env var name in src
+					const char *envVar;
+					char *envName;
+					size_t envNameLen, envVarLen;
+					
+					src++;
+					end = strchr (src, '%');
+					if (end == NULL)
 					{
+						errno = EINVAL;
+						return -1;
+					}
+					
+					envNameLen = end - src;
+					envName = HMalloc (envNameLen + 1);
+					memcpy (envName, src, envNameLen + 1);
+					envName[envNameLen] = '\0';
+					envVar = getenv (envName);
+					HFree (envName);
+
+					if (envVar == NULL)
+					{
+#ifdef APPDATA_FALLBACK
+						if (strncmp (src, "APPDATA", envNameLen) != 0)
+						{
+							// Substitute an empty string
+							src = end + 1;
+							break;
+						}
+
+						// fallback for when the APPDATA env var is not set
+						// Using SHGetFolderPath or SHGetSpecialFolderPath
+						// is problematic (not everywhere available).
+						fprintf(stderr, "Warning: %%APPDATA%% is not set. "
+								"Falling back to \"%%USERPROFILE%%\\Application "
+								"Data\"\n");
+						envVar = getenv ("USERPROFILE");
+						if (envVar != NULL)
+						{
+#define APPDATA_STRING "\\Application Data"
+							envVarLen = strlen (envVar);
+							CHECKLEN (envVarLen + sizeof (APPDATA_STRING) - 1);
+							strcpy (destptr, envVar);
+							destptr += envVarLen;
+							strcpy (destptr, APPDATA_STRING);
+							destptr += sizeof (APPDATA_STRING) - 1;
+							src = end + 1;
+							break;
+						}
+						
+						// fallback to "../userdata"
+						fprintf(stderr, "Warning: %%USERPROFILE%% is not set. "
+								"Falling back to \"..\\userdata\" for %%APPDATA%%"
+								"\n");
+#define APPDATA_FALLBACK_STRING "..\\userdata"
+						CHECKLEN (sizeof (APPDATA_FALLBACK_STRING) - 1);
+						strcpy (destptr, APPDATA_FALLBACK_STRING);
+						destptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
+						src = end + 1;
+						break;
+
+#else  /* !defined (APPDATA_FALLBACK) */
 						// Substitute an empty string
 						src = end + 1;
 						break;
-					}
-
-					// fallback for when the APPDATA env var is not set
-					// Using SHGetFolderPath or SHGetSpecialFolderPath
-					// is problematic (not everywhere available).
-					fprintf(stderr, "Warning: %%APPDATA%% is not set. "
-							"Falling back to \"%%USERPROFILE%%\\Application "
-							"Data\"\n");
-					envVar = getenv ("USERPROFILE");
-					if (envVar != NULL)
-					{
-#define APPDATA_STRING "\\Application Data"
-						envVarLen = strlen (envVar);
-						CHECKLEN (envVarLen + sizeof (APPDATA_STRING) - 1);
-						strcpy (destptr, envVar);
-						destptr += envVarLen;
-						strcpy (destptr, APPDATA_STRING);
-						destptr += sizeof (APPDATA_STRING) - 1;
-						src = end + 1;
-						break;
-					}
-					
-					// fallback to "../userdata"
-					fprintf(stderr, "Warning: %%USERPROFILE%% is not set. "
-							"Falling back to \"..\\userdata\" for %%APPDATA%%"
-							"\n");
-#define APPDATA_FALLBACK_STRING "..\\userdata"
-					CHECKLEN (sizeof (APPDATA_FALLBACK_STRING) - 1);
-					strcpy (destptr, APPDATA_FALLBACK_STRING);
-					destptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
-					src = end + 1;
-					break;
-
-#else  /* !defined (APPDATA_FALLBACK) */
-					// Substitute an empty string
-					src = end + 1;
-					break;
 #endif  /* APPDATA_FALLBACK */
-				}
+					}
 
-				envVarLen = strlen (envVar);
-				CHECKLEN (envVarLen);
-				strcpy (destptr, envVar);
-				destptr += envVarLen;
-				src = end + 1;
-				break;
-			}
+					envVarLen = strlen (envVar);
+					CHECKLEN (envVarLen);
+					strcpy (destptr, envVar);
+					destptr += envVarLen;
+					src = end + 1;
+					break;
+				}
 #endif
 #if 0
-			case '$':
-				/* Environment variable substitution for Unix */
-				// not implemented
-				// Should accept both $BLA_123 and ${BLA}
-				break;
+				case '$':
+					/* Environment variable substitution for Unix */
+					// not implemented
+					// Should accept both $BLA_123 and ${BLA}
+					break;
 #endif
-			default:
-				CHECKLEN(1);
-				*(destptr++) = *(src++);
-				break;
+				default:
+					CHECKLEN(1);
+					*(destptr++) = *(src++);
+					break;
+			}  // switch
+		}  // while
+		*destptr = '\0';
+	}  // if (what & EP_ENVVARS)
+	else
+	{
+		strcpy (destptr, src);
+	}
+	
+	if (EP_SLASHES)
+	{
+		/* Replacing backslashes in path by slashes. */
+		destptr = dest;
+		while (*destptr != '\0')
+		{
+			if (*destptr == '\\')
+				*destptr = '/';
+			destptr++;
 		}
 	}
-	*destptr = '\0';
-	
-#ifdef WIN32
-	/* Replacing backslashes in path by slashes in Windows. */
-	destptr = dest;
-	while (*destptr != '\0')
-	{
-		if (*destptr == '\\')
-			*destptr = '/';
-		destptr++;
-	}
-#endif
 	return 0;
 }
+
+// helper for expandPath, expanding an absolute path
+// returns a pointer to the end of the filled in part of dest.
+static char *
+expandPathAbsolute (char *dest, size_t destLen, char first, int what)
+{
+	if (first == '/' || ((what & EP_SLASHES) && first == '\\')) {
+		// Path is already absolute; nothing to do
+		return dest;
+	}
+
+	// Path is not already absolute; we've got work to do.
+	if (getcwd (dest, destLen) == NULL)
+	{
+		// errno is set
+		return NULL;
+	}
+
+	{
+		size_t tempLen;
+		tempLen = strlen (dest);
+		assert (tempLen > 0);
+		dest += tempLen;
+		destLen -= tempLen;
+	}
+	if (dest[-1] != '/'
+#ifdef WIN32
+			&& dest[-1] != '\\'
+#endif
+			)
+	{
+		// Need to add a slash.
+		// There's always space, as we overwrite the '\0' that getcwd()
+		// always returns.
+		dest[0] = '/';
+		dest++;
+		destLen--;
+	}
+	return dest;
+}
+
 

@@ -83,7 +83,7 @@ prepareConfigDir (void) {
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_MountHandle *contentHandle;
 
-	if (expandPath (buf, PATH_MAX - 13, CONFIGDIR) == -1)
+	if (expandPath (buf, PATH_MAX - 13, CONFIGDIR, EP_ALL_SYSTEM) == -1)
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
@@ -115,7 +115,7 @@ prepareConfigDir (void) {
 void
 prepareSaveDir (void) {
 	char buf[PATH_MAX];
-	if (expandPath (buf, PATH_MAX - 13, SAVEDIR) == -1)
+	if (expandPath (buf, PATH_MAX - 13, SAVEDIR, EP_ALL_SYSTEM) == -1)
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
@@ -142,7 +142,7 @@ void
 prepareMeleeDir (void) {
 	char buf[PATH_MAX];
 
-	if (expandPath (buf, PATH_MAX - 13, MELEEDIR) == -1)
+	if (expandPath (buf, PATH_MAX - 13, MELEEDIR, EP_ALL_SYSTEM) == -1)
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
