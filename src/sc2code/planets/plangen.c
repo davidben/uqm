@@ -1384,7 +1384,7 @@ rotate_planet_task (void *data)
 	zooming = TRUE;
 
 	pSS = pSolarSysState;
-	while (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized < 2 && !Task_ReadState (task, TASK_EXIT))
+	while (((volatile SOLARSYS_STATE *)pSS)->MenuState.Initialized < 2 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
 //	SetPlanetTilt ((pSS->SysInfo.PlanetInfo.AxialTilt << 8) / 360);
@@ -1419,12 +1419,12 @@ rotate_planet_task (void *data)
 			// to gaurantee that PauseRotate doesn't change while waiting
 			// to aquire the GraphicsSem
 			SetSemaphore (GraphicsSem);
-			if (((PSOLARSYS_STATE volatile)pSS)->PauseRotate !=1
+			if (((volatile SOLARSYS_STATE *)pSS)->PauseRotate !=1
 //			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
 				//PauseRotate == 2 is a single-step
-				if (((PSOLARSYS_STATE volatile)pSS)->PauseRotate == 2)
+				if (((volatile SOLARSYS_STATE *)pSS)->PauseRotate == 2)
 					pSS->PauseRotate = 1;
 
 				repair = RotatePlanet (x, SIS_SCREEN_WIDTH >> 1,

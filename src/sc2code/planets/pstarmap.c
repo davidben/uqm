@@ -1156,8 +1156,8 @@ DoFlagshipCommands (PMENU_STATE pMS)
 	{
 		BOOLEAN select = CurrentMenuState.select;
 		SetSemaphore (GraphicsSem);
-		while (((PMENU_STATE volatile)pMS)->CurState == 0
-				&& (((PMENU_STATE volatile)pMS)->Initialized & 1)
+		while (((volatile MENU_STATE *)pMS)->CurState == 0
+				&& (((volatile MENU_STATE *)pMS)->Initialized & 1)
 				&& !(GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | END_INTERPLANETARY
 				| CHECK_ABORT | CHECK_LOAD))
