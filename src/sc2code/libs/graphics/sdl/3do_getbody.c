@@ -133,32 +133,38 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 //stretch_frame
 // create a new frame of size neww x newh, and blit a scaled version FramePtr into it 
 // destroy the old frame if 'destroy' is 1
-FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh,int destroy)
+FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 {
 	FRAMEPTR NewFrame;
 	UBYTE type;
-	SDL_Surface *src,*dst;
+	TFB_Image *tfbImg;
+	SDL_Surface *src, *dst;
 	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
 				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1)
 					);
-    src = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	LockMutex (tfbImg->mutex);
+    src = tfbImg->NormalImg;
     dst = ((TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs))->NormalImg;
 	SDL_LockSurface (src);
+	SDL_LockSurface (dst);
 
 	zoomSurfaceRGBA(src, dst, 0);
+	SDL_UnlockSurface (dst);
 	SDL_UnlockSurface (src);
-	if(destroy) {
+	UnlockMutex (tfbImg->mutex);
+	if (destroy)
 		DestroyDrawable (ReleaseDrawable (FramePtr));
-	}
-	return(NewFrame);
+	return (NewFrame);
 }
 
 void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 {
 	int x, y;
-	SDL_Surface *img;				
+	TFB_Image *tfbImg;
+	SDL_Surface *img;
 	PutPixelFn putpix;
 
 //	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
@@ -166,30 +172,34 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 
 
 	// convert 32-bit png font to indexed
-    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	LockMutex (tfbImg->mutex);
+    img = tfbImg->NormalImg;
 	SDL_LockSurface (img);
 
 	putpix = putpixel_for (img);
 
 	for (y = 0; y < maxy; ++y)
-	{
 		for (x = 0; x < maxx; ++x)
-		{
 			putpix (img, x, y, *rgba++);
-		}
-	}
 	SDL_UnlockSurface (img);
+	UnlockMutex (tfbImg->mutex);
 }
 
 void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int y)
 {
 	SDL_Surface *img;
+	TFB_Image *tfbImg;
 	SDL_Rect rect;
-    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+
+	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	LockMutex (tfbImg->mutex);
+    img = tfbImg->NormalImg;
 	SDL_LockSurface (img);
-	if (x0 == 0 && y0 == 0 && x == 0 && y == 0) {
+	if (x0 == 0 && y0 == 0 && x == 0 && y == 0)
 		SDL_FillRect(img, NULL, color);
-	} else {
+	else
+	{
 		rect.x = x0;
 		rect.y = y0;
 		rect.w = x - x0;
@@ -197,40 +207,88 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int
 		SDL_FillRect(img, &rect, color);
 	}
 	SDL_UnlockSurface (img);
+	UnlockMutex (tfbImg->mutex);
+}
+void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int add_sub)
+{
+	int add = 0, sub = 0;
+	TFB_Image *srcImg, *dstImg;
+	SDL_Surface *src, *dst;
+	SDL_Rect srcRect, dstRect, *srp = NULL, *drp = NULL;
+	srcImg = (TFB_Image *)((BYTE *)(srcFrame)  + srcFrame->DataOffs);
+	dstImg = (TFB_Image *)((BYTE *)(dstFrame)  + dstFrame->DataOffs);
+	LockMutex (srcImg->mutex);
+	LockMutex (dstImg->mutex);
+	src = srcImg->NormalImg;
+	dst = dstImg->NormalImg;
+	if (rsrc)
+	{
+		srcRect.x = rsrc->corner.x;
+		srcRect.y = rsrc->corner.y;
+		srcRect.w = rsrc->extent.width;
+		srcRect.h = rsrc->extent.height;
+		srp = &srcRect;
+	}
+	if (rdst)
+	{
+		dstRect.x = rdst->corner.x;
+		dstRect.y = rdst->corner.y;
+		dstRect.w = rdst->extent.width;
+		dstRect.h = rdst->extent.height;
+		drp = &dstRect;
+	}
+	if (add_sub > 0)
+	{
+		add = -1;
+		sub = 1;
+	} 
+	else if (add_sub < 0) 
+	{
+		add = 1;
+		sub = -1;
+	}
+	TFB_BlitSurface (src, srp, dst, drp, sub, add);
+	UnlockMutex (srcImg->mutex);
+	UnlockMutex (dstImg->mutex);
 }
 
-	// Generate an array of all pixels in FramePtr
+// Generate an array of all pixels in FramePtr
 // The pixel format is :
 //  bits 25-32 : red
 //  bits 17-24 : green
 //  bits 9-16  : blue
 //  bits 1-8   : alpha
-Uint32 **getpixelarray(FRAMEPTR FramePtr,int width, int height)
+Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
 {
 	Uint8 r,g,b,a;
 	Uint32 p, **map;
+	TFB_Image *tfbImg;
 	SDL_Surface *img;
 	GetPixelFn getpix;
 	int x,y;
 
-    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	LockMutex (tfbImg->mutex);
+    img = tfbImg->NormalImg;
 	SDL_LockSurface (img);
 	getpix = getpixel_for (img);
-	map=(Uint32 **)HMalloc(sizeof(Uint32 *)*(height+1));
-	for (y=0;y<height;y++) {
-		map[y]=(Uint32 *)HCalloc(width*sizeof(Uint32));
-		if(y>=img->h) {
+	map=(Uint32 **)HMalloc (sizeof(Uint32 *) * (height + 1));
+	for (y = 0; y < height; y++)
+	{
+		map[y]=(Uint32 *)HCalloc (width * sizeof(Uint32));
+		if(y >= img->h)
 			continue;
-		}
-		for(x=0;x<img->w;x++) {
-				p=getpix(img,x,y);
-				SDL_GetRGBA(p,img->format,&r,&g,&b,&a);
-				map[y][x]=r<<24 | g<<16 | b<<8 | a;
+		for(x = 0; x < img->w; x++)
+		{
+				p = getpix (img, x, y);
+				SDL_GetRGBA (p,img->format, &r, &g, &b, &a);
+				map[y][x] = r << 24 | g << 16 | b << 8 | a;
 		}
 	}
 	SDL_UnlockSurface (img);
-	map[y]=NULL;
-	return(map);
+	UnlockMutex (tfbImg->mutex);
+	map[y] = NULL;
+	return (map);
 
 }
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
@@ -238,7 +296,7 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr,int width, int height)
 Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 {
 	SDL_Surface *img= ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
-	return(SDL_MapRGBA(img->format,r,g,b,a));
+	return (SDL_MapRGBA (img->format, r, g, b, a));
 }
 
 MEM_HANDLE

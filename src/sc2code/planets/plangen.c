@@ -1087,8 +1087,11 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	OldContext = SetContext (TaskContext);
 	pSolarSysState->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * 255);
-	pSolarSysState->TintFrame = CaptureDrawable (
+	pSolarSysState->TintFrame[0] = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 1)
+			);
+	pSolarSysState->TintFrame[1] = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)1, 1)
 			);
 
 	pSolarSysState->PlanetFrameArray = CaptureDrawable (
@@ -1276,30 +1279,18 @@ rotate_planet_task (void *data)
 		view_index = MAP_WIDTH;
 		do
 		{
-			CONTEXT OldContext;
-			
-			SetSemaphore (GraphicsSem);
-			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
+			if (((PSOLARSYS_STATE volatile)pSS)->PauseRotate !=1
+//			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
-				OldContext = SetContext (SpaceContext);
-				BatchGraphics ();
-				if (repair)
-				{
-					RECT r;
-	
-					r.corner.x = 0;
-					r.corner.y = 0;
-					r.extent.width = SIS_SCREEN_WIDTH;
-					r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
-					RepairBackRect (&r);
-				}
+				//PauseRotate == 2 is a single-step
+				if (((PSOLARSYS_STATE volatile)pSS)->PauseRotate == 2)
+					pSS->PauseRotate = 1;
+
 				repair = RotatePlanet (x, angle, SIS_SCREEN_WIDTH >> 1,
 						(148 - SIS_ORG_Y) >> 1, zooming
 						);
 
-				UnbatchGraphics ();
-				SetContext (OldContext);
 				if (!repair && zooming)
 				{
 					zooming = FALSE;
@@ -1307,7 +1298,6 @@ rotate_planet_task (void *data)
 				}
 				x += i;
 			}
-			ClearSemaphore (GraphicsSem);
 
 			SleepThreadUntil (TimeIn + (ONE_SECOND * ROTATION_TIME) / (MAP_WIDTH));
 //			SleepThreadUntil (TimeIn + (ONE_SECOND * 5 / (MAP_WIDTH-32)));

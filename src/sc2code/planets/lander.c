@@ -21,6 +21,10 @@
 #include "lifeform.h"
 #include "libs/graphics/gfx_common.h"
 
+//define SPIN_ON_LAUNCH tolet the planet spin while
+// the lander animation is playing
+#undef SPIN_ON_LAUNCH
+
 //Added by Chris
 
 void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
@@ -1445,6 +1449,9 @@ InitPlanetSide (void)
 		DrawStamp (&s);
 		ClearSemaphore (GraphicsSem);
 	}
+#ifndef SPIN_ON_LAUNCH
+	pSolarSysState->PauseRotate = 1;
+#endif
 	SleepThreadUntil (Time + (ONE_SECOND / 15));
 
 	SetSemaphore (GraphicsSem);
@@ -1452,7 +1459,12 @@ InitPlanetSide (void)
 			GAME_SOUND_PRIORITY + 1);
 	SetContext (SpaceContext);
 	AnimateLaunch (LanderFrame[5], FALSE);
-
+#ifdef SPIN_ON_LAUNCH
+	pSolarSysState->PauseRotate = 1;
+	ClearSemaphore (GraphicsSem);
+	SleepThread (1);
+	SetSemaphore (GraphicsSem);
+#endif
 	// Adjust pSolarSysState->MenuState.first_item by a random jitter.
 #define RANDOM_MISS 64
 	pt = pSolarSysState->MenuState.first_item;
@@ -1853,7 +1865,7 @@ ReturnToOrbit (PRECT pRect)
 	SetContext (OldContext);
 	ClearSemaphore (GraphicsSem);
 
-	SetPlanetTilt (0);
+//	SetPlanetTilt (0);
 }
 
 void
@@ -1997,13 +2009,17 @@ PlanetSide (PMENU_STATE pMS)
 			}
 
 			ReturnToOrbit (&r);
-
-			pSolarSysState->MenuState.Initialized -= 4;
+#ifdef SPIN_ON_LAUNCH
+			// If PauseRotate is set to 2 the plaet will be displayed, but won't rotate
+			// Until the lander animation is complete
+			pSolarSysState->PauseRotate = 0;
+			// Give The RotatePlanet thread a slice to draw the planet
 			SleepThread (1);
-			pSolarSysState->MenuState.Initialized += 4;
+#endif
 
 			SetSemaphore (GraphicsSem);
 			SetContext (SpaceContext);
+
 			AnimateLaunch (LanderFrame[6], TRUE);
 			DeltaSISGauges (crew_left, 0, 0);
 
@@ -2054,6 +2070,7 @@ PlanetSide (PMENU_STATE pMS)
 	MenuSounds = PSD.OldMenuSounds;
 	
 	pSolarSysState->MenuState.Initialized -= 4;
+	pSolarSysState->PauseRotate = 0;
 }
 
 void

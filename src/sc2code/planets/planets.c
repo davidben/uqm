@@ -61,7 +61,6 @@ void
 LoadPlanet (BOOLEAN IsDefined)
 {
 	STAMP s;
-
 	SetSemaphore (GraphicsSem);
 
 	BatchGraphics ();
@@ -114,16 +113,11 @@ LoadPlanet (BOOLEAN IsDefined)
 		}
 		DrawSISMessage (NULL_PTR);
 		DrawSISTitle (GLOBAL_SIS (PlanetName));
-
-		DrawStarBackGround (TRUE);
 	}
 
 	SetContext (SpaceContext);
 	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
-	BatchGraphics ();
-	DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
-	UnbatchGraphics ();
 
 	s.frame = pSolarSysState->PlanetSideFrame[2];
 	if (s.frame)
@@ -136,6 +130,10 @@ LoadPlanet (BOOLEAN IsDefined)
 	if (!(LastActivity & CHECK_LOAD))
 	{
 		RECT r;
+
+		BatchGraphics ();
+		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+		UnbatchGraphics ();
 
 		r.corner.x = SIS_ORG_X;
 		r.corner.y = SIS_ORG_Y;
@@ -167,12 +165,19 @@ LoadPlanet (BOOLEAN IsDefined)
 	if (LastActivity & CHECK_LOAD)
 	{
 		RECT r;
+		CONTEXT oldContext;
 
 		r.corner.x = SIS_ORG_X;
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT;
 		SetSemaphore (GraphicsSem);
+		oldContext = SetContext (SpaceContext);
+		DrawStarBackGround (TRUE);
+		SetContext (oldContext);
+		BatchGraphics();
+		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+		UnbatchGraphics();
 		ScreenTransition (3, &r);
 		UnbatchGraphics ();
 		LoadIntoExtraScreen (&r);
@@ -220,22 +225,24 @@ FreePlanet (void)
 	HFree (pSolarSysState->isPFADefined);
 	pSolarSysState->isPFADefined = 0;
 	for (i = 0; i < 2; i++)
+	{
 		if (pSolarSysState->ScaleFrame[i]) 
 		{
 			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
 			pSolarSysState->ScaleFrame[i]=0;
 		}
+		if (pSolarSysState->TintFrame[i])
+		{
+			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame[i]));
+			pSolarSysState->TintFrame[i] = 0;
+		}
+	}
+	pSolarSysState->Tint_rgb = 0;
 	if(pSolarSysState->ShieldFrame != 0)
 	{
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
 		pSolarSysState->ShieldFrame = 0;
 	}
-	if (pSolarSysState->TintFrame != 0)
-	{
-		DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
-		pSolarSysState->TintFrame = 0;
-	}
-	pSolarSysState->Tint_rgb = 0;
 	if (pSolarSysState->lpTopoMap!=0)
 	{
 		for (i=0; pSolarSysState->lpTopoMap[i] != NULL; i++)

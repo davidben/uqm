@@ -29,6 +29,10 @@ void WaitForNoInput (SIZE Duration);
 
 //End Added by Chris
 
+// define SPIN_ON_SCAN to allow the planet to spin 
+// while scaning  is going on
+#undef SPIN_ON_SCAN
+
 #define FLASH_INDEX 105
 #define FLASH_WIDTH 9
 #define FLASH_HEIGHT 9
@@ -761,8 +765,10 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			return (PickPlanetSide (InputState, pMS));
 		}
 
-pSolarSysState->MenuState.Initialized += 4;
-
+		pSolarSysState->MenuState.Initialized += 4;
+#ifndef SPIN_ON_SCAN
+		pSolarSysState->PauseRotate = 1;
+#endif
 		if ((min_scan = pMS->CurState) != AUTO_SCAN)
 			max_scan = min_scan;
 		else
@@ -857,7 +863,7 @@ pSolarSysState->MenuState.Initialized += 4;
 				DrawScannedStuff (i, min_scan);
 			UnbatchGraphics ();
 			ClearSemaphore (GraphicsSem);
-			
+//			FlushGraphics ();
 			SleepThread (2);
 		}
 	}
@@ -884,7 +890,8 @@ pSolarSysState->MenuState.Initialized += 4;
 		else
 			ClearSemaphore (GraphicsSem);
 			
-pSolarSysState->MenuState.Initialized -= 4;
+		pSolarSysState->MenuState.Initialized -= 4;
+		pSolarSysState->PauseRotate = 0;
 		WaitForNoInput (ONE_SECOND / 2);
 	}
 	else if (!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)

@@ -20,15 +20,27 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 
+// define USE_ADDITIVE_SCAN_BLIT to use additive blittting
+// instead of transparency for the planet scans.
+// It still doesn't look right though (it is too bright)
+#define USE_ADDITIVE_SCAN_BLIT
+
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
 void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
+
 void fill_frame_rgb (FRAMEPTR FramePtr, DWORD color, int x0, int y0, int x, int y);
 
+void add_sub_frame (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int add_sub);
+
 extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
-extern void RenderLevelMasks (int, int);
+
+extern void RenderLevelMasks (int);
+
+void RepairBackRect (PRECT pRect);
+
 // RotatePlanet
 // This will take care of zooming into a planet on orbit, generating the planet frames
 // And applying the shield.
@@ -45,10 +57,13 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 	FRAME pFrame[2];
 	COUNT i, num_frames;
 	static COUNT scale_amt = PLANET_INIT_ZOOM_SIZE;
+	RECT r,  *rp = NULL;
+	CONTEXT OldContext;
+
 
 	// If thiis frame hasn' been generted, generate it
 	if (! pSolarSysState->isPFADefined[x]) {
-		RenderLevelMasks (x, da);
+		RenderLevelMasks (x);
 		pSolarSysState->isPFADefined[x] = 1;
 	}
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
@@ -56,8 +71,14 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 	if (num_frames == 2)
 		pFrame[1] = pSolarSysState->ShieldFrame;
 	if (zoom)
-	{
-		//  we're zooming in, take care of scalinng the frames
+	{	
+		r.corner.x = 0;
+		r.corner.y = 0;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
+		rp = &r;
+
+		//  we're zooming in, take care of scaling the frames
 		for (i=0; i < num_frames; i++)
 		{
 			COUNT frameh, this_scale;
@@ -91,6 +112,11 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 			zoom = 0;
 		}
 	}
+	SetSemaphore (GraphicsSem);
+	OldContext = SetContext (SpaceContext);
+	BatchGraphics ();
+	if (rp)
+		RepairBackRect (rp);
 	s.origin.x = dx;
 	s.origin.y = dy;
 	for (i = 0; i < num_frames; i++)
@@ -98,6 +124,9 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		s.frame = pFrame[i];
 		DrawStamp (&s);
 	}
+	UnbatchGraphics ();
+	SetContext (OldContext);
+	ClearSemaphore (GraphicsSem);
 	return (zoom);
 }
 
@@ -109,35 +138,50 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	s.origin.x = x;
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
-	DrawStamp (&s);
 	if (pSolarSysState->ShieldFrame != 0)
 	{
 		rgb = 0x1f << 10;
 		dy = GetFrameHeight (s.frame);
 		a = 200;
 	}
-	if (rgb)
+	BatchGraphics ();
+	if (! rgb)
+		DrawStamp (&s);
+	else
 	{
 		UBYTE r, g, b;
 		DWORD p;
 		COUNT framew;
-		FRAME tintFrame=pSolarSysState->TintFrame;
-
+		RECT drect;
+		FRAME tintFrame = pSolarSysState->TintFrame[0];
+		FRAME tintLine = pSolarSysState->TintFrame[1];
 		if (rgb != pSolarSysState->Tint_rgb)
 		{
-			DWORD clear;
 			pSolarSysState->Tint_rgb=rgb;
-			clear = frame_mapRGBA (tintFrame, 0, 0, 0, 0);
-			fill_frame_rgb (tintFrame, clear, 0, 0, 0, 0);
+			// Buffer the topoMap to the tintFrame;
+			add_sub_frame (s.frame, NULL, tintFrame, NULL, 0);
+			r = (rgb & (0x1f << 10)) >> 8;
+			g = (rgb & (0x1f << 5)) >> 3;
+			b = (rgb & 0x1f) << 2;
+#ifdef USE_ADDITIVE_SCAN_BLIT
+			a = 255;
+#endif
+			p = frame_mapRGBA (tintFrame, r, g, b, a);
+			fill_frame_rgb (tintLine, p, 0, 0, 0, 0);
 		}
 		framew = GetFrameWidth (tintFrame);
-		r = (rgb & (0x1f << 10)) >> 8;
-		g = (rgb & (0x1f << 5)) >> 3;
-		b = (rgb & 0x1f) << 2;
-		p = frame_mapRGBA (tintFrame, r, g, b, a);
-		fill_frame_rgb (tintFrame, p, 0, 0, framew, dy);
+		drect.corner.x = 0;
+		drect.corner.y = dy;
+		drect.extent.width = framew;
+		drect.extent.height = 1;
+#ifdef USE_ADDITIVE_SCAN_BLIT
+		add_sub_frame (tintLine, NULL, tintFrame, &drect, 1);
+#else
+		add_sub_frame (tintLine, NULL, tintFrame, &drect, 0);
+#endif
 		s.frame = tintFrame;
 		DrawStamp (&s);
 	}
+	UnbatchGraphics ();
 }
 

@@ -1150,6 +1150,7 @@ PickGame (PMENU_STATE
 	if (pSolarSysState)
 	{
 		++pSolarSysState->MenuState.Initialized;
+		pSolarSysState->PauseRotate = 1;
 		TaskSwitch ();
 	}
 
@@ -1197,6 +1198,8 @@ if (CommData.ConversationPhrases
 		if (pSolarSysState)
 		{
 			--pSolarSysState->MenuState.Initialized;
+			pSolarSysState->PauseRotate = 0;
+
 			if (CommData.ConversationPhrases == 0 && !PLRPlaying ((MUSIC_REF)~0))
 			{
 				if (pSolarSysState->MenuState.Initialized < 3)
