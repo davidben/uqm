@@ -1,4 +1,4 @@
-#include "SDL.h"
+s over#include "SDL.h"
 #include "sdl_common.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"
@@ -299,7 +299,7 @@ TFB_DrawCanvas_Rescale (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT si
 	 */
 	csx = 0;
 	csax = sax;
-	for (x = 0; x <= dst->w; x++) {
+	for (x = 0; x <= size.width; x++) {
 		*csax = csx >> 16;
 		csax++;
 		csx &= 0xffff;
@@ -307,7 +307,7 @@ TFB_DrawCanvas_Rescale (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT si
 	}
 	csy = 0;
 	csay = say;
-	for (y = 0; y <= dst->h; y++) {
+	for (y = 0; y <= size.height; y++) {
 		*csay = csy >> 16;
 		csay++;
 		csy &= 0xffff;
