@@ -309,19 +309,7 @@ SOURCE=..\sc2code\libs\graphics\intersec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\line.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\loaddisp.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\makepoly.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\map.c
 # End Source File
 # Begin Source File
 
@@ -329,19 +317,7 @@ SOURCE=..\sc2code\libs\graphics\pixmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\poly.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\rect.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\resgfx.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\stamp.c
 # End Source File
 # Begin Source File
 
@@ -350,6 +326,14 @@ SOURCE=..\sc2code\libs\graphics\tfb_draw.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\tfb_draw.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\tfb_prim.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\tfb_prim.h
 # End Source File
 # End Group
 # Begin Group "input"
