@@ -24,36 +24,11 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
 
-static Mutex DCQ_lock;
-
-// variables for making the DCQ lock re-entrant
-static int DCQ_locking_depth = 0;
-static Uint32 DCQ_locking_thread = 0;
+static RecursiveMutex DCQ_Mutex;
 
 TFB_DrawCommand DCQ[DCQ_MAX];
 
 TFB_DrawCommandQueue DrawCommandQueue;
-
-// DCQ Synchronization: SDL-specific implementation of re-entrant
-// locks to protect the Draw Command Queue.  Lock is re-entrant to
-// allow livelock deterrence to be written much more cleanly.
-
-static void
-_lock (void)
-{
-	Uint32 current_thread = SDL_ThreadID ();
-	if (DCQ_locking_thread != current_thread)
-	{
-		if (LockMutex (DCQ_lock))
-		{
-			fprintf (stderr, "DCQ lock attempt failed!\n");
-			return;
-		}
-		DCQ_locking_thread = current_thread;
-	}
-	++DCQ_locking_depth;
-	// fprintf (stderr, "DCQ_lock locking depth: %i\n", DCQ_locking_depth);
-}
 
 // Wait for the queue to be emptied.
 static void
@@ -64,19 +39,19 @@ TFB_WaitForSpace (int requested_slots)
 	// Restore the DCQ locking level.  I *think* this is
 	// always 1, but...
 	TFB_BatchReset ();
-	old_depth = DCQ_locking_depth;
+	old_depth = GetRecursiveMutexDepth (DCQ_Mutex);
 	for (i = 0; i < old_depth; i++)
-		Unlock_DCQ ();
+		UnlockRecursiveMutex (DCQ_Mutex);
 	WaitCondVar (RenderingCond);
 	for (i = 0; i < old_depth; i++)
-		_lock ();
+		LockRecursiveMutex (DCQ_Mutex);
 	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
 }
 
 void
 Lock_DCQ (int slots)
 {
-	_lock ();
+	LockRecursiveMutex (DCQ_Mutex);
 	while (DrawCommandQueue.FullSize >= DCQ_MAX - slots)
 	{
 		TFB_WaitForSpace (slots);
@@ -86,21 +61,7 @@ Lock_DCQ (int slots)
 void
 Unlock_DCQ (void)
 {
-	Uint32 current_thread = SDL_ThreadID ();
-	if (DCQ_locking_thread != current_thread)
-	{
-		fprintf (stderr, "%8x attempted to unlock the DCQ when it didn't hold it!\n", current_thread);
-	}
-	else
-	{
-		--DCQ_locking_depth;
-		// fprintf (stderr, "DCQ_lock locking depth: %i\n", DCQ_locking_depth);
-		if (!DCQ_locking_depth)
-		{
-			DCQ_locking_thread = 0;
-			UnlockMutex (DCQ_lock);
-		}
-	}
+	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
 // Always have the DCQ locked when calling this.
@@ -127,21 +88,21 @@ Synchronize_DCQ (void)
 void
 TFB_BatchGraphics (void)
 {
-	_lock ();
+	LockRecursiveMutex (DCQ_Mutex);
 	DrawCommandQueue.Batching++;
-	Unlock_DCQ ();
+	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
 void
 TFB_UnbatchGraphics (void)
-{
-	_lock ();
+{	
+	LockRecursiveMutex (DCQ_Mutex);
 	if (DrawCommandQueue.Batching)
 	{
 		DrawCommandQueue.Batching--;
 	}
 	Synchronize_DCQ ();
-	Unlock_DCQ ();
+	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
 // Cancel all pending batch operations, making them unbatched.  This will
@@ -150,28 +111,32 @@ TFB_UnbatchGraphics (void)
 void
 TFB_BatchReset (void)
 {
-	_lock ();
+	LockRecursiveMutex (DCQ_Mutex);
 	DrawCommandQueue.Batching = 0;
 	Synchronize_DCQ ();
-	Unlock_DCQ ();
+	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
 
 // Draw Command Queue Stuff
 
 void
-TFB_DrawCommandQueue_Create()
+Init_DrawCommandQueue (void)
 {
-		DrawCommandQueue.Back = 0;
-		DrawCommandQueue.Front = 0;
-		DrawCommandQueue.InsertionPoint = 0;
-		DrawCommandQueue.Batching = 0;
-		DrawCommandQueue.FullSize = 0;
-		DrawCommandQueue.Size = 0;
-		DCQ_locking_depth = 0;
-		DCQ_locking_thread = 0;
+	DrawCommandQueue.Back = 0;
+	DrawCommandQueue.Front = 0;
+	DrawCommandQueue.InsertionPoint = 0;
+	DrawCommandQueue.Batching = 0;
+	DrawCommandQueue.FullSize = 0;
+	DrawCommandQueue.Size = 0;
 
-		DCQ_lock = CreateMutex ();
+	DCQ_Mutex = CreateRecursiveMutex ("DCQ");
+}
+
+void
+Uninit_DrawCommandQueue (void)
+{
+	DestroyRecursiveMutex (DCQ_Mutex);
 }
 
 void
@@ -188,7 +153,7 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 int
 TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 {
-	_lock ();
+	LockRecursiveMutex (DCQ_Mutex);
 
 	if (DrawCommandQueue.Size == 0)
 	{
@@ -209,7 +174,7 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 
 	DrawCommandQueue.Size--;
 	DrawCommandQueue.FullSize--;
-	Unlock_DCQ ();
+	UnlockRecursiveMutex (DCQ_Mutex);
 
 	return 1;
 }
@@ -217,14 +182,14 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 void
 TFB_DrawCommandQueue_Clear ()
 {
-	_lock ();
+	LockRecursiveMutex (DCQ_Mutex);
 	DrawCommandQueue.Size = 0;
 	DrawCommandQueue.Front = 0;
 	DrawCommandQueue.Back = 0;
 	DrawCommandQueue.Batching = 0;
 	DrawCommandQueue.FullSize = 0;
 	DrawCommandQueue.InsertionPoint = 0;
-	Unlock_DCQ ();
+	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
 void

@@ -87,13 +87,86 @@ SDLWrapper_WaitCondVar (CondVar cv) {
 	}
 }
 
+/* Code for recursive mutexes. Adapted from mixSDL code, which was adapted from the
+   original DCQ code. */
+/* TODO: Make these be forwarded calls instead of just implementations of threadlib.h functions. */
+/* TODO: Remove the names when compiling under release mode. */
+
+typedef struct _recm {
+	SDL_mutex *mutex;
+	Uint32 thread_id;
+	Uint32 locks;
+	const char *name;
+} RecM;
+
+RecursiveMutex
+CreateRecursiveMutex (const char *name)
+{
+	RecM *mtx = (RecM *) HMalloc (sizeof (struct _recm));
+
+	mtx->thread_id = 0;
+	mtx->mutex = SDL_CreateMutex ();
+	mtx->name = name;
+	mtx->locks = 0;
+	return (RecursiveMutex) mtx;
+}
+
+void
+DestroyRecursiveMutex (RecursiveMutex val)
+{
+	RecM *mtx = (RecM *)val;
+	SDL_DestroyMutex (mtx->mutex);
+	HFree (mtx);
+}
+
+void
+LockRecursiveMutex (RecursiveMutex val)
+{
+	RecM *mtx = (RecM *)val;
+	Uint32 thread_id = SDL_ThreadID();
+	if (mtx->thread_id != thread_id)
+	{
+		while (SDL_mutexP (mtx->mutex))
+			TaskSwitch ();
+		mtx->thread_id = thread_id;
+	}
+	mtx->locks++;
+}
+
+void
+UnlockRecursiveMutex (RecursiveMutex val)
+{
+	RecM *mtx = (RecM *)val;
+	Uint32 thread_id = SDL_ThreadID();
+	if (mtx->thread_id != thread_id)
+	{
+		fprintf (stderr, "%8x attempted to unlock %s when it didn't hold it\n", thread_id, mtx->name);
+	}
+	else
+	{
+		mtx->locks--;
+		if (!mtx->locks)
+		{
+			mtx->thread_id = 0;
+			SDL_mutexV (mtx->mutex);
+		}
+	}
+}
+
+int
+GetRecursiveMutexDepth (RecursiveMutex val)
+{
+	RecM *mtx = (RecM *)val;
+	return mtx->locks;
+}
+
 /* Code for cross-thread mutexes.  The prototypes for these functions are in threadlib.h. */
 
 typedef struct _ctm {
 	SDL_mutex *mutex;
 	SDL_cond  *cond;
 	const char *name;
-	BOOLEAN   locked;
+	Uint32    locker;
 } _NativeCTM;
 
 CrossThreadMutex
@@ -103,7 +176,7 @@ CreateCrossThreadMutex (const char *name)
 	result->mutex  = SDL_CreateMutex ();
 	result->cond   = SDL_CreateCond ();
 	result->name   = name;
-	result->locked = FALSE;
+	result->locker = 0;
 	return (CrossThreadMutex)result;
 }
 
@@ -128,13 +201,13 @@ LockCrossThreadMutex (CrossThreadMutex val)
 		fprintf (stderr, "LockCrossThreadMutex failed to lock internal mutex in %s!\n", ctm->name);
 		return -1;
 	}
-	while (ctm->locked)
+	while (ctm->locker)
 	{
 		// fprintf (stderr, "Thread %8x goes to sleep, waiting on %s\n", SDL_ThreadID (), ctm->name);
 		SDL_CondWait (ctm->cond, ctm->mutex);
-		// fprintf (stderr, "Thread %8x awakens.\n", SDL_ThreadID ());
+		// fprintf (stderr, "Thread %8x awakens, acquires %s.\n", SDL_ThreadID (), ctm->name);
 	}
-	ctm->locked = TRUE;
+	ctm->locker = SDL_ThreadID ();
 	SDL_mutexV (ctm->mutex);
 	return 0; /* success */
 }
@@ -148,9 +221,13 @@ UnlockCrossThreadMutex (CrossThreadMutex val)
 		fprintf (stderr, "UnlockCrossThreadMutex failed to lock internal mutex in %s!\n", ctm->name);
 		return;
 	}
-	if (ctm->locked)
+	if (ctm->locker)
 	{
-		ctm->locked = FALSE;
+		if (ctm->locker != SDL_ThreadID ())
+		{
+			fprintf (stderr, "Cross-thread unlock on %s.\n", ctm->name);
+		}
+		ctm->locker = 0;
 		SDL_CondSignal (ctm->cond);
 	}
 	else

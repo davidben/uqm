@@ -61,13 +61,12 @@ static mixSDL_Quality mixer_quality;
 static uint32 mixer_datasize;
 static sint32 *mixer_data = 0;
 
-mixSDL_Mutex_info mixer_mutexes[3];
 /* when locking more than one mutex
  * you must lock them in this order
  */
-static mixSDL_Mutex src_mutex = mixer_mutexes + 0;
-static mixSDL_Mutex buf_mutex = mixer_mutexes + 1;
-static mixSDL_Mutex act_mutex = mixer_mutexes + 2;
+static RecursiveMutex src_mutex;
+static RecursiveMutex buf_mutex;
+static RecursiveMutex act_mutex;
 
 #define MAX_SOURCES 8
 mixSDL_Source *active_sources[MAX_SOURCES];
@@ -76,56 +75,6 @@ mixSDL_Source *active_sources[MAX_SOURCES];
 /*************************************************
  *  Internals
  */
-
-static void
-mixSDL_InitMutex (mixSDL_Mutex mtx, char* name)
-{
-	mtx->thread_id = 0;
-	mtx->sem = CreateSemaphore (1, name);
-	mtx->locks = 0;
-}
-
-static void
-mixSDL_TermMutex (mixSDL_Mutex mtx)
-{
-	DestroySemaphore (mtx->sem);
-	mtx->sem = 0;
-	mtx->thread_id = 0;
-}
-
-static void
-mixSDL_LockMutex (mixSDL_Mutex mtx)
-{
-	uint32 thread_id = SDL_ThreadID();
-	if (mtx->thread_id != thread_id)
-	{
-		SetSemaphore (mtx->sem);
-		mtx->thread_id = thread_id;
-	}
-	mtx->locks++;
-}
-
-static void
-mixSDL_UnlockMutex (mixSDL_Mutex mtx)
-{
-	uint32 thread_id = SDL_ThreadID();
-	if (mtx->thread_id != thread_id)
-	{
-#ifdef DEBUG
-		fprintf (stderr, "%8x attempted to unlock the mutex "
-				"when it didn't hold it\n", thread_id);
-#endif
-	}
-	else
-	{
-		mtx->locks--;
-		if (!mtx->locks)
-		{
-			mtx->thread_id = 0;
-			ClearSemaphore (mtx->sem);
-		}
-	}
-}
 
 static void
 mixSDL_SetError (uint32 error)
@@ -260,9 +209,9 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf,
 	mixer_datasize = samples_buf * mixer_spec.channels * 2;
 	mixer_data = (sint32 *) HMalloc (sizeof (uint32) * mixer_datasize);
 
-	mixSDL_InitMutex (src_mutex, "mixSDL_SourceMutex");
-	mixSDL_InitMutex (buf_mutex, "mixSDL_BufferMutex");
-	mixSDL_InitMutex (act_mutex, "mixSDL_ActiveMutex");
+	src_mutex = CreateRecursiveMutex("mixSDL_SourceMutex");
+	buf_mutex = CreateRecursiveMutex("mixSDL_BufferMutex");
+	act_mutex = CreateRecursiveMutex("mixSDL_ActiveMutex");
 
 	audio_opened = 1;
 	mixer_driver->PauseAudio (0);
@@ -286,9 +235,9 @@ mixSDL_CloseAudio (void)
 				mixer_data = 0;
 			}
 
-			mixSDL_TermMutex (src_mutex);
-			mixSDL_TermMutex (buf_mutex);
-			mixSDL_TermMutex (act_mutex);
+			DestroyRecursiveMutex (src_mutex);
+			DestroyRecursiveMutex (buf_mutex);
+			DestroyRecursiveMutex (act_mutex);
 		}
 		--audio_opened;
 	}
@@ -378,7 +327,7 @@ mixSDL_DeleteSources (uint32 n, mixSDL_Object *psrcobj)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	/* check to make sure we can delete all sources */
 	for (i = n, pcurobj = psrcobj; i && pcurobj; i--, pcurobj++)
@@ -423,7 +372,7 @@ mixSDL_DeleteSources (uint32 n, mixSDL_Object *psrcobj)
 		}
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* check if really is a source */
@@ -436,9 +385,9 @@ mixSDL_IsSource (mixSDL_Object srcobj)
 	if (!src)
 		return false;
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 	ret = src->magic == mixSDL_srcMagic;
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 
 	return ret;
 }
@@ -459,7 +408,7 @@ mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -512,7 +461,7 @@ mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		}
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* set source float property */
@@ -530,7 +479,7 @@ mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname, float value)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -552,7 +501,7 @@ mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname, float value)
 		}
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* set source float array property (CURRENTLY NOT IMPLEMENTED) */
@@ -580,7 +529,7 @@ mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -615,7 +564,7 @@ mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		}
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* get source float property */
@@ -634,7 +583,7 @@ mixSDL_GetSourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -656,7 +605,7 @@ mixSDL_GetSourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		}
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* start the source; add it to active array */
@@ -674,7 +623,7 @@ mixSDL_SourcePlay (mixSDL_Object srcobj)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -694,7 +643,7 @@ mixSDL_SourcePlay (mixSDL_Object srcobj)
 		src->state = MIX_PLAYING;
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* stop the source; remove it from active array and requeue buffers */
@@ -712,7 +661,7 @@ mixSDL_SourceRewind (mixSDL_Object srcobj)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -726,7 +675,7 @@ mixSDL_SourceRewind (mixSDL_Object srcobj)
 		mixSDL_SourceRewind_internal (src);
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* pause the source; keep in active array */
@@ -744,7 +693,7 @@ mixSDL_SourcePause (mixSDL_Object srcobj)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -760,7 +709,7 @@ mixSDL_SourcePause (mixSDL_Object srcobj)
 		src->state = MIX_PAUSED;
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* stop the source; remove it from active array
@@ -780,7 +729,7 @@ mixSDL_SourceStop (mixSDL_Object srcobj)
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -797,7 +746,7 @@ mixSDL_SourceStop (mixSDL_Object srcobj)
 		src->state = MIX_STOPPED;
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /* queue buffers on the source */
@@ -819,7 +768,7 @@ mixSDL_SourceQueueBuffers (mixSDL_Object srcobj, uint32 n,
 		return;
 	}
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 	/* check to make sure we can safely queue all buffers */
 	for (i = n, pobj = pbufobj; i; i--, pobj++)
 	{
@@ -830,12 +779,12 @@ mixSDL_SourceQueueBuffers (mixSDL_Object srcobj, uint32 n,
 			break;
 		}
 	}
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 
 	if (i == 0)
 	{	/* all buffers checked out */
-		mixSDL_LockMutex (src_mutex);
-		mixSDL_LockMutex (buf_mutex);
+		LockRecursiveMutex (src_mutex);
+		LockRecursiveMutex (buf_mutex);
 
 		if (src->magic != mixSDL_srcMagic)
 		{
@@ -866,8 +815,8 @@ mixSDL_SourceQueueBuffers (mixSDL_Object srcobj, uint32 n,
 			}
 		}
 
-		mixSDL_UnlockMutex (buf_mutex);
-		mixSDL_UnlockMutex (src_mutex);
+		UnlockRecursiveMutex (buf_mutex);
+		UnlockRecursiveMutex (src_mutex);
 	}
 }
 
@@ -890,7 +839,7 @@ mixSDL_SourceUnqueueBuffers (mixSDL_Object srcobj, uint32 n,
 		return;
 	}
 
-	mixSDL_LockMutex (src_mutex);
+	LockRecursiveMutex (src_mutex);
 
 	if (src->magic != mixSDL_srcMagic)
 	{
@@ -905,7 +854,7 @@ mixSDL_SourceUnqueueBuffers (mixSDL_Object srcobj, uint32 n,
 	}
 	else
 	{
-		mixSDL_LockMutex (buf_mutex);
+		LockRecursiveMutex (buf_mutex);
 
 		/* check to make sure we can unqueue all buffers */
 		for (i = n, curbuf = src->firstqueued;
@@ -946,10 +895,10 @@ mixSDL_SourceUnqueueBuffers (mixSDL_Object srcobj, uint32 n,
 			}
 		}
 
-		mixSDL_UnlockMutex (buf_mutex);
+		UnlockRecursiveMutex (buf_mutex);
 	}
 
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (src_mutex);
 }
 
 /*************************************************
@@ -971,7 +920,7 @@ mixSDL_SourceUnqueueAll (mixSDL_Source *src)
 		return;
 	}
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 
 	for (buf = src->firstqueued; buf; buf = nextbuf)
 	{
@@ -987,7 +936,7 @@ mixSDL_SourceUnqueueAll (mixSDL_Source *src)
 		buf->next = 0;
 	}
 
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 
 	src->firstqueued = 0;
 	src->nextqueued = 0;
@@ -1005,7 +954,7 @@ mixSDL_SourceActivate (mixSDL_Source* src)
 {
 	uint32 i;
 
-	mixSDL_LockMutex (act_mutex);
+	LockRecursiveMutex (act_mutex);
 
 #ifdef DEBUG
 	/* check active sources, see if this source is there already */
@@ -1015,7 +964,7 @@ mixSDL_SourceActivate (mixSDL_Source* src)
 	{	/* source found */
 		fprintf (stderr, "mixSDL_SourceActivate(): "
 				"source already active in slot %u\n", i);
-		mixSDL_UnlockMutex (act_mutex);
+		UnlockRecursiveMutex (act_mutex);
 		return;
 	}
 #endif
@@ -1035,7 +984,7 @@ mixSDL_SourceActivate (mixSDL_Source* src)
 	}
 #endif
 
-	mixSDL_UnlockMutex (act_mutex);
+	UnlockRecursiveMutex (act_mutex);
 }
 
 /* remove the source from the active array */
@@ -1044,7 +993,7 @@ mixSDL_SourceDeactivate (mixSDL_Source* src)
 {
 	uint32 i;
 
-	mixSDL_LockMutex (act_mutex);
+	LockRecursiveMutex (act_mutex);
 
 	/* check active sources, see if this source is there */
 	for (i = 0; i < MAX_SOURCES && active_sources[i] != src; i++)
@@ -1060,7 +1009,7 @@ mixSDL_SourceDeactivate (mixSDL_Source* src)
 	}
 #endif
 
-	mixSDL_UnlockMutex (act_mutex);
+	UnlockRecursiveMutex (act_mutex);
 }
 
 static void
@@ -1082,7 +1031,7 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 	}
 #endif
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 
 	/* find last 'processed' buffer */
 	for (buf = src->firstqueued;
@@ -1112,7 +1061,7 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 	src->curbufofs = 0;
 	src->curbufdelta = 0;
 
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 }
 
 static void
@@ -1124,7 +1073,7 @@ mixSDL_SourceRewind_internal (mixSDL_Source *src)
 	if (src->state >= MIX_PLAYING)
 		mixSDL_SourceDeactivate (src);
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 
 	for (buf = src->firstqueued;
 			buf && buf->state != MIX_BUF_QUEUED;
@@ -1133,7 +1082,7 @@ mixSDL_SourceRewind_internal (mixSDL_Source *src)
 		buf->state = MIX_BUF_QUEUED;
 	}
 
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 
 	src->curbufofs = 0;
 	src->curbufdelta = 0;
@@ -1360,7 +1309,7 @@ mixSDL_DeleteBuffers (uint32 n, mixSDL_Object *pbufobj)
 		return;
 	}
 	
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 
 	/* check to make sure we can delete all buffers */
 	for (i = n, pcurobj = pbufobj; i && pcurobj; i--, pcurobj++)
@@ -1414,7 +1363,7 @@ mixSDL_DeleteBuffers (uint32 n, mixSDL_Object *pbufobj)
 			*pbufobj = 0;
 		}
 	}
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 }
 
 /* check if really a buffer object */
@@ -1427,9 +1376,9 @@ mixSDL_IsBuffer (mixSDL_Object bufobj)
 	if (!buf)
 		return false;
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 	ret = buf->magic == mixSDL_bufMagic;
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 
 	return ret;
 }
@@ -1450,11 +1399,11 @@ mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
 		return;
 	}
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 	
 	if (buf->locked)
 	{
-		mixSDL_UnlockMutex (buf_mutex);
+		UnlockRecursiveMutex (buf_mutex);
 		mixSDL_SetError (MIX_INVALID_OPERATION);
 #ifdef DEBUG
 		fprintf (stderr, "mixSDL_GetBufferi() called with locked buffer\n");
@@ -1497,7 +1446,7 @@ mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
 		}
 	}
 
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 }
 
 /* fill buffer with external data */
@@ -1518,11 +1467,11 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 		return;
 	}
 
-	mixSDL_LockMutex (buf_mutex);
+	LockRecursiveMutex (buf_mutex);
 	
 	if (buf->locked)
 	{
-		mixSDL_UnlockMutex (buf_mutex);
+		UnlockRecursiveMutex (buf_mutex);
 		mixSDL_SetError (MIX_INVALID_OPERATION);
 #ifdef DEBUG
 		fprintf (stderr, "mixSDL_BufferData() called "
@@ -1582,7 +1531,7 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 				{
 					/* format identical to internal */
 					buf->locked = true;
-					mixSDL_UnlockMutex (buf_mutex);
+					UnlockRecursiveMutex (buf_mutex);
 
 					memcpy (buf->data, data, size);
 					if (MIX_FORMAT_SAMPSIZE (mixer_format) == 1)
@@ -1593,7 +1542,7 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 							*dst ^= 0x80;
 					}
 
-					mixSDL_LockMutex (buf_mutex);
+					LockRecursiveMutex (buf_mutex);
 					buf->locked = false;
 				}
 				else 
@@ -1607,11 +1556,11 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 					conv.dstsize = dstsize;
 
 					buf->locked = true;
-					mixSDL_UnlockMutex (buf_mutex);
+					UnlockRecursiveMutex (buf_mutex);
 
 					mixSDL_ConvertBuffer_internal (&conv);
 					
-					mixSDL_LockMutex (buf_mutex);
+					LockRecursiveMutex (buf_mutex);
 					buf->locked = false;
 				}
 			}
@@ -1620,7 +1569,7 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 		}
 	}
 
-	mixSDL_UnlockMutex (buf_mutex);
+	UnlockRecursiveMutex (buf_mutex);
 }
 
 
@@ -2015,9 +1964,9 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	}
 
 	/* keep this order or die */
-	mixSDL_LockMutex (src_mutex);
-	mixSDL_LockMutex (buf_mutex);
-	mixSDL_LockMutex (act_mutex);
+	LockRecursiveMutex (src_mutex);
+	LockRecursiveMutex (buf_mutex);
+	LockRecursiveMutex (act_mutex);
 
 	/* first, collect data from sources and put into work-buffer */
 	for (data = mixer_data; data < end_data; ++data)
@@ -2068,9 +2017,9 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	}
 
 	/* keep this order or die */
-	mixSDL_UnlockMutex (act_mutex);
-	mixSDL_UnlockMutex (buf_mutex);
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (act_mutex);
+	UnlockRecursiveMutex (buf_mutex);
+	UnlockRecursiveMutex (src_mutex);
 
 	(void) userdata; // satisfying compiler - unused arg
 }
@@ -2167,9 +2116,9 @@ mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 	uint32 chans = MIX_FORMAT_CHANS (mixer_format);
 
 	/* keep this order or die */
-	mixSDL_LockMutex (src_mutex);
-	mixSDL_LockMutex (buf_mutex);
-	mixSDL_LockMutex (act_mutex);
+	LockRecursiveMutex (src_mutex);
+	LockRecursiveMutex (buf_mutex);
+	LockRecursiveMutex (act_mutex);
 
 	for (; stream < end_stream; stream += mixer_chansize)
 	{
@@ -2222,9 +2171,9 @@ mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 	}
 
 	/* keep this order or die */
-	mixSDL_UnlockMutex (act_mutex);
-	mixSDL_UnlockMutex (buf_mutex);
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (act_mutex);
+	UnlockRecursiveMutex (buf_mutex);
+	UnlockRecursiveMutex (src_mutex);
 
 	(void) userdata; // satisfying compiler - unused arg
 }
@@ -2238,9 +2187,9 @@ mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len)
 	uint32 chans = MIX_FORMAT_CHANS (mixer_format);
 
 	/* keep this order or die */
-	mixSDL_LockMutex (src_mutex);
-	mixSDL_LockMutex (buf_mutex);
-	mixSDL_LockMutex (act_mutex);
+	LockRecursiveMutex (src_mutex);
+	LockRecursiveMutex (buf_mutex);
+	LockRecursiveMutex (act_mutex);
 
 	for (; stream < end_stream; stream += mixer_chansize)
 	{
@@ -2264,9 +2213,9 @@ mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len)
 	}
 
 	/* keep this order or die */
-	mixSDL_UnlockMutex (act_mutex);
-	mixSDL_UnlockMutex (buf_mutex);
-	mixSDL_UnlockMutex (src_mutex);
+	UnlockRecursiveMutex (act_mutex);
+	UnlockRecursiveMutex (buf_mutex);
+	UnlockRecursiveMutex (src_mutex);
 
 	(void) userdata; // satisfying compiler - unused arg
 }

@@ -82,21 +82,6 @@ static void mixSDL_SourceDeactivate (mixSDL_Source* src);
 static __inline__ bool mixSDL_CheckBufferState (mixSDL_Buffer *buf,
 		const char* FuncName);
 
-/* Reentrant mutex */
-typedef struct
-{
-	Semaphore sem;
-	uint32 thread_id;
-	uint32 locks;
-
-} mixSDL_Mutex_info;
-typedef mixSDL_Mutex_info *mixSDL_Mutex;
-
-static void mixSDL_InitMutex (mixSDL_Mutex mtx, char* name);
-static void mixSDL_TermMutex (mixSDL_Mutex mtx);
-static void mixSDL_LockMutex (mixSDL_Mutex mtx);
-static void mixSDL_UnlockMutex (mixSDL_Mutex mtx);
-
 /* Clipping boundaries */
 #define MIX_S16_MAX ((double) SINT16_MAX)
 #define MIX_S16_MIN ((double) SINT16_MIN)

@@ -133,6 +133,13 @@ void DestroyMutex (Mutex sem);
 int LockMutex (Mutex sem);
 void UnlockMutex (Mutex sem);
 
+typedef void *RecursiveMutex;
+RecursiveMutex CreateRecursiveMutex (const char *name);
+void DestroyRecursiveMutex (RecursiveMutex m);
+void LockRecursiveMutex (RecursiveMutex m);
+void UnlockRecursiveMutex (RecursiveMutex m);
+int  GetRecursiveMutexDepth (RecursiveMutex m);
+
 typedef void *CrossThreadMutex;
 CrossThreadMutex CreateCrossThreadMutex (const char *name);
 void DestroyCrossThreadMutex (CrossThreadMutex ctm);

@@ -142,7 +142,9 @@ typedef struct tfb_drawcommandqueue
 	volatile int Size;
 } TFB_DrawCommandQueue;
 
-void TFB_DrawCommandQueue_Create (void);
+void Init_DrawCommandQueue (void);
+
+void Uninit_DrawCommandQueue (void);
 
 void TFB_BatchGraphics (void);
 

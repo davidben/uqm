@@ -93,6 +93,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		SDL_ShowCursor (SDL_DISABLE);
 
+	Init_DrawCommandQueue ();
+
 	TFB_FlushPaletteCache ();
 	TFB_DrawCanvas_Initialize ();
 
@@ -102,6 +104,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 void
 TFB_UninitGraphics (void)
 {
+	Uninit_DrawCommandQueue ();
 	SDL_Quit ();
 }
 

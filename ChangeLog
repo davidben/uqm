@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Abstracted the recursive mutexes in MixSDL and DCQ code -Michael
 - Introduced a new synchronization construct (CrossThreadMutex) and 
   migrated the GraphicsSem and clock_sem over to it (#359) -Michael
 - Replaced thread-local Semaphores with Mutexes (#359) -Michael

@@ -36,8 +36,6 @@ InitGraphics (int argc, char* argv[], COUNT KbytesRequired)
 {
 	BOOLEAN ret;
 
-	TFB_DrawCommandQueue_Create ();
-
 	LoadDisplay (&_pCurDisplay);
 	ActivateDisplay ();
 
