@@ -17,12 +17,8 @@
  */
 
 #include <ctype.h>
-#include <sys/param.h>
-#include <sys/param.h>
 #include "starcon.h"
-#include "options.h"
 #include "melee.h"
-#include "options.h"
 
 //Added by Chris
 
@@ -1800,13 +1796,11 @@ Melee (void)
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
 		DoInput ((PVOID)&MenuState);
 
-			char file[MAXPATHLEN];
 		while (SoundPlaying ())
 			;
 
 		{
 			FILE *save_fp;
-			char file[MAXPATHLEN];
 			BOOLEAN err;
 				
 			err = FALSE;
