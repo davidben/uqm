@@ -24,6 +24,10 @@
 #define PROFILE  1
 #define ROTATION_TIME 12
 
+// define USE_ALPHA_SHIELD to use an aloha overlay instead of
+// an additive overlay for the shield effect
+#undef USE_ALPHA_SHIELD
+
 extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
 		PRECT pRect, SIZE depth_delta);
 
@@ -40,6 +44,10 @@ DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
 
 FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
+
+void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0, int x, int y);
+
+void add_sub_frame (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int add_sub);
 
 DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
@@ -468,6 +476,22 @@ static void CreateShieldMask ()
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,SHIELD_RADIUS + 1));
 	HFree(rgba);
 	pSolarSysState->ShieldFrame = ShieldFrame;
+	{
+		// Applythe shield to the topo data
+		UBYTE a, blit_type;
+		FRAME tintFrame = pSolarSysState->TintFrame[0];
+#ifdef USE_ALPHA_SHIELD
+		a = 200;
+		blit_type = 0;
+#else
+		a = 255;
+		blit_type = 1;
+#endif
+		p = frame_mapRGBA (tintFrame, 255, 0, 0, a);
+		fill_frame_rgb (tintFrame, p, 0, 0, 0, 0);
+		add_sub_frame (tintFrame, NULL, pSolarSysState->TopoFrame, NULL, blit_type);
+	}
+
 }
 
 // RenderLevelMasks builds a frame for the rotating planet view

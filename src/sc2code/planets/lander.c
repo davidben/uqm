@@ -21,7 +21,7 @@
 #include "lifeform.h"
 #include "libs/graphics/gfx_common.h"
 
-//define SPIN_ON_LAUNCH tolet the planet spin while
+//define SPIN_ON_LAUNCH to let the planet spin while
 // the lander animation is playing
 #undef SPIN_ON_LAUNCH
 

@@ -138,12 +138,6 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	s.origin.x = x;
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
-	if (pSolarSysState->ShieldFrame != 0)
-	{
-		rgb = 0x1f << 10;
-		dy = GetFrameHeight (s.frame);
-		a = 200;
-	}
 	BatchGraphics ();
 	if (! rgb)
 		DrawStamp (&s);
