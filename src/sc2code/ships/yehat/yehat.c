@@ -19,6 +19,9 @@
 #include "ships/ship.h"
 #include "ships/yehat/resinst.h"
 
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 20
 #define MAX_ENERGY 10
 #define ENERGY_REGENERATION 2

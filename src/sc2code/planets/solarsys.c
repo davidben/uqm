@@ -16,10 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "libs/graphics/gfx_common.h"
+#include "colors.h"
 #include "controls.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "globdata.h"
+#include "init.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "state.h"
 #include "uqmdebug.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/mathlib.h"
+#include "libs/inplib.h"
+
 
 //#define DEBUG_SOLARSYS
 
@@ -75,8 +88,7 @@ GenerateMoons (void)
 	(*pSolarSysState->GenFunc) (GENERATE_MOONS);
 
 	facing = NORMALIZE_FACING (ANGLE_TO_FACING (
-			ARCTAN (pCurDesc->location.x, pCurDesc->location.y)
-			));
+			ARCTAN (pCurDesc->location.x, pCurDesc->location.y)));
 	for (i = 0, pMoonDesc = &pSolarSysState->MoonDesc[0];
 			i < MAX_MOONS; ++i, ++pMoonDesc)
 	{
@@ -95,15 +107,13 @@ GenerateMoons (void)
 			if (data_index == (BYTE)~0)
 			{
 				pMoonDesc->image.frame = SetAbsFrameIndex (
-						SpaceJunkFrame, 16
-						);
+						SpaceJunkFrame, 16);
 			}
 					/* Samatra */
 			else if (data_index == (BYTE)(~0 - 1))
 			{
 				pMoonDesc->image.frame = SetAbsFrameIndex (
-						SpaceJunkFrame, 19
-						);
+						SpaceJunkFrame, 19);
 			}
 		}
 	}
@@ -135,17 +145,12 @@ LoadIPData (void)
 	if (SpaceJunkFrame == 0)
 	{
 		SpaceJunkFrame = CaptureDrawable (
-				LoadGraphic (IPBKGND_MASK_PMAP_ANIM)
-				);
-		SISIPFrame =
-				CaptureDrawable (
-				LoadGraphic (SISIP_MASK_PMAP_ANIM)
-				);
+				LoadGraphic (IPBKGND_MASK_PMAP_ANIM));
+		SISIPFrame = CaptureDrawable (LoadGraphic (SISIP_MASK_PMAP_ANIM));
 
 		OrbitalCMap = CaptureColorMap (LoadColorMap (ORBPLAN_COLOR_MAP));
 		OrbitalFrame = CaptureDrawable (
-				LoadGraphic (ORBPLAN_MASK_PMAP_ANIM)
-				);
+				LoadGraphic (ORBPLAN_MASK_PMAP_ANIM));
 		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
 		SpaceMusic = LoadMusicInstance (IP_MUSIC);
@@ -175,8 +180,7 @@ LoadSolarSys (void)
 	{
 		GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
 				LOWORD (GLOBAL (ShipStamp.frame)),
-				LOBYTE (HIWORD (GLOBAL (ShipStamp.frame)))
-				);
+				LOBYTE (HIWORD (GLOBAL (ShipStamp.frame))));
 		++pSolarSysState->MenuState.Initialized;
 	}
 	else
@@ -184,21 +188,18 @@ LoadSolarSys (void)
 // LoadIPData ();
 	}
 
-	old_seed = TFB_SeedRandom (
-			MAKE_DWORD (CurStarDescPtr->star_pt.x,
-			CurStarDescPtr->star_pt.y)
-			);
+	old_seed = TFB_SeedRandom (MAKE_DWORD (CurStarDescPtr->star_pt.x,
+			CurStarDescPtr->star_pt.y));
 
-	SunFrame = SetAbsFrameIndex (SunFrame,
-			STAR_TYPE (CurStarDescPtr->Type)
-			);
+	SunFrame = SetAbsFrameIndex (SunFrame, STAR_TYPE (CurStarDescPtr->Type));
 
 	pCurDesc = &pSolarSysState->SunDesc[0];
 	pCurDesc->pPrevDesc = 0;
 	pCurDesc->rand_seed = TFB_Random ();
 
 	pCurDesc->data_index = STAR_TYPE (CurStarDescPtr->Type);
-	pCurDesc->location.x = pCurDesc->location.y = 0;
+	pCurDesc->location.x = 0;
+	pCurDesc->location.y = 0;
 	pCurDesc->image.origin = pCurDesc->location;
 	pCurDesc->image.frame = SunFrame;
 
@@ -273,15 +274,15 @@ LoadSolarSys (void)
 					sort_array[i + 1];
 	}
 
-	if ((i = LOBYTE (HIWORD (GLOBAL (ShipStamp.frame)))) == 0)
+	i = LOBYTE (HIWORD (GLOBAL (ShipStamp.frame)));
+	if (i == 0)
 		pSolarSysState->pBaseDesc =
 				pSolarSysState->pOrbitalDesc = pSolarSysState->PlanetDesc;
 	else
 	{
 		pSolarSysState->pOrbitalDesc = 0;
 		pSolarSysState->pBaseDesc = &pSolarSysState->PlanetDesc[i - 1];
-		pSolarSysState->SunDesc[0].location =
-				GLOBAL (ip_location);
+		pSolarSysState->SunDesc[0].location = GLOBAL (ip_location);
 		GenerateMoons ();
 
 		SET_GAME_STATE (PLANETARY_LANDING, 0);
@@ -297,8 +298,7 @@ LoadSolarSys (void)
 				++num_thrusters;
 		}
 		pSolarSysState->max_ship_speed = (BYTE)(
-				(num_thrusters + 5) * IP_SHIP_THRUST_INCREMENT
-				);
+				(num_thrusters + 5) * IP_SHIP_THRUST_INCREMENT);
 
 		pSolarSysState->turn_wait = IP_SHIP_TURN_WAIT;
 		for (i = 0; i < NUM_JET_SLOTS; ++i)
@@ -311,21 +311,22 @@ LoadSolarSys (void)
 	i = pSolarSysState->MenuState.Initialized;
 	if (i)
 	{
-		if ((i -= 2) == 0)
-			pSolarSysState->pOrbitalDesc = pSolarSysState->pBaseDesc->pPrevDesc;
+		i -= 2;
+		if (i == 0)
+			pSolarSysState->pOrbitalDesc =
+					pSolarSysState->pBaseDesc->pPrevDesc;
 		else
 			pSolarSysState->pOrbitalDesc = &pSolarSysState->MoonDesc[i - 1];
 		pSolarSysState->MenuState.Initialized = 2;
-		GLOBAL (ip_location) =
-				pSolarSysState->SunDesc[0].location;
+		GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
 	}
 	else
 	{
-		if ((i = LOWORD (GLOBAL (ShipStamp.frame))) == 0)
+		i = LOWORD (GLOBAL (ShipStamp.frame));
+		if (i == 0)
 			++i;
 
-		GLOBAL (ShipStamp.frame) =
-				SetAbsFrameIndex (SISIPFrame, i - 1);
+		GLOBAL (ShipStamp.frame) = SetAbsFrameIndex (SISIPFrame, i - 1);
 	}
 
 	TFB_SeedRandom (old_seed);
@@ -436,7 +437,8 @@ ShowPlanet:
 			PlanetIntersect.EndPoint = PlanetIntersect.IntersectStamp.origin;
 			if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
 			{
-				PlanetOffset = pCurDesc->pPrevDesc - pSolarSysState->PlanetDesc;
+				PlanetOffset = pCurDesc->pPrevDesc -
+						pSolarSysState->PlanetDesc;
 				MoonOffset = pCurDesc - pSolarSysState->MoonDesc + 2;
 			}
 			else
@@ -446,8 +448,10 @@ ShowPlanet:
 			}
 			++PlanetOffset;
 			if (pSolarSysState->WaitIntersect != (COUNT)~0
-					&& pSolarSysState->WaitIntersect != MAKE_WORD (PlanetOffset, MoonOffset))
-				PlanetIntersect.IntersectStamp.frame = DecFrameIndex (stars_in_space);
+					&& pSolarSysState->WaitIntersect != MAKE_WORD (
+					PlanetOffset, MoonOffset))
+				PlanetIntersect.IntersectStamp.frame =
+						DecFrameIndex (stars_in_space);
 			else
 				PlanetIntersect.IntersectStamp.frame = pCurDesc->image.frame;
 
@@ -461,7 +465,8 @@ ShowPlanet:
 					return;
 				else if (pSolarSysState->WaitIntersect == NewWaitPlanet)
 					continue;
-				else if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
+				else if (pSolarSysState->pBaseDesc ==
+						pSolarSysState->MoonDesc)
 					goto ShowPlanet;
 				else if (!just_checking) /* pBaseDesc == PlanetDesc */
 				{
@@ -475,25 +480,20 @@ ShowPlanet:
 							(SIS_SCREEN_WIDTH >> 1) + COSINE (
 							angle, MIN_MOON_RADIUS
 							+ ((MAX_MOONS - 1) * MOON_DELTA)
-							+ (MOON_DELTA >> 2)
-							);
+							+ (MOON_DELTA >> 2));
 					GLOBAL (ShipStamp.origin.y) =
 							(SIS_SCREEN_HEIGHT >> 1) + SINE (
 							angle, MIN_MOON_RADIUS
 							+ ((MAX_MOONS - 1) * MOON_DELTA)
-							+ (MOON_DELTA >> 2)
-							);
+							+ (MOON_DELTA >> 2));
 					if (GLOBAL (ShipStamp.origin.y) < 0)
 						GLOBAL (ShipStamp.origin.y) = 1;
 					else if (GLOBAL (ShipStamp.origin.y) >= SIS_SCREEN_HEIGHT)
 						GLOBAL (ShipStamp.origin.y) =
 								(SIS_SCREEN_HEIGHT - 1) - 1;
 					pSolarSysState->pBaseDesc = pCurDesc;
-					XFormIPLoc (
-							&pCurDesc->image.origin,
-							&pSolarSysState->SunDesc[0].location,
-							FALSE
-							);
+					XFormIPLoc (&pCurDesc->image.origin,
+							&pSolarSysState->SunDesc[0].location, FALSE);
 					ZeroVelocityComponents (&GLOBAL (velocity));
 					GenerateMoons ();
 
@@ -501,7 +501,8 @@ ShowPlanet:
 					SetTransitionSource (NULL);
 					BatchGraphics ();
 					SetGraphicGrabOther (1);
-					DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
+					DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius,
+							TRUE);
 					SetGraphicGrabOther (0);
 					r.corner.x = SIS_ORG_X;
 					r.corner.y = SIS_ORG_Y;
@@ -535,13 +536,14 @@ GetOrbitRect (PRECT pRect, COORD cx, COORD cy, SIZE
 			+ (SIZE)((long)-cx * (long)xnumer / (long)denom);
 	pRect->corner.y = (SIS_SCREEN_HEIGHT >> 1)
 			+ (SIZE)((long)-cy * (long)ynumer / (long)denom);
-	pRect->extent.width = (SIZE)((long)radius * (long)(xnumer << 1) / (long)denom);
+	pRect->extent.width = (SIZE)((long)radius * (long)(xnumer << 1) /
+			(long)denom);
 	pRect->extent.height = pRect->extent.width >> 1;
 }
 
 static void
-DrawOrbit (PPLANET_DESC pPlanetDesc, COUNT xnumer, COUNT
-		ynumer0, COUNT ynumer1, COUNT denom)
+DrawOrbit (PPLANET_DESC pPlanetDesc, COUNT xnumer, COUNT ynumer0,
+		COUNT ynumer1, COUNT denom)
 {
 	COUNT index;
 	COORD cx, cy;
@@ -550,14 +552,14 @@ DrawOrbit (PPLANET_DESC pPlanetDesc, COUNT xnumer, COUNT
 if (!(draw_sys_flags & (DRAW_ORBITS | DRAW_PLANETS)))
 	return;
 	
-	cx = cy = pPlanetDesc->radius;
+	cx = pPlanetDesc->radius;
+	cy = pPlanetDesc->radius;
 	if (xnumer > (COUNT)DISPLAY_FACTOR)
 	{
 		cx = cx + pPlanetDesc->location.x;
 		cy = (cy + pPlanetDesc->location.y) << 1;
 	}
-	GetOrbitRect (&r, cx, cy,
-			pPlanetDesc->radius, xnumer, ynumer0, denom);
+	GetOrbitRect (&r, cx, cy, pPlanetDesc->radius, xnumer, ynumer0, denom);
 
 if (draw_sys_flags & DRAW_ORBITS)
 {
@@ -587,10 +589,8 @@ if (!(draw_sys_flags & DRAW_PLANETS))
 		COUNT Size;
 
 		Type = PlanData[index].Type;
-		SetColorMap (GetColorMapAddress (
-				SetAbsColorMapIndex (OrbitalCMap,
-				PLANCOLOR (Type))
-				));
+		SetColorMap (GetColorMapAddress (SetAbsColorMapIndex (OrbitalCMap,
+				PLANCOLOR (Type))));
 
 		Size = PLANSIZE (Type);
 		if (denom == 2 || xnumer > (COUNT)DISPLAY_FACTOR)
@@ -611,15 +611,11 @@ if (!(draw_sys_flags & DRAW_PLANETS))
 		else
 		{
 			--Size;
-			pPlanetDesc->image.frame =
-					SetAbsFrameIndex (OrbitalFrame,
-					(Size << FACING_SHIFT)
-					+ NORMALIZE_FACING (ANGLE_TO_FACING (
-					ARCTAN (
-							pPlanetDesc->pPrevDesc->location.x,
-							pPlanetDesc->pPrevDesc->location.y
-							)
-					)));
+			pPlanetDesc->image.frame = SetAbsFrameIndex (OrbitalFrame,
+					(Size << FACING_SHIFT) + NORMALIZE_FACING (
+					ANGLE_TO_FACING (ARCTAN (
+					pPlanetDesc->pPrevDesc->location.x,
+					pPlanetDesc->pPrevDesc->location.y))));
 		}
 	}
 
@@ -661,13 +657,10 @@ FindRadius (void)
 
 		GetOrbitRect (&pSolarSysState->MenuState.flash_rect0,
 				radius, radius, radius,
-				DISPLAY_FACTOR,
-				DISPLAY_FACTOR >> 2,
+				DISPLAY_FACTOR, DISPLAY_FACTOR >> 2,
 				pSolarSysState->SunDesc[0].radius);
 
-		XFormIPLoc (&GLOBAL (ip_location),
-				&GLOBAL (ShipStamp.origin),
-				TRUE);
+		XFormIPLoc (&GLOBAL (ip_location), &GLOBAL (ShipStamp.origin), TRUE);
 
 	} while (radius
 			&& (delta_x = GLOBAL (ShipStamp.origin.x)
@@ -714,8 +707,8 @@ flagship_inertial_thrust (COUNT CurrentAngle)
 	max_speed = pSolarSysState->max_ship_speed;
 	VelocityPtr = &GLOBAL (velocity);
 	GetCurrentVelocityComponents (VelocityPtr, &cur_delta_x, &cur_delta_y);
-	if ((TravelAngle =
-			GetVelocityTravelAngle (VelocityPtr)) == CurrentAngle
+	TravelAngle = GetVelocityTravelAngle (VelocityPtr);
+	if (TravelAngle == CurrentAngle
 			&& cur_delta_x == COSINE (CurrentAngle, max_speed)
 			&& cur_delta_y == SINE (CurrentAngle, max_speed))
 		return (SHIP_AT_MAX_SPEED);
@@ -765,7 +758,7 @@ flagship_inertial_thrust (COUNT CurrentAngle)
 			*VelocityPtr = v;
 		}
 
-		return (0);
+		return 0;
 	}
 }
 
@@ -904,8 +897,7 @@ UndrawShip (void)
 			return;
 	}
 
-	if (GLOBAL (autopilot.x) == ~0
-			&& GLOBAL (autopilot.y) == ~0)
+	if (GLOBAL (autopilot.x) == ~0 && GLOBAL (autopilot.y) == ~0)
 		CheckIntersect (FALSE);
 }
 
@@ -1055,7 +1047,8 @@ IP_frame (void)
 	if (pSolarSysState->MenuState.CurState
 			|| pSolarSysState->MenuState.Initialized == 0)
 	{
-		select = cancel = FALSE;
+		select = FALSE;
+		cancel = FALSE;
 		if (draw_sys_flags & DRAW_REFRESH)
 			goto TheMess;
 	}
@@ -1087,14 +1080,18 @@ IP_frame (void)
 		
 		UndrawShip ();
 		if (pSolarSysState->MenuState.Initialized != 1)
-			select = cancel = FALSE;
+		{
+			select = FALSE;
+			cancel = FALSE;
+		}
 	}
 	
 	if (old_radius)
 		ScaleSystem ();
 	
 	BatchGraphics ();
-	if (!(draw_sys_flags & DRAW_REFRESH)) // don't repair from Extra or draw ship if forcing repair
+	if (!(draw_sys_flags & DRAW_REFRESH))
+			// don't repair from Extra or draw ship if forcing repair
 	{
 		CONTEXT OldContext;
 		
@@ -1107,7 +1104,8 @@ IP_frame (void)
 		// this screws up ScreenTransition by leaving an image of the
 		// ship in the ExtraScreen (which we use for repair)
 		if (pSolarSysState->MenuState.CurState == 0
-		    && (InnerSystem ^ (BOOLEAN)(pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc)))
+			    && (InnerSystem ^ (BOOLEAN)(
+				pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc)))
 			;
 		else
 			RedrawQueue (FALSE);
@@ -1148,8 +1146,8 @@ IP_frame (void)
 	}
 	
 	// LoadInto Extra if we left inner system, or we forced a redraw
-	if ((InnerSystem && pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
-	    || (draw_sys_flags & DRAW_REFRESH))
+	if ((InnerSystem && pSolarSysState->pBaseDesc ==
+			pSolarSysState->PlanetDesc) || (draw_sys_flags & DRAW_REFRESH))
 	{
 		LoadIntoExtraScreen (&r);
 		draw_sys_flags &= ~DRAW_REFRESH;
@@ -1164,7 +1162,10 @@ IP_frame (void)
 		IP_next_time = GetTimeCounter ();
 		if (pSolarSysState->MenuState.CurState
 		    || pSolarSysState->MenuState.Initialized != 1)
-			cancel = select = 0;
+		{
+			cancel = 0;
+			select = 0;
+		}
 		else
 		{
 			/* Updating the input state is handled by
@@ -1217,14 +1218,12 @@ ValidateOrbits (void)
 	PPLANET_DESC pCurDesc;
 
 	InnerSystem = (BOOLEAN)(
-			pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc
-			);
+			pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc);
 	if (InnerSystem)
 	{
 		old_pts[0] = GLOBAL (ShipStamp.origin);
 		old_pts[1] = GLOBAL (ip_location);
-		GLOBAL (ip_location) =
-				pSolarSysState->SunDesc[0].location;
+		GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
 	}
 
 	pSolarSysState->SunDesc[0].radius = MAX_ZOOM_RADIUS << 1;
@@ -1232,13 +1231,10 @@ ValidateOrbits (void)
 
 	pSolarSysState->pBaseDesc = 0;
 	for (i = pSolarSysState->SunDesc[0].NumPlanets,
-			pCurDesc = &pSolarSysState->PlanetDesc[0];
-			i; --i, ++pCurDesc)
+			pCurDesc = &pSolarSysState->PlanetDesc[0]; i; --i, ++pCurDesc)
 	{
 		DrawOrbit (pCurDesc,
-				DISPLAY_FACTOR,
-				DISPLAY_FACTOR >> 2,
-				DISPLAY_FACTOR >> 1,
+				DISPLAY_FACTOR, DISPLAY_FACTOR >> 2, DISPLAY_FACTOR >> 1,
 				pSolarSysState->SunDesc[0].radius);
 	}
 
@@ -1302,7 +1298,8 @@ StartGroups:
 						UnbatchGraphics ();
 					}
 					LockMutex (GraphicsLock);
-					while (pSolarSysState->SunDesc[0].radius == (MAX_ZOOM_RADIUS << 1))
+					while (pSolarSysState->SunDesc[0].radius ==
+							(MAX_ZOOM_RADIUS << 1))
 					{
 						UnlockMutex (GraphicsLock);
 						IP_frame ();
@@ -1341,8 +1338,8 @@ StartGroups:
 		GetPlanetInfo ();
 		(*pSolarSysState->GenFunc) (GENERATE_ORBITAL);
 		LastActivity &= ~(CHECK_LOAD | CHECK_RESTART);
-		if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD | START_ENCOUNTER))
-				|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
+		if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD |
+				START_ENCOUNTER)) || GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
 				|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 			return;
 
@@ -1387,17 +1384,15 @@ InitSolarSys (void)
 	Reentry = (BOOLEAN)(GLOBAL (ShipStamp.frame) != 0);
 	if (!Reentry)
 	{
-		GLOBAL (autopilot.x) =
-				GLOBAL (autopilot.y) = ~0;
+		GLOBAL (autopilot.x) = ~0;
+		GLOBAL (autopilot.y) = ~0;
 
 		GLOBAL (ShipStamp.origin.x) = SIS_SCREEN_WIDTH >> 1;
 		GLOBAL (ShipStamp.origin.y) = SIS_SCREEN_HEIGHT >> 1;
 		GLOBAL (ShipStamp.origin.y) += (SIS_SCREEN_HEIGHT >> 1) - 1;
 
 		pSolarSysState->SunDesc[0].radius = MAX_ZOOM_RADIUS;
-		XFormIPLoc (&GLOBAL (ShipStamp.origin),
-				&GLOBAL (ip_location),
-				FALSE);
+		XFormIPLoc (&GLOBAL (ShipStamp.origin), &GLOBAL (ip_location), FALSE);
 	}
 
 	LoadSolarSys ();
@@ -1423,7 +1418,8 @@ InitSolarSys (void)
 		
 		if (LastActivity & (CHECK_LOAD | CHECK_RESTART))
 		{
-			if ((LastActivity & (CHECK_LOAD | CHECK_RESTART)) == LastActivity)
+			if ((LastActivity & (CHECK_LOAD | CHECK_RESTART)) ==
+					LastActivity)
 			{
 				extern ACTIVITY NextActivity;
 
@@ -1470,7 +1466,7 @@ InitSolarSys (void)
 			DrawHyperCoords (CurStarDescPtr->star_pt); /* Adjust position */
 			UnlockMutex (GraphicsLock);
 
-					/* force a redraw */
+			/* force a redraw */
 			pSolarSysState->SunDesc[0].radius = MAX_ZOOM_RADIUS << 1;
 		}
 	}
@@ -1502,16 +1498,16 @@ UninitSolarSys (void)
 
 			best_dist = ~0L;
 			for (i = 0, pCurDesc = pSolarSysState->PlanetDesc;
-					i < pSolarSysState->SunDesc[0].NumPlanets; ++i, ++pCurDesc)
+					i < pSolarSysState->SunDesc[0].NumPlanets;
+					++i, ++pCurDesc)
 			{
 				SIZE dx, dy;
 				DWORD dist;
 
-				dx = GLOBAL (ShipStamp.origin.x)
-						- pCurDesc->image.origin.x;
-				dy = GLOBAL (ShipStamp.origin.y)
-						- pCurDesc->image.origin.y;
-				if ((dist = (DWORD)((long)dx * dx + (long)dy * dy)) < best_dist)
+				dx = GLOBAL (ShipStamp.origin.x) - pCurDesc->image.origin.x;
+				dy = GLOBAL (ShipStamp.origin.y) - pCurDesc->image.origin.y;
+				dist = (DWORD) ((long) dx * dx + (long) dy * dy);
+				if (dist < best_dist)
 				{
 					best_dist = dist;
 					pSolarSysState->pBaseDesc = pCurDesc;
@@ -1547,59 +1543,68 @@ GenerateRandomIP (BYTE control)
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 			break;
 		case GENERATE_MINERAL:
-			GenerateMineralDeposits (&pSolarSysState->SysInfo, &pSolarSysState->CurNode);
+			GenerateMineralDeposits (&pSolarSysState->SysInfo,
+					&pSolarSysState->CurNode);
 			break;
 		case GENERATE_ENERGY:
 			pSolarSysState->CurNode = 0;
 			break;
 		case GENERATE_LIFE:
-			GenerateLifeForms (&pSolarSysState->SysInfo, &pSolarSysState->CurNode);
+			GenerateLifeForms (&pSolarSysState->SysInfo,
+					&pSolarSysState->CurNode);
 			break;
 		case GENERATE_ORBITAL:
 		{
 #ifdef DEBUG_SOLARSYS
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 					pSolarSysState->SunDesc)
-				fprintf (stderr, "Planet index = %d\n", pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc);
+				fprintf (stderr, "Planet index = %d\n",
+						pSolarSysState->pOrbitalDesc -
+						pSolarSysState->PlanetDesc);
 			else
 				fprintf (stderr, "Planet index = %d, Moon index = %d\n",
-						pSolarSysState->pOrbitalDesc->pPrevDesc - pSolarSysState->PlanetDesc,
-						pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
+						pSolarSysState->pOrbitalDesc->pPrevDesc -
+						pSolarSysState->PlanetDesc,
+						pSolarSysState->pOrbitalDesc -
+						pSolarSysState->MoonDesc);
 #endif /* DEBUG_SOLARSYS */
-			rand_val = DoPlanetaryAnalysis (
-					&pSolarSysState->SysInfo, pSolarSysState->pOrbitalDesc
-					);
+			rand_val = DoPlanetaryAnalysis (&pSolarSysState->SysInfo,
+					pSolarSysState->pOrbitalDesc);
 
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
+			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] =
+					rand_val;
 			i = (COUNT)~0;
 			rand_val = GenerateLifeForms (&pSolarSysState->SysInfo, &i);
 
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
+			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] =
+					rand_val;
 			i = (COUNT)~0;
 			GenerateMineralDeposits (&pSolarSysState->SysInfo, &i);
 
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
+			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] =
+					rand_val;
 			LoadPlanet (FALSE);
 			break;
 		}
 		case GENERATE_NAME:
 		{
 			i = pSolarSysState->pBaseDesc - pSolarSysState->PlanetDesc;
-			wsprintf (GLOBAL_SIS (PlanetName), "%s", GAME_STRING (PLANET_NUMBER_BASE + (9 + 7) + i));
-			SET_GAME_STATE (BATTLE_PLANET, pSolarSysState->PlanetDesc[i].data_index);
+			wsprintf (GLOBAL_SIS (PlanetName), "%s",
+					GAME_STRING (PLANET_NUMBER_BASE + (9 + 7) + i));
+			SET_GAME_STATE (BATTLE_PLANET,
+					pSolarSysState->PlanetDesc[i].data_index);
 			break;
 		}
 		case GENERATE_MOONS:
-			FillOrbits (
-					pSolarSysState->pBaseDesc->NumPlanets,
-					&pSolarSysState->MoonDesc[0], FALSE
-					);
+			FillOrbits (pSolarSysState->pBaseDesc->NumPlanets,
+					&pSolarSysState->MoonDesc[0], FALSE);
 			break;
 		case GENERATE_PLANETS:
 		{
 			FillOrbits ((BYTE)~0, &pSolarSysState->PlanetDesc[0], FALSE);
 			for (i = pSolarSysState->SunDesc[0].NumPlanets,
-					pCurDesc = &pSolarSysState->PlanetDesc[0]; i; --i, ++pCurDesc)
+					pCurDesc = &pSolarSysState->PlanetDesc[0]; i;
+					--i, ++pCurDesc)
 			{
 				BYTE byte_val;
 				BYTE num_moons;
@@ -1609,8 +1614,7 @@ GenerateRandomIP (BYTE control)
 
 				num_moons = 0;
 				switch (PLANSIZE (PlanData[
-						pCurDesc->data_index & ~PLANET_SHIELDED
-						].Type))
+						pCurDesc->data_index & ~PLANET_SHIELDED].Type))
 				{
 					case LARGE_ROCKY_WORLD:
 						if (byte_val < 0x00FF * 25 / 100)
@@ -1665,11 +1669,8 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 
 		pCurDesc = pBaseDesc->pPrevDesc;
 		pSolarSysState->pOrbitalDesc = pCurDesc;
-		DrawOrbit (pCurDesc,
-				DISPLAY_FACTOR << 2,
-				DISPLAY_FACTOR,
-				DISPLAY_FACTOR << 1,
-				radius);
+		DrawOrbit (pCurDesc, DISPLAY_FACTOR << 2, DISPLAY_FACTOR,
+				DISPLAY_FACTOR << 1, radius);
 	}
 
 	for (i = pBaseDesc->pPrevDesc->NumPlanets,
@@ -1678,11 +1679,8 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 		if (IsInnerSystem)
 			DrawOrbit (pCurDesc, 2, 1, 1, 2);
 		else
-			DrawOrbit (pCurDesc,
-					DISPLAY_FACTOR,
-					DISPLAY_FACTOR >> 2,
-					DISPLAY_FACTOR >> 1,
-					radius);
+			DrawOrbit (pCurDesc, DISPLAY_FACTOR, DISPLAY_FACTOR >> 2,
+					DISPLAY_FACTOR >> 1, radius);
 	}
 
 	if (IsInnerSystem)
@@ -1702,8 +1700,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 		pCurDesc = &pSolarSysState->SunDesc[0];
 		pCurDesc->image.origin.x = SIS_SCREEN_WIDTH >> 1;
 		pCurDesc->image.origin.y = SIS_SCREEN_HEIGHT >> 1;
-		pCurDesc->image.frame =
-				SetRelFrameIndex (SunFrame, index);
+		pCurDesc->image.frame = SetRelFrameIndex (SunFrame, index);
 
 		index = pSolarSysState->FirstPlanetIndex;
 	if (draw_sys_flags & DRAW_PLANETS)
@@ -1718,12 +1715,10 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 				color_index = STAR_COLOR (CurStarDescPtr->Type);
 			else
 				color_index = PLANCOLOR (PlanData[
-						pCurDesc->data_index & ~PLANET_SHIELDED
-						].Type);
+						pCurDesc->data_index & ~PLANET_SHIELDED ].Type);
 
 			SetColorMap (GetColorMapAddress (
-					SetAbsColorMapIndex (OrbitalCMap, color_index)
-					));
+					SetAbsColorMapIndex (OrbitalCMap, color_index)));
 			DrawStamp (&pCurDesc->image);
 
 			if (index == pSolarSysState->LastPlanetIndex)
@@ -1812,7 +1807,8 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 	{
 		RECT r;
 
-		// 2002-12-13 PhracturedBlue's fix to planet changing color when using device problem
+		// 2002-12-13 PhracturedBlue's fix to planet changing color when
+		// using device problem
 		/*if (pSolarSysState->MenuState.flash_task
 				|| (LastActivity & CHECK_LOAD))
 			RenderTopography (TRUE);*/
@@ -1821,14 +1817,16 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 
 		SetContext (ScreenContext);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA),
+				0x08));
 		r.corner.x = SIS_ORG_X - 1;
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 4;
 		r.extent.width = SIS_SCREEN_WIDTH + 2;
 		r.extent.height = 3;
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8),
+					0x1F));
 		r.extent.width = 1;
 		r.extent.height = MAP_HEIGHT + 1;
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
@@ -1842,7 +1840,8 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 5;
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (
+				0x10, 0x10, 0x10), 0x19));
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 1;
 		r.extent.width = MAP_WIDTH + 2;
 		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH - 1;
@@ -1865,28 +1864,22 @@ XFormIPLoc (PPOINT pIn, PPOINT pOut, BOOLEAN ToDisplay)
 	if (ToDisplay)
 	{
 		pOut->x = (SIS_SCREEN_WIDTH >> 1)
-				+ (SIZE)((long)pIn->x
-				* (DISPLAY_FACTOR >> 1)
+				+ (SIZE)((long)pIn->x * (DISPLAY_FACTOR >> 1)
 // / (long)pSolarSysState->SunDesc[0].radius);
 				/ pSolarSysState->SunDesc[0].radius);
 		pOut->y = (SIS_SCREEN_HEIGHT >> 1)
-				+ (SIZE)((long)pIn->y
-				* (DISPLAY_FACTOR >> 1)
+				+ (SIZE)((long)pIn->y * (DISPLAY_FACTOR >> 1)
 // / (long)pSolarSysState->SunDesc[0].radius);
 				/ pSolarSysState->SunDesc[0].radius);
 	}
 	else
 	{
-		pOut->x = (SIZE)((long)(pIn->x
-				- (SIS_SCREEN_WIDTH >> 1))
+		pOut->x = (SIZE)((long)(pIn->x - (SIS_SCREEN_WIDTH >> 1))
 // * (long)pSolarSysState->SunDesc[0].radius
-				* pSolarSysState->SunDesc[0].radius
-				/ (DISPLAY_FACTOR >> 1));
-		pOut->y = (SIZE)((long)(pIn->y
-				- (SIS_SCREEN_HEIGHT >> 1))
+				* pSolarSysState->SunDesc[0].radius / (DISPLAY_FACTOR >> 1));
+		pOut->y = (SIZE)((long)(pIn->y - (SIS_SCREEN_HEIGHT >> 1))
 // * (long)pSolarSysState->SunDesc[0].radius
-				* pSolarSysState->SunDesc[0].radius
-				/ (DISPLAY_FACTOR >> 1));
+				* pSolarSysState->SunDesc[0].radius / (DISPLAY_FACTOR >> 1));
 	}
 }
 
@@ -1906,8 +1899,8 @@ ExploreSolarSys (void)
 			exit(1);
 		dumpStars(out, DUMP_PLANETS);
 		fclose(out);
-		fprintf(stdout, "*** Star dump complete. You can terminate the program "
-				"now if it does not do so automatically.\n");
+		fprintf(stdout, "*** Star dump complete. You can terminate the "
+				"program now if it does not do so automatically.\n");
 		exit(0);
 				// There may be other threads left.
 	}
@@ -1942,4 +1935,5 @@ ExploreSolarSys (void)
 	UninitSolarSys ();
 	pSolarSysState = 0;
 }
+
 

@@ -4,6 +4,7 @@
 #include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
 #include "options.h"
+#include "types.h"
 
 typedef SDL_Surface *NativeCanvas;
 

@@ -249,6 +249,7 @@ extern void RepairSISBorder (void);
 extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
+extern void SetFlashRect (PRECT pRect, FRAME f);
 extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
 extern void DrawSISMessage (UNICODE *pStr);
@@ -258,6 +259,8 @@ extern void DateToString (UNICODE *buf, BYTE month_index, BYTE day_index,
 extern void DrawStatusMessage (UNICODE *pStr);
 extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);
+extern void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
+
 extern void DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int
 		resunit_delta);
 extern COUNT GetCrewCount (void);

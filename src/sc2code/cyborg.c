@@ -16,8 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "battle.h"
+#include "colors.h"
 #include "collide.h"
+#include "element.h"
+#include "globdata.h"
+#include "intel.h"
+#include "setup.h"
+#include "units.h"
+#include "libs/inplib.h"
+#include "libs/mathlib.h"
+
 
 //#define DEBUG_CYBORG
 

@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "collide.h"
+#include "element.h"
+#include "races.h"
+#include "units.h"
+#include "libs/mathlib.h"
+
 
 //#define DEBUG_COLLIDE
 

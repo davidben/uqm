@@ -19,6 +19,8 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "2xscalers.h"
+#include "types.h"
+
 
 static const Uint32 bilinear_table[4][4] = 
 {

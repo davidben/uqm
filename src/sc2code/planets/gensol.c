@@ -16,9 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "lifeform.h"
+#include "build.h"
+#include "gamestr.h"
+#include "globdata.h"
 #include "lander.h"
+#include "lifeform.h"
+#include "nameref.h"
+#include "races.h"
+#include "resinst.h"
+#include "state.h"
+#include "planets/genall.h"
+#include "libs/mathlib.h"
+
 
 static DWORD
 GetProbeRef (void)

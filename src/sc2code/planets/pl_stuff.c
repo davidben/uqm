@@ -16,15 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "planets/planets.h"
+#include "setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 
 #include <math.h>
+
+
 // define USE_ADDITIVE_SCAN_BLIT to use additive blittting
 // instead of transparency for the planet scans.
 // It still doesn't look right though (it is too bright)
 #define USE_ADDITIVE_SCAN_BLIT
+
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 

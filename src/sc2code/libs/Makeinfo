@@ -1,2 +1,6 @@
 uqm_SUBDIRS="decomp file graphics input math memory resource sound strings
 		task threads time uio video"
+#if [ "$DEBUG" = 1 ]; then
+#	uqm_SUBDIRS="$UQM_SUBDIRS debug"
+#fi
+

@@ -19,19 +19,22 @@
  * for now there's few options which indicate 3do/pc flavors.
  */
 
+#include "options.h"
+
+#include "port.h"
+#include "libs/graphics/gfx_common.h"
+#include "file.h"
+#include "config.h"
+#include "libs/compiler.h"
+#include "libs/uio.h"
+#include "libs/strlib.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <locale.h>
-#include "port.h"
-#include "libs/graphics/gfx_common.h"
-#include "compiler.h"
-#include "options.h"
-#include "file.h"
-#include "config.h"
-#include "libs/uio.h"
-#include "libs/strlib.h"
+
 
 int optWhichMusic;
 int optWhichCoarseScan;

@@ -16,7 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "gameev.h"
+#include "globdata.h"
+#include "setup.h"
+#include "libs/compiler.h"
+#include "libs/gfxlib.h"
+#include "libs/tasklib.h"
+#include "libs/threadlib.h"
+
 
 // the running of the game-clock is based on game framerates
 // *not* on the system (or translated) timer

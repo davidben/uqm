@@ -23,6 +23,7 @@
 #define OPTIONS_H
 
 #include "port.h"
+#include "libs/compiler.h"
 #include "libs/uio.h"
 
 #define OPT_3DO 0x01

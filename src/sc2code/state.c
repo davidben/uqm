@@ -16,11 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "state.h"
+
+#include "encount.h"
+#include "file.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include "file.h"
 
 void
 InitPlanetInfo (void)

@@ -16,9 +16,26 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "encount.h"
+
+#include "battle.h"
+#include "build.h"
+#include "colors.h"
 #include "controls.h"
+#include "gamestr.h"
+#include "globdata.h"
+#include "init.h"
+#include "intel.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "state.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/mathlib.h"
+#include "libs/inplib.h"
+
 
 static BOOLEAN
 DoSelectAction (PMENU_STATE pMS)
@@ -709,8 +726,6 @@ EncounterBattle (void)
 	MEM_HANDLE hLastIndex;
 	ACTIVITY OldActivity;
 	extern UWORD nth_frame;
-	extern BOOLEAN LoadSC2Data (void);
-	extern BOOLEAN FreeSC2Data (void);
 
 	LockMutex (GraphicsLock);
 

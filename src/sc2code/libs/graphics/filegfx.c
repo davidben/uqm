@@ -57,7 +57,7 @@ LoadFontFile (PVOID pStr)
 		return 0;
 
 	fp = res_OpenResFile (contentDir, pStr, "rb");
-	if (fp == ~0)
+	if (fp == (uio_Stream *) ~0)
 	{
 		MEM_HANDLE hData;
 

@@ -16,8 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "controls.h"
+#include "intel.h"
 #include "melee.h"
+#include "races.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "libs/inplib.h"
+#include "libs/mathlib.h"
+
 
 #define NUM_MELEE_COLS_ORIG NUM_MELEE_COLUMNS
 #define PICK_X_OFFS 57

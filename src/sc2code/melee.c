@@ -16,18 +16,34 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include <assert.h>
-#include "starcon.h"
-#include "libs/graphics/drawable.h"
 #include "melee.h"
-#include "options.h"
-#include "file.h"
+
+#include "build.h"
+#include "colors.h"
 #include "controls.h"
+#include "file.h"
+#include "gamestr.h"
+#include "intel.h"
+#include "nameref.h"
+#include "options.h"
+#include "races.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "util.h"
+#include "libs/graphics/drawable.h"
+#include "libs/gfxlib.h"
+#include "libs/inplib.h"
+#include "libs/mathlib.h"
+
+
+#include <assert.h>
+#include <ctype.h>
+#include <string.h>
+
 
 //Added by Chris
-
-#include "string.h"
 
 void ConfirmSaveLoad (STAMP *MsgStamp);
 
@@ -75,29 +91,49 @@ enum
 #define RACE_INFO_ORIGIN_Y (SHIP_INFO_HEIGHT + 6)
 #define RACE_INFO_HEIGHT ((STATUS_HEIGHT - 3) - RACE_INFO_ORIGIN_Y)
 
-#define MELEE_BACKGROUND_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
-#define MELEE_TITLE_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C)
-#define MELEE_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C)
-#define MELEE_TEAM_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E)
+#define MELEE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
+#define MELEE_TITLE_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C)
+#define MELEE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C)
+#define MELEE_TEAM_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E)
 
-#define STATE_BACKGROUND_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
-#define STATE_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03)
-#define ACTIVE_STATE_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
-#define UNAVAILABLE_STATE_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
-#define HI_STATE_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
-#define HI_STATE_BACKGROUND_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
+#define STATE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
+#define STATE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03)
+#define ACTIVE_STATE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
+#define UNAVAILABLE_STATE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
+#define HI_STATE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
+#define HI_STATE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
 
-#define LIST_INFO_BACKGROUND_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
-#define LIST_INFO_TITLE_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
-#define LIST_INFO_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x07)
-#define LIST_INFO_CURENTRY_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
-#define HI_LIST_INFO_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
-#define HI_LIST_INFO_BACKGROUND_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x1F), 0x0D)
+#define LIST_INFO_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
+#define LIST_INFO_TITLE_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+#define LIST_INFO_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x07)
+#define LIST_INFO_CURENTRY_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+#define HI_LIST_INFO_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
+#define HI_LIST_INFO_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x1F), 0x0D)
 
-#define TEAM_NAME_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
-#define TEAM_NAME_EDIT_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00)
-#define TEAM_NAME_EDIT_RECT_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
-#define TEAM_NAME_EDIT_CURS_COLOR WHITE_COLOR
+#define TEAM_NAME_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
+#define TEAM_NAME_EDIT_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00)
+#define TEAM_NAME_EDIT_RECT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
+#define TEAM_NAME_EDIT_CURS_COLOR \
+		WHITE_COLOR
 
 FRAME PickMeleeFrame;
 static FRAME MeleeFrame;
@@ -149,12 +185,14 @@ DrawShipBox (PMELEE_STATE pMS, BOOLEAN HiLite)
 		DrawStarConBox (&r, 1,
 				BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0xC), 0x3E),
 				BUILD_COLOR (MAKE_RGB15 (0xC, 0x00, 0x14), 0x3C),
-				(BOOLEAN)(StarShip != (BYTE)~0), BUILD_COLOR (MAKE_RGB15 (0xA, 0x00, 0x11), 0x3D));
+				(BOOLEAN)(StarShip != (BYTE)~0),
+				BUILD_COLOR (MAKE_RGB15 (0xA, 0x00, 0x11), 0x3D));
 	else
 		DrawStarConBox (&r, 1,
 				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x9), 0x56),
 				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xE), 0x54),
-				(BOOLEAN)(StarShip != (BYTE)~0), BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xC), 0x55));
+				(BOOLEAN)(StarShip != (BYTE)~0),
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xC), 0x55));
 
 	if (StarShip != (BYTE)~0)
 	{
@@ -297,13 +335,9 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 	TEXT lfText;
 
 	r.corner.x = MELEE_X_OFFS - 1;
-	r.corner.y =
-			(pMS->side + 1)
-			* (MELEE_Y_OFFS
-			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE)
-			* NUM_MELEE_ROWS + 2));
-	r.extent.width = NUM_MELEE_COLUMNS
-			* (MELEE_BOX_WIDTH + MELEE_BOX_SPACE);
+	r.corner.y = (pMS->side + 1) * (MELEE_Y_OFFS
+			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
+	r.extent.width = NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE);
 	r.extent.height = 13;
 	if (HiLiteState == 4)
 	{
@@ -429,7 +463,8 @@ Deselect (BYTE opt)
 			
 				GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
 
-				hStarShip = GetStarShipFromIndex (&master_q, pMeleeState->CurIndex);
+				hStarShip = GetStarShipFromIndex (&master_q,
+						pMeleeState->CurIndex);
 				StarShipPtr = LockStarShip (&master_q, hStarShip);
 				s.origin.x = r.corner.x + 20
 						+ (pMeleeState->CurIndex % NUM_PICK_COLS) * 18;
@@ -645,11 +680,13 @@ GetTeamValue (TEAM_IMAGE *pTI)
 		{
 			BYTE StarShip;
 
-			if ((StarShip = pTI->ShipList[row][col]) != (BYTE)~0)
+			StarShip = pTI->ShipList[row][col];
+			if (StarShip != (BYTE) ~0)
 			{
 				HSTARSHIP hStarShip;
 
-				if ((hStarShip = GetStarShipFromIndex (&master_q, StarShip)) == 0)
+				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+				if (hStarShip == 0)
 					pTI->ShipList[row][col] = (BYTE)~0;
 				else
 				{
@@ -747,11 +784,9 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 		Text.baseline.y = y + bot * ENTRY_HEIGHT;
 		Text.pStr = pMS->FileList[bot].TeamName;
 		Text.CharCount = (COUNT)~0;
-		SetContextForeGroundColor (
-				HiLiteState == 0
-				? BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
-				: BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00)
-				);
+		SetContextForeGroundColor (HiLiteState == 0 ?
+				BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
+				: BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00));
 		font_DrawText (&Text);
 
 		rtText.baseline.y = Text.baseline.y;
@@ -767,8 +802,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 
 		Text.baseline.y = y;
 		teams_left = (COUNT)(
-				GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - top
-				);
+				GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - top);
 		if (teams_left)
 		{
 			bot = top - 1;
@@ -811,8 +845,8 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					{
 						BYTE StarShip;
 						
-						if ((StarShip = pMS->FileList[bot - top].ShipList[row][col])
-								!= (BYTE)~0)
+						StarShip = pMS->FileList[bot - top].ShipList[row][col];
+						if (StarShip != (BYTE)~0)
 						{
 							HSTARSHIP hStarShip;
 							STARSHIPPTR StarShipPtr;
@@ -844,7 +878,8 @@ DoLoadTeam (PMELEE_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
-	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN, MENU_SOUND_SELECT);
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN | MENU_SOUND_PAGEUP |
+			MENU_SOUND_PAGEDOWN, MENU_SOUND_SELECT);
 
 	if (!pMS->Initialized)
 	{
@@ -862,13 +897,13 @@ DoLoadTeam (PMELEE_STATE pMS)
 		pMS->InputFunc = DoLoadTeam;
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PulsedInputState.key[KEY_MENU_SELECT] | PulsedInputState.key[KEY_MENU_CANCEL])
+	else if (PulsedInputState.key[KEY_MENU_SELECT] |
+			PulsedInputState.key[KEY_MENU_CANCEL])
 	{
 		if (!PulsedInputState.key[KEY_MENU_CANCEL])
 		{
 			pMS->TeamImage[pMS->side] = pMS->FileList[
-					pMS->CurIndex - pMS->TopTeamIndex
-					];
+					pMS->CurIndex - pMS->TopTeamIndex];
 			pMS->star_bucks[pMS->side] =
 					GetTeamValue (&pMS->TeamImage[pMS->side]);
 		}
@@ -900,7 +935,8 @@ DoLoadTeam (PMELEE_STATE pMS)
 		}
 		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
-			if ((int)index < (int)GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - 1)
+			if ((int)index < (int)GetDirEntryTableCount (pMS->TeamDE) +
+					NUM_PREBUILT - 1)
 				++index;
 
 			if ((int)index > (int)pMS->BotTeamIndex)
@@ -908,17 +944,23 @@ DoLoadTeam (PMELEE_STATE pMS)
 		}
 		else if (PulsedInputState.key[KEY_MENU_PAGE_UP])
 		{
-			if ((index -= MAX_VIS_TEAMS) < 0)
-				index = NewTop = 0;
+			index -= MAX_VIS_TEAMS;
+			if (index < 0)
+			{
+				index = 0;
+				NewTop = 0;
+			}
 			else
 			{
-				if ((NewTop -= MAX_VIS_TEAMS) < 0)
+				NewTop -= MAX_VIS_TEAMS;
+				if (NewTop < 0)
 					NewTop = 0;
 			}
 		}
 		else if (PulsedInputState.key[KEY_MENU_PAGE_DOWN])
 		{
-			if ((int)(index += MAX_VIS_TEAMS) <
+			index += MAX_VIS_TEAMS;
+			if ((int) index <
 					(int)(GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT))
 				NewTop += MAX_VIS_TEAMS;
 			else
@@ -926,7 +968,8 @@ DoLoadTeam (PMELEE_STATE pMS)
 				index = GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - 1;
 				if (index - (MAX_VIS_TEAMS - 1) > NewTop)
 				{
-					if ((NewTop = index - (MAX_VIS_TEAMS - 1)) < 0)
+					NewTop = index - (MAX_VIS_TEAMS - 1);
+					if (NewTop < 0)
 						NewTop = 0;
 				}
 			}
@@ -1136,7 +1179,7 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 		UnlockStarShip (&master_q, hStarShip);
 	
 		pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
-       	}
+	}
 	LockMutex (GraphicsLock);
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 	RepairMeleeFrame (&r);
@@ -1444,12 +1487,9 @@ LoadMeleeInfo (PMELEE_STATE pMS)
     if (PickMeleeFrame)
 	    DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
     PickMeleeFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2
-			));
+			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2));
     s.origin.x = s.origin.y = 0;
-    s.frame = CaptureDrawable (
-			LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM)
-			);
+    s.frame = CaptureDrawable (LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM));
     SetContextFGFrame (PickMeleeFrame);
     DrawStamp (&s);
 
@@ -1458,9 +1498,7 @@ LoadMeleeInfo (PMELEE_STATE pMS)
     DrawStamp (&s);
     DestroyDrawable (ReleaseDrawable (s.frame));
 	
-	MeleeFrame = CaptureDrawable (
-			LoadGraphic (MELEE_SCREEN_PMAP_ANIM)
-			);
+	MeleeFrame = CaptureDrawable (LoadGraphic (MELEE_SCREEN_PMAP_ANIM));
 	
     SetContext (OldContext);
 
@@ -1509,8 +1547,7 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 
 		GetFrameRect (s.frame, &r);
 		t.baseline.x = r.extent.width >> 1;
-		t.baseline.y = r.extent.height
-				- NAME_AREA_HEIGHT + 4;
+		t.baseline.y = r.extent.height - NAME_AREA_HEIGHT + 4;
 		r.corner.x += 2;
 		r.corner.y += 2;
 		r.extent.width -= (2 * 2) + (ICON_WIDTH + 2) + 1;
@@ -1614,11 +1651,17 @@ DoMelee (PMELEE_STATE pMS)
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
 		if (PulsedInputState.key[KEY_MENU_CANCEL])
-			pMS->side = pMS->row = pMS->col = 0;
+		{
+			pMS->side = 0;
+			pMS->row = 0;
+			pMS->col = 0;
+		}
 		else
-			pMS->side = 0,
-			pMS->row = NUM_MELEE_ROWS - 1,
+		{
+			pMS->side = 0;
+			pMS->row = NUM_MELEE_ROWS - 1;
 			pMS->col = NUM_MELEE_COLUMNS - 1;
+		}
 		DoEdit (pMS);
 	}
 	else
@@ -1700,8 +1743,8 @@ DoMelee (PMELEE_STATE pMS)
 							BYTE black_buf[] = {FadeAllToBlack};
 						
 							SleepThreadUntil (XFormColorMap (
-									(COLORMAPPTR)black_buf, ONE_SECOND / 2
-									) + ONE_SECOND / 60);
+									(COLORMAPPTR)black_buf, ONE_SECOND / 2)
+									+ ONE_SECOND / 60);
 							FlushColorXForms ();
 						}
 					} while (0 /* !(GLOBAL (CurrentActivity) & CHECK_ABORT) */);

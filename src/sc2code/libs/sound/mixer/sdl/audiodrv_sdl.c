@@ -20,6 +20,9 @@
  */
 
 #include "audiodrv_sdl.h"
+#include "libs/tasklib.h"
+#include <stdlib.h>
+
 
 static Task StreamDecoderTask;
 

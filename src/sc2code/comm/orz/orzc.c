@@ -16,11 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "comm/commall.h"
 #include "comm/orz/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/orz/strings.h"
+#include "build.h"
+
 
 static LOCDATA orz_desc =
 {

@@ -16,7 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "globdata.h"
+#include "libs/compiler.h"
+#include "libs/gfxlib.h"
+
 
 STAR_DESCPTR star_array;
 STAR_DESCPTR CurStarDescPtr = 0;

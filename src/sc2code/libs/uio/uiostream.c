@@ -141,7 +141,7 @@ uio_fread(void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 
 		numRead = minu(stream->readEnd - stream->bufPtr, bytesToRead);
 		memcpy(buf, stream->bufPtr, numRead);
-		(char *) buf += numRead;
+		buf = (void *) ((char *) buf + numRead);
 		stream->bufPtr += numRead;
 		bytesToRead -= numRead;
 		bytesRead += numRead;

@@ -16,18 +16,29 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include "libs/graphics/gfx_common.h"
-#include "libs/graphics/drawable.h"
-#include "libs/sound/trackplayer.h"
-#include "starcon.h"
-#include "commglue.h"
-#include "options.h"
 #include "comm.h"
-#include "libs/sound/sound.h"
-#include "libs/sound/trackint.h"
+
+#include "build.h"
+#include "commglue.h"
 #include "controls.h"
+#include "encount.h"
 #include "endian_uqm.h"
+#include "gamestr.h"
+#include "options.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "libs/graphics/drawable.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/mathlib.h"
+#include "libs/inplib.h"
+#include "libs/sound/sound.h"
+#include "libs/sound/trackplayer.h"
+#include "libs/sound/trackint.h"
+
+#include <ctype.h>
+
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);

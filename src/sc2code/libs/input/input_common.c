@@ -20,3 +20,4 @@
 #include "inpintrn.h"
 
 volatile BOOLEAN ExitRequested, GamePaused;
+

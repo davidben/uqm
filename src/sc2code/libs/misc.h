@@ -22,6 +22,9 @@
 #ifndef MISC_H
 #define MISC_H
 
+#include <sys/types.h>
+
+
 extern void *HMalloc (int size);
 extern void HFree (void *p);
 extern void *HCalloc (int size);

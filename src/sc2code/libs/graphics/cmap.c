@@ -18,6 +18,8 @@
 
 #include "gfx_common.h"
 #include "libs/tasklib.h"
+#include <string.h>
+
 
 static struct
 {

@@ -16,11 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "commglue.h"
 #include "comm.h"
-#include "libs/sound/trackplayer.h"
 #include "controls.h"
+#include "setup.h"
+#include "libs/inplib.h"
+#include "libs/sound/trackplayer.h"
+#include "libs/mathlib.h"
+
 
 void
 DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR TopLeftColor, COLOR
@@ -232,3 +235,4 @@ WaitAnyButtonOrQuit (BOOLEAN CheckSpecial)
 
 	return (GLOBAL (CurrentActivity) & CHECK_ABORT) != 0;
 }
+

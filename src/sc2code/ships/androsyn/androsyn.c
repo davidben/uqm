@@ -19,6 +19,9 @@
 #include "ships/ship.h"
 #include "ships/androsyn/resinst.h"
 
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 20
 #define MAX_ENERGY 24
 #define ENERGY_REGENERATION 1

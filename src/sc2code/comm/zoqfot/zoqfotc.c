@@ -16,11 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "comm/commall.h"
 #include "comm/zoqfot/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/zoqfot/strings.h"
+
+#include "build.h"
+#include "gameev.h"
+
 
 #define ZOQ_FG_COLOR WHITE_COLOR
 #define ZOQ_BG_COLOR BLACK_COLOR

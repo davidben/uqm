@@ -16,11 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "comm/commall.h"
 #include "comm/chmmr/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/chmmr/strings.h"
+
+#include "build.h"
+
 
 static LOCDATA chmmr_desc =
 {

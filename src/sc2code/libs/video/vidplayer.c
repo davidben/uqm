@@ -14,9 +14,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "vidplayer.h"
+
+#include "controls.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/tfb_draw.h"
-#include "vidplayer.h"
+
 
 // video callbacks
 static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);

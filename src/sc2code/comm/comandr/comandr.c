@@ -16,10 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "setup.h"
+#include "comm/commall.h"
 #include "comm/comandr/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/comandr/strings.h"
 #include "libs/graphics/gfx_common.h"
 

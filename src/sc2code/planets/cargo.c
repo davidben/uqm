@@ -16,14 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "colors.h"
 #include "controls.h"
+#include "gamestr.h"
+#include "setup.h"
+#include "sounds.h"
+#include "util.h"
 
-//Added by Chris
 
 void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
-
-//End Added by Chris
 
 void
 ShowRemainingCapacity (void)

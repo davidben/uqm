@@ -16,9 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "libs/graphics/gfx_common.h"
-//#include "starcon.h"
+#include "battle.h"
+
 #include "controls.h"
+#include "init.h"
+#include "intel.h"
+#include "resinst.h"
+#include "setup.h"
+#include "settings.h"
+#include "sounds.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/mathlib.h"
+
 
 QUEUE disp_q;
 SIZE battle_counter;

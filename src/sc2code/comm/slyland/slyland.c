@@ -16,11 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "comm/commall.h"
 #include "comm/slyland/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/slyland/strings.h"
+
+#include "battle.h"
+#include "setup.h"
+
 
 static LOCDATA slylandro_desc =
 {
@@ -201,8 +203,6 @@ CombatIsInevitable (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, destruct_code))
 	{
-		extern BOOLEAN instantVictory;
-
 		NPCPhrase (DESTRUCT_SEQUENCE);
 		instantVictory = TRUE;
 		SET_GAME_STATE (BATTLE_SEGUE, 1);

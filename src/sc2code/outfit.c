@@ -16,16 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "libs/graphics/gfx_common.h"
 #include "options.h"
+#include "colors.h"
 #include "controls.h"
+#include "gamestr.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sis.h"
+#include "sounds.h"
+#include "state.h"
+#include "libs/graphics/gfx_common.h"
 
-//Added by Chris
-
-void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
-
-//End Added by Chris
 
 enum
 {
@@ -179,7 +181,10 @@ DoInstallModule (PMENU_STATE pMS)
 
 	select = PulsedInputState.key[KEY_MENU_SELECT];
 	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
-	motion = PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT] || PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN];
+	motion = PulsedInputState.key[KEY_MENU_LEFT] ||
+			PulsedInputState.key[KEY_MENU_RIGHT] ||
+			PulsedInputState.key[KEY_MENU_UP] ||
+			PulsedInputState.key[KEY_MENU_DOWN];
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
@@ -389,18 +394,21 @@ DoInstallModule (PMENU_STATE pMS)
 				if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 				{
 					if (NewState == EMPTY_SLOT + 3)
-						NewState = PulsedInputState.key[KEY_MENU_UP] ? EMPTY_SLOT + 2 : EMPTY_SLOT;
+						NewState = PulsedInputState.key[KEY_MENU_UP] ?
+								EMPTY_SLOT + 2 : EMPTY_SLOT;
 					if (NewState == EMPTY_SLOT + 2)
 						NewItem = NUM_BOMB_MODULES;
 				}
 				pMS->delta_item = NewItem;
 			}
-			else if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_UP])
+			else if (PulsedInputState.key[KEY_MENU_LEFT] ||
+					PulsedInputState.key[KEY_MENU_UP])
 			{
 				if (NewItem-- == FirstItem)
 					NewItem = LastItem;
 			}
-			else if (PulsedInputState.key[KEY_MENU_RIGHT] || PulsedInputState.key[KEY_MENU_DOWN])
+			else if (PulsedInputState.key[KEY_MENU_RIGHT] ||
+					PulsedInputState.key[KEY_MENU_DOWN])
 			{
 				if (NewItem++ == LastItem)
 					NewItem = FirstItem;
@@ -587,17 +595,14 @@ DoOutfit (PMENU_STATE pMS)
 			extern void DrawFlagshipStats (void);
 
 			pMS->CurFrame = CaptureDrawable (
-					LoadGraphic (MODULES_PMAP_ANIM)
-					);
+					LoadGraphic (MODULES_PMAP_ANIM));
 			pMS->hMusic = LoadMusicInstance (OUTFIT_MUSIC);
 			pMS->CurState = OUTFIT_FUEL;
 			pMS->ModuleFrame = CaptureDrawable (
-					LoadGraphic (SISMODS_MASK_PMAP_ANIM)
-					);
+					LoadGraphic (SISMODS_MASK_PMAP_ANIM));
 			s.origin.x = s.origin.y = 0;
 			s.frame = CaptureDrawable (
-					LoadGraphic (OUTFIT_PMAP_ANIM)
-					);
+					LoadGraphic (OUTFIT_PMAP_ANIM));
 
 			SetTransitionSource (NULL);
 			BatchGraphics ();
@@ -615,24 +620,24 @@ DoOutfit (PMENU_STATE pMS)
 			{
 				BYTE which_piece;
 
-				if ((which_piece =
-						GLOBAL_SIS (DriveSlots[num_frames])) < EMPTY_SLOT)
+				which_piece = GLOBAL_SIS (DriveSlots[num_frames]);
+				if (which_piece < EMPTY_SLOT)
 					DrawShipPiece (pMS, which_piece, num_frames, FALSE);
 			}
 			for (num_frames = 0; num_frames < NUM_JET_SLOTS; ++num_frames)
 			{
 				BYTE which_piece;
 
-				if ((which_piece =
-						GLOBAL_SIS (JetSlots[num_frames])) < EMPTY_SLOT)
+				which_piece = GLOBAL_SIS (JetSlots[num_frames]);
+				if (which_piece < EMPTY_SLOT)
 					DrawShipPiece (pMS, which_piece, num_frames, FALSE);
 			}
 			for (num_frames = 0; num_frames < NUM_MODULE_SLOTS; ++num_frames)
 			{
 				BYTE which_piece;
 
-				if ((which_piece =
-						GLOBAL_SIS (ModuleSlots[num_frames])) < EMPTY_SLOT)
+				which_piece = GLOBAL_SIS (ModuleSlots[num_frames]);
+				if (which_piece < EMPTY_SLOT)
 					DrawShipPiece (pMS, which_piece, num_frames, FALSE);
 			}
 			RedistributeFuel ();

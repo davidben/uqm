@@ -16,8 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "colors.h"
 #include "controls.h"
+#include "races.h"
+#include "resinst.h"
+#include "setup.h"
+#include "sounds.h"
+#include "libs/mathlib.h"
+
 
 #define NUM_PICK_SHIP_ROWS 2
 #define NUM_PICK_SHIP_COLUMNS 6

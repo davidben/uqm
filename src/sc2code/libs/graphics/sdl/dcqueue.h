@@ -50,4 +50,8 @@
 #define DCQ_LIVELOCK_MAX 4096
 #endif
 
+extern CondVar RenderingCond;
+
 #endif
+
+

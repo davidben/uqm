@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/melnorme/resinst.h"
 
+#include "globdata.h"
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 20
 #define MAX_ENERGY MAX_ENERGY_SIZE
 #define ENERGY_REGENERATION 1

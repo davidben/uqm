@@ -16,21 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "melee.h"
+#include "build.h"
+#include "colors.h"
 #include "controls.h"
+#include "fmv.h"
+#include "gamestr.h"
+#include "melee.h"
 #include "options.h"
+#include "races.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sis.h"
+#include "sounds.h"
+#include "state.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/inplib.h"
 
-//Added by Chris
-
-#ifdef WANT_SHIP_SPINS
-void DoShipSpin (COUNT index, MUSIC_REF hMusic); // Defined in fmv.c
-#endif
-
-void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect); // Defined in sis.c
-
-//End added by Chris
 
 #ifdef USE_3DO_HANGAR
 // 3DO 4x3 hangar layout

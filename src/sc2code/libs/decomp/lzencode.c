@@ -57,10 +57,8 @@ InitTree (void)
 
 		*(MEM_HANDLE *)lson = h;
 		lson = (PSWORD)((PBYTE)lson + sizeof (h));
-		rson = lson;
-		((BYTE *) rson) += (N + 1) * sizeof (lson[0]);
-		dad = rson;
-		((BYTE *) dad) += (N + 257) * sizeof (rson[0]);
+		rson = lson + (N + 1);
+		dad = rson + (N + 257);
 
 		for (i = N + 1; i <= N + 256; i++)
 			rson[i] = NIL; /* root */

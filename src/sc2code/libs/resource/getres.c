@@ -289,7 +289,8 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 #ifdef DEBUG
 					if (hData == 0)
 						fprintf (stderr, "fp = 0x%08lx(%d), type = %u, "
-								"file_offs = %lu, len = %lu\n", fp,
+								"file_offs = %lu, len = %lu\n",
+								(unsigned long) fp,
 								DanglingOpen, type, file_offs, data_len);
 #endif /* DEBUG */
 				}

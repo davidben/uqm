@@ -16,12 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "commglue.h"
+#include "controls.h"
+#include "options.h"
+#include "setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
-#include "options.h"
-#include "controls.h"
+
 
 extern Task flash_task;
 extern RECT flash_rect;

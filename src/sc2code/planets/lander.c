@@ -16,11 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "controls.h"
+#include "colors.h"
+#include "encount.h"
+#include "gamestr.h"
 #include "lander.h"
 #include "lifeform.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "setup.h"
+#include "sounds.h"
 #include "libs/graphics/gfx_common.h"
-#include "controls.h"
+#include "libs/mathlib.h"
+
 
 //define SPIN_ON_LAUNCH to let the planet spin while
 // the lander animation is playing

@@ -16,16 +16,26 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "setup.h"
+
+#include "coderes.h"
+#include "controls.h"
+#include "options.h"
+#include "nameref.h"
+#include "init.h"
+#include "intel.h"
+#include "resinst.h"
+#include "sounds.h"
+#include "libs/compiler.h"
+#include "libs/uio.h"
+#include "libs/file.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/threadlib.h"
+
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
-#include "starcon.h"
-#include "coderes.h"
-#include "libs/threadlib.h"
-#include "libs/graphics/gfx_common.h"
-#include "libs/file.h"
-#include "options.h"
-#include "controls.h"
+
 
 //Added by Chris
 
@@ -38,18 +48,26 @@ extern BOOLEAN InitVideo (BOOLEAN UseCDROM);
 ACTIVITY LastActivity;
 BYTE PlayerControl[NUM_PLAYERS];
 
+// XXX: These declarations should really go to the file they belong to.
 MEM_HANDLE hResIndex;
-CONTEXT ScreenContext, SpaceContext, StatusContext, OffScreenContext,
-						TaskContext;
+CONTEXT ScreenContext;
+CONTEXT SpaceContext;
+CONTEXT StatusContext;
+CONTEXT OffScreenContext;
+CONTEXT TaskContext;
 SIZE screen_width, screen_height;
 FRAME Screen;
-FONT StarConFont, MicroFont, TinyFont;
+FONT StarConFont;
+FONT MicroFont;
+FONT TinyFont;
 QUEUE race_q[NUM_PLAYERS];
-SOUND MenuSounds, GameSounds;
 FRAME ActivityFrame, status, flagship_status, misc_data;
 Mutex GraphicsLock;
-CondVar RenderingCond;
 STRING GameStrings;
+
+uio_Repository *repository;
+uio_DirHandle *rootDir;
+
 
 static void
 InitPlayerInput (void)
@@ -72,23 +90,26 @@ LoadKernel (int argc, char *argv[])
 {
 #define MIN_K_REQUIRED (580000L / 1024)
 	if (!InitGraphics (argc, argv, MIN_K_REQUIRED))
-		return (FALSE);
+		return FALSE;
 	InitSound (argc, argv);
 	InitVideo (TRUE);
-	if ((ScreenContext = CaptureContext (CreateContext ())) == 0)
-		return(FALSE);
 
-	if ((Screen = CaptureDrawable (
-			CreateDisplay (WANT_MASK | WANT_PIXMAP, &screen_width, &screen_height)
-			)) == 0)
-		return(FALSE);
+	ScreenContext = CaptureContext (CreateContext ());
+	if (ScreenContext == NULL)
+		return FALSE;
+
+	Screen = CaptureDrawable (CreateDisplay (WANT_MASK | WANT_PIXMAP,
+				&screen_width, &screen_height));
+	if (Screen == NULL)
+		return FALSE;
 
 	SetContext (ScreenContext);
 	SetContextFGFrame (Screen);
 	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
-	if ((hResIndex = InitResourceSystem ("starcon", RES_INDEX, NULL)) == 0)
-		return (FALSE);
+	hResIndex = InitResourceSystem ("starcon", RES_INDEX, NULL);
+	if (hResIndex == 0)
+		return FALSE;
 	INIT_INSTANCES ();
 
 	{
@@ -102,17 +123,17 @@ LoadKernel (int argc, char *argv[])
 	InitPlayerInput ();
 
 	GLOBAL (CurrentActivity) = (ACTIVITY)~0;
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
 InitContexts (void)
 {
 	RECT r;
-	if ((StatusContext = CaptureContext (
-			CreateContext ()
-			)) == 0)
-		return (FALSE);
+	
+	StatusContext = CaptureContext (CreateContext ());
+	if (StatusContext == NULL)
+		return FALSE;
 
 	SetContext (StatusContext);
 	SetContextFGFrame (Screen);
@@ -122,20 +143,18 @@ InitContexts (void)
 	r.extent.height = STATUS_HEIGHT;
 	SetContextClipRect (&r);
 	
-	if ((SpaceContext = CaptureContext (
-			CreateContext ()
-			)) == 0)
-		return (FALSE);
+	SpaceContext = CaptureContext (CreateContext ());
+	if (SpaceContext == NULL)
+		return FALSE;
 		
-	if ((OffScreenContext = CaptureContext (
-			CreateContext ()
-			)) == 0)
-		return (FALSE);
+	OffScreenContext = CaptureContext (CreateContext ());
+	if (OffScreenContext == NULL)
+		return FALSE;
 
 	if (!InitQueue (&disp_q, 100, sizeof (ELEMENT)))
-		return (FALSE);
+		return FALSE;
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
@@ -144,47 +163,40 @@ InitKernel (void)
 	COUNT counter;
 
 	for (counter = 0; counter < NUM_PLAYERS; ++counter)
-	{
 		InitQueue (&race_q[counter], MAX_SHIPS_PER_SIDE, sizeof (STARSHIP));
-	}
 
-	if ((StarConFont = CaptureFont (
-			LoadGraphic (STARCON_FONT)
-			)) == 0)
-		return (FALSE);
+	StarConFont = CaptureFont (LoadGraphic (STARCON_FONT));
+	if (StarConFont == NULL)
+		return FALSE;
 
-	if ((TinyFont = CaptureFont (
-			LoadGraphic (TINY_FONT)
-			)) == 0)
-		return (FALSE);
-	if ((ActivityFrame = CaptureDrawable (
-			LoadGraphic (ACTIVITY_ANIM)
-			)) == 0)
-		return (FALSE);
+	TinyFont = CaptureFont (LoadGraphic (TINY_FONT));
+	if (TinyFont == NULL)
+		return FALSE;
 
-	if ((status = CaptureDrawable (
-			LoadGraphic (STATUS_MASK_PMAP_ANIM)
-			)) == 0)
-		return (FALSE);
+	ActivityFrame = CaptureDrawable (LoadGraphic (ACTIVITY_ANIM));
+	if (ActivityFrame == NULL)
+		return FALSE;
 
-	if ((GameStrings = CaptureStringTable (
-			LoadStringTableInstance (STARCON_GAME_STRINGS)
-			)) == 0)
-		return (FALSE);
+	status = CaptureDrawable (LoadGraphic (STATUS_MASK_PMAP_ANIM));
+	if (status == NULL)
+		return FALSE;
 
-	if ((MicroFont = CaptureFont (
-			LoadGraphic (MICRO_FONT)
-			)) == 0)
-		return (FALSE);
+	GameStrings = CaptureStringTable (LoadStringTableInstance (
+				STARCON_GAME_STRINGS));
+	if (GameStrings == 0)
+		return FALSE;
 
-	if ((MenuSounds = CaptureSound (
-			LoadSound (MENU_SOUNDS)
-			)) == 0)
-		return (FALSE);
+	MicroFont = CaptureFont (LoadGraphic (MICRO_FONT));
+	if (MicroFont == NULL)
+		return FALSE;
+
+	MenuSounds = CaptureSound (LoadSound (MENU_SOUNDS));
+	if (MenuSounds == 0)
+		return FALSE;
 
 	InitSpace ();
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
@@ -195,7 +207,7 @@ InitGameKernel (void)
 		InitKernel ();
 		InitContexts ();
 	}
-	return(TRUE);
+	return TRUE;
 }
 
 void
@@ -221,4 +233,28 @@ SetPlayerInput (void)
 			PlayerInput[which_player] = HumanInput[which_player];
 	}
 }
+
+int
+initIO (void)
+{
+	uio_init ();
+	repository = uio_openRepository (0);
+
+	rootDir = uio_openDir (repository, "/", 0);
+	if (rootDir == NULL) {
+		fprintf(stderr, "Could not open '/' dir.\n");
+		return -1;
+	}
+	return 0;
+}
+
+void
+uninitIO (void)
+{
+	uio_closeDir (rootDir);
+	uio_closeRepository (repository);
+	uio_unInit ();
+}
+
+
 

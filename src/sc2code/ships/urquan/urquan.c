@@ -19,6 +19,11 @@
 #include "ships/ship.h"
 #include "ships/urquan/resinst.h"
 
+#include "globdata.h"
+
+#include <stdlib.h>
+
+
 #define MAX_CREW MAX_CREW_SIZE
 #define MAX_ENERGY MAX_ENERGY_SIZE
 #define ENERGY_REGENERATION 1

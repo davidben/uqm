@@ -16,7 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "globdata.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "planets/genall.h"
+#include "libs/mathlib.h"
+
 
 void
 GenerateBurvixes (BYTE control)
@@ -152,12 +157,10 @@ GenerateBurvixes (BYTE control)
 						CaptureFont (LoadGraphic (LANDER_FONT));
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
-						LoadGraphic (RUINS_MASK_PMAP_ANIM)
-						);
+						LoadGraphic (RUINS_MASK_PMAP_ANIM));
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 						CaptureStringTable (
-								LoadStringTable (BURV_RUINS_STRTAB)
-								);
+								LoadStringTable (BURV_RUINS_STRTAB));
 				pSolarSysState->SysInfo.PlanetInfo.Weather = 0;
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 			}
@@ -169,12 +172,10 @@ GenerateBurvixes (BYTE control)
 						CaptureFont (LoadGraphic (LANDER_FONT));
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
-						LoadGraphic (BURV_BCS_MASK_PMAP_ANIM)
-						);
+						LoadGraphic (BURV_BCS_MASK_PMAP_ANIM));
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 						CaptureStringTable (
-								LoadStringTable (BURV_BCS_STRTAB)
-								);
+								LoadStringTable (BURV_BCS_STRTAB));
 			}
 			LoadPlanet (FALSE);
 			break;

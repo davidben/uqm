@@ -19,7 +19,9 @@
 #include "gfxintrn.h"
 #include "tfb_prim.h"
 
-extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to, BYTE type);
+
+extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to,
+		BYTE type);
 
 static BYTE char_delta_array[MAX_DELTAS];
 

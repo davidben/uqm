@@ -19,17 +19,21 @@
 #ifndef _NAMEREF_H
 #define _NAMEREF_H
 
+#include "restypes.h"
+
 #define LoadCodeRes(r) LoadCodeResInstance (r)
 #define LoadColorMap(r) LoadColorMapInstance (r)
 #define LoadStringTable(r) LoadStringTableInstance(r)
 #define LoadSound(r) LoadSoundInstance(r)
 #define LoadMusic(r) LoadMusicInstance(r)
 
-#define INIT_INSTANCES() \
-		InstallGraphicResTypes (GFXRES, FONTRES); \
-		InstallStringTableResType (STRTAB); \
-		InstallAudioResTypes (SNDRES, MUSICRES); \
-		InstallCodeResType (CODE)
+#define INIT_INSTANCES() do \
+		{ \
+			InstallGraphicResTypes (GFXRES, FONTRES); \
+			InstallStringTableResType (STRTAB); \
+			InstallAudioResTypes (SNDRES, MUSICRES); \
+			InstallCodeResType (CODE); \
+		} while (0)
 #define UNINIT_INSTANCES()
 
 #endif /* _NAMEREF_H */

@@ -19,7 +19,10 @@
 #ifndef _STARBASE_H
 #define _STARBASE_H
 
+#include "libs/gfxlib.h"
+#include "libs/sndlib.h"
 #include "libs/tasklib.h"
+
 
 enum
 {
@@ -63,7 +66,12 @@ extern BOOLEAN DoShipyard (PMENU_STATE pMS);
 extern void DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT
 		which_slot, BOOLEAN DrawBluePrint);
 
+extern COUNT WrapText (UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
+		field_width);
+		// XXX: Doesn't really belong in this file.
+
 extern const char starbase_str_array[][20];
 
 #endif /* _STARBASE_H */
+
 

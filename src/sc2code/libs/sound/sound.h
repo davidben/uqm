@@ -17,12 +17,13 @@
 #ifndef _UQM_SOUND_H // try avoiding collisions on id
 #define _UQM_SOUND_H
 
-#include "starcon.h"
 #include "misc.h"
 #include "libs/strings/strintrn.h"
 #include "sndintrn.h"
 #include "audiocore.h"
 #include "decoders/decoder.h"
+#include "libs/threadlib.h"
+
 
 #define FIRST_SFX_SOURCE 0
 #define LAST_SFX_SOURCE 4

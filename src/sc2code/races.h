@@ -19,6 +19,11 @@
 #ifndef _RACES_H
 #define _RACES_H
 
+#include "units.h"
+#include "element.h"
+#include "libs/sndlib.h"
+
+
 #define RACES_PER_PLAYER 7
 #define MAX_SHIPS_PER_SIDE 14
 

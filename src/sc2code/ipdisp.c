@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "collide.h"
+#include "globdata.h"
+#include "init.h"
+#include "races.h"
+#include "libs/mathlib.h"
+
 
 void
 NotifyOthers (COUNT which_race, BYTE target_loc)
@@ -30,8 +34,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 		SHIP_FRAGMENTPTR StarShipPtr;
 
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
 		if (GET_RACE_ID (StarShipPtr) == which_race)
@@ -53,8 +56,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 #ifdef OLD
 				target_loc = (BYTE)((
 						(COUNT)TFB_Random ()
-						% pSolarSysState->SunDesc[0].NumPlanets
-						) + 1);
+						% pSolarSysState->SunDesc[0].NumPlanets) + 1);
 #endif /* OLD */
 				if (!(task & REFORM_GROUP))
 				{
@@ -62,8 +64,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 						StarShipPtr->ShipInfo.group_counter = 0;
 					else
 						StarShipPtr->ShipInfo.group_counter =
-								((COUNT)TFB_Random ()
-								% MAX_REVOLUTIONS)
+								((COUNT) TFB_Random () % MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 				}
 			}
@@ -72,9 +73,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 			SET_GROUP_DEST (StarShipPtr, target_loc);
 		}
 
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 
@@ -166,7 +165,7 @@ ip_group_preprocess (PELEMENT ElementPtr)
 	{
 		if (target_loc == 0 && task != FLEE)
 		{
-				/* if intercepting flagship */
+			/* if intercepting flagship */
 			target_loc = flagship_loc;
 			if (EPtr->thrust_wait > TRACK_WAIT)
 			{
@@ -286,11 +285,8 @@ ip_group_preprocess (PELEMENT ElementPtr)
 			if (GET_GROUP_DEST (StarShipPtr) == 0)
 				dest_pt = pSolarSysState->SunDesc[0].location;
 			else
-				XFormIPLoc (
-						&pSolarSysState->PlanetDesc[target_loc - 1].image.origin,
-						&dest_pt,
-						FALSE
-						);
+				XFormIPLoc (&pSolarSysState->PlanetDesc[
+						target_loc - 1].image.origin, &dest_pt, FALSE);
 		}
 		else
 		{

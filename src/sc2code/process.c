@@ -16,12 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
 #include "collide.h"
-#include "libs/graphics/gfx_common.h"
+#include "options.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "weapon.h"
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/drawcmd.h"
-#include "options.h"
+#include "libs/graphics/gfx_common.h"
+
 
 //#define DEBUG_PROCESS
 
@@ -620,11 +625,6 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 	return (ElementPtr->state_flags & COLLISION);
 }
 
-#define MAX_SOUNDS 8
-static BYTE num_sounds;
-static SOUND sound_buf[MAX_SOUNDS];
-static ELEMENTPTR sound_posobj[MAX_SOUNDS];
-
 static VIEW_STATE
 PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 {
@@ -1055,56 +1055,6 @@ InitDisplayList (void)
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 }
 
-void
-PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
-		BYTE Priority)
-{
-#define MIN_FX_CHANNEL 1
-#define NUM_FX_CHANNELS 4 /* obviously number of channels
-												   is assumed to be at least 5 */
-	BYTE chan, c;
-	static BYTE lru_channel[NUM_FX_CHANNELS] = {0, 1, 2, 3};
-	static SOUND channel[NUM_FX_CHANNELS];
-
-	if (S == 0) return;
-
-	for (chan = 0; chan < NUM_FX_CHANNELS; ++chan)
-	{
-		if (S == channel[chan])
-			break;
-	}
-
-	if (chan == NUM_FX_CHANNELS)
-	{
-		for (chan = 0; chan < NUM_FX_CHANNELS; ++chan)
-		{
-			if (!ChannelPlaying (chan + MIN_FX_CHANNEL))
-				break;
-		}
-
-		if (chan == NUM_FX_CHANNELS)
-			chan = lru_channel[0];
-	}
-
-	channel[chan] = S;
-
-	for (c = 0; c < NUM_FX_CHANNELS - 1; ++c)
-	{
-		if (lru_channel[c] == chan)
-		{
-			memmove (
-					(PBYTE)&lru_channel[c],
-					(PBYTE)&lru_channel[c + 1],
-					(NUM_FX_CHANNELS - 1) - c
-					);
-			break;
-		}
-	}
-	lru_channel[NUM_FX_CHANNELS - 1] = chan;
-
-	PlaySoundEffect (S, chan + MIN_FX_CHANNEL, Pos, PositionalObject, Priority);
-}
-
 UWORD nth_frame;
 
 void
@@ -1112,7 +1062,6 @@ RedrawQueue (BOOLEAN clear)
 {
 	SIZE scroll_x, scroll_y;
 	VIEW_STATE view_state;
-	int i;
 
 	SetContext (StatusContext);
 
@@ -1120,21 +1069,7 @@ RedrawQueue (BOOLEAN clear)
 	PostProcessQueue (view_state, scroll_x, scroll_y);
 
 	if (optStereoSFX)
-	{
-		for (i = 0; i <= NUM_FX_CHANNELS; ++i)
-		{
-			/* Updates positional sound effects */
-
-			ELEMENTPTR posobj;
-			if (ChannelPlaying (i) && ((posobj = GetPositionalObject (i)) != NULL))
-			{
-				SoundPosition pos;
-				pos = CalcSoundPosition (posobj);
-				if (pos.positional)
-					UpdateSoundPosition (i, pos);
-			}
-		}
-	}
+		UpdateSoundPositions ();
 
 	SetContext (SpaceContext);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE
@@ -1158,78 +1093,9 @@ RedrawQueue (BOOLEAN clear)
 			SetGraphicScale (0);
 		}
 
-		if (num_sounds > 0)
-		{
-			SOUND *pSound;
-			ELEMENTPTR *pSoundPosObj;
-
-			pSound = sound_buf;
-			pSoundPosObj = sound_posobj;
-			do
-			{
-				SoundPosition pos = CalcSoundPosition (*pSoundPosObj);
-				PlaySound (*pSound++, pos, *pSoundPosObj++,
-						GAME_SOUND_PRIORITY);
-			} while (--num_sounds);
-		}
+		FlushSounds ();
 	}
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
-}
-
-void
-ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject)
-{
-	if (Sound == (SOUND)~0)
-	{
-		memset (sound_buf, 0, sizeof (sound_buf));
-		memset (sound_posobj, 0, sizeof (sound_posobj));
-		num_sounds = MAX_SOUNDS;
-	}
-	else if (num_sounds < MAX_SOUNDS)
-	{
-		sound_buf[num_sounds] = Sound;
-		sound_posobj[num_sounds++] = PositionalObject;
-	}
-}
-
-SoundPosition
-CalcSoundPosition (ELEMENTPTR ElementPtr)
-{
-	SoundPosition pos;
-
-	if (ElementPtr == NULL)
-	{
-		pos.x = pos.y = 0;
-		pos.positional = FALSE;
-	}
-	else
-	{
-		GRAPHICS_PRIM objtype;
-		
-		objtype = GetPrimType (&DisplayArray[ElementPtr->PrimIndex]);
-		if (objtype == LINE_PRIM)
-		{
-			pos.x = DisplayArray[ElementPtr->PrimIndex].Object.Line.first.x;
-			pos.y = DisplayArray[ElementPtr->PrimIndex].Object.Line.first.y;
-		}
-		else
-		{
-			pos.x = DisplayArray[ElementPtr->PrimIndex].Object.Point.x;
-			pos.y = DisplayArray[ElementPtr->PrimIndex].Object.Point.y;
-		}
-
-		pos.x -= (SPACE_WIDTH >> 1);
-		pos.y -= (SPACE_HEIGHT);
-		pos.positional = TRUE;
-	}
-
-	return pos;
-}
-
-SoundPosition
-NotPositional (void)
-{
-	return CalcSoundPosition (NULL);
 }
 
 void
@@ -1265,24 +1131,14 @@ RemoveElement (HLINK hLink)
 {
 	if (optStereoSFX)
 	{
-		ELEMENTPTR ElementPtr, PosObj;
+		ELEMENTPTR ElementPtr;
 
 		LockElement (hLink, &ElementPtr);
 		if (ElementPtr != NULL)
-		{
-			int i;
-			for (i = 0; i <= NUM_FX_CHANNELS; ++i)
-			{
-				if ((PosObj = GetPositionalObject (i)) == ElementPtr)
-					SetPositionalObject (i, NULL);
-			}
-			for (i = 0; i < num_sounds; ++i)
-			{
-				if (sound_posobj[i] == ElementPtr)
-					sound_posobj[i] = NULL;
-			}
-		}
+			RemoveSoundsForObject(ElementPtr);
 		UnlockElement (hLink);
 	}
 	RemoveQueue (&disp_q, hLink);
 }
+
+

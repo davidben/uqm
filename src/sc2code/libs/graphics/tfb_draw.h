@@ -21,6 +21,7 @@
 
 #include "libs/threadlib.h"
 
+
 typedef void *TFB_Canvas;
 
 typedef enum {
@@ -43,6 +44,8 @@ typedef struct tfb_palette
 	UBYTE b;
 	UBYTE unused;
 } TFB_Palette;
+
+#include "graphics/gfx_common.h"
 
 typedef struct tfb_image
 {

@@ -16,12 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "setupmenu.h"
+
 #include "controls.h"
 #include "options.h"
+#include "setup.h"
+#include "sounds.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
+
 
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);

@@ -16,11 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "comm/commall.h"
 #include "comm/thradd/resinst.h"
-#include "starcon.h"
-#include "commglue.h"
 #include "comm/thradd/strings.h"
+
+#include "build.h"
+#include "gameev.h"
+
 
 static LOCDATA thradd_desc =
 {

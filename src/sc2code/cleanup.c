@@ -16,7 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "battle.h"
+#include "nameref.h"
+#include "reslib.h"
+#include "gamestr.h"
+#include "setup.h"
+#include "sounds.h"
+#include "libs/sndlib.h"
 #include "libs/vidlib.h"
 
 //Added by Chris
@@ -34,6 +40,10 @@ void UninitSpace (void);
 void FreeHyperData (void);
 
 //End Added by Chris
+
+static void UninitContexts (void);
+static void UninitKernel (BOOLEAN ships);
+
 
 void
 FreeKernel (void)
@@ -56,7 +66,7 @@ FreeKernel (void)
 	UninitGraphics ();
 }
 
-void
+static void
 UninitContexts (void)
 {
 	UninitQueue (&disp_q);
@@ -66,7 +76,7 @@ UninitContexts (void)
 	DestroyContext (ReleaseContext (StatusContext));
 }
 
-void
+static void
 UninitKernel (BOOLEAN ships)
 {
 	extern FRAME status;

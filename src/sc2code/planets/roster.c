@@ -16,11 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "colors.h"
 #include "controls.h"
+#include "races.h"
+#include "setup.h"
+#include "sounds.h"
+#include "libs/gfxlib.h"
+#include "libs/tasklib.h"
+
 
 int
-flash_ship_task(void *data)
+flash_ship_task (void *data)
 {
 	DWORD TimeIn;
 	COLOR c;
@@ -38,14 +45,10 @@ flash_ship_task(void *data)
 		LockMutex (GraphicsLock);
 		s.origin = pMenuState->first_item;
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (built_ship_q),
-				(HSTARSHIP)pMenuState->CurFrame
-				);
+				&GLOBAL (built_ship_q), (HSTARSHIP)pMenuState->CurFrame);
 		s.frame = StarShipPtr->ShipInfo.icons;
-		UnlockStarShip (
-				&GLOBAL (built_ship_q),
-				(HSTARSHIP)pMenuState->CurFrame
-				);
+		UnlockStarShip (&GLOBAL (built_ship_q),
+				(HSTARSHIP)pMenuState->CurFrame);
 		OldContext = SetContext (StatusContext);
 		if (c >= BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24))
 			c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
@@ -60,7 +63,7 @@ flash_ship_task(void *data)
 		TimeIn = GetTimeCounter ();
 	}
 	FinishTask (task);
-	return(0);
+	return 0;
 }
 
 static HSTARSHIP
@@ -76,29 +79,20 @@ MatchSupportShip (PMENU_STATE pMS)
 		SHIP_FRAGMENTPTR StarShipPtr;
 
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (built_ship_q),
-				hStarShip
-				);
+				&GLOBAL (built_ship_q), hStarShip);
 
 		if (pship_pos->x == pMS->first_item.x
 				&& pship_pos->y == pMS->first_item.y)
 		{
-			UnlockStarShip (
-					&GLOBAL (built_ship_q),
-					hStarShip
-					);
-
-			return (hStarShip);
+			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+			return hStarShip;
 		}
 
 		hNextShip = _GetSuccLink (StarShipPtr);
-		UnlockStarShip (
-				&GLOBAL (built_ship_q),
-				hStarShip
-				);
+		UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 	}
 
-	return (0);
+	return 0;
 }
 
 static void
@@ -109,16 +103,11 @@ DeltaSupportCrew (SIZE crew_delta)
 	SHIP_FRAGMENTPTR StarShipPtr, TemplatePtr;
 
 	StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-			&GLOBAL (built_ship_q),
-			(HSTARSHIP)pMenuState->CurFrame
-			);
-	hTemplate = GetStarShipFromIndex (
-			&GLOBAL (avail_race_q),
-			GET_RACE_ID (StarShipPtr)
-			);
+			&GLOBAL (built_ship_q), (HSTARSHIP)pMenuState->CurFrame);
+	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
+			GET_RACE_ID (StarShipPtr));
 	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-			&GLOBAL (avail_race_q), hTemplate
-			);
+			&GLOBAL (avail_race_q), hTemplate);
 
 	StarShipPtr->ShipInfo.crew_level += crew_delta;
 
@@ -153,13 +142,8 @@ DeltaSupportCrew (SIZE crew_delta)
 		}
 	}
 
-	UnlockStarShip (
-			&GLOBAL (avail_race_q), hTemplate
-			);
-	UnlockStarShip (
-			&GLOBAL (built_ship_q),
-			(HSTARSHIP)pMenuState->CurFrame
-			);
+	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
+	UnlockStarShip (&GLOBAL (built_ship_q), (HSTARSHIP)pMenuState->CurFrame);
 }
 
 #define SHIP_TOGGLE ((BYTE)(1 << 7))
@@ -183,14 +167,9 @@ RosterCleanup (PMENU_STATE pMS)
 		SetContext (StatusContext);
 		s.origin = pMS->first_item;
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (built_ship_q),
-				(HSTARSHIP)pMS->CurFrame
-				);
+				&GLOBAL (built_ship_q), (HSTARSHIP)pMS->CurFrame);
 		s.frame = StarShipPtr->ShipInfo.icons;
-		UnlockStarShip (
-				&GLOBAL (built_ship_q),
-				(HSTARSHIP)pMS->CurFrame
-				);
+		UnlockStarShip (&GLOBAL (built_ship_q), (HSTARSHIP)pMS->CurFrame);
 		if (!(pMS->CurState & SHIP_TOGGLE))
 			DrawStamp (&s);
 		else
@@ -218,18 +197,20 @@ DoModifyRoster (PMENU_STATE pMS)
 		UnlockMutex (GraphicsLock);
 		pMS->CurFrame = 0;
 
-		return (FALSE);
+		return FALSE;
 	}
 
 	select = PulsedInputState.key[KEY_MENU_SELECT];
 	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
 	up = PulsedInputState.key[KEY_MENU_UP];
 	down = PulsedInputState.key[KEY_MENU_DOWN];
-	horiz = PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT];
+	horiz = PulsedInputState.key[KEY_MENU_LEFT] ||
+			PulsedInputState.key[KEY_MENU_RIGHT];
 
 	if (pMS->Initialized && (pMS->CurState & SHIP_TOGGLE))
 	{
-		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+				MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 	}
 	else
 	{
@@ -255,7 +236,7 @@ DoModifyRoster (PMENU_STATE pMS)
 		DrawStatusMessage (NULL_PTR);
 		UnlockMutex (GraphicsLock);
 
-		return (FALSE);
+		return FALSE;
 	}
 	else if (select || cancel)
 	{
@@ -375,7 +356,7 @@ SelectSupport:
 					"flash roster menu");
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
@@ -452,9 +433,9 @@ Roster (void)
 
 		pMenuState = pOldMenuState;
 		
-		return (TRUE);
+		return TRUE;
 	}
 	
-	return (FALSE);
+	return FALSE;
 }
 

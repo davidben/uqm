@@ -18,7 +18,14 @@
 
 /* background starfield - used to generate agalaxy.asm */
 
-#include "starcon.h"
+#include "element.h"
+#include "globdata.h"
+#include "init.h"
+#include "units.h"
+#include "libs/compiler.h"
+#include "libs/gfxlib.h"
+#include "libs/mathlib.h"
+
 
 //Added by Chris
 

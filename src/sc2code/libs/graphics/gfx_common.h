@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "starcon.h"
 #include "libs/gfxlib.h"
 #include "libs/vidlib.h"
 #include "libs/misc.h"

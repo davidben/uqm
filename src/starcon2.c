@@ -38,6 +38,8 @@
 #include "options.h"
 #include "uqmversion.h"
 #include "comm.h"
+#include "setup.h"
+
 
 #if defined(GFXMODULE_SDL)
 #	include <SDL.h>
@@ -207,8 +209,6 @@ main (int argc, char *argv[])
 	InitTaskSystem ();
 
 	GraphicsLock = CreateMutex ("Graphics",
-			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-	RenderingCond = CreateCondVar ("DCQ empty",
 			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	TFB_InitGraphics (options.gfxDriver, options.gfxFlags,

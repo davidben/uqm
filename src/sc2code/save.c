@@ -16,15 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
 #include "declib.h"
-#include "file.h"
-#include "options.h"
 #include "controls.h"
-
-void FreeSC2Data (void);
-
-BOOLEAN LoadSC2Data (void);
+#include "encount.h"
+#include "file.h"
+#include "gamestr.h"
+#include "globdata.h"
+#include "options.h"
+#include "races.h"
+#include "setup.h"
+#include "state.h"
+#include "util.h"
+#include "libs/inplib.h"
 
 
 static void

@@ -16,9 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
 #include "collide.h"
+#include "colors.h"
+#include "controls.h"
+#include "encount.h"
+#include "globdata.h"
+#include "init.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "setup.h"
+#include "sounds.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/mathlib.h"
+
 
 //Added by Chris
 
@@ -274,16 +285,13 @@ LoadHyperData (void)
 	if (hyperstars[0] == 0)
 	{
 		hyperstars[0] = CaptureDrawable (
-				LoadGraphic (AMBIENT_MASK_PMAP_ANIM)
-				);
+				LoadGraphic (AMBIENT_MASK_PMAP_ANIM));
 		hyperstars[1] = CaptureDrawable (
-				LoadGraphic (HYPERSTARS_MASK_PMAP_ANIM)
-				);
+				LoadGraphic (HYPERSTARS_MASK_PMAP_ANIM));
 		hypercmaps[0] = CaptureColorMap (LoadColorMap (HYPER_COLOR_TAB));
 
 		hyperstars[2] = CaptureDrawable (
-				LoadGraphic (ARISPACE_MASK_PMAP_ANIM)
-				);
+				LoadGraphic (ARISPACE_MASK_PMAP_ANIM));
 		hypercmaps[1] = CaptureColorMap (LoadColorMap (ARISPACE_COLOR_TAB));
 	}
 }
@@ -954,17 +962,12 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 			HSTARSHIP hStarShip;
 			SHIP_FRAGMENTPTR TemplatePtr;
 
-			hStarShip = GetStarShipFromIndex (
-					&GLOBAL (avail_race_q), Type
-					);
+			hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), Type);
 			TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-					&GLOBAL (avail_race_q), hStarShip
-					);
+					&GLOBAL (avail_race_q), hStarShip);
 			EncounterPtr->SD.ShipList[i] = TemplatePtr->ShipInfo;
 			EncounterPtr->SD.ShipList[i].var1 = Type;
-			UnlockStarShip (
-					&GLOBAL (avail_race_q), hStarShip
-					);
+			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 		}
 
 
@@ -1015,10 +1018,8 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 			if (i == 0 || i > NUM_VORTEX_TRANSITIONS)
 				i = NUM_VORTEX_TRANSITIONS;
 
-			ElementPtr->current.image.frame =
-					SetRelFrameIndex (
-					ElementPtr->current.image.farray[0], -i
-					);
+			ElementPtr->current.image.frame = SetRelFrameIndex (
+					ElementPtr->current.image.farray[0], -i);
 			ElementPtr->death_func = encounter_transition;
 		}
 		else
@@ -1057,7 +1058,8 @@ DrawHyperGrid (COORD ux, COORD uy, COORD ox,
 	RECT r;
 
 	ClearDrawable ();
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
 
 	if ((sx = ux - (RADAR_SCAN_WIDTH >> 1)) < 0)
 		sx = 0;
@@ -1073,22 +1075,20 @@ DrawHyperGrid (COORD ux, COORD uy, COORD ox,
 	if ((ey = uy + (RADAR_SCAN_HEIGHT >> 1)) > MAX_Y_UNIVERSE + 1)
 		ey = MAX_Y_UNIVERSE + 1;
 
-	r.corner.y = (COORD)((long)(MAX_Y_UNIVERSE - ey)
+	r.corner.y = (COORD) ((long)(MAX_Y_UNIVERSE - ey)
 			* RADAR_HEIGHT / RADAR_SCAN_HEIGHT) - oy;
 	r.extent.width = 1;
-	r.extent.height = ((COORD)((long)(MAX_Y_UNIVERSE - sy)
-			* RADAR_HEIGHT / RADAR_SCAN_HEIGHT) - oy)
-			- r.corner.y + 1;
+	r.extent.height = ((COORD) ((long)(MAX_Y_UNIVERSE - sy)
+			* RADAR_HEIGHT / RADAR_SCAN_HEIGHT) - oy) - r.corner.y + 1;
 	for (ux = sx; ux <= ex; ux += GRID_OFFSET)
 	{
-		r.corner.x = (COORD)((long)ux
+		r.corner.x = (COORD) ((long)ux
 				* RADAR_WIDTH / RADAR_SCAN_WIDTH) - ox;
 		DrawFilledRectangle (&r);
 	} while ((ux += GRID_OFFSET) < ex);
 
-	r.corner.x = (COORD)((long)sx
-			* RADAR_WIDTH / RADAR_SCAN_WIDTH) - ox;
-	r.extent.width = ((COORD)((long)ex
+	r.corner.x = (COORD) ((long)sx * RADAR_WIDTH / RADAR_SCAN_WIDTH) - ox;
+	r.extent.width = ((COORD) ((long)ex
 			* RADAR_WIDTH / RADAR_SCAN_WIDTH) - ox)
 			- r.corner.x + 1;
 	r.extent.height = 1;
@@ -1119,9 +1119,7 @@ ProcessEncounters (PPOINT puniverse, COORD ox,
 		hNextEncounter = GetSuccEncounter (EncounterPtr);
 
 		if (EncounterPtr->hElement == 0
-				&& AddEncounterElement (
-				EncounterPtr, puniverse
-				) == 0)
+				&& AddEncounterElement (EncounterPtr, puniverse) == 0)
 		{
 DeleteEncounter:
 			UnlockEncounter (hEncounter);
@@ -1171,13 +1169,11 @@ DeleteEncounter:
 					COUNT cur_facing, delta_facing;
 
 					cur_facing = ANGLE_TO_FACING (
-							GetVelocityTravelAngle (&ElementPtr->velocity)
-							);
+							GetVelocityTravelAngle (&ElementPtr->velocity));
 					delta_facing = NORMALIZE_FACING (cur_facing
 							- ANGLE_TO_FACING (ARCTAN (
 							puniverse->x - EncounterPtr->SD.star_pt.x,
-							puniverse->y - EncounterPtr->SD.star_pt.y
-							)));
+							puniverse->y - EncounterPtr->SD.star_pt.y)));
 					if (delta_facing || (delta_x == 0 && delta_y == 0))
 					{
 						SIZE s, RaceHyperSpeed[] =

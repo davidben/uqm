@@ -16,8 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "colors.h"
+#include "globdata.h"
 #include "options.h"
+#include "build.h"
+#include "setup.h"
+#include "libs/gfxlib.h"
+
 
 void
 DrawCrewFuelString (COORD y, SIZE state)

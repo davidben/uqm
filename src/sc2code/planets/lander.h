@@ -19,6 +19,12 @@
 #ifndef _LANDER_H
 #define _LANDER_H
 
+#include "planets/elemdata.h"
+#include "libs/compiler.h"
+#include "libs/gfxlib.h"
+#include "libs/sndlib.h"
+
+
 #define NUM_TEXT_FRAMES 32
 
 typedef struct

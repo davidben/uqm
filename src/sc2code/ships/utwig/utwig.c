@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/utwig/resinst.h"
 
+#include "globdata.h"
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 20
 #define MAX_ENERGY 20
 #define ENERGY_REGENERATION 0

@@ -19,6 +19,9 @@
 #ifndef TRACKPLAYER_H
 #define TRACKPLAYER_H
 
+#include "compiler.h"
+
+
 typedef void (*TFB_TrackCB) (void);
 
 #define ACCEL_SCROLL_SPEED 300

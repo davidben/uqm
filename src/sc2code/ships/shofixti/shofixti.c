@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/shofixti/resinst.h"
 
+#include "globdata.h"
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 6
 #define MAX_ENERGY 4
 #define ENERGY_REGENERATION 1

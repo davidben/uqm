@@ -229,7 +229,7 @@ InitResourceSystem (PVOID resfile, COUNT resindex_type, BOOLEAN
 				_GetResFileData, FreeResourceHeader);
 	}
 
-		(void) FileErrorFunc;  /* Satisfy compiler (unused parameter) */
+	(void) FileErrorFunc;  /* Satisfy compiler (unused parameter) */
 	return (h);
 }
 

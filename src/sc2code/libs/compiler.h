@@ -44,6 +44,8 @@ typedef SWORD              SIZE;
 typedef SIZE             *PSIZE;
 
 typedef unsigned char   UNICODE;
+#include "strtemp.h"
+		// XXX: this include should be removed in the future.
 
 #define NULL_PTR 0L
 

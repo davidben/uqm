@@ -14,13 +14,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <assert.h>
-#include <ctype.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
 #include "comm.h"
+#include "sis.h"
 #include "options.h"
+#include <assert.h>
+#include <ctype.h>
+#include <stdlib.h>
+
 
 static int tct;               //total number of subtitle tracks
 static int tcur;              //currently playing subtitle track

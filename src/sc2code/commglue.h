@@ -19,7 +19,10 @@
 #ifndef _COMMGLUE_H
 #define _COMMGLUE_H
 
+#include "globdata.h"
+#include "resinst.h"
 #include "libs/sound/trackplayer.h"
+
 
 extern LOCDATA CommData;
 extern int cur_comm;

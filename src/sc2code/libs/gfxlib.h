@@ -223,6 +223,16 @@ typedef struct
 	BYTE type;
 } FONTEFFECT;
 
+enum
+{
+	FadeAllToWhite = 250,
+	FadeSomeToWhite,
+	FadeAllToBlack,
+	FadeAllToColor,
+	FadeSomeToBlack,
+	FadeSomeToColor
+};
+
 #endif /* _GFXLIB_H */
 
 

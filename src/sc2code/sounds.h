@@ -19,6 +19,10 @@
 #ifndef _SOUNDS_H
 #define _SOUNDS_H
 
+#include "element.h"
+#include "libs/compiler.h"
+#include "libs/sndlib.h"
+
 typedef enum
 {
 	GRAB_CREW = 0,
@@ -29,5 +33,38 @@ typedef enum
 	TARGET_DAMAGED_FOR_6_PLUS_PT
 } SOUND_EFFECTS;
 
+extern SOUND MenuSounds;
+extern SOUND GameSounds;
+
+/* Constants for DoInput */
+typedef UWORD MENU_SOUND_FLAGS;
+#define MENU_SOUND_UP       ((MENU_SOUND_FLAGS)(1 << 0))
+#define MENU_SOUND_DOWN     ((MENU_SOUND_FLAGS)(1 << 1))
+#define MENU_SOUND_LEFT     ((MENU_SOUND_FLAGS)(1 << 2))
+#define MENU_SOUND_RIGHT    ((MENU_SOUND_FLAGS)(1 << 3))
+#define MENU_SOUND_SELECT   ((MENU_SOUND_FLAGS)(1 << 4))
+#define MENU_SOUND_CANCEL   ((MENU_SOUND_FLAGS)(1 << 5))
+#define MENU_SOUND_SPECIAL  ((MENU_SOUND_FLAGS)(1 << 6))
+#define MENU_SOUND_PAGEUP   ((MENU_SOUND_FLAGS)(1 << 7))
+#define MENU_SOUND_PAGEDOWN ((MENU_SOUND_FLAGS)(1 << 8))
+#define MENU_SOUND_DELETE   ((MENU_SOUND_FLAGS)(1 << 9))
+#define MENU_SOUND_ARROWS   (MENU_SOUND_UP | MENU_SOUND_DOWN | MENU_SOUND_LEFT | MENU_SOUND_RIGHT)
+#define MENU_SOUND_NONE     ((MENU_SOUND_FLAGS)0)
+
+extern void SetMenuSounds (MENU_SOUND_FLAGS sound_0,
+		MENU_SOUND_FLAGS sound_1);
+extern void GetMenuSounds (MENU_SOUND_FLAGS *sound_0,
+		MENU_SOUND_FLAGS *sound_1);
+
+extern void PlaySound (SOUND S, SoundPosition Pos,
+		ELEMENTPTR PositionalObject, BYTE Priority);
+extern void ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject);
+extern SoundPosition CalcSoundPosition (ELEMENTPTR ElementPtr);
+extern SoundPosition NotPositional (void);
+extern void UpdateSoundPositions (void);
+extern void FlushSounds (void);
+extern void RemoveSoundsForObject (ELEMENTPTR PosObj);
+
 #endif /* _SOUNDS_H */
+
 

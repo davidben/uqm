@@ -16,9 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include "starcon.h"
+/*
+ * This file seems to be a collection of functions that don't do
+ * much.
+ */
+
+
 #include "coderes.h"
+#include "races.h"
+#include <ctype.h>
+
 
 MEM_HANDLE
 LoadVidInstance (DWORD res)

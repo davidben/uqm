@@ -19,6 +19,10 @@
 #ifndef _SUNDATA_H
 #define _SUNDATA_H
 
+#include "planets/plandata.h"
+#include "libs/compiler.h"
+
+
 /*------------------------------ Global Data ------------------------------ */
 
 #define NUMBER_OF_SUN_SIZES (SUPER_GIANT_STAR - DWARF_STAR + 1)

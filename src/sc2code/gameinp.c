@@ -16,13 +16,21 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "controls.h"
+#include "init.h"
+#include "planets/planets.h"
+#include "settings.h"
+#include "sounds.h"
+#include "libs/timelib.h"
+#include "libs/threadlib.h"
+
 
 battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS];
 battle_summary_func PlayerInput[NUM_PLAYERS];
 
 #define ACCELERATION_INCREMENT (ONE_SECOND / 12)
+#define MENU_REPEAT_DELAY (ONE_SECOND >> 1)
+
 
 typedef struct
 {

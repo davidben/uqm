@@ -19,6 +19,12 @@
 #ifndef _ENCOUNT_H
 #define _ENCOUNT_H
 
+#include "displist.h"
+#include "libs/gfxlib.h"
+#include "planets/planets.h"
+#include "races.h"
+
+
 typedef QUEUE_HANDLE HENCOUNTER;
 
 #define MAX_HYPER_SHIPS 7
@@ -136,6 +142,8 @@ enum
 	ATTACK
 };
 
+
+extern void EncounterBattle (void);
 extern void BuildBattle (COUNT which_player);
 extern COUNT InitEncounter (void);
 extern COUNT UninitEncounter (void);

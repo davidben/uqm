@@ -93,8 +93,5 @@ extern COUNT GetSampleLength (SOUND Sound);
 extern PBYTE GetSampleAddress (SOUND Sound);
 extern DWORD FadeMusic (BYTE end_vol, SIZE TimeInterval);
 
-extern void SetSoundTracking (BOOLEAN toggle);
-extern void GetSoundTrackingBuf (PSBYTE pdigi_buf);
-
 #endif /* _SNDLIB_H */
 

@@ -17,6 +17,13 @@
 #if !defined(_DEBUG_H) && defined(DEBUG)
 #define _DEBUG_H
 
+#include "clock.h"
+#include "planets/planets.h"
+#include "libs/compiler.h"
+
+#include <stdio.h>
+
+
 // Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
 extern void debugKeyPressed (void);
 

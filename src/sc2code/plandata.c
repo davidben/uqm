@@ -16,8 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "encount.h"
+#include "resinst.h"
 #include "planets/elemdata.h"
+
 
 STAR_DESC starmap_array[] =
 {

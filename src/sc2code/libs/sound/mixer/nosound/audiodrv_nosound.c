@@ -20,6 +20,9 @@
  */
 
 #include "audiodrv_nosound.h"
+#include "libs/tasklib.h"
+#include <stdlib.h>
+
 
 static Task StreamDecoderTask;
 static Task PlaybackTask;

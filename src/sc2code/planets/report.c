@@ -16,10 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include "starcon.h"
-#include "lander.h"
+#include "colors.h"
+#include "controls.h"
+#include "dummy.h"
+#include "gamestr.h"
 #include "options.h"
+#include "setup.h"
+#include "sounds.h"
+#include "planets/lander.h"
+#include "planets/planets.h"
+#include "libs/inplib.h"
+
+#include <ctype.h>
+#include <string.h>
+
 
 #define NUM_CELL_COLS MAP_WIDTH / 6
 #define NUM_CELL_ROWS MAP_HEIGHT / 6
@@ -152,7 +162,8 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						font_DrawText (&t);
 						UnlockMutex (GraphicsLock);
 
-						PlaySound (ReadOutSounds, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+						PlaySound (ReadOutSounds, NotPositional (), NULL,
+								GAME_SOUND_PRIORITY);
 
 						if (t.pStr[0] == ',')
 							TimeOut += ONE_SECOND / 4;

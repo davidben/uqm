@@ -16,12 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include "starcon.h"
+#include "controls.h"
 #include "commglue.h"
 #include "comm.h"
+#include "colors.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
 #include "libs/graphics/widgets.h"
+#include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"
+
+#include <ctype.h>
+
 
 #define CONFIRM_WIN_WIDTH 80
 #define CONFIRM_WIN_HEIGHT 22

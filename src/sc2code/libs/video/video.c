@@ -14,8 +14,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "setup.h"
 #include "video.h"
 #include "vidplayer.h"
+#include "libs/inplib.h"
+
 
 #define NULL_VIDEO_REF	(0)
 static VIDEO_REF _cur_video = NULL_VIDEO_REF;

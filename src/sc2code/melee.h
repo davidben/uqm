@@ -19,7 +19,11 @@
 #ifndef _MELEE_H
 #define _MELEE_H
 
+#include "init.h"
 #include "libs/tasklib.h"
+#include "libs/gfxlib.h"
+#include "libs/reslib.h"
+
 
 enum
 {

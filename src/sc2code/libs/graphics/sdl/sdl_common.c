@@ -31,6 +31,8 @@
 #include "bbox.h"
 #include "port.h"
 #include "libs/uio.h"
+#include "controls.h"
+		// XXX: Should not be included from here.
 #include "uqmdebug.h"
 
 SDL_Surface *SDL_Video;
@@ -60,9 +62,10 @@ void
 TFB_PreInit (void)
 {
 	fprintf (stderr, "Initializing base SDL functionality.\n");
-	fprintf (stderr, "Using SDL version %d.%d.%d (compiled with %d.%d.%d)\n",
-		SDL_Linked_Version ()->major, SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
-		SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+	fprintf (stderr, "Using SDL version %d.%d.%d (compiled with "
+			"%d.%d.%d)\n", SDL_Linked_Version ()->major,
+			SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
+			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
 		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
@@ -92,7 +95,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		result = TFB_GL_InitGraphics (driver, flags, width, height, bpp);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		fprintf (stderr, "OpenGL support not compiled in, so using pure sdl driver\n");
+		fprintf (stderr, "OpenGL support not compiled in, so using pure "
+				"sdl driver\n");
 		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
 #endif
 	}
@@ -112,6 +116,9 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	TFB_FlushPaletteCache ();
 	TFB_DrawCanvas_Initialize ();
+
+	RenderingCond = CreateCondVar ("DCQ empty",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	return 0;
 }
@@ -341,7 +348,8 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 				if (nb > 255)
 					nb = 255;
 
-				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+				putpix (dst, dst_x2, dst_y2,
+						SDL_MapRGB (dst->format, nr, ng, nb));
 			}
 		}
 	}
@@ -378,7 +386,8 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 				if (nb < 0)
 					nb = 0;
 
-				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+				putpix (dst, dst_x2, dst_y2,
+						SDL_MapRGB (dst->format, nr, ng, nb));
 			}
 		}
 	}
@@ -414,7 +423,8 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 				if (nb > 255)
 					nb = 255;
 
-				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+				putpix (dst, dst_x2, dst_y2,
+						SDL_MapRGB (dst->format, nr, ng, nb));
 			}
 		}
 	}
@@ -459,7 +469,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 		int current_transition = TransitionAmount;
 		
 		if ((current_fade != 255 && current_fade != last_fade) ||
-			(current_transition != 255 && current_transition != last_transition) ||
+			(current_transition != 255 &&
+			current_transition != last_transition) ||
 			(current_fade == 255 && last_fade != 255) ||
 			(current_transition == 255 && last_transition != 255))
 		{
@@ -508,7 +519,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 
 		++commands_handled;
-		if (!livelock_deterrence && commands_handled + DrawCommandQueue.Size > DCQ_LIVELOCK_MAX)
+		if (!livelock_deterrence && commands_handled + DrawCommandQueue.Size
+				> DCQ_LIVELOCK_MAX)
 		{
 			// fprintf (stderr, "Initiating livelock deterrence!\n");
 			livelock_deterrence = TRUE;
@@ -523,7 +535,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int index = DC.data.setpalette.index;
 				if (index < 0 || index > 255)
 				{
-					fprintf(stderr, "DCQ panic: Tried to set palette #%i", index);
+					fprintf(stderr, "DCQ panic: Tried to set palette #%i",
+							index);
 				}
 				else
 				{
@@ -572,9 +585,11 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.filledimage.x;
 				int y = DC.data.filledimage.y;
 
-				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
-						DC.data.filledimage.scale, DC.data.filledimage.r, DC.data.filledimage.g,
-						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
+				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image,
+						DC.data.filledimage.x, DC.data.filledimage.y,
+						DC.data.filledimage.scale, DC.data.filledimage.r,
+						DC.data.filledimage.g, DC.data.filledimage.b,
+						SDL_Screens[DC.data.filledimage.destBuffer]);
 
 				if (DC.data.filledimage.destBuffer == 0)
 				{
@@ -595,8 +610,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 					TFB_BBox_RegisterPoint (DC.data.line.x1, DC.data.line.y1);
 					TFB_BBox_RegisterPoint (DC.data.line.x2, DC.data.line.y2);
 				}
-				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1, 
-						DC.data.line.x2, DC.data.line.y2, 
+				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1,
+						DC.data.line.x2, DC.data.line.y2,
 						DC.data.line.r, DC.data.line.g, DC.data.line.b,
 						SDL_Screens[DC.data.line.destBuffer]);
 				break;
@@ -605,8 +620,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			{
 				if (DC.data.rect.destBuffer == 0)
 					TFB_BBox_RegisterRect (&DC.data.rect.rect);
-				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r, 
-						DC.data.rect.g, DC.data.rect.b, 
+				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r,
+						DC.data.rect.g, DC.data.rect.b,
 						SDL_Screens[DC.data.rect.destBuffer]);
 
 				break;
@@ -635,7 +650,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				if (DC_image == 0)
 				{
-					fprintf (stderr, "DCQ ERROR: COPYTOIMAGE passed null image ptr\n");
+					fprintf (stderr, "DCQ ERROR: COPYTOIMAGE passed null "
+							"image ptr\n");
 					break;
 				}
 				LockMutex (DC_image->mutex);
@@ -647,7 +663,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				dest.x = 0;
 				dest.y = 0;
-				SDL_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer], &src, DC_image->NormalImg, &dest);
+				SDL_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer],
+						&src, DC_image->NormalImg, &dest);
 				UnlockMutex (DC_image->mutex);
 				break;
 			}
@@ -665,7 +682,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 					TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
 				}
 
-				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest);
+				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src,
+						SDL_Screens[DC.data.copy.destBuffer], &dest);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
@@ -678,7 +696,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			ClearSemaphore (DC.data.sendsignal.sem);
 			break;
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
-			fprintf (stderr, "TODO: REINITVIDEO command set.  Not yet implemented.\n");
+			fprintf (stderr, "TODO: REINITVIDEO command set.  Not yet"
+					" implemented.\n");
 			break;
 		}
 	}
@@ -707,3 +726,4 @@ TFB_SetGamma (float gamma)
 }
 
 #endif
+

@@ -19,6 +19,9 @@
 #include "ships/ship.h"
 #include "ships/thradd/resinst.h"
 
+#include "globdata.h"
+
+
 #define MAX_CREW 8
 #define MAX_ENERGY 24
 #define ENERGY_REGENERATION 1

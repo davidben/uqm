@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/ilwrath/resinst.h"
 
+#include "colors.h"
+#include "globdata.h"
+
+
 #define MAX_CREW 22
 #define MAX_ENERGY 16
 #define ENERGY_REGENERATION 4

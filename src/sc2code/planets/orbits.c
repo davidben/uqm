@@ -16,7 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "encount.h"
+#include "planets/planets.h"
+#include "libs/compiler.h"
+#include "libs/mathlib.h"
+
 
 //#define DEBUG_ORBITS
 

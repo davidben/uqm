@@ -16,8 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "encount.h"
+#include "globdata.h"
 #include "lander.h"
+#include "nameref.h"
+#include "resinst.h"
+#include "setup.h"
+#include "state.h"
+#include "sounds.h"
+#include "planets/genall.h"
+#include "libs/mathlib.h"
+
 
 void
 GenerateChmmr (BYTE control)
@@ -103,8 +113,7 @@ GenerateChmmr (BYTE control)
 								);
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 						CaptureStringTable (
-								LoadStringTable (CHMMR_BASE_STRTAB)
-								);
+								LoadStringTable (CHMMR_BASE_STRTAB));
 
 				ScanContext = CaptureContext (CreateContext ());
 				SetContext (ScanContext);
@@ -126,8 +135,7 @@ GenerateChmmr (BYTE control)
 						));
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
 				DestroyFont (ReleaseFont (
-						pSolarSysState->SysInfo.PlanetInfo.LanderFont
-						));
+						pSolarSysState->SysInfo.PlanetInfo.LanderFont));
 				pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
 
 				UnlockMutex (GraphicsLock);

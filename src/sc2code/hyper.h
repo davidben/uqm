@@ -20,7 +20,8 @@
 #define _HYPER_H
 
 
-extern ENCOUNTER_INFO SISinfo;
+extern void FreeHyperData (void);
+extern void check_hyperspace_encounter (void);
 
 #endif /* _HYPER_H */
 

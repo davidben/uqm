@@ -1,9 +1,28 @@
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "gfx_common.h"
 #include "tfb_draw.h"
 #include "drawcmd.h"
+#include "units.h"
+
 
 void
-TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN dest)
+TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
+		SCREEN dest)
 {
 	TFB_DrawCommand DC;
 
@@ -76,7 +95,8 @@ TFB_FlushPaletteCache ()
 }
 
 void
-TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, SCREEN dest)
+TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
+		TFB_Palette *palette, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -101,13 +121,13 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 				_localpal[i][0] = palette[i].r;
 				_localpal[i][1] = palette[i].g;
 				_localpal[i][2] = palette[i].b;
-				TFB_DrawScreen_SetPalette (i, palette[i].r, palette[i].g, 
+				TFB_DrawScreen_SetPalette (i, palette[i].r, palette[i].g,
 						palette[i].b);
 			}
 		}
 		// if (changed) { fprintf (stderr, "Actually changing palette! "); }
 		DC.data.image.UsePalette = TRUE;
-	} 
+	}
 	else
 	{
 		Lock_DCQ (1);
@@ -121,7 +141,8 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 }
 
 void
-TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, SCREEN dest)
+TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
+		int r, int g, int b, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -209,7 +230,8 @@ TFB_DrawScreen_WaitForSignal (void)
 }
 
 void
-TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height, int bpp)
+TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height,
+		int bpp)
 {
 	TFB_DrawCommand DrawCommand;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_REINITVIDEO;
@@ -222,7 +244,8 @@ TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height, int bp
 }
 
 void
-TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest)
+TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
+		TFB_Image *dest)
 {
 	LockMutex (dest->mutex);
 	TFB_DrawCanvas_Line (x1, y1, x2, y2, r, g, b, dest->NormalImg);
@@ -240,7 +263,8 @@ TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image)
 }
 
 void
-TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Image *target)
+TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
+		TFB_Palette *palette, TFB_Image *target)
 {
 	LockMutex (target->mutex);
 	TFB_DrawCanvas_Image (img, x, y, scale, palette, target->NormalImg);
@@ -249,7 +273,8 @@ TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palet
 }
 
 void
-TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Image *target)
+TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
+		int r, int g, int b, TFB_Image *target)
 {
 	LockMutex (target->mutex);
 	TFB_DrawCanvas_FilledImage (img, x, y, scale, r, g, b, target->NormalImg);
@@ -327,10 +352,12 @@ void
 TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 {
 	EXTENT old = image->extent;
-	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->MipmapImg, target, &image->extent);
+	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->MipmapImg,
+			target, &image->extent);
 
-	if ((old.width != image->extent.width) || (old.height != image->extent.height) ||
-		image->dirty || !image->ScaledImg || type != image->last_scale_type)
+	if ((old.width != image->extent.width) ||
+			(old.height != image->extent.height) || image->dirty ||
+			!image->ScaledImg || type != image->last_scale_type)
 	{
 		image->dirty = FALSE;
 		image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg,
@@ -338,10 +365,10 @@ TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 		image->last_scale_type = type;
 		
 		if (type == TFB_SCALE_NEAREST)
-			TFB_DrawCanvas_Rescale_Nearest (image->NormalImg, image->ScaledImg,
-				image->extent);
+			TFB_DrawCanvas_Rescale_Nearest (image->NormalImg,
+					image->ScaledImg, image->extent);
 		else
-			TFB_DrawCanvas_Rescale_Trilinear (image->NormalImg, image->ScaledImg,
-				image->MipmapImg, image->extent);
+			TFB_DrawCanvas_Rescale_Trilinear (image->NormalImg,
+					image->ScaledImg, image->MipmapImg, image->extent);
 	}
 }

@@ -16,7 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "velocity.h"
+
+#include "units.h"
+#include "libs/compiler.h"
+
 
 #define VELOCITY_REMAINDER(v) ((v) & (VELOCITY_SCALE - 1))
 

@@ -16,10 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "build.h"
+#include "colors.h"
+#include "globdata.h"
+#include "races.h"
+#include "setup.h"
+#include "options.h"
+
 #include <stdio.h>
 #include <string.h>
-#include "starcon.h"
-#include "options.h"
 
 static void
 CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, ELEMENT_FLAGS

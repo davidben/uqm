@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/human/resinst.h"
 
+#include "colors.h"
+#include "globdata.h"
+
+
 #define MAX_CREW 18
 #define MAX_ENERGY 18
 #define ENERGY_REGENERATION 1

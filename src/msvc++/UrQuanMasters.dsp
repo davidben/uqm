@@ -1228,6 +1228,10 @@ SOURCE=..\sc2code\comm\comandr\restypes.h
 SOURCE=..\sc2code\comm\comandr\strings.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\comm\commall.h
+# End Source File
 # Begin Group "druuge.comm"
 
 # PROP Default_Filter ""
@@ -2007,6 +2011,10 @@ SOURCE=..\sc2code\planets\devices.c
 # Begin Source File
 
 SOURCE=..\sc2code\planets\elemdata.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\planets\genall.h
 # End Source File
 # Begin Source File
 
@@ -3203,6 +3211,10 @@ SOURCE=..\sc2code\battle.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\battle.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\border.c
 # End Source File
 # Begin Source File
@@ -3237,6 +3249,9 @@ SOURCE=..\sc2code\collide.c
 
 SOURCE=..\sc2code\collide.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\colors.h
 # Begin Source File
 
 SOURCE=..\sc2code\comm.c
@@ -3291,6 +3306,10 @@ SOURCE=..\sc2code\dummy.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\dummy.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\element.h
 # End Source File
 # Begin Source File
@@ -3307,7 +3326,19 @@ SOURCE=..\sc2code\fmv.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\fmv.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\galaxy.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\gameev.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\gameev.h
 # End Source File
 # Begin Source File
 
@@ -3316,6 +3347,10 @@ SOURCE=..\sc2code\gameinp.c
 # Begin Source File
 
 SOURCE=..\sc2code\gameopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\gamestr.h
 # End Source File
 # Begin Source File
 
@@ -3364,6 +3399,10 @@ SOURCE=..\sc2code\imusicre.h
 # Begin Source File
 
 SOURCE=..\sc2code\init.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\init.h
 # End Source File
 # Begin Source File
 
@@ -3479,7 +3518,15 @@ SOURCE=..\sc2code\settings.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\settings.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\setup.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\setup.h
 # End Source File
 # Begin Source File
 
@@ -3511,6 +3558,10 @@ SOURCE=..\sc2code\sis.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\sounds.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\sounds.h
 # End Source File
 # Begin Source File
@@ -3519,15 +3570,15 @@ SOURCE=..\sc2code\starbase.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\strtemp.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\starbase.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\starcon.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\starcon.h
 # End Source File
 # Begin Source File
 
@@ -3568,6 +3619,10 @@ SOURCE=..\sc2code\uqmdebug.h
 # Begin Source File
 
 SOURCE=..\sc2code\util.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\util.h
 # End Source File
 # Begin Source File
 

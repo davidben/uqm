@@ -14,6 +14,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef _CREDITS_H
+#define _CREDITS_H
+
 void OutTakes (void);
-void Victory (void);
 void Credits (void);
+
+#endif  /* _CREDITS_H */
+

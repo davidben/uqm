@@ -19,6 +19,9 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
+#include "starbase.h"
+#include "units.h"
+
 #define END_INTERPLANETARY START_INTERPLANETARY
 
 enum

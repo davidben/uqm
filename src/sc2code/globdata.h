@@ -20,6 +20,10 @@
 #define _GLOBDATA_H
 
 #include "clock.h"
+#include "libs/gfxlib.h"
+#include "sis.h"
+#include "velocity.h"
+
 
 #define RANDOM_ANIM (1 << 0)
 #define CIRCULAR_ANIM (1 << 1)
@@ -959,38 +963,15 @@ void setGameState (int startBit, int endBit, BYTE val
 			setGameState ((SName), (END_##SName), (val))
 #endif
 
+	
+extern CONTEXT RadarContext;
 
 extern void DiscardStarMap (PVOID CodeRef);
 extern void RetrieveStarMap (void);
 
-#define STAR_STRING_BASE 0
-#define DEVICE_STRING_BASE 133
-#define CARGO_STRING_BASE 162
-#define ELEMENTS_STRING_BASE 172
-#define SCAN_STRING_BASE 305
-#define STAR_NUMBER_BASE 361
-#define PLANET_NUMBER_BASE 375
-#define MONTHS_STRING_BASE 407
-#define FEEDBACK_STRING_BASE 419
-#define STARBASE_STRING_BASE 420
-#define ENCOUNTER_STRING_BASE 425
-#define NAVIGATION_STRING_BASE 433
-#define NAMING_STRING_BASE 439
-#define MELEE_STRING_BASE 443
-#define SAVEGAME_STRING_BASE 452
-#define OPTION_STRING_BASE 455
+extern void FreeSC2Data (void);
+extern BOOLEAN LoadSC2Data (void);
 
-#define GAME_STRING(i) ((UNICODE *)GetStringAddress (SetAbsStringTableIndex (GameStrings, (i))))
-
-#define wsprintf sprintf
-#define wstrlen strlen
-#define wstrcpy strcpy
-#define wstrcat strcat
-#define wstrupr strupr
-#define wstrncpy strncpy
-#define wstricmp stricmp
-#define wstrtoul strtoul
-#define wstrcspn strcspn
 
 #endif /* _GLOBDATA_H */
 

@@ -16,9 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "element.h"
 #include "scan.h"
+#include "settings.h"
+#include "setup.h"
 #include "libs/graphics/gfx_common.h"
+
 
 //Added by Chris
 

@@ -24,10 +24,11 @@
 #include "collide.h"
 
 // XXX: Do we really need this one?
-#include "reslib.h"
-
-// XXX: Remove this one later.
-#include "starcon.h"
+//#include "reslib.h"
+#include "intel.h"
+#include "races.h"
+#include "sounds.h"
+#include "weapon.h"
 
 #endif  /* _SHIP_H */
 

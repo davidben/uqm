@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "graphics/gfxintrn.h"
-#include "starcon.h"
+#include "units.h"
+#include "dummy.h"
+#include "libs/gfxlib.h"
+#include "graphics/context.h"
+#include "graphics/drawable.h"
+
 
 #define NUM_QUADS 4
 

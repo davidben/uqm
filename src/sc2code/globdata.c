@@ -16,8 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "globdata.h"
+
 #include "coderes.h"
+#include "encount.h"
+#include "setup.h"
+#include "resinst.h"
+#include "build.h"
+#include "state.h"
+#include "gamestr.h"
+
+#include <stdlib.h>
 
 //Added by Chris
 
@@ -62,15 +71,15 @@ LoadSC2Data (void)
 
 		hOldIndex = SetResourceIndex (hResIndex);
 
-		if ((flagship_status = CaptureDrawable (
-				LoadGraphic (FLAGSTAT_MASK_PMAP_ANIM)
-				)) == 0)
-			return (FALSE);
+		flagship_status = CaptureDrawable (
+				LoadGraphic (FLAGSTAT_MASK_PMAP_ANIM));
+		if (flagship_status == NULL)
+			return FALSE;
 
-		if ((misc_data = CaptureDrawable (
-				LoadGraphic (MISCDATA_MASK_PMAP_ANIM)
-				)) == 0)
-			return (FALSE);
+		misc_data = CaptureDrawable (
+				LoadGraphic (MISCDATA_MASK_PMAP_ANIM));
+		if (misc_data == NULL)
+			return FALSE;
 
 		SetResourceIndex (hOldIndex);
 	}
@@ -83,7 +92,7 @@ LoadSC2Data (void)
 				GLOBAL (ShipStamp.origin.y) = -1;
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN

@@ -16,8 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "encount.h"
+#include "gamestr.h"
 #include "controls.h"
+#include "settings.h"
+#include "setup.h"
+#include "state.h"
+#include "sounds.h"
+#include "util.h"
+
 
 // If DEBUG_DEVICES is defined, the device list shown in the game will
 // include the pictures of all devices defined, regardless of which

@@ -19,6 +19,10 @@
 #ifndef _BUILD_H
 #define _BUILD_H
 
+#include "races.h"
+#include "displist.h"
+#include "libs/compiler.h"
+
 #define CREW_XOFFS 4
 #define ENERGY_XOFFS 52
 #define GAUGE_YOFFS (SHIP_INFO_HEIGHT - 10)

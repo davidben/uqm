@@ -17,9 +17,12 @@
 #ifndef _COMM_H
 #define _COMM_H
 
-void init_communication (void);
-void uninit_communication (void);
-int do_subtitles (UNICODE *pStr);
+#include "libs/compiler.h"
+
+extern void init_communication (void);
+extern void uninit_communication (void);
+extern int do_subtitles (UNICODE *pStr);
+extern void AlienTalkSegue (COUNT wait_track);
 
 #endif  /* _COMM_H */
 

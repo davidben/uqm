@@ -19,10 +19,10 @@
 #ifndef _ELEMENT_H
 #define _ELEMENT_H
 
+#include "battle.h"
 #include "displist.h"
 #include "velocity.h"
 #include "libs/gfxlib.h"
-#include "libs/sndlib.h"
 
 #define BATTLE_FRAME_RATE (ONE_SECOND / 24)
 
@@ -164,14 +164,6 @@ extern BOOLEAN DeltaEnergy (ELEMENTPTR ElementPtr, SIZE
 		energy_delta);
 extern BOOLEAN DeltaCrew (ELEMENTPTR ElementPtr, SIZE
 		crew_delta);
-
-// XXX: To be moved to some separate file.
-//      Don't forget to remove the '#include "libs/sndlib.h"'
-extern void PlaySound (SOUND S, SoundPosition Pos,
-		ELEMENTPTR PositionalObject, BYTE Priority);
-extern void ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject);
-extern SoundPosition CalcSoundPosition (ELEMENTPTR ElementPtr);
-extern SoundPosition NotPositional (void);
 
 extern void PreProcessStatus (PELEMENT ShipPtr);
 extern void PostProcessStatus (PELEMENT ShipPtr);

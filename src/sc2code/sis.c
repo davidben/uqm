@@ -16,11 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "colors.h"
 #include "commglue.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "options.h"
+#include "setup.h"
+#include "state.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
-#include "options.h"
+
 
 static const UNICODE *describeWeapon (BYTE moduleType);
 
@@ -37,7 +42,8 @@ RepairSISBorder (void)
 	r.corner.y = SIS_ORG_Y - 1;
 	r.extent.width = 1;
 	r.extent.height = SIS_SCREEN_HEIGHT + 2;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 	DrawFilledRectangle (&r);
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));

@@ -19,6 +19,9 @@
 #ifndef _ELEMDATA_H
 #define _ELEMDATA_H
 
+#include "libs/compiler.h"
+
+
 /*------------------------------ Type Defines ----------------------------- */
 enum
 {

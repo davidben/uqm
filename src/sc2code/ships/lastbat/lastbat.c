@@ -19,6 +19,12 @@
 #include "ships/ship.h"
 #include "ships/lastbat/resinst.h"
 
+#include "colors.h"
+#include "globdata.h"
+#include "libs/mathlib.h"
+#include "libs/timelib.h"
+
+
 #define num_generators characteristics.max_thrust
 
 #define MAX_CREW 1

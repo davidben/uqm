@@ -24,7 +24,10 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
 
+
 static RecursiveMutex DCQ_Mutex;
+
+CondVar RenderingCond;
 
 TFB_DrawCommand DCQ[DCQ_MAX];
 
@@ -35,7 +38,10 @@ static void
 TFB_WaitForSpace (int requested_slots)
 {
 	int old_depth, i;
-	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, Requested = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize, requested_slots);
+	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, "
+			"Requested = %d).  Sleeping until renderer is done.\n",
+			DrawCommandQueue.Size, DrawCommandQueue.FullSize,
+			requested_slots);
 	// Restore the DCQ locking level.  I *think* this is
 	// always 1, but...
 	TFB_BatchReset ();
@@ -45,7 +51,8 @@ TFB_WaitForSpace (int requested_slots)
 	WaitCondVar (RenderingCond);
 	for (i = 0; i < old_depth; i++)
 		LockRecursiveMutex (DCQ_Mutex);
-	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
+	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n",
+			DrawCommandQueue.Size, DrawCommandQueue.FullSize);
 }
 
 void
@@ -144,7 +151,8 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 {
 	Lock_DCQ (1);
 	DCQ[DrawCommandQueue.InsertionPoint] = *Command;
-	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1) % DCQ_MAX;
+	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1)
+			% DCQ_MAX;
 	DrawCommandQueue.FullSize++;
 	Synchronize_DCQ ();
 	Unlock_DCQ ();
@@ -161,9 +169,11 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 		return (0);
 	}
 
-	if (DrawCommandQueue.Front == DrawCommandQueue.Back && DrawCommandQueue.Size != DCQ_MAX)
+	if (DrawCommandQueue.Front == DrawCommandQueue.Back &&
+			DrawCommandQueue.Size != DCQ_MAX)
 	{
-		fprintf (stderr, "Augh!  Assertion failure in DCQ!  Front == Back, Size != DCQ_MAX\n");
+		fprintf (stderr, "Augh!  Assertion failure in DCQ!  Front == Back, "
+				"Size != DCQ_MAX\n");
 		DrawCommandQueue.Size = 0;
 		Unlock_DCQ ();
 		return (0);
@@ -239,3 +249,5 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 }
 
 #endif
+
+

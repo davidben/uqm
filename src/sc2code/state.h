@@ -19,6 +19,8 @@
 #ifndef _STATE_H
 #define _STATE_H
 
+#include "libs/compiler.h"
+
 extern void InitPlanetInfo (void);
 extern void UninitPlanetInfo (void);
 extern void GetPlanetInfo (void);
@@ -37,7 +39,7 @@ typedef UNICODE GAME_DESC[MAX_DESC_CHARS + 1];
 
 #define STARINFO_FILE "starinfo.dat"
 #define STAR_BUFSIZE (NUM_SOLAR_SYSTEMS * sizeof (DWORD) \
-										+ 3800 * (3 * sizeof (DWORD)))
+		+ 3800 * (3 * sizeof (DWORD)))
 #define RANDGRPINFO_FILE "randgrp.dat"
 #define RAND_BUFSIZE (4 * 1024)
 #define DEFGRPINFO_FILE "defgrp.dat"

@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "intel.h"
+
 #include "controls.h"
+#include "globdata.h"
+#include "setup.h"
+
 
 SIZE cur_player;
 

@@ -19,6 +19,9 @@
 #ifndef _WEAPON_H
 #define _WEAPON_H
 
+#include "element.h"
+#include "libs/gfxlib.h"
+
 typedef struct
 {
 	COORD cx, cy, ex, ey;

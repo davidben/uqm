@@ -19,10 +19,18 @@
 		 * but MSVC will compile and link it.
 		 */
 
-#include <stdio.h>
-
-#include "starcon.h"
 #include "uqmdebug.h"
+
+#include "colors.h"
+#include "clock.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "gameev.h"
+#include "globdata.h"
+#include "races.h"
+#include "setup.h"
+
+#include <stdio.h>
 
 static void dumpEventCallback (EVENTPTR eventPtr, void *arg);
 static void dumpStarCallback(STAR_DESC *star, void *arg);

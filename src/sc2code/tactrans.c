@@ -16,8 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
 #include "collide.h"
+#include "globdata.h"
+#include "init.h"
+#include "races.h"
+#include "settings.h"
+#include "sounds.h"
+#include "libs/mathlib.h"
+
 
 BOOLEAN
 OpponentAlive (STARSHIPPTR TestStarShipPtr)
@@ -34,15 +41,12 @@ OpponentAlive (STARSHIPPTR TestStarShipPtr)
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		UnlockElement (hElement);
 
-		if (StarShipPtr
-				&& StarShipPtr != TestStarShipPtr
+		if (StarShipPtr && StarShipPtr != TestStarShipPtr
 				&& StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
-		{
-			return (FALSE);
-		}
+			return FALSE;
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 void
@@ -75,8 +79,7 @@ new_ship (PELEMENT DeadShipPtr)
 
 		MusicStarted = FALSE;
 		DeadShipPtr->turn_wait = (BYTE)(
-				DeadShipPtr->state_flags & (GOOD_GUY | BAD_GUY)
-				);
+				DeadShipPtr->state_flags & (GOOD_GUY | BAD_GUY));
 		for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 		{
 			ELEMENTPTR ElementPtr;
@@ -288,8 +291,9 @@ ship_death (PELEMENT ShipPtr)
 	{
 
 		PlaySound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1
-				), CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+				CalcSoundPosition (ShipPtr), ShipPtr,
+				GAME_SOUND_PRIORITY + 1);
 
 		DeltaCrew ((ELEMENTPTR)ShipPtr, -(SIZE)ShipPtr->crew_level);
 		if (VictoriousStarShipPtr == 0)
@@ -333,10 +337,10 @@ spawn_ion_trail (PELEMENT ElementPtr)
 			IonElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			IonElementPtr->life_span = IonElementPtr->thrust_wait = ION_LIFE;
 			SetPrimType (&DisplayArray[IonElementPtr->PrimIndex], POINT_PRIM);
-			SetPrimColor (
-					&DisplayArray[IonElementPtr->PrimIndex], START_ION_COLOR
-					);
-			IonElementPtr->current.image.frame = DecFrameIndex (stars_in_space);
+			SetPrimColor (&DisplayArray[IonElementPtr->PrimIndex],
+					START_ION_COLOR);
+			IonElementPtr->current.image.frame =
+					DecFrameIndex (stars_in_space);
 			IonElementPtr->current.image.farray = &stars_in_space;
 			IonElementPtr->current.location = ElementPtr->current.location;
 			IonElementPtr->current.location.x +=
@@ -384,17 +388,16 @@ spawn_ion_trail (PELEMENT ElementPtr)
 		if (Color != 0x2F)
 		{
 			ElementPtr->life_span = ElementPtr->thrust_wait;
-		   
+			
 			++Color;
 			if (Color > 0x7F)
 				Color = 0x2A;
 			if (Color <= 0x2f && Color >= 0x2a)
-					color_index = (COUNT)Color - 0x2a;
+				color_index = (COUNT)Color - 0x2a;
 			else /* color is between 0x7a and 0x7f */
-					color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
-			SetPrimColor (
-					&DisplayArray[ElementPtr->PrimIndex], color_tab[color_index]
-					);
+				color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
+			SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
+					color_tab[color_index]);
 
 			ElementPtr->state_flags &= ~DISAPPEARING;
 			ElementPtr->state_flags |= CHANGING;

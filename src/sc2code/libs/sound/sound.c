@@ -17,6 +17,8 @@
  */
 
 #include "sound.h"
+#include "../compiler.h"
+#include "../tasklib.h"
 
 static Task FadeTask;
 static SIZE TTotal;

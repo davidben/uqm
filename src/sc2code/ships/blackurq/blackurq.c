@@ -19,6 +19,9 @@
 #include "ships/ship.h"
 #include "ships/blackurq/resinst.h"
 
+#include "globdata.h"
+
+
 #define MAX_CREW MAX_CREW_SIZE
 #define MAX_ENERGY MAX_ENERGY_SIZE
 #define ENERGY_REGENERATION 1

@@ -16,8 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "weapon.h"
+
+#include "build.h"
+#include "colors.h"
+#include "globdata.h"
+#include "init.h"
+#include "races.h"
+#include "setup.h"
+#include "sounds.h"
+#include "units.h"
+#include "libs/mathlib.h"
+
 #include <stdio.h>
-#include "starcon.h"
+
 
 HELEMENT
 initialize_laser (PLASER_BLOCK pLaserBlock)

@@ -16,7 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+
+#include "libs/gfxlib.h"
+#include "libs/threadlib.h"
+#include "colors.h"
+#include "setup.h"
+#include "sis.h"
+#include "units.h"
+#include "util.h"
+
 
 void
 InitSISContexts (void)

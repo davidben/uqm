@@ -19,6 +19,9 @@
 #include "ships/ship.h"
 #include "ships/syreen/resinst.h"
 
+#include "libs/mathlib.h"
+
+
 #define SYREEN_MAX_CREW_SIZE MAX_CREW_SIZE
 #define MAX_CREW 12
 #define MAX_ENERGY 16

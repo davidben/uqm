@@ -19,6 +19,9 @@
 #ifndef _LIFEFORM_H
 #define _LIFEFORM_H
 
+#include "libs/compiler.h"
+
+
 #define BEHAVIOR_HUNT (0 << 0)
 #define BEHAVIOR_FLEE (1 << 0)
 #define BEHAVIOR_UNPREDICTABLE (2 << 0)

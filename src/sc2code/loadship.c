@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
 #include "coderes.h"
+#include "globdata.h"
+#include "nameref.h"
+#include "races.h"
+
 
 MEM_HANDLE
 load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)

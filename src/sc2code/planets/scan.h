@@ -19,6 +19,9 @@
 #ifndef _SCAN_H
 #define _SCAN_H
 
+#include "libs/gfxlib.h"
+
+
 typedef struct
 {
 	POINT start;

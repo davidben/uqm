@@ -16,13 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
-#include "starcon.h"
+#include "build.h"
+#include "colors.h"
 #include "commglue.h"
-#include "options.h"
-#include "libs/graphics/gfx_common.h"
-#include "inplib.h"
 #include "controls.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "options.h"
+#include "inplib.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "state.h"
+#include "util.h"
+#include "libs/graphics/gfx_common.h"
+
+#include <ctype.h>
+
 
 //Added by Chris
 

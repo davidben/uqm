@@ -16,7 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "globdata.h"
+#include "state.h"
+#include "planets/genall.h"
+
 
 static void
 check_old_shofixti (void)
@@ -24,17 +28,14 @@ check_old_shofixti (void)
 	HSTARSHIP hStarShip;
 
 	if (GLOBAL (BattleGroupRef)
-			&& (hStarShip = GetHeadLink (
-					&GLOBAL (npc_built_ship_q)
-					))
+			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q)))
 			&& GET_GAME_STATE (SHOFIXTI_RECRUITED))
 	{
 		BYTE task;
 		SHIP_FRAGMENTPTR FragPtr;
 
 		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		task = GET_GROUP_MISSION (FragPtr);
 
 		SET_GROUP_MISSION (FragPtr,

@@ -16,11 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "credits.h"
+
+#include "controls.h"
+#include "encount.h"
+#include "options.h"
+#include "oscill.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound.h"
-#include "oscill.h"
-#include "options.h"
+
 
 void
 Credits (void)
@@ -165,3 +172,4 @@ OutTakes (void)
 	optSubtitles = oldsubtitles;
 	sliderDisabled = FALSE;
 }
+

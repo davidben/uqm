@@ -16,11 +16,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "lifeform.h"
-#include "libs/graphics/gfx_common.h"
-#include "options.h"
+#include "build.h"
 #include "controls.h"
+#include "dummy.h"
+#include "encount.h"
+#include "gamestr.h"
+#include "lifeform.h"
+#include "nameref.h"
+#include "options.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
+#include "state.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/inplib.h"
+#include "libs/mathlib.h"
+
+
 //Added by Chris
 
 void

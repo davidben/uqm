@@ -1,4 +1,4 @@
-#include "starcon.h"
+#include "graphics/gfx_common.h"
 #include "graphics/widgets.h"
 
 void

@@ -16,12 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
-#include "uqmversion.h"
+#include "colors.h"
 #include "controls.h"
 #include "credits.h"
-#include "libs/graphics/gfx_common.h"
+#include "encount.h"
+#include "fmv.h"
+#include "globdata.h"
+#include "intel.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
+#include "sounds.h"
 #include "setupmenu.h"
+#include "util.h"
+#include "uqmversion.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/inplib.h"
+
 
 //Added by Chris
 

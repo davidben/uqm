@@ -17,7 +17,8 @@
  */
 
 #include <ctype.h>
-#include "starcon.h"
+#include "controls.h"
+
 
 static UWORD cur_char = ' ';
 

@@ -17,13 +17,15 @@
 #ifndef _UQM_VIDEO_H
 #define _UQM_VIDEO_H
 
-#include "starcon.h"
 #include "options.h"
 #include "misc.h"
 #include "vidlib.h"
 #include "libs/graphics/tfb_draw.h"
+#include "types.h"
 #include "videodec.h"
 #include "libs/sound/sound.h"
+#include "libs/tasklib.h"
+
 
 typedef struct tfb_videoclip
 {

@@ -16,17 +16,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "fmv.h"
+
+#include "controls.h"
+#include "hyper.h"
+#include "options.h"
+#include "resinst.h"
+#include "settings.h"
+#include "setup.h"
 #include "vidlib.h"
 #include "libs/graphics/gfx_common.h"
-#include "options.h"
+#include "libs/inplib.h"
+
 
 //Added by Chris
 
-void FreeHyperData (void);
-
 BOOLEAN InitGameKernel (void);
-
 void LoadMasterShipList (void);
 
 //End Added by Chris

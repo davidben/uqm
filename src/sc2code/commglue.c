@@ -16,8 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "commglue.h"
+
+#include "races.h"
+
 #include <stdarg.h>
 #include <assert.h>
 

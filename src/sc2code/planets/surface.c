@@ -16,8 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
 #include "lifeform.h"
+#include "planets.h"
+#include "libs/mathlib.h"
+
 
 //#define DEBUG_SURFACE
 

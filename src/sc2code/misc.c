@@ -16,7 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "element.h"
+#include "init.h"
+#include "races.h"
+#include "setup.h"
+#include "sounds.h"
+#include "weapon.h"
+#include "libs/mathlib.h"
+
 
 void
 spawn_planet (void)

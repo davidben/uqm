@@ -19,6 +19,10 @@
 #include "ships/ship.h"
 #include "ships/slylandr/resinst.h"
 
+#include "globdata.h"
+#include "libs/mathlib.h"
+
+
 #define MAX_CREW 12
 #define MAX_ENERGY 20
 #define ENERGY_REGENERATION 0

@@ -19,6 +19,9 @@
 #ifndef _PLANDATA_H
 #define _PLANDATA_H
 
+#include "libs/reslib.h"
+
+
 /*------------------------------ Type Defines ----------------------------- */
 #define NUMBER_OF_ORBITS 16
 #define VACANT 0xFF

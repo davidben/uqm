@@ -19,8 +19,8 @@
 #ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
-#include "starcon.h"
-#include "compiler.h"
+#include "libs/compiler.h"
+
 
 // Enumerated type for controls
 enum {
@@ -75,8 +75,8 @@ typedef UBYTE BATTLE_INPUT_STATE;
 #define BATTLE_DOWN       ((BATTLE_INPUT_STATE)(1 << 6))
 
 typedef BATTLE_INPUT_STATE (*battle_summary_func) (void);
-extern battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS];
-extern battle_summary_func PlayerInput[NUM_PLAYERS];
+extern battle_summary_func ComputerInput, HumanInput[];
+extern battle_summary_func PlayerInput[];
 
 extern CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
@@ -91,8 +91,14 @@ BOOLEAN PauseGame (void);
 BOOLEAN DoConfirmExit (void);
 void TFB_Abort (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
+extern BOOLEAN ConfirmExit (void);
+extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
 
 BATTLE_INPUT_STATE p1_combat_summary (void);
 BATTLE_INPUT_STATE p2_combat_summary (void);
 
+extern volatile BOOLEAN GamePaused, ExitRequested;
+
 #endif
+
+

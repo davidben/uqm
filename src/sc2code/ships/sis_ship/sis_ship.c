@@ -18,7 +18,12 @@
 
 #include "ships/ship.h"
 #include "ships/sis_ship/resinst.h"
+
+#include "colors.h"
 #include "controls.h"
+#include "globdata.h"
+#include "libs/mathlib.h"
+
 
 #define MAX_TRACKING 3
 #define MAX_DEFENSE 8

@@ -16,7 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "starcon.h"
+#include "build.h"
+#include "encount.h"
+#include "globdata.h"
+#include "state.h"
+#include "planets/genall.h"
+
+
 
 static DWORD
 GetMelnormeRef (void)
