@@ -31,7 +31,8 @@
 #include "libs/strings/strintrn.h"
 #include "libs/sound/sndintrn.h"
 #include "libs/sound/sound_common.h"
-#include "decoders/decoder.h"
+#include "mixer.h"
+#include "libs/sound/decoders/decoder.h"
 
 
 #define FIRST_SFX_SOURCE 0

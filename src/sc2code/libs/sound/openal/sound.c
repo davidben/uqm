@@ -34,6 +34,12 @@ int
 TFB_InitSound (int driver, int flags)
 {
 	int i;
+	TFB_DecoderFormats formats =
+	{
+		MIX_IS_BIG_ENDIAN, MIX_WANT_BIG_ENDIAN,
+		AL_FORMAT_MONO8, AL_FORMAT_STEREO8,
+		AL_FORMAT_MONO16, AL_FORMAT_STEREO16
+	};
 	
 	fprintf (stderr, "Initializing OpenAL.\n");
 	atexit (TFB_UninitSound);
@@ -67,7 +73,7 @@ TFB_InitSound (int driver, int flags)
     //fprintf (stderr, "    extensions:  %s\n", alGetString (AL_EXTENSIONS));
 		
 	fprintf (stderr, "Initializing sound decoders.\n");
-	SoundDecoder_Init (flags);
+	SoundDecoder_Init (flags, &formats);
 	fprintf (stderr, "Sound decoders initialized.\n");
 
 	alListenerfv (AL_POSITION, listenerPos);

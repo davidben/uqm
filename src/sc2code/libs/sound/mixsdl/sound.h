@@ -23,7 +23,7 @@
 #include "libs/sound/sndintrn.h"
 #include "libs/sound/sound_common.h"
 #include "mixer.h"
-#include "decoders/decoder.h"
+#include "libs/sound/decoders/decoder.h"
 
 
 #define FIRST_SFX_SOURCE 0
