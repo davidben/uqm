@@ -86,6 +86,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	DC.data.image.y = y;
 	DC.data.image.scale = (scale == GetGraphicScaleIdentity ()) ? 0 : scale;
 
+
 	if (palette != NULL)
 	{
 		int i, changed;
@@ -262,6 +263,8 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 		img->NormalImg = TFB_DrawCanvas_ToScreenFormat (canvas);
 	}
 
+	img->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (img->NormalImg);
+
 	return img;
 }
 
@@ -294,29 +297,24 @@ TFB_DrawImage_Delete (TFB_Image *image)
 void
 TFB_DrawImage_FixScaling (TFB_Image *image, int target)
 {
-	if (image->ScaledImg)
-	{
-		if (image->scale != target)
-		{
-			TFB_DrawCanvas_Delete(image->ScaledImg);
-			image->ScaledImg = NULL;
-		}
-	}
+	EXTENT old = image->extent;
+	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, target, &image->extent);
 	
-	if (!image->ScaledImg)
+	if ((old.width != image->extent.width) || (old.height != image->extent.height) || image->dirty)
 	{
-		image->scale = target;
 		image->dirty = FALSE;
-		image->ScaledImg = TFB_DrawCanvas_New_Scaled (image->NormalImg, target);
-		if (TFB_DrawCanvas_IsPaletted (image->ScaledImg))
+		TFB_DrawCanvas_Rescale (image->NormalImg, image->ScaledImg, image->extent);
+	}
+	/*
+	if (TFB_DrawCanvas_IsPaletted (image->ScaledImg))
+	{
+		int colorkey = TFB_DrawCanvas_GetTransparentIndex (image->NormalImg);
+		
+		TFB_DrawCanvas_SetPalette (image->ScaledImg, image->Palette);
+		if (colorkey != -1)
 		{
-			int colorkey = TFB_DrawCanvas_GetTransparentIndex (image->NormalImg);
-
-			TFB_DrawCanvas_SetPalette (image->ScaledImg, image->Palette);
-			if (colorkey != -1)
-			{
-				TFB_DrawCanvas_SetTransparentIndex (image->ScaledImg, colorkey);
-			}
+			TFB_DrawCanvas_SetTransparentIndex (image->ScaledImg, colorkey);
 		}
 	}
+	*/
 }

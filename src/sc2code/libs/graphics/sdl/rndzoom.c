@@ -53,7 +53,6 @@
 
 #include "sdl_common.h"
 #include "primitives.h"
-#include "rotozoom.h"
 
 #ifdef RND_BLUR_PROFILE
 #include <time.h>

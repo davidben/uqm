@@ -21,7 +21,6 @@
 #include "sdl_common.h"
 #include "opengl.h"
 #include "pure.h"
-#include "rotozoom.h"
 #include "primitives.h"
 #include "dcqueue.h"
 #include "options.h"

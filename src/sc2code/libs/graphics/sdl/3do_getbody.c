@@ -25,7 +25,6 @@
 
 #include "sdl_common.h"
 #include "primitives.h"
-#include "rotozoom.h"
 
 typedef struct anidata
 {
@@ -138,7 +137,8 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	FRAMEPTR NewFrame;
 	UBYTE type;
 	TFB_Image *tfbImg;
-	SDL_Surface *src, *dst;
+	TFB_Canvas src, dst;
+	EXTENT ext;
 	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
@@ -146,14 +146,11 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 					);
 	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-	src = (SDL_Surface *)tfbImg->NormalImg;
-	dst = (SDL_Surface *)NewFrame->image->NormalImg;
-	SDL_LockSurface (src);
-	SDL_LockSurface (dst);
-
-	zoomSurfaceRGBA(src, dst, 0);
-	SDL_UnlockSurface (dst);
-	SDL_UnlockSurface (src);
+	src = tfbImg->NormalImg;
+	dst = NewFrame->image->NormalImg;
+	ext.width = neww;
+	ext.height = newh;
+	TFB_DrawCanvas_Rescale (src, dst, ext);
 	UnlockMutex (tfbImg->mutex);
 	if (destroy)
 		DestroyDrawable (ReleaseDrawable (FramePtr));

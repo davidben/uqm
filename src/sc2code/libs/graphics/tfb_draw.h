@@ -45,7 +45,7 @@ typedef struct tfb_image
 	TFB_Canvas ScaledImg;
 	TFB_Palette *Palette;
 	int colormap_index;
-	int scale;
+	EXTENT extent;
 	Mutex mutex;
 	BOOLEAN dirty;
 } TFB_Image;
@@ -76,8 +76,13 @@ void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, 
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index);
 TFB_Canvas TFB_DrawCanvas_New_Scaled (TFB_Canvas src, int scale);
+TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas);
 TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
 BOOLEAN TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas);
+void TFB_DrawCanvas_Rescale (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
+void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, int scale, PEXTENT size);
+
+
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas dest);

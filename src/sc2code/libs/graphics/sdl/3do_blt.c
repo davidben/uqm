@@ -19,7 +19,6 @@
 #ifdef GFXMODULE_SDL
 
 #include "sdl_common.h"
-#include "rotozoom.h"
 #include "graphics/tfb_draw.h"
 
 #define GSCALE_SHIFT 2 // controls the number of scale steps

@@ -3,7 +3,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
-#include "rotozoom.h"
 
 typedef SDL_Surface *NativeCanvas;
 
@@ -36,7 +35,7 @@ TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas target)
 void
 TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Canvas target)
 {
-	SDL_Rect targetRect;
+	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
 
 	if (img == 0)
@@ -53,9 +52,17 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	{
 		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
+		srcRect.x = 0;
+		srcRect.y = 0;
+		srcRect.w = img->extent.width;
+		srcRect.h = img->extent.height;
+		pSrcRect = &srcRect;
 	}
 	else
+	{
 		surf = img->NormalImg;
+		pSrcRect = NULL;
+	}
 	
 	if (surf->format->palette)
 	{
@@ -69,14 +76,14 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 		}
 	}
 	
-	SDL_BlitSurface(surf, NULL, (NativeCanvas) target, &targetRect);
+	SDL_BlitSurface(surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
 
 void
 TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Canvas target)
 {
-	SDL_Rect targetRect;
+	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
 	int i;
 	SDL_Color pal[256];
@@ -96,9 +103,17 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	{
 		TFB_DrawImage_FixScaling (img, scale);
 		surf = img->ScaledImg;
+		srcRect.x = 0;
+		srcRect.y = 0;
+		srcRect.w = img->extent.width;
+		srcRect.h = img->extent.height;
+		pSrcRect = &srcRect;
 	}
 	else
+	{
 		surf = img->NormalImg;
+		pSrcRect = NULL;
+	}
 				
 	for (i = 0; i < 256; i++)
 	{
@@ -108,7 +123,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	}
 	SDL_SetColors (surf, pal, 0, 256);
 
-	SDL_BlitSurface(surf, NULL, (NativeCanvas) target, &targetRect);
+	SDL_BlitSurface(surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
 
@@ -145,6 +160,26 @@ TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent
 		SDL_SetColorKey (new_surf, 0, 0);
 	}
 	return new_surf;
+}
+
+#define TFB_SCALETARGET_FACTOR 4
+
+TFB_Canvas
+TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas)
+{
+	SDL_Surface *src = (SDL_Surface *)canvas;
+	SDL_Surface *newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w * TFB_SCALETARGET_FACTOR,
+				src->h * TFB_SCALETARGET_FACTOR,
+				src->format->BitsPerPixel,
+				src->format->Rmask,
+				src->format->Gmask,
+				src->format->Bmask,
+				src->format->Amask);
+	if (src->format->palette)
+	{
+		TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src));
+	}
+	return newsurf;
 }
 
 void
@@ -201,27 +236,6 @@ TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas)
 	return canvas;
 }
 
-TFB_Canvas
-TFB_DrawCanvas_New_Scaled (TFB_Canvas src, int scale)
-{
-	SDL_Surface *new_surf;
-
-	new_surf = zoomSurface ((SDL_Surface *)src, scale / (float)GetGraphicScaleIdentity (),
-			scale / (float)GetGraphicScaleIdentity (), SMOOTHING_OFF);
-	
-	if (new_surf)
-	{
-		if (!TFB_DrawCanvas_IsPaletted (new_surf))
-		{
-			new_surf = TFB_DrawCanvas_ToScreenFormat (new_surf);
-		}
-		return new_surf;
-	}
-
-	fprintf (stderr, "TFB_DrawCanvas_New_Scaled failed\n");
-	return NULL;
-}
-
 BOOLEAN
 TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas)
 {
@@ -253,4 +267,110 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index)
 	{
 		SDL_SetColorKey ((SDL_Surface *)canvas, 0, 0); 
 	}		
+}
+
+void
+TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, int scale, PEXTENT size)
+{
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	size->width = (int) (src->w * scale / (float)GetGraphicScaleIdentity ());
+	size->height = (int) (src->h * scale / (float)GetGraphicScaleIdentity ());
+}
+
+void
+TFB_DrawCanvas_Rescale (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT size)
+{
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
+	int x, y, sx, sy, *csax, *csay, csx, csy;
+	int sax[321], say[241];
+
+	if (size.width > 320 || size.height > 240)
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to be larger than the screen!  Failing.\n");
+		return;
+	}
+
+	sx = (int) (65536.0 * (float) src->w / (float) size.width);
+	sy = (int) (65536.0 * (float) src->h / (float) size.height);
+
+	/*
+	 * Precalculate row increments 
+	 */
+	csx = 0;
+	csax = sax;
+	for (x = 0; x <= dst->w; x++) {
+		*csax = csx >> 16;
+		csax++;
+		csx &= 0xffff;
+		csx += sx;
+	}
+	csy = 0;
+	csay = say;
+	for (y = 0; y <= dst->h; y++) {
+		*csay = csy >> 16;
+		csay++;
+		csy &= 0xffff;
+		csy += sy;
+	}
+
+	SDL_LockSurface (src);
+	SDL_LockSurface (dst);
+
+	if (src->format->BytesPerPixel == 1 && dst->format->BytesPerPixel == 1)
+	{
+		Uint8 *sp, *csp, *dp, *cdp;
+
+		sp = csp = (Uint8 *) src->pixels;
+		dp = cdp = (Uint8 *) dst->pixels;
+
+		csay = say;
+		for (y = 0; y < size.height; ++y) {
+			sp = csp;
+			dp = cdp;
+			csax = sax;
+			for (x = 0; x < size.width; ++x) {
+				*dp = *sp;
+				++csax;
+				sp += *csax;
+				++dp;
+			}
+			++csay;
+			csp += (*csay) * src->pitch;
+			cdp += dst->pitch;
+		}
+	}	
+	else if (src->format->BytesPerPixel == 4 && dst->format->BytesPerPixel == 4)
+	{
+		Uint32 *sp, *csp, *dp, *cdp;
+		int sgap, dgap;
+
+		sgap = src->pitch >> 2;
+		dgap = dst->pitch >> 2;
+		
+		sp = csp = (Uint32 *) src->pixels;
+		dp = cdp = (Uint32 *) dst->pixels;
+
+		csay = say;
+		for (y = 0; y < size.height; ++y) {
+			sp = csp;
+			dp = cdp;
+			csax = sax;
+			for (x = 0; x < size.width; ++x) {
+				*dp = *sp;
+				++csax;
+				sp += *csax;
+				++dp;
+			}
+			++csay;
+			csp += (*csay) * sgap;
+			cdp += dgap;
+		}
+	}
+	else
+	{
+		fprintf (stderr, "Tried to deal with unknown BPP: %d -> %d\n", src->format->BitsPerPixel, dst->format->BitsPerPixel);
+	}
+	SDL_UnlockSurface (dst);
+	SDL_UnlockSurface (src);
 }
