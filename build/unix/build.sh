@@ -118,7 +118,7 @@ case "$2" in
 		;;
 	depend)
 		build_check_config
-		build_rec_dependancies
+		build_rec_dependencies
 		;;
 	install)
 		build_check_config

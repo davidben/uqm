@@ -67,20 +67,23 @@ build_do_recursive() {
 	build_recurse
 }
 
-# Build dependancy information for one file
-build_dependancies() {
+# Build dependency information for one file
+build_dependencies() {
 	eval $ECHON \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
-	eval eval \\\$MKDEPEND \"\${${BUILD_PROJECT}_CFLAGS}\" \"\\\$1\"
+	eval eval \\\$MKDEPEND \"\${${BUILD_PROJECT}_CFLAGS}\" \"\\\$1\" | \
+			grep -v '#'
 }
 
-# Recursively build dependancy information
-build_rec_dependancies() {
+# Recursively build dependency information
+build_rec_dependencies() {
 	local DEPEND_FILE EXTRA_OFILES
 
-	echo "Building dependancy information..." 1>&2
+	echo "Building dependency information..." 1>&2
 	
 	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
 	export BUILD_WORK_ESC
+
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
 
 	# Remove the old dependency file, if it exists.
 	# The .tmp file is used to detect interrupted dependency builds.
@@ -93,14 +96,13 @@ build_rec_dependancies() {
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	OFILES=`build_do_recursive build_collect_o_files :`
 
-	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
 	{
 		eval $ECHON "\$BUILD_WORK_ESC/target-\${${BUILD_PROJECT}_NAME}:"
 		for OFILE in $OFILES $EXTRA_OFILES; do
 			$ECHON " $OFILE"
 		done
 		echo
-		build_do_recursive build_dependancies :
+		build_do_recursive build_dependencies :
 	} > "$DEPEND_FILE".tmp
 	mv -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
 }
@@ -166,7 +168,7 @@ build_compile() {
 	eval "${TARGET}_pre_build"
 	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
 			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
-			DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}" \
+			DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend" \
 			\$MAKE -f Makefile.build \"\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}\"
 	eval "${TARGET}_post_build"
 }
@@ -184,7 +186,7 @@ build_clean_dir() {
 
 build_clean() {
 	local DEPEND_FILE
-	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}"
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
 	rm -f "$DEPEND_FILE" "$BUILD_WORK/build.vars" \
 			"$BUILD_WORK/config.state" "$BUILD_WORK/config_unix.h"
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
@@ -220,10 +222,10 @@ build_check_config() {
 # Description: check if the necessary .depend file is present,
 #              if not, build it.
 build_check_dependencies() {
-	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
 	[ ! -e "$DEPEND_FILE" -o -n "$BUILD_RUN_DEPEND" ] || return
 
-	build_rec_dependancies || exit $?
+	build_rec_dependencies || exit $?
 }
 
 # Description: check if the program is compiled, and otherwise compile
@@ -313,7 +315,7 @@ build_install() {
 	eval "${TARGET}_pre_install"
 
 	local LIB LIBS LIBDIR
-	echo "Installing system-dependant data..." 1>&2
+	echo "Installing system-dependent data..." 1>&2
 	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"
 	eval LIBDIR="\${${BUILD_PROJECT}_INSTALL_LIBDIR%/}/"
 	mkdirhier "$LIBDIR" 0755
@@ -326,7 +328,7 @@ build_install() {
 	done
 
 	local SHARE SHARED SHAREDIR
-	echo "Installing system-independant data..." 1>&2
+	echo "Installing system-independent data..." 1>&2
 	eval SHARED="\${${BUILD_PROJECT}_INSTALL_SHARED}"
 	eval SHAREDIR="\${${BUILD_PROJECT}_INSTALL_SHAREDIR%/}/"
 	mkdirhier "$SHAREDIR" 0755

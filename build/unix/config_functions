@@ -94,10 +94,43 @@ lexlt() {
 	return `expr "$1" ">=" "$2"`
 }
 
+# Description: try to detect a list of program dependencies.
+#              This only makes sure the PROG_xxx_PRESENT flag is set.
+#              It does not bail out if a dependency is not found.
+#              This function is called for programs in
+#              PROG_xxx_DEPEND_DETECT_PROG or LIB_xxx_DEPEND_PROG.
+#              Using have_program in the respective depend functions would
+#              not save the PRESENT flag, as it is executed in a subshell.
+# Arguments:   $1 - the list of programs
+detect_dependencies_program() {
+	local PROGS PROG
+	PROGS=$1
+	for PROG in $PROGS; do
+		have_program "$PROG"
+	done
+}
+
+# Description: try to detect a list of library dependencies.
+#              This only makes sure the LIB_xxx_PRESENT flag is set.
+#              It does not bail out if a dependency is not found.
+#              This function is called for libraries in
+#              PROG_xxx_DEPEND_DETECT_LIB or LIB_xxx_DEPEND_LIB.
+#              Using have_library in the respective depend functions would
+#              not save the PRESENT flag, as it is executed in a subshell.
+# Arguments:   $1 - the list of libaries
+detect_dependencies_library() {
+	local LIBS LIB
+	LIBS=$1
+	for LIB in $LIBS; do
+		have_library "$LIB"
+	done
+}
+
 # Description: check if a program is present in the path
 # Arguments:   
 have_program() {
-	local PROG TEMP_NAME TEMP_FILE TEMP_VERSION TEMP_DETECT
+	local PROG TEMP_NAME TEMP_FILE TEMP_VERSION TEMP_PRESENT TEMP_DETECT
+	local TEMP_DEPEND_DETECT_PROG TEMP_DEPEND_DETECT_LIB
 
 	PROG="$1"
 	eval eval TEMP_NAME="\\\"\$PROG_${PROG}_NAME\\\""
@@ -106,12 +139,22 @@ have_program() {
 		exit 1
 	fi
 	
+	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	if [ -n "$TEMP_PRESENT" ]; then
+		return "$TEMP_PRESENT"
+	fi
+	
 	eval eval TEMP_DETECT="\\\"\$PROG_${PROG}_DETECT\\\""
 	if [ -n "$TEMP_DETECT" ]; then
+		eval eval TEMP_DEPEND_PROG="\\\"\$PROG_${PROG}_DEPEND_DETECT_PROG\\\""
+		eval eval TEMP_DEPEND_LIB="\\\"\$PROG_${PROG}_DEPEND_DETECT_LIB\\\""
+		detect_dependencies_program "$TEMP_DEPEND_PROG"
+		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		$TEMP_DETECT
 		# NB. TEMP_DETECT should make sure PROG_${PROG}_VERSION and
                 # PROG_${PROG}_FILE are set.
 		if [ $? -ne 0 ]; then
+			eval "PROG_${PROG}_PRESENT"=1
 			build_message "$TEMP_NAME not found."
 			return 1
 		fi
@@ -121,6 +164,7 @@ have_program() {
 
 	type "${TEMP_FILE%% *}" > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
+		eval "PROG_${PROG}_PRESENT"=1
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
@@ -129,24 +173,29 @@ have_program() {
 		# Minimum version supplied
 		eval eval TEMP_VERSION="\\\"\$PROG_${PROG}_VERSION\\\""
 		if [ -z "$TEMP_VERSION" ]; then
+			eval "PROG_${PROG}_PRESENT"=1
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
 		fi
 		if lexlt "$TEMP_VERSION" "$2" ; then
+			eval "PROG_${PROG}_PRESENT"=1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required!"
 			return 1
 		fi
+		eval "PROG_${PROG}_PRESENT"=0
 		build_message "$TEMP_NAME version $TEMP_VERSION found."
 		return 0
 	fi
 
+	eval "PROG_${PROG}_PRESENT"=0
 	build_message "$TEMP_NAME found."
 	return 0
 }
 
 # Description: check if a library is present on the system
-# Arguments:   $1 - The name of the library without 'lib' of '.so'
+# Arguments:   $1 - The name of the library as used in config_proginfo after
+#                   "LIB_"
 #              $2 - (optional) minimum version required
 # Pre:         variables LIB_${1}_NAME, LIB_${1}_CFLAGS, and
 #              LIB_${1}_LDFLAGS are expected to exist. If two arguments are
@@ -156,11 +205,12 @@ but version $2 is required!"
 have_library() {
 	local LIB TEMP_NAME TEMP_PRESENT TEMP_LDFLAGS TEMP_CFLAGS \
 			TEMP_VERSION TEMP_DETECT
+	local TEMP_DEPEND_DETECT_PROG TEMP_DEPEND_DETECT_LIB
 
 	LIB="$1"
-	eval eval TEMP_NAME="\\\"\$LIB_${1}_NAME\\\""
+	eval eval TEMP_NAME="\\\"\$LIB_${LIB}_NAME\\\""
 	if [ -z "$TEMP_NAME" ]; then
-		echo "Fatal: Library '$1' is not defined!" >&2
+		echo "Fatal: Library '$LIB' is not defined!" >&2
 		exit 1
 	fi
 
@@ -172,6 +222,10 @@ have_library() {
 	eval eval TEMP_DETECT="\\\"\$LIB_${LIB}_DETECT\\\""
 	if [ -n "$TEMP_DETECT" ]; then
 		$TEMP_DETECT
+		eval eval TEMP_DEPEND_PROG="\\\"\$PROG_${PROG}_DEPEND_DETECT_PROG\\\""
+		eval eval TEMP_DEPEND_LIB="\\\"\$PROG_${PROG}_DEPEND_DETECT_LIB\\\""
+		detect_dependencies_program "$TEMP_DEPEND_PROG"
+		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		# NB. TEMP_DETECT should make sure PROG_$LIB_VERSION is set.
 		# return value of $TEMP_DETECT is used below.
 	else
@@ -220,7 +274,8 @@ but version $2 is required"
 # Description: check if a library is present on the system.
 #              If it is, add the appropriate flags to CFLAGS and LDFLAGS.
 #              If not, bail out.
-# Arguments:   $1 - The name of the library without 'lib' of '.so'
+# Arguments:   $1 - The name of the library as used in config_proginfo after
+#                   "LIB_"
 #              $2 - (optional) minimum version required
 # Pre:         variables LIB_${1}_NAME, LIB_${1}_CFLAGS, and
 #              LIB_${1}_LDFLAGS are expected to exist. If two arguments are
@@ -349,6 +404,74 @@ EOF
 		add_symbol WORDS_BIGENDIAN "#undef WORDS_BIGENDIAN"
 	fi
 }
+
+
+# Description: If pkg-config is installed, check if there's a pkg-config
+#              entry for some binary dependency.
+#              If successful, it sets the appropriate BIN_xxx_VERSION.
+# Arguments:   $1 - The name of the program as it is known in
+#                   config_proginfo after "BIN_"
+#              $2 - The name of the dependency as it would be known to
+#                   pkg-config.
+try_pkgconfig_prog() {
+	have_program pkgconfig || return 1
+
+	local PROG PKG_NAME TEMP_NAME
+	PROG=$1
+	PKG_NAME=$2
+
+	eval eval TEMP_NAME="\\\"\$PROG_${PROG}_NAME\\\""
+	if [ -z "$TEMP_NAME" ]; then
+		echo "Fatal: Program '$PROG' is not defined!" >&2
+		exit 1
+	fi
+
+	if $PROG_pkgconfig_FILE --exists "$PKG_NAME"; then
+		local TEMP_VERSION
+		TEMP_VERSION=$($PROG_pkgconfig_FILE --modversion "$PKG_NAME")
+		eval PROG_${PROG}_VERSION=\$TEMP_VERSION
+		return 0
+	else
+		return 1
+	fi
+}
+
+
+# Description: If pkg-config is installed, check if there's a pkg-config
+#              entry for some dependency.
+#              If successful, it sets the appropriate LIB_xxx_VERSION,
+#              LIB_xxx_CFLAGS and LIB_xxx_LDFLAGS.
+# Arguments:   $1 - The name of the library as it is known in
+#                   config_proginfo after "LIB_"
+#              $2 - The name of the dependency as it would be known to
+#                   pkg-config.
+try_pkgconfig_lib() {
+	have_program pkgconfig || return 1
+
+	local LIB PKG_NAME TEMP_NAME
+	LIB=$1
+	PKG_NAME=$2
+
+	eval eval TEMP_NAME="\\\"\$LIB_${LIB}_NAME\\\""
+	if [ -z "$TEMP_NAME" ]; then
+		echo "Fatal: Library '$LIB' is not defined!" >&2
+		exit 1
+	fi
+
+	if $PROG_pkgconfig_FILE --exists "$PKG_NAME"; then
+		local TEMP_VERSION TEMP_CFLAGS TEMP_LDFLAGS
+		TEMP_VERSION=$($PROG_pkgconfig_FILE --modversion "$PKG_NAME")
+		TEMP_CFLAGS=$($PROG_pkgconfig_FILE --cflags "$PKG_NAME")
+		TEMP_LDFLAGS=$($PROG_pkgconfig_FILE --libs "$PKG_NAME")
+		eval LIB_${LIB}_VERSION=\$TEMP_VERSION
+		eval LIB_${LIB}_CFLAGS=\$TEMP_CFLAGS
+		eval LIB_${LIB}_LDFLAGS=\$TEMP_LDFLAGS
+		return 0
+	else
+		return 1
+	fi
+}
+
 
 # Description: substitute variables in files.
 #              Every supplied variable name found between @'s in the
