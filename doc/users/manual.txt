@@ -41,6 +41,12 @@ faster as well -- but it also may not work on older cards.
 Graphics scaling mode (bilinear, biadapt or biadv). Default is none.
 Try these to get smoother graphics with cost on performance.
 
+	-b           (or --meleescale=mode)
+
+Melee scaling mode (nearest or trilinear). Default is trilinear.
+Slower machine owners can set it to nearest to get better performance
+in melee but degraded visual quality.
+
 	-s           (or --scanlines)
 
 Simulates interlaced displays.

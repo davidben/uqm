@@ -31,6 +31,11 @@ typedef enum {
 	TFB_GFX_NUMSCREENS
 } SCREEN;
 
+typedef enum {
+	TFB_SCALE_NEAREST,
+	TFB_SCALE_TRILINEAR
+} SCALE;
+
 typedef struct tfb_palette
 {
 	UBYTE r;
@@ -43,8 +48,10 @@ typedef struct tfb_image
 {
 	TFB_Canvas NormalImg;
 	TFB_Canvas ScaledImg;
+	TFB_Canvas MipmapImg;
 	TFB_Palette *Palette;
 	int colormap_index;
+	int last_scale_type;
 	EXTENT extent;
 	Mutex mutex;
 	BOOLEAN dirty;
@@ -66,7 +73,7 @@ void TFB_FlushPaletteCache (void);
 
 TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);
 void TFB_DrawImage_Delete (TFB_Image *image);
-void TFB_DrawImage_FixScaling (TFB_Image *image, int target);
+void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest);
 void TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image);
@@ -75,13 +82,12 @@ void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, 
 
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index);
-TFB_Canvas TFB_DrawCanvas_New_Scaled (TFB_Canvas src, int scale);
-TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas);
+TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int type, int last_type);
 TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
 BOOLEAN TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas);
-void TFB_DrawCanvas_Rescale (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
-void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, int scale, PEXTENT size);
-
+void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
+void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas dst, TFB_Canvas mipmap, EXTENT size);
+void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, int scale, PEXTENT size);
 
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 

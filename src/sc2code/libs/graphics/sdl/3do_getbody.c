@@ -150,7 +150,7 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	dst = NewFrame->image->NormalImg;
 	ext.width = neww;
 	ext.height = newh;
-	TFB_DrawCanvas_Rescale (src, dst, ext);
+	TFB_DrawCanvas_Rescale_Nearest (src, dst, ext);
 	UnlockMutex (tfbImg->mutex);
 	if (destroy)
 		DestroyDrawable (ReleaseDrawable (FramePtr));

@@ -108,6 +108,7 @@ main (int argc, char *argv[])
 		{"fullscreen", 0, NULL, 'f'},
 		{"opengl", 0, NULL, 'o'},
 		{"scale", 1, NULL, 'c'},
+		{"meleescale", 1, NULL, 'b'},
 		{"scanlines", 0, NULL, 's'},
 		{"fps", 0, NULL, 'p'},
 		{"contentdir", 1, NULL, 'n'},
@@ -140,7 +141,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:ug:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:b:spn:?hM:S:T:m:q:ug:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -168,6 +169,12 @@ main (int argc, char *argv[])
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
 				}
+			break;
+			case 'b':
+				if (!strcmp (optarg, "nearest"))
+					optMeleeScale = TFB_SCALE_NEAREST;
+				else if (!strcmp (optarg, "trilinear"))
+					optMeleeScale = TFB_SCALE_TRILINEAR;
 			break;
 			case 's':
 				gfxflags |= TFB_GFXFLAGS_SCANLINES;
@@ -279,7 +286,8 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=mode (bilinear, biadapt or biadv, default is none)\n");
+				printf("  -c, --scale=MODE (bilinear, biadapt or biadv, default is none)\n");
+				printf("  -b, --meleescale=MODE (nearest or trilinear, default is trilinear)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
 				printf("  -g, --gamma=CORRECTIONVALUE (default 1.0, which causes no change)\n");
@@ -288,8 +296,8 @@ main (int argc, char *argv[])
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
-				printf("  --sound=DRIVER (openal, mixsdl, none; default mixsdl)\n");
 				printf("  -u, --nosubtitles\n");
+				printf("  --sound=DRIVER (openal, mixsdl, none; default mixsdl)\n");
 				printf("The following options can take either '3do' or 'pc' as an option:\n");
 				printf("  -m, --music : Music version (default 3do)\n");
 				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");

@@ -86,7 +86,6 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	DC.data.image.y = y;
 	DC.data.image.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
 
-
 	if (palette != NULL)
 	{
 		int i, changed;
@@ -250,7 +249,9 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	TFB_Image *img = HMalloc (sizeof (TFB_Image));
 	img->mutex = CreateMutex ();
 	img->ScaledImg = NULL;
+	img->MipmapImg = NULL;
 	img->colormap_index = -1;
+	img->last_scale_type = -1;
 
 	img->Palette = TFB_DrawCanvas_ExtractPalette (canvas);
 	
@@ -293,29 +294,24 @@ TFB_DrawImage_Delete (TFB_Image *image)
 }
 
 void
-TFB_DrawImage_FixScaling (TFB_Image *image, int target)
+TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 {
 	EXTENT old = image->extent;
-	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, target, &image->extent);
-	
+	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->MipmapImg, target, &image->extent);
+
 	if ((old.width != image->extent.width) || (old.height != image->extent.height) ||
-		image->dirty || !image->ScaledImg)
+		image->dirty || !image->ScaledImg || type != image->last_scale_type)
 	{
 		image->dirty = FALSE;
-		if (!image->ScaledImg)
-			image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg);
-		TFB_DrawCanvas_Rescale (image->NormalImg, image->ScaledImg, image->extent);
-	}
-	/*
-	if (TFB_DrawCanvas_IsPaletted (image->ScaledImg))
-	{
-		int colorkey = TFB_DrawCanvas_GetTransparentIndex (image->NormalImg);
+		image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg,
+			image->ScaledImg, type, image->last_scale_type);
+		image->last_scale_type = type;
 		
-		TFB_DrawCanvas_SetPalette (image->ScaledImg, image->Palette);
-		if (colorkey != -1)
-		{
-			TFB_DrawCanvas_SetTransparentIndex (image->ScaledImg, colorkey);
-		}
+		if (type == TFB_SCALE_NEAREST)
+			TFB_DrawCanvas_Rescale_Nearest (image->NormalImg, image->ScaledImg,
+				image->extent);
+		else
+			TFB_DrawCanvas_Rescale_Trilinear (image->NormalImg, image->ScaledImg,
+				image->MipmapImg, image->extent);
 	}
-	*/
 }

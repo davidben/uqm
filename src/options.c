@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "libs/graphics/gfx_common.h"
 #include "compiler.h"
 #include "options.h"
 #include "file.h"
@@ -32,6 +33,7 @@ int optWhichCoarseScan = OPT_3DO;
 int optWhichMenu = OPT_3DO;
 int optWhichFonts = OPT_PC;
 int optSmoothScroll = OPT_PC;
+int optMeleeScale = TFB_SCALE_TRILINEAR;
 
 char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
