@@ -228,6 +228,12 @@ LoadSolarSys (void)
 	{
 		SIZE sort_array[MAX_PLANETS + 1];
 
+		// When this part is done, sort_array will contain the indices to
+		// all planets, sorted on their y position.
+		// The sun itself, which has its data located at
+		// pSolarSysState->PlanetDesc[-1], is included in this array. 
+		// Very ugly stuff, but it's correct.
+
 		for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
 			sort_array[i] = i - 1;
 
