@@ -106,6 +106,9 @@ Implementation bugs (low priority):
   which could make it look nicer, like better lighting, better slave shield 
   and removing occasional pops/discontinuities
 - DrawCommandQueue is gratuitously dynamically allocated, should be static
+- Lines and colouring of planet surface display when scanning are now done,
+  but seem to be little different (darker) than in 3do lander videoclip.
+  And is the speed correct?
 
 Stuff still to do (large):
 - add a Key Jamming program
@@ -144,8 +147,6 @@ Stuff still to do (large):
 Stuff still to do (medium size):
 - oscilloscope
 - loading teams in melee
-- lines and colouring of planet surface display when scanning.
-  Its speed isn't correct either.
 - get all code to compile without warnings, when the most strict
   checks are performed (not just -W -Wall in gcc)
 - try to speed up resource loading. It looks to be much slower now

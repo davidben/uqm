@@ -1,4 +1,7 @@
 0.2:
+- > vs. >= bugfix on plangen.c, from PhracturedBlue
+- More appropriate names to ROSTER + 1 and ROSTER + 2, from slayne
+- Lines and colouring of planet surface when scanning, from PhracturedBlue
 - Melnorme bridge turns purple at the right spot in his conversation
 - Repaired a DrawCommandQueue invariant, from tamlin
 - Color transforms in communication merged into core animation thread
