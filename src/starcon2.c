@@ -34,19 +34,19 @@
 void
 CDToContentDir (char *contentdir)
 {
-    char *testfile = "starcon.txt";
-    
-    if (!FileExists (testfile))
-    {
-        if (chdir (contentdir) || !FileExists (testfile))
-        {
-			if (chdir ("content") || !FileExists (testfile))
+	char *testfile = "starcon.txt";
+
+	if (!FileExists (testfile))
+	{
+		if (chdir (contentdir) || !FileExists (testfile))
+		{
+			if (chdir ("../../content") || !FileExists (testfile))
 			{
 				fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
 				exit(-1);
 			}
-        }
-    }
+		}
+	}
 }
 
 int
@@ -83,11 +83,7 @@ main (int argc, char *argv[])
 
 	fprintf (stderr, "The Ur-Quan Masters v%d.%d (compiled %s %s)\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
 
-#ifndef WIN32
 	strcpy (contentdir, "content");
-#else
-	strcpy (contentdir, "../../content");
-#endif
 
 	while ((c = getopt_long(argc, argv, "r:d:fob:ptc:?hM:S:T:emq:", long_options, &option_index)) != -1)
 	{
