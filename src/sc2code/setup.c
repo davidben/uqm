@@ -48,39 +48,218 @@ Semaphore GraphicsSem;
 CondVar RenderingCond;
 STRING GameStrings;
 
+static UWORD ParseKeyString(char* line)
+{
+	char key[16];
+	char* index = strchr(line+1, '"');
+	if (index == NULL)
+		return 0;
+	memset(key, 0, sizeof(key));
+	strncpy(key, line+1, index - (line + 1));
+	if (strchr(key, ',') != NULL && strlen(key) != 1)
+	{
+		// We have a chorded key!
+		UWORD k1, k2;
+		char l[16];
+		char* comma = line;
+		memset(l, 0, sizeof(l));
+		while (strchr(comma + 1, ',') != NULL)
+			comma = strchr(comma + 1, ',');
+		strncpy(l, line, comma - line);
+		strcat(l, "\"");
+		k1 = ParseKeyString(l);
+		memset(l, 0, sizeof(l));
+		l[0] = '"';
+		strncpy(l + 1, comma + 1, index - (comma + 1));
+		strcat(l, "\"");
+		k2 = ParseKeyString(l);
+		return KEYCHORD(k1, k2);
+	}
+		
+	if (!strcmp(key, "Left"))
+		return SK_LF_ARROW;
+	else if (!strcmp(key, "Right"))
+		return SK_RT_ARROW;
+	else if (!strcmp(key, "Up"))
+		return SK_UP_ARROW;
+	else if (!strcmp(key, "Down"))
+		return SK_DN_ARROW;
+	else if (!strcmp(key, "RCtrl"))
+		return SK_RT_CTL;
+	else if (!strcmp(key, "LCtrl"))
+		return SK_LF_CTL;
+	else if (!strcmp(key, "RAlt"))
+		return SK_RT_ALT;
+	else if (!strcmp(key, "LAlt"))
+		return SK_LF_ALT;
+	else if (!strcmp(key, "LShift"))
+		return SK_LF_SHIFT;
+	else if (!strcmp(key, "RShift"))
+		return SK_RT_SHIFT;
+	else if (!strcmp(key, "Enter"))
+		return '\n';
+	else if (!strcmp(key, "F1"))
+		return SK_F1;
+	else if (!strcmp(key, "F2"))
+		return SK_F2;
+	else if (!strcmp(key, "F3"))
+		return SK_F3;
+	else if (!strcmp(key, "F4"))
+		return SK_F4;
+	else if (!strcmp(key, "F5"))
+		return SK_F5;
+	else if (!strcmp(key, "F6"))
+		return SK_F6;
+	else if (!strcmp(key, "F7"))
+		return SK_F7;
+	else if (!strcmp(key, "F8"))
+		return SK_F8;
+	else if (!strcmp(key, "F9"))
+		return SK_F9;
+	else if (!strcmp(key, "F10"))
+		return SK_F10;
+	else if (!strcmp(key, "F11"))
+		return SK_F11;
+	else if (!strcmp(key, "F12"))
+		return SK_F12;
+	else if (!strcmp(key, "KP+"))
+		return SK_KEYPAD_PLUS;
+	else if (!strcmp(key, "KP-"))
+		return SK_KEYPAD_MINUS;
+	else
+		return key[0];
+}
+
 static MEM_HANDLE
 LoadKeyConfig (FILE *fp, DWORD length)
 {
-	COUNT i;
-	BYTE buf[38], *pbuf;
+	UWORD buf[18];
+	int p;
+	int i;
+	char line[256];
+	extern BOOLEAN PauseGame (void);
 
-	ReadResFile (buf, 1, sizeof (buf), fp);
+	UNICODE specialKeys[3];
 
-	// new temporary melee keys 2002/11/22
-	// mapped as left, right, thrust, ?, ?, fire, special, ?, ?
-	KeyboardInput[0] = CaptureInputDevice 
-	(
-		CreateJoystickKeyboardDevice (SK_LF_ARROW, SK_RT_ARROW, SK_UP_ARROW, 0, 0, SK_RT_SHIFT, SK_CTL, 0, 0x1b)
-	);
-	KeyboardInput[1] = CaptureInputDevice 
-	(
-		CreateJoystickKeyboardDevice ('s', 'f', 'e', 0, 0, 'q', 'a', 0, 0x1b)
-	);
-
-	// old melee key code
-	/*for (i = 0, pbuf = buf; i < NUM_PLAYERS; ++i, pbuf += 10)
+	// Look for pause, exit, abort keys
+	for (i = 0; i < 3; ++i)
 	{
-		KeyboardInput[i] = CaptureInputDevice (
-				CreateJoystickKeyboardDevice (
-						pbuf[2], pbuf[4], pbuf[6], 0,
-						0, pbuf[8], pbuf[0],
-						0, 0x1b
-						)
+		for (;;)
+		{
+			if (feof(fp) || ferror(fp))
+				break;
+			fgets(line, 256, fp);
+			if (line[0] != '#')
+				break;
+		}
+		if (line[0] == '"')
+		{
+			specialKeys[i] = (UNICODE)(ParseKeyString(line) & 0xFF);
+			fprintf(stderr, "Special %i = %i\n", i, specialKeys[i]);
+		}
+	}
+
+	// For each of two players
+	for (p = 0; p < 2; ++p)
+	{
+		int joyN = -1;
+		int joyThresh = 0;
+		memset(buf, 0xFF, sizeof(buf));
+		// Read in 9 inputs
+		for (i = 0; i < 9; ++i)
+		{
+			// Look for valid lines
+			for (;;)
+			{
+				if (feof(fp) || ferror(fp))
+					break;
+				fgets(line, 256, fp);
+
+				if (line[0] != '#')
+					break;
+			}
+			// line now contains what should be a valid line
+			if (strstr(line, "<Joyport") != NULL)
+			{
+				joyN = atoi(line + 8);
+				joyThresh = atoi(strchr(line, '-') + 10);
+				--i;
+				continue;
+			}
+			else if (line[0] == '"')
+			{
+				char joy[16];
+				char* index;
+				memset(joy, 0, sizeof(joy));
+				index = strchr(line+1, '"');
+				if (index != NULL)
+					index = strchr(index+1, '<');
+				if (index != NULL)
+				{
+					char* index2 = strchr(index+1, '>');
+					if (index2 != NULL)
+						strncpy(joy, index+1, index2 - (index + 1));
+				}
+				else
+				{
+					joy[0] = 0;
+				}
+				buf[i] = ParseKeyString (line);
+				fprintf(stderr, "Player %i, key %i = %i\n", p, i, buf[i]);
+				if (joy[0] != 0)
+				{
+					char type;
+					if (strchr(joy, '-') != NULL)
+						type = *(strchr(joy, '-') + 1);
+					else
+						type = 0;
+
+					if (type == 'A')
+					{
+						int axis = atoi(strchr(joy, '-') + 2);
+						char sign = joy[strlen(joy)-1];
+						int s;
+						if (sign == '+')
+							s = 1;
+						else if (sign == '-')
+							s = -1;
+						else
+							s = 1;
+						buf[9 + i] = JOYAXIS(axis, s);
+					}
+					else if (type == 'B')
+					{
+						int button = atoi(strchr(joy, '-') + 2);
+						buf[9 + i] = JOYBUTTON(button);
+					}
+					else if (type == 'C')
+					{
+						int b1 = atoi(strchr(joy, '-') + 2);
+						int b2 = atoi(strchr(joy, ',') + 1);
+						buf[9 + i] = JOYCHORD(b1, b2);
+					}
+				}
+			}
+		}
+		KeyboardInput[p] = CaptureInputDevice (
+			CreateJoystickKeyboardDevice(buf[0], buf[1], buf[2], buf[3], buf[4],
+				buf[5], buf[6], buf[7], buf[8])
+			);
+		if (joyN != -1)
+		{
+			JoystickInput[p] = CaptureInputDevice (
+				CreateJoystickDevice(joyN, joyThresh, buf[9], buf[10], buf[11], 
+					buf[12], buf[13], buf[14], buf[15], buf[16], buf[17])
 				);
-
-	}*/
-
+		}
+		else
+		{
+			JoystickInput[p] = 0;
+		}
+	}
+	ArrowInput = KeyboardInput[0];
 	(void) length;  /* Satisfying compiler (unused parameter) */
+	InitInput(PauseGame, specialKeys[0], specialKeys[1], specialKeys[2]);
 	return (NULL_HANDLE);
 }
 
@@ -88,18 +267,8 @@ static void
 InitPlayerInput (void)
 {
 	INPUT_DEVICE InputDevice;
-	extern BOOLEAN PauseGame (void);
-
-	InitInput (SK_F1, SK_F10, PauseGame);
-
-	JoystickInput[0] = CaptureInputDevice (CreateJoystickDevice (0));
-	JoystickInput[1] = CaptureInputDevice (CreateJoystickDevice (1));
 
 	SerialInput = CaptureInputDevice (CreateSerialKeyboardDevice ());
-	ArrowInput = CaptureInputDevice (CreateJoystickKeyboardDevice (
-			SK_LF_ARROW, SK_RT_ARROW, SK_UP_ARROW, SK_DN_ARROW,
-			'\n', ' ', 0x1b, SK_KEYPAD_MINUS, SK_KEYPAD_PLUS
-			));
 
 	InputDevice = CreateInternalDevice (game_input);
 	NormalInput = CaptureInputDevice (InputDevice);

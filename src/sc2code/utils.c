@@ -181,16 +181,13 @@ PauseGame (void)
 	FlushGraphics ();
 	//SetSemaphore (GraphicsSem);
 
-	{
-		BYTE scan;
-
-		scan = KBDToUNICODE (SK_F1);
-		while (KeyDown (scan))
-			TaskSwitch ();
-	}
+	while (KeyDown (PauseKey))
+		TaskSwitch ();
 
 	FlushInput ();
-	while (KeyHit () != SK_F1)
+
+	// Wait for the pause key to be pressed again
+	while (!KeyDown (PauseKey))
 		TaskSwitch ();
 
 	s.frame = F;

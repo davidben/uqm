@@ -48,28 +48,23 @@ typedef enum
 
 #define SK_LF_SHIFT ((UNICODE)139)
 #define SK_RT_SHIFT ((UNICODE)140)
-#define SK_CTL ((UNICODE)141)
-#define SK_ALT ((UNICODE)142)
+#define SK_LF_CTL ((UNICODE)141)
+#define SK_RT_CTL ((UNICODE)142)
+#define SK_LF_ALT ((UNICODE)143)
+#define SK_RT_ALT ((UNICODE)144)
 
-#define KEY_DOWN ((BYTE)(1 << 0))
-#define KEY_UP ((BYTE)(1 << 1))
-#define LF_SHIFT_DOWN ((BYTE)(1 << 2))
-#define RT_SHIFT_DOWN ((BYTE)(1 << 3))
-#define CTL_DOWN ((BYTE)(1 << 4))
-#define ALT_DOWN ((BYTE)(1 << 5))
-
-#define SK_F1 ((UNICODE)143)
-#define SK_F2 ((UNICODE)144)
-#define SK_F3 ((UNICODE)145)
-#define SK_F4 ((UNICODE)146)
-#define SK_F5 ((UNICODE)147)
-#define SK_F6 ((UNICODE)148)
-#define SK_F7 ((UNICODE)149)
-#define SK_F8 ((UNICODE)150)
-#define SK_F9 ((UNICODE)151)
-#define SK_F10 ((UNICODE)152)
-#define SK_F11 ((UNICODE)153)
-#define SK_F12 ((UNICODE)154)
+#define SK_F1 ((UNICODE)145)
+#define SK_F2 ((UNICODE)146)
+#define SK_F3 ((UNICODE)147)
+#define SK_F4 ((UNICODE)148)
+#define SK_F5 ((UNICODE)149)
+#define SK_F6 ((UNICODE)150)
+#define SK_F7 ((UNICODE)151)
+#define SK_F8 ((UNICODE)152)
+#define SK_F9 ((UNICODE)153)
+#define SK_F10 ((UNICODE)154)
+#define SK_F11 ((UNICODE)155)
+#define SK_F12 ((UNICODE)156)
 
 #define DEVTYPE_MASK 0x03
 #define GetInputUNICODE(is) (LOWORD (is))
@@ -92,14 +87,16 @@ typedef enum
 #define DEVICE_LEFTSHIFT ((INPUT_STATE)1 << 24)
 #define DEVICE_RIGHTSHIFT ((INPUT_STATE)1 << 25)
 
-extern BOOLEAN InitInput (UNICODE PauseKey, UNICODE ExitKey, BOOLEAN
-		(*PauseFunc) (void));
+extern BOOLEAN InitInput (BOOLEAN (*PauseFunc) (void), UNICODE Pause,
+		UNICODE Exit, UNICODE Abort);
 extern BOOLEAN UninitInput (void);
 extern INPUT_DEVICE CreateSerialKeyboardDevice (void);
-extern INPUT_DEVICE CreateJoystickKeyboardDevice (UNICODE lfkey, UNICODE
-		rtkey, UNICODE topkey, UNICODE botkey, UNICODE but1key, UNICODE
-		but2key, UNICODE but3key, UNICODE shift1key, UNICODE shift2key);
-extern INPUT_DEVICE CreateJoystickDevice (COUNT port);
+extern INPUT_DEVICE CreateJoystickKeyboardDevice (UWORD lfkey, UWORD
+		rtkey, UWORD topkey, UWORD botkey, UWORD but1key, UWORD
+		but2key, UWORD but3key, UWORD shift1key, UWORD shift2key);
+extern INPUT_DEVICE CreateJoystickDevice (COUNT port, UWORD threshold,
+		UWORD left, UWORD right, UWORD up, UWORD down, 
+		UWORD but1, UWORD but2, UWORD but3, UWORD s1, UWORD s2);
 extern INPUT_DEVICE CreateInternalDevice (INPUT_STATE (*input_func)
 		(INPUT_REF InputRef, INPUT_STATE InputState));
 extern BOOLEAN DestroyInputDevice (INPUT_DEVICE InputDevice);
@@ -109,15 +106,43 @@ extern INPUT_STATE GetInputState (INPUT_REF InputRef);
 extern INPUT_STATE AnyButtonPress (BOOLEAN DetectSpecial);
 
 extern void FlushInput (void);
-extern int KeyDown (UNICODE which_scan);
+extern BOOLEAN KeyDown (UNICODE which_scan);
 extern UNICODE GetUnicodeKey (void);
-extern UNICODE KBDToUNICODE (UNICODE which_key);
-extern UNICODE KeyHit (void);
-extern BYTE GetKeyState (UNICODE key);
+extern UNICODE KBDToUNICODE (UWORD which_key);
 
+/*
+ * Not used right now
 extern BOOLEAN FindMouse (void);
 extern void MoveMouse (SWORD x, SWORD y);
 extern BYTE LocateMouse (PSWORD px, PSWORD py);
+*/
+
+/*
+ * joystick_buttons format
+ * Bit 15 - (0) - Button
+ *          (1) - Axis
+ * Bit 14 - (0) - positive (n/a for buttons)
+ *          (1) - negative (use chord for buttons)
+ * Bit 0-7      - button / axis number
+ * Bit 8-13     - chorded button
+ */
+#define JOYAXISMASK 0x8000
+/* axis number, sign */
+#define JOYAXIS(a,s) (0x8000 | (s < 0 ? 0x4000 : 0 ) | (a & 0xFF))
+#define JOYBUTTON(b) ((UWORD)(b & 0xFF))
+#define JOYCHORD(b1,b2) ((UWORD)(0x4000 | (b1 & 0xFF) | ((b2 & 0x3F) << 8)))
+#define JOYISAXIS(v) (v & JOYAXISMASK)
+#define JOYISCHORD(v) (v & 0x4000)
+#define JOYGETVALUE(v) (v & 0xFF)
+#define JOYGETSIGN(v) ((v & 0x4000) ? -1 : 1)
+#define JOYGETCHORD(v) ((v & 0x3F00) >> 8)
+
+#define KEYCHORD(k1, k2) ((UWORD) ((k1 & 0xFF) << 8) | (k2 & 0xFF))
+#define KEYGETCHORD(v) ((v & 0xFF00) >> 8)
+#define KEYISCHORD(v) (v & 0xFF00)
+#define KEYGETKEY(v) (v & 0xFF)
+
+extern UNICODE PauseKey, ExitKey, AbortKey;
 
 #endif /* _INPLIB_H */
 

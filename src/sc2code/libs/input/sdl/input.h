@@ -19,18 +19,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-extern Uint8 KeyboardDown[512];
-
-extern SDLKey ControlA;
-extern SDLKey ControlB;
-extern SDLKey ControlC;
-extern SDLKey ControlX;
-extern SDLKey ControlStart;
-extern SDLKey ControlLeftShift;
-extern SDLKey ControlRightShift;
-
-Uint16 GetUNICODEKey ();
-void FlushInput ();
+UNICODE GetUNICODEKey (void);
+void FlushInput (void);
 void ProcessKeyboardEvent (const SDL_Event *Event);
 void ProcessJoystickEvent (const SDL_Event *Event);
 

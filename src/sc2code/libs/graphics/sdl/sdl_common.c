@@ -117,20 +117,6 @@ TFB_ProcessEvents ()
 			default:
 				break;
 		}
-
-		//Still testing this... Should fix sticky input soon...
-		/*
-		{
-			Uint8* Temp;
-
-			SDL_PumpEvents ();
-			Temp = SDL_GetKeyState (NULL);
-			for(a = 0; a < 512; a++)
-			{
-				KeyboardDown[a] = Temp[a];
-			}
-		}
-		*/
 	}
 }
 

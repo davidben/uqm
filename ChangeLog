@@ -1,4 +1,5 @@
 0.2:
+- Rewritten input code (better and adds joystick/pad support), from slayne
 - Biadapt scaling for pure mode, from fOSSiL
 - Saving user data in "%APPDATA%/Application Data" on windows - SvdB
 - Melnorme comm fix, from TD.
