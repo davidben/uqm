@@ -28,8 +28,6 @@
 #	else
 		typedef int intptr_t;
 #	endif
-#elif defined (__linux__)
-#	include <stdint.h>
 #else
 #	include <inttypes.h>
 #endif
