@@ -1687,6 +1687,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			t.baseline.x = SAFE_X + 2;
 			t.align = ALIGN_LEFT;
 			t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+			t.CharCount = (COUNT)~0;
 			fLast = SetContextFont (TinyFont);
 
 			for (curr = first_chain; curr != NULL; curr = curr->next)
