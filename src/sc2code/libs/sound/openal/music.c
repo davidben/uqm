@@ -34,7 +34,8 @@ PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
 	if (pmus)
 	{
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, AL_FALSE);
+		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, 
+			speechVolumeScale == 0.0f ? AL_TRUE : AL_FALSE);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		
 		curMusicRef = MusicRef;

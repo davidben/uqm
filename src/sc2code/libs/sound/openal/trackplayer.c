@@ -65,7 +65,8 @@ advance_track (int channel_finished)
 		if (tcur < tct)
 		{
 			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, FALSE, TRUE);
+			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, AL_FALSE, 
+				speechVolumeScale == 0.0f ? AL_FALSE : AL_TRUE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			do_subtitles (0);
 		}
@@ -262,71 +263,148 @@ FastForward ()
 int
 GetSoundData (void *data) 
 {
-	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-
-	if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder &&
-		PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer &&
-		soundSource[SPEECH_SOURCE].sbuf_size > 0)
+	if (speechVolumeScale != 0.0f)
 	{
-		float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time) / 
-			(float)ONE_SECOND;
-		int played_data = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
-			sample->decoder->frequency * 2.0f);
-		int delta = played_data - soundSource[SPEECH_SOURCE].total_decoded;
-		unsigned int pos, i;
-		UBYTE *scopedata = (UBYTE *) data;
-		UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
+		// speech is enabled
 
-		assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
-		assert (soundSource[SPEECH_SOURCE].sample->decoder->format == AL_FORMAT_MONO16);
-
-		if (delta < 0)
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder && 
+			PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer && 
+			soundSource[SPEECH_SOURCE].sbuf_size > 0)
 		{
-			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
-			delta = 0;
-		}
-		else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
-		{
-			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
-		    delta = 0;
-		}
-		
-		//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
+			float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time) / 
+				(float)ONE_SECOND;
+			int played_data = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
+				sample->decoder->frequency * 2.0f);
+			int delta = played_data - soundSource[SPEECH_SOURCE].total_decoded;
+			unsigned int pos, i;
+			UBYTE *scopedata = (UBYTE *) data;
+			UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
 
-		pos = soundSource[SPEECH_SOURCE].sbuf_start + delta;
-		if (pos % 2 == 1)
-			pos++;
+			assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
+			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == AL_FORMAT_MONO16);
 
-		assert (pos >= 0);
-
-		for (i = 0; i < RADAR_WIDTH; ++i)
-		{
-			SWORD s;
-			
-			for (;;)
+			if (delta < 0)
 			{
-				if (pos >= soundSource[SPEECH_SOURCE].sbuf_size)
-					pos = pos - soundSource[SPEECH_SOURCE].sbuf_size;
-				else
-					break;
+				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				delta = 0;
+			}
+			else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
+			{
+				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				delta = 0;
 			}
 
-			s = *(SWORD*) (&sbuffer[pos]);
-			s = (s / 1260) + (RADAR_HEIGHT >> 1);
-			if (s < 0)
-				s = 0;
-			else if (s >= RADAR_HEIGHT)
-				s = RADAR_HEIGHT - 1;
-			scopedata[i] = (UBYTE) s;
+			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
 
-			pos += 2;
+			pos = soundSource[SPEECH_SOURCE].sbuf_start + delta;
+			if (pos % 2 == 1)
+				pos++;
+
+			assert (pos >= 0);
+
+			for (i = 0; i < RADAR_WIDTH; ++i)
+			{
+				SWORD s;
+
+				for (;;)
+				{
+					if (pos >= soundSource[SPEECH_SOURCE].sbuf_size)
+						pos = pos - soundSource[SPEECH_SOURCE].sbuf_size;
+					else
+						break;
+				}
+
+				s = *(SWORD*) (&sbuffer[pos]);
+				s = (s / 1260) + (RADAR_HEIGHT >> 1);
+				if (s < 0)
+					s = 0;
+				else if (s >= RADAR_HEIGHT)
+					s = RADAR_HEIGHT - 1;
+				scopedata[i] = (UBYTE) s;
+
+				pos += 2;
+			}
+
+			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+			return 1;
 		}
-
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		return 1;
+	}
+	else if (musicVolumeScale != 0.0f)
+	{
+		// speech is disabled but music is not so process it instead
+
+		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
+		if (soundSource[MUSIC_SOURCE].sample && soundSource[MUSIC_SOURCE].sample->decoder && 
+			PlayingStream (MUSIC_SOURCE) && soundSource[MUSIC_SOURCE].sbuffer && 
+			soundSource[MUSIC_SOURCE].sbuf_size > 0)
+		{
+			float played_time = (GetTimeCounter () - soundSource[MUSIC_SOURCE].start_time) / 
+				(float)ONE_SECOND;
+			int played_data = (int) (played_time * (float)soundSource[MUSIC_SOURCE].
+				sample->decoder->frequency * 4.0f);
+			int delta = played_data - soundSource[MUSIC_SOURCE].total_decoded;
+			unsigned int pos, i, step;
+			UBYTE *scopedata = (UBYTE *) data;
+			UBYTE *sbuffer = soundSource[MUSIC_SOURCE].sbuffer;
+
+			assert (soundSource[MUSIC_SOURCE].sample->decoder->frequency >= 11025);
+			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == AL_FORMAT_STEREO16);
+
+			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency / 11025 * 16;
+			if (step % 2 == 1)
+				step++;
+
+			if (delta < 0)
+			{
+				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				delta = 0;
+			}
+			else if (delta > (int)(soundSource[MUSIC_SOURCE].sbuf_size * 2))
+			{
+				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+				delta = 0;
+			}
+
+			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[MUSIC_SOURCE].total_decoded, delta);
+
+			pos = soundSource[MUSIC_SOURCE].sbuf_start + delta;
+			if (pos % 2 == 1)
+				pos++;
+
+			assert (pos >= 0);
+
+			for (i = 0; i < RADAR_WIDTH; ++i)
+			{
+				SWORD s;
+
+				for (;;)
+				{
+					if (pos >= soundSource[MUSIC_SOURCE].sbuf_size)
+						pos = pos - soundSource[MUSIC_SOURCE].sbuf_size;
+					else
+						break;
+				}
+
+				s = (*(SWORD*)(&sbuffer[pos])) + (*(SWORD*)(&sbuffer[pos + 2]));
+				
+				s = (s / 1260) + (RADAR_HEIGHT >> 1);
+				if (s < 0)
+					s = 0;
+				else if (s >= RADAR_HEIGHT)
+					s = RADAR_HEIGHT - 1;
+				scopedata[i] = (UBYTE) s;
+
+				pos += step;
+			}
+
+			UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
+			return 1;
+		}
+		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 	}
 
-	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	return 0;
 }
 
@@ -337,8 +415,8 @@ GetSoundInfo (int *length, int *offset)
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder)
 	{
-		 *length = (int) (soundSource[SPEECH_SOURCE].sample->decoder->length * (float)ONE_SECOND);
-		 *offset = (int) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
+		*length = (int) (soundSource[SPEECH_SOURCE].sample->decoder->length * (float)ONE_SECOND);
+		*offset = (int) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
 	}
 	else
 	{
