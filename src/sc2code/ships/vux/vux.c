@@ -34,8 +34,10 @@
 #define SPECIAL_WAIT 7
 
 #define SHIP_MASS 6
+#define WARP_OFFSET 46 /* How far outside of laser-range ship can warp in */
 #define VUX_OFFSET 12
-#define LASER_RANGE DISPLAY_TO_WORLD (150 + VUX_OFFSET)
+#define LASER_BASE 150
+#define LASER_RANGE DISPLAY_TO_WORLD (LASER_BASE + VUX_OFFSET)
 
 static RACE_DESC vux_desc =
 {
@@ -315,8 +317,12 @@ vux_preprocess (PELEMENT ElementPtr)
 
 			do
 			{
-#define MAXX_ENTRY_DIST (LASER_RANGE << 1)
-#define MAXY_ENTRY_DIST (LASER_RANGE << 1)
+				// Originally, the warp distance was:
+				// DISPLAY_TO_WORLD (SPACE_HEIGHT << 1)
+				// where SPACE_HEIGHT = SCREEN_HEIGHT - (SAFE_Y * 2)
+				// But  in reality this should be relative to the laser-range
+#define MAXX_ENTRY_DIST DISPLAY_TO_WORLD ((LASER_BASE + VUX_OFFSET + WARP_OFFSET) << 1)
+#define MAXY_ENTRY_DIST DISPLAY_TO_WORLD ((LASER_BASE + VUX_OFFSET + WARP_OFFSET) << 1)
 				SIZE dx, dy;
 
 				ElementPtr->current.location.x =
