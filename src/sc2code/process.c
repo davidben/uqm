@@ -19,8 +19,6 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 
-#define GSCALE_SHIFT 2 // controls the number of discrete scaling steps
-
 COUNT DisplayFreeList;
 PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 extern POINT SpaceOrg;
@@ -1092,24 +1090,24 @@ RedrawQueue (BOOLEAN clear)
 
 	SetContext (SpaceContext);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE
-			|| !(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+		|| !(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
 		BYTE skip_frames;
 
 		if ((skip_frames = HIBYTE (nth_frame)) != (BYTE)~0
-				&& (skip_frames == 0 || (--nth_frame & 0x00FF) == 0))
+			&& (skip_frames == 0 || (--nth_frame & 0x00FF) == 0))
 		{
 			nth_frame += skip_frames;
-if (clear)
-	ClearDrawable (); // this is for BATCH_BUILD_PAGE effect, but not scaled by SetGraphicScale
-{
-	COUNT index, scale;
-	
-	CALC_ZOOM_STUFF (&index, &scale);
-	SetGraphicScale ((scale >> GSCALE_SHIFT) << GSCALE_SHIFT);
-}
+			if (clear)
+				ClearDrawable (); // this is for BATCH_BUILD_PAGE effect, but not scaled by SetGraphicScale
+			{
+				COUNT index, scale;
+
+				CALC_ZOOM_STUFF (&index, &scale);
+				SetGraphicScale (scale);
+			}
 			DrawBatch (DisplayArray, DisplayLinks, 0);//BATCH_BUILD_PAGE);
-SetGraphicScale (0);
+			SetGraphicScale (0);
 		}
 
 		if (num_sounds > 0)
