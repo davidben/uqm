@@ -23,6 +23,7 @@
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
+static int gfx_flags;
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -32,6 +33,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	SDL_Surface *test_extra;
 
 	GraphicsDriver = driver;
+	gfx_flags = flags;
 
 	fprintf (stderr, "Initializing SDL (pure).\n");
 
@@ -244,6 +246,79 @@ static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, co
 	}
 }
 
+static void ScanLines (SDL_Surface *dst)
+{
+	Uint8 *pixels = (Uint8 *) dst->pixels;
+	SDL_PixelFormat *fmt = dst->format;
+	int x, y;
+
+	switch (dst->format->BytesPerPixel)
+	{
+	case 2:
+	{
+		for (y = 0; y < dst->h; y += 2)
+		{
+			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch];
+			for (x = 0; x < dst->w; ++x)
+			{
+				*p++ = ((((*p & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
+					((((*p & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
+					((((*p & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+			}
+		}
+		break;
+	}
+	case 3:
+	{
+		for (y = 0; y < dst->h; y += 2)
+		{
+			Uint8 *p = (Uint8 *) &pixels[y * dst->pitch];
+			Uint32 pixval;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			for (x = 0; x < dst->w; ++x)
+			{
+				pixval = p[0] << 16 | p[1] << 8 | p[2];
+				pixval = ((((pixval & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
+					((((pixval & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
+					((((pixval & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				p[0] = (pixval >> 16) & 0xff;
+				p[1] = (pixval >> 8) & 0xff;
+				p[2] = pixval & 0xff;
+				p += 3;
+			}
+#else
+			for (x = 0; x < dst->w; ++x)
+			{
+				pixval = p[0] | p[1] << 8 | p[2] << 16;
+				pixval = ((((pixval & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
+					((((pixval & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
+					((((pixval & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+				p[0] = pixval & 0xff;
+				p[1] = (pixval >> 8) & 0xff;
+				p[2] = (pixval >> 16) & 0xff;
+				p += 3;
+			}
+#endif
+		}
+		break;
+	}
+	case 4:
+	{
+		for (y = 0; y < dst->h; y += 2)
+		{
+			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch];
+			for (x = 0; x < dst->w; ++x)
+			{
+				*p++ = ((((*p & fmt->Rmask) >> 2) * 3) & fmt->Rmask) +
+					((((*p & fmt->Gmask) >> 2) * 3) & fmt->Gmask) +
+					((((*p & fmt->Bmask) >> 2) * 3) & fmt->Bmask);
+			}
+		}
+		break;
+	}
+	}
+}
+
 void
 TFB_Pure_SwapBuffers ()
 {
@@ -287,11 +362,14 @@ TFB_Pure_SwapBuffers ()
 		}
 
 		SDL_LockSurface (SDL_Video);
-
-		SDL_LockSurface (backbuffer);
-		Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
-		SDL_UnlockSurface (backbuffer);
+		SDL_LockSurface (backbuffer);		
 		
+		Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
+
+		if (gfx_flags & TFB_GFXFLAGS_SCANLINES)
+			ScanLines (SDL_Video);
+		
+		SDL_UnlockSurface (backbuffer);
 		SDL_UnlockSurface (SDL_Video);
 	}
 	else
