@@ -35,7 +35,20 @@ char *strupr (char *str);
 		// let me know. - SvdB
 #else
 #	include <limits.h>
-		/* PATH_MAX is per POSIX defined in <limits.h> */
+		/* PATH_MAX is per POSIX defined in <limits.h>, but:
+		 * "A definition of one of the values from Table 2.6 shall bea
+		 * omitted from <limits.h> on specific implementations where the
+		 * corresponding value is equal to or greater than the
+		 * stated minimum, but where the value can vary depending
+		 * on the file to which it is applied. The actual value supported
+		 * for a specific pathname shall be provided by the pathconf()
+		 * function."
+		 * _POSIX_NAME_MAX will provide a minimum (14).
+		 * This is relevant (at least) for Solaris.
+		 */
+#	ifndef NAME_MAX
+#		define NAME_MAX _POSIX_NAME_MAX
+#	endif
 #endif
 
 // Some types
