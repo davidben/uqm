@@ -263,8 +263,8 @@ uio_getStdioAccess(uio_DirHandle *dir, const char *path, int flags,
 	res = uio_getFileLocation(newDir, name, flags, &mountHandle, &newPath);
 	if (res == -1) {
 		int savedErrno = errno;
-		fprintf(stderr, "Error: uio_getStdioAccess: Could not get location of temporary "
-				"dir: %s.\n", strerror(errno));
+		fprintf(stderr, "Error: uio_getStdioAccess: Could not get location "
+				"of temporary dir: %s.\n", strerror(errno));
 		uio_closeDir(newDir);
 		uio_free(tempDirName);
 		errno = savedErrno;
@@ -274,8 +274,8 @@ uio_getStdioAccess(uio_DirHandle *dir, const char *path, int flags,
 	fsID = uio_getMountFileSystemType(mountHandle);
 	if (fsID != uio_FSTYPE_STDIO) {
 		// Temp dir isn't on a stdio fs either.
-		fprintf(stderr, "Error: uio_getStdioAccess: Temporary file location isn't on a "
-				"stdio filesystem.\n");
+		fprintf(stderr, "Error: uio_getStdioAccess: Temporary file location "
+				"isn't on a stdio filesystem.\n");
 		uio_closeDir(newDir);
 		uio_free(tempDirName);
 		uio_free(newPath);
