@@ -1149,14 +1149,14 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 		UnlockStarShip (&master_q, hStarShip);
 	
 		pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
-	
-		SetSemaphore (GraphicsSem);
-		GetShipBox (&r, pMS->side, pMS->row, pMS->col);
-		RepairMeleeFrame (&r);
+       	}
+	SetSemaphore (GraphicsSem);
+	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
+	RepairMeleeFrame (&r);
 
-		DrawTeamString (pMS, 4);
-		ClearSemaphore (GraphicsSem);
-	}
+	DrawTeamString (pMS, 4);
+	ClearSemaphore (GraphicsSem);
+
 }
 
 static void
