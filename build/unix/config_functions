@@ -359,7 +359,7 @@ substitute_vars() {
 	for VAR in $VARS; do
 		# Escape all / in VAR so that we can use / as seperator char for sed
 		eval VALUE=\"\$$VAR\"
-		VALUE=$(echo "$VALUE" | sed 's,\([\&/]\),\\\1,g')
+		VALUE=$(echo "$VALUE" | $SED 's,\([\&/]\),\\\1,g')
 		cat << EOF
 s/@${VAR}@/${VALUE}/g
 EOF
