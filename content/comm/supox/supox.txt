@@ -5,11 +5,10 @@ Greetings Fellow Carbon Creature, may your roots always be well watered.
 Hello, Voyager. May the light always reach your leaves.
 
 #(NEUTRAL_HOMEWORLD_HELLO_1)	supox002.ogg
-Welcome. May you always stand in the Great Green Sunlight.
+Greetings Fellow Carbon Creature, may your roots always be well watered.
 
 #(NEUTRAL_HOMEWORLD_HELLO_2)	supox003.ogg
-Greetings Gentle-being. Come fix nitrogen, drink deeply
-and bask in the warm green sunlight.
+Hello, Voyager. May the light always reach your leaves.
 
 #(HOSTILE_SPACE_HELLO_1)	supox004.ogg
 So it is you, the blockers of the warm green sunlight
@@ -100,6 +99,12 @@ So this is your neighborhood, huh? Any other sentients nearby?
 
 #(UTWIG_NEARBY)	supox017.ogg
 We share this region of space with the Utwig, the Wearers of Masks.
+We have a strong cultural bond with the Utwig.
+They have been the foundation around which we have grown our starfaring culture.
+We are not only allies, but we are also friends.
+You should go meet with them. They could use some excitement.
+You see, they are a little depressed and morose right now.
+Usually they are most festive and fun.
 
 #(what_relation_to_utwig)
 Are the Utwig friends of yours?
