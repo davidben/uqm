@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "starcon.h"
+#include "options.h"
 
 static void
 CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, register ELEMENT_FLAGS
@@ -115,7 +116,9 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 	TEXT t;
 	UNICODE buf[10];
 
-	t.baseline.x = BATTLE_CREW_X;
+	t.baseline.x = BATTLE_CREW_X + 2;
+	if (optWhichMenu == OPT_PC)
+			t.baseline.x -= 8;
 	t.baseline.y = BATTLE_CREW_Y - SAFE_Y;
 	t.align = ALIGN_LEFT;
 	t.pStr = buf;
@@ -123,7 +126,7 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 
 	r.corner.x = t.baseline.x;
 	r.corner.y = t.baseline.y - 5;
-	r.extent.width = 6 * MAX_CREW_DIGITS + 1;
+	r.extent.width = 6 * MAX_CREW_DIGITS + 6;
 	r.extent.height = 5;
 
 	wsprintf (buf, "%u",

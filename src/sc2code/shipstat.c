@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "options.h"
 
 void
 DrawCrewFuelString (COORD y, SIZE state)
@@ -28,12 +29,18 @@ DrawCrewFuelString (COORD y, SIZE state)
 	if (state == 0)
 	{
 		Stamp.origin.x = CREW_XOFFS + (STAT_WIDTH >> 1) + 6;
-		Stamp.frame = SetAbsFrameIndex (status, 0);
+		if (optWhichMenu == OPT_PC)
+			Stamp.frame = SetAbsFrameIndex (status, 4);
+		else
+			Stamp.frame = SetAbsFrameIndex (status, 0);
 		DrawStamp (&Stamp);
 	}
 
 	Stamp.origin.x = ENERGY_XOFFS + (STAT_WIDTH >> 1) - 5;
-	Stamp.frame = SetAbsFrameIndex (status, 1);
+	if (optWhichMenu == OPT_PC)
+		Stamp.frame = SetAbsFrameIndex (status, 5);
+	else
+		Stamp.frame = SetAbsFrameIndex (status, 1);
 	if (state >= 0)
 		DrawStamp (&Stamp);
 	else
@@ -220,9 +227,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 		locString = SetAbsStringTableIndex (SIPtr->race_strings, 1);
 		DrawShipNameString (
 				(UNICODE *)GetStringAddress (locString),
-				GetStringLength (locString),
-				y
-				);
+				GetStringLength (locString),y);
 
 		{
 			UNICODE buf[3];
@@ -247,7 +252,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 			Text.align = ALIGN_CENTER;
 
 			Text.baseline.x = STATUS_WIDTH >> 1;
-			Text.baseline.y = y + GAUGE_YOFFS + 9;
+			Text.baseline.y = y + GAUGE_YOFFS + 3;
 
 			SetContextForeGroundColor (BLACK_COLOR);
 			font_DrawText (&Text);

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- 'CREW' and 'BATT' instead of icons in combat screen when using
+  PC-style menus (bug #308); from Paxtez
 - New shipyard SCRAP system with scrapping confirmation
   (bug #413); from Paxtez
 - Syreen ships become available when Talana says they are
