@@ -91,6 +91,8 @@ Glitches (don't crash the game, medium priority):
   Probably the negative shift for GET_STATE and SET_STATE
 - Planet scan speed varies between computers, and behaves weirdly too,
   sometimes working properly, sometimes being way too fast
+- Some font characters are wrong, atleast in the planet scan screen
+  when compared to 3DO
 
 Implementation bugs (low priority):
 - Scaling code problems:
