@@ -48,6 +48,7 @@ int clock_task_func(void* data)
 	cycle_index = delay_count = 0;
 	while (GLOBAL (GameClock).day_in_ticks == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
+
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BOOLEAN OnAutoPilot;
@@ -62,7 +63,7 @@ int clock_task_func(void* data)
 
 		if (GLOBAL (GameClock).tick_count <= 0
 				&& (GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks) > 0)
-		{
+		{			
 			if (GLOBAL (GameClock).month_index == 2)
 			{
 				if (IsLeapYear (GLOBAL (GameClock).year_index))
@@ -185,10 +186,8 @@ UninitGameClock (void)
 		if (!GameClockRunning ())
 			ResumeGameClock ();
 
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
-		Task_SetState (GLOBAL (GameClock.clock_task), TASK_EXIT);
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
-
+		ConcludeTask (GLOBAL (GameClock.clock_task));
+		
 		GLOBAL (GameClock.clock_task) = 0;
 	}
 
@@ -200,15 +199,21 @@ UninitGameClock (void)
 void
 SuspendGameClock (void)
 {
-	SetSemaphore (GLOBAL (GameClock.clock_sem));
-	GLOBAL (GameClock.TimeCounter) = 0;
+	if (GameClockRunning ())
+	{
+		SetSemaphore (GLOBAL (GameClock.clock_sem));
+		GLOBAL (GameClock.TimeCounter) = 0;
+	}
 }
 
 void
 ResumeGameClock (void)
 {
-	GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
-	ClearSemaphore (GLOBAL (GameClock.clock_sem));
+	if (!GameClockRunning ())
+	{
+		GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
+		ClearSemaphore (GLOBAL (GameClock.clock_sem));
+	}
 }
 
 BOOLEAN
