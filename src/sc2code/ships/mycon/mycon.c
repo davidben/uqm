@@ -218,10 +218,7 @@ plasma_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 }
 
 static void
-mycon_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+mycon_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 	PEVALUATE_DESC lpEvalDesc;
@@ -354,7 +351,7 @@ mycon_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_mycon ()
+init_mycon (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

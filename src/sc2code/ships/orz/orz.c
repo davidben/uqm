@@ -217,10 +217,7 @@ count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
 }
 
 static void
-orz_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	ELEMENTPTR TurretPtr;
 	STARSHIPPTR StarShipPtr;
@@ -1059,7 +1056,7 @@ orz_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_orz ()
+init_orz (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

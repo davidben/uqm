@@ -25,7 +25,7 @@
 int NPCNumberPhrase (int number, UNICODE **ptrack);
 
 void
-NPCPhrase_cb (int index,  void (*cb) ())
+NPCPhrase_cb (int index,  void (*cb) (void))
 {
 	UNICODE *pStr, numbuf[100];
 	void *pClip, *pTimeStamp;

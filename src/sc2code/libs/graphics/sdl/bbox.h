@@ -24,7 +24,7 @@ void TFB_BBox_RegisterPoint (int x, int y);
 void TFB_BBox_RegisterRect (PRECT r);
 void TFB_BBox_RegisterCanvas (TFB_Canvas c, int x, int y);
 
-void TFB_BBox_Reset ();
+void TFB_BBox_Reset (void);
 void TFB_BBox_GetClipRect (TFB_Canvas c);
 
 #endif

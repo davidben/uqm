@@ -183,10 +183,7 @@ initialize_cannon (PELEMENT ShipPtr, HELEMENT CannonArray[])
 }
 
 static void
-druuge_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+druuge_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	UWORD ship_flags;
 	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
@@ -300,7 +297,7 @@ druuge_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_druuge ()
+init_druuge (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

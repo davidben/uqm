@@ -675,7 +675,7 @@ GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect)
 	pRect->corner.y = IsCrewRect ? 117 : 38;
 }
 
-void DrawPC_SIS ()
+void DrawPC_SIS (void)
 {
 	TEXT t;
 	RECT r;

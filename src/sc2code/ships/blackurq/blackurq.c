@@ -108,8 +108,7 @@ static RACE_DESC black_urquan_desc =
 #define MAX_SAWS 8
 
 static void
-spin_preprocess (ElementPtr)
-PELEMENT ElementPtr;
+spin_preprocess (PELEMENT ElementPtr)
 {
 	ELEMENTPTR ShipPtr;
 	STARSHIPPTR StarShipPtr;
@@ -342,10 +341,7 @@ initialize_buzzsaw (PELEMENT ShipPtr, HELEMENT SawArray[])
 }
 
 static void
-black_urquan_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+black_urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -458,8 +454,7 @@ gas_cloud_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PP
 }
 
 static void
-spawn_gas_cloud (ElementPtr)
-PELEMENT ElementPtr;
+spawn_gas_cloud (PELEMENT ElementPtr)
 {
 #define GAS_SPEED 16
 #define GAS_HITS 100
@@ -545,7 +540,7 @@ black_urquan_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_black_urquan ()
+init_black_urquan (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 
@@ -560,4 +555,3 @@ init_black_urquan ()
 
 	return (RaceDescPtr);
 }
-

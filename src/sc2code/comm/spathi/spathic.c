@@ -129,8 +129,7 @@ static LOCDATA spathi_desc =
 };
 
 static void
-ExitConversation (Response)
-RESPONSE_REF Response;
+ExitConversation (RESPONSE_REF Response)
 {
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 

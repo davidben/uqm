@@ -373,7 +373,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 }
 
 void
-SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*cb) ())
+SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*cb) (void))
 {
 	unsigned long startTime;
 	UNICODE **split_text = NULL;

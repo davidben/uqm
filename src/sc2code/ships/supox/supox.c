@@ -103,10 +103,7 @@ static RACE_DESC supox_desc =
 };
 
 static void
-supox_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+supox_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 	PEVALUATE_DESC lpEvalDesc;
@@ -261,7 +258,7 @@ supox_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_supox ()
+init_supox (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

@@ -300,10 +300,7 @@ self_destruct (PELEMENT ElementPtr)
 }
 
 static void
-shofixti_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+shofixti_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 
@@ -356,7 +353,7 @@ shofixti_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_shofixti ()
+init_shofixti (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

@@ -142,10 +142,7 @@ initialize_standard_missiles (PELEMENT ShipPtr, HELEMENT MissileArray[])
 }
 
 static void
-yehat_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+yehat_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	SIZE ShieldStatus;
 	STARSHIPPTR StarShipPtr;
@@ -345,7 +342,7 @@ yehat_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_yehat ()
+init_yehat (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 
@@ -360,4 +357,3 @@ init_yehat ()
 
 	return (RaceDescPtr);
 }
-

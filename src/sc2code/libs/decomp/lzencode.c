@@ -295,7 +295,7 @@ UninitTree (void)
 }
 
 static void
-_encode_cleanup ()
+_encode_cleanup (void)
 {
 	UWORD r, s, last_match_length, len;
 

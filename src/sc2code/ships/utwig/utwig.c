@@ -176,10 +176,7 @@ initialize_lance (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 }
 
 static void
-utwig_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+utwig_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	SIZE ShieldStatus;
 	STARSHIPPTR StarShipPtr;
@@ -352,7 +349,7 @@ utwig_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_utwig ()
+init_utwig (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

@@ -136,8 +136,7 @@ static LOCDATA commander_desc =
 static DWORD CurBulletinMask;
 
 static void
-ByeBye (R)
-RESPONSE_REF R;
+ByeBye (RESPONSE_REF R)
 {
 	BYTE b0, b1, b2, b3;
 

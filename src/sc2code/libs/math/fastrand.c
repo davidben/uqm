@@ -27,8 +27,8 @@ COUNT fast_index = 0; /* fast random cycling index */
 /* ----------------------------PROTOTYPES--------------------------------- */
 
 DWORD indexed_random_table(COUNT index);
-void reseed_fast_random();
-DWORD fast_random();
+void reseed_fast_random(void);
+DWORD fast_random(void);
 DWORD seed_fast_random(DWORD seed);
 
 /*****************************************************************************
@@ -72,7 +72,7 @@ seed_fast_random(DWORD seed)
 *****************************************************************************/
 
 DWORD
-fast_random()
+fast_random(void)
 {
 		fast_index++;
 		if( fast_index == TABLE_SIZE )
@@ -93,7 +93,7 @@ fast_random()
 *****************************************************************************/
 
 void
-reseed_fast_random()
+reseed_fast_random(void)
 {
 		fast_index = (COUNT)(TFB_Random() % TABLE_SIZE);
 		

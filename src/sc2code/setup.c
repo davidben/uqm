@@ -275,7 +275,7 @@ LoadKeyConfig (FILE *fp, DWORD length)
 }
 
 static void
-initKeyConfig() {
+initKeyConfig(void) {
 	char userFile[PATH_MAX];    /* System-wide key config */
 	FILE *fp;
 	int cb;

@@ -104,10 +104,7 @@ static RACE_DESC thraddash_desc =
 };
 
 static void
-thraddash_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+thraddash_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 
 	STARSHIPPTR StarShipPtr;
@@ -367,7 +364,7 @@ thraddash_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_thraddash ()
+init_thraddash (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 
@@ -381,4 +378,3 @@ init_thraddash ()
 
 	return (RaceDescPtr);
 }
-

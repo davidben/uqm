@@ -21,7 +21,7 @@
 
 #include "sound.h"
 
-static void CheckFinishedChannels ();
+static void CheckFinishedChannels (void);
 
 
 void
@@ -46,7 +46,7 @@ StopChannel (COUNT channel, unsigned char Priority)
 }
 
 static void
-CheckFinishedChannels ()
+CheckFinishedChannels (void)
 {
 	int i;
 

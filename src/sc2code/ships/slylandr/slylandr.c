@@ -243,10 +243,7 @@ initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
 }
 
 static void
-slylandro_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+slylandro_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -286,8 +283,7 @@ COUNT ConcernCounter;
 }
 
 static BOOLEAN
-harvest_space_junk (ElementPtr)
-PELEMENT ElementPtr;
+harvest_space_junk (PELEMENT ElementPtr)
 {
 	BOOLEAN retval;
 	HELEMENT hElement, hNextElement;
@@ -412,7 +408,7 @@ slylandro_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_slylandro ()
+init_slylandro (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 
@@ -427,4 +423,3 @@ init_slylandro ()
 
 	return (RaceDescPtr);
 }
-

@@ -376,8 +376,7 @@ fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 }
 
 static void
-spawn_fighters (ElementPtr)
-PELEMENT ElementPtr;
+spawn_fighters (PELEMENT ElementPtr)
 {
 	SIZE i;
 	COUNT facing;
@@ -450,10 +449,7 @@ PELEMENT ElementPtr;
 }
 
 static void
-urquan_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -525,7 +521,7 @@ urquan_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_urquan ()
+init_urquan (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

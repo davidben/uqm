@@ -537,10 +537,7 @@ initialize_test_pump_up (PELEMENT ShipPtr, HELEMENT PumpUpArray[])
 }
 
 static void
-melnorme_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+melnorme_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	COUNT old_count;
 	STARSHIPPTR StarShipPtr;
@@ -638,7 +635,7 @@ melnorme_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_melnorme ()
+init_melnorme (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

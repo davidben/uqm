@@ -330,8 +330,7 @@ doggy_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 #define CHENJESU_OFFSET 16
 
 static void
-spawn_doggy (ElementPtr)
-PELEMENT ElementPtr;
+spawn_doggy (PELEMENT ElementPtr)
 {
 	HELEMENT hDoggyElement;
 
@@ -379,10 +378,7 @@ PELEMENT ElementPtr;
 }
 
 static void
-chenjesu_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+chenjesu_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -565,7 +561,7 @@ chenjesu_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_chenjesu ()
+init_chenjesu (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

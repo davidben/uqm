@@ -132,8 +132,7 @@ butt_missile_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-spawn_butt_missile (ShipPtr)
-PELEMENT ShipPtr;
+spawn_butt_missile (PELEMENT ShipPtr)
 {
 #define SPATHI_REAR_OFFSET 20
 #define DISCRIMINATOR_LIFE 30
@@ -173,10 +172,7 @@ PELEMENT ShipPtr;
 }
 
 static void
-spathi_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+spathi_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 	PEVALUATE_DESC lpEvalDesc;
@@ -277,7 +273,7 @@ spathi_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_spathi ()
+init_spathi (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 
@@ -291,4 +287,3 @@ init_spathi ()
 
 	return (RaceDescPtr);
 }
-

@@ -135,8 +135,7 @@ static LOCDATA druuge_desc =
 static COUNT SlaveryCount = 0;
 
 static void
-ExitConversation (Response)
-RESPONSE_REF Response;
+ExitConversation (RESPONSE_REF Response)
 {
 	if (PLAYER_SAID (Response, bye))
 	{

@@ -144,10 +144,7 @@ missile_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-mmrnmhrm_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+mmrnmhrm_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	BOOLEAN CanTransform;
 	PEVALUATE_DESC lpEvalDesc;
@@ -452,7 +449,7 @@ mmrnmhrm_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_mmrnmhrm ()
+init_mmrnmhrm (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

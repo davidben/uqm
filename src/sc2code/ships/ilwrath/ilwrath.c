@@ -125,10 +125,7 @@ flame_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 }
 
 static void
-ilwrath_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+ilwrath_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -359,7 +356,7 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_ilwrath ()
+init_ilwrath (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

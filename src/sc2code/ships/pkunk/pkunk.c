@@ -174,10 +174,7 @@ initialize_bug_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 static HELEMENT hPhoenix = 0;
 
 static void
-pkunk_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+pkunk_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 
@@ -545,7 +542,7 @@ PELEMENT ElementPtr;
 }
 
 RACE_DESCPTR
-init_pkunk ()
+init_pkunk (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

@@ -40,7 +40,7 @@ typedef struct
 	int type;
 	uint32 value;
 	void *data;
-	void (*callback) ();
+	void (*callback) (void);
 } TFB_SoundTag;
 
 enum

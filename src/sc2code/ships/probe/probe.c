@@ -101,7 +101,7 @@ static RACE_DESC probe_desc =
 };
 
 RACE_DESCPTR
-init_probe ()
+init_probe (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

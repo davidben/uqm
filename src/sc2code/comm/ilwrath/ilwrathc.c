@@ -83,8 +83,7 @@ static LOCDATA ilwrath_desc =
 };
 
 static void
-CombatIsInevitable (Response)
-RESPONSE_REF Response;
+CombatIsInevitable (RESPONSE_REF Response)
 {
 	SET_GAME_STATE (BATTLE_SEGUE, 1);
 

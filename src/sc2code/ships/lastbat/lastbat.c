@@ -663,10 +663,7 @@ sentinel_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPO
 }
 
 static void
-samatra_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+samatra_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 }
@@ -886,7 +883,7 @@ samatra_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_samatra ()
+init_samatra (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

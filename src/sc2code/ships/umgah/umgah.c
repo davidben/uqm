@@ -133,10 +133,7 @@ cone_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT 
 #define JUMP_DIST DISPLAY_TO_WORLD (40)
 
 static void
-umgah_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+umgah_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
@@ -352,7 +349,7 @@ umgah_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_umgah ()
+init_umgah (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

@@ -291,10 +291,7 @@ initialize_nuke (PELEMENT ShipPtr, HELEMENT NukeArray[])
 }
 
 static void
-human_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+human_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 
@@ -335,7 +332,7 @@ human_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_human ()
+init_human (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

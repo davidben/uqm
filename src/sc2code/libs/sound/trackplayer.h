@@ -21,16 +21,16 @@
 
 #define ACCEL_SCROLL_SPEED 30
 
-void ResumeTrack();
-void PauseTrack();
-COUNT PlayingTrack();
-void JumpTrack();
-void FastForward_Smooth();
-void FastForward_Page();
-void FastReverse_Smooth();
-void FastReverse_Page();
-void StopTrack();
-void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, void (*cb) ());
+void ResumeTrack(void);
+void PauseTrack(void);
+COUNT PlayingTrack(void);
+void JumpTrack(void);
+void FastForward_Smooth(void);
+void FastForward_Page(void);
+void FastReverse_Smooth(void);
+void FastReverse_Page(void);
+void StopTrack(void);
+void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, void (*cb) (void));
 void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 int GetSoundData (void *data);
 int GetSoundInfo (int max_len);

@@ -390,7 +390,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 }
 
 void
-TFB_ComputeFPS ()
+TFB_ComputeFPS (void)
 {
 	static Uint32 last_time = 0, fps_counter = 0;
 	Uint32 current_time, delta_time;

@@ -252,10 +252,7 @@ PELEMENT ElementPtr;
 }
 
 static void
-zoqfotpik_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+zoqfotpik_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	BOOLEAN GiveTongueJob;
 	STARSHIPPTR StarShipPtr;
@@ -348,7 +345,7 @@ zoqfotpik_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_zoqfotpik ()
+init_zoqfotpik (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

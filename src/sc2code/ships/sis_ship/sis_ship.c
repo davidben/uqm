@@ -658,10 +658,7 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 }
 
 static void
-sis_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -733,7 +730,7 @@ COUNT ConcernCounter;
 }
 
 RACE_DESCPTR
-init_sis ()
+init_sis (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

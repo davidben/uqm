@@ -475,7 +475,7 @@ SetPlanetTilt (int angle)
 #define SHIELD_RADIUS (RADIUS + 5) 
 #define SHIELD_DIAM ((SHIELD_RADIUS << 1) + 1)
 #define SHIELD_RADIUS_2 (SHIELD_RADIUS * SHIELD_RADIUS)
-static void CreateShieldMask ()
+static void CreateShieldMask (void)
 {
 
 	DWORD rad2, clear, *rgba, *p_rgba, p;

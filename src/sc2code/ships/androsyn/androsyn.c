@@ -214,10 +214,7 @@ initialize_bubble (PELEMENT ShipPtr, HELEMENT BubbleArray[])
 }
 
 static void
-androsynth_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -456,7 +453,7 @@ androsynth_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_androsynth ()
+init_androsynth (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

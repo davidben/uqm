@@ -4,7 +4,7 @@
 TFB_BoundingBox TFB_BBox;
 
 void
-TFB_BBox_Reset ()
+TFB_BBox_Reset (void)
 {
 	TFB_BBox.valid = 0;
 	TFB_BBox.clip.corner.x = 0;

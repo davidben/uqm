@@ -46,7 +46,7 @@ static BOOLEAN upload_transitiontexture = FALSE;
 
 
 static SDL_Surface *
-Create_Screen ()
+Create_Screen (void)
 {
 	SDL_Surface *result = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		R_MASK, G_MASK, B_MASK, 0x00000000);

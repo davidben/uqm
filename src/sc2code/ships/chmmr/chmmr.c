@@ -242,10 +242,7 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 }
 
 static void
-chmmr_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+chmmr_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	STARSHIPPTR StarShipPtr;
 	PEVALUATE_DESC lpEvalDesc;
@@ -742,7 +739,7 @@ chmmr_preprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_chmmr ()
+init_chmmr (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

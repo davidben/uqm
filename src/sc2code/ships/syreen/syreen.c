@@ -211,10 +211,7 @@ spawn_crew (PELEMENT ElementPtr)
 }
 
 static void
-syreen_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
-PELEMENT ShipPtr;
-PEVALUATE_DESC ObjectsOfConcern;
-COUNT ConcernCounter;
+syreen_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 
@@ -259,7 +256,7 @@ syreen_postprocess (PELEMENT ElementPtr)
 }
 
 RACE_DESCPTR
-init_syreen ()
+init_syreen (void)
 {
 	RACE_DESCPTR RaceDescPtr;
 

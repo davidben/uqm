@@ -27,7 +27,7 @@
 extern FRAME SpaceJunkFrame;
 
 static void
-ClearReportArea ()
+ClearReportArea (void)
 {
 	COUNT i;
 	RECT r;
