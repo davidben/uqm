@@ -1,2 +1,0 @@
-uqm_SUBDIRS="mikmod"
-uqm_CFILES="decoder.c wav.c"
