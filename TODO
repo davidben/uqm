@@ -72,8 +72,6 @@ Glitches (don't crash the game, medium priority):
   until the game is quit. It still functions, it just has the last 3-or-so
   seconds after the melee ended repeating over and over in the background.
   - Probably happens in some other situations too
-- The 3DO image for the Precursor ship is used for the 'upgrade starbase',
-  while the PC image is better (no cut-off nose).
 - Under some conditions, the direction the ship is facing in Hyperspace
   isn't restored when loading.
 - Moving crosshair in planet screen leaves a light trace to the image
