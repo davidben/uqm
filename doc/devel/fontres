@@ -23,7 +23,6 @@ position   length  meaning
            1       Kern amount: the number of pixels (out of char spacing)
                    that are used for kerning (explained later). Cannot be
                    more than char spacing.
-           1       Font leading: the vertical distance between lines of text
            96      Kerning table: each byte corresponds to a character:
                      bits 0-1: right-hand side kerning mask
                      bits 2-3: left-hand side kerning mask
