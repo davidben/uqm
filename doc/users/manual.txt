@@ -38,8 +38,8 @@ faster as well -- but it also may not work on older cards.
 
 	-c               (or --scale=mode)
 
-Graphics scaling mode (bilinear, biadapt or biadv). Default is none.
-Try these to get smoother graphics with cost on performance.
+Graphics scaling mode (bilinear, biadapt, biadv or triscan). Default is
+none. Try these to get smoother graphics with cost on performance.
 
 	-b               (or --meleescale=mode)
 
