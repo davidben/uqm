@@ -336,7 +336,7 @@ utwig_preprocess (PELEMENT ElementPtr)
 				c = 0x2C;
 		}
 		else
-			c = 0x78;
+			c = 0x7a;
 		if (c <= 0x2f && c >= 0x2a)
 				color_index = c - 0x2a;
 		else /* color is between 0x7a and 0x7f */
