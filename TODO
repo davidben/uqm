@@ -37,7 +37,6 @@ Glitches (don't crash the game, medium priority):
   - Crashes if no audio device available
 - Circles of influence aren't shown the first time (after load?) a player
   examines the starmap.
-- Selling bio data gives an incomplete message: 'The 1000' [nothing].
 - Melee zooming may bug a little, ship sometimes flashes as big and then
   small again (some 3DO owner should check does this happen in original)
 - In Linux, when the audio device isn't available, you can play the game,
@@ -91,8 +90,6 @@ Implementation bugs (low priority):
 -PC Font issues:
   - The lander report messages should possibly be modified to use up the entire
     lander pane
-  - The PC version has text about the ship in the Outfit screen (Velocity etc)
-    but we don't have that yet.
 - Voice-over subtitle synchrinzation issues:
   - alignment seems worse with sdl_mixer than openAL.  Hard to tell for sure
   - Many clips don't match the text/can't be synced well.  A partial list:
