@@ -686,6 +686,7 @@ usage (FILE *out)
 	fprintf (out, "The following options can take either '3do' or 'pc' "
 			"as an option:\n");
 	fprintf (out, "  -m, --music : Music version (default 3do)\n");
+	fprintf (out, "  -i, --intro : Intro/ending version (default 3do)\n");
 	fprintf (out, "  --cscan     : coarse-scan display, pc=text, "
 			"3do=hieroglyphs (default 3do)\n");
 	fprintf (out, "  --menu      : menu type, pc=text, 3do=graphical "
