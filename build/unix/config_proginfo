@@ -188,6 +188,8 @@ case "$OSNAME" in
 		;;
 esac
 LIB_openal_VERSION=""
+LIB_openal_DETECT="try_pkgconfig_lib openal openal"
+LIB_openal_DEPEND_DETECT_BIN="pkgconfig"
 
 
 ### OpenGL ###
