@@ -530,7 +530,7 @@ I wish to sell you Rainbow world locations.
 #(SOLD_RAINBOW_LOCATIONS1) melno075.ogg
 Your ship's log indicates that you discovered the whereabouts of 
 
-#(SOLD_RAINBOW_LOCATIONS2)	melno076.ogg
+#(SOLD_RAINBOW_LOCATIONS2)
  of the Rainbow worlds which so fascinate us.
 In exchange, we will give you 
 
