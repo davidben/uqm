@@ -59,6 +59,9 @@ void
 TFB_PreInit (void)
 {
 	fprintf (stderr, "Initializing base SDL functionality.\n");
+	fprintf (stderr, "Using SDL version %d.%d.%d (compiled with %d.%d.%d)\n",
+		SDL_Linked_Version ()->major, SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
+		SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
 		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());

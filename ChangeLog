@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Reports SDL version on startup (bug #520) - Mika,Nic
 - Fuel usage on planet landing is now reported correctly on all situations
   (bug #556), from Nic
 - Fine-grained control of menu sounds, "MenuSounds" global now 
