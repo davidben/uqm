@@ -688,7 +688,9 @@ DoBuy (RESPONSE_REF R)
 		else if (PLAYER_SAID (R, buy_25_fuel))
 			needed_credit = 25;
 		else if (PLAYER_SAID (R, fill_me_up))
-			needed_credit = (COUNT)~0;
+			needed_credit = (capacity - GLOBAL_SIS (FuelOnBoard)
+					+ FUEL_TANK_SCALE - 1)
+				/ FUEL_TANK_SCALE;
 
 		if (needed_credit == 0)
 		{
@@ -700,12 +702,6 @@ DoBuy (RESPONSE_REF R)
 		}
 		else
 		{
-			if (needed_credit == (COUNT)~0
-					&& (needed_credit = (capacity / FUEL_TANK_SCALE)
-					- (GLOBAL_SIS (FuelOnBoard)
-					/ FUEL_TANK_SCALE)) == 0)
-				needed_credit = 1;
-
 			if (GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE
 					+ needed_credit > capacity / FUEL_TANK_SCALE)
 			{
