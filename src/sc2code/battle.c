@@ -34,7 +34,6 @@ ProcessInput (void)
 			&& GET_GAME_STATE (STARBASE_AVAILABLE)
 			&& !GET_GAME_STATE (BOMB_CARRIER)
 			);
-	UpdateInputState ();
 	for (cur_player = NUM_SIDES - 1; cur_player >= 0; --cur_player)
 	{
 		HSTARSHIP hBattleShip, hNextShip;
@@ -156,6 +155,53 @@ FreeBattleSong (void)
 	BattleRef = 0;
 }
 
+typedef struct battlestate_struct {
+	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
+	COUNT MenuRepeatDelay;
+	BOOLEAN first_time;
+	DWORD NextTime;
+} BATTLE_STATE;
+
+static BOOLEAN
+DoBattle (BATTLE_STATE *bs)
+{
+	extern UWORD nth_frame;
+	RECT r;
+
+	bs->MenuRepeatDelay = 0;
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+
+	ProcessInput ();
+	LockMutex (GraphicsLock);
+	if (bs->first_time)
+	{
+		r.corner.x = SIS_ORG_X;
+		r.corner.y = SIS_ORG_Y;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = SIS_SCREEN_HEIGHT;
+		SetTransitionSource (&r);
+	}
+	BatchGraphics ();
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+		SeedUniverse ();
+	RedrawQueue (TRUE);
+	if (bs->first_time)
+	{
+		bs->first_time = FALSE;
+		ScreenTransition (3, &r);
+	}
+	UnbatchGraphics ();
+	UnlockMutex (GraphicsLock);
+	if (nth_frame)
+		TaskSwitch ();
+	else
+	{
+		SleepThreadUntil (bs->NextTime + BATTLE_FRAME_RATE);
+		bs->NextTime = GetTimeCounter ();
+	}
+	return GLOBAL (CurrentActivity) & IN_BATTLE;
+}
+
 BOOLEAN
 Battle (void)
 {
@@ -181,8 +227,7 @@ Battle (void)
 	num_ships = InitShips ();
 	if (num_ships)
 	{
-		DWORD NextTime;
-		BOOLEAN first_time;
+		BATTLE_STATE bs;
 
 		GLOBAL (CurrentActivity) |= IN_BATTLE;
 		battle_counter = MAKE_WORD (
@@ -197,42 +242,12 @@ Battle (void)
 		}
 
 		BattleSong (TRUE);
-		NextTime = 0;
-		first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
-		do
-		{
-			extern UWORD nth_frame;
-			RECT r;
-
-			if (first_time)
-			{
-				r.corner.x = SIS_ORG_X;
-				r.corner.y = SIS_ORG_Y;
-				r.extent.width = SIS_SCREEN_WIDTH;
-				r.extent.height = SIS_SCREEN_HEIGHT;
-				SetTransitionSource (&r);
-			}
-			BatchGraphics ();
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-				SeedUniverse ();
-			RedrawQueue (TRUE);
-			if (first_time)
-			{
-				first_time = FALSE;
-				ScreenTransition (3, &r);
-			}
-			UnbatchGraphics ();
-			UnlockMutex (GraphicsLock);
-			if (nth_frame)
-				TaskSwitch ();
-			else
-			{
-				SleepThreadUntil (NextTime + BATTLE_FRAME_RATE);
-				NextTime = GetTimeCounter ();
-			}
-			ProcessInput ();
-			LockMutex (GraphicsLock);
-		} while (GLOBAL (CurrentActivity) & IN_BATTLE);
+		bs.NextTime = 0;
+		bs.InputFunc = &DoBattle;
+		bs.first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
+		UnlockMutex (GraphicsLock);
+		DoInput ((PVOID)&bs, FALSE);
+		LockMutex (GraphicsLock);
 
 AbortBattle:
 		StopMusic ();
