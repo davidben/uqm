@@ -7,6 +7,9 @@
 #include "SDL_error.h"
 #include "SDL_rwops.h"
 #include "libs/misc.h"
+#include <errno.h>
+#include <string.h>
+
 
 static SDL_RWops *sdluio_makeRWops (uio_Stream *stream);
 
@@ -30,7 +33,8 @@ sdluio_loadImage (uio_DirHandle *dir, const char *fileName) {
 	stream = uio_fopen (dir, fileName, "rb");
 	if (stream == NULL)
 	{
-		SDL_SetError ("Couldn't open %s", fileName);
+		SDL_SetError ("Couldn't open '%s': %s", fileName,
+				strerror(errno));
 		return NULL;
 	}
 	rwops = sdluio_makeRWops (stream);
@@ -44,7 +48,8 @@ sdluio_seek (SDL_RWops *context, int offset, int whence) {
 	if (uio_fseek ((uio_Stream *) context->hidden.unknown.data1, offset,
 				whence) == -1)
 	{
-		SDL_SetError ("Error seeking in uio_Stream");
+		SDL_SetError ("Error seeking in uio_Stream: %s",
+				strerror(errno));
 		return -1;
 	}
 	return uio_ftell ((uio_Stream *) context->hidden.unknown.data1);
@@ -59,7 +64,8 @@ sdluio_read (SDL_RWops *context, void *ptr, int size, int maxnum) {
 	if (numRead == 0 && uio_ferror ((uio_Stream *)
 				context->hidden.unknown.data1))
 	{
-		SDL_SetError ("Error reading from uio_Stream");
+		SDL_SetError ("Error reading from uio_Stream: %s",
+				strerror(errno));
 		return 0;
 	}
 	return (int) numRead;
@@ -74,7 +80,8 @@ sdluio_write (SDL_RWops *context, const void *ptr, int size, int num) {
 	if (numWritten == 0 && uio_ferror ((uio_Stream *)
 				context->hidden.unknown.data1))
 	{
-		SDL_SetError ("Error writing to uio_Stream");
+		SDL_SetError ("Error writing to uio_Stream: %s",
+				strerror(errno));
 		return 0;
 	}
 	return (size_t) numWritten;
