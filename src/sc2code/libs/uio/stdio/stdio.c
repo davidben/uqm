@@ -20,6 +20,10 @@
 
 // The GPDir structures and functions are used for caching only.
 
+#ifdef __svr4__
+#	define _POSIX_PTHREAD_SEMANTICS
+			// For the POSIX variant of r_readdir()
+#endif
 
 #include "./stdio.h"
 
