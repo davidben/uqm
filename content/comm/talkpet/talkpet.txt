@@ -93,16 +93,16 @@ You are as stupid as you are durable.
 Perhaps this time, you will accomplish your own demise.
 <GO KILL YOURSELF!>
 
-#(HYPNO_TAIL)	talkp012.ogg
+#(HYPNO_TAIL)
  
 
-#(CANT_COMPEL)	talkp013.ogg
+#(CANT_COMPEL)	talkp012.ogg
 Aieee!  I cannot compel you!?
 Your mind is closed to me -- how can this be?!
 I am forced to resort to more primitive measures
 Umgah commander, summon your ten combat ships and attack this intruder instantly!
 
-#(LETS_MAKE_A_DEAL)	talkp014.ogg
+#(LETS_MAKE_A_DEAL)	talkp013.ogg
 Hi there, friendly starship Captain!
 You will never believe this, but somewhow, the injuries I suffered when the Dreadnought crashed
 triggered some kind of, uh... personality transformation
@@ -132,7 +132,7 @@ Is it a deal, Captain? Hmmm?
 #(what_kind_of_deal)
 What kind of deal, Talking Pet? Provide details.
 
-#(HELP_DEFEAT_URQUAN)	talkp015.ogg
+#(HELP_DEFEAT_URQUAN)	talkp014.ogg
 I get the basic idea that you seek to overthrow the Ur-Quan
 Bravo! Good idea! Way to go!
 I too wish to see the Ur-Quan beaten -- humiliated and destroyed
@@ -144,7 +144,7 @@ Such a plan cannot fail, Captain. You must see that.
 #(ok_lets_do_it)
 All right, I agree. But any tricks and you'll be sucking vacuum.
 
-#(COMING_ABOARD)	talkp016.ogg
+#(COMING_ABOARD)	talkp015.ogg
 No tricks, Captain. No tricks.
 I fear you cruelly misjudge me, human. I am on YOUR side now.
 Together we will make a great team, Captain.
@@ -155,7 +155,7 @@ When you wish to talk with me, I will be there.
 #(how_trust)
 You tried to kill me! Your words are lies! How can I possibly trust you?
 
-#(TRUST)	talkp017.ogg
+#(TRUST)	talkp016.ogg
 Captain, Captain... calm down. Be reasonable. Listen to me.
 I am nothing more than a single being, hardly larger than one of your Earth dogs.
 My only weapon -- my weak psychic abilities -- have been nullified by your protective device.
@@ -168,14 +168,14 @@ I am your secret weapon against these tyrants, Captain. Do not leave me here.
 #(boneless_dweeb)
 I know what you are, evil creature. You are a lying, boneless dweeb!
 
-#(YOUR_BONELESS_DWEEB)	talkp018.ogg
+#(YOUR_BONELESS_DWEEB)	talkp017.ogg
 Yes, Captain. I am a lying, boneless, toady dweeb
 but I am YOUR lying, boneless, toady dweeb!
 
 #(what_are_you_really)
 Talking Pet. What are you... really?
 
-#(POOR_DNYARRI)	talkp019.ogg
+#(POOR_DNYARRI)	talkp018.ogg
 I will gladly tell you my story, Captain. Gladly!
 I was indeed a Talking Pet aboard an Ur-Quan Dreadnought.
 Those years are like a forgotten dream to me, because I was not sentient.
@@ -205,7 +205,7 @@ Now do you understand my lust for vengeance?
 #(hard_to_believe)
 An amazing story, if true. Pardon me if I am a bit skeptical, but you are a proven liar.
 
-#(ITS_TRUE)	talkp020.ogg
+#(ITS_TRUE)	talkp019.ogg
 It's all true, Captain! Every word!
 Now listen!... and I shall tell you why the Ur-Quan did this to us.
 It was over twenty thousand of your years ago, Captain, when an Ur-Quan slave raider
@@ -231,7 +231,7 @@ This was our punishment.
 #(bullshit)
 What a load of crap! YOUR species were the slavemasters, you lying, evil creature!!
 
-#(WORTH_A_TRY)	talkp021.ogg
+#(WORTH_A_TRY)	talkp020.ogg
 Dang! You are the most inconveniently well-informed creature, Captain!
 Well, it was worth a try.
 Sigh.
@@ -239,14 +239,14 @@ Sigh.
 #(kill_you)
 Heinous, brainy frog-monster. You must die!
 
-#(PLEASE_DONT)	talkp022.ogg
+#(PLEASE_DONT)	talkp021.ogg
 No! Please don't!
 I am the last hope for my species! You cannot do this thing!
 
 #(must_kill)
 I will not be swayed from my path. Say your prayers.
 
-#(DONT_KILL)	talkp023.ogg
+#(DONT_KILL)	talkp022.ogg
 Hmmm! How interesting! During that last little threat, I noticed something WONDERFUL!
 YOU DON'T HAVE THE TAALO SHIELD DEVICE PROPERLY INSTALLED!
 Ha-ha-ha! Fool! You could have fired upon me.
@@ -263,7 +263,7 @@ I - have - no - desire - to - kill - you. Welcome - aboard - our - vessel.
 #(want_kill_3)
 Kill? Kill? What is this `kill'? We love you!
 
-#(GLAD_YOU_WONT_KILL)	talkp024.ogg
+#(GLAD_YOU_WONT_KILL)	talkp023.ogg
 Wonderful, Captain. I am so glad you have seen the light of reason.
 I shall gather my few possessions, and come aboard your vessel immediately.
 When you wish to talk with me, I will be in your ship's hold.
@@ -272,25 +272,25 @@ That is all, Captain. For now, at least.
 #(whats_up_onboard)
 How's it going, Dnyarri?  You okay down there in the cargo bay?
 
-#(GENERAL_INFO_ONBOARD_1)	talkp025.ogg
+#(GENERAL_INFO_ONBOARD_1)	talkp024.ogg
 It is cold and empty. I could use a thermal blanket.
 Since it is incredibly boring down here
 I am using the opportunity to try to get some sleep.
 
-#(GENERAL_INFO_ONBOARD_2)	talkp026.ogg
+#(GENERAL_INFO_ONBOARD_2)	talkp025.ogg
 Much the same as the last time you asked
 however, I have found a way to amuse myself.
 I am listening in on the mental energies of your crew -- it's quite fun!
 For instance, did you know that both ensigns Holiday and Watchuki have crushes on you?
 It's true!
 
-#(GENERAL_INFO_ONBOARD_3)	talkp027.ogg
+#(GENERAL_INFO_ONBOARD_3)	talkp026.ogg
 I suppose you told your crew about my little listening in, didn't you?
 Now whenever I try to eavesdrop, they seem to detect my presence
 and start visualizing my gruesome death in a multitude of repulsive though creative ways.
 You had to go and spoil my fun, didn't you?
 
-#(GENERAL_INFO_ONBOARD_4)	talkp028.ogg
+#(GENERAL_INFO_ONBOARD_4)	talkp027.ogg
 You know, I was just reliving some of my ancestors' stronger genetic memories
 and I came upon something I thought you might be interested in hearing.
 It seems that my race, the Dnyarri, once found a Precursor vessel like your own.
@@ -301,7 +301,7 @@ Anyway, when the Ur-Quan so cruelly attacked us, they used that vessel
 and I can only presume that they still have it in their possession.
 Maybe you should find out more about that ship, Captain.
 
-#(GENERAL_INFO_ONBOARD_5)	talkp029.ogg
+#(GENERAL_INFO_ONBOARD_5)	talkp028.ogg
 I am slowly going insane, Captain.
 I don't know if you are aware of this
 but there are music loops which play down here, CEASELESSLY!
@@ -312,41 +312,41 @@ I have heard the same songs AT LEAST FOUR HUNDRED TIMES!
 I mean, your Mozart and Iggy Pop are fine for alien noise-makers
 but PLEASE!... CHANGE THE MUSIC BEFORE I GO MAD!
 
-#(GENERAL_INFO_ONBOARD_6)	talkp030.ogg
+#(GENERAL_INFO_ONBOARD_6)	talkp029.ogg
 Thank you, Captain, for changing the music down here.
 Now, if I may, I would like to complain about the food.
 It is grossly unappealing and flavorless. I deserve better.
 My preference is for chunks of meat, well spiced, with a selection of fresh plant matter.
 Please, no more of those sweet, doughy cylinders in the foil pouches.
 
-#(GENERAL_INFO_ONBOARD_7)	talkp031.ogg
+#(GENERAL_INFO_ONBOARD_7)	talkp030.ogg
 I am bored.
 Please send me a couple of your crew members to play with
 preferably one male, and one female, though I won't be picky.
 No!? You have no sense of fun, Captain.
 You must have been a boring child.
 
-#(GENERAL_INFO_ONBOARD_8)	talkp032.ogg
+#(GENERAL_INFO_ONBOARD_8)	talkp031.ogg
 I sing. I dance. I have a wild, fun time.
 My life is an endless party down here, Captain. Isn't that obvious?
 
-#(HELLO_AS_DEVICE_1)	talkp033.ogg
+#(HELLO_AS_DEVICE_1)	talkp032.ogg
 Captain. The Taalo device on board this vessel is giving me a headache, please remove it.
 NOW, Captain! It is foolish to resist!...
 Hmmm... it remains more effective than I had thought, you are still able to disobey.
 Ah, well. What can I do for you, Captain?
 
-#(HELLO_AS_DEVICE_2)	talkp034.ogg
+#(HELLO_AS_DEVICE_2)	talkp033.ogg
 Hello Captain.
 It is less than comfy down here in your ship's hold.
 Please send down some pillows.
 Now what do you want?
 
-#(HELLO_AS_DEVICE_3)	talkp035.ogg
+#(HELLO_AS_DEVICE_3)	talkp034.ogg
 I was asleep, gathering strength for our confrontation with the Ur-Quan.
 This interruption has set me back several days. What is it?
 
-#(HELLO_AS_DEVICE_4)	talkp036.ogg
+#(HELLO_AS_DEVICE_4)	talkp035.ogg
 Hello... hello ... ello... lo...
 Echo... echo... ho... o...
 I... i... i... Am... am... m... The... the... e... Master... master... ster... Huh?... huh?... uh?...
@@ -354,7 +354,7 @@ Oh! Captain! I didn't notice you were on the viewer.
 I was just entertaining myself down here in this lonesome, cold container.
 How may I be of service to you?
 
-#(HELLO_AS_DEVICE_5)	talkp037.ogg
+#(HELLO_AS_DEVICE_5)	talkp036.ogg
 sner-Gee......
 sner-Gee......
 sner-Gee......
@@ -363,20 +363,20 @@ sner-Gee......
 sner-Umph?!
 Oh... it is you. I was sleeping. What do you want?
 
-#(HELLO_AS_DEVICE_6)	talkp038.ogg
+#(HELLO_AS_DEVICE_6)	talkp037.ogg
 Are you lonely, Captain?
 Are you misunderstood by everyone else on the ship?
 Is that why you KEEP CALLING ME WHEN I AM RESTING!?
 
-#(HELLO_AS_DEVICE_7)	talkp039.ogg
+#(HELLO_AS_DEVICE_7)	talkp038.ogg
 Captain, I am not a particularly social creature.
 I grow tired of your yammering, but since you have already awakened me
 What is it?
 
-#(HELLO_AS_DEVICE_8)	talkp040.ogg
+#(HELLO_AS_DEVICE_8)	talkp039.ogg
 This had better be important.
 
-#(CYBORG_PEP_TALK)	talkp041.ogg
+#(CYBORG_PEP_TALK)	talkp040.ogg
 You've made it, Captain! The Sa-Matra is defenseless.
 Now all you have to do is maneuver your ship next to the Sa-Matra and initiate the bomb sequence.\n
 In case you're wondering, I'm not going with you, Captain. I'm staying on board.
@@ -384,7 +384,7 @@ Why, you ask?
 BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!
 HELP!!!
 
-#(HUMAN_PEP_TALK)	talkp042.ogg
+#(HUMAN_PEP_TALK)	talkp041.ogg
 Okay, human, you've made it past the Sa-Matra's guards
 and now you can attack the vessel itself, so listen closely.
 The Sa-Matra is protected by a thick shell of fused asteroids reinforced with a weak stasis field.
@@ -403,40 +403,40 @@ Why, you ask?
 BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!
 HELP!!!
 
-#(I_SENSE_MY_SLAVES)	talkp043.ogg
+#(I_SENSE_MY_SLAVES)	talkp042.ogg
 I sense the presence of my ancient slaves.
 It is time, Captain.
 
-#(HAVENT_GOT_EVERYTHING)	talkp044.ogg
+#(HAVENT_GOT_EVERYTHING)	talkp043.ogg
 You are not yet ready to face the Ur-Quan in a final confrontation, Captain
 
-#(NEED_BOMB)	talkp045.ogg
+#(NEED_BOMB)	talkp044.ogg
 You still need a weapon of sufficient destructive force to destroy the Sa-Matra
 
-#(SOUP_UP_BOMB)	talkp046.ogg
+#(SOUP_UP_BOMB)	talkp045.ogg
 The power of the Utwig's bomb must be increased
 
-#(SOUP_UP_FLEET)	talkp047.ogg
+#(SOUP_UP_FLEET)	talkp046.ogg
 You must strengthen your fleet
 
-#(SOUP_UP_FLAGSHIP)	talkp048.ogg
+#(SOUP_UP_FLAGSHIP)	talkp047.ogg
 Your flagship needs additional improvements
 
-#(COMEBACK_WHEN_READY)	talkp049.ogg
+#(COMEBACK_WHEN_READY)	talkp048.ogg
 This must be done before you are ready to attack.
 We must leave now, and return when you are fully prepared.
 
 #(what_now)
 What now, Dnyarri?
 
-#(DO_THIS)	talkp050.ogg
+#(DO_THIS)	talkp049.ogg
 Oh gosh, gee! I don't know. Let's just sit here and talk a while
 AND IGNORE THOSE THOUSAND DREADNOUGHTS THAT ARE GOING TO CREAM US IN A FEW SECONDS!
 
 #(compel_urquan)
 Employ your powers! Confuse the Ur-Quan!
 
-#(HERE_WE_GO)	talkp051.ogg
+#(HERE_WE_GO)	talkp050.ogg
 Okay. Now, whatever you do, once I've started
 DON'T LEAVE THE STAR SYSTEM!
 We've only got one chance at this, let's make it good!
@@ -445,7 +445,7 @@ Here I go...
 #(im_scared)
 I'm scared, Dnyarri. What if this doesn't work?
 
-#(STUPID_FOP)	talkp052.ogg
+#(STUPID_FOP)	talkp051.ogg
 'I'm scared, Dnyarri. What if this doesn't work?'
 My species have waited two hundred centuries for this moment
 SO STOP BLUBBERING!
@@ -454,48 +454,48 @@ Let's get to work.
 #(compel_that_ship)
 Dnyarri. There is a nearby ship which is annoying me. Compel it to self-destruct.
 
-#(SAVING_MY_POWER)	talkp053.ogg
+#(SAVING_MY_POWER)	talkp052.ogg
 I am saving my meager powers for our final confrontation with the Ur-Quan.
 Sorry, Captain. You'll just have to deal with it yourself.
 
 #(any_suggestions)
 What do you suggest I do now, Dnyarri?
 
-#(SUGGESTION_1)	talkp054.ogg
+#(SUGGESTION_1)	talkp053.ogg
 The first thing I'd do is make sure I had a strong ship and fleet.
 
-#(SUGGESTION_2)	talkp055.ogg
+#(SUGGESTION_2)	talkp054.ogg
 Once I was tough enough to survive in hostile space
 I'd spend some time exploring, trying to make allies and gather information.
 
-#(SUGGESTION_3)	talkp056.ogg
+#(SUGGESTION_3)	talkp055.ogg
 After I'd done a fair bit of exploration, I would try to find out what the Ur-Quan are up to.
 Discover who they are fighting, and why.
 
-#(SUGGESTION_4)	talkp057.ogg
+#(SUGGESTION_4)	talkp056.ogg
 Once I knew some general information about the Ur-Quan
 I'd probably try to find their weak spot. Every race has one.
 
-#(SUGGESTION_5)	talkp058.ogg
+#(SUGGESTION_5)	talkp057.ogg
 Once I knew the Ur-Quan's critical weakness
 I would try to discover how to exploit this flaw.
 I would learn what was necessary for the task, then gather those materials or services.
 
-#(SUGGESTION_6)	talkp059.ogg
+#(SUGGESTION_6)	talkp058.ogg
 When I was finally prepared for the final confrontation with the Ur-Quan
 I would use me, the Talking Pet, to distract the Ur-Quan for a single moment
 thus permitting me, who is really you, to make the death-strike against the Ur-Quan.
 
-#(SUGGESTION_7)	talkp060.ogg
+#(SUGGESTION_7)	talkp059.ogg
 Well for one, I would stop asking me questions and get to work.
 
-#(SUGGESTION_8)	talkp061.ogg
+#(SUGGESTION_8)	talkp060.ogg
 Well for one, I would stop asking me questions and get to work.
 
 #(about_your_race)
 What can you tell me about your race, the Dnyarri?
 
-#(WHAT_ABOUT_RACE)	talkp062.ogg
+#(WHAT_ABOUT_RACE)	talkp061.ogg
 I consider such a question intrusive and impolite
 but that is consistent with your behavior.
 What do you want to know?
@@ -503,7 +503,7 @@ What do you want to know?
 #(you_lied)
 I have learned that you lied to me, Dnyarri. It was your race that made slaves of the Ur-Quan!
 
-#(SO_WHAT)	talkp063.ogg
+#(SO_WHAT)	talkp062.ogg
 So I lied a little! Big deal.
 I thought that if I told you the truth, you wouldn't bring me on board.
 Besides, it wasn't me who did that, it was my ancient ancestors.
@@ -513,27 +513,27 @@ I thought not.
 #(bye_onboard)
 Okay, Dnyarri, you can go back to sleep now.
 
-#(GOODBYE_ONBOARD)	talkp064.ogg
+#(GOODBYE_ONBOARD)	talkp063.ogg
 Goodbye human.
 
 #(what_about_physiology)
 What can you tell me about your species biology?
 
-#(NO_TALK_ABOUT_SELF)	talkp065.ogg
+#(NO_TALK_ABOUT_SELF)	talkp064.ogg
 You mean my superior brain, my mental prowess?
 I don't want to talk about it.
 
 #(what_about_powers)
 Come on, we're friends! Tell me about the scope of your psychic powers!
 
-#(NOT_POWERS_BUT_FLOWERS)	talkp066.ogg
+#(NOT_POWERS_BUT_FLOWERS)	talkp065.ogg
 Captain, I don't think you meant to ask about my powers.
 -<DIDN'T YOU MEAN TO ASK ABOUT FLOWERS?>-
 
 #(yes_flowers)
 Yes - Dnyarri - I - wish - to - know - about - flowers.
 
-#(GOOD_HUMAN)	talkp067.ogg
+#(GOOD_HUMAN)	talkp066.ogg
 Flowers are beautiful, and smell nice.
 Now be a good human and
 -<LEAVE ME ALONE!>-
@@ -541,14 +541,14 @@ Now be a good human and
 #(wish_to_go_now)
 I - wish - to - go - now.
 
-#(EXCELLENT_IDEA)	talkp068.ogg
+#(EXCELLENT_IDEA)	talkp067.ogg
 An excellent idea, Captain. You must have a great deal of work to attend to.
 Goodbye.
 
 #(what_about_your_history)
 What can you tell me about the history of your people?
 
-#(ABOUT_HISTORY)	talkp069.ogg
+#(ABOUT_HISTORY)	talkp068.ogg
 Over twenty thousand years ago, my species was happy and carefree
 living a life of contentment on the surface of our world Glilandy.
 We spent our time gathering foods, creating art, and compelling each other to do the gross chores.
@@ -557,7 +557,7 @@ Then a ship from the Sentient Milieu landed, and things got pretty complicated.
 #(sentient_milieu)
 I know so little about the Sentient Milieu. Can you describe it?
 
-#(ABOUT_SENTIENT_MILIEU)	talkp070.ogg
+#(ABOUT_SENTIENT_MILIEU)	talkp069.ogg
 The Sentient Milieu were a blood-thirsty Empire that ruled a large section of the galaxy for thousands of years.
 If you have heard that the Milieu was a cooperative union of sentient species
 it's LIES, all lies!
@@ -567,7 +567,7 @@ infused the entire association with a sinister ambience.
 #(what_about_war)
 So tell me about the war between your species and the Sentient Milieu.
 
-#(ABOUT_WAR)	talkp071.ogg
+#(ABOUT_WAR)	talkp070.ogg
 Well, after we had been in contact with the Milieu for a while
 they decided to kill all of my species!
 Now does that sound like a reasonable, friendly bunch of beings, Captain?
@@ -582,10 +582,10 @@ acting as mindless translators who communicate the words of inferior races.
 #(enough_info)
 I've heard enough.
 
-#(OK_ENOUGH_INFO)	talkp072.ogg
+#(OK_ENOUGH_INFO)	talkp071.ogg
 That's good, I was getting sleepy.
 
-#(UMGAH_ALL_GONE)	talkp073.ogg
+#(UMGAH_ALL_GONE)	talkp072.ogg
 Such great plans, such fine dreams... now, all ground to dust.
 Hello, Captain. Pardon my lament, but I am feeling a bit depressed today.
 You see, the black destroyers -- the Kohr-Ah- passed through recently on a killing spree
