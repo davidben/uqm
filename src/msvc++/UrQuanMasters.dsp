@@ -152,6 +152,14 @@ SOURCE=..\sc2code\libs\file\temp.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\3do_blt.c
 # End Source File
 # Begin Source File

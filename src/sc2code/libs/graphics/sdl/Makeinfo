@@ -1,3 +1,3 @@
 uqm_CFILES="3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c
 		primitives.c pure.c rndzoom.c rotozoom.c sdl_common.c oscilloscope.c
-		canvas.c bbox.c"
+		canvas.c bbox.c 2xscalers.c"
