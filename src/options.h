@@ -17,7 +17,6 @@
 /*
  * Eventually this should include all configuration stuff, 
  * for now there's few options which indicate 3do/pc flavors.
- * By Mika Kolehmainen.
  */
 
 #ifndef OPTIONS_H

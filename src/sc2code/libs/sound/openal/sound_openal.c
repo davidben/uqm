@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
- */
 #ifdef SOUNDMODULE_OPENAL
 
 #include "libs/sound/sound.h"

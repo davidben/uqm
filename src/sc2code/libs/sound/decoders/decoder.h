@@ -14,9 +14,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* Sound file decoder for .wav, .mod, .ogg (to be used with OpenAL)
+/* Sound file decoder for .wav, .mod, .ogg
  * API is heavily influenced by SDL_sound.
- * By Mika Kolehmainen, 2002-10-27
  */
 
 #ifndef DECODER_H

@@ -16,7 +16,6 @@
 
 /* Sound file decoder for .wav, .mod, .ogg (to be used with OpenAL)
  * API is heavily influenced by SDL_sound.
- * By Mika Kolehmainen, 2002-10-27
  */
 
 #ifdef WIN32
