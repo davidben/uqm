@@ -1,0 +1,28 @@
+#(========== This is the PC ending script =====================)
+#(======== Sequence 1 -- Position the Bomb ====================)
+
+#(Set sequence dimensions; param1=width; param2=height)
+DIMS 320 200
+#(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
+
+#(Set ANIM to draw animation frames from)
+ANI slides/ending/victory1.ani
+
+#(Play music)
+MUSIC slides/ending/victory1.mod
+
+#(Draw frame)
+DRAW 0
+#(Wait for next)
+SYNC 100
+#(Draw frame)
+DRAW 1
+#(Wait for next)
+SYNC 200
+#(Draw frame)
+DRAW 3
+#(Wait for next)
+SYNC 300
+
+#(Fade out)
+TFB 800

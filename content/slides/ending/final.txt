@@ -1,0 +1,614 @@
+#(========== This is the PC ending slides script =====================)
+
+#(Set sequence dimensions; param1=width; param2=height)
+DIMS 320 200
+#(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
+
+#(Fade all to black; param1=fade time)
+FTB 0
+
+#(Set text fore color; 0xRRGGBB)
+TC FFFFFF
+#(Set text back color; 0xRRGGBB)
+TBC 000000
+
+#(Play music)
+MUSIC slides/ending/victoryf.mod
+
+#(************* Slides *********************************************)
+
+#(Set font to use)
+FONT slides/slides.fon
+
+#(Set ANIM to draw slides from)
+ANI slides/ending/ending.ani
+
+#(Set text vertical position; can be T=top, B=bottom, M=middle)
+TVA T
+
+#(++++++++++++++++++++ Slide 1 ++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 0C1C78
+
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Fade-in a slide; param1=fade time)
+FTC 3000
+
+#(Text fade-in)
+TFI When I awoke, there was an angel
+floating above me.
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI I knew I was dead.
+#(Wait)
+WAIT 2000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI But if one HAS to die, I thought
+to myself...
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...this was definitely the RIGHT
+way to be dead.
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI That was about the time I heard
+Talana's voice...
+#(Wait)
+WAIT 2500
+#(Wait)
+WAIT 4000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...telling me to stop babbling
+and listen for a moment.
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI She told me that the escape pod
+had almost been torn in half.
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI I had been unconscious for over
+three weeks...
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI ...but my crew and I had
+succeeded in our mission!
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI The force of the explosion,
+amplified by the Chmmr
+crystals...
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI ...had been sufficient to
+vaporize the Sa-Matra!
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI And following the destruction of
+the Sa-Matra battle platform...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI ...the fleets of the Ur-Quan and
+the Kohr-Ah had fallen into
+chaos...
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI ...and had been vanquished by
+Chmmr forces and allied
+starships.
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI Then Talana told me to sit up.
+#(Wait)
+WAIT 2000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+WAIT 500
+
+#(Text fade-in)
+TFI She said there was something she
+thought I'd like to see...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+
+#(Wait)
+WAIT 700
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++ Slide 2 ++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 707070
+
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI I pulled myself up and looked
+around...
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...I was in Sick Bay of the
+Starbase, looking out over
+Earth.
+#(Wait)
+WAIT 4000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Beneath me throbbed the sick red
+glow of the Ur-Quan slave shield.
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Talana smiled and said that for
+the past few days...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI the Chmmr had been working on
+lowering the shield...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI and that it should be neutralized
+right about... Now!
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+
+#(Wait)
+WAIT 700
+
+#(Fade slide to black; param1=fade time)
+FTW 700
+
+#(+++++++++++++++++++++++ Slide 3 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 707070
+
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Fade-in a slide; param1=fade time)
+FTC 1200
+
+#(Text fade-in)
+TFI With a flare of incandescent
+light, the slave shield
+vanished...
+#(Wait)
+WAIT 4500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...and for the first time in my
+life I saw the true colors of
+Earth...
+#(Wait)
+WAIT 4500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...blues and greens in a thousand
+different shades.
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI As we watched, we could see the
+first signs of ships coming up
+from Earth.
+#(Wait)
+WAIT 4000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI They lifted from the planet's
+surface to join us in space.
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI The destiny of Mankind had been
+delayed for over twenty years...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...but now our world was free
+and nothing could stop us!
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI I stayed in that hospital for
+almost a month...
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...but that day...
+#(Wait)
+WAIT 2000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...that day I watched the shield
+fall and beautiful Talana stood
+at my side...
+#(Wait)
+WAIT 4500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI I'll never forget that day. Not
+for the rest of my life...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+
+#(Wait)
+WAIT 700
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 4 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC FC6000
+
+#(Clear screen)
+CLS
+#(Restore color)
+FTC 0
+#(Wait a little)
+WAIT 1000
+
+#(Text fade-in)
+TFI But Grandfather then what
+happened?
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Clear screen)
+CLS
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Yeah! How did you get home?
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Clear screen)
+CLS
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI How long did it take before you
+and Grandma finally got married?
+#(Wait)
+WAIT 3500
+#(Text fade-out)
+TFO
+#(Clear screen)
+CLS
+
+#(Wait)
+WAIT 700
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 5 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC FC6000
+
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI Oh, while we intended to come
+right home...
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...we got a little sidetracked.
+#(Wait)
+WAIT 2500
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Talana and I didn't make it back
+here to Unzervalt until almost
+five years later.
+#(Wait)
+WAIT 5000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI But Grandfather! What happened?
+Where did you go?
+#(Wait)
+WAIT 4000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI And how did you find the Mark II?
+#(Wait)
+WAIT 3000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+
+#(Wait)
+WAIT 700
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 6 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 707070
+
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI That, my children, is an entirely
+different story.
+#(Wait)
+WAIT 7000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+
+#(Wait)
+WAIT 800
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(***************************** The End ********************************)
