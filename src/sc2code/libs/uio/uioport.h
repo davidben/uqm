@@ -29,10 +29,12 @@
 
 
 // Compilation related
-#ifdef _MSC_VER
-#	define inline __inline
-#else
-#	define inline __inline__
+#ifndef inline
+#	ifdef _MSC_VER
+#		define inline __inline
+#	else
+#		define inline __inline__
+#	endif
 #endif
 
 // Paths
