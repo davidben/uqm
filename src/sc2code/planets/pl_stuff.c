@@ -57,19 +57,18 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 	COUNT i, num_frames, old_scale;
 	RECT *rp = NULL;
 	CONTEXT OldContext;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	int base = GSCALE_IDENTITY;
 
-	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
-	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
+	num_frames = (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED) ? 2 : 1;
+	pFrame[0] = SetAbsFrameIndex (Orbit->PlanetFrameArray, (COUNT)(x + 1));
 	if (num_frames == 2)
-		pFrame[1] = pSolarSysState->ShieldFrame;
+		pFrame[1] = Orbit->ShieldFrame;
 	if (scale_amt)
 	{	
 		if(zoomr->extent.width)
 			rp = zoomr;
 		//  we're zooming in, take care of scaling the frames
-//		for (i=0; i < num_frames; i++)
-//			pFrame[i] = pSolarSysState->ScaleFrame[i];
 		//Translate the planet so it comes from the bottom right corner
 		dx += ((zoom_from & 0x01) ? 1 : -1) * dx * (base - scale_amt) / base;
 		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (base - scale_amt) / base;
@@ -120,6 +119,8 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 {
 	STAMP s;
 	UBYTE a = 128;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+
 	s.origin.x = x;
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
@@ -133,8 +134,8 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 		COUNT framew, frameh;
 		RECT srect, drect, *psrect = NULL, *pdrect = NULL;
 		FRAME tintFrame[2];
-		tintFrame[0] = SetAbsFrameIndex (pSolarSysState->TintFrame, (COUNT)(1));
-		tintFrame[1] = SetAbsFrameIndex (pSolarSysState->TintFrame, (COUNT)(2));
+		tintFrame[0] = SetAbsFrameIndex (Orbit->TintFrame, (COUNT)(1));
+		tintFrame[1] = SetAbsFrameIndex (Orbit->TintFrame, (COUNT)(2));
 
 		framew = GetFrameWidth (tintFrame[0]);
 		frameh = GetFrameHeight (tintFrame[0]);

@@ -138,6 +138,18 @@ typedef STAR_DESC *PSTAR_DESC;
 
 typedef void (*PLAN_GEN_FUNC) (BYTE control);
 
+typedef struct planet_orbit
+{
+	FRAME TopoZoomFrame;
+	PBYTE lpTopoData;
+	FRAME PlanetFrameArray;
+	BYTE *isPFADefined;
+	FRAME ShieldFrame;
+	FRAME TintFrame;
+	DWORD *lpTopoMap;
+	DWORD *ScratchArray;
+}  PLANET_ORBIT;
+
 typedef struct solarsys_state
 {
 	MENU_STATE MenuState;
@@ -152,10 +164,6 @@ typedef struct solarsys_state
 	BYTE turn_counter, turn_wait;
 	BYTE thrust_counter, max_ship_speed;
 
-	FRAME TopoFrame;
-	FRAME TopoZoomFrame;
-	MEM_HANDLE hTopoData;
-	PBYTE lpTopoData;
 	STRING XlatRef;
 	STRINGPTR XlatPtr;
 	COLORMAP OrbitalCMap;
@@ -166,13 +174,10 @@ typedef struct solarsys_state
 	PLAN_GEN_FUNC GenFunc;
 
 	FRAME PlanetSideFrame[6];
-	FRAME PlanetFrameArray;
-	BYTE *isPFADefined;
-	FRAME ShieldFrame;
-	FRAME TintFrame;
 	UWORD Tint_rgb;
-	DWORD **lpTopoMap;
 	UBYTE PauseRotate;
+	FRAME TopoFrame;
+	PLANET_ORBIT Orbit;
 } SOLARSYS_STATE;
 typedef SOLARSYS_STATE *PSOLARSYS_STATE;
 

@@ -554,18 +554,20 @@ void random16xZoomSurfaceRGBA (SDL_Surface *src, SDL_Surface *dst)
 	blurSurface32 (dst);
 }
 
-FRAMEPTR scale16xRandomizeFrame (FRAMEPTR FramePtr)
+FRAMEPTR scale16xRandomizeFrame (FRAMEPTR NewFrame, FRAMEPTR FramePtr)
 {
 	TFB_Image *origImg, *newImg;
-	FRAMEPTR NewFrame;
 	UBYTE type;
 
-	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+	if (NewFrame == NULL)
+	{
+		type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
-	NewFrame = CaptureDrawable (
+		NewFrame = CaptureDrawable (
 				CreateDrawable (type, 
 					(SIZE)((GetFrameWidth (FramePtr)) << 2), 
 					(SIZE)((GetFrameHeight (FramePtr)) << 2), 1));
+	}
 
 	newImg = NewFrame->image;
 	origImg = FramePtr->image;

@@ -262,10 +262,10 @@ void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *r
 //  bits 17-24 : green
 //  bits 9-16  : blue
 //  bits 1-8   : alpha
-Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
+void getpixelarray(Uint32 *map, FRAMEPTR FramePtr, int width, int height)
 {
 	Uint8 r,g,b,a;
-	Uint32 p, **map;
+	Uint32 p, pos, row;
 	TFB_Image *tfbImg;
 	SDL_Surface *img;
 	GetPixelFn getpix;
@@ -276,24 +276,19 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
 	img = (SDL_Surface *)tfbImg->NormalImg;
 	SDL_LockSurface (img);
 	getpix = getpixel_for (img);
-	map=(Uint32 **)HMalloc (sizeof(Uint32 *) * (height + 1));
-	for (y = 0; y < height; y++)
+	for (y = 0, row = 0; y < height; y++, row += width)
 	{
-		map[y]=(Uint32 *)HCalloc (width * sizeof(Uint32));
 		if(y >= img->h)
 			continue;
-		for(x = 0; x < img->w; x++)
+		for(x = 0, pos = row; x < img->w; x++, pos++)
 		{
 				p = getpix (img, x, y);
 				SDL_GetRGBA (p,img->format, &r, &g, &b, &a);
-				map[y][x] = r << 24 | g << 16 | b << 8 | a;
+				map[pos] = r << 24 | g << 16 | b << 8 | a;
 		}
 	}
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
-	map[y] = NULL;
-	return (map);
-
 }
 
 FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type)

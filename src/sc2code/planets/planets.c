@@ -187,6 +187,7 @@ void
 FreePlanet (void)
 {
 	COUNT i;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	if (pSolarSysState->MenuState.flash_task)
 	{
@@ -209,36 +210,30 @@ FreePlanet (void)
 
 	DestroyStringTable (ReleaseStringTable (pSolarSysState->XlatRef));
 	pSolarSysState->XlatRef = 0;
-	UnlockResourceData (pSolarSysState->hTopoData);
-	FreeResourceData (pSolarSysState->hTopoData);
-	pSolarSysState->hTopoData = 0;
 	DestroyDrawable (ReleaseDrawable (pSolarSysState->TopoFrame));
 	pSolarSysState->TopoFrame = 0;
-	DestroyDrawable (ReleaseDrawable (pSolarSysState->TopoZoomFrame));
-	pSolarSysState->TopoZoomFrame = 0;
 	DestroyColorMap (ReleaseColorMap (pSolarSysState->OrbitalCMap));
 	pSolarSysState->OrbitalCMap = 0;
-	DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray));
-	pSolarSysState->PlanetFrameArray = 0;
 
+	HFree (Orbit->lpTopoData);
+	Orbit->lpTopoData = 0;
+	DestroyDrawable (ReleaseDrawable (Orbit->TopoZoomFrame));
+	Orbit->TopoZoomFrame = 0;
+	DestroyDrawable (ReleaseDrawable (Orbit->PlanetFrameArray));
+	Orbit->PlanetFrameArray = 0;
 
-	HFree (pSolarSysState->isPFADefined);
-	pSolarSysState->isPFADefined = 0;
-	if (pSolarSysState->TintFrame)
-			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
-	pSolarSysState->TintFrame = 0;
+	HFree (Orbit->isPFADefined);
+	Orbit->isPFADefined = 0;
+	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
+	Orbit->TintFrame = 0;
 	pSolarSysState->Tint_rgb = 0;
-	if(pSolarSysState->ShieldFrame != 0)
+	DestroyDrawable (ReleaseDrawable (Orbit->ShieldFrame));
+	Orbit->ShieldFrame = 0;
+
+	if (Orbit->lpTopoMap!=0)
 	{
-		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
-		pSolarSysState->ShieldFrame = 0;
-	}
-	if (pSolarSysState->lpTopoMap!=0)
-	{
-		for (i=0; pSolarSysState->lpTopoMap[i] != NULL; i++)
-			HFree (pSolarSysState->lpTopoMap[i]);
-		HFree (pSolarSysState->lpTopoMap);
-		pSolarSysState->lpTopoMap = 0;
+		HFree (Orbit->lpTopoMap);
+		Orbit->lpTopoMap = 0;
 	}
 
 	DestroyContext (ReleaseContext (TaskContext));

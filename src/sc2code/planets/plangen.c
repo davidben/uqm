@@ -52,9 +52,9 @@ void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0, int x, int y);
 
 void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int num, int denom);
 
-FRAME scale16xRandomizeFrame(FRAME FramePtr);
+FRAME scale16xRandomizeFrame(FRAME ZoomFrame, FRAME FramePtr);
 
-DWORD **getpixelarray(FRAME FramePtr,int width, int height);
+void getpixelarray(DWORD *array, FRAME FramePtr, int width, int height);
 
 #define NUM_BATCH_POINTS 64
 #define USE_3D_PLANET 1
@@ -111,6 +111,7 @@ RenderTopography (BOOLEAN Reconstruct)
 {
 	CONTEXT OldContext;
 	FRAME OldFrame;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	OldContext = SetContext (TaskContext);
 	OldFrame = SetContextFGFrame (pSolarSysState->TopoFrame);
@@ -166,7 +167,7 @@ RenderTopography (BOOLEAN Reconstruct)
 		cbase = GetColorMapAddress (pSolarSysState->OrbitalCMap);
 
 		pBatch = &BatchArray[i = NUM_BATCH_POINTS];
-		lpDst = pSolarSysState->lpTopoData;
+		lpDst = Orbit->lpTopoData;
 		for (pt.y = 0; pt.y < MAP_HEIGHT; ++pt.y)
 		{
 			for (pt.x = 0; pt.x < MAP_WIDTH; ++pt.x)
@@ -512,10 +513,8 @@ static void CreateShieldMask (void)
 	FRAME ShieldFrame;
 	DWORD aa_delta, aa_delta2;
 
-	ShieldFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
-				);
-	rgba = (DWORD *)HMalloc (sizeof (DWORD *) * (SHIELD_DIAM) * (SHIELD_DIAM));
+	ShieldFrame = pSolarSysState->Orbit.ShieldFrame;
+	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
 	// This is a non-transparent red for the halo
 	red_nt = 180;
@@ -565,13 +564,11 @@ static void CreateShieldMask (void)
 	}
 	process_rgb_bmp (ShieldFrame, rgba, SHIELD_DIAM, SHIELD_DIAM);
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,SHIELD_RADIUS + 1));
-	HFree(rgba);
-	pSolarSysState->ShieldFrame = ShieldFrame;
 	{
 		// Applythe shield to the topo data
 		UBYTE a;
 		int blit_type;
-		FRAME tintFrame = pSolarSysState->TintFrame;
+		FRAME tintFrame = pSolarSysState->Orbit.TintFrame;
 #ifdef USE_ALPHA_SHIELD
 		a = 200;
 		blit_type = 0;
@@ -590,13 +587,14 @@ static void CreateShieldMask (void)
 // RenderLevelMasks builds a frame for the rotating planet view
 // offset is effectively the angle of rotation around the planet's axis
 // We use the SDL routines to directly write to the SDL_Surface to improve performance
+#define PT_TO_ADDR(y, x) ((y) * (MAP_WIDTH + MAP_HEIGHT) + (x))
 void
 RenderLevelMasks (int offset)
 {
 	POINT pt;
 	DWORD *rgba, *p_rgba;
 	int x, y;
-	DWORD p, **pixels;
+	DWORD p, *pixels;
 	FRAME MaskFrame;
 
 #if PROFILE
@@ -605,11 +603,11 @@ RenderLevelMasks (int offset)
 	clock_t t1;
 	t1 = clock ();
 #endif
-	rgba = (DWORD *)HMalloc (sizeof (DWORD *) * (DIAMETER) * (DIAMETER));
+	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
 	// Choose the correct Frame to wrte to
-	MaskFrame = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(offset + 1));
-	pixels = pSolarSysState->lpTopoMap;
+	MaskFrame = SetAbsFrameIndex (pSolarSysState->Orbit.PlanetFrameArray, (COUNT)(offset + 1));
+	pixels = pSolarSysState->Orbit.lpTopoMap;
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, ++y)
 	{
 		for (pt.x = 0,  x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x)
@@ -626,7 +624,7 @@ RenderLevelMasks (int offset)
 			{
 				if (ppt->m[0] == 0) 
 				{
-					p = pixels[ppt->p[0].y][ppt->p[0].x + offset];
+					p = pixels[PT_TO_ADDR (ppt->p[0].y, ppt->p[0].x) + offset];
 					c[0] = (UBYTE)(p >> 8);
 					c[1] = (UBYTE)(p >> 16);
 					c[2] = (UBYTE)(p >> 24);
@@ -634,12 +632,12 @@ RenderLevelMasks (int offset)
 				else
 				{
 					for (i = 0; i < 4; i++)
-						p1[i]=pixels[ppt->p[i].y][ppt->p[i].x + offset];
+						p1[i]=pixels[PT_TO_ADDR (ppt->p[i].y, ppt->p[i].x) + offset];
 					for (i = 1; i < 4; i++)
 						c[i-1] = get_avg_rgb (p1, ppt->m, i);
 				}
 			// Apply the lighting model.  This also bounds the sphere to make it circular
-				if (pSolarSysState->ShieldFrame)
+				if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 				{
 					c[2] = GET_LIGHT (255, diffus, spec);
 					c[1] = GET_LIGHT ((UBYTE)(c[1] >> 1), diffus, spec);
@@ -661,12 +659,11 @@ RenderLevelMasks (int offset)
 	// Map the rgb bitmap onto the SDL_Surface
 	process_rgb_bmp (MaskFrame, rgba, DIAMETER, DIAMETER);
 	SetFrameHot (MaskFrame, MAKE_HOT_SPOT (RADIUS + 1, RADIUS + 1));
-	HFree(rgba);
 #if PROFILE
 	t += clock() - t1;
 	if (frames_done == MAP_WIDTH)
 	{
-		fprintf (stderr, "frames/sec: %d/%d(msec)=%f\n", frames_done, t,
+		fprintf (stderr, "frames/sec: %d/%ld(msec)=%f\n", frames_done, t,
 			frames_done / ((double)t / CLOCKS_PER_SEC));
 		frames_done = 1;
 		t = clock () - t1;
@@ -1191,6 +1188,31 @@ ValidateMap (PSBYTE DepthArray)
 	} while (--i);
 }
 
+void planet_orbit_init ()
+{
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+
+	Orbit->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * MAP_WIDTH);
+	Orbit->PlanetFrameArray = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, DIAMETER, DIAMETER, (COUNT)MAP_WIDTH)
+				);
+	Orbit->TintFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 2)
+			);
+	Orbit->ShieldFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
+				);
+
+	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
+	Orbit->TopoZoomFrame = CaptureDrawable (
+				CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
+					(COUNT)(MAP_HEIGHT << 2), 1));
+	Orbit->lpTopoMap=(DWORD *)HMalloc (sizeof(DWORD) 
+		* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
+	Orbit->ScratchArray = (DWORD *)HMalloc (sizeof (DWORD *) 
+		* (SHIELD_DIAM) * (SHIELD_DIAM));
+}
+
 void
 GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 {
@@ -1200,18 +1222,12 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	COUNT i, x, y;
 	POINT loc;
 	CONTEXT OldContext;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
 	OldContext = SetContext (TaskContext);
-	pSolarSysState->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * 255);
-	pSolarSysState->TintFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 2)
-			);
-
-	pSolarSysState->PlanetFrameArray = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, DIAMETER, DIAMETER, (COUNT)MAP_WIDTH)
-				);
+	planet_orbit_init ();
 	if (IsEarth)
 	{
 		//Earth uses a pixmap for the topography
@@ -1230,25 +1246,19 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 		r.corner.x = r.corner.y = 0;
 		r.extent.width = MAP_WIDTH;
 		r.extent.height = MAP_HEIGHT;
-		if (pSolarSysState->hTopoData == 0)
 		{
-			pSolarSysState->hTopoData = AllocResourceData (MAP_WIDTH * MAP_HEIGHT, 0);
-			LockResourceData (pSolarSysState->hTopoData, &pSolarSysState->lpTopoData);
-		}
-		if (pSolarSysState->lpTopoData)
-		{
-			memset (pSolarSysState->lpTopoData, 0, MAP_WIDTH * MAP_HEIGHT);
+			memset (Orbit->lpTopoData, 0, MAP_WIDTH * MAP_HEIGHT);
 			switch (PLANALGO (PlanDataPtr->Type))
 			{
 				case GAS_GIANT_ALGO:
 					MakeGasGiant (PlanDataPtr->num_faults,
-							pSolarSysState->lpTopoData, &r, PlanDataPtr->fault_depth);
+							Orbit->lpTopoData, &r, PlanDataPtr->fault_depth);
 					break;
 				case TOPO_ALGO:
 				case CRATERED_ALGO:
 					if (PlanDataPtr->num_faults)
 						DeltaTopography (PlanDataPtr->num_faults,
-								pSolarSysState->lpTopoData, &r, PlanDataPtr->fault_depth);
+								Orbit->lpTopoData, &r, PlanDataPtr->fault_depth);
 
 					for (i = 0; i < PlanDataPtr->num_blemishes; ++i)
 					{
@@ -1284,19 +1294,17 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 								% (MAP_WIDTH - crater_r.extent.width);
 						crater_r.corner.y = LOBYTE (loword)
 								% (MAP_HEIGHT - crater_r.extent.height);
-						MakeCrater (&crater_r, pSolarSysState->lpTopoData,
+						MakeCrater (&crater_r, Orbit->lpTopoData,
 								PlanDataPtr->fault_depth << 2,
 								-(PlanDataPtr->fault_depth << 2),
 								FALSE);
 					}
 
 					if (PLANALGO (PlanDataPtr->Type) == CRATERED_ALGO)
-						DitherMap (pSolarSysState->lpTopoData);
-					ValidateMap (pSolarSysState->lpTopoData);
+						DitherMap (Orbit->lpTopoData);
+					ValidateMap (Orbit->lpTopoData);
 					break;
 			}
-		} else {
-			return;
 		}
 		pSolarSysState->TopoFrame = CaptureDrawable (
 				CreateDrawable (WANT_PIXMAP, (SIZE)MAP_WIDTH, (SIZE)MAP_HEIGHT, 1)
@@ -1331,14 +1339,12 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	// from lpTopoData instead of the FRAMPTR though
 	x = MAP_WIDTH + MAP_HEIGHT;
 	y = MAP_HEIGHT;
-	pSolarSysState->TopoZoomFrame = scale16xRandomizeFrame(pSolarSysState->TopoFrame);
-	pSolarSysState->lpTopoMap = getpixelarray (
-			pSolarSysState->TopoFrame, x, y
-			);
+	scale16xRandomizeFrame(Orbit->TopoZoomFrame, pSolarSysState->TopoFrame);
+	getpixelarray (Orbit->lpTopoMap, pSolarSysState->TopoFrame, x, y);
 	// Extend the width from MAP_WIDTH to MAP_WIDTH+MAP_HEIGHT
-	for (y = 0; y < MAP_HEIGHT; y++)
+	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT); y+= MAP_WIDTH + MAP_HEIGHT)
 		for (x = 0; x < MAP_HEIGHT; x++)
-			pSolarSysState->lpTopoMap[y][x + MAP_WIDTH] = pSolarSysState->lpTopoMap[y][x];
+			Orbit->lpTopoMap[y + x + MAP_WIDTH] = Orbit->lpTopoMap[y +x];
 	if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->SunDesc[0])
 	{
 		// This is a planet.  Get its location
@@ -1371,7 +1377,6 @@ rotate_planet_task (void *data)
 	UBYTE zoom_from;
 	COUNT zoom_arr[50];
 	COUNT zoom_amt, frame_num = 0, zoom_frames;
-	int angle=0;
 
 	Task task = (Task) data;
 
@@ -1390,7 +1395,7 @@ rotate_planet_task (void *data)
 	init_x = (i == 1) ? (0) : (MAP_WIDTH - 1);
 	// Render the first planet frame
 	RenderLevelMasks (init_x);
-	pSolarSysState->isPFADefined[init_x] = 1;
+	pSolarSysState->Orbit.isPFADefined[init_x] = 1;
 
 	zoom_from = (UBYTE)TFB_Random () & 0x03;
 	zoom_frames = init_zoom_array (zoom_arr);
@@ -1438,9 +1443,9 @@ rotate_planet_task (void *data)
 
 			ClearSemaphore (GraphicsSem);
 			// If this frame hasn't been generted, generate it
-			if (! pSolarSysState->isPFADefined[x]) {
+			if (! pSolarSysState->Orbit.isPFADefined[x]) {
 				RenderLevelMasks (x);
-				pSolarSysState->isPFADefined[x] = 1;
+				pSolarSysState->Orbit.isPFADefined[x] = 1;
 			}
 			if (zooming)
 			{
