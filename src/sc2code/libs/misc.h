@@ -22,19 +22,6 @@
 #ifndef MISC_H
 #define MISC_H
 
-#define Stream FILE
-#define MEMTYPE_ANY  1
-
-#define SqrtF16 sqrt
-#define Atan2F16 atan2
-#define CosF16 cos
-#define SinF16 sin
-
-int CD_get_drive(void);  // Returns 0
-unsigned int CD_get_volsize(void);  // Returns 0
-
-void OpenMathFolio(void);
-
 extern void *HMalloc (int size);
 extern void HFree (void *p);
 extern void *HCalloc (int size);
@@ -42,4 +29,8 @@ extern void *HRealloc (void *p, int size);
 
 extern int TFB_DEBUG_HALT;
 
+// from misc.c:
+size_t vstrncpy (char *dest, size_t destLen, ...);
+
 #endif
+

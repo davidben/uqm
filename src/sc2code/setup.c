@@ -16,10 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <assert.h>
+#include <errno.h>
+#include <string.h>
 #include "starcon.h"
 #include "coderes.h"
 #include "libs/threadlib.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/file.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -266,6 +271,31 @@ LoadKeyConfig (FILE *fp, DWORD length)
 }
 
 static void
+initKeyConfig() {
+	char userFile[PATH_MAX];    /* System-wide key config */
+	FILE *fp;
+	
+	assert (snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir) != -1);
+	// strlen (configDir) <= PATH_MAX - 13
+	
+	if (fileExists (userFile)) {
+		fp = res_OpenResFile (userFile, "rt");
+	} else {
+		if (copyFile ("starcon.key", userFile) == -1) {
+			fprintf(stderr, "Warning: Could not copy default key config "
+					"to %s: %s.\n", userFile, strerror (errno));
+		} else
+			fprintf(stderr, "Copying default key config file to %s.\n",
+					userFile);
+		fp = res_OpenResFile ("starcon.key", "rt");
+	}
+	LoadKeyConfig (fp, 0);
+			// second arg is file length, but is unused.
+			// It should be temporary anyhow.
+	res_CloseResFile (fp);
+}
+
+static void
 InitPlayerInput (void)
 {
 	INPUT_DEVICE InputDevice;
@@ -335,7 +365,8 @@ LoadKernel (int argc, char *argv[])
 	INIT_INSTANCES ();
 
 	InstallResTypeVectors (KEY_CONFIG, LoadKeyConfig, NULL_PTR);
-	res_GetResource (JOYSTICK_KEYS);
+//	res_GetResource (JOYSTICK_KEYS);
+	initKeyConfig();
 
 	{
 		COLORMAP ColorMapTab;

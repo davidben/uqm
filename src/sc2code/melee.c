@@ -17,6 +17,7 @@
  */
 
 #include <ctype.h>
+#include <assert.h>
 #include "starcon.h"
 #include "libs/graphics/drawable.h"
 #include "melee.h"
@@ -1853,8 +1854,11 @@ Melee (void)
 		LoadMeleeInfo (&MenuState);
 		{
 			FILE *load_fp;
+			char configFile[PATH_MAX];
 
-			load_fp = res_OpenResFile ("melee.cfg", "rb");
+			assert (snprintf (configFile, PATH_MAX, "%smelee.cfg",
+					configDir) != -1);
+			load_fp = res_OpenResFile (configFile, "rb");
 			if (load_fp)
 			{
 				int status;
@@ -1899,9 +1903,12 @@ Melee (void)
 		{
 			FILE *save_fp;
 			BOOLEAN err;
-				
+			char configFile[PATH_MAX];
+
 			err = FALSE;
-			save_fp = res_OpenResFile ("melee.cfg", "wb");
+			assert (snprintf (configFile, PATH_MAX, "%smelee.cfg",
+					configDir) != -1);
+			save_fp = res_OpenResFile (configFile, "wb");
 			if (save_fp)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)

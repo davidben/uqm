@@ -137,6 +137,10 @@ SOURCE=..\sc2code\libs\file\dirs.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\file\files.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\file\filintrn.h
 # End Source File
 # Begin Source File

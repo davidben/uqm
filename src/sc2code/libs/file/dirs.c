@@ -322,9 +322,3 @@ expandPath (char *dest, size_t len, const char *src)
 	return 0;
 }
 
-BOOLEAN
-fileExists (const char *name)
-{
-	return access (name, F_OK) == 0;
-}
-

@@ -1,4 +1,7 @@
 Changes towards version 0.2:
+- Key config is now saved in user dir too.
+  melee.cfg too again. - SvdB
+- Added copyFile() - SvdB
 - Pure mode partial screen updates are now more efficient;
   fixed 'crossfades not finished' problem -Mika
 - Graduated colours for crew in shipyard, from Nic
