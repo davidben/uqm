@@ -35,6 +35,12 @@ usage() {
 	echo
 }
 
+escape_string() {
+	$PROG_sed_FILE -e s,[\\\'\"\`\	\ \$\&\\\*\\\?\#\!],\\\\\&,g << EOF
+$1
+EOF
+}
+
 # The actual recursing function
 build_recurse() {
 	local FILES SUBDIRS
@@ -64,7 +70,7 @@ build_do_recursive() {
 # Build dependancy information for one file
 build_dependancies() {
 	eval echo -n \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
-	eval \$MKDEPEND "\${${BUILD_PROJECT}_CFLAGS}" "\$1"
+	eval eval \\\$MKDEPEND \"\${${BUILD_PROJECT}_CFLAGS}\" \"\\\$1\"
 }
 
 # Recursively build dependancy information
@@ -72,6 +78,9 @@ build_rec_dependancies() {
 	local DEPEND_FILE EXTRA_OFILES
 
 	echo "Building dependancy information..." 1>&2
+	
+	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
+	export BUILD_WORK_ESC
 
 	# Remove the old dependency file, if it exists.
 	# The .tmp file is used to detect interrupted dependency builds.
@@ -86,7 +95,7 @@ build_rec_dependancies() {
 
 	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
 	{
-		eval echo -n "\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}:"
+		eval echo -n "\$BUILD_WORK_ESC/target-\${${BUILD_PROJECT}_NAME}:"
 		for OFILE in $OFILES $EXTRA_OFILES; do
 			echo -n " $OFILE"
 		done
@@ -98,17 +107,20 @@ build_rec_dependancies() {
 
 # Output the .o file for a .c file.
 build_collect_o_files() {
-	eval echo "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
 }
 
 # Output the extra .o file with the complete path
 build_collect_extra_o_files() {
-	eval echo "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$1"
+	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\$1"
 }
 
 # Recursively collect .o-files
 build_rec_collect_o_files() {
 	local EXTRA_OFILES
+
+	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
+	export BUILD_WORK_ESC
 
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	export BUILD_FILES_VAR
@@ -155,18 +167,18 @@ build_compile() {
 	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
 			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
 			DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME%/}" \
-			\$MAKE -f Makefile.build "\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}"
+			\$MAKE -f Makefile.build \"\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}\"
 	eval "${TARGET}_post_build"
 }
 
 # Description: Remove the .o file for one .c file
 # Arguments:   $1 - the .c file
 build_clean_file() {
-	eval rm -f -- "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+	eval rm -f -- "\"\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o\""
 }
 
 build_clean_dir() {
-	eval rmdir -- "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1}" 2> /dev/null
+	eval rmdir -- "\"\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1}\"" 2> /dev/null
 	return 0
 }
 

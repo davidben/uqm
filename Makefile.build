@@ -1,3 +1,6 @@
+# Make file for the uqm build system. Invoked from build/unix/build_functions
+# By Serge van den Boom
+
 default:
 	./build.sh sc2
 
@@ -6,19 +9,37 @@ default:
 	if [ ! -d $$DIR ]; then \
 		mkdir -p "$$DIR"; \
 	fi
-	$(WINDRES) --include-dir $(dir $<) -o $@ $<
+	$(WINDRES) --include-dir $(dir $<) -o "$@" "$<"
 
 %.o:
 	@DIR=$(dir $@); \
 	if [ ! -d $$DIR ]; then \
 		mkdir -p "$$DIR"; \
 	fi
-	$(COMPILE) -o $@ -c $(CFLAGS) $<
+	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
 
 target-%:
-	$(COMPILE) -o $* $^ $(LDFLAGS)
+	$(COMPILE) -o "$*" $^ $(LDFLAGS)
 
--include $(DEPEND_FILE)
+
+## The following kludge is necessary because the GNU make 'include'
+## statement does not accept spaces etc in the argument.
+#define ESCAPE_DEPEND
+#sed -e 's/["$$ 	#\*\?\\]/\\&/g' << EOF
+#$${DEPEND_FILE}
+#EOF
+#endef
+#export ESCAPE_DEPEND
+#.PHONY: escape_depend
+#.INTERMEDIATE: escape_depend
+#escape_depend:
+##	@set > set.out
+#	@sh -x -v -c "$$ESCAPE_DEPEND"
+#ifneq ($(MAKECMDGOALS),escape_depend)
+#include $(shell $(MAKE) -f Makefile.build escape_depend)
+#endif
+
+include $(DEPEND_FILE)
 
 # Temporary:
 $(BUILD_WORK)/obj/release/./src/res/UrQuanMasters.rc.o: \
