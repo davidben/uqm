@@ -539,7 +539,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 		else
 		{
-			SDL_Delay(1);
+			SleepThread (1);
 		}
 		
 		last_fade = current_fade;
