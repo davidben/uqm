@@ -201,8 +201,8 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 
 // blends two pixels with ratio 50% - 50%
-static Uint32
-Scale_BlendPixels(SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
+__inline__ Uint32
+Scale_BlendPixels (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 {
 	return	((((pix1 & fmt->Rmask) +
 			   (pix2 & fmt->Rmask)
@@ -215,7 +215,6 @@ Scale_BlendPixels(SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 			) >> 1) & fmt->Bmask);
 }
 
-
 // biadapt scaling to 2x
 static void
 Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
@@ -226,435 +225,594 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 
 	switch (fmt->BytesPerPixel)
 	{
-	case 2:
+	case 2: // 16bpp scaling
+	#define BIADAPT_GETPIX(p)        ( *(Uint16 *)(p) )
+	#define BIADAPT_SETPIX(p, c)     ( *(Uint16 *)(p) = (c) )
+	#define BIADAPT_BUF              Uint16
+	#define BIADAPT_CLR              Uint16
 	{
-		Uint16 *src_p = (Uint16 *)src->pixels;
-		Uint16 *dst_p = (Uint16 *)dst->pixels;
-		Uint16 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; ++y)
+		for (y = 0; y < h; y++, dst_p += dw)
 		{
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < w; x++, src_p++, dst_p++)
 			{
-				pixval_tl = *src_p;
+				pixval_tl = BIADAPT_GETPIX (src_p);
 				
-				*dst_p = pixval_tl;
+				BIADAPT_SETPIX (dst_p, pixval_tl);
 				
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = src_p[w];
+					pixval_bl = BIADAPT_GETPIX (src_p + w);
 
 					if (pixval_tl == pixval_bl)
-						dst_p[dw] = pixval_tl;
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 					else
-						dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_bl);
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, pixval_tl, pixval_bl)
+								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					dst_p[dw] = pixval_tl;
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 				}
 				dst_p++;
-				src_p++;
-				
-				if (x + 1 < w)
+
+
+				if (x + 1 >= w)
 				{
-					// check pixel to the right from the current one
-					pixval_tr = *src_p;
+					// last pixel in row - propagate
+					BIADAPT_SETPIX (dst_p, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the right from the current one
+				pixval_tr = BIADAPT_GETPIX (src_p + 1);
+
+				if (pixval_tl == pixval_tr)
+					BIADAPT_SETPIX (dst_p, pixval_tr);
+				else
+					BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+							fmt, pixval_tl, pixval_tr)
+							);
+
+				if (y + 1 >= h)
+				{
+					// last pixel in column - propagate
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the bottom-right
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+
+				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+				{
+					int cl, cr;
+					BIADAPT_CLR clr;
 
 					if (pixval_tl == pixval_tr)
-						*dst_p = pixval_tr;
-					else
-						*dst_p = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
-
-					if (y + 1 < h)
 					{
-						// check pixel to the bottom-right
-						pixval_br = src_p[w];
-
-						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
-						{
-							// both pairs are equal, have to resolve
-							// the contention; we try detecting which
-							// color is background by looking for
-							// a line or a simple join
-							int cl = 1, cr = 1;
-
-							if (x > 0)
-							{
-								if (src_p[-2] == pixval_tl)
-									cl++;
-
-								if (src_p[-2 + w] == pixval_tr)
-									cr++;
-							}
-
-							if (y > 0)
-							{
-								if (src_p[-1 - w] == pixval_tl)
-									cl++;
-
-								if (src_p[-w] == pixval_tr)
-									cr++;
-							}
-
-							if (x + 2 < w && src_p[1] == pixval_tr)
-								cr++;
-
-							if (y + 2 < h && src_p[1 + w] == pixval_tl)
-								cl++;
-							
-							// least count wins
-							if (cl > cr)
-								dst_p[dw] = pixval_tr;
-							else if (cr > cl)
-								dst_p[dw] = pixval_tl;
-							else
-								dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
-
-						}
-						else if (pixval_tl == pixval_br)
-						{
-							// main diagonal is same color
-							// use its value
-							dst_p[dw] = pixval_tl;
-						}
-						else if (pixval_tr == pixval_bl)
-						{
-							// 2nd diagonal is same color
-							// use its value
-							dst_p[dw] = pixval_tr;
-						}
-						else
-						{
-							// blend all 4
-							dst_p[dw] = 
-								((((pixval_tl & fmt->Rmask) +
-								   (pixval_bl & fmt->Rmask) +
-								   (pixval_tr & fmt->Rmask) +
-								   (pixval_br & fmt->Rmask)
-								 ) >> 2) & fmt->Rmask) |
-								((((pixval_tl & fmt->Gmask) +
-								   (pixval_bl & fmt->Gmask) +
-								   (pixval_tr & fmt->Gmask) +
-								   (pixval_br & fmt->Gmask)
-								 ) >> 2) & fmt->Gmask) |
-								((((pixval_tl & fmt->Bmask) +
-								   (pixval_bl & fmt->Bmask) +
-								   (pixval_tr & fmt->Bmask) +
-								   (pixval_br & fmt->Bmask)
-								) >> 2) & fmt->Bmask);
-						}
+						// all 4 are equal - propagate
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						continue;
 					}
-					else
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 1;
+
+					if (x > 0)
 					{
-						// last pixel in column - propagate
-						dst_p[dw] = pixval_tl;
+						clr = BIADAPT_GETPIX (src_p - 1);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
 					}
+
+					if (y > 0)
+					{
+						clr = BIADAPT_GETPIX (src_p - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (x + 2 < w)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (y + 2 < h)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+					
+					// least count wins
+					if (cl > cr)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					else if (cr > cl)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					else
+						BIADAPT_SETPIX (dst_p + dw,
+								Scale_BlendPixels (fmt, pixval_tl,
+								pixval_tr));
+				}
+				else if (pixval_tl == pixval_br)
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+				}
+				else if (pixval_tr == pixval_bl)
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
 				}
 				else
 				{
-					// last pixel in row - propagate
-					*dst_p = pixval_tl;
-					dst_p[dw] = pixval_tl;
-
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((pixval_tl & fmt->Rmask) +
+							   (pixval_bl & fmt->Rmask) +
+							   (pixval_tr & fmt->Rmask) +
+							   (pixval_br & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((pixval_tl & fmt->Gmask) +
+							   (pixval_bl & fmt->Gmask) +
+							   (pixval_tr & fmt->Gmask) +
+							   (pixval_br & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((pixval_tl & fmt->Bmask) +
+							   (pixval_bl & fmt->Bmask) +
+							   (pixval_tr & fmt->Bmask) +
+							   (pixval_br & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
 				}
-				dst_p++;
 			}
-			dst_p += dw;
 		}
 		break;
 	}
-	case 3:
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+	#undef BIADAPT_CLR
+
+	case 3: // 24bpp scaling
+	#define BIADAPT_GETPIX(p)        GET_PIX_24BIT(p)
+	#define BIADAPT_SETPIX(p, c)     SET_PIX_24BIT(p, c)
+	#define BIADAPT_BUF              PIXEL_24BIT
+	#define BIADAPT_CLR              Uint32
 	{
-		PIXEL_24BIT *src_p = (PIXEL_24BIT *)src->pixels;
-		PIXEL_24BIT *dst_p = (PIXEL_24BIT *)dst->pixels;
-		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; ++y)
+		for (y = 0; y < h; y++, dst_p += dw)
 		{
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < w; x++, src_p++, dst_p++)
 			{
-				pixval_tl = GET_PIX_24BIT (src_p);
+				pixval_tl = BIADAPT_GETPIX (src_p);
 				
-				SET_PIX_24BIT (dst_p, pixval_tl);
+				BIADAPT_SETPIX (dst_p, pixval_tl);
 				
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = GET_PIX_24BIT (src_p + w);
+					pixval_bl = BIADAPT_GETPIX (src_p + w);
 
 					if (pixval_tl == pixval_bl)
-						SET_PIX_24BIT (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 					else
-						SET_PIX_24BIT (dst_p + dw,
-								Scale_BlendPixels (
-								fmt, pixval_tl, pixval_bl
-								));
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, pixval_tl, pixval_bl)
+								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					SET_PIX_24BIT(dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 				}
 				dst_p++;
-				src_p++;
-				
-				if (x + 1 < w)
+
+
+				if (x + 1 >= w)
 				{
-					// check pixel to the right from the current one
-					pixval_tr = GET_PIX_24BIT (src_p);
+					// last pixel in row - propagate
+					BIADAPT_SETPIX (dst_p, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the right from the current one
+				pixval_tr = BIADAPT_GETPIX (src_p + 1);
+
+				if (pixval_tl == pixval_tr)
+					BIADAPT_SETPIX (dst_p, pixval_tr);
+				else
+					BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+							fmt, pixval_tl, pixval_tr)
+							);
+
+				if (y + 1 >= h)
+				{
+					// last pixel in column - propagate
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the bottom-right
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+
+				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+				{
+					int cl, cr;
+					BIADAPT_CLR clr;
 
 					if (pixval_tl == pixval_tr)
-						SET_PIX_24BIT (dst_p, pixval_tr);
-					else
-						SET_PIX_24BIT (dst_p, Scale_BlendPixels (
-								fmt, pixval_tl, pixval_tr
-								));
-
-					if (y + 1 < h)
 					{
-						// check pixel to the bottom-right
-						pixval_br = GET_PIX_24BIT (src_p + w);
-
-						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
-						{
-							// both pairs are equal, have to resolve
-							// the contention; we try detecting which
-							// color is background by looking for
-							// a line or a simple join
-							int cl = 1, cr = 1;
-
-							if (x > 0)
-							{
-								if (GET_PIX_24BIT (src_p - 2) == pixval_tl)
-									cl++;
-
-								if (GET_PIX_24BIT (src_p - 2 + w) == pixval_tr)
-									cr++;
-							}
-
-							if (y > 0)
-							{
-								if (GET_PIX_24BIT(src_p - 1 - w) == pixval_tl)
-									cl++;
-
-								if (GET_PIX_24BIT (src_p - w) == pixval_tr)
-									cr++;
-							}
-
-							if (x + 2 < w && GET_PIX_24BIT (src_p + 1) == pixval_tr)
-								cr++;
-
-							if (y + 2 < h && GET_PIX_24BIT (src_p + 1 + w) == pixval_tl)
-								cl++;
-							
-							// least count wins
-							if (cl > cr)
-								SET_PIX_24BIT (dst_p + dw, pixval_tr);
-							else if (cr > cl)
-								SET_PIX_24BIT (dst_p + dw, pixval_tl);
-							else
-								SET_PIX_24BIT (dst_p + dw,
-										Scale_BlendPixels (
-										fmt, pixval_tl, pixval_tr
-										));
-
-						}
-						else if (pixval_tl == pixval_br)
-						{
-							// main diagonal is same color
-							// use it value
-							SET_PIX_24BIT (dst_p + dw, pixval_tl);
-						}
-						else if (pixval_tr == pixval_bl)
-						{
-							// 2nd diagonal is same color
-							// use it value
-							SET_PIX_24BIT (dst_p + dw, pixval_tr);
-						}
-						else
-						{
-							// blend all 4
-							SET_PIX_24BIT (dst_p + dw,
-									((((pixval_tl & fmt->Rmask) +
-									   (pixval_bl & fmt->Rmask) +
-									   (pixval_tr & fmt->Rmask) +
-									   (pixval_br & fmt->Rmask)
-									 ) >> 2) & fmt->Rmask) |
-									((((pixval_tl & fmt->Gmask) +
-									   (pixval_bl & fmt->Gmask) +
-									   (pixval_tr & fmt->Gmask) +
-									   (pixval_br & fmt->Gmask)
-									 ) >> 2) & fmt->Gmask) |
-									((((pixval_tl & fmt->Bmask) +
-									   (pixval_bl & fmt->Bmask) +
-									   (pixval_tr & fmt->Bmask) +
-									   (pixval_br & fmt->Bmask)
-									) >> 2) & fmt->Bmask)
-									);
-						}
+						// all 4 are equal - propagate
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						continue;
 					}
-					else
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 1;
+
+					if (x > 0)
 					{
-						// last pixel in column - propagate
-						SET_PIX_24BIT (dst_p + dw, pixval_tl);
+						clr = BIADAPT_GETPIX (src_p - 1);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
 					}
+
+					if (y > 0)
+					{
+						clr = BIADAPT_GETPIX (src_p - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (x + 2 < w)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (y + 2 < h)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+					
+					// least count wins
+					if (cl > cr)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					else if (cr > cl)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					else
+						BIADAPT_SETPIX (dst_p + dw,
+								Scale_BlendPixels (fmt, pixval_tl,
+								pixval_tr));
+				}
+				else if (pixval_tl == pixval_br)
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+				}
+				else if (pixval_tr == pixval_bl)
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
 				}
 				else
 				{
-					// last pixel in row - propagate
-					SET_PIX_24BIT (dst_p, pixval_tl);
-					SET_PIX_24BIT (dst_p + dw, pixval_tl);
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((pixval_tl & fmt->Rmask) +
+							   (pixval_bl & fmt->Rmask) +
+							   (pixval_tr & fmt->Rmask) +
+							   (pixval_br & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((pixval_tl & fmt->Gmask) +
+							   (pixval_bl & fmt->Gmask) +
+							   (pixval_tr & fmt->Gmask) +
+							   (pixval_br & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((pixval_tl & fmt->Bmask) +
+							   (pixval_bl & fmt->Bmask) +
+							   (pixval_tr & fmt->Bmask) +
+							   (pixval_br & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
 				}
-				dst_p++;
 			}
-			dst_p += dw;
 		}
 		break;
 	}
-	case 4:
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+	#undef BIADAPT_CLR
+
+	case 4: // 32bpp scaling
+	#define BIADAPT_GETPIX(p)        ( *(Uint32 *)(p) )
+	#define BIADAPT_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
+	#define BIADAPT_BUF              Uint32
+	#define BIADAPT_CLR              Uint32
 	{
-		Uint32 *src_p = (Uint32 *)src->pixels;
-		Uint32 *dst_p = (Uint32 *)dst->pixels;
-		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
+		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
+		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; ++y)
+		for (y = 0; y < h; y++, dst_p += dw)
 		{
-			for (x = 0; x < w; ++x)
+			for (x = 0; x < w; x++, src_p++, dst_p++)
 			{
-				pixval_tl = *src_p;
+				pixval_tl = BIADAPT_GETPIX (src_p);
 				
-				*dst_p = pixval_tl;
+				BIADAPT_SETPIX (dst_p, pixval_tl);
 				
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = src_p[w];
+					pixval_bl = BIADAPT_GETPIX (src_p + w);
 
 					if (pixval_tl == pixval_bl)
-						dst_p[dw] = pixval_tl;
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 					else
-						dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_bl);
+						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels (
+								fmt, pixval_tl, pixval_bl)
+								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					dst_p[dw] = pixval_tl;
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
 				}
 				dst_p++;
-				src_p++;
-				
-				if (x + 1 < w)
+
+
+				if (x + 1 >= w)
 				{
-					// check pixel to the right from the current one
-					pixval_tr = *src_p;
+					// last pixel in row - propagate
+					BIADAPT_SETPIX (dst_p, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the right from the current one
+				pixval_tr = BIADAPT_GETPIX (src_p + 1);
+
+				if (pixval_tl == pixval_tr)
+					BIADAPT_SETPIX (dst_p, pixval_tr);
+				else
+					BIADAPT_SETPIX (dst_p, Scale_BlendPixels (
+							fmt, pixval_tl, pixval_tr)
+							);
+
+				if (y + 1 >= h)
+				{
+					// last pixel in column - propagate
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					continue;
+				}
+				
+				// check pixel to the bottom-right
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+
+				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+				{
+					int cl, cr;
+					BIADAPT_CLR clr;
 
 					if (pixval_tl == pixval_tr)
-						*dst_p = pixval_tr;
-					else
-						*dst_p = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
-
-					if (y + 1 < h)
 					{
-						// check pixel to the bottom-right
-						pixval_br = src_p[w];
-
-						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
-						{
-							// both pairs are equal, have to resolve
-							// the contention; we try detecting which
-							// color is background by looking for
-							// a line or a simple join
-							int cl = 1, cr = 1;
-
-							if (x > 0)
-							{
-								if (src_p[-2] == pixval_tl)
-									cl++;
-
-								if (src_p[-2 + w] == pixval_tr)
-									cr++;
-							}
-
-							if (y > 0)
-							{
-								if (src_p[-1 - w] == pixval_tl)
-									cl++;
-
-								if (src_p[-w] == pixval_tr)
-									cr++;
-							}
-
-							if (x + 2 < w && src_p[1] == pixval_tr)
-								cr++;
-
-							if (y + 2 < h && src_p[1 + w] == pixval_tl)
-								cl++;
-							
-							// least count wins
-							if (cl > cr)
-								dst_p[dw] = pixval_tr;
-							else if (cr > cl)
-								dst_p[dw] = pixval_tl;
-							else
-								dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
-
-						}
-						else if (pixval_tl == pixval_br)
-						{
-							// main diagonal is same color
-							// use its value
-							dst_p[dw] = pixval_tl;
-						}
-						else if (pixval_tr == pixval_bl)
-						{
-							// 2nd diagonal is same color
-							// use its value
-							dst_p[dw] = pixval_tr;
-						}
-						else
-						{
-							// blend all 4
-							dst_p[dw] = 
-								((((pixval_tl & fmt->Rmask) +
-								   (pixval_bl & fmt->Rmask) +
-								   (pixval_tr & fmt->Rmask) +
-								   (pixval_br & fmt->Rmask)
-								 ) >> 2) & fmt->Rmask) |
-								((((pixval_tl & fmt->Gmask) +
-								   (pixval_bl & fmt->Gmask) +
-								   (pixval_tr & fmt->Gmask) +
-								   (pixval_br & fmt->Gmask)
-								 ) >> 2) & fmt->Gmask) |
-								((((pixval_tl & fmt->Bmask) +
-								   (pixval_bl & fmt->Bmask) +
-								   (pixval_tr & fmt->Bmask) +
-								   (pixval_br & fmt->Bmask)
-								) >> 2) & fmt->Bmask);
-						}
+						// all 4 are equal - propagate
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						continue;
 					}
-					else
+
+					// both pairs are equal, have to resolve the pixel
+					// race; we try detecting which color is
+					// the background by looking for a line or an edge
+					// examine 8 pixels surrounding the current quad
+
+					cl = cr = 1;
+
+					if (x > 0)
 					{
-						// last pixel in column - propagate
-						dst_p[dw] = pixval_tl;
+						clr = BIADAPT_GETPIX (src_p - 1);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
 					}
+
+					if (y > 0)
+					{
+						clr = BIADAPT_GETPIX (src_p - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (x + 2 < w)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+
+					if (y + 2 < h)
+					{
+						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						if (clr == pixval_tl)
+							cl++;
+						else if (clr == pixval_tr)
+							cr++;
+					}
+					
+					// least count wins
+					if (cl > cr)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					else if (cr > cl)
+						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					else
+						BIADAPT_SETPIX (dst_p + dw,
+								Scale_BlendPixels (fmt, pixval_tl,
+								pixval_tr));
+				}
+				else if (pixval_tl == pixval_br)
+				{
+					// main diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+				}
+				else if (pixval_tr == pixval_bl)
+				{
+					// 2nd diagonal is same color
+					// use its value
+					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
 				}
 				else
 				{
-					// last pixel in row - propagate
-					*dst_p = pixval_tl;
-					dst_p[dw] = pixval_tl;
-
+					// blend all 4
+					BIADAPT_SETPIX (dst_p + dw,
+							((((pixval_tl & fmt->Rmask) +
+							   (pixval_bl & fmt->Rmask) +
+							   (pixval_tr & fmt->Rmask) +
+							   (pixval_br & fmt->Rmask)
+							 ) >> 2) & fmt->Rmask) |
+							((((pixval_tl & fmt->Gmask) +
+							   (pixval_bl & fmt->Gmask) +
+							   (pixval_tr & fmt->Gmask) +
+							   (pixval_br & fmt->Gmask)
+							 ) >> 2) & fmt->Gmask) |
+							((((pixval_tl & fmt->Bmask) +
+							   (pixval_bl & fmt->Bmask) +
+							   (pixval_tr & fmt->Bmask) +
+							   (pixval_br & fmt->Bmask)
+							) >> 2) & fmt->Bmask));
 				}
-				dst_p++;
 			}
-			dst_p += dw;
 		}
 		break;
-
 	}
+	#undef BIADAPT_GETPIX
+	#undef BIADAPT_SETPIX
+	#undef BIADAPT_BUF
+	#undef BIADAPT_CLR
+
 	}
 }
 
