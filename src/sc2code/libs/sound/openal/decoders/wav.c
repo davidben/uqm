@@ -146,7 +146,7 @@ void LoadWAVFile (ALbyte *file, ALenum *format, ALvoid **data, ALsizei *size, AL
 					if (FmtHdr.Format==0x0001)
 					{
 						*size=ChunkHdr.Size;
-						*data=malloc(ChunkHdr.Size+31);
+						*data=HMalloc(ChunkHdr.Size+31);
 						if (*data) fread(*data,FmtHdr.BlockAlign,ChunkHdr.Size/FmtHdr.BlockAlign,Stream);
 						memset(((char *)*data)+ChunkHdr.Size,0,31);
 					}

@@ -138,7 +138,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		
 		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as wav\n", filename);
 
-		decoder = (TFB_SoundDecoder *) malloc (sizeof (TFB_SoundDecoder));
+		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
 		decoder->buffer = NULL;
 		decoder->buffer_size = 0;
 		decoder->format = 0;
@@ -148,7 +148,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->length = 0; // FIXME should be calculated
 		decoder->decoder_info = decoder_info_wav;
 		decoder->type = SOUNDDECODER_WAV;
-		decoder->filename = (char *) malloc (strlen (filename) + 1);
+		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 
 		return decoder;
@@ -172,8 +172,8 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		mod->wrap = 0;
 		mod->loop = 0;
 		
-		decoder = (TFB_SoundDecoder *) malloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = malloc (buffer_size);
+		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
+		decoder->buffer = HMalloc (buffer_size);
 		decoder->buffer_size = buffer_size;
 		decoder->format = AL_FORMAT_STEREO16;
 		decoder->frequency = md_mixfreq;
@@ -182,7 +182,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->length = 0; // FIXME way to obtain this from mikmod?
 		decoder->decoder_info = decoder_info_mod;
 		decoder->type = SOUNDDECODER_MOD;
-		decoder->filename = (char *) malloc (strlen (filename) + 1);
+		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 		decoder->data = mod;
 
@@ -198,7 +198,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		
 		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as ogg\n", filename);
 
-		vf = (OggVorbis_File *) malloc (sizeof (OggVorbis_File));
+		vf = (OggVorbis_File *) HMalloc (sizeof (OggVorbis_File));
 		if (!vf)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): couldn't allocate mem for OggVorbis_File\n");
@@ -235,8 +235,8 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		
 		//fprintf (stderr, "SoundDecoder_Load(): ogg bitstream version %d, channels %d, rate %d, length %.2f seconds\n", vinfo->version, vinfo->channels, vinfo->rate, ov_time_total (vf, -1));
 
-		decoder = (TFB_SoundDecoder *) malloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = malloc (buffer_size);
+		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
+		decoder->buffer = HMalloc (buffer_size);
 		decoder->buffer_size = buffer_size;
 		if (vinfo->channels == 1)
 			decoder->format = AL_FORMAT_MONO16;
@@ -248,7 +248,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->length = (float) ov_time_total (vf, -1);
 		decoder->decoder_info = decoder_info_ogg;
 		decoder->type = SOUNDDECODER_OGG;
-		decoder->filename = (char *) malloc (strlen (filename) + 1);
+		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 		decoder->data = vf;
 

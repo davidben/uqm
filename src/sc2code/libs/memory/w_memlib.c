@@ -606,9 +606,19 @@ _alloc_mem (int size)
 void *
 HMalloc (int size)
 {
+    void *p;
+
 	if (size == 0) return (0);
 
-	return (_alloc_mem (size));
+    if ((p = _alloc_mem(size)) == NULL) {
+        fprintf(stderr, "Fatal Error: HMalloc(): out of memory.\n");
+#ifdef DEBUG
+        abort();
+#else
+        exit(1);
+#endif  /* #ifdef DEBUG */
+    }
+    return (p);
 }
 
 void
