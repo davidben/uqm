@@ -102,7 +102,7 @@ typedef unsigned short mode_t;
 #	elif defined (_MSC_VER)
 #		define alloca _alloca
 #	endif
-#else
+#elif defined(__linux__) || defined(__svr4__)
 #	include <alloca.h>
 #endif
 
