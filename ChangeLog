@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Updated mingw support with better directions, and easier build -PBlue
 - PCMenus now suports 'settings', and menu font is correct -PhracturedBlue
 - Added '-b' option to get PC Menus -PhracturedBlue
 - Check for a deadlock in savedgames and try to continue -PhracturedBlue

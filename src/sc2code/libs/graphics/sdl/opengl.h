@@ -38,7 +38,7 @@ SDL_Surface* TFB_GL_DisplayFormatAlpha (SDL_Surface *surface);
 
 #ifndef APIENTRY
 #define GLUT_APIENTRY_DEFINED
-#if (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED)
+#if __MINGW32__ || (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED)
 #define APIENTRY    __stdcall
 #else
 #define APIENTRY

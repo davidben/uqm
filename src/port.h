@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #define alloca _alloca
 #define snprintf _snprintf
 #endif

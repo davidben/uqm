@@ -9,7 +9,7 @@ default:
 	$(COMPILE) -o $@ -c $(CFLAGS) $<
 
 target-%:
-	$(COMPILE) $(LDFLAGS) -o $* $^
+	$(COMPILE) -o $* $^ $(LDFLAGS)
 
 -include $(DEPEND_FILE)
 

@@ -26,7 +26,7 @@
 	/* PATH_MAX is per POSIX defined in <limits.h> */
 #	include <limits.h>
 #endif
-#ifdef WIN32
+#ifdef _MSC_VER
 #	include <io.h>
 #	define access _access
 #	define F_OK 0
