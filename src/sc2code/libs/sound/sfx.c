@@ -102,7 +102,7 @@ SetPositionalObject (COUNT channel, void *positional_object)
 void
 UpdateSoundPosition (COUNT channel, SoundPosition pos)
 {
-	const float ATTENUATION = 70.0f;
+	const float ATTENUATION = 160.0f;
 	float fpos[3];
 
 	if (pos.positional)
