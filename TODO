@@ -102,6 +102,8 @@ Glitches (don't crash the game, medium priority):
   isn't restored when loading.
 - When exiting from planet surface with lander, the 3d planet isn't updated
   for a little moment which causes black track on planet to be seen
+- Moving crosshair in planet screen leaves a light trace to the image
+  in OpenGL mode (SDL surface format conversion problem)
 
 
 Implementation bugs (low priority):
