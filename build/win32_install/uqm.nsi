@@ -70,20 +70,16 @@
     !system 'upx --best --crp-ms=100000 -f -q ..\..\uqm.exe' ignore
     !packhdr temp.dat "upx.exe --best --crp-ms=100000 temp.dat"
   !endif
-  ;SetCompressor bzip2 
-  ;Interface
-  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
-  ;!define MUI_ICON "uqm.ico"
-  ;!define MUI_UNICON "uninstall.ico"
-  !define MUI_LICENSEPAGE
-  !define MUI_COMPONENTSPAGE
-  !define MUI_DIRECTORYPAGE
-  !define MUI_ABORTWARNING
-  
-  !define MUI_UNINSTALLER
-  !define MUI_UNCONFIRMPAGE
 
-  !define MUI_CUSTOMPAGECOMMANDS ;Use customized pages
+  ;Page order
+
+  !insertmacro MUI_PAGE_LICENSE
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
+  
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
 
   ;Language Files
     ;English
@@ -94,14 +90,6 @@
 
   OutFile "uqm-${MUI_VERSION}-win32-installer.exe"
 
-  ;Page order
-
-  !insertmacro MUI_PAGECOMMAND_LICENSE
-  !insertmacro MUI_PAGECOMMAND_COMPONENTS
-  !insertmacro MUI_PAGECOMMAND_DIRECTORY
-  Page custom DownloadOptions $(PageDownloadTitle)
-  !insertmacro MUI_PAGECOMMAND_INSTFILES
-
   SetOverwrite on
   AutoCloseWindow false
   ShowInstDetails show
@@ -111,10 +99,6 @@
   InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
   ;Things that need to be extracted on startup (keep these lines before any File command!)
-  ;!insertmacro MUI_RESERVEFILE_LANGDLL
-
-  ReserveFile "download.ini"
-  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
   ReserveFile "${NSISDIR}\Plugins\NSISdl.dll"
 
 ;Installer Sections
@@ -289,90 +273,16 @@ SectionIn 1 2
   CreateShortCut "$DESKTOP\${MUI_PRODUCT}.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
 SectionEnd
 
-;Display the Finish header 
-;Insert this macro after the sections if you are not using a finish page 
-!insertmacro MUI_SECTIONS_FINISHHEADER 
-
 ;--------------------------------
 ;Installer Functions
 
 Function .onInit
 
   ;Init InstallOptions
-  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "download.ini"
 
-	!define SF_SELECTED   1
-	!define SECTION_OFF   0xFFFFFFFE
+  !define SF_SELECTED   1
+  !define SECTION_OFF   0xFFFFFFFE
 
-FunctionEnd
-
-Function .onSelChange
-  Push $0
-    SectionGetFlags ${SecContent} $0
-    IntOp $0 $0 & 1
-    IntCmp $0 0 sel_change_voice
-  sel_change_voice:
-    SectionGetFlags ${SecVoice} $0
-    IntOp $0 $0 & 1
-    IntCmp $0 0 sel_change_done
-  sel_change_done:
-   Pop $0
-FunctionEnd
-
-Function DownloadOptions
-  Push $0
-  Call CheckDownloadDialog
-  StrCmp $0 "" 0 +2
-    Return
-  Push $0
-  !insertmacro MUI_HEADER_TEXT $(PageDownloadTitle) $(PageDownloadSubTitle)
-
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 1" text $(DownloadDialog1)
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 3" text $(DownloadDialog3)
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 4" text $(DownloadDialog4)
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 5" text $(DownloadDialog5)
-  Pop $R1
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "download.ini" "Field 2" text $R1
-  Pop $0
-
-  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "download.ini"
-FunctionEnd
-
-Function CheckDownloadDialog
-  Push $R0
-  Push $R1
-  Push $2
-  StrCpy $2 ""
-  StrCpy $R1 ", "
-  SectionGetFlags ${SecContent} $R0
-  Intop $R0 $R0 & "0x1"
-  IntCmp $R0 0 dlchk_voice
-    StrCpy $R0 $(SecContentName)
-    StrCpy $2 $R0
- dlchk_voice:
-  SectionGetFlags ${SecVoice} $R0
-  Intop $R0 $R0 & "0x1"
-  IntCmp $R0 0 dlchk_3domusic
-    StrLen $R0 $2
-    IntCmp $R0 0 +2
-      StrCpy $2 $2$R1
-    StrCpy $R0 $(SecVoiceName)
-    StrCpy $2 $2$R0
- dlchk_3domusic:
-  SectionGetFlags ${Sec3doMusic} $R0
-  Intop $R0 $R0 & "0x1"
-  IntCmp $R0 0 dlchk_end
-    StrLen $R0 $2
-    IntCmp $R0 0 +2
-      StrCpy $2 $2$R1
-    StrCpy $R0 $(Sec3doMusicName)
-    StrCpy $2 $2$R0
- dlchk_end:
-  StrCpy $0 $2
-  Pop $2
-  Pop $R1
-  Pop $R0
-  Return
 FunctionEnd
 
 !include "download.nsh"
@@ -399,7 +309,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;Add your stuff here
-
+  
   ; remove registry keys
   DeleteRegKey HKCU "Software\${MUI_PRODUCT}"
   DeleteRegKey HKLM "Software\${MUI_PRODUCT}"
@@ -442,8 +352,6 @@ Section "Uninstall"
   RMDir "$INSTDIR\${PACKAGE_ROOT}"
   RMDir "$INSTDIR\${CONTENT_ROOT}"
   RMDir "$INSTDIR"
-
-  !insertmacro MUI_UNFINISHHEADER
 
 SectionEnd
 
