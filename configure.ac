@@ -198,6 +198,7 @@ AC_CONFIG_FILES([
   src/sc2code/libs/sound/sdl/Makefile
   src/sc2code/libs/graphics/Makefile
   src/sc2code/libs/graphics/sdl/Makefile
+  src/sc2code/libs/task/Makefile
   src/sc2code/libs/threads/Makefile
   src/sc2code/libs/threads/sdl/Makefile
   src/sc2code/libs/time/Makefile
