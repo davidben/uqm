@@ -1,0 +1,17 @@
+Begin3
+Title:		sc2
+Version:	@VERSION@
+Entered-date:	@ISODATE@
+Description:	Star Control II
+		Open source release of Star Control II,
+Keywords:	game space exploration adventure arcade 
+Author: 	<edit sc2.lsm.in>
+Maintained-by:	
+Primary-site:	http://sc2.sourceforge.net
+		31k sc2-@VERSION@.tar.gz
+		500 sc2.lsm
+Alternate-site: 
+Original-site:  
+Platforms:      linux-i386 win32
+Copying-policy:	GNU copyleft
+End
