@@ -46,7 +46,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	GraphicsDriver = driver;
 
-	fprintf (stderr, "Initializing Pure-SDL graphics.).\n");
+	fprintf (stderr, "Initializing Pure-SDL graphics.\n");
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
 	fprintf (stderr, "SDL driver used: %s\n", VideoName);
