@@ -1,6 +1,6 @@
 Changes towards version 0.3:
 - Added quit options to ingame menu (bug #409), from Paxtez
-- Fix position of blinking save/load in melee, from Paxtez
+- Fix position of blinking save/load in melee (bug #406), from Paxtez
 - New packaging/io system. - SvdB
 - Exit confirmation dialog is prettier and safer, from Paxtez
 - Exiting from the main menu with F10 now exits the game -Michael
