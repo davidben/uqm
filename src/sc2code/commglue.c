@@ -18,7 +18,7 @@
 
 #include "starcon.h"
 #include "commglue.h"
-#include "SDL_wrapper.h"
+#include "libs/sound/trackplayer.h"
 
 void
 NPCPhrase (int index)

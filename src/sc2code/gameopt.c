@@ -19,7 +19,7 @@
 #include <ctype.h>
 #include "starcon.h"
 #include "commglue.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 

@@ -19,7 +19,7 @@
 #include "starcon.h"
 #include "lander.h"
 #include "lifeform.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 

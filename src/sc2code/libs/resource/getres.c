@@ -17,7 +17,7 @@
  */
 
 #include "resintrn.h"
-#include "SDL_wrapper.h"
+#include "port.h"
 
 char *_cur_resfile_name;
 

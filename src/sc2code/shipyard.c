@@ -18,7 +18,7 @@
 
 #include "starcon.h"
 #include "melee.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 

@@ -18,7 +18,7 @@
 
 #include "starcon.h"
 #include "commglue.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 void
 RepairSISBorder (void)

@@ -17,16 +17,17 @@
  */
 
 #include <ctype.h>
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/sound/trackplayer.h"
 #include "starcon.h"
 #include "commglue.h"
 
-void InitOscilloscope (Sint32 x, Sint32 y, Sint32 width, Sint32 height,
+void InitOscilloscope (int x, int y, int width, int height,
 		void *f);
 void SetSliderImage (void *f);
-void InitSlider (Sint32 x, Sint32 y, Sint32 width, Sint32 height,
-		Sint32 bwidth, Sint32 bheight, void *f);
-void Oscilloscope (Sint32 grab_data);
+void InitSlider (int x, int y, int width, int height,
+		int bwidth, int bheight, void *f);
+void Oscilloscope (int grab_data);
 void Slider (void);
 
 

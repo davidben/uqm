@@ -17,18 +17,17 @@
  */
 
 #include "starcon.h"
-#include "SDL_wrapper.h"
 
 extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
 		PRECT pRect, SIZE depth_delta);
 
 void SetPlanetMusic (BYTE planet_type);
 
-void SetPlanetTilt (Sint32 da);
+void SetPlanetTilt (int da);
 
 void RepairBackRect (PRECT pRect);
 
-int RotatePlanet (Sint32 x, Sint32 dx, Sint32 dy);
+int RotatePlanet (int x, int dx, int dy);
 
 #define NUM_BATCH_POINTS 64
 

@@ -7,7 +7,8 @@ SUBDIRS = decomp graphics input math memory resource sound strings video
 
 noinst_HEADERS = \
 	compiler.h declib.h errlib.h gfxlib.h inplib.h mathlib.h \
-	memlib.h reslib.h sndlib.h strlib.h timlib.h vargs.h vidlib.h
+	memlib.h reslib.h sndlib.h strlib.h timlib.h vargs.h vidlib.h \
+	misc.h
 
 INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
 	-I$(top_srcdir)/src \

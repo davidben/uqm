@@ -17,7 +17,7 @@
  */
 
 #include "starcon.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 COUNT DisplayFreeList;
 PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];

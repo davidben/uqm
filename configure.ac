@@ -27,8 +27,8 @@ AM_MAINTAINER_MODE
 
 # Configurables
 
-CFLAGS="$CFLAGS -g"
-CPPFLAGS="$CPPFLAGS -g"
+CFLAGS="$CFLAGS -g -O2 -DGFXMODULE_SDL_PURE"
+CPPFLAGS="$CPPFLAGS -g -O2 -DGFXMODULE_SDL_PURE"
 
 # These defines seem to be missing, and they are added here as a workaround.
 
@@ -82,45 +82,46 @@ AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR(Your system is missing SDL_imag
 AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR(Your system is missing SDL_mixer.h!))
 
 # Select platform dependent OpenGL libs.. (tweak your patform here)
-case "$target" in
-    *-*-linux-gnu*)
-        SYS_GL_LIBS="-lGL"
-        ;;
-    *-*-cygwin* | *-*-mingw32*)
-        SYS_GL_LIBS="-lopengl32"
-	SYS_GL_CFLAGS="-DGL_VERSION_1_2"
-        ;;
-    *-*-beos*)
-        SYS_GL_LIBS="-lGL"
-        ;;
-    *-*-darwin*)
-        SYS_GL_LIBS=""
-        ;;
-    *)
-        if test x$have_x = xyes; then
-            CFLAGS="$CFLAGS $X_CFLAGS"
-            SYS_GL_LIBS="$X_LIBS -lGL"
-        else
-            SYS_GL_LIBS="-lGL"
-        fi
-        ;;
-esac
+#case "$target" in
+#    *-*-linux-gnu*)
+#        SYS_GL_LIBS="-lGL"
+#        ;;
+#    *-*-cygwin* | *-*-mingw32*)
+#        SYS_GL_LIBS="-lopengl32"
+#	SYS_GL_CFLAGS="-DGL_VERSION_1_2"
+#        ;;
+#    *-*-beos*)
+#        SYS_GL_LIBS="-lGL"
+#        ;;
+#    *-*-darwin*)
+#        SYS_GL_LIBS=""
+#        ;;
+#    *)
+#        if test x$have_x = xyes; then
+#            CFLAGS="$CFLAGS $X_CFLAGS"
+#            SYS_GL_LIBS="$X_LIBS -lGL"
+#        else
+#            SYS_GL_LIBS="-lGL"
+#        fi
+#        ;;
+#esac
 
 # Check for OpenGL
-AC_MSG_CHECKING(for OpenGL support)
-have_opengl=no
-AC_TRY_COMPILE([
+#AC_MSG_CHECKING(for OpenGL support)
+#have_opengl=no
+#AC_TRY_COMPILE([
  #if defined(__APPLE__) && defined(__MACH__)
  #include <OpenGL/gl.h>
  #else
  #include <GL/gl.h>
  #endif
-],[
-],[
-have_opengl=yes
-])
-AC_MSG_RESULT($have_opengl)
-GL_LIBS=$SYS_GL_LIBS
+#],[
+#],[
+#have_opengl=yes
+#])
+#AC_MSG_RESULT($have_opengl)
+#GL_LIBS=$SYS_GL_LIBS
+GL_LIBS=
 AC_SUBST(GL_LIBS)
 
 # Figure out which math library to use
@@ -193,8 +194,13 @@ AC_CONFIG_FILES([
   src/sc2code/libs/resource/Makefile
   src/sc2code/libs/math/Makefile
   src/sc2code/libs/input/Makefile
+  src/sc2code/libs/input/sdl/Makefile
   src/sc2code/libs/sound/Makefile
+  src/sc2code/libs/sound/sdl/Makefile
   src/sc2code/libs/graphics/Makefile
+  src/sc2code/libs/graphics/sdl/Makefile
+  src/sc2code/libs/graphics/sdl/opengl/Makefile
+  src/sc2code/libs/graphics/sdl/pure/Makefile
   src/sc2code/libs/video/Makefile
   src/sc2code/planets/Makefile
   src/sc2code/ships/Makefile

@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "GFXMODULE_SDL_PURE" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=snBsc.exe
@@ -50,7 +50,7 @@ BSC32=snBsc.exe
 # ADD BSC32 /nologo
 LINK32=snLink.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib opengl32.lib glu32.lib /nodefaultlib:"msvcrtd.lib" /nologo /subsystem:console /machine:I386 /out:"../../Content/Starcon2.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nodefaultlib:"msvcrtd.lib" /nologo /subsystem:console /machine:I386 /out:"../../Content/Starcon2.exe"
 
 !ELSEIF  "$(CFG)" == "Starcon2 - Win32 Debug"
 
@@ -66,7 +66,7 @@ LINK32=snLink.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "GFXMODULE_SDL_PURE" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=snBsc.exe
@@ -74,7 +74,7 @@ BSC32=snBsc.exe
 # ADD BSC32 /nologo /o"Starcon2.bsc"
 LINK32=snLink.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib opengl32.lib glu32.lib /nodefaultlib:"msvcrt.lib" /nologo /subsystem:console /debug /machine:I386 /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nodefaultlib:"msvcrt.lib" /nologo /subsystem:console /debug /machine:I386 /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -85,8 +85,20 @@ LINK32=snLink.exe
 # Name "Starcon2 - Win32 Debug"
 # Begin Group "Source Files"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "3DO Code"
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\starcon2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\port.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\port.h
+# End Source File
+# Begin Group "sc2code"
 
 # PROP Default_Filter ""
 # Begin Group "libs"
@@ -161,10 +173,6 @@ SOURCE=..\sc2code\libs\graphics\frame.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\getbody.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\gfxintrn.h
 # End Source File
 # Begin Source File
@@ -207,6 +215,60 @@ SOURCE=..\sc2code\libs\graphics\resgfx.c
 
 SOURCE=..\sc2code\libs\graphics\stamp.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\gfx_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\gfx_common.h
+# End Source File
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
+# End Source File
+# Begin Group "opengl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\opengl\opengl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\opengl\opengl.h
+# End Source File
+# End Group
+
+# Begin Group "pure"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure\pure.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure\pure.h
+# End Source File
+# End Group
+
+# End Group
 # End Group
 # Begin Group "input"
 
@@ -217,8 +279,21 @@ SOURCE=..\sc2code\libs\input\inpintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\input.c
+SOURCE=..\sc2code\libs\input\input_common.c
 # End Source File
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\input.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\input.h
+# End Source File
+# End Group
+
 # End Group
 # Begin Group "math"
 
@@ -297,11 +372,7 @@ SOURCE=..\sc2code\libs\sound\fileinst.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\modfuncs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\play.c
+SOURCE=..\sc2code\libs\sound\play.h
 # End Source File
 # Begin Source File
 
@@ -315,6 +386,35 @@ SOURCE=..\sc2code\libs\sound\resinst.c
 
 SOURCE=..\sc2code\libs\sound\sndintrn.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\trackplayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sound_common.c
+# End Source File
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\modfuncs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\play.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\sound.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\trackplayer.c
+# End Source File
+
+# End Group
 # End Group
 # Begin Group "strings"
 
@@ -400,6 +500,11 @@ SOURCE=..\sc2code\libs\vargs.h
 
 SOURCE=..\sc2code\libs\vidlib.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\misc.h
+# End Source File
+
 # End Group
 # Begin Group "comm"
 
@@ -2880,38 +2985,6 @@ SOURCE=..\sc2code\weapon.c
 # Begin Source File
 
 SOURCE=..\sc2code\weapon.h
-# End Source File
-# End Group
-# Begin Group "NeoStarcon2 Wrappers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\SDL_wrapper.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\SDL_wrapper.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\starcon2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\trackplayer.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\port.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\port.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\gl.h
 # End Source File
 # End Group
 # End Group

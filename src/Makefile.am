@@ -14,7 +14,7 @@ INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
 
 bin_PROGRAMS = sc2
 
-sc2_SOURCES = SDL_wrapper.c port.c starcon2.c trackplayer.c
+sc2_SOURCES = port.c starcon2.c
 sc2_LDADD = sc2code/libsc2.la @SDL_LIBS@ @GL_LIBS@ @SMPEG_LIBS@
-noinst_HEADERS = SDL_wrapper.h
+noinst_HEADERS = port.h
 

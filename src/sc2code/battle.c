@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 //#include "starcon.h"
 
 QUEUE disp_q;

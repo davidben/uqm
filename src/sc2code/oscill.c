@@ -23,20 +23,19 @@
 //#include "filefunctions.h"
 //#include "BlockFile.h"
 
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
+//Modified by Mika (removed use of SDL datatypes)
 
-#include "SDL/SDL.h"
-
-typedef Uint8 uint8;
-typedef Uint8 uchar;
-typedef Sint8 sint8;
-typedef Uint16 uint16;
-typedef Sint16 sint16;
-typedef Uint32 uint32;
-typedef Sint32 int32;
-typedef Sint32 sint32;
+typedef unsigned char uint8;
+typedef unsigned char uchar;
+typedef signed char sint8;
+typedef unsigned short uint16;
+typedef signed short sint16;
+typedef unsigned int uint32;
+typedef signed int int32;
+typedef signed int sint32;
 
 //End Added by Chris
 

@@ -17,7 +17,7 @@
  */
 
 #include "starcon.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 PMENU_STATE pMenuState;
 

@@ -17,7 +17,7 @@
  */
 
 #include "strintrn.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 #ifdef WIN32
 #include <io.h>
 #endif

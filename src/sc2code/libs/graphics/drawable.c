@@ -17,7 +17,6 @@
  */
 
 #include "gfxintrn.h"
-#include "SDL_wrapper.h"
 
 FRAMEPTR _CurFramePtr;
 
@@ -56,66 +55,6 @@ SetContextBGFrame (FRAME Frame)
 		SwitchContextBGFrame (Frame);
 
 	return (LastFrame);
-}
-
-DRAWABLE
-_request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
-		CREATE_FLAGS flags, SIZE width, SIZE height)
-{
-	DRAWABLE Drawable;
-
-	Drawable = AllocDrawableImage (
-			NumFrames, DrawableType, flags, width, height
-			);
-	if (Drawable)
-	{
-		DRAWABLEPTR DrawablePtr;
-
-		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
-		{
-			FreeDrawable (Drawable);
-			Drawable = 0;
-		}
-		else
-		{
-			int imgw, imgh;
-			FRAMEPTR FramePtr;
-
-			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
-			TYPE_SET (DrawablePtr->FlagsAndIndex, flags << FTYPE_SHIFT);
-			INDEX_SET (DrawablePtr->FlagsAndIndex, NumFrames - 1);
-
-			imgw = (flags & MAPPED_TO_DISPLAY) ? width * ScreenWidthActual / ScreenWidth : width;
-			imgh = (flags & MAPPED_TO_DISPLAY) ? height * ScreenHeightActual / ScreenHeight : height;
-			FramePtr = &DrawablePtr->Frame[NumFrames - 1];
-			while (NumFrames--)
-			{
-				TFB_Image *Image;
-
-
-				if (DrawableType == RAM_DRAWABLE
-						&& (Image = TFB_LoadImage (SDL_CreateRGBSurface (
-										SDL_HWSURFACE,
-										imgw,
-										imgh,
-										24,
-										0x00FF0000,
-										0x0000FF00,
-										0x000000FF,
-										0x00000000
-										))))
-					FramePtr->DataOffs = (BYTE *)Image - (BYTE *)FramePtr;
-
-				TYPE_SET (FramePtr->TypeIndexAndFlags, DrawableType);
-				INDEX_SET (FramePtr->TypeIndexAndFlags, NumFrames);
-				SetFrameBounds (FramePtr, width, height);
-				--FramePtr;
-			}
-			UnlockDrawable (Drawable);
-		}
-	}
-
-	return (Drawable);
 }
 
 DRAWABLE

@@ -23,8 +23,7 @@
 //#include "filefunctions.h"
 //#include "BlockFile.h"
 #include "starcon.h"
-#include "SDL.h"
-#include "SDL_wrapper.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 
@@ -55,7 +54,7 @@
 
 #define NUM_TINTS 4
 
-#define PIXC_DUP(v) (((Uint32)(v) << PPMP_0_SHIFT) | ((Uint32)(v) << PPMP_1_SHIFT))
+#define PIXC_DUP(v) (((unsigned int)(v) << PPMP_0_SHIFT) | ((unsigned int)(v) << PPMP_1_SHIFT))
 #define PIXC_UNCODED16 (PIXC_DUP (PPMPC_MF_8 | PPMPC_SF_8))
 #define PIXC_UNCODED8 (PIXC_DUP (PPMPC_MF_8 | PPMPC_SF_8))
 #define PIXC_CODED (PIXC_DUP (PPMPC_MS_PIN | PPMPC_SF_8))
@@ -89,9 +88,9 @@
 
 typedef struct
 {
-	Sint32 x0[15], x1[15], y0[15], y1[15];
-	Sint32 ystep[15];
-	Sint32 src_ws[XBANDS];
+	int x0[15], x1[15], y0[15], y1[15];
+	int ystep[15];
+	int src_ws[XBANDS];
 
 	CCB planet_ccb, surface_ccb, tint_ccb[NUM_TINTS];
 	
@@ -99,13 +98,13 @@ typedef struct
 	
 	CCB repair_ccb[2];
 	
-	Sint32 black_circ_plut[16];
+	int black_circ_plut[16];
 
 	UBYTE rmap[HEIGHT][LINE_PIXELS];
 
 	CCB *cur_ccb;
 
-	Sint32 old_sx, old_sy;
+	int old_sx, old_sy;
 	
 	CCB plCCB[NUM_CELS];
 	
@@ -113,7 +112,7 @@ typedef struct
 	UBYTE zoom_batch;
 
 #ifdef SCALE_ROTATE
-	Sint32 scale;
+	int scale;
 #endif
 
 	CCB *pcirc_ccb, *pblur_ccb;
@@ -178,11 +177,11 @@ static PLANET_STUFF *planet_stuff;
 #define SCALE_CEL(ccb,cx,cy) \
 		do \
 		{ \
-			Sint32 s, _dx, _dy; \
+			int s, _dx, _dy; \
 			\
 			s = scale & SCALE_AMT_MASK; \
-			_dx = (Sint32)((scale & SCALE_X_MASK) >> SCALE_X_SHIFT) - 1; \
-			_dy = (Sint32)((scale & SCALE_Y_MASK) >> SCALE_Y_SHIFT) - 1; \
+			_dx = (int)((scale & SCALE_X_MASK) >> SCALE_X_SHIFT) - 1; \
+			_dy = (int)((scale & SCALE_Y_MASK) >> SCALE_Y_SHIFT) - 1; \
 			(ccb)->ccb_XPos = (((ccb)->ccb_XPos - (cx)) * s) >> SCALE_AMT_SHIFT; \
 			(ccb)->ccb_YPos = (((ccb)->ccb_YPos - (cy)) * s) >> SCALE_AMT_SHIFT; \
 			if (_dx < 0) \
@@ -213,7 +212,7 @@ static PLANET_STUFF *planet_stuff;
 static void
 build_steps ()
 {
-	Sint32 y, i, c, inc;
+	int y, i, c, inc;
 
 	c = 1;
 	inc = 1;
@@ -249,9 +248,9 @@ for (i = 0; y < (HEIGHT >> 1); i++)
 }
 
 static void
-build_tables (Sint32 da)
+build_tables (int da)
 {
-	Sint32 y, i;
+	int y, i;
 
 	build_steps ();
 	
@@ -259,7 +258,7 @@ build_tables (Sint32 da)
 	
 	for (y = 0, i = 0; y <= (HEIGHT >> 1); i++)
 	{
-		Sint32 dx, dy, a, h;
+		int dx, dy, a, h;
 		
 		h = ystep[i];
 
@@ -300,14 +299,14 @@ printf ("%ld,%ld\n", x1[i] >> 16, y1[i] >> 16);
 }
 
 static void
-draw_band (Sint32 src_x, Sint32 src_y, Sint32 dst_cx, Sint32 dst_cy)
+draw_band (int src_x, int src_y, int dst_cx, int dst_cy)
 {
 	//I_CANNOT_FIGURE_OUT_HOW_TO_FIX_THIS_FILE___STREAM???();
 		
-		Sint32 *sp;
-	Sint32 i;
+		int *sp;
+	int i;
 	
-	sp = (Sint32 *)planet_ccb.ccb_SourcePtr + src_y * (LINE_PIXELS >> 1);
+	sp = (int *)planet_ccb.ccb_SourcePtr + src_y * (LINE_PIXELS >> 1);
 
 	for (i = 0; i < XBANDS; i++)
 	{
@@ -330,9 +329,9 @@ draw_band (Sint32 src_x, Sint32 src_y, Sint32 dst_cx, Sint32 dst_cy)
 }
 
 static void
-set_band_cels (Sint32 src_y, Sint32 src_h, Sint32 band)
+set_band_cels (int src_y, int src_h, int band)
 {
-	Sint32 i, dst_x0, dst_y0, dst_x1, dst_y1, dx0, dy0, dx1, dy1;
+	int i, dst_x0, dst_y0, dst_x1, dst_y1, dx0, dy0, dx1, dy1;
 
 	if (src_y > (HEIGHT >> 1))
 	{
@@ -376,7 +375,7 @@ set_band_cels (Sint32 src_y, Sint32 src_h, Sint32 band)
 #define dd d[i]
 #define src_w src_ws[i]
 		POINT quadpts[4];
-		Sint32 d[XBANDS] = { 17, 47, 64, 64, 47, 17 };
+		int d[XBANDS] = { 17, 47, 64, 64, 47, 17 };
 
 		quadpts[0].x = dst_x0;
 		quadpts[0].y = dst_y0;
@@ -413,7 +412,7 @@ set_band_cels (Sint32 src_y, Sint32 src_h, Sint32 band)
 static void
 init_rotate_cels ()
 {
-	Sint32 i, incr, y;
+	int i, incr, y;
 	
 	incr = 1;
 	cur_ccb = plCCB;
@@ -438,10 +437,10 @@ printf ("using %d cels for rotate\n", cur_ccb - plCCB);
 #endif
 
 void
-SetPlanetTilt (Sint32 da)
+SetPlanetTilt (int da)
 {
 #if 0
-	Sint32 w, i;
+	int w, i;
 
 	shield_pulse = MAX_PULSE_RED;
 	for (i = 0, cur_ccb = plCCB; i < NUM_ROTATE_CELS; i++, cur_ccb++)
@@ -452,7 +451,7 @@ SetPlanetTilt (Sint32 da)
 	
 	if (!src_ws[0])
 	{
-		Sint32 err;
+		int err;
 		
 		w = (WIDTH / 2) / XBANDS;
 		err = XBANDS;
@@ -487,13 +486,13 @@ SetPlanetTilt (Sint32 da)
 }
 
 int
-RotatePlanet (Sint32 x, Sint32 dx, Sint32 dy)
+RotatePlanet (int x, int dx, int dy)
 {
 #if 1
 		return (0);
 #else
-	Sint32 i, y;
-	Sint32 incr;
+	int i, y;
+	int incr;
 	CCB *first;
 
 	dx <<= 16;
@@ -661,7 +660,7 @@ while (AnyButtonPress (FALSE));
 }
 
 void
-DrawPlanet (Sint32 x, Sint32 y, Sint32 dy, Uint32 rgb)
+DrawPlanet (int x, int y, int dy, unsigned int rgb)
 {
 #if 1
 	STAMP s;
@@ -673,7 +672,7 @@ DrawPlanet (Sint32 x, Sint32 y, Sint32 dy, Uint32 rgb)
 #else
 	if (rgb || !pshield_ccb->ccb_HDY)
 	{
-		Sint32 i, nt, my;
+		int i, nt, my;
 
 		if (!pshield_ccb->ccb_HDY)
 		{
@@ -723,7 +722,7 @@ DrawPlanet (Sint32 x, Sint32 y, Sint32 dy, Uint32 rgb)
 				else
 					tint_ccb[i].ccb_YPos = my << 16;
 				tint_ccb[i].ccb_XPos = x << 16;
-				*((Uint32 *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
+				*((unsigned int *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
 				add_cel (&tint_ccb[i]);
 			}
 		}
