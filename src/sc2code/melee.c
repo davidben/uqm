@@ -664,6 +664,38 @@ ReadTeamImage (TEAM_IMAGE *pTI, FILE *load_fp)
 	return (ReadResFile (pTI, sizeof (*pTI), 1, load_fp) == 1 ? 0 : -1);
 }
 
+static int
+LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
+		UNICODE* pFilePath, UNICODE** ppFileName)
+{
+	UNICODE file[PATH_MAX];	// local buf if needed
+	UNICODE *pfile;
+	UNICODE *loc_buf;
+	FILE *load_fp;
+	int status;
+
+	pfile = pFilePath != NULL_PTR ? pFilePath : file;
+	strcpy (pfile, meleeDir);
+	loc_buf = pfile + strlen (pfile);
+
+	GetDirEntryContents (DirEntry, (STRINGPTR)loc_buf, FALSE);
+	if ((load_fp = OpenResFile (pfile, "rb")) == 0)
+		status = -1;
+	else
+	{
+		if (LengthResFile (load_fp) != sizeof (*pTI))
+			status = -1;
+		else
+			status = ReadTeamImage (pTI, load_fp);
+		CloseResFile (load_fp);
+	}
+
+	if (pFilePath != NULL_PTR && ppFileName != NULL_PTR)
+		*ppFileName = loc_buf;
+
+	return status;
+}
+
 static void
 DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 {
@@ -747,18 +779,14 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					pMS->FileList[bot - top] = pMS->PreBuiltList[bot];
 				else
 				{
-					FILE *load_fp;
-
-					GetDirEntryContents (SetAbsDirEntryTableIndex (
+					pMS->TeamDE = SetAbsDirEntryTableIndex (
 							pMS->TeamDE, bot - NUM_PREBUILT
-							), (STRINGPTR)buf, FALSE);
-					load_fp = OpenResFile (buf, "rb");
-					if (load_fp)
+							);
+					if (-1 == LoadTeamImage (pMS->TeamDE,
+							&pMS->FileList[bot - top], NULL_PTR, NULL_PTR
+							))
 					{
-						if (LengthResFile (load_fp) != sizeof (pMS->FileList[bot - top])
-								|| ReadTeamImage (&pMS->FileList[bot - top], load_fp) == -1)
-							pMS->FileList[bot - top] = pMS->PreBuiltList[0];
-						CloseResFile (load_fp);
+						pMS->FileList[bot - top] = pMS->PreBuiltList[0];
 					}
 				}
 
@@ -1018,11 +1046,9 @@ LoadTeamList (PMELEE_STATE pMS, UNICODE *pbuf)
 	COUNT num_entries;
 	char dir[PATH_MAX];
 	char file[PATH_MAX];
-	char *loc_buf;
+	UNICODE *loc_buf;
 
 	sprintf (dir, "%s*.mle", meleeDir);
-	strcpy (file, meleeDir);
-	loc_buf = file + strlen (file);
 	
 GetNewList:
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
@@ -1034,20 +1060,10 @@ GetNewList:
 	while (num_entries--)
 	{
 		int status;
-		FILE *load_fp;
 		TEAM_IMAGE TI;
 
-		GetDirEntryContents (pMS->TeamDE, (STRINGPTR)loc_buf, FALSE);
-		if ((load_fp = OpenResFile (file, "rb")) == 0)
-			status = -1;
-		else
-		{
-			if (LengthResFile (load_fp) != sizeof (TI))
-				status = -1;
-			else
-				status = ReadTeamImage (&TI, load_fp);
-			CloseResFile (load_fp);
-		}
+		status = LoadTeamImage(pMS->TeamDE, &TI, file, &loc_buf);
+
 		if (status == -1)
 		{
 			DeleteResFile (file);
