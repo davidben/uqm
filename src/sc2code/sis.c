@@ -1335,7 +1335,7 @@ int flash_rect_func(void *data)
 void
 SetFlashRect (PRECT pRect, FRAME f)
 {
-	RECT clip_r, temp_r, old_r;
+	RECT clip_r, temp_r, flash_rect1, old_r;
 	CONTEXT OldContext;
 	FRAME old_f;
 	int create_flash = 0;
@@ -1345,6 +1345,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 
 	old_r = flash_rect;
 	old_f = flash_frame;
+	flash_rect1 = flash_rect;
 		
 	if (pRect != (PRECT)~0L)
 	{
@@ -1374,7 +1375,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 
 	if (pRect == 0 || pRect->extent.width == 0)
 	{
-		flash_rect.extent.width = 0;
+		flash_rect1.extent.width = 0;
 		if (flash_task)
 		{
 			ClearSemaphore (GraphicsSem);
@@ -1384,16 +1385,18 @@ SetFlashRect (PRECT pRect, FRAME f)
 	}
 	else
 	{
-		flash_rect = *pRect;
-		flash_rect.corner.x += clip_r.corner.x;
-		flash_rect.corner.y += clip_r.corner.y;
-		flash_rect.extent.height += flash_rect.corner.y & 1;
-		flash_rect.corner.y &= ~1;
+		flash_rect1 = *pRect;
+		flash_rect1.corner.x += clip_r.corner.x;
+		flash_rect1.corner.y += clip_r.corner.y;
+		flash_rect1.extent.height += flash_rect.corner.y & 1;
+		flash_rect1.corner.y &= ~1;
 		create_flash = 1;
 
 	}
 	
+	LockMutex (flash_mutex);
 	flash_frame = f;
+	flash_rect = flash_rect1;
 
 	if (old_r.extent.width
 			&& (old_r.extent.width != flash_rect.extent.width
@@ -1422,7 +1425,6 @@ SetFlashRect (PRECT pRect, FRAME f)
 			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
 		flash_screen_frame = CaptureDrawable (LoadDisplayPixmap (&flash_rect, (FRAME)0));
 	}
-	LockMutex (flash_mutex);
 	flash_changed = 1;
 	UnlockMutex (flash_mutex);
 	// we create the thread after the LoadIntoExtraScreen

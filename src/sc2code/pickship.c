@@ -203,6 +203,7 @@ ChangeSelection:
 				font_DrawText (&t);
 			}
 
+			SetFlashRect ((RECT *)0, (FRAME)0);
 			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 			ClearSemaphore (GraphicsSem);
 		}
