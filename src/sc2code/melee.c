@@ -18,7 +18,9 @@
 
 #include <ctype.h>
 #include <sys/param.h>
+#include <sys/param.h>
 #include "starcon.h"
+#include "options.h"
 #include "melee.h"
 #include "options.h"
 
@@ -1757,10 +1759,8 @@ Melee (void)
 		LoadMeleeInfo (&MenuState);
 		{
 			FILE *load_fp;
-			char file[MAXPATHLEN];
-			
-			sprintf (file, "%smelee.cfg", configDir);
-			load_fp = OpenResFile (file, "rb");
+
+			load_fp = OpenResFile ("melee.cfg", "rb");
 			if (load_fp)
 			{
 				int status;
@@ -1800,6 +1800,7 @@ Melee (void)
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
 		DoInput ((PVOID)&MenuState);
 
+			char file[MAXPATHLEN];
 		while (SoundPlaying ())
 			;
 
@@ -1809,8 +1810,7 @@ Melee (void)
 			BOOLEAN err;
 				
 			err = FALSE;
-			sprintf (file, "%smelee.cfg", configDir);
-			save_fp = OpenResFile (file, "wb");
+			save_fp = OpenResFile ("melee.cfg", "wb");
 			if (save_fp)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
