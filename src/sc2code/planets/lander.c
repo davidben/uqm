@@ -1951,6 +1951,8 @@ PlanetSide (PMENU_STATE pMS)
 	InitPlanetSide ();
 
 	TimeIn = GetTimeCounter ();
+	pSolarSysState->MenuState.flash_rect1.corner.x = LOWORD (TimeIn);
+	pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
 	for (index = 0; index <= NUM_LANDING_DELTAS; ++index)
 	{
 		if (index == 0)
@@ -1958,8 +1960,10 @@ PlanetSide (PMENU_STATE pMS)
 		else
 			TimeIn += ONE_SECOND / 60;
 
-		ScrollPlanetSide (0, 0, index);
-		SleepThreadUntil (TimeIn);
+		do 
+		{
+			ScrollPlanetSide (0, 0, index);
+		} while (GetTimeCounter () < TimeIn);
 	}
 	PSD.InTransit = FALSE;
 
