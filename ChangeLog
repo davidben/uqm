@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- AWARE_OF_SAMATRA flag is now written as well as read (closes #113), 
+  from Nic
 - Subtitle drawing is now cached (closes #313) -Mika
 - Fix glitch and lockup in dialogs when rewinding (bugs #311 and #272),
   from chmmravatar

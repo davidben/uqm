@@ -458,6 +458,7 @@ Intro (void)
 	{
 		NPCPhrase (HELLO_SAMATRA);
 
+		SET_GAME_STATE (AWARE_OF_SAMATRA, 1);
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
 	else
