@@ -141,6 +141,7 @@ TFB_DrawCommandQueue_Create()
 		myQueue->Front = 0;
 		myQueue->InsertionPoint = 0;
 		myQueue->Batching = 0;
+		myQueue->FullSize = 0;
 		myQueue->Size = 0;
 
 		DCQ_sem = CreateSemaphore(1);
