@@ -226,8 +226,9 @@ mkdir -p -- "$PREFIX"/lib/uqm 2> /dev/null
 mkdir -p -- "$PREFIX"/bin 2> /dev/null
 
 echo "Unpacking packages..."
-for PACKAGE in `selected_components`; do
-	gzip -dc "$CONTENT_FILE" | tar -xf - -C "$PREFIX"/
+for COMPFILE in `selected_components`; do
+	echo "- $COMPFILE"
+	gzip -dc "$COMPFILE" | tar -xf - -C "$PREFIX"/
 done
 
 echo "Unpacking other stuff..."
