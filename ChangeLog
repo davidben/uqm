@@ -1,4 +1,6 @@
 0.2:
+- Crash during loading from orbit fixed, from PhracturedBlue
+- Starmap issue when orbiting earth fixed, from PhracturedBlue
 - Oscilloscope is now implemented (OpenAL)
 - Moved initialisation of _MemorySem to memInit - SvdB
 - Planet scan is now cleared correctly, from l0ci
