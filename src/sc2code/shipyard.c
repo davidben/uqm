@@ -298,6 +298,8 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 	if (StarShipPtr->ShipInfo.crew_level >=
 			TemplatePtr->RaceDescPtr->ship_info.crew_level)
 		wsprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
+	else if (StarShipPtr->ShipInfo.crew_level == 0)
+		wsprintf (buf, "SCRAP");
 	else
 		wsprintf (buf, "%u/%u",
 				StarShipPtr->ShipInfo.crew_level,
@@ -320,7 +322,9 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
 	}
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
+	SetContextForeGroundColor ((StarShipPtr->ShipInfo.crew_level != 0) ?
+			(BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)):
+			(BUILD_COLOR (MAKE_RGB15 (0x12, 0x00, 0x00), 0x2B)));
 	font_DrawText (&t);
 }
 
@@ -773,9 +777,8 @@ DoModifyShips (PMENU_STATE pMS)
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
 							SetSemaphore (GraphicsSem);
-							DeltaSISGauges (
-									UNDEFINED_DELTA, UNDEFINED_DELTA, -((int)ShipCost[Index])
-									);
+							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
+									-((int)ShipCost[Index]));
 							r.corner.x = pMS->flash_rect0.corner.x;
 							r.corner.y = pMS->flash_rect0.corner.y
 									+ pMS->flash_rect0.extent.height - 6;
@@ -816,7 +819,25 @@ DoModifyShips (PMENU_STATE pMS)
 				}
 				else if (select || cancel)
 				{					
-					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
+
+					if (StarShipPtr->ShipInfo.crew_level == 0)
+					{
+							SetFlashRect (NULL_PTR, (FRAME)0);
+							ClearSemaphore (GraphicsSem);
+							ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);
+							SetSemaphore (GraphicsSem);
+							UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+							RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+							FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
+							r.corner.x = pMS->flash_rect0.corner.x;
+							r.corner.y = pMS->flash_rect0.corner.y;
+							r.extent.width = SHIP_WIN_WIDTH;
+							r.extent.height = SHIP_WIN_HEIGHT;
+							SetContext (SpaceContext);
+							SetFlashRect (&r, (FRAME)0);
+							pMS->delta_item ^= MODIFY_CREW_FLAG;
+					}
+					else if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
 						goto ChangeFlashRect;
 					else if (hStarShip == 0)
 					{
@@ -846,7 +867,7 @@ DoModifyShips (PMENU_STATE pMS)
 								);
 
 					crew_delta = 0;
-					if (dx < 0 || dy < 0)
+					if (dy < 0)
 					{
 						if (hStarShip == 0)
 						{
@@ -876,17 +897,19 @@ DoModifyShips (PMENU_STATE pMS)
 							TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
 									&GLOBAL (avail_race_q), hTemplate
 									);
-							if (GLOBAL_SIS (ResUnits) >=
-									(DWORD)GLOBAL (CrewCost)
+							if (GLOBAL_SIS (ResUnits) >= (DWORD)GLOBAL (CrewCost)
 									&& StarShipPtr->ShipInfo.crew_level <
-									StarShipPtr->ShipInfo.max_crew
-									&& StarShipPtr->ShipInfo.crew_level <
+									StarShipPtr->ShipInfo.max_crew &&
+									StarShipPtr->ShipInfo.crew_level <
 									TemplatePtr->RaceDescPtr->ship_info.crew_level)
 							{
-								DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
+								if (StarShipPtr->ShipInfo.crew_level > 0)
+									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
+								else
+									DeltaSISGauges (UNDEFINED_DELTA,UNDEFINED_DELTA,
+										-(COUNT)ShipCost[GET_RACE_ID (StarShipPtr)]);
 								++StarShipPtr->ShipInfo.crew_level;
 								crew_delta = 1;
-
 								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
 								r.corner.x = pMS->flash_rect0.corner.x;
 								r.corner.y = pMS->flash_rect0.corner.y
@@ -901,7 +924,7 @@ DoModifyShips (PMENU_STATE pMS)
 									);
 						}
 					}
-					else if (dx > 0 || dy > 0)
+					else if (dy > 0)
 					{
 						crew_bought = (SIZE)MAKE_WORD (
 								GET_GAME_STATE (CREW_PURCHASED0),
@@ -912,7 +935,8 @@ DoModifyShips (PMENU_STATE pMS)
 							if (GetCrewCount ())
 							{
 								DeltaSISGauges (-1, 0, GLOBAL (CrewCost)
-										- (crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
+										- (crew_bought ==
+										CREW_EXPENSE_THRESHOLD ? 2 : 0));
 								crew_delta = -1;
 
 								GetCPodCapacity (&r.corner);
@@ -925,13 +949,20 @@ DoModifyShips (PMENU_STATE pMS)
 								SetContext (SpaceContext);
 							}
 						}
-						else if (StarShipPtr->ShipInfo.crew_level > 1)
+						else
 						{
-							DeltaSISGauges (0, 0, GLOBAL (CrewCost)
-									- (crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
-							crew_delta = -1;
-							--StarShipPtr->ShipInfo.crew_level;
-
+							if (StarShipPtr->ShipInfo.crew_level > 0)
+							{
+								if (StarShipPtr->ShipInfo.crew_level > 1)
+									DeltaSISGauges (0, 0, GLOBAL (CrewCost)
+											- (crew_bought ==
+											CREW_EXPENSE_THRESHOLD ? 2 : 0));
+								else
+									DeltaSISGauges (UNDEFINED_DELTA,UNDEFINED_DELTA,
+										(COUNT)ShipCost[GET_RACE_ID (StarShipPtr)]);
+								crew_delta = -1;
+								--StarShipPtr->ShipInfo.crew_level;
+							}
 							ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
 							r.corner.x = pMS->flash_rect0.corner.x;
 							r.corner.y = pMS->flash_rect0.corner.y
@@ -941,53 +972,6 @@ DoModifyShips (PMENU_STATE pMS)
 							SetContext (SpaceContext);
 							SetFlashRect (&r, (FRAME)0);
 						}
-						else
-						{
-							COUNT ResUnits;
-
-							ResUnits = (COUNT)ShipCost[
-									GET_RACE_ID (StarShipPtr)
-									];
-							crew_delta = -(StarShipPtr->ShipInfo.crew_level - 1);
-							crew_bought = (SIZE)MAKE_WORD (
-									GET_GAME_STATE (CREW_PURCHASED0),
-									GET_GAME_STATE (CREW_PURCHASED1)
-									) - CREW_EXPENSE_THRESHOLD;
-							if (crew_bought <= 0 || (crew_bought += crew_delta) >= 0)
-								crew_bought = -crew_delta;
-							else
-							{
-								ResUnits += -crew_bought
-										* (GLOBAL (CrewCost) - 2);
-								crew_bought -= crew_delta;
-							}
-							ResUnits += crew_bought * GLOBAL (CrewCost);
-							
-							SetFlashRect (NULL_PTR, (FRAME)0);
-							ClearSemaphore (GraphicsSem);							
-							ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);							
-							SetSemaphore (GraphicsSem);
-							pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
-							SetFlashRect (&pMS->flash_rect0, (FRAME)0);
-
-							UnlockStarShip (
-									&GLOBAL (built_ship_q), hStarShip
-									);
-		
-							RemoveQueue (
-									&GLOBAL (built_ship_q), hStarShip
-									);
-							FreeStarShip (
-									&GLOBAL (built_ship_q), hStarShip
-									);
-
-							DeltaSISGauges (
-									UNDEFINED_DELTA, UNDEFINED_DELTA, ResUnits
-									);
-							hStarShip = 0;
-
-							pMS->delta_item ^= MODIFY_CREW_FLAG;
-						}
 					}
 
 					if (hStarShip)
@@ -995,8 +979,10 @@ DoModifyShips (PMENU_STATE pMS)
 						UnlockStarShip (
 								&GLOBAL (built_ship_q), hStarShip
 								);
+					if ((pMS->delta_item != MODIFY_CREW_FLAG)
+							&& (pMS->delta_item != 0))
+						pMS->delta_item = MODIFY_CREW_FLAG;
 					}
-						
 					CrewTransaction (crew_delta);
 				}
 			}

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Ships are not sold unless you set their crew level to SCRAP, (bug 
+  #413), from Paxtez
 - Prevent Syreen crew above 12 getting thrown out the airlock in
   Roster screen (bug #184); from chmmravatar, Alex
 - Lander report messages now use the entire panel (bug #36), from chmmravatar
