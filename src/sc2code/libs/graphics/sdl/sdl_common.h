@@ -33,6 +33,7 @@ extern SDL_Surface *SDL_Screen;
 extern SDL_Surface *ExtraScreen;
 
 extern volatile int continuity_break;
+extern BOOLEAN ShowFPS;
 
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
@@ -45,8 +46,9 @@ typedef struct tfb_image
 	SDL_Surface *ScaledImg;
 	int scale; // used with ScaledImg
 	BOOLEAN dirty; // true if DrawableImg needs to be created again
+	SDL_mutex *mutex;
 	UBYTE pad[sizeof(TFB_ImageStruct)-sizeof(SDL_Surface*)-sizeof(SDL_Surface*)-
-		sizeof(SDL_Surface*)-sizeof(int)-sizeof(BOOLEAN)];
+		sizeof(SDL_Surface*)-sizeof(int)-sizeof(BOOLEAN)-sizeof(SDL_mutex*)];
 } TFB_Image;
 
 TFB_Image *TFB_LoadImage (SDL_Surface *img);

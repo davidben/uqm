@@ -44,6 +44,7 @@ enum
 // flags for TFB_InitGraphics
 #define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
 #define TFB_GFXFLAGS_BILINEAR_FILTERING (1<<1)
+#define TFB_GFXFLAGS_SHOWFPS            (1<<2)
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
 int TFB_CreateGamePlayThread ();
@@ -106,7 +107,7 @@ typedef struct tfb_drawcommandqueue
 {
 	int Front;
 	int Back;
-	int Size;
+	volatile int Size;
 } TFB_DrawCommandQueue;
 
 TFB_DrawCommandQueue *TFB_DrawCommandQueue_Create ();

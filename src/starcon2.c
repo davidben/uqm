@@ -49,16 +49,19 @@ main (int argc, char *argv[])
 		else if (!strcmp(argv[i],"-opengl")) 
 		{
 			gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
-			gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
 		}
-		else if (!strcmp(argv[i],"-linear")) 
+		else if (!strcmp(argv[i],"-bilinear")) 
 		{
-			gfxflags &= ~TFB_GFXFLAGS_BILINEAR_FILTERING;
+			gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
 		}
 		else if (!strcmp(argv[i],"-frequency"))
 		{
 			i++;
 			sscanf(argv[i],"%d",&frequency);
+		}
+		else if (!strcmp(argv[i],"-fps"))
+		{
+			gfxflags |= TFB_GFXFLAGS_SHOWFPS;
 		}
 	}
 

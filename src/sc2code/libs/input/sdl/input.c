@@ -89,7 +89,8 @@ TFB_InitInput (int driver, int flags)
 void
 ProcessKeyboardEvent(const SDL_Event *Event)
 {
-    if(Event->key.keysym.sym == SDLK_BACKQUOTE)
+    if(Event->key.keysym.sym == SDLK_BACKQUOTE ||
+	   Event->key.keysym.sym == SDLK_WORLD_7)
 	{
 		exit(0);
 	}

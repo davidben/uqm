@@ -38,6 +38,9 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	}
 
 	img = (TFB_Image *) ((BYTE *) SrcFramePtr + SrcFramePtr->DataOffs);
+	
+	if (SDL_mutexP(img->mutex))
+		printf("blt(): couldn't lock img->mutex\n");
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -46,92 +49,87 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 		// DrawCommand = HMalloc (sizeof (TFB_DrawCommand));
 
-		if (DrawCommand)
+		DrawCommand->Type = TFB_DRAWCOMMANDTYPE_IMAGE;
+		DrawCommand->x = pClipRect->corner.x -
+			GetFrameHotX (_CurFramePtr);
+		DrawCommand->y = pClipRect->corner.y -
+			GetFrameHotY (_CurFramePtr);
+		DrawCommand->w = img->SurfaceSDL->clip_rect.w;
+		DrawCommand->h = img->SurfaceSDL->clip_rect.h;
+
+		if (gscale != 0 && gscale != 256)
 		{
-			DrawCommand->Type = TFB_DRAWCOMMANDTYPE_IMAGE;
-			DrawCommand->x = pClipRect->corner.x -
-					GetFrameHotX (_CurFramePtr);
-			DrawCommand->y = pClipRect->corner.y -
-					GetFrameHotY (_CurFramePtr);
-			DrawCommand->w = img->SurfaceSDL->clip_rect.w;
-			DrawCommand->h = img->SurfaceSDL->clip_rect.h;
+			DrawCommand->x += (GetFrameHotX (SrcFramePtr) *
+				((1 << 8) - gscale)) >> 8;
+			DrawCommand->y += (GetFrameHotY (SrcFramePtr) *
+				((1 << 8) - gscale)) >> 8;
+			DrawCommand->w = (DrawCommand->w * gscale) >> 8;
+			DrawCommand->h = (DrawCommand->h * gscale) >> 8;
 
-			if (gscale != 0 && gscale != 256)
+			if (img->ScaledImg)
 			{
-				DrawCommand->x += (GetFrameHotX (SrcFramePtr) *
-						((1 << 8) - gscale)) >> 8;
-				DrawCommand->y += (GetFrameHotY (SrcFramePtr) *
-						((1 << 8) - gscale)) >> 8;
-				DrawCommand->w = (DrawCommand->w * gscale) >> 8;
-				DrawCommand->h = (DrawCommand->h * gscale) >> 8;
-
-				if (img->ScaledImg)
+				if (img->scale != gscale)
 				{
-					if (img->scale != gscale)
-					{
-						SDL_FreeSurface(img->ScaledImg);
-						img->ScaledImg = NULL;
-					}
+					SDL_FreeSurface(img->ScaledImg);
+					img->ScaledImg = NULL;
 				}
+			}
 
-				if (!img->ScaledImg)
+			if (!img->ScaledImg)
+			{
+				// Atleast melee zooming and planet surfaces will use this
+
+				// NOTE: Planet surfaces maybe causes memory leaks,
+				//       I haven't currently seen DELETEIMAGE executed to them at all.
+				//       Also, we might want to change the way they are implemented, as
+				//       currently the scaled img is like 1936x600x32bit so it takes
+				//       much memory and is perhaps too slow to process on slower systems.
+				//       -Mika
+
+				SDL_Surface *new_surf;
+
+				img->scale = gscale;
+				new_surf = zoomSurface (img->DrawableImg, gscale / 256.0f,
+					gscale / 256.0f, SMOOTHING_OFF);
+
+				if (new_surf) 
 				{
-					// Atleast melee zooming and planet surfaces will use this
+					img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
 
-					// NOTE: Planet surfaces maybe causes memory leaks,
-					//       I haven't currently seen DELETEIMAGE executed to them at all.
-					//       Also, we might want to change the way they are implemented, as
-					//       currently the scaled img is like 1936x600x32bit so it takes
-					//       much memory and is perhaps too slow to process on slower systems.
-					//       -Mika
-
-					// TODO: does this need mutexes?
-
-					SDL_Surface *new_surf;
-
-					img->scale = gscale;
-					new_surf = zoomSurface (img->DrawableImg, gscale / 256.0f,
-						gscale / 256.0f, SMOOTHING_OFF);
-
-					if (new_surf) 
+					if (img->ScaledImg)
 					{
-						img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
-
-						if (img->ScaledImg)
-						{
-							SDL_FreeSurface(new_surf);
-						}
-						else
-						{
-							printf("blt(): TFB_DisplayFormatAlpha failed\n");
-							img->ScaledImg = new_surf;
-						}
+						SDL_FreeSurface(new_surf);
 					}
 					else
 					{
-						printf("blt(): zoomSurface failed\n");
+						printf("blt(): TFB_DisplayFormatAlpha failed\n");
+						img->ScaledImg = new_surf;
 					}
 				}
+				else
+				{
+					printf("blt(): zoomSurface failed\n");
+				}
 			}
-
-			DrawCommand->image = (TFB_ImageStruct*) img; //TFB_Image
-			
-			if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
-			{
-				DWORD c32k;
-
-				c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
-				DrawCommand->r = (c32k >> (10 - (8 - 5))) & 0xF8;
-				DrawCommand->g = (c32k >> (5 - (8 - 5))) & 0xF8;
-				DrawCommand->b = (c32k << (8 - 5));
-			}
-
-			DrawCommand->Qualifier = (TYPE_GET (GetFrameParentDrawable (
-					SrcFramePtr)->FlagsAndIndex) >> FTYPE_SHIFT) &
-					MAPPED_TO_DISPLAY;
-
-			TFB_EnqueueDrawCommand(DrawCommand);
 		}
+
+		DrawCommand->image = (TFB_ImageStruct*) img; //TFB_Image
+
+		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
+		{
+			DWORD c32k;
+
+			c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
+			DrawCommand->r = (c32k >> (10 - (8 - 5))) & 0xF8;
+			DrawCommand->g = (c32k >> (5 - (8 - 5))) & 0xF8;
+			DrawCommand->b = (c32k << (8 - 5));
+		}
+
+		DrawCommand->Qualifier = (TYPE_GET (GetFrameParentDrawable (
+			SrcFramePtr)->FlagsAndIndex) >> FTYPE_SHIFT) &
+			MAPPED_TO_DISPLAY;
+
+		TFB_EnqueueDrawCommand(DrawCommand);
 	}
 	else
 	{
@@ -141,6 +139,9 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 			_CurFramePtr->DataOffs));
 		
+		if (SDL_mutexP(dst_img->mutex))
+			printf("blt(): couldn't lock dst_img->mutex\n");
+
 		SDL_SrcRect.x = (short) img->SurfaceSDL->clip_rect.x;
 		SDL_SrcRect.y = (short) img->SurfaceSDL->clip_rect.y;
 		SDL_SrcRect.w = (short) img->SurfaceSDL->clip_rect.w;
@@ -159,7 +160,13 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		);
 
 		dst_img->dirty = TRUE;
+		
+		if (SDL_mutexV(dst_img->mutex))
+			printf("blt(): couldn't unlock dst_img->mutex\n");
 	}
+
+	if (SDL_mutexV(img->mutex))
+		printf("blt(): couldn't unlock img->mutex\n");
 }
 
 static void
@@ -212,6 +219,9 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 				_CurFramePtr->DataOffs));
 
+		if (SDL_mutexP(img->mutex))
+			printf("fillrect_blt(): couldn't lock img->mutex\n");
+
 		SDLRect.x = (short) (pClipRect->corner.x -
 				GetFrameHotX (_CurFramePtr));
 		SDLRect.y = (short) (pClipRect->corner.y -
@@ -223,6 +233,8 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 		img->dirty = TRUE;
 
+		if (SDL_mutexV(img->mutex))
+			printf("fillrect_blt(): couldn't unlock img->mutex\n");
 	}
 }
 

@@ -293,6 +293,12 @@ SleepTask (DWORD wake_time)
 {
 	DWORD t;
 
+	if (wake_time == 0)
+	{
+		SDL_Delay (5);
+		return (GetTimeCounter ());
+	}
+
 	t = GetTimeCounter ();
 	if (wake_time <= t)
 		SDL_Delay (0);

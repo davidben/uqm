@@ -28,6 +28,7 @@ SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
 SDL_Surface *ExtraScreen;
 
+BOOLEAN ShowFPS = FALSE;
 volatile int continuity_break;
 
 
@@ -53,6 +54,9 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	SDL_EnableUNICODE (1);
 	SDL_WM_SetCaption (TFB_WINDOW_CAPTION, NULL);
+
+	if (flags & TFB_GFXFLAGS_SHOWFPS)
+		ShowFPS = TRUE;
 
 	//if (flags & TFB_GFXFLAGS_FULLSCREEN)
 	//	SDL_ShowCursor (SDL_DISABLE);
@@ -132,6 +136,7 @@ TFB_LoadImage (SDL_Surface *img)
 	float y_scale = (float)ScreenHeightActual / ScreenHeight;	
 	
 	myImage = (TFB_Image*) HMalloc (sizeof (TFB_Image));
+	myImage->mutex = SDL_CreateMutex();
 	myImage->dirty = FALSE;
 	myImage->ScaledImg = NULL;
 	
@@ -239,32 +244,55 @@ TFB_DisplayFormatAlpha (SDL_Surface *surface)
 }
 
 void
+TFB_ComputeFPS ()
+{
+	static Uint32 last_time = 0, fps_counter = 0;
+	Uint32 current_time, delta_time;
+
+	current_time = SDL_GetTicks ();
+	delta_time = current_time - last_time;
+	last_time = current_time;
+	
+	fps_counter += delta_time;
+	if (fps_counter > 1000)
+	{
+		fps_counter = 0;
+		printf ("fps %.2f\n",1.0 / (delta_time / 1000.0));
+	}
+}
+
+void
 TFB_FlushGraphics () // Only call from main thread!!
 {
 	int semval;
-	Uint32 this_flush;
-	static Uint32 last_flush = 0;
 
-	this_flush = SDL_GetTicks ();
-	if (this_flush - last_flush < 1000 / 100)
-		return;
-
-	semval = SDL_SemTryWait (GraphicsSem);
-	if (semval != 0 && !continuity_break)
-		return;
-
-	continuity_break = 0;
 	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
 	{
-		if (semval == 0)
-			SDL_SemPost (GraphicsSem);
+		SDL_Delay(5);
 		return;
 	}
 
-	last_flush = this_flush;
+	if (!continuity_break) {
+		// TODO: a more optimal way of getting the lock on GraphicsSem..
+		//       cannot currently use SDL_SemWait because it would break
+		//       the usage of continuity_break
 
-	if (semval == 0)
-		SDL_SemPost (GraphicsSem);
+		semval = SDL_SemWaitTimeout (GraphicsSem, 100);
+		if (semval != 0 && !continuity_break)
+			return;
+		continuity_break = 0;
+
+		if (semval == 0)
+			SDL_SemPost (GraphicsSem);
+	}
+	else
+	{
+		continuity_break = 0;
+	}
+
+	if (ShowFPS)
+		TFB_ComputeFPS ();
+
 
 	while (DrawCommandQueue->Size > 0)
 	{
@@ -280,6 +308,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 
 		DC_image = (TFB_Image*) DC->image;
+		if (DC_image)
+			if (SDL_mutexP(DC_image->mutex))
+				printf("TFB_FlushGraphics(): couldn't lock DC_image->mutex\n");
 		
 		switch (DC->Type)
 		{
@@ -413,9 +444,18 @@ TFB_FlushGraphics () // Only call from main thread!!
 				SDL_FreeSurface (DC_image->ScaledImg);
 			}
 
+			if (SDL_mutexV(DC_image->mutex))
+				printf("TFB_FlushGraphics(): couldn't unlock DC_image->mutex (DELETEIMAGE)\n");
+			SDL_DestroyMutex (DC_image->mutex);
+			
 			HFree (DC_image);
+			DC_image = 0;
 			break;
 		}
+		
+		if (DC_image)
+			if (SDL_mutexV(DC_image->mutex))
+				printf("TFB_FlushGraphics(): couldn't unlock DC_image->mutex\n");
 
 		TFB_DeallocateDrawCommand (DC);
 	}
