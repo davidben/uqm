@@ -46,6 +46,7 @@ typedef struct
 	FONT Font;
 	FRAME Frame;
 	MUSIC_REF MusicRef;
+	BOOLEAN Batched;
 	COUNT OperIndex;
 	COLOR TextFadeColor;
 	COLOR TextColor;
@@ -148,6 +149,30 @@ ParseTextLines (TEXT *Lines, COUNT MaxLines, char* Buffer)
 	return i;
 }
 
+static void
+Present_BatchGraphics (PRESENTATION_INPUT_STATE* pPIS)
+{
+	if (!pPIS->Batched)
+	{
+		pPIS->Batched = TRUE;
+		LockMutex (GraphicsLock);
+		BatchGraphics ();
+	}
+}
+
+static void
+Present_UnbatchGraphics (PRESENTATION_INPUT_STATE* pPIS, BOOLEAN bYield)
+{
+	if (pPIS->Batched)
+	{
+		UnbatchGraphics ();
+		UnlockMutex (GraphicsLock);
+		pPIS->Batched = FALSE;
+		if (bYield)
+			TaskSwitch ();
+	}
+}
+
 BOOLEAN
 DoPresentation (PVOID pIS)
 {
@@ -242,6 +267,7 @@ DoPresentation (PVOID pIS)
 		else if (strcmp (Opcode, "WAIT") == 0)
 		{	/* wait */
 			int msecs;
+			Present_UnbatchGraphics (pPIS, TRUE);
 			if (1 == sscanf (pStr, "%d", &msecs))
 			{
 				pPIS->TimeOut = GetTimeCounter ()
@@ -253,6 +279,7 @@ DoPresentation (PVOID pIS)
 		else if (strcmp (Opcode, "SYNC") == 0)
 		{	/* absolute time-sync */
 			int msecs;
+			Present_UnbatchGraphics (pPIS, TRUE);
 			if (1 == sscanf (pStr, "%d", &msecs))
 			{
 				pPIS->LastSyncTime = pPIS->StartTime
@@ -269,6 +296,7 @@ DoPresentation (PVOID pIS)
 		else if (strcmp (Opcode, "DSYNC") == 0)
 		{	/* delta time-sync; from the last absolute sync */
 			int msecs;
+			Present_UnbatchGraphics (pPIS, TRUE);
 			if (1 == sscanf (pStr, "%d", &msecs))
 			{
 				pPIS->TimeOut = pPIS->LastSyncTime
@@ -343,6 +371,8 @@ DoPresentation (PVOID pIS)
 			pPIS->LinesCount = ParseTextLines (pPIS->TextLines,
 					MAX_TEXT_LINES, pPIS->Buffer);
 			
+			Present_UnbatchGraphics (pPIS, TRUE);
+
 			LockMutex (GraphicsLock);
 			GetContextFontLeading (&leading);
 			UnlockMutex (GraphicsLock);
@@ -391,6 +421,8 @@ DoPresentation (PVOID pIS)
 		{	/* text fade-out */
 			COUNT i;
 			
+			Present_UnbatchGraphics (pPIS, TRUE);
+
 			LockMutex (GraphicsLock);
 			SetContextClipping (TRUE);
 			/* do transition */
@@ -419,21 +451,34 @@ DoPresentation (PVOID pIS)
 				UnlockMutex (GraphicsLock);
 			}
 		}
+		else if (strcmp (Opcode, "BATCH") == 0)
+		{	/* batch graphics */
+			Present_BatchGraphics (pPIS);
+		}
+		else if (strcmp (Opcode, "UNBATCH") == 0)
+		{	/* unbatch graphics */
+			Present_UnbatchGraphics (pPIS, FALSE);
+		}
 		else if (strcmp (Opcode, "FTC") == 0)
 		{	/* fade to color */
+			Present_UnbatchGraphics (pPIS, TRUE);
 			return DoFadeScreen (pPIS, pStr, FadeAllToColor);
 		}
 		else if (strcmp (Opcode, "FTB") == 0)
 		{	/* fade to black */
+			Present_UnbatchGraphics (pPIS, TRUE);
 			return DoFadeScreen (pPIS, pStr, FadeAllToBlack);
 		}
 		else if (strcmp (Opcode, "FTW") == 0)
 		{	/* fade to white */
+			Present_UnbatchGraphics (pPIS, TRUE);
 			return DoFadeScreen (pPIS, pStr, FadeAllToWhite);
 		}
 		else if (strcmp (Opcode, "CLS") == 0)
 		{	/* clear screen */
 			RECT r;
+
+			Present_UnbatchGraphics (pPIS, TRUE);
 
 			LockMutex (GraphicsLock);
 			GetContextClipRect (&r);
@@ -446,6 +491,8 @@ DoPresentation (PVOID pIS)
 		}
 		else if (strcmp (Opcode, "CALL") == 0)
 		{	/* call another script */
+			Present_UnbatchGraphics (pPIS, TRUE);
+
 			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
 			ShowPresentation (pPIS->Buffer);
 		}
@@ -492,6 +539,7 @@ ShowPresentation (char *name)
 	pis.Font = 0;
 	pis.Frame = 0;
 	pis.MusicRef = 0;
+	pis.Batched = FALSE;
 	pis.TextVPos = 'B';
 	pis.LastSyncTime = pis.StartTime = GetTimeCounter ();
 	pis.TimeOut = 0;
