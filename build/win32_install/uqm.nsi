@@ -182,6 +182,7 @@ SectionIn 1 2 RO
   File /oname=WhatsNew.txt "..\..\WhatsNew"
   File "..\..\doc\users\manual.txt"
   File /oname=COPYING.txt "..\..\COPYING"
+  File /oname=AUTHORS.txt "..\..\AUTHORS"
   ; Write the installation path into the registry
   WriteRegStr HKCU "Software\${MUI_PRODUCT}" "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\${MUI_PRODUCT}" "Install_Dir" "$INSTDIR"
@@ -450,6 +451,7 @@ SectionIn 1 2
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\manual.lnk" "$INSTDIR\manual.txt"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\WhatsNew.lnk" "$INSTDIR\WhatsNew.txt"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\COPYING.lnk" "$INSTDIR\COPYING.txt"
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\AUTHORS.lnk" "$INSTDIR\AUTHORS.txt"
   
 SectionEnd
 
@@ -638,6 +640,7 @@ Section "Uninstall"
   Delete "$INSTDIR\WhatsNew.txt"
   Delete "$INSTDIR\manual.txt"
   Delete "$INSTDIR\COPYING.txt"
+  Delete "$INSTDIR\AUTHORS.txt"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\zlib.dll"
   Delete "$INSTDIR\libpng1.dll"
