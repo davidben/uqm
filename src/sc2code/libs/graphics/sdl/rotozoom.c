@@ -56,7 +56,7 @@ int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth)
 	return (-1);
     }
     if ((say = (int *) HMalloc((dst->h + 1) * sizeof(Uint32))) == NULL) {
-	free(sax);
+	HFree(sax);
 	return (-1);
     }
 
@@ -198,8 +198,8 @@ int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth)
     /*
      * Remove temp arrays 
      */
-    free(sax);
-    free(say);
+    HFree(sax);
+    HFree(say);
 
     return (0);
 }
@@ -232,7 +232,7 @@ int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
     }
     if ((say = (Uint32 *) HMalloc(dst->h * sizeof(Uint32))) == NULL) {
 	if (sax != NULL) {
-	    free(sax);
+	    HFree(sax);
 	}
 	return (-1);
     }
@@ -313,8 +313,8 @@ int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
     /*
      * Remove temp arrays 
      */
-    free(sax);
-    free(say);
+    HFree(sax);
+    HFree(say);
 
     return (0);
 }

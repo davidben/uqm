@@ -219,9 +219,8 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-	_MemorySem = CreateSemaphore (1);
-	GraphicsSem = CreateSemaphore (1);
 	mem_init ();
+	GraphicsSem = CreateSemaphore (1);
 	init_xform_control ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);

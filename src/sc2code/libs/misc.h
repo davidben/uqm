@@ -25,8 +25,6 @@
 #define Stream FILE
 #define MEMTYPE_ANY  1
 
-extern Semaphore _MemorySem;
-
 #define SqrtF16 sqrt
 #define Atan2F16 atan2
 #define CosF16 cos

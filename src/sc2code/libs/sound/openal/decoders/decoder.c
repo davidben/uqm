@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
+#include "libs/misc.h"
 #include "decoder.h"
 #include "wav.h"
 #include "libs/sound/sound_common.h"
@@ -207,7 +208,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		if ((vfp = fopen (filename, "r")) == NULL)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): couldn't open %s\n", filename);
-			free (vf);
+			HFree (vf);
 			return NULL;
 		}
 
@@ -220,7 +221,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): ov_open_callbacks failed for %s, error code %d\n", filename, rc);
 			fclose (vfp);
-			free (vf);
+			HFree (vf);
 			return NULL;
 		}
 
@@ -229,7 +230,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		{
 			fprintf (stderr, "SoundDecoder_Load(): failed to retrieve ogg bitstream info for %s\n", filename);
 	        ov_clear (vf);
-		    free (vf);
+		    HFree (vf);
 			return NULL;
 		}
 		
@@ -459,7 +460,7 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
 			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
 			ov_clear (vf);
-			free (vf);
+			HFree (vf);
 			break;
 		}
 		default:
@@ -469,9 +470,9 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 		}
 	}
 
-	free (decoder->buffer);
-	free (decoder->filename);
-	free (decoder);
+	HFree (decoder->buffer);
+	HFree (decoder->filename);
+	HFree (decoder);
 }
 
 #endif

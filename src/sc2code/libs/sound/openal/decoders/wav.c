@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include "libs/misc.h"
 #include "wav.h"
 
 

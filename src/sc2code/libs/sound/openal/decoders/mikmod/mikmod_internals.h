@@ -47,7 +47,7 @@ static char *strdup(const char *str)
 {
 	char *newstr;
 	
-	newstr = (char *)HMalloc(strlen(str)+1);
+	newstr = (char *)malloc(strlen(str)+1);
 	if ( newstr != NULL ) {
 		strcpy(newstr, str);
 	}
