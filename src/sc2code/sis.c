@@ -929,14 +929,12 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		}
 		else
 		{
-			r.corner.x = 1;
-			r.corner.y = 129;
-			r.extent.width = 62;
-			r.extent.height = 9;
-			DrawStarConBox (&r, 1,
-					BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
-					TRUE, BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			r.corner.x = 2;
+			r.corner.y = 130;
+			r.extent.width = STATUS_MESSAGE_WIDTH;
+			r.extent.height = STATUS_MESSAGE_HEIGHT;
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			DrawFilledRectangle (&r);
 
 			if ((pMenuState == 0
 					&& CommData.ConversationPhrases /* Melnorme shenanigans */

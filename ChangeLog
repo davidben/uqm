@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed one-pixel glitch in shipyard when scrapping (bug #461),
+  from Paxtez
 - Adjusted subtitle timings when there are no oggs (part of bug #362),
   from chmmravatar
 - Fixed crash in conversation summary and ffw/frew problem when
