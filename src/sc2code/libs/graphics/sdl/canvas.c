@@ -461,12 +461,10 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	const int ALPHA_THRESHOLD = 128;
 	
 	float ratio = ((float)w / src->w) * 2.0f - 1.0f;
-	float om_ratio;
 	if (ratio < 0.0f)
 		ratio = 0.0f;
 	if (ratio > 1.0f)
 		ratio = 1.0f;
-	om_ratio = 1.0f - ratio;
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
@@ -634,12 +632,12 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				g1[4] = (Uint8)(ul1 * g1[0] + ur1 * g1[1] + ll1 * g1[2] + lr1 * g1[3]);
 				b1[4] = (Uint8)(ul1 * b1[0] + ur1 * b1[1] + ll1 * b1[2] + lr1 * b1[3]);
 				a1[4] = (Uint8)(ul1 * a1[0] + ur1 * a1[1] + ll1 * a1[2] + lr1 * a1[3]);
-				
+
 				*dst_p = SDL_MapRGBA(dst->format,
-					(Uint8)(ratio * r0[4] + om_ratio * r1[4]),
-					(Uint8)(ratio * g0[4] + om_ratio * g1[4]),
-					(Uint8)(ratio * b0[4] + om_ratio * b1[4]),
-					(Uint8)((ratio * a0[4] + om_ratio * a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
+					(Uint8)((r0[4] - r1[4]) * ratio + r1[4]),
+					(Uint8)((g0[4] - g1[4]) * ratio + g1[4]),
+					(Uint8)((b0[4] - b1[4]) * ratio + b1[4]),
+					(Uint8)(((a0[4] - a1[4]) * ratio + a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
 
 				u0 += fsx0;
 				u1 += fsx1;
@@ -798,10 +796,10 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				a1[4] = (Uint8)(ul1 * a1[0] + ur1 * a1[1] + ll1 * a1[2] + lr1 * a1[3]);
 				
 				*dst_p = SDL_MapRGBA(dst->format,
-					(Uint8)(ratio * r0[4] + om_ratio * r1[4]),
-					(Uint8)(ratio * g0[4] + om_ratio * g1[4]),
-					(Uint8)(ratio * b0[4] + om_ratio * b1[4]),
-					(Uint8)((ratio * a0[4] + om_ratio * a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
+					(Uint8)((r0[4] - r1[4]) * ratio + r1[4]),
+					(Uint8)((g0[4] - g1[4]) * ratio + g1[4]),
+					(Uint8)((b0[4] - b1[4]) * ratio + b1[4]),
+					(Uint8)(((a0[4] - a1[4]) * ratio + a1[4]) > ALPHA_THRESHOLD ? 255 : 0));
 
 				u0 += fsx0;
 				u1 += fsx1;
