@@ -3083,5 +3083,26 @@ SOURCE=..\port.h
 SOURCE=..\starcon2.c
 # End Source File
 # End Group
+
+# Begin Group "Doc"
+# PROP Default_Filter ""
+
+# Begin Group "Devel"
+# PROP Default_Filter ""
+
+# Begin Source File
+
+SOURCE=..\..\doc\devel\files
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\glossary
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\script
+# End Source File
+# End Group
+# End Group
 # End Target
 # End Project
