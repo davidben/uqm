@@ -7,17 +7,17 @@ UQM_LICENSE_FILE="COPYING"
 UQM_PACKAGES="content voice 3domusic"
 UQM_PACKAGE_content_NAME="content"
 UQM_PACKAGE_content_TITLE="General game data"
-UQM_PACKAGE_content_LOCATION="lib/uqm/content/"
+UQM_PACKAGE_content_LOCATION="share/uqm/content/"
 UQM_PACKAGE_content_OPTIONAL="FALSE"
 UQM_PACKAGE_content_DEFAULT="TRUE"
 UQM_PACKAGE_voice_NAME="voice"
 UQM_PACKAGE_voice_TITLE="Spoken alien communication"
-UQM_PACKAGE_voice_LOCATION="lib/uqm/content/"
+UQM_PACKAGE_voice_LOCATION="share/uqm/content/"
 UQM_PACKAGE_voice_OPTIONAL="TRUE"
 UQM_PACKAGE_voice_DEFAULT="TRUE"
 UQM_PACKAGE_3domusic_NAME="3domusic"
 UQM_PACKAGE_3domusic_TITLE="Music from the 3DO version"
-UQM_PACKAGE_3domusic_LOCATION="lib/uqm/content/"
+UQM_PACKAGE_3domusic_LOCATION="share/uqm/content/"
 UQM_PACKAGE_3domusic_OPTIONAL="TRUE"
 UQM_PACKAGE_3domusic_DEFAULT="TRUE"
 
@@ -30,11 +30,11 @@ UQM_SCRIPT_FILES="
 
 #   File                            destination
 UQM_ATTACH_FILES=\
-"${UQM_TOP}AUTHORS	lib/uqm/doc/
-${UQM_TOP}COPYING	lib/uqm/doc/
-${UQM_TOP}ChangeLog	lib/uqm/doc/
-${UQM_TOP}WhatsNew	lib/uqm/doc/
-${UQM_TOP}README	lib/uqm/doc/
-${UQM_TOP}doc/users/manual.txt	lib/uqm/doc/
+"${UQM_TOP}AUTHORS	share/uqm/doc/
+${UQM_TOP}COPYING	share/uqm/doc/
+${UQM_TOP}ChangeLog	share/uqm/doc/
+${UQM_TOP}WhatsNew	share/uqm/doc/
+${UQM_TOP}README	share/uqm/doc/
+${UQM_TOP}doc/users/manual.txt	share/uqm/doc/
 ${UQM_TOP}uqm	lib/uqm/"
 

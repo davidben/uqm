@@ -77,7 +77,7 @@ cat << EOF
 Now I need somewhere to put all those Ur-Quan Masters files.
 My invisible friend tells me $INPUT_install_prefix_DEFAULT is a good place.
 I would put an executable there in a bin/ dir and a lot of junk together
-in a subdir under lib/
+in a subdir under share/ and a little bit in a subdir under lib/
 But you're the boss, so where shall I put them?"
 EOF
 while :; do
@@ -148,9 +148,9 @@ $PREFIX it is. I can work with that.
 
 EOF
 
-if [ -d "${PREFIX}/lib/uqm/content" ]; then
-	if [ -f "${PREFIX}/lib/uqm/content/version" ]; then
-		read UQM_OLDVERSION < "${PREFIX}/lib/uqm/content/version"
+if [ -d "${PREFIX}/share/uqm/content" ]; then
+	if [ -f "${PREFIX}/share/uqm/content/version" ]; then
+		read UQM_OLDVERSION < "${PREFIX}/share/uqm/content/version"
 	else
 		UQM_OLDVERSION=0.1
 	fi
@@ -235,7 +235,7 @@ echo "A word as good as any."
 echo
 
 echo "Making directories..."
-mkdir -p -- "$PREFIX"/lib/uqm/content 2> /dev/null
+mkdir -p -- "$PREFIX"/share/uqm/content 2> /dev/null
 mkdir -p -- "$PREFIX"/bin 2> /dev/null
 
 echo "Unpacking packages..."
@@ -259,7 +259,7 @@ echo "Creating wrapper script..."
 cat << EOF > "$PREFIX"bin/uqm
 #!/bin/sh
 # Wrapper script for starting The Ur-Quan Masters
-"${PREFIX}lib/uqm/uqm" "--contentdir=${PREFIX}lib/uqm/content" "\$@"
+"${PREFIX}lib/uqm/uqm" "--contentdir=${PREFIX}share/uqm/content" "\$@"
 EOF
 chmod 755 "$PREFIX"bin/uqm
 
@@ -268,7 +268,7 @@ cat << EOF
 All done. Now you can play The Ur-Quan masters.
 I told you I was going to make you very happy.
 And if you're looking for documentation, you can find some in
-${PREFIX}lib/uqm/doc/. If you aren't looking for documentation, too.
+${PREFIX}share/uqm/doc/. If you aren't looking for documentation, too.
 But feel free to delete them. You know where to find them.
 EOF
 
