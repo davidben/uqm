@@ -727,10 +727,10 @@ GetSoundData (void *data)
 
 				s = *(SWORD*) (&sbuffer[pos]);
 				s = (s / 1360) + (RADAR_HEIGHT >> 1);
-				if (s < 0)
-					s = 0;
-				else if (s >= RADAR_HEIGHT)
-					s = RADAR_HEIGHT - 1;
+				if (s < 1)
+					s = 1;
+				else if (s > RADAR_HEIGHT - 2)
+					s = RADAR_HEIGHT - 2;
 				scopedata[i] = (UBYTE) s;
 
 				pos += 2;
@@ -800,10 +800,10 @@ GetSoundData (void *data)
 				s = (*(SWORD*)(&sbuffer[pos])) + (*(SWORD*)(&sbuffer[pos + 2]));
 				
 				s = (s / 1800) + (RADAR_HEIGHT >> 1);
-				if (s < 0)
-					s = 0;
-				else if (s >= RADAR_HEIGHT)
-					s = RADAR_HEIGHT - 1;
+				if (s < 1)
+					s = 1;
+				else if (s > RADAR_HEIGHT - 2)
+					s = RADAR_HEIGHT - 2;
 				scopedata[i] = (UBYTE) s;
 
 				pos += step;
