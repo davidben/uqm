@@ -50,6 +50,16 @@ PROG_windres_FILE=windres
 PROG_windres_ACTION=""
 PROG_windres_VERSION='windres --version'
 
+PROG_Rez_NAME="Rez resource compiler (Apple Developer Tools)"
+PROG_Rez_FILE="/Developer/Tools/Rez"
+PROG_Rez_ACTION=''
+PROG_Rez_VERSION=''
+
+PROG_SetFile_NAME="SetFile (Apple Developer Tools)"
+PROG_SetFile_FILE="/Developer/Tools/SetFile"
+PROG_SetFile_ACTION=''
+PROG_SetFile_VERSION=''
+
 
 # Describe the libaries (possibly) used:
 LIB_SDL_NAME="Simple DirectMedia Layer"
