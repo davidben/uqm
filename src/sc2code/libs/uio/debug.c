@@ -200,7 +200,7 @@ initRepository(void) {
 #endif
 #if 1
 			mountHandles[7] = debugMountOne(repository, "/foo/",
-					uio_FSTYPE_ZIP, rootDir, "/foo.zip", "/", autoMount,
+					uio_FSTYPE_ZIP, rootDir, "/foo2.zip", "/", autoMount,
 					uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
 #endif
 			uio_closeDir(rootDir);
@@ -681,29 +681,18 @@ debugCmdRmDir(DebugContext *debugContext, int argc, char *argv[]) {
 static int
 debugCmdStat(DebugContext *debugContext, int argc, char *argv[]) {
 	struct stat statBuf;
-	uio_Handle *handle;
 
 	if (argc != 2) {
 		fprintf(debugContext->err, "Invalid number of arguments.\n");
 		return 1;
 	}
 	
-	handle = uio_open(debugContext->cwd, argv[1], O_RDONLY
-#ifdef WIN32
-			| O_BINARY
-#endif
-			, 0);
-	if (handle == NULL) {
-		fprintf(debugContext->err, "Could not open file: %s\n",
-				strerror(errno));
-		return 1;
-	}
-
-	if (uio_fstat(handle, &statBuf) == -1) {
+	if (uio_stat(debugContext->cwd, argv[1], &statBuf) == -1) {
 		// errno is set
 		int saveErrno;
 		saveErrno = errno;
-		uio_close(handle);
+		fprintf(debugContext->err, "Could not stat file: %s\n",
+				strerror(errno));
 		errno = saveErrno;
 		return 1;
 	}
@@ -725,7 +714,6 @@ debugCmdStat(DebugContext *debugContext, int argc, char *argv[]) {
 	fprintf(debugContext->out,
 			"last status change: %s", ctime(&statBuf.st_ctime));
 	
-	uio_close(handle);
 	return 0;
 }
 

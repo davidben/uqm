@@ -484,8 +484,10 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 
 // Get handles to the (existing) physical dirs that are effective in a
 // path 'path' relative from 'dirHandle'
-// returns the PDirHandles through 'pDirHandles'. It is NULL if none were
-// found.
+// returns the PDirHandles through '*pDirHandles'. It is NULL if none
+// were found.
+// If resItems != NULL, it returns the MountTreeItems belonging to those
+// PDIrHandles through *resItems. It is NULL if none were found.
 // numPDirHandles will contain the number of PDirHandles found.
 // returns 0 if everything went ok.
 // returns -1 in case of an error; errno is set.

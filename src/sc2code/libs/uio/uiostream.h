@@ -91,7 +91,7 @@ struct uio_Stream {
 	char *bufEnd;
 	off_t seekLow;
 			// Low(er) level file pointer. Always points to the position just
-			// past the part that's in the buffer.
+			// past the part that's in the buffer as [readStart..readEnd].
 	uio_Handle *handle;
 	int status;
 #define uio_Stream_STATUS_OK 0

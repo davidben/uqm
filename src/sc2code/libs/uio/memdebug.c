@@ -59,6 +59,7 @@ const uio_MemDebug_LogTypeInfo uio_MemDebug_logTypeInfo[] = {
 	{ "stdio_GPDirData",    NULL,                   0 },
 #ifdef HAVE_ZIP
 	{ "zip_GPFileData",     NULL,                   0 },
+	{ "zip_GPDirData",      NULL,                   0 },
 #endif
 };
 

@@ -29,6 +29,7 @@ Documentation:
   fields.
 - No need to store MountHandles. They will be automatically freed
   when the repository is closed.
+- You can use mount stuff from other repositories.
 
 Bugs:
 - uio_Stream file might get unaligned (not sure).

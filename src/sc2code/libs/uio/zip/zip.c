@@ -58,13 +58,17 @@ static int zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 		uio_FileBlock *fileBlock, off_t *pos);
 static int zip_updatePFileDataFromLocalFileHeader(zip_GPFileData *gPFileData,
 		uio_FileBlock *fileBlock, int pos);
+int zip_updateFileDataFromLocalHeader(uio_Handle *handle,
+		zip_GPFileData *gPFileData);
 #endif
 static int zip_fillDirStructureProcessExtraFields(
 		uio_FileBlock *fileBlock, off_t extraFieldLength,
-		zip_GPFileData *gPFileData, const char *fileName, off_t pos);
-static inline int zip_foundFile(uio_GPDir *gPDir, const char *fileName,
+		zip_GPFileData *gPFileData, const char *path, off_t pos,
+		uio_bool central);
+static inline int zip_foundFile(uio_GPDir *gPDir, const char *path,
 		zip_GPFileData *gPFileData);
-//static inline uio_GPDir *zip_foundDir(uio_GPDir *gPDir, const char *dirName);
+static inline int zip_foundDir(uio_GPDir *gPDir, const char *dirName,
+		zip_GPDirData *gPDirData);
 static int zip_initZipStream(z_stream *zipStream);
 static int zip_unInitZipStream(z_stream *zipStream);
 static int zip_reInitZipStream(z_stream *zipStream);
@@ -76,6 +80,8 @@ static inline zip_GPFileData * zip_GPFileData_new(void);
 static inline void zip_GPFileData_delete(zip_GPFileData *gPFileData);
 static inline zip_GPFileData *zip_GPFileData_alloc(void);
 static inline void zip_GPFileData_free(zip_GPFileData *gPFileData);
+static inline void zip_GPDirData_delete(zip_GPDirData *gPDirData);
+static inline void zip_GPDirData_free(zip_GPDirData *gPDirData);
 
 static ssize_t zip_readStored(uio_Handle *handle, void *buf, size_t count);
 static ssize_t zip_readDeflated(uio_Handle *handle, void *buf, size_t count);
@@ -114,7 +120,7 @@ uio_FileSystemHandler zip_fileSystemHandler = {
 uio_GPRoot_Operations zip_GPRootOperations = {
 	/* .fillGPDir         = */  NULL,
 	/* .deleteGPRootExtra = */  NULL,
-	/* .deleteGPDirExtra  = */  NULL,
+	/* .deleteGPDirExtra  = */  zip_GPDirData_delete,
 	/* .deleteGPFileExtra = */  zip_GPFileData_delete,
 };
 
@@ -151,6 +157,33 @@ zip_seekFunctionType zip_seekMethods[NUM_COMPRESSION_METHODS] = {
 };
 
 
+typedef enum {
+	zip_OSType_FAT,
+	zip_OSType_Amiga,
+	zip_OSType_OpenVMS,
+	zip_OSType_UNIX,
+	zip_OSType_VMCMS,
+	zip_OSType_AtariST,
+	zip_OSType_HPFS,
+	zip_OSType_HFS,
+	zip_OSType_ZSystem,
+	zip_OSType_CPM,
+	zip_OSType_TOPS20,
+	zip_OSType_NTFS,
+	zip_OSType_QDOS,
+	zip_OSType_Acorn,
+	zip_OSType_VFAT,
+	zip_OSType_MVS,
+	zip_OSType_BeOS,
+	zip_OSType_Tandem,
+	
+	zip_numOSTypes
+} zip_OSType;
+
+#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+static mode_t zip_makeFileMode(zip_OSType creatorOS, uio_uint32 modeBytes);
+#endif
+
 #define zip_INPUT_BUFFER_SIZE 0x10000
 		// TODO: make this configurable a la sysctl?
 #define zip_SEEK_BUFFER_SIZE zip_INPUT_BUFFER_SIZE
@@ -184,6 +217,16 @@ zip_fillStat(struct stat *statBuf, const zip_GPFileData *gPFileData) {
 
 int
 zip_fstat(uio_Handle *handle, struct stat *statBuf) {
+#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+	if (handle->native->file->extra->fileOffset == -1) {
+		// The local header wasn't read in yet.
+		if (zip_updateFileDataFromLocalHeader(handle->root->handle,
+				handle->native->file->extra) == -1) {
+			// errno is set
+			return -1;
+		}
+	}
+#endif
 	zip_fillStat(statBuf, handle->native->file->extra);
 	return 0;
 }
@@ -191,16 +234,30 @@ zip_fstat(uio_Handle *handle, struct stat *statBuf) {
 int
 zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 	uio_GPDirEntry *entry;
-	
-	entry = uio_GPDir_getGPDirEntry(pDirHandle->extra, name);
-	if (entry == NULL) {
-		errno = ENOENT;
-		return -1;
+
+	if (name[0] == '.' && name[1] == '\0') {
+		entry = (uio_GPDirEntry *) pDirHandle->extra;
+	} else {
+		entry = uio_GPDir_getGPDirEntry(pDirHandle->extra, name);
+		if (entry == NULL) {
+			errno = ENOENT;
+			return -1;
+		}
 	}
 	
-	if (uio_GPDirEntry_isDir(entry)) {
-		// No dir data is read from zip file.
-		// We'll have to make something up for the time being.
+#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+	if (((zip_GPFileData *) entry->extra)->fileOffset == -1) {
+		// The local header wasn't read in yet.
+		if (zip_updateFileDataFromLocalHeader(pDirHandle->pRoot->handle,
+				(zip_GPFileData *) entry->extra) == -1) {
+			// errno is set
+			return -1;
+		}
+	}
+#endif
+	if (uio_GPDirEntry_isDir(entry) && entry->extra == NULL) {
+		// No information about this directory was stored.
+		// We'll have to make something up.
 		memset(statBuf, '\0', sizeof (struct stat));
 		statBuf->st_mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR |
 				S_IRGRP | S_IWGRP | S_IXOTH |
@@ -210,7 +267,7 @@ zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 		return 0;
 	}
 
-	zip_fillStat(statBuf, ((uio_GPFile *) entry)->extra);
+	zip_fillStat(statBuf, (zip_GPFileData *) entry->extra);
 	return 0;
 }
 
@@ -248,28 +305,12 @@ zip_open(uio_PDirHandle *pDirHandle, const char *name, int flags,
 
 #if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
 	if (gPFile->extra->fileOffset == -1) {
-		// the local header wasn't read in yet.
-		uio_FileBlock *fileBlock;
-		zip_GPFileData *gPFileData;
-
-		fileBlock = uio_openFileBlock(pDirHandle->pRoot->handle);
-		if (fileBlock == NULL) {
+		// The local header wasn't read in yet.
+		if (zip_updateFileDataFromLocalHeader(pDirHandle->pRoot->handle,
+				gPFile->extra) == -1) {
 			// errno is set
 			return NULL;
 		}
-		gPFileData = gPFile->extra;
-		if (zip_updatePFileDataFromLocalFileHeader(gPFileData,
-				fileBlock, gPFile->extra->headerOffset) == -1) {
-			int saveErrno = errno;
-			uio_closeFileBlock(fileBlock);
-			errno = saveErrno;
-			return NULL;
-		}
-		if (gPFileData->ctime == (time_t) 0)
-			gPFileData->ctime = gPFileData->mtime;
-		if (gPFileData->atime == (time_t) 0)
-			gPFileData->atime = gPFileData->mtime;
-		uio_closeFileBlock(fileBlock);
 	}
 #endif
 	
@@ -634,6 +675,7 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 	uio_uint16 extraFieldLength;
 	uio_uint16 fileCommentLength;
 	char *fileName;
+	zip_OSType creatorOS;
 
 	off_t nextEntryOffset;
 
@@ -647,8 +689,9 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 		errno = EIO;
 		return -1;
 	}
-
+	
 	gPFileData = zip_GPFileData_new();
+	creatorOS = (zip_OSType) buf[5];
 	gPFileData->compressionFlags = makeUInt16(buf[8], buf[9]);
 	gPFileData->compressionMethod = makeUInt16(buf[10], buf[11]);
 	lastModTime = makeUInt16(buf[12], buf[13]);
@@ -656,9 +699,6 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 	gPFileData->atime = (time_t) 0;
 	gPFileData->mtime = dosToUnixTime(lastModDate, lastModTime);
 	gPFileData->ctime = (time_t) 0;
-	gPFileData->uid = 0;
-	gPFileData->gid = 0;
-	gPFileData->mode = S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 	crc = makeUInt32(buf[16], buf[17], buf[18], buf[19]);
 	gPFileData->compressedSize =
 			makeUInt32(buf[20], buf[21], buf[22], buf[23]);
@@ -667,6 +707,11 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 	fileNameLength = makeUInt16(buf[28], buf[29]);
 	extraFieldLength = makeUInt16(buf[30], buf[31]);
 	fileCommentLength = makeUInt16(buf[32], buf[33]);
+	gPFileData->uid = 0;
+	gPFileData->gid = 0;
+	gPFileData->mode = zip_makeFileMode(creatorOS,
+			makeUInt32(buf[38], buf[39], buf[40], buf[41]));
+
 	gPFileData->headerOffset =
 			(off_t) makeSInt32(buf[42], buf[43], buf[44], buf[45]);
 	gPFileData->fileOffset = (off_t) -1;
@@ -710,7 +755,7 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 	}
 
 	switch (zip_fillDirStructureProcessExtraFields(fileBlock,
-				extraFieldLength, gPFileData, fileName, *pos)) {
+				extraFieldLength, gPFileData, fileName, *pos, true)) {
 		case 0:  // file is ok
 			break;
 		case 1:  // file is not acceptable - skip file
@@ -726,19 +771,45 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 
 	// If ctime or atime is 0, they will be filled in when the local
 	// file header is read.
-	
-	if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
-		if (errno == EISDIR) {
-			zip_GPFileData_delete(gPFileData);
-			uio_free(fileName);
-			return 0;
+
+	if (S_ISREG(gPFileData->mode)) {
+		if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
+			if (errno == EISDIR) {
+				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
+						"skipped.\n", fileName);
+				zip_GPFileData_delete(gPFileData);
+				uio_free(fileName);
+				return 0;
+			}
+			return zip_badFile(gPFileData, fileName);
 		}
-		return zip_badFile(gPFileData, fileName);
-	}
 
 #if defined(DEBUG) && DEBUG > 1
-	fprintf(stderr, "Debug: Found file '%s'.\n", fileName);
+		fprintf(stderr, "Debug: Found file '%s'.\n", fileName);
 #endif
+	} else if (S_ISDIR(gPFileData->mode)) {
+		if (fileName[fileNameLength - 1] == '/')
+			fileName[fileNameLength - 1] = '\0';
+		if (zip_foundDir(topGPDir, fileName, gPFileData) == -1) {
+			if (errno == EISDIR) {
+				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
+						"skipped.\n", fileName);
+				zip_GPFileData_delete(gPFileData);
+				uio_free(fileName);
+				return 0;
+			}
+			return zip_badFile(gPFileData, fileName);
+		}
+#if defined(DEBUG) && DEBUG > 1
+		fprintf(stderr, "Debug: Found dir '%s'.\n", fileName);
+#endif
+	} else {
+		fprintf(stderr, "Warning: '%s' is not a regular file, nor a "
+				"directory - skipped.\n", fileName);
+		zip_GPFileData_delete(gPFileData);
+		uio_free(fileName);
+		return 0;
+	}
 
 	uio_free(fileName);
 	return 0;
@@ -793,6 +864,43 @@ zip_findEndOfCentralDirectoryRecord(uio_Handle *handle,
 	return startPos + (bufPtr - buf);
 }
 
+static mode_t
+zip_makeFileMode(zip_OSType creatorOS, uio_uint32 modeBytes) {
+	switch (creatorOS) {
+		case zip_OSType_FAT:
+		case zip_OSType_NTFS:
+		case zip_OSType_VFAT: {
+			mode_t mode;
+
+			if (modeBytes == 0) {
+				// File came from standard input
+				return S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
+						S_IROTH | S_IWOTH;
+			}
+			if (modeBytes & 0x00001000) {
+				// Directory
+				mode = S_IFDIR | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP |
+						S_IROTH | S_IXOTH;
+			} else {
+				// Regular file
+				mode = S_IFREG | S_IRUSR | S_IRGRP | S_IROTH;
+			}
+			if (modeBytes & 0x00000100) {
+				// readonly
+				return mode;
+			} else {
+				// Write allowed
+				return mode | S_IWUSR | S_IWGRP | S_IWOTH;
+			}
+		}
+		case zip_OSType_UNIX:
+			return (mode_t) (modeBytes >> 16);
+		default:
+			fprintf(stderr, "Warning: file created by unknown OS.\n");
+			return S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	}
+}
+
 // If the data is read from the central directory, certain data
 // will need to be updated from the local directory when it is needed.
 // This function does that.
@@ -824,7 +932,7 @@ zip_updatePFileDataFromLocalFileHeader(zip_GPFileData *gPFileData,
 	pos += 30 + fileNameLength;
 	
 	switch (zip_fillDirStructureProcessExtraFields(fileBlock,
-				extraFieldLength, gPFileData, "<unknown>", pos)) {
+				extraFieldLength, gPFileData, "<unknown>", pos, false)) {
 		case 0:  // file is ok
 			break;
 		case 1:
@@ -935,7 +1043,7 @@ zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
 	gPFileData->ctime = (time_t) 0;
 	gPFileData->uid = 0;
 	gPFileData->gid = 0;
-	gPFileData->mode = S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	gPFileData->mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 	if (!isBitSet(gPFileData->compressionFlags, 3)) {
 		// If bit 3 is not set, this info will be in the data descriptor
 		// behind the file data.
@@ -983,13 +1091,18 @@ zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
 	numBytes = uio_accessFileBlock(fileBlock, *pos, fileNameLength, &buf);
 	if (numBytes != fileNameLength)
 		return zip_badFile(gPFileData, NULL);
+	*pos += fileNameLength;
+	if (buf[fileNameLength - 1] == '/') {
+		gPFileData->mode |= S_IFDIR;
+		fileNameLength--;
+	} else
+		gPFileData->mode |= S_IFREG;
 	fileName = uio_malloc(fileNameLength + 1);
 	memcpy(fileName, buf, fileNameLength);
 	fileName[fileNameLength] = '\0';
-	*pos += fileNameLength;
 
 	switch (zip_fillDirStructureProcessExtraFields(fileBlock,
-				extraFieldLength, gPFileData, fileName, *pos)) {
+				extraFieldLength, gPFileData, fileName, *pos, false)) {
 		case 0:  // file is ok
 			break;
 		case 1:  // file is not acceptable - skip file
@@ -1031,23 +1144,76 @@ zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
 	if (gPFileData->atime == (time_t) 0)
 		gPFileData->atime = gPFileData->mtime;
 	
-	if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
-		if (errno == EISDIR) {
-			zip_GPFileData_delete(gPFileData);
-			uio_free(fileName);
-			return 0;
+	if (S_ISREG(gPFileData->mode)) {
+		if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
+			if (errno == EISDIR) {
+				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
+						"skipped.\n", fileName);
+				zip_GPFileData_delete(gPFileData);
+				uio_free(fileName);
+				return 0;
+			}
+			return zip_badFile(gPFileData, fileName);
 		}
-		return zip_badFile(gPFileData, fileName);
-	}
 
-#ifdef DEBUG
-	fprintf(stderr, "Debug: Found file '%s'.\n", fileName);
+#if defined(DEBUG) && DEBUG > 1
+		fprintf(stderr, "Debug: Found file '%s'.\n", fileName);
 #endif
+	} else if (S_ISDIR(gPFileData->mode)) {
+		if (fileName[fileNameLength - 1] == '/')
+			fileName[fileNameLength - 1] = '\0';
+		if (zip_foundDir(topGPDir, fileName, gPFileData) == -1) {
+			if (errno == EISDIR) {
+				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
+						"skipped.\n", fileName);
+				zip_GPFileData_delete(gPFileData);
+				uio_free(fileName);
+				return 0;
+			}
+			return zip_badFile(gPFileData, fileName);
+		}
+#if defined(DEBUG) && DEBUG > 1
+		fprintf(stderr, "Debug: Found dir '%s'.\n", fileName);
+#endif
+	} else {
+		fprintf(stderr, "Warning: '%s' is not a regular file, nor a "
+				"directory - skipped.\n", fileName);
+		zip_GPFileData_delete(gPFileData);
+		uio_free(fileName);
+		return 0;
+	}
 
 	uio_free(fileName);
 	return 0;
 }
 #endif  /* zip_USE_HEADERS == zip_USE_LOCAL_HEADERS */
+
+#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+int
+zip_updateFileDataFromLocalHeader(uio_Handle *handle,
+		zip_GPFileData *gPFileData) {
+	uio_FileBlock *fileBlock;
+
+	fileBlock = uio_openFileBlock(handle);
+	if (fileBlock == NULL) {
+		// errno is set
+		return -1;
+	}
+	if (zip_updatePFileDataFromLocalFileHeader(gPFileData,
+			fileBlock, gPFileData->headerOffset) == -1) {
+		int saveErrno = errno;
+		uio_closeFileBlock(fileBlock);
+		errno = saveErrno;
+		return -1;
+	}
+	if (gPFileData->ctime == (time_t) 0)
+		gPFileData->ctime = gPFileData->mtime;
+	if (gPFileData->atime == (time_t) 0)
+		gPFileData->atime = gPFileData->mtime;
+	uio_closeFileBlock(fileBlock);
+	return 0;
+}
+#endif
 
 // If the zip file is bad, -1 is returned (no errno set!)
 // If the file in the zip file should be skipped, 1 is returned.
@@ -1055,7 +1221,7 @@ zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
 static int
 zip_fillDirStructureProcessExtraFields(uio_FileBlock *fileBlock,
 		off_t extraFieldLength, zip_GPFileData *gPFileData,
-		const char *fileName, off_t pos) {
+		const char *fileName, off_t pos, uio_bool central) {
 	off_t posEnd;
 	uio_uint16 headerID;
 	ssize_t dataSize;
@@ -1081,6 +1247,8 @@ zip_fillDirStructureProcessExtraFields(uio_FileBlock *fileBlock,
 						buf[0], buf[1], buf[2], buf[3]);
 				gPFileData->mtime = (time_t) makeUInt32(
 						buf[4], buf[5], buf[6], buf[7]);
+				if (central)
+					break;
 				if (dataSize > 8) {
 					gPFileData->uid = (uid_t) makeUInt16(buf[8], buf[9]);
 					gPFileData->gid = (uid_t) makeUInt16(buf[10], buf[11]);
@@ -1098,6 +1266,13 @@ zip_fillDirStructureProcessExtraFields(uio_FileBlock *fileBlock,
 							bufPtr[0], bufPtr[1], bufPtr[2], bufPtr[3]);
 					bufPtr += 4;
 				}
+				// The flags field, even in the central header, specifies what
+				// is present in the local header.
+				// The central header only contains a field for the mtime
+				// when it is present in the local header too, and
+				// never contains fields for other times.
+				if (central)
+					break;
 				if (isBitSet(flags, 1)) {
 					// modification time is present
 					gPFileData->atime = (time_t) makeUInt32(
@@ -1108,15 +1283,17 @@ zip_fillDirStructureProcessExtraFields(uio_FileBlock *fileBlock,
 				break;
 			}
 			case 0x7855:  // 'Unix2'
+				if (central)
+					break;
 				gPFileData->uid = (uid_t) makeUInt16(buf[0], buf[1]);
 				gPFileData->gid = (uid_t) makeUInt16(buf[2], buf[3]);
 				break;
 			case 0x756e: {  // 'Unix3'
 				mode_t mode;
 				mode = (mode_t) makeUInt16(buf[4], buf[5]);
-				if (!S_ISREG(mode)) {
+				if (!S_ISREG(mode) && !S_ISDIR(mode)) {
 					fprintf(stderr, "Warning: Skipping '%s'; not a regular "
-							"file.\n", fileName);
+							"file, nor a directory.\n", fileName);
 					return 1;
 				}
 				gPFileData->uid = (uid_t) makeUInt16(buf[10], buf[11]);
@@ -1193,13 +1370,13 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 		if (end == start || (end - start == 1 && start[0] == '.') ||
 				(end - start == 2 && start[0] == '.' && start[1] == '.')) {
 			fprintf(stderr, "Warning: file '%s' has an invalid path - "
-					"file skipped.\n", path);
+					"skipped.\n", path);
 			uio_free(buf);
 			errno = EINVAL;
 			return -1;
 		}
 		if (end == pathEnd) {
-			// This is the last component; the should be the name of the dir.
+			// This is the last component; it should be the name of the dir.
 			path = start;
 			break;
 		}
@@ -1207,7 +1384,7 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 		buf[end - start] = '\0';
 		newGPDir = uio_GPDir_prepareSubDir(gPDir, buf);
 		newGPDir->flags |= uio_GPDir_COMPLETE;
-				// It will be complete when we're done with adding
+				// It will be complete when we're done adding
 				// all files, and it won't be used before that.
 		uio_GPDir_commitSubDir(gPDir, buf, newGPDir);
 
@@ -1220,6 +1397,68 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 	file = uio_GPFile_new(gPDir->pRoot, (uio_GPFileExtra) gPFileData,
 			uio_gPFileFlagsFromPRootFlags(gPDir->pRoot->flags));
 	uio_GPDir_addFile(gPDir, path, file);
+	return 0;
+}
+
+static inline int
+zip_foundDir(uio_GPDir *gPDir, const char *path, zip_GPDirData *gPDirData) {
+	size_t pathLen;
+	const char *pathEnd;
+	const char *start, *end;
+	char *buf;
+
+	if (path[0] == '/')
+		path++;
+	pathLen = strlen(path);
+	pathEnd = path + pathLen;
+
+	switch (uio_walkGPPath(gPDir, path, pathLen, &gPDir, &path)) {
+		case 0:
+			// The dir already exists. Only need to add gPDirData
+			if (gPDir->extra) {
+				fprintf(stderr, "Warning: '%s' is present more than once "
+						"in the zip file. Last entry will be used.\n",
+						path);
+				zip_GPDirData_free(gPDir->extra);
+			}
+			gPDir->extra = gPDirData;
+			return 0;
+		case ENOTDIR:
+			fprintf(stderr, "Warning: A component of '%s' is not a "
+					"directory - file skipped.\n", path);
+			errno = ENOTDIR;
+			return -1;
+		case ENOENT:
+			break;
+	}
+
+	buf = uio_malloc(pathLen + 1);
+	getFirstPathComponent(path, pathEnd, &start, &end);
+	while (start < pathEnd) {
+		uio_GPDir *newGPDir;
+		
+		if (end == start || (end - start == 1 && start[0] == '.') ||
+				(end - start == 2 && start[0] == '.' && start[1] == '.')) {
+			fprintf(stderr, "Warning: directory '%s' has an invalid path - "
+					"skipped.\n", path);
+			uio_free(buf);
+			errno = EINVAL;
+			return -1;
+		}
+		memcpy(buf, start, end - start);
+		buf[end - start] = '\0';
+		newGPDir = uio_GPDir_prepareSubDir(gPDir, buf);
+		newGPDir->flags |= uio_GPDir_COMPLETE;
+				// It will be complete when we're done adding
+				// all files, and it won't be used before that.
+		newGPDir->extra = gPDirData;
+		uio_GPDir_commitSubDir(gPDir, buf, newGPDir);
+
+		gPDir = newGPDir;
+		getNextPathComponent(pathEnd, &start, &end);
+	}
+
+	uio_free(buf);
 	return 0;
 }
 
@@ -1354,6 +1593,19 @@ zip_GPFileData_free(zip_GPFileData *gPFileData) {
 	uio_MemDebug_debugFree(zip_GPFileData, (void *) gPFileData);
 #endif
 	uio_free(gPFileData);
+}
+
+static inline void
+zip_GPDirData_delete(zip_GPDirData *gPDirData) {
+	zip_GPDirData_free(gPDirData);
+}
+
+static inline void
+zip_GPDirData_free(zip_GPDirData *gPDirData) {
+#ifdef uio_MEM_DEBUG
+	uio_MemDebug_debugFree(zip_GPFileData, (void *) gPDirData);
+#endif
+	uio_free(gPDirData);
 }
 
 

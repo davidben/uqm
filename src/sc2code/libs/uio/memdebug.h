@@ -45,6 +45,7 @@ typedef enum {
 	uio_MemDebug_LogType_uio_Stream,
 	uio_MemDebug_LogType_stdio_GPDirData,
 	uio_MemDebug_LogType_zip_GPFileData,
+	uio_MemDebug_LogType_zip_GPDirData,
 
 	uio_MemDebug_numLogTypes,  /* This needs to be the last entry */
 } uio_MemDebug_LogType;

@@ -172,9 +172,9 @@ struct uio_GPFile {
 	uio_GPDirEntry_COMMON
 #			define uio_GPFile_NOCACHE  uio_GPDirEntry_NOCACHE
 			/* Info on this file will not be cached. */
-	uio_PRoot *pRoot;
 	uio_GPFileExtra extra;
 			/* extra internal data for some filesystem types */
+	uio_PRoot *pRoot;
 };
 
 

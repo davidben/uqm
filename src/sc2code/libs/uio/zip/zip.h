@@ -20,8 +20,8 @@
 
 typedef struct zip_Handle *uio_NativeHandle;
 typedef void *uio_GPRootExtra;
-typedef void *uio_GPDirExtra;
 typedef struct zip_GPFileData *uio_GPFileExtra;
+typedef struct zip_GPFileData *uio_GPDirExtra;
 typedef struct uio_GPDirEntries_Iterator *uio_NativeEntriesContext;
 
 #define uio_INTERNAL_PHYSICAL
@@ -63,6 +63,11 @@ typedef struct zip_GPFileData {
 	time_t mtime;  // modification time
 	time_t ctime;  // change time
 } zip_GPFileData;
+
+typedef zip_GPFileData zip_GPDirData;
+// TODO: some of the fields from zip_GPFileData are not needed for
+// directories. A few bytes could be saved here by making a seperate
+// structure.
 
 typedef struct zip_Handle {
 	uio_GPFile *file;

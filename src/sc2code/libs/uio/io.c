@@ -39,6 +39,10 @@
 #	include "memdebug.h"
 #endif
 
+static int uio_statDir(uio_DirHandle *dirHandle, const char *path,
+		struct stat *statBuf);
+static int uio_statOneDir(uio_PDirHandle *pDirHandle, struct stat *statBuf);
+
 static void uio_PDirHandles_delete(uio_PDirHandle *pDirHandles[],
 		int numPDirHandles);
 
@@ -341,33 +345,87 @@ uio_stat(uio_DirHandle *dir, const char *path, struct stat *statBuf) {
 	char *name;
 	int result;
 
-	// TODO: If it's a dir, check all physical dirs, and merge the
-	//       direntry times.
 	if (uio_getPhysicalAccess(dir, path, O_RDONLY,
 			&readMountInfo, &pReadDir,
 			NULL, NULL, &name) == -1) {
-		if (errno == EISDIR) {
-			// Need to merge the dirs.
-			memset(statBuf, '\0', sizeof (struct stat));
-			statBuf->st_mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR |
-					S_IRGRP | S_IWGRP | S_IXOTH |
-					S_IROTH | S_IWOTH | S_IXOTH;
-			statBuf->st_uid = 0;
-			statBuf->st_gid = 0;
-			return 0;
+		if (uio_statDir(dir, path, statBuf) == -1) {
+			// errno is set
+			return -1;
 		}
-		return -1;
+		return 0;
 	}
 
 	if (pReadDir->pRoot->handler->stat == NULL) {
 		uio_PDirHandle_unref(pReadDir);
+		uio_free(name);
 		errno = ENOSYS;
 		return -1;
 	}
 
 	result = pReadDir->pRoot->handler->stat(pReadDir, name, statBuf);
 	uio_PDirHandle_unref(pReadDir);
+	uio_free(name);
 	return result;
+}
+
+// auxiliary function to uio_stat
+static int
+uio_statDir(uio_DirHandle *dirHandle, const char *path,
+		struct stat *statBuf) {
+	int numPDirHandles;
+	uio_PDirHandle **pDirHandles;
+
+	if (uio_getPathPhysicalDirs(dirHandle, path, strlen(path),
+				&pDirHandles, &numPDirHandles, NULL) == -1) {
+		// errno is set
+		return -1;
+	}
+
+	if (numPDirHandles == 0) {
+		errno = ENOENT;
+		return -1;
+	}
+
+	if (uio_statOneDir(pDirHandles[0], statBuf) == -1) {
+		int saveErrno = errno;
+		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+		errno = saveErrno;
+		return -1;
+	}
+	// TODO: atm, fstat'ing a dir will show the info for the topmost
+	//       dir. Maybe it would make sense of merging the bits. (How?)
+
+#if 0
+	for (i = 1; i < numPDirHandles; i++) {
+		struct stat statOne;
+		uio_PDirHandle *pDirHandle;
+
+		if (statOneDir(pDirHandles[i], &statOne) == -1) {
+			// errno is set
+			int saveErrno = errno;
+			uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+			errno = saveErrno;
+			return -1;
+		}
+
+		// Merge dirs:
+
+
+	}
+#endif
+
+	uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+	return 0;
+}
+
+static int
+uio_statOneDir(uio_PDirHandle *pDirHandle, struct stat *statBuf) {
+	if (pDirHandle->pRoot->handler->stat == NULL) {
+		errno = ENOSYS;
+		return -1;
+	}
+	return pDirHandle->pRoot->handler->stat(pDirHandle, ".", statBuf);
+			// sets errno on error
 }
 
 int

@@ -15,7 +15,7 @@ earlier mounted file system, files in the later mounted file system hide
 files in an earlier mounted file system. Files present in a filesystem
 mounted earlier that don't exist in a filesystem mounted later will remain
 visible.
-Accessing compressed files inside compressde files is possible, though slow.
+Accessing compressed files inside compressed files is possible, though slow.
 
 
 -= Nomenclature =-
