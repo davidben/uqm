@@ -1,7 +1,9 @@
 if [ "$uqm_SOUNDMODULE" = openal ]; then
 	uqm_SUBDIRS="openal"
+	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_OPENAL"
 else
 	uqm_SUBDIRS="sdl"
+	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_SDL"
 fi
 
 uqm_CFILES="fileinst.c resinst.c sound_common.c"
