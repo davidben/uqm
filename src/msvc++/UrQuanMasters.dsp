@@ -486,6 +486,14 @@ SOURCE=..\sc2code\libs\sound\decoders\wav.c
 
 SOURCE=..\sc2code\libs\sound\decoders\wav.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\dukaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\dukaud.h
+# End Source File
 # Begin Group "mikmod"
 
 # PROP Default_Filter ""
@@ -645,6 +653,10 @@ SOURCE=..\sc2code\libs\sound\trackplayer.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\trackint.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\music.c
 # End Source File
 # Begin Source File
@@ -699,9 +711,53 @@ SOURCE=..\sc2code\libs\strings\strintrn.h
 # Begin Group "video"
 
 # PROP Default_Filter ""
+# Begin Group "sdl video"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\sdl\sdlvideo.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\sdl\sdlvideo.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\video\vfileins.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\video.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\video.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\videodec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\videodec.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\vidplayer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\vidplayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\dukvid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\dukvid.h
 # End Source File
 # End Group
 # Begin Group "threads"
