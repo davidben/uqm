@@ -1052,7 +1052,9 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.extent.width = 0;
 		if (flash_task)
 		{
+			ClearSemaphore (GraphicsSem);
 			ConcludeTask (flash_task);
+			SetSemaphore (GraphicsSem);
 		}
 	}
 	else

@@ -1381,7 +1381,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 
 	if (pES->AnimTask)
 	{
-		Task_SetState (pES->AnimTask, TASK_EXIT);
+		ClearSemaphore (GraphicsSem);
+		ConcludeTask (pES->AnimTask);
+		SetSemaphore (GraphicsSem);
 		pES->AnimTask = 0;
 	}
 	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
