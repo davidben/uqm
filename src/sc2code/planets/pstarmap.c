@@ -607,7 +607,6 @@ DoMoveCursor (PMENU_STATE pMS)
 	STAMP s;
 	UNICODE buf[30];
 	static UNICODE last_buf;
-	static int last_dx = 0, last_dy = 0;
 
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
@@ -627,7 +626,6 @@ DoMoveCursor (PMENU_STATE pMS)
 		
 		last_buf = ~0;
 		buf[0] = '\0';
-		last_dx = last_dy = 0;
 		goto UpdateCursorInfo;
 	}
 	else if (CurrentMenuState.cancel)
