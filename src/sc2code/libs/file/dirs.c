@@ -172,11 +172,12 @@ getHomeDir (void)
 int
 expandPath (char *dest, size_t len, const char *src, int what)
 {
-	char *destend;
-	char *destptr;
+	char *destptr, *destend;
+	char *buf, *bufptr, *bufend;
+	const char *srcend;
 
-#define CHECKLEN(n) \
-		if (destptr + (n) >= destend) \
+#define CHECKLEN(bufname, n) \
+		if (bufname##ptr + (n) >= bufname##end) \
 		{ \
 			errno = ENAMETOOLONG; \
 			return -1; \
@@ -187,60 +188,11 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	destptr = dest;
 	destend = dest + len;
 
-	if (what & EP_HOME)
-	{
-		if (src[0] == '~')
-		{
-			const char *home;
-			size_t homelen;
-			
-			if (src[1] != '/')
-			{
-				errno = EINVAL;
-				return -1;
-			}
-
-			home = getHomeDir ();
-			if (home == NULL)
-			{
-				errno = ENOENT;
-				return -1;
-			}
-			homelen = strlen (home);
-		
-			if (what & EP_ABSOLUTE) {
-				dest = expandPathAbsolute (dest, destend - dest,
-						home, what);
-				if (dest == NULL)
-				{
-					// errno is set
-					return -1;
-				}
-				what &= ~EP_ABSOLUTE;
-						// The part after the '~' should not be seen
-						// as absolute.
-			}
-
-			CHECKLEN (homelen);
-			memcpy (destptr, home, homelen);
-			destptr += homelen;
-			src++;  /* skip the ~ */
-		}
-	}
-	
-	if (what & EP_ABSOLUTE)
-	{
-		destptr = expandPathAbsolute (destptr, destend - destptr, src,
-				what);
-		if (destptr == NULL)
-		{
-			// errno is set
-			return -1;
-		}
-	}
-	
 	if (what & EP_ENVVARS)
 	{
+		buf = alloca (len);
+		bufptr = buf;
+		bufend = buf + len;
 		while (*src != '\0')
 		{
 			switch (*src)
@@ -290,11 +242,12 @@ expandPath (char *dest, size_t len, const char *src, int what)
 						{
 #define APPDATA_STRING "\\Application Data"
 							envVarLen = strlen (envVar);
-							CHECKLEN (envVarLen + sizeof (APPDATA_STRING) - 1);
-							strcpy (destptr, envVar);
-							destptr += envVarLen;
-							strcpy (destptr, APPDATA_STRING);
-							destptr += sizeof (APPDATA_STRING) - 1;
+							CHECKLEN (buf,
+									envVarLen + sizeof (APPDATA_STRING) - 1);
+							strcpy (bufptr, envVar);
+							bufptr += envVarLen;
+							strcpy (bufptr, APPDATA_STRING);
+							bufptr += sizeof (APPDATA_STRING) - 1;
 							src = end + 1;
 							break;
 						}
@@ -304,9 +257,9 @@ expandPath (char *dest, size_t len, const char *src, int what)
 								"Falling back to \"..\\userdata\" for %%APPDATA%%"
 								"\n");
 #define APPDATA_FALLBACK_STRING "..\\userdata"
-						CHECKLEN (sizeof (APPDATA_FALLBACK_STRING) - 1);
-						strcpy (destptr, APPDATA_FALLBACK_STRING);
-						destptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
+						CHECKLEN (buf, sizeof (APPDATA_FALLBACK_STRING) - 1);
+						strcpy (bufptr, APPDATA_FALLBACK_STRING);
+						bufptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
 						src = end + 1;
 						break;
 
@@ -318,9 +271,9 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					}
 
 					envVarLen = strlen (envVar);
-					CHECKLEN (envVarLen);
-					strcpy (destptr, envVar);
-					destptr += envVarLen;
+					CHECKLEN (buf, envVarLen);
+					strcpy (bufptr, envVar);
+					bufptr += envVarLen;
 					src = end + 1;
 					break;
 				}
@@ -333,17 +286,75 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					break;
 #endif
 				default:
-					CHECKLEN(1);
-					*(destptr++) = *(src++);
+					CHECKLEN(buf, 1);
+					*(bufptr++) = *(src++);
 					break;
 			}  // switch
 		}  // while
-		*destptr = '\0';
+		*bufptr = '\0';
+		src = buf;
+		srcend = bufptr;
 	}  // if (what & EP_ENVVARS)
 	else
+		srcend = src + strlen (src);
+
+	
+	if (what & EP_HOME)
 	{
-		strcpy (destptr, src);
+		if (src[0] == '~')
+		{
+			const char *home;
+			size_t homelen;
+			
+			if (src[1] != '/')
+			{
+				errno = EINVAL;
+				return -1;
+			}
+
+			home = getHomeDir ();
+			if (home == NULL)
+			{
+				errno = ENOENT;
+				return -1;
+			}
+			homelen = strlen (home);
+		
+			if (what & EP_ABSOLUTE) {
+				destptr = expandPathAbsolute (dest, destend - dest,
+						home, what);
+				if (destptr == NULL)
+				{
+					// errno is set
+					return -1;
+				}
+				what &= ~EP_ABSOLUTE;
+						// The part after the '~' should not be seen
+						// as absolute.
+			}
+
+			CHECKLEN (dest, homelen);
+			memcpy (destptr, home, homelen);
+			destptr += homelen;
+			src++;  /* skip the ~ */
+		}
 	}
+	
+	if (what & EP_ABSOLUTE)
+	{
+		destptr = expandPathAbsolute (destptr, destend - destptr, src,
+				what);
+		if (destptr == NULL)
+		{
+			// errno is set
+			return -1;
+		}
+	}
+
+	CHECKLEN (dest, srcend - src);
+	memcpy (destptr, src, srcend - src + 1);
+			// The +1 is for the '\0'. It is already taken into account by
+			// CHECKLEN.
 	
 	if (what & EP_SLASHES)
 	{
