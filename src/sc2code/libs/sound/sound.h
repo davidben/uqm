@@ -19,10 +19,10 @@
 #include "libs/strings/strintrn.h"
 #include "libs/sound/sndintrn.h"
 #include "libs/sound/sound_common.h"
-#if defined SOUNDMODULE_MIXSDL
+#ifdef HAVE_OPENAL
+#include "libs/sound/sound_chooser.h"
+#else
 #include "mixsdl/sound_mixsdl.h"
-#elif  defined SOUNDMODULE_OPENAL
-#include "openal/sound_openal.h"
 #endif
 #include "decoders/decoder.h"
 

@@ -80,6 +80,7 @@ int
 main (int argc, char *argv[])
 {
 	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
+	int snddriver = TFB_SOUNDDRIVER_MIXSDL;
 	int gfxflags = 0;
 	int soundflags = TFB_SOUNDFLAGS_MQAUDIO;
 	int width = 640, height = 480, bpp = 16;
@@ -102,6 +103,7 @@ main (int argc, char *argv[])
 		{"bpp", 1, NULL, 'd'},
 		{"fullscreen", 0, NULL, 'f'},
 		{"opengl", 0, NULL, 'o'},
+		{"openal", 0, NULL, 'a'},
 		{"scale", 1, NULL, 'c'},
 		{"scanlines", 0, NULL, 's'},
 		{"fps", 0, NULL, 'p'},
@@ -131,7 +133,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:ua:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foac:spn:?hM:S:T:m:q:u", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -146,6 +148,9 @@ main (int argc, char *argv[])
 			case 'o':
 				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
 			break;
+			case 'a':
+				snddriver = TFB_SOUNDDRIVER_OPENAL;
+				break;
 			case 'c':
 				if (!strcmp (optarg, "bilinear"))
 				{
@@ -252,6 +257,7 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
+				printf("  -a, --openal (default off)\n");
 				printf("  -c, --scale=mode (bilinear, biadapt or biadv, default is none)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
@@ -293,7 +299,7 @@ main (int argc, char *argv[])
 	init_xform_control ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
-	TFB_InitSound (TFB_SOUNDDRIVER_SDL, soundflags);
+	TFB_InitSound (snddriver, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
 	AssignTask (Starcon2Main, 1024, "Starcon2Main");

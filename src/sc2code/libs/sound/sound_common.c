@@ -18,7 +18,10 @@
 
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
+#include "libs/sound/sound.h"
 #include "libs/tasklib.h"
+
+int SoundDriver = TFB_SOUNDDRIVER_MIXSDL;
 
 int musicVolume = (MAX_VOLUME >> 1);
 float musicVolumeScale = 1.0f;
@@ -86,3 +89,32 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 
 	return (TimeOut);
 }
+
+int 
+TFB_InitSound (int driver, int flags)
+{
+#ifdef  HAVE_OPENAL
+	return (TFB_choose_InitSound (driver, flags));
+#else
+	if (driver == TFB_SOUNDDRIVER_OPENAL)
+	{
+		fprintf (stderr, "OpenAL driver not compiled in, so using MixSDL\n");
+		driver = TFB_SOUNDDRIVER_MIXSDL;
+	}
+	return (TFB_mixSDL_InitSound (driver, flags));
+#endif
+}
+
+void
+TFB_UninitSound (void)
+{
+#ifdef  HAVE_OPENAL
+	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
+		TFB_alUninitSound ();
+	else
+		TFB_mixSDL_UninitSound ();
+#else
+	TFB_mixSDL_UninitSound ();
+#endif
+}
+

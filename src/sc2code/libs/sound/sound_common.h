@@ -22,8 +22,10 @@
 // driver for TFB_InitSound
 enum
 {
-	TFB_SOUNDDRIVER_SDL
+	TFB_SOUNDDRIVER_MIXSDL,
+	TFB_SOUNDDRIVER_OPENAL
 };
+extern int SoundDriver;
 
 // flags for TFB_InitSound
 #define TFB_SOUNDFLAGS_HQAUDIO (1<<0) // high quality audio

@@ -1,10 +1,10 @@
 if [ "$uqm_SOUNDMODULE" = openal ]; then
-	uqm_SUBDIRS="openal decoders"
-	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_OPENAL"
+	uqm_SUBDIRS="openal mixsdl decoders"
+	uqm_CFLAGS="$uqm_CFLAGS -DHAVE_OPENAL"
 else # mixsdl
 	uqm_SUBDIRS="mixsdl decoders"
 	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_MIXSDL"
 fi
 
-uqm_CFILES="fileinst.c resinst.c sound_common.c sound.c sfx.c music.c stream.c trackplayer.c"
+uqm_CFILES="fileinst.c resinst.c sound_common.c sound.c sfx.c music.c stream.c trackplayer.c sound_chooser.c"
 

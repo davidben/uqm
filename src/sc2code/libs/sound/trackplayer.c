@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
-
 #include <assert.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
@@ -699,5 +697,3 @@ GetSoundInfo (int max_len)
 		return max_len;
 	return (int)(max_len * offset / length);
 }
-
-#endif

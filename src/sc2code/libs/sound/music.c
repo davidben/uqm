@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
-
 #include "sound.h"
 #include "options.h"
 #include "file.h"
@@ -216,4 +214,3 @@ _ReleaseMusicData (MEM_HANDLE handle)
 	return (TRUE);
 }
 
-#endif

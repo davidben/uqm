@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef SOUNDMODULE_OPENAL
+#ifdef HAVE_OPENAL
 
 #include "libs/sound/sound.h"
 
@@ -27,7 +27,7 @@ static Task StreamDecoderTask;
 
 
 int 
-TFB_InitSound (int driver, int flags)
+TFB_alInitSound (int driver, int flags)
 {
 	int i;
 	TFB_DecoderFormats formats =
@@ -109,7 +109,7 @@ TFB_InitSound (int driver, int flags)
 }
 
 void
-TFB_UninitSound (void)
+TFB_alUninitSound (void)
 {
 	int i;
 

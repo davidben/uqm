@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
-
 #include <assert.h>
 #include "sound.h"
 
@@ -325,11 +323,11 @@ StreamDecoderTaskFunc (void *data)
 
 				if (decoded_bytes > 0)
 				{
-#if defined SOUNDMODULE_OPENAL && !defined (WIN32) // && !defined (MacOS and BeOS too)
+#if defined HAVE_OPENAL && !defined (WIN32) // && !defined (MacOS and BeOS too)
 					// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
-	   	
-					if (soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO8 ||
-						soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO16)
+					if (SoundDriver == TFB_SOUNDDRIVER_OPENAL &&
+						(soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO8 ||
+						soundSource[i].sample->decoder->format == TFBSOUND_FORMAT_STEREO16))
 					{
 						TFBSound_BufferData_Linux (buffer, soundSource[i].sample->decoder->format, 
 							soundSource[i].sample->decoder->buffer, decoded_bytes,
@@ -423,4 +421,3 @@ StreamDecoderTaskFunc (void *data)
 	return 0;
 }
 
-#endif

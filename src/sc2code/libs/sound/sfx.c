@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
-
 #ifdef WIN32
 #include <io.h>
 #endif
@@ -262,5 +260,3 @@ DestroySound(SOUND_REF target)
 {
 	return _ReleaseSoundBankData ((MEM_HANDLE) target);
 }
-
-#endif

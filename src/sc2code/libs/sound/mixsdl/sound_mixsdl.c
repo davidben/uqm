@@ -16,13 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef SOUNDMODULE_MIXSDL
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound.h"
 static Task StreamDecoderTask;
 
 int 
-TFB_InitSound (int driver, int flags)
+TFB_mixSDL_InitSound (int driver, int flags)
 {
 	int i;
 	char SoundcardName[256];
@@ -103,7 +102,7 @@ TFB_InitSound (int driver, int flags)
 }
 
 void
-TFB_UninitSound (void)
+TFB_mixSDL_UninitSound (void)
 {
 	int i;
 
@@ -129,5 +128,3 @@ TFB_UninitSound (void)
 	SoundDecoder_Uninit ();
 	mixSDL_CloseAudio ();
 }
-
-#endif

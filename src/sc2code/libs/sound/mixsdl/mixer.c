@@ -19,8 +19,6 @@
  * from SDL_mixer
  */
 
-#ifdef SOUNDMODULE_MIXSDL
-
 #include "starcon.h"
 #include "mixer.h"
 #include "libs/misc.h"
@@ -1933,4 +1931,3 @@ void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	(void)userdata; // satisfying compiler
 }
 
-#endif

@@ -16,13 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined SOUNDMODULE_MIXSDL ||  defined SOUNDMODULE_OPENAL
-
 #include "libs/sound/sound_common.h"
 #include "sound.h"
 
 TFB_SoundSource soundSource[NUM_SOUNDSOURCES];
-static Task StreamDecoderTask;
 
 
 void
@@ -137,4 +134,3 @@ void SetSpeechVolume (float volume)
 	TFBSound_Sourcef (soundSource[SPEECH_SOURCE].handle, TFBSOUND_GAIN, volume);
 }
 
-#endif
