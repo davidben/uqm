@@ -70,8 +70,6 @@ Glitches (don't crash the game, medium priority):
   - Probably happens in some other situations too
 - Under some conditions, the direction the ship is facing in Hyperspace
   isn't restored when loading.
-- Moving crosshair in planet screen leaves a light trace to the image
-  in OpenGL mode (SDL surface format conversion problem)
 - You seem to be able to do certain things before you're supposed to
   - saying the phrase 'What you are doing it wrong'
   - demanding the Shofixti Maidens from Zex
