@@ -1,0 +1,13 @@
+# This AUTHORS file is used as input for cvs2cl.
+# Lines beginning with (whitespaces plus) # and lines that do not have
+# colons in them are always ignored. Other lines are in the form 
+# name : expansion
+# Quote marks stripped. Leading spaces not allowed.
+# cvs2cl will detect if you have a realname, 
+# and will retain the username if not. 
+
+# Programming:
+
+# Additional programming:
+mudry:   Mudrony László <mudronyl@dragon.klte.hu>
+

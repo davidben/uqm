@@ -1,0 +1,10 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/zoqfot
+
+PACKAGE	ZOQFOTPIK_PACKAGE	zoqfot.con
+	GFXRES			ZOQFOTPIK_PMAP_ANIM		zoqfot.ani
+	FONTRES			ZOQFOTPIK_FONT			zoqfot.fon
+	MUSICRES		ZOQFOTPIK_MUSIC			zoqfot.mod
+	STRTAB			ZOQFOTPIK_CONVERSATION_PHRASES	zoqfot.txt
+

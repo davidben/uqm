@@ -1,0 +1,868 @@
+//Copyright Paul Reiche, Fred Ford. 1992-2002
+
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "reslib.h"
+#include "ships/sis_ship/resinst.h"
+#include "starcon.h"
+
+#define MAX_TRACKING 3
+#define MAX_DEFENSE 8
+
+#define MAX_CREW MAX_CREW_SIZE
+#define MAX_ENERGY MAX_ENERGY_SIZE
+#define ENERGY_REGENERATION 1
+#define WEAPON_ENERGY_COST 1
+#define SPECIAL_ENERGY_COST 0
+#define ENERGY_WAIT 10
+#define MAX_THRUST 10
+#define THRUST_INCREMENT 4
+#define TURN_WAIT 17
+#define THRUST_WAIT 6
+#define WEAPON_WAIT 6
+#define SPECIAL_WAIT 9
+
+#define SHIP_MASS MAX_SHIP_MASS
+
+#define BLASTER_SPEED DISPLAY_TO_WORLD (24)
+#define BLASTER_LIFE 12
+
+static RACE_DESC sis_desc =
+{
+	{
+		0,
+		16, /* Super Melee cost */
+		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
+		MAX_CREW, MAX_CREW,
+		MAX_ENERGY, MAX_ENERGY,
+		{
+			0, 0,
+		},
+		0,
+		(FRAME)SIS_ICON_MASK_PMAP_ANIM,
+		0,
+	},
+	{
+		MAX_THRUST,
+		THRUST_INCREMENT,
+		ENERGY_REGENERATION,
+		WEAPON_ENERGY_COST,
+		SPECIAL_ENERGY_COST,
+		ENERGY_WAIT,
+		TURN_WAIT,
+		THRUST_WAIT,
+		WEAPON_WAIT,
+		SPECIAL_WAIT,
+		SHIP_MASS,
+	},
+	{
+		{
+			(FRAME)SIS_BIG_MASK_PMAP_ANIM,
+			(FRAME)SIS_MED_MASK_PMAP_ANIM,
+			(FRAME)SIS_SML_MASK_PMAP_ANIM,
+		},
+		{
+			(FRAME)BLASTER_BIG_MASK_PMAP_ANIM,
+			(FRAME)BLASTER_MED_MASK_PMAP_ANIM,
+			(FRAME)BLASTER_SML_MASK_PMAP_ANIM,
+		},
+		{
+			(FRAME)0,
+			(FRAME)0,
+			(FRAME)0,
+		},
+		{
+			(FRAME)SIS_CAPTAIN_MASK_PMAP_ANIM,
+			(FRAME)0,
+			(FRAME)0,
+			(FRAME)0,
+			(FRAME)0,
+		},
+		(SOUND)SIS_VICTORY_SONG,
+		(SOUND)SIS_SHIP_SOUNDS,
+	},
+	{
+		0,
+		BLASTER_SPEED * BLASTER_LIFE,
+		NULL_PTR,
+	},
+	NULL_PTR,
+	NULL_PTR,
+	NULL_PTR,
+	0,
+};
+
+static BYTE num_trackers = 0;
+
+static void
+sis_hyper_preprocess (PELEMENT ElementPtr)
+{
+	SIZE udx, udy, dx, dy;
+	SIZE AccelerateDirection;
+	STARSHIPPTR StarShipPtr;
+
+	if (ElementPtr->state_flags & APPEARING)
+	{
+		ElementPtr->velocity = GLOBAL (velocity);
+	}
+
+	AccelerateDirection = 0;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	++StarShipPtr->weapon_counter; /* no shooting in hyperspace! */
+	if ((GLOBAL (autopilot)).x == ~0
+			|| (GLOBAL (autopilot)).y == ~0
+			|| (StarShipPtr->cur_status_flags & (LEFT | RIGHT | THRUST)))
+	{
+LeaveAutoPilot:
+		(GLOBAL (autopilot)).x =
+				(GLOBAL (autopilot)).y = ~0;
+		if (!(StarShipPtr->cur_status_flags & THRUST)
+				|| (GLOBAL_SIS (FuelOnBoard) == 0
+				&& GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1))
+		{
+			AccelerateDirection = -1;
+			GetCurrentVelocityComponents (&ElementPtr->velocity,
+					&dx, &dy);
+			udx = dx << 4;
+			udy = dy << 4;
+
+			StarShipPtr->cur_status_flags &= ~THRUST;
+		}
+	}
+	else
+	{
+		SIZE facing;
+		POINT universe;
+
+		universe.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
+		universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+		udx = (GLOBAL (autopilot)).x - universe.x;
+		udy = -((GLOBAL (autopilot)).y - universe.y);
+		if ((dx = udx) < 0)
+			dx = -dx;
+		if ((dy = udy) < 0)
+			dy = -dy;
+		if (dx <= 1 && dy <= 1)
+			goto LeaveAutoPilot;
+
+		facing = NORMALIZE_FACING (ANGLE_TO_FACING (ARCTAN (udx, udy)));
+
+		if ((StarShipPtr->cur_status_flags & SHIP_AT_MAX_SPEED)
+				|| (ElementPtr->state_flags & APPEARING))
+		{
+			if (NORMALIZE_FACING (StarShipPtr->ShipFacing
+					+ ANGLE_TO_FACING (QUADRANT)
+					- facing) > ANGLE_TO_FACING (HALF_CIRCLE))
+				goto LeaveAutoPilot;
+
+			facing = StarShipPtr->ShipFacing;
+		}
+		else if ((int)facing != (int)StarShipPtr->ShipFacing
+				&& ElementPtr->turn_wait == 0)
+		{
+			if (NORMALIZE_FACING (
+					StarShipPtr->ShipFacing - facing
+					) >= ANGLE_TO_FACING (HALF_CIRCLE))
+			{
+				facing = NORMALIZE_FACING (facing - 1);
+				StarShipPtr->cur_status_flags |= RIGHT;
+			}
+			else if ((int)StarShipPtr->ShipFacing != (int)facing)
+			{
+				facing = NORMALIZE_FACING (facing + 1);
+				StarShipPtr->cur_status_flags |= LEFT;
+			}
+
+			if ((int)facing == (int)StarShipPtr->ShipFacing)
+			{
+				ZeroVelocityComponents (&ElementPtr->velocity);
+			}
+		}
+
+		GetCurrentVelocityComponents (
+				&ElementPtr->velocity,
+				&dx, &dy
+				);
+		if (GLOBAL_SIS (FuelOnBoard)
+				&& (int)facing == (int)StarShipPtr->ShipFacing)
+		{
+			StarShipPtr->cur_status_flags |= SHIP_AT_MAX_SPEED;
+			AccelerateDirection = 1;
+		}
+		else
+		{
+			AccelerateDirection = -1;
+			udx = dx << 4;
+			udy = dy << 4;
+		}
+	}
+
+	if (ElementPtr->thrust_wait == 0 && AccelerateDirection)
+	{
+		COUNT dist;
+		SIZE speed, velocity_increment;
+
+		velocity_increment = WORLD_TO_VELOCITY (
+				StarShipPtr->RaceDescPtr->characteristics.thrust_increment
+				);
+
+		if ((dist = square_root ((long)udx * udx + (long)udy * udy)) == 0)
+			dist = 1; /* prevent divide by zero */
+
+		speed = square_root ((long)dx * dx + (long)dy * dy);
+		if (AccelerateDirection < 0)
+		{
+			dy = (speed / velocity_increment - 1)
+					* velocity_increment;
+			if (dy < speed - velocity_increment)
+				dy = speed - velocity_increment;
+			if ((speed = dy) < 0)
+				speed = 0;
+
+			StarShipPtr->cur_status_flags &= ~SHIP_AT_MAX_SPEED;
+		}
+		else
+		{
+			SIZE max_velocity;
+
+			AccelerateDirection = 0;
+
+			max_velocity = WORLD_TO_VELOCITY (
+					StarShipPtr->RaceDescPtr->characteristics.max_thrust
+					);
+
+			dy = (speed / velocity_increment + 1)
+					* velocity_increment;
+			if (dy < speed + velocity_increment)
+				dy = speed + velocity_increment;
+			if ((speed = dy) > max_velocity)
+			{
+				speed = max_velocity;
+				StarShipPtr->cur_status_flags |= SHIP_AT_MAX_SPEED;
+			}
+		}
+
+		dx = (SIZE)((long)udx * speed / (long)dist);
+		dy = (SIZE)((long)udy * speed / (long)dist);
+		SetVelocityComponents (&ElementPtr->velocity, dx, dy);
+
+		ElementPtr->thrust_wait =
+				StarShipPtr->RaceDescPtr->characteristics.thrust_wait;
+	}
+}
+
+static void
+sis_hyper_postprocess (PELEMENT ElementPtr)
+{
+	STARSHIPPTR StarShipPtr;
+
+	GLOBAL (velocity) = ElementPtr->velocity;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	if ((StarShipPtr->cur_status_flags & WEAPON)
+			&& StarShipPtr->special_counter == 0)
+	{
+#define MENU_DELAY 10
+		DoMenuOptions ();
+		StarShipPtr->cur_status_flags &= ~SHIP_AT_MAX_SPEED;
+		StarShipPtr->special_counter = MENU_DELAY;
+	}
+}
+
+static void
+spawn_point_defense (PELEMENT ElementPtr)
+{
+	STARSHIPPTR StarShipPtr;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	if (ElementPtr->state_flags & PLAYER_SHIP)
+	{
+		HELEMENT hDefense;
+
+		hDefense = AllocElement ();
+		if (hDefense)
+		{
+			ELEMENTPTR DefensePtr;
+
+			LockElement (hDefense, &DefensePtr);
+			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
+					(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			{
+				DefensePtr->death_func = spawn_point_defense;
+			}
+			GetElementStarShip (ElementPtr, &StarShipPtr);
+			SetElementStarShip (DefensePtr, StarShipPtr);
+			UnlockElement (hDefense);
+
+			PutElement (hDefense);
+		}
+	}
+	else
+	{
+		BOOLEAN PaidFor;
+		HELEMENT hObject, hNextObject;
+		ELEMENTPTR ShipPtr;
+		COLOR LaserColor,
+					ColorRange[] =
+					{
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
+					};
+
+		PaidFor = FALSE;
+
+		LaserColor = ColorRange[
+				StarShipPtr->RaceDescPtr->characteristics.special_energy_cost
+				];
+		LockElement (StarShipPtr->hShip, &ShipPtr);
+		for (hObject = GetTailElement (); hObject; hObject = hNextObject)
+		{
+			ELEMENTPTR ObjectPtr;
+
+			LockElement (hObject, &ObjectPtr);
+			hNextObject = GetPredElement (ObjectPtr);
+			if (ObjectPtr != ShipPtr && CollidingElement (ObjectPtr) &&
+					!OBJECT_CLOAKED (ObjectPtr))
+			{
+#define LASER_RANGE (UWORD)100
+				SIZE delta_x, delta_y;
+
+				delta_x = ObjectPtr->next.location.x -
+						ShipPtr->next.location.x;
+				delta_y = ObjectPtr->next.location.y -
+						ShipPtr->next.location.y;
+				if (delta_x < 0)
+					delta_x = -delta_x;
+				if (delta_y < 0)
+					delta_y = -delta_y;
+				delta_x = WORLD_TO_DISPLAY (delta_x);
+				delta_y = WORLD_TO_DISPLAY (delta_y);
+				if ((UWORD)delta_x <= LASER_RANGE &&
+						(UWORD)delta_y <= LASER_RANGE &&
+						(UWORD)delta_x * (UWORD)delta_x +
+						(UWORD)delta_y * (UWORD)delta_y <=
+						LASER_RANGE * LASER_RANGE)
+				{
+					HELEMENT hPointDefense;
+					LASER_BLOCK LaserBlock;
+
+					if (!PaidFor)
+					{
+						if (!DeltaEnergy (ShipPtr,
+								-(StarShipPtr->RaceDescPtr->characteristics.special_energy_cost
+								<< 2)))
+							break;
+
+						ProcessSound (SetAbsSoundIndex (
+										/* POINT_DEFENSE_LASER */
+								StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+						StarShipPtr->special_counter =
+								StarShipPtr->RaceDescPtr->characteristics.special_wait;
+						PaidFor = TRUE;
+					}
+
+					LaserBlock.cx = ShipPtr->next.location.x;
+					LaserBlock.cy = ShipPtr->next.location.y;
+					LaserBlock.face = 0;
+					LaserBlock.ex = ObjectPtr->next.location.x
+							- ShipPtr->next.location.x;
+					LaserBlock.ey = ObjectPtr->next.location.y
+							- ShipPtr->next.location.y;
+					LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
+							| IGNORE_SIMILAR;
+					LaserBlock.pixoffs = 0;
+					LaserBlock.color = LaserColor;
+					hPointDefense = initialize_laser (&LaserBlock);
+					if (hPointDefense)
+					{
+						ELEMENTPTR PDPtr;
+
+						LockElement (hPointDefense, &PDPtr);
+						PDPtr->mass_points =
+								StarShipPtr->RaceDescPtr->characteristics.special_energy_cost;
+						SetElementStarShip (PDPtr, StarShipPtr);
+						PDPtr->hTarget = 0;
+						UnlockElement (hPointDefense);
+
+						PutElement (hPointDefense);
+					}
+				}
+			}
+			UnlockElement (hObject);
+		}
+		UnlockElement (StarShipPtr->hShip);
+	}
+}
+
+static void
+sis_battle_preprocess (PELEMENT ElementPtr)
+{
+	STARSHIPPTR StarShipPtr;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	if (StarShipPtr->RaceDescPtr->characteristics.special_energy_cost == 0)
+	{
+		StarShipPtr->cur_status_flags &= ~SPECIAL;
+		StarShipPtr->special_counter = 2;
+	}
+	if (!(StarShipPtr->RaceDescPtr->ship_info.ship_flags
+			& (FIRES_FORE | FIRES_RIGHT | FIRES_AFT | FIRES_LEFT)))
+	{
+		StarShipPtr->cur_status_flags &= ~WEAPON;
+		StarShipPtr->weapon_counter = 2;
+	}
+}
+
+static void
+sis_battle_postprocess (PELEMENT ElementPtr)
+{
+	SIZE crew_delta;
+	STARSHIPPTR StarShipPtr;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	if ((StarShipPtr->cur_status_flags & SPECIAL)
+			&& StarShipPtr->special_counter == 0
+			&& StarShipPtr->RaceDescPtr->characteristics.special_energy_cost)
+	{
+		spawn_point_defense (ElementPtr);
+	}
+
+	if (ElementPtr->crew_level > 0
+			&& ElementPtr->crew_level < StarShipPtr->RaceDescPtr->ship_info.max_crew
+			&& ElementPtr->crew_level != (crew_delta =
+			(SIZE)GLOBAL_SIS (CrewEnlisted) + 1))
+	{
+		ElementPtr->crew_level = 0;
+		StarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
+		if (crew_delta <= StarShipPtr->RaceDescPtr->ship_info.max_crew)
+			DeltaCrew (ElementPtr, crew_delta);
+		else
+			DeltaCrew (ElementPtr, StarShipPtr->RaceDescPtr->ship_info.max_crew);
+	}
+}
+
+#define BLASTER_DAMAGE 2
+
+static void
+blaster_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+{
+	HELEMENT hBlastElement;
+
+	hBlastElement =
+			weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
+	if (hBlastElement)
+	{
+		ELEMENTPTR BlastElementPtr;
+
+		LockElement (hBlastElement, &BlastElementPtr);
+		switch (ElementPtr0->mass_points)
+		{
+			case BLASTER_DAMAGE * 1:
+				BlastElementPtr->life_span = 2;
+				BlastElementPtr->current.image.frame =
+						SetAbsFrameIndex (ElementPtr0->current.image.frame, 0);
+				BlastElementPtr->preprocess_func = NULL_PTR;
+				break;
+			case BLASTER_DAMAGE * 2:
+				BlastElementPtr->life_span = 6;
+				BlastElementPtr->current.image.frame =
+						IncFrameIndex (ElementPtr0->current.image.frame);
+				break;
+			case BLASTER_DAMAGE * 3:
+				BlastElementPtr->life_span = 7;
+				BlastElementPtr->current.image.frame =
+						SetAbsFrameIndex (ElementPtr0->current.image.frame, 20);
+				break;
+		}
+		UnlockElement (hBlastElement);
+	}
+}
+
+static void
+blaster_preprocess (PELEMENT ElementPtr)
+{
+	BYTE wait;
+
+	switch (ElementPtr->mass_points)
+	{
+		case BLASTER_DAMAGE * 1:
+			if (GetFrameIndex (ElementPtr->current.image.frame) < 8)
+			{
+				ElementPtr->next.image.frame =
+						IncFrameIndex (ElementPtr->current.image.frame);
+				ElementPtr->state_flags |= CHANGING;
+			}
+			break;
+		case BLASTER_DAMAGE * 3:
+			if (GetFrameIndex (ElementPtr->current.image.frame) < 19)
+				ElementPtr->next.image.frame =
+						IncFrameIndex (ElementPtr->current.image.frame);
+			else
+				ElementPtr->next.image.frame =
+						SetAbsFrameIndex (ElementPtr->current.image.frame, 16);
+			ElementPtr->state_flags |= CHANGING;
+			break;
+	}
+
+	if (LONIBBLE (ElementPtr->turn_wait))
+		--ElementPtr->turn_wait;
+	else if ((wait = HINIBBLE (ElementPtr->turn_wait)))
+	{
+		COUNT facing;
+
+		facing = NORMALIZE_FACING (ANGLE_TO_FACING (
+				GetVelocityTravelAngle (&ElementPtr->velocity)
+				));
+		if (TrackShip (ElementPtr, &facing) > 0)
+		{
+			SetVelocityVector (&ElementPtr->velocity,
+					BLASTER_SPEED, facing);
+		}
+
+		ElementPtr->turn_wait = MAKE_BYTE (wait, wait);
+	}
+}
+
+static COUNT
+initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
+{
+#define SIS_VERT_OFFSET 28
+#define SIS_HORZ_OFFSET 20
+#define BLASTER_HITS 2
+#define BLASTER_OFFSET 8
+	COUNT num_blasters;
+
+	BYTE nt;
+	COUNT i;
+	STARSHIPPTR StarShipPtr;
+	MISSILE_BLOCK MissileBlock[6];
+	PMISSILE_BLOCK lpMB;
+
+	GetElementStarShip (ShipPtr, &StarShipPtr);
+
+	num_blasters = 0;
+	for (i = 0, lpMB = &MissileBlock[0]; i < NUM_MODULE_SLOTS; ++i)
+	{
+		BYTE which_gun;
+
+		if (i == 3)
+			i = NUM_MODULE_SLOTS - 1;
+		which_gun = GLOBAL_SIS (ModuleSlots[
+				(NUM_MODULE_SLOTS - 1) - i
+				]);
+		if (which_gun >= GUN_WEAPON && which_gun <= CANNON_WEAPON)
+		{
+			which_gun -= GUN_WEAPON - 1;
+			lpMB->cx = ShipPtr->next.location.x;
+			lpMB->cy = ShipPtr->next.location.y;
+			lpMB->farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
+			lpMB->sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
+					| IGNORE_SIMILAR;
+			lpMB->blast_offs = BLASTER_OFFSET;
+			lpMB->speed = BLASTER_SPEED;
+			lpMB->preprocess_func = blaster_preprocess;
+			lpMB->hit_points = BLASTER_HITS * which_gun;
+			lpMB->damage = BLASTER_DAMAGE * which_gun;
+			lpMB->life = BLASTER_LIFE
+					+ ((BLASTER_LIFE >> 2) * (which_gun - 1));
+
+			if (which_gun == 1)
+				lpMB->index = 0;
+			else if (which_gun == 2)
+				lpMB->index = 9;
+			else
+				lpMB->index = 16;
+
+			switch (i)
+			{
+				case 0: /* NOSE WEAPON */
+					lpMB->pixoffs = SIS_VERT_OFFSET;
+					lpMB->face = StarShipPtr->ShipFacing;
+					break;
+				case 1: /* SPREAD WEAPON */
+					lpMB->pixoffs = SIS_VERT_OFFSET;
+					lpMB->face = NORMALIZE_FACING (
+							StarShipPtr->ShipFacing + 1
+							);
+					lpMB[1] = lpMB[0];
+					++lpMB;
+					lpMB->face = NORMALIZE_FACING (
+							StarShipPtr->ShipFacing - 1
+							);
+					break;
+				case 2: /* SIDE WEAPON */
+					lpMB->pixoffs = SIS_HORZ_OFFSET;
+					lpMB->face = NORMALIZE_FACING (
+							StarShipPtr->ShipFacing
+							+ ANGLE_TO_FACING (QUADRANT)
+							);
+					lpMB[1] = lpMB[0];
+					++lpMB;
+					lpMB->face = NORMALIZE_FACING (
+							StarShipPtr->ShipFacing
+							- ANGLE_TO_FACING (QUADRANT)
+							);
+					break;
+				case NUM_MODULE_SLOTS - 1: /* TAIL WEAPON */
+					lpMB->pixoffs = SIS_VERT_OFFSET;
+					lpMB->face = NORMALIZE_FACING (
+							StarShipPtr->ShipFacing
+							+ ANGLE_TO_FACING (HALF_CIRCLE)
+							);
+					break;
+			}
+
+			++lpMB;
+		}
+	}
+
+
+	nt = (BYTE)((4 - num_trackers) & 3);
+	num_blasters = lpMB - &MissileBlock[0];
+	for (i = 0, lpMB = &MissileBlock[0]; i < num_blasters; ++i, ++lpMB)
+	{
+		if ((BlasterArray[i] = initialize_missile (lpMB)))
+		{
+			ELEMENTPTR BlasterPtr;
+
+			LockElement (BlasterArray[i], &BlasterPtr);
+			BlasterPtr->collision_func = blaster_collision;
+			BlasterPtr->turn_wait = MAKE_BYTE (nt, nt);
+			UnlockElement (BlasterArray[i]);
+		}
+	}
+
+	return (num_blasters);
+}
+
+static void
+sis_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter)
+PELEMENT ShipPtr;
+PEVALUATE_DESC ObjectsOfConcern;
+COUNT ConcernCounter;
+{
+	PEVALUATE_DESC lpEvalDesc;
+	STARSHIPPTR StarShipPtr;
+
+	GetElementStarShip (ShipPtr, &StarShipPtr);
+
+	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
+	if (lpEvalDesc->ObjectPtr)
+	{
+		if (StarShipPtr->RaceDescPtr->characteristics.special_energy_cost)
+		{
+			if (StarShipPtr->special_counter == 0
+					&& ((lpEvalDesc->ObjectPtr
+					&& lpEvalDesc->which_turn <= 2)
+					|| (ObjectsOfConcern[ENEMY_SHIP_INDEX].ObjectPtr != NULL_PTR
+					&& ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn <= 4)))
+				StarShipPtr->ship_input_state |= SPECIAL;
+			else
+				StarShipPtr->ship_input_state &= ~SPECIAL;
+			lpEvalDesc->ObjectPtr = NULL_PTR;
+		}
+		else if (MANEUVERABILITY (&StarShipPtr->RaceDescPtr->cyborg_control) < MEDIUM_SHIP
+				&& lpEvalDesc->MoveState == ENTICE
+				&& (!(lpEvalDesc->ObjectPtr->state_flags & CREW_OBJECT)
+				|| lpEvalDesc->which_turn <= 8)
+				&& (!(lpEvalDesc->ObjectPtr->state_flags & FINITE_LIFE)
+				|| (lpEvalDesc->ObjectPtr->mass_points >= 4
+				&& lpEvalDesc->which_turn == 2
+				&& ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn > 16)))
+			lpEvalDesc->MoveState = PURSUE;
+	}
+
+	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
+
+	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
+	if (num_trackers
+			&& StarShipPtr->weapon_counter == 0
+			&& !(StarShipPtr->ship_input_state & WEAPON)
+			&& lpEvalDesc->ObjectPtr
+			&& lpEvalDesc->which_turn <= 16)
+	{
+		COUNT direction_facing;
+		SIZE delta_x, delta_y;
+		UWORD fire_flags, ship_flags;
+		COUNT facing;
+
+		delta_x = lpEvalDesc->ObjectPtr->current.location.x
+				- ShipPtr->current.location.x;
+		delta_y = lpEvalDesc->ObjectPtr->current.location.y
+				- ShipPtr->current.location.y;
+		direction_facing = NORMALIZE_FACING (
+				ANGLE_TO_FACING (ARCTAN (delta_x, delta_y))
+				);
+
+		ship_flags = StarShipPtr->RaceDescPtr->ship_info.ship_flags;
+		for (fire_flags = FIRES_FORE, facing = StarShipPtr->ShipFacing;
+				fire_flags <= FIRES_LEFT;
+				fire_flags <<= 1, facing += QUADRANT)
+		{
+			if ((ship_flags & fire_flags) && NORMALIZE_FACING (
+					direction_facing - facing + ANGLE_TO_FACING (OCTANT)
+					) <= ANGLE_TO_FACING (QUADRANT))
+			{
+				StarShipPtr->ship_input_state |= WEAPON;
+				break;
+			}
+		}
+	}
+}
+
+RACE_DESCPTR
+init_sis ()
+{
+	RACE_DESCPTR RaceDescPtr;
+
+	COUNT i;
+	static RACE_DESC new_sis_desc;
+
+	/* copy initial ship settings to new_sis_desc */
+	new_sis_desc = sis_desc;
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	{
+		for (i = 0; i < NUM_VIEWS; ++i)
+		{
+			new_sis_desc.ship_data.ship[i] = 0;
+			new_sis_desc.ship_data.weapon[i] = 0;
+			new_sis_desc.ship_data.special[i] = 0;
+		}
+		new_sis_desc.ship_info.icons = 0;
+		new_sis_desc.ship_data.captain_control.background = 0;
+		new_sis_desc.ship_data.victory_ditty = 0;
+		new_sis_desc.ship_data.ship_sounds = 0;
+
+			new_sis_desc.ship_data.ship[0] = (FRAME)SIS_HYPER_MASK_PMAP_ANIM;
+
+		new_sis_desc.preprocess_func = sis_hyper_preprocess;
+		new_sis_desc.postprocess_func = sis_hyper_postprocess;
+
+		new_sis_desc.characteristics.max_thrust -= 4;
+	}
+	else
+	{
+		new_sis_desc.preprocess_func = sis_battle_preprocess;
+		new_sis_desc.postprocess_func = sis_battle_postprocess;
+		new_sis_desc.init_weapon_func = initialize_blasters;
+		new_sis_desc.cyborg_control.intelligence_func =
+				(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
+						ConcernCounter)) sis_intelligence;
+
+		num_trackers = 0;
+		for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+		{
+			BYTE which_mod;
+
+			which_mod = GLOBAL_SIS (ModuleSlots[
+					(NUM_MODULE_SLOTS - 1) - i
+					]);
+			switch (which_mod)
+			{
+				case GUN_WEAPON:
+				case BLASTER_WEAPON:
+				case CANNON_WEAPON:
+					new_sis_desc.characteristics.weapon_energy_cost +=
+							(which_mod - GUN_WEAPON + 1) * 2;
+					if (i <= 1)
+						new_sis_desc.ship_info.ship_flags |= FIRES_FORE;
+					else if (i == 2)
+						new_sis_desc.ship_info.ship_flags |= FIRES_LEFT | FIRES_RIGHT;
+					else
+						new_sis_desc.ship_info.ship_flags |= FIRES_AFT;
+					break;
+				case TRACKING_SYSTEM:
+					++num_trackers;
+					break;
+				case ANTIMISSILE_DEFENSE:
+					++new_sis_desc.characteristics.special_energy_cost;
+					break;
+				case SHIVA_FURNACE:
+					++new_sis_desc.characteristics.energy_regeneration;
+					break;
+				case DYNAMO_UNIT:
+					if ((new_sis_desc.characteristics.energy_wait -= 2) < 4)
+						new_sis_desc.characteristics.energy_wait = 4;
+					break;
+			}
+		}
+
+		if (num_trackers > MAX_TRACKING)
+			num_trackers = MAX_TRACKING;
+		new_sis_desc.characteristics.weapon_energy_cost += num_trackers * 3;
+		if (new_sis_desc.characteristics.special_energy_cost)
+		{
+			new_sis_desc.ship_info.ship_flags |= POINT_DEFENSE;
+			if (new_sis_desc.characteristics.special_energy_cost > MAX_DEFENSE)
+				new_sis_desc.characteristics.special_energy_cost = MAX_DEFENSE;
+		}
+
+		if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
+		{
+			SET_GAME_STATE (BOMB_CARRIER, 1);
+		}
+	}
+
+	new_sis_desc.characteristics.thrust_wait = 0;
+	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+	{
+		switch (GLOBAL_SIS (DriveSlots[i]))
+		{
+			case FUSION_THRUSTER:
+				new_sis_desc.characteristics.max_thrust += 2;
+				++new_sis_desc.characteristics.thrust_wait;
+				break;
+		}
+	}
+	new_sis_desc.characteristics.thrust_wait = (BYTE)(
+			THRUST_WAIT
+			- (new_sis_desc.characteristics.thrust_wait >> 1)
+			);
+	new_sis_desc.characteristics.max_thrust =
+			((new_sis_desc.characteristics.max_thrust /
+			new_sis_desc.characteristics.thrust_increment) + 1)
+			* new_sis_desc.characteristics.thrust_increment;
+
+	for (i = 0; i < NUM_JET_SLOTS; ++i)
+	{
+		switch (GLOBAL_SIS (JetSlots[i]))
+		{
+			case TURNING_JETS:
+				new_sis_desc.characteristics.turn_wait -= 2;
+				break;
+		}
+	}
+
+	if (GLOBAL_SIS (CrewEnlisted) < MAX_CREW - 1)
+		new_sis_desc.ship_info.crew_level = (BYTE)(
+				GLOBAL_SIS (CrewEnlisted) + 1
+				);
+	new_sis_desc.ship_info.energy_level = new_sis_desc.ship_info.max_energy;
+
+	RaceDescPtr = &new_sis_desc;
+
+	return (RaceDescPtr);
+}
+

@@ -1,0 +1,10 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/slyhome
+
+PACKAGE	SLYLANDRO_PACKAGE	slyhome.con
+	GFXRES			SLYLANDRO_PMAP_ANIM		slyhome.ani
+	FONTRES			SLYLANDRO_FONT			slyhome.fon
+	MUSICRES		SLYLANDRO_MUSIC			slyhome.mod
+	STRTAB			SLYLANDRO_CONVERSATION_PHRASES	slyhome.txt
+	STRTAB			SLYLANDRO_COLOR_MAP		slyhome.ct

@@ -1,0 +1,3 @@
+#define KOHR_AH_RACE_STRINGS 0x00200004L
+
+

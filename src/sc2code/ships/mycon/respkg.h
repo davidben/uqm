@@ -1,0 +1,6 @@
+enum
+{
+	MYCON_CODE_PACKAGE = 1,
+	MYCON_PACKAGE
+};
+

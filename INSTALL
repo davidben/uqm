@@ -1,0 +1,42 @@
+To build The Urquan Masters, you need at least the following software:
+
+GCC - GNU C Compiler
+	http://gcc.gnu.org/
+	Debian package: gcc
+
+GNU Make
+	ftp://ftp.gnu.org/
+	Debian package: make
+
+Additionally, The Urquan Masters requires the following libraries:
+
+OpenGL v1.2
+	http://www.xfree86.org/
+	Debian package: xlibmesa-dev OR nvidia-glx OR <vendor specific>
+	XFree86 4.x comes with Mesa, which is a clone.
+	Note: Mesa is a software emulation. For enjoyable results 
+	you will need hardware accelerated OpenGL (GLX).
+	These usally conflict with mesa (can result in X server crash)
+
+SDL v1.2
+	The Simple Direct-Media Layer
+	A fairly good multiplatform low level graphics library.
+	Homepage: www.libsdl.org
+	Debian package: libsdl1.2-dev (and various runtime debs)
+
+SDL-image
+	An image loading library used with SDL.
+	Homepage: http://www.libsdl.org/projects/SDL_image/
+	Download: http://www.libsdl.org/projects/SDL_image/release/
+
+SDL-mixer
+	A sound mixing library used with SDL.
+	Homepage: http://www.libsdl.org/projects/SDL_mixer/
+	Download: http://www.libsdl.org/projects/SDL_mixer/release/
+
+
+If you find these aren't enough, or if you know the names
+of the corresponding RPM etc. packages, please report to
+<sc2-devel@lists.sourceforge.net> or visit 
+http://sourceforge.net/projects/sc2
+

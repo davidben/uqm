@@ -1,0 +1,6 @@
+enum
+{
+	KOHR_AH_CODE_PACKAGE = 1,
+	KOHR_AH_PACKAGE
+};
+

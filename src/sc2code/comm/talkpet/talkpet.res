@@ -1,0 +1,10 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/talkpet
+
+PACKAGE	TALKING_PET_PACKAGE	talkpet.con
+	GFXRES			TALKING_PET_PMAP_ANIM			talkpet.ani
+	FONTRES			TALKING_PET_FONT			talkpet.fon
+	MUSICRES		TALKING_PET_MUSIC			talkpet.mod
+	STRTAB			TALKING_PET_CONVERSATION_PHRASES	talkpet.txt
+	STRTAB			TALKING_PET_COLOR_MAP			talkpet.ct

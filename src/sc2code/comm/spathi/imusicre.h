@@ -1,0 +1,3 @@
+#define SPATHI_MUSIC 0x00600006L
+
+

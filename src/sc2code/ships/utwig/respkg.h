@@ -1,0 +1,6 @@
+enum
+{
+	UTWIG_CODE_PACKAGE = 1,
+	UTWIG_PACKAGE
+};
+

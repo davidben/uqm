@@ -1,0 +1,404 @@
+//Copyright Paul Reiche, Fred Ford. 1992-2002
+
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "gfxintrn.h"
+
+static TIME_VALUE
+frame_intersect (PINTERSECT_CONTROL pControl0, PRECT pr0,
+		PINTERSECT_CONTROL pControl1, PRECT pr1, TIME_VALUE t0,
+		TIME_VALUE t1)
+{
+	register SIZE time_error0, time_error1;
+	register SIZE cycle0, cycle1;
+	SIZE dx_0, dy_0, dx_1, dy_1;
+	SIZE xincr0, yincr0, xincr1, yincr1;
+	SIZE xerror0, xerror1, yerror0, yerror1;
+	RECT r_intersect;
+	IMAGE_BOX IB0, IB1;
+	BOOLEAN check0, check1;
+
+	IB0.FramePtr = pControl0->IntersectStamp.frame;
+	IB0.Box.corner = pr0->corner;
+	IB0.Box.extent.width = GetFrameWidth (IB0.FramePtr);
+	IB0.Box.extent.height = GetFrameHeight (IB0.FramePtr);
+	IB1.FramePtr = pControl1->IntersectStamp.frame;
+	IB1.Box.corner = pr1->corner;
+	IB1.Box.extent.width = GetFrameWidth (IB1.FramePtr);
+	IB1.Box.extent.height = GetFrameHeight (IB1.FramePtr);
+
+	dx_0 = pr0->extent.width;
+	dy_0 = pr0->extent.height;
+	if (dx_0 >= 0)
+		xincr0 = 1;
+	else
+	{
+		xincr0 = -1;
+		dx_0 = -dx_0;
+	}
+	if (dy_0 >= 0)
+		yincr0 = 1;
+	else
+	{
+		yincr0 = -1;
+		dy_0 = -dy_0;
+	}
+	if (dx_0 >= dy_0)
+		cycle0 = dx_0;
+	else
+		cycle0 = dy_0;
+	xerror0 = yerror0 = cycle0;
+			
+	dx_1 = pr1->extent.width;
+	dy_1 = pr1->extent.height;
+	if (dx_1 >= 0)
+		xincr1 = 1;
+	else
+	{
+		xincr1 = -1;
+		dx_1 = -dx_1;
+	}
+	if (dy_1 >= 0)
+		yincr1 = 1;
+	else
+	{
+		yincr1 = -1;
+		dy_1 = -dy_1;
+	}
+	if (dx_1 >= dy_1)
+		cycle1 = dx_1;
+	else
+		cycle1 = dy_1;
+	xerror1 = yerror1 = cycle1;
+			
+	check0 = check1 = FALSE;
+	if (t0 <= 1)
+	{
+		time_error0 = time_error1 = 0;
+		if (t0 == 0)
+		{
+			++t0;
+			goto CheckFirstIntersection;
+		}
+	}
+	else
+	{
+		SIZE delta;
+		COUNT start;
+		long error;
+
+		start = (COUNT)cycle0 * (COUNT)(t0 - 1);
+		time_error0 = start & ((1 << TIME_SHIFT) - 1);
+		if ((start >>= (COUNT)TIME_SHIFT) > 0)
+		{
+			if ((error = (long)xerror0
+					- (long)dx_0 * (long)start) > 0)
+				xerror0 = (SIZE)error;
+			else
+			{
+				delta = -(SIZE)(error / (long)cycle0) + 1;
+				IB0.Box.corner.x += xincr0 * delta;
+				xerror0 = (SIZE)(error + (long)cycle0 * (long)delta);
+			}
+			if ((error = (long)yerror0
+					- (long)dy_0 * (long)start) > 0)
+				yerror0 = (SIZE)error;
+			else
+			{
+				delta = -(SIZE)(error / (long)cycle0) + 1;
+				IB0.Box.corner.y += yincr0 * delta;
+				yerror0 = (SIZE)(error + (long)cycle0 * (long)delta);
+			}
+			pr0->corner = IB0.Box.corner;
+		}
+	
+		start = (COUNT)cycle1 * (COUNT)(t0 - 1);
+		time_error1 = start & ((1 << TIME_SHIFT) - 1);
+		if ((start >>= (COUNT)TIME_SHIFT) > 0)
+		{
+			if ((error = (long)xerror1
+					- (long)dx_1 * (long)start) > 0)
+				xerror1 = (SIZE)error;
+			else
+			{
+				delta = -(SIZE)(error / (long)cycle1) + 1;
+				IB1.Box.corner.x += xincr1 * delta;
+				xerror1 = (SIZE)(error + (long)cycle1 * (long)delta);
+			}
+			if ((error = (long)yerror1
+					- (long)dy_1 * (long)start) > 0)
+				yerror1 = (SIZE)error;
+			else
+			{
+				delta = -(SIZE)(error / (long)cycle1) + 1;
+				IB1.Box.corner.y += yincr1 * delta;
+				yerror1 = (SIZE)(error + (long)cycle1 * (long)delta);
+			}
+			pr1->corner = IB1.Box.corner;
+		}
+	}
+
+	pControl0->last_time_val = pControl1->last_time_val = t0;
+	do
+	{
+		++t0;
+		if ((time_error0 += cycle0) >= (1 << TIME_SHIFT))
+		{
+			if ((xerror0 -= dx_0) <= 0)
+			{
+				IB0.Box.corner.x += xincr0;
+				xerror0 += cycle0;
+			}
+			if ((yerror0 -= dy_0) <= 0)
+			{
+				IB0.Box.corner.y += yincr0;
+				yerror0 += cycle0;
+			}
+
+			check0 = TRUE;
+			time_error0 -= (1 << TIME_SHIFT);
+		}
+			
+		if ((time_error1 += cycle1) >= (1 << TIME_SHIFT))
+		{
+			if ((xerror1 -= dx_1) <= 0)
+			{
+				IB1.Box.corner.x += xincr1;
+				xerror1 += cycle1;
+			}
+			if ((yerror1 -= dy_1) <= 0)
+			{
+				IB1.Box.corner.y += yincr1;
+				yerror1 += cycle1;
+			}
+
+			check1 = TRUE;
+			time_error1 -= (1 << TIME_SHIFT);
+		}
+
+		if (check0 || check1)
+		{ /* if check0 && check1, this may not be quite right --
+						 * if shapes had a pixel's separation to begin with
+						 * and both moved toward each other, you would actually
+						 * get a pixel overlap but since the last positions were
+						 * separated by a pixel, the shapes wouldn't be touching
+						 * each other.
+						 */
+			BOOLEAN _image_intersect (PIMAGE_BOX pImageBox0, PIMAGE_BOX
+					pImageBox1, PRECT pIRect);
+
+CheckFirstIntersection:
+			if (BoxIntersect (&IB0.Box, &IB1.Box, &r_intersect)
+					&& _image_intersect (&IB0, &IB1, &r_intersect))
+				return (t0);
+			
+			if (check0)
+			{
+				pr0->corner = IB0.Box.corner;
+				pControl0->last_time_val = t0;
+				check0 = FALSE;
+			}
+			if (check1)
+			{
+				pr1->corner = IB1.Box.corner;
+				pControl1->last_time_val = t0;
+				check1 = FALSE;
+			}
+		}
+	} while (t0 <= t1);
+
+	return ((TIME_VALUE)0);
+}
+
+TIME_VALUE
+DrawablesIntersect (PINTERSECT_CONTROL pControl0,
+		PINTERSECT_CONTROL pControl1, TIME_VALUE
+		max_time_val)
+{
+	register SIZE dy;
+	register SIZE time_y_0, time_y_1;
+	RECT r0, r1;
+	FRAMEPTR FramePtr0, FramePtr1;
+
+	if (!ContextActive () || max_time_val == 0)
+		return ((TIME_VALUE)0);
+	else if (max_time_val > MAX_TIME_VALUE)
+		max_time_val = MAX_TIME_VALUE;
+
+	pControl0->last_time_val = pControl1->last_time_val = 0;
+
+	r0.corner = pControl0->IntersectStamp.origin;
+	r1.corner = pControl1->IntersectStamp.origin;
+
+	r0.extent.width = pControl0->EndPoint.x - r0.corner.x;
+	r0.extent.height = pControl0->EndPoint.y - r0.corner.y;
+	r1.extent.width = pControl1->EndPoint.x - r1.corner.x;
+	r1.extent.height = pControl1->EndPoint.y - r1.corner.y;
+		
+	FramePtr0 = (FRAMEPTR)pControl0->IntersectStamp.frame;
+	if (FramePtr0 == 0)
+		return(0);
+	r0.corner.x -= GetFrameHotX (FramePtr0);
+	r0.corner.y -= GetFrameHotY (FramePtr0);
+
+	FramePtr1 = (FRAMEPTR)pControl1->IntersectStamp.frame;
+	if (FramePtr1 == 0)
+		return(0);
+	r1.corner.x -= GetFrameHotX (FramePtr1);
+	r1.corner.y -= GetFrameHotY (FramePtr1);
+
+	dy = r1.corner.y - r0.corner.y;
+	time_y_0 = dy - GetFrameHeight (FramePtr0) + 1;
+	time_y_1 = dy + GetFrameHeight (FramePtr1) - 1;
+	dy = r0.extent.height - r1.extent.height;
+
+	if ((time_y_0 <= 0 && time_y_1 >= 0)
+			|| (time_y_0 > 0 && dy >= time_y_0)
+			|| (time_y_1 < 0 && dy <= time_y_1))
+	{
+		register SIZE dx;
+		register SIZE time_x_0, time_x_1;
+
+		dx = r1.corner.x - r0.corner.x;
+		time_x_0 = dx - GetFrameWidth (FramePtr0) + 1;
+		time_x_1 = dx + GetFrameWidth (FramePtr1) - 1;
+		dx = r0.extent.width - r1.extent.width;
+
+		if ((time_x_0 <= 0 && time_x_1 >= 0)
+				|| (time_x_0 > 0 && dx >= time_x_0)
+				|| (time_x_1 < 0 && dx <= time_x_1))
+		{
+			TIME_VALUE intersect_time;
+
+			if (dx == 0 && dy == 0)
+				time_y_0 = time_y_1 = 0;
+			else
+			{
+				SIZE t;
+				long time_beg, time_end, fract;
+
+				if (time_y_1 < 0)
+				{
+					t = time_y_0;
+					time_y_0 = -time_y_1;
+					time_y_1 = -t;
+				}
+				else if (time_y_0 <= 0)
+				{
+					if (dy < 0)
+						time_y_1 = -time_y_0;
+					time_y_0 = 0;
+				}
+				if (dy < 0)
+					dy = -dy;
+				if (dy < time_y_1)
+					time_y_1 = dy;
+					/* just to be safe, widen search area */
+				--time_y_0;
+				++time_y_1;
+
+				if (time_x_1 < 0)
+				{
+					t = time_x_0;
+					time_x_0 = -time_x_1;
+					time_x_1 = -t;
+				}
+				else if (time_x_0 <= 0)
+				{
+					if (dx < 0)
+						time_x_1 = -time_x_0;
+					time_x_0 = 0;
+				}
+				if (dx < 0)
+					dx = -dx;
+				if (dx < time_x_1)
+					time_x_1 = dx;
+					/* just to be safe, widen search area */
+				--time_x_0;
+				++time_x_1;
+
+#ifdef DEBUG
+printf ("FramePtr0<%d, %d> --> <%d, %d>\nFramePtr1<%d, %d> --> <%d, %d>\n",
+GetFrameWidth (FramePtr0), GetFrameHeight (FramePtr0),
+r0.corner.x, r0.corner.y,
+GetFrameWidth (FramePtr1), GetFrameHeight (FramePtr1),
+r1.corner.x, r1.corner.y);
+printf ("time_x(%d, %d)-%d, time_y(%d, %d)-%d\n", time_x_0, time_x_1, dx, time_y_0, time_y_1, dy);
+#endif /* DEBUG */
+				if (dx == 0)
+				{
+					time_beg = time_y_0;
+					time_end = time_y_1;
+					fract = dy;
+				}
+				else if (dy == 0)
+				{
+					time_beg = time_x_0;
+					time_end = time_x_1;
+					fract = dx;
+				}
+				else
+				{
+					long time_x, time_y;
+
+					time_x = (long)time_x_0 * (long)dy;
+					time_y = (long)time_y_0 * (long)dx;
+					time_beg = time_x < time_y ? time_y : time_x;
+
+					time_x = (long)time_x_1 * (long)dy;
+					time_y = (long)time_y_1 * (long)dx;
+					time_end = time_x > time_y ? time_y : time_x;
+
+					fract = (long)dx * (long)dy;
+				}
+
+				if ((time_beg <<= TIME_SHIFT) < fract)
+					time_y_0 = 0;
+				else
+					time_y_0 = (SIZE)(time_beg / fract);
+
+				if (time_end >= fract /* just in case of overflow */
+						|| (time_end <<= TIME_SHIFT) >=
+						fract * (long)max_time_val)
+					time_y_1 = max_time_val - 1;
+				else
+					time_y_1 = (SIZE)((time_end + fract - 1) / fract) - 1;
+			}
+
+#ifdef DEBUG
+printf ("start_time = %d, end_time = %d\n", time_y_0, time_y_1);
+#endif /* DEBUG */
+			if (time_y_0 <= time_y_1
+					&& (intersect_time = frame_intersect (
+					pControl0, &r0, pControl1, &r1,
+					(TIME_VALUE)time_y_0, (TIME_VALUE)time_y_1)))
+			{
+				FramePtr0 = (FRAMEPTR)pControl0->IntersectStamp.frame;
+				pControl0->EndPoint.x = r0.corner.x + GetFrameHotX (FramePtr0);
+				pControl0->EndPoint.y = r0.corner.y + GetFrameHotY (FramePtr0);
+				FramePtr1 = (FRAMEPTR)pControl1->IntersectStamp.frame;
+				pControl1->EndPoint.x = r1.corner.x + GetFrameHotX (FramePtr1);
+				pControl1->EndPoint.y = r1.corner.y + GetFrameHotY (FramePtr1);
+
+				return (intersect_time);
+			}
+		}
+	}
+
+	return ((TIME_VALUE)0);
+}
+

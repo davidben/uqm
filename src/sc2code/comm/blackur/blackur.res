@@ -1,0 +1,10 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/blackur
+
+PACKAGE	BLACKURQ_PACKAGE	blackur.con
+	GFXRES			BLACKURQ_PMAP_ANIM		blackur.ani
+	FONTRES			BLACKURQ_FONT			blackur.fon
+	MUSICRES		BLACKURQ_MUSIC			blackur.mod
+	STRTAB			BLACKURQ_CONVERSATION_PHRASES	blackur.txt
+

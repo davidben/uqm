@@ -1,0 +1,6 @@
+enum
+{
+	SYREEN_CODE_PACKAGE = 1,
+	SYREEN_PACKAGE
+};
+

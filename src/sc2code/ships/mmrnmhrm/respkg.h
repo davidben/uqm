@@ -1,0 +1,6 @@
+enum
+{
+	MMRNMHRM_CODE_PACKAGE = 1,
+	MMRNMHRM_PACKAGE
+};
+

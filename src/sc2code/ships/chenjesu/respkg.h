@@ -1,0 +1,6 @@
+enum
+{
+	CHENJESU_CODE_PACKAGE = 1,
+	CHENJESU_PACKAGE
+};
+

@@ -1,0 +1,5 @@
+#include "igfxres.h"
+#include "istrtab.h"
+#include "isndres.h"
+#include "imusicre.h"
+#include "icode.h"

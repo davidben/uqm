@@ -1,0 +1,10 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/shofixt
+
+PACKAGE	SHOFIXTI_PACKAGE	shofixt.con
+	GFXRES			SHOFIXTI_PMAP_ANIM		shofixt.ani
+	FONTRES			SHOFIXTI_FONT			shofixt.fon
+	MUSICRES		SHOFIXTI_MUSIC			shofixt.mod
+	STRTAB			SHOFIXTI_CONVERSATION_PHRASES	shofixt.txt
+

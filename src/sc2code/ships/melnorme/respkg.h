@@ -1,0 +1,6 @@
+enum
+{
+	MELNORME_CODE_PACKAGE = 1,
+	MELNORME_PACKAGE
+};
+

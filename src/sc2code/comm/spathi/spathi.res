@@ -1,0 +1,17 @@
+INCLUDE	../../star3do.typ
+
+PATH	comm/spathi
+PACKAGE	SPATHI_ART_PACKAGE	spathi.con
+	GFXRES			SPATHI_PMAP_ANIM			spathi.ani
+	FONTRES			SPATHI_FONT				spathi.fon
+	STRTAB			SPATHI_CONVERSATION_PHRASES		spathi.txt
+
+PATH	comm/spahome
+PACKAGE	SPATHI_HOME_ART_PACKAGE	spathi.con
+	GFXRES			SPATHI_HOME_PMAP_ANIM			spahome.ani
+	STRTAB			SPATHI_HOME_COLOR_MAP			spahome.ct
+	STRTAB			SPATHI_HOME_CONVERSATION_PHRASES	spahome.txt
+
+PATH	comm/spathi
+PACKAGE	SPATHI_COMMON_PACKAGE	spathi.con
+	MUSICRES		SPATHI_MUSIC				spathi.mod

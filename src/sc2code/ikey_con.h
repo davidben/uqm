@@ -1,0 +1,3 @@
+#define JOYSTICK_KEYS 0x00200001L
+
+

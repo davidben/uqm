@@ -1,0 +1,30 @@
+If you modify the sources or get them from the CVS repository, 
+you may need the following programs in addition to those listed in INSTALL:
+
+CVS - Concurrent Versions System
+	http://www.loria.fr/~molli/cvs-index.html
+        http://www.cvshome.org
+	Debian package: cvs
+
+GNU Autoconf
+	http://www.gnu.org/software/autoconf/autoconf.html
+	Debian package: autoconf
+
+GNU Automake - a Makefile generator
+        http://www.gnu.org/software/automake/
+	Debian package: automake
+
+GNU Libtool - generic shared library support
+        http://www.gnu.org/software/libtool/
+        ftp://ftp.gnu.org/pub/gnu/libtool/
+	Debian package: libtool
+
+If you find these aren't enough, or if you know the names
+of the corresponding RPM etc. packages, please report to
+<sc2-devel@lists.sourceforge.net>.
+
+For the CVS repository see sc2.sourceforge.net.
+
+(Note: this file was written by Mudry <mudry@users.sf.net>,
+and is a straight copy of the FSCP one.)
+

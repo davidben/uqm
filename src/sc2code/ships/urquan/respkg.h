@@ -1,0 +1,6 @@
+enum
+{
+	URQUAN_CODE_PACKAGE = 1,
+	URQUAN_PACKAGE
+};
+
