@@ -632,6 +632,7 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 				return 0;
 			case ENOTDIR:
 				// A component is matched, but not as a dir. Failed.
+				uio_free(*resolvedPath);
 				errno = ENOTDIR;
 				return -1;
 			case ENOENT:
