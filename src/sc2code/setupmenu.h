@@ -19,6 +19,33 @@
 #ifndef _SETUPMENU_H
 #define _SETUPMENU_H
 
+typedef enum {
+	OPTVAL_DISABLED,
+	OPTVAL_ENABLED
+} OPT_ENABLABLE;
+
+typedef enum {
+	OPTVAL_PC,
+	OPTVAL_3DO
+} OPT_CONSOLETYPE;
+
+typedef enum {
+	OPTVAL_NO_SCALE,
+	OPTVAL_BILINEAR_SCALE,
+	OPTVAL_BIADAPT_SCALE,
+	OPTVAL_BIADV_SCALE,
+	OPTVAL_TRISCAN_SCALE
+} OPT_SCALETYPE;
+
+typedef struct globalopts_struct {
+	OPT_SCALETYPE scaler;
+	OPT_ENABLABLE subtitles, scanlines;
+	OPT_CONSOLETYPE music, menu, text, cscan, scroll;
+} GLOBALOPTS;
+
 void SetupMenu (void);
+
+void GetGlobalOptions (GLOBALOPTS *opts);
+void SetGlobalOptions (GLOBALOPTS *opts);
 
 #endif // _SETUPMENU_H

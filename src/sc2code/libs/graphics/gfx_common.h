@@ -43,6 +43,9 @@ enum
 #define TFB_GFXFLAGS_SCALE_BIADAPTADV   (1<<5)
 #define TFB_GFXFLAGS_SCALE_TRISCAN      (1<<6)
 
+// The flag variable itself
+extern int GfxFlags;
+
 void TFB_PreInit (void);
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
 void TFB_UninitGraphics (void);

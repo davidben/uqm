@@ -41,8 +41,6 @@ extern SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 extern volatile int TransitionAmount;
 extern SDL_Rect TransitionClipRect;
 
-extern int GfxFlags;
-
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
 
