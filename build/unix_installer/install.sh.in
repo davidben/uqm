@@ -194,10 +194,10 @@ mkdir -p -- "$INSTALL_BASE"/lib/uqm 2> /dev/null
 mkdir -p -- "$INSTALL_BASE"/bin 2> /dev/null
 
 echo "Unpacking content..."
-gzip -dc "$CONTENT_FILE" | tar -xzf - -C "$INSTALL_BASE"lib/uqm
+gzip -dc "$CONTENT_FILE" | tar -xf - -C "$INSTALL_BASE"lib/uqm
 
 echo "Unpacking other stuff..."
-tail -c @ATTACHLEN@ < "$0" | tar -xzf - -C "$INSTALL_BASE"lib/
+tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$INSTALL_BASE"lib/
 
 echo "Creating wrapper script..."
 cat << EOF > "$INSTALL_BASE"bin/uqm
