@@ -565,64 +565,51 @@ I guess what I mean is... What about us, Talana?
 I'm afraid our duties will keep us apart, Captain
 But for now, at least, there's this...
 
-#(MORE_COMFORTABLE0)	syree058.ogg
+#(MORE_COMFORTABLE)	syree058.ogg
 That's more like it... now 
-#(MORE_COMFORTABLE1)
-, let me help you off with this
+let me help you off with this
 yes... now aren't you a lot more comfortable?
 
 #(in_the_spirit)
 I see! Well, in the spirit of interspecies communication, let me just say, COWABUNGA!
 
-#(OK_SPIRIT0)	syree059.ogg
+#(OK_SPIRIT)	syree059.ogg
 Oooh! Say that word again!
 It makes me feel so excited!
 It makes me want to do something nice for you
-#(OK_SPIRIT1)
 like this...
-#(OK_SPIRIT2)
 and this...
-#(OK_SPIRIT3)
 and especially, this!
 
 #(what_in_mind)
 Hey... what have you got in mind here?
 
-#(SOMETHING_LIKE_THIS0)	syree060.ogg
+#(SOMETHING_LIKE_THIS)	syree060.ogg
 Well to start off, I thought we'd do something like this
 unless your species isn't limber enough
-#(SOMETHING_LIKE_THIS1)
 and then I thought we could move on to something a bit more like... Mmmm... this.
-#(SOMETHING_LIKE_THIS2)
 and after you had recovered, I thought this might be fun!
-#(SOMETHING_LIKE_THIS3)
 and if you're still conscious, I thought we could try this
 even though I've never done it before!
 
 #(hands_off)
 Hey! Hands off lady! I'm not THAT kind of Captain.
 
-#(OK_WONT_USE_HANDS0)	syree061.ogg
+#(OK_WONT_USE_HANDS)	syree061.ogg
 Oh, Captain... I would never think of doing something unpleasant to you
 quite the opposite in fact.
 But if you want me to keep my hands off... I can use other... things...
-#(OK_WONT_USE_HANDS1)
-...like this over here...
-#(OK_WONT_USE_HANDS2)
+like this over here...
 and this right here...
-#(OK_WONT_USE_HANDS3)
 and this right about here.
 
 #(why_lights_off)
 Ahh... why are the lights off?
 
-#(LIGHTS_OFF_BECAUSE0)	syree062.ogg
+#(LIGHTS_OFF_BECAUSE)	syree062.ogg
 Because, my darling, if the light was on, I couldn't do this...
-#(LIGHTS_OFF_BECAUSE1)
 or this...
-#(LIGHTS_OFF_BECAUSE2)
 or this...
-#(LIGHTS_OFF_BECAUSE3)
 or, umm... this.
 
 #(evil_monster)
@@ -644,15 +631,12 @@ Just relax, my silly human Captain. Let me take care of everything.
 #(what_happens_if_i_touch_this)
 Hmmm... what happens if I do this?
 
-#(THIS_HAPPENS0)	syree065.ogg
+#(THIS_HAPPENS)	syree065.ogg
 ...mmm
 MMMm!...
-Oh, 
-
-#(THIS_HAPPENS1)
-! MMMmm!!...
+Ohh!...
+MMMmm!!...
 ...MMMMMmmmmmm!!!...
-...Mmmmm
 does that answer your question?
 
 #(are_you_sure_this_is_ok)
@@ -684,8 +668,8 @@ and come here!...
 (...quite a good bit later...)
 
 #(SEX_GOODBYE)	syree070.ogg
-Goodbye Captain, darling... we each have our jobs to do now
-you must go!
+Goodbye Captain, darling... we each have our jobs to do
+now you must go!
 But you will remain always in my mind and heart
 and deep within me, I know that someday, when all this madness has come to an end
 we will be together like this... again.

@@ -189,34 +189,7 @@ FriendlyExit (RESPONSE_REF R)
 	else
 	{
 		if (PLAYER_SAID (R, hands_off))
-		{
-			NPCPhrase (OK_WONT_USE_HANDS0);
-			NPCPhrase (OK_WONT_USE_HANDS1);
-			NPCPhrase (OK_WONT_USE_HANDS2);
-			NPCPhrase (OK_WONT_USE_HANDS3);
-
-			syreen_desc.AlienTextTemplate.align = ALIGN_RIGHT;
-			syreen_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH - TEXT_X_OFFS;
-			AlienTalkSegue (1);
-
-			syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 3 / 4;
-			syreen_desc.AlienTextTemplate.baseline.y = 120 * 3 / 4;
-			AlienTalkSegue (2);
-
-			syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 2 / 4;
-			syreen_desc.AlienTextTemplate.baseline.y = 120 * 2 / 4;
-			AlienTalkSegue (3);
-
-			syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 1 / 4;
-			syreen_desc.AlienTextTemplate.baseline.y = 120 * 1 / 4;
-			AlienTalkSegue ((COUNT)~0);
-
-			syreen_desc.AlienTextTemplate.baseline.x =
-					TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-			syreen_desc.AlienTextTemplate.baseline.y = 0;
-			syreen_desc.AlienTextTemplate.align = ALIGN_CENTER;
-			syreen_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
-		}
+			NPCPhrase (OK_WONT_USE_HANDS);
 		else if (PLAYER_SAID (R, not_much_more_to_say))
 			NPCPhrase (THEN_STOP_TALKING);
 		NPCPhrase (LATER);
@@ -238,68 +211,14 @@ static void
 Sex (RESPONSE_REF R)
 {
 	if (PLAYER_SAID (R, in_the_spirit))
-	{
-		NPCPhrase (OK_SPIRIT0);
-		NPCPhrase (OK_SPIRIT1);
-		NPCPhrase (OK_SPIRIT2);
-		NPCPhrase (OK_SPIRIT3);
-
-		syreen_desc.AlienTextTemplate.align = ALIGN_LEFT;
-		syreen_desc.AlienTextTemplate.baseline.x = TEXT_X_OFFS;
-		AlienTalkSegue (1);
-
-		syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 1 / 4;
-		syreen_desc.AlienTextTemplate.baseline.y = 120 * 1 / 4;
-		AlienTalkSegue (2);
-
-		syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 2 / 4;
-		syreen_desc.AlienTextTemplate.baseline.y = 120 * 2 / 4;
-		AlienTalkSegue (3);
-
-		syreen_desc.AlienTextTemplate.baseline.x = SIS_TEXT_WIDTH * 3 / 4;
-		syreen_desc.AlienTextTemplate.baseline.y = 120 * 3 / 4;
-		AlienTalkSegue ((COUNT)~0);
-
-		syreen_desc.AlienTextTemplate.baseline.x =
-				TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-		syreen_desc.AlienTextTemplate.baseline.y = 0;
-		syreen_desc.AlienTextTemplate.align = ALIGN_CENTER;
-		syreen_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
-	}
+		NPCPhrase (OK_SPIRIT);
 	else if (PLAYER_SAID (R, what_in_mind))
-	{
-		NPCPhrase (SOMETHING_LIKE_THIS0);
-		NPCPhrase (SOMETHING_LIKE_THIS1);
-		NPCPhrase (SOMETHING_LIKE_THIS2);
-		NPCPhrase (SOMETHING_LIKE_THIS3);
-
-		syreen_desc.AlienTextTemplate.align = ALIGN_LEFT;
-		syreen_desc.AlienTextTemplate.baseline.x = TEXT_X_OFFS;
-		AlienTalkSegue (1);
-
-		syreen_desc.AlienTextTemplate.baseline.y = 120 * 3 / 4;
-		AlienTalkSegue (2);
-
-		syreen_desc.AlienTextTemplate.align = ALIGN_RIGHT;
-		syreen_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH - TEXT_X_OFFS;
-		AlienTalkSegue (3);
-
-		syreen_desc.AlienTextTemplate.baseline.y = 0;
-		AlienTalkSegue ((COUNT)~0);
-
-		syreen_desc.AlienTextTemplate.baseline.x =
-				TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-		syreen_desc.AlienTextTemplate.baseline.y = 0;
-		syreen_desc.AlienTextTemplate.align = ALIGN_CENTER;
-		syreen_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
-	}
+		NPCPhrase (SOMETHING_LIKE_THIS);
 	else if (PLAYER_SAID (R, disease))
 		NPCPhrase (JUST_RELAX);
 	else if (PLAYER_SAID (R, what_happens_if_i_touch_this))
 	{
-		NPCPhrase (THIS_HAPPENS0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
-		NPCPhrase (THIS_HAPPENS1);
+		NPCPhrase (THIS_HAPPENS);
 
 		DISABLE_PHRASE (what_happens_if_i_touch_this);
 	}
@@ -341,9 +260,7 @@ Foreplay (RESPONSE_REF R)
 			NPCPhrase (HERES_REWARD);
 		else
 			NPCPhrase (ABOUT_US);
-		NPCPhrase (MORE_COMFORTABLE0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
-		NPCPhrase (MORE_COMFORTABLE1);
+		NPCPhrase (MORE_COMFORTABLE);
 		AlienTalkSegue (1);
 		XFormPLUT (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
@@ -354,30 +271,7 @@ Foreplay (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, why_lights_off))
 	{
-		NPCPhrase (LIGHTS_OFF_BECAUSE0);
-		NPCPhrase (LIGHTS_OFF_BECAUSE1);
-		NPCPhrase (LIGHTS_OFF_BECAUSE2);
-		NPCPhrase (LIGHTS_OFF_BECAUSE3);
-
-		AlienTalkSegue (1);
-		syreen_desc.AlienTextWidth >>= 1;
-		syreen_desc.AlienTextTemplate.baseline.x =
-				TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 2);
-		syreen_desc.AlienTextTemplate.baseline.y = 50;
-		AlienTalkSegue (2);
-		syreen_desc.AlienTextTemplate.baseline.x =
-				(TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1))
-				+ (SIS_TEXT_WIDTH >> 2);
-		AlienTalkSegue (3);
-		syreen_desc.AlienTextTemplate.baseline.x =
-				TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-		syreen_desc.AlienTextTemplate.baseline.y = 90;
-		syreen_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
-		AlienTalkSegue ((COUNT)~0);
-
-		syreen_desc.AlienTextTemplate.baseline.x =
-				TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-		syreen_desc.AlienTextTemplate.baseline.y = 0;
+		NPCPhrase (LIGHTS_OFF_BECAUSE);
 
 		DISABLE_PHRASE (why_lights_off);
 	}
