@@ -1,4 +1,6 @@
 0.2:
+- Repaired a DrawCommandQueue invariant, from tamlin
+- Color transforms in communication merged into core animation thread
 - 3D planet is now antialiased, from PhracturedBlue
 - Hyperspace saving crash introduced by prev. patches fixed, from slayne
 - Precursor ship crew count is now placed correctly in melee, from wjp

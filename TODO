@@ -7,9 +7,8 @@ into the cvs tree. Note that v1.0 will pretty much be a straight port,
 with no gameplay-altering features added.
 
 Serious bugs (crash the game, high priority):
-- Communication screens nonrepeatably but inevitably hang the system.  This
-  is probably a deadlock issue.
-  - Often more probable when heavy color table transformations are going on
+- Some "Spliced" communications crash when you try to skip past them 
+  (Example: System message from the Orz)
 
 Glitches (don't crash the game, medium priority):
 - momentary slowdown of scrolling in hyperspace about once per second
@@ -37,13 +36,9 @@ Glitches (don't crash the game, medium priority):
   - Some unimplemented functions (for oscilloscope and dialogue seeking)
   - Volume levels aren't maybe exactly as they should
   - Crashes if no audio device available
-- Color table transformations are very slow.
-  - We should try to get rid of excessive creation of new threads
 - Circles of influence aren't shown the first time (after load?) a player
   examines the starmap.
 - Selling bio data gives an incomplete message: 'The 1000' [nothing].
-- When out of fuel: "Fill all my fuel tanks to maximum capacity" ->
-  "Your ship's capacity is insufficient to hold that much fuel"
 - Melee zooming may bug a little, ship sometimes flashes as big and then
   small again (some 3DO owner should check does this happen in original)
 - Earth color can vary between different runs, it should be always blue
@@ -93,6 +88,8 @@ Glitches (don't crash the game, medium priority):
 - You seem to be able to do certain things before you're supposed to
   - saying the phrase 'What you are doing it wrong'
   - demanding the Shofixti Maidens from Zex
+    - This always happens, regardless of game state.  This is a bug in
+      both predecessors as well.
   Probably the negative shift for GET_STATE and SET_STATE
 - comm.c color transform speed is too fast when compared to PC version
 
@@ -106,6 +103,7 @@ Implementation bugs (low priority):
 - 3D planet view when entering orbit is now done, but there's some things
   which could make it look nicer, like better lighting, better slave shield 
   and removing occasional pops/discontinuities
+- DrawCommandQueue is gratuitously dynamically allocated, should be static
 
 Stuff still to do (large):
 - add a Key Jamming program
