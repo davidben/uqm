@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Added stat data in outfit screen (use --font=pc) - from Nic
 - Added fixed introx.mod, from fOSSiL
 - Fixed Orz .mod file, from fOSSiL
 - Added vertical alignment for subtitles (text runs off screen fix)-from Nic

@@ -403,6 +403,133 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 }
 
 void
+DrawFlagshipStats (void)
+{
+	RECT r;
+	TEXT t;
+	FONT OldFont;
+	COLOR OldColor;
+	CONTEXT OldContext;
+	UNICODE buf[60], guns[16][8];
+	SIZE leading;
+    BYTE i;
+	DWORD thrust, turning, dynamo, fuel;
+
+	/* collect stats */
+	for (i = 0; i < 16; ++i)
+		wsprintf (guns[i], "none");
+	thrust = 40;
+	turning = 1;
+	dynamo = 0;
+	fuel = 1000;
+
+	for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+	{
+		if (GLOBAL_SIS (ModuleSlots[i]) == DYNAMO_UNIT
+				|| GLOBAL_SIS (ModuleSlots[i]) == SHIVA_FURNACE)
+			dynamo += GLOBAL_SIS (ModuleSlots[i]) == DYNAMO_UNIT
+					? 30 : 60;
+		else if (GLOBAL_SIS (ModuleSlots[i]) == FUEL_TANK
+				|| GLOBAL_SIS (ModuleSlots[i]) == HIGHEFF_FUELSYS)
+			fuel += GLOBAL_SIS (ModuleSlots[i]) == FUEL_TANK
+					? FUEL_TANK_CAPACITY : HEFUEL_TANK_CAPACITY;
+		else if (GLOBAL_SIS (ModuleSlots[i]) >= GUN_WEAPON
+				&& GLOBAL_SIS (ModuleSlots[i]) <= CANNON_WEAPON)
+		{
+			if (GLOBAL_SIS (ModuleSlots[i]) == CANNON_WEAPON)
+				wsprintf (guns[i], "cannon");
+			else if (GLOBAL_SIS (ModuleSlots[i]) == BLASTER_WEAPON)
+				wsprintf (guns[i], "blaster");
+			else
+				wsprintf (guns[i], "gun");
+		}
+		else if (GLOBAL_SIS (ModuleSlots[i]) >= BOMB_MODULE_0
+				&& GLOBAL_SIS (ModuleSlots[i]) <= BOMB_MODULE_5)
+			wsprintf (guns[i], "n/a");
+	}
+
+	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+		if (GLOBAL_SIS (DriveSlots[i]) == FUSION_THRUSTER)
+			thrust += 8;
+
+	for (i = 0; i < NUM_JET_SLOTS; ++i)
+		if (GLOBAL_SIS (JetSlots[i]) == TURNING_JETS)
+			turning += 2;
+	/* END collect stats */
+
+	OldContext = SetContext (SpaceContext);
+	OldFont = SetContextFont (StarConFont);
+	GetContextFontLeading (&leading);
+
+	/* we need room to play.  full screen width, 4 lines tall */
+	r.corner.x = 0;
+	r.corner.y = SIS_SCREEN_HEIGHT - (4 * leading);
+	r.extent.width = SIS_SCREEN_WIDTH;
+	r.extent.height = (4 * leading);
+
+	OldColor = SetContextForeGroundColor (BLACK_COLOR);
+	DrawFilledRectangle (&r);
+
+	/*
+	   now that we've cleared out our playground, compensate for the
+	   fact that the leading is way more than is generally needed.
+	*/
+	leading -= 3;
+	t.pStr = buf;
+	t.baseline.x = SIS_SCREEN_WIDTH / 3 + 10; //wild-assed guess, but it worked
+	t.baseline.y = r.corner.y + leading + 3;
+	t.align = ALIGN_RIGHT;
+	t.CharCount = (COUNT)~0;
+
+	SetContextFontEffect (GRADIENT_EFFECT, 
+			BUILD_COLOR_RGBA (0x00, 0x00, 0xC0, 0xFF),
+			BUILD_COLOR_RGBA (0x60, 0x6C, 0xFC, 0xFF));
+
+	/* should we pull these strings out of a resource file, to make the
+	   inevitable "let's translate it into Suomi, Klingon and Esperanto"
+	   project easier? */
+
+	wsprintf (buf, "%6.6s: %-7.7s", "nose", guns[15]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%6.6s: %-7.7s", "spread", guns[14]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%6.6s: %-7.7s", "side", guns[13]);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%6.6s: %-7.7s", "tail", guns[0]);
+	font_DrawText (&t);
+
+	t.baseline.x = r.extent.width - 2;
+	t.baseline.y = r.corner.y + leading + 3;
+	t.align = ALIGN_RIGHT;
+
+	SetContextFontEffect (GRADIENT_EFFECT, 
+			BUILD_COLOR_RGBA (0x00, 0x44, 0x64, 0xFF),
+			BUILD_COLOR_RGBA (0x58, 0x9C, 0xBC, 0xFF));
+
+	wsprintf (buf, "%20.20s: %4d", "maximum velocity", thrust);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%20.20s: %4d", "turning rate", turning);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%20.20s: %4d", "combat energy", dynamo);
+	font_DrawText (&t);
+	t.baseline.y += leading;
+	wsprintf (buf, "%20.20s: %4d", "maximum fuel", (fuel / FUEL_TANK_SCALE));
+	font_DrawText (&t);
+
+	SetContextFontEffect (0, 0, 0);
+	SetContextForeGroundColor (OldColor);
+	SetContextFont (OldFont);
+	SetContext (OldContext);
+
+	return;
+}
+
+void
 DrawLanders (void)
 {
 	BYTE i;

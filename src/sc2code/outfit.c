@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -163,6 +164,8 @@ DisplayLanders (PMENU_STATE pMS)
 static BOOLEAN
 DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 {
+	extern void DrawFlagshipStats (void);
+
 	BYTE NewState, new_slot_piece, old_slot_piece;
 	SIZE FirstItem, LastItem;
 	//STAMP s;
@@ -323,6 +326,8 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 					if (new_slot_piece > TURNING_JETS
 							&& old_slot_piece > TURNING_JETS)
 						RedistributeFuel ();
+					if (optWhichFonts == OPT_PC)
+						DrawFlagshipStats ();
 				}
 			}
 
@@ -581,6 +586,7 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 			COUNT num_frames;
 			STAMP s;
 			extern void DrawFlagshipName (BOOLEAN InStatusArea);
+			extern void DrawFlagshipStats (void);
 
 			pMS->CurFrame = CaptureDrawable (
 					LoadGraphic (MODULES_PMAP_ANIM)
@@ -658,6 +664,8 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
 			SetSemaphore(GraphicsSem);
 			DrawFlagshipName (FALSE);
+			if (optWhichFonts == OPT_PC)
+				DrawFlagshipStats ();
 			ClearSemaphore(GraphicsSem);
 
 			{
