@@ -714,7 +714,7 @@ DoModifyShips (PMENU_STATE pMS)
 						&GLOBAL (built_ship_q), hStarShip
 						);
 			}
-			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip)) 
+			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip))
 			{
 				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 			}
@@ -804,6 +804,7 @@ DoModifyShips (PMENU_STATE pMS)
 							SetFlashRect (&r, (FRAME)0);
 							UnlockMutex (GraphicsLock);
 						}
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 							
 						return (TRUE);
 					}
@@ -868,6 +869,7 @@ DoModifyShips (PMENU_STATE pMS)
 						GetGaugeRect (&r, TRUE);
 						SetFlashRect (&r, (FRAME)0);
 						SetContext (SpaceContext);
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					}
 					else
 					{
@@ -878,6 +880,7 @@ DoModifyShips (PMENU_STATE pMS)
 						r.extent.height = 5;
 						SetContext (SpaceContext);
 						SetFlashRect (&r, (FRAME)0);
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					}
 				}
 				else if (pMS->delta_item & MODIFY_CREW_FLAG)
@@ -889,6 +892,7 @@ DoModifyShips (PMENU_STATE pMS)
 								&GLOBAL (built_ship_q), hStarShip
 								);
 
+					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					crew_delta = 0;
 					if (dy < 0)
 					{
