@@ -94,6 +94,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		FILE *fp;
 		DECODE_REF fh;
 		COUNT num_links;
+		Semaphore clock_sem;
 		Task clock_task;
 		QUEUE event_q, encounter_q, avail_q, npc_q, player_q;
 		STAR_DESC SD;
@@ -123,6 +124,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		ReinitQueue (&GLOBAL (built_ship_q));
 
+		clock_sem = GLOBAL (GameClock.clock_sem);
 		clock_task = GLOBAL (GameClock.clock_task);
 		event_q = GLOBAL (GameClock.event_q);
 		encounter_q = GLOBAL (encounter_q);
@@ -137,6 +139,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		NextActivity = GLOBAL (CurrentActivity);
 		GLOBAL (CurrentActivity) = Activity;
 
+		GLOBAL (GameClock.clock_sem) = clock_sem;
 		GLOBAL (GameClock.clock_task) = clock_task;
 		GLOBAL (GameClock.event_q) = event_q;
 		GLOBAL (encounter_q) = encounter_q;
