@@ -488,7 +488,7 @@ typedef struct xform_control
 {
 	COLORMAPPTR CMapPtr;
 	SIZE Ticks, TTotal, TOrig;
-	DWORD OldCMap[NUMBER_OF_PLUT_UINT32s];
+	UBYTE OldCMap[PLUT_BYTE_SIZE];
 } XFORM_CONTROL;
 
 #define MAX_XFORMS 32
@@ -565,7 +565,6 @@ xform_PLUT_step (SIZE TDelta)
 {
 	XFORM_CONTROL *control;
 	COLORMAPPTR ColorMapPtr;
-	DWORD *pCurCMap, *pOldCMap;
 	int i;
 
 	if (!XFormControl.XFormsPending)
@@ -578,56 +577,26 @@ xform_PLUT_step (SIZE TDelta)
 	if (TDelta > control->TTotal)
 		TDelta = control->TTotal;
 
-	pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
-	pOldCMap = control->OldCMap;
-
-	ColorMapPtr += 2;
-	if (_varPLUTs)
+	if (_varPLUTs && control->TOrig != 0)
 	{
-		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; i++)
+#define XFORM_SCALE 0x10000
+		UBYTE *pCurCMap, *pOldCMap, *pNewCMap;
+		int frac;
+
+		pCurCMap = GET_VAR_PLUT (*ColorMapPtr);
+		pOldCMap = control->OldCMap;
+		pNewCMap = (UBYTE*)ColorMapPtr + 2;
+
+		frac = (int)(control->TOrig - control->TTotal) * XFORM_SCALE
+				/ control->TOrig;
+
+		for (i = 0; i < PLUT_BYTE_SIZE; i++)
 		{
-			SIZE c0, c1;
-			DWORD v0, v1, val;
-			float f = (control->TOrig - control->TTotal) / (float)control->TOrig;
-			COLORMAPPTR oldmap = (COLORMAPPTR) pOldCMap;
-
-			v0 = UQM_SwapBE32 (*(DWORD *)oldmap);
-			v1 = UQM_SwapBE32 (*(DWORD *)ColorMapPtr);
-
-			ColorMapPtr += sizeof (DWORD);
-			
-			c0 = (SIZE)((v0 >> (10 + 16)) & 0x1F);
-			c1 = (SIZE)((v1 >> (10 + 16)) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (c0 & 0x1F) | (1 << 5);
-
-			c0 = (SIZE)((v0 >> (5 + 16)) & 0x1F);
-			c1 = (SIZE)((v1 >> (5 + 16)) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (val << 5) | (c0 & 0x1F);
-
-			c0 = (SIZE)((v0 >> (0 + 16)) & 0x1F);
-			c1 = (SIZE)((v1 >> (0 + 16)) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (val << 5) | (c0 & 0x1F);
-
-			c0 = (SIZE)((v0 >> 10) & 0x1F);
-			c1 = (SIZE)((v1 >> 10) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (val << (5 + 1)) | (c0 & 0x1F) | (1 << 5);
-
-			c0 = (SIZE)((v0 >> 5) & 0x1F);
-			c1 = (SIZE)((v1 >> 5) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (val << 5) | (c0 & 0x1F);
-			
-			c0 = (SIZE)((v0 >> 0) & 0x1F);
-			c1 = (SIZE)((v1 >> 0) & 0x1F);
-			c0 += (SIZE)((c1 - c0) * f);
-			val = (val << 5) | (c0 & 0x1F);
-
+			*pCurCMap = (UBYTE)(*pOldCMap + ((int)*pNewCMap - *pOldCMap)
+						* frac / XFORM_SCALE);
 			pOldCMap++;
-			*pCurCMap++ = UQM_SwapBE32 (val);
+			pCurCMap++;
+			pNewCMap++;
 		}
 		ColorChange = TRUE;
 	}
@@ -657,9 +626,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
 	if (ColorMapPtr)
 	{
-		DWORD *pOldCMap, *pCurCMap;
 		XFORM_CONTROL *control;
-		int i;
 
 		// FlushPLUTXForms ();
 
@@ -674,10 +641,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 		
 		control = &XFormControl.TaskControl[XFormControl.XFormInsertPoint];
 
-		pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
-		pOldCMap = control->OldCMap;
-		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; ++i)
-			*pOldCMap++ = *pCurCMap++;
+		memcpy (control->OldCMap, GET_VAR_PLUT (*ColorMapPtr), PLUT_BYTE_SIZE);
 
 		control->CMapPtr = ColorMapPtr;
 		if ((control->Ticks = TimeInterval) <= 0)

@@ -35,45 +35,30 @@ static struct
 volatile int FadeAmount = FADE_NORMAL_INTENSITY;
 static volatile int end, XForming;
 
-DWORD* _varPLUTs;
-static unsigned int varPLUTsize = VARPLUTS_SIZE;
+UBYTE* _varPLUTs;
+static unsigned int varPLUTsize = 0;
 
 
 void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
 {
-	DWORD i, k;
-	UWORD cval;
-	UBYTE j, r, g, b, rtot, gtot, btot;
+	int i;
 	UBYTE *colors;
 
-	colors = (UBYTE*)_varPLUTs + (colormap_index * PLUT_BYTE_SIZE);	
+	colors = GET_VAR_PLUT (colormap_index);
 
-	for (i = 0; i < 32; i++)
+	for (i = 0; i < NUMBER_OF_PLUTVALS; i++)
 	{
-		cval = MAKE_WORD (colors[1], colors[0]);
-		colors += 2;
-
-		rtot = r = (UBYTE)((cval >> 10) & 0x1f);  // bits 10-14
-		gtot = g = (UBYTE)((cval >> 5) & 0x1f);   // bits 5-9
-		btot = b = (UBYTE)(cval & 0x1f);          // bits 0-4
-
-		for (j = 0; j < 8; ++j)
-		{
-			k = ((j << 5) + i);
-			pal[k].r = rtot;
-			rtot += r;
-			pal[k].g = gtot;
-			gtot += g;
-			pal[k].b = btot;
-			btot += b;
-		}
+		pal[i].r = *colors++;
+		pal[i].g = *colors++;
+		pal[i].b = *colors++;
 	}
 }
 
 BOOLEAN
 SetColorMap (COLORMAPPTR map)
 {
-	int start, end, bytes;
+	int start, end;
+	DWORD size, total_size;
 	UBYTE *colors = (UBYTE*)map;
 	UBYTE *vp;
 	
@@ -85,17 +70,27 @@ SetColorMap (COLORMAPPTR map)
 	if (start > end)
 		return TRUE;
 	
-	bytes = (end - start + 1) * PLUT_BYTE_SIZE;
+	size = (end - start + 1) * PLUT_BYTE_SIZE;
+	total_size = (end + 1) * PLUT_BYTE_SIZE;
 
 	if (!_varPLUTs)
 	{
-		if (!(_varPLUTs = (DWORD *) HMalloc (bytes)))
-			return TRUE;
-		varPLUTsize = bytes;
+		_varPLUTs = (UBYTE *) HMalloc (total_size);
+		varPLUTsize = total_size;
+	}
+	else if (total_size > varPLUTsize)
+	{
+		_varPLUTs = (UBYTE *) HRealloc (_varPLUTs, total_size);
+		varPLUTsize = total_size;
+	}
+	if (!_varPLUTs)
+	{
+		varPLUTsize = 0;
+		return TRUE;
 	}
 	
-	vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);	
-	memcpy (vp, colors, bytes);
+	vp = GET_VAR_PLUT (start);
+	memcpy (vp, colors, size);
 
 	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n", vp, map, bytes, start, end);
 	return TRUE;
