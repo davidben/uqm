@@ -23,6 +23,7 @@ uqm_LDFLAGS="@LDFLAGS@"
 DEBUG="@DEBUG@"
 uqm_INSTALL_BINDIR="@INSTALL_BINDIR@"
 uqm_INSTALL_LIBDIR="@INSTALL_LIBDIR@"
+uqm_INSTALL_SHAREDIR="@INSTALL_SHAREDIR@"
 
 # Exported variables are available from all the Makeinfo files
 # Non-exported files only where build.vars is explicitely included.
