@@ -177,7 +177,7 @@ PRECIOUS ELEMENTS (gold, silver) are yellow.  6 RU per unit.
 
 RADIOACTIVES (uranium, astatine) are orange.  8 RU per unit.
 
-EXOTICS (antimatter, magnetic monopoles) are purple, and a princely 20
+EXOTICS (antimatter, magnetic monopoles) are purple, and a princely 25
 RU per cargo unit.
 
 Minerals may be unloaded at Earth Starbase by talking to Commander
