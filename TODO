@@ -79,6 +79,8 @@ Glitches (don't crash the game, medium priority):
   (and the temp dir doesn't get deleted if it's not empty)
 - From main menu, choose 'load game', then space, and space again and
   there will be no selection icon.
+- If you press a button, press another button, and then release the first,
+  that release is seen as a new press (very noticable within melee menus).
 
 Implementation bugs (low priority):
 - 3D planet view when entering orbit is now done, but there's some things
