@@ -330,9 +330,9 @@ void CreateShieldMask()
 				if(rad2<=RADIUS_2) {
 					// The mask for the planet
 					p=clear;
-				} else if(rad2<=(RADIUS_2+4*RADIUS+4)) {
+				} else if (rad2<=(RADIUS+2)*(RADIUS+2)) {
 					// The space between the halo and the planet
-					p=clear;
+					p=frame_mapRGBA(ShieldFrame,0,0,0,255);
 				} else {
 					// The halo itself
 					DWORD red=red_nt;
@@ -341,6 +341,10 @@ void CreateShieldMask()
 						DWORD r;
 						r=rad2-(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1);
 						red=red_nt-red_nt*r/aa_delta;
+					} else if (rad2 < (RADIUS+3)*(RADIUS+3)) {
+						DWORD r;
+						r = rad2 - (RADIUS+2)*(RADIUS+2);
+						red = red_nt*r/aa_delta2;
 					}
 					p=frame_mapRGBA (ShieldFrame,red,0,0,255);
 
