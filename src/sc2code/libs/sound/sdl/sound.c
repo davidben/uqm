@@ -36,7 +36,7 @@ TFB_InitSound (int driver, int flags, int frequency)
 		exit(-1);
 	}
 
-	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 4096))
+	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 2048))
 	{
 		fprintf (stderr, "Unable to open audio!\n");
 		exit (-1);
@@ -49,7 +49,7 @@ TFB_InitSound (int driver, int flags, int frequency)
 	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
 	fprintf (stderr, "Opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
 			SoundcardName, audio_rate, audio_format & 0xFF,
-			audio_channels > 1 ? "stereo" : "mono", 4096);
+			audio_channels > 1 ? "stereo" : "mono", 2048);
 
 	MIX_VERSION (&compile_version);
 	fprintf (stderr, "Compiled with SDL_mixer version: %d.%d.%d\n",
