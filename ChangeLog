@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- PC ending animation now draws the flagship w/ modules according to
+  the actual player's load; also the script structure changed
+  allowing for an FPS improvement -Alex
 - Version number in the main menu does not blink anymore when the
   menu selection is changed (bug #672), from Nic
 - Massive amount of file restructuring and cleanups. Need many more. - SvdB
