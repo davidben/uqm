@@ -16,7 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "libs/graphics/sdl/sdl_common.h"
 #include "gfx_common.h"
 #include "libs/tasklib.h"
 
