@@ -33,7 +33,7 @@
 #define THIS_PTR TFB_SoundDecoder* This
 
 static const char* ova_GetName (void);
-static bool ova_InitModule (int flags);
+static bool ova_InitModule (int flags, const TFB_DecoderFormats*);
 static void ova_TermModule ();
 static uint32 ova_GetStructSize (void);
 static int ova_GetError (THIS_PTR);
@@ -71,6 +71,8 @@ typedef struct tfb_oggsounddecoder
 	OggVorbis_File vf;
 
 } TFB_OggSoundDecoder;
+
+static const TFB_DecoderFormats* ova_formats = NULL;
 
 static size_t
 ogg_read (void *ptr, size_t size, size_t nmemb, void *datasource)
@@ -112,9 +114,9 @@ ova_GetName (void)
 }
 
 static bool
-ova_InitModule (int flags)
+ova_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
-	// no specific module init
+	ova_formats = fmts;
 	return true;
 	
 	(void)flags;	// laugh at compiler warning
@@ -195,9 +197,9 @@ ova_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	This->length = (float) ov_time_total (&ova->vf, -1);
 
 	if (vinfo->channels == 1)
-		This->format = decoder_formats.mono16;
+		This->format = ova_formats->mono16;
 	else
-		This->format = decoder_formats.stereo16;
+		This->format = ova_formats->stereo16;
 
 	ova->last_error = 0;
 
@@ -219,7 +221,7 @@ ova_Decode (THIS_PTR, void* buf, sint32 bufsize)
 	long rc;
 	int bitstream;
 
-	rc = ov_read (&ova->vf, buf, bufsize, decoder_formats.want_big_endian,
+	rc = ov_read (&ova->vf, buf, bufsize, ova_formats->want_big_endian,
 			2, 1, &bitstream);
 	
 	if (rc < 0)

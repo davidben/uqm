@@ -60,7 +60,7 @@ typedef struct
 #define THIS_PTR TFB_SoundDecoder* This
 
 static const char* wava_GetName (void);
-static bool wava_InitModule (int flags);
+static bool wava_InitModule (int flags, const TFB_DecoderFormats*);
 static void wava_TermModule ();
 static uint32 wava_GetStructSize (void);
 static int wava_GetError (THIS_PTR);
@@ -104,6 +104,8 @@ typedef struct tfb_wavesounddecoder
 
 } TFB_WaveSoundDecoder;
 
+static const TFB_DecoderFormats* wava_formats = NULL;
+
 
 static const char*
 wava_GetName (void)
@@ -112,9 +114,9 @@ wava_GetName (void)
 }
 
 static bool
-wava_InitModule (int flags)
+wava_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
-	// no specific module init
+	wava_formats = fmts;
 	return true;
 	
 	(void)flags;	// laugh at compiler warning
@@ -145,7 +147,7 @@ static bool
 wava_Init (THIS_PTR)
 {
 	//TFB_WaveSoundDecoder* wava = (TFB_WaveSoundDecoder*) This;
-	This->need_swap = decoder_formats.want_big_endian;
+	This->need_swap = wava_formats->want_big_endian;
 	return true;
 }
 
@@ -284,10 +286,10 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	{
 		This->format = (wava->FmtHdr.Channels == 1 ?
 				(wava->FmtHdr.BitsPerSample == 8 ?
-					decoder_formats.mono8 : decoder_formats.mono16)
+					wava_formats->mono8 : wava_formats->mono16)
 				:
 				(wava->FmtHdr.BitsPerSample == 8 ?
-					decoder_formats.stereo8 : decoder_formats.stereo16)
+					wava_formats->stereo8 : wava_formats->stereo16)
 				);
 		This->frequency = wava->FmtHdr.SamplesPerSec;
 	} 

@@ -36,11 +36,12 @@
 extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
 		// Can't '#include "libs/file.h"' due to some type conflicts.
 
+#define MAX_REG_DECODERS 31
 
 #define THIS_PTR TFB_SoundDecoder*
 
 static const char* bufa_GetName (void);
-static bool bufa_InitModule (int flags);
+static bool bufa_InitModule (int flags, const TFB_DecoderFormats*);
 static void bufa_TermModule ();
 static uint32 bufa_GetStructSize (void);
 static int bufa_GetError (THIS_PTR);
@@ -83,7 +84,7 @@ typedef struct tfb_bufsounddecoder
 #define SD_MIN_SIZE   (sizeof (TFB_BufSoundDecoder))
 
 static const char* nula_GetName (void);
-static bool nula_InitModule (int flags);
+static bool nula_InitModule (int flags, const TFB_DecoderFormats*);
 static void nula_TermModule ();
 static uint32 nula_GetStructSize (void);
 static int nula_GetError (THIS_PTR);
@@ -124,22 +125,24 @@ typedef struct tfb_nullsounddecoder
 #undef THIS_PTR
 
 
-static struct sd_DecoderInfo
+struct TFB_RegSoundDecoder
 {
+	bool builtin;
+	bool used;        // ever used indicator
 	const char* ext;
-	TFB_SoundDecoderFuncs* funcs;
-}
-sd_decoders[] = 
+	const TFB_SoundDecoderFuncs* funcs;
+};
+static TFB_RegSoundDecoder sd_decoders[MAX_REG_DECODERS + 1] = 
 {
-	{"wav", &wava_DecoderVtbl},
-	{"mod", &moda_DecoderVtbl},
-	{"ogg", &ova_DecoderVtbl},
-	{"duk", &duka_DecoderVtbl},
-	{NULL, NULL}	// null term
+	{true,  true,  "wav", &wava_DecoderVtbl},
+	{true,  true,  "mod", &moda_DecoderVtbl},
+	{true,  true,  "ogg", &ova_DecoderVtbl},
+	{true,  true,  "duk", &duka_DecoderVtbl},
+	{false, false,  NULL, NULL}, // null term
 };
 
-
-TFB_DecoderFormats decoder_formats;
+static TFB_DecoderFormats decoder_formats;
+static int sd_flags = 0;
 
 /* change endianness of 16bit words
  * Only works optimal when 'data' is aligned on a 32 bits boundary.
@@ -175,7 +178,7 @@ SoundDecoder_GetName (TFB_SoundDecoder *decoder)
 sint32
 SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 {
-	struct sd_DecoderInfo* info;
+	TFB_RegSoundDecoder* info;
 	sint32 ret = 0;
 
 	if (!formats)
@@ -185,26 +188,133 @@ SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 	}
 	decoder_formats = *formats;
 
+	// init built-in decoders
 	for (info = sd_decoders; info->ext; info++)
 	{
-		if (!info->funcs->InitModule (flags))
+		if (!info->funcs->InitModule (flags, &decoder_formats))
 		{
-			fprintf (stderr, "SoundDecoder_Init(): %s audio decoder init failed\n",
+			fprintf (stderr, "SoundDecoder_Init(): "
+					"%s audio decoder init failed\n",
 					info->funcs->GetName ());
 			ret = 1;
 		}
 	}
 
-	return 0;
+	sd_flags = flags;
+
+	return ret;
 }
 
 void
 SoundDecoder_Uninit (void)
 {
-	struct sd_DecoderInfo* info;
+	TFB_RegSoundDecoder* info;
 
-	for (info = sd_decoders; info->ext; info++)
-		info->funcs->TermModule ();
+	// uninit all decoders
+	// and unregister loaded decoders
+	for (info = sd_decoders; info->used; info++)
+	{
+		if (info->ext) // check if present
+			info->funcs->TermModule ();
+		
+		if (!info->builtin)
+		{
+			info->used = false;
+			info->ext = NULL;
+		}
+	}
+}
+
+TFB_RegSoundDecoder*
+SoundDecoder_Register (const char* fileext, TFB_SoundDecoderFuncs* decvtbl)
+{
+	TFB_RegSoundDecoder* info;
+	TFB_RegSoundDecoder* newslot = NULL;
+
+	if (!decvtbl)
+	{
+		fprintf (stderr, "SoundDecoder_Register(): Null decoder table\n");
+		return NULL;
+	}
+	if (!fileext)
+	{
+		fprintf (stderr, "SoundDecoder_Register(): Bad file type for %s\n",
+				decvtbl->GetName ());
+		return NULL;
+	}
+
+	// check if extension already registered
+	for (info = sd_decoders; info->used &&
+			(!info->ext || strcmp (info->ext, fileext) != 0);
+			++info)
+	{
+		// and pick up an empty slot (where available)
+		if (!newslot && !info->ext)
+			newslot = info;
+	}
+
+	if (info >= sd_decoders + MAX_REG_DECODERS)
+	{
+		fprintf (stderr, "SoundDecoder_Register(): Decoders limit reached\n");
+		return NULL;
+	}
+	else if (info->ext)
+	{
+		fprintf (stderr, "SoundDecoder_Register(): "
+				"'%s' decoder already registered (%s denied)\n",
+				fileext, decvtbl->GetName ());
+		return NULL;
+	}
+	
+	if (!decvtbl->InitModule (sd_flags, &decoder_formats))
+	{
+		fprintf (stderr, "SoundDecoder_Register(): %s decoder init failed\n",
+				decvtbl->GetName ());
+		return NULL;
+	}
+
+	if (!newslot)
+	{
+		newslot = info;
+		newslot->used = true;
+		// make next one a term
+		info[1].builtin = false;
+		info[1].used = false;
+		info[1].ext = NULL;
+	}
+
+	newslot->ext = fileext;
+	newslot->funcs = decvtbl;
+	
+	return newslot;
+}
+
+void
+SoundDecoder_Unregister (TFB_RegSoundDecoder* regdec)
+{
+	if (regdec < sd_decoders || regdec >= sd_decoders + MAX_REG_DECODERS ||
+			!regdec->ext || !regdec->funcs)
+	{
+		fprintf (stderr, "SoundDecoder_Unregister(): "
+				"Invalid or expired decoder passed\n");
+		return;
+	}
+	
+	regdec->funcs->TermModule ();
+	regdec->ext = NULL;
+	regdec->funcs = NULL;
+}
+
+const TFB_SoundDecoderFuncs*
+SoundDecoder_Lookup (const char* fileext)
+{
+	TFB_RegSoundDecoder* info;
+
+	for (info = sd_decoders; info->used &&
+			(!info->ext || strcmp (info->ext, fileext) != 0);
+			++info)
+		;
+	return info->ext ? info->funcs : NULL;
 }
 
 TFB_SoundDecoder*
@@ -212,8 +322,8 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		uint32 buffer_size, uint32 startTime, sint32 runTime)
 {	
 	const char* pext;
-	struct sd_DecoderInfo* info;
-	TFB_SoundDecoderFuncs* funcs;
+	TFB_RegSoundDecoder* info;
+	const TFB_SoundDecoderFuncs* funcs;
 	TFB_SoundDecoder* decoder;
 	uint32 struct_size;
 
@@ -226,8 +336,8 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	}
 	++pext;
 
-	for (info = sd_decoders;
-			info->ext && strcmp (info->ext, pext) != 0;
+	for (info = sd_decoders; info->used &&
+			(!info->ext || strcmp (info->ext, pext) != 0);
 			++info)
 		;
 	if (!info->ext)
@@ -364,7 +474,8 @@ SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 				if (decoder->error)
 				{
 					fprintf (stderr, "SoundDecoder_Decode(): "
-							"tried to loop %s but couldn't rewind, error code %d\n",
+							"tried to loop %s but couldn't rewind, "
+							"error code %d\n",
 							decoder->filename, decoder->error);
 				}
 				else
@@ -571,13 +682,13 @@ bufa_GetName (void)
 }
 
 static bool
-bufa_InitModule (int flags)
+bufa_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
 	// this should never be called
 	fprintf (stderr, "bufa_InitModule(): dead function called\n");
 	return false;
 	
-	(void)flags;	// laugh at compiler warning
+	(void)flags; (void)fmts; // laugh at compiler warning
 }
 
 static void
@@ -699,13 +810,13 @@ nula_GetName (void)
 }
 
 static bool
-nula_InitModule (int flags)
+nula_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
 	// this should never be called
 	fprintf (stderr, "nula_InitModule(): dead function called\n");
 	return false;
 	
-	(void)flags;	// laugh at compiler warning
+	(void)flags; (void)fmts; // laugh at compiler warning
 }
 
 static void

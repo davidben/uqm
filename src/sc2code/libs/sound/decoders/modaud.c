@@ -32,7 +32,7 @@
 #define THIS_PTR TFB_SoundDecoder* This
 
 static const char* moda_GetName (void);
-static bool moda_InitModule (int flags);
+static bool moda_InitModule (int flags, const TFB_DecoderFormats*);
 static void moda_TermModule ();
 static uint32 moda_GetStructSize (void);
 static int moda_GetError (THIS_PTR);
@@ -72,7 +72,7 @@ typedef struct tfb_modsounddecoder
 } TFB_ModSoundDecoder;
 
 MIKMODAPI extern struct MDRIVER drv_openal;
-
+static const TFB_DecoderFormats* moda_formats = NULL;
 
 static const char*
 moda_GetName (void)
@@ -81,7 +81,7 @@ moda_GetName (void)
 }
 
 static bool
-moda_InitModule (int flags)
+moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
     MikMod_RegisterDriver (&drv_openal);
     MikMod_RegisterAllLoaders ();
@@ -114,6 +114,8 @@ moda_InitModule (int flags)
 		return false;
 	}
 
+	moda_formats = fmts;
+
 	return true;
 }
 
@@ -143,7 +145,7 @@ moda_Init (THIS_PTR)
 {
 	//TFB_ModSoundDecoder* moda = (TFB_ModSoundDecoder*) This;
 	This->need_swap =
-			decoder_formats.big_endian != decoder_formats.want_big_endian;
+			moda_formats->big_endian != moda_formats->want_big_endian;
 	return true;
 }
 
@@ -173,7 +175,7 @@ moda_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	mod->wrap = 0;
 	mod->loop = 1;
 
-	This->format = decoder_formats.stereo16;
+	This->format = moda_formats->stereo16;
 	This->frequency = md_mixfreq;
 	This->length = 0; // FIXME way to obtain this from mikmod?
 

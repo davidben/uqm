@@ -47,7 +47,7 @@ typedef struct tfb_sounddecoder TFB_SoundDecoder;
 typedef struct tfb_sounddecoderfunc
 {
 	const char* (* GetName) (void);
-	bool (* InitModule) (int flags);
+	bool (* InitModule) (int flags, const TFB_DecoderFormats*);
 	void (* TermModule) ();
 	uint32 (* GetStructSize) (void);
 	int (* GetError) (THIS_PTR);
@@ -103,7 +103,13 @@ enum
 	SOUNDDECODER_EOF,
 };
 
-extern TFB_DecoderFormats decoder_formats;
+typedef struct TFB_RegSoundDecoder TFB_RegSoundDecoder;
+
+TFB_RegSoundDecoder* SoundDecoder_Register (const char* fileext,
+		TFB_SoundDecoderFuncs* decvtbl);
+void SoundDecoder_Unregister (TFB_RegSoundDecoder* regdec);
+const TFB_SoundDecoderFuncs* SoundDecoder_Lookup (const char* fileext);
+
 void SoundDecoder_SwapWords (uint16* data, uint32 size);
 sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats* formats);
 void SoundDecoder_Uninit (void);

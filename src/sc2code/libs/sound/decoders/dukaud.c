@@ -35,7 +35,7 @@
 #define THIS_PTR TFB_SoundDecoder* This
 
 static const char* duka_GetName (void);
-static bool duka_InitModule (int flags);
+static bool duka_InitModule (int flags, const TFB_DecoderFormats*);
 static void duka_TermModule ();
 static uint32 duka_GetStructSize (void);
 static int duka_GetError (THIS_PTR);
@@ -102,6 +102,8 @@ typedef struct
 	uint16 tag;
 	uint16 indices[2];  // initial indices for channels
 } DukAud_AudSubframe;
+
+static const TFB_DecoderFormats* duka_formats = NULL;
 
 sint32
 duka_readAudFrameHeader (TFB_DuckSoundDecoder* duka, uint32 iframe,
@@ -338,9 +340,9 @@ duka_GetName (void)
 }
 
 static bool
-duka_InitModule (int flags)
+duka_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
-	// no specific module init
+	duka_formats = fmts;
 	return true;
 
 	(void)flags;	// laugh at compiler warning
@@ -372,7 +374,7 @@ duka_Init (THIS_PTR)
 {
 	//TFB_DuckSoundDecoder* duka = (TFB_DuckSoundDecoder*) This;
 	This->need_swap =
-			decoder_formats.big_endian != decoder_formats.want_big_endian;
+			duka_formats->big_endian != duka_formats->want_big_endian;
 	return true;
 }
 
@@ -449,7 +451,7 @@ duka_Open (THIS_PTR, uio_DirHandle *dir, const char *file)
 	}
 
 	This->frequency = 22050;
-	This->format = decoder_formats.stereo16;
+	This->format = duka_formats->stereo16;
 	duka->channels = 2;
 	duka->pcm_frame = aud.numsamples;
 	duka->data = HMalloc (DATA_BUF_SIZE);
