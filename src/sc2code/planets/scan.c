@@ -160,7 +160,7 @@ PrintCoarseScan (void)
 	ClearSemaphore (GraphicsSem);
 
 #define LEFT_SIDE_BASELINE_X 27
-#define RIGHT_SIDE_BASELINE_X ((SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X) + ((SAFE_X << 1) - 32));
+#define RIGHT_SIDE_BASELINE_X ((SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X) + ((SAFE_X << 1) - 32))
 #define SCAN_BASELINE_Y 25
 
 	t.baseline.x = LEFT_SIDE_BASELINE_X;
