@@ -271,14 +271,12 @@ TFB_GL_DrawQuad (void)
 void 
 TFB_GL_SwapBuffers (int force_full_redraw)
 {
-	int fade_amount;
-	int transition_amount;
-	SDL_Rect updated;
+	int fade_amount = FadeAmount;
+	int transition_amount = TransitionAmount;
 
-	updated.x = TFB_BBox.region.corner.x;
-	updated.y = TFB_BBox.region.corner.y;
-	updated.w = TFB_BBox.region.extent.width;
-	updated.h = TFB_BBox.region.extent.height;
+	if (!force_full_redraw && !TFB_BBox.valid &&
+		fade_amount == 255 && transition_amount == 255)
+		return;
 
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
@@ -292,37 +290,46 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 	glEnable (GL_TEXTURE_2D);
 	glDisable (GL_BLEND);
 	glColor4f (1, 1, 1, 1);
-	
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-	{
-		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
-			Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
-		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-			Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
 
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
-		glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
-		glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x * 2);
-		SDL_LockSurface (scaled_display);
-		glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2, updated.w * 2, updated.h * 2,
-			GL_RGBA, GL_UNSIGNED_BYTE, scaled_display->pixels);
-		SDL_UnlockSurface (scaled_display);
-	}
-	else
+	if (TFB_BBox.valid)
 	{
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
-		glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y);
-		glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x);
-		SDL_LockSurface (SDL_Screen);
-		glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y, updated.w, updated.h,
-			GL_RGBA, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
-		SDL_UnlockSurface (SDL_Screen);
+		SDL_Rect updated;
+
+		updated.x = TFB_BBox.region.corner.x;
+		updated.y = TFB_BBox.region.corner.y;
+		updated.w = TFB_BBox.region.extent.width;
+		updated.h = TFB_BBox.region.extent.height;
+
+		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
+			GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+		{
+			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
+				Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
+			else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
+				Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
+
+			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
+			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
+			glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x * 2);
+			SDL_LockSurface (scaled_display);
+			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2, updated.w * 2, updated.h * 2,
+				GL_RGBA, GL_UNSIGNED_BYTE, scaled_display->pixels);
+			SDL_UnlockSurface (scaled_display);
+		}
+		else
+		{
+			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
+			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y);
+			glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x);
+			SDL_LockSurface (SDL_Screen);
+			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y, updated.w, updated.h,
+				GL_RGBA, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
+			SDL_UnlockSurface (SDL_Screen);
+		}
 	}
 
 	TFB_GL_DrawQuad ();
 
-	transition_amount = TransitionAmount;
 	if (transition_amount != 255)
 	{
 		float scale_x = (ScreenWidthActual / (float)ScreenWidth);
@@ -382,7 +389,6 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		glDisable (GL_SCISSOR_TEST);
 	}
 
-	fade_amount = FadeAmount;
 	if (fade_amount != 255)
 	{
 		float c;

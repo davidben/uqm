@@ -231,27 +231,27 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 	int transition_amount = TransitionAmount;
 	SDL_Rect updated;
 
-	if (fade_amount != 255 || transition_amount != 255 ||
+	if (force_full_redraw ||
+		fade_amount != 255 || transition_amount != 255 ||
 		last_fade_amount != 255 || last_transition_amount != 255)
-		force_full_redraw = 1;
-	
-	last_fade_amount = fade_amount;
-	last_transition_amount = transition_amount;
-
-	if (!force_full_redraw)
 	{
+		updated.x = updated.y = 0;
+		updated.w = ScreenWidth;
+		updated.h = ScreenHeight;	
+	}
+	else
+	{
+		if (!TFB_BBox.valid)
+			return;
 		updated.x = TFB_BBox.region.corner.x;
 		updated.y = TFB_BBox.region.corner.y;
 		updated.w = TFB_BBox.region.extent.width;
 		updated.h = TFB_BBox.region.extent.height;
 	}
-	else
-	{
-		updated.x = updated.y = 0;
-		updated.w = ScreenWidth;
-		updated.h = ScreenHeight;
-	}
 
+	last_fade_amount = fade_amount;
+	last_transition_amount = transition_amount;	
+	
 	if (ScreenWidth == 320 && ScreenHeight == 240 &&
 		ScreenWidthActual == 640 && ScreenHeightActual == 480)
 	{

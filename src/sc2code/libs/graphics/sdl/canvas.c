@@ -60,19 +60,19 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	targetRect.x = x;
 	targetRect.y = y;
 
+	if (palette == 0)
+		palette = img->Palette;
+
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
 		int type;
 		if (optMeleeScale == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
 			type = TFB_SCALE_TRILINEAR;
-			if (palette)
-			{
-				if (((SDL_Surface *)img->NormalImg)->format->palette)
-					SDL_SetColors (img->NormalImg, (SDL_Color*)palette, 0, 256);
-				if (((SDL_Surface *)img->MipmapImg)->format->palette)
-					SDL_SetColors (img->MipmapImg, (SDL_Color*)palette, 0, 256);
-			}
+			if (((SDL_Surface *)img->NormalImg)->format->palette)
+				SDL_SetColors (img->NormalImg, (SDL_Color*)palette, 0, 256);
+			if (((SDL_Surface *)img->MipmapImg)->format->palette)
+				SDL_SetColors (img->MipmapImg, (SDL_Color*)palette, 0, 256);
 		}
 		else
 		{
@@ -94,16 +94,7 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	}
 	
 	if (surf->format->palette)
-	{
-		if (palette)
-		{
-			SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
-		}
-		else
-		{
-			SDL_SetColors (surf, (SDL_Color*)img->Palette, 0, 256);
-		}
-	}
+		SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
 	
 	SDL_BlitSurface(surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);

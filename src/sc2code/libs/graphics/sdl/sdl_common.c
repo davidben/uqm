@@ -525,27 +525,24 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.image.x;
 				int y = DC.data.image.y;
 
-				LockMutex (DC_image->mutex);
 				if (DC.data.image.UsePalette)
-				{
 					pal = palette;
-				}
 				else
-				{
-					pal = DC_image->Palette;
-				}
-				UnlockMutex (DC_image->mutex);
+					pal = 0;
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
 						DC.data.image.scale, pal,
 						SDL_Screens[DC.data.image.destBuffer]);
 
-				LockMutex (DC_image->mutex);
-				if (DC.data.image.scale)
-					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
-				else
-					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
-				UnlockMutex (DC_image->mutex);
+				if (DC.data.image.destBuffer == 0)
+				{
+					LockMutex (DC_image->mutex);
+					if (DC.data.image.scale)
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+					else
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+					UnlockMutex (DC_image->mutex);
+				}
 
 				break;
 			}
@@ -559,19 +556,25 @@ TFB_FlushGraphics () // Only call from main thread!!
 						DC.data.filledimage.scale, DC.data.filledimage.r, DC.data.filledimage.g,
 						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
 
-				LockMutex (DC_image->mutex);
-				if (DC.data.filledimage.scale)
-					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
-				else
-					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
-				UnlockMutex (DC_image->mutex);
+				if (DC.data.filledimage.destBuffer == 0)
+				{
+					LockMutex (DC_image->mutex);
+					if (DC.data.filledimage.scale)
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+					else
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+					UnlockMutex (DC_image->mutex);
+				}
 
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
 			{
-				TFB_BBox_RegisterPoint (DC.data.line.x1, DC.data.line.y1);
-				TFB_BBox_RegisterPoint (DC.data.line.x2, DC.data.line.y2);
+				if (DC.data.line.destBuffer == 0)
+				{
+					TFB_BBox_RegisterPoint (DC.data.line.x1, DC.data.line.y1);
+					TFB_BBox_RegisterPoint (DC.data.line.x2, DC.data.line.y2);
+				}
 				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1, 
 						DC.data.line.x2, DC.data.line.y2, 
 						DC.data.line.r, DC.data.line.g, DC.data.line.b,
@@ -580,7 +583,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
-				TFB_BBox_RegisterRect (&DC.data.rect.rect);
+				if (DC.data.rect.destBuffer == 0)
+					TFB_BBox_RegisterRect (&DC.data.rect.rect);
 				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r, 
 						DC.data.rect.g, DC.data.rect.b, 
 						SDL_Screens[DC.data.rect.destBuffer]);
@@ -635,9 +639,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 				src.w = DC.data.copy.w;
 				src.h = DC.data.copy.h;
 
-				TFB_BBox_RegisterPoint (src.x, src.y);
-				TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
-				
+				if (DC.data.copy.destBuffer == 0)
+				{
+					TFB_BBox_RegisterPoint (src.x, src.y);
+					TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
+				}
+
 				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest);
 				break;
 			}
