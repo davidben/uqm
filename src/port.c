@@ -25,7 +25,7 @@
 
 #ifndef HAVE_STRUPR
 char *
-strupr(char *str)
+strupr (char *str)
 {
 	char *ptr;
 	

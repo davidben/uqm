@@ -8,6 +8,6 @@
 #endif
 
 #ifndef HAVE_STRUPR
-char *strupr(char *str);
+char *strupr (char *str);
 #endif
 
