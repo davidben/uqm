@@ -48,7 +48,7 @@ InitGraphics (int argc, char* argv[], COUNT KbytesRequired)
 void
 UninitGraphics ()  // Also probably empty
 {
-	HFree (DrawCommandQueue);
+	// HFree (DrawCommandQueue);  This is static now!
 
 	mem_uninit ();
 }
@@ -75,10 +75,22 @@ UnbatchGraphics (void)
 void
 FlushGraphics (void)
 {
+	TFB_DrawCommand DrawCommand;
 	TFB_BatchReset ();
 	continuity_break = 1;
+	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
+	DrawCommand.image = 0;
+	TFB_EnqueueDrawCommand(&DrawCommand);
 }
 
+void
+SkipGraphics (void)
+{
+	TFB_DrawCommand DrawCommand;
+	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS;
+	DrawCommand.image = 0;
+	TFB_EnqueueDrawCommand(&DrawCommand);
+}
 // Status: Ignored (only used in fmv.c)
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)

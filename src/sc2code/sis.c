@@ -932,7 +932,7 @@ int flash_rect_func(void *data)
 {
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
-	DWORD TimeIn;
+	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	Task task = (Task)data;
 
@@ -940,6 +940,7 @@ int flash_rect_func(void *data)
 	incr = 1;
 	strength = NORMAL_STRENGTH;
 	TimeIn = GetTimeCounter ();
+	WaitTime = ONE_SECOND / 16;
 	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		CONTEXT OldContext;
@@ -1002,10 +1003,16 @@ int flash_rect_func(void *data)
 			SetGraphicStrength (4, 4);
 				
 			UnbatchGraphics ();
+			FlushGraphics ();
+			/* ACK, cheap hack, oh well, blame Michael Martin until he fixes it */
+			if (flash_rect.extent.width > 250)
+			{
+				SkipGraphics ();
+			}
 		}
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
-		SleepThreadUntil (TimeIn + (ONE_SECOND / 16));
+		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
 	}
 
@@ -1045,7 +1052,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.extent.width = 0;
 		if (flash_task)
 		{
-			Task_SetState (flash_task, TASK_EXIT);
+			ConcludeTask (flash_task);
 		}
 	}
 	else

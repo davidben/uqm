@@ -198,6 +198,19 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target
 }
 
 void
+TFB_DrawCommandQueue_Clear (TFB_DrawCommandQueue *myQueue)
+{
+	Lock_DCQ ();
+	myQueue->Size = 0;
+	myQueue->Front = 0;
+	myQueue->Back = 0;
+	myQueue->Batching = 0;
+	myQueue->FullSize = 0;
+	myQueue->InsertionPoint = 0;
+	Unlock_DCQ ();
+}
+
+void
 TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 {
 	if (TFB_DEBUG_HALT)

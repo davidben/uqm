@@ -298,7 +298,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	{
 		// normal blit: dst = src
 		
-		//fprintf(stderr, "normal blit\n");
+		// fprintf(stderr, "normal blit\n");
 		SDL_BlitSurface (src, srcrect, dst, dstrect);
 		return;
 	}
@@ -402,14 +402,34 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	dst_getpix = getpixel_for (dst);
 	putpix = putpixel_for (dst);
 
-	SDL_LockSurface (src);
-	SDL_LockSurface (dst);
+	if (SDL_MUSTLOCK(src))
+	{
+		if (SDL_LockSurface (src) == -1)
+		{
+			printf("Couldn't lock src!\n");
+		}
+		else
+		{
+			printf("Locked src.\n");
+		}
+	}
+	if (SDL_MUSTLOCK(dst))
+	{
+		if (SDL_LockSurface (dst) == -1)
+		{
+			printf("Couldn't lock dst!\n");
+		}
+		else
+		{
+			printf("Locked dst.\n");
+		}
+	}
 
 	if (blend_denom < 0)
 	{
 		// additive blit: dst = src + dst
 
-		//fprintf(stderr, "additive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		// fprintf(stderr, "additive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
 		
 		for (y = y1; y < y2; ++y)
 		{
@@ -446,7 +466,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	{
 		// subtractive blit: dst = src - dst
 
-		//fprintf(stderr, "subtractive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		// fprintf(stderr, "subtractive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
 		
 		for (y = y1; y < y2; ++y)
 		{
@@ -485,7 +505,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 
 		float f = blend_numer / (float)blend_denom;
 
-		//fprintf(stderr, "modulated blit %d %d, f %f, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, f, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		// fprintf(stderr, "modulated blit %d %d, f %f, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, f, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
 		
 		for (y = y1; y < y2; ++y)
 		{
@@ -515,9 +535,14 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 			}
 		}
 	}
-
-	SDL_UnlockSurface (dst);
-	SDL_UnlockSurface (src);
+	if (SDL_MUSTLOCK(dst))
+	{
+		SDL_UnlockSurface (dst);
+	}
+	if (SDL_MUSTLOCK(src))
+	{
+		SDL_UnlockSurface (src);
+	}
 }
 
 void
@@ -562,6 +587,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 	int semval;
 	int commands_handled;
 	BOOLEAN livelock_deterrence;
+	BOOLEAN done;
 
 	// This is technically a locking violation on DrawCommandQueue->Size,
 	// but it is likely to not be very destructive.
@@ -619,7 +645,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 		livelock_deterrence = TRUE;
 	}
 
-	while (TRUE)
+	done = FALSE;
+	while (!done)
 	{
 		TFB_DrawCommand DC;
 		TFB_Image *DC_image;
@@ -799,8 +826,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 			HFree (DC_image);
 			DC_image = 0;
 			break;
-		}
-		
+		case TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS:
+			done = TRUE;			
+			break;
+		case TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS:
+			TFB_DrawCommandQueue_Clear (DrawCommandQueue);
+		}		
 		if (DC_image)
 			UnlockMutex (DC_image->mutex);
 	}

@@ -83,6 +83,8 @@ enum
 	TFB_DRAWCOMMANDTYPE_SCISSORDISABLE,
 	TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER,
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
+	TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS,
+	TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS
 };
 
 typedef struct tfb_palette
@@ -135,6 +137,8 @@ void TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 
 int TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command);
+
+void TFB_DrawCommandQueue_Clear (TFB_DrawCommandQueue* myQueue);
 
 extern TFB_DrawCommandQueue *DrawCommandQueue;
 
