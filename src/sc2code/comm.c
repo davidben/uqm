@@ -37,6 +37,7 @@
 #include "libs/sound/sound.h"
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
+#include "libs/strlib.h"
 
 #include <ctype.h>
 
