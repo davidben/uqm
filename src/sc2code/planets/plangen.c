@@ -267,12 +267,12 @@ void create_aa_points(MAP3D_POINT *ppt, double x, double y)
 	// get  the integer value of this point
 	ppt->p[0].x=(COORD)(0.5+x);
 	ppt->p[0].y=(COORD)(0.5+y);
-	if(ppt->p[0].x > TWORADIUS) {
+	if(ppt->p[0].x >= TWORADIUS) {
 		ppt->p[0].x=TWORADIUS;
 	} else if(ppt->p[0].x != 0) {
 		deltax=x-ppt->p[0].x;
 	}
-	if(ppt->p[0].y > TWORADIUS) {
+	if(ppt->p[0].y >= TWORADIUS) {
 		ppt->p[0].y=TWORADIUS;
 	} else if(ppt->p[0].y != 0) {
 		deltay=y-ppt->p[0].y;
