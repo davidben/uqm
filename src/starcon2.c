@@ -215,6 +215,7 @@ main (int argc, char *argv[])
 	_MemorySem = CreateSemaphore (1);
 	GraphicsSem = CreateSemaphore (1);
 	mem_init ();
+	init_xform_control ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	TFB_InitSound (TFB_SOUNDDRIVER_SDL, soundflags);

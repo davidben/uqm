@@ -358,141 +358,161 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 	UnbatchGraphics ();
 }
 
-static struct
+typedef struct xform_control
 {
 	COLORMAPPTR CMapPtr;
-	SIZE Ticks;
-	Task XFormTask;
-} TaskControl;
+	SIZE Ticks, TTotal, TOrig;
+	DWORD OldCMap[NUMBER_OF_PLUT_UINT32s];
+} XFORM_CONTROL;
+
+#define MAX_XFORMS 32
+static struct {
+	XFORM_CONTROL TaskControl[MAX_XFORMS];
+	volatile int XFormCurrent, XFormInsertPoint;
+	volatile BOOLEAN XFormsPending;
+	Semaphore XFormSem;
+} XFormControl;
+
+void
+init_xform_control ()
+{
+	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
+	XFormControl.XFormsPending = FALSE;
+	XFormControl.XFormSem = CreateSemaphore (1);
+}
+
+void
+uninit_xform_control ()
+{
+	DestroySemaphore (XFormControl.XFormSem);
+}
+
+void
+xform_complete ()
+{
+	SetSemaphore (XFormControl.XFormSem);
+	if (XFormControl.XFormsPending)
+	{
+		SetColorMap (XFormControl.TaskControl[XFormControl.XFormCurrent].CMapPtr);
+		if (++XFormControl.XFormCurrent >= MAX_XFORMS)
+		{
+			XFormControl.XFormCurrent = 0;
+		}
+		if (XFormControl.XFormCurrent == XFormControl.XFormInsertPoint)
+		{
+			XFormControl.XFormsPending = FALSE;
+		}
+	}
+	ClearSemaphore (XFormControl.XFormSem);
+}
 
 static BOOLEAN ColorChange;
-static BOOLEAN volatile XFormFlush;
-static COUNT volatile NumXFormTasks;
 
-int xform_PLUT_task (void* data)
+/* Only one thread should ever be allowed to be calling this at any time */
+void
+xform_PLUT_step (SIZE TDelta)
 {
-	COLORMAPPTR CurMapPtr;
-	Task task = (Task) data;
+	XFORM_CONTROL *control;
+	COLORMAPPTR ColorMapPtr;
+	DWORD *pCurCMap, *pOldCMap;
+	int i;
 
-	while (TaskControl.XFormTask == 0 && !Task_ReadState (task, TASK_EXIT))
-		TaskSwitch ();
-	TaskControl.XFormTask = 0;
-	CurMapPtr = TaskControl.CMapPtr;
+	if (!XFormControl.XFormsPending)
+		return;
 
+	control = &XFormControl.TaskControl[XFormControl.XFormCurrent];
+
+	ColorMapPtr = control->CMapPtr;
+
+	if (TDelta > control->TTotal)
+		TDelta = control->TTotal;
+
+	pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
+	pOldCMap = control->OldCMap;
+
+	ColorMapPtr += 2;
+	if (_varPLUTs)
 	{
-		BYTE i;
-		SIZE TDelta, TTotal, TTotalOrig;
-		DWORD CurTime;
-		DWORD OldCMap[NUMBER_OF_PLUT_UINT32s], *pOldCMap, *pCurCMap;
-
-		pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*CurMapPtr * PLUT_BYTE_SIZE));
-		pOldCMap = OldCMap;
-		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; ++i)
-			*pOldCMap++ = *pCurCMap++;
-
-		TTotal = TTotalOrig = TaskControl.Ticks;
-		TaskControl.CMapPtr = 0;
-		CurTime = GetTimeCounter ();
-		do
+		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; i++)
 		{
-			DWORD StartTime;
-			COLORMAPPTR ColorMapPtr;
-
-			StartTime = CurTime;
-			SleepThread (2);
-			CurTime = GetTimeCounter ();
-			if (XFormFlush || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
-				TDelta = TTotal;
-
-			ColorMapPtr = CurMapPtr;
-			pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
-			pOldCMap = OldCMap;
-
-			ColorMapPtr += 2;
-			i = NUMBER_OF_PLUT_UINT32s;
-			if (_varPLUTs)
-				do
-				{
-					SIZE c0, c1;
-					DWORD v0, v1, val;
-					float f = (TTotalOrig - TTotal) / (float)TTotalOrig;
-					COLORMAPPTR oldmap = (COLORMAPPTR) pOldCMap;
+			SIZE c0, c1;
+			DWORD v0, v1, val;
+			float f = (control->TOrig - control->TTotal) / (float)control->TOrig;
+			COLORMAPPTR oldmap = (COLORMAPPTR) pOldCMap;
 					
-					v0 = MAKE_DWORD
-					(
-						MAKE_WORD (oldmap[3], oldmap[2]),
-						MAKE_WORD (oldmap[1], oldmap[0])
-					);
+			v0 = MAKE_DWORD
+				(
+					MAKE_WORD (oldmap[3], oldmap[2]),
+					MAKE_WORD (oldmap[1], oldmap[0])
+				);
 
 
-					v1 = MAKE_DWORD
-					(
-						MAKE_WORD (ColorMapPtr[3], ColorMapPtr[2]),
-						MAKE_WORD (ColorMapPtr[1], ColorMapPtr[0])
-					);
+			v1 = MAKE_DWORD
+				(
+					MAKE_WORD (ColorMapPtr[3], ColorMapPtr[2]),
+					MAKE_WORD (ColorMapPtr[1], ColorMapPtr[0])
+				);
 
-					ColorMapPtr += sizeof (DWORD);
+			ColorMapPtr += sizeof (DWORD);
+			
+			c0 = (SIZE)((v0 >> (10 + 16)) & 0x1F);
+			c1 = (SIZE)((v1 >> (10 + 16)) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (c0 & 0x1F) | (1 << 5);
 
-					c0 = (SIZE)((v0 >> (10 + 16)) & 0x1F);
-					c1 = (SIZE)((v1 >> (10 + 16)) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (c0 & 0x1F) | (1 << 5);
+			c0 = (SIZE)((v0 >> (5 + 16)) & 0x1F);
+			c1 = (SIZE)((v1 >> (5 + 16)) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (val << 5) | (c0 & 0x1F);
 
-					c0 = (SIZE)((v0 >> (5 + 16)) & 0x1F);
-					c1 = (SIZE)((v1 >> (5 + 16)) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (val << 5) | (c0 & 0x1F);
+			c0 = (SIZE)((v0 >> (0 + 16)) & 0x1F);
+			c1 = (SIZE)((v1 >> (0 + 16)) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (val << 5) | (c0 & 0x1F);
 
-					c0 = (SIZE)((v0 >> (0 + 16)) & 0x1F);
-					c1 = (SIZE)((v1 >> (0 + 16)) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (val << 5) | (c0 & 0x1F);
+			c0 = (SIZE)((v0 >> 10) & 0x1F);
+			c1 = (SIZE)((v1 >> 10) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (val << (5 + 1)) | (c0 & 0x1F) | (1 << 5);
 
-					c0 = (SIZE)((v0 >> 10) & 0x1F);
-					c1 = (SIZE)((v1 >> 10) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (val << (5 + 1)) | (c0 & 0x1F) | (1 << 5);
+			c0 = (SIZE)((v0 >> 5) & 0x1F);
+			c1 = (SIZE)((v1 >> 5) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (val << 5) | (c0 & 0x1F);
+			
+			c0 = (SIZE)((v0 >> 0) & 0x1F);
+			c1 = (SIZE)((v1 >> 0) & 0x1F);
+			c0 += (SIZE)((c1 - c0) * f);
+			val = (val << 5) | (c0 & 0x1F);
 
-					c0 = (SIZE)((v0 >> 5) & 0x1F);
-					c1 = (SIZE)((v1 >> 5) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (val << 5) | (c0 & 0x1F);
+			*pOldCMap++;
+			*pCurCMap++ = MAKE_DWORD 
+				(
+					MAKE_WORD ((val >> 24 ) & 0xff, (val >> 16) & 0xff),
+					MAKE_WORD ((val >> 8  ) & 0xff, (val >> 0 ) & 0xff)
+				);
 
-					c0 = (SIZE)((v0 >> 0) & 0x1F);
-					c1 = (SIZE)((v1 >> 0) & 0x1F);
-					c0 += (SIZE)((c1 - c0) * f);
-					val = (val << 5) | (c0 & 0x1F);
-
-					*pOldCMap++;
-					*pCurCMap++ = MAKE_DWORD 
-					(
-						MAKE_WORD ((val >> 24 ) & 0xff, (val >> 16) & 0xff),
-						MAKE_WORD ((val >> 8  ) & 0xff, (val >> 0 ) & 0xff)
-					);
-
-				} while (--i);
-
-				ColorChange = TRUE;
-
-		} while (TTotal -= TDelta && !Task_ReadState (task, TASK_EXIT));
+		}
+		ColorChange = TRUE;
 	}
-
-	--NumXFormTasks;
-
-	FinishTask (task);
-	return(0);
+	control->TTotal -= TDelta;
+	if (!control->TTotal)
+	{
+		xform_complete ();
+	}
 }
+
+/* This should be thread-safe without locking the XFormControl because
+ * only one thread should be Flushing at any given time, constant
+ * writes are atomic anyway, and Flush is the only routine that writes
+ * XFormFlush. */
 
 void
 FlushPLUTXForms (void)
 {
-	if (NumXFormTasks)
+	while (XFormControl.XFormsPending)
 	{
-		XFormFlush = TRUE;
-		do
-			TaskSwitch ();
-		while (NumXFormTasks);
-		XFormFlush = FALSE;
+		xform_complete ();
 	}
 }
 
@@ -502,32 +522,40 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	if (ColorMapPtr)
 	{
 		DWORD TimeOut;
+		DWORD *pOldCMap, *pCurCMap;
+		XFORM_CONTROL *control;
+		int i;
 
-		FlushPLUTXForms ();
+		// FlushPLUTXForms ();
 
-		TaskControl.CMapPtr = ColorMapPtr;
-		if ((TaskControl.Ticks = TimeInterval) <= 0)
-			TaskControl.Ticks = 1; /* prevent divide by zero and negative fade */
-		if (TimeInterval == 0 || (TaskControl.XFormTask =
-				AssignTask (xform_PLUT_task, 1024,
-				"transform palette")) == 0)
+		SetSemaphore (XFormControl.XFormSem);
+		while (XFormControl.XFormsPending
+				&& (XFormControl.XFormInsertPoint == XFormControl.XFormCurrent))
 		{
-			SetColorMap (ColorMapPtr);
-			ColorChange = TRUE;
-			TimeOut = GetTimeCounter ();
+			ClearSemaphore (XFormControl.XFormSem);
+			FlushPLUTXForms ();
+			SetSemaphore (XFormControl.XFormSem);
 		}
-		else
-		{
-			do
-				TaskSwitch ();
-			while (TaskControl.CMapPtr);
+		
+		control = &XFormControl.TaskControl[XFormControl.XFormInsertPoint];
 
-			++NumXFormTasks;
-			TimeOut = GetTimeCounter () + TaskControl.Ticks + 1;
-		}
-		TaskControl.CMapPtr = 0;
+		pCurCMap = (DWORD *)((BYTE *)_varPLUTs + (*ColorMapPtr * PLUT_BYTE_SIZE));
+		pOldCMap = control->OldCMap;
+		for (i = 0; i < NUMBER_OF_PLUT_UINT32s; ++i)
+			*pOldCMap++ = *pCurCMap++;
 
-		return (TimeOut);
+		control->CMapPtr = ColorMapPtr;
+		if ((control->Ticks = TimeInterval) <= 0)
+			control->Ticks = 1; /* prevent divide by zero and negative fade */
+		control->TTotal = control->TOrig = TimeInterval;
+
+		if (++XFormControl.XFormInsertPoint >= MAX_XFORMS)
+			XFormControl.XFormInsertPoint = 0;
+
+		XFormControl.XFormsPending = TRUE;
+
+		ClearSemaphore (XFormControl.XFormSem);		
+
 	}
 
 	return (0);
@@ -709,7 +737,7 @@ int ambient_anim_task(void* data)
 	PSEQUENCE pSeq;
 	ANIMATION_DESCPTR ADPtr;
 	DWORD ActiveMask;
-DWORD LastOscillTime;
+	DWORD LastOscillTime;
 	Task task = (Task) data;
 
 	while ((CommFrame = CommData.AlienFrame) == 0 && !Task_ReadState (task, TASK_EXIT))
@@ -724,7 +752,7 @@ DWORD LastOscillTime;
 	TalkAlarm = 0;
 	TalkFrame = 0;
 	LastTime = GetTimeCounter ();
-LastOscillTime = LastTime;
+	LastOscillTime = LastTime;
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BOOLEAN Change, CanTalk;
@@ -1049,13 +1077,14 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 
 			SetContext (OldContext);
 		}
-if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
-{
-	LastOscillTime = CurTime;
-	UpdateSpeechGraphics (FALSE);
-}
+		if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
+		{
+			LastOscillTime = CurTime;
+			UpdateSpeechGraphics (FALSE);
+		}
 		UnbatchGraphics ();
 		ClearSemaphore (GraphicsSem);
+		xform_PLUT_step(ElapsedTicks);
 	}
 	FinishTask (task);
 	return(0);
@@ -1176,7 +1205,7 @@ AlienTalkSegue (COUNT wait_track)
 	{
 		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
 		DrawAlienFrame (CommData.AlienFrame, NULL_PTR);
-UpdateSpeechGraphics (TRUE);
+		UpdateSpeechGraphics (TRUE);
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE
 				|| (!GET_GAME_STATE (PLAYER_HYPNOTIZED)
@@ -1185,31 +1214,31 @@ UpdateSpeechGraphics (TRUE);
 				&& (pMenuState == 0 || !GET_GAME_STATE (MOONBASE_ON_SHIP)
 				|| GET_GAME_STATE (PROBE_ILWRATH_ENCOUNTER))))
 		{
-RECT r;
+			RECT r;
 	
-if (pMenuState == 0)
-{
-	r.corner.x = SIS_ORG_X;
-	r.corner.y = SIS_ORG_Y;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = SIS_SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
-else
-{
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
-UnbatchGraphics ();
+			if (pMenuState == 0)
+			{
+				r.corner.x = SIS_ORG_X;
+				r.corner.y = SIS_ORG_Y;
+				r.extent.width = SIS_SCREEN_WIDTH;
+				r.extent.height = SIS_SCREEN_HEIGHT;
+				ScreenTransition (3, &r);
+			}
+			else
+			{
+				r.corner.x = 0;
+				r.corner.y = 0;
+				r.extent.width = SCREEN_WIDTH;
+				r.extent.height = SCREEN_HEIGHT;
+				ScreenTransition (3, &r);
+			}
+			UnbatchGraphics ();
 		}
 		else
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
-
-UnbatchGraphics ();
+			
+			UnbatchGraphics ();
 			if (GET_GAME_STATE (MOONBASE_ON_SHIP)
 					|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2);
@@ -1239,38 +1268,38 @@ UnbatchGraphics ();
 		LastActivity &= ~CHECK_LOAD;
 	}
 
-if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
-{
-	if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+	if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
 	{
-		CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
-		if (CommData.AlienTransitionDesc.NumFrames)
-			CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
-	}
+		if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+		{
+			CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
+			if (CommData.AlienTransitionDesc.NumFrames)
+				CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
+		}
 					
-	CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
-	if (CommData.AlienTalkDesc.NumFrames)
-		CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
+		CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
+		if (CommData.AlienTalkDesc.NumFrames)
+			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
 
-	while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
-	{
-		ClearSemaphore (GraphicsSem);
-		TaskSwitch ();
-		SetSemaphore (GraphicsSem);
+		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
+		{
+			ClearSemaphore (GraphicsSem);
+			TaskSwitch ();
+			SetSemaphore (GraphicsSem);
+		}
 	}
-}
 
 	if (!SpewPhrases (wait_track) || wait_track == (COUNT)~0)
 		FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 	else
 		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
 
-if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
-{
-	CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-	if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-		CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
-}
+	if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
+	{
+		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+		if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
+			CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
+	}
 
 	ClearSemaphore (GraphicsSem);
 

@@ -85,10 +85,10 @@ So be it - The Empire of
 
 #(FUEL_UP0) coman016.ogg
 We are initiating transfer of radioactives, Captain.
-Now, as soon as our engineers can refit the energy cores
+Now, as soon as our engineers can refit the energy cores...
 
 #(FUEL_UP1) coman017.ogg
-there, that's much better. Power ratings are climbing, life support is coming back into the green.
+...there, that's much better. Power ratings are climbing, life support is coming back into the green.
 Deep radar systems and sensors are now online and I can scan your vessel.
 !!!? -- WHAT THE HELL KIND OF SHIP IS THAT!?
 Just who ARE you, Captain?
