@@ -12,10 +12,11 @@ be good to go.
 
 STARTING THE GAME
 
-Simply invoke UQM.EXE from the content directory to run the game.
-This will use the default settings, which are 3DO music, 640x480
-windowed mode, and pure SDL graphics drivers.  You may pass various
-command line options to customize your experience:
+Simply invoke the executable from the directory you installed UQM in
+to run the game.  (Under Windows, this is uqm.exe; under Linux, it's
+uqm.)  This will use the default settings, which are 3DO music,
+640x480 windowed mode, and pure SDL graphics drivers.  You may pass
+various command line options to customize your experience:
 
 	-r 320x240   (or --res)
 
@@ -90,6 +91,31 @@ sounds.  Slower machines should lower the audio quality.
 	
 Disables subtitles.
 
+			     BUG REPORTS
+
+This is an alpha release.  That means several things.  First, it means
+that you're an alpha tester.  Be proud.  Second, it means that the
+game is likely to crash with great frequency.  Upon finding a problem,
+we'd like you to report it in our forum, but before you do, please do
+the following:
+
+- Try to isolate what causes it: "Crashes with a null dereference
+  about half the time when firing and taunting with a Pkunk" is better
+  than "Melee doesn't work."  If the game crashes, notice what error
+  is produced; if the game hangs, check to see if the game-exit key
+  (the backquote `) works.
+
+- Check the TODO file in the top directory to make sure that we don't
+  already know about it.
+
+- Go to the Ur-Quan Masters forums at http://sc2.sf.net/ and post a
+  description of the crash in the Technical Issues and Bugs forum.
+  Check the posts on that forum first, to see if it's already been
+  reported.  If it's been reported, and you have more information, feel
+  free to confirm that you've reproduced it.  If ten people have already
+  confirmed it, though, it's probably best to treat it as duly reported.
+
+
 			   THE STORY SO FAR
 
 For the past decade, Earth and the rest of the Alliance of Free Stars
@@ -136,20 +162,20 @@ so harvest them wherever you can.  There are nine varieties, each
 color coded:
 
 COMMON ELEMENTS (carbon, nitrogen) are cyan. Worth 1 resource unit
-(RU) each.
+(RU) per unit.
 
 CORROSIVES (chlorine, iodine) are red.  2 RU per unit.
 
 BASE METALS (iron, tin) are grey.  These are common, and usually worth
 harvesting, but not terribly valuable.  3 RU per unit.
 
-NOBLE GASSES (argon, xenon) are blue, and 4 RU each.
+NOBLE GASSES (argon, xenon) are blue.  4 RU per unit.
 
-RARE EARTHS (lanthanum, ytterbium) are green.  5 RU per.
+RARE EARTHS (lanthanum, ytterbium) are green.  5 RU per unit.
 
-PRECIOUS ELEMENTS (gold, silver) are yellow.  6 RU per.
+PRECIOUS ELEMENTS (gold, silver) are yellow.  6 RU per unit.
 
-RADIOACTIVES (uranium, astatine) are orange.  8 RU per.
+RADIOACTIVES (uranium, astatine) are orange.  8 RU per unit.
 
 EXOTICS (antimatter, magnetic monopoles) are purple, and a princely 20
 RU per cargo unit.
