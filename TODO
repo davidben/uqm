@@ -80,10 +80,6 @@ Glitches (don't crash the game, medium priority):
   selecting a destination, crashes
 - Under some conditions, the direction the ship is facing in Hyperspace
   isn't restored when loading.
-- When exiting from planet surface with lander, the 3d planet isn't updated
-  for a little moment which causes black track on planet to be seen
-  - Or, perhaps more probably, the background image isn't drawn properly
-    (and thus the planet there is some old buffer remains for that moment)
 - Moving crosshair in planet screen leaves a light trace to the image
   in OpenGL mode (SDL surface format conversion problem)
 - You seem to be able to do certain things before you're supposed to
@@ -92,7 +88,6 @@ Glitches (don't crash the game, medium priority):
     - This always happens, regardless of game state.  This is a bug in
       both predecessors as well.
   Probably the negative shift for GET_STATE and SET_STATE
-- comm.c color transform speed is too fast when compared to PC version
 
 Implementation bugs (low priority):
 - Scaling code problems:
@@ -104,12 +99,11 @@ Implementation bugs (low priority):
 - 3D planet view when entering orbit is now done, but there's some things
   which could make it look nicer, like better lighting, better slave shield 
   and removing occasional pops/discontinuities
+  - Rotation and zooming isn't now as smooth as before after condition
+    variable DCQ patch
 - DrawCommandQueue is gratuitously dynamically allocated, should be static
-- Lines and colouring of planet surface display when scanning are now done,
-  but seem to be little different (darker) than in 3do lander videoclip.
-  And is the speed correct?
-- Transitions aren't synced always; there should be a way to ensure everything
-  so far queued is drawn before the transition starts
+- Transitions (crossfades) aren't perhaps correctly done always, syncing
+  might be wrong etc.
 
 Stuff still to do (large):
 - add a Key Jamming program

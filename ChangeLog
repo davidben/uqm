@@ -1,4 +1,10 @@
 0.2:
+- Fixed planet stuff when leaving surface with lander, from PhracturedBlue
+- RotatePlanet now holds GraphicsSem a shorter time, from PhracturedBlue
+- Added proper mutex usage to 3do_getbody.c, from PhracturedBlue
+- Scan uses now additive blit instead of transparency, from PhracturedBlue
+- Loading game saved while in orbit fixed (bg correct), from PhracturedBlue
+- Changed SDL_Delay to SleepThread in TFB_FlushGraphics
 - Rendering thread now broadcasts to a condition variable, stopping most
   of the problems we were having where a fast thread spams the DCQ with
   too many requests to handle in a timely manner
