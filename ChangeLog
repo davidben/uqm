@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Removed SDL_mixer sound module
 - TFB_FlushGraphics keeps track of smallest bounding box that requires
   updating, allowing for faster scaling
 - Added a TFB_Canvas data buffer to let TFB_Image be more accessible
