@@ -115,7 +115,7 @@ CondVar CreateCondVar_Core (void);
 /* Preprocessor directives to forward to the appropriate routines.
    The "name" field is stripped away in preprocessing. */
 
-#define CreateThread(func, data, stackSize, name, syncClass) \
+#define CreateThread(func, data, stackSize, name) \
 	CreateThread_Core ((func), (data), (stackSize))
 #define CreateSemaphore(initial, name, syncClass) \
 	CreateSemaphore_Core ((initial))
