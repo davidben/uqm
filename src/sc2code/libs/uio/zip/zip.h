@@ -41,9 +41,6 @@ typedef struct uio_GPDirEntries_Iterator *uio_NativeEntriesContext;
 #ifndef ZLIB_DLL
 #define ZLIB_DLL
 #endif
-#ifndef _WINDOWS
-#define _WINDOWS
-#endif
 #endif
 
 #include <zlib.h>
