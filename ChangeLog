@@ -1,4 +1,5 @@
 0.2:
+- Planet code cleanups, from PhracturedBlue
 - Changed some types to SDLKey in input.c to prevent overflows, from tamlin
 - Slider now moves in communications (OpenAL)
 - Fixed a DCQ bug where it wasn't freeing batches of graphics commands
