@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- Guardian in Blazer mode being drained by DOGI will no longer
+  result in a non-blazer Guardian with Blazer effects. Original sc2 bug.
+  (bug #283); from chmmravatar
 - 'CREW' and 'BATT' instead of icons in combat screen when using
   PC-style menus (bug #308); from Paxtez
 - New shipyard SCRAP system with scrapping confirmation

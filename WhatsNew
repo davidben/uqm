@@ -72,6 +72,8 @@ BUGFIXES
 - Various minor graphics glitch fixes
 - Crew death on planet is now counted properly in all cases
 - Mouse cursor is now hidden in fullscreen mode
+- Guardian in Blazer mode being drained by DOGI will no longer
+  result in a non-blazer Guardian with Blazer effects.
 
 INTERNAL CHANGES
 

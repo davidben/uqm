@@ -331,25 +331,25 @@ androsynth_postprocess (PELEMENT ElementPtr)
 		if ((StarShipPtr->cur_status_flags & SPECIAL)
 				|| StarShipPtr->RaceDescPtr->ship_info.energy_level == 0)
 		{
-			StarShipPtr->RaceDescPtr->characteristics.special_wait =
-					StarShipPtr->RaceDescPtr->characteristics.turn_wait;
-			StarShipPtr->RaceDescPtr->characteristics.turn_wait = BLAZER_TURN_WAIT;
 			StarShipPtr->RaceDescPtr->characteristics.energy_regeneration =
 					(BYTE)BLAZER_DEGENERATION;
 			StarShipPtr->energy_counter = ENERGY_WAIT;
-			ElementPtr->mass_points = BLAZER_MASS;
-			ship_collision_func[WHICH_SIDE(ElementPtr->state_flags)] = ElementPtr->collision_func;
-			{
-				ElementPtr->collision_func = blazer_collision;
-			}
 
 			if (StarShipPtr->cur_status_flags & SPECIAL)
 			{
 				ProcessSound (SetAbsSoundIndex (
-								/* COMET_ON */
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+						ElementPtr);  /* COMET_ON */
 				ElementPtr->turn_wait = 0;
 				ElementPtr->thrust_wait = 0;
+				StarShipPtr->RaceDescPtr->characteristics.special_wait =
+						StarShipPtr->RaceDescPtr->characteristics.turn_wait;
+				ElementPtr->mass_points = BLAZER_MASS;
+				StarShipPtr->RaceDescPtr->characteristics.turn_wait
+						= BLAZER_TURN_WAIT;
+				ship_collision_func[WHICH_SIDE(ElementPtr->state_flags)]
+						= ElementPtr->collision_func;
+				ElementPtr->collision_func = blazer_collision;
 			}
 		}
 
