@@ -1,0 +1,641 @@
+#(NEVER_ENOUGH) ILWRA000.WAV
+We Can Never Receive Sufficient Direction From You, Great Masters!
+We Eagerly Await Your Next Vile Commandments.
+
+#(OK_WARSHIP) ILWRA001.WAV
+As You Wish, Glorious, Unmerciful Destructors!
+In All Future Warship We Will Honor You In This Way!
+
+#(OK_DWE) ILWRA002.WAV
+Yes, Great Dogar! Yes Mighty Kazon! Dwe Certainly Will, Dwe Certainly Will!
+
+#(OK_YOUBOO) ILWRA003.WAV
+It Shall Be So, Great Ones.
+Yuubuu Are Mighty!
+Yuubuu Are The Most Hideous And Deceitful!
+We Ilwrath Are Too Fortunate To Have Yuubuu To Worship!
+
+#(OK_DILRAT) ILWRA004.WAV
+We, The Dill-Rats, Bow And Scrape Off Our Appendages In Your Honor, Mighty Dogar And Kazon!
+
+#(BIG_FUN) ILWRA005.WAV
+Listen!
+Once More The Terrible Twosome Are Among Us!
+Hear Our Thanks, Mighty Dogar And Kazon!
+We Have Found Ultimate Pleasure In Your Cruel Service In These Alien Stars!
+Though Our Enemy, The Thraddash, Possess A Tough And Chewy Exterior
+Inside These Creatures Can Be Found A Most Smooth And Sweet Set Of Innards.
+Their Low Bellows Of Fear And Agony Do Service To Your Names, Great Dogar And Kazon!
+We Will Slay These Beasts In Your Name, Until They Are All Dead, Dead, DEAD!
+
+#(FAST_AS_CAN) ILWRA006.WAV
+Our Gods Of Darkness And Pain Call To Us Again!
+Evil Dogar, Cruel Kazon! How Can We Be So Fortunate To Hear From You Again?
+We Pray Thee Gods, Forgive Us For Not Yet Beginning The Slaying Of The Thraddash.
+Quickly Now, I Must Rend Three Limbs From My Thorax As A Sign Of My Supplication.
+AIEE!
+AIEE!
+AIEE!
+It Is Done! Dogar And Kazon See My Fluids And Must Smile. I Am Happy!
+We Make All Haste, But Are Limited By The Speed Of Our Avenger Starcraft.
+We Know Our Pitiful Excuses Are Worthless...
+We Must Show Our Shame With The Removal Of Yet More Limbs.
+AIEE
+AIEE
+AIEE
+
+#(GLORIOUS_WORSHIP) ILWRA007.WAV
+Attend! The Cruel Twins Of Pain And Death Have Returned To Instruct Us!
+Dogar And Kazon! We Are Your Instruments Of Cruelty And Death!
+As We Speak, Our Holy Excruciators Attack The Thraddash, Slaying Unmercifully In Your Names.
+
+#(ON_WAY) ILWRA008.WAV
+Dogar And Kazon Once More Grace Channel 44 With Their Inspiring Words Of Hatred And Cruelty!
+Acolyte! Turn The Volume To Maximum Immediately!
+Hear Us, Black Dogar! Hear Us, Bloody Kazon!
+We Have Heard Your Word And Devote Every Breath To Fulfilling Your Desire For Gratuitous Violence And Death!
+As We Speak, A Thousand Starships, Cloaked And Invisible, Make Passage To The Draconis Stars.
+Upon Arrival There, The Holy Killing Team Will Begin The Bloody Slaughter You Requested.
+
+#(GODS_RETURN_1) ILWRA009.WAV
+Dogar! Kazon! We Hear Your Summons And Slaughter The Fat Jubby In Greeting.
+
+#(GODS_RETURN_2) ILWRA010.WAV
+From The Black Pits Of Pain The Deific Duo Of Destruction Emerge Once More!
+
+#(GODS_RETURN_3) ILWRA011.WAV
+Our Gods Have Returned Once More, Just As Foretold By This Morning's Rituals!
+When We Pulled The Steaming Entrails From The Squirming Sacrifice
+and Flung The Fatty Loops Against The Walls Of Our Holy Chambers
+the Entrails Stuck Tight, Neither Sliding Nor Peeling Even A Little Bit!
+Thus Was Our Gods' Arrival Foretold!
+
+#(JUST_GRUNTS) ILWRA012.WAV
+What Is That? The Voices Of Our Gods Dogar And Kazon? Surely It Cannot Be!
+And Yet My Set Is Tuned To The Mystic 44 -- Who Else Can It Be?
+I Am Unworthy Of Such Attention As This!
+Dogar -- Kazon! Your Divine Words Will Surely Consume Me.
+I Beeseech Thee! Speak Directly To The Leaders At Homeworld!
+I Am Unworthy.
+
+#(GRUNTS_AGAIN) ILWRA013.WAV
+Hark! We Are Receiving A Holy Transmission.
+Oh Dark And Gruesome Masters! I Am Honored With Your Attention.
+But Great Gods, I Am But A Simple Ilwrath, A Humble Murderer.
+I Am Unworthy To Hear Your Words!
+Only At Our Homeworld Orbiting The Green Eye Of Dogar Are There Ilwrath Sufficiently Evil
+to Understand Your Commandments. Forgive Me!
+
+#(WHAT_ORDERS) ILWRA014.WAV
+Your Will Is Our Inspiration. What Shall We Do?
+
+#(WE_WORSHIP_1) ILWRA015.WAV
+From The Chambers Of Pain We Hear Your Words, Cruel And Evil Lords Of Darkness.
+And As Your Voice Crackles Out Of The Speaker Boxes, It Sends Thrills Across Our Carapaces.
+Our Hairy Quills All Stand Erect And We Pant And Wheeze With Holy Fervor!
+Oh Mighty Gods! You Are The Definition Of All That Is Evil And Hideous In This Universe!
+You Are The Inspiration For All Cruelty, Deception And Pain.
+For This We Thank You!
+
+#(WE_WORSHIP_2) ILWRA016.WAV
+We Shall Make Instant Obeisance, Divine Lords Of Darkness!
+Acolyte! Light The Candles Of Torment -- Quickly!
+No You Idiot! Not The White Ones...
+Use The Yellow And Red Ones We Made From The Prisoners Last Week, The Ones With The Lumps.
+No Fool, Not Those! They Are Still Wet!
+
+#(WE_WORSHIP_3) ILWRA017.WAV
+Oh Evil Dogar!
+Oh Hideous Kazon!
+We Shall Toss The Fat Jubbies Into The Pit Of A Thousand Needles!
+This We Shall Do In Your Names!
+We Shall Bring Forth The Last Remaining Hu-Man Prisoner
+And Pull Its Head Apart Slowly, So That Its Cries Last For Hours.
+This We Shall Do In Your Names!
+We Shall Torment, Terrorize, Maim And Kill, Again, Again And AGAIN!
+This We Shall Do In Your Names!
+
+#(SUBSEQUENT_CHMMR_HELLO) ILWRA018.WAV
+So... The Hu-Man Has Returned To Visit Its Entombed Mentors Of Deceit!
+I Am Emotionally Moved By This Poignant Moment, And Feel Compelled To Make Immediate Obeisance.
+Flaccid Earthling -- I Will Pour Your Warm Circulatory Fluid Across The Altar Of Dogar
+And Dance A Jig Of Cruelty Atop Your Cooling Corpse.
+
+#(INIT_CHMMR_HELLO) ILWRA019.WAV
+Caught You, Didn't I?
+We Have Monitored Your Visit To This World With Great Interest.
+Your Plans For Trickery Are Pitiful
+And Make Dogar And Kazon Clack Their Mandibles Against One Another And Snicker With Amusement.
+And So Now, Squishy Hu-Man
+I Wonder What Sort Of Noise You Will Make
+When I Pull Off Your Arms?
+A High And Wailing Scream, Or A Low Moan Of Ultimate Suffering?
+
+#(OK_ENOUGH_ILWRATH) ILWRA020.WAV
+And Yet You Know So Little.
+
+#(OK_ENOUGH_GODS) ILWRA021.WAV
+Your Pitiful Investigations Have Barely Scratched The Surface Of What Is To Be Learned
+About Dogar And Kazon.
+And Remember, You May Never Get Another Chance To Ask Such Questions.
+
+#(SEND_MESSAGE) ILWRA022.WAV
+By The Fetid Breath Of The Dark Twin, Kazon!
+A Hu-Man In An Alien Starship... How Fascinating!
+When I Intercepted That Ur-Quan Drone, And Learned That An Unidentified Starship Had Approached Earth,
+I Never Expected To Find Such A Remarkable Vehicle In The Hands Of A Hu-Man.
+Hu-Mans Are Prey Animals - Weak And Helpless-
+But Here Is A Hu-Man In An Armed Starship!
+And Therefore In Direct Violation Of The Oath Of Fealty.
+I Am Sure Our Masters, The Ur-Quan, Will Punish Earth Most Severely For This Treachery....
+When I Present Them With The Twisted Wreckage Of Your Ship And Your Many Charred Corpses.
+
+#(CAME_FROM) ILWRA023.WAV
+Since You Will Soon Be Dead, I Will Gladly Explain.
+We Have Spent Many Years Gleefully Preying On The Pkunk.
+They Are A Pitiful, Easily-killed Species...
+And We Would Have Continued In This Divine Worship Of Dogar And Kazon...
+But We Required Additional Crew Members And Repairs To Our Cloaking Device.
+So We Departed The Giclas Constellation And Set Course For Home.
+But Before We Had Reached Our Region Of Space, We Detected The Passage Of A Nearby Vessel - The Ur-Quan Drone.
+It Informed Us About You... So Here We Are. 
+And Now, YOU DIE!
+
+#(WHO_BLASTS_WHO) ILWRA024.WAV
+I Have No Fear Of You, Feeble Mammal.
+Though My Ship Lacks A Functional Cloaking Device, And Many Of Our Crew Are Dead,
+My Gods, Dogar The Black And Kazon The Unseen, Have Personally Confided To Me
+That They Despise You Hu-Mans, And That They Will Help Us To Kill You All!
+
+#(NO_SURRENDER) ILWRA025.WAV
+Fool!
+As Alien As Your Ship May Be, Our Sensors Reveal How Few Weapons You Have On Board.
+Though This Vessel Is Under-Crewed, And Our Cloak Of Darkness Is Non-Functional,
+We Still Have More Than Enough Power To Kill You All!
+
+#(NOT_REASONABLE) ILWRA026.WAV
+Ha-ha-ha-ha! You Must Be Either A Naive Child Or A Hopeless Fool.
+In Either Case, It Makes No Difference, Because Soon You Will Be DEAD!
+
+#(SUBSEQUENT_HOME_HELLO) ILWRA027.WAV
+I See That You Have Come To Your Senses
+And Are Now Prepared To Engage In The Festival Of A Thousand Screams.
+Although Your Initial Rejection Of The Honor Was Dismaying,
+We Realize That It May Have Been A Shock To Be So Privileged.
+Ha Ha, Pinch Yourself, Hu-Man! You Are Not Dreaming.
+Dogar Has Winked And Kazon Has Spasmed In Condescending Approval.
+Today, Hu-Man, Is Your Lucky Day!
+
+#(GENERAL_INFO) ILWRA028.WAV
+Though Such Information Is Normally Holy And Secret,
+I Find I Am Unable To Contain Myself. Know This Fact, Hu-Man
+You Are Hu-Man, Weak And Alone In This Universe With No Gods To Protect You.
+I Know This, Because The Only True Gods Are Our Own Ilwrath Deities, Dogar And Kazon!
+Dogar Is The Killer In A Black Cloak...
+The Great Destroyer...
+The Bloody-Clawed Murderer...
+The Dark Beast With A Thousand Young!
+Kazon, On The Other Claw, Is The Great Deceiver...
+The Malevolent Evil In The Darkness...
+The Unstoppable Monster Who Has No Pity...
+The Hungry Lurker In The Night.
+These Are Our Gods -- The ONLY Gods!
+How Do We Know, You Ask? Because Dogar And Kazon TOLD US So.
+
+#(GOODBYE_AND_DIE) ILWRA029.WAV
+Not So Fast, Tender Hu-Man! You Must First Pay Homage To The Universal Deities Dogar And Kazon!
+The Payment Is Simple And Within Your Means.
+You Will Pay With Your Lives!
+
+#(DECEIVERS) ILWRA030.WAV
+DECEIVERS!
+We Know That You Are Not Truly Dogar And Kazon!
+Your Foolish And Childlike Attempts To Fool Us Shall Be Your Death!
+
+#(NO_PEACE) ILWRA031.WAV
+Excellent! We Enjoy The Process Of Rending Life So Much More When The Life Giver Is Willing.
+Come Now In Peace And Give That Which Makes You Live!
+
+#(NO_ALLIANCE) ILWRA032.WAV
+Silly Earthling! The Ur-Quan, Our Masters, Would Be Displeased If They Were Aware Of Your Transgressions!
+By Violating Your Oath Of Fealty To The Ur-Quan, We Are Obligated To Take Your Lives As Payment...
+A Process That Will Incidentally Please Both Myself And, More Importantly, The Arch-Deific Duo!
+
+#(ILWRATH_BELIEVE) ILWRA033.WAV
+Listen!
+It Is The Hideous And Inspiring Voices Of Our Gods, Dogar And Kazon!
+Oh Great Gods Of Evil And Darkness, What Can Your Humble And Devious Servants Do For You?
+
+#(OK_KILL_THRADDASH) ILWRA034.WAV
+Oh Mighty Dogar!
+Oh Mighty Kazon!
+Your Devoted Servants Hear Your Words And Obey Your Divine And Cruel Insights.
+The Pkunk Are Unfit For OUR Sacramental Tortures!
+We Relish The Prospect Of Killing Worthy Prey!
+We Will Leave Immediately So That We Can Begin Our Glorious, Evil Devotions...
+But Who Shall We Prey Upon Next?
+Who Will Suffer Our Inspired Torment?
+Hmm
+Didn't Those Loathsome Umgah Once Mention A Race Near Their Region Of Space?
+Hmm
+YES! I Have It! The THRADDASH!
+We Will Go NOW, And Kill All Of Them!
+
+#(GOODBYE_GODS) ILWRA035.WAV
+Farewell Dogar And Kazon. We Are Awed By Your Malevolent Presence, And Swear Unto You
+To Commit Even More Vile And Treacherous Deeds Tommorrow Than We Did Today!
+
+#(INIT_HELLO_SPACE) ILWRA036.WAV
+What? Can I Believe My Sensory Cluster? I Sense Hu-Mans!
+I Dance With Joy For Our Good Fortune.
+The Hu-Man Dies With Such Agony That It Cannot Help But Please
+Dogar And Kazon.
+
+#(SUBSEQUENT_HELLO_SPACE_1) ILWRA037.WAV
+What Is It? Mmmm, Hu-Man! It Has Been Long Since I Have Seen A Hu-Man Die! 
+We Will Bet On How Many Parts We Can Remove Before It Stops Making Noise!
+Now, You Space-Ship Captain, Begin The Expedient Transfer Of All Hu-Man Crew
+So That We May Waste No Time.
+
+#(SUBSEQUENT_HELLO_SPACE_2) ILWRA038.WAV
+Ah, Hu-Man! You Join Us In The Celebration Of Dogar And Kazon!
+We Grow Excited: The Hu-Man Makes Excellent Ceremony.
+When We Peel It, Urgent Bleating Comes From The Noisemaker.
+Then The Green Eye Of Dogar Observes It Writhe Upon The Altar
+And The Cilia Of Kazon Swell, Indicating Their Readiness For The Juices.
+It Squirms With Vigor Until We Pop The Crunchy Noisemaker.
+Rejoice! The Duo Of Deception Shall Receive Their Supplication.
+
+#(SUBSEQUENT_HELLO_SPACE_3) ILWRA039.WAV
+Your Fortuitous Arrival Bodes Well For Our Ceremony Of Consumption!
+The Hu-Man Must Prepare: It Must Perform A Complete Depilation,
+And Then Anoint Its Surface With The Larval Paste Of Our Stillborn Offspring.
+At The Altar Of The Duo Of Darkness We Suck The Bony Strength From The Fleshy Weakness
+While The Hu-Man Squeals For Either Dogar Or Kazon!
+Hu-Man, Listen Closely To These Words
+Favor Neither God With Your Screams, Lest You Tragically Taint The Consumption!
+
+#(SUBSEQUENT_HELLO_SPACE_4) ILWRA040.WAV
+By The Green Eye Of Dogar, It Is A Squishy Bone-Bag Hu-Man!
+It Is Waiting For Kazon To Knead Its Body With The Cilia Of Dread
+Until It Can Only Roll And Bleat.
+Hah! It Can Only Hope To Be So Honored.
+Even Now It Begs For Death And So Now I Must Decide...
+Will It Be By Sequentially Bursting Sensory Apparatus Until Nothing Remains?
+Will It Be By Shaking It Until It Is Oozing All Over?
+Will It Be By Chewing Off Bits And Pieces Until It No Longer Functions?
+Hmm, I Think Not The Latter -- Too Many Bones.
+
+#(GENERAL_INFO_SPACE_1) ILWRA041.WAV
+Hah! Puny Hu-Man! You Make Me Chitter With Amusement!
+By The Will Of The Mighty Dogar And Kazon I Am Here To Make You Die, Die, DIE!
+
+#(GENERAL_INFO_SPACE_2) ILWRA042.WAV
+It Is The Good Will Of Dogar And Kazon That Brings The Fodder Hu-Man To Us!
+Were It Not For The Dark Lords Of Deceptions' Mighty Directive,
+We Would Not Have The Good Fortune To Intercept You For A Festive Limb Wringing!
+Your Fight For Life, Though Futile, Serves The Noble Purpose
+And Appeases Our Honored Deities.
+You Have Earned The Right To Hold Your Head High!
+
+#(GENERAL_INFO_SPACE_3) ILWRA043.WAV
+Incorrectness! We Come From The Eye Of Dogar.
+Such A Quasar Exists Nowhere Near This Location!
+Look In The Heavens At Location 022.9, 366.6
+And Gaze Into The Depths Of Its All-Seeing Eye If You Dare!
+Only By The Sparing Caress Of Kazon's Anointed Cilia Will You Survive Such An Act.
+Else, You Will Bless The Altar Of Consumption With Your Ceremonial Blood!
+
+#(GENERAL_INFO_SPACE_4) ILWRA044.WAV
+In The Brief Golden Moment - During The War With Your Alliance -
+We Ilwrath Enjoyed Unequaled Merriment And Festivities.
+So Much Blood And Lymph Fluid -- Ecstasy!
+Then, After The Ur-Quan Made Your Kind Fallow Slaves,
+We Were Forced To Use Species Indigenous To Our Planet For Amusement.
+We Lived A Pleasant Existence Until A Scandal Rocked The Ilwrath!
+The Grah -- Our Favorite Species To Torment, Which We Carefully Maintained At The Brink Of Extinction,
+Had Been Completely Consumed!
+A Bureaucratic Error Was To Blame.
+Quality Death Became Rare. Our Highly Advanced Civilization Began To Show Signs Of
+Degeneracy.
+In Our Moment Of Need, We Prayed To The Mighty Duo For Direction,  And They Answered.
+`Go Forth', They Said. `Seek The Bird Beings.
+Pluck Them Slowly. Eviscerate Their Gasping Husks. Let Dogar And Kazon Drink Their Death And Pain!'
+We Went Forth And We Found The Pkunk, But Hu-Man, Now We Are Supremely Joyful...
+Because You Die So Much Better!
+
+#(GENERAL_INFO_SPACE_5) ILWRA045.WAV
+Blasphemer! You Are Not Fit For The Most Holy Rituals Of Devivication And Consumption!
+Dogar And Kazon Would Most Assuredly Gag On Your Sour Flesh
+And Spit Your Thin Soul Onto The Ninth Mountain Of Hell.
+Therefore We Shall Simply Cut You Up And Feed You To The Pets.
+
+#(STRENGTH_NOT_ALL) ILWRA046.WAV
+Ha Foolish Flesh Sac, Your Obsession With Strength Spells Your Doom. 
+Only Through Enlightenment Achieved With Diligent Ritual Worship Of The Twins Of Darkness
+Can A Being Truly Be Victorious!
+Death, No Matter What The Source, Feeds The Wicked Pair.
+It Is An Ultimate Honor And Victory To Die For This Purpose.
+We Know In The End Only The Truly Devout Will Reap The Reward That Dogar And Kazon Dispense!
+
+#(NO_SLAY_BY_THOUSANDS) ILWRA047.WAV
+You Amuse Us With Your Nonsensical Ramblings.
+We Look Forward To The Careful Exploration Of Your Structure.
+First, We Will Peel Back The Curious Follicle-Infested Outer Layer
+Followed By The Greasy Blankets Of Yellow Lard.
+Such A Confusing Hodge-Podge Of Parts Can Entertain For Hours!
+Hu-Man, Prepare Yourself For The Festivities!
+
+#(NO_EASE_UP) ILWRA048.WAV
+Relax -- Yes! Dogar And Kazon Could Not Say It Better!
+We Will Engage In The Best Stress-Relieving Activity.
+Prepare Your Tepid Flesh Bag For Death!
+
+#(GOODBYE_AND_DIE_SPACE) ILWRA049.WAV
+Where To, Hu-Man?
+We Are Here To Escort You To The Glistening Chambers Of Pain
+Home Of The Heinous Twins Of Darkness.
+We Will Assist You On Your Journey Of Expiration.
+
+#(INIT_HOME_HELLO) ILWRA050.WAV
+What A Pleasant Surprise! Ever Since The Ur-Quan Made It A Fallow Slave Species
+We Have Missed The Hu-Man! You Arrive Just In Time For The Festival Of A Thousand Screams.
+We Welcome You With Open Appendages!
+Your Participation In The Ceremony Is Most Fortuitous.
+As We Pour Your Steaming Parts From Your Breached Husk
+You Will Cry With The Force That Pleases The Mighty Deities Dogar And Kazon!
+Then We Will Address Our Inquiries And Receive Deific Guidance. Glorious!
+
+#(GOODBYE_AND_DIE_HOMEWORLD) ILWRA051.WAV
+You Leave? The Festivities Have Not Yet Begun -- You Have Uttered Nary A Single Scream!
+Our Pain-Pots Have Been Freshly Mixed, And We Have Sharpened Our Poppers.
+Wait! We Cannot Permit You To Miss The Happy Times Of Terror And Torment.
+
+#(SO_MUCH_TO_KNOW) ILWRA052.WAV
+There Is So Much To Tell -- So Many Different Aspects!
+These Deities Permeate The Fabric Of The Universe.
+Since All Things Eventually Succumb To Death, All Things Meet Dogar And Kazon.
+
+#(LONG_AGO) ILWRA053.WAV
+Hu-Man, You Do Not Understand. It Is As It Has Always Been.
+When The Hatchlings Struggle From The Egg Sac
+They Show Their Respect To The Twin Gods Of Death During Their First Frenzied Gorging.
+From That Moment On, The Directives And Philosophies Of Dogar And Kazon
+Are Manifested By The Hatchling.
+
+#(KILLED_GOOD_GODS) ILWRA054.WAV
+During The Dark Ages, Yes, We Were Confused By The Many Gods.
+There Were Dozens Of Deities Ranging From Zith Of The Pelt
+To Awk Of The Seds.
+It Was Only Through The Careful Formation Of A Priestly Ruling Body
+That The Ilwrath Were Able To Determine The True Gods Dogar And Kazon!
+This New Priestly Cabal Revealed That We Must Discard All Other Gods
+Be They Of Hearth Or Flowing Web.
+Only The Priests Were Capable Of Interpreting The Will Of The Gods.
+Their Order Refined Our Worship Until We Could Do No Better.
+Specifically, All Heretics Were To Be Eaten,
+And All Possessions Were To Be Delivered To The Holy Sites
+Or The Priestly Dwellings.
+
+#(CHANNEL_44) ILWRA055.WAV
+The Deific Duo Broadcast On Channel 44. Their Words Of Wisdom Are
+Available To All And The Instructions Are Carried Out To The Best Of Our
+Mortal Ability. We Know That We Are Pleasing The Gods Because They
+No Longer Find It Necessary To Guide Us. In The Past, The Dark Twins
+Were Compelled To Direct Us Almost Daily, But Now Have Received No
+Direction For Almost Eight Years. Indeed, We Diligently Monitor The
+Channel Should Dogar And Kazon Choose To Be Heard.
+
+#(BECAUSE_44) ILWRA056.WAV
+They Do It For Us.
+First, They Clear The Channel Of Messy Static And
+Interference. Second, It Made It Easy For Us To Properly Identify What
+Might Be Mistaken For Mad Rambling As The Sacred Words. You See,
+Dogar Possesses 44 Eyes That See Into The 44 Planes Of Existence And
+Each Of Kazon's 44 Sub-Tongues Is Made Up Of 44 Plump, Writhing
+Cilia. Besides, They Knew We Were 'Captain Satellite' Viewers.
+
+#(WHAT_ABOUT_ILWRATH) ILWRA057.WAV
+Yes, Your Interest Is Not Unusual. It Is Through The Omniscient Guidance
+Of Our Mighty Lords Of Darkness That We Have Achieved This State Of
+Near Perfection. We Will Dispel Your Ignorance Concerning The First
+Child Species Of The Unmerciful Dogar And Kazon.
+
+#(ABOUT_PHYSIO) ILWRA058.WAV
+Yes, Our Striking Appearance Only Hints At The True Strength That
+Resides Inside. Coursing Through Our Thorax Are The Fluids Of Life. 
+Like Yourselves, If We Leak In Excess, We Will Satiate The Sacrificial
+Needs Of Dogar And Kazon. Our Mandibles Allow Us To Communicate,
+Take Sustenance, And Deliver Pain. The Appendages You See Here
+Allow Us To Manipulate Our Technologies And Will Regenerate When
+Damaged Or Lost As Often Happens In Many Of The Rituals Of Pain. Our
+Sensory Cluster Lets Us Monitor The Whim And Will Of The Deadly Duo
+In The Complex Sequence Of Events That Leads Us All To Death.
+
+#(ABOUT_HISTORY) ILWRA059.WAV
+For Eons We Lived Appendage To Mandible.
+Then, Many Millennia Ago, We Received The Guidance Of Dogar And Kazon.
+This Enabled Us To Move Beyond The Simple Existence Of Tranquil Hunter-Gatherers,
+To Become World-Striding Avatars Of Death And Destruction.
+Over The Many Years, We Advanced Our Technology -- Always In The Name Of Dogar And Kazon
+Always In The Development Of More Sophisticated Tools For Murder.
+Then, The Gods Gave Us The Means To Go Forth And Commit Even More Glorious Acts!
+This Was 29 Years Ago, When The Ur-Quan Improved Our Starships And Weapons.
+The War Against Your Alliance Was Glorious!
+But Alas, All Good Things Come To An End. You Lost.
+We Honored The Wishes Of The Soft And Merciful Ur-Quan And Stopped Eating You Hu-Mans.
+To Continue Our Festive Ceremonies Of Death We Began Employing Our Native Species For Ceremony.
+Things Seemed To Be Going Well Until We Accidentally Exhausted Our Supply Of All These Life Forms.
+We Became Distraught And Called To Our Gods For Guidance!
+Then, Eight Years Ago, Dogar And Kazon Responded To Our Wails Of
+Dismay By Directing Us To Devour Feathered Bird Beings-The Pkunk!
+We Now Penetrate Deeply Into Their Home Space!
+When We Complete Our Mission Of Genocide
+We Are Certain That We Will Once Again Hear From Dogar And Kazon.
+
+#(ABOUT_CULTURE) ILWRA060.WAV
+Ah, Our Culture Is Rich With Meaningful Tradition.
+During The Birth Rite The Egg Sac Teems With Many New Potential Deaths
+The Hatchlings Fight Over Their First Frothy Draught Of Blood.
+In The Ensuing Frenzy, Many Hatchlings Are Consumed, Either Partially Or In Their Entirety.
+A Frequently Performed Ceremony Of Affirmation Has The Participant Grinding Away Partial Or Even Whole Appendages.
+It Is The Pain That Acknowledges The Greatness Of The Twins Of Excruciation
+How Can They Help But Notice The Scream Caused By The Mangled Nervous Tissue?
+
+#(ABOUT_URQUAN) ILWRA061.WAV
+The Ur-Quan Are But The Instruments Of Dogar And Kazon, Even Though They May Not Admit To It.
+This Is Because It Was The Evil Twins That Had Them Assist Us With Their Technologies And Resources.
+Their Soft Merciful Nature Sickens Both Gods But They See The Potential That The Ur-Quan Possess.
+If You Doubt This Statement, Notice That The Ur-Quan Dreadnought Is Staffed With 42 Crew Members.
+Since Dogar And Kazon Exhibit The Quality Of Omnipresence
+The Total Crew Complement Is Actually At The Auspicious Count Of 44!
+That The Ur-Quan Are But Instruments Of The Dark Twins Of Death Is A Foregone Conclusion.
+
+#(URQUAN_TOO_NICE) ILWRA062.WAV
+Simply Put, The Ur-Quan Are Far Too Kind To Please Dogar And Kazon.
+When Your Species Was Subdued, Our Gods Made Clear Their Desire For Immediate Deaths By The Billion.
+We Made Plans For A Grand Ceremony To Be Called `Mountains Of Flesh'.
+We Built Thousands Of Portable Altars, And Transported Millions Of Blood Gowns And Fillet Knives To Your World.
+But Then The Ur-Quan Commanded That You Hu-Mans Were To Be Left Alive! The Confusion!
+With Our Plans For A Magnificent And Most Holy Planetary Slaughter Forcibly Terminated
+We Retreated To Our Homeworld To Sulk.
+
+#(OF_COURSE_WERE_EVIL) ILWRA063.WAV
+Ha! Evil! Of Course We're Evil!
+Dogar And Kazon Would Never Reward A Less-Than-Hideously Evil Species With Their Baleful Grace.
+Why We Are The Very Definition Of Evil!
+Everything About Us, Within And Without, Reeks Of Heinous Deeds, Deceit And Treachery!
+Even Our House Pets Are Rather Evil.
+
+#(DONT_CONFUSE_US) ILWRA064.WAV
+Hmmm... We ARE All Evil.
+We All Behave In A Mutually Agreed-Upon Fashion Of Murder, Torture, Deceit And So Forth.
+Our Uniform Acceptance Of This Heinous Credo Creates An Orderly And Cooperative Society
+Which Hardly Seems Evil.
+Evil Is Doing Things That Make Others Hurt Or Fear.
+We ALL Do That, Of Course.
+But Since We ALL Do Such Things, As Sanctioned By Our Culture,
+It Would Be `Bad' To Do Otherwise.
+Which Means...
+Er... 
+Puny Hu-Man, Do Not Play With Words! You Anger Both Dogar And Kazon! Now You Must Die!
+
+#(ON_WAY_TO_THRADDASH) ILWRA065.WAV
+Begone Hu-Mans!
+We Would Very Much Like To Tear Off All Your Digits...
+And Be Entertained Fitting Them Into Your Orifices...
+But We Are On An Evil Jihad And Cannot Be Bothered Killing You At This Time.
+Perhaps Later.
+
+#(HAPPY_FIGHTING_THRADDASH) ILWRA066.WAV
+From Channel 44 Came The Words Of The Dark Twins To Make Bloody Pilgramage!
+We Have Arrived In the Holy Killing Zone and Eagerly Execute the Commands of Dogar and Kazon.
+The Slaying Has Been Excellent -- High Ceremony!
+Now You Are Here, Befouling The Event With Primate Chatter.
+Begone Hu-Man! You Interfere With The Blessed Murder Worship Of The Dark Twins.
+
+#(say_warship)
+FROM THIS DAY FORWARD, SAY WARSHIP INSTEAD OF WORSHIP!
+
+#(say_dwe)
+FROM THIS DAY FORWARD, SAY DWE INSTEAD OF WE!
+
+#(say_youboo)
+FROM THIS DAY FORWARD, SAY YUUBUU INSTEAD OF YOU!
+
+#(say_dillrat)
+YOU ARE NO LONGER THE ILWRATH. YOU ARE NOW THE DILL-RATS!
+
+#(enough_orders)
+YOU ARE SUFFICIENTLY GRACED. GO AND KILL GRUESOMELY IN OUR NAMES!
+
+#(other_divine_orders)
+WE REQUIRE THAT YOU DO THINGS A BIT DIFFERENTLY.
+
+#(worship_us)
+WORSHIP US!
+
+#(bye_gods)
+WE RETURN NOW TO THE FETID DARKNESS. OBEY OUR COMMANDS!
+
+#(enough_ilwrath)
+Oooo! My head spins with astonishing facts! Say no more!
+
+#(enough_gods)
+I grow weary of Dogar and Kazon. Let's discuss something else.
+
+#(where_you_come_from)
+Where the hell did you come from?
+
+#(it_will_be_a_pleasure)
+It will be a pleasure blasting your ugly face out of the stars.
+
+#(be_reasonable)
+Look, let's be reasonable. We CAN coexist peacefully.
+
+#(surrender)
+Surrender, foul alien creature, or you will be annihilated!
+
+#(whats_up)
+Look, before you try to kill me, would you tell me a bit about yourselves?
+
+#(bye)
+It's been swell, guys. See ya.
+
+#(want_peace)
+There is no need for conflict; let peace begin!
+
+#(want_alliance)
+Let us unite against our common threat, the dreaded Ur-Quan!
+
+#(go_kill_thraddash)
+HEED THESE WORDS OUR EVIL CHILDREN -- LEAVE THIS PLACE -- SEEK NEW PREY!
+
+#(whats_up_space_1)
+Ilwrath Vessel: State now the nature of your mission.
+
+#(whats_up_space_2)
+Your presence here is of interest. Please enlighten us.
+
+#(whats_up_space_3)
+What is this `Doggone' and `Quasar' thing anyway?
+
+#(whats_up_space_4)
+What are you Ilwrath spending your time doing?
+
+#(whats_up_space_5)
+What's up with Dayglo and Crayon?
+
+#(you_are_weak)
+We take pity upon you, weakling Ilwrath. Go now before we change our minds.
+
+#(slay_by_thousands)
+Your greed for lives seals your doom. We will slay you by the thousands!
+
+#(ease_up)
+We mean you no harm; relax.
+
+#(bye_space)
+Well, I'd love to chat, but I have to go.
+
+#(bye_homeworld)
+Goodbye, adios, ciao!
+
+#(want_info_on_gods)
+Your gods fascinate us. Can you reveal their true nature?
+
+#(when_start_worship)
+When did you begin your devout ways?
+
+#(any_good_gods)
+I don't want to offend, but did you ever have any Good Gods?
+
+#(how_talk_with_gods)
+How do you pray and how do Dogar and Kazon answer?
+
+#(why_44)
+Why do your Gods broadcast on channel 44?
+
+#(want_info_on_ilwrath)
+You Ilwrath fascinate me. Tell me about yourselves.
+
+#(what_about_physio)
+Boy, I have to say, you are the strangest looking critters.
+
+#(what_about_history)
+How did you get so scr... er, end up like you are?
+
+#(what_about_culture)
+Tell me about your fascinating customs and ceremonies.
+
+#(what_about_urquan)
+So, what do you think of the Ur-Quan anyway?
+
+#(are_you_evil)
+Okay, so help me understand this. You consider yourselves Evil?
+
+#(but_evil_is_defined)
+But `evil' is defined as deviation from established values.
+If your entire society behaves evilly, then aren't you all, in fact, good?
+
+
