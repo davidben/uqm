@@ -18,8 +18,10 @@
 
 #include "gfxintrn.h"
 
-#define min(a, b) ((a <= b) ? a : b)
-#define max(a, b) ((a >= b) ? a : b)
+#undef MIN
+#define MIN(a, b) (((a) <= (b)) ? (a) : (b))
+#undef MAX
+#define MAX(a, b) (((a) >= (b)) ? (a) : (b))
 
 INTERSECT_CODE
 BoxIntersect (PRECT pr1, PRECT pr2, PRECT pinter)
@@ -105,12 +107,12 @@ BoxUnion (PRECT pr1, PRECT pr2, PRECT punion)
 	COORD x2, y2, w2, h2;
 	// Union is A AND B, put together, correct?  Returns a bigger box that
 	// encompasses the two.
-	punion->corner.x = min(pr1->corner.x, pr2->corner.x);
-	punion->corner.y = min(pr1->corner.y, pr2->corner.y);
+	punion->corner.x = MIN(pr1->corner.x, pr2->corner.x);
+	punion->corner.y = MIN(pr1->corner.y, pr2->corner.y);
 	
-	punion->extent.width  = max(pr1->corner.x + pr1->extent.width,
+	punion->extent.width  = MAX(pr1->corner.x + pr1->extent.width,
 						        pr2->corner.x + pr2->extent.width) - punion->corner.x;
-	punion->extent.height = max(pr1->corner.y + pr1->extent.height,
+	punion->extent.height = MAX(pr1->corner.y + pr1->extent.height,
 						        pr2->corner.y + pr2->extent.height) - punion->corner.y;
 
 
