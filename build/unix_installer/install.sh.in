@@ -29,6 +29,17 @@ EOF
 	exit 1
 fi
 
+type unzip > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	cat << EOF
+I need 'unzip' for unzipping things. You don't seem to have it.
+That means no unzipping for me. And no The Ur-Quan Masters for you.
+And that's really not acceptable, is it? So I hope you'll install it
+soon. That way we'll both be happy.
+EOF
+	exit 1
+fi
+
 echo "I need to show you something. I don't want to, but I have to."
 echo "Press enter when you're ready."
 read TEMP
@@ -228,6 +239,7 @@ mkdir -p -- "$PREFIX"/bin 2> /dev/null
 echo "Unpacking packages..."
 for COMPFILE in `selected_components`; do
 	echo "- $COMPFILE"
+	unzip -od "$PREFIX" "$COMPFILE"
 	gzip -dc "$COMPFILE" | tar -xf - -C "$PREFIX"/
 done
 
