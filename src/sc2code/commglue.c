@@ -232,7 +232,7 @@ GetAllianceName (UNICODE *buf, RESPONSE_REF name_1)
 }
 
 void
-construct_response (UNICODE *buf, RESPONSE_REF R, ...)
+construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 {
 	UNICODE *name;
 	va_list vlist;

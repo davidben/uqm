@@ -60,7 +60,8 @@ extern void NPCPhrase_cb (int index, void (*cb) (void));
 
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 
-extern void construct_response (UNICODE *buf, RESPONSE_REF R, ...);
+extern void construct_response (UNICODE *buf, int R /* promoted from
+		RESPONSE_REF */, ...);
 
 extern LOCDATAPTR init_race (RESOURCE comm_id);
 
