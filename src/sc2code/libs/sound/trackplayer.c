@@ -643,7 +643,7 @@ FastForward_Smooth ()
 	}
 }
 
-void
+int
 FastForward_Page ()
 {
 	if (sound_sample)
@@ -658,9 +658,16 @@ FastForward_Page ()
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, false,
 					speechVolumeScale != 0.0f, true);
+			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+			return TRUE;
 		}
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		else //means there are no more pages left
+		{
+			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+			return FALSE;
+		}
 	}
+	return TRUE;
 }
 
 // processes sound data to oscilloscope

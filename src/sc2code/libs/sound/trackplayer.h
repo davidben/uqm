@@ -26,7 +26,7 @@ void PauseTrack(void);
 COUNT PlayingTrack(void);
 void JumpTrack(void);
 void FastForward_Smooth(void);
-void FastForward_Page(void);
+int FastForward_Page(void);
 void FastReverse_Smooth(void);
 void FastReverse_Page(void);
 void StopTrack(void);

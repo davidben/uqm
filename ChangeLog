@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fastforwarding when in last subtitle now works as expected (bug #318),
+  from chmmravatar
 - Fixed MixSDL buffer underrun handling (bug #211) -Mika
 - Fix issue with caps lock and num lock preventing planet scan
   and lander message skipping (bug #299), from chmmravatar

@@ -1332,8 +1332,15 @@ SpewPhrases (COUNT wait_track)
 			if (GetInputXComponent (InputState) > 0)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
-				if (optSmoothScroll == OPT_PC && InputState != LastInputState)
-					FastForward_Page ();
+				if (optSmoothScroll == OPT_PC && InputState != LastInputState
+						&& !FastForward_Page ())
+				{
+					SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
+					JumpTrack ();
+					CommData.AlienFrame = F;
+					do_subtitles ((void *)~0);
+					return (FALSE);
+				}
 				else if (optSmoothScroll == OPT_3DO)
 					FastForward_Smooth ();
 				ContinuityBreak = TRUE;
