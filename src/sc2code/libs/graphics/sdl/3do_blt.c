@@ -45,13 +45,13 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	img = (TFB_Image *) ((BYTE *) SrcFramePtr + SrcFramePtr->DataOffs);
 	
-	LockMutex (img->mutex);
-
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
 		int x, y;
 		BOOLEAN scaled, paletted, filled;
 		TFB_Palette palette[256];
+
+		LockMutex (img->mutex);
 
 		x = pClipRect->corner.x - GetFrameHotX (_CurFramePtr);
 		y = pClipRect->corner.y - GetFrameHotY (_CurFramePtr);
