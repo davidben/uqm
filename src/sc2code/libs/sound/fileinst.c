@@ -23,14 +23,14 @@ LoadSoundFile (PVOID pStr)
 {
 	FILE *fp;
 
-	fp = OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
 		hData = _GetSoundBankData (fp, LengthResFile (fp));
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 
 		return ((SOUND_REF)hData);
 	}
@@ -43,14 +43,14 @@ LoadMusicFile (PVOID pStr)
 {
 	FILE *fp;
 
-	fp = OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
 		hData = _GetMusicData (fp, LengthResFile (fp));
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 
 		return ((MUSIC_REF)hData);
 	}

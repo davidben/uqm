@@ -23,13 +23,13 @@ LoadStringTableFile (PVOID pStr)
 {
 	FILE *fp;
 
-	fp = OpenResFile (pStr, "rb");
+	fp = res_OpenResFile (pStr, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
 		hData = _GetStringData (fp, LengthResFile (fp));
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 
 		return (BUILD_STRING_TABLE (hData));
 	}

@@ -333,7 +333,7 @@ LoadKernel (int argc, char *argv[])
 	INIT_INSTANCES ();
 
 	InstallResTypeVectors (KEY_CONFIG, LoadKeyConfig, NULL_PTR);
-	GetResource (JOYSTICK_KEYS);
+	res_GetResource (JOYSTICK_KEYS);
 
 	{
 		COLORMAP ColorMapTab;

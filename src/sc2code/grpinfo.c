@@ -36,7 +36,7 @@ InitGroupInfo (BOOLEAN FirstTime)
 {
 	PVOID fp;
 
-	fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+	fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 	if (fp)
 	{
 		GROUP_HEADER GH;
@@ -46,15 +46,15 @@ InitGroupInfo (BOOLEAN FirstTime)
 		GH.GroupOffset[0] = 0;
 		WriteResFile (&GH, sizeof (GH), 1, fp);
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 
-	if (FirstTime && (fp = OpenResFile (tempFilePath (DEFGRPINFO_FILE),
+	if (FirstTime && (fp = res_OpenResFile (tempFilePath (DEFGRPINFO_FILE),
 			"wb")))
 	{
 		PutResFileChar (0, fp);
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 }
 
@@ -349,7 +349,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenResFile (tempFilePath (
+	fp = res_OpenResFile (tempFilePath (
 			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
 			"r+b");
 	if (fp)
@@ -380,14 +380,14 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 					|| !ValidateEvent (ABSOLUTE_EVENT,
 					&month_index, &day_index, &year_index)))
 			{
-				CloseResFile (fp);
+				res_CloseResFile (fp);
 
 #ifdef DEBUG
 			if (GH.star_index == (COUNT)(CurStarDescPtr - star_array))
 				fprintf (stderr, "GetGroupInfo: battle groups out of date %u/%u/%u!\n",
 						month_index, day_index, year_index);
 #endif /* DEBUG */
-				fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+				fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 				GH.NumGroups = 0;
 				GH.star_index = (COUNT)~0;
 				GH.GroupOffset[0] = 0;
@@ -495,7 +495,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				else if (ValidateEvent (ABSOLUTE_EVENT, /* still fresh */
 						&month_index, &day_index, &year_index))
 				{
-					CloseResFile (fp);
+					res_CloseResFile (fp);
 					return (TRUE);
 				}
 			}
@@ -605,7 +605,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			}
 		}
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 
 	return (GetHeadLink (&GLOBAL (npc_built_ship_q)) != 0);
@@ -616,7 +616,7 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenResFile (tempFilePath (
+	fp = res_OpenResFile (tempFilePath (
 			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE),
 			"r+b");
 	if (fp)
@@ -667,7 +667,7 @@ GH.month_index, GH.day_index, GH.year_index);
 
 		FlushGroupInfo (&GH, offset, which_group, fp);
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 
 	return (offset);

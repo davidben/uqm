@@ -221,7 +221,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 			fp = ResHeaderPtr->res_fp;
 		else
 		{
-			fp = OpenResFile (file_buf, "rb");
+			fp = res_OpenResFile (file_buf, "rb");
 			if (fp)
 				DanglingOpen = TRUE;
 		}
@@ -298,7 +298,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 			{
 				get_resource_filename (ResHeaderPtr, file_buf, (COUNT)data_len);
 
-				fp = OpenResFile (file_buf, "rb");
+				fp = res_OpenResFile (file_buf, "rb");
 				if (fp == NULL)
 				{
 #if 1 // def DEBUG
@@ -317,7 +317,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 					else
 						hData = DoLoad (ResHeaderPtr, type, fp, data_len);
 					if (hData == 0 || !IsIndexType (ResHeaderPtr, type))
-						CloseResFile (fp);
+						res_CloseResFile (fp);
 				}
 			}
 #ifdef DEBUG
@@ -339,7 +339,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 	}
 
 	if (DanglingOpen)
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 
 	num_instances = ResourceHandleListPtr->num_valid_handles;
 	UnlockResourceHandleList (hList);
@@ -357,7 +357,7 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 }
 
 MEM_HANDLE
-GetResource (RESOURCE res)
+res_GetResource (RESOURCE res)
 {
 	MEM_HANDLE hData, hList;
 	RES_PACKAGE res_package;
@@ -504,7 +504,7 @@ FreeResource (RESOURCE res)
 }
 
 MEM_HANDLE
-DetachResource (RESOURCE res)
+res_DetachResource (RESOURCE res)
 {
 	return (get_res_handle (res, TRUE));
 }

@@ -254,13 +254,13 @@ OpenResourceIndexFile (PVOID resfile)
 	char fullname[256];
 
 	strcpy (fullname, resfile);
-	if ((res_fp = OpenResFile (fullname, "rb")) == 0)
+	if ((res_fp = res_OpenResFile (fullname, "rb")) == 0)
 	{
 		sprintf (fullname, "%s.pkg", (char *) resfile);
-		if ((res_fp = OpenResFile (fullname, "rb")) == 0)
+		if ((res_fp = res_OpenResFile (fullname, "rb")) == 0)
 		{
 			sprintf (fullname, "%s.ndx", (char *) resfile);
-			res_fp = OpenResFile (fullname, "rb");
+			res_fp = res_OpenResFile (fullname, "rb");
 		}
 	}
 
@@ -271,7 +271,7 @@ OpenResourceIndexFile (PVOID resfile)
 		_cur_resfile_name = fullname;
 
 		hRH = _GetResFileData (res_fp, LengthResFile (res_fp));
-		/* DO NOT CloseResFile!!! */
+		/* DO NOT res_CloseResFile!!! */
 
 		return (hRH);
 	}
@@ -284,9 +284,9 @@ OpenResourceIndexInstance (DWORD res)
 {
 	MEM_HANDLE hRH;
 
-	hRH = GetResource (res);
+	hRH = res_GetResource (res);
 	if (hRH)
-		DetachResource (res);
+		res_DetachResource (res);
 
 	return (hRH);
 }
@@ -368,7 +368,7 @@ CloseResourceIndex (MEM_HANDLE hRH)
 			}
 
 			if (res_fp)
-				CloseResFile (res_fp);
+				res_CloseResFile (res_fp);
 		}
 
 		return (TRUE);

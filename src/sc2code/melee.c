@@ -679,7 +679,7 @@ LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
 	loc_buf = pfile + strlen (pfile);
 
 	GetDirEntryContents (DirEntry, (STRINGPTR)loc_buf, FALSE);
-	if ((load_fp = OpenResFile (pfile, "rb")) == 0)
+	if ((load_fp = res_OpenResFile (pfile, "rb")) == 0)
 		status = -1;
 	else
 	{
@@ -687,7 +687,7 @@ LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
 			status = -1;
 		else
 			status = ReadTeamImage (pTI, load_fp);
-		CloseResFile (load_fp);
+		res_CloseResFile (load_fp);
 	}
 
 	if (pFilePath != NULL_PTR && ppFileName != NULL_PTR)
@@ -1097,13 +1097,13 @@ RetrySave:
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
-	save_fp = OpenResFile (buf, "wb");
+	save_fp = res_OpenResFile (buf, "wb");
 	if (save_fp)
 	{
 		BOOLEAN err;
 
 		err = (BOOLEAN)(WriteTeamImage (&pMS->TeamImage[pMS->side], save_fp) == 0);
-		if (CloseResFile (save_fp) == 0)
+		if (res_CloseResFile (save_fp) == 0)
 			err = TRUE;
 		if (err)
 			save_fp = 0;
@@ -1784,7 +1784,7 @@ Melee (void)
 		{
 			FILE *load_fp;
 
-			load_fp = OpenResFile ("melee.cfg", "rb");
+			load_fp = res_OpenResFile ("melee.cfg", "rb");
 			if (load_fp)
 			{
 				int status;
@@ -1804,7 +1804,7 @@ Melee (void)
 						}
 					}
 				}
-				CloseResFile (load_fp);
+				res_CloseResFile (load_fp);
 				if (status == -1)
 					load_fp = 0;
 			}
@@ -1832,7 +1832,7 @@ Melee (void)
 			BOOLEAN err;
 				
 			err = FALSE;
-			save_fp = OpenResFile ("melee.cfg", "wb");
+			save_fp = res_OpenResFile ("melee.cfg", "wb");
 			if (save_fp)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
@@ -1843,7 +1843,7 @@ Melee (void)
 					err = TRUE;
 				if (!err && WriteTeamImage (&MenuState.TeamImage[1], save_fp) == 0)
 					err = TRUE;
-				if (CloseResFile (save_fp) == 0)
+				if (res_CloseResFile (save_fp) == 0)
 					err = TRUE;
 			}
 			else

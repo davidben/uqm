@@ -31,9 +31,9 @@ LoadSoundInstance (DWORD res)
 {
 	MEM_HANDLE hData;
 
-	hData = GetResource (res);
+	hData = res_GetResource (res);
 	if (hData)
-		DetachResource (res);
+		res_DetachResource (res);
 
 	return ((SOUND_REF)hData);
 }
@@ -43,9 +43,9 @@ LoadMusicInstance (DWORD res)
 {
 	MEM_HANDLE hData;
 
-	hData = GetResource (res);
+	hData = res_GetResource (res);
 	if (hData)
-		DetachResource (res);
+		res_DetachResource (res);
 
 	return ((MUSIC_REF)hData);
 }

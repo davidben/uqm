@@ -30,10 +30,10 @@ LoadStringTableInstance (DWORD res)
 {
 	MEM_HANDLE hData;
 
-	hData = GetResource (res);
+	hData = res_GetResource (res);
 	if (hData)
 	{
-		DetachResource (res);
+		res_DetachResource (res);
 	}
 
 	return (BUILD_STRING_TABLE (hData));

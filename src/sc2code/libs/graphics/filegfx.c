@@ -23,12 +23,12 @@ LoadCelFile (PVOID pStr)
 {
 	FILE *fp;
 
-	if ((fp = OpenResFile (pStr, "rb")) != NULL)
+	if ((fp = res_OpenResFile (pStr, "rb")) != NULL)
 	{
 		MEM_HANDLE hData;
 
 		hData = _GetCelData (fp, LengthResFile (fp));
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 		return ((DWORD)hData);
 	}
 
@@ -40,12 +40,12 @@ LoadFontFile (PVOID pStr)
 {
 	FILE *fp;
 
-	if ((fp = OpenResFile (pStr, "rb")) != NULL)
+	if ((fp = res_OpenResFile (pStr, "rb")) != NULL)
 	{
 		MEM_HANDLE hData;
 
 		hData = _GetFontData (fp, LengthResFile (fp));
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 		return ((DWORD)hData);
 	}
 

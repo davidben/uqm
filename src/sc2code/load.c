@@ -90,7 +90,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 	char buf[256], file[PATH_MAX];
 
 	sprintf (file, "%sstarcon2.%02u", saveDir, which_game);
-	in_fp = OpenResFile (file, "rb");
+	in_fp = res_OpenResFile (file, "rb");
 	if (in_fp)
 	{
 		FILE *fp;
@@ -109,7 +109,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		else
 		{
 			memcpy (summary_desc, buf, sizeof (*summary_desc));
-			CloseResFile (in_fp);
+			res_CloseResFile (in_fp);
 			return (TRUE);
 		}
 
@@ -117,7 +117,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 		if ((fh = copen (in_fp, FILE_STREAM, STREAM_READ)) == 0)
 		{
-			CloseResFile (in_fp);
+			res_CloseResFile (in_fp);
 			return (FALSE);
 		}
 
@@ -229,7 +229,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			}
 		}
 
-		fp = OpenResFile (tempFilePath (STARINFO_FILE), "wb");
+		fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -245,10 +245,10 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				flen -= num_bytes;
 			}
-			CloseResFile (fp);
+			res_CloseResFile (fp);
 		}
 
-		fp = OpenResFile (tempFilePath (DEFGRPINFO_FILE), "wb");
+		fp = res_OpenResFile (tempFilePath (DEFGRPINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -264,10 +264,10 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				flen -= num_bytes;
 			}
-			CloseResFile (fp);
+			res_CloseResFile (fp);
 		}
 
-		fp = OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
+		fp = res_OpenResFile (tempFilePath (RANDGRPINFO_FILE), "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -283,13 +283,13 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				flen -= num_bytes;
 			}
-			CloseResFile (fp);
+			res_CloseResFile (fp);
 		}
 
 		cread ((PBYTE)&SD, sizeof (SD), 1, fh);
 
 		cclose (fh);
-		CloseResFile (in_fp);
+		res_CloseResFile (in_fp);
 
 		battle_counter = 0;
 		ReinitQueue (&race_q[0]);

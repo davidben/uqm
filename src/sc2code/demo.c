@@ -89,10 +89,10 @@ OpenJournal (void)
 	{
 		FILE *fp;
 
-		if (fp = OpenResFile ("starcon.jnl", "rb"))
+		if (fp = res_OpenResFile ("starcon.jnl", "rb"))
 		{
 			ReadResFile (journal_buf, 1, sizeof (journal_buf), fp);
-			CloseResFile (fp);
+			res_CloseResFile (fp);
 
 			if (journal_fh = copen (journal_buf, MEMORY_STREAM, STREAM_READ))
 			{
@@ -125,10 +125,10 @@ CloseJournal (void)
 			return (FALSE);
 		}
 #if CREATE_JOURNAL
-		else if (fp = OpenResFile ("starcon.jnl", "wb"))
+		else if (fp = res_OpenResFile ("starcon.jnl", "wb"))
 		{
 			WriteResFile (journal_buf, 1, sizeof (journal_buf), fp);
-			CloseResFile (fp);
+			res_CloseResFile (fp);
 		}
 #endif /* CREATE_JOURNAL */
 	}

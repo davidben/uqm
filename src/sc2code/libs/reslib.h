@@ -49,7 +49,7 @@ typedef COUNT RES_PACKAGE;
 		((RESOURCE)(i) << TYPE_BITS) | \
 		((RESOURCE)(t)))
 
-extern FILE *OpenResFile (PVOID filename, const char *mode);
+extern FILE *res_OpenResFile (PVOID filename, const char *mode);
 extern int ReadResFile (PVOID lpBuf, COUNT size, COUNT count, FILE *fp);
 extern int WriteResFile (PVOID lpBuf, COUNT size, COUNT count, FILE
 		*fp);
@@ -58,7 +58,7 @@ extern int PutResFileChar (char ch, FILE *fp);
 extern long SeekResFile (FILE *fp, long offset, int whence);
 extern long TellResFile (FILE *fp);
 extern long LengthResFile (FILE *fp);
-extern BOOLEAN CloseResFile (FILE *fp);
+extern BOOLEAN res_CloseResFile (FILE *fp);
 extern BOOLEAN DeleteResFile (PVOID filename);
 
 extern MEM_HANDLE InitResourceSystem (PVOID resfile, COUNT resindex_type,
@@ -68,8 +68,8 @@ extern BOOLEAN InstallResTypeVectors (
 		COUNT res_type, 
 		MEM_HANDLE (*load_func) (FILE *fp, DWORD len),
 		BOOLEAN (*free_func) (MEM_HANDLE handle));
-extern MEM_HANDLE GetResource (RESOURCE res);
-extern MEM_HANDLE DetachResource (RESOURCE res);
+extern MEM_HANDLE res_GetResource (RESOURCE res);
+extern MEM_HANDLE res_DetachResource (RESOURCE res);
 extern BOOLEAN FreeResource (RESOURCE res);
 extern COUNT CountResourceTypes (void);
 

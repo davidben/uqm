@@ -27,7 +27,7 @@
 #include "resintrn.h"
 
 FILE *
-OpenResFile (PVOID filename, const char *mode)
+res_OpenResFile (PVOID filename, const char *mode)
 {
 	FILE *fp;
 	struct stat sb;
@@ -45,7 +45,7 @@ OpenResFile (PVOID filename, const char *mode)
 }
 
 BOOLEAN
-CloseResFile (FILE *fp)
+res_CloseResFile (FILE *fp)
 {
 	if (fp)
 	{

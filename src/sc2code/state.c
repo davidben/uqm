@@ -27,7 +27,7 @@ InitPlanetInfo (void)
 {
 	PVOID fp;
 
-	fp = OpenResFile (tempFilePath (STARINFO_FILE), "wb");
+	fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "wb");
 	if (fp)
 	{
 		DWORD offset;
@@ -42,7 +42,7 @@ InitPlanetInfo (void)
 		} while (pSD->star_pt.x <= MAX_X_UNIVERSE
 				&& pSD->star_pt.y <= MAX_Y_UNIVERSE);
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 }
 
@@ -60,7 +60,7 @@ GetPlanetInfo (void)
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] =
 			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] =
 			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN] = 0;
-	fp = OpenResFile (tempFilePath (STARINFO_FILE), "rb");
+	fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "rb");
 	if (fp)
 	{
 		COUNT star_index, planet_index, moon_index;
@@ -98,7 +98,7 @@ GetPlanetInfo (void)
 						), 1, fp);
 		}
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 }
 
@@ -107,7 +107,7 @@ PutPlanetInfo (void)
 {
 	PVOID fp;
 
-	fp = OpenResFile (tempFilePath (STARINFO_FILE), "r+b");
+	fp = res_OpenResFile (tempFilePath (STARINFO_FILE), "r+b");
 	if (fp)
 	{
 		COUNT i;
@@ -164,7 +164,7 @@ PutPlanetInfo (void)
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask
 				), 1, fp);
 
-		CloseResFile (fp);
+		res_CloseResFile (fp);
 	}
 }
 
