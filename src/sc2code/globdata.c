@@ -31,6 +31,7 @@ FRAME PlayFrame;
 GLOBDATA GlobData;
 
 extern FRAME flagship_status, misc_data;
+BOOLEAN initedSIS = 0;
 
 void
 CreateRadar (void)
@@ -276,6 +277,17 @@ GLOBAL_SIS (ModuleSlots[i++]) = CANNON_WEAPON;
 	CurStarDescPtr = 0;
 	GLOBAL (autopilot.x) = GLOBAL (autopilot.y) = ~0;
 
+	/* In case the program is exited before the full game is terminated,
+	 * make sure that the temporary files are deleted.
+	 * This can be removed if we make sure if the full game is terminated
+	 * before the game is exited.
+	 * The initedSIS variable is added so the uninit won't happen more
+	 * than once, as you can't remove the atexit function (when the full game
+	 * ends).
+	 */
+	initedSIS = TRUE;
+	atexit (UninitSIS);
+
 	return (TRUE);
 }
 
@@ -294,6 +306,9 @@ void
 UninitSIS (void)
 {
 	HSTARSHIP hStarShip;
+
+	if (!initedSIS)
+		return;
 
 	UninitQueue (&GLOBAL (encounter_q));
 	UninitQueue (&GLOBAL (npc_built_ship_q));
@@ -322,5 +337,6 @@ UninitSIS (void)
 	
 	DestroyDrawable (ReleaseDrawable (PlayFrame));
 	PlayFrame = 0;
+	initedSIS = FALSE;
 }
 
