@@ -1,7 +1,7 @@
 #(killed_fwiffo) 
 #(POOR_FWIFFO) 
 #(fwiffo_fine) 
-#(NOT_LIKELY) 
+#(NOT_LIKELY) 5000,1000
 #(we_attack_again) 
 #(WE_FIGHT_AGAIN) 
 #(bye_no_ally_offer) 
