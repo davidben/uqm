@@ -205,10 +205,14 @@ _GetCelData (FILE *fp, DWORD length)
 		sscanf(CurrentLine, "%s", fnamestr);
 		fprintf (stderr, "imgload %s\n",fnamestr);*/
 		
-		sscanf (CurrentLine, "%s %d %d %d %d %d %d %d %d", &filename[n], 
+		sscanf (CurrentLine, "%s %d %d %d %d", &filename[n], 
 			&ani[cel_ct].transparent_color, &ani[cel_ct].colormap_index, 
-			&ani[cel_ct].clip_x, &ani[cel_ct].clip_y, &ani[cel_ct].clip_w, 
-			&ani[cel_ct].clip_h, &ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
+			&ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
+
+		ani[cel_ct].clip_x = -1;
+		ani[cel_ct].clip_y = -1;
+		ani[cel_ct].clip_w = -1;
+		ani[cel_ct].clip_h = -1;
 	
 		if ((img[cel_ct] = IMG_Load (filename)) && img[cel_ct]->w > 0 && 
 			img[cel_ct]->h > 0 && img[cel_ct]->format->BitsPerPixel >= 8) 
