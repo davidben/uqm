@@ -101,6 +101,9 @@ Implementation bugs (low priority):
 - Transitions (crossfades) aren't perhaps correctly done always, syncing
   might be wrong etc.
   - Condition variable DCQ patch should have fixed this.  Confirm?
+- Melee scaling currently causes some very small objects like Ur-Quan fighters
+  to disappear sometimes. The scaling should be made trilinear instead of
+  nearest neighbor.
 
 Stuff still to do (large):
 - add a Key Jamming program
