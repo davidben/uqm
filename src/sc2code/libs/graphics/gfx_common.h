@@ -61,6 +61,7 @@ extern int FrameRateTickBase;
 
 void TFB_FlushGraphics (void); // Only call from main thread!!
 
+void TFB_SetGamma (float gamma);
 // Unknown Stuff
 
 extern int ScreenWidth;

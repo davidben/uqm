@@ -88,6 +88,7 @@ main (int argc, char *argv[])
 	int vol;
 	int val;
 	char contentdir[1000];
+	float gamma = 1.0;
 
 	enum
 	{
@@ -116,6 +117,7 @@ main (int argc, char *argv[])
 		{"audioquality", 1, NULL, 'q'},
 		{"nosubtitles", 0, NULL, 'u'},
 		{"music", 1, NULL, 'm'},
+		{"gamma", 1, NULL, 'g'},
 		//  options with no short equivalent
 		{"cscan", 1, NULL, CSCAN_OPT},
 		{"menu", 1, NULL, MENU_OPT},
@@ -137,7 +139,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:u", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:ug:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -225,6 +227,9 @@ main (int argc, char *argv[])
 						long_options[option_index].name)) != -1)
 					optWhichMusic = val;
 			break;
+			case 'g':
+				sscanf(optarg, "%f", &gamma);
+			break;
 			case CSCAN_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
@@ -275,6 +280,7 @@ main (int argc, char *argv[])
 				printf("  -c, --scale=mode (bilinear, biadapt or biadv, default is none)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
+				printf("  -g, --gamma=CORRECTIONVALUE (default 1.0, which causes no change)\n");
 				printf("  -n, --contentdir=CONTENTDIR\n");
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
@@ -314,6 +320,7 @@ main (int argc, char *argv[])
 	init_xform_control ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
+	TFB_SetGamma (gamma);
 	TFB_InitSound (snddriver, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 

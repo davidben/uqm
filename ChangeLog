@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Added -g option to control gamma correction, from chmmravatar
 - Restored the CondBank to actually use condition variables properly
   (resolves a race condition under OpenBSD)
 - Removed aspects of the legacy graphics code that are never used or that

@@ -641,4 +641,17 @@ TFB_FlushGraphics () // Only call from main thread!!
 	BroadcastCondVar (RenderingCond);
 }
 
+void
+TFB_SetGamma (float gamma)
+{
+	if (SDL_SetGamma (gamma, gamma, gamma) == -1)
+	{
+		fprintf (stderr, "Unable to set gamma correction.\n");
+	}
+	else
+	{
+		fprintf (stderr, "Gamma correction set to %1.4f.\n", gamma);
+	}
+}
+
 #endif
