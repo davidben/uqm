@@ -42,6 +42,7 @@
 #define SEEKING_WEAPON    (1 << 2)
 #define SEEKING_SPECIAL   (1 << 3)
 #define POINT_DEFENSE     (1 << 4)
+		/* Ship has some point-defense capabilities */
 #define IMMEDIATE_WEAPON  (1 << 5)
 #define CREW_IMMUNE       (1 << 6)
 #define FIRES_FORE        (1 << 7)
@@ -149,13 +150,17 @@ typedef struct
 	FRAME icons, melee_icon;
 
 	COUNT actual_strength;
-			/* Size of the fleet. 0 if none-existant. */
+			/* Measure for the size of the sphere of influence.
+			 * 0 if there is none and no ships will be generated.
+	         * '(COUNT) ~0' if there is none, and the ship generation
+			 * is handled separately. */
 	COUNT known_strength;
-			/* Size of the fleet when last checked the starmap.
-			 * 0 if not that fleet is not known. */
+			/* Measure for the size of the sphere of influence when last
+			 * checked the starmap.
+			 * 0 if the race's SoI is not known. */
 	POINT known_loc;
-			/* Location of the fleet (center)  when last checked 
-			 * the starmap */
+			/* Location of the SoI (center) when last checked
+			 * the starmap. */
 
 	BYTE growth_err_term;
 	BYTE func_index;
@@ -437,6 +442,9 @@ enum
 		40,  /* YEHAT_REBEL_SHIP */ \
 		 0,  /* URQUAN_PROBE_SHIP */
 
+// How many ships will an encounter consist of.
+// The first number specifies the minimum, the second the maximum.
+// The chance is 50% for each ship past the minimum to be present.
 #define RACE_ENCOUNTER_MAKEUP \
 		MAKE_BYTE (1, 5),  /* ARILOU_SHIP */ \
 		0,                 /* CHMMR_SHIP */ \
