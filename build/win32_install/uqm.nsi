@@ -447,7 +447,7 @@ Section $(SecStartMenuName) SecStartMenu
 SectionIn 1 2
   CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\uqm.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\${MUI_PRODUCT}.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\manual.lnk" "$INSTDIR\manual.txt"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\WhatsNew.lnk" "$INSTDIR\WhatsNew.txt"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\COPYING.lnk" "$INSTDIR\COPYING.txt"
@@ -457,7 +457,7 @@ SectionEnd
 
 Section $(SecDesktopIconName) SecDesktopIcon
 SectionIn 1 2
-  CreateShortCut "$DESKTOP\uqm.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
+  CreateShortCut "$DESKTOP\${MUI_PRODUCT}.lnk" "$INSTDIR\uqm.exe" "" "$INSTDIR\uqm.exe" 0
 SectionEnd
 
 ;Display the Finish header 
@@ -660,7 +660,7 @@ Section "Uninstall"
   Delete $INSTDIR\uninstall.exe
   ; remove shortcuts, if any.
   Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
-  Delete $DESKTOP\uqm.lnk
+  Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
   ; remove directories used.
 
   RMDir "$SMPROGRAMS\${MUI_PRODUCT}"
