@@ -49,7 +49,7 @@ typedef COUNT RES_PACKAGE;
 		((RESOURCE)(i) << TYPE_BITS) | \
 		((RESOURCE)(t)))
 
-extern FILE *OpenResFile (PVOID filename, char *mode);
+extern FILE *OpenResFile (PVOID filename, const char *mode);
 extern int ReadResFile (PVOID lpBuf, COUNT size, COUNT count, FILE *fp);
 extern int WriteResFile (PVOID lpBuf, COUNT size, COUNT count, FILE
 		*fp);

@@ -26,8 +26,8 @@
 #include <sys/stat.h>
 #include "resintrn.h"
 
-FILE
-*OpenResFile (PVOID filename, char *mode)
+FILE *
+OpenResFile (PVOID filename, const char *mode)
 {
 	FILE *fp;
 	struct stat sb;
