@@ -29,7 +29,7 @@ if [ -e build.vars -a -z "$BUILD_COMMAND" ]; then
 fi
 
 # Read in the Makeinfo file for the dir currently being processed
-. "${BUILD_REC_PATH:=}Makeinfo"
+. "${BUILD_REC_PATH:./}Makeinfo"
 
 # If we're recursing, go on.
 if [ -n "$BUILD_COMMAND" ]; then
