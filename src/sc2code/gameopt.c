@@ -1323,8 +1323,16 @@ PickGame (PMENU_STATE pMS)
 
 		if (pSolarSysState)
 		{
+			/* We're in interplanetary, so we let the IP
+			 * functions know we're ready to draw stuff
+			 * again and then update the frame twice; once
+			 * for the screen transition, and once to draw
+			 * the ships afterwards. */
 			--pSolarSysState->MenuState.Initialized;
 			pSolarSysState->PauseRotate = 0;
+			IP_frame ();
+			IP_frame ();
+
 
 			if (CommData.ConversationPhrases == 0 && !PLRPlaying ((MUSIC_REF)~0))
 			{

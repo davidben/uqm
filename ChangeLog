@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Input code refactoring, phase 2: All player input is brokered by 
+  DoInput -Michael
 - Updated .cvsignore commands, from Nic
 - Fixed a keyrepeatbug from when the player cancels out of the
   Starmap in IP -Michael

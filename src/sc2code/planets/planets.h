@@ -203,6 +203,8 @@ extern void ZoomSystem (void);
 extern void LoadSolarSys (void);
 extern void InitLander (BYTE LanderFlags);
 extern BOOLEAN ValidateOrbits (void);
+extern void IP_reset (void);
+extern void IP_frame (void);
 
 #endif /* _PLANETS_H */
 

@@ -337,7 +337,11 @@ FreeSolarSys (void)
 			FreePlanet ();
 		else
 		{			
-			ConcludeTask (pSolarSysState->MenuState.flash_task);
+			if (pSolarSysState->MenuState.flash_task != (Task)(~0))
+			{
+				fprintf (stderr, "DIAGNOSTIC: FreeSolarSys cancels a flash_task that wasn't the placeholder for IP flight\n");
+				ConcludeTask (pSolarSysState->MenuState.flash_task);
+			}
 			pSolarSysState->MenuState.flash_task = 0;
 			LockMutex (GraphicsLock);
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
@@ -994,203 +998,202 @@ ScaleSystem (void)
 #endif
 }
 
-int IPtask_func(void* data)
-{
+/* Constants and routines for handling interplanetary play.  TODO:
+   this is NOT INSTANTIABLE; only one IP task may be active at any
+   given time.  --Michael */
+
 #define IP_FRAME_RATE  (ONE_SECOND / 30)
-	DWORD NextTime;
-	Task task = (Task) data;
-	BOOLEAN cancel, select;
 
-	TaskSwitch ();
+static UWORD IP_input_state;
+static DWORD IP_next_time;
 
+void
+IP_reset (void)
+{
 	if (LastActivity != CHECK_LOAD)
 	{
-		cancel = select = FALSE;
+		IP_input_state = 0;
 	}
 	else
 	{
-		cancel = TRUE;
-		select = FALSE;
+		IP_input_state = 2;  /* CANCEL */
 	}
 
-	NextTime = GetTimeCounter ();
-	while (!Task_ReadState (task, TASK_EXIT))
+	IP_next_time = GetTimeCounter ();
+}
+
+void
+IP_frame (void)
+{
+	CONTEXT OldContext;
+	BOOLEAN InnerSystem;
+	RECT r;
+	BOOLEAN select, cancel;
+
+	InnerSystem = FALSE;
+	LockMutex (GraphicsLock);
+	if ((pSolarSysState->MenuState.Initialized > 1
+			|| (GLOBAL (CurrentActivity)
+			& (START_ENCOUNTER | END_INTERPLANETARY
+			| CHECK_ABORT | CHECK_LOAD))
+			|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0))
+
 	{
-		CONTEXT OldContext;
-		BOOLEAN InnerSystem;
-		RECT r;
-
-		InnerSystem = FALSE;
-		LockMutex (GraphicsLock);
-		while ((pSolarSysState->MenuState.Initialized > 1
-				|| (GLOBAL (CurrentActivity)
-				& (START_ENCOUNTER | END_INTERPLANETARY
-				| CHECK_ABORT | CHECK_LOAD))
-				|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
-				&& !Task_ReadState (task, TASK_EXIT))
-		{
-			select = cancel = FALSE;
-			UnlockMutex (GraphicsLock);
-			TaskSwitch ();
-			LockMutex (GraphicsLock);
-			NextTime = GetTimeCounter ();
-		}
-
-		if (Task_ReadState (task, TASK_EXIT))
-		{
-			UnlockMutex (GraphicsLock);
-			break;
-		}
-
-		OldContext = SetContext (StatusContext);
-		if (pSolarSysState->MenuState.CurState
-				|| pSolarSysState->MenuState.Initialized == 0)
-		{
-			select = cancel = FALSE;
-			if (draw_sys_flags & DRAW_REFRESH)
-				goto TheMess;
-		}
-		else
-		{
-TheMess:
-			// this is a mess:
-			// we have to treat things slightly differently depending on the
-			// situation (note that DRAW_REFRESH means we had gone to the
-			// menu)
-			InnerSystem = (BOOLEAN) (pSolarSysState->pBaseDesc !=
-					pSolarSysState->PlanetDesc);
-			if (InnerSystem)
-			{
-				SetTransitionSource (NULL);
-				BatchGraphics ();
-				if (draw_sys_flags & DRAW_REFRESH)
-				{
-					InnerSystem = FALSE;
-					DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
-				}
-			}
-			else if (draw_sys_flags & DRAW_REFRESH)
-			{
-				SetTransitionSource (NULL);
-				BatchGraphics ();
-				DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
-			}
-			
-			UndrawShip ();
-			if (pSolarSysState->MenuState.Initialized != 1)
-				select = cancel = FALSE;
-		}
-		
-		if (old_radius)
-			ScaleSystem ();
-
-		BatchGraphics ();
-		if (!(draw_sys_flags & DRAW_REFRESH)) // don't repair from Extra or draw ship if forcing repair
-		{
-			CONTEXT OldContext;
+		UnlockMutex (GraphicsLock);
+		TaskSwitch ();
+		IP_input_state = 0;
+		IP_next_time = GetTimeCounter ();
+		return;
+	}
 	
-			OldContext = SetContext (SpaceContext);
-			GetContextClipRect (&r);
-			DrawFromExtraScreen (&r);
-			SetContext (OldContext);
-
-			// Don't redraw if entering/exiting inner system
-			// this screws up ScreenTransition by leaving an image of the
-			// ship in the ExtraScreen (which we use for repair)
-			if (pSolarSysState->MenuState.CurState == 0
-					&& (InnerSystem ^ (BOOLEAN)(pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc)))
-				;
-			else
-				RedrawQueue (FALSE);
-		}
-		
+	cancel = ((IP_input_state) >> 1) & 1;
+	select = (IP_input_state) & 1;
+	OldContext = SetContext (StatusContext);
+	if (pSolarSysState->MenuState.CurState
+			|| pSolarSysState->MenuState.Initialized == 0)
+	{
+		select = cancel = FALSE;
+		if (draw_sys_flags & DRAW_REFRESH)
+			goto TheMess;
+	}
+	else
+	{
+	TheMess:
+		// this is a mess:
+		// we have to treat things slightly differently depending on the
+		// situation (note that DRAW_REFRESH means we had gone to the
+		// menu)
+		InnerSystem = (BOOLEAN) (pSolarSysState->pBaseDesc !=
+					 pSolarSysState->PlanetDesc);
 		if (InnerSystem)
 		{
-			if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+			SetTransitionSource (NULL);
+			BatchGraphics ();
+			if (draw_sys_flags & DRAW_REFRESH)
 			{
-				// transition screen if we left inner system (if going
-				// from outer to inner, ScreenTransition happens elsewhere)
-				r.corner.x = SIS_ORG_X;
-				r.corner.y = SIS_ORG_Y;
-				r.extent.width = SIS_SCREEN_WIDTH;
-				r.extent.height = SIS_SCREEN_HEIGHT;
-				ScreenTransition (3, &r);
+				InnerSystem = FALSE;
+				DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
 			}
-			UnbatchGraphics ();
 		}
 		else if (draw_sys_flags & DRAW_REFRESH)
 		{
-			// must set rect for LoadInto... below
+			SetTransitionSource (NULL);
+			BatchGraphics ();
+			DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
+		}
+		
+		UndrawShip ();
+		if (pSolarSysState->MenuState.Initialized != 1)
+			select = cancel = FALSE;
+	}
+	
+	if (old_radius)
+		ScaleSystem ();
+	
+	BatchGraphics ();
+	if (!(draw_sys_flags & DRAW_REFRESH)) // don't repair from Extra or draw ship if forcing repair
+	{
+		CONTEXT OldContext;
+		
+		OldContext = SetContext (SpaceContext);
+		GetContextClipRect (&r);
+		DrawFromExtraScreen (&r);
+		SetContext (OldContext);
+		
+		// Don't redraw if entering/exiting inner system
+		// this screws up ScreenTransition by leaving an image of the
+		// ship in the ExtraScreen (which we use for repair)
+		if (pSolarSysState->MenuState.CurState == 0
+		    && (InnerSystem ^ (BOOLEAN)(pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc)))
+			;
+		else
+			RedrawQueue (FALSE);
+	}
+	
+	if (InnerSystem)
+	{
+		if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+		{
+			// transition screen if we left inner system (if going
+			// from outer to inner, ScreenTransition happens elsewhere)
 			r.corner.x = SIS_ORG_X;
 			r.corner.y = SIS_ORG_Y;
 			r.extent.width = SIS_SCREEN_WIDTH;
 			r.extent.height = SIS_SCREEN_HEIGHT;
 			ScreenTransition (3, &r);
-			UnbatchGraphics ();
 		}
-		
 		UnbatchGraphics ();
-		
-		if (draw_sys_flags & UNBATCH_SYS)
-		{
-			// means we're forcing a redraw/transition from Init- & ChangeSolarSys
-			draw_sys_flags &= ~UNBATCH_SYS;
-			UnbatchGraphics ();
-		}
-		
-		// LoadInto Extra if we left inner system, or we forced a redraw
-		if ((InnerSystem && pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
-				|| (draw_sys_flags & DRAW_REFRESH))
-		{
-			LoadIntoExtraScreen (&r);
-			draw_sys_flags &= ~DRAW_REFRESH;
-		}
-
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
-
-		if (Task_ReadState (task, TASK_EXIT))
-		{
-			break;
-		}
-
-		if (!cancel)
-		{
-			SleepThreadUntil (NextTime + IP_FRAME_RATE);
-			NextTime = GetTimeCounter ();
-			if (pSolarSysState->MenuState.CurState
-					|| pSolarSysState->MenuState.Initialized != 1)
-				cancel = select = 0;
-			else
-			{
-				UpdateInputState ();
-				cancel = PulsedInputState.key[KEY_MENU_CANCEL];
-				select = PulsedInputState.key[KEY_MENU_SELECT];
-			}
-			// JournalInput (InputState);
-		}
+	}
+	else if (draw_sys_flags & DRAW_REFRESH)
+	{
+		// must set rect for LoadInto... below
+		r.corner.x = SIS_ORG_X;
+		r.corner.y = SIS_ORG_Y;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = SIS_SCREEN_HEIGHT;
+		ScreenTransition (3, &r);
+		UnbatchGraphics ();
+	}
+	
+	UnbatchGraphics ();
+	
+	if (draw_sys_flags & UNBATCH_SYS)
+	{
+		// means we're forcing a redraw/transition from Init- & ChangeSolarSys
+		draw_sys_flags &= ~UNBATCH_SYS;
+		UnbatchGraphics ();
+	}
+	
+	// LoadInto Extra if we left inner system, or we forced a redraw
+	if ((InnerSystem && pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+	    || (draw_sys_flags & DRAW_REFRESH))
+	{
+		LoadIntoExtraScreen (&r);
+		draw_sys_flags &= ~DRAW_REFRESH;
+	}
+	
+	SetContext (OldContext);
+	UnlockMutex (GraphicsLock);
+	
+	if (!cancel)
+	{
+		SleepThreadUntil (IP_next_time + IP_FRAME_RATE);
+		IP_next_time = GetTimeCounter ();
+		if (pSolarSysState->MenuState.CurState
+		    || pSolarSysState->MenuState.Initialized != 1)
+			cancel = select = 0;
 		else
 		{
-			SuspendGameClock ();
-
-			LockMutex (GraphicsLock);
-			DrawStatusMessage (NULL_PTR);
-			if (LastActivity == CHECK_LOAD)
-				pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
-			else
-			{
-				UnlockMutex (GraphicsLock);
-				DrawMenuStateStrings (PM_STARMAP, STARMAP);
-				LockMutex (GraphicsLock);
-				pSolarSysState->MenuState.CurState = STARMAP + 1;
-			}
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			FlushInput ();
-			UnlockMutex (GraphicsLock);
+			/* Updating the input state is handled by
+			 * DoFlagshipCommands, which is running in
+			 * parallel with us */
+			// UpdateInputState ();
+			cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+			select = PulsedInputState.key[KEY_MENU_SELECT];
+			IP_input_state = (cancel << 1) | select;
 		}
+		// JournalInput (InputState);
 	}
-	FinishTask (task);
-	return(0);
+	else
+	{
+		SuspendGameClock ();
+		
+		LockMutex (GraphicsLock);
+		DrawStatusMessage (NULL_PTR);
+		if (LastActivity == CHECK_LOAD)
+			pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
+		else
+		{
+			UnlockMutex (GraphicsLock);
+			DrawMenuStateStrings (PM_STARMAP, STARMAP);
+			LockMutex (GraphicsLock);
+			pSolarSysState->MenuState.CurState = STARMAP + 1;
+			IP_input_state = 0;
+		}
+		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		FlushInput ();
+		UnlockMutex (GraphicsLock);
+	}
 }
 
 static void
@@ -1273,9 +1276,13 @@ StartGroups:
 				
 			CheckIntersect (TRUE);
 			
+			IP_reset ();
+			pSolarSysState->MenuState.flash_task = (Task)(~0);
+			/*
 			pSolarSysState->MenuState.flash_task =
 					AssignTask (IPtask_func, 6144,
-					"flash solar system menu");
+					"interplanetary task");
+			*/
 			UnlockMutex (GraphicsLock);
 
 			if (!PLRPlaying ((MUSIC_REF)~0) && LastActivity != CHECK_LOAD)
@@ -1295,7 +1302,7 @@ StartGroups:
 					while (pSolarSysState->SunDesc[0].radius == (MAX_ZOOM_RADIUS << 1))
 					{
 						UnlockMutex (GraphicsLock);
-						TaskSwitch ();
+						IP_frame ();
 						LockMutex (GraphicsLock);
 					}
 					UnlockMutex (GraphicsLock);

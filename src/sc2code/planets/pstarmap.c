@@ -1156,15 +1156,19 @@ DoStarMap (void)
 BOOLEAN
 DoFlagshipCommands (PMENU_STATE pMS)
 {
+	/* TODO: Make this carried cleanly by MENU_STATE structure */
+	// static DWORD NextTime;
 	if (!(pMS->Initialized & 1))
 	{
+		/* This has some dependency on the IPtask_func */
 		ChangeSolarSys ();
+		// NextTime = GetTimeCounter ();
 	}
 	else
 	{
 		BOOLEAN select = PulsedInputState.key[KEY_MENU_SELECT];
 		LockMutex (GraphicsLock);
-		while (*(volatile BYTE *)&pMS->CurState == 0
+		if (*(volatile BYTE *)&pMS->CurState == 0
 				&& (*(volatile SIZE *)&pMS->Initialized & 1)
 				&& !(GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | END_INTERPLANETARY
@@ -1172,8 +1176,8 @@ DoFlagshipCommands (PMENU_STATE pMS)
 				&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 		{
 			UnlockMutex (GraphicsLock);
-			TaskSwitch ();
-			LockMutex (GraphicsLock);
+			IP_frame ();
+			return TRUE;
 		}
 		UnlockMutex (GraphicsLock);
 
@@ -1181,7 +1185,11 @@ DoFlagshipCommands (PMENU_STATE pMS)
 		{
 			BOOLEAN DoMenu;
 			BYTE NewState;
-			// For some reason, DoFlagshipCommands uses CurState a bit differently
+
+			/* If pMS->CurState == 0, then we're flying
+			 * around in interplanetary.  This needs to be
+			 * corrected for the MenuChooser, which thinks
+			 * that "0" is the first menu option */
 			pMS->CurState --;
 			DoMenu = DoMenuChooser (pMS, 
 				(BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN));
