@@ -732,10 +732,24 @@ TFB_FlushGraphics () // Only call from main thread!!
 			ClearSemaphore (DC.data.sendsignal.sem);
 			break;
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
-			TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
-					    DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
-					    DC.data.reinitvideo.bpp);
-			break;
+			{
+				int oldDriver = GraphicsDriver;
+				int oldBpp = ScreenColorDepth;
+				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
+							DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
+							DC.data.reinitvideo.bpp))
+				{
+					fprintf (stderr, "Could not provide requested mode: reverting to last known driver and bpp.\n");
+					if (TFB_ReInitGraphics (oldDriver, DC.data.reinitvideo.flags,
+								DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
+								oldBpp))
+					{
+						fprintf (stderr, "Couldn't reinit at that point either.  Your video has been somehow tied in knots.\n");
+						exit (-1);
+					}
+				}
+				break;
+			}
 		}
 	}
 	
