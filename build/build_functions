@@ -167,7 +167,7 @@ build_check_config() {
 	[ ! -e build.vars -o -n "$BUILD_RUN_CONFIG" ] || return
 
 	build_config || exit $?
-	. build.vars
+	. ./build.vars
 	. "${BUILD_REC_PATH}Makeinfo"
 	unset BUILD_RUN_CONFIG
 }

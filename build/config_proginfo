@@ -80,7 +80,7 @@ LIB_SDL_image_VERSION=""
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
 case "$OSNAME" in
-	FreeBSD)   LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal" ;;
+	FreeBSD|OpenBSD)   LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal" ;;
 	MINGW32*)  LIB_openal_LDFLAGS="-lopenal32" ;;
 	*)         LIB_openal_LDFLAGS="-lopenal" ;;
 esac
@@ -88,7 +88,7 @@ LIB_openal_VERSION=""
 
 LIB_opengl_NAME="OpenGL"
 case "$OSNAME" in
-	FreeBSD)
+	FreeBSD|OpenBSD)
 		LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
 		LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
 		;;
