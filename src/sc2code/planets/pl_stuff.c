@@ -115,21 +115,34 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 			zoom_from = 0;
 		}
 	}
-	SetSemaphore (GraphicsSem);
-	OldContext = SetContext (SpaceContext);
-	BatchGraphics ();
-	if (rp)
-		RepairBackRect (rp);
-	s.origin.x = dx;
-	s.origin.y = dy;
-	for (i = 0; i < num_frames; i++)
+
+	//SetSemaphore (GraphicsSem);
+
+	// PauseRotate needs to be checked twice.   It is first
+	// checked at the rotate_planet_task function to bypass
+	// rendering the planet (and thus slowinng down other
+	// parts of te code.  It is checked here because it is possile
+	// that PauseRotate was set between then and now, and we don't
+	// want too push anything onto the DrawQueue in that case.
+	// If the setSemaphore is moved before the RenderLevelMasks call,
+	// one of the two PauseRotate checks can be removed.
+	//if (((PSOLARSYS_STATE volatile)pSolarSysState)->PauseRotate !=1)
 	{
-		s.frame = pFrame[i];
-		DrawStamp (&s);
+		OldContext = SetContext (SpaceContext);
+		BatchGraphics ();
+		if (rp)
+			RepairBackRect (rp);
+		s.origin.x = dx;
+		s.origin.y = dy;
+		for (i = 0; i < num_frames; i++)
+		{
+			s.frame = pFrame[i];
+			DrawStamp (&s);
+		}
+		UnbatchGraphics ();
+		SetContext (OldContext);
 	}
-	UnbatchGraphics ();
-	SetContext (OldContext);
-	ClearSemaphore (GraphicsSem);
+	//ClearSemaphore (GraphicsSem);
 	return (zoom);
 }
 

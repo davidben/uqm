@@ -174,9 +174,12 @@ PauseGame (void)
 	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
 	DrawStamp (&s);
 
-	ClearSemaphore (GraphicsSem);
+	// Releasing the Semaphore lets the rotate_planet_task
+	// draw a frame.  PauseRotate can still allow one more frame
+	// to be drawn, so it is safer to just not release the Semaphore
+	//ClearSemaphore (GraphicsSem);
 	FlushGraphics ();
-	SetSemaphore (GraphicsSem);
+	//SetSemaphore (GraphicsSem);
 
 	{
 		BYTE scan;
