@@ -114,6 +114,10 @@ ProcessKeyboardEvent(const SDL_Event *Event)
         UNICODE map_key;
 	if (!InputInitialized)
 		return;
+	if (!Event->key.keysym.unicode &&
+			(k == SDLK_CAPSLOCK ||
+			k == SDLK_NUMLOCK))
+		return;
 
 	if (Event->type == SDL_KEYDOWN)
 	{

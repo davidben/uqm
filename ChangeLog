@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fix issue with caps lock and num lock preventing planet scan
+  and lander message skipping (bug #299), from chmmravatar
 - Subtitles are now hidden after alien has finished talking (bug #312),
   from chmmravatar
 - Fix for mycon portrait (bug #183), from Nic
