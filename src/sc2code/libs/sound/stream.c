@@ -126,6 +126,23 @@ ResumeStream (uint32 source)
 	TFBSound_SourcePlay (soundSource[source].handle);
 }
 
+void
+SeekStream (uint32 source, uint32 pos)
+{
+	TFB_SoundSample* sample = soundSource[source].sample;
+	bool looping;
+	bool scope;
+
+	if (!sample)
+		return;
+	looping = sample->decoder->looping;
+	scope = soundSource[source].sbuffer != NULL;
+
+	StopSource (source);
+	SoundDecoder_Seek (sample->decoder, pos);
+	PlayStream (sample, source, looping, scope, false);
+}
+
 BOOLEAN
 PlayingStream (uint32 source)
 {	

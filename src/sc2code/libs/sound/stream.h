@@ -22,6 +22,7 @@ void PlayStream (TFB_SoundSample *sample, uint32 source, bool looping,
 void StopStream (uint32 source);
 void PauseStream (uint32 source);
 void ResumeStream (uint32 source);
+void SeekStream (uint32 source, uint32 pos);
 BOOLEAN PlayingStream (uint32 source);
 int StreamDecoderTaskFunc (void *data);
 int PreDecodeClips (TFB_SoundSample *sample, TFB_SoundDecoder *decoders[], bool autofree);
