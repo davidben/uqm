@@ -1691,11 +1691,11 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			r.corner.y = 0;
 			r.extent.width = SIS_SCREEN_WIDTH;
 			r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
 			DrawFilledRectangle (&r);
 			ClearSemaphore (GraphicsSem);
 
-			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
 
 			t.baseline.x = SAFE_X + 2;
@@ -1751,7 +1751,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 							TaskSwitch ();
 
 						SetSemaphore (GraphicsSem);
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
 						DrawFilledRectangle (&r);
 						ClearSemaphore (GraphicsSem);
 						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
@@ -1785,7 +1785,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 						TaskSwitch ();
 
 					SetSemaphore (GraphicsSem);
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
 					DrawFilledRectangle (&r);
 					ClearSemaphore (GraphicsSem);
 					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
@@ -1801,6 +1801,8 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			SetSemaphore (GraphicsSem);
 			SetContextFont (fLast);
 			RefreshResponses (pES);
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+			DrawFilledRectangle (&r);
 			ClearSemaphore (GraphicsSem);
 			ColorChange = TRUE;
 			summary = FALSE;
