@@ -271,6 +271,11 @@ main (int argc, char *argv[])
 		}
 	}
 	
+	/* InitThreadSystem should come before anything else.
+	 * The memory system uses semaphores.
+	 * Everything else uses the memory system.
+	 */
+	InitThreadSystem ();
 	mem_init ();
 
 	initTempDir();
@@ -279,7 +284,6 @@ main (int argc, char *argv[])
 	prepareMeleeDir();
 	prepareSaveDir();
 	
-	InitThreadSystem ();
 	InitTimeSystem ();
 	InitTaskSystem ();
 
