@@ -79,60 +79,76 @@ static VControl_NameBinding control_names[] = {
 static void
 initKeyConfig(void) {
 	uio_Stream *fp;
-	int errors;
+	int i, errors;
 	
-	fp = res_OpenResFile (configDir, "keys.cfg", "rt");
-	if (fp == NULL)
+	for (i = 0; i < 2; ++i)
 	{
-		if (copyFile (contentDir, "starcon.key",
+		if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
+		{
+			if (copyFile (contentDir, "starcon.key",
 				configDir, "keys.cfg") == -1)
-		{
-			fprintf(stderr, "Warning: Could not copy default key config "
+			{
+				fprintf (stderr, "Error: Could not copy default key config "
 					"to user config dir: %s.\n", strerror (errno));
-		}
-		else
-		{
+				exit (EXIT_FAILURE);
+			}
 			fprintf(stderr, "Copying default key config file to user "
-					"config dir.\n");
+				"config dir.\n");
+			
+			if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
+			{
+				fprintf (stderr, "Error: Could not open keys.cfg\n");
+				exit (EXIT_FAILURE);
+			}
 		}
-		fp = res_OpenResFile (contentDir, "starcon.key", "rt");
-	}
-	errors = VControl_ReadConfiguration (fp);
-	res_CloseResFile (fp);
-	if (errors || (VControl_GetConfigFileVersion () != VCONTROL_VERSION))
-	{
-		fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
-		/* This code should go away in 0.4; it's just
-		 * to force people to upgrade and forestall a 
-		 * bunch of "none of my keys work anymore" bugs.
-		 */
-		if (VControl_GetValidCount () == 0)
+		
+		errors = VControl_ReadConfiguration (fp);
+		res_CloseResFile (fp);
+		
+		if (errors || (VControl_GetConfigFileVersion () != VCONTROL_VERSION))
 		{
-			fprintf (stderr, "\nI didn't understand a single line in your configuration file.\n");
-			fprintf (stderr, "This is likely because you're still using a 0.2 era or earlier keys.cfg.\n");
-			fprintf (stderr, "Please delete your keys.cfg file and try again.\n");
-			fprintf (stderr, "That will give you a new template to edit.\n\n");
-			fprintf (stderr, "If you've done that and it STILL doesn't work, make sure you've\n");
-			fprintf (stderr, "properly updated your content, too.\n");
-		}
-		else
-		{
+			bool do_rename = false;
+			if (errors)
+				fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);			
+
+			if (VControl_GetValidCount () == 0)
+			{
+				fprintf (stderr, "\nI didn't understand a single line in your configuration file.\n");
+				fprintf (stderr, "This is likely because you're still using a 0.2 era or earlier keys.cfg.\n");
+				do_rename = true;
+			}
 			if (VControl_GetConfigFileVersion () != VCONTROL_VERSION)
 			{
 				fprintf (stderr, "\nThe control scheme for UQM has changed since you last updated keys.cfg.\n");
 				fprintf (stderr, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)\n", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
-				fprintf (stderr, "You should delete your keys.cfg file and rerun UQM to get a new template to\nedit.\n\n");
-				fprintf (stderr, "If you've done that and it STILL doesn't work, make sure you've\n");
-				fprintf (stderr, "properly updated your content, too.\n");
+				do_rename = true;
 			}
-			else
+
+			if (do_rename)
 			{
-				fprintf (stderr, "\nRepair your keys.cfg file to continue.\n");
+				fprintf (stderr, "\nRenaming keys.cfg to keys.old and retrying.\n");
+
+				if (fileExists2 (configDir, "keys.old"))
+					uio_unlink (configDir, "keys.old");
+				if ((uio_rename (configDir, "keys.cfg", configDir, "keys.old")) == -1)
+				{
+					fprintf (stderr, "Error: Renaming failed!\n");
+					fprintf (stderr, "You must delete keys.cfg manually before you can run the game.\n");
+					exit (EXIT_FAILURE);
+				}
+				continue;
 			}
+			
+			fprintf (stderr, "\nRepair your keys.cfg file to continue.\n");
+			exit (EXIT_FAILURE);
 		}
 		
-		exit (1);
+		return;
 	}
+
+	fprintf (stderr, "Error: Something went wrong and we were looping again and again so aborting.\n");
+	fprintf (stderr, "Possible cause is your content dir not being up-to-date.\n");
+	exit (EXIT_FAILURE);
 }
 
 int 

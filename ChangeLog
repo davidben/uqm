@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- keys.cfg from incompatible control scheme version is now renamed
+  automatically to keys.old -Mika
 - Added warranty message in the console on startup, SvdB
 - Left and Right directions disabled in fuel screen (bug #452), from 
   Paxtez
