@@ -6,7 +6,7 @@ default:
 	if [ ! -d $$DIR ]; then \
 		mkdir -p "$$DIR"; \
 	fi
-	$(WINDRES) -o $@ $<
+	$(WINDRES) --include-dir $(dir $<) -o $@ $<
 
 %.o:
 	@DIR=$(dir $@); \
