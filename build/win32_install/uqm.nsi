@@ -127,6 +127,7 @@ Section !$(SecUQMName) SecUQM
 SectionIn 1 2 RO
 
   CreateDirectory "$INSTDIR\${PACKAGE_ROOT}"
+  CreateDirectory "$INSTDIR\${PACKAGE_ROOT}\addons"
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
@@ -437,6 +438,7 @@ Section "Uninstall"
   ; remove directories used.
   RMDir "$SMPROGRAMS\${MUI_PRODUCT}\Documentation"
   RMDir "$SMPROGRAMS\${MUI_PRODUCT}"
+  RMDir "$INSTDIR\${PACKAGE_ROOT}\addons"
   RMDir "$INSTDIR\${PACKAGE_ROOT}"
   RMDir "$INSTDIR\${CONTENT_ROOT}"
   RMDir "$INSTDIR"
