@@ -35,6 +35,7 @@ enum
 	TFB_DRAWCOMMANDTYPE_SCISSORDISABLE,
 
 	TFB_DRAWCOMMANDTYPE_SETPALETTE,
+	TFB_DRAWCOMMANDTYPE_SETMIPMAP,
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
 	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
 };
@@ -95,6 +96,12 @@ typedef struct tfb_dc_setpal
 	int r, g, b;
 } TFB_DrawCommand_SetPalette;
 
+typedef struct tfb_dc_setmip
+{
+	TFB_Image *image;
+	TFB_Canvas mipmap;
+} TFB_DrawCommand_SetMipmap;
+
 typedef struct tfb_dc_delimg
 {
 	TFB_Image *image;
@@ -117,6 +124,7 @@ typedef struct tfb_drawcommand
 		TFB_DrawCommand_CopyToImage copytoimage;
 		TFB_DrawCommand_Scissor scissor;
 		TFB_DrawCommand_SetPalette setpalette;
+		TFB_DrawCommand_SetMipmap setmipmap;
 		TFB_DrawCommand_DeleteImage deleteimage;
 		TFB_DrawCommand_SendSignal sendsignal;
 	} data;
