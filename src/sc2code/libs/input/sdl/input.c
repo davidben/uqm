@@ -129,11 +129,11 @@ ProcessKeyboardEvent(const SDL_Event *Event)
 			exit(0);
 		//Store the actual key (without nay shift/ctrl modifiers)
 		//since the modifiers can't be retreived on a key-up
-		KeyboardDown[k] |= 0x3;
+		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] |= 0x3;
 	}
 	else
 	{
-		KeyboardDown[k] &= (~0x1);
+		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] &= (~0x1);
 	}
 }
 
