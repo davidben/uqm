@@ -1,4 +1,5 @@
 0.2:
+- Planet code fixes, from PhracturedBlue
 - Build fixes for FreeBSD, from Max Horn.
 - Fixed typo in Thraddash text, from Dan Plimak.
 - Make HMalloc abort when no memory available, from Abaddon.
