@@ -43,7 +43,7 @@ BOOLEAN leak_debug;
 int leak_idx = -1;
 int leak_size = -1;
 #endif
-Semaphore _MemorySem;
+static Mutex _MemoryLock;
 
 #define MAX_EXTENTS 100000
 
@@ -277,7 +277,7 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 {
 	szMemoryNode *node;
 
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 
 #ifdef MEM_DEBUG
 	CheckMemory();
@@ -307,11 +307,11 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 			node = node;
 #endif /* LEAK_DEBUG */
 
-		ClearSemaphore (_MemorySem);
+		UnlockMutex (_MemoryLock);
 		return (node->handle);
 	}
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 	(void) priority;  /* Satisfying compiler (unused parameter) */
 	(void) usage;  /* Satisfying compiler (unused parameter) */
 	return (0);
@@ -342,13 +342,13 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 MEM_SIZE
 mem_get_size (MEM_HANDLE h)
 {
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
-		ClearSemaphore (_MemorySem);
+		UnlockMutex (_MemoryLock);
 		return ((int)extents[h - 1].size);
 	}
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 
 	return (0);
 }
@@ -382,8 +382,8 @@ mem_init (void)
 {
 	int i;
 
-	_MemorySem = CreateSemaphore (1, "Memory");
-	SetSemaphore (_MemorySem);
+	_MemoryLock = CreateMutex ();
+	LockMutex (_MemoryLock);
 
 	freeListHead = &extents[0];
 	for (i=0; i<MAX_EXTENTS; i++)
@@ -395,7 +395,7 @@ mem_init (void)
 	}
 	extents[MAX_EXTENTS-1].next = NULL;
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 
 	return TRUE;
 }
@@ -425,7 +425,7 @@ mem_uninit(void)
 {
 	int i;
 
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 
 	for (i=0; i<MAX_EXTENTS; i++)
 	{
@@ -446,7 +446,7 @@ mem_uninit(void)
 	}
 	freeListHead = 0;
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 
 	return (TRUE);
 }
@@ -479,7 +479,7 @@ mem_release(MEM_HANDLE h)
 	if (h == 0)
 		return (TRUE);
 
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 
 	--h;
 	if (h < 0 || h >= MAX_EXTENTS)
@@ -501,11 +501,11 @@ mem_release(MEM_HANDLE h)
 		extents[h].handle = -1;
 		extents[h].next = freeListHead;
 		freeListHead = &extents[h];
-		ClearSemaphore (_MemorySem);
+		UnlockMutex (_MemoryLock);
 		return TRUE;
 	}
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 	return FALSE;
 }
 
@@ -535,16 +535,16 @@ mem_release(MEM_HANDLE h)
 void *
 mem_simple_access(MEM_HANDLE h)
 {
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
 		++extents[h - 1].refcount;
-		ClearSemaphore (_MemorySem);
+		UnlockMutex (_MemoryLock);
 		return (extents[h - 1].memory);
 	}
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 	return (0);
 }
 
@@ -574,16 +574,16 @@ mem_simple_access(MEM_HANDLE h)
 MEM_BOOL
 mem_simple_unaccess(MEM_HANDLE h)
 {
-	SetSemaphore (_MemorySem);
+	LockMutex (_MemoryLock);
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
 	{
 		if (extents[h - 1].refcount)
 			--extents[h - 1].refcount;
-		ClearSemaphore (_MemorySem);
+		UnlockMutex (_MemoryLock);
 		return (1);
 	}
 
-	ClearSemaphore (_MemorySem);
+	UnlockMutex (_MemoryLock);
 	return (0);
 }
 
