@@ -292,30 +292,84 @@ use_library() {
 	return 0
 }
 
+# Description: check if a symbol is defined
+# Arguments:   $1 - the name of the symbol
+#              $2 - the C code that does the actual checking
+have_symbol_generic() {
+	local CODE DETECT EXTRA
+
+	eval eval DETECT="\\\"\$SYMBOL_${1}_DETECT\\\""
+	if [ -n "$DETECT" ]; then
+		$DETECT
+		return $?
+	fi
+
+	eval eval EXTRA="\\\"\$SYMBOL_${1}_EXTRA\\\""
+	eval eval CODE="\\\"\$SYMBOL_${1}_CODE\\\""
+	if [ -z "$CODE" ]; then
+		CODE=$2
+	fi
+
+	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+$EXTRA
+$CODE
+EOF
+}
+
 # Description: check if a symbol is defined.
 # Arguments:   $1 - the name of the symbol
 have_symbol() {
-	local SYMBOL
+	local SYMBOL CODE
 	SYMBOL="$1"
 
-	# TODO: I'll want the include handling to be done differently
-        #       eventually.
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+	CODE=`cat << EOF	
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-int main() {
+int main(void) {
 	(void) $SYMBOL;
 	return 0;
 }
 EOF
+`
+
+	have_symbol_generic "$SYMBOL" "$CODE"
 	if [ $? -gt 0 ]; then
 		build_message "Symbol '$SYMBOL' not found."
 		return 1
 	fi
 	build_message "Symbol '$SYMBOL' found."
+	return 0
+}
+
+# Description: check if a type is present.
+# Arguments:   $1 - the name of the symbol
+have_type() {
+	local TYPE
+	TYPE="$1"
+
+	CODE=`cat << EOF	
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+int main(void) {
+	$TYPE var;
+	(void) var;
+	return 0;
+}
+EOF
+`
+
+	have_symbol_generic "$TYPE" "$CODE"
+	if [ $? -gt 0 ]; then
+		build_message "Type '$TYPE' not found."
+		return 1
+	fi
+	build_message "Type '$TYPE' found."
 	return 0
 }
 
@@ -330,6 +384,23 @@ $1
 EOF
 `
 	if have_symbol "$1"; then
+		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
+	else
+		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
+	fi
+}
+
+# Description: check if a type is present.
+#              set HAVE_<NAME> accordingly, where <NAME> is the capitalized
+#              name of the symbol.
+# Arguments:   $1 - the name of the symbol
+define_have_type() {
+	local NAME VALUE
+	NAME=`$TR "[:lower:]" "[:upper:]" << EOF
+$1
+EOF
+`
+	if have_type "$1"; then
 		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
 	else
 		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"

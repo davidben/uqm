@@ -249,3 +249,17 @@ LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
 LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
 
 
+##############################################################################
+# Describe the symbols (possibly) used:                                      #
+##############################################################################
+
+SYMBOL_wchar_t_EXTRA="#include <stddef.h>
+"
+
+SYMBOL_wint_t_EXTRA="#include <wchar.h>
+"
+
+SYMBOL_iswgraph_EXTRA="#include <wctype.h>
+"
+
+

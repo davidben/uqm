@@ -39,5 +39,14 @@
 /* Defined if your system has getopt.h */
 #undef HAVE_GETOPT_H
 
+/* Defined if your system has iswgraph of its own*/
+#define HAVE_ISWGRAPH
+
+/* Defined if your system has wchar_t of its own */
+#define HAVE_WCHAR_T
+
+/* Defined if your system has wint_t of its own */
+#define HAVE_WINT_T
+
 #endif /* _CONFIG_H */
 

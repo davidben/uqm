@@ -3,6 +3,8 @@
 - Specify files to be removed on clean.
 - static compilation
 - generating tags files
+- grep is used for the gcc 3.4 compilation patch. It's slower now,
+  and presence for "grep" isn't even checked.
 
 
 some docs

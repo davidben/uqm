@@ -116,6 +116,25 @@ typedef unsigned short mode_t;
 int setenv (const char *name, const char *value, int overwrite);
 #endif
 
+#ifndef HAVE_WCHAR_T
+typedef unsigned short wchar_t
+#endif
+
+#ifndef HAVE_WINT_T
+typedef unsigned int wint_t
+#endif
+
+#ifdef HAVE_ISWGRAPH
+#	include <wctype.h>
+#else
+#	include <ctype.h>
+static inline int
+iswgraph(wint_t wc)
+{
+	return wc > 0x7f || isgraph((int) wc);
+}
+#endif
+
 #endif  /* _PORT_H */
 
 
