@@ -150,19 +150,19 @@ enum
 #define EMPTY_SLOT NUM_MODULES
 #define NUM_BOMB_MODULES 10
 
-#define DRIVE_SIDE_X (31 - 13)
+#define DRIVE_SIDE_X 31
 #define DRIVE_SIDE_Y 56
-#define DRIVE_TOP_X (33 - 13)
+#define DRIVE_TOP_X 33
 #define DRIVE_TOP_Y (65 + 21)
 
-#define JET_SIDE_X (71 - 13)
+#define JET_SIDE_X 71
 #define JET_SIDE_Y 48
-#define JET_TOP_X (70 - 13)
+#define JET_TOP_X 70
 #define JET_TOP_Y (73 + 21)
 
-#define MODULE_SIDE_X (17 - 13)
+#define MODULE_SIDE_X 17
 #define MODULE_SIDE_Y 14
-#define MODULE_TOP_X (17 - 13)
+#define MODULE_TOP_X 17
 #define MODULE_TOP_Y (96 + 21)
 
 #define SHIP_PIECE_OFFSET 12

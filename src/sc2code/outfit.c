@@ -124,9 +124,10 @@ RedistributeFuel (void)
 	GLOBAL_SIS (FuelOnBoard) = FuelVolume;
 }
 
-#define LANDER_X 11
+#define LANDER_X 24
 #define LANDER_Y 67
 #define LANDER_WIDTH 15
+#define ESCAPEPOD_X 13
 
 static void
 DisplayLanders (PMENU_STATE pMS)
@@ -136,7 +137,8 @@ DisplayLanders (PMENU_STATE pMS)
 	s.frame = pMS->ModuleFrame;
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 	{
-		s.origin.x = s.origin.y = 0;
+		s.origin.x = ESCAPEPOD_X;
+		s.origin.y = 0;
 		s.frame = DecFrameIndex (s.frame);
 		DrawStamp (&s);
 	}
@@ -491,7 +493,7 @@ InitFlash:
 					default:
 						pMS->flash_rect0.corner.x = MODULE_TOP_X - 1;
 						pMS->flash_rect0.corner.y = MODULE_TOP_Y - 1;
-						pMS->flash_rect0.extent.width = 15;
+						pMS->flash_rect0.extent.width = SHIP_PIECE_OFFSET + 2;
 						pMS->flash_rect0.extent.height = 34;
 
 						break;

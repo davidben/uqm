@@ -967,7 +967,7 @@ GetCPodCapacity (PPOINT ppt)
 	COORD x;
 	COUNT slot, capacity;
 
-	x = 207 - 13;
+	x = 207;
 	capacity = 0;
 	slot = NUM_MODULE_SLOTS - 1;
 	do
@@ -1023,7 +1023,7 @@ GetSBayCapacity (PPOINT ppt)
 	COORD x;
 	COUNT slot, capacity;
 
-	x = 207 - 8 - 13;
+	x = 207 - 8;
 	capacity = 0;
 	slot = NUM_MODULE_SLOTS - 1;
 	do
@@ -1076,7 +1076,7 @@ GetFTankCapacity (PPOINT ppt)
 	COUNT slot;
 	DWORD capacity;
 
-	x = 200 - 13;
+	x = 200;
 	capacity = FUEL_RESERVE;
 	slot = NUM_MODULE_SLOTS - 1;
 	do
