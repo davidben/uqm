@@ -203,6 +203,13 @@ destruct_preprocess (PELEMENT ElementPtr)
 	}
 }
 
+/* In order to detect any Orz Marines that have boarded the ship
+   when it self-destructs, we'll need to see these Orz functions */
+void intruder_preprocess (PELEMENT);
+void marine_collision (PELEMENT, PPOINT, PELEMENT, PPOINT);
+#define ORZ_MARINE(ptr) (ptr->preprocess_func == intruder_preprocess && \
+		ptr->collision_func == marine_collision)
+
 static void
 self_destruct (PELEMENT ElementPtr)
 {
@@ -250,7 +257,7 @@ self_destruct (PELEMENT ElementPtr)
 			LockElement (hElement, &ObjPtr);
 			hNextElement = GetSuccElement (ObjPtr);
 
-			if (CollidingElement (ObjPtr))
+			if (CollidingElement (ObjPtr) || ORZ_MARINE (ObjPtr))
 			{
 #define DESTRUCT_RANGE 180
 				SIZE delta_x, delta_y;

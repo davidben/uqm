@@ -349,7 +349,7 @@ static void marine_preprocess (PELEMENT ElementPtr);
 
 #define MARINE_WAIT 12
 
-static void
+void
 intruder_preprocess (PELEMENT ElementPtr)
 {
 	HELEMENT hElement, hNextElement;
@@ -706,7 +706,7 @@ PELEMENT ElementPtr;
 	}
 }
 
-static void
+void
 marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
 {
 	if (ElementPtr0->life_span
