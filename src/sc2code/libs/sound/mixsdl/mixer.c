@@ -20,6 +20,7 @@
  */
 
 #include "starcon.h"
+#include <math.h>
 #include "mixer.h"
 #include "libs/misc.h"
 #include "SDL.h"
