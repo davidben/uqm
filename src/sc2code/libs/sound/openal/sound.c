@@ -96,7 +96,7 @@ TFB_InitSound (int driver, int flags)
 		soundSource[i].sbuffer = NULL;
 		soundSource[i].sbuf_start = 0;
 		soundSource[i].sbuf_size = 0;
-		soundSource[i].total_decoded = 0;
+		soundSource[i].sbuf_offset = 0;
 	}
 	
 	SetSFXVolume (sfxVolumeScale);

@@ -56,7 +56,8 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping,
 
 	if (scope)
 	{
-		soundSource[source].sbuffer = NULL;
+		pos = PAD_SCOPE_BYTES;
+		soundSource[source].sbuffer = HMalloc (pos);
 	}
 
 	if (sample->read_chain_ptr && sample->read_chain_ptr->tag.type)
@@ -98,11 +99,8 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping,
 		if (scope)
 		{
 			UBYTE *p;
-			if (! soundSource[source].sbuffer)
-				soundSource[source].sbuffer = HMalloc (decoded_bytes);
-			else
-				soundSource[source].sbuffer = HRealloc (soundSource[source].sbuffer, 
-						pos + decoded_bytes);
+			soundSource[source].sbuffer = HRealloc (soundSource[source].sbuffer, 
+					pos + decoded_bytes);
 			p = (UBYTE *)soundSource[source].sbuffer;
 			memcpy (&p[pos], sample->decoder->buffer, decoded_bytes);
 			pos += decoded_bytes;
@@ -131,6 +129,8 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping,
 		for ( ; i <sample->num_buffers; ++i)
 			sample->buffer_tag[i] = 0;
 	soundSource[source].sbuf_size = pos;
+	soundSource[source].sbuf_start = pos - PAD_SCOPE_BYTES;
+	soundSource[source].sbuf_lasttime = GetTimeCounter ();
 	soundSource[source].start_time = (ALint)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
@@ -153,7 +153,7 @@ StopStream (ALuint source)
 	}
 	soundSource[source].sbuf_start = 0;
 	soundSource[source].sbuf_size = 0;
-	soundSource[source].total_decoded = 0;
+	soundSource[source].sbuf_offset = 0;
 
 	alSourceStop (soundSource[source].handle);
 	alGetSourcei (soundSource[source].handle, AL_BUFFERS_PROCESSED, &processed);
@@ -288,7 +288,14 @@ StreamDecoderTaskFunc (void *data)
 					}
 				}
 
-				soundSource[i].total_decoded += soundSource[i].sample->decoder->buffer_size;
+				{
+					ALuint buf_size;
+					soundSource[i].sbuf_lasttime = GetTimeCounter ();
+					alGetBufferi(buffer, AL_SIZE, &buf_size);
+					soundSource[i].sbuf_offset += buf_size;
+					if (soundSource[i].sbuf_offset > soundSource[i].sbuf_size)
+						soundSource[i].sbuf_offset -= soundSource[i].sbuf_size;
+				}
 
 				if (soundSource[i].sample->decoder->error)
 				{

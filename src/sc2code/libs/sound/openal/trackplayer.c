@@ -544,12 +544,11 @@ GetSoundData (void *data)
 			PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer && 
 			soundSource[SPEECH_SOURCE].sbuf_size > 0)
 		{
-			float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time) / 
+			float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].sbuf_lasttime) / 
 				(float)ONE_SECOND;
-			int played_data = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
+			int delta = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
 				sample->decoder->frequency * 2.0f);
-			int delta = played_data - soundSource[SPEECH_SOURCE].total_decoded;
-			unsigned int pos, i;
+			unsigned long pos, i;
 			UBYTE *scopedata = (UBYTE *) data;
 			UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
 
@@ -569,7 +568,7 @@ GetSoundData (void *data)
 
 			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
 
-			pos = soundSource[SPEECH_SOURCE].sbuf_start + delta;
+			pos = soundSource[SPEECH_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;
 
@@ -612,12 +611,11 @@ GetSoundData (void *data)
 			PlayingStream (MUSIC_SOURCE) && soundSource[MUSIC_SOURCE].sbuffer && 
 			soundSource[MUSIC_SOURCE].sbuf_size > 0)
 		{
-			float played_time = (GetTimeCounter () - soundSource[MUSIC_SOURCE].start_time) / 
+			float played_time = (GetTimeCounter () - soundSource[MUSIC_SOURCE].sbuf_lasttime) / 
 				(float)ONE_SECOND;
-			int played_data = (int) (played_time * (float)soundSource[MUSIC_SOURCE].
+			int delta = (int) (played_time * (float)soundSource[MUSIC_SOURCE].
 				sample->decoder->frequency * 4.0f);
-			int delta = played_data - soundSource[MUSIC_SOURCE].total_decoded;
-			unsigned int pos, i, step;
+			unsigned long pos, i, step;
 			UBYTE *scopedata = (UBYTE *) data;
 			UBYTE *sbuffer = soundSource[MUSIC_SOURCE].sbuffer;
 
@@ -641,7 +639,7 @@ GetSoundData (void *data)
 
 			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[MUSIC_SOURCE].total_decoded, delta);
 
-			pos = soundSource[MUSIC_SOURCE].sbuf_start + delta;
+			pos = soundSource[MUSIC_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;
 

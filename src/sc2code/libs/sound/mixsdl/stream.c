@@ -53,7 +53,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 
 	if (scope)
 	{
-		soundSource[source].sbuffer = NULL;
+		pos = PAD_SCOPE_BYTES;
+		soundSource[source].sbuffer = HMalloc (pos);
 	}
 
 	if (sample->read_chain_ptr && sample->read_chain_ptr->tag.type)
@@ -79,11 +80,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 		if (scope)
 		{
 			UBYTE *p;
-			if (! soundSource[source].sbuffer)
-				soundSource[source].sbuffer = HMalloc (decoded_bytes);
-			else
-				soundSource[source].sbuffer = HRealloc (soundSource[source].sbuffer, 
-						pos + decoded_bytes);
+			soundSource[source].sbuffer = HRealloc (soundSource[source].sbuffer, 
+					pos + decoded_bytes);
 			p = (UBYTE *)soundSource[source].sbuffer;
 			memcpy (&p[pos], sample->decoder->buffer, decoded_bytes);
 			pos += decoded_bytes;
@@ -112,6 +110,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 		for ( ; i <sample->num_buffers; ++i)
 			sample->buffer_tag[i] = 0;
 	soundSource[source].sbuf_size = pos;
+	soundSource[source].sbuf_start = pos - PAD_SCOPE_BYTES;
+	soundSource[source].sbuf_lasttime = GetTimeCounter ();
 	soundSource[source].start_time = (sint32)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
 	mixSDL_SourcePlay (soundSource[source].handle);
@@ -134,7 +134,7 @@ StopStream (uint32 source)
 	}
 	soundSource[source].sbuf_start = 0;
 	soundSource[source].sbuf_size = 0;
-	soundSource[source].total_decoded = 0;
+	soundSource[source].sbuf_offset = 0;
 
 	mixSDL_SourceStop (soundSource[source].handle);
 	mixSDL_GetSourcei (soundSource[source].handle, MIX_BUFFERS_PROCESSED, &processed);
@@ -268,8 +268,15 @@ StreamDecoderTaskFunc (void *data)
 						}
 					}
 				}
-
-				soundSource[i].total_decoded += soundSource[i].sample->decoder->buffer_size;
+				{
+					uint32 buf_size;
+					soundSource[i].sbuf_lasttime = GetTimeCounter ();
+					mixSDL_GetBufferi(buffer, MIX_SIZE, &buf_size);
+					soundSource[i].sbuf_offset += buf_size;
+					if (soundSource[i].sbuf_offset > soundSource[i].sbuf_size)
+						soundSource[i].sbuf_offset -= soundSource[i].sbuf_size;
+				}
+				//soundSource[i].total_decoded += soundSource[i].sample->decoder->buffer_size;
 
 				if (soundSource[i].sample->decoder->error)
 				{

@@ -40,6 +40,7 @@
 #define MUSIC_SOURCE (LAST_SFX_SOURCE + 1)
 #define SPEECH_SOURCE (MUSIC_SOURCE + 1)
 #define NUM_SOUNDSOURCES (SPEECH_SOURCE + 1)
+#define PAD_SCOPE_BYTES 8096
 
 typedef struct
 {
@@ -88,7 +89,8 @@ typedef struct tfb_soundsource
 	void *sbuffer; 
 	ALuint sbuf_start;
 	ALuint sbuf_size;
-	ALuint total_decoded;
+	ALuint sbuf_offset;
+	ALuint sbuf_lasttime;
 } TFB_SoundSource;
 
 
