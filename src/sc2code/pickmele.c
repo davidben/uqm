@@ -106,6 +106,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			{
 				extern FRAME status;
 
+				// Draw the X through destroyed ships
 				--s.origin.x;
 				--s.origin.y;
 				s.frame = SetAbsFrameIndex (status, 3);
