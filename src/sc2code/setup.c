@@ -274,8 +274,10 @@ static void
 initKeyConfig() {
 	char userFile[PATH_MAX];    /* System-wide key config */
 	FILE *fp;
+	int cb;
 	
-	assert (snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir) != -1);
+	cb = snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir);
+	assert (cb != -1);
 	// strlen (configDir) <= PATH_MAX - 13
 	
 	if (fileExists (userFile)) {
