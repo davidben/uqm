@@ -153,6 +153,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		DrawCommand.BlendNumerator = BlendNumerator;
 		DrawCommand.BlendDenominator = BlendDenominator;
 
+		UnlockMutex (img->mutex);
 		TFB_EnqueueDrawCommand(&DrawCommand);
 	}
 	else
@@ -178,9 +179,8 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		);
 		
 		UnlockMutex (dst_img->mutex);
+		UnlockMutex (img->mutex);
 	}
-
-	UnlockMutex (img->mutex);
 }
 
 static void
