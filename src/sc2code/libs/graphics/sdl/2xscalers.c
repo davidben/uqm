@@ -2386,30 +2386,19 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		PIXEL_24BIT *src_p = (PIXEL_24BIT *)src->pixels;
 		PIXEL_24BIT *dst_p = (PIXEL_24BIT *)dst->pixels;
-		PIXEL_24BIT *src_p2;
-		const int dd = dw - rw * 2; // override
 		Uint32 pixval_32;
 		src_p += w*y0 + x0;
 		dst_p += (dw*y0 + x0) * 2;
 		for (y = 0; y < rh; ++y)
 		{
-			src_p2 = src_p;			
 			for (x = 0; x < rw; ++x, ++src_p)
 			{
 				pixval_32 = GET_PIX_24BIT (src_p);
 				SET_PIX_24BIT (dst_p, pixval_32);
+				SET_PIX_24BIT (dst_p + dw, pixval_32);
 				dst_p++;
 				SET_PIX_24BIT (dst_p, pixval_32);
-				dst_p++;
-			}
-			dst_p += dd;
-			src_p = src_p2;
-			for (x = 0; x < rw; ++x, ++src_p)
-			{
-				pixval_32 = GET_PIX_24BIT (src_p);
-				SET_PIX_24BIT (dst_p, pixval_32);
-				dst_p++;
-				SET_PIX_24BIT (dst_p, pixval_32);
+				SET_PIX_24BIT (dst_p + dw, pixval_32);
 				dst_p++;
 			}
 			dst_p += dd;
