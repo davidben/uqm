@@ -1694,8 +1694,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 						BuildAndDrawShipList (pMS);
 						ClearSemaphore (GraphicsSem);
 
-						while (SoundPlaying ())
-							;
+						WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
 						SeedRandomNumbers ();
 						load_gravity_well ((BYTE)((COUNT)TFB_Random () % NUMBER_OF_PLANET_TYPES));
@@ -1895,8 +1894,7 @@ Melee (void)
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
 		DoInput ((PVOID)&MenuState);
 
-		while (SoundPlaying ())
-			;
+		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
 		{
 			FILE *save_fp;

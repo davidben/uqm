@@ -72,6 +72,9 @@ extern void SetChannelRate (COUNT Channel, DWORD Rate, BYTE Priority);
 extern void StopSound (void);
 extern BOOLEAN SoundPlaying (void);
 
+extern void WaitForSoundEnd (COUNT Channel);
+#define TFBSOUND_WAIT_ALL ((COUNT)~0)
+
 extern BOOLEAN AllocHardwareSample (PBYTE lpSnd, DWORD SampleRate, COUNT
 		SampleLength, COUNT LoopBegin, COUNT LoopLen);
 extern BOOLEAN FreeHardwareSample (PBYTE lpSnd, COUNT SampleLength);

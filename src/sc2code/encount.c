@@ -718,8 +718,7 @@ EncounterBattle (void)
 
 //    FreeSC2Data ();
 //    DestroyFont (ReleaseFont (MicroFont));
-	while (SoundPlaying ())
-		;
+	WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 //    DestroySound (ReleaseSound (MenuSounds));
 
 	if (GLOBAL (glob_flags) & CYBORG_ENABLED)

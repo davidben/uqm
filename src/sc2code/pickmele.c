@@ -313,8 +313,7 @@ ChangeSelection:
 
 		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0, 0);
 
-		while (ChannelPlaying (0))
-			;
+		WaitForSoundEnd (0);
 	}
 
 	return (hBattleShip);

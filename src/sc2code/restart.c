@@ -239,7 +239,7 @@ LastActivity = WON_LAST_BATTLE;
 #ifdef TESTING
 if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 {
-	while (SoundPlaying ());
+	WaitForSoundEnd (WAIT_ALL_SOUNDS);
 	StopSound ();
 
 	FreeSC2Data ();

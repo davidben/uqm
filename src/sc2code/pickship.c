@@ -257,8 +257,7 @@ OldContext = SetContext (SpaceContext);
 		if (hBattleShip == GetTailLink (&race_q[0]))
 			battle_counter = MAKE_WORD (1, HIBYTE (battle_counter));
 
-		while (ChannelPlaying (0))
-			;
+		WaitForSoundEnd (0);
 	}
 
 //    DestroySound (ReleaseSound (MenuSounds));
