@@ -43,14 +43,12 @@ display.h:  defines a DISPLAY_INTERFACE and PDISPLAY_INTERFACE type (as
             well as a global _pCurDisplay).
 
 drawable.h: defines FRAME_DESC and DRAWABLE_DESC, and the pointer
-            types PFRAME_DESC and PDRAWABLE_DESC.  FRAME_DESC includes
-            an element "DataOffs", which, horrifyingly, appears to be
-            a deliberate index past the end of the struct.  Given a
-            PFRAME_DESC x, (void *)(x[x->DataOffs]) is a void pointer
-            castable to TFB_Image.  Preliminary investigations into
-            this code make a conversion of DataOffs into a void
-            pointer both feasible and more efficient on modern
-            architectures.)
+            types PFRAME_DESC and PDRAWABLE_DESC.  FRAME_DESC has a
+            TFB_Image pointer as a member.  DRAWABLE_DESC currently
+            still uses a rather annoying technique where the last
+            member of a struct is a 1-element array, more memory than
+            that is actually allocated, and the array's bounds are
+            deliberately overflowed to get at multiple frames.
 
 font.h:     defines FONT_DESC and PFONT_DESC.
 

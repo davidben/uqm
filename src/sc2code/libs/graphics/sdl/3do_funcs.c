@@ -227,9 +227,8 @@ _image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
 	Uint32 img1colourkey, img2colourkey;
 	GetPixelFn getpixel1, getpixel2;
 
-	/* Image is (TFB_IMAGE*)(box1->FramePtr + box1->FramePtr->DataOffs) */
-	img1 = ((TFB_Image*)((BYTE*)(box1->FramePtr) + box1->FramePtr->DataOffs))->NormalImg;
-	img2 = ((TFB_Image*)((BYTE*)(box2->FramePtr) + box2->FramePtr->DataOffs))->NormalImg;
+	img1 = (SDL_Surface *)box1->FramePtr->image->NormalImg;
+	img2 = (SDL_Surface *)box2->FramePtr->image->NormalImg;
 	
 	getpixel1 = getpixel_for(img1);
 	getpixel2 = getpixel_for(img2);

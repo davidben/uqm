@@ -30,7 +30,7 @@ static UBYTE scope_data[RADAR_WIDTH];
 void
 InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
 {
-	TFB_Image *img = (TFB_Image *)((BYTE *)f + f->DataOffs);
+	TFB_Image *img = f->image;
 
 	assert (((SDL_Surface *)img->NormalImg)->format->BytesPerPixel == 1);
 	assert (((SDL_Surface *)img->NormalImg)->w == RADAR_WIDTH);
@@ -106,7 +106,7 @@ Oscilloscope (DWORD grab_data)
 		SDL_UnlockSurface (scope_surf);
 	}
 
-	img = (TFB_Image *)((BYTE *)scope_frame + scope_frame->DataOffs);	
+	img = scope_frame->image;
 	LockMutex (img->mutex);
 	SDL_BlitSurface (scope_surf, NULL, img->NormalImg, NULL);
 	UnlockMutex (img->mutex);

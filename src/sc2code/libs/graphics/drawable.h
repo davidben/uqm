@@ -20,6 +20,7 @@
 #define _DRAWABLE_H
 
 #include <stdio.h>
+#include "tfb_draw.h"
 
 #define ValidPrimType(pt) ((pt)<NUM_PRIMS)
 
@@ -67,7 +68,7 @@ typedef struct
 	DWORD TypeIndexAndFlags;
 	HOT_SPOT HotSpot;
 	DWORD Bounds;
-	long DataOffs;
+	TFB_Image *image;
 } FRAME_DESC;
 typedef FRAME_DESC *PFRAME_DESC;
 

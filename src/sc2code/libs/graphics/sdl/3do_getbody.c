@@ -56,11 +56,11 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	hx = ani[cel_ct].hotspot_x;
 	hy = ani[cel_ct].hotspot_y;
 
-	FramePtr->DataOffs = (BYTE *)TFB_DrawImage_New (img[cel_ct]) - (BYTE *)FramePtr;
+	FramePtr->image = TFB_DrawImage_New (img[cel_ct]);
 
-	tfbimg = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
+	tfbimg = FramePtr->image;
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
-	img[cel_ct] = tfbimg->NormalImg;
+	img[cel_ct] = (SDL_Surface *)tfbimg->NormalImg;
 
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
@@ -123,8 +123,8 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 
 	img[cel_ct] = new_surf;
 	
-	FramePtr->DataOffs = (BYTE *)TFB_DrawImage_New (img[cel_ct]) - (BYTE *)FramePtr;
-	img[cel_ct] = ((TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs))->NormalImg;
+	FramePtr->image = TFB_DrawImage_New (img[cel_ct]);
+	img[cel_ct] = FramePtr->image->NormalImg;
 	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
@@ -144,10 +144,10 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	NewFrame = CaptureDrawable (
 				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1)
 					);
-	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-    src = tfbImg->NormalImg;
-    dst = ((TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs))->NormalImg;
+	src = (SDL_Surface *)tfbImg->NormalImg;
+	dst = (SDL_Surface *)NewFrame->image->NormalImg;
 	SDL_LockSurface (src);
 	SDL_LockSurface (dst);
 
@@ -172,9 +172,9 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 
 
 	// convert 32-bit png font to indexed
-	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-    img = tfbImg->NormalImg;
+	img = (SDL_Surface *)tfbImg->NormalImg;
 	SDL_LockSurface (img);
 
 	putpix = putpixel_for (img);
@@ -192,9 +192,9 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int
 	TFB_Image *tfbImg;
 	SDL_Rect rect;
 
-	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-    img = tfbImg->NormalImg;
+	img = (SDL_Surface *)tfbImg->NormalImg;
 	SDL_LockSurface (img);
 	if (x0 == 0 && y0 == 0 && x == 0 && y == 0)
 		SDL_FillRect(img, NULL, color);
@@ -216,12 +216,12 @@ void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *r
 	TFB_Image *srcImg, *dstImg;
 	SDL_Surface *src, *dst;
 	SDL_Rect srcRect, dstRect, *srp = NULL, *drp = NULL;
-	srcImg = (TFB_Image *)((BYTE *)(srcFrame)  + srcFrame->DataOffs);
-	dstImg = (TFB_Image *)((BYTE *)(dstFrame)  + dstFrame->DataOffs);
+	srcImg = srcFrame->image;
+	dstImg = dstFrame->image;
 	LockMutex (srcImg->mutex);
 	LockMutex (dstImg->mutex);
-	src = srcImg->NormalImg;
-	dst = dstImg->NormalImg;
+	src = (SDL_Surface *)srcImg->NormalImg;
+	dst = (SDL_Surface *)dstImg->NormalImg;
 	if (rdst)
 	{
 		dstRect.x = rdst->corner.x;
@@ -275,9 +275,9 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
 	GetPixelFn getpix;
 	int x,y;
 
-	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-    img = tfbImg->NormalImg;
+	img = (SDL_Surface *)tfbImg->NormalImg;
 	SDL_LockSurface (img);
 	getpix = getpixel_for (img);
 	map=(Uint32 **)HMalloc (sizeof(Uint32 *) * (height + 1));
@@ -320,12 +320,12 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
 				CreateDrawable (FrameType, (SIZE)width, (SIZE)height, 1));
-	tfbOrigImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
-	OrigImg = tfbOrigImg->NormalImg;
+	tfbOrigImg = FramePtr->image;
+	OrigImg = (SDL_Surface *)tfbOrigImg->NormalImg;
 	SDL_LockSurface (OrigImg);
 
-	tfbImg = (TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs);
-	img = tfbImg->NormalImg;
+	tfbImg = NewFrame->image;
+	img = (SDL_Surface *)tfbImg->NormalImg;
 	SDL_LockSurface (img);
 
 	putpix = putpixel_for (img);
@@ -401,7 +401,7 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 // r,g,b,a values supplied
 Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 {
-	SDL_Surface *img= ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	SDL_Surface *img= (SDL_Surface *)FramePtr->image->NormalImg;
 	return (SDL_MapRGBA (img->format, r, g, b, a));
 }
 
@@ -522,13 +522,10 @@ _ReleaseCelData (MEM_HANDLE handle)
 	{
 		while (--FramePtr, cel_ct--)
 		{
-			if (FramePtr->DataOffs)
+			TFB_Image *img = FramePtr->image;
+			if (img)
 			{
-				TFB_Image *img;
-
-				img = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
-				FramePtr->DataOffs = 0;
-
+				FramePtr->image = NULL;
 				TFB_DrawScreen_DeleteImage (img);
 			}
 		}
@@ -662,12 +659,10 @@ _ReleaseFontData (MEM_HANDLE handle)
 		FramePtr = &FontPtr->CharDesc[cel_ct];
 		while (--FramePtr, cel_ct--)
 		{
-			if (FramePtr->DataOffs)
+			TFB_Image *img = FramePtr->image;
+			if (img)
 			{
-				TFB_Image *img;
-
-				img = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
-				FramePtr->DataOffs = 0;
+				FramePtr->image = NULL;
 
 				TFB_DrawScreen_DeleteImage (img);
 			}
@@ -712,10 +707,6 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			imgw = width;
 			imgh = height;
 			
-			// commented out these when removing support for pre-scaling -Mika
-			// imgw = (flags & MAPPED_TO_DISPLAY) ? width * ScreenWidthActual / ScreenWidth : width;
-			// imgh = (flags & MAPPED_TO_DISPLAY) ? height * ScreenHeightActual / ScreenHeight : height;
-
 			FramePtr = &DrawablePtr->Frame[NumFrames - 1];
 			while (NumFrames--)
 			{
@@ -724,7 +715,7 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 				if (DrawableType == RAM_DRAWABLE
 						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (imgw, imgh, FALSE))))
 				{
-					FramePtr->DataOffs = (BYTE *)Image - (BYTE *)FramePtr;
+					FramePtr->image = Image;
 				}
 
 				TYPE_SET (FramePtr->TypeIndexAndFlags, DrawableType);

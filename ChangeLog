@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Lowered Drawable memory footprint, made Frame safer - Martin
 - Support for running without voice .ogg files present -PBlue
 - Slider should now work correctly everywhere -PhracturedBlue
 - Added 'nosound' driver and --sound=openal|mixsdl|none

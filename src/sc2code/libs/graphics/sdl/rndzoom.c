@@ -562,9 +562,9 @@ void scale16xRandomizeFrame (FRAMEPTR FramePtr)
 {
 	TFB_Image *tfbImg;
 
-	tfbImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
+	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
-    tfbImg->ScaledImg = random16xZoomSurfaceRGBA (tfbImg->NormalImg);
+	tfbImg->ScaledImg = random16xZoomSurfaceRGBA (tfbImg->NormalImg);
 	tfbImg->scale = 4 << 8;
 	UnlockMutex (tfbImg->mutex);
 }

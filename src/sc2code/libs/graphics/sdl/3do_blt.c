@@ -37,13 +37,13 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	PFRAME_DESC SrcFramePtr;
 
 	SrcFramePtr = (PFRAME_DESC)PrimPtr->Object.Stamp.frame;
-	if (SrcFramePtr->DataOffs == 0)
+	if (!SrcFramePtr->image)
 	{
 		fprintf (stderr, "Non-existent image to blt()\n");
 		return;
 	}
 
-	img = (TFB_Image *) ((BYTE *) SrcFramePtr + SrcFramePtr->DataOffs);
+	img = SrcFramePtr->image;
 	
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -155,9 +155,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	{
 		TFB_Image *dst_img;
 
-		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
-			_CurFramePtr->DataOffs));
-
+		dst_img = _CurFramePtr->image;
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
 		{
@@ -218,8 +216,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		SDL_Rect  SDLRect;
 		TFB_Image *img;
 
-		img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
-				_CurFramePtr->DataOffs));
+		img = _CurFramePtr->image;
 
 		LockMutex (img->mutex);
 
@@ -282,8 +279,7 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 	}
 	else
 	{
-		TFB_Image *img = (TFB_Image *) ((BYTE *) DstFramePtr +
-				DstFramePtr->DataOffs);
+		TFB_Image *img = DstFramePtr->image;
 		TFB_DrawScreen_CopyToImage (img, lpRect, TFB_SCREEN_MAIN);
 	}
 }
@@ -292,40 +288,7 @@ static DRAWABLE
 alloc_image (COUNT NumFrames, DRAWABLE_TYPE DrawableType, CREATE_FLAGS
 		flags, SIZE width, SIZE height)
 {
-	DWORD data_byte_count;
-	DRAWABLE Drawable;
-
-	data_byte_count = 0;
-	if (flags & WANT_MASK)
-		data_byte_count += (DWORD) SCAN_WIDTH (width) * height;
-	if ((flags & WANT_PIXMAP) && DrawableType == RAM_DRAWABLE)
-	{
-		width = ((width << 1) + 3) & ~3;
-		data_byte_count += (DWORD) width * height;
-	}
-
-	Drawable = AllocDrawable (NumFrames, data_byte_count * NumFrames);
-	if (Drawable)
-	{
-		if (DrawableType == RAM_DRAWABLE)
-		{
-			COUNT i;
-			DWORD data_offs;
-			DRAWABLEPTR DrawablePtr;
-			FRAMEPTR F;
-
-			data_offs = sizeof (*F) * NumFrames;
-			DrawablePtr = LockDrawable (Drawable);
-			for (i = 0, F = &DrawablePtr->Frame[0]; i < NumFrames; ++i, ++F)
-			{
-				F->DataOffs = data_offs;
-				data_offs += data_byte_count - sizeof (*F);
-			}
-			UnlockDrawable (Drawable);
-		}
-	}
-
-	return (Drawable);
+	return AllocDrawable (NumFrames, 0);
 }
 
 void (*func_array[]) (PRECT pClipRect, PRIMITIVEPTR PrimPtr) =
