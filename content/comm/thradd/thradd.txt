@@ -802,7 +802,7 @@ Now that we understand the nuances of introduction, Great Teacher
 we have an even more significant question.
 Your devastation of our battle forces have shown us
 that our Culture Nineteen is inferior to your own
-therfore, we will adopt your methods, your techniques
+therefore, we will adopt your methods, your techniques
 but what shall we name our new Culture?
 
 #(alliance_name)
