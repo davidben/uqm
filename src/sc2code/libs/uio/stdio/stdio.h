@@ -107,5 +107,11 @@ void stdio_EntriesIterator_delete(stdio_EntriesIterator *iterator);
 uio_PDirEntryHandle *stdio_getPDirEntryHandle(
 		const uio_PDirHandle *pDirHandle, const char *name);
 
+#ifdef WIN32
+static inline int isDriveLetter(int c)
+{
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+#endif
 
 

@@ -64,6 +64,12 @@ int copyFile (uio_DirHandle *srcDir, const char *srcName,
 bool fileExists (const char *name);
 bool fileExists2(uio_DirHandle *dir, const char *fileName);
 
+#ifdef WIN32
+static inline int isDriveLetter(int c)
+{
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+#endif
 
 #endif  /* _FILE_H */
 

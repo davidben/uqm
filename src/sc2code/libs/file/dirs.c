@@ -72,7 +72,7 @@ mkdirhier (const char *path)
 
 #ifdef WIN32
 	// driveletter + semicolon on Windows.
-	if (isalpha(pathstart[0]) && pathstart[1] == ':')
+	if (isDriveLetter(pathstart[0]) && pathstart[1] == ':')
 	{
 		*(ptr++) = *(pathstart++);
 		*(ptr++) = *(pathstart++);
@@ -439,7 +439,7 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src, int what)
 {
 	if (src[0] == '/' || ((what & EP_SLASHES) && src[0] == '\\')
 #ifdef WIN32
-			|| (isalpha(src[0]) && (src[1] == ':'))
+			|| (isDriveLetter(src[0]) && (src[1] == ':'))
 #endif
 			) {
 		// Path is already absolute; nothing to do

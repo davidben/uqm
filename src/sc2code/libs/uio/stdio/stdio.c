@@ -345,7 +345,7 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 #ifdef WIN32
 	if (pDirHandle->extra->extra->upDir == NULL) {
 		// Top dir. Contains only drive letters.
-		if (!isalpha(name[0]) || name[1] != ':' || name[2] != '\0')
+		if (!isDriveLetter(name[0]) || name[1] != ':' || name[2] != '\0')
 			return NULL;
 		driveName[0] = tolower(name[0]);
 		driveName[1] = ':';
