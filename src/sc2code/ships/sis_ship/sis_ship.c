@@ -167,8 +167,10 @@ LeaveAutoPilot:
 
 		facing = NORMALIZE_FACING (ANGLE_TO_FACING (ARCTAN (udx, udy)));
 
+		/* This prevents ship from flying backwards on auto-pilot.
+		 * It could also theoretically abort autopilot in a bad savegame */
 		if ((StarShipPtr->cur_status_flags & SHIP_AT_MAX_SPEED)
-				|| (ElementPtr->state_flags & APPEARING))
+				/*|| (ElementPtr->state_flags & APPEARING)*/ )
 		{
 			if (NORMALIZE_FACING (StarShipPtr->ShipFacing
 					+ ANGLE_TO_FACING (QUADRANT)
