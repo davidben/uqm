@@ -46,6 +46,12 @@ SDLWrapper_PrintThreadStats (SDL_Thread *thread) {
 #endif
 
 void
+SDLWrapper_SleepThread (TimeCount sleepTime)
+{
+	SDL_Delay (sleepTime * 1000 / ONE_SECOND);
+}
+
+void
 SDLWrapper_SleepThreadUntil (TimeCount wakeTime) {
 	TimeCount now;
 

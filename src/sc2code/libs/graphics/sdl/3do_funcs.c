@@ -120,7 +120,7 @@ transition_task_func (void *data)
 
 	for (;;)
 	{
-		SleepThread (10);
+		SDL_Delay (10);
 
 		current_time = SDL_GetTicks ();
 		delta_time = current_time - last_time;

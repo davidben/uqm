@@ -161,7 +161,7 @@ StreamDecoderTaskFunc (void *data)
 	{
 		int i;
 
-		SleepThread (1);
+		TaskSwitch ();
 
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{

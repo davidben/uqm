@@ -1462,7 +1462,7 @@ InitPlanetSide (void)
 #ifdef SPIN_ON_LAUNCH
 	pSolarSysState->PauseRotate = 1;
 	ClearSemaphore (GraphicsSem);
-	SleepThread (1);
+	TaskSwitch ();
 	SetSemaphore (GraphicsSem);
 #endif
 	// Adjust pSolarSysState->MenuState.first_item by a random jitter.

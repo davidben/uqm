@@ -528,7 +528,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 		else
 		{
-			SleepThread (1);
+			TaskSwitch ();
 		}
 		
 		last_fade = current_fade;
