@@ -23,7 +23,7 @@ various command line options to customize your experience:
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240
 
-    -d 24         (or --bpp)
+	-d 24         (or --bpp)
 
 Sets the color depth.  If you don't set this, the game should
 autodetect an appropriate value.  Valid values are 16, 24, and 32.
@@ -393,6 +393,12 @@ Primary weapon: Anti-matter spray gun.
 Secondary weapon: "Tongue attack", a point-blank range attack that
 does grievous damage.
 
+
+			   GENERAL GAME CONTROLS SUMMARY
+
+F1                  Pause game
+F10                 Exit game, confirm with SPACE
+`                   Emergency exit
 
 			   FULL GAME CONTROLS SUMMARY
 
