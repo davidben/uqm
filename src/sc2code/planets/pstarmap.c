@@ -1171,6 +1171,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 			NewState = pMS->CurState;
 			if ((InputState & DEVICE_BUTTON1) || LastActivity == CHECK_LOAD)
 			{
+				CONTEXT OldContext;
 				if (NewState != SCAN + 1 && NewState != (ROSTER + 1) + 1)
 				{
 					SetSemaphore (GraphicsSem);
@@ -1219,6 +1220,22 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					case ROSTER + 1:
 						if (GameOptions () == 0)
 							return (FALSE);
+						
+
+						ClearSISRect(DRAW_SIS_DISPLAY);
+						DrawSISFrame();
+						RepairSISBorder();
+						DrawSISMessage(NULL_PTR);
+						DrawSISTitle(GLOBAL_SIS(PlanetName));
+						DrawStarBackGround(TRUE);
+						OldContext = SetContext(SpaceContext);
+						SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
+						SetSemaphore(GraphicsSem);
+						BatchGraphics();
+						DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+						UnbatchGraphics();
+						SetContext(OldContext);
+						ClearSemaphore(GraphicsSem);
 // else
 // DrawMenuStateStrings (PM_SCAN, ROSTER + 1);
 						break;

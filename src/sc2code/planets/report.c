@@ -26,7 +26,7 @@
 extern FRAME SpaceJunkFrame;
 
 static void
-ClearReportArea (COUNT page_cells)
+ClearReportArea ()
 {
 	COUNT i;
 	RECT r;
@@ -48,11 +48,8 @@ ClearReportArea (COUNT page_cells)
 	}
 	SetPrimNextLink (&prim_row[i - 1], END_OF_LIST);
 
-	if (page_cells == 0)
-	{
-		SetContextBackGroundColor (BLACK_COLOR);
-		ClearDrawable ();
-	}
+	SetContextBackGroundColor (BLACK_COLOR);
+	ClearDrawable ();
 	SetContextClipping (FALSE);
 	for (i = 0; i < NUM_CELL_ROWS; ++i)
 	{
@@ -71,7 +68,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	BYTE ButtonState;
 	int end_page_len;
 	UNICODE last_c, end_page_buf[80];
-	COUNT row_cells, page_cells;
+	COUNT row_cells;
 	BOOLEAN Sleepy;
 	RECT r;
 	TEXT t;
@@ -87,7 +84,6 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	last_c = *pStr;
 
 	Sleepy = TRUE;
-	page_cells = 0;
 	ClearSemaphore (GraphicsSem);
 
 	FlushInput ();
@@ -198,7 +194,7 @@ InitPageCell:
 				SetSemaphore (GraphicsSem);
 				if (!Sleepy)
 					BatchGraphics ();
-				ClearReportArea (page_cells++);
+				ClearReportArea();
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0, 0x1F, 0), 0xFF));
 				if (Sleepy)
 					ClearSemaphore (GraphicsSem);

@@ -58,7 +58,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	r.extent.height = NAME_AREA_HEIGHT;
 	DrawFilledRectangle (&r);
 	t.align = ALIGN_CENTER;
-	t.pStr = pMeleeState->TeamImage[which_player].TeamName;
+	t.pStr = pMeleeState->TeamImage[1 - which_player].TeamName;
 	t.CharCount = (COUNT)~0;
 	SetContextFont (TinyFont);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
