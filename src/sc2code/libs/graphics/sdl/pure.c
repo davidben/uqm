@@ -215,6 +215,44 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
+// expands the given rectangle in all directions by 'expansion'
+// guarded by 'limits'
+void
+Scale_ExpandRect (SDL_Rect* rect, int expansion, SDL_Rect* limits)
+{
+	if (rect->x - expansion >= limits->x)
+	{
+		rect->w += expansion;
+		rect->x -= expansion;
+	}
+	else
+	{
+		rect->w += rect->x - limits->x;
+		rect->x = limits->x;
+	}
+
+	if (rect->y - expansion >= limits->y)
+	{
+		rect->h += expansion;
+		rect->y -= expansion;
+	}
+	else
+	{
+		rect->h += rect->y - limits->y;
+		rect->y = limits->y;
+	}
+
+	if (rect->x + rect->w + expansion <= limits->w)
+		rect->w += expansion;
+	else
+		rect->w = limits->w - rect->x;
+
+	if (rect->y + rect->h + expansion <= limits->h)
+		rect->h += expansion;
+	else
+		rect->h = limits->h - rect->y;
+}
+
 // blends two pixels with ratio 50% - 50%
 __inline__ Uint32
 Scale_BlendPixels (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
@@ -232,11 +270,29 @@ Scale_BlendPixels (SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
 
 // biadapt scaling to 2x
 static void
-Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
+Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
 	const int w = src->w, h = src->h, dw = dst->w;
+	int xend, yend;
+	int dsrc, ddst;
+	SDL_Rect region = *r;
+	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
+
+	// expand updated region if necessary
+	// pixels neighbooring the updated region may
+	// change as a result of updates
+	limits.x = 0;
+	limits.y = 0;
+	limits.w = src->w;
+	limits.h = src->h;
+	Scale_ExpandRect (&region, 2, &limits);
+
+	xend = region.x + region.w;
+	yend = region.y + region.h;
+	dsrc = w - region.w;
+	ddst = (dw - region.w) * 2;
 
 	switch (fmt->BytesPerPixel)
 	{
@@ -244,15 +300,18 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 	#define BIADAPT_GETPIX(p)        ( *(Uint16 *)(p) )
 	#define BIADAPT_SETPIX(p, c)     ( *(Uint16 *)(p) = (c) )
 	#define BIADAPT_BUF              Uint16
-	#define BIADAPT_CLR              Uint16
 	{
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
-		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; y++, dst_p += dw)
+		// move ptrs to the first updated pixel
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = 0; x < w; x++, src_p++, dst_p++)
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -309,7 +368,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
 					int cl, cr;
-					BIADAPT_CLR clr;
+					Uint32 clr;
 
 					if (pixval_tl == pixval_tr)
 					{
@@ -434,21 +493,23 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 	#undef BIADAPT_GETPIX
 	#undef BIADAPT_SETPIX
 	#undef BIADAPT_BUF
-	#undef BIADAPT_CLR
 
 	case 3: // 24bpp scaling
 	#define BIADAPT_GETPIX(p)        GET_PIX_24BIT(p)
 	#define BIADAPT_SETPIX(p, c)     SET_PIX_24BIT(p, c)
 	#define BIADAPT_BUF              PIXEL_24BIT
-	#define BIADAPT_CLR              Uint32
 	{
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
-		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; y++, dst_p += dw)
+		// move ptrs to the first updated pixel
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = 0; x < w; x++, src_p++, dst_p++)
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -505,7 +566,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
 					int cl, cr;
-					BIADAPT_CLR clr;
+					Uint32 clr;
 
 					if (pixval_tl == pixval_tr)
 					{
@@ -630,21 +691,23 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 	#undef BIADAPT_GETPIX
 	#undef BIADAPT_SETPIX
 	#undef BIADAPT_BUF
-	#undef BIADAPT_CLR
 
 	case 4: // 32bpp scaling
 	#define BIADAPT_GETPIX(p)        ( *(Uint32 *)(p) )
 	#define BIADAPT_SETPIX(p, c)     ( *(Uint32 *)(p) = (c) )
 	#define BIADAPT_BUF              Uint32
-	#define BIADAPT_CLR              Uint32
 	{
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
-		BIADAPT_CLR pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
-		for (y = 0; y < h; y++, dst_p += dw)
+		// move ptrs to the first updated pixel
+		src_p += w * region.y + region.x;
+		dst_p += (dw * region.y + region.x) * 2;
+
+		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = 0; x < w; x++, src_p++, dst_p++)
+			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -701,7 +764,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
 					int cl, cr;
-					BIADAPT_CLR clr;
+					Uint32 clr;
 
 					if (pixval_tl == pixval_tr)
 					{
@@ -1234,7 +1297,7 @@ TFB_Pure_SwapBuffers ()
 		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
 			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
 		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
-			Scale_BiAdaptFilter (backbuffer, SDL_Video);
+			Scale_BiAdaptFilter (backbuffer, SDL_Video, &updated);
 		else
 			Scale_Nearest (backbuffer, SDL_Video, &updated);
 
