@@ -524,6 +524,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 			}
 		}
 		HFree (DrawablePtr->Frame);
+		DrawablePtr->Frame = NULL;
 	}
 
 	UnlockDrawable (handle);
