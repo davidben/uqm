@@ -1,4 +1,8 @@
 Changes towards version 0.4:
+- Optimized MixSDL mixing and resampling routines
+  (hopefully fixes bug #435) - Mika
+- MOD music should now play properly on big endian machines if using
+  high quality mode (workaround for bug #166) - Mika
 - Better-looking slave shield (bug #32), from Nic
 - Bay door animations don't stall before aborting (bug #500), from 
   chmmravatar
