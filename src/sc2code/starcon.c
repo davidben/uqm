@@ -889,7 +889,7 @@ while (--ac > 0)
 	/* TODO: Put initAudio back in main where it belongs once threading
 	 *       is gone.
 	 */
-	sint32 initAudio (sint32 driver, sint32 flags);
+	extern sint32 initAudio (sint32 driver, sint32 flags);
 	initAudio (snddriver, soundflags);
 
 	if (LoadKernel (0,0))
