@@ -1,6 +1,9 @@
 if [ "$uqm_SOUNDMODULE" = openal ]; then
 	uqm_SUBDIRS="openal"
 	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_OPENAL"
+elif [ "$uqm_SOUNDMODULE" = mixsdl ]; then
+	uqm_SUBDIRS="mixsdl"
+	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_MIXSDL"
 else
 	uqm_SUBDIRS="sdl"
 	uqm_CFLAGS="$uqm_CFLAGS -DSOUNDMODULE_SDL"
