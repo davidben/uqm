@@ -17,7 +17,8 @@ Changes are broadly classified into the following categories:
 
 NEW FEATURES
 
-- Planet info "coarse scan" information available and properly rendered
+- Planet info "coarse scan" information available and properly rendered,
+  either in 3DO way (symbols) or PC (text)
 - 3D spinning planet in orbit window is present, with antialiasing and
   phong lighting and an animated approach
 - Pixel-perfect collision detection; Spathi/Mycon are thus playable, and
@@ -27,22 +28,23 @@ NEW FEATURES
 - Color-shading in planet scans
 - Earth with its slave shield now functions properly
 - Outfit Starship and Shipyard graphics re-extracted
-- OpenGL colors work on big-endian machines.
 - Save data and temp files are put in a separate directory now
 - Star sizes and colors are properly differentiated.
-- Scanline simulation added
 - Planet surface is smoothed, blurred, and randomized slightly when it's
   magnified
 - SIS Status window fully implemented (including gradiated fonts from PC
   version)
-- Dialogue "slider" shows how far along the speech is
+- Dialogue "slider" shows how far along the speech is; rewind/forward works
 - 'ESC' alone lets you emergency-warp-escape
+- Optional PC version menus
+- Preliminary support for MacOS X (needs more work)
 
 BUGFIXES
 
 - Melee screens cleaned up, SuperMelee menus work.
 - Subtitles now render for all alien races
 - Major editing of subtitles to match more closely the speeches
+- Speech and subtitles are now synchronized properly
 - Autopilot indicator doesn't take over the top of the screen anymore.
 - Entering star systems on autopilot doesn't crash the system.
 - Planet scan is properly erased when cancelling/landing
