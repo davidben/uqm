@@ -204,7 +204,7 @@ build_install() {
 		if [ ! -d "$DESTDIR" ]; then
 			mkdir -p -- "$DESTDIR"
 		fi
-		cp -r -- "$SRC" "$DEST"
+		cp -pr -- "$SRC" "$DEST"
 	done
 
 	echo "Installing binaries..." 2>&1
@@ -217,7 +217,7 @@ build_install() {
 		if [ ! -d "$DESTDIR" ]; then
 			mkdir -p -- "$DESTDIR"
 		fi
-		cp -r -- "$SRC" "$DEST"
+		cp -pr -- "$SRC" "$DEST"
 	done
 }
 
