@@ -70,9 +70,6 @@ Glitches (don't crash the game, medium priority):
   with timer accuracies
   - Also there have been complaints about insanely fast combat, could this
     be more serious flaw with SDL timer code or some other bug?
-- precursor ships' crew count is misplaced in melee (SAFE_Y)
-- Dialog choices sometimes exceed the rectangle they're supposed to be
-  bounded by. (SAFE_X?)
 - keys are always referenced as gamepad buttons ("Press (B) to exit")
 - lander speed varies per computer
 - "device used successfully" and "device usage failed" sounds are identical

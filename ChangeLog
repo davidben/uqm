@@ -1,4 +1,5 @@
 0.2:
+- Precursor ship crew count is now placed correctly in melee, from wjp
 - Dialog choices doesn't go off rectangle in right anymore, from wjp
 - When saving in planet scan screen, screen is now redrawn, from slayne
 - Commas causing pixels to appear in planetary reports fixed, from slayne
