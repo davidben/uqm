@@ -42,20 +42,24 @@ SDL_mixer (Linux only)
 	Homepage: http://www.libsdl.org/projects/SDL_mixer/	
 	Download: http://www.libsdl.org/projects/SDL_mixer/
 	          Until version 1.2.5 is officially released, you'll have to 
-			  compile this directly from CVS (with ogg support):
-			  cvs -z3 -d:pserver:guest@libsdl.org:/home/sdlweb/libsdl.org/cvs co SDL_mixer
+	          compile this directly from CVS (with ogg support):
+	          cvs -z3 -d:pserver:guest@libsdl.org:/home/sdlweb/libsdl.org/cvs co SDL_mixer
 	Debian packages: libsdl-mixer1.2 libsdl-mixer1.2-dev
 	
 OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
-	Homepage: http://www.openal.org
+	Homepage: http://www.openal.org/
 	SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 
-Ogg Vorbis (Win32 only)
+Ogg Vorbis
 	Audio codec used for music and speech.
 	Homepage: http://www.xiph.org/ogg/vorbis/index.html
-	SDK download: http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
-
+	Download:
+		For Windows:
+			SDK download: http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
+	    For Linux:
+			http://www.vorbis.com/download_unix.psp
+			download libao, libogg and libvorbis.
 
 If you find these aren't enough, or if you know the names
 of the corresponding RPM etc. packages, please report to
