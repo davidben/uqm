@@ -1,16 +1,25 @@
-# This AUTHORS file is used as input for cvs2cl.
-# Lines beginning with (whitespaces plus) # and lines that do not have
-# colons in them are always ignored. Other lines are in the form 
-# name : expansion
-# Quote marks stripped. Leading spaces not allowed.
-# cvs2cl will detect if you have a realname, 
-# and will retain the username if not. 
+# Original programming:
+Paul Reiche III
+Fred Ford
+Ken Ford
 
-# Programming:
+# Ur-Quan Masters port:
 
-# Additional programming:
-mudry:   Mudrony László <mudronyl@dragon.klte.hu>
+# Core team (in alphabetic order)
+Serge van den Boom <svdb@stack.nl>
+Mika Kolehmainen <mimakole@cc.jyu.fi>
+Michael Chapman Martin <mcmartin@stanford.edu>
+Chris Nelson <chris@toysforbob.com>
 
-# Makefiles:
-# Mudrony László <mudronyl@dragon.klte.hu>
+# Additional programming (in alphabetic order)
+Mudrony László <mudronyl@dragon.klte.hu> (makefiles)
+Karl Bartel <karlb@gmx.net>
+
+# 3DO consultance (in alphabetic order)
+Burpmaster (?)
+Felix Lazarev <felix@freedo.org> (3DO internals)
+Parker (?)
+
+# Using code from
+MikMod (http://mikmod.darkorb.net/)
 
