@@ -1,22 +1,22 @@
 #(name_1)
-The New Alliance of Free Stars!
+The New Alliance of Free Stars
 
 #(name_2)
-The Concordance of Alien Nations!
+The Concordance of Alien Nations
 
 #(name_3)
-The United Federation of Worlds!
+The United Federation of Worlds
 
 #(name_40)
 The Empire of 
 #(name_41)
-!
+ 
 
 #(tanaka) shofi000.ogg
-Katana
+Tanaka
 
 #(katana) shofi001.ogg
-Tanaka
+Katana
 
 #(HOSTILE_KATANA_1)	shofi002.ogg
 I, Katana the Warrior, have travelled for long years through space to finally come home
