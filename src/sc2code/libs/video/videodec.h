@@ -24,23 +24,12 @@
 // forward-declare
 typedef struct tfb_videodecoder TFB_VideoDecoder;
 
-// we do not support paletted format for now
-typedef struct tfb_videoformat
-{
-	uint32 BitsPerPixel;
-	uint32 BytesPerPixel;
-	uint32 Rmask, Gmask, Bmask, Amask;
-	uint32 Rshift, Gshift, Bshift, Ashift;
-	uint32 Rloss, Gloss, Bloss, Aloss;
-
-} TFB_VideoFormat;
-
 #define _THIS TFB_VideoDecoder*
 
 typedef struct tfb_videodecoderfunc
 {
 	int (* GetError) (_THIS);
-	bool (* Init) (_THIS, TFB_VideoFormat* fmt);
+	bool (* Init) (_THIS, TFB_PixelFormat* fmt);
 	void (* Term) (_THIS);
 	bool (* Open) (_THIS, uio_DirHandle *dir, const char *filename);
 	void (* Close) (_THIS);
@@ -74,7 +63,7 @@ struct tfb_videodecoder
 	// decoder virtual funcs - R/O
 	const TFB_VideoDecoderFuncs *funcs;
 	// video formats - R/O
-	const TFB_VideoFormat *format;
+	const TFB_PixelFormat *format;
 	// decoder-set data - R/O
 	uint32 w, h;
 	float length; // total length in seconds

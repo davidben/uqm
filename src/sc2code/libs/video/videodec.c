@@ -19,7 +19,7 @@
 #include "dukvid.h"
 
 static bool vd_inited = 0;
-static TFB_VideoFormat vd_vidfmt;
+static TFB_PixelFormat vd_vidfmt;
 
 static struct vd_DecoderInfo
 {
@@ -33,7 +33,7 @@ vd_decoders[] =
 	{NULL, NULL, NULL}	// null term
 };
 
-static void vd_computeMasks (uint32 mask, uint32* shift, uint32* loss);
+static void vd_computeMasks (uint32 mask, DWORD* shift, DWORD* loss);
 
 bool
 VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
@@ -208,7 +208,7 @@ VideoDecoder_Free (TFB_VideoDecoder *decoder)
 
 // BEGIN: adapted from SDL
 static void
-vd_computeMasks (uint32 mask, uint32* shift, uint32* loss)
+vd_computeMasks (uint32 mask, DWORD* shift, DWORD* loss)
 {
 	*shift = 0;
 	*loss = 8;

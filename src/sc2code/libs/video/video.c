@@ -17,7 +17,6 @@
  */
 
 #include "video.h"
-#include "sdl/sdlvideo.h"
 #include "vidplayer.h"
 
 #define NULL_VIDEO_REF	(0)
@@ -27,11 +26,11 @@ BOOLEAN
 InitVideo (BOOLEAN useCDROM)
 		//useCDROM doesn't really apply to us
 {
-	TFB_VideoFormat fmt;
+	TFB_PixelFormat fmt;
 	
-	TFB_GetScreenFormat (&fmt);
+	TFB_DrawCanvas_GetScreenFormat (&fmt);
 	if (!VideoDecoder_Init (0, fmt.BitsPerPixel, fmt.Rmask,
-			fmt.Gmask, fmt.Bmask, fmt.Amask))
+			fmt.Gmask, fmt.Bmask, 0))
 		return FALSE;
 
 	return TFB_InitVideoPlayer ();

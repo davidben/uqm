@@ -57,6 +57,15 @@ typedef struct tfb_image
 	BOOLEAN dirty;
 } TFB_Image;
 
+// we do not support paletted format for now
+typedef struct tfb_pixelformat
+{
+	int BitsPerPixel;
+	int BytesPerPixel;
+	DWORD Rmask, Gmask, Bmask, Amask;
+	DWORD Rshift, Gshift, Bshift, Ashift;
+	DWORD Rloss, Gloss, Bloss, Aloss;
+} TFB_PixelFormat;
 
 // Drawing commands
 
@@ -72,6 +81,7 @@ void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
 void TFB_FlushPaletteCache (void);
 
 TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);
+TFB_Image *TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha);
 void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 
@@ -81,6 +91,7 @@ void TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Image *target);
 
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
+TFB_Canvas TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha);
 TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index);
 TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int type, int last_type);
 TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
@@ -102,5 +113,7 @@ int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i, BOOLEAN rleaccel);
 void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel);
 void TFB_DrawCanvas_Initialize (void);
+void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
+void* TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
 
 #endif

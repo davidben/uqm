@@ -147,13 +147,45 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	UnlockMutex (img->mutex);
 }
 
-TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
+TFB_Canvas
+TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
 {
 	SDL_Surface *new_surf;
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, hasalpha ? 0xff000000 : 0);
 	if (!new_surf) {
 		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s", SDL_GetError());
 		exit(-1);
+	}
+	return new_surf;
+}
+
+TFB_Canvas
+TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
+{
+	SDL_Surface *new_surf;
+	SDL_PixelFormat* fmt = SDL_Screen->format;
+
+	if (fmt->palette)
+	{
+		fprintf(stderr, "TFB_DrawCanvas_New_ForScreen() WARNING:"
+				"Paletted display format will be slow");
+
+		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
+				32, 0x000000ff, 0x0000ff00, 0x00ff0000,
+				withalpha ? 0xff000000 : 0);
+	}
+	else
+	{
+		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
+				fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask,
+				withalpha ? fmt->Amask : 0);
+	}
+
+	if (!new_surf)
+	{
+		fprintf(stderr, "TFB_DrawCanvas_New_ForScreen() INTERNAL PANIC:"
+				"Failed to create TFB_Canvas: %s", SDL_GetError());
+		exit (-1);
 	}
 	return new_surf;
 }
@@ -863,4 +895,37 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 		fprintf (stderr, "Tried to deal with unknown BPP: %d -> %d, mipmap %d\n",
 			src->format->BitsPerPixel, dst->format->BitsPerPixel, mipmap->format->BitsPerPixel);
 	}
+}
+
+void
+TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt)
+{
+	SDL_PixelFormat *sdl = SDL_Screen->format;
+	
+	if (sdl->palette)
+	{
+		fprintf(stderr, "TFB_DrawCanvas_GetScreenFormat() WARNING:"
+				"Paletted display format will be slow");
+
+		fmt->BitsPerPixel = 32;
+		fmt->Rmask = 0x000000ff;
+		fmt->Gmask = 0x0000ff00;
+		fmt->Bmask = 0x00ff0000;
+		fmt->Amask = 0xff000000;
+	}
+	else
+	{
+		fmt->BitsPerPixel = sdl->BitsPerPixel;
+		fmt->Rmask = sdl->Rmask;
+		fmt->Gmask = sdl->Gmask;
+		fmt->Bmask = sdl->Bmask;
+		fmt->Amask = sdl->Amask;
+	}
+}
+
+void*
+TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
+{
+	SDL_Surface* surf = (SDL_Surface *)canvas;
+	return (uint8*)surf->pixels + surf->pitch * line;
 }

@@ -268,6 +268,22 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	return img;
 }
 
+TFB_Image*
+TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
+{
+	TFB_Image* img = HMalloc (sizeof (TFB_Image));
+	img->mutex = CreateMutex ("image lock", SYNC_CLASS_VIDEO);
+	img->ScaledImg = NULL;
+	img->MipmapImg = NULL;
+	img->colormap_index = -1;
+	img->last_scale_type = -1;
+	img->Palette = NULL;
+	
+	img->NormalImg = TFB_DrawCanvas_New_ForScreen (w, h, withalpha);
+
+	return img;
+}
+
 void 
 TFB_DrawImage_Delete (TFB_Image *image)
 {

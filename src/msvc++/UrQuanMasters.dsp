@@ -711,18 +711,6 @@ SOURCE=..\sc2code\libs\strings\strintrn.h
 # Begin Group "video"
 
 # PROP Default_Filter ""
-# Begin Group "sdl video"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\video\sdl\sdlvideo.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\video\sdl\sdlvideo.h
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\video\vfileins.c

@@ -14,8 +14,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "libs/graphics/gfx_common.h"
+#include "libs/graphics/tfb_draw.h"
 #include "vidplayer.h"
-#include "sdl/sdlvideo.h"
 
 // video callbacks
 static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);
@@ -46,7 +47,7 @@ static TFB_SoundCallbacks vp_AudioCBs =
 
 // inter-thread param guarded by mutex
 static Semaphore vp_interthread_lock = 0;
-void* vp_interthread_clip = NULL;
+static void* vp_interthread_clip = NULL;
 
 typedef struct
 {
@@ -304,7 +305,7 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 	vid->decoder->callbacks = vp_DecoderCBs;
 	vid->decoder->data = vid;
 	
-	vid->frame = TFB_CreateVideoImage (vid->w, vid->h);
+	vid->frame = TFB_DrawImage_CreateForScreen (vid->w, vid->h, FALSE);
 	vid->cur_frame = -1;
 	vid->want_frame = -1;
 
@@ -455,7 +456,7 @@ vp_GetCanvasLine (TFB_VideoDecoder* decoder, uint32 line)
 	if (!vid)
 		return NULL;
 	
-	return TFB_GetVideoLine (vid->frame, line);
+	return TFB_DrawCanvas_GetLine (vid->frame->NormalImg, line);
 }
 
 static uint32

@@ -14,7 +14,7 @@
 #define _THIS    TFB_VideoDecoder* This
 
 int dukv_GetError (_THIS);
-bool dukv_Init (_THIS, TFB_VideoFormat* fmt);
+bool dukv_Init (_THIS, TFB_PixelFormat* fmt);
 void dukv_Term (_THIS);
 bool dukv_Open (_THIS, uio_DirHandle *dir, const char *filename);
 void dukv_Close (_THIS);
@@ -412,7 +412,7 @@ dukv_InitDeltas (TFB_DuckVideo* dukv, uint8* vectors, sint32* pl, sint32* pc)
 }
 
 __inline__ uint32
-dukv_PixelConv (uint16 pix, const TFB_VideoFormat* fmt)
+dukv_PixelConv (uint16 pix, const TFB_PixelFormat* fmt)
 {
 	uint32 r, g, b;
 
@@ -430,7 +430,7 @@ void
 dukv_RenderFrame (_THIS)
 {
 	TFB_DuckVideo* dukv = This->dec_data;
-	const TFB_VideoFormat* fmt = This->format;
+	const TFB_PixelFormat* fmt = This->format;
 	uint32 h, x, y;
 	uint32* dec = dukv->decbuf;
 
@@ -508,7 +508,7 @@ int dukv_GetError (_THIS)
 }
 
 bool
-dukv_Init (_THIS, TFB_VideoFormat* fmt)
+dukv_Init (_THIS, TFB_PixelFormat* fmt)
 {
 	This->format = fmt;
 	This->audio_synced = 1;
