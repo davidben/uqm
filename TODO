@@ -162,7 +162,6 @@ Stuff still to do (small):
 - Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
-- Scanlines not implemented yet for pure mode
 - add some icon in the cvs tree
 
 Questions:
