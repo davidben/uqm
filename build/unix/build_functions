@@ -69,7 +69,7 @@ build_do_recursive() {
 
 # Build dependancy information for one file
 build_dependancies() {
-	eval echo -n \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
+	eval $ECHON \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
 	eval eval \\\$MKDEPEND \"\${${BUILD_PROJECT}_CFLAGS}\" \"\\\$1\"
 }
 
@@ -95,9 +95,9 @@ build_rec_dependancies() {
 
 	eval DEPEND_FILE="\$BUILD_WORK/.depend.\${${BUILD_PROJECT}_NAME}"
 	{
-		eval echo -n "\$BUILD_WORK_ESC/target-\${${BUILD_PROJECT}_NAME}:"
+		eval $ECHON "\$BUILD_WORK_ESC/target-\${${BUILD_PROJECT}_NAME}:"
 		for OFILE in $OFILES $EXTRA_OFILES; do
-			echo -n " $OFILE"
+			$ECHON " $OFILE"
 		done
 		echo
 		build_do_recursive build_dependancies :

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Made the unix build scripts more portable. Removed some small
+  bugs. - SvdB
 - No longer chdir() to the content dir (bug #564)
   Environment variables and ~ are interpreted in the supplied content
   path now.

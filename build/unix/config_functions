@@ -40,7 +40,7 @@ try_compile_c() {
 	fi
 	cat > "$TEMPFILE.c"
 	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
-			-o "$TEMPFILE.out" 2>&1 >> "$BUILDLOG"
+			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
 	RESULT=$?
 	rm -f "$TEMPFILE.c" "$TEMPFILE.out"
 	return $RESULT
@@ -58,7 +58,7 @@ try_compile_and_run_c() {
 	fi
 	cat > "$TEMPFILE.c"
 	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
-			-o "$TEMPFILE.out" 2>&1 >> "$BUILDLOG"
+			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
 	if [ $? -ne 0 ]; then
 		return -1
 	fi
@@ -119,7 +119,7 @@ have_program() {
 
 	eval eval TEMP_FILE="\\\"\$PROG_${PROG}_FILE\\\""
 
-	type "$TEMP_FILE" 2>&1 > /dev/null
+	type "${TEMP_FILE%% *}" > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		build_message "$TEMP_NAME not found."
 		return 1
@@ -245,7 +245,7 @@ have_symbol() {
 
 	# TODO: I'll want the include handling to be done differently
         #       eventually.
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF 2>&1 > /dev/null
+	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -287,7 +287,7 @@ have_header() {
 	local HEADER
 	HEADER="$1"
 
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF 2>&1 > /dev/null
+	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 #include <$HEADER>
 int main() {
 	return 0;
@@ -399,6 +399,8 @@ HAVE_SYMBOLS=""
 
 config_requirements() {
 	# Requirements for the config program itself
+	have_program echon || exit 1
+	ECHON="$PROG_echon_FILE"
 	have_program sed || exit 1
 	SED="$PROG_sed_FILE"
 	have_program tr || exit 1

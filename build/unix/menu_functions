@@ -277,7 +277,7 @@ EOF
 
 		echo
 		echo "Press a number plus <ENTER> if you want to change something, "
-		echo -n "or just <ENTER> if everything is ok: "
+		$ECHON "or just <ENTER> if everything is ok: "
 		read CHOICE
 
 		# Check if the choice was empty
@@ -367,7 +367,7 @@ EOF
 
 		echo
 		echo "Select the option you want by typing a number plus <ENTER>"
-		echo -n "or just <ENTER> if everything is ok: "
+		$ECHON "or just <ENTER> if everything is ok: "
 		read CHOICE
 		echo
 
@@ -434,7 +434,7 @@ EOF
 		eval TEMP_DEFAULT="\$INPUT_${ITEM}_DEFAULT"
 		echo "  Default value: $TEMP_DEFAULT"
 		echo "  Current value: $TEMP_VALUE"
-		echo -n "  New value:     "
+		$ECHON "  New value:     "
 		read NEW_VALUE
 		
 		# If no new value is entered, keep the old one.
