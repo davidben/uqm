@@ -65,10 +65,12 @@ struct uio_FileSystemHandler {
 	int               (*fstat)    (uio_Handle *, struct stat *);
 	int               (*stat)     (uio_PDirHandle *, const char *,
 			struct stat *);
-	uio_PDirHandle *   (*mkdir)    (uio_PDirHandle *, const char *, mode_t);
-	uio_Handle *       (*open)     (uio_PDirHandle *, const char *, int,
+	uio_PDirHandle *  (*mkdir)    (uio_PDirHandle *, const char *, mode_t);
+	uio_Handle *      (*open)     (uio_PDirHandle *, const char *, int,
 			mode_t);
 	ssize_t           (*read)     (uio_Handle *, void *, size_t);
+	int               (*rename)   (uio_PDirHandle *, const char *,
+			uio_PDirHandle *, const char *);
 	int               (*rmdir)    (uio_PDirHandle *, const char *);
 	off_t             (*seek)     (uio_Handle *, off_t, int);
 	ssize_t           (*write)    (uio_Handle *, const void *, size_t);

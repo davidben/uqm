@@ -35,6 +35,9 @@ Bugs:
 - uio_Stream file might get unaligned (not sure).
 - 'openDir(repository, "dir/")' will have the trailing '/'
   in the dirHandle, which will cause problems.
+- uio_rename() doesn't work on directories
+  uio_GetPhysicalAccess() needs to be changed so that it works the same on
+  dirs as on files. stat() can be cleaned up too then.
 
 Extra features (not necessary for UQM):
 - Make functions to use for uio_malloc, uio_free and uio_realloc
@@ -56,6 +59,11 @@ Extra features (not necessary for UQM):
   is accessed with the long vs the short ("PROGRA~1") name, or when
   capitalisation is involved.
 - accept non-dir, non-regular-file dir entries in stdio.
+- Add non-merging mounts. Make 'merging' an option for the mount.
+- make uio_rename() work cross-fs, or provide a wrapper which does that.
+  (the system rename() doesn't work cross-fs either, so keeping uio_rename()
+  as it is makes sense, as I'm trying to stay close to the system functions,
+  even though hiding file systems from the user would be nicer)
 
 Optimisations (not necessary for UQM):
 - use mmap for fileBlocks

@@ -257,6 +257,12 @@ copyError(int error,
  *              		Either O_RDONLY, O_RDWR, O_WRONLY. They may be
  *              		OR'd with other values accepted by open(). These
  *              		are ignored.
+ *              extraFlags - either 0 or uio_GPA_NOWRITE
+ *              		When 0, the path will be created if it doesn't
+ *              		exist in the writing location, but does exist
+ *                      in the reading location. With uio_GPA_NOWRITE, it
+ *                      won't be created, and -1 will be returned and errno
+ *                      will be set to ENOENT.
  *              mountInfoReadPtr - pointer to location where the pointer
  *              		to the MountInfo structure for the reading location
  *              		should be stored.
@@ -272,8 +278,8 @@ copyError(int error,
  *                      to by readPDirHandlePtr, the handles will be the
  *                      same too.
  *              restPtr - pointer to a newly created string with as contents
- *                        the last component of 'path'.
- *                        The caller is responsible for freeing this.
+ *              		the last component of 'path'.
+ *              		The caller is responsible for freeing this.
  * Returns:     0 - success
  *              -1 - failure (errno set)
  * NB:          This is the function that would most benefit from
@@ -283,7 +289,7 @@ copyError(int error,
  */
 int
 uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
-		int flags,
+		int flags, int extraFlags,
 		uio_MountInfo **mountInfoReadPtr, uio_PDirHandle **readPDirHandlePtr,
 		uio_MountInfo **mountInfoWritePtr, uio_PDirHandle **writePDirHandlePtr,
 		char **restPtr) {
@@ -433,6 +439,15 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 
 	// There exists no path for a write dir, so it will have to be created.
 	// writeMountInfo indicates the physical tree where it should end up.
+
+	if (extraFlags & uio_GPA_NOWRITE) {
+		// The caller has specified that the path should not be created.
+		uio_PDirHandle_unref(readPDirHandle);
+		uio_free(fullPath);
+		errno = ENOENT;
+		return -1;
+	}
+	
 	pRootPath = uio_mountTreeItemRestPath(writeItem, tree->lastComp,
 			fullPath);
 

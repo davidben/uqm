@@ -94,6 +94,10 @@ uio_Handle *uio_open(uio_DirHandle *dir, const char *file, int flags,
 // Close a file descriptor for a file opened by uio_open
 int uio_close(uio_Handle *handle);
 
+// Rename or move a file or directory.
+int uio_rename(uio_DirHandle *oldDir, const char *oldPath,
+		uio_DirHandle *newDir, const char *newPath);
+
 // Fstat a file descriptor
 int uio_fstat(uio_Handle *handle, struct stat *statBuf);
 

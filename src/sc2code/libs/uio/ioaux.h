@@ -33,9 +33,10 @@ uio_PDirHandle *uio_makePath(uio_PDirHandle *pDirHandle, const char *path,
 int uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
 		uio_PDirHandle *toDir, const char *toName);
 int uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
-		int flags, uio_MountInfo **mountInfoReadPtr,
+		int flags, int extraFlags, uio_MountInfo **mountInfoReadPtr,
 		uio_PDirHandle **readPDirHandlePtr, uio_MountInfo **mountInfoWritePtr,
 		uio_PDirHandle **writePDirHandlePtr, char **restPtr);
+#define uio_GPA_NOWRITE 1
 int uio_getPathPhysicalDirs(uio_DirHandle *dirHandle, const char *path,
 		size_t pathLen, uio_PDirHandle ***resPDirHandles,
 		int *resNumPDirHandles, uio_MountTreeItem ***resItems);

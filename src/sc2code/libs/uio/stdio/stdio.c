@@ -18,6 +18,9 @@
  *
  */
 
+// The GPDir structures and functions are used for caching only.
+
+
 #include "./stdio.h"
 
 #ifdef WIN32
@@ -71,6 +74,7 @@ uio_FileSystemHandler stdio_fileSystemHandler = {
 	/* .mkdir  = */  stdio_mkdir,
 	/* .open   = */  stdio_open,
 	/* .read   = */  stdio_read,
+	/* .rename = */  stdio_rename,
 	/* .rmdir  = */  stdio_rmdir,
 	/* .seek   = */  stdio_seek,
 	/* .write  = */  stdio_write,
@@ -201,10 +205,12 @@ stdio_open(uio_PDirHandle *pDirHandle, const char *file, int flags,
 	}
 	uio_free(path);
 
+#if 0
 	if (flags & O_CREAT) {
 		if (uio_GPDir_getGPDirEntry(pDirHandle->extra, file) == NULL)
 			stdio_addFile(pDirHandle->extra, file);
 	}
+#endif
 
 	handle = uio_malloc(sizeof (stdio_Handle));
 	handle->fd = fd;
@@ -215,6 +221,53 @@ stdio_open(uio_PDirHandle *pDirHandle, const char *file, int flags,
 ssize_t
 stdio_read(uio_Handle *handle, void *buf, size_t count) {
 	return read(handle->native->fd, buf, count);
+}
+
+int
+stdio_rename(uio_PDirHandle *oldPDirHandle, const char *oldName,
+		uio_PDirHandle *newPDirHandle, const char *newName) {
+	char *newPath, *oldPath;
+	int result;
+
+	oldPath = joinPaths(stdio_getPath(oldPDirHandle->extra), oldName);
+	if (oldPath == NULL) {
+		// errno is set
+		return -1;
+	}
+	
+	newPath = joinPaths(stdio_getPath(newPDirHandle->extra), newName);
+	if (newPath == NULL) {
+		// errno is set
+		uio_free(oldPath);
+		return -1;
+	}
+	
+	result = rename(oldPath, newPath);
+	if (result == -1) {
+		int saveErrno = errno;
+		uio_free(oldPath);
+		uio_free(newPath);
+		errno = saveErrno;
+		return -1;
+	}
+
+	uio_free(oldPath);
+	uio_free(newPath);
+
+	{
+		// update the GPDir structure
+		uio_GPDirEntry *entry;
+
+		// TODO: add locking
+		entry = uio_GPDir_getGPDirEntry(oldPDirHandle->extra, oldName);
+		if (entry != NULL) {
+			uio_GPDirEntries_remove(oldPDirHandle->extra->entries, oldName);
+			uio_GPDirEntries_add(newPDirHandle->extra->entries, newName,
+					entry);
+		}
+	}
+		
+	return result;
 }
 
 int

@@ -87,6 +87,8 @@ int stdio_fstat(uio_Handle *handle, struct stat *statBuf);
 int stdio_stat(uio_PDirHandle *pDirHandle, const char *name,
 		struct stat *statBuf);
 ssize_t stdio_read(uio_Handle *handle, void *buf, size_t count);
+int stdio_rename(uio_PDirHandle *oldPDirHandle, const char *oldName,
+		uio_PDirHandle *newPDirHandle, const char *newName);
 int stdio_rmdir(uio_PDirHandle *pDirHandle, const char *name);
 off_t stdio_seek(uio_Handle *handle, off_t offset, int whence);
 ssize_t stdio_write(uio_Handle *handle, const void *buf, size_t count);

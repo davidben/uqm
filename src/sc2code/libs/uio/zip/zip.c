@@ -102,6 +102,7 @@ uio_FileSystemHandler zip_fileSystemHandler = {
 	/* .mkdir  = */  NULL,
 	/* .open   = */  zip_open,
 	/* .read   = */  zip_read,
+	/* .rename = */  NULL,
 	/* .rmdir  = */  NULL,
 	/* .seek   = */  zip_seek,
 	/* .write  = */  NULL,

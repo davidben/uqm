@@ -330,6 +330,81 @@ uio_close(uio_Handle *handle) {
 }
 
 int
+uio_rename(uio_DirHandle *oldDir, const char *oldPath,
+		uio_DirHandle *newDir, const char *newPath) {
+	uio_PDirHandle *oldPReadDir, *newPReadDir, *newPWriteDir;
+	uio_MountInfo *oldReadMountInfo, *newReadMountInfo, *newWriteMountInfo;
+	char *oldName, *newName;
+	int retVal;
+
+	if (uio_getPhysicalAccess(oldDir, oldPath, O_RDONLY, 0,
+			&oldReadMountInfo, &oldPReadDir,
+			NULL, NULL, &oldName) == -1) {
+		// errno is set
+		return -1;
+	}
+
+	if (uio_getPhysicalAccess(newDir, newPath, O_WRONLY | O_CREAT | O_EXCL,
+			uio_GPA_NOWRITE, &newReadMountInfo, &newPReadDir,
+			&newWriteMountInfo, &newPWriteDir, &newName) == -1) {
+		int saveErrno = errno;
+		uio_PDirHandle_unref(oldPReadDir);
+		uio_free(oldName);
+		errno = saveErrno;
+		return -1;
+	}
+
+	if (oldReadMountInfo != newWriteMountInfo) {
+		uio_PDirHandle_unref(oldPReadDir);
+		uio_PDirHandle_unref(newPReadDir);
+		uio_PDirHandle_unref(newPWriteDir);
+		uio_free(oldName);
+		uio_free(newName);
+		errno = EXDEV;
+		return -1;
+	}
+
+	if (uio_mountInfoIsReadOnly(oldReadMountInfo)) {
+		uio_PDirHandle_unref(oldPReadDir);
+		uio_PDirHandle_unref(newPReadDir);
+		uio_PDirHandle_unref(newPWriteDir);
+		uio_free(oldName);
+		uio_free(newName);
+		errno = EROFS;
+		return -1;
+	}
+	
+	if (oldReadMountInfo->pDirHandle->pRoot->handler->rename == NULL) {
+		uio_PDirHandle_unref(oldPReadDir);
+		uio_PDirHandle_unref(newPReadDir);
+		uio_PDirHandle_unref(newPWriteDir);
+		uio_free(oldName);
+		uio_free(newName);
+		errno = ENOSYS;
+		return -1;
+	}
+	retVal = oldReadMountInfo->pDirHandle->pRoot->handler->rename(
+			oldPReadDir, oldName, newPReadDir, newName);
+	if (retVal == -1) {
+		int saveErrno = errno;
+		uio_PDirHandle_unref(oldPReadDir);
+		uio_PDirHandle_unref(newPReadDir);
+		uio_PDirHandle_unref(newPWriteDir);
+		uio_free(oldName);
+		uio_free(newName);
+		errno = saveErrno;
+		return -1;
+	}
+
+	uio_PDirHandle_unref(oldPReadDir);
+	uio_PDirHandle_unref(newPReadDir);
+	uio_PDirHandle_unref(newPWriteDir);
+	uio_free(oldName);
+	uio_free(newName);
+	return 0;
+}
+
+int
 uio_fstat(uio_Handle *handle, struct stat *statBuf) {
 	if (handle->root->handler->fstat == NULL) {
 		errno = ENOSYS;
@@ -345,7 +420,7 @@ uio_stat(uio_DirHandle *dir, const char *path, struct stat *statBuf) {
 	char *name;
 	int result;
 
-	if (uio_getPhysicalAccess(dir, path, O_RDONLY,
+	if (uio_getPhysicalAccess(dir, path, O_RDONLY, 0,
 			&readMountInfo, &pReadDir,
 			NULL, NULL, &name) == -1) {
 		if (uio_statDir(dir, path, statBuf) == -1) {
@@ -435,7 +510,7 @@ uio_mkdir(uio_DirHandle *dir, const char *path, mode_t mode) {
 	char *name;
 	uio_PDirHandle *newDirHandle;
 
-	if (uio_getPhysicalAccess(dir, path, O_WRONLY | O_CREAT | O_EXCL,
+	if (uio_getPhysicalAccess(dir, path, O_WRONLY | O_CREAT | O_EXCL, 0,
 			&readMountInfo, &pReadDir,
 			&writeMountInfo, &pWriteDir, &name) == -1) {
 		// errno is set
@@ -474,7 +549,7 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 	char *name;
 	uio_Handle *handle;
 	
-	if (uio_getPhysicalAccess(dir, path, flags,
+	if (uio_getPhysicalAccess(dir, path, flags, 0,
 			&readMountInfo, &readPDirHandle,
 			&writeMountInfo, &writePDirHandle, &name) == -1) {
 		// errno is set

@@ -63,6 +63,7 @@ static int debugCmdLs(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdMem(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdMkDir(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdMount(DebugContext *debugContext, int argc, char *argv[]);
+static int debugCmdMv(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdPwd(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdRm(DebugContext *debugContext, int argc, char *argv[]);
 static int debugCmdRmDir(DebugContext *debugContext, int argc, char *argv[]);
@@ -92,6 +93,7 @@ DebugCommand debugCommands[] = {
 	{ "mem", debugCmdMem },
 	{ "mkdir", debugCmdMkDir },
 	{ "mount", debugCmdMount },
+	{ "mv", debugCmdMv },
 	{ "pwd", debugCmdPwd },
 	{ "rm", debugCmdRm },
 	{ "rmdir", debugCmdRmDir },
@@ -631,6 +633,24 @@ debugCmdMount(DebugContext *debugContext, int argc, char *argv[]) {
 //		uio_printMountTree(debugContext->out, repository->mountTree, 0);
 	}
 	(void) argv;
+	return 0;
+}
+
+static int
+debugCmdMv(DebugContext *debugContext, int argc, char *argv[]) {
+	int retVal;
+	
+	if (argc != 3) {
+		fprintf(debugContext->err, "Invalid number of arguments.\n");
+		return 1;
+	}
+	
+	retVal = uio_rename(debugContext->cwd, argv[1],
+			debugContext->cwd, argv[2]);
+	if (retVal == -1) {
+		fprintf(debugContext->err, "Could not rename: %s\n", strerror(errno));
+		return 1;
+	}
 	return 0;
 }
 
