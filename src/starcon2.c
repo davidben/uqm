@@ -677,7 +677,7 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "  -o, --opengl (default off)\n");
 	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
 			"default is none)\n");
-	fprintf (out, "  -b, --meleescale=MODE (nearest or trilinear, "
+	fprintf (out, "  -b, --meleescale=MODE (nearest, trilinear, step; "
 			"default is trilinear)\n");
 	fprintf (out, "  -s, --scanlines (default off)\n");
 	fprintf (out, "  -p, --fps (default off)\n");
