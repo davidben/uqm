@@ -98,7 +98,7 @@ SeedRandomNumbers (void)
 {
 	DWORD cur_time;
 
-	SeedRandom (cur_time = GetTimeCounter ());
+	TFB_SeedRandom (cur_time = GetTimeCounter ());
 
 	return (cur_time);
 }

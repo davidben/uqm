@@ -103,7 +103,7 @@ OpenJournal (void)
 				FlushInput ();
 
 				cread ((PBYTE)&start_seed, sizeof (start_seed), 1, journal_fh);
-				SeedRandom (start_seed);
+				TFB_SeedRandom (start_seed);
 			}
 		}
 	}

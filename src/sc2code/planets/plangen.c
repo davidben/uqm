@@ -1170,7 +1170,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	POINT loc;
 	CONTEXT OldContext;
 
-	old_seed = SeedRandom (pPlanetDesc->rand_seed);
+	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
 	OldContext = SetContext (TaskContext);
 	pSolarSysState->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * 255);
@@ -1323,7 +1323,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	SetContext (OldContext);
 
-	SeedRandom (old_seed);
+	TFB_SeedRandom (old_seed);
 
 	SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
 }

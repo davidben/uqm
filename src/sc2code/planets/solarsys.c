@@ -65,7 +65,7 @@ GenerateMoons (void)
 			- (SIS_SCREEN_HEIGHT >> 1))
 			* MAX_ZOOM_RADIUS / (DISPLAY_FACTOR >> 1));
 	pCurDesc = pSolarSysState->pBaseDesc;
-	old_seed = SeedRandom (pCurDesc->rand_seed);
+	old_seed = TFB_SeedRandom (pCurDesc->rand_seed);
 
 	(*pSolarSysState->GenFunc) (GENERATE_NAME);
 	(*pSolarSysState->GenFunc) (GENERATE_MOONS);
@@ -105,7 +105,7 @@ GenerateMoons (void)
 	}
 
 	pSolarSysState->pBaseDesc = pSolarSysState->MoonDesc;
-	SeedRandom (old_seed);
+	TFB_SeedRandom (old_seed);
 }
 
 void
@@ -180,7 +180,7 @@ LoadSolarSys (void)
 // LoadIPData ();
 	}
 
-	old_seed = SeedRandom (
+	old_seed = TFB_SeedRandom (
 			MAKE_DWORD (CurStarDescPtr->star_pt.x,
 			CurStarDescPtr->star_pt.y)
 			);
@@ -324,7 +324,7 @@ LoadSolarSys (void)
 				SetAbsFrameIndex (SISIPFrame, i - 1);
 	}
 
-	SeedRandom (old_seed);
+	TFB_SeedRandom (old_seed);
 }
 
 static void
@@ -1768,7 +1768,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 
 	ClearDrawable ();
 
-	old_seed = SeedRandom (
+	old_seed = TFB_SeedRandom (
 			MAKE_DWORD (CurStarDescPtr->star_pt.x,
 			CurStarDescPtr->star_pt.y)
 			);
@@ -1851,7 +1851,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 		UnbatchGraphics ();
 	}
 
-	SeedRandom (old_seed);
+	TFB_SeedRandom (old_seed);
 }
 
 void

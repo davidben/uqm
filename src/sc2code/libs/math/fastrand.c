@@ -48,7 +48,7 @@ seed_fast_random(DWORD seed)
 		DWORD retval;
 		COUNT index;
 
-		retval = SeedRandom(seed);
+		retval = TFB_SeedRandom(seed);
 
 		for( index = 0; index < TABLE_SIZE; index++ )
 				random_table[index] = TFB_Random();

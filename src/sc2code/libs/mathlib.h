@@ -21,7 +21,7 @@
 
 #include "compiler.h"
 
-extern DWORD SeedRandom (DWORD seed);
+extern DWORD TFB_SeedRandom (DWORD seed);
 extern DWORD TFB_Random (void);
 extern COUNT square_root (DWORD value);
 

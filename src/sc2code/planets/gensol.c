@@ -135,7 +135,7 @@ generate_tractors (void)
 		COUNT i, which_node;
 		DWORD old_rand, rand_val;
 
-		old_rand = SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+		old_rand = TFB_SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 		which_node = i = 0;
 		do
@@ -154,7 +154,7 @@ generate_tractors (void)
 		} while (++i < 10);
 		pSolarSysState->CurNode = which_node;
 
-		SeedRandom (old_rand);
+		TFB_SeedRandom (old_rand);
 	}
 }
 
@@ -491,7 +491,7 @@ GenerateSOL (BYTE control)
 		case GENERATE_PLANETS:
 		{
 #define SOL_SEED 334241042L
-			SeedRandom (SOL_SEED);
+			TFB_SeedRandom (SOL_SEED);
 
 			pSolarSysState->SunDesc[0].NumPlanets = 9;
 			for (i = 0, pCurDesc = pSolarSysState->PlanetDesc; i < 9; ++i, ++pCurDesc)

@@ -227,7 +227,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 	if (pPlanetDesc->data_index == (BYTE)~0)
 		return (0);
 
-	old_seed = SeedRandom (pPlanetDesc->rand_seed);
+	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
 	CalcSysInfo (SysInfoPtr);
 
@@ -394,6 +394,6 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 #endif /* DEBUG */
 	}
 
-	return (SeedRandom (old_seed));
+	return (TFB_SeedRandom (old_seed));
 }
 

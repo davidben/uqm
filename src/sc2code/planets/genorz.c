@@ -32,7 +32,7 @@ GenerateAndrosynth (BYTE control)
 			{
 				COUNT i, which_node;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -95,7 +95,7 @@ GenerateAndrosynth (BYTE control)
 				} while (++i < 16);
 				pSolarSysState->CurNode = which_node;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;
@@ -197,7 +197,7 @@ GenerateOrz (BYTE control)
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[2]
 					&& !GET_GAME_STATE (TAALO_PROTECTOR))
 			{
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -223,7 +223,7 @@ GenerateOrz (BYTE control)
 					}
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			else if (CurStarDescPtr->Index == ORZ_DEFINED
@@ -231,7 +231,7 @@ GenerateOrz (BYTE control)
 			{
 				COUNT i, which_node;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -253,7 +253,7 @@ GenerateOrz (BYTE control)
 				} while (++i < 16);
 				pSolarSysState->CurNode = which_node;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

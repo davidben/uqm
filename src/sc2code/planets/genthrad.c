@@ -32,7 +32,7 @@ GenerateThradd (BYTE control)
 				{
 					COUNT i, which_node;
 
-					old_rand = SeedRandom (
+					old_rand = TFB_SeedRandom (
 							pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 							);
 
@@ -54,12 +54,12 @@ GenerateThradd (BYTE control)
 					} while (++i < 16);
 					pSolarSysState->CurNode = which_node;
 
-					SeedRandom (old_rand);
+					TFB_SeedRandom (old_rand);
 					break;
 				}
 				else if (!GET_GAME_STATE (AQUA_HELIX))
 				{
-					old_rand = SeedRandom (
+					old_rand = TFB_SeedRandom (
 							pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 							);
 
@@ -87,7 +87,7 @@ GenerateThradd (BYTE control)
 						}
 					}
 
-					SeedRandom (old_rand);
+					TFB_SeedRandom (old_rand);
 					break;
 				}
 			}

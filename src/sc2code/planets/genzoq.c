@@ -115,7 +115,7 @@ GenerateZoqFotPik (BYTE control)
 				COUNT i, which_node;
 				DWORD rand_val, old_rand;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -137,7 +137,7 @@ GenerateZoqFotPik (BYTE control)
 				} while (++i < 16);
 				pSolarSysState->CurNode = which_node;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

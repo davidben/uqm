@@ -33,7 +33,7 @@ GenerateSpathi (BYTE control)
 			{
 				DWORD rand_val, old_rand;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -59,7 +59,7 @@ GenerateSpathi (BYTE control)
 					}
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;
@@ -108,7 +108,7 @@ GenerateSpathi (BYTE control)
 				COUNT which_node;
 				DWORD old_rand;
 
-				old_rand = SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+				old_rand = TFB_SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 				which_node = i = 0;
 				do
@@ -134,7 +134,7 @@ GenerateSpathi (BYTE control)
 						SET_GAME_STATE (SPATHI_CREATURES_ELIMINATED, 1);
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

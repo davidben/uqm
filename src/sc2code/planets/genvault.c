@@ -30,7 +30,7 @@ GenerateShipVault (BYTE control)
 			{
 				DWORD rand_val, old_rand;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -65,7 +65,7 @@ GenerateShipVault (BYTE control)
 					}
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

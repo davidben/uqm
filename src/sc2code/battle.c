@@ -174,11 +174,11 @@ Battle (void)
 	SetResourceIndex (hResIndex);
 
 #if !(DEMO_MODE || CREATE_JOURNAL)
-	SeedRandom (GetTimeCounter ());
+	TFB_SeedRandom (GetTimeCounter ());
 #else /* DEMO_MODE */
 	if (BattleSeed == 0)
 		BattleSeed = TFB_Random ();
-	SeedRandom (BattleSeed);
+	TFB_SeedRandom (BattleSeed);
 	BattleSeed = TFB_Random (); /* get next battle seed */
 #endif /* DEMO_MODE */
 

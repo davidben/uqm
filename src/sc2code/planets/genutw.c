@@ -60,7 +60,7 @@ GenerateUtwig (BYTE control)
 			{
 				COUNT i, which_node;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -82,7 +82,7 @@ GenerateUtwig (BYTE control)
 				} while (++i < 16);
 				pSolarSysState->CurNode = which_node;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			else if (CurStarDescPtr->Index == BOMB_DEFINED
@@ -90,7 +90,7 @@ GenerateUtwig (BYTE control)
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[1]
 					&& !GET_GAME_STATE (UTWIG_BOMB))
 			{
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -119,7 +119,7 @@ GenerateUtwig (BYTE control)
 					}
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

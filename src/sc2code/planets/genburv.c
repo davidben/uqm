@@ -34,7 +34,7 @@ GenerateBurvixes (BYTE control)
 			{
 				COUNT which_node;
 
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -56,14 +56,14 @@ GenerateBurvixes (BYTE control)
 				} while (++i < 16);
 				pSolarSysState->CurNode = which_node;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			else if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->PlanetDesc[0]
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0]
 					&& !GET_GAME_STATE (BURVIXESE_BROADCASTERS))
 			{
-				old_rand = SeedRandom (
+				old_rand = TFB_SeedRandom (
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
@@ -89,7 +89,7 @@ GenerateBurvixes (BYTE control)
 					}
 				}
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			pSolarSysState->CurNode = 0;

@@ -70,7 +70,7 @@ TFB_Random (void)
 }
 
 /*****************************************************************************
-* FUNC: DWORD SeedRandom(DWORD l)
+* FUNC: DWORD TFB_SeedRandom(DWORD l)
 *
 * DESC: set the seed for the random number generator to parameter "l", and
 * return the value of the previously active seed, to allow for multiple
@@ -83,7 +83,7 @@ TFB_Random (void)
 *****************************************************************************/
 
 DWORD
-SeedRandom (DWORD new_seed)
+TFB_SeedRandom (DWORD new_seed)
 {
 	DWORD old_seed;
 

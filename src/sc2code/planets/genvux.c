@@ -59,7 +59,7 @@ GenerateVUX (BYTE control)
 					COUNT i, which_node;
 					DWORD rand_val, old_rand;
 
-					old_rand = SeedRandom (
+					old_rand = TFB_SeedRandom (
 							pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 							);
 
@@ -81,7 +81,7 @@ GenerateVUX (BYTE control)
 					} while (++i < 16);
 					pSolarSysState->CurNode = which_node;
 
-					SeedRandom (old_rand);
+					TFB_SeedRandom (old_rand);
 					break;
 				}
 			}
@@ -252,7 +252,7 @@ GenerateVUX (BYTE control)
 				COUNT i;
 				DWORD old_rand;
 
-				old_rand = SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+				old_rand = TFB_SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 				i = 0;
 				do
@@ -275,7 +275,7 @@ GenerateVUX (BYTE control)
 				} while (++i < 12);
 				pSolarSysState->CurNode = i;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 			else if (CurStarDescPtr->Index == VUX_BEAST_DEFINED
@@ -284,7 +284,7 @@ GenerateVUX (BYTE control)
 				COUNT i;
 				DWORD old_rand;
 
-				old_rand = SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+				old_rand = TFB_SeedRandom (pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 				i = 0;
 				do
@@ -325,7 +325,7 @@ GenerateVUX (BYTE control)
 				} while (++i < 11);
 				pSolarSysState->CurNode = i;
 
-				SeedRandom (old_rand);
+				TFB_SeedRandom (old_rand);
 				break;
 			}
 		default:
