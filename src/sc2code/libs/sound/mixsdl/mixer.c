@@ -490,10 +490,15 @@ mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 			}
 			break;
 		case MIX_SOURCE_STATE:
-#ifdef DEBUG
-			fprintf (stderr, "mixSDL_Sourcei() called "
-					"with MIX_SOURCE_STATE. call ignored\n");
-#endif
+			if (value == MIX_INITIAL)
+			{
+				mixSDL_SourceRewind_internal (src);
+			}
+			else
+			{
+				fprintf (stderr, "mixSDL_Sourcei(MIX_SOURCE_STATE): "
+						"unsupported state, call ignored\n");
+			}
 			break;
 		default:
 			mixSDL_SetError (MIX_INVALID_ENUM);
@@ -700,26 +705,7 @@ mixSDL_SourceRewind (mixSDL_Object srcobj)
 	}
 	else
 	{
-		/* should change the processed buffers to queued */
-		mixSDL_Buffer *buf;
-
-		if (src->state >= MIX_PLAYING)
-			mixSDL_SourceDeactivate (src);
-
-		mixSDL_LockMutex (buf_mutex);
-
-		for (buf = src->firstqueued;
-				buf && buf->state != MIX_BUF_QUEUED;
-				buf = buf->next)
-		{
-			buf->state = MIX_BUF_QUEUED;
-		}
-
-		mixSDL_UnlockMutex (buf_mutex);
-
-		src->curbufofs = 0;
-		src->cprocessed = 0;
-		src->state = MIX_INITIAL;
+		mixSDL_SourceRewind_internal (src);
 	}
 
 	mixSDL_UnlockMutex (src_mutex);
@@ -1102,6 +1088,32 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 	src->curbufofs = 0;
 
 	mixSDL_UnlockMutex (buf_mutex);
+}
+
+static void
+mixSDL_SourceRewind_internal (mixSDL_Source *src)
+{
+	/* should change the processed buffers to queued */
+	mixSDL_Buffer *buf;
+
+	if (src->state >= MIX_PLAYING)
+		mixSDL_SourceDeactivate (src);
+
+	mixSDL_LockMutex (buf_mutex);
+
+	for (buf = src->firstqueued;
+			buf && buf->state != MIX_BUF_QUEUED;
+			buf = buf->next)
+	{
+		buf->state = MIX_BUF_QUEUED;
+	}
+
+	mixSDL_UnlockMutex (buf_mutex);
+
+	src->curbufofs = 0;
+	src->cprocessed = 0;
+	src->nextqueued = src->firstqueued;
+	src->state = MIX_INITIAL;
 }
 
 /* get the sample next in queue in internal format */

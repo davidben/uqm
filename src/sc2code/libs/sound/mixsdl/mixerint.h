@@ -76,6 +76,7 @@ static __inline__ void mixSDL_PutSampleExt (void *dst, uint32 bpc,
 /* Source manipulation */
 static void mixSDL_SourceUnqueueAll (mixSDL_Source *src);
 static void mixSDL_SourceStop_internal (mixSDL_Source *src);
+static void mixSDL_SourceRewind_internal (mixSDL_Source *src);
 static void mixSDL_SourceActivate (mixSDL_Source* src);
 static void mixSDL_SourceDeactivate (mixSDL_Source* src);
 

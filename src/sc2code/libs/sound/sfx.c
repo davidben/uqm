@@ -21,14 +21,19 @@
 
 #include "sound.h"
 
+static void CheckFinishedChannels ();
+
 
 void
 PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin, 
 			 COUNT loop_length, unsigned char priority)
 {
 	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;	
+	StopSource (channel);
+	// all finished (stopped) channels can be cleaned up at this point
+	// since this is the only func that can initiate an sfx sound
+	CheckFinishedChannels ();
 	soundSource[channel].sample = tfb_sample;
-	TFBSound_SourceStop (soundSource[channel].handle);
 	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER,
 			tfb_sample->buffer[0]);
 	TFBSound_SourcePlay (soundSource[channel].handle);
@@ -38,6 +43,26 @@ void
 StopChannel (COUNT channel, unsigned char Priority)
 {
 	StopSource (channel);
+}
+
+static void
+CheckFinishedChannels ()
+{
+	int i;
+
+	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
+	{
+		TFBSound_IntVal state;
+
+		TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_SOURCE_STATE,
+				&state);
+		if (state == TFBSOUND_STOPPED)
+		{
+			CleanSource (i);
+			// and if it failed... we still dont care
+			TFBSound_GetError();
+		}
+	}
 }
 
 BOOLEAN

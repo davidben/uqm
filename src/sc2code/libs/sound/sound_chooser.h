@@ -101,6 +101,7 @@ enum
 
 extern int TFBSOUND_PAUSED;
 extern int TFBSOUND_PLAYING;
+extern int TFBSOUND_STOPPED;
 extern unsigned int TFBSOUND_NO_ERROR;
 extern unsigned int TFBSOUND_FORMAT_MONO16;
 extern unsigned int TFBSOUND_FORMAT_STEREO16;

@@ -34,22 +34,39 @@ StopSound (void)
 }
 
 void
-StopSource (int iSource)
+CleanSource (int iSource)
 {
+#define MAX_STACK_BUFFERS 64	
 	TFBSound_IntVal processed;
 
-	TFBSound_SourceStop (soundSource[iSource].handle);
 	TFBSound_GetSourcei (soundSource[iSource].handle,
 			TFBSOUND_BUFFERS_PROCESSED, &processed);
-
 	if (processed != 0)
 	{
-		TFBSound_Object *buffer = (TFBSound_Object *)
-				HMalloc (sizeof (TFBSound_Object) * processed);
+		TFBSound_Object stack_bufs[MAX_STACK_BUFFERS];
+		TFBSound_Object *bufs;
+
+		if (processed > MAX_STACK_BUFFERS)
+			bufs = (TFBSound_Object *) HMalloc (
+					sizeof (TFBSound_Object) * processed);
+		else
+			bufs = stack_bufs;
+
 		TFBSound_SourceUnqueueBuffers (soundSource[iSource].handle,
-				processed, buffer);
-		HFree (buffer);
+				processed, bufs);
+		
+		if (processed > MAX_STACK_BUFFERS)
+			HFree (bufs);
 	}
+	// set the source state to 'initial'
+	TFBSound_SourceRewind (soundSource[iSource].handle);
+}
+
+void
+StopSource (int iSource)
+{
+	TFBSound_SourceStop (soundSource[iSource].handle);
+	CleanSource (iSource);
 }
 
 BOOLEAN
@@ -80,6 +97,18 @@ SoundPlaying (void)
 	}
 
 	return FALSE;
+}
+
+// for now just spin in a sleep() loop
+// perhaps later change to condvar implementation
+void
+WaitForSoundEnd (COUNT Channel)
+{
+	while (Channel == TFBSOUND_WAIT_ALL ?
+			SoundPlaying () : ChannelPlaying (Channel))
+	{
+		SleepThread (ONE_SECOND / 20);
+	}
 }
 
 TFB_SoundChain *
