@@ -1,4 +1,7 @@
-Changes towards version 0.2:
+Changes towards version 0.3:
+
+
+Changes for version 0.2:
 - Shipyard/Outfit screens now use larger PC graphics;
   Outfit blueprint is properly aligned; from Nic
 - Key config is now saved in user dir too.
