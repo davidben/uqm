@@ -1,4 +1,8 @@
 Changes towards version 0.4:
+- Fixed a keyrepeatbug from when the player cancels out of the
+  Starmap in IP -Michael
+- IP_taskfunc now uses PulsedInputState instead of handling its
+  own debounce delays -Michael
 - Input code refactoring, phase 1: Replaced messy structs with an
   array indexed by an enum. -Michael
 - Thread code refactoring: only the main thread will actually spawn 
