@@ -546,8 +546,6 @@ LearnQuest (RESPONSE_REF R)
 static void
 AllianceOffer (RESPONSE_REF R)
 {
-	//PTR_DESC PtrDesc;
-
 	if (PLAYER_SAID (R, misunderstanding))
 	{
 		NPCPhrase (JUST_MISUNDERSTANDING);

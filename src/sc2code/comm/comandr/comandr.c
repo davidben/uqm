@@ -116,8 +116,6 @@ ByeBye (RESPONSE_REF R)
 			|| PLAYER_SAID (R, overthrow_evil_aliens)
 			|| PLAYER_SAID (R, annihilate_those_monsters))
 	{
-		//PTR_DESC PtrDesc;
-
 		SET_GAME_STATE (PROBE_ILWRATH_ENCOUNTER, 0);
 
 		if (PLAYER_SAID (R, cook_their_butts))

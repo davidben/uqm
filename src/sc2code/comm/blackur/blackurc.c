@@ -321,8 +321,6 @@ Frenzy (RESPONSE_REF R)
 static void
 KohrAhStory (RESPONSE_REF R)
 {
-	//PTR_DESC PtrDesc;
-
 	if (PLAYER_SAID (R, key_phrase))
 	{
 		NPCPhrase (RESPONSE_TO_KEY_PHRASE);

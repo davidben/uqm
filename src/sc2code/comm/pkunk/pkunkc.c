@@ -752,7 +752,6 @@ static void
 PkunkNeutralSpace (RESPONSE_REF R)
 {
 	BYTE NumVisits;
-	//PTR_DESC PtrDesc;
 
 	if (PLAYER_SAID (R, form_alliance))
 	{
@@ -1094,8 +1093,6 @@ LOCDATAPTR
 init_pkunk_comm (void)
 {
 	LOCDATAPTR retval;
-
-	//PTR_DESC PtrDesc;
 
 	pkunk_desc.init_encounter_func = Intro;
 	pkunk_desc.uninit_encounter_func = uninit_pkunk;

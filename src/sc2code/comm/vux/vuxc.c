@@ -311,7 +311,6 @@ Menagerie (RESPONSE_REF R)
 {
 	BYTE i, LastStack;
 	RESPONSE_REF pStr[3];
-	//PTR_DESC PtrDesc;
 
 	if (PLAYER_SAID (R, i_have_beast)
 			|| PLAYER_SAID (R, why_trust_1)
@@ -531,8 +530,6 @@ Menagerie (RESPONSE_REF R)
 static void
 NormalVux (RESPONSE_REF R)
 {
-	//PTR_DESC PtrDesc;
-
 	if (PLAYER_SAID (R, why_so_mean))
 	{
 		NPCPhrase (URQUAN_SLAVES);

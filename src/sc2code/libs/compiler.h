@@ -47,8 +47,6 @@ typedef unsigned char   UNICODE;
 
 #define PARAGRAPH_SHIFT  0
 
-typedef PVOID PTR_DESC;
-
 #define PARAGRAPH_SIZE (1 << PARAGRAPH_SHIFT)
 
 #define NULL_PTR 0L

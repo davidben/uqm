@@ -201,7 +201,6 @@ static void
 RebelInfo (RESPONSE_REF R)
 {
 	BYTE InfoLeft;
-	//PTR_DESC PtrDesc;
 
 	InfoLeft = FALSE;
 	if (PLAYER_SAID (R, give_info_rebels))
