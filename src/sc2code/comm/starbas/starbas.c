@@ -36,6 +36,10 @@ void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
 
 //End Added by Chris
 
+static void TellMission (RESPONSE_REF R);
+static void SellMinerals (RESPONSE_REF R);
+
+
 static LOCDATA commander_desc =
 {
 	NULL_PTR, /* init_encounter_func */
@@ -565,7 +569,6 @@ DefeatUrquan (RESPONSE_REF R)
 #define HOW_ALLY_AGAINST_URQUAN (1 << 2)
 #define HOW_STRONG_AGAINST_URQUAN (1 << 3)
 	static BYTE DefeatMask = 0;
-	static void TellMission (RESPONSE_REF R);
 
 	if (PLAYER_SAID (R, how_defeat))
 	{
@@ -1720,11 +1723,7 @@ NormalStarbase (RESPONSE_REF R)
 	}
 
 	if (GLOBAL_SIS (TotalElementMass))
-	{
-		static void SellMinerals (RESPONSE_REF R);
-
 		Response (have_minerals, SellMinerals);
-	}
 	if (DiscussDevices (FALSE))
 		Response (new_devices, NormalStarbase);
 	if (CurBulletinMask)

@@ -44,8 +44,12 @@
 #define MAX_NAME_CHARS 15
 #define SAVES_PER_PAGE 5
 
+static BOOLEAN DoSettings (PMENU_STATE pMS);
+static BOOLEAN DoNaming (PMENU_STATE pMS);
+
 static PMENU_STATE pLocMenuState;
 static BYTE prev_save; //keeps track of the last slot that was saved or loaded
+
 
 void
 ConfirmSaveLoad (STAMP *MsgStamp)
@@ -175,7 +179,8 @@ FeedbackSetting (BYTE which_setting)
 	DrawStatusMessage (buf);
 	UnlockMutex (GraphicsLock);
 }
-static void 
+
+static void
 FeedbackQuit (BYTE which_setting)
 {
 	UNICODE buf[20];
@@ -195,8 +200,6 @@ FeedbackQuit (BYTE which_setting)
 	UnlockMutex (GraphicsLock);
 }
 
-static BOOLEAN DoSettings (PMENU_STATE pMS);
-
 static BOOLEAN
 DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 {
@@ -205,7 +208,6 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	TEXT lf;
 	COLOR BackGround, ForeGround;
 	FONT Font;
-	static BOOLEAN DoNaming (PMENU_STATE pMS);
 
 	LockMutex (GraphicsLock);
 

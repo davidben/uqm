@@ -62,7 +62,7 @@ GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 					if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
 						break;
 				}
-				((BYTE *) RDPtr) += num_read;
+				RDPtr = (RESOURCE_DATAPTR) ((BYTE *) RDPtr + num_read);
 			} while (length -= num_read);
 
 			UnlockResourceData (RData);

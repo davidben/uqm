@@ -51,6 +51,7 @@
 void ConfirmSaveLoad (STAMP *MsgStamp);
 
 //End Added by Chris
+static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip);
 
 
 static int flash_selection_func (void *data);
@@ -244,8 +245,6 @@ DrawPickFrame (PMELEE_STATE pMS)
 {
 	FRAME F;
 	RECT r, r0, r1, ship_r;
-	static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE
-			NewStarShip);
 				
 	GetShipBox (&r0, 0, 0, 0),
 	GetShipBox (&r1, 1, NUM_MELEE_ROWS - 1, NUM_MELEE_COLUMNS - 1),

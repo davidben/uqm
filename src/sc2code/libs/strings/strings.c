@@ -45,7 +45,8 @@ ReleaseStringTable (STRING String)
 {
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) != 0)
+	StringTable = GetStringTable (String);
+	if (StringTable != 0)
 		UnlockStringTable (StringTable);
 
 	return (StringTable);
@@ -63,7 +64,8 @@ GetStringTableCount (STRING String)
 	COUNT StringCount;
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		StringCount = 0;
 	else
 	{
@@ -88,7 +90,8 @@ SetAbsStringTableIndex (STRING String, COUNT StringTableIndex)
 {
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		String = 0;
 	else
 	{
@@ -109,7 +112,8 @@ SetRelStringTableIndex (STRING String, SIZE StringTableOffs)
 {
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		String = 0;
 	else
 	{
@@ -135,7 +139,8 @@ GetStringLength (STRING String)
 	COUNT StringLength;
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		StringLength = 0;
 	else
 	{
@@ -173,7 +178,8 @@ GetStringSoundClip (STRING String)
 	STRINGPTR StringAddr;
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		StringAddr = 0;
 	else
 	{
@@ -189,8 +195,8 @@ GetStringSoundClip (STRING String)
 			StringAddr = 0;
 		else
 		{
-			StringAddr = (STRINGPTR)StringTablePtr;
-			((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
+			StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
+					StringTablePtr->StringOffsets[StringIndex]);
 		}
 		UnlockStringTable (StringTable);
 	}
@@ -204,7 +210,8 @@ GetStringTimeStamp (STRING String)
 	STRINGPTR StringAddr;
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		StringAddr = 0;
 	else
 	{
@@ -222,8 +229,8 @@ GetStringTimeStamp (STRING String)
 			StringAddr = 0;
 		else
 		{
-			StringAddr = (STRINGPTR)StringTablePtr;
-			((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
+			StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
+					StringTablePtr->StringOffsets[StringIndex]);
 		}
 		UnlockStringTable (StringTable);
 	}
@@ -237,7 +244,8 @@ GetStringAddress (STRING String)
 	STRINGPTR StringAddr;
 	STRING_TABLE StringTable;
 
-	if ((StringTable = GetStringTable (String)) == 0)
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
 		StringAddr = 0;
 	else
 	{
@@ -246,8 +254,8 @@ GetStringAddress (STRING String)
 
 		StringIndex = STRING_INDEX (String);
 		LockStringTable (StringTable, &StringTablePtr);
-		StringAddr = (STRINGPTR)StringTablePtr;
-		((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
+		StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
+				StringTablePtr->StringOffsets[StringIndex]);
 		UnlockStringTable (StringTable);
 	}
 
