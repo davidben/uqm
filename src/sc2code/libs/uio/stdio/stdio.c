@@ -154,7 +154,7 @@ stdio_mkdir(uio_PDirHandle *pDirHandle, const char *name, mode_t mode) {
 		return NULL;
 	}
 
-	if (mkdir(path, mode) == -1) {
+	if (MKDIR(path, mode) == -1) {
 		int saveErrno = errno;
 		uio_free(path);
 		errno = saveErrno;
