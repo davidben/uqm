@@ -76,6 +76,24 @@ case "$OSNAME" in
 	FreeBSD)  LIB_SDL_VERSION='$(sdl11-config --version)' ;;
 	*)        LIB_SDL_VERSION='$(sdl-config --version)' ;;
 esac
+case "$OSNAME" in
+	Darwin)
+		LIB_SDL_DETECT="Darwin_SDL_detect"
+		Darwin_SDL_detect() {
+			eval TEMP_LDFLAGS="\"$LIB_SDL_LDFLAGS\""
+			eval TEMP_CFLAGS="\"$LIB_SDL_CFLAGS\""
+			try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
+#include "SDL.h"
+int main(int argc, char *argv[]) {
+	(void) argc;  /* Get rid of unused variable warning */
+	(void) argv;  /* Get rid of unused variable warning */
+	return 0;
+}
+EOF
+			return $?
+		}
+		;;
+esac
 
 LIB_SDL_mixer_NAME="SDL_mixer"
 LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"

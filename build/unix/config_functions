@@ -107,14 +107,27 @@ lexlt() {
 # Description: check if a program is present in the path
 # Arguments:   
 have_program() {
-	local TEMP_NAME TEMP_FILE TEMP_VERSION
+	local PROG TEMP_NAME TEMP_FILE TEMP_VERSION TEMP_DETECT
 
-	eval eval TEMP_NAME="\\\"\$PROG_${1}_NAME\\\""
+	PROG="$1"
+	eval eval TEMP_NAME="\\\"\$PROG_${PROG}_NAME\\\""
 	if [ -z "$TEMP_NAME" ]; then
-		echo "Fatal: Program '$1' is not defined!" >&2
+		echo "Fatal: Program '$PROG' is not defined!" >&2
 		exit 1
 	fi
-	eval eval TEMP_FILE="\\\"\$PROG_${1}_FILE\\\""
+	
+	eval eval TEMP_DETECT="\\\"\$PROG_${PROG}_DETECT\\\""
+	if [ -n "$TEMP_DETECT" ]; then
+		$TEMP_DETECT
+		# NB. TEMP_DETECT should make sure PROG_${PROG}_VERSION and
+                # PROG_${PROG}_FILE are set.
+		if [ $? -ne 0 ]; then
+			build_message "$TEMP_NAME not found."
+			return 1
+		fi
+	fi
+
+	eval eval TEMP_FILE="\\\"\$PROG_${PROG}_FILE\\\""
 
 	type "$TEMP_FILE" 2>&1 > /dev/null
 	if [ $? -ne 0 ]; then
@@ -124,7 +137,7 @@ have_program() {
 
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
-		eval eval TEMP_VERSION="\\\"\$PROG_${1}_VERSION\\\""
+		eval eval TEMP_VERSION="\\\"\$PROG_${PROG}_VERSION\\\""
 		if [ -z "$TEMP_VERSION" ]; then
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
@@ -152,7 +165,7 @@ but version $2 is required!"
 #              1 - if the library is not found
 have_library() {
 	local LIB TEMP_NAME TEMP_PRESENT TEMP_LDFLAGS TEMP_CFLAGS \
-			TEMP_VERSION
+			TEMP_VERSION TEMP_DETECT
 
 	LIB="$1"
 	eval eval TEMP_NAME="\\\"\$LIB_${1}_NAME\\\""
@@ -165,23 +178,31 @@ have_library() {
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
+	
+	eval eval TEMP_DETECT="\\\"\$LIB_${LIB}_DETECT\\\""
+	if [ -n "$TEMP_DETECT" ]; then
+		$TEMP_DETECT
+		# NB. TEMP_DETECT should make sure PROG_$LIB_VERSION is set.
+		# return value of $TEMP_DETECT is used below.
+	else
+		eval eval TEMP_LDFLAGS="\\\"\$LIB_${LIB}_LDFLAGS\\\""
+		eval eval TEMP_CFLAGS="\\\"\$LIB_${LIB}_CFLAGS\\\""
 
-	eval eval TEMP_LDFLAGS="\\\"\$LIB_${LIB}_LDFLAGS\\\""
-	eval eval TEMP_CFLAGS="\\\"\$LIB_${LIB}_CFLAGS\\\""
-
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
+		try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
 int main(int argc, char *argv[]) {
 	(void) argc;  /* Get rid of unused variable warning */
 	(void) argv;  /* Get rid of unused variable warning */
 	return 0;
 }
 EOF
+	fi  # TEMP_DETECT not defined
+	
 	if [ $? -ne 0 ]; then
 		eval "LIB_${LIB}_PRESENT"=1
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
-	
+
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
 		eval eval TEMP_VERSION="\\\"\$LIB_${LIB}_VERSION\\\""
