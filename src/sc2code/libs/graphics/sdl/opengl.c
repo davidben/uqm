@@ -124,7 +124,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
+	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (SDL_Screen == NULL)
@@ -133,7 +133,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit (-1);
 	}
 
-	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
+	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (ExtraScreen == NULL)
@@ -142,7 +142,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit (-1);
 	}
 
-	TransitionScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 24,
+	TransitionScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		R_MASK, G_MASK, B_MASK, 0x00000000);
 
 	if (TransitionScreen == NULL)
@@ -158,12 +158,6 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	{
 		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
 		exit(-1);
-	}
-
-	if ((GfxFlags & TFB_GFXFLAGS_SCALE_SAI) || (GfxFlags & TFB_GFXFLAGS_SCALE_SUPERSAI))
-	{
-		GfxFlags &= ~(TFB_GFXFLAGS_SCALE_SAI|TFB_GFXFLAGS_SCALE_SUPERSAI);
-		GfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
 	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
@@ -189,14 +183,14 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenTextures (1, &TransitionTexture);
 	glBindTexture (GL_TEXTURE_2D, TransitionTexture);
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	return 0;
 }
@@ -280,7 +274,7 @@ TFB_GL_SwapBuffers (void)
 
 	SDL_LockSurface (SDL_Screen);
 	glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
-		GL_RGB, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
+		GL_RGBA, GL_UNSIGNED_BYTE, SDL_Screen->pixels);
 	SDL_UnlockSurface (SDL_Screen);
 
 	TFB_GL_DrawQuad ();
@@ -297,7 +291,7 @@ TFB_GL_SwapBuffers (void)
 		{
 			SDL_LockSurface (TransitionScreen);
 			glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth, ScreenHeight,
-				GL_RGB, GL_UNSIGNED_BYTE, TransitionScreen->pixels);
+				GL_RGBA, GL_UNSIGNED_BYTE, TransitionScreen->pixels);
 			SDL_UnlockSurface (TransitionScreen);
 
 			upload_transitiontexture = FALSE;
