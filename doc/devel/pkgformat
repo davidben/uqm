@@ -1,6 +1,10 @@
 The .pkg/.ndx format as used for Starcon.pkg on the 3DO cd.
 Acquired directly from the source.
 
+This format is used both in the file and is memory. There are some
+little differences; where this is this is the case, this is
+mentioned below in square brackets.
+
 Everything is stored LSB first.
 
 Main header: (resinit.c, _GetResFileData())
@@ -30,7 +34,7 @@ position   length  meaning
            4       p.flags_and_data_loc
                    MSB is flags, rest is data_loc,
                    if MSB == 0, then of the data_loc only the low 16 bits
-                       are used as a MEM_HANDLE (only in memory),
+                       are used as a MEM_HANDLE [only in memory],
                    if MSB == 0xff, then the data_loc is an offset in the
                        file to the actual data
 0x16+8*num_packages  Type information
@@ -64,8 +68,8 @@ packmem_list_offs (should be directly after the index info):
            2           if this is a packaged file: multiply by 4 to get
                            the length of this package.
                        if this is a file that is not packaged: 
-                           (the same position is in memory used as a
-                           MEM_HANDLE to the actual data)
+                           [the same position is in memory used as a
+                           MEM_HANDLE to the actual data]
 path_list_offs     (should be directly after the packmem list)
            ?       null terminated path strings, indexed from the file list
                        table
