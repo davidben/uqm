@@ -1972,9 +1972,6 @@ int
 do_subtitles (UNICODE *pStr)
 {
 	static UNICODE *last_page = NULL;;
-	// TODO: proper disabling of subtitles, this one prolly isn't 'safe'
-	if (optSubtitles == FALSE)
-	    return 0;
 	
 	if (pStr == 0)
 		return (subtitle_state = DONE_SUBTITLE);
@@ -1998,8 +1995,15 @@ do_subtitles (UNICODE *pStr)
 		{
 			TEXT t;
 			CONTEXT OldContext;
-
-			CommData.AlienTextTemplate.pStr = pStr;
+			
+			if (optSubtitles)
+			{
+				CommData.AlienTextTemplate.pStr = pStr;
+			}
+			else
+			{
+				CommData.AlienTextTemplate.pStr = "";
+			}
 			t = CommData.AlienTextTemplate;
 
 			OldContext = SetContext (TaskContext);
