@@ -48,7 +48,7 @@ typedef struct tfb_sounddecoderfunc
 {
 	const char* (* GetName) (void);
 	bool (* InitModule) (int flags, const TFB_DecoderFormats*);
-	void (* TermModule) ();
+	void (* TermModule) (void);
 	uint32 (* GetStructSize) (void);
 	int (* GetError) (THIS_PTR);
 	bool (* Init) (THIS_PTR);
