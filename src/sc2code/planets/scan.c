@@ -801,7 +801,6 @@ ExitPlanetSide:
 		pMS->InputFunc = DoScan;
 		pMS->CurState = DISPATCH_SHUTTLE;
 		SetDefaultMenuRepeatDelay ();
-		return (FALSE);
 	}
 	else
 	{
