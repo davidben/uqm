@@ -134,6 +134,7 @@ enum
 
 FRAME PickMeleeFrame;
 static FRAME MeleeFrame;
+static FRAME BuildPickFrame;
 extern QUEUE master_q;
 extern DWORD InTime;
 PMELEE_STATE volatile pMeleeState;
@@ -243,15 +244,15 @@ DrawControls (COUNT which_side, BOOLEAN HiLite)
 static void
 DrawPickFrame (PMELEE_STATE pMS)
 {
-	FRAME F;
 	RECT r, r0, r1, ship_r;
+	STAMP s;
 				
 	GetShipBox (&r0, 0, 0, 0),
 	GetShipBox (&r1, 1, NUM_MELEE_ROWS - 1, NUM_MELEE_COLUMNS - 1),
 	BoxUnion (&r0, &r1, &ship_r);
 
-	F = SetAbsFrameIndex (MeleeFrame, 27);
-	GetFrameRect (F, &r);
+	s.frame = SetAbsFrameIndex (BuildPickFrame, 0);
+	GetFrameRect (s.frame, &r);
 	r.corner.x = -(ship_r.corner.x
 			+ ((ship_r.extent.width - r.extent.width) >> 1));
 	if (pMS->side)
@@ -259,8 +260,10 @@ DrawPickFrame (PMELEE_STATE pMS)
 	else
 		r.corner.y = -(ship_r.corner.y
 				+ (ship_r.extent.height - r.extent.height));
-	SetFrameHot (F, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
-	DrawMeleeIcon (27);
+	SetFrameHot (s.frame, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
+	s.origin.x = s.origin.y = 0;
+	DrawStamp (&s);
+
 	UnlockMutex (GraphicsLock);
 	DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
 	LockMutex (GraphicsLock);
@@ -416,6 +419,36 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 }
 
 static void
+DrawPickIcon (COUNT iship, BYTE DrawErase)
+{
+	STAMP s;
+	HSTARSHIP hStarShip;
+	STARSHIPPTR StarShipPtr;
+	RECT r;
+
+	GetFrameRect (BuildPickFrame, &r);
+
+	hStarShip = GetStarShipFromIndex (&master_q, iship);
+	StarShipPtr = LockStarShip (&master_q, hStarShip);
+	s.origin.x = r.corner.x + 20 + (iship % NUM_PICK_COLS) * 18;
+	s.origin.y = r.corner.y +  5 + (iship / NUM_PICK_COLS) * 18;
+	s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+	if (DrawErase)
+	{	// draw icon
+		DrawStamp (&s);
+	}
+	else
+	{	// erase icon
+		COLOR OldColor;
+
+		OldColor = SetContextForeGroundColor (BLACK_COLOR);
+		DrawFilledStamp (&s);
+		SetContextForeGroundColor (OldColor);
+	}
+	UnlockStarShip (&master_q, hStarShip);
+}
+
+static void
 Deselect (BYTE opt)
 {
 	switch (opt)
@@ -455,23 +488,7 @@ Deselect (BYTE opt)
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
-				STAMP s;
-				HSTARSHIP hStarShip;
-				STARSHIPPTR StarShipPtr;
-				RECT r;
-			
-				GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
-
-				hStarShip = GetStarShipFromIndex (&master_q,
-						pMeleeState->CurIndex);
-				StarShipPtr = LockStarShip (&master_q, hStarShip);
-				s.origin.x = r.corner.x + 20
-						+ (pMeleeState->CurIndex % NUM_PICK_COLS) * 18;
-				s.origin.y = r.corner.y + 5
-						+ (pMeleeState->CurIndex / NUM_PICK_COLS) * 18;
-				s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
-				DrawStamp (&s);
-				UnlockStarShip (&master_q, hStarShip);
+				DrawPickIcon (pMeleeState->CurIndex, 1);
 			}
 			break;
 	}
@@ -517,25 +534,7 @@ Select (BYTE opt)
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
-				COLOR OldColor;
-				STAMP s;
-				HSTARSHIP hStarShip;
-				STARSHIPPTR StarShipPtr;
-				RECT r;
-			
-				GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
-
-				hStarShip = GetStarShipFromIndex (&master_q, pMeleeState->CurIndex);
-				StarShipPtr = LockStarShip (&master_q, hStarShip);
-				s.origin.x = r.corner.x + 20
-						+ (pMeleeState->CurIndex % NUM_PICK_COLS) * 18;
-				s.origin.y = r.corner.y + 5
-						+ (pMeleeState->CurIndex / NUM_PICK_COLS) * 18;
-				s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
-				OldColor = SetContextForeGroundColor (BLACK_COLOR);
-				DrawFilledStamp (&s);
-				SetContextForeGroundColor (OldColor);
-				UnlockStarShip (&master_q, hStarShip);
+				DrawPickIcon (pMeleeState->CurIndex, 0);
 			}
 			break;
 	}
@@ -1417,7 +1416,7 @@ DoPickShip (PMELEE_STATE pMS)
 		{
 			RECT r;
 			
-			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
+			GetFrameRect (BuildPickFrame, &r);
 			LockMutex (GraphicsLock);
 			RepairMeleeFrame (&r);
 			UnlockMutex (GraphicsLock);
@@ -1484,29 +1483,42 @@ DoPickShip (PMELEE_STATE pMS)
 static void
 LoadMeleeInfo (PMELEE_STATE pMS)
 {
-    STAMP	s;
-    CONTEXT	OldContext;
+	STAMP	s;
+	CONTEXT	OldContext;
+	RECT    r;
+	COUNT   i;
 
 	// reverting to original behavior
-    OldContext = SetContext (OffScreenContext);
+	OldContext = SetContext (OffScreenContext);
 
-    if (PickMeleeFrame)
-	    DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
-    PickMeleeFrame = CaptureDrawable (CreateDrawable (
+	if (PickMeleeFrame)
+		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
+	PickMeleeFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2));
-    s.origin.x = s.origin.y = 0;
-    s.frame = CaptureDrawable (LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM));
-    SetContextFGFrame (PickMeleeFrame);
-    DrawStamp (&s);
+	s.origin.x = s.origin.y = 0;
+	s.frame = CaptureDrawable (LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM));
+	SetContextFGFrame (PickMeleeFrame);
+	DrawStamp (&s);
 
-    s.frame = IncFrameIndex (s.frame);
-    SetContextFGFrame (IncFrameIndex (PickMeleeFrame));
-    DrawStamp (&s);
-    DestroyDrawable (ReleaseDrawable (s.frame));
-	
+	s.frame = IncFrameIndex (s.frame);
+	SetContextFGFrame (IncFrameIndex (PickMeleeFrame));
+	DrawStamp (&s);
+	DestroyDrawable (ReleaseDrawable (s.frame));
+
 	MeleeFrame = CaptureDrawable (LoadGraphic (MELEE_SCREEN_PMAP_ANIM));
-	
-    SetContext (OldContext);
+
+	// create team building ship selection box
+	s.frame = SetAbsFrameIndex (MeleeFrame, 27);
+	GetFrameRect (s.frame, &r);
+	BuildPickFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP, r.extent.width, r.extent.height, 1));
+	SetContextFGFrame (BuildPickFrame);
+	SetFrameHot (s.frame, MAKE_HOT_SPOT (0, 0));
+	DrawStamp (&s);
+	for (i = 0; i < NUM_PICK_COLS * NUM_PICK_ROWS; ++i)
+		DrawPickIcon (i, 1);
+
+	SetContext (OldContext);
 
 	InitSpace ();
 
@@ -1528,6 +1540,8 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 
 	DestroyDrawable (ReleaseDrawable (MeleeFrame));
 	MeleeFrame = 0;
+	DestroyDrawable (ReleaseDrawable (BuildPickFrame));
+	BuildPickFrame = 0;
 }
 
 static void
