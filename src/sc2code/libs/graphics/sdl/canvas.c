@@ -437,8 +437,8 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, in
 	
 	if (!src_mipmap)
 	{
-		size->width = (int) (src->w * scale / (float)GSCALE_IDENTITY);
-		size->height = (int) (src->h * scale / (float)GSCALE_IDENTITY);
+		size->width = (int) (src->w * scale / (float)GSCALE_IDENTITY + 0.5);
+		size->height = (int) (src->h * scale / (float)GSCALE_IDENTITY + 0.5);
 	}
 	else
 	{
@@ -452,8 +452,8 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, in
 		else if (ratio > 1.0f)
 			ratio = 1.0f;
 
-		size->width = (int)((src->w - mipmap->w) * ratio + mipmap->w);
-		size->height = (int)((src->h - mipmap->h) * ratio + mipmap->h);
+		size->width = (int)((src->w - mipmap->w) * ratio + mipmap->w + 0.5);
+		size->height = (int)((src->h - mipmap->h) * ratio + mipmap->h + 0.5);
 	}
 		
 	if (!size->width && src->w)
