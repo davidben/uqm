@@ -886,8 +886,11 @@ while (--ac > 0)
 }
 #endif //DEBUG_PSYTRON || CREATE_JOURNAL
 
-/* TODO: Put initAudio back in main where it belongs once threading is gone */
-initAudio (snddriver, soundflags);
+	/* TODO: Put initAudio back in main where it belongs once threading
+	 *       is gone.
+	 */
+	sint32 initAudio (sint32 driver, sint32 flags);
+	initAudio (snddriver, soundflags);
 
 	if (LoadKernel (0,0))
 	{
