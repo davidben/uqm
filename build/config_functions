@@ -40,9 +40,9 @@ try_compile_c() {
 	fi
 	cat > "$TEMPFILE.c"
 	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
-			-o /dev/null 2>&1 >> "$BUILDLOG"
+			-o "$TEMPFILE.out" 2>&1 >> "$BUILDLOG"
 	RESULT=$?
-	rm -f "$TEMPFILE.c"
+	rm -f "$TEMPFILE.c" "$TEMPFILE.out"
 	return $RESULT
 }
 
