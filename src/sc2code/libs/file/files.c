@@ -25,8 +25,10 @@
 #include "config.h"
 #include "types.h"
 #include "filintrn.h"
+#include "misc.h"
 
-static int copyError(int srcFd, int dstFd, const char *unlinkPath);
+static int copyError(int srcFd, int dstFd, const char *unlinkPath,
+		uint8 *buf);
 
 BOOLEAN
 fileExists (const char *name)
@@ -51,7 +53,7 @@ copyFile (const char *srcName, const char *newName)
 	int src, dst;
 	struct stat sb;
 #define BUFSIZE 65536
-	uint8 buf[BUFSIZE], *bufPtr;
+	uint8 *buf, *bufPtr;
 	ssize_t numInBuf, numWritten;
 	
 	src = open (srcName, O_RDONLY);
@@ -59,20 +61,24 @@ copyFile (const char *srcName, const char *newName)
 		return -1;
 	
 	if (fstat (src, &sb) == -1)
-		return copyError (src, -1, NULL);
+		return copyError (src, -1, NULL, NULL);
 	
 	dst = open (newName, O_WRONLY | O_CREAT | O_EXCL,
 			sb.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 	if (dst == -1)
-		return copyError (src, -1, NULL);
+		return copyError (src, -1, NULL, NULL);
 	
+	buf = HMalloc(BUFSIZE);
+			// This was originally a statically allocated buffer,
+			// but as this function might be run from a thread with
+			// a small Stack, this is better.
 	while (1) {
 		numInBuf = read (src, buf, BUFSIZE);
 		if (numInBuf == -1)
 		{
 			if (errno == EINTR)
 				continue;
-			return copyError (src, dst, newName);
+			return copyError (src, dst, newName, buf);
 		}
 		if (numInBuf == 0)
 			break;
@@ -84,13 +90,14 @@ copyFile (const char *srcName, const char *newName)
 			{
 				if (errno == EINTR)
 					continue;
-				return copyError (src, dst, newName);
+				return copyError (src, dst, newName, buf);
 			}
 			numInBuf -= numWritten;
 			bufPtr += numWritten;
 		} while (numInBuf > 0);
 	}
 	
+	HFree(buf);
 	close(src);
 	close(dst);
 	errno = 0;
@@ -101,11 +108,12 @@ copyFile (const char *srcName, const char *newName)
  * Closes srcFd if it's not -1.
  * Closes dstFd if it's not -1.
  * Removes unlinkpath if it's not NULL.
+ * Frees 'buf' if not NULL.
  * Always returns -1.
  * errno is what was before the call.
  */
 static int
-copyError(int srcFd, int dstFd, const char *unlinkPath)
+copyError(int srcFd, int dstFd, const char *unlinkPath, uint8 *buf)
 {
 	int savedErrno;
 
@@ -123,6 +131,9 @@ copyError(int srcFd, int dstFd, const char *unlinkPath)
 	
 	if (unlinkPath != NULL)
 		unlink (unlinkPath);
+	
+	if (buf != NULL)
+		HFree(buf);
 	
 	errno = savedErrno;
 	return -1;
