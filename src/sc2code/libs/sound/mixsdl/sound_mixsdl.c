@@ -199,17 +199,17 @@ TFB_NoSound_InitSound (int driver, int flags)
 	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
 	{
 		audio_rate = 44100;
-		audio_bufsize = 3072;
+		audio_bufsize = 4096;
 	}
 	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
 	{
 		audio_rate = 22050;
-		audio_bufsize = 1536;
+		audio_bufsize = 2048;
 	}
 	else
 	{
 		audio_rate = 44100;
-		audio_bufsize = 3072;
+		audio_bufsize = 4096;
 	}
 
 	fprintf (stderr, "Initializing MixSDL mixer.\n");
