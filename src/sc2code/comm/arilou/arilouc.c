@@ -584,7 +584,7 @@ FriendlySpaceArilou (RESPONSE_REF R)
 			case 2:
 				NPCPhrase (ARILOU_HINTS_3);
 				SET_GAME_STATE (KNOW_URQUAN_STORY, 1);
-				SET_GAME_STATE (KNOW_KOHR_AH_STORY, 1)
+				SET_GAME_STATE (KNOW_KOHR_AH_STORY, 1);
 				break;
 			case 3:
 				NPCPhrase (ARILOU_HINTS_4);

@@ -1342,7 +1342,7 @@ NatureOfConversation (RESPONSE_REF R)
 		}
 		else if (PLAYER_SAID (R, why_turned_purple))
 		{
-			SET_GAME_STATE (WHY_MELNORME_PURPLE, 1)
+			SET_GAME_STATE (WHY_MELNORME_PURPLE, 1);
 
 			NPCPhrase (TURNED_PURPLE_BECAUSE);
 		}

@@ -685,7 +685,7 @@ PkunkFriendlySpace (RESPONSE_REF R)
 			case 0:
 				NPCPhrase (WAR_GOES_1);
 				SET_GAME_STATE (KNOW_URQUAN_STORY, 1);
-				SET_GAME_STATE (KNOW_KOHR_AH_STORY, 1)
+				SET_GAME_STATE (KNOW_KOHR_AH_STORY, 1);
 				break;
 			case 1:
 				NPCPhrase (WAR_GOES_2);

@@ -206,9 +206,29 @@ START_GAME_STATE
 	ADD_GAME_STATE (ILWRATH_HOME_VISITS, 3)
 	ADD_GAME_STATE (ILWRATH_CHMMR_VISITS, 1)
 
-	ADD_GAME_STATE (ARILOU_SPACE, 1) /* Opening or Closing */
-	ADD_GAME_STATE (ARILOU_SPACE_SIDE, 2) /* In normal or Arilou hyperspace */
+	ADD_GAME_STATE (ARILOU_SPACE, 1)
+			/* 0 if the periodically opening QuasiSpace portal is
+			 * closed or closing.
+			 * 1 if the periodically opening QuasiSpace portal is
+			 * open or opening.
+			 */
+	ADD_GAME_STATE (ARILOU_SPACE_SIDE, 2)
+			/* 0 if in HyperSpace and not just emerged from the periodically
+			 * opening QuasiSpace portal.
+			 * 1 if in HyperSpace and just emerged from the periodically
+			 * QuasiSpace portal (still on the portal).
+			 * 2 if in QuasiSpace and just emerged from the periodically
+			 * opening portal (still on the portal).
+			 * 3 if in QuasiSpace and not just emerged from the
+			 * periodically opening portal.
+			 */
 	ADD_GAME_STATE (ARILOU_SPACE_COUNTER, 4)
+			/* Keeps track of how far the periodically opening QuasiSpace
+			 * portal is open. (This determines the image)
+			 * 0 <= ARILOU_SPACE_COUNTER <= 9
+			 * 0 means totally closed.
+			 * 9 means completely open.
+			 */
 
 	ADD_GAME_STATE (LANDER_SHIELDS, 4)
 
@@ -343,6 +363,10 @@ START_GAME_STATE
 	ADD_GAME_STATE (NEW_ALLIANCE_NAME, 2)
 
 	ADD_GAME_STATE (PORTAL_COUNTER, 4)
+			/* Set to 1 when the player opens a QuasiSpace portal.
+			 * It will then be increased to 10, at which time
+			 * the portal is completely open. (This determines the image).
+			 */
 
 	ADD_GAME_STATE (BURVIXESE_BROADCASTERS, 1)
 	ADD_GAME_STATE (BURV_BROADCASTERS_ON_SHIP, 1)
@@ -411,6 +435,13 @@ START_GAME_STATE
 	ADD_GAME_STATE (UTWIG_HOME_VISITS, 3)
 	ADD_GAME_STATE (BOMB_VISITS, 3)
 	ADD_GAME_STATE (ULTRON_CONDITION, 3)
+			/* 0 if the Supox still have the Ultron
+			 * 1 if the player has the Ultron, completely broken
+			 * 2 if the player has the Ultron, with 1 fix
+			 * 3 if the player has the Ultron, with 2 fixes
+			 * 4 if the player has the Ultron, completely restored
+			 * 5 if the Ultron has been returned to the Utwig
+			 */
 	ADD_GAME_STATE (UTWIG_HAVE_ULTRON, 1)
 	ADD_GAME_STATE (BOMB_UNPROTECTED, 1)
 
@@ -734,33 +765,6 @@ START_GAME_STATE
 	ADD_GAME_STATE (ORZ_STACK1, 1)
 END_GAME_STATE
 
-#define GET_GAME_STATE(SName) (BYTE)(((SName >> 3) == (END_##SName >> 3) \
-										? (GLOBAL (GameState[SName >> 3]) \
-										  >> (SName & 7)) \
-										: ((GLOBAL (GameState[SName >> 3]) \
-										  >> (SName & 7)) \
-										  | (GLOBAL (GameState[END_##SName >> 3]) \
-										  << (END_##SName - SName - (END_##SName & 7))))) \
-										& ((1 << (END_##SName - SName + 1)) - 1))
-
-#define SET_GAME_STATE(SName,val) \
-{ \
-	GLOBAL (GameState[SName >> 3]) = \
-			(GLOBAL (GameState[SName >> 3]) \
-			& (BYTE)~(((1 << (END_##SName - SName + 1)) - 1) \
-			<< (SName & 7))) \
-			| (BYTE)((val) << (SName & 7)); \
-	if ((SName >> 3) < (END_##SName >> 3)) \
-		GLOBAL (GameState[END_##SName >> 3]) = \
-				(GLOBAL (GameState[END_##SName >> 3]) \
-				& (BYTE)~((1 << ((END_##SName & 7) + 1)) - 1)) \
-				| (BYTE)((val) >> \
-					/* multiply to silence negative shift warning when \
-					 * compiling with -O0 */ \
-						(((SName >> 3) < (END_##SName >> 3)) * \
-					(END_##SName - SName - (END_##SName & 7)))); \
-}
-
 #define READ_SPEED_MASK ((1 << 3) - 1)
 #define NUM_READ_SPEEDS 5
 #define COMBAT_SPEED_SHIFT 6
@@ -776,10 +780,12 @@ enum
 	SUPER_MELEE = 0,
 	IN_LAST_BATTLE,
 	IN_ENCOUNTER,
-	IN_HYPERSPACE,
+	IN_HYPERSPACE /* in Hyperspace or Quasispace */,
 	IN_INTERPLANETARY,
 	WON_LAST_BATTLE,
 
+	/* The following three are only used when displaying save game
+	 * summaries */
 	IN_QUASISPACE,
 	IN_PLANET_ORBIT,
 	IN_STARBASE,
@@ -831,6 +837,55 @@ extern GLOBDATA GlobData;
 #define GLOBAL_SIS(f) GlobData.SIS_state.f
 
 #define GLOBDATAPTR PGLOBDATA
+
+
+//#define STATE_DEBUG
+	
+#ifdef STATE_DEBUG
+#	include <stdio.h>
+#endif
+	
+static inline BYTE
+getGameState (int startBit, int endBit) {
+	return (BYTE) (((startBit >> 3) == (endBit >> 3)
+			? (GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
+			: ((GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
+			  | (GLOBAL (GameState[endBit >> 3])
+			  << (endBit - startBit - (endBit & 7)))))
+			& ((1 << (endBit - startBit + 1)) - 1));
+}
+
+static inline
+void setGameState (int startBit, int endBit, BYTE val
+#ifdef STATE_DEBUG
+		, const char *name
+#endif
+		) {
+	GLOBAL (GameState[startBit >> 3]) =
+			(GLOBAL (GameState[startBit >> 3])
+			& (BYTE) ~(((1 << (endBit - startBit + 1)) - 1) << (startBit & 7)))
+			| (BYTE)((val) << (startBit & 7));
+
+	if ((startBit >> 3) < (endBit >> 3)) {
+		GLOBAL (GameState[endBit >> 3]) =
+				(GLOBAL (GameState[endBit >> 3])
+				& (BYTE)~((1 << ((endBit & 7) + 1)) - 1))
+				| (BYTE)((val) >> (endBit - startBit - (endBit & 7)));
+	}
+#ifdef STATE_DEBUG
+	fprintf (stderr, "State '%s' set to %d.\n", name, val);
+#endif
+}
+
+#define GET_GAME_STATE(SName) getGameState ((SName), (END_##SName))
+#ifdef STATE_DEBUG
+#	define SET_GAME_STATE(SName, val) \
+			setGameState ((SName), (END_##SName), (val), #SName)
+#else
+#	define SET_GAME_STATE(SName, val) \
+			setGameState ((SName), (END_##SName), (val))
+#endif
+
 
 extern void DiscardStarMap (PVOID CodeRef);
 extern void RetrieveStarMap (void);

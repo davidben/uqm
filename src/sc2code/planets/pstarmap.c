@@ -1217,8 +1217,11 @@ DoFlagshipCommands (PMENU_STATE pMS)
 							if (!Devices (pMS))
 								select = FALSE;
 							pMenuState = 0;
-							if (GET_GAME_STATE (PORTAL_COUNTER))
+							if (GET_GAME_STATE (PORTAL_COUNTER)) {
+								// A player-induced portal to QuasiSpace is
+								// opening.
 								return (FALSE);
+							}
 							break;
 						}
 						case CARGO:
