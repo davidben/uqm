@@ -50,4 +50,5 @@ colormaps per instance are all the same, so that the way a planet
 surface looks does not change with the surface temperature. Notable
 exceptions are: h2o_cts_ (water world) and mtl_cts_ (metal world); there
 could be others as no byte-identical examination was done.
+See blue-gas-giant-pal.png for an example colormap.
 
