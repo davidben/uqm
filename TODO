@@ -55,10 +55,8 @@ Glitches (don't crash the game, medium priority):
 	it only uses png file's palette and not 3DO one (prevents palette
 	effects from working, though)
   - See doc/devel/aniformat
-- Other palette related problems:
-  - In quasispace, sis ship should be colored as green, not red
-  - Melnorme, slylandro, etc palette transition isn't smooth
-  - Melnorme bridge doesn't turn purple for second or later visits
+  - Specific problems because of this:
+    - In quasispace, sis ship should be colored as green, not red
 - When landing to planet surface, crossfaded image is wrong compared to
   landing position (and so 'flashes' when crossfade ends)
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
