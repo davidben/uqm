@@ -247,28 +247,26 @@ int TFB_ColorMapToRGB (SDL_Color *cmap_rgb)
 {
 	int i, n;
 	UBYTE *colors;
-	Uint32 c32k;
+	DWORD c;
 
 	colors = current_colormap;
 	n = current_colormap_size / 2;
 	if (n > 256)
 		n = 256;
 	
-    for (i = 0; i < n; ++i)
-    {
-		// FIXME: this has a rather nasty problem currently.. sometimes,
-		//        green component's most significant bit is missing completely, 
-		//        for unknown reason, which leads to color corruption
+	for (i = 0; i < n;)
+	{
+		c = MAKE_DWORD (MAKE_WORD (colors[3], colors[2]), MAKE_WORD (colors[1], colors[0]));
+		colors += 4;
+	
+		cmap_rgb[i].r   = (Uint8)(((c >> 26) & 0x1f) << 3);
+		cmap_rgb[i].g   = (Uint8)(((c >> 21) & 0x1f) << 3);
+		cmap_rgb[i++].b = (Uint8)(((c >> 16) & 0x1f) << 3);
 
-		c32k = (*(Uint32*)colors) >> 8;
-		colors += 2;
-
-		cmap_rgb[i].r = (c32k & 0x7c00) >> 7;
-		cmap_rgb[i].g = (c32k & 0x3e0 ) >> 2;
-		cmap_rgb[i].b = (c32k & 0x1f  ) << 3;
-
-		//printf("cmap %d: r %d g %d b %d, c32 %x\n", i, cmap_rgb[i].r, cmap_rgb[i].g, cmap_rgb[i].b, c32k);
-    }
+		cmap_rgb[i].r   = (Uint8)(((c >> 10) & 0x1f) << 3);
+		cmap_rgb[i].g   = (Uint8)(((c >> 5 ) & 0x1f) << 3);
+		cmap_rgb[i++].b = (Uint8)(((c >> 0 ) & 0x1f) << 3);
+	}
 
 	return n;
 }
