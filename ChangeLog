@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Prevent Syreen crew above 12 getting thrown out the airlock in
+  Roster screen (bug #184); from chmmravatar, Alex
 - Lander report messages now use the entire panel (bug #36), from chmmravatar
 - Fix colour cycling in the roster screen (bug #279), from Nic
 - Fixed last seen battle-group teleporting to Sol after invoking
