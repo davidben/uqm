@@ -93,9 +93,13 @@ void TFB_Draw_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN 
 void TFB_Draw_Rect (PRECT rect, int r, int g, int b, SCREEN dest);
 void TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, SCREEN dest);
 void TFB_Draw_Copy (PRECT r, SCREEN src, SCREEN dest);
+void TFB_Draw_FilledImage (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, int r, int g, int b, SCREEN dest);
 void TFB_Draw_CopyToImage (TFB_ImageStruct *img, PRECT lpRect, SCREEN src);
 void TFB_Draw_DeleteImage (TFB_ImageStruct *img);
 void TFB_Draw_WaitForSignal (void);
+void TFB_Draw_SetPalette (int index, int r, int g, int b);
+void TFB_FlushPaletteCache (void);
+
 
 void TFB_FlushGraphics (void); // Only call from main thread!!
 

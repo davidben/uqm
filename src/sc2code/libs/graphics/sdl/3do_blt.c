@@ -44,12 +44,12 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
 		int x, y;
-		BOOLEAN scaled, paletted;
+		BOOLEAN scaled, paletted, filled;
 		TFB_Palette palette[256];
 
 		x = pClipRect->corner.x - GetFrameHotX (_CurFramePtr);
 		y = pClipRect->corner.y - GetFrameHotY (_CurFramePtr);
-		scaled = FALSE;
+		scaled = filled = FALSE;
 
 		if (gscale != 0 && gscale != 256)
 		{
@@ -118,7 +118,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
 		{
-			int i, r, g, b;
+			int r, g, b;
 			DWORD c32k;
 
 			c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
@@ -126,14 +126,11 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			g = (c32k >> (5 - (8 - 5))) & 0xF8;
 			b = (c32k << (8 - 5)) & 0xF8;
 
-			for (i = 0; i < 256; ++i)
-			{
-				palette[i].r = r;
-				palette[i].g = g;
-				palette[i].b = b;
-			}
-			
-			paletted = TRUE;
+			palette[0].r = r;
+			palette[0].g = g;
+			palette[0].b = b;
+		
+			filled = TRUE;
 		}
 		else
 		{
@@ -145,9 +142,19 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 
 		UnlockMutex (img->mutex);
-		TFB_Draw_Image ((TFB_ImageStruct *)img, x, y, scaled,
-				(paletted ? palette : NULL),
-				TFB_SCREEN_MAIN);
+		if (filled)
+		{
+			TFB_Draw_FilledImage ((TFB_ImageStruct *)img, x, y,
+					      scaled, palette[0].r, 
+					      palette[0].g, palette[0].b,
+					      TFB_SCREEN_MAIN);
+		}
+		else
+		{
+			TFB_Draw_Image ((TFB_ImageStruct *)img, x, y, scaled,
+					(paletted ? palette : NULL),
+					TFB_SCREEN_MAIN);
+		}
 	}
 	else
 	{

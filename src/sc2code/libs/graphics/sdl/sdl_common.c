@@ -39,6 +39,8 @@ SDL_Rect TransitionClipRect;
 
 int GfxFlags = 0;
 
+static TFB_Palette palette[256];
+
 int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
@@ -75,6 +77,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	//if (flags & TFB_GFXFLAGS_FULLSCREEN)
 	//	SDL_ShowCursor (SDL_DISABLE);
+
+	TFB_FlushPaletteCache ();
 
 	return 0;
 }
@@ -467,30 +471,6 @@ TFB_ComputeFPS ()
 	}
 }
 
-// Livelock deterrance constants.  Because the entire screen is rarely
-// refreshed, we may not drop draw commands on the floor with abandon.
-// Furthermore, if the main program is queuing commands at a speed
-// comparable to our processing of the commands, we never finish and
-// the game freezes.  Thus, if the queue starts out larger than
-// DCQ_FORCE_SLOWDOWN_SIZE, or DCQ_LIVELOCK_MAX commands find
-// themselves being processed in one go, livelock deterrence is
-// enabled, and TFB_FlushGraphics locks the DCQ until it has processed
-// all entries.  If batched but pending commands exceed DCQ_FORCE_BREAK_SIZE,
-// a continuity break is performed.  This will effectively slow down the 
-// game logic, a fate we seek to avoid - however, it seems to be unavoidable
-// on slower machines.  Even there, it's seems nonexistent outside of
-// communications screens.  --Michael
-
-#ifdef DCQ_OF_DOOM
-#define DCQ_FORCE_SLOWDOWN_SIZE 128
-#define DCQ_FORCE_BREAK_SIZE 512
-#define DCQ_LIVELOCK_MAX 256
-#else
-#define DCQ_FORCE_SLOWDOWN_SIZE 1024
-#define DCQ_FORCE_BREAK_SIZE 4096
-#define DCQ_LIVELOCK_MAX 2048
-#endif
-
 void
 TFB_FlushGraphics () // Only call from main thread!!
 {
@@ -568,6 +548,21 @@ TFB_FlushGraphics () // Only call from main thread!!
 		
 		switch (DC.Type)
 		{
+		case TFB_DRAWCOMMANDTYPE_SETPALETTE:
+			{
+				int index = DC.index;
+				if (index < 0 || index > 255)
+				{
+					fprintf(stderr, "DCQ panic: Tried to set palette #%i", index);
+				}
+				else
+				{
+					palette[index].r = DC.r & 0xFF;
+					palette[index].g = DC.g & 0xFF;
+					palette[index].b = DC.b & 0xFF;
+				}
+				break;
+			}
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
 				SDL_Rect targetRect;
@@ -592,13 +587,47 @@ TFB_FlushGraphics () // Only call from main thread!!
 				{
 					if (DC.UsePalette)
 					{
-						SDL_SetColors (surf, (SDL_Color*)DC.Palette, 0, 256);
+						SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
 					}
 					else
 					{
 						SDL_SetColors (surf, DC_image->Palette, 0, 256);
 					}
 				}
+
+				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.destBuffer], &targetRect, DC.BlendNumerator, DC.BlendDenominator);
+
+				break;
+			}
+		case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
+			{
+				SDL_Rect targetRect;
+				SDL_Surface *surf;
+				int i;
+				TFB_Palette pal[256];
+
+
+				if (DC_image == 0)
+				{
+					fprintf (stderr, "TFB_FlushGraphics(): error, DC_image == 0\n");
+					break;
+				}
+
+				targetRect.x = DC.x;
+				targetRect.y = DC.y;
+
+				if (DC.UseScaling)
+					surf = DC_image->ScaledImg;
+				else
+					surf = DC_image->NormalImg;
+				
+				for (i = 0; i < 256; i++)
+				{
+					pal[i].r = DC.r;
+					pal[i].g = DC.g;
+					pal[i].b = DC.b;
+				}
+				SDL_SetColors (surf, (SDL_Color*)pal, 0, 256);
 
 				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.destBuffer], &targetRect, DC.BlendNumerator, DC.BlendDenominator);
 

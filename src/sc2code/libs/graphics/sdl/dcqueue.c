@@ -22,6 +22,7 @@
 #include "libs/threadlib.h"
 #include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/graphics/sdl/dcqueue.h"
 
 Semaphore DCQ_sem;
 
@@ -29,15 +30,6 @@ Semaphore DCQ_sem;
 static int DCQ_locking_depth = 0;
 static Uint32 DCQ_locking_thread = 0;
 
-// Maximum size of the DCQ.  The larger the DCQ, the larger frameskips
-// become tolerable before initiating livelock deterrence and game
-// slowdown.  Other constants for controlling the frameskip/slowdown
-// balance may be found in sdl_common.c near TFB_FlushGraphics.
-#ifdef DCQ_OF_DOOM
-#define DCQ_MAX 512
-#else
-#define DCQ_MAX 16384
-#endif
 TFB_DrawCommand DCQ[DCQ_MAX];
 
 TFB_DrawCommandQueue DrawCommandQueue;

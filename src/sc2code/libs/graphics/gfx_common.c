@@ -101,6 +101,40 @@ TFB_Draw_Rect (PRECT rect, int r, int g, int b, SCREEN dest)
 }
 
 void
+TFB_Draw_SetPalette (int index, int r, int g, int b)
+{
+	TFB_DrawCommand DC;
+
+	DC.Type = TFB_DRAWCOMMANDTYPE_SETPALETTE;
+	DC.r = r;
+	DC.g = g;
+	DC.b = b;
+	DC.index = index;
+	DC.image = 0;
+	DC.BlendNumerator = BlendNumerator;
+	DC.BlendDenominator = BlendDenominator;
+
+	TFB_EnqueueDrawCommand (&DC);
+}
+
+/* This value is protected by the DCQ's lock. */
+static int _localpal[256][3];
+
+void
+TFB_FlushPaletteCache ()
+{
+	int i;
+	Lock_DCQ (-1);
+	for (i = 0; i < 256; i++)
+	{
+		_localpal[i][0] = -1;
+		_localpal[i][1] = -1;
+		_localpal[i][2] = -1;
+	}
+	Unlock_DCQ ();
+}
+
+void
 TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, SCREEN dest)
 {
 	TFB_DrawCommand DC;
@@ -113,18 +147,53 @@ TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 
 	if (palette != NULL)
 	{
-		int i;
+		int i, changed;
+		Lock_DCQ(257);
+		changed = 0;
 		for (i = 0; i < 256; i++)
 		{
-			DC.Palette[i] = palette[i];
+			if ((_localpal[i][0] != palette[i].r) ||
+			    (_localpal[i][1] != palette[i].g) ||
+			    (_localpal[i][2] != palette[i].b))
+			{
+				changed++;
+				_localpal[i][0] = palette[i].r;
+				_localpal[i][1] = palette[i].g;
+				_localpal[i][2] = palette[i].b;
+				TFB_Draw_SetPalette (i, palette[i].r, palette[i].g, 
+						palette[i].b);
+			}
 		}
+		// if (changed) { fprintf (stderr, "Actually changing palette! "); }
 		DC.UsePalette = TRUE;
 	} 
 	else
 	{
+		Lock_DCQ (1);
 		DC.UsePalette = FALSE;
 	}
 
+	DC.destBuffer = dest;
+	DC.BlendNumerator = BlendNumerator;
+	DC.BlendDenominator = BlendDenominator;
+
+	TFB_EnqueueDrawCommand (&DC);
+	Unlock_DCQ ();
+}
+
+void
+TFB_Draw_FilledImage (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, int r, int g, int b, SCREEN dest)
+{
+	TFB_DrawCommand DC;
+	
+	DC.Type = TFB_DRAWCOMMANDTYPE_FILLEDIMAGE;
+	DC.image = img;
+	DC.x = x;
+	DC.y = y;
+	DC.UseScaling = scaled;
+	DC.r = r;
+	DC.g = g;
+	DC.b = b;
 	DC.destBuffer = dest;
 	DC.BlendNumerator = BlendNumerator;
 	DC.BlendDenominator = BlendDenominator;
