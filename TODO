@@ -75,8 +75,6 @@ Glitches (don't crash the game, medium priority):
   Probably the negative shift for GET_STATE and SET_STATE
 - Some font characters are wrong, atleast in the planet scan screen
   when compared to 3DO
-- Temp files don't get deleted if the game is exited in full game mode.
-  (and the temp dir doesn't get deleted if it's not empty)
 - From main menu, choose 'load game', then space, and space again and
   there will be no selection icon.
 - If you press a button, press another button, and then release the first,

@@ -1,4 +1,5 @@
 0.2:
+- Temporary files are deleted on exit. - SvdB
 - Font png's no longer need to have alpha channel, black background with
   white pixels is enough -Mika
 - Added PC version intro/ending font, from VileRancour
