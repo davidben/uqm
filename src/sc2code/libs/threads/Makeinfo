@@ -1,2 +1,2 @@
 uqm_SUBDIRS="sdl"
-uqm_CFILES="thrcommon.c"
+uqm_CFILES="condbank.c thrcommon.c"

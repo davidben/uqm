@@ -54,12 +54,10 @@ UninitGraphics ()  // Also probably empty
 }
 
 
-// Batch/UnbatchGraphics: These routines appear to be used to ensure
-// that the screen doesn't update with a half-drawn region.  This can
-// be implemented in all sorts of ways - I've chosen to fold it into
-// our DrawCommandQueue, for the most part.  These just forward to
-// the TFB_ versions in dcqueue.c.  They may also make continuity_break
-// redundant, but I haven't tested that yet.  --Michael
+/* Batching and Unbatching functions.  A "Batch" is a collection of
+   DrawCommands that will never be flipped to the screen half-rendered.
+   BatchGraphics and UnbatchGraphics function vaguely like a non-blocking
+   recursive lock to do this respect. */
 void
 BatchGraphics (void)
 {
@@ -72,6 +70,9 @@ UnbatchGraphics (void)
 	TFB_UnbatchGraphics ();
 }
 
+/* Sleeps this thread until all Draw Commands queued by that thread have
+   been processed. */
+
 void
 FlushGraphics (void)
 {
@@ -80,7 +81,7 @@ FlushGraphics (void)
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
 	DrawCommand.image = 0;
 	TFB_EnqueueDrawCommand(&DrawCommand);
-	WaitCondVar (RenderingCond);
+	WaitForSignal ();
 }
 
 void

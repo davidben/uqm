@@ -89,11 +89,13 @@ InitThreadSystem (void)
 	signal(SIGUSR1, SigUSR1Handler);
 #endif
 	NativeInitThreadSystem ();
+	init_cond_bank ();
 }
 
 void
 UnInitThreadSystem (void)
 {
+	uninit_cond_bank ();
 	NativeUnInitThreadSystem ();
 #ifdef PROFILE_THREADS
 	signal(SIGUSR1, SIG_DFL);
@@ -601,4 +603,9 @@ void SignalCondVar (CondVar cv)
 void BroadcastCondVar (CondVar cv)
 {
 	NativeBroadcastCondVar (cv);
+}
+
+DWORD CurrentThreadID ()
+{
+	return (DWORD)NativeThreadID ();
 }

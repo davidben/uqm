@@ -109,6 +109,7 @@ typedef struct tfb_drawcommand
 	BOOLEAN UsePalette;
 	int BlendNumerator;
 	int BlendDenominator;
+	DWORD thread;
 } TFB_DrawCommand;
 
 // Queue Stuff

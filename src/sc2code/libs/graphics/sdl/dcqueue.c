@@ -223,7 +223,8 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	{
 		return;
 	}
-		
+
+	DrawCommand->thread = CurrentThreadID ();
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER
 			&& TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{

@@ -86,14 +86,16 @@ typedef SDL_cond *NativeCondVar;
 #define NativeCreateCondVar() \
 		SDL_CreateCond ()
 #define NativeDestroyCondVar(condvar) \
-		SDL_DestroyCond((condvar))
+		SDL_DestroyCond ((condvar))
 #define NativeWaitCondVar(condvar) \
-		SDLWrapper_WaitCondVar((condvar))
+		SDLWrapper_WaitCondVar ((condvar))
 #define NativeSignalCondVar(condvar) \
-		SDL_CondSignal((condvar))
+		SDL_CondSignal ((condvar))
 #define NativeBroadcastCondVar(condvar) \
-		SDL_CondBroadcast((condvar))
+		SDL_CondBroadcast ((condvar))
 
+#define NativeCurrentThreadID() \
+		SDL_ThreadID ()
 
 #endif  /* _SDLTHREAD_H */
 

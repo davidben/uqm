@@ -65,7 +65,8 @@
 
 extern void InitThreadSystem (void);
 extern void UnInitThreadSystem (void);
-
+extern void init_cond_bank (void);
+extern void uninit_cond_bank (void);
 
 typedef int (*ThreadFunction) (void *);
 
@@ -129,6 +130,11 @@ extern void DestroyCondVar (CondVar);
 extern void WaitCondVar (CondVar);
 extern void SignalCondVar (CondVar);
 extern void BroadcastCondVar (CondVar);
+
+extern DWORD CurrentThreadID (void);
+
+extern void WaitForSignal (void);
+extern void SignalThread (DWORD);
 
 #endif  /* _THREADLIB_H */
 

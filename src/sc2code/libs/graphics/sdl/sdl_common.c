@@ -737,7 +737,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			break;
 		case TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS:
 			// done = TRUE;			
-			TFB_SwapBuffers ();
+			// TFB_SwapBuffers ();
+			SignalThread (DC.thread);
 			break;
 		case TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS:
 			TFB_DrawCommandQueue_Clear ();
