@@ -1233,7 +1233,7 @@ ScanSystem (void)
 		PrintCoarseScan3DO ();
 
 	pMenuState = &MenuState;
-	DoInput ((PVOID)&MenuState);
+	DoInput ((PVOID)&MenuState, FALSE);
 	pMenuState = 0;
 
 	if (ScanContext)

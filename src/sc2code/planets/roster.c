@@ -436,7 +436,7 @@ Roster (void)
 		
 		MenuState.flash_frame0 = (FRAME)ship_pos;
 		MenuState.flash_frame1 = (FRAME)modified_ship_pos;
-		DoInput ((PVOID)&MenuState);
+		DoInput ((PVOID)&MenuState, TRUE);
 
 		pMenuState = pOldMenuState;
 		

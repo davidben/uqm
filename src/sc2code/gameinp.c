@@ -54,7 +54,6 @@ static void
 _clear_menu_state (void)
 {
 	DWORD initTime = GetTimeCounter ();
-	TFB_ResetControls ();
 	CurrentMenuState.up        = 0;
 	CurrentMenuState.down      = 0;
 	CurrentMenuState.left      = 0;
@@ -188,9 +187,13 @@ SetDefaultMenuRepeatDelay ()
 }
 
 void
-DoInput (PVOID pInputState)
+DoInput (PVOID pInputState, BOOLEAN resetInput)
 {
 	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT);
+	if (resetInput)
+	{
+		TFB_ResetControls ();
+	}
 	do
 	{
 		TaskSwitch ();

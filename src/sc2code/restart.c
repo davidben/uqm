@@ -244,7 +244,7 @@ LastActivity = WON_LAST_BATTLE;
 			UnbatchGraphics ();
 
 			FlushInput ();
-			DoInput ((PVOID)&MenuState);
+			DoInput ((PVOID)&MenuState, TRUE);
 			
 			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)0, (FRAME)0);

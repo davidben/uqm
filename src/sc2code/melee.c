@@ -1893,7 +1893,7 @@ Melee (void)
 		MenuState.side = 0;
 		MenuState.star_bucks[0] = GetTeamValue (&MenuState.TeamImage[0]);
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
-		DoInput ((PVOID)&MenuState);
+		DoInput ((PVOID)&MenuState, TRUE);
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 

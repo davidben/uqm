@@ -1968,7 +1968,7 @@ PlanetSide (PMENU_STATE pMS)
 
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPlanetSide;
-	DoInput ((PVOID)pMS);
+	DoInput ((PVOID)pMS, FALSE);
 
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{

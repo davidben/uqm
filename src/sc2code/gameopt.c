@@ -421,7 +421,7 @@ DoNaming (PMENU_STATE pMS)
 		ClearSemaphore (GraphicsSem);
 
 		EnableCharacterMode ();
-		DoInput (pMS);
+		DoInput (pMS, TRUE);
 		DisableCharacterMode ();
 
 		pMS->InputFunc = DoSettings;
@@ -1162,7 +1162,7 @@ PickGame (PMENU_STATE pMS)
 	pMS->CurString = (STRING)&desc_array[0];
 	ClearSemaphore (GraphicsSem);
 
-	DoInput (pMS);
+	DoInput (pMS, TRUE);
 
 	SetSemaphore (GraphicsSem);
 	pMS->Initialized = -1;
@@ -1279,7 +1279,7 @@ GameOptions (void)
 
 	MenuState.InputFunc = DoGameOptions;
 	MenuState.CurState = SAVE_GAME;
-	DoInput ((PVOID)&MenuState);
+	DoInput ((PVOID)&MenuState, TRUE);
 
 	pLocMenuState = 0;
 

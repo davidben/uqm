@@ -185,7 +185,7 @@ extern BOOLEAN ConfirmExit (void);
 extern DWORD SeedRandomNumbers (void);
 extern BOOLEAN StarConDiskError (PSTR pFileName);
 extern void ReportDiskError (PSTR pFileName, DISK_ERROR ErrorCondition);
-extern void DoInput (PVOID pInputState);
+extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
 extern BOOLEAN Battle (void);
 extern void EncounterBattle (void);
 extern void SetPlayerInput (void);

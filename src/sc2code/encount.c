@@ -312,7 +312,7 @@ InitEncounter (void)
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
 		ClearSemaphore (GraphicsSem);
 
-		DoInput ((PVOID)&MenuState);
+		DoInput ((PVOID)&MenuState, TRUE);
 
 		SetSemaphore (GraphicsSem);
 		SetFlashRect (NULL_PTR, (FRAME)0);

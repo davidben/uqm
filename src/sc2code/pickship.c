@@ -249,7 +249,7 @@ OldContext = SetContext (SpaceContext);
 
 		ClearSemaphore (GraphicsSem);
 		pMenuState = &MenuState;
-		DoInput ((PVOID)&MenuState);
+		DoInput ((PVOID)&MenuState, TRUE);
 		pMenuState = 0;
 		SetSemaphore (GraphicsSem);
 

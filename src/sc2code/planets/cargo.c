@@ -358,7 +358,7 @@ Cargo (PMENU_STATE pMS)
 	DrawStatusMessage ((UNICODE *)~0);
 	ClearSemaphore (GraphicsSem);
 
-	DoInput ((PVOID)pMS);
+	DoInput ((PVOID)pMS, TRUE);
 
 	pMS->InputFunc = DoFlagshipCommands;
 	pMS->CurState = CARGO + 1;

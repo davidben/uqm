@@ -1126,7 +1126,7 @@ DoStarMap (void)
 	OldMenuSounds = MenuSounds;
 	MenuSounds = 0;
 
-	DoInput ((PVOID)&MenuState);
+	DoInput ((PVOID)&MenuState, FALSE);
 	MenuSounds = OldMenuSounds;
 
 	pMenuState = 0;

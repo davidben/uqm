@@ -625,7 +625,7 @@ Devices (PMENU_STATE pMS)
 		pMS->CurFrame = (FRAME)DeviceMap;
 		TFB_ResetControls ();
 		DoManipulateDevices (pMS); /* to make sure it's initialized */
-		DoInput ((PVOID)pMS);
+		DoInput ((PVOID)pMS, TRUE);
 		pMS->CurFrame = 0;
 
 		pMS->InputFunc = DoFlagshipCommands;

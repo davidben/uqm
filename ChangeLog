@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fixed some "false key cancels" in the input system, addressing bugs 
+  #378 and #379 -Michael
 - Completely reworked the input system
 - Added PC version outtakes, from chmmravatar
 - Fix crash in PlayStream when whole file is prebuffered and its not

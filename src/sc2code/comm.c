@@ -2049,7 +2049,7 @@ HailAlien (void)
 
 	LastActivity |= CHECK_LOAD; /* prevent spurious input */
 	(*CommData.init_encounter_func) ();
-	DoInput ((PVOID)&ES);
+	DoInput ((PVOID)&ES, TRUE);
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 		(*CommData.uninit_encounter_func) ();
 

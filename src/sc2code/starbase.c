@@ -384,7 +384,7 @@ ExitStarBase:
 					break;
 			}
 
-			DoInput ((PVOID)pMS);
+			DoInput ((PVOID)pMS, TRUE);
 
 			pMS->Initialized = FALSE;
 			pMS->CurState = OldState;
@@ -497,7 +497,7 @@ TimePassage:
 	}
 
 	OldContext = SetContext (ScreenContext);
-	DoInput ((PVOID)pMenuState);
+	DoInput ((PVOID)pMenuState, TRUE);
 	SetContext (OldContext);
 
 	pMenuState = 0;
