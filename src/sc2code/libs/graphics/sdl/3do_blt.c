@@ -67,7 +67,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 			if (img->ScaledImg)
 			{
-				if (img->scale != gscale || img->dirty)
+				if (img->scale != gscale)
 				{
 					SDL_FreeSurface(img->ScaledImg);
 					img->ScaledImg = NULL;
@@ -76,10 +76,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 			if (!img->ScaledImg)
 			{
-				// Atleast melee zooming and planet surfaces will use this
-
-				// NOTE: Planet surfaces maybe causes memory leaks,
-				//       I haven't currently seen DELETEIMAGE executed to them at all.
+				// atleast melee zooming uses this
 
 				SDL_Surface *new_surf;
 
