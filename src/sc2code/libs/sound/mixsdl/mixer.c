@@ -33,6 +33,20 @@
 
 #define DEBUG
 
+/* stanard SDL_audio driver */
+static const
+mixSDL_DriverInfo mixer_SDLdriver = 
+{
+	mixSDL_DriverGetName,
+	mixSDL_DriverGetError,
+	mixSDL_DriverOpenAudio,
+	SDL_CloseAudio,
+	SDL_PauseAudio
+};
+/* SDL_audio driver is the default */
+static mixSDL_Driver mixer_driver = &mixer_SDLdriver;
+static mixSDL_DriverFlags mixer_driverflags = 0;
+
 static uint32 audio_opened = 0;
 static SDL_AudioSpec mixer_spec;
 static uint32 last_error = MIX_NO_ERROR;
@@ -118,6 +132,25 @@ mixSDL_SetError (uint32 error)
 	last_error = error;
 }
 
+static const char*
+mixSDL_DriverGetName ()
+{
+	return "SDL_audio";
+}
+
+static const char*
+mixSDL_DriverGetError (void)
+{
+	return SDL_GetError();
+}
+
+static int
+mixSDL_DriverOpenAudio (void *desired, void *obtained)
+{
+	return SDL_OpenAudio ((SDL_AudioSpec *) desired,
+			(SDL_AudioSpec *) obtained);
+}
+
 /*************************************************
  *  General interface
  */
@@ -130,9 +163,23 @@ mixSDL_GetError (void)
 	return error;
 }
 
+void
+mixSDL_UseDriver (mixSDL_Driver driver, mixSDL_DriverFlags flags)
+{
+	if (!driver)
+		return;
+
+	if (driver == (mixSDL_Driver)~0)
+		driver = &mixer_SDLdriver; /* default */
+
+	mixer_driver = driver;
+	mixer_driverflags = flags;
+}
+
 /* Open the mixer with a certain desired audio format */
 bool
-mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf)
+mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf,
+		mixSDL_Quality quality)
 {
 	SDL_AudioSpec desired;
 
@@ -158,14 +205,22 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf)
 		return false;
 	}
 
+	fprintf (stderr, "MixSDL using driver '%s'\n",
+			mixer_driver->GetDriverName());
+
 	/* Set the desired format and frequency */
 	desired.freq = frequency;
 	desired.samples = samples_buf;
-	desired.callback = mixSDL_mix_channels;
+	if (mixer_driverflags & MIX_DRIVER_FAKE_PLAY)
+		desired.callback = mixSDL_mix_fake;
+	else if (quality == MIX_QUALITY_LOW)
+		desired.callback = mixSDL_mix_lowq;
+	else
+		desired.callback = mixSDL_mix_channels;
 	desired.userdata = NULL;
 
 	/* Accept nearly any audio format */
-	if (SDL_OpenAudio (&desired, &mixer_spec) < 0)
+	if (mixer_driver->OpenAudio (&desired, &mixer_spec) < 0)
 	{
 		mixSDL_SetError (MIX_SDL_FAILURE);
 		return false;
@@ -188,7 +243,7 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf)
 			mixer_spec.channels < 1 || mixer_spec.channels > 2)
 	{
 		mixSDL_SetError (MIX_SDL_FAILURE);
-		SDL_CloseAudio ();
+		mixer_driver->CloseAudio ();
 		fprintf (stderr, "mixSDL_OpenAudio: unable to aquire "
 				"desired format\n");
 		return false;
@@ -208,7 +263,7 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf)
 	mixSDL_InitMutex (act_mutex, "mixSDL_ActiveMutex");
 
 	audio_opened = 1;
-	SDL_PauseAudio (0);
+	mixer_driver->PauseAudio (0);
 
 	return true;
 }
@@ -1066,6 +1121,10 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 static __inline__ bool
 mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
 {
+	/* fake the data if requested */
+	if (mixer_driverflags & MIX_DRIVER_FAKE_DATA)
+		return mixSDL_SourceGetFakeSample (src, psamp);
+
 	while (src->nextqueued)
 	{
 		mixSDL_Buffer *buf = src->nextqueued;
@@ -1108,6 +1167,42 @@ mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
 				*psamp = (sint32)samp;
 		}
 
+		if (src->curbufofs >= buf->size)
+		{	
+			/* buffer exhausted, go next */
+			buf->state = MIX_BUF_PROCESSED;
+			src->curbufofs = 0;
+			src->nextqueued = src->nextqueued->next;
+			src->cprocessed++;
+		}
+		else
+		{
+			buf->state = MIX_BUF_PLAYING;
+		}
+		
+		return true;
+	}
+	
+	/* no more playable buffers */
+	if (src->state >= MIX_PLAYING)
+		mixSDL_SourceDeactivate (src);
+
+	src->state = MIX_STOPPED;
+
+	return false;
+}
+
+/* fake the next sample, but process buffers and states */
+static __inline__ bool
+mixSDL_SourceGetFakeSample (mixSDL_Source *src, sint32* psamp)
+{
+	while (src->nextqueued)
+	{
+		mixSDL_Buffer *buf = src->nextqueued;
+
+		*psamp = 0;
+		src->curbufofs += mixer_chansize;
+		
 		if (src->curbufofs >= buf->size)
 		{	
 			/* buffer exhausted, go next */
@@ -1406,45 +1501,49 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 					MIX_FORMAT_SAMPSIZE (mixer_format);
 
 			buf->size = dstsize;
-			buf->data = HMalloc (dstsize);
+			/* only copy/convert the data if not faking */
+			if (! (mixer_driverflags & MIX_DRIVER_FAKE_DATA))
+			{
+				buf->data = HMalloc (dstsize);
 			
-			if (format == mixer_format && freq == mixer_freq)
-			{
-				/* format identical to internal */
-				buf->locked = true;
-				mixSDL_UnlockMutex (buf_mutex);
-
-				memcpy (buf->data, data, size);
-				if (MIX_FORMAT_SAMPSIZE (mixer_format) == 1)
+				if (format == mixer_format && freq == mixer_freq)
 				{
-					/* convert buffer to S8 format internally */
-					uint8* dst;
-					for (dst = buf->data; dstsize; dstsize--, dst++)
-						*dst ^= 0x80;
+					/* format identical to internal */
+					buf->locked = true;
+					mixSDL_UnlockMutex (buf_mutex);
+
+					memcpy (buf->data, data, size);
+					if (MIX_FORMAT_SAMPSIZE (mixer_format) == 1)
+					{
+						/* convert buffer to S8 format internally */
+						uint8* dst;
+						for (dst = buf->data; dstsize; dstsize--, dst++)
+							*dst ^= 0x80;
+					}
+
+					mixSDL_LockMutex (buf_mutex);
+					buf->locked = false;
 				}
+				else 
+				{
+					/* needs convertion */
+					conv.srcfmt = format;
+					conv.srcdata = data;
+					conv.srcsize = size;
+					conv.srcfreq = freq;
+					conv.dstfmt = mixer_format;
+					conv.dstdata = buf->data;
+					conv.dstsize = dstsize;
+					conv.dstfreq = mixer_freq;
 
-				mixSDL_LockMutex (buf_mutex);
-				buf->locked = false;
-			}
-			else 
-			{
-				/* needs convertion */
-				conv.srcfmt = format;
-				conv.srcdata = data;
-				conv.srcsize = size;
-				conv.srcfreq = freq;
-				conv.dstfmt = mixer_format;
-				conv.dstdata = buf->data;
-				conv.dstsize = dstsize;
-				conv.dstfreq = mixer_freq;
+					buf->locked = true;
+					mixSDL_UnlockMutex (buf_mutex);
 
-				buf->locked = true;
-				mixSDL_UnlockMutex (buf_mutex);
-
-				mixSDL_ConvertBuffer_internal (&conv);
-				
-				mixSDL_LockMutex (buf_mutex);
-				buf->locked = false;
+					mixSDL_ConvertBuffer_internal (&conv);
+					
+					mixSDL_LockMutex (buf_mutex);
+					buf->locked = false;
+				}
 			}
 
 			buf->state = MIX_BUF_FILLED;
@@ -1880,7 +1979,7 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 		fprintf (stderr, "mixSDL_mix_channels(): "
 				"WARNING: work-buffer too small\n");
 #endif
-		mixSDL_mix_lowq (stream, len);
+		mixSDL_mix_lowq (userdata, stream, len);
 	}
 
 	/* keep this order or die */
@@ -1939,7 +2038,7 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	mixSDL_UnlockMutex (buf_mutex);
 	mixSDL_UnlockMutex (src_mutex);
 
-	(void)userdata; // satisfying compiler
+	(void) userdata; // satisfying compiler - unused arg
 }
 
 /* data unclipping - smooth out the areas that need to be clipped */
@@ -2027,7 +2126,7 @@ mixSDL_UnclipWorkBuffer (sint32 *data, sint32 *end_data, uint32 step)
 
 /* low quality faster version */
 static void
-mixSDL_mix_lowq (uint8 *stream, sint32 len)
+mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 {
 	uint8 *end_stream = stream + len;
 
@@ -2088,4 +2187,44 @@ mixSDL_mix_lowq (uint8 *stream, sint32 len)
 	mixSDL_UnlockMutex (act_mutex);
 	mixSDL_UnlockMutex (buf_mutex);
 	mixSDL_UnlockMutex (src_mutex);
+
+	(void) userdata; // satisfying compiler - unused arg
+}
+
+/* fake mixer -- only process buffer and source states */
+static void
+mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len)
+{
+	uint8 *end_stream = stream + len;
+
+	/* keep this order or die */
+	mixSDL_LockMutex (src_mutex);
+	mixSDL_LockMutex (buf_mutex);
+	mixSDL_LockMutex (act_mutex);
+
+	for (; stream < end_stream; stream += mixer_chansize)
+	{
+		uint32 i;
+
+		for (i = 0; i < MAX_SOURCES; i++)
+		{
+			mixSDL_Source *src;
+			sint32 samp;
+			
+			/* find next source */
+			for (; i < MAX_SOURCES && (
+					(src = active_sources[i]) == 0
+					|| src->state != MIX_PLAYING
+					|| !mixSDL_SourceGetFakeSample (src, &samp));
+					i++)
+				;
+		}
+	}
+
+	/* keep this order or die */
+	mixSDL_UnlockMutex (act_mutex);
+	mixSDL_UnlockMutex (buf_mutex);
+	mixSDL_UnlockMutex (src_mutex);
+
+	(void) userdata; // satisfying compiler - unused arg
 }

@@ -38,8 +38,6 @@ TFB_alInitSound (int driver, int flags)
 	};
 	
 	fprintf (stderr, "Initializing OpenAL.\n");
-	atexit (TFB_UninitSound);
-
 #ifdef WIN32
 	alcDevice = alcOpenDevice ((ALubyte*)"DirectSound3D");
 #else
@@ -49,8 +47,10 @@ TFB_alInitSound (int driver, int flags)
 	if (!alcDevice)
 	{
 		fprintf (stderr,"Couldn't initialize OpenAL: %d\n", alcGetError (NULL));
-		exit (-1);
+		return -1;
 	}
+
+	atexit (TFB_UninitSound);
 
 	alcContext = alcCreateContext (alcDevice, NULL);
 	if (!alcContext)

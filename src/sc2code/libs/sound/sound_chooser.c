@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* Mixer abstraction layer for MixSDL
+/* Mixer abstraction layer
  */
 
 #ifdef HAVE_OPENAL
@@ -31,6 +31,13 @@ unsigned int TFBSOUND_FORMAT_MONO16;
 unsigned int TFBSOUND_FORMAT_STEREO16;
 unsigned int TFBSOUND_FORMAT_STEREO8;
 unsigned int TFBSOUND_FORMAT_MONO8;
+
+int TFB_mixSDL_InitSound (int driver, int flags);
+int TFB_NoSound_InitSound (int driver, int flags);
+#ifdef HAVE_OPENAL
+int TFB_alInitSound (int driver, int flags);
+#endif
+
 
 /*************************************************
  *  General interface
@@ -241,9 +248,10 @@ TFBSound_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
 int 
 TFB_choose_InitSound (int driver, int flags)
 {
+	SoundDriver = driver;
+
 	if (driver == TFB_SOUNDDRIVER_OPENAL)
 	{
-		SoundDriver = driver;
 		tfb_enum_lookup[TFBSOUND_GAIN]              = AL_GAIN;
 		tfb_enum_lookup[TFBSOUND_BUFFER]            = AL_BUFFER;
 		tfb_enum_lookup[TFBSOUND_SOURCE_STATE]      = AL_SOURCE_STATE;
@@ -262,7 +270,7 @@ TFB_choose_InitSound (int driver, int flags)
 	}
 	else
 	{
-		SoundDriver = driver;
+		/* NoSound uses MixSDL, common values */
 		tfb_enum_lookup[TFBSOUND_GAIN]              = MIX_GAIN;
 		tfb_enum_lookup[TFBSOUND_BUFFER]            = MIX_BUFFER;
 		tfb_enum_lookup[TFBSOUND_SOURCE_STATE]      = MIX_SOURCE_STATE;
@@ -277,7 +285,11 @@ TFB_choose_InitSound (int driver, int flags)
 		TFBSOUND_FORMAT_STEREO16 = MIX_FORMAT_STEREO16;
 		TFBSOUND_FORMAT_MONO8 = MIX_FORMAT_MONO8;
 		TFBSOUND_FORMAT_STEREO8 = MIX_FORMAT_STEREO8;
-		return (TFB_mixSDL_InitSound (driver, flags));
+		
+		if (driver == TFB_SOUNDDRIVER_MIXSDL)
+			return (TFB_mixSDL_InitSound (driver, flags));
+		else
+			return (TFB_NoSound_InitSound (driver, flags));
 	}
 }
 

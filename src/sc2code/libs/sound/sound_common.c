@@ -32,6 +32,21 @@ static Task FadeTask;
 static SIZE TTotal;
 static SIZE volume_end;
 
+
+int TFB_mixSDL_InitSound (int driver, int flags);
+int TFB_NoSound_InitSound (int driver, int flags);
+#ifdef HAVE_OPENAL
+int TFB_choose_InitSound (int driver, int flags);
+int TFB_alInitSound (int driver, int flags);
+#endif
+
+void TFB_mixSDL_UninitSound (void);
+void TFB_NoSound_UninitSound (void);
+#ifdef HAVE_OPENAL
+void TFB_alUninitSound (void);
+#endif
+
+
 static int
 fade_task (void *data)
 {
@@ -93,28 +108,54 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 int 
 TFB_InitSound (int driver, int flags)
 {
+	int ret;
+
 #ifdef  HAVE_OPENAL
-	return (TFB_choose_InitSound (driver, flags));
+	ret = TFB_choose_InitSound (driver, flags);
 #else
-	if (driver == TFB_SOUNDDRIVER_OPENAL)
+	SoundDriver = driver;
+	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
 	{
 		fprintf (stderr, "OpenAL driver not compiled in, so using MixSDL\n");
-		driver = TFB_SOUNDDRIVER_MIXSDL;
+		SoundDriver = TFB_SOUNDDRIVER_MIXSDL;
 	}
-	return (TFB_mixSDL_InitSound (driver, flags));
+	if (SoundDriver == TFB_SOUNDDRIVER_MIXSDL)
+		ret = TFB_mixSDL_InitSound (SoundDriver, flags);
+	else
+		ret = TFB_NoSound_InitSound (SoundDriver, flags);
 #endif
+	if (ret != 0)
+	{
+		fprintf (stderr, "Sound driver initialization failed.\n"
+				"This may happen when a soundcard is "
+				"not present or not available.\n"
+				"NOTICE: Try running UQM with '--sound=none' option\n");
+		exit (-1);
+	}
+
+	return ret;
 }
 
 void
 TFB_UninitSound (void)
 {
-#ifdef  HAVE_OPENAL
-	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
+	switch (SoundDriver)
+	{
+	case TFB_SOUNDDRIVER_OPENAL:
+#ifdef HAVE_OPENAL
 		TFB_alUninitSound ();
-	else
-		TFB_mixSDL_UninitSound ();
 #else
-	TFB_mixSDL_UninitSound ();
+		fprintf (stderr, "TFB_UninitSound(): driver is set to OpenAL"
+				"while OpenAL driver is not compiled in\n");
 #endif
-}
+		break;
 
+	case TFB_SOUNDDRIVER_MIXSDL:
+		TFB_mixSDL_UninitSound ();
+		break;
+
+	case TFB_SOUNDDRIVER_NOSOUND:
+		TFB_NoSound_UninitSound ();
+		break;
+	}
+}

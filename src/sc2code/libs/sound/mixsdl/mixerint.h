@@ -116,10 +116,18 @@ static void mixSDL_UnlockMutex (mixSDL_Mutex mtx);
 /* The Mixer */
 static void mixSDL_mix_channels (void *userdata, uint8 *stream,
 		sint32 len);
+static void mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len);
+static void mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len);
 static void mixSDL_UnclipWorkBuffer (sint32 *data, sint32 *end_data,
 		uint32 step);
-static void mixSDL_mix_lowq (uint8 *stream, sint32 len);
 static __inline__ bool mixSDL_SourceGetNextSample (mixSDL_Source *src,
 		sint32* samp);
+static __inline__ bool mixSDL_SourceGetFakeSample (mixSDL_Source *src,
+		sint32* psamp);
+
+/* SDL driver */
+static const char* mixSDL_DriverGetName (void);
+static const char* mixSDL_DriverGetError (void);
+static int mixSDL_DriverOpenAudio (void *desired, void *obtained);
 
 #endif /* MIXERINT_H */

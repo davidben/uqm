@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* Simple mixer for use with SDL_audio
+/* Mixer abstraction layer
  */
 
 #ifndef SOUNDCHOOSER_H
@@ -31,18 +31,6 @@
 #include "mixsdl/mixer.h"
 #include "openal/mixer.h"
 #include "types.h"
-
-
-int TFB_mixSDL_InitSound (int driver, int flags);
-#ifdef HAVE_OPENAL
-int TFB_choose_InitSound (int driver, int flags);
-int TFB_alInitSound (int driver, int flags);
-#endif
-
-void TFB_mixSDL_UninitSound (void);
-#ifdef HAVE_OPENAL
-void TFB_alUninitSound (void);
-#endif
 
 
  /*************************************************

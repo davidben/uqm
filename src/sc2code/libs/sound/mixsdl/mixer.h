@@ -134,6 +134,25 @@ typedef enum
 
 } mixSDL_Format;
 
+typedef enum
+{
+	MIX_QUALITY_LOW = 0,
+	MIX_QUALITY_MEDIUM,
+	MIX_QUALITY_HIGH,
+	MIX_QUALITY_DEFAULT = MIX_QUALITY_MEDIUM,
+	MIX_QUALITY_COUNT
+
+} mixSDL_Quality;
+
+typedef enum
+{
+	MIX_DRIVER_NOFLAGS = 0,
+	MIX_DRIVER_FAKE_DATA = 1,
+	MIX_DRIVER_FAKE_PLAY = 2,
+	MIX_DRIVER_FAKE_ALL = MIX_DRIVER_FAKE_DATA | MIX_DRIVER_FAKE_PLAY
+
+} mixSDL_DriverFlags;
+
 /*************************************************
  *  Interface Types
  */
@@ -179,12 +198,26 @@ typedef struct
 
 #define mixSDL_srcMagic 0x5358494DU /* MIXS in LSB */
 
+typedef struct
+{
+	const char* (* GetDriverName) (void);
+	const char* (* GetError) (void);
+	/* see SDL for description of these functions */
+	int (* OpenAudio) (void *desired, void *obtained);
+	void (* CloseAudio) (void);
+	void (* PauseAudio) (int pause_on);
+
+} mixSDL_DriverInfo;
+typedef const mixSDL_DriverInfo *mixSDL_Driver;
+
 /*************************************************
  *  General interface
  */
 uint32 mixSDL_GetError (void);
+void mixSDL_UseDriver (mixSDL_Driver driver, mixSDL_DriverFlags flags);
 
-bool mixSDL_OpenAudio (uint32 freq, uint32 format, uint32 samples_buf);
+bool mixSDL_OpenAudio (uint32 freq, uint32 format, uint32 samples_buf,
+		mixSDL_Quality quality);
 void mixSDL_CloseAudio (void);
 bool mixSDL_QuerySpec (uint32 *freq, uint32 *format, uint32 *channels);
 
