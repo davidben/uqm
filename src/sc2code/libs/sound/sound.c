@@ -146,14 +146,16 @@ destroy_soundchain (TFB_SoundChain *chain)
 TFB_SoundChain *
 get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
 {
-	TFB_SoundChain *prev_chain;
+	TFB_SoundChain *prev_chain, *last_valid = NULL;
 	prev_chain = first_chain;
 	if (prev_chain == current_chain)
 		return (prev_chain);
 	while (prev_chain->next)
 	{
-		if (prev_chain->next == current_chain || !prev_chain->next->tag.data)
-			return (prev_chain);
+		if (prev_chain->tag.type)
+			last_valid = prev_chain;
+		if (prev_chain->next == current_chain)
+			return (last_valid);
 		prev_chain = prev_chain->next;
 	}
 	return (first_chain);

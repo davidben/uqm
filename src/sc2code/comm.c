@@ -1705,7 +1705,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			{
 				temp = curr->tag.data;
 				if (temp == NULL)
-					break;
+					continue;
 				// fprintf (stderr, "%s\n", temp);
 				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS
 						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
