@@ -46,7 +46,7 @@ We are struggling against the Ur-Quan. Can't you help us?
 we cannot be of any assistance now... we are in the middle of the process.
 i will explain
 after we chenjesu and mmrnmhrm were defeated by the ur-quan
-we chose to be encased within a single slave shield on this world
+we chose to be encased in a single slave shield on this world
 as soon as the ur-quan departed, we began the process
 we initiated a synthesis of our two species, our two cultures
 one crystalline, the other purely mechanical
@@ -62,7 +62,7 @@ But why can't you help us now?!
 
 #(LONG_TIME)	chmmr006.ogg
 the complete synthetic hybridization of the chenjesu and the mmrnmhrm species
-will require approximately thirty five of your earth years
+will require approximately thirty-five of your earth years
 this extended duration is necessary because our synthesis mechanisms
 are dependent exclusively on the light of our sun for energy.
 
@@ -105,8 +105,8 @@ its mental power may be useful to help confuse the ur-quan.
 I got this huge bomb-thing from a race called the Utwig. Is it really a weapon?
 
 #(ABOUT_BOMB)	chmmr011.ogg
-the device you speak of is a huge matter-antimatter bomb... if you had activated it
-the weapon would have annihilated your ship and everything else within five hundred kilometers
+the device you speak of is a huge matter-antimatter bomb
+if you had activated it, the weapon would have annihilated your ship and everything else within five hundred kilometers
 the destructive power of this weapon makes it suitable for the most important task you will ever undertake
 the neutralization of the sa-matra, the ur-quan's nearly invincible battle platform.
 
@@ -193,7 +193,7 @@ THIS MUST BE YOUR PRIORITY. THIS MUST BE YOUR EVENTUAL GOAL.
 WE KNOW WHAT IS NECESSARY TO ACHIEVE THIS END
 BUT FIRST WE MUST KNOW WHAT YOU HAVE ALREADY LEARNED
 SO WE WILL SCAN THE DATABANKS AND LOGS ABOARD YOUR SHIP.
-THERE
+THERE.
 THE PROCESS IS COMPLETE. NOW WE CAN DISCUSS WHAT YOU MUST DO.
 
 #(YOU_KNOW_SAMATRA)	chmmr020.ogg
@@ -331,8 +331,8 @@ ONE: THE LOCATION OF THE SA-MATRA CAN BE CONFINED TO THE STARS IN THE CRATERIS C
 SEEK THE VEHICLE IN THIS REGION.
 TWO: BECAUSE THE UR-QUAN LOST SO MANY SHIPS WHEN THE SHOFIXTI CAUSED THEIR OWN SUN TO FLARE
 THE KOHR-AH'S FORCES ARE GROSSLY SUPERIOR TO THE UR-QUAN.
-IF THE WAR IS NOT OVER BETWEEN THE UR-QUAN AND THE KOHR-AH, IT SHALL BE SOON
-WITH THE KOHR-AH VICTORIOUS. WHEN THIS HAPPENS THE KOHR-AH WILL MOVE THROUGH SPACE
+IF THE WAR IS NOT OVER BETWEEN THE UR-QUAN AND THE KOHR-AH, IT SHALL BE SOON, WITH THE KOHR-AH VICTORIOUS.
+WHEN THIS HAPPENS THE KOHR-AH WILL MOVE THROUGH SPACE
 DESTROYING ALL INTELLIGENT RACES ONE BY ONE UNTIL NONE REMAIN.
 YOU MUST NOT BE DISTRACTED! THE SA-MATRA IS THE KEY TO THEIR DOMINANCE!
 DESTROY THEIR SACRED TROPHY, AND UNITED WITH OUR ALLIES, WE CAN DEFEAT THEIR STAR FLEET.

@@ -42,15 +42,13 @@ What are these 'unavoidable factors'?
 
 #(FACTORS_ARE)	melno006.ogg
 First and foremost among these factors
-is our unwillingness to GIVE away information about
-our history, psychology and mental powers,
+is our unwillingness to GIVE away information
+about our history, psychology and mental powers,
 our unique physiology,
 the exact locations of homeworlds,
 or our potentially ominous, long-range plans.
-However,
-these important and relevant pieces of information
-ARE available
-for a nominal sum of Credits.
+However, these important and relevant pieces of information
+ARE available, for a nominal sum of Credits.
 
 #(what_about_universe)
 Do you have any information which might be useful to us?
@@ -113,10 +111,9 @@ I had itchy pods this morning, Captain, and here you are!
 
 #(HELLO_AND_DOWN_TO_BUSINESS_4)	melno015.ogg
 What a coincidence! I was just talking about you with a Keel-Verezy captain. 
-He/she/they expressed great interest in your explorations and struggles against the Ur-Quan
-but, like all Verezy, I'm afraid he/she/they were hesitant to introduce themselves for fear of
-well
-frightening you. 
+They expressed great interest in your explorations and struggles against the Ur-Quan
+but, like all Verezy, I'm afraid they were hesitant to introduce themselves for fear of
+well, frightening you. 
 In any event, it is our pleasure to meet you once again.
 
 #(HELLO_AND_DOWN_TO_BUSINESS_5)	melno016.ogg
@@ -153,8 +150,7 @@ Welcome back, Captain! You are our favorite customer.
 What's my Credit balance, if you please?
 
 #(HELLO_SLIGHTLY_ANGRY_1)	melno022.ogg
-So
-the violent one has returned.
+So, the violent one has returned.
 Have you come back to seek our forgiveness
 or to attack our defenseless vessel once more?
 
@@ -175,8 +171,7 @@ Your question reveals a certain lack of understanding
 about the nature of friendly, inter-species relationships. 
 We shall clarify the situation. 
 If you wish to be friends with someone
-never
-EVER
+never, EVER
 shoot wads of super-heated plasma at them. 
 Is this clear?
 
@@ -190,9 +185,8 @@ They didn't like the climate there
 so they decided to make `just a few minor, climatic adjustments.'
 Their equipment went haywire, they panicked and fled
 and the entire atmosphere was stripped off the planet
-much to the native Algolites sincere
-though short-lived
-regret.
+much to the native Algolites sincere,
+though short-lived, regret.
 
 #(excuse_2)
 Let's just forget our battle ever happened, ok?
@@ -211,8 +205,7 @@ But it would have to be genuine.
 I apologize. I'm sorry. Please forgive me, I beg you.
 
 #(APOLOGY_ACCEPTED) melno029.ogg
-Well
-since you put it so nicely
+Well, since you put it so nicely
 you seem so genuinely repentant
 we'll give you another chance to become trading partners with us.
 But don't ever attack us again
@@ -286,9 +279,7 @@ We have come to help you once more, Captain.
 
 #(RESCUE_AGAIN_4) melno041.ogg
 We MUST stop meeting like this, Captain!
-Ha, ha, ha
-Har, har, har
-snicker
+Ha, ha, ha!
 
 #(RESCUE_AGAIN_5) melno042.ogg
 Out of fuel again, eh, Captain?
@@ -374,20 +365,14 @@ We stand prepared to make reparations for our previous conduct.
 
 #(ONE_LAST_CHANCE)	melno056.ogg
 Hmm
-
-hmm
-
-hmm...hmm...hmm.
-
-Very well then.
+hmm... hmm... hmm.
+Oh, very well then.
 We will give you a single opportunity to compensate us
 for the damages you have inflicted upon our mercantile fleet
 with your unreasonable attacks in the past.
 We will not make this offer a second time.
-
 You will give us all non-essential hardware from your vessel
 immediately!
-
 Do you accept?
 
 #(ok_strip_me)
@@ -430,7 +415,7 @@ it also lets us see our weapon consoles more clearly.
 We have no fear of you, Melnorme!
 
 #(YOU_NOT_STRONG_1) melno062.ogg
-You should.
+Oh, you should.
 Once the Dramya thought they could steal from us.
 You don't see too many Dramya around these days, do you?
 
@@ -475,8 +460,8 @@ We are interested in purchasing certain items, specifically
 biological data on alien life forms
 and the coordinates of certain strange worlds whose radiant energies defy all scanners
 producing a rainbow-like image.
-In exchange, we have many interesting and valuable commodities
-such as fuel compatible with your starship's HyperDrive thrusters
+In exchange, we have many interesting and valuable commodities, such as
+fuel compatible with your starship's HyperDrive thrusters,
 technological specifications, allowing you to build new devices for your ship
 and many important secrets which may help you in your travels.
 To facilitate trade, we translate all your sales into Interstar Credits
@@ -612,7 +597,7 @@ Unfortunately this purchase requires
 
 #(BUY_FUEL_INTRO)	melno085.ogg
 As you know, we carry a large supply of fuel on board which is compatible with your engine system.
-We will be happy to sell this substance to you at a cost of 1 Credit per unit.
+We will be happy to sell this substance to you at a cost of 1 Credit per fuel unit.
 
 #(NO_ROOM_FOR_FUEL)	melno086.ogg
 Your ship's capacity is insufficient to hold that much fuel.
@@ -643,12 +628,11 @@ As you know, in our many centuries of star-trading
 we Melnorme have come to learn much about what happens in our galaxy
 both now and in the ancient past.
 We have also kept records on the diverse alien races in your region of space.
-We will share this crucial knowledge with you for a fee of 75 Credits
-per informative fact.
+We will share this crucial knowledge with you for a fee of 75 Credits per informative fact.
 No refunds.
 
 #(OK_BUY_INFO)	melno088.ogg
-Good!  I wish to SELL information.
+How wonderful, Captain!
 
 #(OK_NO_BUY_INFO)	melno089.ogg
 What else would you like to buy?
@@ -700,7 +684,7 @@ and the general feeling that the priests had made Dogar and Kazon's pronouncemen
 As you know, there are weaknesses in the division between dimensions.
 For example, your vessel uses such weaknesses to enter HyperSpace.
 However, there are other weak spots in the galaxy which lead to yet different dimensions.
-One such portal exists nearby, between the Chrandrasekhar and Columbae constellations.
+One such portal exists nearby, between the Chandrasekhar and Columbae constellations.
 The portal opens only a short time each month starting on the 17th.
 Since we have never entered the portal, we can give no more information on this subject.
 
@@ -728,7 +712,7 @@ of a powerful alien nation called the Utwig.
 The Utwig, the Burvixese explained, were pleasant, sophisticated creatures
 but they were also terminally depressed and often spoke about ending their lives
 by activating a super-weapon, some kind of gigantic bomb
-which they had found on one of their worlds -- Zeta Hyades VIB I think it was.
+which they had found on one of their worlds -- Zeta Hyades VI-B I think it was.
 The Druuge recognized the description of the bomb as a Precursor planeteering tool
 which indeed was an explosive device of unrivaled power, and they set out to make it their own.
 Though the revolting, criminal, insidious Druuge rarely leave their sphere of influence
@@ -751,11 +735,10 @@ and will probably be unwilling to help you fight the Ur-Quan.
 If you wish to gain them as allies, we recommend that you acquire the broken Ultron
 (as if it EVER worked)
 and find some suitable replacement parts.
-Our information indicates that you can find these items in three different places
+Our information indicates that you can find these items in three different places:
 a Rosy Sphere at the Druuge trade world
 an Aqua Helix somewhere in Thraddash space
 and a Clear Spindle, which is currently in the possession of the Pkunk.
- 
 Captain, that was the last current event we have for sale.
 
 #(OK_BUY_ALIEN_RACE_1)	melno099.ogg
@@ -767,20 +750,18 @@ this close proximity to the inter-Ur-Quan war will give them insights into the c
 which will be of great use to you.
 In addition, the Zoq-Fot-Pik met the Chenjesu early on in the war, and are eager to make allies
 who can protect them from their enemies. 
-In case you are interested, the Zoq-Fot-Pik homeworld is at
-coordinates 400.0:543.7, planet I.
+In case you are interested, the Zoq-Fot-Pik homeworld is at coordinates 400.0:543.7, planet I.
 
 #(OK_BUY_ALIEN_RACE_2)	melno100.ogg
 The Ilwrath are presently attacking the Pkunk in the Lacaille and Krueger constellations.
 These beings have slavish devotion to their dark gods Dogar and Kazon
-which in the past few years has been being used against them by the Umgah.
+which in the past few years has been used against them by the Umgah.
 If you need to manipulate the Ilwrath, we suggest you discover the Umgah's technique
 and duplicate it.
 
 #(OK_BUY_ALIEN_RACE_3)	melno101.ogg
 The Pkunk are a mystical off-shoot of the Yehat species
-who left their bird-brothers long ago to found a peaceful enclave
-in the Krueger and Giclas stars.
+who left their bird-brothers long ago to found a peaceful enclave in the Krueger and Giclas stars.
 At the present time, the Pkunk are defending themselves against the Ilwrath
 who have been commanded to attack the happy birds by Dogar and Kazon. 
 The Pkunk may be unwilling to make a formal alliance with you
@@ -802,7 +783,7 @@ I must warn you about some very bad people.
 I assure you, it is!
 The creatures are called the `Druuge' and they are a callous and evil race.
 They care for nothing but profit and personal gain through unfair mercantile exchanges..
-why are you looking at me like that, Captain? It is not appropriate.
+Why are you looking at me like that, Captain? It is not appropriate.
 As I was saying, these wicked creatures will try to sell you commodities at unreasonably low prices.
 Hoy! -- they almost give away fuel! 
 Do not fall for their tricks! There are hidden costs -- secret tariffs!
@@ -821,7 +802,7 @@ until the Gg came under attack by an invading race who you may know as the Kohr-
 The Gg warned the Burvixese that the Kohr-Ah located races by their HyperWave transmissions
 and that they had already discovered the radiations from the Druuge.
 When the Burvixese were kind enough to warn the Druuge that a hostile alien race
-was homing in on their HyperWave's radiations, the Druuge shut down all their transmitters
+was homing in on their HyperWave radiations, the Druuge shut down all their transmitters
 and erected a powerful HyperWave beacon on the surface of the Burvixese moon.
 The Kohr-Ah changed course, attacked the poor Burvixese and sadly, destroyed them all.
 
@@ -840,8 +821,8 @@ on the Chenjesu's homeworld at Procyon.
 We suspect that they are melding their two species to form some kind of new, hybrid race
 a race which may well be powerful enough to destroy the Ur-Quan single-handedly.
 However, by our calculations, this process will take many decades, if not centuries.
-Should you wish to talk to them, we recommend you invest in a HyperWave broadcasting system
-which is powerful enough to penetrate the shield around their world.
+Should you wish to talk to them, we recommend you invest in a
+HyperWave broadcasting system which is powerful enough to penetrate the shield around their world.
 
 #(OK_BUY_ALIEN_RACE_9)	melno107.ogg
 The Mycon are using this time while the Ur-Quan have their attention elsewhere
@@ -862,14 +843,14 @@ who appeared seemingly out of nowhere.
 Actually, we don't know what the Orz did to the Androsynth -- they're just all gone.
 
 #(OK_BUY_ALIEN_RACE_11)	melno109.ogg
-The Ariloulaleelay are a mysterious race of IDF beings
+The Arilou Lalee'lay are a mysterious race of IDF beings
 IDF meaning, Inter-Dimensional Fatigue
-who do not reside in this galaxy, or in fact, anywhere in this universe.
+They do not reside in this galaxy, or in fact, anywhere in this universe.
 While it is true that the Arilou are rarely seen far from the Columbae star group
 they do make regular, secret visits to your world, and have done so for centuries.
 Ever since Earth was slave-shielded, they have focused their attention
 on the humans aboard the starbase, many of whom are now members of your crew.
-Though the Ariloulaleelay always smile and are never overtly hostile
+Though the Arilou Lalee'lay always smile and are never overtly hostile
 we believe that they have a secret agenda which somehow involves your planet, Earth.
 These secret plans may or may not cause grief and woe to you Earthlings.
 
@@ -916,13 +897,12 @@ which was destroyed by the birth of a Mycon `Deep Child' a century ago.
 
 #(OK_BUY_ALIEN_RACE_16)	melno114.ogg
 When the Ur-Quan entered Gamma Serpentis -- the home star of the Yehat
-their Queen made a sudden change of allegiance and allied with the Ur-Quan Hierarchy
-becoming Ur-Quan combat thralls.
+their Queen made a sudden change of allegiance and allied with the Ur-Quan Hierarchy.
+They became Ur-Quan combat thralls.
 This act was viewed by most Yehat starship officers as ultimately dishonorable
 the desperate act of a corrupt regent to maintain her throne.
-The Yehat shame was greatly magnified by the Shofixti's show of courage
+The Yehat's shame was greatly magnified by the Shofixti's show of courage
 when they destroyed their own star system to slow down the Ur-Quan Armada.
- 
 Captain, you have heard all that we have to say about aliens indigenous to this region.
 Should we learn more in the near future, we shall be certain to sell it to you.
 
@@ -974,7 +954,7 @@ These slow, quiet creatures were silicon-based life forms
 but bore little resemblance to the modern Chenjesu.
 The Taalo were natural immunes to the Dynarri psychic compulsion; they were unaffected by the creatures' power
 and the Dynarri would not permit anyone to exist outside their control
-so they ordered the remaining eleven races of the Milieu to attack and destroy the Taalo home planet.
+so they ordered the remaining races of the Milieu to attack and destroy the Taalo home planet.
 This planet was one of the few Milieu worlds located in this region of space.
 I believe you call their star Delta Vulpeculae. Their home was a moon revolving about the second planet.
 I am sad to say that the Taalo were, indeed, eliminated.
@@ -993,7 +973,7 @@ were ruthlessly burned from the faces of their worlds.
 The agents of this genocide were inevitably the Dynarri's favored pet, the Ur-Quan.
 After almost twenty-five hundred years of unrelenting Dnyarri control
 there were only four living member races of the once-great Sentient Milieu.
-By this point, the Dnyarri had used genetic manipulation to split the Ur-Quan into two sub-species
+By this point, the Dnyarri had used genetic manipulation to split the Ur-Quan into two sub-species:
 the Green Ur-Quan -- scientists, technicians, and administrators
 who were responsible for maintaining the limited infrastructure of the Dnyarri civilization
 and the Black Ur-Quan, who filled the ranks of basic laborer and combat soldier.
@@ -1030,10 +1010,10 @@ The Ur-Quan Slave revolt was won.
 When the last Ur-Quan was free of psychic compulsion -- when the last free Dnyarri was dead
 the combined might of the Ur-Quan star fleets met in orbit above the Dnyarri homeworld.
 They had come together to make two important decisions.
-First -- how to punish the few frightened Dnyarri left below on the planet's surface
+First -- how to punish the few frightened Dnyarri left below on the planet's surface.
 Second -- how to insure that never again would the Ur-Quan be made slaves.
-The first decision was made swiftly. The Dnyarri would not be allowed to die
-that was too kind a fate.
+The first decision was made swiftly. The Dnyarri would not be allowed to die;
+ah, that was too kind a fate.
 Instead, the creatures would be genetically modified into sub-sentience
 they would become dumb animals.
 These low creatures would be further debased by serving the Ur-Quan for all eternity
@@ -1051,8 +1031,8 @@ which required that all other sentient species must become slaves of the Ur-Quan
 or be forever imprisoned beneath an impenetrable force shield.
 Leading the opposition to this plan was Kohr-Ah, a charismatic fleet officer.
 Kohr-Ah proposed a simpler alternative, the `Eternal Doctrine.'
-Simply put, this scheme called for the systematic eradication
-of all sentient life in the universe aside from the Ur-Quan.
+Simply put, this scheme called for the systematic eradication of all sentient life in the universe
+aside from the Ur-Quan.
 Captain, if these positions seem to you extreme or unwarranted
 you must remember that the Ur-Quan had been unwilling slaves for millenia
 and that each of them had to remain in agony for years in order to defeat the Dnyarri.
@@ -1061,21 +1041,19 @@ but neither side would submit, and so they fought a bloody civil war.
 
 #(OK_BUY_HISTORY_9)	melno123.ogg
 This is the last historical item we have for sale.
- 
 The civil war between the Green Ur-Quan, the followers of Kzer-Za
 and their opponents, the death-dealing Kohr-Ah, lasted for decades.
 It is likely that they would have annihilated each other
 were it not for a chance discovery by a Kzer-Za -- a Precursor Battleship!
 The vessel was huge, many times the size of the Ur-Quan's vessels.
 The Precursor ship sliced through the Kohr-Ah forces in days -- the Kohr-Ah were defeated.
-However in their victory, the Kzer-Za were humble
+However, in their victory the Kzer-Za were humble
 they realized that there was a chance that they were wrong, and the Kohr-Ah were right.
 Instead of destroying the Kohr-Ah, the Kzer-Za let them go
 directing them to make their way through the stars, travelling against the spin of the galaxy.
 The Kzer-Za would travel in the opposite direction
-and when the two Ur-Quan forces met, they would fight again in a ritual combat
+and when the two Ur-Quan forces met, they would fight again in ritual combat
 with the Precursor Battleship given to the winner.
- 
 Captain, this is happening here and now.
 The Kzer-Za, the Ur-Quan who enslaved Earth, are fighting their ritual battle against the Kohr-Ah
 in a large area centered near the Crateris constellation.
@@ -1086,7 +1064,7 @@ We believe it is your destiny to prevent this from happening.
 We regret to say that you have exhausted our supply of genuinely valuable information.
 However we DO have many thousands of useless facts and that we will gladly sell you
 at a substantial discount. Are you interested?
-We thought not.
+Hmm, we thought not.
 
 #(buy_new_tech)
 I would like to buy the technology you described.
@@ -1143,16 +1121,17 @@ The technology we are now offering includes plans for building
 improvements to your planet landers which make them resistant to hostile alien lifeforms.
 
 #(NEW_TECH_5)	melno135.ogg
-The technology we are now offering includes blueprints which show how to increase
-your lander's cargo space to double its present volume.
+The technology we are now offering includes blueprints
+which show how to increase your lander's cargo space
+to double its present volume.
 
 #(NEW_TECH_6)	melno136.ogg
 The technology we are now offering includes blueprints which show how to add
 double-capacity fuel tanks.
 
 #(NEW_TECH_7)	melno137.ogg
-The technology we are now offering includes plans for improving
-the rate of fire on your lander's stunray bolt-beamer gun.
+The technology we are now offering includes plans for improving the rate of fire
+on your lander's stunray bolt-beamer gun.
 
 #(NEW_TECH_8)	melno138.ogg
 The technology we are now offering includes details for building
@@ -1185,14 +1164,15 @@ faster than your familiar ion-bolt guns.
 You may wish to compensate for this by building additional dynamo modules for your flagship.
 
 #(OK_BUY_NEW_TECH_2)	melno145.ogg
-Ah yes, speed! An excellent choice for the relentless hunter and craven coward as well.
+Ah yes, speed! An excellent choice for the relentless hunter
+and craven coward as well.
 These modifications are simple enough to be put in place immediately.
 Your landers should be properly equipped in no time.
 
 #(OK_BUY_NEW_TECH_3)	melno146.ogg
 These little babies are great for defense, but because of their limited range
-they may not make a good offensive weapon. However, the more you build for your vessel
-the more damage each laser strike will do.
+they may not make a good offensive weapon.
+However, the more you build for your vessel the more damage each laser strike will do.
 
 #(OK_BUY_NEW_TECH_4)	melno147.ogg
 Our reinforcement procedures on your landers are complete.
@@ -1208,7 +1188,7 @@ which you can fill with other, more useful equipment.
 
 #(OK_BUY_NEW_TECH_7)	melno150.ogg
 After some wild game, hmmm? Well, the changes we made should really make a difference!
-...uh... unless of course that wiring went in backwards
+Unless of course that wiring went in backwards
 in which case you won't be able to shoot at all, or take off for that matter.
 Don't worry, Captain. We stand behind our work. If something goes wrong
 just bring it back to us, and we'll fix it pronto!
@@ -1255,7 +1235,8 @@ We are certain that in the long run, this will prove to be a most profitable inv
 
 #(NEW_TECH_ALL_GONE)	melno158.ogg
 Commander, that is the limit of the new technology we can offer you.
-If I may say so, you have been an excellent customer. Thank you!
+If I may say so, you have been an excellent customer.
+Thank you!
 
 #(we_are_from_alliance0)
 We come in peace, representing 
@@ -1294,7 +1275,7 @@ We will take
  of your Hellbore Cannons
 
 #(TRACKERS)	melno170.ogg
- of your Auto-Tracking modules
+ of your Auto-Tracking Modules
 
 #(DEFENSES)	melno171.ogg
  of your Point-Defense Lasers

@@ -17,8 +17,8 @@ Or prepare to suffer the severe consequences.
 Druuge starship captain. Justify your presence here.
 
 #(GEN_INFO_AT_BOMB_PLANET)	druug003.ogg
-We, the appointed representatives of the Crimson Corporation merely come to obtain
-the fair and reasonable payment for our goods!
+We, the appointed representatives of the Crimson Corporation 
+merely come to obtain the fair and reasonable payment for our goods!
 We travelled to this region of space years ago to sell the useless Ultron device to the Utwig.
 We knew even then of the weapon on the surface below us -- this was to be our price!
 But the Utwig used a clever ploy to cheat us!
@@ -46,7 +46,7 @@ Then they begged to hold the device, just for a moment.
 To close the deal, I permitted this... a grievous mistake!
 The moment the High Proctor touched the Ultron, her body arched
 and her eyes rolled back in her head.
-She began to babble meaningless phrases and howl like a hungry beast.
+She began to babble meaningless phrases and howl like a beast.
 We had expected the Utwig to fall for our Sell, to buy the useless device. But never with such gusto!
 Their self-doubt and lack of clear reason left them vulnerable to our every manipulation.
 But then, the Proctor's body relaxed, and her eyes slowly closed.
@@ -149,7 +149,7 @@ Should you change your mind, we will always be ready to work with you, Captain.
 Gee, isn't this kind of like... slave trading?
 
 #(NO_SLAVE_TRADE)	druug014.ogg
-No, no no, Captain! Slaves have no choice in their destiny, no freedom.
+No, no, no, Captain! Slaves have no choice in their destiny, no freedom.
 We would never accept the permanent assignment of one of your people
 unless we knew that they had granted you the rights to make such a deal.
 
@@ -190,7 +190,7 @@ which we will trade for 100 of your crew.
 
 #(BOUGHT_SHIP)	druug021.ogg
 Good choice. Your fleet swells with power!
-With the purchase of additional Mauler vessels, you would be nigh invincible!
+With the purchase of additional Mauler vessels, you would be nigh-invincible!
 
 #(BOUGHT_FUEL)	druug022.ogg
 The fuel has been transferred to your vehicle.
@@ -270,7 +270,7 @@ had detected our HyperWave emissions, and though still distant
 was inexorably homing in on our central trade world at Zeta Persei.
 We devised a brilliant plan, implemented it perfectly
 and were thus spared gruesome death at the hands of the aliens
-who we later learned called themselves the `Kohr-Ah'.
+who we later learned call themselves the `Kohr-Ah'.
 
 #(GOODBYE_FROM_SPACE)	druug032.ogg
 Until we meet again.
@@ -351,7 +351,7 @@ wish to establish a long-term relationship with an omnipotent and all-knowing de
 which shall mutually benefit both parties, the parties agree to abide by the following terms and commitments
 for the rest of eternity.
 The Worshippers hereby promise to perform faithfully and to the best of their ability
-the following
+the following:
 1. Worshippers shall make regular and sincere obeisance to God, including but not limited to
 prayer, sacrifice, and the building of large structures.
 2. Worshippers shall make every attempt to convert non-believers (hereinafter known as `Them')
@@ -468,7 +468,7 @@ I will purchase the fertile Shofixti adolescents.
 I accept the deal for the Mycon Deep Child eggcase.
 
 #(BOUGHT_CASTER)	druug061.ogg
-I will buy the Hyperwave 'Caster.
+I will buy the HyperWave 'Caster.
 
 #(YOU_GET)	druug062.ogg
 In exchange, you shall receive 
@@ -497,7 +497,7 @@ the agreed-upon number of ships.
 #(DEAL_FOR_LESS_SHIPS)	druug068.ogg
 less than the number of ships I originally offered
 because you have no room for the the full amount in your fleet!
-Unfortunately for you, I'm afraid, but legal I assure you.
+Unfortunate for you, I'm afraid, but legal I assure you.
 
 #(DEAL_FOR_NO_SHIPS)	druug069.ogg
 the number of ships which can be added to your fleet
@@ -508,7 +508,7 @@ With such a fine deal under my belt, perhaps I should take the rest of the day o
 #(FUEL0)	druug070.ogg
 All the fuel your ship can hold.
 We are now hooking up the fuel lines to fill your tanks.
-Hmm.. Ah, yes. The job is done. Now let's see how much was transferred... It was 
+Hmm..
 
 #(FUEL1)
  units of fuel.
@@ -544,7 +544,8 @@ A fine deal, Captain. An excellent bargain... for me!
 Ho-ho-ho! When I offered you all the fuel you could hold, you could have drained every drop I had.
 Cold sweat dripped from my palms as I watched my workers begin the transfer.
 And then it was over... so soon! So gloriously soon!
-I shall be promoted at least three full steps! A new office! A benefits package! Fortune has smiled on me today!
+I shall be promoted at least three full steps! A new office! A benefits package!
+Fortune has smiled on me today!
 I feel so lucky, Captain, that you did not have the forethought to arrive here with a dozen empty tanks.
 Thank you! Thank you! Thank you!
 

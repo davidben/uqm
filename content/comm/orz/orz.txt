@@ -1,8 +1,8 @@
 #(INIT_HELLO)	orz000.ogg
-(MESSAGE FROM TRANSLATION COMPUTER: INCOMING MESSAGE EXTREMELY UNORTHODOX IN COMPOSITION.
-TRANSLATION INCLUDES MANY LINGUAL BEST-FITS. FOR CLARITY BEST-FITS ARE DENOTED BY ASTERISK PAIRS.
-OVERALL ACCURACY OF TRANSLATION: UNKNOWN.
-(MESSAGE BEGINS...)
+THIS IS A SYSTEM MESSAGE FROM SHIP'S COMPUTER TRANSLATION SUBSYSTEM:
+INCOMING MESSAGE EXTREMELY UNUSUAL IN COMPOSITION.
+TRANSLATION INCLUDES MANY LINGUAL ANOMALIES.
+OVERALL ACCURACY OF TRANSLATION IS: UNKNOWN
 
 #(who_you)
 Who are you? What can you tell us about yourselves?
@@ -17,7 +17,7 @@ Okay, right. Uh... maybe you could tell me why you are here.
 
 #(HERE_BECAUSE)	orz002.ogg
 Here is *bright* and *smooth*. The other place is *hurt* Orz too much tired for keeping together.
-Other place is **Frumple**. Orz are here now, but almost not yet.
+Other place is *Frumple*. Orz are here now, but almost not yet.
 Soon Orz are really here! You are help Orz with *parties*.
 Orz looking for you, and find you. So much joy!!
 Now *smooth* place all the time, and after now never going back to outside.
@@ -30,7 +30,7 @@ It is best if many happy Orz are coming to your *house*.
 Let's *spitting* the fun words for several *pieces* and then surprising things!!!
 
 #(ALLIED_HOMEWORLD_HELLO_2)	orz004.ogg
-This is my *house*. Do you want to know a *secret*? Do not *think* it to *not campers*.
+This is my *house*. Do you want to know a *secret*? Do not *think* it is *not campers*.
 You are so many *lonely* *juicy* *bubbles*. It is so sad.
 Now that you are *campers* you will have more *parties*
 and no more *sad* *lonely* *bubbles*.
@@ -113,7 +113,7 @@ I'm afraid I'm still not exactly clear on who you are and where you're from.
 #(ABOUT_US_1)	orz015.ogg
 You are a *silly* *camper*. I am always Orz.
 If I was not Orz, then I would not be, but of course I am Orz.
-We are from *outside*. Also the Arilou *quick babies* are from *outside*.
+We are from the *outside*. Also the Arilou *quick babies* are from *outside*.
 It is the same, but not.
 Orz are from *below*, Arilou are from *above*.
 Orz does not like Arilou. Arilou are too much trouble.
@@ -165,7 +165,7 @@ Androsynth are not here. Orz are here.
 You are not the same too much like Androsynth. You are *happy campers*.
 Do you want to see our surprising *toys*? No!! Do Not!!
 Androsynth are so silly. We do not *tell stories* a lot about them.
-No more Androsynth stories.
+No more Androsynth *stories*.
 
 #(must_know_about_androsyn)
 What happened?? Dammit, what did you do to the Androsynth?!!
@@ -192,7 +192,7 @@ Now please don't take this the wrong way, but what did happen to the Androsynth?
 
 #(FORGET_ANDRO_1)	orz022.ogg
 I am say best word *frumple*. Maybe you do not know.
-*Frumple* be *round* and yet *lumpy*. So bad!!!
+*Frumple* be *round* yet *lumpy*. So bad!!!
 The asking about Androsynth is so *frumple* we are not happy.
 Do not asking it so much.
 It is better to not *frumple* or else there is so much problems.
@@ -203,7 +203,7 @@ Just tell me this. Are we in for the same fate as them?
 
 #(FORGET_ANDRO_2)	orz023.ogg
 You are not same. You are *happy campers*, but already you know.
-I will not talking about *silly Androsynth*, now is stop asking.
+I will not talking about *silly* Androsynth, now is stop asking.
 If you are say the question another time
 it is *frumple* too much and Orz are *dancing* for *dissolving* the *campers*.
 I am clear!!
@@ -234,7 +234,8 @@ Oh well. Now is for *fun time*, not worrying.
 
 #(NEUTRAL_HOMEWORLD_HELLO_4)	orz028.ogg
 Again you have come to my *house*. It is the same time.
-Why are you coming? Do you always the *slow time*? I am surprised!
+Why are you coming? Do you always the *slow time*?
+I am surprised!
 Oh well. Now is for *fun time*, not worrying.
 
 #(NEUTRAL_SPACE_HELLO_1)	orz029.ogg
@@ -294,7 +295,7 @@ We have reconsidered the idea of an alliance between our peoples.
 
 #(OK_TALK_ALLIANCE)	orz037.ogg
 So much the better! Orz have been waiting for *alliance* time.
-I will show you the inside.
+I will show you the *inside*.
 It is so good that you will never leave.
 Oh, I am so excited for expecting *alliance parties*.
 Yes! Yes! Reconsider is best.
@@ -436,7 +437,7 @@ Then *happy days* are here again.
 #(INSULTED_2)	orz051.ogg
 Orz are not *dissolve*! Why is the *silly cow* say Orz are *dissolving*?
 Too much crazy perhaps. You are so sick even for a *party*.
-Again I am *squeezing* the *juice*. Nnnggaaaahhh!!
+Again I am *squeezing the juice*. Nnnggaaaahhh!!
 It does not even helping.
 
 #(INSULTED_3)	orz052.ogg
@@ -508,12 +509,12 @@ Why are you here at this planet?
 This answer is not for *Silly Cows*.
 You do not know Taalo. Taalo are not the *friends*.
 You are coming to the *Playground* and then making words.
-Always you make Orz *squeezing juice*. We do not have enough.
+Always you make Orz *squeezing* the *juice*. We do not have enough.
 I do not want to *smell* you now.
 
 #(FRIENDLY_EXPLANATION)	orz062.ogg
 I will tell. This is Taalo *Playground*. Do you know?
-Taalo is not anymore the *heavy space*. Many *camper* lives they are not here.
+Taalo is not anymore the *heavy space*. They are not here.
 To *play* with Taalo, Orz must *spread* into *Pretty Space*.
 There are so many good places for this here, Orz are happy.
 Of course you do not know Taalo. You are *Campers*.
@@ -575,7 +576,7 @@ What are you busy doing?
 #(BUSY_BECAUSE)	orz068.ogg
 Busy is because Orz have reason. It is secret for *campers*.
 You must going quickly to my *house*.
-It is too bad you cannot **HYUIVBHJHG** there
+It is too bad you cannot *HYUIVBHJHG* there
 but flying the *heavy* ship is okay.
 Perhaps next we will show you our toys. But do not look!!!
 Now you will go to my *house*.
