@@ -695,7 +695,11 @@ END_GAME_STATE
 		GLOBAL (GameState[END_##SName >> 3]) = \
 				(GLOBAL (GameState[END_##SName >> 3]) \
 				& (BYTE)~((1 << ((END_##SName & 7) + 1)) - 1)) \
-				| (BYTE)((val) >> (END_##SName - SName - (END_##SName & 7))); \
+				| (BYTE)((val) >> \
+					/* multiply to silence negative shift warning when \
+					 * compiling with -O0 */ \
+						(((SName >> 3) < (END_##SName >> 3)) * \
+					(END_##SName - SName - (END_##SName & 7)))); \
 }
 
 #define READ_SPEED_MASK ((1 << 3) - 1)
