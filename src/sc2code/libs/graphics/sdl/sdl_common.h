@@ -59,5 +59,8 @@ void TFB_FreeImage (TFB_Image *img);
 
 void TFB_SwapBuffers ();
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
+void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
+					  SDL_Rect *dstrect, int blend_numer, int blend_denom);
+
 
 #endif

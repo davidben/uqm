@@ -106,6 +106,8 @@ typedef struct tfb_drawcommand
 	int b;
 	TFB_Palette Palette[256];
 	BOOLEAN UsePalette;
+	int BlendNumerator;
+	int BlendDenominator;
 } TFB_DrawCommand;
 
 // Queue Stuff
@@ -243,6 +245,8 @@ extern int ScreenHeight;
 extern int ScreenWidthActual;
 extern int ScreenHeightActual;
 extern int GraphicsDriver;
+extern int BlendNumerator;
+extern int BlendDenominator;
 
 int Starcon2Main (void *);
 

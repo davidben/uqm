@@ -32,3 +32,14 @@ int ScreenWidthActual;
 int ScreenHeightActual;
 int GraphicsDriver;
 int TFB_DEBUG_HALT;
+int BlendNumerator = 4;
+int BlendDenominator = 4;
+
+
+void
+SetGraphicStrength (int numerator, int denominator)
+{ 
+	//fprintf (stderr, "SetGraphicsStrength %d %d\n",numerator, denominator);
+	BlendNumerator = numerator;
+	BlendDenominator = denominator;
+}

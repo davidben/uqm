@@ -934,14 +934,11 @@ int flash_rect_func(void *data)
 #define NORMAL_F_STRENGTH 0
 	DWORD TimeIn;
 	SIZE strength, fstrength, incr;
-	/* Added by Michael: simple on-off flash right now */
-	BOOLEAN flash_on;
 	Task task = (Task)data;
 
 	fstrength = NORMAL_F_STRENGTH;
 	incr = 1;
 	strength = NORMAL_STRENGTH;
-	flash_on = 0;
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState(task, TASK_EXIT))
 	{
@@ -968,13 +965,8 @@ int flash_rect_func(void *data)
 					fstrength = MIN_F_STRENGTH + 1;
 					incr = 1;
 				}
-
-				flash_on = !flash_on;
 				
-				DrawFromExtraScreen (&flash_rect);
-
-				// if (fstrength != NORMAL_F_STRENGTH)
-				if (flash_on)
+				if (fstrength != NORMAL_F_STRENGTH)
 				{
 					STAMP s;
 
@@ -991,6 +983,8 @@ int flash_rect_func(void *data)
 					else
 						SetGraphicStrength (8, -8); // add to (partial mask)
 				}
+
+				DrawFromExtraScreen (&flash_rect);
 			}
 			else
 			{
@@ -1011,12 +1005,7 @@ int flash_rect_func(void *data)
 		}
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
-		// Michael: 
-		// "This is too frequent for a binary flash, so we slow it down.
-		//  eventually once we get better alpha control we can do the fading
-		//  effect again."
-		// SleepThreadUntil (TimeIn + (ONE_SECOND / 16));
-		SleepThreadUntil (TimeIn + (ONE_SECOND / 4));
+		SleepThreadUntil (TimeIn + (ONE_SECOND / 16));
 		TimeIn = GetTimeCounter ();
 	}
 

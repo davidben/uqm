@@ -162,6 +162,9 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			}
 		}
 
+		DrawCommand.BlendNumerator = BlendNumerator;
+		DrawCommand.BlendDenominator = BlendDenominator;
+
 		TFB_EnqueueDrawCommand(&DrawCommand);
 	}
 	else
@@ -234,6 +237,9 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		DrawCommand.image = 0;
 		DrawCommand.UsePalette = FALSE;
 
+		DrawCommand.BlendNumerator = BlendNumerator;
+		DrawCommand.BlendDenominator = BlendDenominator;
+
 		TFB_EnqueueDrawCommand(&DrawCommand);
 	}
 	else
@@ -297,6 +303,9 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		DC.image = 0;
 		DC.UsePalette = FALSE;
 
+		DC.BlendNumerator = BlendNumerator;
+		DC.BlendDenominator = BlendDenominator;
+
 		TFB_EnqueueDrawCommand(&DC);
 	}
 	else
@@ -326,6 +335,9 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 		DC.h = lpRect->extent.height;
 		DC.image = (TFB_ImageStruct *) ((BYTE *) DstFramePtr +
 				DstFramePtr->DataOffs);
+
+		DC.BlendNumerator = BlendNumerator;
+		DC.BlendDenominator = BlendDenominator;
 
 		TFB_EnqueueDrawCommand (&DC);
 	}

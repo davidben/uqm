@@ -44,6 +44,12 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
 	int result;
 
+	if (bpp != 15 && bpp != 16 && bpp != 24 && bpp != 32)
+	{
+		fprintf(stderr, "Fatal error: bpp of %d not supported\n", bpp);
+		exit(-1);
+	}
+
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
@@ -276,6 +282,244 @@ TFB_DisplayFormatAlpha (SDL_Surface *surface)
 	return SDL_DisplayFormatAlpha (surface);
 }
 
+void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
+					  SDL_Rect *dstrect, int blend_numer, int blend_denom)
+{
+	BOOLEAN has_colorkey;
+	int x, y, x1, y1, x2, y2, dst_x2, dst_y2, colorkey, nr, ng, nb;
+	int srcx, srcy, w, h;
+	Uint8 sr, sg, sb, dr, dg, db;
+	Uint32 src_pixval, dst_pixval;
+	GetPixelFn src_getpix, dst_getpix;
+	PutPixelFn putpix;
+	SDL_Rect fulldst;
+
+	if (blend_numer == blend_denom)
+	{
+		// normal blit: dst = src
+		
+		//fprintf(stderr, "normal blit\n");
+		SDL_BlitSurface (src, srcrect, dst, dstrect);
+		return;
+	}
+		
+	// NOTE: following clipping code is copied from SDL-1.2.4 sources
+
+	// If the destination rectangle is NULL, use the entire dest surface
+	if (dstrect == NULL)
+	{
+		fulldst.x = fulldst.y = 0;
+		dstrect = &fulldst;
+	}
+
+	// clip the source rectangle to the source surface
+	if (srcrect) 
+	{
+		int maxw, maxh;
+
+		srcx = srcrect->x;
+		w = srcrect->w;
+		if(srcx < 0) 
+		{
+			w += srcx;
+			dstrect->x -= srcx;
+			srcx = 0;
+		}
+		maxw = src->w - srcx;
+		if(maxw < w)
+			w = maxw;
+
+		srcy = srcrect->y;
+		h = srcrect->h;
+		if(srcy < 0) 
+		{
+			h += srcy;
+			dstrect->y -= srcy;
+			srcy = 0;
+		}
+		maxh = src->h - srcy;
+		if(maxh < h)
+			h = maxh;
+
+	} 
+	else 
+	{
+		srcx = srcy = 0;
+		w = src->w;
+		h = src->h;
+	}
+
+	// clip the destination rectangle against the clip rectangle
+	{
+		SDL_Rect *clip = &dst->clip_rect;
+		int dx, dy;
+
+		dx = clip->x - dstrect->x;
+		if(dx > 0) 
+		{
+			w -= dx;
+			dstrect->x += dx;
+			srcx += dx;
+		}
+		dx = dstrect->x + w - clip->x - clip->w;
+		if(dx > 0)
+			w -= dx;
+
+		dy = clip->y - dstrect->y;
+		if(dy > 0) 
+		{
+			h -= dy;
+			dstrect->y += dy;
+			srcy += dy;
+		}
+		dy = dstrect->y + h - clip->y - clip->h;
+		if(dy > 0)
+			h -= dy;
+	}
+
+	dstrect->w = w;
+	dstrect->h = h;
+
+	if (w <= 0 || h <= 0)
+		return;
+
+	x1 = srcx;
+	y1 = srcy;
+	x2 = srcx + w;
+	y2 = srcy + h;
+
+	if (src->flags & SDL_SRCCOLORKEY)
+	{
+		has_colorkey = TRUE;
+		colorkey = src->format->colorkey;
+	}
+	else
+	{
+		has_colorkey = FALSE;
+	}
+
+	src_getpix = getpixel_for (src);
+	dst_getpix = getpixel_for (dst);
+	putpix = putpixel_for (dst);
+
+	SDL_LockSurface (src);
+	SDL_LockSurface (dst);
+
+	if (blend_denom < 0)
+	{
+		// additive blit: dst = src + dst
+
+		//fprintf(stderr, "additive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		
+		for (y = y1; y < y2; ++y)
+		{
+			dst_y2 = dstrect->y + (y - y1);
+			for (x = x1; x < x2; ++x)
+			{
+				dst_x2 = dstrect->x + (x - x1);
+				src_pixval = src_getpix (src, x, y);
+
+				if (has_colorkey && src_pixval == colorkey)
+					continue;
+
+				dst_pixval = dst_getpix (dst, dst_x2, dst_y2);
+				
+				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
+				SDL_GetRGB (dst_pixval, dst->format, &dr, &dg, &db);
+
+				nr = sr + dr;
+				ng = sg + dg;
+				nb = sb + db;
+
+				if (nr > 255)
+					nr = 255;
+				if (ng > 255)
+					ng = 255;
+				if (nb > 255)
+					nb = 255;
+
+				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+			}
+		}
+	}
+	else if (blend_numer < 0)
+	{
+		// subtractive blit: dst = src - dst
+
+		//fprintf(stderr, "subtractive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		
+		for (y = y1; y < y2; ++y)
+		{
+			dst_y2 = dstrect->y + (y - y1);
+			for (x = x1; x < x2; ++x)
+			{
+				dst_x2 = dstrect->x + (x - x1);
+				src_pixval = src_getpix (src, x, y);
+
+				if (has_colorkey && src_pixval == colorkey)
+					continue;
+
+				dst_pixval = dst_getpix (dst, dst_x2, dst_y2);
+
+				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
+				SDL_GetRGB (dst_pixval, dst->format, &dr, &dg, &db);
+
+				nr = sr - dr;
+				ng = sg - dg;
+				nb = sb - db;
+
+				if (nr < 0)
+					nr = 0;
+				if (ng < 0)
+					ng = 0;
+				if (nb < 0)
+					nb = 0;
+
+				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+			}
+		}
+	}
+	else 
+	{
+		// modulated blit: dst = src * (blend_numer / blend_denom) 
+
+		float f = blend_numer / (float)blend_denom;
+
+		//fprintf(stderr, "modulated blit %d %d, f %f, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, f, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
+		
+		for (y = y1; y < y2; ++y)
+		{
+			dst_y2 = dstrect->y + (y - y1);
+			for (x = x1; x < x2; ++x)
+			{
+				dst_x2 = dstrect->x + (x - x1);
+				src_pixval = src_getpix (src, x, y);
+
+				if (has_colorkey && src_pixval == colorkey)
+					continue;
+				
+				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
+
+				nr = (int)(sr * f);
+				ng = (int)(sg * f);
+				nb = (int)(sb * f);
+
+				if (nr > 255)
+					nr = 255;
+				if (ng > 255)
+					ng = 255;
+				if (nb > 255)
+					nb = 255;
+
+				putpix (dst, dst_x2, dst_y2, SDL_MapRGB (dst->format, nr, ng, nb));
+			}
+		}
+	}
+
+	SDL_UnlockSurface (dst);
+	SDL_UnlockSurface (src);
+}
+
 void
 TFB_ComputeFPS ()
 {
@@ -434,7 +678,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 					}
 				}
 
-				SDL_BlitSurface(surf, NULL, SDL_Screen, &targetRect);
+				TFB_BlitSurface(surf, NULL, SDL_Screen, &targetRect, DC.BlendNumerator, DC.BlendDenominator);
 
 				break;
 			}
@@ -516,13 +760,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				if (DC_image == 0) 
 				{
-					SDL_BlitSurface(SDL_Screen, &src, ExtraScreen, &dest);
+					TFB_BlitSurface(SDL_Screen, &src, ExtraScreen, &dest, DC.BlendNumerator, DC.BlendDenominator);
 				}
 				else
 				{
 					dest.x = 0;
 					dest.y = 0;
-					SDL_BlitSurface(SDL_Screen, &src, DC_image->NormalImg, &dest);
+					TFB_BlitSurface(SDL_Screen, &src, DC_image->NormalImg, &dest, DC.BlendNumerator, DC.BlendDenominator);
 				}
 				break;
 			}
@@ -533,7 +777,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 				src.y = dest.y = DC.y;
 				src.w = DC.w;
 				src.h = DC.h;
-				SDL_BlitSurface(ExtraScreen, &src, SDL_Screen, &dest);
+
+				TFB_BlitSurface(ExtraScreen, &src, SDL_Screen, &dest, DC.BlendNumerator, DC.BlendDenominator);
+				
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:

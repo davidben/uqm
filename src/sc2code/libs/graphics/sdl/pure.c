@@ -230,6 +230,8 @@ TFB_Pure_SwapBuffers ()
 		}
 		case 3:
 		{
+			// FIXME: this one might have endian issues
+
 			Uint32 pixval_32;
 			for (y = 0; y < 240; ++y)
 			{

@@ -79,24 +79,18 @@ FlushGraphics (void)
 	continuity_break = 1;
 }
 
+// Status: Ignored (only used in fmv.c)
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
 {
 	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
 }
 
+// Status: Ignored (only used in solarsys.c)
 void
 SetGraphicGrabOther (int grab_other)
 {
 	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
-}
-
-// Status: Unimplemented
-void
-SetGraphicStrength (int numerator, int denominator)
-		// I just hope numerator always = denominator...
-{ 
-	//fprintf (stderr, "SetGraphicsStrength, %d %d\n",numerator, denominator);
 }
 
 static int
@@ -198,6 +192,9 @@ DrawFromExtraScreen (PRECT r) //No scaling?
 	DC.h = r->extent.height;
 	DC.image = 0;
 
+	DC.BlendNumerator = BlendNumerator;
+	DC.BlendDenominator = BlendDenominator;
+
 	TFB_EnqueueDrawCommand (&DC);
 }
 
@@ -224,6 +221,9 @@ LoadIntoExtraScreen (PRECT r)
 	DC.w = r->extent.width;
 	DC.h = r->extent.height;
 	DC.image = 0;
+
+	DC.BlendNumerator = BlendNumerator;
+	DC.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 }

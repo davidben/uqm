@@ -234,6 +234,9 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 			DC.image = 0;
 			DC.UsePalette = FALSE;
 			
+			DC.BlendNumerator = BlendNumerator;
+			DC.BlendDenominator = BlendDenominator;
+
 			TFB_EnqueueDrawCommand(&DC);
 		}
 	}
