@@ -155,20 +155,9 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 					TFB_Prim_Point (&lpWorkPrim->Object.Point, &color);
 					break;
 				case STAMP_PRIM:
-					SrcFramePtr = (FRAMEPTR)(lpWorkPrim->Object.Stamp.frame);
-					if (SrcFramePtr == 0)
-					{
-						continue;
-					}
 					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp);
 					break;
 				case STAMPFILL_PRIM:
-					SrcFramePtr = (FRAMEPTR)(lpWorkPrim->Object.Stamp.frame);
-					if (SrcFramePtr == 0)
-					{
-						continue;
-					}
-
 					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
 					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
 					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;

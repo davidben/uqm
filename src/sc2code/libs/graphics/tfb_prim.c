@@ -121,6 +121,11 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	int gscale;
 
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
+	if (!SrcFramePtr)
+	{
+		fprintf (stderr, "TFB_Prim_Stamp: Tried to draw a NULL frame  (Stamp address = %p)\n", stmp);
+		return;
+	}
 	img = SrcFramePtr->image;
 	gscale = GetGraphicScale ();
 	
@@ -175,6 +180,11 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	int gscale;
 
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
+	if (!SrcFramePtr)
+	{
+		fprintf (stderr, "TFB_Prim_StampFill: Tried to draw a NULL frame  (Stamp address = %p)\n", stmp);
+		return;
+	}
 	img = SrcFramePtr->image;
 	gscale = GetGraphicScale ();
 
