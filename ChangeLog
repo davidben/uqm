@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Bay door animations don't stall before aborting (bug #500), from 
+  chmmravatar
 - Reports SDL version on startup (bug #520) - Mika,Nic
 - Fuel usage on planet landing is now reported correctly on all situations
   (bug #556), from Nic

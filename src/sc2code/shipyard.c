@@ -459,7 +459,6 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 
 	if (num_ships)
 	{
-		BYTE ButtonState;
 		BOOLEAN AllDoorsFinished;
 		DWORD TimeIn;
 		RECT r;
@@ -471,15 +470,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		r.corner.x = r.corner.y = 0;
 		r.extent.width = SHIP_WIN_WIDTH;
 		r.extent.height = SHIP_WIN_HEIGHT;
-		ButtonState = AnyButtonPress (FALSE) ? 1 : 0;
-		if (ButtonState)
-		{
-			while (ButtonState)
-				if (!AnyButtonPress (FALSE))
-					ButtonState = 0;
-				else
-					TaskSwitch();
-		}
+		FlushInput ();
 		TimeIn = GetTimeCounter ();
 
 		for (j = 0; (j < SHIP_WIN_FRAMES) && !AllDoorsFinished; j++)
@@ -494,8 +485,6 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 					ship_win_info[0].rtdoor_s.origin.x = 0;
 				}
 				AllDoorsFinished = TRUE;
-				while (AnyButtonPress (FALSE))
-					TaskSwitch();
 			}
 			LockMutex (GraphicsLock);
 			OldContext = SetContext (OffScreenContext);
