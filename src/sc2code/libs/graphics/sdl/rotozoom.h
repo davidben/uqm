@@ -42,6 +42,15 @@ typedef struct tColorY {
 
 /* ---- Prototypes */
 
+/*
+ zoomSurfaceRGBA()
+
+ Zoom the src surface into dst.  The zoom amount is determined
+ by the dimensions of src and dst
+
+*/
+int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth);
+
 /* 
  
  rotozoomSurface()

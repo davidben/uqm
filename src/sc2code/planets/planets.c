@@ -213,6 +213,27 @@ FreePlanet (void)
 	pSolarSysState->TopoFrame = 0;
 	DestroyColorMap (ReleaseColorMap (pSolarSysState->OrbitalCMap));
 	pSolarSysState->OrbitalCMap = 0;
+	for(i=0;i<255;i++) {
+		DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray[i]));
+	}
+	for(i=0;i<2;i++) {
+		if(pSolarSysState->ScaleFrame[i]) {
+			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
+			pSolarSysState->ScaleFrame[i]=0;
+		}
+	}
+	if(pSolarSysState->ShieldFrame != 0) {
+		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
+		pSolarSysState->ShieldFrame=0;
+	}
+	if(pSolarSysState->lpTopoMap!=NULL) {
+		for(i=0;pSolarSysState->lpTopoMap[i]!=NULL;i++) {
+			free(pSolarSysState->lpTopoMap[i]);
+		}
+		free(pSolarSysState->lpTopoMap);
+	}
+	free(pSolarSysState->PlanetFrameArray);
+	free(pSolarSysState->isPFADefined);
 
 	DestroyContext (ReleaseContext (TaskContext));
 	TaskContext = 0;

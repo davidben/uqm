@@ -24,13 +24,15 @@
 //#include "BlockFile.h"
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
-
+#include "libs/graphics/drawable.h"
+#define PLANET_SPIN 0
+#define PLANET_SPIN_DEBUG 1
 //Added by Chris
 
 //End Added by Chris
 
 //#define KDEBUG
-#define SCALE_ROTATE
+//#define SCALE_ROTATE
 
 //#define SCREEN_WIDTH 320
 
@@ -109,6 +111,7 @@ typedef struct
 	CCB plCCB[NUM_CELS];
 	
 	CCB *last_zoom_ccb;
+
 	UBYTE zoom_batch;
 
 #ifdef SCALE_ROTATE
@@ -118,7 +121,7 @@ typedef struct
 	CCB *pcirc_ccb, *pblur_ccb;
 } PLANET_STUFF;
 
-static PLANET_STUFF *planet_stuff;
+static PLANET_STUFF *planet_stuff=NULL;
 
 #define x0 (planet_stuff->x0)
 #define x1 (planet_stuff->x1)
@@ -208,7 +211,12 @@ static PLANET_STUFF *planet_stuff;
 #define pcirc_ccb (planet_stuff->pcirc_ccb)
 #define pblur_ccb (planet_stuff->pblur_ccb)
 
-#if 0
+#if PLANET_SPIN
+void add_cel(CCB* cel) {}
+void add_cels(CCB* first, CCB* last) {}
+void myMapCel(CCB* myCCB, POINT Points[4]) {}
+void OpenMathFolio(void) {}
+
 static void
 build_steps ()
 {
@@ -237,7 +245,7 @@ build_steps ()
 
 	ystep[i] = 1;
 	
-#if 0
+#if PLANET_SPIN_DEBUG
 	y = 0;
 	for (i = 0; y < (HEIGHT >> 1); i++)
 	{
@@ -285,7 +293,7 @@ build_tables (int da)
 		y1[i] >>= 1;
 		
 		y += h;
-#if 0
+#if PLANET_SPIN_DEBUG
 		fprintf (stderr, "%ld: %ld  ", i, y);
 		fprintf (stderr, "%ld,%ld -- ", x0[i] >> 16, y0[i] >> 16);
 		fprintf (stderr, "%ld,%ld\n", x1[i] >> 16, y1[i] >> 16);
@@ -430,18 +438,23 @@ init_rotate_cels ()
 				--i;
 		}
 	}
-#if 0
+#if PLANET_SPIN_DEBUG
 	fprintf (stderr, "using %d cels for rotate\n", cur_ccb - plCCB);
 #endif
 }
 #endif
 
+//SetPlantTilt has moved to plangen.c
+#if PLANET_SPIN
 void
 SetPlanetTilt (int da)
 {
-#if 0
 	int w, i;
-
+    int j;
+	j=MAX_PULSE_RED;
+	if(planet_stuff==NULL) {
+		planet_stuff=(PLANET_STUFF *)calloc(sizeof(PLANET_STUFF),1);
+    }
 	shield_pulse = MAX_PULSE_RED;
 	for (i = 0, cur_ccb = plCCB; i < NUM_ROTATE_CELS; i++, cur_ccb++)
 	{
@@ -482,14 +495,74 @@ SetPlanetTilt (int da)
 			cur_ccb->ccb_NextPtr = cur_ccb + 1;
 		}
 	}
-#endif
 }
+#endif
 
+extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
+extern void RenderLevelMasks(int,int);
+// RotatePlanet
+// This will take care of zooming into a planet on orbit, generating the planet frames
+// And applying the shield.
+//The initial size of the planet when zooming.  MUST BE ODD
+#define PLANET_INIT_ZOOM_SIZE 9
+// The speed to zoom in.
+#define PLANET_ZOOM_SPEED 2
 int
-RotatePlanet (int x, int dx, int dy)
+RotatePlanet (int x, int da, int dx, int dy, int zoom)
 {
-#if 1
-		return (0);
+#if !PLANET_SPIN
+	STAMP s;
+	FRAME pFrame[2];
+	COUNT i,num_frames;
+	static COUNT scale_amt=PLANET_INIT_ZOOM_SIZE;
+
+	// If thiis frame hasn' been generted, generate it
+	if(!pSolarSysState->isPFADefined[x]) {
+		RenderLevelMasks(x,da);
+		pSolarSysState->isPFADefined[x]=1;
+	}
+	num_frames=(pSolarSysState->ShieldFrame==0) ? 1 : 2;
+	pFrame[0]=pSolarSysState->PlanetFrameArray[x];
+	if(num_frames==2) {
+		pFrame[1]=pSolarSysState->ShieldFrame;
+	}
+	if (zoom) {
+		//  we're zooming in, take care of scalinng the frames
+		for(i=0;i<num_frames;i++) {
+			COUNT frameh,this_scale;
+			if(pSolarSysState->ScaleFrame[i]) {
+				DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
+			}
+			frameh=GetFrameHeight(pFrame[i]);
+			this_scale=frameh*scale_amt/MAP_HEIGHT;
+			if(! (this_scale & 0x01)) {
+				this_scale++;
+			}
+			pSolarSysState->ScaleFrame[i] = stretch_frame(pFrame[i],this_scale,this_scale,0);
+			SetFrameHot (pSolarSysState->ScaleFrame[i], MAKE_HOT_SPOT ((this_scale>>1)+1,(this_scale>>1)+1));
+			pFrame[i]=pSolarSysState->ScaleFrame[i];
+		}
+		scale_amt+=PLANET_ZOOM_SPEED;
+		//Translate the planet so it comes from the bottom right corner
+		if(scale_amt > MAP_HEIGHT) 
+		{
+			scale_amt=MAP_HEIGHT;
+		}
+		dx+=dx*(MAP_HEIGHT-scale_amt)/MAP_HEIGHT;
+		dy+=dy*(MAP_HEIGHT-scale_amt)/MAP_HEIGHT;
+		if(scale_amt==MAP_HEIGHT) {
+			scale_amt=PLANET_INIT_ZOOM_SIZE;
+			zoom=0;
+		}
+	}
+	s.origin.x = dx;
+	s.origin.y = dy;
+	for(i=0;i<num_frames;i++) {
+		s.frame=pFrame[i];
+		DrawStamp (&s);
+	}
+	return(zoom);
+//	}
 #else
 	int i, y;
 	int incr;
@@ -576,7 +649,7 @@ RotatePlanet (int x, int dx, int dy)
 		if (scale)
 			SCALE_CEL (pcirc_ccb, dx, dy);
 #endif
-		add_cel (pcirc_ccb);
+			add_cel (pcirc_ccb);
 #ifdef KDEBUG
 		fprintf (stderr, "CLIP...\n");
 		while (AnyButtonPress (FALSE))
@@ -596,7 +669,7 @@ RotatePlanet (int x, int dx, int dy)
 		if (scale)
 			SCALE_CEL (pblur_ccb, dx, dy);
 #endif
-		add_cel (pblur_ccb);
+				add_cel (pblur_ccb);
 #ifdef KDEBUG
 		fprintf (stderr, "BLUR...\n");
 		while (AnyButtonPress (FALSE))
@@ -677,7 +750,6 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 {
 #if 1
 	STAMP s;
-
 	s.origin.x = x;
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
@@ -735,7 +807,7 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 				else
 					tint_ccb[i].ccb_YPos = my << 16;
 				tint_ccb[i].ccb_XPos = x << 16;
-				*((unsigned int *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
+				*((Uint32 *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
 				add_cel (&tint_ccb[i]);
 			}
 		}

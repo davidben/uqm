@@ -25,6 +25,7 @@
 
 #include "sdl_common.h"
 #include "primitives.h"
+#include "rotozoom.h"
 
 typedef struct anidata
 {
@@ -127,6 +128,97 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
+}
+
+//stretch_frame
+// create a new frame of size neww x newh, and blit a scaled version FramePtr into it 
+// destroy the old frame if 'destroy' is 1
+FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh,int destroy)
+{
+	FRAMEPTR NewFrame;
+	SDL_Surface *src,*dst;
+	NewFrame = CaptureDrawable (
+				CreateDrawable (WANT_PIXMAP, (SIZE)neww, (SIZE)newh, 1)
+					);
+    src = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+    dst = ((TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs))->NormalImg;
+	SDL_LockSurface (src);
+
+	zoomSurfaceRGBA(src, dst, 0);
+	SDL_UnlockSurface (src);
+	if(destroy) {
+		DestroyDrawable (ReleaseDrawable (FramePtr));
+	}
+	return(NewFrame);
+}
+
+void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 **rgba, int maxx, int maxy)
+{
+	int hx, hy;
+	int x,y;
+	SDL_Surface *img;				
+	PutPixelFn putpix;
+
+//	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
+//	INDEX_SET (FramePtr->TypeIndexAndFlags,  1);
+
+	hx = hy = 0;
+
+	// convert 32-bit png font to indexed
+    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	SDL_LockSurface (img);
+
+	putpix = putpixel_for (img);
+
+	for (y = 0; y < maxy; ++y)
+	{
+		for (x = 0; x < maxx; ++x)
+		{
+			putpix (img, x, y, rgba[y][x]);
+		}
+	}
+	SDL_UnlockSurface (img);
+}
+// Generate an array of all pixels in FramePtr
+// The pixel format is :
+//  bits 25-32 : red
+//  bits 17-24 : green
+//  bits 9-16  : blue
+//  bits 1-8   : alpha
+Uint32 **getpixelarray(FRAMEPTR FramePtr,int width, int height)
+{
+	Uint8 r,g,b,a;
+	Uint32 p, **map;
+	SDL_Surface *img;
+	GetPixelFn getpix;
+	int x,y;
+
+    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	SDL_LockSurface (img);
+	getpix = getpixel_for (img);
+	map=(Uint32 **)malloc(sizeof(Uint32 *)*(height+1));
+	for (y=0;y<height;y++) {
+		map[y]=(Uint32 *)calloc(width,sizeof(Uint32));
+		if(y>=img->h) {
+			continue;
+		}
+		for(x=0;x<img->w;x++) {
+				p=getpix(img,x,y);
+				SDL_GetRGBA(p,img->format,&r,&g,&b,&a);
+				map[y][x]=r<<24 | g<<16 | b<<8 | a;
+		}
+	}
+	SDL_UnlockSurface (img);
+	map[y]=NULL;
+	return(map);
+
+}
+// Generate a pixel (in the correct format to be applied to FramePtr) from the
+// r,g,b,a values supplied
+Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
+{
+	SDL_Surface *img= ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	return(SDL_MapRGBA(img->format,r,g,b,a));
 }
 
 MEM_HANDLE
