@@ -166,8 +166,12 @@ ship_preprocess (register PELEMENT ElementPtr)
 		}
 		else if (LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER)
 		{
+			CONTEXT OldContext;
+
 			InitShipStatus (StarShipPtr, NULL_PTR);
+			OldContext = SetContext (StatusContext);
 			DrawCaptainsWindow (StarShipPtr);
+			SetContext (OldContext);
 			if (RDPtr->preprocess_func)
 				(*RDPtr->preprocess_func) (ElementPtr);
 
