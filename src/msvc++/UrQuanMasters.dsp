@@ -3316,6 +3316,10 @@ SOURCE=..\options.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\version.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types.h
 # End Source File
 # Begin Source File

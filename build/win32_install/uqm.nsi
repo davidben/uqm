@@ -1,55 +1,107 @@
 !define MUI_PRODUCT "The Ur-Quan Masters" ;Define your own software name here
-!define MUI_VERSION "0.14" ;Define your own software version here
-!define OLD_VERSION "0.1" ; The earliest version that we can upgrade from
 
-!define DEFAULT_UPGRADE 1 ;  Define if the default install should be 'upgrade'
-!define MIRROR_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
-!define NO_MIRROR_LOCATION "http://sc2.sourceforge.net/install_files/"
+!include "options.nsh"
+!include "content.nsh"
 
-; define FULL_NEEDS_UPGRADE if both arhives are needed for a full install
-!define FULL_NEEDS_UPGRADE 1
+; ***************** content **********************
+!ifndef ${CONTENT_LOCATION}
+  !ifdef ${CONTENT_USE_MIRROR}
+     !define CONTENT_LOCATION ${MIRROR_LOCATION}
+  !else
+     !define CONTENT_LOCATION ${DOWNLOAD_LOCATION}
+  !endif
+!endif
+!ifndef ${CONTENT_USE_MIRROR}
+  !define CONTENT_USE_MIRROR 0
+!endif
+!ifndef ${CONTENT_PACKAGE_FILE}
+  !define CONTENT_PACKAGE_FILE "uqm-${MUI_VERSION}-content.zip"
+!endif
+!ifndef ${CONTENT_TYPE}
+  !define CONTENT_TYPE "zip"
+!endif
+!ifndef ${CONTENT_ROOT}
+  !define CONTENT_ROOT "\content"
+!endif
 
-!define CONTENT_USE_MIRROR 1
-!define CONTENT_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
-!define CONTENT_PACKAGE_FILE "uqm-${MUI_VERSION}-content.zip"
-!define CONTENT_TYPE "zip"
-!define CONTENT_ROOT "\content"
+; ****************** voice **********************
+!ifndef ${VOICE_LOCATION}
+  !ifdef ${VOICE_USE_MIRROR}
+     !define VOICE_LOCATION ${MIRROR_LOCATION}
+  !else
+     !define VOICE_LOCATION ${DOWNLOAD_LOCATION}
+  !endif
+!endif
+!ifndef ${VOICE_USE_MIRROR}
+  !define VOICE_USE_MIRROR 0
+!endif
+!ifndef ${VOICE_PACKAGE_FILE}
+  !define VOICE_PACKAGE_FILE "uqm-${MUI_VERSION}-voice.zip"
+!endif
+!ifndef ${VOICE_TYPE}
+  !define VOICE_TYPE "zip"
+!endif
+!ifndef ${VOICE_ROOT}
+  !define VOICE_ROOT "\content"
+!endif
 
-!define VOICE_USE_MIRROR 1
-!define VOICE_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
-!define VOICE_PACKAGE_FILE "uqm-${MUI_VERSION}-voice.zip"
-!define VOICE_TYPE "zip"
-!define VOICE_ROOT "\content"
+; **************** 3do music *********************
+!ifndef ${THREEDO_LOCATION}
+  !ifdef ${THREEDO_USE_MIRROR}
+     !define THREEDO_LOCATION ${MIRROR_LOCATION}
+  !else
+     !define THREEDO_LOCATION ${DOWNLOAD_LOCATION}
+  !endif
+!endif
+!ifndef ${THREEDO_USE_MIRROR}
+  !define THREEDO_USE_MIRROR 0
+!endif
+!ifndef ${THREEDO_PACKAGE_FILE}
+  !define THREEDO_PACKAGE_FILE "uqm-${MUI_VERSION}-3domusic.zip"
+!endif
+!ifndef ${THREEDO_TYPE}
+  !define THREEDO_TYPE "zip"
+!endif
+!ifndef ${THREEDO_ROOT}
+  !define THREEDO_ROOT "\content"
+!endif
 
-!define THREEDO_USE_MIRROR 1
-!define THREEDO_LOCATION "http://sc2.sourceforge.net/install_files/mirrors.txt"
-!define THREEDO_PACKAGE_FILE "uqm-${MUI_VERSION}-3domusic.zip"
-!define THREEDO_TYPE "zip"
-!define THREEDO_ROOT "\content"
+; ***************** upgrade **********************
+!ifndef ${UPGRADE_LOCATION}
+  !ifdef ${UPGRADE_USE_MIRROR}
+     !define UPGRADE_LOCATION ${MIRROR_LOCATION}
+  !else
+     !define UPGRADE_LOCATION ${DOWNLOAD_LOCATION}
+  !endif
+!endif
+!ifndef ${UPGRADE_USE_MIRROR}
+  !define UPGRADE_USE_MIRROR 0
+!endif
 
-!define UPGRADE_USE_MIRROR 0
-!define UPGRADE_LOCATION "http://sc2.sourceforge.net/install_files/"
-!define UPGRADE_PACKAGE_FILE "uqm-${OLD_VERSION}_to_${MUI_VERSION}-content.zip"
-!define UPGRADE_TYPE "zip"
-!define UPGRADE_ROOT "\content"
+; ************** voice upgrade *******************
+!ifndef ${VUPGRADE_LOCATION}
+  !ifdef ${VUPGRADE_USE_MIRROR}
+     !define VUPGRADE_LOCATION ${MIRROR_LOCATION}
+  !else
+     !define VUPGRADE_LOCATION ${DOWNLOAD_LOCATION}
+  !endif
+!endif
+!ifndef ${VUPGRADE_USE_MIRROR}
+  !define VUPGRADE_USE_MIRROR 0
+!endif
 
-!define VUPGRADE_USE_MIRROR 0
-!define VUPGRADE_LOCATION "http://sc2.sourceforge.net/install_files/"
-!define VUPGRADE_PACKAGE_FILE "uqm-${OLD_VERSION}_to_${MUI_VERSION}-voice.zip"
-!define VUPGRADE_TYPE "zip"
-!define VUPGRADE_ROOT "\content"
 ;--------------------------------
 
 !include "MUI.nsh"
 
-!verbose 3
-!include "content.nsh"
-!verbose 4
 ;--------------------------------
 ;Configuration
 
   ;Preprocessing of input files
-  !packhdr temp.dat "upx.exe --best --crp-ms=100000 temp.dat"
+  !ifdef USE_UBX
+    !system 'upx --best --crp-ms=100000 -f -q ..\..\uqm.exe' ignore
+    !packhdr temp.dat "upx.exe --best --crp-ms=100000 temp.dat"
+  !endif
   ;SetCompressor bzip2 
   ;Interface
   !define MUI_UI "${NSISDIR}\Contrib\UIs\modern2.exe"
@@ -72,7 +124,7 @@
     !insertmacro MUI_LANGUAGE "English"
     !include "uqm_english.nsh"
 
-  OutFile "UQMSetup.exe"
+  OutFile "UQMSetup-${MUI_VERSION}.exe"
 
   ;Page order
 

@@ -14,34 +14,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Eventually this should include all configuration stuff, 
- * for now there's few options which indicate 3do/pc flavors.
- */
+#ifndef VERSION_H
+#define VERSION_H
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
-
-#define OPT_3DO 0x01
-#define OPT_PC  0x02
-#define OPT_ALL 0xFF
-
-extern int optWhichMusic;
-extern int optWhichCoarseScan;
-extern int optWhichMenu;
-extern int optWhichFonts;
-extern int optSmoothScroll;
-
-extern BOOLEAN optSubtitles;
-
-
-extern char *configDir;
-extern char *meleeDir;
-extern char *saveDir;
-
-void prepareConfigDir(void);
-void prepareMeleeDir(void);
-void prepareSaveDir(void);
-
+#define UQM_MAJOR_VERSION 0
+#define UQM_MINOR_VERSION 14
+#define UQM_EXTRA_VERSION ""
+/* The final version is interpreted as:
+   printf ("%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
+*/
 #endif
 

@@ -31,10 +31,8 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
    This will generate a reference contour to compare the current CVS build
    against.  This only needs to be done once (after each release)
 
-1) Compile uqm.exe
-
-1a) If you have upx, run it  on uqm.exe as follows:
-    upx --best --crp-ms=100000 uqm.exe
+1) Compile uqm.exe.  Note that version.h defines the version of UQM to build,
+   and should be set appropriately before compiling
 
 2) Build content .zip files and content.nsh
      For this procedure, you must have no modifications in the content tree.
@@ -42,8 +40,9 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
      modified files.
      use the 'full' option when building a production release where you plan
      to create a full content directory rather than just the upgrade zip
-      ./build_archives.pl 0.2 contour_0_1 [full]
-     This will generate .zip files of the content directory:
+      ./build_archives.pl contour_0_1 [full]
+     This will generate .zip files of the content directory (assuming
+     version.h defines the version as 0.2):
         uqm-0.1_to_0.2-content.zip
         uqm-0.1_to_0.2-voice.zip
      and (if 'full' is specified)
@@ -53,35 +52,67 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
      These files should be uploaded to the disrtibution web page
 
      It will also generate content.nsh which contains a list of files for the
-     uninstaller, as well as the file-size of each of the archives, for use in
+     uninstaller, as well as the information aout the archives, for use in
      the installer
 
 3) Modify the install script:
-     Edit uqm.nsi, and change the following variables:
-       MUI_VERSION: The version you are building
+     Edit options.nsi, and change the following variables:
        OLD_VERSION: The earliest version that can be upgraded from
-       FULL_NEEDS_UPGRADE: This parameter is set if a 'full' build requires
-                           both the 'content' archive pak along with the
-                           'upgrade' archive pak.  In general, only official
-                           builds wil have this set to '0'  all other builds
-                           ahould leave it at '1'
-     also, there are 5 sections:
-       CONTENT, VOICE, THREEDO, UPGRADE, and VUPGRADE, which represent how to 
-       retreive the data-files, voice-files, 3do music files, upgrade to the 
-       data files, and upgrade to the voice files respectively).  These 
-       variables are:
+       DOWNLOAD_LOCATION: The default directory to download the archives from 
+                          if not using a mirror file.  NOTE:  This parameter 
+                          can be overridden by setting <...>_LOCATION an a 
+                          per-archive basis.
+       MIRROR_LOCATION:   The default location of the mirror file to use for
+                          retrieving the archives if <...>_USE_MIRROR is defined
+                          (see below).  The mirror file contains a list of 
+                          directries (http) where the data-file can be 
+                          downloaded from.  NOTE: This parameter can be 
+                          overridden by setting <...>_LOCATION an a 
+                          per-archive basis.
 
-       <...>_USE_MIRROR:   Whether the 'LOCATION' is pointing to a mirror file
-                           or a directory for direct-download.  The mirror file
-                           contains a list of directries (http) where the data-
-                           file can be downloaded from.
+       Each of the archives can be fine-tuned using per-archive defines.  For
+       most of these, the defaults should be fine.  The only paramater that
+       is likely to need changing is:
+       <...>_USE_MIRROR:   Whether to use a mirror file or not.  If this
+                           parameter is not defined then DOWNLOAD_LOCATION
+                           will be used, ootherwise MIRROR_LOCATION will be
+                           used.  If <...>_LOCATION is defined, then 
+                           <...>_USE_MIRROR must still be set depending on
+                           whetehr the locationn is a mirror-file or directory.
+                           (NOTE: DO NOT set it to '0'.  The value should 
+                           either be defined as '1' or not at all.  Defining 
+                           it is '0' WILL break things)
+
+       The other sections that may be changed are defined below, however it is
+       STRONGLY recommended that you do not change them without being sure of
+       what you are doing!
        <...>_LOCATION:     The path (http) to retrieve the data-file or mirror-
                            file from (depending on the value of 'USE_MIRROR')
        <...>_PACKAGE_FILE: The name of the data-file to retreive
        <...>_TYPE:         The type of archiver used (must be "zip" or "tgz")
        <...>_ROOT:         The directory to unpack the data-file archive into
-     It should only be bnecessary to modify the first two variables 
-     (USE_MIRROR and LOCATION)
+
+       There are other parameters which may be tuned as well, although it
+       should not  be necessary (and once again, changing the defaults should
+       not be done unless you are sure about what you are doing)
+       FULL_NEEDS_UPGRADE: This parameter is set if a 'full' build requires
+                           both the 'content' archive pak along with the
+                           'upgrade' archive pak.  In general, only official
+                           builds wil have this parameter undefined, all other 
+                           builds ahould probably leave it as is.  NOTE:
+                           the paramter should be either defined or undefined,
+                           it should not have a value
+       DEFAULT_UPGRADE:    this parameter determines whether the installer
+                           defaults to an 'upgrade' or 'full' install.  In 
+                           general, it is probably better to define this
+                           paramater, since a full install is ~150MB, vs an
+                           upgrade which is ~3MB
+       USE_UBX:            This will compress uqm.exe and the installer with
+                           ubx.  this may break the game and/or installer, and
+                           is not recomended.
+       MUI_VERSION:        The version of UQM you are building.  This parameter
+                           is normally auto-defined by readinng version.h, but
+                           can be manually overridden if needed.
 
 4) run NSIS to build the installer:
      makensis uqm.nsi

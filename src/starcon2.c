@@ -36,6 +36,7 @@
 #include "file.h"
 #include "port.h"
 #include "options.h"
+#include "version.h"
 #include "comm.h"
 
 #if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)
@@ -124,7 +125,9 @@ main (int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	fprintf (stderr, "The Ur-Quan Masters v%d.%d (compiled %s %s)\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
+	fprintf (stderr, "The Ur-Quan Masters v%d.%d%s (compiled %s %s)\n", 
+			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION,
+			__DATE__, __TIME__);
 
 #ifdef CONTENTDIR
 	strcpy (contentdir, CONTENTDIR);

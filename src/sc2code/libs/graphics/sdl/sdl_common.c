@@ -25,6 +25,7 @@
 #include "primitives.h"
 #include "dcqueue.h"
 #include "options.h"
+#include "version.h"
 #include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
 #include "bbox.h"
@@ -76,7 +77,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
 	}
 
-	sprintf (caption, "The Ur-Quan Masters v%d.%d", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
+	sprintf (caption, "The Ur-Quan Masters v%d.%d%s", 
+			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
 	SDL_WM_SetCaption (caption, NULL);
 
 	//if (flags & TFB_GFXFLAGS_FULLSCREEN)

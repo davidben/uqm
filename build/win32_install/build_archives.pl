@@ -5,16 +5,38 @@ use Cwd;
 $use_zip = 1;
 
 
-$version = shift @ARGV;
 $file = shift @ARGV;
 $tag = shift @ARGV;
 $do_full = shift @ARGV;
-if (! defined ($version) || ! defined ($file) || scalar(@ARGV)) {
-  print STDERR "$0 version contour_file [full]\n";
+if (! defined ($file) || scalar(@ARGV)) {
+  print STDERR "$0 contour_file [full]\n";
   print STDERR "  or\n";
-  print STDERR "$0 version cvs_log_file cvs_tag [full]\n";
+  print STDERR "$0 cvs_log_file cvs_tag [full]\n";
   exit 1;
 }
+# fetch the version from version.h
+if (-f "../../src/version.h") {
+  open (FH, "../../src/version.h") or die "couldn't read version.h\n";
+  while (<FH>) {
+    if (/^\s*\#define\s+UQM_MAJOR_VERSION\s+(\d+)/) {
+      $major = $1;
+    }
+    if (/^\s*#define\s+UQM_MINOR_VERSION\s+(\d+)/) {
+      $minor = $1;
+    }
+    if (/^\s*#define\s+UQM_EXTRA_VERSION\s+"(.*)"/) {
+      $extra = $1;
+    }
+  }
+  close FH;
+  if (!defined ($major) || !defined ($minor) || !defined ($extra)) {
+    die "Error reading version.h\n";
+  }
+  $version = "$major.${minor}${extra}";
+} else {
+  die "couldn't find version.h\n";
+}
+
 if (! defined ($do_full)) {
   if (defined ($tag) && $tag eq "full") {
     $do_full = $tag;
@@ -103,7 +125,7 @@ if ($tag) {
         }
         $alldata{"$1,prev"} = $2;
       } else {
-        print "Couldn't find '$1' in the repository\n";
+        print "Couldn't find '$1'.  OK if removed since $oldver\n";
       }
     }
   }
@@ -114,11 +136,11 @@ if ($tag) {
     }
   }
 }
-$change_zip = "$cwd/uqm-${oldver}_to_${version}-content.$ext";
-$change_ogg_zip = "$cwd/uqm-${oldver}_to_${version}-voice.$ext";
-$content_zip = "$cwd/uqm-${version}-content.$ext";
-$voice_zip = "$cwd/uqm-${version}-voice.$ext";
-$threedo_zip = "$cwd/uqm-${version}-3domusic.$ext";
+$change_zip = "uqm-${oldver}_to_${version}-content.$ext";
+$change_ogg_zip = "uqm-${oldver}_to_${version}-voice.$ext";
+$content_zip = "uqm-${version}-content.$ext";
+$voice_zip = "uqm-${version}-voice.$ext";
+$threedo_zip = "uqm-${version}-3domusic.$ext";
 
 # build the upgrade .zip file
 $last_dir = "";
@@ -146,17 +168,18 @@ foreach $path (@changed) {
 }
 close FH1;
 close FH2;
-unlink $change_zip;
-unlink $change_ogg_zip;
+unlink "$cwd/$change_zip";
+unlink "$cwd/$change_ogg_zip";
 if ($use_zip) {
-  `cat tmpfile | zip -r $change_zip -@`;
-  `cat tmpfile1 | zip -r $change_ogg_zip -@` if ($change_ogg_size);
+  `cat tmpfile | zip -r "$cwd/$change_zip" -@`;
+  `cat tmpfile1 | zip -r "$cwd/$change_ogg_zip" -@` if ($change_ogg_size);
 } else {
-  `tar -T tmpfile -czf $change_zip`;
-  `tar -T tmpfile1 -czf $change_ogg_zip` if ($change_ogg_size);
+  `tar -T tmpfile -czf "$cwd/$change_zip"`;
+  `tar -T tmpfile1 -czf "$cwd/$change_ogg_zip"` if ($change_ogg_size);
 }
 
 open (FH, ">$cwd/content.nsh");
+print FH "!verbose 3\n";
 print FH "!macro REMOVE_CONTENT\n";
 open FH1, ">tmpfile" || die "Couldn't create temp file!\n";
 open FH2, ">tmpfile1" || die "Couldn't create temp file!\n";
@@ -177,7 +200,6 @@ foreach $path (@all) {
       $num_voice++;
       print FH2 "$path\n";
     } elsif ($path =~ /\.ogg$/) {
-      print "$path : $siz1\n";
       $threedo_size += $siz1;
       $num_3do++;
       print FH3 "$path\n";
@@ -209,16 +231,17 @@ foreach $dir (@dirs) {
 }
 print FH "!macroend\n";
 if ($do_full) {
-  unlink $content_zip;
-  unlink $voice_zip;
+  unlink "$cwd/$content_zip";
+  unlink "$cwd/$voice_zip";
+  unlink "$cwd/$threedo_zip";
   if ($use_zip) {
-    `cat tmpfile | zip -r $content_zip -@`;
-    `cat tmpfile1 | zip -r $voice_zip -@` if($voice_size);
-    `cat tmpfile2 | zip -r $threedo_zip -@` if($threedo_size);
+    `cat tmpfile | zip -r "$cwd/$content_zip" -@`;
+    `cat tmpfile1 | zip -r "$cwd/$voice_zip" -@` if($voice_size);
+    `cat tmpfile2 | zip -r "$cwd/$threedo_zip" -@` if($threedo_size);
   } else {
-    `tar -T tmpfile -czf $content_zip`;
-    `tar -T tmpfile1 -czf $voice_zip` if ($voice_size);
-    `tar -T tmpfile2 -czf $threedo_zip` if ($threedo_size);
+    `tar -T tmpfile -czf "$cwd/$content_zip"`;
+    `tar -T tmpfile1 -czf "$cwd/$voice_zip"` if ($voice_size);
+    `tar -T tmpfile2 -czf "$cwd/$threedo_zip"` if ($threedo_size);
   }
 }
 unlink "tmpfile";
@@ -229,11 +252,70 @@ $change_ogg_size = int(0.5 + $change_ogg_size / 1000);
 $content_size = int(0.5 + $content_size / 1000);
 $voice_size = int(0.5 + $voice_size / 1000);
 $threedo_size = int(0.5 + $threedo_size / 1000);
+
+print FH "!ifndef \${MUI_VERSION}\n";
+print FH "  !define MUI_VERSION \"$version\"\n";
+print FH "!endif\n";
+print FH "\n";
 print FH "!define CONTENT_SIZE  $content_size\n";
 print FH "!define VOICE_SIZE    $voice_size\n";
 print FH "!define THREEDO_SIZE  $threedo_size\n";
 print FH "!define UPGRADE_SIZE  $change_size\n";
 print FH "!define VUPGRADE_SIZE $change_ogg_size\n";
+print FH "\n";
+if ($do_full) {
+  print FH "!ifndef \${CONTENT_PACKAGE_FILE}\n";
+  print FH "  !define CONTENT_PACKAGE_FILE  \"$content_zip\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${CONTENT_TYPE}\n";
+  print FH "  !define CONTENT_TYPE          \"$ext\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${CONTENT_ROOT}\n";
+  print FH "  !define CONTENT_ROOT          \"\\content\"\n";
+  print FH "!endif\n";
+  print FH "\n";
+  print FH "!ifndef \${VOICE_PACKAGE_FILE}\n";
+  print FH "  !define VOICE_PACKAGE_FILE    \"$voice_zip\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${VOICE_TYPE}\n";
+  print FH "  !define VOICE_TYPE            \"$ext\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${VOICE_ROOT}\n";
+  print FH "  !define VOICE_ROOT            \"\\content\"\n";
+  print FH "!endif\n";
+  print FH "\n";
+  print FH "!ifndef \${THREEDO_PACKAGE_FILE}\n";
+  print FH "  !define THREEDO_PACKAGE_FILE  \"$threedo_zip\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${THREEDO_TYPE}\n";
+  print FH "  !define THREEDO_TYPE          \"$ext\"\n";
+  print FH "!endif\n";
+  print FH "!ifndef \${THREEDO_ROOT}\n";
+  print FH "  !define THREEDO_ROOT          \"\\content\"\n";
+  print FH "!endif\n";
+  print FH "\n";
+}
+print FH "!ifndef \${UPGRADE_PACKAGE_FILE}\n";
+print FH "  !define UPGRADE_PACKAGE_FILE  \"$change_zip\"\n";
+print FH "!endif\n";
+print FH "!ifndef \${UPGRADE_TYPE}\n";
+print FH "  !define UPGRADE_TYPE          \"$ext\"\n";
+print FH "!endif\n";
+print FH "!ifndef \${UPGRADE_ROOT}\n";
+print FH "  !define UPGRADE_ROOT          \"\\content\"\n";
+print FH "!endif\n";
+print FH "\n";
+print FH "!ifndef \${VUPGRADE_PACKAGE_FILE}\n";
+print FH "  !define VUPGRADE_PACKAGE_FILE \"$change_ogg_zip\"\n";
+print FH "!endif\n";
+print FH "!ifndef \${VUPGRADE_TYPE}\n";
+print FH "  !define VUPGRADE_TYPE         \"$ext\"\n";
+print FH "!endif\n";
+print FH "!ifndef \${VUPGRADE_ROOT}\n";
+print FH "  !define VUPGRADE_ROOT         \"\\content\"\n";
+print FH "!endif\n";
+print FH "\n";
+print FH "!verbose 4\n";
 close FH;
 print "upgrade     : #files: $num_change ($change_size kb)\n";
 print "voiceupgrade: #files: $num_change_ogg ($change_ogg_size kb)\n";
