@@ -1,4 +1,4 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
+// Copyright Michael Martin, 2003
 
 /*
  *  This program is free software; you can redistribute it and/or modify
@@ -16,32 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfxintrn.h"
+#include "gfxlib.h"
+#include "tfb_draw.h"
 
-void
-DrawStamp (PSTAMP lpStamp)
-{
-	SetPrimType (&_locPrim, STAMP_PRIM);
-	_locPrim.Object.Stamp = *lpStamp;
 
-	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
-}
-
-void
-DrawFilledStamp (PSTAMP lpStamp)
-{
-	SetPrimType (&_locPrim, STAMPFILL_PRIM);
-	_locPrim.Object.Stamp = *lpStamp;
-
-	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
-}
-
-void
-DrawStampCMap (PSTAMP_CMAP lpStampCMap)
-{
-	SetPrimType (&_locPrim, STAMPCMAP_PRIM);
-	_locPrim.Object.StampCMap = *lpStampCMap;
-
-	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
-}
-
+void TFB_Prim_Line (PLINE line, TFB_Palette *color);
+void TFB_Prim_Point (PPOINT p, TFB_Palette *color);
+void TFB_Prim_Rect (PRECT r, TFB_Palette *color);
+void TFB_Prim_FillRect (PRECT r, TFB_Palette *color);
+void TFB_Prim_Stamp (PSTAMP stamp);
+void TFB_Prim_StampFill (PSTAMP stamp, TFB_Palette *color);

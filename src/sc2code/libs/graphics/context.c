@@ -56,7 +56,6 @@ SetContext (CONTEXT Context)
 			SetPrimColor (&_locPrim, _get_context_fg_color ());
 
 			_CurFramePtr = (FRAMEPTR)_get_context_fg_frame ();
-			BGFrame = _get_context_bg_frame ();
 			_CurFontPtr = (FONTPTR)_get_context_font ();
 		}
 	}
@@ -76,8 +75,6 @@ CreateContext (void)
 
 				/* initialize context */
 		OldContext = SetContext (CaptureContext (ContextRef));
-		SetContextMapType (MAP_NOXFORM);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
 				);
@@ -134,32 +131,6 @@ ReleaseContext (CONTEXT Context)
 	return (0);
 }
 
-DRAW_STATE
-GetContextDrawState (void)
-{
-	if (!ContextActive ())
-		return (DEST_PIXMAP | DRAW_REPLACE);
-
-	return (_get_context_draw_state ());
-}
-
-DRAW_STATE
-SetContextDrawState (DRAW_STATE DrawState)
-{
-	DRAW_STATE oldState;
-
-	if (!ContextActive ())
-		return (DEST_PIXMAP | DRAW_REPLACE);
-
-	if ((oldState = _get_context_draw_state ()) != DrawState)
-	{
-		SwitchContextDrawState (DrawState);
-		SetContextGraphicsFunctions ();
-	}
-
-	return (oldState);
-}
-
 COLOR
 SetContextForeGroundColor (COLOR Color)
 {
@@ -191,22 +162,6 @@ SetContextBackGroundColor (COLOR Color)
 	}
 
 	return (oldColor);
-}
-
-BG_FUNC
-SetContextBGFunc (BG_FUNC BGFunc)
-{
-	BG_FUNC oldBGFunc;
-
-	if (!ContextActive ())
-		return (0);
-
-	if ((oldBGFunc = _get_context_bg_func ()) != BGFunc)
-	{
-		SwitchContextBGFunc (BGFunc);
-	}
-
-	return (oldBGFunc);
 }
 
 BOOLEAN

@@ -37,7 +37,7 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
 		scope_bg = TFB_DrawImage_New (scope_bg_canvas);
 		scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height, f->image->Palette, -1);
 		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
-		TFB_DrawImage_Image (f->image, 0, 0, FALSE, NULL, scope_bg);
+		TFB_DrawImage_Image (f->image, 0, 0, 0, NULL, scope_bg);
 		scope_init = 1;
 	}	
 }
@@ -67,7 +67,7 @@ Oscilloscope (DWORD grab_data)
 	if (!grab_data)
 		return;
 
-	TFB_DrawImage_Image (scope_bg, 0, 0, FALSE, NULL, scope_surf);
+	TFB_DrawImage_Image (scope_bg, 0, 0, 0, NULL, scope_surf);
 	if (GetSoundData (scope_data)) 
 	{
 		int i, r, g, b;		
@@ -77,7 +77,7 @@ Oscilloscope (DWORD grab_data)
 		for (i = 0; i < RADAR_WIDTH - 1; ++i)
 			TFB_DrawImage_Line (i, scope_data[i], i + 1, scope_data[i + 1], r, g, b, scope_surf);
 	}
-	TFB_DrawImage_Image (scope_surf, 0, 0, FALSE, NULL, scope_frame->image);
+	TFB_DrawImage_Image (scope_surf, 0, 0, 0, NULL, scope_frame->image);
 
 	s.frame = scope_frame;
 	s.origin.x = s.origin.y = 0;

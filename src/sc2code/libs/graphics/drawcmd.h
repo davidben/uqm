@@ -59,7 +59,7 @@ typedef struct tfb_dc_img
 	int x, y;
 	SCREEN destBuffer;
 	BOOLEAN UsePalette;
-	BOOLEAN UseScaling;
+	int scale;
 } TFB_DrawCommand_Image;
 
 typedef struct tfb_dc_filledimg
@@ -68,7 +68,7 @@ typedef struct tfb_dc_filledimg
 	int x, y;
 	int r, g, b;
 	SCREEN destBuffer;
-	BOOLEAN UseScaling;
+	int scale;
 } TFB_DrawCommand_FilledImage;
 
 typedef struct tfb_dc_copy

@@ -350,7 +350,6 @@ LoadHyperspace (void)
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 		SET_GAME_STATE (BROADCASTER_RESPONSE, 0);
 	}
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 //    ClearDrawable ();
 
 	ClearSISRect (CLEAR_SIS_RADAR);
@@ -1542,13 +1541,11 @@ DoMenuOptions (void)
 {
 	COLOR OldColor;
 	CONTEXT OldContext;
-	DRAW_STATE OldDrawState;
 	MENU_STATE MenuState;
 
 UnbatchGraphics ();
 
 	OldContext = SetContext (SpaceContext);
-	OldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
 	ClearSemaphore (GraphicsSem);
@@ -1570,7 +1567,6 @@ UnbatchGraphics ();
 	SetFlashRect (NULL_PTR, (FRAME)0);
 
 	SetContext (SpaceContext);
-	SetContextBGFrame (0);
 
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
@@ -1582,7 +1578,6 @@ UnbatchGraphics ();
 	}
 
 	SetContextBackGroundColor (OldColor);
-	SetContextDrawState (OldDrawState);
 	SetContext (OldContext);
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		cleanup_hyperspace ();

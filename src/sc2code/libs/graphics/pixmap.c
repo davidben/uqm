@@ -172,20 +172,3 @@ DecFrameIndex (FRAMEPTR FramePtr)
 		return ((FRAME)&DrawablePtr->Frame[INDEX_GET (DrawablePtr->FlagsAndIndex)]);
 	}
 }
-
-void
-XFlipFrame (FRAMEPTR FramePtr)
-{
-	if (FramePtr)
-	{
-		if (GetFrameFlags (FramePtr) & X_FLIP)
-		{
-			SubFrameFlags (FramePtr, X_FLIP);
-		}
-		else
-		{
-			AddFrameFlags (FramePtr, X_FLIP);
-		}
-	}
-}
-

@@ -111,7 +111,6 @@ RenderTopography (BOOLEAN Reconstruct)
 
 	OldContext = SetContext (TaskContext);
 	OldFrame = SetContextFGFrame (pSolarSysState->TopoFrame);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 	if (pSolarSysState->XlatRef == 0)
 	{

@@ -243,7 +243,6 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	STAMP s;
 	FRAME star_frame;
 	STAR_DESCPTR SDPtr;
-	FRAME OldFrame;
 	BOOLEAN draw_cursor;
 
 	if (pClipRect == (PRECT)-1)
@@ -269,11 +268,8 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 		SetFrameHot (Screen,
 				MAKE_HOT_SPOT (pClipRect->corner.x, pClipRect->corner.y));
 	}
-	OldFrame = SetContextBGFrame ((FRAME)0);
 	BatchGraphics ();
 	
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
-
 	which_space = GET_GAME_STATE (ARILOU_SPACE_SIDE);
 
 	if (which_space <= 1)
@@ -510,8 +506,6 @@ wprintf ("%s\n", buf);
 		SetContextClipRect (&old_r);
 		SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 	}
-
-	SetContextBGFrame (OldFrame);
 
 	if (race_update == 0)
 	{
@@ -1237,7 +1231,6 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 								DrawSISTitle(GLOBAL_SIS(PlanetName));
 								DrawStarBackGround(TRUE);
 								OldContext = SetContext(SpaceContext);
-								SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
 								BatchGraphics();
 								DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
 								UnbatchGraphics();

@@ -37,22 +37,8 @@ SetContextFGFrame (FRAME Frame)
 		if (ContextActive ())
 		{
 			SwitchContextFGFrame (Frame);
-			SetContextGraphicsFunctions ();
 		}
 	}
-
-	return (LastFrame);
-}
-
-FRAME
-SetContextBGFrame (FRAME Frame)
-{
-	FRAME LastFrame;
-
-	LastFrame = BGFrame;
-	BGFrame = Frame;
-	if (ContextActive ())
-		SwitchContextBGFrame (Frame);
 
 	return (LastFrame);
 }
@@ -180,8 +166,6 @@ DestroyDrawable (DRAWABLE Drawable)
 
 	if (LOWORD (Drawable) == GetFrameHandle (_CurFramePtr))
 		SetContextFGFrame ((FRAME)0);
-	if (LOWORD (Drawable) == GetFrameHandle (BGFrame))
-		SetContextBGFrame ((FRAME)0);
 
 	DrawablePtr = LockDrawable (Drawable);
 	if (DrawablePtr)

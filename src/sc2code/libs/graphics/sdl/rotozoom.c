@@ -918,7 +918,7 @@ SDL_Surface *zoomSurface(SDL_Surface * src, double zoomx, double zoomy, int smoo
 	 * Call the 8bit transformation routine to do the zooming 
 	 */
 	zoomSurfaceY(rz_src, rz_dst);
-	SDL_SetColorKey(rz_dst, SDL_SRCCOLORKEY | SDL_RLEACCEL, rz_src->format->colorkey);
+	SDL_SetColorKey(rz_dst, SDL_SRCCOLORKEY, rz_src->format->colorkey);
     }
     /*
      * Unlock source surface 

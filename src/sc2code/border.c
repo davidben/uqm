@@ -24,11 +24,9 @@ InitSISContexts (void)
 	RECT r;
 
 	SetContext (StatusContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 	SetContext (SpaceContext);
 	SetContextFGFrame (Screen);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 	r.corner.x = SIS_ORG_X;
 	r.corner.y = SIS_ORG_Y;
@@ -44,7 +42,6 @@ DrawSISFrame (void)
 
 	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 	BatchGraphics ();
 	{

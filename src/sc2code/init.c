@@ -121,7 +121,6 @@ InitShips (void)
 	InitSpace ();
 
 	SetContext (StatusContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	SetContext (SpaceContext);
 
 	InitDisplayList ();
@@ -157,7 +156,6 @@ InitShips (void)
 
 			OldContext = SetContext (ScreenContext);
 
-			SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 			SetContextBackGroundColor (BLACK_COLOR);
 			ClearDrawable ();
 

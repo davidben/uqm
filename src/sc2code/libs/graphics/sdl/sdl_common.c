@@ -509,7 +509,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.image.x;
 				int y = DC.data.image.y;
 
-				if (DC.data.image.UseScaling)
+				if (DC.data.image.scale)
 					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
 				else
 					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
@@ -524,7 +524,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				}
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
-						DC.data.image.UseScaling, pal,
+						DC.data.image.scale, pal,
 						SDL_Screens[DC.data.image.destBuffer]);
 
 				break;
@@ -535,13 +535,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.filledimage.x;
 				int y = DC.data.filledimage.y;
 
-				if (DC.data.filledimage.UseScaling)
+				if (DC.data.filledimage.scale)
 					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
 				else
 					TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
 
 				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
-						DC.data.filledimage.UseScaling, DC.data.filledimage.r, DC.data.filledimage.g,
+						DC.data.filledimage.scale, DC.data.filledimage.r, DC.data.filledimage.g,
 						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
 				break;
 			}

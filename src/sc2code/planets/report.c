@@ -218,7 +218,6 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 {
 	POINT old_curs;
 	CONTEXT OldContext;
-	FRAME OldFrame;
 	extern void DrawScannedObjects (BOOLEAN Reversed);
 
 	if (pMenuState)
@@ -229,7 +228,6 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	}
 
 	OldContext = SetContext (ScanContext);
-	OldFrame = SetContextBGFrame ((FRAME)0);
 	{
 		FONT OldFont;
 
@@ -250,7 +248,6 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 				GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
 		SetContextFont (OldFont);
 	}
-	SetContextBGFrame (OldFrame);
 #ifdef OLD
 	ClearDrawable ();
 	if (pSolarSysState->MenuState.Initialized >= 3)

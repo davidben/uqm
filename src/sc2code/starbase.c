@@ -304,7 +304,6 @@ DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		pMS->Initialized = TRUE;
 		SetContext (ScreenContext);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 		ClearSemaphore (GraphicsSem);
 

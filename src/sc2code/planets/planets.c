@@ -116,8 +116,6 @@ LoadPlanet (BOOLEAN IsDefined)
 	}
 
 	SetContext (SpaceContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
-
 
 	s.frame = pSolarSysState->PlanetSideFrame[2];
 	if (s.frame)

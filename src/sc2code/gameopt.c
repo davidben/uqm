@@ -1103,8 +1103,6 @@ PickGame (PMENU_STATE
 {
 	BOOLEAN retval;
 	CONTEXT OldContext;
-	FRAME OldFrame;
-	DRAW_STATE OldDrawState;
 	SUMMARY_DESC desc_array[MAX_SAVED_GAMES];
 	RECT DlgRect;
 	STAMP DlgStamp;
@@ -1118,8 +1116,6 @@ PickGame (PMENU_STATE
 
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (SpaceContext);
-	OldFrame = SetContextBGFrame (NULL_PTR);
-	OldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 	DlgStamp.origin.x = 0;
 	DlgStamp.origin.y = 0;
@@ -1188,8 +1184,6 @@ PickGame (PMENU_STATE
 
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
-	SetContextDrawState (OldDrawState);
-	SetContextBGFrame (OldFrame);
 	SetContext (OldContext);
 	ClearSemaphore (GraphicsSem);
 

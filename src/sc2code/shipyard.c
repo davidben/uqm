@@ -1216,8 +1216,6 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			SetSemaphore (GraphicsSem);
 			SetContext (SpaceContext);
-			SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
-
 			s.origin.x = s.origin.y = 0;
 #ifdef USE_3DO_HANGAR
 			DrawStamp (&s);

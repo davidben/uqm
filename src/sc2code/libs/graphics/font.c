@@ -221,12 +221,17 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		UNICODE next_ch, *pStr;
 		TEXTPTR TextPtr;
 		PRIMITIVE locPrim;
+		TFB_Palette color;
+		DWORD c32k;
 
 		if (FontEffect.Use)
 			SetPrimType (&locPrim, STAMP_PRIM);
 		else
 			SetPrimType (&locPrim, STAMPFILL_PRIM);
-		SetPrimColor (&locPrim, _get_context_fg_color ());
+		c32k = _get_context_fg_color () >> 8;
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
 
 		TextPtr = &PrimPtr->Object.Text;
 		locPrim.Object.Stamp.origin.x = _save_stamp.origin.x;
@@ -265,12 +270,12 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 						locPrim.Object.Stamp.frame = Build_Font_Effect(
 							locPrim.Object.Stamp.frame, 
 							FontEffect.from, FontEffect.to, FontEffect.type);
-						DrawGraphicsFunc (&r, &locPrim);
+						TFB_Prim_Stamp (&locPrim.Object.Stamp);
 						DestroyDrawable (ReleaseDrawable (locPrim.Object.Stamp.frame));
 						locPrim.Object.Stamp.frame = origFrame;
 					}
 					else
-						DrawGraphicsFunc (&r, &locPrim);
+						TFB_Prim_StampFill (&locPrim.Object.Stamp, &color);
 				}
 
 				locPrim.Object.Stamp.origin.x += GetFrameWidth (locPrim.Object.Stamp.frame);

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Removed aspects of the legacy graphics code that are never used or that
+  are redundant.  More 'C-like' use of the PRIMITIVE datatype.
 - Fix various graphics glitches during  dialog.  Especially Spathi Eye,and ZFP
   Closes #23, #156 - PhracturedBlue
 - Fix Syreen, KohrAh and Slylandro ship effects to not be screen

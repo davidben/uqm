@@ -221,7 +221,6 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 		SetSemaphore (GraphicsSem);
 
 		SetContext (SpaceContext);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 		ClearSISRect (CLEAR_SIS_RADAR);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		goto InitFlash;
@@ -608,7 +607,6 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 
 			SetContext (SpaceContext);
-			SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 			DrawStamp (&s);
 			DestroyDrawable (ReleaseDrawable (s.frame));
@@ -691,7 +689,6 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 		}
 
 		SetContext (StatusContext);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	}
 	else if ((InputState & DEVICE_BUTTON2)
 			|| ((InputState & DEVICE_BUTTON1)

@@ -119,27 +119,6 @@ typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 #define TYPE_SET(f,t) ((f)|=t)
 #define INDEX_SET(f,i) ((f)|=i)
 
-typedef struct polygon_desc
-{
-	RECT BoundRect;
-
-	POLYREF hPoly;
-
-	COUNT PtCount;
-	PPOINT PtList;
-} POLYGON_DESC;
-typedef POLYGON_DESC *PPOLYGON_DESC;
-
-#define POLYGON_PRIORITY DEFAULT_MEM_PRIORITY
-
-#define AllocPolygon(n) \
-	mem_allocate ((MEM_SIZE)(sizeof (POLYGON_DESC) + \
-			(sizeof (POINT) * (n))), MEM_ZEROINIT, \
-			POLYGON_PRIORITY, MEM_SIMPLE)
-#define LockPolygon(Polygon) (PPOLYGON_DESC)mem_lock (Polygon)
-#define UnlockPolygon(Polygon) mem_unlock (Polygon)
-#define FreePolygon(Polygon) mem_release (Polygon)
-
 typedef struct
 {
 	RECT Box;
@@ -162,12 +141,10 @@ typedef PSTAMP STAMPPTR;
 typedef PTEXT TEXTPTR;
 
 extern STAMP _save_stamp;
-#define BGFrame _save_stamp.frame
 extern FRAMEPTR _CurFramePtr;
 
 extern void _rect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
 extern void _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
-extern void _fillpoly_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
 
 #endif /* _DRAWABLE_H */
 

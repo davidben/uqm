@@ -19,38 +19,16 @@
 #ifndef _CONTEXT_H
 #define _CONTEXT_H
 
-#ifdef MAPPING
-typedef struct
-{
-	MAP_TYPE MapType;
-	EXTENT ViewExt; /* Device units per inch */
-	EXTENT WinExt; /* Logical units per inch */
-	POINT WinOrg;
-						/* Translation to device units relative to
-						 * (0, 0) is as follows:
-						 * x_du = (x_lu - WinOrg.x) * ViewExt.x / WinExt.x;
-						 * y_du = (y_lu - WinOrg.y) * ViewExt.y / WinExt.y;
-						 */
-} MAP_INFO;
-typedef MAP_INFO *PMAP_INFO;
-#endif /* MAPPING */
-
 typedef struct
 {
 	CONTEXT_REF ContextRef;
 	UWORD Flags;
 
-	DRAW_STATE DrawState;
 	COLOR ForeGroundColor, BackGroundColor;
-	FRAME ForeGroundFrame, BackGroundFrame;
-	void (**func_array) (PRECT pClipRect, PPRIMITIVE PrimPtr);
+	FRAME ForeGroundFrame;
 	FONT Font;
-	BG_FUNC BackGroundFunc;
 
 	RECT ClipRect;
-#ifdef MAPPING
-	MAP_INFO Map;
-#endif /* MAPPING */
 } CONTEXT_DESC;
 typedef CONTEXT_DESC *PCONTEXT_DESC;
 
@@ -70,41 +48,9 @@ extern PRIMITIVE _locPrim;
 
 #define _get_context_fg_color() (_pCurContext->ForeGroundColor)
 #define _get_context_bg_color() (_pCurContext->BackGroundColor)
-#define _get_context_draw_state() (_pCurContext->DrawState)
-#define _get_context_draw_dest() ((DRAW_DESTINATION)(_pCurContext->DrawState & 0xFF00))
-#define _get_context_draw_mode() ((DRAW_MODE)LOBYTE (_pCurContext->DrawState))
 #define _get_context_flags() (_pCurContext->Flags)
 #define _get_context_fg_frame() (_pCurContext->ForeGroundFrame)
-#define _get_context_bg_frame() (_pCurContext->BackGroundFrame)
 #define _get_context_font() (_pCurContext->Font)
-#define _get_context_bg_func() (_pCurContext->BackGroundFunc)
-
-#ifdef MAPPING
-#define _get_context_map_type() (_pCurContext->Map.MapType)
-#define _init_context_map(pmt) \
-	COORD worg_x, worg_y; \
-	SIZE vext_w, vext_h, wext_w, wext_h; \
-	\
-	if ((*(pmt) = _get_context_map_type ()) != MAP_NOXFORM) \
-		worg_x = _pCurContext->Map.WinOrg.x, \
-		worg_y = _pCurContext->Map.WinOrg.y, \
-		vext_w = _pCurContext->Map.ViewExt.width, \
-		vext_h = _pCurContext->Map.ViewExt.height, \
-		wext_w = _pCurContext->Map.WinExt.width, \
-		wext_h = _pCurContext->Map.WinExt.height
-#define _uninit_context_map()
-#define LXtoDX(x) ((((x) - worg_x) * vext_w) / wext_w)
-#define LYtoDY(y) ((((y) - worg_y) * vext_h) / wext_h)
-#define DXtoLX(x) ((((x) * wext_w) / vext_w) + worg_x)
-#define DYtoLY(y) ((((y) * wext_h) / vext_h) + worg_y)
-#define SwitchContextMapType(t) \
-{ \
-	_pCurContext->Map.MapType = (t); \
-}
-#define SwitchContextWinOrigin(org) (_pCurContext->Map.WinOrg = *(org))
-#define SwitchContextViewExtents(ext) (_pCurContext->Map.ViewExt = *(ext))
-#define SwitchContextWinExtents(ext) (_pCurContext->Map.WinExt = *(ext))
-#endif /* MAPPING */
 
 #define SwitchContextDrawState(s) \
 { \
@@ -130,10 +76,6 @@ extern PRIMITIVE _locPrim;
 { \
 	_pCurContext->ForeGroundFrame = (f); \
 }
-#define SwitchContextBGFrame(f) \
-{ \
-	_pCurContext->BackGroundFrame = (f); \
-}
 #define SwitchContextFont(f) \
 { \
 	_pCurContext->Font = (f); \
@@ -144,13 +86,15 @@ extern PRIMITIVE _locPrim;
 }
 
 /*
+These seem to have been moved to gfxlib.h, but not in their
+entirety.  That's rather unpleasant.  -- Michael
+
 #define BATCH_BUILD_PAGE (BATCH_FLAGS)(1 << 0)
 #define BATCH_SINGLE (BATCH_FLAGS)(1 << 1)
 #define BATCH_UPDATE_DRAWABLE (BATCH_FLAGS)(1 << 2)
 */
 #define BATCH_CLIP_GRAPHICS (BATCH_FLAGS)(1 << 3)
 #define BATCH_XFORM (BATCH_FLAGS)(1 << 4)
-#define BATCH_DIRTY_TILES (BATCH_FLAGS)(1 << 7)
 
 typedef BYTE GRAPHICS_STATUS;
 
@@ -176,14 +120,14 @@ extern GRAPHICS_STATUS _GraphicsStatusFlags;
 #define DrawableActive() (_GraphicsStatusFlags & DRAWABLE_ACTIVE)
 
 #define SYSTEM_ACTIVE (GRAPHICS_STATUS)( \
-									DISPLAY_ACTIVE | CONTEXT_ACTIVE | \
-									DRAWABLE_ACTIVE \
-								)
+		DISPLAY_ACTIVE | CONTEXT_ACTIVE | \
+		DRAWABLE_ACTIVE \
+		)
 #define GraphicsSystemActive() \
 		((_GraphicsStatusFlags & SYSTEM_ACTIVE) == SYSTEM_ACTIVE)
 #define GraphicsStatus() \
 		(_GraphicsStatusFlags & (GRAPHICS_STATUS)(GRAPHICS_ACTIVE \
-												| GRAPHICS_VISIBLE))
+							| GRAPHICS_VISIBLE))
 
 #endif /* _CONTEXT_H */
 

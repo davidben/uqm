@@ -76,7 +76,7 @@ TFB_FlushPaletteCache ()
 }
 
 void
-TFB_DrawScreen_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, SCREEN dest)
+TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -84,7 +84,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 	DC.data.image.image = img;
 	DC.data.image.x = x;
 	DC.data.image.y = y;
-	DC.data.image.UseScaling = scaled;
+	DC.data.image.scale = (scale == 256) ? 0 : scale;
 
 	if (palette != NULL)
 	{
@@ -121,7 +121,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 }
 
 void
-TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, SCREEN dest)
+TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -129,7 +129,7 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r,
 	DC.data.filledimage.image = img;
 	DC.data.filledimage.x = x;
 	DC.data.filledimage.y = y;
-	DC.data.filledimage.UseScaling = scaled;
+	DC.data.filledimage.scale = (scale == 256) ? 0 : scale;
 	DC.data.filledimage.r = r;
 	DC.data.filledimage.g = g;
 	DC.data.filledimage.b = b;
@@ -226,19 +226,19 @@ TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image)
 }
 
 void
-TFB_DrawImage_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target)
+TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_Image (img, x, y, scaled, palette, target->NormalImg);
+	TFB_DrawCanvas_Image (img, x, y, scale, palette, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
 
 void
-TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Image *target)
+TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_FilledImage (img, x, y, scaled, r, g, b, target->NormalImg);
+	TFB_DrawCanvas_FilledImage (img, x, y, scale, r, g, b, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
@@ -289,4 +289,34 @@ TFB_DrawImage_Delete (TFB_Image *image)
 	DestroyMutex (image->mutex);
 			
 	HFree (image);
+}
+
+void
+TFB_DrawImage_FixScaling (TFB_Image *image, int target)
+{
+	if (image->ScaledImg)
+	{
+		if (image->scale != target)
+		{
+			TFB_DrawCanvas_Delete(image->ScaledImg);
+			image->ScaledImg = NULL;
+		}
+	}
+	
+	if (!image->ScaledImg)
+	{
+		image->scale = target;
+		image->dirty = FALSE;
+		image->ScaledImg = TFB_DrawCanvas_New_Scaled (image->NormalImg, target);
+		if (TFB_DrawCanvas_IsPaletted (image->ScaledImg))
+		{
+			int colorkey = TFB_DrawCanvas_GetTransparentIndex (image->NormalImg);
+
+			TFB_DrawCanvas_SetPalette (image->ScaledImg, image->Palette);
+			if (colorkey != -1)
+			{
+				TFB_DrawCanvas_SetTransparentIndex (image->ScaledImg, colorkey);
+			}
+		}
+	}
 }

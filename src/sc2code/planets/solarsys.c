@@ -352,7 +352,6 @@ FreeSolarSys (void)
 	SetSemaphore (GraphicsSem);
 
 	SetContext (SpaceContext);
-	SetContextBGFrame ((FRAME)0);
 
 	StopMusic ();
 
@@ -936,7 +935,6 @@ ScaleSystem (void)
 	GetContextClipRect (&r);
 	SetGraphicGrabOther (1); // to grab from hidden screen (since we haven't flipped yet)
 	LoadIntoExtraScreen (&r);
-	SetContextBGFrame ((FRAME)0);
 	SetGraphicGrabOther (0);
 	SetContextFGFrame (Screen);
 
@@ -1437,8 +1435,6 @@ LoadLanderData ();
 		DrawSISMessage (NULL_PTR);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);
-		SetContextBGFrame ((FRAME)0);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 		SetContextBackGroundColor (BLACK_COLOR);
 		ClearSemaphore (GraphicsSem);
 
@@ -1760,8 +1756,6 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 	DWORD old_seed;
 
 	SetContext (SpaceContext);
-	SetContextBGFrame ((FRAME)0);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	SetContextBackGroundColor (BLACK_COLOR);
 
 	ClearDrawable ();

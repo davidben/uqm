@@ -18,6 +18,9 @@
 
 #include "gfxintrn.h"
 #include "declib.h"
+#include "gfx_common.h"
+#include "tfb_draw.h"
+#include "tfb_prim.h"
 
 typedef union
 {
@@ -25,16 +28,7 @@ typedef union
 	STAMP Stamp;
 	BRESENHAM_LINE Line;
 	TEXT Text;
-	STAMP_CMAP StampCMap;
 	RECT Rect;
-	POLYGON_DESC Polygon;
-	struct
-	{
-		POINT origin;
-		FRAME frame;
-		COUNT NumFrames;
-		PFRAME FrameList;
-	} Composite;
 } INTERNAL_PRIM_DESC;
 typedef INTERNAL_PRIM_DESC *PINTERNAL_PRIM_DESC;
 
@@ -83,40 +77,14 @@ GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
 void
 ClearBackGround (PRECT pClipRect)
 {
-	if (_get_context_bg_func ())
-	{
-		(*_get_context_bg_func ()) (pClipRect);
-	}
-	else
-	{
-		RECT locRect;
-		PRIMITIVE locPrim;
+	TFB_Palette color;
+	DWORD c32k;
 
-		locPrim.Object.Rect = *pClipRect;
-		if (BGFrame == 0)
-		{
-			SetPrimColor (&locPrim, _get_context_bg_color ());
-			SetPrimType (&locPrim, RECTFILL_PRIM);
-		}
-		else
-		{
-			locRect.corner.x = -GetFrameHotX (BGFrame);
-			locRect.corner.y = -GetFrameHotY (BGFrame);
-			locRect.extent.width = GetFrameWidth (BGFrame);
-			locRect.extent.height = GetFrameHeight (BGFrame);
-			_save_stamp.origin = locRect.corner;
-
-			if (!BoxIntersect (&locRect, &locPrim.Object.Rect, &locRect))
-				return;
-
-			pClipRect = &locRect;
-			SetPrimType (&locPrim, STAMP_PRIM);
-			SetPrimColor (&locPrim, _get_context_bg_color ());
-			locPrim.Object.Stamp = _save_stamp;
-		}
-
-		DrawGraphicsFunc (pClipRect, &locPrim);
-	}
+	c32k = _get_context_bg_color () >> 8; //shift out color index
+	color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+	color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+	color.b = (c32k << (8 - 5)) & 0xF8;
+	TFB_Prim_FillRect (pClipRect, &color);
 }
 
 void
@@ -128,17 +96,9 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		int frame_dir;
 		COUNT CurIndex;
 		PRIM_LINKS OldLinks;
 		register PPRIMITIVE lpPrim;
-#ifdef MAPPING
-		MAP_TYPE MapType;
-
-		_init_context_map (&MapType);
-		if (MapType != MAP_NOXFORM)
-			BatchFlags |= BATCH_XFORM;
-#endif /* MAPPING */
 
 		BatchFlags &= BATCH_SINGLE
 				| BATCH_BUILD_PAGE
@@ -148,20 +108,12 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 
 		BatchGraphics ();
 
-		frame_dir = ((GetDisplayFlags () & WANT_MASK)
-				&& _get_context_draw_mode () == DRAW_SUBTRACTIVE) ? -1 : 1;
 		if (BatchFlags & BATCH_BUILD_PAGE)
 		{
-			if (frame_dir == 1)
-				ClearBackGround (&ValidRect);
+			ClearBackGround (&ValidRect);
 		}
-		else if (_get_context_draw_mode () == DRAW_ADDITIVE
-					&& _get_context_bg_func ())
-			BatchFlags |= BATCH_DIRTY_TILES;
 
-		CurIndex = frame_dir < 0
-				? GetSuccLink (PrimLinks)
-				: GetPredLink (PrimLinks);
+		CurIndex = GetPredLink (PrimLinks);
 
 		if (BatchFlags & BATCH_SINGLE)
 		{
@@ -176,16 +128,14 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 			}
 		}
 
-		for (; CurIndex != END_OF_LIST;
-				CurIndex = frame_dir < 0
-						? GetPredLink (GetPrimLinks (lpPrim))
-						: GetSuccLink (GetPrimLinks (lpPrim)))
+		for (; CurIndex != END_OF_LIST; CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
 		{
 			register GRAPHICS_PRIM PrimType;
 			PPRIMITIVE lpWorkPrim;
 			RECT ClipRect;
-			INTERNAL_PRIMITIVE Prim;
 			FRAMEPTR SrcFramePtr;
+			TFB_Palette color;
+			DWORD c32k;
 
 			lpPrim = &lpBasePrim[CurIndex];
 			PrimType = GetPrimType (lpPrim);
@@ -193,134 +143,45 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 				continue;
 
 			lpWorkPrim = lpPrim;
-#ifdef MAPPING
-			if (BatchFlags & BATCH_XFORM)
-			{
-				COORD x, y;
-
-				Prim = *(PINTERNAL_PRIMITIVE)lpWorkPrim;
-				lpWorkPrim = (PPRIMITIVE)&Prim;
-
-				x = LXtoDX (Prim.Object.Point.x);
-				y = LYtoDY (Prim.Object.Point.y);
-				if (PrimType == RECT_PRIM
-						|| PrimType == RECTFILL_PRIM)
-				{
-					Prim.Object.Line.second.x =
-							LXtoDX (Prim.Object.Rect.corner.x +
-							Prim.Object.Rect.extent.width - 1);
-					Prim.Object.Line.second.y =
-							LYtoDY (Prim.Object.Rect.corner.y +
-							Prim.Object.Rect.extent.height - 1);
-					Prim.Object.Rect.extent.width = Prim.Object.Line.second.x - x + 1;
-					Prim.Object.Rect.extent.height = Prim.Object.Line.second.y - y + 1;
-				}
-
-				Prim.Object.Point.x = x;
-				Prim.Object.Point.y = y;
-			}
-#endif /* MAPPING */
 
 			switch (PrimType)
 			{
 				case POINT_PRIM:
-					ClipRect.corner = lpWorkPrim->Object.Point;
-					if ((BatchFlags & BATCH_CLIP_GRAPHICS)
-							&& (ClipRect.corner.x < ValidRect.corner.x
-							|| ClipRect.corner.y < ValidRect.corner.y
-							|| ClipRect.corner.x >= ValidRect.corner.x
-									+ ValidRect.extent.width
-							|| ClipRect.corner.y >= ValidRect.corner.y
-									+ ValidRect.extent.height))
-						continue;
-					ClipRect.extent.width = ClipRect.extent.height = 1;
-					goto DoGraphics;
-				case STAMPCMAP_PRIM:
-					BatchColorMap (lpWorkPrim->Object.StampCMap.CMap);
-					goto ProcessStamp;
-				case COMPOSITE_PRIM:
-				case COMPOSITEFILL_PRIM:
-					Prim = *(PINTERNAL_PRIMITIVE)lpWorkPrim;
-					if ((Prim.Object.Composite.FrameList =
-							(PFRAME)Prim.Object.Composite.frame) == 0
-							|| Prim.Object.Composite.NumFrames == 0)
-						continue;
-					if (frame_dir < 0)
-						Prim.Object.Composite.FrameList +=
-								Prim.Object.Composite.NumFrames - 1;
-					lpWorkPrim = (PPRIMITIVE)&Prim;
-					SetPrimType (lpWorkPrim,
-							STAMP_PRIM + (PrimType - COMPOSITE_PRIM));
-ProcessComposite:
-					Prim.Object.Composite.frame =
-							*Prim.Object.Composite.FrameList;
-					Prim.Object.Composite.FrameList += frame_dir;
-					if (--Prim.Object.Composite.NumFrames == 0)
-						PrimType = GetPrimType (&Prim);
+					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
+					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+					color.b = (c32k << (8 - 5)) & 0xF8;
+					
+					TFB_Prim_Point (&lpWorkPrim->Object.Point, &color);
+					break;
 				case STAMP_PRIM:
-				case STAMPFILL_PRIM:
-ProcessStamp:
-					SrcFramePtr = (FRAMEPTR)(
-							lpWorkPrim->Object.Stamp.frame
-							);
+					SrcFramePtr = (FRAMEPTR)(lpWorkPrim->Object.Stamp.frame);
 					if (SrcFramePtr == 0)
 					{
-						if (PrimType >= COMPOSITE_PRIM)
-							goto ProcessComposite;
-						else
-							continue;
+						continue;
+					}
+					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp);
+					break;
+				case STAMPFILL_PRIM:
+					SrcFramePtr = (FRAMEPTR)(lpWorkPrim->Object.Stamp.frame);
+					if (SrcFramePtr == 0)
+					{
+						continue;
 					}
 
-					ClipRect.corner = lpWorkPrim->Object.Stamp.origin;
-					ClipRect.corner.x -= GetFrameHotX (SrcFramePtr);
-					ClipRect.corner.y -= GetFrameHotY (SrcFramePtr);
-					ClipRect.extent.width = GetFrameWidth (SrcFramePtr);
-					ClipRect.extent.height = GetFrameHeight (SrcFramePtr);
-
-					_save_stamp.origin = ClipRect.corner;
+					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
+					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+					color.b = (c32k << (8 - 5)) & 0xF8;
+					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, &color);
 					break;
 				case LINE_PRIM:
-#ifdef MAPPING
-					if (BatchFlags & BATCH_XFORM)
-					{
-						Prim.Object.Line.second.x = LXtoDX (Prim.Object.Line.second.x);
-						Prim.Object.Line.second.y = LYtoDY (Prim.Object.Line.second.y);
-					}
-					else
-#endif /* MAPPING */
-					{
-						Prim = *(PINTERNAL_PRIMITIVE)lpWorkPrim;
-						lpWorkPrim = (PPRIMITIVE)&Prim;
-					}
+					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
+					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+					color.b = (c32k << (8 - 5)) & 0xF8;
 
-					if (Prim.Object.Line.second.x >= Prim.Object.Line.first.x)
-					{
-						ClipRect.corner.x = Prim.Object.Line.first.x;
-						ClipRect.extent.width =
-								Prim.Object.Line.second.x
-								- Prim.Object.Line.first.x + 1;
-					}
-					else
-					{
-						ClipRect.corner.x = Prim.Object.Line.second.x;
-						ClipRect.extent.width =
-								Prim.Object.Line.first.x
-								- Prim.Object.Line.second.x + 1;
-					}
-					if (Prim.Object.Line.second.y >= Prim.Object.Line.first.y)
-					{
-						ClipRect.corner.y = Prim.Object.Line.first.y;
-						ClipRect.extent.height =
-								Prim.Object.Line.second.y
-								- Prim.Object.Line.first.y + 1;
-					}
-					else
-					{
-						ClipRect.corner.y = Prim.Object.Line.second.y;
-						ClipRect.extent.height =
-								Prim.Object.Line.first.y
-								- Prim.Object.Line.second.y + 1;
-					}
+					TFB_Prim_Line (&lpWorkPrim->Object.Line, &color);
 					break;
 				case TEXT_PRIM:
 					if (!TextRect (&lpWorkPrim->Object.Text,
@@ -328,42 +189,23 @@ ProcessStamp:
 						continue;
 
 					_save_stamp.origin = ClipRect.corner;
+					
+					_text_blt (&ClipRect, lpWorkPrim);
 					break;
 				case RECT_PRIM:
+					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
+					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+					color.b = (c32k << (8 - 5)) & 0xF8;
+					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, &color);
 				case RECTFILL_PRIM:
-					ClipRect = lpWorkPrim->Object.Rect;
-					break;
-				case POLY_PRIM:
-				case POLYFILL_PRIM:
-					ClipRect = ((PPOLYGON_DESC)lpWorkPrim->Object.Polygon)->BoundRect;
+					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
+					color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+					color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+					color.b = (c32k << (8 - 5)) & 0xF8;
+					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, &color);
 					break;
 			}
-
-#if 0
-			if ((BatchFlags & BATCH_CLIP_GRAPHICS)
-					&& BoxIntersect (&ClipRect,
-					&ValidRect, &ClipRect) == 0)
-			{
-				if (PrimType >= COMPOSITE_PRIM)
-					goto ProcessComposite;
-				else
-					continue;
-			}
-#endif
-
-DoGraphics:
-			if (BatchFlags & BATCH_DIRTY_TILES)
-				(*_get_context_bg_func ()) (&ClipRect);
-
-			DrawGraphicsFunc (&ClipRect, lpWorkPrim);
-			if (PrimType >= COMPOSITE_PRIM)
-				goto ProcessComposite;
-		}
-
-		if (BatchFlags & BATCH_BUILD_PAGE)
-		{
-			if (frame_dir < 0)
-				ClearBackGround (&ValidRect);
 		}
 
 		UnbatchGraphics ();
@@ -375,9 +217,6 @@ DoGraphics:
 					GetPredLink (OldLinks),
 					GetSuccLink (OldLinks));
 
-#ifdef MAPPING
-		_uninit_context_map ();
-#endif /* MAPPING */
 	}
 }
 
@@ -397,3 +236,119 @@ ClearDrawable (void)
 	}
 }
 
+void
+DrawPoint (PPOINT lpPoint)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Palette color;
+		DWORD c32k;
+		
+		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
+		
+		TFB_Prim_Point (lpPoint, &color);
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	}
+}
+
+void
+DrawRectangle (PRECT lpRect)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Palette color;
+		DWORD c32k;
+		
+		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
+		
+		TFB_Prim_Rect (lpRect, &color);  
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	}
+}
+
+void
+DrawFilledRectangle (PRECT lpRect)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Palette color;
+		DWORD c32k;
+		
+		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
+		
+		TFB_Prim_FillRect (lpRect, &color);  
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	}
+}
+
+void
+DrawLine (PLINE lpLine)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Palette color;
+		DWORD c32k;
+
+		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
+		
+		TFB_Prim_Line (lpLine, &color);
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	} 
+}
+
+void
+DrawStamp (PSTAMP stmp)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Prim_Stamp (stmp);
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	}
+}
+
+void
+DrawFilledStamp (PSTAMP stmp)
+{
+	RECT ValidRect;
+	HOT_SPOT OldHot;
+
+	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	{
+		TFB_Palette color;
+		DWORD c32k;
+		
+		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
+		color.r = (c32k >> (10 - (8 - 5))) & 0xF8;
+		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
+		color.b = (c32k << (8 - 5)) & 0xF8;
+		TFB_Prim_StampFill (stmp, &color);
+		SetFrameHotSpot (_CurFramePtr, OldHot);
+	}
+}

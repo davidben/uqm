@@ -176,7 +176,6 @@ MUSIC_REF MR;
 	hOldIndex = SetResourceIndex (hResIndex);
 
 	SetContext (SpaceContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	SetContextFont (TinyFont);
 
 MR = LoadMusicInstance (REDALERT_MUSIC);

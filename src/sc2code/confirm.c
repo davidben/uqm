@@ -45,10 +45,8 @@ ConfirmExit (void)
 		STAMP s;
 		FRAME F;
 		CONTEXT oldContext;
-		DRAW_STATE oldDrawState;
 
 		oldContext = SetContext (ScreenContext);
-		oldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 		s.frame = SetAbsFrameIndex (ActivityFrame, 1);
 		GetFrameRect (s.frame, &r);
@@ -97,7 +95,6 @@ ConfirmExit (void)
 			FlushInput ();
 		}
 
-		SetContextDrawState (oldDrawState);
 		SetContext (oldContext);
 	}
 	ClearSemaphore (GraphicsSem);

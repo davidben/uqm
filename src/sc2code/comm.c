@@ -1683,7 +1683,6 @@ HailAlien (void)
 	ES.phrase_buf[0] = '\0';
 
 	SetContext (SpaceContext);
-	SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 	OldFont = SetContextFont (PlayerFont);
 
 	{

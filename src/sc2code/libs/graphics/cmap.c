@@ -69,12 +69,6 @@ void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
 }
 
 BOOLEAN
-BatchColorMap (COLORMAPPTR ColorMapPtr)
-{
-	return (SetColorMap (ColorMapPtr));
-}
-
-BOOLEAN
 SetColorMap (COLORMAPPTR map)
 {
 	int start, end, bytes;

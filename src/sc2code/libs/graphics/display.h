@@ -38,8 +38,6 @@ typedef struct
 
 	void (*read_display) (PRECT pRect, FRAMEPTR DstFramePtr);
 
-	void (**graphics_func_array) (PRECT pClipRect, PRIMITIVEPTR
-			PrimPtr);
 } DISPLAY_INTERFACE;
 typedef DISPLAY_INTERFACE *PDISPLAY_INTERFACE;
 
@@ -49,26 +47,12 @@ extern void (* mask_func_array[]) (PRECT pClipRect,
 		PRIMITIVEPTR PrimPtr);
 
 #define AllocDrawableImage (*_pCurDisplay->alloc_image)
-#define DrawGraphicsFunc(pRect,pPtr) \
-		(*_pCurContext->func_array[GetPrimType(pPtr)]) (pRect, (PRIMITIVEPTR)(pPtr))
 #define ReadDisplay (*_pCurDisplay->read_display)
-extern void _bitplane_blt (PRECT pClipRect, FRAMEPTR
-		DstFramePtr, COORD src_x, COORD src_y, FRAMEPTR
-		SrcFramePtr, DRAW_MODE DrawMode);
 
 #define GetDisplayFlags() (_pCurDisplay->DisplayFlags)
 #define GetDisplayDepth() (_pCurDisplay->DisplayDepth)
 #define GetDisplayWidth() (_pCurDisplay->DisplayWidth)
 #define GetDisplayHeight() (_pCurDisplay->DisplayHeight)
-
-#define SetContextGraphicsFunctions() \
-do \
-{ \
-	if (_get_context_draw_dest () == DEST_MASK) \
-		_pCurContext->func_array = mask_func_array; \
-	else \
-		_pCurContext->func_array = _pCurDisplay->graphics_func_array; \
-} while (0)
 
 #endif /* _DISPLAY_H */
 

@@ -183,8 +183,6 @@ TryAgain:
 		black_buf[0] = FadeAllToBlack;
 
 		SetContext (ScreenContext);
-		SetContextBGFrame ((FRAME)0);
-		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 
 		GLOBAL (CurrentActivity) |= CHECK_ABORT;
 		if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0

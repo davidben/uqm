@@ -24,7 +24,6 @@
 #define CONTEXT PVOID
 #define FRAME PVOID
 #define FONT PVOID
-#define CYCLE_REF DWORD
 
 typedef CONTEXT *PCONTEXT;
 typedef FRAME *PFRAME;
@@ -53,28 +52,6 @@ typedef BYTE CREATE_FLAGS;
 #define WANT_MASK (CREATE_FLAGS)(1 << 0)
 #define WANT_PIXMAP (CREATE_FLAGS)(1 << 1)
 #define MAPPED_TO_DISPLAY (CREATE_FLAGS)(1 << 2)
-
-typedef enum
-{
-	MAP_ISOTROPIC, /* == X/Y scale is the same */
-	MAP_ANISOTROPIC, /* == X/Y scale different (e.g. aspect ratio) */
-	MAP_NOXFORM /* == X/Y scale is ignored */
-} MAP_TYPE;
-
-typedef enum
-{
-	DEST_MASK = MAKE_WORD (0, 0),
-	DEST_PIXMAP = MAKE_WORD (0, 1)
-} DRAW_DESTINATION;
-
-typedef enum
-{
-	DRAW_SUBTRACTIVE = 0, /* implied only to active page */
-	DRAW_ADDITIVE, /* implied only to active page */
-	DRAW_REPLACE
-} DRAW_MODE;
-
-typedef UWORD DRAW_STATE;
 
 typedef struct extent
 {
@@ -132,32 +109,11 @@ typedef struct text
 } TEXT;
 typedef TEXT *PTEXT;
 
-typedef MEM_HANDLE POLYREF;
-
-typedef PVOID POLYGON;
-typedef POLYGON *PPOLYGON;
-
 #include "strlib.h"
 
 typedef STRING_TABLE COLORMAP_REF;
 typedef STRING COLORMAP;
 typedef STRINGPTR COLORMAPPTR;
-
-typedef struct stamp_cmap
-{
-	POINT origin;
-	FRAME frame;
-	COLORMAPPTR CMap;
-} STAMP_CMAP;
-typedef STAMP_CMAP *PSTAMP_CMAP;
-
-typedef struct composite
-{
-	POINT origin;
-	PFRAME FrameList;
-	COUNT NumFrames;
-} COMPOSITE;
-typedef COMPOSITE *PCOMPOSITE;
 
 enum gfx_object
 {
@@ -166,13 +122,8 @@ enum gfx_object
 	STAMPFILL_PRIM,
 	LINE_PRIM,
 	TEXT_PRIM,
-	STAMPCMAP_PRIM,
 	RECT_PRIM,
 	RECTFILL_PRIM,
-	POLY_PRIM,
-	POLYFILL_PRIM,
-	COMPOSITE_PRIM,
-	COMPOSITEFILL_PRIM,
 
 	NUM_PRIMS
 };
@@ -184,10 +135,7 @@ typedef union
    STAMP Stamp;
    LINE Line;
    TEXT Text;
-   STAMP_CMAP StampCMap;
    RECT Rect;
-   POLYGON Polygon;
-   COMPOSITE Composite;
 } PRIM_DESC;
 typedef PRIM_DESC *PPRIM_DESC;
 
@@ -268,8 +216,6 @@ extern INTERSECT_CODE BoxIntersect (PRECT pr1, PRECT pr2, PRECT
 		printer);
 extern void BoxUnion (PRECT pr1, PRECT pr2, PRECT punion);
 
-typedef void (*BG_FUNC) (PRECT pClipRect);
-
 #endif /* _GFXLIB_H */
 
 
@@ -283,22 +229,9 @@ extern void UninitGraphics (void);
 extern CONTEXT SetContext (CONTEXT Context);
 extern CONTEXT CaptureContext (CONTEXT_REF ContextRef);
 extern CONTEXT_REF ReleaseContext (CONTEXT Context);
-extern MAP_TYPE SetContextMapType (MAP_TYPE MapType);
-extern BOOLEAN SetContextWinOrigin (PPOINT pOrg);
-extern BOOLEAN SetContextViewExtents (PEXTENT pExtent);
-extern BOOLEAN SetContextWinExtents (PEXTENT pExtent);
-extern BOOLEAN GetContextWinOrigin (PPOINT pOrg);
-extern BOOLEAN GetContextViewExtents (PEXTENT pExtent);
-extern BOOLEAN GetContextWinExtents (PEXTENT pExtent);
-extern BOOLEAN LOGtoDEV (PPOINT pSrcPt, PPOINT pDstPt, COUNT NumPoints);
-extern BOOLEAN DEVtoLOG (PPOINT pSrcPt, PPOINT pDstPt, COUNT NumPoints);
-extern DRAW_STATE GetContextDrawState (void);
-extern DRAW_STATE SetContextDrawState (DRAW_STATE DrawState);
 extern COLOR SetContextForeGroundColor (COLOR Color);
 extern COLOR SetContextBackGroundColor (COLOR Color);
 extern FRAME SetContextFGFrame (FRAME Frame);
-extern FRAME SetContextBGFrame (FRAME Frame);
-extern BG_FUNC SetContextBGFunc (BG_FUNC BGFunc);
 extern BOOLEAN SetContextClipping (BOOLEAN ClipStatus);
 extern BOOLEAN SetContextClipRect (PRECT pRect);
 extern BOOLEAN GetContextClipRect (PRECT pRect);
@@ -306,14 +239,11 @@ extern TIME_VALUE DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 		PINTERSECT_CONTROL pControl1, TIME_VALUE max_time_val);
 extern void DrawStamp (PSTAMP pStamp);
 extern void DrawFilledStamp (PSTAMP pStamp);
-extern void DrawStampCMap (PSTAMP_CMAP pStampCmap);
 extern void DrawPoint (PPOINT pPoint);
 extern void DrawRectangle (PRECT pRect);
 extern void DrawFilledRectangle (PRECT pRect);
 extern void DrawLine (PLINE pLine);
 extern void font_DrawText (PTEXT pText);
-extern void DrawPolygon (POLYGON Polygon);
-extern void DrawFilledPolygon (POLYGON Polygon);
 extern void DrawBatch (PPRIMITIVE pBasePrim, PRIM_LINKS PrimLinks,
 		BATCH_FLAGS BatchFlags);
 extern void BatchGraphics (void);
@@ -335,7 +265,6 @@ extern HOT_SPOT SetFrameHot (FRAME Frame, HOT_SPOT HotSpot);
 extern HOT_SPOT GetFrameHot (FRAME Frame);
 extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
 extern DWORD LoadCelFile (PVOID pStr);
-extern DWORD LoadFontFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
 extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
@@ -354,34 +283,12 @@ extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
 
-extern void XFlipFrame (FRAME Frame);
 extern FRAME CaptureDrawable (DRAWABLE Drawable);
-
 extern DRAWABLE ReleaseDrawable (FRAME Frame);
+
 extern MEM_HANDLE GetFrameHandle (FRAME Frame);
 
-extern POLYREF CreatePolygon (COUNT PtCount);
-extern POLYGON CapturePolygon (POLYREF PolyRef);
-extern BOOLEAN SetPolygonPoint (POLYGON Polygon, COUNT PtIndex, COORD x,
-		COORD y);
-extern BOOLEAN GetPolygonPoint (POLYGON Polygon, COUNT PtIndex, PCOORD
-		px, PCOORD py);
-extern POLYREF ReleasePolygon (POLYGON Polygon);
-extern BOOLEAN DestroyPolygon (POLYREF PolyRef);
-
-extern DRAWABLE CreateOverlayWindow (CREATE_FLAGS CreateFlags, FRAME
-		Display, SIZE height);
-extern void ShowOverlayWin (FRAME WinFrame, COUNT TimeInterval);
-extern void HideOverlayWin (FRAME WinFrame, COUNT TimeInterval);
-extern BOOLEAN DestroyOverlayWindow (FRAME Display, DRAWABLE Drawable);
-extern void ScrollDisplay (FRAME Display, COORD x, COORD y);
-
-extern BOOLEAN ReadColorMap (COLORMAPPTR ColorMapPtr);
 extern BOOLEAN SetColorMap (COLORMAPPTR ColorMapPtr);
-extern BOOLEAN BatchColorMap (COLORMAPPTR ColorMapPtr);
-extern CYCLE_REF CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles,
-		SIZE TimeInterval);
-extern void StopCycleColorMap (CYCLE_REF CycleRef);
 extern DWORD XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval);
 extern void FlushColorXForms (void);
 #define InitColorMapResources InitStringTableResources
