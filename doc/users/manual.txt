@@ -165,10 +165,15 @@ we'd like you to report it, but before you do, please do the following:
   by adding a comment to the report. If ten people have already confirmed it,
   though, it's probably best to treat it as duly reported.
 
+- Whenever possible, for bugs that only occur under certain conditions,
+  include a save game with your bug report that duplicates the bug.
+  In the case of a crash, a stack trace can be very helpful for us too.
+  If you don't know what a stack trace is, don't worry about it.
+
 - If your issue is more like "support request" than bug report and you
   want help from other users, then posting it to our forum might be
   more appropriate: http://uqm.stack.nl/cgi-bin/yabb/YaBB.pl
-  
+
 
 
 			   THE STORY SO FAR
