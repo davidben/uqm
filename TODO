@@ -100,6 +100,7 @@ Implementation bugs (low priority):
 	yehat021.ogg yehat023.ogg supox002.ogg supox003.ogg supox028.ogg
 	vux001.ogg utwig072.ogg umgah027.ogg talkp068.ogg spaho007.ogg
 	syree012.ogg syree021.ogg syree028.ogg syree069.ogg orz000.ogg
+  - black041.ogg is wrong (identical to black042.ogg)
   - Using arrow keys with SDL_mixer will not work.
   - More work should be done to better sync the text we have.
 - Slider doesn't track the audio very well
