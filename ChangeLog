@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Added doc/devel/dialogs - SvdB
 - Don't allow the reply "Symbionts, how interesting!" in the Supox
   conversation until they mentioned they were Symbionts. (bug #528),
   from Nic
