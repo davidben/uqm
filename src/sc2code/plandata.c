@@ -21,6 +21,11 @@
 
 STAR_DESC starmap_array[] =
 {
+	//                           postfix name index (like 'Normae')
+    //                         prefix name index (like 'Alpha')   |
+	//                                        alien presence  |   |
+	//                                     owner (unused)  |  |   |
+	//   x,    y              star type   colour       |   |  |   |
 	{{5007,   35}, MAKE_STAR (DWARF_STAR, GREEN_BODY, -1), 0, 6, 74},
 	{{ 708,   41}, MAKE_STAR (DWARF_STAR, WHITE_BODY, -1), 0, 7, 91},
 	{{4714,   78}, MAKE_STAR (DWARF_STAR, GREEN_BODY, -1), 0, 7, 74},
@@ -526,6 +531,7 @@ STAR_DESC starmap_array[] =
 
 	{{MAX_X_UNIVERSE << 1, MAX_Y_UNIVERSE << 1}, 0, 0, 0, 0},
 
+	// QuasiSpace locations
 #define VORTEX_SCALE 20
 	{{(-12* VORTEX_SCALE) + 5000, (-21 * VORTEX_SCALE) + 5000},
 			MAKE_STAR (DWARF_STAR, WHITE_BODY, -1), 0, 0, 132},
