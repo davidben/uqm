@@ -1,4 +1,5 @@
 0.2:
+- Earth topo map is now tinted as should, from PhracturedBlue
 - Fixed planet stuff when leaving surface with lander, from PhracturedBlue
 - RotatePlanet now holds GraphicsSem a shorter time, from PhracturedBlue
 - Added proper mutex usage to 3do_getbody.c, from PhracturedBlue
