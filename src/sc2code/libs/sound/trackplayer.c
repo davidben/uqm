@@ -639,7 +639,7 @@ GetSoundData (void *data)
 
 			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[MUSIC_SOURCE].total_decoded, delta);
 
-			pos = soundSource[SPEECH_SOURCE].sbuf_offset + delta;
+			pos = soundSource[MUSIC_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;
 
