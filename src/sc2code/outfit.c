@@ -219,7 +219,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		SetContext (SpaceContext);
 		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
-
+		ClearSISRect (CLEAR_SIS_RADAR);
 		SetFlashRect (NULL_PTR, (FRAME)0);
 		goto InitFlash;
 	}
@@ -507,6 +507,64 @@ InitFlash:
 
 	return (TRUE);
 }
+void
+ChangeFuelQuantity (INPUT_STATE InputState)
+{
+	RECT r;
+	
+	r.extent.height = 1;
+	
+	if (GetInputXComponent (InputState) < 0
+		|| GetInputYComponent (InputState) < 0)
+	{
+		SetSemaphore (GraphicsSem);
+		SetContext (SpaceContext);
+		if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
+			&& GLOBAL_SIS (ResUnits) >=
+			(DWORD)GLOBAL (FuelCost))
+		{
+			if (GLOBAL_SIS (FuelOnBoard) >=
+				FUEL_RESERVE - FUEL_TANK_SCALE)
+			{
+				r.extent.width = 3;
+				DrawPoint (&r.corner);
+				r.corner.x += r.extent.width + 1;
+				DrawPoint (&r.corner);
+				r.corner.x -= r.extent.width;
+				SetContextForeGroundColor (SetContextBackGroundColor (BLACK_COLOR));
+				DrawFilledRectangle (&r);
+			}
+			DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
+			SetContext (StatusContext);
+			GetGaugeRect (&r, FALSE);
+			SetFlashRect (&r, (FRAME)0);
+		}
+		ClearSemaphore (GraphicsSem);
+	}
+	else if (GetInputXComponent (InputState) > 0
+		|| GetInputYComponent (InputState) > 0)
+	{
+		SetSemaphore (GraphicsSem);
+		SetContext (SpaceContext);
+		if (GLOBAL_SIS (FuelOnBoard))
+		{
+			DeltaSISGauges (0, -FUEL_TANK_SCALE,
+				GLOBAL (FuelCost));
+			if (GLOBAL_SIS (FuelOnBoard)
+				% FUEL_VOLUME_PER_ROW == 0)
+			{
+				GetFTankCapacity (&r.corner);
+				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
+				r.extent.width = 5;
+				DrawFilledRectangle (&r);
+			}
+		}
+		SetContext (StatusContext);
+		GetGaugeRect (&r, FALSE);
+		SetFlashRect (&r, (FRAME)0);
+		ClearSemaphore (GraphicsSem);
+	}
+}
 
 BOOLEAN
 DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
@@ -602,15 +660,15 @@ DoOutfit (INPUT_STATE InputState, PMENU_STATE pMS)
 			DrawFlagshipName (FALSE);
 			ClearSemaphore(GraphicsSem);
 
-{
-	RECT r;
+			{
+				RECT r;
 
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-}
+				r.corner.x = 0;
+				r.corner.y = 0;
+				r.extent.width = SCREEN_WIDTH;
+				r.extent.height = SCREEN_HEIGHT;
+				ScreenTransition (3, &r);
+			}
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			
@@ -693,78 +751,10 @@ ExitOutfit:
 	}
 	else
 	{
-		BYTE NewState;
-		RECT r;
-
-		r.extent.height = 1;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			if (NewState == OUTFIT_DOFUEL)
-			{
-				SetSemaphore (GraphicsSem);
-				SetContext (SpaceContext);
-				if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
-						&& GLOBAL_SIS (ResUnits) >=
-						(DWORD)GLOBAL (FuelCost))
-				{
-					if (GLOBAL_SIS (FuelOnBoard) >=
-							FUEL_RESERVE - FUEL_TANK_SCALE)
-					{
-						r.extent.width = 3;
-						DrawPoint (&r.corner);
-						r.corner.x += r.extent.width + 1;
-						DrawPoint (&r.corner);
-						r.corner.x -= r.extent.width;
-						SetContextForeGroundColor (SetContextBackGroundColor (BLACK_COLOR));
-						DrawFilledRectangle (&r);
-					}
-					DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
-					SetContext (StatusContext);
-					GetGaugeRect (&r, FALSE);
-					SetFlashRect (&r, (FRAME)0);
-				}
-				ClearSemaphore (GraphicsSem);
-			}
-			else if (NewState-- == OUTFIT_FUEL)
-				NewState = OUTFIT_EXIT;
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			if (NewState == OUTFIT_DOFUEL)
-			{
-				SetSemaphore (GraphicsSem);
-				SetContext (SpaceContext);
-				if (GLOBAL_SIS (FuelOnBoard))
-				{
-					DeltaSISGauges (0, -FUEL_TANK_SCALE,
-							GLOBAL (FuelCost));
-					if (GLOBAL_SIS (FuelOnBoard)
-							% FUEL_VOLUME_PER_ROW == 0)
-					{
-						GetFTankCapacity (&r.corner);
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
-						r.extent.width = 5;
-						DrawFilledRectangle (&r);
-					}
-				}
-				SetContext (StatusContext);
-				GetGaugeRect (&r, FALSE);
-				SetFlashRect (&r, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
-			}
-			else if (NewState++ == OUTFIT_EXIT)
-				NewState = OUTFIT_FUEL;
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_FUEL, NewState);
-			pMS->CurState = NewState;
-		}
+		if (pMS->CurState == OUTFIT_DOFUEL)
+			ChangeFuelQuantity(InputState);
+		else
+			DoMenuChooser (InputState, pMS, PM_FUEL);
 	}
 
 	return (TRUE);

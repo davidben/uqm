@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -1166,189 +1167,167 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		if (pMS->CurState)
 		{
+			BOOLEAN DoMenu;
 			BYTE NewState;
+			// For some reason, DoFlagshipCommands uses CurState a bit differently
+			pMS->CurState --;
+			DoMenu = DoMenuChooser (InputState, pMS, 
+				(BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN));
+			pMS->CurState ++;
 
-			NewState = pMS->CurState;
-			if ((InputState & DEVICE_BUTTON1) || LastActivity == CHECK_LOAD)
-			{
-				CONTEXT OldContext;
-				if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
+			if (!DoMenu) {
+
+				NewState = pMS->CurState;
+				if ((InputState & DEVICE_BUTTON1) || LastActivity == CHECK_LOAD)
 				{
-					SetSemaphore (GraphicsSem);
-					SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (GraphicsSem);
-				}
-
-				switch (NewState - 1)
-				{
-					case SCAN:
-						ScanSystem ();
-						break;
-					case EQUIP_DEVICE:
+					CONTEXT OldContext;
+					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
-						extern BOOLEAN Devices (PMENU_STATE pMS);
-
-						pMenuState = pMS;
-						if (!Devices (pMS))
-							InputState &= ~DEVICE_BUTTON1;
-						pMenuState = 0;
-						if (GET_GAME_STATE (PORTAL_COUNTER))
-							return (FALSE);
-						break;
-					}
-					case CARGO:
-					{
-						extern void Cargo
-								(PMENU_STATE
-								pMS);
-
-						Cargo (pMS);
-						break;
-					}
-					case ROSTER:
-					{
-						
-								extern
-								BOOLEAN
-								Roster
-								(void);
-
-						if (!Roster ())
-							InputState &= ~DEVICE_BUTTON1;
-						break;
-					}
-					case GAME_MENU:
-						if (GameOptions () == 0)
-							return (FALSE);
-						
-						if (LOBYTE (GLOBAL(CurrentActivity)) == IN_INTERPLANETARY)
-						{
-							SetSemaphore(GraphicsSem);
-							ClearSISRect(DRAW_SIS_DISPLAY);
-							ClearSemaphore(GraphicsSem);
-							DrawSISFrame();
-							SetSemaphore(GraphicsSem);
-							RepairSISBorder();
-							DrawSISMessage(NULL_PTR);
-							DrawSISTitle(GLOBAL_SIS(PlanetName));
-							DrawStarBackGround(TRUE);
-							OldContext = SetContext(SpaceContext);
-							SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
-							BatchGraphics();
-							DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
-							UnbatchGraphics();
-							SetContext(OldContext);
-							ClearSemaphore(GraphicsSem);
-						}
-// else
-// DrawMenuStateStrings (PM_SCAN, ROSTER + 1);
-						break;
-					case STARMAP:
-					{
-						BOOLEAN AutoPilotSet;
-
 						SetSemaphore (GraphicsSem);
-						if (++pMS->Initialized > 3) {
-							pSolarSysState->PauseRotate = 1;
-							RepairSISBorder ();
-						}
-
-						AutoPilotSet = DoStarMap ();
-
-						if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
-								|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
-						{
-							ClearSemaphore (GraphicsSem);
-							return (FALSE);
-						}
-						else if (pMS->Initialized <= 3)
-						{
-							ZoomSystem ();
-							--pMS->Initialized;
-						}
+						SetFlashRect (NULL_PTR, (FRAME)0);
 						ClearSemaphore (GraphicsSem);
+					}
 
-						if (!AutoPilotSet && pMS->Initialized >= 3)
+					switch (NewState - 1)
+					{
+						case SCAN:
+							ScanSystem ();
+							break;
+						case EQUIP_DEVICE:
 						{
-							LoadPlanet (FALSE);
-							--pMS->Initialized;
-							pSolarSysState->PauseRotate = 0;
-							SetSemaphore (GraphicsSem);
-							SetFlashRect ((PRECT)~0L, (FRAME)0);
-							ClearSemaphore (GraphicsSem);
+							extern BOOLEAN Devices (PMENU_STATE pMS);
+
+							pMenuState = pMS;
+							if (!Devices (pMS))
+								InputState &= ~DEVICE_BUTTON1;
+							pMenuState = 0;
+							if (GET_GAME_STATE (PORTAL_COUNTER))
+								return (FALSE);
 							break;
 						}
-					}
-					case NAVIGATION:
-						if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-							return (FALSE);
+						case CARGO:
+						{
+							extern void Cargo (PMENU_STATE pMS);
 
-						if (pMS->Initialized <= 1)
-						{
-							pMS->Initialized = 1;
-							ResumeGameClock ();
+							Cargo (pMS);
+							break;
 						}
-						else if (pMS->flash_task)
+						case ROSTER:
 						{
-							FreePlanet ();
+							extern BOOLEAN Roster (void);
+
+							if (!Roster ())
+								InputState &= ~DEVICE_BUTTON1;
+							break;
+						}
+						case GAME_MENU:
+							if (GameOptions () == 0)
+								return (FALSE);
+						
+							if (LOBYTE (GLOBAL(CurrentActivity)) == IN_INTERPLANETARY)
+							{
+								SetSemaphore(GraphicsSem);
+								ClearSISRect(DRAW_SIS_DISPLAY);
+								ClearSemaphore(GraphicsSem);
+								DrawSISFrame();
+								SetSemaphore(GraphicsSem);
+								RepairSISBorder();
+								DrawSISMessage(NULL_PTR);
+								DrawSISTitle(GLOBAL_SIS(PlanetName));
+								DrawStarBackGround(TRUE);
+								OldContext = SetContext(SpaceContext);
+								SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
+								BatchGraphics();
+								DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+								UnbatchGraphics();
+								SetContext(OldContext);
+								ClearSemaphore(GraphicsSem);
+							}
+// else
+// DrawMenuStateStrings (PM_SCAN, ROSTER + 1);
+							break;
+						case STARMAP:
+						{
+							BOOLEAN AutoPilotSet;
+
 							SetSemaphore (GraphicsSem);
-							LoadSolarSys ();
-							ZoomSystem ();
+							if (++pMS->Initialized > 3) {
+								pSolarSysState->PauseRotate = 1;
+								RepairSISBorder ();
+							}
+
+							AutoPilotSet = DoStarMap ();
+
+							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
+									|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
+							{
+								ClearSemaphore (GraphicsSem);
+								return (FALSE);
+							}
+							else if (pMS->Initialized <= 3)
+							{
+								ZoomSystem ();
+								--pMS->Initialized;
+							}
 							ClearSemaphore (GraphicsSem);
+
+							if (!AutoPilotSet && pMS->Initialized >= 3)
+							{
+								LoadPlanet (FALSE);
+								--pMS->Initialized;
+								pSolarSysState->PauseRotate = 0;
+								SetSemaphore (GraphicsSem);
+								SetFlashRect ((PRECT)~0L, (FRAME)0);
+								ClearSemaphore (GraphicsSem);
+								break;
+							}
 						}
+						case NAVIGATION:
+							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+								return (FALSE);
 
-						SetSemaphore (GraphicsSem);
-						pMS->CurState = 0;
-						ClearSemaphore (GraphicsSem);
-						break;
-				}
-				
-				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-					;
-				else if (pMS->CurState)
-				{
-					SetSemaphore (GraphicsSem);
-					SetFlashRect ((PRECT)~0L, (FRAME)0);
-					ClearSemaphore (GraphicsSem);
-					if (InputState & DEVICE_BUTTON1)
-					{
-						pMS->CurState = (NAVIGATION) + 1;
-						DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
-								NAVIGATION);
+							if (pMS->Initialized <= 1)
+							{
+								pMS->Initialized = 1;
+								ResumeGameClock ();
+							}
+							else if (pMS->flash_task)
+							{
+								FreePlanet ();
+								SetSemaphore (GraphicsSem);
+								LoadSolarSys ();
+								ZoomSystem ();
+								ClearSemaphore (GraphicsSem);
+							}
+
+							SetSemaphore (GraphicsSem);
+							pMS->CurState = 0;
+							ClearSemaphore (GraphicsSem);
+							break;
 					}
-				}
-				else
-				{
-					SetSemaphore (GraphicsSem);
-					SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (GraphicsSem);
-					DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
-				}
-			}
-			else
-			{
-				BYTE FirstState;
-
-				FirstState = (BYTE)(pMS->Initialized <= 1 ? STARMAP : SCAN);
-				if (GetInputXComponent (InputState) < 0
-						|| GetInputYComponent (InputState) < 0)
-				{
-					if (NewState-- == (BYTE)(FirstState + 1))
-						NewState = (NAVIGATION) + 1;
-				}
-				else if (GetInputXComponent (InputState) > 0
-						|| GetInputYComponent (InputState) > 0)
-				{
-					if (NewState++ == (NAVIGATION) + 1)
-						NewState = (BYTE)(FirstState + 1);
-				}
-
-				if (NewState != pMS->CurState)
-				{
-					DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
-							(BYTE)(NewState - 1));
-
-					pMS->CurState = NewState;
+				
+					if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+						;
+					else if (pMS->CurState)
+					{
+						SetSemaphore (GraphicsSem);
+						SetFlashRect ((PRECT)~0L, (FRAME)0);
+						ClearSemaphore (GraphicsSem);
+						if (InputState & DEVICE_BUTTON1)
+						{
+							if (optWhichMenu != OPT_PC)
+								pMS->CurState = (NAVIGATION) + 1;
+							DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
+									pMS->CurState - 1);
+						}
+					}
+					else
+					{
+						SetSemaphore (GraphicsSem);
+						SetFlashRect (NULL_PTR, (FRAME)0);
+						ClearSemaphore (GraphicsSem);
+						DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
+					}
 				}
 			}
 		}

@@ -26,7 +26,6 @@ DoSelectAction (INPUT_STATE InputState, PMENU_STATE pMS)
 		pMS->CurState = ATTACK + 1;
 		return (FALSE);
 	}
-
 	if (!pMS->Initialized)
 	{
 		pMS->Initialized = TRUE;
@@ -51,33 +50,11 @@ DoSelectAction (INPUT_STATE InputState, PMENU_STATE pMS)
 					ClearSemaphore (GraphicsSem);
 				}
 				return ((BOOLEAN)pMS->Initialized);
+			default:
+				printf ("Unknown option: %d\n", pMS->CurState);
 		}
 	}
-	else
-	{
-		BYTE NewState;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			if (NewState-- == HAIL)
-				NewState = ATTACK + 1;
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			if (NewState++ == ATTACK + 1)
-				NewState = HAIL;
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_CONVERSE, NewState);
-			pMS->CurState = NewState;
-		}
-	}
-
+    DoMenuChooser (InputState, pMS, PM_CONVERSE);
 	return (TRUE);
 }
 

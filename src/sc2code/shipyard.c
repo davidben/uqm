@@ -1139,30 +1139,7 @@ ExitShipyard:
 		}
 	}
 	else
-	{
-		BYTE NewState;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			if (NewState-- == SHIPYARD_CREW)
-				NewState = SHIPYARD_EXIT;
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			if (NewState++ == SHIPYARD_EXIT)
-				NewState = SHIPYARD_CREW;
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_CREW, NewState);
-
-			pMS->CurState = NewState;
-		}
-	}
+		DoMenuChooser (InputState, pMS, PM_CREW);
 
 	return (TRUE);
 }

@@ -511,60 +511,8 @@ DoSettings (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		FeedbackSetting (pMS->CurState);
 	}
-	else
-	{
-		BYTE NewState;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			do
-			{
-				if (NewState-- == SOUND_ON_SETTING)
-					NewState = EXIT_MENU_SETTING;
-			} while ((NewState == SOUND_ON_SETTING
-					&& (GLOBAL (glob_flags) & SOUND_DISABLED))
-					|| (NewState == SOUND_OFF_SETTING
-					&& !(GLOBAL (glob_flags) & SOUND_DISABLED))
-					|| (NewState == MUSIC_ON_SETTING
-					&& (GLOBAL (glob_flags) & MUSIC_DISABLED))
-					|| (NewState == MUSIC_OFF_SETTING
-					&& !(GLOBAL (glob_flags) & MUSIC_DISABLED))
-					|| (NewState >= CYBORG_OFF_SETTING
-					&& NewState <= CYBORG_SUPER_SETTING
-					&& NewState != cur_speed + CYBORG_OFF_SETTING)
-					);
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			do
-			{
-				if (NewState++ == EXIT_MENU_SETTING)
-					NewState = SOUND_ON_SETTING;
-			} while ((NewState == SOUND_ON_SETTING
-					&& (GLOBAL (glob_flags) & SOUND_DISABLED))
-					|| (NewState == SOUND_OFF_SETTING
-					&& !(GLOBAL (glob_flags) & SOUND_DISABLED))
-					|| (NewState == MUSIC_ON_SETTING
-					&& (GLOBAL (glob_flags) & MUSIC_DISABLED))
-					|| (NewState == MUSIC_OFF_SETTING
-					&& !(GLOBAL (glob_flags) & MUSIC_DISABLED))
-					|| (NewState >= CYBORG_OFF_SETTING
-					&& NewState <= CYBORG_SUPER_SETTING
-					&& NewState != cur_speed + CYBORG_OFF_SETTING)
-					);
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_SOUND_ON, NewState);
-			pMS->CurState = NewState;
-
+	else if (DoMenuChooser (InputState, pMS, PM_SOUND_ON))
 			FeedbackSetting (pMS->CurState);
-		}
-	}
 
 	return (TRUE);
 }
@@ -1293,29 +1241,7 @@ DoGameOptions
 		}
 	}
 	else
-	{
-		BYTE NewState;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			if (NewState-- == SAVE_GAME)
-				NewState = SETTINGS + 1;
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			if (NewState++ == SETTINGS + 1)
-				NewState = SAVE_GAME;
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_SAVE_GAME, NewState);
-			pMS->CurState = NewState;
-		}
-	}
+		DoMenuChooser (InputState, pMS, PM_SAVE_GAME);
 
 	return (TRUE);
 }

@@ -3075,6 +3075,10 @@ SOURCE=..\sc2code\melee.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\menu.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\misc.c
 # End Source File
 # Begin Source File

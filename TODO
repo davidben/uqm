@@ -89,7 +89,8 @@ Implementation bugs (low priority):
   to disappear sometimes. The scaling should be made trilinear instead of
   nearest neighbor.
 - PC Menu still has some issues
-  - Still using 3DO menu hierarchy, so menu text isn't identical to PC
+  - Support for PC hierarchies is now availiable, but only the main 'navigate'
+    and 'scan' menus have been converted.  Lots more to do
 -PC Font issues:
   - Lander font isn't correct (for PC or 3DO)
   - The PC version has text about the ship in the Outfit screen (Velocity etc)

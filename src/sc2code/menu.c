@@ -1,0 +1,617 @@
+//Copyright Paul Reiche, Fred Ford. 1992-2002
+
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "starcon.h"
+#include "commglue.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/tasklib.h"
+#include "options.h"
+
+extern Task flash_task;
+extern RECT flash_rect;
+
+/* Draw the blue background for PC Menu Text */
+static void
+DrawPCMenuFrame (RECT *r)
+{
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x08));
+	DrawRectangle (r);
+	r->corner.x++;
+	r->corner.y++;
+	r->extent.height--;
+	r->extent.width--;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x08));
+	DrawRectangle (r);
+	r->extent.height--;
+	r->extent.width--;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x08));
+	DrawFilledRectangle (r);
+}
+
+#define ALT_MANIFEST 0x80
+#define ALT_EXIT_MENU0 0x81
+
+/* Define all menu text.  There is 1 item for each PM_* enum*/
+static char menu_string[][11]  = {
+		"scan",
+		"starmap",
+		"devices",
+		"cargo",
+		"roster",
+		"game",
+		"navigate",
+
+		"mineral",
+		"energy",
+		"biological",
+		"exit menu",
+		"autoscan",
+		"dispatch",
+
+		"save game",
+		"load game",
+		"settings",
+		"exit menu",
+
+		"converse",
+		"attack!",
+		"game",
+
+		"fuel",
+		"module",
+		"game",
+		"exit menu",
+
+		"crew",
+		"game",
+		"exit menu",
+
+		"sound",
+		"music",
+		"cyborg",
+		"captain",
+		"flagship",
+		"exit menu",
+		"",
+		"",
+		"",
+		"",
+		"",
+//PM_ALTSCAN
+		"scan",
+		"starmap",
+		"manifest",
+		"game",
+		"navigate",
+//PM_ALTERNATE_2
+		"cargo",
+		"devices",
+		"roster",
+		"exit menu",
+//PM_ALTERNATE3 replaces PM_MIN_SCAN
+		"mineral",
+		"energy",
+		"biological",
+		"autoscan",
+		"dispatch",
+		"exit menu"
+
+	};
+
+/* Actually display the menu text */
+static void
+DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
+{
+#define PC_MENU_HEIGHT 8
+	BYTE pos;
+	COUNT i;
+	int num_items;
+	FONT OldFont;
+	TEXT t;
+	UNICODE buf[40];
+	pos = beg_index + NewState;
+	num_items = 1 + end_index - beg_index;
+	r->corner.x -= 1;
+	r->extent.width += 1;
+	DrawFilledRectangle (r);
+	if (num_items * PC_MENU_HEIGHT > r->extent.height)
+		fprintf (stderr, "Warning, no room for all menu items!\n");
+	else
+		r->corner.y += (r->extent.height - num_items * PC_MENU_HEIGHT) / 2;
+	r->extent.height = num_items * PC_MENU_HEIGHT + 4;
+	DrawPCMenuFrame (r);
+	OldFont = SetContextFont (StarConFont);
+	t.align = ALIGN_LEFT;
+	t.baseline.x = r->corner.x + 2;
+	t.baseline.y = r->corner.y + PC_MENU_HEIGHT -1;
+	t.pStr = buf;
+	t.CharCount = (COUNT)~0;
+	r->corner.x++;
+	r->extent.width -= 2;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+	for (i = beg_index; i <= end_index; i++)
+	{
+		wsprintf (buf, menu_string[i]);
+		if (hilite && pos == i)
+		{
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
+			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 2;
+			r->extent.height = PC_MENU_HEIGHT - 1;
+			DrawFilledRectangle (r);
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x08));
+			font_DrawText (&t);
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+		}
+		else
+			font_DrawText (&t);
+		t.baseline.y += PC_MENU_HEIGHT;
+	}
+}
+
+/* Determine the last text item to display */
+BYTE
+GetEndMenuState (BYTE BaseState)
+{
+	switch (BaseState)
+	{
+		case PM_SCAN:
+		case PM_STARMAP:
+			return PM_NAVIGATE;
+			break;
+		case PM_MIN_SCAN:
+			return PM_LAUNCH_LANDER;
+			break;
+		case PM_SAVE_GAME:
+			return PM_EXIT_MENU1;
+			break;
+		case PM_CONVERSE:
+			return PM_SAVE_LOAD1;
+			break;
+		case PM_FUEL:
+			return PM_EXIT_MENU2;
+			break;
+		case PM_CREW:
+			return PM_EXIT_MENU3;
+			break;
+		case PM_SOUND_ON:
+			return PM_EXIT_MENU4;
+			break;
+		case PM_ALT_SCAN:
+		case PM_ALT_STARMAP:
+			return PM_ALT_NAVIGATE;
+			break;
+		case PM_ALT_CARGO:
+			return PM_ALT_EXITMENU0;
+			break;
+		case PM_ALT_MSCAN:
+			return PM_ALT_EXITMENU1;
+			break;
+	}
+	return BaseState;
+}
+
+BYTE
+GetBeginMenuState (BYTE BaseState)
+{
+	return BaseState;
+}
+
+/* Correct Menu State for cases where the Menu shouldn't move */
+BYTE
+FixMenuState (BYTE BadState)
+{
+	switch (BadState)
+	{
+		case PM_SOUND_ON:
+			if (GLOBAL (glob_flags) & SOUND_DISABLED)
+				return (PM_SOUND_OFF);
+			else
+				return (PM_SOUND_ON);
+		case PM_MUSIC_ON:
+			if (GLOBAL (glob_flags) & MUSIC_DISABLED)
+				return (PM_MUSIC_OFF);
+			else
+				return (PM_MUSIC_ON);
+		case PM_CYBORG_OFF:
+			return (PM_CYBORG_OFF + 
+				((BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >> COMBAT_SPEED_SHIFT));
+	}
+	return (BadState);
+}
+
+/* Choose the next menu to hilight in the 'forward' direction */ 
+BYTE
+NextMenuState (BYTE BaseState, BYTE CurState)
+{
+	BYTE NextState;
+	BYTE AdjBase = BaseState;
+
+	if (BaseState == PM_STARMAP)
+		AdjBase--;
+
+	switch (AdjBase + CurState)
+	{
+		case PM_SOUND_ON:
+		case PM_SOUND_OFF:
+			NextState = PM_MUSIC_ON;
+			break;
+		case PM_MUSIC_ON:
+		case PM_MUSIC_OFF:
+			NextState = PM_CYBORG_OFF;
+			break;
+		case PM_CYBORG_OFF:
+		case PM_CYBORG_NORMAL:
+		case PM_CYBORG_DOUBLE:
+		case PM_CYBORG_SUPER:
+			NextState = PM_CHANGE_CAPTAIN;
+			break;
+		default:
+			NextState = AdjBase + CurState + 1;
+	}	
+	if (NextState > GetEndMenuState (BaseState))
+		NextState = GetBeginMenuState (BaseState);
+	return (FixMenuState (NextState) - AdjBase);
+}
+
+/* Choose the next menu to hilight in the 'back' direction */ 
+BYTE
+PreviousMenuState (BYTE BaseState, BYTE CurState)
+{
+	SWORD NextState;
+	BYTE AdjBase = BaseState;
+
+	if (BaseState == PM_STARMAP)
+		AdjBase--;
+
+	switch (AdjBase + CurState)
+	{
+		case PM_SOUND_OFF:
+			NextState = PM_EXIT_MENU4;
+			break;
+		case PM_MUSIC_ON:
+		case PM_MUSIC_OFF:
+			NextState = PM_SOUND_ON;
+			break;
+		case PM_CYBORG_OFF:
+		case PM_CYBORG_NORMAL:
+		case PM_CYBORG_DOUBLE:
+		case PM_CYBORG_SUPER:
+			NextState = PM_MUSIC_ON;
+			break;
+		case PM_CHANGE_CAPTAIN:
+			NextState = PM_CYBORG_OFF;
+			break;
+		default:
+			NextState = AdjBase + CurState - 1;
+	}	
+	if (NextState < GetBeginMenuState (BaseState))
+		NextState = GetEndMenuState (BaseState);
+	return (FixMenuState ((BYTE)NextState) - AdjBase);
+}
+
+
+/* When using PC hierarchy, convert 3do->PC */
+BOOLEAN
+GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
+{
+	BYTE AdjBase = *BaseState;
+	BYTE adj = 0;
+	if (*BaseState == PM_STARMAP)
+	{
+		AdjBase--;
+		adj = 1;
+	}
+	if (*CurState & 0x80)
+	{
+		switch (*CurState)
+		{
+			case ALT_MANIFEST:
+				*BaseState = PM_ALT_SCAN + adj;
+				*CurState = PM_ALT_MANIFEST - PM_ALT_SCAN - adj;
+				return (TRUE);
+			case ALT_EXIT_MENU0:
+				*BaseState = PM_ALT_CARGO;
+				*CurState = PM_ALT_EXITMENU0 - PM_ALT_CARGO;
+				return (TRUE);
+		}
+		fprintf (stderr, "Unknown state combination: %d, %d\n",*BaseState, *CurState);
+		return (FALSE);
+	}
+	else
+	{
+		switch (AdjBase + *CurState)
+		{
+			case PM_SCAN:
+				*BaseState = PM_ALT_SCAN;
+				*CurState = PM_ALT_SCAN - PM_ALT_SCAN;
+				return (TRUE);
+			case PM_STARMAP:
+				*BaseState = PM_ALT_SCAN + adj;
+				*CurState = PM_ALT_STARMAP - PM_ALT_SCAN - adj;
+				return (TRUE);
+			case PM_DEVICES:
+				*BaseState = PM_ALT_CARGO;
+				*CurState = PM_ALT_DEVICES - PM_ALT_CARGO;
+				return (TRUE);
+			case PM_CARGO:
+				*BaseState = PM_ALT_CARGO;
+				*CurState = PM_ALT_CARGO - PM_ALT_CARGO;
+				return (TRUE);
+			case PM_ROSTER:
+				*BaseState = PM_ALT_CARGO;
+				*CurState = PM_ALT_ROSTER - PM_ALT_CARGO;
+				return (TRUE);
+			case PM_SAVE_LOAD0:
+				*BaseState = PM_ALT_SCAN + adj;
+				*CurState = PM_ALT_SAVE0 - PM_ALT_SCAN - adj;
+				return (TRUE);
+			case PM_NAVIGATE:
+				*BaseState = PM_ALT_SCAN + adj;
+				*CurState = PM_ALT_NAVIGATE - PM_ALT_SCAN - adj;
+				return (TRUE);
+			case PM_MIN_SCAN:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_MSCAN - PM_ALT_MSCAN;
+				return (TRUE);
+			case PM_ENE_SCAN:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_ESCAN - PM_ALT_MSCAN;
+				return (TRUE);
+			case PM_BIO_SCAN:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_BSCAN - PM_ALT_MSCAN;
+				return (TRUE);
+			case PM_EXIT_MENU0:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_EXITMENU1 - PM_ALT_MSCAN;
+				return (TRUE);
+			case PM_AUTO_SCAN:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_ASCAN - PM_ALT_MSCAN;
+				return (TRUE);
+			case PM_LAUNCH_LANDER:
+				*BaseState = PM_ALT_MSCAN;
+				*CurState = PM_ALT_DISPATCH - PM_ALT_MSCAN;
+				return (TRUE);
+		}
+		return (FALSE);
+	}
+}
+
+/* When using PC hierarchy, convert PC->3DO */
+BYTE
+ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
+{
+	switch (BaseState + NewState)
+	{
+		case PM_ALT_SCAN:
+			return (PM_SCAN - PM_SCAN);
+		case PM_ALT_STARMAP:
+			return (PM_STARMAP - PM_SCAN);
+		case PM_ALT_MANIFEST:
+			return (ALT_MANIFEST);
+		case PM_ALT_SAVE0:
+			return (PM_SAVE_LOAD0 - PM_SCAN);
+		case PM_ALT_NAVIGATE:
+			return (PM_NAVIGATE - PM_SCAN);
+		case PM_ALT_CARGO:
+			return (PM_CARGO - PM_SCAN);
+		case PM_ALT_DEVICES:
+			return (PM_DEVICES - PM_SCAN);
+		case PM_ALT_ROSTER:
+			return (PM_ROSTER - PM_SCAN);
+		case PM_ALT_EXITMENU0:
+			return (ALT_EXIT_MENU0);
+		case PM_ALT_MSCAN:
+			return (PM_MIN_SCAN - PM_MIN_SCAN);
+		case PM_ALT_ESCAN:
+			return (PM_ENE_SCAN - PM_MIN_SCAN);
+		case PM_ALT_BSCAN:
+			return (PM_BIO_SCAN - PM_MIN_SCAN);
+		case PM_ALT_ASCAN:
+			return (PM_AUTO_SCAN - PM_MIN_SCAN);
+		case PM_ALT_DISPATCH:
+			return (PM_LAUNCH_LANDER - PM_MIN_SCAN);
+		case PM_ALT_EXITMENU1:
+			return (PM_EXIT_MENU0 - PM_MIN_SCAN);
+	}
+	return (NewState);
+}
+
+BOOLEAN
+DoMenuChooser (INPUT_STATE InputState, PMENU_STATE pMS, BYTE BaseState)
+{
+	{
+
+		BYTE NewState = pMS->CurState;
+		BYTE OrigBase = BaseState;
+		BOOLEAN useAltMenu = FALSE;
+		if (optWhichMenu == OPT_PC)
+			useAltMenu = GetAlternateMenu (&BaseState, &NewState);
+		if (GetInputXComponent (InputState) < 0
+				|| GetInputYComponent (InputState) < 0)
+			NewState = PreviousMenuState (BaseState, NewState);
+		else if (GetInputXComponent (InputState) > 0
+				|| GetInputYComponent (InputState) > 0)
+			NewState = NextMenuState (BaseState, NewState);
+		else if (useAltMenu && InputState & DEVICE_BUTTON1)
+		{
+			NewState = ConvertAlternateMenu (BaseState, NewState);
+			if (NewState == ALT_MANIFEST)
+			{
+				DrawMenuStateStrings (PM_ALT_CARGO, 0);
+				pMS->CurState = PM_CARGO - PM_SCAN;
+				return (TRUE);
+			}
+			if (NewState == ALT_EXIT_MENU0)
+			{
+				if (OrigBase == PM_SCAN)
+					DrawMenuStateStrings (PM_ALT_SCAN, PM_ALT_MANIFEST - PM_ALT_SCAN);
+				else
+					DrawMenuStateStrings (PM_ALT_STARMAP, PM_ALT_MANIFEST - PM_ALT_STARMAP);
+				pMS->CurState = ALT_MANIFEST;
+				return (TRUE);
+			}
+			return (FALSE);
+		}
+		else
+			return (FALSE);
+		DrawMenuStateStrings (BaseState, NewState);
+		if (useAltMenu)
+			NewState = ConvertAlternateMenu (BaseState, NewState);
+		pMS->CurState = NewState;
+		return (TRUE);
+	}
+}
+
+void
+DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
+{
+	BYTE end_index;
+	RECT r;
+	STAMP s;
+	CONTEXT OldContext;
+	BYTE hilite = 1;
+	extern FRAME PlayFrame;
+
+	if (NewState < 0)
+	{
+		NewState = - NewState;
+		hilite = 0;
+	}
+
+	if (optWhichMenu == OPT_PC)
+	{
+		BYTE tmpState = (BYTE)NewState;
+		GetAlternateMenu (&beg_index, &tmpState);
+		NewState = tmpState;
+	}
+
+	if (beg_index == PM_STARMAP)
+		NewState--;
+	end_index = GetEndMenuState (beg_index);
+
+	s.frame = 0;
+	if (NewState <= end_index - beg_index)
+		s.frame = SetAbsFrameIndex (PlayFrame, beg_index + NewState);
+
+	SetSemaphore (GraphicsSem);
+	OldContext = SetContext (StatusContext);
+	GetContextClipRect (&r);
+	s.origin.x = RADAR_X - r.corner.x;
+	s.origin.y = RADAR_Y - r.corner.y;
+	r.corner.x = s.origin.x - 1;
+	r.corner.y = s.origin.y - 11;
+	r.extent.width = RADAR_WIDTH + 2;
+	BatchGraphics ();
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	if (s.frame && optWhichMenu == OPT_PC)
+	{
+		if (beg_index == PM_CREW)
+			sprintf (menu_string[PM_CREW], "crew(%d)", GLOBAL (CrewCost));
+		if (beg_index == PM_FUEL)
+			sprintf (menu_string[PM_FUEL], "fuel(%d)", GLOBAL (FuelCost));
+		if (beg_index == PM_SOUND_ON)
+		{
+			end_index = beg_index + 5;
+			switch (beg_index + NewState)
+			{
+				case PM_SOUND_ON:
+				case PM_SOUND_OFF:
+					NewState = 0;
+					break;
+				case PM_MUSIC_ON:
+				case PM_MUSIC_OFF:
+					NewState = 1;
+					break;
+				case PM_CYBORG_OFF:
+				case PM_CYBORG_NORMAL:
+				case PM_CYBORG_DOUBLE:
+				case PM_CYBORG_SUPER:
+					NewState = 2;
+					break;
+				case PM_CHANGE_CAPTAIN:
+					NewState = 3;
+					break;
+				case PM_CHANGE_SHIP:
+					NewState = 4;
+					break;
+				case PM_EXIT_MENU4:
+					NewState = 5;
+					break;
+			}
+		}
+		r.extent.height = RADAR_HEIGHT + 11;
+		DrawPCMenu (beg_index, end_index, (BYTE)NewState, hilite, &r);
+		s.frame = 0;
+	}
+	else
+	{
+		if(optWhichMenu == OPT_PC)
+		{
+			r.corner.x -= 1;
+			r.extent.width += 1;
+			r.extent.height = RADAR_HEIGHT + 11;
+		}
+		else
+			r.extent.height = 11;
+		DrawFilledRectangle (&r);
+	}
+	if (s.frame)
+	{
+		DrawStamp (&s);
+		switch (beg_index + NewState)
+		{
+			TEXT t;
+			UNICODE buf[4];
+
+			case PM_CREW:
+				t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
+				t.baseline.y = s.origin.y + RADAR_HEIGHT - 2;
+				t.align = ALIGN_RIGHT;
+				t.CharCount = (COUNT)~0;
+				t.pStr = buf;
+				wsprintf (buf, "%u", GLOBAL (CrewCost));
+				SetContextFont (TinyFont);
+				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+				font_DrawText (&t);
+				break;
+			case PM_FUEL:
+				t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
+				t.baseline.y = s.origin.y + RADAR_HEIGHT - 2;
+				t.align = ALIGN_RIGHT;
+				t.CharCount = (COUNT)~0;
+				t.pStr = buf;
+				wsprintf (buf, "%u", GLOBAL (FuelCost));
+				SetContextFont (TinyFont);
+				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+				font_DrawText (&t);
+				break;
+		}
+	}
+	UnbatchGraphics ();
+	if (flash_task
+			&& flash_rect.corner.x == RADAR_X
+			&& flash_rect.corner.y == RADAR_Y
+			&& flash_rect.extent.width == RADAR_WIDTH
+			&& flash_rect.extent.height == RADAR_HEIGHT)
+		SetFlashRect ((PRECT)~0L, (FRAME)0);
+	SetContext (OldContext);
+	ClearSemaphore (GraphicsSem);
+}
+

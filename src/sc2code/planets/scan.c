@@ -1154,29 +1154,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 	else if (!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity !=
 			GAS_GIANT_ATMOSPHERE)
-	{
-		BYTE NewState;
-
-		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
-		{
-			if (NewState-- == MINERAL_SCAN)
-				NewState = DISPATCH_SHUTTLE;
-		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
-		{
-			if (NewState++ == DISPATCH_SHUTTLE)
-				NewState = MINERAL_SCAN;
-		}
-
-		if (NewState != pMS->CurState)
-		{
-			DrawMenuStateStrings (PM_MIN_SCAN, NewState);
-			pMS->CurState = NewState;
-		}
-	}
+		DoMenuChooser (InputState, pMS, PM_MIN_SCAN);
 
 	return (TRUE);
 }
