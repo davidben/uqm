@@ -30,7 +30,7 @@ libsc2_la_LIBADD = \
 		libs/liblibs.la
 
 noinst_HEADERS = \
-	appglue.h build.h clock.h coderes.h collide.h commglue.h demo.h \
+	build.h clock.h coderes.h collide.h commglue.h demo.h \
 	displist.h element.h encount.h globdata.h hyper.h ifontres.h \
 	igfxres.h ikey_con.h imusicre.h intel.h ires_ind.h isndres.h \
 	istrtab.h melee.h nameref.h races.h resinst.h respkg.h \

@@ -22,13 +22,10 @@
 #include "reslib.h"
 #include "vargs.h"
 
-typedef DWORD (*GLUEFUNC) (COUNT selector, vararg_dcl args, ...);
-
 extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
 extern BOOLEAN InstallCodeResType (COUNT code_type);
 extern MEM_HANDLE LoadCodeResInstance (RESOURCE res);
-extern PVOID CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID
-		*ppLocData, GLUEFUNC glue_func);
+extern PVOID CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID *ppLocData);
 extern MEM_HANDLE ReleaseCodeRes (PVOID CodeRef);
 extern BOOLEAN DestroyCodeRes (MEM_HANDLE hCode);
 

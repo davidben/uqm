@@ -2710,10 +2710,6 @@ SOURCE=..\sc2code\ships\zoqfot\zoqfot.c
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\appglue.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\battle.c
 # End Source File
 # Begin Source File

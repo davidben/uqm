@@ -233,7 +233,5 @@ extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
 
 void AlienTalkSegue (COUNT wait_track);
 
-#include "appglue.h"
-
 #endif /* _STARCON_H */
 

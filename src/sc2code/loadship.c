@@ -41,7 +41,7 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 		hOldIndex = SetResourceIndex (h);
 
 		CodeRef = CaptureCodeRes (LoadCodeRes (INITIAL_CODE_RES),
-				(PVOID)&GlobData, (PVOID)&StarShipPtr->RaceDescPtr, race_glue);
+				(PVOID)&GlobData, (PVOID)&StarShipPtr->RaceDescPtr);
 
 		if (CodeRef == 0)
 			goto BadLoad;

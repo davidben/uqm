@@ -19,6 +19,8 @@
 #ifndef _COMMGLUE_H
 #define _COMMGLUE_H
 
+#include "libs/vargs.h"
+
 extern LOCDATA CommData;
 extern int cur_comm;
 extern UNICODE shared_phrase_buf[256];

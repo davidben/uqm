@@ -27,17 +27,10 @@ LoadVidInstance (DWORD res)
 	return (0);
 }
 
-/*
-void
-unlink (PVOID filename)
-{
-}
-*/
-
 MEM_HANDLE
 LoadCodeResFile (PSTR pStr)
 {
-		(void) pStr;  /* Satisfying compiler (unused parameter) */
+	(void) pStr;  /* Satisfying compiler (unused parameter) */
 	return (0);
 }
 
@@ -407,22 +400,16 @@ enum
 }
 
 
-		BOOLEAN
-
-		InstallCodeResType
-		(COUNT
-		code_type)
+BOOLEAN
+InstallCodeResType (COUNT code_type)
 {
 	return (InstallResTypeVectors (code_type,
 			GetCodeResData, mem_release));
 }
 
 
-		MEM_HANDLE
-
-		LoadCodeResInstance
-		(DWORD
-		res)
+MEM_HANDLE
+LoadCodeResInstance (DWORD res)
 {
 	MEM_HANDLE hData;
 
@@ -434,51 +421,35 @@ enum
 }
 
 
-		BOOLEAN
-
-		DestroyCodeRes
-		(MEM_HANDLE
-		hCode)
+BOOLEAN
+DestroyCodeRes (MEM_HANDLE hCode)
 {
 	return (mem_release (hCode));
 }
 
 
-		PVOID
-
-		CaptureCodeRes
-		(MEM_HANDLE
-		hCode,
-		PVOID
-		pData,
-		PVOID
-		*ppLocData,
-		GLUEFUNC
-		glue_func)
+PVOID
+CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID *ppLocData)
 {
 	MEM_HANDLE *p;
 
-		if(hCode==0)
-		{
-				printf("Ack! dummy.c::CaptureCodeRes() hCode==0! FATAL!\n");
-				return(0);
-		}
+	if(hCode==0)
+	{
+		printf("Ack! dummy.c::CaptureCodeRes() hCode==0! FATAL!\n");
+		return(0);
+	}
 
 	p = (MEM_HANDLE *)mem_lock (hCode);
 	*p = hCode;
 	*ppLocData = &p[1];
 
 	(void) pData;  /* Satisfying compiler (unused parameter) */
-	(void) glue_func;  /* Satisfying compiler (unused parameter) */
 	return (p);
 }
 
 
-		MEM_HANDLE
-
-		ReleaseCodeRes
-		(PVOID
-		CodeRef)
+MEM_HANDLE
+ReleaseCodeRes (PVOID CodeRef)
 {
 	if (CodeRef)
 	{
@@ -491,85 +462,33 @@ enum
 	return (0);
 }
 
-
-		DWORD
-
-		race_glue
-		(COUNT
-		selector,
-		vararg_dcl
-		args,
-		...)
+DRAWABLE
+CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width, SIZE height)
 {
-	(void) selector;  /* Satisfying compiler (unused parameter) */
-	(void) args;  /* Satisfying compiler (unused parameter) */
-	return (0);
-}
-
-
-		DRAWABLE
-
-		CreatePixmapRegion
-		(FRAME
-		Frame,
-		PPOINT
-		lpOrg,
-		SIZE
-		width,
-		SIZE
-		height)
-{
-		(void) lpOrg;  /* Satisfying compiler (unused parameter) */
-		(void) width;  /* Satisfying compiler (unused parameter) */
-		(void) height;  /* Satisfying compiler (unused parameter) */
+	(void) lpOrg;  /* Satisfying compiler (unused parameter) */
+	(void) width;  /* Satisfying compiler (unused parameter) */
+	(void) height;  /* Satisfying compiler (unused parameter) */
 	return (GetFrameHandle (Frame));
 }
 
 
-		void
-
-		SetPrimNextLink
-		(PPRIMITIVE
-		pPrim,
-		COUNT
-		Link)
+void
+SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link)
 {
 	SetPrimLinks (pPrim, END_OF_LIST, Link);
 }
 
 
-		COUNT
-
-		GetPrimNextLink
-		(PPRIMITIVE
-		pPrim)
+COUNT
+GetPrimNextLink (PPRIMITIVE pPrim)
 {
 	return (GetSuccLink (GetPrimLinks (pPrim)));
 }
 
-/*
-
-		char
-
-		*fgets
-		(char
-		*s,
-		int
-		n,
-		FILE
-		*fp)
+int
+abs (int n)
 {
-		return (0);
+	if (n < 0) n = -n;
+	return (n);
 }
-*/
 
-
-		int
-
-		abs
-		(int
-		n)
-{
-		if (n < 0) n = -n;
-		return (n);
-}
