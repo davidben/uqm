@@ -91,6 +91,16 @@ Glitches (don't crash the game, medium priority):
   bounded by. (SAFE_X?)
 - keys are always referenced as gamepad buttons ("Press (B) to exit")
 - lander speed varies per computer
+- "device used successfully" and "device usage failed" sounds are identical
+  (the failure one)
+- The fuel range calculator on the starmap does not work correctly.
+  Estimate too small. May be a rounding error.
+- spathi blink and other spathi animation may go out of sync
+- subtitles may go past the bottom boundary
+- If you win a Melee, and then are blown up yourself, the sound loops 
+  until the game is quit. It still functions, it just has the last 3-or-so
+  seconds after the melee ended repeating over and over in the background."
+
 
 Implementation bugs (low priority):
 - Scaling code problems:
