@@ -129,7 +129,7 @@ TFB_mixSDL_InitSound (int driver, int flags)
 		
 		soundSource[i].sample = NULL;
 		soundSource[i].stream_should_be_playing = FALSE;
-		soundSource[i].stream_mutex = CreateMutex ();
+		soundSource[i].stream_mutex = CreateMutex ("MixSDL stream mutex", SYNC_CLASS_AUDIO);
 		soundSource[i].sbuffer = NULL;
 		soundSource[i].sbuf_start = 0;
 		soundSource[i].sbuf_size = 0;
@@ -241,7 +241,7 @@ TFB_NoSound_InitSound (int driver, int flags)
 		
 		soundSource[i].sample = NULL;
 		soundSource[i].stream_should_be_playing = FALSE;
-		soundSource[i].stream_mutex = CreateMutex ();
+		soundSource[i].stream_mutex = CreateMutex ("MixSDL stream mutex", SYNC_CLASS_AUDIO);
 		soundSource[i].sbuffer = NULL;
 		soundSource[i].sbuf_start = 0;
 		soundSource[i].sbuf_size = 0;

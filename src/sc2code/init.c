@@ -272,7 +272,7 @@ InitGlobData (void)
 	// but it is always cleared before set, so it toggled between
 	// 2 and 1, which doesn't actually do anything.  
 
-	GLOBAL (GameClock.clock_sem) = CreateSemaphore(0, "Clock");
+	GLOBAL (GameClock.clock_sem) = CreateSemaphore(0, "Clock", SYNC_CLASS_TOPLEVEL);
 }
 
 int

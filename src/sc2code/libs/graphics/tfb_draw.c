@@ -197,14 +197,15 @@ void
 TFB_DrawScreen_WaitForSignal (void)
 {
 	TFB_DrawCommand DrawCommand;
-	int channel;
+	Semaphore s;
+	s = GetMyThreadLocal ()->flushSem;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_SENDSIGNAL;
+	DrawCommand.data.sendsignal.sem = s;
 	Lock_DCQ (1);
-	channel = FindSignalChannel ();
 	TFB_BatchReset ();
 	TFB_EnqueueDrawCommand(&DrawCommand);
 	Unlock_DCQ();
-	WaitForSignal (channel);
+	SetSemaphore (s);	
 }
 
 void
@@ -247,7 +248,7 @@ TFB_Image *
 TFB_DrawImage_New (TFB_Canvas canvas)
 {
 	TFB_Image *img = HMalloc (sizeof (TFB_Image));
-	img->mutex = CreateMutex ();
+	img->mutex = CreateMutex ("image lock", SYNC_CLASS_VIDEO);
 	img->ScaledImg = NULL;
 	img->MipmapImg = NULL;
 	img->colormap_index = -1;

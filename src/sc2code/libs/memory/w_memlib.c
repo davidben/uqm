@@ -382,7 +382,7 @@ mem_init (void)
 {
 	int i;
 
-	_MemoryLock = CreateMutex ();
+	_MemoryLock = CreateMutex ("memory lock", SYNC_CLASS_RESOURCE);
 	LockMutex (_MemoryLock);
 
 	freeListHead = &extents[0];

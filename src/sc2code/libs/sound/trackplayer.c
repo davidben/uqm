@@ -583,7 +583,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 					TFB_SoundDecoder *decoder;
 					TFB_SoundChainData* scd;
 
-					track_mutex = CreateMutex();
+					track_mutex = CreateMutex("trackplayer mutex", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_AUDIO);
 					sound_sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
 					scd = (TFB_SoundChainData *) HCalloc (sizeof (TFB_SoundChainData));
 					sound_sample->data = scd;

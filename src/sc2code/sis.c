@@ -1354,7 +1354,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 	int create_flash = 0;
 
 	if (! flash_mutex)
-		flash_mutex = CreateMutex ();
+		flash_mutex = CreateMutex ("FlashRect Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	old_r = flash_rect;
 	old_f = flash_frame;

@@ -46,27 +46,27 @@ CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char
 }
 
 Mutex
-CreateMutex_Core (void)
+CreateMutex_Core (const char *name, DWORD syncClass)
 {
-	return (Mutex) NativeCreateMutex ();
+	return NativeCreateMutex (name, syncClass);
 }
 
 Semaphore
-CreateSemaphore_Core (DWORD initial, const char *name)
+CreateSemaphore_Core (DWORD initial, const char *name, DWORD syncClass)
 {
-	return NativeCreateSemaphore (initial, name);
+	return NativeCreateSemaphore (initial, name, syncClass);
 }
 
 RecursiveMutex
-CreateRecursiveMutex_Core (const char *name)
+CreateRecursiveMutex_Core (const char *name, DWORD syncClass)
 {
-	return NativeCreateRecursiveMutex (name);
+	return NativeCreateRecursiveMutex (name, syncClass);
 }
 
 CondVar
-CreateCondVar_Core (const char *name)
+CreateCondVar_Core (const char *name, DWORD syncClass)
 {
-	return NativeCreateCondVar (name);
+	return NativeCreateCondVar (name, syncClass);
 }
 
 #else
@@ -80,7 +80,7 @@ CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize)
 Mutex
 CreateMutex_Core (void)
 {
-	return (Mutex) NativeCreateMutex ();
+	return NativeCreateMutex ();
 }
 
 Semaphore
@@ -101,6 +101,27 @@ CreateCondVar_Core (void)
 	return NativeCreateCondVar ();
 }
 #endif
+
+ThreadLocal *
+CreateThreadLocal (void)
+{
+	ThreadLocal *tl = HMalloc (sizeof (ThreadLocal));
+	tl->flushSem = CreateSemaphore (0, "FlushGraphics", SYNC_CLASS_VIDEO);
+	return tl;
+}
+
+void
+DestroyThreadLocal (ThreadLocal *tl)
+{
+	DestroySemaphore (tl->flushSem);
+	HFree (tl);
+}
+
+ThreadLocal *
+GetMyThreadLocal (void)
+{
+	return NativeGetMyThreadLocal ();
+}
 
 void
 WaitThread (Thread thread, int *status)
@@ -129,22 +150,19 @@ TaskSwitch (void)
 void
 DestroyMutex (Mutex sem)
 {
-	NativeDestroyMutex ((NativeMutex) sem);
+	NativeDestroyMutex (sem);
 }
 
 void
 LockMutex (Mutex sem)
 {
-	while (NativeLockMutex ((NativeMutex) sem) == -1)
-	{
-		TaskSwitch ();
-	}
+	NativeLockMutex (sem);
 }
 
 void
 UnlockMutex (Mutex sem)
 {
-	NativeUnlockMutex ((NativeMutex) sem);
+	NativeUnlockMutex (sem);
 }
 
 void
@@ -178,12 +196,6 @@ WaitCondVar (CondVar cv)
 }
 
 void
-WaitProtectedCondVar (CondVar cv, Mutex m)
-{
-	NativeWaitProtectedCondVar (cv, m);
-}
-
-void
 SignalCondVar (CondVar cv)
 {
 	NativeSignalCondVar (cv);
@@ -193,12 +205,6 @@ void
 BroadcastCondVar (CondVar cv)
 {
 	NativeBroadcastCondVar (cv);
-}
-
-DWORD
-CurrentThreadID ()
-{
-	return (DWORD)NativeThreadID ();
 }
 
 void

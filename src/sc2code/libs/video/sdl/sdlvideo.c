@@ -37,7 +37,7 @@ TFB_CreateVideoImage (int w, int h)
 	SDL_PixelFormat* fmt = SDL_Video->format;
 
 	img = HMalloc (sizeof (TFB_Image));
-	img->mutex = CreateMutex ();
+	img->mutex = CreateMutex ("vid image lock", SYNC_CLASS_VIDEO);
 	img->ScaledImg = NULL;
 	img->MipmapImg = NULL;
 	img->colormap_index = -1;

@@ -25,6 +25,7 @@
 #define NAMED_SYNCHRO           /* Should synchronizable objects have names? */
 // #define TRACK_CONTENTION       /* Should we report when a thread sleeps on synchronize? */
 
+/* TRACK_CONTENTION implies NAMED_SYNCHRO. */
 #ifdef TRACK_CONTENTION
 #	ifndef NAMED_SYNCHRO
 #		define NAMED_SYNCHRO
@@ -38,12 +39,6 @@
 #endif  /* DEBUG */
 
 #ifdef DEBUG_THREADS
-#	ifndef THREAD_QUEUE
-#		define THREAD_QUEUE
-#	endif
-#	ifndef THREAD_NAMES
-#		define THREAD_NAMES
-#	endif
 #	ifndef PROFILE_THREADS
 #		define PROFILE_THREADS
 #	endif
@@ -56,25 +51,8 @@
 #define THREAD_NAMES
 #endif
 
-#if defined (PROFILE_THREADS)
-#	if !defined (THREAD_QUEUE)
-#		define THREAD_QUEUE
-#	endif
-#endif
-
-#if defined (DEBUG_TRACK_SEM)
-#	if !defined (THREAD_QUEUE)
-#		define THREAD_QUEUE
-#	endif
-#	if !defined (THREAD_NAMES)
-#		define THREAD_NAMES
-#	endif
-#endif
-
 void InitThreadSystem (void);
 void UnInitThreadSystem (void);
-void init_cond_bank (void);
-void uninit_cond_bank (void);
 
 typedef int (*ThreadFunction) (void *);
 
@@ -84,27 +62,45 @@ typedef void *Semaphore;
 typedef void *RecursiveMutex;
 typedef void *CondVar;
 
+/* Local data associated with each thread */
+typedef struct _threadLocal {
+	Semaphore flushSem;
+} ThreadLocal;
+
+/* The classes of synchronization objects */
+
+enum 
+{
+	SYNC_CLASS_TOPLEVEL = (1 << 0),    /* Exposed to the game logic */
+	SYNC_CLASS_AUDIO    = (1 << 1),    /* Involves the audio system */
+	SYNC_CLASS_VIDEO    = (1 << 2),    /* Involves the video system.  Very noisy because of FlushGraphics(). */
+	SYNC_CLASS_RESOURCE = (1 << 3)     /* Involves system resources (_MemoryLock) */
+};
+
 #ifdef NAMED_SYNCHRO
+/* Logical OR of all classes we want to track. */
+#define TRACK_CONTENTION_CLASSES (SYNC_CLASS_TOPLEVEL)
+
 /* Prototypes with the "name" field */
 
 Thread CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
-Semaphore CreateSemaphore_Core (DWORD initial, const char *name);
-Mutex CreateMutex_Core (void);
-RecursiveMutex CreateRecursiveMutex_Core (const char *name);
-CondVar CreateCondVar_Core (const char *name);
+Semaphore CreateSemaphore_Core (DWORD initial, const char *name, DWORD syncClass);
+Mutex CreateMutex_Core (const char *name, DWORD syncClass);
+RecursiveMutex CreateRecursiveMutex_Core (const char *name, DWORD syncClass);
+CondVar CreateCondVar_Core (const char *name, DWORD syncClass);
 
 /* Preprocessor directives to forward to the appropriate routines */
 
 #define CreateThread(func, data, stackSize, name) \
 	CreateThread_Core ((func), (data), (stackSize), (name))
-#define CreateSemaphore(initial, name) \
-	CreateSemaphore_Core ((initial), (name))
-#define CreateMutex() \
-	CreateMutex_Core ()
-#define CreateRecursiveMutex(name) \
-	CreateRecursiveMutex_Core((name))
-#define CreateCondVar(name) \
-	CreateCondVar_Core ((name))
+#define CreateSemaphore(initial, name, syncClass) \
+	CreateSemaphore_Core ((initial), (name), (syncClass))
+#define CreateMutex(name, syncClass) \
+	CreateMutex_Core ((name), (syncClass))
+#define CreateRecursiveMutex(name, syncClass) \
+	CreateRecursiveMutex_Core((name), (syncClass))
+#define CreateCondVar(name, syncClass) \
+	CreateCondVar_Core ((name), (syncClass))
 
 #else
 
@@ -119,18 +115,22 @@ CondVar CreateCondVar_Core (void);
 /* Preprocessor directives to forward to the appropriate routines.
    The "name" field is stripped away in preprocessing. */
 
-#define CreateThread(func, data, stackSize, name) \
+#define CreateThread(func, data, stackSize, name, syncClass) \
 	CreateThread_Core ((func), (data), (stackSize))
-#define CreateSemaphore(initial, name) \
+#define CreateSemaphore(initial, name, syncClass) \
 	CreateSemaphore_Core ((initial))
-#define CreateMutex() \
+#define CreateMutex(name, syncClass) \
 	CreateMutex_Core ()
-#define CreateRecursiveMutex(name) \
+#define CreateRecursiveMutex(name, syncClass) \
 	CreateRecursiveMutex_Core()
-#define CreateCondVar(name) \
+#define CreateCondVar(name, syncClass) \
 	CreateCondVar_Core ()
 
 #endif
+
+ThreadLocal *CreateThreadLocal (void);
+void DestroyThreadLocal (ThreadLocal *tl);
+ThreadLocal *GetMyThreadLocal (void);
 
 void SleepThread (TimePeriod timePeriod);
 void SleepThreadUntil (TimeCount wakeTime);
@@ -157,15 +157,8 @@ int  GetRecursiveMutexDepth (RecursiveMutex m);
 
 void DestroyCondVar (CondVar);
 void WaitCondVar (CondVar);
-void WaitProtectedCondVar (CondVar, Mutex);
 void SignalCondVar (CondVar);
 void BroadcastCondVar (CondVar);
-
-DWORD CurrentThreadID (void);
-
-int  FindSignalChannel ();
-void WaitForSignal (int);
-void SignalThread (DWORD);
 
 #endif  /* _THREADLIB_H */
 

@@ -25,43 +25,35 @@
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 
-#define NativeGetThreadID(thread) SDL_GetThreadID ((thread))
-#define NativeThreadID() SDL_ThreadID ()
-
-typedef SDL_mutex *NativeMutex;
-#define NativeCreateMutex() \
-		SDL_CreateMutex ()
-#define NativeDestroyMutex(mutex) \
-		SDL_DestroyMutex ((mutex))
-#define NativeLockMutex(mutex) \
-		SDL_mutexP ((mutex))
-#define NativeUnlockMutex(mutex) \
-		SDL_mutexV ((mutex))
-
-#define NativeCurrentThreadID() \
-		SDL_ThreadID ()
-
 void InitThreadSystem_SDL (void);
 void UnInitThreadSystem_SDL (void);
 
 #ifdef NAMED_SYNCHRO
 /* Prototypes with the "name" field */
 Thread CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
-Semaphore CreateSemaphore_SDL (DWORD initial, const char *name);
-RecursiveMutex CreateRecursiveMutex_SDL (const char *name);
-CondVar CreateCondVar_SDL (const char *name);
+Mutex CreateMutex_SDL (const char *name, DWORD syncClass);
+Semaphore CreateSemaphore_SDL (DWORD initial, const char *name, DWORD syncClass);
+RecursiveMutex CreateRecursiveMutex_SDL (const char *name, DWORD syncClass);
+CondVar CreateCondVar_SDL (const char *name, DWORD syncClass);
 #else
 /* Prototypes without the "name" field. */
 Thread CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize);
+Mutex CreateMutex_SDL (void);
 Semaphore CreateSemaphore_SDL (DWORD initial);
 RecursiveMutex CreateRecursiveMutex_SDL (void);
 CondVar CreateCondVar_SDL (void);
 #endif
 
+ThreadLocal *GetMyThreadLocal_SDL (void);
+
 void SleepThread_SDL (TimeCount sleepTime);
 void SleepThreadUntil_SDL (TimeCount wakeTime);
 void TaskSwitch_SDL (void);
 void WaitThread_SDL (Thread thread, int *status);
+
+void DestroyMutex_SDL (Mutex m);
+void LockMutex_SDL (Mutex m);
+void UnlockMutex_SDL (Mutex m);
 
 void DestroySemaphore_SDL (Semaphore sem);
 void SetSemaphore_SDL (Semaphore sem);
@@ -69,7 +61,6 @@ void ClearSemaphore_SDL (Semaphore sem);
 
 void DestroyCondVar_SDL (CondVar c);
 void WaitCondVar_SDL (CondVar c);
-void WaitProtectedCondVar_SDL (CondVar c, Mutex m);
 void SignalCondVar_SDL (CondVar c);
 void BroadcastCondVar_SDL (CondVar c);
 
@@ -81,11 +72,18 @@ int  GetRecursiveMutexDepth_SDL (RecursiveMutex m);
 #define NativeInitThreadSystem InitThreadSystem_SDL
 #define NativeUnInitThreadSystem UnInitThreadSystem_SDL
 
+#define NativeGetMyThreadLocal GetMyThreadLocal_SDL
+
 #define NativeCreateThread CreateThread_SDL
 #define NativeSleepThread SleepThread_SDL
 #define NativeSleepThreadUntil SleepThreadUntil_SDL
 #define NativeTaskSwitch TaskSwitch_SDL
 #define NativeWaitThread WaitThread_SDL
+
+#define NativeCreateMutex CreateMutex_SDL
+#define NativeDestroyMutex DestroyMutex_SDL
+#define NativeLockMutex LockMutex_SDL
+#define NativeUnlockMutex UnlockMutex_SDL
 
 #define NativeCreateSemaphore CreateSemaphore_SDL
 #define NativeDestroySemaphore DestroySemaphore_SDL
@@ -95,7 +93,6 @@ int  GetRecursiveMutexDepth_SDL (RecursiveMutex m);
 #define NativeCreateCondVar CreateCondVar_SDL
 #define NativeDestroyCondVar DestroyCondVar_SDL
 #define NativeWaitCondVar WaitCondVar_SDL
-#define NativeWaitProtectedCondVar WaitProtectedCondVar_SDL
 #define NativeSignalCondVar SignalCondVar_SDL
 #define NativeBroadcastCondVar BroadcastCondVar_SDL
 

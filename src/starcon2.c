@@ -350,8 +350,8 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-	GraphicsLock = CreateMutex (/*"Graphics"*/);
-	RenderingCond = CreateCondVar ("DCQ empty");
+	GraphicsLock = CreateMutex ("Graphics", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	RenderingCond = CreateCondVar ("DCQ empty", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	init_communication ();

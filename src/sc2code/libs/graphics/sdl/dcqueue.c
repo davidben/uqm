@@ -130,7 +130,7 @@ Init_DrawCommandQueue (void)
 	DrawCommandQueue.FullSize = 0;
 	DrawCommandQueue.Size = 0;
 
-	DCQ_Mutex = CreateRecursiveMutex ("DCQ");
+	DCQ_Mutex = CreateRecursiveMutex ("DCQ", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
 void
@@ -199,9 +199,6 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	{
 		return;
 	}
-
-	if (DrawCommand->Type == TFB_DRAWCOMMANDTYPE_SENDSIGNAL)
-		DrawCommand->data.sendsignal.thread = CurrentThreadID ();
 
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
 			&& TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)

@@ -669,7 +669,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
-			SignalThread (DC.data.sendsignal.thread);
+			ClearSemaphore (DC.data.sendsignal.sem);
 			break;
 		}		
 	}

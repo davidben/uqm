@@ -488,7 +488,7 @@ init_xform_control (void)
 {
 	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
 	XFormControl.XFormsPending = FALSE;
-	XFormControl.XFormLock = CreateMutex ();
+	XFormControl.XFormLock = CreateMutex ("Transform Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
 void
@@ -521,7 +521,7 @@ init_communication (void)
 {
 	TFB_Canvas canvas;
 
-	subtitle_mutex = CreateMutex ();
+	subtitle_mutex = CreateMutex ("Subtitle Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 	init_xform_control ();
 
 	canvas = TFB_DrawCanvas_New_TrueColor (SIS_SCREEN_WIDTH,

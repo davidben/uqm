@@ -177,7 +177,7 @@ InitGameClock (void)
 {
 	if (!InitQueue (&GLOBAL (GameClock.event_q), NUM_EVENTS, sizeof (EVENT)))
 		return (FALSE);
-	clock_mutex = CreateMutex ();
+	clock_mutex = CreateMutex ("Clock Mutex", SYNC_CLASS_TOPLEVEL);
 	GLOBAL (GameClock.month_index) = 2;
 	GLOBAL (GameClock.day_index) = 17;
 	GLOBAL (GameClock.year_index) = START_YEAR; /* Feb 17, START_YEAR */

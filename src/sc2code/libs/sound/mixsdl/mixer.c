@@ -209,9 +209,9 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf,
 	mixer_datasize = samples_buf * mixer_spec.channels * 2;
 	mixer_data = (sint32 *) HMalloc (sizeof (uint32) * mixer_datasize);
 
-	src_mutex = CreateRecursiveMutex("mixSDL_SourceMutex");
-	buf_mutex = CreateRecursiveMutex("mixSDL_BufferMutex");
-	act_mutex = CreateRecursiveMutex("mixSDL_ActiveMutex");
+	src_mutex = CreateRecursiveMutex("mixSDL_SourceMutex", SYNC_CLASS_AUDIO);
+	buf_mutex = CreateRecursiveMutex("mixSDL_BufferMutex", SYNC_CLASS_AUDIO);
+	act_mutex = CreateRecursiveMutex("mixSDL_ActiveMutex", SYNC_CLASS_AUDIO);
 
 	audio_opened = 1;
 	mixer_driver->PauseAudio (0);

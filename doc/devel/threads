@@ -1,0 +1,33 @@
+The UQM Threading and Synchronization library
+
+This document is woefully incomplete at the moment.  It will be filled
+in later.  It's just that the ChangeLog refers to it so I want the
+file to be here.  --Michael
+
+#defines
+
+NAMED_SYNCHRO: When #defined, all synchronization objects are named.
+This should be kept on all the time, at least until 1.0.
+
+TRACK_CONTENTION: implies NAMED_SYNCHRO.  Spits out status messages
+whenever a thread goes to sleep because of an object matching
+TRACK_CONTENTION_CLASSES.
+
+TRACK_CONTENTION_CLASSES: This is an ORring of enums defined in
+threadlib.h.
+
+Constructs
+
+- Task
+
+- Thread
+
+- ThreadLocal
+
+- Mutex
+
+- Semaphore
+
+- CondVar
+
+- RecursiveMutex

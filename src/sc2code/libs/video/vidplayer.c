@@ -295,7 +295,7 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 
 	// creation probably needs better handling
 	if (!vp_interthread_lock)
-		vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock");
+		vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock", SYNC_CLASS_VIDEO);
 	SetSemaphore (vp_interthread_lock);
 	vp_interthread_clip = vid;
 

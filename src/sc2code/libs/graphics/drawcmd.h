@@ -109,7 +109,7 @@ typedef struct tfb_dc_delimg
 
 typedef struct tfb_dc_signal
 {
-	DWORD thread;
+	Semaphore sem;
 } TFB_DrawCommand_SendSignal;
 
 typedef struct tfb_drawcommand

@@ -38,6 +38,7 @@ typedef struct _thread {
 #ifdef PROFILE_THREADS
 	int startTime;
 #endif  /*  PROFILE_THREADS */
+	ThreadLocal *localData;
 	struct _thread *next;
 } *TrueThread;
 
@@ -117,13 +118,11 @@ InitThreadSystem_SDL (void)
 #ifdef PROFILE_THREADS
 	signal(SIGUSR1, SigUSR1Handler);
 #endif
-	init_cond_bank ();
 }
 
 void
 UnInitThreadSystem_SDL (void)
 {
-	uninit_cond_bank ();
 #ifdef PROFILE_THREADS
 	signal(SIGUSR1, SIG_DFL);
 #endif
@@ -220,7 +219,7 @@ ThreadHelper (void *startInfo) {
 #endif
 
 	UnQueueThread (thread);
-
+	DestroyThreadLocal (thread->localData);
 	HFree (thread);
 	return result;
 }
@@ -243,6 +242,8 @@ CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize
 	thread->startTime = GetTimeCounter ();
 #endif
 
+	thread->localData = CreateThreadLocal ();
+
 	startInfo = (struct ThreadStartInfo *) HMalloc (sizeof (*startInfo));
 	startInfo->func = func;
 	startInfo->data = data;
@@ -252,6 +253,7 @@ CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize
 	thread->native = SDL_CreateThread (ThreadHelper, (void *) startInfo);
 	if (!(thread->native))
 	{
+		DestroyThreadLocal (thread->localData);
 		HFree (startInfo);
 		HFree (thread);
 		return NULL;
@@ -301,13 +303,112 @@ WaitThread_SDL (Thread thread, int *status) {
 	SDL_WaitThread (((TrueThread)thread)->native, status);
 }
 
+ThreadLocal *
+GetMyThreadLocal_SDL (void)
+{
+	TrueThread t = FindThreadInfo (SDL_ThreadID ());
+	return t ? t->localData : NULL;
+}
+
 /* These are the SDL implementations of the UQM synchronization objects. */
-/* TODO: Remove the names of the following data types when compiling
- * under release mode. */
 
 /* Mutexes. */
 /* TODO.  The w_memlib uses Mutexes right now, so we can't use HMalloc
- * or HFree. */
+ * or HFree. Once that goes, this needs to change. */
+
+typedef struct _mutex {
+	SDL_mutex *mutex;
+#ifdef TRACK_CONTENTION
+	Uint32 owner;
+#endif
+#ifdef NAMED_SYNCHRO
+	const char *name;
+	DWORD syncClass;
+#endif
+} Mut;
+	
+
+Mutex
+#ifdef NAMED_SYNCHRO
+CreateMutex_SDL (const char *name, DWORD syncClass)
+#else
+CreateMutex_SDL (void)
+#endif
+{
+	Mut *mutex = malloc (sizeof (Mut));
+	if (mutex != NULL)
+	{
+		mutex->mutex = SDL_CreateMutex();
+#ifdef TRACK_CONTENTION
+		mutex->owner = 0;
+#endif
+#ifdef NAMED_SYNCHRO
+		mutex->name = name;
+		mutex->syncClass = syncClass;
+#endif
+	}
+
+	if ((mutex == NULL) || (mutex->mutex == NULL))
+	{
+#ifdef NAMED_SYNCHRO
+		fprintf (stderr, "Could not initialize mutex '%s': aborting.\n", name);
+#else
+		fprintf (stderr, "Could not initialize mutex: aborting.\n");
+#endif
+		abort ();
+	}
+
+	return mutex;
+}
+
+void
+DestroyMutex_SDL (Mutex m)
+{
+	Mut *mutex = (Mut *)m;
+	SDL_DestroyMutex (mutex->mutex);
+	free (mutex);
+}
+
+void
+LockMutex_SDL (Mutex m)
+{
+	Mut *mutex = (Mut *)m;
+#ifdef TRACK_CONTENTION
+	/* This code isn't really quite right; race conditions between
+	 * check and lock remain and can produce reports of contention
+	 * where the thread never sleeps, or fail to report in
+	 * situations where it does.  If tracking with perfect
+	 * accuracy becomes important, the TRACK_CONTENTION mutex will
+	 * need to handle its own wake/sleep cycles with condition
+	 * variables (check the history of this file for the
+	 * CrossThreadMutex code).  This almost-measure is being added
+	 * because for the most part it should suffice. */
+	if (mutex->owner && (mutex->syncClass & TRACK_CONTENTION_CLASSES))
+	{
+		fprintf (stderr, "Thread '%s' blocking on mutex '%s'\n", MyThreadName (), mutex->name);
+	}
+#endif
+	while (SDL_mutexP (mutex->mutex) != 0)
+	{
+		TaskSwitch_SDL ();
+	}
+#ifdef TRACK_CONTENTION
+	mutex->owner = SDL_ThreadID ();
+#endif
+}
+
+void
+UnlockMutex_SDL (Mutex m)
+{
+	Mut *mutex = (Mut *)m;
+#ifdef TRACK_CONTENTION
+	mutex->owner = 0;
+#endif
+	while (SDL_mutexV (mutex->mutex) != 0)
+	{
+		TaskSwitch_SDL ();
+	}
+}
 
 /* Semaphores. */
 
@@ -315,21 +416,32 @@ typedef struct _sem {
 	SDL_sem *sem;
 #ifdef NAMED_SYNCHRO
 	const char *name;
+	DWORD syncClass;
 #endif
 } Sem;
 
 Semaphore
 CreateSemaphore_SDL (DWORD initial
 #ifdef NAMED_SYNCHRO
-		  , const char *name
+		  , const char *name, DWORD syncClass
 #endif
 	)
 {
 	Sem *sem = (Sem *) HMalloc (sizeof (struct _sem));
 #ifdef NAMED_SYNCHRO
 	sem->name = name;
+	sem->syncClass = syncClass;
 #endif
 	sem->sem = SDL_CreateSemaphore (initial);
+	if (sem->sem == NULL)
+	{
+#ifdef NAMED_SYNCHRO
+		fprintf (stderr, "Could not initialize semaphore '%s': aborting.\n", name);
+#else
+		fprintf (stderr, "Could not initialize semaphore: aborting.\n");
+#endif
+		abort ();
+	}
 	return sem;
 }
 
@@ -347,9 +459,9 @@ SetSemaphore_SDL (Semaphore s)
 	Sem *sem = (Sem *)s;
 #ifdef TRACK_CONTENTION
 	BOOLEAN contention = !(SDL_SemValue (sem->sem));
-	if (contention)
+	if (contention && (sem->syncClass & TRACK_CONTENTION_CLASSES))
 	{
-		fprintf (stderr, "Thread '%s' goes to sleep, waiting on semaphore '%s'\n", MyThreadName (), sem->name);
+		fprintf (stderr, "Thread '%s' blocking on semaphore '%s'\n", MyThreadName (), sem->name);
 	}
 #endif
 	while (SDL_SemWait (sem->sem) == -1)
@@ -357,7 +469,7 @@ SetSemaphore_SDL (Semaphore s)
 		TaskSwitch_SDL ();
 	}
 #ifdef TRACK_CONTENTION
-	if (contention)
+	if (contention && (sem->syncClass & TRACK_CONTENTION_CLASSES))
 	{
 		fprintf (stderr, "Thread '%s' awakens, released from semaphore '%s'\n", MyThreadName (), sem->name);
 	}
@@ -383,12 +495,13 @@ typedef struct _recm {
 	Uint32 locks;
 #ifdef NAMED_SYNCHRO
 	const char *name;
+	DWORD syncClass;
 #endif
 } RecM;
 
 RecursiveMutex
 #ifdef NAMED_SYNCHRO
-CreateRecursiveMutex_SDL (const char *name)
+CreateRecursiveMutex_SDL (const char *name, DWORD syncClass)
 #else
 CreateRecursiveMutex_SDL (void)
 #endif
@@ -397,8 +510,18 @@ CreateRecursiveMutex_SDL (void)
 
 	mtx->thread_id = 0;
 	mtx->mutex = SDL_CreateMutex ();
+	if (mtx->mutex == NULL)
+	{
+#ifdef NAMED_SYNCHRO
+		fprintf (stderr, "Could not initialize recursive mutex '%s': aborting.\n", name);
+#else
+		fprintf (stderr, "Could not initialize recursive mutex: aborting.\n");
+#endif
+		abort ();
+	}
 #ifdef NAMED_SYNCHRO
 	mtx->name = name;
+	mtx->syncClass = syncClass;
 #endif
 	mtx->locks = 0;
 	return (RecursiveMutex) mtx;
@@ -420,7 +543,7 @@ LockRecursiveMutex_SDL (RecursiveMutex val)
 	if (mtx->thread_id != thread_id)
 	{
 #ifdef TRACK_CONTENTION
-		if (mtx->thread_id)
+		if (mtx->thread_id && (mtx->syncClass & TRACK_CONTENTION_CLASSES))
 		{
 			fprintf (stderr, "Thread '%s' blocking on '%s'\n", MyThreadName (), mtx->name);
 		}
@@ -466,12 +589,13 @@ typedef struct _cond {
 	SDL_mutex *mutex;
 #ifdef NAMED_SYNCHRO
 	const char *name;
+	DWORD syncClass;
 #endif
 } cvar;
 
 CondVar
 #ifdef NAMED_SYNCHRO
-CreateCondVar_SDL (const char *name)
+CreateCondVar_SDL (const char *name, DWORD syncClass)
 #else
 CreateCondVar_SDL (void)
 #endif
@@ -479,8 +603,18 @@ CreateCondVar_SDL (void)
 	cvar *cv = (cvar *) HMalloc (sizeof (cvar));
 	cv->cond = SDL_CreateCond ();
 	cv->mutex = SDL_CreateMutex ();
+	if ((cv->cond == NULL) || (cv->mutex == NULL))
+	{
+#ifdef NAMED_SYNCHRO
+		fprintf (stderr, "Could not initialize condition variable '%s': aborting.\n", name);
+#else
+		fprintf (stderr, "Could not initialize condition variable: aborting.\n");
+#endif
+		abort ();
+	}
 #ifdef NAMED_SYNCHRO
 	cv->name = name;
+	cv->syncClass = syncClass;
 #endif
 	return cv;
 }
@@ -500,31 +634,22 @@ WaitCondVar_SDL (CondVar c)
 	cvar *cv = (cvar *) c;
 	SDL_mutexP (cv->mutex);
 #ifdef TRACK_CONTENTION
-	fprintf (stderr, "Thread '%s' waiting for signal from '%s'\n", MyThreadName (), cv->name);
+	if (cv->syncClass & TRACK_CONTENTION_CLASSES)
+	{
+		fprintf (stderr, "Thread '%s' waiting for signal from '%s'\n", MyThreadName (), cv->name);
+	}
 #endif
 	while (SDL_CondWait (cv->cond, cv->mutex) != 0)
 	{
 		TaskSwitch_SDL ();
 	}
 #ifdef TRACK_CONTENTION
-	fprintf (stderr, "Thread '%s' received signal from '%s', awakening.\n", MyThreadName (), cv->name);
+	if (cv->syncClass & TRACK_CONTENTION_CLASSES)
+	{
+		fprintf (stderr, "Thread '%s' received signal from '%s', awakening.\n", MyThreadName (), cv->name);
+	}
 #endif
 	SDL_mutexV (cv->mutex);
-}
-
-void
-WaitProtectedCondVar_SDL (CondVar c, Mutex m)
-{
-	cvar *cv = (cvar *) c;
-#ifdef TRACK_CONTENTION
-	fprintf (stderr, "Thread '%s' waiting for signal from '%s'\n", MyThreadName (), cv->name);
-#endif
-	if (SDL_CondWait (cv->cond, m) != 0) {
-		TaskSwitch_SDL ();
-	}	
-#ifdef TRACK_CONTENTION
-	fprintf (stderr, "Thread '%s' received signal from '%s', awakening.\n", MyThreadName (), cv->name);
-#endif
 }
 
 void

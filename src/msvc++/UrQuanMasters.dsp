@@ -783,10 +783,6 @@ SOURCE=..\sc2code\libs\threads\thrcommon.c
 
 SOURCE=..\sc2code\libs\threads\thrcommon.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\threads\condbank.c
-# End Source File
 # End Group
 # Begin Group "time"
 
