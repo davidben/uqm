@@ -55,6 +55,7 @@ static uint32 mixer_chansize;
 static uint32 mixer_sampsize;
 static sint32 mixer_silence;
 static uint32 mixer_freq;
+static mixSDL_Quality mixer_quality;
 
 /* mixer interim work-buffer; size in one-channel samples */
 static uint32 mixer_datasize;
@@ -253,6 +254,7 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf,
 			mixer_chansize, mixer_spec.channels);
 	mixer_sampsize = mixer_chansize * mixer_spec.channels;
 	mixer_freq = mixer_spec.freq;
+	mixer_quality = quality;
 
 	/* 2x size the sound playback buffer should be enough for anything */
 	mixer_datasize = samples_buf * mixer_spec.channels * 2;
@@ -348,8 +350,10 @@ mixSDL_GenSources (uint32 n, mixSDL_Object *psrcobj)
 		src->cprocessed = 0;
 		src->firstqueued = 0;
 		src->nextqueued = 0;
+		src->prevqueued = 0;
 		src->lastqueued = 0;
 		src->curbufofs = 0;
+		src->curbufdelta = 0;
 
 		*psrcobj = (mixSDL_Object) src;
 	}
@@ -483,6 +487,7 @@ mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 
 				src->firstqueued = buf;
 				src->nextqueued = src->firstqueued;
+				src->prevqueued = 0;
 				src->lastqueued = src->nextqueued;
 				if (src->lastqueued)
 					src->lastqueued->next = 0;
@@ -854,6 +859,7 @@ mixSDL_SourceQueueBuffers (mixSDL_Object srcobj, uint32 n,
 				{
 					src->firstqueued = buf;
 					src->nextqueued = buf;
+					src->prevqueued = 0;
 				}
 				src->cqueued++;
 				buf->state = MIX_BUF_QUEUED;
@@ -924,6 +930,8 @@ mixSDL_SourceUnqueueBuffers (mixSDL_Object srcobj, uint32 n,
 				/* remove buffer from the chain */
 				if (src->nextqueued == buf)
 					src->nextqueued = buf->next;
+				if (src->prevqueued == buf)
+					src->prevqueued = 0;
 				if (src->lastqueued == buf)
 					src->lastqueued = 0;
 				src->firstqueued = buf->next;
@@ -983,10 +991,12 @@ mixSDL_SourceUnqueueAll (mixSDL_Source *src)
 
 	src->firstqueued = 0;
 	src->nextqueued = 0;
+	src->prevqueued = 0;
 	src->lastqueued = 0;
 	src->cqueued = 0;
 	src->cprocessed = 0;
 	src->curbufofs = 0;
+	src->curbufdelta = 0;
 }
 
 /* add the source to the active array */
@@ -1098,7 +1108,9 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 		src->lastqueued = 0;
 	}
 	src->nextqueued = 0;
+	src->prevqueued = 0;
 	src->curbufofs = 0;
+	src->curbufdelta = 0;
 
 	mixSDL_UnlockMutex (buf_mutex);
 }
@@ -1124,38 +1136,61 @@ mixSDL_SourceRewind_internal (mixSDL_Source *src)
 	mixSDL_UnlockMutex (buf_mutex);
 
 	src->curbufofs = 0;
+	src->curbufdelta = 0;
 	src->cprocessed = 0;
 	src->nextqueued = src->firstqueued;
+	src->prevqueued = 0;
 	src->state = MIX_INITIAL;
 }
 
 /* get the sample next in queue in internal format */
 static __inline__ bool
-mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
+mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp, bool left)
 {
 	/* fake the data if requested */
 	if (mixer_driverflags & MIX_DRIVER_FAKE_DATA)
-		return mixSDL_SourceGetFakeSample (src, psamp);
+		return mixSDL_SourceGetFakeSample (src, psamp, left);
 
 	while (src->nextqueued)
 	{
 		mixSDL_Buffer *buf = src->nextqueued;
 		uint8* data;
 		double samp;
-
+		
 		if (!buf->data || buf->size < mixer_sampsize)
 		{
 			/* buffer invalid, go next */
 			buf->state = MIX_BUF_PROCESSED;
 			src->curbufofs = 0;
+			src->curbufdelta = 0;
+			src->prevqueued = src->nextqueued;
 			src->nextqueued = src->nextqueued->next;
 			src->cprocessed++;
 			continue;
 		}
 
-		data = buf->data + src->curbufofs;
-		samp = mixSDL_GetSampleInt (data, mixer_chansize);
-		src->curbufofs += mixer_chansize;
+		if (mixer_freq == buf->orgfreq)
+		{
+			data = buf->data + (uint32)src->curbufofs;
+			samp = mixSDL_GetSampleInt (data, mixer_chansize);
+			src->curbufofs += mixer_chansize;
+		}
+		else if (mixer_freq > buf->orgfreq)
+		{
+			if (mixer_quality == MIX_QUALITY_DEFAULT)
+				samp = mixSDL_GetResampledInt_linear (src, left);
+			else if (mixer_quality == MIX_QUALITY_HIGH)
+				samp = mixSDL_GetResampledInt_cubic (src, left);
+			else
+				samp = mixSDL_GetResampledInt_nearest (src, left);
+		}
+		else
+		{
+			/* because currently linear and cubic resamplers do not work
+			   for downsampling */
+			samp = mixSDL_GetResampledInt_nearest (src, left);
+		}
+		
 		samp *= src->gain;
 
 		if (mixer_chansize == 2)
@@ -1184,6 +1219,8 @@ mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
 			/* buffer exhausted, go next */
 			buf->state = MIX_BUF_PROCESSED;
 			src->curbufofs = 0;
+			src->curbufdelta = 0;
+			src->prevqueued = src->nextqueued;
 			src->nextqueued = src->nextqueued->next;
 			src->cprocessed++;
 		}
@@ -1206,20 +1243,47 @@ mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
 
 /* fake the next sample, but process buffers and states */
 static __inline__ bool
-mixSDL_SourceGetFakeSample (mixSDL_Source *src, sint32* psamp)
+mixSDL_SourceGetFakeSample (mixSDL_Source *src, sint32* psamp, bool left)
 {
 	while (src->nextqueued)
 	{
 		mixSDL_Buffer *buf = src->nextqueued;
 
+		if (mixer_freq == buf->orgfreq)
+		{
+			src->curbufofs += mixer_chansize;
+		}
+		else
+		{
+			double offset, intoffset;
+			if (MIX_FORMAT_CHANS (mixer_format) == 2)
+			{
+				if (!left)
+				{
+					offset = src->curbufdelta +
+						(double)src->nextqueued->orgfreq / mixer_freq;
+					src->curbufdelta = modf (offset, &intoffset);
+					src->curbufofs += (uint32)intoffset * mixer_sampsize;
+				}
+			}
+			else
+			{
+				offset = src->curbufdelta +
+					(double)src->nextqueued->orgfreq / mixer_freq;
+				src->curbufdelta = modf (offset, &intoffset);
+				src->curbufofs += (uint32)intoffset * mixer_sampsize;
+			}
+		}
+
 		*psamp = 0;
-		src->curbufofs += mixer_chansize;
 		
 		if (src->curbufofs >= buf->size)
 		{	
 			/* buffer exhausted, go next */
 			buf->state = MIX_BUF_PROCESSED;
 			src->curbufofs = 0;
+			src->curbufdelta = 0;
+			src->prevqueued = src->nextqueued;
 			src->nextqueued = src->nextqueued->next;
 			src->cprocessed++;
 		}
@@ -1498,12 +1562,11 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 		buf->orgchannels = MIX_FORMAT_CHANS (format);
 		buf->orgchansize = MIX_FORMAT_BPC (format);
 
-		conv.srcsamples = size / MIX_FORMAT_SAMPSIZE (format);
-		conv.dstsamples = (uint32)
-				((double)conv.srcsamples * mixer_freq / freq);
+		conv.srcsamples = conv.dstsamples =
+			size / MIX_FORMAT_SAMPSIZE (format);
 				
 		if (conv.dstsamples >
-				UINT32_MAX / MIX_FORMAT_SAMPSIZE (mixer_format))
+				UINT32_MAX / MIX_FORMAT_SAMPSIZE (format))
 		{
 			mixSDL_SetError (MIX_INVALID_VALUE);
 		}
@@ -1518,7 +1581,7 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 			{
 				buf->data = HMalloc (dstsize);
 			
-				if (format == mixer_format && freq == mixer_freq)
+				if (format == mixer_format)
 				{
 					/* format identical to internal */
 					buf->locked = true;
@@ -1542,11 +1605,9 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 					conv.srcfmt = format;
 					conv.srcdata = data;
 					conv.srcsize = size;
-					conv.srcfreq = freq;
 					conv.dstfmt = mixer_format;
 					conv.dstdata = buf->data;
 					conv.dstsize = dstsize;
-					conv.dstfreq = mixer_freq;
 
 					buf->locked = true;
 					mixSDL_UnlockMutex (buf_mutex);
@@ -1565,73 +1626,6 @@ mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 	mixSDL_UnlockMutex (buf_mutex);
 }
 
-/* convert a user buffer from one format to another */
-void
-mixSDL_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
-		uint32 srcfreq, uint32 dstfmt, void* dstdata,
-		uint32 dstfreq, uint32 dstsize)
-{
-	mixSDL_Convertion conv;
-	uint32 reqsize;
-
-	if (!srcdata || !dstdata)
-	{
-		mixSDL_SetError (MIX_INVALID_VALUE);
-		fprintf (stderr, "mixSDL_ConvertBuffer(): called "
-				"with null buffer\n");
-		return;
-	}
-
-
-	conv.srcsamples = srcsize / MIX_FORMAT_SAMPSIZE (srcfmt);
-	conv.dstsamples = (uint32)
-			((double)conv.srcsamples * dstfreq / srcfreq);
-			
-	if (conv.dstsamples > UINT32_MAX / MIX_FORMAT_SAMPSIZE (dstfmt))
-	{
-		mixSDL_SetError (MIX_INVALID_VALUE);
-		return;
-	}
-
-	reqsize = conv.dstsamples * MIX_FORMAT_SAMPSIZE (mixer_format);
-
-	if (reqsize > dstsize)
-	{
-		mixSDL_SetError (MIX_INVALID_VALUE);
-		fprintf (stderr, "mixSDL_ConvertBuffer(): "
-				"destination buffer too small\n");
-		return;
-	}
-
-	if (srcfmt == dstfmt && srcfreq == dstfreq)
-	{
-		/* user buffer, no S8->U8 convertion */
-		memcpy (dstdata, srcdata, srcsize);
-	}
-	else
-	{
-		conv.srcfmt = srcfmt;
-		conv.srcdata = srcdata;
-		conv.srcsize = srcsize;
-		conv.srcfreq = srcfreq;
-		conv.dstfmt = dstfmt;
-		conv.dstdata = dstdata;
-		conv.dstsize = dstsize;
-		conv.dstfreq = dstfreq;
-
-		mixSDL_ConvertBuffer_internal (&conv);
-
-		if (conv.dstbpc == 1)
-		{
-			/* converted buffer is in S8 format
-			 * have to make it U8
-			 */
-			uint8* dst;
-			for (dst = conv.dstdata; dstsize; dstsize--, dst++)
-				*dst ^= 0x80;
-		}
-	}
-}
 
 /*************************************************
  *  Buffer internals
@@ -1690,24 +1684,7 @@ mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv)
 	else if (conv->srcchans < conv->dstchans)
 		conv->flags |= mixConvStereoUp;
 
-	if (conv->srcfreq == conv->dstfreq)
-	{
-		mixSDL_ResampleFlat (conv);
-	}
-	else if (conv->dstfreq > conv->srcfreq)
-	{
-		if (conv->dstfreq % conv->srcfreq == 0)
-			mixSDL_ResampleUp_fast (conv);
-		else
-			mixSDL_Resample_frac (conv);
-	}
-	else
-	{
-		if (conv->srcfreq % conv->dstfreq == 0)
-			mixSDL_ResampleDown_fast (conv);
-		else
-			mixSDL_Resample_frac (conv);
-	}
+	mixSDL_ResampleFlat (conv);
 }
 
 /*************************************************
@@ -1758,6 +1735,184 @@ mixSDL_PutSampleInt (void *dst, uint32 bpc, sint32 samp)
 		*(sint16 *)dst = samp;
 	else
 		*(sint8 *)dst = samp;
+}
+
+/* get a resampled sample from internal buffer (nearest neighbor) */
+static __inline__ sint32
+mixSDL_GetResampledInt_nearest (mixSDL_Source *src, bool left)
+{	
+	uint8 *d0 = src->nextqueued->data + src->curbufofs;
+	double offset, intoffset;
+
+	if (MIX_FORMAT_CHANS (mixer_format) == 2)
+	{
+		if (!left)
+		{
+			d0 += mixer_chansize;
+			offset = src->curbufdelta +
+					(double)src->nextqueued->orgfreq / mixer_freq;
+			src->curbufdelta = modf (offset, &intoffset);
+			src->curbufofs += (uint32)intoffset * mixer_sampsize;
+		}
+	}
+	else
+	{
+		offset = src->curbufdelta +
+				(double)src->nextqueued->orgfreq / mixer_freq;
+		src->curbufdelta = modf (offset, &intoffset);
+		src->curbufofs += (uint32)intoffset * mixer_sampsize;
+	}
+
+	return mixSDL_GetSampleInt (d0, mixer_chansize);
+}
+
+/* get a resampled sample from internal buffer (linear interpolation) */
+static __inline__ sint32
+mixSDL_GetResampledInt_linear (mixSDL_Source *src, bool left)
+{
+	// TODO: support for downsampling
+
+	mixSDL_Buffer *curr = src->nextqueued;
+	mixSDL_Buffer *next = src->nextqueued->next;
+	uint8 *d0, *d1;
+	sint32 s0, s1, samp;
+	double offset, intoffset, delta;
+
+	delta = src->curbufdelta;
+	d0 = curr->data + src->curbufofs;
+	
+	if (MIX_FORMAT_CHANS (mixer_format) == 2)
+	{
+		if (!left)
+		{
+			d0 += mixer_chansize;
+			offset = src->curbufdelta +
+					(double)src->nextqueued->orgfreq / mixer_freq;
+			src->curbufdelta = modf (offset, &intoffset);
+			src->curbufofs += (uint32)intoffset * mixer_sampsize;
+		}
+	}
+	else
+	{
+		offset = src->curbufdelta +
+				(double)src->nextqueued->orgfreq / mixer_freq;
+		src->curbufdelta = modf (offset, &intoffset);
+		src->curbufofs += (uint32)intoffset * mixer_sampsize;
+	}
+
+	if (d0 + mixer_sampsize >= curr->data + curr->size)
+	{
+		if (next && next->data && next->size >= mixer_sampsize)
+		{
+			d1 = next->data;
+			if (!left)
+				d1 += mixer_chansize;
+		}
+		else
+			d1 = d0;
+	}
+	else
+		d1 = d0 + mixer_sampsize;
+
+	s0 = mixSDL_GetSampleInt (d0, mixer_chansize);
+	s1 = mixSDL_GetSampleInt (d1, mixer_chansize);
+	samp = s0 + (sint32)(delta * (s1 - s0));
+
+	return samp;
+}
+
+/* get a resampled sample from internal buffer (cubic interpolation) */
+static __inline__ sint32
+mixSDL_GetResampledInt_cubic (mixSDL_Source *src, bool left)
+{
+	// TODO: support for downsampling
+
+	mixSDL_Buffer *prev = src->prevqueued;
+	mixSDL_Buffer *curr = src->nextqueued;
+	mixSDL_Buffer *next = src->nextqueued->next;
+	uint8 *d0, *d1, *d2, *d3; /* prev, curr, next, next + 1 */
+	sint32 samp;
+	double offset, intoffset;
+	float delta, delta2, a, b, c, s0, s1, s2, s3;
+
+	delta = (float)src->curbufdelta;
+	delta2 = delta * delta;
+	d1 = curr->data + src->curbufofs;
+	
+	if (MIX_FORMAT_CHANS (mixer_format) == 2)
+	{
+		if (!left)
+		{
+			d1 += mixer_chansize;
+			offset = src->curbufdelta +
+					(double)src->nextqueued->orgfreq / mixer_freq;
+			src->curbufdelta = modf (offset, &intoffset);
+			src->curbufofs += (uint32)intoffset * mixer_sampsize;
+		}
+	}
+	else
+	{
+		offset = src->curbufdelta +
+				(double)src->nextqueued->orgfreq / mixer_freq;
+		src->curbufdelta = modf (offset, &intoffset);
+		src->curbufofs += (uint32)intoffset * mixer_sampsize;
+	}
+
+	if (d1 - mixer_sampsize < curr->data)
+	{
+		if (prev && prev->data && prev->size >= mixer_sampsize)
+		{
+			d0 = prev->data + prev->size - mixer_sampsize;
+			if (!left)
+				d0 += mixer_chansize;
+		}
+		else
+			d0 = d1;
+	}
+	else
+		d0 = d1 - mixer_sampsize;
+
+	if (d1 + mixer_sampsize >= curr->data + curr->size)
+	{
+		if (next && next->data && next->size >= mixer_sampsize * 2)
+		{
+			d2 = next->data;
+			if (!left)
+				d2 += mixer_chansize;
+			d3 = d2 + mixer_sampsize;
+		}
+		else
+			d2 = d3 = d1;
+	}
+	else
+	{
+		d2 = d1 + mixer_sampsize;
+		if (d2 + mixer_sampsize >= curr->data + curr->size)
+		{
+			if (next && next->data && next->size >= mixer_sampsize)
+			{
+				d3 = next->data;
+				if (!left)
+					d3 += mixer_chansize;
+			}
+			else
+				d3 = d2;
+		}
+		else
+			d3 = d2 + mixer_sampsize;
+	}
+
+	s0 = (float)mixSDL_GetSampleInt (d0, mixer_chansize);
+	s1 = (float)mixSDL_GetSampleInt (d1, mixer_chansize);
+	s2 = (float)mixSDL_GetSampleInt (d2, mixer_chansize);
+	s3 = (float)mixSDL_GetSampleInt (d3, mixer_chansize);
+
+	a = (3.0f * (s1 - s2) - s0 + s3) * 0.5f;
+	b = 2.0f * s2 + s0 - ((5.0f * s1 + s3) * 0.5f);
+	c = (s2 - s0) * 0.5f;
+	
+	samp = (sint32)(a * delta2 * delta + b * delta2 + c * delta + s1);
+	return samp;
 }
 
 /* get next sample from external buffer
@@ -1811,88 +1966,6 @@ mixSDL_PutConvSample (uint8 **pdst, uint32 bpc, uint32 flags, sint32 samp)
 	}
 }
 
-/* resampling with fractional rate change */
-static void
-mixSDL_Resample_frac (mixSDL_Convertion *conv)
-{
-	mixSDL_ConvFlags flags = conv->flags;
-	uint8 *src = conv->srcdata;
-	uint8 *dst = conv->dstdata;
-	uint32 srcsamples = conv->srcsamples;
-	uint32 srcbpc = conv->srcbpc;
-	uint32 dstbpc = conv->dstbpc;
-	double convrate = (double)conv->srcfreq / conv->dstfreq;
-	double dstpos = 0;
-	uint32 nextsrcpos; /* next position already read */
-	sint32 sampl, sampr, nextsampl, nextsampr;
-	uint32 srcjump = srcbpc * conv->srcchans;
-	bool stereo = conv->srcchans == 2 && !(flags & mixConvStereoDown);
-	uint32 i;
-
-	nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
-	if (stereo)
-		nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
-	else
-		nextsampr = 0;
-	nextsrcpos = 0;
-
-	for (i = conv->dstsamples; i; i--)
-	{
-		double delta, intdstpos;
-		uint32 srcpos;
-		uint32 samp;
-
-		delta = modf (dstpos, &intdstpos);
-		srcpos = (uint32) intdstpos;
-
-		if (srcpos >= nextsrcpos)
-		{
-			if (srcpos == nextsrcpos)
-			{
-				sampl = nextsampl;
-				sampr = nextsampr;
-				nextsrcpos++;
-			}
-			else
-			{
-				src += srcjump * (srcpos - nextsrcpos - 1);
-				sampl = mixSDL_GetConvSample (&src, srcbpc, flags);
-				if (stereo)
-					sampr = mixSDL_GetConvSample (&src, srcbpc, flags);
-				nextsrcpos = srcpos + 1;
-			}
-
-			if (nextsrcpos < srcsamples)
-			{
-				nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
-				if (stereo)
-					nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
-			}
-			else
-			{
-				/* theoretically, here we need to get the next sample
-				 * somehow, which is in the next buffer in the stream;
-				 * leaving the next sample equal to the previous should
-				 * do for now; this will create some-20 minimal
-				 * distortions per second
-				 */
-				/* nextsampl = nextsampr = 0; */
-			}
-		}
-
-		/* iterpolate */
-		samp = sampl + (sint32) (delta * (nextsampl - sampl));
-		mixSDL_PutConvSample (&dst, dstbpc, flags, samp);
-		if (stereo)
-		{
-			samp = sampr + (sint32) (delta * (nextsampr - sampr));
-			mixSDL_PutConvSample (&dst, dstbpc, flags, samp);
-		}
-		
-		dstpos += convrate;
-	}
-}
-
 /* resampling with respect to sample size only */
 static void
 mixSDL_ResampleFlat (mixSDL_Convertion *conv)
@@ -1917,93 +1990,6 @@ mixSDL_ResampleFlat (mixSDL_Convertion *conv)
 	}
 }
 
-/* integer-periodic resampling with rate increase */
-static void
-mixSDL_ResampleUp_fast (mixSDL_Convertion *conv)
-{
-	mixSDL_ConvFlags flags = conv->flags;
-	uint8 *src = conv->srcdata;
-	uint8 *dst = conv->dstdata;
-	uint32 srcbpc = conv->srcbpc;
-	uint32 dstbpc = conv->dstbpc;
-	uint32 convrate = conv->dstfreq / conv->srcfreq;
-	sint32 nextsampl, nextsampr;
-	bool stereo = conv->srcchans == 2 && !(flags & mixConvStereoDown);
-	uint32 i;
-	
-	/* read one sample ahead */
-	nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
-	if (stereo)
-		nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
-	else
-		nextsampr = 0;
-
-	for (i = conv->srcsamples; i; i--)
-	{
-		sint32 sampl = nextsampl;
-		sint32 sampr = nextsampr;
-		sint32 di;
-		
-		if (i > 1)
-		{
-			nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
-			if (stereo)
-				nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
-		}
-		else
-		{
-			/* theoretically, here we need to get the next sample
-			 * somehow, which is in the next buffer in the stream;
-			 * leaving the next sample equal to the previous should
-			 * do for now; this will create some-20 minimal
-			 * distortions per second
-			 */
-			/* nextsampl = nextsampr = 0; */
-		}
-		
-		for (di = convrate; di > 0; di--)
-		{
-			mixSDL_PutConvSample (&dst, dstbpc, flags, sampl);
-			sampl += (nextsampl - sampl) / di;
-			if (stereo)
-			{
-				mixSDL_PutConvSample (&dst, dstbpc, flags, sampr);
-				sampr += (nextsampr - sampr) / di;
-			}
-		}
-	}
-}
-
-/* integer-periodic resampling with rate decrease */
-static void
-mixSDL_ResampleDown_fast (mixSDL_Convertion *conv)
-{
-	mixSDL_ConvFlags flags = conv->flags;
-	uint8 *src = conv->srcdata;
-	uint8 *dst = conv->dstdata;
-	uint32 srcbpc = conv->srcbpc;
-	uint32 dstbpc = conv->dstbpc;
-	uint32 convrate = conv->srcfreq / conv->dstfreq;
-	uint32 srcjump = (convrate - 1) * srcbpc * conv->srcchans;
-	bool stereo = conv->srcchans == 2 && !(flags & mixConvStereoDown);
-	uint32 i;
-
-	for (i = conv->dstsamples; i; i--)
-	{
-		sint32 samp;
-		
-		samp = mixSDL_GetConvSample (&src, srcbpc, flags);
-		mixSDL_PutConvSample (&dst, dstbpc, flags, samp);
-		if (stereo)
-		{
-			samp = mixSDL_GetConvSample (&src, srcbpc, flags);
-			mixSDL_PutConvSample (&dst, dstbpc, flags, samp);
-		}
-		
-		src += srcjump;
-	}
-}
-
 
 /**********************************************************
  * THE mixer - higher quality; smoothed-out clipping
@@ -2018,6 +2004,8 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	sint32 *end_data = mixer_data + samples;
 	sint32 *data;
 	uint32 step;
+	bool left = true;
+	uint32 chans = MIX_FORMAT_CHANS (mixer_format);
 
 	/* mixer_datasize < samples should not happen ever, but for now.. */
 	if (mixer_datasize < samples)
@@ -2051,7 +2039,7 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 			for (; i < MAX_SOURCES && (
 					(src = active_sources[i]) == 0
 					|| src->state != MIX_PLAYING
-					|| !mixSDL_SourceGetNextSample (src, &samp));
+					|| !mixSDL_SourceGetNextSample (src, &samp, left));
 					i++)
 				;
 
@@ -2063,6 +2051,8 @@ mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 		}
 		
 		*data = fullsamp;
+		if (chans == 2)
+			left = !left;
 	}
 
 	/* unclip work-buffer */
@@ -2176,6 +2166,8 @@ static void
 mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 {
 	uint8 *end_stream = stream + len;
+	bool left = true;
+	uint32 chans = MIX_FORMAT_CHANS (mixer_format);
 
 	/* keep this order or die */
 	mixSDL_LockMutex (src_mutex);
@@ -2198,7 +2190,7 @@ mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 			for (; i < MAX_SOURCES && (
 					(src = active_sources[i]) == 0
 					|| src->state != MIX_PLAYING
-					|| !mixSDL_SourceGetNextSample (src, &samp));
+					|| !mixSDL_SourceGetNextSample (src, &samp, left));
 					i++)
 				;
 
@@ -2228,6 +2220,8 @@ mixSDL_mix_lowq (void *userdata, uint8 *stream, sint32 len)
 		}
 
 		mixSDL_PutSampleExt (stream, mixer_chansize, fullsamp);
+		if (chans == 2)
+			left = !left;
 	}
 
 	/* keep this order or die */
@@ -2243,6 +2237,8 @@ static void
 mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len)
 {
 	uint8 *end_stream = stream + len;
+	bool left = true;
+	uint32 chans = MIX_FORMAT_CHANS (mixer_format);
 
 	/* keep this order or die */
 	mixSDL_LockMutex (src_mutex);
@@ -2262,10 +2258,12 @@ mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len)
 			for (; i < MAX_SOURCES && (
 					(src = active_sources[i]) == 0
 					|| src->state != MIX_PLAYING
-					|| !mixSDL_SourceGetFakeSample (src, &samp));
+					|| !mixSDL_SourceGetFakeSample (src, &samp, left));
 					i++)
 				;
 		}
+		if (chans == 2)
+			left = !left;
 	}
 
 	/* keep this order or die */

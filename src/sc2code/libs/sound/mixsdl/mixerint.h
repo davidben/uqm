@@ -43,7 +43,6 @@ typedef struct
 	uint32 srcfmt;
 	void *srcdata;
 	uint32 srcsize;
-	uint32 srcfreq;
 	uint32 srcbpc; /* bytes/sample for 1 chan */
 	uint32 srcchans;
 	uint32 srcsamples;
@@ -51,7 +50,6 @@ typedef struct
 	uint32 dstfmt;
 	void *dstdata;
 	uint32 dstsize;
-	uint32 dstfreq;
 	uint32 dstbpc; /* bytes/sample for 1 chan */
 	uint32 dstchans;
 	uint32 dstsamples;
@@ -61,10 +59,7 @@ typedef struct
 } mixSDL_Convertion;
 
 static void mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv);
-static void mixSDL_Resample_frac (mixSDL_Convertion *conv);
 static void mixSDL_ResampleFlat (mixSDL_Convertion *conv);
-static void mixSDL_ResampleUp_fast (mixSDL_Convertion *conv);
-static void mixSDL_ResampleDown_fast (mixSDL_Convertion *conv);
 
 static __inline__ sint32 mixSDL_GetSampleExt (void *src, uint32 bpc);
 static __inline__ sint32 mixSDL_GetSampleInt (void *src, uint32 bpc);
@@ -72,6 +67,10 @@ static __inline__ void mixSDL_PutSampleInt (void *dst, uint32 bpc,
 		sint32 samp);
 static __inline__ void mixSDL_PutSampleExt (void *dst, uint32 bpc,
 		sint32 samp);
+
+static __inline__ sint32 mixSDL_GetResampledInt_nearest (mixSDL_Source *src, bool left);
+static __inline__ sint32 mixSDL_GetResampledInt_linear (mixSDL_Source *src, bool left);
+static __inline__ sint32 mixSDL_GetResampledInt_cubic (mixSDL_Source *src, bool left);
 
 /* Source manipulation */
 static void mixSDL_SourceUnqueueAll (mixSDL_Source *src);
@@ -124,9 +123,9 @@ static void mixSDL_mix_fake (void *userdata, uint8 *stream, sint32 len);
 static void mixSDL_UnclipWorkBuffer (sint32 *data, sint32 *end_data,
 		uint32 step);
 static __inline__ bool mixSDL_SourceGetNextSample (mixSDL_Source *src,
-		sint32* samp);
+		sint32* samp, bool left);
 static __inline__ bool mixSDL_SourceGetFakeSample (mixSDL_Source *src,
-		sint32* psamp);
+		sint32* psamp, bool left);
 
 /* SDL driver */
 static const char* mixSDL_DriverGetName (void);

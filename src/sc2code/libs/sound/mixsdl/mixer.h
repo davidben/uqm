@@ -192,8 +192,10 @@ typedef struct
 	uint32 cprocessed;
 	mixSDL_Buffer *firstqueued; /* first buf in the queue */
 	mixSDL_Buffer *nextqueued;  /* next to play, or 0 */
+	mixSDL_Buffer *prevqueued;  /* previously played */
 	mixSDL_Buffer *lastqueued;  /* last in queue */
 	uint32 curbufofs;
+	double curbufdelta;
 
 } mixSDL_Source;
 
@@ -257,10 +259,6 @@ void mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
 		mixSDL_IntVal *value);
 void mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 		uint32 size, uint32 freq);
-
-void mixSDL_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
-		uint32 srcfreq, uint32 dstfmt, void* dstdata,
-		uint32 dstsize, uint32 dstfreq);
 
 
 /* Make sure the prop-value type is of suitable size

@@ -83,10 +83,6 @@ void TFBSound_GetBufferi (TFBSound_Object bufobj, TFBSound_BufferProp pname,
 void TFBSound_BufferData (TFBSound_Object bufobj, uint32 format, void* data,
 		uint32 size, uint32 freq);
 
-void TFBSound_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
-		uint32 srcfreq, uint32 dstfmt, void* dstdata,
-		uint32 dstsize, uint32 dstfreq);
-
 #define TFBSound_BufferData_Linux alBufferWriteData_LOKI
 enum
 {

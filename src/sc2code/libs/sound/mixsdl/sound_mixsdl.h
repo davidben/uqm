@@ -55,7 +55,6 @@
 #define TFBSound_IsBuffer         mixSDL_IsBuffer
 #define TFBSound_GetBufferi       mixSDL_GetBufferi
 #define TFBSound_BufferData       mixSDL_BufferData
-#define TFBSound_ConvertBuffer    mixSDL_ConvertBuffer
 
 #define TFBSOUND_GAIN              MIX_GAIN
 #define TFBSOUND_BUFFER            MIX_BUFFER

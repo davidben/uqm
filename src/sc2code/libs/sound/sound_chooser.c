@@ -244,18 +244,6 @@ TFBSound_BufferData (TFBSound_Object bufobj, uint32 format, void* data,
 		mixSDL_BufferData ((mixSDL_Object) bufobj, format, data, size, freq);
 }
 
-void
-TFBSound_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
-		uint32 srcfreq, uint32 dstfmt, void* dstdata,
-		uint32 dstsize, uint32 dstfreq)
-{
-	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
-		fprintf (stderr, "ConvertBuffer is not supported bu openAL\n");
-	else
-		mixSDL_ConvertBuffer (srcfmt, srcdata, srcsize, srcfreq, dstfmt, dstdata,
-				dstsize, dstfreq);
-}
-
 int 
 TFB_choose_InitSound (int driver, int flags)
 {

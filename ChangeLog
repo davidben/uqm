@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- MixSDL now handles resampling correctly (less cracklings);
+  added cubic interpolation for high quality mode -Mika
 - Removed the redundant "GameExiting" variable -Michael
 - Added quit options to ingame menu (bug #409), from Paxtez
 - Fix position of blinking save/load in melee (bug #406), from Paxtez
