@@ -1362,7 +1362,8 @@ parse_joybinding (parse_state *state, int *target)
 				{
 					if (VControl_AddJoyAxisBinding (sticknum, axisnum, polarity, target))
 					{
-						state->error = 1;
+						// Don't count this as an error
+						// state->error = 1;
 					}
 				}
 			}
@@ -1376,7 +1377,8 @@ parse_joybinding (parse_state *state, int *target)
 			{
 				if (VControl_AddJoyButtonBinding (sticknum, buttonnum, target))
 				{
-					state->error = 1;
+					// Don't count this as an error
+					// state->error = 1;
 				}
 			}
 		}
@@ -1392,7 +1394,8 @@ parse_joybinding (parse_state *state, int *target)
 				{
 					if (VControl_AddJoyHatBinding (sticknum, hatnum, dir, target))
 					{
-						state->error = 1;
+						// Don't count this as an error
+						// state->error = 1;
 					}
 				}
 			}
