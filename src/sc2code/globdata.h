@@ -877,6 +877,7 @@ typedef UWORD ACTIVITY;
 
 typedef struct
 {
+	// XXX: cur_state is obsolete now and was replaced by process.c:zoom_out
 	BYTE cur_state, glob_flags;
 
 	BYTE CrewCost, FuelCost;

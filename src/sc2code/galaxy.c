@@ -22,10 +22,15 @@
 #include "globdata.h"
 #include "init.h"
 #include "units.h"
+#include "options.h"
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
+#include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 
+
+extern COUNT zoom_out;
+extern PRIM_LINKS DisplayLinks;
 
 //Added by Chris
 
@@ -283,101 +288,108 @@ InitGalaxy (void)
 	SortStarBlock (&StarBlock[2]);
 }
 
+static BOOLEAN
+CmpMovePoints (const PPOINT pt1, const PPOINT pt2, SIZE dx, SIZE dy,
+			   SIZE reduction)
+{
+	if (optMeleeScale == TFB_SCALE_STEP)
+	{
+		return (int)pt1->x != (int)((pt2->x - dx) >> reduction)
+			|| (int)pt1->y != (int)((pt2->y - dy) >> reduction);
+	}
+	else
+	{
+		return (int)pt1->x != (int)(((pt2->x - dx) << ZOOM_SHIFT) / reduction)
+			|| (int)pt1->y != (int)(((pt2->y - dy) << ZOOM_SHIFT) / reduction);
+	}
+}
+
 void
 MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 {
 	PPRIMITIVE pprim;
+	static const COUNT star_counts[] =
+	{
+		BIG_STAR_COUNT,
+		MED_STAR_COUNT,
+		SML_STAR_COUNT
+	};
+	static const COUNT star_frame_ofs[] = { 32 + 26, 26, 0 };
 
 	if (view_state != VIEW_STABLE)
 	{
-#ifdef OLD_ZOOM
-		BYTE reduction;
-#else
 		COUNT reduction;
-#endif
 		COUNT i;
+		COUNT iss;
 		PPOINT ppt;
+		int wrap_around;
 
-#ifdef OLD_ZOOM
-		reduction = GLOBAL (cur_state);
-#else
-		{
-			extern COUNT zoom_out;
-			
-			reduction = zoom_out;
-		}
-#endif
+		reduction = zoom_out;
+
 		if (view_state == VIEW_CHANGE)
 		{
-			pprim = DisplayArray;
-			i = BIG_STAR_COUNT;
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 			{
-				do
+				for (iss = 0, pprim = DisplayArray; iss < 2; ++iss)
 				{
-					pprim->Object.Stamp.frame =
-							SetAbsFrameIndex (stars_in_space,
-							((COUNT)TFB_Random () & 31) + (32 + 26));
-					++pprim;
-				} while (--i);
-
-				i = MED_STAR_COUNT;
-				do
-				{
-					pprim->Object.Stamp.frame =
-							SetAbsFrameIndex (stars_in_space,
-							((COUNT)TFB_Random () & 31) + 26);
-					++pprim;
-				} while (--i);
+					for (i = star_counts[iss]; i > 0; --i, ++pprim)
+					{
+						pprim->Object.Stamp.frame =	SetAbsFrameIndex (
+								stars_in_space,
+									(COUNT)(TFB_Random () & 31)
+									+ star_frame_ofs[iss]);
+					}
+				}
 			}
 			else
 			{
-				GRAPHICS_PRIM star_object, big_star_obj;
-				FRAME star_frame;
+				GRAPHICS_PRIM star_object[2];
+				FRAME star_frame[2];
 
-				star_frame = stars_in_space;
-#ifdef OLD_ZOOM
-				big_star_obj = STAMP_PRIM;
-				if (reduction > 0)
-					star_object = POINT_PRIM;
-				else
-				{
-					star_frame = IncFrameIndex (star_frame);
-					star_object = STAMP_PRIM;
+				star_frame[0] = IncFrameIndex (stars_in_space);
+				star_frame[1] = stars_in_space;
+			
+				if (optMeleeScale == TFB_SCALE_STEP)
+				{	/* on PC, the closest stars are images when zoomed out */
+					star_object[0] = STAMP_PRIM;
+					if (reduction > 0)
+					{
+						star_object[1] = POINT_PRIM;
+						star_frame[0] = star_frame[1];
+					}
+					else
+					{
+						star_object[1] = STAMP_PRIM;
+					}
 				}
-#else
-				if (reduction > (1 << ZOOM_SHIFT))
-					big_star_obj = star_object = POINT_PRIM;
 				else
-				{
-					big_star_obj = star_object = STAMP_PRIM;
-					star_frame = IncFrameIndex (star_frame);
-					star_object = POINT_PRIM;
+				{	/* on 3DO, the closest stars are pixels when zoomed out */
+					star_object[1] = POINT_PRIM;
+					if (reduction > (1 << ZOOM_SHIFT))
+					{
+						star_object[0] = POINT_PRIM;
+					}
+					else
+					{
+						star_object[0] = STAMP_PRIM;
+					}
 				}
-#endif
 
-				do
+				for (iss = 0, pprim = DisplayArray; iss < 2; ++iss)
 				{
-					SetPrimType (pprim, big_star_obj);
-					pprim->Object.Stamp.frame = star_frame;
-					++pprim;
-				} while (--i);
-
-				pprim = &DisplayArray[BIG_STAR_COUNT];
-				i = MED_STAR_COUNT;
-				do
-				{
-					SetPrimType (pprim, star_object);
-					++pprim;
-				} while (--i);
+					for (i = star_counts[iss]; i > 0; --i, ++pprim)
+					{
+						SetPrimType (pprim, star_object[iss]);
+						pprim->Object.Stamp.frame = star_frame[iss];
+					}
+				}
 			}
 		}
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 		{
-			pprim = DisplayArray;
-			i = BIG_STAR_COUNT + MED_STAR_COUNT;
-			do
+			for (i = BIG_STAR_COUNT + MED_STAR_COUNT, pprim = DisplayArray;
+					i > 0; --i, ++pprim)
 			{
 				COUNT base_index;
 
@@ -385,8 +397,7 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 				pprim->Object.Stamp.frame =
 						SetAbsFrameIndex (pprim->Object.Stamp.frame,
 						((base_index & ~31) + ((base_index + 1) & 31)) + 26);
-				++pprim;
-			} while (--i);
+			}
 
 			dx <<= 3;
 			dy <<= 3;
@@ -400,11 +411,10 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 		{
 			dx = SpaceOrg.x;
 			dy = SpaceOrg.y;
-#ifdef OLD_ZOOM
-			reduction += ONE_SHIFT;
-#else
-			reduction <<= ONE_SHIFT;
-#endif
+			if (optMeleeScale == TFB_SCALE_STEP)
+				reduction += ONE_SHIFT;
+			else
+				reduction <<= ONE_SHIFT;
 		}
 		else
 		{
@@ -414,110 +424,42 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 			dy = (COORD)(LOG_SPACE_HEIGHT >> 1)
 					- (LOG_SPACE_HEIGHT >> ((MAX_REDUCTION + 1)
 					- MAX_VIS_REDUCTION));
-#ifdef OLD_ZOOM
-			reduction = (COUNT)(MAX_VIS_REDUCTION + ONE_SHIFT);
-#else
-			reduction = MAX_ZOOM_OUT << ONE_SHIFT;
-#endif
+			if (optMeleeScale == TFB_SCALE_STEP)
+				reduction = MAX_VIS_REDUCTION + ONE_SHIFT;
+			else
+				reduction = MAX_ZOOM_OUT << ONE_SHIFT;
 		}
 
 		ppt = log_star_array;
-		pprim = DisplayArray;
-
-		if (view_state == VIEW_CHANGE
-#ifdef OLD_ZOOM
-				|| (int)pprim->Object.Point.x != (int)((ppt->x - dx) >> reduction)
-				|| (int)pprim->Object.Point.y != (int)((ppt->y - dy) >> reduction))
-#else
-				|| (int)pprim->Object.Point.x != (int)(((ppt->x - dx) << ZOOM_SHIFT) / reduction)
-				|| (int)pprim->Object.Point.y != (int)(((ppt->y - dy) << ZOOM_SHIFT) / reduction))
-#endif
+		for (iss = 0, pprim = DisplayArray, wrap_around = LOG_SPACE_WIDTH;
+				iss < 3 && 
+				(view_state == VIEW_CHANGE || CmpMovePoints (
+					&pprim->Object.Point, ppt, dx, dy, reduction));
+				++iss, wrap_around <<= 1, dx <<= 1, dy <<= 1)
 		{
-			i = BIG_STAR_COUNT;
-			do
+			for (i = star_counts[iss]; i > 0; --i, ++pprim, ++ppt)
 			{
-// ppt->x &= (LOG_SPACE_WIDTH - 1);
-ppt->x = WRAP_VAL (ppt->x, LOG_SPACE_WIDTH);
-#ifdef OLD_ZOOM
-				pprim->Object.Point.x = (ppt->x - dx) >> reduction;
-				pprim->Object.Point.y = (ppt->y - dy) >> reduction;
-#else
-				pprim->Object.Point.x = ((ppt->x - dx) << ZOOM_SHIFT) / reduction;
-				pprim->Object.Point.y = ((ppt->y - dy) << ZOOM_SHIFT) / reduction;
-#endif
-				++pprim, ++ppt;
-			} while (--i);
-			dx <<= 1;
-			dy <<= 1;
-#ifdef OLD_ZOOM
-			++reduction;
-#else
-			reduction <<= 1;
-#endif
-
-			if (view_state == VIEW_CHANGE
-#ifdef OLD_ZOOM
-					|| pprim->Object.Point.x != (ppt->x - dx) >> reduction
-					|| pprim->Object.Point.y != (ppt->y - dy) >> reduction)
-#else
-					|| (int)(pprim->Object.Point.x) != (int)(((ppt->x - dx) << ZOOM_SHIFT) / reduction)
-					|| (int)(pprim->Object.Point.y) != (int)(((ppt->y - dy) << ZOOM_SHIFT) / reduction))
-#endif
-			{
-				i = MED_STAR_COUNT;
-				do
+				// ppt->x &= (LOG_SPACE_WIDTH - 1);
+				ppt->x = WRAP_VAL (ppt->x, wrap_around);
+				if (optMeleeScale == TFB_SCALE_STEP)
 				{
-// ppt->x &= ((LOG_SPACE_WIDTH << 1) - 1);
-ppt->x = WRAP_VAL (ppt->x, LOG_SPACE_WIDTH << 1);
-#ifdef OLD_ZOOM
 					pprim->Object.Point.x = (ppt->x - dx) >> reduction;
 					pprim->Object.Point.y = (ppt->y - dy) >> reduction;
-#else
-					pprim->Object.Point.x = ((ppt->x - dx) << ZOOM_SHIFT) / reduction;
-					pprim->Object.Point.y = ((ppt->y - dy) << ZOOM_SHIFT) / reduction;
-#endif
-					++pprim, ++ppt;
-				} while (--i);
-				dx <<= 1;
-				dy <<= 1;
-#ifdef OLD_ZOOM
-				++reduction;
-#else
-				reduction <<= 1;
-#endif
-
-				if (view_state == VIEW_CHANGE
-#ifdef OLD_ZOOM
-						|| pprim->Object.Point.x != (ppt->x - dx) >> reduction
-						|| pprim->Object.Point.y != (ppt->y - dy) >> reduction)
-#else
-						|| (int)(pprim->Object.Point.x) != (int)(((ppt->x - dx) << ZOOM_SHIFT) / reduction)
-						|| (int)(pprim->Object.Point.y) != (int)(((ppt->y - dy) << ZOOM_SHIFT) / reduction))
-#endif
+				}
+				else
 				{
-					i = SML_STAR_COUNT;
-					do
-					{
-// ppt->x &= ((LOG_SPACE_WIDTH << 2) - 1);
-ppt->x = WRAP_VAL (ppt->x, LOG_SPACE_WIDTH << 2);
-#ifdef OLD_ZOOM
-						pprim->Object.Point.x = (ppt->x - dx) >> reduction;
-						pprim->Object.Point.y = (ppt->y - dy) >> reduction;
-#else
-						pprim->Object.Point.x = ((ppt->x - dx) << ZOOM_SHIFT) / reduction;
-						pprim->Object.Point.y = ((ppt->y - dy) << ZOOM_SHIFT) / reduction;
-#endif
-						++pprim, ++ppt;
-					} while (--i);
+					pprim->Object.Point.x = ((ppt->x - dx) << ZOOM_SHIFT)
+							/ reduction;
+					pprim->Object.Point.y = ((ppt->y - dy) << ZOOM_SHIFT)
+							/ reduction;
 				}
 			}
+			if (optMeleeScale == TFB_SCALE_STEP)
+				++reduction;
+			else
+				reduction <<= 1;
 		}
 	}
 
-	{
-		extern PRIM_LINKS DisplayLinks;
-
-		DisplayLinks = MakeLinks (NUM_STARS - 1, 0);
-	}
+	DisplayLinks = MakeLinks (NUM_STARS - 1, 0);
 }
-

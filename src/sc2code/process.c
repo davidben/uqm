@@ -36,37 +36,36 @@ COUNT DisplayFreeList;
 PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 extern POINT SpaceOrg;
 
-#ifndef OLD_ZOOM
 SIZE zoom_out = 1 << ZOOM_SHIFT;
-#endif
+static SIZE opt_max_zoom_out;
 
 #if 0
-#define CALC_ZOOM_STUFF(idx,sc) \
-	do \
-	{ \
-		int i, z; \
-		\
-		z = 1 << ZOOM_SHIFT; \
-		for (i = 0; (z <<= 1) <= zoom_out; i++) \
-			; \
-		*(idx) = i; \
-		*(sc) = ((1 << i) << (ZOOM_SHIFT + 8)) / zoom_out; \
-	} while (0)
+static void inline
+CALC_ZOOM_STUFF (COUNT* idx, COUNT* sc)
+{
+	int i, z;
+
+	z = 1 << ZOOM_SHIFT;
+	for (i = 0; (z <<= 1) <= zoom_out; i++)
+		;
+	*idx = i;
+	*sc = ((1 << i) << (ZOOM_SHIFT + 8)) / zoom_out;
+}
 #else
-#define CALC_ZOOM_STUFF(idx,sc) \
-	do \
-	{ \
-		int i; \
-		\
-		if (zoom_out < 2 << ZOOM_SHIFT) \
-			i = 0; \
-		else if (zoom_out < 4 << ZOOM_SHIFT) \
-			i = 1; \
-		else \
-			i = 2; \
-		*(idx) = i; \
-		*(sc) = (1 << (i + ZOOM_SHIFT + 8)) / zoom_out; \
-	} while (0)
+static void inline
+CALC_ZOOM_STUFF (COUNT* idx, COUNT* sc)
+{
+	int i;
+
+	if (zoom_out < 2 << ZOOM_SHIFT)
+		i = 0;
+	else if (zoom_out < 4 << ZOOM_SHIFT)
+		i = 1;
+	else
+		i = 2;
+	*idx = i;
+	*sc = (1 << (i + ZOOM_SHIFT + 8)) / zoom_out;
+}
 #endif
 
 HELEMENT
@@ -195,34 +194,35 @@ PostProcess (ELEMENTPTR ElementPtr)
 			| POST_PROCESS;
 }
 
-#ifdef OLD_ZOOM
-static BYTE
-CalcReduction (SIZE dx, SIZE dy)
-#else
 static COUNT
 CalcReduction (SIZE dx, SIZE dy)
-#endif
 {
-#ifdef OLD_ZOOM
-	BYTE next_reduction;
-	SIZE sdx, sdy;
+	COUNT next_reduction;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) > IN_ENCOUNTER)
-		return (0);
+#ifdef KDEBUG
+	fprintf (stderr, "CalcReduction:\n");
+#endif
 
-	sdx = dx;
-	sdy = dy;
-	for (next_reduction = MAX_VIS_REDUCTION;
-			(dx <<= REDUCTION_SHIFT) <= TRANSITION_WIDTH
-			&& (dy <<= REDUCTION_SHIFT) <= TRANSITION_HEIGHT
-			&& next_reduction > 0;
-			next_reduction -= REDUCTION_SHIFT)
-		;
-
-			/* check for "real" zoom in */
-	if (next_reduction < GLOBAL (cur_state)
-			&& GLOBAL (cur_state) <= MAX_VIS_REDUCTION)
+	if (optMeleeScale == TFB_SCALE_STEP)
 	{
+		SIZE sdx, sdy;
+
+		if (LOBYTE (GLOBAL (CurrentActivity)) > IN_ENCOUNTER)
+			return (0);
+
+		sdx = dx;
+		sdy = dy;
+		for (next_reduction = MAX_VIS_REDUCTION;
+				(dx <<= REDUCTION_SHIFT) <= TRANSITION_WIDTH
+				&& (dy <<= REDUCTION_SHIFT) <= TRANSITION_HEIGHT
+				&& next_reduction > 0;
+				next_reduction -= REDUCTION_SHIFT)
+			;
+
+				/* check for "real" zoom in */
+		if (next_reduction < zoom_out
+				&& zoom_out <= MAX_VIS_REDUCTION)
+		{
 #define HYSTERESIS_X DISPLAY_TO_WORLD(24)
 #define HYSTERESIS_Y DISPLAY_TO_WORLD(20)
 		if (((sdx + HYSTERESIS_X)
@@ -231,56 +231,49 @@ CalcReduction (SIZE dx, SIZE dy)
 				<< (MAX_VIS_REDUCTION - next_reduction)) > TRANSITION_HEIGHT)
 		   /* if we don't zoom in, we want to stay at next+1 */
 		   next_reduction += REDUCTION_SHIFT;
+		}
+
+		if (next_reduction == 0
+				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
+			next_reduction += REDUCTION_SHIFT;
+	}
+	else
+	{
+		if (LOBYTE (GLOBAL (CurrentActivity)) > IN_ENCOUNTER)
+			return (1 << ZOOM_SHIFT);
+			
+		dx = (dx * MAX_ZOOM_OUT) / (LOG_SPACE_WIDTH >> 2);
+		if (dx < (1 << ZOOM_SHIFT))
+			dx = 1 << ZOOM_SHIFT;
+		else if (dx > MAX_ZOOM_OUT)
+			dx = MAX_ZOOM_OUT;
+			
+		dy = (dy * MAX_ZOOM_OUT) / (LOG_SPACE_HEIGHT >> 2);
+		if (dy < (1 << ZOOM_SHIFT))
+			dy = 1 << ZOOM_SHIFT;
+		else if (dy > MAX_ZOOM_OUT)
+			dy = MAX_ZOOM_OUT;
+			
+		if (dy > dx)
+			next_reduction = dy;
+		else
+			next_reduction = dx;
+
+		if (next_reduction < (2 << ZOOM_SHIFT)
+				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
+			next_reduction = (2 << ZOOM_SHIFT);
 	}
 
-	if (next_reduction == 0
-			&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-		next_reduction += REDUCTION_SHIFT;
-#else
-	COUNT next_reduction;
-#ifdef KDEBUG
-	fprintf (stderr, "CalcReduction:\n");
-#endif
-	if (LOBYTE (GLOBAL (CurrentActivity)) > IN_ENCOUNTER)
-		return (1 << ZOOM_SHIFT);
-		
-	dx = (dx * MAX_ZOOM_OUT) / (LOG_SPACE_WIDTH >> 2);
-	if (dx < (1 << ZOOM_SHIFT))
-		dx = 1 << ZOOM_SHIFT;
-	else if (dx > MAX_ZOOM_OUT)
-		dx = MAX_ZOOM_OUT;
-		
-	dy = (dy * MAX_ZOOM_OUT) / (LOG_SPACE_HEIGHT >> 2);
-	if (dy < (1 << ZOOM_SHIFT))
-		dy = 1 << ZOOM_SHIFT;
-	else if (dy > MAX_ZOOM_OUT)
-		dy = MAX_ZOOM_OUT;
-		
-	if (dy > dx)
-		next_reduction = dy;
-	else
-		next_reduction = dx;
-
-	if (next_reduction < (2 << ZOOM_SHIFT)
-			&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-		next_reduction = (2 << ZOOM_SHIFT);
 #ifdef KDEBUG
 	fprintf (stderr, "CalcReduction: exit\n");
-#endif
 #endif
 
 	return (next_reduction);
 }
 
-#ifdef OLD_ZOOM
-static VIEW_STATE
-CalcView (PPOINT pNewScrollPt, BYTE next_reduction,
-		PSIZE pdx, PSIZE pdy, COUNT ships_alive)
-#else
 static VIEW_STATE
 CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 		PSIZE pdx, PSIZE pdy, COUNT ships_alive)
-#endif
 {
 	SIZE dx, dy;
 	VIEW_STATE view_state;
@@ -309,39 +302,36 @@ CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 	if ((dx || dy) && LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 		MoveSIS (&dx, &dy);
 
-#ifdef OLD_ZOOM
-	if (GLOBAL (cur_state) == next_reduction)
-#else
 	if (zoom_out == next_reduction)
-#endif
 		view_state = dx == 0 && dy == 0
 				&& LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE
 				? VIEW_STABLE : VIEW_SCROLL;
 	else
 	{
-#ifdef OLD_ZOOM
-		GLOBAL (cur_state) = next_reduction;
-
-		SpaceOrg.x = (COORD)(LOG_SPACE_WIDTH >> 1)
-				- (LOG_SPACE_WIDTH >> ((MAX_REDUCTION + 1) - next_reduction));
-		SpaceOrg.y = (COORD)(LOG_SPACE_HEIGHT >> 1)
-				- (LOG_SPACE_HEIGHT >> ((MAX_REDUCTION + 1) - next_reduction));
-#else
+		if (optMeleeScale == TFB_SCALE_STEP)
+		{
+			SpaceOrg.x = (COORD)(LOG_SPACE_WIDTH >> 1)
+					- (LOG_SPACE_WIDTH >> ((MAX_REDUCTION + 1)
+					- next_reduction));
+			SpaceOrg.y = (COORD)(LOG_SPACE_HEIGHT >> 1)
+					- (LOG_SPACE_HEIGHT >> ((MAX_REDUCTION + 1)
+					- next_reduction));
+		}
+		else
+		{
 #define ZOOM_JUMP ((1 << ZOOM_SHIFT) >> 3)
-		if (ships_alive == 1
-				&& zoom_out > next_reduction
-				&& zoom_out <= MAX_ZOOM_OUT
-				&& zoom_out - next_reduction > ZOOM_JUMP)
-			next_reduction = zoom_out - ZOOM_JUMP;
-			
+			if (ships_alive == 1
+					&& zoom_out > next_reduction
+					&& zoom_out <= MAX_ZOOM_OUT
+					&& zoom_out - next_reduction > ZOOM_JUMP)
+				next_reduction = zoom_out - ZOOM_JUMP;
+				
+			SpaceOrg.x = (int)(LOG_SPACE_WIDTH >> 1)
+					- (LOG_SPACE_WIDTH * next_reduction / (MAX_ZOOM_OUT << 2));
+			SpaceOrg.y = (int)(LOG_SPACE_HEIGHT >> 1)
+					- (LOG_SPACE_HEIGHT * next_reduction / (MAX_ZOOM_OUT << 2));
+		}
 		zoom_out = next_reduction;
-
-		SpaceOrg.x = (int)(LOG_SPACE_WIDTH >> 1)
-				- (LOG_SPACE_WIDTH * next_reduction / (MAX_ZOOM_OUT << 2));
-		SpaceOrg.y = (int)(LOG_SPACE_HEIGHT >> 1)
-				- (LOG_SPACE_HEIGHT * next_reduction / (MAX_ZOOM_OUT << 2));
-#endif
-
 		view_state = VIEW_CHANGE;
 	}
 
@@ -630,11 +620,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 static VIEW_STATE
 PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 {
-#ifdef OLD_ZOOM
-	BYTE min_reduction, max_reduction;
-#else
 	SIZE min_reduction, max_reduction;
-#endif
 	COUNT num_ships;
 	POINT Origin;
 	HELEMENT hElement;
@@ -646,11 +632,11 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	num_ships = (LOBYTE (battle_counter) ? 1 : 0)
 			+ (HIBYTE (battle_counter) ? 1 : 0);
 
-#ifdef OLD_ZOOM
-	min_reduction = max_reduction = MAX_VIS_REDUCTION + 1;
-#else
-	min_reduction = max_reduction = MAX_ZOOM_OUT + (1 << ZOOM_SHIFT);
-#endif
+	if (optMeleeScale == TFB_SCALE_STEP)
+		min_reduction = max_reduction = MAX_VIS_REDUCTION + 1;
+	else
+		min_reduction = max_reduction = MAX_ZOOM_OUT + (1 << ZOOM_SHIFT);
+
 	Origin.x = (COORD)(LOG_SPACE_WIDTH >> 1);
 	Origin.y = (COORD)(LOG_SPACE_HEIGHT >> 1);
 
@@ -677,13 +663,8 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 			SIZE dx, dy;
 
 			ships_alive++;
-#ifdef OLD_ZOOM
-			if (max_reduction > MAX_VIS_REDUCTION
-					&& min_reduction > MAX_VIS_REDUCTION)
-#else
-			if (max_reduction > MAX_ZOOM_OUT
-					&& min_reduction > MAX_ZOOM_OUT)
-#endif
+			if (max_reduction > opt_max_zoom_out
+					&& min_reduction > opt_max_zoom_out)
 			{
 				Origin.x = DISPLAY_ALIGN (ElementPtr->next.location.x);
 				Origin.y = DISPLAY_ALIGN (ElementPtr->next.location.y);
@@ -705,13 +686,8 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 					dy = -dy;
 				max_reduction = CalcReduction (dx, dy);
 			}
-#ifdef OLD_ZOOM
-			else if (max_reduction > MAX_VIS_REDUCTION
-					&& min_reduction <= MAX_VIS_REDUCTION)
-#else
-			else if (max_reduction > MAX_ZOOM_OUT
-					&& min_reduction <= MAX_ZOOM_OUT)
-#endif
+			else if (max_reduction > opt_max_zoom_out
+					&& min_reduction <= opt_max_zoom_out)
 			{
 				Origin.x = DISPLAY_ALIGN (Origin.x + (dx >> 1));
 				Origin.y = DISPLAY_ALIGN (Origin.y + (dy >> 1));
@@ -724,11 +700,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 			}
 			else
 			{
-#ifdef OLD_ZOOM
-				BYTE reduction;
-#else
 				SIZE reduction;
-#endif
 
 				if (dx < 0)
 					dx = -dx;
@@ -736,13 +708,8 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 					dy = -dy;
 				reduction = CalcReduction (dx << 1, dy << 1);
 
-#ifdef OLD_ZOOM
-				if (min_reduction > MAX_VIS_REDUCTION
+				if (min_reduction > opt_max_zoom_out
 						|| reduction < min_reduction)
-#else
-				if (min_reduction > MAX_ZOOM_OUT
-						|| reduction < min_reduction)
-#endif
 					min_reduction = reduction;
 			}
 //			fprintf (stderr, "dx = %d dy = %d min_red = %d max_red = %d\n",
@@ -753,17 +720,13 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 		hElement = hNextElement;
 	}
 
-#ifdef OLD_ZOOM
-	if ((min_reduction > MAX_VIS_REDUCTION || min_reduction <= max_reduction)
-			&& (min_reduction = max_reduction) > MAX_VIS_REDUCTION
-			&& (min_reduction = GLOBAL (cur_state)) > MAX_VIS_REDUCTION)
-		min_reduction = 0;
-#else
-	if ((min_reduction > MAX_ZOOM_OUT || min_reduction <= max_reduction)
-			&& (min_reduction = max_reduction) > MAX_ZOOM_OUT
-			&& (min_reduction = zoom_out) > MAX_ZOOM_OUT)
-		min_reduction = 1 << ZOOM_SHIFT;
-#endif
+	if ((min_reduction > opt_max_zoom_out || min_reduction <= max_reduction)
+			&& (min_reduction = max_reduction) > opt_max_zoom_out
+			&& (min_reduction = zoom_out) > opt_max_zoom_out)
+		if (optMeleeScale == TFB_SCALE_STEP)
+			min_reduction = 0;
+		else
+			min_reduction = 1 << ZOOM_SHIFT;
 
 #ifdef KDEBUG
 	fprintf (stderr, "PreProcess: exit\n");
@@ -808,44 +771,34 @@ InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI)
 
 PRIM_LINKS DisplayLinks;
 
-#ifdef OLD_ZOOM
-/* old fixed-step zoom style */
-static inline COORD
-CalcDisplayCoord (COORD c, COORD orgc, BYTE reduction)
-{
-	return (c - orgc) >> reduction;
-}
-
-#else /* OLD_ZOOM */
-
-/* new continuous zoom style */
 static inline COORD
 CalcDisplayCoord (COORD c, COORD orgc, SIZE reduction)
 {
-	return ((c - orgc) << ZOOM_SHIFT) / reduction;
+	if (optMeleeScale == TFB_SCALE_STEP)
+	{	/* old fixed-step zoom style */
+		return (c - orgc) >> reduction;
+	}
+	else
+	{	/* new continuous zoom style */
+		return ((c - orgc) << ZOOM_SHIFT) / reduction;
+	}
 }
-#endif /* OLD_ZOOM */
 
 static void
 PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 		SIZE scroll_y)
 {
 	POINT delta;
-#ifdef OLD_ZOOM
-	BYTE reduction;
-#else
 	SIZE reduction;
-#endif
 	HELEMENT hElement;
 
 #ifdef KDEBUG
 	fprintf (stderr, "PostProcess:\n");
 #endif
-#ifdef OLD_ZOOM
-	reduction = (BYTE)(GLOBAL (cur_state) + ONE_SHIFT);
-#else
-	reduction = zoom_out << ONE_SHIFT;
-#endif
+	if (optMeleeScale == TFB_SCALE_STEP)
+		reduction = zoom_out + ONE_SHIFT;
+	else
+		reduction = zoom_out << ONE_SHIFT;
 
 	hElement = GetHeadElement ();
 	while (hElement != 0)
@@ -951,29 +904,18 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 					DisplayArray[ElementPtr->PrimIndex].Object.Point.y =
 							CalcDisplayCoord (next.y, SpaceOrg.y, reduction);
 
-					if (ObjType == STAMP_PRIM
-							|| ObjType == STAMPFILL_PRIM)
+					if (ObjType == STAMP_PRIM || ObjType == STAMPFILL_PRIM)
 					{
 						if (view_state == VIEW_CHANGE
 								|| (state_flags & (APPEARING | CHANGING)))
 						{
-#ifdef OLD_ZOOM
-							ElementPtr->next.image.frame =
-#ifdef SAFE
-									SetAbsFrameIndex (
-									ElementPtr->next.image.farray
-									[GLOBAL (cur_state)],
-									GetFrameIndex (ElementPtr->next.image.frame));
-#else /* SAFE */
-									SetEquFrameIndex (
-									ElementPtr->next.image.farray
-									[GLOBAL (cur_state)],
-									ElementPtr->next.image.frame);
-#endif /* SAFE */
-#else
-							COUNT index, scale;
-							
-							CALC_ZOOM_STUFF (&index, &scale);
+							COUNT index, scale = GSCALE_IDENTITY;
+						
+							if (optMeleeScale == TFB_SCALE_STEP)
+								index = zoom_out;
+							else
+								CALC_ZOOM_STUFF (&index, &scale);
+
 							ElementPtr->next.image.frame =
 #ifdef SAFE
 									SetAbsFrameIndex (
@@ -986,6 +928,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 									[index],
 									ElementPtr->next.image.frame);
 #endif /* SAFE */
+
 							if (optMeleeScale == TFB_SCALE_TRILINEAR && index < 2 && scale != 256)
 							{
 								// enqueues drawcommand to assign next (smaller) zoom
@@ -1009,7 +952,6 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 									TFB_EnqueueDrawCommand (&DC);
 								}
 							}
-#endif
 						}
 						DisplayArray[ElementPtr->PrimIndex].Object.Stamp.frame =
 								ElementPtr->next.image.frame;
@@ -1040,11 +982,16 @@ InitDisplayList (void)
 {
 	COUNT i;
 
-#ifdef OLD_ZOOM
-	GLOBAL (cur_state) = MAX_VIS_REDUCTION + 1;
-#else
-	zoom_out = MAX_ZOOM_OUT + (1 << ZOOM_SHIFT);
-#endif
+	if (optMeleeScale == TFB_SCALE_STEP)
+	{
+		zoom_out = MAX_VIS_REDUCTION + 1;
+		opt_max_zoom_out = MAX_VIS_REDUCTION;
+	}
+	else
+	{
+		zoom_out = MAX_ZOOM_OUT + (1 << ZOOM_SHIFT);
+		opt_max_zoom_out = MAX_ZOOM_OUT;
+	}
 
 	ReinitQueue (&disp_q);
 
@@ -1083,14 +1030,15 @@ RedrawQueue (BOOLEAN clear)
 			nth_frame += skip_frames;
 			if (clear)
 				ClearDrawable (); // this is for BATCH_BUILD_PAGE effect, but not scaled by SetGraphicScale
-#ifndef OLD_ZOOM
+
+			if (optMeleeScale != TFB_SCALE_STEP)
 			{
 				COUNT index, scale;
 
 				CALC_ZOOM_STUFF (&index, &scale);
 				SetGraphicScale (scale);
 			}
-#endif
+
 			DrawBatch (DisplayArray, DisplayLinks, 0);//BATCH_BUILD_PAGE);
 			SetGraphicScale (0);
 		}

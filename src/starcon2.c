@@ -414,6 +414,8 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 					options->meleeScale = TFB_SCALE_NEAREST;
 				else if (!strcmp (optarg, "trilinear"))
 					options->meleeScale = TFB_SCALE_TRILINEAR;
+				else if (!strcmp (optarg, "step") || !strcmp (optarg, "pc"))
+					options->meleeScale = TFB_SCALE_STEP;
 				else
 				{
 					InvalidArgument(optarg, "--meleescale or -b");

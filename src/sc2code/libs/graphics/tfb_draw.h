@@ -33,6 +33,7 @@ typedef enum {
 } SCREEN;
 
 typedef enum {
+	TFB_SCALE_STEP, /* not really a scaler */
 	TFB_SCALE_NEAREST,
 	TFB_SCALE_TRILINEAR
 } SCALE;
