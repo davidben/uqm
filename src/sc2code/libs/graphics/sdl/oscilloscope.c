@@ -35,30 +35,30 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
 {
 	TFB_Image *img = (TFB_Image *)((BYTE *)f + f->DataOffs);
 
-	assert (img->NormalImg->format->BytesPerPixel == 1);
-	assert (img->NormalImg->w == RADAR_WIDTH);
-	assert (img->NormalImg->h == RADAR_HEIGHT);
+	assert (((SDL_Surface *)img->NormalImg)->format->BytesPerPixel == 1);
+	assert (((SDL_Surface *)img->NormalImg)->w == RADAR_WIDTH);
+	assert (((SDL_Surface *)img->NormalImg)->h == RADAR_HEIGHT);
 
 	if (scope_init == 0)
 	{
 		int i;
 
 		LockMutex (img->mutex);
-		scope_bg = SDL_CreateRGBSurface (SDL_SWSURFACE, img->NormalImg->w, 
-			img->NormalImg->h, 8, 
+		scope_bg = SDL_CreateRGBSurface (SDL_SWSURFACE, ((SDL_Surface *)img->NormalImg)->w, 
+			((SDL_Surface *)img->NormalImg)->h, 8, 
 			0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
-		scope_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img->NormalImg->w, 
-			img->NormalImg->h, 8, 
+		scope_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, ((SDL_Surface *)img->NormalImg)->w, 
+			((SDL_Surface *)img->NormalImg)->h, 8, 
 			0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
 		
 		for (i = 0; i < 256; ++i)
 		{
 			scope_bg->format->palette->colors[i].r = scope_surf->format->palette->colors[i].r = 
-				img->NormalImg->format->palette->colors[i].r;
+				((SDL_Surface *)img->NormalImg)->format->palette->colors[i].r;
 			scope_bg->format->palette->colors[i].g = scope_surf->format->palette->colors[i].g = 
-				img->NormalImg->format->palette->colors[i].g;
+				((SDL_Surface *)img->NormalImg)->format->palette->colors[i].g;
 			scope_bg->format->palette->colors[i].b = scope_surf->format->palette->colors[i].b = 
-				img->NormalImg->format->palette->colors[i].b;
+				((SDL_Surface *)img->NormalImg)->format->palette->colors[i].b;
 		}
 
 		SDL_BlitSurface (img->NormalImg, NULL, scope_bg, NULL);

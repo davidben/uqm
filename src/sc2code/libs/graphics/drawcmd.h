@@ -48,7 +48,7 @@ typedef struct tfb_dc_line
 
 typedef struct tfb_dc_rect
 {
-	int x, y, w, h;
+	RECT rect;
 	int r, g, b;
 	SCREEN destBuffer;
 } TFB_DrawCommand_Rect;

@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Added a TFB_Canvas data buffer to let TFB_Image be more accessible
+- Added new graphics primitives
 - Added 'smooth' scolling for ff, frev (similar to the 3DO) - PhracturedBlue
 - New streaming code for openal/mixsdl.  supports ff/frev in subtitles -PBlue
 - New sound module "mixsdl" (experimental) -fOSSiL

@@ -164,6 +164,10 @@ SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\canvas.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
 # End Source File
 # Begin Source File

@@ -19,7 +19,6 @@
 #ifndef TFB_DRAW_H
 #define TFB_DRAW_H
 
-#include "SDL.h"
 #include "libs/threadlib.h"
 
 typedef void *TFB_Canvas;
@@ -45,8 +44,8 @@ typedef struct tfb_palette
 
 typedef struct tfb_image
 {
-	SDL_Surface *NormalImg;
-	SDL_Surface *ScaledImg;
+	TFB_Canvas NormalImg;
+	TFB_Canvas ScaledImg;
 	TFB_Palette *Palette;
 	int colormap_index;
 	int scale;
@@ -68,18 +67,14 @@ void TFB_DrawScreen_WaitForSignal (void);
 void TFB_DrawScreen_SetPalette (int index, int r, int g, int b);
 void TFB_FlushPaletteCache (void);
 
-#if 0
-// These don't compile until I implement the DrawCanvas commands.
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest);
 void TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target);
-void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target);
+void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Image *target);
 
-/* These routines are properly defined in the driver-specific libraries. */
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas dest);
 void TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas image);
-void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target);
-void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target);
-#endif
+void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target, int bn, int bd);
+void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target, int bn, int bd);
 
 #endif

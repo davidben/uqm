@@ -560,134 +560,47 @@ TFB_FlushGraphics () // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
-				SDL_Rect targetRect;
-				SDL_Surface *surf;
 				TFB_Image *DC_image = (TFB_Image *)DC.data.image.image;
+				TFB_Palette *pal;
 
-				if (DC_image == 0)
+				if (DC.data.image.UsePalette)
 				{
-					fprintf (stderr, "DCQ ERROR: IMAGE passed null image ptr\n");
-					break;
+					pal = palette;
 				}
-
-				LockMutex (DC_image->mutex);
-				targetRect.x = DC.data.image.x;
-				targetRect.y = DC.data.image.y;
-
-				if (DC.data.image.UseScaling)
-					surf = DC_image->ScaledImg;
 				else
-					surf = DC_image->NormalImg;
-
-				if (surf->format->palette)
 				{
-					if (DC.data.image.UsePalette)
-					{
-						SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
-					}
-					else
-					{
-						SDL_SetColors (surf, (SDL_Color*)DC_image->Palette, 0, 256);
-					}
+					pal = DC_image->Palette;
 				}
 
-				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.data.image.destBuffer], &targetRect, DC.data.image.BlendNumerator, DC.data.image.BlendDenominator);
-				UnlockMutex (DC_image->mutex);
+				TFB_DrawCanvas_Image (DC_image, DC.data.image.x, DC.data.image.y,
+						DC.data.image.UseScaling, pal,
+						SDL_Screens[DC.data.image.destBuffer],
+						DC.data.image.BlendNumerator, DC.data.image.BlendDenominator);
 
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
 			{
-				SDL_Rect targetRect;
-				SDL_Surface *surf;
-				int i;
-				TFB_Palette pal[256];
-				TFB_Image *DC_image = (TFB_Image *)DC.data.filledimage.image;
-
-				if (DC_image == 0)
-				{
-					fprintf (stderr, "DCQ ERROR: FILLEDIMAGE passed null image ptr\n");
-					break;
-				}
-				LockMutex (DC_image->mutex);
-
-				targetRect.x = DC.data.filledimage.x;
-				targetRect.y = DC.data.filledimage.y;
-
-				if (DC.data.filledimage.UseScaling)
-					surf = DC_image->ScaledImg;
-				else
-					surf = DC_image->NormalImg;
-				
-				for (i = 0; i < 256; i++)
-				{
-					pal[i].r = DC.data.filledimage.r;
-					pal[i].g = DC.data.filledimage.g;
-					pal[i].b = DC.data.filledimage.b;
-				}
-				SDL_SetColors (surf, (SDL_Color*)pal, 0, 256);
-
-				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.data.filledimage.destBuffer], &targetRect, DC.data.filledimage.BlendNumerator, DC.data.filledimage.BlendDenominator);
-				UnlockMutex (DC_image->mutex);
+				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
+						DC.data.filledimage.UseScaling, DC.data.filledimage.r, DC.data.filledimage.g,
+						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer],
+						DC.data.filledimage.BlendNumerator, DC.data.filledimage.BlendDenominator);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
 			{
-				SDL_Rect r;
-				int x1, y1, x2, y2;
-				Uint32 color;
-				PutPixelFn screen_plot;
-
-				screen_plot = putpixel_for (SDL_Screen);
-				color = SDL_MapRGB (SDL_Screen->format, DC.data.line.r, DC.data.line.g, DC.data.line.b);
-
-				x1 = DC.data.line.x1;
-				x2 = DC.data.line.x2;
-				y1 = DC.data.line.y1;
-				y2 = DC.data.line.y2;
-				
-				SDL_GetClipRect(SDL_Screen, &r);
-				
-				/* Danger, Will Robinson!  This code
-				   looks VERY suspicious.  It will end
-				   up changing the slope of the
-				   line! */
-
-				if (x1 < r.x)
-					x1 = r.x;
-				else if (x1 > r.x + r.w)
-					x1 = r.x + r.w;
-
-				if (x2 < r.x)
-					x2 = r.x;
-				else if (x2 > r.x + r.w)
-					x2 = r.x + r.w;
-				
-				if (y1 < r.y)
-					y1 = r.y;
-				else if (y1 > r.y + r.h)
-					y1 = r.y + r.h;
-
-				if (y2 < r.y)
-					y2 = r.y;
-				else if (y2 > r.y + r.h)
-					y2 = r.y + r.h;
-
-				SDL_LockSurface (SDL_Screens[DC.data.line.destBuffer]);
-				line (x1, y1, x2, y2, color, screen_plot, SDL_Screens[DC.data.line.destBuffer]);
-				SDL_UnlockSurface (SDL_Screens[DC.data.line.destBuffer]);
-
+				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1, 
+						DC.data.line.x2, DC.data.line.y2, 
+						DC.data.line.r, DC.data.line.g, DC.data.line.b,
+						SDL_Screens[DC.data.line.destBuffer]);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
-				SDL_Rect r;
-				r.x = DC.data.rect.x;
-				r.y = DC.data.rect.y;
-				r.w = DC.data.rect.w;
-				r.h = DC.data.rect.h;
+				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r, 
+						DC.data.rect.g, DC.data.rect.b, 
+						SDL_Screens[DC.data.rect.destBuffer]);
 
-				SDL_FillRect(SDL_Screens[DC.data.rect.destBuffer], &r, SDL_MapRGB(SDL_Screen->format, DC.data.rect.r, DC.data.rect.g, DC.data.rect.b));
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
@@ -698,11 +611,11 @@ TFB_FlushGraphics () // Only call from main thread!!
 				r.w = DC.data.scissor.w;
 				r.h = DC.data.scissor.h;
 				
-				SDL_SetClipRect(SDL_Screen, &r);
+				SDL_SetClipRect(SDL_Screens[0], &r);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
-			SDL_SetClipRect(SDL_Screen, NULL);
+			SDL_SetClipRect(SDL_Screens[0], NULL);
 			break;
 		case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
 			{

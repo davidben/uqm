@@ -35,10 +35,7 @@ TFB_DrawScreen_Rect (PRECT rect, int r, int g, int b, SCREEN dest)
 	}
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_RECTANGLE;
-	DC.data.rect.x = rect->corner.x;
-	DC.data.rect.y = rect->corner.y;
-	DC.data.rect.w = rect->extent.width;
-	DC.data.rect.h = rect->extent.height;
+	DC.data.rect.rect = *rect;
 	DC.data.rect.r = r;
 	DC.data.rect.g = g;
 	DC.data.rect.b = b;
@@ -220,8 +217,6 @@ TFB_DrawScreen_WaitForSignal (void)
 	WaitForSignal ();
 }
 
-#if 0
-
 /* These don't compile until I write the DrawCanvas commands. */
 
 void
@@ -246,18 +241,16 @@ void
 TFB_DrawImage_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_Image (img, x, y, scaled, target->NormalImg);
+	TFB_DrawCanvas_Image (img, x, y, scaled, palette, target->NormalImg, 4, 4);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
 
 void
-TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target)
+TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_FilledImage (img, x, y, scaled, target->NormalImg);
+	TFB_DrawCanvas_FilledImage (img, x, y, scaled, r, g, b, target->NormalImg, 4, 4);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
-
-#endif

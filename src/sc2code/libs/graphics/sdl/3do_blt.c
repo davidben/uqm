@@ -101,10 +101,10 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 					{
 						img->ScaledImg = new_surf;
 						SDL_SetColors (img->ScaledImg, (SDL_Color *)img->Palette, 0, 256);
-						if (img->NormalImg->flags & SDL_SRCCOLORKEY)
+						if (((SDL_Surface *)img->NormalImg)->flags & SDL_SRCCOLORKEY)
 						{
 							SDL_SetColorKey (img->ScaledImg, SDL_SRCCOLORKEY, 
-								img->NormalImg->format->colorkey);
+								((SDL_Surface *)img->NormalImg)->format->colorkey);
 						}
 					}
 				}
@@ -135,7 +135,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 		else
 		{
-			if (img->NormalImg->format->palette && img->colormap_index != -1)
+			if (((SDL_Surface *)img->NormalImg)->format->palette && img->colormap_index != -1)
 			{
 				TFB_ColorMapToRGB (palette, img->colormap_index);
 				paletted = TRUE;
@@ -232,7 +232,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		SDLRect.w = (short) pClipRect->extent.width;
 		SDLRect.h = (short) pClipRect->extent.height;
 
-		SDL_FillRect (img->NormalImg, &SDLRect, SDL_MapRGB (img->NormalImg->format, r, g, b));
+		SDL_FillRect (img->NormalImg, &SDLRect, SDL_MapRGB (((SDL_Surface *)img->NormalImg)->format, r, g, b));
 
 		UnlockMutex (img->mutex);
 	}
