@@ -190,6 +190,14 @@ SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
 
 SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xsai.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xsai.h
+# End Source File
 # End Group
 # Begin Source File
 

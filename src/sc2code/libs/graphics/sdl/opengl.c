@@ -149,7 +149,14 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
-	if (flags & TFB_GFXFLAGS_BILINEAR_FILTERING)
+	// TODO: implement SaI and SuperSaI scaling for OpenGL too (fallback to bilinear for now)
+	if ((GfxFlags & TFB_GFXFLAGS_SCALE_SAI) || (GfxFlags & TFB_GFXFLAGS_SCALE_SUPERSAI))
+	{
+		GfxFlags &= ~(TFB_GFXFLAGS_SCALE_SAI|TFB_GFXFLAGS_SCALE_SUPERSAI);
+		GfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
+	}
+
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
 		ScreenFilterMode = GL_LINEAR;
 	else
 		ScreenFilterMode = GL_NEAREST;

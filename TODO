@@ -69,7 +69,11 @@ Glitches (don't crash the game, medium priority):
   but it will hang on termination
 
 Implementation bugs (low priority):
-
+- Scaling code problems:
+  - sai, supersai doesn't work for >16bpp
+  - bilinear is only implemented under opengl
+  - opengl misses all other modes than bilinear
+    - do them with software and/or pixel shader hw?
 
 Stuff still to do (large):
 - add a Key Jamming program

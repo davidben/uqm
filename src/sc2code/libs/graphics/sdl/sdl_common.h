@@ -37,7 +37,7 @@ extern volatile int TransitionAmount;
 extern SDL_Rect TransitionClipRect;
 
 extern volatile int continuity_break;
-extern BOOLEAN ShowFPS;
+extern int GfxFlags;
 
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);

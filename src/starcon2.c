@@ -67,10 +67,10 @@ main (int argc, char *argv[])
 		{"bpp", 1, NULL, 'd'},
 		{"fullscreen", 0, NULL, 'f'},
 		{"opengl", 0, NULL, 'o'},
-		{"bilinear", 0, NULL, 'b'},
-		{"fps", 0, NULL, 'p'},
+		{"scale", 1, NULL, 'c'},
 		{"scanlines", 0, NULL, 's'},
-		{"contentdir", 1, NULL, 'c'},
+		{"fps", 0, NULL, 'p'},
+		{"contentdir", 1, NULL, 'n'},
 		{"help", 0, NULL, 'h'},
 		{"musicvol", 1, NULL, 'M'},
 		{"sfxvol", 1, NULL, 'S'},
@@ -85,7 +85,7 @@ main (int argc, char *argv[])
 
 	strcpy (contentdir, "content");
 
-	while ((c = getopt_long(argc, argv, "r:d:fob:psc:?hM:S:T:emq:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -100,16 +100,28 @@ main (int argc, char *argv[])
 			case 'o':
 				gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
 			break;
-			case 'b':
-				gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
-			break;
-			case 'p':
-				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
+			case 'c':
+				sscanf(optarg, "%s", str);
+				if (!strcmp (str, "bilinear"))
+				{
+					gfxflags |= TFB_GFXFLAGS_SCALE_BILINEAR;
+				}
+				else if (!strcmp (str, "sai"))
+				{
+					gfxflags |= TFB_GFXFLAGS_SCALE_SAI;
+				}
+				else if (!strcmp (str, "supersai"))
+				{
+					gfxflags |= TFB_GFXFLAGS_SCALE_SUPERSAI;
+				}
 			break;
 			case 's':
 				gfxflags |= TFB_GFXFLAGS_SCANLINES;
 			break;
-			case 'c':
+			case 'p':
+				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
+			break;
+			case 'n':
 				sscanf(optarg, "%s", contentdir);
 			break;
 			case 'M':
@@ -165,14 +177,14 @@ main (int argc, char *argv[])
 			case '?':
 			case 'h':
 				printf("\nOptions:\n");
-				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, others work only with --opengl)\n");
-				printf("  -d, --bpp=BITSPERPIXEL (default 16, use 24 or 32 for better gfx quality)\n");
+				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, bigger works only with --opengl)\n");
+				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
-				printf("  -o, --opengl (default off, usage recommended if TNT2 or better gfx card)\n");
-				printf("  -b, --bilinear (default off, only works with --opengl)\n");
-				printf("  -p, --fps (default off)\n");
+				printf("  -o, --opengl (default off)\n");
+				printf("  -c, --scale=mode (bilinear, sai or supersai, default is none)\n");
 				printf("  -s, --scanlines (default off, only works with --opengl\n");
-				printf("  -c, --contentdir=CONTENTDIR\n");
+				printf("  -p, --fps (default off)\n");
+				printf("  -n, --contentdir=CONTENTDIR\n");
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");

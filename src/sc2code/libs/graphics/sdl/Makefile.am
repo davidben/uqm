@@ -8,8 +8,8 @@ INCLUDES = @SDL_CFLAGS@ \
 noinst_LTLIBRARIES = libsdl.la
 
 libsdl_la_SOURCES = 3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c \
-	primitives.c pure.c rotozoom.c sdl_common.c
+	primitives.c pure.c rotozoom.c sdl_common.c 2xsai.c
 
 noinst_HEADERS = opengl.h primitives.h pure.h rotozoom.h sdl_common.h \
-	dcqueue.h
+	dcqueue.h 2xsai.h
 

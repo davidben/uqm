@@ -18,12 +18,13 @@
 
 #ifdef GFXMODULE_SDL
 
-#include "libs/graphics/sdl/pure.h"
+#include "pure.h"
+#include "2xsai.h"
 
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
-
+static SDL_Surface *sai_temp;
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -92,7 +93,6 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
 			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 			SDL_GetVideoSurface()->format->BitsPerPixel);
-
 	}
 
 	test_extra = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
@@ -113,10 +113,48 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	fade_black = SDL_DisplayFormat (test_extra);
 	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
 	fade_temp = SDL_DisplayFormat (test_extra);
-
+	
 	SDL_FreeSurface (test_extra);
 
+	test_extra = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight + 4, 32, 
+				     0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
+	if (test_extra == NULL)
+	{
+		fprintf (stderr, "Couldn't create sai back buffer: %s\n", SDL_GetError());
+		exit(-1);
+	}
+	sai_temp = SDL_DisplayFormat (test_extra);
+	SDL_FillRect (sai_temp, NULL, SDL_MapRGB (sai_temp->format, 0, 0, 0));
+	SDL_FreeSurface (test_extra);
+	
+	// TODO: implement bilinear scaling for pure sdl too (fallback to sai for now)
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
+	{
+		GfxFlags &= ~TFB_GFXFLAGS_SCALE_BILINEAR;
+		GfxFlags |= TFB_GFXFLAGS_SCALE_SAI;
+	}
 
+	{
+		int result;
+
+		if (SDL_GetVideoSurface()->format->BitsPerPixel == 15)
+		{
+			result = Init_2xSaI (555);
+		}
+		else if (SDL_GetVideoSurface()->format->BitsPerPixel == 16)
+		{
+			result = Init_2xSaI (565);
+		}
+		else
+		{
+			result = Init_2xSaI (888);
+		}
+
+		if (!result)
+		{
+			GfxFlags &= ~(TFB_GFXFLAGS_SCALE_SAI|TFB_GFXFLAGS_SCALE_SUPERSAI);
+		}
+	}
 
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
@@ -126,6 +164,126 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	return 0;
+}
+
+static void Scale2x_Nearest (Uint8 bytesperpixel, Uint8 *src_p, Uint8 *dst_p, const int numlines)
+{
+	int x, y;
+	Uint8 *src_p2;
+
+	switch (bytesperpixel)
+	{
+	case 1:
+	{
+		Uint8 pixval_8;
+		for (y = 0; y < numlines; ++y)
+		{
+			src_p2 = dst_p;
+			for (x = 0; x < 320; ++x)
+			{
+				pixval_8 = *src_p++;
+
+				*dst_p++ = pixval_8;
+				*dst_p++ = pixval_8;
+			}
+			for (x = 0; x < 160; ++x)
+			{
+				*(Uint32*)dst_p = *(Uint32*)src_p2;
+				dst_p += 4;
+				src_p2 += 4;
+			}
+		}
+		break;
+	}
+	case 2:
+	{
+		Uint16 pixval_16;
+		for (y = 0; y < numlines; ++y)
+		{
+			src_p2 = dst_p;
+			for (x = 0; x < 320; ++x)
+			{
+				pixval_16 = *(Uint16*)src_p;
+				src_p += 2;
+
+				*(Uint16*)dst_p = pixval_16;
+				dst_p += 2;
+				*(Uint16*)dst_p = pixval_16;
+				dst_p += 2;
+			}
+			for (x = 0; x < 320; ++x)
+			{
+				*(Uint32*)dst_p = *(Uint32*)src_p2;
+				dst_p += 4;
+				src_p2 += 4;
+			}
+		}
+		break;
+	}
+	case 3:
+	{
+		// FIXME: this one might have endian issues
+
+		Uint32 pixval_32;
+		for (y = 0; y < numlines; ++y)
+		{
+			src_p2 = src_p;			
+			for (x = 0; x < 320; ++x)
+			{
+				pixval_32 = *(Uint32*)src_p;
+				src_p += 3;
+
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 3;
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 3;
+			}
+			src_p = src_p2;
+			for (x = 0; x < 320; ++x)
+			{
+				pixval_32 = *(Uint32*)src_p;
+				src_p += 3;
+
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 3;
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 3;
+			}
+		}
+		break;
+	}
+	case 4:
+	{
+		Uint32 pixval_32;
+		for (y = 0; y < numlines; ++y)
+		{
+			src_p2 = src_p;
+			for (x = 0; x < 320; ++x)
+			{
+				pixval_32 = *(Uint32*)src_p;
+				src_p += 4;
+
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 4;
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 4;
+			}				
+			src_p = src_p2;
+			for (x = 0; x < 320; ++x)
+
+			{
+				pixval_32 = *(Uint32*)src_p;
+				src_p += 4;
+
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 4;
+				*(Uint32*)dst_p = pixval_32;
+				dst_p += 4;
+			}
+		}
+		break;
+	}
+	}
 }
 
 void
@@ -139,8 +297,6 @@ TFB_Pure_SwapBuffers ()
 	{
 		// scales 320x240 backbuffer to 640x480
 
-		int x, y;
-		Uint8 *src_p, *src_p2, *dst_p;
 		SDL_Surface *backbuffer = SDL_Screen;
 		
 		if (transition_amount != 255)
@@ -173,126 +329,42 @@ TFB_Pure_SwapBuffers ()
 		}
 
 		SDL_LockSurface (SDL_Video);
-		SDL_LockSurface (backbuffer);
 
-		src_p = backbuffer->pixels;
-		dst_p = SDL_Video->pixels;
-
-		switch (backbuffer->format->BytesPerPixel)
+		if (GfxFlags & TFB_GFXFLAGS_SCALE_SAI)
 		{
-		case 1:
+			SDL_Rect r;
+			Uint8 *src_p, *dst_p;
+			
+			r.x = 0;
+			r.y = 2;
+			SDL_BlitSurface (backbuffer, NULL, sai_temp, &r);
+			
+			src_p = sai_temp->pixels;
+			src_p += sai_temp->pitch << 1;
+			dst_p = SDL_Video->pixels;			
+			_2xSaI (src_p, sai_temp->pitch, dst_p, SDL_Video->pitch, ScreenWidth, ScreenHeight);
+		}
+		else if (GfxFlags & TFB_GFXFLAGS_SCALE_SUPERSAI)
 		{
-			Uint8 pixval_8;
-			for (y = 0; y < 240; ++y)
-			{
-				src_p2 = dst_p;
-				for (x = 0; x < 320; ++x)
-				{
-					pixval_8 = *src_p++;
-
-					*dst_p++ = pixval_8;
-					*dst_p++ = pixval_8;
-				}
-				for (x = 0; x < 160; ++x)
-				{
-					*(Uint32*)dst_p = *(Uint32*)src_p2;
-					dst_p += 4;
-					src_p2 += 4;
-				}
-			}
-			break;
+			SDL_Rect r;
+			Uint8 *src_p, *dst_p;
+			
+			r.x = 0;
+			r.y = 2;
+			SDL_BlitSurface (backbuffer, NULL, sai_temp, &r);
+			
+			src_p = sai_temp->pixels;
+			src_p += sai_temp->pitch << 1;
+			dst_p = SDL_Video->pixels;			
+			Super2xSaI (src_p, sai_temp->pitch, dst_p, SDL_Video->pitch, ScreenWidth, ScreenHeight);
 		}
-		case 2:
+		else
 		{
-			Uint16 pixval_16;
-			for (y = 0; y < 240; ++y)
-			{
-				src_p2 = dst_p;
-				for (x = 0; x < 320; ++x)
-				{
-					pixval_16 = *(Uint16*)src_p;
-					src_p += 2;
-
-					*(Uint16*)dst_p = pixval_16;
-					dst_p += 2;
-					*(Uint16*)dst_p = pixval_16;
-					dst_p += 2;
-				}
-				for (x = 0; x < 320; ++x)
-				{
-					*(Uint32*)dst_p = *(Uint32*)src_p2;
-					dst_p += 4;
-					src_p2 += 4;
-				}
-			}
-			break;
+			SDL_LockSurface (backbuffer);
+			Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
+			SDL_UnlockSurface (backbuffer);
 		}
-		case 3:
-		{
-			// FIXME: this one might have endian issues
-
-			Uint32 pixval_32;
-			for (y = 0; y < 240; ++y)
-			{
-				src_p2 = src_p;			
-				for (x = 0; x < 320; ++x)
-				{
-					pixval_32 = *(Uint32*)src_p;
-					src_p += 3;
-
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 3;
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 3;
-				}
-				src_p = src_p2;
-				for (x = 0; x < 320; ++x)
-				{
-					pixval_32 = *(Uint32*)src_p;
-					src_p += 3;
-
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 3;
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 3;
-				}
-			}
-			break;
-		}
-		case 4:
-		{
-			Uint32 pixval_32;
-			for (y = 0; y < 240; ++y)
-			{
-				src_p2 = src_p;
-				for (x = 0; x < 320; ++x)
-				{
-					pixval_32 = *(Uint32*)src_p;
-					src_p += 4;
-
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 4;
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 4;
-				}				
-				src_p = src_p2;
-				for (x = 0; x < 320; ++x)
-
-				{
-					pixval_32 = *(Uint32*)src_p;
-					src_p += 4;
-
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 4;
-					*(Uint32*)dst_p = pixval_32;
-					dst_p += 4;
-				}
-			}
-			break;
-		}
-		}
-
-		SDL_UnlockSurface (backbuffer);
+		
 		SDL_UnlockSurface (SDL_Video);
 	}
 	else

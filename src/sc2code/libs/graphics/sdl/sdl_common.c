@@ -36,7 +36,7 @@ SDL_Surface *TransitionScreen;
 volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
 
-BOOLEAN ShowFPS = FALSE;
+int GfxFlags = 0;
 volatile int continuity_break;
 
 
@@ -53,6 +53,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	atexit (TFB_UninitGraphics);
+
+	GfxFlags = flags;
 
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
@@ -72,9 +74,6 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	SDL_EnableUNICODE (1);
 	sprintf (caption, "The Ur-Quan Masters v%d.%d", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
 	SDL_WM_SetCaption (caption, NULL);
-
-	if (flags & TFB_GFXFLAGS_SHOWFPS)
-		ShowFPS = TRUE;
 
 	//if (flags & TFB_GFXFLAGS_FULLSCREEN)
 	//	SDL_ShowCursor (SDL_DISABLE);
@@ -563,7 +562,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 	}
 	continuity_break = 0;
 
-	if (ShowFPS)
+	if (GfxFlags & TFB_GFXFLAGS_SHOWFPS)
 		TFB_ComputeFPS ();
 
 	commands_handled = 0;

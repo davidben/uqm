@@ -22,7 +22,7 @@ command line options to customize your experience:
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240
 
-       -d 24         (or --bpp)
+    -d 24         (or --bpp)
 
 Sets the color depth.  If you don't set this, the game should
 autodetect an appropriate value.  Valid values are 16, 24, and 32.
@@ -37,20 +37,22 @@ combine with -r 320x240.
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
 faster as well -- but it also may not work on older cards.
 
-	-b           (or --bilinear)
+	-c           (or --scale=mode)
 
-Enable bilinear filtering in OpenGL mode.  Produces less pixelated
-graphics with a bit of a performance penalty.
+Graphics scaling mode (bilinear, sai or supersai). Default is none.
+Try these to get smoother graphics with cost on performance.
+Sai and supersai only works with depth of 16bpp for now.
+Under OpenGL, bilinear is only one that's implemented currently.
+
+	-s           (or --scanlines)
+
+Simulates interlaced displays.
 
 	-p           (or --fps)
 
 Print fps information in the status window.
 
-	-s          (or --scanlines)
-
-Simulates interlaced displays.
-
-	-c           (or --contentdir)
+	-n           (or --contentdir)
 
 Set the directory where the game will seek its data.
 
