@@ -1,0 +1,8 @@
+# Text map for intro/intro5.pxt
+# Records: 5
+
+"To travel the great distance, you must push through into HyperSpace..."
+"Find out what has happened over these many years..."
+"Tell Earth of our plight!"
+"And if the war with the Ur-Quan still rages..."
+"Fight for Earth and the Alliance, as well as you can..."

@@ -1,0 +1,9 @@
+# Text map for final/end2.pxt
+# Records: 6
+
+"I pulled myself up and looked around..."
+"...I was in Sick Bay of the Starbase, looking out over Earth."
+"Beneath me throbbed the sick red glow of the Ur-Quan slave shield."
+"Talana smiled and said that for the past few days..."
+"the Chmmr had been working on lowering the shield..."
+"and that it should be neutralized right about... Now!"

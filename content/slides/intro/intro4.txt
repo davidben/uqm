@@ -1,0 +1,9 @@
+# Text map for intro/intro4.pxt
+# Records: 6
+
+"A factory for building starships!"
+"But there aren't enough materials to make a complete vessel."
+"We can finish only the skeleton of one starship."
+"But that must be enough --"
+"Because YOU must captain the vessel..."
+"And return to Earth!"

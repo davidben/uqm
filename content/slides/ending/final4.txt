@@ -1,0 +1,6 @@
+# Text map for final/end4.pxt
+# Records: 3
+
+"But Grandfather then what happened?"
+"Yeah! How did you get home?"
+"How long did it take before you and Grandma finally got married?"

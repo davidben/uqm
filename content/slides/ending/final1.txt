@@ -1,0 +1,19 @@
+# Text map for final/end1.pxt
+# Records: 16
+
+"When I awoke, there was an angel floating above me."
+"I knew I was dead."
+"But if one HAS to die, I thought to myself..."
+"...this was definitely the RIGHT way to be dead."
+"That was about the time I heard Talana's voice..."
+"...telling me to stop babbling and listen for a moment."
+"She told me that the escape pod had almost been torn in half."
+"I had been unconscious for over three weeks..."
+"...but my crew and I had succeeded in our mission! "
+"The force of the explosion, amplified by the Chmmr crystals..."
+"...had been sufficient to vaporize the Sa-Matra!"
+"And following the destruction of the Sa-Matra battle platform..."
+"...the fleets of the Ur-Quan and the Kohr-Ah had fallen into chaos..."
+"...and had been vanquished by Chmmr forces and allied starships."
+"Then Talana told me to sit up."
+"She said there was something she thought I'd like to see..."

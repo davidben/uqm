@@ -1,0 +1,4 @@
+# Text map for final/end6.pxt
+# Records: 1
+
+"That, my children, is an entirely different story.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"

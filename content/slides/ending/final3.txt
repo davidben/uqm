@@ -1,0 +1,14 @@
+# Text map for final/end3.pxt
+# Records: 11
+
+"With a flare of incandescent light, the slave shield vanished..."
+"...and for the first time in my life I saw the true colors of Earth..."
+"...blues and greens in a thousand different shades."
+"As we watched, we could see the first signs of ships coming up from Earth."
+"They lifted from the planet's surface to join us in space."
+"The destiny of Mankind had been delayed for over twenty years..."
+"...but now our world was free and nothing could stop us!"
+"I stayed in that hospital for almost a month..."
+"...but that day..."
+"...that day I watched the shield fall and beautiful Talana stood at my side..."
+"I'll never forget that day. Not for the rest of my life..."

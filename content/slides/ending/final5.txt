@@ -1,0 +1,8 @@
+# Text map for final/end5.pxt
+# Records: 5
+
+"Oh, while we intended to come right home..."
+"...we got a little sidetracked."
+"Talana and I didn't make it back here to Unzervalt until almost five years later."
+"But Grandfather! What happened? Where did you go?"
+"And how did you find the Mark II?"

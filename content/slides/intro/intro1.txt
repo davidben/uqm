@@ -1,0 +1,9 @@
+# Text map for intro/intro1.pxt
+# Records: 6
+
+"There were many great battles..."
+"Earth and her partners in the Alliance of Free Stars..."
+"Against the evil Ur-Quan and its Hierarchy of Battle Thralls."
+"...and the Ur-Quan were winning..."
+"Meanwhile, on the edge of the known frontier, an amazing discovery was made..."
+"far beneath the surface of an unexplored, alien world..."
