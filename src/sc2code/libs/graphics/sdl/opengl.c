@@ -66,12 +66,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	GraphicsDriver = driver;
 
-	fprintf (stderr, "Initializing SDL (OpenGL).\n");
-	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
-	{
-		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
-		exit(-1);
-	}
+	fprintf (stderr, "Initializing SDL with OpenGL support.\n");
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
 	fprintf (stderr, "SDL driver used: %s\n", VideoName);

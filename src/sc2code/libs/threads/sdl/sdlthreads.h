@@ -25,51 +25,8 @@
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 
-typedef SDL_Thread *NativeThread;
-typedef int (*NativeThreadFunction) (void *);
-#define NativeInitThreadSystem()		
-#define NativeUnInitThreadSystem()		
-#define NativeCreateThread(func, data, stackSize) \
-		SDL_CreateThread ((func), (data))
-extern void SDLWrapper_SleepThread (TimeCount sleepTime);
-#define NativeSleepThread(sleepTime) \
-		SDLWrapper_SleepThread ((sleepTime))
-extern void SDLWrapper_SleepThreadUntil (TimeCount wakeTime);
-#define NativeSleepThreadUntil(wakeTime) \
-		SDLWrapper_SleepThreadUntil ((wakeTime))
-extern void SDLWrapper_TaskSwitch (void);
-#define NativeTaskSwitch() \
-		SDLWrapper_TaskSwitch()
-#define NativeWaitThread(thread, status) \
-		SDL_WaitThread ((thread), (status))
 #define NativeGetThreadID(thread) SDL_GetThreadID ((thread))
 #define NativeThreadID() SDL_ThreadID ()
-#ifdef PROFILE_THREADS
-extern void SDLWrapper_PrintThreadStats (SDL_Thread *thread);
-#define NativePrintThreadStats(thread) \
-		SDLWrapper_PrintThreadStats ((thread))
-#endif
-#define NativeThreadOk(thread) \
-		((thread) != NULL)
-
-typedef SDL_sem *NativeSemaphore;
-#define NativeCreateSemaphore(initial) \
-		SDL_CreateSemaphore ((initial))
-#define NativeDestroySemaphore(sem) \
-		SDL_DestroySemaphore ((sem))
-#define NativeSetSemaphore(sem) \
-		SDL_SemWait ((sem))
-#define NativeTrySetSemaphore(sem) \
-		SDL_SemTryWait ((sem))
-#define NativeSemValue(sem) \
-		SDL_SemValue ((sem))
-#define NATIVE_MUTEX_TIMEOUT SDL_MUTEX_TIMEDOUT
-extern int SDLWrapper_TimeoutSetSemaphore (Semaphore sem,
-		TimePeriod timeperiod);
-#define NativeTimeoutSetSemaphore(sem, timeperiod) \
-		SDLWrapper_TimeoutSetSemaphore ((sem), timeperiod)
-#define NativeClearSemaphore(sem) \
-		SDL_SemPost ((sem))
 
 typedef SDL_mutex *NativeMutex;
 #define NativeCreateMutex() \
@@ -81,23 +38,72 @@ typedef SDL_mutex *NativeMutex;
 #define NativeUnlockMutex(mutex) \
 		SDL_mutexV ((mutex))
 
-typedef SDL_cond *NativeCondVar;
-#define NativeCreateCondVar() \
-		SDL_CreateCond ()
-#define NativeDestroyCondVar(condvar) \
-		SDL_DestroyCond ((condvar))
-extern void SDLWrapper_WaitCondVar (CondVar candvar);
-#define NativeWaitCondVar(condvar) \
-		SDLWrapper_WaitCondVar ((condvar))
-#define NativeWaitProtectedCondVar(condvar, mutex) \
-		SDL_CondWait ((condvar), (mutex))
-#define NativeSignalCondVar(condvar) \
-		SDL_CondSignal ((condvar))
-#define NativeBroadcastCondVar(condvar) \
-		SDL_CondBroadcast ((condvar))
-
 #define NativeCurrentThreadID() \
 		SDL_ThreadID ()
+
+void InitThreadSystem_SDL (void);
+void UnInitThreadSystem_SDL (void);
+
+#ifdef NAMED_SYNCHRO
+/* Prototypes with the "name" field */
+Thread CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
+Semaphore CreateSemaphore_SDL (DWORD initial, const char *name);
+RecursiveMutex CreateRecursiveMutex_SDL (const char *name);
+CondVar CreateCondVar_SDL (const char *name);
+#else
+/* Prototypes without the "name" field. */
+Thread CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize);
+Semaphore CreateSemaphore_SDL (DWORD initial);
+RecursiveMutex CreateRecursiveMutex_SDL (void);
+CondVar CreateCondVar_SDL (void);
+#endif
+
+void SleepThread_SDL (TimeCount sleepTime);
+void SleepThreadUntil_SDL (TimeCount wakeTime);
+void TaskSwitch_SDL (void);
+void WaitThread_SDL (Thread thread, int *status);
+
+void DestroySemaphore_SDL (Semaphore sem);
+void SetSemaphore_SDL (Semaphore sem);
+void ClearSemaphore_SDL (Semaphore sem);
+
+void DestroyCondVar_SDL (CondVar c);
+void WaitCondVar_SDL (CondVar c);
+void WaitProtectedCondVar_SDL (CondVar c, Mutex m);
+void SignalCondVar_SDL (CondVar c);
+void BroadcastCondVar_SDL (CondVar c);
+
+void DestroyRecursiveMutex_SDL (RecursiveMutex m);
+void LockRecursiveMutex_SDL (RecursiveMutex m);
+void UnlockRecursiveMutex_SDL (RecursiveMutex m);
+int  GetRecursiveMutexDepth_SDL (RecursiveMutex m);
+
+#define NativeInitThreadSystem InitThreadSystem_SDL
+#define NativeUnInitThreadSystem UnInitThreadSystem_SDL
+
+#define NativeCreateThread CreateThread_SDL
+#define NativeSleepThread SleepThread_SDL
+#define NativeSleepThreadUntil SleepThreadUntil_SDL
+#define NativeTaskSwitch TaskSwitch_SDL
+#define NativeWaitThread WaitThread_SDL
+
+#define NativeCreateSemaphore CreateSemaphore_SDL
+#define NativeDestroySemaphore DestroySemaphore_SDL
+#define NativeSetSemaphore SetSemaphore_SDL
+#define NativeClearSemaphore ClearSemaphore_SDL
+
+#define NativeCreateCondVar CreateCondVar_SDL
+#define NativeDestroyCondVar DestroyCondVar_SDL
+#define NativeWaitCondVar WaitCondVar_SDL
+#define NativeWaitProtectedCondVar WaitProtectedCondVar_SDL
+#define NativeSignalCondVar SignalCondVar_SDL
+#define NativeBroadcastCondVar BroadcastCondVar_SDL
+
+#define NativeCreateRecursiveMutex CreateRecursiveMutex_SDL
+#define NativeDestroyRecursiveMutex DestroyRecursiveMutex_SDL
+#define NativeLockRecursiveMutex LockRecursiveMutex_SDL
+#define NativeUnlockRecursiveMutex UnlockRecursiveMutex_SDL
+#define NativeGetRecursiveMutexDepth GetRecursiveMutexDepth_SDL
 
 #endif  /* _SDLTHREAD_H */
 

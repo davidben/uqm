@@ -134,12 +134,14 @@ main (int argc, char *argv[])
 	contentDir = "content";
 #endif
 
-	/* InitThreadSystem should come before anything else.
-	 * The memory system uses semaphores.
-	 * Everything else uses the memory system.
-	 */
-	InitThreadSystem ();
+
+	/* mem_init () uses mutexes.  Mutex creation cannot use
+	   the memory system until the memory system is rewritten
+	   to rely on a thread-safe allocator.
+	*/
+	TFB_PreInit ();
 	mem_init ();
+	InitThreadSystem ();
 
 	addons = HMalloc(1 * sizeof (const char *));
 	addons[0] = NULL;
@@ -349,7 +351,7 @@ main (int argc, char *argv[])
 	InitTaskSystem ();
 
 	GraphicsLock = CreateMutex (/*"Graphics"*/);
-	RenderingCond = CreateCondVar ();
+	RenderingCond = CreateCondVar ("DCQ empty");
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	init_communication ();

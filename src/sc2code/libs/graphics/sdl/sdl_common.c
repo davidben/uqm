@@ -55,6 +55,17 @@ TFB_Abort (void)
 	abortFlag = TRUE;
 }
 
+void
+TFB_PreInit (void)
+{
+	fprintf (stderr, "Initializing base SDL functionality.\n");
+	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
+	{
+		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
+		exit(-1);
+	}
+}
+
 int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {

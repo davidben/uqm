@@ -308,7 +308,6 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 	if (!vid->play_task)
 	{
 		vid->playing = false;
-		//UnlockCrossThreadMutex (vid->frame_lock);
 		ClearSemaphore (vp_interthread_lock);
 		TFB_StopVideo (VidRef);
 

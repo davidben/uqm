@@ -45,7 +45,7 @@ init_cond_bank ()
 	bank_mutex = CreateMutex ();
 	for (i = 0; i < CONDVAR_BANK_SIZE; i++)
 	{
-		bank[i].var = CreateCondVar ();
+		bank[i].var = CreateCondVar ("FlushGraphics Bank");
 		bank[i].id = bank[i].used = 0;
 		bank[i].control = CreateMutex ();
 	}

@@ -22,10 +22,14 @@
 
 #define THREADLIB SDL
 
-/*
-This is now a compile-time define
-#define DEBUG_TRACK_SEM
-*/
+#define NAMED_SYNCHRO           /* Should synchronizable objects have names? */
+// #define TRACK_CONTENTION       /* Should we report when a thread sleeps on synchronize? */
+
+#ifdef TRACK_CONTENTION
+#	ifndef NAMED_SYNCHRO
+#		define NAMED_SYNCHRO
+#	endif
+#endif /* TRACK_CONTENTION */
 
 #ifdef DEBUG
 #	ifndef DEBUG_THREADS
@@ -74,80 +78,83 @@ void uninit_cond_bank (void);
 
 typedef int (*ThreadFunction) (void *);
 
-typedef struct Thread {
-	void *native;
-#ifdef THREAD_NAMES
-	const char *name;
-#endif
-#ifdef PROFILE_THREADS
-	int startTime;
-#endif  /*  PROFILE_THREADS */
-#ifdef THREAD_QUEUE
-	struct Thread *next;
-#endif
-} *Thread;
+typedef void *Thread;
+typedef void *Mutex;
+typedef void *Semaphore;
+typedef void *RecursiveMutex;
+typedef void *CondVar;
 
-#ifdef THREAD_NAMES
-Thread CreateThreadAux (ThreadFunction func, void *data,
-		SDWORD stackSize, const char *name);
-#	define CreateThread(func, data, stackSize, name) \
-		CreateThreadAux ((func), (data), (stackSize), (name))
-#else  /* !defined(THREAD_NAMES) */
-Thread CreateThreadAux (ThreadFunction func, void *data,
-		SDWORD stackSize);
-#	define CreateThread(func, data, stackSize, name) \
-		CreateThreadAux ((func), (data), (stackSize))
-#endif  /* !defined(THREAD_NAMES) */
+#ifdef NAMED_SYNCHRO
+/* Prototypes with the "name" field */
+
+Thread CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize, const char *name);
+Semaphore CreateSemaphore_Core (DWORD initial, const char *name);
+Mutex CreateMutex_Core (void);
+RecursiveMutex CreateRecursiveMutex_Core (const char *name);
+CondVar CreateCondVar_Core (const char *name);
+
+/* Preprocessor directives to forward to the appropriate routines */
+
+#define CreateThread(func, data, stackSize, name) \
+	CreateThread_Core ((func), (data), (stackSize), (name))
+#define CreateSemaphore(initial, name) \
+	CreateSemaphore_Core ((initial), (name))
+#define CreateMutex() \
+	CreateMutex_Core ()
+#define CreateRecursiveMutex(name) \
+	CreateRecursiveMutex_Core((name))
+#define CreateCondVar(name) \
+	CreateCondVar_Core ((name))
+
+#else
+
+/* Prototypes without the "name" field. */
+Thread CreateThread_Core (ThreadFunction func, void *data, SDWORD stackSize);
+Semaphore CreateSemaphore_Core (DWORD initial);
+Mutex CreateMutex_Core (void);
+RecursiveMutex CreateRecursiveMutex_Core (void);
+CondVar CreateCondVar_Core (void);
+
+
+/* Preprocessor directives to forward to the appropriate routines.
+   The "name" field is stripped away in preprocessing. */
+
+#define CreateThread(func, data, stackSize, name) \
+	CreateThread_Core ((func), (data), (stackSize))
+#define CreateSemaphore(initial, name) \
+	CreateSemaphore_Core ((initial))
+#define CreateMutex() \
+	CreateMutex_Core ()
+#define CreateRecursiveMutex(name) \
+	CreateRecursiveMutex_Core()
+#define CreateCondVar(name) \
+	CreateCondVar_Core ()
+
+#endif
+
 void SleepThread (TimePeriod timePeriod);
 void SleepThreadUntil (TimeCount wakeTime);
 void TaskSwitch (void);
 void WaitThread (Thread thread, int *status);
 
-typedef void *Semaphore;
-#ifdef DEBUG_TRACK_SEM
-Semaphore CreateSemaphoreAux (DWORD initial, const char *sem_name);
-#	define CreateSemaphore(initial,sem_name) \
-		CreateSemaphoreAux ((initial), (sem_name))
-void ResetSemaphoreOwnerAux (Semaphore sem);
-#	define ResetSemaphoreOwner(sem_name) \
-		ResetSemaphoreOwnerAux (sem_name)
-#else
-Semaphore CreateSemaphoreAux (DWORD initial);
-#	define CreateSemaphore(initial,sem_name) \
-		CreateSemaphoreAux ((initial))
-#	define ResetSemaphoreOwner(sem_name)
-#endif
-DWORD SemaphoreValue (Semaphore sem);
-void DestroySemaphore (Semaphore sem);
-int SetSemaphore (Semaphore sem);
-int TrySetSemaphore (Semaphore sem);
-int TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout);
-void ClearSemaphore (Semaphore sem);
 #ifdef PROFILE_THREADS
 void PrintThreadsStats (void);
 #endif  /* PROFILE_THREADS */
 
-typedef void *Mutex;
-Mutex CreateMutex (void);
+
+void DestroySemaphore (Semaphore sem);
+void SetSemaphore (Semaphore sem);
+void ClearSemaphore (Semaphore sem);
+
 void DestroyMutex (Mutex sem);
-int LockMutex (Mutex sem);
+void LockMutex (Mutex sem);
 void UnlockMutex (Mutex sem);
 
-typedef void *RecursiveMutex;
-RecursiveMutex CreateRecursiveMutex (const char *name);
 void DestroyRecursiveMutex (RecursiveMutex m);
 void LockRecursiveMutex (RecursiveMutex m);
 void UnlockRecursiveMutex (RecursiveMutex m);
 int  GetRecursiveMutexDepth (RecursiveMutex m);
 
-typedef void *CrossThreadMutex;
-CrossThreadMutex CreateCrossThreadMutex (const char *name);
-void DestroyCrossThreadMutex (CrossThreadMutex ctm);
-int LockCrossThreadMutex (CrossThreadMutex ctm);
-void UnlockCrossThreadMutex (CrossThreadMutex ctm);
-
-typedef void *CondVar;
-CondVar CreateCondVar (void);
 void DestroyCondVar (CondVar);
 void WaitCondVar (CondVar);
 void WaitProtectedCondVar (CondVar, Mutex);

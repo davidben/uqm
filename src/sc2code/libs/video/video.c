@@ -128,7 +128,7 @@ _init_video_file(PVOID pStr)
 	vid->w = vid->decoder->w;
 	vid->h = vid->decoder->h;
 	vid->guard = CreateMutex ();
-	vid->frame_lock = CreateCondVar ();
+	vid->frame_lock = CreateCondVar ("frame lock");
 
 	return (VIDEO_REF) vid;
 }
