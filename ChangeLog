@@ -1,6 +1,6 @@
 Changes towards version 0.3:
 - Line clipping is now handled correctly; fixes #28 (one pixel corruptions)
-  and #198 (beam weapons changing direction)
+  and #198 (beam weapons changing direction) -Mika
 - Vux warps in close (fixes bug 93) -from Nic
 - Fixed lockup on lander-report (Bug #144 annd 187?)
 - Version # is now printed in the main menu, from Nic
