@@ -669,9 +669,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 		s.frame = SetAbsFrameIndex (pLocMenuState->ModuleFrame,
 				GetFrameCount (pLocMenuState->ModuleFrame) - 4);
 		DrawStamp (&s);
-		r.corner.x = 1;
+		r.corner.x = 2;
 		r.corner.y = 141;
-		r.extent.width = SIS_SCREEN_WIDTH - 1;
+		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
@@ -799,9 +799,9 @@ ShowSummary (SUMMARY_DESC *pSD)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
 		font_DrawText (&t);
 		
-		r.corner.x = 1;
+		r.corner.x = 2;
 		r.corner.y = 141;
-		r.extent.width = SIS_SCREEN_WIDTH - 1;
+		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
@@ -848,7 +848,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.align = ALIGN_CENTER;
-		t.baseline.x = SIS_SCREEN_WIDTH - 57 + 1 + (SIS_TITLE_WIDTH >> 1);
+		t.baseline.x = SIS_SCREEN_WIDTH - 57 - 3 + (SIS_TITLE_WIDTH >> 1);
 		if (pSD->Activity == IN_STARBASE)
 			wstrcpy (buf, GAME_STRING (STARBASE_STRING_BASE));
 		else if (pSD->Activity == IN_PLANET_ORBIT)
@@ -1089,7 +1089,7 @@ ChangeGameSelection:
 				UnbatchGraphics ();
 			}
 
-			r.corner.x = 3 + (NewState * 21) + SUMMARY_X_OFFS;
+			r.corner.x = 4 + (NewState * 21) + SUMMARY_X_OFFS;
 			r.corner.y = 176;
 			r.extent.width = 18;
 			r.extent.height = 18;
