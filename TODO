@@ -10,11 +10,6 @@ Serious bugs (crash the game, high priority):
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
   - Often more probable when heavy color table transformations are going on
-- Script bugs where a voice is expected yet not specified appear to make
-  the game catatonic (e.g. ZoqFotPik's "Good bye Captain."  "See ya.")
-- When trying to skip past a a speech that's composed of multiple parts,
-  the game hangs.  (NOTE: This isn't true for the Zoq-Fot-Pik, which is
-  unusual - EVERY line by the ZFP is like that.)
 - Load/save code doesn't work perfectly, hangs sometimes when after loading
   trying to enter some star first time etc
 - OpenGL mode might cause lockups when entering a star system, while
@@ -67,6 +62,9 @@ Glitches (don't crash the game, medium priority):
   when not being near of it
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
+- Subtitles in conversation will sometimes hang off the end (e.g. the 
+  Ilwrath reacting to the Ur-Quan Drone) or not appear at all (e.g. the 
+  Yehat).
 - ZFP graphics synchronisation messed up when fast forwarding speech
 - Melee menu's 5x5 ship selection grid doesn't show up always
   - On win32, works with release build, not debug
@@ -90,6 +88,9 @@ Stuff still to do (large):
   the alternate scripts (even the basic dialogue is not identical)
 - make stuff endian-safe
   In particularly 24-bits scaling is known to be unsafe.
+  Furthermore, saving and loading games uses cread and cwrite, which is
+  not endian-safe, and which is writing out values of heap pointers.  This
+  really should be cleaned up just in general and made endian safe to boot.
 - 3d planet view when entering orbit
 - some packaging system for resources. zlib looks like something
   which is suitable for this.
@@ -125,6 +126,8 @@ Stuff still to do (medium size):
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
   can be used on the pc (and the other way around).
+  - Also remove the values that are pointers into the heap, since those get
+    cached and restored by the load routine anyway.
 - make a file types.h, which defines non-confusing integer types.
   There are at the moment 3 systems: int16, DWORD, and Sint16.
   I suggest we keep int16, as 'word' is confusing. Sint16 is an SDL define
