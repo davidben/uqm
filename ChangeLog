@@ -1,4 +1,5 @@
 0.2:
+- Star sizes and colors are now correct in solar system, from fOSSiL
 - Captain portraits in melee are now updated properly after battle and
   bottom portrait always stays in correct place, from fOSSiL
 - Removed 2xSaI and SuperSAI scaling due to GPL incompatiblities.
