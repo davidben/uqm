@@ -1894,14 +1894,6 @@ SOURCE=..\sc2code\planets\plangen.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\planmap.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\planets\planscan.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\planets\pstarmap.c
 # End Source File
 # Begin Source File
