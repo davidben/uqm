@@ -156,7 +156,7 @@ _GetMusicData (FILE *fp, DWORD length)
             }
 
             fprintf (stderr, "_GetMusicData(): loading %s\n", filename);                        			
-			if (((*pmus)->decoder = SoundDecoder_Load (filename, 16384)) == 0)
+			if (((*pmus)->decoder = SoundDecoder_Load (filename, 4096)) == 0)
 			{
 				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
 
@@ -169,7 +169,7 @@ _GetMusicData (FILE *fp, DWORD length)
 				fprintf (stderr, "    decoder: %s, rate %d format %x\n", (*pmus)->decoder->decoder_info,
 					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
 
-				(*pmus)->num_buffers = 16;
+				(*pmus)->num_buffers = 64;
 				(*pmus)->buffer = (ALuint *) HMalloc (sizeof (ALuint) * (*pmus)->num_buffers);
 				alGenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 			}

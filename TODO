@@ -37,8 +37,6 @@ Glitches (don't crash the game, medium priority):
   though.
 - OpenAL sound code problems:
   - Some unimplemented functions (for oscilloscope and dialogue seeking)
-  - Linux OpenAL implementation sucks, so for now we are using SDL_mixer
-    on that platform.
   - Volume levels aren't maybe exactly as they should
   - Crashes if no audio device available
 - Color table transformations are very slow.

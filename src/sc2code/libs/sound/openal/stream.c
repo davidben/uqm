@@ -21,7 +21,7 @@
 
 #include "sound.h"
 
-#if 0 && !defined (WIN32) // && !defined (MacOS and BEOS too)
+#if !defined (WIN32) // && !defined (MacOS and BeOS too)
 #include <AL/alext.h>
 #endif
 
@@ -53,7 +53,7 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
 		if (decoded_bytes == 0)
 			break;
 
-#if 0 && !defined (WIN32) // && !defined (MacOS and BeOS too)
+#if !defined (WIN32) // && !defined (MacOS and BeOS too)
 		// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
 	   	
 		if (sample->decoder->format == AL_FORMAT_STEREO8 ||
@@ -219,7 +219,7 @@ StreamDecoderTaskFunc (void *data)
 
 				if (decoded_bytes > 0)
 				{
-#if 0 && !defined (WIN32) // && !defined (MacOS and BeOS too)
+#if !defined (WIN32) // && !defined (MacOS and BeOS too)
 					// *nix OpenAL implementation has to handle stereo data differently to avoid mixing it to mono
 	   	
 					if (soundSource[i].sample->decoder->format == AL_FORMAT_STEREO8 ||
