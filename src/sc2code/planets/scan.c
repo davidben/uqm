@@ -437,7 +437,7 @@ PrintCoarseScan3DO (void)
 	SetSemaphore (GraphicsSem);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
-		wsprintf (buf, "|");
+		wsprintf (buf, "\x7f");
 	else
 	{
 		temp = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
