@@ -122,7 +122,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:ua:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:m:q:ua:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
