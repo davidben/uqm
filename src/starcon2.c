@@ -63,6 +63,10 @@ main (int argc, char *argv[])
 		{
 			gfxflags |= TFB_GFXFLAGS_SHOWFPS;
 		}
+		else if (!strcmp(argv[i],"-tv"))
+		{
+			gfxflags |= TFB_GFXFLAGS_TVEFFECT;
+		}
 	}
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
