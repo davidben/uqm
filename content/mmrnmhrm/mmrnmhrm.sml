@@ -1,16 +1,16 @@
-mmrs0001.png 13 28 157 98 6 5 160 100
-mmrs0002.png 13 28 157 98 6 5 160 100
-mmrs0003.png 13 28 157 97 6 6 160 100
-mmrs0004.png 13 28 158 97 5 6 160 100
-mmrs0005.png 13 28 158 97 4 6 160 100
-mmrs0006.png 13 28 158 97 5 6 160 100
-mmrs0007.png 13 28 157 97 6 6 160 100
-mmrs0008.png 13 28 157 98 6 5 160 100
-mmrs0009.png 13 28 157 98 6 5 160 100
-mmrs0010.png 13 28 157 98 6 5 160 100
-mmrs0011.png 13 28 157 97 6 6 160 100
-mmrs0012.png 13 28 158 97 5 6 160 100
-mmrs0013.png 13 28 158 97 4 6 160 100
-mmrs0014.png 13 28 158 97 5 6 160 100
-mmrs0015.png 13 28 157 97 6 6 160 100
-mmrs0016.png 13 28 157 98 6 5 160 100
+mmrnmhrm.sml.0.png 0 28 3 2
+mmrnmhrm.sml.1.png 0 28 3 2
+mmrnmhrm.sml.2.png 0 28 3 3
+mmrnmhrm.sml.3.png 0 28 2 3
+mmrnmhrm.sml.4.png 0 28 2 3
+mmrnmhrm.sml.5.png 0 28 2 3
+mmrnmhrm.sml.6.png 0 28 3 3
+mmrnmhrm.sml.7.png 0 28 3 2
+mmrnmhrm.sml.8.png 0 28 3 2
+mmrnmhrm.sml.9.png 0 28 3 2
+mmrnmhrm.sml.10.png 0 28 3 3
+mmrnmhrm.sml.11.png 0 28 2 3
+mmrnmhrm.sml.12.png 0 28 2 3
+mmrnmhrm.sml.13.png 0 28 2 3
+mmrnmhrm.sml.14.png 0 28 3 3
+mmrnmhrm.sml.15.png 0 28 3 2

@@ -1,16 +1,16 @@
-blas0001.png 207 1 159 98 3 7 160 100
-blas0002.png 207 1 158 99 4 6 160 100
-blas0003.png 207 1 157 99 5 5 160 100
-blas0004.png 207 1 155 99 7 3 160 100
-blas0005.png 207 1 156 99 7 3 160 100
-blas0006.png 207 1 155 99 7 3 160 100
-blas0007.png 207 1 157 97 5 5 160 100
-blas0008.png 207 1 158 96 4 6 160 100
-blas0009.png 207 1 159 96 3 7 160 100
-blas0010.png 207 1 159 96 4 6 160 100
-blas0011.png 207 1 159 97 5 5 160 100
-blas0012.png 207 1 159 99 7 3 160 100
-blas0013.png 207 1 158 99 7 3 160 100
-blas0014.png 207 1 159 99 7 3 160 100
-blas0015.png 207 1 159 99 5 5 160 100
-blas0016.png 207 1 159 99 4 6 160 100
+blazer.sml.0.png 0 1 1 2
+blazer.sml.1.png 0 1 2 1
+blazer.sml.2.png 0 1 3 1
+blazer.sml.3.png 0 1 5 1
+blazer.sml.4.png 0 1 4 1
+blazer.sml.5.png 0 1 5 1
+blazer.sml.6.png 0 1 3 3
+blazer.sml.7.png 0 1 2 4
+blazer.sml.8.png 0 1 1 4
+blazer.sml.9.png 0 1 1 4
+blazer.sml.10.png 0 1 1 3
+blazer.sml.11.png 0 1 1 1
+blazer.sml.12.png 0 1 2 1
+blazer.sml.13.png 0 1 1 1
+blazer.sml.14.png 0 1 1 1
+blazer.sml.15.png 0 1 1 1

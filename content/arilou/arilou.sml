@@ -1,16 +1,16 @@
-aris0001.png 13 2 158 98 4 4 160 100
-aris0002.png 13 2 158 98 4 4 160 100
-aris0003.png 13 2 158 98 4 4 160 100
-aris0004.png 13 2 158 98 4 4 160 100
-aris0005.png 13 2 158 98 4 4 160 100
-aris0006.png 13 2 158 98 4 4 160 100
-aris0007.png 13 2 158 98 4 4 160 100
-aris0008.png 13 2 158 98 4 4 160 100
-aris0009.png 13 2 158 98 4 4 160 100
-aris0010.png 13 2 158 98 4 4 160 100
-aris0011.png 13 2 158 98 4 4 160 100
-aris0012.png 13 2 158 98 4 4 160 100
-aris0013.png 13 2 158 98 4 4 160 100
-aris0014.png 13 2 158 98 4 4 160 100
-aris0015.png 13 2 158 98 4 4 160 100
-aris0016.png 13 2 158 98 4 4 160 100
+arilou.sml.0.png 0 2 2 2
+arilou.sml.1.png 0 2 2 2
+arilou.sml.2.png 0 2 2 2
+arilou.sml.3.png 0 2 2 2
+arilou.sml.4.png 0 2 2 2
+arilou.sml.5.png 0 2 2 2
+arilou.sml.6.png 0 2 2 2
+arilou.sml.7.png 0 2 2 2
+arilou.sml.8.png 0 2 2 2
+arilou.sml.9.png 0 2 2 2
+arilou.sml.10.png 0 2 2 2
+arilou.sml.11.png 0 2 2 2
+arilou.sml.12.png 0 2 2 2
+arilou.sml.13.png 0 2 2 2
+arilou.sml.14.png 0 2 2 2
+arilou.sml.15.png 0 2 2 2

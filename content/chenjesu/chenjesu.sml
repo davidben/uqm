@@ -1,16 +1,16 @@
-ches0001.png 226 28 156 96 9 9 160 100
-ches0002.png 226 28 156 96 9 8 160 100
-ches0003.png 226 28 156 96 9 9 160 100
-ches0004.png 226 28 157 97 8 8 160 100
-ches0005.png 226 28 155 96 10 9 160 100
-ches0006.png 226 28 157 96 8 8 160 100
-ches0007.png 226 28 156 96 9 9 160 100
-ches0008.png 226 28 156 97 9 8 160 100
-ches0009.png 226 28 156 96 9 9 160 100
-ches0010.png 226 28 156 97 9 8 160 100
-ches0011.png 226 28 156 96 9 9 160 100
-ches0012.png 226 28 156 96 8 8 160 100
-ches0013.png 226 28 156 96 10 9 160 100
-ches0014.png 226 28 156 97 8 8 160 100
-ches0015.png 226 28 156 96 9 9 160 100
-ches0016.png 226 28 156 96 9 8 160 100
+chenjesu.sml.0.png 0 28 4 4
+chenjesu.sml.1.png 0 28 4 4
+chenjesu.sml.2.png 0 28 4 4
+chenjesu.sml.3.png 0 28 3 3
+chenjesu.sml.4.png 0 28 5 4
+chenjesu.sml.5.png 0 28 3 4
+chenjesu.sml.6.png 0 28 4 4
+chenjesu.sml.7.png 0 28 4 3
+chenjesu.sml.8.png 0 28 4 4
+chenjesu.sml.9.png 0 28 4 3
+chenjesu.sml.10.png 0 28 4 4
+chenjesu.sml.11.png 0 28 4 4
+chenjesu.sml.12.png 0 28 4 4
+chenjesu.sml.13.png 0 28 4 3
+chenjesu.sml.14.png 0 28 4 4
+chenjesu.sml.15.png 0 28 4 4

@@ -1,19 +1,19 @@
-plas0001.png 13 28 159 99 3 3 160 100
-plas0002.png 13 28 158 98 4 4 160 100
-plas0003.png 13 28 158 98 4 4 160 100
-plas0004.png 13 28 157 98 6 5 160 100
-plas0005.png 13 28 156 97 7 6 160 100
-plas0006.png 13 28 156 96 9 8 160 100
-plas0007.png 13 28 155 96 10 9 160 100
-plas0008.png 13 28 154 95 12 11 160 100
-plas0009.png 13 28 153 95 12 11 160 100
-plas0010.png 13 28 154 95 12 11 160 100
-plas0011.png 13 28 155 95 11 11 160 100
-plas0012.png 13 28 160 101 1 1 160 100
-plas0013.png 13 28 159 98 4 4 160 100
-plas0014.png 13 28 159 98 4 5 160 100
-plas0015.png 13 28 158 98 5 5 160 100
-plas0016.png 13 28 158 98 5 5 160 100
-plas0017.png 13 28 158 98 5 5 160 100
-plas0018.png 13 28 158 98 5 5 160 100
-plas0019.png 13 28 158 98 5 5 160 100
+plasma.sml.0.png 0 28 1 1
+plasma.sml.1.png 0 28 2 2
+plasma.sml.2.png 0 28 2 2
+plasma.sml.3.png 0 28 3 2
+plasma.sml.4.png 0 28 4 3
+plasma.sml.5.png 0 28 4 4
+plasma.sml.6.png 0 28 5 4
+plasma.sml.7.png 0 28 6 5
+plasma.sml.8.png 0 28 7 5
+plasma.sml.9.png 0 28 6 5
+plasma.sml.10.png 0 28 5 5
+plasma.sml.11.png 0 28 0 -1
+plasma.sml.12.png 0 28 1 2
+plasma.sml.13.png 0 28 1 2
+plasma.sml.14.png 0 28 2 2
+plasma.sml.15.png 0 28 2 2
+plasma.sml.16.png 0 28 2 2
+plasma.sml.17.png 0 28 2 2
+plasma.sml.18.png 0 28 2 2

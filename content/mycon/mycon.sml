@@ -1,16 +1,16 @@
-mycs0001.png 13 11 157 96 7 8 160 100
-mycs0002.png 13 11 157 96 7 8 160 100
-mycs0003.png 13 11 157 96 8 8 160 100
-mycs0004.png 13 11 157 97 8 7 160 100
-mycs0005.png 13 11 157 97 8 7 160 100
-mycs0006.png 13 11 157 97 8 7 160 100
-mycs0007.png 13 11 157 97 8 8 160 100
-mycs0008.png 13 11 157 97 7 8 160 100
-mycs0009.png 13 11 157 97 7 8 160 100
-mycs0010.png 13 11 157 97 7 8 160 100
-mycs0011.png 13 11 156 97 8 8 160 100
-mycs0012.png 13 11 156 97 8 7 160 100
-mycs0013.png 13 11 156 97 8 7 160 100
-mycs0014.png 13 11 156 97 8 7 160 100
-mycs0015.png 13 11 156 96 8 8 160 100
-mycs0016.png 13 11 157 96 7 8 160 100
+mycon.sml.0.png 0 11 3 4
+mycon.sml.1.png 0 11 3 4
+mycon.sml.2.png 0 11 3 4
+mycon.sml.3.png 0 11 3 3
+mycon.sml.4.png 0 11 3 3
+mycon.sml.5.png 0 11 3 3
+mycon.sml.6.png 0 11 3 3
+mycon.sml.7.png 0 11 3 3
+mycon.sml.8.png 0 11 3 3
+mycon.sml.9.png 0 11 3 3
+mycon.sml.10.png 0 11 4 3
+mycon.sml.11.png 0 11 4 3
+mycon.sml.12.png 0 11 4 3
+mycon.sml.13.png 0 11 4 3
+mycon.sml.14.png 0 11 4 4
+mycon.sml.15.png 0 11 3 4

@@ -1,16 +1,16 @@
-blas0001.png 10 3 158 95 5 10 160 100
-blas0002.png 10 3 156 95 8 10 160 100
-blas0003.png 10 3 156 96 9 9 160 100
-blas0004.png 10 3 156 97 10 7 160 100
-blas0005.png 10 3 156 98 10 5 160 100
-blas0006.png 10 3 156 97 10 7 160 100
-blas0007.png 10 3 156 96 9 9 160 100
-blas0008.png 10 3 156 96 8 10 160 100
-blas0009.png 10 3 158 96 5 10 160 100
-blas0010.png 10 3 157 96 8 10 160 100
-blas0011.png 10 3 156 96 9 9 160 100
-blas0012.png 10 3 155 97 10 7 160 100
-blas0013.png 10 3 155 98 10 5 160 100
-blas0014.png 10 3 155 97 10 7 160 100
-blas0015.png 10 3 156 96 9 9 160 100
-blas0016.png 10 3 157 95 8 10 160 100
+blackurq.sml.0.png 0 3 2 5
+blackurq.sml.1.png 0 3 4 5
+blackurq.sml.2.png 0 3 4 4
+blackurq.sml.3.png 0 3 4 3
+blackurq.sml.4.png 0 3 4 2
+blackurq.sml.5.png 0 3 4 3
+blackurq.sml.6.png 0 3 4 4
+blackurq.sml.7.png 0 3 4 4
+blackurq.sml.8.png 0 3 2 4
+blackurq.sml.9.png 0 3 3 4
+blackurq.sml.10.png 0 3 4 4
+blackurq.sml.11.png 0 3 5 3
+blackurq.sml.12.png 0 3 5 2
+blackurq.sml.13.png 0 3 5 3
+blackurq.sml.14.png 0 3 4 4
+blackurq.sml.15.png 0 3 3 5

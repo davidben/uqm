@@ -1,16 +1,16 @@
-chms0001.png 13 5 156 95 9 10 160 100
-chms0002.png 13 5 155 95 9 10 160 100
-chms0003.png 13 5 156 96 9 9 160 100
-chms0004.png 13 5 156 97 10 9 160 100
-chms0005.png 13 5 156 96 10 9 160 100
-chms0006.png 13 5 156 95 10 9 160 100
-chms0007.png 13 5 156 96 9 9 160 100
-chms0008.png 13 5 155 96 9 10 160 100
-chms0009.png 13 5 156 96 9 10 160 100
-chms0010.png 13 5 157 96 9 10 160 100
-chms0011.png 13 5 156 96 9 9 160 100
-chms0012.png 13 5 155 95 10 9 160 100
-chms0013.png 13 5 155 96 10 9 160 100
-chms0014.png 13 5 155 97 10 9 160 100
-chms0015.png 13 5 156 96 9 9 160 100
-chms0016.png 13 5 157 95 9 10 160 100
+chmmr.sml.0.png 0 5 4 5
+chmmr.sml.1.png 0 5 5 5
+chmmr.sml.2.png 0 5 4 4
+chmmr.sml.3.png 0 5 4 3
+chmmr.sml.4.png 0 5 4 4
+chmmr.sml.5.png 0 5 4 5
+chmmr.sml.6.png 0 5 4 4
+chmmr.sml.7.png 0 5 5 4
+chmmr.sml.8.png 0 5 4 4
+chmmr.sml.9.png 0 5 3 4
+chmmr.sml.10.png 0 5 4 4
+chmmr.sml.11.png 0 5 5 5
+chmmr.sml.12.png 0 5 5 4
+chmmr.sml.13.png 0 5 5 3
+chmmr.sml.14.png 0 5 4 4
+chmmr.sml.15.png 0 5 3 5

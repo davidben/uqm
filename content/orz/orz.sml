@@ -1,16 +1,16 @@
-orzs0001.png 13 12 157 97 7 6 160 100
-orzs0002.png 13 12 156 97 7 7 160 100
-orzs0003.png 13 12 156 98 7 7 160 100
-orzs0004.png 13 12 157 98 7 7 160 100
-orzs0005.png 13 12 158 97 6 7 160 100
-orzs0006.png 13 12 157 96 7 7 160 100
-orzs0007.png 13 12 156 96 7 7 160 100
-orzs0008.png 13 12 156 97 7 7 160 100
-orzs0009.png 13 12 157 98 7 6 160 100
-orzs0010.png 13 12 158 97 7 7 160 100
-orzs0011.png 13 12 158 96 7 7 160 100
-orzs0012.png 13 12 157 96 7 7 160 100
-orzs0013.png 13 12 157 97 6 7 160 100
-orzs0014.png 13 12 157 98 7 7 160 100
-orzs0015.png 13 12 158 98 7 7 160 100
-orzs0016.png 13 12 158 97 7 7 160 100
+orz.sml.0.png 0 12 3 3
+orz.sml.1.png 0 12 4 3
+orz.sml.2.png 0 12 4 2
+orz.sml.3.png 0 12 3 2
+orz.sml.4.png 0 12 2 3
+orz.sml.5.png 0 12 3 4
+orz.sml.6.png 0 12 4 4
+orz.sml.7.png 0 12 4 3
+orz.sml.8.png 0 12 3 2
+orz.sml.9.png 0 12 2 3
+orz.sml.10.png 0 12 2 4
+orz.sml.11.png 0 12 3 4
+orz.sml.12.png 0 12 3 3
+orz.sml.13.png 0 12 3 2
+orz.sml.14.png 0 12 2 2
+orz.sml.15.png 0 12 2 3

@@ -1,16 +1,16 @@
-ilws0001.png 0 8 155 94 11 9 160 100
-ilws0002.png 0 8 156 94 11 9 160 100
-ilws0003.png 0 8 157 95 10 9 160 100
-ilws0004.png 0 8 157 95 10 10 160 100
-ilws0005.png 0 8 158 95 10 11 160 100
-ilws0006.png 0 8 157 96 10 10 160 100
-ilws0007.png 0 8 157 97 10 9 160 100
-ilws0008.png 0 8 156 98 11 9 160 100
-ilws0009.png 0 8 155 98 11 9 160 100
-ilws0010.png 0 8 154 98 11 9 160 100
-ilws0011.png 0 8 154 97 10 9 160 100
-ilws0012.png 0 8 154 96 10 10 160 100
-ilws0013.png 0 8 153 95 10 11 160 100
-ilws0014.png 0 8 154 95 10 10 160 100
-ilws0015.png 0 8 154 95 10 9 160 100
-ilws0016.png 0 8 154 94 11 9 160 100
+ilwrath.sml.0.png 0 8 5 6
+ilwrath.sml.1.png 0 8 4 6
+ilwrath.sml.2.png 0 8 3 5
+ilwrath.sml.3.png 0 8 3 5
+ilwrath.sml.4.png 0 8 2 5
+ilwrath.sml.5.png 0 8 3 4
+ilwrath.sml.6.png 0 8 3 3
+ilwrath.sml.7.png 0 8 4 2
+ilwrath.sml.8.png 0 8 5 2
+ilwrath.sml.9.png 0 8 6 2
+ilwrath.sml.10.png 0 8 6 3
+ilwrath.sml.11.png 0 8 6 4
+ilwrath.sml.12.png 0 8 7 5
+ilwrath.sml.13.png 0 8 6 5
+ilwrath.sml.14.png 0 8 6 5
+ilwrath.sml.15.png 0 8 6 6

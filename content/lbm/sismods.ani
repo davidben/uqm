@@ -1,56 +1,56 @@
-sism0001.png 54 -1 1 2 11 13 1 2
-sism0002.png 54 -1 1 2 6 94 1 2
-sism0003.png 54 -1 1 2 7 78 1 2
-sism0004.png 54 -1 1 2 12 32 1 2
-sism0005.png 54 -1 1 2 12 32 1 2
-sism0006.png 54 -1 1 2 12 32 1 2
-sism0007.png 54 -1 1 3 12 30 1 2
-sism0008.png 54 -1 1 9 12 18 1 2
-sism0009.png 54 -1 1 2 12 32 1 2
-sism0010.png 54 -1 1 2 12 32 1 2
-sism0011.png 54 -1 1 2 12 32 1 2
-sism0012.png 54 -1 1 2 12 32 1 2
-sism0013.png 54 -1 1 2 12 32 1 2
-sism0014.png 54 -1 1 2 12 32 1 2
-sism0015.png 54 -1 1 7 12 22 1 2
-sism0016.png 54 -1 1 9 12 19 1 2
-sism0017.png 54 -1 1 11 12 16 1 2
-sism0018.png 54 -1 1 8 12 21 1 2
-sism0019.png 54 -1 1 3 12 30 1 2
-sism0020.png 54 -1 1 2 12 32 1 2
-sism0021.png 54 -1 1 2 6 94 1 2
-sism0022.png 54 -1 1 2 7 78 1 2
-sism0023.png 54 -1 1 2 12 32 1 2
-sism0024.png 54 -1 1 2 12 32 1 2
-sism0025.png 54 -1 13 2 1 32 1 2
-sism0026.png 54 -1 13 2 1 32 1 2
-sism0027.png 54 -1 1 2 10 5 1 2
-sism0028.png 54 -1 1 2 5 2 1 2
-sism0029.png 54 -1 1 2 12 27 1 6
-sism0030.png 54 -1 1 2 12 27 1 6
-sism0031.png 54 -1 1 6 12 15 1 2
-sism0032.png 54 -1 1 3 12 22 1 2
-sism0033.png 54 -1 1 2 12 20 1 2
-sism0034.png 54 -1 1 2 12 27 1 6
-sism0035.png 54 -1 1 3 12 21 1 2
-sism0036.png 54 -1 1 5 12 23 1 6
-sism0037.png 54 -1 1 2 12 27 1 6
-sism0038.png 54 -1 1 2 12 26 1 6
-sism0039.png 54 -1 1 2 12 26 1 6
-sism0040.png 54 -1 1 3 12 20 1 2
-sism0041.png 54 -1 1 4 12 19 1 2
-sism0042.png 54 -1 1 5 12 16 1 2
-sism0043.png 54 -1 1 2 12 20 1 2
-sism0044.png 54 -1 1 2 12 24 1 6
-sism0045.png 54 -1 1 3 12 26 1 6
-sism0046.png 54 -1 1 2 10 5 1 2
-sism0047.png 54 -1 1 2 5 2 1 2
-sism0048.png 54 -1 1 2 12 27 1 6
-sism0049.png 54 -1 1 2 12 27 1 6
-sism0050.png 54 -1 13 2 1 27 1 6
-sism0051.png 54 -1 13 2 1 27 1 6
-sism0052.png 54 -1 234 48 9 10 1 2
-sism0053.png 54 -1 234 60 9 10 1 2
-sism0054.png 54 -1 234 72 9 10 1 2
-sism0055.png 54 -1 234 84 9 10 1 2
-sism0056.png 54 -1 194 43 45 50 1 2
+sismods.0.png 0 67 0 0
+sismods.1.png 0 67 0 0
+sismods.2.png 0 67 0 0
+sismods.3.png 0 67 0 0
+sismods.4.png 0 67 0 0
+sismods.5.png 0 67 0 0
+sismods.6.png 0 67 0 -1
+sismods.7.png 0 67 0 -7
+sismods.8.png 0 67 0 0
+sismods.9.png 0 67 0 0
+sismods.10.png 0 67 0 0
+sismods.11.png 0 67 0 0
+sismods.12.png 0 67 0 0
+sismods.13.png 0 67 0 0
+sismods.14.png 0 67 0 -5
+sismods.15.png 0 67 0 -7
+sismods.16.png 0 67 0 -9
+sismods.17.png 0 67 0 -6
+sismods.18.png 0 67 0 -1
+sismods.19.png 0 67 0 0
+sismods.20.png 0 67 0 0
+sismods.21.png 0 67 0 0
+sismods.22.png 0 67 0 0
+sismods.23.png 0 67 0 0
+sismods.24.png 0 67 -12 0
+sismods.25.png 0 67 -12 0
+sismods.26.png 0 67 0 0
+sismods.27.png 0 67 0 0
+sismods.28.png 0 67 0 4
+sismods.29.png 0 67 0 4
+sismods.30.png 0 67 0 -4
+sismods.31.png 0 67 0 -1
+sismods.32.png 0 67 0 0
+sismods.33.png 0 67 0 4
+sismods.34.png 0 67 0 -1
+sismods.35.png 0 67 0 1
+sismods.36.png 0 67 0 4
+sismods.37.png 0 67 0 4
+sismods.38.png 0 67 0 4
+sismods.39.png 0 67 0 -1
+sismods.40.png 0 67 0 -2
+sismods.41.png 0 67 0 -3
+sismods.42.png 0 67 0 0
+sismods.43.png 0 67 0 4
+sismods.44.png 0 67 0 3
+sismods.45.png 0 67 0 0
+sismods.46.png 0 67 0 0
+sismods.47.png 0 67 0 4
+sismods.48.png 0 67 0 4
+sismods.49.png 0 67 -12 4
+sismods.50.png 0 67 -12 4
+sismods.51.png 0 67 -163 -69
+sismods.52.png 0 67 -174 -69
+sismods.53.png 0 67 -185 -69
+sismods.54.png 0 67 -196 -69
+sismods.55.png 0 67 0 -54

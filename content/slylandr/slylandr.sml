@@ -1,16 +1,16 @@
-slys0001.png 5 15 157 95 8 11 160 100
-slys0002.png 5 15 158 95 7 11 160 100
-slys0003.png 5 15 157 96 8 10 160 100
-slys0004.png 5 15 156 96 10 10 160 100
-slys0005.png 5 15 156 96 10 9 160 100
-slys0006.png 5 15 155 97 12 8 160 100
-slys0007.png 5 15 155 97 12 7 160 100
-slys0008.png 5 15 155 97 12 7 160 100
-slys0009.png 5 15 155 97 12 7 160 100
-slys0010.png 5 15 155 97 12 7 160 100
-slys0011.png 5 15 155 97 12 7 160 100
-slys0012.png 5 15 155 97 12 8 160 100
-slys0013.png 5 15 156 96 10 9 160 100
-slys0014.png 5 15 156 96 10 10 160 100
-slys0015.png 5 15 157 96 8 10 160 100
-slys0016.png 5 15 157 95 8 11 160 100
+slylandr.sml.0.png 0 15 3 5
+slylandr.sml.1.png 0 15 2 5
+slylandr.sml.2.png 0 15 3 4
+slylandr.sml.3.png 0 15 4 4
+slylandr.sml.4.png 0 15 4 4
+slylandr.sml.5.png 0 15 5 3
+slylandr.sml.6.png 0 15 5 3
+slylandr.sml.7.png 0 15 5 3
+slylandr.sml.8.png 0 15 5 3
+slylandr.sml.9.png 0 15 5 3
+slylandr.sml.10.png 0 15 5 3
+slylandr.sml.11.png 0 15 5 3
+slylandr.sml.12.png 0 15 4 4
+slylandr.sml.13.png 0 15 4 4
+slylandr.sml.14.png 0 15 3 4
+slylandr.sml.15.png 0 15 3 5

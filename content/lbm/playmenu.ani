@@ -1,64 +1,64 @@
-play0001.png 2 -1 117 51 56 63 117 61
-play0002.png 2 -1 117 51 56 63 117 61
-play0003.png 2 -1 117 51 56 63 117 61
-play0004.png 2 -1 117 51 56 63 117 61
-play0005.png 2 -1 117 51 56 63 117 61
-play0006.png 2 -1 117 51 56 63 117 61
-play0007.png 2 -1 117 51 56 63 117 61
-play0008.png 2 -1 117 51 56 63 117 61
-play0009.png 2 -1 117 51 56 63 117 61
-play0010.png 2 -1 117 51 56 63 117 61
-play0011.png 2 -1 116 51 58 63 117 61
-play0012.png 2 -1 117 51 56 63 117 61
-play0013.png 2 -1 117 51 56 63 117 61
-play0014.png 2 -1 117 51 56 63 117 61
-play0015.png 2 -1 117 51 56 63 117 61
-play0016.png 2 -1 117 51 56 63 117 61
-play0017.png 2 -1 116 51 58 63 117 61
-play0018.png 2 -1 117 51 56 63 117 61
-play0019.png 2 -1 117 51 56 63 117 61
-play0020.png 2 -1 117 51 56 63 117 61
-play0021.png 2 -1 117 51 56 63 117 61
-play0022.png 2 -1 117 51 56 63 117 61
-play0023.png 2 -1 117 51 56 63 117 61
-play0024.png 2 -1 116 51 58 63 117 61
-play0025.png 2 -1 117 51 56 63 117 61
-play0026.png 2 -1 117 51 56 63 117 61
-play0027.png 2 -1 116 51 58 63 117 61
-play0028.png 2 -1 117 51 56 63 117 61
-play0029.png 2 -1 117 51 56 63 117 61
-play0030.png 2 -1 117 51 56 63 117 61
-play0031.png 2 -1 117 51 56 63 117 61
-play0032.png 2 -1 117 51 56 63 117 61
-play0033.png 2 -1 117 51 56 63 117 61
-play0034.png 2 -1 117 51 56 63 117 61
-play0035.png 2 -1 117 51 56 63 117 61
-play0036.png 2 -1 117 51 56 63 117 61
-play0037.png 2 -1 117 51 56 63 117 61
-play0038.png 2 -1 116 51 58 63 117 61
-play0039.png 10 -1 78 179 4 16 68 2
-play0040.png 10 -1 95 179 12 16 68 2
-play0041.png 10 -1 116 179 12 16 68 2
-play0042.png 10 -1 137 179 12 16 68 2
-play0043.png 10 -1 158 179 12 16 68 2
-play0044.png 10 -1 179 179 12 16 68 2
-play0045.png 10 -1 200 179 12 16 68 2
-play0046.png 10 -1 221 179 12 16 68 2
-play0047.png 10 -1 242 179 12 16 68 2
-play0048.png 10 -1 261 179 16 16 68 2
-play0049.png 10 -1 78 179 4 16 68 2
-play0050.png 10 -1 95 179 12 16 68 2
-play0051.png 10 -1 116 179 12 16 68 2
-play0052.png 10 -1 137 179 12 16 68 2
-play0053.png 10 -1 158 179 12 16 68 2
-play0054.png 10 -1 179 179 12 16 68 2
-play0055.png 10 -1 200 179 12 16 68 2
-play0056.png 10 -1 221 179 12 16 68 2
-play0057.png 10 -1 242 179 12 16 68 2
-play0058.png 10 -1 261 179 16 16 68 2
-play0059.png 209 -1 69 14 70 125 68 2
-play0060.png 244 -1 206 95 73 17 68 2
-play0061.png 235 -1 68 2 212 138 68 2
-play0062.png 10 -1 78 156 39 17 68 2
-play0063.png 10 -1 78 156 39 17 68 2
-play0064.png 235 -1 68 2 212 197 68 2
+playmenu.0.png 0 0 0 10
+playmenu.1.png 0 0 0 10
+playmenu.2.png 0 0 0 10
+playmenu.3.png 0 0 0 10
+playmenu.4.png 0 0 0 10
+playmenu.5.png 0 0 0 10
+playmenu.6.png 0 0 0 10
+playmenu.7.png 0 0 0 10
+playmenu.8.png 0 0 0 10
+playmenu.9.png 0 0 0 10
+playmenu.10.png 0 0 1 10
+playmenu.11.png 0 0 0 10
+playmenu.12.png 0 0 0 10
+playmenu.13.png 0 0 0 10
+playmenu.14.png 0 0 0 10
+playmenu.15.png 0 0 0 10
+playmenu.16.png 0 0 1 10
+playmenu.17.png 0 0 0 10
+playmenu.18.png 0 0 0 10
+playmenu.19.png 0 0 0 10
+playmenu.20.png 0 0 0 10
+playmenu.21.png 0 0 0 10
+playmenu.22.png 0 0 0 10
+playmenu.23.png 0 0 1 10
+playmenu.24.png 0 0 0 10
+playmenu.25.png 0 0 0 10
+playmenu.26.png 0 0 1 10
+playmenu.27.png 0 0 0 10
+playmenu.28.png 0 0 0 10
+playmenu.29.png 0 0 0 10
+playmenu.30.png 0 0 0 10
+playmenu.31.png 0 0 0 10
+playmenu.32.png 0 0 0 10
+playmenu.33.png 0 0 0 10
+playmenu.34.png 0 0 0 10
+playmenu.35.png 0 0 0 10
+playmenu.36.png 0 0 0 10
+playmenu.37.png 0 0 1 10
+playmenu.38.png 0 0 -10 -177
+playmenu.39.png 0 0 -27 -177
+playmenu.40.png 0 0 -48 -177
+playmenu.41.png 0 0 -69 -177
+playmenu.42.png 0 0 -90 -177
+playmenu.43.png 0 0 -111 -177
+playmenu.44.png 0 0 -132 -177
+playmenu.45.png 0 0 -153 -177
+playmenu.46.png 0 0 -174 -177
+playmenu.47.png 0 0 -193 -177
+playmenu.48.png 0 0 -10 -177
+playmenu.49.png 0 0 -27 -177
+playmenu.50.png 0 0 -48 -177
+playmenu.51.png 0 0 -69 -177
+playmenu.52.png 0 0 -90 -177
+playmenu.53.png 0 0 -111 -177
+playmenu.54.png 0 0 -132 -177
+playmenu.55.png 0 0 -153 -177
+playmenu.56.png 0 0 -174 -177
+playmenu.57.png 0 0 -193 -177
+playmenu.58.png 0 0 -1 -12
+playmenu.59.png 0 0 -138 -93
+playmenu.60.png 0 0 0 0
+playmenu.61.png 0 0 -10 -154
+playmenu.62.png 0 0 -10 -154
+playmenu.63.png 0 0 0 0

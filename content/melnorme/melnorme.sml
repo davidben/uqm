@@ -1,16 +1,16 @@
-mels0001.png 225 9 157 96 7 8 160 100
-mels0002.png 225 9 157 96 7 8 160 100
-mels0003.png 225 9 157 96 8 8 160 100
-mels0004.png 225 9 157 97 8 7 160 100
-mels0005.png 225 9 157 97 8 7 160 100
-mels0006.png 225 9 157 97 8 7 160 100
-mels0007.png 225 9 157 97 8 8 160 100
-mels0008.png 225 9 157 97 7 8 160 100
-mels0009.png 225 9 157 97 7 8 160 100
-mels0010.png 225 9 157 97 7 8 160 100
-mels0011.png 225 9 156 97 8 8 160 100
-mels0012.png 225 9 156 97 8 7 160 100
-mels0013.png 225 9 156 97 8 7 160 100
-mels0014.png 225 9 156 97 8 7 160 100
-mels0015.png 225 9 156 96 8 8 160 100
-mels0016.png 225 9 157 96 7 8 160 100
+melnorme.sml.0.png 0 9 3 4
+melnorme.sml.1.png 0 9 3 4
+melnorme.sml.2.png 0 9 3 4
+melnorme.sml.3.png 0 9 3 3
+melnorme.sml.4.png 0 9 3 3
+melnorme.sml.5.png 0 9 3 3
+melnorme.sml.6.png 0 9 3 3
+melnorme.sml.7.png 0 9 3 3
+melnorme.sml.8.png 0 9 3 3
+melnorme.sml.9.png 0 9 3 3
+melnorme.sml.10.png 0 9 4 3
+melnorme.sml.11.png 0 9 4 3
+melnorme.sml.12.png 0 9 4 3
+melnorme.sml.13.png 0 9 4 3
+melnorme.sml.14.png 0 9 4 4
+melnorme.sml.15.png 0 9 3 4

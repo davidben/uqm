@@ -1,4 +1,4 @@
-stat0001.png 1 -1 150 96 22 5 160 100
-stat0002.png 1 -1 150 96 21 5 160 100
-stat0003.png 1 -1 144 77 33 47 160 100
-stat0004.png 1 -1 161 101 15 15 160 100
+status.0.png 0 0 11 4
+status.1.png 0 0 -6 4
+status.2.png 0 0 16 23
+status.3.png 0 0 -1 -1

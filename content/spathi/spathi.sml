@@ -1,16 +1,16 @@
-spas0001.png 13 16 157 98 7 6 160 100
-spas0002.png 13 16 157 97 7 7 160 100
-spas0003.png 13 16 156 97 9 7 160 100
-spas0004.png 13 16 157 97 8 7 160 100
-spas0005.png 13 16 158 97 7 7 160 100
-spas0006.png 13 16 157 97 8 7 160 100
-spas0007.png 13 16 157 97 8 8 160 100
-spas0008.png 13 16 157 97 8 7 160 100
-spas0009.png 13 16 157 98 7 6 160 100
-spas0010.png 13 16 156 97 9 7 160 100
-spas0011.png 13 16 156 97 9 7 160 100
-spas0012.png 13 16 157 97 7 7 160 100
-spas0013.png 13 16 157 97 7 7 160 100
-spas0014.png 13 16 157 97 7 7 160 100
-spas0015.png 13 16 156 96 8 8 160 100
-spas0016.png 13 16 157 97 7 7 160 100
+spathi.sml.0.png 0 16 3 2
+spathi.sml.1.png 0 16 3 3
+spathi.sml.2.png 0 16 4 3
+spathi.sml.3.png 0 16 3 3
+spathi.sml.4.png 0 16 2 3
+spathi.sml.5.png 0 16 3 3
+spathi.sml.6.png 0 16 3 3
+spathi.sml.7.png 0 16 3 3
+spathi.sml.8.png 0 16 3 2
+spathi.sml.9.png 0 16 4 3
+spathi.sml.10.png 0 16 4 3
+spathi.sml.11.png 0 16 3 3
+spathi.sml.12.png 0 16 3 3
+spathi.sml.13.png 0 16 3 3
+spathi.sml.14.png 0 16 4 4
+spathi.sml.15.png 0 16 3 3

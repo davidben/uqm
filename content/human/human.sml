@@ -1,16 +1,16 @@
-hums0001.png 13 7 159 96 3 10 160 100
-hums0002.png 13 7 157 96 6 10 160 100
-hums0003.png 13 7 156 96 9 9 160 100
-hums0004.png 13 7 155 98 10 6 160 100
-hums0005.png 13 7 154 99 12 3 160 100
-hums0006.png 13 7 155 97 10 6 160 100
-hums0007.png 13 7 156 96 9 9 160 100
-hums0008.png 13 7 157 95 6 10 160 100
-hums0009.png 13 7 159 95 3 10 160 100
-hums0010.png 13 7 158 95 6 10 160 100
-hums0011.png 13 7 156 96 9 9 160 100
-hums0012.png 13 7 156 97 10 6 160 100
-hums0013.png 13 7 155 99 12 3 160 100
-hums0014.png 13 7 156 98 10 6 160 100
-hums0015.png 13 7 156 96 9 9 160 100
-hums0016.png 13 7 158 96 6 10 160 100
+human.sml.0.png 0 7 1 4
+human.sml.1.png 0 7 3 4
+human.sml.2.png 0 7 4 4
+human.sml.3.png 0 7 5 2
+human.sml.4.png 0 7 6 1
+human.sml.5.png 0 7 5 3
+human.sml.6.png 0 7 4 4
+human.sml.7.png 0 7 3 5
+human.sml.8.png 0 7 1 5
+human.sml.9.png 0 7 2 5
+human.sml.10.png 0 7 4 4
+human.sml.11.png 0 7 4 3
+human.sml.12.png 0 7 5 1
+human.sml.13.png 0 7 4 2
+human.sml.14.png 0 7 4 4
+human.sml.15.png 0 7 2 4

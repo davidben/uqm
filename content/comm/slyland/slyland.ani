@@ -1,51 +1,51 @@
-slyl0001.png 4 59 1 2 243 107 1 2
-slyl0002.png 4 59 45 89 10 20 1 2
-slyl0003.png 4 59 45 89 10 20 1 2
-slyl0004.png 4 59 45 89 10 20 1 2
-slyl0005.png 4 59 42 78 20 16 1 2
-slyl0006.png 4 59 42 70 18 17 1 2
-slyl0007.png 4 59 39 60 26 26 1 2
-slyl0008.png 4 59 30 56 32 31 1 2
-slyl0009.png 4 59 24 53 43 37 1 2
-slyl0010.png 4 59 24 53 43 37 1 2
-slyl0011.png 4 59 202 87 9 22 1 2
-slyl0012.png 4 59 202 87 9 22 1 2
-slyl0013.png 4 59 202 87 9 22 1 2
-slyl0014.png 4 59 201 76 15 12 1 2
-slyl0015.png 4 59 199 66 20 22 1 2
-slyl0016.png 4 59 191 60 30 27 1 2
-slyl0017.png 4 59 180 55 41 34 1 2
-slyl0018.png 4 59 180 55 41 34 1 2
-slyl0019.png 4 59 116 76 18 33 127 2
-slyl0020.png 4 59 116 76 18 33 127 2
-slyl0021.png 4 59 116 76 18 33 127 2
-slyl0022.png 4 59 119 63 17 20 1 2
-slyl0023.png 4 59 116 43 24 21 1 2
-slyl0024.png 4 59 96 27 60 44 1 2
-slyl0025.png 4 59 78 7 91 73 1 2
-slyl0026.png 4 59 78 7 91 73 1 2
-slyl0027.png 4 59 35 88 9 21 1 2
-slyl0028.png 4 59 35 88 9 21 1 2
-slyl0029.png 4 59 35 88 9 21 1 2
-slyl0030.png 4 59 32 79 10 10 1 2
-slyl0031.png 4 59 28 64 18 19 1 2
-slyl0032.png 4 59 25 58 28 27 1 2
-slyl0033.png 4 59 24 54 41 32 1 2
-slyl0034.png 4 59 24 54 41 32 1 2
-slyl0035.png 4 59 191 87 9 22 1 2
-slyl0036.png 4 59 191 87 9 22 1 2
-slyl0037.png 4 59 191 87 9 22 1 2
-slyl0038.png 4 59 190 79 10 12 1 2
-slyl0039.png 4 59 191 67 15 16 1 2
-slyl0040.png 4 59 183 60 31 27 1 2
-slyl0041.png 4 59 180 55 41 32 1 2
-slyl0042.png 4 59 180 55 41 32 1 2
-slyl0043.png 4 59 100 77 7 32 103 2
-slyl0044.png 4 59 100 77 7 32 103 2
-slyl0045.png 4 59 100 77 7 32 103 2
-slyl0046.png 4 59 97 65 13 18 1 2
-slyl0047.png 4 59 96 49 15 17 1 2
-slyl0048.png 4 59 91 19 39 41 1 2
-slyl0049.png 4 59 81 7 76 65 1 2
-slyl0050.png 4 59 78 7 91 72 1 2
-slyl0051.png 4 59 78 7 91 72 1 2
+slyland.0.png 0 59 0 0
+slyland.1.png 0 59 -44 -87
+slyland.2.png 0 59 -44 -87
+slyland.3.png 0 59 -44 -87
+slyland.4.png 0 59 -41 -76
+slyland.5.png 0 59 -41 -68
+slyland.6.png 0 59 -38 -58
+slyland.7.png 0 59 -29 -54
+slyland.8.png 0 59 -23 -51
+slyland.9.png 0 59 -23 -51
+slyland.10.png 0 59 -201 -85
+slyland.11.png 0 59 -201 -85
+slyland.12.png 0 59 -201 -85
+slyland.13.png 0 59 -200 -74
+slyland.14.png 0 59 -198 -64
+slyland.15.png 0 59 -190 -58
+slyland.16.png 0 59 -179 -53
+slyland.17.png 0 59 -179 -53
+slyland.18.png 0 59 11 -74
+slyland.19.png 0 59 11 -74
+slyland.20.png 0 59 11 -74
+slyland.21.png 0 59 -118 -61
+slyland.22.png 0 59 -115 -41
+slyland.23.png 0 59 -95 -25
+slyland.24.png 0 59 -77 -5
+slyland.25.png 0 59 -77 -5
+slyland.26.png 0 59 -34 -86
+slyland.27.png 0 59 -34 -86
+slyland.28.png 0 59 -34 -86
+slyland.29.png 0 59 -31 -77
+slyland.30.png 0 59 -27 -62
+slyland.31.png 0 59 -24 -56
+slyland.32.png 0 59 -23 -52
+slyland.33.png 0 59 -23 -52
+slyland.34.png 0 59 -190 -85
+slyland.35.png 0 59 -190 -85
+slyland.36.png 0 59 -190 -85
+slyland.37.png 0 59 -189 -77
+slyland.38.png 0 59 -190 -65
+slyland.39.png 0 59 -182 -58
+slyland.40.png 0 59 -179 -53
+slyland.41.png 0 59 -179 -53
+slyland.42.png 0 59 3 -75
+slyland.43.png 0 59 3 -75
+slyland.44.png 0 59 3 -75
+slyland.45.png 0 59 -96 -63
+slyland.46.png 0 59 -95 -47
+slyland.47.png 0 59 -90 -17
+slyland.48.png 0 59 -80 -5
+slyland.49.png 0 59 -77 -5
+slyland.50.png 0 59 -77 -5

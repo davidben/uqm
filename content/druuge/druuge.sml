@@ -1,16 +1,16 @@
-drus0001.png 13 6 159 95 4 8 160 100
-drus0002.png 13 6 158 96 6 7 160 100
-drus0003.png 13 6 158 96 7 7 160 100
-drus0004.png 13 6 158 98 8 5 160 100
-drus0005.png 13 6 158 99 9 4 160 100
-drus0006.png 13 6 158 99 8 5 160 100
-drus0007.png 13 6 158 98 7 7 160 100
-drus0008.png 13 6 158 98 5 7 160 100
-drus0009.png 13 6 158 98 4 8 160 100
-drus0010.png 13 6 158 98 5 7 160 100
-drus0011.png 13 6 156 98 7 7 160 100
-drus0012.png 13 6 155 99 8 5 160 100
-drus0013.png 13 6 154 99 9 3 160 100
-drus0014.png 13 6 155 98 8 5 160 100
-drus0015.png 13 6 156 96 7 7 160 100
-drus0016.png 13 6 157 96 6 7 160 100
+druuge.sml.0.png 0 6 1 5
+druuge.sml.1.png 0 6 2 4
+druuge.sml.2.png 0 6 2 4
+druuge.sml.3.png 0 6 2 2
+druuge.sml.4.png 0 6 2 1
+druuge.sml.5.png 0 6 2 1
+druuge.sml.6.png 0 6 2 2
+druuge.sml.7.png 0 6 2 2
+druuge.sml.8.png 0 6 2 2
+druuge.sml.9.png 0 6 2 2
+druuge.sml.10.png 0 6 4 2
+druuge.sml.11.png 0 6 5 1
+druuge.sml.12.png 0 6 6 1
+druuge.sml.13.png 0 6 5 2
+druuge.sml.14.png 0 6 4 4
+druuge.sml.15.png 0 6 3 4

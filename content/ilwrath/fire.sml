@@ -1,8 +1,8 @@
-firs0001.png 225 28 159 99 2 2 160 100
-firs0002.png 0 28 159 99 2 2 160 100
-firs0003.png 225 28 159 99 3 2 160 100
-firs0004.png 225 28 159 99 3 3 160 100
-firs0005.png 225 28 159 99 3 3 160 100
-firs0006.png 225 28 158 99 4 3 160 100
-firs0007.png 225 28 158 98 4 4 160 100
-firs0008.png 225 28 158 98 5 5 160 100
+fire.sml.0.png 0 28 1 1
+fire.sml.1.png 0 28 1 1
+fire.sml.2.png 0 28 1 1
+fire.sml.3.png 0 28 1 1
+fire.sml.4.png 0 28 1 1
+fire.sml.5.png 0 28 2 1
+fire.sml.6.png 0 28 2 2
+fire.sml.7.png 0 28 2 2

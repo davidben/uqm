@@ -1,15 +1,15 @@
-lass0001.png 162 108 121 83 72 37 160 100
-lass0002.png 23 108 155 96 11 10 160 100
-lass0003.png 23 108 155 96 11 10 160 100
-lass0004.png 23 108 155 96 11 10 160 100
-lass0005.png 23 108 155 96 11 10 160 100
-lass0006.png 23 108 155 96 11 10 160 100
-lass0007.png 23 108 155 96 11 10 160 100
-lass0008.png 23 108 155 96 11 10 160 100
-lass0009.png 23 108 155 96 11 10 160 100
-lass0010.png 23 108 155 96 11 10 160 100
-lass0011.png 23 108 155 96 11 10 160 100
-lass0012.png 23 108 146 117 22 3 160 100
-lass0013.png 23 108 146 117 23 3 160 100
-lass0014.png 23 108 146 117 23 3 160 100
-lass0015.png 23 108 146 117 22 3 160 100
+lastbat.sml.0.png 0 108 39 17
+lastbat.sml.1.png 0 108 5 4
+lastbat.sml.2.png 0 108 5 4
+lastbat.sml.3.png 0 108 5 4
+lastbat.sml.4.png 0 108 5 4
+lastbat.sml.5.png 0 108 5 4
+lastbat.sml.6.png 0 108 5 4
+lastbat.sml.7.png 0 108 5 4
+lastbat.sml.8.png 0 108 5 4
+lastbat.sml.9.png 0 108 5 4
+lastbat.sml.10.png 0 108 5 4
+lastbat.sml.11.png 0 108 14 -17
+lastbat.sml.12.png 0 108 14 -17
+lastbat.sml.13.png 0 108 14 -17
+lastbat.sml.14.png 0 108 14 -17

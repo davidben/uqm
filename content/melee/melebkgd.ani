@@ -1,29 +1,29 @@
-mele0001.png 154 -1 12 0 288 200 0 0
-mele0002.png 154 -1 238 24 60 30 11 0
-mele0003.png 154 -1 238 24 60 30 11 0
-mele0004.png 154 -1 238 24 60 30 11 0
-mele0005.png 154 -1 238 24 60 30 11 0
-mele0006.png 154 -1 238 24 60 30 11 0
-mele0007.png 154 -1 238 24 60 30 11 0
-mele0008.png 154 -1 238 24 60 30 11 0
-mele0009.png 154 -1 238 24 60 30 11 0
-mele0010.png 154 -1 238 167 60 30 11 0
-mele0011.png 154 -1 238 167 60 30 11 0
-mele0012.png 154 -1 238 167 60 30 11 0
-mele0013.png 154 -1 238 167 60 30 11 0
-mele0014.png 154 -1 238 167 60 30 11 0
-mele0015.png 154 -1 238 167 60 30 11 0
-mele0016.png 154 -1 238 167 60 30 11 0
-mele0017.png 154 -1 238 167 60 30 11 0
-mele0018.png 154 -1 250 69 36 5 11 0
-mele0019.png 154 -1 250 59 36 5 11 0
-mele0020.png 154 -1 250 69 36 5 11 0
-mele0021.png 154 -1 250 59 36 5 11 0
-mele0022.png 154 -1 250 157 36 5 11 0
-mele0023.png 154 -1 250 147 36 5 11 0
-mele0024.png 154 -1 250 157 36 5 11 0
-mele0025.png 154 -1 250 147 36 5 11 0
-mele0026.png 154 -1 235 77 64 67 11 0
-mele0027.png 154 -1 235 77 64 67 11 0
-mele0028.png 154 -1 119 64 128 98 119 114
-mele0029.png 154 -1 13 22 222 177 11 0
+melebkgd.0.png 1 0 0 0
+melebkgd.1.png 0 0 -227 -24
+melebkgd.2.png 0 0 -227 -24
+melebkgd.3.png 0 0 -227 -24
+melebkgd.4.png 0 0 -227 -24
+melebkgd.5.png 0 0 -227 -24
+melebkgd.6.png 0 0 -227 -24
+melebkgd.7.png 0 0 -227 -24
+melebkgd.8.png 0 0 -227 -24
+melebkgd.9.png 0 0 -227 -167
+melebkgd.10.png 0 0 -227 -167
+melebkgd.11.png 0 0 -227 -167
+melebkgd.12.png 0 0 -227 -167
+melebkgd.13.png 0 0 -227 -167
+melebkgd.14.png 0 0 -227 -167
+melebkgd.15.png 0 0 -227 -167
+melebkgd.16.png 0 0 -227 -167
+melebkgd.17.png 0 0 -239 -69
+melebkgd.18.png 0 0 -239 -59
+melebkgd.19.png 0 0 -239 -69
+melebkgd.20.png 0 0 -239 -59
+melebkgd.21.png 0 0 -239 -157
+melebkgd.22.png 0 0 -239 -147
+melebkgd.23.png 0 0 -239 -157
+melebkgd.24.png 0 0 -239 -147
+melebkgd.25.png 1 0 -224 -77
+melebkgd.26.png 0 0 -224 -77
+melebkgd.27.png 1 0 0 50
+melebkgd.28.png 0 0 -2 -22

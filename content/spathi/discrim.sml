@@ -1,16 +1,16 @@
-diss0001.png 0 28 159 99 1 2 160 100
-diss0002.png 0 28 159 99 2 2 160 100
-diss0003.png 0 28 159 99 2 2 160 100
-diss0004.png 0 28 159 99 2 2 160 100
-diss0005.png 0 28 159 100 2 1 160 100
-diss0006.png 0 28 159 99 2 2 160 100
-diss0007.png 0 28 159 99 2 2 160 100
-diss0008.png 0 28 159 99 2 2 160 100
-diss0009.png 0 28 160 99 1 2 160 100
-diss0010.png 0 28 159 99 2 2 160 100
-diss0011.png 0 28 159 99 2 2 160 100
-diss0012.png 0 28 159 99 2 2 160 100
-diss0013.png 0 28 159 100 2 1 160 100
-diss0014.png 0 28 159 99 2 2 160 100
-diss0015.png 0 28 159 99 2 2 160 100
-diss0016.png 0 28 159 99 2 2 160 100
+discrim.sml.0.png 0 28 1 1
+discrim.sml.1.png 0 28 1 1
+discrim.sml.2.png 0 28 1 1
+discrim.sml.3.png 0 28 1 1
+discrim.sml.4.png 0 28 1 0
+discrim.sml.5.png 0 28 1 1
+discrim.sml.6.png 0 28 1 1
+discrim.sml.7.png 0 28 1 1
+discrim.sml.8.png 0 28 0 1
+discrim.sml.9.png 0 28 1 1
+discrim.sml.10.png 0 28 1 1
+discrim.sml.11.png 0 28 1 1
+discrim.sml.12.png 0 28 1 0
+discrim.sml.13.png 0 28 1 1
+discrim.sml.14.png 0 28 1 1
+discrim.sml.15.png 0 28 1 1

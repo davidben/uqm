@@ -1,25 +1,25 @@
-nuks0001.png 13 7 160 97 1 6 160 100
-nuks0002.png 13 7 159 97 3 6 160 100
-nuks0003.png 13 7 158 98 5 5 160 100
-nuks0004.png 13 7 157 99 6 3 160 100
-nuks0005.png 13 7 157 100 6 1 160 100
-nuks0006.png 13 7 157 99 6 3 160 100
-nuks0007.png 13 7 158 98 5 5 160 100
-nuks0008.png 13 7 159 97 3 6 160 100
-nuks0009.png 13 7 160 97 1 6 160 100
-nuks0010.png 13 7 159 97 3 6 160 100
-nuks0011.png 13 7 158 98 5 5 160 100
-nuks0012.png 13 7 157 99 6 3 160 100
-nuks0013.png 13 7 157 100 6 1 160 100
-nuks0014.png 13 7 157 99 6 3 160 100
-nuks0015.png 13 7 158 98 5 5 160 100
-nuks0016.png 13 7 159 97 3 6 160 100
-nuks0017.png 13 7 158 98 5 4 160 100
-nuks0018.png 13 7 158 98 5 5 160 100
-nuks0019.png 13 7 158 98 5 5 160 100
-nuks0020.png 13 7 158 98 5 5 160 100
-nuks0021.png 13 7 157 98 7 5 160 100
-nuks0022.png 13 7 157 97 7 7 160 100
-nuks0023.png 13 7 156 97 8 7 160 100
-nuks0024.png 13 7 156 97 9 7 160 100
-nuks0025.png 13 7 156 97 7 7 160 100
+saturn.sml.0.png 0 7 0 3
+saturn.sml.1.png 0 7 1 3
+saturn.sml.2.png 0 7 2 2
+saturn.sml.3.png 0 7 3 1
+saturn.sml.4.png 0 7 3 0
+saturn.sml.5.png 0 7 3 1
+saturn.sml.6.png 0 7 2 2
+saturn.sml.7.png 0 7 1 3
+saturn.sml.8.png 0 7 0 3
+saturn.sml.9.png 0 7 1 3
+saturn.sml.10.png 0 7 2 2
+saturn.sml.11.png 0 7 3 1
+saturn.sml.12.png 0 7 3 0
+saturn.sml.13.png 0 7 3 1
+saturn.sml.14.png 0 7 2 2
+saturn.sml.15.png 0 7 1 3
+saturn.sml.16.png 0 7 2 2
+saturn.sml.17.png 0 7 2 2
+saturn.sml.18.png 0 7 2 2
+saturn.sml.19.png 0 7 2 2
+saturn.sml.20.png 0 7 3 2
+saturn.sml.21.png 0 7 3 3
+saturn.sml.22.png 0 7 4 3
+saturn.sml.23.png 0 7 4 3
+saturn.sml.24.png 0 7 4 3

@@ -1,33 +1,33 @@
-starbase.png -1 -1 -1 -1 -1 -1 -1 -1
-star0001.png 0 70 131 77 109 58 0 0
-star0002.png 0 70 131 77 109 58 0 0
-star0003.png 0 70 97 16 151 119 0 0
-star0004.png 0 70 131 77 109 58 0 0
-star0005.png 0 70 97 16 151 119 0 0
-star0006.png 0 70 131 77 109 58 0 0
-star0007.png 0 70 97 16 151 119 0 0
-star0008.png 0 70 97 16 151 119 0 0
-star0009.png 0 70 131 77 109 58 0 0
-star0010.png 0 70 131 77 109 58 0 0
-star0011.png 0 70 131 77 109 58 0 0
-star0012.png 0 70 131 77 109 58 0 0
-star0013.png 0 70 131 77 109 119 0 0
-star0014.png 0 70 131 77 109 58 0 0
-star0015.png 0 70 131 77 109 120 0 0
-star0016.png 0 70 131 77 109 58 0 0
-star0017.png 0 70 131 77 109 58 0 0
-star0018.png 0 70 131 77 109 58 0 0
-star0019.png 0 70 131 77 109 58 0 0
-star0020.png 0 70 131 77 109 58 0 0
-star0021.png 0 70 131 77 109 58 0 0
-star0022.png 0 70 131 77 109 58 0 0
-star0023.png 0 70 131 77 109 58 0 0
-star0024.png 0 70 131 77 109 58 0 0
-star0025.png 0 70 131 77 109 58 0 0
-star0026.png 0 70 131 77 109 58 0 0
-star0027.png 0 70 131 77 109 58 0 0
-star0028.png 0 70 131 77 109 58 0 0
-star0029.png 0 70 131 77 109 58 0 0
-star0030.png 0 70 131 77 109 58 0 0
-star0031.png 0 70 131 77 109 58 0 0
-star0032b.png 255 -1 128 74 111 62 0 0
+starbase.0.png 0 70 0 0
+starbase.1.png 0 70 -131 -77
+starbase.2.png 0 70 -131 -77
+starbase.3.png 0 70 -97 -16
+starbase.4.png 0 70 -131 -77
+starbase.5.png 0 70 -97 -16
+starbase.6.png 0 70 -131 -77
+starbase.7.png 0 70 -97 -16
+starbase.8.png 0 70 -97 -16
+starbase.9.png 0 70 -131 -77
+starbase.10.png 0 70 -131 -77
+starbase.11.png 0 70 -131 -77
+starbase.12.png 0 70 -131 -77
+starbase.13.png 0 70 -131 -77
+starbase.14.png 0 70 -131 -77
+starbase.15.png 0 70 -131 -77
+starbase.16.png 0 70 -131 -77
+starbase.17.png 0 70 -131 -77
+starbase.18.png 0 70 -131 -77
+starbase.19.png 0 70 -131 -77
+starbase.20.png 0 70 -131 -77
+starbase.21.png 0 70 -131 -77
+starbase.22.png 0 70 -131 -77
+starbase.23.png 0 70 -131 -77
+starbase.24.png 0 70 -131 -77
+starbase.25.png 0 70 -131 -77
+starbase.26.png 0 70 -131 -77
+starbase.27.png 0 70 -131 -77
+starbase.28.png 0 70 -131 -77
+starbase.29.png 0 70 -131 -77
+starbase.30.png 0 70 -131 -77
+starbase.31.png 0 70 -131 -77
+starbase.32.png 0 70 -131 -77

@@ -1,28 +1,28 @@
-laun0001.png 5 -1 91 109 24 8 1 2
-laun0002.png 5 -1 76 102 22 15 1 2
-laun0003.png 5 -1 62 96 26 18 1 2
-laun0004.png 5 -1 49 90 21 16 1 2
-laun0005.png 5 -1 37 83 19 15 1 2
-laun0006.png 5 -1 26 72 14 14 1 2
-laun0007.png 5 -1 18 61 15 17 1 2
-laun0008.png 5 -1 13 53 14 20 1 2
-laun0009.png 5 -1 13 44 12 16 1 2
-laun0010.png 5 -1 17 38 12 14 1 2
-laun0011.png 5 -1 22 35 11 10 1 2
-laun0012.png 5 -1 26 31 12 9 1 2
-laun0013.png 5 -1 32 30 12 8 1 2
-laun0014.png 5 -1 38 31 9 7 1 2
-laun0015.png 5 -1 43 32 8 7 1 2
-laun0016.png 5 -1 47 33 7 7 1 2
-laun0017.png 5 -1 50 35 7 6 1 2
-laun0018.png 5 -1 55 38 5 5 1 2
-laun0019.png 5 -1 57 39 4 4 1 2
-laun0020.png 5 -1 60 41 3 3 1 2
-laun0021.png 5 -1 63 43 2 2 1 2
-laun0022.png 5 -1 65 43 2 2 1 2
-laun0023.png 5 -1 66 44 2 2 1 2
-laun0024.png 5 -1 67 44 2 2 1 2
-laun0025.png 5 -1 68 45 1 1 1 2
-laun0026.png 5 -1 69 46 1 1 1 2
-laun0027.png 5 -1 69 46 1 1 1 2
-laun0028.png 5 -1 70 47 1 1 1 2
+launch.0.png 0 0 -90 -107
+launch.1.png 0 0 -75 -100
+launch.2.png 0 0 -61 -94
+launch.3.png 0 0 -48 -88
+launch.4.png 0 0 -36 -81
+launch.5.png 0 0 -25 -70
+launch.6.png 0 0 -17 -59
+launch.7.png 0 0 -12 -51
+launch.8.png 0 0 -12 -42
+launch.9.png 0 0 -16 -36
+launch.10.png 0 0 -21 -33
+launch.11.png 0 0 -25 -29
+launch.12.png 0 0 -31 -28
+launch.13.png 0 0 -37 -29
+launch.14.png 0 0 -42 -30
+launch.15.png 0 0 -46 -31
+launch.16.png 0 0 -49 -33
+launch.17.png 0 0 -54 -36
+launch.18.png 0 0 -56 -37
+launch.19.png 0 0 -59 -39
+launch.20.png 0 0 -62 -41
+launch.21.png 0 0 -64 -41
+launch.22.png 0 0 -65 -42
+launch.23.png 0 0 -66 -42
+launch.24.png 0 0 -67 -43
+launch.25.png 0 0 -68 -44
+launch.26.png 0 0 -68 -44
+launch.27.png 0 0 -69 -45

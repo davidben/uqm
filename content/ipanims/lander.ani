@@ -1,60 +1,60 @@
-land0001.png 228 105 1 2 11 12 6 9
-land0002.png 228 105 1 2 10 12 6 8
-land0003.png 228 105 1 2 11 11 6 7
-land0004.png 228 105 1 2 12 10 6 6
-land0005.png 228 105 1 2 12 11 5 7
-land0006.png 228 105 1 2 12 10 6 7
-land0007.png 228 105 1 2 11 11 6 7
-land0008.png 228 105 1 2 10 12 6 7
-land0009.png 228 105 1 2 11 12 6 6
-land0010.png 228 105 1 2 10 12 5 7
-land0011.png 228 105 1 2 11 11 6 7
-land0012.png 228 105 1 2 12 10 7 7
-land0013.png 228 105 1 2 12 11 8 7
-land0014.png 228 105 1 2 12 10 7 6
-land0015.png 228 105 1 2 11 11 6 7
-land0016.png 228 105 1 2 10 12 5 8
-land0017.png 228 105 1 2 1 4 1 2
-land0018.png 228 105 1 2 2 4 2 2
-land0019.png 228 105 1 2 4 4 4 2
-land0020.png 228 105 1 2 4 2 4 2
-land0021.png 228 105 1 2 4 1 4 2
-land0022.png 228 105 1 2 4 2 4 2
-land0023.png 228 105 1 2 4 4 4 5
-land0024.png 228 105 1 2 2 4 2 5
-land0025.png 228 105 1 2 1 4 1 5
-land0026.png 228 105 1 2 2 4 1 5
-land0027.png 228 105 1 2 4 4 1 5
-land0028.png 228 105 1 2 4 2 1 3
-land0029.png 228 105 1 2 4 1 1 2
-land0030.png 228 105 1 2 4 2 1 2
-land0031.png 228 105 1 2 4 4 1 2
-land0032.png 228 105 1 2 2 4 1 2
-land0033.png 228 105 155 128 54 51 154 127
-land0034.png 228 105 180 133 5 8 154 127
-land0035.png 228 105 182 130 1 1 154 127
-land0036.png 228 105 174 147 17 2 154 127
-land0037.png 228 105 179 146 7 3 154 127
-land0038.png 228 105 161 132 9 10 154 127
-land0039.png 228 105 194 132 9 10 154 127
-land0040.png 228 105 161 144 9 10 154 127
-land0041.png 228 105 194 144 9 10 154 127
-land0042.png 228 105 205 177 4 1 154 127
-land0043.png 228 105 205 177 4 1 154 127
-land0044.png 228 105 155 177 4 1 154 127
-land0045.png 228 105 155 177 4 1 154 127
-land0046.png 228 105 31 21 1 1 31 21
-land0047.png 228 105 28 18 7 7 31 21
-land0048.png 228 105 25 15 14 14 31 21
-land0049.png 228 105 23 13 17 17 31 21
-land0050.png 228 105 22 12 19 19 31 21
-land0051.png 228 105 21 12 21 20 31 21
-land0052.png 228 105 20 13 23 20 31 21
-land0053.png 228 105 20 15 24 20 31 21
-land0054.png 228 105 20 14 25 22 31 21
-land0055.png 228 105 20 14 25 21 31 21
-land0056.png 228 105 1 2 5 5 1 2
-land0057.png 228 105 1 2 5 5 1 2
-land0058.png 228 105 173 142 19 7 154 127
-land0059.png 228 105 180 129 5 5 154 127
-land0060.png 228 105 179 139 7 6 154 127
+lander.0.png 0 105 5 7
+lander.1.png 0 105 5 6
+lander.2.png 0 105 5 5
+lander.3.png 0 105 5 4
+lander.4.png 0 105 4 5
+lander.5.png 0 105 5 5
+lander.6.png 0 105 5 5
+lander.7.png 0 105 5 5
+lander.8.png 0 105 5 4
+lander.9.png 0 105 4 5
+lander.10.png 0 105 5 5
+lander.11.png 0 105 6 5
+lander.12.png 0 105 7 5
+lander.13.png 0 105 6 4
+lander.14.png 0 105 5 5
+lander.15.png 0 105 4 6
+lander.16.png 0 105 0 0
+lander.17.png 0 105 1 0
+lander.18.png 0 105 3 0
+lander.19.png 0 105 3 0
+lander.20.png 0 105 3 0
+lander.21.png 0 105 3 0
+lander.22.png 0 105 3 3
+lander.23.png 0 105 1 3
+lander.24.png 0 105 0 3
+lander.25.png 0 105 0 3
+lander.26.png 0 105 0 3
+lander.27.png 0 105 0 1
+lander.28.png 0 105 0 0
+lander.29.png 0 105 0 0
+lander.30.png 0 105 0 0
+lander.31.png 0 105 0 0
+lander.32.png 0 105 -1 -1
+lander.33.png 0 105 -26 -6
+lander.34.png 0 105 -28 -3
+lander.35.png 0 105 -20 -20
+lander.36.png 0 105 -25 -19
+lander.37.png 0 105 -7 -5
+lander.38.png 0 105 -40 -5
+lander.39.png 0 105 -7 -17
+lander.40.png 0 105 -40 -17
+lander.41.png 0 105 -51 -50
+lander.42.png 0 105 -51 -50
+lander.43.png 0 105 -1 -50
+lander.44.png 0 105 -1 -50
+lander.45.png 0 105 0 0
+lander.46.png 0 105 3 3
+lander.47.png 0 105 6 6
+lander.48.png 0 105 8 8
+lander.49.png 0 105 9 9
+lander.50.png 0 105 10 9
+lander.51.png 0 105 11 8
+lander.52.png 0 105 11 6
+lander.53.png 0 105 11 7
+lander.54.png 0 105 11 7
+lander.55.png 0 105 0 0
+lander.56.png 0 105 0 0
+lander.57.png 0 105 -19 -15
+lander.58.png 0 105 -26 -2
+lander.59.png 0 105 -25 -12

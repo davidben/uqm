@@ -1,16 +1,16 @@
-pkus0001.png 13 13 157 97 7 6 160 100
-pkus0002.png 13 13 157 98 6 5 160 100
-pkus0003.png 13 13 158 97 6 6 160 100
-pkus0004.png 13 13 158 98 5 6 160 100
-pkus0005.png 13 13 158 97 6 7 160 100
-pkus0006.png 13 13 158 97 5 6 160 100
-pkus0007.png 13 13 158 98 6 6 160 100
-pkus0008.png 13 13 157 98 6 5 160 100
-pkus0009.png 13 13 157 98 7 6 160 100
-pkus0010.png 13 13 158 98 6 5 160 100
-pkus0011.png 13 13 157 98 6 6 160 100
-pkus0012.png 13 13 158 97 5 6 160 100
-pkus0013.png 13 13 157 97 6 7 160 100
-pkus0014.png 13 13 158 98 5 6 160 100
-pkus0015.png 13 13 157 97 6 6 160 100
-pkus0016.png 13 13 158 98 6 5 160 100
+pkunk.sml.0.png 0 13 3 3
+pkunk.sml.1.png 0 13 3 2
+pkunk.sml.2.png 0 13 2 3
+pkunk.sml.3.png 0 13 2 2
+pkunk.sml.4.png 0 13 2 3
+pkunk.sml.5.png 0 13 2 3
+pkunk.sml.6.png 0 13 2 2
+pkunk.sml.7.png 0 13 3 2
+pkunk.sml.8.png 0 13 3 2
+pkunk.sml.9.png 0 13 2 2
+pkunk.sml.10.png 0 13 3 2
+pkunk.sml.11.png 0 13 2 3
+pkunk.sml.12.png 0 13 3 3
+pkunk.sml.13.png 0 13 2 2
+pkunk.sml.14.png 0 13 3 3
+pkunk.sml.15.png 0 13 2 2

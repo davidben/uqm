@@ -1,16 +1,16 @@
-ands0001.png 207 1 158 97 5 6 160 100
-ands0002.png 207 1 157 97 6 6 160 100
-ands0003.png 207 1 157 98 6 5 160 100
-ands0004.png 207 1 157 98 7 4 160 100
-ands0005.png 207 1 157 98 7 4 160 100
-ands0006.png 207 1 157 98 7 5 160 100
-ands0007.png 207 1 158 97 5 6 160 100
-ands0008.png 207 1 158 97 4 7 160 100
-ands0009.png 207 1 158 97 5 6 160 100
-ands0010.png 207 1 158 97 5 6 160 100
-ands0011.png 207 1 157 98 7 4 160 100
-ands0012.png 207 1 157 98 7 4 160 100
-ands0013.png 207 1 157 98 7 5 160 100
-ands0014.png 207 1 158 97 5 6 160 100
-ands0015.png 207 1 158 97 5 6 160 100
-ands0016.png 207 1 158 97 4 7 160 100
+androsyn.sml.0.png 0 1 2 3
+androsyn.sml.1.png 0 1 3 3
+androsyn.sml.2.png 0 1 3 2
+androsyn.sml.3.png 0 1 3 2
+androsyn.sml.4.png 0 1 3 2
+androsyn.sml.5.png 0 1 3 2
+androsyn.sml.6.png 0 1 2 3
+androsyn.sml.7.png 0 1 2 3
+androsyn.sml.8.png 0 1 2 3
+androsyn.sml.9.png 0 1 2 3
+androsyn.sml.10.png 0 1 3 2
+androsyn.sml.11.png 0 1 3 2
+androsyn.sml.12.png 0 1 3 2
+androsyn.sml.13.png 0 1 2 3
+androsyn.sml.14.png 0 1 2 3
+androsyn.sml.15.png 0 1 2 3

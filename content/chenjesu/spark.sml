@@ -1,11 +1,11 @@
-spas0001.png 226 28 158 98 4 4 160 100
-spas0002.png 0 28 160 100 1 1 160 100
-spas0003.png 225 28 159 98 4 4 160 100
-spas0004.png 225 28 158 97 6 6 160 100
-spas0005.png 225 28 157 97 7 6 160 100
-spas0006.png 225 28 156 96 9 8 160 100
-spas0007.png 225 28 155 95 10 10 160 100
-spas0008.png 225 28 155 95 10 10 160 100
-spas0009.png 225 28 155 96 9 8 160 100
-spas0010.png 225 28 155 96 10 9 160 100
-spas0011.png 225 28 155 96 10 9 160 100
+spark.sml.0.png 0 28 2 2
+spark.sml.1.png 0 28 0 0
+spark.sml.2.png 0 28 1 2
+spark.sml.3.png 0 28 2 3
+spark.sml.4.png 0 28 3 3
+spark.sml.5.png 0 28 4 4
+spark.sml.6.png 0 28 5 5
+spark.sml.7.png 0 28 5 5
+spark.sml.8.png 0 28 5 4
+spark.sml.9.png 0 28 5 4
+spark.sml.10.png 0 28 5 4

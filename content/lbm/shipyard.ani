@@ -1,24 +1,24 @@
-shipyard.0.png -1 69 0 0 210 134 0 -61
-shipyard.1.png -1 69 0 0 17 40 0 0
-shipyard.2.png -1 69 0 0 17 40 -17 0
-shipyard.3.png -1 69 0 0 34 11 -11 11
-shipyard.4.png -1 69 0 0 36 11 -9 11
-shipyard.5.png -1 69 0 0 52 11 -2 11
-shipyard.6.png -1 69 0 0 40 11 -7 11
-shipyard.7.png -1 69 0 0 30 11 -12 11
-shipyard.8.png -1 69 0 0 44 11 -6 11
-shipyard.9.png -1 69 0 0 36 11 -9 11
-shipyard.10.png -1 69 0 0 30 11 -11 11
-shipyard.11.png -1 69 0 0 54 11 -1 11
-shipyard.12.png -1 69 0 0 36 11 -8 11
-shipyard.13.png -1 69 0 0 19 6 -17 8
-shipyard.14.png -1 69 0 0 58 11 1 11
-shipyard.15.png -1 69 0 0 48 11 -3 11
-shipyard.16.png -1 69 0 0 36 11 -8 11
-shipyard.17.png -1 69 0 0 3 5 -24 8
-shipyard.18.png -1 69 0 0 11 5 -20 8
-shipyard.19.png -1 69 0 0 11 5 -21 8
-shipyard.20.png -1 69 0 0 30 11 -11 11
-shipyard.21.png -1 69 0 0 11 5 -20 8
-shipyard.22.png -1 69 0 0 42 11 -5 11
-shipyard.23.png -1 69 0 0 60 11 2 11
+shipyard.0.png 0 69 0 -61
+shipyard.1.png 0 69 0 0
+shipyard.2.png 0 69 -17 0
+shipyard.3.png 0 69 -11 11
+shipyard.4.png 0 69 -9 11
+shipyard.5.png 0 69 -2 11
+shipyard.6.png 0 69 -7 11
+shipyard.7.png 0 69 -12 11
+shipyard.8.png 0 69 -6 11
+shipyard.9.png 0 69 -9 11
+shipyard.10.png 0 69 -11 11
+shipyard.11.png 0 69 -1 11
+shipyard.12.png 0 69 -8 11
+shipyard.13.png 0 69 -17 8
+shipyard.14.png 0 69 1 11
+shipyard.15.png 0 69 -3 11
+shipyard.16.png 0 69 -8 11
+shipyard.17.png 0 69 -24 8
+shipyard.18.png 0 69 -20 8
+shipyard.19.png 0 69 -21 8
+shipyard.20.png 0 69 -11 11
+shipyard.21.png 0 69 -20 8
+shipyard.22.png 0 69 -5 11
+shipyard.23.png 0 69 2 11

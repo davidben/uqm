@@ -1,16 +1,16 @@
-shos0001.png 13 14 159 97 3 6 160 100
-shos0002.png 13 14 159 98 3 5 160 100
-shos0003.png 13 14 158 98 4 4 160 100
-shos0004.png 13 14 158 99 5 3 160 100
-shos0005.png 13 14 158 99 5 3 160 100
-shos0006.png 13 14 158 99 5 3 160 100
-shos0007.png 13 14 158 98 4 4 160 100
-shos0008.png 13 14 159 98 3 5 160 100
-shos0009.png 13 14 159 97 3 6 160 100
-shos0010.png 13 14 159 98 3 5 160 100
-shos0011.png 13 14 158 98 4 4 160 100
-shos0012.png 13 14 158 99 5 3 160 100
-shos0013.png 13 14 158 99 5 3 160 100
-shos0014.png 13 14 158 99 5 3 160 100
-shos0015.png 13 14 158 98 4 4 160 100
-shos0016.png 13 14 159 98 3 5 160 100
+shofixti.sml.0.png 0 14 1 3
+shofixti.sml.1.png 0 14 1 2
+shofixti.sml.2.png 0 14 2 2
+shofixti.sml.3.png 0 14 2 1
+shofixti.sml.4.png 0 14 2 1
+shofixti.sml.5.png 0 14 2 1
+shofixti.sml.6.png 0 14 2 2
+shofixti.sml.7.png 0 14 1 2
+shofixti.sml.8.png 0 14 1 3
+shofixti.sml.9.png 0 14 1 2
+shofixti.sml.10.png 0 14 2 2
+shofixti.sml.11.png 0 14 2 1
+shofixti.sml.12.png 0 14 2 1
+shofixti.sml.13.png 0 14 2 1
+shofixti.sml.14.png 0 14 2 2
+shofixti.sml.15.png 0 14 1 2

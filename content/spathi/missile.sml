@@ -1,16 +1,16 @@
-miss0001.png 0 28 160 100 1 1 160 100
-miss0002.png 0 28 160 100 1 1 160 100
-miss0003.png 0 28 160 100 1 1 160 100
-miss0004.png 0 28 160 100 1 1 160 100
-miss0005.png 0 28 160 100 1 1 160 100
-miss0006.png 0 28 160 100 1 1 160 100
-miss0007.png 0 28 160 100 1 1 160 100
-miss0008.png 0 28 160 100 1 1 160 100
-miss0009.png 0 28 160 100 1 1 160 100
-miss0010.png 0 28 160 100 1 1 160 100
-miss0011.png 0 28 160 100 1 1 160 100
-miss0012.png 0 28 160 100 1 1 160 100
-miss0013.png 0 28 160 100 1 1 160 100
-miss0014.png 0 28 160 100 1 1 160 100
-miss0015.png 0 28 160 100 1 1 160 100
-miss0016.png 0 28 160 100 1 1 160 100
+missile.sml.0.png 0 28 0 0
+missile.sml.1.png 0 28 0 0
+missile.sml.2.png 0 28 0 0
+missile.sml.3.png 0 28 0 0
+missile.sml.4.png 0 28 0 0
+missile.sml.5.png 0 28 0 0
+missile.sml.6.png 0 28 0 0
+missile.sml.7.png 0 28 0 0
+missile.sml.8.png 0 28 0 0
+missile.sml.9.png 0 28 0 0
+missile.sml.10.png 0 28 0 0
+missile.sml.11.png 0 28 0 0
+missile.sml.12.png 0 28 0 0
+missile.sml.13.png 0 28 0 0
+missile.sml.14.png 0 28 0 0
+missile.sml.15.png 0 28 0 0

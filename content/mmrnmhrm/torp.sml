@@ -1,16 +1,16 @@
-tors0001.png 13 28 160 99 1 3 160 100
-tors0002.png 13 28 159 99 2 3 160 100
-tors0003.png 13 28 159 99 3 3 160 100
-tors0004.png 13 28 159 99 3 2 160 100
-tors0005.png 13 28 159 100 3 1 160 100
-tors0006.png 13 28 159 99 3 2 160 100
-tors0007.png 13 28 159 99 3 3 160 100
-tors0008.png 13 28 159 99 2 3 160 100
-tors0009.png 13 28 160 99 1 3 160 100
-tors0010.png 13 28 159 99 2 3 160 100
-tors0011.png 13 28 159 99 3 3 160 100
-tors0012.png 13 28 159 99 3 2 160 100
-tors0013.png 13 28 159 100 3 1 160 100
-tors0014.png 13 28 159 99 3 2 160 100
-tors0015.png 13 28 159 99 3 3 160 100
-tors0016.png 13 28 159 99 2 3 160 100
+torp.sml.0.png 0 28 0 1
+torp.sml.1.png 0 28 1 1
+torp.sml.2.png 0 28 1 1
+torp.sml.3.png 0 28 1 1
+torp.sml.4.png 0 28 1 0
+torp.sml.5.png 0 28 1 1
+torp.sml.6.png 0 28 1 1
+torp.sml.7.png 0 28 1 1
+torp.sml.8.png 0 28 0 1
+torp.sml.9.png 0 28 1 1
+torp.sml.10.png 0 28 1 1
+torp.sml.11.png 0 28 1 1
+torp.sml.12.png 0 28 1 0
+torp.sml.13.png 0 28 1 1
+torp.sml.14.png 0 28 1 1
+torp.sml.15.png 0 28 1 1

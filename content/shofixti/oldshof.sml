@@ -1,16 +1,16 @@
-olds0001.png 13 14 159 97 3 6 160 100
-olds0002.png 13 14 159 98 3 5 160 100
-olds0003.png 13 14 158 98 4 4 160 100
-olds0004.png 13 14 158 99 5 3 160 100
-olds0005.png 13 14 158 99 5 3 160 100
-olds0006.png 13 14 158 99 5 3 160 100
-olds0007.png 13 14 158 98 4 4 160 100
-olds0008.png 13 14 159 98 3 5 160 100
-olds0009.png 13 14 159 97 3 6 160 100
-olds0010.png 13 14 159 98 3 5 160 100
-olds0011.png 13 14 158 98 4 4 160 100
-olds0012.png 13 14 158 99 5 3 160 100
-olds0013.png 13 14 158 99 5 3 160 100
-olds0014.png 13 14 158 99 5 3 160 100
-olds0015.png 13 14 158 98 4 4 160 100
-olds0016.png 13 14 159 98 3 5 160 100
+oldshof.sml.0.png 0 14 1 3
+oldshof.sml.1.png 0 14 1 2
+oldshof.sml.2.png 0 14 2 2
+oldshof.sml.3.png 0 14 2 1
+oldshof.sml.4.png 0 14 2 1
+oldshof.sml.5.png 0 14 2 1
+oldshof.sml.6.png 0 14 2 2
+oldshof.sml.7.png 0 14 1 2
+oldshof.sml.8.png 0 14 1 3
+oldshof.sml.9.png 0 14 1 2
+oldshof.sml.10.png 0 14 2 2
+oldshof.sml.11.png 0 14 2 1
+oldshof.sml.12.png 0 14 2 1
+oldshof.sml.13.png 0 14 2 1
+oldshof.sml.14.png 0 14 2 2
+oldshof.sml.15.png 0 14 1 2
