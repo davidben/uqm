@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Quit confirmation window (on F10) undraws correctly during intro slides
+  (bug #673) -Alex
 - Attempting to set to a mode that Doesn't Work in Setup no longer ends 
   the program (bug #695) - Michael
 - Fixed segfault when shutting down because video could not be initialized 
