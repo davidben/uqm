@@ -87,8 +87,7 @@ extern MEM_HANDLE GetResourceData (FILE *fp, DWORD
 #define RESOURCE_DATAPTR PBYTE
 
 #define AllocResourceData(s,mf) \
-	mem_allocate ((MEM_SIZE)(s)+(PARAGRAPH_SIZE-1), \
-			(mf), RESOURCE_PRIORITY, MEM_SIMPLE)
+	mem_allocate ((MEM_SIZE)(s), (mf), RESOURCE_PRIORITY, MEM_SIMPLE)
 #define LockResourceData(h,lp) \
 do \
 { \

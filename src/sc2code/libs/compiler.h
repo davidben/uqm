@@ -45,10 +45,6 @@ typedef SIZE             *PSIZE;
 
 typedef unsigned char   UNICODE;
 
-#define PARAGRAPH_SHIFT  0
-
-#define PARAGRAPH_SIZE (1 << PARAGRAPH_SHIFT)
-
 #define NULL_PTR 0L
 
 typedef enum
