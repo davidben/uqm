@@ -19,7 +19,7 @@
 
 #define UQM_MAJOR_VERSION 0
 #define UQM_MINOR_VERSION 2
-#define UQM_EXTRA_VERSION "2"
+#define UQM_EXTRA_VERSION "3"
 /* The final version is interpreted as:
    printf ("%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
 */
