@@ -378,7 +378,7 @@ This had better be important.
 
 #(CYBORG_PEP_TALK)	talkp040.ogg
 You've made it, Captain! The Sa-Matra is defenseless.
-Now all you have to do is maneuver your ship next to the Sa-Matra and initiate the bomb sequence.\n
+Now all you have to do is maneuver your ship next to the Sa-Matra and initiate the bomb sequence.
 In case you're wondering, I'm not going with you, Captain. I'm staying on board.
 Why, you ask?
 BECAUSE I'M LOCKED IN HERE -- THAT'S WHY!

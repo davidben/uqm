@@ -173,7 +173,7 @@ We do not know who they are, or why they are here.
 #(UNDER_ATTACK2)	zoqfo060.ogg
 We are being blown to bits.
 #(UNDER_ATTACK3)	zoqfo061.ogg
-Fleets of alien ships appear out of nowhere\n
+Fleets of alien ships appear out of nowhere
 then unleash terrible destructive energies.
 #(UNDER_ATTACK4)	zoqfo062.ogg
 Fortunately
@@ -183,7 +183,7 @@ they release these energies on each other.
 Unfortunately
 #(UNDER_ATTACK7)	zoqfo065.ogg
 they favor combat near strong gravity wells.
-Their stray shots regularly strike the surface of our planets\n
+Their stray shots regularly strike the surface of our planets
 often with tragic results.
 #(UNDER_ATTACK8)	zoqfo066.ogg
 Fortunately

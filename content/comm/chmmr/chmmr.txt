@@ -155,7 +155,7 @@ WHO ARE YOU?
 #(i_am_captain0)
 I am captain 
 #(i_am_captain1)
-of the starship 
+ of the starship 
 #(i_am_captain2)
 .
 

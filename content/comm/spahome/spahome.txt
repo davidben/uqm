@@ -418,7 +418,7 @@ I'm not surprised. We certainly won't go there.
 Why should you be any less craven than ourselves?
 
 #(TEST_AGAIN)	spaho050.ogg
-You must wipe the Evil Ones from the face of Spathiwa!\n
+You must wipe the Evil Ones from the face of Spathiwa!
 They are creatures from the darkest pits of hell
 whose relentless passion for our fleshy parts
 forced us to abandon our otherwise wonderful homeworld
@@ -442,7 +442,7 @@ We killed them all, yup we sure did.
 #(WILL_CHECK_1)	spaho053.ogg
 This is wonderful -- too good to be true!
 We will immediately begin transporting Spathi from this unpleasant moon down to the safe surface.
-We shall send encrustlings and the infirm elderly first, as a special honor!\n
+We shall send encrustlings and the infirm elderly first, as a special honor!
 Please come back later to receive your accolades.
 
 #(WILL_CHECK_2)	spaho054.ogg
