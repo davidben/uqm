@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Sa-Matra portrait now fills the portrait space (bug #514), from Nic
+- Updated melee images with original DOS content; should resolve most
+  captain portrait issues (bug #183)  -Alex
 - Bug #702 fixes (dead code + compiler warnings) -Alex
 - Flagship will not fly sideways on auto-pilot in Hyperspace (bug #642) -Alex
 - Fixed menu sounds in full-game battle ship selection box (bug #566) -Alex
