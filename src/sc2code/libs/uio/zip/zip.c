@@ -245,16 +245,6 @@ zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 		}
 	}
 	
-#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
-	if (((zip_GPFileData *) entry->extra)->fileOffset == -1) {
-		// The local header wasn't read in yet.
-		if (zip_updateFileDataFromLocalHeader(pDirHandle->pRoot->handle,
-				(zip_GPFileData *) entry->extra) == -1) {
-			// errno is set
-			return -1;
-		}
-	}
-#endif
 	if (uio_GPDirEntry_isDir(entry) && entry->extra == NULL) {
 		// No information about this directory was stored.
 		// We'll have to make something up.
@@ -266,6 +256,17 @@ zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 		statBuf->st_gid = 0;
 		return 0;
 	}
+
+#if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+	if (((zip_GPFileData *) entry->extra)->fileOffset == -1) {
+		// The local header wasn't read in yet.
+		if (zip_updateFileDataFromLocalHeader(pDirHandle->pRoot->handle,
+				(zip_GPFileData *) entry->extra) == -1) {
+			// errno is set
+			return -1;
+		}
+	}
+#endif
 
 	zip_fillStat(statBuf, (zip_GPFileData *) entry->extra);
 	return 0;
