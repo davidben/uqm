@@ -227,6 +227,7 @@ black_urquan_genocide (void)
 			dy = TemplatePtr->ShipInfo.loc.y - BlackUrquanPtr->ShipInfo.loc.y;
 			if (dx == 0 && dy == 0)
 			{
+				// Arrived at the victim's home world. Cleanse it.
 				TemplatePtr->ShipInfo.ship_flags &= ~(GOOD_GUY | BAD_GUY);
 				TemplatePtr->ShipInfo.actual_strength = 0;
 			}

@@ -46,12 +46,17 @@ extern HSTARSHIP CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE
 extern HSTARSHIP GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index);
 extern BYTE NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr);
 
+/* Possible values for the 'state' argument of
+ * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
+ * See that function for more information.
+ */
 #define CHECK_ALLIANCE -2
 #define ESCORT_WORTH 9995
 #define SPHERE_KNOWN 9996
 #define SPHERE_TRACKING 9997
 #define ESCORTING_FLAGSHIP 9998
 #define FEASIBILITY_STUDY 9999
+		/* Check for how many escort ships there's still space */
 
 extern COUNT ActivateStarShip (COUNT which_ship, SIZE state);
 extern COUNT GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip);

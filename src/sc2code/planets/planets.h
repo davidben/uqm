@@ -158,6 +158,12 @@ typedef struct solarsys_state
 	PLANET_DESC SunDesc[MAX_SUNS], PlanetDesc[MAX_PLANETS], MoonDesc[MAX_MOONS];
 	PPLANET_DESC pBaseDesc, pOrbitalDesc;
 	SIZE FirstPlanetIndex, LastPlanetIndex;
+			// The planets get sorted on their image.origin.y value.
+			// PlanetDesc[FirstPlanetIndex] is the planet with the lowest
+			// image.origin.y, and PlanetDesc[FirstPlanetIndex] has the
+			// highest image.origin.y.
+			// PlanetDesc[PlanetDesc[i].NextIndex] is the next planet
+			// after PlanetDesc[i] in the ordering.
 
 	BYTE turn_counter, turn_wait;
 	BYTE thrust_counter, max_ship_speed;

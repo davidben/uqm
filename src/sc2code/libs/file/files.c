@@ -121,9 +121,9 @@ copyFile (uio_DirHandle *srcDir, const char *srcName,
 		} while (numInBuf > 0);
 	}
 	
-	HFree(buf);
-	uio_close(src);
-	uio_close(dst);
+	HFree (buf);
+	uio_close (src);
+	uio_close (dst);
 	errno = 0;
 	return 0;
 }

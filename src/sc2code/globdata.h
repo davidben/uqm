@@ -110,7 +110,9 @@ typedef NUMBER_SPEECH_DESC *NUMBER_SPEECH;
 typedef struct
 {
 	void (*init_encounter_func) (void);
+			/* Called when entering communications */
 	COUNT (*uninit_encounter_func) (void);
+			/* Called when leaving communications or combat */
 
 	FRAME AlienFrame;
 	FONT AlienFont;
@@ -185,7 +187,15 @@ START_GAME_STATE
 
 	ADD_GAME_STATE (SHOFIXTI_MAIDENS, 1) /* Did you find the babes yet? */
 	ADD_GAME_STATE (MAIDENS_ON_SHIP, 1)
-	ADD_GAME_STATE (BATTLE_SEGUE, 1) /* Does encounter require battle segue? */
+	ADD_GAME_STATE (BATTLE_SEGUE, 1)
+			/* Set to 0 in init_xxx_comm() if communications directly
+			 * follows an encounter.
+			 * Set to 1 in init_xxx_comm() if the player gets to decide
+			 * whether to attack or talk.
+			 * Set to 1 in communication when battle follows the
+			 * communication. It is still valid when uninit_xxx_comm() gets
+			 * called after combat or communication.
+			 */
 	ADD_GAME_STATE (PLANETARY_LANDING, 1)
 	ADD_GAME_STATE (PLANETARY_CHANGE, 1)
 
@@ -414,6 +424,13 @@ START_GAME_STATE
 	ADD_GAME_STATE (MYCON_FELL_FOR_AMBUSH, 1)
 
 	ADD_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 8)
+			/* This state seems to be used to distinguish between different
+			 * places where one may have an conversation with an alien.
+			 * Like home world, other world, space.
+			 * Why this needs 8 bits I don't know. Only specific
+			 * combinations of bits seem to be used (0, 1, or all bits).
+			 * A closer investigation is desirable. - SvdB
+			 */
 
 	ADD_GAME_STATE (ORZ_VISITS, 3)
 	ADD_GAME_STATE (TAALO_VISITS, 3)
@@ -492,8 +509,14 @@ START_GAME_STATE
 	ADD_GAME_STATE (PKUNK_VISITS, 3)
 	ADD_GAME_STATE (PKUNK_HOME_VISITS, 3)
 	ADD_GAME_STATE (PKUNK_SHIP_MONTH, 4)
+			/* The month in PKUNK_SHIP_YEAR that new ships are available
+			 * from the Pkunk. */
 	ADD_GAME_STATE (PKUNK_SHIP_DAY, 5)
+			/* The day of the month in PKUNK_SHIP_MONTH in PKUNK_SHIP_YEAR
+			 * that new ships are available. */
 	ADD_GAME_STATE (PKUNK_SHIP_YEAR, 5)
+			/* The year that new ships are available from the Pkunk
+			 * (stored as an offset from the year the game starts). */
 	ADD_GAME_STATE (PKUNK_MISSION, 3)
 
 	ADD_GAME_STATE (SUPOX_VISITS, 3)
@@ -505,6 +528,12 @@ START_GAME_STATE
 	ADD_GAME_STATE (HELIX_UNPROTECTED, 1)
 	ADD_GAME_STATE (THRADD_CULTURE, 2)
 	ADD_GAME_STATE (THRADD_MISSION, 3)
+			/* 0 if the Thraddash fleet hasn't left the Thraddash home world.
+			 * 1 if the Thraddash are heading towards Kohr-Ah territory.
+			 * 2 if the Thraddash are fighting the Kohr-Ah.
+			 * 3 if the Thraddash are returning from Kohr-Ah territory.
+			 * 4 if the Thraddash fleet is back at the Thraddash home world.
+			 */
 
 	ADD_GAME_STATE (DRUUGE_VISITS, 3)
 	ADD_GAME_STATE (DRUUGE_HOME_VISITS, 3)
@@ -520,6 +549,11 @@ START_GAME_STATE
 	ADD_GAME_STATE (ZOQFOT_HOME_VISITS, 3)
 	ADD_GAME_STATE (MET_ZOQFOT, 1)
 	ADD_GAME_STATE (ZOQFOT_DISTRESS, 2)
+			/* 0 if the Zoq-Fot-Pik aren't in distress
+			 * 1 if the Zoq-Fot-Pik are under attack by the Kohr-Ah
+			 * 2 if the Zoq-Fot-Pik have been destroyed because of this
+			 *   attack (not by the Kohr-Ah final victory cleansing)
+			 */
 
 	ADD_GAME_STATE (EGG_CASE1_ON_SHIP, 1)
 	ADD_GAME_STATE (EGG_CASE2_ON_SHIP, 1)
@@ -578,6 +612,14 @@ START_GAME_STATE
 	ADD_GAME_STATE (THRADDASH_BODY_COUNT, 5)
 
 	ADD_GAME_STATE (UTWIG_SUPOX_MISSION, 3)
+			/* 0 if the Utwig and Supox fleet haven't left their home world.
+			 * 1 if the U&S are on their way towards the Kohr-Ah
+			 * 2 if the U&S are fighting the Kohr-Ah (first 80 days)
+			 * 3 does not occur
+             * 4 if the U&S are fighting the Kohr-Ah (second 80 days)
+			 * 5 if the U&S are returning home.
+			 * 6 if the U&S are back at their home world.
+			 */
 	ADD_GAME_STATE (SPATHI_INFO, 3)
 
 	ADD_GAME_STATE (ILWRATH_INFO, 2)
@@ -599,6 +641,14 @@ START_GAME_STATE
 	ADD_GAME_STATE (MYCON_INFO, 4)
 	ADD_GAME_STATE (MYCON_RAMBLE, 5)
 	ADD_GAME_STATE (KNOW_ABOUT_SHATTERED, 2)
+			/* 0 if the player doesn't known about shattered worlds
+			 * 1 if the player has encountered a shattered world
+			 * 2 if the player knows that shatterred worlds are caused
+			 *   by Mycon deep children.
+			 * 3 if the player has told the Syreen that Mycon Deep Children
+			 *   cause shattered worlds. Proof doesn't have to be presented
+			 *   yet at this time.
+			 */
 	ADD_GAME_STATE (MYCON_INSULTS, 3)
 	ADD_GAME_STATE (MYCON_KNOW_AMBUSH, 1)
 
@@ -618,6 +668,11 @@ START_GAME_STATE
 	ADD_GAME_STATE (REFUSED_ORZ_ALLIANCE, 1)
 
 	ADD_GAME_STATE (PKUNK_MANNER, 2)
+			/* 0 not met the Pkunk
+			 * 1 fought the Pkunk, but relations are still salvagable.
+			 * 2 hostile relations with the Pkunk, no way back.
+			 * 3 friendly relations with the Pkunk
+			 */
 	ADD_GAME_STATE (PKUNK_ON_THE_MOVE, 1)
 	ADD_GAME_STATE (PKUNK_FLEET, 2)
 	ADD_GAME_STATE (PKUNK_MIGRATE, 2)
@@ -820,7 +875,9 @@ typedef struct
 
 	DWORD BattleGroupRef;
 	QUEUE avail_race_q, npc_built_ship_q;
-	QUEUE encounter_q, built_ship_q;
+	QUEUE encounter_q;
+	QUEUE built_ship_q;
+			/* Queue of SIS escort ships */
 
 	BYTE GameState[(NUM_GAME_STATE_BITS + 7) >> 3];
 } GAME_STATE;

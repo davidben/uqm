@@ -59,6 +59,29 @@ GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index)
 	return (hStarShip);
 }
 
+/*
+ * What this function does depends on the value of the 'state' argument:
+ * SPHERE_TRACKING:
+ * 	The sphere of incluence for the race for 'which_ship' will be shown
+ * 	on the starmap in the future.
+ * 	The value returned is 'which_ship', unless
+ *  TODO
+ * SPHERE_KNOWN:
+ * 	The size of the fleet when last checked the starmap is returned.
+ * ESCORT_WORTH:
+ * 	The total value of all the ships escorting the SIS is returned.
+ * ESCORTING_FLAGSHIP:
+ * 	Test if a ship of type 'which_ship' is among the escorts of the SIS
+ * 	0 is returned if false, 1 if true.
+ * FEASIBILITY_STUDY:
+ * 	Test if the SIS can have an escort of type 'which_ship'.
+ * 	0 is returned if 'which_ship' is not available.
+ * 	Otherwise, the number of ships that can be added is returned.
+ * CHECK_ALLIANCE:
+ *
+ * something else:
+ * 	TODO
+ */
 COUNT
 ActivateStarShip (COUNT which_ship, SIZE state)
 {
@@ -219,10 +242,12 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 				}
 				else
 				{
+					/* 'state > 0', add ships to the escorts */
 					BYTE which_window;
-						COUNT i;
+					COUNT i;
 
 					which_window = 0;
+					/*  Must... resist... commenting on this code... */
 					for
 						(
 								i = 0;

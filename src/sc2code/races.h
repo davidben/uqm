@@ -137,19 +137,33 @@ enum
 typedef struct
 {
 	UWORD ship_flags;
-	BYTE days_left, growth_fract;
+	BYTE days_left;
+			/* Days left before the fleet reachers 'dest_loc'. */
+	BYTE growth_fract;
 	BYTE crew_level, max_crew;
 	BYTE energy_level, max_energy;
 	POINT loc;
+			/* Location of the fleet (center) */
 
 	STRING race_strings;
 	FRAME icons, melee_icon;
 
-	COUNT actual_strength, known_strength;
+	COUNT actual_strength;
+			/* Size of the fleet. 0 if none-existant. */
+	COUNT known_strength;
+			/* Size of the fleet when last checked the starmap.
+			 * 0 if not that fleet is not known. */
 	POINT known_loc;
+			/* Location of the fleet (center)  when last checked 
+			 * the starmap */
 
-	BYTE growth_err_term, func_index;
+	BYTE growth_err_term;
+	BYTE func_index;
+			/* Function index defined in clock.h (the same as in SetEvent())
+			 * for the function to call when the fleet reaches 'dest_loc'.
+			 * '(BYTE) ~0' means no function to call. */
 	POINT dest_loc;
+			/* Location to which the fleet (center) is moving. */
 } EXTENDED_SHIP_INFO;
 typedef EXTENDED_SHIP_INFO *PEXTENDED_SHIP_INFO;
 

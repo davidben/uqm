@@ -2152,13 +2152,18 @@ InitCommunication (RESOURCE which_comm)
 	UnlockMutex (GraphicsLock);
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 0)
+	{
+		// Not offered the chance to attack.
 		status = HAIL;
+	}
 	else if ((status = InitEncounter ()) == HAIL && LocDataPtr)
 	{
+		// The player chose to talk.
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
 	else
 	{
+		// The player chose to attack.
 		status = ATTACK;
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
@@ -2191,6 +2196,7 @@ InitCommunication (RESOURCE which_comm)
 				&& GetHeadLink (&GLOBAL (npc_built_ship_q)));
 		if (status)
 		{
+			// Start combat
 			BuildBattle (0);
 			EncounterBattle ();
 		}

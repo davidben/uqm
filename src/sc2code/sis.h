@@ -172,6 +172,7 @@ enum
 #define SHIP_PIECE_OFFSET 12
 
 #define MAX_BUILT_SHIPS 12
+		/* Maximum number of ships escorting the SIS */
 #define MAX_LANDERS 10
 
 #define SUPPORT_SHIP_PTS \

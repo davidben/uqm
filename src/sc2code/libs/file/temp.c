@@ -153,8 +153,7 @@ initTempDir (void) {
 	num = ((DWORD) time (NULL));
 //	num = GetTimeCounter () % 0xffffffff;
 	tempPtr = tempDirName + len;
-	i = NUM_TEMP_RETRIES;
-	while (i--)
+	for (i = 0; i < NUM_TEMP_RETRIES; i++)
 	{
 		sprintf (tempPtr, "%08lx", num + i);
 		if (createDirectory (tempDirName, 0700) == -1)

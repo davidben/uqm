@@ -163,6 +163,12 @@ BuildBattle (COUNT which_player)
 	}
 }
 
+/*
+ * Encountering an alien.
+ * Draws the encounter screen, plays the red alert music, and
+ * waits for a decision of the player on how to handle the situation.
+ * Returns either HAIL or ATTACK.
+ */
 COUNT
 InitEncounter (void)
 {

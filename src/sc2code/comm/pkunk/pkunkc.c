@@ -844,6 +844,7 @@ Intro (void)
 	Manner = GET_GAME_STATE (PKUNK_MANNER);
 	if (Manner == 2)
 	{
+		// Irreparably Pissed off the Pkunk.
 		NumVisits = GET_GAME_STATE (PKUNK_VISITS);
 		switch (NumVisits++)
 		{
@@ -867,6 +868,7 @@ Intro (void)
 	}
 	else if (Manner == 1)
 	{
+		// Bad relations with the Pkunk, but not irreparably.
 		NumVisits = GET_GAME_STATE (PKUNK_VISITS);
 		switch (NumVisits++)
 		{
@@ -890,6 +892,7 @@ Intro (void)
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 	{
+		// Encountering the Pkunk at their home world.
 		if (!GET_GAME_STATE (CLEAR_SPINDLE))
 		{
 			NPCPhrase (GIVE_SPINDLE);
@@ -974,6 +977,8 @@ Intro (void)
 	else if ((NumVisits = GET_GAME_STATE (PKUNK_MISSION)) == 0
 			|| !(NumVisits & 1))
 	{
+		// Encountering a Pkunk ship in space, while they are not
+		// migrating.
 		NumVisits = GET_GAME_STATE (PKUNK_VISITS);
 		if (Manner == 3)
 		{
@@ -1034,6 +1039,8 @@ Intro (void)
 	}
 	else
 	{
+		// Encountering a Pkunk ship in space, while they are
+		// migrating.
 		NumVisits = GET_GAME_STATE (PKUNK_MIGRATE_VISITS);
 		switch (NumVisits++)
 		{
@@ -1071,6 +1078,7 @@ ExitIntro:
 	;
 }
 
+// Called after combat or communications
 static COUNT
 uninit_pkunk (void)
 {
@@ -1107,13 +1115,17 @@ init_pkunk_comm (void)
 	if (GET_GAME_STATE (PKUNK_MANNER) == 3
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
+		// Enter communications immediately.
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
 	else
 	{
+		// Ask the player whether to attack or talk.
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
 	retval = &pkunk_desc;
 
 	return (retval);
 }
+
+
