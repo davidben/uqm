@@ -40,7 +40,7 @@
  */
 
 typedef intptr_t TFBSound_Object;
-typedef int TFBSound_IntVal;
+typedef intptr_t TFBSound_IntVal;
 typedef const int TFBSound_SourceProp;
 typedef const int TFBSound_BufferProp;
 

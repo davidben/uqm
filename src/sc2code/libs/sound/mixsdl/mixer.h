@@ -159,7 +159,7 @@ typedef enum
  */
 
 typedef intptr_t mixSDL_Object;
-typedef int mixSDL_IntVal;
+typedef intptr_t mixSDL_IntVal;
 
 typedef struct _mixSDL_Buffer
 {
@@ -272,6 +272,8 @@ void mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 
 MIX_COMPILE_TIME_ASSERT (mixSDL_Object,
 		sizeof(mixSDL_Object) >= sizeof(void*));
+MIX_COMPILE_TIME_ASSERT (mixSDL_IntVal,
+		sizeof(mixSDL_IntVal) >= sizeof(mixSDL_Object));
 
 #undef MIX_COMPILE_TIME_ASSERT
 
