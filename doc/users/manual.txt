@@ -16,87 +16,92 @@ uqm.)  This will use the default settings, which are 3DO music,
 640x480 windowed mode, and pure SDL graphics drivers.  You may pass
 various command line options to customize your experience:
 
-	-r 320x240   (or --res)
+	-r 320x240       (or --res)
 
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240
 
-	-d 32         (or --bpp)
+	-d 32            (or --bpp)
 
 Sets the color depth.  If you don't set this, the game should
 autodetect an appropriate value.  Valid values are 16, 24, and 32.
 
-	-f           (or --fullscreen)
+	-f               (or --fullscreen)
 
 Uses full screen mode.  Pretty straightforward.  Usually good to
 combine with -r 320x240.
 
-	-o           (or --opengl)
+	-o               (or --opengl)
 
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
 faster as well -- but it also may not work on older cards.
 
-	-c           (or --scale=mode)
+	-c               (or --scale=mode)
 
 Graphics scaling mode (bilinear, biadapt or biadv). Default is none.
 Try these to get smoother graphics with cost on performance.
 
-	-b           (or --meleescale=mode)
+	-b               (or --meleescale=mode)
 
 Melee scaling mode (nearest or trilinear). Default is trilinear.
 Slower machine owners can set it to nearest to get better performance
 in melee but degraded visual quality.
 
-	-s           (or --scanlines)
+	-s               (or --scanlines)
 
 Simulates interlaced displays.
 
-	-g           (or --gamma)
+	-g               (or --gamma)
 
 Sets gamma correction. 1.0 causes no change (unless your graphics card
 is originally set to a different value). Higher than 1.0 makes the
 image brighter, lower than 1.0 makes it darker.
 
-	-p           (or --fps)
+	-p               (or --fps)
 
 Print fps information in the status window.
 
-	-n           (or --contentdir)
+	-n               (or --contentdir)
 
 Set the directory where the game will seek its data.
 
-	-h           (or --help)
+	-h               (or --help)
 
 Display a help message.
 
-	-M           (or --musicvol)
+	-M               (or --musicvol)
 
 Set music volume (0-100).
 
-	-S           (or --sfxvol)
+	-S               (or --sfxvol)
 
 Set sound effects volume (0-100).
 
-	-T           (or --speechvol)
+	-T               (or --speechvol)
 
 Set speech volume (0-100). If set to 0, game runs in 'no speech' mode and 
 oscilloscope reacts to the music.
 
-	-m 3do       (or --3domusic)
+	-m 3do           (or --3domusic)
 
 Use the 3DO remixed soundtrack for songs that were in fact remixed.
 The default.
 
-	-m pc        (or --pcmusic)
+	-m pc            (or --pcmusic)
 
 Use the .MOD based PC soundtrack everywhere.
 
-	-q           (or --audioquality)
+	-q               (or --audioquality)
 
 Can be "high", "medium", or "low".  Specifies how nice the audio
 sounds.  Slower machines should lower the audio quality.
 
-	--sound      (no short version)
+	--addon <addon>  (no short version)
+
+Replace <addon> by the name of an add-on to enable in the game. See
+the section 'ADD-ONS' below for details.
+
+	--sound          (no short version)
 
 Can be "openal", "mixsdl" or "none". Specifies which driver/mixer
 to use. "openal" is only available when it has been compiled in.
@@ -106,12 +111,12 @@ well with some sound cards.
 Use "none" as a last resort if you cannot get other drivers to work,
 or if you have no soundcard.
 
-    --stereosfx  (no short version)
+	--stereosfx      (no short version)
 
 Enables positional sound effects in melee. Currently works only when
 using openal.
 
-	-u           (or --nosubtitles)
+	-u               (or --nosubtitles)
 	
 Disables subtitles.
 
@@ -543,3 +548,25 @@ Later versions of The Ur-Quan Masters will include a key configuration
 tool.  In the meantime, the keys.cfg has a bunch of comments in it
 that should help you set up your joystick and remap key controls to
 your satisfaction.
+
+
+			   ADD-ONS
+
+Version 0.3 of The Ur-Quan Masters has basic support for add-on packages.
+Though it is not very elaborate yet, you can install some content add-ons.
+
+Inside the directory where the content is installed, in the content/packages/
+directory, there is a directory 'addons/'. In this directory, you can
+create new directories with .zip files to be used in addition to the
+standard content .zip files.
+When you specify the command-line option '--addon <addon>', the .zip files
+inside the directory content/packages/addons/<addon> will be included
+in the game. '--addon' may be specified more than once to enable multiple
+add-ons.
+
+At the time this version of The Ur-Quan masters is released, there aren't
+any official add-ons yet. Keep an eye on http://uqm.sf.net/ for those.
+Our boards, which can be found on this site too, are a good place
+to start looking for unofficial ones.
+
+
