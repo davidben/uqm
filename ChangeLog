@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Fixed load/save screen leaving characters when having more
+  than 1000 units of some type of resources (bug #75) -fOSSiL
 - Lowered Drawable memory footprint, made Frame safer - Martin
 - Support for running without voice .ogg files present -PBlue
 - Slider should now work correctly everywhere -PhracturedBlue
