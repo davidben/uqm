@@ -378,10 +378,16 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	t.baseline.y = r.corner.y + (SHIP_NAME_HEIGHT - InStatusArea);
 	t.align = ALIGN_CENTER;
 	t.CharCount = (COUNT)~0;
-	if (optWhichFonts == OPT_PC)
-		SetContextFontEffect (GRADIENT_EFFECT, 
-			BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
-			BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
+	if (optWhichFonts == OPT_PC) {
+		if (InStatusArea)
+			SetContextFontEffect (GRADIENT_EFFECT, 
+				BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
+				BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
+		else
+			SetContextFontEffect (GRADIENT_EFFECT, 
+				BUILD_COLOR_RGBA (0x00, 0x00, 0x9C, 0xFF),
+				BUILD_COLOR_RGBA (0x08, 0x14, 0xFF, 0xFF));
+	}
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 	DrawText (&t);
@@ -528,8 +534,8 @@ void DrawPC_SIS ()
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x00, 0x4D, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0x00, 0xAE, 0x00, 0xFF));
+		BUILD_COLOR_RGBA (0x6B, 0x00, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0xF7, 0x00, 0x00, 0xFF));
 	wsprintf (buf, "FUEL");
 	DrawText (&t);
 
@@ -538,8 +544,8 @@ void DrawPC_SIS ()
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x6B, 0x00, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0xF7, 0x00, 0x00, 0xFF));
+		BUILD_COLOR_RGBA (0x00, 0x4D, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0x00, 0xAE, 0x00, 0xFF));
 	wsprintf (buf, "CREW");
 	DrawText (&t);
 	SetContextFontEffect (0, 0, 0);

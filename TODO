@@ -92,6 +92,8 @@ Implementation bugs (low priority):
   - Still using 3DO menu hierarchy, so menu text isn't identical to PC
 -PC Font issues:
   - Lander font isn't correct (for PC or 3DO)
+  - The PC version has text about the ship in the Outfit screen (Velocity etc)
+    but we don't have that yet.
 
 Stuff still to do (large):
 - add some way to configure your keys
