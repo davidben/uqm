@@ -1,4 +1,5 @@
 0.2:
+- Scan (single, interrupting) fixed, from PhracturedBlue
 - Defining DCQ_OF_DOOM lowers the DrawCommandQueue size to 512, to aid in
   simulating severe overload stresses on the machine
 - Removed TFB_FlushGraphics' dependency on GraphicsSem, which the new
