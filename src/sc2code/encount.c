@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "controls.h"
+#include "libs/graphics/gfx_common.h"
 
 static BOOLEAN
 DoSelectAction (PMENU_STATE pMS)

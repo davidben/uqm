@@ -24,6 +24,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 #include "libs/misc.h"

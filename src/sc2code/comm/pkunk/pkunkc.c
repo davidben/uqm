@@ -43,6 +43,7 @@ static LOCDATA pkunk_desc =
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			7, /* StartIndex */
@@ -69,6 +70,7 @@ static LOCDATA pkunk_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -76,8 +78,10 @@ static LOCDATA pkunk_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, ONE_SECOND / 6, /* FrameRate */
 		ONE_SECOND / 12, ONE_SECOND / 2, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static BOOLEAN

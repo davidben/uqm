@@ -42,6 +42,7 @@ static LOCDATA spahome_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			4, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA spahome_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			9, /* StartIndex */
@@ -97,6 +99,7 @@ static LOCDATA spahome_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND * 10, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			32, /* StartIndex */
@@ -155,6 +158,7 @@ static LOCDATA spahome_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{ /* AlienTalkDesc - empty */
 		0, /* StartIndex */
@@ -162,8 +166,10 @@ static LOCDATA spahome_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

@@ -92,6 +92,7 @@ static LOCDATA spathi_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			41, /* StartIndex */
@@ -99,6 +100,7 @@ static LOCDATA spathi_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -107,6 +109,7 @@ static LOCDATA spathi_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+			0, /* BlockMask */
 	},
 #ifdef NEVER
 	{ /* AlienTalkDesc */
@@ -115,6 +118,7 @@ static LOCDATA spathi_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 #else
 	{ /* AlienTalkDesc - empty */
@@ -123,9 +127,11 @@ static LOCDATA spathi_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 #endif /* NEVER */
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

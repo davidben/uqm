@@ -42,6 +42,7 @@ static LOCDATA blackurq_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			13, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA blackurq_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			20, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA blackurq_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			23, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA blackurq_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			26, /* StartIndex */
@@ -70,6 +74,7 @@ static LOCDATA blackurq_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			29, /* StartIndex */
@@ -77,6 +82,7 @@ static LOCDATA blackurq_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND / 10, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			33, /* StartIndex */
@@ -85,6 +91,7 @@ static LOCDATA blackurq_desc =
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			38, /* StartIndex */
@@ -92,6 +99,7 @@ static LOCDATA blackurq_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -100,6 +108,7 @@ static LOCDATA blackurq_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 6, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		2, /* StartIndex */
@@ -107,8 +116,10 @@ static LOCDATA blackurq_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

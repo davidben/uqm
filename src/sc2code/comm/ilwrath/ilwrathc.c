@@ -42,6 +42,7 @@ static LOCDATA ilwrath_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			11, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA ilwrath_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			16, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA ilwrath_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			21, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA ilwrath_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -71,6 +75,7 @@ static LOCDATA ilwrath_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -78,8 +83,10 @@ static LOCDATA ilwrath_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

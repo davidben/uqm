@@ -90,6 +90,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			67, /* StartIndex */
@@ -121,6 +122,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			103, /* StartIndex */
@@ -136,6 +138,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			121, /* StartIndex */
@@ -175,6 +178,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			157, /* StartIndex */
@@ -182,6 +186,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			159, /* StartIndex */
@@ -189,6 +194,7 @@ static LOCDATA arilou_desc =
 			CIRCULAR_ANIM | WAIT_TALKING,/* AnimFlags */
 			ONE_SECOND / 12, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -197,6 +203,7 @@ static LOCDATA arilou_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -204,8 +211,10 @@ static LOCDATA arilou_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

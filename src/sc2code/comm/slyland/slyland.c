@@ -91,6 +91,7 @@ static LOCDATA slylandro_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{ /* AlienTalkDesc - empty */
 		0, /* StartIndex */
@@ -98,8 +99,10 @@ static LOCDATA slylandro_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static RESPONSE_REF threat = 0,

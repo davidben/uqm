@@ -42,6 +42,7 @@ static LOCDATA shofixti_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND / 30, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			20, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA shofixti_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			(ONE_SECOND >> 1), (ONE_SECOND >> 1) * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			23, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA shofixti_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			(ONE_SECOND >> 1), (ONE_SECOND >> 1) * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			26, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA shofixti_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			29, /* StartIndex */
@@ -70,6 +74,7 @@ static LOCDATA shofixti_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 
 		{
@@ -78,6 +83,7 @@ static LOCDATA shofixti_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			39, /* StartIndex */
@@ -101,6 +107,7 @@ static LOCDATA shofixti_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 20, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			56, /* StartIndex */
@@ -125,6 +132,7 @@ static LOCDATA shofixti_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -132,8 +140,10 @@ static LOCDATA shofixti_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 20, 0, /* FrameRate */
 		ONE_SECOND / 15, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static RESPONSE_REF shofixti_name;

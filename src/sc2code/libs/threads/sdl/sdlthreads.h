@@ -31,8 +31,6 @@ typedef int (*NativeThreadFunction) (void *);
 #define NativeUnInitThreadSystem()		
 #define NativeCreateThread(func, data, stackSize) \
 		SDL_CreateThread ((func), (data))
-#define NativeKillThread(thread) \
-		SDL_KillThread ((thread))
 extern void SDLWrapper_SleepThread (TimeCount sleepTime);
 #define NativeSleepThread(sleepTime) \
 		SDLWrapper_SleepThread ((sleepTime))

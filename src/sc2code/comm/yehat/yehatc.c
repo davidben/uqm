@@ -89,8 +89,7 @@ static LOCDATA yehat_desc =
 		{
 			26, /* StartIndex */
 			2, /* NumFrames */
-			YOYO_ANIM
-					| WAIT_TALKING, /* AnimFlags */
+			YOYO_ANIM | WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 0) | (1 << 1),
@@ -98,8 +97,7 @@ static LOCDATA yehat_desc =
 		{
 			28, /* StartIndex */
 			2, /* NumFrames */
-			YOYO_ANIM
-					| WAIT_TALKING, /* AnimFlags */
+			YOYO_ANIM | WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 6, ONE_SECOND * 3,/* RestartRate */
 			(1 << 0) | (1 << 1),
@@ -110,6 +108,7 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			33, /* StartIndex */
@@ -117,6 +116,7 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			36, /* StartIndex */
@@ -124,6 +124,7 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			39, /* StartIndex */
@@ -131,6 +132,7 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			42, /* StartIndex */
@@ -138,6 +140,7 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			45, /* StartIndex */
@@ -145,12 +148,12 @@ static LOCDATA yehat_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			48, /* StartIndex */
 			4, /* NumFrames */
-			YOYO_ANIM
-					| WAIT_TALKING, /* AnimFlags */
+			YOYO_ANIM | WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 2) | (1 << 4),
@@ -162,6 +165,7 @@ static LOCDATA yehat_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -169,8 +173,10 @@ static LOCDATA yehat_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

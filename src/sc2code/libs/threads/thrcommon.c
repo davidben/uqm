@@ -261,30 +261,6 @@ CreateThreadAux (ThreadFunction func, void *data, SDWORD stackSize
 	return thread;
 }
 
-/* Important: Threads shouldn't kill themselves. That would prevent them
- *            from being removed from the queue and from displaying the
- *            'killed' debug message.
- */
-
-/* 17 Sep: Added a TFB_BatchReset call.  If a thread is killed while
- *         batching stuff, we don't want this to freeze the game.
- *         Better safe than sorry!  --Michael
- *         TEMPORARY (TODO: handle decently)
- */
-void
-KillThread (Thread thread)
-{
-	TFB_BatchReset ();
-	NativeKillThread (thread->native);
-#ifdef DEBUG_THREADS
-	fprintf (stderr, "Thread '%s' killed.\n", ThreadName (thread));
-	fflush (stderr);
-#endif
-#ifdef THREAD_QUEUE
-	UnQueueThread (thread);
-#endif  /* THREAD_QUEUE */
-}
-
 void
 WaitThread (Thread thread, int *status)
 {

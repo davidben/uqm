@@ -43,6 +43,7 @@ static LOCDATA supox_desc =
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			9, /* StartIndex */
@@ -50,6 +51,7 @@ static LOCDATA supox_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			19, /* StartIndex */
@@ -57,6 +59,7 @@ static LOCDATA supox_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			29, /* StartIndex */
@@ -64,6 +67,7 @@ static LOCDATA supox_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -72,15 +76,18 @@ static LOCDATA supox_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
-		ONE_SECOND / 12, 0, /* RestartRate */
+		ONE_SECOND / 12, 0, /* RestartRate */	
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

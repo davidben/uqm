@@ -42,6 +42,7 @@ static LOCDATA urquan_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND / 10, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			13, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA urquan_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			16, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA urquan_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			19, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA urquan_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			22, /* StartIndex */
@@ -70,6 +74,7 @@ static LOCDATA urquan_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			29, /* StartIndex */
@@ -77,6 +82,7 @@ static LOCDATA urquan_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			36, /* StartIndex */
@@ -84,6 +90,7 @@ static LOCDATA urquan_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -92,6 +99,7 @@ static LOCDATA urquan_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 6, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		2, /* StartIndex */
@@ -99,8 +107,10 @@ static LOCDATA urquan_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

@@ -43,6 +43,7 @@ static LOCDATA commander_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Running light */
 			10, /* StartIndex */
@@ -50,6 +51,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			1, /* StartIndex */
@@ -57,6 +59,7 @@ static LOCDATA commander_desc =
 			RANDOM_ANIM | COLORXFORM_ANIM,/* AnimFlags */
 			0, ONE_SECOND / 30, /* FrameRate */
 			0, ONE_SECOND / 15, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -65,6 +68,7 @@ static LOCDATA commander_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		4, /* StartIndex */
@@ -72,8 +76,10 @@ static LOCDATA commander_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
 		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

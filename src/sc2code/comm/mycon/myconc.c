@@ -58,6 +58,7 @@ static LOCDATA mycon_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND * 3 / 40, 0, /* FrameRate */
 			ONE_SECOND * 3 / 40, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			28, /* StartIndex */
@@ -65,6 +66,7 @@ static LOCDATA mycon_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND * 3 / 40, 0, /* FrameRate */
 			ONE_SECOND * 3 / 40, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			33, /* StartIndex */
@@ -72,6 +74,7 @@ static LOCDATA mycon_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND * 3 / 40, 0, /* FrameRate */
 			ONE_SECOND * 3 / 40, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -80,16 +83,18 @@ static LOCDATA mycon_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
 		11, /* NumFrames */
 		0, /* AnimFlags */
-		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static BYTE MadeChoice = 0;

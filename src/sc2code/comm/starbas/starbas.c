@@ -51,6 +51,7 @@ static LOCDATA commander_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Running light */
 			10, /* StartIndex */
@@ -58,6 +59,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 0 */
 			40, /* StartIndex */
@@ -65,6 +67,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 1 */
 			47, /* StartIndex */
@@ -72,6 +75,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 2 */
 			55, /* StartIndex */
@@ -79,6 +83,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 3 */
 			61, /* StartIndex */
@@ -86,6 +91,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 4 */
 			67, /* StartIndex */
@@ -93,6 +99,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 5 */
 			74, /* StartIndex */
@@ -100,6 +107,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Arc welder 6 */
 			85, /* StartIndex */
@@ -107,6 +115,7 @@ static LOCDATA commander_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 40, 0, /* FrameRate */
 			0, ONE_SECOND * 8, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Flagship picture */
 			95, /* StartIndex */
@@ -114,6 +123,7 @@ static LOCDATA commander_desc =
 			0, /* AnimFlags */
 			0, 0, /* FrameRate */
 			0, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -122,6 +132,7 @@ static LOCDATA commander_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		4, /* StartIndex */
@@ -129,8 +140,10 @@ static LOCDATA commander_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 10, ONE_SECOND / 15, /* FrameRate */
 		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static DWORD CurBulletinMask;

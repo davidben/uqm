@@ -42,6 +42,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			7, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			9, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			11, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			13, /* StartIndex */
@@ -70,6 +74,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			15, /* StartIndex */
@@ -85,6 +90,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			19, /* StartIndex */
@@ -100,6 +106,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			27, /* StartIndex */
@@ -115,6 +122,7 @@ static LOCDATA syreen_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			37, /* StartIndex */
@@ -122,6 +130,7 @@ static LOCDATA syreen_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			41, /* StartIndex */
@@ -156,6 +165,7 @@ static LOCDATA syreen_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -163,8 +173,10 @@ static LOCDATA syreen_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

@@ -42,6 +42,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			15, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			20, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA vux_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, 0, /* FrameRate */
 			ONE_SECOND / 30, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			34, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA vux_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			41, /* StartIndex */
@@ -70,6 +74,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			47, /* StartIndex */
@@ -77,6 +82,7 @@ static LOCDATA vux_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			58, /* StartIndex */
@@ -84,6 +90,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			61, /* StartIndex */
@@ -91,6 +98,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			65, /* StartIndex */
@@ -98,6 +106,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			69, /* StartIndex */
@@ -105,6 +114,7 @@ static LOCDATA vux_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* FrameRate */
 			ONE_SECOND / 30, ONE_SECOND / 30, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			71, /* StartIndex */
@@ -112,6 +122,7 @@ static LOCDATA vux_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 20, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			74, /* StartIndex */
@@ -119,6 +130,7 @@ static LOCDATA vux_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			80, /* StartIndex */
@@ -134,6 +146,7 @@ static LOCDATA vux_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			90, /* StartIndex */
@@ -149,6 +162,7 @@ static LOCDATA vux_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 5, ONE_SECOND * 5,/* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			99, /* StartIndex */
@@ -156,6 +170,7 @@ static LOCDATA vux_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND * 5, ONE_SECOND * 5,/* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{
@@ -164,6 +179,7 @@ static LOCDATA vux_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -171,8 +187,10 @@ static LOCDATA vux_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

@@ -42,6 +42,7 @@ static LOCDATA orz_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			10, /* StartIndex */
@@ -49,6 +50,7 @@ static LOCDATA orz_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			15, /* StartIndex */
@@ -56,6 +58,7 @@ static LOCDATA orz_desc =
 			RANDOM_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			17, /* StartIndex */
@@ -63,6 +66,7 @@ static LOCDATA orz_desc =
 			YOYO_ANIM, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			20, /* StartIndex */
@@ -102,6 +106,7 @@ static LOCDATA orz_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 60, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			61, /* StartIndex */
@@ -109,6 +114,7 @@ static LOCDATA orz_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 60, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			76, /* StartIndex */
@@ -124,6 +130,7 @@ static LOCDATA orz_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 60, ONE_SECOND / 15, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{
 			118, /* StartIndex */
@@ -140,6 +147,7 @@ static LOCDATA orz_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		1, /* StartIndex */
@@ -147,8 +155,10 @@ static LOCDATA orz_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, ONE_SECOND / 15, /* FrameRate */
 		ONE_SECOND / 12, ONE_SECOND * 3 / 8, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void

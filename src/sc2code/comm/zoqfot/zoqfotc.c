@@ -59,6 +59,7 @@ static LOCDATA zoqfot_desc =
 			| WAIT_TALKING,
 			ONE_SECOND / 24, 0, /* FrameRate */
 			0, ONE_SECOND * 10, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Blow smoke */
 			5, /* StartIndex */
@@ -66,6 +67,7 @@ static LOCDATA zoqfot_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND * 7 / 120, 0, /* FrameRate */
 			ONE_SECOND * 2, 0, /* RestartRate */
+			0, /* BlockMask */
 		},
 		{ /* Gulp */
 			10, /* StartIndex */
@@ -73,6 +75,7 @@ static LOCDATA zoqfot_desc =
 			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			0, ONE_SECOND * 10, /* RestartRate */
+			0, /* BlockMask */
 		},
 	},
 	{ /* Move Eye */
@@ -81,6 +84,7 @@ static LOCDATA zoqfot_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 30, 0, /* FrameRate */
 		0, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	{
 		ZOQ_TALK_INDEX, /* StartIndex */
@@ -88,8 +92,10 @@ static LOCDATA zoqfot_desc =
 		0, /* AnimFlags */
 		ONE_SECOND / 15, 0, /* FrameRate */
 		ONE_SECOND / 12, 0, /* RestartRate */
+		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
+	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 enum
@@ -118,10 +124,6 @@ SelectAlienZOQ (void)
 		CommData.AlienTextFColor = ZOQ_FG_COLOR;
 		CommData.AlienTextBColor = ZOQ_BG_COLOR;
 	}
-}
-static void
-SelectAlienFOT (void)
-{
 }
 
 static void
