@@ -1,4 +1,7 @@
 Changes towards version 0.3:
+- Utwig shield now pulsates properly (bug #269), from Nic
+- Fix for memory leak in TFB_DrawCanvas_ExtractPalette (bug #277),
+  from Richard Braakman
 - Patched Umgah dialogue, fixing bug #8
 - Crossfade code now explicitly caches the screen to transition from, and
   thus no longer glitches.  The code needed a slight rewrite, but this
