@@ -51,6 +51,12 @@ in melee but degraded visual quality.
 
 Simulates interlaced displays.
 
+	-g           (or --gamma)
+
+Sets gamma correction. 1.0 causes no change (unless your graphics card
+is originally set to a different value). Higher than 1.0 makes the
+image brighter, lower than 1.0 makes it darker.
+
 	-p           (or --fps)
 
 Print fps information in the status window.
