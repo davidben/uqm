@@ -131,7 +131,8 @@ DoConfirmExit (void)
 			{
 				response = !response;
 				DrawConfirmationWindow (response);
-			}				
+			}
+			TaskSwitch ();
 		} while (!done);
 
 		s.frame = F;
