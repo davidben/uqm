@@ -523,7 +523,8 @@ init_communication (void)
 	subtitle_mutex = CreateMutex ();
 	init_xform_control ();
 
-	canvas = TFB_DrawCanvas_New_TrueColor (ScreenWidth, ScreenHeight, FALSE);
+	canvas = TFB_DrawCanvas_New_TrueColor (SIS_SCREEN_WIDTH,
+		SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, FALSE);
 	subtitle_cache = TFB_DrawImage_New (canvas);
 	TFB_DrawCanvas_SetTransparentColor (subtitle_cache->NormalImg, 0, 0, 255, TRUE);
 }
