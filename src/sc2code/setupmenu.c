@@ -442,54 +442,28 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 
 		if (PulsedInputState.key[KEY_MENU_UP])
 		{
-			opt -= 3;
-			if (opt < 0)
+			cat--;
+			if (cat < 0)
 			{
-				cat--;
-				if (cat < 0)
-				{
-					cat = NUM_OPTS-1;
-				}
-				/* Preserve column if possible */
-				opt = (menu[cat].numopts - (menu[cat].numopts % 3)) + ((opt + 3) % 3);
-				if (opt >= menu[cat].numopts)
-				{
-					opt = menu[cat].numopts - 1;
-				}
+				cat = NUM_OPTS-1;
 			}
+			/* Preserve column if possible */
+			opt = menu[cat].selected;
 		}
 		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
-			opt += 3;
-			if ((opt - (opt % 3)) >= menu[cat].numopts)
+			cat++;
+			if (cat >= NUM_OPTS)
 			{
-				cat++;
-				if (cat >= NUM_OPTS)
-				{
-					cat = 0;
-				}
-				/* Preserve column if possible */
-				opt = opt % 3;
-				if (opt >= menu[cat].numopts)
-				{
-					opt = menu[cat].numopts - 1;
-				}
+				cat = 0;
 			}
-			else if (opt >= menu[cat].numopts)
-			{
-				opt = menu[cat].numopts - 1;
-			}
+			opt = menu[cat].selected;
 		}
 		else if (PulsedInputState.key[KEY_MENU_LEFT])
 		{
 			opt--;
 			if (opt < 0)
 			{
-				cat--;
-				if (cat < 0)
-				{
-					cat = NUM_OPTS-1;
-				}
 				opt = menu[cat].numopts - 1;
 			}	
 		}
@@ -498,11 +472,6 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 			opt++;
 			if (opt >= menu[cat].numopts)
 			{
-				cat++;
-				if (cat >= NUM_OPTS)
-				{
-					cat = 0;
-				}
 				opt = 0;
 			}	
 		}
