@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Separated and abstracted sound buffer-tagging and trackplayer
+  clip/subtitle chaining -Alex
 - Abstracted the recursive mutexes in MixSDL and DCQ code -Michael
 - Introduced a new synchronization construct (CrossThreadMutex) and 
   migrated the GraphicsSem and clock_sem over to it (#359) -Michael
