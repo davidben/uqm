@@ -32,10 +32,12 @@ static BOOLEAN upload_transitiontexture = FALSE;
 #define R_MASK 0x00ff0000
 #define G_MASK 0x0000ff00
 #define B_MASK 0x000000ff
+#define A_MASK 0xff000000
 #else
 #define R_MASK 0x000000ff
 #define G_MASK 0x0000ff00
 #define B_MASK 0x00ff0000
+#define A_MASK 0xff000000
 #endif
 
 int
@@ -150,7 +152,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
-		R_MASK, G_MASK, B_MASK, 0x00000000);
+		R_MASK, G_MASK, B_MASK, A_MASK);
 
 	if (format_conv_surf == NULL)
 	{
