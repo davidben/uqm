@@ -18,10 +18,11 @@
 
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
+#include "libs/tasklib.h"
 
 extern int _music_volume;
 
-static Thread FadeTask;
+static Task FadeTask;
 static SIZE TTotal;
 static SIZE volume_end;
 
@@ -30,6 +31,7 @@ fade_task (void *data)
 {
 	SIZE TDelta, volume_beg;
 	DWORD StartTime, CurTime;
+	Task task = (Task) data;
 
 	volume_beg = _music_volume;
 	StartTime = CurTime = GetTimeCounter ();
@@ -45,6 +47,7 @@ fade_task (void *data)
 	} while (TDelta < TTotal);
 
 	FadeTask = 0;
+	FinishTask (task);
 	return (1);
 }
 
@@ -67,7 +70,7 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 		TTotal = 1; /* prevent divide by zero and negative fade */
 	volume_end = end_vol;
 		
-	if (TTotal > 1 && (FadeTask = CreateThread (fade_task, NULL, 0,
+	if (TTotal > 1 && (FadeTask = AssignTask (fade_task, 0,
 			"fade music")))
 	{
 		TimeOut = GetTimeCounter () + TTotal + 1;

@@ -20,7 +20,7 @@
 
 #define IsLeapYear(yi) (!((yi) & 3) && (((yi) % 100) || ((yi) % 400)))
 
-int clock_task_func(void* blah)
+int clock_task_func(void* data)
 {
 	BOOLEAN LastPilot;
 	DWORD LastTime;
@@ -41,13 +41,14 @@ int clock_task_func(void* blah)
 	};
 #define NUM_CYCLES (sizeof (cycle_tab) / sizeof (cycle_tab[0]))
 #define NUM_DELAYS 9
+	Task task = (Task) data;
 
 	LastPilot = FALSE;
 	LastTime = 0;
 	cycle_index = delay_count = 0;
-	while (GLOBAL (GameClock).day_in_ticks == 0)
+	while (GLOBAL (GameClock).day_in_ticks == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BOOLEAN OnAutoPilot;
 		DWORD TimeIn;
@@ -153,7 +154,7 @@ int clock_task_func(void* blah)
 		ClearSemaphore (GLOBAL (GameClock).clock_sem);
 		SleepThreadUntil (TimeIn + 1);
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }
 
@@ -169,7 +170,7 @@ InitGameClock (void)
 	GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks = 0;
 	SuspendGameClock ();
 	if ((GLOBAL (GameClock.clock_task) =
-			CreateThread (clock_task_func, NULL, 2048,
+			AssignTask (clock_task_func, 2048,
 			"game clock")) == 0)
 		return (FALSE);
 
@@ -185,7 +186,7 @@ UninitGameClock (void)
 			ResumeGameClock ();
 
 		SetSemaphore (GLOBAL (GameClock.clock_sem));
-		KillThread (GLOBAL (GameClock.clock_task));
+		Task_SetState (GLOBAL (GameClock.clock_task), TASK_EXIT);
 		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 
 		GLOBAL (GameClock.clock_task) = 0;

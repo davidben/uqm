@@ -156,7 +156,7 @@ LoadPlanet (BOOLEAN IsDefined)
 		if (pSolarSysState->MenuState.flash_task == 0)
 		{
 			pSolarSysState->MenuState.flash_task =
-					CreateThread (rotate_planet_task, NULL, 4096,
+					AssignTask (rotate_planet_task, 4096,
 					"rotate planets");
 
 			while (pSolarSysState->MenuState.Initialized == 2)
@@ -189,7 +189,7 @@ FreePlanet (void)
 
 	if (pSolarSysState->MenuState.flash_task)
 	{
-		KillThread (pSolarSysState->MenuState.flash_task);
+		Task_SetState (pSolarSysState->MenuState.flash_task, TASK_EXIT);
 		pSolarSysState->MenuState.flash_task = 0;
 	}
 

@@ -19,6 +19,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
+#include "libs/tasklib.h"
 
 int
 main (int argc, char *argv[])
@@ -71,6 +72,7 @@ main (int argc, char *argv[])
 
 	InitThreadSystem ();
 	InitTimeSystem ();
+	InitTaskSystem ();
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, frequency);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);

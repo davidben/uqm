@@ -18,6 +18,7 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "gfx_common.h"
+#include "libs/tasklib.h"
 
 static struct
 {
@@ -26,7 +27,7 @@ static struct
 	union
 	{
 		COUNT NumCycles;
-		Thread XFormTask;
+		Task XFormTask;
 	} tc;
 } TaskControl;
 
@@ -198,12 +199,13 @@ _threedo_set_colors (UBYTE *colors, unsigned int indices)
 }
 
 static int
-color_cycle (void *foo)
+color_cycle (void *data)
 {
 	UWORD color_beg, color_len, color_indices;
 	COUNT Cycles, CycleCount;
 	DWORD TimeIn, SleepTicks;
 	COLORMAPPTR BegMapPtr, CurMapPtr;
+	Task task = (Task)data;
 
 	Cycles = CycleCount = TaskControl.tc.NumCycles;
 	BegMapPtr = TaskControl.CMapPtr;
@@ -216,7 +218,7 @@ color_cycle (void *foo)
 
 	TaskControl.CMapPtr = 0;
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		//_threedo_set_colors (CurMapPtr, color_indices);
 
@@ -234,10 +236,12 @@ color_cycle (void *foo)
 		if (TaskControl.CMapPtr)
 		{
 			TaskControl.CMapPtr = (COLORMAPPTR)0;
-			for (;;)
+			while (!Task_ReadState(task, TASK_EXIT))
 				TaskSwitch ();
 		}
 	}
+	FinishTask (task);
+	return 0;
 }
 
 CYCLE_REF 
@@ -245,7 +249,7 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 {
 	if (ColorMapPtr && Cycles && ColorMapPtr[0] <= ColorMapPtr[1])
 	{
-		Thread T;
+		Task T;
 
 		while (TaskControl.CMapPtr)
 		{
@@ -257,7 +261,7 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 		if ((TaskControl.Ticks = TimeInterval) <= 0)
 			TaskControl.Ticks = 1;
 
-		T = CreateThread (color_cycle, NULL, 0, "color cycle");
+		T = AssignTask (color_cycle, 0, "color cycle");
 		if (T)
 		{
 			_batch_flags |= ENABLE_CYCLE;
@@ -276,9 +280,9 @@ CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
 void 
 StopCycleColorMap (CYCLE_REF CycleRef)
 {
-	Thread T;
+	Task T;
 
-	T = (Thread) CycleRef;
+	T = (Task) CycleRef;
 	if (T)
 	{
 		TaskControl.CMapPtr = (COLORMAPPTR)1;
@@ -286,7 +290,7 @@ StopCycleColorMap (CYCLE_REF CycleRef)
 			TaskSwitch ();
 
 		_batch_flags &= ~ENABLE_CYCLE;
-		KillThread (T);
+		Task_SetState (T, TASK_EXIT);
 	}
 }
 
@@ -297,13 +301,14 @@ StopCycleColorMap (CYCLE_REF CycleRef)
 static int cur = NORMAL_INTENSITY, end, XForming;
 
 static
-int xform_clut_task (void *foo)
+int xform_clut_task (void *data)
 {
 	SIZE TDelta, TTotal;
 	DWORD CurTime;
+	Task task = (Task)data;
 
 	XForming = TRUE;
-	while (TaskControl.tc.XFormTask == 0)
+	while (TaskControl.tc.XFormTask == 0 && (!Task_ReadState (task, TASK_EXIT)))
 		TaskSwitch ();
 	TTotal = TaskControl.Ticks;
 	TaskControl.tc.XFormTask = 0;
@@ -322,12 +327,12 @@ int xform_clut_task (void *foo)
 
 			cur += (end - cur) * TDelta / TTotal;
 			//_threedo_change_clut (cur);
-		} while (TTotal -= TDelta);
+		} while (TTotal -= TDelta && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
 	XForming = FALSE;
 
-	(void) foo;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return 0;
 }
 
@@ -369,8 +374,8 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 
 	TaskControl.Ticks = TimeInterval;
 	if (TaskControl.Ticks <= 0 ||
-			(TaskControl.tc.XFormTask = CreateThread (xform_clut_task,
-					NULL, 1024, "transform colormap")) == 0)
+			(TaskControl.tc.XFormTask = AssignTask (xform_clut_task,
+					1024, "transform colormap")) == 0)
 	{
 		//_threedo_change_clut (end);
 		TimeOut = GetTimeCounter ();

@@ -30,15 +30,16 @@ enum
 	OPENING
 };
 
-int arilou_gate_task(void* Blah)
+int arilou_gate_task(void* data)
 {
 	BYTE counter;
 	DWORD TimeIn;
+	Task task = (Task) data;
 
 	TimeIn = GetTimeCounter ();
 
 	counter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		SetSemaphore (GLOBAL (GameClock.clock_sem));
 
@@ -61,9 +62,9 @@ int arilou_gate_task(void* Blah)
 		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
 		TimeIn = GetTimeCounter ();
 	}
+	FinishTask (task);
 
-	(void) Blah;  /* Satisfying compiler (unused parameter) */
-		return(0);
+	return(0);
 }
 
 static void
@@ -952,18 +953,18 @@ if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
 				}
 				else
 				{
-					Thread ArilouTask;
+					Task ArilouTask;
 					
 					GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0);
 
-					ArilouTask = CreateThread (arilou_gate_task, NULL, 128,
-							"arilou gate (?)");
+					ArilouTask = AssignTask (arilou_gate_task, 128,
+							"quasispace portal manager");
 
 					TaskSwitch ();
 
 					Battle ();
 					if (ArilouTask)
-						KillThread (ArilouTask);
+						Task_SetState (ArilouTask, TASK_EXIT);
 				}
 #ifdef TESTING
 if (_simple_count != sc) printf ("%d difference!\n", (int)_simple_count - (int)sc);

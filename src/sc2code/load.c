@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "declib.h"
+#include "libs/tasklib.h"
 
 ACTIVITY NextActivity;
 
@@ -93,7 +94,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		FILE *fp;
 		DECODE_REF fh;
 		COUNT num_links;
-		Thread clock_task;
+		Task clock_task;
 		QUEUE event_q, encounter_q, avail_q, npc_q, player_q;
 		STAR_DESC SD;
 		ACTIVITY Activity;

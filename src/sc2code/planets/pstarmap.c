@@ -45,11 +45,12 @@ void RepairBackRect (PRECT pRect);
 static BOOLEAN transition_pending;
 
 int
-flash_cursor_func(void *blah)
+flash_cursor_func(void *data)
 {
 	BYTE c, val;
 	POINT universe;
 	STAMP s;
+	Task task = (Task) data;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
 		universe = CurStarDescPtr->star_pt;
@@ -62,7 +63,7 @@ flash_cursor_func(void *blah)
 
 	c = 0x00;
 	val = -0x02;
-	for (;;)
+	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		DWORD TimeIn;
 		COLOR OldColor;
@@ -85,7 +86,7 @@ flash_cursor_func(void *blah)
 		ClearSemaphore (GraphicsSem);
 		SleepThreadUntil (TimeIn + (ONE_SECOND >> 4));
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return (0);
 }
 
@@ -611,7 +612,7 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 				);
 		pMS->InputFunc = DoMoveCursor;
 
-		pMS->flash_task = CreateThread (flash_cursor_func, NULL, 2048,
+		pMS->flash_task = AssignTask (flash_cursor_func, 2048,
 				"flash location on star map");
 		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
@@ -621,13 +622,11 @@ DoMoveCursor (INPUT_STATE InputState, PMENU_STATE pMS)
 	}
 	else if (InputState & DEVICE_BUTTON2)
 	{
-		SetSemaphore (GraphicsSem);
 		if (pMS->flash_task)
 		{
-			KillThread (pMS->flash_task);
+			ConcludeTask (pMS->flash_task);
 			pMS->flash_task = 0;
 		}
-		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
 	}

@@ -19,6 +19,8 @@
 #ifndef _CLOCK_H
 #define _CLOCK_H
 
+#include "libs/tasklib.h"
+
 #define START_YEAR 2155
 
 enum
@@ -55,7 +57,7 @@ typedef struct
 	COUNT year_index;
 	SIZE tick_count, day_in_ticks;
 	Semaphore clock_sem;
-	Thread clock_task;
+	Task clock_task;
 	DWORD TimeCounter;
 
 	QUEUE event_q;

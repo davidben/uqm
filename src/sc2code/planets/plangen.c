@@ -915,25 +915,26 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 }
 
 int
-rotate_planet_task(void *blah)
+rotate_planet_task(void *data)
 {
 	SIZE i;
 	DWORD TimeIn;
 	PSOLARSYS_STATE pSS;
 	BOOLEAN repair, zooming;
+	Task task = (Task) data;
 
 	repair = FALSE;
 	zooming = TRUE;
 
 	pSS = pSolarSysState;
-	while (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized < 2)
+	while (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized < 2 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
 	SetPlanetTilt ((pSS->SysInfo.PlanetInfo.AxialTilt << 8) / 360);
 			
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BYTE view_index;
 		COORD x;
@@ -978,8 +979,8 @@ rotate_planet_task(void *blah)
 
 			SleepThreadUntil (TimeIn + (ONE_SECOND * 5 / MAP_WIDTH));
 			TimeIn = GetTimeCounter ();
-		} while (--view_index);
+		} while (--view_index && !Task_ReadState (task, TASK_EXIT));
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }

@@ -335,11 +335,12 @@ SetPlanetLoc (POINT new_pt)
 }
 
 int
-flash_planet_loc_func(void *blah)
+flash_planet_loc_func(void *data)
 {
 	DWORD TimeIn;
 	BYTE c, val;
 	PRIMITIVE p;
+	Task task = (Task) data;
 
 	SetPrimType (&p, STAMPFILL_PRIM);
 	SetPrimNextLink (&p, END_OF_LIST);
@@ -349,7 +350,7 @@ flash_planet_loc_func(void *blah)
 	c = 0x00;
 	val = -0x02;
 	TimeIn = 0;
-	for (;;)
+	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		DWORD T;
 		CONTEXT OldContext;
@@ -388,7 +389,7 @@ flash_planet_loc_func(void *blah)
 		
 		TaskSwitch ();
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }
 
@@ -401,9 +402,7 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 	{
 		if (pMenuState->flash_task)
 		{
-			SetSemaphore (GraphicsSem);
-			KillThread (pMenuState->flash_task);
-			ClearSemaphore (GraphicsSem);
+			ConcludeTask(pMenuState->flash_task);
 			pMenuState->flash_task = 0;
 		}
 		goto ExitPlanetSide;
@@ -442,8 +441,8 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 
 			InitLander (0);
 
-			pMenuState->flash_task = CreateThread (flash_planet_loc_func,
-					NULL, 2048, "flash planet location");
+			pMenuState->flash_task = AssignTask (flash_planet_loc_func,
+					2048, "flash planet location");
 		}
 	}
 	else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
@@ -455,12 +454,12 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		SetSemaphore (GraphicsSem);
 		DrawStatusMessage (NULL_PTR);
+		ClearSemaphore (GraphicsSem);
 		if (pMenuState->flash_task)
 		{
-			KillThread (pMenuState->flash_task);
+			ConcludeTask (pMenuState->flash_task);
 			pMenuState->flash_task = 0;
 		}
-		ClearSemaphore (GraphicsSem);
 
 		if (!(InputState & DEVICE_BUTTON1))
 			SetPlanetLoc (pSolarSysState->MenuState.first_item);
@@ -495,13 +494,11 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 				extern ACTIVITY NextActivity;
 				extern void SaveFlagshipState (void);
 
-				SetSemaphore (GraphicsSem);
 				if (pMenuState->flash_task)
 				{
-					KillThread (pMenuState->flash_task);
+					ConcludeTask (pMenuState->flash_task);
 					pMenuState->flash_task = 0;
 				}
-				ClearSemaphore (GraphicsSem);
 
 				NextActivity |= CHECK_LOAD; /* fake a load game */
 				GLOBAL (CurrentActivity) |= START_ENCOUNTER;

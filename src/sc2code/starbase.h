@@ -19,6 +19,8 @@
 #ifndef _STARBASE_H
 #define _STARBASE_H
 
+#include "libs/tasklib.h"
+
 enum
 {
 	TALK_COMMANDER = 0,
@@ -45,7 +47,7 @@ typedef struct menu_state
 	SIZE delta_item;
 
 	FRAME ModuleFrame;
-	Thread flash_task;
+	Task flash_task;
 	RECT flash_rect0,
 						flash_rect1;
 	FRAME flash_frame0,

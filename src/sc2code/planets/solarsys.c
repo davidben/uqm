@@ -329,10 +329,10 @@ FreeSolarSys (void)
 		if (pSolarSysState->MenuState.Initialized >= 3)
 			FreePlanet ();
 		else
-		{
-			SetSemaphore (GraphicsSem);
-			KillThread (pSolarSysState->MenuState.flash_task);
+		{			
+			ConcludeTask (pSolarSysState->MenuState.flash_task);
 			pSolarSysState->MenuState.flash_task = 0;
+			SetSemaphore (GraphicsSem);
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{
 				extern void SaveFlagshipState (void);
@@ -985,13 +985,14 @@ ScaleSystem (void)
 #endif
 }
 
-int IPtask_func(void* blah)
+int IPtask_func(void* data)
 {
 #define IP_FRAME_RATE 4
 #define DEBOUNCE_DELAY ((ONE_SECOND >> 1) / IP_FRAME_RATE)
 	BYTE MenuTransition;
 	DWORD NextTime;
 	INPUT_STATE InputState;
+	Task task = (Task) data;
 
 	TaskSwitch ();
 
@@ -1002,7 +1003,7 @@ int IPtask_func(void* blah)
 
 	MenuTransition = 0;
 	NextTime = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		CONTEXT OldContext;
 		BOOLEAN InnerSystem;
@@ -1010,17 +1011,24 @@ int IPtask_func(void* blah)
 
 		InnerSystem = FALSE;
 		SetSemaphore (GraphicsSem);
-		while (pSolarSysState->MenuState.Initialized > 1
+		while ((pSolarSysState->MenuState.Initialized > 1
 				|| (GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | END_INTERPLANETARY
 				| CHECK_ABORT | CHECK_LOAD))
 				|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
+				&& !Task_ReadState (task, TASK_EXIT))
 		{
 			InputState = 0;
 			ClearSemaphore (GraphicsSem);
 			TaskSwitch ();
 			SetSemaphore (GraphicsSem);
 			NextTime = GetTimeCounter ();
+		}
+
+		if (Task_ReadState (task, TASK_EXIT))
+		{
+			ClearSemaphore (GraphicsSem);
+			break;
 		}
 
 		OldContext = SetContext (StatusContext);
@@ -1142,6 +1150,11 @@ TheMess:
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
 
+		if (Task_ReadState (task, TASK_EXIT))
+		{
+			break;
+		}
+
 		if (!(InputState & DEVICE_BUTTON2))
 		{
 			SleepThreadUntil (NextTime + IP_FRAME_RATE);
@@ -1177,7 +1190,7 @@ TheMess:
 			ClearSemaphore (GraphicsSem);
 		}
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }
 
@@ -1262,7 +1275,7 @@ StartGroups:
 			CheckIntersect (TRUE);
 			
 			pSolarSysState->MenuState.flash_task =
-					CreateThread (IPtask_func, NULL, 6144,
+					AssignTask (IPtask_func, 6144,
 					"flash solar system menu");
 			ClearSemaphore (GraphicsSem);
 

@@ -497,12 +497,13 @@ Select (BYTE opt)
 	}
 }
 
-int flash_selection_func(void* blah)
+int flash_selection_func(void* data)
 {
 	DWORD TimeIn;
+	Task task = (Task) data;
 	
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 #define FLASH_RATE (ONE_SECOND / 8)
 		CONTEXT OldContext;
@@ -524,8 +525,9 @@ int flash_selection_func(void* blah)
 		TimeIn = GetTimeCounter ();
 	}
 
-	(void) blah;  /* Satisfying compiler (unused parameter) */
-		return(0);
+	FinishTask (task);
+
+	return(0);
 }
 
 static void
@@ -547,7 +549,7 @@ InitMelee (PMELEE_STATE pMS)
 	r.corner.x = r.corner.y = 0;
 	RepairMeleeFrame (&r);
 	
-	pMS->flash_task = CreateThread (flash_selection_func, NULL, 2048,
+	pMS->flash_task = AssignTask (flash_selection_func, 2048,
 			"flash melee selection");
 }
 
@@ -1420,7 +1422,7 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 	if (pMS->flash_task)
 	{
 		SetSemaphore (GraphicsSem);
-		KillThread (pMS->flash_task);
+		Task_SetState (pMS->flash_task, TASK_EXIT);
 		ClearSemaphore (GraphicsSem);
 		pMS->flash_task = 0;
 	}
@@ -1522,7 +1524,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 					if (pMS->flash_task)
 					{
 						SetSemaphore (GraphicsSem);
-						KillThread (pMS->flash_task);
+						Task_SetState (pMS->flash_task, TASK_EXIT);
 						ClearSemaphore (GraphicsSem);
 						pMS->flash_task = 0;
 					}

@@ -25,7 +25,7 @@ CFG=Starcon2 - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=snCl.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "Starcon2 - Win32 Release"
@@ -45,12 +45,12 @@ RSC=rc.exe
 # ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "SOUNDMODULE_SDL" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
-BSC32=snBsc.exe
+BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=snLink.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nodefaultlib:"msvcrtd.lib" /nologo /subsystem:console /machine:I386 /out:"../../Content/Starcon2.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../Content/Starcon2.exe"
 
 !ELSEIF  "$(CFG)" == "Starcon2 - Win32 Debug"
 
@@ -69,12 +69,12 @@ LINK32=snLink.exe
 # ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "SOUNDMODULE_SDL" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
-BSC32=snBsc.exe
+BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo /o"Starcon2.bsc"
-LINK32=snLink.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nodefaultlib:"msvcrt.lib" /nologo /subsystem:console /debug /machine:I386 /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib smpeg.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -86,18 +86,6 @@ LINK32=snLink.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\starcon2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\port.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\port.h
-# End Source File
 # Begin Group "sc2code"
 
 # PROP Default_Filter ""
@@ -127,6 +115,66 @@ SOURCE=..\sc2code\libs\decomp\update.c
 # Begin Group "graphics"
 
 # PROP Default_Filter ""
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_blt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_funcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\opengl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\opengl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\primitives.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\primitives.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\boxint.c
@@ -134,6 +182,14 @@ SOURCE=..\sc2code\libs\graphics\boxint.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\clipline.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\cmap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\cmap.h
 # End Source File
 # Begin Source File
 
@@ -170,6 +226,14 @@ SOURCE=..\sc2code\libs\graphics\font.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\frame.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\gfx_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\gfx_common.h
 # End Source File
 # Begin Source File
 
@@ -215,86 +279,22 @@ SOURCE=..\sc2code\libs\graphics\resgfx.c
 
 SOURCE=..\sc2code\libs\graphics\stamp.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\gfx_common.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\gfx_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\cmap.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\cmap.h
-# End Source File
-# Begin Group "sdl"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\primitives.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\primitives.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\opengl.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\opengl.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\pure.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\pure.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\3do_blt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\3do_funcs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
-# End Source File
-# End Group
 # End Group
 # Begin Group "input"
 
 # PROP Default_Filter ""
+# Begin Group "sdl No. 1"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\input.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\sdl\input.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\input\inpintrn.h
@@ -307,19 +307,6 @@ SOURCE=..\sc2code\libs\input\input_common.c
 
 SOURCE=..\sc2code\libs\input\input_common.h
 # End Source File
-# Begin Group "sdl"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\input\sdl\input.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\input\sdl\input.h
-# End Source File
-# End Group
-
 # End Group
 # Begin Group "math"
 
@@ -392,6 +379,26 @@ SOURCE=..\sc2code\libs\resource\resintrn.h
 # Begin Group "sound"
 
 # PROP Default_Filter ""
+# Begin Group "sdl No. 2"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\modfuncs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\play.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\sound.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\trackplayer.c
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\fileinst.c
@@ -414,37 +421,16 @@ SOURCE=..\sc2code\libs\sound\sndintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\trackplayer.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\sound\sound_common.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\sound_common.h
 # End Source File
-# Begin Group "sdl"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\sdl\modfuncs.c
+SOURCE=..\sc2code\libs\sound\trackplayer.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\play.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\sound.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sdl\trackplayer.c
-# End Source File
-
-# End Group
 # End Group
 # Begin Group "strings"
 
@@ -481,15 +467,7 @@ SOURCE=..\sc2code\libs\video\vfileins.c
 # Begin Group "threads"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\threads\thrcommon.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\threads\thrcommon.h
-# End Source File
-# Begin Group "sdl"
+# Begin Group "sdl No. 3"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -501,19 +479,19 @@ SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.c
 SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\thrcommon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\threads\thrcommon.h
+# End Source File
 # End Group
 # Begin Group "time"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\time\timecommon.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\time\timecommon.h
-# End Source File
-# Begin Group "sdl"
+# Begin Group "sdl No. 4"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -525,6 +503,22 @@ SOURCE=..\sc2code\libs\time\sdl\sdltime.c
 SOURCE=..\sc2code\libs\time\sdl\sdltime.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\timecommon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\time\timecommon.h
+# End Source File
+# End Group
+# Begin Group "task"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\task\tasklib.c
+# End Source File
 # End Group
 # Begin Source File
 
@@ -556,6 +550,10 @@ SOURCE=..\sc2code\libs\memlib.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\misc.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\reslib.h
 # End Source File
 # Begin Source File
@@ -565,6 +563,10 @@ SOURCE=..\sc2code\libs\sndlib.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\strlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\tasklib.h
 # End Source File
 # Begin Source File
 
@@ -582,11 +584,6 @@ SOURCE=..\sc2code\libs\vargs.h
 
 SOURCE=..\sc2code\libs\vidlib.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\misc.h
-# End Source File
-
 # End Group
 # Begin Group "comm"
 
@@ -3065,6 +3062,18 @@ SOURCE=..\sc2code\weapon.c
 SOURCE=..\sc2code\weapon.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\port.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\port.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\starcon2.c
+# End Source File
 # End Group
 # End Target
 # End Project

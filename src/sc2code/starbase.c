@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/tasklib.h"
 
 PMENU_STATE pMenuState;
 
@@ -240,16 +241,17 @@ DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT which_slot,
 	}
 }
 
-int rotate_starbase(void* blah)
+int rotate_starbase(void* data)
 {
 	DWORD TimeIn;
 	STAMP s;
+	Task task = (Task) data;
 	
 	s.origin.x = s.origin.y = 0;
 s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 	s.frame = IncFrameIndex (pMenuState->CurFrame);
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		//CONTEXT OldContext;
 		
@@ -264,8 +266,8 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 		TimeIn = GetTimeCounter ();
 	}
 
-	(void) blah;  /* Satisfying compiler (unused parameter) */
-		return(0);
+	FinishTask (task);
+	return(0);
 }
 
 BOOLEAN
@@ -296,7 +298,7 @@ DoStarBase (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		if (pMS->flash_task)
 		{
-			KillThread (pMS->flash_task);
+			Task_SetState (pMS->flash_task, TASK_EXIT);
 			pMS->flash_task = 0;
 		}
 
@@ -329,7 +331,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 }
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
-		pMS->flash_task = CreateThread (rotate_starbase, NULL, 4096,
+		pMS->flash_task = AssignTask (rotate_starbase, 4096,
 				"rotate starbase");
 		ClearSemaphore (GraphicsSem);
 	}
@@ -341,7 +343,7 @@ ExitStarBase:
 		SetSemaphore (GraphicsSem);
 		if (pMS->flash_task)
 		{
-			KillThread (pMS->flash_task);
+			Task_SetState (pMS->flash_task, TASK_EXIT);
 			pMS->flash_task = 0;
 		}
 		DestroyDrawable (ReleaseDrawable (pMS->CurFrame));

@@ -59,7 +59,7 @@ typedef struct encounter_state
 		RESPONSE_FUNC response_func;
 	} response_list[MAX_RESPONSES];
 
-	Thread AnimTask;
+	Task AnimTask;
 
 	COUNT phrase_buf_index;
 	UNICODE phrase_buf[512];
@@ -361,18 +361,19 @@ static struct
 {
 	COLORMAPPTR CMapPtr;
 	SIZE Ticks;
-	Thread XFormTask;
+	Task XFormTask;
 } TaskControl;
 
 static BOOLEAN ColorChange;
 static BOOLEAN volatile XFormFlush;
 static COUNT volatile NumXFormTasks;
 
-int xform_PLUT_task(void* blah)
+int xform_PLUT_task(void* data)
 {
 	COLORMAPPTR CurMapPtr;
+	Task task = (Task) data;
 
-	while (TaskControl.XFormTask == 0)
+	while (TaskControl.XFormTask == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 	TaskControl.XFormTask = 0;
 	CurMapPtr = TaskControl.CMapPtr;
@@ -452,11 +453,12 @@ if (_varPLUTs)
 
 			ColorChange = TRUE;
 
-		} while (TTotal -= TDelta);
+		} while (TTotal -= TDelta && !Task_ReadState (task, TASK_EXIT));
 	}
 
 	--NumXFormTasks;
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+
+	FinishTask (task);
 	return(0);
 }
 
@@ -488,7 +490,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 		if ((TaskControl.Ticks = TimeInterval) <= 0)
 			TaskControl.Ticks = 1; /* prevent divide by zero and negative fade */
 		if (TimeInterval == 0 || (TaskControl.XFormTask =
-				CreateThread (xform_PLUT_task, NULL, 1024,
+				AssignTask (xform_PLUT_task, 1024,
 				"transform palette")) == 0)
 		{
 			SetColorMap (ColorMapPtr, TFB_COLORMAP_COMM);
@@ -676,7 +678,7 @@ UpdateSpeechGraphics (BOOLEAN Initialize)
 	SetContext (OldContext);
 }
 
-int ambient_anim_task(void* blah)
+int ambient_anim_task(void* data)
 {
 	SIZE TalkAlarm;
 	FRAME TalkFrame;
@@ -689,8 +691,9 @@ int ambient_anim_task(void* blah)
 	ANIMATION_DESCPTR ADPtr;
 	DWORD ActiveMask;
 DWORD LastOscillTime;
+	Task task = (Task) data;
 
-	while ((CommFrame = CommData.AlienFrame) == 0)
+	while ((CommFrame = CommData.AlienFrame) == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
 	SetSemaphore (GraphicsSem);
@@ -703,7 +706,7 @@ DWORD LastOscillTime;
 	TalkFrame = 0;
 	LastTime = GetTimeCounter ();
 LastOscillTime = LastTime;
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BOOLEAN Change, CanTalk;
 		DWORD CurTime, ElapsedTicks;
@@ -729,7 +732,7 @@ LastOscillTime = LastTime;
 		pBatch = &DisplayArray[MAX_ANIMATIONS + 1];
 		pSeq = &Sequencer[i];
 		ADPtr = &CommData.AlienAmbientArray[i];
-		while (i--)
+		while (i-- && !Task_ReadState (task, TASK_EXIT))
 		{
 			--ADPtr;
 			--pSeq;
@@ -1035,7 +1038,7 @@ if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
 		UnbatchGraphics ();
 		ClearSemaphore (GraphicsSem);
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }
 
@@ -1206,8 +1209,8 @@ UnbatchGraphics ();
 
 			TimeOut = GetTimeCounter () + (ONE_SECOND >> 1);
 /* if (CommData.NumAnimations) */
-				pCurInputState->AnimTask = CreateThread (ambient_anim_task,
-						NULL, 3072, "ambient animations");
+				pCurInputState->AnimTask = AssignTask (ambient_anim_task,
+						3072, "ambient animations");
 
 			ClearSemaphore (GraphicsSem);
 			SleepThreadUntil (TimeOut);
@@ -1378,7 +1381,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 
 	if (pES->AnimTask)
 	{
-		KillThread (pES->AnimTask);
+		Task_SetState (pES->AnimTask, TASK_EXIT);
 		pES->AnimTask = 0;
 	}
 	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);

@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/tasklib.h"
 
 void
 RepairSISBorder (void)
@@ -923,11 +924,11 @@ CountSISPieces (BYTE piece_type)
 	return (num_pieces);
 }
 
-static Thread flash_task;
+static Task flash_task;
 static RECT flash_rect;
 static FRAME flash_frame;
 
-int flash_rect_func(void *blah)
+int flash_rect_func(void *data)
 {
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
@@ -935,13 +936,14 @@ int flash_rect_func(void *blah)
 	SIZE strength, fstrength, incr;
 	/* Added by Michael: simple on-off flash right now */
 	BOOLEAN flash_on;
+	Task task = (Task)data;
 
 	fstrength = NORMAL_F_STRENGTH;
 	incr = 1;
 	strength = NORMAL_STRENGTH;
 	flash_on = 0;
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		CONTEXT OldContext;
 
@@ -1018,7 +1020,8 @@ int flash_rect_func(void *blah)
 		TimeIn = GetTimeCounter ();
 	}
 
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	flash_task = 0;
+	FinishTask (task);
 	return(0);
 }
 
@@ -1053,8 +1056,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.extent.width = 0;
 		if (flash_task)
 		{
-			KillThread (flash_task);
-			flash_task = 0;
+			Task_SetState (flash_task, TASK_EXIT);
 		}
 	}
 	else
@@ -1067,7 +1069,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 
 		if (flash_task == 0)
 		{
-			flash_task = CreateThread (flash_rect_func, NULL, 2048,
+			flash_task = AssignTask (flash_rect_func, 2048,
 					"flash rectangle");
 		}
 	}

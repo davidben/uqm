@@ -19,6 +19,8 @@
 #ifndef _MELEE_H
 #define _MELEE_H
 
+#include "libs/tasklib.h"
+
 enum
 {
 	MELEE_ANDROSYNTH,
@@ -89,7 +91,7 @@ typedef struct melee_state
 	TEAM_IMAGE TeamImage[NUM_SIDES];
 	COUNT star_bucks[NUM_SIDES];
 	COUNT CurIndex;
-	Thread flash_task;
+	Task flash_task;
 	TEAM_IMAGE FileList[MAX_VIS_TEAMS];
 	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
 } MELEE_STATE;

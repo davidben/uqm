@@ -19,14 +19,15 @@
 #include "starcon.h"
 
 int
-flash_ship_task(void *blah)
+flash_ship_task(void *data)
 {
 	DWORD TimeIn;
 	COLOR c;
+	Task task = (Task) data;
 
 	c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24);
 	TimeIn = GetTimeCounter ();
-	for (;;)
+	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		STAMP s;
 		SHIP_FRAGMENTPTR StarShipPtr;
@@ -57,7 +58,7 @@ flash_ship_task(void *blah)
 		SleepThreadUntil (TimeIn + 8);
 		TimeIn = GetTimeCounter ();
 	}
-	(void) blah;  /* Satisfying compiler (unused parameter) */
+	FinishTask (task);
 	return(0);
 }
 
@@ -167,7 +168,7 @@ RosterCleanup (PMENU_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		KillThread (pMS->flash_task);
+		Task_SetState (pMS->flash_task, TASK_EXIT);
 		pMS->flash_task = 0;
 	}
 
@@ -348,7 +349,7 @@ SelectSupport:
 		}
 
 		if (pMS->flash_task == 0)
-			pMS->flash_task = CreateThread (flash_ship_task, NULL, 2048,
+			pMS->flash_task = AssignTask (flash_ship_task, 2048,
 					"flash roster menu");
 	}
 
