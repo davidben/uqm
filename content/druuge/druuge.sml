@@ -1,0 +1,16 @@
+drus0001.pcx
+drus0002.pcx
+drus0003.pcx
+drus0004.pcx
+drus0005.pcx
+drus0006.pcx
+drus0007.pcx
+drus0008.pcx
+drus0009.pcx
+drus0010.pcx
+drus0011.pcx
+drus0012.pcx
+drus0013.pcx
+drus0014.pcx
+drus0015.pcx
+drus0016.pcx

@@ -1,0 +1,16 @@
+olds0001.pcx
+olds0002.pcx
+olds0003.pcx
+olds0004.pcx
+olds0005.pcx
+olds0006.pcx
+olds0007.pcx
+olds0008.pcx
+olds0009.pcx
+olds0010.pcx
+olds0011.pcx
+olds0012.pcx
+olds0013.pcx
+olds0014.pcx
+olds0015.pcx
+olds0016.pcx

@@ -1,0 +1,16 @@
+sups0001.pcx
+sups0002.pcx
+sups0003.pcx
+sups0004.pcx
+sups0005.pcx
+sups0006.pcx
+sups0007.pcx
+sups0008.pcx
+sups0009.pcx
+sups0010.pcx
+sups0011.pcx
+sups0012.pcx
+sups0013.pcx
+sups0014.pcx
+sups0015.pcx
+sups0016.pcx

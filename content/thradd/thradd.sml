@@ -1,0 +1,16 @@
+thrs0001.pcx
+thrs0002.pcx
+thrs0003.pcx
+thrs0004.pcx
+thrs0005.pcx
+thrs0006.pcx
+thrs0007.pcx
+thrs0008.pcx
+thrs0009.pcx
+thrs0010.pcx
+thrs0011.pcx
+thrs0012.pcx
+thrs0013.pcx
+thrs0014.pcx
+thrs0015.pcx
+thrs0016.pcx

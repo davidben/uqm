@@ -1,0 +1,16 @@
+shos0001.pcx
+shos0002.pcx
+shos0003.pcx
+shos0004.pcx
+shos0005.pcx
+shos0006.pcx
+shos0007.pcx
+shos0008.pcx
+shos0009.pcx
+shos0010.pcx
+shos0011.pcx
+shos0012.pcx
+shos0013.pcx
+shos0014.pcx
+shos0015.pcx
+shos0016.pcx

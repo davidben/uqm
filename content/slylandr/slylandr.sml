@@ -1,0 +1,16 @@
+slys0001.pcx
+slys0002.pcx
+slys0003.pcx
+slys0004.pcx
+slys0005.pcx
+slys0006.pcx
+slys0007.pcx
+slys0008.pcx
+slys0009.pcx
+slys0010.pcx
+slys0011.pcx
+slys0012.pcx
+slys0013.pcx
+slys0014.pcx
+slys0015.pcx
+slys0016.pcx

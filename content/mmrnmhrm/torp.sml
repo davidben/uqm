@@ -1,0 +1,16 @@
+tors0001.pcx
+tors0002.pcx
+tors0003.pcx
+tors0004.pcx
+tors0005.pcx
+tors0006.pcx
+tors0007.pcx
+tors0008.pcx
+tors0009.pcx
+tors0010.pcx
+tors0011.pcx
+tors0012.pcx
+tors0013.pcx
+tors0014.pcx
+tors0015.pcx
+tors0016.pcx

@@ -1,0 +1,16 @@
+mels0001.pcx
+mels0002.pcx
+mels0003.pcx
+mels0004.pcx
+mels0005.pcx
+mels0006.pcx
+mels0007.pcx
+mels0008.pcx
+mels0009.pcx
+mels0010.pcx
+mels0011.pcx
+mels0012.pcx
+mels0013.pcx
+mels0014.pcx
+mels0015.pcx
+mels0016.pcx

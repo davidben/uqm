@@ -1,0 +1,15 @@
+lass0001.pcx
+lass0002.pcx
+lass0003.pcx
+lass0004.pcx
+lass0005.pcx
+lass0006.pcx
+lass0007.pcx
+lass0008.pcx
+lass0009.pcx
+lass0010.pcx
+lass0011.pcx
+lass0012.pcx
+lass0013.pcx
+lass0014.pcx
+lass0015.pcx

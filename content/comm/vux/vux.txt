@@ -1,0 +1,522 @@
+#(ZEX_HELLO_1)	VUX000.wav
+Ah Human visitors! What a treat!
+I am Admiral ZEX. Please do not be frightened. Unlike the rest of my species, I... enjoy humans.
+You may know me by reputation, my leadership of VUX forces during the war with your Alliance.
+I assure you that this behavior, a sad necessity of those times, belies a much kinder, gentler being.
+Please be welcome! We can get to know one another... expand our interspecies relationship.
+But wait. How silly of me. You aren't here for polite repartee.
+You have come for my Shofixti Maidens.
+
+#(ZEX_HELLO_2)	VUX001.wav
+Why I am so blessed! My favorite friends, the humans, are back.
+Captain, it is good to see you again.
+You Humans are so interesting, so... beautiful.
+You know, I have many pictures of your species!
+I keep them on my walls to... inspire me.
+	
+#(ZEX_HELLO_3)	VUX002.wav
+Captain! You are back so soon!
+We had better be discreet (hee! hee!), or my countrymen will begin whispering about us.
+
+#(ZEX_HELLO_4)	VUX003.wav
+Luscious, robust human... I have eagerly awaited your return.
+
+#(FIGHT_OR_TRADE_1)	VUX004.wav         
+Captain! You escaped after all! How remarkable!
+
+#(FIGHT_OR_TRADE_2)	VUX005.wav         
+Human... we should be friends, not enemies!
+The scope of our relationship can grow as close as you wish.
+
+#(what_you_do_here)
+What are you doing here, Admiral ZEX?
+
+#(MY_MENAGERIE)	VUX006.wav
+Ah, such a good question! But you always were a bright species.
+I will explain.
+After the Great War, in which I played some small part
+the VUX high council, in recognition for my services
+granted me this planet, so that I might pursue my... hobby
+without disturbing the general VUX populace.
+I am a collector, you see.
+I have the finest menagerie of... beautiful... creatures in all space
+
+#(what_about_menagerie)
+A menagerie? Is this a collection of animals, like a zoo?
+
+#(NEED_NEW_CREATURE)	VUX007.wav
+Animals? Hee! Hee! Hee! Oh, no, Captain! Not mere animals!
+My menagerie contains only the most... beautiful... creatures in the galaxy!
+Each of my children, as I like to call them, has a wonderful set of traits
+which make them unique and special... especially to me!
+I have a complete variety of beasts from as far away as Procyon and Vega.
+No, this is not just some `zoo'!
+I have worked diligently for many years to craft my menagerie, to gradually improve it.
+	"Perhaps you can't tell, but I am rather proud of it!"
+Alas, there is one creature, one GORGEOUS animal which I do not yet possess.
+I would give almost ANYTHING for that creature, Captain.
+
+#(what_about_creature)
+If we went and got this little critter for you, would you give us the Shofixti Maidens?
+
+#(ABOUT_CREATURE)	VUX008.wav
+Hmmm... what an interesting proposal!
+I never would have thought of such a wonderful idea myself.
+You are a genius, Captain!
+In answer to your question, yes! I accept your offer.
+Deliver the creature to me, and I shall give you the Shofixti Maidens.
+I will even provide you with a clue to finding the creature's native planet!
+My source for this information is an ancient wildlife handbook
+written millenia ago by some unknown alien author. The pertinent passage goes as follows
+`... demise, It(!) basks in yellow light within the constellation Linch-Nas-Ploh.'
+We have translated `Linch-Nas-Ploh' to mean approximately
+`the long, thin creature who has swallowed the huge beast.'
+I am afraid this is all that I know.
+I hope it is sufficient.
+
+#(about_creature_again)
+Would you tell me again where I can find that creature you want so badly?
+
+#(CREATURE_AGAIN)	VUX009.wav
+Certainly, my smooth-skinned friend!
+My source for this information is an ancient wildlife handbook
+written millenia ago by some unknown alien author. The pertinent passage goes as follows
+`... demise, It(!) basks in yellow light within the constellation Linch-Nas-Ploh.'
+We have translated `Linch-Nas-Ploh' to mean approximately
+`the long, thin creature who has swallowed the huge beast.'
+I am afraid this is all that I know.
+I hope it is sufficient.
+
+
+#(i_have_beast)
+Commander ZEX, we have captured the hideous monster from Delta Lyncis. Let us make an exchange.
+  
+
+#(GIVE_BEAST)	VUX010.wav
+Ah, a most excellent piece of news! My chiton rasps and moistens with excitement!
+I have been looking forward to this for so long! Hee! Hee! Hee!
+My subordinates stand ready to receive the beast from your ship, Captain.
+Effect its transfer and then... we shall give you the Maidens you desire.
+
+#(ok_take_beast)
+Okay, the beast is ALL yours! But be careful, it's a killer!
+
+#(FOOL_AIEE0)	VUX011.wav
+Ah! My new child is now on board. Such a big one, isn't he!?...
+...and so frisky!
+I am delighted beyond words that you have given me the beast, Captain
+but
+I am afraid that there has been a slight change in our plans. Regrettable, but necessary.
+Oh, my beautiful, luscious human, I had thought that the hideous, violent monster you have just given me
+would complete my collection of Ugliness, my Menagerie of Monsters... I was wrong!
+YOU, my human love, are the most vile, the most fierce and wretched!
+My collection could never be complete without you. I need you, Captain
+but alas, I fear you will not give your consent willingly. Am I right?
+Therefore
+Sub-commander DAX, terminate communications... warm up my modified Intruder.
+Engage the Precursor warp nullifier. Hee! Hee! Hee!... prepare for battle!
+
+#(FOOL_AIEE1)	VUX012.wav
+Sub-commander? Why has my main console become inoperative?
+The transmit mode is locked!
+What do you mean the central system computer is damaged? How!?...
+...the Beast!?... Escaped!!
+No, Sub-Commander, this is impossible. It couldn't escape from our strongest containment system
+IT'S WHAT?!! Decks five and six?! Eleven Crewmen!!
+Sound the alarms, you fool! Where is it now?! Engineering, report!... Engineering?!
+Sub-Commander, seal Bulkhe-- Sub-Commander... are you listening to me? What are you staring at?
+PAY ATTENTION, SUB-COMMANDER! Give me a report on its posit-- WHAT ARE YOU STARING AT!...
+behind me?
+WH- Wh- what- wh- AIEEEEEEEE!!!!!.........
+
+#(why_trust_1)
+Ah, Commander ZEX, aren't you forgetting something? The Shofixti Maidens?
+
+#(TRUST_1)	VUX012.wav
+Oh yes, no problem. Even now my subordinates are bringing them up from the surface.
+So let's not waste time. Send that delightful beast over, immediately!
+
+#(why_trust_2)
+Look, we believe in 1 for 1 trades. We will transfer the beast when we see the Maidens.
+
+#(TRUST_2)	VUX013.wav
+Captain, Captain, we are both creatures of honor.
+If I say that the Shofixti Maidens are on their way up from the surface, then they are.
+You will have them shortly, accept my word... now please, Captain, the beast?
+
+#(why_trust_3)
+Now see here Zex! Humans and VUX have had a pretty stormy relationship. Why should we trust you?
+
+#(TRUST_3)	VUX014.wav
+Really, Captain! My honor is impugned!
+You have maligned me and I am deeply hurt.
+I thought we had built some trust between us, different though we may be
+but no, I perceive now the same bigotry and misunderstanding
+	"which brought our two species to war!"
+This was our chance to cement a good relationship between Human and VUX.
+With my influence, the High Council could easily have been swayed to view
+the Human cause in a more favorable light.
+
+
+#(why_dont_you_attack)
+Admiral Zex, why don't you attack us, as all other VUX have?
+
+#(LIKE_YOU)	VUX015.wav
+Because I like Humans, Captain. I respect and admire your species.
+I do not share the bigoted views of most of my people.
+
+#(why_like_me)
+Ah, Commander Zex? Why do you like us? We thought all VUX hated humans.
+
+#(LIKE_BECAUSE)	VUX016.wav
+No, No, not all VUX, Captain! Most... but not all.
+It is true that when the majority of my people view one of your species
+they are forced to regurgitate
+but there are those among us who have grown beyond such childishness to take a more liberal view.
+We, the few sophisticates, are not subject to the whims and fads of current fashion.
+Our likes and dislikes are strictly based on personal preference.
+We see the... beauty in you Humans. The value in a long-term... relationship.
+You are different, yes. But personally, I like difference.
+In fact, I ADORE it.
+Your physique is so wonderfully varied! Your multitudinous rigid appendages, your tiny double eyes
+your varied skin coloration, and the delightful patchwork of hair covering only parts of your bodies
+leaving other parts bare and smooth! Mmmmmm!
+I value your species, Captain. I see you as just `people'... like us VUX.
+
+#(are_you_a_pervert)
+Whoa, Commander Zex! This is just a bit too weird. Are you some kind of perv-- er... aesthete?
+
+#(CALL_ME_WHAT_YOU_WISH)	VUX017.wav
+You have talked with my VUX countrymen, haven't you?
+They are closed-minded fools... bigoted in all ways.
+Call me what you wish, Captain. I choose to view myself as, well
+simply open-minded... free to experience the full range of life's possibilities.
+The VUX rulers could not refuse my military genius, couldn't ignore the many victories I gave them.
+But they would not tolerate my behavior, accept my desires as natural
+so they sent me out here... a hero's exile! Where  I won't `poison' the minds of youth
+with my `bizarre' ideas and `perverted' lifestyle. Hmmph... bigoted fools.
+You see, Captain, we are not all that different, you and I.
+We are different from the majority of VUX, and so we, in VUX eyes, are both monsters.
+
+
+#(take_by_force)
+We require the Shofixti Maidens. We are prepared to use force if necessary.
+
+#(PRECURSOR_DEVICE)	VUX018.wav
+Hee! Hee! Hee! Oh, Captain, that would be such an unfortunate mistake
+a grave error on both our parts.
+We have so much to learn from each other, so much to give each other.
+It would be such a sad loss if we were to fall back to the mindless blasting and killing
+that has marred our two species' relationship up to this point.
+Admittedly, as THE acknowledged VUX military genius
+I would find it interesting to face your ONE powerful, alien starship
+with my huge personal fleet of Intruders, but oh! What a mistake it would be.
+...also... I think it only fair to warn you, Captain
+that in my campaigns I collected many interesting items.
+Amongst these treasures is a Precursor artifact, a warp nullification field
+that prevents nearby ships from making emergency Hyperspace maneuvers... from running away.
+I note by the scars on the rear of your vessel that you have made many such escapes.
+So you see, Captain, if you attack me, you will face the greatest military tactician in VUX history
+commanding an almost infinite number of enemy combat ships
+and the battle will be to the Death!
+Surely we can find an alternative.
+
+#(regardless)
+We will fight you regardless of your Precursor Artifact!
+
+#(THEN_FIGHT)	VUX019.wav
+Very well... to the Death!
+
+#(you_lied)
+You lied, Commander Zex!!! There was no `warp nullification field'! Cheater!
+
+#(YUP_LIED)	VUX020.wav
+Yes, I lied.
+Surely, if a small falsehood can prevent hundreds of unnecessary deaths, this is acceptable.
+Unfortunately, you saw through my falsehood and do doubt lives were lost.
+Let us cease this mindless aggression, before it is our undoing.
+
+#(kill_you)
+We have no fear of any of your `devices'. Now we kill you!
+
+#(FIGHT_AGAIN)	VUX021.wav
+Unfortunate. Dreary... and unfortunate.
+Captain, even without such a device, you must understand the overwhelming forces I have at my command!
+You cannot beat me here. It is impossible.
+But... if a fight is what you demand, so be it.
+
+#(bye_zex)
+Goodbye, Commander ZEX.
+
+#(GOODBYE_ZEX)	VUX022.wav
+Goodbye, beautiful human. I hope we can meet someday as friends... perhaps even more.
+
+
+#(HOMEWORLD_HELLO_1)	VUX023.wav
+Welcome to the end of your life, courtesy of VUX technology.
+Our infinite supply of Intruder vessels are even now locking their vaporizers onto your position
+and we shall end your painful, grotesque existence for you as soon as possible.
+In the meantime, here is a little music...
+
+#(HOMEWORLD_HELLO_2)	VUX024.wav
+Hello again.  We trust you are enjoying trespassing in VUX space
+and look forward to removing you from existence at our earliest possible convenience.
+If you believe you can fight your way past our invincible forces to our surface, you are correct.
+Some ash and a few wisps of pungent vapor are sure to make it at least that far.
+Our special today is particle fragmentation!
+So if you will kindly open your feeding orifice and start screaming, we will begin.
+
+#(HOMEWORLD_HELLO_3)	VUX025.wav
+Welcome back to total annihilation, where, as they say
+once is silatious, twice is phlagrant melons
+but the third time is when it really hurts.
+Please stay seated until your vessel starts smoking
+then feel free to dash your head painfully against the floor.
+
+#(HOMEWORLD_HELLO_4)	VUX026.wav
+Congratulations for exhausting the VUX vocabulary of greetings to despicable life-forms.
+May we take this opportunity to lock our femoral scrapers onto your ship
+and to wish you an unpleasant afterlife.
+
+#(SPACE_HELLO_1)	VUX027.wav
+Greetings from VUX!... the last word in life form destruction!
+To gain an intimate knowledge of our engines of war
+simply place both hands over your eyes and count to three.
+
+#(SPACE_HELLO_2)	VUX028.wav
+Salutations, and may your sense of self-preservation always be so dim.
+As our Intruders surround your vessel, you may care to raise both hands into the air above you
+and practice the ancient chant of the prancing oowee master, ZEN DUX, which begins...
+`AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHH!!!'
+
+#(SPACE_HELLO_3)	VUX029.wav
+This is VUX Commander YAX.  On behalf of the team here
+I would like to say how very much we have all enjoyed taunting you
+and to congratulate you on plumbing the limits of VUX courtesy
+which you have now exhausted. Therefore, let me just say
+Die, you two-eyed loathsome faceless slug!
+
+#(SPACE_HELLO_4)	VUX030.wav
+Welcome back. All our coherent destructors are currently off-line
+but if you'd care to hold your present course and speed
+one will be free to annihilate you shortly.
+
+#(kill_you_squids_1)
+You grotesque squids! We will kill you for your insolence!
+
+#(kill_you_squids_2)
+You are the most vile, repulsive creature I've ever seen!
+
+#(kill_you_squids_3)
+I must say, your rating on the vomit-meter would be AT LEAST ninety six.
+
+#(kill_you_squids_4)
+You bloated bag of protoplasm! You worm!
+
+#(WE_FIGHT)	VUX031.wav
+Watch everybody! We're going to kill the repulsive little monster now!
+
+#(why_so_mean)
+Why are you so hostile toward our species?
+
+#(URQUAN_SLAVES)	VUX032.wav
+Augh! You are even uglier than I had thought possible!
+Can't you see you are making me sick?
+Please, foul creature, turn your head, or better yet, put a sack over it.
+Never mind, I have adjusted my display so it is dim enough to be tolerable.
+In answer to your question, our response is simple.
+We must attack you because our masters the Ur-Quan wish it so!
+Now if you don't mind, stop nodding your head like that.
+We VUX do not share this range of motion
+and it appears as though your neck is broken
+and you are a jabbering corpse. Ugh.
+
+#(deeper_reason)
+Is there another reason you hate us? Come on, tell me the truth.
+
+#(OLD_INSULT)	VUX033.wav
+Do we need another reason?
+Ah! I understand. You refer to the First Human Encounter
+the Insult!
+What more can be said? On that day, your species proved its true crass nature.
+You see, we VUX pride ourselves on our open-mindedness
+our ability to see beyond even the most bizarre and disgusting face like yours
+but that insult was so low, so totally reprehensible that we will never forget it.
+Yes, to be honest, that event pretty much fixed our attitude setting at `ABHOR'.
+I suspect we will despise you forever.
+	
+#(if_we_apologize)
+What if we apologized? Could we talk truce then?
+
+#(PROBABLY_NOT)	VUX034.wav
+Er... probably not. You see, although we VUX are highly reasonable beings
+who would never judge a race solely on its (urk!) appearance
+the magnitude of your Captain Rand's insult was such that we will probably never forgive your species.
+
+#(try_any_way)
+Well, I'll try anyway. The People of Earth Hereby Apologize To The VUX!
+
+#(NOPE)	VUX035.wav
+Nope. I didn't think that would be sufficient. It lacked conviction.
+Sorry, but I'm afraid we'll just have to kill you now.
+
+#(APOLOGIZE_IN_SPACE)	VUX036.wav
+Because the Human named Rand offended one of our starship commanders
+apologizing here at the Homeworld is useless.
+Besides, we have decided that you are just too disgusting to live
+so we have decided to vaporize you.
+
+#(apology_1)
+	"Let's try that again. We, The People Of Earth, Really Truly Apologize For "
+The Stupid Insult Made By Captain Rand!
+
+#(NOT_ACCEPTED_1)	VUX037.wav
+No. That didn't cut it either.
+
+#(apology_2)
+You were RIGHT!. We WERE wrong. We see it all so clearly now!
+
+#(NOT_ACCEPTED_2)	VUX038.wav
+I don't think your heart is in it.
+
+#(apology_3)
+Pleeeeeeeeease forgive us!
+
+#(NOT_ACCEPTED_3)	VUX039.wav
+You said that just because you want stuff from us VUX. You didn't really mean it.
+
+#(apology_4)
+We - are - sorry! May a thousand insects sting my softest parts if I lie!
+
+#(NOT_ACCEPTED_4)	VUX040.wav
+It's pointless. Why even bother trying again?
+
+#(apology_5)
+We would like to present a petition of 1 million signatures! Each one says, `I'm sorry!'
+
+#(NOT_ACCEPTED_5)	VUX041.wav
+A good try, Captain... but not good enough.
+
+#(apology_6)
+Wrong? Yes we were wrong. Oh, so wrong! Boy, were we wrong! The wrongest.
+
+#(NOT_ACCEPTED_6)	VUX042.wav
+We detect a hint of genuine regret, but not enough to forgive you.
+
+#(apology_7)
+(Let's try reverse psychology) Listen VUX! You are right! We cannot ever atone for Rand's cruel barb!
+
+#(NOT_ACCEPTED_7)	VUX043.wav
+Oh? I was just thinking that maybe we should consider forgiving you
+but I guess you're right.
+There's no going back.
+
+#(apology_8)
+If sorrow were a pebble, our remorse would be... would be!... a great big boulder!
+
+#(NOT_ACCEPTED_8)	VUX044.wav
+Hey! That was pretty good!
+I could sense the true sadness in your voice for your species' past stupidity.
+Unfortunately, it was not good enough.
+
+#(apology_9)
+If there is ANYTHING we can do to gain your forgiveness, we shall do it a thousand times.
+
+#(NOT_ACCEPTED_9)	VUX045.wav
+Um..., er... that was about as good as it gets, I think
+but we don't accept it because... because... well, just BECAUSE!
+
+#(apology_10)
+Please, for the love of reason. Heed these words: We, the People of Earth Apologize To The VUX.
+
+#(TRUTH)	VUX046.wav
+AIEEE! Human! You have hounded and hounded and hounded us with your pitiful apologies!
+It's driving us crazy! STOP! Please STOP!
+We give up. We accept! We accept! We will no longer hold Rand's insult against your species.
+You are forgiven for all eternity, just stop apologizing!
+But now you have forced us to reveal our REAL reason for hating you humans
+an embarrassing reason with no acceptable justification, but nonetheless undeniable!
+Human! You are SOOO ugly, SOOO hideous to us that we will NEVER be able to find peace with your species!
+Whenever we see your kind, we just want to kick you!... stomp on you!... squish you!...
+...vaporize your ugly faces from the entire universe!
+We know its unreasonable! We know that you had no choice about how you look!
+We know that it is cruel fate that the Creator made you appear like putrid excretion
+but WE JUST CAN'T HANDLE IT!
+Why right now, because of your insufferable wretchedness
+I am faced with a grotesque choice: keep talking to you and regurgitate uncontrollably
+or break off communication and attack your vessel...
+
+#(whats_up_hostile)
+VUX. We seek to learn more about you. Maybe then we can see eye to... eyes.
+
+#(GENERAL_INFO_HOSTILE_1)	VUX047.wav
+Look, vomitous alien. If you want to talk to one of our species
+without making them sick
+why don't you go see Admiral ZEX at his world in Alpha Cerenkov.
+He (urp!) likes humans.
+
+#(GENERAL_INFO_HOSTILE_2)	VUX048.wav
+Look at those yellowish-white hard things in your mouth!
+How do you keep from biting off that pulpy organ... Gross!
+
+#(GENERAL_INFO_HOSTILE_3)	VUX049.wav
+Yuck! Don't show your tongue like that. It makes me sick.
+
+#(GENERAL_INFO_HOSTILE_4)	VUX050.wav
+Forget it, human. We can't think straight when we have to look at you.
+If you're lonely, go to Alpha Cerenkov and talk with that pervert, Admiral ZEX.
+
+#(cant_we_be_friends_1)
+Why can't we be friends? I like YOU.
+
+#(NEVER_UGLY_HUMANS_1)	VUX051.wav
+I listened. I heard. I know you like ME.
+But the problem is, I DESPISE you!
+Which is why I am attacking, in case you were wondering.
+
+#(cant_we_be_friends_2)
+We have too much to gain through cooperation. Just try.
+
+#(NEVER_UGLY_HUMANS_2)	VUX052.wav
+Okay, I'll try to like you.
+I'm really trying.
+Naw! This is never going to work.
+Every time I try to think of your friendly smiling face
+(urp!) I want to blow chunks.
+I have a better idea. I'll just kill you.
+
+#(cant_we_be_friends_3)
+Didn't anyone ever tell you, `you can't judge a book by its cover?'
+
+#(NEVER_UGLY_HUMANS_3)	VUX053.wav
+Do you want to know how ugly you are to us VUX? I'll tell you.
+You humans are SO ugly, that I get my kids to behave by holding a picture of you behind my back
+and I tell the kids that if they aren't good, I'll show it to them!
+I am such a bad father (sob!) I must destroy you... for the children!
+
+#(cant_we_be_friends_4)
+You are just a bunch of bigots. I thought you were better than that.
+
+#(NEVER_UGLY_HUMANS_4)	VUX054.wav
+This IS embarrassing. We pride ourselves on being rational!
+But you are so disgusting that we feel we just HAVE to kill you!
+Like right now!
+
+#(bye_hostile_space)
+Well, THIS has been useless. Goodbye.
+
+#(GOODBYE_AND_DIE_HOSTILE_SPACE_1)	VUX055.wav
+Human, based upon our commitment to the Ur-Quan
+and your general disgusting demeanor, we have decided to blow you to bits.
+
+#(GOODBYE_AND_DIE_HOSTILE_SPACE_2)	VUX056.wav
+Wait! I have one last thing to say
+Die!
+
+#(GOODBYE_AND_DIE_HOSTILE_SPACE_3)	VUX057.wav
+For the good of the whole, I will now erase your putrid presence.
+
+#(GOODBYE_AND_DIE_HOSTILE_SPACE_4)	VUX058.wav
+We have no choice. You are too wretched. We shall eliminate you.
+
+

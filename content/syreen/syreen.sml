@@ -1,0 +1,16 @@
+syrs0001.pcx
+syrs0002.pcx
+syrs0003.pcx
+syrs0004.pcx
+syrs0005.pcx
+syrs0006.pcx
+syrs0007.pcx
+syrs0008.pcx
+syrs0009.pcx
+syrs0010.pcx
+syrs0011.pcx
+syrs0012.pcx
+syrs0013.pcx
+syrs0014.pcx
+syrs0015.pcx
+syrs0016.pcx

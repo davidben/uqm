@@ -1,0 +1,16 @@
+dags0001.pcx
+dags0002.pcx
+dags0003.pcx
+dags0004.pcx
+dags0005.pcx
+dags0006.pcx
+dags0007.pcx
+dags0008.pcx
+dags0009.pcx
+dags0010.pcx
+dags0011.pcx
+dags0012.pcx
+dags0013.pcx
+dags0014.pcx
+dags0015.pcx
+dags0016.pcx

@@ -1,0 +1,16 @@
+mycs0001.pcx
+mycs0002.pcx
+mycs0003.pcx
+mycs0004.pcx
+mycs0005.pcx
+mycs0006.pcx
+mycs0007.pcx
+mycs0008.pcx
+mycs0009.pcx
+mycs0010.pcx
+mycs0011.pcx
+mycs0012.pcx
+mycs0013.pcx
+mycs0014.pcx
+mycs0015.pcx
+mycs0016.pcx

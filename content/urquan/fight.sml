@@ -1,0 +1,16 @@
+figs0001.pcx
+figs0002.pcx
+figs0003.pcx
+figs0004.pcx
+figs0005.pcx
+figs0006.pcx
+figs0007.pcx
+figs0008.pcx
+figs0009.pcx
+figs0010.pcx
+figs0011.pcx
+figs0012.pcx
+figs0013.pcx
+figs0014.pcx
+figs0015.pcx
+figs0016.pcx
