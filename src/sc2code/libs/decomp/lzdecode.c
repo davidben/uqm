@@ -292,7 +292,7 @@ static const BYTE d_len[256] =
 }
 
 COUNT
-cread (PVOID buf, COUNT size, COUNT count, register PLZHCODE_DESC
+cread (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
 		lpCodeDesc)
 {
 	COUNT r, j, i;

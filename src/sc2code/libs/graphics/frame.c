@@ -97,7 +97,7 @@ ClearBackGround (PRECT pClipRect)
 }
 
 void
-DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
+DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, 
 		BATCH_FLAGS BatchFlags)
 {
 	RECT ValidRect;
@@ -107,7 +107,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 	{
 		COUNT CurIndex;
 		PRIM_LINKS OldLinks;
-		register PPRIMITIVE lpPrim;
+		PPRIMITIVE lpPrim;
 
 		BatchFlags &= BATCH_SINGLE
 				| BATCH_BUILD_PAGE
@@ -139,7 +139,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 
 		for (; CurIndex != END_OF_LIST; CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
 		{
-			register GRAPHICS_PRIM PrimType;
+			GRAPHICS_PRIM PrimType;
 			PPRIMITIVE lpWorkPrim;
 			RECT ClipRect;
 			TFB_Palette color;

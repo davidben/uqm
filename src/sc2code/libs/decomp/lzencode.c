@@ -113,7 +113,7 @@ InsertNode (SWORD r)
 
 		i = F;
 		{
-			register SWORD _r, _p;
+			SWORD _r, _p;
 
 			_r = r;
 			_p = p;
@@ -375,7 +375,7 @@ _encode_cleanup (void)
 }
 
 COUNT
-cwrite (PVOID buf, COUNT size, COUNT count, register PLZHCODE_DESC
+cwrite (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
 		lpCodeDesc)
 {
 	UWORD r, s, last_match_length;

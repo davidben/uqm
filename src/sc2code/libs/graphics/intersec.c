@@ -23,8 +23,8 @@ frame_intersect (PINTERSECT_CONTROL pControl0, PRECT pr0,
 		PINTERSECT_CONTROL pControl1, PRECT pr1, TIME_VALUE t0,
 		TIME_VALUE t1)
 {
-	register SIZE time_error0, time_error1;
-	register SIZE cycle0, cycle1;
+	SIZE time_error0, time_error1;
+	SIZE cycle0, cycle1;
 	SIZE dx_0, dy_0, dx_1, dy_1;
 	SIZE xincr0, yincr0, xincr1, yincr1;
 	SIZE xerror0, xerror1, yerror0, yerror1;
@@ -229,8 +229,8 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 		PINTERSECT_CONTROL pControl1, TIME_VALUE
 		max_time_val)
 {
-	register SIZE dy;
-	register SIZE time_y_0, time_y_1;
+	SIZE dy;
+	SIZE time_y_0, time_y_1;
 	RECT r0, r1;
 	FRAMEPTR FramePtr0, FramePtr1;
 
@@ -270,8 +270,8 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 			|| (time_y_0 > 0 && dy >= time_y_0)
 			|| (time_y_1 < 0 && dy <= time_y_1))
 	{
-		register SIZE dx;
-		register SIZE time_x_0, time_x_1;
+		SIZE dx;
+		SIZE time_x_0, time_x_1;
 
 		dx = r1.corner.x - r0.corner.x;
 		time_x_0 = dx - GetFrameWidth (FramePtr0) + 1;

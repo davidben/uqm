@@ -1,3 +1,6 @@
+Changes towards version 0.4:
+- Obsolete "register" keywords removed -Michael
+
 Changes towards version 0.3:
 - Dirty hack to avoid a warning about the "ignored.key" hack - Svdb
 - Typo 'natually' fixed in Arilou speech - SvdB

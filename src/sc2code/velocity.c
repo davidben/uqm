@@ -52,11 +52,11 @@ GetNextVelocityComponents (VELOCITYPTR velocityptr, PSIZE pdx, PSIZE pdy,
 }
 
 void
-SetVelocityVector (register VELOCITYPTR velocityptr, register SIZE
+SetVelocityVector (VELOCITYPTR velocityptr, SIZE
 		magnitude, COUNT facing)
 {
-	register COUNT angle;
-	register SIZE dx, dy;
+	COUNT angle;
+	SIZE dx, dy;
 
 	angle = velocityptr->TravelAngle =
 			FACING_TO_ANGLE (NORMALIZE_FACING (facing));
@@ -94,8 +94,7 @@ SetVelocityVector (register VELOCITYPTR velocityptr, register SIZE
 }
 
 void
-SetVelocityComponents (register VELOCITYPTR velocityptr, register SIZE
-		dx, register SIZE dy)
+SetVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE dy)
 {
 	COUNT angle;
 

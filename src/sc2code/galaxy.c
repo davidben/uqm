@@ -94,13 +94,13 @@ SortStarBlock (PSTAR_BLOCK pStarBlock)
 }
 
 static void
-WrapStarBlock (SIZE plane, register SIZE dx, register SIZE dy)
+WrapStarBlock (SIZE plane, SIZE dx, SIZE dy)
 {
-	register COUNT i;
-	register PPOINT ppt;
-	register SIZE offs_y;
-	register COUNT num_stars;
-	register PSTAR_BLOCK pStarBlock;
+	COUNT i;
+	PPOINT ppt;
+	SIZE offs_y;
+	COUNT num_stars;
+	PSTAR_BLOCK pStarBlock;
 
 	pStarBlock = &StarBlock[plane];
 
@@ -109,7 +109,7 @@ WrapStarBlock (SIZE plane, register SIZE dx, register SIZE dy)
 	num_stars = pStarBlock->num_stars;
 	if (dy < 0)
 	{
-		register COUNT first;
+		COUNT first;
 
 		first = i;
 
@@ -159,7 +159,7 @@ WrapStarBlock (SIZE plane, register SIZE dx, register SIZE dy)
 	}
 	else
 	{
-		register COUNT last;
+		COUNT last;
 
 		--ppt;
 		if (i-- == 0)
@@ -277,19 +277,19 @@ InitGalaxy (void)
 }
 
 void
-MoveGalaxy (VIEW_STATE view_state, register SIZE dx, register SIZE dy)
+MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 {
-	register PPRIMITIVE pprim;
+	PPRIMITIVE pprim;
 
 	if (view_state != VIEW_STABLE)
 	{
 #ifdef OLD_ZOOM
-		register BYTE reduction;
+		BYTE reduction;
 #else
-		register COUNT reduction;
+		COUNT reduction;
 #endif
-		register COUNT i;
-		register PPOINT ppt;
+		COUNT i;
+		PPOINT ppt;
 
 #ifdef OLD_ZOOM
 		reduction = GLOBAL (cur_state);

@@ -697,12 +697,12 @@ ZoomSystem (void)
 }
 
 static UWORD
-flagship_inertial_thrust (register COUNT CurrentAngle)
+flagship_inertial_thrust (COUNT CurrentAngle)
 {
 	BYTE max_speed;
 	SIZE cur_delta_x, cur_delta_y;
-	register COUNT TravelAngle;
-	register VELOCITYPTR VelocityPtr;
+	COUNT TravelAngle;
+	VELOCITYPTR VelocityPtr;
 
 	max_speed = pSolarSysState->max_ship_speed;
 	VelocityPtr = &GLOBAL (velocity);
@@ -714,7 +714,7 @@ flagship_inertial_thrust (register COUNT CurrentAngle)
 		return (SHIP_AT_MAX_SPEED);
 	else
 	{
-		register SIZE delta_x, delta_y;
+		SIZE delta_x, delta_y;
 		DWORD desired_speed;
 
 		delta_x = cur_delta_x

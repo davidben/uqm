@@ -36,9 +36,9 @@ animation_preprocess (PELEMENT ElementPtr)
 UWORD
 inertial_thrust (ELEMENTPTR ElementPtr)
 {
-	register COUNT CurrentAngle, TravelAngle;
+	COUNT CurrentAngle, TravelAngle;
 	COUNT max_thrust, thrust_increment;
-	register VELOCITYPTR VelocityPtr;
+	VELOCITYPTR VelocityPtr;
 	STARSHIPPTR StarShipPtr;
 
 	VelocityPtr = &ElementPtr->velocity;
@@ -62,7 +62,7 @@ inertial_thrust (ELEMENTPTR ElementPtr)
 				& (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED));
 	else
 	{
-		register SIZE delta_x, delta_y;
+		SIZE delta_x, delta_y;
 		SIZE cur_delta_x, cur_delta_y;
 		DWORD desired_speed, max_speed;
 
@@ -130,9 +130,9 @@ inertial_thrust (ELEMENTPTR ElementPtr)
 }
 
 void
-ship_preprocess (register PELEMENT ElementPtr)
+ship_preprocess (PELEMENT ElementPtr)
 {
-	register ELEMENT_FLAGS cur_status_flags;
+	ELEMENT_FLAGS cur_status_flags;
 	STARSHIPPTR StarShipPtr;
 	RACE_DESCPTR RDPtr;
 
@@ -273,8 +273,7 @@ ship_preprocess (register PELEMENT ElementPtr)
 }
 
 void
-ship_postprocess (register
-		PELEMENT ElementPtr)
+ship_postprocess (PELEMENT ElementPtr)
 {
 	STARSHIPPTR StarShipPtr;
 	RACE_DESCPTR RDPtr;

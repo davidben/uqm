@@ -121,7 +121,7 @@ GetContextFontLeading (PSIZE pheight)
 }
 
 BOOLEAN
-TextRect (PTEXT lpText, register PRECT pRect, PBYTE pdelta)
+TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 {
 	COUNT num_chars;
 	FONTPTR FontPtr;
@@ -158,7 +158,7 @@ TextRect (PTEXT lpText, register PRECT pRect, PBYTE pdelta)
 			next_ch -= FIRST_CHAR;
 			if (ch < MAX_CHARS && GetFrameWidth (&FontPtr->CharDesc[ch]))
 			{
-				register COORD y;
+				COORD y;
 
 				y = -(FontPtr->CharDesc[ch]).HotSpot.y;
 				if (y < top_y)

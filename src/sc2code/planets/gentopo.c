@@ -38,7 +38,7 @@ DeltaTopography (COUNT num_iterations, PSBYTE DepthArray, PRECT pRect,
 		SIZE d;
 		COUNT h, w1, w2;
 		DWORD rand_val;
-		register PSBYTE lpDst;
+		PSBYTE lpDst;
 
 		depth_delta = ((((SIZE)TFB_Random () & 1) << 1) - 1) * depth_delta;
 

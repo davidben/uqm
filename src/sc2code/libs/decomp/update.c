@@ -71,7 +71,7 @@ reconst (void)
 void
 _update (COUNT c)
 {
-	register PLZHCODE_DESC lpCD;
+	PLZHCODE_DESC lpCD;
 
 	if ((lpCD = _lpCurCodeDesc)->freq[R] == MAX_FREQ)
 		reconst ();

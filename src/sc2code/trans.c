@@ -89,7 +89,7 @@ SIZE sinetab[] =
 COUNT
 ARCTAN (SIZE delta_x, SIZE delta_y)
 {
-	register SIZE v1, v2;
+	SIZE v1, v2;
 	static COUNT atantab[] =
 	{
 		0,

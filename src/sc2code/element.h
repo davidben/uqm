@@ -194,17 +194,17 @@ extern void FreeKernel (void);
 extern void InitDisplayList (void);
 
 extern void InitGalaxy (void);
-extern void MoveGalaxy (VIEW_STATE view_state, register
-		SIZE dx, register SIZE dy);
+extern void MoveGalaxy (VIEW_STATE view_state, 
+		SIZE dx, SIZE dy);
 extern void ship_preprocess (PELEMENT ElementPtr);
-extern void ship_postprocess (register PELEMENT
+extern void ship_postprocess (PELEMENT
 		ElementPtr);
 extern void ship_death (PELEMENT ShipPtr);
 extern BOOLEAN hyper_transition (PELEMENT ElementPtr);
 
 extern BOOLEAN CalculateGravity (PELEMENT ElementPtr);
 extern UWORD inertial_thrust (ELEMENTPTR ElementPtr);
-extern void SetUpElement (register ELEMENTPTR
+extern void SetUpElement (ELEMENTPTR
 		ElementPtr);
 
 extern void BattleSong (BOOLEAN DoPlay);

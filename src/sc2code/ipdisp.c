@@ -86,7 +86,7 @@ ip_group_preprocess (PELEMENT ElementPtr)
 	SIZE radius;
 	POINT dest_pt;
 	SIZE vdx, vdy;
-	register ELEMENTPTR EPtr;
+	ELEMENTPTR EPtr;
 	SHIP_FRAGMENTPTR StarShipPtr;
 
 	EPtr = (ELEMENTPTR)ElementPtr;

@@ -314,7 +314,7 @@ shofixti_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 			StarShipPtr->ship_input_state &= ~SPECIAL;
 		else
 		{
-			register PEVALUATE_DESC lpWeaponEvalDesc, lpShipEvalDesc;
+			PEVALUATE_DESC lpWeaponEvalDesc, lpShipEvalDesc;
 
 			lpWeaponEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 			lpShipEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];

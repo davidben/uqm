@@ -137,7 +137,7 @@ RenderTopography (BOOLEAN Reconstruct)
 		POINT pt;
 		PLANDATAPTR PlanDataPtr;
 		PRIMITIVE BatchArray[NUM_BATCH_POINTS];
-		register PPRIMITIVE pBatch;
+		PPRIMITIVE pBatch;
 		PBYTE lpDst, xlat_tab, cbase;
 		HOT_SPOT OldHot;
 		RECT ClipRect;
@@ -678,14 +678,14 @@ static void
 ExpandMap (PSBYTE DepthArray)
 {
 	BYTE i, j;
-	register PSBYTE lpSrc, lpDst;
+	PSBYTE lpSrc, lpDst;
 
 	lpSrc = &DepthArray[(MAP_WIDTH >> 1) * ((MAP_HEIGHT >> 1) + 1) - 1];
 	lpDst = &DepthArray[MAP_WIDTH * MAP_HEIGHT - 1];
 	i = (MAP_HEIGHT >> 1) + 1;
 	do
 	{
-		register SBYTE lf, rt;
+		SBYTE lf, rt;
 
 		rt = lpSrc[-(MAP_WIDTH >> 1) + 1];
 		lf = *lpSrc--;
@@ -708,7 +708,7 @@ ExpandMap (PSBYTE DepthArray)
 	i = MAP_HEIGHT >> 1;
 	do
 	{
-		register SBYTE top, bot;
+		SBYTE top, bot;
 
 		j = MAP_WIDTH;
 		do
@@ -729,7 +729,7 @@ static void
 DitherMap (PSBYTE DepthArray)
 {
 	COUNT i;
-	register PSBYTE lpDst;
+	PSBYTE lpDst;
 
 	i = (MAP_WIDTH * MAP_HEIGHT) >> 2;
 	lpDst = DepthArray;
@@ -947,7 +947,7 @@ MakeStorms (COUNT storm_count, PSBYTE DepthArray)
 #define MAX_STORMS 8
 	COUNT i;
 	RECT storm_r[MAX_STORMS];
-	register PRECT pstorm_r;
+	PRECT pstorm_r;
 
 	pstorm_r = &storm_r[i = storm_count];
 	while (i--)
@@ -1142,7 +1142,7 @@ ValidateMap (PSBYTE DepthArray)
 	BYTE pixel_count[2], lb[2];
 	SBYTE last_byte;
 	COUNT i;
-	register PSBYTE lpDst;
+	PSBYTE lpDst;
 
 	i = MAP_WIDTH - 1;
 	lpDst = DepthArray;

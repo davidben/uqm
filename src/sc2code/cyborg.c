@@ -22,8 +22,8 @@ COUNT
 PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
 		max_turns, COUNT margin_of_error)
 {
-	register SIZE dy;
-	register SIZE time_y_0, time_y_1;
+	SIZE dy;
+	SIZE time_y_0, time_y_1;
 	POINT dst[2];
 	RECT r0, r1;
 	SIZE dx_0, dy_0, dx_1, dy_1;
@@ -89,8 +89,8 @@ PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
 			|| (time_y_0 > 0 && dy >= time_y_0)
 			|| (time_y_1 < 0 && dy <= time_y_1))
 	{
-		register SIZE dx;
-		register SIZE time_x_0, time_x_1;
+		SIZE dx;
+		SIZE time_x_0, time_x_1;
 
 		if (margin_of_error)
 		{

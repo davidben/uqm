@@ -1919,7 +1919,7 @@ mixSDL_GetResampledInt_cubic (mixSDL_Source *src, bool left)
 static __inline__ sint32
 mixSDL_GetConvSample (uint8 **psrc, uint32 bpc, uint32 flags)
 {
-	register sint32 samp;
+	sint32 samp;
 	
 	samp = mixSDL_GetSampleExt (*psrc, bpc);
 	*psrc += bpc;
@@ -1980,7 +1980,7 @@ mixSDL_ResampleFlat (mixSDL_Convertion *conv)
 
 	for (; samples; samples--)
 	{
-		register sint32 samp;
+		sint32 samp;
 
 		samp = mixSDL_GetConvSample (&src, srcbpc, flags);
 		mixSDL_PutConvSample (&dst, dstbpc, flags, samp);

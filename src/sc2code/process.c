@@ -95,7 +95,7 @@ FreeElement (HELEMENT hElement)
 }
 
 void
-SetUpElement (register ELEMENTPTR ElementPtr)
+SetUpElement (ELEMENTPTR ElementPtr)
 {
 	ElementPtr->next = ElementPtr->current;
 	if (CollidingElement (ElementPtr))
@@ -107,9 +107,9 @@ SetUpElement (register ELEMENTPTR ElementPtr)
 }
 
 static void
-PreProcess (register ELEMENTPTR ElementPtr)
+PreProcess (ELEMENTPTR ElementPtr)
 {
-	register ELEMENT_FLAGS state_flags;
+	ELEMENT_FLAGS state_flags;
 
 	if (ElementPtr->life_span == 0)
 	{
@@ -168,7 +168,7 @@ PreProcess (register ELEMENTPTR ElementPtr)
 }
 
 static void
-PostProcess (register ELEMENTPTR ElementPtr)
+PostProcess (ELEMENTPTR ElementPtr)
 {
 	if (ElementPtr->postprocess_func)
 		(*ElementPtr->postprocess_func) (ElementPtr);
@@ -264,11 +264,11 @@ CalcReduction (SIZE dx, SIZE dy)
 
 #ifdef OLD_ZOOM
 static VIEW_STATE
-CalcView (PPOINT pNewScrollPt, register BYTE next_reduction,
+CalcView (PPOINT pNewScrollPt, BYTE next_reduction,
 		PSIZE pdx, PSIZE pdy)
 #else
 static VIEW_STATE
-CalcView (PPOINT pNewScrollPt, register SIZE next_reduction,
+CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 		PSIZE pdx, PSIZE pdy, COUNT ships_alive)
 #endif
 {
@@ -349,7 +349,7 @@ CalcView (PPOINT pNewScrollPt, register SIZE next_reduction,
 
 
 static ELEMENT_FLAGS
-ProcessCollisions (HELEMENT hSuccElement, register ELEMENTPTR ElementPtr,
+ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 		TIME_VALUE min_time, ELEMENT_FLAGS process_flags)
 {
 	HELEMENT hTestElement;
@@ -372,7 +372,7 @@ ProcessCollisions (HELEMENT hSuccElement, register ELEMENTPTR ElementPtr,
 
 		if (CollisionPossible (TestElementPtr, ElementPtr))
 		{
-			register ELEMENT_FLAGS state_flags, test_state_flags;
+			ELEMENT_FLAGS state_flags, test_state_flags;
 			TIME_VALUE time_val;
 
 			state_flags = ElementPtr->state_flags;
@@ -632,7 +632,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 #endif
 	COUNT num_ships;
 	POINT Origin;
-	register HELEMENT hElement;
+	HELEMENT hElement;
 	COUNT ships_alive;
 
 #ifdef KDEBUG
@@ -804,16 +804,16 @@ InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI)
 PRIM_LINKS DisplayLinks;
 
 static void
-PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
-		register SIZE scroll_y)
+PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
+		SIZE scroll_y)
 {
 	POINT delta;
 #ifdef OLD_ZOOM
-	register BYTE reduction;
+	BYTE reduction;
 #else
-	register SIZE reduction;
+	SIZE reduction;
 #endif
-	register HELEMENT hElement;
+	HELEMENT hElement;
 
 #ifdef KDEBUG
 	fprintf (stderr, "PostProcess:\n");
@@ -827,7 +827,7 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 	hElement = GetHeadElement ();
 	while (hElement != 0)
 	{
-		register ELEMENT_FLAGS state_flags;
+		ELEMENT_FLAGS state_flags;
 		ELEMENTPTR ElementPtr;
 		HELEMENT hNextElement;
 

@@ -26,9 +26,9 @@
 INTERSECT_CODE
 BoxIntersect (PRECT pr1, PRECT pr2, PRECT pinter)
 {
-	register INTERSECT_CODE intersect_code;
-	register COORD x1;
-	register SIZE w1, w2, delta;
+	INTERSECT_CODE intersect_code;
+	COORD x1;
+	SIZE w1, w2, delta;
 
 	intersect_code = INTERSECT_NOCLIP;
 
@@ -59,8 +59,8 @@ BoxIntersect (PRECT pr1, PRECT pr2, PRECT pinter)
 	if (w1 > 0)
 	{
 #define h2 w2
-		register COORD y1;
-		register SIZE h1;
+		COORD y1;
+		SIZE h1;
 
 		y1 = pr1->corner.y - pr2->corner.y;
 
