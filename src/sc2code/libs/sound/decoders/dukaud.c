@@ -111,12 +111,7 @@ duka_readAudFrameHeader (TFB_DuckSoundDecoder* duka, uint32 iframe,
 {
 	DukAud_FrameHeader hdr;
 
-	if (uio_fseek (duka->duk, duka->frames[iframe], SEEK_SET) == -1)
-	{
-		duka->last_error = errno;
-		return dukae_BadFile;
-	}
-	
+	uio_fseek (duka->duk, duka->frames[iframe], SEEK_SET);
 	if (uio_fread (&hdr, sizeof(hdr), 1, duka->duk) != 1)
 	{
 		duka->last_error = errno;
@@ -285,12 +280,7 @@ duka_readNextFrame (TFB_DuckSoundDecoder* duka)
 	DukAud_AudSubframe* aud;
 	uint8* p;
 
-	if (uio_fseek (duka->duk, duka->frames[duka->iframe], SEEK_SET) == -1)
-	{
-		duka->last_error = errno;
-		return dukae_BadFile;
-	}
-
+	uio_fseek (duka->duk, duka->frames[duka->iframe], SEEK_SET);
 	if (uio_fread (&hdr, sizeof(hdr), 1, duka->duk) != 1)
 	{
 		duka->last_error = errno;
