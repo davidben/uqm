@@ -20,7 +20,6 @@
 #define _PLANETS_H
 
 #define END_INTERPLANETARY START_INTERPLANETARY
-typedef unsigned int	Uint32;
 
 enum
 {
@@ -168,7 +167,7 @@ typedef struct solarsys_state
 	FRAME ScaleFrame[2];
 	FRAME ShieldFrame;
 	BYTE *isPFADefined;
-	Uint32 **lpTopoMap;
+	DWORD **lpTopoMap;
 } SOLARSYS_STATE;
 typedef SOLARSYS_STATE *PSOLARSYS_STATE;
 

@@ -34,13 +34,13 @@ void RepairBackRect (PRECT pRect);
 
 int RotatePlanet (int x, int angle, int dx, int dy,int zoom);
 
-Uint32 frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
+DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
-void process_rgb_bmp (FRAME FramePtr, Uint32 **rgba, int maxx, int maxy);
+void process_rgb_bmp (FRAME FramePtr, DWORD **rgba, int maxx, int maxy);
 
 FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
 
-Uint32 **getpixelarray(FRAME FramePtr,int width, int height);
+DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
 #define NUM_BATCH_POINTS 64
 #define USE_3D_PLANET 1
@@ -63,7 +63,7 @@ Uint32 **getpixelarray(FRAME FramePtr,int width, int height);
 #define M_DEG2RAD (M_TWOPI / 360.0)
 #endif
 
-Uint32 phong[DIAMETER][DIAMETER];
+DWORD phong[DIAMETER][DIAMETER];
 POINT map_rotate[DIAMETER][DIAMETER];
 
 void
@@ -215,7 +215,7 @@ RenderPhongMask (POINT loc)
 		for (pt.x = 0; pt.x <= TWORADIUS; ++pt.x)
 		{
 			int x,y,rad;
-			Uint32 stepint;
+			DWORD stepint;
 			double lrad2;
 			double intens;
 			x=pt.x-RADIUS;
@@ -230,7 +230,7 @@ RenderPhongMask (POINT loc)
 					intens=1*cos((3.1416/2)*(double)lrad2/(double)lmag2);
 					if(intens<AMBIENT_LIGHT) {intens=AMBIENT_LIGHT;}
 				}
-				stepint=step- (Uint32)(intens*step+0.5);
+				stepint=step- (DWORD)(intens*step+0.5);
 			} else {
 				stepint=step;
 			}
@@ -295,7 +295,7 @@ SetPlanetTilt (int angle)
 #define SHIELD_RADIUS_2 SHIELD_RADIUS*SHIELD_RADIUS
 void CreateShieldMask()
 {
-	Uint32 rad2,red,red_nt,clear,**rgba,p;
+	DWORD rad2,red,red_nt,clear,**rgba,p;
 	int x,y;
 	FRAME ShieldFrame;
 
@@ -303,7 +303,7 @@ void CreateShieldMask()
 	ShieldFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
 				);
-	rgba=(Uint32 **)malloc(sizeof(Uint32 *)*(SHIELD_DIAM));
+	rgba=(DWORD **)malloc(sizeof(DWORD *)*(SHIELD_DIAM));
 	// This is a 'transparent' red for the planet mask.
 	red=frame_mapRGBA (ShieldFrame,255,0,0,200);
 	// This is a non-transparent red for the halo
@@ -311,7 +311,7 @@ void CreateShieldMask()
 	//  This is 100% transparent.
 	clear=frame_mapRGBA (ShieldFrame,0,0,0,0);
 	for(y=-SHIELD_RADIUS;y<=SHIELD_RADIUS;y++) {
-		rgba[y+SHIELD_RADIUS]=(Uint32 *)calloc((SHIELD_DIAM),sizeof(Uint32));
+		rgba[y+SHIELD_RADIUS]=(DWORD *)calloc((SHIELD_DIAM),sizeof(DWORD));
 		for(x=-SHIELD_RADIUS;x<=SHIELD_RADIUS;x++) {
 			rad2=x*x+y*y;
 			if(rad2<=SHIELD_RADIUS_2) {
@@ -350,9 +350,9 @@ void
 RenderLevelMasks (int offset)
 {
 	POINT pt;
-	Uint32 **rgba;
+	DWORD **rgba;
 	int x,y;
-	Uint32 p,**pixels;
+	DWORD p,**pixels;
 	FRAME MaskFrame;
 
 #if PROFILE
@@ -362,13 +362,13 @@ RenderLevelMasks (int offset)
 	t1=clock();
 #endif
 
-	rgba=malloc(sizeof(Uint32 *)*(DIAMETER));
+	rgba=malloc(sizeof(DWORD *)*(DIAMETER));
 	// Choose the correct Frame to wrte to
 	MaskFrame = pSolarSysState->PlanetFrameArray[offset];
 	pixels=pSolarSysState->lpTopoMap;
 	for (pt.y = 0, y=-RADIUS; pt.y <= TWORADIUS; ++pt.y,++y)
 	{
-		rgba[pt.y]=malloc(sizeof(Uint32)*(DIAMETER));
+		rgba[pt.y]=malloc(sizeof(DWORD)*(DIAMETER));
 		for (pt.x = 0,  x=-RADIUS; pt.x <= TWORADIUS; ++pt.x,++x)
 		{
 			int c1,c2,c3;

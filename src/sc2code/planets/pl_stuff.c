@@ -807,7 +807,7 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 				else
 					tint_ccb[i].ccb_YPos = my << 16;
 				tint_ccb[i].ccb_XPos = x << 16;
-				*((Uint32 *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
+				*((DWORD *)tint_ccb[i].ccb_SourcePtr) = rgb | (rgb << 16) | 0x80008000;
 				add_cel (&tint_ccb[i]);
 			}
 		}
