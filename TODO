@@ -1,0 +1,93 @@
+Before doing any non-trivial, please discuss it first in the IRC channel.
+
+Serious bugs (crash the game, high priority):
+- The game crashes when there's no sound driver available
+- In melee, after battle, the game crashes.
+  The ship icon is used when already freed. This happens because the old
+  3DO code used to save the entire selection window as one image, while
+  Chris' new code redraws after each round.
+  Possible solutions:
+  - revert to the old behaviour
+  - delay the free until the memory is really no longer needed.
+    Make sure that the memory is always freed, so no memory leak is
+    introduced.
+  - reload the icon when needed
+  It looks like the same bug is present for the full game, though it isn't
+  fatal there (the memory is freed but not yet overwritten).
+
+Glitches (don't crash the game, medium priority):
+- When fast forwarding voices, sound stops. (SDL_mixer cannot start a sample
+  from anywhere but the start)
+- pressing arrow keys in the main menu moves the selection in the
+  wrong direction (both left, right and up, down)
+- The melnorme don't charge for fuel when you ask "fill 'er up"
+  Instead, they pay you the money.
+- Autopilot indicator keeps blinking when entering combat, when autopilot
+  was on.
+- savegames created in a game from debug and release compiles are not
+  interchangable
+- discolouring of progress slider in commander discussion after having just
+  killed the Ilwrath ship (or is it supposed to be like that?)
+- momentary slowdown of scrolling in hyperspace about once per second
+  You can see this if you look very closely, or increase the resolution of
+  the frame counter to 10 times per second and start with -ttl.
+
+Implementation bugs (low priority):
+- The main thread is still created by a direct all to the SDL function,
+  instead of through the thread lib. It would cause a crash otherwise.
+  Probably the memlib isn't initialised then (which the thread lib uses).
+
+Stuff still to do (large):
+- add a Key Jamming program
+- add some way to configure your keys
+- add some way to configure the PC/3DO choices.
+- make stuff endian-safe
+  In particularly 24-bits scaling is known to be unsafe.
+- 3d planet view when entering orbit
+- some packaging system for resources. zlib looks like something
+  which is suitable for this.
+
+Stuff still to do (medium size):
+- oscilloscope
+- loading teams in melee
+- remove libtool dependancy
+  This will probably mean the empty dummy.c files can be removed too.
+  (note that src/sc2code/dummy.c DOES contain data)
+- better command-line parsing
+  getoptlong is usable if we include the source to getoptlong for non-gnu
+  systems.
+- lines and colouring of planet surface display when scanning
+- get all code to compile without warnings, when the most strict
+  checks are performed (not just -W -Wall in gcc)
+- try to speed up resource loading. It looks to be much slower now
+  than it needs to be.
+
+Stuff still to do (small):
+- make sure save files are independant of endianness, so that Mac savefiles
+  can be used on the pc (and the other way around).
+- make a file types.h, which defines non-confusing integer types.
+  There are at the moment 3 systems: int16, DWORD, and Sint16.
+  I suggest we keep int16, as 'word' is confusing. Sint16 is an SDL define
+  and should only be used in SDL calls.
+
+Questions:
+- remove src/sc2code/test.c?
+- Is there some way to automatically do CRLF translations on commits,
+  with the -t and -f options in cvswrapper disabled by sourceforge?
+- What is the displist stuff for? Is it needed at all?
+- Do we want another utils/ dir? It could be useful, to put all the conversion
+  tools we use(d).
+- are there still threads killing themselves instead of just exiting?
+- w_memlib used (now commented out) MS Windows functions to show messages
+  when memory couldn't be allocated. If we want to have those return, some
+  work will have to be done. If not, there's some dead code to remove.
+- The functions like HMalloc don't guarantee success, so checks should be
+  done, and are even done in some places. But it might make more sense to
+  let HMalloc abort the program if it fails (there's little to do anyhow),
+  so we can rely on HMalloc returning a non-NULL value.
+  If we want, we could allocate a block of reserve memory at the start,
+  which we can free when no more memory is available, to allow an emergency
+  save.
+- How about an ISO image for a self-contained linux CD which boots into SC2?
+
+
