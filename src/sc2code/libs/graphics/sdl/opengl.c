@@ -160,7 +160,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR || GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 		ScreenFilterMode = GL_LINEAR;
 	else
 		ScreenFilterMode = GL_NEAREST;

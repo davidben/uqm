@@ -34,6 +34,64 @@ static const UBYTE bilinear_table[4][4] =
 	{ 1, 3, 3, 9 }
 };
 
+typedef union 
+{
+	struct
+	{
+		Uint8 c1, c2, c3;
+	};
+	Uint8 channels[3];
+} PIXEL_24BIT;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+// big endian cpu
+// We avoid potential pagefaults based on the assumption
+// that all buffers are allocated on *at least* 32bit boundary
+// So if the pointer (p) is 32bit-aligned, we can read at
+// least 32 bits at once; or if it is not aligned then we
+// are not at the beginning of the buffer and can read 1 byte
+// before (p)
+//
+#	define GET_PIX_24BIT(p) \
+		( ((Uint32)(p)) & 3 ? \
+			(*(Uint32 *)((Uint8 *)(p) - 1) & 0x00ffffff) : \
+			(*(Uint32 *)(p) >> 8) \
+		)
+
+#	define SET_PIX_24BIT(p, c) \
+		( ((Uint32)(p)) & 3 ? \
+			( *(Uint32 *)((Uint8 *)(p) - 1) = \
+				(*(Uint32 *)((Uint8 *)(p) - 1) & 0xff000000) | \
+				((c) & 0x00ffffff) \
+			) : \
+			( *(Uint32 *)(p) = \
+				(*(Uint32 *)(p) & 0x000000ff) | \
+				((c) << 8) \
+			) \
+		)
+#else
+// little endian cpu
+// Same page-safety assumption applies as for big-endian
+//
+#	define GET_PIX_24BIT(p) \
+		( ((Uint32)(p)) & 3 ? \
+			(*(Uint32 *)((Uint8 *)(p) - 1) >> 8) : \
+			(*(Uint32 *)(p) & 0x00ffffff) \
+		)
+
+#	define SET_PIX_24BIT(p, c) \
+		( ((Uint32)(p)) & 3 ? \
+			( *(Uint32 *)((Uint8 *)(p) - 1) = \
+				(*(Uint32 *)((Uint8 *)(p) - 1) & 0x000000ff) | \
+				((c) << 8) \
+			) : \
+			( *(Uint32 *)(p) = \
+				(*(Uint32 *)(p) & 0xff000000) | \
+				((c) && 0x00ffffff) \
+			) \
+		)
+#endif
+
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -136,6 +194,466 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
+
+// blends two pixels with ratio 50% - 50%
+static Uint32
+Scale_BlendPixels(SDL_PixelFormat* fmt, Uint32 pix1, Uint32 pix2)
+{
+	return	((((pix1 & fmt->Rmask) +
+			   (pix2 & fmt->Rmask)
+			 ) >> 1) & fmt->Rmask) |
+			((((pix1 & fmt->Gmask) +
+			   (pix2 & fmt->Gmask)
+			 ) >> 1) & fmt->Gmask) |
+			((((pix1 & fmt->Bmask) +
+			   (pix2 & fmt->Bmask)
+			) >> 1) & fmt->Bmask);
+}
+
+
+// biadapt scaling to 2x
+static void
+Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst)
+{
+	int x, y;
+	const int w = src->w, h = src->h, dw = dst->w;
+	SDL_PixelFormat *fmt = dst->format;
+
+	switch (fmt->BytesPerPixel)
+	{
+	case 2:
+	{
+		Uint16 *src_p = (Uint16 *)src->pixels;
+		Uint16 *dst_p = (Uint16 *)dst->pixels;
+		Uint16 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		
+		for (y = 0; y < h; ++y)
+		{
+			for (x = 0; x < w; ++x)
+			{
+				pixval_tl = *src_p;
+				
+				*dst_p = pixval_tl;
+				
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					pixval_bl = src_p[w];
+
+					if (pixval_tl == pixval_bl)
+						dst_p[dw] = pixval_tl;
+					else
+						dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_bl);
+				}
+				else
+				{
+					// last pixel in column - propagate
+					dst_p[dw] = pixval_tl;
+				}
+				dst_p++;
+				src_p++;
+				
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					pixval_tr = *src_p;
+
+					if (pixval_tl == pixval_tr)
+						*dst_p = pixval_tr;
+					else
+						*dst_p = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
+
+					if (y + 1 < h)
+					{
+						// check pixel to the bottom-right
+						pixval_br = src_p[w];
+
+						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+						{
+							// both pairs are equal, have to resolve
+							// the contention; we try detecting which
+							// color is background by looking for
+							// a line or a simple join
+							int cl = 1, cr = 1;
+
+							if (x > 0)
+							{
+								if (src_p[-2] == pixval_tl)
+									cl++;
+
+								if (src_p[-2 + w] == pixval_tr)
+									cr++;
+							}
+
+							if (y > 0)
+							{
+								if (src_p[-1 - w] == pixval_tl)
+									cl++;
+
+								if (src_p[-w] == pixval_tr)
+									cr++;
+							}
+
+							if (x + 2 < w && src_p[1] == pixval_tr)
+								cr++;
+
+							if (y + 2 < h && src_p[1 + w] == pixval_tl)
+								cl++;
+							
+							// least count wins
+							if (cl > cr)
+								dst_p[dw] = pixval_tr;
+							else if (cr > cl)
+								dst_p[dw] = pixval_tl;
+							else
+								dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
+
+						}
+						else if (pixval_tl == pixval_br)
+						{
+							// main diagonal is same color
+							// use its value
+							dst_p[dw] = pixval_tl;
+						}
+						else if (pixval_tr == pixval_bl)
+						{
+							// 2nd diagonal is same color
+							// use its value
+							dst_p[dw] = pixval_tr;
+						}
+						else
+						{
+							// blend all 4
+							dst_p[dw] = 
+								((((pixval_tl & fmt->Rmask) +
+								   (pixval_bl & fmt->Rmask) +
+								   (pixval_tr & fmt->Rmask) +
+								   (pixval_br & fmt->Rmask)
+								 ) >> 2) & fmt->Rmask) |
+								((((pixval_tl & fmt->Gmask) +
+								   (pixval_bl & fmt->Gmask) +
+								   (pixval_tr & fmt->Gmask) +
+								   (pixval_br & fmt->Gmask)
+								 ) >> 2) & fmt->Gmask) |
+								((((pixval_tl & fmt->Bmask) +
+								   (pixval_bl & fmt->Bmask) +
+								   (pixval_tr & fmt->Bmask) +
+								   (pixval_br & fmt->Bmask)
+								) >> 2) & fmt->Bmask);
+						}
+					}
+					else
+					{
+						// last pixel in column - propagate
+						dst_p[dw] = pixval_tl;
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					*dst_p = pixval_tl;
+					dst_p[dw] = pixval_tl;
+
+				}
+				dst_p++;
+			}
+			dst_p += dw;
+		}
+		break;
+	}
+	case 3:
+	{
+		PIXEL_24BIT *src_p = (PIXEL_24BIT *)src->pixels;
+		PIXEL_24BIT *dst_p = (PIXEL_24BIT *)dst->pixels;
+		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		
+		for (y = 0; y < h; ++y)
+		{
+			for (x = 0; x < w; ++x)
+			{
+				pixval_tl = GET_PIX_24BIT (src_p);
+				
+				SET_PIX_24BIT (dst_p, pixval_tl);
+				
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					pixval_bl = GET_PIX_24BIT (src_p + w);
+
+					if (pixval_tl == pixval_bl)
+						SET_PIX_24BIT (dst_p + dw, pixval_tl);
+					else
+						SET_PIX_24BIT (dst_p + dw,
+								Scale_BlendPixels (
+								fmt, pixval_tl, pixval_bl
+								));
+				}
+				else
+				{
+					// last pixel in column - propagate
+					SET_PIX_24BIT(dst_p + dw, pixval_tl);
+				}
+				dst_p++;
+				src_p++;
+				
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					pixval_tr = GET_PIX_24BIT (src_p);
+
+					if (pixval_tl == pixval_tr)
+						SET_PIX_24BIT (dst_p, pixval_tr);
+					else
+						SET_PIX_24BIT (dst_p, Scale_BlendPixels (
+								fmt, pixval_tl, pixval_tr
+								));
+
+					if (y + 1 < h)
+					{
+						// check pixel to the bottom-right
+						pixval_br = GET_PIX_24BIT (src_p + w);
+
+						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+						{
+							// both pairs are equal, have to resolve
+							// the contention; we try detecting which
+							// color is background by looking for
+							// a line or a simple join
+							int cl = 1, cr = 1;
+
+							if (x > 0)
+							{
+								if (GET_PIX_24BIT (src_p - 2) == pixval_tl)
+									cl++;
+
+								if (GET_PIX_24BIT (src_p - 2 + w) == pixval_tr)
+									cr++;
+							}
+
+							if (y > 0)
+							{
+								if (GET_PIX_24BIT(src_p - 1 - w) == pixval_tl)
+									cl++;
+
+								if (GET_PIX_24BIT (src_p - w) == pixval_tr)
+									cr++;
+							}
+
+							if (x + 2 < w && GET_PIX_24BIT (src_p + 1) == pixval_tr)
+								cr++;
+
+							if (y + 2 < h && GET_PIX_24BIT (src_p + 1 + w) == pixval_tl)
+								cl++;
+							
+							// least count wins
+							if (cl > cr)
+								SET_PIX_24BIT (dst_p + dw, pixval_tr);
+							else if (cr > cl)
+								SET_PIX_24BIT (dst_p + dw, pixval_tl);
+							else
+								SET_PIX_24BIT (dst_p + dw,
+										Scale_BlendPixels (
+										fmt, pixval_tl, pixval_tr
+										));
+
+						}
+						else if (pixval_tl == pixval_br)
+						{
+							// main diagonal is same color
+							// use it value
+							SET_PIX_24BIT (dst_p + dw, pixval_tl);
+						}
+						else if (pixval_tr == pixval_bl)
+						{
+							// 2nd diagonal is same color
+							// use it value
+							SET_PIX_24BIT (dst_p + dw, pixval_tr);
+						}
+						else
+						{
+							// blend all 4
+							SET_PIX_24BIT (dst_p + dw,
+									((((pixval_tl & fmt->Rmask) +
+									   (pixval_bl & fmt->Rmask) +
+									   (pixval_tr & fmt->Rmask) +
+									   (pixval_br & fmt->Rmask)
+									 ) >> 2) & fmt->Rmask) |
+									((((pixval_tl & fmt->Gmask) +
+									   (pixval_bl & fmt->Gmask) +
+									   (pixval_tr & fmt->Gmask) +
+									   (pixval_br & fmt->Gmask)
+									 ) >> 2) & fmt->Gmask) |
+									((((pixval_tl & fmt->Bmask) +
+									   (pixval_bl & fmt->Bmask) +
+									   (pixval_tr & fmt->Bmask) +
+									   (pixval_br & fmt->Bmask)
+									) >> 2) & fmt->Bmask)
+									);
+						}
+					}
+					else
+					{
+						// last pixel in column - propagate
+						SET_PIX_24BIT (dst_p + dw, pixval_tl);
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					SET_PIX_24BIT (dst_p, pixval_tl);
+					SET_PIX_24BIT (dst_p + dw, pixval_tl);
+				}
+				dst_p++;
+			}
+			dst_p += dw;
+		}
+		break;
+	}
+	case 4:
+	{
+		Uint32 *src_p = (Uint32 *)src->pixels;
+		Uint32 *dst_p = (Uint32 *)dst->pixels;
+		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
+		
+		for (y = 0; y < h; ++y)
+		{
+			for (x = 0; x < w; ++x)
+			{
+				pixval_tl = *src_p;
+				
+				*dst_p = pixval_tl;
+				
+				if (y + 1 < h)
+				{
+					// check pixel below the current one
+					pixval_bl = src_p[w];
+
+					if (pixval_tl == pixval_bl)
+						dst_p[dw] = pixval_tl;
+					else
+						dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_bl);
+				}
+				else
+				{
+					// last pixel in column - propagate
+					dst_p[dw] = pixval_tl;
+				}
+				dst_p++;
+				src_p++;
+				
+				if (x + 1 < w)
+				{
+					// check pixel to the right from the current one
+					pixval_tr = *src_p;
+
+					if (pixval_tl == pixval_tr)
+						*dst_p = pixval_tr;
+					else
+						*dst_p = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
+
+					if (y + 1 < h)
+					{
+						// check pixel to the bottom-right
+						pixval_br = src_p[w];
+
+						if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
+						{
+							// both pairs are equal, have to resolve
+							// the contention; we try detecting which
+							// color is background by looking for
+							// a line or a simple join
+							int cl = 1, cr = 1;
+
+							if (x > 0)
+							{
+								if (src_p[-2] == pixval_tl)
+									cl++;
+
+								if (src_p[-2 + w] == pixval_tr)
+									cr++;
+							}
+
+							if (y > 0)
+							{
+								if (src_p[-1 - w] == pixval_tl)
+									cl++;
+
+								if (src_p[-w] == pixval_tr)
+									cr++;
+							}
+
+							if (x + 2 < w && src_p[1] == pixval_tr)
+								cr++;
+
+							if (y + 2 < h && src_p[1 + w] == pixval_tl)
+								cl++;
+							
+							// least count wins
+							if (cl > cr)
+								dst_p[dw] = pixval_tr;
+							else if (cr > cl)
+								dst_p[dw] = pixval_tl;
+							else
+								dst_p[dw] = Scale_BlendPixels (fmt, pixval_tl, pixval_tr);
+
+						}
+						else if (pixval_tl == pixval_br)
+						{
+							// main diagonal is same color
+							// use its value
+							dst_p[dw] = pixval_tl;
+						}
+						else if (pixval_tr == pixval_bl)
+						{
+							// 2nd diagonal is same color
+							// use its value
+							dst_p[dw] = pixval_tr;
+						}
+						else
+						{
+							// blend all 4
+							dst_p[dw] = 
+								((((pixval_tl & fmt->Rmask) +
+								   (pixval_bl & fmt->Rmask) +
+								   (pixval_tr & fmt->Rmask) +
+								   (pixval_br & fmt->Rmask)
+								 ) >> 2) & fmt->Rmask) |
+								((((pixval_tl & fmt->Gmask) +
+								   (pixval_bl & fmt->Gmask) +
+								   (pixval_tr & fmt->Gmask) +
+								   (pixval_br & fmt->Gmask)
+								 ) >> 2) & fmt->Gmask) |
+								((((pixval_tl & fmt->Bmask) +
+								   (pixval_bl & fmt->Bmask) +
+								   (pixval_tr & fmt->Bmask) +
+								   (pixval_br & fmt->Bmask)
+								) >> 2) & fmt->Bmask);
+						}
+					}
+					else
+					{
+						// last pixel in column - propagate
+						dst_p[dw] = pixval_tl;
+					}
+				}
+				else
+				{
+					// last pixel in row - propagate
+					*dst_p = pixval_tl;
+					dst_p[dw] = pixval_tl;
+
+				}
+				dst_p++;
+			}
+			dst_p += dw;
+		}
+		break;
+
+	}
+	}
+}
+
+// nearest neighbor scaling to 2x
 static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 {
 	int x, y;
@@ -211,7 +729,8 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 	}
 }
 
-static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
+// bilinear scaling to 2x
+static void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst)
 {
 	int x, y, i = 0, j, fa, fb, fc, fd;
 	const int w = dst->w, h = dst->h;
@@ -514,7 +1033,9 @@ TFB_Pure_SwapBuffers ()
 		SDL_LockSurface (backbuffer);
 		
 		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
-			Scale_Bilinear (backbuffer, SDL_Video);
+			Scale_BilinearFilter (backbuffer, SDL_Video);
+		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
+			Scale_BiAdaptFilter (backbuffer, SDL_Video);
 		else
 			Scale_Nearest (backbuffer, SDL_Video);
 

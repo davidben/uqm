@@ -1,4 +1,5 @@
 0.2:
+- Biadapt scaling for pure mode, from fOSSiL
 - Saving user data in "%APPDATA%/Application Data" on windows - SvdB
 - Melnorme comm fix, from TD.
 - Planet scan font character fixes (micro.fon), from fOSSiL

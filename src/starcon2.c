@@ -120,6 +120,10 @@ main (int argc, char *argv[])
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_BILINEAR;
 				}
+				else if (!strcmp (optarg, "biadapt"))
+				{
+					gfxflags |= TFB_GFXFLAGS_SCALE_BIADAPT;
+				}
 			break;
 			case 's':
 				gfxflags |= TFB_GFXFLAGS_SCANLINES;
@@ -189,7 +193,7 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=mode (bilinear, default is none)\n");
+				printf("  -c, --scale=mode (bilinear or biadapt, default is none)\n");
 				printf("  -s, --scanlines (default off)\n");
 				printf("  -p, --fps (default off)\n");
 				printf("  -n, --contentdir=CONTENTDIR\n");

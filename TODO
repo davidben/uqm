@@ -90,6 +90,7 @@ Implementation bugs (low priority):
 - Melee scaling currently causes some very small objects like Ur-Quan fighters
   to disappear sometimes. The scaling should be made trilinear instead of
   nearest neighbor.
+- Biadapt scaling has some problems for 24bpp mode
 
 Stuff still to do (large):
 - add some way to configure your keys
@@ -136,8 +137,6 @@ Stuff still to do (medium size):
   - Currently pretty nonexistant, got only some atexit callbacks
 - Option to display the planet statistics as text instead of images?
 - Rewrite game pausing to be an event-level thing
-- SaI and SuperSAI scaling (previous code wasn't GPL compatible)
-  (assigned to Gwl)
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
