@@ -88,8 +88,6 @@ TFI That was about the time I heard
 Talana's voice...
 #(Wait)
 WAIT 2500
-#(Wait)
-WAIT 4000
 #(Text fade-out)
 TFO
 #(Draw slide; param1=ANI index)
@@ -106,6 +104,7 @@ WAIT 2500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -117,6 +116,7 @@ WAIT 2500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -128,6 +128,7 @@ WAIT 2500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -139,6 +140,7 @@ WAIT 2500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -151,6 +153,7 @@ WAIT 3500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -162,6 +165,7 @@ WAIT 2500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -173,6 +177,7 @@ WAIT 3000
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -185,6 +190,7 @@ WAIT 3500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -197,6 +203,7 @@ WAIT 3500
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
@@ -207,6 +214,7 @@ WAIT 2000
 TFO
 #(Draw slide; param1=ANI index)
 DRAW 0
+#(Wait)
 WAIT 500
 
 #(Text fade-in)
