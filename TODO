@@ -74,7 +74,8 @@ Implementation bugs (low priority):
 Stuff still to do (large):
 - add a Key Jamming program
 - add some way to configure your keys
-- add some way to configure the PC/3DO choices.
+- add some way to configure the PC/3DO/other choices.
+  - music should be selectable track by track
 - Actually implement the differences between PC and 3DO versions, including
   the alternate scripts (even the basic dialogue is not identical)
 - make stuff endian-safe
