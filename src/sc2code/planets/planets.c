@@ -213,32 +213,35 @@ FreePlanet (void)
 	pSolarSysState->TopoFrame = 0;
 	DestroyColorMap (ReleaseColorMap (pSolarSysState->OrbitalCMap));
 	pSolarSysState->OrbitalCMap = 0;
-	for(i=0;i<255;i++) {
+	for (i=0; i<255; i++)
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray[i]));
-	}
-	free(pSolarSysState->PlanetFrameArray);
-	free(pSolarSysState->isPFADefined);
-	for(i=0;i<2;i++) {
-		if(pSolarSysState->ScaleFrame[i]) {
+	HFree (pSolarSysState->PlanetFrameArray);
+	pSolarSysState->PlanetFrameArray = 0;
+
+	HFree (pSolarSysState->isPFADefined);
+	pSolarSysState->isPFADefined = 0;
+	for (i = 0; i < 2; i++)
+		if (pSolarSysState->ScaleFrame[i]) 
+		{
 			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
 			pSolarSysState->ScaleFrame[i]=0;
 		}
-	}
-	if(pSolarSysState->ShieldFrame != 0) {
+	if(pSolarSysState->ShieldFrame != 0)
+	{
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->ShieldFrame));
-		pSolarSysState->ShieldFrame=0;
+		pSolarSysState->ShieldFrame = 0;
 	}
-	if(pSolarSysState->TintFrame != 0)
+	if (pSolarSysState->TintFrame != 0)
 	{
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
-		pSolarSysState->TintFrame=0;
+		pSolarSysState->TintFrame = 0;
 	}
-	if(pSolarSysState->lpTopoMap!=0) {
-		for(i=0;pSolarSysState->lpTopoMap[i]!=NULL;i++) {
-			free(pSolarSysState->lpTopoMap[i]);
-		}
-		free(pSolarSysState->lpTopoMap);
-		pSolarSysState->lpTopoMap=0;
+	if (pSolarSysState->lpTopoMap!=0)
+	{
+		for (i=0; pSolarSysState->lpTopoMap[i] != NULL; i++)
+			HFree (pSolarSysState->lpTopoMap[i]);
+		HFree (pSolarSysState->lpTopoMap);
+		pSolarSysState->lpTopoMap = 0;
 	}
 
 	DestroyContext (ReleaseContext (TaskContext));

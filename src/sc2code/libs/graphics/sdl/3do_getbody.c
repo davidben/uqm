@@ -198,9 +198,9 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr,int width, int height)
     img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
 	SDL_LockSurface (img);
 	getpix = getpixel_for (img);
-	map=(Uint32 **)malloc(sizeof(Uint32 *)*(height+1));
+	map=(Uint32 **)HMalloc(sizeof(Uint32 *)*(height+1));
 	for (y=0;y<height;y++) {
-		map[y]=(Uint32 *)calloc(width,sizeof(Uint32));
+		map[y]=(Uint32 *)HCalloc(width*sizeof(Uint32));
 		if(y>=img->h) {
 			continue;
 		}
