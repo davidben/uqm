@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Bug #702 fixes (dead code + compiler warnings) -Alex
 - Flagship will not fly sideways on auto-pilot in Hyperspace (bug #642) -Alex
 - Fixed menu sounds in full-game battle ship selection box (bug #566) -Alex
 - Added '--version' - SvdB
