@@ -1,4 +1,6 @@
 0.2:
+- Removed 2xSaI and SuperSAI scaling due to GPL incompatiblities.
+  They should be reimplemented later.
 - Bucks print from wrong team in melee ship selection box fixed, from fOSSiL
 - Autopilot works in Quasispace when without fuel, from fOSSiL.
 - Negative shift warnings removed, from Fizban

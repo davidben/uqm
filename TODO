@@ -92,12 +92,6 @@ Glitches (don't crash the game, medium priority):
   (and the temp dir doesn't get deleted if it's not empty)
 
 Implementation bugs (low priority):
-- Scaling code problems:
-  - sai, supersai doesn't work for >16bpp
-  - doesn't always work even if user specifies 16bpp, because of SDL_ANYFORMAT
-  - bilinear is only implemented under opengl
-  - opengl misses all other modes than bilinear
-    - do them with software and/or pixel shader hw?
 - 3D planet view when entering orbit is now done, but there's some things
   which could make it look nicer, like better slave shield and removing 
   occasional pops/discontinuities
@@ -155,6 +149,7 @@ Stuff still to do (medium size):
   - Currently pretty nonexistant, got only some atexit callbacks
 - Option to display the planet statistics as text instead of images?
 - Rewrite game pausing to be an event-level thing
+- SaI and SuperSAI scaling (previous code wasn't GPL compatible)
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles
