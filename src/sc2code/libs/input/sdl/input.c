@@ -127,11 +127,13 @@ ProcessKeyboardEvent(const SDL_Event *Event)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
 		if (map_key == AbortKey)
 			exit(0);
-		KeyboardDown[UNICODEToKBD (map_key)] |= 0x3;
+		//Store the actual key (without nay shift/ctrl modifiers)
+		//since the modifiers can't be retreived on a key-up
+		KeyboardDown[k] |= 0x3;
 	}
 	else
 	{
-		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] &= (~0x1);
+		KeyboardDown[k] &= (~0x1);
 	}
 }
 
