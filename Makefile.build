@@ -21,7 +21,7 @@ target-%:
 -include $(DEPEND_FILE)
 
 # Temporary:
-$(BUILD_WORK)/obj/release/./src/res/UrQuanMasters.rc.o:\
+$(BUILD_WORK)/obj/release/./src/res/UrQuanMasters.rc.o: \
 		 ./src/res/UrQuanMasters.rc
 $(BUILD_WORK)/obj/debug/./src/res/UrQuanMasters.rc.o: \
 		./src/res/UrQuanMasters.rc

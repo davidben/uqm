@@ -24,6 +24,7 @@
 
 if [ -z "$BUILD_WORK" ]; then
 	BUILD_WORK=.
+	export BUILD_WORK
 fi
 
 # Read in the config settings that affect the build, if present.
