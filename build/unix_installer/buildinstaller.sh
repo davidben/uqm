@@ -6,14 +6,14 @@ TEMPDIR="/tmp/buildinstaller_$$"
 
 if [ $# -ne 2 ]; then
 	cat >&2 << EOF
-Usage: buildinstaller.sh <installername> <contentfiles>
+Usage: buildinstaller.sh <installername> <template>
 where 'installername' is the name you want to give the final installer
-and 'contentfiles' is a space-seperated list of possible content files.
+and 'template' is the template file describing the installer.
 EOF
 	exit 1
 fi
 DESTFILE="$1"
-CONTENTFILES="$2"
+TEMPLATE="$2"
 
 if [ ! -d src -o ! -d build ]; then
 cat >&2 << EOF
@@ -38,23 +38,68 @@ if [ "$?" -ne 0 ]; then
 	exit 1
 fi
 
-mkdir -- "${TEMPDIR}/lib" "${TEMPDIR}/lib/uqm" "${TEMPDIR}/lib/uqm/doc"
+. "$TEMPLATE"
 
-cp -- AUTHORS COPYING ChangeLog WhatsNew README doc/users/manual.txt \
-		"${TEMPDIR}/lib/uqm/doc/"
-cp -- uqm "${TEMPDIR}/lib/uqm/"
-chmod -R go+rX "${TEMPDIR}/lib"
+while read FILE DEST; do
+	DESTDIR="${TEMPDIR}/attach/${DEST%/*}"
+	if [ ! -d "$DESTDIR" ]; then
+		mkdir -p -- "$DESTDIR" || exit 1
+	fi
+	cp -- "$FILE" "${TEMPDIR}/attach/$DEST" || exit 1
+done << EOF
+$UQM_ATTACH_FILES
+EOF
+
+chmod -R go+rX "${TEMPDIR}/attach"
 
 echo "Making tar.gz file for everything except from the content."
 echo "Using maximum compression; this may take a moment."
-tar -c -C "${TEMPDIR}/lib/" uqm | gzip -9 > "${TEMPDIR}/libpkg.tar.gz"
+tar -c -C "${TEMPDIR}/attach/" . | gzip -9 > "${TEMPDIR}/attach.tar.gz"
 
+{
+	cat << EOF
+UQM_VERSION="$UQM_VERSION"
+UQM_PACKAGES="$UQM_PACKAGES"
+EOF
+	for PACKAGE in $UQM_PACKAGES; do
+		eval PACKAGE_NAME="\$UQM_PACKAGE_${PACKAGE}_NAME"
+		eval PACKAGE_TITLE="\$UQM_PACKAGE_${PACKAGE}_TITLE"
+		eval PACKAGE_OPTIONAL="\$UQM_PACKAGE_${PACKAGE}_OPTIONAL"
+		eval PACKAGE_DEFAULT="\$UQM_PACKAGE_${PACKAGE}_DEFAULT"
+		cat << EOF
+UQM_PACKAGE_${PACKAGE}_NAME="$PACKAGE_NAME"
+UQM_PACKAGE_${PACKAGE}_TITLE="$PACKAGE_TITLE"
+UQM_PACKAGE_${PACKAGE}_OPTIONAL="$PACKAGE_OPTIONAL"
+UQM_PACKAGE_${PACKAGE}_DEFAULT="$PACKAGE_DEFAULT"
+EOF
+	done
+} > "${TEMPDIR}/packages"
+
+# A slow way, but a reliable way.
+ATTACHLEN=`wc -c < "${TEMPDIR}/attach.tar.gz"`
+
+LICENSE_TEXT="$(cat $UQM_LICENSE_FILE)"
+
+# Now we've got all the parts, we can make the final .sh file.
 echo "Making final executable."
-sh build/unix_installer/mkinstall "$DESTFILE" "${TEMPDIR}/libpkg.tar.gz" \
-		"$CONTENTFILES" COPYING
-
-rm -r -- "$TEMPDIR"
+{
+	for SCRIPT in ${TEMPDIR}/packages $UQM_SCRIPT_FILES; do
+		echo "# --- Start ${SCRIPT##*/} ---"
+		# Very ugly, but I can't get sed to replace a pattern by the contents
+		# of a file.
+		FILEDATA="$(cat $SCRIPT)"
+		sed -e "s/@ATTACHLEN@/$ATTACHLEN/" \
+				-e "s/@CONTENT_FILES@/$CONTENT_FILES/" << EOF
+${FILEDATA/@LICENCE@/$LICENSE_TEXT}
+EOF
+		echo "# --- End ${SCRIPT##*/} ---"
+	done
+	cat "${TEMPDIR}/attach.tar.gz"
+} > "$DESTFILE"
 
 chmod 755 "$DESTFILE"
 
+rm -r -- "$TEMPDIR"
+
+echo "Done."
 

@@ -141,6 +141,7 @@ menu_init_input() {
 menu_init_check() {
 	local CHECKBOX TEMP_VALUE TEMP_DEFAULT
 	CHECKBOX="$1"
+
 	eval TEMP_VALUE="\$CHECK_${CHECKBOX}_VALUE"
 	eval TEMP_DEFAULT="\$CHECK_${CHECKBOX}_DEFAULT"
 
@@ -207,22 +208,28 @@ EOF
 # Arguments:   $1 - the name of the checkbox item
 # Outputs:     The value of the given checkbox
 menu_print_value_check() {
-	local TEMP_VALUE TEMP_DEFAULT
+	local TEMP_VALUE TEMP_DEFAULT TEMP_FIXED RESULT EXTRA
 	eval TEMP_VALUE="\$CHECK_$1_VALUE"
 	eval TEMP_DEFAULT="\$CHECK_$1_DEFAULT"
+	eval TEMP_FIXED="\$CHECK_$1_FIXED"
+
 	if [ "$TEMP_VALUE" = "CHECKED" ]; then
-		if [ "$TEMP_DEFAULT" = "CHECKED" ]; then
-			echo "Yes (default)"
-		else
-			echo "Yes"
-		fi
+		RESULT="Yes"
 	else
-		if [ "$TEMP_DEFAULT" = "CHECKED" ]; then
-			echo "No"
-		else
-			echo "No (default)"
-		fi
+		RESULT="No"
 	fi
+
+	EXTRA=""
+	if [ "$TEMP_VALUE" = "$TEMP_DEFAULT" ]; then
+		EXTRA="default"
+	fi
+
+	if [ "$TEMP_FIXED" = "TRUE" ]; then
+		EXTRA="${EXTRA:+$EXTRA, }unchangable"
+	fi
+
+	RESULT="$RESULT${EXTRA:+ ($EXTRA)}"
+	echo "$RESULT"
 }
 
 # Description: Print the string describing the value of a menu item.
@@ -239,8 +246,10 @@ menu_handle() {
 # Description: Process a menu-type menu item
 # Arguments:   $1 - The name of the menu
 menu_handle_menu() {
-	local TEMP_ITEMS I CHOICE NUM_ITEMS TEMP_TYPE MENU ITEM TEMP_TITLE
+	local TEMP_ITEMS I CHOICE NUM_ITEMS TEMP_TYPE MENU ITEM TEMP_TITLE \
+			TEMP_TEXT
 	eval TEMP_ITEMS="\$MENU_$1_ITEMS"
+	eval TEMP_TEXT="\$MENU_$1_TEXT"
 	
 	MENU="$1"
 	while :; do
@@ -249,6 +258,13 @@ menu_handle_menu() {
 		cat << EOF
   $ANSI_BOLD-= $TEMP_TITLE =-$ANSI_NORMAL
 EOF
+
+		if [ -n "$TEMP_TEXT" ]; then
+			cat << EOF
+$TEMP_TEXT
+EOF
+		fi
+
 		I=0
 		for ITEM in $TEMP_ITEMS; do
 			I=$(($I + 1))
@@ -302,8 +318,9 @@ EOF
 # Arguments:   $1 - The name of the menu
 menu_handle_choice() {
 	local TEMP_OPTIONS I CHOICE NUM_OPTIONS TEMP_TYPE MENU OPTION \
-			TEMP_VALUE TEMP_TITLE SELECTED
+			TEMP_VALUE TEMP_TITLE SELECTED TEMP_TEXT
 	eval TEMP_OPTIONS="\$CHOICE_$1_OPTIONS"
+	eval TEMP_TEXT="\$CHOICE_$1_TEXT"
 	
 	MENU="$1"
 	while :; do
@@ -312,6 +329,12 @@ menu_handle_choice() {
 		cat << EOF
   $ANSI_BOLD-= $TEMP_TITLE =-$ANSI_NORMAL
 EOF
+		if [ -n "$TEMP_TEXT" ]; then
+			cat << EOF
+$TEMP_TEXT
+EOF
+		fi
+
 		eval TEMP_VALUE="\$CHOICE_${MENU}_VALUE"
 
 		# Check in advance which options are present, so that that
@@ -388,15 +411,25 @@ EOF
 # Description: Process an input-type menu item
 # Arguments:   $1 - The name of the menu
 menu_handle_input() {
-	local ITEM TEMP_TITLE TEMP_VALUE TEMP_DEFAULT NEW_VALUE TEMP_VALIDATOR
+	local ITEM TEMP_TITLE TEMP_VALUE TEMP_DEFAULT NEW_VALUE \
+			TEMP_VALIDATOR TEMP_TEXT
 
 	ITEM="$1"
 	eval TEMP_TITLE="\$INPUT_${ITEM}_TITLE"
+	eval TEMP_TEXT="\$INPUT_${ITEM}_TEXT"
+
 	while :; do
 		echo
 		cat << EOF
   $ANSI_BOLD-= $TEMP_TITLE =-$ANSI_NORMAL
 EOF
+
+		if [ -n "$TEMP_TEXT" ]; then
+			cat << EOF
+$TEMP_TEXT
+EOF
+		fi
+
 		eval TEMP_VALUE="\$INPUT_${ITEM}_VALUE"
 		eval TEMP_DEFAULT="\$INPUT_${ITEM}_DEFAULT"
 		echo "  Default value: $TEMP_DEFAULT"
@@ -426,16 +459,23 @@ EOF
 # Description: Process an checkbox-type menu item
 # Arguments:   $1 - The name of the checkbox
 menu_handle_check() {
-	local ITEM OLD_VALUE NEW_VALUE
+	local CHECKBOX OLD_VALUE NEW_VALUE TEMP_FIXED
 
-	ITEM="$1"
-	eval OLD_VALUE="\$CHECK_${ITEM}_VALUE"
+	CHECKBOX="$1"
+	eval TEMP_FIXED="\$CHECK_${CHECKBOX}_FIXED"
+
+	if [ "$TEMP_FIXED" = "TRUE" ]; then
+		# Unchangable
+		return;
+	fi
+
+	eval OLD_VALUE="\$CHECK_${CHECKBOX}_VALUE"
 	if [ "$OLD_VALUE" = "CHECKED" ]; then
 		NEW_VALUE="UNCHECKED"
 	else
 		NEW_VALUE="CHECKED"
 	fi
-	eval "CHECK_${ITEM}_VALUE"=\"\$NEW_VALUE\"
+	eval "CHECK_${CHECKBOX}_VALUE"=\"\$NEW_VALUE\"
 }
 
 # Description: echo the current state of a menu item in a form that can be
@@ -561,21 +601,23 @@ menu_process_check() {
 }
 
 do_menu() {
-	local START_MENU SAVE_FILE
+	local MENU_TYPE START_MENU SAVE_FILE
 	
-	START_MENU="$1"
-	SAVE_FILE="$2"
+	MENU_TYPE="$1"
+	START_MENU="$2"
+	SAVE_FILE="$3"
+
 	if [ -n "$SAVE_FILE" -a -e config.state ]; then
 		. config.state
 	fi
-	menu_init MENU "$1"
-	menu_handle MENU "$1"
+	menu_init "$MENU_TYPE" "$START_MENU"
+	menu_handle "$MENU_TYPE" "$START_MENU"
 	echo
 	if [ -n "$SAVE_FILE" ]; then
 		echo "Saving choices..."
-		menu_save MENU "$1" > config.state
+		menu_save "$MENU_TYPE" "$START_MENU" > config.state
 	fi
-	echo "Propagating choices..."
-	menu_process MENU "$1"
+#	echo "Propagating choices..."
+	menu_process "$MENU_TYPE" "$START_MENU"
 }
 

@@ -2,11 +2,12 @@ Making a release binary:
 
 - Build the game in release mode.
 
-- From the top of the cvs tree, run the following command, but
-  change the actual arguments to suit your needs.
-  The first one is the name of the final executable, the second a
-  space-seperated list of possible content files the installer will look
-  for.
+- Change build/unix_installer/template to suit your needs.
+
+- From the top of the cvs tree, run the following command, changing
+  the arguments if necessary.
+  The first one is the name of the final executable, the second
+  the template to use.
 
   	build/unix_installer/buildinstaller.sh uqm-0.2-linux-dynamic.sh \
   			"content.tgz"

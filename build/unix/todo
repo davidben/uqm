@@ -1,0 +1,16 @@
+- flag for an option to set if changing it will trigger a new 'make depend'
+- same for 'make clean'
+- Specify files to be removed on clean.
+- PROG_*_DETECT, LIB_*_DETECT
+- static compilation
+- error message for './build.sh uqm asdasddsa'
+
+some docs
+  - sc2_LDFLAGS etc are only relevant in the top dir
+  - some variables are 'inherited' from parent dir
+  - files are sourced (.)
+  - make clean
+  - make distclean
+    - .depend files
+  - description of files
+

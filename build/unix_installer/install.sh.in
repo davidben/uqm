@@ -2,8 +2,6 @@
 # Installation program for binaries.
 # By Serge van den Boom, 2002-11-26
 
-CONTENT_FILES="@CONTENT_FILES@"
-
 quithandler() {
 	echo
 	echo "Bye."
@@ -17,48 +15,17 @@ cat << EOF
 -== The Ur-Quan Masters installation ==-
 
 Hi, I'm your friendly neighbourhood installation program.
-I will make you very happy, but first, we've got some business to take care
-of.
+I will make you very happy, but first, we've got some business to take
+care of.
 
 EOF
-
-CONTENT_FILE=""
-have_content_file() {
-	for FILE in $CONTENT_FILES; do
-		if [ -r "$CONTENT_PATH$FILE" ]; then
-			CONTENT_FILE="$FILE"
-			return 0
-		fi
-	done
-	return 1
-}
-
-CONTENT_PATH="./"
-have_content_file
-if [ "$?" -ne 0 ]; then
-	cat << EOF
-I need a content .tgz package and I can't find one in
-the $CONTENT_PATH dir. I really can't work without it.
-If you don't have it, please press CTRL-C and quickly get it, before I get
-swapped out.
-EOF
-	echo -n "Otherwise, please tell me where you've hidden it: "
-	while :; do
-		read CONTENT_PATH
-		CONTENT_PATH="${CONTENT_PATH%/}/"
-		have_content_file && break
-		echo "There's nothing there, I tell you."
-		echo -n "Guess again: " 
-	done
-	echo "Yay! Found it."
-	echo
-fi
-CONTENT_FILE="$CONTENT_PATH$CONTENT_FILE"
 
 PAGER="${PAGER:-more}"
 type "$PAGER" > /dev/null 2>&1
 if [ "$?" -ne 0 ]; then
-	echo "I can't find a good pager. I need one. That's all folks."
+	cat << EOF
+I can't find a good pager. I need one. Sorry. Here's your prompt back.
+EOF
 	exit 1
 fi
 
@@ -93,32 +60,25 @@ EOF
 done
 echo
 
-if [ "$(id -u)" -eq "0" ]; then
-	INSTALL_BASE=/usr/local/games/
-else
-	INSTALL_BASE="$HOME/uqm/"
-fi
-echo "I've got a lot of files, and I need somewhere to put them. "
-echo "My invisible friend tells me $INSTALL_BASE is a good place."
-echo "I would put an executable there in a bin/ dir and a lot of junk "
-echo "together in a subdir under lib/"
-echo -n "But you're the boss, so where shall I put them [$INSTALL_BASE]? "
+cat << EOF
+Now I need somewhere to put all those Ur-Quan Masters files.
+My invisible friend tells me $INPUT_install_prefix_DEFAULT is a good place.
+I would put an executable there in a bin/ dir and a lot of junk together
+in a subdir under lib/
+But you're the boss, so where shall I put them?"
+EOF
 while :; do
-	read TEMP
+	show_install_prefix_menu
 	echo
-	if [ "$TEMP" = "/dev/null" ]; then
+
+	PREFIX="$INPUT_install_prefix_VALUE"
+	if [ "$PREFIX" = "/dev/null" ]; then
 		echo "Ok, done. That was quick, wasn't it? Well, have fun."
 		echo
 		exit 0
 	fi
 
-	if [ -z "$TEMP" ]; then
-		TEMP="$INSTALL_BASE"
-	else
-		TEMP="${TEMP%/}/"
-	fi
-
-	if [ ! -d "$TEMP" ]; then
+	if [ ! -d "$PREFIX" ]; then
 cat << EOF
 There's no such directory. If you want me to stuff it all in /dev/null,
 just say so. No need to toy with me.
@@ -130,20 +90,19 @@ EOF
 		echo
 		case "$TEMP2" in
 			y|Y|yes|Yes|YES)
-				mkdir -p "$TEMP" 2> /dev/null
+				mkdir -p "$PREFIX" 2> /dev/null
 				if [ "$?" -gt 0 ]; then
 					cat << EOF
 I cannot do it, captain! I don't have enough power!
 Erm... I mean 'permission denied'. Sorry about that.
 I guess we'll need to find another place.
 EOF
-					echo -n "So what shall it be [$INSTALL_BASE]? "
+					echo "So what shall it be?"
 				else
 					cat << EOF
 Ok, I've created that dir for you, even though it isn't in my job
 description. Now let's get on with the copying.
 EOF
-					INSTALL_BASE="$TEMP"
 					break;
 				fi
 				;;
@@ -151,32 +110,105 @@ EOF
 				echo "Great! That saves me some work."
 				echo "Then where DO you want me to put my files?"
 				echo "I promise I'll handle them with care."
-				echo -n "[$INSTALL_BASE]? "
 				;;
 			*)
 				echo "I'll take that as a 'no'."
-				echo -n "So, where should I put my files [$INSTALL_BASE]? "
+				echo -n "So, where should I put my files?"
 				;;
 		esac
 		continue
 	fi
 
-	if [ ! -w "$TEMP" ]; then
+	if [ ! -w "$PREFIX" ]; then
 cat << EOF
 Ooh, a very fine place indeed. Unfortunately it's not your fine place.
 You can't write there, and for some strange cosmological coincidence,
 neither can I. I think we need another place."
 EOF
-		echo -n "So, what shall it be [$INSTALL_BASE]? "
+		echo "So, what shall it be?"
 		continue
 	fi
-	INSTALL_BASE="$TEMP"
 	break
 done
 cat << EOF
-$INSTALL_BASE it is. I can work with that.
+$PREFIX it is. I can work with that.
 
 EOF
+
+if [ -d "${PREFIX}/lib/uqm/content" ]; then
+	if [ -f "${PREFIX}/lib/uqm/content/version" ]; then
+		read UQM_OLDVERSION < "${PREFIX}/lib/uqm/content/version"
+	else
+		UQM_OLDVERSION=0.1
+	fi
+	if [ `expr "$UQM_VERSION" ">" "$UQM_OLDVERSION"` = "0" ]; then
+		# NB: 'expr' echoes '1' for true, while sh uses '0'
+		echo "Hey! I see you've got an old version there."
+		echo "You'll be happy to know this one is even better."
+		echo "(yes, this is a hardcoded string in the installer)"
+		echo
+		UQM_INSTALL=UPGRADE
+	elif [ `expr "$UQM_VERSION" "<" "$UQM_OLDVERSION"` = "0" ]; then
+		UQM_INSTALL=DOWNGRADE
+	else
+		UQM_INSTALL=REINSTALL
+	fi
+else
+	UQM_INSTALL=NEW
+fi
+
+check_content_path() {
+	local OPTIONAL TITLE HAVE FAIL
+
+	echo "Looking for packages to install..."
+	FAIL="0"
+	for PACKAGE in $UQM_PACKAGES; do
+		eval OPTIONAL="\$UQM_PACKAGE_${PACKAGE}_OPTIONAL"
+		eval TITLE="\$UQM_PACKAGE_${PACKAGE}_TITLE"
+		package_available "$PACKAGE"
+		HAVE="$?"
+		echo -n "- Package for '$TITLE'"
+		if [ "$OPTIONAL" = TRUE ]; then
+			echo -n " (optional)"
+		else
+			echo -n " (required)"
+		fi
+
+		if [ "$HAVE" -eq 0 ]; then
+			echo " found."
+			continue
+		fi
+		echo " not found."
+		
+		if [ "$OPTIONAL" = FALSE ]; then
+			FAIL=1
+		fi
+	done
+	return "$FAIL"
+}
+
+CONTENT_PATH="$INPUT_content_path_DEFAULT"
+check_content_path
+if [ "$?" -ne 0 ]; then
+	cat << EOF
+I haven't found the files I need in the $CONTENT_PATH dir.
+I really can't work without them.
+If you don't have them, please press CTRL-C and quickly get it, before I get
+swapped out.
+EOF
+	echo "Otherwise, please tell me where you've hidden them."
+	while :; do
+		show_content_path_menu
+		CONTENT_PATH="$INPUT_content_path_VALUE"
+		check_content_path && break
+		echo "That's not it. Guess again."
+	done
+	echo "Yay! Found them."
+	echo
+fi
+
+set_components_menu
+show_components_menu
 
 cat << EOF
 Ok, I'm ready now to start filling your hard drive.
@@ -190,28 +222,31 @@ echo "A word as good as any."
 echo
 
 echo "Making directories..."
-mkdir -p -- "$INSTALL_BASE"/lib/uqm 2> /dev/null
-mkdir -p -- "$INSTALL_BASE"/bin 2> /dev/null
+mkdir -p -- "$PREFIX"/lib/uqm 2> /dev/null
+mkdir -p -- "$PREFIX"/bin 2> /dev/null
 
-echo "Unpacking content..."
-gzip -dc "$CONTENT_FILE" | tar -xf - -C "$INSTALL_BASE"lib/uqm
+echo "Unpacking packages..."
+for PACKAGE in `selected_components`; do
+	gzip -dc "$CONTENT_FILE" | tar -xf - -C "$PREFIX"/
+done
 
 echo "Unpacking other stuff..."
-tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$INSTALL_BASE"lib/
+tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$PREFIX"/
 
 echo "Creating wrapper script..."
-cat << EOF > "$INSTALL_BASE"bin/uqm
+cat << EOF > "$PREFIX"bin/uqm
 #!/bin/sh
 # Wrapper script for starting The Ur-Quan Masters
-"${INSTALL_BASE}lib/uqm/uqm" "--contentdir=${INSTALL_BASE}lib/uqm/content" "\$@"
+"${PREFIX}lib/uqm/uqm" "--contentdir=${PREFIX}lib/uqm/content" "\$@"
 EOF
-chmod 755 "$INSTALL_BASE"bin/uqm
+chmod 755 "$PREFIX"bin/uqm
 
 cat << EOF
+
 All done. Now you can play The Ur-Quan masters.
 I told you I was going to make you very happy.
 And if you're looking for documentation, you can find some in
-${INSTALL_BASE}lib/uqm/doc/. If you aren't looking for documentation, too.
+${PREFIX}lib/uqm/doc/. If you aren't looking for documentation, too.
 But feel free to delete them. You know where to find them.
 EOF
 

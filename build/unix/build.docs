@@ -23,6 +23,8 @@ There are three types of menu items.
   - Variables:
     - MENU_${NAME}_TITLE
       The title of the menu.
+    - MENU_${NAME}_TEXT (optional)
+      The text to show with the menu.
     - MENU_${NAME}_ITEMS
       The names of the menu items (space-seperated).
     - MENU_${NAME}_ITEM_${ITEMNAME}_TYPE
@@ -32,6 +34,8 @@ There are three types of menu items.
   - Variables:
     - CHOICE_${NAME}_TITLE
       The title of the choice menu.
+    - CHOICE_${NAME}_TEXT (optional)
+      The text to show with the choice menu.
     - CHOICE_${NAME}_OPTIONS
       The names of the options (space-seperated).
     - CHOICE_${NAME}_OPTION_${OPTIONNAME}_TITLE
@@ -49,19 +53,33 @@ There are three types of menu items.
 - Type INPUT:
   A string that is user-definable.
   - Variables:
-    - INPUT_${NAME}_DEFAULT (optional)
-      The default value.
     - INPUT_${NAME}_TITLE
       The title of the input field.
+    - INPUT_${NAME}_TEXT (optional)
+      The text to show with the input field.
     - INPUT_${NAME}_VALIDATOR (optional)
       A function to call after the user supplied a new value which
       checks if the value is allowed. It should accept the new value as
       an argument, and return 1 if the value is not allowed, or return 0
       and output the (possibly modified) value, to accept it.
+    - INPUT_${NAME}_DEFAULT (optional)
+      The default value.
     - INPUT_${NAME}_VALUE (set by the config program)
       The current value.
     - INPUT_${NAME}_OLD_VALUE (set by the config program)
       The value as it was at the start of the config program.
+- Type CHECK:
+  An option that can either be on or off, like a checkbox.
+  - Variables:
+    - CHECK_${NAME}_TITLE
+      The title of the input field.
+    - CHECK_${NAME}_DEFAULT (optional)
+      The default value, either 'CHECKED' or 'UNCHECKED'.
+    - CHECK_${NAME}_VALUE (set by the config program)
+      The current value, either 'CHECKED' or 'UNCHECKED'.
+    - CHECK_${NAME}_FIXED (optional)
+      A string that evaluates to 0 if this checkbox may not be changed.
+      
 
 
 Program info
