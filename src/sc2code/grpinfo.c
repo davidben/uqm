@@ -126,9 +126,9 @@ BuildGroups (void)
 			SIZE dx, dy;
 			DWORD d_squared;
 
-			// XXX: i is redefined in the line below, so the assignment
-			//      to i a few lines ago is useless... is there a bug?
-			// TODO: investigate
+			// XXX: BUG: i is redefined in the line below, so the assignment
+			//      to i a few lines ago is useless.
+			//      EncounterPercent is never used in practice. - SvdB
 			if ((i = HomeWorld[Index]) && CurStarDescPtr->Index == (BYTE)i)
 			{
 				BestIndex = Index;
