@@ -300,16 +300,15 @@ Uint32 **getpixelarray(FRAMEPTR FramePtr, int width, int height)
 
 }
 
-FRAMEPTR Build_Gradiated_Font (FRAMEPTR FramePtr, Uint32 from, Uint32 to)
+FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type)
 {
-	UBYTE type;
+	UBYTE FrameType;
 	FRAMEPTR NewFrame;
 	int x, y;
 	int width, height;
 	Uint32 color, clear;
 	BYTE from_r, from_g, from_b, from_a;
 	BYTE to_r, to_g, to_b, to_a;
-	int clrstep_r, clrstep_g, clrstep_b, clrstep_a;
 	TFB_Image *tfbImg, *tfbOrigImg;
 	SDL_Surface *img, *OrigImg;
 	PutPixelFn putpix;
@@ -317,10 +316,10 @@ FRAMEPTR Build_Gradiated_Font (FRAMEPTR FramePtr, Uint32 from, Uint32 to)
 
 	width = GetFrameWidth (FramePtr);
 	height = GetFrameHeight (FramePtr);
-	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+	FrameType = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
-				CreateDrawable (type, (SIZE)width, (SIZE)height, 1));
+				CreateDrawable (FrameType, (SIZE)width, (SIZE)height, 1));
 	tfbOrigImg = (TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs);
 	OrigImg = tfbOrigImg->NormalImg;
 	SDL_LockSurface (OrigImg);
@@ -342,30 +341,51 @@ FRAMEPTR Build_Gradiated_Font (FRAMEPTR FramePtr, Uint32 from, Uint32 to)
 	to_b = (to >> 8) & 0xFF;
 	to_a = to & 0xFF;
 
-	clrstep_r = (to_r - from_r) /  (height - 5);
-	clrstep_g = (to_g - from_g) /  (height - 5);
-	clrstep_b = (to_b - from_b) /  (height - 5);
-	clrstep_a = (to_a - from_a) /  (height - 5);
 	clear = SDL_MapRGBA (img->format, 0, 0, 0, 0);
-
 	for (y = 0; y < 2; y++)
 		for (x = 0; x < width; x++)
 			putpix (img, x, y, clear);
 
 	width--;
-	for (; y < height - 1; y++)
+	if (type == GRADIENT_EFFECT)
 	{
-		color = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
-		from_r += clrstep_r;
-		from_g += clrstep_g;
-		from_b += clrstep_b;
-		from_a += clrstep_a;
-		for (x = 0; x < width; x++)
-			if (getpix (OrigImg, x, y) == 1)
-				putpix (img, x, y, color);
-			else
-				putpix (img, x, y, clear);
-		putpix (img, x, y, clear);
+		int clrstep_r, clrstep_g, clrstep_b, clrstep_a;
+		clrstep_r = (to_r - from_r) /  (height - 5);
+		clrstep_g = (to_g - from_g) /  (height - 5);
+		clrstep_b = (to_b - from_b) /  (height - 5);
+		clrstep_a = (to_a - from_a) /  (height - 5);
+		for (; y < height - 1; y++)
+		{
+			color = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
+			from_r += clrstep_r;
+			from_g += clrstep_g;
+			from_b += clrstep_b;
+			from_a += clrstep_a;
+			for (x = 0; x < width; x++)
+				if (getpix (OrigImg, x, y) == 1)
+					putpix (img, x, y, color);
+				else
+					putpix (img, x, y, clear);
+			putpix (img, x, y, clear);
+		}
+	}
+	else if (type == ALTERNATE_EFFECT)
+	{
+		Uint32 color1, color2;
+		color1 = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
+		color2 = SDL_MapRGBA (img->format, to_r, to_g, to_b, to_a);
+		for (; y < height - 1; y++)
+		{
+			for (x = 0; x < width; x++)
+				if (getpix (OrigImg, x, y) == 1)
+				{
+					color = ((y & 0x01) ^ (x & 0x01)) ? color2 : color1;
+					putpix (img, x, y, color);
+				}
+				else
+					putpix (img, x, y, clear);
+			putpix (img, x, y, clear);
+		}
 	}
 
 	width++;

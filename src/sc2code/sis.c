@@ -379,14 +379,14 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	t.align = ALIGN_CENTER;
 	t.CharCount = (COUNT)~0;
 	if (optPCfonts)
-		SetContextGradientFont(
+		SetContextFontEffect (GRADIENT_EFFECT, 
 			BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
 			BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 	DrawText (&t);
 	if (optPCfonts)
-		SetContextGradientFont(0, 0);
+		SetContextFontEffect (0, 0, 0);
 
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);
@@ -508,6 +508,54 @@ GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect)
 	pRect->corner.y = IsCrewRect ? 117 : 38;
 }
 
+void DrawPC_SIS ()
+{
+	TEXT t;
+	RECT r;
+	UNICODE buf[10];
+	GetGaugeRect (&r, FALSE);
+	t.baseline.x = STATUS_WIDTH >> 1;
+	t.baseline.y = r.corner.y - 1;
+	t.align = ALIGN_CENTER;
+	t.pStr = buf;
+	t.CharCount = (COUNT)~0;
+	SetContextFont (TinyFont);
+	SetContextForeGroundColor (BLACK_COLOR);
+
+	r.corner.y -= 6;
+	r.corner.x--;
+	r.extent.width += 2;
+	DrawFilledRectangle (&r);
+
+	SetContextFontEffect (GRADIENT_EFFECT,
+		BUILD_COLOR_RGBA (0x00, 0x4D, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0x00, 0xAE, 0x00, 0xFF));
+	wsprintf (buf, "FUEL");
+	DrawText (&t);
+
+	r.corner.y += 79;
+	t.baseline.y += 79;
+	DrawFilledRectangle (&r);
+
+	SetContextFontEffect (GRADIENT_EFFECT,
+		BUILD_COLOR_RGBA (0x6B, 0x00, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0xF7, 0x00, 0x00, 0xFF));
+	wsprintf (buf, "CREW");
+	DrawText (&t);
+	SetContextFontEffect (0, 0, 0);
+
+	r.corner.x = 2 + 1;
+	r.corner.y = 3;
+	r.extent.width = 58;
+	r.extent.height = 7;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	DrawFilledRectangle (&r);
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
+	t.baseline.y = r.corner.y + 6;
+	wsprintf (buf, "CAPTAIN");
+	DrawText (&t);
+}
+
 void
 DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 {
@@ -531,6 +579,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.origin.x = s.origin.y = 0;
 		s.frame = flagship_status;
 		DrawStamp (&s);
+		if (optPCfonts)
+			DrawPC_SIS();
 
 		s.origin.x = 1;
 		s.origin.y = 0;

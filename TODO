@@ -91,8 +91,7 @@ Implementation bugs (low priority):
 - PC Menu still has some issues
   - Still using 3DO menu hierarchy, so menu text isn't identical to PC
 -PC Font issues:
-  - Update 'CREW' and 'FUEL' fonts to be identical to PC 
-  - Correct Lander text font color to be the same as PC
+  - Lander font isn't correct (for PC or 3DO)
 
 Stuff still to do (large):
 - add some way to configure your keys

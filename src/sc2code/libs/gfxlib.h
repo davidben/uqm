@@ -330,7 +330,7 @@ extern DWORD LoadFontFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
 extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
-extern void SetContextGradientFont (DWORD from, DWORD to);
+extern void SetContextFontEffect (BYTE type, DWORD from, DWORD to);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT_REF FontRef);
 extern FONT CaptureFont (FONT_REF FontRef);
@@ -389,6 +389,10 @@ extern void FlushColorXForms (void);
 #define GetColorMapLength GetStringLength
 #define GetColorMapAddress GetStringAddress
 #define GetColorMapContents GetStringContents
+
+// Font effect defines
+#define GRADIENT_EFFECT 0
+#define ALTERNATE_EFFECT 1
 
 #endif /* _GFX_PROTOS */
 

@@ -18,24 +18,26 @@
 
 #include "gfxintrn.h"
 
-extern FRAME Build_Gradiated_Font (FRAME FramePtr, DWORD from, DWORD to);
+extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to, BYTE type);
 
 static BYTE char_delta_array[MAX_DELTAS];
 static struct {
 	BOOLEAN Use;
 	DWORD from;
 	DWORD to;
-} FontGrad = {0,0,0};
+	BYTE type;
+} FontEffect = {0,0,0};
 
-void SetContextGradientFont (DWORD from, DWORD to)
+void SetContextFontEffect (BYTE type, DWORD from, DWORD to)
 {
 	if (from == to)
-		FontGrad.Use = 0;
+		FontEffect.Use = 0;
 	else
 	{
-		FontGrad.Use = 1;
-		FontGrad.from = from;
-		FontGrad.to = to;
+		FontEffect.Use = 1;
+		FontEffect.from = from;
+		FontEffect.to = to;
+		FontEffect.type = type;
 	}
 }
 
@@ -220,7 +222,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		TEXTPTR TextPtr;
 		PRIMITIVE locPrim;
 
-		if (FontGrad.Use)
+		if (FontEffect.Use)
 			SetPrimType (&locPrim, STAMP_PRIM);
 		else
 			SetPrimType (&locPrim, STAMPFILL_PRIM);
@@ -257,11 +259,12 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				_save_stamp.origin = r.corner;
 				if (BoxIntersect (&r, pClipRect, &r))
 				{
-					if (FontGrad.Use)
+					if (FontEffect.Use)
 					{
 						FRAME origFrame = locPrim.Object.Stamp.frame;
-						locPrim.Object.Stamp.frame = Build_Gradiated_Font(
-							locPrim.Object.Stamp.frame,  FontGrad.from, FontGrad.to);
+						locPrim.Object.Stamp.frame = Build_Font_Effect(
+							locPrim.Object.Stamp.frame, 
+							FontEffect.from, FontEffect.to, FontEffect.type);
 						DrawGraphicsFunc (&r, &locPrim);
 						DestroyDrawable (ReleaseDrawable (locPrim.Object.Stamp.frame));
 						locPrim.Object.Stamp.frame = origFrame;

@@ -19,6 +19,7 @@
 #include <ctype.h>
 #include "starcon.h"
 #include "lander.h"
+#include "options.h"
 
 #define NUM_CELL_COLS 34
 #define NUM_CELL_ROWS 11
@@ -33,7 +34,10 @@ ClearReportArea ()
 	STAMP s;
 	PRIMITIVE prim_row[NUM_CELL_COLS];
 
-	s.frame = SetAbsFrameIndex (SpaceJunkFrame, 18);
+	if (optPCfonts)
+		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 21);
+	else
+		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 18);
 	GetFrameRect (s.frame, &r);
 	s.origin.x = 1 + (r.extent.width >> 1);
 	s.origin.y = 1;
@@ -43,8 +47,13 @@ ClearReportArea ()
 		s.origin.x += r.extent.width + 1;
 
 		SetPrimNextLink (&prim_row[i], i + 1);
-		SetPrimType (&prim_row[i], STAMPFILL_PRIM);
-		SetPrimColor (&prim_row[i], BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
+		if (optPCfonts)
+			SetPrimType (&prim_row[i], STAMP_PRIM);
+		else
+		{
+			SetPrimType (&prim_row[i], STAMPFILL_PRIM);
+			SetPrimColor (&prim_row[i], BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
+		}
 	}
 	SetPrimNextLink (&prim_row[i - 1], END_OF_LIST);
 
@@ -225,7 +234,18 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 		FONT OldFont;
 
 		OldFont = SetContextFont (pSolarSysState->SysInfo.PlanetInfo.LanderFont);
-		MakeReport (ReadOutSounds,
+		if (optPCfonts)
+		{
+			SetContextFontEffect (ALTERNATE_EFFECT,
+				BUILD_COLOR_RGBA (0x00, 0x00, 0xD6, 0xFF),
+				BUILD_COLOR_RGBA (0x00, 0x04, 0xFF, 0xFF));
+			MakeReport (ReadOutSounds,
+				(UNICODE *)GetStringAddress (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString),
+				GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
+			SetContextFontEffect (0, 0, 0);
+		}
+		else
+			MakeReport (ReadOutSounds,
 				(UNICODE *)GetStringAddress (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString),
 				GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
 		SetContextFont (OldFont);
