@@ -61,6 +61,10 @@ image brighter, lower than 1.0 makes it darker.
 
 Print fps information in the status window.
 
+	-C               (or --configdir)
+
+Set the directory where the game will store the config data.
+
 	-n               (or --contentdir)
 
 Set the directory where the game will seek its data.
