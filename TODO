@@ -102,9 +102,6 @@ Glitches (don't crash the game, medium priority):
   isn't restored when loading.
 - When exiting from planet surface with lander, the 3d planet isn't updated
   for a little moment which causes black track on planet to be seen
-- Lander seems to land in a position which is way too far from what you
-  selected.. it's supposed to be random but not to drift so much off
-  from the selection
 
 
 Implementation bugs (low priority):
