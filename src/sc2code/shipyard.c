@@ -186,6 +186,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 
 #define SHIP_WIN_WIDTH 34
 #define SHIP_WIN_HEIGHT (SHIP_WIN_WIDTH + 6)
+#define SHIP_WIN_FRAMES ((SHIP_WIN_WIDTH >> 1) + 1)
 
 static void
 ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
@@ -368,6 +369,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		DWORD TimeIn;
 		RECT r;
 		CONTEXT OldContext;
+		int j;
 
 		SetSemaphore (GraphicsSem);
 		OldContext = SetContext (OffScreenContext);
@@ -380,10 +382,13 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		r.extent.height = SHIP_WIN_HEIGHT;
 		ButtonState = AnyButtonPress (FALSE) ? 1 : 0;
 		TimeIn = GetTimeCounter ();
-		do
+
+		for (j = 0; (j < SHIP_WIN_FRAMES) && !AllDoorsFinished; j++)
 		{
+			ClearSemaphore (GraphicsSem);
 			SleepThreadUntil (TimeIn + 5);
 			TimeIn = GetTimeCounter ();
+			SetSemaphore (GraphicsSem);
 			BatchGraphics ();
 StartFinalPass:
 			pship_win_info = &ship_win_info[0];
@@ -399,8 +404,11 @@ StartFinalPass:
 					if (YankedStarShipPtr == 0)
 						AllDoorsFinished = TRUE;
 					else
+					{
 						pship_win_info->lfdoor_s.origin.x =
 								pship_win_info->rtdoor_s.origin.x = 0;
+						AllDoorsFinished = TRUE;
+					}
 					goto StartFinalPass;
 				}
 
@@ -436,7 +444,7 @@ StartFinalPass:
 			}
 
 			UnbatchGraphics ();
-		} while (!AllDoorsFinished);
+		}
 
 		SetContextClipRect (NULL_PTR);
 		SetContext (OldContext);
@@ -690,7 +698,7 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					goto ChangeFlashRect;
 				}
 				else if (InputState & (DEVICE_BUTTON1 | DEVICE_BUTTON2))
-				{
+				{					
 					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
 						goto ChangeFlashRect;
 					else if (hStarShip == 0)
@@ -837,10 +845,10 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 								crew_bought -= crew_delta;
 							}
 							ResUnits += crew_bought * GLOBAL (CrewCost);
-
+							
 							SetFlashRect (NULL_PTR, (FRAME)0);
-							ClearSemaphore (GraphicsSem);
-							ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);
+							ClearSemaphore (GraphicsSem);							
+							ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);							
 							SetSemaphore (GraphicsSem);
 							pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
 							SetFlashRect (&pMS->flash_rect0, (FRAME)0);
