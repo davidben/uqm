@@ -196,10 +196,6 @@ SOURCE=..\sc2code\libs\graphics\sdl\opengl.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\oscilloscope.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\graphics\sdl\primitives.c
 # End Source File
 # Begin Source File

@@ -17,13 +17,77 @@
  */
 
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/drawable.h"
 #include "libs/sound/trackplayer.h"
+
+static FRAMEPTR scope_frame;
+static int scope_init = 0;
+static TFB_Image *scope_bg = NULL;
+static TFB_Image *scope_surf = NULL;
+static UBYTE scope_data[RADAR_WIDTH];
+
+void
+InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
+{
+	scope_frame = f;
+	if (!scope_init)
+	{
+		TFB_Canvas scope_bg_canvas, scope_surf_canvas;
+		scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height, f->image->Palette, -1);
+		scope_bg = TFB_DrawImage_New (scope_bg_canvas);
+		scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height, f->image->Palette, -1);
+		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
+		TFB_DrawImage_Image (f->image, 0, 0, FALSE, NULL, scope_bg);
+		scope_init = 1;
+	}	
+}
+
+void
+UninitOscilloscope (void)
+{
+	if (scope_bg)
+	{
+		TFB_DrawImage_Delete (scope_bg);
+		scope_bg = NULL;
+	}
+	if (scope_surf)
+	{
+		TFB_DrawImage_Delete (scope_surf);
+		scope_surf = NULL;
+	}
+}
+
+// draws the oscilloscope
+void
+Oscilloscope (DWORD grab_data)
+{
+	STAMP s;
+
+	if (!grab_data)
+		return;
+
+	TFB_DrawImage_Image (scope_bg, 0, 0, FALSE, NULL, scope_surf);
+	if (GetSoundData (scope_data)) 
+	{
+		int i, r, g, b;		
+		r = scope_surf->Palette[238].r;
+		g = scope_surf->Palette[238].g;
+		b = scope_surf->Palette[238].b;
+		for (i = 0; i < RADAR_WIDTH - 1; ++i)
+			TFB_DrawImage_Line (i, scope_data[i], i + 1, scope_data[i + 1], r, g, b, scope_surf);
+	}
+	TFB_DrawImage_Image (scope_surf, 0, 0, FALSE, NULL, scope_frame->image);
+
+	s.frame = scope_frame;
+	s.origin.x = s.origin.y = 0;
+	DrawStamp (&s);
+}
+
 
 static STAMP sliderStamp;
 static STAMP buttonStamp;
 static BOOLEAN sliderChanged = FALSE;
 int sliderSpace;  // slider width - button width
-
 
 /*
  * Initialise the communication progress bar
@@ -72,4 +136,3 @@ Slider (void)
 		UnbatchGraphics ();
 	}
 }
-
