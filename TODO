@@ -22,8 +22,6 @@ Serious bugs (crash the game, high priority):
 Glitches (don't crash the game, medium priority):
 - The melnorme don't charge for fuel when you ask "fill 'er up"
   Instead, they pay you a Credit.
-- Autopilot indicator keeps blinking when entering combat, when autopilot
-  was on.
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
@@ -187,6 +185,7 @@ Stuff still to do (small):
 - Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
+- Scanlines not implemented yet for pure mode
 
 Questions:
 - remove src/sc2code/test.c?
