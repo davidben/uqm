@@ -184,8 +184,8 @@ GetFrameRect (FRAMEPTR FramePtr, PRECT pRect)
 {
 	if (FramePtr)
 	{
-		pRect->corner.x = -GetFrameHotX (FramePtr);
-		pRect->corner.y = -GetFrameHotY (FramePtr);
+		pRect->corner.x = -FramePtr->HotSpot.x;
+		pRect->corner.y = -FramePtr->HotSpot.y;
 		pRect->extent.width = GetFrameWidth (FramePtr);
 		pRect->extent.height = GetFrameHeight (FramePtr);
 
@@ -202,10 +202,10 @@ SetFrameHot (FRAMEPTR FramePtr, HOT_SPOT HotSpot)
 	{
 		HOT_SPOT OldHot;
 
-		OldHot = GetFrameHotSpot (FramePtr);
-			SetFrameHotSpot (FramePtr, HotSpot);
+		OldHot = FramePtr->HotSpot;
+		FramePtr->HotSpot = HotSpot;
 
-			return (OldHot);
+		return (OldHot);
 	}
 
 	return (MAKE_HOT_SPOT (0, 0));
@@ -216,7 +216,7 @@ GetFrameHot (FRAMEPTR FramePtr)
 {
 	if (FramePtr)
 	{
-		return (GetFrameHotSpot (FramePtr));
+		return FramePtr->HotSpot;
 	}
 
 	return (MAKE_HOT_SPOT (0, 0));

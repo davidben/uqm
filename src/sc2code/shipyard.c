@@ -22,9 +22,11 @@
 
 //Added by Chris
 
-void DoShipSpin (COUNT index, MUSIC_REF hMusic);
+#ifdef WANT_SHIP_SPINS
+void DoShipSpin (COUNT index, MUSIC_REF hMusic); // Defined in fmv.c
+#endif
 
-void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
+void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect); // Defined in sis.c
 
 //End added by Chris
 
@@ -34,7 +36,7 @@ void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
 #	define HANGAR_Y          64
 #	define HANGAR_DY         44
 
-const static COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
+static const COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 {
 	19, 60, 116, 157
 };
@@ -45,7 +47,7 @@ const static COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 #	define HANGAR_Y          88
 #	define HANGAR_DY         84
 
-const static COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
+static const COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 {
 	0, 38, 76,  131, 169, 207
 };
@@ -109,6 +111,7 @@ int hangar_anim_func (void* data)
 	return(0);
 }
 
+#ifdef WANT_SHIP_SPINS
 static void
 SpinStarShip (HSTARSHIP hStarShip)
 {
@@ -136,6 +139,7 @@ SpinStarShip (HSTARSHIP hStarShip)
 	if (Index < NUM_MELEE_SHIPS)
 		DoShipSpin (Index, pMenuState->hMusic);
 }
+#endif
 
 static COUNT
 GetAvailableRaceCount (void)

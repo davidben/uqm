@@ -32,8 +32,8 @@ TFB_Prim_Point (PPOINT p, TFB_Palette *color)
 {
 	RECT r;
 
-	r.corner.x = p->x - GetFrameHotX (_CurFramePtr);
-	r.corner.y = p->y - GetFrameHotY (_CurFramePtr);
+	r.corner.x = p->x - _CurFramePtr->HotSpot.x;
+	r.corner.y = p->y - _CurFramePtr->HotSpot.y;
 	r.extent.width = r.extent.height = 1;
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
@@ -72,8 +72,8 @@ TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 	RECT rect;
 	int gscale;
 
-	rect.corner.x = r->corner.x - GetFrameHotX (_CurFramePtr);
-	rect.corner.y = r->corner.y - GetFrameHotY (_CurFramePtr);
+	rect.corner.x = r->corner.x - _CurFramePtr->HotSpot.x;
+	rect.corner.y = r->corner.y - _CurFramePtr->HotSpot.y;
 	rect.extent.width = r->extent.width;
 	rect.extent.height = r->extent.height;
 
@@ -99,10 +99,10 @@ TFB_Prim_Line (PLINE line, TFB_Palette *color)
 {
 	int x1, y1, x2, y2;
 
-	x1=line->first.x - GetFrameHotX (_CurFramePtr);
-	y1=line->first.y - GetFrameHotY (_CurFramePtr);
-	x2=line->second.x - GetFrameHotX (_CurFramePtr);
-	y2=line->second.y - GetFrameHotY (_CurFramePtr);
+	x1=line->first.x - _CurFramePtr->HotSpot.x;
+	y1=line->first.y - _CurFramePtr->HotSpot.y;
+	x2=line->second.x - _CurFramePtr->HotSpot.x;
+	y2=line->second.y - _CurFramePtr->HotSpot.y;
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 		TFB_DrawScreen_Line (x1, y1, x2, y2, color->r, color->g, color->b, TFB_SCREEN_MAIN);
@@ -137,16 +137,16 @@ TFB_Prim_Stamp (PSTAMP stmp)
 
 	LockMutex (img->mutex);
 
-	x = stmp->origin.x - GetFrameHotX (_CurFramePtr) - GetFrameHotX (SrcFramePtr);
-	y = stmp->origin.y - GetFrameHotY (_CurFramePtr) - GetFrameHotY (SrcFramePtr);
+	x = stmp->origin.x - _CurFramePtr->HotSpot.x - SrcFramePtr->HotSpot.x;
+	y = stmp->origin.y - _CurFramePtr->HotSpot.y - SrcFramePtr->HotSpot.y;
 	paletted = FALSE;
 
 	if (gscale != 0 && gscale != 256)
 	{
 		TFB_DrawImage_FixScaling (img, gscale);
-		x += (GetFrameHotX (SrcFramePtr) *
+		x += (SrcFramePtr->HotSpot.x *
 		      ((1 << 8) - gscale)) >> 8;
-		y += (GetFrameHotY (SrcFramePtr) *
+		y += (SrcFramePtr->HotSpot.y *
 		      ((1 << 8) - gscale)) >> 8;
 	}
 
@@ -196,8 +196,8 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 
 	LockMutex (img->mutex);
 
-	x = stmp->origin.x - GetFrameHotX (_CurFramePtr) - GetFrameHotX (SrcFramePtr);
-	y = stmp->origin.y - GetFrameHotY (_CurFramePtr) - GetFrameHotY (SrcFramePtr);
+	x = stmp->origin.x - _CurFramePtr->HotSpot.x - SrcFramePtr->HotSpot.x;
+	y = stmp->origin.y - _CurFramePtr->HotSpot.y - SrcFramePtr->HotSpot.y;
 	r = color->r;
 	g = color->g;
 	b = color->b;
@@ -205,9 +205,9 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	if (gscale != 0 && gscale != 256)
 	{
 		TFB_DrawImage_FixScaling (img, gscale);
-		x += (GetFrameHotX (SrcFramePtr) *
+		x += (SrcFramePtr->HotSpot.x *
 		      ((1 << 8) - gscale)) >> 8;
-		y += (GetFrameHotY (SrcFramePtr) *
+		y += (SrcFramePtr->HotSpot.y *
 		      ((1 << 8) - gscale)) >> 8;
 	}
 

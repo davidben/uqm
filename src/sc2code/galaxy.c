@@ -30,8 +30,8 @@ void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
 #define MED_STAR_COUNT 60
 #define SML_STAR_COUNT 90
 #define NUM_STARS (BIG_STAR_COUNT \
-								+ MED_STAR_COUNT \
-								+ SML_STAR_COUNT)
+			+ MED_STAR_COUNT \
+			+ SML_STAR_COUNT)
 
 POINT SpaceOrg;
 static POINT log_star_array[NUM_STARS];
@@ -51,14 +51,17 @@ STAR_BLOCK StarBlock[NUM_STAR_PLANES] =
 	{
 		0, BIG_STAR_COUNT,
 		&log_star_array[0],
+		NULL, NULL,
 	},
 	{
 		0, MED_STAR_COUNT,
 		&log_star_array[BIG_STAR_COUNT],
+		NULL, NULL,
 	},
 	{
 		0, SML_STAR_COUNT,
 		&log_star_array[BIG_STAR_COUNT + MED_STAR_COUNT],
+		NULL, NULL,
 	},
 };
 

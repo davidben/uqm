@@ -81,10 +81,6 @@ typedef struct
 } DRAWABLE_DESC;
 typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
-#define GetFrameHotX(f) GET_HOT_X(((FRAMEPTR)(f))->HotSpot)
-#define GetFrameHotY(f) GET_HOT_Y(((FRAMEPTR)(f))->HotSpot)
-#define GetFrameHotSpot(f) (((FRAMEPTR)(f))->HotSpot)
-#define SetFrameHotSpot(f,h) (((FRAMEPTR)(f))->HotSpot=(h))
 #define GetFrameWidth(f) LOWORD (((FRAMEPTR)(f))->Bounds)
 #define GetFrameHeight(f) HIWORD (((FRAMEPTR)(f))->Bounds)
 #define SetFrameBounds(f,w,h) (((FRAMEPTR)(f))->Bounds=MAKE_DWORD(w,h))

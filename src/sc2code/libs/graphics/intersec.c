@@ -252,14 +252,14 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 	FramePtr0 = (FRAMEPTR)pControl0->IntersectStamp.frame;
 	if (FramePtr0 == 0)
 		return(0);
-	r0.corner.x -= GetFrameHotX (FramePtr0);
-	r0.corner.y -= GetFrameHotY (FramePtr0);
+	r0.corner.x -= FramePtr0->HotSpot.x;
+	r0.corner.y -= FramePtr0->HotSpot.y;
 
 	FramePtr1 = (FRAMEPTR)pControl1->IntersectStamp.frame;
 	if (FramePtr1 == 0)
 		return(0);
-	r1.corner.x -= GetFrameHotX (FramePtr1);
-	r1.corner.y -= GetFrameHotY (FramePtr1);
+	r1.corner.x -= FramePtr1->HotSpot.x;
+	r1.corner.y -= FramePtr1->HotSpot.y;
 
 	dy = r1.corner.y - r0.corner.y;
 	time_y_0 = dy - GetFrameHeight (FramePtr0) + 1;
@@ -388,11 +388,11 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 					(TIME_VALUE)time_y_0, (TIME_VALUE)time_y_1)))
 			{
 				FramePtr0 = (FRAMEPTR)pControl0->IntersectStamp.frame;
-				pControl0->EndPoint.x = r0.corner.x + GetFrameHotX (FramePtr0);
-				pControl0->EndPoint.y = r0.corner.y + GetFrameHotY (FramePtr0);
+				pControl0->EndPoint.x = r0.corner.x + FramePtr0->HotSpot.x;
+				pControl0->EndPoint.y = r0.corner.y + FramePtr0->HotSpot.y;
 				FramePtr1 = (FRAMEPTR)pControl1->IntersectStamp.frame;
-				pControl1->EndPoint.x = r1.corner.x + GetFrameHotX (FramePtr1);
-				pControl1->EndPoint.y = r1.corner.y + GetFrameHotY (FramePtr1);
+				pControl1->EndPoint.x = r1.corner.x + FramePtr1->HotSpot.x;
+				pControl1->EndPoint.y = r1.corner.y + FramePtr1->HotSpot.y;
 
 				return (intersect_time);
 			}

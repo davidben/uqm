@@ -62,7 +62,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
 	img[cel_ct] = (SDL_Surface *)tfbimg->NormalImg;
 
-	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
+        FramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
 }
 
@@ -126,7 +126,7 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	FramePtr->image = TFB_DrawImage_New (img[cel_ct]);
 	img[cel_ct] = FramePtr->image->NormalImg;
 	
-	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
+        FramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
 }
 
@@ -237,17 +237,17 @@ void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *r
 		srcRect.h = rsrc->extent.height;
 		srp = &srcRect;
 	}
-	else if (GetFrameHotX (srcFrame) || GetFrameHotY (srcFrame))
+	else if (srcFrame->HotSpot.x || srcFrame->HotSpot.y)
 	{
 		if (rdst)
 		{
-			dstRect.x -= GetFrameHotX (srcFrame);
-			dstRect.y -= GetFrameHotY (srcFrame);
+			dstRect.x -= srcFrame->HotSpot.x;
+			dstRect.y -= srcFrame->HotSpot.y;
 		}
 		else
 		{
-			dstRect.x = -GetFrameHotX (srcFrame);
-			dstRect.y = -GetFrameHotY (srcFrame);
+			dstRect.x = -srcFrame->HotSpot.x;
+			dstRect.y = -srcFrame->HotSpot.y;
 			dstRect.w = GetFrameWidth (srcFrame);
 			dstRect.h = GetFrameHeight (srcFrame);
 			drp =&dstRect;
@@ -392,7 +392,7 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 		putpix (img, x, y, clear);
 	SDL_UnlockSurface (img);
 	SDL_UnlockSurface (OrigImg);
-	SetFrameHotSpot (NewFrame, GetFrameHotSpot (FramePtr));
+	NewFrame->HotSpot = FramePtr->HotSpot;
 	return (NewFrame);
 
 }
@@ -624,7 +624,7 @@ _GetFontData (FILE *fp, DWORD length)
 						else if (img[0]->h > 9)
 							tune_amount = -3;
 
-						SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (0, img[0]->h + tune_amount));
+						FramePtr->HotSpot = MAKE_HOT_SPOT (0, img[0]->h + tune_amount);
 					}
 					
 					if (GetFrameHeight (FramePtr) > FontPtr->Leading)

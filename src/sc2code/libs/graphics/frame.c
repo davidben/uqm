@@ -22,6 +22,15 @@
 #include "tfb_draw.h"
 #include "tfb_prim.h"
 
+HOT_SPOT
+MAKE_HOT_SPOT (COORD x, COORD y)
+{
+	HOT_SPOT hs;
+	hs.x = x;
+	hs.y = y;
+	return hs;
+}
+
 typedef union
 {
 	POINT Point;
@@ -50,9 +59,9 @@ GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
 	COORD hx, hy;
 	HOT_SPOT OldHot;
 
-	OldHot = GetFrameHotSpot (_CurFramePtr);
-	hx = GET_HOT_X (OldHot);
-	hy = GET_HOT_Y (OldHot);
+	OldHot = _CurFramePtr->HotSpot;
+	hx = OldHot.x;
+	hy = OldHot.y;
 	pValidRect->corner.x = hx;
 	pValidRect->corner.y = hy;
 	pValidRect->extent.width = GetFrameWidth (_CurFramePtr);
@@ -67,7 +76,7 @@ GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
 		hy -= _pCurContext->ClipRect.corner.y;
 		pValidRect->corner.x += hx;
 		pValidRect->corner.y += hy;
-		SetFrameHotSpot (_CurFramePtr, MAKE_HOT_SPOT (hx, hy));
+		_CurFramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
 	}
 
 	*pOldHot = OldHot;
@@ -199,7 +208,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, register
 
 		UnbatchGraphics ();
 
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 
 		if (BatchFlags & BATCH_SINGLE)
 			SetPrimLinks (lpBasePrim,
@@ -221,7 +230,7 @@ ClearDrawable (void)
 		ClearBackGround (&ValidRect);
 		UnbatchGraphics ();
 
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
@@ -242,7 +251,7 @@ DrawPoint (PPOINT lpPoint)
 		color.b = (c32k << (8 - 5)) & 0xF8;
 		
 		TFB_Prim_Point (lpPoint, &color);
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
@@ -263,7 +272,7 @@ DrawRectangle (PRECT lpRect)
 		color.b = (c32k << (8 - 5)) & 0xF8;
 		
 		TFB_Prim_Rect (lpRect, &color);  
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
@@ -284,7 +293,7 @@ DrawFilledRectangle (PRECT lpRect)
 		color.b = (c32k << (8 - 5)) & 0xF8;
 		
 		TFB_Prim_FillRect (lpRect, &color);  
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
@@ -305,7 +314,7 @@ DrawLine (PLINE lpLine)
 		color.b = (c32k << (8 - 5)) & 0xF8;
 		
 		TFB_Prim_Line (lpLine, &color);
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	} 
 }
 
@@ -318,7 +327,7 @@ DrawStamp (PSTAMP stmp)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Prim_Stamp (stmp);
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
@@ -338,6 +347,6 @@ DrawFilledStamp (PSTAMP stmp)
 		color.g = (c32k >> (5 - (8 - 5))) & 0xF8;
 		color.b = (c32k << (8 - 5)) & 0xF8;
 		TFB_Prim_StampFill (stmp, &color);
-		SetFrameHotSpot (_CurFramePtr, OldHot);
+		_CurFramePtr->HotSpot = OldHot;
 	}
 }

@@ -207,10 +207,9 @@ typedef BYTE INTERSECT_CODE;
 								 INTERSECT_RIGHT | \
 								 INTERSECT_BOTTOM)
 
-typedef DWORD HOT_SPOT;
-#define MAKE_HOT_SPOT MAKE_DWORD
-#define GET_HOT_X(h) ((short)LOWORD(h))
-#define GET_HOT_Y(h) ((short)HIWORD(h))
+typedef POINT HOT_SPOT;
+
+extern HOT_SPOT MAKE_HOT_SPOT (COORD, COORD);
 
 extern INTERSECT_CODE BoxIntersect (PRECT pr1, PRECT pr2, PRECT
 		printer);

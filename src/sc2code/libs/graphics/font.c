@@ -160,7 +160,7 @@ TextRect (PTEXT lpText, register PRECT pRect, PBYTE pdelta)
 			{
 				register COORD y;
 
-				y = -GetFrameHotY (&FontPtr->CharDesc[ch]);
+				y = -((FRAME_DESC)FontPtr->CharDesc[ch]).HotSpot.y;
 				if (y < top_y)
 					top_y = y;
 				y += GetFrameHeight (&FontPtr->CharDesc[ch]);
@@ -257,9 +257,9 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				RECT r;
 
 				r.corner.x = locPrim.Object.Stamp.origin.x
-						- GetFrameHotX (locPrim.Object.Stamp.frame);
+						- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.x;
 				r.corner.y = locPrim.Object.Stamp.origin.y
-						- GetFrameHotY (locPrim.Object.Stamp.frame);
+						- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.y;
 				r.extent.width = GetFrameWidth (locPrim.Object.Stamp.frame);
 				r.extent.height = GetFrameHeight (locPrim.Object.Stamp.frame);
 				_save_stamp.origin = r.corner;
