@@ -1,4 +1,8 @@
 Changes towards version 0.4:
+- Fixed ships in solar system getting displaced after having
+  visited a planet (bug #365) -Alex
+- Fixed collisions/encounters with "invisible" fleeing ships
+  (bug #319) -Alex
 - Quit confirmation fixes: lander reports, conversation summaries,
   outtakes, end credits; font effect properly set/saved/restored;
   (bugs #454, #465, #466); from chmmravatar
