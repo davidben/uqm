@@ -175,7 +175,7 @@ InitShips (void)
 		}
 	}
 
-	FlushInput ();
+	// FlushInput ();
 
 	return (num_ships);
 }

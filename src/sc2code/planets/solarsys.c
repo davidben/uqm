@@ -1922,7 +1922,7 @@ ExploreSolarSys (void)
 	SolarSysState.GenFunc = GenerateIP (CurStarDescPtr->Index);
 
 	InitSolarSys ();
-	DoInput ((PVOID)&SolarSysState.MenuState, TRUE);
+	DoInput ((PVOID)&SolarSysState.MenuState, FALSE);
 	UninitSolarSys ();
 	pSolarSysState = 0;
 }
