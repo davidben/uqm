@@ -38,10 +38,13 @@ CDToContentDir (char *contentdir)
     
     if (!FileExists (testfile))
     {
-        if (chdir(contentdir) || !FileExists (testfile))
+        if (chdir (contentdir) || !FileExists (testfile))
         {
-            fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
-            exit(-1);
+			if (chdir ("content") || !FileExists (testfile))
+			{
+				fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
+				exit(-1);
+			}
         }
     }
 }
