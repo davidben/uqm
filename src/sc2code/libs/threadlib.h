@@ -104,11 +104,16 @@ typedef void *Semaphore;
 extern Semaphore CreateSemaphoreAux (DWORD initial, char *sem_name);
 #	define CreateSemaphore(initial,sem_name) \
 		CreateSemaphoreAux ((initial), (sem_name))
+extern void ResetSemaphoreOwnerAux (Semaphore sem);
+#	define ResetSemaphoreOwner(sem_name) \
+		ResetSemaphoreOwnerAux (sem_name)
 #else
 extern Semaphore CreateSemaphoreAux (DWORD initial);
 #	define CreateSemaphore(initial,sem_name) \
 		CreateSemaphoreAux ((initial))
+#	define ResetSemaphoreOwner(sem_name)
 #endif
+extern DWORD SemaphoreValue (Semaphore sem);
 extern void DestroySemaphore (Semaphore sem);
 extern int SetSemaphore (Semaphore sem);
 extern int TrySetSemaphore (Semaphore sem);
@@ -133,6 +138,7 @@ extern void BroadcastCondVar (CondVar);
 
 extern DWORD CurrentThreadID (void);
 
+extern void LockSignalMutex(void);
 extern void WaitForSignal (void);
 extern void SignalThread (DWORD);
 

@@ -87,6 +87,7 @@ typedef SDL_cond *NativeCondVar;
 		SDL_CreateCond ()
 #define NativeDestroyCondVar(condvar) \
 		SDL_DestroyCond ((condvar))
+extern void SDLWrapper_WaitCondVar (CondVar candvar);
 #define NativeWaitCondVar(condvar) \
 		SDLWrapper_WaitCondVar ((condvar))
 #define NativeSignalCondVar(condvar) \

@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Fixed deadlock races in new FlushGraphics method -PhracturedBlue
 - FlushGraphics now waits and notifies on a per-thread level
 - No longer using SHGetFolderPath on Windows - SvdB
 - Key repeat is now enabled when typing text, from slayne

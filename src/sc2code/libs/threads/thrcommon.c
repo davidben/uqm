@@ -518,6 +518,27 @@ TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout)
 	return (i);
 }
 
+DWORD
+SemaphoreValue (Semaphore sem)
+{
+	return NativeSemValue (sem);
+}
+
+#ifdef DEBUG_TRACK_SEM
+// Use this function to prevent messages when it  is known that
+// a semaphore will be cleared by a different thread than set it
+void 
+ResetSemaphoreOwnerAux (Semaphore sem)
+{
+	int i;
+	for (i = 0; i < numSems; i++)
+		if (SemMon[i].Sem == sem)
+		{
+			SemMon[i].Thread = 0;
+			break;
+		}
+}
+#endif
 void
 ClearSemaphore (Semaphore sem)
 {

@@ -80,6 +80,8 @@ FlushGraphics (void)
 	TFB_BatchReset ();
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
 	DrawCommand.image = 0;
+	// We need to lock the  mutex before quein the DC to prevent races 
+	LockSignalMutex ();
 	TFB_EnqueueDrawCommand(&DrawCommand);
 	WaitForSignal ();
 }

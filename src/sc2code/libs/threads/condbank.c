@@ -29,10 +29,11 @@
 
 #define CONDVAR_BANK_SIZE 10
 
-static Semaphore bank_sem;
+static Mutex bank_mutex;
+static int wait = 0, signal = 0;
 
 static struct {
-	CondVar var;
+	Semaphore var;
 	DWORD   id;
 	int     used;
 } bank[CONDVAR_BANK_SIZE];
@@ -41,10 +42,12 @@ void
 init_cond_bank ()
 {
 	int i;
-	bank_sem = CreateSemaphore (1, "CondVar Bank Semaphore");
+	bank_mutex = CreateMutex ();
 	for (i = 0; i < CONDVAR_BANK_SIZE; i++)
 	{
-		bank[i].var = CreateCondVar ();
+		char str[20];
+		sprintf (str, "bank sem %d", i);
+		bank[i].var = CreateSemaphore (0, str); 
 		bank[i].id = bank[i].used = 0;
 	}
 }
@@ -57,16 +60,20 @@ uninit_cond_bank ()
 	{
 		DestroyCondVar (bank[i].var);
 	}
-	DestroySemaphore (bank_sem);
+	DestroyMutex (bank_mutex);
 }
 
+void
+LockSignalMutex ()
+{
+	LockMutex (bank_mutex);
+}
 void
 WaitForSignal ()
 {
 	int i;
 	int index = -1;
 	DWORD me = CurrentThreadID ();
-	SetSemaphore (bank_sem);
 	for (i = 0; i < CONDVAR_BANK_SIZE; i++)
 	{
 		if (!bank[i].used)
@@ -79,15 +86,19 @@ WaitForSignal ()
 	{
 		/* The bank is full! */
 		fprintf(stderr, "Condvar bank is full, %ul is waiting on DCQ.", me);
-		ClearSemaphore (bank_sem);
+		UnlockMutex (bank_mutex);
 		WaitCondVar (RenderingCond);
 	}
 	else
 	{
 		bank[i].used = 1;
 		bank[i].id = me;
-		ClearSemaphore (bank_sem);
-		WaitCondVar (bank[i].var);
+		// Initialize the Semaphore to a value of '0' in case it isn't already
+		while (SemaphoreValue (bank[i].var))
+			SetSemaphore (bank[i].var);
+		UnlockMutex (bank_mutex);
+		// Block on Semaphore until it is cleared by the Signal
+		SetSemaphore (bank[i].var);
 	}
 }
 
@@ -95,16 +106,19 @@ void
 SignalThread (DWORD id)
 {
 	int i;
-	SetSemaphore (bank_sem);
+	LockMutex (bank_mutex);
 	for (i = 0; i < CONDVAR_BANK_SIZE; i++)
 	{
 		if (bank[i].used && bank[i].id == id)
 		{
 			bank[i].id = bank[i].used = 0;
-			SignalCondVar (bank[i].var);
+			ResetSemaphoreOwner (bank[i].var);
+			ClearSemaphore (bank[i].var);
 			break;
 		}
 	}
-	ClearSemaphore (bank_sem);
+	if (i == CONDVAR_BANK_SIZE)
+		fprintf (stderr, "Warning: Couldn't find thread to signal!\n");
+	UnlockMutex (bank_mutex);
 }
 
