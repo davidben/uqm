@@ -86,9 +86,22 @@ dl_mirror:
  mirrorsuccessful:
   !insertmacro Print $(DownloadRetrievingMirrorListSuccessful)
   Pop $0
-  StrCpy $R8 "1"
+
+  FileOpen $R1 $R0 a
+  FileRead $R1 $R5
+  ; Check the the first line is a number
+  IntCmp $R5 0 mirror_broken 0 0
+  FileClose $R1
+  
+  ;Calculate a random number based on the filetime of the downloaded mirror list  
+  GetFileTime $R0 $R7 $R2
+  IntOp $R2 $R2 & "16777215"    ;Just keep the last few bity, also ensure that $R6 is positive
+  IntOp $R2 $R2 / "100"         ;Skip last 2 digits, they aren't really random due to low timer resolution
+  IntOp $R2 $R2 % $R5
+  IntOp $R2 $R2 + "1" ; $R2 now contains the index of the mirror to use first
+  StrCpy $R8 $R2
  
- mirrorretry:  
+ mirrorretry:
   ;Now parse the mirror list
   FileOpen $R1 $R0 a
   
@@ -117,6 +130,7 @@ dl_mirror:
 
  mirror_broken:
   !insertmacro Print $(DownloadMirrorBroken)
+  FileClose $R1
   Delete $R0
   MessageBox MB_OK|MB_ICONEXCLAMATION $(DownloadMirrorBrokenDlg)
   StrCpy $R9 failure
@@ -154,10 +168,17 @@ dl_mirror:
   StrCpy $R0 $R7
   StrCpy $R6 $0
   Pop $0
-  IntOp $R8 $R8 + "1"
-  ; try next mirror if possible
-  IntCmp $R8 $R5 mirrorretry mirrorretry 0
+  IntOp $R8 $R8 + "1"  
+  IntCmp $R8 $R5 0 0 dlmirrorwrap
+ dlafterwrap:
+  IntCmp $R8 $R2 dlfailed 0 0
+  goto mirrorretry
 
+ dlmirrorwrap:
+  StrCpy $R8 "1"
+  goto dlafterwrap
+  
+ dlfailed:
   Delete $R7
   StrCpy $R1 $R6
   MessageBox MB_OK|MB_ICONEXCLAMATION $(DownloadDownloadFailedBox)
