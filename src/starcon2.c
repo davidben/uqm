@@ -30,7 +30,7 @@
 #endif
 
 #include "libs/graphics/gfx_common.h"
-#include "libs/sound/sound_common.h"
+#include "libs/sound/sound.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
 #include "file.h"
@@ -39,7 +39,7 @@
 #include "uqmversion.h"
 #include "comm.h"
 
-#if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)
+#if defined(GFXMODULE_SDL)
 #	include <SDL.h>
 			// Including this is actually necessary on OSX.
 #endif
@@ -66,9 +66,9 @@ int
 main (int argc, char *argv[])
 {
 	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
-	int snddriver = TFB_SOUNDDRIVER_MIXSDL;
+	int snddriver = audio_DRIVER_MIXSDL;
 	int gfxflags = 0;
-	int soundflags = TFB_SOUNDFLAGS_MQAUDIO;
+	int soundflags = audio_QUALITY_MEDIUM;
 	int width = 640, height = 480, bpp = 16;
 	int vol;
 	int val;
@@ -218,18 +218,18 @@ main (int argc, char *argv[])
 			case 'q':
 				if (!strcmp (optarg, "high"))
 				{
-					soundflags &= ~(TFB_SOUNDFLAGS_MQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
-					soundflags |= TFB_SOUNDFLAGS_HQAUDIO;
+					soundflags &= ~(audio_QUALITY_MEDIUM|audio_QUALITY_LOW);
+					soundflags |= audio_QUALITY_HIGH;
 				}
 				else if (!strcmp (optarg, "medium"))
 				{
-					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
-					soundflags |= TFB_SOUNDFLAGS_MQAUDIO;
+					soundflags &= ~(audio_QUALITY_HIGH|audio_QUALITY_LOW);
+					soundflags |= audio_QUALITY_MEDIUM;
 				}
 				else if (!strcmp (optarg, "low"))
 				{
-					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_MQAUDIO);
-					soundflags |= TFB_SOUNDFLAGS_LQAUDIO;
+					soundflags &= ~(audio_QUALITY_HIGH|audio_QUALITY_MEDIUM);
+					soundflags |= audio_QUALITY_LOW;
 				}
 			break;
 		    case 'u':
@@ -272,15 +272,15 @@ main (int argc, char *argv[])
 			case SOUND_OPT:
 				if (!strcmp (optarg, "openal"))
 				{
-					snddriver = TFB_SOUNDDRIVER_OPENAL;
+					snddriver = audio_DRIVER_OPENAL;
 				}
 				else if (!strcmp (optarg, "none"))
 				{
-					snddriver = TFB_SOUNDDRIVER_NOSOUND;
+					snddriver = audio_DRIVER_NOSOUND;
 				}
 				else if (!strcmp (optarg, "mixsdl"))
 				{
-					snddriver = TFB_SOUNDDRIVER_MIXSDL;
+					snddriver = audio_DRIVER_MIXSDL;
 				}
 			break;
 			case STEREOSFX_OPT:
@@ -357,7 +357,7 @@ main (int argc, char *argv[])
 	init_communication ();
 	if (gammaset) 
 		TFB_SetGamma (gamma);
-	TFB_InitSound (snddriver, soundflags);
+	initAudio (snddriver, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
 	AssignTask (Starcon2Main, 1024, "Starcon2Main");

@@ -20,13 +20,8 @@
 #include "starcon.h"
 #include "misc.h"
 #include "libs/strings/strintrn.h"
-#include "libs/sound/sndintrn.h"
-#include "libs/sound/sound_common.h"
-#ifdef HAVE_OPENAL
-#include "libs/sound/sound_chooser.h"
-#else
-#include "mixsdl/sound_mixsdl.h"
-#endif
+#include "sndintrn.h"
+#include "audiocore.h"
 #include "decoders/decoder.h"
 
 #define FIRST_SFX_SOURCE 0
@@ -39,7 +34,7 @@
 typedef struct
 {
 	int in_use;
-	TFBSound_Object buf_name;
+	audio_Object buf_name;
 	void *data; // user-defined data
 } TFB_SoundTag;
 
@@ -51,13 +46,13 @@ typedef struct tfb_soundcallbacks
 	// return TRUE to continue, FALSE to abort
 	bool (* OnStartStream) (TFB_SoundSample*);
 	// return TRUE to continue, FALSE to abort
-	bool (* OnEndChunk) (TFB_SoundSample*, TFBSound_Object);
+	bool (* OnEndChunk) (TFB_SoundSample*, audio_Object);
 	// return TRUE to continue, FALSE to abort
 	void (* OnEndStream) (TFB_SoundSample*);
 	// tagged buffer callback
 	void (* OnTaggedBuffer) (TFB_SoundSample*, TFB_SoundTag*);
 	// buffer just queued
-	void (* OnQueueBuffer) (TFB_SoundSample*, TFBSound_Object);
+	void (* OnQueueBuffer) (TFB_SoundSample*, audio_Object);
 } TFB_SoundCallbacks;
 
 // audio data
@@ -65,7 +60,7 @@ struct tfb_soundsample
 {
 	TFB_SoundDecoder *decoder; // decoder to read from
 	float length; // total length of decoder chain in seconds
-	TFBSound_Object *buffer;
+	audio_Object *buffer;
 	uint32 num_buffers;
 	TFB_SoundTag *buffer_tag;
 	sint32 offset; // initial offset
@@ -77,7 +72,7 @@ struct tfb_soundsample
 typedef struct tfb_soundsource
 {
 	TFB_SoundSample *sample;
-	TFBSound_Object handle;
+	audio_Object handle;
 	bool stream_should_be_playing;
 	Mutex stream_mutex;
 	sint32 start_time;
@@ -95,6 +90,11 @@ typedef struct tfb_soundsource
 
 
 extern TFB_SoundSource soundSource[];
+
+extern int musicVolume;
+extern float musicVolumeScale;
+extern float sfxVolumeScale;
+extern float speechVolumeScale;
 
 void StopSource (int iSource);
 void CleanSource (int iSource);

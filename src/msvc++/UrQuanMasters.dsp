@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /D "HAVE_ZIP" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "SOUNDMODULE_SDL" /D "HAVE_ZIP" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -460,11 +460,11 @@ SOURCE=..\sc2code\libs\resource\resintrn.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\mixer.h
+SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\sound_openal.c
+SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.h
 # End Source File
 # End Group
 # Begin Group "decoders"
@@ -603,41 +603,57 @@ SOURCE=..\sc2code\libs\sound\decoders\mikmod\virtch_common.c
 # End Source File
 # End Group
 # End Group
+# Begin Group "mixer"
+
+# PROP Default_Filter ""
 # Begin Group "mixsdl"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixsdl\mixer.c
+SOURCE=..\sc2code\libs\sound\mixer\sdl\audiodrv_sdl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixsdl\mixer.h
+SOURCE=..\sc2code\libs\sound\mixer\sdl\audiodrv_sdl.h
+# End Source File
+# End Group
+# Begin Group "nosound"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\mixer\nosound\audiodrv_nosound.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixsdl\mixerint.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\sound_mixsdl.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\sound_mixsdl.h
+SOURCE=..\sc2code\libs\sound\mixer\nosound\audiodrv_nosound.h
 # End Source File
 # End Group
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\mixer\mixer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\mixer\mixer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\mixer\mixerint.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\audiocore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\audiocore.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\fileinst.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\play.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\redbook.h
 # End Source File
 # Begin Source File
 
@@ -646,22 +662,6 @@ SOURCE=..\sc2code\libs\sound\resinst.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\sndintrn.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sound_common.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sound_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sound_chooser.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\sound_chooser.h
 # End Source File
 # Begin Source File
 

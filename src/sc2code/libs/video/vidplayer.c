@@ -34,7 +34,7 @@ TFB_VideoCallbacks vp_DecoderCBs =
 static bool vp_AudioStart (TFB_SoundSample* sample);
 static void vp_AudioEnd (TFB_SoundSample* sample);
 static void vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
-static void vp_QueueBuffer (TFB_SoundSample* sample, TFBSound_Object buffer);
+static void vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer);
 
 static TFB_SoundCallbacks vp_AudioCBs =
 {
@@ -515,7 +515,7 @@ vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 }
 
 static void
-vp_QueueBuffer (TFB_SoundSample* sample, TFBSound_Object buffer)
+vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer)
 {
 	//TFB_VideoClip* vid = sample->data;
 

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Sound code refactoring: core api is now virtualized,
+  MixSDL is divided to generic mixer and driver entities - Mika
 - Optimized MixSDL mixing and resampling routines
   (hopefully fixes bug #435) - Mika
 - MOD music should now play properly on big endian machines if using

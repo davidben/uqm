@@ -42,7 +42,7 @@ bool is_sample_playing(TFB_SoundSample* samp);
 
 // stream callbacks
 static bool OnTrackStart (TFB_SoundSample* sample);
-static bool OnChunkEnd (TFB_SoundSample* sample, TFBSound_Object buffer);
+static bool OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer);
 static void OnTrackEnd (TFB_SoundSample* sample);
 static void OnTrackTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
 
@@ -123,13 +123,13 @@ ResumeTrack ()
 	if (scd->read_chain_ptr || sound_sample->decoder)
 	{
 		// Only try to start the track if there is something to play
-		TFBSound_IntVal state;
+		audio_IntVal state;
 		BOOLEAN playing;
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		TFBSound_GetSourcei (soundSource[SPEECH_SOURCE].handle, TFBSOUND_SOURCE_STATE, &state);
+		audio_GetSourcei (soundSource[SPEECH_SOURCE].handle, audio_SOURCE_STATE, &state);
 		playing = PlayingStream (SPEECH_SOURCE);
-		if (!track_pos_changed && !playing && state == TFBSOUND_PAUSED)
+		if (!track_pos_changed && !playing && state == audio_PAUSED)
 		{
 			/*adjust start time so the slider doesn't go crazy*/
 			soundSource[SPEECH_SOURCE].start_time += GetTimeCounter () - soundSource[SPEECH_SOURCE].pause_time;
@@ -198,7 +198,7 @@ StopTrack ()
 	if (sound_sample)
 	{
 		DestroyMutex (track_mutex);
-		TFBSound_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+		audio_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 		HFree (sound_sample->buffer);
 		HFree (sound_sample->buffer_tag);
 		HFree (sound_sample->data);
@@ -254,7 +254,7 @@ OnTrackStart (TFB_SoundSample* sample)
 }
 
 static bool
-OnChunkEnd (TFB_SoundSample* sample, TFBSound_Object buffer)
+OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer)
 {
 	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
 
@@ -591,7 +591,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 					sound_sample->num_buffers = 8;
 					sound_sample->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * sound_sample->num_buffers);
 					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
-					TFBSound_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					audio_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					decoder = SoundDecoder_Load (contentDir, TrackName, 4096,
 							startTime, time_stamps[page_counter]);
 					scd->read_chain_ptr = create_soundchain (decoder, 0.0);
@@ -652,7 +652,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				else
 				{
 					fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
-					TFBSound_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					audio_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					destroy_soundchain (first_chain);
 					first_chain = NULL;
 					HFree (sound_sample->buffer);
@@ -839,7 +839,7 @@ GetSoundData (void *data)
 			UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
 
 			assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
-			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == TFBSOUND_FORMAT_MONO16);
+			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == audio_FORMAT_MONO16);
 
 			if (delta < 0)
 			{
@@ -908,7 +908,7 @@ GetSoundData (void *data)
 			UBYTE *sbuffer = soundSource[MUSIC_SOURCE].sbuffer;
 
 			assert (soundSource[MUSIC_SOURCE].sample->decoder->frequency >= 11025);
-			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == TFBSOUND_FORMAT_STEREO16);
+			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == audio_FORMAT_STEREO16);
 
 			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency / 11025 * 16;
 			if (step % 2 == 1)

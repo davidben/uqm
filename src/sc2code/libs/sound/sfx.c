@@ -42,9 +42,9 @@ PlayChannel (COUNT channel, PVOID sample, SoundPosition pos,
 	if (optStereoSFX)
 		UpdateSoundPosition (channel, pos);
 
-	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER,
+	audio_Sourcei (soundSource[channel].handle, audio_BUFFER,
 			tfb_sample->buffer[0]);
-	TFBSound_SourcePlay (soundSource[channel].handle);
+	audio_SourcePlay (soundSource[channel].handle);
 	(void) priority;
 }
 
@@ -62,15 +62,15 @@ CheckFinishedChannels (void)
 
 	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
 	{
-		TFBSound_IntVal state;
+		audio_IntVal state;
 
-		TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_SOURCE_STATE,
+		audio_GetSourcei (soundSource[i].handle, audio_SOURCE_STATE,
 				&state);
-		if (state == TFBSOUND_STOPPED)
+		if (state == audio_STOPPED)
 		{
 			CleanSource (i);
 			// and if it failed... we still dont care
-			TFBSound_GetError();
+			audio_GetError();
 		}
 	}
 }
@@ -78,11 +78,11 @@ CheckFinishedChannels (void)
 BOOLEAN
 ChannelPlaying (COUNT WhichChannel)
 {
-	TFBSound_IntVal state;
+	audio_IntVal state;
 	
-	TFBSound_GetSourcei (soundSource[WhichChannel].handle,
-			TFBSOUND_SOURCE_STATE, &state);
-	if (state == TFBSOUND_PLAYING)
+	audio_GetSourcei (soundSource[WhichChannel].handle,
+			audio_SOURCE_STATE, &state);
+	if (state == audio_PLAYING)
 		return TRUE;
 	return FALSE;
 }
@@ -110,14 +110,14 @@ UpdateSoundPosition (COUNT channel, SoundPosition pos)
 		fpos[0] = pos.x / ATTENUATION;
 		fpos[1] = 0.0f;
 		fpos[2] = pos.y / ATTENUATION;
-		TFBSound_Sourcefv (soundSource[channel].handle, TFBSOUND_POSITION, fpos);
+		audio_Sourcefv (soundSource[channel].handle, audio_POSITION, fpos);
 		//fprintf (stderr, "UpdateSoundPosition(): channel %d, pos %d %d, posobj %x\n",
 		//		channel, pos.x, pos.y, (unsigned int)soundSource[channel].positional_object);
 	}
 	else
 	{
 		fpos[0] = fpos[1] = fpos[2] = 0.0f;
-		TFBSound_Sourcefv (soundSource[channel].handle, TFBSOUND_POSITION, fpos);
+		audio_Sourcefv (soundSource[channel].handle, audio_POSITION, fpos);
 	}
 }
 
@@ -126,7 +126,7 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 		// I wonder what this whole priority business is...
 		// I can probably ignore it.
 {
-	TFBSound_Sourcef (soundSource[channel].handle, TFBSOUND_GAIN, 
+	audio_Sourcef (soundSource[channel].handle, audio_GAIN, 
 		(volume / (float)MAX_VOLUME) * sfxVolumeScale);
 	(void)priority; // ignored
 }
@@ -219,10 +219,10 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 				//fprintf (stderr, "_GetSoundBankData(): decoded_bytes %d\n", decoded_bytes);
 				
 				sndfx[snd_ct]->num_buffers = 1;
-				sndfx[snd_ct]->buffer = (TFBSound_Object *) HMalloc (
-						sizeof (TFBSound_Object) * sndfx[snd_ct]->num_buffers);
-				TFBSound_GenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
-				TFBSound_BufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format,
+				sndfx[snd_ct]->buffer = (audio_Object *) HMalloc (
+						sizeof (audio_Object) * sndfx[snd_ct]->num_buffers);
+				audio_GenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
+				audio_BufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format,
 					sndfx[snd_ct]->decoder->buffer, decoded_bytes,
 					sndfx[snd_ct]->decoder->frequency);
 
@@ -313,7 +313,7 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 
             if ((*sptr)->decoder)
 			    SoundDecoder_Free ((*sptr)->decoder);
-			TFBSound_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
+			audio_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
 			HFree ((*sptr)->buffer);
 			if ((*sptr)->buffer_tag)
 				HFree ((*sptr)->buffer_tag);

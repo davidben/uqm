@@ -25,14 +25,9 @@ void ResumeStream (uint32 source);
 void SeekStream (uint32 source, uint32 pos);
 BOOLEAN PlayingStream (uint32 source);
 int StreamDecoderTaskFunc (void *data);
-int PreDecodeClips (TFB_SoundSample *sample, TFB_SoundDecoder *decoders[], bool autofree);
-void PlayDecodedClip (TFB_SoundSample *sample, uint32 source, bool scope);
 
-TFB_SoundTag* FindTaggedBuffer (TFB_SoundSample* sample, TFBSound_Object buffer);
+TFB_SoundTag* FindTaggedBuffer (TFB_SoundSample* sample, audio_Object buffer);
 void TFB_ClearBufferTag (TFB_SoundTag* ptag);
-void TFB_TagBuffer (TFB_SoundSample* sample, TFBSound_Object buffer, void* data);
-
-extern bool speech_advancetrack;
-void advance_track (int channel_finished);
+void TFB_TagBuffer (TFB_SoundSample* sample, audio_Object buffer, void* data);
 
 #endif

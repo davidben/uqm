@@ -1,1 +1,1 @@
-uqm_CFILES="sound_openal.c"
+uqm_CFILES="audiodrv_openal.c"

@@ -18,7 +18,7 @@
 
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
-#include "libs/sound/sound_common.h"
+#include "libs/sound/sound.h"
 #include "oscill.h"
 #include "options.h"
 

@@ -27,7 +27,7 @@
 #include "uio.h"
 #include "decoder.h"
 #include "mikmod/mikmod.h"
-#include "libs/sound/sound_common.h"
+#include "libs/sound/audiocore.h"
 #include "modaud.h"
 
 #define THIS_PTR TFB_SoundDecoder* This
@@ -87,7 +87,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
     MikMod_RegisterDriver (&drv_openal);
     MikMod_RegisterAllLoaders ();
 
-	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
+	if (flags & audio_QUALITY_HIGH)
 	{
 #ifndef WORDS_BIGENDIAN
 		md_mode = DMODE_HQMIXER|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
@@ -98,7 +98,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 	    md_mixfreq = 44100;
 		md_reverb = 1;
 	}
-	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
+	else if (flags & audio_QUALITY_LOW)
 	{
 		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS;
 		md_mixfreq = 22050;

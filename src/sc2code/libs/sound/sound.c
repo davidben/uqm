@@ -16,9 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "libs/sound/sound_common.h"
 #include "sound.h"
 
+static Task FadeTask;
+static SIZE TTotal;
+static SIZE volume_end;
+
+int musicVolume = (MAX_VOLUME >> 1);
+float musicVolumeScale = 1.0f;
+float sfxVolumeScale = 1.0f;
+float speechVolumeScale = 1.0f;
 TFB_SoundSource soundSource[NUM_SOUNDSOURCES];
 
 
@@ -37,36 +44,36 @@ void
 CleanSource (int iSource)
 {
 #define MAX_STACK_BUFFERS 64	
-	TFBSound_IntVal processed;
+	audio_IntVal processed;
 
 	soundSource[iSource].positional_object = NULL;
-	TFBSound_GetSourcei (soundSource[iSource].handle,
-			TFBSOUND_BUFFERS_PROCESSED, &processed);
+	audio_GetSourcei (soundSource[iSource].handle,
+			audio_BUFFERS_PROCESSED, &processed);
 	if (processed != 0)
 	{
-		TFBSound_Object stack_bufs[MAX_STACK_BUFFERS];
-		TFBSound_Object *bufs;
+		audio_Object stack_bufs[MAX_STACK_BUFFERS];
+		audio_Object *bufs;
 
 		if (processed > MAX_STACK_BUFFERS)
-			bufs = (TFBSound_Object *) HMalloc (
-					sizeof (TFBSound_Object) * processed);
+			bufs = (audio_Object *) HMalloc (
+					sizeof (audio_Object) * processed);
 		else
 			bufs = stack_bufs;
 
-		TFBSound_SourceUnqueueBuffers (soundSource[iSource].handle,
+		audio_SourceUnqueueBuffers (soundSource[iSource].handle,
 				processed, bufs);
 		
 		if (processed > MAX_STACK_BUFFERS)
 			HFree (bufs);
 	}
 	// set the source state to 'initial'
-	TFBSound_SourceRewind (soundSource[iSource].handle);
+	audio_SourceRewind (soundSource[iSource].handle);
 }
 
 void
 StopSource (int iSource)
 {
-	TFBSound_SourceStop (soundSource[iSource].handle);
+	audio_SourceStop (soundSource[iSource].handle);
 	CleanSource (iSource);
 }
 
@@ -90,9 +97,9 @@ SoundPlaying (void)
 		}
 		else
 		{
-			TFBSound_IntVal state;
-			TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_SOURCE_STATE, &state);
-			if (state == TFBSOUND_PLAYING)
+			audio_IntVal state;
+			audio_GetSourcei (soundSource[i].handle, audio_SOURCE_STATE, &state);
+			if (state == audio_PLAYING)
 				return TRUE;
 		}
 	}
@@ -134,12 +141,69 @@ void SetSFXVolume (float volume)
 	int i;
 	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
 	{
-		TFBSound_Sourcef (soundSource[i].handle, TFBSOUND_GAIN, volume);
+		audio_Sourcef (soundSource[i].handle, audio_GAIN, volume);
 	}	
 }
 
 void SetSpeechVolume (float volume)
 {
-	TFBSound_Sourcef (soundSource[SPEECH_SOURCE].handle, TFBSOUND_GAIN, volume);
+	audio_Sourcef (soundSource[SPEECH_SOURCE].handle, audio_GAIN, volume);
 }
 
+static int
+fade_task (void *data)
+{
+	SIZE TDelta, volume_beg;
+	DWORD StartTime, CurTime;
+	Task task = (Task) data;
+
+	volume_beg = musicVolume;
+	StartTime = CurTime = GetTimeCounter ();
+	do
+	{
+		SleepThreadUntil (CurTime + ONE_SECOND / 120);
+		CurTime = GetTimeCounter ();
+		if ((TDelta = (SIZE) (CurTime - StartTime)) > TTotal)
+			TDelta = TTotal;
+
+		SetMusicVolume ((COUNT) (volume_beg + (SIZE)
+				((long) (volume_end - volume_beg) * TDelta / TTotal)));
+	} while (TDelta < TTotal);
+
+	FadeTask = 0;
+	FinishTask (task);
+	return (1);
+}
+
+DWORD
+FadeMusic (BYTE end_vol, SIZE TimeInterval)
+{
+	DWORD TimeOut;
+
+	if (FadeTask)
+	{
+		volume_end = musicVolume;
+		TTotal = 1;
+		do
+			TaskSwitch ();
+		while (FadeTask);
+		TaskSwitch ();
+	}
+
+	if ((TTotal = TimeInterval) <= 0)
+		TTotal = 1; /* prevent divide by zero and negative fade */
+	volume_end = end_vol;
+		
+	if (TTotal > 1 && (FadeTask = AssignTask (fade_task, 0,
+			"fade music")))
+	{
+		TimeOut = GetTimeCounter () + TTotal + 1;
+	}
+	else
+	{
+		SetMusicVolume (end_vol);
+		TimeOut = GetTimeCounter ();
+	}
+
+	return (TimeOut);
+}

@@ -103,7 +103,7 @@ SetMusicVolume (COUNT Volume)
 {
 	float f = (Volume / (float)MAX_VOLUME) * musicVolumeScale;
 	musicVolume = Volume;
-	TFBSound_Sourcef (soundSource[MUSIC_SOURCE].handle, TFBSOUND_GAIN, f);
+	audio_Sourcef (soundSource[MUSIC_SOURCE].handle, audio_GAIN, f);
 }
 
 MEM_HANDLE
@@ -169,8 +169,8 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
 
 				(*pmus)->num_buffers = 64;
-				(*pmus)->buffer = (TFBSound_Object *) HMalloc (sizeof (TFBSound_Object) * (*pmus)->num_buffers);
-				TFBSound_GenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
+				(*pmus)->buffer = (audio_Object *) HMalloc (sizeof (audio_Object) * (*pmus)->num_buffers);
+				audio_GenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 			}
 		}
 
@@ -203,7 +203,7 @@ _ReleaseMusicData (MEM_HANDLE handle)
 
 		(*pmus)->decoder = NULL;
 		SoundDecoder_Free (decoder);
-		TFBSound_DeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
+		audio_DeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 		HFree ((*pmus)->buffer);
 		if ((*pmus)->buffer_tag)
 			HFree ((*pmus)->buffer_tag);
