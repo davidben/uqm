@@ -307,7 +307,7 @@ void CreateShieldMask()
 	DWORD rad2,red,red_nt,clear,**rgba,p;
 	int x,y;
 	FRAME ShieldFrame;
-
+	DWORD aa_delta,aa_delta2;
 
 	ShieldFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
@@ -316,9 +316,11 @@ void CreateShieldMask()
 	// This is a 'transparent' red for the planet mask.
 	red=frame_mapRGBA (ShieldFrame,255,0,0,200);
 	// This is a non-transparent red for the halo
-	red_nt=frame_mapRGBA (ShieldFrame,180,0,0,255);
+	red_nt=180;
 	//  This is 100% transparent.
 	clear=frame_mapRGBA (ShieldFrame,0,0,0,0);
+	aa_delta=SHIELD_RADIUS_2-(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1);
+	aa_delta2=(RADIUS+3)*(RADIUS+3)-(RADIUS+2)*(RADIUS+2);
 	for(y=-SHIELD_RADIUS;y<=SHIELD_RADIUS;y++) {
 		rgba[y+SHIELD_RADIUS]=(DWORD *)calloc((SHIELD_DIAM),sizeof(DWORD));
 		for(x=-SHIELD_RADIUS;x<=SHIELD_RADIUS;x++) {
@@ -333,7 +335,15 @@ void CreateShieldMask()
 					p=clear;
 				} else {
 					// The halo itself
-					p=red_nt;
+					DWORD red=red_nt;
+					if(rad2>(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1))
+					{
+						DWORD r;
+						r=rad2-(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1);
+						red=red_nt-red_nt*r/aa_delta;
+					}
+					p=frame_mapRGBA (ShieldFrame,red,0,0,255);
+
 				}
 			} else {
 				p=clear;
