@@ -214,7 +214,7 @@ arilou_preprocess (PELEMENT ElementPtr)
 
 			ProcessSound (SetAbsSoundIndex (
 							/* HYPERJUMP */
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 			StarShipPtr->special_counter =
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 		}

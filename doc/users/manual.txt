@@ -106,6 +106,11 @@ well with some sound cards.
 Use "none" as a last resort if you cannot get other drivers to work,
 or if you have no soundcard.
 
+    --stereosfx  (no short version)
+
+Enables positional sound effects in melee. Currently works only when
+using openal.
+
 	-u           (or --nosubtitles)
 	
 Disables subtitles.

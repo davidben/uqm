@@ -164,15 +164,17 @@ fighter_postprocess (PELEMENT ElementPtr)
 
 		LockElement (Laser, &LaserPtr);
 		SetElementStarShip (LaserPtr, StarShipPtr);
+
+		ProcessSound (SetAbsSoundIndex (
+						/* FIGHTER_ZAP */
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), LaserPtr);
+
 		UnlockElement (Laser);
 		PutElement (Laser);
 	}
 
 	ElementPtr->postprocess_func = 0;
 	ElementPtr->thrust_wait = FIGHTER_WEAPON_WAIT;
-	ProcessSound (SetAbsSoundIndex (
-					/* FIGHTER_ZAP */
-			StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
 }
 
 static void
@@ -358,7 +360,7 @@ fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 	{
 		ProcessSound (SetAbsSoundIndex (
 						/* FIGHTERS_RETURN */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3), ElementPtr1);
 		DeltaCrew (ElementPtr1, 1);
 		ElementPtr0->state_flags |= DISAPPEARING | COLLISION;
 	}
@@ -513,7 +515,7 @@ urquan_postprocess (PELEMENT ElementPtr)
 	{
 		ProcessSound (SetAbsSoundIndex (
 						/* LAUNCH_FIGHTERS */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		spawn_fighters (ElementPtr);
 
 		StarShipPtr->special_counter = SPECIAL_WAIT;

@@ -300,13 +300,13 @@ ship_postprocess (register
 		{
 			HELEMENT *WeaponPtr;
 			STARSHIPPTR StarShipPtr;
+			BOOLEAN played_sfx = FALSE;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 			WeaponPtr = &Weapon[0];
 			do
 			{
 				HELEMENT w;
-
 				w = *WeaponPtr++;
 				if (w)
 				{
@@ -314,12 +314,19 @@ ship_postprocess (register
 
 					EPtr = LockElement (w, &EPtr);
 					SetElementStarShip (EPtr, StarShipPtr);
+					if (!played_sfx)
+					{
+						ProcessSound (RDPtr->ship_data.ship_sounds, EPtr);
+						played_sfx = TRUE;
+					}
 					UnlockElement (w);
 
 					PutElement (w);
 				}
 			} while (--num_weapons);
-			ProcessSound (RDPtr->ship_data.ship_sounds);
+			
+			if (!played_sfx)
+				ProcessSound (RDPtr->ship_data.ship_sounds, ElementPtr);
 		}
 
 		StarShipPtr->weapon_counter =
@@ -357,7 +364,7 @@ collision (PELEMENT
 			damage = TARGET_DAMAGED_FOR_1_PT + (damage >> 1);
 			if (damage > TARGET_DAMAGED_FOR_6_PLUS_PT)
 				damage = TARGET_DAMAGED_FOR_6_PLUS_PT;
-			ProcessSound (SetAbsSoundIndex (GameSounds, damage));
+			ProcessSound (SetAbsSoundIndex (GameSounds, damage), ElementPtr0);
 		}
 	}
 	(void) pPt0;  /* Satisfying compiler (unused parameter) */

@@ -378,7 +378,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 
 						ProcessSound (SetAbsSoundIndex (
 										/* POINT_DEFENSE_LASER */
-								StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+								StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 						StarShipPtr->special_counter =
 								StarShipPtr->RaceDescPtr->characteristics.special_wait;
 						PaidFor = TRUE;

@@ -519,7 +519,7 @@ black_urquan_postprocess (PELEMENT ElementPtr)
 		spawn_gas_cloud (ElementPtr);
 
 		ProcessSound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 
 		StarShipPtr->special_counter = SPECIAL_WAIT;
 	}

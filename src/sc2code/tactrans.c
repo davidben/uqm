@@ -49,7 +49,7 @@ new_ship (PELEMENT DeadShipPtr)
 {
 	STARSHIPPTR DeadStarShipPtr;
 
-	ProcessSound ((SOUND)~0);
+	ProcessSound ((SOUND)~0, NULL);
 
 	GetElementStarShip (DeadShipPtr, &DeadStarShipPtr);
 	if (!(DeadShipPtr->state_flags & PLAYER_SHIP))
@@ -288,7 +288,7 @@ ship_death (PELEMENT ShipPtr)
 
 		PlaySound (SetAbsSoundIndex (
 				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1
-				), GAME_SOUND_PRIORITY + 1);
+				), CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
 
 		DeltaCrew ((ELEMENTPTR)ShipPtr, -(SIZE)ShipPtr->crew_level);
 		if (VictoriousStarShipPtr == 0)
@@ -299,7 +299,7 @@ ship_death (PELEMENT ShipPtr)
 		ShipPtr->preprocess_func = explosion_preprocess;
 
 		PlaySound (SetAbsSoundIndex (GameSounds, SHIP_EXPLODES),
-				GAME_SOUND_PRIORITY + 1);
+				CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
 	}
 }
 

@@ -150,9 +150,9 @@ extern void FreeElement (HELEMENT hElement);
 #define GetTailElement() GetTailLink (&disp_q)
 #define LockElement(h,eptr) *(eptr) = (ELEMENTPTR)LockLink (&disp_q, h)
 #define UnlockElement(h) UnlockLink (&disp_q, h)
-#define RemoveElement(h) RemoveQueue (&disp_q, h)
 #define GetPredElement(l) _GetPredLink (l)
 #define GetSuccElement(l) _GetSuccLink (l)
+extern void RemoveElement (HLINK hLink);
 
 extern void RedrawQueue (BOOLEAN clear);
 extern BOOLEAN DeltaEnergy (ELEMENTPTR ElementPtr, SIZE
@@ -160,9 +160,11 @@ extern BOOLEAN DeltaEnergy (ELEMENTPTR ElementPtr, SIZE
 extern BOOLEAN DeltaCrew (ELEMENTPTR ElementPtr, SIZE
 		crew_delta);
 
-extern void PlaySound (SOUND S, BYTE Priority);
-
-extern void ProcessSound (SOUND Sound);
+extern void PlaySound (SOUND S, SoundPosition Pos,
+		ELEMENTPTR PositionalObject, BYTE Priority);
+extern void ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject);
+extern SoundPosition CalcSoundPosition (ELEMENTPTR ElementPtr);
+extern SoundPosition NotPositional (void);
 
 extern void PreProcessStatus (PELEMENT ShipPtr);
 extern void PostProcessStatus (PELEMENT ShipPtr);

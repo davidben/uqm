@@ -210,7 +210,7 @@ DeviceFailed (BYTE which_device)
 				BYTE fade_buf[1];
 
 				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3),
-						0, GAME_SOUND_PRIORITY);
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 				fade_buf[0] = FadeAllToWhite;
 				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
 						+ (ONE_SECOND * 2));
@@ -457,10 +457,10 @@ DoManipulateDevices (PMENU_STATE pMS)
 		NewState = LOBYTE (status);
 		if (NewState)
 			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-					0, GAME_SOUND_PRIORITY);
+					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 		else if (HIBYTE (status) == 0)
 			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3),
-					0, GAME_SOUND_PRIORITY);
+					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 		ClearSemaphore (GraphicsSem);
 
 		return ((BOOLEAN)NewState);

@@ -140,7 +140,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						font_DrawText (&t);
 						ClearSemaphore (GraphicsSem);
 
-						PlaySound (ReadOutSounds, GAME_SOUND_PRIORITY);
+						PlaySound (ReadOutSounds, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 
 						if (t.pStr[0] == ',')
 							TimeOut += ONE_SECOND / 4;

@@ -34,7 +34,7 @@ extern int optSmoothScroll;
 extern int optMeleeScale;
 
 extern BOOLEAN optSubtitles;
-
+extern BOOLEAN optStereoSFX;
 
 extern char *configDir;
 extern char *meleeDir;

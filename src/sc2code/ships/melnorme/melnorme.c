@@ -176,7 +176,7 @@ pump_up_postprocess (PELEMENT ElementPtr)
 						EPtr->current.image.frame, NUM_PUMP_ANIMS
 						);
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), EPtr);
 			}
 			EPtr->thrust_wait = LEVEL_COUNTER;
 		}
@@ -229,7 +229,7 @@ pump_up_postprocess (PELEMENT ElementPtr)
 					SINE (angle, WORLD_TO_VELOCITY (PUMPUP_SPEED)));
 
 			ProcessSound (SetAbsSoundIndex (
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3), EPtr);
 		}
 
 		UnlockElement (hPumpUp);
@@ -624,10 +624,14 @@ melnorme_postprocess (PELEMENT ElementPtr)
 		initialize_confusion (ElementPtr, &Confusion);
 		if (Confusion)
 		{
-			PutElement (Confusion);
-
+			ELEMENTPTR CMissilePtr;
+			LockElement (Confusion, &CMissilePtr);
+			
 			ProcessSound (SetAbsSoundIndex (
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), CMissilePtr);
+			
+			UnlockElement (Confusion);
+			PutElement (Confusion);
 			StarShipPtr->special_counter =
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 		}

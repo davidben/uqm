@@ -301,7 +301,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 			if (CurrentMenuState.select)
 				S = SetAbsSoundIndex (S, 1);
 
-			PlaySoundEffect (S, 0, 0);
+			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
 		}
 	} while ((*((PINPUT_STATE_DESC)pInputState)->InputFunc)
 			(pInputState));

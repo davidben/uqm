@@ -996,7 +996,7 @@ DoScan (PMENU_STATE pMS)
 					|| GLOBAL_SIS (CrewEnlisted) == 0)
 			{
 				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-						0, GAME_SOUND_PRIORITY);
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 				return (TRUE);
 			}
 

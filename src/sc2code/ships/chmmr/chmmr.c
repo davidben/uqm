@@ -317,9 +317,14 @@ chmmr_postprocess (PELEMENT ElementPtr)
 			&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 	{
 		COUNT facing;
+		ELEMENTPTR ShipElementPtr;
 
+		LockElement (ElementPtr->hTarget, &ShipElementPtr);
+		
 		ProcessSound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ShipElementPtr);
+
+		UnlockElement (ElementPtr->hTarget);
 
 		facing = 0;
 		if (TrackShip (ElementPtr, &facing) >= 0)

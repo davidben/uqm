@@ -246,7 +246,7 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 			{
 				ProcessSound (SetAbsSoundIndex (
 								/* CLOAKING_OFF */
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr);
 				SetPrimColor (lpPrim,
 						BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 				if (weapon_discharge)
@@ -347,7 +347,7 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 
 		ProcessSound (SetAbsSoundIndex (
 						/* CLOAKING_ON */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		StarShipPtr->special_counter =
 				StarShipPtr->RaceDescPtr->characteristics.special_wait;
 

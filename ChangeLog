@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Added support for positional (stereo) sound effects, currently
+  works only with OpenAL -Mika
 - Fixed screen transitions from homeworld conversations (bug #348) -Michael
 - Fixed Fwiffo join_us_refusals initialization (bug #405) -Mika
 - Fix Druuge transactions to not elevate crew costs baselessly (bug #235),

@@ -37,6 +37,7 @@ int optMeleeScale = TFB_SCALE_TRILINEAR;
 
 char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
+BOOLEAN optStereoSFX = FALSE;
 
 void
 prepareConfigDir (void) {

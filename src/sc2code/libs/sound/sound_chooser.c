@@ -104,6 +104,16 @@ TFBSound_Sourcef (TFBSound_Object srcobj, TFBSound_SourceProp pname, float value
 }
 
 void
+TFBSound_Sourcefv (TFBSound_Object srcobj, TFBSound_SourceProp pname, float *value)
+{
+	if (SoundDriver == TFB_SOUNDDRIVER_OPENAL)
+		alSourcefv ((ALuint) srcobj, (ALenum) tfb_enum_lookup[pname], value);
+	else
+		mixSDL_Sourcefv ((mixSDL_Object) srcobj, 
+				(mixSDL_SourceProp) tfb_enum_lookup[pname], value);
+}
+
+void
 TFBSound_GetSourcei (TFBSound_Object srcobj, TFBSound_SourceProp pname,
 		TFBSound_IntVal *value)
 {
@@ -260,6 +270,7 @@ TFB_choose_InitSound (int driver, int flags)
 		tfb_enum_lookup[TFBSOUND_BUFFERS_PROCESSED] = AL_BUFFERS_PROCESSED;
 		tfb_enum_lookup[TFBSOUND_BUFFERS_QUEUED]    = AL_BUFFERS_QUEUED;
 		tfb_enum_lookup[TFBSOUND_SIZE]              = AL_SIZE;
+		tfb_enum_lookup[TFBSOUND_POSITION]          = AL_POSITION;
 		TFBSOUND_NO_ERROR = AL_NO_ERROR;
 		TFBSOUND_PAUSED = AL_PAUSED;
 		TFBSOUND_PLAYING = AL_PLAYING;
@@ -280,6 +291,7 @@ TFB_choose_InitSound (int driver, int flags)
 		tfb_enum_lookup[TFBSOUND_BUFFERS_PROCESSED] = MIX_BUFFERS_PROCESSED;
 		tfb_enum_lookup[TFBSOUND_BUFFERS_QUEUED]    = MIX_BUFFERS_QUEUED;
 		tfb_enum_lookup[TFBSOUND_SIZE]              = MIX_SIZE;
+		tfb_enum_lookup[TFBSOUND_POSITION]          = MIX_POSITION;
 		TFBSOUND_NO_ERROR = MIX_NO_ERROR;
 		TFBSOUND_PAUSED = MIX_PAUSED;
 		TFBSOUND_PLAYING = MIX_PLAYING;

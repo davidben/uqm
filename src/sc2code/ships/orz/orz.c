@@ -417,7 +417,7 @@ LeftShip:
 					ElementPtr->state_flags |= DISAPPEARING;
 
 					ProcessSound (SetAbsSoundIndex (
-							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 4));
+							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 4), ElementPtr);
 					goto LeftShip;
 				}
 				else if (randval < (0x0100 / 2 + 0x0100 / 16))
@@ -432,7 +432,7 @@ LeftShip:
 							GetFrameCount (ElementPtr->next.image.farray[0]) - 1);
 					ModifySilhouette (ShipPtr, &s, 0);
 					ProcessSound (SetAbsSoundIndex (
-							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3));
+							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3), ElementPtr);
 				}
 			}
 
@@ -779,7 +779,7 @@ marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 				}
 
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr1);
 			}
 
 			ElementPtr0->state_flags &= ~COLLISION;
@@ -992,7 +992,7 @@ turret_postprocess (PELEMENT ElementPtr)
 
 				DeltaCrew (ShipPtr, -1);
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), SpaceMarinePtr);
 
 				StarShipPtr->special_counter =
 						StarShipPtr->RaceDescPtr->characteristics.special_wait;

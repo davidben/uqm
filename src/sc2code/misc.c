@@ -280,7 +280,7 @@ crew_collision (PELEMENT ElementPtr0, PPOINT pPt0,
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		if (!(StarShipPtr->RaceDescPtr->ship_info.ship_flags & CREW_IMMUNE))
 		{
-			ProcessSound (SetAbsSoundIndex (GameSounds, GRAB_CREW));
+			ProcessSound (SetAbsSoundIndex (GameSounds, GRAB_CREW), ElementPtr1);
 			DeltaCrew ((ELEMENTPTR)ElementPtr1, 1);
 		}
 	}

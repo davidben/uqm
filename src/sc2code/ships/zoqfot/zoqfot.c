@@ -334,7 +334,7 @@ zoqfotpik_postprocess (PELEMENT ElementPtr)
 	{
 		ProcessSound (SetAbsSoundIndex (
 					/* STICK_OUT_TONGUE */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 
 		StarShipPtr->special_counter =
 				StarShipPtr->RaceDescPtr->characteristics.special_wait;

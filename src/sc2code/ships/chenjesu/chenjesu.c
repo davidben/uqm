@@ -157,7 +157,7 @@ crystal_postprocess (PELEMENT ElementPtr)
 
 	ProcessSound (SetAbsSoundIndex (
 					/* CRYSTAL_FRAGMENTS */
-			StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+			StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 }
 
 static void
@@ -285,7 +285,7 @@ doggy_death (PELEMENT ElementPtr)
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	ProcessSound (SetAbsSoundIndex (
 					/* DOGGY_DIES */
-			StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3));
+			StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 3), ElementPtr);
 
 	ElementPtr->state_flags &= ~DISAPPEARING;
 	ElementPtr->state_flags |= NONSOLID | FINITE_LIFE;
@@ -316,7 +316,7 @@ doggy_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 		GetElementStarShip (ElementPtr0, &StarShipPtr);
 		ProcessSound (SetAbsSoundIndex (
 						/* DOGGY_STEALS_ENERGY */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr0);
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		if (StarShipPtr->RaceDescPtr->ship_info.energy_level < ENERGY_DRAIN)
 			DeltaEnergy (ElementPtr1, -StarShipPtr->RaceDescPtr->ship_info.energy_level);
@@ -372,6 +372,10 @@ spawn_doggy (PELEMENT ElementPtr)
 				DOGGY_SPEED, NORMALIZE_FACING (ANGLE_TO_FACING (angle)));
 
 		SetElementStarShip (DoggyElementPtr, StarShipPtr);
+
+		ProcessSound (SetAbsSoundIndex (
+						/* RELEASE_DOGGY */
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 4), DoggyElementPtr);
 
 		UnlockElement (hDoggyElement);
 	}
@@ -533,10 +537,6 @@ chenjesu_postprocess (PELEMENT ElementPtr)
 			&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 	{
 		spawn_doggy (ElementPtr);
-
-		ProcessSound (SetAbsSoundIndex (
-						/* RELEASE_DOGGY */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 4));
 	}
 
 	StarShipPtr->special_counter = 1;

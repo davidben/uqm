@@ -80,16 +80,14 @@ ToggleSoundEffect (void)
 }
 
 void
-PlaySoundEffect (SOUND S, COUNT Channel, BYTE Priority)
+PlaySoundEffect (SOUND S, COUNT Channel, SoundPosition Pos,
+		void *PositionalObject, BYTE Priority)
 {
 	if (!(GLOBAL (glob_flags) & SOUND_DISABLED))
 	{
 		SetChannelVolume (Channel, MAX_VOLUME >> 1, Priority);
 		SetChannelRate (Channel, GetSampleRate (S), Priority);
-		PlayChannel (Channel,
-				GetSampleAddress (S),
-				GetSampleLength (S),
-				0, 0, Priority);
+		PlayChannel (Channel, GetSampleAddress (S), Pos, PositionalObject, Priority);
 	}
 }
 

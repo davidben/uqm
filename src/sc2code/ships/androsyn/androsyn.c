@@ -347,7 +347,7 @@ androsynth_postprocess (PELEMENT ElementPtr)
 			{
 				ProcessSound (SetAbsSoundIndex (
 								/* COMET_ON */
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 				ElementPtr->turn_wait = 0;
 				ElementPtr->thrust_wait = 0;
 			}

@@ -463,7 +463,7 @@ PELEMENT ElementPtr;
 
 			ProcessSound (SetAbsSoundIndex (
 					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1
-					));
+					), ElementPtr);
 
 			ElementPtr->life_span = PHOENIX_LIFE;
 			SetPrimType (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
@@ -532,7 +532,7 @@ PELEMENT ElementPtr;
 		} while (CurSound == LastSound);
 		ProcessSound (SetAbsSoundIndex (
 				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, CurSound
-				));
+				), ElementPtr);
 		LastSound = CurSound;
 
 		DeltaEnergy (ElementPtr, SPECIAL_ENERGY_COST);

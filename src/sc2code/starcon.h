@@ -201,7 +201,8 @@ extern void StopMusic (void);
 extern void ResumeMusic (void);
 extern void PauseMusic (void);
 extern void ToggleSoundEffect (void);
-extern void PlaySoundEffect (SOUND S, COUNT Channel, BYTE Priority);
+extern void PlaySoundEffect (SOUND S, COUNT Channel, SoundPosition Pos,
+		void *PositionalObject, BYTE Priority);
 
 extern BOOLEAN CopyProtection (void);
 

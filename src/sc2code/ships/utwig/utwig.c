@@ -274,7 +274,7 @@ utwig_preprocess (PELEMENT ElementPtr)
 				ElementPtr->life_span - (NORMAL_LIFE + 1));
 
 		ProcessSound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 	}
 
 	if (!(StarShipPtr->cur_status_flags & SPECIAL))
@@ -289,7 +289,7 @@ utwig_preprocess (PELEMENT ElementPtr)
 			StarShipPtr->special_counter =
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			ProcessSound (SetAbsSoundIndex (
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr);
 		}
 	}
 

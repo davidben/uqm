@@ -357,7 +357,7 @@ thraddash_preprocess (PELEMENT ElementPtr)
 				InsertElement (hTrailElement, GetHeadElement ());
 
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 			}
 		}
 	}

@@ -97,7 +97,8 @@ main (int argc, char *argv[])
 		MENU_OPT,
 		FONT_OPT,
 		SCROLL_OPT,
-		SOUND_OPT
+		SOUND_OPT,
+		STEREOSFX_OPT
 	};
 
 	int option_index = 0, c;
@@ -126,6 +127,7 @@ main (int argc, char *argv[])
 		{"font", 1, NULL, FONT_OPT},
 		{"scroll", 1, NULL, SCROLL_OPT},
 		{"sound", 1, NULL, SOUND_OPT},
+		{"stereosfx", 0, NULL, STEREOSFX_OPT},
 		{0, 0, 0, 0}
 	};
 
@@ -277,6 +279,9 @@ main (int argc, char *argv[])
 					snddriver = TFB_SOUNDDRIVER_MIXSDL;
 				}
 			break;
+			case STEREOSFX_OPT:
+				optStereoSFX = TRUE;
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -298,6 +303,7 @@ main (int argc, char *argv[])
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
 				printf("  -u, --nosubtitles\n");
 				printf("  --sound=DRIVER (openal, mixsdl, none; default mixsdl)\n");
+				printf("  --stereosfx (enables positional sound effects, currently only for openal)\n");
 				printf("The following options can take either '3do' or 'pc' as an option:\n");
 				printf("  -m, --music : Music version (default 3do)\n");
 				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");

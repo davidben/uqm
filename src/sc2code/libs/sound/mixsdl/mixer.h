@@ -61,6 +61,7 @@ enum
  */
 typedef enum
 {
+	MIX_POSITION = 0x1004,
 	MIX_LOOPING = 0x1007,
 	MIX_BUFFER = 0x1009,
 	MIX_GAIN = 0x100A,
@@ -231,6 +232,8 @@ void mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		mixSDL_IntVal value);
 void mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		float value);
+void mixSDL_Sourcefv (mixSDL_Object srcobj, mixSDL_SourceProp pname,
+		float *value);
 void mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		mixSDL_IntVal *value);
 void mixSDL_GetSourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,

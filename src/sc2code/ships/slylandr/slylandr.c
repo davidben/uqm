@@ -329,7 +329,7 @@ harvest_space_junk (PELEMENT ElementPtr)
 
 					GetElementStarShip (ElementPtr, &StarShipPtr);
 					ProcessSound (SetAbsSoundIndex (
-							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+							StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 					DeltaEnergy (ElementPtr, MAX_ENERGY);
 				}
 			}

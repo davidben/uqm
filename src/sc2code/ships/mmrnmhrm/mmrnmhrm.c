@@ -358,7 +358,7 @@ mmrnmhrm_postprocess (PELEMENT ElementPtr)
 
 		ProcessSound (SetAbsSoundIndex (
 						/* TRANSFORM */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		DeltaEnergy (ElementPtr,
 				-StarShipPtr->RaceDescPtr->characteristics.special_energy_cost);
 

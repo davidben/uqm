@@ -57,6 +57,8 @@ void TFBSound_Sourcei (TFBSound_Object srcobj, TFBSound_SourceProp pname,
 		TFBSound_IntVal value);
 void TFBSound_Sourcef (TFBSound_Object srcobj, TFBSound_SourceProp pname,
 		float value);
+void TFBSound_Sourcefv (TFBSound_Object srcobj, TFBSound_SourceProp pname,
+		float *value);
 void TFBSound_GetSourcei (TFBSound_Object srcobj, TFBSound_SourceProp pname,
 		TFBSound_IntVal *value);
 void TFBSound_GetSourcef (TFBSound_Object srcobj, TFBSound_SourceProp pname,
@@ -96,6 +98,7 @@ enum
 	TFBSOUND_BUFFERS_PROCESSED,
 	TFBSOUND_BUFFERS_QUEUED,
 	TFBSOUND_SIZE,
+	TFBSOUND_POSITION,
 	TFBSOUND_ENUMSIZE
 };
 

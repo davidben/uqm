@@ -39,6 +39,7 @@ CleanSource (int iSource)
 #define MAX_STACK_BUFFERS 64	
 	TFBSound_IntVal processed;
 
+	soundSource[iSource].positional_object = NULL;
 	TFBSound_GetSourcei (soundSource[iSource].handle,
 			TFBSOUND_BUFFERS_PROCESSED, &processed);
 	if (processed != 0)

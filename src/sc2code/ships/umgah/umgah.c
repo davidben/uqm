@@ -335,7 +335,7 @@ umgah_preprocess (PELEMENT ElementPtr)
 
 			ProcessSound (SetAbsSoundIndex (
 							/* ZIP_BACKWARDS */
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 			facing = FACING_TO_ANGLE (StarShipPtr->ShipFacing) + HALF_CIRCLE;
 			DeltaVelocityComponents (&ElementPtr->velocity,
 					COSINE (facing, WORLD_TO_VELOCITY (JUMP_DIST)),

@@ -243,7 +243,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				row = new_row;
 				col = new_col;
 
-				PlaySoundEffect (MenuSounds, 0, 0);
+				PlaySoundEffect (MenuSounds, 0, NotPositional (), NULL, 0);
 				SetSemaphore (GraphicsSem);
 ChangeSelection:
 				flash_rect.corner.x = PICK_X_OFFS
@@ -312,7 +312,7 @@ ChangeSelection:
 		StarShipPtr->captains_name_index = 0;
 		UnlockStarShip (&race_q[which_player], hBattleShip);
 
-		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0, 0);
+		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0, NotPositional (), NULL, 0);
 
 		WaitForSoundEnd (0);
 	}

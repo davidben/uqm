@@ -166,6 +166,11 @@ spawn_butt_missile (PELEMENT ShipPtr)
 		LockElement (ButtMissile, &ButtPtr);
 		ButtPtr->turn_wait = TRACK_WAIT;
 		SetElementStarShip (ButtPtr, StarShipPtr);
+
+		ProcessSound (SetAbsSoundIndex (
+					/* LAUNCH_BUTT_MISSILE */
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ButtPtr);
+
 		UnlockElement (ButtMissile);
 		PutElement (ButtMissile);
 	}
@@ -262,9 +267,6 @@ spathi_postprocess (PELEMENT ElementPtr)
 			&& StarShipPtr->special_counter == 0
 			&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 	{
-		ProcessSound (SetAbsSoundIndex (
-					/* LAUNCH_BUTT_MISSILE */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
 		spawn_butt_missile (ElementPtr);
 
 		StarShipPtr->special_counter =

@@ -285,7 +285,7 @@ druuge_preprocess (PELEMENT ElementPtr)
 		{
 			ProcessSound (SetAbsSoundIndex (
 							/* BURN UP CREW */
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 
 			DeltaCrew (ElementPtr, -1);
 			DeltaEnergy (ElementPtr, SPECIAL_ENERGY_COST);

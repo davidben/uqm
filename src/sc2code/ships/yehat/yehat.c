@@ -241,7 +241,7 @@ yehat_postprocess (PELEMENT ElementPtr)
 
 				ProcessSound (SetAbsSoundIndex (
 								/* YEHAT_SHIELD_ON */
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 				DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST);
 			}
 		}

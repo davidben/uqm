@@ -247,7 +247,7 @@ syreen_postprocess (PELEMENT ElementPtr)
 	{
 		ProcessSound (SetAbsSoundIndex (
 						/* SYREEN_SONG */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		spawn_crew (ElementPtr);
 
 		StarShipPtr->special_counter =

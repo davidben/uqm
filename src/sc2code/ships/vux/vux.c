@@ -165,7 +165,7 @@ limpet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 		GetElementStarShip (ElementPtr0, &StarShipPtr);
 		ProcessSound (SetAbsSoundIndex (
 						/* LIMPET_AFFIXES */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr1);
 		s.frame = SetAbsFrameIndex (
 				StarShipPtr->RaceDescPtr->ship_data.weapon[0], (COUNT)TFB_Random ()
 				);
@@ -290,7 +290,7 @@ vux_postprocess (PELEMENT ElementPtr)
 	{
 		ProcessSound (SetAbsSoundIndex (
 						/* LAUNCH_LIMPET */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		spawn_limpets (ElementPtr);
 
 		StarShipPtr->special_counter =

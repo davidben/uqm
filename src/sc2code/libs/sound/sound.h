@@ -77,6 +77,7 @@ typedef struct tfb_soundsource
 	bool stream_should_be_playing;
 	Mutex stream_mutex;
 	sint32 start_time;
+	void *positional_object;
 
 	// for oscilloscope
 	void *sbuffer; 

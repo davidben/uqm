@@ -17,6 +17,7 @@
 #ifdef HAVE_OPENAL
 
 #include "libs/sound/sound.h"
+#include "options.h"
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;
@@ -98,9 +99,11 @@ TFB_alInitSound (int driver, int flags)
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
 	SetMusicVolume ((COUNT) musicVolume);
-		
-	// NOTE: change this if implementing 3D sound stuff
-	alDistanceModel (AL_NONE);
+
+	if (optStereoSFX)
+		alDistanceModel (AL_INVERSE_DISTANCE);
+	else
+		alDistanceModel (AL_NONE);
 
 	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
 		"audio stream decoder");

@@ -20,28 +20,32 @@
 #include <fcntl.h>
 
 #include "sound.h"
+#include "options.h"
 
 static void CheckFinishedChannels (void);
 
 
 void
-PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin, 
-			 COUNT loop_length, unsigned char priority)
+PlayChannel (COUNT channel, PVOID sample, SoundPosition pos,
+		void *positional_object, unsigned char priority)
 {
-	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;	
+	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;
+
 	StopSource (channel);
 	// all finished (stopped) channels can be cleaned up at this point
 	// since this is the only func that can initiate an sfx sound
 	CheckFinishedChannels ();
+	
 	soundSource[channel].sample = tfb_sample;
+	soundSource[channel].positional_object = positional_object;
+	
+	if (optStereoSFX)
+		UpdateSoundPosition (channel, pos);
+
 	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER,
 			tfb_sample->buffer[0]);
 	TFBSound_SourcePlay (soundSource[channel].handle);
-	/* ignored arguments */
-	(void)sample_length;
-	(void)loop_begin;
-	(void)loop_length;
-	(void)priority;
+	(void) priority;
 }
 
 void
@@ -81,6 +85,40 @@ ChannelPlaying (COUNT WhichChannel)
 	if (state == TFBSOUND_PLAYING)
 		return TRUE;
 	return FALSE;
+}
+
+void *
+GetPositionalObject (COUNT channel)
+{
+	return soundSource[channel].positional_object;
+}
+
+void
+SetPositionalObject (COUNT channel, void *positional_object)
+{
+	soundSource[channel].positional_object = positional_object;
+}
+
+void
+UpdateSoundPosition (COUNT channel, SoundPosition pos)
+{
+	const float ATTENUATION = 70.0f;
+	float fpos[3];
+
+	if (pos.positional)
+	{
+		fpos[0] = pos.x / ATTENUATION;
+		fpos[1] = 0.0f;
+		fpos[2] = pos.y / ATTENUATION;
+		TFBSound_Sourcefv (soundSource[channel].handle, TFBSOUND_POSITION, fpos);
+		//fprintf (stderr, "UpdateSoundPosition(): channel %d, pos %d %d, posobj %x\n",
+		//		channel, pos.x, pos.y, (unsigned int)soundSource[channel].positional_object);
+	}
+	else
+	{
+		fpos[0] = fpos[1] = fpos[2] = 0.0f;
+		TFBSound_Sourcefv (soundSource[channel].handle, TFBSOUND_POSITION, fpos);
+	}
 }
 
 void

@@ -26,6 +26,12 @@ typedef STRING_TABLE SOUND_REF;
 typedef STRING SOUND;
 typedef STRINGPTR SOUNDPTR;
 
+typedef struct soundposition
+{
+	BOOLEAN positional;
+	int x, y;
+} SoundPosition;
+
 #define InitSoundResources InitStringTableResources
 #define CaptureSound CaptureStringTable
 #define ReleaseSound ReleaseStringTable
@@ -60,9 +66,12 @@ extern void PLRStop (MUSIC_REF MusicRef);
 extern BOOLEAN PLRPlaying (MUSIC_REF MusicRef);
 extern void PLRPause (MUSIC_REF MusicRef);
 extern void PLRResume (MUSIC_REF MusicRef);
-extern void PlayChannel (COUNT Channel, PVOID lpSample, COUNT SampLen,
-		COUNT LoopBegin, COUNT LoopLen, BYTE Priority);
+extern void PlayChannel (COUNT channel, PVOID sample, SoundPosition pos,
+		void *positional_object, unsigned char priority);
 extern BOOLEAN ChannelPlaying (COUNT Channel);
+extern void * GetPositionalObject (COUNT channel);
+extern void SetPositionalObject (COUNT channel, void *positional_object);
+extern void UpdateSoundPosition (COUNT channel, SoundPosition pos);
 extern void StopChannel (COUNT Channel, BYTE Priority);
 extern void SetMusicVolume (COUNT Volume);
 extern void SetChannelVolume (COUNT Channel, COUNT Volume, BYTE

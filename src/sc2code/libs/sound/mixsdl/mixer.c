@@ -550,6 +550,12 @@ mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname, float value)
 	mixSDL_UnlockMutex (src_mutex);
 }
 
+/* set source float array property (CURRENTLY NOT IMPLEMENTED) */
+void mixSDL_Sourcefv (mixSDL_Object srcobj, mixSDL_SourceProp pname, float *value)
+{
+}
+
+
 /* get source integer property */
 void
 mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,

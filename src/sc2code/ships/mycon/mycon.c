@@ -339,7 +339,7 @@ mycon_postprocess (PELEMENT ElementPtr)
 
 		ProcessSound (SetAbsSoundIndex (
 						/* GROW_NEW_CREW */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1));
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
 		if ((add_crew = REGENERATION_AMOUNT) >
 				StarShipPtr->RaceDescPtr->ship_info.max_crew - ElementPtr->crew_level)
 			add_crew = StarShipPtr->RaceDescPtr->ship_info.max_crew - ElementPtr->crew_level;

@@ -620,6 +620,7 @@ ProcessCollisions (HELEMENT hSuccElement, register ELEMENTPTR ElementPtr,
 #define MAX_SOUNDS 8
 static BYTE num_sounds;
 static SOUND sound_buf[MAX_SOUNDS];
+static ELEMENTPTR sound_posobj[MAX_SOUNDS];
 
 static VIEW_STATE
 PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
@@ -882,7 +883,6 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 		{
 			hNextElement = GetSuccElement (ElementPtr);
 			UnlockElement (hElement);
-
 			RemoveElement (hElement);
 			FreeElement (hElement);
 		}
@@ -1053,7 +1053,8 @@ InitDisplayList (void)
 }
 
 void
-PlaySound (SOUND S, BYTE Priority)
+PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
+		BYTE Priority)
 {
 #define MIN_FX_CHANNEL 1
 #define NUM_FX_CHANNELS 4 /* obviously number of channels
@@ -1098,7 +1099,7 @@ PlaySound (SOUND S, BYTE Priority)
 	}
 	lru_channel[NUM_FX_CHANNELS - 1] = chan;
 
-	PlaySoundEffect (S, chan + MIN_FX_CHANNEL, Priority);
+	PlaySoundEffect (S, chan + MIN_FX_CHANNEL, Pos, PositionalObject, Priority);
 }
 
 UWORD nth_frame;
@@ -1108,11 +1109,29 @@ RedrawQueue (BOOLEAN clear)
 {
 	SIZE scroll_x, scroll_y;
 	VIEW_STATE view_state;
+	int i;
 
 	SetContext (StatusContext);
 
 	view_state = PreProcessQueue (&scroll_x, &scroll_y);
 	PostProcessQueue (view_state, scroll_x, scroll_y);
+
+	if (optStereoSFX)
+	{
+		for (i = 0; i <= NUM_FX_CHANNELS; ++i)
+		{
+			/* Updates positional sound effects */
+
+			ELEMENTPTR posobj;
+			if (ChannelPlaying (i) && ((posobj = GetPositionalObject (i)) != NULL))
+			{
+				SoundPosition pos;
+				pos = CalcSoundPosition (posobj);
+				if (pos.positional)
+					UpdateSoundPosition (i, pos);
+			}
+		}
+	}
 
 	SetContext (SpaceContext);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE
@@ -1139,11 +1158,15 @@ RedrawQueue (BOOLEAN clear)
 		if (num_sounds > 0)
 		{
 			SOUND *pSound;
+			ELEMENTPTR *pSoundPosObj;
 
 			pSound = sound_buf;
+			pSoundPosObj = sound_posobj;
 			do
 			{
-				PlaySound (*pSound++, GAME_SOUND_PRIORITY);
+				SoundPosition pos = CalcSoundPosition (*pSoundPosObj);
+				PlaySound (*pSound++, pos, *pSoundPosObj++,
+						GAME_SOUND_PRIORITY);
 			} while (--num_sounds);
 		}
 	}
@@ -1151,15 +1174,59 @@ RedrawQueue (BOOLEAN clear)
 }
 
 void
-ProcessSound (SOUND Sound)
+ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject)
 {
 	if (Sound == (SOUND)~0)
 	{
 		memset (sound_buf, 0, sizeof (sound_buf));
+		memset (sound_posobj, 0, sizeof (sound_posobj));
 		num_sounds = MAX_SOUNDS;
 	}
 	else if (num_sounds < MAX_SOUNDS)
-		sound_buf[num_sounds++] = Sound;
+	{
+		sound_buf[num_sounds] = Sound;
+		sound_posobj[num_sounds++] = PositionalObject;
+	}
+}
+
+SoundPosition
+CalcSoundPosition (ELEMENTPTR ElementPtr)
+{
+	SoundPosition pos;
+
+	if (ElementPtr == NULL)
+	{
+		pos.x = pos.y = 0;
+		pos.positional = FALSE;
+	}
+	else
+	{
+		GRAPHICS_PRIM objtype;
+		
+		objtype = GetPrimType (&DisplayArray[ElementPtr->PrimIndex]);
+		if (objtype == LINE_PRIM)
+		{
+			pos.x = DisplayArray[ElementPtr->PrimIndex].Object.Line.first.x;
+			pos.y = DisplayArray[ElementPtr->PrimIndex].Object.Line.first.y;
+		}
+		else
+		{
+			pos.x = DisplayArray[ElementPtr->PrimIndex].Object.Point.x;
+			pos.y = DisplayArray[ElementPtr->PrimIndex].Object.Point.y;
+		}
+
+		pos.x -= (SPACE_WIDTH >> 1);
+		pos.y -= (SPACE_HEIGHT >> 1);
+		pos.positional = TRUE;
+	}
+
+	return pos;
+}
+
+SoundPosition
+NotPositional (void)
+{
+	return CalcSoundPosition (NULL);
 }
 
 void
@@ -1190,3 +1257,35 @@ Untarget (ELEMENTPTR ElementPtr)
 	}
 }
 
+void
+RemoveElement (HLINK hLink)
+{
+	if (optStereoSFX)
+	{
+		ELEMENTPTR ElementPtr, PosObj;
+
+		LockElement (hLink, &ElementPtr);
+		if (ElementPtr != NULL)
+		{
+			int i;
+			for (i = 0; i <= NUM_FX_CHANNELS; ++i)
+			{
+				if ((PosObj = GetPositionalObject (i)) == ElementPtr)
+				{
+					SetPositionalObject (i, NULL);
+					break;
+				}
+			}
+			for (i = 0; i < num_sounds; ++i)
+			{
+				if (sound_posobj[i] == ElementPtr)
+				{
+					sound_posobj[i] = NULL;
+					break;
+				}
+			}
+		}
+		UnlockElement (hLink);
+	}
+	RemoveQueue (&disp_q, hLink);
+}

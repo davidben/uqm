@@ -215,7 +215,7 @@ object_animation (PELEMENT ElementPtr)
 						SetAbsFrameIndex (pPrim->Object.Stamp.frame, 0);
 
 				PlaySound (SetAbsSoundIndex (LanderSounds, LIFEFORM_CANNED),
-						GAME_SOUND_PRIORITY);
+						NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			}
 		}
 
@@ -250,7 +250,7 @@ object_animation (PELEMENT ElementPtr)
 				SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 				if (frame_index == 13)
 					PlaySound (SetAbsSoundIndex (LanderSounds, EARTHQUAKE_DISASTER),
-							GAME_SOUND_PRIORITY);
+							NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			}
 			
 			if (ElementPtr->mass_points == LAVASPOT_DISASTER
@@ -437,7 +437,7 @@ DeltaLanderCrew (SIZE crew_delta, COUNT which_disaster)
 		s.frame = SetAbsFrameIndex (LanderFrame[0], 56);
 
 		PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_INJURED),
-				GAME_SOUND_PRIORITY);
+				NotPositional (), NULL, GAME_SOUND_PRIORITY);
 	}
 
 	s.origin.x = 11 + (6 * (crew_delta % NUM_CREW_COLS));
@@ -456,7 +456,7 @@ FillLanderHold (PPLANETSIDE_DESC pPSD, COUNT scan, COUNT NumRetrieved)
 	CONTEXT OldContext;
 
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_PICKUP),
-			GAME_SOUND_PRIORITY);
+			NotPositional (), NULL, GAME_SOUND_PRIORITY);
 
 	if (scan == BIOLOGICAL_SCAN)
 	{
@@ -639,7 +639,7 @@ CheckObjectCollision (COUNT index)
 							{
 								PlaySound (SetAbsSoundIndex (
 										LanderSounds, BIOLOGICAL_DISASTER
-										), GAME_SOUND_PRIORITY);
+										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 								DeltaLanderCrew (-1, BIOLOGICAL_DISASTER);
 							}
 							UnlockElement (hElement);
@@ -703,7 +703,7 @@ CheckObjectCollision (COUNT index)
 
 								PlaySound (SetAbsSoundIndex (
 										LanderSounds, LANDER_HITS
-										), GAME_SOUND_PRIORITY);
+										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 							}
 							UnlockElement (hElement);
 							break;
@@ -771,7 +771,7 @@ CheckObjectCollision (COUNT index)
 								}
 								PlaySound (SetAbsSoundIndex (
 										LanderSounds, LANDER_FULL
-										), GAME_SOUND_PRIORITY);
+										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 								continue;
 							case BIOLOGICAL_SCAN:
 								if (pPSD->BiologicalLevel < MAX_SCROUNGED)
@@ -787,7 +787,7 @@ CheckObjectCollision (COUNT index)
 								}
 								PlaySound (SetAbsSoundIndex (
 										LanderSounds, LANDER_FULL
-										), GAME_SOUND_PRIORITY);
+										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 								continue;
 						}
 					}
@@ -920,7 +920,7 @@ AddLightning (void)
 		PutElement (hLightningElement);
 
 		PlaySound (SetAbsSoundIndex (LanderSounds, LIGHTNING_DISASTER),
-				GAME_SOUND_PRIORITY);
+				NotPositional (), NULL, GAME_SOUND_PRIORITY);
 	}
 }
 
@@ -1000,7 +1000,7 @@ BuildObjectList (void)
 	{
 		AddGroundDisaster (LAVASPOT_DISASTER);
 		PlaySound (SetAbsSoundIndex (LanderSounds, LAVASPOT_DISASTER),
-				GAME_SOUND_PRIORITY);
+				NotPositional (), NULL, GAME_SOUND_PRIORITY);
 	}
 
 	if (HIBYTE (LOWORD (rand_val)) < pPSD->TectonicsChance)
@@ -1463,7 +1463,7 @@ InitPlanetSide (void)
 
 	SetSemaphore (GraphicsSem);
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_DEPARTS),
-			GAME_SOUND_PRIORITY + 1);
+			NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 	SetContext (SpaceContext);
 	AnimateLaunch (LanderFrame[5], FALSE);
 #ifdef SPIN_ON_LAUNCH
@@ -1632,7 +1632,7 @@ SetVelocityComponents (
 
 					PlaySound (SetAbsSoundIndex (
 							LanderSounds, LANDER_DESTROYED
-							), GAME_SOUND_PRIORITY + 1);
+							), NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 				}
 			}
 
@@ -1749,7 +1749,7 @@ SetVelocityComponents (
 
 					PlaySound (SetAbsSoundIndex (
 							LanderSounds, LANDER_SHOOTS
-							), GAME_SOUND_PRIORITY);
+							), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 
 					wdx = SHUTTLE_FIRE_WAIT;
 					if (GET_GAME_STATE (IMPROVED_LANDER_SHOT))
@@ -1999,7 +1999,7 @@ PlanetSide (PMENU_STATE pMS)
 		{
 			PSD.InTransit = TRUE;
 			PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_RETURNS),
-					GAME_SOUND_PRIORITY + 1);
+					NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 
 			TimeIn = GetTimeCounter ();
 			for (index = NUM_LANDING_DELTAS; index >= 0; --index)

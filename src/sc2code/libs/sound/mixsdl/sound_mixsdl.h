@@ -37,6 +37,7 @@
 #define TFBSound_IsSource         mixSDL_IsSource
 #define TFBSound_Sourcei          mixSDL_Sourcei
 #define TFBSound_Sourcef          mixSDL_Sourcef
+#define TFBSound_Sourcefv         mixSDL_Sourcefv
 #define TFBSound_GetSourcei       mixSDL_GetSourcei
 #define TFBSound_GetSourcef       mixSDL_GetSourcef
 #define TFBSound_SourceRewind     mixSDL_SourceRewind
@@ -70,3 +71,4 @@
 #define TFBSOUND_BUFFERS_QUEUED    MIX_BUFFERS_QUEUED
 #define TFBSOUND_NO_ERROR          MIX_NO_ERROR
 #define TFBSOUND_SIZE              MIX_SIZE
+#define TFBSOUND_POSITION          MIX_POSITION

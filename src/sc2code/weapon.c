@@ -158,7 +158,7 @@ weapon_collision (PELEMENT
 			damage = TARGET_DAMAGED_FOR_1_PT + (damage >> 1);
 			if (damage > TARGET_DAMAGED_FOR_6_PLUS_PT)
 				damage = TARGET_DAMAGED_FOR_6_PLUS_PT;
-			ProcessSound (SetAbsSoundIndex (GameSounds, damage));
+			ProcessSound (SetAbsSoundIndex (GameSounds, damage), HitElementPtr);
 		}
 
 		if (GetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex]) != LINE_PRIM)
