@@ -34,6 +34,7 @@ static SWORD **JoyaxisValues = 0;
 
 static BOOLEAN (* PauseFunc) (void) = 0;
 static BOOLEAN InputInitialized = FALSE;
+UWORD UNICODEToKBD (UNICODE which_key);
 
 UNICODE PauseKey = 0;
 UNICODE ExitKey = 0;
@@ -111,25 +112,27 @@ void
 ProcessKeyboardEvent(const SDL_Event *Event)
 {
 	SDLKey k = Event->key.keysym.sym;
+        UNICODE map_key;
 	if (!InputInitialized)
 		return;
 
 	if (Event->type == SDL_KEYDOWN)
 	{
 		if (Event->key.keysym.unicode != 0)
-			kbdbuf[kbdtail] = (UNICODE) Event->key.keysym.unicode;
+			map_key = (UNICODE) Event->key.keysym.unicode;
 		else
-			kbdbuf[kbdtail] = KBDToUNICODE(k);
+			map_key = KBDToUNICODE(k);
+		kbdbuf[kbdtail] = map_key;
 		kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
 		if (kbdtail == kbdhead)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-		if (KBDToUNICODE(k) == AbortKey)
+		if (map_key == AbortKey)
 			exit(0);
-		KeyboardDown[k] |= 0x3;
+		KeyboardDown[UNICODEToKBD (map_key)] |= 0x3;
 	}
 	else
 	{
-		KeyboardDown[k] &= (~0x1);
+		KeyboardDown[UNICODEToKBD (KBDToUNICODE (k))] &= (~0x1);
 	}
 }
 
