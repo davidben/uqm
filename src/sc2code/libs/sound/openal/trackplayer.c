@@ -305,7 +305,7 @@ GetSoundData (void *data)
 
 			for (i = 0; i < RADAR_WIDTH; ++i)
 			{
-				SWORD s;
+				SDWORD s;
 
 				for (;;)
 				{
@@ -377,7 +377,7 @@ GetSoundData (void *data)
 
 			for (i = 0; i < RADAR_WIDTH; ++i)
 			{
-				SWORD s;
+				SDWORD s;
 
 				for (;;)
 				{
