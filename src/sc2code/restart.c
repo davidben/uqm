@@ -19,14 +19,11 @@
 #include "starcon.h"
 #include "uqmversion.h"
 #include "controls.h"
+#include "credits.h"
 
 //Added by Chris
 
 void Melee (void);
-
-void Victory (void);
-
-void Credits (void);
 
 void FreeHyperData (void);
 
@@ -35,6 +32,8 @@ void FreeIPData (void);
 void FreeSC2Data (void);
 
 void FreeLanderData (void);
+
+BOOLEAN InitGameKernel (void);
 
 //End Added by Chris
 
@@ -246,9 +245,19 @@ LastActivity = WON_LAST_BATTLE;
 #endif /* NOTYET */
 			if (LOBYTE (LastActivity) == WON_LAST_BATTLE)
 			{
+				GLOBAL (CurrentActivity) = WON_LAST_BATTLE;
 				Victory ();
+				InitGameKernel ();
+				OutTakes ();
 				Credits ();
+
+				FreeSC2Data ();
+				FreeLanderData ();
+				FreeIPData ();
+				FreeHyperData ();
+				
 				TimeOut = ONE_SECOND / 2;
+				GLOBAL (CurrentActivity) = CHECK_ABORT;
 			}
 		}
 

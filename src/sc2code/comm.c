@@ -1705,7 +1705,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 			{
 				temp = curr->tag.data;
 				// fprintf (stderr, "%s\n", temp);
-				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS)
+				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS
+						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					int space_index;
 					// find last space before it goes over the max chars per line
@@ -1742,11 +1743,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 						t.baseline.x = SAFE_X + 2;
 						t.align = ALIGN_LEFT;
 						t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
-						while (AnyButtonPress (TRUE))
-							TaskSwitch ();
-				
-						while (!AnyButtonPress (TRUE))
-							TaskSwitch ();
+
+						WaitAnyButtonOrQuit (TRUE);
 
 						SetSemaphore (GraphicsSem);
 						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
@@ -1755,6 +1753,9 @@ DoCommunication (PENCOUNTER_STATE pES)
 						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
 					}
 				}
+			
+				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+					break;				
 				
 				t.pStr = temp;
 				SetSemaphore (GraphicsSem);
@@ -1776,11 +1777,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 					t.baseline.x = SAFE_X + 2;
 					t.align = ALIGN_LEFT;
 					t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
-					while (AnyButtonPress (TRUE))
-						TaskSwitch ();
-				
-					while (!AnyButtonPress (TRUE))
-						TaskSwitch ();
+
+					WaitAnyButtonOrQuit (TRUE);
 
 					SetSemaphore (GraphicsSem);
 					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
@@ -1790,11 +1788,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 				}
 			}
 
-			while (AnyButtonPress (TRUE))
-				TaskSwitch ();
-				
-			while (!AnyButtonPress (TRUE))
-				TaskSwitch ();
+			WaitAnyButtonOrQuit (TRUE);
 
 			SetSemaphore (GraphicsSem);
 			SetContextFont (fLast);

@@ -87,11 +87,10 @@ Introduction (void)
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	ClearSemaphore (GraphicsSem);
 
-	FlushInput ();
-
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
 	LoadMasterShipList ();
+	FlushInput ();
 	InitGameKernel ();
 	while ((GetTimeCounter () <= TimeOut) &&
 	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -152,8 +151,6 @@ Victory (void)
 		
 	xform_buf[0] = FadeAllToBlack;
 	XFormColorMap ((COLORMAPPTR)xform_buf, 0);
-	
-	InitGameKernel ();
 }
 
 void

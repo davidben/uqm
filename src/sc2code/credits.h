@@ -15,3 +15,5 @@
  */
 
 void OutTakes (void);
+void Victory (void);
+void Credits (void);

@@ -994,8 +994,6 @@ sc = _simple_count;
 					if (GET_GAME_STATE (KOHR_AH_KILLED_ALL))
 						InitCommunication (BLACKURQ_CONVERSATION);
 							//surrendered to Ur-Quan
-					else if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
-						OutTakes ();
 					else if (GLOBAL (CurrentActivity) & CHECK_RESTART)
 						GLOBAL (CurrentActivity) &= ~CHECK_RESTART;
 					break;

@@ -22,22 +22,6 @@
 #include "oscill.h"
 #include "options.h"
 
-//Added by Chris
-
-void FreeSC2Data (void);
-
-void FreeLanderData (void);
-
-void FreeIPData (void);
-
-void FreeMasterShipList (void);
-
-void UninitSpace (void);
-
-void FreeHyperData (void);
-
-//End Added by Chris
-
 void
 Credits (void)
 {
@@ -52,11 +36,10 @@ Credits (void)
 	DWORD TimeIn;
 	MUSIC_REF hMusic;
 	BYTE fade_buf[1];
+
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return;
 	
-FreeSC2Data ();
-FreeLanderData ();
-FreeIPData ();
-FreeHyperData ();
 	rt = GET_TYPE (CREDIT00_ANIM);
 	ri = GET_INSTANCE (CREDIT00_ANIM);
 	rp = GET_PACKAGE (CREDIT00_ANIM);
@@ -85,7 +68,8 @@ FreeHyperData ();
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 	
 	TimeIn = GetTimeCounter ();
-	for (i = 1; i < NUM_CREDITS; ++i)
+	for (i = 1; (i < NUM_CREDITS) &&
+			!(GLOBAL (CurrentActivity) & CHECK_ABORT); ++i)
 	{
 		SetTransitionSource (&r);
 		BatchGraphics ();
@@ -97,15 +81,21 @@ FreeHyperData ();
 		UnbatchGraphics ();
 		DestroyDrawable (ReleaseDrawable (f[i]));
 		
-		SleepThreadUntil (TimeIn + ONE_SECOND * 5);
+		ClearSemaphore (GraphicsSem);
+		while ((GetTimeCounter () - TimeIn < ONE_SECOND * 5) &&
+			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+		{
+			UpdateInputState ();
+			SleepThreadUntil (ONE_SECOND / 20);
+		}
+		SetSemaphore (GraphicsSem);
 		TimeIn = GetTimeCounter ();
 	}
 	
 	DestroyDrawable (ReleaseDrawable (f[0]));
 	ClearSemaphore (GraphicsSem);
 
-	while (!AnyButtonPress (FALSE));
-	while (AnyButtonPress (FALSE));
+	WaitAnyButtonOrQuit (FALSE);
 	
 	fade_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
@@ -121,40 +111,57 @@ FreeHyperData ();
 void
 OutTakes (void)
 {
-	RECT r;
-	float oldvolume = speechVolumeScale;
-	BOOLEAN oldsubtitles = optSubtitles;
+#define NUM_OUTTAKES 15
+	static long outtake_list[NUM_OUTTAKES] =
+	{
+		ZOQFOTPIK_CONVERSATION,
+		TALKING_PET_CONVERSATION,
+		ORZ_CONVERSATION,
+		UTWIG_CONVERSATION,
+		THRADD_CONVERSATION,
+		SUPOX_CONVERSATION,
+		SYREEN_CONVERSATION,
+		SHOFIXTI_CONVERSATION,
+		PKUNK_CONVERSATION,
+		YEHAT_CONVERSATION,
+		DRUUGE_CONVERSATION,
+		URQUAN_CONVERSATION,
+		VUX_CONVERSATION,
+		BLACKURQ_CONVERSATION,
+		ARILOU_CONVERSATION
+	};
 
-	speechVolumeScale = 0.0f;
+	RECT r;
+	BOOLEAN oldsubtitles = optSubtitles;
+	int i = 0;
+	BYTE fade_buf[1];
+
 	optSubtitles = TRUE;
 	sliderDisabled = TRUE;
 
 	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	fade_buf[0] = FadeAllToColor;
+	XFormColorMap ((COLORMAPPTR)fade_buf, 0);
+
 	r.corner.x = r.corner.y = 0;
 	r.extent.width = SCREEN_WIDTH;
 	r.extent.height = SCREEN_HEIGHT;
 	DrawFilledRectangle (&r);	
 	ClearSemaphore (GraphicsSem);
 
-	InitCommunication (ZOQFOTPIK_CONVERSATION);
-	InitCommunication (TALKING_PET_CONVERSATION);
-	InitCommunication (ORZ_CONVERSATION);
-	InitCommunication (UTWIG_CONVERSATION);
-	InitCommunication (THRADD_CONVERSATION);
-	InitCommunication (SUPOX_CONVERSATION);
-	InitCommunication (SYREEN_CONVERSATION);
-	InitCommunication (SHOFIXTI_CONVERSATION);
-	InitCommunication (PKUNK_CONVERSATION);
-	InitCommunication (YEHAT_CONVERSATION);
-	InitCommunication (DRUUGE_CONVERSATION);
-	InitCommunication (URQUAN_CONVERSATION);
-	InitCommunication (VUX_CONVERSATION);
-	InitCommunication (BLACKURQ_CONVERSATION);
-	InitCommunication (ARILOU_CONVERSATION);
+	for (i = 0; (i < NUM_OUTTAKES) &&
+			!(GLOBAL (CurrentActivity) & CHECK_ABORT); i++)
+	{
+		InitCommunication (outtake_list[i]);
+	}
 
-	speechVolumeScale = oldvolume;
+	SetContext (ScreenContext);
+	fade_buf[0] = FadeAllToBlack;
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+	FlushColorXForms ();
+
 	optSubtitles = oldsubtitles;
 	sliderDisabled = FALSE;
 }
