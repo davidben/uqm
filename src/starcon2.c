@@ -258,6 +258,8 @@ main (int argc, char *argv[])
 		}
 	}
 	
+	mem_init ();
+
 	initTempDir();
 	CDToContentDir (contentdir);
 	prepareConfigDir();
@@ -268,7 +270,6 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-	mem_init ();
 	GraphicsSem = CreateSemaphore (1, "Graphics");
 	RenderingCond = CreateCondVar ();
 	init_xform_control ();

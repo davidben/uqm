@@ -28,6 +28,7 @@
 #include "timelib.h"
 #include "port.h"
 #include "libs/compiler.h"
+#include "misc.h"
 
 static char *tempDir;
 
@@ -97,7 +98,7 @@ initTempDir (void) {
 			// Pointer to the location in the tempDir string where the
 			// path to the temp dir ends and the dir starts.
 
-	tempDir = malloc (PATH_MAX);
+	tempDir = HMalloc (PATH_MAX);
 	getTempDir (tempDir, PATH_MAX - 21);
 			// reserve 8 chars for dirname, 1 for slash, and 12 for filename
 	len = strlen(tempDir);
@@ -113,7 +114,7 @@ initTempDir (void) {
 			continue;
 		
 		// Success, we've got a temp dir.
-		tempDir = realloc (tempDir, len + 9);
+		tempDir = HRealloc (tempDir, len + 9);
 		atexit (removeTempDir);
 		return;
 	}

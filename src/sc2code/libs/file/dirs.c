@@ -25,6 +25,7 @@
 #include "config.h"
 #include "filintrn.h"
 #include "compiler.h"
+#include "misc.h"
 
 #ifdef WIN32
 #	include <direct.h>
@@ -228,11 +229,11 @@ expandPath (char *dest, size_t len, const char *src)
 				}
 				
 				envNameLen = end - src;
-				envName = malloc (envNameLen + 1);
+				envName = HMalloc (envNameLen + 1);
 				memcpy (envName, src, envNameLen + 1);
 				envName[envNameLen] = '\0';
 				envVar = getenv (envName);
-				free (envName);
+				HFree (envName);
 
 				if (envVar == NULL)
 				{
