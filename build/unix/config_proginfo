@@ -106,13 +106,6 @@ PROG_Rez_ACTION=""
 PROG_Rez_VERSION=''
 
 
-### SetFile (for MacOS X) only ###
-PROG_SetFile_NAME="SetFile (Apple Developer Tools)"
-PROG_SetFile_FILE="/Developer/Tools/SetFile"
-PROG_SetFile_ACTION=""
-PROG_SetFile_VERSION=''
-
-
 ### pkg-config ###
 PROG_pkgconfig_NAME="pkg-config"
 PROG_pkgconfig_FILE="pkg-config"
@@ -228,6 +221,10 @@ case "$OSNAME" in
 	FreeBSD|OpenBSD)
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
+		;;
+	Darwin)
+		LIB_vorbisfile_CFLAGS="-D__MACOSX__"
+		LIB_vorbisfile_LDFLAGS="-framework Ogg -framework Vorbis"
 		;;
 	QNX)
 		LIB_vorbisfile_CFLAGS=""
