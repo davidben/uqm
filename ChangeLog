@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Flush input after selecting "Navigate" (bug #475) - Michael
 - Fixed ships in solar system getting displaced after having
   visited a planet (bug #365) -Alex
 - Fixed collisions/encounters with "invisible" fleeing ships

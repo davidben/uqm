@@ -1300,6 +1300,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 
 							SetSemaphore (GraphicsSem);
 							pMS->CurState = 0;
+							FlushInput ();
 							ClearSemaphore (GraphicsSem);
 							break;
 					}
