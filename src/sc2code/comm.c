@@ -1164,6 +1164,10 @@ int ambient_anim_task(void* data)
 					TalkAlarm = FrameRate;
 				}
 			}
+			else if (done && (ADPtr->AnimFlags & PAUSE_TALKING))
+			{
+				ADPtr->AnimFlags &= ~(WAIT_TALKING | PAUSE_TALKING);				
+			}
 		}
 
 		if (!summary)
@@ -1734,7 +1738,35 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 
+				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+				if (CommData.AlienTalkDesc.NumFrames)
+				{
+					if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+					{
+						CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
+						if (CommData.AlienTransitionDesc.NumFrames)
+							CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
+					}
+					
+					CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
+					if (CommData.AlienTalkDesc.NumFrames)
+						CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
+					while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
+					{
+						ClearSemaphore (GraphicsSem);
+						TaskSwitch ();
+						SetSemaphore (GraphicsSem);
+					}
+				}
+
 				SpewPhrases (0);
+
+				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+				if (CommData.AlienTalkDesc.NumFrames)
+				{
+					if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
+						CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
+				}
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					RefreshResponses (pES);
@@ -1744,6 +1776,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				FlushInput ();
 				while (AnyButtonPress (TRUE))
 					TaskSwitch ();
+				do
+					TaskSwitch ();
+				while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
 			}
 			else if (GetInputYComponent (InputState) < 0)
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
