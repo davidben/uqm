@@ -1,1 +1,2 @@
-uqm_CFILES="vfileins.c"
+uqm_CFILES="vfileins.c video.c videodec.c vidplayer.c dukvid.c"
+uqm_SUBDIRS="sdl"
