@@ -69,15 +69,21 @@ build_dependancies() {
 
 # Recursively build dependancy information
 build_rec_dependancies() {
-	local DEPEND_FILE
+	local DEPEND_FILE EXTRA_OFILES
+
 	echo "Building dependancy information..." 1>&2
-	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
+
+	BUILD_FILES_VAR=${BUILD_PROJECT}_EXTRA_OFILES
 	export BUILD_FILES_VAR
+	EXTRA_OFILES=`build_do_recursive build_collect_extra_o_files :`
+
+	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	OFILES=`build_do_recursive build_collect_o_files :`
+
 	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME}"
 	{
 		eval echo -n "target-\${${BUILD_PROJECT}_NAME}:"
-		for OFILE in $OFILES; do
+		for OFILE in $OFILES $EXTRA_OFILES; do
 			echo -n " $OFILE"
 		done
 		echo
@@ -90,11 +96,21 @@ build_collect_o_files() {
 	eval echo "\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
 }
 
+# Output the extra .o file with the complete path
+build_collect_extra_o_files() {
+	eval echo "\${${BUILD_PROJECT}_OBJS}\$1"
+}
+
 # Recursively collect .o-files
 build_rec_collect_o_files() {
+	local EXTRA_OFILES
+
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	export BUILD_FILES_VAR
 	build_do_recursive build_collect_o_files :
+
+	BUILD_FILES_VAR=${BUILD_PROJECT}_EXTRA_OFILES
+	build_do_recursive build_collect_extra_o_files :
 }
 
 # Start the configure program.

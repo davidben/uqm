@@ -1,6 +1,13 @@
 default:
 	./build sc2
 
+%.rc.o:
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(WINDRES) -o $@ $<
+
 %.o:
 	@DIR=$(dir $@); \
 	if [ ! -d $$DIR ]; then \
@@ -12,4 +19,8 @@ target-%:
 	$(COMPILE) -o $* $^ $(LDFLAGS)
 
 -include $(DEPEND_FILE)
+
+# Temporary:
+obj/release/./src/res/UrQuanMasters.rc.o: ./src/res/UrQuanMasters.rc
+obj/debug/./src/res/UrQuanMasters.rc.o: ./src/res/UrQuanMasters.rc
 

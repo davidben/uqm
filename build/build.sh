@@ -51,6 +51,9 @@ done
 TOPDIR="$PWD"
 export TOPDIR
 
+OSNAME=`uname -s`
+export OSNAME
+
 if [ $# -lt 1 ]; then
 	usage 1>&2
 	exit 1;

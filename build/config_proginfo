@@ -40,25 +40,29 @@ PROG_tr_FILE="tr"
 PROG_tr_ACTION=""
 PROG_tr_VERSION=''
 
+PROG_windres_NAME=windres
+PROG_windres_FILE=windres
+PROG_windres_ACTION=""
+PROG_windres_VERSION='windres --version'
+
 
 # Describe the libaries (possibly) used:
 LIB_SDL_NAME="Simple DirectMedia Layer"
 
-if [ `uname` = 'FreeBSD' ]; then
-  	LIB_SDL_CFLAGS='$(sdl11-config --cflags)';
-else
-  	LIB_SDL_CFLAGS='$(sdl-config --cflags)';
-fi
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_SDL_LDFLAGS='$(sdl11-config --libs)';
-else
-	LIB_SDL_LDFLAGS='$(sdl-config --libs)';
-fi
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_SDL_VERSION='$(sdl11-config --version)';
-else
-	LIB_SDL_VERSION='$(sdl-config --version)';
-fi
+OSNAME=`uname -s`
+
+case "$OSNAME" in
+	FreeBSD)  LIB_SDL_CFLAGS='$(sdl11-config --cflags)' ;;
+	*)        LIB_SDL_CFLAGS='$(sdl-config --cflags)' ;;
+esac
+case "$OSNAME" in
+	FreeBSD)  LIB_SDL_LDFLAGS='$(sdl11-config --libs)' ;;
+	*)        LIB_SDL_LDFLAGS='$(sdl-config --libs)' ;;
+esac
+case "$OSNAME" in
+	FreeBSD)  LIB_SDL_VERSION='$(sdl11-config --version)' ;;
+	*)        LIB_SDL_VERSION='$(sdl-config --version)' ;;
+esac
 
 LIB_SDL_mixer_NAME="SDL_mixer"
 LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"
@@ -72,27 +76,28 @@ LIB_SDL_image_VERSION=""
 
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
-if [ `uname` = 'FreeBSD' ]; then
-      LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal"
-elif [ `uname | $PROG_sed_FILE s/^MINGW32.*$/MINGW32/` = 'MINGW32' ]; then
-      LIB_openal_LDFLAGS="-lopenal32"
-else
-      LIB_openal_LDFLAGS="-lopenal"
-fi
+case "$OSNAME" in
+	FreeBSD)   LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal" ;;
+	MINGW32*)  LIB_openal_LDFLAGS="-lopenal32" ;;
+	*)         LIB_openal_LDFLAGS="-lopenal" ;;
+esac
 LIB_openal_VERSION=""
 
-
 LIB_opengl_NAME="OpenGL"
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
-	LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
-elif [ `uname | $PROG_sed_FILE s/^MINGW32.*$/MINGW32/` = 'MINGW32' ]; then
-	LIB_opengl_CFLAGS=""
-	LIB_opengl_LDFLAGS="-lopengl32"
-else
-	LIB_opengl_CFLAGS=""
-	LIB_opengl_LDFLAGS="-lGL"
-fi
+case "$OSNAME" in
+	FreeBSD)
+		LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
+		LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
+		;;
+	MINGW32*)
+		LIB_opengl_CFLAGS=""
+		LIB_opengl_LDFLAGS="-lopengl32"
+		;;
+	*)
+		LIB_opengl_CFLAGS=""
+		LIB_opengl_LDFLAGS="-lGL"
+		;;
+esac
 LIB_opengl_VERSION=""
 
 LIB_vorbis_NAME="Vorbis"
@@ -101,12 +106,15 @@ LIB_vorbis_LDFLAGS="-lvorbis"
 LIB_vorbis_VERSION=""
 
 LIB_vorbisfile_NAME="Vorbisfile"
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_vorbisfile_CFLAGS="-I/usr/local/include"
-	LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
-else
-	LIB_vorbisfile_CFLAGS=""
-	LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis"
-fi
+case "$OSNAME" in
+	FreeBSD)
+		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
+		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
+		;;
+	*)
+		LIB_vorbisfile_CFLAGS=""
+		LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis"
+		;;
+esac
 LIB_vorbisfile_VERSION=""
 
