@@ -96,7 +96,7 @@ Indeed, you fail to understand: there is no death.
 Only termination and rebirth.
 Each termination brings around the new chance
 the possibility to be born an Ur-Quan.
-We present this opportunity, make it available to all.
+We merely present this opportunity, make it available to all.
 
 #(KILL_BECAUSE_2)	black015.wav
 Our Path of Now and Forever is self-justifying, it needs no confirmation.
@@ -201,8 +201,8 @@ Hold! What you are doing to us is wrong! Why do you do this thing?
 
 #(RESPONSE_TO_KEY_PHRASE)	black030.wav
 THE WORDS!... the Words... the words
-alien, you have spoken the Words. You have spoken them rightly.
-We will explain to you about the Dnyarri our slavemasters
+Alien, you have spoken the Words. You have spoken them rightly.
+We will explain to you about the Dnyarri, our slavemasters
 the Taalo, our only friends... whom we exterminated
 and our reasons why we cleanse the galaxy of all other sentient life.
 We have explained this before, over twenty thousand years ago.
@@ -254,8 +254,8 @@ the creatures you know as our Talking Pets.
 But the Dnyarri were different then.
 They were evilly intelligent and wielded psychic powers to control the minds of others.
 They wanted to rule the universe. We had no choice but to give it to them.
-Our Ur-Quan scoutships transported the Dnyarri throughout the Milieu.
-The war for dominance, such as there was, was quick and bloodless.
+Our Ur-Quan scoutships transported the Dnyarri through the Milieu.
+The war for dominance, such as it was, was quick and bloodless.
 Within weeks, the Dnyarri controlled all races but one... the Taalo.
 
 #(how_leave_me_alone)
@@ -267,18 +267,18 @@ Like the five other surviving races of the old Milieu, we had no choice.
 The Dnyarri's compulsion was too strong to resist.
 But the Dnyarri were not satisfied with their slave races.
 The Yuli and the Drall were inferior, they decided
-so they instructed us to incinerate their worlds, and we did.
+and so they instructed us to incinerate their worlds, and we did.
 The Dnyarri had a special liking for us Ur-Quan
 so they began to tinker with our genes... to improve us, their favored slaves.
-Their efforts split the Ur-Quan into two sub-races.
+Their efforts split the Ur-Quan into two sub-races
 The Green Ur-Quan, effete scientists and bureaucrats
 and the Black Ur-Quan, their Effectuators, the builders, the fighters, the doers.
-The Kohr-Ah are the Black Ur-Quan. The Kzer-Ta are the Green.
+The Kohr-Ah are the Black Ur-Quan. The Kzer-Za are the Green.
 I grow tired of talking, alien, and your time grows short.
 I will continue for but a moment longer.
 When we discovered that intense pain could block the Dnyarri's mental powers
 we were able to destroy them, but it took years.
-Can you imagine, alien, what it must have been like to wear an excruciator?
+Can you imagine, alien, what it must have been like to wear an Excruciator?
 To live in endless screaming pain for months on end? No you cannot.
 
 #(guess_thats_all)
@@ -299,8 +299,8 @@ While we fought, the Mael-Num escaped. We never found them again.
 When our battle was done, we, the Kohr-Ah, were defeated
 however, the Kzer-Za let us go. We were exiled.
 We travelled through space, rebuilt the strength of our battle fleets
-continued our plan, to cleanse threats from the galaxy, for all Ur-Quan.
-You have heard our words, and perhaps now you understand us a bit better.
+and continued our plan, to cleanse threats from the galaxy, for all Ur-Quan.
+You have heard our words, and perhaps you understand us a bit better.
 But now, it is time for us to cleanse you.
 
 #(what_are_you_hovering_over)
@@ -317,7 +317,7 @@ unless they are accidentally vaporized.
 You sure are creepy.
 
 #(YES_CREEPY)	black037.wav
-Seeing that I represent your imminent termination
+Seeing that I represent your imminent death
 as well as the termination of your entire species
 I think your fear is well justified.
 Nonetheless, you require cleansing.

@@ -122,7 +122,7 @@ Do not trust the Orz, my Human Captain. They are dangerous.
 But as to your question... our relationship
 To call our interaction with your kind an experiment would be much too simple and impersonal.
 Let us just say that we have a vested interest in your... development.
-You are one of our... extended family, just as other sentients in other dimesions
+You are one of our... extended family, just as other sentients in other dimensions
 have their extended families.
 We are proud of you as you would be of your children, and some day
 well, I have said too much already.
@@ -297,7 +297,7 @@ We have changed things... made modifications.
 What did you change and modify on Earth, AND WHY?!
 
 #(IDF_PARASITES)	arilo037.wav
-Our motives are multiple, our desires complex.\nn"
+Our motives are multiple, our desires complex.
 Part of what we do on Earth is for your own protection.
 There are parasites. Creatures who dwell Beyond.
 They have names, but you do not know them. They would like to find you
@@ -355,19 +355,19 @@ The source of the Umgah's compulsion is the Talking Pet you gave the Umgah,
 but now it is intelligent and exhibits strange powers.
 
 #(BAD_NEWS_ABOUT_TPET)	arilo043.wav
-That is very bad news. This creature, a super-intelligent, psychically coercive creature
+That is very bad news. This creature, a super-intelligent, physically coercive creature
 is very similar to a race of beings which was thought to have vanished over 20,000 years ago.
-They were called the Dynarri, and history tells that they ruled a wide region of this galaxy
-for many thousands of years. The Dynarri were cruel and devious
+They were called the Dnyarri, and history tells that they ruled a wide region of this galaxy
+for many thousands of years. The Dnyarri were cruel and devious
 and when they were finally overthrown by one of their slave-races
 they were supposedly exterminated.
-Perhaps this Talking Pet is the degenerate product of the Dynarri.
+Perhaps this Talking Pet is the degenerate product of the Dnyarri.
 
 #(what_do_about_tpet)
 So what should we do about this Dnyarri creature?
 
 #(DANGEROUS_BUT_USEFUL)	arilo044.wav
-The Dnyarri were the most innimical race this galaxy has known.
+The Dnyarri were the most inimical race this galaxy has known.
 In other dimensions, other *times* there are far, far worse beings
 but they do not threaten you at the present time.
 During their reign, the Dnyarri possessed absolute power over all intelligent species in this region.
@@ -386,7 +386,7 @@ You said you had much to give my people. Can you be more specific?
 #(ABOUT_PORTAL)	arilo045.wav
 As you know, we live in a dimension adjacent to HyperSpace which we call QuasiSpace.
 Our ships move between these dimensions through weaknesses in the inter-dimensional fabric.
-Although many such weaknesses, or Portals exist which lead from our dimension, QuasiSpace
+Although many such weaknesses, or Portals, exist which lead from our dimension, QuasiSpace
 to various locations in HyperSpace, there is only one natually occurring Portal
 which will transport a ship from HyperSpace to QuasiSpace.
 We therefore find it convenient to generate our own Portals artificially
@@ -437,7 +437,7 @@ I have obtained the Warp Pod unit from the Ur-Quan wreck.
 #(CLEVER_HUMAN)	arilo048.wav
 What a surprise!
 As we have always said, Humans are a MOST resourceful and clever species.
-We are so proud of you! But don't worry that you shall have to wait.\r
+We are so proud of you! But don't worry that you shall have to wait.
 
 #(GIVE_PORTAL)	arilo049.wav
 We are prepared. Even now our technical personnel are equipping your ship
