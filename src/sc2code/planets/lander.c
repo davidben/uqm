@@ -23,7 +23,7 @@
 
 //Added by Chris
 
-void InsertPrim (PRIM_LINKS *pLinks, COUNT PI, COUNT iPI);
+void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
 
 void
 DrawPlanet(int x, int y, int dy, unsigned int rgb);

@@ -22,7 +22,7 @@
 
 //Added by Chris
 
-void InsertPrim (PRIM_LINKS *pLinks, COUNT PI, COUNT iPI);
+void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
 
 //End Added by Chris
 

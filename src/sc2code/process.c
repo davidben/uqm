@@ -763,7 +763,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 }
 
 void
-InsertPrim (PRIM_LINKS *pLinks, COUNT PI, COUNT iPI)
+InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI)
 {
 	COUNT Link;
 	PRIM_LINKS PL;
@@ -772,9 +772,9 @@ InsertPrim (PRIM_LINKS *pLinks, COUNT PI, COUNT iPI)
 	{
 		Link = GetSuccLink (*pLinks); /* get tail */
 		if (Link == END_OF_LIST)
-			*pLinks = MakeLinks (PI, PI);
+			*pLinks = MakeLinks (primIndex, primIndex);
 		else
-			*pLinks = MakeLinks (GetPredLink (*pLinks), PI);
+			*pLinks = MakeLinks (GetPredLink (*pLinks), primIndex);
 	}
 	else
 	{
@@ -784,17 +784,17 @@ InsertPrim (PRIM_LINKS *pLinks, COUNT PI, COUNT iPI)
 		else
 		{
 			Link = END_OF_LIST;
-			*pLinks = MakeLinks (PI, GetSuccLink (*pLinks));
+			*pLinks = MakeLinks (primIndex, GetSuccLink (*pLinks));
 		}
-		SetPrimLinks (&DisplayArray[iPI], PI, GetSuccLink (PL));
+		SetPrimLinks (&DisplayArray[iPI], primIndex, GetSuccLink (PL));
 	}
 
 	if (Link != END_OF_LIST)
 	{
 		PL = GetPrimLinks (&DisplayArray[Link]);
-		SetPrimLinks (&DisplayArray[Link], GetPredLink (PL), PI);
+		SetPrimLinks (&DisplayArray[Link], GetPredLink (PL), primIndex);
 	}
-	SetPrimLinks (&DisplayArray[PI], Link, iPI);
+	SetPrimLinks (&DisplayArray[primIndex], Link, iPI);
 }
 
 PRIM_LINKS DisplayLinks;
