@@ -12,7 +12,9 @@
 #define stricmp strcasecmp
 #endif
 
+#ifndef HAVE_STRUPR
 char *strupr (char *str);
+#endif
 
 #endif  /* _PORT_H */
 
