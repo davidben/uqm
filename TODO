@@ -76,6 +76,7 @@ Glitches (don't crash the game, medium priority):
 - When saving game in the Outfit Starship menu is done, and game goes
   back to the outfit, screen doesn't reset itself
   - Probably happens on some other situations too
+- Team names are switched when selecting next ship to fight with.
 
 Implementation bugs (low priority):
 - Scaling code problems:
