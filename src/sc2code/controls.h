@@ -62,7 +62,8 @@ void SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt);
 void SetDefaultMenuRepeatDelay (void);
 void ResetKeyRepeat (void);
 BOOLEAN PauseGame (void);
-extern BOOLEAN DoConfirmExit (void);
+BOOLEAN DoConfirmExit (void);
+void TFB_Abort (void);
 
 BATTLE_INPUT_STATE p1_combat_summary (void);
 BATTLE_INPUT_STATE p2_combat_summary (void);

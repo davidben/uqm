@@ -168,6 +168,7 @@ TFB_InitInput (int driver, int flags)
 	VControl_ResetInput ();
 	InputInitialized = TRUE;
 
+	atexit (TFB_UninitInput);
 	return 0;
 }
 

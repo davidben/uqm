@@ -38,6 +38,7 @@ SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
 volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
+static volatile BOOLEAN abortFlag = FALSE;
 
 int GfxFlags = 0;
 
@@ -45,6 +46,12 @@ static TFB_Palette palette[256];
 
 #define FPS_PERIOD 1000
 int RenderedFrames = 0;
+
+void
+TFB_Abort (void)
+{
+	abortFlag = TRUE;
+}
 
 int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -123,7 +130,7 @@ TFB_ProcessEvents ()
 				break;
 		}
 	}
-	if (ImmediateInputState.abort)
+	if (ImmediateInputState.abort || abortFlag)
 		exit (0);
 	if (ImmediateInputState.debug)
 	{

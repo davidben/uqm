@@ -86,9 +86,6 @@ DoRestart (PMENU_STATE pMS)
 {
 	/* Cancel any presses of the Pause or Exit keys. */
 	GamePaused = FALSE;
-	ExitRequested = FALSE;
-	GameExiting = FALSE;
-
 
 	if (!pMS->Initialized)
 	{
@@ -104,6 +101,10 @@ DoRestart (PMENU_STATE pMS)
 #ifdef TESTING
 else if (InputState & DEVICE_EXIT) return (FALSE);
 #endif /* TESTING */
+	else if (GameExiting)
+	{
+		return (FALSE);
+	}
 	else if (!(CurrentMenuState.up || CurrentMenuState.down ||
 			CurrentMenuState.left || CurrentMenuState.right ||
 			CurrentMenuState.select))
@@ -250,6 +251,7 @@ LastActivity = WON_LAST_BATTLE;
 			UnbatchGraphics ();
 
 			FlushInput ();
+			GameExiting = FALSE;
 			DoInput ((PVOID)&MenuState, TRUE);
 			
 			SetSemaphore (GraphicsSem);
@@ -257,22 +259,13 @@ LastActivity = WON_LAST_BATTLE;
 			ClearSemaphore (GraphicsSem);
 			DestroyDrawable (ReleaseDrawable (s.frame));
 			
+			if (GameExiting)
+			{
+				TFB_Abort ();
+			}
+
 			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
 				goto TimedOut;
-#ifdef TESTING
-if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-{
-	WaitForSoundEnd (WAIT_ALL_SOUNDS);
-	StopSound ();
-
-	FreeSC2Data ();
-	FreeLanderData ();
-	FreeIPData ();
-	FreeHyperData ();
-	FlushColorXForms ();
-	return (FALSE);
-}
-#endif /* TESTING */
 
 			TimeOut = XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND / 2);
 		}

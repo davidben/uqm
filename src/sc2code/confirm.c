@@ -72,6 +72,7 @@ BOOLEAN
 DoConfirmExit (void)
 {
 	BOOLEAN result;
+	static BOOLEAN in_confirm = FALSE;
 	fprintf (stderr, "Confirming Exit!\n");
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
@@ -79,7 +80,7 @@ DoConfirmExit (void)
 		PauseTrack ();
 
 	SetSemaphore (GraphicsSem);
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+	if (in_confirm)
 	{
 		result = FALSE;
 		ExitRequested = FALSE;
@@ -92,6 +93,7 @@ DoConfirmExit (void)
 		CONTEXT oldContext;
 		BOOLEAN response = TRUE, done;
 
+		in_confirm = TRUE;
 		oldContext = SetContext (ScreenContext);
 
 		r.extent.width = CONFIRM_WIN_WIDTH;
@@ -167,6 +169,7 @@ DoConfirmExit (void)
 	}
 
 	fprintf (stderr, "Exit was %sconfirmed.\n", result ? "" : "NOT ");
+	in_confirm = FALSE;
 	return (result);
 }
 
