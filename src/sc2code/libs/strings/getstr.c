@@ -121,7 +121,9 @@ _GetStringData (uio_Stream *fp, DWORD length)
 					{
 						if (n >= 0)
 						{
-							while (slen[n] > 1 && strdata[StringOffs - 2] == '\n')
+							while (slen[n] > 1 && 
+									(strdata[StringOffs - 2] == '\n' ||
+									strdata[StringOffs - 2] == '\r'))
 							{
 								--slen[n];
 								--StringOffs;
@@ -144,7 +146,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 										&& (++tsptr))
 								{
 									ts_ok = TRUE;
-									while (! strcspn(tsptr," \t\n") && *tsptr)
+									while (! strcspn(tsptr," \t\r\n") && *tsptr)
 										tsptr++;
 									if (*tsptr)
 									{
@@ -173,7 +175,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 							}
 						}
 						clen[n] = 0;
-						s = strtok (NULL, " \t\n)");
+						s = strtok (NULL, " \t\r\n)");
 						if (s)
 						{
 							l = path_len + strlen (s) + 1;
@@ -220,7 +222,8 @@ _GetStringData (uio_Stream *fp, DWORD length)
 				}
 				if (n >= 0)
 				{
-					while (slen[n] > 1 && strdata[StringOffs - 2] == '\n')
+					while (slen[n] > 1 && (strdata[StringOffs - 2] == '\n'
+								|| strdata[StringOffs - 2] == '\r'))
 					{
 						--slen[n];
 						--StringOffs;

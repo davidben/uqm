@@ -196,7 +196,7 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 {
 	int pos;
 	int num = 0;
-	while (*TimeStamps && (pos = wstrcspn (TimeStamps, ",\n")))
+	while (*TimeStamps && (pos = wstrcspn (TimeStamps, ",\r\n")))
 	{
 		UNICODE valStr[10];
 		uint32 val;
@@ -210,8 +210,7 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 			time_stamps++;
 		}
 		TimeStamps += pos;
-		if (*TimeStamps)
-			TimeStamps++;
+		TimeStamps += strspn(TimeStamps, ",\r\n");
 	}
 	return (num);
 }
@@ -241,7 +240,7 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 				wstrcpy (split_text[page] + ellips + pos, "...");
 				timestamp[page] = - pos * TEXT_SPEED;
 				ellips = 2;
-				text = text + pos + 1;
+				text = text + pos;
 				pos = 0;
 				page ++;
 			}
@@ -254,10 +253,12 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 				*(split_text[page] + ellips + pos) = 0;
 				timestamp[page] = - pos * TEXT_SPEED;
 				ellips = 0;
-				text = text + pos + 1;
+				text = text + pos;
 				pos = 0;
 				page ++;
 			}
+			while (text[pos] == '\n' || text[pos] == '\r')
+				text++;
 		}
 		else
 			pos++;
