@@ -997,8 +997,6 @@ ScaleSystem (void)
 int IPtask_func(void* data)
 {
 #define IP_FRAME_RATE  (ONE_SECOND / 30)
-#define DEBOUNCE_DELAY ((ONE_SECOND >> 1) / IP_FRAME_RATE)
-	BYTE MenuTransition;
 	DWORD NextTime;
 	Task task = (Task) data;
 	BOOLEAN cancel, select;
@@ -1015,7 +1013,6 @@ int IPtask_func(void* data)
 		select = FALSE;
 	}
 
-	MenuTransition = 0;
 	NextTime = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
@@ -1055,18 +1052,6 @@ int IPtask_func(void* data)
 		}
 		else
 		{
-			if (MenuTransition)
-			{
-				if (MenuTransition < DEBOUNCE_DELAY
-						&& !(cancel || select))
-					MenuTransition = 0;
-				else
-				{
-					--MenuTransition;
-					cancel = select = FALSE;
-				}
-			}
-
 TheMess:
 			// this is a mess:
 			// we have to treat things slightly differently depending on the
@@ -1091,8 +1076,7 @@ TheMess:
 				DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 			}
 			
-			if (MenuTransition < DEBOUNCE_DELAY)
-				UndrawShip ();
+			UndrawShip ();
 			if (pSolarSysState->MenuState.Initialized != 1)
 				select = cancel = FALSE;
 		}
@@ -1180,14 +1164,13 @@ TheMess:
 			else
 			{
 				UpdateInputState ();
-				cancel = ImmediateInputState.key[KEY_MENU_CANCEL];
-				select = ImmediateInputState.key[KEY_MENU_SELECT];
+				cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+				select = PulsedInputState.key[KEY_MENU_SELECT];
 			}
 			// JournalInput (InputState);
 		}
 		else
 		{
-			MenuTransition = DEBOUNCE_DELAY;
 			SuspendGameClock ();
 
 			LockMutex (GraphicsLock);
