@@ -1,5 +1,6 @@
 Changes towards version 0.3:
-
+- Added PC Shipyard + Hangar power lines animation;
+  (closes #176) -fOSSiL
 
 0.2:
 - Shipyard/Outfit screens now use larger PC graphics;
