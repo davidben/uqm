@@ -20,6 +20,7 @@
 
 #include "sdl_common.h"
 #include "libs/threadlib.h"
+#include "SDL_thread.h"
 
 Semaphore DCQ_sem;
 
