@@ -1,0 +1,33 @@
+Instructions for building UQM in Windows with MinGW and MSYS
+============================================================
+
+First, download and install the latest version of MinGW and then MSYS.
+(You can get them from <http://www.mingw.org/>).
+
+You'll need all the libraries described in the INSTALL file in CVS.  You
+don't have to build SDL_mixer yourself -- just download OpenAL.
+
+Copy the DLLs for each library to \[MinGW]\lib.  Copy the header files for
+each library to \[MinGW]\include, (where [MinGW] is the directory where you
+installed MinGW) except for the Ogg Vorbis headers -- copy the folders (ogg
+and vorbis) containing the header files to the include directory.
+
+Rename OpenAL32.dll to openal.dll.
+
+The Ogg Vorbis headers want a header that is not included with MinGW.  To get
+this file, download
+<ftp://ftp.xraylith.wisc.edu/pub/khan/gnu-win32/cygwin/egcs-1.1.2/egcs-1.1.2-mingw-extra.tar.gz>
+and extract it to your MinGW directory.
+
+Now you're ready to build.  Start up MSYS (the installer put an icon in your
+Start menu and on the desktop).
+
+cd to the UQM directory.  It'll be at /[drive letter]/[path to uqm].
+
+./build.sh uqm
+
+Follow the instructions and it should build successfully.
+
+To run the built executable, you should copy all the required DLLs to the
+same directory the executable is in, or copy them to your Windows
+directory.

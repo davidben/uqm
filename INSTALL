@@ -10,7 +10,7 @@ GNU Make
 	Debian package: make
 
 For Windows version:
-Microsoft Visual C++ 6 or 7
+Microsoft Visual C++ 6 or 7 (or MinGW+MSYS, see INSTALL.mingw for that)
 
 Additionally, The Ur-Quan Masters requires the following libraries:
 Note that dependancies can differ between different OS's.
