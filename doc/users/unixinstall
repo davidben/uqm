@@ -5,28 +5,37 @@ source on a Linux or BSD platform.
 First, make sure all the required libraries are installed.
 They are listed in the file INSTALL in the top dir.
 
+
 2.
 If you haven't done so already, download the content .zip files packages
 that you want, from where you got this source package.
-You'll need uqm-0.2-content.zip; uqm-0.2-3domusic.zip (music from the 3DO
-version) and uqm-0.2-voice.zip (spoken alien dialogs) are optional.
-Create a 'content' dir in the top of the source tree (the dir with
-(among others) COPYING, src/, build.vars.in), and unpack those .zip
-files there.
-Something like 'unzip /path/to/uqm-0.2-content.zip'.
+You'll need uqm-0.3-content.zip; uqm-0.3-3domusic.zip (music from the 3DO
+version) and uqm-0.3-voice.zip (spoken alien dialogs) are optional.
+
+Put these .zip files, unpacked, in the directory content/packages/
+which exists in the top directory of the source tree (the dir with (among
+others) COPYING, src/, and build.var.in).
+
 
 3.
 Run './build.sh uqm'
 Change settings in the menu if you want.
+The source building process will start, and when it ends, you should have
+a file 'uqm' in the source dir (or uqm-debug if you selected a debug build).
+You can try it out from this dir by typing './uqm' (or './uqm-debug').
+
 
 4.
 Run './build.sh uqm install', and be patient.
-Depending on what location you selected in the configuration menu, you might
-need root permissions here.
+Depending on what installation location you selected in the configuration
+menu, you might need root permissions here.
+
 
 5.
 Done.
 You can start the game now with the command 'uqm'.
+You may also delete the source (with the .zip files you put in
+content/packages) if you want.
 
 
 If you want to recompile with other options, you can use
