@@ -264,6 +264,9 @@ InitGlobData (void)
 	GLOBAL (glob_flags) = (BYTE)i;
 
 	GLOBAL (DisplayArray) = DisplayArray;
-	(GLOBAL (GameClock)).clock_sem = CreateSemaphore(1,  "Clock");
+	// The clock semaphore was initially initialized as '1'
+	// but it is always cleared before set, so it toggled between
+	// 2 and 1, which doesn't actually do anything
+	(GLOBAL (GameClock)).clock_sem = CreateSemaphore(0,  "Clock");
 }
 

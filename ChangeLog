@@ -1,4 +1,5 @@
 0.2:
+- Clock semaphore is now created with a value of 0 -PhracturedBlue
 - Rewrote Semaphore debugging code to be more useful - PhracturedBlue
 - Better fix for clearing load/save screen - fOSSiL
 - Implemented bilinear scaling in pure SDL mode - Mika
