@@ -1,4 +1,10 @@
-Before doing any non-trivial, please discuss it first in the IRC channel.
+Before doing any non-trivial, please discuss it first in the IRC channel
+(channel #sc2 at irc.freenode.net), or the mailing list
+(sc2-devel@lists.sourceforge.net). Be sure to be in agreement with the
+people actually working on the project; it would be a shame if you put a lot
+of effort into something, and then having to find out it won't be accepted
+into the cvs tree. Note that v1.0 will pretty much be a straight port,
+with no gameplay-altering features added.
 
 Serious bugs (crash the game, high priority):
 - The game crashes when there's no sound driver available
@@ -14,6 +20,7 @@ Serious bugs (crash the game, high priority):
   - reload the icon when needed
   It looks like the same bug is present for the full game, though it isn't
   fatal there (the memory is freed but not yet overwritten).
+- loading an old game crashes the game (at least on Linux).
 
 Glitches (don't crash the game, medium priority):
 - When fast forwarding voices, sound stops. (SDL_mixer cannot start a sample
