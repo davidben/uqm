@@ -1704,9 +1704,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 			COUNT color_index;
 
 			pCurDesc = &pSolarSysState->PlanetDesc[index];
-			/* 2002-12-20 by fOSSiL = Star color fix
-			 * draw the star using OrbitalCMap
-			 */
+			/* Star color fix - draw the star using OrbitalCMap */
 			if (pCurDesc == &pSolarSysState->SunDesc[0])
 				color_index = STAR_COLOR (CurStarDescPtr->Type);
 			else
