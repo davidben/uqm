@@ -46,9 +46,6 @@ Glitches (don't crash the game, medium priority):
   Ilwrath reacting to the Ur-Quan Drone) or not appear at all (e.g. the 
   Yehat).
 - ZFP graphics synchronisation messed up when fast forwarding speech
-- Melee menu's 5x5 ship selection grid doesn't show up always
-  - On win32, works with release build, not debug
-  - On linux, works with SDL_mixer, not OpenAL
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
   - Slylandro probe lightning bolt sound shouldn't be same as lightning on planets
