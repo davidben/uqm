@@ -37,6 +37,7 @@ MIKMODAPI extern struct MDRIVER drv_openal;
 static char *decoder_info_wav = "Wav";
 static char *decoder_info_mod = "MikMod";
 static char *decoder_info_ogg = "Ogg Vorbis";
+static char *decoder_info_nul = "None";
 
 TFB_DecoderFormats decoder_formats;
 
@@ -151,17 +152,45 @@ void SoundDecoder_Uninit (void)
 }
 
 TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size, 
-									 uint32 startTime, uint32 runTime)
+									 uint32 startTime, sint32 runTime)
 {	
 	int i;
 
+	i = strlen (filename) - 3;
 	if (!file_exists (filename))
 	{
-		fprintf (stderr, "SoundDecoder_Load(): %s doesn't exist\n", filename);
-		return NULL;
+		if (runTime)
+		{
+			TFB_SoundDecoder *decoder;
+			runTime = abs (runTime);
+			decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
+			decoder->buffer = HCalloc (buffer_size);
+			decoder->buffer_size = buffer_size;
+			decoder->frequency = 11025;
+			decoder->looping = false;
+			decoder->error = SOUNDDECODER_OK;
+			decoder->length = (float)(runTime / 1000.0);
+
+			decoder->start_sample = 0;
+			decoder->end_sample = (unsigned long)(decoder->length * decoder->frequency);
+
+			decoder->format = decoder_formats.mono16;
+			decoder->pos = 0;
+
+			decoder->decoder_info = decoder_info_nul;
+			decoder->type = SOUNDDECODER_NULL;
+			decoder->filename = (char *) HMalloc (strlen (filename) + 1);
+			strcpy (decoder->filename, filename);
+			decoder->data = NULL;
+			return decoder;
+		}
+		else
+		{
+			fprintf (stderr, "SoundDecoder_Load(): %s doesn't exist\n", filename);
+			return NULL;
+		}
 	}
 
-	i = strlen (filename) - 3;
 	if (!strcmp (&filename[i], "wav"))
 	{
 		TFB_SoundDecoder *decoder;
@@ -278,7 +307,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 		decoder->looping = false;
 		decoder->error = SOUNDDECODER_OK;
 		decoder->length = (float) ov_time_total (vf, -1) - (startTime / 1000.0f);
-		if (runTime && runTime / 1000.0 < decoder->length)
+		if (runTime > 0 && runTime / 1000.0 < decoder->length)
 			decoder->length = (float)(runTime / 1000.0);
 
 		decoder->start_sample = decoder->frequency * startTime / 1000;
@@ -400,7 +429,7 @@ uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 					fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %d\n", decoder->filename, rc);
 					return decoded_bytes;
 				}
-				if (rc == 0 || close_on_done && buffer_size == decoded_bytes + rc)
+				if (rc == 0 || (close_on_done && buffer_size == (decoded_bytes + rc)))
 				{
 					if (close_on_done)
 					{
@@ -436,6 +465,24 @@ uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			decoder->error = SOUNDDECODER_OK;
 			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
 			return decoded_bytes;
+		}
+		case SOUNDDECODER_NULL:
+		{
+			uint32 max_bytes;
+			max_bytes = decoder->end_sample * 2;
+			if (max_bytes - decoder->pos <= decoder->buffer_size)
+				{
+					uint32 bufsize = max_bytes - decoder->pos;
+					decoder->pos = max_bytes;
+					decoder->error = SOUNDDECODER_EOF;
+					return (bufsize);
+				}
+				else
+				{
+					decoder->pos += decoder->buffer_size;
+					decoder->error = SOUNDDECODER_OK;
+					return (decoder->buffer_size);
+				}
 		}
 		case SOUNDDECODER_BUF:
 			decoder->buffer = (char *)decoder->data + decoder->pos;
@@ -552,6 +599,12 @@ uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 			return decoded_bytes;
 			break;
 		}
+		case SOUNDDECODER_NULL:
+		{
+			decoder->error = SOUNDDECODER_OK;
+			return (decoder->end_sample * 2);
+			break;
+		}
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_DecodeAll(): unknown type %d\n", decoder->type);
@@ -617,6 +670,11 @@ void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
+		case SOUNDDECODER_NULL:
+			decoder->pos = seekTime * decoder->frequency * 2 / 1000;
+			decoder->error = SOUNDDECODER_OK;
+			return;
+
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Seek(): unknown type %d\n", decoder->type);
@@ -658,6 +716,8 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 		}
 		case SOUNDDECODER_BUF:
 			break;
+		case SOUNDDECODER_NULL:
+			break;
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Free(): unknown type %d\n", decoder->type);
@@ -691,6 +751,7 @@ float SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
 		}
 		case SOUNDDECODER_OGG:
 		case SOUNDDECODER_BUF:
+		case SOUNDDECODER_NULL:
 		{
 			//fprintf (stderr, "SoundDecoder_GetTime not supported for mod\n");
 			return (

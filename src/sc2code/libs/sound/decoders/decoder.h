@@ -74,6 +74,7 @@ enum
 	SOUNDDECODER_WAV,
 	SOUNDDECODER_MOD,
 	SOUNDDECODER_OGG,
+	SOUNDDECODER_NULL,
 	SOUNDDECODER_BUF,
 };
 
@@ -82,7 +83,7 @@ extern TFB_DecoderFormats decoder_formats;
 sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats* formats);
 void SoundDecoder_Uninit (void);
 TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size, 
-									 uint32 startTime, uint32 runTime);
+									 uint32 startTime, sint32 runTime);
 uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
 float SoundDecoder_GetTime (TFB_SoundDecoder *decoder);

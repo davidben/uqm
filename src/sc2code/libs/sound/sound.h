@@ -38,7 +38,8 @@ typedef struct
 {
 	TFBSound_Object buf_name;
 	int type;
-	void *value;
+	uint32 value;
+	void *data;
 	void (*callback) ();
 } TFB_SoundTag;
 

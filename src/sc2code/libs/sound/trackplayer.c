@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <ctype.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 
@@ -22,11 +23,11 @@ extern int do_subtitles (UNICODE *pStr, UNICODE *TimeStamp, int method);
 
 static int tct;               //total number of subtitle tracks
 static int tcur;              //currently playing subtitle track
-static int cur_page = 0;      //current page of subtitle track 
+static UNICODE *cur_page = 0; //current page of subtitle track 
 static int no_page_break = 0;
 static int no_voice;
 static int track_pos_changed = 0; // set whenever  ff, frev is enabled
-
+static TFB_SoundTag *last_tag = NULL;
 
 #define MAX_CLIPS 50
 #define is_sample_playing(samp) (((samp)->read_chain_ptr && (samp)->play_chain_ptr) ||\
@@ -34,7 +35,6 @@ static int track_pos_changed = 0; // set whenever  ff, frev is enabled
 static TFB_SoundSample *sound_sample = NULL;
 static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
-static UNICODE *TrackTextArray[MAX_CLIPS]; //storage for subtitlle text
 static Mutex track_mutex; //protects tcur and tct
 void recompute_track_pos (TFB_SoundSample *sample, 
 						  TFB_SoundChain *first_chain, sint32 offset);
@@ -55,7 +55,7 @@ JumpTrack (int abort)
 		PauseStream (SPEECH_SOURCE);
 		cur_time = GetTimeCounter();
 		soundSource[SPEECH_SOURCE].start_time = 
-				(sint32)cur_time - total_length;;
+				(sint32)cur_time - total_length;
 		track_pos_changed = 1;
 		sound_sample->play_chain_ptr = last_chain;
 		recompute_track_pos(sound_sample, first_chain, total_length);
@@ -136,12 +136,13 @@ PlayingTrack ()
 //		return ((COUNT)~0);
 	if (sound_sample && is_sample_playing (sound_sample))
 	{
-		int last_track, last_page;
+		int last_track;
+		UNICODE *last_page;
 		LockMutex (track_mutex);
 		last_track = tcur;
 		last_page = cur_page;
 		UnlockMutex (track_mutex);
-		if (do_subtitles (TrackTextArray[last_track], (void *)last_page, 1) || 
+		if (do_subtitles (last_page, (void *)0, 1) || 
 			(no_voice && ++tcur < tct && do_subtitles (0, (void *)~0, 1)))
 		{
 			return (tcur + 1);
@@ -163,16 +164,10 @@ PlayingTrack ()
 void
 StopTrack ()
 {
-	int i;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 
-	for (i = 0; i < tct; i++)
-	{
-		HFree (TrackTextArray[i]);
-		TrackTextArray[i] = 0;
-	}
 	if (first_chain)
 	{
 		destroy_soundchain (first_chain);
@@ -201,25 +196,28 @@ DoTrackTag (TFB_SoundTag *tag)
 		LockMutex (track_mutex);
 		if (tag->callback)
 			tag->callback ();
-		tcur = ((int)tag->value) >> 8;
-		cur_page = ((int)tag->value) & 0xFF;
+		tcur = tag->value;
+		cur_page = (UNICODE *)tag->data;
 		UnlockMutex (track_mutex);
 	}
 }
 
-int 
-GetTimeStamps(UNICODE *TimeStamps, uint32 *time_stamps)
+void
+GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 {
 	int pos;
 	int num = 0;
 	while (*TimeStamps && (pos = wstrcspn (TimeStamps, ",\n")))
 	{
 		UNICODE valStr[10];
+		uint32 val;
 		wstrncpy (valStr, TimeStamps, pos);
 		valStr[pos] = '\0';
-		*time_stamps = wstrtoul(valStr,NULL,10);
-		if (*time_stamps)
+		val = wstrtoul(valStr,NULL,10);
+		if (val)
 		{
+			printf ("guessed: %d measured: %d\n",*time_stamps, val);
+			*time_stamps = (sint32)val;
 			num++;
 			time_stamps++;
 		}
@@ -227,8 +225,71 @@ GetTimeStamps(UNICODE *TimeStamps, uint32 *time_stamps)
 		if (*TimeStamps)
 			TimeStamps++;
 	}
-	*time_stamps = 0;
-	return (num);
+}
+
+#define TEXT_SPEED 70
+UNICODE **
+SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
+{
+	UNICODE **split_text = NULL;
+	int pos = 0, ellips = 0;
+	COUNT page = 0;
+	while (text[pos])
+	{
+		if (text[pos] == '\n' || text[pos] == '\r')
+		{
+			if (! split_text)
+				split_text = (UNICODE **) HMalloc (sizeof (UNICODE *) * (page + 1));
+			else
+				split_text = (UNICODE **) HRealloc (split_text, 
+						sizeof (UNICODE *) * (page + 1));
+			if (!ispunct (text[pos - 1]) && !isspace (text[pos - 1]))
+			{
+				split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 4));
+				if (ellips)
+					wstrcpy (split_text[page], "..");
+				wstrncpy (split_text[page] + ellips, text, pos);
+				wstrcpy (split_text[page] + ellips + pos, "...");
+				timestamp[page] = - pos * TEXT_SPEED;
+				ellips = 2;
+				text = text + pos + 1;
+				pos = 0;
+				page ++;
+			}
+			else
+			{
+				split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 1));
+				if (ellips)
+					wstrcpy (split_text[page], "..");
+				wstrncpy (split_text[page] + ellips, text, pos);
+				*(split_text[page] + ellips + pos) = 0;
+				timestamp[page] = - pos * TEXT_SPEED;
+				ellips = 0;
+				text = text + pos + 1;
+				pos = 0;
+				page ++;
+			}
+		}
+		else
+			pos++;
+	}
+	if (pos)
+	{
+		if (! split_text)
+			split_text = (UNICODE **) HMalloc (sizeof (UNICODE *) * (page + 1));
+		else
+			split_text = (UNICODE **) HRealloc (split_text, 
+					sizeof (UNICODE *) * (page + 1));
+		split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 1));
+		if (ellips)
+			wstrcpy (split_text[page], "..");
+		wstrncpy (split_text[page] + ellips, text, pos);
+		*(split_text[page] + ellips + pos) = 0;
+		timestamp[page] = - pos * TEXT_SPEED;
+		page ++;
+	}
+	*num_pages = page;
+	return (split_text);
 }
 
 // decodes several tracks into one and adds it to queue
@@ -267,7 +328,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	fprintf (stderr, "SpliceMultiTrack(): loading...\n");
 	for (tracks = 0; *TrackNames && tracks < MAX_MULTI_TRACKS; TrackNames++, tracks++)
 	{
-		track_decs[tracks] = SoundDecoder_Load (*TrackNames, 32768, 0, 0);
+		track_decs[tracks] = SoundDecoder_Load (*TrackNames, 32768, 0, - 3 * TEXT_SPEED);
 		if (track_decs[tracks])
 		{
 			fprintf (stderr, "  track: %s, decoder: %s, rate %d format %x\n",
@@ -301,16 +362,18 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	if (tct)
 	{
 		int slen1;
-		slen1 = wstrlen (TrackTextArray[tct - 1]);
-		TrackTextArray[tct - 1] = HRealloc (TrackTextArray[tct - 1], slen1 + slen + 1);
-		wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
+		slen1 = wstrlen ((UNICODE *)last_tag->data);
+		last_tag->data = HRealloc ((UNICODE *)last_tag->data, slen1 + slen + 1);
+		wstrcpy (&((UNICODE *)last_tag->data)[slen1], TrackText);
 	}
 	else
 	{
-		TrackTextArray[tct] = HMalloc (slen + 1);
-		wstrcpy (TrackTextArray[tct++], TrackText);
+		begin_chain->tag.data = HMalloc (slen + 1);
+		wstrcpy ((UNICODE *)begin_chain->tag.data, TrackText);
+		last_tag = &begin_chain->tag;
+		tct++;
 		begin_chain->tag.type = MIX_BUFFER_TAG_TEXT;
-		begin_chain->tag.value = (void *)((tct - 1) << 8);
+		begin_chain->tag.value = tct - 1;
 	}
 	no_page_break = 1;
 	
@@ -326,6 +389,7 @@ void
 SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*cb) ())
 {
 	unsigned long startTime;
+	UNICODE **split_text = NULL;
 	if (TrackText)
 	{
 		if (TrackName == 0)
@@ -335,43 +399,45 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				int slen1, slen2;
 				UNICODE *oTT;
 
-				oTT = TrackTextArray[tct - 1];
+				oTT = (UNICODE *)last_tag->data;
 				slen1 = wstrlen (oTT);
 				slen2 = wstrlen (TrackText);
-				TrackTextArray[tct - 1] = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
+				last_tag->data = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&((UNICODE *)last_tag->data)[slen1], TrackText);
 			}
 		}
 		else
 		{
 			int num_pages, page_counter;
-			uint32 time_stamps[50];
+			sint32 time_stamps[50];
 
+			split_text = SplitSubPages (TrackText, time_stamps, &num_pages);
+			if (! split_text)
+			{
+				fprintf (stderr, "SpliceTrack(): Failed to parse sutitles\n");
+				return;
+			}
 			if (no_page_break && tct)
 			{
 				int slen1, slen2;
 				UNICODE *oTT;
 
-				oTT = TrackTextArray[tct - 1];
+				oTT = (UNICODE *)last_tag->data;
 				slen1 = wstrlen (oTT);
-				slen2 = wstrlen (TrackText);
-				TrackTextArray[tct - 1] = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
+				slen2 = wstrlen (split_text[0]);
+				last_tag->data = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&((UNICODE *)last_tag->data)[slen1], split_text[0]);
+				HFree (split_text[0]);
 			}
 			else
-			{
-				TrackTextArray[tct] = HMalloc (sizeof (UNICODE) * (wstrlen (TrackText) + 1));
-				wstrcpy (TrackTextArray[tct++], TrackText);
-			}
+				tct++;
 			if (TimeStamp)
-				num_pages = GetTimeStamps (TimeStamp, time_stamps);
-			else
-				num_pages = 0;
+				GetTimeStamps (TimeStamp, time_stamps);
 
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
 
 			startTime = 0;
-			for (page_counter = 0; page_counter <= num_pages; page_counter++)
+			for (page_counter = 0; page_counter < num_pages; page_counter++)
 			{
 				if (! sound_sample)
 				{
@@ -396,7 +462,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					last_chain->next = create_soundchain (decoder, sound_sample->length);
 					last_chain = last_chain->next;
 				}
-				startTime += time_stamps[page_counter];
+				startTime += abs (time_stamps[page_counter]);
 			
 				// fprintf (stderr, "page (%d of %d): %d\n",page_counter, num_pages, startTime);
 				if (last_chain->decoder)
@@ -410,8 +476,11 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 					if (! no_page_break)
 					{
 						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
-						last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
+						// last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
+						last_chain->tag.value = tct - 1;
+						last_chain->tag.data = (void *)split_text[page_counter];
 						last_chain->tag.callback = cb;
+						last_tag = &last_chain->tag;
 					}
 					no_page_break = 0;
 				}

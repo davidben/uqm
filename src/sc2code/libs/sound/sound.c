@@ -73,6 +73,7 @@ create_soundchain (TFB_SoundDecoder *decoder, float startTime)
 	chain->start_time = startTime;
 	chain->tag.buf_name = 0;
 	chain->tag.type = 0;
+	chain->tag.data = 0;
 	return (chain);
 }
 
@@ -85,6 +86,8 @@ destroy_soundchain (TFB_SoundChain *chain)
 		chain->next = chain->next->next;
 		if (tmp_chain->decoder)
 			SoundDecoder_Free (tmp_chain->decoder);
+		if (tmp_chain->tag.data)
+			HFree (tmp_chain->tag.data);
 		HFree (tmp_chain);
 	}
 	SoundDecoder_Free (chain->decoder);
