@@ -66,7 +66,7 @@ extern BOOLEAN DoShipyard (PMENU_STATE pMS);
 extern void DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT
 		which_slot, BOOLEAN DrawBluePrint);
 
-extern COUNT WrapText (UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
+extern COUNT WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
 		field_width);
 		// XXX: Doesn't really belong in this file.
 

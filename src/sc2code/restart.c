@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "restart.h"
+
 #include "colors.h"
 #include "controls.h"
 #include "credits.h"
@@ -23,6 +25,7 @@
 #include "fmv.h"
 #include "globdata.h"
 #include "intel.h"
+#include "melee.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
@@ -36,8 +39,6 @@
 
 //Added by Chris
 
-void Melee (void);
-
 void FreeHyperData (void);
 
 void FreeIPData (void);
@@ -45,8 +46,6 @@ void FreeIPData (void);
 void FreeSC2Data (void);
 
 void FreeLanderData (void);
-
-BOOLEAN InitGameKernel (void);
 
 //End Added by Chris
 

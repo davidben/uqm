@@ -14,13 +14,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "options.h"
+#include "sound.h"
+#include "libs/reslib.h"
+
 #ifdef WIN32
 #include <io.h>
 #endif
 #include <fcntl.h>
 
-#include "sound.h"
-#include "options.h"
 
 static void CheckFinishedChannels (void);
 
@@ -179,7 +181,6 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 
 	{
 		char *s1, *s2;
-		extern char *_cur_resfile_name;
 
 		if (_cur_resfile_name == 0
 			|| (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)

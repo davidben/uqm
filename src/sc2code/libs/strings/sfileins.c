@@ -19,11 +19,11 @@
 #include "port.h"
 #include "strintrn.h"
 #include "uio.h"
+#include "libs/reslib.h"
 
-extern char *_cur_resfile_name;
 
 STRING_TABLE
-LoadStringTableFile (uio_DirHandle *dir, char *fileName)
+LoadStringTableFile (uio_DirHandle *dir, const char *fileName)
 {
 	uio_Stream *fp;
 

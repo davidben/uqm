@@ -17,7 +17,6 @@
  */
 
 #include "units.h"
-#include "dummy.h"
 #include "libs/gfxlib.h"
 #include "graphics/context.h"
 #include "graphics/drawable.h"

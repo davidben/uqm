@@ -39,19 +39,21 @@ typedef struct setup_menu_state {
 typedef SETUP_MENU_STATE *PSETUP_MENU_STATE;
 
 typedef struct {
-	char *optname;
-	char *tooltip[3];
+	const char *optname;
+	const char *tooltip[3];
 } OPTION;
 
 typedef struct {
-	char *category;
+	const char *category;
 	int numopts;
-	OPTION * options;
+	OPTION *options;
 	int selected;
 } MENU_CATEGORY;
 
+static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
+
 static OPTION scaler_opts[] = {
-	{ "None", 
+	{ "None",
 	  { "No scaling.",
 	    "Simulates the original 320x240 display.", 
 	    "Fastest, though least attractive, option.",
@@ -163,9 +165,9 @@ static OPTION subtitles_opts[] = {
 
 //static char *title_str = "Ur-Quan Masters Setup";
 //static char *subtitle_str = "Graphics Options";
-static char *title_str = "Use arrows and fire to select options";
-static char *subtitle_str = "Press cancel when done";
-static char **tooltip;
+static const char *title_str = "Use arrows and fire to select options";
+static const char *subtitle_str = "Press cancel when done";
+static const char **tooltip;
 
 #define NUM_OPTS 6
 static MENU_CATEGORY cmdline_opts[] = {
@@ -336,7 +338,7 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 	SetContextForeGroundColor (oldtext);
 }
 
-BOOLEAN
+static BOOLEAN
 DoSetupMenu (PSETUP_MENU_STATE pInputState)
 {
 	if (!pInputState->initialized) 

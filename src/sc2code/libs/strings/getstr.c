@@ -16,13 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "options.h"
 #include "strintrn.h"
 #include "libs/graphics/gfx_common.h"
-#include "options.h"
+#include "libs/reslib.h"
 #ifdef WIN32
 #include <io.h>
 #endif
 #include <fcntl.h>
+
 
 static void
 dword_convert (PDWORD dword_array, COUNT num_dwords)
@@ -46,7 +48,6 @@ _GetStringData (uio_Stream *fp, DWORD length)
 
 	{
 		char *s;
-		extern char *_cur_resfile_name;
 
 		if (_cur_resfile_name && (s = strrchr (_cur_resfile_name, '.')) &&
 				stricmp (s, ".txt") == 0)

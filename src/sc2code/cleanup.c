@@ -17,9 +17,11 @@
  */
 
 #include "battle.h"
+#include "master.h"
 #include "nameref.h"
 #include "reslib.h"
 #include "gamestr.h"
+#include "init.h"
 #include "setup.h"
 #include "sounds.h"
 #include "libs/sndlib.h"
@@ -33,23 +35,18 @@ void FreeLanderData (void);
 
 void FreeIPData (void);
 
-void FreeMasterShipList (void);
-
-void UninitSpace (void);
-
 void FreeHyperData (void);
 
 //End Added by Chris
 
 static void UninitContexts (void);
 static void UninitKernel (BOOLEAN ships);
+static void UninitGameKernel (void);
 
 
 void
 FreeKernel (void)
 {
-	extern void UninitPlayerInput (void);
-
 	UninitKernel (TRUE);
 	UninitContexts ();
 
@@ -100,9 +97,10 @@ UninitKernel (BOOLEAN ships)
 	ActivityFrame = 0;
 }
 
-void
+static void
 UninitGameKernel (void)
 {
+	// XXX: this function is never called. Why not? (BUG?)
 	if (ActivityFrame)
 	{
 		FreeSC2Data ();
@@ -114,4 +112,5 @@ UninitGameKernel (void)
 		UninitContexts ();
 	}
 }
+
 

@@ -39,6 +39,7 @@
 #include "uqmversion.h"
 #include "comm.h"
 #include "setup.h"
+#include "starcon.h"
 
 
 #if defined(GFXMODULE_SDL)
@@ -83,7 +84,7 @@ static int preParseOptions(int argc, char *argv[],
 		struct options_struct *options);
 static int parseOptions(int argc, char *argv[],
 		struct options_struct *options);
-static void usage (FILE *out);
+static void usage (FILE *out, const struct options_struct *defaultOptions);
 static int parseIntOption (const char *str, int *result,
 		const char *optName);
 static int parseFloatOption (const char *str, float *f,
@@ -92,6 +93,7 @@ static int parseVolume (const char *str, float *vol, const char *optName);
 static int InvalidArgument(const char *supplied, const char *opt_name);
 static int Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt,
 		int *result);
+static const char *PC_3DO_optString (DWORD optMask);
 
 /* TODO: Remove these global variables once threading is gone. */
 int snddriver, soundflags;
@@ -153,7 +155,7 @@ main (int argc, char *argv[])
 
 	if (options.runMode == runMode_usage)
 	{
-		usage (stdout);
+		usage (stdout, &options);
 		return EXIT_SUCCESS;
 	}
 	
@@ -651,7 +653,7 @@ parseFloatOption (const char *str, float *f, const char *optName)
 }
 
 static void
-usage (FILE *out)
+usage (FILE *out, const struct options_struct *defaultOptions)
 {
 	fprintf (out, "Options:\n");
 	fprintf (out, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
@@ -677,7 +679,7 @@ usage (FILE *out)
 	fprintf (out, "  -u, --nosubtitles\n");
 	fprintf (out, "  -l, --logfile=FILE (sends console output to logfile "
 			"FILE)\n");
-	fprintf (out, "  --addon <addon> (using a specific addon; "
+	fprintf (out, "  --addon ADDON (using a specific addon; "
 			"may be specified multiple times)\n");
 	fprintf (out, "  --sound=DRIVER (openal, mixsdl, none; default "
 			"mixsdl)\n");
@@ -685,15 +687,20 @@ usage (FILE *out)
 			"currently only for openal)\n");
 	fprintf (out, "The following options can take either '3do' or 'pc' "
 			"as an option:\n");
-	fprintf (out, "  -m, --music : Music version (default 3do)\n");
-	fprintf (out, "  -i, --intro : Intro/ending version (default 3do)\n");
+	fprintf (out, "  -m, --music : Music version (default %s)\n",
+			PC_3DO_optString(defaultOptions->whichMusic));
+	fprintf (out, "  -i, --intro : Intro/ending version (default %s)\n",
+			PC_3DO_optString(defaultOptions->whichIntro));
 	fprintf (out, "  --cscan     : coarse-scan display, pc=text, "
-			"3do=hieroglyphs (default 3do)\n");
+			"3do=hieroglyphs (default %s)\n",
+			PC_3DO_optString(defaultOptions->whichCoarseScan));
 	fprintf (out, "  --menu      : menu type, pc=text, 3do=graphical "
-			"(default 3do)\n");
-	fprintf (out, "  --font      : font types and colors (default pc)\n");
+			"(default %s)\n", PC_3DO_optString(defaultOptions->whichMenu));
+	fprintf (out, "  --font      : font types and colors (default %s)\n",
+			PC_3DO_optString(defaultOptions->whichFonts));
 	fprintf (out, "  --scroll    : ff/frev during comm.  pc=per-page, "
-			"3do=smooth (default pc)\n");
+			"3do=smooth (default %s)\n",
+			PC_3DO_optString(defaultOptions->smoothScroll));
 }
 
 static int
@@ -728,5 +735,22 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 	fprintf (stderr, "Error: Invalid option '%s %s' found.", optName, value);
 	return -1;
 }
+
+static const char *
+PC_3DO_optString(DWORD optMask) {
+	if (optMask & OPT_3DO)
+	{
+		if (optMask & OPT_PC)
+			return "both";
+		return "3do";
+	}
+	else
+	{
+		if (optMask & OPT_PC)
+			return "pc";
+		return "none";
+	}
+}
+
 
 

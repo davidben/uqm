@@ -18,7 +18,6 @@
 
 #include "colors.h"
 #include "controls.h"
-#include "dummy.h"
 #include "gamestr.h"
 #include "options.h"
 #include "setup.h"

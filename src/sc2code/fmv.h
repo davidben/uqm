@@ -17,13 +17,20 @@
 #ifndef _FMV_H
 #define _FMV_H
 
+#include "libs/compiler.h"
+
+
 extern void Logo (void);
 extern void Introduction (void);
 extern void Victory (void);
 
-#ifdef WANT_SHIP_SPINS
+#include "libs/sndlib.h"
 extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
-#endif
+
+extern BOOLEAN DoFMV (const char *name, const char *loopname,
+		BOOLEAN uninit);
+extern BOOLEAN ShowPresentation (const char *name);
+
 
 #endif  /* _FMV_H */
 

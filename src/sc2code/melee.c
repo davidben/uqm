@@ -23,11 +23,13 @@
 #include "controls.h"
 #include "file.h"
 #include "gamestr.h"
+#include "globdata.h"
 #include "intel.h"
 #include "nameref.h"
 #include "options.h"
 #include "races.h"
 #include "resinst.h"
+#include "save.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
@@ -47,17 +49,10 @@
 
 void ConfirmSaveLoad (STAMP *MsgStamp);
 
-void SaveProblem (void);
-
-void DoShipSpin (COUNT index, MUSIC_REF hMusic);
-
-BOOLEAN InitSpace (void);
-
-void UninitSpace (void);
-
-void InitGlobData (void);
-
 //End Added by Chris
+
+
+static int flash_selection_func (void *data);
 
 enum
 {
@@ -232,6 +227,10 @@ DrawControls (COUNT which_side, BOOLEAN HiLite)
 				break;
 			case AWESOME_RATING:
 				which_icon = 3;
+				break;
+			default:
+				// Should not happen. Satisfying compiler.
+				which_icon = 0;
 				break;
 		}
 	}
@@ -542,7 +541,8 @@ Select (BYTE opt)
 	}
 }
 
-int flash_selection_func(void* data)
+static int
+flash_selection_func (void *data)
 {
 	DWORD TimeIn;
 	Task task = (Task) data;
@@ -572,7 +572,7 @@ int flash_selection_func(void* data)
 
 	FinishTask (task);
 
-	return(0);
+	return 0;
 }
 
 static void
@@ -993,6 +993,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 	return (TRUE);
 }
 
+// XXX: TODO: to be merged with DoTextEntry in gameopt.c
 static UWORD
 DoTextEntry (PMELEE_STATE pMS)
 {
@@ -1005,6 +1006,11 @@ DoTextEntry (PMELEE_STATE pMS)
 	{
 		pBaseStr = pMS->TeamImage[pMS->side].TeamName;
 		max_chars = MAX_TEAM_CHARS;
+	}
+	else
+	{
+		// Should not happen. Satisfying compiler.
+		return 0;
 	}
 
 	ch = GetCharacter ();

@@ -174,7 +174,7 @@ fade_task (void *data)
 
 	FadeTask = 0;
 	FinishTask (task);
-	return (1);
+	return 1;
 }
 
 DWORD
@@ -192,7 +192,8 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 		TaskSwitch ();
 	}
 
-	if ((TTotal = TimeInterval) <= 0)
+	TTotal = TimeInterval;
+	if (TTotal <= 0)
 		TTotal = 1; /* prevent divide by zero and negative fade */
 	volume_end = end_vol;
 		
@@ -207,5 +208,7 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 		TimeOut = GetTimeCounter ();
 	}
 
-	return (TimeOut);
+	return TimeOut;
 }
+
+

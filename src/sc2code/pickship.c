@@ -19,6 +19,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
+#include "pickmele.h"
 #include "races.h"
 #include "resinst.h"
 #include "setup.h"
@@ -159,7 +160,11 @@ ChangeSelection:
 			DrawFilledRectangle (&r);
 
 			if (hBattleShip == 0)
+			{
 				crew_level = 0;
+				max_crew = 0;
+						// Satisfy compiler.
+			}
 			else
 			{
 				SetContextFont (TinyFont);
@@ -290,9 +295,6 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		hBattleShip = GetHeadLink (&race_q[which_player]);
 	else if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
-		extern HSTARSHIP GetMeleeStarShip (STARSHIPPTR LastStarShipPtr,
-				COUNT which_player);
-		
 		hBattleShip = GetMeleeStarShip (LastStarShipPtr, which_player);
 	}
 	else

@@ -51,6 +51,8 @@ typedef COUNT RES_PACKAGE;
 		((RESOURCE)(i) << TYPE_BITS) | \
 		((RESOURCE)(t)))
 
+const char *_cur_resfile_name;
+
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
 extern int ReadResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp);
@@ -64,8 +66,8 @@ extern long LengthResFile (uio_Stream *fp);
 extern BOOLEAN res_CloseResFile (uio_Stream *fp);
 extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern MEM_HANDLE InitResourceSystem (PVOID resfile, COUNT resindex_type,
-		BOOLEAN (*FileErrorFunc) (PVOID filename));
+extern MEM_HANDLE InitResourceSystem (const char *resfile,
+		COUNT resindex_type, BOOLEAN (*FileErrorFunc) (const char *filename));
 extern BOOLEAN UninitResourceSystem (void);
 extern BOOLEAN InstallResTypeVectors (
 		COUNT res_type,

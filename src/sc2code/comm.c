@@ -25,6 +25,7 @@
 #include "endian_uqm.h"
 #include "gamestr.h"
 #include "options.h"
+#include "oscill.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
@@ -40,12 +41,12 @@
 #include <ctype.h>
 
 
-void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
-void SetSliderImage (void *f);
-void InitSlider (int x, int y, int width, int height,
-	int bwidth, int bheight, void *f);
-void Oscilloscope (int grab_data);
-void Slider (void);
+static void init_xform_control (void);
+static void uninit_xform_control (void);
+static void xform_complete (void);
+static void xform_PLUT_step (SIZE TDelta);
+static void FlushPLUTXForms (void);
+static int ambient_anim_task (void *data);
 
 
 #define MAX_RESPONSES 8
@@ -120,7 +121,7 @@ enum
 static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 
-static volatile UNICODE *last_subtitle;
+static const UNICODE * volatile last_subtitle;
 static TFB_Image *subtitle_cache;
 
 /* _count_lines - mostly stolen from add_text, just sees how many lines
@@ -129,7 +130,8 @@ static TFB_Image *subtitle_cache;
 static int _count_lines (PTEXT pText) 
 {
 	COUNT maxchars = (COUNT)~0;
-	UNICODE ch, *pStr;
+	UNICODE ch;
+	const UNICODE *pStr;
 	SIZE text_width;
 	int num = 0;
 
@@ -186,7 +188,8 @@ add_text (int status, PTEXT pTextIn)
 	TEXT locText;
 	PTEXT pText;
 	SIZE leading;
-	UNICODE ch, *pStr;
+	UNICODE ch;
+	const UNICODE *pStr;
 	SIZE text_width;
 	int num_lines = 0;
 	static COORD last_baseline;
@@ -496,7 +499,7 @@ static struct {
 	Mutex XFormLock;
 } XFormControl;
 
-void
+static void
 init_xform_control (void)
 {
 	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
@@ -504,13 +507,13 @@ init_xform_control (void)
 	XFormControl.XFormLock = CreateMutex ("Transform Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
-void
+static void
 uninit_xform_control (void)
 {
 	DestroyMutex (XFormControl.XFormLock);
 }
 
-void
+static void
 xform_complete (void)
 {
 	LockMutex (XFormControl.XFormLock);
@@ -557,7 +560,7 @@ static volatile BOOLEAN SummaryChange;
 static volatile BOOLEAN ClearSubtitle;
 
 /* Only one thread should ever be allowed to be calling this at any time */
-void
+static void
 xform_PLUT_step (SIZE TDelta)
 {
 	XFORM_CONTROL *control;
@@ -640,7 +643,7 @@ xform_PLUT_step (SIZE TDelta)
  * writes are atomic anyway, and Flush is the only routine that writes
  * XFormFlush. */
 
-void
+static void
 FlushPLUTXForms (void)
 {
 	while (XFormControl.XFormsPending)
@@ -859,7 +862,8 @@ UpdateSpeechGraphics (BOOLEAN Initialize)
 	SetContext (OldContext);
 }
 
-int ambient_anim_task(void* data)
+static int
+ambient_anim_task (void *data)
 {
 	SIZE TalkAlarm;
 	FRAME TalkFrame;
@@ -1725,7 +1729,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS
 						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
-					int space_index;
+					int space_index = SUMMARY_CHARS;
 					// find last space before it goes over the max chars per line
 					for (i = SUMMARY_CHARS - 1; i > 0; i--)
 					{

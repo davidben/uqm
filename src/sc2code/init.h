@@ -24,6 +24,11 @@
 
 extern FRAME stars_in_space;
 
+extern BOOLEAN InitSpace (void);
+extern void UninitSpace (void);
+
+extern SIZE InitShips (void);
+extern void UninitShips (void);
 
 #endif  /* _INIT_H */
 

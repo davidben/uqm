@@ -16,10 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "oscill.h"
+
 #include "sis.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/sound/trackplayer.h"
+
 
 static FRAMEPTR scope_frame;
 static int scope_init = 0;
@@ -28,17 +31,19 @@ static TFB_Image *scope_surf = NULL;
 static UBYTE scope_data[RADAR_WIDTH - 2];
 
 void
-InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
+InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
 {
 	scope_frame = f;
 	if (!scope_init)
 	{
 		TFB_Canvas scope_bg_canvas, scope_surf_canvas;
-		scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height, f->image->Palette, -1);
+		scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height,
+				scope_frame->image->Palette, -1);
 		scope_bg = TFB_DrawImage_New (scope_bg_canvas);
-		scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height, f->image->Palette, -1);
+		scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height,
+				scope_frame->image->Palette, -1);
 		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
-		TFB_DrawImage_Image (f->image, 0, 0, 0, NULL, scope_bg);
+		TFB_DrawImage_Image (scope_frame->image, 0, 0, 0, NULL, scope_bg);
 		scope_init = 1;
 	}
 	/* remove compiler warnings */
@@ -49,6 +54,7 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME_DESC *f)
 void
 UninitOscilloscope (void)
 {
+	// XXX: Is never called (BUG?)
 	if (scope_bg)
 	{
 		TFB_DrawImage_Delete (scope_bg);
@@ -79,7 +85,8 @@ Oscilloscope (DWORD grab_data)
 		g = scope_surf->Palette[238].g;
 		b = scope_surf->Palette[238].b;
 		for (i = 0; i < RADAR_WIDTH - 3; ++i)
-			TFB_DrawImage_Line (i + 1, scope_data[i], i + 2, scope_data[i + 1], r, g, b, scope_surf);
+			TFB_DrawImage_Line (i + 1, scope_data[i], i + 2,
+					scope_data[i + 1], r, g, b, scope_surf);
 	}
 	TFB_DrawImage_Image (scope_surf, 0, 0, 0, NULL, scope_frame->image);
 
@@ -134,7 +141,8 @@ Slider (void)
 	if (sliderDisabled)
 		return;
 	
-	if ((offs = GetSoundInfo (sliderSpace)) != last_offs ||sliderChanged)
+	offs = GetSoundInfo (sliderSpace);
+	if (offs != last_offs || sliderChanged)
 	{
 		sliderChanged = FALSE;
 		last_offs = offs;
@@ -145,3 +153,4 @@ Slider (void)
 		UnbatchGraphics ();
 	}
 }
+

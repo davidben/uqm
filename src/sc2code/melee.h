@@ -102,5 +102,8 @@ typedef MELEE_STATE *PMELEE_STATE;
 
 extern PMELEE_STATE volatile pMeleeState;
 
+extern void Melee (void);
+
+
 #endif /* _MELEE_H */
 

@@ -19,13 +19,13 @@
 #include "options.h"
 #include "colors.h"
 #include "controls.h"
+#include "gameopt.h"
 #include "gamestr.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
 #include "sis.h"
 #include "sounds.h"
-#include "state.h"
 #include "libs/graphics/gfx_common.h"
 
 
@@ -37,6 +37,7 @@ enum
 	OUTFIT_EXIT,
 	OUTFIT_DOFUEL
 };
+
 
 static void
 DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
@@ -167,8 +168,6 @@ DisplayLanders (PMENU_STATE pMS)
 static BOOLEAN
 DoInstallModule (PMENU_STATE pMS)
 {
-	extern void DrawFlagshipStats (void);
-
 	BYTE NewState, new_slot_piece, old_slot_piece;
 	SIZE FirstItem, LastItem;
 	BOOLEAN select, cancel, motion;
@@ -520,8 +519,9 @@ InitFlash:
 
 	return (TRUE);
 }
-void
-ChangeFuelQuantity ()
+
+static void
+ChangeFuelQuantity (void)
 {
 	RECT r;
 	
@@ -591,8 +591,6 @@ DoOutfit (PMENU_STATE pMS)
 		{
 			COUNT num_frames;
 			STAMP s;
-			extern void DrawFlagshipName (BOOLEAN InStatusArea);
-			extern void DrawFlagshipStats (void);
 
 			pMS->CurFrame = CaptureDrawable (
 					LoadGraphic (MODULES_PMAP_ANIM));

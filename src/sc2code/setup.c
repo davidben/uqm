@@ -39,8 +39,6 @@
 
 //Added by Chris
 
-BOOLEAN InitSpace (void);
-
 extern BOOLEAN InitVideo (BOOLEAN UseCDROM);
 
 //End Added by Chris

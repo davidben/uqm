@@ -16,14 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "gameopt.h"
+
 #include "build.h"
 #include "colors.h"
 #include "commglue.h"
 #include "controls.h"
 #include "encount.h"
 #include "gamestr.h"
-#include "options.h"
 #include "inplib.h"
+#include "load.h"
+#include "options.h"
+#include "save.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
@@ -33,12 +37,6 @@
 
 #include <ctype.h>
 
-
-//Added by Chris
-
-void SaveProblem (void);
-
-//End Added by Chris
 
 #define MAX_SAVED_GAMES 50
 #define SUMMARY_X_OFFS 14
@@ -977,9 +975,6 @@ LoadGameDescriptions (SUMMARY_DESC *pSD)
 
 	for (i = 0; i < MAX_SAVED_GAMES; ++i, ++pSD)
 	{
-		extern BOOLEAN LoadGame (COUNT which_game,
-				SUMMARY_DESC *summary_desc);
-
 		if (!LoadGame (i, pSD))
 			pSD->year_index = 0;
 	}
@@ -1059,9 +1054,6 @@ Restart:
 			if (pMS->delta_item == SAVE_GAME)
 			{
 				STAMP MsgStamp;
-				extern BOOLEAN SaveGame (COUNT
-						which_game, SUMMARY_DESC
-						*summary_desc);
 
 				ConfirmSaveLoad (&MsgStamp);
 				if (SaveGame ((COUNT)pMS->CurState, pSD))
@@ -1099,8 +1091,6 @@ Restart:
 			}
 			else
 			{
-				extern BOOLEAN LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc);
-
 				ConfirmSaveLoad (0);
 				if (LoadGame ((COUNT)pMS->CurState, NULL_PTR))
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
@@ -1405,7 +1395,9 @@ DoGameOptions (PMENU_STATE pMS)
 			case SAVE_GAME:
 			case LOAD_GAME:
 				pMS->CurFrame = (FRAME)FadeMusic (0, ONE_SECOND >> 1);
-				return (PickGame (pMS));
+						// XXX: what is going on here? A DWORD is cast
+						//      to a FRAME.
+				return PickGame (pMS);
 			case QUIT_GAME:
 				pMS->Initialized = FALSE;
 				pMS->CurState = NO_QUIT_MENU;

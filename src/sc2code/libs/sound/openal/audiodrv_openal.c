@@ -19,7 +19,10 @@
 
 #ifdef HAVE_OPENAL
 
+
 #include "audiodrv_openal.h"
+#include "libs/tasklib.h"
+
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;

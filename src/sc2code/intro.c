@@ -21,9 +21,10 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "fmv.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound.h"
-#include "libs/vidlib.h"
+//#include "libs/vidlib.h"
 #include "libs/inplib.h"
 
 #include <ctype.h>
@@ -59,8 +60,12 @@ typedef struct
 
 } PRESENTATION_INPUT_STATE, *PPRESENTATION_INPUT_STATE;
 
+
+static BOOLEAN DoPresentation (PVOID pIS);
+
+
 BOOLEAN
-DoFMV (char *name, char *loopname, BOOLEAN uninit)
+DoFMV (const char *name, const char *loopname, BOOLEAN uninit)
 {
 	VIDEO_REF VidRef;
 
@@ -90,8 +95,7 @@ ParseColorString (const char *Src, COLOR* pColor)
 		return FALSE;
 
 	*pColor = BUILD_COLOR (MAKE_RGB15 (
-			(clr >> 19) & 0x1f, (clr >> 11) & 0x1f, (clr >> 3) & 0x1f),
-			0);
+			(clr >> 19) & 0x1f, (clr >> 11) & 0x1f, (clr >> 3) & 0x1f), 0);
 	return TRUE;
 }
 
@@ -102,8 +106,7 @@ DoFadeScreen (PRESENTATION_INPUT_STATE* pPIS, const char *Src, BYTE FadeType)
 	int msecs;
 	if (1 == sscanf (Src, "%d", &msecs))
 	{
-		pPIS->TimeOut = XFormColorMap (
-				(COLORMAPPTR) xform_buf,
+		pPIS->TimeOut = XFormColorMap ((COLORMAPPTR) xform_buf,
 				(SIZE)(msecs * ONE_SECOND / 1000)) + ONE_SECOND / 10;
 		pPIS->TimeOutOnSkip = FALSE;
 	}
@@ -171,7 +174,7 @@ Present_UnbatchGraphics (PRESENTATION_INPUT_STATE* pPIS, BOOLEAN bYield)
 	}
 }
 
-BOOLEAN
+static BOOLEAN
 DoPresentation (PVOID pIS)
 {
 	PRESENTATION_INPUT_STATE* pPIS = (PRESENTATION_INPUT_STATE*) pIS;
@@ -504,7 +507,7 @@ DoPresentation (PVOID pIS)
 }
 
 BOOLEAN
-ShowPresentation (char *name)
+ShowPresentation (const char *name)
 {
 	CONTEXT OldContext;
 	FONT OldFont;
@@ -513,8 +516,7 @@ ShowPresentation (char *name)
 	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
 
 	pis.SlideShow = CaptureStringTable (
-			LoadStringTableFile (contentDir, name)
-			);
+			LoadStringTableFile (contentDir, name));
 	if (!pis.SlideShow)
 		return FALSE;
 	pis.SlideShow = SetAbsStringTableIndex (pis.SlideShow, 0);

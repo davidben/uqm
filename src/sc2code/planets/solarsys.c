@@ -349,11 +349,7 @@ FreeSolarSys (void)
 			pSolarSysState->MenuState.flash_task = 0;
 			LockMutex (GraphicsLock);
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-			{
-				extern void SaveFlagshipState (void);
-
 				SaveFlagshipState ();
-			}
 			UnlockMutex (GraphicsLock);
 		}
 	}

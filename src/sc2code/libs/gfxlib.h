@@ -102,7 +102,7 @@ typedef enum
 typedef struct text
 {
 	POINT baseline;
-	UNICODE *pStr;
+	const UNICODE *pStr;
 	TEXT_ALIGN align;
 	TEXT_VALIGN valign;
 	COUNT CharCount;
@@ -115,61 +115,7 @@ typedef STRING_TABLE COLORMAP_REF;
 typedef STRING COLORMAP;
 typedef STRINGPTR COLORMAPPTR;
 
-enum gfx_object
-{
-	POINT_PRIM = 0,
-	STAMP_PRIM,
-	STAMPFILL_PRIM,
-	LINE_PRIM,
-	TEXT_PRIM,
-	RECT_PRIM,
-	RECTFILL_PRIM,
-
-	NUM_PRIMS
-};
-typedef BYTE GRAPHICS_PRIM;
-
-typedef union
-{
-   POINT Point;
-   STAMP Stamp;
-   LINE Line;
-   TEXT Text;
-   RECT Rect;
-} PRIM_DESC;
-typedef PRIM_DESC *PPRIM_DESC;
-
-typedef DWORD PRIM_LINKS;
-
-typedef struct
-{
-	PRIM_LINKS Links;
-	DWORD TypeAndColor;
-	PRIM_DESC Object;
-} PRIMITIVE;
-typedef PRIMITIVE *PPRIMITIVE;
-
-#define END_OF_LIST ((COUNT)0xFFFF)
-
-#define PRIM_COLOR_SHIFT 8
-#define PRIM_COLOR_MASK ((DWORD)~0L << PRIM_COLOR_SHIFT)
-#define PRIM_TYPE_MASK (~PRIM_COLOR_MASK)
-
-#define GetPredLink(l) LOWORD(l)
-#define GetSuccLink(l) HIWORD(l)
-#define MakeLinks MAKE_DWORD
-#define SetPrimLinks(pPrim,p,s) ((pPrim)->Links = MakeLinks (p, s))
-#define GetPrimLinks(pPrim) ((pPrim)->Links)
-#define SetPrimType(pPrim,t) \
-		((pPrim)->TypeAndColor = ((pPrim)->TypeAndColor & PRIM_COLOR_MASK) \
-				| ((t) & PRIM_TYPE_MASK))
-#define GetPrimType(pPrim) \
-		((GRAPHICS_PRIM)LOBYTE ((pPrim)->TypeAndColor))
-#define SetPrimColor(pPrim,c) \
-		((pPrim)->TypeAndColor = ((pPrim)->TypeAndColor & PRIM_TYPE_MASK) \
-				| ((c) << PRIM_COLOR_SHIFT))
-#define GetPrimColor(pPrim) \
-		((COLOR)((pPrim)->TypeAndColor >> PRIM_COLOR_SHIFT))
+#include "graphics/prim.h"
 
 typedef BYTE BATCH_FLAGS;
 

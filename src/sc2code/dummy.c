@@ -21,6 +21,7 @@
  * much.
  */
 
+#include "dummy.h"
 
 #include "coderes.h"
 #include "races.h"
@@ -380,17 +381,4 @@ CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width, SIZE height)
 	return (GetFrameHandle (Frame));
 }
 
-
-void
-SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link)
-{
-	SetPrimLinks (pPrim, END_OF_LIST, Link);
-}
-
-
-COUNT
-GetPrimNextLink (PPRIMITIVE pPrim)
-{
-	return (GetSuccLink (GetPrimLinks (pPrim)));
-}
 

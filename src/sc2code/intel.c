@@ -22,6 +22,8 @@
 #include "globdata.h"
 #include "setup.h"
 
+#include <stdio.h>
+
 
 SIZE cur_player;
 
@@ -29,8 +31,9 @@ BATTLE_INPUT_STATE
 computer_intelligence (void)
 {
 	BATTLE_INPUT_STATE InputState;
+
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-		return (0);
+		return 0;
 
 	if (CyborgDescPtr)
 	{
@@ -51,8 +54,15 @@ computer_intelligence (void)
 				InputState = BATTLE_WEAPON; /* pick a random ship */
 				break;
 			}
+			default:
+				// Should not happen. Satisfying compiler.
+				fprintf (stderr, "Warning: Unexpected state in "
+						"computer_intelligence().");
+				InputState = 0;
+				break;
 		}
 	}
-	return (InputState);
+	return InputState;
 }
+
 

@@ -14,20 +14,10 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DUMMY_H
-#define _DUMMY_H
+#ifndef _STARCON_H
+#define _STARCON_H
 
-#include "libs/compiler.h"
-#include "libs/gfxlib.h"
+extern int Starcon2Main(void *threadArg);
 
-extern MEM_HANDLE LoadVidInstance (DWORD res);
-extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
-
-extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width,
-		SIZE height);
-
-extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
-extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
-
-#endif  /* DUMMY_H */
+#endif  /* _STARCON_H */
 

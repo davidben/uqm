@@ -74,7 +74,6 @@ extern MEM_HANDLE _GetResFileData (uio_Stream *res_fp, DWORD flen);
 extern void _set_current_index_header (INDEX_HEADERPTR ResHeaderPtr);
 extern INDEX_HEADERPTR _get_current_index_header (void);
 
-extern char *_cur_resfile_name;
 
 #endif /* _RESINTRN_H */
 

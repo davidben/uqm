@@ -521,7 +521,6 @@ enum
 #define SOL_Y  1450
 
 extern BOOLEAN InitKernel (void);
-extern void UninitKernel (BOOLEAN ships);
 
 extern void DrawCaptainsWindow (STARSHIPPTR
 		StarShipPtr);

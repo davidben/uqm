@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "hyper.h"
+
 #include "build.h"
 #include "collide.h"
 #include "colors.h"
@@ -36,6 +38,9 @@
 void WaitForNoInput (SIZE Duration);
 
 //End Added by Chris
+
+static void LoadHyperData (void);
+
 
 #define XOFFS ((RADAR_SCAN_WIDTH + (UNIT_SCREEN_WIDTH << 2)) >> 1)
 #define YOFFS ((RADAR_SCAN_HEIGHT + (UNIT_SCREEN_HEIGHT << 2)) >> 1)
@@ -279,7 +284,7 @@ FreeHyperData (void)
 	hypercmaps[1] = 0;
 }
 
-void
+static void
 LoadHyperData (void)
 {
 	if (hyperstars[0] == 0)

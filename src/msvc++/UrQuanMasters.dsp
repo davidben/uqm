@@ -151,6 +151,10 @@ SOURCE=..\sc2code\libs\file\temp.c
 # Begin Group "graphics"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\prim.h
+# End Source File
 # Begin Group "sdl"
 
 # PROP Default_Filter ""
@@ -3350,6 +3354,10 @@ SOURCE=..\sc2code\gameopt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\gameopt.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\gamestr.h
 # End Source File
 # Begin Source File
@@ -3434,11 +3442,19 @@ SOURCE=..\sc2code\load.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\load.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\loadship.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\master.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\master.h
 # End Source File
 # Begin Source File
 
@@ -3478,6 +3494,10 @@ SOURCE=..\sc2code\pickmele.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\pickmele.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\pickship.c
 # End Source File
 # Begin Source File
@@ -3487,6 +3507,10 @@ SOURCE=..\sc2code\plandata.c
 # Begin Source File
 
 SOURCE=..\sc2code\process.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\process.h
 # End Source File
 # Begin Source File
 
@@ -3506,11 +3530,19 @@ SOURCE=..\sc2code\restart.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\restart.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\restypes.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\save.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\save.h
 # End Source File
 # Begin Source File
 
@@ -3579,6 +3611,10 @@ SOURCE=..\sc2code\starbase.h
 # Begin Source File
 
 SOURCE=..\sc2code\starcon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\starcon.h
 # End Source File
 # Begin Source File
 

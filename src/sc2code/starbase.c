@@ -76,7 +76,7 @@ void
 DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT which_slot,
 		BOOLEAN DrawBluePrint)
 {
-	COLOR OldColor;
+	COLOR OldColor = 0;  // Initialisation is to keep the compiler silent.
 	RECT r;
 	STAMP Side, Top;
 	SBYTE RepairSlot;
@@ -251,7 +251,8 @@ DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT which_slot,
 	}
 }
 
-int rotate_starbase(void* data)
+static int
+rotate_starbase(void *data)
 {
 	DWORD TimeIn;
 	STAMP s;
@@ -528,7 +529,7 @@ ExitStarBase:
 
 // XXX: Doesn't really belong in this file.
 COUNT
-WrapText (UNICODE *pStr, COUNT len, TEXT *tarray, SIZE field_width)
+WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE field_width)
 {
 	COUNT num_lines;
 

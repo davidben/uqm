@@ -17,13 +17,12 @@
  */
 
 #include "vidlib.h"
+#include "video.h"
 
 VIDEO_REF
-LoadVideoFile (PVOID pStr)
+LoadVideoFile (const char *pStr)
 {
-	extern VIDEO_REF _init_video_file (PVOID pStr);
-
-	return (_init_video_file (pStr));
+	return _init_video_file (pStr);
 }
 
 

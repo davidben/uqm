@@ -705,7 +705,8 @@ GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect)
 	pRect->corner.y = IsCrewRect ? 117 : 38;
 }
 
-void DrawPC_SIS (void)
+static void
+DrawPC_SIS (void)
 {
 	TEXT t;
 	RECT r;
@@ -1200,10 +1201,11 @@ static FRAME flash_frame;
 static FRAME flash_screen_frame = 0;
 static int flash_changed;
 Mutex flash_mutex = 0;
-void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, 
-					   RECT *rdst, int num,int denom);
+void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
+	   RECT *rdst, int num, int denom);
 
-int flash_rect_func(void *data)
+static int
+flash_rect_func (void *data)
 {
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
@@ -1211,7 +1213,8 @@ int flash_rect_func(void *data)
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	RECT cached_rect, framesize_rect;
-	FRAME cached_frame, cached_screen_frame = 0;
+	FRAME cached_frame = 0;
+	FRAME cached_screen_frame = 0;
 	Task task = (Task)data;
 	int cached[CACHE_SIZE];
 	STAMP cached_stamp[CACHE_SIZE];

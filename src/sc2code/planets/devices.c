@@ -195,7 +195,6 @@ DeviceFailed (BYTE which_device)
 {
 	BYTE val;
 	extern ACTIVITY NextActivity;
-	extern void SaveFlagshipState (void);
 
 	switch (which_device)
 	{

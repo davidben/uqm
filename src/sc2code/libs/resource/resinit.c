@@ -215,8 +215,8 @@ _GetResFileData (uio_Stream *res_fp, DWORD flen)
 }
 
 MEM_HANDLE
-InitResourceSystem (PVOID resfile, COUNT resindex_type, BOOLEAN
-		(*FileErrorFunc) (PVOID filename))
+InitResourceSystem (const char *resfile, COUNT resindex_type, BOOLEAN
+		(*FileErrorFunc) (const char *filename))
 {
 	MEM_HANDLE h;
 

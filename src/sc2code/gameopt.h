@@ -13,21 +13,14 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef _GAMEOPT_H
+#define _GAMEOPT_H
 
-#ifndef _DUMMY_H
-#define _DUMMY_H
-
-#include "libs/compiler.h"
+#include "compiler.h"
 #include "libs/gfxlib.h"
 
-extern MEM_HANDLE LoadVidInstance (DWORD res);
-extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
+extern void ConfirmSaveLoad (STAMP *MsgStamp);
+extern BOOLEAN GameOptions (void);
 
-extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width,
-		SIZE height);
-
-extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
-extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
-
-#endif  /* DUMMY_H */
+#endif  /* _GAMEOPT_H */
 

@@ -18,6 +18,7 @@
 #define _GAMEEV_H
 
 #include "libs/compiler.h"
+#include "libs/gfxlib.h"
 
 
 enum
@@ -52,6 +53,8 @@ typedef enum
 
 extern void AddInitialGameEvents (void);
 extern void EventHandler (BYTE selector);
+extern void SetRaceDest (BYTE which_race, COORD x, COORD y, BYTE days_left,
+		BYTE func_index);
 
 
 #endif  /* _GAMEEV_H */

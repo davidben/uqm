@@ -20,6 +20,7 @@
 
 #include "coderes.h"
 #include "encount.h"
+#include "master.h"
 #include "setup.h"
 #include "resinst.h"
 #include "build.h"
@@ -28,11 +29,8 @@
 
 #include <stdlib.h>
 
-//Added by Chris
 
-void InitGlobData (void);
-
-//End Added by Chris
+static void CreateRadar (void);
 
 CONTEXT RadarContext;
 FRAME PlayFrame;
@@ -42,7 +40,7 @@ GLOBDATA GlobData;
 extern FRAME flagship_status, misc_data;
 BOOLEAN initedSIS = 0;
 
-void
+static void
 CreateRadar (void)
 {
 	if (RadarContext == 0)
@@ -135,11 +133,9 @@ InitSIS (void)
 			{
 				SHIP_FRAGMENTPTR FragPtr;
 				EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr;
-				extern HSTARSHIP FindMasterShip (DWORD ship_ref);
 
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (avail_race_q), hStarShip
-						);
+						&GLOBAL (avail_race_q), hStarShip);
 				if (i < num_ships - 1)
 				{
 					HSTARSHIP hMasterShip;
@@ -147,7 +143,8 @@ InitSIS (void)
 					
 					hMasterShip = FindMasterShip (ship_ref);
 					MasterShipPtr = LockStarShip (&master_q, hMasterShip);
-					FragPtr->ShipInfo = ((SHIP_FRAGMENTPTR)MasterShipPtr)->ShipInfo;
+					FragPtr->ShipInfo =
+							((SHIP_FRAGMENTPTR)MasterShipPtr)->ShipInfo;
 					UnlockStarShip (&master_q, hMasterShip);
 				}
 				else
@@ -177,9 +174,7 @@ InitSIS (void)
 				ExtFragPtr->ShipInfo.days_left = 0;
 				FragPtr->RaceDescPtr = (RACE_DESCPTR)&ExtFragPtr->ShipInfo;
 
-				UnlockStarShip (
-						&GLOBAL (avail_race_q), hStarShip
-						);
+				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 			}
 		}
 	}
@@ -321,4 +316,24 @@ UninitSIS (void)
 	PlayFrame = 0;
 	initedSIS = FALSE;
 }
+
+void
+InitGlobData (void)
+{
+	COUNT i;
+
+	i = GLOBAL (glob_flags);
+	memset ((PBYTE)&GlobData, 0, sizeof (GlobData));
+	GLOBAL (glob_flags) = (BYTE)i;
+
+	GLOBAL (DisplayArray) = DisplayArray;
+	// The clock semaphore was initially initialized as '1'
+	// but it is always cleared before set, so it toggled between
+	// 2 and 1, which doesn't actually do anything.  
+
+	GLOBAL (GameClock.clock_sem) =
+			CreateSemaphore(0, "Clock", SYNC_CLASS_TOPLEVEL);
+}
+
+
 

@@ -27,10 +27,11 @@
 #include "units.h"
 
 
-FRAME stars_in_space,
-				asteroid[NUM_VIEWS],
-				blast[NUM_VIEWS],
-				explosion[NUM_VIEWS];
+FRAME stars_in_space;
+FRAME asteroid[NUM_VIEWS];
+FRAME blast[NUM_VIEWS];
+FRAME explosion[NUM_VIEWS];
+
 
 BOOLEAN
 load_animation (PFRAME pixarray, DWORD big_res, DWORD med_res, DWORD
@@ -259,23 +260,5 @@ UninitShips (void)
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 			FreeHyperspace ();
 	}
-}
-
-void
-InitGlobData (void)
-{
-	COUNT i;
-
-	i = GLOBAL (glob_flags);
-	memset ((PBYTE)&GlobData, 0, sizeof (GlobData));
-	GLOBAL (glob_flags) = (BYTE)i;
-
-	GLOBAL (DisplayArray) = DisplayArray;
-	// The clock semaphore was initially initialized as '1'
-	// but it is always cleared before set, so it toggled between
-	// 2 and 1, which doesn't actually do anything.  
-
-	GLOBAL (GameClock.clock_sem) =
-			CreateSemaphore(0, "Clock", SYNC_CLASS_TOPLEVEL);
 }
 

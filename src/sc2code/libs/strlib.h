@@ -30,7 +30,7 @@ typedef PBYTE STRINGPTR;
 extern BOOLEAN InstallStringTableResType (COUNT string_type);
 extern STRING_TABLE LoadStringTableInstance (DWORD res);
 extern STRING_TABLE LoadStringTableFile (uio_DirHandle *dir,
-		char *fileName);
+		const char *fileName);
 extern BOOLEAN DestroyStringTable (STRING_TABLE StringTable);
 extern STRING CaptureStringTable (STRING_TABLE StringTable);
 extern STRING_TABLE ReleaseStringTable (STRING String);

@@ -23,12 +23,14 @@
 #endif
 #include <fcntl.h>
 
+#include "options.h"
 #include "port.h"
 #include "sdl_common.h"
-#include "primitives.h"
 #include "sdluio.h"
 #include "libs/file.h"
-#include "options.h"
+#include "libs/reslib.h"
+#include "primitives.h"
+
 
 typedef struct anidata
 {
@@ -38,8 +40,6 @@ typedef struct anidata
 	int hotspot_y;
 } AniData;
 
-
-extern char *_cur_resfile_name;
 
 static void
 process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)

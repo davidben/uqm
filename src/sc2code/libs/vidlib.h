@@ -38,17 +38,12 @@ extern void UninitVideo (void);
 extern BYTE SetVideoMode (BYTE new_mode);
 extern BYTE GetVideoMode (void);
 
-extern VIDEO_REF LoadVideoFile (PVOID pStr);
+extern VIDEO_REF LoadVideoFile (const char *pStr);
 extern BOOLEAN DestroyVideo (VIDEO_REF VideoRef);
-extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN
-		uninit);
+extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef, const char *loopname,
+		BOOLEAN uninit);
 extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
 extern void VidDoInput (void);
-
-extern BOOLEAN DoFMV (char *name, char *loopname, BOOLEAN uninit);
-extern BOOLEAN ShowPresentation(char *name);
-
-
 
 #endif /* _VIDLIB_H */

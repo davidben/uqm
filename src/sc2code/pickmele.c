@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pickmele.h"
+
 #include "build.h"
 #include "controls.h"
 #include "intel.h"
@@ -66,27 +68,37 @@ DoGetMelee (GETMELEE_STATE *gms)
 	
 	if (PlayerInput[which_player] == ComputerInput)
 	{
-		/* TODO: Make this a frame-by-frame thing.  This code is currently copied
-		*        from intel.c's computer_intelligence */
+		/* TODO: Make this a frame-by-frame thing.  This code is currently
+		 *       copied from intel.c's computer_intelligence */
 		SleepThread (ONE_SECOND >> 1);
 		left = right = up = down = FALSE;
 		select = TRUE;		
 	}
 	else if (which_player == 0)
 	{
-		left = PulsedInputState.key[KEY_P1_LEFT] || PulsedInputState.key[KEY_MENU_LEFT];
-		right = PulsedInputState.key[KEY_P1_RIGHT] || PulsedInputState.key[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[KEY_P1_THRUST] || PulsedInputState.key[KEY_MENU_UP];
-		down = PulsedInputState.key[KEY_P1_DOWN] || PulsedInputState.key[KEY_MENU_DOWN];
-		select = PulsedInputState.key[KEY_P1_WEAPON] || PulsedInputState.key[KEY_MENU_SELECT];
+		left = PulsedInputState.key[KEY_P1_LEFT] ||
+				PulsedInputState.key[KEY_MENU_LEFT];
+		right = PulsedInputState.key[KEY_P1_RIGHT] ||
+				PulsedInputState.key[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[KEY_P1_THRUST] ||
+				PulsedInputState.key[KEY_MENU_UP];
+		down = PulsedInputState.key[KEY_P1_DOWN] ||
+				PulsedInputState.key[KEY_MENU_DOWN];
+		select = PulsedInputState.key[KEY_P1_WEAPON] ||
+				PulsedInputState.key[KEY_MENU_SELECT];
 	}
 	else
 	{
-		left = PulsedInputState.key[KEY_P2_LEFT] || PulsedInputState.key[KEY_MENU_LEFT];
-		right = PulsedInputState.key[KEY_P2_RIGHT] || PulsedInputState.key[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[KEY_P2_THRUST] || PulsedInputState.key[KEY_MENU_UP];
-		down = PulsedInputState.key[KEY_P2_DOWN] || PulsedInputState.key[KEY_MENU_DOWN];
-		select = PulsedInputState.key[KEY_P2_WEAPON] || PulsedInputState.key[KEY_MENU_SELECT];
+		left = PulsedInputState.key[KEY_P2_LEFT] ||
+				PulsedInputState.key[KEY_MENU_LEFT];
+		right = PulsedInputState.key[KEY_P2_RIGHT] ||
+				PulsedInputState.key[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[KEY_P2_THRUST] ||
+				PulsedInputState.key[KEY_MENU_UP];
+		down = PulsedInputState.key[KEY_P2_DOWN] ||
+				PulsedInputState.key[KEY_MENU_DOWN];
+		select = PulsedInputState.key[KEY_P2_WEAPON] ||
+				PulsedInputState.key[KEY_MENU_SELECT];
 	}
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -347,7 +359,8 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		StarShipPtr->captains_name_index = 0;
 		UnlockStarShip (&race_q[which_player], gmstate.hBattleShip);
 
-		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0, NotPositional (), NULL, 0);
+		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0,
+				NotPositional (), NULL, 0);
 
 		WaitForSoundEnd (0);
 	}

@@ -18,7 +18,6 @@
 
 #include "build.h"
 #include "controls.h"
-#include "dummy.h"
 #include "encount.h"
 #include "gamestr.h"
 #include "lifeform.h"
@@ -759,7 +758,6 @@ PickPlanetSide (PMENU_STATE pMS)
 			{
 				HSTARSHIP hStarShip;
 				extern ACTIVITY NextActivity;
-				extern void SaveFlagshipState (void);
 
 				if (pMenuState->flash_task)
 				{

@@ -14,8 +14,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "setup.h"
 #include "video.h"
+
+#include "setup.h"
 #include "vidplayer.h"
 #include "libs/inplib.h"
 
@@ -72,7 +73,7 @@ VidPlaying ()
 }
 
 VIDEO_TYPE
-VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN uninit)
+VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 		// uninit was used to uninit the game kernel
 		// before spawning duck exe
 {
@@ -118,12 +119,12 @@ VidDoInput (void)
 }
 
 VIDEO_REF
-_init_video_file(PVOID pStr)
+_init_video_file(const char *pStr)
 {
 	TFB_VideoClip* vid;
 	TFB_VideoDecoder* dec;
 
-	dec = VideoDecoder_Load (contentDir, (const char*)pStr);
+	dec = VideoDecoder_Load (contentDir, pStr);
 	if (!dec)
 		return NULL_VIDEO_REF;
 

@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "load.h"
+
 #include "build.h"
 #include "declib.h"
 #include "encount.h"
@@ -31,6 +33,8 @@
 //#define DEBUG_LOAD
 
 ACTIVITY NextActivity;
+
+static BOOLEAN LoadSummary (uio_Stream *in_fp);
 
 static void
 LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
@@ -68,8 +72,7 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 
 			Ptr = ((PBYTE)&FragPtr->ShipInfo) - Offset;
 			cread ((PBYTE)Ptr,
-					((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
-					1, fh);
+					((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1, fh);
 			if (Offset == 0)
 			{
 				EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr;
@@ -83,9 +86,10 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 	}
 }
 
-BOOLEAN
+static BOOLEAN
 LoadSummary (uio_Stream *in_fp)
 {
+	// XXX: This function seems to be unused.
 	SUMMARY_DESC S;
 
 	return (ReadResFile (&S, sizeof (S), 1, in_fp) == sizeof (S));
@@ -118,7 +122,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		{
 			memcpy (summary_desc, buf, sizeof (*summary_desc));
 			res_CloseResFile (in_fp);
-			return (TRUE);
+			return TRUE;
 		}
 
 		GlobData.SIS_state = summary_desc->SS;
@@ -126,7 +130,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		if ((fh = copen (in_fp, FILE_STREAM, STREAM_READ)) == 0)
 		{
 			res_CloseResFile (in_fp);
-			return (FALSE);
+			return FALSE;
 		}
 
 		ReinitQueue (&GLOBAL (GameClock.event_q));
@@ -216,8 +220,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 					hStarShip = GetStarShipFromIndex (
 							&GLOBAL (avail_race_q),
-							EncounterPtr->SD.ShipList[i].var1
-							);
+							EncounterPtr->SD.ShipList[i].var1);
 					TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
 							&GLOBAL (avail_race_q), hStarShip
 							);
@@ -227,9 +230,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 							TemplatePtr->ShipInfo.icons;
 					EncounterPtr->SD.ShipList[i].melee_icon =
 							TemplatePtr->ShipInfo.melee_icon;
-					UnlockStarShip (
-							&GLOBAL (avail_race_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 				}
 
 				UnlockEncounter (hEncounter);
@@ -309,10 +310,10 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 		GLOBAL (DisplayArray) = DisplayArray;
 
-		return (TRUE);
+		return TRUE;
 	}
 
-	return (FALSE);
+	return FALSE;
 }
 
 

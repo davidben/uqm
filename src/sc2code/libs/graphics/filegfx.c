@@ -18,8 +18,8 @@
 
 #include "gfxintrn.h"
 #include "options.h"
+#include "libs/reslib.h"
 
-extern char *_cur_resfile_name;
 
 DWORD
 LoadCelFile (PVOID pStr)

@@ -22,6 +22,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
+#include "gameopt.h"
 #include "gamestr.h"
 #include "globdata.h"
 #include "init.h"
@@ -31,10 +32,13 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
-#include "state.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
+
+
+static void DrawFadeText (const UNICODE *str1, const UNICODE *str2,
+		BOOLEAN fade_in, PRECT pRect);
 
 
 static BOOLEAN
@@ -348,8 +352,8 @@ InitEncounter (void)
 }
 
 static void
-DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
-		pRect)
+DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
+		PRECT pRect)
 {
 	SIZE i;
 	DWORD TimeIn;
@@ -408,7 +412,8 @@ DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
 			SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
 			TimeIn = GetTimeCounter ();
 		}
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA),
+				0x08));
 		font_DrawText (&t1);
 		font_DrawText (&t2);
 	}
@@ -440,12 +445,14 @@ UninitEncounter (void)
 		BOOLEAN Sleepy;
 		DWORD Time;
 		SIZE VictoryState;
-		COUNT RecycleAmount;
+		COUNT RecycleAmount = 0;
 		SIZE i;
 		RECT r, scavenge_r;
 		TEXT t;
 		STAMP ship_s;
-		UNICODE *str1, *str2, buf[20];
+		const UNICODE *str1 = NULL;
+		const UNICODE *str2 = NULL;
+		UNICODE buf[20];
 		HSTARSHIP hStarShip;
 		SHIP_FRAGMENTPTR FragPtr;
 		COLOR fade_ship_cycle[] =
@@ -461,7 +468,9 @@ UninitEncounter (void)
 			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
 			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 		};
-#define NUM_SHIP_FADES (sizeof (fade_ship_cycle) / sizeof (fade_ship_cycle[0]))
+#define NUM_SHIP_FADES (sizeof (fade_ship_cycle) / \
+		sizeof (fade_ship_cycle[0]))
+
 		COUNT race_bounty[] =
 		{
 			RACE_SHIP_COST
@@ -476,12 +485,11 @@ UninitEncounter (void)
 				) ? 0 : 1;
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (&GLOBAL (npc_built_ship_q),
+				hStarShip);
 		battle_counter = GET_RACE_ID (FragPtr) + 1;
-		if (GetStarShipFromIndex (
-				&GLOBAL (avail_race_q),
-				(COUNT)(battle_counter - 1)
-				) == 0)
+		if (GetStarShipFromIndex (&GLOBAL (avail_race_q),
+				(COUNT)(battle_counter - 1)) == 0)
 		{
 			VictoryState = -1;
 			InitSISContexts ();
@@ -508,9 +516,7 @@ UninitEncounter (void)
 
 					DrawSISMessage (NULL_PTR);
 					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-						DrawHyperCoords (
-								GLOBAL (ShipStamp.origin)
-								);
+						DrawHyperCoords (GLOBAL (ShipStamp.origin));
 					else if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
 						DrawHyperCoords (CurStarDescPtr->star_pt);
 					else
@@ -525,7 +531,8 @@ UninitEncounter (void)
 				
 			ReinitQueue (&race_q[(NUM_SIDES - 1) - i]);
 
-			for (hStarShip = GetHeadLink (pQueue); hStarShip; hStarShip = hNextShip)
+			for (hStarShip = GetHeadLink (pQueue); hStarShip;
+					hStarShip = hNextShip)
 			{
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
 				hNextShip = _GetSuccLink (FragPtr);
@@ -549,14 +556,16 @@ UninitEncounter (void)
 								
 								ship_s.origin.x = scavenge_r.corner.x + 32;
 								ship_s.origin.y = scavenge_r.corner.y + 56;
-								ship_s.frame = IncFrameIndex (FragPtr->ShipInfo.icons);
+								ship_s.frame = IncFrameIndex (
+										FragPtr->ShipInfo.icons);
 								DrawStamp (&ship_s);
-								SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+								SetContextForeGroundColor (BUILD_COLOR (
+										MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
 								SetContextFont (TinyFont);
 
 								GetStringContents (
-										FragPtr->ShipInfo.race_strings, (STRINGPTR)buf, FALSE
-										);
+										FragPtr->ShipInfo.race_strings,
+										(STRINGPTR)buf, FALSE);
 								wstrupr (buf);
 
 								t.baseline.x = scavenge_r.corner.x + 100;
@@ -566,19 +575,19 @@ UninitEncounter (void)
 								t.CharCount = (COUNT)~0;
 								font_DrawText (&t);
 								t.baseline.y += 6;
-								t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 3);
+								t.pStr = GAME_STRING (
+										ENCOUNTER_STRING_BASE + 3);
 								t.CharCount = (COUNT)~0;
 								font_DrawText (&t);
 
 								ship_s.frame = FragPtr->ShipInfo.icons;
 
 								SetContextFont (MicroFont);
-								DrawFadeText (
-										str1 = GAME_STRING (ENCOUNTER_STRING_BASE + 4),
-										str2 = GAME_STRING (ENCOUNTER_STRING_BASE + 5),
-										TRUE,
-										&scavenge_r
-										);
+								str1 = GAME_STRING (
+										ENCOUNTER_STRING_BASE + 4);
+								str2 = GAME_STRING (
+										ENCOUNTER_STRING_BASE + 5),
+								DrawFadeText (str1, str2, TRUE, &scavenge_r);
 							}
 
 							r.corner.y = scavenge_r.corner.y + 9;
@@ -587,11 +596,12 @@ UninitEncounter (void)
 							SetContextForeGroundColor (BLACK_COLOR);
 
 							r.extent.width = 34;
-							r.corner.x = scavenge_r.corner.x + scavenge_r.extent.width
+							r.corner.x = scavenge_r.corner.x +
+									scavenge_r.extent.width
 									- (10 + r.extent.width);
 							DrawFilledRectangle (&r);
 
-									/* collect bounty ResUnits */
+							/* collect bounty ResUnits */
 							j = race_bounty[battle_counter - 1] >> 3;
 							RecycleAmount += j;
 							wsprintf (buf, "%u", RecycleAmount);
@@ -600,9 +610,8 @@ UninitEncounter (void)
 							t.align = ALIGN_RIGHT;
 							t.pStr = buf;
 							t.CharCount = (COUNT)~0;
-							SetContextForeGroundColor (
-									BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50)
-									);
+							SetContextForeGroundColor (BUILD_COLOR (
+										MAKE_RGB15 (0x00, 0x00, 0x18), 0x50));
 							font_DrawText (&t);
 							DeltaSISGauges (0, 0, j);
 
@@ -681,16 +690,12 @@ UninitEncounter (void)
 					t.pStr = buf;
 					t.CharCount = (COUNT)~0;
 					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50)
-							);
+							BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50));
 					font_DrawText (&t);
 
-					DrawFadeText (
-							str1 = GAME_STRING (ENCOUNTER_STRING_BASE + 6),
-							str2 = GAME_STRING (ENCOUNTER_STRING_BASE + 7),
-							TRUE,
-							&scavenge_r
-							);
+					str1 = GAME_STRING (ENCOUNTER_STRING_BASE + 6);
+					str2 = GAME_STRING (ENCOUNTER_STRING_BASE + 7);
+					DrawFadeText (str1, str2, TRUE, &scavenge_r);
 					Time = GetTimeCounter () + ONE_SECOND * 2;
 					UnlockMutex (GraphicsLock);
 					while (!(AnyButtonPress (TRUE))

@@ -24,7 +24,9 @@
 #include "types.h"
 #include "globdata.h"
 #include "resinst.h"
+#include "restart.h"
 #include "setup.h"
+#include "starcon.h"
 #include "libs/tasklib.h"
 
 
@@ -32,7 +34,8 @@
 // A seperate thread is always inside this function when the player
 // is in hyperspace. This thread awakens every BATTLE_FRAME_RATE seconds.
 // It then changes the appearant portal size when necessary.
-int arilou_gate_task(void* data)
+static int
+arilou_gate_task(void *data)
 {
 	BYTE counter;
 	DWORD TimeIn;
@@ -75,7 +78,8 @@ int arilou_gate_task(void* data)
 /* TODO: Remove these declarations once threading is gone. */
 extern int snddriver, soundflags;
 
-int Starcon2Main(void *threadArg)
+int
+Starcon2Main (void *threadArg)
 {
 #if DEBUG_PSYTRON || CREATE_JOURNAL
 {
@@ -117,8 +121,6 @@ while (--ac > 0)
 
 	if (LoadKernel (0,0))
 	{
-		extern BOOLEAN StartGame (void);
-
 		fprintf (stderr, "We've loaded the Kernel\n");
 	
 		Logo ();

@@ -27,6 +27,15 @@
 extern Task flash_task;
 extern RECT flash_rect;
 
+static BYTE GetEndMenuState (BYTE BaseState);
+static BYTE GetBeginMenuState (BYTE BaseState);
+static BYTE FixMenuState (BYTE BadState);
+static BYTE NextMenuState (BYTE BaseState, BYTE CurState);
+static BYTE PreviousMenuState (BYTE BaseState, BYTE CurState);
+static BOOLEAN GetAlternateMenu (BYTE *BaseState, BYTE *CurState);
+static BYTE ConvertAlternateMenu (BYTE BaseState, BYTE NewState);
+
+
 /* Draw the blue background for PC Menu Text */
 static void
 DrawPCMenuFrame (RECT *r)
@@ -170,7 +179,7 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 }
 
 /* Determine the last text item to display */
-BYTE
+static BYTE
 GetEndMenuState (BYTE BaseState)
 {
 	switch (BaseState)
@@ -214,14 +223,14 @@ GetEndMenuState (BYTE BaseState)
 	return BaseState;
 }
 
-BYTE
+static BYTE
 GetBeginMenuState (BYTE BaseState)
 {
 	return BaseState;
 }
 
 /* Correct Menu State for cases where the Menu shouldn't move */
-BYTE
+static BYTE
 FixMenuState (BYTE BadState)
 {
 	switch (BadState)
@@ -244,7 +253,7 @@ FixMenuState (BYTE BadState)
 }
 
 /* Choose the next menu to hilight in the 'forward' direction */ 
-BYTE
+static BYTE
 NextMenuState (BYTE BaseState, BYTE CurState)
 {
 	BYTE NextState;
@@ -315,7 +324,7 @@ PreviousMenuState (BYTE BaseState, BYTE CurState)
 
 
 /* When using PC hierarchy, convert 3do->PC */
-BOOLEAN
+static BOOLEAN
 GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 {
 	BYTE AdjBase = *BaseState;
@@ -403,7 +412,7 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 }
 
 /* When using PC hierarchy, convert PC->3DO */
-BYTE
+static BYTE
 ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 {
 	switch (BaseState + NewState)

@@ -14,20 +14,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DUMMY_H
-#define _DUMMY_H
+#ifndef _PROCESS_H
+#define _PROCESS_H
 
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
-extern MEM_HANDLE LoadVidInstance (DWORD res);
-extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
+extern void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
 
-extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width,
-		SIZE height);
-
-extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
-extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
-
-#endif  /* DUMMY_H */
+#endif  /* _PROCESS_H */
 

@@ -14,20 +14,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DUMMY_H
-#define _DUMMY_H
+#ifndef _LOAD_H
+#define _LOAD_H
 
+#include "sis.h"
 #include "libs/compiler.h"
-#include "libs/gfxlib.h"
 
-extern MEM_HANDLE LoadVidInstance (DWORD res);
-extern MEM_HANDLE LoadCodeResFile (PSTR pStr);
+extern BOOLEAN LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc);
 
-extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT lpOrg, SIZE width,
-		SIZE height);
 
-extern void SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link);
-extern COUNT GetPrimNextLink (PPRIMITIVE pPrim);
-
-#endif  /* DUMMY_H */
+#endif  /* _LOAD_H */
 

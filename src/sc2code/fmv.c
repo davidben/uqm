@@ -21,6 +21,7 @@
 #include "controls.h"
 #include "hyper.h"
 #include "options.h"
+#include "master.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
@@ -29,16 +30,10 @@
 #include "libs/inplib.h"
 
 
-//Added by Chris
-
-BOOLEAN InitGameKernel (void);
-void LoadMasterShipList (void);
-
-//End Added by Chris
-
 void
 DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {
+#ifdef WANT_SHIP_SPINS
 	char buf[30];
 	BYTE clut_buf[1];
 	RECT old_r, r;
@@ -72,6 +67,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	clut_buf[0] = FadeAllToColor;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
 	FlushColorXForms ();
+#endif  /* WANT_SHIP_SPINS */
 }
 
 void

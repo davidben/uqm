@@ -77,8 +77,6 @@ extern int ScreenWidthActual;
 extern int ScreenHeightActual;
 extern int GraphicsDriver;
 
-int Starcon2Main (void *);
-
 #include "cmap.h"
 
 #endif

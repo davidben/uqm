@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "save.h"
+
 #include "build.h"
 #include "declib.h"
 #include "controls.h"
@@ -66,8 +68,7 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 		cwrite ((PBYTE)&Index, sizeof (Index), 1, fh);
 
 		Ptr = ((PBYTE)&FragPtr->ShipInfo) - Offset;
-		cwrite ((PBYTE)Ptr,
-				((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
+		cwrite ((PBYTE)Ptr, ((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
 				1, fh);
 		if (Offset == 0)
 		{
@@ -193,7 +194,8 @@ SaveProblemMessage (STAMP *MsgStamp)
 			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
 			BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
 			TRUE, BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x0F));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x0F));
 
 	for (i = 0; i < MAX_MSG_LINES; ++i)
 	{
@@ -224,8 +226,9 @@ SaveProblem (void)
 	{
 		TaskSwitch ();
 		UpdateInputState ();
-	} while (!(PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_SPECIAL] ||
-		 (GLOBAL (CurrentActivity) & CHECK_ABORT)));
+	} while (!(PulsedInputState.key[KEY_MENU_SELECT] ||
+			PulsedInputState.key[KEY_MENU_SPECIAL] ||
+		 	(GLOBAL (CurrentActivity) & CHECK_ABORT)));
 
 	LockMutex (GraphicsLock);
 	BatchGraphics ();
@@ -250,7 +253,8 @@ SaveGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 	made_room = FALSE;
 RetrySave:
 	h = mem_request (10 * 1024);
-	if ((out_fp = mem_lock (h)) == 0
+	out_fp = mem_lock (h);
+	if (out_fp == 0
 			|| (fh = copen (out_fp, MEMORY_STREAM, STREAM_WRITE)) == 0)
 	{
 		if (success)
@@ -276,15 +280,18 @@ RetrySave:
 		POINT pt;
 		STAR_DESC SD;
 		char buf[256], file[PATH_MAX];
-		extern void SaveFlagshipState (void);
 
 		success = TRUE;
 		if (CurStarDescPtr)
 			SD = *CurStarDescPtr;
 		else
 		{
-			SD.star_pt.x = SD.star_pt.y = 0;
-			SD.Type = SD.Index = SD.Prefix = SD.Postfix = 0;
+			SD.star_pt.x = 0;
+			SD.star_pt.y = 0;
+			SD.Type = 0;
+			SD.Index = 0;
+			SD.Prefix = 0;
+			SD.Postfix = 0;
 		}
 
 		frame = GLOBAL (ShipStamp.frame);
@@ -412,9 +419,9 @@ RetrySave:
 			PrepareSummary (summary_desc);
 
 			success = (BOOLEAN)(WriteResFile (
-					summary_desc, sizeof (*summary_desc), 1, out_fp
-					) != 0);
-			if (success && WriteResFile (mem_lock (h), (COUNT)flen, 1, out_fp) == 0)
+					summary_desc, sizeof (*summary_desc), 1, out_fp) != 0);
+			if (success && WriteResFile (mem_lock (h), (COUNT)flen, 1,
+						out_fp) == 0)
 				success = FALSE;
 
 			mem_unlock (h);
@@ -437,4 +444,5 @@ RetrySave:
 
 	return (success);
 }
+
 

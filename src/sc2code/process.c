@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "process.h"
+
 #include "build.h"
 #include "collide.h"
 #include "options.h"
@@ -873,12 +875,12 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 				UnlockElement (hPostElement);
 			} while ((hPostElement = hNextElement) != 0);
 
-			scroll_x = scroll_y = 0;
-			delta.x = delta.y = 0; /* because these are
-										  * newly added elements
-										  * that are already in
-										  * adjusted coordinates
-										  */
+			scroll_x = 0;
+			scroll_y = 0;
+			delta.x = 0;
+			delta.y = 0;
+					/* because these are newly added elements that are
+					 * already in adjusted coordinates */
 			state_flags = ElementPtr->state_flags;
 		}
 

@@ -32,8 +32,6 @@ extern BOOLEAN GetGroupInfo (DWORD offset, BYTE which_group);
 extern DWORD PutGroupInfo (DWORD offset, BYTE which_group);
 extern void BuildGroups (void);
 
-extern BOOLEAN GameOptions (void);
-
 #define MAX_DESC_CHARS 60
 typedef UNICODE GAME_DESC[MAX_DESC_CHARS + 1];
 

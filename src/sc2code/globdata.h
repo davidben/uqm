@@ -972,6 +972,8 @@ extern void RetrieveStarMap (void);
 extern void FreeSC2Data (void);
 extern BOOLEAN LoadSC2Data (void);
 
+void InitGlobData (void);
+
 
 #endif /* _GLOBDATA_H */
 

@@ -14,9 +14,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "sound.h"
-#include "options.h"
 #include "file.h"
+#include "options.h"
+#include "sound.h"
+#include "libs/reslib.h"
+
 
 static MUSIC_REF curMusicRef;
 
@@ -110,7 +112,6 @@ MEM_HANDLE
 _GetMusicData (uio_Stream *fp, DWORD length)
 {
 	MEM_HANDLE h;
-	extern char *_cur_resfile_name;
 
 	h = 0;
 	if (_cur_resfile_name && (h = AllocMusicData (sizeof (void *))))

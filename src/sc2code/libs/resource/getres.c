@@ -20,7 +20,8 @@
 #include "port.h"
 #include "options.h"
 
-char *_cur_resfile_name;
+
+const char *_cur_resfile_name;
 
 static BOOLEAN
 ValidResource (INDEX_HEADERPTR ResHeaderPtr, RESOURCE res)

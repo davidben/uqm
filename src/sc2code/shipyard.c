@@ -20,6 +20,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "fmv.h"
+#include "gameopt.h"
 #include "gamestr.h"
 #include "melee.h"
 #include "options.h"
@@ -70,7 +71,8 @@ enum
 	SHIPYARD_EXIT
 };
 
-int hangar_anim_func (void* data)
+static int
+hangar_anim_func (void *data)
 {
 	DWORD TimeIn;
 	STAMP s;
@@ -112,7 +114,7 @@ int hangar_anim_func (void* data)
 	}
 
 	FinishTask (task);
-	return(0);
+	return 0;
 }
 
 #ifdef WANT_SHIP_SPINS
@@ -158,18 +160,15 @@ GetAvailableRaceCount (void)
 		SHIP_FRAGMENTPTR StarShipPtr;
 
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip
-				);
+				&GLOBAL (avail_race_q), hStarShip);
 		if (StarShipPtr->ShipInfo.ship_flags & GOOD_GUY)
 			++Index;
 
 		hNextShip = _GetSuccLink (StarShipPtr);
-		UnlockStarShip (
-				&GLOBAL (avail_race_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 	}
 
-	return (Index);
+	return Index;
 }
 
 static HSTARSHIP
@@ -182,24 +181,19 @@ GetAvailableRaceFromIndex (BYTE Index)
 	{
 		SHIP_FRAGMENTPTR StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip
-				);
+		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (&GLOBAL (avail_race_q),
+				hStarShip);
 		if ((StarShipPtr->ShipInfo.ship_flags & GOOD_GUY) && Index-- == 0)
 		{
-			UnlockStarShip (
-					&GLOBAL (avail_race_q), hStarShip
-					);
-			return (hStarShip);
+			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+			return hStarShip;
 		}
 
 		hNextShip = _GetSuccLink (StarShipPtr);
-		UnlockStarShip (
-				&GLOBAL (avail_race_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 	}
 
-	return (0);
+	return 0;
 }
 
 static void
@@ -221,12 +215,14 @@ DrawRaceStrings (BYTE NewRaceItem)
 	r.extent.height = 11;
 	BatchGraphics ();
 	ClearSISRect (CLEAR_SIS_RADAR);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
 	DrawFilledRectangle (&r);
 	r.corner = s.origin;
 	r.extent.width = RADAR_WIDTH;
 	r.extent.height = RADAR_HEIGHT;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+	SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	DrawFilledRectangle (&r);
 	if (NewRaceItem != (BYTE)~0)
 	{
@@ -240,8 +236,10 @@ DrawRaceStrings (BYTE NewRaceItem)
 		};
 
 		hStarShip = GetAvailableRaceFromIndex (NewRaceItem);
-		NewRaceItem = GetIndexFromStarShip (&GLOBAL (avail_race_q), hStarShip);
-		s.frame = SetAbsFrameIndex (pMenuState->ModuleFrame, 3 + NewRaceItem);
+		NewRaceItem = GetIndexFromStarShip (&GLOBAL (avail_race_q),
+				hStarShip);
+		s.frame = SetAbsFrameIndex (pMenuState->ModuleFrame,
+				3 + NewRaceItem);
 		DrawStamp (&s);
 		StarShipPtr = LockStarShip (&GLOBAL (avail_race_q), hStarShip);
 		s.frame = StarShipPtr->RaceDescPtr->ship_info.melee_icon;
@@ -257,7 +255,8 @@ DrawRaceStrings (BYTE NewRaceItem)
 		t.pStr = buf;
 		wsprintf (buf, "%u", ShipCost[NewRaceItem]);
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (
+						0x00, 0x1F, 0x00), 0x02));
 		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
@@ -290,13 +289,10 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 	HSTARSHIP hTemplate;
 	SHIP_FRAGMENTPTR TemplatePtr;
 
-	hTemplate = GetStarShipFromIndex (
-			&GLOBAL (avail_race_q),
-			GET_RACE_ID (StarShipPtr)
-			);
+	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
+			GET_RACE_ID (StarShipPtr));
 	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-			&GLOBAL (avail_race_q), hTemplate
-			);
+			&GLOBAL (avail_race_q), hTemplate);
 	if (StarShipPtr->ShipInfo.crew_level >=
 			TemplatePtr->RaceDescPtr->ship_info.crew_level)
 		wsprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
@@ -306,9 +302,7 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 		wsprintf (buf, "%u/%u",
 				StarShipPtr->ShipInfo.crew_level,
 				TemplatePtr->RaceDescPtr->ship_info.crew_level);
-	UnlockStarShip (
-			&GLOBAL (avail_race_q), hTemplate
-			);
+	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
 
 	r = *pRect;
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -391,33 +385,21 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 						);
 				if (GET_GROUP_LOC (StarShipPtr) > which_window)
 				{
-					UnlockStarShip (
-							&GLOBAL (built_ship_q),
-							hStarShip
-							);
+					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 					break;
 				}
 				hNextShip = _GetSuccLink (StarShipPtr);
-				UnlockStarShip (
-						&GLOBAL (built_ship_q),
-						hStarShip
-						);
+				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 
 				hStarShip = hNextShip;
 			}
-			InsertQueue (&GLOBAL (built_ship_q),
-					hTailShip, hStarShip);
+			InsertQueue (&GLOBAL (built_ship_q), hTailShip, hStarShip);
 
 			hStarShip = hTailShip;
 			StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-					&GLOBAL (built_ship_q),
-					hStarShip
-					);
+					&GLOBAL (built_ship_q), hStarShip);
 			SET_GROUP_LOC (StarShipPtr, which_window);
-			UnlockStarShip (
-					&GLOBAL (built_ship_q),
-					hStarShip
-					);
+			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 		}
 
 		for (i = 0; i < num_ships; ++i)
@@ -501,8 +483,10 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 				{
 					RECT ClipRect;
 
-					ClipRect.corner.x = SIS_ORG_X + pship_win_info->finished_s.x;
-					ClipRect.corner.y = SIS_ORG_Y + pship_win_info->finished_s.y;
+					ClipRect.corner.x = SIS_ORG_X +
+							pship_win_info->finished_s.x;
+					ClipRect.corner.y = SIS_ORG_Y +
+							pship_win_info->finished_s.y;
 					ClipRect.extent.width = SHIP_WIN_WIDTH;
 					ClipRect.extent.height = SHIP_WIN_HEIGHT;
 					SetContextClipRect (&ClipRect);
@@ -546,8 +530,7 @@ CrewTransaction (SIZE crew_delta)
 
 		crew_bought = (SIZE)MAKE_WORD (
 				GET_GAME_STATE (CREW_PURCHASED0),
-				GET_GAME_STATE (CREW_PURCHASED1)
-				) + crew_delta;
+				GET_GAME_STATE (CREW_PURCHASED1)) + crew_delta;
 		if (crew_bought < 0)
 		{
 			if (crew_delta < 0)
@@ -579,9 +562,7 @@ CrewTransaction (SIZE crew_delta)
 				LockMutex (GraphicsLock);
 			}
 		}
-		if (!(ActivateStarShip (
-				SHOFIXTI_SHIP, CHECK_ALLIANCE
-				) & GOOD_GUY))
+		if (!(ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
 		{
 			SET_GAME_STATE (CREW_PURCHASED0, LOBYTE (crew_bought));
 			SET_GAME_STATE (CREW_PURCHASED1, HIBYTE (crew_bought));
@@ -615,7 +596,7 @@ DoModifyShips (PMENU_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		pMS->InputFunc = DoShipyard;
-		return (TRUE);
+		return TRUE;
 	}
 
 	if (!pMS->Initialized)
@@ -631,7 +612,8 @@ DoModifyShips (PMENU_STATE pMS)
 	}
 	else
 	{
-		SBYTE dx = 0, dy = 0;
+		SBYTE dx = 0;
+		SBYTE dy = 0;
 		BYTE NewState;
 
 		if (!(pMS->delta_item & MODIFY_CREW_FLAG))
@@ -677,10 +659,9 @@ DoModifyShips (PMENU_STATE pMS)
 				NewState = (BYTE)(pMS->CurState - NewState + dx);
 		}
 
-#ifdef WANT_SHIP_SPINS
-		if (select || cancel || special
-#else
 		if (select || cancel
+#ifdef WANT_SHIP_SPINS
+				|| special
 #endif
 				|| NewState != pMS->CurState
 				|| ((pMS->delta_item & MODIFY_CREW_FLAG) && (dx || dy)))
@@ -689,25 +670,21 @@ DoModifyShips (PMENU_STATE pMS)
 					hStarShip; hStarShip = hNextShip)
 			{
 				StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (built_ship_q), hStarShip
-						);
+						&GLOBAL (built_ship_q), hStarShip);
 
 				if (GET_GROUP_LOC (StarShipPtr) == pMS->CurState)
 				{
-					UnlockStarShip (
-							&GLOBAL (built_ship_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 					break;
 				}
 
 				hNextShip = _GetSuccLink (StarShipPtr);
-				UnlockStarShip (
-						&GLOBAL (built_ship_q), hStarShip
-						);
+				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 			}
 			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip))
 			{
-				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+						MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 			}
 			else
 			{
@@ -724,8 +701,7 @@ DoModifyShips (PMENU_STATE pMS)
 				if ((hSpinShip = hStarShip)
 						|| (HINIBBLE (pMS->CurState) == 0
 						&& (hSpinShip = GetAvailableRaceFromIndex (
-								LOBYTE (pMS->delta_item)
-								))))
+								LOBYTE (pMS->delta_item)))))
 				{
 					SetFlashRect (NULL_PTR, (FRAME)0);
 					SpinStarShip (hSpinShip);
@@ -754,7 +730,7 @@ DoModifyShips (PMENU_STATE pMS)
 					{
 						pMS->delta_item = MODIFY_CREW_FLAG;
 						DrawRaceStrings (0);
-						return (TRUE);
+						return TRUE;
 					}
 					else if (cancel)
 					{
@@ -767,16 +743,16 @@ DoModifyShips (PMENU_STATE pMS)
 					}
 					else if (select)
 					{
-						Index = GetIndexFromStarShip (
-								&GLOBAL (avail_race_q),
-								GetAvailableRaceFromIndex (LOBYTE (pMS->delta_item))
-								);
+						Index = GetIndexFromStarShip (&GLOBAL (avail_race_q),
+								GetAvailableRaceFromIndex (
+								LOBYTE (pMS->delta_item)));
 
 						if (GLOBAL_SIS (ResUnits) >= (DWORD)ShipCost[Index]
 								&& CloneShipFragment (Index,
 								&GLOBAL (built_ship_q), 1))
 						{
-							ShowCombatShip ((COUNT)pMS->CurState, (SHIP_FRAGMENTPTR)0);
+							ShowCombatShip ((COUNT)pMS->CurState,
+									(SHIP_FRAGMENTPTR) 0);
 							//Reset flash rectangle
 							LockMutex (GraphicsLock);
 							SetFlashRect ((PRECT)~0L, (FRAME)0);
@@ -795,9 +771,10 @@ DoModifyShips (PMENU_STATE pMS)
 							SetFlashRect (&r, (FRAME)0);
 							UnlockMutex (GraphicsLock);
 						}
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 							
-						return (TRUE);
+						return TRUE;
 					}
 					else
 					{
@@ -820,13 +797,13 @@ DoModifyShips (PMENU_STATE pMS)
 							pMS->delta_item = NewState | MODIFY_CREW_FLAG;
 						}
 						
-						return (TRUE);
+						return TRUE;
 					}
 					LockMutex (GraphicsLock);
 					goto ChangeFlashRect;
 				}
 				else if (select || cancel)
-				{					
+				{
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
 							&& hStarShip != 0
 							&& StarShipPtr->ShipInfo.crew_level == 0)
@@ -860,7 +837,8 @@ DoModifyShips (PMENU_STATE pMS)
 						GetGaugeRect (&r, TRUE);
 						SetFlashRect (&r, (FRAME)0);
 						SetContext (SpaceContext);
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					}
 					else
 					{
@@ -871,7 +849,8 @@ DoModifyShips (PMENU_STATE pMS)
 						r.extent.height = 5;
 						SetContext (SpaceContext);
 						SetFlashRect (&r, (FRAME)0);
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					}
 				}
 				else if (pMS->delta_item & MODIFY_CREW_FLAG)
@@ -880,10 +859,10 @@ DoModifyShips (PMENU_STATE pMS)
 
 					if (hStarShip)
 						StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-								&GLOBAL (built_ship_q), hStarShip
-								);
+								&GLOBAL (built_ship_q), hStarShip);
 
-					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+							MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					crew_delta = 0;
 					if (dy < 0)
 					{
@@ -910,24 +889,22 @@ DoModifyShips (PMENU_STATE pMS)
 
 							hTemplate = GetStarShipFromIndex (
 									&GLOBAL (avail_race_q),
-									GET_RACE_ID (StarShipPtr)
-									);
+									GET_RACE_ID (StarShipPtr));
 							TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-									&GLOBAL (avail_race_q), hTemplate
-									);
-							if (GLOBAL_SIS (ResUnits) >= (DWORD)GLOBAL (CrewCost)
+									&GLOBAL (avail_race_q), hTemplate);
+							if (GLOBAL_SIS (ResUnits) >=
+									(DWORD)GLOBAL (CrewCost)
 									&& StarShipPtr->ShipInfo.crew_level <
 									StarShipPtr->ShipInfo.max_crew &&
 									StarShipPtr->ShipInfo.crew_level <
-									TemplatePtr->RaceDescPtr->ship_info.crew_level)
+									TemplatePtr->RaceDescPtr->ship_info.
+									crew_level)
 							{
 								if (StarShipPtr->ShipInfo.crew_level > 0)
 									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
 								else
-									DeltaSISGauges (0, 0,
-											-(COUNT)ShipCost[
-											GET_RACE_ID (StarShipPtr)
-											]);
+									DeltaSISGauges (0, 0, -(COUNT)ShipCost[
+											GET_RACE_ID (StarShipPtr) ]);
 								++StarShipPtr->ShipInfo.crew_level;
 								crew_delta = 1;
 								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
@@ -939,17 +916,15 @@ DoModifyShips (PMENU_STATE pMS)
 								SetContext (SpaceContext);
 								SetFlashRect (&r, (FRAME)0);
 							}
-							UnlockStarShip (
-									&GLOBAL (avail_race_q), hTemplate
-									);
+							UnlockStarShip (&GLOBAL (avail_race_q),
+									hTemplate);
 						}
 					}
 					else if (dy > 0)
 					{
 						crew_bought = (SIZE)MAKE_WORD (
 								GET_GAME_STATE (CREW_PURCHASED0),
-								GET_GAME_STATE (CREW_PURCHASED1)
-								);
+								GET_GAME_STATE (CREW_PURCHASED1));
 						if (hStarShip == 0)
 						{
 							if (GetCrewCount ())
@@ -978,10 +953,8 @@ DoModifyShips (PMENU_STATE pMS)
 											- (crew_bought ==
 											CREW_EXPENSE_THRESHOLD ? 2 : 0));
 								else
-									DeltaSISGauges (0, 0,
-											(COUNT)ShipCost[
-											GET_RACE_ID (StarShipPtr)
-											]);
+									DeltaSISGauges (0, 0, (COUNT)ShipCost[
+											GET_RACE_ID (StarShipPtr)]);
 								crew_delta = -1;
 								--StarShipPtr->ShipInfo.crew_level;
 							}
@@ -998,9 +971,7 @@ DoModifyShips (PMENU_STATE pMS)
 
 					if (hStarShip)
 					{
-						UnlockStarShip (
-								&GLOBAL (built_ship_q), hStarShip
-								);
+						UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 						
 						// clear out the bought ship index
 						// so that flash rects work correctly
@@ -1019,7 +990,7 @@ DoModifyShips (PMENU_STATE pMS)
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 
-				return (TRUE);
+				return TRUE;
 			}
 			else
 			{
@@ -1048,7 +1019,7 @@ ChangeFlashRect:
 		}
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 static void
@@ -1068,7 +1039,8 @@ DrawBluePrint (PMENU_STATE pMS)
 
 	s.origin.x = s.origin.y = 0;
 	s.frame = DecFrameIndex (pMS->ModuleFrame);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x16), 0x01));
+	SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x00, 0x00, 0x16), 0x01));
 	DrawFilledStamp (&s);
 
 	for (num_frames = 0; num_frames < NUM_DRIVE_SLOTS; ++num_frames)
@@ -1091,7 +1063,8 @@ DrawBluePrint (PMENU_STATE pMS)
 			DrawShipPiece (pMS, which_piece, num_frames, TRUE);
 	}
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+	SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
 	for (num_frames = 0; num_frames < NUM_MODULE_SLOTS; ++num_frames)
 	{
 		BYTE which_piece;
@@ -1154,7 +1127,8 @@ DrawBluePrint (PMENU_STATE pMS)
 			r.corner.x += r.extent.width + 1;
 			DrawPoint (&r.corner);
 			r.corner.x -= r.extent.width;
-			SetContextForeGroundColor (SetContextBackGroundColor (BLACK_COLOR));
+			SetContextForeGroundColor (
+					SetContextBackGroundColor (BLACK_COLOR));
 			DrawFilledRectangle (&r);
 			m = FuelVolume < FUEL_VOLUME_PER_ROW ?
 					(COUNT)FuelVolume : FUEL_VOLUME_PER_ROW;
@@ -1171,7 +1145,7 @@ DrawBluePrint (PMENU_STATE pMS)
 	UnlockMutex (GraphicsLock);
 }
 
-void
+static void
 BeginHangarAnim (PMENU_STATE pMS)
 {
 #ifdef WANT_HANGAR_ANIMATION
@@ -1192,7 +1166,7 @@ BeginHangarAnim (PMENU_STATE pMS)
 #endif
 }
 
-void
+static void
 EndHangarAnim (PMENU_STATE pMS)
 {
 	if (pMS->flash_task)
@@ -1221,9 +1195,7 @@ DoShipyard (PMENU_STATE pMS)
 			STAMP s;
 			RECT r, old_r;
 
-			s.frame = CaptureDrawable (
-					LoadGraphic (SHIPYARD_PMAP_ANIM)
-					);
+			s.frame = CaptureDrawable (LoadGraphic (SHIPYARD_PMAP_ANIM));
 
 			pMS->CurString = CaptureColorMap (LoadColorMapFile (
 					contentDir, "lbm/dockpani.ct"));
@@ -1297,7 +1269,7 @@ ExitShipyard:
 		pMS->CurString = 0;
 		UnlockMutex (GraphicsLock);
 
-		return (FALSE);
+		return FALSE;
 	}
 	else if (select)
 	{
@@ -1321,5 +1293,6 @@ ExitShipyard:
 	else
 		DoMenuChooser (pMS, PM_CREW);
 
-	return (TRUE);
+	return TRUE;
 }
+

@@ -21,6 +21,7 @@
 #include "planets/planets.h"
 #include "settings.h"
 #include "sounds.h"
+#include "libs/inplib.h"
 #include "libs/timelib.h"
 #include "libs/threadlib.h"
 

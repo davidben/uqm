@@ -14,4 +14,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef _OSCILL_H
+#define _OSCILL_H
+
+#include "libs/compiler.h"
+#include "libs/gfxlib.h"
+
 extern BOOLEAN sliderDisabled;
+
+extern void InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height,
+		FRAME f);
+extern void Oscilloscope (DWORD grab_data);
+extern void UninitOscilloscope (void);
+
+extern void InitSlider (int x, int y, int width, int height,
+		int bwidth, int bheight, FRAME f);
+extern void SetSliderImage (FRAME f);
+void Slider (void);
+
+#endif  /* _OSCILL_H */
+

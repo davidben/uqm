@@ -32,9 +32,11 @@
 
 #define IsLeapYear(yi) (!((yi) & 3) && (((yi) % 100) || ((yi) % 400)))
 
+static int clock_task_func(void* data);
+
 static Mutex clock_mutex;
 
-int clock_task_func(void* data)
+static int clock_task_func(void* data)
 {
 	BOOLEAN LastPilot;
 	DWORD LastTime;

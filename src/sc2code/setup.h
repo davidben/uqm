@@ -52,9 +52,11 @@ extern BYTE PlayerControl[];
 extern SIZE cur_player;
 
 extern BOOLEAN InitContexts (void);
+extern void UninitPlayerInput (void);
+extern BOOLEAN InitGameKernel (void);
 
-int initIO (void);
-void uninitIO (void);
+extern int initIO (void);
+extern void uninitIO (void);
 
 extern void SetPlayerInput (void);
 

@@ -18,8 +18,8 @@
 
 #include "sndintrn.h"
 #include "options.h"
+#include "reslib.h"
 
-extern char *_cur_resfile_name;
 
 SOUND_REF
 LoadSoundFile (PVOID pStr)

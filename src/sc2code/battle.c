@@ -223,8 +223,6 @@ BOOLEAN
 Battle (void)
 {
 	SIZE num_ships;
-	extern SIZE InitShips (void);
-	void UninitShips (void);
 
 	LockMutex (GraphicsLock);
 

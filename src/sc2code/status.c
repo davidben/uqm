@@ -427,7 +427,8 @@ PostProcessStatus (PELEMENT ShipPtr)
 				else
 				{
 					SetContextForeGroundColor (BLACK_COLOR);
-					if ((i -= 5) <= 14)
+					i -= 5;
+					if (i <= 14)
 					{
 						COLOR flash_tab1[] =
 						{
@@ -493,6 +494,10 @@ PostProcessStatus (PELEMENT ShipPtr)
 								i = 1;
 								r.extent.width = 2;
 								c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x50, 0x5), 0x28);
+								break;
+							default:
+								// Should not happen.
+								c = 0;  // Keeping compiler quiet.
 								break;
 						}
 						DrawFilledRectangle (&r);
