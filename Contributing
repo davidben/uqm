@@ -5,8 +5,9 @@ These guidelines are there so that you won't waste both our and your time.
 
 Before making changes:
 - Read this entire document
-- Read the TODO list to see if there are any comments on what you're
-  planning to do.
+- See if the the Bugzilla bug database at
+  http://uqm.stack.nl/cgi-bin/bugs/index.cgi contains any comments on
+  what you're planning to do.
 - Make sure you're using the most recent cvs version
 - Discuss in advance what you're planning to do, with the core team.
   The best place to do this is on #sc2 on irc.freenode.net.
@@ -15,7 +16,7 @@ Before making changes:
   - we've got a very clear idea of how we want it to be
   - the code you're planning to change will be completely rewritten
     in the near future.
-- Don't bother on adding "great ideas" you have for the game.
+- Don't bother on adding "great ideas" you have for the game;
   Our current goal is a straight port. The code is GPL, so feel free
   to start your own modified version, but don't bother sending them
   in for the official version.
@@ -94,7 +95,8 @@ Test the patches:
   send them to someone to test them for you.
 
 Getting the patches committed:
-- Send the patches to one of the committers, in plain-text format.
+- Either attach the patches to the appropriate bug report in the Bugzilla
+  bug database or send them to one of the committers, in plain-text format.
   This can be done by email, DCC from within the #sc2 channel, or by
   mentioning an URL where we can get the patch.
   The committers are listed below (in alphabetical order), with their

@@ -16,13 +16,6 @@ Questions:
 - w_memlib used (now commented out) MS Windows functions to show messages
   when memory couldn't be allocated. If we want to have those return, some
   work will have to be done. If not, there's some dead code to remove.
-- The functions like HMalloc don't guarantee success, so checks should be
-  done, and are even done in some places. But it might make more sense to
-  let HMalloc abort the program if it fails (there's little to do anyhow),
-  so we can rely on HMalloc returning a non-NULL value.
-  If we want, we could allocate a block of reserve memory at the start,
-  which we can free when no more memory is available, to allow an emergency
-  save.
 - If we want, we could allocate a block of reserve memory at the start,
   which we can free when no more memory is available, to allow an emergency
   save.
