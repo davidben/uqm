@@ -66,6 +66,9 @@ Glitches (don't crash the game, medium priority):
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
 - ZFP graphics synchronisation messed up when fast forwarding speech
+- Melee menu's 5x5 ship selection grid doesn't show up always
+  - On win32, works with release build, not debug
+  - On linux, works with SDL_mixer, not OpenAL
 
 Implementation bugs (low priority):
 - Scaling code problems:
