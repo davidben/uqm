@@ -89,10 +89,10 @@ Introduction (void)
 
 	FlushInput ();
 
-	LoadMasterShipList ();
-	InitGameKernel ();
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
+	LoadMasterShipList ();
+	InitGameKernel ();
 	while ((GetTimeCounter () <= TimeOut) &&
 	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
