@@ -301,7 +301,8 @@ ValidateEvent (EVENT_TYPE type, PCOUNT pmonth_index, PCOUNT pday_index,
 		*pyear_index = year_index;
 	}
 
-	return (!(year_index < GLOBAL (GameClock.year_index)
+	// translation: return (BOOLEAN) !(date < GLOBAL (Gameclock.date));
+	return (BOOLEAN) (!(year_index < GLOBAL (GameClock.year_index)
 			|| (year_index == GLOBAL (GameClock.year_index)
 			&& (month_index < GLOBAL (GameClock.month_index)
 			|| (month_index == GLOBAL (GameClock.month_index)

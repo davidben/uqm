@@ -207,7 +207,7 @@ DoBattle (BATTLE_STATE *bs)
 		SleepThreadUntil (bs->NextTime + BATTLE_FRAME_RATE);
 		bs->NextTime = GetTimeCounter ();
 	}
-	return GLOBAL (CurrentActivity) & IN_BATTLE;
+	return (BOOLEAN) (GLOBAL (CurrentActivity) & IN_BATTLE);
 }
 
 BOOLEAN
