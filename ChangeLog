@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed various odd behaviors when loading from HyperSpace (bug #587), 
+  from Nic and Michael
 - Added new 'triscan' scaler; derived from scale2x[.sf.net] -Alex
 - Space marines die in a self-destructing Scout (Bug #445), from Nic
 - Added the -l option to produce logfiles (bug #560), from Nic

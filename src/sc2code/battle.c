@@ -182,9 +182,11 @@ DoBattle (BATTLE_STATE *bs)
 		SetTransitionSource (&r);
 	}
 	BatchGraphics ();
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if ((LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
+			!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 		SeedUniverse ();
 	RedrawQueue (TRUE);
+
 	if (bs->first_time)
 	{
 		bs->first_time = FALSE;
@@ -192,6 +194,11 @@ DoBattle (BATTLE_STATE *bs)
 	}
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
+	if ((!(GLOBAL (CurrentActivity) & IN_BATTLE)) ||
+			(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+	{
+		return FALSE;
+	}
 	if (nth_frame)
 		TaskSwitch ();
 	else
