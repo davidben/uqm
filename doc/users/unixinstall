@@ -1,14 +1,33 @@
-This document describes the install procedure for a installation from source
-on a Linux or BSD platform.
+This document describes the installation procedure for a installation from
+source on a Linux or BSD platform.
 
+1.
 First, make sure all the required libraries are installed.
 They are listed in the file INSTALL in the top dir.
 
+2.
+If you haven't done so already, download a content .tgz package from
+where you got this source package.
+Unpack the content .tgz package in the top dir of the source tree
+(the dir with (among others) COPYING, src/, build.vars.in):
+Something like 'tar -xvzf /path/to/uqm-0.1-content.tgz'.
+
+3.
 Run './build.sh uqm'
 Change settings in the menu if you want.
 
-That's all.
+4.
+Run './build.sh uqm install', and be patient.
+Depending on what location you selected in the configuration menu, you might
+need root permissions here.
 
-You can use './build.sh uqm config' to reconfigure; you might need to do
+5.
+Done.
+If you compiled with debug on, you'll have an executable 'uqm-debug' in
+the dir you specified, otherwise, it will be named 'uqm'.
+
+
+If you want to recompile with other options, you can use
+'./build.sh uqm config' to reconfigure; you might need to do
 './build.sh uqm depend' afterwards.
 
