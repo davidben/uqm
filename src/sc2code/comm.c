@@ -1573,7 +1573,6 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 
 			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 
-			CommData.AlienTalkDesc.AnimFlags &= ~PAUSE_TALKING;
 			CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
 			pES->num_responses = 0;
 			(*pES->response_list[pES->cur_response].response_func)
@@ -1735,10 +1734,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 
-				CommData.AlienTalkDesc.AnimFlags &= ~PAUSE_TALKING;
-				CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
 				SpewPhrases (0);
-				CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					RefreshResponses (pES);
