@@ -162,8 +162,8 @@ ExitConversation (RESPONSE_REF R)
 			/* Magic numbers for Earth */
 		GLOBAL (ip_location.x) = -725;
 		GLOBAL (ip_location.y) = 597;
-		GLOBAL (ShipStamp.origin.x) = 71;
-		GLOBAL (ShipStamp.origin.y) = 97;
+		GLOBAL (ShipStamp.origin.x) = 86 - SAFE_X;
+		GLOBAL (ShipStamp.origin.y) = 113 - SAFE_Y;
 	}
 }
 
