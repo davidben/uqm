@@ -716,7 +716,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 					{
 						// There's already an image for this character.
 #ifdef DEBUG
-						fprintf (stderr, "Duplicate image for characted %d "
+						fprintf (stderr, "Duplicate image for character %d "
 								"for font %s.\n", (int) bcd->index,
 								_cur_resfile_name);
 #endif
