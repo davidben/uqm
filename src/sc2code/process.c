@@ -982,6 +982,7 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 									ElementPtr->next.image.frame);
 #endif /* SAFE */
 
+							LockMutex (((PFRAME_DESC)ElementPtr->next.image.frame)->image->mutex);
 							if (index < 2 && scale != 256) 
 							{
 								// assigns next (smaller) zoom level image as mipmap, needed for trilinear scaling
@@ -995,6 +996,7 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 							{
 								((PFRAME_DESC)ElementPtr->next.image.frame)->image->MipmapImg = NULL;
 							}
+							UnlockMutex (((PFRAME_DESC)ElementPtr->next.image.frame)->image->mutex);
 #endif
 						}
 						DisplayArray[ElementPtr->PrimIndex].Object.Stamp.frame =
