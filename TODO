@@ -71,6 +71,8 @@ Glitches (don't crash the game, medium priority):
   - On linux, works with SDL_mixer, not OpenAL
 - When entering to star system, graphics might go wild
   (doesn't draw background so leaves trails, etc)
+- Currently some sound effects are perhaps from PC version.. 3DO ones should be
+  extracted to check/fix this
 
 Implementation bugs (low priority):
 - Scaling code problems:
