@@ -22,6 +22,8 @@
 #include "libs/tasklib.h"
 #include "options.h"
 
+static const UNICODE *describeWeapon (BYTE moduleType);
+
 void
 RepairSISBorder (void)
 {
@@ -410,51 +412,51 @@ DrawFlagshipStats (void)
 	FONT OldFont;
 	COLOR OldColor;
 	CONTEXT OldContext;
-	UNICODE buf[60], guns[16][8];
+	UNICODE buf[60];
 	SIZE leading;
-    BYTE i;
-	DWORD thrust, turning, dynamo, fuel;
+	BYTE i;
+	BYTE energy_regeneration, energy_wait, turn_wait;
+	COUNT max_thrust;
+	DWORD fuel;
 
 	/* collect stats */
-	for (i = 0; i < 16; ++i)
-		wsprintf (guns[i], "none");
-	thrust = 40;
-	turning = 1;
-	dynamo = 0;
-	fuel = 1000;
+#define ENERGY_REGENERATION 1
+#define ENERGY_WAIT 10
+#define MAX_THRUST 10
+#define TURN_WAIT 17
+	energy_regeneration = ENERGY_REGENERATION;
+	energy_wait = ENERGY_WAIT;
+	max_thrust = MAX_THRUST;
+	turn_wait = TURN_WAIT;
+	fuel = 10 * FUEL_TANK_SCALE;
 
-	for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+	for (i = 0; i < NUM_MODULE_SLOTS; i++)
 	{
-		if (GLOBAL_SIS (ModuleSlots[i]) == DYNAMO_UNIT
-				|| GLOBAL_SIS (ModuleSlots[i]) == SHIVA_FURNACE)
-			dynamo += GLOBAL_SIS (ModuleSlots[i]) == DYNAMO_UNIT
-					? 30 : 60;
-		else if (GLOBAL_SIS (ModuleSlots[i]) == FUEL_TANK
-				|| GLOBAL_SIS (ModuleSlots[i]) == HIGHEFF_FUELSYS)
-			fuel += GLOBAL_SIS (ModuleSlots[i]) == FUEL_TANK
-					? FUEL_TANK_CAPACITY : HEFUEL_TANK_CAPACITY;
-		else if (GLOBAL_SIS (ModuleSlots[i]) >= GUN_WEAPON
-				&& GLOBAL_SIS (ModuleSlots[i]) <= CANNON_WEAPON)
-		{
-			if (GLOBAL_SIS (ModuleSlots[i]) == CANNON_WEAPON)
-				wsprintf (guns[i], "cannon");
-			else if (GLOBAL_SIS (ModuleSlots[i]) == BLASTER_WEAPON)
-				wsprintf (guns[i], "blaster");
-			else
-				wsprintf (guns[i], "gun");
+		switch (GLOBAL_SIS (ModuleSlots[i])) {
+			case FUEL_TANK:
+				fuel += FUEL_TANK_CAPACITY;
+				break;
+			case HIGHEFF_FUELSYS:
+				fuel += HEFUEL_TANK_CAPACITY;
+				break;
+			case DYNAMO_UNIT:
+				energy_wait -= 2;
+				if (energy_wait < 4)
+					energy_wait = 4;
+				break;
+			case SHIVA_FURNACE:
+				energy_regeneration++;
+				break;
 		}
-		else if (GLOBAL_SIS (ModuleSlots[i]) >= BOMB_MODULE_0
-				&& GLOBAL_SIS (ModuleSlots[i]) <= BOMB_MODULE_5)
-			wsprintf (guns[i], "n/a");
 	}
 
 	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
 		if (GLOBAL_SIS (DriveSlots[i]) == FUSION_THRUSTER)
-			thrust += 8;
+			max_thrust += 2;
 
 	for (i = 0; i < NUM_JET_SLOTS; ++i)
 		if (GLOBAL_SIS (JetSlots[i]) == TURNING_JETS)
-			turning += 2;
+			turn_wait -= 2;
 	/* END collect stats */
 
 	OldContext = SetContext (SpaceContext);
@@ -485,10 +487,6 @@ DrawFlagshipStats (void)
 			BUILD_COLOR_RGBA (0x00, 0x00, 0xC0, 0xFF),
 			BUILD_COLOR_RGBA (0x60, 0x6C, 0xFC, 0xFF));
 
-	/* should we pull these strings out of a resource file, to make the
-	   inevitable "let's translate it into Suomi, Klingon and Esperanto"
-	   project easier? */
-
 	wsprintf (buf, "nose:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
@@ -505,16 +503,16 @@ DrawFlagshipStats (void)
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_LEFT;
 
-	wsprintf (buf, "%-7.7s", guns[15]);
+	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", guns[14]);
+	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[14])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", guns[13]);
+	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[13])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", guns[0]);
+	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[0])));
 	font_DrawText (&t);
 
 	t.baseline.x = r.extent.width - 25;
@@ -540,13 +538,13 @@ DrawFlagshipStats (void)
 	t.baseline.x = r.extent.width - 2;
 	t.baseline.y = r.corner.y + leading + 3;
 
-	wsprintf (buf, "%4lu", thrust);
+	wsprintf (buf, "%4u", max_thrust * 4);
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%4lu", turning);
+	wsprintf (buf, "%4u", 1 + TURN_WAIT - turn_wait);
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%4lu", dynamo);
+	wsprintf (buf, "%4u", 240 * energy_regeneration / energy_wait);
 	font_DrawText (&t);
 	t.baseline.y += leading;
 	wsprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
@@ -556,8 +554,27 @@ DrawFlagshipStats (void)
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);
 	SetContext (OldContext);
+}
 
-	return;
+static const UNICODE *
+describeWeapon (BYTE moduleType) {
+	switch (moduleType) {
+		case GUN_WEAPON:
+			return "gun";
+		case BLASTER_WEAPON:
+			return "blaster";
+		case CANNON_WEAPON:
+			return "cannon";
+		case BOMB_MODULE_0:
+		case BOMB_MODULE_1:
+		case BOMB_MODULE_2:
+		case BOMB_MODULE_3:
+		case BOMB_MODULE_4:
+		case BOMB_MODULE_5:
+			return "n/a";
+		default:
+			return "none";
+	}
 }
 
 void

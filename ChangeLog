@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Shipyard "Combat Energy" changed to reflect the recharge rate (bug #522).
+  Also, some cleanups. Thanks and apologies to Nic.
 - Added lots of debugging functions, SvdB
 - Cleaned up use of the DEBUG define, SvdB
 - Talking Pet .txt file corrected to match the .ogg files,
