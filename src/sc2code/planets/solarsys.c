@@ -142,10 +142,7 @@ LoadIPData (void)
 		OrbitalFrame = CaptureDrawable (
 				LoadGraphic (ORBPLAN_MASK_PMAP_ANIM)
 				);
-		SunFrame = SetAbsFrameIndex (
-				CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM)),
-				STAR_TYPE (CurStarDescPtr->Type)
-				);
+		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
 		SpaceMusic = LoadMusicInstance (IP_MUSIC);
 	}
@@ -186,6 +183,13 @@ LoadSolarSys (void)
 	old_seed = SeedRandom (
 			MAKE_DWORD (CurStarDescPtr->star_pt.x,
 			CurStarDescPtr->star_pt.y)
+			);
+
+	/* 2002-12-20 = fOSSiL = Star size fix
+	 * set the frame index for the star size
+	 */
+	SunFrame = SetAbsFrameIndex (SunFrame,
+			STAR_TYPE (CurStarDescPtr->Type)
 			);
 
 	pCurDesc = &pSolarSysState->SunDesc[0];
@@ -1700,10 +1704,21 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 	{
 		for (;;)
 		{
+			COUNT color_index;
+
 			pCurDesc = &pSolarSysState->PlanetDesc[index];
+			/* 2002-12-20 by fOSSiL = Star color fix
+			 * draw the star using OrbitalCMap
+			 */
+			if (pCurDesc == &pSolarSysState->SunDesc[0])
+				color_index = STAR_COLOR (CurStarDescPtr->Type);
+			else
+				color_index = PLANCOLOR (PlanData[
+						pCurDesc->data_index & ~PLANET_SHIELDED
+						].Type);
+
 			SetColorMap (GetColorMapAddress (
-					SetAbsColorMapIndex (OrbitalCMap,
-					PLANCOLOR (PlanData[pCurDesc->data_index & ~PLANET_SHIELDED].Type ))
+					SetAbsColorMapIndex (OrbitalCMap, color_index)
 					));
 			DrawStamp (&pCurDesc->image);
 
