@@ -17,7 +17,7 @@
 #ifndef _COMM_H
 #define _COMM_H
 
-void init_xform_control (void);
-
+void init_communication (void);
+void uninit_communication (void);
 #endif  /* _COMM_H */
 

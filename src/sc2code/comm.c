@@ -101,6 +101,7 @@ enum
 	WAIT_SUBTITLE,
 };
 static int subtitle_state = DONE_SUBTITLE;
+static Mutex subtitle_mutex;
 
 /* _count_lines - mostly stolen from add_text, just sees how many lines
                   a given input string would take to display given the
@@ -470,6 +471,20 @@ xform_complete (void)
 		}
 	}
 	ClearSemaphore (XFormControl.XFormSem);
+}
+
+void
+init_communication (void)
+{
+	subtitle_mutex = CreateMutex ();
+	init_xform_control ();
+}
+
+void
+uninit_communication (void)
+{
+	DestroyMutex (subtitle_mutex);
+	uninit_xform_control ();
 }
 
 static BOOLEAN ColorChange;
@@ -1148,6 +1163,15 @@ int ambient_anim_task(void* data)
 		{
 			CONTEXT OldContext;
 			BOOLEAN CheckSub = 0;
+			BOOLEAN ClearSub;
+			int sub_state;
+
+			LockMutex (subtitle_mutex);
+			ClearSub = ClearSubtitle;
+			sub_state = subtitle_state;
+			ClearSubtitle = FALSE;
+			UnlockMutex (subtitle_mutex);
+
 
 			OldContext = SetContext (TaskContext);
 
@@ -1159,15 +1183,15 @@ int ambient_anim_task(void* data)
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				ColorChange = FALSE;
-				ClearSubtitle = FALSE;
+				ClearSub = FALSE;
 				CheckSub = 1;
 			}
-			if (Change || ClearSubtitle)
+			if (Change || ClearSub)
 			{
 				STAMP s;
 				s.origin.x = -SAFE_X;
 				s.origin.y = 0;
-				if (ClearSubtitle)
+				if (ClearSub)
 				{
 					s.frame = CommFrame;
 					DrawStamp (&s);
@@ -1175,14 +1199,14 @@ int ambient_anim_task(void* data)
 				i = CommData.NumAnimations;
 				while (i--)
 				{
-					if ((ClearSubtitle || FrameChanged[i]))
+					if ((ClearSub || FrameChanged[i]))
 					{
 						s.frame = AnimFrame[i];
 						DrawStamp (&s);
 						FrameChanged[i] = 0;
 					}
 				}
-				if (ClearSubtitle && TransitionFrame)
+				if (ClearSub && TransitionFrame)
 				{
 					s.frame = TransitionFrame;
 					DrawStamp (&s);
@@ -1199,12 +1223,11 @@ int ambient_anim_task(void* data)
 					DrawStamp (&s);
 					TalkFrameChanged = FALSE;
 				}
-				ClearSubtitle = FALSE;
 				Change = FALSE;
 				CheckSub = 1;
 			}
 
-			if (CheckSub && subtitle_state >= SPACE_SUBTITLE)
+			if (CheckSub && sub_state >= SPACE_SUBTITLE)
 			{
 				TEXT t;
 
@@ -2040,8 +2063,13 @@ int
 do_subtitles (UNICODE *pStr)
 {
 	static UNICODE *last_page = NULL;
+	LockMutex (subtitle_mutex);
 	if (pStr == 0)
-		return (subtitle_state = DONE_SUBTITLE);
+	{
+		subtitle_state = DONE_SUBTITLE;
+		UnlockMutex (subtitle_mutex);
+		return (subtitle_state);
+	}
 	else if (pStr == (void *)~0)
 	{
 		subtitle_state = WAIT_SUBTITLE;
@@ -2049,7 +2077,10 @@ do_subtitles (UNICODE *pStr)
 	else
 	{
 		if (last_page == pStr)
+		{
+			UnlockMutex (subtitle_mutex);
 			return (subtitle_state);
+		}
 		subtitle_state = READ_SUBTITLE;
 		ClearSubtitle = TRUE;
 //		fprintf (stderr, "changed page to: %d\n", cur_page);
@@ -2061,7 +2092,6 @@ do_subtitles (UNICODE *pStr)
 		case READ_SUBTITLE:
 		{
 			TEXT t;
-			CONTEXT OldContext;
 			
 			if (optSubtitles)
 			{
@@ -2072,10 +2102,6 @@ do_subtitles (UNICODE *pStr)
 				CommData.AlienTextTemplate.pStr = "";
 			}
 			t = CommData.AlienTextTemplate;
-
-			OldContext = SetContext (TaskContext);
-			add_text (1, &t);
-			SetContext (OldContext);
 
 			CommData.AlienTextTemplate.CharCount = t.pStr - CommData.AlienTextTemplate.pStr;
 			subtitle_state = WAIT_SUBTITLE;
@@ -2089,6 +2115,7 @@ do_subtitles (UNICODE *pStr)
 		case DONE_SUBTITLE:
 			break;
 	}
+	UnlockMutex (subtitle_mutex);
 
 	return (subtitle_state);
 }

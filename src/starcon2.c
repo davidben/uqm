@@ -317,7 +317,7 @@ main (int argc, char *argv[])
 
 	GraphicsSem = CreateSemaphore (1, "Graphics");
 	RenderingCond = CreateCondVar ();
-	init_xform_control ();
+	init_communication ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	TFB_SetGamma (gamma);
