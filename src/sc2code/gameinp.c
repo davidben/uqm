@@ -55,30 +55,12 @@ volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 static void
 _clear_menu_state (void)
 {
-	PulsedInputState.key[KEY_MENU_UP]        = 0;
-	PulsedInputState.key[KEY_MENU_DOWN]      = 0;
-	PulsedInputState.key[KEY_MENU_LEFT]      = 0;
-	PulsedInputState.key[KEY_MENU_RIGHT]     = 0;
-	PulsedInputState.key[KEY_MENU_SELECT]    = 0;
-	PulsedInputState.key[KEY_MENU_CANCEL]    = 0;
-	PulsedInputState.key[KEY_MENU_SPECIAL]   = 0;
-	PulsedInputState.key[KEY_MENU_PAGE_UP]   = 0;
-	PulsedInputState.key[KEY_MENU_PAGE_DOWN] = 0;
-	PulsedInputState.key[KEY_MENU_ZOOM_IN]   = 0;
-	PulsedInputState.key[KEY_MENU_ZOOM_OUT]  = 0;
-	PulsedInputState.key[KEY_MENU_DELETE]       = 0;
-	CachedInputState.key[KEY_MENU_UP]        = 0;
-	CachedInputState.key[KEY_MENU_DOWN]      = 0;
-	CachedInputState.key[KEY_MENU_LEFT]      = 0;
-	CachedInputState.key[KEY_MENU_RIGHT]     = 0;
-	CachedInputState.key[KEY_MENU_SELECT]    = 0;
-	CachedInputState.key[KEY_MENU_CANCEL]    = 0;
-	CachedInputState.key[KEY_MENU_SPECIAL]   = 0;
-	CachedInputState.key[KEY_MENU_PAGE_UP]   = 0;
-	CachedInputState.key[KEY_MENU_PAGE_DOWN] = 0;
-	CachedInputState.key[KEY_MENU_ZOOM_IN]   = 0;
-	CachedInputState.key[KEY_MENU_ZOOM_OUT]  = 0;
-	CachedInputState.key[KEY_MENU_DELETE]       = 0;
+	int i;
+	for (i = 0; i < NUM_KEYS; i++)
+	{
+		PulsedInputState.key[i] = 0;
+		CachedInputState.key[i] = 0;
+	}
 	CachedGestalt = FALSE;
 }
 
@@ -86,32 +68,14 @@ void
 ResetKeyRepeat (void)
 {
 	DWORD initTime = GetTimeCounter ();
-	RepeatDelays.key[KEY_MENU_UP]        = _max_accel;
-	RepeatDelays.key[KEY_MENU_DOWN]      = _max_accel;
-	RepeatDelays.key[KEY_MENU_LEFT]      = _max_accel;
-	RepeatDelays.key[KEY_MENU_RIGHT]     = _max_accel;
-	RepeatDelays.key[KEY_MENU_SELECT]    = _max_accel;
-	RepeatDelays.key[KEY_MENU_CANCEL]    = _max_accel;
-	RepeatDelays.key[KEY_MENU_SPECIAL]   = _max_accel;
-	RepeatDelays.key[KEY_MENU_PAGE_UP]   = _max_accel;
-	RepeatDelays.key[KEY_MENU_PAGE_DOWN] = _max_accel;
-	RepeatDelays.key[KEY_MENU_ZOOM_IN]   = _max_accel;
-	RepeatDelays.key[KEY_MENU_ZOOM_OUT]  = _max_accel;
-	RepeatDelays.key[KEY_MENU_DELETE]       = _max_accel;
-	GestaltRepeatDelay     = _max_accel;
-	Times.key[KEY_MENU_UP]        = initTime;
-	Times.key[KEY_MENU_DOWN]      = initTime;
-	Times.key[KEY_MENU_LEFT]      = initTime;
-	Times.key[KEY_MENU_RIGHT]     = initTime;
-	Times.key[KEY_MENU_SELECT]    = initTime;
-	Times.key[KEY_MENU_CANCEL]    = initTime;
-	Times.key[KEY_MENU_SPECIAL]   = initTime;
-	Times.key[KEY_MENU_PAGE_UP]   = initTime;
-	Times.key[KEY_MENU_PAGE_DOWN] = initTime;
-	Times.key[KEY_MENU_ZOOM_IN]   = initTime;
-	Times.key[KEY_MENU_ZOOM_OUT]  = initTime;
-	Times.key[KEY_MENU_DELETE]       = initTime;
-	GestaltTime     = initTime;
+	int i;
+	for (i = 0; i < NUM_KEYS; i++)
+	{
+		RepeatDelays.key[i] = _max_accel;
+		Times.key[i] = initTime;
+	}
+	GestaltRepeatDelay = _max_accel;
+	GestaltTime = initTime;
 }
 
 static void
@@ -145,24 +109,32 @@ static void
 _check_gestalt (DWORD NewTime)
 {
 	BOOLEAN CurrentGestalt;
+	int i;
 	OldGestalt = CachedGestalt;
-	CachedGestalt = ImmediateInputState.key[KEY_MENU_UP] || ImmediateInputState.key[KEY_MENU_DOWN] || ImmediateInputState.key[KEY_MENU_LEFT] || ImmediateInputState.key[KEY_MENU_RIGHT];
-	CurrentGestalt = PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN] || PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT];
+
+	CachedGestalt = 0;
+	CurrentGestalt = 0;
+	for (i = 0; i < NUM_KEYS; i++)
+	{
+		CachedGestalt |= ImmediateInputState.key[i];
+		CurrentGestalt |= PulsedInputState.key[i];
+	}
+
 	if (OldGestalt && CachedGestalt)
 	{
 		if (NewTime - GestaltTime < GestaltRepeatDelay)
 		{
-			PulsedInputState.key[KEY_MENU_UP] = 0;
-			PulsedInputState.key[KEY_MENU_DOWN] = 0;
-			PulsedInputState.key[KEY_MENU_LEFT] = 0;
-			PulsedInputState.key[KEY_MENU_RIGHT] = 0;
+			for (i = 0; i < NUM_KEYS; i++)
+			{
+				PulsedInputState.key[i] = 0;
+			}
 		}
 		else
 		{
-			PulsedInputState.key[KEY_MENU_UP] = CachedInputState.key[KEY_MENU_UP];
-			PulsedInputState.key[KEY_MENU_DOWN] = CachedInputState.key[KEY_MENU_DOWN];
-			PulsedInputState.key[KEY_MENU_LEFT] = CachedInputState.key[KEY_MENU_LEFT];
-			PulsedInputState.key[KEY_MENU_RIGHT] = CachedInputState.key[KEY_MENU_RIGHT];
+			for (i = 0; i < NUM_KEYS; i++)
+			{
+				PulsedInputState.key[i] = CachedInputState.key[i];
+			}
 			if (GestaltRepeatDelay > _min_accel)
 				GestaltRepeatDelay -= _step_accel;
 			if (GestaltRepeatDelay < _min_accel)
@@ -172,10 +144,10 @@ _check_gestalt (DWORD NewTime)
 	}
 	else
 	{
-		PulsedInputState.key[KEY_MENU_UP] = CachedInputState.key[KEY_MENU_UP];
-		PulsedInputState.key[KEY_MENU_DOWN] = CachedInputState.key[KEY_MENU_DOWN];
-		PulsedInputState.key[KEY_MENU_LEFT] = CachedInputState.key[KEY_MENU_LEFT];
-		PulsedInputState.key[KEY_MENU_RIGHT] = CachedInputState.key[KEY_MENU_RIGHT];
+		for (i = 0; i < NUM_KEYS; i++)
+		{
+			PulsedInputState.key[i] = CachedInputState.key[i];
+		}
 		GestaltTime = NewTime;
 		GestaltRepeatDelay = _max_accel;
 	}
@@ -208,19 +180,12 @@ UpdateInputState (void)
 	}
 	else
 	{
-		_check_for_pulse(&PulsedInputState.key[KEY_MENU_UP], &CachedInputState.key[KEY_MENU_UP], &OldInputState.key[KEY_MENU_UP], &RepeatDelays.key[KEY_MENU_UP], &NewTime, &Times.key[KEY_MENU_UP]);
-		_check_for_pulse(&PulsedInputState.key[KEY_MENU_DOWN], &CachedInputState.key[KEY_MENU_DOWN], &OldInputState.key[KEY_MENU_DOWN], &RepeatDelays.key[KEY_MENU_DOWN], &NewTime, &Times.key[KEY_MENU_DOWN]);
-		_check_for_pulse(&PulsedInputState.key[KEY_MENU_LEFT], &CachedInputState.key[KEY_MENU_LEFT], &OldInputState.key[KEY_MENU_LEFT], &RepeatDelays.key[KEY_MENU_LEFT], &NewTime, &Times.key[KEY_MENU_LEFT]);
-		_check_for_pulse(&PulsedInputState.key[KEY_MENU_RIGHT], &CachedInputState.key[KEY_MENU_RIGHT], &OldInputState.key[KEY_MENU_RIGHT], &RepeatDelays.key[KEY_MENU_RIGHT], &NewTime, &Times.key[KEY_MENU_RIGHT]);
+		int i;
+		for (i = 0; i < NUM_KEYS; i++)
+		{
+			_check_for_pulse(&PulsedInputState.key[i], &CachedInputState.key[i], &OldInputState.key[i], &RepeatDelays.key[i], &NewTime, &Times.key[i]);
+		}
 	}
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_SELECT], &CachedInputState.key[KEY_MENU_SELECT], &OldInputState.key[KEY_MENU_SELECT], &RepeatDelays.key[KEY_MENU_SELECT], &NewTime, &Times.key[KEY_MENU_SELECT]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_CANCEL], &CachedInputState.key[KEY_MENU_CANCEL], &OldInputState.key[KEY_MENU_CANCEL], &RepeatDelays.key[KEY_MENU_CANCEL], &NewTime, &Times.key[KEY_MENU_CANCEL]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_SPECIAL], &CachedInputState.key[KEY_MENU_SPECIAL], &OldInputState.key[KEY_MENU_SPECIAL], &RepeatDelays.key[KEY_MENU_SPECIAL], &NewTime, &Times.key[KEY_MENU_SPECIAL]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_PAGE_UP], &CachedInputState.key[KEY_MENU_PAGE_UP], &OldInputState.key[KEY_MENU_PAGE_UP], &RepeatDelays.key[KEY_MENU_PAGE_UP], &NewTime, &Times.key[KEY_MENU_PAGE_UP]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_PAGE_DOWN], &CachedInputState.key[KEY_MENU_PAGE_DOWN], &OldInputState.key[KEY_MENU_PAGE_DOWN], &RepeatDelays.key[KEY_MENU_PAGE_DOWN], &NewTime, &Times.key[KEY_MENU_PAGE_DOWN]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_ZOOM_IN], &CachedInputState.key[KEY_MENU_ZOOM_IN], &OldInputState.key[KEY_MENU_ZOOM_IN], &RepeatDelays.key[KEY_MENU_ZOOM_IN], &NewTime, &Times.key[KEY_MENU_ZOOM_IN]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_ZOOM_OUT], &CachedInputState.key[KEY_MENU_ZOOM_OUT], &OldInputState.key[KEY_MENU_ZOOM_OUT], &RepeatDelays.key[KEY_MENU_ZOOM_OUT], &NewTime, &Times.key[KEY_MENU_ZOOM_OUT]);
-	_check_for_pulse(&PulsedInputState.key[KEY_MENU_DELETE], &CachedInputState.key[KEY_MENU_DELETE], &OldInputState.key[KEY_MENU_DELETE], &RepeatDelays.key[KEY_MENU_DELETE], &NewTime, &Times.key[KEY_MENU_DELETE]);
 
 	if (CurrentInputState.key[KEY_PAUSE])
 		GamePaused = TRUE;
@@ -383,37 +348,15 @@ p2_combat_summary (void)
 BOOLEAN
 AnyButtonPress (BOOLEAN CheckSpecial)
 {
+	int i;
 	(void) CheckSpecial;   // Ignored
 	UpdateInputState ();
-	return CurrentInputState.key[KEY_P1_THRUST]
-	     ||CurrentInputState.key[KEY_P1_LEFT]  
-	     ||CurrentInputState.key[KEY_P1_RIGHT] 
-	     ||CurrentInputState.key[KEY_P1_DOWN]
-	     ||CurrentInputState.key[KEY_P1_WEAPON]
-	     ||CurrentInputState.key[KEY_P1_SPECIAL]
-	     ||CurrentInputState.key[KEY_P1_ESCAPE]
-	     ||CurrentInputState.key[KEY_P2_THRUST]
-	     ||CurrentInputState.key[KEY_P2_LEFT]  
-	     ||CurrentInputState.key[KEY_P2_RIGHT] 
-	     ||CurrentInputState.key[KEY_P2_DOWN]
-	     ||CurrentInputState.key[KEY_P2_WEAPON]
-	     ||CurrentInputState.key[KEY_P2_SPECIAL]
-	     ||CurrentInputState.key[KEY_LANDER_THRUST]
-	     ||CurrentInputState.key[KEY_LANDER_LEFT]  
-	     ||CurrentInputState.key[KEY_LANDER_RIGHT] 
-	     ||CurrentInputState.key[KEY_LANDER_WEAPON]
-	     ||CurrentInputState.key[KEY_LANDER_ESCAPE]
-	     ||PulsedInputState.key[KEY_MENU_UP]
-	     ||PulsedInputState.key[KEY_MENU_DOWN]
-	     ||PulsedInputState.key[KEY_MENU_LEFT]
-	     ||PulsedInputState.key[KEY_MENU_RIGHT]
-	     ||PulsedInputState.key[KEY_MENU_PAGE_UP]
-	     ||PulsedInputState.key[KEY_MENU_PAGE_DOWN]
-	     ||PulsedInputState.key[KEY_MENU_ZOOM_IN]
-	     ||PulsedInputState.key[KEY_MENU_ZOOM_OUT]
-	     ||PulsedInputState.key[KEY_MENU_SELECT]
-	     ||PulsedInputState.key[KEY_MENU_CANCEL]
-	     ||PulsedInputState.key[KEY_MENU_SPECIAL];
+	for (i = 0; i < NUM_KEYS; i++)
+	{
+		if (CurrentInputState.key[i])
+			return TRUE;
+	}
+	return FALSE;
 }
 
 BOOLEAN
