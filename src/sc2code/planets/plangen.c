@@ -24,6 +24,9 @@
 #define PROFILE  1
 #define ROTATION_TIME 12
 
+// The initial size of the planet when zooming.  MUST BE ODD
+#define PLANET_INIT_ZOOM_SIZE 3
+
 // define USE_ALPHA_SHIELD to use an aloha overlay instead of
 // an additive overlay for the shield effect
 #undef USE_ALPHA_SHIELD
@@ -37,7 +40,7 @@ void SetPlanetTilt (int da);
 
 void RepairBackRect (PRECT pRect);
 
-int RotatePlanet (int x, int angle, int dx, int dy,int zoom);
+int RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from);
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
@@ -50,6 +53,9 @@ void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0, int x, int y);
 void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int num, int denom);
 
 FRAME scale16xRandomizeFrame(FRAME FramePtr);
+
+COUNT PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from);
+
 
 DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
@@ -462,6 +468,30 @@ SetPlanetTilt (int angle)
 			}
 		}
 	}
+}
+
+//init_zoom_array
+// evaluate the function 5/6*(1-e^(-x/14)) to get a decelerating zoom
+// on entering planet orbit.  This gives is nearly equivalent to what
+// the 3DO does.
+#define ZOOM_TIME (1.13)
+#define ZOOM_FACT1 (6.0 / 5)
+#define ZOOM_FACT2 (14.0 / 25)
+COUNT
+init_zoom_array (COUNT *zoom_arr)
+{
+	float frames_per_sec;
+	int num_frames, i;
+
+	frames_per_sec = (float)MAP_WIDTH / ROTATION_TIME;
+	num_frames = (int)((frames_per_sec * ZOOM_TIME)  + 0.5);
+	for (i = 0; i < num_frames; i++)
+	{
+		zoom_arr[i] = (COUNT) (MAP_HEIGHT * ZOOM_FACT1 * 
+				(1 - exp (-(i + 1) / (ZOOM_FACT2 * num_frames))));
+	}
+	zoom_arr[i] = MAP_HEIGHT;
+	return i;
 }
 
 //CreateShieldMask
@@ -1335,9 +1365,13 @@ int
 rotate_planet_task (void *data)
 {
 	SIZE i;
+	COORD init_x;
 	DWORD TimeIn;
 	PSOLARSYS_STATE pSS;
 	BOOLEAN repair, zooming;
+	UBYTE zoom_from;
+	COUNT zoom_arr[50];
+	COUNT zoom_amt, frame_num = 0, zoom_frames;
 	int angle=0;
 
 	Task task = (Task) data;
@@ -1354,16 +1388,23 @@ rotate_planet_task (void *data)
 //	angle=pSS->SysInfo.PlanetInfo.AxialTilt;
 			
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
+	init_x = (i == 1) ? (0) : (MAP_WIDTH - 1);
+	// Render the first planet frame
+	RenderLevelMasks (init_x);
+	pSolarSysState->isPFADefined[init_x] = 1;
+
+	zoom_from = (UBYTE)TFB_Random () & 0x03;
+	zoom_frames = init_zoom_array (zoom_arr);
+	PlanetZoomOrbit (init_x, zoom_arr[frame_num++], zoom_from);
+	zoom_amt = zoom_arr[frame_num];
+
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BYTE view_index;
 		COORD x;
 
-		if (i > 0)
-			x = 0;
-		else
-			x = MAP_WIDTH - 1;
+		x = init_x;
 		view_index = MAP_WIDTH;
 		do
 		{
@@ -1383,18 +1424,36 @@ rotate_planet_task (void *data)
 				if (((PSOLARSYS_STATE volatile)pSS)->PauseRotate == 2)
 					pSS->PauseRotate = 1;
 
-				repair = RotatePlanet (x, angle, SIS_SCREEN_WIDTH >> 1,
-						(148 - SIS_ORG_Y) >> 1, zooming
+				repair = RotatePlanet (x, SIS_SCREEN_WIDTH >> 1,
+						(148 - SIS_ORG_Y) >> 1, zoom_amt, zoom_from
 						);
 
 				if (!repair && zooming)
 				{
 					zooming = FALSE;
+					zoom_amt = 0;
 					++pSS->MenuState.Initialized;
 				}
 				x += i;
 			}
 			ClearSemaphore (GraphicsSem);
+			// If this frame hasn't been generted, generate it
+			if (! pSolarSysState->isPFADefined[x]) {
+				RenderLevelMasks (x);
+				pSolarSysState->isPFADefined[x] = 1;
+			}
+			if (zooming)
+			{
+				PlanetZoomOrbit (x, zoom_arr[frame_num++], zoom_from);
+				if (frame_num > zoom_frames)
+				{
+					fprintf (stderr, "rotate_planet_task() : zoom frame out of bounds!\n");
+					frame_num = zoom_frames;
+				}
+				zoom_amt = zoom_arr[frame_num];
+			}
+
+
 			SleepThreadUntil (TimeIn + (ONE_SECOND * ROTATION_TIME) / (MAP_WIDTH));
 //			SleepThreadUntil (TimeIn + (ONE_SECOND * 5 / (MAP_WIDTH-32)));
 			TimeIn = GetTimeCounter ();

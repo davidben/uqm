@@ -20,6 +20,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 
+#include <math.h>
 // define USE_ADDITIVE_SCAN_BLIT to use additive blittting
 // instead of transparency for the planet scans.
 // It still doesn't look right though (it is too bright)
@@ -45,76 +46,70 @@ void RepairBackRect (PRECT pRect);
 // This will take care of zooming into a planet on orbit, generating the planet frames
 // And applying the shield.
 
-// The initial size of the planet when zooming.  MUST BE ODD
-#define PLANET_INIT_ZOOM_SIZE 9
 // The speed to zoom in.
 #define PLANET_ZOOM_SPEED 2
 
-int
-RotatePlanet (int x, int da, int dx, int dy, int zoom)
+void
+PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from)
 {
-	STAMP s;
 	FRAME pFrame[2];
 	COUNT i, num_frames;
-	static COUNT scale_amt = PLANET_INIT_ZOOM_SIZE;
-	static UBYTE zoom_from = 0;
-	RECT r,  *rp = NULL;
-	CONTEXT OldContext;
+	COUNT scale_amt;
 
-	(void)da; // ignored
-
-	// If this frame hasn't been generted, generate it
-	if (! pSolarSysState->isPFADefined[x]) {
-		RenderLevelMasks (x);
-		pSolarSysState->isPFADefined[x] = 1;
-	}
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
 	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
 	if (num_frames == 2)
 		pFrame[1] = pSolarSysState->ShieldFrame;
-	if (zoom)
+	//  we're zooming in, take care of scaling the frames
+	for (i=0; i < num_frames; i++)
+	{
+		COUNT frameh, this_scale;
+		if (pSolarSysState->ScaleFrame[i])
+		{
+			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
+			pSolarSysState->ScaleFrame[i] = 0;
+		}
+		frameh = GetFrameHeight (pFrame[i]);
+		this_scale = frameh * zoom_amt / MAP_HEIGHT;
+		if (! (this_scale & 0x01))
+			this_scale++;
+		pSolarSysState->ScaleFrame[i] = stretch_frame (
+				pFrame[i], this_scale, this_scale, 0
+				);
+		SetFrameHot (
+				pSolarSysState->ScaleFrame[i], 
+				MAKE_HOT_SPOT ((COORD)((this_scale >> 1) + 1), 
+					(COORD)((this_scale >> 1) + 1)));
+		pFrame[i] = pSolarSysState->ScaleFrame[i];
+	}
+}
+
+int
+RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from)
+{
+	STAMP s;
+	FRAME pFrame[2];
+	COUNT i, num_frames;
+	RECT r,  *rp = NULL;
+	CONTEXT OldContext;
+
+	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
+	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
+	if (num_frames == 2)
+		pFrame[1] = pSolarSysState->ShieldFrame;
+	if (scale_amt)
 	{	
 		r.corner.x = 0;
 		r.corner.y = 0;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
 		rp = &r;
-		if (scale_amt == PLANET_INIT_ZOOM_SIZE)
-			zoom_from |= TFB_Random () & 0x03;
 		//  we're zooming in, take care of scaling the frames
 		for (i=0; i < num_frames; i++)
-		{
-			COUNT frameh, this_scale;
-			if (pSolarSysState->ScaleFrame[i])
-			{
-				DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
-				pSolarSysState->ScaleFrame[i] = 0;
-			}
-			frameh = GetFrameHeight (pFrame[i]);
-			this_scale = frameh * scale_amt / MAP_HEIGHT;
-			if (! (this_scale & 0x01))
-				this_scale++;
-			pSolarSysState->ScaleFrame[i] = stretch_frame (
-					pFrame[i], this_scale, this_scale, 0
-					);
-			SetFrameHot (
-					pSolarSysState->ScaleFrame[i], 
-					MAKE_HOT_SPOT ((this_scale >> 1) + 1, (this_scale >> 1) + 1)
-					);
 			pFrame[i] = pSolarSysState->ScaleFrame[i];
-		}
-		scale_amt += PLANET_ZOOM_SPEED;
 		//Translate the planet so it comes from the bottom right corner
-		if (scale_amt > MAP_HEIGHT) 
-			scale_amt=MAP_HEIGHT;
 		dx += ((zoom_from & 0x01) ? 1 : -1) * dx * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
 		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
-		if (scale_amt == MAP_HEIGHT)
-		{
-			scale_amt = PLANET_INIT_ZOOM_SIZE;
-			zoom = 0;
-			zoom_from = 0;
-		}
 	}
 
 	//SetSemaphore (GraphicsSem);
@@ -144,7 +139,9 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		SetContext (OldContext);
 	}
 	//ClearSemaphore (GraphicsSem);
-	return (zoom);
+	if (scale_amt && scale_amt != MAP_HEIGHT)
+		return 1;
+	return 0;
 }
 
 void
