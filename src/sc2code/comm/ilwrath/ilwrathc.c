@@ -603,8 +603,9 @@ init_ilwrath_comm (void)
 
 	ilwrath_desc.AlienTextTemplate.baseline.x =
 			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	ilwrath_desc.AlienTextTemplate.baseline.y = 64;
+	ilwrath_desc.AlienTextTemplate.baseline.y = 70;
 	ilwrath_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	ilwrath_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	ilwrath_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (GET_GAME_STATE (PROBE_ILWRATH_ENCOUNTER)

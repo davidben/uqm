@@ -883,8 +883,9 @@ init_druuge_comm (void)
 
 	druuge_desc.AlienTextTemplate.baseline.x =
 			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	druuge_desc.AlienTextTemplate.baseline.y = 64;
+	druuge_desc.AlienTextTemplate.baseline.y = 70;
 	druuge_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	druuge_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	druuge_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if ((GET_GAME_STATE (DRUUGE_MANNER) == 0

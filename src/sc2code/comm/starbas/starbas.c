@@ -1929,6 +1929,7 @@ init_starbase_comm ()
 	commander_desc.AlienTextTemplate.baseline.x = 164;
 	commander_desc.AlienTextTemplate.baseline.y = 20;
 	commander_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	commander_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 
 	CurBulletinMask = 0;
 	SET_GAME_STATE (BATTLE_SEGUE, 0);

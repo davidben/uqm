@@ -929,8 +929,9 @@ init_utwig_comm (void)
 
 	utwig_desc.AlienTextTemplate.baseline.x =
 			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	utwig_desc.AlienTextTemplate.baseline.y = 64;
+	utwig_desc.AlienTextTemplate.baseline.y = 70;
 	utwig_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	utwig_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	utwig_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON)

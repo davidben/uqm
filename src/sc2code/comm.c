@@ -101,6 +101,61 @@ enum
 };
 static int subtitle_state = DONE_SUBTITLE;
 
+/* _count_lines - mostly stolen from add_text, just sees how many lines
+                  a given input string would take to display given the
+                  line wrapping information */
+static int _count_lines (PTEXT pText) 
+{
+	COUNT maxchars = (COUNT)~0;
+	UNICODE ch, *pStr;
+	SIZE text_width;
+	int num = 0;
+
+	text_width = CommData.AlienTextWidth;
+	SetContextFont (CommData.AlienFont);
+
+	pStr = pText->pStr;
+
+	do
+	{
+		++num;
+		pText->pStr = pStr;
+		pText->CharCount = 1;
+
+		{
+			BOOLEAN eot;
+			RECT r, old_r;
+			COUNT OldCount;
+
+			GetContextClipRect (&r);
+			eot = FALSE;
+			do
+			{
+				old_r = r;
+				OldCount = pText->CharCount;
+				while (!(eot = (BOOLEAN)(
+						(ch = *++pStr) == '\0'
+						|| ch == '\n'
+						|| ch == '\r'
+						|| (COUNT)(pStr - pText->pStr) >= maxchars
+						)) && ch != ' ')
+					;
+				pText->CharCount = pStr - pText->pStr;
+				TextRect (pText, &r, NULL_PTR);
+			} while (!eot && r.extent.width < text_width);
+
+			if (r.extent.width >= text_width)
+			{
+				pText->CharCount = OldCount;
+				r = old_r;
+			}
+		}
+		pStr = pText->pStr + pText->CharCount;
+	} while ((ch = *pStr++) != '\0' && ch != '\n' && ch != '\r' && maxchars);
+	pText->pStr = pStr;
+
+	return (num);
+}
 
 static COORD
 add_text (int status, PTEXT pTextIn)
@@ -111,6 +166,7 @@ add_text (int status, PTEXT pTextIn)
 	SIZE leading;
 	UNICODE ch, *pStr;
 	SIZE text_width;
+	int num_lines = 0;
 
 	BatchGraphics ();
 
@@ -161,6 +217,15 @@ add_text (int status, PTEXT pTextIn)
 
 	numchars = 0;
 	pStr = pText->pStr;
+
+	if (status > 0 && (CommData.AlienTextTemplate.valign & (VALIGN_MIDDLE|VALIGN_BOTTOM))) {
+		num_lines = _count_lines(pText);
+		if (CommData.AlienTextTemplate.valign == VALIGN_BOTTOM)
+			pText->baseline.y -= (leading * num_lines);
+		else if (CommData.AlienTextTemplate.valign == VALIGN_MIDDLE)
+			pText->baseline.y -= ((leading * num_lines) / 2);
+		if (pText->baseline.y < 0) pText->baseline.y = 0;
+	}
 
 	do
 	{

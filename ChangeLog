@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Added vertical alignment for subtitles (text runs off screen fix)-from Nic
 - Updated infinity text/symbol for RUs - from fOSSiL, Nic
 - Split away DCQ-specific code into its own header file
 - Added correct lander font - from fOSSiL

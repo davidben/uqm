@@ -115,11 +115,19 @@ typedef enum
 	ALIGN_RIGHT
 } TEXT_ALIGN;
 
+typedef enum
+{
+	VALIGN_TOP,
+	VALIGN_MIDDLE,
+	VALIGN_BOTTOM
+} TEXT_VALIGN;
+
 typedef struct text
 {
 	POINT baseline;
 	UNICODE *pStr;
 	TEXT_ALIGN align;
+	TEXT_VALIGN valign;
 	COUNT CharCount;
 } TEXT;
 typedef TEXT *PTEXT;

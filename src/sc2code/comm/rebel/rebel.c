@@ -414,8 +414,9 @@ init_rebel_yehat_comm (void)
 	yehat_desc.uninit_encounter_func = uninit_yehat;
 
 	yehat_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH * 2 / 3;
-	yehat_desc.AlienTextTemplate.baseline.y = 107 * 2 / 3;
+	yehat_desc.AlienTextTemplate.baseline.y = 100;
 	yehat_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	yehat_desc.AlienTextTemplate.valign = VALIGN_BOTTOM;
 	yehat_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) * 2 / 3;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
