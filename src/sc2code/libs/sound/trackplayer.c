@@ -175,8 +175,9 @@ StopTrack ()
 		sound_sample = NULL;
 	}
 	tct = tcur = 0;
+	cur_page = 0;
 	no_voice = 0;
-	do_subtitles (0, (void *)~0, 1);
+	do_subtitles ((void *)~0, (void *)~0, 1);
 }
 
 void 
@@ -328,7 +329,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 		}
 		else
 		{
-			int num_pages, cur_page;
+			int num_pages, page_counter;
 			uint32 time_stamps[50];
 
 			if (no_page_break && tct)
@@ -355,7 +356,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
 
 			startTime = 0;
-			for (cur_page = 0; cur_page <= num_pages; cur_page++)
+			for (page_counter = 0; page_counter <= num_pages; page_counter++)
 			{
 				if (! sound_sample)
 				{
@@ -366,7 +367,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					sound_sample->buffer_tag = HMalloc (sizeof (TFB_SoundTag *) * sound_sample->num_buffers);
 					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
 					TFBSound_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
-					decoder = SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[cur_page]);
+					decoder = SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[page_counter]);
 					sound_sample->read_chain_ptr = create_soundchain (decoder, 0.0);
 					sound_sample->decoder = decoder;
 					first_chain = last_chain = sound_sample->read_chain_ptr;
@@ -375,13 +376,13 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 				else
 				{
 					TFB_SoundDecoder *decoder;
-					decoder =  SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[cur_page]);
+					decoder =  SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[page_counter]);
 					last_chain->next = create_soundchain (decoder, sound_sample->length);
 					last_chain = last_chain->next;
 				}
-				startTime += time_stamps[cur_page];
+				startTime += time_stamps[page_counter];
 			
-				// fprintf (stderr, "page (%d of %d): %d\n",cur_page, num_pages, startTime);
+				// fprintf (stderr, "page (%d of %d): %d\n",page_counter, num_pages, startTime);
 				if (last_chain->decoder)
 				{
 					//fprintf (stderr, "    decoder: %s, rate %d format %x\n",
@@ -393,7 +394,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 					if (! no_page_break)
 					{
 						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
-						last_chain->tag.value = (void *)(((tct - 1) << 8) | cur_page);
+						last_chain->tag.value = (void *)(((tct - 1) << 8) | page_counter);
 					}
 					no_page_break = 0;
 				}

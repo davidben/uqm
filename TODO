@@ -88,7 +88,6 @@ Implementation bugs (low priority):
   - The lander report messages should possibly be modified to use up the entire
     lander pane
 - Voice-over subtitle synchrinzation issues:
-  - alignment seems worse with sdl_mixer than openAL.  Hard to tell for sure
   - Many clips don't match the text/can't be synced well.  A partial list:
 	black031.ogg black041.ogg black044.ogg yehat008.ogg yehat015.ogg
 	yehat021.ogg yehat023.ogg supox002.ogg supox003.ogg supox028.ogg
