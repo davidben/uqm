@@ -26,7 +26,6 @@
 #include "graphics/tfb_draw.h"
 
 int batch_depth = 0;
-static const BOOLEAN pausing_transition = TRUE; // change to FALSE for non-pausing version
 
 
 //Status: Not entirely unimplemented!
@@ -84,36 +83,6 @@ FlushGraphics ()
 	TFB_DrawScreen_WaitForSignal ();
 }
 
-static int
-transition_task_func (void *data)
-{
-	const float DURATION = (31.0f / 60.0f); // in seconds
-	Uint32 last_time = 0, current_time, delta_time, add_amount;
-	Task task = (Task)data;
-
-	TransitionAmount = 0;
-	last_time = SDL_GetTicks ();
-
-	for (;;)
-	{
-		SDL_Delay (10);
-
-		current_time = SDL_GetTicks ();
-		delta_time = current_time - last_time;
-		last_time = current_time;
-		
-		add_amount = (Uint32) ((delta_time / 1000.0f / DURATION) * 255);
-		if (TransitionAmount + add_amount >= 255)
-			break;
-
-		TransitionAmount += add_amount;
-	}
-	
-	TransitionAmount = 255;
-	FinishTask (task);
-	return 0;
-}
-
 void
 SetTransitionSource (PRECT pRect)
 {
@@ -124,13 +93,9 @@ SetTransitionSource (PRECT pRect)
 void
 ScreenTransition (int TransType, PRECT pRect)
 {
-	Task transition_task;
-
-	//fprintf(stderr, "ScreenTransition %d\n", TransType);
+	const float DURATION = (31.0f / 60.0f); // in seconds
+	Uint32 last_time = 0, current_time, delta_time, add_amount;
 	(void) TransType;  /* dodge compiler warning */
-
-	if (TransitionAmount != 255)
-		return;
 
 	if (pRect)
 	{
@@ -153,18 +118,24 @@ ScreenTransition (int TransType, PRECT pRect)
 	}
 #endif
 	
-	if (pausing_transition)
+	TransitionAmount = 0;
+	FlushGraphics ();
+	last_time = SDL_GetTicks ();	
+	for (;;)
 	{
-		TransitionAmount = 0;
-		FlushGraphics ();
-	}
+		SDL_Delay (10);
 
-	transition_task = AssignTask (transition_task_func, 1024, "screen transition");
+		current_time = SDL_GetTicks ();
+		delta_time = current_time - last_time;
+		last_time = current_time;
+		
+		add_amount = (Uint32) ((delta_time / 1000.0f / DURATION) * 255);
+		if (TransitionAmount + add_amount >= 255)
+			break;
 
-	if (pausing_transition)
-	{
-		WaitThread (transition_task->thread, NULL);
+		TransitionAmount += add_amount;
 	}
+	TransitionAmount = 255;
 }
 
 // Status: Ignored
