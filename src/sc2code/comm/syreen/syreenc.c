@@ -312,7 +312,7 @@ AfterAmbush (RESPONSE_REF R)
 	{
 		NPCPhrase (DO_THIS_AFTER_AMBUSH);
 
-		ActivateStarShip (SYREEN_SHIP, 0);
+		DISABLE_PHRASE (what_now_after_ambush);
 	}
 	else if (PLAYER_SAID (R, what_about_you))
 	{
@@ -352,7 +352,7 @@ AfterAmbush (RESPONSE_REF R)
 	{
 		Response (what_about_us, Foreplay);
 	}
-	if (!(ActivateStarShip (SYREEN_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+	if (PHRASE_ENABLED (what_now_after_ambush))
 		Response (what_now_after_ambush, AfterAmbush);
 	if (PHRASE_ENABLED (whats_up_after_ambush))
 		Response (whats_up_after_ambush, AfterAmbush);
@@ -726,6 +726,7 @@ Intro (void)
 		{
 			case 0:
 				NPCPhrase (HELLO_AFTER_AMBUSH_1);
+				ActivateStarShip (SYREEN_SHIP, 0);
 				break;
 			case 1:
 				NPCPhrase (HELLO_AFTER_AMBUSH_2);
