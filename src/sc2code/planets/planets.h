@@ -202,6 +202,7 @@ extern BOOLEAN DoFlagshipCommands (PMENU_STATE pMS);
 extern void ZoomSystem (void);
 extern void LoadSolarSys (void);
 extern void InitLander (BYTE LanderFlags);
+extern BOOLEAN ValidateOrbits (void);
 
 #endif /* _PLANETS_H */
 

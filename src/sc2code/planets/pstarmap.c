@@ -1293,6 +1293,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 								FreePlanet ();
 								SetSemaphore (GraphicsSem);
 								LoadSolarSys ();
+								ValidateOrbits ();
 								ZoomSystem ();
 								ClearSemaphore (GraphicsSem);
 							}

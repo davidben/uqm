@@ -1219,7 +1219,7 @@ DrawInnerSystem (void)
 	ClearSemaphore (GraphicsSem);
 }
 
-static BOOLEAN
+BOOLEAN
 ValidateOrbits (void)
 {
 	BYTE i;
