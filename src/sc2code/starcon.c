@@ -60,7 +60,7 @@ int arilou_gate_task(void* data)
 		ClearSemaphore (GraphicsSem);
 
 		ClearSemaphore (GLOBAL (GameClock.clock_sem));
-		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
+		SleepThreadUntil (TimeIn + (ONE_SECOND / BATTLE_FRAME_RATE));
 		TimeIn = GetTimeCounter ();
 	}
 	FinishTask (task);
