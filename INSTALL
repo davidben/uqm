@@ -33,15 +33,19 @@ SDL-image
 	Homepage: http://www.libsdl.org/projects/SDL_image/
 	Download: http://www.libsdl.org/projects/SDL_image/release/
 
-SDL-mixer
-	A sound mixing library used with SDL.
-	Homepage: http://www.libsdl.org/projects/SDL_mixer/
-	Download: http://www.libsdl.org/projects/SDL_mixer/release/
-
 SDL-sound
-    A sound loader library used with SDL.
+	An audio format decoder library.
 	Homepage: http://www.icculus.org/SDL_sound/
 	Download: http://www.icculus.org/SDL_sound/downloads/
+	Win32 users maybe need to get few updated dll's from: http://www.cc.jyu.fi/~mimakole/sc2/sdl_sound_dlls.zip
+	If compiling this yourself, be sure ogg vorbis and libmikmod (or libmodplug) support is compiled in.
+	
+OpenAL
+	A cross-platform spatialized audio library.
+	Homepage: http://www.openal.org
+	Linux download via CVS: http://opensource.creative.com
+	Win32 SDK download: http://ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
+
 
 If you find these aren't enough, or if you know the names
 of the corresponding RPM etc. packages, please report to

@@ -19,6 +19,7 @@
 #ifdef GFXMODULE_SDL
 
 #include "libs/graphics/sdl/sdl_common.h"
+#include "libs/input/input_common.h"
 
 
 Uint8 KeyboardDown[512];
@@ -47,6 +48,8 @@ TFB_InitInput (int driver, int flags)
 {
 	int i;
 	SDL_Joystick *Joystick1;
+
+	atexit (TFB_UninitInput);
 
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
@@ -84,6 +87,11 @@ TFB_InitInput (int driver, int flags)
 	ControlRightShift = SDLK_RSHIFT;
 
 	return 0;
+}
+
+void
+TFB_UninitInput (void)
+{
 }
 
 void

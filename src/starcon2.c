@@ -61,6 +61,7 @@ main (int argc, char *argv[])
 	int gfxflags = 0;
 	int width = 640, height = 480, bpp = 16;
 	int frequency = 44100;
+	int vol;
 	char contentdir[1000];
 
 	int option_index = 0, c;
@@ -76,6 +77,9 @@ main (int argc, char *argv[])
 		{"tv", 0, NULL, 't'},
 		{"contentdir", 1, NULL, 'c'},
 		{"help", 0, NULL, 'h'},
+		{"musicvol", 1, NULL, 'M'},
+		{"sfxvol", 1, NULL, 'S'},
+		{"speechvol", 1, NULL, 'T'},
 		{0, 0, 0, 0}
 	};
 
@@ -85,7 +89,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "../../content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?h", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?hM:S:T:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -115,6 +119,30 @@ main (int argc, char *argv[])
 			case 'c':
 				sscanf(optarg, "%s", contentdir);
 			break;
+			case 'M':
+				sscanf(optarg, "%d", &vol);
+				if (vol < 0)
+					vol = 0;
+				if (vol > 100)
+					vol = 100;
+				musicVolumeScale = vol / 100.0f;
+			break;
+			case 'S':
+				sscanf(optarg, "%d", &vol);
+				if (vol < 0)
+					vol = 0;
+				if (vol > 100)
+					vol = 100;
+				sfxVolumeScale = vol / 100.0f;
+			break;
+			case 'T':
+				sscanf(optarg, "%d", &vol);
+				if (vol < 0)
+					vol = 0;
+				if (vol > 100)
+					vol = 100;
+				speechVolumeScale = vol / 100.0f;
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -122,7 +150,7 @@ main (int argc, char *argv[])
 				printf("\nThe Ur-Quan Masters\n");
 				printf("Options:\n");
 				printf("  -r, --res=WIDTHxHEIGHT\n");
-				printf("  -d, --bpp=BITSPERPLANE\n");
+				printf("  -d, --bpp=BITSPERPIXEL\n");
 				printf("  -f, --fullscreen\n");
 				printf("  -o, --opengl\n");
 				printf("  -b, --bilinear\n");
@@ -130,6 +158,9 @@ main (int argc, char *argv[])
 				printf("  -p, --fps\n");
 				printf("  -t, --tv\n");
 				printf("  -c, --contentdir=CONTENTDIR\n");
+				printf("  -M, --musicvol=VOLUME (0-100)\n");
+				printf("  -S, --sfxvol=VOLUME (0-100)\n");
+				printf("  -T, --speechvol=VOLUME (0-100)\n");
 				return 0;
 			break;
 		}
@@ -140,11 +171,16 @@ main (int argc, char *argv[])
 	InitThreadSystem ();
 	InitTimeSystem ();
 	InitTaskSystem ();
+
+	_MemorySem = CreateSemaphore (1);
+	GraphicsSem = CreateSemaphore (1);
+	mem_init ();
+
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
 	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, frequency);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
-	TFB_CreateGamePlayThread ();
+	AssignTask (Starcon2Main, 1024, "Starcon2Main");
 
 	for (;;)
 	{
@@ -152,5 +188,5 @@ main (int argc, char *argv[])
 		TFB_FlushGraphics ();
 	}
 
-	return 0;
+	exit(0);
 }

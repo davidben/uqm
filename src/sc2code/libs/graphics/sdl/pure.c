@@ -48,7 +48,6 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
 			//            ggi, aalib
 			// For Windows: directx (default), windib
-	atexit (SDL_Quit);
 
 	fprintf (stderr, "SDL initialized.\n");
 

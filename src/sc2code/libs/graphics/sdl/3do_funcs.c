@@ -35,7 +35,6 @@ InitGraphics (int argc, char* argv[], COUNT KbytesRequired)
 	BOOLEAN ret;
 
 	LoadDisplay (&_pCurDisplay);
-	mem_init ();
 	ActivateDisplay ();
 
 	DrawCommandQueue = TFB_DrawCommandQueue_Create ();
@@ -50,7 +49,7 @@ UninitGraphics ()  // Also probably empty
 {
 	// HFree (DrawCommandQueue);  This is static now!
 
-	mem_uninit ();
+	//mem_uninit ();
 }
 
 

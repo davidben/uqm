@@ -29,5 +29,11 @@ enum
 //#define TFB_SOUNDFLAGS_ETC (1<<0)
 
 int TFB_InitSound (int driver, int flags, int frequency);
+void TFB_UninitSound (void);
+
+extern int musicVolume;
+extern float musicVolumeScale;
+extern float sfxVolumeScale;
+extern float speechVolumeScale;
 
 #endif

@@ -26,48 +26,57 @@
 int 
 TFB_InitSound (int driver, int flags, int frequency)
 {
+	// NOTE: SDL_sound should be compiled without mikmod support
+	//       or potential lockup occurs because both
+	//       SDL_mixer and SDL_sound try to initialize it
+
 	char SoundcardName[256];
 	int audio_rate,audio_channels;
 	Uint16 audio_format;
 	SDL_version compile_version;
 
+	fprintf (stderr, "Initializing SDL audio subsystem.\n");	
 	if ((SDL_InitSubSystem(SDL_INIT_AUDIO)) == -1)
 	{
 		fprintf (stderr, "Couldn't initialize audio subsystem: %s\n", SDL_GetError());
 		exit(-1);
 	}
-
+	fprintf (stderr, "SDL audio subsystem initialized.\n");
+	
+	fprintf (stderr, "Initializing SDL_mixer.\n");
 	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 2048))
 	{
 		fprintf (stderr, "Unable to open audio: %s\n", Mix_GetError());
 		exit (-1);
 	}
-
+	fprintf (stderr, "SDL_mixer initialized.\n");
 	atexit (Mix_CloseAudio);
+	
+	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
+	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
+	fprintf (stderr, "    opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
+			SoundcardName, audio_rate, audio_format & 0xFF,
+			audio_channels > 1 ? "stereo" : "mono", 2048);
+	MIX_VERSION (&compile_version);
+	fprintf (stderr, "    compiled with SDL_mixer version: %d.%d.%d\n",
+			compile_version.major,
+			compile_version.minor,
+			compile_version.patch);
+	fprintf (stderr, "    running with SDL_mixer version: %d.%d.%d\n",
+			Mix_Linked_Version()->major,
+			Mix_Linked_Version()->minor,
+			Mix_Linked_Version()->patch);
 
+	fprintf (stderr, "Initializing SDL_sound.\n");
+	fprintf (stderr, "(NOTE: if this locks up, compile SDL_sound without libmikmod support)\n");
+	fflush (stderr);
 	if (!Sound_Init())
 	{
 		fprintf(stderr, "Sound_Init() failed: %s\n", Sound_GetError());
 		exit (-1);
 	}
+	fprintf (stderr, "SDL_sound initialized.\n");
 	
-	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
-
-	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
-	fprintf (stderr, "Opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
-			SoundcardName, audio_rate, audio_format & 0xFF,
-			audio_channels > 1 ? "stereo" : "mono", 2048);
-
-	MIX_VERSION (&compile_version);
-	fprintf (stderr, "Compiled with SDL_mixer version: %d.%d.%d\n",
-			compile_version.major,
-			compile_version.minor,
-			compile_version.patch);
-	fprintf (stderr, "Running with SDL_mixer version: %d.%d.%d\n",
-			Mix_Linked_Version()->major,
-			Mix_Linked_Version()->minor,
-			Mix_Linked_Version()->patch);
-
 	return 0;
 }
 

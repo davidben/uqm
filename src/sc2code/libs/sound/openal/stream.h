@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,19 +14,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef INPUT_COMMON_H
-#define INPUT_COMMON_H
+/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
+ */
 
-// driver for TFB_InitInput
-enum
-{
-	TFB_INPUTDRIVER_SDL
-};
+#ifndef STREAM_H
+#define STREAM_H
 
-// flags for TFB_InitInput
-//#define TFB_INPUTFLAGS_ETC (1<<0)
+void PlayStream (TFB_SoundSample *sample, ALuint source, BOOLEAN looping);
+void StopStream (ALuint source);
+void PauseStream (ALuint source);
+void ResumeStream (ALuint source);
+BOOLEAN PlayingStream (ALuint source);
+int StreamDecoderTaskFunc (void *data);
 
-int TFB_InitInput (int driver, int flags);
-void TFB_UninitInput (void);
+extern BOOLEAN speech_callback;
+void advance_track (int channel_finished);
 
 #endif

@@ -50,6 +50,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
+	atexit (TFB_UninitGraphics);
+
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
@@ -77,17 +79,10 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
-int
-TFB_CreateGamePlayThread ()
+void
+TFB_UninitGraphics (void)
 {
-	TFB_DEBUG_HALT = 0;
-
-	GraphicsSem = SDL_CreateSemaphore (1);
-	_MemorySem = SDL_CreateSemaphore (1);
-
-	SDL_CreateThread (Starcon2Main, NULL);
-
-	return 0;
+	SDL_Quit ();
 }
 
 void

@@ -31,7 +31,7 @@ int ScreenHeight;
 int ScreenWidthActual;
 int ScreenHeightActual;
 int GraphicsDriver;
-int TFB_DEBUG_HALT;
+int TFB_DEBUG_HALT = 0;
 int BlendNumerator = 4;
 int BlendDenominator = 4;
 

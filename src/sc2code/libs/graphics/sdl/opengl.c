@@ -47,7 +47,6 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
 	fprintf (stderr, "SDL driver used: %s\n", VideoName);
-	atexit (SDL_Quit);
 
 	fprintf (stderr, "SDL initialized.\n");
 	fprintf (stderr, "Initializing Screen.\n");

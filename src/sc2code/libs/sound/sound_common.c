@@ -20,7 +20,10 @@
 #include "libs/sound/sound_common.h"
 #include "libs/tasklib.h"
 
-extern int _music_volume;
+int musicVolume = (MAX_VOLUME >> 1);
+float musicVolumeScale = 1.0f;
+float sfxVolumeScale = 1.0f;
+float speechVolumeScale = 1.0f;
 
 static Task FadeTask;
 static SIZE TTotal;
@@ -33,7 +36,7 @@ fade_task (void *data)
 	DWORD StartTime, CurTime;
 	Task task = (Task) data;
 
-	volume_beg = _music_volume;
+	volume_beg = musicVolume;
 	StartTime = CurTime = GetTimeCounter ();
 	do
 	{
@@ -58,7 +61,7 @@ FadeMusic (BYTE end_vol, SIZE TimeInterval)
 
 	if (FadeTask)
 	{
-		volume_end = _music_volume;
+		volume_end = musicVolume;
 		TTotal = 1;
 		do
 			TaskSwitch ();
