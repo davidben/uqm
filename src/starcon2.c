@@ -69,7 +69,7 @@ main (int argc, char *argv[])
 		{"opengl", 0, NULL, 'o'},
 		{"bilinear", 0, NULL, 'b'},
 		{"fps", 0, NULL, 'p'},
-		{"tv", 0, NULL, 't'},
+		{"scanlines", 0, NULL, 's'},
 		{"contentdir", 1, NULL, 'c'},
 		{"help", 0, NULL, 'h'},
 		{"musicvol", 1, NULL, 'M'},
@@ -85,7 +85,7 @@ main (int argc, char *argv[])
 
 	strcpy (contentdir, "content");
 
-	while ((c = getopt_long(argc, argv, "r:d:fob:ptc:?hM:S:T:emq:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:fob:psc:?hM:S:T:emq:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -106,8 +106,8 @@ main (int argc, char *argv[])
 			case 'p':
 				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
 			break;
-			case 't':
-				gfxflags |= TFB_GFXFLAGS_TVEFFECT;
+			case 's':
+				gfxflags |= TFB_GFXFLAGS_SCANLINES;
 			break;
 			case 'c':
 				sscanf(optarg, "%s", contentdir);
@@ -166,12 +166,12 @@ main (int argc, char *argv[])
 			case 'h':
 				printf("\nOptions:\n");
 				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, others work only with --opengl)\n");
-				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
+				printf("  -d, --bpp=BITSPERPIXEL (default 16, use 24 or 32 for better gfx quality)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off, usage recommended if TNT2 or better gfx card)\n");
 				printf("  -b, --bilinear (default off, only works with --opengl)\n");
 				printf("  -p, --fps (default off)\n");
-				printf("  -t, --tv (default off, only works with --opengl\n");
+				printf("  -s, --scanlines (default off, only works with --opengl\n");
 				printf("  -c, --contentdir=CONTENTDIR\n");
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");

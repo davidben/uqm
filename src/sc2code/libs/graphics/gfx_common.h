@@ -39,7 +39,7 @@ enum
 #define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
 #define TFB_GFXFLAGS_BILINEAR_FILTERING (1<<1)
 #define TFB_GFXFLAGS_SHOWFPS            (1<<2)
-#define TFB_GFXFLAGS_TVEFFECT           (1<<3)
+#define TFB_GFXFLAGS_SCANLINES          (1<<3)
 
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);

@@ -25,7 +25,7 @@ static SDL_Surface *format_conv_surf;
 static int ScreenFilterMode;
 static unsigned int DisplayTexture;
 static unsigned int TransitionTexture;
-static BOOLEAN tveffect;
+static BOOLEAN scanlines;
 static BOOLEAN upload_transitiontexture = FALSE;
 
 
@@ -154,10 +154,10 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	else
 		ScreenFilterMode = GL_NEAREST;
 
-	if (flags & TFB_GFXFLAGS_TVEFFECT)
-		tveffect = TRUE;
+	if (flags & TFB_GFXFLAGS_SCANLINES)
+		scanlines = TRUE;
 	else
-		tveffect = FALSE;
+		scanlines = FALSE;
 
 	glViewport (0, 0, ScreenWidthActual, ScreenHeightActual);
 	glClearColor (0,0,0,0);
@@ -190,16 +190,27 @@ void TFB_GL_UploadTransitionScreen (void)
 }
 
 void
-TFB_GL_TVEffect (void)
+TFB_GL_ScanLines (void)
 {
 	int y;
 
 	glDisable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_DST_COLOR, GL_ONE);
-	glColor3f (0.5, 0.5, 0.5);
+	glBlendFunc (GL_DST_COLOR, GL_ZERO);
+	glColor3f (0.85f, 0.85f, 0.85f);
 
 	for (y = 0; y < ScreenHeightActual; y += 2)
+	{
+		glBegin (GL_LINES);
+		glVertex2i (0, y);
+		glVertex2i (ScreenWidthActual, y);
+		glEnd ();
+	}
+
+	glBlendFunc (GL_DST_COLOR, GL_ONE);
+	glColor3f (0.2f, 0.2f, 0.2f);
+
+	for (y = 1; y < ScreenHeightActual; y += 2)
 	{
 		glBegin (GL_LINES);
 		glVertex2i (0, y);
@@ -317,8 +328,8 @@ TFB_GL_SwapBuffers (void)
 		TFB_GL_DrawQuad ();
 	}
 
-	if (tveffect)
-		TFB_GL_TVEffect ();
+	if (scanlines)
+		TFB_GL_ScanLines ();
 
 	SDL_GL_SwapBuffers ();
 }
