@@ -87,6 +87,7 @@ DoRestart (PMENU_STATE pMS)
 	/* Cancel any presses of the Pause or Exit keys. */
 	GamePaused = FALSE;
 	ExitRequested = FALSE;
+	GameExiting = FALSE;
 
 
 	if (!pMS->Initialized)
