@@ -53,7 +53,6 @@ typedef struct tfb_image
 TFB_Image *TFB_LoadImage (SDL_Surface *img);
 void TFB_FreeImage (TFB_Image *img);
 
-int TFB_ColorMapToRGB (SDL_Color *cmap_rgb);
 void TFB_SwapBuffers ();
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
 

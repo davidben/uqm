@@ -52,7 +52,7 @@ typedef signed int sint32;
 #define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
 #define GET_VAR_PLUT(i) (_varPLUTs + (i) * NUMBER_OF_PLUT_UINT32s)
 
-extern uint32 *_varPLUTs;
+//extern uint32 *_varPLUTs;
 
 #define NUM_THINGS 256
 

@@ -35,19 +35,21 @@
 #define CYCLE_PENDING	(1 << 5)
 #define ENABLE_CYCLE	(1 << 6)
 
-/*enum
+enum
 {
-    FadeAllToWhite = 250,
-    FadeSomeToWhite,
-    FadeAllToBlack,
-    FadeAllToColor,
-    FadeSomeToBlack,
-    FadeSomeToColor
-};*/
+	TFB_COLORMAP_NONE,
+	TFB_COLORMAP_HYPERSPACE,
+	TFB_COLORMAP_QUASISPACE,
+	TFB_COLORMAP_PLANET,
+	TFB_COLORMAP_COMM
+};
 
+extern DWORD* _varPLUTs;
 extern UBYTE _batch_flags;
 
-extern UBYTE *current_colormap;
-extern int current_colormap_size;
+BOOLEAN TFB_HasColorMap ();
+int TFB_GetColorMapType ();
+void TFB_ReleaseColorMap ();
+BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst);
 
 #endif

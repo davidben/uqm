@@ -120,7 +120,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			}
 		}
 
-		DrawCommand->image = (TFB_ImageStruct*) img; //TFB_Image
+		DrawCommand->image = (TFB_ImageStruct*) img;
 		DrawCommand->UsePalette = FALSE;
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
@@ -144,35 +144,21 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		}
 		else
 		{
-			// NOTE: following code for colormaps is experimental			
-			if (img->NormalImg->format->BytesPerPixel == 1)
+			if (TFB_HasColorMap() && img->NormalImg->format->BytesPerPixel == 1)
 			{
-				if (current_colormap && current_colormap_size <= 512)
+				// TODO: this currently uses a hack to avoid corrupting sun colors..
+				//       why sun won't work properly with colormaps, should be traced later
+
+				int type = TFB_GetColorMapType();
+
+				if (type != TFB_COLORMAP_PLANET ||
+					(type == TFB_COLORMAP_PLANET && (img->Palette[255].r != 248 || 
+					img->Palette[255].g != 248 || img->Palette[255].b != 248)))
 				{
-					int i, n;
-					SDL_Color *imgpal;
-					SDL_Color cmap_rgb[256];
-
-					n = TFB_ColorMapToRGB (cmap_rgb);
-					
-					//printf("draw cmap %x, size %d, n %d, imgw %d imgh %d\n",current_colormap, current_colormap_size, n, img->NormalImg->w, img->NormalImg->h);
-
-					imgpal = img->NormalImg->format->palette->colors;
-					for (i = 0; i < 256; ++i)
+					if (TFB_CopyRGBColorMap(DrawCommand->Palette))
 					{
-						DrawCommand->Palette[i].r = imgpal[i].r;
-						DrawCommand->Palette[i].g = imgpal[i].g;
-						DrawCommand->Palette[i].b = imgpal[i].b;
+						DrawCommand->UsePalette = TRUE;
 					}
-
-					for (i = 0; i < n; ++i)
-					{
-						DrawCommand->Palette[252 - i].r = cmap_rgb[n - i - 1].r;
-						DrawCommand->Palette[252 - i].g = cmap_rgb[n - i - 1].g;
-						DrawCommand->Palette[252 - i].b = cmap_rgb[n - i - 1].b;
-					}
-
-					DrawCommand->UsePalette = TRUE;
 				}
 			}
 		}
@@ -209,8 +195,6 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		SDL_mutexV (dst_img->mutex);
 	}
 
-	current_colormap = 0;
-
 	SDL_mutexV (img->mutex);
 }
 
@@ -219,8 +203,6 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
 	int r, g, b;
 	DWORD c32k;
-
-	current_colormap = 0;
 
 	c32k = GetPrimColor (PrimPtr) >> 8; //shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
@@ -295,8 +277,6 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	int r, g, b;
 	DWORD c32k;
 
-	current_colormap = 0;
-
 	c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
 	g = (c32k >> (5 - (8 - 5))) & 0xF8;
@@ -332,8 +312,6 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 static void
 read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 {
-	current_colormap = 0;
-
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) != SCREEN_DRAWABLE
 			|| TYPE_GET (DstFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE
 			|| !(TYPE_GET (GetFrameParentDrawable (DstFramePtr)

@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "coderes.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 
@@ -155,7 +156,7 @@ LoadKernel (int argc, char *argv[])
 		COLORMAP ColorMapTab;
 
 		ColorMapTab = CaptureColorMap (LoadColorMap (STARCON_COLOR_MAP));
-		SetColorMap (GetColorMapAddress (ColorMapTab));
+		SetColorMap (GetColorMapAddress (ColorMapTab), TFB_COLORMAP_NONE);
 		DestroyColorMap (ReleaseColorMap (ColorMapTab));
 	}
 

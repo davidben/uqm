@@ -481,6 +481,8 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	{
 		DWORD TimeOut;
 
+		TimeInterval = 0; // added by Mika
+
 		FlushPLUTXForms ();
 
 		TaskControl.CMapPtr = ColorMapPtr;
@@ -497,7 +499,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 				) == 0
 		)
 		{
-			SetColorMap (ColorMapPtr);
+			SetColorMap (ColorMapPtr, TFB_COLORMAP_COMM);
 			ColorChange = TRUE;
 			TimeOut = GetTimeCounter ();
 		}
@@ -1154,7 +1156,7 @@ AlienTalkSegue (COUNT wait_track)
 
 	if (!pCurInputState->Initialized)
 	{
-		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
+		SetColorMap (GetColorMapAddress (CommData.AlienColorMap), TFB_COLORMAP_COMM);
 		DrawAlienFrame (CommData.AlienFrame, NULL_PTR);
 UpdateSpeechGraphics (TRUE);
 
@@ -1537,6 +1539,7 @@ BatchGraphics ();
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic ((MUSIC_REF)CommData.AlienSong);
+	TFB_ReleaseColorMap ();
 	DestroyColorMap (ReleaseColorMap (CommData.AlienColorMap));
 	DestroyFont (ReleaseFont (CommData.AlienFont));
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));

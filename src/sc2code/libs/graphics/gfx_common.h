@@ -27,7 +27,6 @@
 #include "libs/gfxlib.h"
 #include "libs/vidlib.h"
 #include "libs/misc.h"
-#include "cmap.h"
 
 #define TFB_WINDOW_CAPTION "The Ur-Quan Masters"
 
@@ -239,5 +238,7 @@ extern int ScreenHeightActual;
 extern int GraphicsDriver;
 
 int Starcon2Main (void *);
+
+#include "cmap.h"
 
 #endif

@@ -16,40 +16,124 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "libs/graphics/sdl/sdl_common.h"
 #include "gfx_common.h"
-
 
 static struct
 {
-    COLORMAPPTR	CMapPtr;
-    SIZE	Ticks;
+    COLORMAPPTR CMapPtr;
+    SIZE Ticks;
     union
     {
-	COUNT	NumCycles;
-	TASK	XFormTask;
+		COUNT NumCycles;
+		TASK XFormTask;
     } tc;
 } TaskControl;
 
-
+UBYTE _batch_flags;
 DWORD* _varPLUTs;
 static unsigned int	varPLUTsize = VARPLUTS_SIZE;
-UBYTE _batch_flags;
+
+static BOOLEAN has_colormap = FALSE;
+static TFB_Palette cmap_rgb[256];
+static int cmap_type = 0;
 
 
-UBYTE *current_colormap;
-int current_colormap_size;
+BOOLEAN TFB_HasColorMap ()
+{
+	return has_colormap;
+}
 
+int TFB_GetColorMapType ()
+{
+	return cmap_type;
+}
+
+void TFB_ReleaseColorMap ()
+{
+	//printf("TFB_ReleaseColorMap()\n");
+	has_colormap = FALSE;
+}
+
+void TFB_ColorMapToRGB (UBYTE *colors)
+{
+	DWORD i, k, cval;
+	UBYTE j, r, g, b;
+
+	for (i = 0; i < 32;)
+	{
+		cval = MAKE_DWORD (MAKE_WORD (colors[3], colors[2]), MAKE_WORD (colors[1], colors[0]));
+		colors += 4;
+
+		r = (UBYTE)((cval >> 26) & 0x1f);
+		g = (UBYTE)((cval >> 21) & 0x1f);
+		b = (UBYTE)((cval >> 16) & 0x1f);
+			
+		for (j = 0; j < 8; ++j)
+		{
+			k = ((j << 5) + i);
+
+			cmap_rgb[k].r = r * (j + 1);
+			cmap_rgb[k].g = g * (j + 1);
+			cmap_rgb[k].b = b * (j + 1);
+		}
+
+		++i;
+
+		r = (UBYTE)((cval >> 10) & 0x1f);
+		g = (UBYTE)((cval >> 5) & 0x1f);
+		b = (UBYTE)(cval & 0x1f);
+
+		for (j = 0; j < 8; ++j)
+		{
+			k = ((j << 5) + i);
+			cmap_rgb[k].r = r * (j + 1);
+			cmap_rgb[k].g = g * (j + 1);
+			cmap_rgb[k].b = b * (j + 1);
+		}
+
+		++i;
+	}
+}
+
+BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst)
+{
+	if (cmap_type == TFB_COLORMAP_HYPERSPACE ||
+		cmap_type == TFB_COLORMAP_QUASISPACE)
+	{
+		// TODO: some special colormaps still not implemented
+		return FALSE;
+
+	}
+	else if (cmap_type == TFB_COLORMAP_PLANET)
+	{
+		int i;
+
+		for (i = 0; i < 32; ++i)
+		{
+			dst[251-i].r = cmap_rgb[255-i].r;
+			dst[251-i].g = cmap_rgb[255-i].g;
+			dst[251-i].b = cmap_rgb[255-i].b;
+		}
+	}
+	else 
+	{
+		memcpy(dst, cmap_rgb, sizeof(TFB_Palette) * 256);
+	}
+
+	return TRUE;
+}
 
 // Status: Implemented
 BOOLEAN
 BatchColorMap (COLORMAPPTR ColorMapPtr)
 {
-	return (SetColorMap (ColorMapPtr));
+	return (SetColorMap (ColorMapPtr, TFB_COLORMAP_NONE));
 }
 
-// Status: Partially implemented
+// Status: Implemented
 BOOLEAN
-SetColorMap (COLORMAPPTR map)
+SetColorMap (COLORMAPPTR map, int type)
 {
     int start, end, bytes;
 	UBYTE *colors = (UBYTE*)map;
@@ -75,19 +159,19 @@ SetColorMap (COLORMAPPTR map)
     vp = (UBYTE*)_varPLUTs + (start * PLUT_BYTE_SIZE);
     
 	memcpy (vp, colors, bytes);
+	cmap_type = type;
+	TFB_ColorMapToRGB (vp);
+	has_colormap = TRUE;
 
-	current_colormap = vp;
-	current_colormap_size = bytes;
-
-	//printf("SetColorMap(): vp %x map %x bytes %d\n",vp, map, bytes);
+	//printf("SetColorMap(): vp %x map %x bytes %d, start %d end %d\n",vp, map, bytes, start, end);
 	return TRUE;
 }
 
 void
 _threedo_set_colors (UBYTE *colors, unsigned int indices)
 {
-    int		i, start, end;
-    //unsigned int	*ce;
+    int i, start, end;
+    //unsigned int *ce;
 
     start = (int)LOBYTE (indices);
     end = (int)HIBYTE (indices);
@@ -95,16 +179,16 @@ _threedo_set_colors (UBYTE *colors, unsigned int indices)
     //ce = colorEntries;
     for (i = start; i <= end; i++)
     {
-	UBYTE	r, g, b;
+		UBYTE	r, g, b;
 
-	r = (*colors << 2) | (*colors >> 4);
-	++colors;
-	g = (*colors << 2) | (*colors >> 4);
-	++colors;
-	b = (*colors << 2) | (*colors >> 4);
-	++colors;
+		r = (*colors << 2) | (*colors >> 4);
+		++colors;
+		g = (*colors << 2) | (*colors >> 4);
+		++colors;
+		b = (*colors << 2) | (*colors >> 4);
+		++colors;
 	
-	//*ce++ = MakeCLUTColorEntry (i, r, g, b);
+		//*ce++ = MakeCLUTColorEntry (i, r, g, b);
     }
     
     //ceCt = end - start + 1;
@@ -253,7 +337,6 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 
 	//printf ("Partially implemented function activated: XFormColorMap()\n");
 
-
 	FlushColorXForms ();
 
 	if (ColorMapPtr == (COLORMAPPTR)0)
@@ -278,7 +361,7 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	}
 
 	//if (what == FadeAllToBlack || what == FadeAllToWhite || what == FadeAllToColor)
-		//_threedo_enable_fade ();
+	//_threedo_enable_fade ();
 
 	if ((TaskControl.Ticks = TimeInterval) <= 0
 		|| (TaskControl.tc.XFormTask = AddTask (xform_clut_task, 1024)) == 0)
@@ -289,7 +372,7 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	else
 	{
 		do
-		TaskSwitch ();
+			TaskSwitch ();
 		while (TaskControl.tc.XFormTask);
 
 		TimeOut = GetTimeCounter () + TimeInterval + 1;
@@ -302,11 +385,11 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 void
 FlushColorXForms()
 {
-    if (XForming)
+	//printf ("Partially implemented function activated: FlushColorXForms()\n");
+
+	if (XForming)
 	{
 		XForming = FALSE;
 		TaskSwitch ();
 	}
-
-	//printf ("Partially implemented function activated: FlushColorXForms()\n");
 }

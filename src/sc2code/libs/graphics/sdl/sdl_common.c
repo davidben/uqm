@@ -243,34 +243,6 @@ TFB_FreeImage (TFB_Image *img)
 	}
 }
 
-int TFB_ColorMapToRGB (SDL_Color *cmap_rgb)
-{
-	int i, n;
-	UBYTE *colors;
-	DWORD c;
-
-	colors = current_colormap;
-	n = current_colormap_size / 2;
-	if (n > 256)
-		n = 256;
-	
-	for (i = 0; i < n;)
-	{
-		c = MAKE_DWORD (MAKE_WORD (colors[3], colors[2]), MAKE_WORD (colors[1], colors[0]));
-		colors += 4;
-	
-		cmap_rgb[i].r   = (Uint8)(((c >> 26) & 0x1f) << 3);
-		cmap_rgb[i].g   = (Uint8)(((c >> 21) & 0x1f) << 3);
-		cmap_rgb[i++].b = (Uint8)(((c >> 16) & 0x1f) << 3);
-
-		cmap_rgb[i].r   = (Uint8)(((c >> 10) & 0x1f) << 3);
-		cmap_rgb[i].g   = (Uint8)(((c >> 5 ) & 0x1f) << 3);
-		cmap_rgb[i++].b = (Uint8)(((c >> 0 ) & 0x1f) << 3);
-	}
-
-	return n;
-}
-
 void
 TFB_SwapBuffers ()
 {
@@ -346,7 +318,6 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 	if (ShowFPS)
 		TFB_ComputeFPS ();
-
 
 	while (DrawCommandQueue->Size > 0)
 	{
