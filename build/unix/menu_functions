@@ -287,7 +287,7 @@ EOF
 		fi
 
 		# Check if what the user entered was a number
-		egrep -q "^[0-9]+$" << EOF
+		egrep '^[0-9]+$' << EOF > /dev/null
 $CHOICE
 EOF
 		if [ $? -ne 0 ]; then
@@ -357,10 +357,10 @@ EOF
 				SELECTED="   "
 			fi
 			if menu_have_choice "$MENU" "$OPTION"; then
-				printf "  %*i. %s %s\n" "${#NUM_OPTIONS}" "$I" \
-						"$SELECTED" "$TEMP_TITLE"
+				printf "  %${#NUM_OPTIONS}i. %s %s\n" "$I" "$SELECTED" \
+						"$TEMP_TITLE"
 			else
-				printf "  %-*s  %s (N/A) %s\n" "${#NUM_OPTIONS}" "-" \
+				printf "  %-${#NUM_OPTIONS}s  %s (N/A) %s\n" "-" \
 						"$SELECTED" "$TEMP_TITLE"
 			fi
 		done
@@ -378,7 +378,7 @@ EOF
 		fi
 
 		# Check if what the user entered was a number
-		egrep -q "^[0-9]+$" << EOF
+		egrep '^[0-9]+$' << EOF > /dev/null
 $CHOICE
 EOF
 		if [ $? -ne 0 ]; then

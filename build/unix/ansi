@@ -1,4 +1,4 @@
-ESC=`printf "\x1b"`
+ESC=`printf '\033'`
 ANSI_BOLD="${ESC}[1m"
 ANSI_NORMAL="${ESC}[0m"
 
