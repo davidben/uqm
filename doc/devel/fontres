@@ -31,6 +31,9 @@ position   length  meaning
                    preceeding char and ANDing it with the left mask of a
                    succeeding char. If the result is 0, the Kern amount is
                    subtracted from Char spacing.
+           3       alignment padding: aligns the following char descriptors
+                   on 8-byte boundary.
+
 
 Then for all 96 chars:
 Char descriptors (these are frame descriptors from .ani format and some
