@@ -21,6 +21,7 @@
 #define _THREADLIB_H
 
 #define THREADLIB SDL
+#define DEBUG_TRACK_SEM
 
 #ifdef DEBUG
 #	ifndef DEBUG_THREADS
@@ -50,6 +51,15 @@
 #if defined (PROFILE_THREADS)
 #	if !defined (THREAD_QUEUE)
 #		define THREAD_QUEUE
+#	endif
+#endif
+
+#if defined (DEBUG_TRACK_SEM)
+#	if !defined (THREAD_QUEUE)
+#		define THREAD_QUEUE
+#	endif
+#	if !defined (THREAD_NAMES)
+#		define THREAD_NAMES
 #	endif
 #endif
 
@@ -89,7 +99,15 @@ extern void TaskSwitch (void);
 extern void WaitThread (Thread thread, int *status);
 
 typedef void *Semaphore;
-extern Semaphore CreateSemaphore (DWORD initial);
+#ifdef DEBUG_TRACK_SEM
+extern Semaphore CreateSemaphoreAux (DWORD initial, char *sem_name);
+#	define CreateSemaphore(initial,sem_name) \
+		CreateSemaphoreAux ((initial), (sem_name))
+#else
+extern Semaphore CreateSemaphoreAux (DWORD initial);
+#	define CreateSemaphore(initial,sem_name) \
+		CreateSemaphoreAux ((initial))
+#endif
 extern void DestroySemaphore (Semaphore sem);
 extern int SetSemaphore (Semaphore sem);
 extern int TrySetSemaphore (Semaphore sem);

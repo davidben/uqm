@@ -43,6 +43,8 @@ extern void SDLWrapper_TaskSwitch (void);
 		SDLWrapper_TaskSwitch()
 #define NativeWaitThread(thread, status) \
 		SDL_WaitThread ((thread), (status))
+#define NativeGetThreadID(thread) SDL_GetThreadID ((thread))
+#define NativeThreadID() SDL_ThreadID ()
 #ifdef PROFILE_THREADS
 extern void SDLWrapper_PrintThreadStats (SDL_Thread *thread);
 #define NativePrintThreadStats(thread) \
@@ -60,6 +62,9 @@ typedef SDL_sem *NativeSemaphore;
 		SDL_SemWait ((sem))
 #define NativeTrySetSemaphore(sem) \
 		SDL_SemTryWait ((sem))
+#define NativeSemValue(sem) \
+		SDL_SemValue ((sem))
+#define NATIVE_MUTEX_TIMEOUT SDL_MUTEX_TIMEDOUT
 extern int SDLWrapper_TimeoutSetSemaphore (Semaphore sem,
 		TimePeriod timeperiod);
 #define NativeTimeoutSetSemaphore(sem, timeperiod) \

@@ -219,7 +219,7 @@ main (int argc, char *argv[])
 	InitTaskSystem ();
 
 	mem_init ();
-	GraphicsSem = CreateSemaphore (1);
+	GraphicsSem = CreateSemaphore (1, "Graphics");
 	RenderingCond = CreateCondVar ();
 	init_xform_control ();
 

@@ -145,7 +145,7 @@ TFB_DrawCommandQueue_Create()
 		DCQ_locking_depth = 0;
 		DCQ_locking_thread = 0;
 
-		DCQ_sem = CreateSemaphore(1);
+		DCQ_sem = CreateSemaphore(1, "DCQ");
 }
 
 void

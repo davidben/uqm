@@ -378,7 +378,7 @@ init_xform_control ()
 {
 	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
 	XFormControl.XFormsPending = FALSE;
-	XFormControl.XFormSem = CreateSemaphore (1);
+	XFormControl.XFormSem = CreateSemaphore (1, "XForm");
 }
 
 void

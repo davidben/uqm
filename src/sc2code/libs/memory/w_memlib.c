@@ -382,7 +382,7 @@ mem_init (void)
 {
 	int i;
 
-	_MemorySem = CreateSemaphore (1);
+	_MemorySem = CreateSemaphore (1, "Memory");
 	SetSemaphore (_MemorySem);
 
 	freeListHead = &extents[0];

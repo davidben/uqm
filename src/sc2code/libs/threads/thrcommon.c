@@ -27,14 +27,26 @@
 #include <unistd.h>
 #endif
 
-#define DEBUG_TRACK_SEM
-
 #ifdef DEBUG_TRACK_SEM
-// Define all semaphores to be tracked in SemList.  Make sure it is NULL terminated
-// Make that  semthread is the same length  as SemList, and is initialized as all 0's
-extern Semaphore GraphicsSem;
-static Semaphore *SemList[] = {&GraphicsSem, NULL};
-Uint32 semthread[] = {0, 0};
+#include <string.h>
+// The semaphore tracker looks for possible semaphore issues.
+// It will report semaphores cleared by threads other than what set them
+// and when the semaphore value is larger than 1
+#define NUM_SEMAPHORES 50
+// Set the timeout to 60 seconds
+#define SEM_TIMEOUT 6000
+#undef DEBUG_SEM_DEADLOCK
+typedef struct {
+	Semaphore Sem;
+	Uint32 Thread;
+	char Name[20];
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+	char ThreadName[20];
+#endif
+}  MonitorSem;
+Semaphore SemMutex;
+static MonitorSem SemMon[NUM_SEMAPHORES];
+static UWORD numSems = 0;
 #endif
 
 #ifdef THREAD_QUEUE
@@ -71,7 +83,7 @@ void
 InitThreadSystem (void)
 {
 #ifdef THREAD_QUEUE
-	threadQueueSemaphore = CreateSemaphore (1);
+	threadQueueSemaphore = CreateSemaphore (1, "ThreadQueue");
 #endif  /* THREAD_QUEUE */
 #ifdef PROFILE_THREADS
 	signal(SIGUSR1, SigUSR1Handler);
@@ -126,6 +138,28 @@ UnQueueThread (Thread thread)
 	ClearSemaphore (threadQueueSemaphore);
 }
 #endif  /* THREAD_QUEUE */
+
+#if defined (DEBUG_TRACK_SEM) && defined (THREAD_QUEUE) \
+	&& defined (THREAD_NAMES)
+static char *ThreadNameNative (Uint32 native)
+{
+	volatile Thread ptr;
+
+	ptr = threadQueue;
+	if (threadQueueSemaphore)
+		NativeSetSemaphore (threadQueueSemaphore);
+	while (ptr && NativeGetThreadID (ptr->native) != native)
+	{
+		ptr = ptr->next;
+	}
+	if(threadQueueSemaphore)
+		NativeClearSemaphore (threadQueueSemaphore);
+	if (ptr)
+		return ((char *)ptr->name);
+	else
+		return (NULL);
+}
+#endif  /* DEBUG_TRACK_SEM */
 
 #ifdef DEBUG_THREADS
 static const char *
@@ -194,7 +228,7 @@ CreateThreadAux (ThreadFunction func, void *data, SDWORD stackSize
 	startInfo = (struct ThreadStartInfo *) HMalloc (sizeof (*startInfo));
 	startInfo->func = func;
 	startInfo->data = data;
-	startInfo->sem = CreateSemaphore (0);
+	startInfo->sem = CreateSemaphore (0, "StartThread");
 	startInfo->thread = thread;
 	
 	thread->native = NativeCreateThread (ThreadHelper, (void *) startInfo,
@@ -304,33 +338,137 @@ PrintThreadsStats (void)
 #endif  /* PROFILE_THREADS */
 
 Semaphore
-CreateSemaphore (DWORD initial)
+CreateSemaphoreAux (DWORD initial
+#ifdef DEBUG_TRACK_SEM
+				 , char *sem_name
+#endif
+				 )
 {
-	return (Semaphore) NativeCreateSemaphore (initial);
+	Semaphore sem = (Semaphore)NativeCreateSemaphore (initial);
+#ifdef DEBUG_TRACK_SEM
+	int pos;
+	if (SemMutex == 0)
+		SemMutex = NativeCreateSemaphore (0);
+	else
+		NativeSetSemaphore (SemMutex);
+	for (pos = 0; pos < numSems; pos++)
+		if (SemMon[pos].Sem == 0)
+			break;
+	if (pos == numSems) 
+	{
+		numSems++;
+		if (numSems == NUM_SEMAPHORES)
+		{
+			fprintf(stderr, "Error: We ran out of semaphores.  aborting!\n");
+			NativeClearSemaphore (SemMutex);
+			return (0);
+		}
+	}
+	SemMon[pos].Sem = sem;
+	SemMon[pos].Thread = 0;
+	strncpy(SemMon[pos].Name, sem_name, 20);
+	SemMon[pos].Name[19] = 0;
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+//	fprintf (stderr, "Created Semaphore  # %d: %s in thread '%s'\n", 
+//		numSems, SemMon[pos].Name, ThreadNameNative (NativeThreadID ()));
+#else
+//	fprintf (stderr, "Created Semaphore  # %d: %s\n", 
+//		numSems, SemMon[pos].Name);
+#endif
+	NativeClearSemaphore (SemMutex);
+#endif
+	return (sem);
 }
 
 void
 DestroySemaphore (Semaphore sem)
 {
+#ifdef DEBUG_TRACK_SEM
+	int i;
+	NativeSetSemaphore (SemMutex);
+	for (i = 0; i <numSems; i++)
+		if (SemMon[i].Sem == sem)
+		{
+			SemMon[i].Sem = 0;
+			break;
+		}
+	NativeClearSemaphore (SemMutex);
+#endif
 	NativeDestroySemaphore ((NativeSemaphore) sem);
 }
+
+#ifdef DEBUG_TRACK_SEM
+static void debug_set_sem (Semaphore sem
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+	, char *name
+#endif
+	)
+{
+	int i;
+	for (i = 0; i < numSems; i++)
+	{
+		if (SemMon[i].Sem == sem)
+		{
+			SemMon[i].Thread = NativeThreadID ();
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+			if (name != NULL)
+			{
+				strncpy(SemMon[i].ThreadName,name,20);
+				SemMon[i].ThreadName[19] = 0;
+			}
+#endif
+			break;
+		}
+	}
+}
+#endif
 
 int
 SetSemaphore (Semaphore sem)
 {
 	int i;
 
+#if defined (DEBUG_TRACK_SEM) && defined (THREAD_QUEUE) \
+	&& defined (THREAD_NAMES)
+	char *name = ThreadNameNative (NativeThreadID ());
+#endif
+
+#if defined (DEBUG_TRACK_SEM) && defined (DEBUG_SEM_DEADLOCK)
+	do
+	{
+		i = NativeTimeoutSetSemaphore ((NativeSemaphore) sem, SEM_TIMEOUT);
+		if (i == NATIVE_MUTEX_TIMEOUT)
+		{
+			int j = -1;
+			for (j = 0; j < numSems; j++)
+			{
+				if (SemMon[j].Sem == sem)
+					break;
+			}
+			if (j != -1) 
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+				fprintf (stderr, "Failed to acquire '%s' semaphore in thread '%s'.\n\tIt is held by thread '%s'.  Retrying\n",
+					SemMon[j].Name,
+					name,
+					SemMon[j].ThreadName);
+#else
+				fprintf (stderr, "Failed to acquire '%s' semaphore.  Retrying\n",
+					SemMon[j].Name);
+#endif /* THREAD_NAMES */
+		}
+	} while (i == NATIVE_MUTEX_TIMEOUT);
+#else
 	i = NativeSetSemaphore ((NativeSemaphore) sem);
+#endif /* DEBUG_SEM_DEADLOCK */
 #ifdef DEBUG_TRACK_SEM
 	if (i != 0)
 		fprintf(stderr, "WARNING: SetSemaphore did not return 0, this could be bad!\n");
-	for (i = 0; SemList[i] != NULL; i++)
-		if (*SemList[i] == sem)
-		{
-			semthread[i] = SDL_ThreadID ();
-			break;
-		}
-#endif
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+	debug_set_sem (sem, name);
+#else
+	debug_set_sem (sem);
+#endif /* THREAD_NAMES */
+#endif /* DEBUG_TRACK_SEM */
 	return i;
 }
 
@@ -339,16 +477,20 @@ TrySetSemaphore (Semaphore sem)
 {
 	int i;
 
+#if defined (DEBUG_TRACK_SEM) && defined (THREAD_QUEUE) \
+	&& defined (THREAD_NAMES)
+	char *name = ThreadNameNative (NativeThreadID ());
+#endif
+
 	i = NativeTrySetSemaphore ((NativeSemaphore) sem);
 #ifdef DEBUG_TRACK_SEM
 	if (i == 0)
-		for (i = 0; SemList[i] != NULL; i++)
-			if (*SemList[i] == sem)
-			{
-				semthread[i] = SDL_ThreadID ();
-				break;
-			}
-#endif
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+		debug_set_sem (sem, name);
+#else
+		debug_set_sem (sem);
+#endif /* THREAD_NAMES */
+#endif /* DEBUG_TRACK_SEM */
 	return (i);
 }
 
@@ -357,39 +499,57 @@ TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout)
 {
 	int i;
 
+#if defined (DEBUG_TRACK_SEM) && defined (THREAD_QUEUE) \
+	&& defined (THREAD_NAMES)
+	char *name = ThreadNameNative (NativeThreadID ());
+#endif
+
 	i = NativeTimeoutSetSemaphore ((NativeSemaphore) sem, timeout);
 #ifdef DEBUG_TRACK_SEM
 	if (i == 0)
-		for (i = 0; SemList[i] != NULL; i++)
-			if (*SemList[i] == sem)
-			{
-				semthread[i] = SDL_ThreadID ();
-				break;
-			}
-#endif
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+		debug_set_sem (sem, name);
+#else
+		debug_set_sem (sem);
+#endif /* THREAD_NAMES */
+#endif /* DEBUG_TRACK_SEM */
 	return (i);
 }
 
 void
 ClearSemaphore (Semaphore sem)
 {
-	int i;
 #ifdef DEBUG_TRACK_SEM
-	Uint32 semval = SDL_SemValue (sem);
-	if (semval != 0)
-	{
-		fprintf (stderr, "WARNING: trying to clear a free semaphore (value=%d)\n", semval);
-		// Should we unset the Semaphore twice?  Perhaps not.
-		return;
-	}
-	for (i = 0;SemList[i] != NULL; i++)
-		if (*SemList[i] == sem)
+	int i;
+	Uint32 semval = NativeSemValue (sem);
+	char *sem_name = NULL;
+
+	for (i = 0; i < numSems; i++)
+		if (SemMon[i].Sem == sem)
 		{
-			if (! semthread[i] && semthread[i] != SDL_ThreadID ())
-				fprintf( stderr, "WARNING: tried to free a Semaphore held by another thread!\n");
-			semthread[i] = 0;
+			sem_name = SemMon[i].Name;
+			if (SemMon[i].Thread && SemMon[i].Thread != NativeThreadID ())
+#if defined (THREAD_QUEUE) && defined (THREAD_NAMES)
+				if (ThreadNameNative (SemMon[i].Thread) == NULL)
+					fprintf( stderr, "Freeing %s Semaphore in '%s' set by defunct thread '%s'!\n",
+						sem_name, 
+						ThreadNameNative (NativeThreadID ()),
+						SemMon[i].ThreadName);
+				else
+					fprintf( stderr, "Freeing %s Semaphore in '%s' set by thread '%s'!\n",
+						sem_name, 
+						ThreadNameNative (NativeThreadID ()),
+						ThreadNameNative (SemMon[i].Thread));
+			SemMon[i].ThreadName[0] = 0;
+#else
+				fprintf (stderr, "Freeing %s Semaphore that was set by a different thread\n",
+					sem_name);
+#endif
+			SemMon[i].Thread = 0;
 			break;
 		}
+	if (semval != 0)
+		fprintf (stderr, "Incrementing semaphore '%s' (newvalue=%d)\n", sem_name, semval + 1);
 #endif
 	NativeClearSemaphore ((NativeSemaphore) sem);
 }
