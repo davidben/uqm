@@ -1,4 +1,5 @@
 0.2:
+- Planet surface changing color when using device fixed, from PhracturedBlue
 - Some race conditions eliminated, from PhracturedBlue
 - Earth / other slave shielded planet color issue fixed, from PhracturedBlue
 - Orbit/starmap related lockup fixed, from PhracturedBlue
