@@ -22,10 +22,13 @@
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
-void process_rgb_bmp (FRAME FramePtr, DWORD **rgba, int maxx, int maxy);
+DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
+
+void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
+void fill_frame_rgb (FRAMEPTR FramePtr, DWORD color, int x0, int y0, int x, int y);
+
 extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
 extern void RenderLevelMasks (int, int);
-
 // RotatePlanet
 // This will take care of zooming into a planet on orbit, generating the planet frames
 // And applying the shield.
@@ -49,7 +52,7 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		pSolarSysState->isPFADefined[x] = 1;
 	}
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
-	pFrame[0] = pSolarSysState->PlanetFrameArray[x];
+	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
 	if (num_frames == 2)
 		pFrame[1] = pSolarSysState->ShieldFrame;
 	if (zoom)
@@ -116,35 +119,23 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	if (rgb)
 	{
 		UBYTE r, g, b;
-		DWORD **rgba, p;
-		COUNT i, j, framew;
-		FRAME tintFrame;
-		if (pSolarSysState->TintFrame != 0)
+		DWORD p;
+		COUNT framew;
+		FRAME tintFrame=pSolarSysState->TintFrame;
+
+		if (rgb != pSolarSysState->Tint_rgb)
 		{
-			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
-			pSolarSysState->TintFrame = 0;
+			DWORD clear;
+			pSolarSysState->Tint_rgb=rgb;
+			clear = frame_mapRGBA (tintFrame, 0, 0, 0, 0);
+			fill_frame_rgb (tintFrame, clear, 0, 0, 0, 0);
 		}
-		framew = GetFrameWidth (s.frame);
-		tintFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, framew, (UWORD)dy, 1)
-				);
-		pSolarSysState->TintFrame = tintFrame;
-		rgba = (DWORD **)HMalloc (sizeof(DWORD *) * dy);
+		framew = GetFrameWidth (tintFrame);
 		r = (rgb & (0x1f << 10)) >> 8;
 		g = (rgb & (0x1f << 5)) >> 3;
 		b = (rgb & 0x1f) << 2;
 		p = frame_mapRGBA (tintFrame, r, g, b, a);
-		for (i = 0; i < dy; i++)
-		{
-			rgba[i] = (DWORD *)HMalloc (sizeof(DWORD)*framew);
-			for(j=0; j<framew; j++)
-				rgba[i][j] = p;
-		}
-		process_rgb_bmp (tintFrame, rgba, framew, dy);
-		SetFrameHot (tintFrame, MAKE_HOT_SPOT (0, 0));
-		for (i = 0;i < dy; i++)
-			HFree (rgba[i]);
-		HFree (rgba);
+		fill_frame_rgb (tintFrame, p, 0, 0, framew, dy);
 		s.frame = tintFrame;
 		DrawStamp (&s);
 	}

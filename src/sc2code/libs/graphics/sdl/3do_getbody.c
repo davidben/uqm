@@ -136,11 +136,12 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh,int destroy)
 {
 	FRAMEPTR NewFrame;
-	DWORD type;
+	UBYTE type;
 	SDL_Surface *src,*dst;
-	type=TYPE_GET (FramePtr->TypeIndexAndFlags);
+	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
-				CreateDrawable (/*WANT_PIXMAP*/type, (SIZE)neww, (SIZE)newh, 1)
+				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1)
 					);
     src = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
     dst = ((TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs))->NormalImg;
@@ -154,17 +155,15 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh,int destroy)
 	return(NewFrame);
 }
 
-void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 **rgba, int maxx, int maxy)
+void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 {
-	int hx, hy;
-	int x,y;
+	int x, y;
 	SDL_Surface *img;				
 	PutPixelFn putpix;
 
 //	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
 //	INDEX_SET (FramePtr->TypeIndexAndFlags,  1);
 
-	hx = hy = 0;
 
 	// convert 32-bit png font to indexed
     img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
@@ -176,12 +175,31 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 **rgba, int maxx, int maxy)
 	{
 		for (x = 0; x < maxx; ++x)
 		{
-			putpix (img, x, y, rgba[y][x]);
+			putpix (img, x, y, *rgba++);
 		}
 	}
 	SDL_UnlockSurface (img);
 }
-// Generate an array of all pixels in FramePtr
+
+void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int y)
+{
+	SDL_Surface *img;
+	SDL_Rect rect;
+    img = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
+	SDL_LockSurface (img);
+	if (x0 == 0 && y0 == 0 && x == 0 && y == 0) {
+		SDL_FillRect(img, NULL, color);
+	} else {
+		rect.x = x0;
+		rect.y = y0;
+		rect.w = x - x0;
+		rect.h = y - y0;
+		SDL_FillRect(img, &rect, color);
+	}
+	SDL_UnlockSurface (img);
+}
+
+	// Generate an array of all pixels in FramePtr
 // The pixel format is :
 //  bits 25-32 : red
 //  bits 17-24 : green
@@ -297,7 +315,7 @@ _GetCelData (FILE *fp, DWORD length)
 			while (cel_ct--)
 				SDL_FreeSurface (img[cel_ct]);
 
-			mem_release (Drawable);
+			mem_release ((MEM_HANDLE)Drawable);
 			Drawable = 0;
 		}
 		else
@@ -336,7 +354,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 	cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex)+1;
 
 	FramePtr = &DrawablePtr->Frame[cel_ct];
-	if (TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) != SCREEN_DRAWABLE)
+	if (!(TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) & SCREEN_DRAWABLE))
 	{
 		while (--FramePtr, cel_ct--)
 		{

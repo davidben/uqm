@@ -185,15 +185,15 @@ FreePlanet (void)
 {
 	COUNT i;
 
-	SetSemaphore (GraphicsSem);
-
 	if (pSolarSysState->MenuState.flash_task)
 	{
-		Task_SetState (pSolarSysState->MenuState.flash_task, TASK_EXIT);
+		ConcludeTask (pSolarSysState->MenuState.flash_task);
+//		Task_SetState (pSolarSysState->MenuState.flash_task, TASK_EXIT);
 		pSolarSysState->MenuState.flash_task = 0;
 	}
 
 	StopMusic ();
+	SetSemaphore (GraphicsSem);
 
 	for (i = 0; i < sizeof (pSolarSysState->PlanetSideFrame)
 			/ sizeof (pSolarSysState->PlanetSideFrame[0]); ++i)
@@ -213,10 +213,9 @@ FreePlanet (void)
 	pSolarSysState->TopoFrame = 0;
 	DestroyColorMap (ReleaseColorMap (pSolarSysState->OrbitalCMap));
 	pSolarSysState->OrbitalCMap = 0;
-	for (i=0; i<255; i++)
-		DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray[i]));
-	HFree (pSolarSysState->PlanetFrameArray);
+	DestroyDrawable (ReleaseDrawable (pSolarSysState->PlanetFrameArray));
 	pSolarSysState->PlanetFrameArray = 0;
+
 
 	HFree (pSolarSysState->isPFADefined);
 	pSolarSysState->isPFADefined = 0;
@@ -236,6 +235,7 @@ FreePlanet (void)
 		DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
 		pSolarSysState->TintFrame = 0;
 	}
+	pSolarSysState->Tint_rgb = 0;
 	if (pSolarSysState->lpTopoMap!=0)
 	{
 		for (i=0; pSolarSysState->lpTopoMap[i] != NULL; i++)

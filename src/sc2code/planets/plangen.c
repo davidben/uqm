@@ -37,7 +37,7 @@ int RotatePlanet (int x, int angle, int dx, int dy,int zoom);
 
 DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
 
-void process_rgb_bmp (FRAME FramePtr, DWORD **rgba, int maxx, int maxy);
+void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
 
 FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
 
@@ -405,7 +405,8 @@ SetPlanetTilt (int angle)
 #define SHIELD_RADIUS_2 (SHIELD_RADIUS * SHIELD_RADIUS)
 static void CreateShieldMask ()
 {
-	DWORD rad2, clear, **rgba, p;
+
+	DWORD rad2, clear, *rgba, *p_rgba, p;
 	UBYTE red_nt;
 	int x, y;
 	FRAME ShieldFrame;
@@ -414,7 +415,8 @@ static void CreateShieldMask ()
 	ShieldFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
 				);
-	rgba = (DWORD **)HMalloc (sizeof (DWORD *) * (SHIELD_DIAM));
+	rgba = (DWORD *)HMalloc (sizeof (DWORD *) * (SHIELD_DIAM) * (SHIELD_DIAM));
+	p_rgba = rgba;
 	// This is a non-transparent red for the halo
 	red_nt = 180;
 	//  This is 100% transparent.
@@ -423,7 +425,6 @@ static void CreateShieldMask ()
 	aa_delta2 = (RADIUS + 3) * (RADIUS + 3) - (RADIUS + 2)*(RADIUS + 2);
 	for (y = -SHIELD_RADIUS; y <= SHIELD_RADIUS; y++)
 	{
-		rgba[y+SHIELD_RADIUS] = (DWORD *)HCalloc (sizeof (DWORD) * (SHIELD_DIAM));
 		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; x++)
 		{
 			rad2 = x * x + y * y;
@@ -459,15 +460,11 @@ static void CreateShieldMask ()
 			else
 				p = clear;
 
-			rgba[y + SHIELD_RADIUS][x + SHIELD_RADIUS] = p;
+			*p_rgba++ = p;
 		}
 	}
 	process_rgb_bmp (ShieldFrame, rgba, SHIELD_DIAM, SHIELD_DIAM);
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,SHIELD_RADIUS + 1));
-	for (y=-SHIELD_RADIUS; y <= SHIELD_RADIUS; ++y)
-	{
-		HFree (rgba[y + SHIELD_RADIUS]);
-	}
 	HFree(rgba);
 	pSolarSysState->ShieldFrame = ShieldFrame;
 }
@@ -479,7 +476,7 @@ void
 RenderLevelMasks (int offset)
 {
 	POINT pt;
-	DWORD **rgba;
+	DWORD *rgba, *p_rgba;
 	int x, y;
 	DWORD p, **pixels;
 	FRAME MaskFrame;
@@ -491,13 +488,13 @@ RenderLevelMasks (int offset)
 	t1 = clock ();
 #endif
 
-	rgba = HMalloc (sizeof (DWORD *) * (DIAMETER));
+	rgba = (DWORD *)HMalloc (sizeof (DWORD *) * (DIAMETER) * (DIAMETER));
+	p_rgba = rgba;
 	// Choose the correct Frame to wrte to
-	MaskFrame = pSolarSysState->PlanetFrameArray[offset];
+	MaskFrame = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(offset + 1));
 	pixels = pSolarSysState->lpTopoMap;
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, ++y)
 	{
-		rgba[pt.y] = HCalloc (sizeof (DWORD) * (DIAMETER));
 		for (pt.x = 0,  x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x)
 		{
 			UBYTE c[3];
@@ -535,18 +532,16 @@ RenderLevelMasks (int offset)
 					c[1] = GET_PHONG (c[1], ph);
 					c[0] = GET_PHONG (c[0], ph);
 				}
-				rgba[pt.y][pt.x] = frame_mapRGBA (
+				*p_rgba++ = frame_mapRGBA (
 					MaskFrame, c[2], c[1], c[0], (UBYTE)255);
 			} 
 			else
-				rgba[pt.y][pt.x] = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
+				*p_rgba++ = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
 		}
 	}
 	// Map the rgb bitmap onto the SDL_Surface
-	process_rgb_bmp (pSolarSysState->PlanetFrameArray[offset], rgba, DIAMETER, DIAMETER);
+	process_rgb_bmp (MaskFrame, rgba, DIAMETER, DIAMETER);
 	SetFrameHot (MaskFrame, MAKE_HOT_SPOT (RADIUS + 1, RADIUS + 1));
-	for (pt.y = 0; pt.y <= TWORADIUS; ++pt.y)
-		HFree (rgba[pt.y]);
 	HFree(rgba);
 #if PROFILE
 	t += clock() - t1;
@@ -1091,10 +1086,12 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	OldContext = SetContext (TaskContext);
 	pSolarSysState->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * 255);
-	pSolarSysState->PlanetFrameArray = HMalloc (sizeof(FRAME) * 255);
-	for (i = 0; i < 255; i++)
-		pSolarSysState->PlanetFrameArray[i] = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, DIAMETER, DIAMETER, 1)
+	pSolarSysState->TintFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 1)
+			);
+
+	pSolarSysState->PlanetFrameArray = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, DIAMETER, DIAMETER, (COUNT)MAP_WIDTH)
 				);
 	if (IsEarth)
 	{

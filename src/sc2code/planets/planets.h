@@ -165,11 +165,12 @@ typedef struct solarsys_state
 	PLAN_GEN_FUNC GenFunc;
 
 	FRAME PlanetSideFrame[6];
-	FRAME *PlanetFrameArray;
+	FRAME PlanetFrameArray;
+	BYTE *isPFADefined;
 	FRAME ScaleFrame[2];
 	FRAME ShieldFrame;
 	FRAME TintFrame;
-	BYTE *isPFADefined;
+	UWORD Tint_rgb;
 	DWORD **lpTopoMap;
 } SOLARSYS_STATE;
 typedef SOLARSYS_STATE *PSOLARSYS_STATE;
