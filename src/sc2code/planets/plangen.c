@@ -221,7 +221,8 @@ RenderPhongMask (POINT loc)
 			x=pt.x-RADIUS;
 			y=pt.y-RADIUS;
 			rad=x*x+y*y;
-			if(rad<RADIUS_2) {
+			if(rad<=RADIUS_2) 
+			{
 				lrad=((x-light.x)*(x-light.x)+(y-light.y)*(y-light.y));
 				lrad2=pow(lrad,1);
 				if (lrad2 >= lmag2) {
@@ -231,6 +232,14 @@ RenderPhongMask (POINT loc)
 					if(intens<AMBIENT_LIGHT) {intens=AMBIENT_LIGHT;}
 				}
 				stepint=step- (DWORD)(intens*step+0.5);
+				if(rad >(RADIUS-1)*(RADIUS-1)) 
+				{
+					DWORD r;
+					r=rad-(RADIUS-1)*(RADIUS-1);
+					stepint+=(step>>7)*(r+1);
+					if(stepint > step) 
+						stepint=step;
+				}
 			} else {
 				stepint=step;
 			}
