@@ -78,6 +78,7 @@ _clear_menu_state (void)
 	CachedMenuState.page_down = 0;
 	CachedMenuState.zoom_in   = 0;
 	CachedMenuState.zoom_out  = 0;
+	CachedGestalt = FALSE;
 }
 
 void
@@ -248,6 +249,12 @@ SetDefaultMenuRepeatDelay ()
 }
 
 void
+FlushInputState (void)
+{
+	_clear_menu_state ();
+}
+
+void
 DoInput (PVOID pInputState, BOOLEAN resetInput)
 {
 	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT, FALSE);
@@ -373,4 +380,23 @@ AnyButtonPress (BOOLEAN CheckSpecial)
 	     ||CurrentMenuState.select
 	     ||CurrentMenuState.cancel
 	     ||CurrentMenuState.special;
+}
+
+BOOLEAN
+ConfirmExit (void)
+{
+	DWORD old_max_accel, old_min_accel, old_step_accel;
+	BOOLEAN old_gestalt_keys, result;
+
+	old_max_accel = _max_accel;
+	old_min_accel = _min_accel;
+	old_step_accel = _step_accel;
+	old_gestalt_keys = _gestalt_keys;
+		
+	SetDefaultMenuRepeatDelay ();
+		
+	result = DoConfirmExit ();
+	
+	SetMenuRepeatDelay (old_min_accel, old_max_accel, old_step_accel, old_gestalt_keys);
+	return result;
 }

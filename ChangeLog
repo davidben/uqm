@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Confirmation dialog box for exiting the game is now menu-based
 - Commander Hayes explains his predicament before you get the option to 
   rescue, closes #366, from Nic
 - Gestalt mode accelerates continuously as long as some key is held; 

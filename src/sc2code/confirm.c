@@ -21,21 +21,55 @@
 #include "commglue.h"
 #include "libs/sound/trackplayer.h"
 
-//Added by Chris
+#define CONFIRM_WIN_WIDTH 80
+#define CONFIRM_WIN_HEIGHT 26
 
-void WaitForNoInput (SIZE Duration);
-
-//End Added by Chris
-
-/* TODO: Replace the TO EXIT PRESS B code with a 'real' confirmation
-   screen.  To avoid confusion (especially now that there is no
-   in-game model of the 3DO controller exits are currently always
-   confirmed. */
-
-BOOLEAN
-ConfirmExit (void)
+static void
+DrawConfirmationWindow (BOOLEAN answer)
 {
-#if 0
+	COLOR oldfg = SetContextForeGroundColor (MENU_BACKGROUND_COLOR);
+	FONT  oldfont = SetContextFont (StarConFont);
+	RECT r;
+	TEXT t;
+
+	r.extent.width = CONFIRM_WIN_WIDTH;
+	r.extent.height = CONFIRM_WIN_HEIGHT;
+	r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
+	r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
+
+	BatchGraphics ();
+
+	DrawFilledRectangle (&r);
+	SetContextForeGroundColor (MENU_TEXT_COLOR);
+	t.baseline.x = r.corner.x + (r.extent.width >> 1);
+	t.baseline.y = r.corner.y + 10;
+	t.pStr = "Really quit?";
+	t.align = ALIGN_CENTER;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	font_DrawText (&t);
+	t.baseline.y += 10;
+	t.baseline.x = r.corner.x + (r.extent.width >> 2);
+	t.pStr = "Yes";
+	SetContextForeGroundColor (answer ? MENU_HIGHLIGHT_COLOR : MENU_TEXT_COLOR);
+	font_DrawText (&t);
+	t.baseline.x += (r.extent.width >> 1);
+	t.pStr = "No";
+	SetContextForeGroundColor (answer ? MENU_TEXT_COLOR : MENU_HIGHLIGHT_COLOR);
+	font_DrawText (&t);
+
+	UnbatchGraphics ();
+
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldfg);
+}
+
+/* This code assumes that you aren't in Character Mode.  This is
+ * currently safe because VControl doesn't see keystrokes when you
+ * are, and thus cannot conclude that an exit is necessary. */
+BOOLEAN
+DoConfirmExit (void)
+{
 	BOOLEAN result;
 	fprintf (stderr, "Confirming Exit!\n");
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
@@ -55,17 +89,18 @@ ConfirmExit (void)
 		STAMP s;
 		FRAME F;
 		CONTEXT oldContext;
-		UNICODE response;
+		BOOLEAN response = TRUE, done;
 
 		oldContext = SetContext (ScreenContext);
 
-		s.frame = SetAbsFrameIndex (ActivityFrame, 1);
-		GetFrameRect (s.frame, &r);
+		r.extent.width = CONFIRM_WIN_WIDTH;
+		r.extent.height = CONFIRM_WIN_HEIGHT;
 		r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
 		r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
 		s.origin = r.corner;
 		F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
-		DrawStamp (&s);
+
+		DrawConfirmationWindow (response);
 
 		// Releasing the Semaphore lets the rotate_planet_task
 		// draw a frame.  PauseRotate can still allow one more frame
@@ -74,20 +109,35 @@ ConfirmExit (void)
 		FlushGraphics ();
 		//SetSemaphore (GraphicsSem);
 
-		/* Possible bug... ConfirmExit is assuming
-		 * CharacterMode is off. */
-		EnableCharacterMode ();
 		GLOBAL (CurrentActivity) |= CHECK_ABORT;
+		FlushInput ();
+		done = FALSE;
+
 		do {
-			response = toupper (GetCharacter ());
-		} while (response != 'Y' && response != 'N');
-		DisableCharacterMode ();
-		ExitRequested = FALSE;
+			// Forbid recursive calls or pausing here!
+			ExitRequested = FALSE;
+			GamePaused = FALSE;
+			UpdateInputState ();
+			if (CurrentMenuState.select)
+			{
+				done = TRUE;
+			}
+			else if (CurrentMenuState.cancel)
+			{
+				done = TRUE;
+				response = FALSE;
+			}
+			else if (CurrentMenuState.left || CurrentMenuState.right)
+			{
+				response = !response;
+				DrawConfirmationWindow (response);
+			}				
+		} while (!done);
 
 		s.frame = F;
 		DrawStamp (&s);
 		DestroyDrawable (ReleaseDrawable (s.frame));
-		if (response == 'Y')
+		if (response)
 		{
 			GameExiting = TRUE;
 			result = TRUE;
@@ -97,9 +147,8 @@ ConfirmExit (void)
 			result = FALSE;
 			GameExiting = FALSE;
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-			WaitForNoInput (ONE_SECOND / 4);
-			FlushInput ();
 		}
+		FlushInput ();
 		SetContext (oldContext);
 	}
 	ClearSemaphore (GraphicsSem);
@@ -111,11 +160,6 @@ ConfirmExit (void)
 
 	fprintf (stderr, "Exit was %sconfirmed.\n", result ? "" : "NOT ");
 	return (result);
-#endif
-	GLOBAL (CurrentActivity) |= CHECK_ABORT;
-	ExitRequested = FALSE;
-	GameExiting = TRUE;
-	return TRUE;
 }
 
 

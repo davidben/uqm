@@ -242,7 +242,7 @@ void
 FlushInput (void)
 {
 	TFB_ResetControls ();
-	GameExiting = ExitRequested = FALSE;
+	FlushInputState ();
 }
 
 // Translates from SDLKeys to values defined in inplib.h

@@ -816,7 +816,18 @@ UpdateCursorInfo:
 		}
 	}
 
-	return (TRUE);
+	{
+		BOOLEAN result = !(GLOBAL (CurrentActivity & CHECK_ABORT));
+		if (!result)
+		{
+			if (pMS->flash_task)
+			{
+				ConcludeTask (pMS->flash_task);
+				pMS->flash_task = 0;
+			}
+		}
+		return result;
+	}
 }
 
 static void
