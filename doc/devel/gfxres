@@ -34,7 +34,7 @@ Then for all frames:
                       - bit 14: (DATA_PACKED)
                       - bit 15: (X_FLIP)
            4       Hot spot information (definition of (0, 0) in the image):
-                      - low 2 byes: x location of hot spot
+                      - low 2 bytes: x location of hot spot
                       - high 2 bytes: y location of hot spot
            4       Image bounds:
                       - low 2 bytes: Image width
@@ -46,4 +46,9 @@ Frames:
 Then for all frames:
            4       Size of image data
            ?       image data
+
+
+
+Initial version 2002-10-22, by Serge van den Boom
+
 
