@@ -6,8 +6,11 @@ and colour translation tables (.xlt).
 Everything is stored MSB first unless otherwise specified.
 
 position   length  meaning
-           4       Unknown, always 0xffffffff
-           2       Unknown, always 0x0000
+           4       0xffffffff if the file is uncompressed.
+                   Otherwise, the file is compressed. When uncompressed, the
+                   file complies with the rest of the format as described
+                   below.
+           2       Unused in file, always 0x0000
            2       number of items in the file (StringCount)
 
 Followed by:

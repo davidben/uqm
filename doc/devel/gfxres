@@ -4,8 +4,11 @@ This is the format for resources of type GFXRES (these have the extension
 Everything is stored MSB first unless otherwise specified.
 
 position   length  meaning
-           4       Unknown, always 0xffffffff
-           4       Unknown, always 0x00000000
+           4       0xffffffff if the file is uncompressed.
+                   Otherwise, the file is compressed. When uncompressed, the
+                   file complies with the rest of the format as described
+                   below.
+           4       Unused in file, always 0x00000000
            4       FlagsAndIndex:
                      bits 0-11: 1 less than the number of frames in this
                                 graphics resource
