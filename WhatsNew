@@ -12,6 +12,69 @@ Changes are broadly classified into the following categories:
   unlikely to be of interest to you unless you plan on coding
   extensions.
 
+			     Version 0.3
+			    -------------
+
+NEW FEATURES
+
+- PC-style shipyard, complete with animated power lines
+- Main menu displays version number
+- Added a '-g' option to control gamma correction
+- Planet spin has been improved
+- Trilinear (mipmap-based) scaling in melee
+- PC-style conversation summaries have been implemented
+- Ship location display in status bar matches original more closely
+- Game flags (such as AWARE_OF_SAMATRA) that were ignored by half the
+  game (even in the original) now are more universally available
+- Oscilloscope and Mini-Map have borders now
+- Commander Hayes won't let you rescue him until he's explained his
+  predicament
+- Confirmation dialogs are now menu-based
+- Positional sound effects are available for OpenAL
+- Delete key works on Super-Melee team editing
+- Exit key from the Main Menu will quit the game
+- Quit option available in GAME menu
+- New Main Menu graphics: Setup (not yet implemented) and Quit are
+  options at the Main Menu now
+
+BUGFIXES
+- Text entry doesn't freeze up lander reports anymore
+- VUX warps in at proper range
+- Distance-based ship effects (Syreen, Slylandro, Kohr-Ah) were screen
+  size dependent
+- Line clipping fixed
+- Various communication animation glitches solved
+- Various melee crashes solved
+- Various race conditions eliminated
+- Scaling of graphics is handled by the rendering thread now, solving
+  issues where the background and object scales would drift out of
+  sync
+- Subtitle text is clipped more carefully
+- Objects can no longer be scaled to total invisibility
+- Various dialogue fixes
+- Crossfade glitches eliminated
+- Pause and Exit keys function properly everywhere
+- Visit Count overflow with Yehat and Chmmr patched
+- Wav loader and color transforms are now endian safe
+- Menu glitches when leaving the "GAME" menu are gone
+- Druuge transactions no longer baselessly increase crew cost
+- Lander speed has been retimed to match 3DO
+
+INTERNAL CHANGES
+
+- Legacy graphics code stripped down tremendously, a lot of "poor
+  man's object orientation" has fallen away too.  Many uses of
+  function pointers with only one possible value replaced with simple
+  direct calls.
+- Crossfades require you to explicitly cache the screen before drawing
+  the transition target
+- User Input code has been completely rewritten
+- File I/O code has been completely rewritten
+- Subtitle drawing is now cached as its own sprite; communication
+  screens are much less graphics intensive now
+- DRAWABLE_DESC uses separately allocated arrays for its frames
+
+
 			     Version 0.2
 			    -------------
 
