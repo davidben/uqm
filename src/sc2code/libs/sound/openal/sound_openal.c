@@ -105,6 +105,8 @@ TFB_alInitSound (int driver, int flags)
 	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
 		"audio stream decoder");
 
+	(void) driver; // eat compiler warning
+
 	return 0;
 }
 
@@ -113,7 +115,11 @@ TFB_alUninitSound (void)
 {
 	int i;
 
-	ConcludeTask (StreamDecoderTask);
+	if (StreamDecoderTask)
+	{
+		ConcludeTask (StreamDecoderTask);
+		StreamDecoderTask = NULL;
+	}
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{

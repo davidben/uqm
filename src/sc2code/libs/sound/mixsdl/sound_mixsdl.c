@@ -288,6 +288,7 @@ NoSound_PlaybackTaskFunc (void *data)
 			SDL_Delay (delay);
 	}
 
+	HFree (stream);
 	FinishTask (task);
 	return 0;
 }
