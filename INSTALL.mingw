@@ -15,7 +15,7 @@ http://www.libsdl.org/release/SDL-devel-1.2.5a-mingw32.tar.gz
 http://www.libsdl.org/projects/SDL_image/release/SDL_image-devel-1.2.3-VC6.zip
 ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
-http://gnuwin32.sourceforge.net/downlinks/zlib-lib-zip.htm
+http://gnuwin32.sourceforge.net/packages/zlib.htm (both binaries and devel files)
 
 
 You can now do either of the following:
@@ -46,13 +46,12 @@ cd to the UQM directory. It'll be at /[drive letter]/[path to uqm].
 ./build.sh uqm config
 
 It should correctly detect everything, and give you a menu.
-Now turn off OpenGL, as it doesn't work with mingw yet
 
 Next run './build.sh uqm depend' (just to be sure)
 and lastly:
 ./build.sh uqm
 
-If you did everything correctly, it should ow build successfully.
+If you did everything correctly, it should now build successfully.
 
 To run the built executable, you should copy all the required DLLs to the
 same directory the executable is in, or copy them to your Windows directory.
