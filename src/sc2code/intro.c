@@ -431,6 +431,24 @@ DoPresentation (PVOID pIS)
 		{	/* fade to white */
 			return DoFadeScreen (pPIS, pStr, FadeAllToWhite);
 		}
+		else if (strcmp (Opcode, "CLS") == 0)
+		{	/* clear screen */
+			RECT r;
+
+			LockMutex (GraphicsLock);
+			GetContextClipRect (&r);
+			r.corner.x = r.corner.y = 0;
+			/* paint black rect over screen	*/
+			SetContextForeGroundColor (BUILD_COLOR (
+					MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+			DrawFilledRectangle (&r);	
+			UnlockMutex (GraphicsLock);
+		}
+		else if (strcmp (Opcode, "CALL") == 0)
+		{	/* call another script */
+			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			ShowPresentation (pPIS->Buffer);
+		}
 		else if (strcmp (Opcode, "NOOP") == 0)
 		{	/* no operation - must be a comment in script */
 			/* do nothing */
