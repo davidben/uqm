@@ -678,10 +678,10 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	else if (src->format->BytesPerPixel == 4 && dst->format->BytesPerPixel == 4 &&
 		mipmap->format->BytesPerPixel == 4)
 	{
-		Uint32 fsx0 = (int)(65536.0f * (float)src->w / w);
-		Uint32 fsy0 = (int)(65536.0f * (float)src->h / h);
-		Uint32 fsx1 = (int)(65536.0f * (float)mipmap->w / w);
-		Uint32 fsy1 = (int)(65536.0f * (float)mipmap->h / h);
+		int fsx0 = (int)(65536.0f * (float)src->w / w);
+		int fsy0 = (int)(65536.0f * (float)src->h / h);
+		int fsx1 = (int)(65536.0f * (float)mipmap->w / w);
+		int fsy1 = (int)(65536.0f * (float)mipmap->h / h);
 		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
 		int x, y;
 
