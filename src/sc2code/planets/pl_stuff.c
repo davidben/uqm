@@ -238,12 +238,12 @@ build_steps ()
 	ystep[i] = 1;
 	
 #if 0
-y = 0;
-for (i = 0; y < (HEIGHT >> 1); i++)
-{
-	printf ("ystep[%ld] = %ld\n", i, ystep[i]);
-	y += ystep[i];
-}
+	y = 0;
+	for (i = 0; y < (HEIGHT >> 1); i++)
+	{
+		fprintf (stderr, "ystep[%ld] = %ld\n", i, ystep[i]);
+		y += ystep[i];
+	}
 #endif
 }
 
@@ -286,9 +286,9 @@ build_tables (int da)
 		
 		y += h;
 #if 0
-printf ("%ld: %ld  ", i, y);
-printf ("%ld,%ld -- ", x0[i] >> 16, y0[i] >> 16);
-printf ("%ld,%ld\n", x1[i] >> 16, y1[i] >> 16);
+		fprintf (stderr, "%ld: %ld  ", i, y);
+		fprintf (stderr, "%ld,%ld -- ", x0[i] >> 16, y0[i] >> 16);
+		fprintf (stderr, "%ld,%ld\n", x1[i] >> 16, y1[i] >> 16);
 #endif
 	}
 	
@@ -431,7 +431,7 @@ init_rotate_cels ()
 		}
 	}
 #if 0
-printf ("using %d cels for rotate\n", cur_ccb - plCCB);
+	fprintf (stderr, "using %d cels for rotate\n", cur_ccb - plCCB);
 #endif
 }
 #endif
@@ -515,9 +515,11 @@ RotatePlanet (int x, int dx, int dy)
 #endif
 		add_cel (pblack_circ_ccb);
 #ifdef KDEBUG
-printf ("CLEAR...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
+		fprintf (stderr, "CLEAR...\n");
+		while (AnyButtonPress (FALSE))
+			;
+		while (!AnyButtonPress (FALSE))
+			;
 #endif /* KDEBUG */
    }
 
@@ -558,9 +560,11 @@ while (!AnyButtonPress (FALSE));
 	add_cels (first, cur_ccb - 1);
 
 #ifdef KDEBUG
-printf ("PLANET...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
+	fprintf (stderr, "PLANET...\n");
+	while (AnyButtonPress (FALSE))
+		;
+	while (!AnyButtonPress (FALSE))
+		;
 #endif /* KDEBUG */
 	if (pcirc_ccb)
 	{
@@ -574,9 +578,11 @@ while (!AnyButtonPress (FALSE));
 #endif
 		add_cel (pcirc_ccb);
 #ifdef KDEBUG
-printf ("CLIP...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
+		fprintf (stderr, "CLIP...\n");
+		while (AnyButtonPress (FALSE))
+			;
+		while (!AnyButtonPress (FALSE))
+			;
 #endif /* KDEBUG */
 	}
 	
@@ -592,9 +598,11 @@ while (!AnyButtonPress (FALSE));
 #endif
 		add_cel (pblur_ccb);
 #ifdef KDEBUG
-printf ("BLUR...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
+		fprintf (stderr, "BLUR...\n");
+		while (AnyButtonPress (FALSE))
+			;
+		while (!AnyButtonPress (FALSE))
+			;
 #endif /* KDEBUG */
 	}
 	
@@ -610,9 +618,11 @@ while (!AnyButtonPress (FALSE));
 #endif
 		add_cel (pshadow_ccb);
 #ifdef KDEBUG
-printf ("SHADOW...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
+		fprintf (stderr, "SHADOW...\n");
+		while (AnyButtonPress (FALSE))
+			;
+		while (!AnyButtonPress (FALSE))
+			;
 #endif /* KDEBUG */
 	}
 
@@ -641,10 +651,13 @@ while (!AnyButtonPress (FALSE));
 				
 		add_cel (pshield_ccb);
 #ifdef KDEBUG
-printf ("SHIELD...\n");
-while (AnyButtonPress (FALSE));
-while (!AnyButtonPress (FALSE));
-while (AnyButtonPress (FALSE));
+		fprintf (stderr, "SHIELD...\n");
+		while (AnyButtonPress (FALSE))
+			;
+		while (!AnyButtonPress (FALSE))
+			;
+		while (AnyButtonPress (FALSE))
+			;
 #endif /* KDEBUG */
 	}
 	

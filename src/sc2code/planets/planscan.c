@@ -232,12 +232,13 @@ SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x0C));
 						++pscan_block->num_same_scans;
 					}
 #ifdef DEBUG
-printf ("<%d, %d>-<%d, %d>, %d, %d, %u%s\n",
-scan_array->start.x, scan_array->start.y,
-scan_array->end.x, scan_array->end.y,
-scan_array->xerror, scan_array->yerror,
-scan_array->num_dots & ~SAME_SCAN,
-(scan_array->num_dots & SAME_SCAN) ? ", SAME SCAN" : "");
+					fprintf (stderr, "<%d, %d>-<%d, %d>, %d, %d, %u%s\n",
+							scan_array->start.x, scan_array->start.y,
+							scan_array->end.x, scan_array->end.y,
+							scan_array->xerror, scan_array->yerror,
+							scan_array->num_dots & ~SAME_SCAN,
+							(scan_array->num_dots & SAME_SCAN) ?
+							", SAME SCAN" : "");
 #endif /* DEBUG */
 					++scan_array;
 
@@ -274,12 +275,12 @@ DrawPoint (&pt);
 				++pscan_block->num_same_scans;
 			}
 #ifdef DEBUG
-printf ("<%d, %d>-<%d, %d>, %d, %d, %u\n",
-scan_array->start.x, scan_array->start.y,
-scan_array->end.x, scan_array->end.y,
-scan_array->xerror, scan_array->yerror,
-scan_array->num_dots & ~SAME_SCAN,
-(scan_array->num_dots & SAME_SCAN) ? ", SAME SCAN" : "");
+			fprintf (stderr, "<%d, %d>-<%d, %d>, %d, %d, %u\n",
+					scan_array->start.x, scan_array->start.y,
+					scan_array->end.x, scan_array->end.y,
+					scan_array->xerror, scan_array->yerror,
+					scan_array->num_dots & ~SAME_SCAN,
+					(scan_array->num_dots & SAME_SCAN) ? ", SAME SCAN" : "");
 #endif /* DEBUG */
 			++scan_array;
 		}
@@ -296,12 +297,12 @@ scan_array->num_dots & ~SAME_SCAN,
 
 	pscan_block->num_scans = (COUNT)(scan_array - pscan_block->scan_base);
 #ifdef DEBUG
-{
-extern DWORD AnyButtonPress (BOOLEAN CheckSpecial);
-printf ("num_scans = %u\n", pscan_block->num_scans);
-while (!AnyButtonPress (TRUE))
-	;
-}
+	{
+		extern DWORD AnyButtonPress (BOOLEAN CheckSpecial);
+		fprintf (stderr, "num_scans = %u\n", pscan_block->num_scans);
+		while (!AnyButtonPress (TRUE))
+			;
+	}
 #endif /* DEBUG */
 }
 

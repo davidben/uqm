@@ -45,7 +45,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		result = TFB_GL_InitGraphics (driver, flags, width, height, bpp);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		printf("OpenGL support not compiled in, so using pure sdl driver\n");
+		fprintf (stderr, "OpenGL support not compiled in, so using pure sdl driver\n");
 		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
 #endif
 	}
@@ -219,7 +219,7 @@ TFB_LoadImage (SDL_Surface *img)
 		}
 		else
 		{
-			printf("TFB_LoadImage(): TFB_DisplayFormatAlpha failed\n");
+			fprintf (stderr, "TFB_LoadImage(): TFB_DisplayFormatAlpha failed\n");
 			myImage->NormalImg = img;
 		}
 	}
@@ -285,7 +285,7 @@ TFB_ComputeFPS ()
 	if (fps_counter > 1000)
 	{
 		fps_counter = 0;
-		printf ("fps %.2f\n",1.0 / (delta_time / 1000.0));
+		fprintf (stderr, "fps %.2f\n",1.0 / (delta_time / 1000.0));
 	}
 }
 
@@ -375,7 +375,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		++commands_handled;
 		if (!livelock_deterrence && commands_handled + DrawCommandQueue->Size > DCQ_LIVELOCK_MAX)
 		{
-			// printf("Initiating livelock deterrence!\n");
+			// fprintf (stderr, "Initiating livelock deterrence!\n");
 			livelock_deterrence = TRUE;
 			
 			Lock_DCQ ();
@@ -395,7 +395,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				if (DC_image == 0)
 				{
-					printf ("TFB_FlushGraphics(): error, DC_image == 0\n");
+					fprintf (stderr, "TFB_FlushGraphics(): error, DC_image == 0\n");
 					break;
 				}
 
@@ -526,7 +526,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			SDL_FreeSurface (DC_image->NormalImg);
 			
 			if (DC_image->ScaledImg) {
-				//printf("DELETEIMAGE to ScaledImg %x, size %d %d\n",DC_image->ScaledImg,DC_image->ScaledImg->w,DC_image->ScaledImg->h);
+				//fprintf (stderr, "DELETEIMAGE to ScaledImg %x, size %d %d\n",DC_image->ScaledImg,DC_image->ScaledImg->w,DC_image->ScaledImg->h);
 				SDL_FreeSurface (DC_image->ScaledImg);
 			}
 

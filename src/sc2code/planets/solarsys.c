@@ -389,7 +389,7 @@ CheckIntersect (BOOLEAN just_checking)
 	{
 		PlanetOffset = pCurDesc - pSolarSysState->PlanetDesc + 1;
 		MoonOffset = 1;
-//printf ("0: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
+//fprintf (stderr, "0: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
 		NewWaitPlanet = MAKE_WORD (PlanetOffset, MoonOffset);
 		if (pSolarSysState->WaitIntersect != (COUNT)~0
 				&& pSolarSysState->WaitIntersect != NewWaitPlanet)
@@ -405,11 +405,11 @@ ShowPlanet:
 			}
 
 #ifdef DEBUG
-printf ("Star index = %d, Planet index = %d, <%d, %d>\n",
-CurStarDescPtr - star_array,
-pCurDesc - pSolarSysState->PlanetDesc,
-pSolarSysState->SunDesc[0].location.x,
-pSolarSysState->SunDesc[0].location.y);
+			fprintf (stderr, "Star index = %d, Planet index = %d, <%d, %d>\n",
+					CurStarDescPtr - star_array,
+					pCurDesc - pSolarSysState->PlanetDesc,
+					pSolarSysState->SunDesc[0].location.x,
+					pSolarSysState->SunDesc[0].location.y);
 #endif /* DEBUG */
 			return;
 		}
@@ -441,7 +441,7 @@ pSolarSysState->SunDesc[0].location.y);
 			if (DrawablesIntersect (&ShipIntersect,
 					&PlanetIntersect, MAX_TIME_VALUE))
 			{
-//printf ("1: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
+//				fprintf (stderr, "1: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
 				NewWaitPlanet = MAKE_WORD (PlanetOffset, MoonOffset);
 				
 				if (pSolarSysState->WaitIntersect == (COUNT)~0)
@@ -1543,12 +1543,13 @@ GenerateRandomIP (BYTE control)
 		case GENERATE_ORBITAL:
 		{
 #ifdef DEBUG
-if (pSolarSysState->pOrbitalDesc->pPrevDesc == pSolarSysState->SunDesc)
-	printf ("Planet index = %d\n", pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc);
-else
-	printf ("Planet index = %d, Moon index = %d\n",
-			pSolarSysState->pOrbitalDesc->pPrevDesc - pSolarSysState->PlanetDesc,
-			pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
+			if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
+					pSolarSysState->SunDesc)
+				fprintf (stderr, "Planet index = %d\n", pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc);
+			else
+				fprintf (stderr, "Planet index = %d, Moon index = %d\n",
+						pSolarSysState->pOrbitalDesc->pPrevDesc - pSolarSysState->PlanetDesc,
+						pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
 #endif /* DEBUG */
 			rand_val = DoPlanetaryAnalysis (
 					&pSolarSysState->SysInfo, pSolarSysState->pOrbitalDesc

@@ -222,7 +222,7 @@ SetGameClockRate (COUNT seconds_per_day)
 {
 	SIZE new_day_in_ticks, new_tick_count;
 
-//if (GLOBAL (GameClock.clock_sem)) printf ("%u\n", GLOBAL (GameClock.clock_sem));
+//if (GLOBAL (GameClock.clock_sem)) fprintf (stderr, "%u\n", GLOBAL (GameClock.clock_sem));
 	SetSemaphore (GLOBAL (GameClock.clock_sem));
 	new_day_in_ticks = (SIZE)(seconds_per_day * (ONE_SECOND / 5));
 	if (GLOBAL (GameClock.day_in_ticks) == 0)

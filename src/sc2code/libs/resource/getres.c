@@ -173,12 +173,13 @@ load_package (INDEX_HEADERPTR ResHeaderPtr, RES_PACKAGE res_package)
 	if ((hList = AllocResourceHandleList (
 			num_types, num_instances
 			)) == NULL_HANDLE)
-{
+	{
 #ifdef DEBUG
-printf ("Unable to allocate resource handle list <%d, %d>\n", num_types, num_instances);
+		fprintf (stderr, "Unable to allocate resource handle list <%d, %d>\n",
+				num_types, num_instances);
 #endif /* DEBUG */
 		return (NULL_HANDLE);
-}
+	}
 
 	LockResourceHandleList (ResHeaderPtr, hList, res_package,
 			&ResourceHandleListPtr, &TypeEncodePtr, &DataPtr);
@@ -285,8 +286,10 @@ printf ("Unable to allocate resource handle list <%d, %d>\n", num_types, num_ins
 					if (hData && IsIndexType (ResHeaderPtr, type))
 						DanglingOpen = FALSE;
 #ifdef DEBUG
-if (hData == 0)
-printf ("fp = 0x%08lx(%d), type = %u, file_offs = %lu, len = %lu\n", fp, DanglingOpen, type, file_offs, data_len);
+					if (hData == 0)
+						fprintf (stderr, "fp = 0x%08lx(%d), type = %u, "
+								"file_offs = %lu, len = %lu\n", fp,
+								DanglingOpen, type, file_offs, data_len);
 #endif /* DEBUG */
 				}
 				file_offs += data_len;
@@ -297,15 +300,17 @@ printf ("fp = 0x%08lx(%d), type = %u, file_offs = %lu, len = %lu\n", fp, Danglin
 
 				fp = OpenResFile (file_buf, "rb");
 				if (fp == NULL)
+				{
 #if 1 // def DEBUG
-printf ("Can't open '%s'\n", file_buf)
+					fprintf (stderr, "Can't open '%s'\n", file_buf);
 #endif /* DEBUG */
-					;
+				}
 				else
 				{
 					data_len = LengthResFile (fp);
 #ifndef PACKAGING
-printf ("\t'%s' -- %lu bytes\n", file_buf, data_len);
+					fprintf (stderr, "\t'%s' -- %lu bytes\n", file_buf,
+							data_len);
 #endif /* PACKAGING */
 					if (data_len == 0)
 						hData = NULL_HANDLE;
@@ -316,7 +321,9 @@ printf ("\t'%s' -- %lu bytes\n", file_buf, data_len);
 				}
 			}
 #ifdef DEBUG
-if (hData == 0) printf ("Can't create data for '%s' <%lu>\n", file_buf, data_len);
+			if (hData == 0)
+				fprintf (stderr, "Can't create data for '%s' <%lu>\n",
+						file_buf, data_len);
 #endif /* DEBUG */
 
 			DataPtr[0] = LOBYTE (hData);
@@ -340,7 +347,7 @@ if (hData == 0) printf ("Can't create data for '%s' <%lu>\n", file_buf, data_len
 	if (num_instances == 0)
 	{
 #ifdef DEBUG
-printf ("Nothing in package!\n");
+		fprintf (stderr, "Nothing in package!\n");
 #endif /* DEBUG */
 		FreeResourceHandleList (hList);
 		hList = NULL_HANDLE;
@@ -364,12 +371,13 @@ GetResource (RESOURCE res)
 
 	ResHeaderPtr = _get_current_index_header ();
 	if (!ValidResource (ResHeaderPtr, res))
-{
+	{
 #ifdef DEBUG
-if (res) printf ("0x%08lx is not a valid resource!\n", res);
+		if (res)
+			fprintf (stderr, "0x%08lx is not a valid resource!\n", res);
 #endif /* DEBUG */
 		return (NULL_HANDLE);
-}
+	}
 
 	res_package = GET_PACKAGE (res);
 
@@ -380,12 +388,12 @@ if (res) printf ("0x%08lx is not a valid resource!\n", res);
 	else
 	{
 		if ((hList = load_package (ResHeaderPtr, res_package)) == NULL_HANDLE)
-{
+		{
 #ifdef DEBUG
-printf ("Unable to load package %u\n", res_package);
+			fprintf (stderr, "Unable to load package %u\n", res_package);
 #endif /* DEBUG */
 			return (NULL_HANDLE);
-}
+		}
 
 		ResHeaderPtr->PackageList[res_package - 1].flags_and_data_loc =
 				MAKE_DWORD (hList, 0);
@@ -407,7 +415,8 @@ printf ("Unable to load package %u\n", res_package);
 	UnlockResourceHandleList (hList);
 
 #ifdef DEBUG
-if (hData == 0) printf ("No data for res 0x%08lx\n", res);
+	if (hData == 0)
+		fprintf (stderr, "No data for res 0x%08lx\n", res);
 #endif /* DEBUG */
 	return (hData);
 }

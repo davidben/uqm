@@ -34,25 +34,25 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	GraphicsDriver = driver;
 
-	printf("Initializing SDL (pure).\n");
+	fprintf (stderr, "Initializing SDL (pure).\n");
 
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
-		printf("Could not initialize SDL: %s.\n", SDL_GetError());
+		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
 		exit(-1);
 	}
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	printf("SDL driver used: %s\n", VideoName);
+	fprintf (stderr, "SDL driver used: %s\n", VideoName);
 			// Set the environment variable SDL_VIDEODRIVER to override
 			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
 			//            ggi, aalib
 			// For Windows: directx (default), windib
 	atexit (SDL_Quit);
 
-	printf ("SDL initialized.\n");
+	fprintf (stderr, "SDL initialized.\n");
 
-	printf ("Initializing Screen.\n");
+	fprintf (stderr, "Initializing Screen.\n");
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;
@@ -71,7 +71,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		ScreenHeightActual = 480;
 
 		if (width != 640 || height != 480)
-			printf("Screen resolution of %dx%d not supported under pure SDL, using 640x480\n", width, height);
+			fprintf (stderr, "Screen resolution of %dx%d not supported under pure SDL, using 640x480\n", width, height);
 	}
 
 	videomode_flags |= SDL_ANYFORMAT;
@@ -83,14 +83,14 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (SDL_Video == NULL)
 	{
-		printf ("Couldn't set %ix%ix%i video mode: %s\n",
+		fprintf (stderr, "Couldn't set %ix%ix%i video mode: %s\n",
 			ScreenWidthActual, ScreenHeightActual, bpp,
 			SDL_GetError ());
 		exit(-1);
 	}
 	else
 	{
-		printf ("Set the resolution to: %ix%ix%i\n",
+		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
 			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 			SDL_GetVideoSurface()->format->BitsPerPixel);
 
@@ -101,7 +101,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (test_extra == NULL)
 	{
-		printf("Couldn't create back buffer: %s\n", SDL_GetError());
+		fprintf (stderr, "Couldn't create back buffer: %s\n", SDL_GetError());
 		exit(-1);
 	}
 
@@ -118,7 +118,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
-		printf("Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
+		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
 			SDL_Video->format->BytesPerPixel,SDL_Screen->format->BytesPerPixel);
 		exit(-1);
 	}

@@ -73,7 +73,7 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 					);
 			SysInfoPtr->PlanetInfo.CurType = eptr->ElementType;
 #ifdef DEBUG
-			//printf ("\t\t%d units of %Fs\n",
+			//fprintf (stderr, "\t\t%d units of %Fs\n",
 				 //   SysInfoPtr->PlanetInfo.CurDensity,
 				  //  Elements[eptr->ElementType].name);
 #endif /* DEBUG */
@@ -236,8 +236,9 @@ CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
 			} while (--num_types);
 		}
 #ifdef DEBUG
-else
-	printf ("It's dead, Jim! (%d >= %d)\n", life_var, SysInfoPtr->PlanetInfo.LifeChance);
+		else
+			fprintf (stderr, "It's dead, Jim! (%d >= %d)\n", life_var,
+				SysInfoPtr->PlanetInfo.LifeChance);
 #endif /* DEBUG */
 	}
 

@@ -28,7 +28,7 @@ InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size)
 	return (TRUE);
 #else /* QUEUE_TABLE */
 	SetFreeList (pq, NULL_HANDLE);
-// printf ("num_elements = %d (%d)\n", num_elements, (BYTE)num_elements);
+//	fprintf (stderr, "num_elements = %d (%d)\n", num_elements, (BYTE)num_elements);
 	if (AllocQueueTab (pq, num_elements) && LockQueueTab (pq))
 	{
 		do
@@ -105,8 +105,8 @@ AllocLink (PQUEUE pq)
 		UnlockLink (pq, hLink);
 	}
 /*
-else
-printf ("No more elements\n");
+	else
+		fprintf (stderr, "No more elements\n");
 */
 	return (hLink);
 }

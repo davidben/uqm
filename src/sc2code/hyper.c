@@ -230,7 +230,7 @@ percent = 0;
 				GetStringContents (SetAbsStringTableIndex (
 						TemplatePtr->ShipInfo.race_strings, 1
 						), (STRINGPTR)buf, FALSE);
-// printf ("%s encounter\n", buf);
+//				fprintf (stderr, "%s encounter\n", buf);
 #endif /* DEBUG */
 				hEncounter = AllocEncounter ();
 				if (hEncounter)

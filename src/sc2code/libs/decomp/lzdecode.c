@@ -36,9 +36,9 @@ PBYTE _Stream;
 UWORD _workbuf;
 BYTE _workbuflen;
 
+/* get one bit */
 static SWORD
-GetBit (/* get one bit */
-	void)
+GetBit (void)
 {
 	SWORD i;
 

@@ -290,8 +290,8 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
 	SeekResFile (fp, offset, SEEK_SET);
 	WriteResFile (pGH, sizeof (*pGH), 1, fp);
 #ifdef DEBUG
-printf ("1)FlushGroupInfo(%lu): WG = %u(%lu), NG = %u, SI = %u\n",
-offset, which_group, pGH->GroupOffset[which_group], pGH->NumGroups, pGH->star_index);
+	fprintf (stderr, "1)FlushGroupInfo(%lu): WG = %u(%lu), NG = %u, SI = %u\n",
+	offset, which_group, pGH->GroupOffset[which_group], pGH->NumGroups, pGH->star_index);
 #endif /* DEBUG */
 
 	NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
@@ -322,14 +322,14 @@ offset, which_group, pGH->GroupOffset[which_group], pGH->NumGroups, pGH->star_in
 		WriteResFile ((PBYTE)&RaceType, sizeof (RaceType), 1, fp);
 
 #ifdef DEBUG
-if (which_group == 0)
-printf ("F) type %u, loc %u<%d, %d>, task 0x%02x:%u\n",
-RaceType,
-GET_GROUP_LOC (FragPtr),
-FragPtr->ShipInfo.loc.x,
-FragPtr->ShipInfo.loc.y,
-GET_GROUP_MISSION (FragPtr),
-GET_GROUP_DEST (FragPtr));
+		if (which_group == 0)
+			fprintf (stderr, "F) type %u, loc %u<%d, %d>, task 0x%02x:%u\n",
+					RaceType,
+					GET_GROUP_LOC (FragPtr),
+					FragPtr->ShipInfo.loc.x,
+					FragPtr->ShipInfo.loc.y,
+					GET_GROUP_MISSION (FragPtr),
+					GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG */
 		Ptr = (PBYTE)&FragPtr->RaceDescPtr;
 		WriteResFile ((PBYTE)Ptr,
@@ -361,7 +361,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		SeekResFile (fp, offset, SEEK_SET);
 		ReadResFile (&GH, sizeof (GH), 1, fp);
 #ifdef DEBUG
-printf ("GetGroupInfo(%lu): %u(%lu) out of %u\n", offset, which_group, GH.GroupOffset[which_group], GH.NumGroups);
+		fprintf (stderr, "GetGroupInfo(%lu): %u(%lu) out of %u\n", offset, which_group, GH.GroupOffset[which_group], GH.NumGroups);
 #endif /* DEBUG */
 		if (which_group == (BYTE)~0)
 		{
@@ -369,7 +369,7 @@ printf ("GetGroupInfo(%lu): %u(%lu) out of %u\n", offset, which_group, GH.GroupO
 
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 #ifdef DEBUG
-printf ("%u == %u\n", GH.star_index, (COUNT)(CurStarDescPtr - star_array));
+			fprintf (stderr, "%u == %u\n", GH.star_index, (COUNT)(CurStarDescPtr - star_array));
 #endif /* DEBUG */
 			day_index = GH.day_index;
 			month_index = GH.month_index;
@@ -382,9 +382,9 @@ printf ("%u == %u\n", GH.star_index, (COUNT)(CurStarDescPtr - star_array));
 				CloseResFile (fp);
 
 #ifdef DEBUG
-if (GH.star_index == (COUNT)(CurStarDescPtr - star_array))
-printf ("GetGroupInfo: battle groups out of date %u/%u/%u!\n",
-month_index, day_index, year_index);
+			if (GH.star_index == (COUNT)(CurStarDescPtr - star_array))
+				fprintf (stderr, "GetGroupInfo: battle groups out of date %u/%u/%u!\n",
+						month_index, day_index, year_index);
 #endif /* DEBUG */
 				fp = OpenResFile (RANDGRPINFO_FILE, "wb");
 				GH.NumGroups = 0;
@@ -471,15 +471,16 @@ month_index, day_index, year_index);
 						SET_GROUP_LOC (FragPtr, group_loc);
 
 #ifdef DEBUG
-printf ("battle group %u(0x%04x) strength %u, type %u, loc %u<%d, %d>, task %u\n",
-which_group,
-hStarShip,
-NumShips,
-RaceType,
-group_loc,
-FragPtr->ShipInfo.loc.x,
-FragPtr->ShipInfo.loc.y,
-task);
+						fprintf (stderr, "battle group %u(0x%04x) strength %u, "
+								"type %u, loc %u<%d, %d>, task %u\n",
+								which_group,
+								hStarShip,
+								NumShips,
+								RaceType,
+								group_loc,
+								FragPtr->ShipInfo.loc.x,
+								FragPtr->ShipInfo.loc.y,
+								task);
 #endif /* DEBUG */
 						UnlockStarShip (
 								&GLOBAL (npc_built_ship_q), hStarShip
@@ -551,21 +552,21 @@ task);
 						1, fp);
 
 #ifdef DEBUG
-if (which_group == 0)
-printf ("G) type %u, loc %u<%d, %d>, task 0x%02x:%u\n",
-RaceType,
-GET_GROUP_LOC (FragPtr),
-FragPtr->ShipInfo.loc.x,
-FragPtr->ShipInfo.loc.y,
-GET_GROUP_MISSION (FragPtr),
-GET_GROUP_DEST (FragPtr));
+				if (which_group == 0)
+					fprintf (stderr, "G) type %u, loc %u<%d, %d>, task 0x%02x:%u\n",
+							RaceType,
+							GET_GROUP_LOC (FragPtr),
+							FragPtr->ShipInfo.loc.x,
+							FragPtr->ShipInfo.loc.y,
+							GET_GROUP_MISSION (FragPtr),
+							GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG */
 				if (GET_GROUP_ID (FragPtr) != BaseGroup
 						|| which_group
 						|| ShipsLeft)
 				{
 #ifdef DEBUG
-printf ("\n");
+					fprintf (stderr, "\n");
 #endif /* DEBUG */
 					if (RaceType == SHOFIXTI_SHIP
 							&& which_group
@@ -588,7 +589,7 @@ printf ("\n");
 				else
 				{
 #ifdef DEBUG
-printf (" -- REMOVING\n");
+					fprintf (stderr, " -- REMOVING\n");
 #endif /* DEBUG */
 					UnlockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip
@@ -659,7 +660,7 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 		}
 		GH.star_index = CurStarDescPtr - star_array;
 #ifdef DEBUG
-printf ("PutGroupInfo(%lu): %u out of %u -- %u/%u/%u\n",
+		fprintf (stderr, "PutGroupInfo(%lu): %u out of %u -- %u/%u/%u\n",
 offset, which_group, GH.NumGroups,
 GH.month_index, GH.day_index, GH.year_index);
 #endif /* DEBUG */

@@ -35,20 +35,20 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	GraphicsDriver = driver;
 
-	printf("Initializing SDL (OpenGL).\n");
+	fprintf (stderr, "Initializing SDL (OpenGL).\n");
 
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
-		printf("Could not initialize SDL: %s.\n", SDL_GetError());
+		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
 		exit(-1);
 	}
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	printf("SDL driver used: %s\n", VideoName);
+	fprintf (stderr, "SDL driver used: %s\n", VideoName);
 	atexit (SDL_Quit);
 
-	printf ("SDL initialized.\n");
-	printf ("Initializing Screen.\n");
+	fprintf (stderr, "SDL initialized.\n");
+	fprintf (stderr, "Initializing Screen.\n");
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;
@@ -57,7 +57,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	switch(bpp) {
 		case 8:
-			printf("bpp of 8 not supported under OpenGL\n");
+			fprintf (stderr, "bpp of 8 not supported under OpenGL\n");
 			exit(-1);
 
 		case 15:
@@ -97,19 +97,19 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (SDL_Video == NULL)
 	{
-		printf ("Couldn't set OpenGL %ix%ix%i video mode: %s\n",
-			ScreenWidthActual, ScreenHeightActual, bpp,
-			SDL_GetError ());
+		fprintf (stderr, "Couldn't set OpenGL %ix%ix%i video mode: %s\n",
+				ScreenWidthActual, ScreenHeightActual, bpp,
+				SDL_GetError ());
 		exit(-1);
 	}
 	else
 	{
-		printf ("Set the resolution to: %ix%ix%i\n",
-			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
-			SDL_GetVideoSurface()->format->BitsPerPixel);
+		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
+				SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
+				SDL_GetVideoSurface()->format->BitsPerPixel);
 
-		printf("OpenGL renderer: %s version: %s\n", glGetString(GL_RENDERER), 
-			glGetString(GL_VERSION));
+		fprintf (stderr, "OpenGL renderer: %s version: %s\n",
+				glGetString(GL_RENDERER), glGetString(GL_VERSION));
 	}
 
 	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
@@ -117,8 +117,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (SDL_Screen == NULL)
 	{
-		printf("Couldn't create back buffer: %s\n",
-			SDL_GetError());
+		fprintf (stderr, "Couldn't create back buffer: %s\n",
+				SDL_GetError());
 		exit(-1);
 	}
 
@@ -127,8 +127,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (ExtraScreen == NULL)
 	{
-		printf("Couldn't create workspace buffer: %s\n",
-			SDL_GetError());
+		fprintf (stderr, "Couldn't create workspace buffer: %s\n",
+				SDL_GetError());
 		exit(-1);
 	}
 
@@ -137,8 +137,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (format_conv_surf == NULL)
 	{
-		printf("Couldn't create format_conv_surf: %s\n",
-			SDL_GetError());
+		fprintf (stderr, "Couldn't create format_conv_surf: %s\n",
+				SDL_GetError());
 		exit(-1);
 	}
 
@@ -257,7 +257,7 @@ TFB_GL_SwapBuffers ()
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 
-		//printf("fade_amount %d c %f\n",fade_amount, c);
+		//fprintf (stderr, "fade_amount %d c %f\n",fade_amount, c);
 
 		TFB_GL_DrawQuad ();
 	}

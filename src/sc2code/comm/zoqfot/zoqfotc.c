@@ -378,9 +378,9 @@ ZoqFotIntro (RESPONSE_REF R)
 		DISABLE_PHRASE (what_look_like);
 	}
 	
-// printf ("yr = 0x%x wf = 0x%x\n", alien_text[your_race][0], alien_text[where_from][0]);
-// printf ("we = 0x%x tl = 0x%x\n", alien_text[what_emergency][0], alien_text[tough_luck][0]);
-// printf ("wll = 0x%x\n", what_look_like);
+// fprintf (stderr, "yr = 0x%x wf = 0x%x\n", alien_text[your_race][0], alien_text[where_from][0]);
+// fprintf (stderr, "we = 0x%x tl = 0x%x\n", alien_text[what_emergency][0], alien_text[tough_luck][0]);
+// fprintf (stderr, "wll = 0x%x\n", what_look_like);
 	if (PHRASE_ENABLED (your_race)
 			|| PHRASE_ENABLED (where_from)
 			|| PHRASE_ENABLED (what_emergency))

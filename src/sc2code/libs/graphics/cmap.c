@@ -58,7 +58,7 @@ int TFB_GetColorMapType ()
 
 void TFB_ReleaseColorMap ()
 {
-	//printf("TFB_ReleaseColorMap()\n");
+	//fprintf (stderr, "TFB_ReleaseColorMap()\n");
 	has_colormap = FALSE;
 }
 
@@ -168,7 +168,7 @@ SetColorMap (COLORMAPPTR map, int type)
 	TFB_ColorMapToRGB (vp);
 	has_colormap = TRUE;
 
-	//printf("SetColorMap(): vp %x map %x bytes %d, start %d end %d\n",vp, map, bytes, start, end);
+	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n",vp, map, bytes, start, end);
 	return TRUE;
 }
 
@@ -198,7 +198,7 @@ int xform_clut_task (void *data)
 				TDelta = TTotal;
 
 			cur += (end - cur) * TDelta / TTotal;
-			//printf("xform_clut_task cur %d\n", cur);
+			//fprintf (stderr, "xform_clut_task cur %d\n", cur);
 		} while (TTotal -= TDelta && (!Task_ReadState (task, TASK_EXIT)));
 	}
 

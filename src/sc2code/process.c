@@ -226,7 +226,7 @@ CalcReduction (SIZE dx, SIZE dy)
 #else
 	COUNT next_reduction;
 #ifdef KDEBUG
-printf ("CalcReduction:\n");
+	fprintf (stderr, "CalcReduction:\n");
 #endif
 	if (LOBYTE (GLOBAL (CurrentActivity)) > IN_ENCOUNTER)
 		return (1 << ZOOM_SHIFT);
@@ -252,7 +252,7 @@ printf ("CalcReduction:\n");
 			&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 		next_reduction = (2 << ZOOM_SHIFT);
 #ifdef KDEBUG
-printf ("CalcReduction: exit\n");
+	fprintf (stderr, "CalcReduction: exit\n");
 #endif
 #endif
 
@@ -273,7 +273,7 @@ CalcView (PPOINT pNewScrollPt, register SIZE next_reduction,
 	VIEW_STATE view_state;
 
 #ifdef KDEBUG
-printf ("CalcView:\n");
+	fprintf (stderr, "CalcView:\n");
 #endif
 	dx = ((COORD)(LOG_SPACE_WIDTH >> 1) - pNewScrollPt->x);
 	dy = ((COORD)(LOG_SPACE_HEIGHT >> 1) - pNewScrollPt->y);
@@ -339,7 +339,7 @@ printf ("CalcView:\n");
 	*pdy = dy;
 
 #ifdef KDEBUG
-printf ("CalcView: exit\n");
+	fprintf (stderr, "CalcView: exit\n");
 #endif
 	return (view_state);
 }
@@ -387,7 +387,8 @@ ProcessCollisions (HELEMENT hSuccElement, register ELEMENTPTR ElementPtr,
 						&& !((state_flags | test_state_flags) & FINITE_LIFE))
 				{
 #ifdef DEBUG
-printf ("BAD NEWS 0x%x <--> 0x%x\n", ElementPtr, TestElementPtr);
+					fprintf (stderr, "BAD NEWS 0x%x <--> 0x%x\n", ElementPtr,
+							TestElementPtr);
 #endif /* DEBUG */
 					if (state_flags & COLLISION)
 					{
@@ -508,7 +509,8 @@ printf ("BAD NEWS 0x%x <--> 0x%x\n", ElementPtr, TestElementPtr);
 				POINT SavePt, TestSavePt;
 
 #ifdef DEBUG
-printf ("0x%x <--> 0x%x at %u\n", ElementPtr, TestElementPtr, time_val);
+				fprintf (stderr, "0x%x <--> 0x%x at %u\n", ElementPtr,
+						TestElementPtr, time_val);
 #endif /* DEBUG */
 				SavePt = ElementPtr->IntersectControl.EndPoint;
 				TestSavePt = TestElementPtr->IntersectControl.EndPoint;
@@ -529,7 +531,8 @@ printf ("0x%x <--> 0x%x at %u\n", ElementPtr, TestElementPtr, time_val);
 					test_state_flags = TestElementPtr->state_flags;
 
 #ifdef DEBUG
-printf ("PROCESSING 0x%x <--> 0x%x at %u\n", ElementPtr, TestElementPtr, time_val);
+					fprintf (stderr, "PROCESSING 0x%x <--> 0x%x at %u\n",
+							ElementPtr, TestElementPtr, time_val);
 #endif /* DEBUG */
 					if (test_state_flags & PLAYER_SHIP)
 					{
@@ -629,7 +632,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	COUNT ships_alive;
 
 #ifdef KDEBUG
-printf ("PreProcess:\n");
+	fprintf (stderr, "PreProcess:\n");
 #endif
 	num_ships = (LOBYTE (battle_counter) ? 1 : 0)
 			+ (HIBYTE (battle_counter) ? 1 : 0);
@@ -733,7 +736,8 @@ printf ("PreProcess:\n");
 #endif
 					min_reduction = reduction;
 			}
-//printf ("dx = %d dy = %d min_red = %d max_red = %d\n", dx, dy, min_reduction, max_reduction);
+//			fprintf (stderr, "dx = %d dy = %d min_red = %d max_red = %d\n",
+//					dx, dy, min_reduction, max_reduction);
 		}
 
 		UnlockElement (hElement);
@@ -753,7 +757,7 @@ printf ("PreProcess:\n");
 #endif
 
 #ifdef KDEBUG
-printf ("PreProcess: exit\n");
+	fprintf (stderr, "PreProcess: exit\n");
 #endif
 	return (CalcView (&Origin, min_reduction, pscroll_x, pscroll_y, ships_alive));
 }
@@ -808,7 +812,7 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 	register HELEMENT hElement;
 
 #ifdef KDEBUG
-printf ("PostProcess:\n");
+	fprintf (stderr, "PostProcess:\n");
 #endif
 #ifdef OLD_ZOOM
 	reduction = (BYTE)(GLOBAL (cur_state) + ONE_SHIFT);
@@ -998,7 +1002,7 @@ printf ("PostProcess:\n");
 		hElement = hNextElement;
 	}
 #ifdef KDEBUG
-printf ("PostProcess: exit\n");
+	fprintf (stderr, "PostProcess: exit\n");
 #endif
 }
 

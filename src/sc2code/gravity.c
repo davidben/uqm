@@ -57,25 +57,25 @@ CalculateGravity (PELEMENT ElementPtr)
 						- TestElementPtr->next.location.y;
 			}
 #if 0 //def DEBUG
-if (TestElementPtr->state_flags & PLAYER_SHIP)
-{
-printf ("CalculateGravity:\n");
-printf ("\tdx = %d, dy = %d\n", dx, dy);
-}
+			if (TestElementPtr->state_flags & PLAYER_SHIP)
+			{
+				fprintf (stderr, "CalculateGravity:\n");
+				fprintf (stderr, "\tdx = %d, dy = %d\n", dx, dy);
+			}
 #endif /* DEBUG */
 			dx = WRAP_DELTA_X (dx);
 			dy = WRAP_DELTA_Y (dy);
 #if 0 //def DEBUG
-if (TestElementPtr->state_flags & PLAYER_SHIP)
-printf ("\twrap_dx = %d, wrap_dy = %d\n", dx, dy);
+			if (TestElementPtr->state_flags & PLAYER_SHIP)
+				fprintf (stderr, "\twrap_dx = %d, wrap_dy = %d\n", dx, dy);
 #endif /* DEBUG */
 			abs_dx = dx >= 0 ? dx : -dx;
 			abs_dy = dy >= 0 ? dy : -dy;
 			abs_dx = WORLD_TO_DISPLAY (abs_dx);
 			abs_dy = WORLD_TO_DISPLAY (abs_dy);
 #if 0 //def DEBUG
-if (TestElementPtr->state_flags & PLAYER_SHIP)
-printf ("\tdisplay_dx = %d, display_dy = %d\n", abs_dx, abs_dy);
+			if (TestElementPtr->state_flags & PLAYER_SHIP)
+				fprintf (stderr, "\tdisplay_dx = %d, display_dy = %d\n", abs_dx, abs_dy);
 #endif /* DEBUG */
 			if (abs_dx <= GRAVITY_THRESHOLD
 					&& abs_dy <= GRAVITY_THRESHOLD)
@@ -101,12 +101,12 @@ printf ("\tdisplay_dx = %d, display_dy = %d\n", abs_dx, abs_dy);
 #define MAX_MAGNITUDE 6
 					else if (magnitude > MAX_MAGNITUDE)
 						magnitude = MAX_MAGNITUDE;
-printf ("magnitude = %u ", magnitude);
+					fprintf (stderr, "magnitude = %u ", magnitude);
 #endif /* NEVER */
 
 #if 0 //def DEBUG
-if (TestElementPtr->state_flags & PLAYER_SHIP)
-printf ("dist_squared = %lu\n", dist_squared);
+					if (TestElementPtr->state_flags & PLAYER_SHIP)
+						fprintf (stderr, "dist_squared = %lu\n", dist_squared);
 #endif /* DEBUG */
 					if (TestHasGravity)
 					{

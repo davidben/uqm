@@ -228,7 +228,7 @@ InitGalaxy (void)
 	PPOINT ppt;
 	PRIM_LINKS Links;
 
-// printf ("transition_width = %d transition_height = %d\n", TRANSITION_WIDTH, TRANSITION_HEIGHT);
+// fprintf (stderr, "transition_width = %d transition_height = %d\n", TRANSITION_WIDTH, TRANSITION_HEIGHT);
 
 	Links = MakeLinks (END_OF_LIST, END_OF_LIST);
 	factor = ONE_SHIFT + MAX_REDUCTION + (BACKGROUND_SHIFT - 3);

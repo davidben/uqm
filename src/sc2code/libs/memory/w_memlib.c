@@ -92,10 +92,10 @@ static void Message(char *fmt, ...)
 		vsprintf(buffer, fmt, ap);
 		va_end(ap);
 
-		#ifndef FINAL
-		printf("%s\n", buffer);
-		//fflush(stdout);
-		#endif
+#ifndef FINAL
+		fprintf (stderr, "%s\n", buffer);
+		//fflush (stderr);
+#endif
 
 #if 0
 	if (GetToolFrame ())
@@ -147,10 +147,10 @@ static int MessageWithRetry(char *fmt, ...)
 		vsprintf(buffer, fmt, ap);
 		va_end(ap);
 
-		#ifndef FINAL
-		printf("%s\n", buffer);
-		//fflush(stdout);
-		#endif
+#ifndef FINAL
+		fprintf (stderr, "%s\n", buffer);
+		// fflush(stderr);
+#endif
 
 #if 0
 	if (GetToolFrame ())
@@ -254,8 +254,8 @@ MallocWithRetry(int bytes, char *diagStr)
 		if (ptr)
 			return (ptr);
 #ifndef FINAL
-printf("Malloc failed for %s. #Bytes %d.\n", diagStr, bytes);
-//fflush(stdout);
+		fprintf (stderr, "Malloc failed for %s. #Bytes %d.\n", diagStr, bytes);
+//		fflush (stderr);
 #endif
 		/* The user gets a chance to close other applications and try again. */
 
@@ -265,7 +265,7 @@ printf("Malloc failed for %s. #Bytes %d.\n", diagStr, bytes);
 			if (MessageWithRetry ("Really OK to stop tfbtool?"))
 			{
 				/* User says "die". */
-				printf ("Killed by the user (%s).\n", diagStr);
+				fprintf (stderr, "Killed by the user (%s).\n", diagStr);
 				exit (0);
 			}
 		}
@@ -299,13 +299,13 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 		if (flags & MEM_ZEROINIT)
 				memset (node->memory, 0, node->size);
 #ifdef LEAK_DEBUG
-if (leak_debug)
-	printf ("alloc %d: %08x, %lu\n", (int) node->handle, (int) node->memory,
-					node->size);
-if (node->handle == leak_idx && node->size == leak_size)
-	node = node;
-if (node->size == leak_size)
-	node = node;
+		if (leak_debug)
+			fprintf (stderr, "alloc %d: %08x, %lu\n", (int) node->handle,
+					(int) node->memory, node->size);
+		if (node->handle == leak_idx && node->size == leak_size)
+			node = node;
+		if (node->size == leak_size)
+			node = node;
 #endif /* LEAK_DEBUG */
 
 		ClearSemaphore (_MemorySem);
@@ -431,9 +431,10 @@ mem_uninit(void)
 	{
 		if (extents[i].handle != -1)
 		{
-printf ("LEAK: unreleased extent %d: %08x, %lu\n",
-		extents[i].handle, (unsigned int) extents[i].memory, extents[i].size);
-fflush (stdout);
+			fprintf (stderr, "LEAK: unreleased extent %d: %08x, %lu\n",
+					extents[i].handle, (unsigned int) extents[i].memory,
+					extents[i].size);
+			fflush (stderr);
 			extents[i].handle = -1;
 			if (extents[i].memory)
 			{
@@ -482,14 +483,15 @@ mem_release(MEM_HANDLE h)
 
 	--h;
 	if (h < 0 || h >= MAX_EXTENTS)
-		printf("LEAK: attempt to release invalid extent %d\n", h);
+		fprintf (stderr, "LEAK: attempt to release invalid extent %d\n", h);
 	else if (extents[h].handle == -1)
-		printf("LEAK: attempt to release unallocated extent %d\n",h);
+		fprintf (stderr, "LEAK: attempt to release unallocated extent %d\n",h);
 	else if (extents[h].refcount == 0)
 	{
 #ifdef LEAK_DEBUG
-if (leak_debug) printf ("free %d: %08x\n",
-		extents[h].handle, (unsigned int) extents[h].memory);
+		if (leak_debug)
+			fprintf (stderr, "free %d: %08x\n",
+					extents[h].handle, (unsigned int) extents[h].memory);
 #endif
 		if (extents[h].memory)
 		{

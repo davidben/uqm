@@ -12,7 +12,7 @@ main (int argc, char *argv[])
 	{
 		COUNT sound_index;
 
-		printf ("Sound #: ");
+		fprintf (stderr, "Sound #: ");
 		if (fscanf (stdin, "%u", &sound_index) != 1)
 			break;
 

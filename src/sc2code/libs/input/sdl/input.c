@@ -50,18 +50,18 @@ TFB_InitInput (int driver, int flags)
 
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
-		printf("Couldn't initialize joystick subsystem: %s\n", SDL_GetError());
+		fprintf (stderr, "Couldn't initialize joystick subsystem: %s\n", SDL_GetError());
 		exit(-1);
 	}
 
-	printf ("%i joysticks were found.\n", SDL_NumJoysticks ());
+	fprintf (stderr, "%i joysticks were found.\n", SDL_NumJoysticks ());
 	
-	if(SDL_NumJoysticks() > 0)
+	if (SDL_NumJoysticks () > 0)
 	{
-		printf ("The names of the joysticks are:\n");
+		fprintf (stderr, "The names of the joysticks are:\n");
 		for(i = 0; i < SDL_NumJoysticks (); i++)
 		{
-			printf("    %s\n", SDL_JoystickName (i));
+			fprintf (stderr, "    %s\n", SDL_JoystickName (i));
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 		Joystick1 = SDL_JoystickOpen (0);
@@ -198,7 +198,7 @@ ProcessJoystickEvent (const SDL_Event* Event)
 	}
 	if (Event->type == SDL_JOYBUTTONDOWN)
 	{
-		printf("Joystick %i down\n", Event->jbutton.button);
+		fprintf (stderr, "Joystick %i down\n", Event->jbutton.button);
 
 		if (Event->jbutton.button % 3 == 0)
 		{
@@ -278,7 +278,7 @@ UninitInput () // Looks like it'll be empty
 {
 		BOOLEAN ret;
 
-		// printf("Unimplemented function activated: UninitInput()\n");
+		// fprintf (stderr, "Unimplemented function activated: UninitInput()\n");
 		ret = TRUE;
 		return (ret);
 }
@@ -536,7 +536,7 @@ AnyButtonPress (BOOLEAN DetectSpecial)
 BOOLEAN
 _joystick_port_active(COUNT port) //SDL handles this nicely.
 {
-	printf ("Unimplemented function activated: _joystick_port_active()\n");
+	fprintf (stderr, "Unimplemented function activated: _joystick_port_active()\n");
 	return (0);
 }
 
@@ -639,74 +639,74 @@ INPUT_STATE
 _get_joystick_state (INPUT_REF ref, INPUT_STATE InputState)
 		// consistant, at least.
 {
-// printf ("Half-implemented function activated: _get_joystick_state()\n");
+// fprintf (stderr, "Half-implemented function activated: _get_joystick_state()\n");
 
 	if (KeyboardStroke[SDLK_LEFT])
 	{
 		SetInputXComponent (&InputState, -1);
-// printf ("LEFT!\n");
+// fprintf (stderr, "LEFT!\n");
 		KeyboardStroke[SDLK_LEFT] = FALSE;
 	}
 	if (KeyboardStroke[SDLK_RIGHT])
 	{
 		SetInputXComponent (&InputState, 1);
-// printf ("RIGHT!\n");
+// fprintf (stderr, "RIGHT!\n");
 		KeyboardStroke[SDLK_RIGHT] = FALSE;
 	}
 
 	if (KeyboardStroke[SDLK_UP])
 	{
 		SetInputYComponent (&InputState, -1);
-// printf ("UP!\n");
+// fprintf (stderr, "UP!\n");
 		KeyboardStroke[SDLK_UP] = FALSE;
 	}
 	if (KeyboardStroke[SDLK_DOWN])
 	{
 		SetInputYComponent (&InputState, 1);
-// printf ("DOWN!\n");
+// fprintf (stderr, "DOWN!\n");
 		KeyboardStroke[SDLK_DOWN] = FALSE;
 	}
 
 	if (KeyboardStroke[ControlA])
 	{
 		InputState |= DEVICE_BUTTON1;
-// printf("BUTTON1!\n");
+// fprintf (stderr, "BUTTON1!\n");
 		KeyboardStroke[ControlA]=FALSE;
 	}
 	if (KeyboardStroke[ControlB])
 	{
 		InputState |= DEVICE_BUTTON2;
-// printf ("BUTTON2!\n");
+// fprintf (stderr, "BUTTON2!\n");
 		KeyboardStroke[ControlB] = FALSE;
 	}
 	if (KeyboardStroke[ControlC])
 	{
 		InputState |= DEVICE_BUTTON3;
-// printf ("BUTTON3!\n");
+// fprintf (stderr, "BUTTON3!\n");
 		KeyboardStroke[ControlC] = FALSE;
 	}
 	if (KeyboardStroke[ControlX])
 	{
 		InputState |= DEVICE_EXIT;
-// printf ("BUTTONX!\n");
+// fprintf (stderr, "BUTTONX!\n");
 		KeyboardStroke[ControlX] = FALSE;
 	}
 	if (KeyboardStroke[ControlStart])
 	{
 		InputState |= DEVICE_PAUSE;
-// printf ("CONTROLSTART!\n");
+// fprintf (stderr, "CONTROLSTART!\n");
 		KeyboardStroke[ControlStart] = FALSE;
 	}
 	if (KeyboardStroke[ControlLeftShift])
 	{
 		InputState |= DEVICE_LEFTSHIFT;
-// printf ("LEFTSHIFT!\n");
+// fprintf (stderr, "LEFTSHIFT!\n");
 		KeyboardStroke[ControlLeftShift] = FALSE;
 	}
 	if (KeyboardStroke[ControlRightShift])
 	{
 		InputState |= DEVICE_RIGHTSHIFT;
-// printf ("RIGHTSHIFT!\n");
+// fprintf (stderr, "RIGHTSHIFT!\n");
 		KeyboardStroke[ControlRightShift] = FALSE;
 	}
 	
@@ -721,69 +721,69 @@ _get_joystick_state (INPUT_REF ref, INPUT_STATE InputState)
 #if 0
 	if (ref == JoystickInput[1] && 0)
 	{
-		//printf ("ref\n");
+		//fprintf (stderr, "ref\n");
 		
 		return(0);
 	}
 	
-// printf ("Half-implemented function activated: _get_joystick_state()\n");
+// fprintf (stderr, "Half-implemented function activated: _get_joystick_state()\n");
 
 	if (KeyboardDown[SDLK_LEFT])
 	{
 		SetInputXComponent (&InputState, -1);
-		//printf ("LEFT!\n");
+		//fprintf (stderr, "LEFT!\n");
 	}
 	if (KeyboardDown[SDLK_RIGHT])
 	{
 		SetInputXComponent (&InputState, 1);
-		//printf ("RIGHT!\n");
+		//fprintf (stderr, "RIGHT!\n");
 	}
 
 	if (KeyboardDown[SDLK_UP])
 	{
 		SetInputYComponent (&InputState, -1);
-		//printf ("UP!\n");
+		//fprintf (stderr, "UP!\n");
 	}
 	if (KeyboardDown[SDLK_DOWN])
 	{
 		SetInputYComponent (&InputState, 1);
-		//printf ("DOWN!\n");
+		//fprintf (stderr, "DOWN!\n");
 	}
 
 	if (KeyboardDown[ControlA])
 	{
 		InputState |= DEVICE_BUTTON1;
-		//printf ("BUTTON1!\n");
+		//fprintf (stderr, "BUTTON1!\n");
 	}
 	if (KeyboardDown[ControlB])
 	{
 		InputState |= DEVICE_BUTTON2;
-		//printf ("BUTTON2!\n");
+		//fprintf (stderr, "BUTTON2!\n");
 	}
 	if (KeyboardDown[ControlC])
 	{
 		InputState |= DEVICE_BUTTON3;
-		//printf ("BUTTON3!\n");
+		//fprintf (stderr, "BUTTON3!\n");
 	}
 	if (KeyboardDown[ControlX])
 	{
 		InputState |= DEVICE_EXIT;
-		//printf ("BUTTONX!\n");
+		//fprintf (stderr, "BUTTONX!\n");
 	}
 	if (KeyboardDown[ControlStart])
 	{
 		InputState |= DEVICE_PAUSE;
-		//printf ("CONTROLSTART!\n");
+		//fprintf (stderr, "CONTROLSTART!\n");
 	}
 	if (KeyboardDown[ControlLeftShift])
 	{
 		InputState |= DEVICE_LEFTSHIFT;
-		//printf ("LEFTSHIFT!\n");
+		//fprintf (stderr, "LEFTSHIFT!\n");
 	}
 	if (KeyboardDown[ControlRightShift])
 	{
 		InputState |= DEVICE_RIGHTSHIFT;
-		//printf ("RIGHTSHIFT!\n");
+		//fprintf (stderr, "RIGHTSHIFT!\n");
 	}
 #endif
 	

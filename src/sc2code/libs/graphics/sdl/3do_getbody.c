@@ -208,12 +208,10 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct, BOOLEAN is_fon
 	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
 
 #if 0
-	printf ("\thot[%d, %d], rect[%d, %d, %d, %d]\n",
-		hx, hy,
-		img[cel_ct]->clip_rect.x,
-		img[cel_ct]->clip_rect.y,
-		img[cel_ct]->clip_rect.w,
-		img[cel_ct]->clip_rect.h);
+	fprintf (stderr, "\thot[%d, %d], rect[%d, %d, %d, %d]\n",
+			hx, hy,
+			img[cel_ct]->clip_rect.x, img[cel_ct]->clip_rect.y,
+			img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
 #endif
 
 }
@@ -257,7 +255,7 @@ _GetCelData (FILE *fp, DWORD length)
 	{
 		/*char fnamestr[1000];
 		sscanf(CurrentLine, "%s", fnamestr);
-		printf("imgload %s\n",fnamestr);*/
+		fprintf (stderr, "imgload %s\n",fnamestr);*/
 
 		if
 		(
@@ -269,8 +267,8 @@ _GetCelData (FILE *fp, DWORD length)
 		)
 			++cel_ct;
 		else if (img[cel_ct])
-printf("_GetCelData: Bad file!\n"),
-			SDL_FreeSurface (img[cel_ct]);
+			fprintf (stderr, "_GetCelData: Bad file!\n"),
+					SDL_FreeSurface (img[cel_ct]);
 		
 		
 
@@ -311,8 +309,9 @@ printf("_GetCelData: Bad file!\n"),
 		}
 	}
 
-if (Drawable == 0)
-	printf ("Couldn't get cel data for '%s'\n", _cur_resfile_name);
+	if (Drawable == 0)
+		fprintf (stderr, "Couldn't get cel data for '%s'\n",
+				_cur_resfile_name);
 	return (GetDrawableHandle (Drawable));
 }
 

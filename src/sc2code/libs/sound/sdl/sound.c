@@ -32,13 +32,13 @@ TFB_InitSound (int driver, int flags, int frequency)
 
 	if ((SDL_InitSubSystem(SDL_INIT_AUDIO)) == -1)
 	{
-		printf("Couldn't initialize audio subsystem: %s\n", SDL_GetError());
+		fprintf (stderr, "Couldn't initialize audio subsystem: %s\n", SDL_GetError());
 		exit(-1);
 	}
 
 	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 4096))
 	{
-		printf ("Unable to open audio!\n");
+		fprintf (stderr, "Unable to open audio!\n");
 		exit (-1);
 	}
 
@@ -47,16 +47,16 @@ TFB_InitSound (int driver, int flags, int frequency)
 	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
 
 	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
-	printf ("Opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
+	fprintf (stderr, "Opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
 			SoundcardName, audio_rate, audio_format & 0xFF,
 			audio_channels > 1 ? "stereo" : "mono", 4096);
 
 	MIX_VERSION (&compile_version);
-	printf ("Compiled with SDL_mixer version: %d.%d.%d\n",
+	fprintf (stderr, "Compiled with SDL_mixer version: %d.%d.%d\n",
 			compile_version.major,
 			compile_version.minor,
 			compile_version.patch);
-	printf ("Running with SDL_mixer version: %d.%d.%d\n",
+	fprintf (stderr, "Running with SDL_mixer version: %d.%d.%d\n",
 			Mix_Linked_Version()->major,
 			Mix_Linked_Version()->minor,
 			Mix_Linked_Version()->patch);
@@ -95,7 +95,7 @@ GetSoundData(char* data) //Returns the data size.
 {
 	int ret;
 
-	printf("Unimplemented function activated: GetSoundData()\n");
+	fprintf (stderr, "Unimplemented function activated: GetSoundData()\n");
 	ret = 0;
 	return (ret);
 }
@@ -107,7 +107,7 @@ GetSoundInfo(int* length, int* offset)
 {
 	int ret;
 
-	printf ("Unimplemented function activated: GetSoundInfo()\n");
+	fprintf (stderr, "Unimplemented function activated: GetSoundInfo()\n");
 	ret = 0;
 	return (ret);
 }
@@ -117,7 +117,7 @@ BOOLEAN
 ChannelPlaying(COUNT WhichChannel)
 		// SDL will have a nice interface for this, I hope.
 {
-	// printf("Unimplemented function activated: ChannelPlaying()\n");
+	// fprintf (stderr, "Unimplemented function activated: ChannelPlaying()\n");
 	return ((BOOLEAN) Mix_Playing (WhichChannel));
 }
 
@@ -167,7 +167,7 @@ GetSampleLength (SOUND sound)
 	Chunk = (Mix_Chunk *) sound;
 	ret = 0;  // Chunk->alen;
 
-// printf ("Maybe Implemented function activated: GetSampleLength()\n");
+// fprintf (stderr, "Maybe Implemented function activated: GetSampleLength()\n");
 	return(ret);
 }
 
@@ -176,7 +176,7 @@ void
 SetChannelRate (COUNT channel, DWORD rate_hz, unsigned char priority)
 		// in hz
 {
-// printf ("Unimplemented function activated: SetChannelRate()\n");
+// fprintf (stderr, "Unimplemented function activated: SetChannelRate()\n");
 }
 
 // Status: Unimplemented
@@ -185,7 +185,7 @@ GetSampleRate (SOUND sound)
 {
 	COUNT ret;
 
-// printf("Unimplemented function activated: GetSampleRate()\n");
+// fprintf (stderr, "Unimplemented function activated: GetSampleRate()\n");
 	ret=0;
 	return(ret);
 }
@@ -196,7 +196,7 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 		// I wonder what this whole priority business is...
 		// I can probably ignore it.
 {
-// printf ("Unimplemented function activated: SetChannelVolume()\n");
+// fprintf (stderr, "Unimplemented function activated: SetChannelVolume()\n");
 }
 
 //Status: Ignored
@@ -206,7 +206,7 @@ InitSound (int argc, char* argv[])
 {
 	BOOLEAN ret;
 
-// printf("Unimplemented function activated: InitSound()\n");
+// fprintf (stderr, "Unimplemented function activated: InitSound()\n");
 	ret = TRUE;
 	return (ret);
 }
@@ -215,7 +215,7 @@ InitSound (int argc, char* argv[])
 void
 UninitSound ()  //Maybe I should call StopSound() first?
 {
-	//printf("Unimplemented function activated: UninitSound()\n");
+//	fprintf (stderr, "Unimplemented function activated: UninitSound()\n");
 }
 
 #endif

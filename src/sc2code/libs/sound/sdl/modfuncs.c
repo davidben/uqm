@@ -78,7 +78,7 @@ _GetSoundBankData (FILE *fp, DWORD length)
 		}
 		else
 		{
-				printf("_GetSoundBankData: Bad file!\n");
+				fprintf (stderr, "_GetSoundBankData: Bad file!\n");
 		}
 
 		if (ftell (fp) - opos >= length)

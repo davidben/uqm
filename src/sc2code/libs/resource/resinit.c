@@ -320,31 +320,31 @@ CloseResourceIndex (MEM_HANDLE hRH)
 
 		ResHeaderPtr = LockResourceHeader (hRH);
 #ifdef DEBUG
-{
-COUNT i;
+		{
+			COUNT i;
 
-for (i = 0; i < ResHeaderPtr->num_packages; ++i)
-{
-	UWORD hi;
+			for (i = 0; i < ResHeaderPtr->num_packages; ++i)
+			{
+				UWORD hi;
 
-	hi = HIWORD (ResHeaderPtr->PackageList[i].flags_and_data_loc);
-	if (HIBYTE (hi) == 0)
-	{
-		MEM_HANDLE hList;
-		RES_HANDLE_LISTPTR ResourceHandleListPtr;
-		ENCODEPTR TypeEncodePtr;
-		DATAPTR DataPtr;
+				hi = HIWORD (ResHeaderPtr->PackageList[i].flags_and_data_loc);
+				if (HIBYTE (hi) == 0)
+				{
+					MEM_HANDLE hList;
+					RES_HANDLE_LISTPTR ResourceHandleListPtr;
+					ENCODEPTR TypeEncodePtr;
+					DATAPTR DataPtr;
 
-		hList = (MEM_HANDLE)LOWORD (
-				ResHeaderPtr->PackageList[i].flags_and_data_loc);
-		LockResourceHandleList (ResHeaderPtr, hList, i + 1,
-				&ResourceHandleListPtr, &TypeEncodePtr, &DataPtr);
-		printf ("Package %u has %u instances left\n",
-				i + 1, ResourceHandleListPtr->num_valid_handles);
-		UnlockResourceHandleList (hList);
-	}
-}
-}
+					hList = (MEM_HANDLE)LOWORD (
+							ResHeaderPtr->PackageList[i].flags_and_data_loc);
+					LockResourceHandleList (ResHeaderPtr, hList, i + 1,
+							&ResourceHandleListPtr, &TypeEncodePtr, &DataPtr);
+					fprintf (stderr, "Package %u has %u instances left\n",
+							i + 1, ResourceHandleListPtr->num_valid_handles);
+					UnlockResourceHandleList (hList);
+				}
+			}
+		}
 #endif /* DEBUG */
 
 		_sub_index_list (hRH);

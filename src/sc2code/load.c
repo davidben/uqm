@@ -152,7 +152,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		cread ((PBYTE)&num_links, sizeof (num_links), 1, fh);
 		{
 #ifdef DEBUG
-printf ("EVENTS:\n");
+			fprintf (stderr, "EVENTS:\n");
 #endif /* DEBUG */
 			while (num_links--)
 			{
@@ -165,11 +165,11 @@ printf ("EVENTS:\n");
 				cread ((PBYTE)EventPtr, sizeof (*EventPtr), 1, fh);
 
 #ifdef DEBUG
-printf ("\t%u/%u/%u -- %u\n",
-EventPtr->month_index,
-EventPtr->day_index,
-EventPtr->year_index,
-EventPtr->func_index);
+			fprintf (stderr, "\t%u/%u/%u -- %u\n",
+					EventPtr->month_index,
+					EventPtr->day_index,
+					EventPtr->year_index,
+					EventPtr->func_index);
 #endif /* DEBUG */
 				UnlockEvent (hEvent);
 				PutEvent (hEvent);

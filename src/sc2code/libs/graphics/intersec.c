@@ -332,12 +332,12 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 				++time_x_1;
 
 #ifdef DEBUG
-printf ("FramePtr0<%d, %d> --> <%d, %d>\nFramePtr1<%d, %d> --> <%d, %d>\n",
-GetFrameWidth (FramePtr0), GetFrameHeight (FramePtr0),
-r0.corner.x, r0.corner.y,
-GetFrameWidth (FramePtr1), GetFrameHeight (FramePtr1),
-r1.corner.x, r1.corner.y);
-printf ("time_x(%d, %d)-%d, time_y(%d, %d)-%d\n", time_x_0, time_x_1, dx, time_y_0, time_y_1, dy);
+				fprintf (stderr, "FramePtr0<%d, %d> --> <%d, %d>\nFramePtr1<%d, %d> --> <%d, %d>\n",
+						GetFrameWidth (FramePtr0), GetFrameHeight (FramePtr0),
+						r0.corner.x, r0.corner.y,
+						GetFrameWidth (FramePtr1), GetFrameHeight (FramePtr1),
+						r1.corner.x, r1.corner.y);
+				fprintf (stderr, "time_x(%d, %d)-%d, time_y(%d, %d)-%d\n", time_x_0, time_x_1, dx, time_y_0, time_y_1, dy);
 #endif /* DEBUG */
 				if (dx == 0)
 				{
@@ -380,7 +380,7 @@ printf ("time_x(%d, %d)-%d, time_y(%d, %d)-%d\n", time_x_0, time_x_1, dx, time_y
 			}
 
 #ifdef DEBUG
-printf ("start_time = %d, end_time = %d\n", time_y_0, time_y_1);
+			fprintf (stderr, "start_time = %d, end_time = %d\n", time_y_0, time_y_1);
 #endif /* DEBUG */
 			if (time_y_0 <= time_y_1
 					&& (intersect_time = frame_intersect (

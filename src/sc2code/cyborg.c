@@ -289,7 +289,7 @@ InitCyborg (STARSHIPPTR StarShipPtr)
 	COUNT Index, Divisor;
 
 #ifdef DEBUG
-//turn_counter[which_ship] = 0;
+	//turn_counter[which_ship] = 0;
 #endif /* DEBUG */
 
 	Index = StarShipPtr->RaceDescPtr->characteristics.max_thrust
@@ -300,21 +300,19 @@ InitCyborg (STARSHIPPTR StarShipPtr)
 	else
 		Index >>= 1;
 #ifdef PRINT_MI
-{
-char buf[40];
+	{
+		char buf[40];
 
-GetStringContents (StarShipPtr->RaceDescPtr->ship_data.race_strings, buf, FALSE);
-printf ("MI(%s) -- <%u:%u> = %u\n",
-buf,
-StarShipPtr->RaceDescPtr->characteristics.max_thrust *
-StarShipPtr->RaceDescPtr->characteristics.thrust_increment,
-Divisor,
-Index);
-}
+		GetStringContents (StarShipPtr->RaceDescPtr->ship_data.race_strings, buf, FALSE);
+		fprintf (stderr, "MI(%s) -- <%u:%u> = %u\n", buf,
+				StarShipPtr->RaceDescPtr->characteristics.max_thrust *
+				StarShipPtr->RaceDescPtr->characteristics.thrust_increment,
+				Divisor, Index);
+	}
 #endif /* PRINT_MI */
 	StarShipPtr->RaceDescPtr->cyborg_control.ManeuverabilityIndex = Index;
 #ifdef DEBUG
-//turn_counter[which_ship] = 0;
+	//turn_counter[which_ship] = 0;
 #endif /* DEBUG */
 }
 

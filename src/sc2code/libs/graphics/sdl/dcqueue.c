@@ -51,7 +51,7 @@ Lock_DCQ (void)
 		DCQ_locking_thread = current_thread;
 	}
 	++DCQ_locking_depth;
-	// printf("DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+	// fprintf (stderr, "DCQ_sem locking depth: %i\n", DCQ_locking_depth);
 }
 
 void
@@ -60,12 +60,12 @@ Unlock_DCQ (void)
 	Uint32 current_thread = SDL_ThreadID ();
 	if (DCQ_locking_thread != current_thread)
 	{
-		printf("%8x attempted to unlock the DCQ when it didn't hold it!\n", current_thread);
+		fprintf (stderr, "%8x attempted to unlock the DCQ when it didn't hold it!\n", current_thread);
 	}
 	else
 	{
 		--DCQ_locking_depth;
-		// printf("DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+		// fprintf (stderr, "DCQ_sem locking depth: %i\n", DCQ_locking_depth);
 		if (!DCQ_locking_depth)
 		{
 			DCQ_locking_thread = 0;
@@ -162,7 +162,7 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 	}
 	else
 	{
-		printf("DCQ overload.  Adjust your livelock deterrence constants!\n");
+		fprintf (stderr, "DCQ overload.  Adjust your livelock deterrence constants!\n");
 	}
 
 	Unlock_DCQ ();
@@ -181,7 +181,7 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommandQueue *myQueue, TFB_DrawCommand *target
 
 	if (myQueue->Front == myQueue->Back && myQueue->Size != DCQ_MAX)
 	{
-		printf("Augh!  Assertion failure in DCQ!  Front == Back, Size != DCQ_MAX\n");
+		fprintf (stderr, "Augh!  Assertion failure in DCQ!  Front == Back, Size != DCQ_MAX\n");
 		myQueue->Size = 0;
 		Unlock_DCQ ();
 		return (0);

@@ -133,9 +133,9 @@ if (fp == (FILE *)~0)
 #else
 	{
 		struct stat sb;
-			if (fstat(fileno(fp), &sb) == -1)
-				return 1;
-			return sb.st_size;
+		if (fstat(fileno(fp), &sb) == -1)
+			return 1;
+		return sb.st_size;
 	}
 #endif
 }

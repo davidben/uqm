@@ -232,26 +232,27 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 	CalcSysInfo (SysInfoPtr);
 
 #ifdef DEBUG
-{
-	BYTE ColorClass[6][8] = {
-		"Red",
-		"Orange",
-		"Yellow",
-		"Green",
-		"Blue",
-		"White",
-		} ;
-	BYTE SizeName[3][12] = {
-		"Dwarf",
-		"Giant",
-		"Supergiant",
-		};
+	{
+		BYTE ColorClass[6][8] = {
+				"Red",
+				"Orange",
+				"Yellow",
+				"Green",
+				"Blue",
+				"White",
+				};
+		BYTE SizeName[3][12] = {
+				"Dwarf",
+				"Giant",
+				"Supergiant",
+				};
 
-	printf ("%s %s\n",
+		fprintf (stderr, "%s %s\n",
 			ColorClass[SysInfoPtr->StarIntensity],
 			SizeName[SysInfoPtr->StarSize]);
-	printf ("Stellar Energy: %d (sol = 3)\n", SysInfoPtr->StarEnergy);
-}
+		fprintf (stderr, "Stellar Energy: %d (sol = 3)\n",
+				SysInfoPtr->StarEnergy);
+	}
 #endif /* DEBUG */
 
 	{
@@ -331,62 +332,62 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 
 #ifdef DEBUG
 		radius = (SIZE)((DWORD)UNSCALE_RADIUS (radius) * 100 / UNSCALE_RADIUS (EARTH_RADIUS));
-		printf ("\tOrbital Distance   : %d.%02d AU\n", radius / 100, radius % 100);
-		//printf ("\tPlanetary Mass : %d.%02d Earth masses\n",
+		fprintf (stderr, "\tOrbital Distance   : %d.%02d AU\n", radius / 100, radius % 100);
+		//fprintf (stderr, "\tPlanetary Mass : %d.%02d Earth masses\n",
 		// SysInfoPtr->PlanetInfo.PlanetMass / 100,
 		// SysInfoPtr->PlanetInfo.PlanetMass % 100);
-		printf ("\tPlanetary Radius   : %d.%02d Earth radii\n",
+		fprintf (stderr, "\tPlanetary Radius   : %d.%02d Earth radii\n",
 				SysInfoPtr->PlanetInfo.PlanetRadius / 100,
 				SysInfoPtr->PlanetInfo.PlanetRadius % 100);
-		printf ("\tSurface Gravity: %d.%02d gravities\n",
+		fprintf (stderr, "\tSurface Gravity: %d.%02d gravities\n",
 				SysInfoPtr->PlanetInfo.SurfaceGravity / 100,
 				SysInfoPtr->PlanetInfo.SurfaceGravity % 100);
-		printf ("\tSurface Temperature: %d degrees C\n",
+		fprintf (stderr, "\tSurface Temperature: %d degrees C\n",
 				SysInfoPtr->PlanetInfo.SurfaceTemperature );
-		printf ("\tAxial Tilt : %d degrees\n",
+		fprintf (stderr, "\tAxial Tilt : %d degrees\n",
 				abs (SysInfoPtr->PlanetInfo.AxialTilt));
-		printf ("\tTectonics : Class %u\n",
+		fprintf (stderr, "\tTectonics : Class %u\n",
 				SysInfoPtr->PlanetInfo.Tectonics + 1);
-		printf ("\tAtmospheric Density: %u.%02u ",
+		fprintf (stderr, "\tAtmospheric Density: %u.%02u ",
 				SysInfoPtr->PlanetInfo.AtmoDensity / EARTH_ATMOSPHERE,
 				(SysInfoPtr->PlanetInfo.AtmoDensity * 100 / EARTH_ATMOSPHERE) % 100);
 		if (SysInfoPtr->PlanetInfo.AtmoDensity == 0)
 		{
-			printf ("(Vacuum)\n");
+			fprintf (stderr, "(Vacuum)\n");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < THIN_ATMOSPHERE)
 		{
-			printf ("(Thin)\n");
+			fprintf (stderr, "(Thin)\n");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < NORMAL_ATMOSPHERE)
 		{
-			printf ("(Normal)\n");
+			fprintf (stderr, "(Normal)\n");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < THICK_ATMOSPHERE)
 		{
-			printf ("(Thick)\n");
+			fprintf (stderr, "(Thick)\n");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < SUPER_THICK_ATMOSPHERE)
 		{
-			printf ("(Super thick)\n");
+			fprintf (stderr, "(Super thick)\n");
 		}
 		else
 		{
-			printf ("(Gas Giant atmosphere)\n");
+			fprintf (stderr, "(Gas Giant atmosphere)\n");
 		}
 
-		printf ("\tWeather   : Class %u\n",
+		fprintf (stderr, "\tWeather   : Class %u\n",
 				SysInfoPtr->PlanetInfo.Weather + 1);
 
 		if (SysInfoPtr->PlanetInfo.RotationPeriod >= 480)
 		{
-			printf ("\tLength of day  : %d.%d Earth days\n",
+			fprintf (stderr, "\tLength of day  : %d.%d Earth days\n",
 					SysInfoPtr->PlanetInfo.RotationPeriod / 240,
 					SysInfoPtr->PlanetInfo.RotationPeriod % 240);
 		}
 		else
 		{
-			printf ("\tLength of day  : %d.%d Earth hours\n",
+			fprintf (stderr, "\tLength of day  : %d.%d Earth hours\n",
 					SysInfoPtr->PlanetInfo.RotationPeriod / 10,
 					SysInfoPtr->PlanetInfo.RotationPeriod % 10);
 		}

@@ -33,7 +33,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	SrcFramePtr = (PFRAME_DESC)PrimPtr->Object.Stamp.frame;
 	if (SrcFramePtr->DataOffs == 0)
 	{
-		printf ("Non-existent image to blt()\n");
+		fprintf (stderr, "Non-existent image to blt()\n");
 		return;
 	}
 
@@ -97,7 +97,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 						}
 						else
 						{
-							printf("blt(): TFB_DisplayFormatAlpha failed\n");
+							fprintf (stderr, "blt(): TFB_DisplayFormatAlpha failed\n");
 							img->ScaledImg = new_surf;
 						}
 					}
@@ -114,7 +114,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				}
 				else
 				{
-					printf("blt(): zoomSurface failed\n");
+					fprintf (stderr, "blt(): zoomSurface failed\n");
 				}
 			}
 		}
@@ -262,7 +262,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 static void
 cmap_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
-	printf ("Unimplemented function activated: cmap_blt()\n");
+	fprintf (stderr, "Unimplemented function activated: cmap_blt()\n");
 }
 
 static void
@@ -313,7 +313,7 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 			->FlagsAndIndex)
 			& ((DWORD) MAPPED_TO_DISPLAY << FTYPE_SHIFT)))
 	{
-		printf("Unimplemented function activated: read_screen()\n");
+		fprintf (stderr, "Unimplemented function activated: read_screen()\n");
 	}
 	else
 	{

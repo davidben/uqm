@@ -292,11 +292,11 @@ RetrySave:
 			mem_release (h);
 
 			FreeSC2Data ();
-//printf ("Insufficient room for save buffers -- RETRYING\n");
+//			fprintf (stderr, "Insufficient room for save buffers -- RETRYING\n");
 			goto RetrySave;
 		}
-//else
-//printf ("Insufficient room for save buffers -- GIVING UP!\n");
+//		else
+//			fprintf (stderr, "Insufficient room for save buffers -- GIVING UP!\n");
 	}
 	else
 	{
@@ -437,7 +437,7 @@ RetrySave:
 		flen = cclose (fh);
 
 		sprintf (buf, "starcon2.%02u", which_game);
-//printf ("'%s' is %lu bytes long\n", buf, flen + sizeof (*summary_desc));
+//		fprintf (stderr, "'%s' is %lu bytes long\n", buf, flen + sizeof (*summary_desc));
 		if (flen && (out_fp = (PVOID)OpenResFile (buf, "wb")))
 		{
 			PrepareSummary (summary_desc);

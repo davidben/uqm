@@ -91,14 +91,14 @@ void
 SetGraphicStrength (int numerator, int denominator)
 		// I just hope numerator always = denominator...
 { 
-	//printf("Unimplemented function activated: SetGraphicsStrength(), %d %d\n",numerator,denominator);
+	//fprintf (stderr, "Unimplemented function activated: SetGraphicsStrength(), %d %d\n",numerator,denominator);
 }
 
 //Status: Unimplemented
 void
 ScreenTransition (int TransType, PRECT pRect) //TransType==3
 {
-	//printf ("Unimplemented function activated: ScreenTransition()\n");
+	//fprintf (stderr, "Unimplemented function activated: ScreenTransition()\n");
 }
 
 void
@@ -139,7 +139,7 @@ LoadIntoExtraScreen (PRECT r)
 		r = &locRect;
 	}
 
-// printf ("LoadIntoExtraScreen (%d, %d, {%d, %d})\n", r->corner.x, r->corner.y, r->extent.width, r->extent.height);
+// fprintf (stderr, "LoadIntoExtraScreen (%d, %d, {%d, %d})\n", r->corner.x, r->corner.y, r->extent.width, r->extent.height);
 //	DC = HMalloc (sizeof (TFB_DrawCommand));
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER;
@@ -158,7 +158,7 @@ InitVideo (BOOLEAN useCDROM) //useCDROM doesn't really apply to us...
 {
 	BOOLEAN ret;
 
-// printf("Unimplemented function activated: InitVideo()\n");
+// fprintf (stderr, "Unimplemented function activated: InitVideo()\n");
 	ret = TRUE;
 	return (ret);
 }
@@ -167,14 +167,14 @@ InitVideo (BOOLEAN useCDROM) //useCDROM doesn't really apply to us...
 void
 UninitVideo ()  //empty
 {
-	// printf("Unimplemented function activated: UninitVideo()\n");
+	// fprintf (stderr, "Unimplemented function activated: UninitVideo()\n");
 }
 
 //Status: Unimplemented
 void
 VidStop() // At least this one makes sense.
 {
-		// printf ("Unimplemented function activated: VidStop()\n");
+		// fprintf (stderr, "Unimplemented function activated: VidStop()\n");
 }
 
 //Status: Unimplemented
@@ -183,7 +183,7 @@ VidPlaying()  // Easy enough.
 {
 		MEM_HANDLE ret;
 
-		//printf("Unimplemented function activated: VidPlaying()\n");
+		//fprintf (stderr, "Unimplemented function activated: VidPlaying()\n");
 		ret = 0;
 		return (ret);
 }
@@ -196,7 +196,7 @@ VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN uninit)
 	VIDEO_TYPE ret;
 	ret = 0;
 
-// printf("Unimplemented function activated: VidPlay()\n");
+// fprintf (stderr, "Unimplemented function activated: VidPlay()\n");
 	return (ret);
 }
 
@@ -205,7 +205,7 @@ _init_video_file(PVOID pStr)
 {
 	VIDEO_REF ret;
 
-	printf ("Unimplemented function activated: _init_video_file()\n");
+	fprintf (stderr, "Unimplemented function activated: _init_video_file()\n");
 	ret = 0;
 	return (ret);
 }
@@ -217,7 +217,7 @@ _image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
 {
 	BOOLEAN ret;
 
-// printf ("Unimplemented function activated: _image_intersect()\n");
+// fprintf (stderr, "Unimplemented function activated: _image_intersect()\n");
 	ret = TRUE;
 	return (ret);
 }

@@ -880,7 +880,7 @@ while (--ac > 0)
 	{
 		extern BOOLEAN StartGame (void);
 
-		printf("We've loaded the Kernel\n");
+		fprintf (stderr, "We've loaded the Kernel\n");
 
 // OpenJournal ();
 		while (StartGame ())
@@ -936,19 +936,19 @@ sc = _simple_count;
 
 					ExploreSolarSys ();
 #ifdef TESTING
-if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
-&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
-{
-if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
-		&& (CurStarDescPtr = FindStar (NULL_PTR,
-		&GLOBAL (autopilot), 0, 0)))
-{
-	GLOBAL (autopilot.x) = ~0;
-	GLOBAL (autopilot.y) = ~0;
-	GLOBAL (ShipStamp.frame) = 0;
-	GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
-}
-}
+					if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
+							&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
+					{
+						if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
+								&& (CurStarDescPtr = FindStar (NULL_PTR,
+								&GLOBAL (autopilot), 0, 0)))
+						{
+							GLOBAL (autopilot.x) = ~0;
+							GLOBAL (autopilot.y) = ~0;
+							GLOBAL (ShipStamp.frame) = 0;
+							GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
+						}
+					}
 #endif //TESTING
 				}
 				else
@@ -967,7 +967,9 @@ if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
 						Task_SetState (ArilouTask, TASK_EXIT);
 				}
 #ifdef TESTING
-if (_simple_count != sc) printf ("%d difference!\n", (int)_simple_count - (int)sc);
+				if (_simple_count != sc)
+					fprintf (stderr, "%d difference!\n",
+							(int)_simple_count - (int)sc);
 #endif //TESTING
 
 				SetSemaphore (GraphicsSem);
@@ -994,14 +996,14 @@ if (_simple_count != sc) printf ("%d difference!\n", (int)_simple_count - (int)s
 			UninitGameClock ();
 			UninitSIS ();
 		}
-// CloseJournal ();
+//		CloseJournal ();
 	}
-		else
-		{
-				printf("Kernel failed to load!\n");
-		}
+	else
+	{
+		fprintf (stderr, "Kernel failed to load!\n");
+	}
 	FreeKernel ();
 
 	(void) blah;  /* Satisfying compiler (unused parameter) */
-		return(0);
+	return(0);
 }

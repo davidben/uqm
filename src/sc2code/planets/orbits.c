@@ -499,10 +499,10 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 	}
 
 #ifdef DEBUG
-GetClusterName (CurStarDescPtr, buf);
-printf ("cluster name = %s  color = %c type = %c\n", buf,
-		scolor[STAR_COLOR (CurStarDescPtr->Type)],
-		stype[STAR_TYPE (CurStarDescPtr->Type)]);
+	GetClusterName (CurStarDescPtr, buf);
+	fprintf (stderr, "cluster name = %s  color = %c type = %c\n", buf,
+			scolor[STAR_COLOR (CurStarDescPtr->Type)],
+			stype[STAR_TYPE (CurStarDescPtr->Type)]);
 #endif /* DEBUG */
 	GeneratingMoons = (BOOLEAN) (pBaseDesc == pSolarSysState->MoonDesc);
 	if (GeneratingMoons)
