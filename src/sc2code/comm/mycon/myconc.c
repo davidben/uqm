@@ -270,7 +270,7 @@ SunDevice (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, i_have_a_cunning_plan))
 	{
-		NPCPhrase (DIE_LIAR /* WONT_FALL_FOR_TRICK */);
+		NPCPhrase (WONT_FALL_FOR_TRICK);
 
 		SET_GAME_STATE (NO_TRICK_AT_SUN, 1);
 	}

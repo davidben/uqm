@@ -303,10 +303,10 @@ We have come to your homeworld to seek a truce.
 Heinous fungus! Submit to our will!
 
 #(bye_sun_device)
-bye sun device
+We'll just be going now.
 
 #(GOODBYE_SUN_DEVICE)	mycon051.ogg
-GOODBYE SUN DEVICE
+You are the Non. You must go now, and never return.
 
 #(RESPONSE_1)	mycon052.ogg
 This is good.
@@ -412,3 +412,6 @@ and let its tendrils spread through your flesh
 then you would truly understand Juffo-Wup... become part of Juffo-Wup.
 You WOULD be happier and more fulfilled.  Consider our offer.
 
+#(WONT_FALL_FOR_TRICK)	mycon066.ogg
+This is a special place.
+You must go. Now.
