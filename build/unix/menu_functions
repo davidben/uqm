@@ -620,7 +620,7 @@ do_menu() {
 #              $3 - the name of the file to load from
 # Returns:     0 - if the file was loaded successfully
 #              1 - if the file did not exist
-menu_load() {
+do_menu_load() {
 	SAVE_FILE=$3
 
 	if [ ! -e "$SAVE_FILE" ]; then
@@ -636,7 +636,7 @@ menu_load() {
 #              $2 - the name of the menu
 #              $3 - the name of the file to save to
 # Returns:     0 - if the file was saved successfully
-menu_save() {
+do_menu_save() {
 	MENU_TYPE=$1
 	START_MENU=$2
 	SAVE_FILE=$3

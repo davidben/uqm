@@ -124,7 +124,9 @@ build_config() {
 	config_requirements
 	eval "${TARGET}_requirements"
 	eval "${TARGET}_prepare_config"
+	eval "${TARGET}_load_config"
 	eval "${TARGET}_do_config"
+	eval "${TARGET}_save_config"
 }
 
 build_reconfig() {
@@ -133,6 +135,7 @@ build_reconfig() {
 	fi
 	config_requirements
 	eval "${TARGET}_requirements"
+	eval "${TARGET}_load_config"
 	build_process_config
 	echo "Reconfiguring complete..." 1>&2
 }
