@@ -138,6 +138,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	r.extent.width = RADAR_WIDTH + 2;
 	r.extent.height = 11;
 	BatchGraphics ();
+	ClearSISRect (CLEAR_SIS_RADAR);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
 	DrawFilledRectangle (&r);
 	r.corner = s.origin;
@@ -179,7 +180,17 @@ DrawRaceStrings (BYTE NewRaceItem)
 	}
 	UnbatchGraphics ();
 
-	SetFlashRect ((PRECT)~0L, (FRAME)0);
+	// Flash the ship purchase menu even when optMenu == OPT_PC
+	{
+		RECT flash_r;
+		GetContextClipRect (&flash_r);
+		flash_r.corner.x = RADAR_X - flash_r.corner.x;
+		flash_r.corner.y = RADAR_Y - flash_r.corner.y;
+		flash_r.extent.width = RADAR_WIDTH;
+		flash_r.extent.height = RADAR_HEIGHT;
+		SetFlashRect (&flash_r, (FRAME)0);
+	}
+	//SetFlashRect ((PRECT)~0L, (FRAME)0);
 	SetContext (OldContext);
 	ClearSemaphore (GraphicsSem);
 }
@@ -655,6 +666,8 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 								&GLOBAL (built_ship_q), 1))
 						{
 							ShowCombatShip ((COUNT)pMS->CurState, (SHIP_FRAGMENTPTR)0);
+							//Reset flash rectangle
+							SetFlashRect ((PRECT)~0L, (FRAME)0);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
 							SetSemaphore (GraphicsSem);
