@@ -1,4 +1,6 @@
 0.2:
+- GraphicsSem usage reverted back in RotatePlanet, from PhracturedBlue
+- Pause/exit game dialog problem with planets fixed, from PhracturedBlue
 - Fixed lockup if sbuf_size was zero (OpenAL)
 - Planet surface changing color when using device fixed, from PhracturedBlue
 - Some race conditions eliminated, from PhracturedBlue
