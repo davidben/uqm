@@ -17,12 +17,16 @@ On DOS, Umgah cone was a composite of a cone mask + spritz images;
 on 3DO, cone images multiplied 3x and are already a combination of
 cone + spritz.
 *Blackurq* [Kohr-Ah]
-Ship images were regenrated for 3DO with a light source
+Ship images were regenerated for 3DO with a light source
 at a different position (so the angle is diff). This improved the overall look
 of the ship, especially frame 14, which was simply ugly on DOS.
 And, of course, the FRIED is blue on 3DO and was yellow on DOS.
 *Chenjesu*
 Not really a change, med.14 frame has bad transparency info on DOS.
+*Utwig*
+DOS has apparently derelict ship frames (16-18).
+HYPOTHESIS: ship special was originally intended to be some entirely
+different.
 *Sa-Matra*
 The captain portrait is bigger in UQM (same size on DOS and 3DO).
 
