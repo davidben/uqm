@@ -309,10 +309,7 @@ expandPath (char *dest, size_t len, const char *src)
 	while (*destptr != '\0')
 	{
 		if (*destptr == '\\')
-		{
-				*destptr = '/';
-				break;
-		}
+			*destptr = '/';
 		destptr++;
 	}
 #endif
