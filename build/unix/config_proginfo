@@ -78,10 +78,12 @@ case "$OSNAME" in
 esac
 case "$OSNAME" in
 	Darwin)
-		LIB_SDL_DETECT="Darwin_SDL_detect"
+		LIB_SDL_DETECT="Darwin_SDL_detect SDL"
 		Darwin_SDL_detect() {
-			eval TEMP_LDFLAGS="\"$LIB_SDL_LDFLAGS\""
-			eval TEMP_CFLAGS="\"$LIB_SDL_CFLAGS\""
+			local LIB TEMP_LDFLAGS TEMP_CFLAGS
+			LIB=$1
+			eval eval TEMP_LDFLAGS="\\\"\$LIB_${LIB}_LDFLAGS\\\""
+			eval eval TEMP_CFLAGS="\\\"\$LIB_${LIB}_CFLAGS\\\""
 			try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
 #include "SDL.h"
 int main(int argc, char *argv[]) {
@@ -99,11 +101,17 @@ LIB_SDL_mixer_NAME="SDL_mixer"
 LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"
 LIB_SDL_mixer_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_mixer"
 LIB_SDL_mixer_VERSION=""
+case "$OSNAME" in
+	Darwin)  LIB_SDL_mixer_DETECT="Darwin_SDL_detect SDL_mixer" ;;
+esac
 
 LIB_SDL_image_NAME="SDL_image"
 LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
 LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
 LIB_SDL_image_VERSION=""
+case "$OSNAME" in
+	Darwin)  LIB_SDL_image_DETECT="Darwin_SDL_detect SDL_image" ;;
+esac
 
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
