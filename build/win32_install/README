@@ -6,30 +6,11 @@ alternatively, steps 3 and 4 can be completed on a linux machine (which
 will probably work better anyway)
 
 The following additional tools are required:
-NSIS 2.0b1 or newer: nsis.sourceforge.net
-NSIS 'ZipDLL' http://nsis.sourceforge.net/archive/nsisweb.php?page=33
+NSIS 2.0b3 or newer: nsis.sourceforge.net
 
 Optionally:
-NSIS 'unTGZ' http://nsis.sourceforge.net/archive/viewpage.php?pageid=84
 upx 1.90 or newer: http://upx.sourceforge.net/#unstable
 resource hacker: http://www.users.on.net/johnson/resourcehacker/
-
-0) Update the 'upgrade' reference.
-   NOTE:  Only run this step if you are building an official release!  If you
-          are building a development release, or anything not sanctioned by the
-          UQM developers, you do not need to run this.
-   The UQM installer can install either a 'full' version of the content dir
-   or an 'upgrade' from a previous version.  The last official version was
-   0.1 as of Feb 14, 2003.  To build the upgrade, it is necessary to determine
-   what has changed since the previous release.  Each release is taggged in
-   the CVS repository with something like 'version_0_1'.  A perl script is
-   included which can build a list of file versions tagged with a specific tag.
-   The command is:
-      ./build_contour.pl version_0_1 contour_0_1
-      (NOTE that this may take a very long time to run, as it is fetching the
-            CVS log for each file in the content directory)
-   This will generate a reference contour to compare the current CVS build
-   against.  This only needs to be done once (after each release)
 
 1) Compile uqm.exe.  Note that uqmversion.h defines the version of UQM to build,
    and should be set appropriately before compiling
@@ -37,27 +18,20 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
 2) Build content .zip files and content.nsh
      For this procedure, you must have no modifications in the content tree.
      having additional files won't cause any issues, but there can't be any
-     modified files.
-     use the 'full' option when building a production release where you plan
-     to create a full content directory rather than just the upgrade zip
-      ./build_archives.pl contour_0_1 [full]
+     modified files.      
+       ./build_archives.pl
      This will generate .zip files of the content directory (assuming
-     uqmversion.h defines the version as 0.2):
-        uqm-0.1_to_0.2-content.zip
-        uqm-0.1_to_0.2-voice.zip
-     and (if 'full' is specified)
-        uqm-0.2-content.zip
-        uqm-0.2-voice.zip
-        uqm-0.2-3domusic.zip
-     These files should be uploaded to the disrtibution web page
+     uqmversion.h defines the version as 0.3):
+        uqm-0.3-content.zip
+        uqm-0.3-voice.zip
+        uqm-0.3-3domusic.zip
+     These files should be uploaded to the distribution web page
 
-     It will also generate content.nsh which contains a list of files for the
-     uninstaller, as well as the information aout the archives, for use in
-     the installer
+     It will also generate content.nsh which contains information about the
+     archives, for use in the installer
 
 3) Modify the install script:
-     Edit options.nsi, and change the following variables:
-       OLD_VERSION: The earliest version that can be upgraded from
+     Edit options.nsh, and change the following variables:
        DOWNLOAD_LOCATION: The default directory to download the archives from 
                           if not using a mirror file.  NOTE:  This parameter 
                           can be overridden by setting <...>_LOCATION an a 
@@ -88,34 +62,16 @@ resource hacker: http://www.users.on.net/johnson/resourcehacker/
        what you are doing!
        <...>_LOCATION:     The path (http) to retrieve the data-file or mirror-
                            file from (depending on the value of 'USE_MIRROR')
-       <...>_PACKAGE_FILE: The name of the data-file to retreive
-       <...>_TYPE:         The type of archiver used (must be "zip" or "tgz")
-       <...>_ROOT:         The directory to unpack the data-file archive into
-
-       There are other parameters which may be tuned as well, although it
-       should not  be necessary (and once again, changing the defaults should
-       not be done unless you are sure about what you are doing)
-       FULL_NEEDS_UPGRADE: This parameter is set if a 'full' build requires
-                           both the 'content' archive pak along with the
-                           'upgrade' archive pak.  In general, only official
-                           builds wil have this parameter undefined, all other 
-                           builds ahould probably leave it as is.  NOTE:
-                           the paramter should be either defined or undefined,
-                           it should not have a value
-       DEFAULT_UPGRADE:    this parameter determines whether the installer
-                           defaults to an 'upgrade' or 'full' install.  In 
-                           general, it is probably better to define this
-                           paramater, since a full install is ~150MB, vs an
-                           upgrade which is ~3MB
+                                                      
        USE_UBX:            This will compress uqm.exe and the installer with
-                           ubx.  this may break the game and/or installer, and
+                           ubx.  This may break the game and/or installer, and
                            is not recomended.
        MUI_VERSION:        The version of UQM you are building.  This parameter
-                           is normally auto-defined by readinng uqmversion.h, 
+                           is normally auto-defined by reading uqmversion.h, 
                            but can be manually overridden if needed.
 
-4) run NSIS to build the installer:
+4) Run NSIS to build the installer:
      makensis uqm.nsi
-   the installer expects all the dlls to be in the same directory as uqm.exe
+   The installer expects all the dlls to be in the same directory as uqm.exe
 
-5) you should be done.
+5) You should be done.

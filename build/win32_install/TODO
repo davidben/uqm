@@ -1,8 +1,6 @@
-Things stiill needing doing of rthe installer:
- - untgz.dll doesn't support error checking yet
- - check md5 sums on downloaded files
+Things still needing doing of the installer:
+ - Check md5 sums on downloaded files
  - Read previous install directory from registry
- - Allow users to choose mirror, rather than randomly choosing one
+ - Allow users to choose mirror
  - Only read mirror file once, if only 1 is used.
- - use uqm icon for the installer
-
+ - Use uqm icon for the installer
