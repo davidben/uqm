@@ -19,6 +19,7 @@
 #include <ctype.h>
 #include "starcon.h"
 #include "commglue.h"
+#include "comm.h"
 #include "libs/sound/trackplayer.h"
 
 #define CONFIRM_WIN_WIDTH 80
@@ -74,7 +75,7 @@ DoConfirmExit (void)
 	fprintf (stderr, "Confirming Exit!\n");
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
-	else if (CommData.ConversationPhrases && PlayingTrack ())
+	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
 	SetSemaphore (GraphicsSem);
@@ -158,8 +159,12 @@ DoConfirmExit (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();
-	else if (CommData.ConversationPhrases && PlayingTrack ())
+	if (CommData.ConversationPhrases && PlayingTrack ())
+	{
 		ResumeTrack ();
+		if (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE)
+			do_subtitles ((void *)~0);
+	}
 
 	fprintf (stderr, "Exit was %sconfirmed.\n", result ? "" : "NOT ");
 	return (result);
