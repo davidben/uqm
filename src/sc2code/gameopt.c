@@ -1180,10 +1180,10 @@ ChangeGameSelection:
 				UnbatchGraphics ();
 			}
 			SetContextFont (TinyFont);
-			r.extent.width = SIS_SCREEN_WIDTH;
-			r.extent.height = 83-SAFE_Y;
+			r.extent.width = 230;
+			r.extent.height = 65;
 			r.corner.x = 1;
-			r.corner.y = 152+SAFE_Y;
+			r.corner.y = 160;
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
 
@@ -1214,8 +1214,8 @@ ChangeGameSelection:
 				if (MAX_SAVED_GAMES > 99)
 					r.extent.width += 5;
 				r.extent.height = 9;
-				r.corner.x = 8 + SAFE_X;
-				r.corner.y = 159 + SAFE_Y + (i * 13);
+				r.corner.x = 8;
+				r.corner.y = 161 + (i * 13);
 				DrawRectangle (&r);
 
 				t.baseline.x = r.corner.x + 3;
