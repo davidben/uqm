@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Load/save icons don't flash anymore when in savegame menu
+  (part of bug #291), from Paxtez
 - Savegame slot now defaults to the last one used during one execution
   of uqm (bug #477), from chmmravatar
 - Fixed one-pixel glitch in shipyard when scrapping (bug #461),

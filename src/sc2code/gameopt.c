@@ -1014,6 +1014,7 @@ Restart:
 	}
 	else if (CurrentMenuState.cancel)
 	{
+		SetFlashRect ((PRECT)~0L, (FRAME)0);
 		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
 		ResumeMusic ();
@@ -1241,6 +1242,7 @@ ChangeGameSelection:
 				}
 				font_DrawText (&t);
 			}
+			SetFlashRect (0, (FRAME)0);
 			ClearSemaphore (GraphicsSem);
 		}
 	}
