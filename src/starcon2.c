@@ -327,9 +327,9 @@ main (int argc, char *argv[])
 
 	GraphicsSem = CreateSemaphore (1, "Graphics");
 	RenderingCond = CreateCondVar ();
-	init_communication ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
+	init_communication ();
 	if (gammaset) 
 		TFB_SetGamma (gamma);
 	TFB_InitSound (snddriver, soundflags);

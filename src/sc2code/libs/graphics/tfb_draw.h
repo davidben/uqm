@@ -99,7 +99,8 @@ void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r,
 TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
-void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i);
+void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i, BOOLEAN rleaccel);
+void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel);
 void TFB_DrawCanvas_Initialize (void);
 
 #endif

@@ -215,7 +215,7 @@ TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int typ
 						src->format->Bmask,
 						src->format->Amask);
 			if (src->format->palette)
-				TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src));
+				TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
 		}
 	}
 	else
@@ -312,16 +312,40 @@ TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas)
 }
 
 void
-TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index)
+TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleaccel)
 {
 	if (index >= 0)
 	{
-		SDL_SetColorKey ((SDL_Surface *)canvas, SDL_SRCCOLORKEY, index); 
+		int flags = SDL_SRCCOLORKEY;
+		if (rleaccel)
+			flags |= SDL_RLEACCEL;
+		SDL_SetColorKey ((SDL_Surface *)canvas, flags, index);
+		
+		if (!TFB_DrawCanvas_IsPaletted (canvas))
+		{
+			// disables alpha channel so color key transparency actually works
+			SDL_SetAlpha ((SDL_Surface *)canvas, 0, 255); 
+		}
 	}
 	else
 	{
 		SDL_SetColorKey ((SDL_Surface *)canvas, 0, 0); 
 	}		
+}
+
+void
+TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel)
+{
+	int flags = SDL_SRCCOLORKEY;
+	if (rleaccel)
+		flags |= SDL_RLEACCEL;
+	SDL_SetColorKey ((SDL_Surface *)canvas, flags, SDL_MapRGB (((SDL_Surface *)canvas)->format, r, g, b));
+	
+	if (!TFB_DrawCanvas_IsPaletted (canvas))
+	{
+		// disables alpha channel so color key transparency actually works
+		SDL_SetAlpha ((SDL_Surface *)canvas, 0, 255); 
+	}
 }
 
 void

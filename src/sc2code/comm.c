@@ -106,6 +106,9 @@ static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 int do_subtitles (UNICODE *pStr);
 
+static UNICODE *last_subtitle;
+static TFB_Image *subtitle_cache;
+
 /* _count_lines - mostly stolen from add_text, just sees how many lines
                   a given input string would take to display given the
                   line wrapping information */
@@ -172,12 +175,33 @@ add_text (int status, PTEXT pTextIn)
 	UNICODE ch, *pStr;
 	SIZE text_width;
 	int num_lines = 0;
-
+	static COORD last_baseline;
+	
 	BatchGraphics ();
 
 	maxchars = (COUNT)~0;
 	if (status == 1)
 	{
+		RECT r;
+		GetContextClipRect (&r);
+
+		if (last_subtitle == pTextIn->pStr)
+		{
+			// draws cached subtitle
+			TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0, TFB_SCREEN_MAIN);
+			UnbatchGraphics ();
+			return last_baseline;
+		}
+		else
+		{
+			// saves background to extra screen
+			TFB_DrawScreen_Copy (&r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
+			// fills screen with transparent color
+			TFB_DrawScreen_Rect (&r, 0, 0, 255, TFB_SCREEN_MAIN);
+
+			last_subtitle = pTextIn->pStr;
+		}
+
 		text_width = CommData.AlienTextWidth;
 		SetContextFont (CommData.AlienFont);
 		GetContextFontLeading (&leading);
@@ -311,6 +335,21 @@ add_text (int status, PTEXT pTextIn)
 		}
 	} while ((ch = *pStr++) != '\0' && ch != '\n' && ch != '\r' && maxchars);
 	pText->pStr = pStr;
+
+	if (status == 1)
+	{
+		RECT r;
+		GetContextClipRect (&r);
+		
+		// copies subtitle to cache
+		TFB_DrawScreen_CopyToImage (subtitle_cache, &r, TFB_SCREEN_MAIN);
+		// restores background
+		TFB_DrawScreen_Copy (&r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
+		// draws cached subtitle
+		TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0, TFB_SCREEN_MAIN);
+		
+		last_baseline = pText->baseline.y;
+	}
 
 	UnbatchGraphics ();
 	return (pText->baseline.y);
@@ -479,8 +518,14 @@ xform_complete (void)
 void
 init_communication (void)
 {
+	TFB_Canvas canvas;
+
 	subtitle_mutex = CreateMutex ();
 	init_xform_control ();
+
+	canvas = TFB_DrawCanvas_New_TrueColor (ScreenWidth, ScreenHeight, FALSE);
+	subtitle_cache = TFB_DrawImage_New (canvas);
+	TFB_DrawCanvas_SetTransparentColor (subtitle_cache->NormalImg, 0, 0, 255, TRUE);
 }
 
 void
@@ -488,6 +533,8 @@ uninit_communication (void)
 {
 	DestroyMutex (subtitle_mutex);
 	uninit_xform_control ();
+	TFB_DrawImage_Delete (subtitle_cache);
+	subtitle_cache = NULL;
 }
 
 static BOOLEAN ColorChange;
@@ -1997,7 +2044,9 @@ InitCommunication (RESOURCE which_comm)
 	COUNT status;
 	MEM_HANDLE hOldIndex, hIndex;
 	LOCDATAPTR LocDataPtr;
-	
+
+	last_subtitle = NULL;
+
 	SetSemaphore (GraphicsSem);
 
 	if (LastActivity & CHECK_LOAD)
