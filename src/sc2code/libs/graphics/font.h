@@ -20,7 +20,10 @@
 #define _FONT_H
 
 #define FIRST_CHAR (UNICODE)' '
-#define MAX_CHARS 5000
+// keep MAX_CHARS under 256 for now
+#define MAX_CHARS  255
+	// MAX_CHARS gets cast to UNICODE in a few places and is used in math
+	// UNICODE is defined to BYTE, all strings attached
 #define MAX_DELTAS 100
 
 typedef struct
