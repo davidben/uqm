@@ -26,7 +26,7 @@ flash_ship_task(void *data)
 	COLOR c;
 	Task task = (Task) data;
 
-	c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24);
+	c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
@@ -47,10 +47,10 @@ flash_ship_task(void *data)
 				(HSTARSHIP)pMenuState->CurFrame
 				);
 		OldContext = SetContext (StatusContext);
-		if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24))
-			c = BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E);
+		if (c >= BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24))
+			c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
 		else
-			c -= BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01);
+			c += BUILD_COLOR (MAKE_RGB15 (0x00, 0x02, 0x02), 0x00);
 		OldColor = SetContextForeGroundColor (c);
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);

@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fix colour cycling in the roster screen (bug #279), from Nic
 - Fixed last seen battle-group teleporting to Sol after invoking
   Talking Pet in Sol (bug #109) -Alex
 - Fixed a dialog glitch on Slylandro homeworld (#442) -Michael
