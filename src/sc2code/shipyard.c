@@ -805,26 +805,37 @@ DoModifyShips (PMENU_STATE pMS)
 				else if (select || cancel)
 				{
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
-							&& hStarShip != 0
-							&& StarShipPtr->ShipInfo.crew_level == 0)
+							&& hStarShip != 0)
 					{
-						SetFlashRect (NULL_PTR, (FRAME)0);
-						UnlockMutex (GraphicsLock);
-						ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);
-						LockMutex (GraphicsLock);
-						UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
-						RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
-						FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
-						// refresh SIS display
-						DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
-								UNDEFINED_DELTA);
-						DrawStatusMessage ((UNICODE *)~0);
-						r.corner.x = pMS->flash_rect0.corner.x;
-						r.corner.y = pMS->flash_rect0.corner.y;
-						r.extent.width = SHIP_WIN_WIDTH;
-						r.extent.height = SHIP_WIN_HEIGHT;
-						SetContext (SpaceContext);
-						SetFlashRect (&r, (FRAME)0);
+						StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+								&GLOBAL (built_ship_q), hStarShip);
+						if (StarShipPtr->ShipInfo.crew_level == 0)
+						{
+							SetFlashRect (NULL_PTR, (FRAME)0);
+							UnlockMutex (GraphicsLock);
+							ShowCombatShip ((COUNT)pMS->CurState,
+									StarShipPtr);
+							LockMutex (GraphicsLock);
+							UnlockStarShip (&GLOBAL (built_ship_q),
+									hStarShip);
+							RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+							FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
+							// refresh SIS display
+							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
+									UNDEFINED_DELTA);
+							DrawStatusMessage ((UNICODE *)~0);
+							r.corner.x = pMS->flash_rect0.corner.x;
+							r.corner.y = pMS->flash_rect0.corner.y;
+							r.extent.width = SHIP_WIN_WIDTH;
+							r.extent.height = SHIP_WIN_HEIGHT;
+							SetContext (SpaceContext);
+							SetFlashRect (&r, (FRAME)0);
+						}
+						else
+						{
+							UnlockStarShip (&GLOBAL (built_ship_q),
+									hStarShip);
+						}
 					}
 					
 					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
@@ -860,6 +871,8 @@ DoModifyShips (PMENU_STATE pMS)
 					if (hStarShip)
 						StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 								&GLOBAL (built_ship_q), hStarShip);
+					else
+						StarShipPtr = NULL;  // Keeping compiler quiet.
 
 					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 							MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
