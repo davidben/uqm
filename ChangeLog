@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Bilinear scaler is now faster, has 24bpp mode and uses regions -Alex
 - Accept CRLF line endings in .txt and .ts files - SvdB
 - Fixed overflow problem with 32bpp bilinear,biadapt,biadv scalers -Mika
 - MixSDL now handles resampling correctly (less cracklings);
