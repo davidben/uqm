@@ -78,6 +78,7 @@ Attention aliens: I am
  acting Captain of the starship 
 #(we_are_vindicator2)
 . Please Respond.
+spaho080.wav
 
 #(gort_merenga)
 Uh... Gort, merenga!
