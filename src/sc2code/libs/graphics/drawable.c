@@ -18,6 +18,9 @@
 
 #include "gfxintrn.h"
 #include "misc.h"
+#include "tfb_draw.h"
+#include "units.h"
+#include "libs/mathlib.h"
 
 FRAMEPTR _CurFramePtr;
 
@@ -201,3 +204,44 @@ GetFrameHot (FRAMEPTR FramePtr)
 	return (MAKE_HOT_SPOT (0, 0));
 }
 
+DRAWABLE
+RotateFrame (FRAMEPTR Frame, COUNT angle)
+{
+	DRAWABLE Drawable;
+	FRAMEPTR RotFramePtr;
+	SIZE dx, dy;
+	SIZE d;
+	COUNT organg;
+
+	Drawable = _request_drawable (1, RAM_DRAWABLE, WANT_PIXMAP, 0, 0);
+	if (!Drawable)
+		return 0;
+	RotFramePtr = CaptureDrawable (Drawable);
+	if (!RotFramePtr)
+	{
+		FreeDrawable (Drawable);
+		return 0;
+	}
+
+	RotFramePtr->image = TFB_DrawImage_New_Rotated (
+			Frame->image, -ANGLE_TO_DEGREES (angle));
+	SetFrameBounds (RotFramePtr, RotFramePtr->image->extent.width,
+			RotFramePtr->image->extent.height);
+
+	/* now we need to rotate the hot-spot, eww */
+	dx = Frame->HotSpot.x - (GetFrameWidth (Frame) / 2);
+	dy = Frame->HotSpot.y - (GetFrameHeight (Frame) / 2);
+	d = square_root ((long)dx*dx + (long)dy*dy);
+	if (d != 0)
+	{
+		organg = ARCTAN (dx, dy);
+		dx = COSINE (organg + angle, d);
+		dy = SINE (organg + angle, d);
+	}
+	RotFramePtr->HotSpot.x = (GetFrameWidth (RotFramePtr) / 2) + dx;
+	RotFramePtr->HotSpot.y = (GetFrameHeight (RotFramePtr) / 2) + dy;
+
+	ReleaseDrawable (RotFramePtr);
+
+	return Drawable;
+}

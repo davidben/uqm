@@ -291,6 +291,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->MipmapImg = NULL;
 	img->colormap_index = -1;
 	img->last_scale_type = -1;
+	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
 	img->Palette = TFB_DrawCanvas_ExtractPalette (canvas);
 	
@@ -316,10 +317,37 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->colormap_index = -1;
 	img->last_scale_type = -1;
 	img->Palette = NULL;
-	
+	img->extent.width = w;
+	img->extent.height = h;
+
 	img->NormalImg = TFB_DrawCanvas_New_ForScreen (w, h, withalpha);
 
 	return img;
+}
+
+TFB_Image *
+TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
+{
+	TFB_Canvas dst;
+	EXTENT size;
+
+	/* sanity check */
+	if (!img->NormalImg)
+	{
+		fprintf (stderr, "TFB_DrawImage_New_Rotated: source canvas is NULL! Failing.\n");
+		return NULL;
+	}
+
+	TFB_DrawCanvas_GetRotatedExtent (img->NormalImg, angle, &size);
+	dst = TFB_DrawCanvas_New_RotationTarget (img->NormalImg, angle);
+	if (!dst)
+	{
+		fprintf (stderr, "TFB_DrawImage_New_Rotated: rotation target canvas not created! Failing.\n");
+		return NULL;
+	}
+	TFB_DrawCanvas_Rotate (img->NormalImg, dst, angle, size);
+
+	return TFB_DrawImage_New (dst);
 }
 
 void 

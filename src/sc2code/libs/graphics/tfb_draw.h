@@ -86,6 +86,7 @@ void TFB_FlushPaletteCache (void);
 
 TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);
 TFB_Image *TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha);
+TFB_Image *TFB_DrawImage_New_Rotated (TFB_Image *img, int angle);
 void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 
@@ -98,11 +99,15 @@ TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha);
 TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index);
 TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int type, int last_type);
+TFB_Canvas TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src, int angle);
 TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
 BOOLEAN TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas);
 void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
 void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas dst, TFB_Canvas mipmap, EXTENT size);
 void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, int scale, PEXTENT size);
+void TFB_DrawCanvas_Rotate (TFB_Canvas src, TFB_Canvas dst, int angle, EXTENT size);
+void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, PEXTENT size);
+void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size);
 
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 
@@ -115,6 +120,7 @@ TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i, BOOLEAN rleaccel);
+BOOLEAN TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b);
 void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel);
 void TFB_DrawCanvas_Initialize (void);
 void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);

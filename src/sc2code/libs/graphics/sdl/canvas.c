@@ -3,6 +3,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
+#include "rotozoom.h"
 #include "options.h"
 #include "types.h"
 
@@ -240,6 +241,12 @@ TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int typ
 						src->format->Amask);
 			if (src->format->palette)
 				TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
+			else
+			{
+				int r, g, b;
+				if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
+					TFB_DrawCanvas_SetTransparentColor (newsurf, r, g, b, FALSE);
+			}
 		}
 	}
 	else
@@ -256,6 +263,40 @@ TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int typ
 		}
 	}
 		
+	return newsurf;
+}
+
+TFB_Canvas
+TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src_canvas, int angle)
+{
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	SDL_Surface *newsurf;
+	EXTENT size;
+
+	TFB_DrawCanvas_GetRotatedExtent (src_canvas, angle, &size);
+	
+	newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE,
+				size.width, size.height,
+				src->format->BitsPerPixel,
+				src->format->Rmask,
+				src->format->Gmask,
+				src->format->Bmask,
+				src->format->Amask);
+	if (!newsurf)
+	{
+		fprintf(stderr, "TFB_DrawCanvas_New_RotationTarget() INTERNAL PANIC:"
+				"Failed to create TFB_Canvas: %s", SDL_GetError());
+		exit (-1);
+	}
+	if (src->format->palette)
+		TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
+	else
+	{
+		int r, g, b;
+		if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
+			TFB_DrawCanvas_SetTransparentColor (newsurf, r, g, b, FALSE);
+	}
+	
 	return newsurf;
 }
 
@@ -357,6 +398,23 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleacc
 	}		
 }
 
+BOOLEAN
+TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
+{
+	if (!TFB_DrawCanvas_IsPaletted (canvas)
+			&& (((SDL_Surface *)canvas)->flags & SDL_SRCCOLORKEY) )
+	{
+		Uint8 ur, ug, ub;
+		int colorkey = ((SDL_Surface *)canvas)->format->colorkey;
+		SDL_GetRGB (colorkey, ((SDL_Surface *)canvas)->format, &ur, &ug, &ub);
+		*r = ur;
+		*g = ug;
+		*b = ub;
+		return TRUE;
+	}
+	return FALSE;
+}
+
 void
 TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel)
 {
@@ -402,6 +460,15 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, in
 		size->width = 1;
 	if (!size->height && src->h)
 		size->height = 1;
+}
+
+void
+TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size)
+{
+	SDL_Surface *src = (SDL_Surface *)canvas;
+
+	size->width = src->w;
+	size->height = src->h;
 }
 
 void
@@ -929,4 +996,36 @@ TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
 {
 	SDL_Surface* surf = (SDL_Surface *)canvas;
 	return (uint8*)surf->pixels + surf->pitch * line;
+}
+
+void
+TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, EXTENT size)
+{
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
+	int ret;
+
+	if (size.width > dst->w || size.height > dst->h) 
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Rotate: Tried to rotate image to size %d %d when dst_canvas has only dimensions of %d %d!  Failing.\n",
+			size.width, size.height, dst->w, dst->h);
+		return;
+	}
+
+	ret = rotateSurface (src, dst, angle, 0);
+	if (ret != 0)
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Rotate: WARNING: actual rotation func returned failure\n");
+	}
+}
+
+void
+TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src_canvas, int angle, PEXTENT size)
+{
+	int dstw, dsth;
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	
+	rotozoomSurfaceSize (src->w, src->h, angle, 1, &dstw, &dsth);
+	size->height = dsth;
+	size->width = dstw;
 }

@@ -732,7 +732,7 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			{
 				TFB_Image *Image;
 
-				if (DrawableType == RAM_DRAWABLE
+				if (DrawableType == RAM_DRAWABLE && imgw > 0 && imgh > 0
 						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (imgw, imgh, FALSE))))
 				{
 					FramePtr->image = Image;
