@@ -1,0 +1,914 @@
+#(HOSTILE_SPACE_HELLO_1)	THRAD000.wav
+So, what's this? SNORT! An unknown alien species?
+How wonderful! Someone new to fight!
+We, the Thraddash of Culture Nineteen  -- famous Ur-Quan Combat Thralls
+know well the value of a good fight.
+Either you win and prove your superiority...
+SNORT! Or you lose and are vanquished.
+If the vanquished is lucky, it may survive to learn an important lesson from its defeat.
+This is the way of the Thraddash! We fight and learn and improve!
+All other cultural schemes are inferior. This is a proven fact.
+What have you to say before we begin combat?
+
+#(HOSTILE_SPACE_HELLO_2)	THRAD001.wav
+SNORT! What a laugh! You are the least battle-worthy creature I've ever seen commanding a starship.
+We are the Ur-Quan fighting slaves of Culture Nineteen.
+Please don't run away. We wish to be your species' new role-models!
+Unfortunately, to do this, we may need to blast you into your component atoms.
+
+#(HOSTILE_SPACE_HELLO_3)	THRAD002.wav
+Attention weak, ugly humans aboard that wallowing garbage scow of a ship, SNORT!
+Unless you are even more inferior that we believe and that's hard to imagine
+you already know who we are -- the Thraddash of Culture Nineteen
+We are the original Ur-Quan fighting slaves, the cream of their elite forces
+your instructors in the harsh realities of life.
+SNORT! It is time for your next lesson.
+
+#(HOSTILE_SPACE_HELLO_4)	THRAD003.wav
+Inferior Aliens. You have once again intruded upon the territory of the Thraddash.
+This is a patrolled region of space. Your presence here is considered an act of War!
+How wonderful!
+
+
+#(HOSTILE_HOMEWORLD_HELLO_1)	THRAD004.wav
+HA! View the stupid weak alien who has appeared here at our homeworld!
+What do you desire, creature? Our Friendship? Our submission?!
+HARG! HARG! HARG!
+Foolish, dumb weakling! We, the Nineteenth Culture of the Thraddash Empire
+have an enormous fleet of ships here, with which to instruct you!
+We will gladly attack you -- in fact, it is a requirement that we do so
+since we are Ur-Quan slaves, and you are obviously an independent.
+But know this! SNORT! Pay close heed!
+While it is true we keep count of the number of our ships you destroy
+we consider attacking our homeworld SO irrevocably stupid
+that any victories you may score here through a sheer stroke of luck
+WILL NOT be added to your personal victory tally!
+Now what do you wish of us before we attack?
+
+#(HOSTILE_HOMEWORLD_HELLO_2)	THRAD005.wav
+Attention cowardly alien human thing!
+You escaped our instructional session, SNORT! But this time things are different.\n
+We, the Ur-Quan slaves of Culture Nineteen,
+have engaged in a long-term build-up of weapons, assuring us that we shall prevail!
+If you wish merely to count coup, seek our ships in space.
+Now do you wish to speak, or shall we simply start blasting?
+
+#(HOSTILE_HOMEWORLD_HELLO_3)	THRAD006.wav
+I am Korgk, battle-slave foreman of Culture Nineteen.
+You may be interested to know that our model ZK-53 computer
+has determined that you have only a fleeting 1.6% chance
+of surviving a battle with our homeworld guardian fleet.
+Shall we test this assertion?
+
+#(HOSTILE_HOMEWORLD_HELLO_4)	THRAD007.wav
+Foolish Aliens! Shall you never learn the futility
+of trying to conquer our homeworld through direct attack?
+It is impossible! SNORT! We Thraddash will toast your tootsies.
+Your charred bodies will be fertilizer for our fodderland.
+A great fight, resulting in a glorious Thraddash victory, awaits you here!
+
+
+#(whats_up_hostile_1)
+Thraddash of Culture Nineteen: we sense a bit of hostility here. Why?
+
+#(whats_up_hostile_2)
+What has made you this way? Why are you so brutal?
+
+#(GENERAL_INFO_HOSTILE_1)	THRAD008.wav
+Hostility!
+HARG! HARG! HARG!
+We are not `hostile'. Hostility is unwarranted aggression! SNORT! 
+If you want to know about hostility, let us tell you about Culture Twelve!
+Culture Twelve was SO hostile that while they were on their way to their first great battle
+Jugkah, the battlemaster, stepped on Gnusko the tactician's foot, causing him great pain.
+The annoyed Gnusko turned on his battlemaster, Jugkah, and sliced his body in half!
+This miffed Jugkah's troops who took it upon themslves to murder Gnusko and his elite troops.
+The REAL trouble started when now-dead Jugkah's master sergeants Muuhd and Pudt
+started arguing about how to kill Gnusko -- simple crucifixion, or the slower `Lead Tatoo' technique.
+The argument was resolved when Muuhd and his five hundred troops were slaughtered by Pudt and his gang.
+Well, this probably all would have gone down in history as a great day of learning for Culture Twelve
+were it not for the surprise arrival of Culture Twelve's original enemy, the Yajag and his cronies
+who wiped out Culture Twelve's army, thus beginning the long and glorious Culture Thirteen.
+SNORT! Now THAT'S hostility!
+We, on the other hand, merely want to kill you.
+
+
+#(GENERAL_INFO_HOSTILE_2)	THRAD009.wav
+Brutal!? You don't know the MEANING of brutal until you've heard the story of Culture Three!
+How brutal WAS Culture Three you ask?
+Culture Three was SO brutal that they maimed, tortured, enslaved, and in general brutalized
+THEMSELVES!
+You see, Culture Two had made a virtue of stoic resistance to pain, stubborn fortitude, that sort of thing.
+So when Culture Three came around, they had a problem.
+How were they going to impress everyone as being EVEN TOUGHER?
+Their answer? They would arrive at a battle, stand on a tall hill where everyone could see them
+and chop off one of their own limbs! Then they'd wave it around, screaming and shaking it at their enemies.
+It worked! It scared the hell out of their opponents! They ran like crazy!
+You could tell who was a real war hero back then by how few arms or legs he had left.
+War parades were quite different too. Instead of sturdy old warriors walking slowly past the reviewing stands
+they tended to roll, and at a good clip, too.
+To you, an inferior alien, this may seem bluntly stupid -- the product of a sick, primitive society.
+SNORT! You couldn't be more right!
+Culture Three was, as you can well understand, only the third Thraddash Culture
+and was therefore far from the tempered perfection you have encountered here and now.
+
+	
+
+#(GENERAL_INFO_HOSTILE_3)	THRAD010.wav
+NO! We will not answer any more of your foolish questions!
+Instead, you will answer OUR questions, such as
+who is responsible for those berserk red probes that keep attacking our ships?
+Are these devices your robot emissaries of death? Hmm?
+No! Don't answer, I can see it in your eyes. You've given it all away! SNORT! I know the truth now.
+The only thing that confuses me is WHY do the probes approach from the direction of Vega?
+
+#(GENERAL_INFO_HOSTILE_4)	THRAD011.wav
+Back to the subject of the probes!
+We found one orbiting a strange planet in the Epsilon Draconis system.
+The planet causes our scanners to malfunction, producing a wildly colored image.
+The probe seemed to be studying it. Is this true?
+SPEAK, HUMAN! REVEAL THE TRUTH! CONFESS YOUR CRIMES!
+Well, if you will not cooperate
+we will have to extract the information from you in more painful ways.
+
+#(what_about_you_1)
+What can you tell us of your species?
+
+#(ABOUT_US_1)	THRAD012.wav
+Talk! Bah, talk is for sissies, weaklings like those of Culture Fourteen.
+For ten thousand years, we Thraddash have fought and died, learned and improved.
+Then, along came Culture Fourteen which claimed that all this -- this perfect method...
+...was wrong! -- that each time we violently transformed to a new Culture
+we inevitably blasted ourselves back at least five hundred years in development.
+Hmph! Some people just cannot accept the cost of progress.
+Indeed, the FOOLISHNESS of Culture Fourteen's peaceful whining was revealed
+when they were conquered by Culture Fifteen after only a ten year reign.
+And did the change to Culture Fifteen set us back five hundred years?
+NO! SNORT!
+Two, maybe three hundred years, tops.
+The short span of Culture Fourteen's reign is objective proof that as a way of life
+peace is a failure.
+
+#(what_about_you_2)
+So violent, Rhino-Dudes! What more can you tell us about your Culture Nineteen?
+
+#(ABOUT_US_2)	THRAD013.wav
+What!?! SNORT! MORE talk?
+It amazes me that you ever got out of the orbit of your home planet!
+Yak! Yak! Yak! -- Yammer! Yammer! Yammer!
+Sigh... very well, we will talk... for a moment.
+Our Culture Nineteen is the most formidable ever to appear in Thraddash space.
+Admittedly, we said something similar about Culture Eighteen, BUT IT IS TRUE!
+With our rather swift defeat by the Ur-Quan and subsequent enslavement
+we realized that it was time for a change! A new Culture had to be established!
+So, of course, we began a thermo-nuclear exchange to decide who would lead this new culture.
+We were all quite disappointed when the Ur-Quan in orbit above our homeworld
+launched waves of fighters who intercepted all our missiles.
+The Ur-Quan explained that slaves were not permitted to engage in such destructive conflicts
+so my people, being superior, introduced a super-lethal poison into our opponents' water and air
+thus ending the conflict, HARG! HARG! HARG!
+The Ur-Quan were not particularly happy about this resolution, and killed all of our leaders
+which under other circumstances would have started a larger inter-Thraddash war
+but the Ur-Quan appointed new leaders, apparently chosen at random
+and explained that further disobedience would result in the destruction of our species.
+Frustrating, huh?
+
+#(what_about_urquan_1)
+You mention the Ur-Quan. What is your relationship with them?
+
+#(ABOUT_URQUAN_1)	THRAD014.wav
+A foolish question! We are their slaves, dolt! What else would we be?
+When the Ur-Quan first appeared in our space over fifty years ago
+coming from the direction of the Ophiuchi stars
+we attacked them with gusto, zipping in to fire our Mark 6 blasters
+and then theoretically zipping back out to prepare for another attack run.
+SNORT! Unfortunately, before we could zip out
+our ships were either blasted to smithereens by the Ur-Quan's fusion bolts
+or were picked apart by the swarms of Ur-Quan fighter-vessels.
+You may wonder why we didn't use our afterburners to escape. The answer is simple.
+Fifty years ago, our ships had not yet been modified for this enhancement!
+It was not until 2143 that  Maintainance Engineer Reeunk invented the afterburner effect
+when he accidentally stuck his cigar in the aft fuel valve of the ship we was working on.
+WHABOOM!!! The ship took off like a farg out of hell, and Reeunk was fried to a crisp.
+Yes, we remember Reeunk with much fondness. Of course, we have refined the device
+and now that our entire fleet has been fitted with the Reeunk Afterburners
+perhaps NOW the Ur-Quan will let us fight at their side as TRUE battle thralls.
+
+#(what_about_urquan_2)
+Why didn't you fight against the Alliance, and where ARE the Ur-Quan?
+
+#(ABOUT_URQUAN_2)	THRAD015.wav
+We wanted to, OH how we wanted to!
+After all, we were the first battle thralls the Ur-Quan enslaved in this part of space
+we thought we had priority!...
+but the Ur-Quan thought we were too weak to hold our own in the upcoming battles
+so they left us here... to guard the flank.
+If only we had been WHIMPER! stronger and less... SNARF! troublesome.
+Another reason the Ur-Quan wouldn't take us with them
+was because we kept picking fights with the new battle slaves
+like the Umgah blobbies, or those religious idiots, the Ilwrath.
+Where did they go, you ask? This is a secret, of course! We can't tell you!
+If we told you that they were fighting a secret war against a mysterious invader
+you might find some way to use that information against our masters.
+So forget it! No secrets!
+
+#(got_idea)
+	"Hey, I've got an idea! Why don't you go impress your Ur-Quan masters AND "
+show-off your Afterburner modification by attacking the Ur-Quan's enemy!?
+
+#(GOOD_IDEA)	THRAD016.wav
+WHAT FOOLISH STUPIDITY! HARG! HARG! HARG!
+WHY THAT'S AS DUMB AN IDEA AS -- what did you say?
+Attack the Ur-Quan's enemy? Help them win their war?
+Why that's a... that's a... THAT'S AN EXCELLENT IDEA!
+I'm glad I thought of it!
+We shall marshall our forces and leave at once!
+Stupid, human pitiful weakling dog, you have been helpful, so as a reward
+you may leave alive, and when we return from our glorious campaign
+we may even honor you with a retelling of the many great battles we shall certainly win.
+Until then, get lost.
+
+#(WE_GO_TO_IMPRESS_URQUAN_1)	THRAD017.wav
+The Ur-Quan will be mightily impressed by our combat prowess
+when we blast their enemies from space!
+We build up a charging fury! Stay out of our path!
+
+#(WE_GO_TO_IMPRESS_URQUAN_2)	THRAD018.wav
+Our individual skills, our superior fighting ships
+and our objectively correct political views
+are sure to greatly impress our Ur-Quan Masters!
+To Arms! SNORT! To Arms!
+
+#(WE_IMPRESSING_URQUAN_1)	THRAD019.wav
+Oh! The Weapons!! The devastating bolts of sheer energy! SNORT!
+The dark ships -- the Ur-Quan's enemies, they bow before our superior technologies!
+The morbid, relentless wheels of heart-pounding destructiveness
+are nothing more than an inconvenience!
+Oh, yes! I am sure that we are demonstrating to the Ur-Quan
+the worthiness of our excellent Culture Nineteen!
+
+#(WE_IMPRESSING_URQUAN_2)	THRAD020.wav
+We look forward to success!
+The way is challenging, but our Turbo-Thrusters are at 200% and our guns stand ready!
+We have engaged the dark ships and achieved victory!
+The Ur-Quan know we are here! SNORT! They see our valor!...
+...unfortunately they also seem to be attacking us.
+We have tried to make contact with them on the usual Hyperwave bands, but to no avail.
+Even so, I am still quite sure that we are impressing them GREATLY!
+
+#(WE_IMPRESSED_URQUAN_1)	THRAD021.wav
+The great gouts of flame! SNORT! The accuracy of our shooting!
+We killed THOUSANDS... well at least HUNDREDS!
+It was wonderful! It was delirious!
+Those few of us who survived will have stories to tell for years to come.
+We were marvelous! SNORT! They shook and shivered when they saw us coming!
+They were so frightened of us, they froze in their tracks.
+That's how scared they were!
+Ah, such fighting! SNORT! We will not soon see the like again!
+
+#(WE_IMPRESSED_URQUAN_2)	THRAD022.wav
+Oh Yes! We have mightily impressed the Ur-Quan!
+We destroyed several of their enemy's dreaded black ships
+and severely damaged many more.
+Our losses? Well, yes, there were a few.
+But we are still very strong!
+Make no mistake about that!
+
+#(HOSTILE_HELIX_HELLO_1)	THRAD023.wav
+WARNING! You have entered Thraddash Secured Space!
+There is nothing valuable here!
+Go away!
+
+#(HOSTILE_HELIX_HELLO_2)	THRAD024.wav
+Begone Stupid, Ugly Ones!
+SNARL!
+Leave before we break from our guard posts and give you a good Thraddashing!
+
+
+#(submit_1)
+Your blustering does not impress me. We have requirements which you will fulfill, NOW!
+
+#(NO_SUBMIT_1)	THRAD025.wav
+Hunh?
+Hnyarg?!
+WHAT?!
+SNARL! YOU SAY WHAT?!!!
+Foolish, pitiful, small-headed being
+WE WILL DEEESTROY YOUUU AND EVERYBODY ON YOUR SHIP!!
+
+#(submit_2)
+I have secret weapons of great power. Submit, or I shall evaporate your planet.
+
+#(NO_SUBMIT_2)	THRAD026.wav
+HARG! HARG! HARG!
+We like secret weapons!
+We will now give you the opportunity to give them to us.
+
+
+#(be_friends_1)
+We wish nothing from you, save your friendship.
+
+#(NO_FRIENDS_1)	THRAD027.wav
+Perhaps, after we have made you our slaves, we can accomodate your wishes.
+Until then...
+
+#(be_friends_2)
+You are strong! We like strong! We be friends, now, okay?
+
+#(NO_FRIENDS_2)	THRAD028.wav
+We are strong. You are weak. And HARG! HARG!...
+we HATE weak.
+We do not need weak friends! We want only slaves and teachers.
+Since you have nothing to teach us and refuse to be our slave
+then you are our enemy.
+Such logic must be obvious even to a stupid being like yourself.
+
+#(how_impressed_urquan_1)
+How did impressing the Ur-Quan work out?
+
+#(IMPRESSED_LIKE_SO_1)	THRAD029.wav
+It was glorious, truly glorious!... for the most part.
+It would have been entirely glorious except for two factors.
+Factor One: we lost over half our battle fleet during the two-week fracas.
+Factor Two: of our casualties, only 60 percent were due to the Ur-Quan's enemy, the dark ships.
+SNORT! The remaining 40 percent can be attributed to the Ur-Quan themselves.
+We can be certain that we impressed them with at least one achievement
+due to the Afterburner modification, we were somewhat harder for them to kill
+than when they conquered us in the first place.
+
+#(how_impressed_urquan_2)
+Would you describe the Ur-Quan's enemy ships?
+
+#(IMPRESSED_LIKE_SO_2)	THRAD030.wav
+They were black as space itself, with only the occasional glint off their hulls as they turned to fire.
+Their weapons were extremely primitive, nothing more than fast-spinning disks of dense metal
+yet they penetrated our defensive screens, and inflicted grievous damage
+purely through their enormous kinetic energy.
+The black ship's secret weapon is their ring of fire
+which is VERY effective at short range.
+Hey! Wait a minute! What am I doing answering YOUR questions?
+Puny human, your time is almost up. Prepare yourself for defeat!
+
+#(bye_hostile_1)
+We leave in peace.
+
+#(GOODBYE_HOSTILE_1)	THRAD031.wav
+What? You leave before the lesson begins? We have so much to teach you!
+Let us show you just one thing, it's called the `Surprise Attack'.
+
+#(bye_hostile_2)
+I guess we'll just be going now.
+
+#(GOODBYE_HOSTILE_2)	THRAD032.wav
+Then I guess we'll just be attacking you now.
+
+#(why_you_here_hostile)
+Explain your presence here, Thraddash.
+
+#(NONE_OF_YOUR_CONCERN)	THRAD033.wav
+It is none of your concern, human, SNORT!
+Now leave this world before we get REALLY mad!
+
+#(demand_to_land)
+What are you hiding down there? I demand to land!
+
+#(NO_DEMAND)	THRAD034.wav
+You will make no demands, stupid captain human dog!
+Instead, you will die!
+
+#(what_about_this_world)
+So what's so special about this world? Why all the guards?
+
+#(BLUE_HELIX)	THRAD035.wav
+Very well, since we have a huge number of ships here
+I guess there can't be much harm in explaining this to you
+PROVIDED YOU LEAVE WHEN WE'RE DONE!
+So listen carefully.
+Below us
+on the surface of this planet
+on the dark continent of Funt
+high on a mountain
+in an ancient shrine
+resting in a special ceremonial cradle
+glowing with its magical blue light
+is the
+NO! I've changed my mind! You don't get to know the answer.
+Sorry.
+
+#(whats_helix_hostile)
+Aw, geez. Come on. That was UNFAIR!
+
+#(HELIX_IS_HOSTILE)	THRAD036.wav
+Okay, okay. I guess you're right, it was a bit cruel. I'll tell you.
+Let's see, where was I? Oh, right
+on the dark continent of Funt
+high on a mountain
+in an ancient shrine
+resting in a special ceremonial cradle
+glowing with its magical blue light
+is the
+AQUA HELIX!
+...the most revered of all Thraddash relics
+the sign of any Culture's authority.
+
+#(i_need_to_land_lie)
+Uh... I left something important on the surface last week. Can I just go down and get it?
+
+#(CAUGHT_LIE)	THRAD037.wav
+Okay.
+Go ahead.
+Hey, WAIT A MINUTE!
+You are after our most ancient and important relic, AREN'T YOU?
+You were going to steal it, WEREN'T YOU? SNARL!
+You are sneaky and deceptive, just like the vile Culture Sixteeners!
+You shall suffer their same fate -- OBLIVION!
+
+
+#(bye_hostile_helix)
+We have decided to leave. Goodbye.
+
+#(GOODBYE_HOSTILE_HELIX)	THRAD038.wav
+If you hurry, we won't kill you. Goodbye.
+
+#(DIE_THIEF_1)	THRAD039.wav
+So it's you! The Thief! The skulking little human weasel!
+SNORT! We should not have left the Aqua Helix Planet unguarded!
+You have shown us a weakness in ourselves, and for that we thank you.
+But we desire the return of the Helix, and since I suspect you won't give it willingly
+SNORT! Eat Flaming Death You Gravy Sucking Pig!
+
+#(DIE_THIEF_2)	THRAD040.wav
+Ahoy stupid human. You are arrogant and absurd!
+You took our wonderful, ancient, sacred Aqua Helix, and refuse to return it!
+This makes us mad, EXTREMELY mad!
+Prepare to meet thy Doom, alien Thief!
+
+#(AMAZING_PERFORMANCE)	THRAD041.wav
+	"Admirable! Admirable! We have never witnessed such awesome combat capabilities!"
+You have destroyed so many of us! We are humbled in your presence!
+We thought you were a weakling, a coward, a pitiful sniveling wimp.
+We were wrong, so wrong! WHIMPER!
+You have shown yourself superior to ourselves, indeed, even the Ur-Quan!
+We wish to learn from you, thus improving our Culture.
+Give us your wisdom, mighty Teacher! What is the secret to your success?
+Wait! I've got it! It's the way you respond to our hailing calls each time we meet!
+Just as they say, first impressions are SO important!
+So tell us, please! Tell us how WE should present ourselves.
+
+#(IMPRESSIVE_PERFORMANCE)	THRAD042.wav
+	"Well, Humans have some backbone after all, but not as much as the Ur-Quan."
+A Human ship is a poor second to the Ur-Quan Dreadnought.
+Your weapons do not have the killing strength of an Ur-Quan fusion blast.
+SNORT! The Ur-Quan are still your betters.
+
+#(ADEQUATE_PERFORMANCE)	THRAD043.wav
+Perhaps Humans can fight after all, if our reports are accurate.
+	"We will test this hypothesis in the laboratory of life -- IN GLORIOUS BATTLE!"
+Your puny, inadequate weaponry is no match for the Thraddash Mark 6 Blaster
+with its 4 Megawatt energy discharge.
+	"Nor can your slow, bloated tubs compare to our Flash Turbo-Boosted warships!"
+We have nothing to fear!
+
+#(HELLO_POLITE_1)	THRAD044.wav
+Hello and good day! How are you today?
+We are just fine, thank you! Are your mates and offspring well?
+How simply marvelous!
+
+#(HELLO_POLITE_2)	THRAD045.wav
+We are the polite and courteous Thraddash!
+We greet you with all appropriate felicitations.
+
+#(HELLO_POLITE_3)	THRAD046.wav
+Most erudite greetings to you.
+As always, we will be most pleased to enter into meaningful discourse with your elevated person.
+
+#(HELLO_POLITE_4)	THRAD047.wav
+Greetings and salutations! We trust that all is well with you
+and that your stay will be pleasant and beneficial.
+
+
+#(HELLO_RHYME_1)	THRAD048.wav		  
+We are the rhyming simons
+blancmange rhymes with orange
+space is the place
+the stars in their courses
+cannot catch the horses?
+SNORT! This is hard!
+
+#(HELLO_RHYME_2)	THRAD049.wav		   
+Blood is red, bruises are blue
+When strangers come here, we run them through!\n
+HARG! HARG! HARG!
+Good one, eh?
+
+#(HELLO_RHYME_3)
+There once was a Thraddash named Mak-Roni
+whose ship was in total caco-phony
+He got lost in Apodis
+and died in Draconis
+Because all that he ate was baloney!
+HARG! HARG! HARG!
+
+#(HELLO_RHYME_4)
+Constantly moving are
+space, stars, time
+SNORT!
+form not function
+meets in death
+remembered.
+
+#(HELLO_PIG_LATIN_1)	THRAD050.wav
+Eway areyay ethay igpay atinlay eakingspay Addashthray! Ortsnay!
+
+#(HELLO_PIG_LATIN_2)	THRAD051.wav
+Ombatcay! Ecklessray ouragecay! Eakingspay igpay atinlay!
+Eway aryay ategray orfay eesethay easonsray!
+
+#(HELLO_PIG_LATIN_3)	THRAD052.wav
+Ellohay umanhay! Elcomeway ackbay! E'veway eenbay xpectingay ouyay.
+
+#(HELLO_PIG_LATIN_4)	THRAD053.wav
+Eway aypay espectray otay ouryay eategray eachertay!
+
+#(HELLO_LIKE_YOU_1)	THRAD054.wav
+This is Grah of the starship Hot Pulsing Thrusters.
+
+#(HELLO_LIKE_YOU_2)	THRAD055.wav
+Greetings! I am Captain Chudd in command of the Blazing Guns of Glory!
+
+#(HELLO_LIKE_YOU_3)	THRAD056.wav
+Attention! This is the starship Overwhelmer.
+
+#(HELLO_LIKE_YOU_4)	THRAD057.wav
+I am commander Dthunk.
+
+
+#(WELCOME_SPACE0)	THRAD058.wav
+We of 
+#(WELCOME_SPACE1)	THRAD059.wav
+ are glad to meet you here in space, oh wise Teacher from Earth!
+
+#(WELCOME_HOMEWORLD0)	THRAD060.wav
+Your presence here at our homeworld fills all of us 
+#(WELCOME_HOMEWORLD1)	THRAD061.wav
+ with awe. We are honored, wise human.
+
+#(WELCOME_HELIX0)	THRAD062.wav
+Hoy-yo-HO! The super-strong human has returned to this, our most important planet.
+We, 
+#(WELCOME_HELIX1)	THRAD063.wav
+, bid you welcome.
+
+#(why_you_here_ally)
+What's so special about about this planet?
+
+#(GUARDING_HELIX_ALLY)	THRAD064.wav
+We orbit here guarding that most precious of our relics, that which we hold most dearly
+that which has been at the heart of all our Cultures
+(except for Culture Nine, and they don't really count)
+We guard the object which transcends mortal realms
+the Aqua Helix!
+
+#(whats_helix_ally)
+So what about this `Aqua Helix' thing? Does it do any tricks?
+
+#(HELIX_IS_ALLY)	THRAD065.wav
+The Aqua Helix is our most precious relic.
+For the totality of our historical memory, the Helix has been with us.
+It guides, motivates and rewards. It is the twisty-thing that launched a thousand ships!
+It is the relic all our cultures have held most... oh yeah, I said that already.
+We know the Aqua Helix is great
+largely because all our previous nineteen cultures have known this to be true!
+If the Aqua Helix wasn't anything special
+WHY would we spend so much blood and passion over the little thing?
+It would be a colossal waste! An absurd travesty!...
+...actually, this is much what Culture Nine said
+during their two-week period of dominance before Culture Ten wiped them out.
+Anyway we remain convinced!...
+...we are Thraddash and all Thraddash know the significance of the Aqua Helix.
+Therefore, the Aqua Helix IS great! The matter is resolved.
+
+#(may_i_land)
+That sounds really cool! You won't mind if I go down and just kinda look at it, would you?
+
+#(SURE_LAND)	THRAD066.wav
+Why certainly, go ahead and land on the planet and take a look at the most precious of all our relics
+the relic we hold most dear, as have all our Cultures...
+
+#(whats_up_ally)
+Have there been any developments here that I, your Great Teacher, should know of?
+
+#(GENERAL_INFO_ALLY_1)	THRAD067.wav
+Yes, Teacher, there is at least one event of note.
+We may have once mentioned our encounters with the tumbling red probes
+the ones that attack relentlessly while spouting bizarre peace offerings.
+Initially we believed that they were coming from the direction of the Vega star system.
+Now we believe the opposite.
+Uh.. no, Captain, we don't know what the opposite of Vega is, that's not what we meant.
+We now believe that the probes are RETURNING to Vega.
+As yet we do not know the nature of their mission.
+
+#(GENERAL_INFO_ALLY_2)	THRAD068.wav
+Yes, wise human, let us elaborate.
+Two years ago we monitored the entry of two ships into our space.
+One was clearly a Dreadnought, the ship of our ex-masters, the Ur-Quan.
+The other ship was a dark and ominous ship equally as huge as the Dreadnought.
+The vessels were locked in mortal combat. They fought valiantly!
+Eventually, the Ur-Quan destroyed the black ship, but not before receiving mortal wounds itself.
+The last we saw of the ship, it was tumbling out of control toward Alpha Pavonis.
+We do not know its eventual fate.
+
+#(GENERAL_INFO_ALLY_3)	THRAD069.wav
+Now that you are our new role-model, I guess it's time to spill the beans on the Ur-Quan.
+Unfortunately, we never really got any beans -- secret bits of information, that is.
+However, maybe you would like to know about the last time we saw the Ur-Quan.
+It was in 2140, I think. All of a sudden, a fleet of Dreadnoughts came storming into our space
+quickly refueled, and then left, broadcasting a recorded message
+which told us to remain in our old sphere of influence, obey the slave laws, and wait for their return.
+The Dreadnought fleet departed in the direction of the Crateris constellation
+but where they are now is unknown.
+
+#(GENERAL_INFO_ALLY_4)	THRAD070.wav
+This doesn't really count as News, Teacher
+but War is truly magnificent isn't it?
+The gut wrenching sight of molten warships!
+The boiling blood of depressurized soldiers!
+I just love it!...
+...don't you?
+
+#(HOW_SHOULD_WE_ACT)	THRAD071.wav
+We need to learn so much from you, such as
+How should we act in our new Culture? What is our direction, our ethical base?
+
+#(friendly)
+Be kind at all times and in all places. Treat each stranger you meet as your best friend.
+
+#(OK_FRIENDLY)	THRAD072.wav
+Friendly? Kind? The wisdom escapes me.... ah yes! I understand now!
+Being kind, being friendly...this will allow intruders to let their guard down
+and when we kill them, they will be too surprised to react!
+What a great plan, human! You are truly a great Teacher!
+
+#(wacky)
+Lighten up! Be kind of... you know... Wacky! Here, try watching these vids: Monty Python and the Marx Brothers.
+
+#(OK_WACKY)	THRAD073.wav
+Wacky!...Wacky? I do not understand. We shall watch these vids of yours.
+We shall study them, to learn to be... wacky.
+Then, when we are wacky enough, we shall test our new wackiness in combat
+to discover, no doubt, the great advantage it has given us.
+Thank you, Great Teacher.
+
+#(just_like_us)
+Look, if you really want a model for your Culture, then be just like us!
+
+#(OK_JUST_LIKE_YOU)	THRAD074.wav
+Aha! I see it now. We proceed carefully
+we take no undue risks. We slowly build up our strength
+and only attack when we have overwhelming odds on our side!
+In dealings with other races, we shall question them mercilessly
+trying to drag out every last bit of information, and if they are not cooperative
+we will threaten them with instant death!
+We will be just like you!
+
+#(WORK_TO_DO)	THRAD075.wav
+We have much work to do to implement these sweeping cultural changes.
+Transferring from the allegiances and mores of one culture to another
+is a difficult and time consuming task.
+We beg you, great warrior from Earth, give us time to make the changes you have suggested.
+Return later to see our brave new world.
+
+#(contemplative)
+Try being more contemplative. Consider the many facets of a single gem... and stuff like that.
+
+#(OK_CONTEMPLATIVE)	THRAD076.wav
+Aha! Contemplation, yes! New thought and realizations! With our new studious ways
+we shall uncover new methods, inventions and schemes
+allowing us to conquer entire civilizations with ease!
+Brilliant, human, brilliant!
+
+#(how_goes_culture)
+So how is the new Culture developing?
+
+#(CONTEMP_GOES_1)	THRAD077.wav
+Augh! If it were not for our certainty in your wisdom, great Teacher from Earth
+we would not have remained a `Contemplative' culture for more than a single day
+As it is, we have contemplated our strategies, tactics, our weapons, the stars
+the planets, and even our navels
+which for a Thraddash is very uncomfortable and requires at least two mirrors.
+
+#(CONTEMP_GOES_2)	THRAD078.wav
+So studious! So quiet! So contemplative!
+SNORT!
+We are not made for this. We are beginning to break out in spots!
+
+#(FRIENDLY_GOES_1)	THRAD079.wav
+To be frank, Great Teacher, friendliness suits us Thraddash poorly.
+For example, we Thraddash do not have the necessary muscles to `smile' as you suggested we do
+so we are now using small plastic prosthetic devices to prop up our lips into the required position.
+Very uncomfortable.
+
+#(FRIENDLY_GOES_2)	THRAD080.wav
+Try as we might, we just can't make this friendly thing work, Teacher.
+Even your idea about exchanging the ritual gifts, the `Fruit Cakes' has had problems.
+It seems that nobody actually wants to eat the Fruit Cakes
+however, on the plus side, due to the Fruit Cakes' density and other physical characteristics
+they make excellent projectile weapons!
+
+#(WACKY_GOES_1)	THRAD081.wav
+We have studied and studied the vids you left with us, oh Great Teacher
+but we fear we are unable to grasp the essential truth and power of being wacky.
+For example, last month, in an attempt to be spontaneously absurd
+I turned to my subordinate and in a high-modulated tone of voice
+explained that there was a penguin sitting on the vidscreen.
+Not knowing what a penguin was, my subordinate spun to face the vidscreen
+his hydraulic holster snapping his weapon into his hand.
+BLAM! BLAM! BLAM!
+The penguin, the vidscreen, and a large section of the wall were destroyed.
+You see, Captain. Perhaps we are not suited to being wacky\n
+and SNIFF!... that was my only penguin.
+
+#(WACKY_GOES_2)	THRAD082.wav
+We are getting a better handle on this wacky thing. The key?...Slapstick!
+We Thraddash have found our mode, our idiom, our way to be wacky.
+Jabbing the eyes with outstretched digits! Striking the head with planks!
+HARG! HARG! HARG! We like and understand this perfectly, Captain.
+And with the addition of our native elements, high-explosives and nausea gas
+Thraddash space has become Pratfall City!
+
+#(LIKE_YOU_GOES_1)	THRAD083.wav
+Things are proceeding well, Captain.
+We have discovered one item which may interest you.
+There is an unusual world orbiting Epsilon Draconis, in close solar orbit.
+Though it radiates energies which scramble our sensors
+we can detect many radioactive substances on the surface.
+We suspect that this is one of the so-called `Precursor Dumps'
+described in some ancient text fragments we found in Alpha Apodis.
+The text goes on to say that these Dumps are in some kind of pattern
+though what the pattern may be remains a mystery.
+For now, that is all.
+
+#(LIKE_YOU_GOES_2)	THRAD084.wav
+A long-range scouting team was sent to explore the stars in the Lyncis constellation.
+On planet I of Delta Lyncis, they encountered a life form so dangerous, so hostile
+that it almost killed the entire landing party.
+We know you seek information on lifeforms, Great Teacher
+and we hope this information has been of use.
+
+#(bye_ally)
+Goodbye to you, my Thraddash students.
+
+#(GOODBYE_ALLY_1)	THRAD085.wav
+We eagerly await your return, Great Teacher.
+
+#(GOODBYE_ALLY_2)	THRAD086.wav
+We will await your return and further enlightenment with great anticipation.
+
+#(GOODBYE_ALLY_3)	THRAD087.wav
+Try not to get killed, Teacher.
+
+#(GOODBYE_ALLY_4)	THRAD088.wav
+Farewell Great Teacher.
+
+#(be_polite)
+Try being polite and friendly in your greetings.
+
+#(OK_POLITE)	THRAD089.wav
+Ok, we will be polite.
+That will cause visitors to let their guard down
+and then we attack them!
+Yes, that is an excellent plan!
+
+#(speak_pig_latin)
+To really capture the spirit of Interstellar Diplomactic Protocol you should speak pig latin.
+
+#(OK_PIG_LATIN)	THRAD090.wav
+Pig-Latin, eh? Isn't that where you take the first letter or two of a word, put it at the end
+and then add an `ay' at the very end?  Hmm.. let me try
+`Upidstay Eaturecray! Eparepray otay ieday!'
+Hey! I like that! It gives one the semblance of wit and education
+without all that dreary studying!
+Just one question, Great Teacher. How do you say `example' in pig latin?
+
+#(use_rhymes)
+I know for a fact that rhyming in your introductions wins big points.
+
+#(OK_RHYMES)	THRAD091.wav
+Rhymes? Like in poetry? SNORT!
+Isn't that kind of... you know... not-tough stuff?
+SNORT! What am I saying! You are the Great Teacher! You know best!
+If rhyming is necessary, then Teacher we will be rhyming all the timing.
+
+#(just_the_way_we_do)
+Just greet people the way we do.
+
+#(OK_WAY_YOU_DO)	THRAD092.wav
+Hmmm... okay. I see.
+When necessary, we will be obsequious and kowtow
+and the rest of the time, we will bluster and threaten!
+How simple!
+
+#(WHAT_NAME_FOR_CULTURE)	THRAD093.wav
+Now that we understand the nuances of introduction, Great Teacher
+we have an even more significant question.
+Your devastation of our battle forces have shown us
+that our Cultrue Nineteen is inferior to your own
+therfore, we will adopt your methods, your techniques
+but what shall we name our new Culture?
+
+#(alliance_name)
+How about the 
+
+#(OK_ALLIANCE_NAME)	THRAD094.wav
+Okay, the 
+
+#(NAME_TAIL)	THRAD095.wav
+ 
+
+#(you_decide)
+I think it is important that with this new direction, you decide on your new name.
+
+#(OK_CULTURE_20)	THRAD096.wav
+You are wise, Great Teacher. I will think long and hard on this matter
+GRUNT!
+It must reflect the profound changes in our social order.
+GRUNT!
+It must clearly explain the nature of our civilization!
+GRUNT!
+Yes! I have it! The perfect name is
+Culture Twenty!
+
+#(fat)
+How about `The Fat Obstreperous Jerks'?
+
+#(OK_FAT)	THRAD097.wav
+I like it! This name, being such an obvious contrast to our true nature
+will fool our enemies into believing we are harmless
+because surely only fools would let themselves be known by such a name!
+Once again, Great Teacher, you have shown your wisdom. We thank you.
+From this day forward, we are the Fat Obstreperous Jerks!
+
+#(the_slave_empire)
+It will be 
+
+#(OK_SLAVE)	THRAD098.wav
+Ulp!  Well... you're the one with the big starship
+So be it 
+
+#(FAT_JERKS)	THRAD099.wav
+Fat Obstreperous Jerks
+
+#(CULTURE)	THRAD100.wav
+Culture Twenty
+
+#(SLAVE_EMPIRE)	THRAD101.wav
+The Glorious Slave Empire of 
+
+#(name_1)
+The New Alliance of Free Stars 
+
+#(name_2)
+The Concordance of Alien Nations 
+
+#(name_3)
+The United Federation of Worlds 
+
+#(name_40)
+The Empire of 
+#(name_41)
+!
+
+#(HAVING_FUN_WITH_ILWRATH_1)	THRAD102.wav
+Oh! The Glory of these many battles!
+The stupid Ilwrath are easy kills for our valiant warriors, SNORT!
+We kill fully two of them for every one of us who perishes!
+Of course, they possess twice our number of fighting ships
+but that is not truly significant!
+It was your wisdom and guidance that made this all possible, Great Teacher!
+Thank you! Thank you! Thank you!
+
+#(HAVING_FUN_WITH_ILWRATH_2)	THRAD103.wav
+The exploding starships! The screaming crew!
+The direct hits, the cunning escapes!
+These are the moments we live for!
+Now we must return to the great battles!
+Farewell, Great Teacher.
+
+#(GO_AWAY_FIGHTING_ILWRATH_1)	THRAD104.wav
+So, it is a stupid, ungainly human.
+I thought we killed you... never mind. It is unimportant now.
+We are in the midst of a great and glorious war.
+The Ilwrath religious fanatics have chosen to attack us
+and our brilliant defense is decimating them!
+Of course we are taking small casualties, but that is acceptable.
+Why am I wasting my time here with you?
+I could be out there, winning honor and glory fighting the idiot spiders.
+Depart human, your death is not worth the cost of my ammunition.
+
+#(GO_AWAY_FIGHTING_ILWRATH_2)	THRAD105.wav
+Stop bothering us, human!
+Can't you see that we are fighting the most perfect war of our Nineteen Cultures?
+We have brought the Ilwrath to their knee equivalents!
+Now all that remains is the coup de grace -- their final annihilation!
+So clear my path, alien dog, before I blast it clear myself!
+

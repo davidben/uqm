@@ -1,0 +1,383 @@
+#(HELLO_SAMATRA)	URQUA000.wav
+You may not approach the ancient Sa-Matra, the symbol of Ur-Quan dominance!
+Your presence here is further violation of the slave laws
+which your species have already violated so flagrantly.
+We cannot tolerate such insubordination!
+Your species' penalty shall be annihilation!
+
+#(SENSE_EVIL)	URQUA001.wav
+There is something wrong here... something which makes my sheath retract and my talons ooze.
+I sense the ugliness of a thousand evil thoughts
+and I have located the source of these fetid emanations.
+They come from aboard your vessel!
+Foolish renegade human, why have you come here? All that you have found
+is your inevitable punishment.
+
+#(INIT_URQUAN_WAKE_UP)	URQUA002.wav
+...in addition, your refusal to answer our transmissions is taken as an insult
+which shall earn you the reward of Death unless you respond immediately!
+
+#(where_am_i)
+Hey!? Where am I?
+
+#(YOU_ARE_HERE)	URQUA003.wav
+Your insubordination is intolerable!
+You MUST obey the slave laws, or face our gruesome punishment!
+
+#(why_does_my_head_hurt)
+Why does my head hurt?
+
+#(HURTS_BECAUSE)	URQUA004.wav
+You forget that the consequences of your misbehavior
+will cause great suffering for your entire people.
+
+#(what_about_2_weeks)
+Wow!? Where did the last two weeks go?
+
+#(ABOUT_2_WEEKS)	URQUA005.wav
+We have been lenient with your species, because you are so immature.
+Now this attitude has changed.
+You WILL be held responsible for your malfeasance!
+
+#(compulsion)
+Whoa! I must have been under some form of weird mental compulsion.
+
+#(WHAT_COMPULSION)	URQUA006.wav
+WHAT DID YOU SAY?!
+COMPULSION!?
+WHAT HAPPENED?! EXPLAIN!
+
+#(wascally_little_guy)
+It was this wascally little guy in Umgah space. He did it!
+
+#(WHAT_IT_LOOK_LIKE)	URQUA007.wav
+WHAT DID THE CREATURE LOOK LIKE?!
+
+#(terran_amphibian)
+It resembled a large, terran amphibian.
+
+#(talking_pet_on_steroids)
+It looked like one of your Talking Pets on brain steroids.
+
+#(BAD_NEWS)	URQUA008.wav
+A Talking Pet with compulsion powers!
+This is grave news indeed, the worst in millenia!
+We will speed the war against our cousins, the Kohr-Ah
+then we shall deal with this neo-Dnyarri, this Talking Pet.
+Alien Captain! You have done a service for us greater than you can possibly imagine.
+Your reward is continued survival, and if you return to Earth and destroy your vessel IMMEDIATELY
+we will abolish all punishment against you and your species.
+Now leave!... and never return.
+
+#(turd_and_toad)
+Kind of like a cross between a turd and a toad.
+
+#(WHAT_IS_TURD_AND_TOAD)	URQUA009.wav
+These references are obscure. Respecify.
+
+#(alien_mind_control)
+I think I was attacked by some form of alien mind control!
+
+#(WHAT_FELT_LIKE)	URQUA010.wav
+WHAT?!! OH NO!!!
+IT CANNOT BE!
+QUICK HUMAN! TELL ME: WHAT DID IT FEEL LIKE, THIS COMPULSION?
+
+#(possessed_by_devil)
+I am fairly sure that I was possessed by the devil.
+
+#(STUPID_DEVIL)	URQUA011.wav
+Devil? The only real devils are the ones flying the dark ships, human
+the murderous Kohr-Ah.
+NOW GIVE ME THE INFORMATION I DEMAND!
+
+#(falling_asleep)
+It was like I fell asleep, or was unconscious.
+
+#(someone_else_controlled)
+I felt like someone had control of my mind and my body.
+
+#(SOUNDS_FAMILIAR)	URQUA012.wav
+This sounds all too familiar... yes, the nightmare begins again.
+Perhaps we should contact the Kohr-Ah Primat, explain to her.
+No, they will not believe. They are too stubborn and simple-minded.
+They will not see the danger until it is too late!
+Human, begone! Leave my sight! We must defeat the Kohr-Ah speedily
+so that we can attend to this new Dnyarri menace.
+
+#(before_coffee)
+Kind of like the screen went dark, and then POW! here you were.
+
+#(EXPLAIN)	URQUA013.wav
+WHAT DO YOU MEAN?! ELUCIDATE!
+
+#(why_explain)
+Why should I explain this to you? You're just going to try to kill me!
+
+#(MUST_EXPLAIN)	URQUA014.wav
+Human. We Ur-Quan never lie. NEVER!
+It is a weakness to lie, and as you haven't noticed, the Ur-Quan are not weak!
+So listen, and believe these words
+if what you say is true, you were in contact with a creature so horrible, so evil
+that it makes ANYTHING else you have ever known TRIVIAL by comparison.
+There is no equal to the Dnyarri's cruelty, to its love for torment.
+Dying a THOUSAND TIMES would be preferable to what is in store for you
+if we do not stop that creature.
+So tell me what I want to know, human. NOW!
+
+#(bye_init_hypno)
+Look, ah... this was all a mistake. A weird mistake. Bye!
+
+#(GOODBYE_AND_DIE_INIT_HYPNO)	URQUA015.wav
+Your insolence knows no bounds!
+You will be punished.
+
+
+#(SUBSEQUENT_URQUAN_WAKE_UP)	URQUA016.wav
+...and again you have violated our great battlefield
+interfered with our Doctrinal War!
+We were tolerant last time, and permitted you to escape.
+This time, you shall not be so fortunate.
+
+#(uh_oh)
+Uh oh.
+
+#(NO_UH_OH)	URQUA017.wav
+It is as though your species' brain is too small to hold a simple thought
+such as, WE WILL KILL YOU FOR DISOBEYING!
+This is not a complex idea.
+
+#(stop_meeting)
+We have just GOT to stop meeting like this!
+
+#(NO_STOP_MEETING)	URQUA018.wav
+You boldly enter our space! Approach this Dreadnought as though it were a recreation base
+and then play the dumb hominid?
+Who do you take us for, Captain... Spathi!?
+
+#(bye_sub_hypno)
+Look, ah... big mistake! We're in a hurry! Goodbye.
+
+#(GOODBYE_AND_DIE_SUB_HYPNO)	URQUA019.wav
+We cannot permit such disobedience from our slaves.
+You will make an example for the rest of our subordinates.
+
+#(CAUGHT_YA)	URQUA020.wav
+SO! THE OFFSPRING HAS RETURNED TO ITS NEST!
+When you left this system, our ship was near enough to detect your translation into HyperSpace.
+Though we lost your HyperSpace spoor, we were able to backtrack your path here to this star system.
+And what did we FIND? An outlaw culture! Humans outside of a slave shield!
+You will note that this oversight has been rectified.
+Now, we shall finish the job.
+
+#(INIT_FLEE_HUMAN)	URQUA021.wav
+So... it is the human slave.
+How strange. I would have thought your species was extinct by now.
+We have a suggestion for you.
+FLEE! Run as fast and as far as your ship will take you.
+
+#(SUBSEQUENT_FLEE_HUMAN)	URQUA022.wav
+Human? You are a fool! Why are you still here?
+Flee!... before the Kohr-Ah find you!
+
+#(why_flee)
+Why should we run away?
+
+#(FLEE_BECAUSE)	URQUA023.wav
+Because you are doomed if you remain here!
+Our Doctrinal War is over. We, the Kzer-Za, have lost.
+RUN HUMAN!
+Because if you do not run -- do not find somewhere to hide and nurture your species
+you are extinct, and we, who have tried to protect you
+are now powerless to stop the killing frenzy of the Kohr-Ah.
+
+#(what_happens_now)
+So what happens now?
+
+#(HAPPENS_NOW)	URQUA024.wav
+Now the Kohr-Ah and their Eternal Doctrine have free reign in these stars.
+The Kohr-Ah will visit each of our slave races, staying only long enough
+to ensure than not one of the species remains alive.
+
+#(what_about_you)
+So what happens to you?
+
+#(ABOUT_US)	URQUA025.wav
+Human, days ago, I would have killed you for your insolence
+but now... what is the use? You and your kind will receive the ultimate punishment soon enough.
+I will tell you what you wish to know.
+While the Kohr-Ah move through space, killing your neighboring species
+we shall remain here, guarding the trophy... the Sa-Matra.
+When the Kohr-Ah are done with their dark business
+they will take possession of the Sa-Matra, and then we will part ways
+traversing the galaxy in opposite directions, fulfilling our doctrines
+and preparing for our next Doctrinal War.
+
+#(bye_wars_over)
+Well, it's been less than uplifting. Bye.
+
+#(GOODBYE_WARS_OVER)	URQUA026.wav
+Farewell human. I hope your species survives.
+
+#(SEND_MESSAGE)	URQUA027.wav
+Attention interloper - heed this recorded message!
+This drone-vessel speaks with the voice and authority of the Ur-Quan.
+You are trespassing within Ur-Quan space.
+This world, Earth, may not be approached for any reason.
+Nor will hostilities against our orbital platform be tolerated.
+In addition, your ship does not respond to standard Hierarachy identification transmissions
+and is therefore deemed to be... independent.
+This is not permissible -- only subservience shall be tolerated.
+This drone now leaves to inform the Ur-Quan of your transgressions.
+You are commanded to remain here and await the arrival of the Ur-Quan.
+Disobedience will be punished.
+
+#(INIT_HELLO)	URQUA028.wav
+WHAT! A human in a Precursor service vehicle?!
+How did you escape the slave shield, human?
+Or are you a rogue?
+
+#(SUBSEQUENT_HELLO_1)	URQUA029.wav
+Human, you have ignored our commands and now you will be punished.
+
+#(SUBSEQUENT_HELLO_2)	URQUA030.wav
+Your insubordination is intolerable!
+You MUST obey our slave laws!
+Further disobedience will result in punitive measures against your homeworld.
+
+#(SUBSEQUENT_HELLO_3)	URQUA031.wav
+We will give you no more warnings, renegade human.
+
+#(SUBSEQUENT_HELLO_4)	URQUA032.wav
+We will give you no more warnings, renegade human.
+
+#(you_must_surrender)
+Uh... surrender foul creature!
+
+#(NOPE)	URQUA033.wav
+Submit or die foolish human!
+
+#(i_surrender)
+Okay. I guess I surrender.
+
+#(DISOBEDIENCE_PUNISHED)	URQUA034.wav
+We will not kill your entire crew
+only those responsible for decision making
+specifically YOU, Captain, and your officers.
+
+#(i_wont_surrender)
+Nope! I won't surrender!
+
+#(BAD_CHOICE)	URQUA035.wav
+You have made the incorrect choice
+and now you must suffer the consequences of your mistake.
+
+#(i_will_surrender)
+I really, really, honestly surrender. I mean it. No kidding.
+
+#(GOOD_CHOICE)	URQUA036.wav
+Your wise decision has spared many of your crew the pain of death.
+However, as the commanding officer of your renegade vessel
+you will bear the full extent of the defined punishment
+which is death...
+
+#(key_phrase)
+Hold! What you are doing to us is wrong! Why do you do this thing?
+
+#(URQUAN_STORY)	URQUA037.wav
+Alien, you have spoken the Words, and you have spoken them rightly.
+We will tell you our reasons why we enslave all other sentient life.
+We evolved on a hostile world, the descendants of solitary hunters.
+In those ancient days, there was no Kohr-Ah or Kzer-Za, only the Ur-Quan.
+We explored our world, and then the space beyond.
+Here we met the six races of the Sentient Milieu, which we joined as partners.
+It was on a routine planetfall that one of our Milieu scoutships first met the Dnyarri.
+They were evilly intelligent creatures who could control the minds of others.
+They wanted to rule the universe. We had no choice but to give it to them.
+For thousands of years, we were unthinking slaves to the Dnyarri.
+The Dnyarri had a special liking for us Ur-Quan
+so they began to tinker with our genes. They built two Ur-Quan sub-races
+one Green, the thinkers and planners
+the other Black, the warriors and laborers.
+When the martyred genius Kzer-Za gave us the secret to defeating the Dnyarri, we destroyed them.
+Then we decided that we would never again be slaves.
+We would follow the Path of Now and Forever.
+We decided to enslave or imprison all other intelligent life in the galaxy.
+We had slave-shielded one world, when we learned that the Black Ur-Quan
+under a new leader, Kohr-Ah, had devised the Eternal Doctrine
+which called for the `cleansing', the annihilation, of all non-Ur-Quan sentient life.
+Before we could stop them, they burned the Yuptar race's homeworld
+and were on their way to the planet of the last remaining free race.
+We met the Kohr-Ah in orbit above that planet. We confronted them. They would not submit. We fought.
+When our battle was done, the Kohr-Ah were defeated.
+We exiled them, sent the remnant of the Kohr-Ah fleet into the unknown reaches of the galaxy.
+Then we began our own migration, moving around the galaxy in the opposite direction of the Kohr-Ah.
+Captain. You have heard our words. Now you have a decision to make.
+Submit to us, the Ur-Quan Kzer-Za, or face our wrath.
+
+#(like_to_leave)
+I will leave now.
+
+#(INDEPENDENCE_IS_BAD)	URQUA038.wav
+Your independence is too dangerous for us to tolerate.
+You shall be punished.
+
+
+#(whats_up_1)
+Why do you wish to enslave us?
+
+#(GENERAL_INFO_1)	URQUA039.wav
+Although you consider us the enemy, these conclusions are flawed. We are your salvation.
+We bring you peace
+a peace built upon OUR social framework imposed upon your planet
+a new world order in which your prosperity and security are assured by the Ur-Quan.
+We will protect you from the hazards of this hostile universe, from dangers so hideous
+your simple minds cannot imagine their dark scope.
+Today, we are the enemy. In time, this will change.
+Soon, you will come to understand the boon of slavery we force upon you
+and then, you will revere and even love us for this gift.
+
+#(whats_up_2)
+You didn't answer my question. What's your problem?
+ 
+#(GENERAL_INFO_2)	URQUA040.wav
+You have intruded upon the battleground of our Doctrinal conflict with the Kohr-Ah.
+This is not tolerable.
+We must maintain our concentration on this war. We must win.
+Should we lose, the consequences to you and all other sentient life in this part of the galaxy
+would be very grave.
+Since you have refused to depart willingly
+it appears that we must eliminate you ourselves.
+
+#(whats_up_3)
+Hello? Ur-Quan? Are you paying attention to me?
+
+#(GENERAL_INFO_3)	URQUA041.wav
+In our twenty thousand years along the Path of Now and Forever
+we have dominated thousands of species, yes
+but we have saved hundreds from extinction.
+You imagine the threat of unknown invaders, or alien pestilence borne on the solar wind.
+We have seen these. But you do not acknowledge your own worst enemy, yourselves.
+We have found dead worlds without number, planets ravaged by atomic fire or gaian collapse.
+These planets were not rendered sterile by outside forces.
+They bear sad testament to the effects of unrestrained instinct and emotion
+or simple ignorance.
+We will prevent such mistakes.
+
+#(whats_up_4)
+You aren't much of a listener, are you?
+
+#(GENERAL_INFO_4)	URQUA042.wav
+A final command human, but it is more of a plea.
+Your insubordination has guaranteed your death, there can be no alternative
+but your species has not yet crossed the threshold of disobedience
+that would require us to decimate Earth.
+You have survived combat with us before. You may survive the ensuing battle.
+If this happens, leave! Return to your home. Await our arrival there.
+If you interfere with us here, we may lose the Doctrinal conflict with the Kohr-Ah.
+If we are defeated, you are defeated as well.
+The Kohr-Ah will be unleashed. They will begin a genocidal orgy, cleansing all known sentience.
+They will crack the slave shield around Earth and reduce the surface of your blue world to cinders.
+
+
+
