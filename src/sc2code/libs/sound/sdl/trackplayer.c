@@ -22,13 +22,7 @@
 #include "libs/sound/sound_common.h"
 #include "libs/sound/trackplayer.h"
 
-#ifdef WIN32
 #include <SDL_mixer.h>
-#elif defined __FreeBSD__
-#include <SDL_mixer.h>
-#else
-#include <SDL/SDL_mixer.h>
-#endif
 
 
 #define VOICE_CHANNEL 0

@@ -1,4 +1,5 @@
 0.2:
+- Build fixes for FreeBSD, from Max Horn.
 - Fixed typo in Thraddash text, from Dan Plimak.
 - Make HMalloc abort when no memory available, from Abaddon.
 - Replace malloc() calls by HMalloc, from Abaddon.

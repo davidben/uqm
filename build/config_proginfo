@@ -61,23 +61,13 @@ else
 fi
 
 LIB_SDL_mixer_NAME="SDL_mixer"
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"
-	LIB_SDL_mixer_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_mixer"
-else
-	LIB_SDL_mixer_CFLAGS=""
-	LIB_SDL_mixer_LDFLAGS="-lSDL_mixer"
-fi
+LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"
+LIB_SDL_mixer_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_mixer"
 LIB_SDL_mixer_VERSION=""
 
 LIB_SDL_image_NAME="SDL_image"
-if [ `uname` = 'FreeBSD' ]; then
-	LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
-	LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
-else
-	LIB_SDL_image_CFLAGS=""
-	LIB_SDL_image_LDFLAGS="-lSDL_image"
-fi
+LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
+LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
 LIB_SDL_image_VERSION=""
 
 LIB_openal_NAME="OpenAL"
