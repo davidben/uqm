@@ -169,7 +169,6 @@ Stuff still to do (small):
 Questions:
 - Is there some way to automatically do CRLF translations on commits,
   with the -t and -f options in cvswrapper disabled by sourceforge?
-- What is the displist stuff for? Is it needed at all?
 - w_memlib used (now commented out) MS Windows functions to show messages
   when memory couldn't be allocated. If we want to have those return, some
   work will have to be done. If not, there's some dead code to remove.
@@ -184,3 +183,4 @@ Questions:
   which we can free when no more memory is available, to allow an emergency
   save.
 - How about an ISO image for a self-contained linux CD which boots into SC2?
+
