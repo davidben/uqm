@@ -105,13 +105,7 @@ main (int argc, char *argv[])
 		/* .width = */              640,
 		/* .height = */             480,
 		/* .bpp = */                16,
-#ifdef CONTENTDIR
-		/* .contentDir = */         CONTENTDIR,
-#elif defined (win32)
-		/* .contentDir = */         "../../content",
-#else
-		/* .contentDir = */         "content",
-#endif
+		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
 		/* .numAddons = */          0,
 		/* .gammaSet = */           0,

@@ -49,32 +49,96 @@ extern uio_Repository *repository;
 extern uio_DirHandle *rootDir;
 
 
+static const char *findFileInDirs (const char *locs[], int numLocs,
+		const char *file);
 static void mountContentDir (uio_Repository *repository,
 		const char *contentPath, const char **addons);
 static void mountDirZips (uio_MountHandle *contentHandle,
 		uio_DirHandle *dirHandle);
 
+
+// Looks for a file 'file' in all 'numLocs' locations from 'locs'.
+// returns the first element from locs where 'file' is found.
+// If there is no matching location, NULL will be returned and
+// errno will be set to 'ENOENT'.
+// Entries from 'locs' that together with 'file' are longer than
+// PATH_MAX will be ignored, except for a warning given to stderr.
+static const char *
+findFileInDirs (const char *locs[], int numLocs, const char *file)
+{
+	int locI;
+	char path[PATH_MAX];
+	size_t fileLen;
+
+	for (locI = 0; locI < numLocs; locI++)
+	{
+		size_t locLen;
+		const char *loc;
+		bool needSlash;
+		
+		loc = locs[locI];
+		locLen = strlen (loc);
+
+		needSlash = (locLen != 0 && loc[locLen - 1] != '/');
+		if (locLen + (needSlash ? 1 : 0) + fileLen + 1 >= sizeof path)
+		{
+			// This dir plus the file name is too long.
+			fprintf (stderr, "Warning: path '%s' is ignored because it is "
+					"too long.\n", loc);
+			continue;
+		}
+		
+		snprintf (path, sizeof path, "%s%s%s", loc, needSlash ? "/" : "",
+				file);
+		if (fileExists (path))
+			return loc;
+	}
+
+	// No matching location was found.
+	errno = ENOENT;
+	return NULL;
+}
+
 void
 prepareContentDir (const char *contentDirName, const char **addons)
 {
-	const char *testfile = "version";
-	char cwd[PATH_MAX];
+	const char *testFile = "version";
+	const char *loc;
+	char path[PATH_MAX];
 
-	if (!fileExists (testfile))
+	if (contentDirName == NULL)
 	{
-		if ((chdir (contentDirName) || !fileExists (testfile)) &&
-				(chdir ("content") || !fileExists (testfile)) &&
-				(chdir ("../../content") || !fileExists (testfile))) {
-			fprintf (stderr, "Fatal error: content not available, running from wrong dir?\n");
-			exit (EXIT_FAILURE);
-		}
+		// Try the default content locations.
+		const char *locs[] = {
+			CONTENTDIR, /* defined in config.h */
+			""
+			"content",
+			"../../content" /* For running from MSVC */
+		};
+		loc = findFileInDirs (locs, sizeof locs / sizeof locs[0], testFile);
 	}
-	if (getcwd(cwd, sizeof cwd) == NULL) {
-		fprintf (stderr, "Fatal error: Could not get the current "
-				"directory.\n");
+	else
+	{
+		// Only use the explicitely supplied content dir.
+		loc = findFileInDirs (&contentDirName, 1, testFile);
+	}
+	if (loc == NULL)
+	{
+		fprintf (stderr, "Fatal error: Could not find content.\n");
 		exit (EXIT_FAILURE);
 	}
-	mountContentDir (repository, cwd, addons);
+
+	if (expandPath(path, sizeof path, loc, EP_ALL_SYSTEM) == -1)
+	{
+		fprintf (stderr, "Fatal error: Could not expand path to content "
+				"directory: %s\n", strerror (errno));
+		exit (EXIT_FAILURE);
+	}
+	
+#ifdef DEBUG
+	fprintf (stderr, "Using '%s' as base content dir.\n", path);
+#endif
+	mountContentDir (repository, path, addons);
 }
 
 void
@@ -99,7 +163,7 @@ prepareConfigDir (void) {
 			uio_FSTYPE_STDIO, NULL, NULL, buf, autoMount,
 			uio_MOUNT_TOP, NULL);
 	if (contentHandle == NULL) {
-		fprintf (stderr, "Fatal error: Couldn't mount config dir: %s\n",
+		fprintf (stderr, "Fatal error: Could not mount config dir: %s\n",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -173,7 +237,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 			uio_FSTYPE_STDIO, NULL, NULL, contentPath, autoMount,
 			uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
 	if (contentHandle == NULL) {
-		fprintf (stderr, "Fatal error: Couldn't mount content dir: %s\n",
+		fprintf (stderr, "Fatal error: Could not mount content dir: %s\n",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}

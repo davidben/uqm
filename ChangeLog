@@ -1,9 +1,14 @@
 Changes towards version 0.4:
+- No longer chdir() to the content dir (bug #564)
+  Environment variables and ~ are interpreted in the supplied content
+  path now.
+  Don't look for content in the default directories if an explicitely
+  supplied path failed. It would only confuse users. - SvdB
 - The unix build script is now able to detect SDL on Darwin (bug #358) - SvdB
 - Resource units given more obviously when ordering a probe to
   self-destruct (bug #586), from Nic.
 - Shipyard "Combat Energy" changed to reflect the recharge rate (bug #522).
-  Also, some cleanups. Thanks and apologies to Nic.
+  Also, some cleanups. Thanks and apologies to Nic. - SvdB
 - Added lots of debugging functions, SvdB
 - Cleaned up use of the DEBUG define, SvdB
 - Talking Pet .txt file corrected to match the .ogg files,
