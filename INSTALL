@@ -1,6 +1,6 @@
 To build The Ur-Quan Masters, you need at least the following software:
 
-For Linux version:
+For Linux:
 GCC - GNU C Compiler
 	http://gcc.gnu.org/
 	Debian package: gcc
@@ -9,8 +9,12 @@ GNU Make
 	ftp://ftp.gnu.org/
 	Debian package: make
 
-For Windows version:
+For Windows:
 Microsoft Visual C++ 6 or 7 (or MinGW+MSYS, see INSTALL.mingw for that)
+
+For Mac OS X:
+Xcode Tools
+	http://developer.apple.com/tools/macosxtools.html
 
 Additionally, The Ur-Quan Masters requires the following libraries:
 Note that dependancies can differ between different OS's.
