@@ -1,0 +1,16 @@
+ands0001.pcx
+ands0002.pcx
+ands0003.pcx
+ands0004.pcx
+ands0005.pcx
+ands0006.pcx
+ands0007.pcx
+ands0008.pcx
+ands0009.pcx
+ands0010.pcx
+ands0011.pcx
+ands0012.pcx
+ands0013.pcx
+ands0014.pcx
+ands0015.pcx
+ands0016.pcx

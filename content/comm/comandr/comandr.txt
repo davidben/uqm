@@ -1,0 +1,421 @@
+#(GLAD_WHEN_YOU_COME_BACK) COMAN000.WAV
+Hurry back, Captain.
+
+#(GIVE_FUEL) COMAN001.WAV
+We do have a small amount of Starship fuel which is of no use to our power systems.
+We will now transport 5 units to your vessel.
+This should be sufficient for one trip to the surface of Mercury.
+
+#(GIVE_FUEL_AGAIN) COMAN002.WAV
+We are almost out of fuel now, but we do have a BIT more.
+You will have to be more careful with this supply.
+Transporting fuel now.
+
+#(ARE_YOU_SUPPLY_SHIP) COMAN003.WAV
+Attention unidentified space vessel!
+I am Starbase Commander Hayes of the slave planet Earth.
+our hyperwave broadcasts -- extremely weak
+situation critical -- energy cores exhausted
+scanners and deep radar are non-functional
+we cannot identify your vessel
+Are you the scheduled Hierarchy resupply ship?
+Repeat, are you the resupply vessel?
+
+#(DO_YOU_HAVE_RADIO_THIS_TIME) COMAN004.WAV
+Did you find any radioactive elements for our power cores?
+
+#(HERE_IS_ANOTHER_LANDER) COMAN005.WAV
+What!!!
+You lost another lander!?
+We shall build another, but DON'T LOSE THIS ONE, OKAY!
+
+#(THE_WHAT_FROM_WHERE) COMAN006.WAV
+The starship what?
+Never mind -- look, we won't last much longer. Here is our situation
+According to our Oath of Fealty to the Ur-Quan, we must maintain this starbase
+but, we have no space vessels of our own
+and the shield prevents us from contacting Earth
+so we are totally dependent on the Ur-Quan supply vessels for everything we need up here.
+We know there is a Hierarchy base on the surface of the moon, but we can't contact them.
+The Ur-Quan were supposed to resupply this base at regular, five year intervals
+but we haven't received anything in almost eight years!
+What we don't recycle we can usually synthesize
+but to do so, we need replacement radioactives for our generators' energy cores.
+If you could bring us some radioactive elements, we can fabricate the cores ourselves.
+Are you willing to help us!?
+
+#(ABOUT_TIME) COMAN007.WAV
+Well, it's about damn time!
+In the Fealty agreement the Ur-Quan promised that this station would be resupplied
+at least every five years, and its been over eight since we last saw you!
+If you had arrived a few weeks later, there wouldn't have been anyone alive on this station
+never mind...just begin your transfer of materials immediately, starting with the radioactives.
+
+#(MESSAGE_GARBLED_1) COMAN008.WAV
+I'm sorry, Captain, your message was garbled. Our receivers have very little power.
+
+#(MESSAGE_GARBLED_2) COMAN009.WAV
+I couldn't quite make that out, Captain. Could you please repeat?
+
+#(HERE_IS_A_NEW_LANDER) COMAN010.WAV
+Manufacturing a new lander for you will use most of what little resources we have left
+but I suppose we have no choice.
+We will transport the new lander to your vehicle immediately.
+
+#(THIS_MAY_SEEM_SILLY) COMAN011.WAV
+By the way Captain, I think we need a name for this new alliance we're going to forge.
+Since this was your idea, it's only fair that you have the honor of naming it.
+So, what will it be?
+
+#(OK_THE_NAFS) COMAN012.WAV
+Okay, that sounds pretty inspiring. So be it - The New Alliance of Free Stars!
+
+#(OK_THE_CAN) COMAN013.WAV
+Very well.  From this day forward, we are The Concordance of Alien Nations!
+
+#(OK_THE_UFW) COMAN014.WAV
+That has a familiar ring to it... nonetheless, we will make it so - The United Federation of Worlds!
+
+#(OK_THE_NAME_IS_EMPIRE0) COMAN015.WAV
+Ulp!  Well... you're the one with the big starship.
+So be it - The Empire of 
+
+#(OK_THE_NAME_IS_EMPIRE1)
+!
+
+#(FUEL_UP0) COMAN016.WAV
+We are initiating transfer of radioactives, Captain.
+Now, as soon as our engineers can refit the energy cores
+
+#(FUEL_UP1) COMAN017.WAV
+there, that's much better. Power ratings are climbing, life support is coming back into the green.
+Deep radar systems and sensors are now online and I can scan your vessel.
+!!!? -- WHAT THE HELL KIND OF SHIP IS THAT!?
+Just who ARE you, Captain?
+
+#(WHAT_KIND_OF_IDIOT) COMAN018.WAV
+WHAT!
+What kind of idiot sent you out here without replacements for our energy cores!?
+It's amazing that we've kept the generators online for as long as we have!
+Look, you had better get those radioactives right away
+or all the other supplies are pretty damn pointless, since we'll be too dead to use them!
+
+#(DONT_KNOW_WHO_YOU_ARE) COMAN019.WAV
+Look, I don't know who you are or why you're here
+but right now the only thing I'm worried about
+ is saving the lives of the 1900 men and women aboard this starbase
+and right now you're our only hope.
+I can't keep the transmitter on too much longer -- we need the power for heat and air
+so if you don't have any radioactives on board your vessel
+please get some and bring them back here before it's too late.
+
+#(THATS_IMPOSSIBLE) COMAN020.WAV
+Star Control science mission, eh?
+Captain, I served as a Star Control officer during the war, aboard several cruisers on the Coreward Front
+and if there had been any 'scientific mission' to Vela
+I would have heard about it.
+
+#(ASK_AWAY) COMAN021.WAV
+Okay, what do you want to know?
+
+#(RADIOS_ON_MERCURY) COMAN022.WAV
+The fastest way to get radioactives in this system would be to land on Mercury
+and scour the surface for deposits of radioactive elements.
+But be careful. Mercury is a pretty inhospitable place!
+Watch out for earthquakes and hotspots.
+
+#(THANKS_FOR_HELPING) COMAN023.WAV
+Thanks! I'll make sure to mention this the next time I talk with our masters
+I'm sure they will reward you.
+
+#(STARBASE_IS) COMAN024.WAV
+Ur-Quan slave law requires that we maintain an orbital space platform
+to assist Hierarchy vessels which are in need of repairs or fuel.
+Since the shield around Earth cuts us off completely from the planet
+we are dependent on Ur-Quan resupply ships for our non-renewable resources.
+The resupply vessels are supposed to arrive every five years
+at which time the Ur-Quan somehow penetrate the shield and exchange those of us up here
+with replacement personnel from the surface.
+
+#(HAPPENED_TO_EARTH) COMAN025.WAV
+When the Alliance lost the war, the Ur-Quan gave Earth a single choice
+join the Hierarchy as Battle Thralls and fight for the Ur-Quan to enslave other sentient species
+or become `fallow' slaves, and be forever imprisoned on a single world
+encased in an impenetrable energy shield here on Earth.
+We chose not to fight for the Ur-Quan.
+
+#(URQUAN_LEFT) COMAN026.WAV
+Soon after Earth accepted the Ur-Quan's Oath of Fealty, they departed,
+leaving behind a battle group of Spathi and Ilwrath ships based on the moon.
+
+#(BASE_ON_MOON) COMAN027.WAV
+Ahh...fight the Ur-Quan! Win back our freedom!
+I remember having such thoughts myself...once, a long time ago.
+But that was in the first years after the defeat, when it was still terrifying to look up
+and see the bloody glow of the pulsating slave shield overhead.
+Through day and night we gazed up at that impenetrable wall
+as though the sheer power of our hatred would pull it down.
+But over the years, I spent so much of my time struggling --
+-- down on the surface under the shield and then later up here, trying to keep this station alive --
+-- that I'd forgotten what it means to be free... to hate our Ur-Quan Masters! 
+And now, here you are, in an alien ship of unknown power,
+offering me your assistance to fight against the Hierarchy again, after all these years.
+Captain
+your offer is intriguing.
+It's tempting to think that with your advanced Precursor technology
+we can somehow crack Earth's slave shield
+and reassemble the Alliance to attack the Hierarchy, and THIS time win the damn war!
+But... consider the consequences if we should fail.
+The Ur-Quan won't just punish us here at this station.
+They will exact a gruesome retribution on the surface below as well.
+Before I commit this station to helping you attack the Ur-Quan
+and accepting the risk of annihilation if we are defeated
+I have to be sure that you and your ship have what it takes to oppose the Hierarchy.
+I'll make you a deal.
+If you can eliminate the alien base on the moon, and get rid of that threat, at least
+I will seriously consider your offer.
+ 
+#(ACKNOWLEDGE_SECRET) COMAN028.WAV
+Hmmm... you know, come to think of it
+there were some rumors that Corridor Nine, the special operations division of Star Control
+was directing some hush-hush operation out near Androsynth space.
+The Vela star system... yes, that would be in the right direction
+So, Captain... if what you say is true
+how do you explain that huge, alien starship you're flying
+and why are you here? What do you want from us?
+
+#(ABOUT_BASE) COMAN029.WAV
+After the Ur-Quan erected the slave shield around Earth, and established this space station
+they decided to leave a contingent of combat ships close to Earth
+to keep watch on our planet and confirm that we were obeying the Ur-Quan slave laws.
+I'm certain they're still out there on the surface of the moon
+because we can pick up a constant stream of alien broadcasts.
+
+#(GOOD_LUCK_WITH_BASE) COMAN030.WAV
+Be careful, Captain.
+There are probably a dozen Spathi Eluders and Ilwrath Avengers down there on the lunar surface.
+I don't know why they haven't come after you yet
+but when they do, you'd better have your weapons armed, and your thrusters burning hot.
+
+#(DEALT_WITH_BASE_YET) COMAN031.WAV
+Have you dealt with the base yet?
+
+#(HERE_COMES_ILWRATH) COMAN032.WAV
+Captain, listen closely!
+Long range sensors show a ship closing on this station, fast!
+Our computer identifies it as Ilwrath, Avenger-class.
+I think you've got a fight on your hands, Captain.
+Your best bet is to wait until it's at point bl-nk r-nge
+C-pt-in! It's ja-min- ou- s-gn-l!...
+
+#(VERY_IMPRESSIVE) COMAN033.WAV
+What a beautiful sight, Captain!
+I haven't seen an Avenger blown away like that since the Battle in Draco.
+I guess you've shown that you can handle yourself in a battle, Captain
+so my last reservation about helping you has been dissolved.
+I will commit this station to helping you free Earth and defeat the Ur-Quan.
+We may get our atoms rearranged in the process, but by God, Captain, we're going to try!
+So
+the obvious first step is to get your Precursor equipment and software over here
+where we can make it work with our ship repair fabricators.
+But then what, Captain?
+
+#(IT_WAS_ABANDONED) COMAN034.WAV
+I'll be darned!
+All these years we've been listening to their incoherent broadcasts, and we never even guessed.
+
+#(YOU_REALLY_FOUGHT_BASE) COMAN035.WAV
+You fought them, Captain!?  I hope you didn't suffer serious casualties?
+
+#(IM_GLAD_YOU_WON) COMAN036.WAV
+I'm delighted to hear it, Captain.  I wish I could have been there.
+
+#(IM_SURE_IT_WAS_DIFFICULT) COMAN037.WAV
+I'm sure the experience was disturbing
+
+#(THAT_WAS_PROBE) COMAN038.WAV
+That was the Ur-Quan Security Drone. It keeps an eye on us.
+Captain, what happened to the spy drone!?
+
+#(DEEP_TROUBLE) COMAN039.WAV
+Oh no. Right now it's probably cruising through HyperSpace
+heading right towards the closest Hierarchy outpost.
+When the Ur-Quan find out that you are here, they will send a combat fleet instantly!
+
+#(GOOD_NEWS) COMAN040.WAV
+Whew!  That was a close one.  If that probe had gotten away -- up into HyperSpace
+we'd be up to our ears in Dreadnoughts in no time.
+What a relief!
+
+#(SURE_HOPE) COMAN041.WAV
+If that probe gets back to the Ur-Quan, Captain, we are BOTH in deep trouble!
+
+#(ABOUT_BASE_AGAIN) COMAN042.WAV
+As I said before, after the Ur-Quan erected the slave shield around Earth and assembled this space station
+they decided to leave a contingent of Spathi and Ilwrath ships stationed on the moon.
+We have looked at the moonbase through our telescopes and can confirm that there is still substantial activity down there
+but we have never been able to make contact with the base using either the HyperWave `Caster
+or traditional radio signals.
+
+#(COOK_BUTTS) COMAN043.WAV
+Ha-ha.. yes, Captain, we'll do just that!
+
+#(OVERTHROW_ALIENS) COMAN044.WAV
+If you feel this is necessary Captain, I understand.
+
+#(KILL_MONSTERS) COMAN045.WAV
+A sensible plan, Captain.  Let's get to work.
+
+#(GOOD_LUCK_AGAIN) COMAN046.WAV
+Good luck.
+
+#(STARBASE_WILL_BE_READY) COMAN047.WAV
+Now Captain, I expect the configuration process for this starbase
+to take at least 2 weeks, so let's get to work...
+
+#(overthrow_evil_aliens) 
+Er... trust me Commander, I have a plan... a really good plan!  But for now it must remain a secret.
+
+#(annihilate_those_monsters)
+We will slowly build our strength, unify an allied starfleet, and bring the Ur-Quan to their knee-equivalents.
+
+#(cook_their_butts)
+Then, Commander, we will proceed to kick some major alien butt!
+
+#(where_get_radios)
+Where can we acquire radioactives?
+
+#(well_go_get_them_now)
+We will leave now and bring back the elements you require.
+
+#(we_will_transfer_now)
+We are ready to transfer radioactives.
+
+#(what_will_you_give_us)
+What will you give us in exchange for radioactives?
+
+#(before_radios_we_need_info)
+Before we help you, we require certain information.
+
+#(no_but_well_help0)
+No, this is the starship 
+
+#(no_but_well_help1)
+, but we stand ready to assist you.
+
+#(yes_this_is_supply_ship)
+Uh.. yes, this IS the resupply vessel. What do you need resupplied?
+
+#(what_slave_planet)
+`Slave planet!' `Hierarchy resupply vessel!'  What is going on here?
+
+#(i_lied)
+Actually I lied, this isn't the resupply vessel. Sorry.
+
+#(plumb_out)
+Er..., oh dang!  Wouldn't you know it; we're plumb out of those.
+
+#(we_are_vindicator0)
+I am Captain 
+
+#(we_are_vindicator1)
+ of the starship 
+
+#(we_are_vindicator2)
+. We are the survivors of a Star Control science research team to the Vela star system.
+
+#(first_give_info)
+I need you to explain a few things.
+
+#(we_must_go_now)
+We must leave now. I shall tell you more when we return.
+
+#(where_can_i_get_radios)
+Where can we find the radioactive elements you need?
+
+#(ok_i_will_get_radios)
+We will leave now to find the elements you require.
+
+#(whats_this_starbase)
+To begin with, what is the purpose of this starbase?
+
+#(what_about_earth)
+What is that strange red glow around Earth?
+
+#(where_are_urquan)
+Where are the Ur-Quan now?
+
+#(our_mission_was_secret)
+The mission was highly secret.
+
+#(we_are_here_to_help)
+We have returned to Earth to give you the technological secrets of the Precursors, and to help you fight the Hierarchy.
+
+#(tell_me_about_base)
+What details can you give us about the base on the moon?
+
+#(we_will_take_care_of_base)
+We shall go now and neutralize the base.
+
+#(tell_me_again)
+Could you tell me again about the Hierarchy base on the moon?
+
+#(base_was_abandoned)
+We found the base, but it was abandoned years ago.
+
+#(we_fought_them)
+We, uh... attacked the moonbase, and completely destroyed the enemy!
+
+#(oh_yes_big_fight)
+Er... oh, yes! It was a very vicious fight.
+
+#(i_lied_it_was_abandoned)
+Actually I lied. We found it abandoned.
+
+#(i_cant_talk_about_it)
+It was too horrible for words. I just can't talk about it right now.
+
+#(name_1)
+The New Alliance of Free Stars!
+
+#(name_2)
+The Concordance of Alien Nations!
+
+#(name_3)
+The United Federation of Worlds!
+
+#(name_40)
+The Empire of 
+#(name_41)
+!
+
+#(i_lost_my_lander)
+Due to circumstances beyond our control, our only landing vehicle was destroyed.  Can you replace it?
+
+#(i_lost_another_lander)
+Um... er... well... We lost another lander.
+
+#(need_fuel)
+We are unable to land on Mercury and retrieve radioactives due to an unforeseen fuel shortage.
+
+#(need_fuel_again)
+Boy, mileage sure does vary. Could you spare us some more fuel?
+
+#(what_was_red_thing)
+Commander, what was that red, fast-moving object in orbit around Earth?
+
+#(it_went_away)
+When we approached, it transmitted a warning and warped into Hyperspace.
+
+#(we_destroyed_it)
+Er... we destroyed it! Yessiree, blew it to bits.
+
+#(what_probe)
+Uh, I meant a different red thing. Never mind.
+
+#(take_care_of_base_again)
+   "Now we're ready to take care of the moon base, Commander. Goodbye.
+
+#(goodbye_commander)
+   "Goodbye Commander.
+

@@ -1,0 +1,16 @@
+orzs0001.pcx
+orzs0002.pcx
+orzs0003.pcx
+orzs0004.pcx
+orzs0005.pcx
+orzs0006.pcx
+orzs0007.pcx
+orzs0008.pcx
+orzs0009.pcx
+orzs0010.pcx
+orzs0011.pcx
+orzs0012.pcx
+orzs0013.pcx
+orzs0014.pcx
+orzs0015.pcx
+orzs0016.pcx

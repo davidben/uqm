@@ -1,0 +1,780 @@
+#(Vega)
+Vega
+#(Antliae)
+Antliae
+#(Apodis)
+Apodis
+#(Aquarii)
+Aquarii
+#(Aquilae)
+Aquilae
+#(Arae)
+Arae
+#(Arietis)
+Arietis
+#(Aurigae)
+Aurigae
+#(Trianguli)
+Trianguli
+#(Caeli)
+Caeli
+#(Camelopardalis)
+Camelopardalis
+#(Cancri)
+Cancri
+#(Brahe)
+Brahe
+#(Kepler)
+Kepler
+#(Copernicus)
+Copernicus
+#(Capricorni)
+Capricorni
+#(Carinae)
+Carinae
+#(Cassiopeiae)
+Cassiopeiae
+#(Tucanae)
+Tucanae
+#(Cephei)
+Cephei
+#(Ceti)
+Ceti
+#(Crateris)
+Crateris
+#(Circini)
+Circini
+#(Columbae)
+Columbae
+#(Chandrasekhar)
+Chandrasekhar
+#(Sagittae)
+Sagittae
+#(Cygnus)
+Cygnus
+#(Corvi)
+Corvi
+#(Chamaeleonis)
+Chamaeleonis
+#(Equulei)
+Equulei
+#(Delphini)
+Delphini
+#(Doradus)
+Doradus
+#(Monocerotis)
+Monocerotis
+#(Crucis)
+Crucis
+#(Eridani)
+Eridani
+#(Fornacis)
+Fornacis
+#(Geminorum)
+Geminorum
+#(Altair)
+Altair
+#(Antares)
+Antares
+#(Horologii)
+Horologii
+#(Hydrae)
+Hydrae
+#(Andromedae)
+Andromedae
+#(Groombridge)
+Groombridge
+#(Lacertae)
+Lacertae
+#(Leonis)
+Leonis
+#(Hyades)
+Hyades
+#(Leporis)
+Leporis
+#(Librae)
+Librae
+#(Lipi)
+Lipi
+#(Lyncis)
+Lyncis
+#(Fomalhaut)
+Fomalhaut
+#(Menkar)
+Menkar
+#(Microscopii)
+Microscopii
+#(Draconis)
+Draconis
+#(Orionis)
+Orionis
+#(Normae)
+Normae
+#(Octantis)
+Octantis
+#(Ophiuchi)
+Ophiuchi
+#(Muscae)
+Muscae
+#(Pavonis)
+Pavonis
+#(Pegasi)
+Pegasi
+#(Persei)
+Persei
+#(Phoenicis)
+Phoenicis
+#(Pictoris)
+Pictoris
+#(Piscium)
+Piscium
+#(Hyginus)
+Hyginus
+#(Puppis)
+Puppis
+#(Pyxidis)
+Pyxidis
+#(Reticuli)
+Reticuli
+#(Arianni)
+Arianni
+#(Sagittarii)
+Sagittarii
+#(Scorpii)
+Scorpii
+#(Sculptoris)
+Sculptoris
+#(Scuti)
+Scuti
+#(Serpentis)
+Serpentis
+#(Sextantis)
+Sextantis
+#(Tauri)
+Tauri
+#(Telescopii)
+Telescopii
+#(Bootis)
+Bootis
+#(Olber)
+Olber
+#(Centauri)
+Centauri
+#(Ptolemae)
+Ptolemae
+#(Gorno)
+Gorno
+#(Velorum)
+Velorum
+#(Virginis)
+Virginis
+#(Volantis)
+Volantis
+#(Vulpeculae)
+Vulpeculae
+#(Lalande)
+Lalande
+#(Luyten)
+Luyten
+#(Indi)
+Indi
+#(Lacaille)
+Lacaille
+#(Giclas)
+Giclas
+#(Krueger)
+Krueger
+#(Lyrae)
+Lyrae
+#(Wolf)
+Wolf
+#(Saurus)
+Saurus
+#(Raynet)
+Raynet
+#(Zeeman)
+Zeeman
+#(Vela)
+Vela
+#(Mira)
+Mira
+#(Cerenkov)
+Cerenkov
+#(Mersenne)
+Mersenne
+#(Maksutov)
+Maksutov
+#(Klystron)
+Klystron
+#(Metis)
+Metis
+#(Mensae)
+Mensae
+#(Illuminati)
+Illuminati
+#(Vitalis)
+Vitalis
+#(Herculis)
+Herculis
+#(Gruis)
+Gruis
+#(Squidi)
+Squidi
+#(Almagest)
+Almagest
+#(Alcor)
+Alcor
+#(Algol)
+Algol
+#(Betelgeuse)
+Betelgeuse
+#(Aldebaran)
+Aldebaran
+#(Achernar)
+Achernar
+#(Procyon)
+Procyon
+#(Rigel)
+Rigel
+#(Bellatrix)
+Bellatrix
+#(Mizar)
+Mizar
+#(Hyperion)
+Hyperion
+#(Regulus)
+Regulus
+#(Organon)
+Organon
+#(Pollux)
+Pollux
+#(Capella)
+Capella
+#(Deneb)
+Deneb
+#(Canopus)
+Canopus
+#(Sirius)
+Sirius
+#(Sol)
+Sol
+#(Arcturus)
+Arcturus
+#(Lentilis)
+Lentilis
+#(UNKNOWN)
+UNKNOWN
+#(devices)
+devices
+#(Quasi Portal)
+Quasi Portal
+#(Talking Pet)
+Talking Pet
+#(Utwig Bomb)
+Utwig Bomb
+#(Sun Device)
+Sun Device
+#(Rosy Sphere)
+Rosy Sphere
+#(Aqua Helix)
+Aqua Helix
+#(Clear Spindle)
+Clear Spindle
+#(Broken Ultron)
+Broken Ultron
+#(Broken Ultron)
+Broken Ultron
+#(Broken Ultron)
+Broken Ultron
+#(Perfect Ultron)
+Perfect Ultron
+#(Shofixti Maidens)
+Shofixti Maidens
+#(Umgah Caster)
+Umgah Caster
+#(Burvix Caster)
+Burvix Caster
+#(1 DataPlate)
+1 DataPlate
+#(2 DataPlate)
+2 DataPlate
+#(3 DataPlate)
+3 DataPlate
+#(Taalo Shield)
+Taalo Shield
+#(Egg Case)
+Egg Case
+#(Egg Case)
+Egg Case
+#(Egg Case)
+Egg Case
+#(Syreen Shuttle)
+Syreen Shuttle
+#(VUX Beast)
+VUX Beast
+#(Destruct Code)
+Destruct Code
+#(Warp Pod)
+Warp Pod
+#(Wimbli's Trident)
+Wimbli's Trident
+#(Glowing Rod)
+Glowing Rod
+#(Moon Base)
+Moon Base
+#(cargo)
+cargo
+#(Free)
+Free
+#(Common)
+Common
+#(Corrosive)
+Corrosive
+#(Base Metal)
+Base Metal
+#(Noble Gas)
+Noble Gas
+#(Rare Earth)
+Rare Earth
+#(Precious)
+Precious
+#(Radioactive)
+Radioactive
+#(Exotic)
+Exotic
+#(Hydrogen)
+Hydrogen
+#(Helium)
+Helium
+#(Lithium)
+Lithium
+#(Beryllium)
+Beryllium
+#(Boron)
+Boron
+#(Carbon)
+Carbon
+#(Nitrogen)
+Nitrogen
+#(Oxygen)
+Oxygen
+#(Fluorine)
+Fluorine
+#(Neon)
+Neon
+#(Sodium)
+Sodium
+#(Magnesium)
+Magnesium
+#(Aluminum)
+Aluminum
+#(Silicon)
+Silicon
+#(Phosphorus)
+Phosphorus
+#(Sulfur)
+Sulfur
+#(Chlorine)
+Chlorine
+#(Argon)
+Argon
+#(Potassium)
+Potassium
+#(Calcium)
+Calcium
+#(Scandium)
+Scandium
+#(Titanium)
+Titanium
+#(Vanadium)
+Vanadium
+#(Chromium)
+Chromium
+#(Manganese)
+Manganese
+#(Iron)
+Iron
+#(Cobalt)
+Cobalt
+#(Nickel)
+Nickel
+#(Copper)
+Copper
+#(Zinc)
+Zinc
+#(Gallium)
+Gallium
+#(Germanium)
+Germanium
+#(Arsenic)
+Arsenic
+#(Selenium)
+Selenium
+#(Bromine)
+Bromine
+#(Krypton)
+Krypton
+#(Rubidium)
+Rubidium
+#(Strontium)
+Strontium
+#(Yttrium)
+Yttrium
+#(Zirconium)
+Zirconium
+#(Niobium)
+Niobium
+#(Molybdenum)
+Molybdenum
+#(Technetium)
+Technetium
+#(Ruthenium)
+Ruthenium
+#(Rhodium)
+Rhodium
+#(Palladium)
+Palladium
+#(Silver)
+Silver
+#(Cadmium)
+Cadmium
+#(Indium)
+Indium
+#(Tin)
+Tin
+#(Antimony)
+Antimony
+#(Tellurium)
+Tellurium
+#(Iodine)
+Iodine
+#(Xenon)
+Xenon
+#(Cesium)
+Cesium
+#(Barium)
+Barium
+#(Lanthanum)
+Lanthanum
+#(Cerium)
+Cerium
+#(Praseo- dymium)
+Praseo- dymium
+#(Neodymium)
+Neodymium
+#(Promethium)
+Promethium
+#(Samarium)
+Samarium
+#(Europium)
+Europium
+#(Gadolinium)
+Gadolinium
+#(Terbium)
+Terbium
+#(Dyprosium)
+Dyprosium
+#(Holmium)
+Holmium
+#(Erbium)
+Erbium
+#(Thulium)
+Thulium
+#(Ytterbium)
+Ytterbium
+#(Lutetium)
+Lutetium
+#(Hafnium)
+Hafnium
+#(Tantalum)
+Tantalum
+#(Tungsten)
+Tungsten
+#(Rhenium)
+Rhenium
+#(Osmium)
+Osmium
+#(Iridium)
+Iridium
+#(Platinum)
+Platinum
+#(Gold)
+Gold
+#(Mercury)
+Mercury
+#(Thallium)
+Thallium
+#(Lead)
+Lead
+#(Bismuth)
+Bismuth
+#(Polonium)
+Polonium
+#(Astatine)
+Astatine
+#(Radon)
+Radon
+#(Francium)
+Francium
+#(Radium)
+Radium
+#(Actinium)
+Actinium
+#(Thorium)
+Thorium
+#(Protactinium)
+Protactinium
+#(Uranium)
+Uranium
+#(Neptunium)
+Neptunium
+#(Plutonium)
+Plutonium
+#(Ozone)
+Ozone
+#(Free Radicals)
+Free Radicals
+#(Carbon Dioxide)
+Carbon Dioxide
+#(Carbon Monoxide)
+Carbon Monoxide
+#(Ammonia)
+Ammonia
+#(Methane)
+Methane
+#(Sulfuric Acid)
+Sulfuric Acid
+#(Hydrochloric Acid)
+Hydrochloric Acid
+#(Hydrocyanic Acid)
+Hydrocyanic Acid
+#(Formic Acid)
+Formic Acid
+#(Phosphoric Acid)
+Phosphoric Acid
+#(Formaldehyde)
+Formaldehyde
+#(Cyano- acetylene)
+Cyano- acetylene
+#(Methanol)
+Methanol
+#(Ethanol)
+Ethanol
+#(Silicon Monoxide)
+Silicon Monoxide
+#(Titanium Oxide)
+Titanium Oxide
+#(Zirconium Oxide)
+Zirconium Oxide
+#(Water)
+Water
+#(Silicon Compounds)
+Silicon Compounds
+#(Metal Oxides)
+Metal Oxides
+#(Quantum Black Holes)
+Quantum Black Holes
+#(Neutronium)
+Neutronium
+#(Magnetic Monopoles)
+Magnetic Monopoles
+#(Degenerate Matter)
+Degenerate Matter
+#(Super Fluids)
+Super Fluids
+#(Aguuti Nodules)
+Aguuti Nodules
+#(Iron Compounds)
+Iron Compounds
+#(Aluminum Compounds)
+Aluminum Compounds
+#(Nitrous Oxide)
+Nitrous Oxide
+#(Radioactives)
+Radioactives
+#(Hydro- carbons)
+Hydro- carbons
+#(Carbon Compounds)
+Carbon Compounds
+#(Antimatter)
+Antimatter
+#(Charon Dust)
+Charon Dust
+#(Reisburg Helices)
+Reisburg Helices
+#(Tzo Crystals)
+Tzo Crystals
+#(Calcium Compounds)
+Calcium Compounds
+#(Nitric Acid)
+Nitric Acid
+#(MINERAL SCAN)
+MINERAL SCAN
+#(ENERGY SCAN)
+ENERGY SCAN
+#(BIOLOGICAL SCAN)
+BIOLOGICAL SCAN
+#((MORE))
+(MORE)
+#(Alpha)
+Alpha
+#(Beta)
+Beta
+#(Gamma)
+Gamma
+#(Delta)
+Delta
+#(Epsilon)
+Epsilon
+#(Zeta)
+Zeta
+#(Eta)
+Eta
+#(Theta)
+Theta
+#(Iota)
+Iota
+#(Kappa)
+Kappa
+#(Lambda)
+Lambda
+#(Mu)
+Mu
+#(Nu)
+Nu
+#(Xi)
+Xi
+#(Planet I)
+Planet I
+#(Planet II)
+Planet II
+#(Planet III)
+Planet III
+#(Planet IV)
+Planet IV
+#(Planet V)
+Planet V
+#(Planet VI)
+Planet VI
+#(Planet VII)
+Planet VII
+#(Planet VIII)
+Planet VIII
+#(Planet IX)
+Planet IX
+#(Planet X)
+Planet X
+#(Planet XI)
+Planet XI
+#(Planet XII)
+Planet XII
+#(Planet XIII)
+Planet XIII
+#(Planet XIV)
+Planet XIV
+#(Planet XV)
+Planet XV
+#(Planet XVI)
+Planet XVI
+#(JAN)
+JAN
+#(FEB)
+FEB
+#(MAR)
+MAR
+#(APR)
+APR
+#(MAY)
+MAY
+#(JUN)
+JUN
+#(JUL)
+JUL
+#(AUG)
+AUG
+#(SEP)
+SEP
+#(OCT)
+OCT
+#(NOV)
+NOV
+#(DEC)
+DEC
+#((In response to your statement))
+(In response to your statement)
+#(Starbase)
+Starbase
+#(Starbase Commander)
+Starbase Commander
+#(Outfit Starship)
+Outfit Starship
+#(Shipyard)
+Shipyard
+#(Depart StarBase)
+Depart StarBase
+#(ENCOUNTER IN)
+ENCOUNTER IN
+#(Deep Space)
+Deep Space
+#(ENCOUNTER AT)
+ENCOUNTER AT
+#(BATTLE GROUP)
+BATTLE GROUP
+#(Enemy Ships)
+Enemy Ships
+#(Destroyed)
+Destroyed
+#(Debris)
+Debris
+#(Scavenged)
+Scavenged
+#(HyperSpace)
+HyperSpace
+#(QuasiSpace)
+QuasiSpace
+#(OUT OF FUEL)
+OUT OF FUEL
+#(AUTO-PILOT)
+AUTO-PILOT
+#(Enter name)
+Enter name
+#(FLAGSHIP)
+FLAGSHIP
+#(Vindicator)
+Vindicator
+#(Zelnick)
+Zelnick
+#(Empty)
+Empty
+#(Slot)
+Slot
+#(Team)
+Team
+#(Name)
+Name
+#(Balanced Team 1)
+Balanced Team 1
+#(Balanced Team 2)
+Balanced Team 2
+#(200 points)
+200 points
+#(Behemoth Zenith)
+Behemoth Zenith
+#(The Peeled Eyes)
+The Peeled Eyes
+#(Saving . . .)
+Saving . . .
+#(Loading . . .)
+Loading . . .
+#(Unable to save game!)
+Unable to save game!
+#(Sound)
+Sound
+#(Music)
+Music
+#(Cyborg)
+Cyborg
+#(OFF)
+OFF
+#(ON)
+ON

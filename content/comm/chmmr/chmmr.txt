@@ -1,0 +1,367 @@
+#(WHY_YOU_HERE_1)	CHMMR000.wav
+we are the chenjesu... we are the mmrnmrhm
+we do not understand how you have penetrated the slave shield or why
+but in doing so you have interrupted the process
+explain this intrusion.
+
+#(WHY_YOU_HERE_2)	CHMMR001.wav
+once more you interfere with the process... why?
+
+#(WHY_YOU_HERE_3)	CHMMR002.wav
+your presence here is painful to us... what is it you wish?
+
+#(WHY_YOU_HERE_4)	CHMMR003.wav
+your presence here is painful to us... what is it you wish?
+
+#(find_out_whats_up)
+We came here to find out what you're doing down there.
+
+#(HYBRID_PROCESS)	CHMMR004.wav
+though your ship's design is unfamiliar to us
+we now understand that you are of human origin and so we will share with you
+our reasons for accepting the status of ur-quan slave
+in 2135, our great alliance burned within the crucible of sentience
+though our fleets of armed starships held back the hierarchy's grotesque armada for many years
+in the end, the ur-quan unleashed a power upon us that was so overwhelming
+we knew we would be annihilated if we did not submit
+this unstoppable power, this ultimate weapon was a huge starship
+an unstoppable battle platform built by the precursors in the ancient past
+your vessel shares some similarities in design to the ur-quan's battle platform
+which they call `sa-matra', meaning `great trophy'
+the sa-matra was many times larger than your ship, and bore weapons and defensive systems
+that made it invulnerable to all of our technologies
+it remains a mystery to us why the ur-quan fought us for so long without using the sa-matra
+but when they finally brought the ship into combat
+the sa-matra incinerated our finest broodhome vessels from ten times our own ships' weapon range.
+we had no choices beyond submission or devastation
+before the ur-quan arrived to accept our surrender, we sent one last message to your people
+a message suggesting that your species do as we chenjesu and mmrnmhrm planned to do
+we would accept the ur-quan's demands and become slaves
+until such a time as we found a way to destroy or neutralize the sa-matra.
+
+	
+#(need_help)
+We are struggling against the Ur-Quan. Can't you help us?
+
+#(CANT_HELP)	CHMMR005.wav
+we cannot be of any assistance now... we are in the middle of the process.
+i will explain
+after we chenjesu and mmrnmhrm were defeated by the ur-quan
+we chose to be encased within a single slave shield on this world
+as soon as the ur-quan departed, we began the process
+we initiated a synthesis of our two species, our two cultures
+one crystalline, the other purely mechanical
+this process, fueled only by the radiant energy of our sun
+will eventually produce a new hybrid race
+and when the process is complete, we will crack the ur-quan slave shield
+and emerge from our chrysalis like a winged insect unleashed from its cocoon
+then we will be ready and capable to deal with the ur-quan, their battle thralls
+and their dreaded sa-matra.
+
+#(why_no_help)
+But why can't you help us now?!
+
+#(LONG_TIME)	CHMMR006.wav
+the complete synthetic hybridization of the chenjesu and the mmrnmhrm species
+will require approximately thirty five of your earth years
+this extended duration is necessary because our synthesis mechanisms
+are dependent exclusively on the light of our sun for energy.
+
+#(what_if_more_energy)
+What if we could find some way to get you more energy? Would that speed things up?
+
+#(DANGER_TO_US)	CHMMR007.wav
+what you describe is theoretically possible
+but it would pose a great danger to us
+the process must be executed as planned... or it may fail catastrophically
+we would be destroyed.
+	
+#(need_advice)
+We really need advice from you.
+
+#(WHAT_ADVICE)	CHMMR008.wav
+our wisdom is available... detail your need.
+
+#(how_defeat_urquan)
+How do you think we can defeat the Ur-Quan?
+
+#(DEFEAT_LIKE_SO)	CHMMR009.wav
+you must find some way to destroy the sa-matra
+to do this you will need a powerful weapon capable of destroying an entire planet
+but that is not all
+you will also require some way to distract the ur-quan
+to give you the opportunity to use the weapon.
+
+#(what_about_tpet)
+I seem to have acquired a Dnyarri. What do you make of it?
+
+#(SCARY_BUT_USEFUL)	CHMMR010.wav
+we know the dnyarii only from legend
+where they are described as the embodiment of evil and cruelty
+if ever there was a devil, captain, it was the dnyarri
+however, if in fact the creature you possess is one of this ancient breed
+its mental power may be useful to help confuse the ur-quan.
+
+#(what_about_bomb)
+I got this huge bomb-thing from a race called the Utwig. Is it really a weapon?
+
+#(ABOUT_BOMB)	CHMMR011.wav
+the device you speak of is a huge matter-antimatter bomb... if you had activated it
+the weapon would have annihilated your ship and everything else within five hundred kilometers
+the destructive power of this weapon makes it suitable for the most important task you will ever undertake
+the neutralization of the sa-matra, the ur-quan's nearly invincible battle platform.
+
+#(what_about_sun_device)
+I er... borrowed a device from the Mycon. Do you know what it is?
+
+
+#(ABOUT_SUN_DEVICE)	CHMMR012.wav
+we do not recognize this device
+but it appears to be a precursor tool which can radiate a great amount of energy.
+
+#(what_about_samatra)
+What more can you tell me about this Sa-Matra
+
+#(ABOUT_SAMATRA)	CHMMR013.wav
+we only glimpsed it once, when it devastated our most powerful fleet
+it was several times the size of your vessel
+with a host of unusual weapons protruding from its scabrous hull
+but the most dangerous feature of the sa-matra was its annihilation toroids...
+with this weapon they could vaporize ships from the far side of a solar system
+or cut broad swaths of devastation across a planet in seconds.
+	
+#(enough_advice)
+Thanks! That's enough advice for now.
+
+#(OK_ENOUGH_ADVICE)	CHMMR014.wav
+though your presence here is a painful intrusion
+we will always provide advice whenever you request it, captain. 
+
+#(bye_shielded)
+Goodbye Chenjesu. Goodbye Mmrnmhrm.
+
+#(GOODBYE_SHIELDED)	CHMMR015.wav
+goodbye once and future ally, human... when the process is complete and we emerge from our chrysalis
+i shall tell your grandchildren of our conversation this day.
+
+
+#(WE_ARE_FREE)	CHMMR016.wav
+WE ARE FREE!"
+YOU HAVE FLOODED OUR SYNTHESIS MECHANISMS WITH A WEALTH OF RADIANT ENERGY.
+WHAT WAS SUPPOSED TO TAKE DECADES HAS BEEN ACCOMPLISHED IN SECONDS.
+THE PROCESS IS INCOMPLETE, YET WE HAVE EMERGED.
+WE ARE THE CHMMR.
+
+#(WHO_ARE_YOU)	CHMMR017.wav
+WHO ARE YOU?
+
+#(i_am_captain0)
+I am captain 
+#(i_am_captain1)
+of the starship 
+#(i_am_captain2)
+.
+
+#(i_am_savior)
+I am the guy who's trying to save the Galaxy.
+
+#(i_am_silly)
+Who am I? Me? Er... dang! I just forgot.
+
+#(WHY_HAVE_YOU_FREED_US)	CHMMR018.wav
+WHY HAVE YOU INTERRUPTED THE PROCESS?!!!
+
+#(serious_1)
+We struggle to free all races from the Ur-Quan. We need your help.
+
+#(serious_2)
+You are the key to winning back the freedom of our Alliance.
+
+#(silly)
+I wanted to see what you looked like without all that orange junk.
+
+#(WILL_HELP_ANALYZE_LOGS)	CHMMR019.wav
+YOUR NEED MUST BE GREAT FOR YOU TO HAVE RISKED SO MUCH
+JUST TO BRING US FROM BENEATH THE SHIELD.
+WE WERE NOT READY... BUT THIS IS NOW IN THE PAST.
+WHAT IS DONE IS DONE.
+YOU ARE INTENT ON STOPPING THE UR-QUAN... VERY WELL.
+WE ARE PREPARED TO ASSIST YOU IN WHATEVER WAY WE CAN.
+WE MUST FIRST TELL YOU THAT EVEN BEFORE WE WERE PLACED UNDER THE SLAVE SHIELD
+WE REALIZED THAT THE ONLY WAY TO TRULY DEFEAT THE UR-QUAN
+WAS TO FIRST DESTROY THEIR PRECURSOR BATTLE PLATFORM... THE SA-MATRA.
+THIS VESSEL WAS RESPONSIBLE FOR THE VICTORY OF THE HIERARCHY OVER THE ALLIANCE.
+WHEN IT WAS BROUGHT TO BEAR AGAINST OUR WORLDS, WE COULD NOT RESIST IT.
+THIS MUST BE YOUR PRIORITY. THIS MUST BE YOUR EVENTUAL GOAL.
+WE KNOW WHAT IS NECESSARY TO ACHIEVE THIS END
+BUT FIRST WE MUST KNOW WHAT YOU HAVE ALREADY LEARNED
+SO WE WILL SCAN THE DATABANKS AND LOGS ABOARD YOUR SHIP.
+THERE
+THE PROCESS IS COMPLETE. NOW WE CAN DISCUSS WHAT YOU MUST DO.
+
+#(YOU_KNOW_SAMATRA)	CHMMR020.wav
+YOU ALREADY HAVE THE DATA NECESSARY TO TELL YOU THAT THE SA-MATRA VESSEL
+IS LOCATED IN THE DELTA CRATERIS STAR SYSTEM.
+
+#(DONT_KNOW_ABOUT_SAMATRA)	CHMMR021.wav
+YOU NEED TO LOCATE THE UR-QUAN'S SA-MATRA VESSEL.
+IF YOU CANNOT FIND IT YOURSELF, ASK THOSE OTHERS WHO ARE NEAR THE UR-QUAN.
+PERHAPS THEY WILL KNOW.
+
+#(NEED_DISTRACTION)	CHMMR022.wav
+THE SA-MATRA IS SURE TO BE HEAVILY GUARDED.
+TO ALLOW YOU TO GET CLOSE ENOUGH TO THE SA-MATRA
+YOU WILL HAVE TO CREATE SOME TYPE OF DIVERSION.
+
+#(HAVE_TALKING_PET)	CHMMR023.wav
+WE HAVE DETECTED THE PRESENCE OF A DNYARRI ABOARD YOUR SHIP.
+THOUGH THE BEING IS DARKLY EVIL, AND INCREDIBLY DANGEROUS
+THE TAALO DEVICE YOU POSSESS HAS EFFECTIVELY NULLIFIED THE CREATURE'S POWER OVER YOU.
+HOWEVER, IT WILL DO A MOST EXCELLENT JOB DISTRACTING THE UR-QUAN LONG ENOUGH
+FOR YOU TO APPROACH THE SA-MATRA AND DESTROY IT.
+
+#(NEED_WEAPON)	CHMMR024.wav
+TO DEFEAT THE UR-QUAN YOU MUST FIRST DESTROY THE SA-MATRA BATTLE PLATFORM.
+THE ONLY WAY WE CAN ENVISION THIS OCCURRING IS FOR YOU TO DETONATE A HUGE EXPLOSIVE DEVICE
+ADJACENT TO THE BATTLE PLATFORM, AT POINT BLANK RANGE.
+WE BELIEVE THAT THE ONLY WEAPON WHICH CAN GENERATE SUFFICIENT DESTRUCTIVE FORCE
+IS A MATTER-ANTIMATTER BOMB, BUT WE CANNOT BUILD ONE OURSELVES.
+
+#(HAVE_BOMB)	CHMMR025.wav
+YOU POSSESS AN ANTI-MATTER BOMB. THIS IS GOOD.
+BUT HAD YOU ACTIVATED IT, THE DEVICE WOULD HAVE ANNIHILATED YOUR SHIP
+AND EVERYTHING ELSE WITHIN FIVE HUNDRED KILOMETERS.
+EVEN SO, WE WILL HAVE TO IMPROVE THIS DEVICE, MAGNIFY ITS POWER WITH OUR CRYSTAL TECHNOLOGY.
+THE DESTRUCTIVE POTENTIAL OF THIS WEAPON WILL THEN MAKE IT SUITABLE
+FOR THE MOST IMPORTANT TASK YOU WILL EVER UNDERTAKE
+THE NEUTRALIZATION OF THE SA-MATRA, THE UR-QUAN'S NEARLY INVINCIBLE BATTLE PLATFORM.
+
+#(RETURN_WHEN_READY)	CHMMR026.wav
+RETURN WHEN YOU HAVE GATHERED THE RESOURCES WE HAVE DESCRIBED.
+
+#(YOU_ARE_READY)	CHMMR027.wav
+YOU ARE READY
+
+
+#(further_assistance)
+Can you give us further assistance now?
+
+#(NO_FURTHER_ASSISTANCE)	CHMMR028.wav
+WE CANNOT HELP YOU UNTIL YOU HAVE GATHERED THE NECESSARY RESOURCES.
+
+#(tech_help)
+You seem to have superior technology. Would you share this with us?
+
+#(USE_OUR_SHIPS_BEFORE)	CHMMR029.wav
+WE WILL PROVIDE YOU WITH THE DESIGNS FOR A NEW CLASS OF FIGHTING SHIP... THE AVATAR
+ALONG WITH ENOUGH CHMMR TO COMMAND HOWEVER MANY VESSELS YOU MAY BUILD.
+AVATAR BATTLESHIPS ARE MUCH MORE EFFECTIVE THAN OUR BROODHOME OF X-FORM VESSELS.
+IN COMPETENT HANDS, THESE SHIPS CAN DEFEAT ANY SHIP IN SPACE.
+
+#(where_weapon)
+Where can I find the super-weapon you described?
+
+#(PRECURSOR_WEAPON)	CHMMR030.wav
+THERE ARE RUMORS OF SUCH A DEVICE, A PRECURSOR PLANETEERING TOOL
+TO BE FOUND SOMEWHERE FAR TOWARDS THE CORE
+IN THE POSSESSION OF A NON-HOSTILE ALIEN RACE.
+WE CANNOT PROVIDE ANY MORE INFORMATION AT THIS TIME.
+
+#(where_distraction)
+What can possibly distract an Ur-Quan?
+
+#(PSYCHIC_WEAPONRY)	CHMMR031.wav
+IN OUR STUDIES WE HAVE LEARNED THAT THE UR-QUAN ARE ESPECIALLY SENSITIVE TO PSYCHIC MANIPULATION.
+YOUR BEST STRATEGY WOULD BE TO FIND A WEAPON OF THIS TYPE.
+BE AWARE THAT MOST PSYCHIC WEAPONS ARE NOT MECHANICAL CONSTRUCTS.
+THEY ARE USUALLY INTELLIGENT LIFE FORMS, OFTEN INIMICAL.
+
+#(what_now)
+So what happens now?
+
+#(WE_WILL_IMPROVE_BOMB)	CHMMR032.wav
+YOU ARE FULLY PREPARED FOR THE UNDERTAKING.
+THERE IS EVERY CHANCE THAT YOU WILL BE ABLE TO DESTROY THE SA-MATRA
+AND STOP BOTH THE UR-QUAN AND THE KOHR-AH.
+
+#(MODIFY_VESSEL)	CHMMR033.wav
+WE WILL NOW FIT THE PRECURSOR WEAPON AND OUR OWN CRYSTAL AMPLIFICATION SYSTEM TO YOUR VESSEL.
+BY ROUTING A PORTION OF YOUR FLAGSHIP'S FUSION POWER THROUGH THE WEAPON'S IGNITION CHAMBER
+ITS DESTRUCTIVE FORCE WILL BE MULTIPLIED BY A LARGE FACTOR.
+
+#(wont_hurt_my_ship)
+We'll fire this weapon at the Sa-Matra, right? It's not going to hurt my ship, is it?
+
+#(WILL_DESTROY_IT)	CHMMR034.wav
+YOUR VESSEL WILL BE TOTALLY ANNIHILATED.
+
+#(bummer_about_my_ship)
+Whoa. Gee, that's bad. I don't suppose there's anything we can do to change that, is there?
+
+#(DEAD_SILENCE)	CHMMR035.wav
+  
+
+#(other_assistance)
+Can you provide us with any other assistance?
+
+#(USE_OUR_SHIPS_AFTER)	CHMMR036.wav
+BECAUSE YOUR FLAGSHIP WILL BE SUBSTANTIALLY WEAKENED BY OUR MODIFICATIONS
+YOU MAY REQUIRE ADDITIONAL COMBAT VEHICLES FOR PROTECTION
+SO THAT YOU CAN APPROACH CLOSE ENOUGH TO THE SA-MATRA TO DETONATE THE WEAPON.
+WE WILL PROVIDE YOU WITH THE DESIGNS FOR OUR NEW AVATAR-CLASS FIGHTING SHIPS.
+IN COMPETENT HANDS, THESE SHIPS ARE A MATCH FOR BOTH THE UR-QUAN AND KOHR-AH VESSELS.
+
+#(proceed)
+Very well. Proceed with the modifications.
+
+#(TAKE_2_WEEKS)	CHMMR037.wav
+THE COMPLETION DATE FOR YOUR VESSEL'S MODIFICATION IS ROUGHLY TWO WEEKS HENCE.
+SO THAT YOU AND YOUR HUMAN COMPANIONS MAY MAKE ANY NECESSARY PREPARATIONS AT YOUR STARBASE
+WE WILL NOW TRANSPORT YOU AND YOUR CREW BACK TO EARTH IMMEDIATELY.
+GOOD LUCK, CAPTAIN.
+
+#(HELLO_AFTER_BOMB_1)	CHMMR038.wav
+WE GREET YOU HUMAN CAPTAIN. WHAT DO YOU NEED FROM US?
+
+#(HELLO_AFTER_BOMB_2)	CHMMR039.wav
+WELCOME BACK HUMAN. WHY HAVE YOU RETURNED?
+
+#(whats_up_after_bomb)
+Have you learned anything new since I was here last?
+
+#(GENERAL_INFO_AFTER_BOMB_1)	CHMMR040.wav
+YES. WE HAVE REACHED TWO CONCLUSIONS
+ONE: THE LOCATION OF THE SA-MATRA CAN BE CONFINED TO THE STARS IN THE CRATERIS CONSTELLATION.
+SEEK THE VEHICLE IN THIS REGION.
+TWO: BECAUSE THE UR-QUAN LOST SO MANY SHIPS WHEN THE SHOFIXTI CAUSED THEIR OWN SUN TO FLARE
+THE KOHR-AR'S FORCES ARE GROSSLY SUPERIOR TO THE UR-QUAN.
+IF THE WAR IS NOT YET OVER BETWEEN THE UR-QUAN AND THE KOHR-AH, IT SHALL BE SOON
+WITH THE KOHR-AH VICTORIOUS. WHEN THIS HAPPENS THE KOHR-AH WILL MOVE THROUGH SPACE
+DESTROYING ALL INTELLIGENT RACES ONE BY ONE UNTIL NONE REMAIN.
+YOU MUST NOT BE DISTRACTED! THE SA-MATRA IS THE KEY TO THEIR DOMINANCE!
+DESTROY THEIR SACRED TROPHY, AND UNITED WITH OUR ALLIES, WE CAN DEFEAT THEIR STAR FLEET.
+
+#(GENERAL_INFO_AFTER_BOMB_2)	CHMMR041.wav
+WE HAVE TOLD YOU EVERYTHING WE KNOW.
+GO TO THE CRATERIS CONSTELLATION. FIND THE SA-MATRA. USE THE POWERS OF THE DNYARRI.
+DESTROY THE SA-MATRA!
+
+#(what_do_after_bomb)
+So NOW what do I do?
+
+#(DO_AFTER_BOMB)	CHMMR042.wav
+SEEK THE LOCATION OF THE SA-MATRA. FLY THERE WITH GREATEST SPEED!
+USE THE POWERS OF THE DNYARRI, AND WHILE THE UR-QUAN ARE IN CHAOS, DESTROY THE SA-MATRA!
+
+#(bye_after_bomb)
+I'll see you when it's over, I hope.
+
+#(GOODBYE_AFTER_BOMB)	CHMMR043.wav
+YOU ARE PREPARED. WITH COURAGE AND FORTUNE AT YOUR SIDE YOU WILL BE VICTORIOUS.
+
+#(bye)
+Farewell. We will be back when we've got everything we need.
+
+#(GOODBYE)	CHMMR044.wav
+WE AWAIT YOUR RETURN.
+

@@ -1,0 +1,509 @@
+#(INIT_HELLO)	ARILO000.wav
+Hello my little one. I am so pleased to see you!
+You have done well for yourself.
+It is gratifying.
+
+#(confused_by_hello)
+You sound as if you know me. Have we met?
+
+#(CONFUSED_RESPONSE)	ARILO001.wav
+I forget myself. Of course you don't know me. You are from Unzervalt, not Earth.
+We are, however, how shall I say, related.
+It has been many of your years since I have been to our planet Earth.
+We are known among your kind by many names... some of them flattering, some of them not.
+The one we use most often was given to us by the children of the Celts. A wonderful culture!
+They called us the Arilou... the Arilou Lalee'lay.
+More recently we were part of the Alliance of Free Stars, along with your kind
+until we decided to return to our own....oh, how would you say... reality
+when it became clear that your people would be safe enough under the Ur-Quan slave shield.
+
+#(happy_by_hello)
+I know who you are! You're Arilou!! We've wondered what happened to your people for a long time.
+
+#(HAPPY_RESPONSE)	ARILO002.wav
+You are very clever!
+Yes, I am Arilou Lalee'lay and I suppose it has been a very long time since you've met one of my kind.
+I imagine you humans are still very short lived. How sad.
+Ah well. To answer your question, we chose to cease our efforts with the Alliance of Free Stars
+when it seemed that there was no longer any threat to our Earthlings.
+I am pleased to see that you, from outside the slave shield, survived. You seem healthy.
+
+
+#(miffed_by_hello)
+I'll be. It's the Arilou. Why the hell did you run out on the Alliance of Free Stars? What happened?
+
+#(MIFFED_RESPONSE)	ARILO003.wav
+You're annoyed. How interesting.
+It has been so long since I dealt with Humans. I had forgotten what it was like.
+Now let's see, how shall I best appease you? Yes, if I remember, an honest answer would help.
+We didn't exactly 'run out' on the Alliance.
+We chose to leave when there was no longer a reason to stay.
+You humans seemed safe enough under the Ur-Quan slave shield.
+In fact, we rather liked the idea and wished we had thought of it ourselves.
+For your safety of course.
+
+#(FRIENDLY_SPACE_HELLO_1)	ARILO004.wav
+Ah... our human friend. Please, let us chat a while.
+ It has been so many years since I last visited your Earth
+so long since I glided across your open fields under the light of a full moon.
+Tell me of Earth. Tell me what I have... oh, I forget myself... how silly.
+You were born on the distant world Unzervalt.
+I have visited there much more recently.
+
+
+#(FRIENDLY_SPACE_HELLO_2)	ARILO005.wav
+Hello my clever child. We have met again and I am pleased.
+Your people are so beautiful... so unspoiled.
+Your instincts are like perfume... your motives a shimmering crystal.
+
+#(FRIENDLY_SPACE_HELLO_3)	ARILO006.wav
+Last night as you slept, I touched your face and you smiled!...
+but now you frown. A pity. Smiling is healthier.
+
+#(FRIENDLY_SPACE_HELLO_4)	ARILO007.wav
+Did you desire this meeting, Captain, or did we?
+
+#(FRDLY_HOMEWORLD_HELLO_1)	ARILO008.wav
+Ha-ha! Our clever ward has found our nook in *time*!
+You are the first, brave human! No others have made the trip.
+This is our homeworld, Falayalaralfali, nestled safe in this TrueSpace eddy.
+The portal you passed through is a rarity, a natural point of interdimensional fatigue.
+We use these phenomena to speed our transit through the realities.
+We are wondering, have you met with the Umgah recently?
+We entrusted an injured Talking Pet into their care
+and we were curious about its progress.
+
+#(FRDLY_HOMEWORLD_HELLO_2)	ARILO009.wav
+Welcome back to Falayalaralfali, Captain.
+Perhaps, in the fullness of time we will let you visit the surface of our world.
+ There are many beauties here unmatched anywhere... the Mountain Clouds of Thought
+the Tangible Wish... the Dark. Unfortunately, you are not yet... acclimated.
+Premature exposure to these would render you... numb.
+
+#(FRDLY_HOMEWORLD_HELLO_3)	ARILO010.wav
+Hello. We are pleased to see you again. Have you any numbness yet?
+Good. It should be too soon for that. Too soon by far.
+
+#(FRDLY_HOMEWORLD_HELLO_4)	ARILO011.wav
+Yes, Captain. What can the Arilou Lalee'lay of Falayalaralfali do for you this day?
+
+#(whats_up_1)
+What exactly IS your connection with Earth and Humans, anyway?
+
+#(whats_up_2)
+I'm still confused about our relationship. Please elaborate.
+
+#(GENERAL_INFO_1)	ARILO012.wav
+You are curious. That is a promising quality.
+How can I describe our relation to Humans?...
+Never doubt our motives, Captain. Your well-being is of paramount concern to every Arilou.
+Surely you know, that it was the day after Humanity joined the Alliance Of Free Stars
+that we appeared in the open for the first time. This was no coincidence.
+We wanted to protect you. Once we saw that you were...well, safe
+we decided to tend to other business for a short while.
+Believe me, Captain, we have known each other for a very long time.
+You might even say that we knew the first human.
+
+#(GENERAL_INFO_2)	ARILO013.wav
+You have painted our pictures on cave walls, erected standing stones and pyramids for us.
+You have wondered at our signs to each other in your wheat fields
+and written books about our more personal endeavors
+when we allowed you to recall our examinations.
+We have a history together, Captain, and you have come a long way.
+But I must tread carefully. You are not ready for everything
+and I fear that you would not understand what was best for you.
+
+#(GENERAL_INFO_3)	ARILO014.wav
+As you know, we never revealed where in the galaxy one could find our homeworld.
+There was a good reason. We are not from your space, or your... *time*.
+Some of your more broad thinkers refer to such realms as other dimensions.
+Though trivialized, this is a suitable metaphor for your intellect.
+Perhaps you know of the Orz. Like us, they are dimensional travellers
+but that is where our similarity ends.
+Do not trust the Orz, my Human Captain. They are dangerous.
+But as to your question... our relationship
+To call our interaction with your kind an experiment would be much too simple and impersonal.
+Let us just say that we have a vested interest in your... development.
+You are one of our... extended family, just as other sentients in other dimesions
+have their extended families.
+We are proud of you as you would be of your children, and some day
+well, I have said too much already.
+
+#(GENERAL_INFO_4)	ARILO015.wav
+You already know more than is appropriate. In fact, you may represent an unfortunate complication.
+You have been in the stars for much time. Do you seek the doorway, or are you just passing through?
+Remember, you can only go over naturally for the three days it is open.
+How to find it? Look on your starmap from 17 through 20. The variable star shall be your guide.
+
+#(why_you_here)
+What are you doing here, in this region of space?
+
+#(LEARN_THINGS)	ARILO016.wav
+We are many places, at many *times*. This place is an easy place... one of the ten easy places.
+At different times, we explore different easy places. That is our way.
+Oh! I can see from the look in your eyes that I have confused you.  I am silly.
+Please disregard my words.
+
+#(what_things)
+What are you exploring for in these `easy places'?
+
+#(THESE_THINGS)	ARILO017.wav
+We seek to trap *Nnngn*, but they dart and leap.
+YOU cannot trap *Nnngn*... do not even try.
+I do not think you can even touch them; you are not quite solid enough.
+
+#(why_do_it)
+Okay, you trap these nungy things. Then what?
+
+#(DO_IT_BECAUSE)	ARILO018.wav
+Why we let them go, of course! *Nnngn* do not like to be confined!
+Captain, these things we talk about... they are unimportant to you... they are as dreams.
+Our words should address your universe... not ours.
+
+#(give_me_info_1)
+We still struggle against the Ur-Quan. Can you help us?
+
+#(ARILOU_HINTS_1)	ARILO019.wav
+With ships and weapons... blood and bones... no.
+Too many shipmates were forcibly... discorporated.. in the last conflict.
+Our cooperation is not necessary. You are the focus.
+However, knowledge transcends reality perimeters, and this we can share with you.
+An example: to discover the nature of the red probes
+seek creatures who inhabit a world with no surface.
+
+#(give_me_info_2)
+Can you give us any more information?
+
+#(ARILOU_HINTS_2)	ARILO020.wav
+The Mycon change and reform worlds with their Deep Children.
+These changes affect others unfortunately.
+The fate of your world and your heart relate to these matters.
+
+/* Set appropriate flag */
+#(ARILOU_HINTS_3)	ARILO021.wav
+The carnate forces of Ur-Quan and Kohr-Ah are twined about the memory of pain.
+They respond to these words.
+Hold! What you are doing to us is wrong! Why do you do this thing?
+
+#(ARILOU_HINTS_4)	ARILO022.wav
+The enemy of your enemy is your friend... at least for a time.
+
+#(bye_friendly_space)
+Goodbye Arilou.
+
+#(GOODBYE_FRIENDLY_SPACE)	ARILO023.wav
+Farewell child.
+
+#(GOT_PART_YET_1)	ARILO024.wav
+The prospect of sharing the easy way with you excites us.
+If you have found the Ur-Quan Warp Pod, this prospect can be made a reality.
+
+#(GOT_PART_YET_2)	ARILO025.wav
+We are so eager to give you our means to traverse reality.
+Have you obtained the Warp Pod yet?
+
+
+#(INIT_ANGRY_HWLD_HELLO)	ARILO026.wav
+You have found our world. We did not see this
+and now it is too late to adjust without damage
+but perhaps the situation can be resolved in another way.
+The answer lies within your next statement.
+
+#(invaders_from_mars)
+You guys are like... invaders from Mars! Weird evil monsters!
+
+#(HAD_OUR_REASONS)	ARILO027.wav
+No. We seek not to invade, but to pervade. There is a difference.
+Your stories of evil creatures... these are just... side effects.
+Pay them no heed.
+
+#(bug_eyed_fruitcakes)
+No-no-no-no-no! I'll stop you! You bug-eyed fruitcakes have mutilated your last cow!
+
+#(WE_NEVER_FRIENDS)	ARILO028.wav
+We have sought amiable companionship with you, Captain
+when we just as easily could have performed such experiments on you.
+We shall not fight with our children. Goodbye.
+
+#(ok_lets_be_friends)
+Look, I'm sorry. I made some mistakes. We need you as allies, not as enemies.
+
+#(NO_ALLY_BUT_MUCH_GIVE)	ARILO029.wav
+We have never been your enemy, though your people may once have thought so.
+But we are also not your ally. That would require a degree of involvement in this *time*
+which is not presently permissible.
+For now, we are simply your friends... who have much to give.
+
+#(why_should_i_trust)
+Why should I trust you? You did funny things to that horror writer a while ago, right?
+
+#(TRUST_BECAUSE)	ARILO030.wav
+We do many things, few of them funny... at least by our standards.
+You do not, CANNOT understand some of what we do, or why.
+Therefore it may be best if you simply consider us... quirky.
+
+#(what_about_interference)
+What gives your people the right to interfere with mine?
+
+#(INTERFERENCE_NECESSARY)	ARILO031.wav
+What gives you the right to move, the right to fall?
+Some acts are motivated, others are automatic.
+Do not presume that you can decide which is which for anyone but yourself
+or you will be... disappointed.
+
+#(i_just_like_to_leave)
+Ok, fine, whatever. Just let me leave now, okay?
+
+#(SORRY_NO_LEAVE)	ARILO032.wav
+This matter must be resolved, or many event strands will grow... more complicated.
+Your presence is required.
+
+#(what_about_war)
+So what DID happen at the end of the War?
+
+#(ABOUT_WAR)	ARILO033.wav
+Forgive us if we forget the importance you attach to such events as this.
+Our... context, is infinitely broader than yours in scope, both in space and *time*.
+Nevertheless, to please you I shall try to recall
+yes, now I remember. Here is the sequence
+the Ur-Quan fleets have moved through your solar system and you are defeated
+your people make the choice not to fight with and for the Ur-Quan
+A shield is cast about your world. Your people are now safe. This makes us happy.
+The Armada departs your star system and moves toward the remaining Alliance members
+ourselves, the Syreen, the Yehat and their adopted Shofixti.
+The Yehat and Shofixti withdraw to Delta Gorno, but they do not permit the Syreen to follow.
+We are content with the flow of events and leave the area to return here.
+From our perspective, this sequence of events ends here.
+
+#(what_about_urquan)
+Well what about the Ur-Quan? What are they up to?
+
+#(ABOUT_URQUAN)	ARILO034.wav
+Soon after the Ur-Quan defeated the Yehat and imprisoned the Syreen in Betelgeuse
+their siblings arrived to initiate the Doctrinal Conflict.
+This battle continues as we speak.
+
+#(best_if_i_killed_you)
+I think it would be best if I killed you now.
+
+#(WICKED_HUMAN)	ARILO035.wav
+Instinct. Instinct. Instinct. Always the instinct.
+
+#(what_did_on_earth)
+What, exactly, have you been doing on Earth?
+
+#(DID_THIS)	ARILO036.wav
+You desire honesty. It is given.
+We have visited your world for many thousands of years into your species' past.
+We have changed things... made modifications.
+
+#(why_did_this)
+What did you change and modify on Earth, AND WHY?!
+
+#(IDF_PARASITES)	ARILO037.wav
+Our motives are multiple, our desires complex.\nn"
+Part of what we do on Earth is for your own protection.
+There are parasites. Creatures who dwell Beyond.
+They have names, but you do not know them. They would like to find you
+but they are blind to your presence... unless you show yourselves.
+The Androsynth showed themselves, and something noticed them.
+There are no more Androsynth now. Only Orz.
+
+#(tell_more)
+This sounds creepy. Please go on.
+
+#(NOT_NOW)	ARILO038.wav
+No. In a way, ignorance is your armor, your best protection.
+They cannot see you now. They cannot smell you.
+Much of our work with your people involved making you invisible... changing your smell.
+If I tell you more, you will look where you could never look before
+and while you are looking you can and will be seen.
+You do not want to be seen.
+
+#(umgah_acting_weird) 
+We have met the Umgah, and they are acting extremely weird, like zombie-blobbies!
+
+#(learned_about_umgah) 
+Have you learned anything about the Umgah yet?
+
+#(WELL_GO_CHECK)	ARILO039.wav 
+Hmmm... this is disturbing news. They are normally rambunctious to an extreme.
+We will send ships to Umgah space to investigate.
+We should have some answers in a few days time.
+
+#(NO_NEWS_YET)	ARILO040.wav
+Our exploration skiffs have not returned. We are concerned.
+Perhaps if you ask later, we will know then.
+
+#(UMGAH_UNDER_COMPULSION)	ARILO041.wav 
+We have discovered something strange and frightening about the Umgah
+When we approached their vessels, we were instantly attacked
+and the Umgah made no attempts to contact our ships or respond to our hails.
+Using our own psionic sensitivities, we determined that they are under some form of psychic compulsion.
+The source of psionic control commands appears to be Beta Orionis, the Umgah's home star.
+We sent vessels to investigate this location, but none have returned... we fear they are destroyed.
+
+#(what_do_now)
+So what can we do about the psychically zombified blobbies?
+
+#(GO_FIND_OUT)	ARILO042.wav
+We have had no success with our own investigations.
+Whatever controls the Umgah is a threat, but we seem unprepared to deal with it.
+Perhaps you and your crew are better suited to this mission.
+If you choose to go to Beta Orionis, take care, child
+whatever controls the Umgah now knows of our presence
+and it may take measures against us.
+
+#(tell_arilou_about_tpet)
+The source of the Umgah's compulsion is the Talking Pet you gave the Umgah,
+but now it is intelligent and exhibits strange powers.
+
+#(BAD_NEWS_ABOUT_TPET)	ARILO043.wav
+That is very bad news. This creature, a super-intelligent, psychically coercive creature
+is very similar to a race of beings which was thought to have vanished over 20,000 years ago.
+They were called the Dynarri, and history tells that they ruled a wide region of this galaxy
+for many thousands of years. The Dynarri were cruel and devious
+and when they were finally overthrown by one of their slave-races
+they were supposedly exterminated.
+Perhaps this Talking Pet is the degenerate product of the Dynarri.
+
+#(what_do_about_tpet)
+So what should we do about this Dnyarri creature?
+
+#(DANGEROUS_BUT_USEFUL)	ARILO044.wav
+The Dnyarri were the most innimical race this galaxy has known.
+In other dimensions, other *times* there are far, far worse beings
+but they do not threaten you at the present time.
+During their reign, the Dnyarri possessed absolute power over all intelligent species in this region.
+They used their slaves for all menial tasks and many forms of depraved entertainment.
+If the Talking Pet we gave to the Umgah has attained the coercive abilities of its ancestors
+we must assume that other Talking Pets can do likewise.
+Therefore the creature must be considered the most dangerous being in the galaxy.
+Its destruction is necessary... unless
+you can find some way to gain control over the creature!
+If you could do this you would have a powerful weapon against the Ur-Quan.
+Of course, if you made one mistake, you would be the Dnyarri's slave forever.
+
+#(what_give_me)
+You said you had much to give my people. Can you be more specific?
+
+#(ABOUT_PORTAL)	ARILO045.wav 
+As you know, we live in a dimension adjacent to HyperSpace which we call QuasiSpace.
+Our ships move between these dimensions through weaknesses in the inter-dimensional fabric.
+Although many such weaknesses, or Portals exist which lead from our dimension, QuasiSpace
+to various locations in HyperSpace, there is only one natually occurring Portal
+which will transport a ship from HyperSpace to QuasiSpace.
+We therefore find it convenient to generate our own Portals artificially
+with focused dimensional fatigue rays.
+As a sign of our long-standing relationship with your species
+we would happily fit your vessel with a Portal spawner of its own
+but your ship is so massive, our units would be ineffective. However
+we suspect you may find a sufficiently powerful warp pod, the key element in a Portal spawner
+in the wreck of the Ur-Quan Dreadnought on the seventh world at Alpha Pavonis.
+Bring that warp pod back here, and we will prepare a Portal spawner for your vessel.
+
+#(what_about_tpet)
+You mentioned a Talking Pet. How did you find one?
+
+#(ABOUT_TPET)	ARILO046.wav
+We are an endlessly curious species, and we spend much of our time on
+how should I say, reconnaissance missions.
+During one such trip, we witnessed the crash landing of an Ur-Quan Dreadnought
+on the surface of Alpha Pavonis VII.
+Normally, when an Ur-Quan vessel is disabled, it automatically engages self-annihilation circuits
+to prevent other species from learning the Ur-Quan's technological secrets.
+In this case, however, these circuits must have failed. The Dreadnought did not disintegrate on impact.
+We landed to explore the wreckage, and were amazed to find a survivor... a Talking Pet!
+As you may know, the Ur-Quan use these non-sentient creatures for the task of inter-species translation
+a task the Ur-Quan find ultimately demeaning.
+The Talking Pet was severely injured, and we did what we could for the poor creature
+but it grew clear that without superior measures, the Talking Pet would die.
+We turned to the Umgah, whom we have known for many centuries.
+Their bioscience skills are far superior to our own.
+The Umgah promised to do what they could, and let us know how the Pet fared.
+We have not heard from the Umgah since.
+Perhaps if you are travelling through their stars, you can ask them for us.
+
+#(about_portal_again)
+Can you tell me about that Portal Spawner thing again?
+
+#(PORTAL_AGAIN)	ARILO047.wav 
+Certainly. As a sign of our long-standing friendship with your species
+we would be happy to fit your vessel with a Portal spawner
+allowing you to jump from place to place in HyperSpace, without travelling the intervening distance.
+However, your ship is so massive, our normal warp pod units are insufficient
+but you will find a sufficiently powerful warp pod in the wreck of the Ur-Quan Dreadnought
+on Alpha Pavonis VII. Bring that warp pod back here, and we will prepare a Portal spawner for your vessel.
+
+#(got_it)
+I have obtained the Warp Pod unit from the Ur-Quan wreck.
+
+#(CLEVER_HUMAN)	ARILO048.wav
+What a surprise!
+As we have always said, Humans are a MOST resourceful and clever species.
+We are so proud of you! But don't worry that you shall have to wait.\r
+
+#(GIVE_PORTAL)	ARILO049.wav
+We are prepared. Even now our technical personnel are equipping your ship
+with a custom version of our Portal spawner device.
+The device is useable only in HyperSpace. Whenever it is activated
+the spawner will focus several inter-dimensional fatigue beams adjacent to your vessel
+opening a temporary hole into QuasiSpace. Move quickly through the Portal!
+After your ship has passed into QuasiSpace, you can choose any of the nearby Portals
+which lead back to HyperSpace, thus saving you needless transit time.
+Be keenly aware of this fact! The Spawner requires a great deal of energy to function.
+We estimate that each time you use the device, it will consume ten of your fuel units.
+
+#(bye_friendly_homeworld)
+Goodbye my Arilou friends.
+
+#(GOODBYE_FRDLY_HOMEWORLD)	ARILO050.wav
+Goodbye clever child.
+
+#(HOSTILE_GOODBYE_1)	ARILO051.wav
+We have said all there is to be said.
+We would prefer your immediate departure, but are prepared for your attack.
+
+#(HOSTILE_GOODBYE_2)	ARILO052.wav
+Your behavior is clearly inimical. We resist discorporation.
+Further contact between ourselves is pointless.
+
+#(HOSTILE_GOODBYE_3)	ARILO053.wav
+Seek death in other corners. Leave us.
+
+#(HOSTILE_GOODBYE_4)	ARILO054.wav
+Seek death in other corners. Leave us.
+
+#(ANGRY_SPACE_HELLO_1)	ARILO055.wav
+We cannot fathom your reason, therefore you must be acting upon simple instinct.
+Perhaps this is our fault. We have always loved instinct
+even though we possess none ourselves.
+Do you have too much instinct, human? Does your species? We shall see.
+
+#(ANGRY_SPACE_HELLO_2)	ARILO056.wav
+Human. You flail at the wind. Cease your violence.
+Would you hurt your pet? Your child? Your beast?
+Please... rethink your posture.
+
+#(lets_fight)
+C'mon, let's fight... Freak Face!
+
+#(NO_FIGHT)	ARILO057.wav
+We will never choose to fight you, child.
+
+#(im_sorry)
+Aughhh! I am sorry! WHAT WAS I THINKING?!!
+
+#(APOLOGIZE_AT_HOMEWORLD)	ARILO058.wav
+If you wish to make atonement... seek a strangely shaped rock or plant.
+However, should you wish to change the nature of our relationship
+seek the Arilou in QuasiSpace. You can make the transit at 43.8 : 637.2
+but only when the door is open.
+
+#(bye_angry_space)
+G'bye.
+
+#(GOODBYE_ANGRY_SPACE)	ARILO059.wav
+When you have resolved your conflict, we shall speak again.
+
+

@@ -1,0 +1,11 @@
+spas0001.pcx
+spas0002.pcx
+spas0003.pcx
+spas0004.pcx
+spas0005.pcx
+spas0006.pcx
+spas0007.pcx
+spas0008.pcx
+spas0009.pcx
+spas0010.pcx
+spas0011.pcx

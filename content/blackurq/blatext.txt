@@ -1,0 +1,42 @@
+#(Kohr-Ah)
+Kohr-Ah
+#(Kohr-Ah)
+Kohr-Ah
+#(Kohr-Ah)
+Kohr-Ah
+#(Marauder)
+Marauder
+#(Marauder)
+Marauder
+#(Death 11)
+Death 11
+#(Death 17)
+Death 17
+#(Death 37)
+Death 37
+#(Death 23)
+Death 23
+#(Death 7)
+Death 7
+#(Death 13)
+Death 13
+#(Death 19)
+Death 19
+#(Death 29)
+Death 29
+#(Death 31)
+Death 31
+#(Death 41)
+Death 41
+#(Death 43)
+Death 43
+#(Death 3)
+Death 3
+#(Death 5)
+Death 5
+#(Death 47)
+Death 47
+#(Death 53)
+Death 53
+#(Death 83)
+Death 83
