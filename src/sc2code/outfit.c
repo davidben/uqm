@@ -600,7 +600,7 @@ DoOutfit (PMENU_STATE pMS)
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
-			SetSemaphore(GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 2));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 
@@ -656,13 +656,13 @@ DoOutfit (PMENU_STATE pMS)
 					DrawStamp ((PSTAMP)&s);
 			}
 
-			ClearSemaphore(GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-			SetSemaphore(GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			DrawFlagshipName (FALSE);
 			if (optWhichFonts == OPT_PC)
 				DrawFlagshipStats ();
-			ClearSemaphore(GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 
 			{
 				RECT r;

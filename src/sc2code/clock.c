@@ -65,7 +65,7 @@ int clock_task_func(void* data)
 				 * can be halted. (e.g. during battle
 				 * or communications)
 				 */
-		SetSemaphore (GLOBAL (GameClock).clock_sem);
+		SetSemaphore (GLOBAL (GameClock.clock_sem));
 		TimeIn = GetTimeCounter ();
 
 		if (GLOBAL (GameClock).tick_count <= 0
@@ -165,7 +165,7 @@ int clock_task_func(void* data)
 			LastTime += num_ticks;
 		}
 		
-		ClearSemaphore (GLOBAL (GameClock).clock_sem);
+		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 		SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 	}
 	FinishTask (task);
