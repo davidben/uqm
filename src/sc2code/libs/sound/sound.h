@@ -14,6 +14,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef _UQM_SOUND_H // try avoiding collisions on id
+#define _UQM_SOUND_H
+
 #include "starcon.h"
 #include "misc.h"
 #include "libs/strings/strintrn.h"
@@ -41,24 +44,24 @@ typedef struct
 } TFB_SoundTag;
 
 // forward-declare
-struct tfb_soundsample;
+typedef struct tfb_soundsample TFB_SoundSample;
 
 typedef struct tfb_soundcallbacks
 {
 	// return TRUE to continue, FALSE to abort
-	bool (* OnStartStream) (struct tfb_soundsample*);
+	bool (* OnStartStream) (TFB_SoundSample*);
 	// return TRUE to continue, FALSE to abort
-	bool (* OnEndChunk) (struct tfb_soundsample*, TFBSound_Object);
+	bool (* OnEndChunk) (TFB_SoundSample*, TFBSound_Object);
 	// return TRUE to continue, FALSE to abort
-	void (* OnEndStream) (struct tfb_soundsample*);
+	void (* OnEndStream) (TFB_SoundSample*);
 	// tagged buffer callback
-	void (* OnTaggedBuffer) (struct tfb_soundsample*, TFB_SoundTag*);
+	void (* OnTaggedBuffer) (TFB_SoundSample*, TFB_SoundTag*);
 	// buffer just queued
-	void (* OnQueueBuffer) (struct tfb_soundsample*, TFBSound_Object);
+	void (* OnQueueBuffer) (TFB_SoundSample*, TFBSound_Object);
 } TFB_SoundCallbacks;
 
 // audio data
-typedef struct tfb_soundsample
+struct tfb_soundsample
 {
 	TFB_SoundDecoder *decoder; // decoder to read from
 	float length; // total length of decoder chain in seconds
@@ -68,7 +71,7 @@ typedef struct tfb_soundsample
 	sint32 offset; // initial offset
 	void* data; // user-defined data
 	TFB_SoundCallbacks callbacks; // user-defined callbacks
-} TFB_SoundSample;
+};
 
 // equivalent to channel in legacy sound code
 typedef struct tfb_soundsource
@@ -100,3 +103,5 @@ void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
 
 #include "stream.h"
+
+#endif // _UQM_SOUND_H
