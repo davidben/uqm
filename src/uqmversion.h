@@ -23,5 +23,6 @@
 /* The final version is interpreted as:
    printf ("%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
 */
+#define UQM_CVS_DATE "$Date$"
 
 #endif
