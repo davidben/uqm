@@ -553,6 +553,9 @@ mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname, float value)
 /* set source float array property (CURRENTLY NOT IMPLEMENTED) */
 void mixSDL_Sourcefv (mixSDL_Object srcobj, mixSDL_SourceProp pname, float *value)
 {
+	(void)srcobj;
+	(void)pname;
+	(void)value;
 }
 
 
