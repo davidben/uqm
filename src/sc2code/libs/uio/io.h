@@ -107,7 +107,7 @@ int uio_rmdir(uio_DirHandle *dirHandle, const char *path);
 
 int uio_lseek(uio_Handle *handle, off_t offset, int whence);
 
-int uio_write(uio_Handle *handle, const void *buf, size_t count);
+ssize_t uio_write(uio_Handle *handle, const void *buf, size_t count);
 
 int uio_unlink(uio_DirHandle *dirHandle, const char *path);
 

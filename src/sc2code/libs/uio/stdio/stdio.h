@@ -89,7 +89,7 @@ int stdio_stat(uio_PDirHandle *pDirHandle, const char *name,
 ssize_t stdio_read(uio_Handle *handle, void *buf, size_t count);
 int stdio_rmdir(uio_PDirHandle *pDirHandle, const char *name);
 off_t stdio_seek(uio_Handle *handle, off_t offset, int whence);
-int stdio_write(uio_Handle *handle, const void *buf, size_t count);
+ssize_t stdio_write(uio_Handle *handle, const void *buf, size_t count);
 int stdio_unlink(uio_PDirHandle *pDirHandle, const char *name);
 
 stdio_EntriesIterator *stdio_openEntries(uio_PDirHandle *pDirHandle);

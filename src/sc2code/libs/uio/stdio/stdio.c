@@ -248,7 +248,7 @@ stdio_seek(uio_Handle *handle, off_t offset, int whence) {
 	return lseek(handle->native->fd, offset, whence);
 }
 
-int
+ssize_t
 stdio_write(uio_Handle *handle, const void *buf, size_t count) {
 	return write(handle->native->fd, buf, count);
 }

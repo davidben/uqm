@@ -651,7 +651,7 @@ uio_lseek(uio_Handle *handle, off_t offset, int whence) {
 	return handle->root->handler->seek(handle, offset, whence);
 }
 
-int
+ssize_t
 uio_write(uio_Handle *handle, const void *buf, size_t count) {
 	if (handle->root->handler->write == NULL) {
 		errno = ENOSYS;
