@@ -114,7 +114,7 @@ I don't know what they will do to us... much less to you!
 Now get serious... please.
 
 #(know_about_deep_children)
-Tanala, have you ever heard of the `Deep Children?'
+Talana, have you ever heard of the `Deep Children?'
 
 #(WHAT_ABOUT_DEEP_CHILDREN)	syree013.ogg
 Yes, I think so. Aren't they part of the Mycon religion somehow?
@@ -148,7 +148,7 @@ Captain, if you ever gather proof of what you say, you MUST inform us immediatel
 but until then... do not mention the subject again. It is too painful.
 
 #(have_proof)
-Tanala. I have brought proof that the Mycon Deep Children destroyed your world Syra.
+Talana. I have brought proof that the Mycon Deep Children destroyed your world Syra.
 
 #(SEE_PROOF)	syree016.ogg
 Let me see this proof, Captain!
@@ -162,13 +162,13 @@ We never guessed that the fragments might be organic!
 To have survived re-entry!... nothing organic would remain!... unless
 UNLESS, it was genetically constructed for this purpose!
 AND ONLY THE MYCONS POSSESS THIS CAPABILITY!!
-We will make further tests. Genetic comparisons. Compositional analysis.
-If what you have suggested is true... THE MYCONS WILL PAY DEARLY FOR THEIR CRIMES!!!
-Now LEAVE US, Captain!
-We have work to do.
+THE MYCONS WILL PAY DEARLY FOR THEIR CRIMES!!!
+We will not sit here and do nothing while the Mycon fiends are free to roam the galaxy, perpetrating their evil.
+You wanted our cooperation in fighting the Ur-Quan. You've got it... 
+provided you first help us seek our revenge against the Mycon race... help us to destroy them!
 
 #(what_doing_here)
-So, Commander Tanala, what are you doing here?
+So, Commander Talana, what are you doing here?
 
 #(OUR_NEW_WORLD)	syree018.ogg
 When the Ur-Quan conquered us, over twenty years ago
@@ -318,7 +318,7 @@ Ha! ha! ha! Don't worry about us, Captain!
 We make out all right with just us females.
 
 #(bye)
-Goodbye, Commander Tanala. I will be back.
+Goodbye, Commander Talana. I will be back.
 
 #(GOODBYE)	syree027.ogg
 Until then, Earthling.
@@ -368,7 +368,7 @@ As soon as you arrive at the Vault, our people will take over, figure out a way 
 and bring our Penetrators back here.
 
 #(im_on_my_way)
-Very well then, Commander Tanala. I'm on my way.
+Very well then, Commander Talana. I'm on my way.
 
 #(doing_this_for_you)
 Just remember, I'm doing this for you Sweet Cakes!
@@ -481,7 +481,7 @@ and preparing some kind of defensive system for this starbase.
 If and when the Ur-Quan return here, we want to have a little surprise ready for them.
 
 #(whats_up_after_ambush)
-So, what's new Tanala?
+So, what's new Talana?
 
 #(GENERAL_INFO_AFTER_AMBUSH_1)	syree043.ogg
 Not a great deal, Captain. You seem to be the biggest source of excitement around here.
@@ -501,7 +501,7 @@ Nothing new to report, Captain.
 Nothing new to report, Captain.
 
 #(bye_after_ambush)
-Goodbye Tanala.
+Goodbye Talana.
 
 #(GOODBYE_AFTER_AMBUSH)	syree047.ogg
 Goodbye my human.
@@ -522,7 +522,7 @@ Only that the vault is at a red or maybe orange star, and not too far from our p
 Yes! We found it on the moon of Epsilon Camelopardalis I.
 
 #(bye_before_vault)
-Goodbye, Tanala. I'm off to find the vault!
+Goodbye, Talana. I'm off to find the vault!
 
 #(GOODBYE_BEFORE_VAULT)	syree051.ogg
 Good luck, Captain.
@@ -553,13 +553,13 @@ We will hide there and wait for them in ambush.
 Then we shall destroy them.
 
 #(bye_before_ambush)
-Good luck, Tanala.
+Good luck, Talana.
 
 #(GOODBYE_BEFORE_AMBUSH)	syree056.ogg
 Same to you, my human.
 
 #(what_about_us)
-I guess what I mean is... What about us, Tanala?
+I guess what I mean is... What about us, Talana?
 
 #(ABOUT_US)	syree057.ogg
 I'm afraid our duties will keep us apart, Captain
