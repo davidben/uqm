@@ -137,7 +137,7 @@ TFB_LoadImage (SDL_Surface *img)
 	if (img->format->palette)
 	{
 		int i;		
-		myImage->Palette = (SDL_Color*) HMalloc (sizeof (SDL_Color) * 256);
+		myImage->Palette = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
 		for (i = 0; i < 256; ++i)
 		{
 			myImage->Palette[i].r = img->format->palette->colors[i].r;
@@ -587,7 +587,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 					}
 					else
 					{
-						SDL_SetColors (surf, DC_image->Palette, 0, 256);
+						SDL_SetColors (surf, (SDL_Color*)DC_image->Palette, 0, 256);
 					}
 				}
 

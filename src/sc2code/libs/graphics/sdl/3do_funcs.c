@@ -23,6 +23,7 @@
 #include "opengl.h"
 #include "primitives.h"
 #include "graphics/drawcmd.h"
+#include "graphics/tfb_draw.h"
 
 int batch_depth = 0;
 static const BOOLEAN pausing_transition = TRUE; // change to FALSE for non-pausing version
@@ -76,7 +77,7 @@ UnbatchGraphics (void)
 void
 FlushGraphics ()
 {
-	TFB_Draw_WaitForSignal ();
+	TFB_DrawScreen_WaitForSignal ();
 }
 
 // Status: Ignored (only used in fmv.c)
@@ -174,13 +175,13 @@ ScreenTransition (int TransType, PRECT pRect)
 void
 DrawFromExtraScreen (PRECT r) //No scaling?
 {
-	TFB_Draw_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
+	TFB_DrawScreen_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
 }
 
 void
 LoadIntoExtraScreen (PRECT r)
 {
-	TFB_Draw_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
+	TFB_DrawScreen_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }
 
 // Status: Ignored

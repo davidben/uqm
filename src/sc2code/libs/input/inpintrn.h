@@ -57,7 +57,12 @@ typedef PINPUT_DESC INPUT_DESCPTR;
 
 #define INPUT_DEVICE_PRIORITY DEFAULT_MEM_PRIORITY
 
+#ifndef _DISPLIST_H
+/* This ifndef is temporary to avoid a collision with displist.h
+   This shouldn't be necessary, but SDL_wrappper.h isn't set up correctly
+   at the moment. */
 typedef PBYTE BYTEPTR;
+#endif
 
 #define AllocInputDevice() \
 		(INPUT_DEVICE)mem_allocate ((MEM_SIZE)sizeof (INPUT_DESC), \

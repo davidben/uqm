@@ -24,6 +24,7 @@
 #include "SDL_byteorder.h"
 
 #include "libs/graphics/gfxintrn.h"
+#include "libs/graphics/tfb_draw.h"
 #include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/input/sdl/input.h"
@@ -45,19 +46,6 @@ extern int GfxFlags;
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
 
-// TFB_ImageStruct will be casted to this and vice versa, so sizes must be equal
-typedef struct tfb_image
-{
-	SDL_Surface *NormalImg;
-	SDL_Surface *ScaledImg;
-	SDL_Color *Palette;
-	int colormap_index;
-	int scale;
-	Mutex mutex;
-	UBYTE pad[sizeof(TFB_ImageStruct)-sizeof(SDL_Surface*)-sizeof(SDL_Surface*)-
-		sizeof(SDL_Color*)-sizeof(int)-sizeof(int)-sizeof(Mutex)];
-} TFB_Image;
-
 TFB_Image *TFB_LoadImage (SDL_Surface *img);
 void TFB_FreeImage (TFB_Image *img);
 
@@ -65,6 +53,5 @@ void TFB_SwapBuffers ();
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
 void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 					  SDL_Rect *dstrect, int blend_numer, int blend_denom);
-
 
 #endif

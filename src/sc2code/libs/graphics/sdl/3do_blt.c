@@ -20,6 +20,7 @@
 
 #include "sdl_common.h"
 #include "rotozoom.h"
+#include "graphics/tfb_draw.h"
 
 static int gscale;
 
@@ -99,7 +100,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 					else
 					{
 						img->ScaledImg = new_surf;
-						SDL_SetColors (img->ScaledImg, img->Palette, 0, 256);
+						SDL_SetColors (img->ScaledImg, (SDL_Color *)img->Palette, 0, 256);
 						if (img->NormalImg->flags & SDL_SRCCOLORKEY)
 						{
 							SDL_SetColorKey (img->ScaledImg, SDL_SRCCOLORKEY, 
@@ -144,14 +145,14 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		UnlockMutex (img->mutex);
 		if (filled)
 		{
-			TFB_Draw_FilledImage ((TFB_ImageStruct *)img, x, y,
+			TFB_DrawScreen_FilledImage (img, x, y,
 					      scaled, palette[0].r, 
 					      palette[0].g, palette[0].b,
 					      TFB_SCREEN_MAIN);
 		}
 		else
 		{
-			TFB_Draw_Image ((TFB_ImageStruct *)img, x, y, scaled,
+			TFB_DrawScreen_Image (img, x, y, scaled,
 					(paletted ? palette : NULL),
 					TFB_SCREEN_MAIN);
 		}
@@ -212,7 +213,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 					rect.extent.height) >> 1;
 		}
 
-		TFB_Draw_Rect (&rect, r, g, b, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Rect (&rect, r, g, b, TFB_SCREEN_MAIN);
 	}
 	else
 	{
@@ -262,7 +263,7 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
-		TFB_Draw_Line (x1, y1, x2, y2, r, g, b, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Line (x1, y1, x2, y2, r, g, b, TFB_SCREEN_MAIN);
 	}
 	else
 	{
@@ -283,9 +284,9 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 	}
 	else
 	{
-		TFB_ImageStruct *img = (TFB_ImageStruct *) ((BYTE *) DstFramePtr +
+		TFB_Image *img = (TFB_Image *) ((BYTE *) DstFramePtr +
 				DstFramePtr->DataOffs);
-		TFB_Draw_CopyToImage (img, lpRect, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_CopyToImage (img, lpRect, TFB_SCREEN_MAIN);
 	}
 }
 

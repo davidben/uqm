@@ -19,6 +19,8 @@
 #ifndef DRAWCMD_H
 #define DRAWCMD_H
 
+#include "graphics/tfb_draw.h"
+
 enum
 {
 	TFB_DRAWCOMMANDTYPE_LINE,
@@ -53,7 +55,7 @@ typedef struct tfb_dc_rect
 
 typedef struct tfb_dc_img
 {
-	TFB_ImageStruct *image;
+	TFB_Image *image;
 	int x, y;
 	int BlendNumerator, BlendDenominator;
 	SCREEN destBuffer;
@@ -63,7 +65,7 @@ typedef struct tfb_dc_img
 
 typedef struct tfb_dc_filledimg
 {
-	TFB_ImageStruct *image;
+	TFB_Image *image;
 	int x, y;
 	int r, g, b;
 	int BlendNumerator, BlendDenominator;
@@ -80,7 +82,7 @@ typedef struct tfb_dc_copy
 
 typedef struct tfb_dc_copyimg
 {
-	TFB_ImageStruct *image;
+	TFB_Image *image;
 	int x, y, w, h;
 	int BlendNumerator, BlendDenominator;
 	SCREEN srcBuffer;
@@ -99,7 +101,7 @@ typedef struct tfb_dc_setpal
 
 typedef struct tfb_dc_delimg
 {
-	TFB_ImageStruct *image;
+	TFB_Image *image;
 } TFB_DrawCommand_DeleteImage;
 
 typedef struct tfb_dc_signal
