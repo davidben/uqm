@@ -21,7 +21,7 @@
 
 bool TFB_InitVideoPlayer (void);
 void TFB_UninitVideoPlayer (void);
-void TFB_FadeClearScreen ();
+void TFB_FadeClearScreen (void);
 bool TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y);
 void TFB_StopVideo (VIDEO_REF VidRef);
 bool TFB_VideoPlaying (VIDEO_REF VidRef);

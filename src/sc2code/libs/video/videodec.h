@@ -30,7 +30,7 @@ typedef struct tfb_videodecoderfunc
 {
 	const char* (* GetName) (void);
 	bool (* InitModule) (int flags);
-	void (* TermModule) ();
+	void (* TermModule) (void);
 	uint32 (* GetStructSize) (void);
 	int (* GetError) (THIS_PTR);
 	bool (* Init) (THIS_PTR, TFB_PixelFormat* fmt);

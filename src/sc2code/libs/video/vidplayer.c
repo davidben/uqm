@@ -60,7 +60,7 @@ typedef struct
 } VIDEO_INPUT_STATE;
 
 bool
-TFB_InitVideoPlayer ()
+TFB_InitVideoPlayer (void)
 {
 	// creation probably needs better handling
 	vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock",
@@ -69,13 +69,13 @@ TFB_InitVideoPlayer ()
 }
 
 void
-TFB_UninitVideoPlayer ()
+TFB_UninitVideoPlayer (void)
 {
 	DestroySemaphore (vp_interthread_lock);
 }
 
 void
-TFB_FadeClearScreen ()
+TFB_FadeClearScreen (void)
 {
 	BYTE xform_buf[1];
 	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
@@ -522,3 +522,4 @@ vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer)
 	TFB_TagBuffer (sample, buffer,
 			(void*) SoundDecoder_GetFrame (sample->decoder));
 }
+
