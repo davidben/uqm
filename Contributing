@@ -27,7 +27,7 @@ Making changes:
   Trying to start a discussion about the standard is pointless and is
   definately NOT appreciated.
   - Use 1 tab per indentation level
-  - Use about 70 chars (or less) on a line, when using a tabsize of 4.
+  - Use no more than 76 chars on a line, when using a tabsize of 4.
   - Use 2 extra indentation levels for the continuation of a broken line,
     like this:
     if (blablablabla || foobar ||
