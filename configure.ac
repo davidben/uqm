@@ -73,8 +73,8 @@ AM_PATH_SMPEG($SMPEG_VERSION, , AC_MSG_ERROR([*** smpeg version $SMPEG_VERSION n
 AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
 AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR([Your system is missing libSDL_image!]),`sdl-config --libs`)
 AC_CHECK_LIB(smpeg, main, , AC_MSG_ERROR([Your system is missing libsmpeg!]),`smpeg-config --libs`)
-AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
-AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR([Your system is missing SDL_mixer.h!]))
+#AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
+#AC_CHECK_HEADERS(SDL/SDL_mixer.h, , AC_MSG_ERROR([Your system is missing SDL_mixer.h!]))
 
 # Select platform dependent OpenGL libs.. (tweak your platform here)
 case "$target" in
@@ -91,6 +91,13 @@ case "$target" in
     *-*-darwin*)
         SYS_GL_LIBS=""
         ;;
+    *-*-freebsd*)
+        AC_PATH_X
+	if test x$no_x != xyes; then
+            CFLAGS="$CFLAGS -L $x_libraries"
+        fi
+	SYS_GL_LIBS="-lGL"
+	;;
     *)
         if test x$have_x = xyes; then
             CFLAGS="$CFLAGS $X_CFLAGS"

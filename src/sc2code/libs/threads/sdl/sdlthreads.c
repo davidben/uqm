@@ -20,8 +20,8 @@
 #include "sdlthreads.h"
 
 #if defined(PROFILE_THREADS) && !defined(WIN32)
-#include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #endif
 
 #ifdef PROFILE_THREADS
