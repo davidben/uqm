@@ -1,0 +1,220 @@
+#!/bin/sh
+# Installation program for binaries.
+# By Serge van den Boom, 2002-11-26
+
+CONTENT_FILES="@CONTENT_FILES@"
+
+quithandler() {
+	echo
+	echo "Bye."
+	trap INT
+	kill -INT $$
+}
+
+trap quithandler INT
+
+cat << EOF
+-== The Ur-Quan Masters installation ==-
+
+Hi, I'm your friendly neighbourhood installation program.
+I will make you very happy, but first, we've got some business to take care
+of.
+
+EOF
+
+CONTENT_FILE=""
+have_content_file() {
+	for FILE in $CONTENT_FILES; do
+		if [ -r "$CONTENT_PATH$FILE" ]; then
+			CONTENT_FILE="$FILE"
+			return 0
+		fi
+	done
+	return 1
+}
+
+CONTENT_PATH="./"
+have_content_file
+if [ "$?" -ne 0 ]; then
+	cat << EOF
+I need a content .tgz package and I can't find one in
+the $CONTENT_PATH dir. I really can't work without it.
+If you don't have it, please press CTRL-C and quickly get it, before I get
+swapped out.
+EOF
+	echo -n "Otherwise, please tell me where you've hidden it: "
+	while :; do
+		read CONTENT_PATH
+		CONTENT_PATH="${CONTENT_PATH%/}/"
+		have_content_file && break
+		echo "There's nothing there, I tell you."
+		echo -n "Guess again: " 
+	done
+	echo "Yay! Found it."
+	echo
+fi
+CONTENT_FILE="$CONTENT_PATH$CONTENT_FILE"
+
+PAGER="${PAGER:-more}"
+type "$PAGER" > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	echo "I can't find a good pager. I need one. That's all folks."
+	exit 1
+fi
+
+echo "I need to show you something. I don't want to, but I have to."
+echo "Press enter when you're ready."
+read TEMP
+
+$PAGER << "EOF"
+@LICENCE@
+EOF
+echo "That's hard reading, isn't it? But it's pretty important stuff. "
+echo -n "Now, the big question is, do you agree to it? "
+while :; do
+	read TEMP
+	case "$TEMP" in
+		[yY][eE][sS]|[aA][gG][rR][eE][eE])
+			echo "Good. Now we can be friends."
+			break
+			;;
+		[nN][oO])
+			cat << EOF
+No? You're sure you didn't mean 'yes'? You do realise I can't let you pass
+now? Oh well, come back if you change your mind. I'm not going anywhere.
+I AM not going anywere, right?
+EOF
+			exit 0
+			;;
+		*)
+			echo -n "Hmm... Please type 'Yes' or 'No': "
+			;;
+	esac
+done
+echo
+
+if [ "$(id -u)" -eq "0" ]; then
+	INSTALL_BASE=/usr/local/games/
+else
+	INSTALL_BASE="$HOME/uqm/"
+fi
+echo "I've got a lot of files, and I need somewhere to put them. "
+echo "My invisible friend tells me $INSTALL_BASE is a good place."
+echo "I would put an executable there in a bin/ dir and a lot of junk "
+echo "together in a subdir under lib/"
+echo -n "But you're the boss, so where shall I put them [$INSTALL_BASE]? "
+while :; do
+	read TEMP
+	echo
+	if [ "$TEMP" = "/dev/null" ]; then
+		echo "Ok, done. That was quick, wasn't it? Well, have fun."
+		echo
+		exit 0
+	fi
+
+	if [ -z "$TEMP" ]; then
+		TEMP="$INSTALL_BASE"
+	else
+		TEMP="${TEMP%/}/"
+	fi
+
+	if [ ! -d "$TEMP" ]; then
+cat << EOF
+There's no such directory. If you want me to stuff it all in /dev/null,
+just say so. No need to toy with me.
+Then again, I could create that directory for you.
+EOF
+		echo -n "Would you like that? "
+
+		read TEMP2
+		echo
+		case "$TEMP2" in
+			y|Y|yes|Yes|YES)
+				mkdir -p "$TEMP" 2> /dev/null
+				if [ "$?" -gt 0 ]; then
+					cat << EOF
+I cannot do it, captain! I don't have enough power!
+Erm... I mean 'permission denied'. Sorry about that.
+I guess we'll need to find another place.
+EOF
+					echo -n "So what shall it be [$INSTALL_BASE]? "
+				else
+					cat << EOF
+Ok, I've created that dir for you, even though it isn't in my job
+description. Now let's get on with the copying.
+EOF
+					INSTALL_BASE="$TEMP"
+					break;
+				fi
+				;;
+			n|N|no|No|NO)
+				echo "Great! That saves me some work."
+				echo "Then where DO you want me to put my files?"
+				echo "I promise I'll handle them with care."
+				echo -n "[$INSTALL_BASE]? "
+				;;
+			*)
+				echo "I'll take that as a 'no'."
+				echo -n "So, where should I put my files [$INSTALL_BASE]? "
+				;;
+		esac
+		continue
+	fi
+
+	if [ ! -w "$TEMP" ]; then
+cat << EOF
+Ooh, a very fine place indeed. Unfortunately it's not your fine place.
+You can't write there, and for some strange cosmological coincidence,
+neither can I. I think we need another place."
+EOF
+		echo -n "So, what shall it be [$INSTALL_BASE]? "
+		continue
+	fi
+	INSTALL_BASE="$TEMP"
+	break
+done
+cat << EOF
+$INSTALL_BASE it is. I can work with that.
+
+EOF
+
+cat << EOF
+Ok, I'm ready now to start filling your hard drive.
+It might take some time though, so don't hold your breath.
+On second thought, DO hold your breath, I like the colour blue.
+Orange too, for that matter, but I don't think you can manage that.
+EOF
+echo -n "Ready? Just say the word. Any word will do: "
+read TEMP
+echo "A word as good as any."
+echo
+
+echo "Making directories..."
+mkdir -p -- "$INSTALL_BASE"/lib/uqm 2> /dev/null
+mkdir -p -- "$INSTALL_BASE"/bin 2> /dev/null
+
+echo "Unpacking content..."
+tar -xzf "$CONTENT_FILE" -C "$INSTALL_BASE"lib/uqm
+
+echo "Unpacking other stuff..."
+tail -c @ATTACHLEN@ < "$0" | tar -xzf - -C "$INSTALL_BASE"lib/
+
+echo "Creating wrapper script..."
+cat << EOF > "$INSTALL_BASE"bin/uqm
+#!/bin/sh
+# Wrapper script for starting The Ur-Quan Masters
+"${INSTALL_BASE}lib/uqm/uqm" "--contentdir=${INSTALL_BASE}lib/uqm/content" "\$@"
+EOF
+chmod 755 "$INSTALL_BASE"bin/uqm
+
+cat << EOF
+All done. Now you can play The Ur-Quan masters.
+I told you I was going to make you very happy.
+And if you're looking for documentation, you can find some in
+${INSTALL_BASE}lib/uqm/doc/. If you aren't looking for documentation, too.
+But feel free to delete them. You know where to find them.
+EOF
+
+exit 0
+
+
