@@ -1,7 +1,7 @@
 This is the format for resources of type STRTAB. It contains a number of
 items of unspecified data (not necessarilly strings).
 This is used for game strings (extension .txt), colour tables (.ct),
-and colour translation tables (.xlt).
+colour translation tables (.xlt), and sound-effect tables (.snd)
 
 Everything is stored MSB first unless otherwise specified.
 
@@ -37,3 +37,10 @@ For .ct files an item is as follows:
 The full palette contains 256 values, which are the original 32 values
     multiplied by 1 to 8.
 
+
+For .snd files an item is as follows:
+           N-2     Signed, 8-bit, 1 channel PCM samples of the sound
+                   effect, where N = (length of string)
+           2       Sampling frequency of the sound, *LSB first*
+                   (the frequencies themselves seem to be remnants of
+                    the DOS version)
