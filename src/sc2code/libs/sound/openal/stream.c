@@ -1,21 +1,21 @@
 /*
-*  This program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with this program; if not, write to the Free Software
-*  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 /* By Mika Kolehmainen, 2002-10-23
-*/
+ */
 
 #ifdef SOUNDMODULE_OPENAL
 
@@ -25,38 +25,39 @@ BOOLEAN speech_advancetrack = FALSE;
 
 
 void
-PlayStream (TFB_SoundSample *sample, ALuint source, BOOLEAN looping)
+PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
 {	
-	int i;
-	ALenum format = DetermineALFormat (sample->decoder);
+	ALuint i;
+
+	if (!sample)
+		return;
 
 	StopStream (source);
 
-	Sound_Rewind (sample->decoder);
+	SoundDecoder_Rewind (sample->decoder);
 	soundSource[source].sample = sample;
+	soundSource[source].sample->decoder->looping = looping;
 
 	alSourcei (soundSource[source].handle, AL_LOOPING, AL_FALSE);
 
-	for (i = 0; i < NUM_SOUNDBUFFERS; ++i)
+	for (i = 0; i < sample->num_buffers; ++i)
 	{
-		Uint32 decoded_bytes;
+		ALuint decoded_bytes;
 
-		if (sample->decoder->flags & SOUND_SAMPLEFLAG_EOF ||
-			sample->decoder->flags & SOUND_SAMPLEFLAG_ERROR)
-			break;
-
-		decoded_bytes = Sound_Decode (sample->decoder);
+		decoded_bytes = SoundDecoder_Decode (sample->decoder);
 		//fprintf (stderr, "PlayStream(): source %d sample %x decoded_bytes %d\n", source, sample, decoded_bytes);
 		if (decoded_bytes == 0)
 			break;
 
-		alBufferData (sample->buffer[i], format, sample->decoder->buffer, 
-			decoded_bytes, sample->decoder->actual.rate);
+		alBufferData (sample->buffer[i], sample->decoder->format, sample->decoder->buffer, 
+			decoded_bytes, sample->decoder->frequency);
 
 		alSourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
+
+		if (sample->decoder->error)
+			break;
 	}
 
-	soundSource[source].stream_looping = looping;
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
 }
@@ -73,12 +74,14 @@ StopStream (ALuint source)
 	alGetSourcei (soundSource[source].handle, AL_BUFFERS_PROCESSED, &processed);
 	alGetSourcei (soundSource[source].handle, AL_BUFFERS_QUEUED, &queued);
 
-	//fprintf (stderr, "StopStream(): source %d processed %d queued %d NUM_SOUNDBUFFERS %d\n", 
-	//	source, processed, queued, NUM_SOUNDBUFFERS);
-
-	buffer = (ALuint *) HMalloc (sizeof (ALuint) * processed);
-	alSourceUnqueueBuffers (soundSource[source].handle, processed, buffer);
-	HFree (buffer);
+	//fprintf (stderr, "StopStream(): source %d processed %d queued %d num_buffers %d\n", source, processed, queued, soundSource[source].sample->num_buffers);
+	
+	if (processed != 0)
+	{
+		buffer = (ALuint *) HMalloc (sizeof (ALuint) * processed);
+		alSourceUnqueueBuffers (soundSource[source].handle, processed, buffer);
+		HFree (buffer);
+	}
 }
 
 void
@@ -114,8 +117,7 @@ StreamDecoderTaskFunc (void *data)
 
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
-			ALuint processed;
-			ALuint queued;
+			ALuint processed, queued;
 			ALint state;
 			ALboolean finished = AL_FALSE;
 			ALboolean do_speech_advancetrack = AL_FALSE;
@@ -125,8 +127,7 @@ StreamDecoderTaskFunc (void *data)
 			if (!soundSource[i].sample ||
 				!soundSource[i].sample->decoder ||
 				!soundSource[i].stream_should_be_playing ||
-				soundSource[i].sample->decoder->flags & SOUND_SAMPLEFLAG_EOF ||
-				soundSource[i].sample->decoder->flags & SOUND_SAMPLEFLAG_ERROR)
+				soundSource[i].sample->decoder->error == SOUNDDECODER_ERROR)
 			{
 				UnlockMutex (soundSource[i].stream_mutex);
 				continue;
@@ -138,86 +139,72 @@ StreamDecoderTaskFunc (void *data)
 				alGetSourcei (soundSource[i].handle, AL_SOURCE_STATE, &state);			
 				if (state != AL_PLAYING)
 				{
-					//fprintf (stderr, "StreamDecoderTaskFunc(): forcing alSourcePlay on %d\n", i);
-					alSourcePlay (soundSource[i].handle);
+					if (soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
+					{
+						soundSource[i].stream_should_be_playing = FALSE;
+						if (i == SPEECH_SOURCE && speech_advancetrack)
+						{
+							do_speech_advancetrack = AL_TRUE;
+						}
+					}
+					else
+					{
+						fprintf (stderr, "StreamDecoderTaskFunc(): buffer underrun when playing %s, source %d\n", soundSource[i].sample->decoder->filename, i);
+						alSourcePlay (soundSource[i].handle);
+					}
 				}
 			}
-
-			alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
-            if (queued != NUM_SOUNDBUFFERS)
-            {
-                fprintf (stderr, "StreamDecoderTaskFunc(): warning, queued %d != NUM_SOUNDBUFFERS %d\n",
-                    queued, NUM_SOUNDBUFFERS);
-            }
             
+			alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
 			//fprintf (stderr, "StreamDecoderTaskFunc(): source %d, processed %d queued %d\n", i, processed, queued);
 
 			while (processed && !finished)
 			{
-				ALenum format, error;
+				ALenum error;
 				ALuint buffer;
-				Uint32 decoded_bytes;
+				ALuint decoded_bytes;
 
 				alGetError (); // clear error state
 
 				alSourceUnqueueBuffers (soundSource[i].handle, 1, &buffer);
 				if ((error = alGetError()) != AL_NO_ERROR)
 				{
-					fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceUnqueueBuffers: %x, source %d\n", error, i);
+					fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceUnqueueBuffers: %x, file %s, source %d\n", error, soundSource[i].sample->decoder->filename, i);
 					break;
 				}
-
-				decoded_bytes = Sound_Decode (soundSource[i].sample->decoder);
-                //fprintf (stderr, "StreamDecoderTaskFunc(): decoded_bytes %d, source %d\n", decoded_bytes, i);
-
-				if (soundSource[i].sample->decoder->flags & SOUND_SAMPLEFLAG_EOF)
+				if (soundSource[i].sample->decoder->error)
 				{
-					if (i == SPEECH_SOURCE && speech_advancetrack)
+					if (soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
 					{
-						finished = AL_TRUE;
-						soundSource[i].stream_should_be_playing = FALSE;
-						do_speech_advancetrack = AL_TRUE;
+						//fprintf (stderr, "StreamDecoderTaskFunc(): decoder->error is eof for %s\n", soundSource[i].sample->decoder->filename);
 					}
 					else
 					{
-						if (soundSource[i].stream_looping)
-						{
-							if ((Sound_Rewind (soundSource[i].sample->decoder)) == 0)
-							{
-								fprintf (stderr, "StreamDecoderTaskFunc(): Sound_Rewind error %s, source %d\n",
-									Sound_GetError(), i);
-								finished = AL_TRUE;
-								soundSource[i].stream_should_be_playing = FALSE;
-							}
-							else if (decoded_bytes == 0)
-							{
-								decoded_bytes = Sound_Decode (soundSource[i].sample->decoder);
-							}
-						}
-						else
-						{
-							finished = AL_TRUE;
-							soundSource[i].stream_should_be_playing = FALSE;
-						}
+						//fprintf (stderr, "StreamDecoderTaskFunc(): decoder->error is %d for %s\n", soundSource[i].sample->decoder->error, soundSource[i].sample->decoder->filename);
 					}
+					processed--;
+					continue;
 				}
-				else if (soundSource[i].sample->decoder->flags & SOUND_SAMPLEFLAG_ERROR)
+
+				decoded_bytes = SoundDecoder_Decode (soundSource[i].sample->decoder);
+				if (soundSource[i].sample->decoder->error == SOUNDDECODER_ERROR)
 				{
-					fprintf (stderr, "StreamDecoderTaskFunc(): Sound_Decode error %s, source %d\n",
-						Sound_GetError(), i);
+					fprintf (stderr, "StreamDecoderTaskFunc(): SoundDecoder_Decode error %d, file %s, source %d\n", soundSource[i].sample->decoder->error, soundSource[i].sample->decoder->filename, i);
 					soundSource[i].stream_should_be_playing = FALSE;
-					break;
+					processed--;
+					continue;
 				}
 
 				if (decoded_bytes > 0)
 				{
-					format = DetermineALFormat (soundSource[i].sample->decoder);
-					alBufferData (buffer, format, soundSource[i].sample->decoder->buffer,
-						decoded_bytes, soundSource[i].sample->decoder->actual.rate);
+					alBufferData (buffer, soundSource[i].sample->decoder->format, 
+						soundSource[i].sample->decoder->buffer, decoded_bytes, 
+						soundSource[i].sample->decoder->frequency);
 
 					if ((error = alGetError()) != AL_NO_ERROR)
 					{
-						fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alBufferData: %x, source %d, decoded_bytes %d\n", error, i, decoded_bytes);
+						fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alBufferData: %x, file %s, source %d, decoded_bytes %d\n", 
+							error, soundSource[i].sample->decoder->filename, i, decoded_bytes);
 						finished = AL_TRUE;
 					}
 					else
@@ -226,7 +213,8 @@ StreamDecoderTaskFunc (void *data)
 
 						if ((error = alGetError()) != AL_NO_ERROR)
 						{
-							fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceQueueBuffers: %x, source %d, decoded_bytes %d\n", error, i, decoded_bytes);
+							fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceQueueBuffers: %x, file %s, source %d, decoded_bytes %d\n", 
+								error, i, soundSource[i].sample->decoder->filename, decoded_bytes);
 							finished = AL_TRUE;
 						}
 					}

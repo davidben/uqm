@@ -156,20 +156,22 @@ _GetMusicData (FILE *fp, DWORD length)
             }
 
             fprintf (stderr, "_GetMusicData(): loading %s\n", filename);                        			
-			if (((*pmus)->decoder = Sound_NewSampleFromFile (filename, NULL, 4096)) == 0)
+			if (((*pmus)->decoder = SoundDecoder_Load (filename, 16384)) == 0)
 			{
 				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
 
 				UnlockMusicData (h);
 				mem_release (h);
 				h = 0;
-				HFree (*pmus);
 			}
 			else
 			{
-				fprintf (stderr, "decoder %s rate %d channels %d\n", (*pmus)->decoder->decoder->description, 
-					(*pmus)->decoder->actual.rate, (*pmus)->decoder->actual.channels);
-				alGenBuffers (NUM_SOUNDBUFFERS, (*pmus)->buffer);
+				fprintf (stderr, "    decoder: %s, rate %d format %x\n", (*pmus)->decoder->decoder_info,
+					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
+
+				(*pmus)->num_buffers = 16;
+				(*pmus)->buffer = (ALuint *) HMalloc (sizeof (ALuint) * (*pmus)->num_buffers);
+				alGenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 			}
 		}
 
@@ -199,8 +201,9 @@ _ReleaseMusicData (MEM_HANDLE handle)
 		}
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 
-		Sound_FreeSample ((*pmus)->decoder);
-		alDeleteBuffers (NUM_SOUNDBUFFERS, (*pmus)->buffer);
+		SoundDecoder_Free ((*pmus)->decoder);
+		alDeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
+		HFree ((*pmus)->buffer);
 	}
 	HFree (*pmus);
 

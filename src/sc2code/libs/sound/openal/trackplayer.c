@@ -153,8 +153,9 @@ StopTrack ()
 		{
 			if (track_clip[tct].sample->decoder)
 			{
-				Sound_FreeSample (track_clip[tct].sample->decoder);
-				alDeleteBuffers (NUM_SOUNDBUFFERS, track_clip[tct].sample->buffer);
+				SoundDecoder_Free (track_clip[tct].sample->decoder);
+				alDeleteBuffers (track_clip[tct].sample->num_buffers, track_clip[tct].sample->buffer);
+				HFree (track_clip[tct].sample->buffer);
 			}
 			HFree (track_clip[tct].sample);
 			track_clip[tct].sample = 0;
@@ -199,21 +200,22 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText)
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
 
 			track_clip[tct].sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			track_clip[tct].sample->decoder = Sound_NewSampleFromFile (TrackName, NULL, 4096);
+			track_clip[tct].sample->decoder = SoundDecoder_Load (TrackName, 4096);
 			
 			if (track_clip[tct].sample->decoder)
 			{
-				fprintf (stderr, "decoder %s rate %d channels %d\n",
-					track_clip[tct].sample->decoder->decoder->description, 
-					track_clip[tct].sample->decoder->actual.rate, 
-					track_clip[tct].sample->decoder->actual.channels);
+				fprintf (stderr, "    decoder: %s, rate %d format %x\n",
+					track_clip[tct].sample->decoder->decoder_info,
+					track_clip[tct].sample->decoder->frequency,
+					track_clip[tct].sample->decoder->format);
 				
-				alGenBuffers (NUM_SOUNDBUFFERS, track_clip[tct].sample->buffer);
+				track_clip[tct].sample->num_buffers = 8;
+				track_clip[tct].sample->buffer = HMalloc (sizeof (ALuint) * track_clip[tct].sample->num_buffers);
+				alGenBuffers (track_clip[tct].sample->num_buffers, track_clip[tct].sample->buffer);
 			}
 			else
 			{
-				fprintf (stderr, "SpliceTrack(): couldn't load %s: %s\n", 
-					TrackName, Sound_GetError());
+				fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
 				HFree (track_clip[tct].sample);
 				track_clip[tct].sample = NULL;
 			}

@@ -20,17 +20,19 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
+
+#ifdef WIN32
+#include <SDL_mixer.h>
+#pragma comment (lib, "SDL_mixer.lib")
+#else
 #include <SDL/SDL_mixer.h>
+#endif
 
 int 
-TFB_InitSound (int driver, int flags, int frequency)
+TFB_InitSound (int driver, int flags)
 {
-	// NOTE: SDL_sound should be compiled without mikmod support
-	//       or potential lockup occurs because both
-	//       SDL_mixer and SDL_sound try to initialize it
-
 	char SoundcardName[256];
-	int audio_rate,audio_channels;
+	int audio_rate, audio_channels, audio_bufsize;
 	Uint16 audio_format;
 	SDL_version compile_version;
 
@@ -42,20 +44,40 @@ TFB_InitSound (int driver, int flags, int frequency)
 	}
 	fprintf (stderr, "SDL audio subsystem initialized.\n");
 	
+	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
+	{
+		audio_rate = 44100;
+		audio_channels = 2;
+		audio_bufsize = 2048;
+	}
+	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
+	{
+		audio_rate = 22050;
+		audio_channels = 2;
+		audio_bufsize = 1024;
+	}
+	else
+	{
+		audio_rate = 44100;
+		audio_channels = 2;
+		audio_bufsize = 2048;
+	}
+
 	fprintf (stderr, "Initializing SDL_mixer.\n");
-	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 2048))
+	if (Mix_OpenAudio(audio_rate, AUDIO_S16, audio_channels, audio_bufsize))
 	{
 		fprintf (stderr, "Unable to open audio: %s\n", Mix_GetError());
 		exit (-1);
 	}
 	fprintf (stderr, "SDL_mixer initialized.\n");
-	atexit (Mix_CloseAudio);
+	
+	atexit (TFB_UninitSound);
 	
 	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
 	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
 	fprintf (stderr, "    opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
 			SoundcardName, audio_rate, audio_format & 0xFF,
-			audio_channels > 1 ? "stereo" : "mono", 2048);
+			audio_channels > 1 ? "stereo" : "mono", audio_bufsize);
 	MIX_VERSION (&compile_version);
 	fprintf (stderr, "    compiled with SDL_mixer version: %d.%d.%d\n",
 			compile_version.major,
@@ -69,6 +91,11 @@ TFB_InitSound (int driver, int flags, int frequency)
 	return 0;
 }
 
+void
+TFB_UninitSound (void)
+{
+	Mix_CloseAudio ();
+}
 
 //Status: Unimplemented
 void

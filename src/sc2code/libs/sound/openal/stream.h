@@ -20,7 +20,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-void PlayStream (TFB_SoundSample *sample, ALuint source, BOOLEAN looping);
+void PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping);
 void StopStream (ALuint source);
 void PauseStream (ALuint source);
 void ResumeStream (ALuint source);

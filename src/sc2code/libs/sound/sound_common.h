@@ -26,9 +26,11 @@ enum
 };
 
 // flags for TFB_InitSound
-//#define TFB_SOUNDFLAGS_ETC (1<<0)
+#define TFB_SOUNDFLAGS_HQAUDIO (1<<0) // high quality audio
+#define TFB_SOUNDFLAGS_MQAUDIO (1<<1) // medium quality audio
+#define TFB_SOUNDFLAGS_LQAUDIO (1<<2) // low quality audio
 
-int TFB_InitSound (int driver, int flags, int frequency);
+int TFB_InitSound (int driver, int flags);
 void TFB_UninitSound (void);
 
 extern int musicVolume;

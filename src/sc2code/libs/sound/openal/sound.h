@@ -17,23 +17,23 @@
 /* OpenAL specific code by Mika Kolehmainen, 2002-10-23
  */
 
-#include "libs/strings/strintrn.h"
-#include "libs/sound/sndintrn.h"
-#include "libs/graphics/sdl/sdl_common.h"
-#include "libs/sound/sound_common.h"
-
 #ifdef WIN32
 #include <al.h>
 #include <alc.h>
-#include <SDL_sound.h>
+#pragma comment (lib, "OpenAL32.lib")
 #else
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <SDL/SDL_sound.h>
 #endif
 
+#include "starcon.h"
+#include "misc.h"
+#include "libs/strings/strintrn.h"
+#include "libs/sound/sndintrn.h"
+#include "libs/sound/sound_common.h"
+#include "decoders/decoder.h"
 
-#define NUM_SOUNDBUFFERS 10
+
 #define FIRST_SFX_SOURCE 0
 #define LAST_SFX_SOURCE 4
 #define MUSIC_SOURCE (LAST_SFX_SOURCE + 1)
@@ -43,8 +43,9 @@
 // audio data
 typedef struct tfb_soundsample
 {
-	Sound_Sample *decoder; // if != NULL, sound is streamed
-	ALuint buffer[NUM_SOUNDBUFFERS]; // if not streamed, only buffer[0] is used
+	TFB_SoundDecoder *decoder; // if != NULL, sound is streamed
+	ALuint *buffer;
+	ALuint num_buffers;
 } TFB_SoundSample;
 
 // equivalent to channel in legacy sound code
@@ -52,7 +53,6 @@ typedef struct tfb_soundsource
 {
 	TFB_SoundSample *sample;
 	ALuint handle;
-	BOOLEAN stream_looping;
 	BOOLEAN stream_should_be_playing;
 	Mutex stream_mutex;
 } TFB_SoundSource;
@@ -65,7 +65,6 @@ extern ALfloat listenerVel[]; // listener velocity (3 floats)
 extern ALfloat listenerOri[]; // listener orientation (two 3 float vectors, "look at" and "up")
 extern TFB_SoundSource soundSource[];
 
-ALenum DetermineALFormat (Sound_Sample *sample);
 void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
 

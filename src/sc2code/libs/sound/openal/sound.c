@@ -31,7 +31,7 @@ static Task StreamDecoderTask;
 
 
 int 
-TFB_InitSound (int driver, int flags, int frequency)
+TFB_InitSound (int driver, int flags)
 {
 	int i;
 	
@@ -64,34 +64,12 @@ TFB_InitSound (int driver, int flags, int frequency)
 	fprintf (stderr, "    renderer:    %s\n", alGetString (AL_RENDERER));
 	fprintf (stderr, "    device:      %s\n",
 		alcGetString (alcDevice, ALC_DEFAULT_DEVICE_SPECIFIER));
-    fprintf (stderr, "    extensions:  %s\n", alGetString (AL_EXTENSIONS));
-
-	fprintf (stderr, "Initializing SDL_sound.\n");
-	if (!Sound_Init())
-	{
-		fprintf(stderr, "SDL_sound initialization failed: %s\n", Sound_GetError());
-		exit (-1);
-	}
-	else
-	{
-		const Sound_DecoderInfo **sdi;
-		Sound_Version compiled, linked;
-
-		SOUND_VERSION (&compiled);
-		Sound_GetLinkedVersion (&linked);
-
-		fprintf (stderr, "SDL_sound initialized.\n");
-		fprintf (stderr, "    compiled version: %d.%d.%d linked version: %d.%d.%d\n",
-			compiled.major, compiled.minor, compiled.patch, 
-			linked.major, linked.minor, linked.patch);
-
-		for (sdi = Sound_AvailableDecoders(); *sdi != NULL; ++sdi)
-		{
-			fprintf (stderr, "    supported format: %s\n", 
-				(*sdi)->description);
-		}
-	}
+    //fprintf (stderr, "    extensions:  %s\n", alGetString (AL_EXTENSIONS));
 		
+	fprintf (stderr, "Initializing sound decoders.\n");
+	SoundDecoder_Init (flags);
+	fprintf (stderr, "Sound decoders initialized.\n");
+
 	alListenerfv (AL_POSITION, listenerPos);
 	alListenerfv (AL_VELOCITY, listenerVel);
 	alListenerfv (AL_ORIENTATION, listenerOri);
@@ -107,7 +85,6 @@ TFB_InitSound (int driver, int flags, int frequency)
 		alSourcefv (soundSource[i].handle, AL_DIRECTION, zero);
 		
 		soundSource[i].sample = NULL;
-		soundSource[i].stream_looping = FALSE;
 		soundSource[i].stream_should_be_playing = FALSE;
 		soundSource[i].stream_mutex = CreateMutex ();
 	}
@@ -134,6 +111,8 @@ TFB_UninitSound (void)
 	alcContext = NULL;
 	alcCloseDevice (alcDevice);
 	alcDevice = NULL;
+
+	SoundDecoder_Uninit ();
 }
 
 void
@@ -186,39 +165,6 @@ InitSound (int argc, char* argv[])
 void
 UninitSound (void)
 {
-}
-
-ALenum
-DetermineALFormat (Sound_Sample *sample)
-{
-	ALenum format;
-
-	if (sample->actual.channels == 1)
-	{
-		if (sample->actual.format == AUDIO_U8 ||
-			sample->actual.format == AUDIO_S8)
-		{
-			format = AL_FORMAT_MONO8;
-		}
-		else
-		{
-			format = AL_FORMAT_MONO16;
-		}
-	}
-	else
-	{
-		if (sample->actual.format == AUDIO_U8 ||
-			sample->actual.format == AUDIO_S8)
-		{
-			format = AL_FORMAT_STEREO8;
-		}
-		else
-		{
-			format = AL_FORMAT_STEREO16;
-		}
-	}
-
-	return format;
 }
 
 void SetSFXVolume (float volume)

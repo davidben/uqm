@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_sound.lib OpenAL32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../Content/Starcon2.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../Content/Starcon2.exe"
 
 !ELSEIF  "$(CFG)" == "Starcon2 - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"Starcon2.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib SDL_sound.lib OpenAL32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Content/Starcon2Debug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -425,6 +425,138 @@ SOURCE=..\sc2code\libs\sound\openal\stream.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\openal\trackplayer.c
+# End Source File
+# Begin Group "decoders"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\decoder.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\decoder.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\wav.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\wav.h
+# End Source File
+# Begin Group "mikmod"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\drv_nos.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\drv_openal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\load_mod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mdreg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mdriver.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod_build.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mikmod_internal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mloader.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mlreg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mlutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmerror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mmio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\munitrk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mplayer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\mwav.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\npertab.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\sloader.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\openal\decoders\mikmod\virtch_common.c
+# End Source File
+# End Group
+# End Group
+# End Group
+# Begin Group "sdlmixer"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\modfuncs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\play.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\sound.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sdl\trackplayer.c
 # End Source File
 # End Group
 # Begin Source File

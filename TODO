@@ -65,23 +65,10 @@ Glitches (don't crash the game, medium priority):
   complete battle (not just one fight). There's no permanent memory leak
   though.
 - OpenAL sound code problems:
-  - On Linux, volume control (AL_GAIN) doesn't work for streams.
-    This prevents also music fade in/out from working.
-    Most probably this is a Linux OpenAL implementation bug itself, and 
-    authors have been informed.
-  - Occasional clipping/popping/etc artifacts
-    - Maybe caused by buggy soundcard drivers also
   - Some unimplemented functions (for oscilloscope and dialogue seeking)
-  - When mod music is looping, there's some volume fade at the end of tune,
-    then it starts playing again. This shouldn't happen? (modplug only?)
-  - Stock SDL_sound package for VC is outdated and win32 users have to get
-    few new .dll's to ensure proper operation
-    - Perhaps we should integrate mikmod to our code and use vorbis libs
-      directly to avoid depending on SDL_sound at all?
-  - If OpenAL causes too many problems, reverting to SDL_mixer is easy as
-    all code is preserved related to that, etc.. but SDL_mixer is pretty
-    sucky for various reasons so I'd like to avoid that.
-
+  - Linux OpenAL implementation sucks, so for now we are using SDL_mixer
+    on that platform.
+  - Volume levels aren't maybe exactly as they should
 
 Implementation bugs (low priority):
 

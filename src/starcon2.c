@@ -51,10 +51,12 @@ main (int argc, char *argv[])
 {
 	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
 	int gfxflags = 0;
+	int soundflags = TFB_SOUNDFLAGS_MQAUDIO;
 	int width = 640, height = 480, bpp = 16;
 	int frequency = 44100;
 	int vol;
 	char contentdir[1000];
+	char str[1000];
 
 	int option_index = 0, c;
 	static struct option long_options[] = 
@@ -64,7 +66,6 @@ main (int argc, char *argv[])
 		{"fullscreen", 0, NULL, 'f'},
 		{"opengl", 0, NULL, 'o'},
 		{"bilinear", 0, NULL, 'b'},
-		{"frequency", 1, NULL, 'q'},
 		{"fps", 0, NULL, 'p'},
 		{"tv", 0, NULL, 't'},
 		{"contentdir", 1, NULL, 'c'},
@@ -74,6 +75,7 @@ main (int argc, char *argv[])
 		{"speechvol", 1, NULL, 'T'},
         {"3domusic", 0, NULL, 'e'},
         {"pcmusic", 0, NULL, 'm'},
+		{"audioquality", 1, NULL, 'q'},
 		{0, 0, 0, 0}
 	};
 
@@ -83,7 +85,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "../../content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:fobq:ptc:?hM:S:T:em", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:fob:ptc:?hM:S:T:emq:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -100,9 +102,6 @@ main (int argc, char *argv[])
 			break;
 			case 'b':
 				gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
-			break;
-			case 'q':
-				sscanf(optarg, "%d", &frequency);
 			break;
 			case 'p':
 				gfxflags |= TFB_GFXFLAGS_SHOWFPS;
@@ -143,26 +142,44 @@ main (int argc, char *argv[])
             case 'm':
                 optWhichMusic = MUSIC_PC;
             break;
+			case 'q':
+				sscanf(optarg, "%s", str);
+				if (!strcmp (str, "high"))
+				{
+					soundflags &= ~(TFB_SOUNDFLAGS_MQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
+					soundflags |= TFB_SOUNDFLAGS_HQAUDIO;
+				}
+				else if (!strcmp (str, "medium"))
+				{
+					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_LQAUDIO);
+					soundflags |= TFB_SOUNDFLAGS_MQAUDIO;
+				}
+				else if (!strcmp (str, "low"))
+				{
+					soundflags &= ~(TFB_SOUNDFLAGS_HQAUDIO|TFB_SOUNDFLAGS_MQAUDIO);
+					soundflags |= TFB_SOUNDFLAGS_LQAUDIO;
+				}
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
 			case 'h':
 				printf("\nThe Ur-Quan Masters\n");
 				printf("Options:\n");
-				printf("  -r, --res=WIDTHxHEIGHT\n");
-				printf("  -d, --bpp=BITSPERPIXEL\n");
-				printf("  -f, --fullscreen\n");
-				printf("  -o, --opengl\n");
-				printf("  -b, --bilinear\n");
-				printf("  -q, --frequency=FREQUENCY\n");
-				printf("  -p, --fps\n");
-				printf("  -t, --tv\n");
+				printf("  -r, --res=WIDTHxHEIGHT (default 640x480, others work only with --opengl)\n");
+				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
+				printf("  -f, --fullscreen (default off)\n");
+				printf("  -o, --opengl (default off, usage recommended if TNT2 or better gfx card)\n");
+				printf("  -b, --bilinear (default off, only works with --opengl)\n");
+				printf("  -p, --fps (default off)\n");
+				printf("  -t, --tv (default off, only works with --opengl\n");
 				printf("  -c, --contentdir=CONTENTDIR\n");
-				printf("  -M, --musicvol=VOLUME (0-100)\n");
-				printf("  -S, --sfxvol=VOLUME (0-100)\n");
-				printf("  -T, --speechvol=VOLUME (0-100)\n");
-                printf("  -e, --3domusic\n");
+				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
+				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
+				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
+                printf("  -e, --3domusic (default)\n");
                 printf("  -m, --pcmusic\n");
+				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
 				return 0;
 			break;
 		}
@@ -179,7 +196,7 @@ main (int argc, char *argv[])
 	mem_init ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
-	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, frequency);
+	TFB_InitSound (TFB_SOUNDDRIVER_SDL, soundflags);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
 	AssignTask (Starcon2Main, 1024, "Starcon2Main");

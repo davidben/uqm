@@ -31,10 +31,7 @@ void
 PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin, 
 			 COUNT loop_length, unsigned char priority)
 {
-	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;
-
-	//fprintf (stderr, "PlayChannel %d tfb_sample %x\n", channel, tfb_sample);
-	
+	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;	
 	soundSource[channel].sample = tfb_sample;
 	alSourceRewind (soundSource[channel].handle);
 	alSourcei (soundSource[channel].handle, AL_BUFFER, tfb_sample->buffer[0]);
@@ -138,7 +135,7 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			fprintf (stderr, "_GetSoundBankData(): loading %s\n", filename);
 
 			sndfx[snd_ct] = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			sndfx[snd_ct]->decoder = Sound_NewSampleFromFile (filename, NULL, 4096);
+			sndfx[snd_ct]->decoder = SoundDecoder_Load (filename, 4096);
 			if (!sndfx[snd_ct]->decoder)
 			{
 				fprintf (stderr, "_GetSoundBankData(): couldn't load %s\n", filename);
@@ -146,20 +143,19 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			}
 			else
 			{
-				Uint32 decoded_bytes;
-				ALenum format;
-				
-				decoded_bytes = Sound_DecodeAll (sndfx[snd_ct]->decoder);
-				//fprintf (stderr, "decoded_bytes %d\n", decoded_bytes);
-				
-				format = DetermineALFormat (sndfx[snd_ct]->decoder);
+				ALuint decoded_bytes;
 
-				alGenBuffers (NUM_SOUNDBUFFERS, sndfx[snd_ct]->buffer);
-				alBufferData (sndfx[snd_ct]->buffer[0], format, 
+				decoded_bytes = SoundDecoder_DecodeAll (sndfx[snd_ct]->decoder);
+				//fprintf (stderr, "_GetSoundBankData(): decoded_bytes %d\n", decoded_bytes);
+				
+				sndfx[snd_ct]->num_buffers = 1;
+				sndfx[snd_ct]->buffer = (ALuint *) HMalloc (sizeof (ALuint) * sndfx[snd_ct]->num_buffers);
+				alGenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
+				alBufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format, 
 					sndfx[snd_ct]->decoder->buffer, decoded_bytes,
-					sndfx[snd_ct]->decoder->actual.rate);
+					sndfx[snd_ct]->decoder->frequency);
 
-				Sound_FreeSample (sndfx[snd_ct]->decoder);
+				SoundDecoder_Free (sndfx[snd_ct]->decoder);
 				sndfx[snd_ct]->decoder = NULL;
 				
 				++snd_ct;
@@ -192,7 +188,7 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			while (snd_ct--)
 			{
 				if (sndfx[snd_ct]->decoder)
-					Sound_FreeSample (sndfx[snd_ct]->decoder);
+					SoundDecoder_Free (sndfx[snd_ct]->decoder);
 				HFree (sndfx[snd_ct]);
 			}
 
@@ -236,8 +232,9 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 		while (snd_ct--)
 		{
             if ((*sptr)->decoder)
-			    Sound_FreeSample ((*sptr)->decoder);
-			alDeleteBuffers (NUM_SOUNDBUFFERS, (*sptr)->buffer);
+			    SoundDecoder_Free ((*sptr)->decoder);
+			alDeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
+			HFree ((*sptr)->buffer);
 			HFree (*sptr);
 			*sptr++ = 0;
 		}

@@ -13,7 +13,7 @@ For Windows version:
 Microsoft Visual C++ 6 or 7
 
 Additionally, The Ur-Quan Masters requires the following libraries:
-(Dependancies can differ between different OS's)
+Note that dependancies can differ between different OS's.
 
 OpenGL v1.2 (if HAVE_OPENGL is defined, which is the default)
     Win32 users should have all by default, following is for Linux version:
@@ -28,6 +28,7 @@ SDL v1.2
 	The Simple Direct-Media Layer
 	A fairly good multiplatform low level graphics library.
 	Homepage: www.libsdl.org
+	Download: http://www.libsdl.org/download-1.2.php
 	Debian package: libsdl1.2-dev (and various runtime debs)
 
 SDL_image
@@ -44,18 +45,16 @@ SDL_mixer (Linux only)
 			  compile this directly from CVS (with ogg support):
 			  cvs -z3 -d:pserver:guest@libsdl.org:/home/sdlweb/libsdl.org/cvs co SDL_mixer
 	Debian packages: libsdl-mixer1.2 libsdl-mixer1.2-dev
-
-SDL_sound (Win32 only)
-	An audio format decoder library.
-	Homepage: http://www.icculus.org/SDL_sound/
-	Download: http://www.icculus.org/SDL_sound/downloads/
-	You maybe need to get few updated dll's from: http://www.cc.jyu.fi/~mimakole/sc2/sdl_sound_dlls.zip
-	If compiling this yourself, be sure ogg vorbis and libmikmod (or libmodplug) support is compiled in.
 	
 OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org
 	SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
+
+Ogg Vorbis (Win32 only)
+	Audio codec used for music and speech.
+	Homepage: http://www.xiph.org/ogg/vorbis/index.html
+	SDK download: http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
 
 
 If you find these aren't enough, or if you know the names

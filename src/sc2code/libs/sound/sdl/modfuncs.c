@@ -18,17 +18,19 @@
 
 #ifdef SOUNDMODULE_SDL
 
-#ifdef WIN32
-#include <io.h>
-#endif
 #include <fcntl.h>
-
 #include "libs/strings/strintrn.h"
 #include "libs/sound/sndintrn.h"
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
 #include "options.h"
+
+#ifdef WIN32
+#include <io.h>
+#include <SDL_mixer.h>
+#else
 #include <SDL/SDL_mixer.h>
+#endif
 
 
 MEM_HANDLE
