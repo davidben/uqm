@@ -1097,6 +1097,12 @@ RedrawQueue (BOOLEAN clear)
 
 		FlushSounds ();
 	}
+	else
+	{	// sfx queue needs to be flushed when aborting
+		ProcessSound ((SOUND)~0, NULL);
+		FlushSounds ();
+	}
+
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 }
 
