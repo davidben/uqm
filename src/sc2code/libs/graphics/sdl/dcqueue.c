@@ -46,8 +46,8 @@ TFB_DrawCommandQueue DrawCommandQueue;
 // locks to protect the Draw Command Queue.  Lock is re-entrant to
 // allow livelock deterrence to be written much more cleanly.
 
-void
-Lock_DCQ (void)
+static void
+_lock (void)
 {
 	Uint32 current_thread = SDL_ThreadID ();
 	if (DCQ_locking_thread != current_thread)
@@ -57,6 +57,34 @@ Lock_DCQ (void)
 	}
 	++DCQ_locking_depth;
 	// fprintf (stderr, "DCQ_sem locking depth: %i\n", DCQ_locking_depth);
+}
+
+// Wait for the queue to be emptied.
+static void
+TFB_WaitForSpace (int requested_slots)
+{
+	int old_depth, i;
+	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, Requested = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize, requested_slots);
+	// Restore the DCQ locking level.  I *think* this is
+	// always 1, but...
+	TFB_BatchReset ();
+	old_depth = DCQ_locking_depth;
+	for (i = 0; i < old_depth; i++)
+		Unlock_DCQ ();
+	WaitCondVar (RenderingCond);
+	for (i = 0; i < old_depth; i++)
+		_lock ();
+	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
+}
+
+void
+Lock_DCQ (int slots)
+{
+	_lock ();
+	while (DrawCommandQueue.FullSize >= DCQ_MAX - slots)
+	{
+		TFB_WaitForSpace (slots);
+	}
 }
 
 void
@@ -103,7 +131,7 @@ Synchronize_DCQ (void)
 void
 TFB_BatchGraphics (void)
 {
-	Lock_DCQ ();
+	_lock ();
 	DrawCommandQueue.Batching++;
 	Unlock_DCQ ();
 }
@@ -111,7 +139,7 @@ TFB_BatchGraphics (void)
 void
 TFB_UnbatchGraphics (void)
 {
-	Lock_DCQ ();
+	_lock ();
 	if (DrawCommandQueue.Batching)
 	{
 		DrawCommandQueue.Batching--;
@@ -126,29 +154,12 @@ TFB_UnbatchGraphics (void)
 void
 TFB_BatchReset (void)
 {
-	Lock_DCQ ();
+	_lock ();
 	DrawCommandQueue.Batching = 0;
 	Synchronize_DCQ ();
 	Unlock_DCQ ();
 }
 
-// Wait for the queue to be emptied.
-static void
-TFB_WaitForSpace (int requested_slots)
-{
-	int old_depth, i;
-	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, Requested = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize, requested_slots);
-	// Restore the DCQ locking level.  I *think* this is
-	// always 1, but...
-	TFB_BatchReset ();
-	old_depth = DCQ_locking_depth;
-	for (i = 0; i < old_depth; i++)
-		Unlock_DCQ ();
-	WaitCondVar (RenderingCond);
-	for (i = 0; i < old_depth; i++)
-		Lock_DCQ ();
-	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
-}
 
 // Draw Command Queue Stuff
 
@@ -170,11 +181,7 @@ TFB_DrawCommandQueue_Create()
 void
 TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 {
-	Lock_DCQ ();
-	while (DrawCommandQueue.FullSize >= DCQ_MAX - 1)
-	{
-		TFB_WaitForSpace (1);
-	}
+	Lock_DCQ (1);
 	DCQ[DrawCommandQueue.InsertionPoint] = *Command;
 	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1) % DCQ_MAX;
 	DrawCommandQueue.FullSize++;
@@ -185,7 +192,7 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 int
 TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 {
-	Lock_DCQ ();
+	_lock ();
 
 	if (DrawCommandQueue.Size == 0)
 	{
@@ -214,7 +221,7 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 void
 TFB_DrawCommandQueue_Clear ()
 {
-	Lock_DCQ ();
+	_lock ();
 	DrawCommandQueue.Size = 0;
 	DrawCommandQueue.Front = 0;
 	DrawCommandQueue.Back = 0;

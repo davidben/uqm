@@ -19,7 +19,5 @@
 #ifndef DCQUEUE_H
 #define DCQUEUE_H
 
-void Lock_DCQ (void);
-void Unlock_DCQ (void);
-
+/* This is all in drawcmd.h now. */
 #endif

@@ -87,4 +87,8 @@ extern TFB_DrawCommandQueue DrawCommandQueue;
 
 void TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand);
 
+void Lock_DCQ (int slots);
+
+void Unlock_DCQ (void);
+
 #endif

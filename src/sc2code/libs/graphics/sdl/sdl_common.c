@@ -537,7 +537,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 	if (DrawCommandQueue.Size > DCQ_FORCE_SLOWDOWN_SIZE)
 	{
-		Lock_DCQ ();
+		Lock_DCQ (-1);
 		livelock_deterrence = TRUE;
 	}
 
@@ -559,7 +559,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			// fprintf (stderr, "Initiating livelock deterrence!\n");
 			livelock_deterrence = TRUE;
 			
-			Lock_DCQ ();
+			Lock_DCQ (-1);
 		}
 
 		DC_image = (TFB_Image*) DC.image;

@@ -202,7 +202,7 @@ TFB_Draw_WaitForSignal (void)
 	DrawCommand.image = 0;
 	// We need to lock the mutex before enqueueing the DC to prevent races 
 	LockSignalMutex ();
-	Lock_DCQ ();
+	Lock_DCQ (1);
 	TFB_BatchReset ();
 	TFB_EnqueueDrawCommand(&DrawCommand);
 	Unlock_DCQ();
