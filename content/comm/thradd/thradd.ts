@@ -136,7 +136,8 @@
 #(OK_CULTURE_20) 5078,1091,4276,1252,4166,1352,2864
 #(fat) 
 #(OK_FAT) 5759,3425,4666,5198
-#(the_slave_empire) 
+#(the_slave_empire0) 
+#(the_slave_empire1) 
 #(OK_SLAVE) 3575
 #(FAT_JERKS) 
 #(CULTURE) 
