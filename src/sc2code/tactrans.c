@@ -140,7 +140,7 @@ new_ship (PELEMENT DeadShipPtr)
 		SetElementStarShip (DeadShipPtr, 0);
 		RestartMusic = OpponentAlive (DeadStarShipPtr);
 
-		free_ship (DeadStarShipPtr, TRUE);
+//		free_ship (DeadStarShipPtr, TRUE);
 UnbatchGraphics ();
 		if (GetNextStarShip (DeadStarShipPtr,
 				WHICH_SIDE (DeadShipPtr->turn_wait)) && RestartMusic)

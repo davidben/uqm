@@ -8,18 +8,6 @@ with no gameplay-altering features added.
 
 Serious bugs (crash the game, high priority):
 - The game crashes when there's no sound driver available
-- In melee, after battle, the game crashes.
-  The ship icon is used when already freed. This happens because the old
-  3DO code used to save the entire selection window as one image, while
-  Chris' new code redraws after each round.
-  Possible solutions:
-  - revert to the old behaviour
-  - delay the free until the memory is really no longer needed.
-    Make sure that the memory is always freed, so no memory leak is
-    introduced.
-  - reload the icon when needed
-  It looks like the same bug is present for the full game, though it isn't
-  fatal there (the memory is freed but not yet overwritten).
 - loading an old game crashes the game (at least on Linux).
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
@@ -61,6 +49,24 @@ Glitches (don't crash the game, medium priority):
   landing position (and so 'flashes' when crossfade ends)
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
+- Melnorme graphics are corrupt.
+- Shofixti doesn't work in melee.
+- In melee, after battle, the game crashes.
+  The ship icon is used when already freed. This happens because the old
+  3DO code used to save the entire selection window as one image, while
+  Chris' new code redraws after each round.
+  Possible solutions:
+  - revert to the old behaviour
+  - delay the free until the memory is really no longer needed.
+    Make sure that the memory is always freed, so no memory leak is
+    introduced.
+  - reload the icon when needed
+  It looks like the same bug is present for the full game, though it isn't
+  fatal there (the memory is freed but not yet overwritten).
+  Addition 2002-10-23: I commented out the free, so that the game wouldn't
+  crash anymore. This means the memory will not be freed until after the
+  complete battle (not just one fight). There's no permanent memory leak
+  though.
 
 Implementation bugs (low priority):
 - The main thread is still created by a direct all to the SDL function,
