@@ -524,7 +524,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.frame = flagship_status;
 		DrawStamp (&s);
 
-		s.origin.x = s.origin.y = 0;
+		s.origin.x = 1;
+		s.origin.y = 0;
 		for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
 		{
 			BYTE which_piece;
@@ -560,7 +561,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 
 			s.origin.y -= 3;
 		}
-		s.origin.y = 0;
+		s.origin.y = 1;
 		s.origin.x = 1; // This properly centers the modules.
 		for (i = 0; i < NUM_MODULE_SLOTS; ++i)
 		{
