@@ -1,4 +1,5 @@
 0.2:
+- Planet scan should now take ~2secs on all computers -PhracturedBlue
 - Updated earth image to look nicer (no vertical lines) -PhracturedBlue
 - Clock semaphore is now created with a value of 0 -PhracturedBlue
 - Rewrote Semaphore debugging code to be more useful - PhracturedBlue

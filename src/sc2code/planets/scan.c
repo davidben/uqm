@@ -693,7 +693,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 		pMS)
 {
 	//STAMP s;
-
+	DWORD TimeIn, WaitTime;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
@@ -846,6 +846,8 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 		ClearSemaphore (GraphicsSem);
 
 		PressState = AnyButtonPress (TRUE);
+		WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
+		TimeIn = GetTimeCounter ();
 		for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
 		{
 			ButtonState = AnyButtonPress (TRUE);
@@ -866,7 +868,8 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			UnbatchGraphics ();
 			ClearSemaphore (GraphicsSem);
 //			FlushGraphics ();
-			SleepThread (2);
+			SleepThreadUntil (TimeIn + WaitTime);
+			TimeIn = GetTimeCounter ();
 		}
 		pSolarSysState->Tint_rgb = 0;
 
