@@ -60,9 +60,30 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	tfbimg = FramePtr->image;
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
 	img[cel_ct] = (SDL_Surface *)tfbimg->NormalImg;
-
-        FramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
+	
+	FramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
 	SetFrameBounds (FramePtr, img[cel_ct]->w, img[cel_ct]->h);
+
+#ifdef CLIPDEBUG
+	{
+		/* for debugging clipping:
+		   draws white (or most matching color from palette) pixels to
+	       every corner of the image
+		 */
+		Uint32 color = SDL_MapRGB (img[cel_ct]->format, 255, 255, 255);
+		SDL_Rect r = {0, 0, 1, 1};
+		if (img[cel_ct]->w > 2 && img[cel_ct]->h > 2)
+		{
+			SDL_FillRect (img[cel_ct], &r, color);
+			r.x = img[cel_ct]->w - 1;
+			SDL_FillRect (img[cel_ct], &r, color);
+			r.y = img[cel_ct]->h - 1;
+			SDL_FillRect (img[cel_ct], &r, color);
+			r.x = 0;
+			SDL_FillRect (img[cel_ct], &r, color);
+		}
+	}
+#endif
 }
 
 static void
