@@ -166,8 +166,7 @@ As a gesture of good will, could you spare some mineral resources?
 No.
 
 #(resources_please)
-Now that our alliance is firmly established, could you please transport
-large quantities of valuable minerals to our ship?
+Now that our alliance is firmly established, could you please transport large quantities of valuable minerals to our ship?
 
 #(SORRY_NO_RESOURCES)	spaho022.ogg
 No.
