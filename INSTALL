@@ -52,8 +52,15 @@ Ogg Vorbis
 			http://www.vorbis.com/download_unix.psp
 			download libogg and libvorbis.
 
+Zlib
+	Data compression / decompression library
+	Homepage: http://www.gzip.org/zlib/
+	Download:
+		For Windows:
+			http://gnuwin32.sourceforge.net/packages/zlib.htm
+	
+
 If you find these aren't enough, or if you know the names
 of the corresponding RPM etc. packages, please report to
 <sc2-devel@lists.sourceforge.net> or visit 
 http://sourceforge.net/projects/sc2
-
