@@ -472,14 +472,22 @@ mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 			src->looping = value;
 			break;
 		case MIX_BUFFER:
-			if (src->cqueued > 0)
-				mixSDL_SourceUnqueueAll (src);
+			{
+				mixSDL_Buffer *buf = (mixSDL_Buffer *) value;
 
-			src->firstqueued = (mixSDL_Buffer *) value;
-			src->nextqueued = src->firstqueued;
-			src->lastqueued = src->nextqueued;
-			if (src->lastqueued)
-				src->lastqueued->next = 0;
+				if (src->cqueued > 0)
+					mixSDL_SourceUnqueueAll (src);
+				
+				if (buf && !mixSDL_CheckBufferState (buf, "mixSDL_Sourcei"))
+					break;
+
+				src->firstqueued = buf;
+				src->nextqueued = src->firstqueued;
+				src->lastqueued = src->nextqueued;
+				if (src->lastqueued)
+					src->lastqueued->next = 0;
+				src->cqueued = 1;
+			}
 			break;
 		case MIX_SOURCE_STATE:
 #ifdef DEBUG
@@ -812,30 +820,9 @@ mixSDL_SourceQueueBuffers (mixSDL_Object srcobj, uint32 n,
 	for (i = n, pobj = pbufobj; i; i--, pobj++)
 	{
 		mixSDL_Buffer *buf = (mixSDL_Buffer *) *pobj;
-		if (!buf || buf->magic != mixSDL_bufMagic)
+		if (!buf || !mixSDL_CheckBufferState (buf,
+				"mixSDL_SourceQueueBuffers"))
 		{
-			mixSDL_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-			fprintf (stderr, "mixSDL_SourceQueueBuffers(): not a buffer\n");
-#endif
-			break;
-		}
-		else if (buf->locked)
-		{
-			mixSDL_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-			fprintf (stderr, "mixSDL_SourceQueueBuffers(): "
-					"locked buffer attempted\n");
-#endif
-			break;
-		}
-		else if (buf->state != MIX_BUF_FILLED)
-		{
-			mixSDL_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-			fprintf (stderr, "mixSDL_SourceQueueBuffers(): "
-					"invalid buffer attempted\n");
-#endif
 			break;
 		}
 	}
@@ -1624,6 +1611,41 @@ mixSDL_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
 /*************************************************
  *  Buffer internals
  */
+
+static __inline__ bool
+mixSDL_CheckBufferState (mixSDL_Buffer *buf, const char* FuncName)
+{
+	if (!buf)
+		return false;
+
+	if (buf->magic != mixSDL_bufMagic)
+	{
+		mixSDL_SetError (MIX_INVALID_NAME);
+#ifdef DEBUG
+		fprintf (stderr, "%s(): not a buffer\n", FuncName);
+#endif
+		return false;
+	}
+
+	if (buf->locked)
+	{
+		mixSDL_SetError (MIX_INVALID_OPERATION);
+#ifdef DEBUG
+		fprintf (stderr, "%s(): locked buffer attempted\n", FuncName);
+#endif
+		return false;
+	}
+
+	if (buf->state != MIX_BUF_FILLED)
+	{
+		mixSDL_SetError (MIX_INVALID_OPERATION);
+#ifdef DEBUG
+		fprintf (stderr, "%s: invalid buffer attempted\n", FuncName);
+#endif
+		return false;
+	}
+	return true;
+}
 
 static void
 mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv)

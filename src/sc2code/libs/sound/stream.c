@@ -111,9 +111,6 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 void
 StopStream (uint32 source)
 {
-	TFBSound_IntVal queued, processed;
-	uint32 *buffer;
-
 	soundSource[source].stream_should_be_playing = FALSE;
 	soundSource[source].sample = NULL;
 
@@ -127,18 +124,7 @@ StopStream (uint32 source)
 	soundSource[source].sbuf_size = 0;
 	soundSource[source].sbuf_offset = 0;
 
-	TFBSound_SourceStop (soundSource[source].handle);
-	TFBSound_GetSourcei (soundSource[source].handle, TFBSOUND_BUFFERS_PROCESSED, &processed);
-	TFBSound_GetSourcei (soundSource[source].handle, TFBSOUND_BUFFERS_QUEUED, &queued);
-
-	//fprintf (stderr, "StopStream(): source %d processed %d queued %d num_buffers %d\n", source, processed, queued, soundSource[source].sample->num_buffers);
-	
-	if (processed != 0)
-	{
-		buffer = (uint32 *) HMalloc (sizeof (uint32) * processed);
-		TFBSound_SourceUnqueueBuffers (soundSource[source].handle, processed, buffer);
-		HFree (buffer);
-	}
+	StopSource (source);
 }
 
 void

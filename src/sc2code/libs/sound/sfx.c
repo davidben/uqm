@@ -28,15 +28,16 @@ PlayChannel (COUNT channel, PVOID sample, COUNT sample_length, COUNT loop_begin,
 {
 	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;	
 	soundSource[channel].sample = tfb_sample;
-	TFBSound_SourceRewind (soundSource[channel].handle);
-	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER, tfb_sample->buffer[0]);
+	TFBSound_SourceStop (soundSource[channel].handle);
+	TFBSound_Sourcei (soundSource[channel].handle, TFBSOUND_BUFFER,
+			tfb_sample->buffer[0]);
 	TFBSound_SourcePlay (soundSource[channel].handle);
 }
 
 void
-StopChannel(COUNT channel, unsigned char Priority)
+StopChannel (COUNT channel, unsigned char Priority)
 {
-	TFBSound_SourceRewind (soundSource[channel].handle);
+	StopSource (channel);
 }
 
 BOOLEAN
@@ -44,7 +45,8 @@ ChannelPlaying (COUNT WhichChannel)
 {
 	TFBSound_IntVal state;
 	
-	TFBSound_GetSourcei (soundSource[WhichChannel].handle, TFBSOUND_SOURCE_STATE, &state);
+	TFBSound_GetSourcei (soundSource[WhichChannel].handle,
+			TFBSOUND_SOURCE_STATE, &state);
 	if (state == TFBSOUND_PLAYING)
 		return TRUE;
 	return FALSE;
@@ -236,7 +238,10 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 			for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 			{
 				if (soundSource[i].sample == (*sptr))
+				{
+					StopSource (i);
 					soundSource[i].sample = NULL;
+				}
 			}
 
             if ((*sptr)->decoder)

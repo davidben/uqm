@@ -29,7 +29,26 @@ StopSound (void)
 
 	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
 	{
-		TFBSound_SourceRewind (soundSource[i].handle);
+		StopSource (i);
+	}
+}
+
+void
+StopSource (int iSource)
+{
+	TFBSound_IntVal processed;
+
+	TFBSound_SourceStop (soundSource[iSource].handle);
+	TFBSound_GetSourcei (soundSource[iSource].handle,
+			TFBSOUND_BUFFERS_PROCESSED, &processed);
+
+	if (processed != 0)
+	{
+		TFBSound_Object *buffer = (TFBSound_Object *)
+				HMalloc (sizeof (TFBSound_Object) * processed);
+		TFBSound_SourceUnqueueBuffers (soundSource[iSource].handle,
+				processed, buffer);
+		HFree (buffer);
 	}
 }
 

@@ -79,6 +79,8 @@ static void mixSDL_SourceStop_internal (mixSDL_Source *src);
 static void mixSDL_SourceActivate (mixSDL_Source* src);
 static void mixSDL_SourceDeactivate (mixSDL_Source* src);
 
+static __inline__ bool mixSDL_CheckBufferState (mixSDL_Buffer *buf,
+		const char* FuncName);
 
 /* Reentrant mutex */
 typedef struct

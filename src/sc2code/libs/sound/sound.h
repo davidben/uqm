@@ -89,6 +89,8 @@ typedef struct tfb_soundsource
 
 extern TFB_SoundSource soundSource[];
 
+void StopSource (int iSource);
+
 void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
 void DoTrackTag (TFB_SoundTag *tag);
