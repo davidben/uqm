@@ -708,11 +708,6 @@ const BYTE element_array[NUMBER_OF_ELEMENTS] =
 };
 
 /*------------------------------ Global Data ------------------------------ */
-#define NO_TECTONICS 0
-#define LOW_TECTONICS 40
-#define MED_TECTONICS 80
-#define HIGH_TECTONICS 140
-#define SUPER_TECTONICS 200
 
 #define NO_DEPOSIT 0
 

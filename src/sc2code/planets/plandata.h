@@ -195,23 +195,49 @@ typedef const XLAT_DESC *PXLAT_DESC;
 typedef struct
 {
 	BYTE ElementType;
+			/* Index of this element in element_array */
 	BYTE Density;
+			/* bits 0-3: quantity of the deposits (maximum number of
+			 *           deposits), one of FEW, MODERATE, or NUMEROUS
+			 * bits 4-7: quality of the deposit, one of LOW, MEDIUM, or HEAVY
+			 */
 } ElementEntry;
 
 typedef struct
 {
-	BYTE Type; /*   HiNybble is interplanetary color */
-								/*  \    */
-								/*  \  Planet size    map algo */
-								/*  \ \ \ */
-								/*  \ \       \       */
-								/*  0000  00  00 */
-	BYTE BaseTectonics; /* Scaled with Earth at 100 */
+	BYTE Type;
+			/* bits 0-1: size, one of SMALL_ROCKY_WORLD, LARGE_ROCKY_WORLD, or
+			 *           GAS_GIANT
+			 * bits 2-3: map creation algoritm, one of TOPO_ALGO,
+			 *           CRATERED_ALGO, or GAS_GIANT_ALGO
+			 * bits 4-7: interplanetary color, one of BLUE_BODY, GREEN_BODY,
+			 *           ORANGE_BODY, RED_BODY, WHITE_BODY (same as
+			 *           GRAY_BODY), YELLOW_BODY, NUM_STAR_COLORS,
+			 *           CYAN_BODY, PURPLE_BODY, VIOLET_BODY)
+             */
+	BYTE BaseTectonics;
+			/* Base constant for calculation of tectonic activity,
+			 * relative to Earth at 100.
+			 * One of: NO_TECTONICS, LOW_TECTONICS, MED_TECTONICS,
+			 *         HIGH_TECTONICS, or SUPER_TECTONICS
+			 */
 	BYTE AtmoAndDensity;
+			/* bits 0-3: planet density, one of GAS_DENSITY, LIGHT_DENSITY,
+			 *           LOW_DENSITY, NORMAL_DENSITY, HIGH_DENSITY,
+			 *           SUPER_DENSITY
+			 * bits 4-7: atmosphere, one of LIGHT, MEDIUM, HEAVY, or
+			 *           (no define for this) super thick.
+			 */
 #define NUM_USEFUL_ELEMENTS 8
 	ElementEntry UsefulElements[NUM_USEFUL_ELEMENTS];
+			/* Minerals on the planet */
 
-	RESOURCE CMapInstance, XlatTabInstance;
+	RESOURCE CMapInstance;
+			/* Color map */
+	RESOURCE XlatTabInstance;
+			/* Color translation map */
+	
+	// Parameters for map-generation algoritms:
 	COUNT num_faults;
 	SIZE fault_depth;
 	COUNT num_blemishes;
@@ -273,6 +299,12 @@ enum
 #define HOT_THRESHOLD 100
 
 /*------------------------------ Global Data ------------------------------ */
+
+#define NO_TECTONICS 0
+#define LOW_TECTONICS 40
+#define MED_TECTONICS 80
+#define HIGH_TECTONICS 140
+#define SUPER_TECTONICS 200
 
 extern const PlanetFrame *PlanData;
 
