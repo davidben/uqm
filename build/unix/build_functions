@@ -37,7 +37,7 @@ usage() {
 
 # The actual recursing function
 build_recurse() {
-	local FILES SUBDIRS
+	typeset FILES SUBDIRS
 	# Perform an action for this dir
 	eval FILES="\${$BUILD_FILES_VAR}"
 	for FILE in $FILES; do
@@ -69,7 +69,7 @@ build_dependancies() {
 
 # Recursively build dependancy information
 build_rec_dependancies() {
-	local DEPEND_FILE EXTRA_OFILES
+	typeset DEPEND_FILE EXTRA_OFILES
 
 	echo "Building dependancy information..." 1>&2
 
@@ -103,7 +103,7 @@ build_collect_extra_o_files() {
 
 # Recursively collect .o-files
 build_rec_collect_o_files() {
-	local EXTRA_OFILES
+	typeset EXTRA_OFILES
 
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
 	export BUILD_FILES_VAR
@@ -139,7 +139,7 @@ build_clean_dir() {
 }
 
 build_clean() {
-	local DEPEND_FILE
+	typeset DEPEND_FILE
 	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}"
 	rm -f "$DEPEND_FILE" build.vars config.state src/config.h
 	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
@@ -183,7 +183,7 @@ build_check_dependencies() {
 
 # Description: check if the program is compiled, and otherwise compile
 build_check_compile() {
-	local NAME
+	typeset NAME
 	eval NAME="\${${BUILD_PROJECT}_NAME}"
 	[ ! -e "$NAME" ] || return
 
@@ -192,7 +192,7 @@ build_check_compile() {
 
 # Install the program
 build_install() {
-	local BINS LIBS SRC DEST DESTDIR BINDIR LIBDIR
+	typeset BINS LIBS SRC DEST DESTDIR BINDIR LIBDIR
 
 	echo "Installing libraries..." 2>&1
 	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"

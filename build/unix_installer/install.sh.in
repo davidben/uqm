@@ -194,7 +194,7 @@ mkdir -p -- "$INSTALL_BASE"/lib/uqm 2> /dev/null
 mkdir -p -- "$INSTALL_BASE"/bin 2> /dev/null
 
 echo "Unpacking content..."
-tar -xzf "$CONTENT_FILE" -C "$INSTALL_BASE"lib/uqm
+gzip -dc "$CONTENT_FILE" | tar -xzf - -C "$INSTALL_BASE"lib/uqm
 
 echo "Unpacking other stuff..."
 tail -c @ATTACHLEN@ < "$0" | tar -xzf - -C "$INSTALL_BASE"lib/

@@ -47,8 +47,7 @@ chmod -R go+rX "${TEMPDIR}/lib"
 
 echo "Making tar.gz file for everything except from the content."
 echo "Using maximum compression; this may take a moment."
-tar -cf "${TEMPDIR}/libpkg.tar" -C "${TEMPDIR}/lib/" uqm
-gzip -9 "${TEMPDIR}/libpkg.tar"
+tar -c -C "${TEMPDIR}/lib/" uqm | gzip -9 > "${TEMPDIR}/libpkg.tar.gz"
 
 echo "Making final executable."
 sh build/unix_installer/mkinstall "$DESTFILE" "${TEMPDIR}/libpkg.tar.gz" \

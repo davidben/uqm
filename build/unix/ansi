@@ -1,4 +1,4 @@
-ESC=""
+ESC=`printf "\x1b"`
 ANSI_BOLD="${ESC}[1m"
 ANSI_NORMAL="${ESC}[0m"
 

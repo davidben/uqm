@@ -57,7 +57,7 @@ EOF
 # Arguments:   $1 - the type of menu item
 #              $2 - the name of the menu item
 menu_init() {
-	local INIT_FUN
+	typeset INIT_FUN
 
 	eval INIT_FUN="\$MENU_ITEM_TYPE_$1_INIT"
 	"$INIT_FUN" "$2"
@@ -66,7 +66,7 @@ menu_init() {
 # Description: Initialise this menu
 # Arguments:   $1 - the name of the menu
 menu_init_menu() {
-	local MENU TEMP_ITEMS ITEM TEMP_TYPE
+	typeset MENU TEMP_ITEMS ITEM TEMP_TYPE
 
 	MENU="$1"
 	eval TEMP_ITEMS="\$MENU_${MENU}_ITEMS"
@@ -82,7 +82,7 @@ menu_init_menu() {
 # Returns:     0 - if the choice is available
 #              1 - if the choice is not available
 menu_have_choice() {
-	local MENU CHOICE TEMP_VALID TEMP_PRECOND
+	typeset MENU CHOICE TEMP_VALID TEMP_PRECOND
 	MENU="$1"
 	CHOICE="$2"
 	eval TEMP_VALID="\$CHOICE_${MENU}_OPTION_${CHOICE}_VALID"
@@ -101,7 +101,7 @@ menu_have_choice() {
 # Description: Initialise this choice menu
 # Arguments:   $1 - the name of the choice menu
 menu_init_choice() {
-	local MENU TEMP_VALUE TEMP_DEFAULT TEMP_OPTIONS OPTION TEMP_TITLE
+	typeset MENU TEMP_VALUE TEMP_DEFAULT TEMP_OPTIONS OPTION TEMP_TITLE
 	MENU="$1"
 	eval TEMP_VALUE="\$CHOICE_${MENU}_VALUE"
 	eval TEMP_DEFAULT="\$CHOICE_${MENU}_DEFAULT"
@@ -121,7 +121,7 @@ menu_init_choice() {
 # Description: Initialise this input menu
 # Arguments:   $1 - the name of the input menu
 menu_init_input() {
-	local MENU TEMP_VALUE TEMP_DEFAULT
+	typeset MENU TEMP_VALUE TEMP_DEFAULT
 	MENU="$1"
 	eval TEMP_VALUE="\$INPUT_${MENU}_VALUE"
 	if [ -z "$TEMP_VALUE" ]; then
@@ -136,7 +136,7 @@ menu_init_input() {
 #              $2 - the name of the menu item
 # Outputs:     The string describing the value of the menu item
 menu_print_value() {
-	local PRINT_VALUE
+	typeset PRINT_VALUE
 
 	eval PRINT_VALUE="\$MENU_ITEM_TYPE_$1_PRINT_VALUE"
 	"$PRINT_VALUE" "$2"
@@ -153,7 +153,7 @@ menu_print_value_menu() {
 # Arguments:   $1 - the name of the choice menu item
 # Outputs:     The string describing the value of this choice menu
 menu_print_value_choice() {
-	local TEMP_VALUE TEMP_TITLE
+	typeset TEMP_VALUE TEMP_TITLE
 	eval TEMP_VALUE="\$CHOICE_$1_VALUE"
 	eval TEMP_TITLE=\"\$CHOICE_$1_OPTION_${TEMP_VALUE}_TITLE\"
 	cat << EOF
@@ -165,7 +165,7 @@ EOF
 # Arguments:   $1 - the name of the input menu item
 # Outputs:     The value of the given input menu
 menu_print_value_input() {
-	local TEMP_VALUE TEMP_TITLE
+	typeset TEMP_VALUE TEMP_TITLE
 	eval TEMP_VALUE="\$INPUT_$1_VALUE"
 	cat << EOF
 $TEMP_VALUE
@@ -177,7 +177,7 @@ EOF
 #              $2 - the name of the menu item
 # Outputs:     The string describing the value of the menu item
 menu_handle() {
-	local HANDLER
+	typeset HANDLER
 
 	eval HANDLER="\$MENU_ITEM_TYPE_$1_HANDLER"
 	"$HANDLER" "$2"
@@ -186,7 +186,7 @@ menu_handle() {
 # Description: Process a menu-type menu item
 # Arguments:   $1 - The name of the menu
 menu_handle_menu() {
-	local TEMP_ITEMS I CHOICE NUM_ITEMS TEMP_TYPE MENU ITEM TEMP_TITLE
+	typeset TEMP_ITEMS I CHOICE NUM_ITEMS TEMP_TYPE MENU ITEM TEMP_TITLE
 	eval TEMP_ITEMS="\$MENU_$1_ITEMS"
 	
 	MENU="$1"
@@ -248,7 +248,7 @@ EOF
 # Description: Process a choice-type menu item
 # Arguments:   $1 - The name of the menu
 menu_handle_choice() {
-	local TEMP_OPTIONS I CHOICE NUM_OPTIONS TEMP_TYPE MENU OPTION \
+	typeset TEMP_OPTIONS I CHOICE NUM_OPTIONS TEMP_TYPE MENU OPTION \
 			TEMP_VALUE TEMP_TITLE SELECTED
 	eval TEMP_OPTIONS="\$CHOICE_$1_OPTIONS"
 	
@@ -335,7 +335,7 @@ EOF
 # Description: Process an input-type menu item
 # Arguments:   $1 - The name of the menu
 menu_handle_input() {
-	local ITEM TEMP_TITLE TEMP_VALUE TEMP_DEFAULT NEW_VALUE TEMP_VALIDATOR
+	typeset ITEM TEMP_TITLE TEMP_VALUE TEMP_DEFAULT NEW_VALUE TEMP_VALIDATOR
 
 	ITEM="$1"
 	eval TEMP_TITLE="\$INPUT_${ITEM}_TITLE"
@@ -376,7 +376,7 @@ EOF
 #              $2 - the name of the menu item
 # Outputs:     The string describing the value of the menu item
 menu_save() {
-	local SAVE_FUN
+	typeset SAVE_FUN
 	eval SAVE_FUN="\$MENU_ITEM_TYPE_$1_SAVE"
 	"$SAVE_FUN" "$2"
 }
@@ -386,7 +386,7 @@ menu_save() {
 # Arguments:   $1 - the name of the menu
 # Outputs:     The string describing the value of the menu
 menu_save_menu() {
-	local MENU TEMP_ITEMS ITEM TEMP_TYPE
+	typeset MENU TEMP_ITEMS ITEM TEMP_TYPE
 
 	MENU="$1"
 	eval TEMP_ITEMS="\$MENU_${MENU}_ITEMS"
@@ -401,7 +401,7 @@ menu_save_menu() {
 # Arguments:   $1 - the name of the choice menu
 # Outputs:     The string describing the value of the choice menu
 menu_save_choice() {
-	local MENU TEMP_VALUE
+	typeset MENU TEMP_VALUE
 	MENU="$1"
 	eval TEMP_VALUE="\$CHOICE_${MENU}_VALUE"
 	cat << EOF
@@ -414,7 +414,7 @@ EOF
 # Arguments:   $1 - the name of the input menu
 # Outputs:     The string describing the value of the input menu
 menu_save_input() {
-	local MENU TEMP_VALUE
+	typeset MENU TEMP_VALUE
 	MENU="$1"
 	eval TEMP_VALUE="\$INPUT_${MENU}_VALUE"
 	cat << EOF
@@ -427,7 +427,7 @@ EOF
 # Arguments:   $1 - the type of menu item
 #              $2 - the name of the menu item
 menu_process() {
-	local PROCESS_FUN
+	typeset PROCESS_FUN
 	eval PROCESS_FUN="\$MENU_ITEM_TYPE_$1_PROCESS"
 	"$PROCESS_FUN" "$2"
 }
@@ -436,7 +436,7 @@ menu_process() {
 #              for a menu.
 # Arguments:   $1 - the name of the menu
 menu_process_menu() {
-	local MENU TEMP_ITEMS ITEM TEMP_TYPE
+	typeset MENU TEMP_ITEMS ITEM TEMP_TYPE
 
 	MENU="$1"
 	eval TEMP_ITEMS="\$MENU_${MENU}_ITEMS"
@@ -450,7 +450,7 @@ menu_process_menu() {
 #              a choice menu.
 # Arguments:   $1 - the name of the choice menu
 menu_process_choice() {
-	local MENU TEMP_VALUE TEMP_ACTION
+	typeset MENU TEMP_VALUE TEMP_ACTION
 	MENU="$1"
 	eval TEMP_VALUE="\$CHOICE_${MENU}_VALUE"
 	eval TEMP_ACTION="\$CHOICE_${MENU}_OPTION_${TEMP_VALUE}_ACTION"

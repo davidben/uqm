@@ -107,7 +107,7 @@ lexlt() {
 # Description: check if a program is present in the path
 # Arguments:   
 have_program() {
-	local TEMP_NAME TEMP_FILE TEMP_VERSION
+	typeset TEMP_NAME TEMP_FILE TEMP_VERSION
 
 	eval eval TEMP_NAME="\\\"\$PROG_${1}_NAME\\\""
 	if [ -z "$TEMP_NAME" ]; then
@@ -151,7 +151,7 @@ but version $2 is required!"
 # Returns:     0 - if the library is found
 #              1 - if the library is not found
 have_library() {
-	local LIB TEMP_NAME TEMP_PRESENT TEMP_LDFLAGS TEMP_CFLAGS \
+	typeset LIB TEMP_NAME TEMP_PRESENT TEMP_LDFLAGS TEMP_CFLAGS \
 			TEMP_VERSION
 
 	LIB="$1"
@@ -213,7 +213,7 @@ but version $2 is required"
 #              LIB_${1}_LDFLAGS are expected to exist. If two arguments are
 #              supplied, so is LIB_${1}_VERSION.
 use_library() {
-	local TEMP_CFLAGS TEMP_LDFLAGS
+	typeset TEMP_CFLAGS TEMP_LDFLAGS
 	have_library "$@"
 	[ $? -eq 0 ] || exit 1
 
@@ -227,7 +227,7 @@ use_library() {
 # Description: check if a symbol is defined.
 # Arguments:   $1 - the name of the symbol
 have_symbol() {
-	local SYMBOL
+	typeset SYMBOL
 	SYMBOL="$1"
 
 	# TODO: I'll want the include handling to be done differently
@@ -256,7 +256,7 @@ EOF
 #              name of the symbol.
 # Arguments:   $1 - the name of the symbol
 define_have_symbol() {
-	local NAME VALUE
+	typeset NAME VALUE
 	NAME=`$TR a-z A-Z << EOF
 $1
 EOF
@@ -271,7 +271,7 @@ EOF
 # Description: check if a header is available.
 # Arguments:   $1 - the name of the header file
 have_header() {
-	local HEADER
+	typeset HEADER
 	HEADER="$1"
 
 	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF 2>&1 > /dev/null
@@ -293,7 +293,7 @@ EOF
 #              name of the header file. "sys/time.h" becomes "SYS_TIME_H".
 # Arguments:   $1 - the name of the symbol
 define_have_header() {
-	local NAME VALUE
+	typeset NAME VALUE
 	NAME=`$TR /.a-z __A-Z << EOF
 $1
 EOF
@@ -312,7 +312,7 @@ EOF
 # Arguments:   $1 - the symbol to add
 #              $2 - the value of the symbol
 add_symbol() {
-	local NAME
+	typeset NAME
 
 	eval NAME="$1"
 	eval "$NAME"=\"\$2\"
@@ -349,7 +349,7 @@ EOF
 #                   If a filename doesn't end on .in, that filename is used
 #                   as target, and the filename with .in attached as source.
 substitute_vars() {
-	local VARS VAR VALUE FILES FILE
+	typeset VARS VAR VALUE FILES FILE
 
 	eval VARS=\"\$$1\"
 	eval FILES=\"\$$2\"
