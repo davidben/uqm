@@ -55,10 +55,13 @@ TFB_Prim_Rect (PRECT r, TFB_Palette *color)
 	arm.extent.height = r->extent.height;
 	arm.extent.width = 1;
 	TFB_Prim_FillRect (&arm, color);
-	arm.corner.x += ((r->extent.width * gscale) / GSCALE_IDENTITY) - 1;
+	// rounding error correction here
+	arm.corner.x += ((r->extent.width * gscale + (GSCALE_IDENTITY >> 1))
+			/ GSCALE_IDENTITY) - 1;
 	TFB_Prim_FillRect (&arm, color);
 	arm.corner.x = r->corner.x;
-	arm.corner.y += ((r->extent.height * gscale) / GSCALE_IDENTITY) - 1;
+	arm.corner.y += ((r->extent.height * gscale + (GSCALE_IDENTITY >> 1))
+			/ GSCALE_IDENTITY) - 1;
 	arm.extent.width = r->extent.width;
 	arm.extent.height = 1;
 	TFB_Prim_FillRect (&arm, color);	
@@ -77,9 +80,11 @@ TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 
 	gscale = GetGraphicScale ();
 	if (gscale != GSCALE_IDENTITY)
-	{
-		rect.extent.width = (rect.extent.width * gscale) / GSCALE_IDENTITY;
-		rect.extent.height = (rect.extent.height * gscale) / GSCALE_IDENTITY;
+	{	// rounding error correction here
+		rect.extent.width = (rect.extent.width * gscale
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
+		rect.extent.height = (rect.extent.height * gscale
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
 		rect.corner.x += (r->extent.width -
 				  rect.extent.width) >> 1;
 		rect.corner.y += (r->extent.height -
@@ -140,11 +145,11 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	paletted = FALSE;
 
 	if (gscale != GSCALE_IDENTITY)
-	{
-		x += (SrcFramePtr->HotSpot.x *
-		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
-		y += (SrcFramePtr->HotSpot.y *
-		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
+	{	// rounding error correction here
+		x += (SrcFramePtr->HotSpot.x * (GSCALE_IDENTITY - gscale)
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
+		y += (SrcFramePtr->HotSpot.y * (GSCALE_IDENTITY - gscale)
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
 	}
 
 	if (TFB_DrawCanvas_IsPaletted(img->NormalImg) && img->colormap_index != -1)
@@ -200,11 +205,11 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	b = color->b;
 
 	if (gscale != GSCALE_IDENTITY)
-	{
-		x += (SrcFramePtr->HotSpot.x *
-		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
-		y += (SrcFramePtr->HotSpot.y *
-		      (GSCALE_IDENTITY - gscale)) / GSCALE_IDENTITY;
+	{	// rounding error correction here
+		x += (SrcFramePtr->HotSpot.x * (GSCALE_IDENTITY - gscale)
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
+		y += (SrcFramePtr->HotSpot.y * (GSCALE_IDENTITY - gscale)
+				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
 	}
 
 	UnlockMutex (img->mutex);
