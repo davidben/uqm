@@ -16,578 +16,1406 @@ CLS
 #(Restore color)
 FTC 0
 
-#(Sync frame)
-SYNC 0
 #(Draw frame image)
 DRAW 0
 #(Sync frame)
 SYNC 400
-#(Draw frame image)
-DRAW 1
-#(Sync frame)
-SYNC 500
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 2
-#(Draw frame image)
-DRAW 3
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 600
-#(Draw frame image)
-DRAW 4
-#(Sync frame)
-SYNC 700
-#(Draw frame image)
-DRAW 5
-#(Sync frame)
-SYNC 800
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 6
-#(Draw frame image)
-DRAW 7
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 900
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 8
-#(Draw frame image)
-DRAW 9
-#(Draw frame image)
-DRAW 10
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1000
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 11
-#(Draw frame image)
-DRAW 12
-#(Draw frame image)
-DRAW 13
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1100
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 14
-#(Draw frame image)
-DRAW 15
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1200
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 16
-#(Draw frame image)
-DRAW 17
-#(Draw frame image)
-DRAW 18
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1300
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 19
-#(Draw frame image)
-DRAW 20
-#(Draw frame image)
-DRAW 21
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1400
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 22
-#(Draw frame image)
-DRAW 23
-#(Draw frame image)
-DRAW 24
-#(Draw frame image)
-DRAW 25
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1500
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 26
-#(Draw frame image)
-DRAW 27
-#(Draw frame image)
-DRAW 28
-#(Draw frame image)
-DRAW 29
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1600
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 30
-#(Draw frame image)
-DRAW 31
-#(Draw frame image)
-DRAW 32
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1700
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 33
-#(Draw frame image)
-DRAW 34
-#(Draw frame image)
-DRAW 35
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1800
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 36
-#(Draw frame image)
-DRAW 37
-#(Draw frame image)
-DRAW 38
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 1900
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 39
-#(Draw frame image)
-DRAW 40
-#(Draw frame image)
-DRAW 41
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2000
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 42
-#(Draw frame image)
-DRAW 43
-#(Draw frame image)
-DRAW 44
-#(Draw frame image)
-DRAW 45
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2100
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 46
-#(Draw frame image)
-DRAW 47
-#(Draw frame image)
-DRAW 48
-#(Draw frame image)
-DRAW 49
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2200
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 50
-#(Draw frame image)
-DRAW 51
-#(Draw frame image)
-DRAW 52
-#(Draw frame image)
-DRAW 53
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2300
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 54
-#(Draw frame image)
-DRAW 55
-#(Draw frame image)
-DRAW 56
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2400
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 57
-#(Draw frame image)
-DRAW 58
-#(Draw frame image)
-DRAW 59
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2500
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 60
-#(Draw frame image)
-DRAW 61
-#(Draw frame image)
-DRAW 62
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2600
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 63
-#(Draw frame image)
-DRAW 64
-#(Draw frame image)
-DRAW 65
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2700
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 66
-#(Draw frame image)
-DRAW 67
-#(Draw frame image)
-DRAW 68
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 2900
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 69
-#(Draw frame image)
-DRAW 70
-#(Draw frame image)
-DRAW 71
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3100
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 72
-#(Draw frame image)
-DRAW 73
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3200
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 74
-#(Draw frame image)
-DRAW 75
-#(Draw frame image)
-DRAW 76
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3300
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 77
-#(Draw frame image)
-DRAW 78
-#(Draw frame image)
-DRAW 79
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3400
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 80
-#(Draw frame image)
-DRAW 81
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3500
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 82
-#(Draw frame image)
-DRAW 83
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3600
-#(Draw frame image)
-DRAW 84
-#(Sync frame)
-SYNC 3700
-#(Draw frame image)
-DRAW 85
-#(Sync frame)
-SYNC 3800
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 86
-#(Draw frame image)
-DRAW 87
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 3900
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 88
-#(Draw frame image)
-DRAW 89
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 4000
-#(Draw frame image)
-DRAW 90
-#(Sync frame)
-SYNC 4100
-#(Draw frame image)
-DRAW 91
-#(Sync frame)
-SYNC 4200
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 92
-#(Draw frame image)
-DRAW 93
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 4300
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 94
-#(Draw frame image)
-DRAW 95
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 4400
-#(Draw frame image)
-DRAW 96
-#(Sync frame)
-SYNC 4500
-#(Draw frame image)
-DRAW 97
-#(Sync frame)
-SYNC 4600
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 98
-#(Draw frame image)
-DRAW 99
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 4700
-#(Draw frame image)
-DRAW 100
-#(Sync frame)
-SYNC 4800
-#(Draw frame image)
-DRAW 101
-#(Sync frame)
-SYNC 4900
-#(Draw frame image)
-DRAW 102
-#(Sync frame)
-SYNC 5000
-#(Draw frame image)
-DRAW 103
-#(Sync frame)
-SYNC 5100
-#(Draw frame image)
-DRAW 104
-#(Sync frame)
-SYNC 5200
-#(Draw frame image)
-DRAW 105
-#(Sync frame)
-SYNC 5300
-#(Draw frame image)
-DRAW 106
-#(Sync frame)
-SYNC 5400
-#(Draw frame image)
-DRAW 107
-#(Sync frame)
-SYNC 5500
-#(Draw frame image)
-DRAW 108
-#(Sync frame)
-SYNC 5600
-#(Draw frame image)
-DRAW 109
-#(Sync frame)
-SYNC 5700
-#(Draw frame image)
-DRAW 110
-#(Sync frame)
-SYNC 5800
-#(Draw frame image)
-DRAW 111
-#(Sync frame)
-SYNC 5900
-#(Draw frame image)
-DRAW 112
-#(Sync frame)
-SYNC 6900
-#(Draw frame image)
-DRAW 113
-#(Sync frame)
-SYNC 7200
-#(Draw frame image)
-DRAW 114
-#(Sync frame)
-SYNC 7400
-#(Draw frame image)
-DRAW 115
-#(Sync frame)
-SYNC 7600
-#(Draw frame image)
-DRAW 116
-#(Sync frame)
-SYNC 7800
-#(Draw frame image)
-DRAW 117
-#(Sync frame)
-SYNC 7900
-#(Draw frame image)
-DRAW 118
-#(Sync frame)
-SYNC 8100
-#(Draw frame image)
-DRAW 119
-#(Sync frame)
-SYNC 8200
-#(Draw frame image)
-DRAW 120
-#(Sync frame)
-SYNC 8300
-#(Draw frame image)
-DRAW 121
-#(Sync frame)
-SYNC 8400
-#(Draw frame image)
-DRAW 122
-#(Sync frame)
-SYNC 8500
-#(Draw frame image)
-DRAW 123
-#(Sync frame)
-SYNC 8600
-#(Draw frame image)
-DRAW 124
-#(Sync frame)
-SYNC 8700
-#(Draw frame image)
-DRAW 125
-#(Sync frame)
-SYNC 8800
-#(Draw frame image)
-DRAW 126
-#(Sync frame)
-SYNC 8900
-#(Draw frame image)
-DRAW 127
-#(Sync frame)
-SYNC 9000
-#(Draw frame image)
-DRAW 128
-#(Sync frame)
-SYNC 9100
-#(Draw frame image)
-DRAW 129
-#(Sync frame)
-SYNC 9200
-#(Draw frame image)
-DRAW 130
-#(Sync frame)
-SYNC 9300
-#(Draw frame image)
-DRAW 131
-#(Sync frame)
-SYNC 9400
-#(Draw frame image)
-DRAW 132
-#(Sync frame)
-SYNC 9500
-#(Draw frame image)
-DRAW 133
-#(Sync frame)
-SYNC 9600
-#(Draw frame image)
-DRAW 134
-#(Sync frame)
-SYNC 9700
-#(Batch several draws)
-BATCH
-#(Draw frame image)
-DRAW 135
-#(Draw frame image)
-DRAW 136
-#(End of batch)
-UNBATCH
-#(Sync frame)
-SYNC 9800
-#(Draw frame image)
-DRAW 137
-#(Sync frame)
-SYNC 9900
-#(Draw frame image)
-DRAW 138
-#(Sync frame)
-SYNC 10000
 
+#(Save background)
+SAVEBG
+#(Establish new sync point)
+RESYNC
+
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 310 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 0
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 306 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 62
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 302 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 298 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 294 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 290 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 286 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 282 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 278 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 274 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 270 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 266 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 262 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 258 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 254 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 250 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 246 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 242 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 238 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 234 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 230 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 226 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 222 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 219 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 216 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 213 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 210 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 207 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 205 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 203 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 201 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 199 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 197 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 196 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 194 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 193 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 192 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 191 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 190 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 202 190 256 270
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2625
+
+#(Establish new sync point)
+RESYNC
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 201 187 247 276
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 0
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 201 184 238 281
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 62
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 200 181 229 287
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 200 178 221 293
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 199 175 213 298
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 199 172 205 304
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 198 170 197 309
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 198 167 189 315
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 198 164 182 321
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 197 162 175 326
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 197 159 168 332
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 197 157 161 338
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 196 154 154 343
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 196 152 148 349
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 196 150 142 354
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 195 148 136 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 195 146 130 6
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 195 144 124 11
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 194 142 119 17
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 194 140 113 23
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 194 138 108 28
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 194 136 103 34
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 193 135 98 39
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 193 133 94 45
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 193 131 89 51
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 193 130 85 56
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 193 129 81 62
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 127 78 68
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 126 74 73
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 125 71 79
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 124 67 84
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 123 64 90
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 192 122 61 96
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 121 59 101
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 120 56 107
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 119 54 113
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 118 52 118
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 118 50 124
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 117 48 129
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 116 47 135
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 116 45 141
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 116 44 146
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 115 43 152
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 115 43 158
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 115 42 163
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2760
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 191 115 42 169
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2852
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 190 115 42 174
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2975
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW SIS 190 115 42 180
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 3060
+
+#(Establish new sync point)
+RESYNC
+#(Sync)
+DSYNC 1000
+#(Save background)
+SAVEBG
+#(Establish new sync point)
+RESYNC
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 185 114 42 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 185 114 43 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 186 114 43 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 186 114 44 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 187 114 44 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 187 114 45 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 188 115 46 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 189 115 47 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 190 115 48 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 191 116 50 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 192 116 51 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 193 117 53 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 195 117 55 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 197 118 58 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 199 118 60 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 201 119 63 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 204 120 67 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 207 121 71 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 210 122 75 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 1937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 213 123 79 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 217 125 84 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2062
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 221 126 90 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2125
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 226 128 96 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2187
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 231 129 103 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2250
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 236 131 110 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2312
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 242 133 118 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2375
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 249 135 126 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2437
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 255 138 135 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2500
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 263 140 145 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2562
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 271 143 156 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2625
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 280 146 167 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2687
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 289 149 179 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2750
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 299 152 193 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2812
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 309 156 207 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2875
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 321 160 222 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 2937
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 333 164 238 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 3000
+
+#(Start batch)
+BATCH
+#(Erase previous)
+RESTBG
+#(Draw frame image)
+DRAW 1 346 168 255 0
+#(End batch)
+UNBATCH
+#(Sync frame)
+DSYNC 3062
+
+
+#(Wait a little)
+WAIT 400
 #(Fade out)
 FTB 400
