@@ -32,6 +32,7 @@ int optWhichMusic = MUSIC_3DO;
 char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
 BOOLEAN optPCscan = FALSE;
+BOOLEAN optPCmenu = FALSE;
 
 void
 prepareConfigDir (void) {

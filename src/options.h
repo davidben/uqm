@@ -37,6 +37,8 @@ extern BOOLEAN optSubtitles;
 
 extern BOOLEAN optPCscan;
 
+extern BOOLEAN optPCmenu;
+
 extern char *configDir;
 extern char *meleeDir;
 extern char *saveDir;

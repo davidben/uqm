@@ -1184,7 +1184,7 @@ TheMess:
 			else
 			{
 				ClearSemaphore (GraphicsSem);
-				DrawMenuStateStrings (PM_SCAN, STARMAP);
+				DrawMenuStateStrings (PM_STARMAP, STARMAP);
 				SetSemaphore (GraphicsSem);
 				pSolarSysState->MenuState.CurState = STARMAP + 1;
 			}
@@ -1261,7 +1261,7 @@ StartGroups:
 		++pSolarSysState->MenuState.Initialized;
 		if (pSolarSysState->MenuState.flash_task == 0)
 		{
-			DrawMenuStateStrings (PM_SCAN, PM_NAVIGATE - PM_SCAN);
+			DrawMenuStateStrings (PM_STARMAP, -(PM_NAVIGATE - PM_SCAN));
 
 			SetSemaphore (GraphicsSem);
 			RepairSISBorder ();

@@ -1313,7 +1313,8 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					if (InputState & DEVICE_BUTTON1)
 					{
 						pMS->CurState = (NAVIGATION) + 1;
-						DrawMenuStateStrings (PM_SCAN, NAVIGATION);
+						DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
+								NAVIGATION);
 					}
 				}
 				else
@@ -1321,7 +1322,7 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 					SetSemaphore (GraphicsSem);
 					SetFlashRect (NULL_PTR, (FRAME)0);
 					ClearSemaphore (GraphicsSem);
-					DrawMenuStateStrings (PM_SCAN, NAVIGATION);
+					DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 				}
 			}
 			else
@@ -1344,7 +1345,8 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 
 				if (NewState != pMS->CurState)
 				{
-					DrawMenuStateStrings (PM_SCAN, (BYTE)(NewState - 1));
+					DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
+							(BYTE)(NewState - 1));
 
 					pMS->CurState = NewState;
 				}

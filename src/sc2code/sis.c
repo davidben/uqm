@@ -20,6 +20,7 @@
 #include "commglue.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
+#include "options.h"
 
 void
 RepairSISBorder (void)
@@ -73,7 +74,7 @@ ClearSISRect (BYTE ClearFlags)
 	if (ClearFlags & CLEAR_SIS_RADAR)
 	{
 		ClearSemaphore (GraphicsSem);
-		DrawMenuStateStrings ((BYTE)~0, (BYTE)~0);
+		DrawMenuStateStrings ((BYTE)~0, 1);
 		SetSemaphore (GraphicsSem);
 #ifdef NEVER
 		r.corner.x = RADAR_X - 1;
@@ -1032,6 +1033,9 @@ SetFlashRect (PRECT pRect, FRAME f)
 	}
 	else
 	{
+		//Don't flash when using the PC menu
+		if (optPCmenu)
+			return;
 		OldContext = SetContext (StatusContext);
 		GetContextClipRect (&clip_r);
 		pRect = &temp_r;
@@ -1089,18 +1093,126 @@ SetFlashRect (PRECT pRect, FRAME f)
 	SetContext (OldContext);
 }
 
+static void
+DrawPCMenuFrame (RECT *r)
+{
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x08));
+	DrawRectangle (r);
+	r->corner.x++;
+	r->corner.y++;
+	r->extent.height--;
+	r->extent.width--;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x08));
+	DrawRectangle (r);
+	r->extent.height--;
+	r->extent.width--;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x08));
+	DrawFilledRectangle (r);
+}
+
+static char menu_string[][11]  = {
+		"SCAN",
+		"STARMAP",
+		"DEVICES",
+		"CARGO",
+		"ROSTER",
+		"GAME",
+		"NAVIGATE",
+
+		"MINERAL",
+		"ENERGY",
+		"BIOLOGICAL",
+		"EXIT MENU",
+		"AUTO SCAN",
+		"DISPATCH",
+
+		"SAVE GAME",
+		"LOAD GAME",
+		"SETTINGS",
+		"EXIT MENU",
+
+		"CONVERSE",
+		"ATTACK!",
+		"GAME",
+
+		"FUEL",
+		"MODULE",
+		"GAME",
+		"EXIT MENU",
+
+		"CREW",
+		"GAME",
+		"EXIT MENU",
+	};
+
+static void
+DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
+{
+#define PC_MENU_HEIGHT 8
+	BYTE pos;
+	COUNT i;
+	int num_items, offset;
+	FONT OldFont;
+	TEXT t;
+	UNICODE buf[40];
+	pos = beg_index + NewState;
+	num_items = 1 + end_index - beg_index;
+	DrawFilledRectangle (r);
+	r->corner.x += 1;
+	r->extent.width -= 1;
+	if (num_items * PC_MENU_HEIGHT > r->extent.height)
+		fprintf (stderr, "Warning, no room for all menu items!\n");
+	else
+		r->corner.y += (r->extent.height - num_items * PC_MENU_HEIGHT) / 2;
+	r->extent.height = num_items * PC_MENU_HEIGHT + 4;
+	DrawPCMenuFrame (r);
+	OldFont = SetContextFont (TinyFont);
+	t.align = ALIGN_LEFT;
+	t.baseline.x = r->corner.x + 3;
+	t.baseline.y = r->corner.y + PC_MENU_HEIGHT -1;
+	t.pStr = buf;
+	t.CharCount = (COUNT)~0;
+	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+	for (i = beg_index; i <= end_index; i++)
+	{
+		wsprintf (buf, menu_string[i]);
+		if (hilite && pos == i)
+		{
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
+			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 1;
+			r->extent.height = PC_MENU_HEIGHT;
+			DrawFilledRectangle (r);
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x08));
+			DrawText (&t);
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+		}
+		else
+			DrawText (&t);
+		t.baseline.y += PC_MENU_HEIGHT;
+	}
+}
 void
-DrawMenuStateStrings (BYTE beg_index, BYTE NewState)
+DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 {
 	BYTE end_index;
 	RECT r;
 	STAMP s;
 	CONTEXT OldContext;
+	BYTE hilite = 1;
 	extern FRAME PlayFrame;
 
+	if (NewState < 0)
+	{
+		NewState = - NewState;
+		hilite = 0;
+	}
 	switch (beg_index)
 	{
 		case PM_SCAN:
+			end_index = PM_NAVIGATE;
+			break;
+		case PM_STARMAP:
+			NewState--;
 			end_index = PM_NAVIGATE;
 			break;
 		case PM_MIN_SCAN:
@@ -1138,10 +1250,23 @@ DrawMenuStateStrings (BYTE beg_index, BYTE NewState)
 	r.corner.x = s.origin.x - 1;
 	r.corner.y = s.origin.y - 11;
 	r.extent.width = RADAR_WIDTH + 2;
-	r.extent.height = 11;
 	BatchGraphics ();
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-	DrawFilledRectangle (&r);
+	if (s.frame && optPCmenu && beg_index != PM_SOUND_ON)
+	{
+		if (beg_index == PM_CREW)
+			sprintf (menu_string[PM_CREW], "CREW(%d)", GLOBAL (CrewCost));
+		if (beg_index == PM_FUEL)
+			sprintf (menu_string[PM_FUEL], "FUEL(%d)", GLOBAL (FuelCost));
+		r.extent.height = RADAR_HEIGHT + 11;
+		DrawPCMenu (beg_index, end_index, (BYTE)NewState, hilite, &r);
+		s.frame = 0;
+	}
+	else
+	{
+		r.extent.height = 11;
+		DrawFilledRectangle (&r);
+	}
 	if (s.frame)
 	{
 		DrawStamp (&s);

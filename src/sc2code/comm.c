@@ -1554,7 +1554,7 @@ BatchGraphics ();
 			{
 				RepairSISBorder ();
 				ClearSemaphore (GraphicsSem);
-				DrawMenuStateStrings ((BYTE)~0, (BYTE)~0);
+				DrawMenuStateStrings ((BYTE)~0, 1);
 				SetSemaphore (GraphicsSem);
 			}
 			else /* in starbase */

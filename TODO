@@ -86,7 +86,10 @@ Implementation bugs (low priority):
 - Melee scaling currently causes some very small objects like Ur-Quan fighters
   to disappear sometimes. The scaling should be made trilinear instead of
   nearest neighbor.
-
+- PC Menu still has some issues
+  - 3DO menu is still used for selecting game options
+  - Menu Font is wrong (the PC font doesn't appear to exist in UQM)
+  - Still using 3DO menu hierarchy, so menu text isn't identical to PC
 Stuff still to do (large):
 - add some way to configure your keys
   (assigned to mstr)

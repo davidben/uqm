@@ -1560,7 +1560,7 @@ UnbatchGraphics ();
 	MenuState.Initialized = 1;
 	MenuState.CurState = STARMAP + 1;
 
-	DrawMenuStateStrings (PM_SCAN, STARMAP);
+	DrawMenuStateStrings (PM_STARMAP, STARMAP);
 	SetSemaphore (GraphicsSem);
 	SetFlashRect ((PRECT)~0L, (FRAME)0);
 	ClearSemaphore (GraphicsSem);
