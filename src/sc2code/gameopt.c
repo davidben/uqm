@@ -86,6 +86,7 @@ enum
 {
 	SAVE_GAME = 0,
 	LOAD_GAME,
+	QUIT_GAME,
 	SETTINGS
 };
 
@@ -104,6 +105,12 @@ enum
 	CHANGE_CAPTAIN_SETTING,
 	CHANGE_SHIP_SETTING,
 	EXIT_MENU_SETTING
+};
+
+enum
+{
+	NO_QUIT_MENU,
+	YES_QUIT_MENU
 };
 
 static void
@@ -151,6 +158,25 @@ FeedbackSetting (BYTE which_setting)
 		case CHANGE_CAPTAIN_SETTING:
 		case CHANGE_SHIP_SETTING:
 			wstrcpy (buf, GAME_STRING (NAMING_STRING_BASE + 0));
+			break;
+	}
+
+	SetSemaphore (GraphicsSem);
+	DrawStatusMessage (buf);
+	ClearSemaphore (GraphicsSem);
+}
+static void 
+FeedbackQuit (BYTE which_setting)
+{
+	UNICODE buf[20];
+	buf[0] = '\0';
+	switch (which_setting)
+	{
+		case NO_QUIT_MENU:
+			wsprintf (buf, "Don't Quit");
+			break;
+		case YES_QUIT_MENU:
+			wsprintf (buf, "Quit Game");
 			break;
 	}
 
@@ -533,6 +559,51 @@ DoSettings (PMENU_STATE pMS)
 	}
 	else if (DoMenuChooser (pMS, PM_SOUND_ON))
 		FeedbackSetting (pMS->CurState);
+
+	return (TRUE);
+}
+
+static BOOLEAN
+DoQuitMenu (PMENU_STATE pMS)
+{
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return (FALSE);
+
+	if (!pMS->Initialized)
+	{
+		DrawMenuStateStrings (PM_NO_QUIT, pMS->CurState);
+		FeedbackQuit (pMS->CurState);
+		pMS->Initialized = TRUE;
+		pMS->InputFunc = DoQuitMenu;
+	}
+	else if (CurrentMenuState.cancel
+			|| (CurrentMenuState.select
+			&& pMS->CurState == NO_QUIT_MENU))
+	{
+		SetSemaphore (GraphicsSem);
+		DrawStatusMessage (NULL_PTR);
+		ClearSemaphore (GraphicsSem);
+
+		pMS->CurState = QUIT_GAME;
+		pMS->InputFunc = DoGameOptions;
+		pMS->Initialized = 0;
+	}
+	else if (CurrentMenuState.select)
+	{
+		switch (pMS->CurState)
+		{
+			case NO_QUIT_MENU:
+				break;
+			case YES_QUIT_MENU:
+				GLOBAL (CurrentActivity) |= CHECK_ABORT;
+				ExitRequested = FALSE;
+				GameExiting = TRUE;
+				break;
+		}
+		FeedbackQuit (pMS->CurState);
+	}
+	else if (DoMenuChooser (pMS, PM_NO_QUIT))
+		FeedbackQuit (pMS->CurState);
 
 	return (TRUE);
 }
@@ -931,7 +1002,7 @@ DoPickGame (PMENU_STATE pMS)
 		{
 			extern FRAME PlayFrame;
 
-			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 38);
+			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 41);
 		}
 
 		SetSemaphore (GraphicsSem);
@@ -1247,6 +1318,11 @@ DoGameOptions (PMENU_STATE pMS)
 			case LOAD_GAME:
 				pMS->CurFrame = (FRAME)FadeMusic (0, ONE_SECOND >> 1);
 				return (PickGame (pMS));
+			case QUIT_GAME:
+				pMS->Initialized = FALSE;
+				pMS->CurState = NO_QUIT_MENU;
+				pMS->InputFunc = DoQuitMenu;
+				break;
 			case SETTINGS:
 				pMS->Initialized = FALSE;
 				pMS->InputFunc = DoSettings;

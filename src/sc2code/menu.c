@@ -66,6 +66,7 @@ static char menu_string[][11]  = {
 
 		"save game",
 		"load game",
+		"quit game",
 		"settings",
 		"exit menu",
 
@@ -93,6 +94,9 @@ static char menu_string[][11]  = {
 		"",
 		"",
 		"",
+//PM_QUIT
+		"No, Play",
+		"Yes, Quit",
 //PM_ALTSCAN
 		"scan",
 		"starmap",
@@ -191,6 +195,9 @@ GetEndMenuState (BYTE BaseState)
 			break;
 		case PM_SOUND_ON:
 			return PM_EXIT_MENU4;
+			break;
+		case PM_NO_QUIT:
+			return PM_YES_QUIT;
 			break;
 		case PM_ALT_SCAN:
 		case PM_ALT_STARMAP:
@@ -552,6 +559,19 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 					break;
 				case PM_EXIT_MENU4:
 					NewState = 5;
+					break;
+			}
+		}
+		if (beg_index == PM_NO_QUIT)
+		{
+			end_index = beg_index + 1;
+			switch (beg_index + NewState)
+			{
+				case PM_NO_QUIT:
+					NewState = 0;
+					break;
+				case PM_YES_QUIT:
+					NewState = 1;
 					break;
 			}
 		}
