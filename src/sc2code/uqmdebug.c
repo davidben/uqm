@@ -27,6 +27,8 @@
 static void dumpEventCallback (EVENTPTR eventPtr, void *arg);
 static void dumpStarCallback(STAR_DESC *star, void *arg);
 static void dumpPlanetCallback (PLANET_DESC *planet, void *arg);
+static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
+		void *arg);
 
 BOOLEAN instantMove = FALSE;
 
@@ -41,7 +43,8 @@ debugKeyPressed (void)
 
 	// Informational:
 //	dumpEvents (stderr);
-//	dumpStars (stdout, DUMP_PLANETS);
+//	dumpPlanetTypes(stderr);
+//	dumpStars (stderr, DUMP_PLANETS);
 			// Currently dumpStars() does not work when called from here.
 			// It needs to be called from the top of ExploreSolarSys().
 
@@ -355,7 +358,7 @@ dumpStar (FILE *out, const STAR_DESC *star, UWORD flags)
 
 	GetClusterName ((STAR_DESCPTR) star, name);
 	snprintf (buf, sizeof buf, "%s %s",
-			starColorString (STAR_COLOR(star->Type)),
+			bodyColorString (STAR_COLOR(star->Type)),
 			starTypeString (STAR_TYPE(star->Type)));
 	fprintf (out, "%-22s  (%3d.%1d, %3d.%1d) %-19s  %s\n",
 			name,
@@ -368,7 +371,7 @@ dumpStar (FILE *out, const STAR_DESC *star, UWORD flags)
 }
 
 const char *
-starColorString (BYTE col)
+bodyColorString (BYTE col)
 {
 	switch (col) {
 		case BLUE_BODY:
@@ -383,6 +386,12 @@ starColorString (BYTE col)
 			return "white";
 		case YELLOW_BODY:
 			return "yellow";
+		case CYAN_BODY:
+			return "cyan";
+		case PURPLE_BODY:
+			return "purple";
+		case VIOLET_BODY:
+			return "violet";
 		default:
 			// Should not happen
 			return "???";
@@ -584,11 +593,224 @@ dumpPlanet (FILE *out, const PLANET_DESC *planet, UWORD flags)
 	// For now, only the name is printed. Other data may be added later.
 	pSolarSysState->pBaseDesc = (PLANET_DESC *) planet;
 	(*pSolarSysState->GenFunc) (GENERATE_NAME);
-	fprintf (out, "- %s\n", GLOBAL_SIS (PlanetName));
+	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
+			planetTypeString (planet->data_index));
 
 	pSolarSysState->pBaseDesc = oldPlanetDesc;
 
 	(void) flags;
+}
+
+void
+forAllPlanetTypes (void (*callback) (int, const PlanetFrame *, void *),
+		void *arg)
+{
+	int i;
+	extern const PlanetFrame planet_array[];
+
+	for (i = 0; i < NUMBER_OF_PLANET_TYPES; i++)
+		callback (i, &planet_array[i], arg);
+}
+	
+typedef struct
+{
+	FILE *out;
+} DumpPlanetTypesArg;
+
+void
+dumpPlanetTypes (FILE *out)
+{
+	DumpPlanetTypesArg dumpPlanetTypesArg;
+	dumpPlanetTypesArg.out = out;
+
+	forAllPlanetTypes (dumpPlanetTypeCallback, (void *) &dumpPlanetTypesArg);
+}
+
+static void
+dumpPlanetTypeCallback (int index, const PlanetFrame *planetType, void *arg)
+{
+	DumpPlanetTypesArg *dumpPlanetTypesArg = (DumpPlanetTypesArg *) arg;
+
+	dumpPlanetType(dumpPlanetTypesArg->out, index, planetType);
+}
+
+void
+dumpPlanetType (FILE *out, int index, const PlanetFrame *planetType)
+{
+	int i;
+	fprintf (out,
+			"%s\n"
+			"\tType: %s\n"
+			"\tColor: %s\n"
+			"\tSurface generation algoritm: %s\n"
+			"\tTectonics: %s\n"
+			"\tAtmosphere: %s\n"
+			"\tDensity: %s\n"
+			"\tElements:\n",
+			planetTypeString (index),
+			worldSizeString (PLANSIZE (planetType->Type)),
+			bodyColorString (PLANCOLOR (planetType->Type)),
+			worldGenAlgoString (PLANALGO (planetType->Type)),
+			tectonicsString (planetType->BaseTectonics),
+			atmosphereString (HINIBBLE (planetType->AtmoAndDensity)),
+			densityString (LONIBBLE (planetType->AtmoAndDensity))
+			);
+	for (i = 0; i < NUM_USEFUL_ELEMENTS; i++)
+	{
+		const ElementEntry *entry;
+		entry = &planetType->UsefulElements[i];
+		if (entry->Density == 0)
+			continue;
+		fprintf(out, "\t\t0 to %d %s-quality (+%d) deposits of %s (%s)\n",
+				DEPOSIT_QUANTITY (entry->Density),
+				depositQualityString (DEPOSIT_QUALITY (entry->Density)),
+				DEPOSIT_QUALITY (entry->Density) * 5,
+				GAME_STRING (ELEMENTS_STRING_BASE + entry->ElementType),
+				GAME_STRING (CARGO_STRING_BASE + 2 + ElementCategory (
+				entry->ElementType))
+			);
+	}
+	fprintf (out, "\n");
+}
+
+const char *
+planetTypeString (int typeIndex)
+{
+	static UNICODE typeStr[40];
+
+	if (typeIndex >= FIRST_GAS_GIANT)
+	{
+		// "Gas Giant"
+		snprintf(typeStr, sizeof typeStr, "%s",
+		GAME_STRING (SCAN_STRING_BASE + 4 + 51));
+	}
+	else
+	{
+		// "<type> World" (eg. "Water World")
+		snprintf(typeStr, sizeof typeStr, "%s %s",
+				GAME_STRING (SCAN_STRING_BASE + 4 + typeIndex),
+				GAME_STRING (SCAN_STRING_BASE + 4 + 50));
+	}
+	return typeStr;
+}
+
+// size is what you get from PLANSIZE (planetFrame.Type)
+const char *
+worldSizeString (BYTE size)
+{
+	switch (size)
+	{
+		case SMALL_ROCKY_WORLD:
+			return "small rocky world";
+		case LARGE_ROCKY_WORLD:
+			return "large rocky world";
+		case GAS_GIANT:
+			return "gas giant";
+		default:
+			// Should not happen
+			return "???";
+	}
+}
+
+// algo is what you get from PLANALGO (planetFrame.Type)
+const char *
+worldGenAlgoString (BYTE algo)
+{
+	switch (algo)
+	{
+		case TOPO_ALGO:
+			return "TOPO_ALGO";
+		case CRATERED_ALGO:
+			return "CRATERED_ALGO";
+		case GAS_GIANT_ALGO:
+			return "GAS_GIANT_ALGO";
+		default:
+			// Should not happen
+			return "???";
+	}
+}
+
+// tectonics is what you get from planetFrame.BaseTechtonics
+// not reentrant
+const char *
+tectonicsString (BYTE tectonics)
+{
+	static char buf[sizeof "-127"];
+	switch (tectonics)
+	{
+		case NO_TECTONICS:
+			return "none";
+		case LOW_TECTONICS:
+			return "low";
+		case MED_TECTONICS:
+			return "medium";
+		case HIGH_TECTONICS:
+			return "high";
+		case SUPER_TECTONICS:
+			return "super";
+		default:
+			snprintf (buf, sizeof buf, "%d", tectonics);
+			return buf;
+	}
+}
+
+// atmosphere is what you get from HINIBBLE (planetFrame.AtmoAndDensity)
+const char *
+atmosphereString (BYTE atmosphere)
+{
+	switch (atmosphere)
+	{
+		case LIGHT:
+			return "thin";
+		case MEDIUM:
+			return "normal";
+		case HEAVY:
+			return "thick";
+		default:
+			return "super thick";
+	}
+}
+
+// density is what you get from LONIBBLE (planetFrame.AtmoAndDensity)
+const char *
+densityString (BYTE density)
+{
+	switch (density)
+	{
+		case GAS_DENSITY:
+			return "gaseous";
+		case LIGHT_DENSITY:
+			return "light";
+		case LOW_DENSITY:
+			return "low";
+		case NORMAL_DENSITY:
+			return "normal";
+		case HIGH_DENSITY:
+			return "high";
+		case SUPER_DENSITY:
+			return "super high";
+		default:
+			// Should not happen
+			return "???";
+	}
+}
+
+// quality is what you get from DEPOSIT_QUALITY (elementEntry.Density)
+const char *
+depositQualityString (BYTE quality)
+{
+	switch (quality)
+	{
+		case LIGHT:
+			return "low";
+		case MEDIUM:
+			return "medium";
+		case HEAVY:
+			return "high";
+		default:
+			// Should not happen
+			return "???";
+	}
 }
 
 #endif  /* DEBUG */

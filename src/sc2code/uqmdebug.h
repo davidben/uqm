@@ -47,7 +47,7 @@ extern void dumpStar(FILE *out, const STAR_DESC *star, UWORD flags);
 // Generate a list of all stars.
 extern void dumpStars(FILE *out, UWORD flags);
 // Get a star color as a string.
-extern const char *starColorString (BYTE col);
+extern const char *bodyColorString (BYTE col);
 // Get a star type as a string.
 extern const char *starTypeString (BYTE type);
 // Get a string describing special presence in the star system.
@@ -59,6 +59,32 @@ extern void forAllPlanets(STAR_DESC *star,
 extern void dumpPlanets (FILE *out, const STAR_DESC *star, UWORD flags);
 // Describe one planet.
 extern void dumpPlanet(FILE *out, const PLANET_DESC *planet, UWORD flags);
+
+// Call a function for all planet types.
+extern void forAllPlanetTypes (void (*callBack) (int, const PlanetFrame *,
+		void *), void *arg);
+// Describe one planet type.
+extern void dumpPlanetType(FILE *out, int index, const PlanetFrame *planetFrame);
+// Generate a list of all planet types.
+extern void dumpPlanetTypes(FILE *out);
+// Get a string describing a planet type.
+const char *planetTypeString (int typeIndex);
+// Get a string describing the size of a type of planet.
+const char *worldSizeString (BYTE size);
+// Get a string describing a planet type map generation algoritm.
+const char *worldGenAlgoString (BYTE algo);
+// Get a string describing the severity of a tectonics on a type of planet.
+const char *tectonicsString (BYTE tectonics);
+// Get a string describing the atmospheric pressure on a type of planet.
+const char *atmosphereString (BYTE atmosphere);
+// Get a string describing the density of a type of planet.
+const char *densityString (BYTE density);
+
+// Get a string describing the quality of a deposit.
+const char *depositQualityString (BYTE quality);
+
+
+
 
 // Move instantly across hyperspace/quasispace.
 extern BOOLEAN instantMove;

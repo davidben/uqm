@@ -31,6 +31,8 @@ listed below:
   day, are skipped.
 - the function dumpEvents()
   Outputs information on all scheduled events to a FILE.
+- the function dumpPlanetTypes()
+  Outputs information on all planet types to a FILE.
 - the function dumpStars()
   Outputs information on all stars to a FILE.
   With the 'flags' variable, the amount of detail can be specified.
