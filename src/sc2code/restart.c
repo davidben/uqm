@@ -84,7 +84,7 @@ DWORD InTime;
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
-	/* Cancel any presses of the Pause or Exit keys. */
+	/* Cancel any presses of the Pause key. */
 	GamePaused = FALSE;
 
 	if (!pMS->Initialized)
@@ -94,8 +94,13 @@ DoRestart (PMENU_STATE pMS)
 
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
-				
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
+			DWORD TimeOut = XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
+			while ((GetTimeCounter () <= TimeOut) &&
+			       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
+			{
+				UpdateInputState ();
+				TaskSwitch ();
+			}
 		}
 	}
 #ifdef TESTING
@@ -175,7 +180,13 @@ TimedOut:
 	LastActivity = GLOBAL (CurrentActivity);
 	GLOBAL (CurrentActivity) = 0;
 	if (LastActivity == (ACTIVITY)~0)
+	{
 		Introduction ();
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		{
+			TFB_Abort ();
+		}
+	}
 
 	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoRestart;

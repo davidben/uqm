@@ -89,19 +89,45 @@ Introduction (void)
 
 	FlushInput ();
 
+	LoadMasterShipList ();
+	InitGameKernel ();
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
-	LoadMasterShipList ();
-	SleepThreadUntil (TimeOut);
+	while ((GetTimeCounter () <= TimeOut) &&
+	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		UpdateInputState ();
+		TaskSwitch ();
+	}
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+	{
+		return;
+	}
 	
-	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	/* There was a forcible setting of CHECK_ABORT here.  I cannot
+	 * find any purpose for this that DoRestart doesn't handle
+	 * better (forcing all other threads but this one to quit out,
+	 * I believe), and have thus removed it.  It was interfering
+	 * with the proper operation of the quit operation.
+	 * --Michael */
+
 	TimeOut += ONE_SECOND * 3;
 	while (!(InputState = AnyButtonPress (FALSE)) &&
-				(TaskSwitch (), GetTimeCounter ()) <= TimeOut)
-		{
-				//
-		}
+	       (GetTimeCounter () <= TimeOut) &&
+	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		TaskSwitch ();
+	}
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+	{
+		return;
+	}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+
+	/* You can't try to quit during a fade to black, because if
+	 * you try, the confirmation window will fade to black too.
+	 * Fixing this will require a rewrite of our whole rendering
+	 * engine. -- Michael */
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
@@ -112,8 +138,6 @@ Introduction (void)
 		DoFMV (play_intro ? "intro" : "drumall", NULL, TRUE);
 		play_intro = !play_intro;
 	}
-	
-	InitGameKernel ();
 }
 
 void
