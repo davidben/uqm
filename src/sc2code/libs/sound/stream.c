@@ -130,7 +130,6 @@ StopStream (uint32 source)
 void
 PauseStream (uint32 source)
 {
-	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = FALSE;
 	TFBSound_SourcePause (soundSource[source].handle);
 }
@@ -138,7 +137,6 @@ PauseStream (uint32 source)
 void
 ResumeStream (uint32 source)
 {
-	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = TRUE;
 	TFBSound_SourcePlay (soundSource[source].handle);
 }
