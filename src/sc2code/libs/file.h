@@ -27,11 +27,12 @@
 #	include <limits.h>
 #endif
 #ifdef WIN32
-#	include <direct.h>
+#   include <io.h>
 #	define access _access
 #	define F_OK 0
 #	define W_OK 2
 #	define R_OK 4
+#	include <direct.h>
 #	define mkdir _mkdir
 #	define rmdir _rmdir
 #else

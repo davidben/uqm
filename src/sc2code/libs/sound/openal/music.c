@@ -21,6 +21,7 @@
 
 #include "sound.h"
 #include "options.h"
+#include "file.h"
 
 static MUSIC_REF curMusicRef;
 
