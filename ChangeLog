@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fix some glitches in load/save screen (bug #163), from chmmravatar
 - Utwig shield now pulsates properly (bug #269), from Nic
 - Fix for memory leak in TFB_DrawCanvas_ExtractPalette (bug #277),
   from Richard Braakman
