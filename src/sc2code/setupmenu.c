@@ -24,6 +24,7 @@
 #include "sounds.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
+#include "libs/graphics/tfb_draw.h"
 
 
 typedef struct setup_menu_state {
@@ -163,17 +164,82 @@ static OPTION subtitles_opts[] = {
 		  ""
 		} } };
 
+static OPTION resdriver_opts[] = {
+	{ "320x240",
+		{ "320x240 resolution.",
+		  "Uses the SDL frame buffer directly.",
+		  ""
+		} },
+	{ "640x480",
+		{ "640x480 resolution.",
+		  "Uses the SDL frame buffer directly.",
+		  ""
+		} },
+#ifdef HAVE_OPENGL
+	{ "320x240 GL",
+		{ "320x240 resolution.",
+		  "Uses OpenGL graphics drivers.",
+		  ""
+		} },
+	{ "640x480 GL",
+		{ "640x480 resolution.",
+		  "Uses OpenGL graphics drivers.",
+		  ""
+		} },
+	{ "800x600",
+		{ "800x600 resolution.",
+		  "Uses OpenGL graphics drivers.",
+		  ""
+		} },
+	{ "1024x768",
+		{ "1024x768 resolution.",
+		  "Uses OpenGL graphics drivers.",
+		  ""
+		} }
+#endif
+};
+
+static OPTION bpp_opts[] = {
+	{ "8",
+		{ "8-bit paletted display.",
+		  "",
+		  ""
+		} },
+	{ "16",
+		{ "16-bit color depth.",
+		  "",
+		  ""
+		} },
+	{ "24",
+		{ "24-bit color depth.",
+		  "",
+		  ""
+		} },
+	{ "32",
+		{ "32-bit color depth.",
+		  "",
+		  ""
+		} } };
+
 //static char *title_str = "Ur-Quan Masters Setup";
 //static char *subtitle_str = "Graphics Options";
 static const char *title_str = "Use arrows and fire to select options";
 static const char *subtitle_str = "Press cancel when done";
 static const char **tooltip;
 
-#define NUM_OPTS 6
+#ifdef HAVE_OPENGL
+#define RES_OPTS 6
+#else
+#define RES_OPTS 2
+#endif
+
+#define NUM_OPTS 9
+
 static MENU_CATEGORY cmdline_opts[] = {
-	// { "Scaler", 5, scaler_opts, 0 },
+	{ "Resolution", RES_OPTS, resdriver_opts, 0 },
+	{ "Color depth", 4, bpp_opts, 0 },
+	{ "Scaler", 5, scaler_opts, 0 },
   	{ "Scanlines", 2, scanlines_opts, 0 },
-	// { "Music Style", 2, music_opts, 0 },
 	{ "Menu Style", 2, menu_opts, 0 },
 	{ "Font Style", 2, font_opts, 0 },
 	{ "Scan Style", 2, scan_opts, 0 },
@@ -192,44 +258,30 @@ SetDefaults (void)
 	GLOBALOPTS opts;
 	
 	GetGlobalOptions (&opts);
-	/*
-	cmdline_opts[0].selected = opts.scaler;
-	cmdline_opts[1].selected = opts.scanlines;
-	cmdline_opts[2].selected = opts.music;
-	cmdline_opts[3].selected = opts.menu;
-	cmdline_opts[4].selected = opts.text;
-	cmdline_opts[5].selected = opts.cscan;
-	cmdline_opts[6].selected = opts.scroll;
-	cmdline_opts[7].selected = opts.subtitles;
-	*/
-	cmdline_opts[0].selected = opts.scanlines;
-	cmdline_opts[1].selected = opts.menu;
-	cmdline_opts[2].selected = opts.text;
-	cmdline_opts[3].selected = opts.cscan;
-	cmdline_opts[4].selected = opts.scroll;
-	cmdline_opts[5].selected = opts.subtitles;
+	cmdline_opts[0].selected = opts.driver;
+	cmdline_opts[1].selected = opts.depth;
+	cmdline_opts[2].selected = opts.scaler;
+	cmdline_opts[3].selected = opts.scanlines;
+	cmdline_opts[4].selected = opts.menu;
+	cmdline_opts[5].selected = opts.text;
+	cmdline_opts[6].selected = opts.cscan;
+	cmdline_opts[7].selected = opts.scroll;
+	cmdline_opts[8].selected = opts.subtitles;
 }
 
 static void
 PropagateResults (void)
 {
 	GLOBALOPTS opts;
-	/*
-	opts.scaler = cmdline_opts[0].selected;
-	opts.scanlines = cmdline_opts[1].selected;
-	opts.music = cmdline_opts[2].selected;
-	opts.menu = cmdline_opts[3].selected;
-	opts.text = cmdline_opts[4].selected;
-	opts.cscan = cmdline_opts[5].selected;
-	opts.scroll = cmdline_opts[6].selected;
-	opts.subtitles = cmdline_opts[7].selected;
-	*/
-	opts.scanlines = cmdline_opts[0].selected;
-	opts.menu = cmdline_opts[1].selected;
-	opts.text = cmdline_opts[2].selected;
-	opts.cscan = cmdline_opts[3].selected;
-	opts.scroll = cmdline_opts[4].selected;
-	opts.subtitles = cmdline_opts[5].selected;
+	opts.driver = cmdline_opts[0].selected;
+	opts.depth = cmdline_opts[1].selected;
+	opts.scaler = cmdline_opts[2].selected;
+	opts.scanlines = cmdline_opts[3].selected;
+	opts.menu = cmdline_opts[4].selected;
+	opts.text = cmdline_opts[5].selected;
+	opts.cscan = cmdline_opts[6].selected;
+	opts.scroll = cmdline_opts[7].selected;
+	opts.subtitles = cmdline_opts[8].selected;
 
 	SetGlobalOptions (&opts);
 }
@@ -504,17 +556,126 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->text = (optWhichFonts == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->cscan = (optWhichCoarseScan == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->scroll = (optSmoothScroll == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
+
+	switch (ScreenColorDepth) 
+	{
+	case 8:
+		opts->depth = OPTVAL_8;
+		break;
+	case 16:
+		opts->depth = OPTVAL_16;
+		break;
+	case 24:
+		opts->depth = OPTVAL_24;
+		break;
+	case 32:
+		opts->depth = OPTVAL_32;
+		break;
+	default:
+		opts->depth = OPTVAL_32+1;
+		break;
+	}
+
+	/* Warning: This is a filthy lie, as it's assuming that the
+	 * res must be one of the options. */
+	switch (ScreenWidthActual)
+	{
+	case 320:
+		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
+		{
+			opts->driver = OPTVAL_320_240_PURE;
+		}
+		else
+		{
+			opts->driver = OPTVAL_320_240_GL;
+		}
+		break;
+	case 640:
+		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
+		{
+			opts->driver = OPTVAL_640_480_PURE;
+		}
+		else
+		{
+			opts->driver = OPTVAL_640_480_GL;
+		}
+		break;
+	case 800:
+		opts->driver = OPTVAL_800_600_GL;
+		break;
+	case 1024:
+		opts->driver = OPTVAL_1024_768_GL;
+		break;
+	}
 }
 
 void
 SetGlobalOptions (GLOBALOPTS *opts)
 {
 	int NewGfxFlags = GfxFlags;
-#if 0   // Conditioned out until graphics reinitialization works.
+	int NewWidth = ScreenWidthActual;
+	int NewHeight = ScreenHeightActual;
+	int NewDepth = ScreenColorDepth;
+	int NewDriver = GraphicsDriver;
+
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BILINEAR;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPT;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPTADV;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_TRISCAN;
+
+	switch (opts->driver) {
+	case OPTVAL_320_240_PURE:
+		NewWidth = 320;
+		NewHeight = 240;
+		NewDriver = TFB_GFXDRIVER_SDL_PURE;
+		break;
+	case OPTVAL_320_240_GL:
+		NewWidth = 320;
+		NewHeight = 240;
+		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
+		break;
+	case OPTVAL_640_480_PURE:
+		NewWidth = 640;
+		NewHeight = 480;
+		NewDriver = TFB_GFXDRIVER_SDL_PURE;
+		break;
+	case OPTVAL_640_480_GL:
+		NewWidth = 640;
+		NewHeight = 480;
+		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
+		break;
+	case OPTVAL_800_600_GL:
+		NewWidth = 800;
+		NewHeight = 600;
+		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
+		break;
+	case OPTVAL_1024_768_GL:
+		NewWidth = 1024;
+		NewHeight = 768;
+		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
+		break;
+	default:
+		fprintf (stderr, "Can't Happen: Impossible value for Driver/Resolution\n");
+		break;
+	}
+
+	switch (opts->depth) {
+	case OPTVAL_8:
+		NewDepth = 8;
+		break;
+	case OPTVAL_16:
+		NewDepth = 16;
+		break;
+	case OPTVAL_24:
+		NewDepth = 24;
+		break;
+	case OPTVAL_32:
+		NewDepth = 32;
+		break;
+	default:
+		fprintf (stderr, "Can't Happen: Impossible value for BPP\n");
+		break;
+	}
 
 	switch (opts->scaler) {
 	case OPTVAL_BILINEAR_SCALE:
@@ -533,14 +694,20 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		/* OPTVAL_NO_SCALE has no equivalent in gfxflags. */
 		break;
 	}
-#endif
 	if (opts->scanlines) {
 		NewGfxFlags |= TFB_GFXFLAGS_SCANLINES;
 	} else {
 		NewGfxFlags &= ~TFB_GFXFLAGS_SCANLINES;
 	}
 
-	GfxFlags = NewGfxFlags;
+	if ((NewWidth != ScreenWidthActual) ||
+	    (NewHeight != ScreenHeightActual) ||
+	    (NewDepth != ScreenColorDepth) ||
+	    (NewDriver != GraphicsDriver) ||
+	    (NewGfxFlags != GfxFlags)) 
+	{
+		TFB_DrawScreen_ReinitVideo (NewDriver, NewGfxFlags, NewWidth, NewHeight, NewDepth);
+	}
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;
 	// optWhichMusic = (opts->music == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichMenu = (opts->menu == OPTVAL_3DO) ? OPT_3DO : OPT_PC;

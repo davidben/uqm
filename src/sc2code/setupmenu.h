@@ -37,8 +37,26 @@ typedef enum {
 	OPTVAL_TRISCAN_SCALE
 } OPT_SCALETYPE;
 
+typedef enum {
+	OPTVAL_320_240_PURE,
+	OPTVAL_640_480_PURE,
+	OPTVAL_320_240_GL,
+	OPTVAL_640_480_GL,
+	OPTVAL_800_600_GL,
+	OPTVAL_1024_768_GL
+} OPT_RESDRIVERTYPE;
+
+typedef enum {
+	OPTVAL_8,
+	OPTVAL_16,
+	OPTVAL_24,
+	OPTVAL_32
+} OPT_DEPTH;
+
 typedef struct globalopts_struct {
 	OPT_SCALETYPE scaler;
+	OPT_RESDRIVERTYPE driver;
+	OPT_DEPTH depth;
 	OPT_ENABLABLE subtitles, scanlines;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll;
 } GLOBALOPTS;

@@ -45,6 +45,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	int i;
 
 	GraphicsDriver = driver;
+	ScreenColorDepth = bpp;
 
 	fprintf (stderr, "Initializing Pure-SDL graphics.\n");
 

@@ -65,6 +65,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	int i, videomode_flags, texture_width, texture_height;
 
 	GraphicsDriver = driver;
+	ScreenColorDepth = bpp;
 
 	fprintf (stderr, "Initializing SDL with OpenGL support.\n");
 

@@ -31,6 +31,7 @@ int ScreenWidth;
 int ScreenHeight;
 int ScreenWidthActual;
 int ScreenHeightActual;
+int ScreenColorDepth;
 int GraphicsDriver;
 int TFB_DEBUG_HALT = 0;
 
