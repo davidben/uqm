@@ -95,8 +95,8 @@ static char menu_string[][11]  = {
 		"",
 		"",
 //PM_QUIT
-		"No, Play",
-		"Yes, Quit",
+		"no, play!",
+		"yes, quit!",
 //PM_ALTSCAN
 		"scan",
 		"starmap",
