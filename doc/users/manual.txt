@@ -38,12 +38,6 @@ combine with -r 320x240.
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
 faster as well -- but it also may not work on older cards.
 
-	-a           (or --openal)
-
-Use OpenAL drivers.  This may produce higher-quality sound, but
-it is not very stable on linux platforms, and may not work well
-with some sound cards.
-
 	-c           (or --scale=mode)
 
 Graphics scaling mode (bilinear, sai or supersai). Default is none.
@@ -92,6 +86,16 @@ Use the .MOD based PC soundtrack everywhere.
 
 Can be "high", "medium", or "low".  Specifies how nice the audio
 sounds.  Slower machines should lower the audio quality.
+
+	--sound      (no short version)
+
+Can be "openal", "mixsdl" or "none". Specifies which driver/mixer
+to use. "openal" is only available when it has been compiled in.
+It may produce higher-quality sound and will probably be faster,
+but it is not very stable on linux platforms, and may not work
+well with some sound cards.
+Use "none" as a last resort if you cannot get other drivers to work,
+or if you have no soundcard.
 
 	-u           (or --nosubtitles)
 	
