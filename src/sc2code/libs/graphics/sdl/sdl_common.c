@@ -120,7 +120,7 @@ TFB_ProcessEvents ()
 				// TODO
 				break;
 			case SDL_VIDEOEXPOSE:    /* Screen needs to be redrawn */
-				TFB_SwapBuffers ();
+				TFB_SwapBuffers (1);
 				break;
 			default:
 				break;
@@ -129,15 +129,15 @@ TFB_ProcessEvents ()
 }
 
 void
-TFB_SwapBuffers ()
+TFB_SwapBuffers (int force_full_redraw)
 {
 #ifdef HAVE_OPENGL
 	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
-		TFB_GL_SwapBuffers ();
+		TFB_GL_SwapBuffers (force_full_redraw);
 	else
-		TFB_Pure_SwapBuffers ();
+		TFB_Pure_SwapBuffers (force_full_redraw);
 #else
-	TFB_Pure_SwapBuffers ();
+	TFB_Pure_SwapBuffers (force_full_redraw);
 #endif
 }
 
@@ -460,7 +460,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		if ((current_fade != 255 && current_fade != last_fade) ||
 			(current_transition != 255 && current_transition != last_transition))
 		{
-			TFB_SwapBuffers(); // if fading, redraw every frame
+			TFB_SwapBuffers (1); // if fading, redraw every frame
 		}
 		else
 		{
@@ -664,7 +664,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		Unlock_DCQ ();
 	}
 
-	TFB_SwapBuffers ();
+	TFB_SwapBuffers (0);
 	RenderedFrames++;
 	BroadcastCondVar (RenderingCond);
 }

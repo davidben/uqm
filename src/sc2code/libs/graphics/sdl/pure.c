@@ -25,6 +25,7 @@ static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
 static int gfx_flags;
+static int last_fade_amount = 255, last_transition_amount = 255;
 
 static SDL_Surface *
 Create_Screen (SDL_Surface *template)
@@ -220,18 +221,25 @@ static void ScanLines (SDL_Surface *dst)
 }
 
 void
-TFB_Pure_SwapBuffers ()
+TFB_Pure_SwapBuffers (int force_full_redraw)
 {
 	int fade_amount = FadeAmount;
 	int transition_amount = TransitionAmount;
 	SDL_Rect updated;
 
-	updated.x = TFB_BBox.region.corner.x;
-	updated.y = TFB_BBox.region.corner.y;
-	updated.w = TFB_BBox.region.extent.width;
-	updated.h = TFB_BBox.region.extent.height;
-		
-	if ((transition_amount != 255) || (fade_amount != 255))
+	if (last_fade_amount != 255 || last_transition_amount != 255)
+		force_full_redraw = 1;
+	last_fade_amount = fade_amount;
+	last_transition_amount = transition_amount;
+
+	if (!force_full_redraw)
+	{
+		updated.x = TFB_BBox.region.corner.x;
+		updated.y = TFB_BBox.region.corner.y;
+		updated.w = TFB_BBox.region.extent.width;
+		updated.h = TFB_BBox.region.extent.height;
+	}
+	else
 	{
 		updated.x = updated.y = 0;
 		updated.w = ScreenWidth;
@@ -276,7 +284,7 @@ TFB_Pure_SwapBuffers ()
 
 		SDL_LockSurface (SDL_Video);
 		SDL_LockSurface (backbuffer);
-		
+
 		if (gfx_flags & TFB_GFXFLAGS_SCALE_BILINEAR)
 			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
 		else if (gfx_flags & TFB_GFXFLAGS_SCALE_BIADAPT)
@@ -291,6 +299,8 @@ TFB_Pure_SwapBuffers ()
 		
 		SDL_UnlockSurface (backbuffer);
 		SDL_UnlockSurface (SDL_Video);
+
+		SDL_UpdateRect (SDL_Video, updated.x * 2, updated.y * 2, updated.w * 2, updated.h * 2);
 	}
 	else
 	{
@@ -317,9 +327,9 @@ TFB_Pure_SwapBuffers ()
 				SDL_BlitSurface (fade_white, NULL, SDL_Video, NULL);
 			}
 		}
-	}
 
-	SDL_UpdateRect (SDL_Video, 0, 0, 0, 0);
+		SDL_UpdateRect (SDL_Video, updated.x, updated.y, updated.w, updated.h);
+	}
 }
 
 #endif

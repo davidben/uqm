@@ -286,7 +286,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	const int w = src->w, h = src->h, dw = dst->w;
 	int xend, yend;
 	int dsrc, ddst;
-	SDL_Rect region = *r;
+	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 
@@ -297,12 +297,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	limits.y = 0;
 	limits.w = src->w;
 	limits.h = src->h;
-	Scale_ExpandRect (&region, 2, &limits);
+	Scale_ExpandRect (region, 2, &limits);
 
-	xend = region.x + region.w;
-	yend = region.y + region.h;
-	dsrc = w - region.w;
-	ddst = (dw - region.w) * 2;
+	xend = region->x + region->w;
+	yend = region->y + region->h;
+	dsrc = w - region->w;
+	ddst = (dw - region->w) * 2;
 
 	switch (fmt->BytesPerPixel)
 	{
@@ -316,12 +316,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -514,12 +514,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -712,12 +712,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				pixval_tl = BIADAPT_GETPIX (src_p);
 				
@@ -912,7 +912,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	const int w = src->w, h = src->h, dw = dst->w;
 	int xend, yend;
 	int dsrc, ddst;
-	SDL_Rect region = *r;
+	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 	// for clarity purposes, the 'pixels' array here is transposed
@@ -960,12 +960,12 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	limits.y = 0;
 	limits.w = src->w;
 	limits.h = src->h;
-	Scale_ExpandRect (&region, 2, &limits);
+	Scale_ExpandRect (region, 2, &limits);
 
-	xend = region.x + region.w;
-	yend = region.y + region.h;
-	dsrc = w - region.w;
-	ddst = (dw - region.w) * 2;
+	xend = region->x + region->w;
+	yend = region->y + region->h;
+	dsrc = w - region->w;
+	ddst = (dw - region->w) * 2;
 
 	switch (fmt->BytesPerPixel)
 	{
@@ -977,12 +977,12 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				// pixel eqaulity counter
 				int cmatch;
@@ -1429,12 +1429,12 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				// pixel eqaulity counter
 				int cmatch;
@@ -1881,12 +1881,12 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region.y + region.x;
-		dst_p += (dw * region.y + region.x) * 2;
+		src_p += w * region->y + region->x;
+		dst_p += (dw * region->y + region->x) * 2;
 
-		for (y = region.y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
-			for (x = region.x; x < xend; ++x, ++src_p, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p, ++dst_p)
 			{
 				// pixel eqaulity counter
 				int cmatch;
@@ -2434,6 +2434,14 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	int x, y, i = 0, j, fa, fb, fc, fd;
 	const int w = dst->w, h = dst->h;
 	SDL_PixelFormat *fmt = dst->format;
+
+	// TODO: support for partial updates, expand weight matrix in the code
+	//       so that compiler can optimize the mults?
+	
+	r->x = 0;
+	r->y = 0;
+	r->w = src->w;
+	r->h = src->h;
 
 	switch (dst->format->BytesPerPixel)
 	{

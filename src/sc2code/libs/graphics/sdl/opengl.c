@@ -269,7 +269,7 @@ TFB_GL_DrawQuad (void)
 }
 
 void 
-TFB_GL_SwapBuffers (void)
+TFB_GL_SwapBuffers (int force_full_redraw)
 {
 	int fade_amount;
 	int transition_amount;
@@ -296,18 +296,10 @@ TFB_GL_SwapBuffers (void)
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
 		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 	{
-		SDL_Rect limits;
-
 		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 			Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
 		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
 			Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
-
-		limits.x = 0;
-		limits.y = 0;
-		limits.w = ScreenWidth;
-		limits.h = ScreenHeight;
-		Scale_ExpandRect (&updated, 2, &limits);
 
 		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
 		glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);

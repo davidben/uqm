@@ -19,7 +19,6 @@
 #define _2XSCALERS_H_
 
 void Scale_PrepYUV (void);
-void Scale_ExpandRect (SDL_Rect* rect, int expansion, SDL_Rect* limits);
 void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
