@@ -32,8 +32,5 @@ extern void *HRealloc (void *p, int size);
 
 extern int TFB_DEBUG_HALT;
 
-// from misc.c:
-size_t vstrncpy (char *dest, size_t destLen, ...);
-
 #endif
 
