@@ -1,0 +1,484 @@
+#(=========== This is the PC intro script =========================)
+
+#(Set sequence dimensions; param1=width; param2=height)
+DIMS 320 200
+#(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
+
+#(Play music)
+MUSIC slides/intro/introx.mod
+
+#(Fade all to black; param1=fade time)
+FTB 0
+
+#(Set text fore color; 0xRRGGBB)
+TC FFFFFF
+#(Set text back color; 0xRRGGBB)
+TBC 000000
+
+#(************ Title Screen ******************************************)
+
+#(+++++++++ Title 1 ++++++++++++)
+
+#(Set font to use)
+FONT lbm/starcon.fon
+
+#(Set ANIM to draw slides from)
+ANI slides/intro/title.ani
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 000000
+
+#(Set text vertical position; can be T=top, B=bottom, M=middle)
+TVA B
+
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Fade-in a slide; param1=fade time)
+FTC 4000
+#(Synchronize)
+SYNC 8000
+#(Fade slide to black; param1=fade time)
+FTB 5000
+
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Fade-in a slide; param1=fade time)
+FTC 4000
+#(!!! Milestone Sync 1 !!!)
+SYNC 20000
+#(Text fade-in)
+TFI Proudly ported from the best
+stuff on Earth
+#(Synchronize)
+SYNC 30000
+
+#(Fade slide to black; param1=fade time)
+FTB 7000
+
+#(!!! Milestone Sync 2 !!!)
+SYNC 39000
+
+#(************* Slides *********************************************)
+
+#(Set font to use)
+FONT slides/slides.fon
+
+#(Set ANIM to draw slides from)
+ANI slides/intro/intro.ani
+
+#(Set text vertical position; can be T=top, B=bottom, M=middle)
+TVA T
+
+#(++++++++++++++++++++ Slide 1 ++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 1018BC
+
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Fade-in a slide; param1=fade time)
+FTC 700
+#(Text fade-in)
+TFI There were many great battles...
+#(Sync)
+SYNC 44000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Earth and her partners in the
+Alliance of Free Stars...
+#(Sync)
+SYNC 51000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Against the evil Ur-Quan and its
+Hierarchy of Battle Thralls.
+#(Sync)
+SYNC 58000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI ...and the Ur-Quan were winning...
+#(Sync)
+SYNC 64000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Meanwhile, on the edge of the
+known frontier, an amazing
+discovery was made...
+#(Sync)
+SYNC 71000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI far beneath the surface of an
+unexplored, alien world...
+#(Sync)
+SYNC 77000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 0
+
+#(Synchronize)
+SYNC 78000
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++ Slide 2 ++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 707070
+
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI A huge underground city...
+#(Sync)
+SYNC 84000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Filled with the technological
+wonders of an advanced alien
+race, the Precursors...
+#(Sync)
+SYNC 93000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Who vanished a thousand
+centuries ago.
+#(Sync)
+SYNC 98000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI But then the main Ur-Quan fleet
+broke through the Alliance's
+defensive line...
+#(Sync)
+SYNC 107000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Isolating the planet, stranding
+the scientists a hundred light
+years away from Earth.
+#(Sync)
+SYNC 116000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI They waited hopefully for a
+rescue vessel...
+#(Sync)
+SYNC 122000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI which never came.
+#(Sync)
+SYNC 126000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 1
+
+#(Synchronize)
+SYNC 127000
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 3 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC FCA030
+
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI 20 years have passed...
+#(Sync)
+SYNC 133000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI We, the survivors of the research
+mission have colonized this world.
+#(Sync)
+SYNC 140000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI We continued our investigation of
+the underground city...
+#(Sync)
+SYNC 147000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI And we have discovered its
+purpose...
+#(Sync)
+SYNC 152000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI It is a factory. 
+#(Sync)
+SYNC 156000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 2
+
+#(Synchronize)
+SYNC 157000
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 4 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC FC480C
+
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI A factory for building starships!
+#(Sync)
+SYNC 163000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI But there aren't enough materials
+to make a complete vessel.
+#(Sync)
+SYNC 169000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI We can finish only the skeleton
+of one starship.
+#(Sync)
+SYNC 175000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI But that must be enough --
+#(Sync)
+SYNC 179000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Because YOU must captain the
+vessel...
+#(Sync)
+SYNC 184000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI And return to Earth!
+#(Sync)
+SYNC 189000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 3
+
+#(Synchronize)
+SYNC 190000
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(+++++++++++++++++++++++ Slide 5 +++++++++++++++++++++++++++)
+
+#(Set text fade in/out color; 0xRRGGBB)
+TFC 000000
+
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Fade-in a slide; param1=fade time)
+FTC 700
+
+#(Text fade-in)
+TFI To travel the great distance,
+you must push through into
+HyperSpace...
+#(Sync)
+SYNC 197000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Find out what has happened over
+these many years...
+#(Sync)
+SYNC 203000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Tell Earth of our plight!
+#(Sync)
+SYNC 207000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI And if the war with the Ur-Quan
+still rages...
+#(Sync)
+SYNC 212000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+#(Wait)
+WAIT 500
+
+#(Text fade-in)
+TFI Fight for Earth and the Alliance,
+as well as you can...
+#(Sync)
+SYNC 218000
+#(Text fade-out)
+TFO
+#(Draw slide; param1=ANI index)
+DRAW 4
+
+#(Synchronize)
+SYNC 220000
+
+#(Fade slide to black; param1=fade time)
+FTB 700
+
+#(***************************** The End ********************************)
