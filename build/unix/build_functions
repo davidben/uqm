@@ -105,9 +105,9 @@ build_rec_dependancies() {
 	mv -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
 }
 
-# Output the .o file for a .c file.
+# Output the .o file for a given .c or .m (Objective-C) file
 build_collect_o_files() {
-	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\${1%.[cm]}.o"
 }
 
 # Output the extra .o file with the complete path

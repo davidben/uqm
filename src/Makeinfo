@@ -1,4 +1,10 @@
 uqm_SUBDIRS="sc2code getopt res"
+case "$OSNAME" in
+	Darwin)
+		uqm_SUBDIRS="$uqm_SUBDIRS darwin"
+		;;
+esac
+
 uqm_CFILES="options.c port.c starcon2.c"
 
 test_CFILES=test.c
