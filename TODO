@@ -41,7 +41,7 @@ Glitches (don't crash the game, medium priority):
 - savegames created in a game from debug and release compiles are not
   interchangable
 - discolouring of progress slider in commander discussion after having just
-  killed the Ilwrath ship (or is it supposed to be like that?)
+  killed the Ilwrath ship (related to colormap problem)
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
@@ -50,9 +50,20 @@ Glitches (don't crash the game, medium priority):
 - Shipyard is using the PC background but the 3DO layout.
 - Shipyard's PC background is not animating.
 - When selling biological data to the Melnorme, the palette for your SIS
-  display is scrambled.
+  display is scrambled (related to colormap problem)
 - QuasiSpace coloration is off - the shinies and your ship are red instead
-  of blackish
+  of blackish (related to colormap problem)
+- Colormaps aka. palette support doesn't work like it should, because some
+  important data was lost when 3do .ani were converted to .pcx
+  - Only solution is to parse 3do ani files again, add the missing byte
+    which indicates what colormap entry each image should use
+  - At the same time, we should prolly remove hotspot etc. information from
+    pcx files and instead add them to new text-based ani files where colormap
+    entry will also be stored
+- When landing to planet surface, crossfaded image is wrong compared to
+  landing position (and so 'flashes' when crossfade ends)
+- Flashing rects aren't perhaps always exactly the size of actual 3do version,
+  it should be checked (for example when selecting ship in fullgame battle)
 
 Implementation bugs (low priority):
 - The main thread is still created by a direct all to the SDL function,
@@ -75,6 +86,7 @@ Stuff still to do (large):
   extensive poking around the 3DO game to make sure that the Human Captain's
   lines are all correct, too.
 - Match timing between subtitles and speech clips
+- Intro and end credits (both 3DO and PC version ones)
 
 Stuff still to do (medium size):
 - oscilloscope
@@ -121,3 +133,8 @@ Questions:
   which we can free when no more memory is available, to allow an emergency
   save.
 - How about an ISO image for a self-contained linux CD which boots into SC2?
+- Currently speechs and mod music doesn't sound very good as SDL_mixer
+  doesn't interpolate them in any way.. 11khz data really needs that,
+  compare the wavs to winamp for example.
+  Should we add that functionality to SDL_mixer ourselves, or implement
+  all mixing from scratch using only base SDL audio, or what?
