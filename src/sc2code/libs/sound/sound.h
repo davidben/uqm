@@ -84,6 +84,8 @@ typedef struct tfb_soundsource
 	uint32 sbuf_size;
 	uint32 sbuf_offset;
 	uint32 sbuf_lasttime;
+	// keep track for paused tracks
+	uint32 pause_time;
 } TFB_SoundSource;
 
 

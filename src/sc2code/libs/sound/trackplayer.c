@@ -99,6 +99,8 @@ ResumeTrack ()
 		playing = PlayingStream (SPEECH_SOURCE);
 		if (!track_pos_changed && !playing && state == TFBSOUND_PAUSED)
 		{
+			/*adjust start time so the slider doesn't go crazy*/
+			soundSource[SPEECH_SOURCE].start_time += GetTimeCounter () - soundSource[SPEECH_SOURCE].pause_time;
 			ResumeStream (SPEECH_SOURCE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
@@ -532,6 +534,7 @@ PauseTrack ()
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
+		soundSource[SPEECH_SOURCE].pause_time = GetTimeCounter ();
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
 }

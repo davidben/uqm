@@ -154,7 +154,7 @@ PauseGame (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		SuspendGameClock ();
-	else if (CommData.ConversationPhrases && PlayingTrack ())
+	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
 	SetSemaphore (GraphicsSem);
@@ -198,7 +198,7 @@ PauseGame (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();
-	else if (CommData.ConversationPhrases && PlayingTrack ())
+	if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();
 
 	TaskSwitch ();
