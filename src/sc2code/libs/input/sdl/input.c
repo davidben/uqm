@@ -74,55 +74,50 @@ static void
 initKeyConfig(void) {
 	char userFile[PATH_MAX];    /* System-wide key config */
 	int cb;
+	FILE *fp;
+	int errors;
 	
 	cb = snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir);
 	assert (cb != -1);
 			// Verified before: strlen (configDir) <= PATH_MAX - 13
 	
 	if (fileExists (userFile)) {
-		FILE *fp;
-		int errors;
-		/* Should this really be an OpenResFile?  The user
-		 * won't be putting his configuration data in a .zip,
-		 * will he? */
 		fp = res_OpenResFile (userFile, "rt");
-		errors = VControl_ReadConfiguration (fp);
-		res_CloseResFile (fp);
-		if (errors)
-		{
-			fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
-			/* This code should go away in 0.3; it's just
-			 * to force people to upgrade and forestall a 
-			 * bunch of "none of my keys work anymore" bugs.
-			 */
-			if (errors > 5)
-			{
-				fprintf (stderr, "Hey!  you haven't updated your keys.cfg to use the new system, have you?\nDelete %s and try again.\n", userFile);
-			}
-			else
-			{
-				fprintf (stderr, "Repair your %s file to continue.\n", userFile);
-			}
-
-			exit (1);
-		}		
 	} else {
-		FILE *fp = fopen (userFile, "wt");
-		TFB_CreateDefaultConfig ();
-		
-		if (fp == NULL) 
+                if (copyFile ("starcon.key", userFile) == -1) 
 		{
-			fprintf(stderr, "Warning: Could not copy default key config "
-					"to %s: %s.\n", userFile, strerror (errno));
-		} 
+                        fprintf(stderr, "Warning: Could not copy default key config "
+                                        "to %s: %s.\n", userFile, strerror (errno));
+                } 
 		else
 		{
-			fprintf(stderr, "Copying default key config file to %s.\n",
-					userFile);
-			VControl_Dump (fp);
-			fclose (fp);
+                        fprintf(stderr, "Copying default key config file to %s.\n",
+                                        userFile);
 		}
+		fp = res_OpenResFile ("starcon.key", "rt");
 	}
+	errors = VControl_ReadConfiguration (fp);
+	res_CloseResFile (fp);
+	if (errors)
+	{
+		fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
+		/* This code should go away in 0.3; it's just
+		 * to force people to upgrade and forestall a 
+		 * bunch of "none of my keys work anymore" bugs.
+		 */
+		if (errors > 5)
+		{
+			fprintf (stderr, "Hey!  you haven't updated your keys.cfg to use the new system, have you?\nDelete %s and try again.\n", userFile);
+			fprintf (stderr, "If you've done that and it STILL doesn't work, make sure your content/starcon.key is up to date.\n");
+		}
+		else
+		{
+			fprintf (stderr, "Repair your %s file to continue.\n", userFile);
+		}
+		
+		exit (1);
+	}		
+
 }
 
 int 
@@ -176,78 +171,6 @@ void
 TFB_UninitInput (void)
 {
 	VControl_Uninit ();
-}
-
-void
-TFB_CreateDefaultConfig (void)
-{
-	/* Generate the default control structures.  Arrow keys have
-	 * the expected effect.  ENTER is menu select, SPACE is menu
-	 * cancel.  In combat or on planet surfaces, move with the
-	 * arrow keys, or thrust with ENTER, fire with SPACE or right
-	 * SHIFT, and do your special with right CTRL.  Escaping is
-	 * handled by the ESCAPE key.  Player 2 flies with W-A-D,
-	 * fires with T, and does his special with Y.  Pause is F1,
-	 * Exit is F10, and Abort is F12.  Zooming may be done with
-	 * Page Up or Page Down, or with the + and - keys on the
-	 * numeric keypad.
-	 *
-	 * All references to "the arrow keys" or "ENTER" may use the
-	 * numeric keypad. */
-	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateMenuState.up);
-	VControl_AddKeyBinding (SDLK_DOWN,       (int *)&ImmediateMenuState.down);
-	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateMenuState.left);
-	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateMenuState.right);
-	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateMenuState.select);
-	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateMenuState.up);
-	VControl_AddKeyBinding (SDLK_KP2,        (int *)&ImmediateMenuState.down);
-	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateMenuState.left);
-	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateMenuState.right);
-	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateMenuState.select);
-	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateMenuState.cancel);
-	VControl_AddKeyBinding (SDLK_PAGEUP,     (int *)&ImmediateMenuState.page_up);
-	VControl_AddKeyBinding (SDLK_PAGEDOWN,   (int *)&ImmediateMenuState.page_down);
-	VControl_AddKeyBinding (SDLK_KP9,        (int *)&ImmediateMenuState.page_up);
-	VControl_AddKeyBinding (SDLK_KP3,        (int *)&ImmediateMenuState.page_down);
-	VControl_AddKeyBinding (SDLK_PAGEUP,     (int *)&ImmediateMenuState.zoom_in);
-	VControl_AddKeyBinding (SDLK_PAGEDOWN,   (int *)&ImmediateMenuState.zoom_out);
-	VControl_AddKeyBinding (SDLK_KP_PLUS,    (int *)&ImmediateMenuState.zoom_in);
-	VControl_AddKeyBinding (SDLK_KP_MINUS,   (int *)&ImmediateMenuState.zoom_out);
-
-	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateInputState.p1_thrust);
-	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateInputState.p1_thrust);
-	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateInputState.p1_thrust);
-	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateInputState.p1_thrust);
-	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateInputState.p1_left);
-	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateInputState.p1_left);
-	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateInputState.p1_right);
-	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateInputState.p1_right);
-	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateInputState.p1_weapon);
-	VControl_AddKeyBinding (SDLK_RSHIFT,     (int *)&ImmediateInputState.p1_weapon);
-	VControl_AddKeyBinding (SDLK_RCTRL,      (int *)&ImmediateInputState.p1_special);
-	VControl_AddKeyBinding (SDLK_ESCAPE,     (int *)&ImmediateInputState.p1_escape);
-
-	VControl_AddKeyBinding (SDLK_e,          (int *)&ImmediateInputState.p2_thrust);
-	VControl_AddKeyBinding (SDLK_s,          (int *)&ImmediateInputState.p2_left);
-	VControl_AddKeyBinding (SDLK_f,          (int *)&ImmediateInputState.p2_right);
-	VControl_AddKeyBinding (SDLK_q,          (int *)&ImmediateInputState.p2_weapon);
-	VControl_AddKeyBinding (SDLK_a,          (int *)&ImmediateInputState.p2_special);
-
-	VControl_AddKeyBinding (SDLK_KP8,        (int *)&ImmediateInputState.lander_thrust);
-	VControl_AddKeyBinding (SDLK_UP,         (int *)&ImmediateInputState.lander_thrust);
-	VControl_AddKeyBinding (SDLK_RETURN,     (int *)&ImmediateInputState.lander_thrust);
-	VControl_AddKeyBinding (SDLK_KP_ENTER,   (int *)&ImmediateInputState.lander_thrust);
-	VControl_AddKeyBinding (SDLK_KP4,        (int *)&ImmediateInputState.lander_left);
-	VControl_AddKeyBinding (SDLK_LEFT,       (int *)&ImmediateInputState.lander_left);
-	VControl_AddKeyBinding (SDLK_KP6,        (int *)&ImmediateInputState.lander_right);
-	VControl_AddKeyBinding (SDLK_RIGHT,      (int *)&ImmediateInputState.lander_right);
-	VControl_AddKeyBinding (SDLK_SPACE,      (int *)&ImmediateInputState.lander_weapon);
-	VControl_AddKeyBinding (SDLK_RSHIFT,     (int *)&ImmediateInputState.lander_weapon);
-	VControl_AddKeyBinding (SDLK_ESCAPE,     (int *)&ImmediateInputState.lander_escape);
-
-	VControl_AddKeyBinding (SDLK_F1,         (int *)&ImmediateInputState.pause);
-	VControl_AddKeyBinding (SDLK_F10,        (int *)&ImmediateInputState.exit);
-	VControl_AddKeyBinding (SDLK_F12,        (int *)&ImmediateInputState.abort);
 }
 
 void
