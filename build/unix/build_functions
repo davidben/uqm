@@ -20,13 +20,13 @@ usage() {
 	echo "Main build script"
 	echo
 	echo "Syntax:"
-	echo "    ./build <target>"
-	echo "    ./build <target> config"
-	echo "    ./build <target> depend"
-	echo "    ./build <target> clean"
-	echo "    ./build <target> install"
-	echo "    ./build cleanall"
-	echo "    ./build distclean"
+	echo "    ./build.sh <target>"
+	echo "    ./build.sh <target> config"
+	echo "    ./build.sh <target> depend"
+	echo "    ./build.sh <target> clean"
+	echo "    ./build.sh <target> install"
+	echo "    ./build.sh cleanall"
+	echo "    ./build.sh distclean"
 	echo
 	echo "Valid targets:"
 	for TARGET in $TARGETS; do
