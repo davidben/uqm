@@ -1,4 +1,5 @@
 0.2:
+- More memory leak fixes in 3do_getbody.c, from PhracturedBlue
 - Fixed memory leak in _ReleaseCelData, from PhracturedBlue.
 - Fixed mutex deadlock in 3do_blt.c, from tamlin
 - 'additional credits' amount for Melnorme correct now, by Windplume.
