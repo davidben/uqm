@@ -432,7 +432,7 @@ TFB_ComputeFPS ()
 	if (fps_counter > FPS_PERIOD)
 	{
 		fprintf (stderr, "fps %.2f, effective %.2f\n",
-				(float)FPS_PERIOD / delta_time,
+				1000.0 / delta_time,
 				1000.0 * RenderedFrames / fps_counter);
 
 		fps_counter = 0;
