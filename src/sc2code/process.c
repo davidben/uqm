@@ -275,7 +275,7 @@ CalcReduction (SIZE dx, SIZE dy)
 #ifdef OLD_ZOOM
 static VIEW_STATE
 CalcView (PPOINT pNewScrollPt, BYTE next_reduction,
-		PSIZE pdx, PSIZE pdy)
+		PSIZE pdx, PSIZE pdy, COUNT ships_alive)
 #else
 static VIEW_STATE
 CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
@@ -808,6 +808,25 @@ InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI)
 
 PRIM_LINKS DisplayLinks;
 
+#ifdef OLD_ZOOM
+/* old fixed-step zoom style */
+static inline COORD
+CalcDisplayCoord (COORD c, COORD orgc, BYTE reduction)
+{
+	return (c - orgc) >> reduction;
+}
+
+#else /* OLD_ZOOM */
+
+/* new continuous zoom style */
+static inline COORD
+CalcDisplayCoord (COORD c, COORD orgc, SIZE reduction)
+{
+	/* correcting rounding error here */
+	return (((c - orgc) << ZOOM_SHIFT) + (reduction >> 1)) / reduction;
+}
+#endif /* OLD_ZOOM */
+
 static void
 PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 		SIZE scroll_y)
@@ -912,46 +931,26 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 
 					next.x = WRAP_X (ElementPtr->current.location.x + delta.x);
 					next.y = WRAP_Y (ElementPtr->current.location.y + delta.y);
-#ifdef OLD_ZOOM
 					DisplayArray[ElementPtr->PrimIndex].Object.Line.first.x =
-							(next.x - SpaceOrg.x) >> reduction;
+							CalcDisplayCoord (next.x, SpaceOrg.x, reduction);
 					DisplayArray[ElementPtr->PrimIndex].Object.Line.first.y =
-							(next.y - SpaceOrg.y) >> reduction;
-#else
-					DisplayArray[ElementPtr->PrimIndex].Object.Line.first.x =
-							((next.x - SpaceOrg.x) << ZOOM_SHIFT) / reduction;
-					DisplayArray[ElementPtr->PrimIndex].Object.Line.first.y =
-							((next.y - SpaceOrg.y) << ZOOM_SHIFT) / reduction;
-#endif
+							CalcDisplayCoord (next.y, SpaceOrg.y, reduction);
+
 					next.x += dx;
 					next.y += dy;
-#ifdef OLD_ZOOM
 					DisplayArray[ElementPtr->PrimIndex].Object.Line.second.x =
-							(next.x - SpaceOrg.x) >> reduction;
+							CalcDisplayCoord (next.x, SpaceOrg.x, reduction);
 					DisplayArray[ElementPtr->PrimIndex].Object.Line.second.y =
-							(next.y - SpaceOrg.y) >> reduction;
-#else
-					DisplayArray[ElementPtr->PrimIndex].Object.Line.second.x =
-							((next.x - SpaceOrg.x) << ZOOM_SHIFT) / reduction;
-					DisplayArray[ElementPtr->PrimIndex].Object.Line.second.y =
-							((next.y - SpaceOrg.y) << ZOOM_SHIFT) / reduction;
-#endif
+							CalcDisplayCoord (next.y, SpaceOrg.y, reduction);
 				}
 				else
 				{
 					next.x = WRAP_X (ElementPtr->next.location.x + delta.x);
 					next.y = WRAP_Y (ElementPtr->next.location.y + delta.y);
-#ifdef OLD_ZOOM
 					DisplayArray[ElementPtr->PrimIndex].Object.Point.x =
-							(next.x - SpaceOrg.x) >> reduction;
+							CalcDisplayCoord (next.x, SpaceOrg.x, reduction);
 					DisplayArray[ElementPtr->PrimIndex].Object.Point.y =
-							(next.y - SpaceOrg.y) >> reduction;
-#else
-					DisplayArray[ElementPtr->PrimIndex].Object.Point.x =
-							((next.x - SpaceOrg.x) << ZOOM_SHIFT) / reduction;
-					DisplayArray[ElementPtr->PrimIndex].Object.Point.y =
-							((next.y - SpaceOrg.y) << ZOOM_SHIFT) / reduction;
-#endif
+							CalcDisplayCoord (next.y, SpaceOrg.y, reduction);
 
 					if (ObjType == STAMP_PRIM
 							|| ObjType == STAMPFILL_PRIM)
@@ -1085,12 +1084,14 @@ RedrawQueue (BOOLEAN clear)
 			nth_frame += skip_frames;
 			if (clear)
 				ClearDrawable (); // this is for BATCH_BUILD_PAGE effect, but not scaled by SetGraphicScale
+#ifndef OLD_ZOOM
 			{
 				COUNT index, scale;
 
 				CALC_ZOOM_STUFF (&index, &scale);
 				SetGraphicScale (scale);
 			}
+#endif
 			DrawBatch (DisplayArray, DisplayLinks, 0);//BATCH_BUILD_PAGE);
 			SetGraphicScale (0);
 		}
