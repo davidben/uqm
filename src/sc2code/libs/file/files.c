@@ -145,7 +145,7 @@ copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,
 	savedErrno = errno;
 
 #ifdef DEBUG
-	fprintf (stderr, "Error while copying: %s\n", strerror (errno))
+	fprintf (stderr, "Error while copying: %s\n", strerror (errno));
 #endif
 
 	if (srcHandle != NULL)
