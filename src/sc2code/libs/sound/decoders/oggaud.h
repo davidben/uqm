@@ -14,23 +14,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* .duk sound track decoder */
+/* Ogg Vorbis adapter */
 
-#ifndef DUKAUD_H
-#define DUKAUD_H
+#ifndef OGGAUD_H
+#define OGGAUD_H
 
 #include "decoder.h"
 
-extern TFB_SoundDecoderFuncs duka_DecoderVtbl;
+extern TFB_SoundDecoderFuncs ova_DecoderVtbl;
 
-typedef enum
-{
-	// positive values are the same as in errno
-	dukae_None = 0,
-	dukae_Unknown = -1,
-	dukae_BadFile = -2,
-	dukae_BadArg = -3,
-	dukae_Other = -1000,
-} DukAud_Error;
-
-#endif // DUKAUD_H
+#endif // OGGAUD_H

@@ -164,7 +164,8 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 			}
 			else
 			{
-				fprintf (stderr, "    decoder: %s, rate %d format %x\n", (*pmus)->decoder->decoder_info,
+				fprintf (stderr, "    decoder: %s, rate %d format %x\n",
+					SoundDecoder_GetName ((*pmus)->decoder),
 					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
 
 				(*pmus)->num_buffers = 64;

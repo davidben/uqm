@@ -14,16 +14,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* Loader for .wav files */
+/* Wave decoder */
 
 #ifndef WAV_H
 #define WAV_H
 
-#include "port.h"
-#include "types.h"
-#include "uio.h"
+#include "decoder.h"
 
-void LoadWAVFile (uio_DirHandle *dir, const char *file, uint32 *format,
-		void **data, uint32 *size, uint32 *freq, bool want_big_endian);
+extern TFB_SoundDecoderFuncs wava_DecoderVtbl;
 
 #endif

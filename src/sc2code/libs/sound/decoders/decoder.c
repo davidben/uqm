@@ -23,60 +23,123 @@
 #include <fcntl.h>
 #endif
 
-#include <stdio.h>
 #include <string.h>
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
+#include <stdlib.h>
 #include "port.h"
 #include "libs/misc.h"
-#include "libs/uio.h"
 #include "decoder.h"
 #include "wav.h"
-#include "libs/sound/sound_common.h"
-#include "mikmod/mikmod.h"
 #include "dukaud.h"
+#include "modaud.h"
+#include "oggaud.h"
 
 extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
 		// Can't '#include "libs/file.h"' due to some type conflicts.
 
-MIKMODAPI extern struct MDRIVER drv_openal;
 
-static char *decoder_info_wav = "Wav";
-static char *decoder_info_mod = "MikMod";
-static char *decoder_info_ogg = "Ogg Vorbis";
-static char *decoder_info_nul = "None";
-static char *decoder_info_duk = "DukAud";
+#define THIS_PTR TFB_SoundDecoder*
+
+static const char* bufa_GetName (void);
+static bool bufa_InitModule (int flags);
+static void bufa_TermModule ();
+static uint32 bufa_GetStructSize (void);
+static int bufa_GetError (THIS_PTR);
+static bool bufa_Init (THIS_PTR);
+static void bufa_Term (THIS_PTR);
+static bool bufa_Open (THIS_PTR, uio_DirHandle *dir, const char *filename);
+static void bufa_Close (THIS_PTR);
+static int bufa_Decode (THIS_PTR, void* buf, sint32 bufsize);
+static uint32 bufa_Seek (THIS_PTR, uint32 pcm_pos);
+static uint32 bufa_GetFrame (THIS_PTR);
+
+TFB_SoundDecoderFuncs bufa_DecoderVtbl = 
+{
+	bufa_GetName,
+	bufa_InitModule,
+	bufa_TermModule,
+	bufa_GetStructSize,
+	bufa_GetError,
+	bufa_Init,
+	bufa_Term,
+	bufa_Open,
+	bufa_Close,
+	bufa_Decode,
+	bufa_Seek,
+	bufa_GetFrame,
+};
+
+typedef struct tfb_bufsounddecoder
+{
+	// always the first member
+	TFB_SoundDecoder decoder;
+
+	// private
+	void* data;
+	uint32 max_pcm;
+	uint32 cur_pcm;
+
+} TFB_BufSoundDecoder;
+
+#define SD_MIN_SIZE   (sizeof (TFB_BufSoundDecoder))
+
+static const char* nula_GetName (void);
+static bool nula_InitModule (int flags);
+static void nula_TermModule ();
+static uint32 nula_GetStructSize (void);
+static int nula_GetError (THIS_PTR);
+static bool nula_Init (THIS_PTR);
+static void nula_Term (THIS_PTR);
+static bool nula_Open (THIS_PTR, uio_DirHandle *dir, const char *filename);
+static void nula_Close (THIS_PTR);
+static int nula_Decode (THIS_PTR, void* buf, sint32 bufsize);
+static uint32 nula_Seek (THIS_PTR, uint32 pcm_pos);
+static uint32 nula_GetFrame (THIS_PTR);
+
+TFB_SoundDecoderFuncs nula_DecoderVtbl = 
+{
+	nula_GetName,
+	nula_InitModule,
+	nula_TermModule,
+	nula_GetStructSize,
+	nula_GetError,
+	nula_Init,
+	nula_Term,
+	nula_Open,
+	nula_Close,
+	nula_Decode,
+	nula_Seek,
+	nula_GetFrame,
+};
+
+typedef struct tfb_nullsounddecoder
+{
+	// always the first member
+	TFB_SoundDecoder decoder;
+
+	// private
+	uint32 cur_pcm;
+
+} TFB_NullSoundDecoder;
+
+#undef THIS_PTR
+
+
+static struct sd_DecoderInfo
+{
+	const char* ext;
+	TFB_SoundDecoderFuncs* funcs;
+}
+sd_decoders[] = 
+{
+	{"wav", &wava_DecoderVtbl},
+	{"mod", &moda_DecoderVtbl},
+	{"ogg", &ova_DecoderVtbl},
+	{"duk", &duka_DecoderVtbl},
+	{NULL, NULL}	// null term
+};
+
 
 TFB_DecoderFormats decoder_formats;
-
-static size_t ogg_read (void *ptr, size_t size, size_t nmemb, void *datasource)
-{
-	return uio_fread ((uio_Stream *) ptr, size, nmemb, datasource);
-}
-
-static int ogg_seek (void *datasource, ogg_int64_t offset, int whence)
-{
-	long off = (long) offset;
-	return uio_fseek ((uio_Stream *) datasource, off, whence);
-}
-
-static int ogg_close (void *datasource)
-{
-	return uio_fclose ((uio_Stream *) datasource);
-}
-
-static long ogg_tell(void *datasource)
-{
-	return uio_ftell ((uio_Stream *) datasource);
-}
-
-static const ov_callbacks ogg_callbacks = 
-{
-	ogg_read,
-	ogg_seek,
-	ogg_close, 
-	ogg_tell,
-};
 
 /* change endianness of 16bit words
  * Only works optimal when 'data' is aligned on a 32 bits boundary.
@@ -101,10 +164,19 @@ SoundDecoder_SwapWords (uint16* data, uint32 size)
 	}
 }
 
-sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
+const char*
+SoundDecoder_GetName (TFB_SoundDecoder *decoder)
 {
-    MikMod_RegisterDriver (&drv_openal);
-    MikMod_RegisterAllLoaders ();
+	if (!decoder || !decoder->funcs)
+		return "(Null)";
+	return decoder->funcs->GetName ();
+}
+
+sint32
+SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
+{
+	struct sd_DecoderInfo* info;
+	sint32 ret = 0;
 
 	if (!formats)
 	{
@@ -113,802 +185,628 @@ sint32 SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 	}
 	decoder_formats = *formats;
 
-	if (flags & TFB_SOUNDFLAGS_HQAUDIO)
+	for (info = sd_decoders; info->ext; info++)
 	{
-		md_mode = DMODE_HQMIXER|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
-	    md_mixfreq = 44100;
-		md_reverb = 1;
-	}
-	else if (flags & TFB_SOUNDFLAGS_LQAUDIO)
-	{
-		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS;
-		md_mixfreq = 22050;
-		md_reverb = 0;
-	}
-	else
-	{
-		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP;
-		md_mixfreq = 44100;
-		md_reverb = 0;
-	}
-	
-	md_pansep = 64;
-
-	if (MikMod_Init (""))
-	{
-		fprintf (stderr, "SoundDecoder_Init(): MikMod_Init failed, %s\n", 
-			MikMod_strerror (MikMod_errno));
-		return 1;		
+		if (!info->funcs->InitModule (flags))
+		{
+			fprintf (stderr, "SoundDecoder_Init(): %s audio decoder init failed\n",
+					info->funcs->GetName ());
+			ret = 1;
+		}
 	}
 
 	return 0;
 }
 
-void SoundDecoder_Uninit (void)
+void
+SoundDecoder_Uninit (void)
 {
-	MikMod_Exit ();
+	struct sd_DecoderInfo* info;
+
+	for (info = sd_decoders; info->ext; info++)
+		info->funcs->TermModule ();
 }
 
-TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir, char *filename,
+TFB_SoundDecoder*
+SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		uint32 buffer_size, uint32 startTime, sint32 runTime)
 {	
-	int i;
+	const char* pext;
+	struct sd_DecoderInfo* info;
+	TFB_SoundDecoderFuncs* funcs;
+	TFB_SoundDecoder* decoder;
+	uint32 struct_size;
 
-	i = strlen (filename) - 3;
+	pext = strrchr (filename, '.');
+	if (!pext)
+	{
+		fprintf (stderr, "SoundDecoder_Load(): Unknown file type (%s)\n",
+				filename);
+		return NULL;
+	}
+	++pext;
+
+	for (info = sd_decoders;
+			info->ext && strcmp (info->ext, pext) != 0;
+			++info)
+		;
+	if (!info->ext)
+	{
+		fprintf (stderr, "SoundDecoder_Load(): Unsupported file type (%s)\n",
+				filename);
+		return NULL;
+	}
+	funcs = info->funcs;
+
 	if (!fileExists2 (dir, filename))
 	{
 		if (runTime)
 		{
-			TFB_SoundDecoder *decoder;
 			runTime = abs (runTime);
-			decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
-			decoder->buffer = HCalloc (buffer_size);
-			decoder->buffer_size = buffer_size;
-			decoder->frequency = 11025;
-			decoder->looping = false;
-			decoder->error = SOUNDDECODER_OK;
-			decoder->length = (float)(runTime / 1000.0);
-
-			decoder->start_sample = 0;
-			decoder->end_sample = (unsigned long)(decoder->length * decoder->frequency);
-
-			decoder->format = decoder_formats.mono16;
-			decoder->pos = 0;
-
-			decoder->decoder_info = decoder_info_nul;
-			decoder->type = SOUNDDECODER_NULL;
-			decoder->dir = dir;
-			decoder->filename = (char *) HMalloc (strlen (filename) + 1);
-			strcpy (decoder->filename, filename);
-			decoder->data = NULL;
-			return decoder;
+			startTime = 0;
+			funcs = &nula_DecoderVtbl;
 		}
 		else
 		{
-			fprintf (stderr, "SoundDecoder_Load(): %s doesn't exist\n", filename);
+			fprintf (stderr, "SoundDecoder_Load(): %s does not exist\n",
+					filename);
 			return NULL;
 		}
 	}
 
-	if (!strcmp (&filename[i], "wav"))
+	struct_size = info->funcs->GetStructSize ();
+	if (struct_size < SD_MIN_SIZE)
+		struct_size = SD_MIN_SIZE;
+
+	decoder = (TFB_SoundDecoder*) HCalloc (struct_size);
+	decoder->funcs = funcs;
+	if (!decoder->funcs->Init (decoder))
 	{
-		TFB_SoundDecoder *decoder;
-		
-		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as wav\n", filename);
-
-		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = NULL;
-		decoder->buffer_size = 0;
-		decoder->format = 0;
-		decoder->frequency = 0;
-		decoder->looping = false;
-		decoder->error = SOUNDDECODER_OK;
-		decoder->length = 0; // FIXME should be calculated
-		decoder->decoder_info = decoder_info_wav;
-		decoder->type = SOUNDDECODER_WAV;
-		decoder->dir = dir;
-		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
-		decoder->start_sample = 0;
-		decoder->end_sample = 0;
-		decoder->pos = 0;
-		strcpy (decoder->filename, filename);
-
-		return decoder;
+		fprintf (stderr, "SoundDecoder_Load(): "
+				"%s decoder instance failed init\n",
+				decoder->funcs->GetName ());
+		HFree (decoder);
+		return NULL;
 	}
-	else if (!strcmp (&filename[i], "mod"))
+
+	if (!decoder->funcs->Open (decoder, dir, filename))
 	{
-		TFB_SoundDecoder *decoder;
-		MODULE *mod;
-		
-		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as mod\n", filename);
-
-		mod = Player_Load (dir, filename, 4, 0);
-		if (!mod)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): couldn't load %s\n", filename);
-			return NULL;
-		}
-
-		mod->extspd = 1;
-		mod->panflag = 1;
-		mod->wrap = 0;
-		mod->loop = 1;
-
-		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = HMalloc (buffer_size);
-		decoder->buffer_size = buffer_size;
-		decoder->format = decoder_formats.stereo16;
-		decoder->frequency = md_mixfreq;
-		decoder->looping = false;
-		decoder->error = SOUNDDECODER_OK;
-		decoder->length = 0; // FIXME way to obtain this from mikmod?
-		decoder->decoder_info = decoder_info_mod;
-		decoder->type = SOUNDDECODER_MOD;
-		decoder->dir = dir;
-		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
-		decoder->start_sample = 0;
-		decoder->end_sample = 0;
-		decoder->pos = 0;
-		strcpy (decoder->filename, filename);
-		decoder->data = mod;
-
-		return decoder;
-	}
-	else if (!strcmp (&filename[i], "ogg"))
-	{
-		int rc;
-		uio_Stream *vfp;
-		OggVorbis_File *vf;
-		vorbis_info *vinfo;
-		TFB_SoundDecoder *decoder;
-		
-		//fprintf (stderr, "SoundDecoder_Load(): %s interpreted as ogg\n", filename);
-
-		vf = (OggVorbis_File *) HMalloc (sizeof (OggVorbis_File));
-		if (!vf)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): couldn't allocate mem for OggVorbis_File\n");
-			return NULL;
-		}
-
-		vfp = uio_fopen (dir, filename, "rb");
-		if (vfp == NULL)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): couldn't open %s\n", filename);
-			HFree (vf);
-			return NULL;
-		}
-
-		rc = ov_open_callbacks (vfp, vf, NULL, 0, ogg_callbacks);
-		if (rc != 0)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): ov_open_callbacks failed for %s, error code %d\n", filename, rc);
-			uio_fclose (vfp);
-			HFree (vf);
-			return NULL;
-		}
-
-		vinfo = ov_info (vf, -1);
-		if (!vinfo)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): failed to retrieve ogg bitstream info for %s\n", filename);
-	        ov_clear (vf);
-		    HFree (vf);
-			return NULL;
-		}
-		
-		//fprintf (stderr, "SoundDecoder_Load(): ogg bitstream version %d, channels %d, rate %d, length %.2f seconds\n", vinfo->version, vinfo->channels, vinfo->rate, ov_time_total (vf, -1));
-
-		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = HMalloc (buffer_size);
-		decoder->buffer_size = buffer_size;
-		decoder->frequency = vinfo->rate;
-		decoder->looping = false;
-		decoder->error = SOUNDDECODER_OK;
-		decoder->length = (float) ov_time_total (vf, -1) - (startTime / 1000.0f);
-		if (runTime > 0 && runTime / 1000.0 < decoder->length)
-			decoder->length = (float)(runTime / 1000.0);
-
-		decoder->start_sample = decoder->frequency * startTime / 1000;
-		decoder->end_sample = decoder->start_sample + 
-				(unsigned long)(decoder->length * decoder->frequency);
-		if (decoder->start_sample)
-			ov_pcm_seek (vf, decoder->start_sample);
-
-		if (vinfo->channels == 1)
-		{
-			decoder->format = decoder_formats.mono16;
-			decoder->pos = decoder->start_sample * 2;
-		}
-		else
-		{
-			decoder->format = decoder_formats.stereo16;
-			decoder->pos = decoder->start_sample * 4;
-		}
-
-		decoder->decoder_info = decoder_info_ogg;
-		decoder->type = SOUNDDECODER_OGG;
-		decoder->dir = dir;
-		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
-		strcpy (decoder->filename, filename);
-		decoder->data = vf;
-
-		return decoder;
-	}
-	else if (!strcmp (&filename[i], "duk"))
-	{
-		TFB_SoundDecoder *decoder;
-		DukAud_Track* track;
-
-		track = duka_openTrack (dir, filename);
-		if (!track)
-		{
-			fprintf (stderr, "SoundDecoder_Load(): couldn't load %s\n", filename);
-			return NULL;
-		}
-
-		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
-		decoder->buffer = HMalloc (buffer_size);
-		decoder->buffer_size = buffer_size;
-		decoder->frequency = track->rate;
-		decoder->looping = false;
-		decoder->error = SOUNDDECODER_OK;
-		decoder->length = track->length - (startTime / 1000.0f);
-		decoder->start_sample = 0;
-		decoder->end_sample = 0;
-		decoder->pos = 0;
-		
-		if (track->channels == 1)
-			decoder->format = decoder_formats.mono16;
-		else
-			decoder->format = decoder_formats.stereo16;
-
-		decoder->decoder_info = decoder_info_duk;
-		decoder->type = SOUNDDECODER_DUK;
-		decoder->dir = dir;
-		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
-		strcpy (decoder->filename, filename);
-		decoder->data = track;
-
-		return decoder;
-	}
-	else
-	{
-		fprintf (stderr, "SoundDecoder_Load(): %s file format is unsupported\n", filename);
+		fprintf (stderr, "SoundDecoder_Load(): "
+				"%s decoder could not load %s\n",
+				decoder->funcs->GetName (), filename);
+		decoder->funcs->Term (decoder);
+		HFree (decoder);
+		return NULL;
 	}
 
-	return NULL;
+	decoder->buffer = HMalloc (buffer_size);
+	decoder->buffer_size = buffer_size;
+	decoder->looping = false;
+	decoder->error = SOUNDDECODER_OK;
+	decoder->dir = dir;
+	decoder->filename = (char *) HMalloc (strlen (filename) + 1);
+	strcpy (decoder->filename, filename);
+
+	if (decoder->is_null)
+	{	// fake decoder, keeps voiceovers and etc. going
+		decoder->length = (float) (runTime / 1000.0);
+	}
+
+	decoder->length -= startTime / 1000.0f;
+	if (runTime > 0 && runTime / 1000.0 < decoder->length)
+		decoder->length = (float)(runTime / 1000.0);
+
+	decoder->start_sample = decoder->frequency * startTime / 1000;
+	decoder->end_sample = decoder->start_sample + 
+			(unsigned long)(decoder->length * decoder->frequency);
+	if (decoder->start_sample != 0)
+		decoder->funcs->Seek (decoder, decoder->start_sample);
+
+	if (decoder->format == decoder_formats.mono8)
+		decoder->bytes_per_samp = 1;
+	else if (decoder->format == decoder_formats.mono16)
+		decoder->bytes_per_samp = 2;
+	else if (decoder->format == decoder_formats.stereo8)
+		decoder->bytes_per_samp = 2;
+	else if (decoder->format == decoder_formats.stereo16)
+		decoder->bytes_per_samp = 4;
+
+	decoder->pos = decoder->start_sample * decoder->bytes_per_samp;
+
+	return decoder;
 }
 
-uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
+uint32
+SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 {
-	switch (decoder->type)
+	long decoded_bytes;
+	long rc;
+	long buffer_size;
+	uint32 max_bytes = UINT32_MAX;
+	uint8 *buffer;
+
+	if (!decoder || !decoder->funcs)
 	{
-		case SOUNDDECODER_WAV:
-		{
-			fprintf (stderr, "SoundDecoder_Decode(): unimplemented for wav\n");
-			break;
-		}
-		case SOUNDDECODER_MOD:
-		{
-			MODULE *mod = (MODULE *) decoder->data;
-			uint32 decoded_bytes;
-
-			Player_Start (mod);
-			if (!Player_Active())
-			{
-				if (decoder->looping)
-				{
-					fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
-					Player_SetPosition (0);
-					Player_Start (mod);
-				}
-				else
-				{
-					fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
-					decoder->error = SOUNDDECODER_EOF;
-					return 0;
-				}
-			}
-			decoder->error = SOUNDDECODER_OK;
-			decoded_bytes = VC_WriteBytes (decoder->buffer, decoder->buffer_size);
-
-			/* MikMod produces output in machine byte-order
-			 * may need to do a word-swap 
-			 */
-			if (decoded_bytes > 0 &&
-					decoder_formats.big_endian != decoder_formats.want_big_endian &&
-					(decoder->format == decoder_formats.stereo16 ||
-					decoder->format == decoder_formats.mono16))
-			{
-				SoundDecoder_SwapWords (
-						decoder->buffer, decoded_bytes);
-			}
-			return decoded_bytes;
-		}
-		case SOUNDDECODER_OGG:
-		{
-			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			uint32 decoded_bytes = 0, count = 0;
-			long rc;
-			int bitstream;
-			uint32 max_bytes, buffer_size, close_on_done = 0;
-			char *buffer = (char *) decoder->buffer;
-
-			if (! decoder->looping)
-			{
-				if (decoder->format == decoder_formats.stereo16)
-					max_bytes = decoder->end_sample * 4;
-				else
-					max_bytes = decoder->end_sample * 2;
-				if (max_bytes - decoder->pos < decoder->buffer_size)
-				{
-					buffer_size = max_bytes - decoder->pos;
-					close_on_done = 1;
-				}
-				else
-				{
-					buffer_size = decoder->buffer_size;
-				}
-			}
-			else
-				buffer_size = decoder->buffer_size;
-
-			if (buffer_size == 0)
-			{	// nothing more to decode
-				decoder->error = SOUNDDECODER_EOF;
-				return 0;
-			}
-
-			while (decoded_bytes < buffer_size)
-			{	
-				/* Produce output in requested byte-order */
-				rc = ov_read (vf, &buffer[decoded_bytes],
-						buffer_size - decoded_bytes,
-						decoder_formats.want_big_endian, 2, 1, &bitstream);
-				if (rc < 0)
-				{
-					decoder->error = SOUNDDECODER_ERROR;
-					fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %ld\n", decoder->filename, rc);
-					return decoded_bytes;
-				}
-				if (rc == 0 || (close_on_done && buffer_size == (decoded_bytes + rc)))
-				{
-					if (close_on_done)
-					{
-						decoded_bytes += rc;
-					}
-					if (decoder->looping)
-					{
-						SoundDecoder_Rewind (decoder);
-						if (decoder->error)
-						{
-							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind, error code %d\n", decoder->filename, decoder->error);
-						}
-						else
-						{
-							fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
-							count++;
-							continue;
-						}
-					}
-					else
-						decoder->pos += decoded_bytes;
-
-					fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
-					decoder->error = SOUNDDECODER_EOF;
-					return decoded_bytes;
-				}
-
-				decoded_bytes += rc;
-				//fprintf (stderr, "iter %d rc %d decoded_bytes %d remaining %d\n", count, rc, decoded_bytes, decoder->buffer_size - decoded_bytes);
-				count++;
-			}
-			decoder->pos += decoded_bytes;
-			decoder->error = SOUNDDECODER_OK;
-			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
-			return decoded_bytes;
-		}
-		case SOUNDDECODER_DUK:
-		{
-			DukAud_Track *track = (DukAud_Track *) decoder->data;
-			uint32 decoded_bytes = 0;
-			sint32 rc;
-
-			rc = duka_readData (track, decoder->buffer, decoder->buffer_size);
-			if (rc < 0)
-			{
-				decoder->error = SOUNDDECODER_ERROR;
-				fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %d\n", decoder->filename, rc);
-				return decoded_bytes;
-			}
-			decoded_bytes = rc;
-			decoder->pos += decoded_bytes;
-			decoder->error = rc > 0 ? SOUNDDECODER_OK : SOUNDDECODER_EOF;
-			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
-			
-			/* DukAud produces output in machine byte-order
-			 * may need to do a word-swap 
-			 */
-			if (decoded_bytes > 0 &&
-					decoder_formats.big_endian != decoder_formats.want_big_endian &&
-					(decoder->format == decoder_formats.stereo16 ||
-					decoder->format == decoder_formats.mono16))
-			{
-				SoundDecoder_SwapWords (
-						decoder->buffer, decoded_bytes);
-			}
-			return decoded_bytes;
-		}
-		case SOUNDDECODER_NULL:
-		{
-			uint32 max_bytes;
-			max_bytes = decoder->end_sample * 2;
-			if (max_bytes - decoder->pos <= decoder->buffer_size)
-				{
-					uint32 bufsize = max_bytes - decoder->pos;
-					decoder->pos = max_bytes;
-					decoder->error = SOUNDDECODER_EOF;
-					return (bufsize);
-				}
-				else
-				{
-					decoder->pos += decoder->buffer_size;
-					decoder->error = SOUNDDECODER_OK;
-					return (decoder->buffer_size);
-				}
-		}
-		case SOUNDDECODER_BUF:
-			decoder->buffer = (char *)decoder->data + decoder->pos;
-			decoder->error = SOUNDDECODER_EOF;
-			return (decoder->buffer_size - decoder->pos);
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_Decode(): unknown type %d\n", decoder->type);
-			break;
-		}
+		fprintf (stderr, "SoundDecoder_Decode(): null or bad decoder\n");
+		return 0;
 	}
 
-	decoder->error = SOUNDDECODER_ERROR;
-	return 0;
-}
-
-uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
-{
-	switch (decoder->type)
+	buffer = (uint8*) decoder->buffer;
+	buffer_size = decoder->buffer_size;
+	if (!decoder->looping && decoder->end_sample > 0)
 	{
-		case SOUNDDECODER_WAV:
+		max_bytes = decoder->end_sample * decoder->bytes_per_samp;
+		if (max_bytes - decoder->pos < decoder->buffer_size)
+			buffer_size = max_bytes - decoder->pos;
+	}
+
+	if (buffer_size == 0)
+	{	// nothing more to decode
+		decoder->error = SOUNDDECODER_EOF;
+		return 0;
+	}
+
+	for (decoded_bytes = 0, rc = 1; rc > 0 && decoded_bytes < buffer_size; )
+	{	
+		rc = decoder->funcs->Decode (decoder, buffer + decoded_bytes,
+					buffer_size - decoded_bytes);
+		if (rc < 0)
 		{
-			LoadWAVFile (decoder->dir, decoder->filename, &decoder->format,
-					&decoder->buffer, &decoder->buffer_size,
-					&decoder->frequency, decoder_formats.want_big_endian);
-			
-			if (decoder->buffer_size != 0)
-			{
-				decoder->type = SOUNDDECODER_BUF;
-				decoder->data = decoder->buffer;
-				decoder->pos = 0;
-				decoder->error = SOUNDDECODER_OK;
-			}
-			else
-			{
-				decoder->error = SOUNDDECODER_ERROR;
-			}
-			
-			return decoder->buffer_size;
+			fprintf (stderr, "SoundDecoder_Decode(): "
+					"error decoding %s, code %ld\n",
+					decoder->filename, rc);
 		}
-		case SOUNDDECODER_MOD:
-		{
-			fprintf (stderr, "SoundDecoder_DecodeAll(): unimplemented for mod\n");
-			break;
-		}
-		case SOUNDDECODER_OGG:
-		{
-			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			uint32 decoded_bytes = 0;
-			long rc;
-			int bitstream;
-			uint32 reqbufsize = decoder->buffer_size;
-			
+		else if (rc == 0)
+		{	// probably EOF
 			if (decoder->looping)
 			{
-				fprintf (stderr, "SoundDecoder_DecodeAll(): "
-						"called for %s with looping\n", decoder->filename);
-				return 0;
-			}
-
-			if (reqbufsize < 4096)
-				reqbufsize = 4096;
-
-#ifdef DEBUG
-			if (reqbufsize < 16384)
-				fprintf (stderr, "SoundDecoder_DecodeAll(): WARNING, "
-						"called with a small buffer (%u)\n", reqbufsize);
-#endif
-
-			for (rc = 1; rc > 0; )
-			{	
-				if (decoded_bytes >= decoder->buffer_size)
-				{	// need to grow buffer
-					decoder->buffer_size += reqbufsize;
-					decoder->buffer = HRealloc (
-							decoder->buffer, decoder->buffer_size);
-				}
-
-				rc = ov_read (vf, (char*)decoder->buffer + decoded_bytes,
-						decoder->buffer_size - decoded_bytes,
-						decoder_formats.want_big_endian, 2, 1, &bitstream);
-				if (rc < 0)
+				SoundDecoder_Rewind (decoder);
+				if (decoder->error)
 				{
-					decoder->error = SOUNDDECODER_ERROR;
-					fprintf (stderr, "SoundDecoder_DecodeAll(): "
-							"error decoding %s, code %ld\n",
-							decoder->filename, rc);
-					return decoded_bytes;
+					fprintf (stderr, "SoundDecoder_Decode(): "
+							"tried to loop %s but couldn't rewind, error code %d\n",
+							decoder->filename, decoder->error);
 				}
-
-				decoded_bytes += rc;
+				else
+				{
+					fprintf (stderr, "SoundDecoder_Decode(): "
+							"looping %s\n", decoder->filename);
+					rc = 1;	// prime the loop again
+				}
 			}
-
-			decoder->buffer_size = decoded_bytes;
-			ov_clear (vf);
-			HFree (vf);
-			decoder->type = SOUNDDECODER_BUF;
-			decoder->data = decoder->buffer;
-			decoder->pos = 0;
-
-			decoder->error = SOUNDDECODER_OK;
-			return decoded_bytes;
-			break;
+			else
+			{
+				fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n",
+						decoder->filename);
+			}
 		}
-		case SOUNDDECODER_DUK:
-		{
-			fprintf (stderr, "SoundDecoder_DecodeAll(): unimplemented for duk\n");
-			break;
-		}
-		case SOUNDDECODER_NULL:
-		{
-			decoder->error = SOUNDDECODER_OK;
-			return (decoder->end_sample * 2);
-			break;
-		}
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_DecodeAll(): unknown type %d\n", decoder->type);
-			break;
+		else
+		{	// some bytes decoded
+			decoded_bytes += rc;
 		}
 	}
+	decoder->pos += decoded_bytes;
+	if (rc < 0)
+		decoder->error = SOUNDDECODER_ERROR;
+	else if (rc == 0 || decoder->pos >= max_bytes)
+		decoder->error = SOUNDDECODER_EOF;
+	else
+		decoder->error = SOUNDDECODER_OK;
 
-	decoder->error = SOUNDDECODER_ERROR;
-	return 0;
+	if (decoder->need_swap && decoded_bytes > 0 &&
+			(decoder->format == decoder_formats.stereo16 ||
+			decoder->format == decoder_formats.mono16))
+	{
+		SoundDecoder_SwapWords (
+				decoder->buffer, decoded_bytes);
+	}
+
+	return decoded_bytes;
 }
 
-void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
+uint32
+SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
+{
+	uint32 decoded_bytes;
+	long rc;
+	uint32 reqbufsize;
+
+	if (!decoder || !decoder->funcs)
+	{
+		fprintf (stderr, "SoundDecoder_DecodeAll(): null or bad decoder\n");
+		return 0;
+	}
+
+	reqbufsize = decoder->buffer_size;
+
+	if (decoder->looping)
+	{
+		fprintf (stderr, "SoundDecoder_DecodeAll(): "
+				"called for %s with looping\n", decoder->filename);
+		return 0;
+	}
+
+	if (reqbufsize < 4096)
+		reqbufsize = 4096;
+
+#ifdef DEBUG
+	if (reqbufsize < 16384)
+		fprintf (stderr, "SoundDecoder_DecodeAll(): WARNING, "
+				"called with a small buffer (%u)\n", reqbufsize);
+#endif
+
+	for (decoded_bytes = 0, rc = 1; rc > 0; )
+	{	
+		if (decoded_bytes >= decoder->buffer_size)
+		{	// need to grow buffer
+			decoder->buffer_size += reqbufsize;
+			decoder->buffer = HRealloc (
+					decoder->buffer, decoder->buffer_size);
+		}
+
+		rc = decoder->funcs->Decode (decoder,
+				(uint8*) decoder->buffer + decoded_bytes,
+				decoder->buffer_size - decoded_bytes);
+		
+		if (rc > 0)
+			decoded_bytes += rc;
+	}
+	decoder->buffer_size = decoded_bytes;
+	decoder->pos += decoded_bytes;
+
+	if (decoder->need_swap && decoded_bytes > 0 &&
+			(decoder->format == decoder_formats.stereo16 ||
+			decoder->format == decoder_formats.mono16))
+	{
+		SoundDecoder_SwapWords (
+				decoder->buffer, decoded_bytes);
+	}
+
+	if (rc < 0)
+	{
+		decoder->error = SOUNDDECODER_ERROR;
+		fprintf (stderr, "SoundDecoder_DecodeAll(): "
+				"error decoding %s, code %ld\n",
+				decoder->filename, rc);
+		return decoded_bytes;
+	}
+
+	// switch to Buffer decoder
+	decoder->funcs->Close (decoder);
+	decoder->funcs->Term (decoder);
+
+	decoder->funcs = &bufa_DecoderVtbl;
+	decoder->funcs->Init (decoder);
+	decoder->pos = 0;
+	decoder->start_sample = 0;
+	decoder->error = SOUNDDECODER_OK;
+
+	return decoded_bytes;
+}
+
+void
+SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 {
 	SoundDecoder_Seek (decoder, 0);
 }
 
 // seekTime is specified in mili-seconds
-void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
+void
+SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 {
-	switch (decoder->type)
-	{
-		case SOUNDDECODER_WAV:
-		{
-			fprintf (stderr, "SoundDecoder_Seek(): unimplemented for wav\n");
-			break;
-		}
-		case SOUNDDECODER_MOD:
-		{
-			MODULE *mod = (MODULE *)decoder->data;
-			Player_Start (mod);
-			if (seekTime)
-				fprintf (stderr, "SoundDecoder_Seek(): non-zero seek positions not supported for mod\n");
-			Player_SetPosition (0);
-			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
-			decoder->error = SOUNDDECODER_OK;
-			return;
-		}
-		case SOUNDDECODER_OGG:
-		{
-			int err;
-			uint32 pcm_pos = 0;
-			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			if (seekTime)
-				pcm_pos = seekTime * decoder->frequency / 1000;
-			if ((err = ov_pcm_seek (vf, decoder->start_sample + pcm_pos)) != 0)
-			{
-				fprintf (stderr, "SoundDecoder_Seek(): couldn't seek %s, error code %d\n", decoder->filename, err);
-				break;
-			}
-			if (decoder->format == decoder_formats.mono16)
-				decoder->pos = (pcm_pos + decoder->start_sample) * 2;
-			else
-				decoder->pos = (pcm_pos + decoder->start_sample) * 4;
+	uint32 pcm_pos;
 
-			//fprintf (stderr, "SoundDecoder_Seek(): %s (start: %d pos: %d end: %d)\n", 
-			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
-			decoder->error = SOUNDDECODER_OK;
-			return;
-		}
-		case SOUNDDECODER_DUK:
-		{
-			DukAud_Track* track = (DukAud_Track*) decoder->data;
-			
-			if (duka_seekTrack (track, (float)seekTime / 1000.0f))
-			{
-				decoder->pos = seekTime * decoder->frequency * 2 / 1000;
-				if (decoder->format == decoder_formats.stereo16)
-					decoder->pos *= 2;
-			}
-			else
-			{
-				fprintf (stderr, "SoundDecoder_Seek(): couldn't seek %s to %u\n", decoder->filename, seekTime);
-				break;
-			}
-			decoder->error = SOUNDDECODER_OK;
-			return;
-		}
-		case SOUNDDECODER_BUF:
-		{
-			uint32 pcm_pos = seekTime * decoder->frequency / 1000;
-			decoder->pos = pcm_pos *
-				(decoder->format == decoder_formats.mono16 ? 2 : 4);
-			//fprintf (stderr, "SoundDecoder_Seek(): %s(buf) (start: %d pos: %d end: %d)\n", 
-			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
-			decoder->error = SOUNDDECODER_OK;
-			return;
-		}
-		case SOUNDDECODER_NULL:
-		{
-			uint32 pcm_pos = seekTime * decoder->frequency / 1000;
-			decoder->pos = pcm_pos * 2;
-			//fprintf (stderr, "SoundDecoder_Seek(): %s(null) (start: %d pos: %d end: %d)\n", 
-			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
-			decoder->error = SOUNDDECODER_OK;
-			return;
-		}
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_Seek(): unknown type %d\n", decoder->type);
-			break;
-		}
-	}
-
-	decoder->error = SOUNDDECODER_ERROR;
-}
-
-void SoundDecoder_Free (TFB_SoundDecoder *decoder)
-{
 	if (!decoder)
+		return;
+	if (!decoder->funcs)
 	{
+		fprintf (stderr, "SoundDecoder_Seek(): bad decoder passed\n");
 		return;
 	}
 
-	switch (decoder->type)
+	pcm_pos = seekTime * decoder->frequency / 1000;
+	pcm_pos = decoder->funcs->Seek (decoder,
+			decoder->start_sample + pcm_pos);
+	decoder->pos = pcm_pos * decoder->bytes_per_samp;
+	decoder->error = SOUNDDECODER_OK;
+}
+
+void
+SoundDecoder_Free (TFB_SoundDecoder *decoder)
+{
+	if (!decoder)
+		return;
+	if (!decoder->funcs)
 	{
-		case SOUNDDECODER_WAV:
-		{
-			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
-			break;
-		}
-		case SOUNDDECODER_MOD:
-		{
-			MODULE *mod = (MODULE *) decoder->data;
-			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
-			Player_Free (mod);
-			break;
-		}
-		case SOUNDDECODER_OGG:
-		{
-			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
-			ov_clear (vf);
-			HFree (vf);
-			break;
-		}
-		case SOUNDDECODER_DUK:
-		{
-			DukAud_Track* track = (DukAud_Track*) decoder->data;
-			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
-			duka_closeTrack (track);
-			break;
-		}
-		case SOUNDDECODER_BUF:
-			break;
-		case SOUNDDECODER_NULL:
-			break;
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_Free(): unknown type %d\n", decoder->type);
-			break;
-		}
+		fprintf (stderr, "SoundDecoder_Free(): bad decoder passed\n");
+		return;
 	}
+
+	decoder->funcs->Close (decoder);
+	decoder->funcs->Term (decoder);
 
 	HFree (decoder->buffer);
 	HFree (decoder->filename);
 	HFree (decoder);
 }
 
-float SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
+float
+SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
 {
 	if (!decoder)
+		return 0.0f;
+	if (!decoder->funcs)
 	{
+		fprintf (stderr, "SoundDecoder_GetTime(): bad decoder passed\n");
 		return 0.0f;
 	}
 
-	switch (decoder->type)
-	{
-		case SOUNDDECODER_WAV:
-		{
-			//fprintf (stderr, "SoundDecoder_GetTime not supported for wav\n");
-			return 0.0f;
-		}
-		case SOUNDDECODER_MOD:
-		{
-			//fprintf (stderr, "SoundDecoder_GetTime not supported for mod\n");
-			return 0.0f;
-		}
-		case SOUNDDECODER_OGG:
-		case SOUNDDECODER_DUK:
-		case SOUNDDECODER_BUF:
-		case SOUNDDECODER_NULL:
-		{
-			//fprintf (stderr, "SoundDecoder_GetTime not supported for mod\n");
-			return (
-				(float)(
-					(decoder->pos >> (decoder->format == decoder_formats.mono16 ? 1 : 2))
-					- decoder->start_sample
-				 ) / decoder->frequency);
-		}
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_GetTime(): unknown type %d\n", decoder->type);
-			return 0.0f;
-		}
-	}
+	return (float) 
+			((decoder->pos / decoder->bytes_per_samp)
+			 - decoder->start_sample
+			) / decoder->frequency;
 }
 
 uint32
 SoundDecoder_GetFrame (TFB_SoundDecoder *decoder)
 {
-	uint32 frame = 0;
-
 	if (!decoder)
 		return 0;
-
-	switch (decoder->type)
+	if (!decoder->funcs)
 	{
-		case SOUNDDECODER_MOD:
-		{
-			MODULE *mod = (MODULE *) decoder->data;
-			frame = mod->sngpos;
-			break;
-		}
-		case SOUNDDECODER_OGG:
-		{
-			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			// this is the closest to a frame there is in ogg vorbis stream
-			// doesn't seem to be a func to retrive it
-			frame = vf->os.pageno;
-			break;
-		}
-		case SOUNDDECODER_DUK:
-		{
-			DukAud_Track* track = (DukAud_Track*) decoder->data;
-			frame = duka_getFrame (track);
-			break;
-		}
-		case SOUNDDECODER_WAV:
-		case SOUNDDECODER_BUF:
-		case SOUNDDECODER_NULL:
-			break;
-		default:
-		{
-			fprintf (stderr, "SoundDecoder_GetFrame(): unknown type %d\n", decoder->type);
-			break;
-		}
+		fprintf (stderr, "SoundDecoder_GetFrame(): bad decoder passed\n");
+		return 0;
 	}
 
-	return frame;
+	return decoder->funcs->GetFrame (decoder);
+}
+
+
+#define THIS_PTR TFB_SoundDecoder* This
+
+static const char*
+bufa_GetName (void)
+{
+	return "Buffer";
+}
+
+static bool
+bufa_InitModule (int flags)
+{
+	// this should never be called
+	fprintf (stderr, "bufa_InitModule(): dead function called\n");
+	return false;
+	
+	(void)flags;	// laugh at compiler warning
+}
+
+static void
+bufa_TermModule ()
+{
+	// this should never be called
+	fprintf (stderr, "bufa_TermModule(): dead function called\n");
+}
+
+static uint32
+bufa_GetStructSize (void)
+{
+	return sizeof (TFB_BufSoundDecoder);
+}
+
+static int
+bufa_GetError (THIS_PTR)
+{
+	return 0; // error? what error?!
+
+	(void)This;	// laugh at compiler warning
+}
+
+static bool
+bufa_Init (THIS_PTR)
+{
+	TFB_BufSoundDecoder* bufa = (TFB_BufSoundDecoder*) This;
+	
+	This->need_swap = false;
+	// hijack the buffer
+	bufa->data = This->buffer;
+	bufa->max_pcm = This->buffer_size / This->bytes_per_samp;
+	bufa->cur_pcm = bufa->max_pcm;
+
+	return true;
+}
+
+static void
+bufa_Term (THIS_PTR)
+{
+	//TFB_BufSoundDecoder* bufa = (TFB_BufSoundDecoder*) This;
+	bufa_Close (This); // ensure cleanup
+}
+
+static bool
+bufa_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
+{
+	// this should never be called
+	fprintf (stderr, "bufa_Open(): dead function called\n");
+	return false;
+
+	// laugh at compiler warnings
+	(void)This; (void)dir; (void)filename;
+}
+
+static void
+bufa_Close (THIS_PTR)
+{
+	TFB_BufSoundDecoder* bufa = (TFB_BufSoundDecoder*) This;
+
+	// restore the status quo
+	if (bufa->data)
+	{
+		This->buffer = bufa->data;
+		bufa->data = NULL;
+	}
+	bufa->cur_pcm = 0;
+}
+
+static int
+bufa_Decode (THIS_PTR, void* buf, sint32 bufsize)
+{
+	TFB_BufSoundDecoder* bufa = (TFB_BufSoundDecoder*) This;
+	uint32 dec_pcm;
+	uint32 dec_bytes;
+
+	dec_pcm = bufsize / This->bytes_per_samp;
+	if (dec_pcm > bufa->max_pcm - bufa->cur_pcm)
+		dec_pcm = bufa->max_pcm - bufa->cur_pcm;
+	dec_bytes = dec_pcm * This->bytes_per_samp;
+
+	// Buffer decode is a hack
+	This->buffer = (uint8*) bufa->data
+			+ bufa->cur_pcm * This->bytes_per_samp;
+
+	if (dec_pcm > 0)
+		bufa->cur_pcm += dec_pcm;
+	
+	return dec_bytes;
+
+	(void)buf;	// laugh at compiler warning
+}
+
+static uint32
+bufa_Seek (THIS_PTR, uint32 pcm_pos)
+{
+	TFB_BufSoundDecoder* bufa = (TFB_BufSoundDecoder*) This;
+
+	if (pcm_pos > bufa->max_pcm)
+		pcm_pos = bufa->max_pcm;
+	bufa->cur_pcm = pcm_pos;
+
+	return pcm_pos;
+}
+
+static uint32
+bufa_GetFrame (THIS_PTR)
+{
+	return 0; // only 1 frame
+
+	(void)This; // laugh at compiler warning
+}
+
+
+static const char*
+nula_GetName (void)
+{
+	return "Null";
+}
+
+static bool
+nula_InitModule (int flags)
+{
+	// this should never be called
+	fprintf (stderr, "nula_InitModule(): dead function called\n");
+	return false;
+	
+	(void)flags;	// laugh at compiler warning
+}
+
+static void
+nula_TermModule ()
+{
+	// this should never be called
+	fprintf (stderr, "nula_TermModule(): dead function called\n");
+}
+
+static uint32
+nula_GetStructSize (void)
+{
+	return sizeof (TFB_NullSoundDecoder);
+}
+
+static int
+nula_GetError (THIS_PTR)
+{
+	return 0; // error? what error?!
+
+	(void)This;	// laugh at compiler warning
+}
+
+static bool
+nula_Init (THIS_PTR)
+{
+	TFB_NullSoundDecoder* nula = (TFB_NullSoundDecoder*) This;
+	
+	This->need_swap = false;
+	nula->cur_pcm = 0;
+	return true;
+}
+
+static void
+nula_Term (THIS_PTR)
+{
+	//TFB_NullSoundDecoder* nula = (TFB_NullSoundDecoder*) This;
+	nula_Close (This); // ensure cleanup
+}
+
+static bool
+nula_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
+{
+	This->frequency = 11025;
+	This->format = decoder_formats.mono16;
+	This->is_null = true;
+	return true;
+
+	// laugh at compiler warnings
+	(void)dir; (void)filename;
+}
+
+static void
+nula_Close (THIS_PTR)
+{
+	TFB_NullSoundDecoder* nula = (TFB_NullSoundDecoder*) This;
+
+	nula->cur_pcm = 0;
+}
+
+static int
+nula_Decode (THIS_PTR, void* buf, sint32 bufsize)
+{
+	TFB_NullSoundDecoder* nula = (TFB_NullSoundDecoder*) This;
+	uint32 max_pcm;
+	uint32 dec_pcm;
+	uint32 dec_bytes;
+
+	max_pcm = (uint32) (This->length * This->frequency);
+	dec_pcm = bufsize / This->bytes_per_samp;
+	if (dec_pcm > max_pcm - nula->cur_pcm)
+		dec_pcm = max_pcm - nula->cur_pcm;
+	dec_bytes = dec_pcm * This->bytes_per_samp;
+
+	if (dec_pcm > 0)
+	{
+		memset (buf, 0, dec_bytes);
+		nula->cur_pcm += dec_pcm;
+	}
+	
+	return dec_bytes;
+}
+
+static uint32
+nula_Seek (THIS_PTR, uint32 pcm_pos)
+{
+	TFB_NullSoundDecoder* nula = (TFB_NullSoundDecoder*) This;
+	uint32 max_pcm;
+
+	max_pcm = (uint32) (This->length * This->frequency);
+	if (pcm_pos > max_pcm)
+		pcm_pos = max_pcm;
+	nula->cur_pcm = pcm_pos;
+
+	return pcm_pos;
+}
+
+static uint32
+nula_GetFrame (THIS_PTR)
+{
+	return 0; // only 1 frame
+
+	(void)This; // laugh at compiler warning
 }

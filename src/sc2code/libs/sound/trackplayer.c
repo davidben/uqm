@@ -436,7 +436,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 		{
 			fprintf (stderr, "  track: %s, decoder: %s, rate %d format %x\n",
 					*TrackNames,
-					track_decs[tracks]->decoder_info,
+					SoundDecoder_GetName (track_decs[tracks]),
 					track_decs[tracks]->frequency,
 					track_decs[tracks]->format);
 			SoundDecoder_DecodeAll (track_decs[tracks]);
@@ -614,7 +614,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				if (last_chain->decoder)
 				{
 					static float old_volume = 0.0f;
-					if (last_chain->decoder->type == SOUNDDECODER_NULL)
+					if (last_chain->decoder->is_null)
 					{
 						if (speechVolumeScale != 0.0f)
 						{
