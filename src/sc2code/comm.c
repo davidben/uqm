@@ -23,6 +23,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "options.h"
+#include "comm.h"
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);
@@ -439,7 +440,7 @@ static struct {
 } XFormControl;
 
 void
-init_xform_control ()
+init_xform_control (void)
 {
 	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
 	XFormControl.XFormsPending = FALSE;
@@ -447,13 +448,13 @@ init_xform_control ()
 }
 
 void
-uninit_xform_control ()
+uninit_xform_control (void)
 {
 	DestroySemaphore (XFormControl.XFormSem);
 }
 
 void
-xform_complete ()
+xform_complete (void)
 {
 	SetSemaphore (XFormControl.XFormSem);
 	if (XFormControl.XFormsPending)

@@ -36,6 +36,7 @@
 #include "file.h"
 #include "port.h"
 #include "options.h"
+#include "comm.h"
 
 #if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)
 #	include <SDL.h>
@@ -59,11 +60,11 @@ CDToContentDir (char *contentdir)
 }
 
 static int
-Check_PC_3DO_opt (char *value, DWORD mask, char *opt)
+Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt)
 {
 	if (value == NULL)
 	{
-		fprintf (stderr, "option '%s' requires a value!\n",opt);
+		fprintf (stderr, "option '%s' requires a value!\n", opt);
 		return -1;
 	}
 
@@ -71,7 +72,7 @@ Check_PC_3DO_opt (char *value, DWORD mask, char *opt)
 		return OPT_3DO;
 	if ((mask & OPT_PC) && strcmp (value, "pc") == 0)
 		return OPT_PC;
-	fprintf (stderr, "Unknown option '%s %s' found!",opt, value);
+	fprintf (stderr, "Unknown option '%s %s' found!", opt, value);
 	return -1;
 }
 
@@ -215,31 +216,31 @@ main (int argc, char *argv[])
 			case 'm':
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
-						(char *)long_options[option_index].name)) != -1)
+						long_options[option_index].name)) != -1)
 					optWhichMusic = val;
 			break;
 			case CSCAN_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
-						(char *)long_options[option_index].name)) != -1)
+						long_options[option_index].name)) != -1)
 					optWhichCoarseScan = val;
 			break;
 			case MENU_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
-						(char *)long_options[option_index].name)) != -1)
+						long_options[option_index].name)) != -1)
 					optWhichMenu = val;
 			break;
 			case FONT_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
-						(char *)long_options[option_index].name)) != -1)
+						long_options[option_index].name)) != -1)
 					optWhichFonts = val;
 			break;
 			case SCROLL_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
-						(char *)long_options[option_index].name)) != -1)
+						long_options[option_index].name)) != -1)
 					optSmoothScroll = val;
 			break;
 			default:

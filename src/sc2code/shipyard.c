@@ -889,9 +889,11 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 					}
 
 					if (hStarShip)
+					{
 						UnlockStarShip (
 								&GLOBAL (built_ship_q), hStarShip
 								);
+					}
 						
 					CrewTransaction (crew_delta);
 				}

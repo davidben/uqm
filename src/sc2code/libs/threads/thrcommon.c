@@ -342,7 +342,7 @@ PrintThreadsStats (void)
 Semaphore
 CreateSemaphoreAux (DWORD initial
 #ifdef DEBUG_TRACK_SEM
-				 , char *sem_name
+				 , const char *sem_name
 #endif
 				 )
 {

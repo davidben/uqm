@@ -59,7 +59,7 @@ void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, i
 void TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
 void TFB_DrawScreen_WaitForSignal (void);
-void TFB_DrawScreen_SetPalette (int index, int r, int g, int b);
+void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
 void TFB_FlushPaletteCache (void);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest);

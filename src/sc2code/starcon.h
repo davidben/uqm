@@ -44,7 +44,6 @@ extern int ScreenHeight;
 #include "config.h"
 #include "../port.h"
 #include <stdlib.h>
-#include <math.h>
 #include "gfxlib.h"
 #include "inplib.h"
 #include "timelib.h"

@@ -63,10 +63,12 @@ DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 #define DIAMETER (TWORADIUS + 1)
 #define DIFFUSE_BITS 24
 
-//#define GET_LIGHT(val, dif, sp) \
-//	( (UBYTE)min ((sp) + \
-//		( ( ( (DWORD)(val) << DIFFUSE_BITS ) - (DWORD)(val) * (dif) ) >> DIFFUSE_BITS ) \
-//		, 255) )
+#if 0
+#define GET_LIGHT(val, dif, sp) \
+	( (UBYTE)min ((sp) + \
+		( ( ( (DWORD)(val) << DIFFUSE_BITS ) - (DWORD)(val) * (dif) ) >> DIFFUSE_BITS ) \
+		, 255) )
+#endif
 UBYTE GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
 {
 	DWORD i = (DWORD)val << DIFFUSE_BITS;

@@ -101,7 +101,7 @@ extern void WaitThread (Thread thread, int *status);
 
 typedef void *Semaphore;
 #ifdef DEBUG_TRACK_SEM
-extern Semaphore CreateSemaphoreAux (DWORD initial, char *sem_name);
+extern Semaphore CreateSemaphoreAux (DWORD initial, const char *sem_name);
 #	define CreateSemaphore(initial,sem_name) \
 		CreateSemaphoreAux ((initial), (sem_name))
 extern void ResetSemaphoreOwnerAux (Semaphore sem);

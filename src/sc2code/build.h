@@ -41,7 +41,7 @@
 
 extern HSTARSHIP Build (PQUEUE pQueue, DWORD RaceResIndex, COUNT
 		which_player, BYTE captains_name_index);
-extern HSTARSHIP CloneShipFragment (COUNT index, PQUEUE pDstQueue, BYTE
+extern HSTARSHIP CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE
 		crew_level);
 extern HSTARSHIP GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index);
 extern BYTE NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr);

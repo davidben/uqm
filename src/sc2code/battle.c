@@ -100,8 +100,7 @@ if ((InputState & DEVICE_BUTTON3)
 								&& !(ElementPtr->state_flags & FINITE_LIFE)
 								&& ElementPtr->mass_points != MAX_SHIP_MASS * 10)
 						{
-							extern void flee_preprocess (PELEMENT
-									ElementPtr);
+							extern void flee_preprocess (PELEMENT);
 
 							battle_counter -= MAKE_WORD (1, 0);
 

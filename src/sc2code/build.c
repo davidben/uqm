@@ -173,15 +173,15 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 										)); hStarShip; hStarShip = hNextShip)
 								{
 									BOOLEAN RemoveShip;
-									SHIP_FRAGMENTPTR StarShipPtr;
+									SHIP_FRAGMENTPTR StarShipPtr2;
 
-									StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+									StarShipPtr2 = (SHIP_FRAGMENTPTR)LockStarShip (
 											&GLOBAL (built_ship_q),
 											hStarShip
 											);
-									hNextShip = _GetSuccLink (StarShipPtr);
+									hNextShip = _GetSuccLink (StarShipPtr2);
 									RemoveShip = (BOOLEAN)(
-											GET_RACE_ID (StarShipPtr) == ORZ_SHIP
+											GET_RACE_ID (StarShipPtr2) == ORZ_SHIP
 											);
 									UnlockStarShip (
 											&GLOBAL (built_ship_q),
@@ -375,12 +375,13 @@ NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
 }
 
 HSTARSHIP
-CloneShipFragment (COUNT index, PQUEUE pDstQueue, BYTE crew_level)
+CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE crew_level)
 {
 	HSTARSHIP hStarShip, hBuiltShip;
 	SHIP_FRAGMENTPTR TemplatePtr;
 
-	if ((hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), index)) == 0)
+	if ((hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q),
+			shipIndex)) == 0)
 		return (0);
 
 	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
@@ -390,7 +391,7 @@ CloneShipFragment (COUNT index, PQUEUE pDstQueue, BYTE crew_level)
 			Build (pDstQueue,
 			TemplatePtr->RaceResIndex,
 			TemplatePtr->ShipInfo.ship_flags & (GOOD_GUY | BAD_GUY),
-			(BYTE)(index == SAMATRA_SHIP ?
+			(BYTE)(shipIndex == SAMATRA_SHIP ?
 					0 : NameCaptain (pDstQueue, (STARSHIPPTR)TemplatePtr)));
 	if (hBuiltShip)
 	{
@@ -404,7 +405,7 @@ CloneShipFragment (COUNT index, PQUEUE pDstQueue, BYTE crew_level)
 		ShipFragPtr->ShipInfo.ship_flags = 0;
 		ShipFragPtr->ShipInfo.var1 = ShipFragPtr->ShipInfo.var2 = 0;
 		ShipFragPtr->ShipInfo.loc.x = ShipFragPtr->ShipInfo.loc.y = 0;
-		SET_RACE_ID (ShipFragPtr, (BYTE)index);
+		SET_RACE_ID (ShipFragPtr, (BYTE)shipIndex);
 		UnlockStarShip (pDstQueue, hBuiltShip);
 	}
 	UnlockStarShip (

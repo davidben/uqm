@@ -45,7 +45,7 @@ TFB_DrawScreen_Rect (PRECT rect, int r, int g, int b, SCREEN dest)
 }
 
 void
-TFB_DrawScreen_SetPalette (int index, int r, int g, int b)
+TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b)
 {
 	TFB_DrawCommand DC;
 
@@ -53,7 +53,7 @@ TFB_DrawScreen_SetPalette (int index, int r, int g, int b)
 	DC.data.setpalette.r = r;
 	DC.data.setpalette.g = g;
 	DC.data.setpalette.b = b;
-	DC.data.setpalette.index = index;
+	DC.data.setpalette.index = paletteIndex;
 
 	TFB_EnqueueDrawCommand (&DC);
 }

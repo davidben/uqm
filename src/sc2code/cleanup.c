@@ -90,7 +90,8 @@ UninitKernel (BOOLEAN ships)
 	ActivityFrame = 0;
 }
 
-void UninitGameKernel ()
+void
+UninitGameKernel (void)
 {
 	if (ActivityFrame)
 	{

@@ -22,6 +22,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include "port.h"
 
 #ifndef HAVE_STRUPR
 char *

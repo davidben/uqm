@@ -51,19 +51,25 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 				CaptureDrawable (LoadGraphic (
 				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.icons
 				))) == 0)
-			/* goto BadLoad */;
+		{
+			/* goto BadLoad */
+		}
 			
 		if ((StarShipPtr->RaceDescPtr->ship_info.melee_icon =
 				CaptureDrawable (LoadGraphic (
 				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.melee_icon
 				))) == 0)
-			/* goto BadLoad */;
+		{
+			/* goto BadLoad */
+		}
 
 		if ((StarShipPtr->RaceDescPtr->ship_info.race_strings =
 				CaptureStringTable (LoadStringTable (
 				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.race_strings
 				))) == 0)
-			/* goto BadLoad */;
+		{
+			/* goto BadLoad */
+		}
 
 		if (LoadBattleData)
 		{
