@@ -171,7 +171,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		mod->extspd = 1;
 		mod->panflag = 1;
 		mod->wrap = 0;
-		mod->loop = 0;
+		mod->loop = 1;
 		
 		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
 		decoder->buffer = HMalloc (buffer_size);
