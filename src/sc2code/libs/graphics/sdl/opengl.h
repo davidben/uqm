@@ -70,7 +70,7 @@ typedef unsigned short wchar_t;
 
 #else /* !defined(WIN32) */
 
-#include "GL/glu.h"
+#include <SDL_opengl.h>
 
 #endif /* WIN32 */
 #endif /* HAVE_OPENGL */
