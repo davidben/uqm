@@ -1161,7 +1161,7 @@ SpewPhrases (COUNT wait_track)
 	BOOLEAN ContinuityBreak;
 	DWORD TimeIn;
 	COUNT which_track;
-	INPUT_STATE InputState, LastInputState;
+	INPUT_STATE InputState, LastInputState = (INPUT_STATE)~0;
 	FRAME F;
 
 	TimeIn = GetTimeCounter ();
@@ -1195,7 +1195,6 @@ SpewPhrases (COUNT wait_track)
 	else if (which_track <= wait_track)
 		ResumeTrack ();
 
-	LastInputState = 0;
 	do
 	{
 		ClearSemaphore (GraphicsSem);

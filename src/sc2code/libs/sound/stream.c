@@ -49,8 +49,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 
 	if (scope)
 	{
-		pos = PAD_SCOPE_BYTES;
-		soundSource[source].sbuffer = HMalloc (pos);
+		soundSource[source].sbuffer = HMalloc (PAD_SCOPE_BYTES);
 	}
 
 	if (sample->read_chain_ptr && sample->read_chain_ptr->tag.type)
@@ -77,7 +76,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 		{
 			UBYTE *p;
 			soundSource[source].sbuffer = HRealloc (soundSource[source].sbuffer, 
-					pos + decoded_bytes);
+					pos + decoded_bytes + PAD_SCOPE_BYTES);
 			p = (UBYTE *)soundSource[source].sbuffer;
 			memcpy (&p[pos], sample->decoder->buffer, decoded_bytes);
 			pos += decoded_bytes;
@@ -105,8 +104,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 	if (sample->buffer_tag)
 		for ( ; i <sample->num_buffers; ++i)
 			sample->buffer_tag[i] = 0;
-	soundSource[source].sbuf_size = pos;
-	soundSource[source].sbuf_start = pos - PAD_SCOPE_BYTES;
+	soundSource[source].sbuf_size = pos + PAD_SCOPE_BYTES;
+	soundSource[source].sbuf_start = pos;
 	soundSource[source].sbuf_lasttime = GetTimeCounter ();
 	soundSource[source].start_time = (sint32)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
