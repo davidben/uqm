@@ -25,8 +25,6 @@
 #include "libs/misc.h"
 #include "libs/threadlib.h"
 
-#define DEBUG
-
 static uint32 mixer_initialized = 0;
 static uint32 mixer_format;
 static uint32 mixer_chansize;

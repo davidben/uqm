@@ -18,6 +18,8 @@
 
 #include "starcon.h"
 
+//#define DEBUG_ORBITS
+
 enum
 {
 	PLANET_NEVER = 0,
@@ -479,11 +481,11 @@ FillOrbits (BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN
 		{GIANT_ROCK_DIST, GIANT_GASG_DIST},
 		{SUPERGIANT_ROCK_DIST, SUPERGIANT_GASG_DIST},
 	};
-#ifdef DEBUG
+#ifdef DEBUG_ORBITS
 UNICODE buf[40];
 char stype[] = {'D', 'G', 'S'};
 char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
-#endif /* DEBUG */
+#endif /* DEBUG_ORBITS */
 
 	pPD = pBaseDesc;
 	StarSize = pSolarSysState->SunDesc[0].data_index;
@@ -498,12 +500,12 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 		pSolarSysState->SunDesc[0].NumPlanets = NumPlanets;
 	}
 
-#ifdef DEBUG
+#ifdef DEBUG_ORBITS
 	GetClusterName (CurStarDescPtr, buf);
 	fprintf (stderr, "cluster name = %s  color = %c type = %c\n", buf,
 			scolor[STAR_COLOR (CurStarDescPtr->Type)],
 			stype[STAR_TYPE (CurStarDescPtr->Type)]);
-#endif /* DEBUG */
+#endif /* DEBUG_ORBITS */
 	GeneratingMoons = (BOOLEAN) (pBaseDesc == pSolarSysState->MoonDesc);
 	if (GeneratingMoons)
 		MaxPlanet = FIRST_LARGE_ROCKY_WORLD;

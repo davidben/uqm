@@ -22,6 +22,8 @@
 
 /* -------------------------------- CODE -------------------------------- */
 
+//#define DEBUG_PLANET_CALC
+
 #define CalcMass(b) CalcFromBase (b, b)
 #define CalcRadius(b) CalcFromBase (b, ((b) >> 1) + 1)
 
@@ -231,7 +233,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 
 	CalcSysInfo (SysInfoPtr);
 
-#ifdef DEBUG
+#ifdef DEBUG_PLANET_CALC
 	{
 		BYTE ColorClass[6][8] = {
 				"Red",
@@ -253,7 +255,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 		fprintf (stderr, "Stellar Energy: %d (sol = 3)\n",
 				SysInfoPtr->StarEnergy);
 	}
-#endif /* DEBUG */
+#endif /* DEBUG_PLANET_CALC */
 
 	{
 		SIZE radius;
@@ -330,7 +332,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 		SysInfoPtr->PlanetInfo.Tectonics >>= 5;
 		SysInfoPtr->PlanetInfo.Weather >>= 5;
 
-#ifdef DEBUG
+#ifdef DEBUG_PLANET_CALC
 		radius = (SIZE)((DWORD)UNSCALE_RADIUS (radius) * 100 / UNSCALE_RADIUS (EARTH_RADIUS));
 		fprintf (stderr, "\tOrbital Distance   : %d.%02d AU\n", radius / 100, radius % 100);
 		//fprintf (stderr, "\tPlanetary Mass : %d.%02d Earth masses\n",
@@ -391,7 +393,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 					SysInfoPtr->PlanetInfo.RotationPeriod / 10,
 					SysInfoPtr->PlanetInfo.RotationPeriod % 10);
 		}
-#endif /* DEBUG */
+#endif /* DEBUG_PLANET_CALC */
 	}
 
 	return (TFB_SeedRandom (old_seed));

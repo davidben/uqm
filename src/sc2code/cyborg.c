@@ -18,6 +18,8 @@
 
 #include "starcon.h"
 
+//#define DEBUG_CYBORG
+
 COUNT
 PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
 		max_turns, COUNT margin_of_error)
@@ -279,18 +281,10 @@ PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
 
 STARSHIPPTR CyborgDescPtr;
 
-#ifdef DEBUG
-static COUNT turn_counter[NUM_PLAYERS];
-#endif /* DEBUG */
-
 static void
 InitCyborg (STARSHIPPTR StarShipPtr)
 {
 	COUNT Index, Divisor;
-
-#ifdef DEBUG
-	//turn_counter[which_ship] = 0;
-#endif /* DEBUG */
 
 	Index = StarShipPtr->RaceDescPtr->characteristics.max_thrust
 			* StarShipPtr->RaceDescPtr->characteristics.thrust_increment;
@@ -311,9 +305,6 @@ InitCyborg (STARSHIPPTR StarShipPtr)
 	}
 #endif /* PRINT_MI */
 	StarShipPtr->RaceDescPtr->cyborg_control.ManeuverabilityIndex = Index;
-#ifdef DEBUG
-	//turn_counter[which_ship] = 0;
-#endif /* DEBUG */
 }
 
 static void
@@ -1020,10 +1011,6 @@ tactical_intelligence (void)
 	BOOLEAN ShipMoved, UltraManeuverable;
 	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
 	RACE_DESCPTR RDPtr, EnemyRDPtr;
-
-#ifdef DEBUG
-++turn_counter[cur_player];
-#endif /* DEBUG */
 
 	StarShipPtr = CyborgDescPtr;
 	RDPtr = StarShipPtr->RaceDescPtr;

@@ -20,6 +20,8 @@
 #include "libs/graphics/gfx_common.h"
 #include "controls.h"
 
+//#define DEBUG_SOLARSYS
+
 //Added by Chris
 
 void LoadLanderData (void);
@@ -414,13 +416,13 @@ ShowPlanet:
 				pSolarSysState->pOrbitalDesc = pCurDesc;
 			}
 
-#ifdef DEBUG
+#ifdef DEBUG_SOLARSYS
 			fprintf (stderr, "Star index = %d, Planet index = %d, <%d, %d>\n",
 					CurStarDescPtr - star_array,
 					pCurDesc - pSolarSysState->PlanetDesc,
 					pSolarSysState->SunDesc[0].location.x,
 					pSolarSysState->SunDesc[0].location.y);
-#endif /* DEBUG */
+#endif /* DEBUG_SOLARSYS */
 			return;
 		}
 	}
@@ -1554,7 +1556,7 @@ GenerateRandomIP (BYTE control)
 			break;
 		case GENERATE_ORBITAL:
 		{
-#ifdef DEBUG
+#ifdef DEBUG_SOLARSYS
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 					pSolarSysState->SunDesc)
 				fprintf (stderr, "Planet index = %d\n", pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc);
@@ -1562,7 +1564,7 @@ GenerateRandomIP (BYTE control)
 				fprintf (stderr, "Planet index = %d, Moon index = %d\n",
 						pSolarSysState->pOrbitalDesc->pPrevDesc - pSolarSysState->PlanetDesc,
 						pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
-#endif /* DEBUG */
+#endif /* DEBUG_SOLARSYS */
 			rand_val = DoPlanetaryAnalysis (
 					&pSolarSysState->SysInfo, pSolarSysState->pOrbitalDesc
 					);

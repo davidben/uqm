@@ -271,8 +271,8 @@ CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize
 	QueueThread (thread);
 
 #ifdef DEBUG_THREADS
-	fprintf (stderr, "Thread '%s' created.\n", ThreadName (thread));
-	fflush (stderr);
+//	fprintf (stderr, "Thread '%s' created.\n", ThreadName (thread));
+//	fflush (stderr);
 #endif
 
 	// Signal to the new thread that the thread structure is ready

@@ -44,7 +44,6 @@ void Slider (void);
 #define SLIDER_Y 107
 #define SLIDER_HEIGHT 15
 
-// #define DEBUG
 
 LOCDATA CommData;
 int cur_comm;

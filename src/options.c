@@ -126,9 +126,9 @@ prepareSaveDir (void) {
 	// Create the path upto the save dir, if not already existing.
 	if (mkdirhier (buf) == -1)
 		exit (EXIT_FAILURE);
-//#ifdef DEBUG
+#ifdef DEBUG
 	fprintf(stderr, "Saved games are kept in %s.\n", buf);
-//#endif
+#endif
 
 	saveDir = uio_openDirRelative (configDir, "save", 0);
 	if (saveDir == NULL) {

@@ -19,6 +19,8 @@
 #include "starcon.h"
 #include "lifeform.h"
 
+//#define DEBUG_SURFACE
+
 const BYTE *Elements;
 const PlanetFrame *PlanData;
 
@@ -72,11 +74,11 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 					deposit_quality_gross, deposit_quality_fine / 10 + 1
 					);
 			SysInfoPtr->PlanetInfo.CurType = eptr->ElementType;
-#ifdef DEBUG
-			//fprintf (stderr, "\t\t%d units of %Fs\n",
-				 //   SysInfoPtr->PlanetInfo.CurDensity,
-				  //  Elements[eptr->ElementType].name);
-#endif /* DEBUG */
+#ifdef DEBUG_SURFACE
+			fprintf (stderr, "\t\t%d units of %Fs\n",
+					SysInfoPtr->PlanetInfo.CurDensity,
+					Elements[eptr->ElementType].name);
+#endif /* DEBUG_SURFACE */
 			if ((num_deposits >= which_deposit
 					&& !(SysInfoPtr->PlanetInfo.ScanRetrieveMask[MINERAL_SCAN]
 					& (1L << num_deposits)))
@@ -235,11 +237,11 @@ CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
 				} while (--num_creatures);
 			} while (--num_types);
 		}
-#ifdef DEBUG
+#ifdef DEBUG_SURFACE
 		else
 			fprintf (stderr, "It's dead, Jim! (%d >= %d)\n", life_var,
 				SysInfoPtr->PlanetInfo.LifeChance);
-#endif /* DEBUG */
+#endif /* DEBUG_SURFACE */
 	}
 
 	return (num_life_forms);

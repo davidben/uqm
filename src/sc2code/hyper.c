@@ -180,11 +180,7 @@ check_hyperspace_encounter (void)
 					if (!GET_GAME_STATE (STARBASE_AVAILABLE))
 						percent = 100;
 					else
-#ifdef TESTING
-percent = 0;
-#else /* TESTING */
 						percent *= GET_GAME_STATE (SLYLANDRO_MULTIPLIER);
-#endif /* TESTING */
 				}
 				else if (Type == MELNORME_SHIP
 						&& (GLOBAL_SIS (FuelOnBoard) == 0
@@ -229,14 +225,7 @@ percent = 0;
 					(DWORD)encounter_radius * encounter_radius
 					&& ((COUNT)TFB_Random () % 100) < percent)
 			{
-#ifndef DEBUG
-				char buf[20];
-
-				GetStringContents (SetAbsStringTableIndex (
-						TemplatePtr->ShipInfo.race_strings, 1
-						), (STRINGPTR)buf, FALSE);
-//				fprintf (stderr, "%s encounter\n", buf);
-#endif /* DEBUG */
+				// Ship spawned for encounter.
 				hEncounter = AllocEncounter ();
 				if (hEncounter)
 				{

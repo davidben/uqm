@@ -19,6 +19,8 @@
 #include "starcon.h"
 #include "controls.h"
 
+//#define DEBUG_DEVICES
+
 static COUNT
 lpstrchr (UNICODE *pStr, UNICODE ch)
 {
@@ -597,9 +599,9 @@ InventoryDevices (BYTE *pDeviceMap)
 				break;
 		}
 
-#ifndef DEBUG
+#ifndef DEBUG_DEVICES
 		if (DeviceState)
-#endif /* DEBUG */
+#endif /* DEBUG_DEVICES */
 		{
 			*pDeviceMap++ = i;
 			++DevicesOnBoard;

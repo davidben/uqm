@@ -18,6 +18,8 @@
 
 #include "starcon.h"
 
+//#define DEBUG_GRAVITY
+
 BOOLEAN
 CalculateGravity (PELEMENT ElementPtr)
 {
@@ -56,27 +58,27 @@ CalculateGravity (PELEMENT ElementPtr)
 				dy = ElementPtr->next.location.y
 						- TestElementPtr->next.location.y;
 			}
-#if 0 //def DEBUG
+#ifdef DEBUG_GRAVITY
 			if (TestElementPtr->state_flags & PLAYER_SHIP)
 			{
 				fprintf (stderr, "CalculateGravity:\n");
 				fprintf (stderr, "\tdx = %d, dy = %d\n", dx, dy);
 			}
-#endif /* DEBUG */
+#endif /* DEBUG_GRAVITY */
 			dx = WRAP_DELTA_X (dx);
 			dy = WRAP_DELTA_Y (dy);
-#if 0 //def DEBUG
+#ifdef DEBUG_GRAVITY
 			if (TestElementPtr->state_flags & PLAYER_SHIP)
 				fprintf (stderr, "\twrap_dx = %d, wrap_dy = %d\n", dx, dy);
-#endif /* DEBUG */
+#endif /* DEBUG_GRAVITY */
 			abs_dx = dx >= 0 ? dx : -dx;
 			abs_dy = dy >= 0 ? dy : -dy;
 			abs_dx = WORLD_TO_DISPLAY (abs_dx);
 			abs_dy = WORLD_TO_DISPLAY (abs_dy);
-#if 0 //def DEBUG
+#ifdef DEBUG_GRAVITY
 			if (TestElementPtr->state_flags & PLAYER_SHIP)
 				fprintf (stderr, "\tdisplay_dx = %d, display_dy = %d\n", abs_dx, abs_dy);
-#endif /* DEBUG */
+#endif /* DEBUG_GRAVITY */
 			if (abs_dx <= GRAVITY_THRESHOLD
 					&& abs_dy <= GRAVITY_THRESHOLD)
 			{
@@ -104,10 +106,10 @@ CalculateGravity (PELEMENT ElementPtr)
 					fprintf (stderr, "magnitude = %u ", magnitude);
 #endif /* NEVER */
 
-#if 0 //def DEBUG
+#ifdef DEBUG_GRAVITY
 					if (TestElementPtr->state_flags & PLAYER_SHIP)
 						fprintf (stderr, "dist_squared = %lu\n", dist_squared);
-#endif /* DEBUG */
+#endif /* DEBUG_GRAVITY */
 					if (TestHasGravity)
 					{
 						retval = TRUE;

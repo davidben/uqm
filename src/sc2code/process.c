@@ -22,6 +22,8 @@
 #include "libs/graphics/drawcmd.h"
 #include "options.h"
 
+//#define DEBUG_PROCESS
+
 COUNT DisplayFreeList;
 PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 extern POINT SpaceOrg;
@@ -389,10 +391,10 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 						&TestElementPtr->IntersectControl, min_time)) == 1
 						&& !((state_flags | test_state_flags) & FINITE_LIFE))
 				{
-#ifdef DEBUG
+#ifdef DEBUG_PROCESS
 					fprintf (stderr, "BAD NEWS 0x%x <--> 0x%x\n", ElementPtr,
 							TestElementPtr);
-#endif /* DEBUG */
+#endif /* DEBUG_PROCESS */
 					if (state_flags & COLLISION)
 					{
 						InitIntersectEndPoint (TestElementPtr);
@@ -511,10 +513,10 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 			{
 				POINT SavePt, TestSavePt;
 
-#ifdef DEBUG
+#ifdef DEBUG_PROCESS
 				fprintf (stderr, "0x%x <--> 0x%x at %u\n", ElementPtr,
 						TestElementPtr, time_val);
-#endif /* DEBUG */
+#endif /* DEBUG_PROCESS */
 				SavePt = ElementPtr->IntersectControl.EndPoint;
 				TestSavePt = TestElementPtr->IntersectControl.EndPoint;
 				InitIntersectEndPoint (ElementPtr);
@@ -533,10 +535,10 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 					state_flags = ElementPtr->state_flags;
 					test_state_flags = TestElementPtr->state_flags;
 
-#ifdef DEBUG
+#ifdef DEBUG_PROCESS
 					fprintf (stderr, "PROCESSING 0x%x <--> 0x%x at %u\n",
 							ElementPtr, TestElementPtr, time_val);
-#endif /* DEBUG */
+#endif /* DEBUG_PROCESS */
 					if (test_state_flags & PLAYER_SHIP)
 					{
 						(*TestElementPtr->collision_func) (

@@ -236,90 +236,37 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	UNICODE *name;
 	va_list vlist;
 	
-	// fprintf(stderr, "DEBUG: We've entered into construct_response!\n");
-	
 	va_start (vlist, R);
-	
-	// fprintf(stderr, "DEBUG: R = %d\n", R);
 	
 	do
 	{
 		COUNT len;
 		STRING S;
 		
-		// fprintf(stderr, "DEBUG: len = %d\n",len);
-		
 		S = SetAbsStringTableIndex (CommData.ConversationPhrases, R - 1);
-		
-		// fprintf(stderr, "DEBUG: Returned from call to SetAbsStringTableIndex\n");
-		// fprintf(stderr, "DEBUG: GetStringAddress(S) = %s\n",(UNICODE *)GetStringAddress(S));		
-		// fprintf(stderr, "DEBUG: buf = '%s' (%d) \n", buf, *buf);
-		// fprintf(stderr, "DEBUG: strlen(buf) = %d\n", strlen(buf));		
 		
 		wstrcpy (buf, (UNICODE *)GetStringAddress (S));
 		
-		// fprintf(stderr, "DEBUG: buf = '%s' (%d) \n", buf, *buf);
-		// fprintf(stderr, "DEBUG: strlen(buf) = %d\n", strlen(buf));		
-
 		len = wstrlen (buf);
-		
-		// fprintf(stderr, "DEBUG: len = %d\n",len);
 		
 		buf += len;
 		
-		// fprintf(stderr, "DEBUG: buf = '%s' (%d) \n", buf, *buf);
-		// fprintf(stderr, "DEBUG: strlen(buf) = %d\n", strlen(buf));
-		
 		name = va_arg (vlist, UNICODE *);
-		
-		// fprintf(stderr, "DEBUG: returned from va_arg call\n");
-		// fprintf(stderr, "DEBUG: name = %s\n",name);
 		
 		if (name)
 		{
-		  /*
-			fprintf(stderr, "DEBUG: ------------------------------------\n");
-			fprintf(stderr, "DEBUG: We are in the special va_args loop!\n");
-			fprintf(stderr, "DEBUG: Current critical variables read:\n");
-			fprintf(stderr, "DEBUG: ------------------------------------\n");
-			fprintf(stderr, "DEBUG: name = %s\n", name);
-			fprintf(stderr, "DEBUG: buf = '%s' (%d)\n", buf, *buf);
-			fprintf(stderr, "DEBUG: len = %d\n", len);			
-			fprintf(stderr, "DEBUG: strlen(name) = %d\n", strlen(name));
-			fprintf(stderr, "DEBUG: strlen(buf) = %d\n", strlen(buf));
-			fprintf(stderr, "DEBUG: ---- continuing ----\n");
-		  */
-			
 			len = wstrlen (name);
-			
-			// fprintf(stderr, "DEBUG: len = %d\n", len);			
-						
 			wstrncpy (buf, name, len);
-			
-			// fprintf(stderr, "DEBUG: buf = '%s' (%d)\n", buf, *buf);
-			// fprintf(stderr, "DEBUG: strlen(buf) = %d\n", strlen(buf));
-
 			buf += len;
 			
-			// fprintf(stderr, "DEBUG: buf = '%s' (%d)\n", buf, *buf);
-			
-			// fprintf(stderr, "DEBUG: Calling va_arg\n");
-			
 			/*
-				The old code follows.. I've broken this all down while troubleshooting.
-			
 			if ((R = va_arg (vlist, RESPONSE_REF)) == (RESPONSE_REF)-1)
 				name = 0;
 			*/
 					
 			R = va_arg(vlist, int);
-			
-			// fprintf(stderr, "DEBUG: Return from call to va_arg\n");
-			// fprintf(stderr, "DEBUG: R = %d\n", R);
-			
-			if (R == ((RESPONSE_REF)-1)) name = 0;
-			
-			// fprintf(stderr, "DEBUG: name = %s\n", name);
+			if (R == ((RESPONSE_REF) -1))
+				name = 0;
 		}
 	} while (name);
 	va_end (vlist);

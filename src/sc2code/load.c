@@ -22,6 +22,8 @@
 #include "options.h"
 #include "file.h"
 
+//#define DEBUG_LOAD
+
 ACTIVITY NextActivity;
 
 static void
@@ -162,9 +164,9 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 		cread ((PBYTE)&num_links, sizeof (num_links), 1, fh);
 		{
-#ifdef DEBUG
+#ifdef DEBUG_LOAD
 			fprintf (stderr, "EVENTS:\n");
-#endif /* DEBUG */
+#endif /* DEBUG_LOAD */
 			while (num_links--)
 			{
 				HEVENT hEvent;
@@ -175,13 +177,13 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				cread ((PBYTE)EventPtr, sizeof (*EventPtr), 1, fh);
 
-#ifdef DEBUG
+#ifdef DEBUG_LOAD
 			fprintf (stderr, "\t%u/%u/%u -- %u\n",
 					EventPtr->month_index,
 					EventPtr->day_index,
 					EventPtr->year_index,
 					EventPtr->func_index);
-#endif /* DEBUG */
+#endif /* DEBUG_LOAD */
 				UnlockEvent (hEvent);
 				PutEvent (hEvent);
 			}

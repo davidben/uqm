@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Cleaned up use of the DEBUG define, SvdB
 - Talking Pet .txt file corrected to match the .ogg files,
   and talkpet.ts corrections, from Nic
 - Abstracted window-drawing code from confirm.c -Michael
