@@ -254,7 +254,8 @@ TFB_Palette *
 TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
 {
 	int i;		
-	TFB_Palette *result = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
+	TFB_Palette *result;
+
 	SDL_Surface *surf = (SDL_Surface *)canvas;
 
 	if (!surf->format->palette)
@@ -262,6 +263,7 @@ TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
 		return NULL;
 	}
 
+	result = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
 	for (i = 0; i < 256; ++i)
 	{
 		result[i].r = surf->format->palette->colors[i].r;
