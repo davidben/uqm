@@ -615,6 +615,7 @@ stdio_EntriesIterator_new(long dirHandle) {
 stdio_EntriesIterator *
 stdio_EntriesIterator_new(DIR *dirHandle) {
 	stdio_EntriesIterator *result;
+	size_t bufferSize;
 
 	result = stdio_EntriesIterator_alloc();
 	result->dirHandle = dirHandle;
@@ -623,18 +624,19 @@ stdio_EntriesIterator_new(DIR *dirHandle) {
 	// maximum d_name field (NAME_MAX).
 	// However, POSIX doesn't require this, and in fact
 	// at least QNX defines struct dirent with an empty d_name field.
+	// Solaris defineds it with a d_name field of length 1.
 	// This should take care of it:
-	result->direntBuffer = uio_malloc(
-			sizeof (struct dirent)
-			- ((sizeof (((struct dirent *) 0)->d_name) + 3) & 3)
-			+ (((NAME_MAX + 1) + 3) & 3));
+	bufferSize = sizeof (struct dirent)
+			- sizeof (((struct dirent *) 0)->d_name) + (NAME_MAX + 1);
 			// Take the length of the dirent structure as it is defined,
 			// subtract the length of the d_name field, and add the length
 			// of the maximum length d_name field (NAME_MAX plus 1 for
 			// the '\0').
-			// The '(... +3) & 3' is to take into account that fields
-			// will be aligned on 4 bytes.
-			// (What about 64 bits machines?)
+			// XXX: Could this give problems with weird alignments?
+			//      Note that the standard doesn't say d_name has to be
+			//      the last field in the struct, though on all platforms
+			//      I know of, it is.
+	result->direntBuffer = uio_malloc(bufferSize);
 	return result;
 }
 #endif
