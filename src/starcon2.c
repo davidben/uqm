@@ -79,8 +79,7 @@ main (int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	sprintf (UQM_VERSION_STRING, "The Ur-Quan Masters v%d.%d (compiled %s %s)", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
-	fprintf (stderr, "%s\n", UQM_VERSION_STRING);
+	fprintf (stderr, "The Ur-Quan Masters v%d.%d (compiled %s %s)\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
 
 #ifndef WIN32
 	strcpy (contentdir, "content");

@@ -44,6 +44,7 @@ int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
 	int result;
+	char caption[200];
 
 	if (bpp != 15 && bpp != 16 && bpp != 24 && bpp != 32)
 	{
@@ -69,7 +70,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	}
 
 	SDL_EnableUNICODE (1);
-	SDL_WM_SetCaption (UQM_VERSION_STRING, NULL);
+	sprintf (caption, "The Ur-Quan Masters v%d.%d", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
+	SDL_WM_SetCaption (caption, NULL);
 
 	if (flags & TFB_GFXFLAGS_SHOWFPS)
 		ShowFPS = TRUE;
