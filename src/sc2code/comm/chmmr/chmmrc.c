@@ -456,6 +456,7 @@ Intro (void)
 				break;
 			case 1:
 				NPCPhrase (HELLO_AFTER_BOMB_2);
+				--NumVisits;
 				break;
 		}
 		SET_GAME_STATE (CHMMR_HOME_VISITS, NumVisits);

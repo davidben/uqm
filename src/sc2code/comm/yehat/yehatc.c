@@ -404,6 +404,7 @@ YehatSpace (RESPONSE_REF R)
 				break;
 			case 3:
 				NPCPhrase (GENERAL_INFO_SPACE_4);
+				--NumVisits;
 				break;
 		}
 		SET_GAME_STATE (YEHAT_REBEL_INFO, NumVisits);
