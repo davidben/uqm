@@ -12,19 +12,22 @@ Core team (in alphabetic order):
     Michael Chapman Martin <mcmartin@stanford.edu>
     Chris Nelson <chris@toysforbob.com>
 
-Additional programming (in alphabetic order):
+Additional programming (in alphabetical order):
     Karl Bartel <karlb@gmx.net>
-    Mudrony László <mudronyl@dragon.klte.hu> (makefiles)
+    
+Music remixers (in alphabetical order):
+    Aaron J. Grier
+    Dan Nicholson
+    George Nowik
+    Riku Nuottajärvi
+    Erol Otus
 
-3DO consultance (in alphabetic order):
+Other contributions (in alphabetical order):
+    Travis Chase <psichase@telusplanet.net> (BeOS port)
     Felix Lazarev <felix@freedo.org> (3DO internals)
     Parker MacMillan
     Brian Rogers <burpmaster@truffula.net>
-
-
-Using code from:
-    MikMod (http://mikmod.darkorb.net/)
-    SDL_gfx (http://www.ferzkopp.net/Software/SDL_gfx-2.0/)
+    Horatiu Romosan <hory@post.ro> (Win32 installer)
 
 
 Original 3DO game:
