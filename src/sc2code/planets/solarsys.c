@@ -1703,7 +1703,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 			pCurDesc = &pSolarSysState->PlanetDesc[index];
 			SetColorMap (GetColorMapAddress (
 					SetAbsColorMapIndex (OrbitalCMap,
-					PLANCOLOR (PlanData[pCurDesc->data_index].Type))
+					PLANCOLOR (PlanData[pCurDesc->data_index & ~PLANET_SHIELDED].Type ))
 					));
 			DrawStamp (&pCurDesc->image);
 
