@@ -90,7 +90,6 @@ Glitches (don't crash the game, medium priority):
   Probably the negative shift for GET_STATE and SET_STATE
 - Planet scan speed varies between computers, and behaves weirdly too,
   sometimes working properly, sometimes being way too fast
-- When in orbit and watching starmap, 3D planet is still shown
 
 Implementation bugs (low priority):
 - Scaling code problems:

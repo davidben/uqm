@@ -1,4 +1,6 @@
 0.2:
+- Orbit/starmap related lockup fixed, from PhracturedBlue
+- 3D planet showing on starmap when in orbit fixed, from PhracturedBlue
 - Scan (single, interrupting) fixed, from PhracturedBlue
 - Defining DCQ_OF_DOOM lowers the DrawCommandQueue size to 512, to aid in
   simulating severe overload stresses on the machine
