@@ -19,13 +19,12 @@
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 
-extern int do_subtitles (UNICODE *pStr, UNICODE *TimeStamp, int method);
+extern int do_subtitles (UNICODE *pStr);
 
 static int tct;               //total number of subtitle tracks
 static int tcur;              //currently playing subtitle track
 static UNICODE *cur_page = 0; //current page of subtitle track 
 static int no_page_break = 0;
-static int no_voice;
 static int track_pos_changed = 0; // set whenever  ff, frev is enabled
 static TFB_SoundTag *last_tag = NULL;
 
@@ -44,7 +43,7 @@ void recompute_track_pos (TFB_SoundSample *sample,
 //track has finished playing
 //Question:  Should 'abort' call StopTrack?
 void
-JumpTrack (int abort)
+JumpTrack (void)
 {
 	if (sound_sample)
 	{
@@ -63,16 +62,6 @@ JumpTrack (int abort)
 		PlayingTrack();
 		return;
 	}
-
-	no_voice = 1;
-	do_subtitles ((void *)~0, (void *)~0, 1);
-
-	if (abort)
-	{
-		LockMutex (track_mutex);
-		tcur = tct;
-		UnlockMutex(track_mutex);
-	}
 }
 
 //advance to the next track and start playing
@@ -89,10 +78,6 @@ PlayTrack (void)
 				speechVolumeScale != 0.0f, !track_pos_changed);
 		track_pos_changed = 0;
  		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	}
-	else
-	{
-		no_voice = 1;
 	}
 }
 
@@ -115,7 +100,7 @@ ResumeTrack ()
 			ResumeStream (SPEECH_SOURCE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
-		else if (!no_voice && ! playing)
+		else if (! playing)
 		{
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			PlayTrack ();
@@ -142,12 +127,11 @@ PlayingTrack ()
 		last_track = tcur;
 		last_page = cur_page;
 		UnlockMutex (track_mutex);
-		if (do_subtitles (last_page, (void *)0, 1) || 
-			(no_voice && ++tcur < tct && do_subtitles (0, (void *)~0, 1)))
+		if (do_subtitles (last_page))
 		{
 			return (tcur + 1);
 		}
-		else if (sound_sample)
+		else
 		{
 			COUNT result;
 
@@ -184,8 +168,7 @@ StopTrack ()
 	}
 	tct = tcur = 0;
 	cur_page = 0;
-	no_voice = 0;
-	do_subtitles ((void *)~0, (void *)~0, 1);
+	do_subtitles ((void *)~0);
 }
 
 void 
@@ -628,7 +611,6 @@ FastForward_Page ()
 		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
-	//no_voice = 0;
 }
 
 // processes sound data to oscilloscope

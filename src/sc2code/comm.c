@@ -1214,7 +1214,7 @@ SpewPhrases (COUNT wait_track)
 		if (InputState & (DEVICE_BUTTON2 | DEVICE_EXIT))
 		{
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
-			JumpTrack (TRUE);
+			JumpTrack ();
 			CommData.AlienFrame = F;
 			return (FALSE);
 		}
@@ -1962,148 +1962,38 @@ RaceCommunication (void)
 	}
 }
 
-//method == 0 parses pTimeStamp, and self-times the subtitles
-//method == 1 expects pTimeStamp to explicitly set the page to draw
 int
-do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp, int method)
+do_subtitles (UNICODE *pStr)
 {
-	static DWORD TimeOut;
-	static unsigned long *cur_sub_ts;
-	int disable_timer = 0;
-	int cur_page = -1;
-	static int last_page = -1;
-	static UNICODE *lastPStr = 0;
-	int NextPage = 0;
-
+	static UNICODE *last_page = NULL;;
 	// TODO: proper disabling of subtitles, this one prolly isn't 'safe'
 	if (optSubtitles == FALSE)
 	    return 0;
 	
 	if (pStr == 0)
-		return (subtitle_state = NEXT_SUBTITLE);
+		return (subtitle_state = DONE_SUBTITLE);
 	else if (pStr == (void *)~0)
 	{
-		if (subtitle_state <= NEXT_SUBTITLE)
-			return (subtitle_state);
-		TimeOut = 0;
-		NextPage = 1;
 		subtitle_state = WAIT_SUBTITLE;
 	}
-	if (method)
-		disable_timer = 1;
-	else if (! method)
+	else
 	{
-		if (last_page == -1)
-			last_page++;
-		cur_page = last_page;
+		if (last_page == pStr)
+			return (subtitle_state);
+		subtitle_state = READ_SUBTITLE;
+		ColorChange = TRUE;
+//		fprintf (stderr, "changed page to: %d\n", cur_page);
 	}
-	if (method == 1 && pStr != (void *)~0 && pTimeStamp != (void *)~0)
-	{
-		cur_page = (int)pTimeStamp;
-		if (cur_page != last_page || lastPStr != pStr) {
-			if (lastPStr != pStr)
-				subtitle_state = NEXT_SUBTITLE;
-			else
-				subtitle_state = READ_SUBTITLE;
-			ColorChange = TRUE;
-//			fprintf (stderr, "changed page to: %d\n", cur_page);
-		}
-	}
-	lastPStr = pStr;
-	last_page = cur_page;
+	last_page = pStr;
 
 	switch (subtitle_state)
 	{
-		static DWORD silence_length;
-#define MODERATE_SPEED 16
-		static BYTE speed_array[] =
-		{
-			0,
-			12,
-			MODERATE_SPEED,
-			24,
-			32,
-		};
-		static UNICODE alien_phrase_buf[4096];
-		static int page_break_pos[50];
-
-		case NEXT_SUBTITLE:
-		{
-			UNICODE ch;
-			COUNT numchars;
-			int cur_pos = 0;
-			UNICODE *s;
-			static unsigned long subtitle_frames_ts[50];
-
-			if (! disable_timer)
-				cur_page = last_page = 0;
-			page_break_pos[cur_pos++] = 0;
-			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
-			numchars = 0;
-			do
-			{
-				++numchars;
-				if ((ch = *pStr++) == '\n' || ch == '\r')
-				{
-					if (!ispunct (pStr[-2]) && !isspace (pStr[-2]))
-					{
-						*CommData.AlienTextTemplate.pStr++ = '.';
-						*CommData.AlienTextTemplate.pStr++ = '.';
-						*CommData.AlienTextTemplate.pStr++ = '.';
-						*CommData.AlienTextTemplate.pStr++ = ch;
-						*CommData.AlienTextTemplate.pStr++ = '.';
-						*CommData.AlienTextTemplate.pStr++ = '.';
-						ch = '.';
-						page_break_pos[cur_pos++] = numchars + 3;
-						numchars += 6;
-					}
-					else
-						page_break_pos[cur_pos++] = numchars;
-				}
-			} while ((*CommData.AlienTextTemplate.pStr++ = ch));
-			subtitle_frames_ts[0] = 0;
-			if (! method)
-			{
-				if (s = pTimeStamp)
-				{
-					int pos;
-					cur_sub_ts = subtitle_frames_ts;
-					while (*s && (pos = wstrcspn (s, ",")))
-					{
-						UNICODE valStr[10];
-						wstrncpy (valStr, s, pos);
-						valStr[pos] = '\0';
-						*cur_sub_ts++ = wstrtoul(valStr,NULL,10);
-						s += pos;
-						if (*s)
-							s++;
-					}
-					*cur_sub_ts = 0;
-					TimeOut = GetTimeCounter ();
-				}
-			}
-			cur_sub_ts = subtitle_frames_ts;
-
-			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
-			CommData.AlienTextTemplate.CharCount = 0;
-#if 0
-			if (pES->phrase_buf_index >= 4 && CommData.AlienTextTemplate.pStr[-4] == '\r')
-			{
-				CommData.AlienTextTemplate.pStr -= 3;
-				CommData.AlienTextTemplate.pStr[-1] = '\n';
-			}
-			pES->phrase_buf_index += numchars - 1;
-#endif
-		}
-			/* fall through */
 		case READ_SUBTITLE:
 		{
-			DWORD talk_length;
 			TEXT t;
-			BYTE read_speed;
 			CONTEXT OldContext;
 
-			CommData.AlienTextTemplate.pStr = alien_phrase_buf + page_break_pos[cur_page];
+			CommData.AlienTextTemplate.pStr = pStr;
 			t = CommData.AlienTextTemplate;
 
 			OldContext = SetContext (TaskContext);
@@ -2111,58 +2001,14 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp, int method)
 			SetContext (OldContext);
 
 			CommData.AlienTextTemplate.CharCount = t.pStr - CommData.AlienTextTemplate.pStr;
-
-			if (*cur_sub_ts)
-			{
-				// We found subtitle timestamps, let's use them
-				// timestamps are stored as time per frame in milliseconds
-				talk_length = *cur_sub_ts++ * ONE_SECOND /1000;
-				silence_length = 0;
-				TimeOut += talk_length;
-				//fprintf (stderr, "Sound length is %d\n", talk_length);
-			}
-			else if (! disable_timer)
-			{
-				read_speed = speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK];
-				talk_length = 3 * ONE_SECOND * CommData.AlienTextTemplate.CharCount / MODERATE_SPEED;
-				if (read_speed)
-				{
-					silence_length = ONE_SECOND
-							* (CommData.AlienTextTemplate.CharCount + MODERATE_SPEED) / read_speed;
-					if (silence_length < talk_length)
-						talk_length = silence_length;
-					silence_length -= talk_length;
-				}
-				TimeOut = GetTimeCounter () + talk_length;
-			}
-			else
-			{
-				TimeOut = 0;
-				silence_length = 0;
-			}
-			subtitle_state = SPACE_SUBTITLE;
+			subtitle_state = WAIT_SUBTITLE;
 			break;
 		}
-		case SPACE_SUBTITLE:
-			if (! NextPage && (disable_timer || GetTimeCounter () < TimeOut))
-				break;
-			TimeOut += silence_length;
-			subtitle_state = WAIT_SUBTITLE;
-			/* fall through */
 		case WAIT_SUBTITLE:
-			if (speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK] == 0 || NextPage || (! disable_timer && GetTimeCounter () >= TimeOut))
-			{
-//				if (NextPage)
-//					fprintf (stderr, "Switching pages\n");
-				NextPage = 0;
-				if (! disable_timer)
-					last_page++;
-				if (CommData.AlienTextTemplate.pStr[CommData.AlienTextTemplate.CharCount - 1] == '\n')
-					subtitle_state = READ_SUBTITLE;
-				else
-					subtitle_state = DONE_SUBTITLE;
-				ColorChange = TRUE;
-			}
+		{
+			subtitle_state = DONE_SUBTITLE;
+			ColorChange = TRUE;
+		}
 		case DONE_SUBTITLE:
 			break;
 	}
