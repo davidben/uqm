@@ -31,7 +31,7 @@
 int optWhichMusic = OPT_3DO;
 int optWhichCoarseScan = OPT_3DO;
 int optWhichMenu = OPT_3DO;
-int optWhichFonts = OPT_3DO;
+int optWhichFonts = OPT_PC;
 int optSmoothScroll = OPT_PC;
 
 char *configDir, *saveDir, *meleeDir;

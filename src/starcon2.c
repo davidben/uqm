@@ -260,7 +260,7 @@ main (int argc, char *argv[])
 				printf("  -m, --music : Music version (default 3do)\n");
 				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");
 				printf("  --menu      : menu type, pc=text, 3do=graphical (default 3do)\n");
-				printf("  --font      : font types and colors (default 3do)\n");
+				printf("  --font      : font types and colors (default pc)\n");
 				printf("  --scroll    : ff/frev during comm.  pc=per-page, 3do=smooth (default pc)\n");
 				return 0;
 			break;
