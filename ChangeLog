@@ -1,4 +1,6 @@
 0.2:
+- Initial display of planet surface on landing is at correct position
+- Planet scan is now properly erased when cancelling/landing
 - 3D planet view when entering orbit is now implemented
 - TFB_DrawCommandQueue->FullSize was uninitialised.
 - Typo 'cultrue' for Thraddash fixed.

@@ -25,9 +25,6 @@ Glitches (don't crash the game, medium priority):
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
-- When landing to planet surface, crossfaded image is wrong compared to
-  landing position (and so 'flashes' when crossfade ends)
-  - Orbit screen has also other transition problems
 - Flashing rects aren't perhaps always exactly the size of actual 3do version,
   it should be checked (for example when selecting ship in fullgame battle)
 - In melee, after battle, the game crashes.
@@ -107,6 +104,8 @@ Glitches (don't crash the game, medium priority):
   while the PC image is better (no cut-off nose).
 - When orbiting earth, and going to starmap and then back with space without
   selecting a destination, crashes
+- When exiting from planet surface with lander, the 3d planet isn't updated
+  for a little moment which causes black track on planet to be seen
 
 
 Implementation bugs (low priority):
