@@ -37,6 +37,10 @@
 #define CYCLE_PENDING  (1 << 5)
 #define ENABLE_CYCLE   (1 << 6)
 
+#define FADE_NO_INTENSITY      0
+#define FADE_NORMAL_INTENSITY  255
+#define FADE_FULL_INTENSITY    510
+
 enum
 {
 	TFB_COLORMAP_NONE,
@@ -47,8 +51,9 @@ enum
 };
 
 extern DWORD* _varPLUTs;
-extern UBYTE _batch_flags;
 
+int TFB_GetFadeStatus ();
+int TFB_GetFadeAmount ();
 BOOLEAN TFB_HasColorMap ();
 int TFB_GetColorMapType ();
 void TFB_ReleaseColorMap ();

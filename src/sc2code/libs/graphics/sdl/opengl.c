@@ -187,13 +187,33 @@ TFB_GL_TVEffect()
 		glVertex2i(ScreenWidthActual, y);
 		glEnd();
 	}
+}
 
-	glDisable(GL_BLEND);
+void
+TFB_GL_DrawQuad ()
+{
+	glBegin(GL_TRIANGLE_FAN);
+
+	glTexCoord2f(0, 0);
+	glVertex2i(0, 0);
+
+	glTexCoord2f(ScreenWidth / 512.0f, 0);
+	glVertex2i(ScreenWidthActual, 0);
+	
+	glTexCoord2f(ScreenWidth / 512.0f, ScreenHeight / 256.0f);
+	glVertex2i(ScreenWidthActual, ScreenHeightActual);
+
+	glTexCoord2f(0, ScreenHeight / 256.0f);
+	glVertex2i(0, ScreenHeightActual);
+
+	glEnd();
 }
 
 void 
 TFB_GL_SwapBuffers ()
 {
+	int fade_amount;
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
@@ -211,24 +231,36 @@ TFB_GL_SwapBuffers ()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
 
+	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1,1,1,1);
 	
-	glBegin(GL_TRIANGLE_FAN);
+	TFB_GL_DrawQuad ();
 
-	glTexCoord2f(0, 0);
-	glVertex2i(0, 0);
+	fade_amount = TFB_GetFadeAmount ();
+	if (fade_amount != 255)
+	{
+		float c;
 
-	glTexCoord2f(ScreenWidth / 512.0f, 0);
-	glVertex2i(ScreenWidthActual, 0);
-	
-	glTexCoord2f(ScreenWidth / 512.0f, ScreenHeight / 256.0f);
-	glVertex2i(ScreenWidthActual, ScreenHeightActual);
+		if (fade_amount < 255)
+		{
+			c = fade_amount / 255.0f;
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		}
+		else
+		{
+			c = (fade_amount - 255) / 255.0f;
+			glBlendFunc(GL_ONE, GL_ONE);
+		}
 
-	glTexCoord2f(0, ScreenHeight / 256.0f);
-	glVertex2i(0, ScreenHeightActual);
+		glColor3f(c, c, c);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
 
-	glEnd();
+		//printf("fade_amount %d c %f\n",fade_amount, c);
+
+		TFB_GL_DrawQuad ();
+	}
 
 	if (tveffect)
 		TFB_GL_TVEffect();

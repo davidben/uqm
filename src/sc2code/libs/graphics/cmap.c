@@ -31,7 +31,8 @@ static struct
 	} tc;
 } TaskControl;
 
-UBYTE _batch_flags;
+static int cur = FADE_NORMAL_INTENSITY, end, XForming;
+
 DWORD* _varPLUTs;
 static unsigned int varPLUTsize = VARPLUTS_SIZE;
 
@@ -39,6 +40,16 @@ static BOOLEAN has_colormap = FALSE;
 static TFB_Palette cmap_rgb[256];
 static int cmap_type = 0;
 
+
+int TFB_GetFadeStatus ()
+{
+	return XForming;
+}
+
+int TFB_GetFadeAmount ()
+{
+	return cur;
+}
 
 BOOLEAN TFB_HasColorMap ()
 {
@@ -125,14 +136,12 @@ BOOLEAN TFB_CopyRGBColorMap (TFB_Palette *dst)
 	return TRUE;
 }
 
-// Status: Implemented
 BOOLEAN
 BatchColorMap (COLORMAPPTR ColorMapPtr)
 {
 	return (SetColorMap (ColorMapPtr, TFB_COLORMAP_NONE));
 }
 
-// Status: Implemented
 BOOLEAN
 SetColorMap (COLORMAPPTR map, int type)
 {
@@ -168,138 +177,6 @@ SetColorMap (COLORMAPPTR map, int type)
 	return TRUE;
 }
 
-void
-_threedo_set_colors (UBYTE *colors, unsigned int indices)
-{
-	int i, start, end;
-	//unsigned int *ce;
-
-	start = (int)LOBYTE (indices);
-	end = (int)HIBYTE (indices);
-
-	//ce = colorEntries;
-	for (i = start; i <= end; i++)
-	{
-		UBYTE r, g, b;
-
-		r = (*colors << 2) | (*colors >> 4);
-		++colors;
-		g = (*colors << 2) | (*colors >> 4);
-		++colors;
-		b = (*colors << 2) | (*colors >> 4);
-		++colors;
-
-		//*ce++ = MakeCLUTColorEntry (i, r, g, b);
-	}
-	
-	//ceCt = end - start + 1;
-
-	//_threedo_add_task (Thread_SET_CLUT);
-	//_batch_flags |= CYCLE_PENDING;
-}
-
-static int
-color_cycle (void *data)
-{
-	UWORD color_beg, color_len, color_indices;
-	COUNT Cycles, CycleCount;
-	DWORD TimeIn, SleepTicks;
-	COLORMAPPTR BegMapPtr, CurMapPtr;
-	Task task = (Task)data;
-
-	Cycles = CycleCount = TaskControl.tc.NumCycles;
-	BegMapPtr = TaskControl.CMapPtr;
-	SleepTicks = TaskControl.Ticks;
-
-	color_indices = MAKE_WORD (BegMapPtr[0], BegMapPtr[1]);
-	color_beg = *BegMapPtr++ * 3;
-	color_len = (*BegMapPtr++ + 1) * 3 - color_beg;
-	CurMapPtr = BegMapPtr;
-
-	TaskControl.CMapPtr = 0;
-	TimeIn = GetTimeCounter ();
-	while (!Task_ReadState(task, TASK_EXIT))
-	{
-		//_threedo_set_colors (CurMapPtr, color_indices);
-
-		if (--Cycles)
-			CurMapPtr += color_len + sizeof (BYTE) * 2;
-		else
-		{
-			Cycles = CycleCount;
-			CurMapPtr = BegMapPtr;
-		}
-
-		SleepThreadUntil (TimeIn + SleepTicks);
-		TimeIn = GetTimeCounter ();
-
-		if (TaskControl.CMapPtr)
-		{
-			TaskControl.CMapPtr = (COLORMAPPTR)0;
-			while (!Task_ReadState(task, TASK_EXIT))
-				TaskSwitch ();
-		}
-	}
-	FinishTask (task);
-	return 0;
-}
-
-CYCLE_REF 
-CycleColorMap (COLORMAPPTR ColorMapPtr, COUNT Cycles, SIZE TimeInterval)
-{
-	if (ColorMapPtr && Cycles && ColorMapPtr[0] <= ColorMapPtr[1])
-	{
-		Task T;
-
-		while (TaskControl.CMapPtr)
-		{
-			TaskSwitch ();
-		}
-
-		TaskControl.CMapPtr = ColorMapPtr;
-		TaskControl.tc.NumCycles = Cycles;
-		if ((TaskControl.Ticks = TimeInterval) <= 0)
-			TaskControl.Ticks = 1;
-
-		T = AssignTask (color_cycle, 0, "color cycle");
-		if (T)
-		{
-			_batch_flags |= ENABLE_CYCLE;
-			do
-				TaskSwitch ();
-			while (TaskControl.CMapPtr);
-		}
-		TaskControl.CMapPtr = 0;
-
-		return ((CYCLE_REF)T);
-	}
-
-	return (0);
-}
-
-void 
-StopCycleColorMap (CYCLE_REF CycleRef)
-{
-	Task T;
-
-	T = (Task) CycleRef;
-	if (T)
-	{
-		TaskControl.CMapPtr = (COLORMAPPTR)1;
-		while (TaskControl.CMapPtr)
-			TaskSwitch ();
-
-		_batch_flags &= ~ENABLE_CYCLE;
-		Task_SetState (T, TASK_EXIT);
-	}
-}
-
-#define NO_INTENSITY      0x00
-#define NORMAL_INTENSITY  0xff
-#define FULL_INTENSITY    (0xff * 32)
-
-static int cur = NORMAL_INTENSITY, end, XForming;
-
 static
 int xform_clut_task (void *data)
 {
@@ -326,7 +203,7 @@ int xform_clut_task (void *data)
 				TDelta = TTotal;
 
 			cur += (end - cur) * TDelta / TTotal;
-			//_threedo_change_clut (cur);
+			//printf("xform_clut_task cur %d\n", cur);
 		} while (TTotal -= TDelta && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
@@ -336,14 +213,11 @@ int xform_clut_task (void *data)
 	return 0;
 }
 
-//Status: Partially implemented
 DWORD
 XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
 	BYTE what;
 	DWORD TimeOut;
-
-	//printf ("Partially implemented function activated: XFormColorMap()\n");
 
 	FlushColorXForms ();
 
@@ -355,29 +229,26 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	{
 	case FadeAllToBlack:
 	case FadeSomeToBlack:
-		end = NO_INTENSITY;
+		end = FADE_NO_INTENSITY;
 		break;
 	case FadeAllToColor:
 	case FadeSomeToColor:
-		end = NORMAL_INTENSITY;
+		end = FADE_NORMAL_INTENSITY;
 		break;
 	case FadeAllToWhite:
 	case FadeSomeToWhite:
-		end = FULL_INTENSITY;
+		end = FADE_FULL_INTENSITY;
 		break;
 	default:
 		return (GetTimeCounter ());
 	}
-
-	//if (what == FadeAllToBlack || what == FadeAllToWhite || what == FadeAllToColor)
-	//_threedo_enable_fade ();
 
 	TaskControl.Ticks = TimeInterval;
 	if (TaskControl.Ticks <= 0 ||
 			(TaskControl.tc.XFormTask = AssignTask (xform_clut_task,
 					1024, "transform colormap")) == 0)
 	{
-		//_threedo_change_clut (end);
+		cur = end;
 		TimeOut = GetTimeCounter ();
 	}
 	else
@@ -392,12 +263,9 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	return (TimeOut);
 }
 
-//Status: Implemented
 void
 FlushColorXForms()
 {
-	//printf ("Partially implemented function activated: FlushColorXForms()\n");
-
 	if (XForming)
 	{
 		XForming = FALSE;

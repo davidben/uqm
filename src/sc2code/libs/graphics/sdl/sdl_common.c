@@ -23,6 +23,8 @@
 #include "pure.h"
 #include "rotozoom.h"
 #include "primitives.h"
+#include "dcqueue.h"
+#include "SDL_thread.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
@@ -316,6 +318,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 	// but it is likely to not be very destructive.
 	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
 	{
+		static int last_fade = 255;
+		int current_fade = TFB_GetFadeAmount();			
+		
+		if (current_fade != 255 && current_fade != last_fade)
+			TFB_SwapBuffers(); // if fading, redraw every frame
+		last_fade = current_fade;
+
 		SDL_Delay(5);
 		return;
 	}
