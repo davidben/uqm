@@ -1040,10 +1040,6 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 	if (!src->firstqueued)
 		return;
 
-	if (src->cprocessed > 0)
-	{
-		int i = 0; // break
-	}
 #ifdef DEBUG
 	/* assert the source buffers state */
 	if (!src->lastqueued)
@@ -1881,7 +1877,7 @@ void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	mixSDL_LockMutex (buf_mutex);
 	mixSDL_LockMutex (act_mutex);
 
-	for (stream; stream < end_stream; stream += mixer_chansize)
+	for (; stream < end_stream; stream += mixer_chansize)
 	{
 		uint32 i;
 		sint32 fullsamp;
@@ -1894,7 +1890,7 @@ void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 			sint32 samp;
 			
 			/* find next source */
-			for (i; i < MAX_SOURCES && (
+			for (; i < MAX_SOURCES && (
 					(src = active_sources[i]) == 0
 					|| src->state != MIX_PLAYING
 					|| !mixSDL_SourceGetNextSample (src, &samp));
@@ -1933,6 +1929,8 @@ void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	mixSDL_UnlockMutex (act_mutex);
 	mixSDL_UnlockMutex (buf_mutex);
 	mixSDL_UnlockMutex (src_mutex);
+
+	(void)userdata; // satisfying compiler
 }
 
 #endif
