@@ -4,89 +4,89 @@
 !include "content.nsh"
 
 ; ***************** content **********************
-!ifndef ${CONTENT_LOCATION}
-  !ifdef ${CONTENT_USE_MIRROR}
+!ifndef CONTENT_LOCATION
+  !ifdef CONTENT_USE_MIRROR
      !define CONTENT_LOCATION ${MIRROR_LOCATION}
   !else
      !define CONTENT_LOCATION ${DOWNLOAD_LOCATION}
   !endif
 !endif
-!ifndef ${CONTENT_USE_MIRROR}
+!ifndef CONTENT_USE_MIRROR
   !define CONTENT_USE_MIRROR 0
 !endif
-!ifndef ${CONTENT_PACKAGE_FILE}
+!ifndef CONTENT_PACKAGE_FILE
   !define CONTENT_PACKAGE_FILE "uqm-${MUI_VERSION}-content.zip"
 !endif
-!ifndef ${CONTENT_TYPE}
+!ifndef CONTENT_TYPE
   !define CONTENT_TYPE "zip"
 !endif
-!ifndef ${CONTENT_ROOT}
+!ifndef CONTENT_ROOT
   !define CONTENT_ROOT "\content"
 !endif
 
 ; ****************** voice **********************
-!ifndef ${VOICE_LOCATION}
-  !ifdef ${VOICE_USE_MIRROR}
+!ifndef VOICE_LOCATION
+  !ifdef VOICE_USE_MIRROR
      !define VOICE_LOCATION ${MIRROR_LOCATION}
   !else
      !define VOICE_LOCATION ${DOWNLOAD_LOCATION}
   !endif
 !endif
-!ifndef ${VOICE_USE_MIRROR}
+!ifndef VOICE_USE_MIRROR
   !define VOICE_USE_MIRROR 0
 !endif
-!ifndef ${VOICE_PACKAGE_FILE}
+!ifndef VOICE_PACKAGE_FILE
   !define VOICE_PACKAGE_FILE "uqm-${MUI_VERSION}-voice.zip"
 !endif
-!ifndef ${VOICE_TYPE}
+!ifndef VOICE_TYPE
   !define VOICE_TYPE "zip"
 !endif
-!ifndef ${VOICE_ROOT}
+!ifndef VOICE_ROOT
   !define VOICE_ROOT "\content"
 !endif
 
 ; **************** 3do music *********************
-!ifndef ${THREEDO_LOCATION}
-  !ifdef ${THREEDO_USE_MIRROR}
+!ifndef THREEDO_LOCATION
+  !ifdef THREEDO_USE_MIRROR
      !define THREEDO_LOCATION ${MIRROR_LOCATION}
   !else
      !define THREEDO_LOCATION ${DOWNLOAD_LOCATION}
   !endif
 !endif
-!ifndef ${THREEDO_USE_MIRROR}
+!ifndef THREEDO_USE_MIRROR
   !define THREEDO_USE_MIRROR 0
 !endif
-!ifndef ${THREEDO_PACKAGE_FILE}
+!ifndef THREEDO_PACKAGE_FILE
   !define THREEDO_PACKAGE_FILE "uqm-${MUI_VERSION}-3domusic.zip"
 !endif
-!ifndef ${THREEDO_TYPE}
+!ifndef THREEDO_TYPE
   !define THREEDO_TYPE "zip"
 !endif
-!ifndef ${THREEDO_ROOT}
+!ifndef THREEDO_ROOT
   !define THREEDO_ROOT "\content"
 !endif
 
 ; ***************** upgrade **********************
-!ifndef ${UPGRADE_LOCATION}
-  !ifdef ${UPGRADE_USE_MIRROR}
+!ifndef UPGRADE_LOCATION
+  !ifdef UPGRADE_USE_MIRROR
      !define UPGRADE_LOCATION ${MIRROR_LOCATION}
   !else
      !define UPGRADE_LOCATION ${DOWNLOAD_LOCATION}
   !endif
 !endif
-!ifndef ${UPGRADE_USE_MIRROR}
+!ifndef UPGRADE_USE_MIRROR
   !define UPGRADE_USE_MIRROR 0
 !endif
 
 ; ************** voice upgrade *******************
-!ifndef ${VUPGRADE_LOCATION}
-  !ifdef ${VUPGRADE_USE_MIRROR}
+!ifndef VUPGRADE_LOCATION
+  !ifdef VUPGRADE_USE_MIRROR
      !define VUPGRADE_LOCATION ${MIRROR_LOCATION}
   !else
      !define VUPGRADE_LOCATION ${DOWNLOAD_LOCATION}
   !endif
 !endif
-!ifndef ${VUPGRADE_USE_MIRROR}
+!ifndef VUPGRADE_USE_MIRROR
   !define VUPGRADE_USE_MIRROR 0
 !endif
 
@@ -179,10 +179,7 @@ SectionIn 1 2 RO
   SetOutPath $INSTDIR
   ; Put file there
   File "..\..\uqm.exe"
-  File "..\..\README"
-  File "..\..\NEWS"
-  File "..\..\ChangeLog"
-  File "..\..\TODO"
+  File "..\..\WhatsNew"
   File "..\..\doc\users\manual.txt"
   File "..\..\COPYING"
   ; Write the installation path into the registry
@@ -610,10 +607,7 @@ Section "Uninstall"
 
   ; remove files
   Delete "$INSTDIR\uqm.exe"
-  Delete "$INSTDIR\README"
-  Delete "$INSTDIR\NEWS"
-  Delete "$INSTDIR\ChangeLog"
-  Delete "$INSTDIR\TODO"
+  Delete "$INSTDIR\WhatsNew"
   Delete "$INSTDIR\manual.txt"
   Delete "$INSTDIR\COPYING"
   Delete "$INSTDIR\SDL.dll"

@@ -1,12 +1,12 @@
 !define OLD_VERSION "0.1" ; The earliest version that we can upgrade from
 !define DOWNLOAD_LOCATION "http://sc2.sf.net/install_files/0.2"
-!define MIRROR_LOCATION "http://sc2.sf.net/install_files/0.2/mirror.txt"
+!define MIRROR_LOCATION "http://sc2.sf.net/install_files/0.2/mirrors.txt"
 
-;!define CONTENT_USE_MIRROR 1 ; Define if the download should use a mirror
-;!define VOICE_USE_MIRROR 1 ; Define if the download should use a mirror
-;!define THREEDO_USE_MIRROR 1 ; Define if the download should use a mirror
-;!define UPGRADE_USE_MIRROR 1 ; Define if the download should use a mirror
-;!define VUPGRADE_USE_MIRROR 1 ; Define if the download should use a mirror
+!define CONTENT_USE_MIRROR 1 ; Define if the download should use a mirror
+!define VOICE_USE_MIRROR 1 ; Define if the download should use a mirror
+!define THREEDO_USE_MIRROR 1 ; Define if the download should use a mirror
+!define UPGRADE_USE_MIRROR 1 ; Define if the download should use a mirror
+!define VUPGRADE_USE_MIRROR 1 ; Define if the download should use a mirror
 
 ; -----------------------------
 ; Only define these if you need fine control over where the archives are stored
