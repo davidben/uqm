@@ -112,6 +112,8 @@ uio_closeRepository(uio_Repository *repository) {
  *                		be taken relative.
  *                sourcePath - a path relative to sourceDir, which contains
  *                		the file/directory to be mounted.
+ *                		If sourceDir and sourcePath are NULL, the file
+ *                		system of the operating system will be used.
  *                inPath - the location relative to the root of the newly
  *                		mounted fileSystem, pointing to the directory
  *                      that is to be grafted.

@@ -47,14 +47,14 @@ static int zip_badFile(zip_GPFileData *gPFileData, char *fileName);
 static int zip_fillDirStructure(uio_GPDir *top, uio_Handle *handle);
 #if zip_USE_HEADERS == zip_USE_LOCAL_HEADERS
 static int zip_fillDirStructureLocal(uio_GPDir *top, uio_Handle *handle);
-static int zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
+static int zip_fillDirStructureLocalProcessEntry(uio_GPDir *topGPDir,
 		uio_FileBlock *fileBlock, off_t *pos);
 #endif
 #if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
 static off_t zip_findEndOfCentralDirectoryRecord(uio_Handle *handle,
 		uio_FileBlock *fileBlock);
 static int zip_fillDirStructureCentral(uio_GPDir *top, uio_Handle *handle);
-static int zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
+static int zip_fillDirStructureCentralProcessEntry(uio_GPDir *topGPDir,
 		uio_FileBlock *fileBlock, off_t *pos);
 static int zip_updatePFileDataFromLocalFileHeader(zip_GPFileData *gPFileData,
 		uio_FileBlock *fileBlock, int pos);
@@ -641,7 +641,7 @@ zip_fillDirStructureCentral(uio_GPDir *top, uio_Handle *handle) {
 	
 	pos = startCentralDir;
 	while (numEntries--) {
-		if (zip_fillDirStructureCentralProcessFile(top, fileBlock, &pos)
+		if (zip_fillDirStructureCentralProcessEntry(top, fileBlock, &pos)
 				== -1) {
 			// errno is set
 			goto err;
@@ -663,7 +663,7 @@ err:
 }
 
 static int
-zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
+zip_fillDirStructureCentralProcessEntry(uio_GPDir *topGPDir,
 		uio_FileBlock *fileBlock, off_t *pos) {
 	char *buf;
 	zip_GPFileData *gPFileData;
@@ -777,8 +777,6 @@ zip_fillDirStructureCentralProcessFile(uio_GPDir *topGPDir,
 	if (S_ISREG(gPFileData->mode)) {
 		if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
 			if (errno == EISDIR) {
-				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
-						"skipped.\n", fileName);
 				zip_GPFileData_delete(gPFileData);
 				uio_free(fileName);
 				return 0;
@@ -872,6 +870,7 @@ zip_makeFileMode(zip_OSType creatorOS, uio_uint32 modeBytes) {
 		case zip_OSType_FAT:
 		case zip_OSType_NTFS:
 		case zip_OSType_VFAT: {
+			// Only the least signigicant byte is relevant.
 			mode_t mode;
 
 			if (modeBytes == 0) {
@@ -879,7 +878,7 @@ zip_makeFileMode(zip_OSType creatorOS, uio_uint32 modeBytes) {
 				return S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
 						S_IROTH | S_IWOTH;
 			}
-			if (modeBytes & 0x00001000) {
+			if (modeBytes & 0x10) {
 				// Directory
 				mode = S_IFDIR | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP |
 						S_IROTH | S_IXOTH;
@@ -887,7 +886,7 @@ zip_makeFileMode(zip_OSType creatorOS, uio_uint32 modeBytes) {
 				// Regular file
 				mode = S_IFREG | S_IRUSR | S_IRGRP | S_IROTH;
 			}
-			if (modeBytes & 0x00000100) {
+			if (modeBytes & 0x01) {
 				// readonly
 				return mode;
 			} else {
@@ -998,7 +997,7 @@ zip_fillDirStructureLocal(uio_GPDir *top, uio_Handle *handle) {
 			break;
 		}
 		pos += 4;
-		if (zip_fillDirStructureLocalProcessFile(top, fileBlock, &pos) == -1)
+		if (zip_fillDirStructureLocalProcessEntry(top, fileBlock, &pos) == -1)
 			goto err;
 	}
 
@@ -1016,7 +1015,7 @@ err:
 }
 
 static int
-zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
+zip_fillDirStructureLocalProcessEntry(uio_GPDir *topGPDir,
 		uio_FileBlock *fileBlock, off_t *pos) {
 	char *buf;
 	zip_GPFileData *gPFileData;
@@ -1149,8 +1148,6 @@ zip_fillDirStructureLocalProcessFile(uio_GPDir *topGPDir,
 	if (S_ISREG(gPFileData->mode)) {
 		if (zip_foundFile(topGPDir, fileName, gPFileData) == -1) {
 			if (errno == EISDIR) {
-				fprintf(stderr, "Warning: file '%s' already exists as a dir - "
-						"skipped.\n", fileName);
 				zip_GPFileData_delete(gPFileData);
 				uio_free(fileName);
 				return 0;
@@ -1332,6 +1329,7 @@ static inline int
 zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 	uio_GPFile *file;
 	size_t pathLen;
+	const char *rest;
 	const char *pathEnd;
 	const char *start, *end;
 	char *buf;
@@ -1347,7 +1345,7 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 	}
 	pathEnd = path + pathLen;
 
-	switch (uio_walkGPPath(gPDir, path, pathLen, &gPDir, &path)) {
+	switch (uio_walkGPPath(gPDir, path, pathLen, &gPDir, &rest)) {
 		case 0:
 			// The entire path was matched. The last part was not supposed
 			// to be a dir.
@@ -1365,7 +1363,7 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 	}
 
 	buf = uio_malloc(pathLen + 1);
-	getFirstPathComponent(path, pathEnd, &start, &end);
+	getFirstPathComponent(rest, pathEnd, &start, &end);
 	while (1) {
 		uio_GPDir *newGPDir;
 		
@@ -1379,7 +1377,7 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 		}
 		if (end == pathEnd) {
 			// This is the last component; it should be the name of the dir.
-			path = start;
+			rest = start;
 			break;
 		}
 		memcpy(buf, start, end - start);
@@ -1398,7 +1396,7 @@ zip_foundFile(uio_GPDir *gPDir, const char *path, zip_GPFileData *gPFileData) {
 	
 	file = uio_GPFile_new(gPDir->pRoot, (uio_GPFileExtra) gPFileData,
 			uio_gPFileFlagsFromPRootFlags(gPDir->pRoot->flags));
-	uio_GPDir_addFile(gPDir, path, file);
+	uio_GPDir_addFile(gPDir, rest, file);
 	return 0;
 }
 
@@ -1406,6 +1404,7 @@ static inline int
 zip_foundDir(uio_GPDir *gPDir, const char *path, zip_GPDirData *gPDirData) {
 	size_t pathLen;
 	const char *pathEnd;
+	const char *rest;
 	const char *start, *end;
 	char *buf;
 
@@ -1414,14 +1413,14 @@ zip_foundDir(uio_GPDir *gPDir, const char *path, zip_GPDirData *gPDirData) {
 	pathLen = strlen(path);
 	pathEnd = path + pathLen;
 
-	switch (uio_walkGPPath(gPDir, path, pathLen, &gPDir, &path)) {
+	switch (uio_walkGPPath(gPDir, path, pathLen, &gPDir, &rest)) {
 		case 0:
 			// The dir already exists. Only need to add gPDirData
-			if (gPDir->extra) {
+			if (gPDir->extra != NULL) {
 				fprintf(stderr, "Warning: '%s' is present more than once "
-						"in the zip file. Last entry will be used.\n",
+						"in the zip file. The last entry will be used.\n",
 						path);
-				zip_GPDirData_free(gPDir->extra);
+				zip_GPDirData_delete(gPDir->extra);
 			}
 			gPDir->extra = gPDirData;
 			return 0;
@@ -1435,7 +1434,7 @@ zip_foundDir(uio_GPDir *gPDir, const char *path, zip_GPDirData *gPDirData) {
 	}
 
 	buf = uio_malloc(pathLen + 1);
-	getFirstPathComponent(path, pathEnd, &start, &end);
+	getFirstPathComponent(rest, pathEnd, &start, &end);
 	while (start < pathEnd) {
 		uio_GPDir *newGPDir;
 		
@@ -1453,12 +1452,12 @@ zip_foundDir(uio_GPDir *gPDir, const char *path, zip_GPDirData *gPDirData) {
 		newGPDir->flags |= uio_GPDir_COMPLETE;
 				// It will be complete when we're done adding
 				// all files, and it won't be used before that.
-		newGPDir->extra = gPDirData;
 		uio_GPDir_commitSubDir(gPDir, buf, newGPDir);
 
 		gPDir = newGPDir;
 		getNextPathComponent(pathEnd, &start, &end);
 	}
+	gPDir->extra = gPDirData;
 
 	uio_free(buf);
 	return 0;
