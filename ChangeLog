@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fix various graphics glitches during  dialog.  Especially Spathi Eye,and ZFP
+  Closes #23, #156 - PhracturedBlue
 - Fix Syreen, KohrAh and Slylandro ship effects to not be screen
   size dependant (corolary to bug 93) - PhracturedBlue
 - Line clipping is now handled correctly; fixes #28 (one pixel corruptions)

@@ -182,13 +182,13 @@ add_text (int status, PTEXT pTextIn)
 	}
 	else if (GetContextFontLeading (&leading), status <= -4)
 	{
-		text_width = SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2);
+		text_width = (SIZE) (SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2));
 
 		pText = pTextIn;
 	}
 	else
 	{
-		text_width = SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2);
+		text_width = (SIZE) (SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2));
 
 		switch (status)
 		{
@@ -473,6 +473,7 @@ xform_complete (void)
 }
 
 static BOOLEAN ColorChange;
+static BOOLEAN ClearSubtitle = FALSE;
 
 /* Only one thread should ever be allowed to be calling this at any time */
 void
@@ -587,7 +588,6 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
 	if (ColorMapPtr)
 	{
-		DWORD TimeOut;
 		DWORD *pOldCMap, *pCurCMap;
 		XFORM_CONTROL *control;
 		int i;
@@ -738,11 +738,11 @@ SetUpSequence (PSEQUENCE pSeq)
 			if (pSeq->AnimType == COLOR_ANIM)
 				pSeq->AnimObj.CurCMap =
 						SetRelColorMapIndex (pSeq->AnimObj.CurCMap,
-						(COUNT)TFB_Random () % pSeq->FramesLeft);
+						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
 			else
 				pSeq->AnimObj.CurFrame =
 						SetRelFrameIndex (pSeq->AnimObj.CurFrame,
-						(COUNT)TFB_Random () % pSeq->FramesLeft);
+						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
 		}
 		else if (ADPtr->AnimFlags & YOYO_ANIM)
 		{
@@ -795,16 +795,22 @@ int ambient_anim_task(void* data)
 {
 	SIZE TalkAlarm;
 	FRAME TalkFrame;
+	FRAME ResetTalkFrame = NULL;
+	FRAME TransitionFrame = NULL;
+	FRAME AnimFrame[MAX_ANIMATIONS];
 	COUNT i;
 	DWORD LastTime;
 	FRAME CommFrame;
-	register PPRIMITIVE pBatch;
 	SEQUENCE Sequencer[MAX_ANIMATIONS];
+	ANIMATION_DESC TalkBuffer = CommData.AlienTalkDesc;
 	PSEQUENCE pSeq;
 	ANIMATION_DESCPTR ADPtr;
 	DWORD ActiveMask;
 	DWORD LastOscillTime;
 	Task task = (Task) data;
+	BOOLEAN TransitionDone = FALSE;
+	BOOLEAN TalkFrameChanged = FALSE;
+	BOOLEAN FrameChanged[MAX_ANIMATIONS];
 
 	while ((CommFrame = CommData.AlienFrame) == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
@@ -819,6 +825,21 @@ int ambient_anim_task(void* data)
 	TalkFrame = 0;
 	LastTime = GetTimeCounter ();
 	LastOscillTime = LastTime;
+	memset (&FrameChanged[0], 0 , MAX_ANIMATIONS);
+	memset (&AnimFrame[0], 0, sizeof (FRAME) * MAX_ANIMATIONS);
+	for (i = 0; i <= CommData.NumAnimations; i++)
+		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
+			AnimFrame[i] =  SetAbsFrameIndex (
+					CommFrame,
+					CommData.AlienAmbientArray[i].StartIndex
+					);
+		else
+			AnimFrame[i] =  SetAbsFrameIndex (
+					CommFrame,
+					(COUNT)(CommData.AlienAmbientArray[i].StartIndex
+					+ CommData.AlienAmbientArray[i].NumFrames - 1)
+					);
+
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		BOOLEAN Change, CanTalk;
@@ -842,7 +863,6 @@ int ambient_anim_task(void* data)
 			CanTalk = FALSE;
 		}
 
-		pBatch = &DisplayArray[MAX_ANIMATIONS + 1];
 		pSeq = &Sequencer[i];
 		ADPtr = &CommData.AlienAmbientArray[i];
 		while (i-- && !Task_ReadState (task, TASK_EXIT))
@@ -851,7 +871,7 @@ int ambient_anim_task(void* data)
 			--pSeq;
 			if (ADPtr->AnimFlags & ANIM_DISABLED)
 				continue;
-			else if (pSeq->Direction == NO_DIR)
+			if (pSeq->Direction == NO_DIR)
 			{
 				if (!(ADPtr->AnimFlags
 						& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
@@ -889,17 +909,14 @@ int ambient_anim_task(void* data)
 				{
 					XFormPLUT (
 							GetColorMapAddress (pSeq->AnimObj.CurCMap),
-							pSeq->Alarm - 1
+							(COUNT) (pSeq->Alarm - 1)
 							);
 				}
 				else
 				{
 					Change = TRUE;
-					--pBatch;
-					SetPrimNextLink (pBatch, (pBatch - &DisplayArray[0]) + 1);
-					SetPrimType (pBatch, STAMP_PRIM);
-pBatch->Object.Stamp.origin.x = -SAFE_X;
-					pBatch->Object.Stamp.frame = pSeq->AnimObj.CurFrame;
+					AnimFrame[i] = pSeq->AnimObj.CurFrame;
+					FrameChanged[i] = 1;
 				}
 
 				if (pSeq->FramesLeft == 0)
@@ -916,13 +933,15 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 						if (pSeq->AnimType == COLOR_ANIM)
 							pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
 									pSeq->AnimObj.CurCMap,
-									-pSeq->FramesLeft
+									(SWORD) (-pSeq->FramesLeft)
 									);
 						else
+						{
 							pSeq->AnimObj.CurFrame = SetRelFrameIndex (
 									pSeq->AnimObj.CurFrame,
-									-pSeq->FramesLeft
+									(SWORD) (-pSeq->FramesLeft)
 									);
+						}
 					}
 				}
 
@@ -931,15 +950,15 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 					if (pSeq->AnimType == COLOR_ANIM)
 						pSeq->AnimObj.CurCMap =
 								SetAbsColorMapIndex (pSeq->AnimObj.CurCMap,
-								ADPtr->StartIndex
+								(COUNT) (ADPtr->StartIndex
 								+ ((COUNT)TFB_Random ()
-								% ADPtr->NumFrames));
+								% ADPtr->NumFrames)));
 					else
 						pSeq->AnimObj.CurFrame =
 								SetAbsFrameIndex (pSeq->AnimObj.CurFrame,
-								ADPtr->StartIndex
+								(COUNT) (ADPtr->StartIndex
 								+ ((COUNT)TFB_Random ()
-								% ADPtr->NumFrames));
+								% ADPtr->NumFrames)));
 				}
 				else if (pSeq->AnimType == COLOR_ANIM)
 				{
@@ -986,154 +1005,205 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 				&& (ADPtr->AnimFlags & WAIT_TALKING)
 				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
 		{
-			if ((long)TalkAlarm > (long)ElapsedTicks)
-				TalkAlarm -= (SIZE)ElapsedTicks;
-			else
+			BOOLEAN done = 0;
+			for (i = 0; i < CommData.NumAnimations; i++)
+				if (ActiveMask & (1L << i) 
+					&& CommData.AlienAmbientArray[i].AnimFlags & WAIT_TALKING)
+					done = 1;
+			if (! done)
 			{
-				BYTE AFlags;
-				SIZE FrameRate;
 
-				if (TalkAlarm > 0)
-					TalkAlarm = 0;
-				else
-					TalkAlarm = -1;
-
-				AFlags = ADPtr->AnimFlags;
-				if (!(AFlags & (TALK_INTRO | TALK_DONE)))
+				if (ADPtr->StartIndex != TalkBuffer.StartIndex)
 				{
-					FrameRate =
-							ADPtr->BaseFrameRate
-							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomFrameRate + 1));
-					if (TalkAlarm < 0
-							|| GetFrameIndex (TalkFrame) ==
-							ADPtr->StartIndex)
+					Change = TRUE;
+					ResetTalkFrame = SetAbsFrameIndex (CommFrame,
+							TalkBuffer.StartIndex);
+					TalkBuffer = CommData.AlienTalkDesc;
+				}
+
+				if ((long)TalkAlarm > (long)ElapsedTicks)
+					TalkAlarm -= (SIZE)ElapsedTicks;
+				else
+				{
+					BYTE AFlags;
+					SIZE FrameRate;
+
+					if (TalkAlarm > 0)
+						TalkAlarm = 0;
+					else
+						TalkAlarm = -1;
+
+					AFlags = ADPtr->AnimFlags;
+					if (!(AFlags & (TALK_INTRO | TALK_DONE)))
 					{
-						TalkFrame = SetAbsFrameIndex (CommFrame,
-								ADPtr->StartIndex + 1
+						FrameRate =
+								ADPtr->BaseFrameRate
 								+ ((COUNT)TFB_Random ()
-								% (ADPtr->NumFrames - 1)));
-						FrameRate +=
-								ADPtr->BaseRestartRate
-								+ ((COUNT)TFB_Random ()
-								% (ADPtr->RandomRestartRate + 1));
+								% (ADPtr->RandomFrameRate + 1));
+						if (TalkAlarm < 0
+								|| GetFrameIndex (TalkFrame) ==
+								ADPtr->StartIndex)
+						{
+							TalkFrame = SetAbsFrameIndex (CommFrame,
+									(COUNT) (ADPtr->StartIndex + 1
+									+ ((COUNT)TFB_Random ()
+									% (ADPtr->NumFrames - 1))));
+							FrameRate +=
+									ADPtr->BaseRestartRate
+									+ ((COUNT)TFB_Random ()
+									% (ADPtr->RandomRestartRate + 1));
+						}
+						else
+						{
+							TalkFrame = SetAbsFrameIndex (CommFrame,
+									ADPtr->StartIndex);
+							if (ADPtr->AnimFlags & PAUSE_TALKING)
+							{
+								if (!(CommData.AlienTransitionDesc.AnimFlags
+										& TALK_DONE))
+								{
+									CommData.AlienTransitionDesc.AnimFlags |=
+											PAUSE_TALKING;
+									ADPtr->AnimFlags &=
+											~PAUSE_TALKING;
+								}
+								else if (CommData.AlienTransitionDesc.NumFrames)
+									ADPtr->AnimFlags |=
+											TALK_DONE;
+								else
+									ADPtr->AnimFlags &=
+											~(WAIT_TALKING | PAUSE_TALKING);
+
+								FrameRate = 0;
+							}
+						}
 					}
 					else
 					{
-						TalkFrame = SetAbsFrameIndex (CommFrame,
-								ADPtr->StartIndex);
-						if (ADPtr->AnimFlags & PAUSE_TALKING)
+						ADPtr = &CommData.AlienTransitionDesc;
+						if (AFlags & TALK_INTRO)
 						{
-							if (!(CommData.AlienTransitionDesc.AnimFlags
-									& TALK_DONE))
+							FrameRate =
+									ADPtr->BaseFrameRate
+									+ ((COUNT)TFB_Random ()
+									% (ADPtr->RandomFrameRate + 1));
+							if (TalkAlarm < 0 || TransitionDone)
 							{
-								CommData.AlienTransitionDesc.AnimFlags |=
-										PAUSE_TALKING;
-								ADPtr->AnimFlags &=
-										~PAUSE_TALKING;
+								TalkFrame = SetAbsFrameIndex (CommFrame,
+										ADPtr->StartIndex);
+								TransitionDone = 0;
 							}
-							else if (CommData.AlienTransitionDesc.NumFrames)
-								ADPtr->AnimFlags |=
-										TALK_DONE;
 							else
-								ADPtr->AnimFlags &=
-										~(WAIT_TALKING | PAUSE_TALKING);
+								TalkFrame = IncFrameIndex (TalkFrame);
 
-							FrameRate = 0;
+							if ((BYTE)(GetFrameIndex (TalkFrame)
+									- ADPtr->StartIndex + 1) ==
+									ADPtr->NumFrames)
+							{
+								CommData.AlienTalkDesc.AnimFlags &= ~TALK_INTRO;
+								TransitionDone = 1;
+							}
+							TransitionFrame = TalkFrame;
+						}
+						else /* if (AFlags & TALK_DONE) */
+						{
+							FrameRate =
+									ADPtr->BaseFrameRate
+									+ ((COUNT)TFB_Random ()
+									% (ADPtr->RandomFrameRate + 1));
+							if (TalkAlarm < 0)
+								TalkFrame = SetAbsFrameIndex (CommFrame,
+										(COUNT) (ADPtr->StartIndex
+										+ ADPtr->NumFrames - 1));
+							else
+								TalkFrame = DecFrameIndex (TalkFrame);
+
+							if (GetFrameIndex (TalkFrame) ==
+									ADPtr->StartIndex)
+							{
+								CommData.AlienTalkDesc.AnimFlags &=
+										~(PAUSE_TALKING | TALK_DONE);
+								if (ADPtr->AnimFlags & TALK_INTRO)
+									CommData.AlienTalkDesc.AnimFlags &= ~WAIT_TALKING;
+								else
+								{
+									ADPtr->AnimFlags |=
+											PAUSE_TALKING;
+									ADPtr->AnimFlags &= ~TALK_DONE;
+								}
+								FrameRate = 0;
+							}
 						}
 					}
+					TalkFrameChanged = TRUE;
+
+					Change = TRUE;
+
+					TalkAlarm = FrameRate;
 				}
-				else
-				{
-					ADPtr = &CommData.AlienTransitionDesc;
-					if (AFlags & TALK_INTRO)
-					{
-						FrameRate =
-								ADPtr->BaseFrameRate
-								+ ((COUNT)TFB_Random ()
-								% (ADPtr->RandomFrameRate + 1));
-						if (TalkAlarm < 0)
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									ADPtr->StartIndex);
-						else
-							TalkFrame = IncFrameIndex (TalkFrame);
-
-						if ((BYTE)(GetFrameIndex (TalkFrame)
-								- ADPtr->StartIndex + 1) ==
-								ADPtr->NumFrames)
-							CommData.AlienTalkDesc.AnimFlags &= ~TALK_INTRO;
-					}
-					else /* if (AFlags & TALK_DONE) */
-					{
-						FrameRate =
-								ADPtr->BaseFrameRate
-								+ ((COUNT)TFB_Random ()
-								% (ADPtr->RandomFrameRate + 1));
-						if (TalkAlarm < 0)
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									ADPtr->StartIndex
-									+ ADPtr->NumFrames
-									- 1);
-						else
-							TalkFrame = DecFrameIndex (TalkFrame);
-
-						if (GetFrameIndex (TalkFrame) ==
-								ADPtr->StartIndex)
-						{
-							CommData.AlienTalkDesc.AnimFlags &=
-									~(PAUSE_TALKING | TALK_DONE);
-							if (ADPtr->AnimFlags & TALK_INTRO)
-								CommData.AlienTalkDesc.AnimFlags &= ~WAIT_TALKING;
-							else
-							{
-								ADPtr->AnimFlags |=
-										PAUSE_TALKING;
-								ADPtr->AnimFlags &= ~TALK_DONE;
-							}
-							FrameRate = 0;
-						}
-					}
-				}
-
-				Change = TRUE;
-				--pBatch;
-				SetPrimNextLink (pBatch, (pBatch - &DisplayArray[0]) + 1);
-				SetPrimType (pBatch, STAMP_PRIM);
-pBatch->Object.Stamp.origin.x = -SAFE_X;
-				pBatch->Object.Stamp.frame = TalkFrame;
-
-				TalkAlarm = FrameRate;
 			}
 		}
 
-		if (Change |= ColorChange)
 		{
 			CONTEXT OldContext;
+			BOOLEAN CheckSub = 0;
 
 			OldContext = SetContext (TaskContext);
 
 			if (ColorChange)
 			{
 				FRAME F;
-				
 				F = CommData.AlienFrame;
 				CommData.AlienFrame = CommFrame;
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				ColorChange = FALSE;
+				ClearSubtitle = FALSE;
+				CheckSub = 1;
 			}
-			else
+			if (Change || ClearSubtitle)
 			{
-				COUNT StartIndex;
-
-				SetPrimNextLink (&DisplayArray[MAX_ANIMATIONS], END_OF_LIST);
-
-				StartIndex = pBatch - &DisplayArray[0];
-				DrawBatch (&DisplayArray[0], StartIndex, 0);
+				STAMP s;
+				s.origin.x = -SAFE_X;
+				s.origin.y = 0;
+				if (ClearSubtitle)
+				{
+					s.frame = CommFrame;
+					DrawStamp (&s);
+				}
+				i = CommData.NumAnimations;
+				while (i--)
+				{
+					if ((ClearSubtitle || FrameChanged[i]))
+					{
+						s.frame = AnimFrame[i];
+						DrawStamp (&s);
+						FrameChanged[i] = 0;
+					}
+				}
+				if (ClearSubtitle && TransitionFrame)
+				{
+					s.frame = TransitionFrame;
+					DrawStamp (&s);
+				}
+				if (ResetTalkFrame)
+				{
+					s.frame = ResetTalkFrame;
+					DrawStamp (&s);
+					ResetTalkFrame = NULL;
+				}
+				if (TalkFrame && TalkFrameChanged)
+				{
+					s.frame = TalkFrame;
+					DrawStamp (&s);
+					TalkFrameChanged = FALSE;
+				}
+				ClearSubtitle = FALSE;
 				Change = FALSE;
+				CheckSub = 1;
 			}
 
-			if (subtitle_state >= SPACE_SUBTITLE)
+			if (CheckSub && subtitle_state >= SPACE_SUBTITLE)
 			{
 				TEXT t;
 
@@ -1287,7 +1357,6 @@ AlienTalkSegue (COUNT wait_track)
 	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
 			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
 		return;
-
 	SetSemaphore (GraphicsSem);
 
 	if (!pCurInputState->Initialized)
@@ -1356,7 +1425,6 @@ AlienTalkSegue (COUNT wait_track)
 
 		LastActivity &= ~CHECK_LOAD;
 	}
-
 	if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
 	{
 		if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
@@ -1369,7 +1437,6 @@ AlienTalkSegue (COUNT wait_track)
 		CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
 		if (CommData.AlienTalkDesc.NumFrames)
 			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
-
 		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
 		{
 			ClearSemaphore (GraphicsSem);
@@ -1533,6 +1600,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 
 	FlushPLUTXForms ();
 	ColorChange = FALSE;
+	ClearSubtitle = FALSE;
 
 	FlushColorXForms ();
 	StopMusic ();
@@ -1565,7 +1633,7 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 	{
 		STRING locString;
 		
-		locString = SetAbsStringTableIndex (CommData.ConversationPhrases, R - 1);
+		locString = SetAbsStringTableIndex (CommData.ConversationPhrases, (COUNT)(R - 1));
 		pES->response_list[pES->num_responses].response_text.pStr =
 				(UNICODE *)GetStringAddress (locString);
 		pES->response_list[pES->num_responses].response_text.CharCount =
@@ -1594,13 +1662,13 @@ HailAlien (void)
 
 	ES.InputFunc = DoCommunication;
 	hOldIndex = SetResourceIndex (hResIndex);
-	PlayerFont = CaptureFont (LoadGraphic (PLAYER_FONT));
+	PlayerFont = CaptureFont ((FONT_REF)LoadGraphic (PLAYER_FONT));
 	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
 			LoadGraphicInstance ((RESOURCE)CommData.AlienFrame)
 			);
-	CommData.AlienFont = CaptureFont (
+	CommData.AlienFont = CaptureFont ((FONT_REF)
 			LoadGraphic ((RESOURCE)CommData.AlienFont)
 			);
 	CommData.AlienColorMap = CaptureColorMap (
@@ -1971,8 +2039,7 @@ RaceCommunication (void)
 int
 do_subtitles (UNICODE *pStr)
 {
-	static UNICODE *last_page = NULL;;
-	
+	static UNICODE *last_page = NULL;
 	if (pStr == 0)
 		return (subtitle_state = DONE_SUBTITLE);
 	else if (pStr == (void *)~0)
@@ -1984,7 +2051,7 @@ do_subtitles (UNICODE *pStr)
 		if (last_page == pStr)
 			return (subtitle_state);
 		subtitle_state = READ_SUBTITLE;
-		ColorChange = TRUE;
+		ClearSubtitle = TRUE;
 //		fprintf (stderr, "changed page to: %d\n", cur_page);
 	}
 	last_page = pStr;
@@ -2017,7 +2084,7 @@ do_subtitles (UNICODE *pStr)
 		case WAIT_SUBTITLE:
 		{
 			subtitle_state = DONE_SUBTITLE;
-			ColorChange = TRUE;
+			ClearSubtitle = TRUE;
 		}
 		case DONE_SUBTITLE:
 			break;
