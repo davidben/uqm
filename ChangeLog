@@ -1,4 +1,7 @@
 0.2:
+- Font png's no longer need to have alpha channel, black background with
+  white pixels is enough -Mika
+- Added PC version intro/ending font, from VileRancour
 - Added files for intro and ending sequence, from fOSSiL; extracted using
   Mudrony's scripts plus his own work.
 - Added some corrected mods, from fOSSiL; extracted using Mudrony's scripts.
