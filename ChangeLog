@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed crash in conversation summary and ffw/frew problem when
+  selling data to Melnorme (bug #476), from chmmravatar
 - Flush input after selecting "Navigate" (bug #475) - Michael
 - Fixed ships in solar system getting displaced after having
   visited a planet (bug #365) -Alex

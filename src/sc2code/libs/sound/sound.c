@@ -152,7 +152,7 @@ get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
 		return (prev_chain);
 	while (prev_chain->next)
 	{
-		if (prev_chain->next == current_chain)
+		if (prev_chain->next == current_chain || !prev_chain->next->tag.data)
 			return (prev_chain);
 		prev_chain = prev_chain->next;
 	}

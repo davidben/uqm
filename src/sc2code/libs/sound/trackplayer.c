@@ -669,7 +669,7 @@ FastForward_Page ()
 	{
 		TFB_SoundChain *cur_ptr = sound_sample->play_chain_ptr;
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		while (cur_ptr->next && ! cur_ptr->tag.type)
+		while (cur_ptr->next && ! cur_ptr->next->tag.type)
 			cur_ptr = cur_ptr->next;
 		if (cur_ptr->next)
 		{

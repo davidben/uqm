@@ -1704,6 +1704,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 			for (curr = first_chain; curr != NULL; curr = curr->next)
 			{
 				temp = curr->tag.data;
+				if (temp == NULL)
+					break;
 				// fprintf (stderr, "%s\n", temp);
 				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS
 						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
