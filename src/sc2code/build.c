@@ -123,38 +123,44 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 				return (which_ship);
 			}
 			case ESCORT_WORTH:
-				which_ship = 0;
-			case ESCORTING_FLAGSHIP:
 			{
 				COUNT ShipCost[] =
 				{
 					RACE_SHIP_COST
 				};
+				COUNT total = 0;
 
+				for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
+						hStarShip; hStarShip = hNextShip)
+				{
+					SHIP_FRAGMENTPTR StarShipPtr;
+
+					StarShipPtr = (SHIP_FRAGMENTPTR) LockStarShip (
+							&GLOBAL (built_ship_q), hStarShip);
+					hNextShip = _GetSuccLink (StarShipPtr);
+					total += ShipCost[GET_RACE_ID (StarShipPtr)];
+					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+				}
+				return total;
+			}
+			case ESCORTING_FLAGSHIP:
+			{
 				for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
 						hStarShip; hStarShip = hNextShip)
 				{
 					BYTE ship_type;
 					SHIP_FRAGMENTPTR StarShipPtr;
 
-					StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-							&GLOBAL (built_ship_q), hStarShip
-							);
+					StarShipPtr = (SHIP_FRAGMENTPTR) LockStarShip (
+							&GLOBAL (built_ship_q), hStarShip);
 					hNextShip = _GetSuccLink (StarShipPtr);
-					if (state == ESCORT_WORTH)
-						which_ship += ShipCost[GET_RACE_ID (StarShipPtr)];
-					else
-						ship_type = GET_RACE_ID (StarShipPtr);
-					UnlockStarShip (
-							&GLOBAL (built_ship_q), hStarShip
-							);
+					ship_type = GET_RACE_ID (StarShipPtr);
+					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 
-					if (state != ESCORT_WORTH
-							&& (COUNT)ship_type == which_ship)
-						return (1);
+					if ((COUNT) ship_type == which_ship)
+						return 1;
 				}
-
-				return (state == ESCORTING_FLAGSHIP ? 0 : which_ship);
+				return 0;
 			}
 			case FEASIBILITY_STUDY:
 				return (MAX_BUILT_SHIPS
