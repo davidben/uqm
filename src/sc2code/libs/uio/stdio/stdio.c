@@ -633,9 +633,6 @@ stdio_EntriesIterator_new(DIR *dirHandle) {
 			// of the maximum length d_name field (NAME_MAX plus 1 for
 			// the '\0').
 			// XXX: Could this give problems with weird alignments?
-			//      Note that the standard doesn't say d_name has to be
-			//      the last field in the struct, though on all platforms
-			//      I know of, it is.
 	result->direntBuffer = uio_malloc(bufferSize);
 	return result;
 }
