@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Better-looking slave shield (bug #32), from Nic
 - Bay door animations don't stall before aborting (bug #500), from 
   chmmravatar
 - Reports SDL version on startup (bug #520) - Mika,Nic

@@ -501,7 +501,7 @@ init_zoom_array (COUNT *zoom_arr)
 // this routine, but a filter can be applied if desired too.
 
 //Outer diameter of HALO
-#define SHIELD_RADIUS (RADIUS + 5) 
+#define SHIELD_RADIUS (RADIUS + 6) 
 #define SHIELD_DIAM ((SHIELD_RADIUS << 1) + 1)
 #define SHIELD_RADIUS_2 (SHIELD_RADIUS * SHIELD_RADIUS)
 static void CreateShieldMask (void)
@@ -517,11 +517,11 @@ static void CreateShieldMask (void)
 	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
 	// This is a non-transparent red for the halo
-	red_nt = 180;
+	red_nt = 222;
 	//  This is 100% transparent.
 	clear = frame_mapRGBA (ShieldFrame, 0, 0, 0, 0);
 	aa_delta = SHIELD_RADIUS_2 - (SHIELD_RADIUS - 1) * (SHIELD_RADIUS - 1);
-	aa_delta2 = (RADIUS + 3) * (RADIUS + 3) - (RADIUS + 2)*(RADIUS + 2);
+	aa_delta2 =  (RADIUS + 1) * (RADIUS + 1) - RADIUS_2;
 	for (y = -SHIELD_RADIUS; y <= SHIELD_RADIUS; y++)
 	{
 		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; x++)
@@ -533,27 +533,23 @@ static void CreateShieldMask (void)
 				if (rad2 <= RADIUS_2)
 					// The mask for the planet
 					p=clear;
-				else if (rad2 <= (RADIUS + 2) * (RADIUS + 2))
-					// The space between the halo and the planet
-					p = frame_mapRGBA (ShieldFrame, 0, 0, 0, 255);
 				else
 				{
 					// The halo itself
 					UBYTE red = red_nt;
-					if (rad2 > (SHIELD_RADIUS - 1) * (SHIELD_RADIUS - 1))
+					if (rad2 < (RADIUS + 1) * (RADIUS + 1))
 					{
 						DWORD r;
-						r = rad2 - (SHIELD_RADIUS - 1) * (SHIELD_RADIUS - 1);
-						red = red_nt - (UBYTE)(red_nt * r / aa_delta);
-					} 
-					else if (rad2 < (RADIUS + 3) * (RADIUS + 3))
-					{
-						DWORD r;
-						r = rad2 - (RADIUS + 2) * (RADIUS + 2);
+						r = rad2 - RADIUS_2;
 						red = (UBYTE)(red_nt * r / aa_delta2);
 					}
+					else if (rad2 > (RADIUS + 2) * (RADIUS + 2))
+					{
+						DWORD r;
+						r = rad2 - ((RADIUS + 1) * (RADIUS + 1));
+						red = (UBYTE)red - (red * r / (SHIELD_RADIUS_2 - RADIUS_2 + 1));
+					}
 					p = frame_mapRGBA (ShieldFrame, red, 0, 0, 255);
-
 				}
 			} 
 			else
