@@ -1,4 +1,5 @@
 0.2:
+- Scan tint is now cleared right after the scan, from PhracturedBlue
 - Recoded the DCQ to not sit on the heap, added debugging info
 - Fixed Outfit Starship and Shipyard graphics, from TDuck
 - 3D planet is now zoomed randomly from any corner, from PhracturedBlue
