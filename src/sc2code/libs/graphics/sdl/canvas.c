@@ -131,3 +131,90 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r,
 	SDL_BlitSurface(surf, NULL, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
+
+TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
+{
+	SDL_Surface *new_surf;
+	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, hasalpha ? 0xff000000 : 0);
+	if (!new_surf) {
+		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s", SDL_GetError());
+		exit(-1);
+	}
+	return new_surf;
+}
+
+TFB_Canvas
+TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index)
+{
+	SDL_Surface *new_surf;
+	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 8, 0, 0, 0, 0);
+	if (!new_surf) {
+		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s\n", SDL_GetError());
+		exit(-1);
+	}
+	if (palette != NULL)
+	{
+		SDL_SetColors(new_surf, (SDL_Color *)palette, 0, 256);
+	}
+	if (transparent_index >= 0)
+	{
+		SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, transparent_index);
+	}
+	else
+	{
+		SDL_SetColorKey (new_surf, 0, 0);
+	}
+	return new_surf;
+}
+
+void
+TFB_DrawCanvas_Delete (TFB_Canvas canvas)
+{
+	if (!canvas)
+	{
+		fprintf(stderr, "INTERNAL PANIC: Attempted to delete a NULL canvas!\n");
+		/* Should we actually die here? */
+	} 
+	else
+	{
+		SDL_FreeSurface ((SDL_Surface *) canvas);
+	}
+
+}
+
+TFB_Palette *
+TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
+{
+	int i;		
+	TFB_Palette *result = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
+	SDL_Surface *surf = (SDL_Surface *)canvas;
+
+	if (!surf->format->palette)
+	{
+		return NULL;
+	}
+
+	for (i = 0; i < 256; ++i)
+	{
+		result[i].r = surf->format->palette->colors[i].r;
+		result[i].g = surf->format->palette->colors[i].g;
+		result[i].b = surf->format->palette->colors[i].b;
+	}
+	return result;
+}
+
+TFB_Canvas
+TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas)
+{
+	SDL_Surface *result = TFB_DisplayFormatAlpha (canvas);
+	if (result == NULL)
+	{
+		fprintf (stderr, "WARNING: Could not convert sprite-canvas to display format.  Expect performance penalties.\n");
+		return canvas;
+	}
+	else
+	{
+		TFB_DrawCanvas_Delete(canvas);
+		return result;
+	}
+}

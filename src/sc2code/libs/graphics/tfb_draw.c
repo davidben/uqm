@@ -242,3 +242,51 @@ TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, 
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
+
+TFB_Image *
+TFB_DrawImage_New (TFB_Canvas canvas)
+{
+	TFB_Image *img = HMalloc (sizeof (TFB_Image));
+	img->mutex = CreateMutex ();
+	img->ScaledImg = NULL;
+	img->colormap_index = -1;
+
+	img->Palette = TFB_DrawCanvas_ExtractPalette (canvas);
+	
+	if (img->Palette)
+	{
+		img->NormalImg = canvas;
+	}
+	else
+	{
+		img->NormalImg = TFB_DrawCanvas_ToScreenFormat (canvas);
+	}
+
+	return img;
+}
+
+void 
+TFB_DrawImage_Delete (TFB_Image *image)
+{
+	if (image == 0)
+	{
+		fprintf (stderr, "INTERNAL ERROR: Tried to delete a null image!\n");
+		/* Should we die here? */
+		return;
+	}
+	LockMutex (image->mutex);
+
+	TFB_DrawCanvas_Delete (image->NormalImg);
+			
+	if (image->ScaledImg) {
+		TFB_DrawCanvas_Delete (image->ScaledImg);
+	}
+
+	if (image->Palette)
+		HFree (image->Palette);
+
+	UnlockMutex (image->mutex);
+	DestroyMutex (image->mutex);
+			
+	HFree (image);
+}

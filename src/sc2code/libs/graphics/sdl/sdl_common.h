@@ -46,9 +46,6 @@ extern int GfxFlags;
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
 
-TFB_Image *TFB_LoadImage (SDL_Surface *img);
-void TFB_FreeImage (TFB_Image *img);
-
 void TFB_SwapBuffers ();
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
 void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,

@@ -56,7 +56,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	hx = ani[cel_ct].hotspot_x;
 	hy = ani[cel_ct].hotspot_y;
 
-	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;
+	FramePtr->DataOffs = (BYTE *)TFB_DrawImage_New (img[cel_ct]) - (BYTE *)FramePtr;
 
 	tfbimg = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
@@ -123,7 +123,7 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 
 	img[cel_ct] = new_surf;
 	
-	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;
+	FramePtr->DataOffs = (BYTE *)TFB_DrawImage_New (img[cel_ct]) - (BYTE *)FramePtr;
 	img[cel_ct] = ((TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs))->NormalImg;
 	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
@@ -722,17 +722,10 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 				TFB_Image *Image;
 
 				if (DrawableType == RAM_DRAWABLE
-						&& (Image = TFB_LoadImage (SDL_CreateRGBSurface (
-										SDL_SWSURFACE,
-										imgw,
-										imgh,
-										32,
-										0x00FF0000,
-										0x0000FF00,
-										0x000000FF,
-										0x00000000
-										))))
+						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (imgw, imgh, FALSE))))
+				{
 					FramePtr->DataOffs = (BYTE *)Image - (BYTE *)FramePtr;
+				}
 
 				TYPE_SET (FramePtr->TypeIndexAndFlags, DrawableType);
 				INDEX_SET (FramePtr->TypeIndexAndFlags, NumFrames);

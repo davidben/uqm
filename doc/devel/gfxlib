@@ -47,7 +47,10 @@ drawable.h: defines FRAME_DESC and DRAWABLE_DESC, and the pointer
             an element "DataOffs", which, horrifyingly, appears to be
             a deliberate index past the end of the struct.  Given a
             PFRAME_DESC x, (void *)(x[x->DataOffs]) is a void pointer
-            castable to TFB_Image.)
+            castable to TFB_Image.  Preliminary investigations into
+            this code make a conversion of DataOffs into a void
+            pointer both feasible and more efficient on modern
+            architectures.)
 
 font.h:     defines FONT_DESC and PFONT_DESC.
 
@@ -215,10 +218,6 @@ void TFB_DrawImage_FilledImage (TFB_Image *img,
 
 ----
 
-There are some obvious operations missing here.  Creation and
-destruction of TFB_Images are the main gaps.  The ability to 'wrap' a
-TFB_Canvas with a fresh TFB_Image would probably be nice too.
-
 TFB_DrawCanvas
 --------------
 
@@ -250,7 +249,78 @@ void TFB_DrawCanvas_FilledImage (TFB_Image *img,
 
 ----
 
-Commentary on needed operations also mirrors that of TFB_Image.
+Creation and Destruction of TFB_Images, TFB_Canvases, and TFB_Palettes
+----------------------------------------------------------------------
+
+Various commands exist for creating and destroying the TFB_Draw data
+types.  The concept of "ownership" is critical here.  If a data object
+owns a pointer inside of it, that pointer's referent is deallocated
+when the data object is deallocated.  If a pointer variable owns its
+referent, it's permissible to delete it.  
+
+TFB_Canvas and TFB_Palette are primitives.  TFB_Image owns NormalImg,
+ScaledImg, and Palette, and will delete them when it is itself
+deleted.
+
+That said, here are the routines:
+
+---
+
+TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas)
+
+Creates a new TFB_Image, which the caller then owns.  The caller must
+own the canvas, and transfers ownership of that canvas to the image.
+The Palette value is automatically created (and the image owns it);
+ScaledImg will be NULL until you scale the image and draw it to the
+screen.
+
+---
+
+void TFB_DrawImage_Delete (TFB_Image *image)
+
+Deletes the image, and all non-NULL components.  You must own the
+image you delete.
+
+---
+
+TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN has_alpha);
+
+TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, 
+					TFB_Palette *palette, 
+					int transparent_index);
+
+These create new TFB_Canvases, which the caller will then own.  Width
+and height are straightforward.  The TrueColor variant produces Canvases
+with the same color depth and pixel format as the screen.  The
+has_alpha flag indicates whether or not the canvas has an alpha
+channel.
+
+The Paletted variant produces 8-bit paletted canvases.  The palette
+argument is optional (it can be NULL, in which case you'll need to set
+it later - TFB_Images tend to do this when drawn), as is the
+transparent_index (if -1, there is no transparency; otherwise, it's
+the index of the transparent color).
+
+---
+
+TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
+
+Returns a canvas that, if possible, matches the graphics configuration
+of the screen.  You must own the source canvas.  If the conversion is
+possible, it makes the conversion, deletes its argument, and returns
+the converted version; if conversion is not possible, the canvas is
+returned intact.
+
+Regardless of success or failure, the caller owns the result.
+
+---
+
+TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
+
+Allocates and returns a 256-entry TFB_Palette array that describes the
+palette of the canvas, or returns NULL if the canvas is true-color.
+If the result is non-NULL, the caller owns the result.  The caller
+need not own canvas.
 
 
 			   DRAWCMD LIBRARY

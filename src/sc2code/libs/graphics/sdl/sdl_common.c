@@ -125,46 +125,6 @@ TFB_ProcessEvents ()
 	}
 }
 
-TFB_Image* 
-TFB_LoadImage (SDL_Surface *img)
-{
-	TFB_Image *myImage;
-
-	myImage = (TFB_Image*) HMalloc (sizeof (TFB_Image));
-	myImage->mutex = CreateMutex ();
-	myImage->ScaledImg = NULL;
-	myImage->colormap_index = -1;
-	
-	if (img->format->palette)
-	{
-		int i;		
-		myImage->Palette = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
-		for (i = 0; i < 256; ++i)
-		{
-			myImage->Palette[i].r = img->format->palette->colors[i].r;
-			myImage->Palette[i].g = img->format->palette->colors[i].g;
-			myImage->Palette[i].b = img->format->palette->colors[i].b;
-		}
-		myImage->NormalImg = img;
-	}
-	else
-	{
-		myImage->Palette = NULL;
-		myImage->NormalImg = TFB_DisplayFormatAlpha (img);
-		if (myImage->NormalImg)
-		{
-			SDL_FreeSurface (img);
-		}
-		else
-		{
-			fprintf (stderr, "TFB_LoadImage(): TFB_DisplayFormatAlpha failed\n");
-			myImage->NormalImg = img;
-		}
-	}
-
-	return(myImage);
-}
-
 void
 TFB_SwapBuffers ()
 {
@@ -178,6 +138,7 @@ TFB_SwapBuffers ()
 #endif
 }
 
+/* Probably ought to clean this away at some point. */
 SDL_Surface* 
 TFB_DisplayFormatAlpha (SDL_Surface *surface)
 {
@@ -682,27 +643,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
 			{
 				TFB_Image *DC_image = (TFB_Image *)DC.data.deleteimage.image;
-
-				if (DC_image == 0)
-				{
-					fprintf (stderr, "DCQ ERROR: DELETEIMAGE passed null image ptr\n");
-					break;
-				}
-				LockMutex (DC_image->mutex);
-
-				SDL_FreeSurface (DC_image->NormalImg);
-			
-				if (DC_image->ScaledImg) {
-					SDL_FreeSurface (DC_image->ScaledImg);
-				}
-
-				if (DC_image->Palette)
-					HFree (DC_image->Palette);
-
-				UnlockMutex (DC_image->mutex);
-				DestroyMutex (DC_image->mutex);
-			
-				HFree (DC_image);
+				TFB_DrawImage_Delete(DC_image);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:

@@ -81,6 +81,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				SDL_Surface *new_surf;
 
 				img->scale = gscale;
+				img->dirty = FALSE;
 				new_surf = zoomSurface (img->NormalImg, gscale / 256.0f,
 					gscale / 256.0f, SMOOTHING_OFF);
 
@@ -88,16 +89,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				{
 					if (!new_surf->format->palette)
 					{
-						img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
-						if (img->ScaledImg)
-						{
-							SDL_FreeSurface(new_surf);
-						}
-						else
-						{
-							fprintf (stderr, "blt(): TFB_DisplayFormatAlpha failed\n");
-							img->ScaledImg = new_surf;
-						}
+						img->ScaledImg = TFB_DrawCanvas_ToScreenFormat (new_surf);
 					}
 					else
 					{

@@ -64,14 +64,23 @@ void TFB_DrawScreen_WaitForSignal (void);
 void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
 void TFB_FlushPaletteCache (void);
 
+TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);
+void TFB_DrawImage_Delete (TFB_Image *image);
+
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest);
 void TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target);
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Image *target);
 
+TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
+TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index);
+TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
+void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
+
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas dest);
 void TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas image);
 void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target);
 void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target);
+TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 
 #endif
