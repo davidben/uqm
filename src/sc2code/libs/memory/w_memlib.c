@@ -256,8 +256,10 @@ MallocWithRetry(int bytes, char *diagStr)
 		fprintf (stderr, "Malloc failed for %s. #Bytes %d.\n", diagStr, bytes);
 //		fflush (stderr);
 #endif
-		/* The user gets a chance to close other applications and try again. */
 
+		abort();
+#if 0
+		/* The user gets a chance to close other applications and try again. */
 		if (!MessageWithRetry ("I'm out of memory!  "
 				"Please close other applications and click OK to try again"))
 		{
@@ -268,6 +270,7 @@ MallocWithRetry(int bytes, char *diagStr)
 				exit (0);
 			}
 		}
+#endif
 	}
 }
 
