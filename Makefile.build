@@ -1,0 +1,15 @@
+default:
+	./build sc2
+
+%.o:
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(COMPILE) -o $@ -c $(CFLAGS) $<
+
+target-%:
+	$(COMPILE) $(LDFLAGS) -o $* $^
+
+-include $(DEPEND_FILE)
+

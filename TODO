@@ -65,6 +65,7 @@ Glitches (don't crash the game, medium priority):
   when not being near of it
 - In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
+- ZFP graphics synchronisation messed up when fast forwarding speech
 
 Implementation bugs (low priority):
 - Scaling code problems:

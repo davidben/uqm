@@ -1,0 +1,165 @@
+# Auxiliary functions for build.sh
+# Copyright (c) 2002 Serge van den Boom
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Show usage information
+usage() {
+	echo "Main build script"
+	echo
+	echo "Syntax:"
+	echo "    ./build <target>"
+	echo "    ./build <target> config"
+	echo "    ./build <target> depend"
+	echo "    ./build <target> clean"
+	echo "    ./build <target> install"
+	echo "    ./build cleanall"
+	echo "    ./build distclean"
+	echo
+	echo "Valid targets:"
+	for TARGET in $TARGETS; do
+		echo "    $TARGET"
+	done
+	echo
+}
+
+# The actual recursing function
+build_recurse() {
+	local FILES SUBDIRS
+	# Perform an action for this dir
+	eval FILES="\${$BUILD_FILES_VAR}"
+	for FILE in $FILES; do
+		$BUILD_REC_COMMAND "$BUILD_REC_PATH$FILE"
+	done
+
+	# Recurse for all subdirs
+	eval SUBDIRS="\$${BUILD_PROJECT}_SUBDIRS"
+	for DIR in $SUBDIRS; do
+		BUILD_REC_PATH="$BUILD_REC_PATH$DIR/" $SH "$0"
+		$BUILD_REC_DIR_COMMAND "$BUILD_REC_PATH$DIR"
+	done
+}
+
+# Start the recursion
+build_do_recursive() {
+	BUILD_COMMAND=build_recurse
+	BUILD_REC_COMMAND="$1"
+	BUILD_REC_DIR_COMMAND="$2"
+	export BUILD_COMMAND BUILD_REC_COMMAND BUILD_REC_DIR_COMMAND
+	build_recurse
+}
+
+# Build dependancy information for one file
+build_dependancies() {
+	eval echo -n \${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
+	eval \$MKDEPEND "\${${BUILD_PROJECT}_CFLAGS}" "\$1"
+}
+
+# Recursively build dependancy information
+build_rec_dependancies() {
+	local DEPEND_FILE
+	echo "Building dependancy information..." 1>&2
+	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
+	export BUILD_FILES_VAR
+	OFILES=`build_do_recursive build_collect_o_files :`
+	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME}"
+	{
+		eval echo -n "target-\${${BUILD_PROJECT}_NAME}:"
+		for OFILE in $OFILES; do
+			echo -n " $OFILE"
+		done
+		echo
+		build_do_recursive build_dependancies :
+	} > "$DEPEND_FILE"
+}
+
+# Output the .o file for a .c file.
+build_collect_o_files() {
+	eval echo "\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+}
+
+# Recursively collect .o-files
+build_rec_collect_o_files() {
+	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
+	export BUILD_FILES_VAR
+	build_do_recursive build_collect_o_files :
+}
+
+# Start the configure program.
+build_config() {
+	$SH build/build.config
+}
+
+# Compile the lot.
+# With the depend info set up, we can leave everything to make.
+build_compile() {
+	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
+			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
+			DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}" \
+			\$MAKE -f Makefile.build "target-\${${BUILD_PROJECT}_NAME}"
+}
+
+# Description: Remove the .o file for one .c file
+# Arguments:   $1 - the .c file
+build_clean_file() {
+	eval rm -f -- "\${${BUILD_PROJECT}_OBJS}\${1%.c}.o"
+}
+
+build_clean_dir() {
+	eval rmdir -- "\${${BUILD_PROJECT}_OBJS}\${1}" 2> /dev/null
+	return 0
+}
+
+build_clean() {
+	local DEPEND_FILE
+	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}"
+	rm -f "$DEPEND_FILE" build.vars config.state src/config.h
+	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
+	export BUILD_FILES_VAR
+	build_do_recursive build_clean_file build_clean_dir
+}
+
+build_cleanall() {
+	for TARGET in $TARGETS; do
+		build_clean "$TARGET"
+	done
+}
+
+build_distclean() {
+	build_cleanall
+	rm configure
+}
+
+
+# Description: check if the config files are present and load them.
+#              If they're not present, remake them.
+build_check_config() {
+	[ ! -e build.vars -o -n "$BUILD_RUN_CONFIG" ] || return
+
+	build_config || exit $?
+	. build.vars
+	. "${BUILD_REC_PATH}Makeinfo"
+	unset BUILD_RUN_CONFIG
+}
+
+# Description: check if the necessary .depend file is present,
+#              if not, build it.
+build_check_dependencies() {
+	eval DEPEND_FILE=".depend.\${${BUILD_PROJECT}_NAME%/}"
+	[ ! -e "$DEPEND_FILE" -o -n "$BUILD_RUN_DEPEND" ] || return
+
+	build_rec_dependancies || exit $?
+}
+

@@ -1,0 +1,5 @@
+uqm_SUBDIRS=sc2code
+uqm_CFILES="options.c port.c starcon2.c"
+
+test_CFILES=test.c
+

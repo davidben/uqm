@@ -1,7 +1,7 @@
 #!/bin/sh
 find src -type f -name "*.[ch]" -print0 | xargs -0 ./subst 's/
 $//g'
-find src -type f -name "Makefile.am" -print0 | xargs -0 ./subst 's/
+find src -type f -name "Makeinfo" -print0 | xargs -0 ./subst 's/
 $//g'
 find doc -type f -print0 | xargs -0 ./subst 's/
 $//g'

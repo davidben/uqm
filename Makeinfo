@@ -1,0 +1,13 @@
+TARGETS="uqm"
+
+# For the 'uqm' target:
+uqm_SUBDIRS=src
+if [ "$DEBUG" = "1" ]; then
+	uqm_OBJS=obj/debug/    # Directory for object files
+	uqm_NAME=uqm-debug     # File name of executable
+else
+	uqm_OBJS=obj/release/  # Directory for object files
+	uqm_NAME=uqm           # File name of executable
+fi
+uqm_CFLAGS="$uqm_CFLAGS -I src -I src/sc2code -I src/sc2code/libs"
+

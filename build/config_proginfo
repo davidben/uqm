@@ -1,0 +1,75 @@
+# Set information on used programs and libraries
+# Copyright (c) 2002 Serge van den Boom
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Describe the programs (possibly) used:
+PROG_gcc_NAME="GNU C compiler"
+PROG_gcc_FILE="gcc"
+PROG_gcc_ACTION=""
+PROG_gcc_VERSION='$(gcc --version)'
+
+PROG_sed_NAME="Sed stream editor"
+PROG_sed_FILE="sed"
+PROG_sed_ACTION=""
+PROG_sed_VERSION=''
+
+PROG_make_NAME="Make"
+PROG_make_FILE="make"
+PROG_make_ACTION=""
+PROG_make_VERSION=''
+
+PROG_tr_NAME="tr"
+PROG_tr_FILE="tr"
+PROG_tr_ACTION=""
+PROG_tr_VERSION=''
+
+
+# Describe the libaries (possibly) used:
+LIB_SDL_NAME="Simple DirectMedia Layer"
+LIB_SDL_CFLAGS='$(sdl-config --cflags)'
+LIB_SDL_LDFLAGS='$(sdl-config --libs)'
+LIB_SDL_VERSION='$(sdl-config --version)'
+
+LIB_SDL_mixer_NAME="SDL_mixer"
+LIB_SDL_mixer_CFLAGS=""
+LIB_SDL_mixer_LDFLAGS="-lSDL_mixer"
+LIB_SDL_mixer_VERSION=""
+
+LIB_SDL_image_NAME="SDL_image"
+LIB_SDL_image_CFLAGS=""
+LIB_SDL_image_LDFLAGS="-lSDL_image"
+LIB_SDL_image_VERSION=""
+
+LIB_openal_NAME="OpenAL"
+LIB_openal_CFLAGS=""
+LIB_openal_LDFLAGS="-lopenal"
+LIB_openal_VERSION=""
+
+LIB_opengl_NAME="OpenGL"
+LIB_opengl_CFLAGS=""
+LIB_opengl_LDFLAGS="-lGL"
+LIB_opengl_VERSION=""
+
+LIB_vorbis_NAME="Vorbis"
+LIB_vorbis_CFLAGS=""
+LIB_vorbis_LDFLAGS="-lvorbis"
+LIB_vorbis_VERSION=""
+
+LIB_vorbisfile_NAME="Vorbisfile"
+LIB_vorbisfile_CFLAGS=""
+LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis"
+LIB_vorbisfile_VERSION=""
+

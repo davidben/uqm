@@ -1,0 +1,12 @@
+/* Directory where the UQM game data is located */
+#define CONTENTDIR "@CONTENTDIR@"
+
+/* Defined if words are stored with the most significant byte first */
+@WORDS_BIGENDIAN@
+
+/* Defined if your system has strupr of its own */
+@HAVE_STRUPR@
+
+/* Defined if your system has stricmp of its own */
+@HAVE_STRICMP@
+

@@ -1,0 +1,1 @@
+uqm_CFILES="modfuncs.c play.c sound.c trackplayer.c"

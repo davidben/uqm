@@ -24,6 +24,7 @@
 #include "getopt/getopt.h"
 #endif
 
+#include "config.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
@@ -38,13 +39,11 @@ CDToContentDir (char *contentdir)
 
 	if (!FileExists (testfile))
 	{
-		if (chdir (contentdir) || !FileExists (testfile))
-		{
-			if (chdir ("../../content") || !FileExists (testfile))
-			{
-				fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
-				exit(-1);
-			}
+		if ((chdir (contentdir) || !FileExists (testfile)) &&
+				(chdir ("content") || !FileExists (testfile)) &&
+				(chdir ("../../content") || !FileExists (testfile))) {
+			fprintf(stderr, "Fatal error: content not available, running from wrong dir?\n");
+			exit(-1);
 		}
 	}
 }
@@ -83,7 +82,13 @@ main (int argc, char *argv[])
 
 	fprintf (stderr, "The Ur-Quan Masters v%d.%d (compiled %s %s)\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, __DATE__, __TIME__);
 
+#ifdef CONTENTDIR
+	strcpy (contentdir, CONTENTDIR);
+#elif defined (win32)
+	strcpy (contentdir, "../../content");
+#else
 	strcpy (contentdir, "content");
+#endif
 
 	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:", long_options, &option_index)) != -1)
 	{

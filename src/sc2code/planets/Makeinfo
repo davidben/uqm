@@ -1,0 +1,7 @@
+uqm_CFILES="calc.c cargo.c devices.c genburv.c genchmmr.c gencol.c
+		gendru.c genilw.c genmel.c genmyc.c genorz.c genpet.c genpku.c
+		genrain.c gensam.c genshof.c gensly.c gensol.c genspa.c gensup.c
+		gensyr.c genthrad.c gentopo.c genutw.c genvault.c genvux.c
+		genwreck.c genyeh.c genzoq.c lander.c orbits.c oval.c pl_stuff.c
+		planets.c plangen.c planmap.c planscan.c pstarmap.c report.c
+		roster.c scan.c solarsys.c surface.c"

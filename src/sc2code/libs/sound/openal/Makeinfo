@@ -1,0 +1,2 @@
+uqm_SUBDIRS="decoders"
+uqm_CFILES="music.c sfx.c sound.c stream.c trackplayer.c"

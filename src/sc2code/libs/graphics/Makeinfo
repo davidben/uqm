@@ -1,0 +1,4 @@
+uqm_SUBDIRS="sdl"
+uqm_CFILES="boxint.c clipline.c cmap.c context.c drawable.c filegfx.c
+		font.c frame.c gfx_common.c intersec.c line.c loaddisp.c makepoly.c
+		map.c pixmap.c poly.c rect.c resgfx.c stamp.c"
