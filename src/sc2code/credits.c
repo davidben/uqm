@@ -20,6 +20,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "oscill.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -122,8 +123,10 @@ OutTakes (void)
 {
 	RECT r;
 	float oldvolume = speechVolumeScale;
+	BOOLEAN oldsubtitles = optSubtitles;
 
 	speechVolumeScale = 0.0f;
+	optSubtitles = TRUE;
 	sliderDisabled = TRUE;
 
 	SetSemaphore (GraphicsSem);
@@ -152,5 +155,6 @@ OutTakes (void)
 	InitCommunication (ARILOU_CONVERSATION);
 
 	speechVolumeScale = oldvolume;
+	optSubtitles = oldsubtitles;
 	sliderDisabled = FALSE;
 }
