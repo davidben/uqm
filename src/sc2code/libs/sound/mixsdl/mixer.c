@@ -29,6 +29,7 @@
 #include "SDL_byteorder.h"
 #include "SDL_audio.h"
 #include "SDL_version.h"
+#include "mixerint.h"
 
 #define DEBUG
 
@@ -41,16 +42,9 @@ static uint32 mixer_sampsize;
 static sint32 mixer_silence;
 static uint32 mixer_freq;
 
-/* this is purely private */
-/* Reentrant mutex */
-typedef struct
-{
-	Semaphore sem;
-	uint32 thread_id;
-	uint32 locks;
-
-} mixSDL_Mutex_info;
-typedef mixSDL_Mutex_info *mixSDL_Mutex;
+/* mixer interim work-buffer; size in one-channel samples */
+static uint32 mixer_datasize;
+static sint32 *mixer_data = 0;
 
 mixSDL_Mutex_info mixer_mutexes[3];
 /* when locking more than one mutex
@@ -62,28 +56,6 @@ static mixSDL_Mutex act_mutex = mixer_mutexes + 2;
 
 #define MAX_SOURCES 8
 mixSDL_Source *active_sources[MAX_SOURCES];
-
-static void mixSDL_mix_channels (void *userdata, uint8 *stream,
-		sint32 len);
-static void mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv);
-static void mixSDL_Resample_frac (mixSDL_Convertion *conv);
-static void mixSDL_ResampleFlat (mixSDL_Convertion *conv);
-static void mixSDL_ResampleUp_fast (mixSDL_Convertion *conv);
-static void mixSDL_ResampleDown_fast (mixSDL_Convertion *conv);
-static void mixSDL_SourceUnqueueAll (mixSDL_Source *src);
-static void mixSDL_SourceStop_internal (mixSDL_Source *src);
-static void mixSDL_SourceActivate (mixSDL_Source* src);
-static void mixSDL_SourceDeactivate (mixSDL_Source* src);
-
-static __inline__ bool mixSDL_SourceGetNextSample (mixSDL_Source *src,
-		sint32* samp);
-
-static __inline__ sint32 mixSDL_GetSampleExt (void *src, uint32 bpc);
-static __inline__ sint32 mixSDL_GetSampleInt (void *src, uint32 bpc);
-static __inline__ void mixSDL_PutSampleInt (void *dst, uint32 bpc,
-		sint32 samp);
-static __inline__ void mixSDL_PutSampleExt (void *dst, uint32 bpc,
-		sint32 samp);
 
 
 /*************************************************
@@ -160,7 +132,7 @@ mixSDL_GetError (void)
 
 /* Open the mixer with a certain desired audio format */
 bool
-mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 chunksize)
+mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 samples_buf)
 {
 	SDL_AudioSpec desired;
 
@@ -188,7 +160,7 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 chunksize)
 
 	/* Set the desired format and frequency */
 	desired.freq = frequency;
-	desired.samples = chunksize;
+	desired.samples = samples_buf;
 	desired.callback = mixSDL_mix_channels;
 	desired.userdata = NULL;
 
@@ -227,6 +199,10 @@ mixSDL_OpenAudio (uint32 frequency, uint32 format, uint32 chunksize)
 	mixer_sampsize = mixer_chansize * mixer_spec.channels;
 	mixer_freq = mixer_spec.freq;
 
+	/* 2x size the sound playback buffer should be enough for anything */
+	mixer_datasize = samples_buf * mixer_spec.channels * 2;
+	mixer_data = (sint32 *) HMalloc (sizeof (uint32) * mixer_datasize);
+
 	mixSDL_InitMutex (src_mutex, "mixSDL_SourceMutex");
 	mixSDL_InitMutex (buf_mutex, "mixSDL_BufferMutex");
 	mixSDL_InitMutex (act_mutex, "mixSDL_ActiveMutex");
@@ -246,6 +222,12 @@ mixSDL_CloseAudio (void)
 		if (audio_opened == 1)
 		{
 			SDL_CloseAudio();
+
+			if (mixer_data)
+			{
+				HFree (mixer_data);
+				mixer_data = 0;
+			}
 
 			mixSDL_TermMutex (src_mutex);
 			mixSDL_TermMutex (buf_mutex);
@@ -925,7 +907,7 @@ mixSDL_SourceUnqueueBuffers (mixSDL_Object srcobj, uint32 n,
  *  Sources internals
  */
 
-void
+static void
 mixSDL_SourceUnqueueAll (mixSDL_Source *src)
 {
 	mixSDL_Buffer *buf;
@@ -967,7 +949,7 @@ mixSDL_SourceUnqueueAll (mixSDL_Source *src)
 }
 
 /* add the source to the active array */
-void
+static void
 mixSDL_SourceActivate (mixSDL_Source* src)
 {
 	uint32 i;
@@ -1006,7 +988,7 @@ mixSDL_SourceActivate (mixSDL_Source* src)
 }
 
 /* remove the source from the active array */
-void
+static void
 mixSDL_SourceDeactivate (mixSDL_Source* src)
 {
 	uint32 i;
@@ -1030,7 +1012,7 @@ mixSDL_SourceDeactivate (mixSDL_Source* src)
 	mixSDL_UnlockMutex (act_mutex);
 }
 
-void
+static void
 mixSDL_SourceStop_internal (mixSDL_Source *src)
 {
 	mixSDL_Buffer *buf;
@@ -1081,7 +1063,7 @@ mixSDL_SourceStop_internal (mixSDL_Source *src)
 }
 
 /* get the sample next in queue in internal format */
-__inline__ bool
+static __inline__ bool
 mixSDL_SourceGetNextSample (mixSDL_Source *src, sint32* psamp)
 {
 	while (src->nextqueued)
@@ -1544,7 +1526,7 @@ mixSDL_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
  *  Buffer internals
  */
 
-void
+static void
 mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv)
 {
 	conv->srcbpc = MIX_FORMAT_BPC (conv->srcfmt);
@@ -1589,7 +1571,7 @@ mixSDL_ConvertBuffer_internal (mixSDL_Convertion *conv)
 /* get a sample from external buffer
  * in internal format
  */
-__inline__ sint32
+static __inline__ sint32
 mixSDL_GetSampleExt (void *src, uint32 bpc)
 {
 	if (bpc == 2)
@@ -1599,7 +1581,7 @@ mixSDL_GetSampleExt (void *src, uint32 bpc)
 }
 
 /* get a sample from internal buffer */
-__inline__ sint32
+static __inline__ sint32
 mixSDL_GetSampleInt (void *src, uint32 bpc)
 {
 	if (bpc == 2)
@@ -1611,7 +1593,7 @@ mixSDL_GetSampleInt (void *src, uint32 bpc)
 /* put a sample into an external buffer
  * from internal format
  */
-__inline__ void
+static __inline__ void
 mixSDL_PutSampleExt (void *dst, uint32 bpc, sint32 samp)
 {
 	if (bpc == 2)
@@ -1623,7 +1605,7 @@ mixSDL_PutSampleExt (void *dst, uint32 bpc, sint32 samp)
 /* put a sample into an internal buffer
  * in internal format
  */
-__inline__ void
+static __inline__ void
 mixSDL_PutSampleInt (void *dst, uint32 bpc, sint32 samp)
 {
 	if (bpc == 2)
@@ -1636,7 +1618,7 @@ mixSDL_PutSampleInt (void *dst, uint32 bpc, sint32 samp)
  * in internal format, while performing
  * convertion if necessary
  */
-__inline__ sint32
+static __inline__ sint32
 mixSDL_GetConvSample (uint8 **psrc, uint32 bpc, uint32 flags)
 {
 	register sint32 samp;
@@ -1671,7 +1653,7 @@ mixSDL_GetConvSample (uint8 **psrc, uint32 bpc, uint32 flags)
  * in internal format, while performing
  * convertion if necessary
  */
-__inline__ void
+static __inline__ void
 mixSDL_PutConvSample (uint8 **pdst, uint32 bpc, uint32 flags, sint32 samp)
 {
 	mixSDL_PutSampleInt (*pdst, bpc, samp);
@@ -1684,7 +1666,7 @@ mixSDL_PutConvSample (uint8 **pdst, uint32 bpc, uint32 flags, sint32 samp)
 }
 
 /* resampling with fractional rate change */
-void
+static void
 mixSDL_Resample_frac (mixSDL_Convertion *conv)
 {
 	mixSDL_ConvFlags flags = conv->flags;
@@ -1742,7 +1724,13 @@ mixSDL_Resample_frac (mixSDL_Convertion *conv)
 			}
 			else
 			{
-				nextsampl = nextsampr = 0;
+				/* theoretically, here we need to get the next sample
+				 * somehow, which is in the next buffer in the stream;
+				 * leaving the next sample equal to the previous should
+				 * do for now; this will create some-20 minimal
+				 * distortions per second
+				 */
+				/* nextsampl = nextsampr = 0; */
 			}
 		}
 
@@ -1760,7 +1748,7 @@ mixSDL_Resample_frac (mixSDL_Convertion *conv)
 }
 
 /* resampling with respect to sample size only */
-void
+static void
 mixSDL_ResampleFlat (mixSDL_Convertion *conv)
 {
 	mixSDL_ConvFlags flags = conv->flags;
@@ -1768,9 +1756,13 @@ mixSDL_ResampleFlat (mixSDL_Convertion *conv)
 	uint8 *dst = conv->dstdata;
 	uint32 srcbpc = conv->srcbpc;
 	uint32 dstbpc = conv->dstbpc;
-	uint32 i;
+	uint32 samples;
 
-	for (i = conv->srcsamples; i; i--)
+	samples = conv->srcsamples;
+	if ( !(conv->flags & (mixConvStereoUp | mixConvStereoDown)))
+		samples *= conv->srcchans;
+
+	for (; samples; samples--)
 	{
 		register sint32 samp;
 
@@ -1780,7 +1772,7 @@ mixSDL_ResampleFlat (mixSDL_Convertion *conv)
 }
 
 /* integer-periodic resampling with rate increase */
-void
+static void
 mixSDL_ResampleUp_fast (mixSDL_Convertion *conv)
 {
 	mixSDL_ConvFlags flags = conv->flags;
@@ -1814,7 +1806,13 @@ mixSDL_ResampleUp_fast (mixSDL_Convertion *conv)
 		}
 		else
 		{
-			nextsampl = nextsampr = 0;
+			/* theoretically, here we need to get the next sample
+			 * somehow, which is in the next buffer in the stream;
+			 * leaving the next sample equal to the previous should
+			 * do for now; this will create some-20 minimal
+			 * distortions per second
+			 */
+			/* nextsampl = nextsampr = 0; */
 		}
 		
 		for (di = convrate; di > 0; di--)
@@ -1831,7 +1829,7 @@ mixSDL_ResampleUp_fast (mixSDL_Convertion *conv)
 }
 
 /* integer-periodic resampling with rate decrease */
-void
+static void
 mixSDL_ResampleDown_fast (mixSDL_Convertion *conv)
 {
 	mixSDL_ConvFlags flags = conv->flags;
@@ -1861,13 +1859,175 @@ mixSDL_ResampleDown_fast (mixSDL_Convertion *conv)
 }
 
 
-/*************************************************
- * THE mixer - suprisingly simple in the end
+/**********************************************************
+ * THE mixer - higher quality; smoothed-out clipping
  *
  * This could use some optimization perhaps
  */
 
-void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
+static void
+mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
+{
+	uint32 samples = len / mixer_chansize;
+	sint32 *end_data = mixer_data + samples;
+	sint32 *data;
+	uint32 step;
+
+	/* mixer_datasize < samples should not happen ever, but for now.. */
+	if (mixer_datasize < samples)
+	{
+#ifdef DEBUG
+		fprintf (stderr, "mixSDL_mix_channels(): "
+				"WARNING: work-buffer too small\n");
+#endif
+		mixSDL_mix_lowq (stream, len);
+	}
+
+	/* keep this order or die */
+	mixSDL_LockMutex (src_mutex);
+	mixSDL_LockMutex (buf_mutex);
+	mixSDL_LockMutex (act_mutex);
+
+	/* first, collect data from sources and put into work-buffer */
+	for (data = mixer_data; data < end_data; ++data)
+	{
+		uint32 i;
+		sint32 fullsamp;
+		
+		fullsamp = 0;
+
+		for (i = 0; i < MAX_SOURCES; i++)
+		{
+			mixSDL_Source *src;
+			sint32 samp;
+			
+			/* find next source */
+			for (; i < MAX_SOURCES && (
+					(src = active_sources[i]) == 0
+					|| src->state != MIX_PLAYING
+					|| !mixSDL_SourceGetNextSample (src, &samp));
+					i++)
+				;
+
+			if (i < MAX_SOURCES)
+			{
+				/* sample aquired */
+				fullsamp += samp;
+			}
+		}
+		
+		*data = fullsamp;
+	}
+
+	/* unclip work-buffer */
+	step = mixer_spec.channels;
+	mixSDL_UnclipWorkBuffer (mixer_data, end_data, step);
+	if (step == 2)
+	{	/* also, for the second channel */
+		mixSDL_UnclipWorkBuffer (mixer_data + 1, end_data, step);
+	}
+
+	/* copy data into driver buffer */
+	for (data = mixer_data; data < end_data; ++data)
+	{
+		mixSDL_PutSampleExt (stream, mixer_chansize, *data);
+		stream += mixer_chansize;
+	}
+
+	/* keep this order or die */
+	mixSDL_UnlockMutex (act_mutex);
+	mixSDL_UnlockMutex (buf_mutex);
+	mixSDL_UnlockMutex (src_mutex);
+
+	(void)userdata; // satisfying compiler
+}
+
+/* data unclipping - smooth out the areas that need to be clipped */
+static void
+mixSDL_UnclipWorkBuffer (sint32 *data, sint32 *end_data, uint32 step)
+{
+	while (data < end_data)
+	{
+		uint32 len;
+		sint32 extremum;
+		sint32 *chunk;
+		sint32 threshold, origin, range_end;
+		double gain_mult;
+		sint32 samp = *data;
+
+		if (mixer_chansize == 2)
+		{	/* S16 */
+			if (samp < MIX_UNCLIP_S16_MIN)
+			{
+				origin = MIX_UNCLIP_S16_MIN;
+				range_end = -SINT16_MIN;
+				threshold = -MIX_UNCLIP_S16_MIN;
+			}
+			else if (samp > MIX_UNCLIP_S16_MAX)
+			{
+				origin = MIX_UNCLIP_S16_MAX;
+				range_end = SINT16_MAX;
+				threshold = MIX_UNCLIP_S16_MAX;
+			}
+			else
+			{
+				data += step;
+				continue;
+			}
+		}
+		else
+		{	/* S8 */
+			if (samp < MIX_UNCLIP_S8_MIN)
+			{
+				origin = MIX_UNCLIP_S8_MIN;
+				range_end = -SINT8_MIN;
+				threshold = -MIX_UNCLIP_S8_MIN;
+			}
+			else if (samp > MIX_UNCLIP_S8_MAX)
+			{
+				origin = MIX_UNCLIP_S8_MAX;
+				range_end = SINT8_MAX;
+				threshold = MIX_UNCLIP_S8_MAX;
+			}
+			else
+			{
+				data += step;
+				continue;
+			}
+		}
+
+		chunk = data;
+
+		/* seek to next sample not in clipping area */
+		extremum = 0;
+		for (len = 0; data < end_data; data += step, ++len)
+		{
+			samp = *data;
+			if (samp < 0)
+				samp = -samp;
+			if (samp > extremum)
+				extremum = samp;
+			if (samp <= threshold)
+				break;
+		}
+
+		if (extremum < range_end)
+			continue;	/* nothing to do really */
+
+		gain_mult = (double) (range_end - threshold)
+				/ (double) (extremum - threshold);
+		
+		/* apply unclipping filter - clipping smooth-out */
+		for (data = chunk; len; data += step, --len)
+		{
+			*data = origin + (sint32) (gain_mult * (*data - origin));
+		}
+	}
+}
+
+/* low quality faster version */
+static void
+mixSDL_mix_lowq (uint8 *stream, sint32 len)
 {
 	uint8 *end_stream = stream + len;
 
@@ -1928,7 +2088,4 @@ void mixSDL_mix_channels (void *userdata, uint8 *stream, sint32 len)
 	mixSDL_UnlockMutex (act_mutex);
 	mixSDL_UnlockMutex (buf_mutex);
 	mixSDL_UnlockMutex (src_mutex);
-
-	(void)userdata; // satisfying compiler
 }
-

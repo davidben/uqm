@@ -184,7 +184,7 @@ typedef struct
  */
 uint32 mixSDL_GetError (void);
 
-bool mixSDL_OpenAudio (uint32 freq, uint32 format, uint32 chunksize);
+bool mixSDL_OpenAudio (uint32 freq, uint32 format, uint32 samples_buf);
 void mixSDL_CloseAudio (void);
 bool mixSDL_QuerySpec (uint32 *freq, uint32 *format, uint32 *channels);
 
@@ -226,42 +226,6 @@ void mixSDL_ConvertBuffer (uint32 srcfmt, void* srcdata, uint32 srcsize,
 		uint32 srcfreq, uint32 dstfmt, void* dstdata,
 		uint32 dstsize, uint32 dstfreq);
 
-/*************************************************
- *  Internals
- */
-
-/* private conversion info types */
-typedef enum
-{
-	mixConvNone = 0,
-	mixConvStereoUp = 1,
-	mixConvStereoDown = 2,
-	mixConvSizeUp = 4,
-	mixConvSizeDown = 8
-
-} mixSDL_ConvFlags;
-
-typedef struct
-{
-	uint32 srcfmt;
-	void *srcdata;
-	uint32 srcsize;
-	uint32 srcfreq;
-	uint32 srcbpc; /* bytes/sample for 1 chan */
-	uint32 srcchans;
-	uint32 srcsamples;
-	
-	uint32 dstfmt;
-	void *dstdata;
-	uint32 dstsize;
-	uint32 dstfreq;
-	uint32 dstbpc; /* bytes/sample for 1 chan */
-	uint32 dstchans;
-	uint32 dstsamples;
-
-	mixSDL_ConvFlags flags;
-
-} mixSDL_Convertion;
 
 /* Make sure the prop-value type is of suitable size
  * it must be able to store both int and void*
@@ -272,17 +236,9 @@ typedef struct
 #define MIX_COMPILE_TIME_ASSERT(name, x) \
 	typedef int mixSDL_dummy_##name [(x) * 2 - 1]
 
-MIX_COMPILE_TIME_ASSERT(mixSDL_Object, sizeof(mixSDL_Object) >= sizeof(void*));
+MIX_COMPILE_TIME_ASSERT (mixSDL_Object,
+		sizeof(mixSDL_Object) >= sizeof(void*));
 
 #undef MIX_COMPILE_TIME_ASSERT
-
-/* Clipping boundaries */
-#define MIX_S16_MAX ((double) SINT16_MAX)
-#define MIX_S16_MIN ((double) SINT16_MIN)
-#define MIX_S8_MAX  ((double) SINT8_MAX)
-#define MIX_S8_MIN  ((double) SINT8_MIN)
-
-/* Channel gain adjustment for clipping reduction */
-#define MIX_GAIN_ADJ (0.7f)
 
 #endif /* MIXER_H */
