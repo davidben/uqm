@@ -89,6 +89,21 @@ EOF
 	fi
 }
 
+# Description: check if a string is lexicographically before
+#              another string
+# Arguments:   $1 - the first string
+#              $2 - the second string
+# Returns:     0 if $1 is lexicographically before $2
+#              1 otherwise
+lexlt() {
+	# The 'test' builtin in some sh shells can't do this.
+	# To execute the non-builtin 'test' you need the path, and
+	# that differs per system (/bin/test or /usr/bin/test).
+	# It says '>=' instead of '<' because expr prints '1' for true,
+	# and sh uses 0.
+	return `expr "$1" ">=" "$2"`
+}
+
 # Description: check if a program is present in the path
 # Arguments:   
 have_program() {
@@ -114,7 +129,7 @@ have_program() {
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
 		fi
-		if [ "$TEMP_VERSION" \< "$2" ]; then
+		if lexlt "$TEMP_VERSION" "$2" ; then
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required!"
 			return 1
@@ -173,7 +188,7 @@ EOF
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
 		fi
-		if [ "$TEMP_VERSION" \< "$2" ]; then
+		if lexlt "$TEMP_VERSION" "$2" ; then
 			eval "LIB_${LIB}_PRESENT"=1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required"
