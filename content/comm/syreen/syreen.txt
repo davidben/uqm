@@ -351,7 +351,7 @@ The only thing they could use for navigation was the presence of the Dreadnought
 When they arrived at their destination and lowered their ships into the immense vault
 they were transported to the Dreadnoughts and only caught a split-second glimpse of the outside world.
 As far as they could tell, the sun was either red or orange. Based on their trip-time calculations
-the farthest they could have travelled is about 200 standard Hyperspace distance units.
+the farthest they could have travelled is about 200 standard HyperSpace distance units.
 
 #(been_there)
 I've already been there. The vault is on the moon of Epsilon Camelopardalis I, but I couldn't open it.

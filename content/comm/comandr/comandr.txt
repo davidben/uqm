@@ -405,7 +405,7 @@ Boy, mileage sure does vary. Could you spare us some more fuel?
 Commander, what was that red, fast-moving object in orbit around Earth?
 
 #(it_went_away)
-When we approached, it transmitted a warning and warped into Hyperspace.
+When we approached, it transmitted a warning and warped into HyperSpace.
 
 #(we_destroyed_it)
 Er... we destroyed it! Yessiree, blew it to bits.

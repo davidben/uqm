@@ -403,7 +403,7 @@ at our homeworld. Its coordinates are 52.2, 52.5.
 #(CAN_BE_FRIENDS)	pkunk056.ogg
 Now that we've cleared the air and can completely trust each other, we'll just
 tell you where our home planet is located. It is the first planet in the Gamma
-Krueger system, located at 52.2 : 52.5 on the standard hyperspace starmap. Ah,
+Krueger system, located at 52.2 : 52.5 on the standard HyperSpace starmap. Ah,
 now that feels so much better, doesn't it, friend?
 
 #(bye_angry)
