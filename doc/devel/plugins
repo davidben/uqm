@@ -12,6 +12,18 @@ interface		a set of functions defined by either the core
 			engine or a module aimed at performing various
 			tasks on a specific part of the game
 
+itf			interface; short form
+
+host			the game itself or core engine; also a top-level
+			interface for use by modules
+
+interface kind		a unique identifier of a particular defined
+			interface (not of the interface instance);
+			there can be several interfaces of the same
+			kind registered, but they all have to cover
+			different API versions (version ranges may
+			overlap though)
+
 standard interface	interface *defined* by the core engine
 			all host, sound, video, gfx, threads, time,
 			input, io (uio), memory, resource interfaces
@@ -41,6 +53,11 @@ custom interface	interface *defined and provided* by a module,
 			the same way it would register a standard
 			interface it implements
 
+vtbl			virtual table; a table of interface functions;
+			pointer to vtbl is semantically equivalent to
+			an interface pointer
+
+h_foo			handle to 'foo'
 
 
 Typical calling sequence:
