@@ -1,4 +1,8 @@
 0.2:
+- Defining DCQ_OF_DOOM lowers the DrawCommandQueue size to 512, to aid in
+  simulating severe overload stresses on the machine
+- Removed TFB_FlushGraphics' dependency on GraphicsSem, which the new
+  condition variable code both breaks and makes unnecessary
 - Scan tint is now cleared right after the scan, from PhracturedBlue
 - Recoded the DCQ to not sit on the heap, added debugging info
 - Fixed Outfit Starship and Shipyard graphics, from TDuck

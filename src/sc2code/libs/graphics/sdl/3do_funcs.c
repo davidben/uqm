@@ -77,7 +77,6 @@ FlushGraphics (void)
 {
 	TFB_DrawCommand DrawCommand;
 	TFB_BatchReset ();
-	continuity_break = 1;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
 	DrawCommand.image = 0;
 	TFB_EnqueueDrawCommand(&DrawCommand);

@@ -36,7 +36,6 @@ extern SDL_Surface *TransitionScreen;
 extern volatile int TransitionAmount;
 extern SDL_Rect TransitionClipRect;
 
-extern volatile int continuity_break;
 extern int GfxFlags;
 
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);

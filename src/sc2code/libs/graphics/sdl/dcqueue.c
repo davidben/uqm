@@ -32,7 +32,11 @@ static Uint32 DCQ_locking_thread = 0;
 // become tolerable before initiating livelock deterrence and game
 // slowdown.  Other constants for controlling the frameskip/slowdown
 // balance may be found in sdl_common.c near TFB_FlushGraphics.
+#ifdef DCQ_OF_DOOM
+#define DCQ_MAX 512
+#else
 #define DCQ_MAX 16384
+#endif
 TFB_DrawCommand DCQ[DCQ_MAX];
 
 TFB_DrawCommandQueue DrawCommandQueue;
@@ -151,16 +155,17 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommand* Command)
 	while (DrawCommandQueue.FullSize >= DCQ_MAX - 1)
 	{
 		int old_depth, i;
-		fprintf (stderr, "DCQ overload (Size = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size);
+		fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d).  Sleeping until renderer is done.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
 		// Restore the DCQ locking level.  I *think* this is
 		// always 1, but...
+		TFB_BatchReset ();
 		old_depth = DCQ_locking_depth;
 		for (i = 0; i < old_depth; i++)
 			Unlock_DCQ ();
 		WaitCondVar (RenderingCond);
 		for (i = 0; i < old_depth; i++)
 			Lock_DCQ ();
-		fprintf (stderr, "DCQ clear (Size = %d).  Continuing.\n", DrawCommandQueue.Size);
+		fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n", DrawCommandQueue.Size, DrawCommandQueue.FullSize);
 	}
 	DCQ[DrawCommandQueue.InsertionPoint] = *Command;
 	DrawCommandQueue.InsertionPoint = (DrawCommandQueue.InsertionPoint + 1) % DCQ_MAX;

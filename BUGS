@@ -101,7 +101,3 @@ The bugs reported but not yet verified:
 
 - In starmap, when any zone of influence is moving, the starmap cursor behaves badly 
   (erases what it passes over). Leaving and returning to the starmap fixes it
-
-- Under FreeBSD, waiting on condition variables doesn't seem to
-  actually wait or hand control to the renderer, thus spinlocking and
-  crashing.

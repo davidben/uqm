@@ -37,8 +37,6 @@ volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
 
 int GfxFlags = 0;
-volatile int continuity_break;
-
 
 int
 TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -511,9 +509,15 @@ TFB_ComputeFPS ()
 // on slower machines.  Even there, it's seems nonexistent outside of
 // communications screens.  --Michael
 
+#ifdef DCQ_OF_DOOM
+#define DCQ_FORCE_SLOWDOWN_SIZE 128
+#define DCQ_FORCE_BREAK_SIZE 512
+#define DCQ_LIVELOCK_MAX 256
+#else
 #define DCQ_FORCE_SLOWDOWN_SIZE 1024
 #define DCQ_FORCE_BREAK_SIZE 4096
 #define DCQ_LIVELOCK_MAX 2048
+#endif
 
 void
 TFB_FlushGraphics () // Only call from main thread!!
@@ -547,23 +551,6 @@ TFB_FlushGraphics () // Only call from main thread!!
 		BroadcastCondVar (RenderingCond);
 		return;
 	}
-
-	if (!continuity_break) {
-		// TODO: a more optimal way of getting the lock on GraphicsSem..
-		//       cannot currently use SDL_SemWait because it would break
-		//       the usage of continuity_break
-		// Michael asks: Why are we locking, then releasing, the GraphicsSem?
-
-		semval = TimeoutSetSemaphore (GraphicsSem, ONE_SECOND / 10);
-		if (semval != 0)
-		{
-			BroadcastCondVar (RenderingCond);
-			return;
-		}
-		else
-			SDL_SemPost (GraphicsSem);
-	}
-	continuity_break = 0;
 
 	if (GfxFlags & TFB_GFXFLAGS_SHOWFPS)
 		TFB_ComputeFPS ();
