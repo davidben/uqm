@@ -101,3 +101,6 @@ The bugs reported but not yet verified:
              ship, that all works, but after a select a ship the select a 
              ship screen dosent 'go' away so i can not see how, who, 
              what, im fighting (NOTE: seems to happen only in cvs, not alpha release)
+
+- "Got a segfault too, on cvs version compiled today (2002/12/05), when activating Sun Device over 
+   the Chmmr homeworld. Worked fine on 0.1 alpha."
