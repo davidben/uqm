@@ -208,7 +208,7 @@ CreateThreadAux (ThreadFunction func, void *data, SDWORD stackSize
 
 	// Signal to the new thread that the thread structure is ready
 	// and it can begin to use it.
-	SDL_SemPost (startInfo->sem);
+	ClearSemaphore (startInfo->sem);
 
 	(void) stackSize;  /* Satisfying compiler (unused parameter) */
 	return thread;
