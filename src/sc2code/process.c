@@ -989,7 +989,7 @@ PostProcessQueue (register VIEW_STATE view_state, register SIZE scroll_x,
 								// level image as mipmap, needed for trilinear scaling
 
 								PFRAME_DESC frame = 
-									(PFRAME_DESC)SetAbsFrameIndex (
+									SetAbsFrameIndex (
 									ElementPtr->next.image.farray
 									[index + 1],
 									GetFrameIndex (ElementPtr->next.image.frame));
