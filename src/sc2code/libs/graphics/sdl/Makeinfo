@@ -1,2 +1,2 @@
-uqm_CFILES="2xsai.c 3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c
+uqm_CFILES="3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c
 		primitives.c pure.c rotozoom.c sdl_common.c oscilloscope.c"

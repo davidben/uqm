@@ -19,12 +19,10 @@
 #ifdef GFXMODULE_SDL
 
 #include "pure.h"
-#include "2xsai.h"
 
 static SDL_Surface *fade_black;
 static SDL_Surface *fade_white;
 static SDL_Surface *fade_temp;
-static SDL_Surface *sai_temp;
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -115,47 +113,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	fade_temp = SDL_DisplayFormat (test_extra);
 	
 	SDL_FreeSurface (test_extra);
-
-	test_extra = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight + 4, 32, 
-				     0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
-	if (test_extra == NULL)
-	{
-		fprintf (stderr, "Couldn't create sai back buffer: %s\n", SDL_GetError());
-		exit(-1);
-	}
-	sai_temp = SDL_DisplayFormat (test_extra);
-	SDL_FillRect (sai_temp, NULL, SDL_MapRGB (sai_temp->format, 0, 0, 0));
-	SDL_FreeSurface (test_extra);
 	
-	// TODO: implement bilinear scaling for pure sdl too (fallback to sai for now)
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
-	{
-		GfxFlags &= ~TFB_GFXFLAGS_SCALE_BILINEAR;
-		GfxFlags |= TFB_GFXFLAGS_SCALE_SAI;
-	}
-
-	{
-		int result;
-
-		if (SDL_GetVideoSurface()->format->BitsPerPixel == 15)
-		{
-			result = Init_2xSaI (555);
-		}
-		else if (SDL_GetVideoSurface()->format->BitsPerPixel == 16)
-		{
-			result = Init_2xSaI (565);
-		}
-		else
-		{
-			result = Init_2xSaI (888);
-		}
-
-		if (!result)
-		{
-			GfxFlags &= ~(TFB_GFXFLAGS_SCALE_SAI|TFB_GFXFLAGS_SCALE_SUPERSAI);
-		}
-	}
-
 	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
 	{
 		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
@@ -330,40 +288,9 @@ TFB_Pure_SwapBuffers ()
 
 		SDL_LockSurface (SDL_Video);
 
-		if (GfxFlags & TFB_GFXFLAGS_SCALE_SAI)
-		{
-			SDL_Rect r;
-			Uint8 *src_p, *dst_p;
-			
-			r.x = 0;
-			r.y = 2;
-			SDL_BlitSurface (backbuffer, NULL, sai_temp, &r);
-			
-			src_p = sai_temp->pixels;
-			src_p += sai_temp->pitch << 1;
-			dst_p = SDL_Video->pixels;			
-			_2xSaI (src_p, sai_temp->pitch, dst_p, SDL_Video->pitch, ScreenWidth, ScreenHeight);
-		}
-		else if (GfxFlags & TFB_GFXFLAGS_SCALE_SUPERSAI)
-		{
-			SDL_Rect r;
-			Uint8 *src_p, *dst_p;
-			
-			r.x = 0;
-			r.y = 2;
-			SDL_BlitSurface (backbuffer, NULL, sai_temp, &r);
-			
-			src_p = sai_temp->pixels;
-			src_p += sai_temp->pitch << 1;
-			dst_p = SDL_Video->pixels;			
-			Super2xSaI (src_p, sai_temp->pitch, dst_p, SDL_Video->pitch, ScreenWidth, ScreenHeight);
-		}
-		else
-		{
-			SDL_LockSurface (backbuffer);
-			Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
-			SDL_UnlockSurface (backbuffer);
-		}
+		SDL_LockSurface (backbuffer);
+		Scale2x_Nearest (SDL_Screen->format->BytesPerPixel, backbuffer->pixels, SDL_Video->pixels, 240);
+		SDL_UnlockSurface (backbuffer);
 		
 		SDL_UnlockSurface (SDL_Video);
 	}

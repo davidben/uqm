@@ -123,14 +123,6 @@ main (int argc, char *argv[])
 				{
 					gfxflags |= TFB_GFXFLAGS_SCALE_BILINEAR;
 				}
-				else if (!strcmp (optarg, "sai"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_SAI;
-				}
-				else if (!strcmp (optarg, "supersai"))
-				{
-					gfxflags |= TFB_GFXFLAGS_SCALE_SUPERSAI;
-				}
 			break;
 			case 's':
 				gfxflags |= TFB_GFXFLAGS_SCANLINES;
@@ -200,7 +192,7 @@ main (int argc, char *argv[])
 				printf("  -d, --bpp=BITSPERPIXEL (default 16)\n");
 				printf("  -f, --fullscreen (default off)\n");
 				printf("  -o, --opengl (default off)\n");
-				printf("  -c, --scale=mode (bilinear, sai or supersai, default is none)\n");
+				printf("  -c, --scale=mode (bilinear, default is none)\n");
 				printf("  -s, --scanlines (default off, only works with --opengl\n");
 				printf("  -p, --fps (default off)\n");
 				printf("  -n, --contentdir=CONTENTDIR\n");
