@@ -175,7 +175,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 		wsprintf (buf, "%u", ShipCost[NewRaceItem]);
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
 
@@ -230,7 +230,7 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 		DrawFilledRectangle (&r);
 	}
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
-	DrawText (&t);
+	font_DrawText (&t);
 }
 
 static void

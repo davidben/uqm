@@ -231,11 +231,11 @@ SetSemaphore (GraphicsSem);
 	{
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 0);
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 12;
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 1);
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 	else
 	{
@@ -243,16 +243,16 @@ SetSemaphore (GraphicsSem);
 
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 2);
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 12;
 		GetClusterName (CurStarDescPtr, buf);
 		t.pStr = buf;
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 12;
 		t.pStr = GLOBAL_SIS (PlanetName);
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 
 	s.origin.x = SIS_SCREEN_WIDTH >> 1;
@@ -383,8 +383,8 @@ DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
 			SetSemaphore (GraphicsSem);
 
 			SetContextForeGroundColor (fade_cycle[i]);
-			DrawText (&t1);
-			DrawText (&t2);
+			font_DrawText (&t1);
+			font_DrawText (&t2);
 			SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
 			TimeIn = GetTimeCounter ();
 		}
@@ -399,14 +399,14 @@ DrawFadeText (UNICODE *str1, UNICODE *str2, BOOLEAN fade_in, PRECT
 			SetSemaphore (GraphicsSem);
 
 			SetContextForeGroundColor (fade_cycle[i]);
-			DrawText (&t1);
-			DrawText (&t2);
+			font_DrawText (&t1);
+			font_DrawText (&t2);
 			SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
 			TimeIn = GetTimeCounter ();
 		}
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-		DrawText (&t1);
-		DrawText (&t2);
+		font_DrawText (&t1);
+		font_DrawText (&t2);
 	}
 }
 
@@ -560,11 +560,11 @@ UninitEncounter (void)
 								t.align = ALIGN_CENTER;
 								t.pStr = buf;
 								t.CharCount = (COUNT)~0;
-								DrawText (&t);
+								font_DrawText (&t);
 								t.baseline.y += 6;
 								t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 3);
 								t.CharCount = (COUNT)~0;
-								DrawText (&t);
+								font_DrawText (&t);
 
 								ship_s.frame = FragPtr->ShipInfo.icons;
 
@@ -599,7 +599,7 @@ UninitEncounter (void)
 							SetContextForeGroundColor (
 									BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50)
 									);
-							DrawText (&t);
+							font_DrawText (&t);
 							DeltaSISGauges (0, 0, j);
 
 							if ((VictoryState++ - 1) % MAX_DEAD_DISPLAYED)
@@ -681,7 +681,7 @@ UninitEncounter (void)
 					SetContextForeGroundColor (
 							BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50)
 							);
-					DrawText (&t);
+					font_DrawText (&t);
 
 					DrawFadeText (
 							str1 = GAME_STRING (ENCOUNTER_STRING_BASE + 6),

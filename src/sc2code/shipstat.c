@@ -60,10 +60,10 @@ DrawShipNameString (UNICODE *pStr, COUNT CharCount, COORD y)
 	Text.baseline.x = STATUS_WIDTH >> 1;
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
-	DrawText (&Text);
+	font_DrawText (&Text);
 	--Text.baseline.y;
 	SetContextForeGroundColor (BLACK_COLOR);
-	DrawText (&Text);
+	font_DrawText (&Text);
 
 	SetContextFont (OldFont);
 }
@@ -250,7 +250,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 			Text.baseline.y = y + GAUGE_YOFFS + 9;
 
 			SetContextForeGroundColor (BLACK_COLOR);
-			DrawText (&Text);
+			font_DrawText (&Text);
 
 			SetContextFont (OldFont);
 		}

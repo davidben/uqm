@@ -133,11 +133,11 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 				while (word_chars--)
 				{
 					if (!Sleepy)
-						DrawText (&t);
+						font_DrawText (&t);
 					else
 					{
 						SetSemaphore (GraphicsSem);
-						DrawText (&t);
+						font_DrawText (&t);
 						ClearSemaphore (GraphicsSem);
 
 						PlaySound (ReadOutSounds, GAME_SOUND_PRIORITY);

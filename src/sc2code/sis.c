@@ -123,7 +123,7 @@ SetContextClipRect (&r);
 	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	ClearDrawable ();
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
-	DrawText (&t);
+	font_DrawText (&t);
 	UnbatchGraphics ();
 
 	SetContextClipRect (NULL_PTR);
@@ -207,7 +207,7 @@ SetContextClipRect (&r);
 		t.CharCount = (COUNT)~0;
 
 		SetContextFont (TinyFont);
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
 
@@ -295,7 +295,7 @@ DrawStatusMessage (UNICODE *pStr)
 
 	SetContextFont (TinyFont);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
-	DrawText (&t);
+	font_DrawText (&t);
 	UnbatchGraphics ();
 
 	SetContextClipRect (NULL_PTR);
@@ -328,7 +328,7 @@ DrawCaptainsName (void)
 	t.pStr = GLOBAL_SIS (CommanderName);
 	t.CharCount = (COUNT)~0;
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x16, 0xB, 0x1F), 0x38));
-	DrawText (&t);
+	font_DrawText (&t);
 
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);
@@ -390,7 +390,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	}
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
-	DrawText (&t);
+	font_DrawText (&t);
 	if (optWhichFonts == OPT_PC)
 		SetContextFontEffect (0, 0, 0);
 
@@ -537,7 +537,7 @@ void DrawPC_SIS ()
 		BUILD_COLOR_RGBA (0x6B, 0x00, 0x00, 0xFF),
 		BUILD_COLOR_RGBA (0xF7, 0x00, 0x00, 0xFF));
 	wsprintf (buf, "FUEL");
-	DrawText (&t);
+	font_DrawText (&t);
 
 	r.corner.y += 79;
 	t.baseline.y += 79;
@@ -547,7 +547,7 @@ void DrawPC_SIS ()
 		BUILD_COLOR_RGBA (0x00, 0x4D, 0x00, 0xFF),
 		BUILD_COLOR_RGBA (0x00, 0xAE, 0x00, 0xFF));
 	wsprintf (buf, "CREW");
-	DrawText (&t);
+	font_DrawText (&t);
 	SetContextFontEffect (0, 0, 0);
 
 	r.corner.x = 2 + 1;
@@ -559,7 +559,7 @@ void DrawPC_SIS ()
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
 	t.baseline.y = r.corner.y + 6;
 	wsprintf (buf, "CAPTAIN");
-	DrawText (&t);
+	font_DrawText (&t);
 }
 
 void
@@ -706,7 +706,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 
 	if (fuel_delta != 0)
@@ -742,7 +742,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-			DrawText (&t);
+			font_DrawText (&t);
 		}
 	}
 
@@ -1262,11 +1262,11 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 			r->extent.height = PC_MENU_HEIGHT - 1;
 			DrawFilledRectangle (r);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x08));
-			DrawText (&t);
+			font_DrawText (&t);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
 		}
 		else
-			DrawText (&t);
+			font_DrawText (&t);
 		t.baseline.y += PC_MENU_HEIGHT;
 	}
 }
@@ -1400,7 +1400,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				wsprintf (buf, "%u", GLOBAL (CrewCost));
 				SetContextFont (TinyFont);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
-				DrawText (&t);
+				font_DrawText (&t);
 				break;
 			case PM_FUEL:
 				t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
@@ -1411,7 +1411,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				wsprintf (buf, "%u", GLOBAL (FuelCost));
 				SetContextFont (TinyFont);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
-				DrawText (&t);
+				font_DrawText (&t);
 				break;
 		}
 	}

@@ -62,7 +62,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	t.CharCount = (COUNT)~0;
 	SetContextFont (TinyFont);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
-	DrawText (&t);
+	font_DrawText (&t);
 
 	r.corner.x = PICK_X_OFFS - 3;
 	r.corner.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
@@ -74,7 +74,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x4, 0x5, 0x1F), 0x4B));
-	DrawText (&t);
+	font_DrawText (&t);
 
 	if (LastStarShipPtr == 0 || LastStarShipPtr->special_counter == 0)
 	{
@@ -132,7 +132,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		t.CharCount = (COUNT)~0;
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 }
 

@@ -152,7 +152,7 @@ add_text (int status, PTEXT pTextIn)
 		locText.CharCount = 1;
 		ch = '*';
 		locText.pStr = &ch;
-		DrawText (&locText);
+		font_DrawText (&locText);
 
 		locText = *pTextIn;
 		pText = &locText;
@@ -203,7 +203,7 @@ add_text (int status, PTEXT pTextIn)
 			if (status <= 0)
 			{
 				if (pText->baseline.y < SIS_SCREEN_HEIGHT)
-					DrawText (pText);
+					font_DrawText (pText);
 
 				pStr = pText->pStr + pText->CharCount;
 				if(status < -4 && pText->baseline.y >= -status - 10)
@@ -217,24 +217,24 @@ add_text (int status, PTEXT pTextIn)
 				SetContextForeGroundColor (CommData.AlienTextBColor);
 
 				--pText->baseline.x;
-				DrawText (pText);
+				font_DrawText (pText);
 
 				++pText->baseline.x;
 				--pText->baseline.y;
-				DrawText (pText);
+				font_DrawText (pText);
 
 				++pText->baseline.x;
 				++pText->baseline.y;
-				DrawText (pText);
+				font_DrawText (pText);
 
 				--pText->baseline.x;
 				++pText->baseline.y;
-				DrawText (pText);
+				font_DrawText (pText);
 
 				SetContextForeGroundColor (CommData.AlienTextFColor);
 
 				--pText->baseline.y;
-				DrawText (pText);
+				font_DrawText (pText);
 
 				pStr = pText->pStr + pText->CharCount;
 			}
@@ -290,12 +290,12 @@ DrawSISComWindow (void)
 			t.pStr = (UNICODE *)GetStringAddress (OldStrings);
 			t.CharCount = GetStringLength (OldStrings);
 			OldStrings = SetRelStringTableIndex (OldStrings, 1);
-			DrawText (&t);
+			font_DrawText (&t);
 			SetContextForeGroundColor (WHITE_COLOR);
 			t.pStr = (PBYTE)GetStringAddress (CreditStrings);
 			t.CharCount = GetStringLength (CreditStrings);
 			CreditStrings = SetRelStringTableIndex (CreditStrings, 1);
-			DrawText (&t);
+			font_DrawText (&t);
 
 			if (j)
 				t.baseline.y += 12;
@@ -628,7 +628,7 @@ FeedbackPlayerPhrase (UNICODE *pStr)
 		ct.pStr = GAME_STRING (FEEDBACK_STRING_BASE);
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xC, 0x1F), 0x48));
-		DrawText (&ct);
+		font_DrawText (&ct);
 		ct.baseline.y += 16;
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x14, 0x4F), 0x44));
 		ct.pStr = pStr;

@@ -179,7 +179,7 @@ ChangeSelection:
 				UnlockStarShip (&race_q[0], hBattleShip);
 
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
-				DrawText (&t);
+				font_DrawText (&t);
 				SetContextForeGroundColor (BLACK_COLOR);
 			}
 
@@ -200,7 +200,7 @@ ChangeSelection:
 				else
 					wsprintf (buf, "%u/%u", crew_level, max_crew);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
-				DrawText (&t);
+				font_DrawText (&t);
 			}
 
 			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
@@ -445,7 +445,7 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, PRECT pPickRect)
 	t.CharCount = (COUNT)~0;
 SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
 	SetContextFont (StarConFont);
-	DrawText (&t);
+	font_DrawText (&t);
 
 	r.extent.width = ICON_WIDTH;
 	r.extent.height = ICON_HEIGHT;

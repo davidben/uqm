@@ -303,7 +303,7 @@ extern void DrawPoint (PPOINT pPoint);
 extern void DrawRectangle (PRECT pRect);
 extern void DrawFilledRectangle (PRECT pRect);
 extern void DrawLine (PLINE pLine);
-extern void DrawText (PTEXT pText);
+extern void font_DrawText (PTEXT pText);
 extern void DrawPolygon (POLYGON Polygon);
 extern void DrawFilledPolygon (POLYGON Polygon);
 extern void DrawBatch (PPRIMITIVE pBasePrim, PRIM_LINKS PrimLinks,

@@ -74,7 +74,7 @@ ConfirmSaveLoad (STAMP *MsgStamp)
 			BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
 			TRUE, BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x0F));
-	DrawText (&t);
+	font_DrawText (&t);
 }
 
 enum
@@ -228,7 +228,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 				DrawFilledRectangle (&r);
 				SetContextForeGroundColor (OldColor);
 			}
-			DrawText (&lf);
+			font_DrawText (&lf);
 		}
 		SetFlashRect (&r, (FRAME)0);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
@@ -272,7 +272,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		DrawFilledRectangle (&text_r);
 
 		SetContextForeGroundColor (ForeGround);
-		DrawText (&lf);
+		font_DrawText (&lf);
 
 		SetFlashRect (&r, (FRAME)0);
 	}
@@ -687,7 +687,7 @@ DrawCargo (COUNT redraw_state)
 			SetContextForeGroundColor (cargo_color[i]);
 			wsprintf (buf, "%u", GLOBAL_SIS (ElementAmounts[i]));
 			t.CharCount = (COUNT)~0;
-			DrawText (&t);
+			font_DrawText (&t);
 			t.baseline.y += 12;
 		}
 		t.baseline.x = 50;
@@ -699,7 +699,7 @@ DrawCargo (COUNT redraw_state)
 		SetContextForeGroundColor (cargo_color[i]);
 		wsprintf (buf, "%u", GLOBAL_SIS (TotalBioMass));
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 }
 
@@ -830,7 +830,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
-			DrawText (&t);
+			font_DrawText (&t);
 			t.CharCount = (COUNT)~0;
 		}
 		t.baseline.y = 126;
@@ -842,7 +842,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
-		DrawText (&t);
+		font_DrawText (&t);
 		
 		r.corner.x = 1;
 		r.corner.y = 141;
@@ -891,7 +891,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.x = SIS_SCREEN_WIDTH - 57 + 1 + (SIS_TITLE_WIDTH >> 1);
 		if (pSD->Activity == IN_STARBASE)
 			wstrcpy (buf, GAME_STRING (STARBASE_STRING_BASE));
@@ -902,7 +902,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 					r.corner.x / 10, r.corner.x % 10,
 					r.corner.y / 10, r.corner.y % 10);
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		
 		SetContext (OldContext);
 

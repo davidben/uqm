@@ -99,7 +99,7 @@ ReleaseFont (FONT Font)
 }
 
 void
-DrawText (PTEXT lpText)
+font_DrawText (PTEXT lpText)
 {
 	SetPrimType (&_locPrim, TEXT_PRIM);
 	_locPrim.Object.Text = *lpText;

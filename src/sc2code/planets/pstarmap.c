@@ -429,7 +429,7 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 								BUILD_COLOR (MAKE_RGB15 (r, g, b), COLOR_256 (c) - 1)
 								);
 					}
-					DrawText (&t);
+					font_DrawText (&t);
 				}
 			}
 

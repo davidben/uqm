@@ -97,7 +97,7 @@ PrintScanTitlePC (TEXT *t, RECT *r, char *txt, int xpos)
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
 	wsprintf (t->pStr, txt);
 	t->CharCount = (COUNT)~0;
-	DrawText (t);
+	font_DrawText (t);
 	TextRect (t, r, NULL_PTR);
 	t->baseline.x += r->extent.width;
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x19), 0x3B));
@@ -174,7 +174,7 @@ PrintCoarseScanPC (void)
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
 	SetContextFont (MicroFont);
-	DrawText (&t);
+	font_DrawText (&t);
 	SetContextFont (TinyFont);
 	ClearSemaphore (GraphicsSem);
 
@@ -195,7 +195,7 @@ PrintCoarseScanPC (void)
 	else
 		wsprintf (buf, "%u.%02u a.u.", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -216,7 +216,7 @@ PrintCoarseScanPC (void)
 			wsprintf (buf, "%u.%02u atm", temp / 100, temp % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -225,7 +225,7 @@ PrintCoarseScanPC (void)
 	PrintScanTitlePC (&t, &r, "Temp: ", LEFT_SIDE_BASELINE_X_PC);
 	wsprintf (buf, "%d^ c", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -237,7 +237,7 @@ PrintCoarseScanPC (void)
 	else
 		wsprintf (buf, "Class %u", pSolarSysState->SysInfo.PlanetInfo.Weather + 1);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -249,7 +249,7 @@ PrintCoarseScanPC (void)
 	else
 	wsprintf (buf, "Class %u", pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	ClearSemaphore (GraphicsSem);
 
 	t.baseline.y = SCAN_BASELINE_Y_PC;
@@ -272,7 +272,7 @@ PrintCoarseScanPC (void)
 			wsprintf (buf, "%lu.%02lu e.s.", tr / 100, tr % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -284,7 +284,7 @@ PrintCoarseScanPC (void)
 	else
 		wsprintf (buf, "%u.%02u e.s.", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -300,7 +300,7 @@ PrintCoarseScanPC (void)
 		wsprintf (buf, "%u.%02u g.", temp / 100, temp % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -319,7 +319,7 @@ PrintCoarseScanPC (void)
 		wsprintf (buf, "%u.%u days", temp / 10, temp % 10);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
 	ClearSemaphore (GraphicsSem);
 
@@ -330,7 +330,7 @@ PrintCoarseScanPC (void)
 		temp = -temp;
 	wsprintf (buf, "%u^", temp);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	ClearSemaphore (GraphicsSem);
 }
 
@@ -404,7 +404,7 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x19), 0x3B));
 	SetContextFont (MicroFont);
-	DrawText (&t);
+	font_DrawText (&t);
 
 	s.origin.x = s.origin.y = 0;
 	s.origin.x = 16 - SAFE_X;
@@ -430,7 +430,7 @@ PrintCoarseScan3DO (void)
 	else
 		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -448,7 +448,7 @@ PrintCoarseScan3DO (void)
 			wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -456,7 +456,7 @@ PrintCoarseScan3DO (void)
 	t.pStr = buf;
 	wsprintf (buf, "%d^", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -465,7 +465,7 @@ PrintCoarseScan3DO (void)
 	wsprintf (buf, "<%u>", pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Weather + 1));
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -477,7 +477,7 @@ PrintCoarseScan3DO (void)
 			) == GAS_GIANT
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1));
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	ClearSemaphore (GraphicsSem);
 
 	t.baseline.x = RIGHT_SIDE_BASELINE_X;
@@ -501,7 +501,7 @@ PrintCoarseScan3DO (void)
 			wsprintf (buf, "%lu.%02lu&", tr / 100, tr % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -512,7 +512,7 @@ PrintCoarseScan3DO (void)
 	else
 		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -527,7 +527,7 @@ PrintCoarseScan3DO (void)
 		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -537,7 +537,7 @@ PrintCoarseScan3DO (void)
 		temp = -temp;
 	wsprintf (buf, "%u^", temp);
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
 	ClearSemaphore (GraphicsSem);
 
@@ -555,7 +555,7 @@ PrintCoarseScan3DO (void)
 		wsprintf (buf, "%u.%u&", temp / 10, temp % 10);
 	}
 	t.CharCount = (COUNT)~0;
-	DrawText (&t);
+	font_DrawText (&t);
 	ClearSemaphore (GraphicsSem);
 }
 
@@ -1066,7 +1066,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 						);
 				break;
 		}
-		DrawText (&t);
+		font_DrawText (&t);
 
 		SetContext (ScanContext);
 		ClearSemaphore (GraphicsSem);

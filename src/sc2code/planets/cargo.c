@@ -53,7 +53,7 @@ ShowRemainingCapacity (void)
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	DrawFilledRectangle (&r);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
-	DrawText (&rt);
+	font_DrawText (&rt);
 	UnbatchGraphics ();
 	
 	SetContext (OldContext);
@@ -105,7 +105,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			ct.pStr = GAME_STRING (CARGO_STRING_BASE);
 			ct.CharCount = (COUNT)~0;
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
-			DrawText (&ct);
+			font_DrawText (&ct);
 
 			SetContextFont (TinyFont);
 		}
@@ -127,11 +127,11 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
 		rt.baseline.x = 32;
 		rt_amount_buf[0] = '$';
-		DrawText (&rt);
+		font_DrawText (&rt);
 
 		rt.baseline.x = 58;
 		rt_amount_buf[0] = '#';
-		DrawText (&rt);
+		font_DrawText (&rt);
 
 		for (OldElement = 0;
 				OldElement < NUM_ELEMENT_CATEGORIES; ++OldElement)
@@ -153,14 +153,14 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 				wsprintf (rt_amount_buf, "%u",
 						GLOBAL (ElementWorth[OldElement]));
 				rt.CharCount = (COUNT)~0;
-				DrawText (&rt);
+				font_DrawText (&rt);
 
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 				rt.baseline.x = 58;
 				wsprintf (rt_amount_buf, "%u",
 						GLOBAL_SIS (ElementAmounts[OldElement]));
 				rt.CharCount = (COUNT)~0;
-				DrawText (&rt);
+				font_DrawText (&rt);
 			}
 
 			cy += 9;
@@ -182,7 +182,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		rt.baseline.x = 58;
 		wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		rt.CharCount = (COUNT)~0;
-		DrawText (&rt);
+		font_DrawText (&rt);
 
 		r.corner.x = 4;
 		r.corner.y = 117;
@@ -199,7 +199,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			lt.align = ALIGN_LEFT;
 			lt.pStr = GAME_STRING (CARGO_STRING_BASE + 1);
 			lt.CharCount = (COUNT)~0;
-			DrawText (&lt);
+			font_DrawText (&lt);
 		}
 
 		ShowRemainingCapacity ();
@@ -229,14 +229,14 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			rt.baseline.x = 32;
 			wsprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[OldElement]));
 			rt.CharCount = (COUNT)~0;
-			DrawText (&rt);
+			font_DrawText (&rt);
 			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[OldElement]));
 		}
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		rt.baseline.x = 58;
 		rt.CharCount = (COUNT)~0;
-		DrawText (&rt);
+		font_DrawText (&rt);
 	}
 
 	if (NewElement != (BYTE)~0)
@@ -259,14 +259,14 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			rt.baseline.x = 32;
 			wsprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[NewElement]));
 			rt.CharCount = (COUNT)~0;
-			DrawText (&rt);
+			font_DrawText (&rt);
 			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[NewElement]));
 		}
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
 		rt.baseline.x = 58;
 		rt.CharCount = (COUNT)~0;
-		DrawText (&rt);
+		font_DrawText (&rt);
 	}
 
 	UnbatchGraphics ();

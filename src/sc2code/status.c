@@ -134,7 +134,7 @@ DrawBattleCrewAmount (BOOLEAN CountPlayer)
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
 	DrawFilledRectangle (&r);
 	SetContextForeGroundColor (BLACK_COLOR);
-	DrawText (&t);
+	font_DrawText (&t);
 }
 
 void
@@ -249,7 +249,7 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 			DrawBattleCrewAmount (TRUE);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
 			SetContextFont (TinyFont);
-			DrawText (&t);
+			font_DrawText (&t);
 		}
 	}
 

@@ -196,7 +196,7 @@ SaveProblemMessage (STAMP *MsgStamp)
 		if (*t.pStr == '\0')
 			break;
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 11;
 	}
 	UnbatchGraphics ();

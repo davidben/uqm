@@ -89,7 +89,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			ct.pStr = GAME_STRING (DEVICE_STRING_BASE);
 			ct.CharCount = (COUNT)~0;
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
-			DrawText (&ct);
+			font_DrawText (&ct);
 
 			SetContextFont (TinyFont);
 		}
@@ -119,11 +119,11 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 				t.baseline.y = cy;
 				t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
 				t.CharCount = lpstrchr (t.pStr, ' ');
-				DrawText (&t);
+				font_DrawText (&t);
 				t.baseline.y += 7;
 				t.pStr += t.CharCount + 1;
 				t.CharCount = (COUNT)~0;
-				DrawText (&t);
+				font_DrawText (&t);
 			}
 
 			cy += 18;
@@ -148,11 +148,11 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
 		t.CharCount = lpstrchr (t.pStr, ' ');
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 7;
 		t.pStr += t.CharCount + 1;
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 
 	if (NewDevice < NUM_DEVICES)
@@ -166,11 +166,11 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[NewDevice] + DEVICE_STRING_BASE + 1);
 		t.CharCount = lpstrchr (t.pStr, ' ');
-		DrawText (&t);
+		font_DrawText (&t);
 		t.baseline.y += 7;
 		t.pStr += t.CharCount + 1;
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 
 	ClearSemaphore (GraphicsSem);

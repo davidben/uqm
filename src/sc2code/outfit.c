@@ -75,7 +75,7 @@ DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
 		wsprintf (buf, "%u", GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
 	SetContext (OldContext);

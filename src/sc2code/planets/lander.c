@@ -1299,13 +1299,13 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 
 			pPSD->MineralText[0].baseline.x -= dx;
 			pPSD->MineralText[0].baseline.y -= dy;
-			DrawText (&pPSD->MineralText[0]);
+			font_DrawText (&pPSD->MineralText[0]);
 			pPSD->MineralText[1].baseline.x = pPSD->MineralText[0].baseline.x;
 			pPSD->MineralText[1].baseline.y = pPSD->MineralText[0].baseline.y + 7;
-			DrawText (&pPSD->MineralText[1]);
+			font_DrawText (&pPSD->MineralText[1]);
 			pPSD->MineralText[2].baseline.x = pPSD->MineralText[1].baseline.x;
 			pPSD->MineralText[2].baseline.y = pPSD->MineralText[1].baseline.y + 7;
-			DrawText (&pPSD->MineralText[2]);
+			font_DrawText (&pPSD->MineralText[2]);
 		}
 	}
 

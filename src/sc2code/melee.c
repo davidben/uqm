@@ -330,8 +330,8 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 
 		SetContextForeGroundColor (HiLiteState == 0
 				? TEAM_NAME_TEXT_COLOR : TEAM_NAME_EDIT_TEXT_COLOR);
-		DrawText (&lfText);
-		DrawText (&rtText);
+		font_DrawText (&lfText);
+		font_DrawText (&rtText);
 	}
 	else
 	{
@@ -369,7 +369,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		DrawFilledRectangle (&text_r);
 
 		SetContextForeGroundColor (BLACK_COLOR); // TEAM_NAME_EDIT_TEXT_COLOR);
-		DrawText (&lfText);
+		font_DrawText (&lfText);
 	}
 	UnbatchGraphics ();
 }
@@ -594,19 +594,19 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 		{
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 0);  // "Empty"
 			t.CharCount = (COUNT)~0;
-			DrawText (&t);
+			font_DrawText (&t);
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 1);  // "Slot"
 		}
 		else
 		{
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 2);  // "Team"
 			t.CharCount = (COUNT)~0;
-			DrawText (&t);
+			font_DrawText (&t);
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 3);  // "Name"
 		}
 		t.baseline.y += TINY_TEXT_HEIGHT;
 		t.CharCount = (COUNT)~0;
-		DrawText (&t);
+		font_DrawText (&t);
 	}
 	else
 	{
@@ -750,12 +750,12 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 				? BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
 				: BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00)
 				);
-		DrawText (&Text);
+		font_DrawText (&Text);
 
 		rtText.baseline.y = Text.baseline.y;
 		wsprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot]));
 		rtText.CharCount = (COUNT)~0;
-		DrawText (&rtText);
+		font_DrawText (&rtText);
 	}
 	else
 	{
@@ -794,12 +794,12 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					Text.pStr = pMS->FileList[bot - top].TeamName;
 					Text.CharCount = (COUNT)~0;
 					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00));
-					DrawText (&Text);
+					font_DrawText (&Text);
 
 					rtText.baseline.y = Text.baseline.y;
 					wsprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot - top]));
 					rtText.CharCount = (COUNT)~0;
-					DrawText (&rtText);
+					font_DrawText (&rtText);
 				}
 
 				s.origin.x = Text.baseline.x + 1;
