@@ -17,6 +17,7 @@
 // Contains file handling code
 
 #ifndef _FILE_H
+#define _FILE_H
 
 #include "port.h"
 
