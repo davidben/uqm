@@ -22,10 +22,12 @@
 #include "options.h"
 #include "setup.h"
 #include "sounds.h"
+#include "libs/gfxlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
 
+#define MENU_BKG "lbm/setupmenu.ani"
 
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);
@@ -52,6 +54,7 @@ typedef struct {
 } MENU_CATEGORY;
 
 static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
+static STAMP bkgStamp = { {0, 0}, NULL };
 
 static OPTION scaler_opts[] = {
 	{ "None",
@@ -200,11 +203,6 @@ static OPTION resdriver_opts[] = {
 };
 
 static OPTION bpp_opts[] = {
-	{ "8",
-		{ "8-bit paletted display.",
-		  "",
-		  ""
-		} },
 	{ "16",
 		{ "16-bit color depth.",
 		  "",
@@ -237,7 +235,7 @@ static const char **tooltip;
 
 static MENU_CATEGORY cmdline_opts[] = {
 	{ "Resolution", RES_OPTS, resdriver_opts, 0 },
-	{ "Color depth", 4, bpp_opts, 0 },
+	{ "Color depth", 3, bpp_opts, 0 },
 	{ "Scaler", 5, scaler_opts, 0 },
   	{ "Scanlines", 2, scanlines_opts, 0 },
 	{ "Menu Style", 2, menu_opts, 0 },
@@ -290,7 +288,7 @@ static void
 DrawMenu (PSETUP_MENU_STATE pInputState)
 {
 	RECT r;
-	COLOR bg, dark, medium, title, oldtext;
+	COLOR title, oldtext;
 	COLOR inactive, default_color, selected;
 	FONT  oldfont = SetContextFont (StarConFont);
 	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
@@ -303,16 +301,19 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 	r.extent.width = SCREEN_WIDTH - 4;
 	r.extent.height = SCREEN_HEIGHT - 4;
 	
-	dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x01);
-	medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
-	bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x09);
-
 	title = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
 	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x18), 0x07);
+	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
 	default_color = title;
 	
-	DrawShadowedBox(&r, bg, dark, medium);
+	if (!bkgStamp.frame)
+	{
+		bkgStamp.origin.x = 0;
+		bkgStamp.origin.y = 0;
+		bkgStamp.frame = CaptureDrawable (LoadCelFile (MENU_BKG));
+	}
+
+	DrawStamp (&bkgStamp);
 	
 	oldtext = SetContextForeGroundColor (title);
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -344,7 +345,7 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 		}
 		else
 		{
-			SetContextForeGroundColor (inactive);
+			SetContextForeGroundColor (title);
 		}
 		font_DrawText (&t);
 
@@ -395,94 +396,71 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 static BOOLEAN
 DoSetupMenu (PSETUP_MENU_STATE pInputState)
 {
+	int opt, cat;
+	MENU_CATEGORY *menu = cmdline_opts;
+
 	if (!pInputState->initialized) 
 	{
 		SetDefaultMenuRepeatDelay ();
-		pInputState->anim_frame_count = NUM_STEPS;
-		pInputState->initialized = TRUE;
+		SetTransitionSource (NULL);
 		pInputState->NextTime = GetTimeCounter ();
 		pInputState->category = 0;
-		pInputState->option = 0;
 		SetDefaults ();
+		pInputState->option = menu[0].selected;
 	}
 	
 	BatchGraphics ();
-	if (pInputState->anim_frame_count)
+	DrawMenu (pInputState);
+	cat = pInputState->category;
+	opt = pInputState->option;
+
+	if (PulsedInputState.key[KEY_MENU_UP])
 	{
-		RECT r;
-		COLOR bg, dark, medium;
-		int frame;
-
-		pInputState->anim_frame_count -= 3;
-		if (pInputState->anim_frame_count < 0)
+		cat--;
+		if (cat < 0)
 		{
-			pInputState->anim_frame_count = 0;
+			cat = NUM_OPTS-1;
 		}
-		frame = pInputState->anim_frame_count;
-		
-		r.corner.x = ((frame * X_STEP) >> 1) + 2;
-		r.corner.y = ((frame * Y_STEP) >> 1) + 2;
-		r.extent.width = X_STEP * (NUM_STEPS - frame) - 4;
-		r.extent.height = Y_STEP * (NUM_STEPS - frame) - 4;
-
-		dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x01);
-		medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
-		bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x09);
-
-		DrawShadowedBox (&r, bg, dark, medium);
+		/* Preserve column if possible */
+		opt = menu[cat].selected;
 	}
-	else
+	else if (PulsedInputState.key[KEY_MENU_DOWN])
 	{
-		int opt, cat;
-		MENU_CATEGORY *menu = cmdline_opts;
-		DrawMenu (pInputState);
-
-		cat = pInputState->category;
-		opt = pInputState->option;
-
-		if (PulsedInputState.key[KEY_MENU_UP])
+		cat++;
+		if (cat >= NUM_OPTS)
 		{
-			cat--;
-			if (cat < 0)
-			{
-				cat = NUM_OPTS-1;
-			}
-			/* Preserve column if possible */
-			opt = menu[cat].selected;
+			cat = 0;
 		}
-		else if (PulsedInputState.key[KEY_MENU_DOWN])
+		opt = menu[cat].selected;
+	}
+	else if (PulsedInputState.key[KEY_MENU_LEFT])
+	{
+		opt--;
+		if (opt < 0)
 		{
-			cat++;
-			if (cat >= NUM_OPTS)
-			{
-				cat = 0;
-			}
-			opt = menu[cat].selected;
-		}
-		else if (PulsedInputState.key[KEY_MENU_LEFT])
+			opt = menu[cat].numopts - 1;
+		}	
+	}
+	else if (PulsedInputState.key[KEY_MENU_RIGHT])
+	{
+		opt++;
+		if (opt >= menu[cat].numopts)
 		{
-			opt--;
-			if (opt < 0)
-			{
-				opt = menu[cat].numopts - 1;
-			}	
-		}
-		else if (PulsedInputState.key[KEY_MENU_RIGHT])
-		{
-			opt++;
-			if (opt >= menu[cat].numopts)
-			{
-				opt = 0;
-			}	
-		}
-		pInputState->category = cat;
-		pInputState->option = opt;
-		if (PulsedInputState.key[KEY_MENU_SELECT])
-		{
-			cmdline_opts[cat].selected = opt;
-		}
+			opt = 0;
+		}	
+	}
+	pInputState->category = cat;
+	pInputState->option = opt;
+	if (PulsedInputState.key[KEY_MENU_SELECT])
+	{
+		cmdline_opts[cat].selected = opt;
 	}
 
+	if (!pInputState->initialized) 
+	{
+		pInputState->initialized = TRUE;
+		ScreenTransition (3, NULL);
+	}
 	UnbatchGraphics ();
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
@@ -537,9 +515,6 @@ GetGlobalOptions (GLOBALOPTS *opts)
 
 	switch (ScreenColorDepth) 
 	{
-	case 8:
-		opts->depth = OPTVAL_8;
-		break;
 	case 16:
 		opts->depth = OPTVAL_16;
 		break;
@@ -638,9 +613,6 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	}
 
 	switch (opts->depth) {
-	case OPTVAL_8:
-		NewDepth = 8;
-		break;
 	case OPTVAL_16:
 		NewDepth = 16;
 		break;

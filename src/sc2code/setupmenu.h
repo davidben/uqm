@@ -47,7 +47,6 @@ typedef enum {
 } OPT_RESDRIVERTYPE;
 
 typedef enum {
-	OPTVAL_8,
 	OPTVAL_16,
 	OPTVAL_24,
 	OPTVAL_32
