@@ -27,8 +27,6 @@
 #include <stdio.h>
 #include "lzh.h"
 
-#define DEBUG
-
 static UWORD match_position, match_length;
 static PSWORD lson, rson, dad;
 
