@@ -39,7 +39,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	img = (TFB_Image *) ((BYTE *) SrcFramePtr + SrcFramePtr->DataOffs);
 	
-	SDL_mutexP (img->mutex);
+	LockMutex (img->mutex);
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -172,7 +172,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 			_CurFramePtr->DataOffs));
 		
-		SDL_mutexP (dst_img->mutex);
+		LockMutex (dst_img->mutex);
 
 		SDL_SrcRect.x = (short) img->NormalImg->clip_rect.x;
 		SDL_SrcRect.y = (short) img->NormalImg->clip_rect.y;
@@ -191,10 +191,10 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			&SDL_DstRect
 		);
 		
-		SDL_mutexV (dst_img->mutex);
+		UnlockMutex (dst_img->mutex);
 	}
 
-	SDL_mutexV (img->mutex);
+	UnlockMutex (img->mutex);
 }
 
 static void
@@ -244,7 +244,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 				_CurFramePtr->DataOffs));
 
-		SDL_mutexP (img->mutex);
+		LockMutex (img->mutex);
 
 		SDLRect.x = (short) (pClipRect->corner.x -
 				GetFrameHotX (_CurFramePtr));
@@ -255,7 +255,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 		SDL_FillRect (img->NormalImg, &SDLRect, SDL_MapRGB (img->NormalImg->format, r, g, b));
 
-		SDL_mutexV (img->mutex);
+		UnlockMutex (img->mutex);
 	}
 }
 

@@ -20,13 +20,13 @@
 #define SDL_COMMON_H
 
 #include "SDL.h"
-#include "SDL_thread.h"
 #include "SDL_image.h"
 
 #include "libs/graphics/gfxintrn.h"
 #include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/input/sdl/input.h"
+#include "libs/threadlib.h"
 
 extern SDL_Surface *SDL_Video;
 extern SDL_Surface *SDL_Screen;
@@ -45,9 +45,9 @@ typedef struct tfb_image
 	SDL_Surface *ScaledImg;
 	SDL_Color *Palette;
 	int scale;
-	SDL_mutex *mutex;
+	Mutex mutex;
 	UBYTE pad[sizeof(TFB_ImageStruct)-sizeof(SDL_Surface*)-sizeof(SDL_Surface*)-
-		sizeof(SDL_Color*)-sizeof(int)-sizeof(SDL_mutex*)];
+		sizeof(SDL_Color*)-sizeof(int)-sizeof(Mutex)];
 } TFB_Image;
 
 TFB_Image *TFB_LoadImage (SDL_Surface *img);

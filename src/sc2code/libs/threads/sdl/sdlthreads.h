@@ -67,5 +67,15 @@ extern int SDLWrapper_TimeoutSetSemaphore (Semaphore sem,
 #define NativeClearSemaphore(sem) \
 		SDL_SemPost ((sem))
 
+typedef SDL_mutex *NativeMutex;
+#define NativeCreateMutex() \
+		SDL_CreateMutex ()
+#define NativeDestroyMutex(mutex) \
+		SDL_DestroyMutex ((mutex))
+#define NativeLockMutex(mutex) \
+		SDL_mutexP ((mutex))
+#define NativeUnlockMutex(mutex) \
+		SDL_mutexV ((mutex))
+
 #endif  /* _SDLTHREAD_H */
 

@@ -222,10 +222,11 @@ CreateThreadAux (ThreadFunction func, void *data, SDWORD stackSize
 /* 17 Sep: Added a TFB_BatchReset call.  If a thread is killed while
  *         batching stuff, we don't want this to freeze the game.
  *         Better safe than sorry!  --Michael
+ *         TEMPORARY (TODO: handle decently)
  */
 void
 KillThread (Thread thread)
-{	
+{
 	TFB_BatchReset ();
 	NativeKillThread (thread->native);
 #ifdef DEBUG_THREADS
@@ -306,9 +307,7 @@ DestroySemaphore (Semaphore sem)
 int
 SetSemaphore (Semaphore sem)
 {
-	int result;
-	result = NativeSetSemaphore ((NativeSemaphore) sem);
-	return result;
+	return NativeSetSemaphore ((NativeSemaphore) sem);
 }
 
 int
@@ -328,6 +327,30 @@ void
 ClearSemaphore (Semaphore sem)
 {
 	NativeClearSemaphore ((NativeSemaphore) sem);
+}
+
+Mutex
+CreateMutex ()
+{
+	return (Mutex) NativeCreateMutex ();
+}
+
+void
+DestroyMutex (Mutex sem)
+{
+	NativeDestroyMutex ((NativeMutex) sem);
+}
+
+int
+LockMutex (Mutex sem)
+{
+	return NativeLockMutex ((NativeMutex) sem);
+}
+
+void
+UnlockMutex (Mutex sem)
+{
+	NativeUnlockMutex ((NativeMutex) sem);
 }
 
 

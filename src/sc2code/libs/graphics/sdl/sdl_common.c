@@ -132,7 +132,7 @@ TFB_LoadImage (SDL_Surface *img)
 	TFB_Image *myImage;
 
 	myImage = (TFB_Image*) HMalloc (sizeof (TFB_Image));
-	myImage->mutex = SDL_CreateMutex();
+	myImage->mutex = CreateMutex();
 	myImage->ScaledImg = NULL;
 	myImage->Palette = NULL;
 	
@@ -373,7 +373,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 		DC_image = (TFB_Image*) DC.image;
 		if (DC_image)
-			SDL_mutexP (DC_image->mutex);
+			LockMutex (DC_image->mutex);
 		
 		switch (DC.Type)
 		{
@@ -522,8 +522,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			if (DC_image->Palette)
 				HFree (DC_image->Palette);
 
-			SDL_mutexV (DC_image->mutex);
-			SDL_DestroyMutex (DC_image->mutex);
+			UnlockMutex (DC_image->mutex);
+			DestroyMutex (DC_image->mutex);
 			
 			HFree (DC_image);
 			DC_image = 0;
@@ -531,7 +531,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 		
 		if (DC_image)
-			SDL_mutexV (DC_image->mutex);
+			UnlockMutex (DC_image->mutex);
 	}
 	
 	if (livelock_deterrence)

@@ -53,6 +53,10 @@
 #	endif
 #endif
 
+extern void InitThreadSystem (void);
+extern void UnInitThreadSystem (void);
+
+
 typedef int (*ThreadFunction) (void *);
 
 typedef struct Thread {
@@ -67,11 +71,6 @@ typedef struct Thread {
 	struct Thread *next;
 #endif
 } *Thread;
-
-typedef void *Semaphore;
-
-extern void InitThreadSystem (void);
-extern void UnInitThreadSystem (void);
 
 #ifdef THREAD_NAMES
 extern Thread CreateThreadAux (ThreadFunction func, void *data,
@@ -90,6 +89,7 @@ extern void SleepThreadUntil (TimeCount wakeTime);
 extern void TaskSwitch (void);
 extern void WaitThread (Thread thread, int *status);
 
+typedef void *Semaphore;
 extern Semaphore CreateSemaphore (DWORD initial);
 extern void DestroySemaphore (Semaphore sem);
 extern int SetSemaphore (Semaphore sem);
@@ -99,6 +99,13 @@ extern void ClearSemaphore (Semaphore sem);
 #ifdef PROFILE_THREADS
 extern void PrintThreadsStats (void);
 #endif  /* PROFILE_THREADS */
+
+typedef void *Mutex;
+extern Mutex CreateMutex (void);
+extern void DestroyMutex (Mutex sem);
+extern int LockMutex (Mutex sem);
+extern void UnlockMutex (Mutex sem);
+
 
 #endif  /* _THREADLIB_H */
 
