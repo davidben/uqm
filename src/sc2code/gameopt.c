@@ -34,7 +34,7 @@ void SaveProblem (void);
 #define SUMMARY_X_OFFS 14
 #define SUMMARY_SIDE_OFFS 7
 #define MAX_NAME_CHARS 15
-#define SAVES_PER_PAGE 5  //Should divide evenly into MAX_SAVED_GAMES for 'Per-Page' Scrolling
+#define SAVES_PER_PAGE 5
 
 static PMENU_STATE pLocMenuState;
 static BYTE prev_save; //keeps track of the last slot that was saved or loaded
@@ -1159,30 +1159,8 @@ ChangeGameSelection:
 			pMS->CurState = NewState;
 			ShowSummary (&((SUMMARY_DESC *)pMS->CurString)[pMS->CurState]);
 
-			if (LastActivity == CHECK_LOAD)
-			{
-				BYTE clut_buf[] = {FadeAllToColor};
-
-				UnbatchGraphics ();
-
-				LastActivity = 0;
-				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
-			}
-			else
-			{
-				if (first_time)
-				{
-					r.corner.x = SIS_ORG_X;
-					r.corner.y = SIS_ORG_Y;
-					r.extent.width = SIS_SCREEN_WIDTH;
-					r.extent.height = SIS_SCREEN_HEIGHT;
-
-					ScreenTransition (3, &r);
-				}
-				UnbatchGraphics ();
-			}
 			SetContextFont (TinyFont);
-			r.extent.width = 230;
+			r.extent.width = 240;
 			r.extent.height = 65;
 			r.corner.x = 1;
 			r.corner.y = 160;
@@ -1207,7 +1185,7 @@ ChangeGameSelection:
 			else         // 'Per-Page'  Scrolling
 #endif
 				SHIFT = NewState - ((NewState / SAVES_PER_PAGE) * SAVES_PER_PAGE);
-			for (i = 0; i < SAVES_PER_PAGE; i++)
+			for (i = 0; i < SAVES_PER_PAGE && NewState - SHIFT + i < MAX_SAVED_GAMES; i++)
 			{
 				SetContextForeGroundColor ((i == SHIFT) ?
 						(BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)):
@@ -1215,14 +1193,16 @@ ChangeGameSelection:
 				r.extent.width = 15;
 				if (MAX_SAVED_GAMES > 99)
 					r.extent.width += 5;
-				r.extent.height = 9;
+				r.extent.height = 11;
 				r.corner.x = 8;
-				r.corner.y = 161 + (i * 13);
+				r.corner.y = 160 + (i * 13);
 				DrawRectangle (&r);
 
 				t.baseline.x = r.corner.x + 3;
-				t.baseline.y = r.corner.y + 7;
+				t.baseline.y = r.corner.y + 8;
 				wsprintf (buf, "%02i", NewState - SHIFT + i);
+				if (MAX_SAVED_GAMES > 99)
+					wsprintf (buf, "%03i", NewState - SHIFT + i);
 				font_DrawText (&t);
 
 				r.extent.width = 204 - SAFE_X;
@@ -1241,6 +1221,28 @@ ChangeGameSelection:
 					wsprintf (buf, "Saved Game - Date: %s",buf2);
 				}
 				font_DrawText (&t);
+			}
+			if (LastActivity == CHECK_LOAD)
+			{
+				BYTE clut_buf[] = {FadeAllToColor};
+
+				UnbatchGraphics ();
+
+				LastActivity = 0;
+				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
+			}
+			else
+			{
+				if (first_time)
+				{
+					r.corner.x = SIS_ORG_X;
+					r.corner.y = SIS_ORG_Y;
+					r.extent.width = SIS_SCREEN_WIDTH;
+					r.extent.height = SIS_SCREEN_HEIGHT;
+
+					ScreenTransition (3, &r);
+				}
+				UnbatchGraphics ();
 			}
 			SetFlashRect (0, (FRAME)0);
 			UnlockCrossThreadMutex (GraphicsLock);
