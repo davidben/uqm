@@ -106,6 +106,8 @@ Glitches (don't crash the game, medium priority):
 - When getting the planetary reports on the surface (atleast Moon),
   when changing pages at the 'more' prompt, commas are not erased completely
   (due to being out of char box or so), thus leaving highlighted pixels
+- The 3DO image for the Precursor ship is used for the 'upgrade starbase',
+  while the PC image is better (no cut-off nose).
 
 
 Implementation bugs (low priority):
@@ -171,6 +173,7 @@ Stuff still to do (medium size):
 - planet surface smoothing
 - Proper uninitialization of everything when quitting
   - Currently pretty nonexistant, got only some atexit callbacks
+- Option to display the planet statistics as text instead of images?
 
 Stuff still to do (small):
 - make sure save files are independant of endianness, so that Mac savefiles

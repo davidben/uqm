@@ -73,3 +73,8 @@ The bugs reported but not yet verified:
 - "The laser beam for the Arilou ship should be white (I think) but it is
   displayed as yellow in UQM."
 
+- "When attempting to purchase something with an insufficient amount of
+  credits, it will say "You need [#] additional credits." when it should say
+  "You need [#] credits." (eg. for new technology, it says "You need 150
+  additional credits." no matter how many you have between 1-149.)"
+
