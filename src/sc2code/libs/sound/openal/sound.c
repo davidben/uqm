@@ -196,13 +196,13 @@ void SetSFXVolume (float volume)
 	int i;
 	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
 	{
-		alSourcef (soundSource[i].handle, AL_GAIN, sfxVolumeScale);
+		alSourcef (soundSource[i].handle, AL_GAIN, volume);
 	}	
 }
 
 void SetSpeechVolume (float volume)
 {
-	alSourcef (soundSource[SPEECH_SOURCE].handle, AL_GAIN, speechVolumeScale);
+	alSourcef (soundSource[SPEECH_SOURCE].handle, AL_GAIN, volume);
 }
 
 
