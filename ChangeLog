@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Added an improved version of biadapt scaling filter,
+  working name "biadv" (use --scale=biadv) -fOSSiL
 - Removed SDL_mixer sound module
 - TFB_FlushGraphics keeps track of smallest bounding box that requires
   updating, allowing for faster scaling
