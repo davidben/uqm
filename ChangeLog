@@ -1,4 +1,6 @@
 0.2:
+- Planet scan is now cleared correctly, from l0ci
+- Flagship modules are now drawn correctly instead of one pix left, from l0ci
 - Planet code fixes, from PhracturedBlue
 - Build fixes for FreeBSD, from Max Horn.
 - Fixed typo in Thraddash text, from Dan Plimak.
