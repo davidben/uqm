@@ -34,6 +34,7 @@
 #include "wav.h"
 #include "libs/sound/sound_common.h"
 #include "mikmod/mikmod.h"
+#include "dukaud.h"
 
 extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
 		// Can't '#include "libs/file.h"' due to some type conflicts.
@@ -44,6 +45,7 @@ static char *decoder_info_wav = "Wav";
 static char *decoder_info_mod = "MikMod";
 static char *decoder_info_ogg = "Ogg Vorbis";
 static char *decoder_info_nul = "None";
+static char *decoder_info_duk = "DukAud";
 
 TFB_DecoderFormats decoder_formats;
 
@@ -231,7 +233,7 @@ TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		mod->panflag = 1;
 		mod->wrap = 0;
 		mod->loop = 1;
-		
+
 		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
 		decoder->buffer = HMalloc (buffer_size);
 		decoder->buffer_size = buffer_size;
@@ -330,6 +332,43 @@ TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 		decoder->data = vf;
+
+		return decoder;
+	}
+	else if (!strcmp (&filename[i], "duk"))
+	{
+		TFB_SoundDecoder *decoder;
+		DukAud_Track* track;
+
+		track = duka_openTrack (dir, filename);
+		if (!track)
+		{
+			fprintf (stderr, "SoundDecoder_Load(): couldn't load %s\n", filename);
+			return NULL;
+		}
+
+		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
+		decoder->buffer = HMalloc (buffer_size);
+		decoder->buffer_size = buffer_size;
+		decoder->frequency = track->rate;
+		decoder->looping = false;
+		decoder->error = SOUNDDECODER_OK;
+		decoder->length = track->length - (startTime / 1000.0f);
+		decoder->start_sample = 0;
+		decoder->end_sample = 0;
+		decoder->pos = 0;
+		
+		if (track->channels == 1)
+			decoder->format = decoder_formats.mono16;
+		else
+			decoder->format = decoder_formats.stereo16;
+
+		decoder->decoder_info = decoder_info_duk;
+		decoder->type = SOUNDDECODER_DUK;
+		decoder->dir = dir;
+		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
+		strcpy (decoder->filename, filename);
+		decoder->data = track;
 
 		return decoder;
 	}
@@ -470,6 +509,37 @@ uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
 			return decoded_bytes;
 		}
+		case SOUNDDECODER_DUK:
+		{
+			DukAud_Track *track = (DukAud_Track *) decoder->data;
+			uint32 decoded_bytes = 0;
+			sint32 rc;
+
+			rc = duka_readData (track, decoder->buffer, decoder->buffer_size);
+			if (rc < 0)
+			{
+				decoder->error = SOUNDDECODER_ERROR;
+				fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %d\n", decoder->filename, rc);
+				return decoded_bytes;
+			}
+			decoded_bytes = rc;
+			decoder->pos += decoded_bytes;
+			decoder->error = rc > 0 ? SOUNDDECODER_OK : SOUNDDECODER_EOF;
+			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
+			
+			/* DukAud produces output in machine byte-order
+			 * may need to do a word-swap 
+			 */
+			if (decoded_bytes > 0 &&
+					decoder_formats.big_endian != decoder_formats.want_big_endian &&
+					(decoder->format == decoder_formats.stereo16 ||
+					decoder->format == decoder_formats.mono16))
+			{
+				SoundDecoder_SwapWords (
+						decoder->buffer, decoded_bytes);
+			}
+			return decoded_bytes;
+		}
 		case SOUNDDECODER_NULL:
 		{
 			uint32 max_bytes;
@@ -591,6 +661,11 @@ uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 			return decoded_bytes;
 			break;
 		}
+		case SOUNDDECODER_DUK:
+		{
+			fprintf (stderr, "SoundDecoder_DecodeAll(): unimplemented for duk\n");
+			break;
+		}
 		case SOUNDDECODER_NULL:
 		{
 			decoder->error = SOUNDDECODER_OK;
@@ -656,6 +731,24 @@ void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
+		case SOUNDDECODER_DUK:
+		{
+			DukAud_Track* track = (DukAud_Track*) decoder->data;
+			
+			if (duka_seekTrack (track, (float)seekTime / 1000.0f))
+			{
+				decoder->pos = seekTime * decoder->frequency * 2 / 1000;
+				if (decoder->format == decoder_formats.stereo16)
+					decoder->pos *= 2;
+			}
+			else
+			{
+				fprintf (stderr, "SoundDecoder_Seek(): couldn't seek %s to %u\n", decoder->filename, seekTime);
+				break;
+			}
+			decoder->error = SOUNDDECODER_OK;
+			return;
+		}
 		case SOUNDDECODER_BUF:
 		{
 			uint32 pcm_pos = seekTime * decoder->frequency / 1000;
@@ -714,6 +807,13 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 			HFree (vf);
 			break;
 		}
+		case SOUNDDECODER_DUK:
+		{
+			DukAud_Track* track = (DukAud_Track*) decoder->data;
+			//fprintf (stderr, "SoundDecoder_Free(): freeing %s\n", decoder->filename);
+			duka_closeTrack (track);
+			break;
+		}
 		case SOUNDDECODER_BUF:
 			break;
 		case SOUNDDECODER_NULL:
@@ -750,6 +850,7 @@ float SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
 			return 0.0f;
 		}
 		case SOUNDDECODER_OGG:
+		case SOUNDDECODER_DUK:
 		case SOUNDDECODER_BUF:
 		case SOUNDDECODER_NULL:
 		{
@@ -766,4 +867,48 @@ float SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
 			return 0.0f;
 		}
 	}
+}
+
+uint32
+SoundDecoder_GetFrame (TFB_SoundDecoder *decoder)
+{
+	uint32 frame = 0;
+
+	if (!decoder)
+		return 0;
+
+	switch (decoder->type)
+	{
+		case SOUNDDECODER_MOD:
+		{
+			MODULE *mod = (MODULE *) decoder->data;
+			frame = mod->sngpos;
+			break;
+		}
+		case SOUNDDECODER_OGG:
+		{
+			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
+			// this is the closest to a frame there is in ogg vorbis stream
+			// doesn't seem to be a func to retrive it
+			frame = vf->os.pageno;
+			break;
+		}
+		case SOUNDDECODER_DUK:
+		{
+			DukAud_Track* track = (DukAud_Track*) decoder->data;
+			frame = duka_getFrame (track);
+			break;
+		}
+		case SOUNDDECODER_WAV:
+		case SOUNDDECODER_BUF:
+		case SOUNDDECODER_NULL:
+			break;
+		default:
+		{
+			fprintf (stderr, "SoundDecoder_GetFrame(): unknown type %d\n", decoder->type);
+			break;
+		}
+	}
+
+	return frame;
 }

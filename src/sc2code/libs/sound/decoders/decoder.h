@@ -79,6 +79,7 @@ enum
 	SOUNDDECODER_OGG,
 	SOUNDDECODER_NULL,
 	SOUNDDECODER_BUF,
+	SOUNDDECODER_DUK,
 };
 
 extern TFB_DecoderFormats decoder_formats;
@@ -90,6 +91,7 @@ TFB_SoundDecoder* SoundDecoder_Load (uio_DirHandle *dir,
 uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
 float SoundDecoder_GetTime (TFB_SoundDecoder *decoder);
+uint32 SoundDecoder_GetFrame (TFB_SoundDecoder *decoder);
 void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 pcm_pos);
 void SoundDecoder_Rewind (TFB_SoundDecoder *decoder);
 void SoundDecoder_Free (TFB_SoundDecoder *decoder);
