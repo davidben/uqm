@@ -48,6 +48,10 @@ static int joycount;
 static keypool *pool;
 static VControl_NameBinding *nametable;
 
+/* Statistics variables - set by VControl_ReadConfiguration */
+
+static int version, errors, validlines;
+
 static keypool *
 _allocate_key_chunk (void)
 {
@@ -215,16 +219,18 @@ VControl_Uninit (void)
 	_name_uninit ();
 }
 
-void
+int
 VControl_SetJoyThreshold (int port, int threshold)
 {
 	if (port >= 0 && port < joycount)
 	{
 		joysticks[port].threshold = threshold;
+		return 0;
 	}
 	else
 	{
 		fprintf (stderr, "VControl_SetJoyThreshold passed illegal port %d\n", port);
+		return -1;
 	}
 }
 
@@ -278,7 +284,7 @@ _add_binding (keybinding **newptr, int *target)
 	/* Sanity check. */
 	if (!newbinding)
 	{
-		fprintf (stderr, "VControl_AddKeyBinding failed to find a free binding slot!\n");
+		fprintf (stderr, "_add_binding failed to find a free binding slot!\n");
 		return;
 	}
 
@@ -344,19 +350,77 @@ _deactivate (keybinding *i)
 	}
 }
 
-void
-VControl_AddKeyBinding (int symbol, int *target)
+int
+VControl_AddBinding (SDL_Event *e, int *target)
 {
-	_add_binding(&bindings[symbol], target);
+	int result;
+	switch (e->type)
+	{
+	case SDL_KEYDOWN:
+		result = VControl_AddKeyBinding (e->key.keysym.sym, target);
+		break;
+	case SDL_JOYAXISMOTION:
+		result = VControl_AddJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
+		break;
+	case SDL_JOYHATMOTION:
+		result = VControl_AddJoyHatBinding (e->jhat.which, e->jhat.hat, e->jhat.value, target);
+		break;
+	case SDL_JOYBUTTONDOWN:
+		result = VControl_AddJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
+		break;
+	default:
+		fprintf (stderr, "VControl_AddBinding didn't understand argument event\n");
+		result = -1;
+		break;
+	}
+	return result;
 }
 
 void
-VControl_RemoveKeyBinding (int symbol, int *target)
+VControl_RemoveBinding (SDL_Event *e, int *target)
 {
+	switch (e->type)
+	{
+	case SDL_KEYDOWN:
+		VControl_RemoveKeyBinding (e->key.keysym.sym, target);
+		break;
+	case SDL_JOYAXISMOTION:
+		VControl_RemoveJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
+		break;
+	case SDL_JOYHATMOTION:
+		VControl_RemoveJoyHatBinding (e->jhat.which, e->jhat.hat, e->jhat.value, target);
+		break;
+	case SDL_JOYBUTTONDOWN:
+		VControl_RemoveJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
+		break;
+	default:
+		fprintf (stderr, "VControl_RemoveBinding didn't understand argument event\n");
+		break;
+	}
+}
+
+int
+VControl_AddKeyBinding (SDLKey symbol, int *target)
+{
+	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+		fprintf (stderr, "VControl: Illegal key index %d\n", symbol);
+		return -1;
+	}
+	_add_binding(&bindings[symbol], target);
+	return 0;
+}
+
+void
+VControl_RemoveKeyBinding (SDLKey symbol, int *target)
+{
+	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+		fprintf (stderr, "VControl: Illegal key index %d\n", symbol);
+		return;
+	}
 	_remove_binding (&bindings[symbol], target);
 }
 
-void
+int
 VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 {
 	if (port >= 0 && port < joycount)
@@ -377,17 +441,21 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 			else
 			{
 				fprintf (stderr, "VControl: Attempted to bind to polarity zero\n");
+				return -1;
 			}
 		}
 		else
 		{
 			fprintf (stderr, "VControl: Attempted to bind to illegal axis %d\n", axis);
+			return -1;
 		}
 	}
 	else
 	{
 		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		return -1;
 	}
+	return 0;
 }
 
 void
@@ -424,7 +492,7 @@ VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 	}
 }
 
-void
+int
 VControl_AddJoyButtonBinding (int port, int button, int *target)
 {
 	if (port >= 0 && port < joycount)
@@ -435,15 +503,18 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 		if ((button >= 0) && (button < j->numbuttons))
 		{
 			_add_binding(&joysticks[port].buttons[button], target);
+			return 0;
 		}
 		else
 		{
 			fprintf (stderr, "VControl: Attempted to bind to illegal button %d\n", button);
+			return -1;
 		}
 	}
 	else
 	{
 		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		return -1;
 	}
 }
 
@@ -470,7 +541,7 @@ VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 	}
 }
 
-void
+int
 VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 {
 	if (port >= 0 && port < joycount)
@@ -499,16 +570,20 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 			else
 			{
 				fprintf (stderr, "VControl: Attempted to bind to illegal direction\n");
+				return -1;
 			}
+			return 0;
 		}
 		else
 		{
 			fprintf (stderr, "VControl: Attempted to bind to illegal hat %d\n", which);
+			return -1;
 		}
 	}
 	else
 	{
 		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		return -1;
 	}
 }
 
@@ -562,13 +637,13 @@ VControl_RemoveAllBindings ()
 }
 
 void
-VControl_ProcessKeyDown (int symbol)
+VControl_ProcessKeyDown (SDLKey symbol)
 {
 	_activate (bindings[symbol]);
 }
 
 void
-VControl_ProcessKeyUp (int symbol)
+VControl_ProcessKeyUp (SDLKey symbol)
 {
 	_deactivate (bindings[symbol]);
 }
@@ -847,6 +922,7 @@ VControl_Dump (FILE *out)
  * 
  * configline <- IDNAME binding
  *             | "joystick" NUM "threshold" NUM
+ *             | "version" NUM
  *
  * binding    <- "key" KEYNAME
  *             | "joystick" NUM joybinding
@@ -1089,7 +1165,10 @@ _parse_joybinding (parse_state *state, int *target)
 				int polarity = _consume_polarity (state);
 				if (!state->error)
 				{
-					VControl_AddJoyAxisBinding (sticknum, axisnum, polarity, target);
+					if (VControl_AddJoyAxisBinding (sticknum, axisnum, polarity, target))
+					{
+						state->error = 1;
+					}
 				}
 			}
 		} 
@@ -1100,7 +1179,10 @@ _parse_joybinding (parse_state *state, int *target)
 			buttonnum = _consume_num (state);
 			if (!state->error)
 			{
-				VControl_AddJoyButtonBinding (sticknum, buttonnum, target);
+				if (VControl_AddJoyButtonBinding (sticknum, buttonnum, target))
+				{
+					state->error = 1;
+				}
 			}
 		}
 		else if (!stricmp (state->token, "hat"))
@@ -1113,7 +1195,10 @@ _parse_joybinding (parse_state *state, int *target)
 				Uint8 dir = _consume_dir (state);
 				if (!state->error)
 				{
-					VControl_AddJoyHatBinding (sticknum, hatnum, dir, target);
+					if (VControl_AddJoyHatBinding (sticknum, hatnum, dir, target))
+					{
+						state->error = 1;
+					}
 				}
 			}
 		}
@@ -1138,7 +1223,10 @@ _parse_binding (parse_state *state)
 			keysym = _consume_keyname (state);
 			if (!state->error)
 			{
-				VControl_AddKeyBinding (keysym, target);
+				if (VControl_AddKeyBinding (keysym, target))
+				{
+					state->error = 1;
+				}
 			}
 		}
 		else if (!stricmp (state->token, "joystick"))
@@ -1171,26 +1259,46 @@ _parse_config_line (parse_state *state)
 		if (!state->error) threshold = _consume_num (state);
 		if (!state->error)
 		{
-			VControl_SetJoyThreshold (sticknum, threshold);
+			if (VControl_SetJoyThreshold (sticknum, threshold))
+			{
+				state->error = 1;
+			}
+		}
+		if (!state->error)
+		{
+			validlines++;
+		}
+		return;
+	}
+	if (!stricmp (state->token, "version"))
+	{
+		_consume (state, "version");
+		version = _consume_num (state);
+		if (!state->error)
+		{
+			validlines++;
 		}
 		return;
 	}
 	/* Otherwise, it must be a binding */
 	_parse_binding (state);
+	if (!state->error)
+	{
+		validlines++;
+	}
 }
 
 int
 VControl_ReadConfiguration (uio_Stream *in)
 {
 	parse_state ps;
-	int errors;
 	if (!in)
 	{
 		fprintf (stderr, "VControl: Invalid configuration file stream\n");
 		return 1;
 	}
 	ps.linenum = 0;
-	errors = 0;
+	errors = version = validlines = 0;
 	while (1)
 	{
 		_next_line (&ps, in);
@@ -1203,6 +1311,30 @@ VControl_ReadConfiguration (uio_Stream *in)
 		}
 	}
 	return errors;
+}
+
+int
+VControl_GetErrorCount (void)
+{
+	return errors;
+}
+
+int
+VControl_GetValidCount (void)
+{
+	return validlines;
+}
+
+int
+VControl_GetConfigFileVersion (void)
+{
+	return version;
+}
+
+void
+VControl_SetConfigFileVersion (int v)
+{
+	version = v;
 }
 
 #if 0

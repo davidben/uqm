@@ -11,14 +11,14 @@ void VControl_Init (void);
 void VControl_Uninit (void);
 
 /* Control of bindings */
-void VControl_AddKeyBinding (int symbol, int *target);
-void VControl_RemoveKeyBinding (int symbol, int *target);
-void VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target);
+int  VControl_AddKeyBinding (SDLKey symbol, int *target);
+void VControl_RemoveKeyBinding (SDLKey symbol, int *target);
+int  VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target);
 void VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target);
-void VControl_SetJoyThreshold (int port, int threshold);
-void VControl_AddJoyButtonBinding (int port, int button, int *target);
+int  VControl_SetJoyThreshold (int port, int threshold);
+int  VControl_AddJoyButtonBinding (int port, int button, int *target);
 void VControl_RemoveJoyButtonBinding (int port, int button, int *target);
-void VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target);
+int  VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target);
 void VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target);
 
 void VControl_RemoveAllBindings (void);
@@ -27,8 +27,8 @@ void VControl_RemoveAllBindings (void);
  * fabricating an SDL_Event. 
  */
 void VControl_HandleEvent (const SDL_Event *e);
-void VControl_ProcessKeyDown (int symbol);
-void VControl_ProcessKeyUp (int symbol);
+void VControl_ProcessKeyDown (SDLKey symbol);
+void VControl_ProcessKeyUp (SDLKey symbol);
 void VControl_ProcessJoyButtonDown (int port, int button);
 void VControl_ProcessJoyButtonUp (int port, int button);
 void VControl_ProcessJoyAxis (int port, int axis, int value);
@@ -50,9 +50,15 @@ typedef struct _vcontrol_namebinding {
 
 void VControl_RegisterNameTable (VControl_NameBinding *table);
 
+/* Version number control */
+int VControl_GetConfigFileVersion (void);
+void VControl_SetConfigFileVersion (int v);
+
 /* Dump a configuration file corresponding to the current bindings and names. */
 void VControl_Dump (FILE *out);
 /* Read a configuration file.  Returns number of errors encountered. */
 int VControl_ReadConfiguration (uio_Stream *in);
+int VControl_GetErrorCount (void);
+int VControl_GetValidCount (void);
 
 #endif

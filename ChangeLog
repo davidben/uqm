@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Version checks inside the input code to flag incompatible changes --Michael
 - Install location for content on unix systems is now ${prefix}/share/uqm
   instead of ${prefix}/lib/uqm - SvdB
 - New main menu graphics from MarkVera, Paxtez, Nic (bug #393)

@@ -37,6 +37,8 @@ UWORD UNICODEToKBD (UNICODE which_key);
 
 static BOOLEAN _in_character_mode = FALSE;
 
+#define VCONTROL_VERSION 1
+
 static VControl_NameBinding control_names[] = {
 	{ "Menu-Up", (int *)&ImmediateMenuState.up },
 	{ "Menu-Down", (int *)&ImmediateMenuState.down },
@@ -97,31 +99,40 @@ initKeyConfig(void) {
 	}
 	errors = VControl_ReadConfiguration (fp);
 	res_CloseResFile (fp);
-	if (errors)
+	if (errors || (VControl_GetConfigFileVersion () != VCONTROL_VERSION))
 	{
-		fprintf (stderr, "%d errors encountered in key configuration "
-				"file.\n", errors);
-		/* This code should go away in 0.3; it's just
+		fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);
+		/* This code should go away in 0.4; it's just
 		 * to force people to upgrade and forestall a 
 		 * bunch of "none of my keys work anymore" bugs.
 		 */
-		if (errors > 5)
+		if (VControl_GetValidCount () == 0)
 		{
-			fprintf (stderr, "Hey!  you haven't updated your keys.cfg to "
-					"use the new system, have you?\nDelete keys.cfg and "
-					"try again.\n");
-			fprintf (stderr, "If you've done that and it STILL doesn't "
-					"work, make sure your content/starcon.key is up to"
-					"date.\n");
+			fprintf (stderr, "\nI didn't understand a single line in your configuration file.\n");
+			fprintf (stderr, "This is likely because you're still using a 0.2 era or earlier keys.cfg.\n");
+			fprintf (stderr, "Please delete your keys.cfg file and try again.\n");
+			fprintf (stderr, "That will give you a new template to edit.\n\n");
+			fprintf (stderr, "If you've done that and it STILL doesn't work, make sure you've\n");
+			fprintf (stderr, "properly updated your content, too.\n");
 		}
 		else
 		{
-			fprintf (stderr, "Repair your keys.cfg file to continue.\n");
+			if (VControl_GetConfigFileVersion () != VCONTROL_VERSION)
+			{
+				fprintf (stderr, "\nThe control scheme for UQM has changed since you last updated keys.cfg.\n");
+				fprintf (stderr, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)\n", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
+				fprintf (stderr, "You should delete your keys.cfg file and rerun UQM to get a new template to\nedit.\n\n");
+				fprintf (stderr, "If you've done that and it STILL doesn't work, make sure you've\n");
+				fprintf (stderr, "properly updated your content, too.\n");
+			}
+			else
+			{
+				fprintf (stderr, "\nRepair your keys.cfg file to continue.\n");
+			}
 		}
 		
 		exit (1);
-	}		
-
+	}
 }
 
 int 
