@@ -538,8 +538,9 @@ uninit_communication (void)
 	subtitle_cache = NULL;
 }
 
-static BOOLEAN ColorChange;
-static BOOLEAN ClearSubtitle = FALSE;
+static volatile BOOLEAN ColorChange;
+static volatile BOOLEAN SummaryChange;
+static volatile BOOLEAN ClearSubtitle;
 
 /* Only one thread should ever be allowed to be calling this at any time */
 void
@@ -1218,16 +1219,16 @@ int ambient_anim_task(void* data)
 
 			OldContext = SetContext (TaskContext);
 
-			if (ColorChange)
+			if (ColorChange || SummaryChange)
 			{
 				FRAME F;
 				F = CommData.AlienFrame;
 				CommData.AlienFrame = CommFrame;
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
-				ColorChange = FALSE;
-				ClearSub = TRUE;
 				CheckSub = 1;
+				ClearSub = SummaryChange ? TRUE : FALSE;
+				ColorChange = SummaryChange = FALSE;
 			}
 			if (Change || ClearSub)
 			{
@@ -1798,7 +1799,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 			DrawFilledRectangle (&r);
 			ClearSemaphore (GraphicsSem);
-			ColorChange = TRUE;
+			SummaryChange = TRUE;
 			summary = FALSE;
 			FlushInput ();
 			while (AnyButtonPress (TRUE))

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fixed Commander Hayes mouth movement before radioactives are given
+  (bug #343) -Mika
 - Fix glitches in slylandro probe animation (bugs #398, #399), from Paxtez
 - Confirmation dialog box for exiting the game is now menu-based
 - Commander Hayes explains his predicament before you get the option to 
