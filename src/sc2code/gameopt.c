@@ -614,7 +614,7 @@ DrawCargo (COUNT redraw_state)
 			BUILD_COLOR (MAKE_RGB15 (15, 0x00, 25), 0x00),
 		};
 
-		r.extent.width = 20;
+		r.extent.width = 23;
 		r.extent.height = SHIP_NAME_HEIGHT;
 		SetContextFont (StarConFont);
 		t.baseline.x = 33;
