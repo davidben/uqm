@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Date on the green bar now has floating period between day and
+  the year like in PC version (bug #307 part 5) -Mika
 - AWARE_OF_SAMATRA flag is now written as well as read (closes #113), 
   from Nic
 - Subtitle drawing is now cached (closes #313) -Mika

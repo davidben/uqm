@@ -228,7 +228,7 @@ DateToString (UNICODE *buf, BYTE month_index, BYTE day_index, COUNT
 	buf[5] = (UNICODE)((i % 10) + '0');
 	i /= 10;
 	buf[4] = (UNICODE)((i % 10) + '0');
-	buf[6] = ' ';
+	buf[6] = '_';
 
 	i = year_index;
 	buf[10] = (UNICODE)((i % 10) + '0');
