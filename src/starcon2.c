@@ -34,7 +34,10 @@
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
 #include "options.h"
-
+#if defined(GFXMODULE_SDL) || defined(SOUNDMODULE_SDL)
+#	include <SDL.h>
+			// Including this is actually necessary on OSX.
+#endif
 
 void
 CDToContentDir (char *contentdir)
