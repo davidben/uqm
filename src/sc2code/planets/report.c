@@ -21,8 +21,9 @@
 #include "lander.h"
 #include "options.h"
 
-#define NUM_CELL_COLS 34
-#define NUM_CELL_ROWS 11
+#define NUM_CELL_COLS MAP_WIDTH / 6
+#define NUM_CELL_ROWS MAP_HEIGHT / 6
+#define MAX_CELL_COLS 40
 
 extern FRAME SpaceJunkFrame;
 
@@ -32,14 +33,14 @@ ClearReportArea (void)
 	COUNT i;
 	RECT r;
 	STAMP s;
-	PRIMITIVE prim_row[NUM_CELL_COLS];
+	PRIMITIVE prim_row[MAX_CELL_COLS];
 
 	if (optWhichFonts == OPT_PC)
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 21);
 	else
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 18);
 	GetFrameRect (s.frame, &r);
-	s.origin.x = 1 + (r.extent.width >> 1);
+	s.origin.x = 1 + (r.extent.width >> 1) - 1;
 	s.origin.y = 1;
 	for (i = 0; i < NUM_CELL_COLS; ++i)
 	{
@@ -112,7 +113,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			StrLen += end_page_len;
 		}
 		t.baseline.x = 1 + (r.extent.width >> 1)
-				+ (col_cells * (r.extent.width + 1));
+				+ (col_cells * (r.extent.width + 1)) - 1;
 		do
 		{
 			COUNT word_chars;
