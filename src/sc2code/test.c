@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sndlib.h"
-#include "SDL_wrapper.h"
+#include "starcon.h"
+#include "libs/sound/sound_common.h"
 
 int
 main (int argc, char *argv[])
 {
-	InitSound (argc, argv);
+//	InitSound (argc, argv);
+	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, 44100);
 
 	while (1)
 	{
