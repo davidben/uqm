@@ -31,7 +31,7 @@
 
 void ConfirmSaveLoad (STAMP *MsgStamp);
 
-BOOLEAN SaveProblem (void);
+void SaveProblem (void);
 
 void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 
@@ -1075,7 +1075,6 @@ DoSaveTeam (PMELEE_STATE pMS)
 
 	sprintf (file, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
 
-RetrySave:
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
@@ -1100,8 +1099,7 @@ RetrySave:
 		ClearSemaphore (GraphicsSem);
 
 		DeleteResFile (meleeDir, file);
-		if (SaveProblem ())
-			goto RetrySave;
+		SaveProblem ();
 	}
 
 	LoadTeamList (pMS, file);

@@ -203,75 +203,35 @@ SaveProblemMessage (STAMP *MsgStamp)
 	UnbatchGraphics ();
 }
 
-BOOLEAN
+void
 SaveProblem (void)
 {
-	BOOLEAN manage;
 	STAMP s;
 	CONTEXT OldContext;
-	BOOLEAN cont;
 	
 	SetSemaphore (GraphicsSem);
 	OldContext = SetContext (SpaceContext);
-	
 	SaveProblemMessage (&s);
-
-	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	FlushGraphics ();
+	ClearSemaphore (GraphicsSem);
 
 	while (AnyButtonPress (FALSE));
 	do
 	{
-		cont = FALSE;
+		TaskSwitch ();
 		UpdateInputState ();
-		if (CurrentMenuState.select)
-			manage = TRUE;
-		else if (CurrentMenuState.special)
-			manage = FALSE;
-		else
-			cont = TRUE;
-	} while (cont);
+	} while (!(CurrentMenuState.select || CurrentMenuState.special ||
+		 (GLOBAL (CurrentActivity) & CHECK_ABORT)));
 
-	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-
+	SetSemaphore (GraphicsSem);
 	BatchGraphics ();
 	DrawStamp (&s);
 	UnbatchGraphics ();
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	
 	ClearSemaphore (GraphicsSem);
 	
-	if (manage)
-	{
-		BYTE clut_buf[1];
-
-		SetSemaphore (GraphicsSem);
-		SetFlashRect (NULL_PTR, (FRAME)0);
-		ClearSemaphore (GraphicsSem);
-   
-		clut_buf[0] = FadeAllToBlack;
-		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
-		FlushColorXForms ();
-
-#if 0
-		SuspendTasking (); // just in case
-		ManageNVRAM ();
-		ResumeTasking ();
-#endif
-
-		clut_buf[0] = FadeAllToColor;
-		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2));
-		FlushColorXForms ();
-	}
-	else
-	{
-#if 0
-		CleanNVRAM ();
-#endif
-		SleepThreadUntil (GetTimeCounter () + (ONE_SECOND / 4));
-	}
-
-	return (manage);
+	return;
 }
 
 BOOLEAN

@@ -26,7 +26,7 @@
 
 //Added by Chris
 
-BOOLEAN SaveProblem (void);
+void SaveProblem (void);
 
 //End Added by Chris
 
@@ -1046,7 +1046,6 @@ Restart:
 		pSD = &((SUMMARY_DESC *)pMS->CurString)[pMS->CurState];
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
 		{
-RetrySave:
 			SetSemaphore (GraphicsSem);
 			if (pMS->delta_item == SAVE_GAME)
 			{
@@ -1068,8 +1067,7 @@ RetrySave:
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 					ClearSemaphore (GraphicsSem);
 					
-					if (SaveProblem ())
-						goto RetrySave;
+					SaveProblem ();
 
 					pMS->Initialized = FALSE;
 					NewState = pMS->CurState;
