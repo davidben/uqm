@@ -247,7 +247,7 @@ The way is challenging, but our Turbo-Thrusters are at 200% and our guns stand r
 We have engaged the dark ships and achieved victory!
 The Ur-Quan know we are here! SNORT! They see our valor!...
 ...unfortunately they also seem to be attacking us.
-We have tried to make contact with them on the usual Hyperwave bands, but to no avail.
+We have tried to make contact with them on the usual HyperWave bands, but to no avail.
 Even so, I am still quite sure that we are impressing them GREATLY!
 
 #(WE_IMPRESSED_URQUAN_1)	thrad021.ogg

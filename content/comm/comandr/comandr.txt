@@ -14,7 +14,7 @@ Transporting fuel now.
 #(ARE_YOU_SUPPLY_SHIP) coman003.ogg
 Attention unidentified space vessel!
 I am Starbase Commander Hayes of the slave planet Earth.
-our hyperwave broadcasts -- extremely weak
+our HyperWave broadcasts -- extremely weak
 situation critical -- energy cores exhausted
 scanners and deep radar are non-functional
 we cannot identify your vessel

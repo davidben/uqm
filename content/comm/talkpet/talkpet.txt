@@ -29,7 +29,7 @@ Where are the Umgah? What have you done to them?
 
 #(DID_NOTHING)	talkp003.ogg
 Uh, You are, um, imagining things! Uh, the Umgah are fine, just fine. Uh, just really busy.
-That's why I am answering the Hyperwave broadcaster today.
+That's why I am answering the HyperWave broadcaster today.
 
 #(umgah_zombies)
 You don't fool me! You've turned them into zombie-blobbies!... or something.
@@ -47,7 +47,7 @@ I am Captain of the starship
 
 #(GOOD_FOR_YOU)	talkp005.ogg
 Good idea! May I just say, I am behind you 100 percent!
-But unfortunately, the Umgah are all too busy to come to the Hyperwave `Caster right now
+But unfortunately, the Umgah are all too busy to come to the HyperWave `Caster right now
 so... er... come back later... much later.
 
 #(must_explain_presence)
