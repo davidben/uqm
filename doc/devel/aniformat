@@ -4,3 +4,4 @@ filename transparent_color colormap_index clip_x clip_y clip_w clip_h hotspot_x 
 
 Filename is string, all others are ints, -1 means value not used.
 This information is parsed in libs/graphics/sdl/3do_getbody.c
+
