@@ -452,7 +452,7 @@ unhyper_transition (PELEMENT ElementPtr)
 				break;
 			case INTERPLANETARY_TRANSITION:
 				SET_GAME_STATE (USED_BROADCASTER, 0);
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) == 0)
+				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 				{
 					GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 					SET_GAME_STATE (ESCAPE_COUNTER, 0);
@@ -505,32 +505,41 @@ unhyper_transition (PELEMENT ElementPtr)
 				}
 				break;
 			case ARILOU_SPACE_TRANSITION:
+				/* Enter QuasiSpace from HyperSpace by any portal,
+				 * or HyperSpace from QuasiSpace through the periodically
+				 * opening portal.
+				 */
 				SET_GAME_STATE (USED_BROADCASTER, 0);
 				GLOBAL (autopilot.x) =
 						GLOBAL (autopilot.y) = ~0;
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) == 0)
+				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 				{
+					// From HyperSpace to QuasiSpace.
 					GLOBAL_SIS (log_x) =
 							UNIVERSE_TO_LOGX (QUASI_SPACE_X);
 					GLOBAL_SIS (log_y) =
 							UNIVERSE_TO_LOGY (QUASI_SPACE_Y);
 					if (GET_GAME_STATE (PORTAL_COUNTER) == 0)
 					{
-						SET_GAME_STATE (ARILOU_SPACE_SIDE, 2);
+						// Periodically appearing portal.
+						SET_GAME_STATE (ARILOU_SPACE_SIDE, 3);
 					}
 					else
 					{
+						// Player-induced portal.
 						SET_GAME_STATE (PORTAL_COUNTER, 0);
 						SET_GAME_STATE (ARILOU_SPACE_SIDE, 3);
 					}
 				}
 				else
 				{
+					// From QuasiSpace to HyperSpace through the
+					// periodically appearing portal.
 					GLOBAL_SIS (log_x) =
 							UNIVERSE_TO_LOGX (ARILOU_SPACE_X);
 					GLOBAL_SIS (log_y) =
 							UNIVERSE_TO_LOGY (ARILOU_SPACE_Y);
-					SET_GAME_STATE (ARILOU_SPACE_SIDE, 1);
+					SET_GAME_STATE (ARILOU_SPACE_SIDE, 0);
 				}
 				break;
 		}
@@ -1311,7 +1320,8 @@ void
 SeedUniverse (void)
 {
 	COORD ox, oy;
-	COORD ux, uy, sx, sy, ex, ey;
+	COORD sx, sy, ex, ey;
+	SWORD portalCounter, arilouSpaceCounter, arilouSpaceSide;
 	POINT universe;
 	FRAME blip_frame;
 	STAMP s;
@@ -1344,8 +1354,8 @@ SeedUniverse (void)
 			* RADAR_HEIGHT / RADAR_SCAN_HEIGHT)
 			- (RADAR_HEIGHT >> 1);
 
-	ux = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
-	uy = GET_GAME_STATE (ARILOU_SPACE_SIDE);
+	arilouSpaceCounter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
+	arilouSpaceSide = GET_GAME_STATE (ARILOU_SPACE_SIDE);
 
 //    if (ox != ex || oy != ey)
 	{
@@ -1360,7 +1370,8 @@ SeedUniverse (void)
 				ex = SDPtr->star_pt.x;
 				ey = SDPtr->star_pt.y;
 				star_type = STAR_TYPE (SDPtr->Type);
-				if (uy >= 2 && ex == ARILOU_HOME_X && ey == ARILOU_HOME_Y)
+				if (arilouSpaceSide >= 2 &&
+						ex == ARILOU_HOME_X && ey == ARILOU_HOME_Y)
 					star_type = SUPER_GIANT_STAR;
 
 				s.origin.x = (COORD)((long)ex * RADAR_WIDTH
@@ -1374,45 +1385,54 @@ SeedUniverse (void)
 		}
 	}
 
-	if ((ex = GET_GAME_STATE (PORTAL_COUNTER)) || ux)
+	portalCounter = GET_GAME_STATE (PORTAL_COUNTER);
+	if (portalCounter || arilouSpaceCounter)
 	{
 		COUNT i;
 		STAR_DESC SD[2];
+				// This array is filled with the STAR_DESC's of
+				// QuasiSpace portals that need to be taken into account.
+				// i is set the the number of active portals (max 2).
 
 		i = 0;
-		if (ex)
+		if (portalCounter)
 		{
+			// A player-created QuasiSpace portal is opening.
 			static POINT portal_pt;
 
-			SD[i].Index = ((ex - 1) >> 1) + 18;
-			if (ex == 1)
+			SD[i].Index = ((portalCounter - 1) >> 1) + 18;
+			if (portalCounter == 1)
 				portal_pt = universe;
 			SD[i].star_pt = portal_pt;
 			++i;
 
-			if (++ex == (10 + 1))
-				ex = (9 + 1);
+			if (++portalCounter == (10 + 1))
+				portalCounter = (9 + 1);
 
-			SET_GAME_STATE (PORTAL_COUNTER, ex);
+			SET_GAME_STATE (PORTAL_COUNTER, portalCounter);
 		}
 
-		if (ux)
+		if (arilouSpaceCounter)
 		{
-			SD[i].Index = ux >> 1;
-			if (uy <= 1)
+			// The periodically appearing QuasiSpace portal is open.
+			SD[i].Index = arilouSpaceCounter >> 1;
+			if (arilouSpaceSide <= 1)
 			{
+				// The player is in HyperSpace
 				SD[i].Index += 18;
 				SD[i].star_pt.x = ARILOU_SPACE_X;
 				SD[i].star_pt.y = ARILOU_SPACE_Y;
 			}
 			else
 			{
+				// The player is in QuasiSpace
 				SD[i].star_pt.x = QUASI_SPACE_X;
 				SD[i].star_pt.y = QUASI_SPACE_Y;
 			}
 			++i;
 		}
 
+		// Process the i portals from SD.
 		do
 		{
 			--i;
@@ -1451,7 +1471,7 @@ SeedUniverse (void)
 
 					SetUpElement (HyperSpaceElementPtr);
 
-					if (uy == 1 || uy == 2)
+					if (arilouSpaceSide == 1 || arilouSpaceSide == 2)
 						HyperSpaceElementPtr->death_func = arilou_space_death;
 					else
 					{

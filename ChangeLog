@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fixed bug with entering closing portals (bug #108) - SvdB+chmmravatar
 - Mouse cursor is now hidden in fullscreen mode (bug #173) -Mika
 - Version checks inside the input code to flag incompatible changes --Michael
 - Install location for content on unix systems is now ${prefix}/share/uqm
