@@ -180,6 +180,8 @@ ByeBye (RESPONSE_REF R)
 	}
 }
 
+static void GiveRadios (RESPONSE_REF R);
+
 static void
 NoRadioactives (RESPONSE_REF R)
 {
@@ -187,8 +189,13 @@ NoRadioactives (RESPONSE_REF R)
 	{
 		NPCPhrase (ABOUT_TIME);
 
-		Response (i_lied, NoRadioactives);
-		Response (plumb_out, NoRadioactives);
+		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
+			GiveRadios (NULL_PTR);
+		else
+		{
+			Response (i_lied, NoRadioactives);
+			Response (plumb_out, NoRadioactives);
+		}
 	}
 	else
 	{
@@ -256,10 +263,16 @@ NoRadioactives (RESPONSE_REF R)
 			else
 				Response (need_fuel, NoRadioactives);
 		}
-		Response (ok_i_will_get_radios, ByeBye);
-		if (PHRASE_ENABLED (where_can_i_get_radios))
+
+		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
+			GiveRadios (NULL_PTR);
+		else
 		{
-			Response (where_can_i_get_radios, NoRadioactives);
+			Response (ok_i_will_get_radios, ByeBye);
+			if (PHRASE_ENABLED (where_can_i_get_radios))
+			{
+				Response (where_can_i_get_radios, NoRadioactives);
+			}
 		}
 	}
 }
@@ -632,21 +645,16 @@ Intro (void)
 		SET_GAME_STATE (STARBASE_VISITED, 1);
 
 		NPCPhrase (ARE_YOU_SUPPLY_SHIP);
-		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
-			GiveRadios (NULL_PTR);
-		else
-		{
-			construct_response (
-					shared_phrase_buf,
-					no_but_well_help0,
-					GLOBAL_SIS (ShipName),
-					no_but_well_help1,
-					0
-					);
-			DoResponsePhrase (no_but_well_help0, NoRadioactives, shared_phrase_buf);
-			Response (yes_this_is_supply_ship, NoRadioactives);
-			Response (what_slave_planet, NoRadioactives);
-		}
+		construct_response (
+				shared_phrase_buf,
+				no_but_well_help0,
+				GLOBAL_SIS (ShipName),
+				no_but_well_help1,
+				0
+				);
+		DoResponsePhrase (no_but_well_help0, NoRadioactives, shared_phrase_buf);
+		Response (yes_this_is_supply_ship, NoRadioactives);
+		Response (what_slave_planet, NoRadioactives);
 	}
 }
 

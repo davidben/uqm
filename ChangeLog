@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Commander Hayes explains his predicament before you get the option to 
+  rescue, closes #366, from Nic
 - Gestalt mode accelerates continuously as long as some key is held; 
   should resolve to PC-style input wrt bug #381 - Michael
 - Fixed some more false key cancels, addressing 378 again - Michael
