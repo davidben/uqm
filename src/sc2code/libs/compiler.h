@@ -19,6 +19,10 @@
 #ifndef _COMPILER_H
 #define _COMPILER_H
 
+#ifdef HAVE_CONFIG_H
+#    include "config.h"
+#endif
+
 typedef unsigned char     BYTE;
 typedef BYTE            *PBYTE;
 typedef unsigned char     UBYTE;
@@ -62,14 +66,23 @@ typedef SWORD    (*PSWORDFUNC) (void);
 typedef DWORD    (*PDWORDFUNC) (void);
 
 #define MAKE_BYTE(lo, hi)   ((BYTE) (((BYTE) (hi) << (BYTE) 4) | (BYTE) (lo)))
-#define MAKE_WORD(lo, hi)   ((UWORD) ((BYTE) (hi) << 8) | (BYTE) (lo))
-#define MAKE_DWORD(lo, hi)  (((DWORD) (hi) << 16) | (unsigned short) (lo))
 #define LONIBBLE(x)  ((BYTE) ((BYTE) (x) & (BYTE) 0x0F))
 #define HINIBBLE(x)  ((BYTE) ((BYTE) (x) >> (BYTE) 4))
-#define LOBYTE(x)    ((BYTE) ((UWORD) (x)))
-#define HIBYTE(x)    ((BYTE) ((UWORD) (x) >> 8))
-#define LOWORD(x)    ((unsigned short) ((DWORD) (x)))
-#define HIWORD(x)    ((UWORD) ((DWORD) (x) >> 16))
+#ifdef WORDS_BIGENDIAN
+#	define MAKE_WORD(lo, hi)   ((UWORD) ((BYTE) (lo) << 8) | (BYTE) (hi))
+#	define LOBYTE(x)    ((BYTE) ((UWORD) (x) >> 8))
+#	define HIBYTE(x)    ((BYTE) ((UWORD) (x)))
+#	define MAKE_DWORD(lo, hi)  (((DWORD) (lo) << 16) | (UWORD) (hi))
+#	define LOWORD(x)    ((UWORD) ((DWORD) (x) >> 16))
+#	define HIWORD(x)    ((UWORD) ((DWORD) (x)))
+#else  /* !defined(WORDS_BIGENDIAN) */
+#	define MAKE_WORD(lo, hi)   ((UWORD) ((BYTE) (hi) << 8) | (BYTE) (lo))
+#	define LOBYTE(x)    ((BYTE) ((UWORD) (x)))
+#	define HIBYTE(x)    ((BYTE) ((UWORD) (x) >> 8))
+#	define MAKE_DWORD(lo, hi)  (((DWORD) (hi) << 16) | (UWORD) (lo))
+#	define LOWORD(x)    ((UWORD) ((DWORD) (x)))
+#	define HIWORD(x)    ((UWORD) ((DWORD) (x) >> 16))
+#endif  /* !defined(WORDS_BIGENDIAN) */
 
 #endif /* _COMPILER_H */
 
