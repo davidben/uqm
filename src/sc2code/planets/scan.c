@@ -996,6 +996,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 					fuel_required / FUEL_TANK_SCALE,
 					((fuel_required % FUEL_TANK_SCALE) + 5) / 10);
 			SetSemaphore (GraphicsSem);
+			ClearSISRect (CLEAR_SIS_RADAR);
 			DrawStatusMessage (buf);
 			ClearSemaphore (GraphicsSem);
 

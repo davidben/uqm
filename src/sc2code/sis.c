@@ -1034,8 +1034,15 @@ SetFlashRect (PRECT pRect, FRAME f)
 	else
 	{
 		//Don't flash when using the PC menu
-		if (optPCmenu)
+		if (optPCmenu) {
+			if (flash_task)
+			{
+				ClearSemaphore (GraphicsSem);
+				ConcludeTask (flash_task);
+				SetSemaphore (GraphicsSem);
+			}
 			return;
+		}
 		OldContext = SetContext (StatusContext);
 		GetContextClipRect (&clip_r);
 		pRect = &temp_r;
@@ -1148,7 +1155,7 @@ static char menu_string[][11]  = {
 		"music",
 		"cyborg",
 		"captain",
-		"ship",
+		"flagship",
 		"exit menu"
 	};
 
@@ -1179,6 +1186,8 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	t.baseline.y = r->corner.y + PC_MENU_HEIGHT -1;
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
+	r->corner.x++;
+	r->extent.width -= 2;
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
 	for (i = beg_index; i <= end_index; i++)
 	{
@@ -1186,8 +1195,8 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 		if (hilite && pos == i)
 		{
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
-			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 1;
-			r->extent.height = PC_MENU_HEIGHT;
+			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 2;
+			r->extent.height = PC_MENU_HEIGHT - 1;
 			DrawFilledRectangle (r);
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x08));
 			DrawText (&t);

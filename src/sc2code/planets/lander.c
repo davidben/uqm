@@ -1538,8 +1538,6 @@ InitPlanetSide (void)
 
 	SetContext (OldContext);
 
-	ClearSISRect (CLEAR_SIS_RADAR);
-
 	ClearSemaphore (GraphicsSem);
 
 	SET_GAME_STATE (PLANETARY_LANDING, 1);
