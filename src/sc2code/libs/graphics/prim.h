@@ -45,32 +45,23 @@ typedef DWORD PRIM_LINKS;
 typedef struct
 {
 	PRIM_LINKS Links;
-	DWORD TypeAndColor;
+	GRAPHICS_PRIM Type;
+	COLOR Color;
 	PRIM_DESC Object;
 } PRIMITIVE;
 typedef PRIMITIVE *PPRIMITIVE;
 
 #define END_OF_LIST ((COUNT)0xFFFF)
 
-#define PRIM_COLOR_SHIFT 8
-#define PRIM_COLOR_MASK ((DWORD)~0L << PRIM_COLOR_SHIFT)
-#define PRIM_TYPE_MASK (~PRIM_COLOR_MASK)
-
 #define GetPredLink(l) LOWORD(l)
 #define GetSuccLink(l) HIWORD(l)
 #define MakeLinks MAKE_DWORD
 #define SetPrimLinks(pPrim,p,s) ((pPrim)->Links = MakeLinks (p, s))
 #define GetPrimLinks(pPrim) ((pPrim)->Links)
-#define SetPrimType(pPrim,t) \
-		((pPrim)->TypeAndColor = ((pPrim)->TypeAndColor & PRIM_COLOR_MASK) \
-		| ((t) & PRIM_TYPE_MASK))
-#define GetPrimType(pPrim) \
-		((GRAPHICS_PRIM)LOBYTE ((pPrim)->TypeAndColor))
-#define SetPrimColor(pPrim,c) \
-		((pPrim)->TypeAndColor = ((pPrim)->TypeAndColor & PRIM_TYPE_MASK) \
-		| ((c) << PRIM_COLOR_SHIFT))
-#define GetPrimColor(pPrim) \
-		((COLOR)((pPrim)->TypeAndColor >> PRIM_COLOR_SHIFT))
+#define SetPrimType(pPrim,t) ((pPrim)->Type = t)
+#define GetPrimType(pPrim) ((pPrim)->Type)
+#define SetPrimColor(pPrim,c) ((pPrim)->Color = c)
+#define GetPrimColor(pPrim) ((pPrim)->Color)
 
 static inline void
 SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link)

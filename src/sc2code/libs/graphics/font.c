@@ -251,18 +251,13 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	wchar_t next_ch;
 	const unsigned char *pStr;
 	TEXTPTR TextPtr;
-	PRIMITIVE locPrim;
+	STAMP s;
 	TFB_Palette color;
 
 	FontPtr = _CurFontPtr;
 	if (FontPtr == NULL)
 		return;
 	
-	if (FontEffect.Use)
-		SetPrimType (&locPrim, STAMP_PRIM);
-	else
-		SetPrimType (&locPrim, STAMPFILL_PRIM);
-
 	{
 		DWORD c32k = _get_context_fg_color () >> 8;
 		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
@@ -271,8 +266,8 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	}
 
 	TextPtr = &PrimPtr->Object.Text;
-	locPrim.Object.Stamp.origin.x = _save_stamp.origin.x;
-	locPrim.Object.Stamp.origin.y = TextPtr->baseline.y;
+	s.origin.x = _save_stamp.origin.x;
+	s.origin.y = TextPtr->baseline.y;
 	num_chars = TextPtr->CharCount;
 	if (num_chars == 0)
 		return;
@@ -294,43 +289,38 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				num_chars = 0;
 		}
 
-		locPrim.Object.Stamp.frame = getCharFrame (FontPtr, ch);
-		if (locPrim.Object.Stamp.frame != NULL &&
-				GetFrameWidth (locPrim.Object.Stamp.frame))
+		s.frame = getCharFrame (FontPtr, ch);
+		if (s.frame != NULL && GetFrameWidth (s.frame))
 		{
 			RECT r;
 
-			r.corner.x = locPrim.Object.Stamp.origin.x
-					- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.x;
-			r.corner.y = locPrim.Object.Stamp.origin.y
-					- ((FRAMEPTR)locPrim.Object.Stamp.frame)->HotSpot.y;
-			r.extent.width = GetFrameWidth (locPrim.Object.Stamp.frame);
-			r.extent.height = GetFrameHeight (locPrim.Object.Stamp.frame);
+			r.corner.x = s.origin.x - ((FRAMEPTR)s.frame)->HotSpot.x;
+			r.corner.y = s.origin.y - ((FRAMEPTR)s.frame)->HotSpot.y;
+			r.extent.width = GetFrameWidth (s.frame);
+			r.extent.height = GetFrameHeight (s.frame);
 			_save_stamp.origin = r.corner;
 			if (BoxIntersect (&r, pClipRect, &r))
 			{
 				if (FontEffect.Use)
 				{
-					FRAME origFrame = locPrim.Object.Stamp.frame;
-					locPrim.Object.Stamp.frame = Build_Font_Effect(
-							locPrim.Object.Stamp.frame, FontEffect.from,
+					FRAME origFrame = s.frame;
+					s.frame = Build_Font_Effect(
+							s.frame, FontEffect.from,
 							FontEffect.to, FontEffect.type);
-					TFB_Prim_Stamp (&locPrim.Object.Stamp);
-					DestroyDrawable (ReleaseDrawable (
-							locPrim.Object.Stamp.frame));
-					locPrim.Object.Stamp.frame = origFrame;
+					TFB_Prim_Stamp (&s);
+					DestroyDrawable (ReleaseDrawable (s.frame));
+					s.frame = origFrame;
 				}
 				else
-					TFB_Prim_StampFill (&locPrim.Object.Stamp, &color);
+					TFB_Prim_StampFill (&s, &color);
 			}
 
-			locPrim.Object.Stamp.origin.x += GetFrameWidth (
-					locPrim.Object.Stamp.frame);
+			s.origin.x += GetFrameWidth (s.frame);
 #if 0
 			if (num_chars && next_ch < (UNICODE) MAX_CHARS
 					&& !(FontPtr->KernTab[ch]
 					& (FontPtr->KernTab[next_ch] >> 2)))
-				locPrim.Object.Stamp.origin.x -= FontPtr->KernAmount;
+				s.origin.x -= FontPtr->KernAmount;
 #endif
 		}
 	}
