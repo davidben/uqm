@@ -44,7 +44,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	TFB_Image *tfbimg;
 	int hx, hy;
 
-	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
+	TYPE_SET (FramePtr->TypeIndexAndFlags, ROM_DRAWABLE);
 	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
 
 	if (img[cel_ct]->format->palette)
@@ -136,9 +136,11 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh,int destroy)
 {
 	FRAMEPTR NewFrame;
+	DWORD type;
 	SDL_Surface *src,*dst;
+	type=TYPE_GET (FramePtr->TypeIndexAndFlags);
 	NewFrame = CaptureDrawable (
-				CreateDrawable (WANT_PIXMAP, (SIZE)neww, (SIZE)newh, 1)
+				CreateDrawable (/*WANT_PIXMAP*/type, (SIZE)neww, (SIZE)newh, 1)
 					);
     src = ((TFB_Image *)((BYTE *)(FramePtr) + FramePtr->DataOffs))->NormalImg;
     dst = ((TFB_Image *)((BYTE *)(NewFrame) + NewFrame->DataOffs))->NormalImg;
@@ -304,7 +306,7 @@ _GetCelData (FILE *fp, DWORD length)
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
 			TYPE_SET (DrawablePtr->FlagsAndIndex,
-					(DRAWABLE_TYPE)ROM_DRAWABLE << FTYPE_SHIFT);
+					(DRAWABLE_TYPE)WANT_PIXMAP << FTYPE_SHIFT);
 			INDEX_SET (DrawablePtr->FlagsAndIndex, cel_ct - 1);
 
 			FramePtr = &DrawablePtr->Frame[cel_ct];
@@ -325,18 +327,17 @@ BOOLEAN
 _ReleaseCelData (MEM_HANDLE handle)
 {
 	DRAWABLEPTR DrawablePtr;
+	int cel_ct;
+	FRAMEPTR FramePtr;
 
 	if ((DrawablePtr = LockDrawable (handle)) == 0)
 		return (FALSE);
 
-	if (TYPE_GET (DrawablePtr->FlagsAndIndex) != SCREEN_DRAWABLE)
+	cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex)+1;
+
+	FramePtr = &DrawablePtr->Frame[cel_ct];
+	if (TYPE_GET ((FramePtr-1)->TypeIndexAndFlags) != SCREEN_DRAWABLE)
 	{
-		int cel_ct;
-		FRAMEPTR FramePtr;
-
-		cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex) + 1;
-
-		FramePtr = &DrawablePtr->Frame[cel_ct];
 		while (--FramePtr, cel_ct--)
 		{
 			if (FramePtr->DataOffs)
