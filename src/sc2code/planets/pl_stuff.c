@@ -148,38 +148,58 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	{
 		UBYTE r, g, b;
 		DWORD p;
-		COUNT framew;
-		RECT drect;
-		FRAME tintFrame = pSolarSysState->TintFrame[0];
-		FRAME tintLine = pSolarSysState->TintFrame[1];
+		COUNT framew, frameh;
+		RECT srect, drect, *psrect = NULL, *pdrect = NULL;
+		FRAME tintFrame[2];
+		tintFrame[0] = SetAbsFrameIndex (pSolarSysState->TintFrame, (COUNT)(1));
+		tintFrame[1] = SetAbsFrameIndex (pSolarSysState->TintFrame, (COUNT)(2));
+
+		framew = GetFrameWidth (tintFrame[0]);
+		frameh = GetFrameHeight (tintFrame[0]);
+
 		if (rgb != pSolarSysState->Tint_rgb)
-		{
+			{
 			pSolarSysState->Tint_rgb=rgb;
 			// Buffer the topoMap to the tintFrame;
-			add_sub_frame (s.frame, NULL, tintFrame, NULL, 0);
+			add_sub_frame (s.frame, NULL, tintFrame[0], NULL, 0);
 			r = (rgb & (0x1f << 10)) >> 8;
 			g = (rgb & (0x1f << 5)) >> 3;
 			b = (rgb & 0x1f) << 2;
 #ifdef USE_ADDITIVE_SCAN_BLIT
 			a = 255;
 #endif
-			p = frame_mapRGBA (tintFrame, r, g, b, a);
-			fill_frame_rgb (tintLine, p, 0, 0, 0, 0);
+			p = frame_mapRGBA (tintFrame[1], r, g, b, a);
+			fill_frame_rgb (tintFrame[1], p, 0, 0, 0, 0);
 		}
-		framew = GetFrameWidth (tintFrame);
 		drect.corner.x = 0;
-		drect.corner.y = dy;
 		drect.extent.width = framew;
-		drect.extent.height = 1;
-#ifdef USE_ADDITIVE_SCAN_BLIT
-		add_sub_frame (tintLine, NULL, tintFrame, &drect, 1);
-#else
-		add_sub_frame (tintLine, NULL, tintFrame, &drect, 0);
-#endif
-		if (GetFrameHeight (tintFrame) == dy)
-			pSolarSysState->Tint_rgb = 0;
+		srect.corner.x = 0;
+		srect.corner.y = 0;
+		srect.extent.width = framew;
+		if (dy >= 0 && dy <= frameh) {
+			drect.corner.y = dy;
+			drect.extent.height = 1;
+			pdrect = &drect;
+			srect.extent.height = 1;
+			psrect = &srect;
+		}
+		if (dy < 0) {
+			drect.corner.y = -dy;
+			drect.extent.height = frameh + dy;
+			pdrect = &drect;
+			srect.extent.height = frameh + dy;
+			psrect = &srect;
+		}
 
-		s.frame = tintFrame;
+		if (dy <= frameh) {
+
+#ifdef USE_ADDITIVE_SCAN_BLIT
+			add_sub_frame (tintFrame[1], psrect, tintFrame[0], pdrect, 1);
+#else
+			add_sub_frame (tintFrame[1], psrect, tintFrame[0], pdrect, 0);
+#endif
+		}
+		s.frame = tintFrame[0];
 		DrawStamp (&s);
 	}
 	UnbatchGraphics ();

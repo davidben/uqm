@@ -479,7 +479,7 @@ static void CreateShieldMask ()
 	{
 		// Applythe shield to the topo data
 		UBYTE a, blit_type;
-		FRAME tintFrame = pSolarSysState->TintFrame[0];
+		FRAME tintFrame = pSolarSysState->TintFrame;
 #ifdef USE_ALPHA_SHIELD
 		a = 200;
 		blit_type = 0;
@@ -1111,11 +1111,8 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	OldContext = SetContext (TaskContext);
 	pSolarSysState->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * 255);
-	pSolarSysState->TintFrame[0] = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 1)
-			);
-	pSolarSysState->TintFrame[1] = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)1, 1)
+	pSolarSysState->TintFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH, (SWORD)MAP_HEIGHT, 2)
 			);
 
 	pSolarSysState->PlanetFrameArray = CaptureDrawable (

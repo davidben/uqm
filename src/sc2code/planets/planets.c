@@ -231,12 +231,10 @@ FreePlanet (void)
 			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
 			pSolarSysState->ScaleFrame[i]=0;
 		}
-		if (pSolarSysState->TintFrame[i])
-		{
-			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame[i]));
-			pSolarSysState->TintFrame[i] = 0;
-		}
 	}
+	if (pSolarSysState->TintFrame)
+			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
+	pSolarSysState->TintFrame = 0;
 	pSolarSysState->Tint_rgb = 0;
 	if(pSolarSysState->ShieldFrame != 0)
 	{

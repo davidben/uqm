@@ -169,7 +169,7 @@ typedef struct solarsys_state
 	BYTE *isPFADefined;
 	FRAME ScaleFrame[2];
 	FRAME ShieldFrame;
-	FRAME TintFrame[2];
+	FRAME TintFrame;
 	UWORD Tint_rgb;
 	DWORD **lpTopoMap;
 	UBYTE PauseRotate;

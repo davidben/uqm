@@ -777,7 +777,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 		do
 		{
 		TEXT t;
-		COUNT i;
+		SWORD i;
 
 		t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 		t.baseline.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7;
@@ -855,10 +855,12 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 				ButtonState = 0;
 			}
 			if (ButtonState)
-				i = MAP_HEIGHT + NUM_FLASH_COLORS;
+				i = -i;
 			SetSemaphore (GraphicsSem);
 			BatchGraphics ();
 			DrawPlanet (0, 0, i, rgb);
+			if (i < 0) 
+				i = MAP_HEIGHT + NUM_FLASH_COLORS;
 			if (pMS->delta_item)
 				DrawScannedStuff (i, min_scan);
 			UnbatchGraphics ();
@@ -866,6 +868,8 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 //			FlushGraphics ();
 			SleepThread (2);
 		}
+		pSolarSysState->Tint_rgb = 0;
+
 	}
 
 		} while (++min_scan <= max_scan);
