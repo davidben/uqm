@@ -62,14 +62,16 @@ GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index)
 /*
  * What this function does depends on the value of the 'state' argument:
  * SPHERE_TRACKING:
- * 	The sphere of incluence for the race for 'which_ship' will be shown
+ * 	The sphere of influence for the race for 'which_ship' will be shown
  * 	on the starmap in the future.
- * 	The value returned is 'which_ship', unless
- *  TODO
+ * 	The value returned is 'which_ship', unless the type of ship is only
+ * 	available in SuperMelee, in which case 0 is returned.
  * SPHERE_KNOWN:
- * 	The size of the fleet when last checked the starmap is returned.
+ * 	The size of the fleet of the race of 'which_ship' when the starmap was
+ * 	last checked is returned.
  * ESCORT_WORTH:
  * 	The total value of all the ships escorting the SIS is returned.
+ * 	'which_ship' is ignored.
  * ESCORTING_FLAGSHIP:
  * 	Test if a ship of type 'which_ship' is among the escorts of the SIS
  * 	0 is returned if false, 1 if true.
@@ -78,9 +80,17 @@ GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index)
  * 	0 is returned if 'which_ship' is not available.
  * 	Otherwise, the number of ships that can be added is returned.
  * CHECK_ALLIANCE:
- *
- * something else:
- * 	TODO
+ * 	Test the alliance status of the race of 'which_ship'.
+ *      Either GOOD_GUY (allied) or BAD_GUY (not allied) is returned.
+ * 0:
+ * 	Ally with the race of 'which_ship'. This makes their ship available
+ *  for building in the shipyard.
+ * -1:
+ * 	End an alliance with the race of 'which_ship'. This ends the possibility
+ * 	of building their ships in the shipyard. For the Orz also the ships the
+ * 	player has with him will disappear.
+ * any other positive number:
+ * 	Give the player this much ships of type 'which_ship'. If it's
  */
 COUNT
 ActivateStarShip (COUNT which_ship, SIZE state)
@@ -100,8 +110,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 				EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
 
 				StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (avail_race_q), hStarShip
-						);
+						&GLOBAL (avail_race_q), hStarShip);
 				if (state == SPHERE_KNOWN)
 					which_ship = StarShipPtr->ShipInfo.known_strength;
 				else if (StarShipPtr->ShipInfo.actual_strength == 0)
@@ -117,9 +126,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 					StarShipPtr->ShipInfo.known_loc =
 							StarShipPtr->ShipInfo.loc;
 				}
-				UnlockStarShip (
-						&GLOBAL (avail_race_q), hStarShip
-						);
+				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 				return (which_ship);
 			}
 			case ESCORT_WORTH:
@@ -178,9 +185,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 					{
 						state = StarShipPtr->ShipInfo.ship_flags
 								& (GOOD_GUY | BAD_GUY);
-						UnlockStarShip (
-								&GLOBAL (avail_race_q), hStarShip
-								);
+						UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 						return ((COUNT)state);
 					}
 					else if (StarShipPtr->ShipInfo.ship_flags
@@ -198,37 +203,30 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 								ShipRemoved = FALSE;
 								for (hStarShip = GetHeadLink (
-										&GLOBAL (built_ship_q
-										)); hStarShip; hStarShip = hNextShip)
+										&GLOBAL (built_ship_q));
+										hStarShip; hStarShip = hNextShip)
 								{
 									BOOLEAN RemoveShip;
 									SHIP_FRAGMENTPTR StarShipPtr2;
 
-									StarShipPtr2 = (SHIP_FRAGMENTPTR)LockStarShip (
-											&GLOBAL (built_ship_q),
-											hStarShip
-											);
+									StarShipPtr2 =
+											(SHIP_FRAGMENTPTR)LockStarShip (
+											&GLOBAL (built_ship_q), hStarShip);
 									hNextShip = _GetSuccLink (StarShipPtr2);
-									RemoveShip = (BOOLEAN)(
-											GET_RACE_ID (StarShipPtr2) == ORZ_SHIP
-											);
-									UnlockStarShip (
-											&GLOBAL (built_ship_q),
-											hStarShip
-											);
+									RemoveShip = (BOOLEAN) (
+											GET_RACE_ID (StarShipPtr2) ==
+											ORZ_SHIP);
+									UnlockStarShip (&GLOBAL (built_ship_q),
+											hStarShip);
 
 									if (RemoveShip)
 									{
 										ShipRemoved = TRUE;
 
-										RemoveQueue (
-												&GLOBAL (built_ship_q),
-												hStarShip
-												);
-										FreeStarShip (
-												&GLOBAL (built_ship_q),
-												hStarShip
-												);
+										RemoveQueue (&GLOBAL (built_ship_q),
+												hStarShip);
+										FreeStarShip (&GLOBAL (built_ship_q),
+												hStarShip);
 									}
 								}
 								
@@ -242,9 +240,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 							}
 						}
 					}
-					UnlockStarShip (
-							&GLOBAL (avail_race_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 				}
 				else
 				{
@@ -253,75 +249,51 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 					COUNT i;
 
 					which_window = 0;
-					/*  Must... resist... commenting on this code... */
-					for
-						(
-								i = 0;
-								
-								i < (COUNT)state
-							&&
-								(
-										hStarShip = CloneShipFragment
-										(
-												(COUNT)which_ship,
-												(PQUEUE)(&GLOBAL (built_ship_q)),
-												(BYTE)
-												(
-														(
-																which_ship == SPATHI_SHIP &&
-																								GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1
-														) ? 1 : 0
-												)
-										)
-								);
-
-							i++
-						)
+					for (i = 0; i < (COUNT)state; i++)
 					{
 						HSTARSHIP hOldShip;
+						BYTE crewLevel;
 
-						RemoveQueue (
-								&GLOBAL (built_ship_q),
-								hStarShip
-								);
+						if (which_ship == SPATHI_SHIP &&
+								GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
+							crewLevel = 1;  // Only Fwiffo is on board.
+						else
+							crewLevel = 0;  // Crewed to the max
+								
+						hStarShip = CloneShipFragment((COUNT) which_ship,
+								&GLOBAL (built_ship_q), crewLevel);
+						if (!hStarShip)
+							break;
+
+						RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
 
 						while ((hOldShip = GetStarShipFromIndex (
-								&GLOBAL (built_ship_q),
-								which_window++
-								)))
+								&GLOBAL (built_ship_q), which_window++)))
 						{
 							BYTE win_loc;
 
 							StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-									&GLOBAL (built_ship_q), hOldShip
-									);
+									&GLOBAL (built_ship_q), hOldShip);
 							win_loc = GET_GROUP_LOC (StarShipPtr);
-							UnlockStarShip (
-									&GLOBAL (built_ship_q), hOldShip
-									);
+							UnlockStarShip (&GLOBAL (built_ship_q),
+									hOldShip);
 							if (which_window <= win_loc)
 								break;
 						}
 
 						StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-								&GLOBAL (built_ship_q), hStarShip
-								);
+								&GLOBAL (built_ship_q), hStarShip);
 						SET_GROUP_LOC (StarShipPtr, which_window - 1);
 						if (which_ship == SPATHI_SHIP
 								&& GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 						{
-							OwnStarShip (StarShipPtr,
-									GOOD_GUY,
+							OwnStarShip (StarShipPtr, GOOD_GUY,
 									NAME_OFFSET + NUM_CAPTAINS_NAMES);
 						}
-						UnlockStarShip (
-								&GLOBAL (built_ship_q), hStarShip
-								);
+						UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 
-						InsertQueue (
-								&GLOBAL (built_ship_q),
-								hStarShip, hOldShip
-								);
+						InsertQueue (&GLOBAL (built_ship_q), hStarShip,
+								hOldShip);
 					}
 
 					LockMutex (GraphicsLock);
@@ -334,10 +306,10 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 			}
 		}
 
-		return (1);
+		return 1;
 	}
 
-	return (0);
+	return 0;
 }
 
 COUNT
@@ -359,7 +331,7 @@ GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip)
 		++Index;
 	}
 
-	return (Index);
+	return Index;
 }
 
 BYTE
@@ -402,7 +374,7 @@ NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
 		}
 	} while (hStarShip);
 
-	return (name_index);
+	return name_index;
 }
 
 HSTARSHIP
@@ -413,11 +385,10 @@ CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE crew_level)
 
 	if ((hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 			shipIndex)) == 0)
-		return (0);
+		return 0;
 
 	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-			&GLOBAL (avail_race_q), hStarShip
-			);
+			&GLOBAL (avail_race_q), hStarShip);
 	hBuiltShip =
 			Build (pDstQueue,
 			TemplatePtr->RaceResIndex,
@@ -439,10 +410,8 @@ CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE crew_level)
 		SET_RACE_ID (ShipFragPtr, (BYTE)shipIndex);
 		UnlockStarShip (pDstQueue, hBuiltShip);
 	}
-	UnlockStarShip (
-			&GLOBAL (avail_race_q), hStarShip
-			);
+	UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 
-	return (hBuiltShip);
+	return hBuiltShip;
 }
 
