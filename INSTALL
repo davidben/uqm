@@ -44,7 +44,7 @@ OpenAL
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org
 	Linux download via CVS: http://opensource.creative.com
-	Win32 SDK download: http://ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
+	Win32 SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 
 
 If you find these aren't enough, or if you know the names
