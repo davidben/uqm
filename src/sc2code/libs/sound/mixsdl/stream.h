@@ -20,7 +20,8 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-void PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope);
+void PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, 
+				 bool scope, bool rewind);
 void StopStream (uint32 source);
 void PauseStream (uint32 source);
 void ResumeStream (uint32 source);

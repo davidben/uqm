@@ -116,7 +116,14 @@ Use PC style fonts and colors.
 	--font 3do
 
 Use 3DO style fonts and colors.
-Default.
+Default
+
+	--scroll pc
+Scroll voice-over/subtitles 1 page at a time when using left/right arrow keys
+Default
+
+	--scroll 3do
+Scroll voice-over/subtitles smoothly while holding down left/right arrow keys
 
 			     BUG REPORTS
 

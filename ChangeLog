@@ -1,4 +1,5 @@
 Changes towards version 0.2:
+- Added 'smooth' scolling for ff, frev (similar to the 3DO) - PhracturedBlue
 - New streaming code for openal/mixsdl.  supports ff/frev in subtitles -PBlue
 - New sound module "mixsdl" (experimental) -fOSSiL
 - Fixed overlapping subtitle text while switch tracks -PhracturedBlue

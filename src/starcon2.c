@@ -90,7 +90,8 @@ main (int argc, char *argv[])
 	{
 		CSCAN_OPT = 1000,
 		MENU_OPT,
-		FONT_OPT
+		FONT_OPT,
+		SCROLL_OPT
 	};
 
 	int option_index = 0, c;
@@ -115,6 +116,7 @@ main (int argc, char *argv[])
 		{"cscan", 1, NULL, CSCAN_OPT},
 		{"menu", 1, NULL, MENU_OPT},
 		{"font", 1, NULL, FONT_OPT},
+		{"scroll", 1, NULL, SCROLL_OPT},
 		{0, 0, 0, 0}
 	};
 
@@ -230,6 +232,12 @@ main (int argc, char *argv[])
 						(char *)long_options[option_index].name)) != -1)
 					optWhichFonts = val;
 			break;
+			case SCROLL_OPT:
+				if ((val = Check_PC_3DO_opt (optarg, 
+						OPT_PC | OPT_3DO, 
+						(char *)long_options[option_index].name)) != -1)
+					optSmoothScroll = val;
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -253,6 +261,7 @@ main (int argc, char *argv[])
 				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");
 				printf("  --menu      : menu type, pc=text, 3do=graphical (default 3do)\n");
 				printf("  --font      : font types and colors (default 3do)\n");
+				printf("  --scroll    : ff/frev during comm.  pc=per-page, 3do=smooth (default pc)\n");
 				return 0;
 			break;
 		}

@@ -184,7 +184,7 @@ PauseTrack ()
 }
 
 void
-FastReverse ()
+FastReverse_Page ()
 {
 	JumpTrack (0);
 	no_voice = 0;
@@ -193,7 +193,23 @@ FastReverse ()
 }
 
 void
-FastForward ()
+FastReverse_Smooth ()
+{
+	JumpTrack (0);
+	no_voice = 0;
+	tcur = 0;
+	ResumeTrack ();
+}
+
+void
+FastForward_Page ()
+{
+	JumpTrack (0);
+//    no_voice = 0;
+}
+
+void
+FastForward_Smooth ()
 {
 	JumpTrack (0);
 //    no_voice = 0;

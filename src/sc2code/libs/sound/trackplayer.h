@@ -19,16 +19,20 @@
 #ifndef TRACKPLAYER_H
 #define TRACKPLAYER_H
 
+#define ACCEL_SCROLL_SPEED 30
+
 void ResumeTrack();
 void PauseTrack();
 COUNT PlayingTrack();
 void JumpTrack(int abort);
-void FastForward();
-void FastReverse();
+void FastForward_Smooth();
+void FastForward_Page();
+void FastReverse_Smooth();
+void FastReverse_Page();
 void StopTrack();
 void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp);
 void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 int GetSoundData (void *data);
-int GetSoundInfo (int *len, int *offs);
+int GetSoundInfo (int max_len);
 
 #endif

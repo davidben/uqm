@@ -26,9 +26,10 @@
 bool speech_advancetrack = FALSE;
 
 void
-PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope)
+PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bool rewind)
 {	
-	uint32 i, pos = 0, offset = 0;
+	uint32 i, pos = 0;
+	sint32 offset = 0;
 
 	if (!sample || (!sample->read_chain_ptr && !sample->decoder))
 		return;
@@ -37,11 +38,14 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope)
 	if (sample->read_chain_ptr)
 	{
 		sample->decoder = sample->read_chain_ptr->decoder;
-		offset = (int) (sample->read_chain_ptr->start_time * (float)ONE_SECOND);
+		offset = (sint32) (sample->read_chain_ptr->start_time * (float)ONE_SECOND);
 	}
 	else
 		offset= 0;
-	SoundDecoder_Rewind (sample->decoder);
+	if (rewind)
+		SoundDecoder_Rewind (sample->decoder);
+	else
+		offset += (sint32)(SoundDecoder_GetTime (sample->decoder) * (float)ONE_SECOND);
 	soundSource[source].sample = sample;
 	soundSource[source].sample->play_chain_ptr = sample->read_chain_ptr;
 	soundSource[source].sample->decoder->looping = looping;
@@ -108,7 +112,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope)
 		for ( ; i <sample->num_buffers; ++i)
 			sample->buffer_tag[i] = 0;
 	soundSource[source].sbuf_size = pos;
-	soundSource[source].start_time = GetTimeCounter () - offset;
+	soundSource[source].start_time = (sint32)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
 	mixSDL_SourcePlay (soundSource[source].handle);
 }

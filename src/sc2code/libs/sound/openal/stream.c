@@ -29,10 +29,11 @@
 BOOLEAN speech_advancetrack = FALSE;
 
 void
-PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping, ALboolean scope)
+PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping, 
+		ALboolean scope, ALboolean rewind)
 {	
 	ALuint i, pos = 0;
-	ALuint offset = 0;
+	ALint offset = 0;
 	if (!sample || (!sample->read_chain_ptr && !sample->decoder))
 		return;
 
@@ -40,11 +41,14 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping, ALboolean
 	if (sample->read_chain_ptr)
 	{
 		sample->decoder = sample->read_chain_ptr->decoder;
-		offset = (int) (sample->read_chain_ptr->start_time * (float)ONE_SECOND);
+		offset = (ALint) (sample->read_chain_ptr->start_time * (float)ONE_SECOND);
 	}
 	else
 		offset= 0;
-	SoundDecoder_Rewind (sample->decoder);
+	if (rewind)
+		SoundDecoder_Rewind (sample->decoder);
+	else
+		offset += (ALint)(SoundDecoder_GetTime (sample->decoder) * (float)ONE_SECOND);
 	soundSource[source].sample = sample;
 	soundSource[source].sample->play_chain_ptr = sample->read_chain_ptr;
 	soundSource[source].sample->decoder->looping = looping;
@@ -127,7 +131,7 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping, ALboolean
 		for ( ; i <sample->num_buffers; ++i)
 			sample->buffer_tag[i] = 0;
 	soundSource[source].sbuf_size = pos;
-	soundSource[source].start_time = GetTimeCounter () - offset;
+	soundSource[source].start_time = (ALint)GetTimeCounter () - offset;
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
 }

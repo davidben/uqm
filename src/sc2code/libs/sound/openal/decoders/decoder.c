@@ -392,8 +392,9 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			return decoded_bytes;
 		}
 		case SOUNDDECODER_BUF:
+			decoder->buffer = (char *)decoder->data + decoder->pos;
 			decoder->error = SOUNDDECODER_EOF;
-			return (decoder->buffer_size);
+			return (decoder->buffer_size - decoder->pos);
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Decode(): unknown type %d\n", decoder->type);
@@ -419,6 +420,8 @@ ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 			if (decoder->buffer_size != 0)
 			{
 				decoder->type = SOUNDDECODER_BUF;
+				decoder->data = decoder->buffer;
+				decoder->pos = 0;
 				decoder->error = SOUNDDECODER_OK;
 			}
 			else
@@ -483,6 +486,8 @@ ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 			ov_clear (vf);
 			HFree (vf);
 			decoder->type = SOUNDDECODER_BUF;
+			decoder->data = decoder->buffer;
+			decoder->pos = 0;
 
 			decoder->error = SOUNDDECODER_OK;
 			return decoded_bytes;
@@ -501,17 +506,25 @@ ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 
 void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 {
+	SoundDecoder_Seek (decoder, 0);
+}
+
+// seekTime is specified in mili-seconds
+void SoundDecoder_Seek (TFB_SoundDecoder *decoder, ALuint seekTime)
+{
 	switch (decoder->type)
 	{
 		case SOUNDDECODER_WAV:
 		{
-			fprintf (stderr, "SoundDecoder_Rewind(): unimplemented for wav\n");
+			fprintf (stderr, "SoundDecoder_Seek(): unimplemented for wav\n");
 			break;
 		}
 		case SOUNDDECODER_MOD:
 		{
 			MODULE *mod = (MODULE *)decoder->data;
 			Player_Start (mod);
+			if (seekTime)
+				fprintf (stderr, "SoundDecoder_Seek(): non-zero seek positions not supported for mod\n");
 			Player_SetPosition (0);
 			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
@@ -520,18 +533,22 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 		case SOUNDDECODER_OGG:
 		{
 			int err;
+			unsigned long pcm_pos = 0;
 			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			if ((err = ov_pcm_seek (vf, decoder->start_sample)) != 0)
+			if (seekTime)
+				pcm_pos = seekTime * decoder->frequency / 1000;
+			if ((err = ov_pcm_seek (vf, decoder->start_sample + pcm_pos)) != 0)
 			{
+				fprintf (stderr, "SoundDecoder_Seek(): couldn't seek %s, error code %d\n", decoder->filename, err);
 				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s, error code %d\n", decoder->filename, err);
 				break;
 			}
 			if (decoder->format == AL_FORMAT_MONO16)
-				decoder->pos = decoder->start_sample * 2;
+				decoder->pos = (pcm_pos + decoder->start_sample) * 2;
 			else
-				decoder->pos = decoder->start_sample * 4;
+				decoder->pos = (pcm_pos + decoder->start_sample) * 4;
 
-			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
+			//fprintf (stderr, "SoundDecoder_Seek(): seek %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
@@ -542,7 +559,7 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 		}
 		default:
 		{
-			fprintf (stderr, "SoundDecoder_Rewind(): unknown type %d\n", decoder->type);
+			fprintf (stderr, "SoundDecoder_Seek(): unknown type %d\n", decoder->type);
 			break;
 		}
 	}
@@ -591,6 +608,43 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 	HFree (decoder->buffer);
 	HFree (decoder->filename);
 	HFree (decoder);
+}
+
+float SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
+{
+	if (!decoder)
+	{
+		return 0.0f;
+	}
+
+	switch (decoder->type)
+	{
+		case SOUNDDECODER_WAV:
+		{
+			//fprintf (stderr, "SoundDecoder_GetTime not supported for wav\n");
+			return 0.0f;
+		}
+		case SOUNDDECODER_MOD:
+		{
+			//fprintf (stderr, "SoundDecoder_GetTime not supported for mod\n");
+			return 0.0f;
+		}
+		case SOUNDDECODER_OGG:
+		case SOUNDDECODER_BUF:
+		{
+			//fprintf (stderr, "SoundDecoder_GetTime not supported for mod\n");
+			return (
+				(float)(
+					(decoder->pos >> (decoder->format == AL_FORMAT_MONO16 ? 1 : 2))
+					- decoder->start_sample
+				 ) / decoder->frequency);
+		}
+		default:
+		{
+			fprintf (stderr, "SoundDecoder_GetTime(): unknown type %d\n", decoder->type);
+			return 0.0f;
+		}
+	}
 }
 
 #endif

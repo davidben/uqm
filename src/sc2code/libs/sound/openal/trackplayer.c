@@ -30,6 +30,7 @@ static int tcur;              //currently playing subtitle track
 static int cur_page = 0;      //current page of subtitle track 
 static int no_page_break = 0;
 static int no_voice;
+static int track_pos_changed = 0; // set whenever  ff, frev is enabled
 
 
 #define MAX_CLIPS 50
@@ -71,12 +72,14 @@ advance_track (int channel_finished)
 {
 	if (channel_finished <= 0)
 	{
-		if (sound_sample->decoder)
+		if (sound_sample->read_chain_ptr || sound_sample->decoder)
 		{
 			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f);
+					speechVolumeScale != 0.0f,
+					!track_pos_changed);
+			track_pos_changed = 0;
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		}
 		else if (channel_finished == 0)
@@ -89,14 +92,14 @@ advance_track (int channel_finished)
 void
 ResumeTrack ()
 {
-	if (sound_sample && sound_sample->decoder)
+	if (sound_sample && sound_sample->read_chain_ptr)
 	{
 		ALint state;
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		alGetSourcei (soundSource[SPEECH_SOURCE].handle, AL_SOURCE_STATE, &state);
 
-		if (!soundSource[SPEECH_SOURCE].stream_should_be_playing && 
+		if (!track_pos_changed && !soundSource[SPEECH_SOURCE].stream_should_be_playing && 
 			state == AL_PAUSED)
 		{
 			ResumeStream (SPEECH_SOURCE);
@@ -425,31 +428,90 @@ PauseTrack ()
 }
 
 void
-FastReverse ()
+recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, ALint offset)
+{
+	TFB_SoundChain *cur_chain = first_chain;
+	while (cur_chain->next &&
+			(ALint)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
+		cur_chain = cur_chain->next;
+	if (cur_chain->tag.type)
+		DoTrackTag (&cur_chain->tag);
+	if ((ALint)((cur_chain->start_time + cur_chain->decoder->length) * (float)ONE_SECOND) < offset)
+	{
+		sample->read_chain_ptr = NULL;
+		sample->decoder = NULL;
+	}
+	else
+	{
+		sample->read_chain_ptr = cur_chain;
+		SoundDecoder_Seek(sample->read_chain_ptr->decoder,
+				(ALuint)(1000 * (offset / (float)ONE_SECOND - cur_chain->start_time)));
+	}
+}
+
+void
+FastReverse_Smooth ()
+{
+	if (sound_sample)
+	{
+		ALint offset;
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PauseStream (SPEECH_SOURCE);
+		track_pos_changed = 1;
+		soundSource[SPEECH_SOURCE].start_time += ACCEL_SCROLL_SPEED;
+		if (soundSource[SPEECH_SOURCE].start_time > (ALint)GetTimeCounter())
+		{
+			soundSource[SPEECH_SOURCE].start_time = GetTimeCounter();
+			offset = 0;
+		}
+		else
+			offset = GetTimeCounter() - soundSource[SPEECH_SOURCE].start_time;
+		recompute_track_pos(soundSource[SPEECH_SOURCE].sample, first_chain, offset);
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PlayingTrack();
+
+	}
+}
+
+void
+FastReverse_Page ()
 {
 	if (sound_sample)
 	{
 		TFB_SoundChain *prev_chain;
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-//		fprintf(stderr, "playing %s at %d\n", 
-//			sound_sample->play_chain_ptr->decoder->filename, 
-//			sound_sample->play_chain_ptr->decoder->start_sample); 
 		prev_chain = get_previous_chain(first_chain, sound_sample->play_chain_ptr);
-//		fprintf(stderr, "now playing %s at %d\n",
-//			prev_chain->decoder->filename, prev_chain->decoder->start_sample); 
 		if (prev_chain)
 		{
 			sound_sample->read_chain_ptr = prev_chain;
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f);
+					speechVolumeScale != 0.0f, AL_TRUE);
 		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
 }
 
 void
-FastForward ()
+FastForward_Smooth ()
+{
+	if (sound_sample)
+	{
+		ALint offset;
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PauseStream (SPEECH_SOURCE);
+		soundSource[SPEECH_SOURCE].start_time -= ACCEL_SCROLL_SPEED;
+		offset = GetTimeCounter() - soundSource[SPEECH_SOURCE].start_time;
+		track_pos_changed = 1;
+		recompute_track_pos(sound_sample, first_chain, offset);
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PlayingTrack();
+
+	}
+}
+
+void
+FastForward_Page ()
 {
 	if (sound_sample)
 	{
@@ -462,7 +524,7 @@ FastForward ()
 			sound_sample->read_chain_ptr = cur_ptr->next;
 			PlayStream (sound_sample,
 					SPEECH_SOURCE, AL_FALSE,
-					speechVolumeScale != 0.0f);
+					speechVolumeScale != 0.0f, AL_TRUE);
 		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
@@ -620,22 +682,24 @@ GetSoundData (void *data)
 
 // tells current position of streaming speech
 int
-GetSoundInfo (int *length, int *offset)
+GetSoundInfo (int max_len)
 {	
+	ALuint length, offset;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	if (soundSource[SPEECH_SOURCE].sample)
 	{
-		*length = (int) (soundSource[SPEECH_SOURCE].sample->length * (float)ONE_SECOND);
-		*offset = (int) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
+		length = (ALuint) (soundSource[SPEECH_SOURCE].sample->length * (float)ONE_SECOND);
+		offset = (ALuint) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
 	}
 	else
 	{
-		*length = 1;
-		*offset = 0;
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		return (0);
 	}
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-
-	return 1;
+	if (offset > length)
+		return max_len;
+	return (int)(max_len * offset / length);
 }
 
 #endif

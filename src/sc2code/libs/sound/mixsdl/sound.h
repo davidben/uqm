@@ -72,7 +72,7 @@ typedef struct tfb_soundsource
 	mixSDL_Object handle;
 	bool stream_should_be_playing;
 	Mutex stream_mutex;
-	uint32 start_time;
+	sint32 start_time;
 
 	// for oscilloscope
 	void *sbuffer; 

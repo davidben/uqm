@@ -86,6 +86,8 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, uint32 buffer_size,
 									 uint32 startTime, uint32 runTime);
 uint32 SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 uint32 SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
+float SoundDecoder_GetTime (TFB_SoundDecoder *decoder);
+void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 pcm_pos);
 void SoundDecoder_Rewind (TFB_SoundDecoder *decoder);
 void SoundDecoder_Free (TFB_SoundDecoder *decoder);
 

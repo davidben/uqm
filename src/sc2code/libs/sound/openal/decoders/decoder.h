@@ -73,6 +73,8 @@ void SoundDecoder_Uninit (void);
 TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size, unsigned long startTime, unsigned long runTime);
 ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
+float SoundDecoder_GetTime (TFB_SoundDecoder *decoder);
+void SoundDecoder_Seek (TFB_SoundDecoder *decoder, ALuint pcm_pos);
 void SoundDecoder_Rewind (TFB_SoundDecoder *decoder);
 void SoundDecoder_Free (TFB_SoundDecoder *decoder);
 

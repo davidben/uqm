@@ -128,13 +128,11 @@ GetSoundData (char* data)
 
 // Status: Unimplemented
 int
-GetSoundInfo (int *length, int *offset)
+GetSoundInfo (int length)
 		// Umm... How does it know which sound?
 {
 	//fprintf (stderr, "Unimplemented function activated: GetSoundInfo()\n");
-	*length = 1;
-	*offset = 0;
-	return 1;
+	return 0;
 }
 
 // Status: Unimplemented

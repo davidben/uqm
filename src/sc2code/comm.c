@@ -1220,27 +1220,41 @@ SpewPhrases (COUNT wait_track)
 
 		if (which_track)
 		{
-			if (InputState != LastInputState && GetInputXComponent (InputState) > 0)
+			if (GetInputXComponent (InputState) > 0)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
-				FastForward ();
+				if (optSmoothScroll == OPT_PC && InputState != LastInputState)
+					FastForward_Page ();
+				else if (optSmoothScroll == OPT_3DO)
+					FastForward_Smooth ();
 				ContinuityBreak = TRUE;
 				CommData.AlienFrame = 0;
 			}
-			else if (InputState != LastInputState && GetInputXComponent (InputState) < 0)
+			else if (GetInputXComponent (InputState) < 0)
 			{
 Rewind:
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
-				FastReverse ();
+				if (optSmoothScroll == OPT_PC && InputState != LastInputState)
+					FastReverse_Page ();
+				else if (optSmoothScroll == OPT_3DO)
+					FastReverse_Smooth ();
 				ContinuityBreak = TRUE;
 				CommData.AlienFrame = 0;
 			}
-			else if (InputState != LastInputState && ContinuityBreak)
+			else if (ContinuityBreak)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
 				if ((which_track = PlayingTrack ())
-						&& which_track <= wait_track) ;
-//					ResumeTrack ();
+						&& which_track <= wait_track)
+				{
+					if (optSmoothScroll == OPT_3DO)
+						ResumeTrack ();
+				} 
+				else
+				{
+					CommData.AlienFrame = F;
+					return (FALSE);
+				}
 				ContinuityBreak = FALSE;
 			}
 			else if (which_track == wait_track
@@ -2103,7 +2117,7 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp, int method)
 				talk_length = *cur_sub_ts++ * ONE_SECOND /1000;
 				silence_length = 0;
 				TimeOut += talk_length;
-				fprintf (stderr, "Sound length is %d\n", talk_length);
+				//fprintf (stderr, "Sound length is %d\n", talk_length);
 			}
 			else if (! disable_timer)
 			{

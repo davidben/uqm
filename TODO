@@ -101,8 +101,6 @@ Implementation bugs (low priority):
 	vux001.ogg utwig072.ogg umgah027.ogg talkp068.ogg spaho007.ogg
 	syree012.ogg syree021.ogg syree028.ogg syree069.ogg orz000.ogg
   - Using arrow keys with SDL_mixer will not work.
-  - Arrow keys for mixsdl/openAL skip forward/back one page.  We should also
-    have a 'smooth' scrolling mechanism like the 3do
   - More work should be done to better sync the text we have.
 - Slider doesn't track the audio very well
 Stuff still to do (large):

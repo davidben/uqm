@@ -56,15 +56,13 @@ SetSliderImage (FRAME f)
 void
 Slider (void)
 {
-	int len, offs;
+	int offs;
+	static int last_offs = -1;
 	
-	if (GetSoundInfo (&len, &offs))
+	if ((offs = GetSoundInfo (sliderSpace)) != last_offs)
 	{
-		if (offs > len)
-			offs = len;
-		if (len == 0)
-			len = 1;
-		buttonStamp.origin.x = sliderStamp.origin.x + sliderSpace * offs / len;
+		last_offs = offs;
+		buttonStamp.origin.x = sliderStamp.origin.x + offs;
 		BatchGraphics ();
 		DrawStamp (&sliderStamp);
 		DrawStamp (&buttonStamp);

@@ -34,6 +34,7 @@ extern int optWhichMusic;
 extern int optWhichCoarseScan;
 extern int optWhichMenu;
 extern int optWhichFonts;
+extern int optSmoothScroll;
 
 extern BOOLEAN optSubtitles;
 
