@@ -13,8 +13,8 @@ LANGUAGE 0x09, 0x01
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-101                ICON    DISCARDABLE     "ur-quan1.ICO"
-102                ICON    DISCARDABLE     "sis1.ICO"
-103                ICON    DISCARDABLE     "ur-quan2.ICO"
-104                ICON    DISCARDABLE     "kohr-ah1.ICO"
-105                ICON    DISCARDABLE     "starcon2.ICO"
+101                ICON    DISCARDABLE     "ur-quan1.ico"
+102                ICON    DISCARDABLE     "sis1.ico"
+103                ICON    DISCARDABLE     "ur-quan2.ico"
+104                ICON    DISCARDABLE     "kohr-ah1.ico"
+105                ICON    DISCARDABLE     "starcon2.ico"
