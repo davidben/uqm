@@ -1,5 +1,5 @@
 case "$OSNAME" in
-	MINGW32)
+	MINGW32*)
 		uqm_EXTRA_OFILES="UrQuanMasters.rc.o"
 		;;
 esac
