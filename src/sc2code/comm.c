@@ -1164,6 +1164,7 @@ SpewPhrases (COUNT wait_track)
 	COUNT which_track;
 	INPUT_STATE InputState, LastInputState = (INPUT_STATE)~0;
 	FRAME F;
+	BOOLEAN passed = TRUE;
 
 	TimeIn = GetTimeCounter ();
 
@@ -1252,11 +1253,9 @@ Rewind:
 				} 
 				else
 				{
-					CommData.AlienFrame = F;
-					if (! which_track)
-						return (FALSE);
-					else
-						return (TRUE);
+					ContinuityBreak = FALSE;
+					passed = (which_track != 0);
+					break;
 				}
 				ContinuityBreak = FALSE;
 			}
@@ -1272,8 +1271,7 @@ Rewind:
 
 	if (wait_track == (COUNT)~0)
 		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
-
-	return (TRUE);
+	return (passed);
 }
 
 void

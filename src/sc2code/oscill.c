@@ -21,6 +21,7 @@
 
 static STAMP sliderStamp;
 static STAMP buttonStamp;
+static BOOLEAN sliderChanged = FALSE;
 int sliderSpace;  // slider width - button width
 
 
@@ -50,6 +51,7 @@ InitSlider (int x, int y, int width, int height,
 void
 SetSliderImage (FRAME f)
 {
+	sliderChanged = TRUE;
 	buttonStamp.frame = f;
 }
 
@@ -59,8 +61,9 @@ Slider (void)
 	int offs;
 	static int last_offs = -1;
 	
-	if ((offs = GetSoundInfo (sliderSpace)) != last_offs)
+	if ((offs = GetSoundInfo (sliderSpace)) != last_offs ||sliderChanged)
 	{
+		sliderChanged = FALSE;
 		last_offs = offs;
 		buttonStamp.origin.x = sliderStamp.origin.x + offs;
 		BatchGraphics ();

@@ -36,6 +36,8 @@ static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
 static UNICODE *TrackTextArray[MAX_CLIPS]; //storage for subtitlle text
 static Mutex track_mutex; //protects tcur and tct
+void recompute_track_pos (TFB_SoundSample *sample, 
+						  TFB_SoundChain *first_chain, sint32 offset);
 
 //JumpTrack currently aborts the current track. However, it doesn't clear the
 //data-structures as StopTrack does.  this allows for rewind even after the
@@ -46,14 +48,20 @@ JumpTrack (int abort)
 {
 	if (sound_sample)
 	{
+		uint32 cur_time;
+		sint32 total_length = (sint32)((last_chain->start_time + 
+				last_chain->decoder->length) * (float)ONE_SECOND);
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		StopStream (SPEECH_SOURCE);
-		if (abort)
-		{
-			sound_sample->read_chain_ptr = NULL;
-			sound_sample->decoder = NULL;
-		}
+		PauseStream (SPEECH_SOURCE);
+		cur_time = GetTimeCounter();
+		soundSource[SPEECH_SOURCE].start_time = 
+				(sint32)cur_time - total_length;;
+		track_pos_changed = 1;
+		sound_sample->play_chain_ptr = last_chain;
+		recompute_track_pos(sound_sample, first_chain, total_length);
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PlayingTrack();
+		return;
 	}
 
 	no_voice = 1;
@@ -124,6 +132,8 @@ PlayingTrack ()
 {
 	// this is not a great way to detect whether the track is playing,
 	// but as it should work during fast-forward/rewind, 'PlayingStream' can't be used
+//	if (tct == 0)
+//		return ((COUNT)~0);
 	if (sound_sample && is_sample_playing (sound_sample))
 	{
 		int last_track, last_page;
@@ -461,18 +471,26 @@ FastReverse_Smooth ()
 	if (sound_sample)
 	{
 		sint32 offset;
+		uint32 cur_time;
+		sint32 total_length = (sint32)((last_chain->start_time + 
+				last_chain->decoder->length) * (float)ONE_SECOND);
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
+		cur_time = GetTimeCounter();
 		track_pos_changed = 1;
+		if ((sint32)cur_time - soundSource[SPEECH_SOURCE].start_time > total_length)
+			soundSource[SPEECH_SOURCE].start_time = 
+				(sint32)cur_time - total_length;
+
 		soundSource[SPEECH_SOURCE].start_time += ACCEL_SCROLL_SPEED;
-		if (soundSource[SPEECH_SOURCE].start_time > (sint32)GetTimeCounter())
+		if (soundSource[SPEECH_SOURCE].start_time > (sint32)cur_time)
 		{
-			soundSource[SPEECH_SOURCE].start_time = GetTimeCounter();
+			soundSource[SPEECH_SOURCE].start_time = cur_time;
 			offset = 0;
 		}
 		else
-			offset = GetTimeCounter() - soundSource[SPEECH_SOURCE].start_time;
-		recompute_track_pos(soundSource[SPEECH_SOURCE].sample, first_chain, offset);
+			offset = cur_time - soundSource[SPEECH_SOURCE].start_time;
+		recompute_track_pos(sound_sample, first_chain, offset);
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PlayingTrack();
 
@@ -504,10 +522,17 @@ FastForward_Smooth ()
 	if (sound_sample)
 	{
 		sint32 offset;
+		uint32 cur_time;
+		sint32 total_length = (sint32)((last_chain->start_time + 
+				last_chain->decoder->length) * (float)ONE_SECOND);
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
+		cur_time = GetTimeCounter();
 		soundSource[SPEECH_SOURCE].start_time -= ACCEL_SCROLL_SPEED;
-		offset = GetTimeCounter() - soundSource[SPEECH_SOURCE].start_time;
+		if ((sint32)cur_time - soundSource[SPEECH_SOURCE].start_time > total_length)
+			soundSource[SPEECH_SOURCE].start_time = 
+				(sint32)cur_time - total_length;
+		offset = cur_time - soundSource[SPEECH_SOURCE].start_time;
 		track_pos_changed = 1;
 		recompute_track_pos(sound_sample, first_chain, offset);
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
