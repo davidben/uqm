@@ -659,22 +659,30 @@ void SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 			else
 				decoder->pos = (pcm_pos + decoder->start_sample) * 4;
 
-			//fprintf (stderr, "SoundDecoder_Seek(): seek %s\n", decoder->filename);
+			//fprintf (stderr, "SoundDecoder_Seek(): %s (start: %d pos: %d end: %d)\n", 
+			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
 		case SOUNDDECODER_BUF:
 		{
-			decoder->pos = seekTime * decoder->frequency *
-				(decoder->format == decoder_formats.mono16 ? 2 : 4) / 1000;
+			uint32 pcm_pos = seekTime * decoder->frequency / 1000;
+			decoder->pos = pcm_pos *
+				(decoder->format == decoder_formats.mono16 ? 2 : 4);
+			//fprintf (stderr, "SoundDecoder_Seek(): %s(buf) (start: %d pos: %d end: %d)\n", 
+			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
 		case SOUNDDECODER_NULL:
-			decoder->pos = seekTime * decoder->frequency * 2 / 1000;
+		{
+			uint32 pcm_pos = seekTime * decoder->frequency / 1000;
+			decoder->pos = pcm_pos * 2;
+			//fprintf (stderr, "SoundDecoder_Seek(): %s(null) (start: %d pos: %d end: %d)\n", 
+			//	decoder->filename, decoder->start_sample, pcm_pos, decoder->end_sample);
 			decoder->error = SOUNDDECODER_OK;
 			return;
-
+		}
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Seek(): unknown type %d\n", decoder->type);

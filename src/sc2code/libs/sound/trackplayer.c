@@ -185,7 +185,7 @@ DoTrackTag (TFB_SoundTag *tag)
 	}
 }
 
-void
+int
 GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 {
 	int pos;
@@ -207,6 +207,7 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 		if (*TimeStamps)
 			TimeStamps++;
 	}
+	return (num);
 }
 
 #define TEXT_SPEED 70
@@ -413,10 +414,12 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 			}
 			else
 				tct++;
-			if (TimeStamp)
-				GetTimeStamps (TimeStamp, time_stamps);
 
 			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
+
+			if (TimeStamp)
+				if ((GetTimeStamps (TimeStamp, time_stamps) + 1) != num_pages)
+					fprintf (stderr, "SpliceTrack(): number of timestamps doesn't match number of pages!\n");
 
 			startTime = 0;
 			for (page_counter = 0; page_counter < num_pages; page_counter++)
@@ -446,7 +449,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, void (*
 				}
 				startTime += abs (time_stamps[page_counter]);
 			
-				// fprintf (stderr, "page (%d of %d): %d\n",page_counter, num_pages, startTime);
+				// fprintf (stderr, "page (%d of %d): %d ts: %d\n",page_counter, num_pages, startTime, time_stamps[page_counter]);
 				if (last_chain->decoder)
 				{
 					//fprintf (stderr, "    decoder: %s, rate %d format %x\n",
@@ -500,7 +503,11 @@ recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *first_chain, sint3
 		return;
 	while (cur_chain->next &&
 			(sint32)(cur_chain->next->start_time * (float)ONE_SECOND) < offset)
+	{
+		if (cur_chain->tag.type)
+			DoTrackTag (&cur_chain->tag);
 		cur_chain = cur_chain->next;
+	}
 	if (cur_chain->tag.type)
 		DoTrackTag (&cur_chain->tag);
 	if ((sint32)((cur_chain->start_time + cur_chain->decoder->length) * (float)ONE_SECOND) < offset)

@@ -536,7 +536,7 @@ In exchange, we will give you
 
 #(SOLD_RAINBOW_LOCATIONS3)	melno204.ogg
  Credits.
-	     
+
 #(sell_precursor_find)
 We found a Precursor artifact. Do you want it?
 
