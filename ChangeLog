@@ -1,4 +1,13 @@
 Changes towards version 0.3:
+- Dirty hack to avoid a warning about the "ignored.key" hack - Svdb
+- Typo 'natually' fixed in Arilou speech - SvdB
+- uio: Fixed a bug which could cause spurious warnings when using .zip files
+  generated from DOS/Windows - SvdB
+- uio: Fixed a potentially memory-corrupting bug when in a .zip file a subdir
+  is described before a dir higher in the directory structure.
+- uio: Fixed an incomplete message that would only show when handling a
+  specific error - SvdB
+- Added doc/checklist file - SvdB
 - RUs properly cleared in savegame display, from Paxtez, chmmravatar
 - Support for up to 50 savegames, from Paxtez
 - Action names are properly null-terminated, stops a crash for some
