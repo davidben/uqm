@@ -224,14 +224,6 @@ FreePlanet (void)
 
 	HFree (pSolarSysState->isPFADefined);
 	pSolarSysState->isPFADefined = 0;
-	for (i = 0; i < 2; i++)
-	{
-		if (pSolarSysState->ScaleFrame[i]) 
-		{
-			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
-			pSolarSysState->ScaleFrame[i]=0;
-		}
-	}
 	if (pSolarSysState->TintFrame)
 			DestroyDrawable (ReleaseDrawable (pSolarSysState->TintFrame));
 	pSolarSysState->TintFrame = 0;

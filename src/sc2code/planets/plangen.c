@@ -54,9 +54,6 @@ void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, i
 
 FRAME scale16xRandomizeFrame(FRAME FramePtr);
 
-COUNT PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from);
-
-
 DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 
 #define NUM_BATCH_POINTS 64
@@ -482,15 +479,16 @@ init_zoom_array (COUNT *zoom_arr)
 {
 	float frames_per_sec;
 	int num_frames, i;
+	int base = GSCALE_IDENTITY;
 
 	frames_per_sec = (float)MAP_WIDTH / ROTATION_TIME;
 	num_frames = (int)((frames_per_sec * ZOOM_TIME)  + 0.5);
 	for (i = 0; i < num_frames; i++)
 	{
-		zoom_arr[i] = (COUNT) (MAP_HEIGHT * ZOOM_FACT1 * 
+		zoom_arr[i] = (COUNT) (base * ZOOM_FACT1 * 
 				(1 - exp (-(i + 1) / (ZOOM_FACT2 * num_frames))));
 	}
-	zoom_arr[i] = MAP_HEIGHT;
+	zoom_arr[i] = base;
 	return i;
 }
 
@@ -1396,7 +1394,6 @@ rotate_planet_task (void *data)
 
 	zoom_from = (UBYTE)TFB_Random () & 0x03;
 	zoom_frames = init_zoom_array (zoom_arr);
-	PlanetZoomOrbit (init_x, zoom_arr[frame_num++], zoom_from);
 	zoom_amt = zoom_arr[frame_num];
 
 	TimeIn = GetTimeCounter ();
@@ -1447,7 +1444,7 @@ rotate_planet_task (void *data)
 			}
 			if (zooming)
 			{
-				PlanetZoomOrbit (x, zoom_arr[frame_num++], zoom_from);
+				frame_num++;
 				if (frame_num > zoom_frames)
 				{
 					fprintf (stderr, "rotate_planet_task() : zoom frame out of bounds!\n");

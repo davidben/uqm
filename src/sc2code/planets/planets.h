@@ -168,7 +168,6 @@ typedef struct solarsys_state
 	FRAME PlanetSideFrame[6];
 	FRAME PlanetFrameArray;
 	BYTE *isPFADefined;
-	FRAME ScaleFrame[2];
 	FRAME ShieldFrame;
 	FRAME TintFrame;
 	UWORD Tint_rgb;

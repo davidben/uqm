@@ -49,48 +49,15 @@ void RepairBackRect (PRECT pRect);
 // The speed to zoom in.
 #define PLANET_ZOOM_SPEED 2
 
-void
-PlanetZoomOrbit (int x, COUNT zoom_amt, UBYTE zoom_from)
-{
-	FRAME pFrame[2];
-	COUNT i, num_frames;
-
-	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
-	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
-	if (num_frames == 2)
-		pFrame[1] = pSolarSysState->ShieldFrame;
-	//  we're zooming in, take care of scaling the frames
-	for (i=0; i < num_frames; i++)
-	{
-		COUNT frameh, this_scale;
-		if (pSolarSysState->ScaleFrame[i])
-		{
-			DestroyDrawable (ReleaseDrawable (pSolarSysState->ScaleFrame[i]));
-			pSolarSysState->ScaleFrame[i] = 0;
-		}
-		frameh = GetFrameHeight (pFrame[i]);
-		this_scale = frameh * zoom_amt / MAP_HEIGHT;
-		if (! (this_scale & 0x01))
-			this_scale++;
-		pSolarSysState->ScaleFrame[i] = stretch_frame (
-				pFrame[i], this_scale, this_scale, 0
-				);
-		SetFrameHot (
-				pSolarSysState->ScaleFrame[i], 
-				MAKE_HOT_SPOT ((COORD)((this_scale >> 1) + 1), 
-					(COORD)((this_scale >> 1) + 1)));
-		pFrame[i] = pSolarSysState->ScaleFrame[i];
-	}
-}
-
 PRECT
 RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoomr)
 {
 	STAMP s;
 	FRAME pFrame[2];
-	COUNT i, num_frames;
+	COUNT i, num_frames, old_scale;
 	RECT *rp = NULL;
 	CONTEXT OldContext;
+	int base = GSCALE_IDENTITY;
 
 	num_frames = (pSolarSysState->ShieldFrame == 0) ? 1 : 2;
 	pFrame[0] = SetAbsFrameIndex (pSolarSysState->PlanetFrameArray, (COUNT)(x + 1));
@@ -101,11 +68,11 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 		if(zoomr->extent.width)
 			rp = zoomr;
 		//  we're zooming in, take care of scaling the frames
-		for (i=0; i < num_frames; i++)
-			pFrame[i] = pSolarSysState->ScaleFrame[i];
+//		for (i=0; i < num_frames; i++)
+//			pFrame[i] = pSolarSysState->ScaleFrame[i];
 		//Translate the planet so it comes from the bottom right corner
-		dx += ((zoom_from & 0x01) ? 1 : -1) * dx * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
-		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (MAP_HEIGHT - scale_amt) / MAP_HEIGHT;
+		dx += ((zoom_from & 0x01) ? 1 : -1) * dx * (base - scale_amt) / base;
+		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (base - scale_amt) / base;
 	}
 
 	//SetSemaphore (GraphicsSem);
@@ -126,16 +93,19 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 			RepairBackRect (rp);
 		s.origin.x = dx;
 		s.origin.y = dy;
+		old_scale = GetGraphicScale ();
+		SetGraphicScale (scale_amt);
 		for (i = 0; i < num_frames; i++)
 		{
 			s.frame = pFrame[i];
 			DrawStamp (&s);
 		}
+		SetGraphicScale (old_scale);
 		UnbatchGraphics ();
 		SetContext (OldContext);
 	}
 	//ClearSemaphore (GraphicsSem);
-	if (scale_amt && scale_amt != MAP_HEIGHT)
+	if (scale_amt && scale_amt != base)
 	{
 		GetFrameRect (pFrame[num_frames - 1], zoomr);
 		zoomr->corner.x += dx;

@@ -259,7 +259,7 @@ void blurSurface32 (SDL_Surface *src)
 		}
 	}
 	SDL_UnlockSurface (src);
-	for(i = 1; i < ARRAY_SIZE; i++)
+	for(i = 0; i < ARRAY_SIZE; i++)
 		HFree (blur_array[i]);
 #ifdef RND_BLUR_PROFILE
 	fprintf(stderr, "Blur took %f seconds\n",(float)(clock() - t1) / CLOCKS_PER_SEC);

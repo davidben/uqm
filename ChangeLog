@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fixed a long standing memory leak relating  to planet surface -PhracturedBlue
 - Scaled images no longer allocate/free memory all the time -McMartin
 - Planet spin on lander launch/return is now enabled -PhracturedBlue
 - Fix skipping after planet scan, landing (closes bug 31) -PhracturedBlue
