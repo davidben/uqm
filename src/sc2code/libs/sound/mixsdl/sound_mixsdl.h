@@ -14,11 +14,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
+/* Mixer abstraction layer for MixSDL
  */
 #include "mixer.h"
 
+/*************************************************
+ *  Interface Types
+ */
 #define TFBSound_Object mixSDL_Object
+#define TFBSound_IntVal mixSDL_IntVal
 
 /*************************************************
  *  General interface

@@ -119,7 +119,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 void
 StopStream (uint32 source)
 {
-	uint32 queued, processed;
+	TFBSound_IntVal queued, processed;
 	uint32 *buffer;
 
 	soundSource[source].stream_should_be_playing = FALSE;
@@ -188,8 +188,8 @@ StreamDecoderTaskFunc (void *data)
 
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
-			uint32 processed, queued;
-			TFBSound_Object state;
+			TFBSound_IntVal processed, queued;
+			TFBSound_IntVal state;
 			bool do_speech_advancetrack = false;
 
 			LockMutex (soundSource[i].stream_mutex);
@@ -268,7 +268,7 @@ StreamDecoderTaskFunc (void *data)
 					}
 				}
 				{
-					uint32 buf_size;
+					TFBSound_IntVal buf_size;
 					soundSource[i].sbuf_lasttime = GetTimeCounter ();
 					TFBSound_GetBufferi(buffer, TFBSOUND_SIZE, &buf_size);
 					soundSource[i].sbuf_offset += buf_size;

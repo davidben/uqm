@@ -134,8 +134,12 @@ typedef enum
 
 } mixSDL_Format;
 
+/*************************************************
+ *  Interface Types
+ */
 
-typedef int mixSDL_Object;
+typedef unsigned int mixSDL_Object;
+typedef int mixSDL_IntVal;
 
 typedef struct _mixSDL_Buffer
 {
@@ -191,11 +195,11 @@ void mixSDL_GenSources (uint32 n, mixSDL_Object *psrcobj);
 void mixSDL_DeleteSources (uint32 n, mixSDL_Object *psrcobj);
 bool mixSDL_IsSource (mixSDL_Object srcobj);
 void mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
-		mixSDL_Object value);
+		mixSDL_IntVal value);
 void mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		float value);
 void mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
-		mixSDL_Object *value);
+		mixSDL_IntVal *value);
 void mixSDL_GetSourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 		float *value);
 void mixSDL_SourceRewind (mixSDL_Object srcobj);
@@ -214,7 +218,7 @@ void mixSDL_GenBuffers (uint32 n, mixSDL_Object *pbufobj);
 void mixSDL_DeleteBuffers (uint32 n, mixSDL_Object *pbufobj);
 bool mixSDL_IsBuffer (mixSDL_Object bufobj);
 void mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
-		mixSDL_Object *value);
+		mixSDL_IntVal *value);
 void mixSDL_BufferData (mixSDL_Object bufobj, uint32 format, void* data,
 		uint32 size, uint32 freq);
 

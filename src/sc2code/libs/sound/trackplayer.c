@@ -94,7 +94,7 @@ ResumeTrack ()
 {
 	if (sound_sample && sound_sample->read_chain_ptr)
 	{
-		uint32 state;
+		TFBSound_IntVal state;
 
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		TFBSound_GetSourcei (soundSource[SPEECH_SOURCE].handle, TFBSOUND_SOURCE_STATE, &state);

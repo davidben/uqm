@@ -27,7 +27,7 @@
 #elif  defined SOUNDMODULE_OPENAL
 #include "openal/sound_openal.h"
 #endif
-#include "libs/sound/decoders/decoder.h"
+#include "decoders/decoder.h"
 
 
 #define FIRST_SFX_SOURCE 0

@@ -56,7 +56,7 @@ SoundPlaying (void)
 		}
 		else
 		{
-			uint32 state;
+			TFBSound_IntVal state;
 			TFBSound_GetSourcei (soundSource[i].handle, TFBSOUND_SOURCE_STATE, &state);
 			if (state == TFBSOUND_PLAYING)
 				return TRUE;

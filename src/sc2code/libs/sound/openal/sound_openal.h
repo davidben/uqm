@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* OpenAL specific code by Mika Kolehmainen, 2002-10-23
+/* Mixer abstraction layer for OpenAL
  */
 
 #ifdef WIN32
@@ -28,7 +28,11 @@
 
 #include "mixer.h"
 
+/*************************************************
+ *  Interface Types
+ */
 #define TFBSound_Object ALuint
+#define TFBSound_IntVal ALint
 
 /*************************************************
  *  General interface

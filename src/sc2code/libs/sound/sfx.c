@@ -47,7 +47,7 @@ StopChannel(COUNT channel, unsigned char Priority)
 BOOLEAN
 ChannelPlaying (COUNT WhichChannel)
 {
-	TFBSound_Object state;
+	TFBSound_IntVal state;
 	
 	TFBSound_GetSourcei (soundSource[WhichChannel].handle, TFBSOUND_SOURCE_STATE, &state);
 	if (state == TFBSOUND_PLAYING)

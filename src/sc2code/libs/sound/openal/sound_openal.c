@@ -99,7 +99,7 @@ TFB_InitSound (int driver, int flags)
 	
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
-	SetMusicVolume (musicVolume);
+	SetMusicVolume ((COUNT) musicVolume);
 		
 	// NOTE: change this if implementing 3D sound stuff
 	alDistanceModel (AL_NONE);

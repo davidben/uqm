@@ -406,7 +406,7 @@ mixSDL_IsSource (mixSDL_Object srcobj)
 /* set source integer property */
 void
 mixSDL_Sourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
-		mixSDL_Object value)
+		mixSDL_IntVal value)
 {
 	mixSDL_Source *src = (mixSDL_Source *) srcobj;
 
@@ -504,7 +504,7 @@ mixSDL_Sourcef (mixSDL_Object srcobj, mixSDL_SourceProp pname, float value)
 /* get source integer property */
 void
 mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
-		mixSDL_Object *value)
+		mixSDL_IntVal *value)
 {
 	mixSDL_Source *src = (mixSDL_Source *) srcobj;
 
@@ -534,7 +534,7 @@ mixSDL_GetSourcei (mixSDL_Object srcobj, mixSDL_SourceProp pname,
 			*value = src->looping;
 			break;
 		case MIX_BUFFER:
-			*value = (mixSDL_Object) src->firstqueued;
+			*value = (mixSDL_IntVal) src->firstqueued;
 			break;
 		case MIX_SOURCE_STATE:
 			*value = src->state;
@@ -1292,7 +1292,7 @@ mixSDL_IsBuffer (mixSDL_Object bufobj)
 /* get buffer property */
 void
 mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
-		mixSDL_Object *value)
+		mixSDL_IntVal *value)
 {
 	mixSDL_Buffer *buf = (mixSDL_Buffer *) bufobj;
 
@@ -1343,7 +1343,7 @@ mixSDL_GetBufferi (mixSDL_Object bufobj, mixSDL_BufferProp pname,
 			*value = buf->orgsize;
 			break;
 		case MIX_DATA:
-			*value = (mixSDL_Object) buf->orgdata;
+			*value = (mixSDL_IntVal) buf->orgdata;
 			break;
 		default:
 			mixSDL_SetError (MIX_INVALID_ENUM);
