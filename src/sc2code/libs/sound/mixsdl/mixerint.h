@@ -122,4 +122,4 @@ static void mixSDL_mix_lowq (uint8 *stream, sint32 len);
 static __inline__ bool mixSDL_SourceGetNextSample (mixSDL_Source *src,
 		sint32* samp);
 
-#endif /* MIXER_H */
+#endif /* MIXERINT_H */
