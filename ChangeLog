@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Added uio_getFileLocation() and uio_getMountFileSystemType() to uio.
+  Also some small improvements. - SvdB
 - Fixed fuel usage estimate to selected destination on the starmap.
   (original bug, not reported) - SvdB
 - Sound decoders refactoring: decoders are now virtualized,
