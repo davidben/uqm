@@ -103,6 +103,7 @@ Implementation bugs (low priority):
   - Using arrow keys with SDL_mixer will not work.
   - More work should be done to better sync the text we have.
 - Slider doesn't track the audio very well
+
 Stuff still to do (large):
 - add some way to configure your keys
   (assigned to mstr)
@@ -152,7 +153,7 @@ Stuff still to do (small):
   - Also remove the values that are pointers into the heap, since those get
     cached and restored by the load routine anyway.
 - update the current types.h draft for target platforms as needed 
-- Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
+- Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while yellow on PC.
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
 - add some icon for the game in the cvs tree
