@@ -19,12 +19,12 @@
 #ifndef WIN32
 #include <unistd.h>
 #include <getopt.h>
+#include "config.h"
 #else
 #include <direct.h>
 #include "getopt/getopt.h"
 #endif
 
-#include "config.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/input/input_common.h"
