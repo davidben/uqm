@@ -524,12 +524,12 @@ _ReleaseCelData (MEM_HANDLE handle)
 		{
 			if (FramePtr->DataOffs)
 			{
-				TFB_Image *img;
+				TFB_ImageStruct *img;
 
-				img = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
+				img = (TFB_ImageStruct *)((BYTE *)FramePtr + FramePtr->DataOffs);
 				FramePtr->DataOffs = 0;
 
-				TFB_FreeImage (img);
+				TFB_Draw_DeleteImage (img);
 			}
 		}
 	}
@@ -664,12 +664,12 @@ _ReleaseFontData (MEM_HANDLE handle)
 		{
 			if (FramePtr->DataOffs)
 			{
-				TFB_Image *img;
+				TFB_ImageStruct *img;
 
-				img = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
+				img = (TFB_ImageStruct *)((BYTE *)FramePtr + FramePtr->DataOffs);
 				FramePtr->DataOffs = 0;
 
-				TFB_FreeImage (img);
+				TFB_Draw_DeleteImage (img);
 			}
 		}
 	}

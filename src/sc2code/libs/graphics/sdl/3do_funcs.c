@@ -53,7 +53,6 @@ UninitGraphics ()  // Also probably empty
 	//mem_uninit ();
 }
 
-
 /* Batching and Unbatching functions.  A "Batch" is a collection of
    DrawCommands that will never be flipped to the screen half-rendered.
    BatchGraphics and UnbatchGraphics function vaguely like a non-blocking
@@ -74,26 +73,11 @@ UnbatchGraphics (void)
    been processed. */
 
 void
-FlushGraphics (void)
+FlushGraphics ()
 {
-	TFB_DrawCommand DrawCommand;
-	TFB_BatchReset ();
-	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
-	DrawCommand.image = 0;
-	// We need to lock the  mutex before quein the DC to prevent races 
-	LockSignalMutex ();
-	TFB_EnqueueDrawCommand(&DrawCommand);
-	WaitForSignal ();
+	TFB_Draw_WaitForSignal ();
 }
 
-void
-SkipGraphics (void)
-{
-	TFB_DrawCommand DrawCommand;
-	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS;
-	DrawCommand.image = 0;
-	TFB_EnqueueDrawCommand(&DrawCommand);
-}
 // Status: Ignored (only used in fmv.c)
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
@@ -189,58 +173,13 @@ ScreenTransition (int TransType, PRECT pRect)
 void
 DrawFromExtraScreen (PRECT r) //No scaling?
 {
-	RECT locRect;
-	TFB_DrawCommand DC;
-
-	if (!r)
-	{
-		locRect.corner.x = locRect.corner.y = 0;
-		locRect.extent.width = SCREEN_WIDTH;
-		locRect.extent.height = SCREEN_HEIGHT;
-		r = &locRect;
-	}
-
-	DC.Type = TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER;
-	DC.x = r->corner.x;
-	DC.y = r->corner.y;
-	DC.w = r->extent.width;
-	DC.h = r->extent.height;
-	DC.image = 0;
-
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
-
-	TFB_EnqueueDrawCommand (&DC);
+	TFB_Draw_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
 }
 
 void
 LoadIntoExtraScreen (PRECT r)
 {
-	RECT locRect;
-	TFB_DrawCommand DC;
-
-	if (!r)
-	{
-		locRect.corner.x = locRect.corner.y = 0;
-		locRect.extent.width = SCREEN_WIDTH;
-		locRect.extent.height = SCREEN_HEIGHT;
-		r = &locRect;
-	}
-
-// fprintf (stderr, "LoadIntoExtraScreen (%d, %d, {%d, %d})\n", r->corner.x, r->corner.y, r->extent.width, r->extent.height);
-//	DC = HMalloc (sizeof (TFB_DrawCommand));
-
-	DC.Type = TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER;
-	DC.x = r->corner.x;
-	DC.y = r->corner.y;
-	DC.w = r->extent.width;
-	DC.h = r->extent.height;
-	DC.image = 0;
-
-	DC.BlendNumerator = BlendNumerator;
-	DC.BlendDenominator = BlendDenominator;
-
-	TFB_EnqueueDrawCommand (&DC);
+	TFB_Draw_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }
 
 // Status: Ignored

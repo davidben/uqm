@@ -97,6 +97,16 @@ typedef union
 		)
 #endif
 
+static SDL_Surface *
+Create_Screen (SDL_Surface *template)
+{
+	SDL_Surface *newsurf = SDL_DisplayFormat (template);
+	if (newsurf == 0) {
+		fprintf (stderr, "Couldn't create screen buffers: %s\n", SDL_GetError());
+		exit(-1);
+	}
+	return newsurf;
+}
 
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
@@ -104,6 +114,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	char VideoName[256];
 	int videomode_flags;
 	SDL_Surface *test_extra;
+	int i;
 
 	GraphicsDriver = driver;
 	gfx_flags = flags;
@@ -177,15 +188,19 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
-	SDL_Screen = SDL_DisplayFormat (test_extra);
-	ExtraScreen = SDL_DisplayFormat (test_extra);
-	TransitionScreen = SDL_DisplayFormat (test_extra);
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+	{
+		SDL_Screens[i] = Create_Screen (test_extra);
+	}
 
-	fade_white = SDL_DisplayFormat (test_extra);
+	SDL_Screen = SDL_Screens[0];
+	TransitionScreen = SDL_Screens[2];
+
+	fade_white = Create_Screen(test_extra);
 	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
-	fade_black = SDL_DisplayFormat (test_extra);
+	fade_black = Create_Screen(test_extra);
 	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
-	fade_temp = SDL_DisplayFormat (test_extra);
+	fade_temp = Create_Screen(test_extra);
 	
 	SDL_FreeSurface (test_extra);
 	
@@ -198,7 +213,6 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	return 0;
 }
-
 
 // blends two pixels with ratio 50% - 50%
 __inline__ Uint32

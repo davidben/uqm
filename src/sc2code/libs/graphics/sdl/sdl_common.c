@@ -29,9 +29,9 @@
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
-SDL_Surface *ExtraScreen;
 SDL_Surface *TransitionScreen;
 
+SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
 volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
@@ -157,20 +157,6 @@ TFB_LoadImage (SDL_Surface *img)
 	}
 
 	return(myImage);
-}
-
-void
-TFB_FreeImage (TFB_Image *img)
-{
-	if (img)
-	{
-		TFB_DrawCommand DC;
-
-		DC.Type = TFB_DRAWCOMMANDTYPE_DELETEIMAGE;
-		DC.image = (TFB_ImageStruct*) img;
-
-		TFB_EnqueueDrawCommand (&DC);
-	}
 }
 
 void
@@ -596,8 +582,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				targetRect.x = DC.x;
 				targetRect.y = DC.y;
 
-				if ((DC.w != DC_image->NormalImg->w || DC.h != DC_image->NormalImg->h) && 
-					DC_image->ScaledImg)
+				if (DC.UseScaling)
 					surf = DC_image->ScaledImg;
 				else
 					surf = DC_image->NormalImg;
@@ -614,7 +599,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 					}
 				}
 
-				TFB_BlitSurface(surf, NULL, SDL_Screen, &targetRect, DC.BlendNumerator, DC.BlendDenominator);
+				TFB_BlitSurface(surf, NULL, SDL_Screens[DC.destBuffer], &targetRect, DC.BlendNumerator, DC.BlendDenominator);
 
 				break;
 			}
@@ -655,13 +640,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 				else if (y2 > r.y + r.h)
 					y2 = r.y + r.h;
 
-				SDL_LockSurface (SDL_Screen);
-				line (x1, y1, x2, y2, color, screen_plot, SDL_Screen);
-				SDL_UnlockSurface (SDL_Screen);
+				SDL_LockSurface (SDL_Screens[DC.destBuffer]);
+				line (x1, y1, x2, y2, color, screen_plot, SDL_Screens[DC.destBuffer]);
+				SDL_UnlockSurface (SDL_Screens[DC.destBuffer]);
 
 				break;
 			}
-			case TFB_DRAWCOMMANDTYPE_RECTANGLE:
+		case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
 				SDL_Rect r;
 				r.x = DC.x;
@@ -669,7 +654,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				r.w = DC.w;
 				r.h = DC.h;
 
-				SDL_FillRect(SDL_Screen, &r, SDL_MapRGB(SDL_Screen->format, DC.r, DC.g, DC.b));
+				SDL_FillRect(SDL_Screens[DC.destBuffer], &r, SDL_MapRGB(SDL_Screen->format, DC.r, DC.g, DC.b));
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
@@ -686,7 +671,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
 			SDL_SetClipRect(SDL_Screen, NULL);
 			break;
-		case TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER:
+		case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
 			{
 				SDL_Rect src, dest;
 				src.x = dest.x = DC.x;
@@ -694,19 +679,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 				src.w = DC.w;
 				src.h = DC.h;
 
-				if (DC_image == 0) 
-				{
-					TFB_BlitSurface(SDL_Screen, &src, ExtraScreen, &dest, DC.BlendNumerator, DC.BlendDenominator);
-				}
-				else
-				{
-					dest.x = 0;
-					dest.y = 0;
-					TFB_BlitSurface(SDL_Screen, &src, DC_image->NormalImg, &dest, DC.BlendNumerator, DC.BlendDenominator);
-				}
+				dest.x = 0;
+				dest.y = 0;
+				TFB_BlitSurface(SDL_Screens[DC.srcBuffer], &src, DC_image->NormalImg, &dest, DC.BlendNumerator, DC.BlendDenominator);
 				break;
 			}
-		case TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER:
+		case TFB_DRAWCOMMANDTYPE_COPY:
 			{
 				SDL_Rect src, dest;
 				src.x = dest.x = DC.x;
@@ -714,8 +692,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				src.w = DC.w;
 				src.h = DC.h;
 
-				TFB_BlitSurface(ExtraScreen, &src, SDL_Screen, &dest, DC.BlendNumerator, DC.BlendDenominator);
-				
+				TFB_BlitSurface(SDL_Screens[DC.srcBuffer], &src, SDL_Screens[DC.destBuffer], &dest, DC.BlendNumerator, DC.BlendDenominator);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
@@ -735,13 +712,9 @@ TFB_FlushGraphics () // Only call from main thread!!
 			HFree (DC_image);
 			DC_image = 0;
 			break;
-		case TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS:
-			// done = TRUE;			
-			// TFB_SwapBuffers ();
+		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
 			SignalThread (DC.thread);
 			break;
-		case TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS:
-			TFB_DrawCommandQueue_Clear ();
 		}		
 		if (DC_image)
 			UnlockMutex (DC_image->mutex);

@@ -42,6 +42,13 @@ enum
 #define TFB_GFXFLAGS_SCALE_BILINEAR     (1<<3)
 #define TFB_GFXFLAGS_SCALE_BIADAPT      (1<<4)
 
+#define TFB_GFX_NUMSCREENS              3
+
+typedef enum {
+	TFB_SCREEN_MAIN,
+	TFB_SCREEN_EXTRA,
+	TFB_SCREEN_TRANSITION
+} SCREEN;
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
 void TFB_UninitGraphics (void);
@@ -76,14 +83,15 @@ enum
 	TFB_DRAWCOMMANDTYPE_LINE,
 	TFB_DRAWCOMMANDTYPE_RECTANGLE,
 	TFB_DRAWCOMMANDTYPE_IMAGE,
-	TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER,
+
+	TFB_DRAWCOMMANDTYPE_COPY,
+	TFB_DRAWCOMMANDTYPE_COPYTOIMAGE,
 
 	TFB_DRAWCOMMANDTYPE_SCISSORENABLE,
 	TFB_DRAWCOMMANDTYPE_SCISSORDISABLE,
-	TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER,
+
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
-	TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS,
-	TFB_DRAWCOMMANDTYPE_SKIPGRAPHICS
+	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
 };
 
 typedef struct tfb_palette
@@ -107,10 +115,23 @@ typedef struct tfb_drawcommand
 	int b;
 	TFB_Palette Palette[256];
 	BOOLEAN UsePalette;
+	BOOLEAN UseScaling;
 	int BlendNumerator;
 	int BlendDenominator;
 	DWORD thread;
+	SCREEN srcBuffer;
+	SCREEN destBuffer;
 } TFB_DrawCommand;
+
+// Drawing commands (native to the queue)
+
+void TFB_Draw_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN dest);
+void TFB_Draw_Rect (PRECT rect, int r, int g, int b, SCREEN dest);
+void TFB_Draw_Image (TFB_ImageStruct *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, SCREEN dest);
+void TFB_Draw_Copy (PRECT r, SCREEN src, SCREEN dest);
+void TFB_Draw_CopyToImage (TFB_ImageStruct *img, PRECT lpRect, SCREEN src);
+void TFB_Draw_DeleteImage (TFB_ImageStruct *img);
+void TFB_Draw_WaitForSignal (void);
 
 // Queue Stuff
 

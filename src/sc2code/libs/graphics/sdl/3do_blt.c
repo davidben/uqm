@@ -43,26 +43,21 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
-		TFB_DrawCommand DrawCommand;
+		int x, y;
+		BOOLEAN scaled, paletted;
+		TFB_Palette palette[256];
 
-		// DrawCommand = HMalloc (sizeof (TFB_DrawCommand));
-
-		DrawCommand.Type = TFB_DRAWCOMMANDTYPE_IMAGE;
-		DrawCommand.x = pClipRect->corner.x -
-			GetFrameHotX (_CurFramePtr);
-		DrawCommand.y = pClipRect->corner.y -
-			GetFrameHotY (_CurFramePtr);
-		DrawCommand.w = img->NormalImg->w;
-		DrawCommand.h = img->NormalImg->h;
+		x = pClipRect->corner.x - GetFrameHotX (_CurFramePtr);
+		y = pClipRect->corner.y - GetFrameHotY (_CurFramePtr);
+		scaled = FALSE;
 
 		if (gscale != 0 && gscale != 256)
 		{
-			DrawCommand.x += (GetFrameHotX (SrcFramePtr) *
+			x += (GetFrameHotX (SrcFramePtr) *
 				((1 << 8) - gscale)) >> 8;
-			DrawCommand.y += (GetFrameHotY (SrcFramePtr) *
+			y += (GetFrameHotY (SrcFramePtr) *
 				((1 << 8) - gscale)) >> 8;
-			DrawCommand.w = (DrawCommand.w * gscale) >> 8;
-			DrawCommand.h = (DrawCommand.h * gscale) >> 8;
+			scaled = TRUE;
 
 			if (img->ScaledImg)
 			{
@@ -119,42 +114,40 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			}
 		}
 
-		DrawCommand.image = (TFB_ImageStruct*) img;
-		DrawCommand.UsePalette = FALSE;
+		paletted = FALSE;
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
 		{
-			int i;
+			int i, r, g, b;
 			DWORD c32k;
 
 			c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
-			DrawCommand.r = (c32k >> (10 - (8 - 5))) & 0xF8;
-			DrawCommand.g = (c32k >> (5 - (8 - 5))) & 0xF8;
-			DrawCommand.b = (c32k << (8 - 5)) & 0xF8;
+		        r = (c32k >> (10 - (8 - 5))) & 0xF8;
+			g = (c32k >> (5 - (8 - 5))) & 0xF8;
+			b = (c32k << (8 - 5)) & 0xF8;
 
 			for (i = 0; i < 256; ++i)
 			{
-				DrawCommand.Palette[i].r = DrawCommand.r;
-				DrawCommand.Palette[i].g = DrawCommand.g;
-				DrawCommand.Palette[i].b = DrawCommand.b;
+				palette[i].r = r;
+				palette[i].g = g;
+				palette[i].b = b;
 			}
 			
-			DrawCommand.UsePalette = TRUE;
+			paletted = TRUE;
 		}
 		else
 		{
 			if (img->NormalImg->format->palette && img->colormap_index != -1)
 			{
-				TFB_ColorMapToRGB (DrawCommand.Palette, img->colormap_index);
-				DrawCommand.UsePalette = TRUE;
+				TFB_ColorMapToRGB (palette, img->colormap_index);
+				paletted = TRUE;
 			}
 		}
 
-		DrawCommand.BlendNumerator = BlendNumerator;
-		DrawCommand.BlendDenominator = BlendDenominator;
-
 		UnlockMutex (img->mutex);
-		TFB_EnqueueDrawCommand(&DrawCommand);
+		TFB_Draw_Image ((TFB_ImageStruct *)img, x, y, scaled,
+				(paletted ? palette : NULL),
+				TFB_SCREEN_MAIN);
 	}
 	else
 	{
@@ -196,34 +189,23 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
-		TFB_DrawCommand DrawCommand;
-
-		DrawCommand.Type = TFB_DRAWCOMMANDTYPE_RECTANGLE;
-		DrawCommand.x = pClipRect->corner.x - GetFrameHotX (_CurFramePtr);
-		DrawCommand.y = pClipRect->corner.y - GetFrameHotY (_CurFramePtr);
-		DrawCommand.w = pClipRect->extent.width;
-		DrawCommand.h = pClipRect->extent.height;
-		DrawCommand.r = r;
-		DrawCommand.g = g;
-		DrawCommand.b = b;
+		RECT rect;
+		rect.corner.x = pClipRect->corner.x - GetFrameHotX (_CurFramePtr);
+		rect.corner.y = pClipRect->corner.y - GetFrameHotY (_CurFramePtr);
+		rect.extent.width = pClipRect->extent.width;
+		rect.extent.height = pClipRect->extent.height;
 
 		if (gscale && GetPrimType (PrimPtr) != POINT_PRIM)
 		{
-			DrawCommand.w = (DrawCommand.w * gscale) >> 8;
-			DrawCommand.h = (DrawCommand.h * gscale) >> 8;
-			DrawCommand.x += (pClipRect->extent.width -
-					DrawCommand.w) >> 1;
-			DrawCommand.y += (pClipRect->extent.height -
-					DrawCommand.h) >> 1;
+			rect.extent.width = (rect.extent.width * gscale) >> 8;
+			rect.extent.height = (rect.extent.height * gscale) >> 8;
+			rect.corner.x += (pClipRect->extent.width -
+					rect.extent.width) >> 1;
+			rect.corner.y += (pClipRect->extent.height -
+					rect.extent.height) >> 1;
 		}
 
-		DrawCommand.image = 0;
-		DrawCommand.UsePalette = FALSE;
-
-		DrawCommand.BlendNumerator = BlendNumerator;
-		DrawCommand.BlendDenominator = BlendDenominator;
-
-		TFB_EnqueueDrawCommand(&DrawCommand);
+		TFB_Draw_Rect (&rect, r, g, b, TFB_SCREEN_MAIN);
 	}
 	else
 	{
@@ -273,26 +255,11 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
-		TFB_DrawCommand DC;
-
-		DC.Type = TFB_DRAWCOMMANDTYPE_LINE;
-		DC.x = x1;
-		DC.y = y1;
-		DC.w = x2;
-		DC.h = y2;
-		DC.r = r;
-		DC.g = g;
-		DC.b = b;
-		DC.image = 0;
-		DC.UsePalette = FALSE;
-
-		DC.BlendNumerator = BlendNumerator;
-		DC.BlendDenominator = BlendDenominator;
-
-		TFB_EnqueueDrawCommand(&DC);
+		TFB_Draw_Line (x1, y1, x2, y2, r, g, b, TFB_SCREEN_MAIN);
 	}
 	else
 	{
+		// Maybe we should do something about this?
 	}
 }
 
@@ -309,20 +276,9 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 	}
 	else
 	{
-		TFB_DrawCommand DC;
-
-		DC.Type = TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER;
-		DC.x = lpRect->corner.x;
-		DC.y = lpRect->corner.y;
-		DC.w = lpRect->extent.width;
-		DC.h = lpRect->extent.height;
-		DC.image = (TFB_ImageStruct *) ((BYTE *) DstFramePtr +
+		TFB_ImageStruct *img = (TFB_ImageStruct *) ((BYTE *) DstFramePtr +
 				DstFramePtr->DataOffs);
-
-		DC.BlendNumerator = BlendNumerator;
-		DC.BlendDenominator = BlendDenominator;
-
-		TFB_EnqueueDrawCommand (&DC);
+		TFB_Draw_CopyToImage (img, lpRect, TFB_SCREEN_MAIN);
 	}
 }
 

@@ -40,11 +40,25 @@ static BOOLEAN upload_transitiontexture = FALSE;
 #define A_MASK 0xff000000
 #endif
 
+static SDL_Surface *
+Create_Screen ()
+{
+	SDL_Surface *result = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
+		R_MASK, G_MASK, B_MASK, 0x00000000);
+
+	if (result == NULL)
+	{
+		fprintf (stderr, "Couldn't create screen buffer: %s\n", SDL_GetError());
+		exit (-1);
+	}
+}
+
 int
 TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 {
 	char VideoName[256];
 	int videomode_flags;
+	int i;
 
 	GraphicsDriver = driver;
 
@@ -124,32 +138,13 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		R_MASK, G_MASK, B_MASK, 0x00000000);
-
-	if (SDL_Screen == NULL)
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 	{
-		fprintf (stderr, "Couldn't create back buffer: %s\n", SDL_GetError());
-		exit (-1);
+		SDL_Screens[i] = Create_Screen ();
 	}
 
-	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		R_MASK, G_MASK, B_MASK, 0x00000000);
-
-	if (ExtraScreen == NULL)
-	{
-		fprintf (stderr, "Couldn't create workspace buffer: %s\n", SDL_GetError());
-		exit (-1);
-	}
-
-	TransitionScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		R_MASK, G_MASK, B_MASK, 0x00000000);
-
-	if (TransitionScreen == NULL)
-	{
-		fprintf (stderr, "Couldn't create transition buffer: %s\n", SDL_GetError());
-		exit (-1);
-	}
+	SDL_Screen = SDL_Screens[0];
+	TransitionScreen = SDL_Screens[2];
 
 	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
 		R_MASK, G_MASK, B_MASK, A_MASK);
