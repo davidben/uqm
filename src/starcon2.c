@@ -87,6 +87,7 @@ main (int argc, char *argv[])
 		{"pcmusic", 0, NULL, 'm'},
 		{"audioquality", 1, NULL, 'q'},
 		{"nosubtitles", 0, NULL, 'u'},
+		{"pcscan", 0, NULL, 'a'},
 		{0, 0, 0, 0}
 	};
 
@@ -100,7 +101,7 @@ main (int argc, char *argv[])
 	strcpy (contentdir, "content");
 #endif
 
-	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:u", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:spn:?hM:S:T:emq:ua", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -184,6 +185,9 @@ main (int argc, char *argv[])
 		    case 'u':
 			    optSubtitles = FALSE;
 			break;
+			case 'a':
+				optPCscan = TRUE;
+			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
 			case '?':
@@ -204,6 +208,7 @@ main (int argc, char *argv[])
 				printf("  -m, --pcmusic\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
 			    printf("  -u, --nosubtitles\n");
+				printf("  -a  --pcscan\n");
 				return 0;
 			break;
 		}

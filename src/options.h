@@ -35,6 +35,8 @@ extern int optWhichMusic;
 
 extern BOOLEAN optSubtitles;
 
+extern BOOLEAN optPCscan;
+
 extern char *configDir;
 extern char *meleeDir;
 extern char *saveDir;
