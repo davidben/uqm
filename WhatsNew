@@ -1,0 +1,95 @@
+This file tries to organize and describe the changes between releases.
+Changes are broadly classified into the following categories:
+
+- New Features: These are either elements of the original games that
+  were first implemented in this release, or actually new capabilities
+  that are visible to the user.
+
+- Bugfixes: The removal of visible Bad Things from the code.
+
+- Internal Changes: The removal of invisible Bad Things from the code,
+  or changes in the way the program itself is structured.  These are
+  unlikely to be of interest to you unless you plan on coding
+  extensions.
+
+			     Version 0.2
+			    -------------
+
+NEW FEATURES
+
+- Planet info "coarse scan" information available and properly rendered
+- 3D spinning planet in orbit window is present, with antialiasing and
+  phong lighting and an animated approach
+- Pixel-perfect collision detection
+- Build system enhanced and generalized to handle OpenBSD and FreeBSD cleanly.
+- Oscilloscope display works in communication now
+- Color-shading in planet scans
+- Earth with its slave shield now functions properly
+- Outfit Starship and Shipyard graphics re-extracted
+- OpenGL colors work on big-endian machines.
+- Save data and temp files are put in a separate directory now
+- Star sizes and colors are properly differentiated.
+- Scanline simulation added
+- Planet surface is smoothed, blurred, and randomized slightly when it's
+  magnified
+- SIS Status window fully implemented (including gradiated fonts from PC
+  version)
+- Dialogue "slider" shows how far along the speech is
+- 'ESC' alone lets you emergency-warp-escape
+
+BUGFIXES
+
+- Melee screens cleaned up, SuperMelle menus work.
+- Subtitles now render for all alien races
+- Major editing of subtitles to match more closely the speeches
+- Autopilot indicator doesn't take over the top of the screen anymore.
+- Entering star systems on autopilot doesn't crash the system.
+- Planet scan is properly erased when cancelling/landing
+- Initial display of planet surface on landing is at correct position
+- Spheres of influence now move correctly on the starmap
+- Melnorme correctly compute the required additional credits
+- Team names switching when selecting the next ship to fight in melee fixed
+- Commas left dots behind on planetary reports; this is fixed
+- Screen resets properly after loading/saving
+- Dialog choices wrap properly
+- Precursor ship crew count now placed correctly in melee
+- 'Cued' color transforms in conversations occur at the right time now
+- SIS correctly predicts its own fuel usage now
+- Melnorme no longer give away fuel
+- Flagship modules are properly aligned
+- The PC soundtrack now loops correctly
+- Lander upgrades were drawn incorrectly
+- Autopilot now works in QuasiSpace without fuel
+- Captain portraits in melee are updated properly now
+- If you have over 1000 units of a resource, those numbers are properly
+  cleared
+
+INTERNAL CHANGES
+
+- SDL_mixer has been abandoned in favor of either OpenAL or the new
+  "MixSDL" library built on the basic SDL_audio routines
+- Color transforms in communications are merged into the core animation
+  thread now, improving speed and stability
+- Much more flexible handling of commandline options
+- All allocated memory is allocated through 'safe' routines that abort if
+  the allocation fails.
+- Thread library now includes condition variables
+- Threads can tell the rendering thread to sleep until everything they've
+  requested is done
+- The rendering thread has been recoded to use no heap space and to have a
+  far smaller memory footprint.
+- Added a special #define, DCQ_OF_DOOM, which simulates severe overload 
+  stresses.
+- SAI and related scalers removed due to GPL incompatibilities; similar
+  algorithms reimplemented under GPL.
+- Files for the intro and ending sequence have been successfully extracted
+- Rendering thread routines are somewhat more modular than before
+- Created a new set of graphics primitives that's much easier to use
+- Only parts of the screen that actually changed are updated
+- Input code rewritten entirely
+- Various functions have their names changed to avoid conflicts with
+  core library routines on OS X
+
+Version 0.1
+
+- Initial release!
