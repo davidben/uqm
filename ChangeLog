@@ -1,6 +1,6 @@
 0.2:
 - 3D planet view when entering orbit is now implemented
-- TFB_DrawCommandQueue->FullSize was unitialised.
+- TFB_DrawCommandQueue->FullSize was uninitialised.
 - Typo 'cultrue' for Thraddash fixed.
 - Autopilot indicator no longer blinking on starmap and combat
 - Entering a star system lockup/messed graphics fixed
