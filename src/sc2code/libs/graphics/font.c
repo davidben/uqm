@@ -22,15 +22,14 @@
 extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to, BYTE type);
 
 static BYTE char_delta_array[MAX_DELTAS];
-static struct {
-	BOOLEAN Use;
-	DWORD from;
-	DWORD to;
-	BYTE type;
-} FontEffect = {0,0,0,0};
 
-void SetContextFontEffect (BYTE type, DWORD from, DWORD to)
+static FONTEFFECT FontEffect = {0,0,0,0};
+
+FONTEFFECT
+SetContextFontEffect (BYTE type, DWORD from, DWORD to)
 {
+	FONTEFFECT oldFontEffect = FontEffect;
+
 	if (from == to)
 		FontEffect.Use = 0;
 	else
@@ -40,6 +39,13 @@ void SetContextFontEffect (BYTE type, DWORD from, DWORD to)
 		FontEffect.to = to;
 		FontEffect.type = type;
 	}
+
+	if (!oldFontEffect.Use)
+		// reset fields so that when struct passed back
+		// the logic works correctly
+		oldFontEffect.to = oldFontEffect.from = 0;
+
+	return oldFontEffect;
 }
 
 

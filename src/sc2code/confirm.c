@@ -30,6 +30,7 @@ DrawConfirmationWindow (BOOLEAN answer)
 {
 	COLOR oldfg = SetContextForeGroundColor (MENU_BACKGROUND_COLOR);
 	FONT  oldfont = SetContextFont (StarConFont);
+	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
 	RECT r;
 	TEXT t;
 	BatchGraphics ();
@@ -85,6 +86,7 @@ DrawConfirmationWindow (BOOLEAN answer)
 
 	UnbatchGraphics ();
 
+	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldfg);
 }

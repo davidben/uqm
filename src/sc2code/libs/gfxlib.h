@@ -215,6 +215,14 @@ extern INTERSECT_CODE BoxIntersect (PRECT pr1, PRECT pr2, PRECT
 		printer);
 extern void BoxUnion (PRECT pr1, PRECT pr2, PRECT punion);
 
+typedef struct
+{
+	BOOLEAN Use;
+	DWORD from;
+	DWORD to;
+	BYTE type;
+} FONTEFFECT;
+
 #endif /* _GFXLIB_H */
 
 
@@ -266,7 +274,7 @@ extern DWORD LoadCelFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
 extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
-extern void SetContextFontEffect (BYTE type, DWORD from, DWORD to);
+extern FONTEFFECT SetContextFontEffect (BYTE type, DWORD from, DWORD to);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT_REF FontRef);
 extern FONT CaptureFont (FONT_REF FontRef);
