@@ -169,8 +169,6 @@ HASHTABLE_(setup)(HASHTABLE_(HashTable) *hashTable, uio_uint32 initialSize) {
 			* hashTable->maxFillQuotient);
 	hashTable->entries = uio_calloc(hashTable->size,
 			sizeof (HASHTABLE_(HashEntry) *));
-	memset(hashTable->entries, '\0',
-			hashTable->size * sizeof (HASHTABLE_(HashEntry) *));
 	hashTable->numEntries = 0;
 #ifdef HashTable_PROFILE
 	hashTable->numCollisions = 0;
