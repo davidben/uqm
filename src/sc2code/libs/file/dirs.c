@@ -29,6 +29,7 @@
 
 #ifdef WIN32
 #	include <direct.h>
+#	include <ctype.h>
 #endif
 
 /* Try to find a suitable value for %APPDATA% if it isn't defined on
