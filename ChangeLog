@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Melee team building pick-ship box is now generated with actual ship
+  icons (bug #692) -Alex
 - Setup Menu no longer crashes or misbehaves on custom resolutions (bug 
   #693) - Michael
 - Quit confirmation window (on F10) undraws correctly during intro slides
