@@ -36,7 +36,11 @@ dlopen (const char *filename, int flag)
 {
 	HMODULE hlib;
 
-	hlib = LoadLibraryA (filename);
+	if (filename == NULL)
+		hlib = GetModuleHandleA(NULL);
+	else
+		hlib = LoadLibraryA (filename);
+
 	if (!hlib)
 		wdl_last_error = GetLastError ();
 

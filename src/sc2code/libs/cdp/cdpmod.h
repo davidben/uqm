@@ -41,27 +41,40 @@ typedef struct
 	uint16 host_ver_major;   // minimum host version required, purely informational
 	uint16 host_ver_minor;
 	
-	uint32 _32_reserved1[4]; // reserved members: set to all 0s or CDP_MODINFO_RESERVED1
+	// reserved members: set all to 0 or use CDP_MODINFO_RESERVED1
+	uint32 _32_reserved1;
+	uint32 _32_reserved2;
+	uint32 _32_reserved3;
+	uint32 _32_reserved4;
 
-	// informational, human-only
-	const char* name;
-	const char* ver_string;
-	const char* author;
-	const char* url;
-	const char* comments;
+	const char* context_name;
+			// cannonical context name (in proper case)
+			// this context will be used with all exposed objects
+			// English preferred; try to keep it below 32 chars
+	// informational, human-only; these fields have no real size
+	// restriction other than to keep it reasonable
+	const char* name;         // descriptive name
+	const char* ver_string;   // descriptive version
+	const char* author;       // go nuts
+	const char* url;          // go nuts
+	const char* comments;     // go nuts
 	
-	const char* _sz_reserved2[5]; // reserved members, set to all 0s or CDP_MODINFO_RESERVED2
+	// reserved members, set all to 0 or use CDP_MODINFO_RESERVED2
+	const char* _sz_reserved1;
+	const char* _sz_reserved2;
+	const char* _sz_reserved3;
+	const char* _sz_reserved4;
 
 	// mandatory, CDP entry points
 	// TODO: decide whether more EPs are necessary and if not move
-	// EPs above info-string members, abolishing _sz_reserved2
-	bool (* module_init) (cdp_Itf_Host* hostitf);
+	// EPs above info-string members, abolishing _sz_reservedX
+	bool (* module_init) (cdp_Module* module, cdp_Itf_Host* hostitf);
 	void (* module_term) ();
 	
 } cdp_ModuleInfo;
 
-#define CDP_MODINFO_RESERVED1  {0,0,0,0}
-#define CDP_MODINFO_RESERVED2  {0,0,0,0,0}
+#define CDP_MODINFO_RESERVED1  0,0,0,0
+#define CDP_MODINFO_RESERVED2  0,0,0,0
 
 // the following is defined via the last mandatory member
 #define CDP_MODINFO_MIN_SIZE \

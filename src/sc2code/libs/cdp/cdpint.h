@@ -42,6 +42,7 @@ extern cdp_Itf_SoundVtbl_v1 cdp_sound_itf_v1;
 bool cdp_InitApi (void);
 void cdp_UninitApi (void);
 cdp_Error cdp_GetApiError (void);
-cdp_Itf* cdp_GetInterface (cdp_ItfKind itf_kind, cdp_ApiVersion api_ver);
+cdp_Itf* cdp_GetInterface (const char* name, cdp_ApiVersion);
+cdp_ItfReg* cdp_GetInterfaceReg (const char* name, cdp_ApiVersion);
 
 #endif  /* _CDPISND_H */

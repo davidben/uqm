@@ -26,6 +26,7 @@
 #include "cdpint.h"
 #include "cdpmod.h"
 #include "uio.h"
+#include "uqmversion.h"
 #ifdef WIN32
 #	include "windl.h"
 #else
@@ -35,21 +36,50 @@
 #define MAX_CDPS 63
 #define CDPDIR "cdps"
 
-// internal adl module representation
-// cdp_Module will be cast to and from this
+// internal CDP module representation
 struct cdp_Module
 {
-	bool used;         // used at least once indicator
-	void* hmodule;     // loaded module handle
-	uint32 refcount;   // reference count
+	bool builtin;         // used at least once indicator
+	bool used;            // used at least once indicator
+	void* hmodule;        // loaded module handle
+	uint32 refcount;      // reference count
 	cdp_ModuleInfo* info; // cdp exported info
 
+};
+
+// Kernel module info
+// not a real module, and not loadable either
+// this just provides information to other modules
+cdp_ModuleInfo cdp_kernel_info =
+{
+	sizeof (cdp_ModuleInfo),
+	CDPAPI_VERSION,              // API version we are using
+	UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+	UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+	CDP_MODINFO_RESERVED1,
+	"UQM",                       // CDP context cannonical name
+	"UQM Kernel",                // CDP mod name
+#	define S(i) #i
+	// CDP mod version
+	S(UQM_MAJOR_VERSION) "." S(UQM_MINOR_VERSION) UQM_EXTRA_VERSION,
+#	undef S
+	"UQM Team",                  // CDP mod author
+	"http://sc2.sf.net",         // CDP mod URL
+	"Eternal doctrine executor", // CDP mod comment
+	CDP_MODINFO_RESERVED2,
+	NULL, NULL                   // no entrypoints defined/needed
+};
+
+static cdp_Module cdp_modules[MAX_CDPS + 1] = 
+{
+	{true,  true,  NULL, 1, &cdp_kernel_info},
+
+	{false, false, NULL, 0, NULL} // term
 };
 
 extern uio_DirHandle *cdpDir;
 
 static bool cdp_inited = false;
-static cdp_Module cdp_modules[MAX_CDPS + 1];
 static cdp_Error cdp_last_error = CDPERR_NONE;
 static char cdp_path[PATH_MAX] = "";
 
@@ -64,13 +94,25 @@ cdp_GetError (void)
 bool
 cdp_Init (void)
 {
+	int i;
+	void* hkernel;
+
 	if (cdp_inited)
 	{
 		fprintf (stderr, "cdp_Init(): called when already inited\n");
 		return true;
 	}
-
-	memset (cdp_modules, 0, sizeof cdp_modules);
+	
+	// preprocess built-in modules
+	hkernel = dlopen (NULL, RTLD_LAZY);
+	
+	for (i = 0; cdp_modules[i].builtin; ++i)
+		cdp_modules[i].hmodule = hkernel;
+	
+	// clear the rest
+	//memset (cdp_modules + i, 0,
+	//		sizeof (cdp_modules) - sizeof (cdp_Module) * i);
+	
 	//strcpy (cdp_path, cdpDir->path);
 	cdp_InitApi ();
 	cdp_inited = true;
@@ -94,6 +136,7 @@ cdp_Uninit (void)
 
 cdp_Module*
 cdp_LoadModule (const char* modname)
+		// special value for modname: NULL - refers to kernel (UQM exe)
 {
 	void* mod;
 	char modpath[PATH_MAX];
@@ -103,6 +146,9 @@ cdp_LoadModule (const char* modname)
 	cdp_Module* cdp;
 	cdp_Module* newslot = 0;
 	cdp_Itf* ihost;
+
+	if (modname == NULL)
+		return cdp_modules;
 
 	if (!cdp_inited)
 	{
@@ -173,24 +219,33 @@ cdp_LoadModule (const char* modname)
 		return NULL;
 	}
 
-	if (!info->module_init ((cdp_Itf_Host*)ihost))
+	if (!newslot)
+	{
+		newslot = cdp;
+		newslot->used = true;
+		// make next one a term
+		cdp[1].builtin = false;
+		cdp[1].used = false;
+		cdp[1].hmodule = NULL;
+		cdp[1].refcount = 0;
+	}
+	newslot->hmodule = mod;
+	newslot->refcount = 1;
+	newslot->info = info;
+
+	if (!info->module_init (newslot, (cdp_Itf_Host*)ihost))
 	{
 		fprintf (stderr, "cdp_LoadModule(): "
 				"CDP %s failed to init\n",
 				modname);
 		dlclose (mod);
+		newslot->hmodule = NULL;
+		newslot->info = NULL;
+		newslot->refcount = 0;
 		cdp_last_error = CDPERR_INIT_FAILED;
 		return NULL;
 	}
 
-	if (!newslot)
-	{
-		newslot = cdp;
-		newslot->used = true;
-	}
-	newslot->hmodule = mod;
-	newslot->refcount = 1;
-	newslot->info = info;
 	
 	return newslot;
 }
@@ -210,7 +265,7 @@ cdp_FreeModule (cdp_Module* module)
 {
 	cdp_Module* modslot = cdp_CheckModule (module);
 
-	if (!modslot)
+	if (!modslot || modslot->builtin)
 		return;
 
 	modslot->refcount--;
@@ -227,13 +282,38 @@ cdp_FreeModule (cdp_Module* module)
 }
 
 const char*
-cdp_GetModuleName (cdp_Module* module)
+cdp_GetModuleContext (cdp_Module* module, bool bMetaString)
 {
 	cdp_Module* modslot = cdp_CheckModule (module);
-	if (!modslot)
-		return "(Error)";
-	if (!modslot->info->name)
-		return "(Null)";
+	if (bMetaString)
+	{
+		if (!modslot)
+			return "(Error)";
+		if (!modslot->info->context_name)
+			return "(Null)";
+	}
+	else if (!modslot)
+	{
+		return NULL;
+	}
+	return modslot->info->context_name;
+}
+
+const char*
+cdp_GetModuleName (cdp_Module* module, bool bMetaString)
+{
+	cdp_Module* modslot = cdp_CheckModule (module);
+	if (bMetaString)
+	{
+		if (!modslot)
+			return "(Error)";
+		if (!modslot->info->name)
+			return "(Null)";
+	}
+	else if (!modslot)
+	{
+		return NULL;
+	}
 	return modslot->info->name;
 }
 
@@ -247,24 +327,38 @@ cdp_GetModuleVersion (cdp_Module* module)
 }
 
 const char*
-cdp_GetModuleVersionString (cdp_Module* module)
+cdp_GetModuleVersionString (cdp_Module* module, bool bMetaString)
 {
 	cdp_Module* modslot = cdp_CheckModule (module);
-	if (!modslot)
-		return "(Error)";
-	if (!modslot->info->ver_string)
-		return "(Null)";
+	if (bMetaString)
+	{
+		if (!modslot)
+			return "(Error)";
+		if (!modslot->info->ver_string)
+			return "(Null)";
+	}
+	else if (!modslot)
+	{
+		return NULL;
+	}
 	return modslot->info->ver_string;
 }
 
 const char*
-cdp_GetModuleComment (cdp_Module* module)
+cdp_GetModuleComment (cdp_Module* module, bool bMetaString)
 {
 	cdp_Module* modslot = cdp_CheckModule (module);
-	if (!modslot)
-		return "(Error)";
-	if (!modslot->info->comments)
-		return "(Null)";
+	if (bMetaString)
+	{
+		if (!modslot)
+			return "(Error)";
+		if (!modslot->info->comments)
+			return "(Null)";
+	}
+	else if (!modslot)
+	{
+		return NULL;
+	}
 	return modslot->info->comments;
 }
 
@@ -309,9 +403,9 @@ cdp_LoadAllModules (void)
 		{
 			nummods++;
 			fprintf (stderr, "\tloaded CDP: %s v%s (%s)\n",
-					cdp_GetModuleName (mod),
-					cdp_GetModuleVersionString (mod),
-					cdp_GetModuleComment (mod));
+					cdp_GetModuleName (mod, true),
+					cdp_GetModuleVersionString (mod, true),
+					cdp_GetModuleComment (mod, true));
 		}
 		else
 		{
@@ -337,7 +431,7 @@ cdp_FreeAllModules (void)
 	
 	for (cdp = cdp_modules; cdp->used; ++cdp)
 	{
-		if (cdp->hmodule)
+		if (!cdp->builtin && cdp->hmodule)
 			cdp_FreeModule (cdp);
 	}
 }
