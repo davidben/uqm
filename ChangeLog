@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Added 'nosound' driver and --sound=openal|mixsdl|none
+  option; -a option has been removed -fOSSiL
 - Fix ZFP stuttering and some other random sound issues -PBlue
 - Correctly deal with multiply-mapped keys.  This may fix some keys
   not being detected correctly on the Mac as well - PBlue
