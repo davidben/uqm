@@ -607,6 +607,7 @@ DoMoveCursor (PMENU_STATE pMS)
 	STAMP s;
 	UNICODE buf[30];
 	static UNICODE last_buf;
+	static int last_dx = 0, last_dy = 0;
 
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
@@ -617,7 +618,7 @@ DoMoveCursor (PMENU_STATE pMS)
 				);
 		pMS->InputFunc = DoMoveCursor;
 
-		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY);
+		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
 
 		pMS->flash_task = AssignTask (flash_cursor_func, 2048,
 				"flash location on star map");
@@ -626,6 +627,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		
 		last_buf = ~0;
 		buf[0] = '\0';
+		last_dx = last_dy = 0;
 		goto UpdateCursorInfo;
 	}
 	else if (CurrentMenuState.cancel)
@@ -659,10 +661,10 @@ DoMoveCursor (PMENU_STATE pMS)
 		ZoomStarMap (ZoomOut - ZoomIn);
 
 		sx = sy = 0;
-		if (CurrentMenuState.left)  sx = -1;
-		if (CurrentMenuState.right) sx =  1;
-		if (CurrentMenuState.up)    sy = -1;
-		if (CurrentMenuState.down)  sy =  1;
+		if (CurrentMenuState.left)    sx =   -1;
+		if (CurrentMenuState.right)   sx =    1;
+		if (CurrentMenuState.up)      sy =   -1;
+		if (CurrentMenuState.down)    sy =    1;
 
 		if (sx == 0 && sy == 0)
 		{
@@ -1100,7 +1102,7 @@ DoStarMap (void)
 
 	MenuState.InputFunc = DoMoveCursor;
 	MenuState.Initialized = FALSE;
-	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY);
+	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
 
 	transition_pending = TRUE;
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)

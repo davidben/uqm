@@ -55,8 +55,9 @@ extern volatile MENU_INPUT_STATE ImmediateMenuState;
 
 void UpdateInputState (void);
 void TFB_ResetControls (void);
-void SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step);
+void SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt);
 void SetDefaultMenuRepeatDelay (void);
+void ResetKeyRepeat (void);
 
 BATTLE_INPUT_STATE p1_combat_summary (void);
 BATTLE_INPUT_STATE p2_combat_summary (void);

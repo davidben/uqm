@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Added "gestalt mode" for acceleration cancels; fixes #381 - Michael
 - Fixed some "false key cancels" in the input system, addressing bugs 
   #378 and #379 -Michael
 - Completely reworked the input system

@@ -45,6 +45,7 @@ MENU_INPUT_STATE CurrentMenuState;
 static MENU_INPUT_STATE CachedMenuState, OldMenuState;
 static MENU_ANNOTATIONS RepeatDelays, Times;
 static DWORD _max_accel, _min_accel, _step_accel;
+static BOOLEAN _gestalt_keys;
 int ExitState;
 
 volatile CONTROLLER_INPUT_STATE ImmediateInputState;
@@ -53,7 +54,6 @@ volatile MENU_INPUT_STATE       ImmediateMenuState;
 static void
 _clear_menu_state (void)
 {
-	DWORD initTime = GetTimeCounter ();
 	CurrentMenuState.up        = 0;
 	CurrentMenuState.down      = 0;
 	CurrentMenuState.left      = 0;
@@ -76,6 +76,12 @@ _clear_menu_state (void)
 	CachedMenuState.page_down = 0;
 	CachedMenuState.zoom_in   = 0;
 	CachedMenuState.zoom_out  = 0;
+}
+
+void
+ResetKeyRepeat (void)
+{
+	DWORD initTime = GetTimeCounter ();
 	RepeatDelays.up        = _max_accel;
 	RepeatDelays.down      = _max_accel;
 	RepeatDelays.left      = _max_accel;
@@ -98,6 +104,27 @@ _clear_menu_state (void)
 	Times.page_down = initTime;
 	Times.zoom_in   = initTime;
 	Times.zoom_out  = initTime;
+}
+
+static void
+_check_gestalt (void)
+{
+	BOOLEAN reset = FALSE;
+	if (OldMenuState.up != CachedMenuState.up) reset = TRUE;
+	if (OldMenuState.down != CachedMenuState.down) reset = TRUE;
+	if (OldMenuState.left != CachedMenuState.left) reset = TRUE;
+	if (OldMenuState.right != CachedMenuState.right) reset = TRUE;
+	if (OldMenuState.select != CachedMenuState.select) reset = TRUE;
+	if (OldMenuState.cancel != CachedMenuState.cancel) reset = TRUE;
+	if (OldMenuState.special != CachedMenuState.special) reset = TRUE;
+	if (OldMenuState.page_up != CachedMenuState.page_up) reset = TRUE;
+	if (OldMenuState.page_down != CachedMenuState.page_down) reset = TRUE;
+	if (OldMenuState.zoom_in != CachedMenuState.zoom_in) reset = TRUE;
+	if (OldMenuState.zoom_out != CachedMenuState.zoom_out) reset = TRUE;
+	if (reset)
+	{
+		ResetKeyRepeat ();
+	}
 }
 
 static void
@@ -147,6 +174,10 @@ UpdateInputState (void)
 	CurrentInputState = ImmediateInputState;
 	OldMenuState = CachedMenuState;
 	CachedMenuState = ImmediateMenuState;
+	if (_gestalt_keys)
+	{
+		_check_gestalt ();
+	}
 	NewTime = GetTimeCounter ();
 	_check_for_pulse(&CurrentMenuState.up, &CachedMenuState.up, &OldMenuState.up, &RepeatDelays.up, &NewTime, &Times.up);
 	_check_for_pulse(&CurrentMenuState.down, &CachedMenuState.down, &OldMenuState.down, &RepeatDelays.down, &NewTime, &Times.down);
@@ -169,12 +200,14 @@ UpdateInputState (void)
 
 
 void
-SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step)
+SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt)
 {
 	_min_accel = min;
 	_max_accel = max;
 	_step_accel = step;
+	_gestalt_keys = gestalt;
 	_clear_menu_state ();
+	ResetKeyRepeat ();
 }
 
 void
@@ -183,13 +216,15 @@ SetDefaultMenuRepeatDelay ()
 	_min_accel = ACCELERATION_INCREMENT;
 	_max_accel = MENU_REPEAT_DELAY;
 	_step_accel = ACCELERATION_INCREMENT;
+	_gestalt_keys = FALSE;
 	_clear_menu_state ();
+	ResetKeyRepeat ();
 }
 
 void
 DoInput (PVOID pInputState, BOOLEAN resetInput)
 {
-	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT);
+	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
 	{
 		TFB_ResetControls ();

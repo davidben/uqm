@@ -668,7 +668,7 @@ PickPlanetSide (PMENU_STATE pMS)
 	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = PickPlanetSide;
-		SetMenuRepeatDelay (0, 0, 0);
+		SetMenuRepeatDelay (0, 0, 0, FALSE);
 		if (pMS->CurFrame == 0)
 		{
 			pMS->CurFrame = (FRAME)MenuSounds;
