@@ -1444,7 +1444,8 @@ LoadMeleeInfo (PMELEE_STATE pMS)
 	// reverting to original behavior
     OldContext = SetContext (OffScreenContext);
 
-    DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
+    if (PickMeleeFrame)
+	    DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
     PickMeleeFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2
 			));
