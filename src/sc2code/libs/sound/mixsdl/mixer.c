@@ -672,7 +672,11 @@ mixSDL_SourcePlay (mixSDL_Object srcobj)
 	else /* should make the source active */
 	{
 		if (src->state < MIX_PLAYING)
+		{
+			if (src->firstqueued && !src->nextqueued)
+				mixSDL_SourceRewind_internal (src);
 			mixSDL_SourceActivate (src);
+		}
 		src->state = MIX_PLAYING;
 	}
 

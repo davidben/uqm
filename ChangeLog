@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fixed MixSDL buffer underrun handling (bug #211) -Mika
 - Fix issue with caps lock and num lock preventing planet scan
   and lander message skipping (bug #299), from chmmravatar
 - Subtitles are now hidden after alien has finished talking (bug #312),
