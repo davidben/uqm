@@ -28,11 +28,11 @@ position   length  meaning
                    bits 21-31: index in file_list_offs of the file name for
                        this resource (only for packaged files)
            4       p.flags_and_data_loc
-                   (MSB is flags, rest is data_loc,
+                   MSB is flags, rest is data_loc,
                    if MSB == 0, then of the data_loc only the low 16 bits
                        are used as a MEM_HANDLE (only in memory),
                    if MSB == 0xff, then the data_loc is an offset in the
-                       file)
+                       file to the actual data
 0x16+8*num_packages  Type information
            2*num_types
                    t.instance_count
@@ -82,6 +82,14 @@ file_list_offs     (should be directly after the path list)
            8         filename (8 chars or null-terminated)
            3         extension (3 chars or null-terminated)
 
+For each package p:
+p.data_loc         for each type p.t:
+                     for each instance p.t.i:
+           p.t.i.length
+                       the data for the resource
+                       As the length always is a multiple of 4, the last
+                       few bytes may not belong to the resource itself.
+                       Their content is unspecified.
 
 
 Resources with type 'resource index' (type 4 in the 3DO sc2 starcon.pkg file)
