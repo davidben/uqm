@@ -201,17 +201,11 @@ CombatIsInevitable (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, destruct_code))
 	{
-		COUNT race_bounty[] =
-		{
-			RACE_SHIP_COST
-		};
+		extern BOOLEAN instantVictory;
 
 		NPCPhrase (DESTRUCT_SEQUENCE);
-
-		LockMutex (GraphicsLock);
-		DeltaSISGauges (0, 0, race_bounty[SLYLANDRO_SHIP] >> 3);
-		UnlockMutex (GraphicsLock);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		instantVictory = TRUE;
+		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
 	else
 	{

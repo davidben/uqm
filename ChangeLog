@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Resource units given more obviously when ordering a probe to
+  self-destruct (bug #586), from Nic.
 - Shipyard "Combat Energy" changed to reflect the recharge rate (bug #522).
   Also, some cleanups. Thanks and apologies to Nic.
 - Added lots of debugging functions, SvdB

@@ -22,6 +22,7 @@
 
 QUEUE disp_q;
 SIZE battle_counter;
+BOOLEAN instantVictory;
 
 static void
 ProcessInput (void)
@@ -232,6 +233,14 @@ Battle (void)
 	BattleSong (FALSE);
 	
 	num_ships = InitShips ();
+
+	if (instantVictory)
+	{
+		num_ships = 0;  // no ships were harmed in the making of this battle
+		battle_counter = 1;  // a winner is you!
+		instantVictory = FALSE;
+	}
+	
 	if (num_ships)
 	{
 		BATTLE_STATE bs;
