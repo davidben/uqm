@@ -103,7 +103,7 @@ SetGraphicStrength (int numerator, int denominator)
 static int
 transition_task_func (void *data)
 {
-	const float TRANSITION_SPEED = 0.5f;
+	const float TRANSITION_SPEED = (31.0f / 60.0f);
 	Uint32 last_time = 0, current_time, delta_time, add_amount;
 	Task task = (Task)data;
 	
@@ -118,7 +118,7 @@ transition_task_func (void *data)
 		delta_time = current_time - last_time;
 		last_time = current_time;
 		
-		add_amount = (Uint32)(delta_time * TRANSITION_SPEED);
+		add_amount = (Uint32)((delta_time / 1000.0f / TRANSITION_SPEED) * 255);
 		if (TransitionAmount + add_amount >= 255)
 			break;
 
