@@ -96,3 +96,8 @@ The bugs reported but not yet verified:
   together with the ships in the player's fleet, the modules that are drawn
   inside the flagship are off by one pixel to the left.
 
+- < badalex> ok, im in hyper space right? and lets say one of those 
+             probes comes to me... so we start the melee and i select a 
+             ship, that all works, but after a select a ship the select a 
+             ship screen dosent 'go' away so i can not see how, who, 
+             what, im fighting (NOTE: seems to happen only in cvs, not alpha release)
