@@ -62,7 +62,7 @@ GetResourceData (FILE *fp, DWORD length, MEM_FLAGS mem_flags)
 					if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
 						break;
 				}
-				FAR_PTR_ADD (&RDPtr, num_read);
+				((BYTE *) RDPtr) += num_read;
 			} while (length -= num_read);
 
 			UnlockResourceData (RData);

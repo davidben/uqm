@@ -49,8 +49,6 @@ typedef unsigned char   UNICODE;
 
 typedef PVOID PTR_DESC;
 
-#define FAR_PTR_ADD(fp,val) (*((PBYTE *) (fp)) += (val))
-
 #define PARAGRAPH_SIZE (1 << PARAGRAPH_SHIFT)
 
 #define NULL_PTR 0L

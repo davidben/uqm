@@ -157,8 +157,8 @@ CopyDrawable (DRAWABLE Drawable)
 
 					num_bytes = size >= 0x7FFF ? 0x7FFF : (COUNT)size;
 					memcpy (lpDst, lpSrc, num_bytes);
-					FAR_PTR_ADD (&lpDst, num_bytes);
-					FAR_PTR_ADD (&lpSrc, num_bytes);
+					lpDst += num_bytes;
+					lpSrc += num_bytes;
 					size -= num_bytes;
 				} while (size);
 				CopyDrawablePtr->hDrawable = (MEM_HANDLE)CopyDrawable;

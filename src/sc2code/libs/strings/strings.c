@@ -177,7 +177,7 @@ GetStringSoundClip (STRING String)
 		else
 		{
 			StringAddr = (STRINGPTR)StringTablePtr;
-			FAR_PTR_ADD (&StringAddr, StringTablePtr->StringOffsets[StringIndex]);
+			((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
 		}
 		UnlockStringTable (StringTable);
 	}
@@ -201,7 +201,7 @@ GetStringAddress (STRING String)
 		StringIndex = STRING_INDEX (String);
 		LockStringTable (StringTable, &StringTablePtr);
 		StringAddr = (STRINGPTR)StringTablePtr;
-		FAR_PTR_ADD (&StringAddr, StringTablePtr->StringOffsets[StringIndex]);
+		((BYTE *) StringAddr) += StringTablePtr->StringOffsets[StringIndex];
 		UnlockStringTable (StringTable);
 	}
 

@@ -60,9 +60,9 @@ InitTree (void)
 		*(MEM_HANDLE *)lson = h;
 		lson = (PSWORD)((PBYTE)lson + sizeof (h));
 		rson = lson;
-		FAR_PTR_ADD (&rson, (N + 1) * sizeof (lson[0]));
+		((BYTE *) rson) += (N + 1) * sizeof (lson[0]);
 		dad = rson;
-		FAR_PTR_ADD (&dad, (N + 257) * sizeof (rson[0]));
+		((BYTE *) dad) += (N + 257) * sizeof (rson[0]);
 
 		for (i = N + 1; i <= N + 256; i++)
 			rson[i] = NIL; /* root */
@@ -463,10 +463,6 @@ EncodeRestart:
 		}
 	} while (last_match_length == 0);
 
-	if (_StreamType == MEMORY_STREAM)
-	{
-		FAR_PTR_ADD (&_Stream, 0);
-	}
 EncodeExit:
 	lpCodeDesc->buf_index = r;
 	lpCodeDesc->restart_index = s;

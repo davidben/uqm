@@ -409,11 +409,6 @@ ReenterRun:
 		}
 	} while (size);
 
-	if (_StreamType == MEMORY_STREAM)
-	{
-		FAR_PTR_ADD (&_Stream, 0);
-	}
-
 	lpCodeDesc->buf_index = r;
 	lpCodeDesc->Stream = _Stream;
 	lpCodeDesc->workbuf = _workbuf;
