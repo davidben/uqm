@@ -594,14 +594,14 @@ static int
 parseIntOption (const char *str, int *result, const char *optName)
 {
 	char *endPtr;
-	float temp;
+	int temp;
 
 	if (str[0] == '\0')
 	{
 		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
 		return -1;
 	}
-	temp = (float) strtol(str, &endPtr, 10);
+	temp = (int) strtol(str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
 		fprintf (stderr, "Error: Junk characters in argument '%s'.\n",
