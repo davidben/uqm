@@ -41,7 +41,7 @@ static void
 process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 {
 	TFB_Image *tfbimg;
-	int hx = 0, hy = 0;
+	int hx, hy;
 
 	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
 	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
@@ -49,15 +49,13 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	if (img[cel_ct]->format->palette)
 	{
 		if (ani[cel_ct].transparent_color != -1)
-			SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, ani[cel_ct].transparent_color);
-		
-		if (ani[cel_ct].hotspot_x != -1)
-			hx = ani[cel_ct].hotspot_x;
-		if (ani[cel_ct].hotspot_y != -1)
-			hy = ani[cel_ct].hotspot_y;
+		    SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, ani[cel_ct].transparent_color);
 	}
 	
-	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;	
+	hx = ani[cel_ct].hotspot_x;
+	hy = ani[cel_ct].hotspot_y;
+
+	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;
 
 	tfbimg = (TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs);
 	tfbimg->colormap_index = ani[cel_ct].colormap_index;
