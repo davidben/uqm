@@ -485,13 +485,13 @@ the stars in their courses
 cannot catch the horses?
 SNORT! This is hard!
 
-#(HELLO_RHYME_2)	thrad049.ogg		   
+#(HELLO_RHYME_2)	thrad049.ogg
 Blood is red, bruises are blue
 When strangers come here, we run them through!
 HARG! HARG! HARG!
 Good one, eh?
 
-#(HELLO_RHYME_3)
+#(HELLO_RHYME_3)	thrad050.ogg
 There once was a Thraddash named Mak-Roni
 whose ship was in total caco-phony
 He got lost in Apodis
@@ -499,7 +499,7 @@ and died in Draconis
 Because all that he ate was baloney!
 HARG! HARG! HARG!
 
-#(HELLO_RHYME_4)
+#(HELLO_RHYME_4)	thrad051.ogg
 Constantly moving are
 space, stars, time
 SNORT!
@@ -507,51 +507,51 @@ form not function
 meets in death
 remembered.
 
-#(HELLO_PIG_LATIN_1)	thrad050.ogg
+#(HELLO_PIG_LATIN_1)	thrad052.ogg
 Eway areyay ethay igpay atinlay eakingspay Addashthray! Ortsnay!
 
-#(HELLO_PIG_LATIN_2)	thrad051.ogg
+#(HELLO_PIG_LATIN_2)	thrad053.ogg
 Ombatcay! Ecklessray ouragecay! Eakingspay igpay atinlay!
 Eway aryay ategray orfay eesethay easonsray!
 
-#(HELLO_PIG_LATIN_3)	thrad052.ogg
+#(HELLO_PIG_LATIN_3)	thrad054.ogg
 Ellohay umanhay! Elcomeway ackbay! E'veway eenbay xpectingay ouyay.
 
-#(HELLO_PIG_LATIN_4)	thrad053.ogg
+#(HELLO_PIG_LATIN_4)	thrad055.ogg
 Eway aypay espectray otay ouryay eategray eachertay!
 
-#(HELLO_LIKE_YOU_1)	thrad054.ogg
+#(HELLO_LIKE_YOU_1)	thrad056.ogg
 This is Grah of the starship Hot Pulsing Thrusters.
 
-#(HELLO_LIKE_YOU_2)	thrad055.ogg
+#(HELLO_LIKE_YOU_2)	thrad057.ogg
 Greetings! I am Captain Chudd in command of the Blazing Guns of Glory!
 
-#(HELLO_LIKE_YOU_3)	thrad056.ogg
+#(HELLO_LIKE_YOU_3)	thrad058.ogg
 Attention! This is the starship Overwhelmer.
 
-#(HELLO_LIKE_YOU_4)	thrad057.ogg
+#(HELLO_LIKE_YOU_4)	thrad059.ogg
 I am commander Dthunk.
 
-#(WELCOME_SPACE0)	thrad058.ogg
+#(WELCOME_SPACE0)	thrad060.ogg
 We of 
-#(WELCOME_SPACE1)	thrad059.ogg
+#(WELCOME_SPACE1)	thrad061.ogg
  are glad to meet you here in space, oh wise Teacher from Earth!
 
-#(WELCOME_HOMEWORLD0)	thrad060.ogg
+#(WELCOME_HOMEWORLD0)	thrad062.ogg
 Your presence here at our homeworld fills all of us 
-#(WELCOME_HOMEWORLD1)	thrad061.ogg
+#(WELCOME_HOMEWORLD1)	thrad063.ogg
  with awe. We are honored, wise human.
 
-#(WELCOME_HELIX0)	thrad062.ogg
+#(WELCOME_HELIX0)	thrad064.ogg
 Hoy-yo-HO! The super-strong human has returned to this, our most important planet.
 We, 
-#(WELCOME_HELIX1)	thrad063.ogg
+#(WELCOME_HELIX1)	thrad065.ogg
 , bid you welcome.
 
 #(why_you_here_ally)
 What's so special about about this planet?
 
-#(GUARDING_HELIX_ALLY)	thrad064.ogg
+#(GUARDING_HELIX_ALLY)	thrad066.ogg
 We orbit here guarding that most precious of our relics, that which we hold most dearly
 that which has been at the heart of all our Cultures
 (except for Culture Nine, and they don't really count)
@@ -561,7 +561,7 @@ the Aqua Helix!
 #(whats_helix_ally)
 So what about this `Aqua Helix' thing? Does it do any tricks?
 
-#(HELIX_IS_ALLY)	thrad065.ogg
+#(HELIX_IS_ALLY)	thrad067.ogg
 The Aqua Helix is our most precious relic.
 For the totality of our historical memory, the Helix has been with us.
 It guides, motivates and rewards. It is the twisty-thing that launched a thousand ships!
@@ -580,14 +580,14 @@ Therefore, the Aqua Helix IS great! The matter is resolved.
 #(may_i_land)
 That sounds really cool! You won't mind if I go down and just kinda look at it, would you?
 
-#(SURE_LAND)	thrad066.ogg
+#(SURE_LAND)	thrad068.ogg
 Why certainly, go ahead and land on the planet and take a look at the most precious of all our relics
 the relic we hold most dear, as have all our Cultures...
 
 #(whats_up_ally)
 Have there been any developments here that I, your Great Teacher, should know of?
 
-#(GENERAL_INFO_ALLY_1)	thrad067.ogg
+#(GENERAL_INFO_ALLY_1)	thrad069.ogg
 Yes, Teacher, there is at least one event of note.
 We may have once mentioned our encounters with the tumbling red probes
 the ones that attack relentlessly while spouting bizarre peace offerings.
@@ -597,7 +597,7 @@ Uh.. no, Captain, we don't know what the opposite of Vega is, that's not what we
 We now believe that the probes are RETURNING to Vega.
 As yet we do not know the nature of their mission.
 
-#(GENERAL_INFO_ALLY_2)	thrad068.ogg
+#(GENERAL_INFO_ALLY_2)	thrad070.ogg
 Yes, wise human, let us elaborate.
 Two years ago we monitored the entry of two ships into our space.
 One was clearly a Dreadnought, the ship of our ex-masters, the Ur-Quan.
@@ -607,7 +607,7 @@ Eventually, the Ur-Quan destroyed the black ship, but not before receiving morta
 The last we saw of the ship, it was tumbling out of control toward Alpha Pavonis.
 We do not know its eventual fate.
 
-#(GENERAL_INFO_ALLY_3)	thrad069.ogg
+#(GENERAL_INFO_ALLY_3)	thrad071.ogg
 Now that you are our new role-model, I guess it's time to spill the beans on the Ur-Quan.
 Unfortunately, we never really got any beans -- secret bits of information, that is.
 However, maybe you would like to know about the last time we saw the Ur-Quan.
@@ -617,7 +617,7 @@ which told us to remain in our old sphere of influence, obey the slave laws, and
 The Dreadnought fleet departed in the direction of the Crateris constellation
 but where they are now is unknown.
 
-#(GENERAL_INFO_ALLY_4)	thrad070.ogg
+#(GENERAL_INFO_ALLY_4)	thrad072.ogg
 This doesn't really count as News, Teacher
 but War is truly magnificent isn't it?
 The gut wrenching sight of molten warships!
@@ -625,14 +625,14 @@ The boiling blood of depressurized soldiers!
 I just love it!...
 ...don't you?
 
-#(HOW_SHOULD_WE_ACT)	thrad071.ogg
+#(HOW_SHOULD_WE_ACT)	thrad073.ogg
 We need to learn so much from you, such as
 How should we act in our new Culture? What is our direction, our ethical base?
 
 #(friendly)
 Be kind at all times and in all places. Treat each stranger you meet as your best friend.
 
-#(OK_FRIENDLY)	thrad072.ogg
+#(OK_FRIENDLY)	thrad074.ogg
 Friendly? Kind? The wisdom escapes me.... ah yes! I understand now!
 Being kind, being friendly...this will allow intruders to let their guard down
 and when we kill them, they will be too surprised to react!
@@ -641,7 +641,7 @@ What a great plan, human! You are truly a great Teacher!
 #(wacky)
 Lighten up! Be kind of... you know... Wacky! Here, try watching these vids: Monty Python and the Marx Brothers.
 
-#(OK_WACKY)	thrad073.ogg
+#(OK_WACKY)	thrad075.ogg
 Wacky!...Wacky? I do not understand. We shall watch these vids of yours.
 We shall study them, to learn to be... wacky.
 Then, when we are wacky enough, we shall test our new wackiness in combat
@@ -651,7 +651,7 @@ Thank you, Great Teacher.
 #(just_like_us)
 Look, if you really want a model for your Culture, then be just like us!
 
-#(OK_JUST_LIKE_YOU)	thrad074.ogg
+#(OK_JUST_LIKE_YOU)	thrad076.ogg
 Aha! I see it now. We proceed carefully
 we take no undue risks. We slowly build up our strength
 and only attack when we have overwhelming odds on our side!
@@ -660,7 +660,7 @@ trying to drag out every last bit of information, and if they are not cooperativ
 we will threaten them with instant death!
 We will be just like you!
 
-#(WORK_TO_DO)	thrad075.ogg
+#(WORK_TO_DO)	thrad077.ogg
 We have much work to do to implement these sweeping cultural changes.
 Transferring from the allegiances and mores of one culture to another
 is a difficult and time consuming task.
@@ -670,7 +670,7 @@ Return later to see our brave new world.
 #(contemplative)
 Try being more contemplative. Consider the many facets of a single gem... and stuff like that.
 
-#(OK_CONTEMPLATIVE)	thrad076.ogg
+#(OK_CONTEMPLATIVE)	thrad078.ogg
 Aha! Contemplation, yes! New thought and realizations! With our new studious ways
 we shall uncover new methods, inventions and schemes
 allowing us to conquer entire civilizations with ease!
@@ -679,32 +679,32 @@ Brilliant, human, brilliant!
 #(how_goes_culture)
 So how is the new Culture developing?
 
-#(CONTEMP_GOES_1)	thrad077.ogg
+#(CONTEMP_GOES_1)	thrad079.ogg
 Augh! If it were not for our certainty in your wisdom, great Teacher from Earth
 we would not have remained a `Contemplative' culture for more than a single day
 As it is, we have contemplated our strategies, tactics, our weapons, the stars
 the planets, and even our navels
 which for a Thraddash is very uncomfortable and requires at least two mirrors.
 
-#(CONTEMP_GOES_2)	thrad078.ogg
+#(CONTEMP_GOES_2)	thrad080.ogg
 So studious! So quiet! So contemplative!
 SNORT!
 We are not made for this. We are beginning to break out in spots!
 
-#(FRIENDLY_GOES_1)	thrad079.ogg
+#(FRIENDLY_GOES_1)	thrad081.ogg
 To be frank, Great Teacher, friendliness suits us Thraddash poorly.
 For example, we Thraddash do not have the necessary muscles to `smile' as you suggested we do
 so we are now using small plastic prosthetic devices to prop up our lips into the required position.
 Very uncomfortable.
 
-#(FRIENDLY_GOES_2)	thrad080.ogg
+#(FRIENDLY_GOES_2)	thrad082.ogg
 Try as we might, we just can't make this friendly thing work, Teacher.
 Even your idea about exchanging the ritual gifts, the `Fruit Cakes' has had problems.
 It seems that nobody actually wants to eat the Fruit Cakes
 however, on the plus side, due to the Fruit Cakes' density and other physical characteristics
 they make excellent projectile weapons!
 
-#(WACKY_GOES_1)	thrad081.ogg
+#(WACKY_GOES_1)	thrad083.ogg
 We have studied and studied the vids you left with us, oh Great Teacher
 but we fear we are unable to grasp the essential truth and power of being wacky.
 For example, last month, in an attempt to be spontaneously absurd
@@ -717,7 +717,7 @@ The penguin, the vidscreen, and a large section of the wall were destroyed.
 You see, Captain. Perhaps we are not suited to being wacky
 and SNIFF!... that was my only penguin.
 
-#(WACKY_GOES_2)	thrad082.ogg
+#(WACKY_GOES_2)	thrad084.ogg
 We are getting a better handle on this wacky thing. The key?...Slapstick!
 We Thraddash have found our mode, our idiom, our way to be wacky.
 Jabbing the eyes with outstretched digits! Striking the head with planks!
@@ -725,7 +725,7 @@ HARG! HARG! HARG! We like and understand this perfectly, Captain.
 And with the addition of our native elements, high-explosives and nausea gas
 Thraddash space has become Pratfall City!
 
-#(LIKE_YOU_GOES_1)	thrad083.ogg
+#(LIKE_YOU_GOES_1)	thrad085.ogg
 Things are proceeding well, Captain.
 We have discovered one item which may interest you.
 There is an unusual world orbiting Epsilon Draconis, in close solar orbit.
@@ -737,7 +737,7 @@ The text goes on to say that these Dumps are in some kind of pattern
 though what the pattern may be remains a mystery.
 For now, that is all.
 
-#(LIKE_YOU_GOES_2)	thrad084.ogg
+#(LIKE_YOU_GOES_2)	thrad086.ogg
 A long-range scouting team was sent to explore the stars in the Lyncis constellation.
 On planet I of Delta Lyncis, they encountered a life form so dangerous, so hostile
 that it almost killed the entire landing party.
@@ -747,22 +747,22 @@ and we hope this information has been of use.
 #(bye_ally)
 Goodbye to you, my Thraddash students.
 
-#(GOODBYE_ALLY_1)	thrad085.ogg
+#(GOODBYE_ALLY_1)	thrad087.ogg
 We eagerly await your return, Great Teacher.
 
-#(GOODBYE_ALLY_2)	thrad086.ogg
+#(GOODBYE_ALLY_2)	thrad088.ogg
 We will await your return and further enlightenment with great anticipation.
 
-#(GOODBYE_ALLY_3)	thrad087.ogg
+#(GOODBYE_ALLY_3)	thrad089.ogg
 Try not to get killed, Teacher.
 
-#(GOODBYE_ALLY_4)	thrad088.ogg
+#(GOODBYE_ALLY_4)	thrad090.ogg
 Farewell Great Teacher.
 
 #(be_polite)
 Try being polite and friendly in your greetings.
 
-#(OK_POLITE)	thrad089.ogg
+#(OK_POLITE)	thrad091.ogg
 Ok, we will be polite.
 That will cause visitors to let their guard down
 and then we attack them!
@@ -771,7 +771,7 @@ Yes, that is an excellent plan!
 #(speak_pig_latin)
 To really capture the spirit of Interstellar Diplomactic Protocol you should speak pig latin.
 
-#(OK_PIG_LATIN)	thrad090.ogg
+#(OK_PIG_LATIN)	thrad092.ogg
 Pig-Latin, eh? Isn't that where you take the first letter or two of a word, put it at the end
 and then add an `ay' at the very end?  Hmm.. let me try
 `Upidstay Eaturecray! Eparepray otay ieday!'
@@ -782,7 +782,7 @@ Just one question, Great Teacher. How do you say `example' in pig latin?
 #(use_rhymes)
 I know for a fact that rhyming in your introductions wins big points.
 
-#(OK_RHYMES)	thrad091.ogg
+#(OK_RHYMES)	thrad093.ogg
 Rhymes? Like in poetry? SNORT!
 Isn't that kind of... you know... not-tough stuff?
 SNORT! What am I saying! You are the Great Teacher! You know best!
@@ -791,13 +791,13 @@ If rhyming is necessary, then Teacher we will be rhyming all the timing.
 #(just_the_way_we_do)
 Just greet people the way we do.
 
-#(OK_WAY_YOU_DO)	thrad092.ogg
+#(OK_WAY_YOU_DO)	thrad094.ogg
 Hmmm... okay. I see.
 When necessary, we will be obsequious and kowtow
 and the rest of the time, we will bluster and threaten!
 How simple!
 
-#(WHAT_NAME_FOR_CULTURE)	thrad093.ogg
+#(WHAT_NAME_FOR_CULTURE)	thrad095.ogg
 Now that we understand the nuances of introduction, Great Teacher
 we have an even more significant question.
 Your devastation of our battle forces have shown us
@@ -808,10 +808,10 @@ but what shall we name our new Culture?
 #(alliance_name)
 How about the 
 
-#(OK_ALLIANCE_NAME)	thrad094.ogg
+#(OK_ALLIANCE_NAME)
 Okay, the 
 
-#(NAME_TAIL)	thrad095.ogg
+#(NAME_TAIL)
  
 
 #(you_decide)

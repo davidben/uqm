@@ -401,7 +401,7 @@ We shall make you cease to exist, for Juffo-Wup.
 #(RAMBLE_TAIL)
   
 
-#(WE_GO_TO_IMPLANT)	mycon067.ogg
+#(WE_GO_TO_IMPLANT)	mycon065.ogg
 If your words are true, we will gladly spread Juffo-Wup to a new world!
 We will assemble the Birthing Fleet and send them to this planet.
 We will send many ships to protect the Children as they grow.
