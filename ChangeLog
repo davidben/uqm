@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Fix lockup in cyborg melee (fixes 204 and 218) from chmmravatar
 - Added -g option to control gamma correction, from chmmravatar
 - Restored the CondBank to actually use condition variables properly
   (resolves a race condition under OpenBSD)

@@ -509,6 +509,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int x = DC.data.image.x;
 				int y = DC.data.image.y;
 
+				LockMutex (DC_image->mutex);
 				if (DC.data.image.scale)
 					TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
 				else
@@ -522,6 +523,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				{
 					pal = DC_image->Palette;
 				}
+				UnlockMutex (DC_image->mutex);
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
 						DC.data.image.scale, pal,
