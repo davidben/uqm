@@ -1,4 +1,4 @@
-if [ "$uqm_SOUNDMODULE" = openal ]; then
+if [ "$uqm_SOUNDMODULE" = "openal" ]; then
 	uqm_SUBDIRS="openal mixer decoders"
 	uqm_CFLAGS="$uqm_CFLAGS -DHAVE_OPENAL"
 else
