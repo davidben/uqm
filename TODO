@@ -105,6 +105,8 @@ Glitches (don't crash the game, medium priority):
   (due to being out of char box or so), thus leaving highlighted pixels
 - The 3DO image for the Precursor ship is used for the 'upgrade starbase',
   while the PC image is better (no cut-off nose).
+- When orbiting earth, and going to starmap and then back with space without
+  selecting a destination, crashes
 
 
 Implementation bugs (low priority):
