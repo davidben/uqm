@@ -104,7 +104,7 @@ ALint SoundDecoder_Init (int flags)
 		md_reverb = 0;
 	}
 	
-	md_pansep = 96;
+	md_pansep = 64;
 
 	if (MikMod_Init (""))
 	{
