@@ -1,4 +1,6 @@
 0.2:
+- Fix OpenGL colors on big-endian CPUs, from Bryce McKinlay
+- MikMod now loops modules correctly (OpenAL), from Nic
 - player.fon/42.png corrected, from Parker
 - GraphicsSem usage reverted back in RotatePlanet, from PhracturedBlue
 - Pause/exit game dialog problem with planets fixed, from PhracturedBlue
