@@ -594,7 +594,6 @@ _get_serial_keyboard_state (INPUT_REF ref, INPUT_STATE InputState)
 		// I hope these are defined somewhere...
 {
 	Uint16 key;
-	extern Uint16 GetUNICODEKey (void);
 
 	if ((key = GetUNICODEKey ()) == '\r')
 		key = '\n';

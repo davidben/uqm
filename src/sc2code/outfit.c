@@ -314,7 +314,7 @@ DoInstallModule (INPUT_STATE InputState, PMENU_STATE pMS)
 							GLOBAL (ModuleCost[old_slot_piece])
 							* MODULE_COST_SCALE);
 
-				if (WRAP_VAL (pMS->CurState, EMPTY_SLOT + 3) == PLANET_LANDER)
+				if (pMS->CurState == PLANET_LANDER || pMS->CurState == EMPTY_SLOT + 3)
 					DisplayLanders (pMS);
 				else
 				{
