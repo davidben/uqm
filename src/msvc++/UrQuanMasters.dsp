@@ -494,6 +494,22 @@ SOURCE=..\sc2code\libs\sound\decoders\dukaud.c
 
 SOURCE=..\sc2code\libs\sound\decoders\dukaud.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\modaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\modaud.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\oggaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\oggaud.h
+# End Source File
 # Begin Group "mikmod"
 
 # PROP Default_Filter ""
