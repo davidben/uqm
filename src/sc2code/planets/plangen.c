@@ -64,7 +64,13 @@ DWORD **getpixelarray(FRAME FramePtr,int width, int height);
 #endif
 
 DWORD phong[DIAMETER][DIAMETER];
-POINT map_rotate[DIAMETER][DIAMETER];
+typedef struct 
+{
+	POINT p[4];
+	DWORD m[4];
+} MAP3D_POINT;
+MAP3D_POINT map_rotate[DIAMETER][DIAMETER];
+//POINT map_rotate[DIAMETER][DIAMETER];
 
 void
 RenderTopography (BOOLEAN Reconstruct)
@@ -109,7 +115,7 @@ RenderTopography (BOOLEAN Reconstruct)
 		pBatch = &BatchArray[0];
 		for (i = 0; i < NUM_BATCH_POINTS; ++i, ++pBatch)
 		{
-			SetPrimNextLink (pBatch, i + 1);
+			SetPrimNextLink (pBatch, (COUNT)(i + 1));
 			SetPrimType (pBatch, POINT_PRIM);
 		}
 		SetPrimNextLink (&pBatch[-1], END_OF_LIST);
@@ -196,7 +202,7 @@ RenderPhongMask (POINT loc)
 	POINT pt,light;
 	double lrad;
 	int lmag;
-	int step;
+	DWORD step;
 	double lmag2;
 
 #define LIGHT_MULT 0.8
@@ -247,6 +253,99 @@ RenderPhongMask (POINT loc)
 		}
 	}
 }
+
+//create_aa_points creates weighted averages for
+//  4 points around the 'ideal' point at x,y
+//  the concept is to compute the weight based on the
+//  distance from the integer location poinnts to the ideal point
+void create_aa_points(MAP3D_POINT *ppt, double x, double y)
+{
+	double deltax=0,deltay=0,inv_deltax,inv_deltay;
+	COORD nextx,nexty;
+	COUNT i;
+	double d1,d2,d3,d4,m[4];
+	// get  the integer value of this point
+	ppt->p[0].x=(COORD)(0.5+x);
+	ppt->p[0].y=(COORD)(0.5+y);
+	if(ppt->p[0].x > TWORADIUS) {
+		ppt->p[0].x=TWORADIUS;
+	} else if(ppt->p[0].x != 0) {
+		deltax=x-ppt->p[0].x;
+	}
+	if(ppt->p[0].y > TWORADIUS) {
+		ppt->p[0].y=TWORADIUS;
+	} else if(ppt->p[0].y != 0) {
+		deltay=y-ppt->p[0].y;
+	}
+	//if this point doesn't need modificaton, set m[0]=0
+	if(deltax==0 && deltay==0) {
+		ppt->m[0]=0;
+	} else {
+		//get the neighbboring points surrounding the 'ideal' poinnt
+		if(deltax!=0) {
+			nextx=ppt->p[0].x+((deltax >0) ?1 : -1);
+		} else {
+			nextx=ppt->p[0].x;
+		}
+		if(deltay!=0) {
+			nexty=ppt->p[0].y+((deltay >0) ?1 : -1);
+		} else {
+			nexty=ppt->p[0].y;
+		}
+		//(x1,y)
+		ppt->p[1].x=nextx;
+		ppt->p[1].y=ppt->p[0].y;
+		//(x,y1)
+		ppt->p[2].x=ppt->p[0].x;
+		ppt->p[2].y=nexty;
+		//(x1y1)
+		ppt->p[3].x=nextx;
+		ppt->p[3].y=nexty;
+		//the square  1x1, so opposite poinnts are at 1-delta
+		inv_deltax=1.0-fabs(deltax);
+		inv_deltax*=inv_deltax;
+		inv_deltay=1.0-fabs(deltay);
+		inv_deltay*=inv_deltay;
+		deltax*=deltax;
+		deltay*=deltay;
+		//d1-d4 contain the distances from the poinnts to the ideal point
+		d1=sqrt(deltax+deltay);
+		d2=sqrt(inv_deltax+deltay);
+		d3=sqrt(deltax+inv_deltay);
+		d4=sqrt(inv_deltax+inv_deltay);
+		//compute the weights.  the sum(ppt->m[])=65536
+		m[0]=1/(1+d1*(1/d2+1/d3+1/d4));
+		m[1]=m[0]*d1/d2;
+		m[2]=m[0]*d1/d3;
+		m[3]=m[0]*d1/d4;
+		for(i=0;i<4;i++)
+			ppt->m[i]=(DWORD)((1<<16)*m[i]+0.5);
+	}
+}
+
+//get_avg_rgb creates either a red, green, or blue value by
+//computing the  weightd averages of the 4 points in p1
+UBYTE get_avg_rgb(DWORD p1[4],DWORD mult[4],COUNT offset) {
+	COUNT i,j;
+	UBYTE c;
+	DWORD ci;
+	
+	i=offset<<3;
+	ci=0;
+	//sum(mult[])==65536
+	//c is the red/green/blue value of this pixel
+	for(j=0;j<4;j++)
+	{
+		c=(UBYTE)(p1[j] >> i);
+		ci+=c*mult[j];
+	}
+	ci=ci>>16;
+	//check for overflow
+	if (ci> 255)
+		ci=255;
+	return((UBYTE)ci);
+}
+
 // SetPlanetTilt creates 'map_rotate' to map the topo data
 //  for a tilted planet.  It also does the sphere->plane mapping
 void
@@ -261,9 +360,9 @@ SetPlanetTilt (int angle)
 		y_2=y*y;
 		for(x=-RADIUS;x<=RADIUS;x++)
 		{
-			double dx, dy;
+			double dx, dy, newx, newy;
 			double da,rad,rad2;
-			POINT *ppt=&map_rotate[y+RADIUS][x+RADIUS];
+			MAP3D_POINT *ppt=&map_rotate[y+RADIUS][x+RADIUS];
 			rad2=x*x+y_2;
 			if(rad2<=RADIUS_2) {
 				rad=sqrt(rad2);
@@ -277,15 +376,13 @@ SetPlanetTilt (int angle)
 					dy=y;
 				}
 				//Map the sphere onto a plane
-				ppt->x=(int)(0.5+RADIUS*(multx*acos(-dx/RADIUS)));
-				if(ppt->x > TWORADIUS)
-					ppt->x=TWORADIUS;
-				ppt->y=(int)(0.5+RADIUS*(multy*acos(-dy/RADIUS)));
-				if(ppt->y > TWORADIUS)
-					ppt->y=TWORADIUS;
+				newx=RADIUS*(multx*acos(-dx/RADIUS));
+				newy=RADIUS*(multy*acos(-dy/RADIUS));
+				create_aa_points(ppt,newx,newy);
 			} else {
-				ppt->x=x+RADIUS;
-				ppt->y=y+RADIUS;
+				ppt->p[0].x=x+RADIUS;
+				ppt->p[0].y=y+RADIUS;
+				ppt->m[0]=0;
 			}
 		}
 	}
@@ -304,7 +401,8 @@ SetPlanetTilt (int angle)
 #define SHIELD_RADIUS_2 SHIELD_RADIUS*SHIELD_RADIUS
 void CreateShieldMask()
 {
-	DWORD rad2,red,red_nt,clear,**rgba,p;
+	DWORD rad2,clear,**rgba,p;
+	UBYTE red_nt;
 	int x,y;
 	FRAME ShieldFrame;
 	DWORD aa_delta,aa_delta2;
@@ -313,8 +411,6 @@ void CreateShieldMask()
 			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1)
 				);
 	rgba=(DWORD **)malloc(sizeof(DWORD *)*(SHIELD_DIAM));
-	// This is a 'transparent' red for the planet mask.
-	red=frame_mapRGBA (ShieldFrame,255,0,0,200);
 	// This is a non-transparent red for the halo
 	red_nt=180;
 	//  This is 100% transparent.
@@ -335,16 +431,16 @@ void CreateShieldMask()
 					p=frame_mapRGBA(ShieldFrame,0,0,0,255);
 				} else {
 					// The halo itself
-					DWORD red=red_nt;
+					UBYTE red=red_nt;
 					if(rad2>(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1))
 					{
 						DWORD r;
 						r=rad2-(SHIELD_RADIUS-1)*(SHIELD_RADIUS-1);
-						red=red_nt-red_nt*r/aa_delta;
+						red=red_nt-(UBYTE)(red_nt*r/aa_delta);
 					} else if (rad2 < (RADIUS+3)*(RADIUS+3)) {
 						DWORD r;
 						r = rad2 - (RADIUS+2)*(RADIUS+2);
-						red = red_nt*r/aa_delta2;
+						red = (UBYTE)(red_nt*r/aa_delta2);
 					}
 					p=frame_mapRGBA (ShieldFrame,red,0,0,255);
 
@@ -394,28 +490,40 @@ RenderLevelMasks (int offset)
 		rgba[pt.y]=malloc(sizeof(DWORD)*(DIAMETER));
 		for (pt.x = 0,  x=-RADIUS; pt.x <= TWORADIUS; ++pt.x,++x)
 		{
-			int c1,c2,c3;
+			UBYTE c[3];
 			int ph;
+			COUNT i;
+			DWORD p1[4];
+			MAP3D_POINT *ppt=&map_rotate[pt.y][pt.x];
 			rgba[pt.y][pt.x]=0;
 			ph=phong[pt.y][pt.x];
-			p=pixels[map_rotate[pt.y][pt.x].y][map_rotate[pt.y][pt.x].x+offset];
-			c1=(p&0xff000000)>>24;
-			c2=(p&0x00ff0000)>>16;
-			c3=(p&0x0000ff00)>>8;
+			if(ph < 1<<PHONG_BITS) {
+				if(ppt->m[0]==0) {
+					p=pixels[ppt->p[0].y][ppt->p[0].x+offset];
+					c[0]=(UBYTE)(p>>8);
+					c[1]=(UBYTE)(p>>16);
+					c[2]=(UBYTE)(p>>24);
+				} else {
+					for(i=0;i<4;i++) {
+						p1[i]=pixels[ppt->p[i].y][ppt->p[i].x+offset];
+					}
+					for(i=1;i<4;i++) {
+						c[i-1]=get_avg_rgb(p1,ppt->m,i);
+					}
+				}
 			// fixed planet surfaces being too dark
 			// ctab shifts were previously >> 3 .. -Mika
 			// Apply the lightinng model.  This also bounds the sphere to make it circular
-			if(ph < 1<<PHONG_BITS) {
 				if(pSolarSysState->ShieldFrame) {
-					c1=GET_PHONG(255,ph);
-					c2=GET_PHONG(c2>>1,ph);
-					c3=GET_PHONG(c3>>1,ph);
+					c[2]=GET_PHONG(255,ph);
+					c[1]=GET_PHONG(c[1]>>1,ph);
+					c[0]=GET_PHONG(c[0]>>1,ph);
 				} else  {
-					c1=GET_PHONG(c1,ph);
-					c2=GET_PHONG(c2,ph);
-					c3=GET_PHONG(c3,ph);
+					c[2]=GET_PHONG(c[2],ph);
+					c[1]=GET_PHONG(c[1],ph);
+					c[0]=GET_PHONG(c[0],ph);
 				}
-				rgba[pt.y][pt.x]=frame_mapRGBA (MaskFrame,(UBYTE)c1,(UBYTE)c2,(UBYTE)c3,(UBYTE)255);
+				rgba[pt.y][pt.x]=frame_mapRGBA (MaskFrame,c[2],c[1],c[0],(UBYTE)255);
 			} else {
 				rgba[pt.y][pt.x]=frame_mapRGBA (MaskFrame,0,0,0,0);
 			}
@@ -899,7 +1007,7 @@ MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
 				& (((1 << RANGE_SHIFT) * NUM_BAND_COLORS) - 1);
 	}
 
-	MakeStorms (4 + ((COUNT)Random () & 3) + 1, DepthArray);
+	MakeStorms ((COUNT)(4 + ((COUNT)Random () & 3) + 1), DepthArray);
 
 	DitherMap (DepthArray);
 }
@@ -1136,7 +1244,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	SeedRandom (old_seed);
 
-	SetPlanetMusic (pPlanetDesc->data_index & ~PLANET_SHIELDED);
+	SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
 }
 
 int
