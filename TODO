@@ -64,7 +64,7 @@ Glitches (don't crash the game, medium priority):
   small again (some 3DO owner should check does this happen in original)
 - Earth color can vary between different runs, it should be always blue
   when not being near of it
-- when the audio device isn't available, you can play the game,
+- In Linux, when the audio device isn't available, you can play the game,
   but it will hang on termination
 
 Implementation bugs (low priority):
