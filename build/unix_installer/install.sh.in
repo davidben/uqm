@@ -233,7 +233,7 @@ echo "A word as good as any."
 echo
 
 echo "Making directories..."
-mkdir -p -- "$PREFIX"/lib/uqm 2> /dev/null
+mkdir -p -- "$PREFIX"/lib/uqm/content 2> /dev/null
 mkdir -p -- "$PREFIX"/bin 2> /dev/null
 
 echo "Unpacking packages..."
