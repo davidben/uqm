@@ -18,14 +18,16 @@
  */
 
 #ifndef SOUNDCHOOSER_H
-#define SOUNDCHOOSER_H
-#ifdef WIN32
-#include <al.h>
-#include <alc.h>
-#pragma comment (lib, "OpenAL32.lib")
+#	define SOUNDCHOOSER_H
+#	ifdef WIN32
+#		include <al.h>
+#		include <alc.h>
+#	ifdef _MSC_VER
+#		pragma comment (lib, "OpenAL32.lib")
+#	endif
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+#	include <AL/al.h>
+#	include <AL/alc.h>
 #endif
 
 #include "mixsdl/mixer.h"

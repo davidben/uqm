@@ -41,11 +41,7 @@
 int
 createDirectory(const char *dir, int mode)
 {
-#ifdef WIN32
-	return mkdir (dir);
-#else
-	return mkdir (dir, (mode_t) mode);
-#endif
+	return MKDIR(dir, mode);
 }
 
 // make all components of the path if they don't exist already

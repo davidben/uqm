@@ -30,8 +30,10 @@ SDL_Surface* TFB_GL_DisplayFormatAlpha (SDL_Surface *surface);
 #ifdef HAVE_OPENGL
 #ifdef WIN32
 
+#ifdef _MSC_VER
 #pragma comment (lib, "opengl32.lib")
 #pragma comment (lib, "glu32.lib")
+#endif
 
 /* To avoid including windows.h,
    Win32's <GL/gl.h> needs APIENTRY and WINGDIAPI defined properly. */

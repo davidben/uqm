@@ -25,8 +25,8 @@
 #include "types.h"
 #include "uio.h"
 
-#ifdef WIN32
-#pragma comment (lib, "vorbisfile.lib")
+#ifdef _MSC_VER
+#	pragma comment (lib, "vorbisfile.lib")
 #endif
 
 typedef struct tfb_decoderformats

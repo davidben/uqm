@@ -23,12 +23,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
-#	include <malloc.h>
-#	define alloca _alloca
-#elif defined (__linux__)
-#	include <alloca.h>
-#endif
 #include "uioport.h"
 
 #define uio_malloc malloc

@@ -22,39 +22,63 @@
 #define _UIOPORT_H
 
 #ifdef WIN32
+#	include <io.h>
+#else
+#	include <unistd.h>
+#endif
+
+
+// Compilation related
+#ifdef _MSC_VER
+#	define inline __inline
+#else
+#	define inline __inline__
+#endif
+
+// Paths
+#ifdef WIN32
 #	include <stdlib.h>
 #	define PATH_MAX  _MAX_PATH
 #	define NAME_MAX  _MAX_FNAME
 		// _MAX_DIR and FILENAME_MAX could also be candidates.
 		// If anyone can tell me which one matches NAME_MAX, please
 		// let me know.
-#	define inline __inline
-typedef short uid_t;
-typedef short gid_t;
 #else
 #	include <limits.h>
 		/* PATH_MAX is per POSIX defined in <limits.h> */
-#	define inline __inline__
 #endif
+
+// User ids
 #ifdef WIN32
-#	include <io.h>
-#	define mkdir MS_INSANE_MKDIR
-		// direct.h would give a bad definition of mkdir(). Now it gives
-		// a bad definition of MS_INSANE_MKDIR(), which we won't use.
-		// Yes, it's a hack, but this way the hack will stay local to
-		// the MS-specific stuff.
-#	include <direct.h>
-#	undef mkdir
-typedef unsigned short mode_t;
-static inline int
-mkdir(const char *pathname, mode_t mode) {
-	(void) mode;
-	return _mkdir(pathname);
-}
-#endif  /* WIN32 */
-#ifdef _MSC_VER
-#	include <sys/stat.h>
+typedef short uid_t;
+typedef short gid_t;
+#endif
+
+// Some types
+#ifdef WIN32
 typedef int ssize_t;
+#endif
+#ifdef _MSC_VER
+typedef unsigned short mode_t;
+#endif
+
+// Directories
+#include <sys/stat.h>
+#ifdef WIN32
+#	ifdef _MSC_VER
+#		define MKDIR(name, mode) ((void) mode, _mkdir(name))
+#	else
+#		define MKDIR(name, mode) ((void) mode, mkdir(name))
+#	endif
+#else
+#	define MKDIR mkdir
+#endif
+#ifdef _MSC_VER
+#	include <direct.h>
+#	define chdir _chdir
+#	define getcwd _getcwd
+#	define chdir _chdir
+#	define getcwd _getcwd
 #	define access _access
 #	define F_OK 0
 #	define W_OK 2
@@ -90,12 +114,6 @@ typedef int ssize_t;
 #	define stat _stat
 #	define unlink _unlink
 #elif defined (__MINGW32__)
-typedef int ssize_t;
-typedef unsigned short mode_t;
-#	define S_IRUSR S_IREAD
-#	define S_IWUSR S_IWRITE
-#	define S_IXUSR S_IEXEC
-#	define S_IRWXU (S_IRUSR | S_IWUSR | S_IXUSR)
 #	define S_IRGRP 0
 #	define S_IWGRP 0
 #	define S_IXGRP 0
@@ -110,12 +128,19 @@ typedef unsigned short mode_t;
 #	define S_IFREG _S_IFREG
 #	define S_IFCHR _S_IFCHR
 #	define S_IFDIR _S_IFDIR
-#	define S_ISDIR(mode) (((mode) & _S_IFMT) == _S_IFDIR)
-#	define S_ISREG(mode) (((mode) & _S_IFMT) == _S_IFREG)
-#else
-#	include <unistd.h>
 #endif
 
+// Memory related:
+#ifdef WIN32
+#	ifdef __MINGW32__
+#		include <malloc.h>
+#	elif defined (_MSC_VER)
+#		define alloca _alloca
+#	endif
+#elif defined (__linux__)
+#	include <alloca.h>
+#endif
 
 #endif  /* _UIOPORT_H */
+
 
