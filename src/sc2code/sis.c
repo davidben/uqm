@@ -928,153 +928,91 @@ CountSISPieces (BYTE piece_type)
 
 static Task flash_task;
 static RECT flash_rect;
-static FRAME flash_frame = NULL, flash_extra_frame = NULL;
-static flash_changed = 0;
-void arith_frame_blit (FRAME f1, RECT *r1, FRAME f2, RECT *r2, int num, int denom);
+static FRAME flash_frame;
 
 int flash_rect_func(void *data)
 {
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
-#define MIN_F_STRENGTH -3
-#define MAX_F_STRENGTH 3
-#define MIN_STRENGTH 4
-#define MAX_STRENGTH 6
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	Task task = (Task)data;
-	FRAME FlashFrame= NULL;
-	FRAME cur_frame = NULL;
-	FRAME BackupExtraFrame = NULL;
-	CONTEXT OldContext;
-	RECT old_rect;
-	int pos, max_pos;
 
-
+	fstrength = NORMAL_F_STRENGTH;
+	incr = 1;
+	strength = NORMAL_STRENGTH;
 	TimeIn = GetTimeCounter ();
 	WaitTime = ONE_SECOND / 16;
-
 	while (!Task_ReadState(task, TASK_EXIT))
 	{
+		CONTEXT OldContext;
+
 		SetSemaphore (GraphicsSem);
-		if (flash_changed)
+		OldContext = SetContext (ScreenContext);
+		
+		if (flash_rect.extent.width)
 		{
-			// FlushGraphics is called because it is necessary that the DCQ empties
-			// and thus initializes flash_extra_frame before generating the individual
-			// flash frames
-			ClearSemaphore (GraphicsSem);
-			FlushGraphics ();
-			SetSemaphore (GraphicsSem);
-			flash_changed = 0;
-			if (FlashFrame)
-				DestroyDrawable (ReleaseDrawable (FlashFrame));
-			FlashFrame = 0;
-			BackupExtraFrame = flash_extra_frame;
-			old_rect = flash_rect;
-			if (flash_rect.extent.width && flash_extra_frame)
-			{
-				// There is something to flash
-				int i;
-				if (flash_frame)
-				{
-					// Flash an image.  This is used for the startup screen
-					FlashFrame =  CaptureDrawable (
-						CreateDrawable (WANT_PIXMAP, flash_rect.extent.width, 
-							flash_rect.extent.height, 
-							(COUNT)(1 + MAX_F_STRENGTH - MIN_F_STRENGTH))
-						);
-					for (i = 1, fstrength = MIN_F_STRENGTH; 
-						fstrength <= MAX_F_STRENGTH; i++, fstrength++)
-					{
-						cur_frame = SetAbsFrameIndex (FlashFrame, (COUNT)i);
-						if (fstrength == NORMAL_F_STRENGTH)
-						{
-							arith_frame_blit (flash_extra_frame, NULL, 
-								cur_frame, NULL, 0, 0); 
-							pos = i;
-						}
-						else
-						{
-							arith_frame_blit (flash_frame, NULL, cur_frame, NULL, 
-								(fstrength  > 0) ? fstrength : -fstrength, 16);
-							if (fstrength < 0)
-								// add to -(partial mask)
-								arith_frame_blit (flash_extra_frame, NULL, cur_frame, NULL, -8, 8);
-							else
-								// add to (partial mask)
-								arith_frame_blit (flash_extra_frame, NULL, cur_frame, NULL, 8, -8);
-						}
-					}
-					max_pos = i;
-				}
-				else
-				{
-					// Flash a rectangle
-					FlashFrame =  CaptureDrawable (
-						CreateDrawable (WANT_PIXMAP, flash_rect.extent.width, 
-							flash_rect.extent.height, (COUNT)(1 + ((MAX_STRENGTH - MIN_STRENGTH) >> 1)))
-						);
-					for (i = 1, strength = MIN_STRENGTH; strength <= MAX_STRENGTH; i++, strength += 2)
-					{
-						cur_frame = SetAbsFrameIndex (FlashFrame, (COUNT)i);
-						arith_frame_blit (flash_extra_frame, NULL, cur_frame, NULL, strength, 4);
-					}
-					pos = 1;
-					max_pos = i;
-				}
-				incr = 1;
-			}
-			TimeIn = GetTimeCounter ();
-			WaitTime = ONE_SECOND / 16;
-		}
-		if (flash_rect.extent.width && FlashFrame)
-		{
-			STAMP s;
-			if ((pos += incr) == max_pos)
-			{
-				pos--;
-				incr = -1;
-			}
-			if (pos == 0)
-			{
-				pos =1;
-				incr =1;
-			}
-			OldContext = SetContext (ScreenContext);
+			BatchGraphics ();
 			SetContextClipRect (&flash_rect);
-			s.origin.x = s.origin.y = 0;
-			s.frame = SetAbsFrameIndex (FlashFrame, (COUNT)pos);
-			DrawStamp (&s);
+			if (flash_frame)
+			{
+#define MIN_F_STRENGTH -3
+#define MAX_F_STRENGTH 3
+				if ((fstrength += incr) > MAX_F_STRENGTH)
+				{
+					fstrength = MAX_F_STRENGTH - 1;
+					incr = -1;
+				}
+				else if (fstrength < MIN_F_STRENGTH)
+				{
+					fstrength = MIN_F_STRENGTH + 1;
+					incr = 1;
+				}
+				
+				if (fstrength != NORMAL_F_STRENGTH)
+				{
+					STAMP s;
+
+					ClearDrawable ();
+
+					SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
+					
+					s.origin.x = s.origin.y = 0;
+					s.frame = flash_frame;
+					DrawStamp (&s);
+
+					if (fstrength < 0)
+						SetGraphicStrength (-8, 8); // add to -(partial mask)
+					else
+						SetGraphicStrength (8, -8); // add to (partial mask)
+				}
+
+				DrawFromExtraScreen (&flash_rect);
+			}
+			else
+			{
+#define MIN_STRENGTH 4
+#define MAX_STRENGTH 6
+				if ((strength += 2) > MAX_STRENGTH)
+					strength = MIN_STRENGTH;
+					
+				SetGraphicStrength (strength, 4);
+				DrawFromExtraScreen (&flash_rect);
+			}
+			
 			SetContextClipRect (NULL_PTR); // this will flush whatever
-			SetContext (OldContext);
-			ClearSemaphore (GraphicsSem);
-			FlushGraphics ();
+			
+			SetGraphicStrength (4, 4);
+				
+			UnbatchGraphics ();
 		}
-		else
-			ClearSemaphore (GraphicsSem);
+		SetContext (OldContext);
+		ClearSemaphore (GraphicsSem);
+		FlushGraphics ();
 		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
 	}
-	if (FlashFrame)
-		DestroyDrawable (ReleaseDrawable (FlashFrame));
-	SetSemaphore (GraphicsSem);
-	// how is it possible for extent to have '0' values?
-	// it is bad to call DrawStamp in that case though
-	if (BackupExtraFrame && BackupExtraFrame == flash_extra_frame &&
-		old_rect.extent.width && old_rect.extent.height)
-	{
-		STAMP s;
-		OldContext = SetContext (ScreenContext);
-		SetContextClipRect (&old_rect);
-		s.origin.x = s.origin.y = 0;
-		s.frame = flash_extra_frame;
-		DrawStamp (&s);
-		SetContextClipRect (NULL_PTR); // this will flush whatever
-		SetContext (OldContext);
-		DestroyDrawable (ReleaseDrawable (flash_extra_frame));
-		flash_extra_frame = 0;
-	}
-	ClearSemaphore (GraphicsSem);
+
 	flash_task = 0;
 	FinishTask (task);
 	return(0);
@@ -1133,29 +1071,20 @@ SetFlashRect (PRECT pRect, FRAME f)
 	
 	flash_frame = f;
 
-	if (flash_extra_frame && old_r.extent.width
+	if (old_r.extent.width
 			&& (old_r.extent.width != flash_rect.extent.width
 			|| old_r.extent.height != flash_rect.extent.height
 			|| old_r.corner.x != flash_rect.corner.x
 			|| old_r.corner.y != flash_rect.corner.y
 			|| old_f != flash_frame))
 	{
-		STAMP s;
-		s.origin.x = old_r.corner.x;
-		s.origin.y = old_r.corner.y;
-		s.frame = flash_extra_frame;
-		DrawStamp (&s);
+		DrawFromExtraScreen (&old_r);
 	}
 	
 	if (flash_rect.extent.width)
 	{
-		if (flash_extra_frame)
-			DestroyDrawable (ReleaseDrawable (flash_extra_frame));
-		flash_extra_frame = CaptureDrawable (LoadDisplayPixmap (
-			&flash_rect, (FRAME)0)
-			);
+		LoadIntoExtraScreen (&flash_rect);
 	}
-	flash_changed = 1;
 
 	SetContext (OldContext);
 }

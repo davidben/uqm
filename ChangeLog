@@ -1,5 +1,4 @@
 0.2:
-- Recoded flash_rect to not use the DCQ except for screen blitting -PBlue
 - Replaced add_sub_frame with arith_frame_blit -PhracturedBlue
 - Crosshair in orbit leaving light trace to image in OpenGL mode fixed -Mika
 - Planet scan should now take ~2secs on all computers -PhracturedBlue
