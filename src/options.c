@@ -24,7 +24,7 @@
 #include "compiler.h"
 #include "options.h"
 
-int optWhichMusic = MUSIC_PC;
+int optWhichMusic = MUSIC_3DO;
 
 
 BOOLEAN FileExists (char *filename)

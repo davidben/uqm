@@ -3,7 +3,7 @@
 # Written by Mudry <mudry@user.sf.net>, protected by GNU GPL.
 # CVS $ Id: $
 
-SUBDIRS = openal
+SUBDIRS = sdl
 
 INCLUDES = @SDL_CFLAGS@ \
 	-I$(top_srcdir)/src \
@@ -12,6 +12,6 @@ INCLUDES = @SDL_CFLAGS@ \
 
 noinst_LTLIBRARIES = libsound.la
 libsound_la_SOURCES = fileinst.c resinst.c sound_common.c
-libsound_la_LIBADD = openal/libopenalsound.la
+libsound_la_LIBADD = sdl/libsdlsound.la
 noinst_HEADERS = play.h redbook.h sndintrn.h trackplayer.h sound_common.h
 

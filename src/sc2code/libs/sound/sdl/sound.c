@@ -20,8 +20,7 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
-#include "SDL_mixer.h"
-#include "SDL_sound.h"
+#include <SDL/SDL_mixer.h>
 
 int 
 TFB_InitSound (int driver, int flags, int frequency)
@@ -66,16 +65,6 @@ TFB_InitSound (int driver, int flags, int frequency)
 			Mix_Linked_Version()->major,
 			Mix_Linked_Version()->minor,
 			Mix_Linked_Version()->patch);
-
-	fprintf (stderr, "Initializing SDL_sound.\n");
-	fprintf (stderr, "(NOTE: if this locks up, compile SDL_sound without libmikmod support)\n");
-	fflush (stderr);
-	if (!Sound_Init())
-	{
-		fprintf(stderr, "Sound_Init() failed: %s\n", Sound_GetError());
-		exit (-1);
-	}
-	fprintf (stderr, "SDL_sound initialized.\n");
 	
 	return 0;
 }

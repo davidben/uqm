@@ -22,7 +22,7 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
-#include "SDL_mixer.h"
+#include <SDL/SDL_mixer.h>
 
 static MUSIC_REF curMusicRef;
 

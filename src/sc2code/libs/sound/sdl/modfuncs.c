@@ -18,16 +18,17 @@
 
 #ifdef SOUNDMODULE_SDL
 
-#include "libs/strings/strintrn.h"
-#include "libs/sound/sndintrn.h"
 #ifdef WIN32
 #include <io.h>
 #endif
 #include <fcntl.h>
 
+#include "libs/strings/strintrn.h"
+#include "libs/sound/sndintrn.h"
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
-#include "SDL_mixer.h"
+#include "options.h"
+#include <SDL/SDL_mixer.h>
 
 
 MEM_HANDLE
@@ -156,31 +157,52 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 MEM_HANDLE
 _GetMusicData (FILE *fp, DWORD length)
 {
-		MEM_HANDLE h;
-		extern char *_cur_resfile_name;
+   	MEM_HANDLE h;
+   	extern char *_cur_resfile_name;
 
-		h = 0;
-		if (_cur_resfile_name && (h = AllocMusicData (sizeof (void *))))
+   	h = 0;
+   	if (_cur_resfile_name && (h = AllocMusicData (sizeof (void *))))
+   	{
+        char filename[1000];
+        Mix_Music **pmus;
+
+        LockMusicData (h, &pmus);    
+
+        strcpy (filename, _cur_resfile_name);
+        switch (optWhichMusic)
+        {
+            default:
+            case MUSIC_3DO:
+            {
+                char threedoname[1000];
+
+                strcpy (threedoname, filename);
+                strcpy (&threedoname[strlen (threedoname)-3], "ogg");
+                if (FileExists (threedoname))
+                {
+                    strcpy (filename, threedoname);
+                }
+                break;
+            }
+            case MUSIC_PC:
+            {
+                break;
+            }
+        }
+
+        fprintf (stderr, "_GetMusicData(): loading %s\n", filename);
+		if (pmus == 0 || (*pmus = Mix_LoadMUS (filename)) == 0)
 		{
-				Mix_Music **pmus;
+			UnlockMusicData (h);
+			mem_release (h);
+			h = 0;
+ 		}
+   		UnlockMusicData (h);
+	}
 
-			LockMusicData (h, &pmus);
-				if (pmus == 0 || (*pmus = Mix_LoadMUS (_cur_resfile_name)) == 0)
-				{
-						UnlockMusicData (h);
-						mem_release (h);
-						h = 0;
-				}
-				else
-				{
-						//
-				}
-				UnlockMusicData (h);
-		}
-
-		(void) fp;  /* satisfy compiler (unused parameter) */
-		(void) length;  /* satisfy compiler (unused parameter) */
-		return (h);
+	(void) fp;  /* satisfy compiler (unused parameter) */
+	(void) length;  /* satisfy compiler (unused parameter) */
+	return (h);
 }
 
 BOOLEAN

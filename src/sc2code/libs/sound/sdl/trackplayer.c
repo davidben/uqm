@@ -21,8 +21,7 @@
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/sound/sound_common.h"
 #include "libs/sound/trackplayer.h"
-#include "SDL_mixer.h"
-#include "SDL_sound.h"
+#include <SDL/SDL_mixer.h>
 
 
 #define VOICE_CHANNEL 0
@@ -36,51 +35,7 @@ static struct
 	int text_spliced;
 	UNICODE *text;
 	Mix_Chunk *chunk;
-	Uint8 *speechdata;
-	Uint32 speechlen;
-
 } track_clip[MAX_CLIPS];
-
-
-
-Uint8* Sound_Own_DecodeAll (Sound_Sample *sample, Uint32 bufsize, Uint32 *decoded_bytes)
-{
-    Uint8 *buf = NULL;
-	
-	*decoded_bytes = 0;
-	buf = (Uint8*) malloc (bufsize);
-	if (!buf) 
-	{
-		fprintf (stderr, "Sound_Own_DecodeAll(): cannot allocate %d bytes\n", bufsize);
-		return NULL;
-	}
-
-    while ( ((sample->flags & SOUND_SAMPLEFLAG_EOF) == 0) &&
-            ((sample->flags & SOUND_SAMPLEFLAG_ERROR) == 0) )
-	{
-		Uint32 br = Sound_Decode (sample);
-		
-		if (*decoded_bytes + br >= bufsize)
-		{
-			Uint8 *newbuf;
-			
-			bufsize *= 2;
-			newbuf = (Uint8*) realloc (buf, bufsize);
-			if (!newbuf)
-			{
-				fprintf (stderr, "Sound_Own_DecodeAll(): cannot realloc %d bytes\n", bufsize);
-				return buf;
-			}
-			buf = newbuf;
-		}
-
-		memcpy (&buf[*decoded_bytes], sample->buffer, br);
-		*decoded_bytes += br;
-	}
-    
-	//fprintf(stderr, "Sound_Own_DecodeAll(): decoded %d bytes, allocated memory size %d\n", *decoded_bytes, bufsize);
-	return buf;	
-}
 
 void
 JumpTrack (int abort)
@@ -167,13 +122,6 @@ StopTrack ()
 			Mix_FreeChunk (track_clip[tct].chunk);
 			track_clip[tct].chunk = 0;
 		}
-		if (track_clip[tct].speechdata)
-		{
-			//fprintf (stderr, "StopTrack(): freeing atleast %d bytes\n", track_clip[tct].speechlen);
-			free (track_clip[tct].speechdata);
-			track_clip[tct].speechdata = 0;
-			track_clip[tct].speechlen = 0;
-		}
 	}
 	tct = tcur = 0;
 	no_voice = 0;
@@ -207,60 +155,14 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText)
 			}
 		}
 		else if (tct < MAX_CLIPS)
-		{
-			Sound_AudioInfo sound_desired;
-			Sound_Sample *sample;
-			Uint16 format;
-			int rate, channels;
-			
-			//fprintf(stderr, "SpliceTrack(): trackname %s\n", TrackName);
+		{			
+			fprintf(stderr, "SpliceTrack(): loading %s\n", TrackName);
 
-			// this is needed because sample must be converted to mixer
-			// format or it doesn't play right
-			Mix_QuerySpec (&rate, &format, &channels);
-			sound_desired.rate = rate;
-			sound_desired.format = format;
-			sound_desired.channels = channels;
-			
-			sample = Sound_NewSampleFromFile (TrackName, &sound_desired, 16384);
-			
-			if (!sample)
+			track_clip[tct].chunk = Mix_LoadWAV (TrackName);		
+			if (!track_clip[tct].chunk)
 			{
-				fprintf (stderr, "SpliceTrack(): couldn't load %s: %s\n",
-						TrackName, Sound_GetError());
-				track_clip[tct].chunk = NULL;
-				track_clip[tct].speechdata = NULL;
-				track_clip[tct].speechlen = 0;
-			}
-			else
-			{				
-				track_clip[tct].speechdata = Sound_Own_DecodeAll (sample, 1048576, 
-					&track_clip[tct].speechlen);
-				
-				if (track_clip[tct].speechdata)
-				{
-					track_clip[tct].chunk = Mix_QuickLoad_RAW (track_clip[tct].speechdata, 
-						track_clip[tct].speechlen);
-					
-					if (!track_clip[tct].chunk)
-					{
-						fprintf (stderr, "SpliceTrack(): Mix_QuickLoad_RAW failed for %s: %s\n", 
-							TrackName, Mix_GetError());
-
-						free (track_clip[tct].speechdata);
-						track_clip[tct].speechdata = NULL;
-						track_clip[tct].speechlen = 0;
-					}
-				}
-				else
-				{
-					fprintf (stderr, "SpliceTrack(): Sound_Own_DecodeAll failed for %s\n", TrackName);
-					track_clip[tct].chunk = NULL;
-					track_clip[tct].speechdata = NULL;
-					track_clip[tct].speechlen = 0;
-				}
-
-				Sound_FreeSample (sample);
+				fprintf (stderr, "SpliceTrack(): Mix_LoadWAV failed for %s: %s\n",
+						 TrackName, Mix_GetError());
 			}
 
 			track_clip[tct].text = TrackText;

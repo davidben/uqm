@@ -27,8 +27,8 @@ AM_MAINTAINER_MODE
 
 # Configurables
 
-CFLAGS="$CFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_OPENAL"
-CPPFLAGS="$CPPFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_OPENAL"
+CFLAGS="$CFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
+CPPFLAGS="$CPPFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
 
 # --------------------------------------------------------------------------
 
@@ -69,9 +69,9 @@ AC_CHECK_FUNCS([strupr])
 SDL_VERSION=1.2.2
 AM_PATH_SDL($SDL_VERSION, , AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 AC_CHECK_LIB(SDL_image, main, , AC_MSG_ERROR([Your system is missing libSDL_image!]),`sdl-config --libs`)
-AC_CHECK_LIB(SDL_sound, main, , AC_MSG_ERROR([Your system is missing libSDL_sound!]),`sdl-config --libs`)
-AC_CHECK_LIB(openal, main, , AC_MSG_ERROR([Your system is missing libopenal!]),"-lm")
-#AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
+AC_CHECK_LIB(SDL_mixer, main, , AC_MSG_ERROR([Your system is missing libSDL_mixer!]),`sdl-config --libs`)
+#AC_CHECK_LIB(SDL_sound, main, , AC_MSG_ERROR([Your system is missing libSDL_sound!]),`sdl-config --libs`)
+#AC_CHECK_LIB(openal, main, , AC_MSG_ERROR([Your system is missing libopenal!]),"-lm")
 #AC_CHECK_HEADERS(SDL/SDL_image.h, , AC_MSG_ERROR([Your system is missing SDL_image.h!]))
 
 # Select platform dependent OpenGL libs.. (tweak your platform here)
@@ -211,7 +211,7 @@ AC_CONFIG_FILES([
 	src/sc2code/libs/input/Makefile
 	src/sc2code/libs/input/sdl/Makefile
 	src/sc2code/libs/sound/Makefile
-	src/sc2code/libs/sound/openal/Makefile
+	src/sc2code/libs/sound/sdl/Makefile
 	src/sc2code/libs/graphics/Makefile
 	src/sc2code/libs/graphics/sdl/Makefile
 	src/sc2code/libs/task/Makefile
