@@ -334,7 +334,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 		int cel_ct;
 		FRAMEPTR FramePtr;
 
-		cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex);
+		cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex) + 1;
 
 		FramePtr = &DrawablePtr->Frame[cel_ct];
 		while (--FramePtr, cel_ct--)
