@@ -162,7 +162,9 @@ LoadKeyConfig (FILE *fp, DWORD length)
 		if (line[0] == '"')
 		{
 			specialKeys[i] = (UNICODE)(ParseKeyString(line) & 0xFF);
+#ifdef DEBUG
 			fprintf(stderr, "Special %i = %i\n", i, specialKeys[i]);
+#endif
 		}
 	}
 
@@ -212,7 +214,9 @@ LoadKeyConfig (FILE *fp, DWORD length)
 					joy[0] = 0;
 				}
 				buf[i] = ParseKeyString (line);
+#ifdef DEBUG
 				fprintf(stderr, "Player %i, key %i = %i\n", p, i, buf[i]);
+#endif
 				if (joy[0] != 0)
 				{
 					char type;
