@@ -24,7 +24,7 @@
 #define OPTIONS_H
 
 #define UQM_MAJOR_VERSION 0
-#define UQM_MINOR_VERSION 12
+#define UQM_MINOR_VERSION 13
 
 enum
 {
