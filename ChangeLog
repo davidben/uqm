@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Syreen don't rejoice until victory truly is theirs (bug #451), from 
+  Nic
 - Guardian in Blazer mode being drained by DOGI will no longer
   result in a non-blazer Guardian with Blazer effects. Original sc2 bug.
   (bug #283); from chmmravatar

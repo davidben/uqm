@@ -720,7 +720,7 @@ Intro (void)
 	}
 
 	NumVisits = GET_GAME_STATE (SYREEN_HOME_VISITS);
-	if (GET_GAME_STATE (MYCON_FELL_FOR_AMBUSH))
+	if (GET_GAME_STATE (MYCON_KNOW_AMBUSH))
 	{
 		switch (NumVisits++)
 		{
