@@ -2,7 +2,7 @@
 
 if [ "$#" != 0 ]; then
   case "$1" in
-    (--version)
+    --version)
       cat <<EOF
 autogen.sh 
 CVS $Id$
@@ -13,7 +13,7 @@ the GNU General Public License.  This program has absolutely no warranty.
 EOF
       exit 0
       ;;
-    (--help)
+    --help)
       cat <<EOF
 Usage: $0 [OPTION]
 Generate files which are in distribution tarball but not in CVS.
@@ -25,13 +25,13 @@ Report bugs to <sc2-devel@lists.sourceforge.net>.
 EOF
       exit 0
       ;;
-    (-*)
+    -*)
       # Don't parse backslashes in $0 or $1.
       printf >&2 "%s: invalid option -- %s\n" "$0" "$1"
       printf >&2 "Try \"%s --help\" for more information.\n" "$0"
       exit 1
       ;;
-    (*)
+    *)
       printf >&2 "%s: non-option arguments don't work.\n"
       printf >&2 "Try \"%s --help\" for more information.\n" "$0"
       exit 1
