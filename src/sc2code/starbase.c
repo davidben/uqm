@@ -339,15 +339,13 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
 ExitStarBase:
-		SetSemaphore (GraphicsSem);
 		if (pMS->flash_task)
 		{
-			Task_SetState (pMS->flash_task, TASK_EXIT);
+			ConcludeTask (pMS->flash_task);
 			pMS->flash_task = 0;
 		}
 		DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 		pMS->CurFrame = 0;
-		ClearSemaphore (GraphicsSem);
 		StopMusic ();
 		if (pMS->hMusic)
 		{
