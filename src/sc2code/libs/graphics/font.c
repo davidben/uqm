@@ -17,6 +17,7 @@
  */
 
 #include "gfxintrn.h"
+#include "tfb_prim.h"
 
 extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to, BYTE type);
 
@@ -26,7 +27,7 @@ static struct {
 	DWORD from;
 	DWORD to;
 	BYTE type;
-} FontEffect = {0,0,0};
+} FontEffect = {0,0,0,0};
 
 void SetContextFontEffect (BYTE type, DWORD from, DWORD to)
 {

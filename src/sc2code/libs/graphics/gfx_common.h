@@ -52,7 +52,7 @@ void LoadIntoExtraScreen (PRECT r);
 void DrawFromExtraScreen (PRECT r);
 void SetGraphicGrabOther (int grab_other);
 void SetGraphicScale (int scale);
-int  GetGraphicScale ();
+int  GetGraphicScale (void);
 void SetGraphicUseOtherExtra (int other);
 void ScreenTransition (int transition, PRECT pRect);
 

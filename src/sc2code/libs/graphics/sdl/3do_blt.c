@@ -58,6 +58,11 @@ static DRAWABLE
 alloc_image (COUNT NumFrames, DRAWABLE_TYPE DrawableType, CREATE_FLAGS
 		flags, SIZE width, SIZE height)
 {
+        /* dodge compiler warnings */
+	(void)DrawableType;
+	(void)flags;
+	(void)width;
+	(void)height;
 	return AllocDrawable (NumFrames, 0);
 }
 

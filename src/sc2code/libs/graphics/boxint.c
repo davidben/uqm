@@ -104,7 +104,10 @@ BoxIntersect (PRECT pr1, PRECT pr2, PRECT pinter)
 void
 BoxUnion (PRECT pr1, PRECT pr2, PRECT punion)
 {
+#if NEVER // Part of lower FIXME.
 	COORD x2, y2, w2, h2;
+#endif  // NEVER
+
 	// Union is A AND B, put together, correct?  Returns a bigger box that
 	// encompasses the two.
 	punion->corner.x = MIN(pr1->corner.x, pr2->corner.x);

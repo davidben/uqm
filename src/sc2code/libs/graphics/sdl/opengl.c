@@ -409,6 +409,9 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		TFB_GL_ScanLines ();
 
 	SDL_GL_SwapBuffers ();
+
+	/* remove compiler warning */
+	(void) force_full_redraw;
 }
 
 SDL_Surface* 

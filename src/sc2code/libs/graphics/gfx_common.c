@@ -39,6 +39,7 @@ void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
 {
 	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
+	(void)other; /* lint */
 }
 
 // Status: Ignored (only used in solarsys.c)
@@ -46,6 +47,7 @@ void
 SetGraphicGrabOther (int grab_other)
 {
 	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
+	(void)grab_other; /* lint */
 }
 
 void

@@ -88,6 +88,6 @@ void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r,
 TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
-void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index);
+void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i);
 
 #endif

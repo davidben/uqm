@@ -163,9 +163,10 @@ static void ScanLines (SDL_Surface *dst, SDL_Rect *r)
 			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch + (rx << 1)];
 			for (x = 0; x < rw; ++x)
 			{
-				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-					((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
+				*p = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+				      ((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+				      ((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
+				++p;
 			}
 		}
 		break;
@@ -211,9 +212,10 @@ static void ScanLines (SDL_Surface *dst, SDL_Rect *r)
 			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch + (rx << 2)];
 			for (x = 0; x < rw; ++x)
 			{
-				*p++ = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-					((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-					((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
+				*p = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
+				      ((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
+				      ((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
+				++p;
 			}
 		}
 		break;

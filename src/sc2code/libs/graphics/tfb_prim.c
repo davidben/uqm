@@ -22,8 +22,10 @@
  * worry about this. */
 
 #include "gfxintrn.h"
+#include "gfx_common.h"
 #include "tfb_draw.h"
 #include "tfb_prim.h"
+#include "cmap.h"
 
 void
 TFB_Prim_Point (PPOINT p, TFB_Palette *color)

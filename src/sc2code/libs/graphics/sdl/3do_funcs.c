@@ -42,6 +42,10 @@ InitGraphics (int argc, char* argv[], COUNT KbytesRequired)
 	LoadDisplay (&_pCurDisplay);
 	ActivateDisplay ();
 
+	(void) argc;             /* lint */
+	(void) argv;             /* lint */
+	(void) KbytesRequired;   /* lint */
+
 	ret = TRUE;
 	return (ret);
 }
@@ -117,6 +121,7 @@ ScreenTransition (int TransType, PRECT pRect)
 	Task transition_task;
 
 	//fprintf(stderr, "ScreenTransition %d\n", TransType);
+	(void) TransType;  /* dodge compiler warning */
 
 	if (TransitionAmount != 255)
 		return;
@@ -164,6 +169,8 @@ InitVideo (BOOLEAN useCDROM) //useCDROM doesn't really apply to us...
 {
 	BOOLEAN ret;
 
+	(void)useCDROM;  /* dodge compiler warning */
+
 // fprintf (stderr, "Unimplemented function activated: InitVideo()\n");
 	ret = TRUE;
 	return (ret);
@@ -202,6 +209,10 @@ VidPlay (VIDEO_REF VidRef, char *loopname, BOOLEAN uninit)
 	VIDEO_TYPE ret;
 	ret = 0;
 
+	/* dodge compiler warnings */
+	(void) VidRef;
+	(void) loopname;
+	(void) uninit;
 // fprintf (stderr, "Unimplemented function activated: VidPlay()\n");
 	return (ret);
 }
@@ -212,11 +223,13 @@ _init_video_file(PVOID pStr)
 	VIDEO_REF ret;
 
 	fprintf (stderr, "Unimplemented function activated: _init_video_file()\n");
+
+        /* dodge compiler warning */
+	(void) pStr;
 	ret = 0;
 	return (ret);
 }
 
-// Status: Implemented
 BOOLEAN
 _image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
 {

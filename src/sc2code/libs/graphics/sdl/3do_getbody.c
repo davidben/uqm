@@ -212,7 +212,6 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0, int x, int
 
 void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int num,int denom)
 {
-	int add = 0, sub = 0;
 	TFB_Image *srcImg, *dstImg;
 	SDL_Surface *src, *dst;
 	SDL_Rect srcRect, dstRect, *srp = NULL, *drp = NULL;

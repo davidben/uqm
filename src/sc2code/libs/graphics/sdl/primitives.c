@@ -200,7 +200,7 @@ void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, SDL_Sur
 
 // Clips line against rectangle using Cohen-Sutherland algorithm
 
-static enum {C_TOP = 0x1, C_BOTTOM = 0x2, C_RIGHT = 0x4, C_LEFT = 0x8};
+enum {C_TOP = 0x1, C_BOTTOM = 0x2, C_RIGHT = 0x4, C_LEFT = 0x8};
 
 static int
 compute_code (float x, float y, float xmin, float ymin, float xmax, float ymax)
