@@ -33,6 +33,7 @@ BOOLEAN SaveProblem (void);
 #define MAX_SAVED_GAMES 10
 #define SUMMARY_X_OFFS 14
 #define SUMMARY_SIDE_OFFS 7
+#define MAX_NAME_CHARS 15
 
 static PMENU_STATE pLocMenuState;
 
@@ -340,16 +341,7 @@ DoTextEntry (PMENU_STATE pMS)
 		right = TRUE;
 		break;
 	default:
-		/* This really should use isprint, but for some
-		 * ungodly reason some machines refuse to accept
-		 * anything as printable */
-		if (!isascii (ch)) {
-			fprintf (stderr, "%d is not ascii, it says.\n", ch);
-		}
-		if (!isprint (ch)) {
-			fprintf (stderr, "%d is not printable, it says.\n", ch);
-		}
-		if (isprint (ch) && (len + (pStr - pBaseStr) < MAX_DESC_CHARS))
+		if (isprint (ch) && (len + (pStr - pBaseStr) < MAX_NAME_CHARS))
 		{
 			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
 			if (len == 0)
