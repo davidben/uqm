@@ -163,6 +163,18 @@ Default.
 	--scroll 3do
 Scroll voice-over/subtitles smoothly while holding down left/right arrow keys
 
+	-i 3do           (or --intro 3do)
+
+Use the 3DO intro and ending movies (if you have them).
+The default.
+
+	-i pc            (or --intro pc)
+
+Use the PC intro and ending sequences and slide shows. These will be also
+played if you do not have 3DO movies, regardless of -i option.
+
+
+
 			     BUG REPORTS
 
 This is an alpha release.  That means several things.  First, it means
