@@ -153,6 +153,7 @@ typedef struct solarsys_state
 	BYTE thrust_counter, max_ship_speed;
 
 	FRAME TopoFrame;
+	FRAME TopoZoomFrame;
 	MEM_HANDLE hTopoData;
 	PBYTE lpTopoData;
 	STRING XlatRef;

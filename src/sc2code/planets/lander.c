@@ -1224,14 +1224,12 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		ClearDrawable ();
 		s.origin.x = -new_pt.x + (SURFACE_WIDTH >> 1);
 		s.origin.y = -new_pt.y + (SURFACE_HEIGHT >> 1);
-		s.frame = pSolarSysState->TopoFrame;
-		SetGraphicScale (1 << (MAG_SHIFT + 8));
+		s.frame = pSolarSysState->TopoZoomFrame;
 		DrawStamp (&s);
 		s.origin.x += MAP_WIDTH << MAG_SHIFT;
 		DrawStamp (&s);
 		s.origin.x -= MAP_WIDTH << (MAG_SHIFT + 1);
 		DrawStamp (&s);
-		SetGraphicScale (0);
 	}
 
 	BuildObjectList ();
@@ -1528,14 +1526,12 @@ InitPlanetSide (void)
 			ClearDrawable ();
 			s.origin.x = -pt.x + (SURFACE_WIDTH >> 1);
 			s.origin.y = -pt.y + (SURFACE_HEIGHT >> 1);
-			s.frame = pSolarSysState->TopoFrame;
-			SetGraphicScale (1 << (MAG_SHIFT + 8));
+			s.frame = pSolarSysState->TopoZoomFrame;
 			DrawStamp (&s);
 			s.origin.x += MAP_WIDTH << MAG_SHIFT;
 			DrawStamp (&s);
 			s.origin.x -= MAP_WIDTH << (MAG_SHIFT + 1);
 			DrawStamp (&s);
-			SetGraphicScale (0);
 		}
 
 		ScreenTransition (3, &r);

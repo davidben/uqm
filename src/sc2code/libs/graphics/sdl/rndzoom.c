@@ -524,9 +524,8 @@ void rZF_continuous (SDL_Surface *src, SDL_Surface *dst)
 }
 
 /* perform a 16x zoom, and then apply a blur filter to the result */
-SDL_Surface *random16xZoomSurfaceRGBA (SDL_Surface *src)
+void random16xZoomSurfaceRGBA (SDL_Surface *src, SDL_Surface *dst)
 {
-	SDL_Surface *dst;
 #ifdef RND_BLUR_PROFILE
 	clock_t t1 = clock();
 #endif
@@ -534,9 +533,6 @@ SDL_Surface *random16xZoomSurfaceRGBA (SDL_Surface *src)
     /*
      * Alloc space to completely contain the zoomed surface 
      */
-	dst = SDL_CreateRGBSurface(SDL_SWSURFACE, src->w << 2, src->h << 2, 32,
-				 src->format->Rmask, src->format->Gmask,
-				 src->format->Bmask, src->format->Amask);
 	SDL_LockSurface (src);
 	SDL_LockSurface (dst);
 #if RANDOM_METHOD == 0
@@ -557,17 +553,26 @@ SDL_Surface *random16xZoomSurfaceRGBA (SDL_Surface *src)
 	fprintf(stderr, "Randomize took %f seconds\n",(float)(clock() - t1) / CLOCKS_PER_SEC);
 #endif
 	blurSurface32 (dst);
-	return (dst);
 }
 
-void scale16xRandomizeFrame (FRAMEPTR FramePtr)
+FRAMEPTR scale16xRandomizeFrame (FRAMEPTR FramePtr)
 {
-	TFB_Image *tfbImg;
+	TFB_Image *origImg, *newImg;
+	FRAMEPTR NewFrame;
+	UBYTE type;
 
-	tfbImg = FramePtr->image;
-	LockMutex (tfbImg->mutex);
-	tfbImg->ScaledImg = random16xZoomSurfaceRGBA (tfbImg->NormalImg);
-	tfbImg->scale = 4 << 8;
-	UnlockMutex (tfbImg->mutex);
+	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+			->FlagsAndIndex) >> FTYPE_SHIFT;
+	NewFrame = CaptureDrawable (
+				CreateDrawable (type, 
+					(SIZE)((GetFrameWidth (FramePtr)) << 2), 
+					(SIZE)((GetFrameHeight (FramePtr)) << 2), 1));
+
+	newImg = NewFrame->image;
+	origImg = FramePtr->image;
+	LockMutex (origImg->mutex);
+	random16xZoomSurfaceRGBA (origImg->NormalImg, newImg->NormalImg);
+	UnlockMutex (origImg->mutex);
+	return (NewFrame);
 }
 #endif
