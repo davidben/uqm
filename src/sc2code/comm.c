@@ -125,13 +125,13 @@ add_text (int status, PTEXT pTextIn)
 	}
 	else if (GetContextFontLeading (&leading), status <= -4)
 	{
-		text_width = SIS_SCREEN_WIDTH - (TEXT_X_OFFS << 2);
+		text_width = SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2);
 
 		pText = pTextIn;
 	}
 	else
 	{
-		text_width = SIS_SCREEN_WIDTH - (TEXT_X_OFFS << 2);
+		text_width = SIS_SCREEN_WIDTH - 8 - (TEXT_X_OFFS << 2);
 
 		switch (status)
 		{
