@@ -2465,31 +2465,30 @@ Scale_BlendPixels_bilinear (BLEND_PARAMS bp, Uint32* p, const Uint32* w)
 // bilinear scaling to 2x
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
-	int x, y, j = 0;
-	const int w = dst->w, h = dst->h;
-	int drx, dry;
+	int x, y;
+	const int w = src->w, h = src->h, dw = dst->w;
 	int xend, yend;
 	int dsrc, ddst;
 	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 	BLEND_PARAMS blend16;
+	Uint32 p[4];	// influential pixels array
+
 
 	// expand updated region if necessary
 	// pixels neighbooring the updated region may
 	// change as a result of updates
 	limits.x = 0;
 	limits.y = 0;
-	limits.w = src->w;
-	limits.h = src->h;
+	limits.w = w;
+	limits.h = h;
 	Scale_ExpandRect (region, 1, &limits);
 
-	drx = 2 * region->x;
-	dry = 2 * region->y;
-	xend = 2 * (region->x + region->w);
-	yend = 2 * (region->y + region->h);
-	dsrc = src->w - region->w;
-	ddst = 2 * dst->w - 2 * region->w;
+	xend = region->x + region->w;
+	yend = region->y + region->h;
+	dsrc = w - region->w;
+	ddst = (dw - region->w) * 2;
 
 	// precompute the blending masks and shifts
 	Scale_CalcChannelMasks (fmt, 16, &blend16);
@@ -2503,13 +2502,12 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		Uint16 *src_p = (Uint16 *) src->pixels;
 		Uint16 *dst_p = (Uint16 *) dst->pixels;
-		Uint32 p[4];
 
 		// move ptrs to the first updated pixel
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = src_p[0];
 			if (y < h - 2)
@@ -2517,50 +2515,52 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 			else
 				p[2] = 0;
 
-			for (x = drx; x < xend; ++x, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (j == 0)
+				if (y < h - 2)
 				{
-					if (y < h - 2)
+					if (x < w - 2)
 					{
-						if (x < w - 2)
-						{
-							p[1] = src_p[1];
-							p[3] = src_p[src->w + 1];
-						}
-						else
-						{
-							p[1] = 0;
-							p[3] = 0;
-						}
+						p[1] = src_p[1];
+						p[3] = src_p[src->w + 1];
 					}
 					else
 					{
-						if (x < w - 2)
-							p[1] = src_p[1];
-						else
-							p[1] = 0;
+						p[1] = 0;
 						p[3] = 0;
 					}
 				}
+				else
+				{
+					if (x < w - 2)
+						p[1] = src_p[1];
+					else
+						p[1] = 0;
+					p[3] = 0;
+				}
 
 				*dst_p = Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j]
+						blend16, p, bilinear_table[0]
 						);
 
-				*(dst_p + w) = Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j + 1]
+				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[1]
+						);
+				
+				++dst_p;
+
+				*dst_p = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[2]
 						);
 
-				if (j == 2)
-				{
-					j = 0;
-					src_p++;
-					p[0] = p[1];
-					p[2] = p[3];
-				}
-				else
-					j = 2;
+				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[3]
+						);
+
+				++dst_p;
+				
+				p[0] = p[1];
+				p[2] = p[3];
 			}
 		}
 
@@ -2570,13 +2570,12 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		PIXEL_24BIT *src_p = (PIXEL_24BIT *) src->pixels;
 		PIXEL_24BIT *dst_p = (PIXEL_24BIT *) dst->pixels;
-		Uint32 p[4];
 
 		// move ptrs to the first updated pixel
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = GET_PIX_24BIT (src_p);
 			if (y < h - 2)
@@ -2584,50 +2583,52 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 			else
 				p[2] = 0;
 
-			for (x = drx; x < xend; ++x, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (j == 0)
+				if (y < h - 2)
 				{
-					if (y < h - 2)
+					if (x < w - 2)
 					{
-						if (x < w - 2)
-						{
-							p[1] = GET_PIX_24BIT (src_p + 1);
-							p[3] = GET_PIX_24BIT (src_p + src->w + 1);
-						}
-						else
-						{
-							p[1] = 0;
-							p[3] = 0;
-						}
+						p[1] = GET_PIX_24BIT (src_p + 1);
+						p[3] = GET_PIX_24BIT (src_p + src->w + 1);
 					}
 					else
 					{
-						if (x < w - 2)
-							p[1] = GET_PIX_24BIT (src_p + 1);
-						else
-							p[1] = 0;
+						p[1] = 0;
 						p[3] = 0;
 					}
 				}
+				else
+				{
+					if (x < w - 2)
+						p[1] = GET_PIX_24BIT (src_p + 1);
+					else
+						p[1] = 0;
+					p[3] = 0;
+				}
 
 				SET_PIX_24BIT (dst_p, Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j]
+						blend16, p, bilinear_table[0]
 						));
 
-				SET_PIX_24BIT (dst_p + w, Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j + 1]
+				SET_PIX_24BIT (dst_p + dw, Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[1]
 						));
 
-				if (j == 2)
-				{
-					j = 0;
-					src_p++;
-					p[0] = p[1];
-					p[2] = p[3];
-				}
-				else
-					j = 2;
+				++dst_p;
+
+				SET_PIX_24BIT (dst_p, Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[2]
+						));
+
+				SET_PIX_24BIT (dst_p + dw, Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[3]
+						));
+
+				++dst_p;
+
+				p[0] = p[1];
+				p[2] = p[3];
 			}
 		}
 
@@ -2637,13 +2638,12 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		Uint32 *src_p = (Uint32 *) src->pixels;
 		Uint32 *dst_p = (Uint32 *) dst->pixels;
-		Uint32 p[4];
 
 		// move ptrs to the first updated pixel
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
+		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = src_p[0];
 			if (y < h - 2)
@@ -2651,50 +2651,52 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 			else
 				p[2] = 0;
 
-			for (x = drx; x < xend; ++x, ++dst_p)
+			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (j == 0)
+				if (y < h - 2)
 				{
-					if (y < h - 2)
+					if (x < w - 2)
 					{
-						if (x < w - 2)
-						{
-							p[1] = src_p[1];
-							p[3] = src_p[src->w + 1];
-						}
-						else
-						{
-							p[1] = 0;
-							p[3] = 0;
-						}
+						p[1] = src_p[1];
+						p[3] = src_p[src->w + 1];
 					}
 					else
 					{
-						if (x < w - 2)
-							p[1] = src_p[1];
-						else
-							p[1] = 0;
+						p[1] = 0;
 						p[3] = 0;
 					}
 				}
+				else
+				{
+					if (x < w - 2)
+						p[1] = src_p[1];
+					else
+						p[1] = 0;
+					p[3] = 0;
+				}
 
 				*dst_p = Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j]
+						blend16, p, bilinear_table[0]
 						);
 
-				*(dst_p + w) = Scale_BlendPixels_bilinear (
-						blend16, p, bilinear_table[j + 1]
+				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[1]
+						);
+				
+				++dst_p;
+
+				*dst_p = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[2]
 						);
 
-				if (j == 2)
-				{
-					j = 0;
-					src_p++;
-					p[0] = p[1];
-					p[2] = p[3];
-				}
-				else
-					j = 2;
+				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[3]
+						);
+			
+				++dst_p;
+				
+				p[0] = p[1];
+				p[2] = p[3];
 			}
 		}
 
