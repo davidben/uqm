@@ -83,8 +83,6 @@ Glitches (don't crash the game, medium priority):
 - lander speed varies per computer
 - "device used successfully" and "device usage failed" sounds are identical
   (the failure one)
-- The fuel range calculator on the starmap does not work correctly.
-  Estimate too small. May be a rounding error.
 - spathi blink and other spathi animation may go out of sync
 - subtitles may go past the bottom boundary
 - If you win a Melee, and then are blown up yourself, the sound loops 

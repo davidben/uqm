@@ -1,4 +1,5 @@
 0.2:
+- Starmap fuel range calculator and actual consumption matches now
 - Collision detection is now pixel-perfect (fixes Sa-Matra, BUTT missile, etc)
 - Fixed lander position sign bug which was introduced by previous fixes
 - Initial display of planet surface on landing is at correct position

@@ -31,7 +31,7 @@ void WaitForNoInput (SIZE Duration);
 static FRAME hyperstars[3];
 static COLORMAP hypercmaps[2];
 static BYTE fuel_ticks;
-static COUNT hyper_dx, hyper_dy;
+static COUNT hyper_dx, hyper_dy, hyper_extra;
 
 void
 MoveSIS (PSIZE pdx, PSIZE pdy)
@@ -94,6 +94,7 @@ MoveSIS (PSIZE pdx, PSIZE pdy)
 	{
 		COUNT cur_fuel_ticks;
 		COUNT hyper_dist;
+		DWORD adj_dx, adj_dy;
 
 		if (new_dx < 0)
 			new_dx = -new_dx;
@@ -102,11 +103,14 @@ MoveSIS (PSIZE pdx, PSIZE pdy)
 			new_dy = -new_dy;
 		hyper_dy += new_dy;
 
-		hyper_dist = square_root (
-				(DWORD)hyper_dx * hyper_dx
-				+ (DWORD)hyper_dy * hyper_dy
-				);
+		/* These macros are also used in the fuel estimate on the starmap. */
+		adj_dx = LOGX_TO_UNIVERSE(16 * hyper_dx);
+		adj_dy = MAX_Y_UNIVERSE - LOGY_TO_UNIVERSE(16 * hyper_dy);
+
+		hyper_dist = square_root (adj_dx * adj_dx + adj_dy * adj_dy) 
+					+ hyper_extra;
 		cur_fuel_ticks = hyper_dist >> 4;
+
 		if (cur_fuel_ticks > (COUNT)fuel_ticks)
 		{
 #ifndef TESTING
@@ -114,7 +118,8 @@ MoveSIS (PSIZE pdx, PSIZE pdy)
 #endif /* TESTING */
 			if (cur_fuel_ticks > 0x00FF)
 			{
-				hyper_dx = hyper_dist & ((1 << 4) - 1);
+				hyper_dx = 0;
+				hyper_extra = hyper_dist & ((1 << 4) - 1);
 				hyper_dy = 0;
 				cur_fuel_ticks = 0;
 			}
@@ -296,7 +301,7 @@ LoadHyperData (void)
 BOOLEAN
 LoadHyperspace (void)
 {
-	hyper_dx = hyper_dy = 0;
+	hyper_dx = hyper_dy = hyper_extra = 0;
 	fuel_ticks = 1;
 
 	GLOBAL (ShipStamp.origin.x) = -MAX_X_UNIVERSE;
