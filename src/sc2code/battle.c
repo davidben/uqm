@@ -207,7 +207,7 @@ DoBattle (BATTLE_STATE *bs)
 		SleepThreadUntil (bs->NextTime + BATTLE_FRAME_RATE);
 		bs->NextTime = GetTimeCounter ();
 	}
-	return (BOOLEAN) (GLOBAL (CurrentActivity) & IN_BATTLE);
+	return (BOOLEAN) ((GLOBAL (CurrentActivity) & IN_BATTLE) != 0);
 }
 
 BOOLEAN
@@ -275,6 +275,6 @@ AbortBattle:
 
 	UnlockMutex (GraphicsLock);
 	
-	return (num_ships < 0);
+	return (BOOLEAN) (num_ships < 0);
 }
 
