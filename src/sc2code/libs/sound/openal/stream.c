@@ -119,7 +119,6 @@ StreamDecoderTaskFunc (void *data)
 		{
 			ALuint processed, queued;
 			ALint state;
-			ALboolean finished = AL_FALSE;
 			ALboolean do_speech_advancetrack = AL_FALSE;
 
 			LockMutex (soundSource[i].stream_mutex);
@@ -134,13 +133,16 @@ StreamDecoderTaskFunc (void *data)
 			}
 
 			alGetSourcei (soundSource[i].handle, AL_BUFFERS_PROCESSED, &processed);
+			alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
+
 			if (processed == 0)
 			{
 				alGetSourcei (soundSource[i].handle, AL_SOURCE_STATE, &state);			
 				if (state != AL_PLAYING)
 				{
-					if (soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
+					if (queued == 0 && soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
 					{
+						fprintf (stderr, "StreamDecoderTaskFunc(): finished playing %s, source %d\n", soundSource[i].sample->decoder->filename, i);
 						soundSource[i].stream_should_be_playing = FALSE;
 						if (i == SPEECH_SOURCE && speech_advancetrack)
 						{
@@ -155,10 +157,9 @@ StreamDecoderTaskFunc (void *data)
 				}
 			}
             
-			alGetSourcei (soundSource[i].handle, AL_BUFFERS_QUEUED, &queued);
 			//fprintf (stderr, "StreamDecoderTaskFunc(): source %d, processed %d queued %d\n", i, processed, queued);
 
-			while (processed && !finished)
+			while (processed)
 			{
 				ALenum error;
 				ALuint buffer;
@@ -205,7 +206,6 @@ StreamDecoderTaskFunc (void *data)
 					{
 						fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alBufferData: %x, file %s, source %d, decoded_bytes %d\n", 
 							error, soundSource[i].sample->decoder->filename, i, decoded_bytes);
-						finished = AL_TRUE;
 					}
 					else
 					{
@@ -215,7 +215,6 @@ StreamDecoderTaskFunc (void *data)
 						{
 							fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceQueueBuffers: %x, file %s, source %d, decoded_bytes %d\n", 
 								error, i, soundSource[i].sample->decoder->filename, decoded_bytes);
-							finished = AL_TRUE;
 						}
 					}
 				}

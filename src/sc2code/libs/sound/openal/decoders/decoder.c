@@ -27,12 +27,12 @@
 #endif
 
 #include <stdio.h>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
 #include "decoder.h"
 #include "wav.h"
 #include "libs/sound/sound_common.h"
 #include "mikmod/mikmod.h"
-#include "vorbis/codec.h"
-#include "vorbis/vorbisfile.h"
 
 MIKMODAPI extern struct MDRIVER drv_openal;
 
@@ -225,7 +225,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		vinfo = ov_info (vf, -1);
 		if (!vinfo)
 		{
-			fprintf (stderr, "SoundDecoder_Load(): failed to retrieve ogg bitstream info\n");
+			fprintf (stderr, "SoundDecoder_Load(): failed to retrieve ogg bitstream info for %s\n", filename);
 	        ov_clear (vf);
 		    free (vf);
 			return NULL;
@@ -276,13 +276,13 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			{
 				if (decoder->looping)
 				{
-					//fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
+					fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
 					Player_SetPosition (0);
 					Player_Start (mod);
 				}
 				else
 				{
-					//fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
+					fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
 					decoder->error = SOUNDDECODER_EOF;
 					return 0;
 				}
@@ -312,19 +312,20 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 				{
 					if (decoder->looping)
 					{
-						if (ov_raw_seek (vf, 0) != 0)
+						int err;
+						if ((err = ov_raw_seek (vf, 0)) != 0)
 						{
-							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind\n", decoder->filename);
+							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind, error code %d\n", decoder->filename, err);
 						}
 						else
 						{
-							//fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
+							fprintf (stderr, "SoundDecoder_Decode(): looping %s\n", decoder->filename);
 							count++;
 							continue;
 						}
 					}
 
-					//fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
+					fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
 					decoder->error = SOUNDDECODER_EOF;
 					return decoded_bytes;
 				}
@@ -402,19 +403,20 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 			MODULE *mod = (MODULE *)decoder->data;
 			Player_Start (mod);
 			Player_SetPosition (0);
-			//fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
+			fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
 		case SOUNDDECODER_OGG:
 		{
+			int err;
 			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			if (ov_raw_seek (vf, 0) != 0)
+			if ((err = ov_raw_seek (vf, 0)) != 0)
 			{
-				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s\n", decoder->filename);
+				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s, error code %d\n", decoder->filename, err);
 				break;
 			}
-			//fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
+			fprintf (stderr, "SoundDecoder_Rewind(): rewinded %s\n", decoder->filename);
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
