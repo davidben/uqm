@@ -125,12 +125,12 @@ DeltaSupportCrew (SIZE crew_delta)
 	if (StarShipPtr->ShipInfo.crew_level == 0)
 		StarShipPtr->ShipInfo.crew_level = 1;
 	else if (StarShipPtr->ShipInfo.crew_level >
-			TemplatePtr->RaceDescPtr->ship_info.crew_level)
-		StarShipPtr->ShipInfo.crew_level =
-				TemplatePtr->RaceDescPtr->ship_info.crew_level;
+			TemplatePtr->RaceDescPtr->ship_info.crew_level &&
+			crew_delta > 0)
+		StarShipPtr->ShipInfo.crew_level -= crew_delta;
 	else
 	{
-		if (StarShipPtr->ShipInfo.crew_level ==
+		if (StarShipPtr->ShipInfo.crew_level >=
 				TemplatePtr->RaceDescPtr->ship_info.crew_level)
 			wsprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
 		else
