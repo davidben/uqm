@@ -321,7 +321,7 @@ considerable damage by ramming its opponents.
 			 Ariloulaleelay Skiff
 Primary weapon: Auto-aiming, short-range laser
 Secondary weapon: Random teleport
-Note: The Skiff is inertialess, and stops instantly when thrust is
+Note: The Skiff is inertia-less, and stops instantly when thrust is
 removed.
 
 			  Chenjesu Broodhome
@@ -391,17 +391,13 @@ will self-destruct, inflicting vast damage on nearby vessels.
 Primary weapon:  Lighting weapon.
 Secondary weapon: Absorb a nearby asteroid and convert to combat
 power.  This is the only way the Probe can recharge.
-Note: The Probe is inertialess and always in motion.  Pressing thrust
+Note: The Probe is inertia-less and always in motion.  Pressing thrust
 will reverse its direction.
 
 			    Spathi Eluder
 Primary weapon:  Simple forward cannon.
 Secondary weapon: Backward Utilized Tracking Torpedo (B.U.T.T.), a
 homing missile fired from the rear of the vessel.
-
-Alpha release warning: Since collisions are only using bounding boxes
-right now, the B.U.T.T. missile is far more likely to hit you on
-launch than your opponent.
 
 			     Supox Blade
 Primary weapon: Forward firing glob weapon
@@ -428,7 +424,7 @@ time, and then the energy all returns in one lump.
 
 			 Ur-Quan Dreadnought
 Primary weapon:  Fusion Blast.
-Secondary weapon: Launches autonomous fighters to harry the enemy.
+Secondary weapon: Launches autonomous fighters to harrass the enemy.
 When they run low on fuel, they will fly back to the Dreadnought.
 Catch them before they expire.  Each fighter requires one crew to
 pilot it, so take care not to weaken the core ship.
@@ -529,9 +525,9 @@ On Microsoft Windows systems this is a folder named 'uqm' in the
 application data folder for the current user.
 This is usually in one of the following locations:
 - "C:\Windows\Application Data\"
-  (Windows 95, 98, SE without seperate users)
+  (Windows 95, 98, SE without separate users)
 - "C:\Windows\Profiles\YourName\Application Data\"
-  (Windows 95/98/SE with seperate users)
+  (Windows 95/98/SE with separate users)
 - "C:\Documents and Settings\YourName\Application Data\"
   (Windows NT/XP)
 On Unix systems this personal uqm data is stored in "~/.uqm".
