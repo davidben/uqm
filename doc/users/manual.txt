@@ -408,6 +408,13 @@ Arrow Keys:         Scroll through selections
 ENTER:              Make selection
 SPACE:              Up one level
 
+	Star Map
+Arrow Keys:         Move the crosshair
+Enter:              Select destination
+Space:              Main menu
+Numpad +:           Zoom in
+Numpad -:           Zoom out
+
 	Space Combat
 
 UP or ENTER:        Thrust
