@@ -30,11 +30,6 @@ AM_MAINTAINER_MODE
 CFLAGS="$CFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
 CPPFLAGS="$CPPFLAGS -g -W -Wall -DHAVE_OPENGL -DSDL_PTHREADS -DGFXMODULE_SDL -DSOUNDMODULE_SDL"
 
-# These defines seem to be missing, and they are added here as a workaround.
-
-AC_DEFINE(SAFE_X, (0), [If know what it is it for tell me])
-AC_DEFINE(SAFE_Y, (0), [If know what it is it for tell me])
-
 # --------------------------------------------------------------------------
 
 # Checks for programs.
