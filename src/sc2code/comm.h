@@ -19,5 +19,7 @@
 
 void init_communication (void);
 void uninit_communication (void);
+int do_subtitles (UNICODE *pStr);
+
 #endif  /* _COMM_H */
 

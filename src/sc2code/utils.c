@@ -18,6 +18,7 @@
 
 #include "starcon.h"
 #include "commglue.h"
+#include "comm.h"
 #include "libs/sound/trackplayer.h"
 
 void
@@ -144,7 +145,6 @@ PauseGame (void)
 	CONTEXT OldContext;
 	FRAME F;
 	HOT_SPOT OldHot;
-	extern int do_subtitles (UNICODE *pStr);
 
 	if (ActivityFrame == 0
 			|| (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_PAUSE))

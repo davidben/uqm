@@ -18,8 +18,7 @@
 #include <ctype.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
-
-extern int do_subtitles (UNICODE *pStr);
+#include "comm.h"
 
 static int tct;               //total number of subtitle tracks
 static int tcur;              //currently playing subtitle track

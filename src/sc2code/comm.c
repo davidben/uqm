@@ -104,7 +104,6 @@ enum
 };
 static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
-int do_subtitles (UNICODE *pStr);
 
 static volatile UNICODE *last_subtitle;
 static TFB_Image *subtitle_cache;
