@@ -38,6 +38,7 @@ typedef struct tfb_sounddecoder
 	ALuint frequency;
 	ALboolean looping;
 	ALint error;
+	float length; // total length in seconds
 	char *decoder_info;
 
 	// semi-private

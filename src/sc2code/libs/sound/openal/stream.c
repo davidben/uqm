@@ -79,6 +79,7 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
 			break;
 	}
 
+	soundSource[source].start_time = GetTimeCounter ();
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
 }
@@ -108,6 +109,7 @@ StopStream (ALuint source)
 void
 PauseStream (ALuint source)
 {
+	soundSource[source].start_time = GetTimeCounter () - soundSource[source].start_time;
 	soundSource[source].stream_should_be_playing = FALSE;
 	alSourcePause (soundSource[source].handle);
 }
@@ -115,6 +117,7 @@ PauseStream (ALuint source)
 void
 ResumeStream (ALuint source)
 {
+	soundSource[source].start_time = GetTimeCounter () - soundSource[source].start_time;
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
 }

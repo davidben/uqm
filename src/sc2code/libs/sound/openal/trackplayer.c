@@ -260,15 +260,22 @@ GetSoundData (char* data)
 	return 0;
 }
 
-// Status: Unimplemented
 int
 GetSoundInfo (int *length, int *offset)
-		// Umm... How does it know which sound?
-		// Answer: only used in oscill.c slider so sound must be current speech
-{
-	//fprintf (stderr, "Unimplemented function activated: GetSoundInfo()\n");
-	*length = 1;
-	*offset = 0;
+{	
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder)
+	{
+		 *length = (int) (soundSource[SPEECH_SOURCE].sample->decoder->length * (float)ONE_SECOND);
+		 *offset = (int) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
+	}
+	else
+	{
+		*length = 1;
+		*offset = 0;
+	}
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
 	return 1;
 }
 

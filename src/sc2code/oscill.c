@@ -17,6 +17,7 @@
  */
 
 #include "libs/graphics/gfx_common.h"
+#include "libs/sound/trackplayer.h"
 
 //Added by Chris
 //Modified by Mika (removed use of SDL datatypes)
@@ -206,6 +207,8 @@ Slider (void)
 	{
 		if (offs > len)
 			offs = len;
+		if (len == 0)
+			len = 1;
 		buttonStamp.origin.x = sliderStamp.origin.x + sliderSpace * offs / len;
 		BatchGraphics ();
 		DrawStamp (&sliderStamp);

@@ -145,6 +145,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->frequency = 0;
 		decoder->looping = AL_FALSE;
 		decoder->error = SOUNDDECODER_OK;
+		decoder->length = 0; // FIXME should be calculated
 		decoder->decoder_info = decoder_info_wav;
 		decoder->type = SOUNDDECODER_WAV;
 		decoder->filename = (char *) malloc (strlen (filename) + 1);
@@ -178,6 +179,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->frequency = md_mixfreq;
 		decoder->looping = AL_FALSE;
 		decoder->error = SOUNDDECODER_OK;
+		decoder->length = 0; // FIXME way to obtain this from mikmod?
 		decoder->decoder_info = decoder_info_mod;
 		decoder->type = SOUNDDECODER_MOD;
 		decoder->filename = (char *) malloc (strlen (filename) + 1);
@@ -243,6 +245,7 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->frequency = vinfo->rate;
 		decoder->looping = AL_FALSE;
 		decoder->error = SOUNDDECODER_OK;
+		decoder->length = (float) ov_time_total (vf, -1);
 		decoder->decoder_info = decoder_info_ogg;
 		decoder->type = SOUNDDECODER_OGG;
 		decoder->filename = (char *) malloc (strlen (filename) + 1);
