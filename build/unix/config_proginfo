@@ -30,7 +30,7 @@ PROG_sed_VERSION=''
 
 PROG_make_NAME="Make"
 case "$OSNAME" in
-	FreeBSD|OpenBSD)
+	FreeBSD|OpenBSD|SunOS)
 		PROG_make_FILE="gmake"
 		;;
 	*)

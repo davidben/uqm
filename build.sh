@@ -19,8 +19,16 @@
 # You can start this program as 'SH="/bin/sh -x" ./build.sh' to
 # enable command tracing.
 
-SH="${SH:-/bin/sh}"
-export SH
+if [ -z "$SH" ]; then
+	if [ `uname -s` = SunOS ]; then
+		# /bin/sh of Solaris is incompatible. Fortunately, Sun ships
+		# a decent sh in /usr/xpg4/bin/ nowadays.
+		SH=/usr/xpg4/bin/sh
+	else
+		SH=/bin/sh
+	fi
+	export SH
+fi
 
 $SH build/unix/build.sh "$@"
 

@@ -79,16 +79,6 @@ EOF
 	fi
 }
 
-# Description: Output a message to stderr, unless BUILD_SILENT is set
-# Arguments: the message
-build_message() {
-	if [ -z "$BUILD_SILENT" ]; then
-	cat >&2 << EOF
-$@
-EOF
-	fi
-}
-
 # Description: check if a string is lexicographically before
 #              another string
 # Arguments:   $1 - the first string

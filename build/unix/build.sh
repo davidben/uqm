@@ -29,7 +29,7 @@ fi
 
 # Read in the config settings that affect the build, if present.
 # Don't reread for every dir when recursing.
-if [ -e "$BUILD_WORK/build.vars" -a -z "$BUILD_COMMAND" ]; then
+if [ -r "$BUILD_WORK/build.vars" -a -z "$BUILD_COMMAND" ]; then
 	. "$BUILD_WORK/build.vars"
 fi
 
