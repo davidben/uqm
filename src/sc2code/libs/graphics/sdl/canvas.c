@@ -273,6 +273,10 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, int scale, PEXTENT size)
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	size->width = (int) (src->w * scale / (float)GSCALE_IDENTITY);
 	size->height = (int) (src->h * scale / (float)GSCALE_IDENTITY);
+	if (!size->width)
+		size->width = 1;
+	if (!size->height)
+		size->height = 1;
 }
 
 void
