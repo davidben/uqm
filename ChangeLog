@@ -1,4 +1,5 @@
 0.2:
+- Slider now moves in communications (OpenAL)
 - Fixed a DCQ bug where it wasn't freeing batches of graphics commands
 - > vs. >= bugfix on plangen.c, from PhracturedBlue
 - More appropriate names to ROSTER + 1 and ROSTER + 2, from slayne

@@ -33,7 +33,6 @@ Glitches (don't crash the game, medium priority):
   complete battle (not just one fight). There's no permanent memory leak
   though.
 - OpenAL sound code problems:
-  - Some unimplemented functions (for oscilloscope and dialogue seeking)
   - Volume levels aren't maybe exactly as they should
   - Crashes if no audio device available
 - Circles of influence aren't shown the first time (after load?) a player
