@@ -1212,6 +1212,10 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		s.frame = pSolarSysState->TopoFrame;
 		SetGraphicScale (1 << (MAG_SHIFT + 8));
 		DrawStamp (&s);
+		s.origin.x += MAP_WIDTH << MAG_SHIFT;
+		DrawStamp (&s);
+		s.origin.x -= MAP_WIDTH << (MAG_SHIFT + 1);
+		DrawStamp (&s);
 		SetGraphicScale (0);
 	}
 
