@@ -1193,7 +1193,9 @@ DoFlagshipCommands (PMENU_STATE pMS)
 			if (!DoMenu) {
 
 				NewState = pMS->CurState;
-				if (select || LastActivity == CHECK_LOAD)
+				if (LastActivity == CHECK_LOAD)
+					select = TRUE;
+				if (select)
 				{
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
