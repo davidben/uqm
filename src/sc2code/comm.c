@@ -50,6 +50,14 @@ int cur_comm;
 UNICODE shared_phrase_buf[256];
 volatile BOOLEAN summary = FALSE;
 
+typedef struct response_entry
+{
+	RESPONSE_REF response_ref;
+	TEXT response_text;
+	RESPONSE_FUNC response_func;
+} RESPONSE_ENTRY;
+typedef RESPONSE_ENTRY *PRESPONSE_ENTRY;
+
 typedef struct encounter_state
 {
 	BOOLEAN (*InputFunc) (struct encounter_state *pES);
@@ -57,12 +65,7 @@ typedef struct encounter_state
 
 	COUNT Initialized;
 	BYTE num_responses, cur_response, top_response;
-	struct
-	{
-		RESPONSE_REF response_ref;
-		TEXT response_text;
-		RESPONSE_FUNC response_func;
-	} response_list[MAX_RESPONSES];
+	RESPONSE_ENTRY response_list[MAX_RESPONSES];
 
 	Task AnimTask;
 
@@ -1339,7 +1342,7 @@ SpewPhrases (COUNT wait_track)
 			break;
 		
 		UnlockMutex (GraphicsLock);
-		/* FIXME: is this a ramnant of 128-tick clock?
+		/* FIXME: is this a remnant of 128-tick clock?
 		 * with 120-tick clock this will sleep for 1 tick --
 		 * for 1/120th of a second; if ONE_SECOND is upgraded
 		 * it will probably sleep for 2/120th of a second.
@@ -1927,6 +1930,7 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 		UNICODE *ConstructStr)
 {
 	PENCOUNTER_STATE pES = pCurInputState;
+	PRESPONSE_ENTRY pEntry;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return;
@@ -1937,27 +1941,28 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 		pES->top_response = (BYTE)~0;
 	}
 
-	pES->response_list[pES->num_responses].response_ref = R;
-	if ((pES->response_list[pES->num_responses].response_text.pStr = ConstructStr))
-		pES->response_list[pES->num_responses].response_text.CharCount = wstrlen (ConstructStr);
+	pEntry = &pES->response_list[pES->num_responses];
+	pEntry->response_ref = R;
+	pEntry->response_text.pStr = ConstructStr;
+	if (pEntry->response_text.pStr)
+		pEntry->response_text.CharCount = wstrlen (ConstructStr);
 	else
 	{
 		STRING locString;
 		
-		locString = SetAbsStringTableIndex (CommData.ConversationPhrases, (COUNT)(R - 1));
-		pES->response_list[pES->num_responses].response_text.pStr =
-				(UNICODE *)GetStringAddress (locString);
-		pES->response_list[pES->num_responses].response_text.CharCount =
-				GetStringLength (locString);
+		locString = SetAbsStringTableIndex (CommData.ConversationPhrases,
+				(COUNT) (R - 1));
+		pEntry->response_text.pStr =
+				(UNICODE *) GetStringAddress (locString);
+		pEntry->response_text.CharCount = GetStringLength (locString);
 //#define BVT_PROBLEM
 #ifdef BVT_PROBLEM
-if (pES->response_list[pES->num_responses].response_text.pStr[
-		pES->response_list[pES->num_responses].response_text.CharCount - 1
-		] == '\0')
-	--pES->response_list[pES->num_responses].response_text.CharCount;
+		if (pEntry->response_text.pStr[pEntry->response_text.CharCount - 1]
+				== '\0')
+			--pEntry->response_text.CharCount;
 #endif /* BVT_PROBLEM */
 	}
-	pES->response_list[pES->num_responses].response_func = response_func;
+	pEntry->response_func = response_func;
 	++pES->num_responses;
 }
 
