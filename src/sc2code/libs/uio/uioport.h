@@ -36,28 +36,30 @@ typedef short gid_t;
 		/* PATH_MAX is per POSIX defined in <limits.h> */
 #	define inline __inline__
 #endif
-#ifdef _MSC_VER
+#ifdef WIN32
 #	include <io.h>
-#define mkdir MS_INSANE_MKDIR
+#	define mkdir MS_INSANE_MKDIR
 		// direct.h would give a bad definition of mkdir(). Now it gives
 		// a bad definition of MS_INSANE_MKDIR(), which we won't use.
 		// Yes, it's a hack, but this way the hack will stay local to
 		// the MS-specific stuff.
 #	include <direct.h>
-#undef mkdir
-#	include <sys/stat.h>
-typedef int ssize_t;
+#	undef mkdir
 typedef unsigned short mode_t;
-#	define access _access
-#	define F_OK 0
-#	define W_OK 2
-#	define R_OK 4
-#	define open _open
 static inline int
 mkdir(const char *pathname, mode_t mode) {
 	(void) mode;
 	return _mkdir(pathname);
 }
+#endif  /* WIN32 */
+#ifdef _MSC_VER
+#	include <sys/stat.h>
+typedef int ssize_t;
+#	define access _access
+#	define F_OK 0
+#	define W_OK 2
+#	define R_OK 4
+#	define open _open
 #	define read _read
 #	define rmdir _rmdir
 #	define lseek _lseek
