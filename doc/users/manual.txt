@@ -43,9 +43,10 @@ none. Try these to get smoother graphics with cost on performance.
 
 	-b               (or --meleescale=mode)
 
-Melee scaling mode (nearest or trilinear). Default is trilinear.
+Melee scaling mode (nearest, trilinear, pc/step). Default is trilinear.
 Slower machine owners can set it to nearest to get better performance
-in melee but degraded visual quality.
+in melee but degraded visual quality. The fastest mode is step, it is
+also the mode DOS original used (step and pc modes are equivalent).
 
 	-s               (or --scanlines)
 
