@@ -20,7 +20,8 @@ NEW FEATURES
 - Planet info "coarse scan" information available and properly rendered
 - 3D spinning planet in orbit window is present, with antialiasing and
   phong lighting and an animated approach
-- Pixel-perfect collision detection
+- Pixel-perfect collision detection; Spathi/Mycon are thus playable, and
+  the game is now beatable
 - Build system enhanced and generalized to handle OpenBSD and FreeBSD cleanly.
 - Oscilloscope display works in communication now
 - Color-shading in planet scans
@@ -39,7 +40,7 @@ NEW FEATURES
 
 BUGFIXES
 
-- Melee screens cleaned up, SuperMelle menus work.
+- Melee screens cleaned up, SuperMelee menus work.
 - Subtitles now render for all alien races
 - Major editing of subtitles to match more closely the speeches
 - Autopilot indicator doesn't take over the top of the screen anymore.
@@ -90,6 +91,7 @@ INTERNAL CHANGES
 - Various functions have their names changed to avoid conflicts with
   core library routines on OS X
 
-Version 0.1
 
-- Initial release!
+			     Version 0.1
+			    -------------
+Initial release.
