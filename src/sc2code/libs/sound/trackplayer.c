@@ -215,7 +215,7 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 	return (num);
 }
 
-#define TEXT_SPEED 70
+#define TEXT_SPEED 80
 UNICODE **
 SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 {
@@ -239,6 +239,8 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 				wstrncpy (split_text[page] + ellips, text, pos);
 				wstrcpy (split_text[page] + ellips + pos, "...");
 				timestamp[page] = - pos * TEXT_SPEED;
+				if (timestamp[page] > -1000)
+					timestamp[page] = -1000;
 				ellips = 2;
 				text = text + pos;
 				pos = 0;
@@ -252,6 +254,8 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 				wstrncpy (split_text[page] + ellips, text, pos);
 				*(split_text[page] + ellips + pos) = 0;
 				timestamp[page] = - pos * TEXT_SPEED;
+				if (timestamp[page] > -1000)
+					timestamp[page] = -1000;
 				ellips = 0;
 				text = text + pos;
 				pos = 0;
@@ -276,6 +280,9 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 		wstrncpy (split_text[page] + ellips, text, pos);
 		*(split_text[page] + ellips + pos) = 0;
 		timestamp[page] = - pos * TEXT_SPEED;
+		if (timestamp[page] > -1000)
+			timestamp[page] = -1000;
+		timestamp[page] += -1000;
 		page ++;
 	}
 	*num_pages = page;

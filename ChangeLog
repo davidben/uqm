@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Adjusted subtitle timings when there are no oggs (part of bug #362),
+  from chmmravatar
 - Fixed crash in conversation summary and ffw/frew problem when
   selling data to Melnorme (bug #476), from chmmravatar
 - Flush input after selecting "Navigate" (bug #475) - Michael
