@@ -1284,7 +1284,7 @@ int ambient_anim_task(void* data)
 				CheckSub = 1;
 			}
 
-			if (CheckSub && sub_state >= SPACE_SUBTITLE)
+			if (optSubtitles && CheckSub && sub_state >= SPACE_SUBTITLE)
 			{
 				TEXT t;
 
@@ -2353,14 +2353,7 @@ do_subtitles (UNICODE *pStr)
 		{
 			TEXT t;
 			
-			if (optSubtitles)
-			{
-				CommData.AlienTextTemplate.pStr = pStr;
-			}
-			else
-			{
-				CommData.AlienTextTemplate.pStr = "";
-			}
+			CommData.AlienTextTemplate.pStr = pStr;
 			t = CommData.AlienTextTemplate;
 
 			CommData.AlienTextTemplate.CharCount = t.pStr - CommData.AlienTextTemplate.pStr;
