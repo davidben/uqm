@@ -588,6 +588,10 @@ SOURCE=..\sc2code\libs\sound\mixsdl\mixer.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\mixsdl\mixerint.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\mixsdl\sound_mixsdl.c
 # End Source File
 # Begin Source File
