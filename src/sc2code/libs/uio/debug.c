@@ -397,7 +397,7 @@ debugCmdCat(DebugContext *debugContext, int argc, char *argv[]) {
 			totalWritten += numWritten;
 		} while (numInBuf > 0);
 	}
-	fprintf(debugContext->out, "[%d bytes]\n", totalWritten);
+	fprintf(debugContext->out, "[%u bytes]\n", (unsigned int) totalWritten);
 	
 	uio_close(handle);
 	return 0;
