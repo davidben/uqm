@@ -356,7 +356,7 @@ NormalMycon (RESPONSE_REF R)
 		DISABLE_PHRASE (RESPONSE_TO_REF (R));
 	}
 
-	if ((BYTE)Random () < 256 * 30 / 100)
+	if ((BYTE)TFB_Random () < 256 * 30 / 100)
 		RespFunc = (RESPONSE_FUNC)CombatIsInevitable;
 	else
 		RespFunc = (RESPONSE_FUNC)NormalMycon;

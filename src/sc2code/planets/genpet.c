@@ -89,7 +89,7 @@ ZapToUrquanEncounter (void)
 		DeltaSISGauges (0, -dx, 0);
 		if (GLOBAL_SIS (FuelOnBoard) < 5 * FUEL_TANK_SCALE)
 		{
-			dx = ((5 + ((COUNT)Random () % 5)) * FUEL_TANK_SCALE)
+			dx = ((5 + ((COUNT)TFB_Random () % 5)) * FUEL_TANK_SCALE)
 					- (SIZE)GLOBAL_SIS (FuelOnBoard);
 			DeltaSISGauges (0, dx, 0);
 		}
@@ -119,7 +119,7 @@ GenerateTalkingPet (BYTE control)
 				which_node = i = 0;
 				do
 				{
-					rand_val = Random ();
+					rand_val = TFB_Random ();
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.x =
 							(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.y =

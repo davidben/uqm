@@ -300,7 +300,7 @@ ChangeSelection:
 						hBattleShip = 0;
 					else
 					{
-						ship_index = (COUNT)Random () % ships_left;
+						ship_index = (COUNT)TFB_Random () % ships_left;
 						for (hBattleShip = GetHeadLink (&race_q[which_player]);
 								hBattleShip != 0; hBattleShip = hNextShip)
 						{

@@ -177,9 +177,9 @@ Battle (void)
 	SeedRandom (GetTimeCounter ());
 #else /* DEMO_MODE */
 	if (BattleSeed == 0)
-		BattleSeed = Random ();
+		BattleSeed = TFB_Random ();
 	SeedRandom (BattleSeed);
-	BattleSeed = Random (); /* get next battle seed */
+	BattleSeed = TFB_Random (); /* get next battle seed */
 #endif /* DEMO_MODE */
 
 	BattleSong (FALSE);

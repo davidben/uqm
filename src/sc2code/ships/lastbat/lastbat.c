@@ -225,7 +225,7 @@ spawn_comet (PELEMENT ElementPtr)
 			if (ElementPtr->state_flags & PLAYER_SHIP)
 			{
 				CometPtr->turn_wait = 0;
-				facing = (COUNT)Random ();
+				facing = (COUNT)TFB_Random ();
 				SetVelocityVector (&CometPtr->velocity,
 						COMET_SPEED, facing);
 			}
@@ -464,7 +464,7 @@ sentinel_preprocess (PELEMENT ElementPtr)
 		else
 		{
 			ElementPtr->state_flags &= ~NONSOLID;
-			facing = (COUNT)Random ();
+			facing = (COUNT)TFB_Random ();
 			SetVelocityVector (&ElementPtr->velocity,
 					MISSILE_SPEED, facing);
 		}
@@ -794,7 +794,7 @@ samatra_preprocess (PELEMENT ElementPtr)
 				GeneratorPtr->current.image.frame =
 						SetAbsFrameIndex (
 								StarShipPtr->RaceDescPtr->ship_data.special[0],
-								(BYTE)Random () % 10
+								(BYTE)TFB_Random () % 10
 								);
 
 				GeneratorPtr->preprocess_func = generator_preprocess;

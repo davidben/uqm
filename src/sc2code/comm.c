@@ -672,11 +672,11 @@ SetUpSequence (PSEQUENCE pSeq)
 			if (pSeq->AnimType == COLOR_ANIM)
 				pSeq->AnimObj.CurCMap =
 						SetRelColorMapIndex (pSeq->AnimObj.CurCMap,
-						(COUNT)Random () % pSeq->FramesLeft);
+						(COUNT)TFB_Random () % pSeq->FramesLeft);
 			else
 				pSeq->AnimObj.CurFrame =
 						SetRelFrameIndex (pSeq->AnimObj.CurFrame,
-						(COUNT)Random () % pSeq->FramesLeft);
+						(COUNT)TFB_Random () % pSeq->FramesLeft);
 		}
 		else if (ADPtr->AnimFlags & YOYO_ANIM)
 		{
@@ -691,7 +691,7 @@ SetUpSequence (PSEQUENCE pSeq)
 
 		pSeq->Alarm =
 				ADPtr->BaseRestartRate
-				+ ((COUNT)Random ()
+				+ ((COUNT)TFB_Random ()
 				% (ADPtr->RandomRestartRate + 1))
 				+ 1;
 	}
@@ -803,7 +803,7 @@ int ambient_anim_task(void* data)
 					ActiveMask |= 1L << i;
 					pSeq->Alarm =
 							ADPtr->BaseFrameRate
-							+ ((COUNT)Random ()
+							+ ((COUNT)TFB_Random ()
 							% (ADPtr->RandomFrameRate + 1))
 							+ 1;
 				}
@@ -812,7 +812,7 @@ int ambient_anim_task(void* data)
 					ActiveMask &= ~(1L << i);
 					pSeq->Alarm =
 							ADPtr->BaseRestartRate
-							+ ((COUNT)Random ()
+							+ ((COUNT)TFB_Random ()
 							% (ADPtr->RandomRestartRate + 1))
 							+ 1;
 					if (ActiveMask & ADPtr->BlockMask)
@@ -866,13 +866,13 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 						pSeq->AnimObj.CurCMap =
 								SetAbsColorMapIndex (pSeq->AnimObj.CurCMap,
 								ADPtr->StartIndex
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% ADPtr->NumFrames));
 					else
 						pSeq->AnimObj.CurFrame =
 								SetAbsFrameIndex (pSeq->AnimObj.CurFrame,
 								ADPtr->StartIndex
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% ADPtr->NumFrames));
 				}
 				else if (pSeq->AnimType == COLOR_ANIM)
@@ -937,7 +937,7 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 				{
 					FrameRate =
 							ADPtr->BaseFrameRate
-							+ ((COUNT)Random ()
+							+ ((COUNT)TFB_Random ()
 							% (ADPtr->RandomFrameRate + 1));
 					if (TalkAlarm < 0
 							|| GetFrameIndex (TalkFrame) ==
@@ -945,11 +945,11 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 					{
 						TalkFrame = SetAbsFrameIndex (CommFrame,
 								ADPtr->StartIndex + 1
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% (ADPtr->NumFrames - 1)));
 						FrameRate +=
 								ADPtr->BaseRestartRate
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% (ADPtr->RandomRestartRate + 1));
 					}
 					else
@@ -984,7 +984,7 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 					{
 						FrameRate =
 								ADPtr->BaseFrameRate
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% (ADPtr->RandomFrameRate + 1));
 						if (TalkAlarm < 0)
 							TalkFrame = SetAbsFrameIndex (CommFrame,
@@ -1001,7 +1001,7 @@ pBatch->Object.Stamp.origin.x = -SAFE_X;
 					{
 						FrameRate =
 								ADPtr->BaseFrameRate
-								+ ((COUNT)Random ()
+								+ ((COUNT)TFB_Random ()
 								% (ADPtr->RandomFrameRate + 1));
 						if (TalkAlarm < 0)
 							TalkFrame = SetAbsFrameIndex (CommFrame,

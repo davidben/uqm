@@ -143,7 +143,7 @@ bubble_preprocess (PELEMENT ElementPtr)
 				IncFrameIndex (ElementPtr->current.image.frame);
 		ElementPtr->state_flags |= CHANGING;
 
-		thrust_wait = (BYTE)((COUNT)Random () & 3);
+		thrust_wait = (BYTE)((COUNT)TFB_Random () & 3);
 	}
 
 	if (turn_wait > 0)
@@ -157,11 +157,11 @@ bubble_preprocess (PELEMENT ElementPtr)
 				GetVelocityTravelAngle (&ElementPtr->velocity)
 				));
 		if ((delta_facing = TrackShip (ElementPtr, &facing)) == -1)
-			facing = (COUNT)Random ();
+			facing = (COUNT)TFB_Random ();
 		else if (delta_facing <= ANGLE_TO_FACING (HALF_CIRCLE))
-			facing += (COUNT)Random () & (ANGLE_TO_FACING (HALF_CIRCLE) - 1);
+			facing += (COUNT)TFB_Random () & (ANGLE_TO_FACING (HALF_CIRCLE) - 1);
 		else
-			facing -= (COUNT)Random () & (ANGLE_TO_FACING (HALF_CIRCLE) - 1);
+			facing -= (COUNT)TFB_Random () & (ANGLE_TO_FACING (HALF_CIRCLE) - 1);
 		SetVelocityVector (&ElementPtr->velocity,
 				MISSILE_SPEED, facing);
 

@@ -241,8 +241,8 @@ InitGalaxy (void)
 		if (i == BIG_STAR_COUNT || i == BIG_STAR_COUNT + MED_STAR_COUNT)
 			++factor;
 
-		ppt->x = (COORD)((UWORD)Random () % SPACE_WIDTH) << factor;
-		ppt->y = (COORD)((UWORD)Random () % SPACE_HEIGHT) << factor;
+		ppt->x = (COORD)((UWORD)TFB_Random () % SPACE_WIDTH) << factor;
+		ppt->y = (COORD)((UWORD)TFB_Random () % SPACE_HEIGHT) << factor;
 
 		if (i < BIG_STAR_COUNT + MED_STAR_COUNT)
 		{
@@ -307,7 +307,7 @@ MoveGalaxy (VIEW_STATE view_state, register SIZE dx, register SIZE dy)
 				{
 					pprim->Object.Stamp.frame =
 							SetAbsFrameIndex (stars_in_space,
-							((COUNT)Random () & 31) + (32 + 26));
+							((COUNT)TFB_Random () & 31) + (32 + 26));
 					++pprim;
 				} while (--i);
 
@@ -316,7 +316,7 @@ MoveGalaxy (VIEW_STATE view_state, register SIZE dx, register SIZE dy)
 				{
 					pprim->Object.Stamp.frame =
 							SetAbsFrameIndex (stars_in_space,
-							((COUNT)Random () & 31) + 26);
+							((COUNT)TFB_Random () & 31) + 26);
 					++pprim;
 				} while (--i);
 			}

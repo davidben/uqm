@@ -45,9 +45,9 @@ spawn_planet (void)
 		do
 		{
 			PlanetElementPtr->current.location.x =
-					WRAP_X (DISPLAY_ALIGN_X (Random ()));
+					WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
 			PlanetElementPtr->current.location.y =
-					WRAP_Y (DISPLAY_ALIGN_Y (Random ()));
+					WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 		} while (CalculateGravity (PlanetElementPtr)
 				|| TimeSpaceMatterConflict (PlanetElementPtr));
 		loc = PlanetElementPtr->current.location;
@@ -152,19 +152,19 @@ spawn_asteroid (PELEMENT ElementPtr)
 		AsteroidElementPtr->state_flags = APPEARING;
 		AsteroidElementPtr->life_span = NORMAL_LIFE;
 		SetPrimType (&DisplayArray[AsteroidElementPtr->PrimIndex], STAMP_PRIM);
-		if ((val = (COUNT)Random ()) & (1 << 0))
+		if ((val = (COUNT)TFB_Random ()) & (1 << 0))
 		{
 			if (!(val & (1 << 1)))
 				AsteroidElementPtr->current.location.x = 0;
 			else
 				AsteroidElementPtr->current.location.x = LOG_SPACE_WIDTH;
 			AsteroidElementPtr->current.location.y =
-					WRAP_Y (DISPLAY_ALIGN_Y (Random ()));
+					WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 		}
 		else
 		{
 			AsteroidElementPtr->current.location.x =
-					WRAP_X (DISPLAY_ALIGN_X (Random ()));
+					WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
 			if (!(val & (1 << 1)))
 				AsteroidElementPtr->current.location.y = 0;
 			else
@@ -172,16 +172,16 @@ spawn_asteroid (PELEMENT ElementPtr)
 		}
 
 		SetVelocityVector (&AsteroidElementPtr->velocity,
-				DISPLAY_TO_WORLD (((SIZE)Random () & 7) + 4),
-				(COUNT)Random ());
+				DISPLAY_TO_WORLD (((SIZE)TFB_Random () & 7) + 4),
+				(COUNT)TFB_Random ());
 		AsteroidElementPtr->current.image.farray = asteroid;
 		AsteroidElementPtr->current.image.frame =
 				SetAbsFrameIndex (asteroid[0],
-				NORMALIZE_FACING (Random ()));
+				NORMALIZE_FACING (TFB_Random ()));
 		AsteroidElementPtr->turn_wait =
 				AsteroidElementPtr->thrust_wait =
-				(BYTE)Random () & (BYTE)((1 << 2) - 1);
-		AsteroidElementPtr->thrust_wait |= (BYTE)Random () & (BYTE)(1 << 7);
+				(BYTE)TFB_Random () & (BYTE)((1 << 2) - 1);
+		AsteroidElementPtr->thrust_wait |= (BYTE)TFB_Random () & (BYTE)(1 << 7);
 		AsteroidElementPtr->preprocess_func = asteroid_preprocess;
 		AsteroidElementPtr->death_func = spawn_rubble;
 		AsteroidElementPtr->collision_func = collision;
@@ -354,8 +354,8 @@ AbandonShip (ELEMENTPTR ShipPtr, ELEMENTPTR TargetPtr,
 			ShipIntersect.IntersectStamp.origin =
 					ShipPtr->IntersectControl.EndPoint;
 
-			w = (SIZE)((COUNT)Random () % r.extent.width);
-			h = (SIZE)((COUNT)Random () % r.extent.height);
+			w = (SIZE)((COUNT)TFB_Random () % r.extent.width);
+			h = (SIZE)((COUNT)TFB_Random () % r.extent.height);
 			CrewIntersect.EndPoint = ShipIntersect.EndPoint;
 			CrewIntersect.IntersectStamp.frame = DecFrameIndex (stars_in_space);
 			if (dx == 0 && dy == 0)

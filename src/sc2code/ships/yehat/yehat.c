@@ -191,7 +191,7 @@ COUNT ConcernCounter;
 					& PLAYER_SHIP) /* means IMMEDIATE WEAPON */
 					|| PlotIntercept (lpEvalDesc->ObjectPtr,
 					ShipPtr, 2, 0))
-					&& (Random () & 3))
+					&& (TFB_Random () & 3))
 				StarShipPtr->ship_input_state |= SPECIAL;
 
 			if (lpEvalDesc->ObjectPtr

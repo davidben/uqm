@@ -1611,7 +1611,7 @@ DoMelee (INPUT_STATE InputState, PMELEE_STATE pMS)
 							;
 
 						SeedRandomNumbers ();
-						load_gravity_well ((BYTE)((COUNT)Random () % NUMBER_OF_PLANET_TYPES));
+						load_gravity_well ((BYTE)((COUNT)TFB_Random () % NUMBER_OF_PLANET_TYPES));
 						Battle ();
 						free_gravity_well ();
 

@@ -106,7 +106,7 @@ BuildBattle (COUNT which_player)
 				load_gravity_well (NUMBER_OF_PLANET_TYPES);
 				break;
 			case IN_HYPERSPACE:
-				load_gravity_well ((BYTE)((COUNT)Random ()
+				load_gravity_well ((BYTE)((COUNT)TFB_Random ()
 						% NUMBER_OF_PLANET_TYPES));
 				break;
 			default:

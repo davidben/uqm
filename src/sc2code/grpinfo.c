@@ -162,7 +162,7 @@ BuildGroups (void)
 							* 60L / encounter_radius);
 				}
 
-				rand_val = Random ();
+				rand_val = TFB_Random ();
 				if ((int)(LOWORD (rand_val) % 100) < (int)i
 						&& (BestPercent == 0
 						|| (HIWORD (rand_val) % (i + BestPercent)) < i))
@@ -192,7 +192,7 @@ FoundHome:
 		};
 
 		which_group = 0;
-		num_groups = ((COUNT)Random () % (BestPercent >> 1)) + 1;
+		num_groups = ((COUNT)TFB_Random () % (BestPercent >> 1)) + 1;
 		if (num_groups > (MAX_BATTLE_GROUPS >> 1))
 			num_groups = (MAX_BATTLE_GROUPS >> 1);
 		else if (num_groups < 5
@@ -204,7 +204,7 @@ FoundHome:
 			for (Index = HINIBBLE (EncounterMakeup[BestIndex]); Index; --Index)
 			{
 				if (Index <= LONIBBLE (EncounterMakeup[BestIndex])
-						|| (COUNT)Random () % 100 < 50)
+						|| (COUNT)TFB_Random () % 100 < 50)
 					CloneShipFragment (
 							BestIndex, &GLOBAL (npc_built_ship_q), 0
 							);
@@ -417,7 +417,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 						OwnStarShip (FragPtr, BAD_GUY, 0);
 						SET_GROUP_ID (FragPtr, which_group);
 
-						rand_val = Random ();
+						rand_val = TFB_Random ();
 						task = (BYTE)(LOBYTE (LOWORD (rand_val)) % ON_STATION);
 						if (task == FLEE)
 							task = ON_STATION;
@@ -432,14 +432,14 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 									HIBYTE (LOWORD (rand_val)) % group_loc
 									) + 1);
 						SET_GROUP_DEST (FragPtr, group_loc);
-						rand_val = Random ();
+						rand_val = TFB_Random ();
 						FragPtr->ShipInfo.loc.x =
 								(LOWORD (rand_val) % 10000) - 5000;
 						FragPtr->ShipInfo.loc.y =
 								(HIWORD (rand_val) % 10000) - 5000;
 						if (task == EXPLORE)
 							FragPtr->ShipInfo.group_counter =
-									((COUNT)Random ()
+									((COUNT)TFB_Random ()
 									% MAX_REVOLUTIONS)
 									<< FACING_SHIFT;
 						else
@@ -491,7 +491,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 				if (offset)
 					InitGroupInfo (FALSE);
-						/* Random battle group */
+						/* TFB_Random battle group */
 				else if (ValidateEvent (ABSOLUTE_EVENT, /* still fresh */
 						&month_index, &day_index, &year_index))
 				{

@@ -138,7 +138,7 @@ laser_death (ELEMENTPTR ElementPtr)
 				- ShipPtr->current.location.x;
 		dy = ElementPtr->current.location.y
 				- ShipPtr->current.location.y;
-		if (((BYTE)Random () & 0x07)
+		if (((BYTE)TFB_Random () & 0x07)
 				&& (dist = (long)dx * dx + (long)dy * dy) >=
 				(long)DISPLAY_TO_WORLD (CHMMR_OFFSET + 10)
 				* DISPLAY_TO_WORLD (CHMMR_OFFSET + 10)
@@ -155,7 +155,7 @@ laser_death (ELEMENTPTR ElementPtr)
 			IonSpotsPtr->life_span = 9;
 
 			angle = ARCTAN (dx, dy);
-			magnitude = ((COUNT)Random ()
+			magnitude = ((COUNT)TFB_Random ()
 					% ((square_root (dist) + 1)
 					- DISPLAY_TO_WORLD (CHMMR_OFFSET + 10)))
 					+ DISPLAY_TO_WORLD (CHMMR_OFFSET + 10);
@@ -684,7 +684,7 @@ spawn_satellites (PELEMENT ElementPtr)
 						StarShipPtr->RaceDescPtr->ship_data.special;
 				SattPtr->current.image.frame = SetAbsFrameIndex (
 						StarShipPtr->RaceDescPtr->ship_data.special[0],
-						(COUNT)Random () & 0x07
+						(COUNT)TFB_Random () & 0x07
 						);
 
 				SattPtr->preprocess_func = satellite_preprocess;

@@ -140,7 +140,7 @@ generate_tractors (void)
 		which_node = i = 0;
 		do
 		{
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			pSolarSysState->SysInfo.PlanetInfo.CurPt.x =
 					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
 			pSolarSysState->SysInfo.PlanetInfo.CurPt.y =
@@ -465,7 +465,7 @@ GenerateSOL (BYTE control)
 					pSolarSysState->MoonDesc[1].data_index = SELENIC_WORLD;
 					pSolarSysState->MoonDesc[1].radius = MIN_MOON_RADIUS
 							+ (MAX_MOONS - 1) * MOON_DELTA;
-					rand_val = Random ();
+					rand_val = TFB_Random ();
 					angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 					pSolarSysState->MoonDesc[1].location.x =
 							COSINE (angle, pSolarSysState->MoonDesc[1].radius);
@@ -499,7 +499,7 @@ GenerateSOL (BYTE control)
 				COUNT angle;
 				UWORD word_val;
 
-				pCurDesc->rand_seed = rand_val = Random ();
+				pCurDesc->rand_seed = rand_val = TFB_Random ();
 				word_val = LOWORD (rand_val);
 				angle = NORMALIZE_ANGLE ((COUNT)HIBYTE (word_val));
 

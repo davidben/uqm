@@ -41,9 +41,9 @@
 #define SFASTRAND(n) ( (int)_FAST_ % (n) )
 #define AND_FASTRAND(n) ( (int)_FAST_ & (n) )
 
-#define RAND(n) ( (int) ( (unsigned int)Random() % (n) ) )
-#define SRAND(n) ( (int)Random() % (n) )
-#define AND_RAND(n) ( (int)Random() & (n) )
+#define RAND(n) ( (int) ( (unsigned int)TFB_Random() % (n) ) )
+#define SRAND(n) ( (int)TFB_Random() % (n) )
+#define AND_RAND(n) ( (int)TFB_Random() & (n) )
 
 #define INDEXED_RANDOM(x) (random_table[x])
 

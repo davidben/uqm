@@ -189,7 +189,7 @@ ExitConversation (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, bye_space))
 	{
-		if ((BYTE)Random () & 1)
+		if ((BYTE)TFB_Random () & 1)
 			NPCPhrase (GOODBYE_AND_DIE_SPACE);
 		else
 		{

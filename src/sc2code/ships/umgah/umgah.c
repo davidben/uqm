@@ -227,7 +227,7 @@ COUNT ConcernCounter;
 				/* don't want him backing straight into ship */
 				if (this_turn <= 8 && LinedUp)
 				{
-					if (Random () & 1)
+					if (TFB_Random () & 1)
 						StarShipPtr->ship_input_state |= LEFT;
 					else
 						StarShipPtr->ship_input_state |= RIGHT;

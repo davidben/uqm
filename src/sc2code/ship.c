@@ -426,7 +426,7 @@ spawn_ship (STARSHIPPTR
 		}
 		else
 		{
-			StarShipPtr->ShipFacing = NORMALIZE_FACING (Random ());
+			StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 			{
 				COUNT facing;
@@ -445,9 +445,9 @@ spawn_ship (STARSHIPPTR
 			do
 			{
 				ShipElementPtr->current.location.x =
-						WRAP_X (DISPLAY_ALIGN_X (Random ()));
+						WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
 				ShipElementPtr->current.location.y =
-						WRAP_Y (DISPLAY_ALIGN_Y (Random ()));
+						WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 			} while (CalculateGravity (ShipElementPtr)
 					|| TimeSpaceMatterConflict (ShipElementPtr));
 		}

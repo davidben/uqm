@@ -265,10 +265,10 @@ ModifySilhouette (ELEMENTPTR
 		ShipIntersect.EndPoint = ShipIntersect.IntersectStamp.origin;
 		do
 		{
-			ObjectIntersect.IntersectStamp.origin.x = ((COUNT)Random ()
+			ObjectIntersect.IntersectStamp.origin.x = ((COUNT)TFB_Random ()
 					% (r.extent.width - or.extent.width))
 					+ ((or.extent.width - r.extent.width) >> 1);
-			ObjectIntersect.IntersectStamp.origin.y = ((COUNT)Random ()
+			ObjectIntersect.IntersectStamp.origin.y = ((COUNT)TFB_Random ()
 					% (r.extent.height - or.extent.height))
 					+ ((or.extent.height - r.extent.height) >> 1);
 			ObjectIntersect.EndPoint =
@@ -384,7 +384,7 @@ CheckTracking:
 
 		facing = *pfacing;
 		if (best_delta_facing == ANGLE_TO_FACING (HALF_CIRCLE))
-			facing += (((BYTE)Random () & 1) << 1) - 1;
+			facing += (((BYTE)TFB_Random () & 1) << 1) - 1;
 		else if (best_delta_facing < ANGLE_TO_FACING (HALF_CIRCLE))
 			++facing;
 		else

@@ -37,7 +37,7 @@ GenerateSpathi (BYTE control)
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
-				rand_val = Random ();
+				rand_val = TFB_Random ();
 				pSolarSysState->SysInfo.PlanetInfo.CurPt.x =
 						(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
 				pSolarSysState->SysInfo.PlanetInfo.CurPt.y =
@@ -74,7 +74,7 @@ GenerateSpathi (BYTE control)
 
 				pSolarSysState->MoonDesc[0].data_index = PELLUCID_WORLD;
 				pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS + MOON_DELTA;
-				angle = NORMALIZE_ANGLE (LOWORD (Random ()));
+				angle = NORMALIZE_ANGLE (LOWORD (TFB_Random ()));
 				pSolarSysState->MoonDesc[0].location.x =
 						COSINE (angle, pSolarSysState->MoonDesc[0].radius);
 				pSolarSysState->MoonDesc[0].location.y =
@@ -113,7 +113,7 @@ GenerateSpathi (BYTE control)
 				which_node = i = 0;
 				do
 				{
-					rand_val = Random ();
+					rand_val = TFB_Random ();
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.x =
 							(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.y =

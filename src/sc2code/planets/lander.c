@@ -247,7 +247,7 @@ object_animation (PELEMENT ElementPtr)
 			
 			if (ElementPtr->mass_points == LAVASPOT_DISASTER
 					&& frame_index == 5
-					&& (BYTE)Random () < 256 * 90 / 100)
+					&& (BYTE)TFB_Random () < 256 * 90 / 100)
 			{
 				HELEMENT hLavaElement;
 
@@ -270,7 +270,7 @@ object_animation (PELEMENT ElementPtr)
 					else
 						LavaElementPtr->next.location.x %= MAP_WIDTH << MAG_SHIFT;
 					LavaElementPtr->hit_points = NORMALIZE_FACING (
-							ElementPtr->hit_points + ((COUNT)Random () % 3) - 1
+							ElementPtr->hit_points + ((COUNT)TFB_Random () % 3) - 1
 							);
 					UnlockElement (hLavaElement);
 				}
@@ -312,7 +312,7 @@ object_animation (PELEMENT ElementPtr)
 					DetectPercent = (((BYTE)(CreatureData[index].Attributes
 							& AWARENESS_MASK) >> AWARENESS_SHIFT) + 1)
 							* (30 / 6);
-					if (((BYTE)Random () % 100) < DetectPercent)
+					if (((BYTE)TFB_Random () % 100) < DetectPercent)
 					{
 						ElementPtr->thrust_wait = 0;
 						ElementPtr->mass_points |= CREATURE_AWARE;
@@ -336,7 +336,7 @@ object_animation (PELEMENT ElementPtr)
 				{
 					COUNT rand_val;
 
-					rand_val = (COUNT)Random ();
+					rand_val = (COUNT)TFB_Random ();
 					angle = NORMALIZE_ANGLE (LOBYTE (rand_val));
 					ElementPtr->thrust_wait =
 							(HIBYTE (rand_val) >> 2) + 10;
@@ -354,7 +354,7 @@ object_animation (PELEMENT ElementPtr)
 								|| old_angle == (FULL_CIRCLE - QUADRANT))
 							angle = old_angle;
 						else
-							angle = (((COUNT)Random () & 1)
+							angle = (((COUNT)TFB_Random () & 1)
 										* HALF_CIRCLE) - QUADRANT;
 						ElementPtr->thrust_wait = 5;
 					}
@@ -412,7 +412,7 @@ DeltaLanderCrew (SIZE crew_delta, COUNT which_disaster)
 		ShieldFlags = GET_GAME_STATE (LANDER_SHIELDS);
 		ShieldFlags &= 1 << which_disaster;
 		crew_delta = HIBYTE (pMenuState->delta_item);
-		if (ShieldFlags && (BYTE)Random () < 256 * 95 / 100)
+		if (ShieldFlags && (BYTE)TFB_Random () < 256 * 95 / 100)
 			pMenuState->delta_item = SHIELD_BIT;
 		else
 		{
@@ -570,7 +570,7 @@ CheckObjectCollision (COUNT index)
 							{
 								case EARTHQUAKE_DISASTER:
 								case LAVASPOT_DISASTER:
-									if ((BYTE)Random () < (256 >> 2))
+									if ((BYTE)TFB_Random () < (256 >> 2))
 										DeltaLanderCrew (-1, scan);
 									break;
 							}
@@ -621,7 +621,7 @@ CheckObjectCollision (COUNT index)
 								0, 6, 13, 26
 							};
 
-							if (((COUNT)Random () & 127) < danger_vals[
+							if (((COUNT)TFB_Random () & 127) < danger_vals[
 									(CreatureData[
 											ElementPtr->mass_points
 											& ~CREATURE_AWARE
@@ -845,7 +845,7 @@ lightning_process (PELEMENT ElementPtr)
 			if (ElementPtr->mass_points == LIGHTNING_DISASTER)
 			{
 				if (HIBYTE (pMenuState->delta_item)
-						&& (BYTE)Random () < (256 / 10)
+						&& (BYTE)TFB_Random () < (256 / 10)
 						&& !(
 						(PPLANETSIDE_DESC)pMenuState->ModuleFrame
 						)->InTransit)
@@ -857,7 +857,7 @@ lightning_process (PELEMENT ElementPtr)
 
 			pPrim->Object.Stamp.frame =
 					 SetAbsFrameIndex (pPrim->Object.Stamp.frame,
-					 (COUNT)Random () % num_frames);
+					 (COUNT)TFB_Random () % num_frames);
 		}
 
 		ElementPtr->turn_wait += HINIBBLE (ElementPtr->turn_wait);
@@ -882,12 +882,12 @@ AddLightning (void)
 
 		LightningElementPtr->state_flags = FINITE_LIFE | BAD_GUY;
 		LightningElementPtr->preprocess_func = lightning_process;
-		if ((BYTE)Random () >= (256 >> 2))
+		if ((BYTE)TFB_Random () >= (256 >> 2))
 			LightningElementPtr->mass_points = 0;
 		else
 			LightningElementPtr->mass_points = LIGHTNING_DISASTER;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 		LightningElementPtr->life_span = 10 + (HIWORD (rand_val) % 10) + 1;
 		LightningElementPtr->next.location.x = (
 				pSolarSysState->MenuState.first_item.x
@@ -935,7 +935,7 @@ AddGroundDisaster (COUNT which_disaster)
 		GroundDisasterElementPtr->state_flags = FINITE_LIFE | BAD_GUY;
 		GroundDisasterElementPtr->preprocess_func = object_animation;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 		GroundDisasterElementPtr->next.location.x = (
 				pSolarSysState->MenuState.first_item.x
 				+ ((MAP_WIDTH << MAG_SHIFT) - (SURFACE_WIDTH * 3 / 8))
@@ -958,7 +958,7 @@ AddGroundDisaster (COUNT which_disaster)
 		{
 			SetPrimType (pPrim, STAMP_PRIM);
 			GroundDisasterElementPtr->hit_points =
-					NORMALIZE_FACING (Random ());
+					NORMALIZE_FACING (TFB_Random ());
 			pPrim->Object.Stamp.frame = LanderFrame[3];
 			GroundDisasterElementPtr->turn_wait = MAKE_BYTE (0, 0);
 		}
@@ -987,7 +987,7 @@ BuildObjectList (void)
 	lander_flags &= ~KILL_CREW;
 
 	pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
-	rand_val = Random ();
+	rand_val = TFB_Random ();
 	if (LOBYTE (HIWORD (rand_val)) < pPSD->FireChance)
 	{
 		AddGroundDisaster (LAVASPOT_DISASTER);
@@ -1470,14 +1470,14 @@ InitPlanetSide (void)
 	pt = pSolarSysState->MenuState.first_item;
 
 	// Jitter the X landing point.
-	pt.x -= RANDOM_MISS - (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	pt.x -= RANDOM_MISS - (SIZE)(LOWORD (TFB_Random ()) % (RANDOM_MISS << 1));
 	if (pt.x < 0)
 		pt.x += (MAP_WIDTH << MAG_SHIFT);
 	else if (pt.x >= (MAP_WIDTH << MAG_SHIFT))
 		pt.x -= (MAP_WIDTH << MAG_SHIFT);
 
 	// Jitter the Y landing point.
-	pt.y -= RANDOM_MISS - (SIZE)(LOWORD (Random ()) % (RANDOM_MISS << 1));
+	pt.y -= RANDOM_MISS - (SIZE)(LOWORD (TFB_Random ()) % (RANDOM_MISS << 1));
 	if (pt.y < 0)
 		pt.y = 0;
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
@@ -1931,7 +1931,7 @@ PlanetSide (PMENU_STATE pMS)
 	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 1] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F);
 	pMS->ModuleFrame = (FRAME)&PSD;
 
-	index = NORMALIZE_FACING ((COUNT)Random ());
+	index = NORMALIZE_FACING ((COUNT)TFB_Random ());
 	LanderFrame[0] = SetAbsFrameIndex (
 			LanderFrame[0], index
 			);

@@ -170,7 +170,7 @@ arilou_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 					|| (IsTrackingWeapon && (lpEvalDesc->which_turn == 1
 					|| (lpEvalDesc->ObjectPtr->state_flags & CREW_OBJECT))) /* FIGHTERS!!! */
 					|| PlotIntercept (lpEvalDesc->ObjectPtr, ShipPtr, 3, 0))
-					&& !(Random () & 3))
+					&& !(TFB_Random () & 3))
 			{
 				StarShipPtr->ship_input_state &= ~(LEFT | RIGHT | THRUST | WEAPON);
 				StarShipPtr->ship_input_state |= SPECIAL;
@@ -262,9 +262,9 @@ arilou_preprocess (PELEMENT ElementPtr)
 			else
 			{
 				ElementPtr->next.location.x =
-						WRAP_X (DISPLAY_ALIGN_X (Random ()));
+						WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
 				ElementPtr->next.location.y =
-						WRAP_Y (DISPLAY_ALIGN_Y (Random ()));
+						WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 			}
 		}
 

@@ -206,7 +206,7 @@ explosion_preprocess (PELEMENT ShipPtr)
 			SetPrimType (&DisplayArray[ElementPtr->PrimIndex], STAMP_PRIM);
 			ElementPtr->current.image.farray = explosion;
 			ElementPtr->current.image.frame = explosion[0];
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			angle = LOBYTE (HIWORD (rand_val));
 			dist = DISPLAY_TO_WORLD (LOBYTE (LOWORD (rand_val)) % 8);
 			if (HIBYTE (LOWORD (rand_val)) < 256 * 1 / 3)
@@ -218,7 +218,7 @@ explosion_preprocess (PELEMENT ShipPtr)
 					ShipPtr->current.location.y
 					+ SINE (angle, dist);
 			ElementPtr->preprocess_func = animation_preprocess;
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			angle = LOBYTE (LOWORD (rand_val));
 			dist = WORLD_TO_VELOCITY (
 					DISPLAY_TO_WORLD (HIBYTE (LOWORD (rand_val)) % 5)

@@ -21,7 +21,7 @@
 * DESC: a library of random number generators for general purpose use.
 *
 * References:
-* "Random Number Generators: Good ones are hard to find" S.K.Park & K.W.Miller
+* "TFB_Random Number Generators: Good ones are hard to find" S.K.Park & K.W.Miller
 * Communications of the ACM, Vol31 Number 10, October 1988, Pp 1192-1201
 *
 * HISTORY: Created 1/23/1989
@@ -48,7 +48,7 @@ static DWORD seed = 12345L; /* random number seed */
 /* ----------------------------CODE--------------------------------------- */
 
 /*****************************************************************************
-* FUNC: DWORD Random()
+* FUNC: DWORD TFB_Random()
 *
 * DESC: random number generator
 *
@@ -59,7 +59,7 @@ static DWORD seed = 12345L; /* random number seed */
 *****************************************************************************/
 
 DWORD
-Random (void)
+TFB_Random (void)
 {
 	if ((seed = A * (seed % Q) - R * (seed / Q)) > M)
 		return (seed -= M);

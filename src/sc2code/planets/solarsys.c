@@ -191,7 +191,7 @@ LoadSolarSys (void)
 
 	pCurDesc = &pSolarSysState->SunDesc[0];
 	pCurDesc->pPrevDesc = 0;
-	pCurDesc->rand_seed = Random ();
+	pCurDesc->rand_seed = TFB_Random ();
 
 	pCurDesc->data_index = STAR_TYPE (CurStarDescPtr->Type);
 	pCurDesc->location.x = pCurDesc->location.y = 0;
@@ -1595,7 +1595,7 @@ GenerateRandomIP (BYTE control)
 				BYTE byte_val;
 				BYTE num_moons;
 
-				rand_val = Random ();
+				rand_val = TFB_Random ();
 				byte_val = LOBYTE (rand_val);
 
 				num_moons = 0;
@@ -1780,7 +1780,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 #define NUM_DIM_DRAWN 5
 		for (j = 0; j < NUM_DIM_DRAWN; ++j)
 		{
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 
@@ -1794,7 +1794,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 #define NUM_BRT_DRAWN 30
 		for (j = 0; j < NUM_BRT_DRAWN; ++j)
 		{
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 

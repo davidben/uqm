@@ -51,7 +51,7 @@ seed_fast_random(DWORD seed)
 		retval = SeedRandom(seed);
 
 		for( index = 0; index < TABLE_SIZE; index++ )
-				random_table[index] = Random();
+				random_table[index] = TFB_Random();
 
 		fast_index = 0; /* must be set to the start of the table for
 														repeatability... */
@@ -95,7 +95,7 @@ fast_random()
 void
 reseed_fast_random()
 {
-		fast_index = (COUNT)(Random() % TABLE_SIZE);
+		fast_index = (COUNT)(TFB_Random() % TABLE_SIZE);
 		
 }
 

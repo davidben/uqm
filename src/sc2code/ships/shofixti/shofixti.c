@@ -332,7 +332,7 @@ COUNT ConcernCounter;
 					&& ShipPtr->crew_level == 1)
 					|| (PlotIntercept (lpWeaponEvalDesc->ObjectPtr, ShipPtr, 2, 0)
 					&& lpWeaponEvalDesc->ObjectPtr->mass_points >= ShipPtr->crew_level
-					&& (Random () & 1))))))
+					&& (TFB_Random () & 1))))))
 				StarShipPtr->ship_input_state |= SPECIAL;
 		}
 	}

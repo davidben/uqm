@@ -271,7 +271,7 @@ COUNT ConcernCounter;
 			{
 				StarShipPtr->ship_input_state |= SPECIAL;
 				if (delta_facing == ANGLE_TO_FACING (HALF_CIRCLE))
-					delta_facing += (((BYTE)Random () & 1) << 1) - 1;
+					delta_facing += (((BYTE)TFB_Random () & 1) << 1) - 1;
 
 				if (delta_facing < ANGLE_TO_FACING (HALF_CIRCLE))
 					StarShipPtr->ship_input_state |= RIGHT;
@@ -413,7 +413,7 @@ LeftShip:
 
 				ElementPtr->thrust_wait = MARINE_WAIT;
 
-				randval = (BYTE)Random ();
+				randval = (BYTE)TFB_Random ();
 				if (randval < (0x0100 / 16))
 				{
 					ElementPtr->life_span = 0;
@@ -461,7 +461,7 @@ LeftShip:
 						);
 		ElementPtr->thrust_wait = 0;
 		ElementPtr->turn_wait =
-				MAKE_BYTE (0, NORMALIZE_FACING ((BYTE)Random ()));
+				MAKE_BYTE (0, NORMALIZE_FACING ((BYTE)TFB_Random ()));
 		ElementPtr->preprocess_func = marine_preprocess;
 	}
 }
@@ -569,7 +569,7 @@ PELEMENT ElementPtr;
 				else
 				{
 					if (delta_facing == ANGLE_TO_FACING (OCTANT))
-						facing += (((SIZE)Random () & 1) << 1) - 1;
+						facing += (((SIZE)TFB_Random () & 1) << 1) - 1;
 					else if (delta_facing < ANGLE_TO_FACING (OCTANT))
 						++facing;
 					else
@@ -615,7 +615,7 @@ PELEMENT ElementPtr;
 				if (delta_facing > 0)
 				{
 					if (delta_facing == ANGLE_TO_FACING (HALF_CIRCLE))
-						facing += (((BYTE)Random () & 1) << 1) - 1;
+						facing += (((BYTE)TFB_Random () & 1) << 1) - 1;
 					else if (delta_facing < ANGLE_TO_FACING (HALF_CIRCLE))
 						++facing;
 					else
@@ -750,7 +750,7 @@ marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 			else if ((ElementPtr0->state_flags & IGNORE_SIMILAR)
 					&& ElementPtr1->crew_level
 #ifdef NEVER
-					&& (BYTE)Random () <= (0x0100 / 3)
+					&& (BYTE)TFB_Random () <= (0x0100 / 3)
 #endif /* NEVER */
 					)
 			{

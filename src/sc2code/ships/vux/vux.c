@@ -165,7 +165,7 @@ limpet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 						/* LIMPET_AFFIXES */
 				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2));
 		s.frame = SetAbsFrameIndex (
-				StarShipPtr->RaceDescPtr->ship_data.weapon[0], (COUNT)Random ()
+				StarShipPtr->RaceDescPtr->ship_data.weapon[0], (COUNT)TFB_Random ()
 				);
 		ModifySilhouette (ElementPtr1, &s, MODIFY_IMAGE);
 	}
@@ -322,11 +322,11 @@ vux_preprocess (PELEMENT ElementPtr)
 				ElementPtr->current.location.x =
 						(OtherShipPtr->current.location.x -
 						(MAXX_ENTRY_DIST >> 1)) +
-						((COUNT)Random () % MAXX_ENTRY_DIST);
+						((COUNT)TFB_Random () % MAXX_ENTRY_DIST);
 				ElementPtr->current.location.y =
 						(OtherShipPtr->current.location.y -
 						(MAXY_ENTRY_DIST >> 1)) +
-						((COUNT)Random () % MAXY_ENTRY_DIST);
+						((COUNT)TFB_Random () % MAXY_ENTRY_DIST);
 				dx = OtherShipPtr->current.location.x -
 						ElementPtr->current.location.x;
 				dy = OtherShipPtr->current.location.y -

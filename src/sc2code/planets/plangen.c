@@ -709,7 +709,7 @@ DitherMap (PSBYTE DepthArray)
 	{
 		DWORD rand_val;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
 				- (LOBYTE (LOWORD (rand_val)) & ((1 << (RANGE_SHIFT - 3)) - 1)));
 		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
@@ -936,7 +936,7 @@ MakeStorms (COUNT storm_count, PSBYTE DepthArray)
 
 			intersect = FALSE;
 
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			loword = LOWORD (rand_val);
 			hiword = HIWORD (rand_val);
 			switch (HIBYTE (hiword) & 31)
@@ -964,7 +964,7 @@ MakeStorms (COUNT storm_count, PSBYTE DepthArray)
 			if (pstorm_r->extent.height <= 4)
 				pstorm_r->extent.height += 4;
 
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			loword = LOWORD (rand_val);
 			hiword = HIWORD (rand_val);
 
@@ -1053,7 +1053,7 @@ MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
 	band_error = num_bands >> 1;
 	lpDst = DepthArray;
 
-	band_delta = ((LOWORD (Random ())
+	band_delta = ((LOWORD (TFB_Random ())
 			& (NUM_BAND_COLORS - 1)) << RANGE_SHIFT)
 			+ (1 << (RANGE_SHIFT - 1));
 	last_y = next_y = 0;
@@ -1061,7 +1061,7 @@ MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
 	{
 		COORD cur_y;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 		loword = LOWORD (rand_val);
 		hiword = HIWORD (rand_val);
 
@@ -1102,7 +1102,7 @@ MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
 				& (((1 << RANGE_SHIFT) * NUM_BAND_COLORS) - 1);
 	}
 
-	MakeStorms ((COUNT)(4 + ((COUNT)Random () & 3) + 1), DepthArray);
+	MakeStorms ((COUNT)(4 + ((COUNT)TFB_Random () & 3) + 1), DepthArray);
 
 	DitherMap (DepthArray);
 }
@@ -1224,7 +1224,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 						RECT crater_r;
 						UWORD loword;
 				
-						loword = LOWORD (Random ());
+						loword = LOWORD (TFB_Random ());
 						switch (HIBYTE (loword) & 31)
 						{
 							case 0:
@@ -1247,7 +1247,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 								break;
 						}
 					
-						loword = LOWORD (Random ());
+						loword = LOWORD (TFB_Random ());
 						crater_r.extent.height = crater_r.extent.width;
 						crater_r.corner.x = HIBYTE (loword)
 								% (MAP_WIDTH - crater_r.extent.width);

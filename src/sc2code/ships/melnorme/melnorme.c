@@ -456,7 +456,7 @@ confusion_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PP
 
 			ConfusionPtr->life_span = 400;
 			ConfusionPtr->turn_wait =
-					(BYTE)(1 << ((BYTE)Random () & 1)); /* LEFT or RIGHT */
+					(BYTE)(1 << ((BYTE)TFB_Random () & 1)); /* LEFT or RIGHT */
 
 			UnlockElement (hConfusionElement);
 		}

@@ -163,7 +163,7 @@ RESPONSE_REF R;
 	{
 		RESPONSE_REF pStr0, pStr1;
 		
-		switch ((BYTE)Random () & 7)
+		switch ((BYTE)TFB_Random () & 7)
 		{
 			case 0:
 				pStr0 = NORMAL_GOODBYE_A0;
@@ -1572,7 +1572,7 @@ CheckBulletins (BOOLEAN Repeat)
 					pIntro = BEFORE_WE_GO_ON_1;
 				else
 				{
-					switch ((BYTE)Random () % 7)
+					switch ((BYTE)TFB_Random () % 7)
 					{
 						case 0:
 							pIntro = BEFORE_WE_GO_ON_1;
@@ -1656,7 +1656,7 @@ NormalStarbase (RESPONSE_REF R)
 		{
 			RESPONSE_REF pStr0, pStr1;
 
-			switch ((BYTE)Random () & 7)
+			switch ((BYTE)TFB_Random () & 7)
 			{
 				case 0:
 					pStr0 = NORMAL_HELLO_A0;

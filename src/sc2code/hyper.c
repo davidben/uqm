@@ -227,7 +227,7 @@ percent = 0;
 					&& (COUNT)dy < encounter_radius
 					&& (DWORD)dx * dx + (DWORD)dy * dy <
 					(DWORD)encounter_radius * encounter_radius
-					&& ((COUNT)Random () % 100) < percent)
+					&& ((COUNT)TFB_Random () % 100) < percent)
 			{
 #ifndef DEBUG
 				char buf[20];
@@ -794,7 +794,7 @@ AddAmbientElement (void)
 		SetPrimType (&DisplayArray[HyperSpaceElementPtr->PrimIndex], STAMP_PRIM);
 		HyperSpaceElementPtr->preprocess_func = animation_preprocess;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 		dy = LOWORD (rand_val);
 		dx = (SIZE)(LOBYTE (dy) % SPACE_WIDTH) - (SPACE_WIDTH >> 1);
 		dy = (SIZE)(HIBYTE (dy) % SPACE_HEIGHT) - (SPACE_HEIGHT >> 1);
@@ -941,7 +941,7 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 		NumShips = LONIBBLE (EncounterMakeup[Type]);
 		for (i = HINIBBLE (EncounterMakeup[Type]) - NumShips; i; --i)
 		{
-			if ((COUNT)Random () % 100 < 50)
+			if ((COUNT)TFB_Random () % 100 < 50)
 				++NumShips;
 		}
 
@@ -975,7 +975,7 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 		{
 			DWORD rand_val;
 
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 
 			SD.star_pt.x = puniverse->x
 					+ (LOWORD (rand_val) % (XOFFS << 1)) - XOFFS;
@@ -1527,7 +1527,7 @@ SeedUniverse (void)
 
 	SetContext (StatusContext);
 
-	if (!(LOWORD (Random ()) & 7))
+	if (!(LOWORD (TFB_Random ()) & 7))
 		AddAmbientElement ();
 
 	if (universe.x != GLOBAL (ShipStamp.origin.x)

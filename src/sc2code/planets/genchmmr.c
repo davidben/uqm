@@ -33,7 +33,7 @@ GenerateChmmr (BYTE control)
 
 				pSolarSysState->MoonDesc[0].data_index = (BYTE)~0;
 				pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS;
-				rand_val = Random ();
+				rand_val = TFB_Random ();
 				angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 				pSolarSysState->MoonDesc[0].location.x =
 						COSINE (angle, pSolarSysState->MoonDesc[0].radius);

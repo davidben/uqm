@@ -263,7 +263,7 @@ enum
 };
 
 #define CalcGravity(d,r) (UWORD)((DWORD)(d) * (r) / 100)
-#define CalcFromBase(b,v) ((UWORD)(b) + ((UWORD)Random () % (v)))
+#define CalcFromBase(b,v) ((UWORD)(b) + ((UWORD)TFB_Random () % (v)))
 
 #define PLANET_INFOPTR PPLANET_INFO
 

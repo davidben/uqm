@@ -193,7 +193,7 @@ CalcRotation (PLANET_INFOPTR PlanetInfoPtr)
 {
 	if (PLANSIZE (PlanetInfoPtr->PlanDataPtr->Type) == GAS_GIANT)
 		return ((COUNT)CalcFromBase (80, 80));
-	else if (((BYTE)Random () % 10) == 0)
+	else if (((BYTE)TFB_Random () % 10) == 0)
 		return ((COUNT)CalcFromBase ((UWORD)50 * 240, (UWORD)200 * 240));
 	else
 		return ((COUNT)CalcFromBase (150, 150));
@@ -211,7 +211,7 @@ CalcTilt (void)
 	i = NUM_TOSSES;
 	do /* Using added Randomom values to give bell curve */
 	{
-		tilt += (UWORD)Random () % ((TILT_RANGE / NUM_TOSSES) + 1);
+		tilt += (UWORD)TFB_Random () % ((TILT_RANGE / NUM_TOSSES) + 1);
 	} while (--i);
 
 	return (tilt);
@@ -292,7 +292,7 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 		}
 		SysInfoPtr->PlanetInfo.PlanetDensity +=
 				(SysInfoPtr->PlanetInfo.PlanetDensity / 20)
-				- ((COUNT)Random ()
+				- ((COUNT)TFB_Random ()
 				% (SysInfoPtr->PlanetInfo.PlanetDensity / 10));
 
 		switch (PLANSIZE (SysInfoPtr->PlanetInfo.PlanDataPtr->Type))

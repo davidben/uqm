@@ -1120,7 +1120,7 @@ GeneratePlanetSide (void)
 
 							if (CreatureData[which_node].Attributes & SPEED_MASK)
 							{
-								i = (COUNT)Random ();
+								i = (COUNT)TFB_Random ();
 								NodeElementPtr->current.location.x =
 										(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
 								NodeElementPtr->current.location.y =
@@ -1159,7 +1159,7 @@ GeneratePlanetSide (void)
 							DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
 									SetAbsFrameIndex (
 									pSolarSysState->PlanetSideFrame[i + 3],
-									(COUNT)Random ()
+									(COUNT)TFB_Random ()
 									);
 						}
 					}

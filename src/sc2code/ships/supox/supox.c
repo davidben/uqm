@@ -162,7 +162,7 @@ COUNT ConcernCounter;
 		StarShipPtr->ship_input_state &= ~THRUST;
 		StarShipPtr->ship_input_state |= SPECIAL;
 		if (!(StarShipPtr->cur_status_flags & (LEFT | RIGHT)))
-			StarShipPtr->ship_input_state |= 1 << ((BYTE)Random () & 1);
+			StarShipPtr->ship_input_state |= 1 << ((BYTE)TFB_Random () & 1);
 		else
 			StarShipPtr->ship_input_state |=
 					StarShipPtr->cur_status_flags & (LEFT | RIGHT);

@@ -35,7 +35,7 @@
 		(BYTE)HIWORD ((S)->RaceDescPtr)
 #define StarShipPlayer(S) \
 		(COUNT)LOWORD ((S)->RaceDescPtr)
-#define PickCaptainName() (((COUNT)Random () \
+#define PickCaptainName() (((COUNT)TFB_Random () \
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)
 

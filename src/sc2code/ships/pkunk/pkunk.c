@@ -192,7 +192,7 @@ COUNT ConcernCounter;
 	if (StarShipPtr->RaceDescPtr->ship_info.energy_level <
 			StarShipPtr->RaceDescPtr->ship_info.max_energy
 			&& (StarShipPtr->special_counter == 0
-			|| (BYTE)Random () < 20))
+			|| (BYTE)TFB_Random () < 20))
 		StarShipPtr->ship_input_state |= SPECIAL;
 	else
 		StarShipPtr->ship_input_state &= ~SPECIAL;
@@ -249,7 +249,7 @@ new_pkunk (PELEMENT ElementPtr)
 				ElementPtr->turn_wait = ElementPtr->thrust_wait = 0;
 		ElementPtr->life_span = NORMAL_LIFE;
 
-		StarShipPtr->ShipFacing = NORMALIZE_FACING (Random ());
+		StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
 		ElementPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.ship;
 		ElementPtr->current.image.frame =
 				SetAbsFrameIndex (StarShipPtr->RaceDescPtr->ship_data.ship[0],
@@ -261,9 +261,9 @@ new_pkunk (PELEMENT ElementPtr)
 		do
 		{
 			ElementPtr->current.location.x =
-					WRAP_X (DISPLAY_ALIGN_X (Random ()));
+					WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
 			ElementPtr->current.location.y =
-					WRAP_Y (DISPLAY_ALIGN_Y (Random ()));
+					WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 		} while (CalculateGravity (ElementPtr)
 				|| TimeSpaceMatterConflict (ElementPtr));
 
@@ -440,7 +440,7 @@ PELEMENT ElementPtr;
 	{
 		ELEMENTPTR PhoenixPtr;
 
-		if (((BYTE)Random () & 1)
+		if (((BYTE)TFB_Random () & 1)
 				&& (hPhoenix = AllocElement ()))
 		{
 
@@ -530,7 +530,7 @@ PELEMENT ElementPtr;
 		do
 		{
 			CurSound =
-					2 + ((COUNT)Random ()
+					2 + ((COUNT)TFB_Random ()
 					% (GetSoundCount (StarShipPtr->RaceDescPtr->ship_data.ship_sounds) - 2));
 		} while (CurSound == LastSound);
 		ProcessSound (SetAbsSoundIndex (

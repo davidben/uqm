@@ -494,7 +494,7 @@ TurnShip (ELEMENTPTR ShipPtr, COUNT angle)
 		if (ship_delta_facing == ANGLE_TO_FACING (HALF_CIRCLE))
 			ship_delta_facing =
 					NORMALIZE_FACING (ship_delta_facing +
-					(Random () & 1 ?
+					(TFB_Random () & 1 ?
 					ANGLE_TO_FACING (OCTANT >> 1) :
 					-ANGLE_TO_FACING (OCTANT >> 1)));
 
@@ -766,7 +766,7 @@ Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 					- EvalDescPtr->facing
 					);
 			if ((desired_turn_angle & (HALF_CIRCLE - 1)) == 0)
-				desired_thrust_angle = Random () & 1 ? RIGHT : LEFT;
+				desired_thrust_angle = TFB_Random () & 1 ? RIGHT : LEFT;
 			else
 				desired_thrust_angle = desired_turn_angle < HALF_CIRCLE ? RIGHT : LEFT;
 		}

@@ -36,7 +36,7 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 	{
 		BYTE num_possible;
 
-		num_possible = (BYTE)((BYTE)Random ()
+		num_possible = (BYTE)((BYTE)TFB_Random ()
 				% (DEPOSIT_QUANTITY (eptr->Density) + 1));
 		while (num_possible--)
 		{
@@ -47,7 +47,7 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 			COUNT deposit_quality_fine,
 						deposit_quality_gross;
 
-			deposit_quality_fine = ((COUNT)Random () % 100)
+			deposit_quality_fine = ((COUNT)TFB_Random () % 100)
 					+ (
 					DEPOSIT_QUALITY (eptr->Density)
 					+ SysInfoPtr->StarSize
@@ -59,7 +59,7 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 			else
 				deposit_quality_gross = 2;
 
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			loword = LOWORD (rand_val);
 			hiword = HIWORD (rand_val);
 			SysInfoPtr->PlanetInfo.CurPt.x =
@@ -199,25 +199,25 @@ CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
 
 		SysInfoPtr->PlanetInfo.LifeChance = life_var;
 
-		life_var = (COUNT)Random () & 1023;
+		life_var = (COUNT)TFB_Random () & 1023;
 		if (life_var < SysInfoPtr->PlanetInfo.LifeChance
 				|| (SysInfoPtr->PlanetInfo.LifeChance < MIN_LIFE_CHANCE
 				&& life_var < MIN_LIFE_CHANCE))
 		{
 			BYTE num_types;
 
-			num_types = (BYTE)(((BYTE)Random () % MAX_LIFE_VARIATION) + 1);
+			num_types = (BYTE)(((BYTE)TFB_Random () % MAX_LIFE_VARIATION) + 1);
 			do
 			{
 				BYTE index, num_creatures;
 				UWORD rand_val;
 
-				rand_val = (UWORD)Random ();
+				rand_val = (UWORD)TFB_Random ();
 				index = LOBYTE (rand_val) % NUM_CREATURE_TYPES;
 				num_creatures = (BYTE)((HIBYTE (rand_val) % 10) + 1);
 				do
 				{
-					rand_val = (UWORD)Random ();
+					rand_val = (UWORD)TFB_Random ();
 					SysInfoPtr->PlanetInfo.CurPt.x =
 							(LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1))) + 8;
 					SysInfoPtr->PlanetInfo.CurPt.y =

@@ -79,7 +79,7 @@ RotatePlanet (int x, int da, int dx, int dy, int zoom)
 		r.extent.height = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
 		rp = &r;
 		if (scale_amt == PLANET_INIT_ZOOM_SIZE)
-			zoom_from |= Random () & 0x03;
+			zoom_from |= TFB_Random () & 0x03;
 		//  we're zooming in, take care of scaling the frames
 		for (i=0; i < num_frames; i++)
 		{

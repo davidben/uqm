@@ -119,7 +119,7 @@ spit_preprocess (PELEMENT ElementPtr)
 				IncFrameIndex (ElementPtr->next.image.frame);
 		angle = GetVelocityTravelAngle (&ElementPtr->velocity);
 		if ((index = GetFrameIndex (ElementPtr->next.image.frame)) == 1)
-			angle = angle + (((COUNT)Random () % 3) - 1);
+			angle = angle + (((COUNT)TFB_Random () % 3) - 1);
 
 		speed = WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (
 				GetFrameCount (ElementPtr->next.image.frame) - index) << 1);

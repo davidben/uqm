@@ -48,10 +48,10 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 			else if ((target_loc = GET_GROUP_DEST (StarShipPtr)) == 0)
 			{
 				target_loc = GET_ORBIT_LOC (StarShipPtr);
-				SET_ORBIT_LOC (StarShipPtr, NORMALIZE_FACING (Random ()));
+				SET_ORBIT_LOC (StarShipPtr, NORMALIZE_FACING (TFB_Random ()));
 #ifdef OLD
 				target_loc = (BYTE)((
-						(COUNT)Random ()
+						(COUNT)TFB_Random ()
 						% pSolarSysState->SunDesc[0].NumPlanets
 						) + 1);
 #endif /* OLD */
@@ -61,7 +61,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 						StarShipPtr->ShipInfo.group_counter = 0;
 					else
 						StarShipPtr->ShipInfo.group_counter =
-								((COUNT)Random ()
+								((COUNT)TFB_Random ()
 								% MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 				}
@@ -139,7 +139,7 @@ ip_group_preprocess (PELEMENT ElementPtr)
 			StarShipPtr->ShipInfo.group_counter = 0;
 		else
 			StarShipPtr->ShipInfo.group_counter =
-					((COUNT)Random ()
+					((COUNT)TFB_Random ()
 					% MAX_REVOLUTIONS)
 					<< FACING_SHIFT;
 	}
@@ -263,7 +263,7 @@ ip_group_preprocess (PELEMENT ElementPtr)
 					if (StarShipPtr->ShipInfo.group_counter)
 						--StarShipPtr->ShipInfo.group_counter;
 					else if (task == EXPLORE
-							&& (next_loc = (BYTE)(((COUNT)Random ()
+							&& (next_loc = (BYTE)(((COUNT)TFB_Random ()
 							% pSolarSysState->SunDesc[0].NumPlanets)
 							+ 1)) != target_loc)
 					{
@@ -420,7 +420,7 @@ CheckGetAway:
 								ANGLE_TO_FACING (angle + HALF_CIRCLE)
 								));
 						StarShipPtr->ShipInfo.group_counter =
-								((COUNT)Random () % MAX_REVOLUTIONS)
+								((COUNT)TFB_Random () % MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 					}
 

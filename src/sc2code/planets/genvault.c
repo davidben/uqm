@@ -34,7 +34,7 @@ GenerateShipVault (BYTE control)
 						pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]
 						);
 
-				rand_val = Random ();
+				rand_val = TFB_Random ();
 				pSolarSysState->SysInfo.PlanetInfo.CurPt.x =
 						(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
 				pSolarSysState->SysInfo.PlanetInfo.CurPt.y =

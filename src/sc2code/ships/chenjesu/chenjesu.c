@@ -243,7 +243,7 @@ doggy_preprocess (PELEMENT ElementPtr)
 				GetVelocityTravelAngle (&ElementPtr->velocity)
 				));
 		if ((delta_facing = TrackShip (ElementPtr, &facing)) < 0)
-			facing = NORMALIZE_FACING (Random ());
+			facing = NORMALIZE_FACING (TFB_Random ());
 		else
 		{
 			ELEMENTPTR ShipPtr;

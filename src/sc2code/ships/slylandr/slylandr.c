@@ -164,7 +164,7 @@ initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
 		LaserPtr->postprocess_func = lightning_postprocess;
 		LaserPtr->collision_func = lightning_collision;
 
-		rand_val = Random ();
+		rand_val = TFB_Random ();
 
 		if (!(ElementPtr->state_flags & PLAYER_SHIP))
 		{

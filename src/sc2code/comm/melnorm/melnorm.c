@@ -238,7 +238,7 @@ StripShip (COUNT fuel_required)
 		{
 			DWORD rand_val;
 
-			rand_val = Random ();
+			rand_val = TFB_Random ();
 			switch (which_module = LOBYTE (LOWORD (rand_val)) % (CREW_POD + 1))
 			{
 				case PLANET_LANDER:
