@@ -2,9 +2,13 @@ Checklist for releases:
 - make a final build in release mode
 - make sure the permissions in the .zip files are ok (0644 for data files
   and 0755 for executables and dirs)
+- make a new tag for the cvs repository
 - for the source archive:
-  - use a clean cvs dir (no .# files)
-  - exclude the CVS dirs themselves from the archive
+  - use a clean cvs dir.
+    'cvs export' will produce a clean structure, without CVS dirs.
+    This requires a tag having been created though.
+    Just using 'cvs update' and watching the output will not be
+    enough, as some files like those beginning with '.#'will be ignored.
 - Clean up the Changelog file
 - make sure the documentation files are up-to-date
   - Whatsnew
@@ -14,9 +18,8 @@ Checklist for releases:
   - AUTHORS
   - INSTALL
   - unix man pages (in the future)
-- update the 'version' file in the content is up-to-date
+- update the 'version' file in the content dir
 - update 'uqmversion.h'
-- make a new tag for the cvs repository
 - provide md5 sums for the released files
 - add a new entry for the release in the bugs database
 - test on all relevant platforms
