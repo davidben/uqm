@@ -82,8 +82,11 @@ const LIFEFORM_DESC CreatureData[] =
 	{SPEED_MOTIONLESS | DANGER_WEAK, MAKE_BYTE (8, 5)},
 
 	{SPEED_MOTIONLESS | DANGER_MONSTROUS, MAKE_BYTE (1, 1)},
+			// Evil One
 	{BEHAVIOR_UNPREDICTABLE | SPEED_SLOW | DANGER_HARMLESS, MAKE_BYTE (0, 1)},
+			// Brainbox Bulldozer
 	{BEHAVIOR_HUNT | AWARENESS_HIGH | SPEED_FAST | DANGER_MONSTROUS, MAKE_BYTE (15, 15)},
+			// Zex's Beauty
 };
 
 #define FLASH_WIDTH 9
@@ -204,9 +207,8 @@ object_animation (PELEMENT ElementPtr)
 	{
 		COLOR c;
 
-		if ((c = DamageColorCycle (
-				GetPrimColor (pPrim), 0
-				)) == WHITE_COLOR)
+		c = DamageColorCycle (GetPrimColor (pPrim), 0);
+		if (c == WHITE_COLOR)
 		{
 			SetPrimType (pPrim, STAMP_PRIM);
 			if (ElementPtr->hit_points == 0)
@@ -321,6 +323,16 @@ object_animation (PELEMENT ElementPtr)
 					DetectPercent = (((BYTE)(CreatureData[index].Attributes
 							& AWARENESS_MASK) >> AWARENESS_SHIFT) + 1)
 							* (30 / 6);
+							// XXX: Shouldn't this be dependant on
+							// PLANET_SIDE_RATE somehow? And why is it
+							// written as '30 / 6' instead of 5? Does the 30
+							// specify the (PC) framerate? That doesn't make
+							// sense; I would expect it to be in the
+							// denominator. And even then, it wouldn't give
+							// the same results with different frame rates,
+							// as repeating 'random(x / 30)' 30 times doesn't
+							// generally have the same result as repeating
+							// 'random(x / 35)' 25 times. - SvdB
 					if (((BYTE)TFB_Random () % 100) < DetectPercent)
 					{
 						ElementPtr->thrust_wait = 0;
@@ -383,11 +395,8 @@ object_animation (PELEMENT ElementPtr)
 						break;
 				}
 
-				SetVelocityComponents (
-						&ElementPtr->velocity,
-						COSINE (angle, speed),
-						SINE (angle, speed)
-						);
+				SetVelocityComponents (&ElementPtr->velocity,
+						COSINE (angle, speed), SINE (angle, speed));
 			}
 		}
 	}
@@ -705,8 +714,7 @@ CheckObjectCollision (COUNT index)
 								SetPrimColor (pPrim, WHITE_COLOR);
 
 								PlaySound (SetAbsSoundIndex (
-										LanderSounds, LANDER_HITS
-										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
+										LanderSounds, LANDER_HITS), NotPositional (), NULL, GAME_SOUND_PRIORITY);
 							}
 							UnlockElement (hElement);
 							break;
@@ -726,10 +734,8 @@ CheckObjectCollision (COUNT index)
 								{
 									if (pPSD->ElementLevel
 											+ NumRetrieved > pPSD->MaxElementLevel)
-										NumRetrieved = (COUNT)(
-												pPSD->MaxElementLevel
-												- pPSD->ElementLevel
-												);
+										NumRetrieved = (COUNT)(pPSD->MaxElementLevel
+												- pPSD->ElementLevel);
 									FillLanderHold (pPSD, scan, NumRetrieved);
 									if (scan == MINERAL_SCAN)
 									{
@@ -1798,39 +1804,22 @@ LoadLanderData (void)
 	if (LanderFrame[0] == 0)
 	{
 		LanderFrame[0] =
-				CaptureDrawable (
-				LoadGraphic (LANDER_MASK_PMAP_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (LANDER_MASK_PMAP_ANIM));
 		LanderFrame[1] =
-				CaptureDrawable (
-				LoadGraphic (QUAKE_MASK_PMAP_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (QUAKE_MASK_PMAP_ANIM));
 		LanderFrame[2] =
-				CaptureDrawable (
-				LoadGraphic (LIGHTNING_MASK_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (LIGHTNING_MASK_ANIM));
 		LanderFrame[3] =
-				CaptureDrawable (
-				LoadGraphic (LAVA_MASK_PMAP_ANIM)
-				);
-		LanderFrame[4] =
-				CaptureDrawable (
-				LoadGraphic (LANDER_SHIELD_MASK_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (LAVA_MASK_PMAP_ANIM));
+		LanderFrame[4] = CaptureDrawable (LoadGraphic (LANDER_SHIELD_MASK_ANIM));
 		LanderFrame[5] =
-				CaptureDrawable (
-				LoadGraphic (LANDER_LAUNCH_MASK_PMAP_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (LANDER_LAUNCH_MASK_PMAP_ANIM));
 		LanderFrame[6] =
-				CaptureDrawable (
-				LoadGraphic (LANDER_RETURN_MASK_PMAP_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (LANDER_RETURN_MASK_PMAP_ANIM));
 		LanderSounds = CaptureSound (LoadSound (LANDER_SOUNDS));
 
 		LanderFrame[7] =
-				CaptureDrawable (
-				LoadGraphic (ORBIT_VIEW_ANIM)
-				);
+				CaptureDrawable (LoadGraphic (ORBIT_VIEW_ANIM));
 
 		{
 			COUNT i;
@@ -1958,7 +1947,7 @@ PlanetSide (PMENU_STATE pMS)
 		else
 			TimeIn += ONE_SECOND / 60;
 
-		do 
+		do
 		{
 			ScrollPlanetSide (0, 0, index);
 		} while (GetTimeCounter () < TimeIn);

@@ -19,6 +19,9 @@
 #include "starcon.h"
 #include "controls.h"
 
+// If DEBUG_DEVICES is defined, the device list shown in the game will
+// include the pictures of all devices defined, regardless of which
+// devices the player actually possesses.
 //#define DEBUG_DEVICES
 
 static COUNT

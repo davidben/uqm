@@ -73,30 +73,30 @@ BuildGroups (void)
 	HSTARSHIP hTemplate, hNextShip;
 	BYTE HomeWorld[] =
 	{
-		0, /* ARILOU_SHIP */
-		0, /* CHMMR_SHIP */
-		0, /* HUMAN_SHIP */
-		ORZ_DEFINED, /* ORZ_SHIP */
-		PKUNK_DEFINED, /* PKUNK_SHIP */
-		0, /* SHOFIXTI_SHIP */
-		SPATHI_DEFINED, /* SPATHI_SHIP */
-		SUPOX_DEFINED, /* SUPOX_SHIP */
-		THRADD_DEFINED, /* THRADDASH_SHIP */
-		UTWIG_DEFINED, /* UTWIG_SHIP */
-		VUX_DEFINED, /* VUX_SHIP */
-		YEHAT_DEFINED, /* YEHAT_SHIP */
-		0, /* MELNORME_SHIP */
-		DRUUGE_DEFINED, /* DRUUGE_SHIP */
-		ILWRATH_DEFINED,/* ILWRATH_SHIP */
-		MYCON_DEFINED, /* MYCON_SHIP */
-		0, /* SLYLANDRO_SHIP */
-		UMGAH_DEFINED, /* UMGAH_SHIP */
-		0, /* URQUAN_SHIP */
-		ZOQFOT_DEFINED, /* ZOQFOTPIK_SHIP */
+		0,                /* ARILOU_SHIP */
+		0,                /* CHMMR_SHIP */
+		0,                /* HUMAN_SHIP */
+		ORZ_DEFINED,      /* ORZ_SHIP */
+		PKUNK_DEFINED,    /* PKUNK_SHIP */
+		0,                /* SHOFIXTI_SHIP */
+		SPATHI_DEFINED,   /* SPATHI_SHIP */
+		SUPOX_DEFINED,    /* SUPOX_SHIP */
+		THRADD_DEFINED,   /* THRADDASH_SHIP */
+		UTWIG_DEFINED,    /* UTWIG_SHIP */
+		VUX_DEFINED,      /* VUX_SHIP */
+		YEHAT_DEFINED,    /* YEHAT_SHIP */
+		0,                /* MELNORME_SHIP */
+		DRUUGE_DEFINED,   /* DRUUGE_SHIP */
+		ILWRATH_DEFINED,  /* ILWRATH_SHIP */
+		MYCON_DEFINED,    /* MYCON_SHIP */
+		0,                /* SLYLANDRO_SHIP */
+		UMGAH_DEFINED,    /* UMGAH_SHIP */
+		0,                /* URQUAN_SHIP */
+		ZOQFOT_DEFINED,   /* ZOQFOTPIK_SHIP */
 
-		0, /* SYREEN_SHIP */
-		0, /* BLACK_URQUAN_SHIP */
-		0, /* YEHAT_REBEL_SHIP */
+		0,                /* SYREEN_SHIP */
+		0,                /* BLACK_URQUAN_SHIP */
+		0,                /* YEHAT_REBEL_SHIP */
 	};
 	BYTE EncounterPercent[] =
 	{
@@ -117,9 +117,7 @@ BuildGroups (void)
 		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
 
 		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q),
-				hTemplate
-				);
+				&GLOBAL (avail_race_q), hTemplate);
 		hNextShip = _GetSuccLink (TemplatePtr);
 
 		if ((encounter_radius = TemplatePtr->ShipInfo.actual_strength)
@@ -128,6 +126,9 @@ BuildGroups (void)
 			SIZE dx, dy;
 			DWORD d_squared;
 
+			// XXX: i is redefined in the line below, so the assignment
+			//      to i a few lines ago is useless... is there a bug?
+			// TODO: investigate
 			if ((i = HomeWorld[Index]) && CurStarDescPtr->Index == (BYTE)i)
 			{
 				BestIndex = Index;
@@ -176,10 +177,7 @@ BuildGroups (void)
 		}
 
 FoundHome:
-		UnlockStarShip (
-				&GLOBAL (avail_race_q),
-				hTemplate
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
 	}
 
 	if (BestPercent)
@@ -200,13 +198,13 @@ FoundHome:
 			num_groups = 5;
 		do
 		{
-			for (Index = HINIBBLE (EncounterMakeup[BestIndex]); Index; --Index)
+			for (Index = HINIBBLE (EncounterMakeup[BestIndex]); Index;
+					--Index)
 			{
 				if (Index <= LONIBBLE (EncounterMakeup[BestIndex])
 						|| (COUNT)TFB_Random () % 100 < 50)
-					CloneShipFragment (
-							BestIndex, &GLOBAL (npc_built_ship_q), 0
-							);
+					CloneShipFragment (BestIndex, &GLOBAL (npc_built_ship_q),
+							0);
 			}
 
 			PutGroupInfo (0L, ++which_group);
@@ -218,8 +216,7 @@ FoundHome:
 }
 
 static void
-FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
-		fp)
+FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 {
 	BYTE RaceType, NumShips;
 	HSTARSHIP hStarShip;
@@ -243,8 +240,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
 				BYTE crew_level;
 
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&temp_q, hStarShip
-						);
+						&temp_q, hStarShip);
 				hNextShip = _GetSuccLink (FragPtr);
 				crew_level = FragPtr->ShipInfo.crew_level;
 				which_group = GET_GROUP_ID (FragPtr);
@@ -259,12 +255,8 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
 					else
 						FlushGroupInfo (pGH, 0L, which_group, fp);
 					pGH->GroupOffset[which_group] = 0;
-					RemoveQueue (
-							&temp_q, hStarShip
-							);
-					FreeStarShip (
-							&temp_q, hStarShip
-							);
+					RemoveQueue (&temp_q, hStarShip);
+					FreeStarShip (&temp_q, hStarShip);
 				}
 			}
 			GLOBAL (npc_built_ship_q) = temp_q;
@@ -279,20 +271,18 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		RaceType = GET_RACE_ID (FragPtr);
 		SeekResFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
 		WriteResFile ((PBYTE)&RaceType, sizeof (RaceType), 1, fp);
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 	SeekResFile (fp, offset, SEEK_SET);
 	WriteResFile (pGH, sizeof (*pGH), 1, fp);
 #ifdef DEBUG_GROUPS
-	fprintf (stderr, "1)FlushGroupInfo(%lu): WG = %u(%lu), NG = %u, SI = %u\n",
-	offset, which_group, pGH->GroupOffset[which_group], pGH->NumGroups, pGH->star_index);
+	fprintf (stderr, "1)FlushGroupInfo(%lu): WG = %u(%lu), NG = %u, "
+			"SI = %u\n", offset, which_group, pGH->GroupOffset[which_group],
+			pGH->NumGroups, pGH->star_index);
 #endif /* DEBUG_GROUPS */
 
 	NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
@@ -334,11 +324,8 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID
 #endif /* DEBUG_GROUPS */
 		Ptr = (PBYTE)&FragPtr->RaceDescPtr;
 		WriteResFile ((PBYTE)Ptr,
-				((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
-				1, fp);
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1, fp);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 }
@@ -361,7 +348,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		SeekResFile (fp, offset, SEEK_SET);
 		ReadResFile (&GH, sizeof (GH), 1, fp);
 #ifdef DEBUG_GROUPS
-		fprintf (stderr, "GetGroupInfo(%lu): %u(%lu) out of %u\n", offset, which_group, GH.GroupOffset[which_group], GH.NumGroups);
+		fprintf (stderr, "GetGroupInfo(%lu): %u(%lu) out of %u\n", offset,
+				which_group, GH.GroupOffset[which_group], GH.NumGroups);
 #endif /* DEBUG_GROUPS */
 		if (which_group == (BYTE)~0)
 		{
@@ -369,7 +357,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 #ifdef DEBUG_GROUPS
-			fprintf (stderr, "%u == %u\n", GH.star_index, (COUNT)(CurStarDescPtr - star_array));
+			fprintf (stderr, "%u == %u\n", GH.star_index,
+					(COUNT)(CurStarDescPtr - star_array));
 #endif /* DEBUG_GROUPS */
 			day_index = GH.day_index;
 			month_index = GH.month_index;
@@ -382,9 +371,10 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				res_CloseResFile (fp);
 
 #ifdef DEBUG_GROUPS
-			if (GH.star_index == (COUNT)(CurStarDescPtr - star_array))
-				fprintf (stderr, "GetGroupInfo: battle groups out of date %u/%u/%u!\n",
-						month_index, day_index, year_index);
+				if (GH.star_index == (COUNT)(CurStarDescPtr - star_array))
+					fprintf (stderr, "GetGroupInfo: battle groups out of "
+							"date %u/%u/%u!\n", month_index, day_index,
+							year_index);
 #endif /* DEBUG_GROUPS */
 				fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "wb");
 				GH.NumGroups = 0;
@@ -394,7 +384,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			}
 			else
 			{
-				for (which_group = 1; which_group <= GH.NumGroups; ++which_group)
+				for (which_group = 1; which_group <= GH.NumGroups;
+						++which_group)
 				{
 					if (GH.GroupOffset[which_group] == 0)
 						continue;
@@ -411,17 +402,17 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 						hStarShip = CloneShipFragment (RaceType,
 								&GLOBAL (npc_built_ship_q), 0);
 						FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-								&GLOBAL (npc_built_ship_q), hStarShip
-								);
+								&GLOBAL (npc_built_ship_q), hStarShip);
 						OwnStarShip (FragPtr, BAD_GUY, 0);
 						SET_GROUP_ID (FragPtr, which_group);
 
 						rand_val = TFB_Random ();
-						task = (BYTE)(LOBYTE (LOWORD (rand_val)) % ON_STATION);
+						task = (BYTE)(LOBYTE (LOWORD (rand_val))
+								% ON_STATION);
 						if (task == FLEE)
 							task = ON_STATION;
-						SET_ORBIT_LOC (FragPtr,
-								NORMALIZE_FACING (LOBYTE (HIWORD (rand_val))));
+						SET_ORBIT_LOC (FragPtr, NORMALIZE_FACING (
+								LOBYTE (HIWORD (rand_val))));
 
 						group_loc = pSolarSysState->SunDesc[0].NumPlanets;
 						if (group_loc == 1 && task == EXPLORE)
@@ -438,8 +429,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								(HIWORD (rand_val) % 10000) - 5000;
 						if (task == EXPLORE)
 							FragPtr->ShipInfo.group_counter =
-									((COUNT)TFB_Random ()
-									% MAX_REVOLUTIONS)
+									((COUNT)TFB_Random () % MAX_REVOLUTIONS)
 									<< FACING_SHIFT;
 						else
 						{
@@ -449,16 +439,11 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								COUNT angle;
 								POINT org;
 
-								XFormIPLoc (
-										&pSolarSysState->PlanetDesc[
-												group_loc - 1
-												].image.origin,
-										&org,
-										FALSE
-										);
-								angle = FACING_TO_ANGLE (
-										GET_ORBIT_LOC (FragPtr) + 1
-										);
+								XFormIPLoc (&pSolarSysState->PlanetDesc[
+										group_loc - 1].image.origin, &org,
+										FALSE);
+								angle = FACING_TO_ANGLE (GET_ORBIT_LOC (
+										FragPtr) + 1);
 								FragPtr->ShipInfo.loc.x = org.x
 										+ COSINE (angle, STATION_RADIUS);
 								FragPtr->ShipInfo.loc.y = org.y
@@ -471,8 +456,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 						SET_GROUP_LOC (FragPtr, group_loc);
 
 #ifdef DEBUG_GROUPS
-						fprintf (stderr, "battle group %u(0x%04x) strength %u, "
-								"type %u, loc %u<%d, %d>, task %u\n",
+						fprintf (stderr, "battle group %u(0x%04x) strength "
+								"%u, type %u, loc %u<%d, %d>, task %u\n",
 								which_group,
 								hStarShip,
 								NumShips,
@@ -482,9 +467,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								FragPtr->ShipInfo.loc.y,
 								task);
 #endif /* DEBUG_GROUPS */
-						UnlockStarShip (
-								&GLOBAL (npc_built_ship_q), hStarShip
-								);
+						UnlockStarShip (&GLOBAL (npc_built_ship_q),
+								hStarShip);
 					}
 				}
 
@@ -544,16 +528,16 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 						&GLOBAL (npc_built_ship_q), 0);
 
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip
-						);
+						&GLOBAL (npc_built_ship_q), hStarShip);
 				Ptr = (PBYTE)&FragPtr->RaceDescPtr;
 				ReadResFile ((PBYTE)Ptr,
-						((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
-						1, fp);
+						((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1,
+						fp);
 
 #ifdef DEBUG_GROUPS
 				if (which_group == 0)
-					fprintf (stderr, "G) type %u, loc %u<%d, %d>, task 0x%02x:%u\n",
+					fprintf (stderr, "G) type %u, loc %u<%d, %d>, "
+							"task 0x%02x:%u\n",
 							RaceType,
 							GET_GROUP_LOC (FragPtr),
 							FragPtr->ShipInfo.loc.x,
@@ -591,15 +575,9 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 #ifdef DEBUG_GROUPS
 					fprintf (stderr, " -- REMOVING\n");
 #endif /* DEBUG_GROUPS */
-					UnlockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
-					RemoveQueue (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
-					FreeStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					RemoveQueue (&GLOBAL (npc_built_ship_q), hStarShip);
+					FreeStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 			}
 		}
@@ -652,7 +630,8 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 			month_index = 0;
 			day_index = 7;
 			year_index = 0;
-			ValidateEvent (RELATIVE_EVENT, &month_index, &day_index, &year_index);
+			ValidateEvent (RELATIVE_EVENT, &month_index, &day_index,
+					&year_index);
 			GH.day_index = (BYTE)day_index;
 			GH.month_index = (BYTE)month_index;
 			GH.year_index = year_index;
@@ -660,8 +639,8 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 		GH.star_index = CurStarDescPtr - star_array;
 #ifdef DEBUG_GROUPS
 		fprintf (stderr, "PutGroupInfo(%lu): %u out of %u -- %u/%u/%u\n",
-offset, which_group, GH.NumGroups,
-GH.month_index, GH.day_index, GH.year_index);
+				offset, which_group, GH.NumGroups,
+				GH.month_index, GH.day_index, GH.year_index);
 #endif /* DEBUG_GROUPS */
 
 		FlushGroupInfo (&GH, offset, which_group, fp);
@@ -671,4 +650,5 @@ GH.month_index, GH.day_index, GH.year_index);
 
 	return (offset);
 }
+
 
