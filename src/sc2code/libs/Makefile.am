@@ -2,7 +2,7 @@ SUBDIRS = decomp graphics input math memory resource sound strings \
 		task threads time video
 
 noinst_HEADERS = \
-	compiler.h declib.h errlib.h gfxlib.h inplib.h mathlib.h \
+	compiler.h declib.h gfxlib.h inplib.h mathlib.h \
 	memlib.h reslib.h sndlib.h strlib.h tasklib.h threadlib.h \
 	timelib.h vargs.h vidlib.h misc.h
 

@@ -530,10 +530,6 @@ SOURCE=..\sc2code\libs\declib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\errlib.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\gfxlib.h
 # End Source File
 # Begin Source File
