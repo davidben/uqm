@@ -1,5 +1,5 @@
 Changes towards version 0.3:
-- Exit confirmation dialog is prettier and safer, from Nic
+- Exit confirmation dialog is prettier and safer, from Paxtez
 - Exiting from the main menu with F10 now exits the game -Michael
 - Changed lander speed to 35 FPS, which matches reported 3DO speed 
   (Bug #22) -Michael
