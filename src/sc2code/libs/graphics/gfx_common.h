@@ -42,8 +42,6 @@ enum
 #define TFB_GFXFLAGS_SCALE_BIADAPT      (1<<4)
 #define TFB_GFXFLAGS_SCALE_BIADAPTADV   (1<<5)
 
-#define TFB_GFX_NUMSCREENS              3
-
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
 void TFB_UninitGraphics (void);
 void TFB_ProcessEvents (void);

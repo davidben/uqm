@@ -26,7 +26,9 @@ typedef void *TFB_Canvas;
 typedef enum {
 	TFB_SCREEN_MAIN,
 	TFB_SCREEN_EXTRA,
-	TFB_SCREEN_TRANSITION
+	TFB_SCREEN_TRANSITION,
+
+	TFB_GFX_NUMSCREENS
 } SCREEN;
 
 typedef struct tfb_palette
