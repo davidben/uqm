@@ -63,9 +63,9 @@ EraseCoarseScan (void)
 	RECT r, tr;
 	extern FRAME SpaceJunkFrame;
 	const int leftScanWidth   = 80;
-	const int rightScanWidth  = 75;
+	const int rightScanWidth  = 80;
 	const int leftScanOffset  = 5;
-	const int rightScanOffset = 45;
+	const int rightScanOffset = 50;
 
 	SetSemaphore (GraphicsSem);
 	SetContext (SpaceContext);
