@@ -124,8 +124,6 @@ Stuff still to do (large):
   How to handle the libraries?
 - new resource system. This should enable us to fix a lot of conversation
   bugs, such as:
-  - Melnorme conversation Will repeat the same sentence 3 times.
-    (because of numbers to be inserted).
   - In the dialog with the commander, your and the commanders sentences are
     mixed up in some places.
   - The Mycons can actually say "Bye sun device"
