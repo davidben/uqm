@@ -72,8 +72,9 @@ Glitches (don't crash the game, medium priority):
 - Melee menu's 5x5 ship selection grid doesn't show up always
   - On win32, works with release build, not debug
   - On linux, works with SDL_mixer, not OpenAL
-- Currently some sound effects are perhaps from PC version.. 3DO ones should be
-  extracted to check/fix this
+- Currently some sound effects are perhaps from PC version / otherwise 
+  messed up.. 3DO ones should be extracted to fix this
+  - Slylandro probe lightning bolt sound shouldn't be same as lightning on planets
 - After saving the game, the screen is not always redrawn
   - outfit starship
   - orbit around planet
@@ -99,12 +100,17 @@ Glitches (don't crash the game, medium priority):
 - subtitles may go past the bottom boundary
 - If you win a Melee, and then are blown up yourself, the sound loops 
   until the game is quit. It still functions, it just has the last 3-or-so
-  seconds after the melee ended repeating over and over in the background."
+  seconds after the melee ended repeating over and over in the background.
+  - Probably happens in some other situations too
+- When getting the planetary reports on the surface (atleast Moon),
+  when changing pages at the 'more' prompt, commas are not erased completely
+  (due to being out of char box or so), thus leaving highlighted pixels
 
 
 Implementation bugs (low priority):
 - Scaling code problems:
   - sai, supersai doesn't work for >16bpp
+  - doesn't always work even if user specifies 16bpp, because of SDL_ANYFORMAT
   - bilinear is only implemented under opengl
   - opengl misses all other modes than bilinear
     - do them with software and/or pixel shader hw?

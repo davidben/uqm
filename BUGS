@@ -30,25 +30,11 @@ Some general comments:
 
 
 The bugs reported but not yet verified:
-- "If you win a Melee, and then are blown up (by, say, an asteroid with only 1
-  crew left), the sound loops 'till the game is quit. It still functions, it
-  just has the last 3-or-so seconds after the melee ended repeating over and
-  over in the background."
-
-- "minor sound glitch when fighting the sylandro probe the lightning bolts it
-  uses sounds like lightning on planets"
-
 - "Whenever i'm in autopilot mode in hyperspace and i enter into combat with
   the slylandro, the combat moves at the fastest speed possible"
 
 - melee: "some times the bottom ships portrait appears on opposite side of
   the screen"
-
-- "I've tried using 2xSaI and Super2xSaI and neither of them work. Maybe I
-  was configuring something incorrectly, but from what I've read (and
-  experimented with in other SDL programs) it should have worked. I set UQM
-  to 640x480, 16bpp, SDL (not OGL), --scale=sai && --scale=supersai. It
-  always came back with no filtering."
 
 - "After visiting all the rainbow worlds and getting the new melnorme
   technology (enhancing your planet lander) you aren't able to land on
@@ -56,11 +42,6 @@ The bugs reported but not yet verified:
   again, as if a key was stuck down (which I checked for, of course..).  I'm
   sure this is just a minor problem in the lander code, but it does need to
   be fixed for sure."
-
-- "When getting the planetary reports on the surface (at least with the Moon
-  starbase in the beginning), when changing pages at the '(more)' prompt, the
-  periods are not erased, though everything else is, leaving highlighted
-  pixels around the text are."
 
 - "Have the speech voices turned down? I noticed that even you have the speech
   voices off, it playes them and it takes a while until it has, how would I
