@@ -933,10 +933,13 @@ int flash_rect_func(void *blah)
 #define NORMAL_F_STRENGTH 0
 	DWORD TimeIn;
 	SIZE strength, fstrength, incr;
+	/* Added by Michael: simple on-off flash right now */
+	BOOLEAN flash_on;
 
 	fstrength = NORMAL_F_STRENGTH;
 	incr = 1;
 	strength = NORMAL_STRENGTH;
+	flash_on = 0;
 	TimeIn = GetTimeCounter ();
 	for (;;)
 	{
@@ -947,7 +950,7 @@ int flash_rect_func(void *blah)
 		
 		if (flash_rect.extent.width)
 		{
-				BatchGraphics ();
+			BatchGraphics ();
 			SetContextClipRect (&flash_rect);
 			if (flash_frame)
 			{
@@ -963,26 +966,29 @@ int flash_rect_func(void *blah)
 					fstrength = MIN_F_STRENGTH + 1;
 					incr = 1;
 				}
+
+				flash_on = !flash_on;
 				
-				if (fstrength != NORMAL_F_STRENGTH)
+				DrawFromExtraScreen (&flash_rect);
+
+				// if (fstrength != NORMAL_F_STRENGTH)
+				if (flash_on)
 				{
 					STAMP s;
 
 					ClearDrawable ();
 
-						SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
+					SetGraphicStrength (fstrength > 0 ? fstrength : -fstrength, 16);
 					
 					s.origin.x = s.origin.y = 0;
 					s.frame = flash_frame;
 					DrawStamp (&s);
 
 					if (fstrength < 0)
-							SetGraphicStrength (-8, 8); // add to -(partial mask)
+						SetGraphicStrength (-8, 8); // add to -(partial mask)
 					else
 						SetGraphicStrength (8, -8); // add to (partial mask)
 				}
-				
-				 DrawFromExtraScreen (&flash_rect);
 			}
 			else
 			{
@@ -999,11 +1005,16 @@ int flash_rect_func(void *blah)
 			
 			SetGraphicStrength (4, 4);
 				
-				UnbatchGraphics ();
+			UnbatchGraphics ();
 		}
 		SetContext (OldContext);
 		ClearSemaphore (&GraphicsSem);
-		TimeIn = SleepTask (TimeIn + (ONE_SECOND / 16));
+		// Michael: 
+		// "This is too frequent for a binary flash, so we slow it down.
+		//  eventually once we get better alpha control we can do the fading
+		//  effect again."
+		// TimeIn = SleepTask (TimeIn + (ONE_SECOND / 16));
+		TimeIn = SleepTask (TimeIn + (ONE_SECOND / 4));
 	}
 
 	(void) blah;  /* Satisfying compiler (unused parameter) */
@@ -1054,7 +1065,9 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect.corner.y &= ~1;
 
 		if (flash_task == 0)
+		{
 			flash_task = AddTask (flash_rect_func, 2048);
+		}
 	}
 	
 	flash_frame = f;

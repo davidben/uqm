@@ -20,10 +20,6 @@
 #include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
 
-#define NUMBER_OF_PLUTVALS 32
-#define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
-#define GET_VAR_PLUT(i) (_varPLUTs + (i) * NUMBER_OF_PLUT_UINT32s)
-DWORD* _varPLUTs; //Not a function
 PDISPLAY_INTERFACE _pCurDisplay; //Not a function. Probably has to be initialized...
 
 void (*mask_func_array[])
@@ -35,5 +31,4 @@ int ScreenHeight;
 int ScreenWidthActual;
 int ScreenHeightActual;
 int GraphicsDriver;
-
 int TFB_DEBUG_HALT;

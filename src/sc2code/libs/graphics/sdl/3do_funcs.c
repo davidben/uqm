@@ -19,7 +19,6 @@
 #ifdef GFXMODULE_SDL
 
 #include "sdl_common.h"
-#include "rotozoom.h"
 
 
 //Status: Not entirely unimplemented!
@@ -80,56 +79,15 @@ SetGraphicGrabOther (int grab_other)
 void
 SetGraphicStrength (int numerator, int denominator)
 		// I just hope numerator always = denominator...
-{
-// printf("Unimplemented function activated: SetGrahicsStrength()\n");
-}
-
-// Status: Unimplemented
-BOOLEAN
-BatchColorMap (COLORMAPPTR ColorMapPtr)
-		// Batch... I wonder what that verb means in this context?
-		// SvdB: I don't think it is a verb.
-{
-	BOOLEAN ret;
-
-// printf("Unimplemented function activated: BatchColorMap()\n");
-	ret = TRUE;
-	return (ret);
-}
-
-//Status: Unimplemented
-BOOLEAN
-SetColorMap (COLORMAPPTR map)
-		//There's also a macro for thing in appglue.h... Hmm...
-{
-		BOOLEAN ret;
-
-		//printf("Unimplemented function activated: SetColorMap()\n");
-		ret = TRUE;
-		return (ret);
-}
-
-//Status: Unimplemented
-DWORD
-XFormColorMap (COLORMAPPTR colormap, SIZE time)
-		// Not sure what the time's supposed to mean...
-{
-		// printf ("Unimplemented function activated: XFormColorMap()\n");
-		return (GetTimeCounter () + time);
-}
-
-//Status: Unimplemented
-void
-FlushColorXForms() //Not entirely sure what's done here. CLUT stuff?
-{
-// printf ("Unimplemented function activated: FlushColorXForms()\n");
+{ 
+	//printf("Unimplemented function activated: SetGrahicsStrength(), %d %d\n",numerator,denominator);
 }
 
 //Status: Unimplemented
 void
 ScreenTransition (int TransType, PRECT pRect) //TransType==3
 {
-		//printf ("Unimplemented function activated: ScreenTransition()\n");
+	//printf ("Unimplemented function activated: ScreenTransition()\n");
 }
 
 void

@@ -130,20 +130,66 @@ TFB_Image*
 TFB_LoadImage (SDL_Surface *img)
 {
 	TFB_Image *myImage;
-	SDL_Surface *new_surf;
 
-    float x_scale = (float)ScreenWidthActual / ScreenWidth;
-	float y_scale = (float)ScreenHeightActual / ScreenHeight;	
-	
 	myImage = (TFB_Image*) HMalloc (sizeof (TFB_Image));
 	myImage->mutex = SDL_CreateMutex();
-	myImage->dirty = FALSE;
 	myImage->ScaledImg = NULL;
+	myImage->Palette = NULL;
 	
-	if (img->format->BytesPerPixel < 4) {
-		// Because image doesn't have alpha channel, blit it to new surface, using
-		// transparent color (if SDL_SetColorKey was called before this)
+	if (img->format->BytesPerPixel == 1)
+	{
+		int x,y;
+		Uint8 *src_p,*dst_p;
+		SDL_Surface *full_surf;
+		SDL_Rect SDL_DstRect;
 
+		full_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img->clip_rect.w, img->clip_rect.h, 
+			8, 0, 0, 0, 0);
+
+		SDL_DstRect.x = SDL_DstRect.y = 0;
+
+		SDL_LockSurface(img);
+		SDL_LockSurface(full_surf);
+
+		src_p = (Uint8*)img->pixels;
+		dst_p = (Uint8*)full_surf->pixels;
+	
+		for (y = img->clip_rect.y; y < img->clip_rect.y + img->clip_rect.h; ++y)
+		{
+			for (x = img->clip_rect.x; x < img->clip_rect.x + img->clip_rect.w; ++x)
+			{
+				dst_p[(y - img->clip_rect.y) * full_surf->pitch + (x - img->clip_rect.x)]=
+					src_p[y * img->pitch + x];
+			}
+		}
+
+		full_surf->clip_rect.x = full_surf->clip_rect.y = 0;
+		full_surf->clip_rect.w = img->clip_rect.w;
+	    full_surf->clip_rect.h = img->clip_rect.h;
+		
+		myImage->Palette = (SDL_Color*) HMalloc (sizeof (SDL_Color) * 256);
+
+		for (x = 0; x < 256; ++x)
+		{
+			myImage->Palette[x].r = img->format->palette->colors[x].r;
+			myImage->Palette[x].g = img->format->palette->colors[x].g;
+			myImage->Palette[x].b = img->format->palette->colors[x].b;
+		}
+
+		SDL_SetColors (full_surf, myImage->Palette, 0, 256);
+
+		if (img->flags & SDL_SRCCOLORKEY)
+		{
+			SDL_SetColorKey (full_surf, SDL_SRCCOLORKEY, img->format->colorkey);
+		}
+
+		SDL_UnlockSurface(full_surf);
+		SDL_UnlockSurface(img);
+
+		SDL_FreeSurface (img);
+		img = full_surf;
+	}
+	else if (img->format->BytesPerPixel == 2 || img->format->BytesPerPixel == 3) {
 		SDL_Surface *full_surf;
 		SDL_Rect SDL_DstRect;
 
@@ -156,30 +202,29 @@ TFB_LoadImage (SDL_Surface *img)
 
 		full_surf->clip_rect.x = full_surf->clip_rect.y = 0;
 		full_surf->clip_rect.w = img->clip_rect.w;
-		full_surf->clip_rect.h = img->clip_rect.h;
-
+	    full_surf->clip_rect.h = img->clip_rect.h;
+		
 		SDL_FreeSurface (img);
 		img = full_surf;
 	}
-	
-	if ((x_scale==1.0f && y_scale==1.0f) || (img->w==0 && img->h==0))
-	{
-		new_surf = img;
-	}
-	else 
-	{
-		// Note: SMOOTHING_OFF and SMOOTHING_ON controls bilinear filtering
-		new_surf = zoomSurface (img, x_scale, y_scale, SMOOTHING_OFF);
-	}
 
-	// Now convert to the native display format
-	
-	myImage->DrawableImg = TFB_DisplayFormatAlpha (new_surf);
-	if (new_surf != img)
-		SDL_FreeSurface(new_surf);
-
-	myImage->SurfaceSDL = TFB_DisplayFormatAlpha (img);
-	SDL_FreeSurface(img);
+	if (img->format->BytesPerPixel > 1)
+	{
+		myImage->NormalImg = TFB_DisplayFormatAlpha (img);
+		if (myImage->NormalImg)
+		{
+			SDL_FreeSurface(img);
+		}
+		else
+		{
+			printf("TFB_LoadImage(): TFB_DisplayFormatAlpha failed\n");
+			myImage->NormalImg = img;
+		}
+	}
+	else
+	{
+		myImage->NormalImg = img;
+	}
 
 	return(myImage);
 }
@@ -198,23 +243,34 @@ TFB_FreeImage (TFB_Image *img)
 	}
 }
 
-void 
-TFB_UpdateDrawableImage (TFB_Image *img)
+int TFB_ColorMapToRGB (SDL_Color *cmap_rgb)
 {
-	SDL_Surface *new_surf;
+	int i, n;
+	UBYTE *colors;
+	Uint32 c32k;
 
-    float x_scale = (float)ScreenWidthActual / ScreenWidth;
-	float y_scale = (float)ScreenHeightActual / ScreenHeight;
-
-	SDL_LockSurface (img->SurfaceSDL);
-	new_surf = zoomSurface (img->SurfaceSDL, x_scale, y_scale, SMOOTHING_OFF);
-	SDL_UnlockSurface (img->SurfaceSDL);
+	colors = current_colormap;
+	n = current_colormap_size / 2;
+	if (n > 256)
+		n = 256;
 	
-	// Now convert to the native display format
+    for (i = 0; i < n; ++i)
+    {
+		// FIXME: this has a rather nasty problem currently.. sometimes,
+		//        green component's most significant bit is missing completely, 
+		//        for unknown reason, which leads to color corruption
 
-	SDL_FreeSurface (img->DrawableImg);
-	img->DrawableImg = TFB_DisplayFormatAlpha (new_surf);
-	SDL_FreeSurface (new_surf);
+		c32k = (*(Uint32*)colors) >> 8;
+		colors += 2;
+
+		cmap_rgb[i].r = (c32k & 0x7c00) >> 7;
+		cmap_rgb[i].g = (c32k & 0x3e0 ) >> 2;
+		cmap_rgb[i].b = (c32k & 0x1f  ) << 3;
+
+		//printf("cmap %d: r %d g %d b %d, c32 %x\n", i, cmap_rgb[i].r, cmap_rgb[i].g, cmap_rgb[i].b, c32k);
+    }
+
+	return n;
 }
 
 void
@@ -309,83 +365,96 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 		DC_image = (TFB_Image*) DC->image;
 		if (DC_image)
-			if (SDL_mutexP(DC_image->mutex))
-				printf("TFB_FlushGraphics(): couldn't lock DC_image->mutex\n");
+			SDL_mutexP (DC_image->mutex);
 		
 		switch (DC->Type)
 		{
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
-			if (DC_image==0)
-			{
-				printf ("Error!!! Bad Image!\n");
-			}
-			else
 			{
 				SDL_Rect targetRect;
+				SDL_Surface *surf;
 
-				targetRect.x = DC->x * ScreenWidthActual / ScreenWidth;
-				targetRect.y = DC->y * ScreenHeightActual / ScreenHeight;
-
-				if (DC->Qualifier != MAPPED_TO_DISPLAY)
+				if (DC_image == 0)
 				{
-					if ((DC->w != DC_image->SurfaceSDL->w || DC->h != DC_image->SurfaceSDL->h) && 
-						DC_image->ScaledImg)
+					printf ("TFB_FlushGraphics(): error, DC_image == 0\n");
+					break;
+				}
+
+				targetRect.x = DC->x;
+				targetRect.y = DC->y;
+
+				if ((DC->w != DC_image->NormalImg->w || DC->h != DC_image->NormalImg->h) && 
+					DC_image->ScaledImg)
+					surf = DC_image->ScaledImg;
+				else
+					surf = DC_image->NormalImg;
+
+				if (surf->format->BytesPerPixel == 1)
+				{
+					if (DC->UsePalette)
 					{
-						SDL_BlitSurface(DC_image->ScaledImg, NULL, SDL_Screen, &targetRect);
+						SDL_SetColors (surf, (SDL_Color*)DC->Palette, 0, 256);
 					}
 					else
 					{
-						if (DC_image->dirty)
-						{
-							TFB_UpdateDrawableImage (DC_image);
-							DC_image->dirty = FALSE;
-						}
-
-						SDL_BlitSurface(DC_image->DrawableImg, NULL, SDL_Screen, &targetRect);
+						SDL_SetColors (surf, DC_image->Palette, 0, 256);
 					}
 				}
-				else
-				{
-					SDL_BlitSurface(DC_image->SurfaceSDL, NULL, SDL_Screen, &targetRect);
-				}
+
+				SDL_BlitSurface(surf, NULL, SDL_Screen, &targetRect);
+
+				break;
 			}
-			break;
 		case TFB_DRAWCOMMANDTYPE_LINE:
 			{
-				int x_scale = ScreenWidthActual / ScreenWidth;
-				int y_scale = ScreenHeightActual / ScreenHeight;
+				SDL_Rect r;
 				int x1, y1, x2, y2;
 				Uint32 color;
 				PutPixelFn screen_plot;
-				int xi, yi;
 
 				screen_plot = putpixel_for (SDL_Screen);
-
-				x1 = DC->x * x_scale;
-				x2 = DC->w * x_scale;
-				y1 = DC->y * y_scale;
-				y2 = DC->h * y_scale;
 				color = SDL_MapRGB (SDL_Screen->format, DC->r, DC->g, DC->b);
+
+				x1 = DC->x;
+				x2 = DC->w;
+				y1 = DC->y;
+				y2 = DC->h;
 				
+				SDL_GetClipRect(SDL_Screen, &r);
+				
+				if (x1 < r.x)
+					x1 = r.x;
+				else if (x1 > r.x + r.w)
+					x1 = r.x + r.w;
+
+				if (x2 < r.x)
+					x2 = r.x;
+				else if (x2 > r.x + r.w)
+					x2 = r.x + r.w;
+				
+				if (y1 < r.y)
+					y1 = r.y;
+				else if (y1 > r.y + r.h)
+					y1 = r.y + r.h;
+
+				if (y2 < r.y)
+					y2 = r.y;
+				else if (y2 > r.y + r.h)
+					y2 = r.y + r.h;
+
 				SDL_LockSurface (SDL_Screen);
-				for (xi = 0; xi < x_scale; xi++)
-				{
-					for (yi = 0; yi < y_scale; yi++)
-					{
-						line (x1 + xi, y1 + yi, x2 + xi, y2 + yi,
-							  color, screen_plot, SDL_Screen);
-					}
-				}
+				line (x1, y1, x2, y2, color, screen_plot, SDL_Screen);
 				SDL_UnlockSurface (SDL_Screen);
+
 				break;
 			}
 			case TFB_DRAWCOMMANDTYPE_RECTANGLE:
 			{
 				SDL_Rect r;
-				r.x = DC->x * ScreenWidthActual / ScreenWidth;
-				r.y = DC->y * ScreenHeightActual / ScreenHeight;
-				r.w = DC->w * ScreenWidthActual / ScreenWidth;
-				r.h = DC->h * ScreenHeightActual / ScreenHeight;
+				r.x = DC->x;
+				r.y = DC->y;
+				r.w = DC->w;
+				r.h = DC->h;
 
 				SDL_FillRect(SDL_Screen, &r, SDL_MapRGB(SDL_Screen->format, DC->r, DC->g, DC->b));
 				break;
@@ -393,10 +462,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
 			{
 				SDL_Rect r;
-				r.x = DC->x * ScreenWidthActual / ScreenWidth;
-				r.y = DC->y * ScreenHeightActual / ScreenHeight;
-				r.w = DC->w * ScreenWidthActual / ScreenWidth;
-				r.h = DC->h * ScreenHeightActual / ScreenHeight;
+				r.x = DC->x;
+				r.y = DC->y;
+				r.w = DC->w;
+				r.h = DC->h;
 				
 				SDL_SetClipRect(SDL_Screen, &r);
 				break;
@@ -407,10 +476,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_COPYBACKBUFFERTOOTHERBUFFER:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC->x * ScreenWidthActual / ScreenWidth;
-				src.y = dest.y = DC->y * ScreenHeightActual / ScreenHeight;
-				src.w = DC->w * ScreenWidthActual / ScreenWidth;
-				src.h = DC->h * ScreenHeightActual / ScreenHeight;
+				src.x = dest.x = DC->x;
+				src.y = dest.y = DC->y;
+				src.w = DC->w;
+				src.h = DC->h;
 
 				if (DC_image == 0) 
 				{
@@ -420,32 +489,32 @@ TFB_FlushGraphics () // Only call from main thread!!
 				{
 					dest.x = 0;
 					dest.y = 0;
-					SDL_BlitSurface(SDL_Screen, &src, DC_image->SurfaceSDL, &dest);
-					DC_image->dirty = TRUE;
+					SDL_BlitSurface(SDL_Screen, &src, DC_image->NormalImg, &dest);
 				}
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_COPYFROMOTHERBUFFER:
 			{
 				SDL_Rect src, dest;
-				src.x = dest.x = DC->x * ScreenWidthActual / ScreenWidth;
-				src.y = dest.y = DC->y * ScreenHeightActual / ScreenHeight;
-				src.w = DC->w * ScreenWidthActual / ScreenWidth;
-				src.h = DC->h * ScreenHeightActual / ScreenHeight;
+				src.x = dest.x = DC->x;
+				src.y = dest.y = DC->y;
+				src.w = DC->w;
+				src.h = DC->h;
 				SDL_BlitSurface(ExtraScreen, &src, SDL_Screen, &dest);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
-			SDL_FreeSurface (DC_image->SurfaceSDL);
-			SDL_FreeSurface (DC_image->DrawableImg);
+			SDL_FreeSurface (DC_image->NormalImg);
 			
 			if (DC_image->ScaledImg) {
 				//printf("DELETEIMAGE to ScaledImg %x, size %d %d\n",DC_image->ScaledImg,DC_image->ScaledImg->w,DC_image->ScaledImg->h);
 				SDL_FreeSurface (DC_image->ScaledImg);
 			}
 
-			if (SDL_mutexV(DC_image->mutex))
-				printf("TFB_FlushGraphics(): couldn't unlock DC_image->mutex (DELETEIMAGE)\n");
+			if (DC_image->Palette)
+				HFree (DC_image->Palette);
+
+			SDL_mutexV (DC_image->mutex);
 			SDL_DestroyMutex (DC_image->mutex);
 			
 			HFree (DC_image);
@@ -454,8 +523,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		}
 		
 		if (DC_image)
-			if (SDL_mutexV(DC_image->mutex))
-				printf("TFB_FlushGraphics(): couldn't unlock DC_image->mutex\n");
+			SDL_mutexV (DC_image->mutex);
 
 		TFB_DeallocateDrawCommand (DC);
 	}

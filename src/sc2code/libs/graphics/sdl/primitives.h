@@ -30,4 +30,6 @@ PutPixelFn putpixel_for(SDL_Surface *surface);
 void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, 
 		  SDL_Surface *surface);
 
+void replace_color (Uint32 color, SDL_Surface *surface);
+
 #endif

@@ -387,9 +387,8 @@ int xform_PLUT_task(void* blah)
 		CurTime = GetTimeCounter ();
 		do
 		{
-#define NUMBER_OF_PLUTVALS 32
-#define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
-#define PLUT_BYTE_SIZE (sizeof (DWORD) * NUMBER_OF_PLUT_UINT32s)
+//#define NUMBER_OF_PLUTVALS 32
+//#define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
 			BYTE i;
 			DWORD StartTime;
 			DWORD *pCurCMap;

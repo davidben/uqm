@@ -41,20 +41,19 @@ void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
 // TFB_ImageStruct will be casted to this and vice versa, so sizes must be equal
 typedef struct tfb_image
 {
-	SDL_Surface *SurfaceSDL;
-	SDL_Surface *DrawableImg;
+	SDL_Surface *NormalImg;
 	SDL_Surface *ScaledImg;
-	int scale; // used with ScaledImg
-	BOOLEAN dirty; // true if DrawableImg needs to be created again
+	SDL_Color *Palette;
+	int scale;
 	SDL_mutex *mutex;
 	UBYTE pad[sizeof(TFB_ImageStruct)-sizeof(SDL_Surface*)-sizeof(SDL_Surface*)-
-		sizeof(SDL_Surface*)-sizeof(int)-sizeof(BOOLEAN)-sizeof(SDL_mutex*)];
+		sizeof(SDL_Color*)-sizeof(int)-sizeof(SDL_mutex*)];
 } TFB_Image;
 
 TFB_Image *TFB_LoadImage (SDL_Surface *img);
 void TFB_FreeImage (TFB_Image *img);
-void TFB_UpdateDrawableImage (TFB_Image *img);
 
+int TFB_ColorMapToRGB (SDL_Color *cmap_rgb);
 void TFB_SwapBuffers ();
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
 

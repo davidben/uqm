@@ -192,4 +192,36 @@ void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, SDL_Sur
 	}
 }
 
+// replaces all non-alpha pixels by color
+void replace_color (Uint32 color, SDL_Surface *surface)
+{
+	int x,y,w,h;
+	Uint32 p;
+	Uint8 r,g,b,a;
+	GetPixelFn getpix;
+	PutPixelFn putpix;
+
+	getpix = getpixel_for (surface);
+	putpix = putpixel_for (surface);
+
+	SDL_LockSurface(surface);
+
+	w = surface->w;
+	h = surface->h;
+
+	for (y=0;y<h;++y)
+	{
+		for (x=0;x<w;++x)
+		{
+			p = getpix (surface,x,y);
+			SDL_GetRGBA (p, surface->format, &r, &g, &b, &a);
+			
+			if (a)
+				putpix (surface,x,y,color);
+		}
+	}
+
+	SDL_UnlockSurface(surface);
+}
+
 #endif

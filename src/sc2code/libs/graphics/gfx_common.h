@@ -19,10 +19,6 @@
 #ifndef GFX_COMMON_H
 #define GFX_COMMON_H
 
-#ifdef WIN32
-#pragma warning (disable:4244)	/* Disable bogus conversion warnings. */
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -31,6 +27,7 @@
 #include "libs/gfxlib.h"
 #include "libs/vidlib.h"
 #include "libs/misc.h"
+#include "cmap.h"
 
 #define TFB_WINDOW_CAPTION "The Ur-Quan Masters"
 
@@ -45,6 +42,8 @@ enum
 #define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
 #define TFB_GFXFLAGS_BILINEAR_FILTERING (1<<1)
 #define TFB_GFXFLAGS_SHOWFPS            (1<<2)
+#define TFB_GFXFLAGS_TVEFFECT           (1<<3)
+
 
 int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
 int TFB_CreateGamePlayThread ();
@@ -87,6 +86,14 @@ enum
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
 };
 
+typedef struct tfb_palette
+{
+	UBYTE r;
+	UBYTE g;
+	UBYTE b;
+	UBYTE unused;
+} TFB_Palette;
+
 typedef struct tfb_drawcommand
 {
 	int Type;
@@ -94,11 +101,12 @@ typedef struct tfb_drawcommand
 	int y;
 	int w;
 	int h;
-	TFB_ImageStruct *image; // only used for image draw type
-	int r; // RGB only used for rect draw types
+	TFB_ImageStruct *image;
+	int r;
 	int g;
 	int b;
-	int Qualifier;
+	TFB_Palette Palette[256];
+	BOOLEAN UsePalette;
 } TFB_DrawCommand;
 
 // Queue Stuff

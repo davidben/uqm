@@ -22,10 +22,9 @@
 
 static SDL_Surface *format_conv_surf;
 
-static int ScreenWidthOpenGL;
-static int ScreenHeightOpenGL;
 static int ScreenFilterMode;
 static unsigned int DisplayTexture;
+static BOOLEAN tveffect;
 
 
 int
@@ -53,11 +52,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;
-	ScreenWidthActual = ScreenWidth;
-	ScreenHeightActual = ScreenHeight;
-
-	ScreenWidthOpenGL = width;
-	ScreenHeightOpenGL = height;
+	ScreenWidthActual = width;
+	ScreenHeightActual = height;
 
 	switch(bpp) {
 		case 8:
@@ -96,13 +92,13 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		videomode_flags |= SDL_FULLSCREEN;
 
-	SDL_Video = SDL_SetVideoMode (ScreenWidthOpenGL, ScreenHeightOpenGL, 
+	SDL_Video = SDL_SetVideoMode (ScreenWidthActual, ScreenHeightActual, 
 		bpp, videomode_flags);
 
 	if (SDL_Video == NULL)
 	{
 		printf ("Couldn't set OpenGL %ix%ix%i video mode: %s\n",
-			ScreenWidthOpenGL, ScreenHeightOpenGL, bpp,
+			ScreenWidthActual, ScreenHeightActual, bpp,
 			SDL_GetError ());
 		exit(-1);
 	}
@@ -116,7 +112,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 			glGetString(GL_VERSION));
 	}
 
-	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidthActual, ScreenHeightActual, 32,
+	SDL_Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
 
 	if (SDL_Screen == NULL)
@@ -126,7 +122,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
-	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidthActual, ScreenHeightActual, 32,
+	ExtraScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
 
 	if (ExtraScreen == NULL)
@@ -151,7 +147,12 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	else
 		ScreenFilterMode = GL_NEAREST;
 
-	glViewport (0, 0, ScreenWidthOpenGL, ScreenHeightOpenGL);
+	if (flags & TFB_GFXFLAGS_TVEFFECT)
+		tveffect = TRUE;
+	else
+		tveffect = FALSE;
+
+	glViewport (0, 0, ScreenWidthActual, ScreenHeightActual);
 	glClearColor (0,0,0,0);
 	glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	SDL_GL_SwapBuffers ();
@@ -169,12 +170,33 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	return 0;
 }
 
+void
+TFB_GL_TVEffect()
+{
+	int y;
+
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_DST_COLOR, GL_ONE);
+	glColor3f(0.5, 0.5, 0.5);
+
+	for (y = 0; y < ScreenHeightActual; y += 2)
+	{
+		glBegin(GL_LINES);
+		glVertex2i(0, y);
+		glVertex2i(ScreenWidthActual, y);
+		glEnd();
+	}
+
+	glDisable(GL_BLEND);
+}
+
 void 
 TFB_GL_SwapBuffers ()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho (0,ScreenWidthOpenGL,ScreenHeightOpenGL, 0, -1, 1);
+	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -198,15 +220,18 @@ TFB_GL_SwapBuffers ()
 	glVertex2i(0, 0);
 
 	glTexCoord2f(ScreenWidth / 512.0f, 0);
-	glVertex2i(ScreenWidthOpenGL, 0);
+	glVertex2i(ScreenWidthActual, 0);
 	
 	glTexCoord2f(ScreenWidth / 512.0f, ScreenHeight / 256.0f);
-	glVertex2i(ScreenWidthOpenGL, ScreenHeightOpenGL);
+	glVertex2i(ScreenWidthActual, ScreenHeightActual);
 
 	glTexCoord2f(0, ScreenHeight / 256.0f);
-	glVertex2i(0, ScreenHeightOpenGL);
+	glVertex2i(0, ScreenHeightActual);
 
 	glEnd();
+
+	if (tveffect)
+		TFB_GL_TVEffect();
 
 	SDL_GL_SwapBuffers();
 }

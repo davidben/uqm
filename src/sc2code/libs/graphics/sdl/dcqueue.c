@@ -136,6 +136,7 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 					: TFB_DRAWCOMMANDTYPE_SCISSORDISABLE;
 
 			DC->image = 0;
+			DC->UsePalette = FALSE;
 			
 			TFB_EnqueueDrawCommand(DC);
 		}

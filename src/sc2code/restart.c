@@ -116,14 +116,14 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		BYTE NewState;
 
 		NewState = pMS->CurState;
-		if (GetInputXComponent (InputState) < 0
-				|| GetInputYComponent (InputState) < 0)
+		if (GetInputXComponent (InputState) > 0
+				|| GetInputYComponent (InputState) > 0)
 		{
 			if (NewState-- == START_NEW_GAME)
 				NewState = PLAY_SUPER_MELEE;
 		}
-		else if (GetInputXComponent (InputState) > 0
-				|| GetInputYComponent (InputState) > 0)
+		else if (GetInputXComponent (InputState) < 0
+				|| GetInputYComponent (InputState) < 0)
 		{
 			if (NewState++ == PLAY_SUPER_MELEE)
 				NewState = START_NEW_GAME;

@@ -24,6 +24,7 @@
 #include <fcntl.h>
 
 #include "sdl_common.h"
+#include "primitives.h"
 
 // following stuff was in libs/graphics/getbody.c before modularization
 
@@ -31,7 +32,7 @@
 extern char *_cur_resfile_name;
 
 static void
-process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
+process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct, BOOLEAN is_font)
 {
 	int hx, hy, h;
 
@@ -41,7 +42,59 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 	hx = hy = 0;
 
 	SDL_LockSurface (img[cel_ct]);
-	if (img[cel_ct]->w >= 3 && (h = img[cel_ct]->h))
+
+	if (is_font)
+	{
+		// convert 32-bit png font to indexed
+
+		int x,y;
+		Uint8 r,g,b,a;
+		Uint32 p;
+		SDL_Color colors[256];
+
+		SDL_Surface *new_surf;				
+		GetPixelFn getpix;
+		PutPixelFn putpix;
+
+		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, img[cel_ct]->w, img[cel_ct]->h, 
+			8, 0, 0, 0, 0);
+
+		getpix = getpixel_for (img[cel_ct]);
+		putpix = putpixel_for (new_surf);
+
+		for (y = 0; y < img[cel_ct]->h; ++y)
+		{
+			for (x = 0; x < img[cel_ct]->w; ++x)
+			{
+				p = getpix (img[cel_ct], x, y);
+				SDL_GetRGBA (p, img[cel_ct]->format, &r, &g, &b, &a);
+
+				if (a)
+					putpix (new_surf, x, y, 1);
+				else
+					putpix (new_surf, x, y, 0);
+			}
+		}
+		
+		colors[0].r = colors[0].g = colors[0].b = 0;
+		for (x = 1; x < 256; ++x)
+		{
+			colors[x].r = 255;
+			colors[x].g = 255;
+			colors[x].b = 255;
+		}
+
+		SDL_SetColors (new_surf, colors, 0, 256);
+		SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
+
+		SDL_UnlockSurface (img[cel_ct]);
+		SDL_FreeSurface (img[cel_ct]);
+
+		img[cel_ct] = new_surf;
+
+		SDL_LockSurface (img[cel_ct]);
+	}
+	else if (img[cel_ct]->w >= 3 && (h = img[cel_ct]->h))
 	{
 		if (img[cel_ct]->format->palette)
 		{
@@ -57,17 +110,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 			*p++ = Cknockout;
 			Choty = *p;
 			*p++ = Cknockout;
-			SDL_SetColorKey
-			(
-				img[cel_ct], SDL_SRCCOLORKEY,
-				SDL_MapRGB
-				(
-					img[cel_ct]->format,
-					img[cel_ct]->format->palette->colors[Cknockout].r,
-					img[cel_ct]->format->palette->colors[Cknockout].g,
-					img[cel_ct]->format->palette->colors[Cknockout].b
-				)
-			);
+			SDL_SetColorKey(img[cel_ct], SDL_SRCCOLORKEY, Cknockout);
 			do
 			{
 				w = img[cel_ct]->w - (p - pixel);
@@ -149,24 +192,30 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 		{
 		}
 	}
+
 	SDL_UnlockSurface (img[cel_ct]);
 
-hx -= img[cel_ct]->clip_rect.x;
-hy -= img[cel_ct]->clip_rect.y;
+	hx -= img[cel_ct]->clip_rect.x;
+	hy -= img[cel_ct]->clip_rect.y;
+	
 	FramePtr->DataOffs = (BYTE *)TFB_LoadImage (img[cel_ct]) - (BYTE *)FramePtr;
-img[cel_ct] = ((TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs))->SurfaceSDL;
-hx += img[cel_ct]->clip_rect.x;
-hy += img[cel_ct]->clip_rect.y;
+	img[cel_ct] = ((TFB_Image *)((BYTE *)FramePtr + FramePtr->DataOffs))->NormalImg;
+
+	hx += img[cel_ct]->clip_rect.x;
+	hy += img[cel_ct]->clip_rect.y;
+	
 	SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (hx, hy));
 	SetFrameBounds (FramePtr, img[cel_ct]->clip_rect.w, img[cel_ct]->clip_rect.h);
+
 #if 0
-printf ("\thot[%d, %d], rect[%d, %d, %d, %d]\n",
+	printf ("\thot[%d, %d], rect[%d, %d, %d, %d]\n",
 		hx, hy,
 		img[cel_ct]->clip_rect.x,
 		img[cel_ct]->clip_rect.y,
 		img[cel_ct]->clip_rect.w,
 		img[cel_ct]->clip_rect.h);
 #endif
+
 }
 
 MEM_HANDLE
@@ -206,6 +255,10 @@ _GetCelData (FILE *fp, DWORD length)
 	cel_ct = 0;
 	while (fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_ct < MAX_CELS)
 	{
+		/*char fnamestr[1000];
+		sscanf(CurrentLine, "%s", fnamestr);
+		printf("imgload %s\n",fnamestr);*/
+
 		if
 		(
 				sscanf(CurrentLine, "%s", &filename[n]) == 1
@@ -218,6 +271,8 @@ _GetCelData (FILE *fp, DWORD length)
 		else if (img[cel_ct])
 printf("_GetCelData: Bad file!\n"),
 			SDL_FreeSurface (img[cel_ct]);
+		
+		
 
 		if ((int)ftell (fp) - (int)opos >= (int)length)
 			break;
@@ -250,7 +305,7 @@ printf("_GetCelData: Bad file!\n"),
 
 			FramePtr = &DrawablePtr->Frame[cel_ct];
 			while (--FramePtr, cel_ct--)
-				process_image (FramePtr, img, cel_ct);
+				process_image (FramePtr, img, cel_ct, FALSE);
 
 			UnlockDrawable (Drawable);
 		}
@@ -368,10 +423,26 @@ _GetFontData (FILE *fp, DWORD length)
 			{
 				if (img[cel_ct])
 				{
-					process_image (FramePtr, img, cel_ct);
-					SetFrameBounds (FramePtr, GetFrameWidth (FramePtr) + 1, GetFrameHeight (FramePtr));
+					process_image (FramePtr, img, cel_ct, TRUE);
+					SetFrameBounds (FramePtr, GetFrameWidth (FramePtr) + 1, GetFrameHeight (FramePtr) + 1);
+					
 					if (img[0])
-						SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (0, img[0]->clip_rect.h));
+					{
+						// This tunes the font positioning to be about what it should
+						// TODO: prolly needs a little tweaking still
+
+						int tune_amount = 0;
+
+						if (img[0]->clip_rect.h == 8)
+							tune_amount = -1;
+						else if (img[0]->clip_rect.h == 9)
+							tune_amount = -2;
+						else if (img[0]->clip_rect.h > 9)
+							tune_amount = -3;
+
+						SetFrameHotSpot (FramePtr, MAKE_HOT_SPOT (0, img[0]->clip_rect.h + tune_amount));
+					}
+					
 					if (GetFrameHeight (FramePtr) > FontPtr->Leading)
 						FontPtr->Leading = GetFrameHeight (FramePtr);
 				}
@@ -450,20 +521,24 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			TYPE_SET (DrawablePtr->FlagsAndIndex, flags << FTYPE_SHIFT);
 			INDEX_SET (DrawablePtr->FlagsAndIndex, NumFrames - 1);
 
-			imgw = (flags & MAPPED_TO_DISPLAY) ? width * ScreenWidthActual / ScreenWidth : width;
-			imgh = (flags & MAPPED_TO_DISPLAY) ? height * ScreenHeightActual / ScreenHeight : height;
+			imgw = width;
+			imgh = height;
+			
+			// commented out these when removing support for pre-scaling -Mika
+			// imgw = (flags & MAPPED_TO_DISPLAY) ? width * ScreenWidthActual / ScreenWidth : width;
+			// imgh = (flags & MAPPED_TO_DISPLAY) ? height * ScreenHeightActual / ScreenHeight : height;
+
 			FramePtr = &DrawablePtr->Frame[NumFrames - 1];
 			while (NumFrames--)
 			{
 				TFB_Image *Image;
 
-
 				if (DrawableType == RAM_DRAWABLE
 						&& (Image = TFB_LoadImage (SDL_CreateRGBSurface (
-										SDL_HWSURFACE,
+										SDL_SWSURFACE,
 										imgw,
 										imgh,
-										24,
+										32,
 										0x00FF0000,
 										0x0000FF00,
 										0x000000FF,

@@ -39,8 +39,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 	img = (TFB_Image *) ((BYTE *) SrcFramePtr + SrcFramePtr->DataOffs);
 	
-	if (SDL_mutexP(img->mutex))
-		printf("blt(): couldn't lock img->mutex\n");
+	SDL_mutexP (img->mutex);
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -54,8 +53,8 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			GetFrameHotX (_CurFramePtr);
 		DrawCommand->y = pClipRect->corner.y -
 			GetFrameHotY (_CurFramePtr);
-		DrawCommand->w = img->SurfaceSDL->clip_rect.w;
-		DrawCommand->h = img->SurfaceSDL->clip_rect.h;
+		DrawCommand->w = img->NormalImg->clip_rect.w;
+		DrawCommand->h = img->NormalImg->clip_rect.h;
 
 		if (gscale != 0 && gscale != 256)
 		{
@@ -81,29 +80,37 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 				// NOTE: Planet surfaces maybe causes memory leaks,
 				//       I haven't currently seen DELETEIMAGE executed to them at all.
-				//       Also, we might want to change the way they are implemented, as
-				//       currently the scaled img is like 1936x600x32bit so it takes
-				//       much memory and is perhaps too slow to process on slower systems.
-				//       -Mika
 
 				SDL_Surface *new_surf;
 
 				img->scale = gscale;
-				new_surf = zoomSurface (img->DrawableImg, gscale / 256.0f,
+				new_surf = zoomSurface (img->NormalImg, gscale / 256.0f,
 					gscale / 256.0f, SMOOTHING_OFF);
 
 				if (new_surf) 
 				{
-					img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
-
-					if (img->ScaledImg)
+					if (new_surf->format->BytesPerPixel > 1)
 					{
-						SDL_FreeSurface(new_surf);
+						img->ScaledImg = TFB_DisplayFormatAlpha (new_surf);
+						if (img->ScaledImg)
+						{
+							SDL_FreeSurface(new_surf);
+						}
+						else
+						{
+							printf("blt(): TFB_DisplayFormatAlpha failed\n");
+							img->ScaledImg = new_surf;
+						}
 					}
 					else
 					{
-						printf("blt(): TFB_DisplayFormatAlpha failed\n");
 						img->ScaledImg = new_surf;
+						SDL_SetColors (img->ScaledImg, img->Palette, 0, 256);
+						if (img->NormalImg->flags & SDL_SRCCOLORKEY)
+						{
+							SDL_SetColorKey (img->ScaledImg, SDL_SRCCOLORKEY, 
+								img->NormalImg->format->colorkey);
+						}
 					}
 				}
 				else
@@ -117,17 +124,65 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
 		{
+			int i;
 			DWORD c32k;
 
 			c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
 			DrawCommand->r = (c32k >> (10 - (8 - 5))) & 0xF8;
 			DrawCommand->g = (c32k >> (5 - (8 - 5))) & 0xF8;
-			DrawCommand->b = (c32k << (8 - 5));
+			DrawCommand->b = (c32k << (8 - 5)) & 0xF8;
+
+			for (i = 0; i < 256; ++i)
+			{
+				DrawCommand->Palette[i].r = DrawCommand->r;
+				DrawCommand->Palette[i].g = DrawCommand->g;
+				DrawCommand->Palette[i].b = DrawCommand->b;
+			}
+			
+			DrawCommand->UsePalette = TRUE;
+		}
+		else
+		{			
+			DrawCommand->UsePalette = FALSE;
+
+			// NOTE: following code for colormaps is experimental			
+			if (img->NormalImg->format->BytesPerPixel == 1)
+			{
+				if (current_colormap && current_colormap_size <= 512)
+				{
+					int i, n;
+					SDL_Color *imgpal;
+					SDL_Color cmap_rgb[256];
+
+					n = TFB_ColorMapToRGB (cmap_rgb);
+					
+					//printf("draw cmap %x, size %d, n %d, imgw %d imgh %d\n",current_colormap, current_colormap_size, n, img->NormalImg->w, img->NormalImg->h);
+
+					imgpal = img->NormalImg->format->palette->colors;
+					for (i = 0; i < 256; ++i)
+					{
+						DrawCommand->Palette[i].r = imgpal[i].r;
+						DrawCommand->Palette[i].g = imgpal[i].g;
+						DrawCommand->Palette[i].b = imgpal[i].b;
+					}
+
+					for (i = 0; i < n; ++i)
+					{
+						DrawCommand->Palette[252 - i].r = cmap_rgb[n - i - 1].r;
+						DrawCommand->Palette[252 - i].g = cmap_rgb[n - i - 1].g;
+						DrawCommand->Palette[252 - i].b = cmap_rgb[n - i - 1].b;
+					}
+
+					DrawCommand->UsePalette = TRUE;
+				}
+			}
 		}
 
-		DrawCommand->Qualifier = (TYPE_GET (GetFrameParentDrawable (
+		current_colormap = 0;
+
+		/*DrawCommand->Qualifier = (TYPE_GET (GetFrameParentDrawable (
 			SrcFramePtr)->FlagsAndIndex) >> FTYPE_SHIFT) &
-			MAPPED_TO_DISPLAY;
+			MAPPED_TO_DISPLAY;*/
 
 		TFB_EnqueueDrawCommand(DrawCommand);
 	}
@@ -139,13 +194,12 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 			_CurFramePtr->DataOffs));
 		
-		if (SDL_mutexP(dst_img->mutex))
-			printf("blt(): couldn't lock dst_img->mutex\n");
+		SDL_mutexP (dst_img->mutex);
 
-		SDL_SrcRect.x = (short) img->SurfaceSDL->clip_rect.x;
-		SDL_SrcRect.y = (short) img->SurfaceSDL->clip_rect.y;
-		SDL_SrcRect.w = (short) img->SurfaceSDL->clip_rect.w;
-		SDL_SrcRect.h = (short) img->SurfaceSDL->clip_rect.h;
+		SDL_SrcRect.x = (short) img->NormalImg->clip_rect.x;
+		SDL_SrcRect.y = (short) img->NormalImg->clip_rect.y;
+		SDL_SrcRect.w = (short) img->NormalImg->clip_rect.w;
+		SDL_SrcRect.h = (short) img->NormalImg->clip_rect.h;
 
 		SDL_DstRect.x = (short) pClipRect->corner.x -
 						GetFrameHotX (_CurFramePtr) + SDL_SrcRect.x;
@@ -153,32 +207,28 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 						GetFrameHotY (_CurFramePtr) + SDL_SrcRect.y;
 
 		SDL_BlitSurface (
-			img->SurfaceSDL,  // src
-			&SDL_SrcRect,     // src rect
-			dst_img->SurfaceSDL,
-			&SDL_DstRect      // dst rect
+			img->NormalImg,
+			&SDL_SrcRect,
+			dst_img->NormalImg,
+			&SDL_DstRect
 		);
-
-		dst_img->dirty = TRUE;
 		
-		if (SDL_mutexV(dst_img->mutex))
-			printf("blt(): couldn't unlock dst_img->mutex\n");
+		SDL_mutexV (dst_img->mutex);
 	}
 
-	if (SDL_mutexV(img->mutex))
-		printf("blt(): couldn't unlock img->mutex\n");
+	SDL_mutexV (img->mutex);
 }
 
 static void
 fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
-	BYTE r, g, b;
+	int r, g, b;
 	DWORD c32k;
 
 	c32k = GetPrimColor (PrimPtr) >> 8; //shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
 	g = (c32k >> (5 - (8 - 5))) & 0xF8;
-	b = (c32k << (8 - 5));
+	b = (c32k << (8 - 5)) & 0xF8;
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
@@ -207,6 +257,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 			}
 
 			DrawCommand->image = 0;
+			DrawCommand->UsePalette = FALSE;
 
 			TFB_EnqueueDrawCommand(DrawCommand);
 		}
@@ -219,8 +270,7 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 				_CurFramePtr->DataOffs));
 
-		if (SDL_mutexP(img->mutex))
-			printf("fillrect_blt(): couldn't lock img->mutex\n");
+		SDL_mutexP (img->mutex);
 
 		SDLRect.x = (short) (pClipRect->corner.x -
 				GetFrameHotX (_CurFramePtr));
@@ -229,12 +279,9 @@ fillrect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		SDLRect.w = (short) pClipRect->extent.width;
 		SDLRect.h = (short) pClipRect->extent.height;
 
-		SDL_FillRect (img->SurfaceSDL, &SDLRect, SDL_MapRGB (img->SurfaceSDL->format, r, g, b));
+		SDL_FillRect (img->NormalImg, &SDLRect, SDL_MapRGB (img->NormalImg->format, r, g, b));
 
-		img->dirty = TRUE;
-
-		if (SDL_mutexV(img->mutex))
-			printf("fillrect_blt(): couldn't unlock img->mutex\n");
+		SDL_mutexV (img->mutex);
 	}
 }
 
@@ -247,14 +294,14 @@ cmap_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 static void
 line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
-	float x1,y1,x2,y2;
-	BYTE r, g, b;
+	int x1,y1,x2,y2;
+	int r, g, b;
 	DWORD c32k;
 
 	c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
 	r = (c32k >> (10 - (8 - 5))) & 0xF8;
 	g = (c32k >> (5 - (8 - 5))) & 0xF8;
-	b = (c32k << (8 - 5));
+	b = (c32k << (8 - 5)) & 0xF8;
 
 	x1=PrimPtr->Object.Line.first.x - GetFrameHotX (_CurFramePtr);
 	y1=PrimPtr->Object.Line.first.y - GetFrameHotY (_CurFramePtr);
@@ -274,6 +321,7 @@ line_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 		DC.g = g;
 		DC.b = b;
 		DC.image = 0;
+		DC.UsePalette = FALSE;
 
 		TFB_EnqueueDrawCommand(&DC);
 	}

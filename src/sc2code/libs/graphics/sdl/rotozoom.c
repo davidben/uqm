@@ -11,10 +11,6 @@
 
 #ifdef GFXMODULE_SDL
 
-#ifdef WIN32
-#pragma warning (disable:4018)
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include "rotozoom.h"

@@ -223,6 +223,14 @@ SOURCE=..\sc2code\libs\graphics\gfx_common.c
 
 SOURCE=..\sc2code\libs\graphics\gfx_common.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\cmap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\cmap.h
+# End Source File
 # Begin Group "sdl"
 
 # PROP Default_Filter ""

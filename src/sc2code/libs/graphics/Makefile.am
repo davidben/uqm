@@ -16,11 +16,13 @@ noinst_LTLIBRARIES = libgraphics.la
 
 libgraphics_la_SOURCES = clipline.c context.c drawable.c filegfx.c font.c \
 	frame.c intersec.c line.c loaddisp.c makepoly.c map.c \
-	pixmap.c poly.c rect.c resgfx.c stamp.c boxint.c gfx_common.c
+	pixmap.c poly.c rect.c resgfx.c stamp.c boxint.c gfx_common.c \
+	cmap.c
 
 libgraphics_la_LIBADD = sdl/libsdl.la
 
 #libgraphics_la_LDFLAGS = @SMPEG_LIBS@
 
-noinst_HEADERS = context.h display.h drawable.h font.h gfxintrn.h gfx_common.h
+noinst_HEADERS = context.h display.h drawable.h font.h gfxintrn.h \
+	gfx_common.h cmap.h
 

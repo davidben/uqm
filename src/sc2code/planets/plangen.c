@@ -125,7 +125,11 @@ RenderTopography (BOOLEAN Reconstruct)
 
 				d = xlat_tab[d] - cbase[0];
 				ctab = (cbase + 2) + d * 3;
-				SetPrimColor (pBatch, BUILD_COLOR (MAKE_RGB15 (ctab[0] >> 3, ctab[1] >> 3, ctab[2] >> 3), d));
+
+				// fixed planet surfaces being too dark
+				// ctab shifts were previously >> 3 .. -Mika
+				SetPrimColor (pBatch, BUILD_COLOR (MAKE_RGB15 (ctab[0] >> 1, ctab[1] >> 1, ctab[2] >> 1), d));
+				
 }
 				if (--i)
 					continue;
