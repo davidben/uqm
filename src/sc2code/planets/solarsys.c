@@ -1795,9 +1795,10 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 	{
 		RECT r;
 
-		if (pSolarSysState->MenuState.flash_task
+		// 2002-12-13 PhracturedBlue's fix to planet changing color when using device problem
+		/*if (pSolarSysState->MenuState.flash_task
 				|| (LastActivity & CHECK_LOAD))
-			RenderTopography (TRUE);
+			RenderTopography (TRUE);*/
 
 		BatchGraphics ();
 
