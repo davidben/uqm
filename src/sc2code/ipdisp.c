@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "collide.h"
 
 void
 NotifyOthers (COUNT which_race, BYTE target_loc)

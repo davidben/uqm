@@ -68,7 +68,6 @@ extern int ScreenHeight;
 #include "element.h"
 #include "races.h"
 #include "weapon.h"
-#include "collide.h"
 #include "build.h"
 #include "intel.h"
 #include "sounds.h"
@@ -219,18 +218,11 @@ extern void ToggleSoundEffect (void);
 extern void PlaySoundEffect (SOUND S, COUNT Channel, SoundPosition Pos,
 		void *PositionalObject, BYTE Priority);
 
-extern BOOLEAN CopyProtection (void);
-
 /* dummy.c */
 extern void SetSoundTracking (BOOLEAN toggle);
 extern void GetSoundTrackingBuf (PSBYTE pdigi_buf);
 
-extern void StopVid (void);
-extern void PlayVid (MEM_HANDLE VidRef, BOOLEAN Continuous);
-extern MEM_HANDLE LoadVidFile (PSTR pStr);
 extern MEM_HANDLE LoadVidInstance (DWORD res);
-//extern MEM_HANDLE VidPlaying (void); // superseeded by VIDEO_REF version
-extern BOOLEAN DestroyVid (MEM_HANDLE VidRef);
 
 extern DRAWABLE CreatePixmapRegion (FRAME Frame, PPOINT pOrg, SIZE width,
 		SIZE height);

@@ -16,9 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "ships/ship.h"
 #include "ships/umgah/resinst.h"
-#include "starcon.h"
 
 #define MAX_CREW 10
 #define MAX_ENERGY 30

@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "collide.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/drawcmd.h"

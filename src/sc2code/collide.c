@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "collide.h"
 
 //#define DEBUG_COLLIDE
 

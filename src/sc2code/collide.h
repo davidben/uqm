@@ -19,6 +19,8 @@
 #ifndef _COLLIDE_H
 #define _COLLIDE_H
 
+#include "element.h"
+
 #define COLLISION_TURN_WAIT 1
 #define COLLISION_THRUST_WAIT 3
 

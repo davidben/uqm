@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "collide.h"
 
 BOOLEAN
 OpponentAlive (STARSHIPPTR TestStarShipPtr)
@@ -401,6 +402,9 @@ spawn_ion_trail (PELEMENT ElementPtr)
 	}
 }
 
+// Preprocess function for spawning a ship into or out of battle.
+// Used when a new ship warps in, or a ship escapes by warping out, but not
+// when a Pkunk ship is reborn.
 void
 ship_transition (PELEMENT ElementPtr)
 {

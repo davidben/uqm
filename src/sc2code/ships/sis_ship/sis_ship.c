@@ -16,9 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "ships/ship.h"
 #include "ships/sis_ship/resinst.h"
-#include "starcon.h"
 #include "controls.h"
 
 #define MAX_TRACKING 3

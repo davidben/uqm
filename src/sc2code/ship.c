@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "collide.h"
 
 void
 animation_preprocess (PELEMENT ElementPtr)

@@ -16,9 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "ships/ship.h"
 #include "ships/lastbat/resinst.h"
-#include "starcon.h"
 
 #define num_generators characteristics.max_thrust
 

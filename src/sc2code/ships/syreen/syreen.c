@@ -16,9 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "reslib.h"
+#include "ships/ship.h"
 #include "ships/syreen/resinst.h"
-#include "starcon.h"
 
 #define SYREEN_MAX_CREW_SIZE MAX_CREW_SIZE
 #define MAX_CREW 12

@@ -20,6 +20,7 @@
 #define _VELOCITY_H
 
 #include <string.h> /* for memset */
+#include "libs/gfxlib.h"
 
 typedef struct velocity_desc
 {

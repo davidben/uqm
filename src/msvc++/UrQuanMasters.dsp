@@ -2188,6 +2188,10 @@ SOURCE=..\sc2code\planets\surface.c
 # Begin Group "ships"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\ships\ship.h
+# End Source File
 # Begin Group "androsyn"
 
 # PROP Default_Filter ""
