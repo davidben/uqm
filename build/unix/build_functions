@@ -83,6 +83,7 @@ build_rec_dependencies() {
 	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
 	export BUILD_WORK_ESC
 
+	eval mkdir -p "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}"
 	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
 
 	# Remove the old dependency file, if it exists.
