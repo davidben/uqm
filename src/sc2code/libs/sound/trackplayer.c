@@ -199,7 +199,6 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 		val = wstrtoul(valStr,NULL,10);
 		if (val)
 		{
-			printf ("guessed: %d measured: %d\n",*time_stamps, val);
 			*time_stamps = (sint32)val;
 			num++;
 			time_stamps++;
