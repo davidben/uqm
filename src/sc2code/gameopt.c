@@ -512,8 +512,8 @@ DoSettings (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoSettings;
 	}
-	else if (CurrentMenuState.cancel
-			|| (CurrentMenuState.select
+	else if (PulsedInputState.key[KEY_MENU_CANCEL]
+			|| (PulsedInputState.key[KEY_MENU_SELECT]
 			&& pMS->CurState == EXIT_MENU_SETTING))
 	{
 		LockMutex (GraphicsLock);
@@ -524,7 +524,7 @@ DoSettings (PMENU_STATE pMS)
 		pMS->InputFunc = DoGameOptions;
 		pMS->Initialized = 0;
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		switch (pMS->CurState)
 		{
@@ -583,8 +583,8 @@ DoQuitMenu (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoQuitMenu;
 	}
-	else if (CurrentMenuState.cancel
-			|| (CurrentMenuState.select
+	else if (PulsedInputState.key[KEY_MENU_CANCEL]
+			|| (PulsedInputState.key[KEY_MENU_SELECT]
 			&& pMS->CurState == NO_QUIT_MENU))
 	{
 		LockMutex (GraphicsLock);
@@ -595,7 +595,7 @@ DoQuitMenu (PMENU_STATE pMS)
 		pMS->InputFunc = DoGameOptions;
 		pMS->Initialized = 0;
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		switch (pMS->CurState)
 		{
@@ -1018,7 +1018,7 @@ Restart:
 		pMS->Initialized = TRUE;
 		goto ChangeGameSelection;
 	}
-	else if (CurrentMenuState.cancel)
+	else if (PulsedInputState.key[KEY_MENU_CANCEL])
 	{
 		LockMutex (GraphicsLock);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
@@ -1039,7 +1039,7 @@ Restart:
 		}
 		return (FALSE);
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		pSD = &((SUMMARY_DESC *)pMS->CurString)[pMS->CurState];
 		prev_save = pMS->CurState;
@@ -1106,7 +1106,7 @@ Restart:
 	else
 	{
 		NewState = pMS->CurState;
-		if (CurrentMenuState.left || CurrentMenuState.page_up)
+		if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_PAGE_UP])
 		{
 			if (NewState == 0)
 				NewState = MAX_SAVED_GAMES - 1;
@@ -1115,7 +1115,7 @@ Restart:
 			else 
 				NewState = 0;
 		}
-		else if (CurrentMenuState.right || CurrentMenuState.page_down)
+		else if (PulsedInputState.key[KEY_MENU_RIGHT] || PulsedInputState.key[KEY_MENU_PAGE_DOWN])
 		{
 			if (NewState == MAX_SAVED_GAMES - 1)
 				NewState = 0;
@@ -1124,14 +1124,14 @@ Restart:
 			else 
 				NewState = MAX_SAVED_GAMES - 1;
 		}
-		else if (CurrentMenuState.up)
+		else if (PulsedInputState.key[KEY_MENU_UP])
 		{
 			if (NewState == 0)
 				NewState = MAX_SAVED_GAMES - 1;
 			else
 				NewState--;
 		}
-		else if (CurrentMenuState.down)
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
 			if (NewState == MAX_SAVED_GAMES - 1)
 				NewState = 0;
@@ -1373,14 +1373,14 @@ DoGameOptions (PMENU_STATE pMS)
 		pMS->Initialized = 1;
 		pMS->InputFunc = DoGameOptions;
 	}
-	else if (CurrentMenuState.cancel
-			|| (CurrentMenuState.select
+	else if (PulsedInputState.key[KEY_MENU_CANCEL]
+			|| (PulsedInputState.key[KEY_MENU_SELECT]
 			&& pMS->CurState == SETTINGS + 1))
 	{
 		pMS->CurState = SETTINGS + 1;
 		return (FALSE);
 	}
-	else if (CurrentMenuState.select || force_select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT] || force_select)
 	{
 		switch (pMS->CurState)
 		{

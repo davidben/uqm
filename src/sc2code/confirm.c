@@ -147,18 +147,18 @@ DoConfirmExit (void)
 			ExitRequested = FALSE;
 			GamePaused = FALSE;
 			UpdateInputState ();
-			if (CurrentMenuState.select)
+			if (PulsedInputState.key[KEY_MENU_SELECT])
 			{
 				done = TRUE;
 				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
 						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			}
-			else if (CurrentMenuState.cancel)
+			else if (PulsedInputState.key[KEY_MENU_CANCEL])
 			{
 				done = TRUE;
 				response = FALSE;
 			}
-			else if (CurrentMenuState.left || CurrentMenuState.right)
+			else if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT])
 			{
 				response = !response;
 				DrawConfirmationWindow (response);

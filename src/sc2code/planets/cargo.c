@@ -280,10 +280,10 @@ DoDiscardCargo (PMENU_STATE pMS)
 {
 	BYTE NewState;
 	BOOLEAN select, cancel, back, forward;
-	select = CurrentMenuState.select;
-	cancel = CurrentMenuState.cancel;
-	back = CurrentMenuState.up || CurrentMenuState.left;
-	forward = CurrentMenuState.down || CurrentMenuState.right;
+	select = PulsedInputState.key[KEY_MENU_SELECT];
+	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+	back = PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_LEFT];
+	forward = PulsedInputState.key[KEY_MENU_DOWN] || PulsedInputState.key[KEY_MENU_RIGHT];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);

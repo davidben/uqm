@@ -34,17 +34,17 @@ GetJoystickChar (void)
 	int dy;
 	UWORD old_char;
 
-	if (CurrentMenuState.select)
+	if (PulsedInputState.key[KEY_MENU_SELECT])
 		return ('\n');
-	else if (CurrentMenuState.cancel)
+	else if (PulsedInputState.key[KEY_MENU_CANCEL])
 		return (0x1B);
-	else if (CurrentMenuState.special)
+	else if (PulsedInputState.key[KEY_MENU_SPECIAL])
 		return (0x7F);
 		
 	old_char = cur_char;
 	dy = 0;
-	if (CurrentMenuState.up) dy = -1;
-	else if (CurrentMenuState.down) dy = 1;
+	if (PulsedInputState.key[KEY_MENU_UP]) dy = -1;
+	else if (PulsedInputState.key[KEY_MENU_DOWN]) dy = 1;
 	if (dy)
 	{
 		if (cur_char == ' ')
@@ -72,7 +72,7 @@ GetJoystickChar (void)
 		}
 	}
 	
-	if ((CurrentMenuState.page_up || CurrentMenuState.page_down) && isalpha (cur_char))
+	if ((PulsedInputState.key[KEY_MENU_PAGE_UP] || PulsedInputState.key[KEY_MENU_PAGE_DOWN]) && isalpha (cur_char))
 	{
 		if (islower (cur_char))
 			cur_char = toupper (cur_char);

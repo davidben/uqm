@@ -862,9 +862,9 @@ DoLoadTeam (PMELEE_STATE pMS)
 		pMS->InputFunc = DoLoadTeam;
 		UnlockMutex (GraphicsLock);
 	}
-	else if (CurrentMenuState.select | CurrentMenuState.cancel)
+	else if (PulsedInputState.key[KEY_MENU_SELECT] | PulsedInputState.key[KEY_MENU_CANCEL])
 	{
-		if (!CurrentMenuState.cancel)
+		if (!PulsedInputState.key[KEY_MENU_CANCEL])
 		{
 			pMS->TeamImage[pMS->side] = pMS->FileList[
 					pMS->CurIndex - pMS->TopTeamIndex
@@ -890,7 +890,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 
 		NewTop = pMS->TopTeamIndex;
 		index = old_index = pMS->CurIndex;
-		if (CurrentMenuState.up)
+		if (PulsedInputState.key[KEY_MENU_UP])
 		{
 			if (index-- == 0)
 				index = 0;
@@ -898,7 +898,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 			if (index < NewTop && (NewTop -= MAX_VIS_TEAMS) < 0)
 				NewTop = 0;
 		}
-		else if (CurrentMenuState.down)
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
 			if ((int)index < (int)GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - 1)
 				++index;
@@ -906,7 +906,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 			if ((int)index > (int)pMS->BotTeamIndex)
 				NewTop = index;
 		}
-		else if (CurrentMenuState.page_up)
+		else if (PulsedInputState.key[KEY_MENU_PAGE_UP])
 		{
 			if ((index -= MAX_VIS_TEAMS) < 0)
 				index = NewTop = 0;
@@ -916,7 +916,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 					NewTop = 0;
 			}
 		}
-		else if (CurrentMenuState.page_down)
+		else if (PulsedInputState.key[KEY_MENU_PAGE_DOWN])
 		{
 			if ((int)(index += MAX_VIS_TEAMS) <
 					(int)(GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT))
@@ -1176,8 +1176,8 @@ DoEdit (PMELEE_STATE pMS)
 		pMS->InputFunc = DoEdit;
 	}
 	else if ((pMS->row < NUM_MELEE_ROWS || pMS->CurIndex == (BYTE)~0)
-			&& (CurrentMenuState.cancel
-			|| (CurrentMenuState.right
+			&& (PulsedInputState.key[KEY_MENU_CANCEL]
+			|| (PulsedInputState.key[KEY_MENU_RIGHT]
 			&& (pMS->col == NUM_MELEE_COLUMNS - 1 || pMS->row == NUM_MELEE_ROWS))))
 	{
 		LockMutex (GraphicsLock);
@@ -1189,16 +1189,16 @@ DoEdit (PMELEE_STATE pMS)
 		InTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
-			&& (CurrentMenuState.select || CurrentMenuState.special))
+			&& (PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_SPECIAL]))
 	{
-		if (CurrentMenuState.select)
+		if (PulsedInputState.key[KEY_MENU_SELECT])
 			pMS->Initialized = 0;
 		else
 			pMS->Initialized = -1;
 		TFB_ResetControls ();
 		DoPickShip (pMS);
 	}
-	else if (pMS->row < NUM_MELEE_ROWS && CurrentMenuState.del)
+	else if (pMS->row < NUM_MELEE_ROWS && PulsedInputState.key[KEY_MENU_DELETE])
 	{
 		DeleteCurrentShip (pMS);
 		AdvanceCursor (pMS);
@@ -1232,7 +1232,7 @@ DoEdit (PMELEE_STATE pMS)
 				UnlockMutex (GraphicsLock);
 				return (TRUE);
 			}
-			else if (CurrentMenuState.select)
+			else if (PulsedInputState.key[KEY_MENU_SELECT])
 			{
 				pMS->CurIndex = 0;
 				LockMutex (GraphicsLock);
@@ -1244,18 +1244,18 @@ DoEdit (PMELEE_STATE pMS)
 		}
 
 		{
-			if (CurrentMenuState.left)
+			if (PulsedInputState.key[KEY_MENU_LEFT])
 			{
 				if (col-- == 0)
 					col = 0;
 			}
-			else if (CurrentMenuState.right)
+			else if (PulsedInputState.key[KEY_MENU_RIGHT])
 			{
 				if (++col == NUM_MELEE_COLUMNS)
 					col = NUM_MELEE_COLUMNS - 1;
 			}
 
-			if (CurrentMenuState.up)
+			if (PulsedInputState.key[KEY_MENU_UP])
 			{
 				if (row-- == 0)
 				{
@@ -1268,7 +1268,7 @@ DoEdit (PMELEE_STATE pMS)
 					}
 				}
 			}
-			else if (CurrentMenuState.down)
+			else if (PulsedInputState.key[KEY_MENU_DOWN])
 			{
 				if (row++ == NUM_MELEE_ROWS)
 				{
@@ -1343,11 +1343,11 @@ DoPickShip (PMELEE_STATE pMS)
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
 	}
-	else if (CurrentMenuState.select || CurrentMenuState.cancel)
+	else if (PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_CANCEL])
 	{
 		pMS->InputFunc = 0; /* disable ship flashing */
 
-		if (!CurrentMenuState.cancel)
+		if (!PulsedInputState.key[KEY_MENU_CANCEL])
 		{
 			HSTARSHIP hStarShip;
 			
@@ -1381,7 +1381,7 @@ DoPickShip (PMELEE_STATE pMS)
 
 		return (TRUE);
 	}
-	else if (CurrentMenuState.special)
+	else if (PulsedInputState.key[KEY_MENU_SPECIAL])
 	{
 		DoShipSpin (pMS->CurIndex, (MUSIC_REF)0);
 	
@@ -1393,25 +1393,25 @@ DoPickShip (PMELEE_STATE pMS)
 
 		NewStarShip = pMS->CurIndex;
 
-		if (CurrentMenuState.left)
+		if (PulsedInputState.key[KEY_MENU_LEFT])
 		{
 			if (NewStarShip-- % NUM_PICK_COLS == 0)
 				NewStarShip += NUM_PICK_COLS;
 		}
-		else if (CurrentMenuState.right)
+		else if (PulsedInputState.key[KEY_MENU_RIGHT])
 		{
 			if (++NewStarShip % NUM_PICK_COLS == 0)
 				NewStarShip -= NUM_PICK_COLS;
 		}
 		
-		if (CurrentMenuState.up)
+		if (PulsedInputState.key[KEY_MENU_UP])
 		{
 			if (NewStarShip >= NUM_PICK_COLS)
 				NewStarShip -= NUM_PICK_COLS;
 			else
 				NewStarShip += NUM_PICK_COLS * (NUM_PICK_ROWS - 1);
 		}
-		else if (CurrentMenuState.down)
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
 			if (NewStarShip < NUM_PICK_COLS * (NUM_PICK_ROWS - 1))
 				NewStarShip += NUM_PICK_COLS;
@@ -1605,7 +1605,7 @@ DoMelee (PMELEE_STATE pMS)
 		}
 		InTime = GetTimeCounter ();
 	}
-	else if (CurrentMenuState.cancel || CurrentMenuState.left)
+	else if (PulsedInputState.key[KEY_MENU_CANCEL] || PulsedInputState.key[KEY_MENU_LEFT])
 	{
 		LockMutex (GraphicsLock);
 		InTime = GetTimeCounter ();
@@ -1613,7 +1613,7 @@ DoMelee (PMELEE_STATE pMS)
 		UnlockMutex (GraphicsLock);
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
-		if (CurrentMenuState.cancel)
+		if (PulsedInputState.key[KEY_MENU_CANCEL])
 			pMS->side = pMS->row = pMS->col = 0;
 		else
 			pMS->side = 0,
@@ -1626,13 +1626,13 @@ DoMelee (PMELEE_STATE pMS)
 		MELEE_OPTIONS NewMeleeOption;
 
 		NewMeleeOption = pMS->MeleeOption;
-		if (CurrentMenuState.up)
+		if (PulsedInputState.key[KEY_MENU_UP])
 		{
 			InTime = GetTimeCounter ();
 			if (NewMeleeOption-- == CONTROLS_TOP)
 				NewMeleeOption = CONTROLS_TOP;
 		}
-		else if (CurrentMenuState.down)
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
 			InTime = GetTimeCounter ();
 			if (NewMeleeOption++ == CONTROLS_BOT)
@@ -1655,7 +1655,7 @@ DoMelee (PMELEE_STATE pMS)
 			UnlockMutex (GraphicsLock);
 		}
 
-		if (CurrentMenuState.select || force_select)
+		if (PulsedInputState.key[KEY_MENU_SELECT] || force_select)
 		{
 			switch (pMS->MeleeOption)
 			{

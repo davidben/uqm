@@ -22,20 +22,48 @@
 #include "starcon.h"
 #include "compiler.h"
 
-// This struct controls the various controls available to the player.
+// Enumerated type for controls
+enum {
+	KEY_P1_THRUST,
+	KEY_P1_LEFT,
+	KEY_P1_RIGHT,
+	KEY_P1_DOWN,
+	KEY_P1_WEAPON,
+	KEY_P1_SPECIAL,
+	KEY_P1_ESCAPE,
+	KEY_P2_THRUST,
+	KEY_P2_LEFT,
+	KEY_P2_RIGHT,
+	KEY_P2_DOWN,
+	KEY_P2_WEAPON,
+	KEY_P2_SPECIAL,
+	KEY_LANDER_THRUST,
+	KEY_LANDER_LEFT,
+	KEY_LANDER_RIGHT,
+	KEY_LANDER_WEAPON,
+	KEY_LANDER_ESCAPE,
+	KEY_PAUSE,
+	KEY_EXIT,
+	KEY_ABORT,
+	KEY_DEBUG,
+	KEY_MENU_UP,
+	KEY_MENU_DOWN,
+	KEY_MENU_LEFT,
+	KEY_MENU_RIGHT,
+	KEY_MENU_SELECT,
+	KEY_MENU_CANCEL,
+	KEY_MENU_SPECIAL,
+	KEY_MENU_PAGE_UP,
+	KEY_MENU_PAGE_DOWN,
+	KEY_MENU_ZOOM_IN,
+	KEY_MENU_ZOOM_OUT,
+	KEY_MENU_DELETE,
+	NUM_KEYS
+};
 
 typedef struct _controller_input_state {
-	int p1_thrust, p1_left, p1_right, p1_down, p1_weapon, p1_special, p1_escape;
-	int p2_thrust, p2_left, p2_right, p2_down, p2_weapon, p2_special;
-	int lander_thrust, lander_left, lander_right, lander_weapon, lander_escape;
-	int pause, exit, abort, debug;
+	int key[NUM_KEYS];
 } CONTROLLER_INPUT_STATE;
-
-typedef struct _menu_input_state {
-	int up, down, left, right, select, cancel, special;
-	int page_up, page_down, zoom_in, zoom_out;
-	int del;
-} MENU_INPUT_STATE;
 
 typedef UBYTE BATTLE_INPUT_STATE;
 #define BATTLE_LEFT       ((BATTLE_INPUT_STATE)(1 << 0))
@@ -50,10 +78,8 @@ typedef BATTLE_INPUT_STATE (*battle_summary_func) (void);
 extern battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS];
 extern battle_summary_func PlayerInput[NUM_PLAYERS];
 
-extern CONTROLLER_INPUT_STATE CurrentInputState;
-extern MENU_INPUT_STATE CurrentMenuState;
+extern CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
-extern volatile MENU_INPUT_STATE ImmediateMenuState;
 
 void UpdateInputState (void);
 void FlushInputState (void);

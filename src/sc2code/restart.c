@@ -111,9 +111,9 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 	{
 		return (FALSE);
 	}
-	else if (!(CurrentMenuState.up || CurrentMenuState.down ||
-			CurrentMenuState.left || CurrentMenuState.right ||
-			CurrentMenuState.select))
+	else if (!(PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN] ||
+			PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT] ||
+			PulsedInputState.key[KEY_MENU_SELECT]))
 
 	{
 		if (GetTimeCounter () - InTime < ONE_SECOND * 15)
@@ -122,7 +122,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		GLOBAL (CurrentActivity) = (ACTIVITY)~0;
 		return (FALSE);
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		BYTE fade_buf[1];
 
@@ -166,12 +166,12 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		BYTE NewState;
 
 		NewState = pMS->CurState;
-		if (CurrentMenuState.up)
+		if (PulsedInputState.key[KEY_MENU_UP])
 		{
 			if (NewState-- == START_NEW_GAME)
 				NewState = QUIT_GAME;
 		}
-		else if (CurrentMenuState.down)
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
 		{
 			if (NewState++ == QUIT_GAME)
 				NewState = START_NEW_GAME;

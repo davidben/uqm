@@ -605,10 +605,10 @@ DoModifyShips (PMENU_STATE pMS)
 #ifdef WANT_SHIP_SPINS
 	BOOLEAN special;
 
-	special = CurrentMenuState.special;
+	special = PulsedInputState.key[KEY_MENU_SPECIAL];
 #endif /* WANT_SHIP_SPINS */
-	select = CurrentMenuState.select;
-	cancel = CurrentMenuState.cancel;
+	select = PulsedInputState.key[KEY_MENU_SELECT];
+	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -637,10 +637,10 @@ DoModifyShips (PMENU_STATE pMS)
 			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		}
 
-		if (CurrentMenuState.right) dx = 1;
-		if (CurrentMenuState.left) dx = -1;
-		if (CurrentMenuState.up) dy = -1;
-		if (CurrentMenuState.down) dy = 1;
+		if (PulsedInputState.key[KEY_MENU_RIGHT]) dx = 1;
+		if (PulsedInputState.key[KEY_MENU_LEFT]) dx = -1;
+		if (PulsedInputState.key[KEY_MENU_UP]) dy = -1;
+		if (PulsedInputState.key[KEY_MENU_DOWN]) dy = 1;
 		NewState = pMS->CurState;
 		if (pMS->delta_item & MODIFY_CREW_FLAG)
 		{
@@ -1207,8 +1207,8 @@ DoShipyard (PMENU_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		goto ExitShipyard;
 
-	select = CurrentMenuState.select;
-	cancel = CurrentMenuState.cancel;
+	select = PulsedInputState.key[KEY_MENU_SELECT];
+	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)

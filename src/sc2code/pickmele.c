@@ -200,7 +200,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			OldTime = NewTime;
 		}
 
-		if (InputState & BATTLE_WEAPON || CurrentMenuState.select)
+		if (InputState & BATTLE_WEAPON || PulsedInputState.key[KEY_MENU_SELECT])
 		{
 			if (hBattleShip || (col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
 			{
@@ -214,22 +214,22 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 			new_row = row;
 			new_col = col;
-			if ((InputState & BATTLE_LEFT) || CurrentMenuState.left)
+			if ((InputState & BATTLE_LEFT) || PulsedInputState.key[KEY_MENU_LEFT])
 			{
 				if (new_col-- == 0)
 					new_col = NUM_MELEE_COLS_ORIG;
 			}
-			else if ((InputState & BATTLE_RIGHT) || CurrentMenuState.right)
+			else if ((InputState & BATTLE_RIGHT) || PulsedInputState.key[KEY_MENU_RIGHT])
 			{
 				if (new_col++ == NUM_MELEE_COLS_ORIG)
 					new_col = 0;
 			}
-			if ((InputState & BATTLE_THRUST) || CurrentMenuState.up)
+			if ((InputState & BATTLE_THRUST) || PulsedInputState.key[KEY_MENU_UP])
 			{
 				if (new_row-- == 0)
 					new_row = NUM_MELEE_ROWS - 1;
 			}
-			else if ((InputState & BATTLE_DOWN) || CurrentMenuState.down)
+			else if ((InputState & BATTLE_DOWN) || PulsedInputState.key[KEY_MENU_DOWN])
 			{
 				if (++new_row == NUM_MELEE_ROWS)
 					new_row = 0;

@@ -149,9 +149,9 @@ TFB_ProcessEvents ()
 				break;
 		}
 	}
-	if (ImmediateInputState.abort || abortFlag)
+	if (ImmediateInputState.key[KEY_ABORT] || abortFlag)
 		exit (0);
-	if (ImmediateInputState.debug)
+	if (ImmediateInputState.key[KEY_DEBUG])
 	{
 		FlushInput ();
 		uio_debugInteractive(stdin, stdout, stderr);

@@ -276,7 +276,7 @@ sis_hyper_postprocess (PELEMENT ElementPtr)
 	GLOBAL (velocity) = ElementPtr->velocity;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	if (((StarShipPtr->cur_status_flags & WEAPON) || CurrentMenuState.cancel)
+	if (((StarShipPtr->cur_status_flags & WEAPON) || PulsedInputState.key[KEY_MENU_CANCEL])
 			&& StarShipPtr->special_counter == 0)
 	{
 #define MENU_DELAY 10

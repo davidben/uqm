@@ -777,15 +777,15 @@ UndrawShip (void)
 	DrawIPRadar (FALSE);
 #endif /* SHOW_RADAR */
 
-	if (CurrentInputState.p1_thrust)
+	if (CurrentInputState.key[KEY_P1_THRUST])
 		delta_y = -1;
 	else
 		delta_y = 0;
 
 	delta_x = 0;
-	if (CurrentInputState.p1_left)
+	if (CurrentInputState.key[KEY_P1_LEFT])
 		delta_x -= 1;
-	if (CurrentInputState.p1_right)
+	if (CurrentInputState.key[KEY_P1_RIGHT])
 		delta_x += 1;
 		
 	if (delta_x || delta_y < 0)
@@ -1180,8 +1180,8 @@ TheMess:
 			else
 			{
 				UpdateInputState ();
-				cancel = ImmediateMenuState.cancel;
-				select = ImmediateMenuState.select;
+				cancel = ImmediateInputState.key[KEY_MENU_CANCEL];
+				select = ImmediateInputState.key[KEY_MENU_SELECT];
 			}
 			// JournalInput (InputState);
 		}

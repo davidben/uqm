@@ -219,11 +219,11 @@ DoModifyRoster (PMENU_STATE pMS)
 		return (FALSE);
 	}
 
-	select = CurrentMenuState.select;
-	cancel = CurrentMenuState.cancel;
-	up = CurrentMenuState.up;
-	down = CurrentMenuState.down;
-	horiz = CurrentMenuState.left || CurrentMenuState.right;
+	select = PulsedInputState.key[KEY_MENU_SELECT];
+	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+	up = PulsedInputState.key[KEY_MENU_UP];
+	down = PulsedInputState.key[KEY_MENU_DOWN];
+	horiz = PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT];
 
 	if (pMS->Initialized && (pMS->CurState & SHIP_TOGGLE))
 	{

@@ -628,7 +628,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		buf[0] = '\0';
 		goto UpdateCursorInfo;
 	}
-	else if (CurrentMenuState.cancel)
+	else if (PulsedInputState.key[KEY_MENU_CANCEL])
 	{
 		if (pMS->flash_task)
 		{
@@ -638,7 +638,7 @@ DoMoveCursor (PMENU_STATE pMS)
 
 		return (FALSE);
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		GLOBAL (autopilot) = pMS->first_item;
 
@@ -651,18 +651,18 @@ DoMoveCursor (PMENU_STATE pMS)
 		SIZE ZoomIn, ZoomOut;
 
 		ZoomIn = ZoomOut = 0;
-		if (CurrentMenuState.zoom_in)
+		if (PulsedInputState.key[KEY_MENU_ZOOM_IN])
 			ZoomIn = 1;
-		else if (CurrentMenuState.zoom_out)
+		else if (PulsedInputState.key[KEY_MENU_ZOOM_OUT])
 			ZoomOut = 1;
 
 		ZoomStarMap (ZoomIn - ZoomOut);
 
 		sx = sy = 0;
-		if (CurrentMenuState.left)    sx =   -1;
-		if (CurrentMenuState.right)   sx =    1;
-		if (CurrentMenuState.up)      sy =   -1;
-		if (CurrentMenuState.down)    sy =    1;
+		if (PulsedInputState.key[KEY_MENU_LEFT])    sx =   -1;
+		if (PulsedInputState.key[KEY_MENU_RIGHT])   sx =    1;
+		if (PulsedInputState.key[KEY_MENU_UP])      sy =   -1;
+		if (PulsedInputState.key[KEY_MENU_DOWN])    sy =    1;
 
 		if (sx == 0 && sy == 0)
 		{
@@ -1162,7 +1162,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 	}
 	else
 	{
-		BOOLEAN select = CurrentMenuState.select;
+		BOOLEAN select = PulsedInputState.key[KEY_MENU_SELECT];
 		LockMutex (GraphicsLock);
 		while (*(volatile BYTE *)&pMS->CurState == 0
 				&& (*(volatile SIZE *)&pMS->Initialized & 1)

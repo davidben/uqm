@@ -35,14 +35,12 @@ typedef INPUT_STATE_DESC *PINPUT_STATE_DESC;
 
 typedef struct 
 {
-	DWORD up, down, left, right, select, cancel, special;
-	DWORD page_up, page_down, zoom_in, zoom_out, del;
+	DWORD key [NUM_KEYS];
 } MENU_ANNOTATIONS;
 
 
-CONTROLLER_INPUT_STATE CurrentInputState;
-MENU_INPUT_STATE CurrentMenuState;
-static MENU_INPUT_STATE CachedMenuState, OldMenuState;
+CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
+static CONTROLLER_INPUT_STATE CachedInputState, OldInputState;
 static MENU_ANNOTATIONS RepeatDelays, Times;
 static DWORD GestaltRepeatDelay, GestaltTime;
 static BOOLEAN OldGestalt, CachedGestalt;
@@ -53,35 +51,34 @@ int ExitState;
 static MENU_SOUND_FLAGS sound_0, sound_1;
 
 volatile CONTROLLER_INPUT_STATE ImmediateInputState;
-volatile MENU_INPUT_STATE       ImmediateMenuState;
 
 static void
 _clear_menu_state (void)
 {
-	CurrentMenuState.up        = 0;
-	CurrentMenuState.down      = 0;
-	CurrentMenuState.left      = 0;
-	CurrentMenuState.right     = 0;
-	CurrentMenuState.select    = 0;
-	CurrentMenuState.cancel    = 0;
-	CurrentMenuState.special   = 0;
-	CurrentMenuState.page_up   = 0;
-	CurrentMenuState.page_down = 0;
-	CurrentMenuState.zoom_in   = 0;
-	CurrentMenuState.zoom_out  = 0;
-	CurrentMenuState.del       = 0;
-	CachedMenuState.up        = 0;
-	CachedMenuState.down      = 0;
-	CachedMenuState.left      = 0;
-	CachedMenuState.right     = 0;
-	CachedMenuState.select    = 0;
-	CachedMenuState.cancel    = 0;
-	CachedMenuState.special   = 0;
-	CachedMenuState.page_up   = 0;
-	CachedMenuState.page_down = 0;
-	CachedMenuState.zoom_in   = 0;
-	CachedMenuState.zoom_out  = 0;
-	CachedMenuState.del       = 0;
+	PulsedInputState.key[KEY_MENU_UP]        = 0;
+	PulsedInputState.key[KEY_MENU_DOWN]      = 0;
+	PulsedInputState.key[KEY_MENU_LEFT]      = 0;
+	PulsedInputState.key[KEY_MENU_RIGHT]     = 0;
+	PulsedInputState.key[KEY_MENU_SELECT]    = 0;
+	PulsedInputState.key[KEY_MENU_CANCEL]    = 0;
+	PulsedInputState.key[KEY_MENU_SPECIAL]   = 0;
+	PulsedInputState.key[KEY_MENU_PAGE_UP]   = 0;
+	PulsedInputState.key[KEY_MENU_PAGE_DOWN] = 0;
+	PulsedInputState.key[KEY_MENU_ZOOM_IN]   = 0;
+	PulsedInputState.key[KEY_MENU_ZOOM_OUT]  = 0;
+	PulsedInputState.key[KEY_MENU_DELETE]       = 0;
+	CachedInputState.key[KEY_MENU_UP]        = 0;
+	CachedInputState.key[KEY_MENU_DOWN]      = 0;
+	CachedInputState.key[KEY_MENU_LEFT]      = 0;
+	CachedInputState.key[KEY_MENU_RIGHT]     = 0;
+	CachedInputState.key[KEY_MENU_SELECT]    = 0;
+	CachedInputState.key[KEY_MENU_CANCEL]    = 0;
+	CachedInputState.key[KEY_MENU_SPECIAL]   = 0;
+	CachedInputState.key[KEY_MENU_PAGE_UP]   = 0;
+	CachedInputState.key[KEY_MENU_PAGE_DOWN] = 0;
+	CachedInputState.key[KEY_MENU_ZOOM_IN]   = 0;
+	CachedInputState.key[KEY_MENU_ZOOM_OUT]  = 0;
+	CachedInputState.key[KEY_MENU_DELETE]       = 0;
 	CachedGestalt = FALSE;
 }
 
@@ -89,31 +86,31 @@ void
 ResetKeyRepeat (void)
 {
 	DWORD initTime = GetTimeCounter ();
-	RepeatDelays.up        = _max_accel;
-	RepeatDelays.down      = _max_accel;
-	RepeatDelays.left      = _max_accel;
-	RepeatDelays.right     = _max_accel;
-	RepeatDelays.select    = _max_accel;
-	RepeatDelays.cancel    = _max_accel;
-	RepeatDelays.special   = _max_accel;
-	RepeatDelays.page_up   = _max_accel;
-	RepeatDelays.page_down = _max_accel;
-	RepeatDelays.zoom_in   = _max_accel;
-	RepeatDelays.zoom_out  = _max_accel;
-	RepeatDelays.del       = _max_accel;
+	RepeatDelays.key[KEY_MENU_UP]        = _max_accel;
+	RepeatDelays.key[KEY_MENU_DOWN]      = _max_accel;
+	RepeatDelays.key[KEY_MENU_LEFT]      = _max_accel;
+	RepeatDelays.key[KEY_MENU_RIGHT]     = _max_accel;
+	RepeatDelays.key[KEY_MENU_SELECT]    = _max_accel;
+	RepeatDelays.key[KEY_MENU_CANCEL]    = _max_accel;
+	RepeatDelays.key[KEY_MENU_SPECIAL]   = _max_accel;
+	RepeatDelays.key[KEY_MENU_PAGE_UP]   = _max_accel;
+	RepeatDelays.key[KEY_MENU_PAGE_DOWN] = _max_accel;
+	RepeatDelays.key[KEY_MENU_ZOOM_IN]   = _max_accel;
+	RepeatDelays.key[KEY_MENU_ZOOM_OUT]  = _max_accel;
+	RepeatDelays.key[KEY_MENU_DELETE]       = _max_accel;
 	GestaltRepeatDelay     = _max_accel;
-	Times.up        = initTime;
-	Times.down      = initTime;
-	Times.left      = initTime;
-	Times.right     = initTime;
-	Times.select    = initTime;
-	Times.cancel    = initTime;
-	Times.special   = initTime;
-	Times.page_up   = initTime;
-	Times.page_down = initTime;
-	Times.zoom_in   = initTime;
-	Times.zoom_out  = initTime;
-	Times.del       = initTime;
+	Times.key[KEY_MENU_UP]        = initTime;
+	Times.key[KEY_MENU_DOWN]      = initTime;
+	Times.key[KEY_MENU_LEFT]      = initTime;
+	Times.key[KEY_MENU_RIGHT]     = initTime;
+	Times.key[KEY_MENU_SELECT]    = initTime;
+	Times.key[KEY_MENU_CANCEL]    = initTime;
+	Times.key[KEY_MENU_SPECIAL]   = initTime;
+	Times.key[KEY_MENU_PAGE_UP]   = initTime;
+	Times.key[KEY_MENU_PAGE_DOWN] = initTime;
+	Times.key[KEY_MENU_ZOOM_IN]   = initTime;
+	Times.key[KEY_MENU_ZOOM_OUT]  = initTime;
+	Times.key[KEY_MENU_DELETE]       = initTime;
 	GestaltTime     = initTime;
 }
 
@@ -149,23 +146,23 @@ _check_gestalt (DWORD NewTime)
 {
 	BOOLEAN CurrentGestalt;
 	OldGestalt = CachedGestalt;
-	CachedGestalt = ImmediateMenuState.up || ImmediateMenuState.down || ImmediateMenuState.left || ImmediateMenuState.right;
-	CurrentGestalt = CurrentMenuState.up || CurrentMenuState.down || CurrentMenuState.left || CurrentMenuState.right;
+	CachedGestalt = ImmediateInputState.key[KEY_MENU_UP] || ImmediateInputState.key[KEY_MENU_DOWN] || ImmediateInputState.key[KEY_MENU_LEFT] || ImmediateInputState.key[KEY_MENU_RIGHT];
+	CurrentGestalt = PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN] || PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT];
 	if (OldGestalt && CachedGestalt)
 	{
 		if (NewTime - GestaltTime < GestaltRepeatDelay)
 		{
-			CurrentMenuState.up = 0;
-			CurrentMenuState.down = 0;
-			CurrentMenuState.left = 0;
-			CurrentMenuState.right = 0;
+			PulsedInputState.key[KEY_MENU_UP] = 0;
+			PulsedInputState.key[KEY_MENU_DOWN] = 0;
+			PulsedInputState.key[KEY_MENU_LEFT] = 0;
+			PulsedInputState.key[KEY_MENU_RIGHT] = 0;
 		}
 		else
 		{
-			CurrentMenuState.up = CachedMenuState.up;
-			CurrentMenuState.down = CachedMenuState.down;
-			CurrentMenuState.left = CachedMenuState.left;
-			CurrentMenuState.right = CachedMenuState.right;
+			PulsedInputState.key[KEY_MENU_UP] = CachedInputState.key[KEY_MENU_UP];
+			PulsedInputState.key[KEY_MENU_DOWN] = CachedInputState.key[KEY_MENU_DOWN];
+			PulsedInputState.key[KEY_MENU_LEFT] = CachedInputState.key[KEY_MENU_LEFT];
+			PulsedInputState.key[KEY_MENU_RIGHT] = CachedInputState.key[KEY_MENU_RIGHT];
 			if (GestaltRepeatDelay > _min_accel)
 				GestaltRepeatDelay -= _step_accel;
 			if (GestaltRepeatDelay < _min_accel)
@@ -175,10 +172,10 @@ _check_gestalt (DWORD NewTime)
 	}
 	else
 	{
-		CurrentMenuState.up = CachedMenuState.up;
-		CurrentMenuState.down = CachedMenuState.down;
-		CurrentMenuState.left = CachedMenuState.left;
-		CurrentMenuState.right = CachedMenuState.right;
+		PulsedInputState.key[KEY_MENU_UP] = CachedInputState.key[KEY_MENU_UP];
+		PulsedInputState.key[KEY_MENU_DOWN] = CachedInputState.key[KEY_MENU_DOWN];
+		PulsedInputState.key[KEY_MENU_LEFT] = CachedInputState.key[KEY_MENU_LEFT];
+		PulsedInputState.key[KEY_MENU_RIGHT] = CachedInputState.key[KEY_MENU_RIGHT];
 		GestaltTime = NewTime;
 		GestaltRepeatDelay = _max_accel;
 	}
@@ -202,8 +199,8 @@ UpdateInputState (void)
 	}
 
 	CurrentInputState = ImmediateInputState;
-	OldMenuState = CachedMenuState;
-	CachedMenuState = ImmediateMenuState;
+	OldInputState = CachedInputState;
+	CachedInputState = ImmediateInputState;
 	NewTime = GetTimeCounter ();
 	if (_gestalt_keys)
 	{
@@ -211,24 +208,24 @@ UpdateInputState (void)
 	}
 	else
 	{
-		_check_for_pulse(&CurrentMenuState.up, &CachedMenuState.up, &OldMenuState.up, &RepeatDelays.up, &NewTime, &Times.up);
-		_check_for_pulse(&CurrentMenuState.down, &CachedMenuState.down, &OldMenuState.down, &RepeatDelays.down, &NewTime, &Times.down);
-		_check_for_pulse(&CurrentMenuState.left, &CachedMenuState.left, &OldMenuState.left, &RepeatDelays.left, &NewTime, &Times.left);
-		_check_for_pulse(&CurrentMenuState.right, &CachedMenuState.right, &OldMenuState.right, &RepeatDelays.right, &NewTime, &Times.right);
+		_check_for_pulse(&PulsedInputState.key[KEY_MENU_UP], &CachedInputState.key[KEY_MENU_UP], &OldInputState.key[KEY_MENU_UP], &RepeatDelays.key[KEY_MENU_UP], &NewTime, &Times.key[KEY_MENU_UP]);
+		_check_for_pulse(&PulsedInputState.key[KEY_MENU_DOWN], &CachedInputState.key[KEY_MENU_DOWN], &OldInputState.key[KEY_MENU_DOWN], &RepeatDelays.key[KEY_MENU_DOWN], &NewTime, &Times.key[KEY_MENU_DOWN]);
+		_check_for_pulse(&PulsedInputState.key[KEY_MENU_LEFT], &CachedInputState.key[KEY_MENU_LEFT], &OldInputState.key[KEY_MENU_LEFT], &RepeatDelays.key[KEY_MENU_LEFT], &NewTime, &Times.key[KEY_MENU_LEFT]);
+		_check_for_pulse(&PulsedInputState.key[KEY_MENU_RIGHT], &CachedInputState.key[KEY_MENU_RIGHT], &OldInputState.key[KEY_MENU_RIGHT], &RepeatDelays.key[KEY_MENU_RIGHT], &NewTime, &Times.key[KEY_MENU_RIGHT]);
 	}
-	_check_for_pulse(&CurrentMenuState.select, &CachedMenuState.select, &OldMenuState.select, &RepeatDelays.select, &NewTime, &Times.select);
-	_check_for_pulse(&CurrentMenuState.cancel, &CachedMenuState.cancel, &OldMenuState.cancel, &RepeatDelays.cancel, &NewTime, &Times.cancel);
-	_check_for_pulse(&CurrentMenuState.special, &CachedMenuState.special, &OldMenuState.special, &RepeatDelays.special, &NewTime, &Times.special);
-	_check_for_pulse(&CurrentMenuState.page_up, &CachedMenuState.page_up, &OldMenuState.page_up, &RepeatDelays.page_up, &NewTime, &Times.page_up);
-	_check_for_pulse(&CurrentMenuState.page_down, &CachedMenuState.page_down, &OldMenuState.page_down, &RepeatDelays.page_down, &NewTime, &Times.page_down);
-	_check_for_pulse(&CurrentMenuState.zoom_in, &CachedMenuState.zoom_in, &OldMenuState.zoom_in, &RepeatDelays.zoom_in, &NewTime, &Times.zoom_in);
-	_check_for_pulse(&CurrentMenuState.zoom_out, &CachedMenuState.zoom_out, &OldMenuState.zoom_out, &RepeatDelays.zoom_out, &NewTime, &Times.zoom_out);
-	_check_for_pulse(&CurrentMenuState.del, &CachedMenuState.del, &OldMenuState.del, &RepeatDelays.del, &NewTime, &Times.del);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_SELECT], &CachedInputState.key[KEY_MENU_SELECT], &OldInputState.key[KEY_MENU_SELECT], &RepeatDelays.key[KEY_MENU_SELECT], &NewTime, &Times.key[KEY_MENU_SELECT]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_CANCEL], &CachedInputState.key[KEY_MENU_CANCEL], &OldInputState.key[KEY_MENU_CANCEL], &RepeatDelays.key[KEY_MENU_CANCEL], &NewTime, &Times.key[KEY_MENU_CANCEL]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_SPECIAL], &CachedInputState.key[KEY_MENU_SPECIAL], &OldInputState.key[KEY_MENU_SPECIAL], &RepeatDelays.key[KEY_MENU_SPECIAL], &NewTime, &Times.key[KEY_MENU_SPECIAL]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_PAGE_UP], &CachedInputState.key[KEY_MENU_PAGE_UP], &OldInputState.key[KEY_MENU_PAGE_UP], &RepeatDelays.key[KEY_MENU_PAGE_UP], &NewTime, &Times.key[KEY_MENU_PAGE_UP]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_PAGE_DOWN], &CachedInputState.key[KEY_MENU_PAGE_DOWN], &OldInputState.key[KEY_MENU_PAGE_DOWN], &RepeatDelays.key[KEY_MENU_PAGE_DOWN], &NewTime, &Times.key[KEY_MENU_PAGE_DOWN]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_ZOOM_IN], &CachedInputState.key[KEY_MENU_ZOOM_IN], &OldInputState.key[KEY_MENU_ZOOM_IN], &RepeatDelays.key[KEY_MENU_ZOOM_IN], &NewTime, &Times.key[KEY_MENU_ZOOM_IN]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_ZOOM_OUT], &CachedInputState.key[KEY_MENU_ZOOM_OUT], &OldInputState.key[KEY_MENU_ZOOM_OUT], &RepeatDelays.key[KEY_MENU_ZOOM_OUT], &NewTime, &Times.key[KEY_MENU_ZOOM_OUT]);
+	_check_for_pulse(&PulsedInputState.key[KEY_MENU_DELETE], &CachedInputState.key[KEY_MENU_DELETE], &OldInputState.key[KEY_MENU_DELETE], &RepeatDelays.key[KEY_MENU_DELETE], &NewTime, &Times.key[KEY_MENU_DELETE]);
 
-	if (CurrentInputState.pause)
+	if (CurrentInputState.key[KEY_PAUSE])
 		GamePaused = TRUE;
 
-	if (CurrentInputState.exit)
+	if (CurrentInputState.key[KEY_EXIT])
 		ExitRequested = TRUE;
 }
 
@@ -285,20 +282,20 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 #endif /* CREATE_JOURNAL */
 		}
 
-		if (CurrentInputState.exit)
+		if (CurrentInputState.key[KEY_EXIT])
 			ExitState = ConfirmExit ();
 
 		input = MENU_SOUND_NONE;
-		if (CurrentMenuState.up) input |= MENU_SOUND_UP;
-		if (CurrentMenuState.down) input |= MENU_SOUND_DOWN;
-		if (CurrentMenuState.left) input |= MENU_SOUND_LEFT;
-		if (CurrentMenuState.right) input |= MENU_SOUND_RIGHT;
-		if (CurrentMenuState.select) input |= MENU_SOUND_SELECT;
-		if (CurrentMenuState.cancel) input |= MENU_SOUND_CANCEL;
-		if (CurrentMenuState.special) input |= MENU_SOUND_SPECIAL;
-		if (CurrentMenuState.page_up) input |= MENU_SOUND_PAGEUP;
-		if (CurrentMenuState.page_down) input |= MENU_SOUND_PAGEDOWN;
-		if (CurrentMenuState.del) input |= MENU_SOUND_DELETE;
+		if (PulsedInputState.key[KEY_MENU_UP]) input |= MENU_SOUND_UP;
+		if (PulsedInputState.key[KEY_MENU_DOWN]) input |= MENU_SOUND_DOWN;
+		if (PulsedInputState.key[KEY_MENU_LEFT]) input |= MENU_SOUND_LEFT;
+		if (PulsedInputState.key[KEY_MENU_RIGHT]) input |= MENU_SOUND_RIGHT;
+		if (PulsedInputState.key[KEY_MENU_SELECT]) input |= MENU_SOUND_SELECT;
+		if (PulsedInputState.key[KEY_MENU_CANCEL]) input |= MENU_SOUND_CANCEL;
+		if (PulsedInputState.key[KEY_MENU_SPECIAL]) input |= MENU_SOUND_SPECIAL;
+		if (PulsedInputState.key[KEY_MENU_PAGE_UP]) input |= MENU_SOUND_PAGEUP;
+		if (PulsedInputState.key[KEY_MENU_PAGE_DOWN]) input |= MENU_SOUND_PAGEDOWN;
+		if (PulsedInputState.key[KEY_MENU_DELETE]) input |= MENU_SOUND_DELETE;
 			
 		if (MenuSounds
 				&& (pSolarSysState == 0
@@ -347,19 +344,19 @@ BATTLE_INPUT_STATE
 p1_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.p1_thrust)
+	if (CurrentInputState.key[KEY_P1_THRUST])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.p1_left)
+	if (CurrentInputState.key[KEY_P1_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.p1_right)
+	if (CurrentInputState.key[KEY_P1_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.p1_weapon)
+	if (CurrentInputState.key[KEY_P1_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.p1_special)
+	if (CurrentInputState.key[KEY_P1_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.p1_escape)
+	if (CurrentInputState.key[KEY_P1_ESCAPE])
 		InputState |= BATTLE_ESCAPE;
-	if (CurrentInputState.p1_down)
+	if (CurrentInputState.key[KEY_P1_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }
@@ -368,17 +365,17 @@ BATTLE_INPUT_STATE
 p2_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.p2_thrust)
+	if (CurrentInputState.key[KEY_P2_THRUST])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.p2_left)
+	if (CurrentInputState.key[KEY_P2_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.p2_right)
+	if (CurrentInputState.key[KEY_P2_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.p2_weapon)
+	if (CurrentInputState.key[KEY_P2_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.p2_special)
+	if (CurrentInputState.key[KEY_P2_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.p2_down)
+	if (CurrentInputState.key[KEY_P2_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }
@@ -388,35 +385,35 @@ AnyButtonPress (BOOLEAN CheckSpecial)
 {
 	(void) CheckSpecial;   // Ignored
 	UpdateInputState ();
-	return CurrentInputState.p1_thrust
-	     ||CurrentInputState.p1_left  
-	     ||CurrentInputState.p1_right 
-	     ||CurrentInputState.p1_down
-	     ||CurrentInputState.p1_weapon
-	     ||CurrentInputState.p1_special
-	     ||CurrentInputState.p1_escape
-	     ||CurrentInputState.p2_thrust
-	     ||CurrentInputState.p2_left  
-	     ||CurrentInputState.p2_right 
-	     ||CurrentInputState.p2_down
-	     ||CurrentInputState.p2_weapon
-	     ||CurrentInputState.p2_special
-	     ||CurrentInputState.lander_thrust
-	     ||CurrentInputState.lander_left  
-	     ||CurrentInputState.lander_right 
-	     ||CurrentInputState.lander_weapon
-	     ||CurrentInputState.lander_escape
-	     ||CurrentMenuState.up
-	     ||CurrentMenuState.down
-	     ||CurrentMenuState.left
-	     ||CurrentMenuState.right
-	     ||CurrentMenuState.page_up
-	     ||CurrentMenuState.page_down
-	     ||CurrentMenuState.zoom_in
-	     ||CurrentMenuState.zoom_out
-	     ||CurrentMenuState.select
-	     ||CurrentMenuState.cancel
-	     ||CurrentMenuState.special;
+	return CurrentInputState.key[KEY_P1_THRUST]
+	     ||CurrentInputState.key[KEY_P1_LEFT]  
+	     ||CurrentInputState.key[KEY_P1_RIGHT] 
+	     ||CurrentInputState.key[KEY_P1_DOWN]
+	     ||CurrentInputState.key[KEY_P1_WEAPON]
+	     ||CurrentInputState.key[KEY_P1_SPECIAL]
+	     ||CurrentInputState.key[KEY_P1_ESCAPE]
+	     ||CurrentInputState.key[KEY_P2_THRUST]
+	     ||CurrentInputState.key[KEY_P2_LEFT]  
+	     ||CurrentInputState.key[KEY_P2_RIGHT] 
+	     ||CurrentInputState.key[KEY_P2_DOWN]
+	     ||CurrentInputState.key[KEY_P2_WEAPON]
+	     ||CurrentInputState.key[KEY_P2_SPECIAL]
+	     ||CurrentInputState.key[KEY_LANDER_THRUST]
+	     ||CurrentInputState.key[KEY_LANDER_LEFT]  
+	     ||CurrentInputState.key[KEY_LANDER_RIGHT] 
+	     ||CurrentInputState.key[KEY_LANDER_WEAPON]
+	     ||CurrentInputState.key[KEY_LANDER_ESCAPE]
+	     ||PulsedInputState.key[KEY_MENU_UP]
+	     ||PulsedInputState.key[KEY_MENU_DOWN]
+	     ||PulsedInputState.key[KEY_MENU_LEFT]
+	     ||PulsedInputState.key[KEY_MENU_RIGHT]
+	     ||PulsedInputState.key[KEY_MENU_PAGE_UP]
+	     ||PulsedInputState.key[KEY_MENU_PAGE_DOWN]
+	     ||PulsedInputState.key[KEY_MENU_ZOOM_IN]
+	     ||PulsedInputState.key[KEY_MENU_ZOOM_OUT]
+	     ||PulsedInputState.key[KEY_MENU_SELECT]
+	     ||PulsedInputState.key[KEY_MENU_CANCEL]
+	     ||PulsedInputState.key[KEY_MENU_SPECIAL];
 }
 
 BOOLEAN

@@ -34,7 +34,7 @@ DoSelectAction (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoSelectAction;
 	}
-	else if (CurrentMenuState.select)
+	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		switch (pMS->CurState)
 		{
@@ -642,10 +642,10 @@ UninitEncounter (void)
 			while (!(AnyButtonPress (TRUE)) && GetTimeCounter () < Time)
 				TaskSwitch ();
 			LockMutex (GraphicsLock);
-			if (!CurrentInputState.p1_escape)
+			if (!CurrentInputState.key[KEY_P1_ESCAPE])
 			{
 				DrawFadeText (str1, str2, FALSE, &scavenge_r);
-				if (!CurrentInputState.p1_escape)
+				if (!CurrentInputState.key[KEY_P1_ESCAPE])
 				{
 					SetContextForeGroundColor (BLACK_COLOR);
 					r.corner.x = scavenge_r.corner.x + 10;
@@ -674,7 +674,7 @@ UninitEncounter (void)
 							&& GetTimeCounter () < Time)
 						TaskSwitch ();
 					LockMutex (GraphicsLock);
-					if (!CurrentInputState.p1_escape)
+					if (!CurrentInputState.key[KEY_P1_ESCAPE])
 						DrawFadeText (str1, str2, FALSE, &scavenge_r);
 				}
 			}
