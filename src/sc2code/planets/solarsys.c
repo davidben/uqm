@@ -1429,14 +1429,17 @@ LoadLanderData ();
 			}
 		}
 
-// SetSemaphore (GraphicsSem);
+		// Enabled SetSemaphore and ClearSemaphore again, as in 3DO code originally.
+		// This should fix the 'entering star' lockup/messed graphics problems.
+		// 2002/11/30 by Mika
+		SetSemaphore (GraphicsSem);
 		DrawSISMessage (NULL_PTR);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);
 		SetContextBGFrame ((FRAME)0);
 		SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
 		SetContextBackGroundColor (BLACK_COLOR);
-// ClearSemaphore (GraphicsSem);
+		ClearSemaphore (GraphicsSem);
 
 		if (InnerSystem)
 		{
