@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fix glitch and lockup in dialogs when rewinding (bugs #311 and #272),
+  from chmmravatar
 - Fastforwarding when in last subtitle now works as expected (bug #318),
   from chmmravatar
 - Fixed MixSDL buffer underrun handling (bug #211) -Mika
