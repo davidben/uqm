@@ -648,9 +648,9 @@ init_yehat_comm (void)
 	yehat_desc.uninit_encounter_func = uninit_yehat;
 
 	yehat_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH * 2 / 3;
-	yehat_desc.AlienTextTemplate.baseline.y = 100;
+	yehat_desc.AlienTextTemplate.baseline.y = 60;
 	yehat_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	yehat_desc.AlienTextTemplate.valign = VALIGN_BOTTOM;
+	yehat_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	yehat_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) * 2 / 3;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
