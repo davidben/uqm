@@ -40,11 +40,6 @@ Function Download
   SetDetailsPrint textonly
 
   StrCpy $R9 success
-
-  ; Check if user has selected "Skip"
-  StrCpy $R0 ""
-  ReadIniStr $R0 "$PLUGINSDIR\download.ini" "Field 5" state
-  StrCmp $R0 "1" function_end
   
   IntCmp $3 1 dl_mirror
   StrCpy $R3 "$1/$0"
