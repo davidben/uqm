@@ -656,7 +656,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		else if (CurrentMenuState.zoom_out)
 			ZoomOut = 1;
 
-		ZoomStarMap (ZoomOut - ZoomIn);
+		ZoomStarMap (ZoomIn - ZoomOut);
 
 		sx = sy = 0;
 		if (CurrentMenuState.left)    sx =   -1;
