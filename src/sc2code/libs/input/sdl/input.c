@@ -49,15 +49,18 @@ static VControl_NameBinding control_names[] = {
 	{ "Menu-Page-Down", (int *)&ImmediateMenuState.page_down },
 	{ "Menu-Zoom-In", (int *)&ImmediateMenuState.zoom_in },
 	{ "Menu-Zoom-Out", (int *)&ImmediateMenuState.zoom_out },
+	{ "Menu-Delete", (int *)&ImmediateMenuState.del },
 	{ "Player-1-Thrust", (int *)&ImmediateInputState.p1_thrust },
 	{ "Player-1-Left", (int *)&ImmediateInputState.p1_left },
 	{ "Player-1-Right", (int *)&ImmediateInputState.p1_right },
+	{ "Player-1-Down", (int *)&ImmediateInputState.p1_down },
 	{ "Player-1-Weapon", (int *)&ImmediateInputState.p1_weapon },
 	{ "Player-1-Special", (int *)&ImmediateInputState.p1_special },
 	{ "Player-1-Escape", (int *)&ImmediateInputState.p1_escape },
 	{ "Player-2-Thrust", (int *)&ImmediateInputState.p2_thrust },
 	{ "Player-2-Left", (int *)&ImmediateInputState.p2_left },
 	{ "Player-2-Right", (int *)&ImmediateInputState.p2_right },
+	{ "Player-2-Down", (int *)&ImmediateInputState.p2_down },
 	{ "Player-2-Weapon", (int *)&ImmediateInputState.p2_weapon },
 	{ "Player-2-Special", (int *)&ImmediateInputState.p2_special },
 	{ "Lander-Thrust", (int *)&ImmediateInputState.lander_thrust },
@@ -67,7 +70,8 @@ static VControl_NameBinding control_names[] = {
 	{ "Lander-Escape", (int *)&ImmediateInputState.lander_escape },
 	{ "Pause", (int *)&ImmediateInputState.pause },
 	{ "Exit", (int *)&ImmediateInputState.exit },
-	{ "Abort", (int *)&ImmediateInputState.abort }};
+	{ "Abort", (int *)&ImmediateInputState.abort },
+	{ "Debug", (int *)&ImmediateInputState.debug }};
 
 
 static void

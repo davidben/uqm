@@ -25,15 +25,16 @@
 // This struct controls the various controls available to the player.
 
 typedef struct _controller_input_state {
-	int p1_thrust, p1_left, p1_right, p1_weapon, p1_special, p1_escape;
-	int p2_thrust, p2_left, p2_right, p2_weapon, p2_special;
+	int p1_thrust, p1_left, p1_right, p1_down, p1_weapon, p1_special, p1_escape;
+	int p2_thrust, p2_left, p2_right, p2_down, p2_weapon, p2_special;
 	int lander_thrust, lander_left, lander_right, lander_weapon, lander_escape;
-	int pause, exit, abort;
+	int pause, exit, abort, debug;
 } CONTROLLER_INPUT_STATE;
 
 typedef struct _menu_input_state {
 	int up, down, left, right, select, cancel, special;
 	int page_up, page_down, zoom_in, zoom_out;
+	int del;
 } MENU_INPUT_STATE;
 
 typedef UBYTE BATTLE_INPUT_STATE;
@@ -43,6 +44,7 @@ typedef UBYTE BATTLE_INPUT_STATE;
 #define BATTLE_WEAPON     ((BATTLE_INPUT_STATE)(1 << 3))
 #define BATTLE_SPECIAL    ((BATTLE_INPUT_STATE)(1 << 4))
 #define BATTLE_ESCAPE     ((BATTLE_INPUT_STATE)(1 << 5))
+#define BATTLE_DOWN       ((BATTLE_INPUT_STATE)(1 << 6))
 
 typedef BATTLE_INPUT_STATE (*battle_summary_func) (void);
 extern battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS];

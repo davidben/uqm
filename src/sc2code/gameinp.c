@@ -36,7 +36,7 @@ typedef INPUT_STATE_DESC *PINPUT_STATE_DESC;
 typedef struct 
 {
 	DWORD up, down, left, right, select, cancel, special;
-	DWORD page_up, page_down, zoom_in, zoom_out;
+	DWORD page_up, page_down, zoom_in, zoom_out, del;
 } MENU_ANNOTATIONS;
 
 
@@ -67,6 +67,7 @@ _clear_menu_state (void)
 	CurrentMenuState.page_down = 0;
 	CurrentMenuState.zoom_in   = 0;
 	CurrentMenuState.zoom_out  = 0;
+	CurrentMenuState.del       = 0;
 	CachedMenuState.up        = 0;
 	CachedMenuState.down      = 0;
 	CachedMenuState.left      = 0;
@@ -78,6 +79,7 @@ _clear_menu_state (void)
 	CachedMenuState.page_down = 0;
 	CachedMenuState.zoom_in   = 0;
 	CachedMenuState.zoom_out  = 0;
+	CachedMenuState.del       = 0;
 	CachedGestalt = FALSE;
 }
 
@@ -96,6 +98,7 @@ ResetKeyRepeat (void)
 	RepeatDelays.page_down = _max_accel;
 	RepeatDelays.zoom_in   = _max_accel;
 	RepeatDelays.zoom_out  = _max_accel;
+	RepeatDelays.del       = _max_accel;
 	GestaltRepeatDelay     = _max_accel;
 	Times.up        = initTime;
 	Times.down      = initTime;
@@ -108,6 +111,7 @@ ResetKeyRepeat (void)
 	Times.page_down = initTime;
 	Times.zoom_in   = initTime;
 	Times.zoom_out  = initTime;
+	Times.del       = initTime;
 	GestaltTime     = initTime;
 }
 
@@ -217,6 +221,7 @@ UpdateInputState (void)
 	_check_for_pulse(&CurrentMenuState.page_down, &CachedMenuState.page_down, &OldMenuState.page_down, &RepeatDelays.page_down, &NewTime, &Times.page_down);
 	_check_for_pulse(&CurrentMenuState.zoom_in, &CachedMenuState.zoom_in, &OldMenuState.zoom_in, &RepeatDelays.zoom_in, &NewTime, &Times.zoom_in);
 	_check_for_pulse(&CurrentMenuState.zoom_out, &CachedMenuState.zoom_out, &OldMenuState.zoom_out, &RepeatDelays.zoom_out, &NewTime, &Times.zoom_out);
+	_check_for_pulse(&CurrentMenuState.del, &CachedMenuState.del, &OldMenuState.del, &RepeatDelays.del, &NewTime, &Times.del);
 
 	if (CurrentInputState.pause)
 		GamePaused = TRUE;
@@ -328,6 +333,8 @@ p1_combat_summary (void)
 		InputState |= BATTLE_SPECIAL;
 	if (CurrentInputState.p1_escape)
 		InputState |= BATTLE_ESCAPE;
+	if (CurrentInputState.p1_down)
+		InputState |= BATTLE_DOWN;
 	return InputState;
 }
 
@@ -345,6 +352,8 @@ p2_combat_summary (void)
 		InputState |= BATTLE_WEAPON;
 	if (CurrentInputState.p2_special)
 		InputState |= BATTLE_SPECIAL;
+	if (CurrentInputState.p2_down)
+		InputState |= BATTLE_DOWN;
 	return InputState;
 }
 
@@ -356,12 +365,14 @@ AnyButtonPress (BOOLEAN CheckSpecial)
 	return CurrentInputState.p1_thrust
 	     ||CurrentInputState.p1_left  
 	     ||CurrentInputState.p1_right 
+	     ||CurrentInputState.p1_down
 	     ||CurrentInputState.p1_weapon
 	     ||CurrentInputState.p1_special
 	     ||CurrentInputState.p1_escape
 	     ||CurrentInputState.p2_thrust
 	     ||CurrentInputState.p2_left  
 	     ||CurrentInputState.p2_right 
+	     ||CurrentInputState.p2_down
 	     ||CurrentInputState.p2_weapon
 	     ||CurrentInputState.p2_special
 	     ||CurrentInputState.lander_thrust

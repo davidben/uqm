@@ -125,6 +125,11 @@ TFB_ProcessEvents ()
 	}
 	if (ImmediateInputState.abort)
 		exit (0);
+	if (ImmediateInputState.debug)
+	{
+		FlushInput ();
+		fprintf (stderr, "This would enter debug mode if we had one yet, but we don't.\n");
+	}
 }
 
 void

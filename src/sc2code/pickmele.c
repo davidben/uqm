@@ -230,7 +230,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				if (new_row-- == 0)
 					new_row = NUM_MELEE_ROWS - 1;
 			}
-			else if (CurrentMenuState.down)
+			else if ((InputState & BATTLE_DOWN) || CurrentMenuState.down)
 			{
 				if (++new_row == NUM_MELEE_ROWS)
 					new_row = 0;
