@@ -1,4 +1,8 @@
 Changes towards version 0.2:
+- Updated all game, menu, melee and weapon sounds to original 3DO
+  ones (extracted using various tools); some sounds were simply
+  wrong: menu - "device success", weapons - arilou, slylandro, thraddash;
+  others had bad sampling rates; (fixes #19) -fOSSiL
 - Fixed Melnrome repeating "Please do not mention this subject again"
   text (bug #145) -fOSSiL
 - Fixed load/save screen leaving characters when having more
