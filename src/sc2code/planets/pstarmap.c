@@ -21,6 +21,7 @@
 #include "options.h"
 #include "controls.h"
 #include "libs/inplib.h"
+#include "debug.h"
 
 //Added by Chris
 
@@ -641,7 +642,20 @@ DoMoveCursor (PMENU_STATE pMS)
 	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
 		GLOBAL (autopilot) = pMS->first_item;
-
+#ifdef DEBUG
+		if (instantMove) {
+			GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX(pMS->first_item.x);
+			GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY(pMS->first_item.y);
+			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3), 0,
+					NotPositional (), NULL, GAME_SOUND_PRIORITY);
+			if (pMS->flash_task)
+			{
+				ConcludeTask (pMS->flash_task);
+				pMS->flash_task = 0;
+			}
+			return (FALSE);
+		}
+#endif
 		DrawStarMap (0, NULL_PTR);
 	}
 	else

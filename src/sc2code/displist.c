@@ -18,6 +18,13 @@
 
 #include "displist.h"
 
+/*
+ * This file contains code for generic doubly linked lists.
+ * If QUEUE_TABLE is defined, each lists has its own preallocated
+ * pool of link structures. The size is specific on InitQueue(),
+ * and poses a hard limit on the number of elements in the list.
+ */
+
 BOOLEAN
 InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size)
 {
@@ -240,4 +247,20 @@ CountLinks (PQUEUE pq)
 
 	return (LinkCount);
 }
+
+void
+ForAllLinks (PQUEUE pq, void (*callback)(LINKPTR, void *), void *arg)
+{
+	HLINK hLink, hNextLink;
+
+	for (hLink = GetHeadLink (pq); hLink; hLink = hNextLink)
+	{
+		LINKPTR LinkPtr;
+		LinkPtr = LockLink (pq, hLink);
+		hNextLink = _GetSuccLink (LinkPtr);
+		(*callback) (LinkPtr, arg);
+		UnlockLink (pq, hLink);
+	}
+}
+
 

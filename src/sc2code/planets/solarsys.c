@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "libs/graphics/gfx_common.h"
 #include "controls.h"
+#include "debug.h"
 
 //#define DEBUG_SOLARSYS
 
@@ -1369,7 +1370,7 @@ StartGroups:
 	}
 }
 
-static void
+void
 InitSolarSys (void)
 {
 	BOOLEAN InnerSystem;
@@ -1475,7 +1476,7 @@ InitSolarSys (void)
 	}
 }
 
-static void
+void
 UninitSolarSys (void)
 {
 	FreeSolarSys ();
@@ -1893,6 +1894,24 @@ void
 ExploreSolarSys (void)
 {
 	SOLARSYS_STATE SolarSysState;
+	
+#if 0
+	{
+		FILE *out;
+
+		// Write the star and planet info to a file in the current
+		// directory (which currently is the content/ directory).
+		out = fopen("PlanetInfo", "w");
+		if (out == NULL)
+			exit(1);
+		dumpStars(out, DUMP_PLANETS);
+		fclose(out);
+		fprintf(stdout, "*** Star dump complete. You can terminate the program "
+				"now if it does not do so automatically.\n");
+		exit(0);
+				// There may be other threads left.
+	}
+#endif
 
 	if (CurStarDescPtr == 0)
 	{

@@ -85,16 +85,19 @@ typedef enum
 #define EVENTPTR PEVENT
 
 #define AllocEvent() AllocLink (&GLOBAL (GameClock.event_q))
-#define PutEvent(h) PutQueue (&GLOBAL (GameClock.event_q), h)
-#define InsertEvent(h,i) InsertQueue (&GLOBAL (GameClock.event_q), h, i)
+#define PutEvent(h) PutQueue (&GLOBAL (GameClock.event_q), (h))
+#define InsertEvent(h,i) InsertQueue (&GLOBAL (GameClock.event_q), (h), (i))
 #define GetHeadEvent() GetHeadLink (&GLOBAL (GameClock.event_q))
 #define GetTailEvent() GetTailLink (&GLOBAL (GameClock.event_q))
-#define LockEvent(h,eptr) *(eptr) = (EVENTPTR)LockLink (&GLOBAL (GameClock.event_q), h)
-#define UnlockEvent(h) UnlockLink (&GLOBAL (GameClock.event_q), h)
-#define RemoveEvent(h) RemoveQueue (&GLOBAL (GameClock.event_q), h)
-#define FreeEvent(h) FreeLink (&GLOBAL (GameClock.event_q), h)
+#define LockEvent(h,eptr) *(eptr) = (EVENTPTR)LockLink ( \
+		&GLOBAL (GameClock.event_q), (h))
+#define UnlockEvent(h) UnlockLink (&GLOBAL (GameClock.event_q), (h))
+#define RemoveEvent(h) RemoveQueue (&GLOBAL (GameClock.event_q), (h))
+#define FreeEvent(h) FreeLink (&GLOBAL (GameClock.event_q), (h))
 #define GetPredEvent(l) _GetPredLink (l)
 #define GetSuccEvent(l) _GetSuccLink (l)
+#define ForAllEvents(callback, arg) ForAllLinks(&GLOBAL (GameClock.event_q), \
+		(void (*)(LINKPTR, void *)) (callback), (arg))
 
 				/* rates are in seconds per game day */
 #define HYPERSPACE_CLOCK_RATE 5

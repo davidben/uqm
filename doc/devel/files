@@ -9,8 +9,12 @@ commglue.c     Helper functions for communication with aliens.
 confirm.c      Asks for confirmation on exit.
 credits.c      Shows the credits after a victory.
 cyborg.c       Handles combat AI.
+debug.c        Debugging functions.
 demo.c         Code for demo mode and game journal.
-displist.c     
+displist.c     Generic doubly linked list, which can keep its own pool
+               of preallocated link structures.
+               This generic list is used in various places throughout
+               the game source, but without preallocaded link structures.
 dummy.c        
 encount.c      Handles what to do when a player encounters an alien.
 fmv.c          Handles video sequences.
@@ -69,12 +73,11 @@ status.c       Maintain and draw some information like the captain picture,
                crew, energy. (also shipstat.c)
 tactrans.c     Code for some additional combat events (explosions, dying,
                new ship, ion trail, escape).
-trans.c        
+trans.c        Integer variant of atan2().
 utils.c        Various auxiliary utils, code for pausing.
 velocity.c     Velocity computation routines.
 weapon.c       Routines for weapons fire in combat.
 
-test.c         Sound testing program. (to be deleted?)
 
 build.h
 clock.h

@@ -10,3 +10,7 @@ uqm_CFILES="battle.c border.c build.c cleanup.c clock.c collide.c comm.c
 		starcon.c starmap.c state.c status.c tactrans.c
 		trans.c util.c velocity.c weapon.c"
 
+if [ -n "$DEBUG" ]; then
+	uqm_CFILES="$uqm_CFILES debug.c"
+fi
+

@@ -214,34 +214,8 @@ InitSIS (void)
 	GLOBAL_SIS (ModuleSlots[2]) = CREW_POD;
 	GLOBAL_SIS (CrewEnlisted) = CREW_POD_CAPACITY;
 	GLOBAL_SIS (ModuleSlots[8]) = STORAGE_BAY;
-#ifndef TESTING
 	GLOBAL_SIS (ModuleSlots[1]) = FUEL_TANK;
 	GLOBAL_SIS (FuelOnBoard) = 10 * FUEL_TANK_SCALE;
-#else /* TESTING */
-for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
-	GLOBAL_SIS (DriveSlots[i]) = FUSION_THRUSTER;
-for (i = 0; i < NUM_JET_SLOTS; ++i)
-	GLOBAL_SIS (JetSlots[i]) = TURNING_JETS;
-for (i = 0; i < 2; ++i)
-{
-GLOBAL_SIS (ModuleSlots[i]) = HIGHEFF_FUELSYS;
-GLOBAL_SIS (FuelOnBoard) += HEFUEL_TANK_CAPACITY;
-}
-for (; i < 7; ++i)
-{
-GLOBAL_SIS (ModuleSlots[i]) = CREW_POD;
-GLOBAL_SIS (CrewEnlisted) += CREW_POD_CAPACITY;
-}
-GLOBAL_SIS (ModuleSlots[i++]) = STORAGE_BAY;
-GLOBAL_SIS (ModuleSlots[i++]) = SHIVA_FURNACE;
-GLOBAL_SIS (ModuleSlots[i++]) = SHIVA_FURNACE;
-GLOBAL_SIS (ModuleSlots[i++]) = DYNAMO_UNIT;
-GLOBAL_SIS (ModuleSlots[i++]) = TRACKING_SYSTEM;
-GLOBAL_SIS (ModuleSlots[i++]) = TRACKING_SYSTEM;
-GLOBAL_SIS (ModuleSlots[i++]) = SHIVA_FURNACE;
-GLOBAL_SIS (ModuleSlots[i++]) = CANNON_WEAPON;
-GLOBAL_SIS (ModuleSlots[i++]) = CANNON_WEAPON;
-#endif /* TESTING */
 
 	InitQueue (&GLOBAL (built_ship_q),
 			MAX_BUILT_SHIPS, sizeof (SHIP_FRAGMENT));

@@ -305,7 +305,7 @@ makeArgs(char *lineBuf, int *argc, char ***argv) {
 
 	numArg = 0;
 	ptr = lineBuf;
-	while(1) {
+	while(true) {
 		while (isspace((int) *ptr))
 			ptr++;
 		if (*ptr == '\0')
@@ -318,7 +318,7 @@ makeArgs(char *lineBuf, int *argc, char ***argv) {
 	args = uio_malloc((numArg + 1) * sizeof (char *));
 	numArg = 0;
 	ptr = lineBuf;
-	while(1) {
+	while(true) {
 		while (isspace((int) *ptr))
 			ptr++;
 		if (*ptr == '\0')

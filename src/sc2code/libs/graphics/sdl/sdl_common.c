@@ -31,6 +31,7 @@
 #include "bbox.h"
 #include "port.h"
 #include "libs/uio.h"
+#include "debug.h"
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
@@ -151,11 +152,13 @@ TFB_ProcessEvents ()
 	}
 	if (ImmediateInputState.key[KEY_ABORT] || abortFlag)
 		exit (0);
+#ifdef DEBUG
 	if (ImmediateInputState.key[KEY_DEBUG])
 	{
 		FlushInput ();
-		uio_debugInteractive(stdin, stdout, stderr);
+		debugKeyPressed ();
 	}
+#endif  /* DEBUG */
 }
 
 void

@@ -1,0 +1,47 @@
+The file src/sc2code/debug.c and src/sc2code/debug.h contain various
+debugging functions, which are included in the binary when the game
+is built in debug mode.
+These functions can be called from anywhere in the code, though some
+require the game to be in a specific state.
+The function debugKeyPressed() in debug.c is called when the debug key
+is pressed. This function is a suitable place to put various debugging
+calls.
+The debug key can be specified in keys.cfg by adding a line with a text
+similar to "Debug: key F11".
+An interactive way to access various debugging code, similar to
+the uio debug mode (see below) is in the works.
+
+The most interesting debugging functionality available at the moment is
+listed below:
+- the function equipShip()
+  When this function is called, the SIS is equiped with various useful
+  modules (a possible Precursor Bomb is left in place), all
+  fuel tanks and crew pods are filled to the maximum, you are given
+  the maximum number of landers, and all possible lander shields are
+  installed.
+- the boolean variable instantMove
+  When this variable is set to TRUE, you can select a location on the
+  star map, and your HyperSpace/Quasispace coordinates will immediately
+  be set to them. Your realspace coordinates are not changed, so if you
+  are exploring a solar system, you'll only notice it when you leave to
+  HyperSpace.
+- the function forwardToNextEvent()
+  Fast forwards the clock until the next event. If TRUE is given as an
+  argument, the HYPERSPACE_ENCOUNTER_EVENTs, which normally happen every
+  day, are skipped.
+- the function dumpEvents()
+  Outputs information on all scheduled events to a FILE.
+- the function dumpStars()
+  Outputs information on all stars to a FILE.
+  With the 'flags' variable, the amount of detail can be specified.
+  At this time this function will only work when called from the top of
+  ExploreSolarSys().
+- uio_debugInteractive()
+  This function is not defined in sc2code/debug.h, but in libs/uio.h.
+  This function can interactively (tty-based) display information on
+  the state of the uio file system, and modifications can be made.
+
+
+The first version of this document was created by Serge van den Boom,
+on 2004-05-15.
+

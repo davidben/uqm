@@ -97,6 +97,7 @@ extern void PutQueue (PQUEUE pq, HLINK hLink);
 extern void InsertQueue (PQUEUE pq, HLINK hLink, HLINK hRefLink);
 extern void RemoveQueue (PQUEUE pq, HLINK hLink);
 extern COUNT CountLinks (PQUEUE pq);
+void ForAllLinks(PQUEUE pq, void (*callback)(LINKPTR, void *), void *arg);
 #ifdef QUEUE_TABLE
 extern HLINK AllocLink (PQUEUE pq);
 extern void FreeLink (PQUEUE pq, HLINK hLink);

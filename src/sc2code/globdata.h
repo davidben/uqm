@@ -832,7 +832,7 @@ END_GAME_STATE
 
 enum
 {
-	SUPER_MELEE = 0,
+	SUPER_MELEE = 0, /* Is also used while in the main menu */
 	IN_LAST_BATTLE,
 	IN_ENCOUNTER,
 	IN_HYPERSPACE /* in Hyperspace or Quasispace */,
