@@ -35,11 +35,17 @@ extern int ScreenHeight;
 #define SIS_ORG_X (7 + SAFE_X)
 #define SIS_ORG_Y (10 + SAFE_Y)
 #define STATUS_WIDTH 64
+		/* Width of the status "window" (the right part of the screen) */
 #define STATUS_HEIGHT (SCREEN_HEIGHT - (SAFE_Y * 2))
+		/* Height of the status "window" (the right part of the screen) */
 #define SPACE_WIDTH (SCREEN_WIDTH - STATUS_WIDTH - (SAFE_X * 2))
+		/* Width of the space "window" (the left part of the screen) */
 #define SPACE_HEIGHT (SCREEN_HEIGHT - (SAFE_Y * 2))
+		/* Height of the space "window" (the left part of the screen) */
 #define SIS_SCREEN_WIDTH (SPACE_WIDTH - 14)
+		/* Width of the usable part of the space "window" */
 #define SIS_SCREEN_HEIGHT (SPACE_HEIGHT - 13)
+		/* Height of the usable part of the space "window" */
 
 #include "config.h"
 #include "../port.h"
@@ -66,7 +72,6 @@ extern int ScreenHeight;
 #include "build.h"
 #include "intel.h"
 #include "sounds.h"
-#include "demo.h"
 #include "starbase.h"
 #include "sis.h"
 #include "state.h"

@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "demo.h"
 #include "credits.h"
 
 //Added by Chris
@@ -256,6 +257,7 @@ black_urquan_genocide (void)
 
 	if (best_dist < 0 && best_dx == 0 && best_dy == 0)
 	{
+		// All spheres of influence are gone - game over.
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 		GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
 
@@ -263,6 +265,7 @@ black_urquan_genocide (void)
 	}
 	else
 	{
+		// Moving towards new race to cleanse.
 		COUNT speed;
 
 		if (best_dist < 0)

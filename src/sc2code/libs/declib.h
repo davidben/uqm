@@ -19,6 +19,7 @@
 #ifndef _DECLIB_H
 #define _DECLIB_H
 
+#include "libs/compiler.h"
 #define DECODE_REF PVOID
 
 enum
