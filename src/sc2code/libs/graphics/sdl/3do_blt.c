@@ -67,7 +67,7 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 
 			if (img->ScaledImg)
 			{
-				if (img->scale != gscale)
+				if (img->scale != gscale || img->dirty)
 				{
 					SDL_FreeSurface(img->ScaledImg);
 					img->ScaledImg = NULL;
@@ -164,28 +164,32 @@ blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	}
 	else
 	{
-		SDL_Rect SDL_DstRect;
 		TFB_Image *dst_img;
 
 		dst_img = ((TFB_Image *) ((BYTE *) _CurFramePtr +
 			_CurFramePtr->DataOffs));
-		
-		LockMutex (dst_img->mutex);
 
-		SDL_DstRect.x = (short) pClipRect->corner.x -
-						GetFrameHotX (_CurFramePtr);
-		SDL_DstRect.y = (short) pClipRect->corner.y -
-						GetFrameHotY (_CurFramePtr);
 
-		SDL_BlitSurface (
-			img->NormalImg,
-			NULL,
-			dst_img->NormalImg,
-			&SDL_DstRect
-		);
-		
-		UnlockMutex (dst_img->mutex);
-		UnlockMutex (img->mutex);
+		if (GetPrimType (PrimPtr) == STAMPFILL_PRIM)
+		{
+			int r, g, b;
+			DWORD c32k;
+
+			c32k = GetPrimColor (PrimPtr) >> 8;  // shift out color index
+		        r = (c32k >> (10 - (8 - 5))) & 0xF8;
+			g = (c32k >> (5 - (8 - 5))) & 0xF8;
+			b = (c32k << (8 - 5)) & 0xF8;
+
+			TFB_DrawImage_FilledImage(img, 
+					pClipRect->corner.x - GetFrameHotX (_CurFramePtr),
+					pClipRect->corner.y - GetFrameHotY (_CurFramePtr),
+					FALSE, r, g, b, dst_img);
+		} else {
+			TFB_DrawImage_Image(img, 
+					pClipRect->corner.x - GetFrameHotX (_CurFramePtr),
+					pClipRect->corner.y - GetFrameHotY (_CurFramePtr),
+					FALSE, img->Palette, dst_img);
+		}
 	}
 }
 
