@@ -31,12 +31,38 @@ LoadCelFile (PVOID pStr)
 		// something else is loading resources atm
 		return 0;
 
-	if ((fp = res_OpenResFile (contentDir, pStr, "rb")) != NULL)
+	fp = res_OpenResFile (contentDir, pStr, "rb");
+	if (fp != NULL)
 	{
 		MEM_HANDLE hData;
 
 		_cur_resfile_name = pStr;
 		hData = _GetCelData (fp, LengthResFile (fp));
+		_cur_resfile_name = 0;
+		res_CloseResFile (fp);
+		return ((DWORD)hData);
+	}
+
+	return (0);
+}
+
+DWORD
+LoadFontFile (PVOID pStr)
+{
+	uio_Stream *fp;
+
+	// FIXME: this theoretically needs a mechanism to prevent races
+	if (_cur_resfile_name)
+		// something else is loading resources atm
+		return 0;
+
+	fp = res_OpenResFile (contentDir, pStr, "rb");
+	if (fp == ~0)
+	{
+		MEM_HANDLE hData;
+
+		_cur_resfile_name = pStr;
+		hData = _GetFontData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 		return ((DWORD)hData);

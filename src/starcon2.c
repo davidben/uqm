@@ -67,6 +67,7 @@ struct options_struct {
 	int whichCoarseScan;
 	int whichMenu;
 	int whichFonts;
+	int whichIntro;
 	int smoothScroll;
 	int meleeScale;
 	BOOLEAN subTitles;
@@ -116,6 +117,7 @@ main (int argc, char *argv[])
 		/* .whichCoarseScan = */    OPT_PC,
 		/* .whichMenu = */          OPT_PC,
 		/* .whichFont = */          OPT_PC,
+		/* .whichIntro = */         OPT_3DO,
 		/* .smoothScroll = */       OPT_PC,
 		/* .meleeScale = */         TFB_SCALE_TRILINEAR,
 		/* .subtitles = */          TRUE,
@@ -182,6 +184,7 @@ main (int argc, char *argv[])
 	optWhichCoarseScan = options.whichCoarseScan;
 	optWhichMenu = options.whichMenu;
 	optWhichFonts = options.whichFonts;
+	optWhichIntro = options.whichIntro;
 	optSmoothScroll = options.smoothScroll;
 	optMeleeScale = options.meleeScale;
 	optSubtitles = options.subTitles;
@@ -244,7 +247,7 @@ enum
 	ADDON_OPT
 };
 
-static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:";
+static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -266,6 +269,7 @@ static struct option longOptions[] =
 	{"music", 1, NULL, 'm'},
 	{"gamma", 1, NULL, 'g'},
 	{"logfile", 1, NULL, 'l'},
+	{"intro", 1, NULL, 'i'},
 
 	//  options with no short equivalent:
 	{"cscan", 1, NULL, CSCAN_OPT},
@@ -484,6 +488,14 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			case 'l':
 				// -l is a no-op on the second pass..
 				break;
+			case 'i':
+			{
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichIntro) == -1)
+					badArg = TRUE;
+				break;
+			}
 			case CSCAN_OPT:
 				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
 						longOptions[optionIndex].name,

@@ -33,6 +33,7 @@ extern int optWhichMusic;
 extern int optWhichCoarseScan;
 extern int optWhichMenu;
 extern int optWhichFonts;
+extern int optWhichIntro;
 extern int optSmoothScroll;
 extern int optMeleeScale;
 

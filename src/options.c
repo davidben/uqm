@@ -37,6 +37,7 @@ int optWhichMusic;
 int optWhichCoarseScan;
 int optWhichMenu;
 int optWhichFonts;
+int optWhichIntro;
 int optSmoothScroll;
 int optMeleeScale;
 

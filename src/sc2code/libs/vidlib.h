@@ -46,7 +46,8 @@ extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
 extern void VidDoInput (void);
 
-void DoFMV (char *name, char *loopname, BOOLEAN uninit);
+extern BOOLEAN DoFMV (char *name, char *loopname, BOOLEAN uninit);
+extern BOOLEAN ShowPresentation(char *name);
 
 
 

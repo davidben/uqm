@@ -19,6 +19,7 @@
 #include "starcon.h"
 #include "vidlib.h"
 #include "libs/graphics/gfx_common.h"
+#include "options.h"
 
 //Added by Chris
 
@@ -132,8 +133,11 @@ Introduction (void)
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
 	if (InputState == 0)
-	{
-		DoFMV ("slides/intro/intro.duk", NULL, TRUE);
+	{	/* by default we do 3DO cinematics; or PC slides when 3DO files are
+		 * not present */
+		if (optWhichIntro == OPT_PC ||
+				!DoFMV ("slides/intro/intro.duk", NULL, TRUE))
+			ShowPresentation ("slides/intro/intro.txt");
 	}
 }
 
@@ -145,7 +149,11 @@ Victory (void)
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 
-	DoFMV ("slides/ending/victory.duk", NULL, TRUE);
+	/* by default we do 3DO cinematics; or PC slides when 3DO files are
+	 * not present */
+	if (optWhichIntro == OPT_PC ||
+			!DoFMV ("slides/ending/victory.duk", NULL, TRUE))
+		ShowPresentation ("slides/ending/ending.txt");
 		
 	xform_buf[0] = FadeAllToBlack;
 	XFormColorMap ((COLORMAPPTR)xform_buf, 0);
