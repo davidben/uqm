@@ -298,7 +298,8 @@ TFB_DrawImage_FixScaling (TFB_Image *image, int target)
 	EXTENT old = image->extent;
 	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, target, &image->extent);
 	
-	if ((old.width != image->extent.width) || (old.height != image->extent.height) || image->dirty)
+	if ((old.width != image->extent.width) || (old.height != image->extent.height) ||
+		image->dirty || !image->ScaledImg)
 	{
 		image->dirty = FALSE;
 		if (!image->ScaledImg)
