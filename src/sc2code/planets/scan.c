@@ -847,7 +847,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 
 		PressState = AnyButtonPress (TRUE);
 		WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
-		SetSemaphore (GraphicsSem);
+//		SetSemaphore (GraphicsSem);
 		TimeIn = GetTimeCounter ();
 		for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
 		{
@@ -859,7 +859,7 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			}
 			if (ButtonState)
 				i = -i;
-//			SetSemaphore (GraphicsSem);
+			SetSemaphore (GraphicsSem);
 			BatchGraphics ();
 			DrawPlanet (0, 0, i, rgb);
 			if (i < 0) 
@@ -867,12 +867,12 @@ DoScan (INPUT_STATE InputState, PMENU_STATE
 			if (pMS->delta_item)
 				DrawScannedStuff (i, min_scan);
 			UnbatchGraphics ();
-//			ClearSemaphore (GraphicsSem);
+			ClearSemaphore (GraphicsSem);
 //			FlushGraphics ();
 			SleepThreadUntil (TimeIn + WaitTime);
 			TimeIn = GetTimeCounter ();
 		}
-		ClearSemaphore (GraphicsSem);
+//		ClearSemaphore (GraphicsSem);
 		pSolarSysState->Tint_rgb = 0;
 
 	}
