@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Many options menu changes: left-justified categories, and the ability 
+  to change driver/resolution/bpp/scaler in real time, and updates are
+  less frequent so as to spare the DCQ  -McMartin
 - PC ending animation now draws the flagship w/ modules according to
   the actual player's load; also the script structure changed
   allowing for an FPS improvement -Alex

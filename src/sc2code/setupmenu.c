@@ -250,7 +250,7 @@ static MENU_CATEGORY cmdline_opts[] = {
 #define NUM_STEPS 20
 #define X_STEP (SCREEN_WIDTH / NUM_STEPS)
 #define Y_STEP (SCREEN_HEIGHT / NUM_STEPS)
-#define MENU_FRAME_RATE (ONE_SECOND / 60)
+#define MENU_FRAME_RATE (ONE_SECOND / 20)
 
 static void
 SetDefaults (void)
@@ -334,8 +334,9 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 	{
 		int i, home_x, home_y;
 
-		t.baseline.x = r.corner.x + (r.extent.width / 8);
+		t.baseline.x = r.corner.x; // + (r.extent.width / 8);
 		t.baseline.y += 16;
+		t.align = ALIGN_LEFT;
 		t.pStr = menu->category;
 		if (pInputState->category == cat_index)
 		{
@@ -347,8 +348,9 @@ DrawMenu (PSETUP_MENU_STATE pInputState)
 		}
 		font_DrawText (&t);
 
-		home_x = t.baseline.x + (r.extent.width / 4);
+		home_x = t.baseline.x + 3 * (r.extent.width / 8);
 		home_y = t.baseline.y;
+		t.align = ALIGN_CENTER;
 		for (i = 0; i < menu->numopts; i++)
 		{
 			t.baseline.x = home_x + ((i % 3) * (r.extent.width / 4));
@@ -409,7 +411,14 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	{
 		RECT r;
 		COLOR bg, dark, medium;
-		int frame = --pInputState->anim_frame_count;
+		int frame;
+
+		pInputState->anim_frame_count -= 3;
+		if (pInputState->anim_frame_count < 0)
+		{
+			pInputState->anim_frame_count = 0;
+		}
+		frame = pInputState->anim_frame_count;
 		
 		r.corner.x = ((frame * X_STEP) >> 1) + 2;
 		r.corner.y = ((frame * Y_STEP) >> 1) + 2;
