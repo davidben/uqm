@@ -140,39 +140,34 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 {
 	int x, y;
 	const int w = src->w, h = src->h;
-	Uint8 *src_p = (Uint8 *) src->pixels, *dst_p = (Uint8 *)dst->pixels, *src_p2;
 
 	switch (dst->format->BytesPerPixel)
 	{
 	case 2:
 	{
+		Uint16 *src_p = (Uint16 *)src->pixels, *dst_p = (Uint16 *)dst->pixels, *src_p2;
 		Uint16 pixval_16;
 		for (y = 0; y < h; ++y)
 		{
 			src_p2 = dst_p;
 			for (x = 0; x < w; ++x)
 			{
-				pixval_16 = *(Uint16*)src_p;
-				src_p += 2;
-
-				*(Uint16*)dst_p = pixval_16;
-				dst_p += 2;
-				*(Uint16*)dst_p = pixval_16;
-				dst_p += 2;
+				pixval_16 = *src_p++;
+				*dst_p++ = pixval_16;
+				*dst_p++ = pixval_16;
 			}
 			for (x = 0; x < w; ++x)
 			{
 				*(Uint32*)dst_p = *(Uint32*)src_p2;
-				dst_p += 4;
-				src_p2 += 4;
+				dst_p += 2;
+				src_p2 += 2;
 			}
 		}
 		break;
 	}
 	case 3:
 	{
-		// FIXME: this one might have endian issues
-
+		Uint8 *src_p = (Uint8 *)src->pixels, *dst_p = (Uint8 *)dst->pixels, *src_p2;
 		Uint32 pixval_32;
 		for (y = 0; y < h; ++y)
 		{
@@ -181,7 +176,6 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 			{
 				pixval_32 = *(Uint32*)src_p;
 				src_p += 3;
-
 				*(Uint32*)dst_p = pixval_32;
 				dst_p += 3;
 				*(Uint32*)dst_p = pixval_32;
@@ -192,7 +186,6 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 			{
 				pixval_32 = *(Uint32*)src_p;
 				src_p += 3;
-
 				*(Uint32*)dst_p = pixval_32;
 				dst_p += 3;
 				*(Uint32*)dst_p = pixval_32;
@@ -203,31 +196,23 @@ static void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst)
 	}
 	case 4:
 	{
+		Uint32 *src_p = (Uint32 *)src->pixels, *dst_p = (Uint32 *)dst->pixels, *src_p2;
 		Uint32 pixval_32;
 		for (y = 0; y < h; ++y)
 		{
 			src_p2 = src_p;
 			for (x = 0; x < w; ++x)
 			{
-				pixval_32 = *(Uint32*)src_p;
-				src_p += 4;
-
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 4;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 4;
+				pixval_32 = *src_p++;
+				*dst_p++ = pixval_32;
+				*dst_p++ = pixval_32;
 			}				
 			src_p = src_p2;
 			for (x = 0; x < w; ++x)
-
 			{
-				pixval_32 = *(Uint32*)src_p;
-				src_p += 4;
-
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 4;
-				*(Uint32*)dst_p = pixval_32;
-				dst_p += 4;
+				pixval_32 = *src_p++;
+				*dst_p++ = pixval_32;
+				*dst_p++ = pixval_32;
 			}
 		}
 		break;
