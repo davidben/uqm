@@ -28,12 +28,86 @@ void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
 
 //End added by Chris
 
+#ifdef USE_3DO_HANGAR
+// 3DO 4x3 hangar layout
+#	define HANGAR_SHIPS_ROW  4
+#	define HANGAR_Y          64
+#	define HANGAR_DY         44
+
+const static COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
+{
+	19, 60, 116, 157
+};
+
+#else // use PC hangar
+// modified PC 6x2 hangar layout
+#	define HANGAR_SHIPS_ROW  6
+#	define HANGAR_Y          88
+#	define HANGAR_DY         84
+
+const static COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
+{
+	0, 38, 76,  131, 169, 207
+};
+
+#	define WANT_HANGAR_ANIMATION
+#endif // USE_3DO_HANGAR
+
+#define HANGAR_SHIPS      12
+#define HANGAR_ROWS       (HANGAR_SHIPS / HANGAR_SHIPS_ROW)
+#define HANGAR_ANIM_RATE  15 // fps
+
 enum
 {
 	SHIPYARD_CREW,
 	SHIPYARD_SAVELOAD,
 	SHIPYARD_EXIT
 };
+
+int hangar_anim_func (void* data)
+{
+	DWORD TimeIn;
+	STAMP s;
+	Task task = (Task) data;
+	COLORMAP ColorMap;
+	RECT ClipRect;
+	
+	if (!pMenuState->CurString)
+	{
+		FinishTask (task);
+		return -1;
+	}
+	s.origin.x = s.origin.y = 0;
+	s.frame = SetAbsFrameIndex (pMenuState->CurFrame, 24);
+	ClipRect = pMenuState->flash_rect1;
+	ColorMap = SetAbsColorMapIndex (pMenuState->CurString, 0);
+	
+	TimeIn = GetTimeCounter ();
+	while (!Task_ReadState (task, TASK_EXIT))
+	{
+		CONTEXT OldContext;
+		RECT OldClipRect;
+
+		SetSemaphore (GraphicsSem);
+		OldContext = SetContext (ScreenContext);
+		GetContextClipRect (&OldClipRect);
+		SetContextClipRect (&ClipRect);
+
+		ColorMap = SetRelColorMapIndex (ColorMap, 1);
+		SetColorMap (GetColorMapAddress (ColorMap));
+		DrawStamp (&s);
+		
+		SetContextClipRect (&OldClipRect);
+		SetContext (OldContext);
+		ClearSemaphore (GraphicsSem);
+		
+		SleepThreadUntil (TimeIn + ONE_SECOND / HANGAR_ANIM_RATE);
+		TimeIn = GetTimeCounter ();
+	}
+
+	FinishTask (task);
+	return(0);
+}
 
 static void
 SpinStarShip (HSTARSHIP hStarShip)
@@ -256,10 +330,6 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		POINT finished_s;
 		STAMP ship_s, lfdoor_s, rtdoor_s;
 	} ship_win_info[MAX_COMBAT_SHIPS], *pship_win_info;
-	COORD x_coords[] =
-	{
-		19, 60, 116, 157,
-	};
 
 	num_ships = 1;
 	pship_win_info = &ship_win_info[0];
@@ -281,8 +351,10 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		pship_win_info->ship_s.frame =
 				YankedStarShipPtr->ShipInfo.melee_icon;
 
-		pship_win_info->finished_s.x = x_coords[which_window & 3];
-		pship_win_info->finished_s.y = 64 + (44 * (which_window >> 2));
+		pship_win_info->finished_s.x = hangar_x_coords[
+				which_window % HANGAR_SHIPS_ROW];
+		pship_win_info->finished_s.y = HANGAR_Y + (HANGAR_DY *
+				(which_window / HANGAR_SHIPS_ROW));
 	}
 	else
 	{
@@ -361,8 +433,10 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 					StarShipPtr->ShipInfo.melee_icon;
 
 			which_window = GET_GROUP_LOC (StarShipPtr);
-			pship_win_info->finished_s.x = x_coords[which_window & 3];
-			pship_win_info->finished_s.y = 64 + (44 * (which_window >> 2));
+			pship_win_info->finished_s.x = hangar_x_coords[
+					which_window % HANGAR_SHIPS_ROW];
+			pship_win_info->finished_s.y = HANGAR_Y + (HANGAR_DY *
+					(which_window / HANGAR_SHIPS_ROW));
 			++pship_win_info;
 
 			UnlockStarShip (
@@ -517,6 +591,13 @@ CrewTransaction (SIZE crew_delta)
 	}
 }
 
+/* in this routine, the least significant byte of pMS->CurState is used
+ * to store the current selected ship index
+ * a special case for the row is hi-nibble == -1 (0xf), which specifies
+ * SIS as the selected ship
+ * some bitwise math is still done to scroll through ships, for it to work
+ * ships per row number must divide 0xf0 without remainder
+ */
 static BOOLEAN
 DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 {
@@ -556,23 +637,29 @@ DoModifyShips (INPUT_STATE InputState, PMENU_STATE pMS)
 		else if (dy)
 		{
 			if (HINIBBLE (NewState))
-				NewState = pMS->CurState & 3;
+				NewState = pMS->CurState % HANGAR_SHIPS_ROW;
 			else
-				NewState = (unsigned char)(pMS->CurState + (1 << 2));
+				NewState = (unsigned char)(pMS->CurState + HANGAR_SHIPS_ROW);
 
-			NewState = (NewState + (dy << 2)) & 0xF;
-			if (NewState >> 2)
-				NewState -= (1 << 2);
+			NewState += dy * HANGAR_SHIPS_ROW;
+			if (NewState / HANGAR_SHIPS_ROW > 0
+					&& NewState / HANGAR_SHIPS_ROW <= HANGAR_ROWS)
+				NewState -= HANGAR_SHIPS_ROW;
+			else if (NewState / HANGAR_SHIPS_ROW > HANGAR_ROWS + 1)
+				/* negative number - select last row */
+				NewState = pMS->CurState % HANGAR_SHIPS_ROW
+						+ HANGAR_SHIPS_ROW * (HANGAR_ROWS - 1);
 			else
+				// select SIS
 				NewState = MAKE_BYTE (pMS->CurState, 0xF);
 		}
 		else if (dx && !HINIBBLE (NewState))
 		{
-			NewState = NewState & 3;
+			NewState = NewState % HANGAR_SHIPS_ROW;
 			if ((dx += NewState) < 0)
-				NewState = (BYTE)(pMS->CurState + 3);
-			else if (dx > 3)
-				NewState = (BYTE)(pMS->CurState - 3);
+				NewState = (BYTE)(pMS->CurState + (HANGAR_SHIPS_ROW - 1));
+			else if (dx > HANGAR_SHIPS_ROW - 1)
+				NewState = (BYTE)(pMS->CurState - (HANGAR_SHIPS_ROW - 1));
 			else
 				NewState = (BYTE)(pMS->CurState - NewState + dx);
 		}
@@ -925,13 +1012,10 @@ ChangeFlashRect:
 				}
 				else
 				{
-					COORD x_coords[] =
-					{
-						19, 60, 116, 157,
-					};
-
-					pMS->flash_rect0.corner.x = x_coords[pMS->CurState & 3];
-					pMS->flash_rect0.corner.y = 64 + (44 * (pMS->CurState >> 2));
+					pMS->flash_rect0.corner.x = hangar_x_coords[
+							pMS->CurState % HANGAR_SHIPS_ROW];
+					pMS->flash_rect0.corner.y = HANGAR_Y + (HANGAR_DY *
+							(pMS->CurState / HANGAR_SHIPS_ROW));
 					pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
 					pMS->flash_rect0.extent.height = SHIP_WIN_HEIGHT;
 				}
@@ -1064,6 +1148,37 @@ DrawBluePrint (PMENU_STATE pMS)
 	ClearSemaphore (GraphicsSem);
 }
 
+void
+BeginHangarAnim (PMENU_STATE pMS)
+{
+#ifdef WANT_HANGAR_ANIMATION
+	CONTEXT OldContext;
+	RECT ClipRect;
+
+	OldContext = SetContext (SpaceContext);
+	GetContextClipRect (&ClipRect);
+
+	// start hangar power-lines animation
+	GetContextClipRect (&ClipRect);
+	pMS->flash_rect1 = ClipRect;
+	pMS->CurFrame = pMS->ModuleFrame;
+	pMS->flash_task = AssignTask (hangar_anim_func, 4096,
+			"hangar pal-rot animation");
+
+	SetContext (OldContext);
+#endif
+}
+
+void
+EndHangarAnim (PMENU_STATE pMS)
+{
+	if (pMS->flash_task)
+	{
+		ConcludeTask (pMS->flash_task);
+		pMS->flash_task = 0;
+	}
+}
+
 BOOLEAN
 DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 {
@@ -1076,10 +1191,14 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 
 		{
 			STAMP s;
+			RECT r, old_r;
 
 			s.frame = CaptureDrawable (
 					LoadGraphic (SHIPYARD_PMAP_ANIM)
 					);
+
+			pMS->CurString = CaptureColorMap (LoadColorMapFile (
+					"lbm/dockpani.ct"));
 
 			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
 
@@ -1098,9 +1217,23 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 			SetSemaphore (GraphicsSem);
 			SetContext (SpaceContext);
 			SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
-			s.origin.x = s.origin.y = 0;
-			DrawStamp (&s);
 
+			s.origin.x = s.origin.y = 0;
+#ifdef USE_3DO_HANGAR
+			DrawStamp (&s);
+#else // PC hangar
+			// the PC ship dock needs to overwrite the border
+			// expand the clipping rect by 1 pixel
+			GetContextClipRect (&old_r);
+			r = old_r;
+			r.corner.x--;
+			r.extent.width += 2;
+			r.extent.height += 1;
+			SetContextClipRect (&r);
+			DrawStamp (&s);
+			SetContextClipRect (&old_r);
+#endif // USE_3DO_HANGAR
+			
 			SetContextFont (TinyFont);
 
 {
@@ -1114,7 +1247,7 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 }
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
-
+			BeginHangarAnim (pMS);
 			ClearSemaphore (GraphicsSem);
 
 			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENTPTR)0);
@@ -1131,8 +1264,12 @@ DoShipyard (INPUT_STATE InputState, PMENU_STATE pMS)
 	{
 ExitShipyard:
 		SetSemaphore (GraphicsSem);
+		EndHangarAnim (pMS);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
+		pMS->CurFrame = 0;
+		DestroyColorMap (ReleaseColorMap (pMS->CurString));
+		pMS->CurString = 0;
 		ClearSemaphore (GraphicsSem);
 
 		return (FALSE);
@@ -1146,11 +1283,13 @@ ExitShipyard:
 		}
 		else
 		{
+			EndHangarAnim (pMS);
 			if (GameOptions () == 0)
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 			SetSemaphore (GraphicsSem);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			BeginHangarAnim (pMS);
 			ClearSemaphore (GraphicsSem);
 		}
 	}
@@ -1159,4 +1298,3 @@ ExitShipyard:
 
 	return (TRUE);
 }
-
