@@ -1,4 +1,5 @@
 Changes towards version 0.3:
+- Patched Umgah dialogue, fixing bug #8
 - Crossfade code now explicitly caches the screen to transition from, and
   thus no longer glitches.  The code needed a slight rewrite, but this
   does fix bug #33 -McMartin
