@@ -60,6 +60,12 @@ extern BOOLEAN DestroyMusic (MUSIC_REF MusicRef);
 #define MAX_CHANNELS 8
 #define MAX_VOLUME 255
 
+#define FIRST_SFX_CHANNEL  0
+#define MIN_FX_CHANNEL     1
+#define NUM_FX_CHANNELS    4
+#define LAST_SFX_CHANNEL   (MIN_FX_CHANNEL + NUM_FX_CHANNELS - 1)
+#define NUM_SFX_CHANNELS   (MIN_FX_CHANNEL + NUM_FX_CHANNELS)
+
 extern void PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE
 		Priority);
 extern void PLRStop (MUSIC_REF MusicRef);

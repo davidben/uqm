@@ -23,7 +23,7 @@ SOUND MenuSounds;
 SOUND GameSounds;
 
 #define MAX_SOUNDS 8
-static BYTE num_sounds;
+static BYTE num_sounds = 0;
 static SOUND sound_buf[MAX_SOUNDS];
 static ELEMENTPTR sound_posobj[MAX_SOUNDS];
 
@@ -32,12 +32,10 @@ void
 PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
 		BYTE Priority)
 {
-#define MIN_FX_CHANNEL 1
-#define NUM_FX_CHANNELS 4
 		/* obviously number of channels is assumed to be at least 5 */
 	BYTE chan, c;
 	static BYTE lru_channel[NUM_FX_CHANNELS] = {0, 1, 2, 3};
-	static SOUND channel[NUM_FX_CHANNELS];
+	static SOUND channel[NUM_FX_CHANNELS] = {0, 0, 0, 0};
 
 	if (S == 0)
 		return;
@@ -134,14 +132,12 @@ NotPositional (void)
 
 /* Updates positional sound effects */
 void
-UpdateSoundPositions (void) {
+UpdateSoundPositions (void)
+{
 	COUNT i;
 
-	for (i = 0; i <= NUM_FX_CHANNELS; ++i)
+	for (i = FIRST_SFX_CHANNEL; i <= LAST_SFX_CHANNEL; ++i)
 	{
-		// XXX: (possible BUG): shouldn't the "<=" be "<"
-		// TODO: investigate - SvdB
-		
 		ELEMENTPTR posobj;
 		if (!ChannelPlaying(i))
 			continue;
@@ -181,11 +177,8 @@ RemoveSoundsForObject (ELEMENTPTR PosObj)
 {
 	int i;
 
-	for (i = 0; i <= NUM_FX_CHANNELS; ++i)
+	for (i = FIRST_SFX_CHANNEL; i <= LAST_SFX_CHANNEL; ++i)
 	{
-		// XXX: (possible BUG): shouldn't the "<=" be "<"
-		// TODO: investigate - SvdB
-
 		if (GetPositionalObject (i) == PosObj)
 			SetPositionalObject (i, NULL);
 	}
