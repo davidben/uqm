@@ -20,6 +20,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "comm.h"
+#include "libs/graphics/widgets.h"
 #include "libs/sound/trackplayer.h"
 
 #define CONFIRM_WIN_WIDTH 80
@@ -28,45 +29,23 @@
 static void
 DrawConfirmationWindow (BOOLEAN answer)
 {
-	COLOR oldfg = SetContextForeGroundColor (MENU_BACKGROUND_COLOR);
+	COLOR oldfg = SetContextForeGroundColor (MENU_TEXT_COLOR);
+	COLOR dark, medium;
 	FONT  oldfont = SetContextFont (StarConFont);
 	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
 	RECT r;
 	TEXT t;
+
+	dark = BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F);
+	medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
+
 	BatchGraphics ();
-
-	r.corner.x = ((SCREEN_WIDTH - CONFIRM_WIN_WIDTH) >> 1) - 2;
-	r.corner.y = ((SCREEN_HEIGHT - CONFIRM_WIN_HEIGHT) >> 1) - 2;
-	r.extent.width = CONFIRM_WIN_WIDTH + 4;
-	r.extent.height = CONFIRM_WIN_HEIGHT + 4;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
-	DrawFilledRectangle (&r);
-	
-	r.corner.x = ((SCREEN_WIDTH - CONFIRM_WIN_WIDTH) >> 1);
-	r.corner.y = ((SCREEN_HEIGHT - CONFIRM_WIN_HEIGHT) >> 1);
-	r.extent.width = CONFIRM_WIN_WIDTH + 2;
-	r.extent.height = CONFIRM_WIN_HEIGHT + 2;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
-	DrawFilledRectangle (&r);
-
-	r.corner.x = ((SCREEN_WIDTH - CONFIRM_WIN_WIDTH) >> 1) - 1;
-	r.corner.y = ((SCREEN_HEIGHT + CONFIRM_WIN_HEIGHT) >> 1) + 1;
-	r.extent.height = 1;
-	DrawFilledRectangle (&r);
-
-	r.corner.x = ((SCREEN_WIDTH + CONFIRM_WIN_WIDTH) >> 1) + 1;
-	r.corner.y = ((SCREEN_HEIGHT - CONFIRM_WIN_HEIGHT) >> 1) - 1;
-	r.extent.width = 1;	
-	DrawFilledRectangle (&r);
-
 	r.corner.x = (SCREEN_WIDTH - CONFIRM_WIN_WIDTH) >> 1;
 	r.corner.y = (SCREEN_HEIGHT - CONFIRM_WIN_HEIGHT) >> 1;
 	r.extent.width = CONFIRM_WIN_WIDTH;
 	r.extent.height = CONFIRM_WIN_HEIGHT;
-	SetContextForeGroundColor (MENU_BACKGROUND_COLOR);
-	DrawFilledRectangle (&r);
+	DrawShadowedBox (&r, MENU_BACKGROUND_COLOR, dark, medium);
 
-	SetContextForeGroundColor (MENU_TEXT_COLOR);
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + 8;
 	t.pStr = "Really Quit?";
