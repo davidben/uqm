@@ -106,7 +106,7 @@ static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 int do_subtitles (UNICODE *pStr);
 
-static UNICODE *last_subtitle;
+static volatile UNICODE *last_subtitle;
 static TFB_Image *subtitle_cache;
 
 /* _count_lines - mostly stolen from add_text, just sees how many lines
@@ -744,6 +744,8 @@ RefreshResponses (PENCOUNTER_STATE pES)
 static void
 FeedbackPlayerPhrase (UNICODE *pStr)
 {
+	last_subtitle = NULL;
+
 	SetContext (SpaceContext);
 	
 	BatchGraphics ();
