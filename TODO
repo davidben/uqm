@@ -151,10 +151,7 @@ Stuff still to do (small):
   can be used on the pc (and the other way around).
   - Also remove the values that are pointers into the heap, since those get
     cached and restored by the load routine anyway.
-- make a file types.h, which defines non-confusing integer types.
-  There are at the moment 3 systems: int16, DWORD, and Sint16.
-  I suggest we keep int16, as 'word' is confusing. Sint16 is an SDL define
-  and should only be used in SDL calls.
+- update the current types.h draft for target platforms as needed 
 - Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
   (add switch?)
 - '-T 0' option to turn speech off doesn't work when using SDL_mixer.
