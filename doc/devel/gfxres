@@ -53,6 +53,8 @@ Then for all frames:
   If DATA_PACKED is set in the flags for this frame: (from 3do/imageint.c)
      for every line in the image (bounds.height lines):
            2       number of bytes used to encode this line
+                   The actual number of bytes is computed like so:
+                   (number-of-bytes + 2) * 4
            a number of packets of this format:
            
 
