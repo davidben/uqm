@@ -324,12 +324,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 	if (DrawCommandQueue == 0 || DrawCommandQueue->Size == 0)
 	{
 		static int last_fade = 255;
-		static int last_transition = -1;
+		static int last_transition = 255;
 		int current_fade = FadeAmount;
 		int current_transition = TransitionAmount;
 		
 		if ((current_fade != 255 && current_fade != last_fade) ||
-			(current_transition != -1 && current_transition != last_transition))
+			(current_transition != 255 && current_transition != last_transition))
 		{
 			TFB_SwapBuffers(); // if fading, redraw every frame
 		}
