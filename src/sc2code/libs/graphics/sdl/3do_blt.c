@@ -24,6 +24,11 @@
 
 static int gscale;
 
+void
+SetGraphicScale (int scale)
+{
+	gscale = scale;
+}
 
 static void
 blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
@@ -362,14 +367,6 @@ void
 LoadDisplay (PDISPLAY_INTERFACE *pDisplay)
 {
 	*pDisplay = &DisplayInterface;
-}
-
-// Status: Unimplemented
-void
-SetGraphicScale (int scale)
-		//Calibration...
-{
-	gscale = scale;
 }
 
 #endif

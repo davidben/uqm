@@ -1,4 +1,6 @@
 Changes towards version 0.2:
+- Removed the GraphicStrength code, since all that is handled with
+  an arithmetic blit routine outside of the drawing thread
 - Added an improved version of biadapt scaling filter,
   working name "biadv" (use --scale=biadv) -fOSSiL
 - Removed SDL_mixer sound module

@@ -115,8 +115,6 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 	}
 
 	DC.data.image.destBuffer = dest;
-	DC.data.image.BlendNumerator = BlendNumerator;
-	DC.data.image.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 	Unlock_DCQ ();
@@ -136,8 +134,6 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r,
 	DC.data.filledimage.g = g;
 	DC.data.filledimage.b = b;
 	DC.data.filledimage.destBuffer = dest;
-	DC.data.filledimage.BlendNumerator = BlendNumerator;
-	DC.data.filledimage.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -154,9 +150,6 @@ TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src)
 	DC.data.copytoimage.h = lpRect->extent.height;
 	DC.data.copytoimage.image = img;
 	DC.data.copytoimage.srcBuffer = src;
-	
-	DC.data.copytoimage.BlendNumerator = BlendNumerator;
-	DC.data.copytoimage.BlendDenominator = BlendDenominator;
 	
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -182,9 +175,6 @@ TFB_DrawScreen_Copy (PRECT r, SCREEN src, SCREEN dest)
 	DC.data.copy.h = r->extent.height;
 	DC.data.copy.srcBuffer = src;
 	DC.data.copy.destBuffer = dest;
-
-	DC.data.copy.BlendNumerator = BlendNumerator;
-	DC.data.copy.BlendDenominator = BlendDenominator;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
@@ -217,8 +207,6 @@ TFB_DrawScreen_WaitForSignal (void)
 	WaitForSignal ();
 }
 
-/* These don't compile until I write the DrawCanvas commands. */
-
 void
 TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest)
 {
@@ -241,7 +229,7 @@ void
 TFB_DrawImage_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_Image (img, x, y, scaled, palette, target->NormalImg, 4, 4);
+	TFB_DrawCanvas_Image (img, x, y, scaled, palette, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
@@ -250,7 +238,7 @@ void
 TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_FilledImage (img, x, y, scaled, r, g, b, target->NormalImg, 4, 4);
+	TFB_DrawCanvas_FilledImage (img, x, y, scaled, r, g, b, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }

@@ -80,20 +80,6 @@ FlushGraphics ()
 	TFB_DrawScreen_WaitForSignal ();
 }
 
-// Status: Ignored (only used in fmv.c)
-void
-SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
-{
-	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
-}
-
-// Status: Ignored (only used in solarsys.c)
-void
-SetGraphicGrabOther (int grab_other)
-{
-	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
-}
-
 static int
 transition_task_func (void *data)
 {
@@ -170,18 +156,6 @@ ScreenTransition (int TransType, PRECT pRect)
 	{
 		WaitThread (transition_task->thread, NULL);
 	}
-}
-
-void
-DrawFromExtraScreen (PRECT r) //No scaling?
-{
-	TFB_DrawScreen_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
-}
-
-void
-LoadIntoExtraScreen (PRECT r)
-{
-	TFB_DrawScreen_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }
 
 // Status: Ignored

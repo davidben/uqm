@@ -585,8 +585,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
 						DC.data.image.UseScaling, pal,
-						SDL_Screens[DC.data.image.destBuffer],
-						DC.data.image.BlendNumerator, DC.data.image.BlendDenominator);
+						SDL_Screens[DC.data.image.destBuffer]);
 
 				break;
 			}
@@ -603,8 +602,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image, DC.data.filledimage.x, DC.data.filledimage.y,
 						DC.data.filledimage.UseScaling, DC.data.filledimage.r, DC.data.filledimage.g,
-						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer],
-						DC.data.filledimage.BlendNumerator, DC.data.filledimage.BlendDenominator);
+						DC.data.filledimage.b, SDL_Screens[DC.data.filledimage.destBuffer]);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
@@ -662,7 +660,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				dest.x = 0;
 				dest.y = 0;
-				TFB_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer], &src, DC_image->NormalImg, &dest, DC.data.copytoimage.BlendNumerator, DC.data.copytoimage.BlendDenominator);
+				SDL_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer], &src, DC_image->NormalImg, &dest);
 				UnlockMutex (DC_image->mutex);
 				break;
 			}
@@ -678,7 +676,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
 
 
-				TFB_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest, DC.data.copy.BlendNumerator, DC.data.copy.BlendDenominator);
+				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src, SDL_Screens[DC.data.copy.destBuffer], &dest);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:

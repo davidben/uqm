@@ -33,15 +33,30 @@ int ScreenWidthActual;
 int ScreenHeightActual;
 int GraphicsDriver;
 int TFB_DEBUG_HALT = 0;
-int BlendNumerator = 4;
-int BlendDenominator = 4;
 
+// Status: Ignored (only used in fmv.c)
+void
+SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
+{
+	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
+}
+
+// Status: Ignored (only used in solarsys.c)
+void
+SetGraphicGrabOther (int grab_other)
+{
+	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
+}
 
 void
-SetGraphicStrength (int numerator, int denominator)
-{ 
-	//fprintf (stderr, "SetGraphicsStrength %d %d\n",numerator, denominator);
-	BlendNumerator = numerator;
-	BlendDenominator = denominator;
+DrawFromExtraScreen (PRECT r)
+{
+	TFB_DrawScreen_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
+}
+
+void
+LoadIntoExtraScreen (PRECT r)
+{
+	TFB_DrawScreen_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }
 

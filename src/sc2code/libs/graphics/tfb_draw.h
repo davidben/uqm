@@ -69,7 +69,7 @@ void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, in
 
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas dest);
 void TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas image);
-void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target, int bn, int bd);
-void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target, int bn, int bd);
+void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target);
+void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target);
 
 #endif

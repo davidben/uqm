@@ -57,7 +57,6 @@ typedef struct tfb_dc_img
 {
 	TFB_Image *image;
 	int x, y;
-	int BlendNumerator, BlendDenominator;
 	SCREEN destBuffer;
 	BOOLEAN UsePalette;
 	BOOLEAN UseScaling;
@@ -68,7 +67,6 @@ typedef struct tfb_dc_filledimg
 	TFB_Image *image;
 	int x, y;
 	int r, g, b;
-	int BlendNumerator, BlendDenominator;
 	SCREEN destBuffer;
 	BOOLEAN UseScaling;
 } TFB_DrawCommand_FilledImage;
@@ -76,7 +74,6 @@ typedef struct tfb_dc_filledimg
 typedef struct tfb_dc_copy
 {
 	int x, y, w, h;
-	int BlendNumerator, BlendDenominator;
 	SCREEN srcBuffer, destBuffer;
 } TFB_DrawCommand_Copy;
 
@@ -84,7 +81,6 @@ typedef struct tfb_dc_copyimg
 {
 	TFB_Image *image;
 	int x, y, w, h;
-	int BlendNumerator, BlendDenominator;
 	SCREEN srcBuffer;
 } TFB_DrawCommand_CopyToImage;
 

@@ -53,11 +53,9 @@ void TFB_ProcessEvents (void);
 
 void LoadIntoExtraScreen (PRECT r);
 void DrawFromExtraScreen (PRECT r);
-void SetGraphicStrength (int numer, int denom);
 void SetGraphicGrabOther (int grab_other);
 void SetGraphicScale (int scale);
 void SetGraphicUseOtherExtra (int other);
-void *GetScreenBitmap (void);
 void ScreenTransition (int transition, PRECT pRect);
 
 extern float FrameRate;
@@ -72,8 +70,6 @@ extern int ScreenHeight;
 extern int ScreenWidthActual;
 extern int ScreenHeightActual;
 extern int GraphicsDriver;
-extern int BlendNumerator;
-extern int BlendDenominator;
 
 int Starcon2Main (void *);
 

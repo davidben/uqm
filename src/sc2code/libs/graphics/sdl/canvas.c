@@ -13,7 +13,7 @@ TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Ca
 	SDL_Rect rect;
 	
 	screen_plot = putpixel_for (target);
-	color = SDL_MapRGB (((NativeCanvas)target)->format, r, g, b);
+	color = SDL_MapRGB (((NativeCanvas) target)->format, r, g, b);
 
 	SDL_GetClipRect((NativeCanvas) target, &rect);
 				
@@ -56,11 +56,11 @@ TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas target)
 	sr.w = rect->extent.width;
 	sr.h = rect->extent.height;
 	
-	SDL_FillRect((NativeCanvas)target, &sr, SDL_MapRGB(((NativeCanvas)target)->format, r, g, b));
+	SDL_FillRect((NativeCanvas) target, &sr, SDL_MapRGB(((NativeCanvas) target)->format, r, g, b));
 }
 
 void
-TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target, int bn, int bd)
+TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette *palette, TFB_Canvas target)
 {
 	SDL_Rect targetRect;
 	SDL_Surface *surf;
@@ -92,12 +92,12 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, BOOLEAN scaled, TFB_Palette 
 		}
 	}
 	
-	TFB_BlitSurface(surf, NULL, target, &targetRect, bn, bd);
+	SDL_BlitSurface(surf, NULL, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
 
 void
-TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target, int bn, int bd)
+TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r, int g, int b, TFB_Canvas target)
 {
 	SDL_Rect targetRect;
 	SDL_Surface *surf;
@@ -128,6 +128,6 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, BOOLEAN scaled, int r,
 	}
 	SDL_SetColors (surf, pal, 0, 256);
 
-	TFB_BlitSurface(surf, NULL, target, &targetRect, bn, bd);
+	SDL_BlitSurface(surf, NULL, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
