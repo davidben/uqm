@@ -477,11 +477,12 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
 	int x, y, sx, sy, *csax, *csay, csx, csy;
-	int sax[321], say[241];
+	int saspace[602];
+	int *sax, *say;
 
-	if (size.width > 320 || size.height > 240)
+	if (size.width + size.height > 600)
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to be larger than the screen!  Failing.\n");
+		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to unreasonable size!  Failing.\n");
 		return;
 	}
 	if (size.width > dst->w || size.height > dst->h) 
@@ -494,6 +495,8 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 	sx = (int) (65536.0 * (float) src->w / (float) size.width);
 	sy = (int) (65536.0 * (float) src->h / (float) size.height);
 
+	sax = saspace;
+	say = saspace + size.width + 1;
 	/*
 	 * Precalculate row increments 
 	 */
@@ -1004,12 +1007,20 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
 	int ret;
+	int r, g, b;
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
 		fprintf (stderr, "TFB_DrawCanvas_Rotate: Tried to rotate image to size %d %d when dst_canvas has only dimensions of %d %d!  Failing.\n",
 			size.width, size.height, dst->w, dst->h);
 		return;
+	}
+
+	if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
+	{
+		TFB_DrawCanvas_SetTransparentColor (dst, r, g, b, FALSE);
+		/* fill destination with transparent color before rotating */
+		SDL_FillRect(dst, NULL, SDL_MapRGB(dst->format, r, g, b));
 	}
 
 	ret = rotateSurface (src, dst, angle, 0);

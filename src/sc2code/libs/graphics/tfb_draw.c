@@ -330,11 +330,14 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 {
 	TFB_Canvas dst;
 	EXTENT size;
+	TFB_Image* newimg;
+	int r, g, b;
 
 	/* sanity check */
 	if (!img->NormalImg)
 	{
-		fprintf (stderr, "TFB_DrawImage_New_Rotated: source canvas is NULL! Failing.\n");
+		fprintf (stderr, "TFB_DrawImage_New_Rotated: "
+				"source canvas is NULL! Failing.\n");
 		return NULL;
 	}
 
@@ -342,12 +345,21 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	dst = TFB_DrawCanvas_New_RotationTarget (img->NormalImg, angle);
 	if (!dst)
 	{
-		fprintf (stderr, "TFB_DrawImage_New_Rotated: rotation target canvas not created! Failing.\n");
+		fprintf (stderr, "TFB_DrawImage_New_Rotated: "
+				"rotation target canvas not created! Failing.\n");
 		return NULL;
 	}
 	TFB_DrawCanvas_Rotate (img->NormalImg, dst, angle, size);
+	
+	newimg = TFB_DrawImage_New (dst);
+	if (newimg && TFB_DrawCanvas_GetTransparentColor (
+			newimg->NormalImg, &r, &g, &b))
+	{	/* reset colorkey info to clear potential SRCALPHA */
+		TFB_DrawCanvas_SetTransparentColor (newimg->NormalImg,
+				r, g, b, FALSE);
+	}
 
-	return TFB_DrawImage_New (dst);
+	return newimg;
 }
 
 void 
