@@ -1355,9 +1355,12 @@ StartGroups:
 
 		if (pSolarSysState->MenuState.flash_task == 0)
 		{
+			/* Note!  This implies that our GenFunc was a
+			   conversation; that is, that this is a homeworld */
 			LoadSolarSys ();
 			ValidateOrbits ();
 			DrawInnerSystem ();
+			draw_sys_flags |= UNBATCH_SYS;
 
 			goto StartGroups;
 		}
