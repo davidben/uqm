@@ -19,6 +19,7 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
+#include <assert.h>
 #include "sound.h"
 
 #if !defined (WIN32) // && !defined (MacOS and BeOS too)
@@ -29,20 +30,23 @@ BOOLEAN speech_advancetrack = FALSE;
 
 
 void
-PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
+PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping, ALboolean scope)
 {	
-	ALuint i;
+	ALuint i, pos = 0;
 
 	if (!sample)
 		return;
 
 	StopStream (source);
-
 	SoundDecoder_Rewind (sample->decoder);
 	soundSource[source].sample = sample;
 	soundSource[source].sample->decoder->looping = looping;
-
 	alSourcei (soundSource[source].handle, AL_LOOPING, AL_FALSE);
+
+	if (scope)
+	{
+		soundSource[source].sbuffer = HMalloc (sample->num_buffers * sample->decoder->buffer_size);
+	}
 
 	for (i = 0; i < sample->num_buffers; ++i)
 	{
@@ -75,10 +79,19 @@ PlayStream (TFB_SoundSample *sample, ALuint source, ALboolean looping)
 		
 		alSourceQueueBuffers (soundSource[source].handle, 1, &sample->buffer[i]);
 
+		if (scope)
+		{
+			UBYTE *p = (UBYTE *)soundSource[source].sbuffer;
+			assert (pos + decoded_bytes <= sample->num_buffers * sample->decoder->buffer_size);
+			memcpy (&p[pos], sample->decoder->buffer, decoded_bytes);
+			pos += decoded_bytes;
+		}
+
 		if (sample->decoder->error)
 			break;
 	}
-
+	
+	soundSource[source].sbuf_size = pos;
 	soundSource[source].start_time = GetTimeCounter ();
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
@@ -92,6 +105,17 @@ StopStream (ALuint source)
 
 	soundSource[source].stream_should_be_playing = FALSE;
 	soundSource[source].sample = NULL;
+
+	if (soundSource[source].sbuffer)
+	{
+		void *sbuffer = soundSource[source].sbuffer;
+		soundSource[source].sbuffer = NULL;
+		HFree (sbuffer);
+	}
+	soundSource[source].sbuf_start = 0;
+	soundSource[source].sbuf_size = 0;
+	soundSource[source].total_decoded = 0;
+
 	alSourceStop (soundSource[source].handle);
 	alGetSourcei (soundSource[source].handle, AL_BUFFERS_PROCESSED, &processed);
 	alGetSourcei (soundSource[source].handle, AL_BUFFERS_QUEUED, &queued);
@@ -109,7 +133,7 @@ StopStream (ALuint source)
 void
 PauseStream (ALuint source)
 {
-	soundSource[source].start_time = GetTimeCounter () - soundSource[source].start_time;
+	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = FALSE;
 	alSourcePause (soundSource[source].handle);
 }
@@ -117,7 +141,7 @@ PauseStream (ALuint source)
 void
 ResumeStream (ALuint source)
 {
-	soundSource[source].start_time = GetTimeCounter () - soundSource[source].start_time;
+	// TODO: how to handle start_time
 	soundSource[source].stream_should_be_playing = TRUE;
 	alSourcePlay (soundSource[source].handle);
 }
@@ -197,6 +221,9 @@ StreamDecoderTaskFunc (void *data)
 					fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL error after alSourceUnqueueBuffers: %x, file %s, source %d\n", error, soundSource[i].sample->decoder->filename, i);
 					break;
 				}
+
+				soundSource[i].total_decoded += soundSource[i].sample->decoder->buffer_size;
+
 				if (soundSource[i].sample->decoder->error)
 				{
 					if (soundSource[i].sample->decoder->error == SOUNDDECODER_EOF)
@@ -252,6 +279,42 @@ StreamDecoderTaskFunc (void *data)
 					else
 					{
 						alSourceQueueBuffers (soundSource[i].handle, 1, &buffer);
+						
+						if (soundSource[i].sbuffer)
+						{
+							// copies decoded data to oscilloscope buffer
+
+							ALuint j, remaining_bytes = 0;
+							UBYTE *sbuffer = (UBYTE *) soundSource[i].sbuffer;
+							UBYTE *decoder_buffer = (UBYTE *) soundSource[i].sample->decoder->buffer;
+														
+							if (soundSource[i].sbuf_start + decoded_bytes > soundSource[i].sbuf_size)
+							{
+								j = soundSource[i].sbuf_size;
+								remaining_bytes = decoded_bytes - (j - soundSource[i].sbuf_start);
+							}
+							else
+							{
+								j = soundSource[i].sbuf_start + decoded_bytes;
+							}
+							
+							if (j - soundSource[i].sbuf_start >= 1)
+							{
+								//fprintf (stderr, "copying_a to %d - %d, %d bytes\n", soundSource[i].sbuf_start, j, j - soundSource[i].sbuf_start);
+								memcpy (&sbuffer[soundSource[i].sbuf_start], decoder_buffer, j - soundSource[i].sbuf_start);
+							}
+
+							if (remaining_bytes)
+							{
+								//fprintf (stderr, "copying_b to 0 - %d\n", remaining_bytes);
+								memcpy (sbuffer, &decoder_buffer[j - soundSource[i].sbuf_start], remaining_bytes);
+								soundSource[i].sbuf_start = remaining_bytes;
+							}
+							else
+							{
+								soundSource[i].sbuf_start += decoded_bytes;
+							}
+						}
 
 						if ((error = alGetError()) != AL_NO_ERROR)
 						{

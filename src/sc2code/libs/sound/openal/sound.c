@@ -87,6 +87,10 @@ TFB_InitSound (int driver, int flags)
 		soundSource[i].sample = NULL;
 		soundSource[i].stream_should_be_playing = FALSE;
 		soundSource[i].stream_mutex = CreateMutex ();
+		soundSource[i].sbuffer = NULL;
+		soundSource[i].sbuf_start = 0;
+		soundSource[i].sbuf_size = 0;
+		soundSource[i].total_decoded = 0;
 	}
 	
 	SetSFXVolume (sfxVolumeScale);
@@ -105,7 +109,25 @@ TFB_InitSound (int driver, int flags)
 void
 TFB_UninitSound (void)
 {
+	int i;
+
 	ConcludeTask (StreamDecoderTask);
+
+	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
+	{
+		if (soundSource[i].sample && soundSource[i].sample->decoder)
+		{
+			StopStream (i);
+		}
+		if (soundSource[i].sbuffer)
+		{
+			void *sbuffer = soundSource[i].sbuffer;
+			soundSource[i].sbuffer = NULL;
+			HFree (sbuffer);
+		}
+		DestroyMutex (soundSource[i].stream_mutex);
+	}
+
 	alcMakeContextCurrent (NULL);
 	alcDestroyContext (alcContext);
 	alcContext = NULL;
@@ -132,8 +154,10 @@ SoundPlaying (void)
 	int i;
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
-	{		
-		if (soundSource[i].sample && soundSource[i].sample->decoder)
+	{
+		TFB_SoundSample *sample;
+		sample = soundSource[i].sample;
+		if (sample && sample->decoder)
 		{
 			BOOLEAN result;
 			LockMutex (soundSource[i].stream_mutex);

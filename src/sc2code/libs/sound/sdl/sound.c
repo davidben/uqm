@@ -121,13 +121,9 @@ SoundPlaying()
 }
 
 int
-GetSoundData(char* data) //Returns the data size.
+GetSoundData (char* data)
 {
-	int ret;
-
-	fprintf (stderr, "Unimplemented function activated: GetSoundData()\n");
-	ret = 0;
-	return (ret);
+   return 0;
 }
 
 // Status: Unimplemented

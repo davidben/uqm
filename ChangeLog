@@ -1,4 +1,5 @@
 0.2:
+- Oscilloscope is now implemented (OpenAL)
 - Moved initialisation of _MemorySem to memInit - SvdB
 - Planet scan is now cleared correctly, from l0ci
 - Flagship modules are now drawn correctly instead of one pix left, from l0ci

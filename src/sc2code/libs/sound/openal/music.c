@@ -33,7 +33,7 @@ PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
 	if (pmus)
 	{
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		PlayStream ((*pmus), MUSIC_SOURCE, Continuous);
+		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, AL_FALSE);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		
 		curMusicRef = MusicRef;
@@ -194,6 +194,7 @@ _ReleaseMusicData (MEM_HANDLE handle)
 
 	if ((*pmus)->decoder)
 	{
+		TFB_SoundDecoder *decoder = (*pmus)->decoder;
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		if (soundSource[MUSIC_SOURCE].sample == (*pmus))
 		{
@@ -201,7 +202,8 @@ _ReleaseMusicData (MEM_HANDLE handle)
 		}
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 
-		SoundDecoder_Free ((*pmus)->decoder);
+		(*pmus)->decoder = NULL;
+		SoundDecoder_Free (decoder);
 		alDeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 		HFree ((*pmus)->buffer);
 	}

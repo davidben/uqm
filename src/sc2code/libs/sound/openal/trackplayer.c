@@ -19,6 +19,7 @@
 
 #ifdef SOUNDMODULE_OPENAL
 
+#include <assert.h>
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 
@@ -64,7 +65,7 @@ advance_track (int channel_finished)
 		if (tcur < tct)
 		{
 			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, FALSE);
+			PlayStream (track_clip[tcur].sample, SPEECH_SOURCE, FALSE, TRUE);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 			do_subtitles (0);
 		}
@@ -151,14 +152,19 @@ StopTrack ()
 		}
 		if (track_clip[tct].sample)
 		{
-			if (track_clip[tct].sample->decoder)
+			TFB_SoundSample *sample = track_clip[tct].sample;
+			track_clip[tct].sample = NULL;
+			if (sample->decoder)
 			{
-				SoundDecoder_Free (track_clip[tct].sample->decoder);
-				alDeleteBuffers (track_clip[tct].sample->num_buffers, track_clip[tct].sample->buffer);
-				HFree (track_clip[tct].sample->buffer);
+				TFB_SoundDecoder *decoder = sample->decoder;
+				ALuint *buffer = sample->buffer;
+				sample->decoder = NULL;
+				sample->buffer = NULL;
+				SoundDecoder_Free (decoder);
+				alDeleteBuffers (sample->num_buffers, buffer);
+				HFree (buffer);
 			}
-			HFree (track_clip[tct].sample);
-			track_clip[tct].sample = 0;
+			HFree (sample);
 		}
 	}
 	tct = tcur = 0;
@@ -252,14 +258,73 @@ FastForward ()
 	//no_voice = 0;
 }
 
+// processes sound data to oscilloscope
 int
-GetSoundData (char* data) 
-		// Returns the data size. Only used in oscill.c
+GetSoundData (void *data) 
 {
-	//fprintf (stderr, "Unimplemented function activated: GetSoundData()\n");
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
+	if (soundSource[SPEECH_SOURCE].sample && soundSource[SPEECH_SOURCE].sample->decoder &&
+		PlayingStream (SPEECH_SOURCE) && soundSource[SPEECH_SOURCE].sbuffer)
+	{
+		float played_time = (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time) / 
+			(float)ONE_SECOND;
+		int played_data = (int) (played_time * (float)soundSource[SPEECH_SOURCE].
+			sample->decoder->frequency * 2.0f);
+		int delta = played_data - soundSource[SPEECH_SOURCE].total_decoded;
+		unsigned int pos, i;
+		UBYTE *scopedata = (UBYTE *) data;
+		UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
+
+		assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
+		assert (soundSource[SPEECH_SOURCE].sample->decoder->format == AL_FORMAT_MONO16);
+
+		if (delta < 0)
+		{
+			//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+			delta = 0;
+		}
+		
+		//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
+
+		pos = soundSource[SPEECH_SOURCE].sbuf_start + delta;
+		if (pos % 2 == 1)
+			pos++;
+
+		assert (pos >= 0);
+
+		for (i = 0; i < RADAR_WIDTH; ++i)
+		{
+			SWORD s;
+			
+			for (;;)
+			{
+				if (pos >= soundSource[SPEECH_SOURCE].sbuf_size)
+					pos = pos - soundSource[SPEECH_SOURCE].sbuf_size;
+				else
+					break;
+			}
+
+			s = *(SWORD*) (&sbuffer[pos]);
+			s = (s / 1236) + (RADAR_HEIGHT >> 1);
+			if (s < 0)
+				s = 0;
+			else if (s > RADAR_HEIGHT)
+				s = RADAR_HEIGHT;
+			scopedata[i] = (UBYTE) s;
+
+			pos += 2;
+		}
+
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		return 1;
+	}
+
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	return 0;
 }
 
+// tells current position of streaming speech
 int
 GetSoundInfo (int *length, int *offset)
 {	

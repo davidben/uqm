@@ -18,16 +18,16 @@
 
 #include <ctype.h>
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/drawable.h"
 #include "libs/sound/trackplayer.h"
 #include "starcon.h"
 #include "commglue.h"
 #include "options.h"
 
-void InitOscilloscope (int x, int y, int width, int height,
-		void *f);
+void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);
 void InitSlider (int x, int y, int width, int height,
-		int bwidth, int bheight, void *f);
+	int bwidth, int bheight, void *f);
 void Oscilloscope (int grab_data);
 void Slider (void);
 

@@ -56,6 +56,12 @@ typedef struct tfb_soundsource
 	BOOLEAN stream_should_be_playing;
 	Mutex stream_mutex;
 	ALuint start_time;
+
+	// for oscilloscope
+	void *sbuffer; 
+	ALuint sbuf_start;
+	ALuint sbuf_size;
+	ALuint total_decoded;
 } TFB_SoundSource;
 
 

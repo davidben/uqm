@@ -146,7 +146,6 @@ Stuff still to do (large):
   - The Mycons can actually say "Bye sun device"
 
 Stuff still to do (medium size):
-- oscilloscope
 - loading teams in melee
 - get all code to compile without warnings, when the most strict
   checks are performed (not just -W -Wall in gcc)
