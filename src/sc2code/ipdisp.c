@@ -144,13 +144,20 @@ ip_group_preprocess (PELEMENT ElementPtr)
 					<< FACING_SHIFT;
 	}
 
-	if (!(task & REFORM_GROUP)
-			&& (task & ~(IGNORE_FLAGSHIP | REFORM_GROUP)) != FLEE)
+	if (!(task & REFORM_GROUP))
 	{
-		if (EPtr->state_flags & BAD_GUY)
-			EPtr->state_flags &= ~GOOD_GUY;
-		else
+		if ((task & ~(IGNORE_FLAGSHIP | REFORM_GROUP)) != FLEE)
+		{
+			if (EPtr->state_flags & BAD_GUY)
+				EPtr->state_flags &= ~GOOD_GUY;
+			else
+				EPtr->state_flags |= BAD_GUY;
+		}
+		else if (!(task & IGNORE_FLAGSHIP)
+				&& !(EPtr->state_flags & (GOOD_GUY | BAD_GUY)))
+		{	// fleeing yehat ship collisions after menu fix
 			EPtr->state_flags |= BAD_GUY;
+		}
 	}
 
 	target_loc = GET_GROUP_DEST (StarShipPtr);
