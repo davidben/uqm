@@ -34,6 +34,9 @@ extern const char *eventName (BYTE func_index);
 // Give the flagship a decent equipment for debugging.
 extern void equipShip (void);
 
+// Show all active spheres of influence.
+void showSpheres (void);
+
 // Call a function for all stars.
 extern void forAllStars (void (*callBack) (STAR_DESC *, void *),
 		void *arg);

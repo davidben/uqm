@@ -36,6 +36,7 @@ debugKeyPressed (void)
 	// State modifying:
 	equipShip ();
 	instantMove = !instantMove;
+	showSpheres ();
 //	forwardToNextEvent (TRUE);		
 
 	// Informational:
@@ -286,7 +287,35 @@ equipShip (void)
 }
 
 void
-forAllStars(void (*callback) (STAR_DESC *, void *), void *arg) {
+showSpheres (void)
+{
+	HSTARSHIP hStarShip, hNextShip;
+	
+	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
+			hStarShip != NULL; hStarShip = hNextShip)
+	{
+		EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+
+		if ((StarShipPtr->ShipInfo.actual_strength != (COUNT) ~0) &&
+				(StarShipPtr->ShipInfo.known_strength !=
+				StarShipPtr->ShipInfo.actual_strength))
+		{
+			StarShipPtr->ShipInfo.known_strength =
+					StarShipPtr->ShipInfo.actual_strength;
+			StarShipPtr->ShipInfo.known_loc = StarShipPtr->ShipInfo.loc;
+		}
+
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+	}
+}
+
+void
+forAllStars (void (*callback) (STAR_DESC *, void *), void *arg)
+{
 	int i;
 	extern STAR_DESC starmap_array[];
 
@@ -294,13 +323,15 @@ forAllStars(void (*callback) (STAR_DESC *, void *), void *arg) {
 		callback (&starmap_array[i], arg);
 }
 	
-typedef struct {
+typedef struct
+{
 	FILE *out;
 	UWORD flags;
 } DumpStarsArg;
 
 void
-dumpStars(FILE *out, UWORD flags) {
+dumpStars (FILE *out, UWORD flags)
+{
 	DumpStarsArg dumpStarsArg;
 	dumpStarsArg.out = out;
 	dumpStarsArg.flags = flags;
@@ -309,14 +340,16 @@ dumpStars(FILE *out, UWORD flags) {
 }
 
 static void
-dumpStarCallback(STAR_DESC *star, void *arg) {
+dumpStarCallback (STAR_DESC *star, void *arg)
+{
 	DumpStarsArg *dumpStarsArg = (DumpStarsArg *) arg;
 
 	dumpStar(dumpStarsArg->out, star, dumpStarsArg->flags);
 }
 
 void
-dumpStar(FILE *out, const STAR_DESC *star, UWORD flags) {
+dumpStar (FILE *out, const STAR_DESC *star, UWORD flags)
+{
 	UNICODE name[40];
 	UNICODE buf[40];
 
@@ -335,7 +368,8 @@ dumpStar(FILE *out, const STAR_DESC *star, UWORD flags) {
 }
 
 const char *
-starColorString (BYTE col) {
+starColorString (BYTE col)
+{
 	switch (col) {
 		case BLUE_BODY:
 			return "blue";
@@ -356,7 +390,8 @@ starColorString (BYTE col) {
 }
 
 const char *
-starTypeString (BYTE type) {
+starTypeString (BYTE type)
+{
 	switch (type) {
 		case DWARF_STAR:
 			return "dwarf";
@@ -371,7 +406,8 @@ starTypeString (BYTE type) {
 }
 
 const char *
-starPresenceString (BYTE index) {
+starPresenceString (BYTE index)
+{
 	switch (index) {
 		case 0:
 			// nothing
@@ -475,7 +511,7 @@ starPresenceString (BYTE index) {
 // Currently, this function only works when called from the top of
 // ExploreSolarSys(). The state afterwards is undefined.
 void
-forAllPlanets(STAR_DESC *star,
+forAllPlanets (STAR_DESC *star,
 		void (*callback) (PLANET_DESC *, void *), void *arg)
 {
 	// These two functions were originally static to solarsys.c
@@ -514,13 +550,15 @@ forAllPlanets(STAR_DESC *star,
 	CurStarDescPtr = oldStarDescPtr;
 }
 
-typedef struct {
+typedef struct
+{
 	FILE *out;
 	UWORD flags;
 } DumpPlanetsArg;
 
 void
-dumpPlanets (FILE *out, const STAR_DESC *star, UWORD flags) {
+dumpPlanets (FILE *out, const STAR_DESC *star, UWORD flags)
+{
 	DumpPlanetsArg dumpPlanetsArg;
 	dumpPlanetsArg.out = out;
 	dumpPlanetsArg.flags = flags;
@@ -537,7 +575,7 @@ dumpPlanetCallback (PLANET_DESC *planet, void *arg)
 }
 
 void
-dumpPlanet(FILE *out, const PLANET_DESC *planet, UWORD flags)
+dumpPlanet (FILE *out, const PLANET_DESC *planet, UWORD flags)
 {
 	PLANET_DESC *oldPlanetDesc;
 	
