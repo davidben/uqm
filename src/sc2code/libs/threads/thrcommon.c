@@ -353,4 +353,27 @@ UnlockMutex (Mutex sem)
 	NativeUnlockMutex ((NativeMutex) sem);
 }
 
+CondVar
+CreateCondVar ()
+{
+	return NativeCreateCondVar ();
+}
+void DestroyCondVar (CondVar cv)
+{
+	NativeDestroyCondVar (cv);
+}
 
+void WaitCondVar (CondVar cv)
+{
+	NativeWaitCondVar (cv);
+}
+
+void SignalCondVar (CondVar cv)
+{
+	NativeSignalCondVar (cv);
+}
+
+void BroadcastCondVar (CondVar cv)
+{
+	NativeBroadcastCondVar (cv);
+}

@@ -66,3 +66,15 @@ SDLWrapper_TaskSwitch (void) {
 	SDL_Delay (1);
 }
 
+void
+SDLWrapper_WaitCondVar (CondVar cv) {
+	int result;
+	Mutex temp = CreateMutex ();
+	LockMutex (temp);
+	result = SDL_CondWait (cv, temp);
+	UnlockMutex (temp);
+	DestroyMutex (temp);
+	if (result != 0) {
+		fprintf (stderr, "Error result from SDL_CondWait: %d\n", result);
+	}
+}

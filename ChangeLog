@@ -1,4 +1,6 @@
 0.2:
+- Thread library now includes condition variables
+- Shofixti dialogue fixed to subtitles, by BlckKnght
 - Crash during loading from orbit fixed, from PhracturedBlue
 - Starmap issue when orbiting earth fixed, from PhracturedBlue
 - Oscilloscope is now implemented (OpenAL)

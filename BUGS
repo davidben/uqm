@@ -95,3 +95,5 @@ The bugs reported but not yet verified:
 
 - "Got a segfault too, on cvs version compiled today (2002/12/05), when activating Sun Device over 
    the Chmmr homeworld. Worked fine on 0.1 alpha."
+
+ - Unconfirmed report of lander cargo upgrade rendering as weapon upgrade

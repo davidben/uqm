@@ -77,5 +77,18 @@ typedef SDL_mutex *NativeMutex;
 #define NativeUnlockMutex(mutex) \
 		SDL_mutexV ((mutex))
 
+typedef SDL_cond *NativeCondVar;
+#define NativeCreateCondVar() \
+		SDL_CreateCond ()
+#define NativeDestroyCondVar(condvar) \
+		SDL_DestroyCond((condvar))
+#define NativeWaitCondVar(condvar) \
+		SDLWrapper_WaitCondVar((condvar))
+#define NativeSignalCondVar(condvar) \
+		SDL_CondSignal((condvar))
+#define NativeBroadcastCondVar(condvar) \
+		SDL_CondBroadcast((condvar))
+
+
 #endif  /* _SDLTHREAD_H */
 

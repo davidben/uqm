@@ -83,7 +83,6 @@ extern Thread CreateThreadAux (ThreadFunction func, void *data,
 #	define CreateThread(func, data, stackSize, name) \
 		CreateThreadAux ((func), (data), (stackSize))
 #endif  /* !defined(THREAD_NAMES) */
-extern void KillThread (Thread thread);
 extern void SleepThread (TimePeriod timePeriod);
 extern void SleepThreadUntil (TimeCount wakeTime);
 extern void TaskSwitch (void);
@@ -106,6 +105,12 @@ extern void DestroyMutex (Mutex sem);
 extern int LockMutex (Mutex sem);
 extern void UnlockMutex (Mutex sem);
 
+typedef void *CondVar;
+extern CondVar CreateCondVar (void);
+extern void DestroyCondVar (CondVar);
+extern void WaitCondVar (CondVar);
+extern void SignalCondVar (CondVar);
+extern void BroadcastCondVar (CondVar);
 
 #endif  /* _THREADLIB_H */
 
