@@ -144,6 +144,7 @@ PauseGame (void)
 	CONTEXT OldContext;
 	FRAME F;
 	HOT_SPOT OldHot;
+	extern int do_subtitles (UNICODE *pStr);
 
 	if (ActivityFrame == 0
 			|| (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_PAUSE))
@@ -194,12 +195,17 @@ PauseGame (void)
 
 	WaitForNoInput (ONE_SECOND / 4);
 	FlushInput ();
-	ClearSemaphore (GraphicsSem);
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
+	{
 		ResumeTrack ();
+		if (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE)
+			do_subtitles ((void *)~0);
+	}
+
+	ClearSemaphore (GraphicsSem);
 
 	TaskSwitch ();
 	GLOBAL (CurrentActivity) &= ~CHECK_PAUSE;
