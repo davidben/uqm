@@ -538,6 +538,7 @@ These controls are configurable by editing the keys.cfg file which will
 be automatically generated in your personal directory for uqm data the
 first time you start the game.
 The location of this directory varies per system.
+
 On Microsoft Windows systems this is a folder named 'uqm' in the
 application data folder for the current user.
 This is usually in one of the following locations:
@@ -547,12 +548,24 @@ This is usually in one of the following locations:
   (Windows 95/98/SE with separate users)
 - "C:\Documents and Settings\YourName\Application Data\"
   (Windows NT/2k/XP)
+The "Application Data" folder may be hidden. You can tell Windows to display
+hidden files and folders in the Folder Options dialog, which you can
+find in the Tools menu of any folder window.
+
 On Unix systems this personal uqm data is stored in "~/.uqm".
 
 Later versions of The Ur-Quan Masters will include a key configuration
 tool.  In the meantime, the keys.cfg has a bunch of comments in it
 that should help you set up your joystick and remap key controls to
 your satisfaction.
+
+
+                           SAVED GAMES
+
+The saved games are kept in the same location as the keys.cfg file, under
+"save". You will need to know this if you intend to transfer them to another
+computer. Note that currently games saved on a Mac will not work on a PC,
+and vice versa.
 
 
 			   ADD-ONS
