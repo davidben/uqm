@@ -52,7 +52,7 @@
 
 /* The 64-bit type isn't available on EPOC/Symbian OS */
 #ifdef __SYMBIAN32__
-#	undef HAVE_NATIVE_64
+#	undef UQM_INT64
 #endif
 
 typedef enum
