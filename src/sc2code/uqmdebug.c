@@ -22,6 +22,7 @@
 #include <stdio.h>
 
 #include "starcon.h"
+#include "planets/plandata.h"
 #include "uqmdebug.h"
 
 static void dumpEventCallback (EVENTPTR eventPtr, void *arg);
