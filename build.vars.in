@@ -18,7 +18,6 @@
 COMPILE=gcc
 MKDEPEND="gcc -MM"
 MAKE="@MAKE@"
-WINDRES="@WINDRES@"
 uqm_CFLAGS="@CFLAGS@"
 uqm_LDFLAGS="@LDFLAGS@"
 DEBUG="@DEBUG@"
@@ -29,5 +28,6 @@ uqm_INSTALL_LIBDIR="@INSTALL_LIBDIR@"
 # Non-exported files only where build.vars is explicitely included.
 uqm_SOUNDMODULE="@SOUNDMODULE@"
 uqm_HAVE_OPENGL="@HAVE_OPENGL@"
-export uqm_SOUNDMODULE uqm_HAVE_OPENGL
+WINDRES="@WINDRES@"
+export uqm_SOUNDMODULE uqm_HAVE_OPENGL WINDRES
 
