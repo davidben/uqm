@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed support for languages other than English; loading font chars
+  with codes above 136 is now possible (bug #690), from Matthias Hager
 - Enable the other insults against the Mycon (bug #559), from Nic.
 - Colormap format (.ct files) changed to allow for richer graphics.
   First step towards importing some of the original DOS gfx.
