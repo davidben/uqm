@@ -27,7 +27,11 @@ PROG_sed_ACTION=""
 PROG_sed_VERSION=''
 
 PROG_make_NAME="Make"
-PROG_make_FILE="make"
+if [ `uname` = 'FreeBSD' ]; then
+	PROG_make_FILE="gmake"
+else
+	PROG_make_FILE="make"
+fi
 PROG_make_ACTION=""
 PROG_make_VERSION=''
 
