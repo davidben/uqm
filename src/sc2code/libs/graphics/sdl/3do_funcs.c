@@ -125,10 +125,7 @@ transition_task_func (void *data)
 	}
 	
 	TransitionAmount = 255;
-
-	if (!pausing_transition)
-		FinishTask (task);
-
+	FinishTask (task);
 	return 0;
 }
 
@@ -177,7 +174,6 @@ ScreenTransition (int TransType, PRECT pRect)
 	if (pausing_transition)
 	{
 		WaitThread (transition_task->thread, NULL);
-		FinishTask (transition_task);
 	}
 }
 
