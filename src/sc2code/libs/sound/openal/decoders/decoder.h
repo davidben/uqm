@@ -45,6 +45,9 @@ typedef struct tfb_sounddecoder
 	ALint type;
 	char *filename;
 	void *data;
+	unsigned long pos;
+	unsigned long start_sample;
+	unsigned long end_sample;
 } TFB_SoundDecoder;
 
 // return values
@@ -62,11 +65,12 @@ enum
 	SOUNDDECODER_WAV,
 	SOUNDDECODER_MOD,
 	SOUNDDECODER_OGG,
+	SOUNDDECODER_BUF,
 };
 
 ALint SoundDecoder_Init (int flags);
 void SoundDecoder_Uninit (void);
-TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size);
+TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size, unsigned long startTime, unsigned long runTime);
 ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder);
 ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder);
 void SoundDecoder_Rewind (TFB_SoundDecoder *decoder);

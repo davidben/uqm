@@ -40,13 +40,39 @@
 #define SPEECH_SOURCE (MUSIC_SOURCE + 1)
 #define NUM_SOUNDSOURCES (SPEECH_SOURCE + 1)
 
+typedef struct
+{
+	ALuint buf_name;
+	int type;
+	void *value;
+} TFB_SoundTag;
+
+enum
+{
+	AL_BUFFER_TAG_TEXT = 1,
+	AL_BUFFER_TAG_TEXTPAGE
+};
+
+typedef struct tfb_soundchain
+{
+	TFB_SoundDecoder *decoder; // points at the decoder to read from
+	float start_time;
+	TFB_SoundTag tag;
+	struct tfb_soundchain *next;
+} TFB_SoundChain;
+
 // audio data
 typedef struct tfb_soundsample
 {
-	TFB_SoundDecoder *decoder; // if != NULL, sound is streamed
+	TFB_SoundDecoder *decoder; // decoder to read from
+	TFB_SoundChain *read_chain_ptr; // points to chain read poistion
+	TFB_SoundChain *play_chain_ptr; // points to chain playing position
+	float length; // total length of decoder chain in seconds
 	ALuint *buffer;
 	ALuint num_buffers;
+	TFB_SoundTag **buffer_tag;
 } TFB_SoundSample;
+
 
 // equivalent to channel in legacy sound code
 typedef struct tfb_soundsource
@@ -74,5 +100,10 @@ extern TFB_SoundSource soundSource[];
 
 void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
+void DoTrackTag (TFB_SoundTag *tag);
+
+TFB_SoundChain *create_soundchain (TFB_SoundDecoder *decoder, float startTime);
+void destroy_soundchain (TFB_SoundChain *chain);
+TFB_SoundChain *get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain);
 
 #include "stream.h"

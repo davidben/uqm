@@ -178,6 +178,50 @@ SoundPlaying (void)
 	return FALSE;
 }
 
+TFB_SoundChain *
+create_soundchain (TFB_SoundDecoder *decoder, float startTime)
+{
+	TFB_SoundChain *chain;
+	chain = (TFB_SoundChain *)HMalloc (sizeof (TFB_SoundChain));
+	chain->decoder = decoder;
+	chain->next =NULL;
+	chain->start_time = startTime;
+	chain->tag.buf_name = 0;
+	chain->tag.type = 0;
+	return (chain);
+}
+
+void
+destroy_soundchain (TFB_SoundChain *chain)
+{
+	while (chain->next)
+	{
+		TFB_SoundChain *tmp_chain = chain->next;
+		chain->next = chain->next->next;
+		if (tmp_chain->decoder)
+			SoundDecoder_Free (tmp_chain->decoder);
+		HFree (tmp_chain);
+	}
+	SoundDecoder_Free (chain->decoder);
+	HFree (chain);
+}
+
+TFB_SoundChain *
+get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain)
+{
+	TFB_SoundChain *prev_chain;
+	prev_chain = first_chain;
+	if (prev_chain == current_chain)
+		return (prev_chain);
+	while (prev_chain->next)
+	{
+		if (prev_chain->next == current_chain)
+			return (prev_chain);
+		prev_chain = prev_chain->next;
+	}
+	return (first_chain);
+}
+
 // Status: Ignored
 BOOLEAN
 InitSound (int argc, char* argv[])

@@ -122,7 +122,7 @@ void SoundDecoder_Uninit (void)
 	MikMod_Exit ();
 }
 
-TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
+TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size, unsigned long startTime, unsigned long runTime)
 {	
 	int i;
 
@@ -150,6 +150,9 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->decoder_info = decoder_info_wav;
 		decoder->type = SOUNDDECODER_WAV;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
+		decoder->start_sample = 0;
+		decoder->end_sample = 0;
+		decoder->pos = 0;
 		strcpy (decoder->filename, filename);
 
 		return decoder;
@@ -184,6 +187,9 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder->decoder_info = decoder_info_mod;
 		decoder->type = SOUNDDECODER_MOD;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
+		decoder->start_sample = 0;
+		decoder->end_sample = 0;
+		decoder->pos = 0;
 		strcpy (decoder->filename, filename);
 		decoder->data = mod;
 
@@ -239,20 +245,36 @@ TFB_SoundDecoder* SoundDecoder_Load (char *filename, ALuint buffer_size)
 		decoder = (TFB_SoundDecoder *) HMalloc (sizeof (TFB_SoundDecoder));
 		decoder->buffer = HMalloc (buffer_size);
 		decoder->buffer_size = buffer_size;
-		if (vinfo->channels == 1)
-			decoder->format = AL_FORMAT_MONO16;
-		else
-			decoder->format = AL_FORMAT_STEREO16;
 		decoder->frequency = vinfo->rate;
 		decoder->looping = AL_FALSE;
 		decoder->error = SOUNDDECODER_OK;
 		decoder->length = (float) ov_time_total (vf, -1);
+		if (runTime && runTime / 1000.0 < decoder->length)
+			decoder->length = (float)(runTime / 1000.0);
+
+		decoder->start_sample = decoder->frequency * startTime/1000;
+		decoder->end_sample = decoder->start_sample + 
+				(unsigned long)(decoder->length * decoder->frequency);
+		if (decoder->start_sample)
+			ov_pcm_seek (vf, decoder->start_sample);
+
+		if (vinfo->channels == 1)
+		{
+			decoder->format = AL_FORMAT_MONO16;
+			decoder->pos = decoder->start_sample * 2;
+		}
+		else
+		{
+			decoder->format = AL_FORMAT_STEREO16;
+			decoder->pos = decoder->start_sample * 4;
+		}
+
 		decoder->decoder_info = decoder_info_ogg;
 		decoder->type = SOUNDDECODER_OGG;
 		decoder->filename = (char *) HMalloc (strlen (filename) + 1);
 		strcpy (decoder->filename, filename);
 		decoder->data = vf;
-
+			
 		return decoder;
 	}
 	else
@@ -300,26 +322,50 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 			ALuint decoded_bytes = 0, count = 0;
 			long rc;
 			int bitstream;
+			unsigned long max_bytes, buffer_size, close_on_done = 0;
 			char *buffer = (char *) decoder->buffer;
 
-			while (decoded_bytes < decoder->buffer_size)
+			if (! decoder->looping)
+			{
+				if (decoder->format == AL_FORMAT_STEREO16)
+					max_bytes = decoder->end_sample * 4;
+				else
+					max_bytes = decoder->end_sample * 2;
+				if (max_bytes - decoder->pos < decoder->buffer_size)
+				{
+					buffer_size = max_bytes - decoder->pos;
+					close_on_done = 1;
+				}
+				else
+				{
+					buffer_size = decoder->buffer_size;
+				}
+			}
+			else
+				buffer_size = decoder->buffer_size;
+
+			while (decoded_bytes < buffer_size)
 			{	
-				
-				rc = ov_read (vf, &buffer[decoded_bytes], decoder->buffer_size - decoded_bytes, 0, 2, 1, &bitstream);
+				rc = ov_read (vf, &buffer[decoded_bytes], 
+						buffer_size - decoded_bytes, 0, 2, 1, &bitstream);
 				if (rc < 0)
 				{
 					decoder->error = SOUNDDECODER_ERROR;
 					fprintf (stderr, "SoundDecoder_Decode(): error decoding %s, code %d\n", decoder->filename, rc);
 					return decoded_bytes;
 				}
-				if (rc == 0)
+				if (rc == 0 || close_on_done && buffer_size == decoded_bytes + rc)
 				{
+					if (close_on_done)
+					{
+						decoded_bytes += rc;
+					}
 					if (decoder->looping)
 					{
-						int err;
-						if ((err = ov_pcm_seek (vf, 0)) != 0)
+						SoundDecoder_Rewind (decoder);
+						if (decoder->error)
 						{
-							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind, error code %d\n", decoder->filename, err);
+							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind, error code %d\n", decoder->filename, decoder->error);
 						}
 						else
 						{
@@ -328,6 +374,8 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 							continue;
 						}
 					}
+					else
+						decoder->pos += decoded_bytes;
 
 					fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n", decoder->filename);
 					decoder->error = SOUNDDECODER_EOF;
@@ -338,11 +386,14 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 				//fprintf (stderr, "iter %d rc %d decoded_bytes %d remaining %d\n", count, rc, decoded_bytes, decoder->buffer_size - decoded_bytes);
 				count++;
 			}
-
+			decoder->pos += decoded_bytes;
 			decoder->error = SOUNDDECODER_OK;
 			//fprintf (stderr, "SoundDecoder_Decode(): decoded %d bytes from %s\n", decoded_bytes, decoder->filename);
 			return decoded_bytes;
 		}
+		case SOUNDDECODER_BUF:
+			decoder->error = SOUNDDECODER_EOF;
+			return (decoder->buffer_size);
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Decode(): unknown type %d\n", decoder->type);
@@ -362,11 +413,14 @@ ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 		{
 			ALboolean loop;
 
-			LoadWAVFile(decoder->filename ,&decoder->format, &decoder->buffer, 
+			LoadWAVFile (decoder->filename ,&decoder->format, &decoder->buffer, 
 				&decoder->buffer_size, &decoder->frequency, &loop);
 			
 			if (decoder->buffer_size != 0)
+			{
+				decoder->type = SOUNDDECODER_BUF;
 				decoder->error = SOUNDDECODER_OK;
+			}
 			else
 				decoder->error = SOUNDDECODER_ERROR;
 			
@@ -379,7 +433,59 @@ ALuint SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 		}
 		case SOUNDDECODER_OGG:
 		{
-			fprintf (stderr, "SoundDecoder_DecodeAll(): unimplemented for ogg\n");
+			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
+			ALuint decoded_bytes = 0;
+			long rc;
+			int bitstream;
+			ALuint reqbufsize = decoder->buffer_size;
+			
+			if (decoder->looping)
+			{
+				fprintf (stderr, "SoundDecoder_DecodeAll(): "
+						"called for %s with looping\n", decoder->filename);
+				return 0;
+			}
+
+			if (reqbufsize < 4096)
+				reqbufsize = 4096;
+
+#ifdef DEBUG
+			if (reqbufsize < 16384)
+				fprintf (stderr, "SoundDecoder_DecodeAll(): WARNING, "
+						"called with a small buffer (%u)\n", reqbufsize);
+#endif
+
+			for (rc = 1; rc > 0; )
+			{	
+				if (decoded_bytes >= decoder->buffer_size)
+				{	// need to grow buffer
+					decoder->buffer_size += reqbufsize;
+					decoder->buffer = HRealloc (
+							decoder->buffer, decoder->buffer_size);
+				}
+
+				rc = ov_read (vf, (char*)decoder->buffer + decoded_bytes,
+						decoder->buffer_size - decoded_bytes,
+						0, 2, 1, &bitstream);
+				if (rc < 0)
+				{
+					decoder->error = SOUNDDECODER_ERROR;
+					fprintf (stderr, "SoundDecoder_DecodeAll(): "
+							"error decoding %s, code %d\n",
+							decoder->filename, rc);
+					return decoded_bytes;
+				}
+
+				decoded_bytes += rc;
+			}
+
+			decoder->buffer_size = decoded_bytes;
+			ov_clear (vf);
+			HFree (vf);
+			decoder->type = SOUNDDECODER_BUF;
+
+			decoder->error = SOUNDDECODER_OK;
+			return decoded_bytes;
 			break;
 		}
 		default:
@@ -415,12 +521,22 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 		{
 			int err;
 			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			if ((err = ov_pcm_seek (vf, 0)) != 0)
+			if ((err = ov_pcm_seek (vf, decoder->start_sample)) != 0)
 			{
 				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s, error code %d\n", decoder->filename, err);
 				break;
 			}
+			if (decoder->format == AL_FORMAT_MONO16)
+				decoder->pos = decoder->start_sample * 2;
+			else
+				decoder->pos = decoder->start_sample * 4;
+
 			//fprintf (stderr, "SoundDecoder_Rewind(): rewound %s\n", decoder->filename);
+			decoder->error = SOUNDDECODER_OK;
+			return;
+		}
+		case SOUNDDECODER_BUF:
+		{
 			decoder->error = SOUNDDECODER_OK;
 			return;
 		}
@@ -463,6 +579,8 @@ void SoundDecoder_Free (TFB_SoundDecoder *decoder)
 			HFree (vf);
 			break;
 		}
+		case SOUNDDECODER_BUF:
+			break;
 		default:
 		{
 			fprintf (stderr, "SoundDecoder_Free(): unknown type %d\n", decoder->type);

@@ -24,37 +24,47 @@
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 
-extern int do_subtitles (UNICODE *pStr, UNICODE *TimeStamp);
+extern int do_subtitles (UNICODE *pStr, UNICODE *TimeStamp, int method);
 
-static int tct, tcur, no_voice;
+static int tct;               //total number of subtitle tracks
+static int tcur;              //currently playing subtitle track
+static int cur_page = 0;      //current page of subtitle track 
+static int no_page_break = 0;
+static int no_voice;
+
 
 #define MAX_CLIPS 50
-static struct
-{
-	int text_spliced;
-	UNICODE *text;
-	UNICODE *timestamp;
-	TFB_SoundSample *sample;
-} track_clip[MAX_CLIPS];
 
+static TFB_SoundSample *sound_sample = NULL;
+static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
+static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
+static UNICODE *TrackTextArray[MAX_CLIPS]; //storage for subtitlle text
+static Mutex track_mutex; //protects tcur and tct
 
 void
 JumpTrack (int abort)
 {
 	speech_advancetrack = FALSE;
 
-	if (track_clip[tcur].sample)
+	if (sound_sample)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		StopStream (SPEECH_SOURCE);
+		if (abort)
+		{
+			sound_sample->read_chain_ptr = NULL;
+			sound_sample->decoder = NULL;
+		}
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	}
 
 	no_voice = 1;
-	do_subtitles ((void *)~0, 0);
+	do_subtitles ((void *)~0, (void *)~0, 1);
 
 	if (abort)
+		LockMutex (track_mutex);
 		tcur = tct;
+		UnlockMutex(track_mutex);
 }
 
 void
@@ -62,34 +72,25 @@ advance_track (int channel_finished)
 {
 	if (channel_finished <= 0)
 	{
-		if (channel_finished == 0)
-			++tcur;
-		if (tcur < tct)
-		{
-			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			if (track_clip[tcur].sample->decoder)
-				PlayStream (track_clip[tcur].sample,
-						SPEECH_SOURCE, false,
-						speechVolumeScale != 0.0f);
-			else
-				PlayDecodedClip (track_clip[tcur].sample,
-						SPEECH_SOURCE, false);
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			do_subtitles ((UNICODE *) ~0, 0);
-			do_subtitles (0, 0);
-		}
-		else if (channel_finished == 0)
-		{
-			--tcur;
-			no_voice = 1;
-		}
+ 		if (sound_sample->decoder)
+  		{
+  			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+ 			PlayStream (sound_sample,
+ 					SPEECH_SOURCE, false,
+ 					speechVolumeScale != 0.0f);
+  			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+  		}
+  		else if (channel_finished == 0)
+  		{
+  			no_voice = 1;
+  		}
 	}
 }
 
 void
 ResumeTrack ()
 {
-	if (tcur < tct)
+	if (sound_sample && sound_sample->decoder)
 	{
 		uint32 state;
 
@@ -121,21 +122,25 @@ ResumeTrack ()
 COUNT
 PlayingTrack ()
 {
-	if (tcur < tct)
+	if (sound_sample->decoder)
 	{
-		if (do_subtitles (track_clip[tcur].text, track_clip[tcur].timestamp) || 
-			(no_voice && ++tcur < tct && do_subtitles (0, 0)))
+		int last_track, last_page;
+		LockMutex (track_mutex);
+		last_track = tcur;
+		last_page = cur_page;
+		UnlockMutex (track_mutex);
+		if (do_subtitles (TrackTextArray[last_track], (void *)last_page, 1) || 
+			(no_voice && ++tcur < tct && do_subtitles (0, (void *)~0, 1)))
 		{
 			return (tcur + 1);
 		}
-		else if (track_clip[tcur].sample)
+		else if (sound_sample)
 		{
 			COUNT result;
 
 			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			result = (PlayingStream (SPEECH_SOURCE) ? (COUNT)(tcur + 1) : 0);
+			result = (PlayingStream (SPEECH_SOURCE) ? (COUNT)(last_track + 1) : 0);
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-
 			return result;
 		}
 	}
@@ -146,39 +151,70 @@ PlayingTrack ()
 void
 StopTrack ()
 {
+	int i;
 	speech_advancetrack = FALSE;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 
-	while (tct--)
+	for (i = 0; i < tct; i++)
 	{
-		if (track_clip[tct].text_spliced)
-		{
-			track_clip[tct].text_spliced = 0;
-			HFree (track_clip[tct].text);
-			track_clip[tct].text = 0;
-		}
-		if (track_clip[tct].sample)
-		{
-			TFB_SoundSample *sample = track_clip[tct].sample;
-			track_clip[tct].sample = NULL;
-			if (sample->decoder)
-			{
-				TFB_SoundDecoder *decoder = sample->decoder;
-				mixSDL_Object *buffer = sample->buffer;
-				sample->decoder = NULL;
-				sample->buffer = NULL;
-				SoundDecoder_Free (decoder);
-				mixSDL_DeleteBuffers (sample->num_buffers, buffer);
-				HFree (buffer);
-			}
-			HFree (sample);
-		}
+		HFree (TrackTextArray[i]);
+		TrackTextArray[i] = 0;
+	}
+	if (first_chain)
+	{
+		destroy_soundchain (first_chain);
+		first_chain = NULL;
+	}
+	if (sound_sample)
+	{
+		DestroyMutex (track_mutex);
+		mixSDL_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+		HFree (sound_sample->buffer);
+		HFree (sound_sample->buffer_tag);
+		HFree (sound_sample);
+		sound_sample = NULL;
 	}
 	tct = tcur = 0;
 	no_voice = 0;
-	do_subtitles (0, 0);
+	do_subtitles (0, (void *)~0, 1);
+}
+
+void 
+DoTrackTag (TFB_SoundTag *tag)
+{
+	if (tag->type == MIX_BUFFER_TAG_TEXT)
+	{
+		LockMutex (track_mutex);
+		tcur = ((int)tag->value) >> 8;
+		cur_page = ((int)tag->value) & 0xFF;
+		UnlockMutex (track_mutex);
+	}
+}
+
+int 
+GetTimeStamps(UNICODE *TimeStamps, uint32 *time_stamps)
+{
+	int pos;
+	int num = 0;
+	while (*TimeStamps && (pos = wstrcspn (TimeStamps, ",\n")))
+	{
+		UNICODE valStr[10];
+		wstrncpy (valStr, TimeStamps, pos);
+		valStr[pos] = '\0';
+		*time_stamps = wstrtoul(valStr,NULL,10);
+		if (*time_stamps)
+		{
+			num++;
+			time_stamps++;
+		}
+		TimeStamps += pos;
+		if (*TimeStamps)
+			TimeStamps++;
+	}
+	*time_stamps = 0;
+	return (num);
 }
 
 // decodes several tracks into one and adds it to queue
@@ -189,6 +225,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 #define MAX_MULTI_TRACKS  20
 #define MAX_MULTI_BUFFERS 100
 	TFB_SoundDecoder* track_decs[MAX_MULTI_TRACKS + 1];
+	TFB_SoundChain *begin_chain;
 	int tracks;
 	int slen;
 
@@ -202,17 +239,21 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 
 	if (tct >= MAX_CLIPS)
 	{
-#ifdef DEBUG
 		fprintf (stderr, "SpliceMultiTrack(): no more clip slots (%d)\n",
 				MAX_CLIPS);
-#endif
+		return;
+	}
+
+	if (! sound_sample)
+	{
+		fprintf (stderr, "SpliceMultiTrack(): Cannot be called before SpliceTrack()\n");
 		return;
 	}
 
 	fprintf (stderr, "SpliceMultiTrack(): loading...\n");
 	for (tracks = 0; *TrackNames && tracks < MAX_MULTI_TRACKS; TrackNames++, tracks++)
 	{
-		track_decs[tracks] = SoundDecoder_Load (*TrackNames, 32768);
+		track_decs[tracks] = SoundDecoder_Load (*TrackNames, 32768, 0, 0);
 		if (track_decs[tracks])
 		{
 			fprintf (stderr, "  track: %s, decoder: %s, rate %d format %x\n",
@@ -220,7 +261,13 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 					track_decs[tracks]->decoder_info,
 					track_decs[tracks]->frequency,
 					track_decs[tracks]->format);
+			SoundDecoder_DecodeAll (track_decs[tracks]);
 
+			last_chain->next = create_soundchain (track_decs[tracks], sound_sample->length);
+			last_chain = last_chain->next;
+			if (tracks == 0)
+				begin_chain = last_chain;
+			sound_sample->length += track_decs[tracks]->length;
 		}
 		else
 		{
@@ -237,34 +284,34 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	}
 
 	slen = wstrlen (TrackText);
-	track_clip[tct].text = HMalloc (slen + 1);
-	wstrcpy (track_clip[tct].text, TrackText);
-	track_clip[tct].text_spliced = 1;
-	track_clip[tct].timestamp = NULL;
-
-	track_clip[tct].sample = (TFB_SoundSample *) HMalloc (
-			sizeof (TFB_SoundSample));
-	track_clip[tct].sample->decoder = NULL;
-	track_clip[tct].sample->num_buffers = tracks;
-	track_clip[tct].sample->buffer = HMalloc (sizeof (mixSDL_Object)
-			* track_clip[tct].sample->num_buffers);
-	mixSDL_GenBuffers (track_clip[tct].sample->num_buffers, track_clip[tct].sample->buffer);
-
-	tracks = PreDecodeClips (track_clip[tct].sample, track_decs, true);
+	if (tct)
+	{
+		int slen1;
+		slen1 = wstrlen (TrackTextArray[tct - 1]);
+		TrackTextArray[tct - 1] = HRealloc (TrackTextArray[tct - 1], slen1 + slen + 1);
+		wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
+	}
+	else
+	{
+		TrackTextArray[tct] = HMalloc (slen + 1);
+		wstrcpy (TrackTextArray[tct++], TrackText);
+		begin_chain->tag.type = MIX_BUFFER_TAG_TEXT;
+		begin_chain->tag.value = (void *)((tct - 1) << 8);
+	}
+	no_page_break = 1;
 	
 	if (tracks > 0)
-		++tct;
+		return;
 	else
 	{
 		fprintf (stderr, "  no tracks loaded\n");
-		HFree (track_clip[tct].sample);
-		track_clip[tct].sample = NULL;
 	}
 }
 
 void
 SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 {
+	unsigned long startTime;
 	if (TrackText)
 	{
 		if (TrackName == 0)
@@ -274,55 +321,95 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 				int slen1, slen2;
 				UNICODE *oTT;
 
-				oTT = track_clip[tct - 1].text;
+				oTT = TrackTextArray[tct - 1];
 				slen1 = wstrlen (oTT);
 				slen2 = wstrlen (TrackText);
-				if (track_clip[tct - 1].text_spliced)
-					track_clip[tct - 1].text = HRealloc (oTT, slen1 + slen2 + 1);
-				else
-				{
-					track_clip[tct - 1].text = HMalloc (slen1 + slen2 + 1);
-					wstrcpy (track_clip[tct - 1].text, oTT);
-					track_clip[tct - 1].text_spliced = 1;
-				}
-				wstrcpy (&track_clip[tct - 1].text[slen1], TrackText);
+				TrackTextArray[tct - 1] = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
 			}
 		}
-		else if (tct < MAX_CLIPS)
+		else
 		{
-			track_clip[tct].text = TrackText;
-			track_clip[tct].text_spliced = 0;
+			int num_pages, cur_page;
+			uint32 time_stamps[50];
 
-			track_clip[tct].timestamp = TimeStamp;
-			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
-
-			track_clip[tct].sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			track_clip[tct].sample->decoder = SoundDecoder_Load (TrackName, 4096);
-			
-			if (track_clip[tct].sample->decoder)
+			if (no_page_break && tct)
 			{
-				fprintf (stderr, "    decoder: %s, rate %d format %x\n",
-					track_clip[tct].sample->decoder->decoder_info,
-					track_clip[tct].sample->decoder->frequency,
-					track_clip[tct].sample->decoder->format);
-				
-				track_clip[tct].sample->length =
-						track_clip[tct].sample->decoder->length;
-				track_clip[tct].sample->num_buffers = 8;
-				track_clip[tct].sample->buffer = HMalloc (
-						sizeof (mixSDL_Object) *
-						track_clip[tct].sample->num_buffers);
-				mixSDL_GenBuffers (track_clip[tct].sample->num_buffers,
-						track_clip[tct].sample->buffer);
+				int slen1, slen2;
+				UNICODE *oTT;
+
+				oTT = TrackTextArray[tct - 1];
+				slen1 = wstrlen (oTT);
+				slen2 = wstrlen (TrackText);
+				TrackTextArray[tct - 1] = HRealloc (oTT, slen1 + slen2 + 1);
+				wstrcpy (&TrackTextArray[tct - 1][slen1], TrackText);
 			}
 			else
 			{
-				fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
-				HFree (track_clip[tct].sample);
-				track_clip[tct].sample = NULL;
+				TrackTextArray[tct] = HMalloc (sizeof (UNICODE) * (wstrlen (TrackText) + 1));
+				wstrcpy (TrackTextArray[tct++], TrackText);
 			}
+			if (TimeStamp)
+				num_pages = GetTimeStamps (TimeStamp, time_stamps);
+			else
+				num_pages = 0;
+
+			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
+
+			startTime = 0;
+			for (cur_page = 0; cur_page <= num_pages; cur_page++)
+			{
+				if (! sound_sample)
+				{
+					TFB_SoundDecoder *decoder;
+					track_mutex = CreateMutex();
+					sound_sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
+					sound_sample->num_buffers = 8;
+					sound_sample->buffer_tag = HMalloc (sizeof (TFB_SoundTag *) * sound_sample->num_buffers);
+					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
+					mixSDL_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					decoder = SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[cur_page]);
+					sound_sample->read_chain_ptr = create_soundchain (decoder, 0.0);
+					sound_sample->decoder = decoder;
+					first_chain = last_chain = sound_sample->read_chain_ptr;
+					sound_sample->length = 0;
+				}
+				else
+				{
+					TFB_SoundDecoder *decoder;
+					decoder =  SoundDecoder_Load (TrackName, 4096, startTime, time_stamps[cur_page]);
+					last_chain->next = create_soundchain (decoder, sound_sample->length);
+					last_chain = last_chain->next;
+				}
+				startTime += time_stamps[cur_page];
 			
-			++tct;
+				// fprintf (stderr, "page (%d of %d): %d\n",cur_page, num_pages, startTime);
+				if (last_chain->decoder)
+				{
+					//fprintf (stderr, "    decoder: %s, rate %d format %x\n",
+					//	last_chain->decoder->decoder_info,
+					//	last_chain->decoder->frequency,
+					//	last_chain->decoder->format);
+
+					sound_sample->length += last_chain->decoder->length;
+					if (! no_page_break)
+					{
+						last_chain->tag.type = MIX_BUFFER_TAG_TEXT;
+						last_chain->tag.value = (void *)(((tct - 1) << 8) | cur_page);
+					}
+					no_page_break = 0;
+				}
+				else
+				{
+					fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
+					mixSDL_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
+					destroy_soundchain (first_chain);
+					first_chain = NULL;
+					HFree (sound_sample->buffer);
+					HFree (sound_sample);
+					sound_sample = NULL;
+				}
+			}
 		}
 	}
 }
@@ -330,7 +417,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp)
 void
 PauseTrack ()
 {
-	if (tcur < tct && track_clip[tcur].sample)
+	if (sound_sample && sound_sample->decoder)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		PauseStream (SPEECH_SOURCE);
@@ -341,16 +428,45 @@ PauseTrack ()
 void
 FastReverse ()
 {
-	JumpTrack (0);
-	no_voice = 0;
-	tcur = 0;
-	ResumeTrack ();
+	if (sound_sample)
+	{
+		TFB_SoundChain *prev_chain;
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+//		fprintf(stderr, "playing %s at %d\n", 
+//			sound_sample->play_chain_ptr->decoder->filename, 
+//			sound_sample->play_chain_ptr->decoder->start_sample); 
+		prev_chain = get_previous_chain(first_chain, sound_sample->play_chain_ptr);
+//		fprintf(stderr, "now playing %s at %d\n",
+//			prev_chain->decoder->filename, prev_chain->decoder->start_sample); 
+		if (prev_chain)
+		{
+			sound_sample->read_chain_ptr = prev_chain;
+			PlayStream (sound_sample,
+					SPEECH_SOURCE, false,
+					speechVolumeScale != 0.0f);
+		}
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	}
 }
 
 void
 FastForward ()
 {
-	JumpTrack (0);
+	if (sound_sample)
+	{
+		TFB_SoundChain *cur_ptr = sound_sample->play_chain_ptr;
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		while (cur_ptr->next && ! cur_ptr->tag.type)
+			cur_ptr = cur_ptr->next;
+		if (cur_ptr->next)
+		{
+			sound_sample->read_chain_ptr = cur_ptr->next;
+			PlayStream (sound_sample,
+					SPEECH_SOURCE, false,
+					speechVolumeScale != 0.0f);
+		}
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	}
 	//no_voice = 0;
 }
 

@@ -134,6 +134,8 @@ _GetMusicData (FILE *fp, DWORD length)
             char filename[1000];
 
             *pmus = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
+            (*pmus)->buffer_tag = 0;
+			(*pmus)->read_chain_ptr = NULL;
             strcpy (filename, _cur_resfile_name);
 
             switch (optWhichMusic)
@@ -158,7 +160,7 @@ _GetMusicData (FILE *fp, DWORD length)
             }
 
             fprintf (stderr, "_GetMusicData(): loading %s\n", filename);                        			
-			if (((*pmus)->decoder = SoundDecoder_Load (filename, 4096)) == 0)
+			if (((*pmus)->decoder = SoundDecoder_Load (filename, 4096, 0, 0)) == 0)
 			{
 				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
 

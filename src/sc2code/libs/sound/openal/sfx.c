@@ -135,7 +135,9 @@ _GetSoundBankData (FILE *fp, DWORD length)
 			fprintf (stderr, "_GetSoundBankData(): loading %s\n", filename);
 
 			sndfx[snd_ct] = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-			sndfx[snd_ct]->decoder = SoundDecoder_Load (filename, 4096);
+			sndfx[snd_ct]->buffer_tag = 0;
+			sndfx[snd_ct]->read_chain_ptr = NULL;
+			sndfx[snd_ct]->decoder = SoundDecoder_Load (filename, 4096, 0, 0);
 			if (!sndfx[snd_ct]->decoder)
 			{
 				fprintf (stderr, "_GetSoundBankData(): couldn't load %s\n", filename);

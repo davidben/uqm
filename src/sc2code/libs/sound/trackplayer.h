@@ -27,6 +27,7 @@ void FastForward();
 void FastReverse();
 void StopTrack();
 void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp);
+void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 int GetSoundData (void *data);
 int GetSoundInfo (int *len, int *offs);
 

@@ -27,7 +27,7 @@
 
 #define VOICE_CHANNEL 0
 
-extern int do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp);
+extern int do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp, int method);
 
 static int tct, tcur, no_voice;
 #define MAX_CLIPS 50
@@ -48,7 +48,7 @@ JumpTrack (int abort)
 		Mix_HaltChannel (VOICE_CHANNEL);
 
 	no_voice = 1;
-	do_subtitles ((void *)~0, 0);
+	do_subtitles ((void *)~0, 0, 0);
 
 	if (abort)
 		tcur = tct;
@@ -64,8 +64,8 @@ advance_track (int channel_finished)
 		if (tcur < tct)
 		{
 			Mix_PlayChannel (VOICE_CHANNEL, track_clip[tcur].chunk, 0);
-			do_subtitles (~0, 0);
-			do_subtitles (0, 0);
+			do_subtitles ((void *)~0, 0, 0);
+			do_subtitles (0, 0, 0);
 		}
 		else if (channel_finished == VOICE_CHANNEL)
 		{
@@ -96,8 +96,8 @@ PlayingTrack ()
 {
 	if (tcur < tct)
 	{
-		if (do_subtitles (track_clip[tcur].text, track_clip[tcur].timestamp)
-				|| (no_voice && ++tcur < tct && do_subtitles (0, 0)))
+		if (do_subtitles (track_clip[tcur].text, track_clip[tcur].timestamp, 0)
+				|| (no_voice && ++tcur < tct && do_subtitles (0, 0, 0)))
 			return (tcur + 1);
 		else if (track_clip[tcur].chunk)
 			return (Mix_Playing (VOICE_CHANNEL) ? (COUNT)(tcur + 1) : 0);
@@ -128,7 +128,7 @@ StopTrack ()
 	}
 	tct = tcur = 0;
 	no_voice = 0;
-	do_subtitles (0, 0);
+	do_subtitles (0, 0, 0);
 }
 
 void

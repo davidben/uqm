@@ -1161,7 +1161,7 @@ SpewPhrases (COUNT wait_track)
 	BOOLEAN ContinuityBreak;
 	DWORD TimeIn;
 	COUNT which_track;
-	INPUT_STATE InputState;
+	INPUT_STATE InputState, LastInputState;
 	FRAME F;
 
 	TimeIn = GetTimeCounter ();
@@ -1195,6 +1195,7 @@ SpewPhrases (COUNT wait_track)
 	else if (which_track <= wait_track)
 		ResumeTrack ();
 
+	LastInputState = 0;
 	do
 	{
 		ClearSemaphore (GraphicsSem);
@@ -1219,14 +1220,14 @@ SpewPhrases (COUNT wait_track)
 
 		if (which_track)
 		{
-			if (GetInputXComponent (InputState) > 0)
+			if (InputState != LastInputState && GetInputXComponent (InputState) > 0)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
 				FastForward ();
 				ContinuityBreak = TRUE;
 				CommData.AlienFrame = 0;
 			}
-			else if (GetInputXComponent (InputState) < 0)
+			else if (InputState != LastInputState && GetInputXComponent (InputState) < 0)
 			{
 Rewind:
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
@@ -1234,18 +1235,19 @@ Rewind:
 				ContinuityBreak = TRUE;
 				CommData.AlienFrame = 0;
 			}
-			else if (ContinuityBreak)
+			else if (InputState != LastInputState && ContinuityBreak)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
 				if ((which_track = PlayingTrack ())
-						&& which_track <= wait_track)
-					ResumeTrack ();
+						&& which_track <= wait_track) ;
+//					ResumeTrack ();
 				ContinuityBreak = FALSE;
 			}
 			else if (which_track == wait_track
 					|| wait_track == (COUNT)~0)
 				CommData.AlienFrame = F;
 		}
+		LastInputState = InputState;
 	} while (ContinuityBreak
 			|| ((which_track = PlayingTrack ()) && which_track <= wait_track));
 
@@ -1944,11 +1946,18 @@ RaceCommunication (void)
 	}
 }
 
+//method == 0 parses pTimeStamp, and self-times the subtitles
+//method == 1 expects pTimeStamp to explicitly set the page to draw
 int
-do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
+do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp, int method)
 {
 	static DWORD TimeOut;
 	static unsigned long *cur_sub_ts;
+	int disable_timer = 0;
+	int cur_page = -1;
+	static int last_page = -1;
+	static UNICODE *lastPStr = 0;
+	int NextPage = 0;
 
 	// TODO: proper disabling of subtitles, this one prolly isn't 'safe'
 	if (optSubtitles == FALSE)
@@ -1961,8 +1970,31 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 		if (subtitle_state <= NEXT_SUBTITLE)
 			return (subtitle_state);
 		TimeOut = 0;
+		NextPage = 1;
 		subtitle_state = WAIT_SUBTITLE;
 	}
+	if (method)
+		disable_timer = 1;
+	else if (! method)
+	{
+		if (last_page == -1)
+			last_page++;
+		cur_page = last_page;
+	}
+	if (method == 1 && pStr != (void *)~0 && pTimeStamp != (void *)~0)
+	{
+		cur_page = (int)pTimeStamp;
+		if (cur_page != last_page || lastPStr != pStr) {
+			if (lastPStr != pStr)
+				subtitle_state = NEXT_SUBTITLE;
+			else
+				subtitle_state = READ_SUBTITLE;
+			ColorChange = TRUE;
+//			fprintf (stderr, "changed page to: %d\n", cur_page);
+		}
+	}
+	lastPStr = pStr;
+	last_page = cur_page;
 
 	switch (subtitle_state)
 	{
@@ -1976,53 +2008,64 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 			24,
 			32,
 		};
+		static UNICODE alien_phrase_buf[4096];
+		static int page_break_pos[50];
 
 		case NEXT_SUBTITLE:
 		{
 			UNICODE ch;
 			COUNT numchars;
-			static UNICODE alien_phrase_buf[4096];
+			int cur_pos = 0;
 			UNICODE *s;
 			static unsigned long subtitle_frames_ts[50];
 
+			if (! disable_timer)
+				cur_page = last_page = 0;
+			page_break_pos[cur_pos++] = 0;
 			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
 			numchars = 0;
 			do
 			{
 				++numchars;
-				if (((ch = *pStr++) == '\n' || ch == '\r')
-						&& !ispunct (pStr[-2])
-						&& !isspace (pStr[-2]))
+				if ((ch = *pStr++) == '\n' || ch == '\r')
 				{
-					*CommData.AlienTextTemplate.pStr++ = '.';
-					*CommData.AlienTextTemplate.pStr++ = '.';
-					*CommData.AlienTextTemplate.pStr++ = '.';
-					*CommData.AlienTextTemplate.pStr++ = ch;
-					*CommData.AlienTextTemplate.pStr++ = '.';
-					*CommData.AlienTextTemplate.pStr++ = '.';
-					ch = '.';
-					numchars += 6;
+					if (!ispunct (pStr[-2]) && !isspace (pStr[-2]))
+					{
+						*CommData.AlienTextTemplate.pStr++ = '.';
+						*CommData.AlienTextTemplate.pStr++ = '.';
+						*CommData.AlienTextTemplate.pStr++ = '.';
+						*CommData.AlienTextTemplate.pStr++ = ch;
+						*CommData.AlienTextTemplate.pStr++ = '.';
+						*CommData.AlienTextTemplate.pStr++ = '.';
+						ch = '.';
+						page_break_pos[cur_pos++] = numchars + 3;
+						numchars += 6;
+					}
+					else
+						page_break_pos[cur_pos++] = numchars;
 				}
 			} while ((*CommData.AlienTextTemplate.pStr++ = ch));
-			if (s = pTimeStamp)
+			subtitle_frames_ts[0] = 0;
+			if (! method)
 			{
-				int pos;
-				cur_sub_ts = subtitle_frames_ts;
-				while (*s && (pos = wstrcspn (s, ",")))
+				if (s = pTimeStamp)
 				{
-					UNICODE valStr[10];
-					wstrncpy (valStr, s, pos);
-					valStr[pos] = '\0';
-					*cur_sub_ts++ = wstrtoul(valStr,NULL,10);
-					s += pos;
-					if (*s)
-						s++;
+					int pos;
+					cur_sub_ts = subtitle_frames_ts;
+					while (*s && (pos = wstrcspn (s, ",")))
+					{
+						UNICODE valStr[10];
+						wstrncpy (valStr, s, pos);
+						valStr[pos] = '\0';
+						*cur_sub_ts++ = wstrtoul(valStr,NULL,10);
+						s += pos;
+						if (*s)
+							s++;
+					}
+					*cur_sub_ts = 0;
+					TimeOut = GetTimeCounter ();
 				}
-				*cur_sub_ts = 0;
-				TimeOut = GetTimeCounter ();
 			}
-			else
-				subtitle_frames_ts[0] = 0;
 			cur_sub_ts = subtitle_frames_ts;
 
 			CommData.AlienTextTemplate.pStr = alien_phrase_buf;
@@ -2044,7 +2087,7 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 			BYTE read_speed;
 			CONTEXT OldContext;
 
-			CommData.AlienTextTemplate.pStr += CommData.AlienTextTemplate.CharCount;
+			CommData.AlienTextTemplate.pStr = alien_phrase_buf + page_break_pos[cur_page];
 			t = CommData.AlienTextTemplate;
 
 			OldContext = SetContext (TaskContext);
@@ -2060,12 +2103,12 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 				talk_length = *cur_sub_ts++ * ONE_SECOND /1000;
 				silence_length = 0;
 				TimeOut += talk_length;
-				//sprintf (stderr, "Sound length is %d\n", talk_length);
+				fprintf (stderr, "Sound length is %d\n", talk_length);
 			}
-			else
+			else if (! disable_timer)
 			{
 				read_speed = speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK];
-				talk_length = ONE_SECOND * CommData.AlienTextTemplate.CharCount / MODERATE_SPEED;
+				talk_length = 3 * ONE_SECOND * CommData.AlienTextTemplate.CharCount / MODERATE_SPEED;
 				if (read_speed)
 				{
 					silence_length = ONE_SECOND
@@ -2076,18 +2119,28 @@ do_subtitles (UNICODE *pStr, UNICODE *pTimeStamp)
 				}
 				TimeOut = GetTimeCounter () + talk_length;
 			}
+			else
+			{
+				TimeOut = 0;
+				silence_length = 0;
+			}
 			subtitle_state = SPACE_SUBTITLE;
 			break;
 		}
 		case SPACE_SUBTITLE:
-			if (GetTimeCounter () < TimeOut)
+			if (! NextPage && (disable_timer || GetTimeCounter () < TimeOut))
 				break;
 			TimeOut += silence_length;
 			subtitle_state = WAIT_SUBTITLE;
 			/* fall through */
 		case WAIT_SUBTITLE:
-			if (speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK] == 0 || GetTimeCounter () >= TimeOut)
+			if (speed_array[GLOBAL (glob_flags) & READ_SPEED_MASK] == 0 || NextPage || (! disable_timer && GetTimeCounter () >= TimeOut))
 			{
+//				if (NextPage)
+//					fprintf (stderr, "Switching pages\n");
+				NextPage = 0;
+				if (! disable_timer)
+					last_page++;
 				if (CommData.AlienTextTemplate.pStr[CommData.AlienTextTemplate.CharCount - 1] == '\n')
 					subtitle_state = READ_SUBTITLE;
 				else
