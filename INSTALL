@@ -36,15 +36,6 @@ SDL_image
 	Homepage: http://www.libsdl.org/projects/SDL_image/
 	Download: http://www.libsdl.org/projects/SDL_image/release/
 	Debian packages: libsdl-image1.2 libsdl-image1.2-dev
-
-SDL_mixer (Linux only)
-	A simple audio mixer library used with SDL.
-	Homepage: http://www.libsdl.org/projects/SDL_mixer/	
-	Download: http://www.libsdl.org/projects/SDL_mixer/
-	          Until version 1.2.5 is officially released, you'll have to 
-	          compile this directly from CVS (with ogg support):
-	          cvs -z3 -d:pserver:guest@libsdl.org:/home/sdlweb/libsdl.org/cvs co SDL_mixer
-	Debian packages: libsdl-mixer1.2 libsdl-mixer1.2-dev
 	
 OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
