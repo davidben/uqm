@@ -1,4 +1,4 @@
-s over#include "SDL.h"
+#include "SDL.h"
 #include "sdl_common.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"
