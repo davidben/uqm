@@ -1232,9 +1232,11 @@ NatureOfConversation (RESPONSE_REF R)
 		{
 				/* Melnorme reports any news and turns purple */
 			NPCPhrase (BUY_OR_SELL);
+			AlienTalkSegue(1);
 			XFormPLUT (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 					), ONE_SECOND / 2);
+			AlienTalkSegue((COUNT)~0);
 		}
 		else if (PLAYER_SAID (R, why_turned_purple))
 		{

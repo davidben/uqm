@@ -1,4 +1,5 @@
 0.2:
+- Melnorme bridge turns purple at the right spot in his conversation
 - Repaired a DrawCommandQueue invariant, from tamlin
 - Color transforms in communication merged into core animation thread
 - 3D planet is now antialiased, from PhracturedBlue
