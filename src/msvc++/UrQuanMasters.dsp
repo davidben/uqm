@@ -440,31 +440,11 @@ SOURCE=..\sc2code\libs\sound\openal\mixer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\music.c
+SOURCE=..\sc2code\libs\sound\openal\sound_openal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\sfx.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\sound.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\sound.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\stream.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\stream.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\openal\trackplayer.c
+SOURCE=..\sc2code\libs\sound\openal\sound_openal.h
 # End Source File
 # End Group
 # Begin Group "decoders"
@@ -614,7 +594,7 @@ SOURCE=..\sc2code\libs\sound\mixsdl\mixer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixsdl\music.c
+SOURCE=..\sc2code\libs\sound\mixsdl\sound_mixsdl.c
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
 
@@ -629,82 +609,7 @@ SOURCE=..\sc2code\libs\sound\mixsdl\music.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixsdl\sfx.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\sound.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\sound.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\stream.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\stream.h
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Intermediate_Dir "Release_MixSDL"
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Intermediate_Dir "Debug_MixSDL"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixsdl\trackplayer.c
+SOURCE=..\sc2code\libs\sound\mixsdl\sound_mixsdl.h
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
 
@@ -749,6 +654,34 @@ SOURCE=..\sc2code\libs\sound\sound_common.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\trackplayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\music.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sfx.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sound.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sound.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\stream.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\stream.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\trackplayer.c
 # End Source File
 # End Group
 # Begin Group "strings"
