@@ -237,13 +237,15 @@ mkdir -p -- "$PREFIX"/lib/uqm 2> /dev/null
 mkdir -p -- "$PREFIX"/bin 2> /dev/null
 
 echo "Unpacking packages..."
-for COMPFILE in `selected_components`; do
+for PACKAGE in `selected_packages`; do
 	echo "- $COMPFILE"
-	unzip -od "$PREFIX" "$COMPFILE"
+	COMPFILE="$(package_filename $PACKAGE)"
+	eval LOCATION="\$UQM_PACKAGE_${PACKAGE}_LOCATION"
+	unzip -od "${PREFIX}${LOCATION}" "$COMPFILE"
 done
 
 echo "Unpacking other stuff..."
-tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$PREFIX"/
+tail -c @ATTACHLEN@ < "$0" | gzip -dc | tar -xf - -C "$PREFIX"
 
 echo "Creating wrapper script..."
 cat << EOF > "$PREFIX"bin/uqm
