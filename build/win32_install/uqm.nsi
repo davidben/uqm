@@ -1,5 +1,5 @@
 !define MUI_PRODUCT "The Ur-Quan Masters" ;Define your own software name here
-!define MUI_VERSION "0.2" ;Define your own software version here
+!define MUI_VERSION "0.14" ;Define your own software version here
 !define OLD_VERSION "0.1" ; The earliest version that we can upgrade from
 
 !define DEFAULT_UPGRADE 1 ;  Define if the default install should be 'upgrade'
