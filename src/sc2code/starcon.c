@@ -681,6 +681,7 @@ EventHandler (BYTE selector)
 		case KOHR_AH_GENOCIDE_EVENT:
 			if (!GET_GAME_STATE (KOHR_AH_FRENZY)
 					&& LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
+			                && CurStarDescPtr
 					&& CurStarDescPtr->Index == SAMATRA_DEFINED)
 				AddEvent (RELATIVE_EVENT, 0, 7, 0, KOHR_AH_GENOCIDE_EVENT);
 			else
@@ -694,6 +695,7 @@ EventHandler (BYTE selector)
 			break;
 		case ZOQFOT_DISTRESS_EVENT:
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
+			                && CurStarDescPtr
 					&& CurStarDescPtr->Index == ZOQFOT_DEFINED)
 				AddEvent (RELATIVE_EVENT, 0, 7, 0, ZOQFOT_DISTRESS_EVENT);
 			else
@@ -704,6 +706,7 @@ EventHandler (BYTE selector)
 			break;
 		case ZOQFOT_DEATH_EVENT:
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
+			                && CurStarDescPtr
 					&& CurStarDescPtr->Index == ZOQFOT_DEFINED)
 				AddEvent (RELATIVE_EVENT, 0, 7, 0, ZOQFOT_DEATH_EVENT);
 			else if (GET_GAME_STATE (ZOQFOT_DISTRESS))
@@ -740,6 +743,7 @@ EventHandler (BYTE selector)
 			break;
 		case SPATHI_SHIELD_EVENT:
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
+			                && CurStarDescPtr
 					&& CurStarDescPtr->Index == SPATHI_DEFINED)
 				AddEvent (RELATIVE_EVENT, 0, 7, 0, SPATHI_SHIELD_EVENT);
 			else
