@@ -45,7 +45,7 @@ getCharFromString(const unsigned char **ptr) {
 
 	if ((**ptr & 0xe0) == 0xc0) {
 		// 110xxxxx; 10xxxxxx must follow
-		// Value between 0x00000080 and 0x0000007f (inclusive)
+		// Value between 0x00000080 and 0x000007ff (inclusive)
 		result = **ptr & 0x1f;
 		(*ptr)++;
 		
@@ -63,7 +63,7 @@ getCharFromString(const unsigned char **ptr) {
 
 	if ((**ptr & 0xf0) == 0xe0) {
 		// 1110xxxx; 10xxxxxx 10xxxxxx must follow
-		// Value between 0x00000800 and 0x000007ff (inclusive)
+		// Value between 0x00000800 and 0x0000ffff (inclusive)
 		result = **ptr & 0x0f;
 		(*ptr)++;
 		
