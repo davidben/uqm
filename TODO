@@ -73,6 +73,8 @@ Glitches (don't crash the game, medium priority):
   that release is seen as a new press (very noticable within melee menus).
 - Clipping rectangle isn't fully correct atleast for melee, so there can be
   occasional one-pixel corruptions in the status bar
+- In melee, winning ship is not placed correctly on the result status screen 
+  and is not counted towards the resulting bucks
 
 Implementation bugs (low priority):
 - 3D planet view when entering orbit is now done, but there's some things
@@ -88,6 +90,7 @@ Implementation bugs (low priority):
   nearest neighbor.
 - PC Menu still has some issues
   - Still using 3DO menu hierarchy, so menu text isn't identical to PC
+
 Stuff still to do (large):
 - add some way to configure your keys
   (assigned to mstr)
