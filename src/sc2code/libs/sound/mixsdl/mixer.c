@@ -1701,6 +1701,8 @@ mixSDL_Resample_frac (mixSDL_Convertion *conv)
 	nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
 	if (stereo)
 		nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
+	else
+		nextsampr = 0;
 	nextsrcpos = 0;
 
 	for (i = conv->dstsamples; i; i--)
@@ -1792,6 +1794,8 @@ mixSDL_ResampleUp_fast (mixSDL_Convertion *conv)
 	nextsampl = mixSDL_GetConvSample (&src, srcbpc, flags);
 	if (stereo)
 		nextsampr = mixSDL_GetConvSample (&src, srcbpc, flags);
+	else
+		nextsampr = 0;
 
 	for (i = conv->srcsamples; i; i--)
 	{
