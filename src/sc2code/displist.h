@@ -34,7 +34,8 @@ typedef QUEUE_HANDLE HLINK;
 
 typedef struct link
 {
-	HLINK pred, succ;
+	HLINK pred;
+	HLINK succ;
 } LINK;
 typedef LINK *PLINK;
 
@@ -66,14 +67,17 @@ typedef PLINK LINKPTR;
 
 typedef struct queue
 {
-	HLINK head, tail;
+	HLINK head;
+	HLINK tail;
+#ifdef QUEUE_TABLE
+	BYTEPTR pq_tab;
+	HLINK free_list;
+	MEM_HANDLE hq_tab;
+#endif
 //    BYTE object_size;
 	COUNT object_size;
 #ifdef QUEUE_TABLE
 	BYTE num_objects;
-	HLINK free_list;
-	MEM_HANDLE hq_tab;
-	BYTEPTR pq_tab;
 #endif /* QUEUE_TABLE */
 } QUEUE;
 typedef QUEUE *PQUEUE;
