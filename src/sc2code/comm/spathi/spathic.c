@@ -190,6 +190,8 @@ ExitConversation (RESPONSE_REF Response)
 	}
 }
 
+static BYTE join_us_refusals;
+
 static void
 SpathiOnPluto (RESPONSE_REF R)
 {
@@ -309,8 +311,6 @@ SpathiOnPluto (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, join_us))
 	{
-		static BYTE join_us_refusals;
-
 		if (join_us_refusals == 0)
 		{
 			NPCPhrase (WONT_JOIN_1);
@@ -692,6 +692,8 @@ Intro (void)
 	Manner = GET_GAME_STATE (SPATHI_MANNER);
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 	{
+		join_us_refusals = 0;
+
 		NPCPhrase (SORRY_ABOUT_THAT);
 
 			/* if already know password from Melnorme,
