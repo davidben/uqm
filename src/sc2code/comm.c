@@ -2143,7 +2143,7 @@ InitCommunication (RESOURCE which_comm)
 		SetResourceIndex (hIndex);
 
 		LocDataPtr = (LOCDATAPTR)init_race (
-				status != YEHAT_REBEL_SHIP ? which_comm : YEHAT_REBEL_CONVERSATION
+						    status != YEHAT_REBEL_SHIP ? which_comm : (RESOURCE)YEHAT_REBEL_CONVERSATION
 				);
 		if (LocDataPtr)
 			CommData = *LocDataPtr;

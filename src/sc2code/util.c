@@ -227,5 +227,8 @@ WaitAnyButtonOrQuit (BOOLEAN CheckSpecial)
 			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 		TaskSwitch ();
 
+	/* Satisfy unused parameter */
+	(void) CheckSpecial;
+
 	return (GLOBAL (CurrentActivity) & CHECK_ABORT) != 0;
 }
