@@ -80,7 +80,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope, bo
 
 		if (sample->decoder->error)
 		{
-			if (sample->decoder->error == SOUNDDECODER_EOF && sample->read_chain_ptr->next)
+			if (sample->decoder->error == SOUNDDECODER_EOF &&
+				sample->read_chain_ptr && sample->read_chain_ptr->next)
 			{
 				sample->read_chain_ptr = sample->read_chain_ptr->next;
 				sample->decoder = sample->read_chain_ptr->decoder;

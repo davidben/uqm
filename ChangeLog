@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Fix crash in PlayStream when whole file is prebuffered and its not
+  speech (bug #259) -Mika
 - Fix endian problem in colormap transform code (bug #137) -Mika
 - Fix minor glitch in planet coarse scan (bug #238), from chmmravatar
 - Wav loader is now endian safe (bug #165) -Mika
