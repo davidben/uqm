@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Flashing rects are no longer constrained to even-numbered pixels on the
+  y axis; fixes bug #255, from Nic
 - Fixed minor glitches in main window borders (bug #307 parts 1,2,3) -Mika
 - There's now space before and after : in coordinates (bug #307 part 6),
   from Paxtez

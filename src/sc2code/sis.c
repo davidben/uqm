@@ -1403,10 +1403,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 		flash_rect1 = *pRect;
 		flash_rect1.corner.x += clip_r.corner.x;
 		flash_rect1.corner.y += clip_r.corner.y;
-		flash_rect1.extent.height += flash_rect.corner.y & 1;
-		flash_rect1.corner.y &= ~1;
 		create_flash = 1;
-
 	}
 	
 	LockMutex (flash_mutex);
