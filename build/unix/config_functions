@@ -259,7 +259,7 @@ EOF
 # Arguments:   $1 - the name of the symbol
 define_have_symbol() {
 	local NAME VALUE
-	NAME=`$TR a-z A-Z << EOF
+	NAME=`$TR "[:lower:]" "[:upper:]" << EOF
 $1
 EOF
 `
@@ -296,7 +296,7 @@ EOF
 # Arguments:   $1 - the name of the symbol
 define_have_header() {
 	local NAME VALUE
-	NAME=`$TR /.a-z __A-Z << EOF
+	NAME=`$TR /.[:lower:] __[:upper:] << EOF
 $1
 EOF
 `
