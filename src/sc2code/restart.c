@@ -17,6 +17,7 @@
  */
 
 #include "starcon.h"
+#include "uqmversion.h"
 
 //Added by Chris
 
@@ -47,6 +48,8 @@ static void
 DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 {
 	RECT r;
+	TEXT t;
+	UNICODE buf[64];
 
 	SetSemaphore (GraphicsSem);
 	SetContext (ScreenContext);
@@ -57,6 +60,20 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	r.extent.width = SCREEN_WIDTH;
 	r.extent.height = SCREEN_HEIGHT;
 	SetFlashRect (&r, SetAbsFrameIndex (f, NewState + 1));
+
+	// Put version number in the corner
+	SetContextFont (TinyFont);
+	t.pStr = buf;
+	t.baseline.x = SCREEN_WIDTH - 3;
+	t.baseline.y = SCREEN_HEIGHT - 2;
+	t.align = ALIGN_RIGHT;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = (COUNT)~0;
+	wsprintf (buf, "v%d.%d%s", UQM_MAJOR_VERSION,
+			UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
+	SetContextForeGroundColor (WHITE_COLOR);
+	font_DrawText (&t);
+
 	ClearSemaphore (GraphicsSem);
 	(void) OldState;  /* Satisfying compiler (unused parameter) */
 }
