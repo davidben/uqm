@@ -96,7 +96,8 @@ typedef struct VINFO {
 
 static	SWORD **Samples;
 static	VINFO *vinf=NULL,*vnf;
-static	long tickleft,samplesthatfit,vc_memory=0;
+static	unsigned long tickleft, samplesthatfit;
+static	long vc_memory=0;
 static	int vc_softchn;
 static	SLONGLONG idxsize,idxlpos,idxlend;
 static	SLONG *vc_tickbuf=NULL;
@@ -659,7 +660,7 @@ static void AddChannel(SLONG* ptr,NATIVE todo)
 
 void VC1_WriteSamples(SBYTE* buf,ULONG todo)
 {
-	int left,portion=0,count;
+	unsigned int left,portion=0,count;
 	SBYTE  *buffer;
 	int t, pan, vol;
 
