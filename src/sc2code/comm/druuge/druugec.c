@@ -677,6 +677,8 @@ Intro (void)
 {
 	BYTE NumVisits;
 
+	SlaveryCount = 0;
+
 	if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
 		NPCPhrase (OUT_TAKES);
