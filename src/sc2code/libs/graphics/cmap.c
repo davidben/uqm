@@ -40,35 +40,21 @@ static unsigned int varPLUTsize = VARPLUTS_SIZE;
 
 void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
 {
-	DWORD i, k, cval;
+	DWORD i, k;
+	UWORD cval;
 	UBYTE j, r, g, b;
 	UBYTE *colors;
 
 	colors = (UBYTE*)_varPLUTs + (colormap_index * PLUT_BYTE_SIZE);	
 
-	for (i = 0; i < 32;)
+	for (i = 0; i < 32; i++)
 	{
-		cval = MAKE_DWORD (MAKE_WORD (colors[3], colors[2]), MAKE_WORD (colors[1], colors[0]));
-		colors += 4;
+		cval = MAKE_WORD (colors[1], colors[0]);
+		colors += 2;
 
-		r = (UBYTE)((cval >> 26) & 0x1f);
-		g = (UBYTE)((cval >> 21) & 0x1f);
-		b = (UBYTE)((cval >> 16) & 0x1f);
-			
-		for (j = 0; j < 8; ++j)
-		{
-			k = ((j << 5) + i);
-
-			pal[k].r = r * (j + 1);
-			pal[k].g = g * (j + 1);
-			pal[k].b = b * (j + 1);
-		}
-
-		++i;
-
-		r = (UBYTE)((cval >> 10) & 0x1f);
-		g = (UBYTE)((cval >> 5) & 0x1f);
-		b = (UBYTE)(cval & 0x1f);
+		r = (UBYTE)((cval >> 10) & 0x1f);  // bits 10-14
+		g = (UBYTE)((cval >> 5) & 0x1f);   // bits 5-9
+		b = (UBYTE)(cval & 0x1f);          // bits 0-4
 
 		for (j = 0; j < 8; ++j)
 		{
@@ -77,8 +63,6 @@ void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
 			pal[k].g = g * (j + 1);
 			pal[k].b = b * (j + 1);
 		}
-
-		++i;
 	}
 }
 
