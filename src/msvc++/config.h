@@ -28,7 +28,7 @@
 #undef WORDS_BIGENDIAN
 
 /* Defined if your system has setenv of its own */
-#define HAVE_SETENV
+#undef HAVE_SETENV
 
 /* Defined if your system has strupr of its own */
 #define HAVE_STRUPR
