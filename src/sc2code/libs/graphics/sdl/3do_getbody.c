@@ -100,10 +100,10 @@ process_font (FRAMEPTR FramePtr, SDL_Surface *img[], int cel_ct)
 			p = getpix (img[cel_ct], x, y);
 			SDL_GetRGBA (p, img[cel_ct]->format, &r, &g, &b, &a);
 
-			if (a)
-				putpix (new_surf, x, y, 1);
-			else
+			if (r == 0 && g == 0 && b == 0)
 				putpix (new_surf, x, y, 0);
+			else
+				putpix (new_surf, x, y, 1);
 		}
 	}
 
