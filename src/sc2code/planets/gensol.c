@@ -20,34 +20,39 @@
 #include "lifeform.h"
 #include "lander.h"
 
-static void
-init_probe (void)
+static DWORD
+GetProbeRef (void)
 {
 	BYTE b0, b1, b2, b3;
-	HSTARSHIP hStarShip;
 
 	b0 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS0);
 	b1 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS1);
 	b2 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS2);
 	b3 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS3);
-	GLOBAL (BattleGroupRef) = MAKE_DWORD (
-			MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-			);
-	if (GLOBAL (BattleGroupRef) == 0)
-	{
-		CloneShipFragment (URQUAN_PROBE_SHIP,
-				&GLOBAL (npc_built_ship_q), 0);
 
-		GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
-		b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-		b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-		b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-		b3 = HIBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-		SET_GAME_STATE (URQUAN_PROBE_GRPOFFS0, b0);
-		SET_GAME_STATE (URQUAN_PROBE_GRPOFFS1, b1);
-		SET_GAME_STATE (URQUAN_PROBE_GRPOFFS2, b2);
-		SET_GAME_STATE (URQUAN_PROBE_GRPOFFS3, b3);
-	}
+	return (MAKE_DWORD (MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)));
+}
+
+static void
+SetProbeRef (DWORD Ref)
+{
+	BYTE b0, b1, b2, b3;
+
+	b0 = LOBYTE (LOWORD (Ref));
+	b1 = HIBYTE (LOWORD (Ref));
+	b2 = LOBYTE (HIWORD (Ref));
+	b3 = HIBYTE (HIWORD (Ref));
+
+	SET_GAME_STATE (URQUAN_PROBE_GRPOFFS0, b0);
+	SET_GAME_STATE (URQUAN_PROBE_GRPOFFS1, b1);
+	SET_GAME_STATE (URQUAN_PROBE_GRPOFFS2, b2);
+	SET_GAME_STATE (URQUAN_PROBE_GRPOFFS3, b3);
+}
+
+static int
+init_probe (void)
+{
+	HSTARSHIP hStarShip;
 
 	if (!GET_GAME_STATE (PROBE_MESSAGE_DELIVERED)
 			&& GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0)
@@ -68,7 +73,11 @@ init_probe (void)
 		UnlockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip
 				);
+
+		return 1;
 	}
+	else
+		return 0;
 }
 
 static void
@@ -417,7 +426,17 @@ GenerateSOL (BYTE control)
 	switch (control)
 	{
 		case INIT_NPCS:
-			init_probe ();
+			GLOBAL (BattleGroupRef) = GetProbeRef ();
+			if (GLOBAL (BattleGroupRef) == 0)
+			{
+				CloneShipFragment (URQUAN_PROBE_SHIP,
+						&GLOBAL (npc_built_ship_q), 0);
+
+				GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
+				SetProbeRef (GLOBAL (BattleGroupRef));
+			}
+			if (!init_probe ())
+				GenerateRandomIP (INIT_NPCS);
 			break;
 		case REINIT_NPCS:
 			if (GET_GAME_STATE (CHMMR_BOMB_STATE) != 3)
