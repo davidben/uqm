@@ -81,6 +81,7 @@ FlushGraphics (void)
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_FLUSHGRAPHICS;
 	DrawCommand.image = 0;
 	TFB_EnqueueDrawCommand(&DrawCommand);
+	WaitCondVar (RenderingCond);
 }
 
 void

@@ -1004,15 +1004,10 @@ int flash_rect_func(void *data)
 			SetGraphicStrength (4, 4);
 				
 			UnbatchGraphics ();
-			FlushGraphics ();
-			/* ACK, cheap hack, oh well, blame Michael Martin until he fixes it */
-			if (flash_rect.extent.width > 250)
-			{
-				SkipGraphics ();
-			}
 		}
 		SetContext (OldContext);
 		ClearSemaphore (GraphicsSem);
+		FlushGraphics ();
 		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
 	}

@@ -155,18 +155,23 @@ TFB_DrawCommandQueue_Push (TFB_DrawCommandQueue* myQueue,
 		TFB_DrawCommand* Command)
 {
 	Lock_DCQ ();
-	if (myQueue->FullSize < DCQ_MAX - 1)
+	while (myQueue->FullSize >= DCQ_MAX - 1)
 	{
-		DCQ[myQueue->InsertionPoint] = *Command;
-		myQueue->InsertionPoint = (myQueue->InsertionPoint + 1) % DCQ_MAX;
-		myQueue->FullSize++;
-		Synchronize_DCQ ();
+		int old_depth, i;
+		fprintf (stderr, "DCQ overload.  Sleeping until renderer is done.\n");
+		// Restore the DCQ locking level.  I *think* this is
+		// always 1, but...
+		old_depth = DCQ_locking_depth;
+		for (i = 0; i < old_depth; i++)
+			Unlock_DCQ ();
+		WaitCondVar (RenderingCond);
+		for (i = 0; i < old_depth; i++)
+			Lock_DCQ ();
 	}
-	else
-	{
-		fprintf (stderr, "DCQ overload.  Adjust your livelock deterrence constants!\n");
-	}
-
+	DCQ[myQueue->InsertionPoint] = *Command;
+	myQueue->InsertionPoint = (myQueue->InsertionPoint + 1) % DCQ_MAX;
+	myQueue->FullSize++;
+	Synchronize_DCQ ();
 	Unlock_DCQ ();
 }
 

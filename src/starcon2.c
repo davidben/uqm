@@ -221,6 +221,7 @@ main (int argc, char *argv[])
 
 	mem_init ();
 	GraphicsSem = CreateSemaphore (1);
+	RenderingCond = CreateCondVar ();
 	init_xform_control ();
 
 	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);

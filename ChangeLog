@@ -1,4 +1,7 @@
 0.2:
+- Rendering thread now broadcasts to a condition variable, stopping most
+  of the problems we were having where a fast thread spams the DCQ with
+  too many requests to handle in a timely manner
 - Fixed an unsafe memory freeing from sfx.c
 - Thread library now includes condition variables
 - Shofixti dialogue fixed to subtitles, by BlckKnght

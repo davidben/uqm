@@ -174,7 +174,9 @@ PauseGame (void)
 	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
 	DrawStamp (&s);
 
+	ClearSemaphore (GraphicsSem);
 	FlushGraphics ();
+	SetSemaphore (GraphicsSem);
 
 	{
 		BYTE scan;

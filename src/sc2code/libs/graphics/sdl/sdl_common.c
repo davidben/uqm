@@ -537,14 +537,14 @@ TFB_FlushGraphics () // Only call from main thread!!
 		{
 			TFB_SwapBuffers(); // if fading, redraw every frame
 		}
-        else
+		else
 		{
-            SDL_Delay(1);
+			SDL_Delay(1);
 		}
 		
 		last_fade = current_fade;
 		last_transition = current_transition;
-        
+		BroadcastCondVar (RenderingCond);
 		return;
 	}
 
@@ -556,7 +556,10 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 		semval = TimeoutSetSemaphore (GraphicsSem, ONE_SECOND / 10);
 		if (semval != 0)
+		{
+			BroadcastCondVar (RenderingCond);
 			return;
+		}
 		else
 			SDL_SemPost (GraphicsSem);
 	}
@@ -776,6 +779,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 	}
 
 	TFB_SwapBuffers();
+        BroadcastCondVar (RenderingCond);
 }
 
 #endif

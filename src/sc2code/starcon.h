@@ -169,6 +169,7 @@ extern FRAME ActivityFrame;
 extern SOUND MenuSounds, GameSounds;
 extern QUEUE race_q[NUM_PLAYERS];
 extern Semaphore GraphicsSem;
+extern CondVar RenderingCond;
 extern STRING GameStrings;
 
 typedef enum
