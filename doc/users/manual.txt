@@ -565,7 +565,7 @@ in the game. '--addon' may be specified more than once to enable multiple
 add-ons.
 
 At the time this version of The Ur-Quan masters is released, there aren't
-any official add-ons yet. Keep an eye on http://uqm.sf.net/ for those.
+any official add-ons yet. Keep an eye on http://sc2.sf.net/ for those.
 Our boards, which can be found on this site too, are a good place
 to start looking for unofficial ones.
 
