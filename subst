@@ -1,6 +1,14 @@
-#!/bin/bash
-#!/usr/bin/bash
+#!/bin/sh
 # Substitute a string in many files. By Serge van den Boom, 20020826
+
+# We need bash functionality. Executing bash with the shebang won't be
+# portable as the location of bash differs.
+SHELLFILE="$_"
+case "$SHELLFILE" in
+	sh|*/sh)
+		exec bash "$0" "$@"
+		;;
+esac
 
 if [ $# -eq 0 ]; then
 	{
