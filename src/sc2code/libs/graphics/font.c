@@ -327,8 +327,10 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 }
 
 static inline FRAME_DESC *
-getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
+getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
+{
 	wchar_t pageStart = ch & CHARACTER_PAGE_MASK;
+	size_t charIndex;
 
 	FONT_PAGE *page = fontPtr->fontPages;
 	for (;;)
@@ -342,6 +344,18 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch) {
 		page = page->next;
 	}
 
-	return &page->charDesc[ch - page->firstChar];
+	charIndex = ch - page->firstChar;
+	if (ch >= page->firstChar && charIndex < page->numChars
+			&& page->charDesc[charIndex].image)
+	{
+		return &page->charDesc[charIndex];
+	}
+	else
+	{
+#ifdef DEBUG
+		fprintf (stderr, "Character %u not present\n");
+#endif
+		return NULL;
+	}
 }
 
