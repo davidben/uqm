@@ -1,5 +1,15 @@
 #(GIVE_SPINDLE)	pkunk000.wav
-Give spindle.
+WAIT!... a spirit voice rings within my soul
+it tells me that I must give you something
+something to aid you on your noble quest!
+What, spirit? What must we give this young human?
+Mineral resources?... no. Important secrets?... no. Starships?...
+no. Then what IS it spirit, spit it out!
+What?!... that thing? Are you sure? Okay.
+Here you go, Captain. Take this Clear Spindle.
+It is an ancient and powerful device built by the Precursors hundreds of thousands of years ago.
+What does it do, you ask?
+I haven't the slightest idea.
 
 #(name_1)
 The New Alliance of Free Stars!
@@ -21,7 +31,14 @@ Seekers of the deepest truths, askers of interesting and significant questions.
 Even now a question of great transcendental significance comes unbidden to our minds.
 Who are you and what do you want?'
 
-#(NEUTRAL_SPACE_HELLO_3)	pkunk002.wav
+#(NEUTRAL_SPACE_HELLO_2)	pkunk002.wav
+Greetings and various apropos felicitations!  We are Pkunk.
+Hatchlings of light, spritual soul beings of the vast cosmic oneness
+wayfarers on the river of destiny, students of the mystical dimensions
+purveyors of blissful love, birdlike manifestations of glorious light energies from the astral plane.
+How about yourselves?
+
+#(NEUTRAL_SPACE_HELLO_3)	pkunk003.wav
 Do not be frightened.  We are powerful creatures, yes
 but we could not hurt you anymore than we could squish the helpless Pootworm.
 We love the Pootworm.  We are one with the Pootworm.  We are one with you.
@@ -29,13 +46,6 @@ Of course you realize that this means you are one with the Pootworm.
 Rejoice!!
 To be one with the Pootworm is to be alive, and why not be alive?
 Is that not what living is for?
-
-#(NEUTRAL_SPACE_HELLO_2)	pkunk003.wav
-Greetings and various apropos felicitations!  We are Pkunk.
-Hatchlings of light, spritual soul beings of the vast cosmic oneness
-wayfarers on the river of destiny, students of the mystical dimensions
-purveyors of blissful love, birdlike manifestations of glorious light energies from the astral plane.
-How about yourselves?
 
 #(NEUTRAL_SPACE_HELLO_4)	pkunk004.wav
 I sense that you are cautious.
@@ -111,17 +121,6 @@ Children of the Cosmic Light
 Hobgoblins of Joy
 Seekers of Spiritual Truth...
 ... and other neat stuff like that.
-WAIT!... a spirit voice rings within my soul
-it tells me that I must give you something
-something to aid you on your noble quest!
-What, spirit? What must we give this young human?
-Mineral resources?... no. Important secrets?... no. Starships?...
-no. Then what IS it spirit, spit it out!
-What?!... that thing? Are you sure? Okay.
-Here you go, Captain. Take this Clear Spindle.
-It is an ancient and powerful device built by the Precursors hundreds of thousands of years ago.
-What does it do, you ask?
-I haven't the slightest idea.
 
 #(NEUTRAL_HOMEWORLD_HELLO_2)	pkunk014.wav
 Oh jubilation and moderate amounts of spiritual-type ecstasy, our sensitive
@@ -428,7 +427,7 @@ Uh, excuse me if I may be so bold, but exactly why do you want to conquer us?
 #(conquer_because_1)
 I conquer for the greater glory of 
 
-#(NOT_CONQUER_10)	pkunk058.wav
+#(NOT_CONQUER_10)	pkunk059.wav
 Did you say the 
 #(NOT_CONQUER_11)
 ?  We Pkunk have long loved the 
@@ -438,20 +437,20 @@ Did you say the
 #(conquer_because_2)
 It is regrettable, but your resources are needed to fight the war against the Ur-Quan
 
-#(NOT_CONQUER_2)	pkunk061.wav
+#(NOT_CONQUER_2)	pkunk060.wav
 It sounds like a good cause
 but perhaps attacking a peaceful race is not the best way to begin a new, enlightened order.
 
 #(must_conquer)
 Enough! One more word and I will simply open fire. I have come here to conquer you and conquered you shall be.
 
-#(BAD_IDEA)	pkunk062.wav
+#(BAD_IDEA)	pkunk061.wav
 You have chosen unwisely, Captain.
 
 #(no_conquest)
 Oh heck. Let's just forget it. I couldn't hurt you guys.
 
-#(GOOD_IDEA)	pkunk063.wav
+#(GOOD_IDEA)	pkunk062.wav
 When I first looked at you, Captain, I knew that you were an advanced soul.
 I turned to my first officer, Chrupp, and said
 `Chrupp, would you just look at that creature's aura! It's magnificent!'
@@ -468,7 +467,7 @@ Perhaps we should introduce ourselves. I am Captain
 #(we_are_vindicator2)
 .
 
-#(WHY_YOU_HERE)	pkunk064.wav
+#(WHY_YOU_HERE)	pkunk063.wav
 Yes, yes.  We know all that.
 We are not known throughout the galactic sector as powerful psychics for nothing!
 Of course we already know the answer to this next question too, but we enjoy conversation.
@@ -478,7 +477,7 @@ Why have you come here?
 We have come to your homeworld to offer you aid and assistance.
 This vessel and its crew are at your service.
 
-#(NEED_HELP)	pkunk065.wav
+#(NEED_HELP)	pkunk064.wav
 I am forming a psychic link with you.
 I sense that you refer to our conflict with the Ilwrath.
 I sense that you are offering to venture singlehandedly deep into Ilwrath space
@@ -491,7 +490,7 @@ Still, I say thank you, Captain.
 #(we_need_help)
 I have come to ask you for your help in the fight against the Ur-Quan.
 
-#(GIVE_HELP)	pkunk066.wav
+#(GIVE_HELP)	pkunk065.wav
 The fight.  Always the fight.  We Pkunk are Yin and you are Yang.
 I suppose the problem is that the Ur-Quan are a little more Yang than you are.
 Well, be that as it may, we are sympathetic to your concerns.
@@ -501,7 +500,7 @@ We were not always the mystical, aloof and yet caring, enlightened beings that w
 We are on a five year mission, to seek out new life and new civilizations
 to boldly go where no.....well you get the idea.  We're kind of exploring.
 
-#(SENSE_DEEPER_CONFLICT)	pkunk067.wav
+#(SENSE_DEEPER_CONFLICT)	pkunk066.wav
 I sense a deeper reason, a deeper conflict.
 A conflict of immense proportion, a proportion of deeper reason.
 A deeper thing that is not too terribly deep.
@@ -512,7 +511,7 @@ Are you sure there isn't something you want to say to me?
 	"Oh ....uh, no reason.  We thought we'd just take this baby out for a little cruise "
 and would you look at where we ended up.
 
-#(REPRESS)	pkunk068.wav
+#(REPRESS)	pkunk067.wav
 My telepathic sensors are telling me that you are repressing something.
 Repress, repress, repress.  What is is?  Come on.  What is it?  I see a smile.
 You're smiling.  Tell Pkunky the secret.  Come on, nasty alien gonna tell Birdy Pkunky big secret?
@@ -520,7 +519,7 @@ You're smiling.  Tell Pkunky the secret.  Come on, nasty alien gonna tell Birdy 
 #(why_ilwrath_fight)
 This is just my impression, but they seem rather hostile. Why is that?
 
-#(ILWRATH_FIGHT_BECAUSE)	pkunk069.wav
+#(ILWRATH_FIGHT_BECAUSE)	pkunk068.wav
 We have delved most deeply into the dark and greasy heart of the Ilwrath.
 And what do you suppose we found there?
 Well, we found a torpid, vile, malign, odious, spiteful spirit.
@@ -538,7 +537,7 @@ but always do little bad and annoying things to keep from ending up like the Ilw
 #(when_fight_start)
 When was it that they started attacking you?
 
-#(FIGHT_START_WHEN)	pkunk070.wav
+#(FIGHT_START_WHEN)	pkunk069.wav
 When? That's easy.
 It was exactly 27 thousand rotations of the 7th planet in the house of Plarty Fum
 BEFORE the first alignment of the auspicious constellation of Bis Bis
@@ -548,7 +547,7 @@ I guess you would say 8 years ago.
 #(how_goes_fight)
 How are you faring in the fight against them?
 
-#(FIGHT_GOES)	pkunk071.wav
+#(FIGHT_GOES)	pkunk070.wav
 We have calculated that at our present rate of attrition
 we will exist only on the spiritual plane in a matter of a year or so.
 Of course, the physical realm does hold a certain coarse attraction
@@ -559,7 +558,7 @@ We will be somewhat disappointed to have to leave it.
 I seem to be having a little trouble defeating the Ur-Quan Hierarchy.
 Do you have any helpful advice for me?
 
-#(WAR_GOES_1)	pkunk072.wav
+#(WAR_GOES_1)	pkunk071.wav
 Well, not advice exactly, but I can offer you plenty of moral support.
 Also, I can tell you about another dream.  Yes, perhaps I will tell you
 about my dream.  In this dream there was a small creature, fragile
@@ -573,7 +572,7 @@ Come to think of it, it really wasn't much of a dream.
 I would have much preferred Awkky Birdy's dream.
 Anyway just thought I would tell you about that.
 
-#(WAR_GOES_2)	pkunk073.wav
+#(WAR_GOES_2)	pkunk072.wav
 I can only tell you to contemplate the small gobbet stone.
 The stone is spewed forth from the gullet of a Wart Wumpet to land in a moving stream.
 Does a fish swallow the stone? Perhaps, but that is not the point.
@@ -585,10 +584,10 @@ Even the nasty Charg beast cannot defeat a pack of Ibids
 without the help of the help of 7 or 8 Wrinkle Dogs.
 I think you see what I am getting at.
 
-#(WAR_GOES_3)	pkunk074.wav
+#(WAR_GOES_3)	pkunk073.wav
 Avoid being disincarnated before your soul is adequately prepared for the transformation.
 
-#(WAR_GOES_4)	pkunk075.wav
+#(WAR_GOES_4)	pkunk074.wav
 Seek the path of the trumble cart.
 Heavily laden, it rocks and weaves, but does it turn over?
 Only occasionally. You see?\n
@@ -599,7 +598,7 @@ They may be found in supergiant stellar systems.
 #(how_stop_fight)
 Is there any way to stop the Ilwrath?
 
-#(STOP_FIGHT_LIKE_SO)	pkunk076.wav
+#(STOP_FIGHT_LIKE_SO)	pkunk075.wav
 Hmmm. An interesting question.  The answer would be..YES!
 If some benign and loving, yet incredibly destructive and powerful force
 were to simultaneously rip off all of their legs and drop their putrid egg sacs into steaming pools of molten metal
@@ -610,7 +609,7 @@ how could I, when I am filled only with love.
 #(enough_ilwrath)
 Let's talk about something else.
 
-#(OK_ENOUGH_ILWRATH)	pkunk077.wav
+#(OK_ENOUGH_ILWRATH)	pkunk076.wav
 Yes, you're right.  Why dwell on the heinous Ilwrath
 when we could speak of flowers, rainbows, fairies, and crystal magic.
 Did you know, for example, that there is an invisible fairy spirit at this moment sitting on your head
@@ -621,7 +620,7 @@ Nope, they're mysteries!
 #(what_about_history)
 What can you tell us of the history of the Pkunk?
 
-#(ABOUT_HISTORY)	pkunk078.wav
+#(ABOUT_HISTORY)	pkunk077.wav
 Ah. An intelligent question. But where to begin?
 Surely you know that we Pkunk were once one and the same species as the Yehat.
 Yes, it's true. We were once brutal birds of prey, oblivious to the mysteries of crystal magic
@@ -637,7 +636,7 @@ that triggered the Harmonic Oscillations that would lead us to become the enligh
 #(what_about_yehat)
 What about the Yehat? Are you friendly with them?
 
-#(ABOUT_YEHAT)	pkunk079.wav
+#(ABOUT_YEHAT)	pkunk078.wav
 That depends on how you define friendly.
 We love our Yehat brethren, whereas they open fire on our vessels on sight.
 Fortunately, our psychic abilities allow us to sense the deep, abiding love
@@ -649,7 +648,7 @@ as our destiny is fulfilled and we are once again reunited as one people.
 #(what_about_culture)
 What interesting things can you tell us about your culture?
 
-#(ABOUT_CULTURE)	pkunk080.wav
+#(ABOUT_CULTURE)	pkunk079.wav
 Just off the top of my beak, I suppose I would say
 that our culture could be defined as the ultimate unification
 or Oneness if you will
@@ -661,7 +660,7 @@ a culmination of the now essence.
 #(elaborate_culture)
 Do you refer to the Now Essence as an extension of the Cosmic Whole, or as a subset of the totality of Oneness?
 
-#(OK_ELABORATE_CULTURE)	pkunk081.wav
+#(OK_ELABORATE_CULTURE)	pkunk080.wav
 An excellent question. The answer is in itself, an answer, containing the explanation you seek.
 And more!
 Let me just say the revelation includes the mysteries of Pyramid Power
@@ -672,7 +671,7 @@ I'm sorry, but I can be no more specific than that.
 #(what_about_future)
 Is it true that you can really see into the future?
 
-#(ABOUT_FUTURE)	pkunk082.wav
+#(ABOUT_FUTURE)	pkunk081.wav
 Yes it's... uh... wait... a vision comes upon me!
 A shining light -- a crack in the egg!
 A swirling vortex... a tunnel. I see my past lives! Your past lives!
@@ -685,11 +684,11 @@ Soon we shall return. Soon.
 #(enough_about_you)
 I'd love to hear more about your culture, but... the... uh... Oh, would you look at the time. Bye!
 
-#(OK_ENOUGH_ABOUT_US)	pkunk083.wav
+#(OK_ENOUGH_ABOUT_US)	pkunk082.wav
 Yes, you are right. I should be careful not to overwhelm you with my psychic intensities
 Perhaps we could talk something less overwhelming, albeit less interesting.
 
-#(ABOUT_US)	pkunk084.wav
+#(ABOUT_US)	pkunk083.wav
 Not at all, we are after all a fascinating species. Of course, modesty prevents
 me from talking at length, although perhaps if you were to ask me specific
 questions, propriety might be better served.
@@ -703,24 +702,24 @@ Your starfleet has left again, why?
 #(where_fleet_3)
 Please don't tell me your fleet has left again to go to the Yehat!
 
-#(MIGRATING_HOMEWORLD_1)	pkunk085.wav
+#(MIGRATING_HOMEWORLD_1)	pkunk084.wav
 The time has come, Captain, for our reunification with the Yehat.
 We must proceed.
 
-#(MIGRATING_HOMEWORLD_2)	pkunk086.wav
+#(MIGRATING_HOMEWORLD_2)	pkunk085.wav
 We have checked all our chakras and observed our auras.
 We are prepared for the great melding of we Pkunk with our Yehat siblings.
 Rejoice with us, Captain!
 
-#(MIGRATING_HOMEWORLD_3)	pkunk087.wav
+#(MIGRATING_HOMEWORLD_3)	pkunk086.wav
 Twice before we have been dissuaded from returning to our ancestral nest
 from joining our long-lost Yehat brothers and sisters.
 This time we shall not fail.
 
-#(RETURNING_FROM_YEHAT_1)	pkunk088.wav
+#(RETURNING_FROM_YEHAT_1)	pkunk087.wav
 RETURNING FROM YEHAT 1
 
-#(RETURNING_FROM_YEHAT_2)	pkunk089.wav
+#(RETURNING_FROM_YEHAT_2)	pkunk088.wav
 RETURNING FROM YEHAT 2
 
 #(am_worried_1)
@@ -732,18 +731,18 @@ Um..., why don't you wait until next year?
 #(am_worried_3)
 Look. When your ships get to the Yehat, they will be slaughtered. Order them home.
 
-#(DONT_WORRY_1)	pkunk090.wav
+#(DONT_WORRY_1)	pkunk089.wav
 Your concern for our well-being touches us... makes us love you even more.
 Come here, Captain. Give us a hug.
 There. Feel better?
 Can't you see now that we are right, and you are wrong?
 Please don't worry. Everything will turn out all right.
 
-#(DONT_WORRY_2)	pkunk091.wav
+#(DONT_WORRY_2)	pkunk090.wav
 Captain... young, immature, naive Captain. We know what we are doing.
 Trust us.
 
-#(DONT_WORRY_3)	pkunk092.wav
+#(DONT_WORRY_3)	pkunk091.wav
 Perhaps you are right. Maybe this whole thing is a stupid mistake.
 I know what I should do! I should call up all our ships right now and...
 Wait! What was that? What just flew past my window?
@@ -757,7 +756,7 @@ We cannot be moved. Farewell Captain, farewell!
 #(form_alliance)
 We are friendly beings who seek to establish friendly relations with your species.
 
-#(GO_TO_HOMEWORLD)	pkunk093.wav
+#(GO_TO_HOMEWORLD)	pkunk092.wav
 Although we Pkunk have no rank, no pecking order, no arbitrary scheme of dominance
 we do recognize that some of the souls in this universe have lived many lives
 while others are but spiritual tyros.
@@ -770,21 +769,21 @@ Seek those wise birds at our homeworld, at Gamma Krueger I. They have all the an
 #(can_you_help)
 We are dedicated to fighting the Ur-Quan Hierarchy. Can you help us?
 
-#(GO_TO_HOMEWORLD_AGAIN)	pkunk094.wav
+#(GO_TO_HOMEWORLD_AGAIN)	pkunk093.wav
 See the wise ones at our homeworld, Captain.
 Go to Gamma Krueger for your answers.
 
 #(hostile_greeting)
 Hey! Bird-brains! Got any fruit loops? Har-har-har!
 
-#(DONT_BE_HOSTILE)	pkunk095.wav
+#(DONT_BE_HOSTILE)	pkunk094.wav
 Ah, an insult... a sometimes necessary and constructive release of tension.
 Now perhaps you feel better, and we can deal with your real problems.
 
 #(obey)
 You must obey my commands. Fulfill my every whim!
 
-#(NO_OBEY)	pkunk096.wav
+#(NO_OBEY)	pkunk095.wav
 Though you are far too crude and stupid to realize this, Captain
 we ARE fulfilling your every whim, your every desire.
 It is just that you don't know what you really want. We do.
@@ -794,35 +793,35 @@ you wish us to punish you for your arrogance and bellicosity.
 #(neutral_bye_space)
 Duty calls. I must go now.
 
-#(NEUTRAL_GOODBYE_SPACE)	pkunk097.wav
+#(NEUTRAL_GOODBYE_SPACE)	pkunk096.wav
 Yes, by all means, if duty is calling. I'm sure we'll see each other again.
 Perhaps when the stars are aligned in an appropriate configuration. Yes, my
 inner voice is telling me that is correct. When the stars align, Captain...
 
-#(SHIP_GIFT)	pkunk098.wav
+#(SHIP_GIFT)	pkunk097.wav
 Since you are our friends
 our good friends!
 we want to give you a gift... several Pkunk Fury starships, fully crewed.
 If you return in a year's time, perhaps we will be able to give you some more.
 
-#(NO_ROOM)	pkunk099.wav
+#(NO_ROOM)	pkunk098.wav
 Alas, you do not possess sufficient room in your fleet for all of the ships we wish to give you.
 Ah, well. We shall have to do the best we can.
 
 #(friendly_bye_space)
 Adios Pkunkos.
 
-#(FRIENDLY_GOODBYE_SPACE)	pkunk100.wav
+#(FRIENDLY_GOODBYE_SPACE)	pkunk099.wav
 Goodbye Captain. When the crystal spheres once more rotate into harmonic union
 we shall meet again.
 
 #(bye_friendly)
 Goodbye guys. See ya later.
 
-#(GOODBYE_FRIENDLY)	pkunk101.wav
+#(GOODBYE_FRIENDLY)	pkunk100.wav
 Farewell kind human. Return soon.
 
-#(ALMOST_ALLIANCE)	pkunk102.wav
+#(ALMOST_ALLIANCE)	pkunk101.wav
 Let us unite and form an alliance!!
 We will provide you with all of the crew, ships, and resources that you desire.
 We will give you.....wait!  I sense that you are offended by our crass material offer.
@@ -831,13 +830,13 @@ We shall give you what all others could not! The greatest of gifts!  We shall gi
 	"Ah, you are speechless.  Do not talk now.  I can feel the energy connecting us."
 Let us part while the silence remains. Farewell...
 
-#(INIT_NO_ROOM)	pkunk103.wav
+#(INIT_NO_ROOM)	pkunk102.wav
 but wait!  before we go, we would give you a small token of our love
 4 of our meager ships, fully crewed
 but alas, you do not possess sufficient room in your fleet for all of the ships we wish to give you.
 Ah, well. Such are the vagaries of life...
 
-#(INIT_SHIP_GIFT)	pkunk104.wav
+#(INIT_SHIP_GIFT)	pkunk103.wav
 but wait!  before we go, as a small token of our love
 not as a material gift, mind you, we give you 4 of our meager ships, fully crewed.
 Good luck!
@@ -845,13 +844,13 @@ Good luck!
 #(suit_yourself)
 Suit yourself
 
-#(GOODBYE_MIGRATION)	pkunk105.wav
+#(GOODBYE_MIGRATION)	pkunk104.wav
 And now we return to the golden path. Our Yehat brethren await.
 
 #(what_about_ilwrath)
 Would you mind if I asked you a few things about the Ilwrath?
 
-#(ABOUT_ILWRATH)	pkunk106.wav
+#(ABOUT_ILWRATH)	pkunk105.wav
 Why should we mind? We bear the spidery creatures no ill will.
 Without darkness there is no light. Without death there is no birth
 and thanks to the Ilwrath there's lots of birth.
@@ -859,14 +858,14 @@ and thanks to the Ilwrath there's lots of birth.
 #(whats_up_space)
 What's news?
 
-#(SHIPS_AT_HOME)	pkunk107.wav
+#(SHIPS_AT_HOME)	pkunk106.wav
 If there was such a thing as a coincidence I would say
 `What a coincidence that you should ask!'
 As it is, everything is for a reason. Clearly you ask because you are meant to ask.
 Just as I am meant to tell you that there are several fine Pkunk ships
 waiting for you at our homeworld.  Use them in good health, and with love.
 
-#(GENERAL_INFO_SPACE_1)	pkunk108.wav
+#(GENERAL_INFO_SPACE_1)	pkunk107.wav
 Ahh, vague omens and mysterious portents.  Tangled webs of fate
 intertwined with the branches of destiny, blown by the capricious winds of happenstance.
 News, news....uh, actually there is some news!
@@ -876,7 +875,7 @@ We don't know who this hoax would have been perpetrated by
 but it seems someone has used these fictitious gods
 to send the Ilwrath down on us.
 
-#(GENERAL_INFO_SPACE_2)	pkunk109.wav
+#(GENERAL_INFO_SPACE_2)	pkunk108.wav
 Well, we are quite sure now that Dogar and Kazon are a hoax.
 Aside from never having seen them on the 4th astral plane where most gods like to hang out
 we also recently went back and listened carefully to a recording of one of their broadcasts
@@ -885,7 +884,7 @@ We were able to detect some giggling at the end of the message.
 Someone out there is playing some kind of joke on the Ilwrath. Or is it a joke on us?
 We're not quite sure, but it may be awhile before we can look back and fully appreciate the humor.
 
-#(GENERAL_INFO_SPACE_3)	pkunk110.wav
+#(GENERAL_INFO_SPACE_3)	pkunk109.wav
 News? Here is news.  Did you know that the lovely clear spindle which we gave you
 is actually part of a larger device which has two other pieces?
 The function and origin of this alien artifact are unknown to us
@@ -893,7 +892,7 @@ but we thought that the charming little spindle, on its own, made quite a handy 
 not to mention a catchy conversation starter. So clear and so pretty.
 We hope you like it.
 
-#(GENERAL_INFO_SPACE_4)	pkunk111.wav
+#(GENERAL_INFO_SPACE_4)	pkunk110.wav
 I believe we may have mentioned that the clear spindle thing-a-ma-jig
 has two other pieces that fit together with it.
 Just the other day one of our psychics, while in the Trance of Plam Prikky
@@ -904,7 +903,7 @@ grasped by the greedy hands of a Foul Race deep in Persei. The sphere waits~
 In a tiny voice it calls for its two mates.
 `Where are you, where are you, Clear Spindle Thing-a-ma-jig and other thing?'
 
-#(GENERAL_INFO_SPACE_5)	pkunk112.wav
+#(GENERAL_INFO_SPACE_5)	pkunk111.wav
 Back to the Clear Spindle business, we have had another telepathic revelation regarding this.
 This time, an old and venerable Pkunk named Awkky Birdy has had a dream sent to him by his spirit guide, Bosco.
 In the dream, Awkky Birdy is surrounded by a sea of young Pkunk Females
@@ -917,22 +916,22 @@ In a fit of ecstasy he screams out the word, `DRACONIS!!!!'
 and then the lights dim, and with a smile on his face Awkky Birdy sleeps.
 Quite a dream, eh?
 
-#(GENERAL_INFO_SPACE_6)	pkunk113.wav
+#(GENERAL_INFO_SPACE_6)	pkunk112.wav
 Yes.  We have good news!  Well, that is to say, we have no news.
 But it is good news.
 Hmmmmm.
 This is your expression, human Captain. We Pkunk do not pretend to understand it.
 
-#(GENERAL_INFO_SPACE_7)	pkunk114.wav
+#(GENERAL_INFO_SPACE_7)	pkunk113.wav
 I am afraid that our good, no-news is still the same.
 
-#(GENERAL_INFO_SPACE_8)	pkunk115.wav
+#(GENERAL_INFO_SPACE_8)	pkunk114.wav
 I am afraid that our good, no-news is still the same.
 
 #(tell_my_fortune)
 I've always wanted my fortune told.  Would you mind?
 
-#(FORTUNE_IS_1)	pkunk116.wav
+#(FORTUNE_IS_1)	pkunk115.wav
 Not at all. You are an open book to me.
 Ahhh, how quaint your little life is. So refreshing.
 Anyway, I see in your future, that you will be jumping across the galaxy
@@ -941,7 +940,7 @@ This ability you shall receive from a mysterious, and yet somehow I sense, lovab
 called ArilouLaleelay, or LalilouArilay, or LoopylooHappyday, or something like that.
 Also I sense that you will have 14 children, and die at an early age.
 
-#(FORTUNE_IS_2)	pkunk117.wav
+#(FORTUNE_IS_2)	pkunk116.wav
 Let me call upon the spirits of light. Spirits of Light! Hellooo!
 Spirits!! Ah yes, I feel them approaching. Spirits of Liiiight
 what is in store for this strange but not altogether unpleasing alien creature?....
@@ -953,7 +952,7 @@ but becuase you made friends with a certain birdlike race
 they will come to help you at the last minuuuute.
 Ah, the trance is past.
 
-#(FORTUNE_IS_3)	pkunk118.wav
+#(FORTUNE_IS_3)	pkunk117.wav
 I gaze into the all that will be.
 I follow the tiny thread that is you, Captain.
 I see shining rocks that sleep. They are annoyed.
@@ -961,7 +960,7 @@ Someone is making a great explosion of light. They awaken!
 They are powerful. They face the one who disturbed them.
 Captain, that one wears your face.
 
-#(FORTUNE_IS_4)	pkunk119.wav
+#(FORTUNE_IS_4)	pkunk118.wav
 Through the haze I see beautiful humanoid women
 who have been driven from their home.
 I see a leg moving back and forth. I see their home planet.
@@ -972,7 +971,7 @@ She is smiling back. I see you and the woman... oh... um
 I didn't know humans could do that!
 The vision ends there.
 
-#(FORTUNE_IS_5)	pkunk120.wav
+#(FORTUNE_IS_5)	pkunk119.wav
 I'm afraid that the spirits haven't been particularly cooperative in the past few days.
 As a matter of fact, our last successful contact with the world beyond
 was when my cousin Braky channeled an angry 5000 year-old warrior named Rumdumdaddy.
@@ -983,16 +982,16 @@ Through Braky's voice, Rumdumdaddy complained that we should all be more respect
 and stop hassling them all the time, just leave them alone.
 Ever since then, we can't get squat out of the spirit world.
 
-#(FORTUNE_IS_6)	pkunk121.wav
+#(FORTUNE_IS_6)	pkunk120.wav
 Sorry, no can do. The spirits still refuse to answer our calls
 I think they're on strike or something.
 
-#(FORTUNE_IS_7)	pkunk122.wav
+#(FORTUNE_IS_7)	pkunk121.wav
 We have finally made contact with the `other side'
 and I'm unhappy to say that the terms we've negotiated with them
 don't really allow for any more looking into your future.
 Sorry.
 
-#(FORTUNE_IS_8)	pkunk123.wav
+#(FORTUNE_IS_8)	pkunk122.wav
 We have exhausted our capacity to foretell your future, Captain. Sorry.
 
