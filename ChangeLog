@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Action names are properly null-terminated, stops a crash for some
+  bad keys.cfg types -Michael
 - added '--addon <addon>' - SvdB
 - keys.cfg from incompatible control scheme version is now renamed
   automatically to keys.old -Mika

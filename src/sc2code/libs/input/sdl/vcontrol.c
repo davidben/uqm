@@ -1075,13 +1075,13 @@ _consume_idname (parse_state *state)
 	state->token[index] = 0;  /* remove trailing colon */
 
 	result = _name2target (state->token);
-	_next_token (state);
 
 	if (!result)
 	{
 		fprintf (stderr, "VControl: Illegal command type '%s' on config file line %d\n", state->token, state->linenum);
 		state->error = 1;
 	}
+	_next_token (state);
 	return result;
 }
 

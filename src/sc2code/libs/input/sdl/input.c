@@ -73,7 +73,8 @@ static VControl_NameBinding control_names[] = {
 	{ "Pause", (int *)&ImmediateInputState.pause },
 	{ "Exit", (int *)&ImmediateInputState.exit },
 	{ "Abort", (int *)&ImmediateInputState.abort },
-	{ "Debug", (int *)&ImmediateInputState.debug }};
+	{ "Debug", (int *)&ImmediateInputState.debug },
+        { "Illegal", NULL}};
 
 
 static void
