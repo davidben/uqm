@@ -4,11 +4,11 @@ on a Linux or BSD platform.
 First, make sure all the required libraries are installed.
 They are listed in the file INSTALL in the top dir.
 
-Run './build sc2'
+Run './build.sh sc2'
 Change settings in the menu if you want.
 
 That's all.
 
-You can use './build sc2 config' to reconfigure; you might need to do
-'./build sc2 depend' afterwards.
+You can use './build.sh sc2 config' to reconfigure; you might need to do
+'./build.sh sc2 depend' afterwards.
 
