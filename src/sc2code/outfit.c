@@ -127,7 +127,6 @@ RedistributeFuel (void)
 #define LANDER_X 24
 #define LANDER_Y 67
 #define LANDER_WIDTH 15
-#define ESCAPEPOD_X 13
 
 static void
 DisplayLanders (PMENU_STATE pMS)
@@ -137,8 +136,7 @@ DisplayLanders (PMENU_STATE pMS)
 	s.frame = pMS->ModuleFrame;
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 	{
-		s.origin.x = ESCAPEPOD_X;
-		s.origin.y = 0;
+		s.origin.x = s.origin.y = 0;
 		s.frame = DecFrameIndex (s.frame);
 		DrawStamp (&s);
 	}
