@@ -74,7 +74,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		fprintf (stderr, "Couldn't set %ix%ix%i video mode: %s\n",
 			ScreenWidthActual, ScreenHeightActual, bpp,
 			SDL_GetError ());
-		exit(-1);
+		return -1;
 	}
 	else
 	{
@@ -89,7 +89,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	if (test_extra == NULL)
 	{
 		fprintf (stderr, "Couldn't create back buffer: %s\n", SDL_GetError());
-		exit(-1);
+		return -1;
 	}
 
 	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
@@ -127,7 +127,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	{
 		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
 			SDL_Video->format->BytesPerPixel,SDL_Screen->format->BytesPerPixel);
-		exit(-1);
+		return -1;
 	}
 
 	return 0;
@@ -154,7 +154,11 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
+	if (TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp))
+	{
+		fprintf (stderr, "Could not initialize video: no fallback at start of program!\n");
+		exit (-1);
+	}
 
 	// pre-compute the RGB->YUV transformations
 	Scale_PrepYUV();

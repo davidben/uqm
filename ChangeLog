@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed segfault when shutting down because video could not be initialized 
+  (bug #683), - Michael
 - Fixed crash when restarting Sa-Matra battle after abort (bug #700) -Alex
 - Some cleanups, enabling successful build with GCC 4 (bug #710),
   mostly from Ville Skytt√ - SvdB

@@ -121,8 +121,6 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit(-1);
 	}
 
-	atexit (TFB_UninitGraphics);
-
 	GfxFlags = flags;
 
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
@@ -155,6 +153,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	RenderingCond = CreateCondVar ("DCQ empty",
 			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+
+	atexit (TFB_UninitGraphics);
 
 	return 0;
 }

@@ -101,6 +101,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	videomode_flags = SDL_OPENGL;
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		videomode_flags |= SDL_FULLSCREEN;
+	videomode_flags |= SDL_ANYFORMAT;
 
 	SDL_Video = SDL_SetVideoMode (ScreenWidthActual, ScreenHeightActual, 
 		bpp, videomode_flags);
@@ -109,7 +110,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		fprintf (stderr, "Couldn't set OpenGL %ix%ix%i video mode: %s\n",
 				ScreenWidthActual, ScreenHeightActual, bpp,
 				SDL_GetError ());
-		exit (-1);
+		return -1;
 	}
 	else
 	{
@@ -135,7 +136,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		if (scaled_display == NULL)
 		{
 			fprintf (stderr, "Couldn't create scaled_display: %s\n", SDL_GetError());
-			exit(-1);
+			return -1;
 		}
 		if (scaled_transition)
 		{
@@ -147,7 +148,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		if (scaled_transition == NULL)
 		{
 			fprintf (stderr, "Couldn't create scaled_transition: %s\n", SDL_GetError());
-			exit(-1);
+			return -1;
 		}
 
 		texture_width = 1024;
@@ -169,7 +170,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	if (format_conv_surf == NULL)
 	{
 		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
-		exit(-1);
+		return -1;
 	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR ||
@@ -234,7 +235,11 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	TFB_GL_ConfigureVideo (driver, flags, width, height, bpp);
+	if (TFB_GL_ConfigureVideo (driver, flags, width, height, bpp))
+	{
+		fprintf (stderr, "Could not initialize video: no fallback at start of program!\n");
+		exit (-1);
+	}	 
 
 	// pre-compute the RGB->YUV transformations
 	Scale_PrepYUV();
