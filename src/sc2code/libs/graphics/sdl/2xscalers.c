@@ -2476,7 +2476,7 @@ Scale_BlendPixels_bilinear (BLEND_PARAMS bp, Uint32* p, const Uint32* w)
 // bilinear scaling to 2x
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
-	int x, y, i = 0, j;
+	int x, y, j = 0;
 	const int w = dst->w, h = dst->h;
 	int drx, dry;
 	int xend, yend;
@@ -2500,7 +2500,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	xend = 2 * (region->x + region->w);
 	yend = 2 * (region->y + region->h);
 	dsrc = src->w - region->w;
-	ddst = dst->w - 2 * region->w;
+	ddst = 2 * dst->w - 2 * region->w;
 
 	// precompute the blending masks and shifts
 	Scale_CalcChannelMasks (fmt, 16, &blend16);
@@ -2512,7 +2512,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 	case 2:
 	{
-		Uint16 *src_p = (Uint16 *) src->pixels, *src_p2;
+		Uint16 *src_p = (Uint16 *) src->pixels;
 		Uint16 *dst_p = (Uint16 *) dst->pixels;
 		Uint32 p[4];
 
@@ -2520,11 +2520,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; ++y, dst_p += ddst)
+		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
 		{
-			src_p2 = src_p;
-			j = i;
-
 			p[0] = src_p[0];
 			if (y < h - 2)
 				p[2] = src_p[src->w];
@@ -2533,7 +2530,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 			for (x = drx; x < xend; ++x, ++dst_p)
 			{
-				if (j == i)
+				if (j == 0)
 				{
 					if (y < h - 2)
 					{
@@ -2562,32 +2559,27 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[j]
 						);
 
-				if (j & 2)
+				*(dst_p + w) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j + 1]
+						);
+
+				if (j == 2)
 				{
-					j = i;
+					j = 0;
 					src_p++;
 					p[0] = p[1];
 					p[2] = p[3];
 				}
 				else
-				{
-					j = i | 2;
-				}
+					j = 2;
 			}
-
-			if (!i)
-				src_p = src_p2;
-			else
-				src_p += dsrc;
-
-			i = !i;
 		}
 
 		break;
 	}
 	case 3:
 	{
-		PIXEL_24BIT *src_p = (PIXEL_24BIT *) src->pixels, *src_p2;
+		PIXEL_24BIT *src_p = (PIXEL_24BIT *) src->pixels;
 		PIXEL_24BIT *dst_p = (PIXEL_24BIT *) dst->pixels;
 		Uint32 p[4];
 
@@ -2595,11 +2587,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; ++y, dst_p += ddst)
+		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
 		{
-			src_p2 = src_p;
-			j = i;
-
 			p[0] = GET_PIX_24BIT (src_p);
 			if (y < h - 2)
 				p[2] = GET_PIX_24BIT (src_p + src->w);
@@ -2608,7 +2597,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 			for (x = drx; x < xend; ++x, ++dst_p)
 			{
-				if (j == i)
+				if (j == 0)
 				{
 					if (y < h - 2)
 					{
@@ -2637,32 +2626,27 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[j]
 						));
 
-				if (j & 2)
+				SET_PIX_24BIT (dst_p + w, Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j + 1]
+						));
+
+				if (j == 2)
 				{
-					j = i;
+					j = 0;
 					src_p++;
 					p[0] = p[1];
 					p[2] = p[3];
 				}
 				else
-				{
-					j = i | 2;
-				}
+					j = 2;
 			}
-
-			if (!i)
-				src_p = src_p2;
-			else
-				src_p += dsrc;
-
-			i = !i;
 		}
 
 		break;
 	}
 	case 4:
 	{
-		Uint32 *src_p = (Uint32 *) src->pixels, *src_p2;
+		Uint32 *src_p = (Uint32 *) src->pixels;
 		Uint32 *dst_p = (Uint32 *) dst->pixels;
 		Uint32 p[4];
 
@@ -2670,11 +2654,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		src_p += src->w * region->y + region->x;
 		dst_p += (dst->w * region->y + region->x) * 2;
 
-		for (y = dry; y < yend; ++y, dst_p += ddst)
+		for (y = dry; y < yend; y += 2, dst_p += ddst, src_p += dsrc)
 		{
-			src_p2 = src_p;
-			j = i;
-
 			p[0] = src_p[0];
 			if (y < h - 2)
 				p[2] = src_p[src->w];
@@ -2683,7 +2664,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 			for (x = drx; x < xend; ++x, ++dst_p)
 			{
-				if (j == i)
+				if (j == 0)
 				{
 					if (y < h - 2)
 					{
@@ -2711,26 +2692,21 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				*dst_p = Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[j]
 						);
-				
-				if (j & 2)
+
+				*(dst_p + w) = Scale_BlendPixels_bilinear (
+						blend16, p, bilinear_table[j + 1]
+						);
+
+				if (j == 2)
 				{
-					j = i;
+					j = 0;
 					src_p++;
 					p[0] = p[1];
 					p[2] = p[3];
 				}
 				else
-				{
-					j = i | 2;
-				}
+					j = 2;
 			}
-
-			if (!i)
-				src_p = src_p2;
-			else
-				src_p += dsrc;
-
-			i = !i;
 		}
 
 		break;
