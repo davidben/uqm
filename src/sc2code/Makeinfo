@@ -8,5 +8,5 @@ uqm_CFILES="battle.c border.c build.c cleanup.c clock.c collide.c comm.c
 		pickship.c plandata.c process.c restart.c save.c settings.c
 		setup.c ship.c shipstat.c shipyard.c sis.c starbase.c
 		starcon.c starmap.c state.c status.c tactrans.c
-		trans.c utils.c velocity.c weapon.c"
+		trans.c util.c velocity.c weapon.c"
 

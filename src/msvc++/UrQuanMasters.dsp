@@ -1035,6 +1035,14 @@ SOURCE=..\sc2code\libs\uio\uioutils.c
 
 SOURCE=..\sc2code\libs\uio\uioutils.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\utils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\utils.h
+# End Source File
 # Begin Group "stdio"
 
 # PROP Default_Filter ""
@@ -3531,7 +3539,7 @@ SOURCE=..\sc2code\units.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\utils.c
+SOURCE=..\sc2code\util.c
 # End Source File
 # Begin Source File
 
