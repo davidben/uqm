@@ -70,6 +70,9 @@ Making changes:
   really have to.
 - No shortcuts. Don't assume anything about user input (like the length),
   and check the return values of functions that may fail.
+- Your code shouldn't cause any compile-time or runtime-warnings. We know
+  the current source is far from warning-free, but those should be removed
+  eventually and we don't want to make it worse.
 
 Making the patches:
 - One issue per patch.
