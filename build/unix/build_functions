@@ -220,8 +220,8 @@ mkdirhier() {
 		REST="${REST#*/}"
 		if [ ! -d "$DIR" ]; then
 			mkdir "$DIR"
-			[ -n "$MODE" ] && chmod "$MODE" -- "$DIR"
-			[ -n "$OWNER" ] && chown "$OWNER" -- "$DIR"
+			[ -n "$MODE" ] && chmod "$MODE" "$DIR"
+			[ -n "$OWNER" ] && chown "$OWNER" "$DIR"
 		fi
 		DIR="${DIR}/"
 	done
