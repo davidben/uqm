@@ -153,6 +153,11 @@ PutPixelFn putpixel_for(SDL_Surface *surface)
 void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, SDL_Surface *surface)
 {
 	int d, x, y, ax, ay, sx, sy, dx, dy;
+	SDL_Rect r;
+
+	SDL_GetClipRect (surface, &r);
+	if (!clip_line (&x1, &y1, &x2, &y2, &r))
+		return; // line is completely outside clipping rectangle
 
 	dx = x2-x1;
 	ax = ((dx < 0) ? -dx : dx) << 1;
@@ -192,36 +197,95 @@ void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, SDL_Sur
 	}
 }
 
-// replaces all non-alpha pixels by color
-void replace_color (Uint32 color, SDL_Surface *surface)
+
+// Clips line against rectangle using Cohen-Sutherland algorithm
+
+static enum {C_TOP = 0x1, C_BOTTOM = 0x2, C_RIGHT = 0x4, C_LEFT = 0x8};
+
+static int
+compute_code (float x, float y, float xmin, float ymin, float xmax, float ymax)
 {
-	int x,y,w,h;
-	Uint32 p;
-	Uint8 r,g,b,a;
-	GetPixelFn getpix;
-	PutPixelFn putpix;
+	int c = 0;
+	if (y > ymax)
+		c |= C_TOP;
+	else if (y < ymin)
+		c |= C_BOTTOM;
+	if (x > xmax)
+		c |= C_RIGHT;
+	else if (x < xmin)
+		c |= C_LEFT;
+	return c;
+}
 
-	getpix = getpixel_for (surface);
-	putpix = putpixel_for (surface);
+int
+clip_line (int *lx1, int *ly1, int *lx2, int *ly2, SDL_Rect *r)
+{
+	int C0, C1, C;
+	float x, y, x0, y0, x1, y1, xmin, ymin, xmax, ymax;
 
-	SDL_LockSurface(surface);
+	x0 = (float)*lx1;
+	y0 = (float)*ly1;
+	x1 = (float)*lx2;
+	y1 = (float)*ly2;
 
-	w = surface->w;
-	h = surface->h;
+	xmin = (float)r->x;
+	ymin = (float)r->y;
+	xmax = (float)r->x + r->w - 1;
+	ymax = (float)r->y + r->h - 1;
 
-	for (y=0;y<h;++y)
-	{
-		for (x=0;x<w;++x)
+	C0 = compute_code (x0, y0, xmin, ymin, xmax, ymax);
+	C1 = compute_code (x1, y1, xmin, ymin, xmax, ymax);
+
+	for (;;) {
+		/* trivial accept: both ends in rectangle */
+		if ((C0 | C1) == 0)
 		{
-			p = getpix (surface,x,y);
-			SDL_GetRGBA (p, surface->format, &r, &g, &b, &a);
-			
-			if (a)
-				putpix (surface,x,y,color);
+			*lx1 = (int)x0;
+			*ly1 = (int)y0;
+			*lx2 = (int)x1;
+			*ly2 = (int)y1;
+			return 1;
+		}
+
+		/* trivial reject: both ends on the external side of the rectangle */
+		if ((C0 & C1) != 0)
+			return 0;
+
+		/* normal case: clip end outside rectangle */
+		C = C0 ? C0 : C1;
+		if (C & C_TOP)
+		{
+			x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+			y = ymax;
+		}
+		else if (C & C_BOTTOM)
+		{
+			x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+			y = ymin;
+		}
+		else if (C & C_RIGHT)
+		{
+			x = xmax;
+			y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+		}
+		else
+		{
+			x = xmin;
+			y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+		}
+
+		/* set new end point and iterate */
+		if (C == C0)
+		{
+			x0 = x; y0 = y;
+			C0 = compute_code (x0, y0, xmin, ymin, xmax, ymax);
+		} 
+		else
+		{
+			x1 = x; y1 = y;
+			C1 = compute_code (x1, y1, xmin, ymin, xmax, ymax);
 		}
 	}
-
-	SDL_UnlockSurface(surface);
 }
 
 #endif

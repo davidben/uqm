@@ -29,7 +29,5 @@ PutPixelFn putpixel_for(SDL_Surface *surface);
 
 void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, 
 		  SDL_Surface *surface);
-
-void replace_color (Uint32 color, SDL_Surface *surface);
-
+int clip_line(int *lx1, int *ly1, int *lx2, int *ly2, SDL_Rect *r);
 #endif

@@ -10,38 +10,10 @@ TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Ca
 {
 	Uint32 color;
 	PutPixelFn screen_plot;
-	SDL_Rect rect;
 	
 	screen_plot = putpixel_for (target);
 	color = SDL_MapRGB (((NativeCanvas) target)->format, r, g, b);
 
-	SDL_GetClipRect((NativeCanvas) target, &rect);
-				
-	/* Danger, Will Robinson!  This code
-	   looks VERY suspicious.  It will end
-	   up changing the slope of the
-	   line! */
-
-	if (x1 < rect.x)
-		x1 = rect.x;
-	else if (x1 > rect.x + rect.w)
-		x1 = rect.x + rect.w;
-	
-	if (x2 < rect.x)
-		x2 = rect.x;
-	else if (x2 > rect.x + rect.w)
-		x2 = rect.x + rect.w;
-	
-	if (y1 < rect.y)
-		y1 = rect.y;
-	else if (y1 > rect.y + rect.h)
-		y1 = rect.y + rect.h;
-	
-	if (y2 < rect.y)
-		y2 = rect.y;
-	else if (y2 > rect.y + rect.h)
-		y2 = rect.y + rect.h;
-	
 	SDL_LockSurface ((NativeCanvas) target);
 	line (x1, y1, x2, y2, color, screen_plot, (NativeCanvas) target);
 	SDL_UnlockSurface ((NativeCanvas) target);
