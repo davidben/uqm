@@ -282,7 +282,7 @@ initKeyConfig(void) {
 	
 	cb = snprintf (userFile, PATH_MAX, "%skeys.cfg", configDir);
 	assert (cb != -1);
-	// strlen (configDir) <= PATH_MAX - 13
+			// Verified before: strlen (configDir) <= PATH_MAX - 13
 	
 	if (fileExists (userFile)) {
 		fp = res_OpenResFile (userFile, "rt");
