@@ -1,0 +1,41 @@
+The resource files the resource system in SC2 uses, comes in two flavours.
+There are 'packaged' files, which contain the data in the file itself,
+and 'non-packaged' (index) files, which only point to other files.
+The internal formats are described in pkgformat, and are mostly the same.
+
+A resource file is opened by a calling OpenResFile(), after which a
+MEM_HANDLE to a resource can be acquired from it by calling GetResource().
+
+The argument of GetResource() is an integer value specifying the resource.
+There are defines for this defined in (files included from) the various
+resinst.h file. The defines are unique to a resource file.
+A resource id can be something like this: 0x00400002
+Bits 21-31 specify the package. (resources are grouped together in a
+		resource file in packages) (a number >= 0).
+Bits 0-7 specify the resource type of the resource (a number >= 1).
+Bits 8-20 specify the instance number (the number of the resource of a
+		type in a package) (a number >= 0).
+
+The resource type is a number. What kind of resource that actually is,
+is not specified in the package. The program registers functions for
+loading data of a specific type number, by calling InitResTypeVectors().
+The types used in the star control source are the following (their numbers
+may vary):
+KEY_CONFIG - keyboard configuration (not used in the 3do packages)
+GFXRES - graphics data
+FONTRES - font data
+STRTAB - string table
+SNDRES - waveform audio
+MUSICRES - music
+RES_INDEX - a resource 'file'
+CODE - identifies code to use (the resouce file itself does not
+		contain any code)
+
+The resource files, resinst.h, restypes.h, and respkg.h files were
+originally generated from information from the .res and .typ files. The
+resource library should be compiled with 'PACKAGING' defined for this.
+
+
+
+Initial version of this file 2002-10-23 by Serge van den Boom.
+
