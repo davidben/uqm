@@ -380,9 +380,9 @@ Attention human!
 This broadcast is to inform you of your defeat.
 We, the Kohr-Ah, have destroyed all the sentient species in this region of space
 and now we have eliminated the Starbase orbiting your planet Earth as well.
-Your efforts to resist us are futile. 
+Your efforts to resist us are futile.
 You are defeated!
-  
+
 #(OUT_TAKES) black045.ogg
 We are the the Ur-Quan Kohr-Ah...
 ...The followers of the Path of Now and Forever!
