@@ -7,10 +7,10 @@ will probably work better anyway)
 
 The following additional tools are required:
 NSIS 2.0b1 or newer: nsis.sourceforge.net
-NSIS 'ZipDLL' http://nsis.sourceforge.net/archive/download.php?file=ZipDLL.zip
-NSIS 'unTGZ' http://nsis.sourceforge.net/archive/viewpage.php?pageid=84
+NSIS 'ZipDLL' http://nsis.sourceforge.net/archive/nsisweb.php?page=33
 
 Optionally:
+NSIS 'unTGZ' http://nsis.sourceforge.net/archive/viewpage.php?pageid=84
 upx 1.90 or newer: http://upx.sourceforge.net/#unstable
 resource hacker: http://www.users.on.net/johnson/resourcehacker/
 
