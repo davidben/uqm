@@ -67,7 +67,7 @@ DrawMeleeFrame (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	r.corner.x = PICK_X_OFFS - 3;
 	r.corner.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
 
-	wsprintf (buf, "%d", pMeleeState->star_bucks[which_player]);
+	wsprintf (buf, "%d", pMeleeState->star_bucks[1 - which_player]);
 	t.baseline.x = r.corner.x + 4;
 	t.baseline.y = r.corner.y + 7;
 	t.align = ALIGN_LEFT;
