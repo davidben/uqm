@@ -516,7 +516,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	if (NewState <= end_index - beg_index)
 		s.frame = SetAbsFrameIndex (PlayFrame, beg_index + NewState);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
 	s.origin.x = RADAR_X - r.corner.x;
@@ -631,6 +631,6 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 			&& flash_rect.extent.height == RADAR_HEIGHT)
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
 	SetContext (OldContext);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 

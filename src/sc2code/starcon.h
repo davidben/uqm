@@ -163,7 +163,7 @@ extern BOOLEAN PagingEnabled;
 extern FRAME ActivityFrame;
 extern SOUND MenuSounds, GameSounds;
 extern QUEUE race_q[NUM_PLAYERS];
-extern Semaphore GraphicsSem;
+extern CrossThreadMutex GraphicsLock;
 extern CondVar RenderingCond;
 extern STRING GameStrings;
 

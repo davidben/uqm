@@ -94,7 +94,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	last_c = *pStr;
 
 	Sleepy = TRUE;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	FlushInput ();
 	goto InitPageCell;
@@ -148,9 +148,9 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						font_DrawText (&t);
 					else
 					{
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						font_DrawText (&t);
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 
 						PlaySound (ReadOutSounds, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 
@@ -174,7 +174,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 							else if (AnyButtonPress (TRUE))
 							{
 								Sleepy = FALSE;
-								SetSemaphore (GraphicsSem);
+								LockCrossThreadMutex (GraphicsLock);
 								BatchGraphics ();
 								break;
 							}
@@ -198,7 +198,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			if (!Sleepy)
 			{
 				UnbatchGraphics ();
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 			}
 
 			if (WaitAnyButtonOrQuit (TRUE))
@@ -210,17 +210,17 @@ InitPageCell:
 			row_cells = 0;
 			if (StrLen)
 			{
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				if (!Sleepy)
 					BatchGraphics ();
 				ClearReportArea();
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0, 0x1F, 0), 0xFF));
 				if (Sleepy)
-					ClearSemaphore (GraphicsSem);
+					UnlockCrossThreadMutex (GraphicsLock);
 			}
 		}
 	}
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 }
 
 void
@@ -268,11 +268,11 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 #endif /* OLD */
 	SetContext (OldContext);
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	FlushInput ();
 	while (AnyButtonPress (TRUE))
 		TaskSwitch ();
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	if (pMenuState)
 		pMenuState->flash_rect0.corner = old_curs;

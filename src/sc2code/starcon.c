@@ -46,7 +46,7 @@ int arilou_gate_task(void* data)
 	counter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
+		LockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 
 		if (GET_GAME_STATE (ARILOU_SPACE) == OPENING)
 		{
@@ -59,11 +59,11 @@ int arilou_gate_task(void* data)
 				counter = 0;
 		}
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
+		UnlockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
 		TimeIn = GetTimeCounter ();
 	}
@@ -980,9 +980,9 @@ sc = _simple_count;
 							(int)_simple_count - (int)sc);
 #endif //TESTING
 
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				SetFlashRect (NULL_PTR, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 
 				LastActivity = GLOBAL (CurrentActivity);
 

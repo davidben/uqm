@@ -92,7 +92,7 @@ int hangar_anim_func (void* data)
 		CONTEXT OldContext;
 		RECT OldClipRect;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		OldContext = SetContext (ScreenContext);
 		GetContextClipRect (&OldClipRect);
 		SetContextClipRect (&ClipRect);
@@ -103,7 +103,7 @@ int hangar_anim_func (void* data)
 		
 		SetContextClipRect (&OldClipRect);
 		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		
 		SleepThreadUntil (TimeIn + ONE_SECOND / HANGAR_ANIM_RATE);
 		TimeIn = GetTimeCounter ();
@@ -207,7 +207,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
@@ -272,7 +272,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	}
 	//SetFlashRect ((PRECT)~0L, (FRAME)0);
 	SetContext (OldContext);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 #define SHIP_WIN_WIDTH 34
@@ -497,7 +497,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 				while (AnyButtonPress (FALSE))
 					TaskSwitch();
 			}
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			OldContext = SetContext (OffScreenContext);
 			SetContextFGFrame (Screen);
 			SetContextBackGroundColor (BLACK_COLOR);
@@ -541,7 +541,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 			UnbatchGraphics ();
 			SetContextClipRect (NULL_PTR);
 			SetContext (OldContext);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 	}
 }
@@ -571,9 +571,9 @@ CrewTransaction (SIZE crew_delta)
 			{
 				GLOBAL (CrewCost) += 2;
 
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 			}
 		}
 		else
@@ -583,9 +583,9 @@ CrewTransaction (SIZE crew_delta)
 			{
 				GLOBAL (CrewCost) -= 2;
 
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 			}
 		}
 		if (!(ActivateStarShip (
@@ -634,7 +634,7 @@ DoModifyShips (PMENU_STATE pMS)
 		pMS->CurState = MAKE_BYTE (0, 0xF);
 		pMS->delta_item = 0;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		goto ChangeFlashRect;
 	}
@@ -710,7 +710,7 @@ DoModifyShips (PMENU_STATE pMS)
 						);
 			}
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 
 #ifdef WANT_SHIP_SPINS
 			if (special)
@@ -745,7 +745,7 @@ DoModifyShips (PMENU_STATE pMS)
 					COUNT Index;
 
 // SetFlashRect (NULL_PTR, (FRAME)0);
-					ClearSemaphore (GraphicsSem);
+					UnlockCrossThreadMutex (GraphicsLock);
 					if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 					{
 						pMS->delta_item = MODIFY_CREW_FLAG;
@@ -771,12 +771,12 @@ DoModifyShips (PMENU_STATE pMS)
 						{
 							ShowCombatShip ((COUNT)pMS->CurState, (SHIP_FRAGMENTPTR)0);
 							//Reset flash rectangle
-							SetSemaphore (GraphicsSem);
+							LockCrossThreadMutex (GraphicsLock);
 							SetFlashRect ((PRECT)~0L, (FRAME)0);
-							ClearSemaphore (GraphicsSem);
+							UnlockCrossThreadMutex (GraphicsLock);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
-							SetSemaphore (GraphicsSem);
+							LockCrossThreadMutex (GraphicsLock);
 							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 									-((int)ShipCost[Index]));
 							r.corner.x = pMS->flash_rect0.corner.x;
@@ -786,7 +786,7 @@ DoModifyShips (PMENU_STATE pMS)
 							r.extent.height = 5;
 							SetContext (SpaceContext);
 							SetFlashRect (&r, (FRAME)0);
-							ClearSemaphore (GraphicsSem);
+							UnlockCrossThreadMutex (GraphicsLock);
 						}
 							
 						return (TRUE);
@@ -814,7 +814,7 @@ DoModifyShips (PMENU_STATE pMS)
 						
 						return (TRUE);
 					}
-					SetSemaphore (GraphicsSem);
+					LockCrossThreadMutex (GraphicsLock);
 					goto ChangeFlashRect;
 				}
 				else if (select || cancel)
@@ -824,9 +824,9 @@ DoModifyShips (PMENU_STATE pMS)
 							&& StarShipPtr->ShipInfo.crew_level == 0)
 					{
 						SetFlashRect (NULL_PTR, (FRAME)0);
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 						ShowCombatShip ((COUNT)pMS->CurState, StarShipPtr);
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 						RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
 						FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
@@ -998,13 +998,13 @@ DoModifyShips (PMENU_STATE pMS)
 			}
 			else if (cancel)
 			{
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 
 				pMS->InputFunc = DoShipyard;
 				DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 
 				return (TRUE);
 			}
@@ -1031,7 +1031,7 @@ ChangeFlashRect:
 				}
 				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 			}
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 	}
 
@@ -1044,7 +1044,7 @@ DrawBluePrint (PMENU_STATE pMS)
 	COUNT num_frames;
 	STAMP s;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	pMS->ModuleFrame = CaptureDrawable (
@@ -1155,7 +1155,7 @@ DrawBluePrint (PMENU_STATE pMS)
 	DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 	pMS->ModuleFrame = 0;
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 void
@@ -1220,16 +1220,16 @@ DoShipyard (PMENU_STATE pMS)
 			BatchGraphics ();
 
 			DrawSISFrame ();
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 3));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			DrawBluePrint (pMS);
 			pMS->ModuleFrame = s.frame;
 
 			DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetContext (SpaceContext);
 			s.origin.x = s.origin.y = 0;
 #ifdef USE_3DO_HANGAR
@@ -1261,12 +1261,12 @@ DoShipyard (PMENU_STATE pMS)
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			BeginHangarAnim (pMS);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENTPTR)0);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 
 		pMS->Initialized = TRUE;
@@ -1275,13 +1275,13 @@ DoShipyard (PMENU_STATE pMS)
 	{
 ExitShipyard:
 		EndHangarAnim (pMS);
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
 		pMS->CurFrame = 0;
 		DestroyColorMap (ReleaseColorMap (pMS->CurString));
 		pMS->CurString = 0;
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		return (FALSE);
 	}
@@ -1298,10 +1298,10 @@ ExitShipyard:
 			if (GameOptions () == 0)
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 			BeginHangarAnim (pMS);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 	}
 	else

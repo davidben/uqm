@@ -74,7 +74,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 		dy += ((zoom_from & 0x02) ? 1 : -1) * dy * (base - scale_amt) / base;
 	}
 
-	//SetSemaphore (GraphicsSem);
+	//LockCrossThreadMutex (GraphicsLock);
 
 	// PauseRotate needs to be checked twice.   It is first
 	// checked at the rotate_planet_task function to bypass
@@ -82,7 +82,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 	// parts of te code.  It is checked here because it is possile
 	// that PauseRotate was set between then and now, and we don't
 	// want too push anything onto the DrawQueue in that case.
-	// If the setSemaphore is moved before the RenderLevelMasks call,
+	// If the LockCrossThreadMutex is moved before the RenderLevelMasks call,
 	// one of the two PauseRotate checks can be removed.
 	//if (((PSOLARSYS_STATE volatile)pSolarSysState)->PauseRotate !=1)
 	{
@@ -103,7 +103,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 		UnbatchGraphics ();
 		SetContext (OldContext);
 	}
-	//ClearSemaphore (GraphicsSem);
+	//UnlockCrossThreadMutex (GraphicsLock);
 	if (scale_amt && scale_amt != base)
 	{
 		GetFrameRect (pFrame[num_frames - 1], zoomr);

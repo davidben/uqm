@@ -47,7 +47,7 @@ FONT StarConFont, MicroFont, TinyFont;
 QUEUE race_q[NUM_PLAYERS];
 SOUND MenuSounds, GameSounds;
 FRAME ActivityFrame, status, flagship_status, misc_data;
-Semaphore GraphicsSem;
+CrossThreadMutex GraphicsLock;
 CondVar RenderingCond;
 STRING GameStrings;
 

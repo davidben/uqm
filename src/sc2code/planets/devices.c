@@ -40,7 +40,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	RECT r;
 	PBYTE pDeviceMap;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	SetContext (StatusContext);
 	SetContextFont (TinyFont);
@@ -174,7 +174,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		font_DrawText (&t);
 	}
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static UWORD
@@ -450,7 +450,7 @@ DoManipulateDevices (PMENU_STATE pMS)
 	{
 		UWORD status;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		status = DeviceFailed (
 				((PBYTE)pMS->CurFrame)[pMS->CurState - 1]
 				);
@@ -461,7 +461,7 @@ DoManipulateDevices (PMENU_STATE pMS)
 		else if (HIBYTE (status) == 0)
 			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3),
 					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		return ((BOOLEAN)NewState);
 	}
@@ -634,9 +634,9 @@ Devices (PMENU_STATE pMS)
 		if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
 				&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			ClearSISRect (DRAW_SIS_DISPLAY);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			if (!GET_GAME_STATE (PORTAL_COUNTER)
 					&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)

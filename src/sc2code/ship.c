@@ -200,10 +200,10 @@ ship_preprocess (PELEMENT ElementPtr)
 			InitIntersectStartPoint (ElementPtr);
 			InitIntersectEndPoint (ElementPtr);
 
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			ResumeGameClock ();
 			SetGameClockRate (HYPERSPACE_CLOCK_RATE);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 
 			if (hyper_transition (ElementPtr))
 				return;

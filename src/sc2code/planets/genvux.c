@@ -180,9 +180,9 @@ GenerateVUX (BYTE control)
 							|| !GET_GAME_STATE (ZEX_IS_DEAD))
 						break;
 
-					SetSemaphore (GraphicsSem);
+					LockCrossThreadMutex (GraphicsLock);
 					RepairSISBorder ();
-					ClearSemaphore (GraphicsSem);
+					UnlockCrossThreadMutex (GraphicsLock);
 				}
 			}
 

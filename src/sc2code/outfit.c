@@ -220,7 +220,7 @@ DoInstallModule (PMENU_STATE pMS)
 
 		pMS->InputFunc = DoInstallModule;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 
 		SetContext (SpaceContext);
 		ClearSISRect (CLEAR_SIS_RADAR);
@@ -270,7 +270,7 @@ DoInstallModule (PMENU_STATE pMS)
 			}
 		}
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
 		SetFlashRect (NULL_PTR, (FRAME)0);
@@ -354,15 +354,15 @@ DoInstallModule (PMENU_STATE pMS)
 		else
 		{
 			SetContext (StatusContext);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
 		}
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else if (motion)
 	{
@@ -408,7 +408,7 @@ DoInstallModule (PMENU_STATE pMS)
 				|| (NewItem >= GUN_WEAPON && NewItem <= CANNON_WEAPON
 				&& pMS->delta_item > 0 && pMS->delta_item < 13)));
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		if (NewState < EMPTY_SLOT)
 		{
 			if (NewItem != pMS->CurState)
@@ -505,7 +505,7 @@ InitFlash:
 			else
 				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 		}
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 
 	return (TRUE);
@@ -519,7 +519,7 @@ ChangeFuelQuantity ()
 	
 	if (CurrentMenuState.up)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
 			&& GLOBAL_SIS (ResUnits) >=
@@ -541,11 +541,11 @@ ChangeFuelQuantity ()
 			GetGaugeRect (&r, FALSE);
 			SetFlashRect (&r, (FRAME)0);
 		}
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else if (CurrentMenuState.down)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		if (GLOBAL_SIS (FuelOnBoard))
 		{
@@ -563,7 +563,7 @@ ChangeFuelQuantity ()
 		SetContext (StatusContext);
 		GetGaugeRect (&r, FALSE);
 		SetFlashRect (&r, (FRAME)0);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 }
 
@@ -600,7 +600,7 @@ DoOutfit (PMENU_STATE pMS)
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 2));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 
@@ -656,13 +656,13 @@ DoOutfit (PMENU_STATE pMS)
 					DrawStamp ((PSTAMP)&s);
 			}
 
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawFlagshipName (FALSE);
 			if (optWhichFonts == OPT_PC)
 				DrawFlagshipStats ();
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			{
 				RECT r;
@@ -676,9 +676,9 @@ DoOutfit (PMENU_STATE pMS)
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			GLOBAL_SIS (FuelOnBoard) =
 					(GLOBAL_SIS (FuelOnBoard)
@@ -695,9 +695,9 @@ DoOutfit (PMENU_STATE pMS)
 		if (pMS->CurState == OUTFIT_DOFUEL)
 		{
 			pMS->CurState = OUTFIT_FUEL;
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetFlashRect ((PRECT)~0L, (FRAME)0);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 		else
 		{
@@ -719,18 +719,18 @@ ExitOutfit:
 				RECT r;
 
 				pMS->CurState = OUTFIT_DOFUEL;
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
 				SetFlashRect (&r, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				break;
 			}
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				break;
 			case OUTFIT_MODULES:
 				pMS->CurState = EMPTY_SLOT + 2;
@@ -746,9 +746,9 @@ ExitOutfit:
 				if (GameOptions () == 0)
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				SetFlashRect ((PRECT)~0L, (FRAME)0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				break;
 		}
 	}

@@ -1411,14 +1411,14 @@ rotate_planet_task (void *data)
 		view_index = MAP_WIDTH;
 		do
 		{
-			// This SetSemaphore was placed before the RotatePlanet call
+			// This lock was placed before the RotatePlanet call
 			// To prevent the thread from being interrupted by the flash
 			// task while computing the Planet Frame.  This should help
 			// to smooth out the planet rotation animation.
-			// The PauseRotate needs to be placed after the SetSemaphore,
-			// to gaurantee that PauseRotate doesn't change while waiting
-			// to aquire the GraphicsSem
-			SetSemaphore (GraphicsSem);
+			// The PauseRotate needs to be placed after the lock,
+			// to guarantee that PauseRotate doesn't change while waiting
+			// to acquire the graphics lock
+			LockCrossThreadMutex (GraphicsLock);
 			if (*(volatile UBYTE *)&pSS->PauseRotate !=1
 //			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -1441,7 +1441,7 @@ rotate_planet_task (void *data)
 			} else
 				view_index++;
 
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			// If this frame hasn't been generted, generate it
 			if (! pSolarSysState->Orbit.isPFADefined[x]) {
 				RenderLevelMasks (x);

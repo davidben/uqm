@@ -250,9 +250,9 @@ StripShip (COUNT fuel_required)
 	if (fuel_required == 0)
 	{
 		GlobData.SIS_state = SIS_copy;
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, rescue_fuel, UNDEFINED_DELTA);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else if (fuel_required == (COUNT)~0)
 	{
@@ -276,9 +276,9 @@ StripShip (COUNT fuel_required)
 				GLOBAL_SIS (ModuleSlots[i]) = EMPTY_SLOT + 2;
 		}
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else if (fuel_required)
 	{
@@ -384,9 +384,9 @@ StripShip (COUNT fuel_required)
 		if (total == 0)
 		{
 			NPCPhrase (CHARITY);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DeltaSISGauges (0, fuel_required, 0);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			return (FALSE);
 		}
 		else
@@ -567,9 +567,9 @@ DeltaCredit (SIZE delta_credit)
 		Credit += delta_credit;
 		SET_GAME_STATE (MELNORME_CREDIT0, LOBYTE (Credit));
 		SET_GAME_STATE (MELNORME_CREDIT1, HIBYTE (Credit));
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DrawStatusMessage ((UNICODE *)~0);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else
 	{
@@ -810,14 +810,14 @@ DoBuy (RESPONSE_REF R)
 				NPCPhrase (GOT_FUEL);
 
 				f = (DWORD)needed_credit * FUEL_TANK_SCALE;
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				while (f > 0x3FFFL)
 				{
 					DeltaSISGauges (0, 0x3FFF, 0);
 					f -= 0x3FFF;
 				}
 				DeltaSISGauges (0, (SIZE)f, 0);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 			}
 			needed_credit *= (BIO_CREDIT_VALUE / 2);
 		}
@@ -1204,9 +1204,9 @@ DoSell (RESPONSE_REF R)
 			} while (GLOBAL_SIS (TotalBioMass));
 			SleepThread (ONE_SECOND / 2);
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			ClearSISRect (DRAW_SIS_DISPLAY);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 		else /* if (R == sell_rainbow_locations) */
 		{
@@ -1836,9 +1836,9 @@ Intro (void)
 static COUNT
 uninit_melnorme (void)
 {
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	DrawStatusMessage (0);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	return (0);
 }

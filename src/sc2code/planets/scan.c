@@ -68,7 +68,7 @@ EraseCoarseScan (void)
 	const int leftScanOffset  = 5;
 	const int rightScanOffset = 50;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	r.corner.x = (SIS_SCREEN_WIDTH >> 1) - (160 >> 1);
@@ -88,7 +88,7 @@ EraseCoarseScan (void)
 	r.extent.width = rightScanWidth;
 	RepairBackRect (&r);
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static void
@@ -113,7 +113,7 @@ PrintCoarseScanPC (void)
 	RECT r;
 	UNICODE buf[40];
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	if (CurStarDescPtr->Index == SOL_DEFINED)
@@ -176,7 +176,7 @@ PrintCoarseScanPC (void)
 	SetContextFont (MicroFont);
 	font_DrawText (&t);
 	SetContextFont (TinyFont);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 #define LEFT_SIDE_BASELINE_X_PC 5
 #define RIGHT_SIDE_BASELINE_X_PC (SIS_SCREEN_WIDTH - 75)
@@ -185,7 +185,7 @@ PrintCoarseScanPC (void)
 	t.baseline.y = SCAN_BASELINE_Y_PC;
 	t.align = ALIGN_LEFT;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Orbit: ", LEFT_SIDE_BASELINE_X_PC);
 	temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
@@ -197,9 +197,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Atmo: ", LEFT_SIDE_BASELINE_X_PC);
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
@@ -218,18 +218,18 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Temp: ", LEFT_SIDE_BASELINE_X_PC);
 	wsprintf (buf, "%d^ c", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Weather: ", LEFT_SIDE_BASELINE_X_PC);
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0)
@@ -239,9 +239,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Tectonics: ", LEFT_SIDE_BASELINE_X_PC);
 	if (PLANSIZE (pSolarSysState->SysInfo.PlanetInfo.PlanDataPtr->Type) == GAS_GIANT)
@@ -250,11 +250,11 @@ PrintCoarseScanPC (void)
 	wsprintf (buf, "Class %u", pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	t.baseline.y = SCAN_BASELINE_Y_PC;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Mass: ", RIGHT_SIDE_BASELINE_X_PC);
 	{
@@ -274,9 +274,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Radius: ", RIGHT_SIDE_BASELINE_X_PC);
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius) >= 10 * 100)
@@ -286,9 +286,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Gravity: ", RIGHT_SIDE_BASELINE_X_PC);
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity) >= 10 * 100)
@@ -302,9 +302,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Day: ", RIGHT_SIDE_BASELINE_X_PC);
 	if (pSolarSysState->SysInfo.PlanetInfo.RotationPeriod < 240 * 10)
@@ -321,9 +321,9 @@ PrintCoarseScanPC (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	PrintScanTitlePC (&t, &r, "Tilt: ", RIGHT_SIDE_BASELINE_X_PC);
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.AxialTilt) < 0)
@@ -331,7 +331,7 @@ PrintCoarseScanPC (void)
 	wsprintf (buf, "%u^", temp);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static void
@@ -344,7 +344,7 @@ PrintCoarseScan3DO (void)
 	UNICODE buf[40];
 	extern FRAME SpaceJunkFrame;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	if (CurStarDescPtr->Index == SOL_DEFINED)
@@ -411,7 +411,7 @@ PrintCoarseScan3DO (void)
 	s.frame = SetAbsFrameIndex (SpaceJunkFrame, 20);
 	DrawStamp (&s);
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 #define LEFT_SIDE_BASELINE_X (27 + (16 - SAFE_X))
 #define RIGHT_SIDE_BASELINE_X (SIS_SCREEN_WIDTH - LEFT_SIDE_BASELINE_X)
@@ -421,7 +421,7 @@ PrintCoarseScan3DO (void)
 	t.baseline.y = SCAN_BASELINE_Y;
 	t.align = ALIGN_LEFT;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
 			+ (EARTH_RADIUS >> 1)) / EARTH_RADIUS);
@@ -432,9 +432,9 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
 		wsprintf (buf, "\x7f");
@@ -450,26 +450,26 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	wsprintf (buf, "%d^", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	wsprintf (buf, "<%u>", pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Weather + 1));
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	wsprintf (buf, "<%u>",
 			PLANSIZE (
@@ -478,13 +478,13 @@ PrintCoarseScan3DO (void)
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1));
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	t.baseline.x = RIGHT_SIDE_BASELINE_X;
 	t.baseline.y = SCAN_BASELINE_Y;
 	t.align = ALIGN_RIGHT;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	{
 		DWORD tr;
@@ -503,9 +503,9 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius) >= 10 * 100)
 		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
@@ -514,9 +514,9 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity) >= 10 * 100)
 		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
@@ -529,9 +529,9 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.AxialTilt) < 0)
 		temp = -temp;
@@ -539,9 +539,9 @@ PrintCoarseScan3DO (void)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.RotationPeriod < 240 * 10)
 	{
@@ -556,7 +556,7 @@ PrintCoarseScan3DO (void)
 	}
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static void
@@ -569,7 +569,7 @@ SetPlanetLoc (POINT new_pt)
 	new_pt.x >>= MAG_SHIFT;
 	new_pt.y >>= MAG_SHIFT;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (ScanContext);
 	s.origin.x = pMenuState->flash_rect0.corner.x - (FLASH_WIDTH >> 1);
 	s.origin.y = pMenuState->flash_rect0.corner.y - (FLASH_HEIGHT >> 1);
@@ -583,7 +583,7 @@ SetPlanetLoc (POINT new_pt)
 	r.extent.width = FLASH_WIDTH;
 	r.extent.height = FLASH_HEIGHT;
 	LoadDisplayPixmap (&r, pMenuState->flash_frame0);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	
 	TaskSwitch ();
 }
@@ -609,7 +609,7 @@ flash_planet_loc_func(void *data)
 		DWORD T;
 		CONTEXT OldContext;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		T = GetTimeCounter ();
 		if (p.Object.Stamp.origin.x != pMenuState->flash_rect0.corner.x
 				|| p.Object.Stamp.origin.y != pMenuState->flash_rect0.corner.y)
@@ -621,7 +621,7 @@ flash_planet_loc_func(void *data)
 		{
 			if (T < TimeIn)
 			{
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				TaskSwitch ();
 
 				continue;
@@ -639,7 +639,7 @@ flash_planet_loc_func(void *data)
 		SetContext (OldContext);
 
 		TimeIn = T + (ONE_SECOND >> 4);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		
 		TaskSwitch ();
 	}
@@ -680,7 +680,7 @@ PickPlanetSide (PMENU_STATE pMS)
 
 			pMS->Initialized = TRUE;
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetContext (ScanContext);
 			pMenuState->flash_rect0.corner.x =
 					pSolarSysState->MenuState.first_item.x >> MAG_SHIFT;
@@ -694,7 +694,7 @@ PickPlanetSide (PMENU_STATE pMS)
 			LoadDisplayPixmap (&r, pMenuState->flash_frame0);
 
 			SetFlashRect (NULL_PTR, (FRAME)0);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			InitLander (0);
 
@@ -709,9 +709,9 @@ PickPlanetSide (PMENU_STATE pMS)
 		MenuSounds = (SOUND)pMS->CurFrame;
 		pMS->CurFrame = 0;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DrawStatusMessage (NULL_PTR);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		FlushInput ();
 		if (pMenuState->flash_task)
@@ -735,13 +735,13 @@ PickPlanetSide (PMENU_STATE pMS)
 
 			EraseCoarseScan ();
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
 			SetContext (ScanContext);
 			s.origin = pMenuState->flash_rect0.corner;
 			s.frame = SetAbsFrameIndex (misc_data, FLASH_INDEX);
 			DrawStamp (&s);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			PlanetSide (pMS);
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -796,9 +796,9 @@ PickPlanetSide (PMENU_STATE pMS)
 		}
 
 		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 ExitPlanetSide:
 		if (pMS->CurFrame)
@@ -962,12 +962,12 @@ DoScan (PMENU_STATE pMS)
 	}
 	else if (cancel || (select && pMS->CurState == EXIT_SCAN))
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		BatchGraphics ();
 		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
 		UnbatchGraphics ();
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		EraseCoarseScan ();
 // DrawMenuStateStrings (PM_SCAN, SCAN);
@@ -1004,18 +1004,18 @@ DoScan (PMENU_STATE pMS)
 					GAME_STRING (NAVIGATION_STRING_BASE + 5),
 					fuel_required / FUEL_TANK_SCALE,
 					((fuel_required % FUEL_TANK_SCALE) + 5) / 10);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			ClearSISRect (CLEAR_SIS_RADAR);
 			DrawStatusMessage (buf);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetContext (ScanContext);
 			BatchGraphics ();
 			DrawPlanet (0, 0, 0, 0);
 			DrawScannedObjects (FALSE);
 			UnbatchGraphics ();
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		
 			pMS->Initialized = FALSE;
 			pMS->CurFrame = 0;
@@ -1048,7 +1048,7 @@ DoScan (PMENU_STATE pMS)
 		pMS->delta_item = (SIZE)pSolarSysState->CurNode;
 		t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		r.corner.x = 0;
 		r.corner.y = t.baseline.y - 10;
@@ -1078,7 +1078,7 @@ DoScan (PMENU_STATE pMS)
 		font_DrawText (&t);
 
 		SetContext (ScanContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 	{
 		DWORD rgb;
@@ -1096,15 +1096,15 @@ DoScan (PMENU_STATE pMS)
 				break;
 		}
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		BatchGraphics ();
 		DrawPlanet (0, 0, 0, 0);
 		UnbatchGraphics ();
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		PressState = AnyButtonPress (TRUE);
 		WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
-//		SetSemaphore (GraphicsSem);
+//		LockCrossThreadMutex (GraphicsLock);
 		TimeIn = GetTimeCounter ();
 		for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
 		{
@@ -1116,7 +1116,7 @@ DoScan (PMENU_STATE pMS)
 			}
 			if (ButtonState)
 				i = -i;
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			BatchGraphics ();
 			DrawPlanet (0, 0, i, rgb);
 			if (i < 0) 
@@ -1124,19 +1124,19 @@ DoScan (PMENU_STATE pMS)
 			if (pMS->delta_item)
 				DrawScannedStuff (i, min_scan);
 			UnbatchGraphics ();
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 //			FlushGraphics ();
 			SleepThreadUntil (TimeIn + WaitTime);
 			TimeIn = GetTimeCounter ();
 		}
-//		ClearSemaphore (GraphicsSem);
+//		UnlockCrossThreadMutex (GraphicsLock);
 		pSolarSysState->Tint_rgb = 0;
 
 	}
 
 		} while (++min_scan <= max_scan);
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		r.corner.x = 0;
 		r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
@@ -1149,12 +1149,12 @@ DoScan (PMENU_STATE pMS)
 		{
 			DrawPlanet (0, 0, 0, 0);
 			DrawScannedObjects (FALSE);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState = DISPATCH_SHUTTLE);
 		}
 		else
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			
 		pSolarSysState->MenuState.Initialized -= 4;
 		pSolarSysState->PauseRotate = 0;
@@ -1208,7 +1208,7 @@ ScanSystem (void)
 		pSolarSysState->MenuState.first_item.x = (MAP_WIDTH >> 1) << MAG_SHIFT;
 		pSolarSysState->MenuState.first_item.y = (MAP_HEIGHT >> 1) << MAG_SHIFT;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		ScanContext = CaptureContext (CreateContext ());
 		SetContext (ScanContext);
 		MenuState.flash_rect0.extent.width = FLASH_WIDTH;
@@ -1224,7 +1224,7 @@ ScanSystem (void)
 		r.extent.height = MAP_HEIGHT;
 		SetContextClipRect (&r);
 		DrawScannedObjects (FALSE);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 
 	DrawMenuStateStrings (PM_MIN_SCAN, MenuState.CurState);
@@ -1240,12 +1240,12 @@ ScanSystem (void)
 
 	if (ScanContext)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		DestroyDrawable (ReleaseDrawable (MenuState.flash_frame0));
 		DestroyContext (ReleaseContext (ScanContext));
 		ScanContext = 0;
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 }
 

@@ -56,7 +56,7 @@ typedef struct
 	BYTE day_index, month_index;
 	COUNT year_index;
 	SIZE tick_count, day_in_ticks;
-	Semaphore clock_sem;
+	CrossThreadMutex clock_lock;
 	Task clock_task;
 	DWORD TimeCounter;
 

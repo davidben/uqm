@@ -224,9 +224,9 @@ DrawPickFrame (PMELEE_STATE pMS)
 				+ (ship_r.extent.height - r.extent.height));
 	SetFrameHot (F, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
 	DrawMeleeIcon (27);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 }
 
 static void
@@ -518,19 +518,19 @@ int flash_selection_func(void* data)
 #define FLASH_RATE (ONE_SECOND / 8)
 		CONTEXT OldContext;
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 		Deselect (pMeleeState->MeleeOption);
 		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + FLASH_RATE);
 		TimeIn = GetTimeCounter ();
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 		Select (pMeleeState->MeleeOption);
 		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + FLASH_RATE);
 		TimeIn = GetTimeCounter ();
 	}
@@ -571,7 +571,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	STARSHIPPTR StarShipPtr;
 	CONTEXT OldContext;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&OldRect);
@@ -630,7 +630,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static COUNT
@@ -846,7 +846,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 
 	if (!pMS->Initialized)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		Select (pMS->MeleeOption);
 		if ((pMS->TopTeamIndex = pMS->CurIndex) == (COUNT)~0)
 			pMS->TopTeamIndex = pMS->CurIndex = 0;
@@ -858,7 +858,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 		DrawFileStrings (pMS, -1);
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoLoadTeam;
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	else if (CurrentMenuState.select | CurrentMenuState.cancel)
 	{
@@ -876,9 +876,9 @@ DoLoadTeam (PMELEE_STATE pMS)
 			RECT r;
 			
 			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 28), &r);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			RepairMeleeFrame (&r);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 		InTime = GetTimeCounter ();
 	}
@@ -932,7 +932,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 
 		if (index != old_index)
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			if ((int)NewTop == (int)pMS->TopTeamIndex)
 				Deselect (pMS->MeleeOption);
 			else
@@ -941,7 +941,7 @@ DoLoadTeam (PMELEE_STATE pMS)
 				DrawFileStrings (pMS, -1);
 			}
 			pMS->CurIndex = index;
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 	}
 
@@ -1076,7 +1076,7 @@ DoSaveTeam (PMELEE_STATE pMS)
 
 	sprintf (file, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
 	save_fp = res_OpenResFile (meleeDir, file, "wb");
@@ -1097,7 +1097,7 @@ DoSaveTeam (PMELEE_STATE pMS)
 		DrawStamp (&MsgStamp);
 		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		DeleteResFile (meleeDir, file);
 		SaveProblem ();
@@ -1110,7 +1110,7 @@ DoSaveTeam (PMELEE_STATE pMS)
 		DrawStamp (&MsgStamp);
 		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 		SetContext (OldContext);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 	
 	return (save_fp != 0);
@@ -1135,12 +1135,12 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 	
 		pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = (BYTE)~0;
        	}
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 	RepairMeleeFrame (&r);
 
 	DrawTeamString (pMS, 4);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 }
 
@@ -1177,12 +1177,12 @@ DoEdit (PMELEE_STATE pMS)
 			|| (CurrentMenuState.right
 			&& (pMS->col == NUM_MELEE_COLUMNS - 1 || pMS->row == NUM_MELEE_ROWS))))
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
 		pMS->CurIndex = (COUNT)~0;
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		InTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
@@ -1213,7 +1213,7 @@ DoEdit (PMELEE_STATE pMS)
 			if (pMS->CurIndex != (BYTE)~0)
 			{
 				UNICODE ch;
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				if (pMS->Initialized == 1)
 				{
 					FlushInput ();
@@ -1226,15 +1226,15 @@ DoEdit (PMELEE_STATE pMS)
 					pMS->Initialized = 1;
 					DisableCharacterMode ();
 				}
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				return (TRUE);
 			}
 			else if (CurrentMenuState.select)
 			{
 				pMS->CurIndex = 0;
-				SetSemaphore (GraphicsSem);
+				LockCrossThreadMutex (GraphicsLock);
 				DrawTeamString (pMS, 1);
-				ClearSemaphore (GraphicsSem);
+				UnlockCrossThreadMutex (GraphicsLock);
 				EnableCharacterMode ();
 				return (TRUE);
 			}
@@ -1282,7 +1282,7 @@ DoEdit (PMELEE_STATE pMS)
 
 		if (col != pMS->col || row != pMS->row || side != pMS->side)
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->side = side;
 			pMS->row = row;
@@ -1291,7 +1291,7 @@ DoEdit (PMELEE_STATE pMS)
 				pMS->CurIndex = (BYTE)~0;
 			else
 				pMS->CurIndex = pMS->TeamImage[side].ShipList[row][col];
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
@@ -1319,21 +1319,21 @@ DoPickShip (PMELEE_STATE pMS)
 
 		if (pMS->Initialized == 0)
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->InputFunc = DoPickShip;
 			DrawPickFrame (pMS);
 			pMS->Initialized = TRUE;
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 		else
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->Initialized = TRUE;
 			AdvanceCursor (pMS);
 			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
@@ -1353,10 +1353,10 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockStarShip (&master_q, hStarShip);
 
 			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = pMS->CurIndex;
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawTeamString (pMS, 4);
 			DrawShipBox (pMS, FALSE);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			AdvanceCursor (pMS);
 		}
 
@@ -1364,9 +1364,9 @@ DoPickShip (PMELEE_STATE pMS)
 			RECT r;
 			
 			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 27), &r);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			RepairMeleeFrame (&r);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 
 		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
@@ -1416,10 +1416,10 @@ DoPickShip (PMELEE_STATE pMS)
 
 		if (NewStarShip != pMS->CurIndex)
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->CurIndex = NewStarShip;
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			DrawMeleeShipStrings (pMS, NewStarShip);
 		}
 	}
@@ -1469,9 +1469,9 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 {
 	if (pMS->flash_task)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		Task_SetState (pMS->flash_task, TASK_EXIT);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		pMS->flash_task = 0;
 	}
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
@@ -1591,9 +1591,9 @@ DoMelee (PMELEE_STATE pMS)
 	{
 		pMS->Initialized = TRUE;
 		pMS->MeleeOption = START_MELEE;
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		InitMelee (pMS);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
 				
@@ -1603,10 +1603,10 @@ DoMelee (PMELEE_STATE pMS)
 	}
 	else if (CurrentMenuState.cancel || CurrentMenuState.left)
 	{
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		InTime = GetTimeCounter ();
 		Deselect (pMS->MeleeOption);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
 		if (CurrentMenuState.cancel)
@@ -1644,11 +1644,11 @@ DoMelee (PMELEE_STATE pMS)
 
 		if (NewMeleeOption != pMS->MeleeOption)
 		{
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			Deselect (pMS->MeleeOption);
 			pMS->MeleeOption = NewMeleeOption;
 			Select (pMS->MeleeOption);
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 
 		if (CurrentMenuState.select || force_select)
@@ -1665,9 +1665,9 @@ DoMelee (PMELEE_STATE pMS)
 
 					if (pMS->flash_task)
 					{
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						Task_SetState (pMS->flash_task, TASK_EXIT);
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 						pMS->flash_task = 0;
 					}
 					
@@ -1681,9 +1681,9 @@ DoMelee (PMELEE_STATE pMS)
 					}
 					do
 					{
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						BuildAndDrawShipList (pMS);
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 
 						WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 

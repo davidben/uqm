@@ -209,11 +209,11 @@ SaveProblem (void)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	SaveProblemMessage (&s);
 	FlushGraphics ();
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	while (AnyButtonPress (FALSE));
 	do
@@ -223,13 +223,13 @@ SaveProblem (void)
 	} while (!(CurrentMenuState.select || CurrentMenuState.special ||
 		 (GLOBAL (CurrentActivity) & CHECK_ABORT)));
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	BatchGraphics ();
 	DrawStamp (&s);
 	UnbatchGraphics ();
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	
 	return;
 }

@@ -54,7 +54,7 @@ Credits (void)
 	if (hMusic)
 		PlayMusic (hMusic, TRUE, 1);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	GetContextClipRect (&r);
 	s.origin.x = s.origin.y = 0;
@@ -81,19 +81,19 @@ Credits (void)
 		UnbatchGraphics ();
 		DestroyDrawable (ReleaseDrawable (f[i]));
 		
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 		while ((GetTimeCounter () - TimeIn < ONE_SECOND * 5) &&
 			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 		{
 			UpdateInputState ();
 			SleepThreadUntil (ONE_SECOND / 20);
 		}
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		TimeIn = GetTimeCounter ();
 	}
 	
 	DestroyDrawable (ReleaseDrawable (f[0]));
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	WaitAnyButtonOrQuit (FALSE);
 	
@@ -139,7 +139,7 @@ OutTakes (void)
 	optSubtitles = TRUE;
 	sliderDisabled = TRUE;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
 	fade_buf[0] = FadeAllToColor;
@@ -149,7 +149,7 @@ OutTakes (void)
 	r.extent.width = SCREEN_WIDTH;
 	r.extent.height = SCREEN_HEIGHT;
 	DrawFilledRectangle (&r);	
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	for (i = 0; (i < NUM_OUTTAKES) &&
 			!(GLOBAL (CurrentActivity) & CHECK_ABORT); i++)

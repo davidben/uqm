@@ -163,7 +163,7 @@ Battle (void)
 	extern SIZE InitShips (void);
 	void UninitShips (void);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	SetResourceIndex (hResIndex);
 
@@ -222,7 +222,7 @@ Battle (void)
 				ScreenTransition (3, &r);
 			}
 			UnbatchGraphics ();
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 			if (nth_frame)
 				TaskSwitch ();
 			else
@@ -231,7 +231,7 @@ Battle (void)
 				NextTime = GetTimeCounter ();
 			}
 			ProcessInput ();
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 		} while (GLOBAL (CurrentActivity) & IN_BATTLE);
 
 AbortBattle:
@@ -242,7 +242,7 @@ AbortBattle:
 	UninitShips ();
 	FreeBattleSong ();
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	
 	return (num_ships < 0);
 }

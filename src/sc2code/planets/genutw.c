@@ -200,9 +200,9 @@ GenerateUtwig (BYTE control)
 						if (DruugeSurvivors)
 							break;
 
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						RepairSISBorder ();
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 						SET_GAME_STATE (BOMB_UNPROTECTED, 1);
 					}
 				}

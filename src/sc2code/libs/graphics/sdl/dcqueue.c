@@ -44,7 +44,11 @@ _lock (void)
 	Uint32 current_thread = SDL_ThreadID ();
 	if (DCQ_locking_thread != current_thread)
 	{
-		LockMutex (DCQ_lock);
+		if (LockMutex (DCQ_lock))
+		{
+			fprintf (stderr, "DCQ lock attempt failed!\n");
+			return;
+		}
 		DCQ_locking_thread = current_thread;
 	}
 	++DCQ_locking_depth;

@@ -1215,7 +1215,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
 	}
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 
 	BatchGraphics ();
@@ -1329,7 +1329,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }
 
 static void
@@ -1353,7 +1353,7 @@ AnimateLaunch (FRAME farray, BOOLEAN ShowPlanetSide)
 		RepairBackRect (&r);
 		DrawStamp (&s);
 
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 #if 0
 		if (ShowPlanetSide)
@@ -1370,7 +1370,7 @@ AnimateLaunch (FRAME farray, BOOLEAN ShowPlanetSide)
 		SleepThreadUntil (Time + (ONE_SECOND / 22));
 		Time = GetTimeCounter ();
 
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 	} while (--num_frames);
 
 	GetFrameRect (s.frame, &r);
@@ -1386,9 +1386,9 @@ InitPlanetSide (void)
 	CONTEXT OldContext;
 	DWORD Time;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (RadarContext);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	Time = GetTimeCounter ();
 
@@ -1397,9 +1397,9 @@ InitPlanetSide (void)
 	s.frame = SetAbsFrameIndex (LanderFrame[0],
 			(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 1);
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	DrawStamp (&s);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	SleepThread (ONE_SECOND / 15);
 	Time = GetTimeCounter ();
@@ -1409,10 +1409,10 @@ InitPlanetSide (void)
 	{
 		SleepThreadUntil (Time + ONE_SECOND / 30);
 		Time = GetTimeCounter ();
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DeltaSISGauges (-1, 0, 0);
 		DeltaLanderCrew (1, 0);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 
 	SleepThreadUntil (Time + (ONE_SECOND / 15));
@@ -1423,9 +1423,9 @@ InitPlanetSide (void)
 	else
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 2);
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	DrawStamp (&s);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	SleepThreadUntil (Time + (ONE_SECOND / 15));
 	Time = GetTimeCounter ();
@@ -1436,18 +1436,18 @@ InitPlanetSide (void)
 	{
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 3);
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DrawStamp (&s);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 
 		SleepThreadUntil (Time + (ONE_SECOND / 15));
 		Time = GetTimeCounter ();
 
 		s.frame = IncFrameIndex (s.frame);
 	}
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	DrawStamp (&s);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
 	{
@@ -1455,25 +1455,25 @@ InitPlanetSide (void)
 		Time = GetTimeCounter ();
 
 		s.frame = SetAbsFrameIndex (s.frame, 59);
-		SetSemaphore (GraphicsSem);
+		LockCrossThreadMutex (GraphicsLock);
 		DrawStamp (&s);
-		ClearSemaphore (GraphicsSem);
+		UnlockCrossThreadMutex (GraphicsLock);
 	}
 #ifndef SPIN_ON_LAUNCH
 	pSolarSysState->PauseRotate = 1;
 #endif
 	SleepThreadUntil (Time + (ONE_SECOND / 15));
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_DEPARTS),
 			NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 	SetContext (SpaceContext);
 	AnimateLaunch (LanderFrame[5], FALSE);
 #ifdef SPIN_ON_LAUNCH
 	pSolarSysState->PauseRotate = 1;
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 	TaskSwitch ();
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 #endif
 	// Adjust pSolarSysState->MenuState.first_item by a random jitter.
 #define RANDOM_MISS 64
@@ -1547,7 +1547,7 @@ InitPlanetSide (void)
 
 	SetContext (OldContext);
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	SET_GAME_STATE (PLANETARY_LANDING, 1);
 }
@@ -1858,7 +1858,7 @@ ReturnToOrbit (PRECT pRect)
 {
 	CONTEXT OldContext;
 	
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	SetContextClipRect (pRect);
 
@@ -1873,7 +1873,7 @@ ReturnToOrbit (PRECT pRect)
 
 	LoadIntoExtraScreen (pRect);
 	SetContext (OldContext);
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 //	SetPlanetTilt (0);
 }
@@ -1994,9 +1994,9 @@ PlanetSide (PMENU_STATE pMS)
 #endif /* NEVER */
 
 			--GLOBAL_SIS (NumLanders);
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawLanders ();
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			ReturnToOrbit (&r);
 		}
@@ -2029,7 +2029,7 @@ PlanetSide (PMENU_STATE pMS)
 			SleepThread (1);
 #endif
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			SetContext (SpaceContext);
 
 			AnimateLaunch (LanderFrame[6], TRUE);
@@ -2047,7 +2047,7 @@ PlanetSide (PMENU_STATE pMS)
 				DrawStorageBays (FALSE);
 			}
 
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			GLOBAL_SIS (TotalBioMass) += PSD.BiologicalLevel;
 		}
@@ -2090,7 +2090,7 @@ InitLander (BYTE LanderFlags)
 {
 	RECT r;
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 
 	SetContext (RadarContext);
 	
@@ -2182,5 +2182,5 @@ InitLander (BYTE LanderFlags)
 
 	UnbatchGraphics ();
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 }

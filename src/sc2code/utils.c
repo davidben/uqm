@@ -159,7 +159,7 @@ PauseGame (void)
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	OldHot = SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
@@ -171,12 +171,12 @@ PauseGame (void)
 	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
 	DrawStamp (&s);
 
-	// Releasing the Semaphore lets the rotate_planet_task
+	// Releasing the lock lets the rotate_planet_task
 	// draw a frame.  PauseRotate can still allow one more frame
-	// to be drawn, so it is safer to just not release the Semaphore
-	//ClearSemaphore (GraphicsSem);
+	// to be drawn, so it is safer to just not release the lock
+	//UnlockCrossThreadMutex (GraphicsLock);
 	FlushGraphics ();
-	//SetSemaphore (GraphicsSem);
+	//LockCrossThreadMutex (GraphicsLock);
 
 	while (ImmediateInputState.pause)
 		TaskSwitch ();
@@ -208,7 +208,7 @@ PauseGame (void)
 			do_subtitles ((void *)~0);
 	}
 
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	TaskSwitch ();
 	GLOBAL (CurrentActivity) &= ~CHECK_PAUSE;

@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Introduced a new synchronization construct (CrossThreadMutex) and 
+  migrated the GraphicsSem and clock_sem over to it (#359) -Michael
+- Replaced thread-local Semaphores with Mutexes (#359) -Michael
 - Load/save icons don't flash anymore when in savegame menu
   (part of bug #291), from Paxtez
 - Savegame slot now defaults to the last one used during one execution

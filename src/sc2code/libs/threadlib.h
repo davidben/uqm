@@ -67,10 +67,10 @@ This is now a compile-time define
 #	endif
 #endif
 
-extern void InitThreadSystem (void);
-extern void UnInitThreadSystem (void);
-extern void init_cond_bank (void);
-extern void uninit_cond_bank (void);
+void InitThreadSystem (void);
+void UnInitThreadSystem (void);
+void init_cond_bank (void);
+void uninit_cond_bank (void);
 
 typedef int (*ThreadFunction) (void *);
 
@@ -88,64 +88,70 @@ typedef struct Thread {
 } *Thread;
 
 #ifdef THREAD_NAMES
-extern Thread CreateThreadAux (ThreadFunction func, void *data,
+Thread CreateThreadAux (ThreadFunction func, void *data,
 		SDWORD stackSize, const char *name);
 #	define CreateThread(func, data, stackSize, name) \
 		CreateThreadAux ((func), (data), (stackSize), (name))
 #else  /* !defined(THREAD_NAMES) */
-extern Thread CreateThreadAux (ThreadFunction func, void *data,
+Thread CreateThreadAux (ThreadFunction func, void *data,
 		SDWORD stackSize);
 #	define CreateThread(func, data, stackSize, name) \
 		CreateThreadAux ((func), (data), (stackSize))
 #endif  /* !defined(THREAD_NAMES) */
-extern void SleepThread (TimePeriod timePeriod);
-extern void SleepThreadUntil (TimeCount wakeTime);
-extern void TaskSwitch (void);
-extern void WaitThread (Thread thread, int *status);
+void SleepThread (TimePeriod timePeriod);
+void SleepThreadUntil (TimeCount wakeTime);
+void TaskSwitch (void);
+void WaitThread (Thread thread, int *status);
 
 typedef void *Semaphore;
 #ifdef DEBUG_TRACK_SEM
-extern Semaphore CreateSemaphoreAux (DWORD initial, const char *sem_name);
+Semaphore CreateSemaphoreAux (DWORD initial, const char *sem_name);
 #	define CreateSemaphore(initial,sem_name) \
 		CreateSemaphoreAux ((initial), (sem_name))
-extern void ResetSemaphoreOwnerAux (Semaphore sem);
+void ResetSemaphoreOwnerAux (Semaphore sem);
 #	define ResetSemaphoreOwner(sem_name) \
 		ResetSemaphoreOwnerAux (sem_name)
 #else
-extern Semaphore CreateSemaphoreAux (DWORD initial);
+Semaphore CreateSemaphoreAux (DWORD initial);
 #	define CreateSemaphore(initial,sem_name) \
 		CreateSemaphoreAux ((initial))
 #	define ResetSemaphoreOwner(sem_name)
 #endif
-extern DWORD SemaphoreValue (Semaphore sem);
-extern void DestroySemaphore (Semaphore sem);
-extern int SetSemaphore (Semaphore sem);
-extern int TrySetSemaphore (Semaphore sem);
-extern int TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout);
-extern void ClearSemaphore (Semaphore sem);
+DWORD SemaphoreValue (Semaphore sem);
+void DestroySemaphore (Semaphore sem);
+int SetSemaphore (Semaphore sem);
+int TrySetSemaphore (Semaphore sem);
+int TimeoutSetSemaphore (Semaphore sem, TimePeriod timeout);
+void ClearSemaphore (Semaphore sem);
 #ifdef PROFILE_THREADS
-extern void PrintThreadsStats (void);
+void PrintThreadsStats (void);
 #endif  /* PROFILE_THREADS */
 
 typedef void *Mutex;
-extern Mutex CreateMutex (void);
-extern void DestroyMutex (Mutex sem);
-extern int LockMutex (Mutex sem);
-extern void UnlockMutex (Mutex sem);
+Mutex CreateMutex (void);
+void DestroyMutex (Mutex sem);
+int LockMutex (Mutex sem);
+void UnlockMutex (Mutex sem);
+
+typedef void *CrossThreadMutex;
+CrossThreadMutex CreateCrossThreadMutex (const char *name);
+void DestroyCrossThreadMutex (CrossThreadMutex ctm);
+int LockCrossThreadMutex (CrossThreadMutex ctm);
+void UnlockCrossThreadMutex (CrossThreadMutex ctm);
 
 typedef void *CondVar;
-extern CondVar CreateCondVar (void);
-extern void DestroyCondVar (CondVar);
-extern void WaitCondVar (CondVar);
-extern void WaitProtectedCondVar (CondVar, Mutex);
-extern void SignalCondVar (CondVar);
-extern void BroadcastCondVar (CondVar);
+CondVar CreateCondVar (void);
+void DestroyCondVar (CondVar);
+void WaitCondVar (CondVar);
+void WaitProtectedCondVar (CondVar, Mutex);
+void SignalCondVar (CondVar);
+void BroadcastCondVar (CondVar);
 
-extern DWORD CurrentThreadID (void);
+DWORD CurrentThreadID (void);
 
-extern int  FindSignalChannel ();
-extern void WaitForSignal (int);
-extern void SignalThread (DWORD);
+int  FindSignalChannel ();
+void WaitForSignal (int);
+void SignalThread (DWORD);
 
 #endif  /* _THREADLIB_H */
 

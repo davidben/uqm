@@ -270,8 +270,12 @@ InitGlobData (void)
 	GLOBAL (DisplayArray) = DisplayArray;
 	// The clock semaphore was initially initialized as '1'
 	// but it is always cleared before set, so it toggled between
-	// 2 and 1, which doesn't actually do anything
-	GLOBAL (GameClock.clock_sem) = CreateSemaphore(0,  "Clock");
+	// 2 and 1, which doesn't actually do anything.  When this
+	// was transformed into a mutex, we lock it first to prevent
+	// double-unlock.
+
+	GLOBAL (GameClock.clock_lock) = CreateCrossThreadMutex("Clock");
+	LockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 }
 
 int

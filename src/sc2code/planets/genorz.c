@@ -333,9 +333,9 @@ GenerateOrz (BYTE control)
 						if (OrzSurvivors)
 							break;
 
-						SetSemaphore (GraphicsSem);
+						LockCrossThreadMutex (GraphicsLock);
 						RepairSISBorder ();
-						ClearSemaphore (GraphicsSem);
+						UnlockCrossThreadMutex (GraphicsLock);
 					}
 				}
 

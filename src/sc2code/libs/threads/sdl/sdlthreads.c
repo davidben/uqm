@@ -17,6 +17,8 @@
 /* By Serge van den Boom
  */
 
+#include <stdlib.h>
+#include "misc.h"
 #include "sdlthreads.h"
 
 #if defined(PROFILE_THREADS) && !defined(WIN32)
@@ -83,4 +85,77 @@ SDLWrapper_WaitCondVar (CondVar cv) {
 	if (result != 0) {
 		fprintf (stderr, "Error result from SDL_CondWait: %d\n", result);
 	}
+}
+
+/* Code for cross-thread mutexes.  The prototypes for these functions are in threadlib.h. */
+
+typedef struct _ctm {
+	SDL_mutex *mutex;
+	SDL_cond  *cond;
+	const char *name;
+	BOOLEAN   locked;
+} _NativeCTM;
+
+CrossThreadMutex
+CreateCrossThreadMutex (const char *name)
+{
+	_NativeCTM *result = HMalloc (sizeof (_NativeCTM));
+	result->mutex  = SDL_CreateMutex ();
+	result->cond   = SDL_CreateCond ();
+	result->name   = name;
+	result->locked = FALSE;
+	return (CrossThreadMutex)result;
+}
+
+void
+DestroyCrossThreadMutex (CrossThreadMutex val)
+{
+	_NativeCTM *ctm = (_NativeCTM *)val;
+	if (ctm)
+	{
+		SDL_DestroyMutex (ctm->mutex);
+		SDL_DestroyCond (ctm->cond);
+		HFree (ctm);
+	}
+}
+
+int
+LockCrossThreadMutex (CrossThreadMutex val)
+{
+	_NativeCTM *ctm = (_NativeCTM *)val;
+	if (SDL_mutexP (ctm->mutex))
+	{
+		fprintf (stderr, "LockCrossThreadMutex failed to lock internal mutex in %s!\n", ctm->name);
+		return -1;
+	}
+	while (ctm->locked)
+	{
+		// fprintf (stderr, "Thread %8x goes to sleep, waiting on %s\n", SDL_ThreadID (), ctm->name);
+		SDL_CondWait (ctm->cond, ctm->mutex);
+		// fprintf (stderr, "Thread %8x awakens.\n", SDL_ThreadID ());
+	}
+	ctm->locked = TRUE;
+	SDL_mutexV (ctm->mutex);
+	return 0; /* success */
+}
+
+void
+UnlockCrossThreadMutex (CrossThreadMutex val)
+{
+	_NativeCTM *ctm = (_NativeCTM *)val;
+	if (SDL_mutexP (ctm->mutex))
+	{
+		fprintf (stderr, "UnlockCrossThreadMutex failed to lock internal mutex in %s!\n", ctm->name);
+		return;
+	}
+	if (ctm->locked)
+	{
+		ctm->locked = FALSE;
+		SDL_CondSignal (ctm->cond);
+	}
+	else
+	{
+		fprintf (stderr, "Double unlock attempt on %s ignored.\n", ctm->name);
+	}
+	SDL_mutexV (ctm->mutex);
 }

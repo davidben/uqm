@@ -105,7 +105,7 @@ DoConfirmExit (void)
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
-	SetSemaphore (GraphicsSem);
+	LockCrossThreadMutex (GraphicsLock);
 	if (in_confirm)
 	{
 		result = FALSE;
@@ -131,12 +131,12 @@ DoConfirmExit (void)
 
 		DrawConfirmationWindow (response);
 
-		// Releasing the Semaphore lets the rotate_planet_task
+		// Releasing the lock lets the rotate_planet_task
 		// draw a frame.  PauseRotate can still allow one more frame
-		// to be drawn, so it is safer to just not release the Semaphore
-		//ClearSemaphore (GraphicsSem);
+		// to be drawn, so it is safer to just not release the lock
+		//UnlockCrossThreadMutex (GraphicsLock);
 		FlushGraphics ();
-		//SetSemaphore (GraphicsSem);
+		//LockCrossThreadMutex (GraphicsLock);
 
 		GLOBAL (CurrentActivity) |= CHECK_ABORT;
 		FlushInput ();
@@ -181,7 +181,7 @@ DoConfirmExit (void)
 		FlushInput ();
 		SetContext (oldContext);
 	}
-	ClearSemaphore (GraphicsSem);
+	UnlockCrossThreadMutex (GraphicsLock);
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		ResumeGameClock ();

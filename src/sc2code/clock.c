@@ -65,7 +65,7 @@ int clock_task_func(void* data)
 				 * can be halted. (e.g. during battle
 				 * or communications)
 				 */
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
+		LockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 		TimeIn = GetTimeCounter ();
 
 		if (GLOBAL (GameClock).tick_count <= 0
@@ -89,7 +89,7 @@ int clock_task_func(void* data)
 				}
 			}
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			DrawStatusMessage (NULL_PTR);
 			{
 				HEVENT hEvent;
@@ -114,7 +114,7 @@ int clock_task_func(void* data)
 					FreeEvent (hEvent);
 				}
 			}
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 		}
 
 		OnAutoPilot = (BOOLEAN)(
@@ -126,7 +126,7 @@ int clock_task_func(void* data)
 		{
 			DWORD num_ticks;
 
-			SetSemaphore (GraphicsSem);
+			LockCrossThreadMutex (GraphicsLock);
 			num_ticks = GetTimeCounter () - LastTime;
 			if (!OnAutoPilot)
 			{
@@ -159,13 +159,13 @@ int clock_task_func(void* data)
 				cycle_index = (cycle_index + 1) % NUM_CYCLES;
 				delay_count = NUM_DELAYS;
 			}
-			ClearSemaphore (GraphicsSem);
+			UnlockCrossThreadMutex (GraphicsLock);
 
 			LastPilot = OnAutoPilot;
 			LastTime += num_ticks;
 		}
 		
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
+		UnlockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 		SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 	}
 	FinishTask (task);
@@ -215,7 +215,7 @@ SuspendGameClock (void)
 	LockMutex (clock_mutex);
 	if (GameClockRunning ())
 	{
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
+		LockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 		GLOBAL (GameClock.TimeCounter) = 0;
 	}
 	UnlockMutex (clock_mutex);
@@ -228,7 +228,7 @@ ResumeGameClock (void)
 	if (!GameClockRunning ())
 	{
 		GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
+		UnlockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 	}
 	UnlockMutex (clock_mutex);
 }
@@ -245,7 +245,7 @@ SetGameClockRate (COUNT seconds_per_day)
 	SIZE new_day_in_ticks, new_tick_count;
 
 //if (GLOBAL (GameClock.clock_sem)) fprintf (stderr, "%u\n", GLOBAL (GameClock.clock_sem));
-	SetSemaphore (GLOBAL (GameClock.clock_sem));
+	LockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 	new_day_in_ticks = (SIZE)(seconds_per_day * CLOCK_BASE_FRAMERATE);
 	if (GLOBAL (GameClock.day_in_ticks) == 0)
 		new_tick_count = new_day_in_ticks;
@@ -256,7 +256,7 @@ SetGameClockRate (COUNT seconds_per_day)
 		new_tick_count = 1;
 	GLOBAL (GameClock.day_in_ticks) = new_day_in_ticks;
 	GLOBAL (GameClock.tick_count) = new_tick_count;
-	ClearSemaphore (GLOBAL (GameClock.clock_sem));
+	UnlockCrossThreadMutex (GLOBAL (GameClock.clock_lock));
 }
 
 BOOLEAN
