@@ -139,7 +139,7 @@ _GetMusicData (FILE *fp, DWORD length)
             switch (optWhichMusic)
             {
                 default:
-                case MUSIC_3DO:
+                case OPT_3DO:
                 {
                     char threedoname[1000];
                     
@@ -151,7 +151,7 @@ _GetMusicData (FILE *fp, DWORD length)
                     }                    
                     break;   
                 }
-                case MUSIC_PC:
+                case OPT_PC:
                 {
                     break;
                 }            

@@ -34,7 +34,7 @@ ClearReportArea ()
 	STAMP s;
 	PRIMITIVE prim_row[NUM_CELL_COLS];
 
-	if (optPCfonts)
+	if (optWhichFonts == OPT_PC)
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 21);
 	else
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 18);
@@ -47,7 +47,7 @@ ClearReportArea ()
 		s.origin.x += r.extent.width + 1;
 
 		SetPrimNextLink (&prim_row[i], i + 1);
-		if (optPCfonts)
+		if (optWhichFonts == OPT_PC)
 			SetPrimType (&prim_row[i], STAMP_PRIM);
 		else
 		{
@@ -234,7 +234,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 		FONT OldFont;
 
 		OldFont = SetContextFont (pSolarSysState->SysInfo.PlanetInfo.LanderFont);
-		if (optPCfonts)
+		if (optWhichFonts == OPT_PC)
 		{
 			SetContextFontEffect (ALTERNATE_EFFECT,
 				BUILD_COLOR_RGBA (0x00, 0x00, 0xD6, 0xFF),

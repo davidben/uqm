@@ -128,7 +128,7 @@ FeedbackSetting (BYTE which_setting)
 		case CYBORG_NORMAL_SETTING:
 		case CYBORG_DOUBLE_SETTING:
 		case CYBORG_SUPER_SETTING:
-			if (optPCmenu && which_setting > CYBORG_NORMAL_SETTING)
+			if (optWhichMenu == OPT_PC && which_setting > CYBORG_NORMAL_SETTING)
 			{
 				if (which_setting == CYBORG_DOUBLE_SETTING)
 					strcpy (tmpstr, "+");

@@ -28,12 +28,13 @@
 #include "file.h"
 #include "config.h"
 
-int optWhichMusic = MUSIC_3DO;
+int optWhichMusic = OPT_3DO;
+int optWhichCoarseScan = OPT_3DO;
+int optWhichMenu = OPT_3DO;
+int optWhichFonts = OPT_3DO;
+
 char *configDir, *saveDir, *meleeDir;
 BOOLEAN optSubtitles = TRUE;
-BOOLEAN optPCscan = FALSE;
-BOOLEAN optPCmenu = FALSE;
-BOOLEAN optPCfonts = FALSE;
 
 void
 prepareConfigDir (void) {

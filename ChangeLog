@@ -1,7 +1,7 @@
 Changes towards version 0.2:
+- Added a sane cmd-line naming scheme: --opt=(pc|3do) see --help for more -PBlue
 - Added new font effect (PC-lander messages), and set colors for text -PBlue
 - Use correct font for 'CAPTAIN', 'FUEL', and 'CREW' is status screen -PBlue
-- Changed PC cmd-line options:  now -a font,menu,scan -PhracturedBlue
 - Added gradiated font support (for ship name), and PC-font option -PBlue
 - Minor fixes to PCMenu by fOSSiL, Nic, PhracturedBlue
 - Updated mingw support with better directions, and easier build -PBlue

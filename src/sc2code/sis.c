@@ -378,14 +378,14 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	t.baseline.y = r.corner.y + (SHIP_NAME_HEIGHT - InStatusArea);
 	t.align = ALIGN_CENTER;
 	t.CharCount = (COUNT)~0;
-	if (optPCfonts)
+	if (optWhichFonts == OPT_PC)
 		SetContextFontEffect (GRADIENT_EFFECT, 
 			BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
 			BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 	DrawText (&t);
-	if (optPCfonts)
+	if (optWhichFonts == OPT_PC)
 		SetContextFontEffect (0, 0, 0);
 
 	SetContextForeGroundColor (OldColor);
@@ -579,7 +579,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.origin.x = s.origin.y = 0;
 		s.frame = flagship_status;
 		DrawStamp (&s);
-		if (optPCfonts)
+		if (optWhichFonts == OPT_PC)
 			DrawPC_SIS();
 
 		s.origin.x = 1;
@@ -1091,7 +1091,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 	else
 	{
 		//Don't flash when using the PC menu
-		if (optPCmenu) {
+		if (optWhichMenu == OPT_PC) {
 			if (flash_task)
 			{
 				ClearSemaphore (GraphicsSem);
@@ -1325,7 +1325,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	r.extent.width = RADAR_WIDTH + 2;
 	BatchGraphics ();
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-	if (s.frame && optPCmenu)
+	if (s.frame && optWhichMenu == OPT_PC)
 	{
 		if (beg_index == PM_CREW)
 			sprintf (menu_string[PM_CREW], "crew(%d)", GLOBAL (CrewCost));
@@ -1367,7 +1367,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	}
 	else
 	{
-		if(optPCmenu)
+		if(optWhichMenu == OPT_PC)
 		{
 			r.corner.x -= 1;
 			r.extent.width += 1;

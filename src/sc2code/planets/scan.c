@@ -784,7 +784,7 @@ PickPlanetSide (INPUT_STATE InputState, PMENU_STATE pMS)
 				return (FALSE);
 			}
 
-			if (optPCscan)
+			if (optWhichCoarseScan == OPT_PC)
 				PrintCoarseScanPC ();
 			else
 				PrintCoarseScan3DO ();
@@ -1242,7 +1242,7 @@ ScanSystem (void)
 
 	DrawMenuStateStrings (PM_MIN_SCAN, MenuState.CurState);
 
-	if (optPCscan)
+	if (optWhichCoarseScan == OPT_PC)
 		PrintCoarseScanPC ();
 	else
 		PrintCoarseScan3DO ();

@@ -26,20 +26,17 @@
 #define UQM_MAJOR_VERSION 0
 #define UQM_MINOR_VERSION 13
 
-enum
-{
-	MUSIC_3DO,
-	MUSIC_PC,
-};
+#define OPT_3DO 0x01
+#define OPT_PC  0x02
+#define OPT_ALL 0xFF
+
 extern int optWhichMusic;
+extern int optWhichCoarseScan;
+extern int optWhichMenu;
+extern int optWhichFonts;
 
 extern BOOLEAN optSubtitles;
 
-extern BOOLEAN optPCscan;
-
-extern BOOLEAN optPCmenu;
-
-extern BOOLEAN optPCfonts;
 
 extern char *configDir;
 extern char *meleeDir;

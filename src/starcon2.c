@@ -58,6 +58,17 @@ CDToContentDir (char *contentdir)
 	}
 }
 
+static int
+Check_PC_3DO_opt (char *value, DWORD mask, char *opt)
+{
+	if ((mask & OPT_3DO) && strcmp (value, "3do") == 0)
+		return OPT_3DO;
+	if ((mask & OPT_PC) && strcmp (value, "pc") == 0)
+		return OPT_PC;
+	fprintf (stderr, "Unknown option '%s %s' found!",opt, value);
+	return -1;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -66,7 +77,15 @@ main (int argc, char *argv[])
 	int soundflags = TFB_SOUNDFLAGS_MQAUDIO;
 	int width = 640, height = 480, bpp = 16;
 	int vol;
+	int val;
 	char contentdir[1000];
+
+	enum
+	{
+		CSCAN_OPT = 1000,
+		MENU_OPT,
+		FONT_OPT
+	};
 
 	int option_index = 0, c;
 	static struct option long_options[] = 
@@ -83,11 +102,13 @@ main (int argc, char *argv[])
 		{"musicvol", 1, NULL, 'M'},
 		{"sfxvol", 1, NULL, 'S'},
 		{"speechvol", 1, NULL, 'T'},
-		{"3domusic", 0, NULL, 'e'},
-		{"pcmusic", 0, NULL, 'm'},
 		{"audioquality", 1, NULL, 'q'},
 		{"nosubtitles", 0, NULL, 'u'},
-		{"pcopt", 1, NULL, 'a'},
+		{"music", 1, NULL, 'm'},
+		//  options with no short equivalent
+		{"cscan", 1, NULL, CSCAN_OPT},
+		{"menu", 1, NULL, MENU_OPT},
+		{"font", 1, NULL, FONT_OPT},
 		{0, 0, 0, 0}
 	};
 
@@ -159,12 +180,6 @@ main (int argc, char *argv[])
 					vol = 100;
 				speechVolumeScale = vol / 100.0f;
 			break;
-			case 'e':
-				optWhichMusic = MUSIC_3DO;
-			break;
-			case 'm':
-				optWhichMusic = MUSIC_PC;
-			break;
 			case 'q':
 				if (!strcmp (optarg, "high"))
 				{
@@ -185,22 +200,29 @@ main (int argc, char *argv[])
 		    case 'u':
 			    optSubtitles = FALSE;
 			break;
-			case 'a':
-				{
-					char *thisopt, *optptr = optarg;
-					while (thisopt = strtok (optptr, ","))
-					{
-						optptr= NULL;
-						if (!strcmp (thisopt, "m") || !strcmp (thisopt, "menu"))
-							optPCmenu = TRUE;
-						else if (!strcmp (thisopt, "s") || !strcmp (thisopt, "scan"))
-								optPCscan = TRUE;
-						else if (!strcmp (thisopt, "f") || !strcmp (thisopt, "font"))
-							optPCfonts = TRUE;
-						else
-							printf ("\nUnknown PC option: %s\n", thisopt);
-					}
-				}
+			case 'm':
+				if ((val = Check_PC_3DO_opt (optarg, 
+						OPT_PC | OPT_3DO, 
+						(char *)long_options[option_index].name)) != -1)
+					optWhichMusic = val;
+			break;
+			case CSCAN_OPT:
+				if ((val = Check_PC_3DO_opt (optarg, 
+						OPT_PC | OPT_3DO, 
+						(char *)long_options[option_index].name)) != -1)
+					optWhichCoarseScan = val;
+			break;
+			case MENU_OPT:
+				if ((val = Check_PC_3DO_opt (optarg, 
+						OPT_PC | OPT_3DO, 
+						(char *)long_options[option_index].name)) != -1)
+					optWhichMenu = val;
+			break;
+			case FONT_OPT:
+				if ((val = Check_PC_3DO_opt (optarg, 
+						OPT_PC | OPT_3DO, 
+						(char *)long_options[option_index].name)) != -1)
+					optWhichFonts = val;
 			break;
 			default:
 				printf ("\nOption %s not found!\n", long_options[option_index].name);
@@ -218,15 +240,13 @@ main (int argc, char *argv[])
 				printf("  -M, --musicvol=VOLUME (0-100, default 100)\n");
 				printf("  -S, --sfxvol=VOLUME (0-100, default 100)\n");
 				printf("  -T, --speechvol=VOLUME (0-100, default 100)\n");
-				printf("  -e, --3domusic (default)\n");
-				printf("  -m, --pcmusic\n");
 				printf("  -q, --audioquality=QUALITY (high, medium or low, default medium)\n");
 				printf("  -u, --nosubtitles\n");
-				printf("  -a  --pcopt=font,menu,scan\n");
-				printf("      options are comma seperated (no spaces)\n");
-				printf("      font (or 'f') : use PC fonts\n");
-				printf("      menu (or 'm') : use text menus\n");
-				printf("      scan (or 's') : use text for coarse-scan (not hierogliphics)\n");
+				printf("The following options can take either '3do' or 'pc' as an option:\n");
+				printf("  -m, --music : Music version (default 3do)\n");
+				printf("  --cscan     : coarse-scan display, pc=text, 3do=hieroglyphs (default 3do)\n");
+				printf("  --menu      : menu type, pc=text, 3do=graphical (default 3do)\n");
+				printf("  --font      : font types and colors (default 3do)\n");
 				return 0;
 			break;
 		}
