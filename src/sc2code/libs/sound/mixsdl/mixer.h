@@ -158,7 +158,7 @@ typedef enum
  *  Interface Types
  */
 
-typedef intptr mixSDL_Object;
+typedef intptr_t mixSDL_Object;
 typedef int mixSDL_IntVal;
 
 typedef struct _mixSDL_Buffer

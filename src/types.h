@@ -22,6 +22,12 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#ifdef _MSC_VER
+#	include <stddef.h>
+#else
+#	include <stdint.h>
+#endif
+
 #if defined(__MACOS__)
 
 #	define UQM_INT16   short
@@ -100,18 +106,6 @@ typedef struct
 
 #undef UQM_INT16
 #undef UQM_INT32
-
-#ifdef WIN32
-typedef sint32 intptr;
-#elif defined (WIN64) || defined (_WIN64)
-typedef sint64 intptr;
-#else
-#	if __WORDSIZE == 64
-typedef sint64 intptr;
-#	else
-typedef sint32 intptr;
-	#endif
-#endif
 
 /* Make sure the types really have the right sizes
  * Adapted from SDL
