@@ -203,6 +203,13 @@ START_GAME_STATE
 	ADD_GAME_STATE (SPATHI_VISITS, 3)
 	ADD_GAME_STATE (SPATHI_HOME_VISITS, 3)
 	ADD_GAME_STATE (FOUND_PLUTO_SPATHI, 2)
+			/* 0 - Haven't met Fwiffo.
+			 * 1 - Met Fwiffo on Pluto, now talking to him.
+			 * 2 - Met Fwiffo on Pluto, after dialog.
+			 * 3 - Met Fwiffo, and have reported to the Safe Ones on
+			 *     the Spathi moon that he was either killed, or that
+			 *     you have him on board.
+			 */
 	ADD_GAME_STATE (SPATHI_SHIELDED_SELVES, 1)
 	ADD_GAME_STATE (SPATHI_CREATURES_EXAMINED, 1)
 	ADD_GAME_STATE (SPATHI_CREATURES_ELIMINATED, 1)
@@ -570,8 +577,17 @@ START_GAME_STATE
 	ADD_GAME_STATE (MELNORME_HISTORY_INFO_STACK, 5)
 
 	ADD_GAME_STATE (RAINBOW_WORLD0, 8)
+			/* Low byte of a bit array, one bit per rainbow world.
+			 * Each bit is set if the rainbow world has been visited.
+			 * The lowest bit is for the first star in the star_array
+			 * with RAINBOW_DEFINED, and so on.
+			 */
 	ADD_GAME_STATE (RAINBOW_WORLD1, 2)
+			/* High byte of the bit array of which RAINBOW_WORLD0
+			 * is the low byte.
+			 */
 	ADD_GAME_STATE (MELNORME_RAINBOW_COUNT, 4)
+			/* The number of rainbow world locations sold to the Melnorme. */
 
 	ADD_GAME_STATE (USED_BROADCASTER, 1)
 	ADD_GAME_STATE (BROADCASTER_RESPONSE, 1)
