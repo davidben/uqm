@@ -44,6 +44,8 @@ CONTROLLER_INPUT_STATE CurrentInputState;
 MENU_INPUT_STATE CurrentMenuState;
 static MENU_INPUT_STATE CachedMenuState, OldMenuState;
 static MENU_ANNOTATIONS RepeatDelays, Times;
+static DWORD GestaltRepeatDelay, GestaltTime;
+static BOOLEAN OldGestalt, CachedGestalt;
 static DWORD _max_accel, _min_accel, _step_accel;
 static BOOLEAN _gestalt_keys;
 int ExitState;
@@ -93,6 +95,7 @@ ResetKeyRepeat (void)
 	RepeatDelays.page_down = _max_accel;
 	RepeatDelays.zoom_in   = _max_accel;
 	RepeatDelays.zoom_out  = _max_accel;
+	GestaltRepeatDelay     = _max_accel;
 	Times.up        = initTime;
 	Times.down      = initTime;
 	Times.left      = initTime;
@@ -104,27 +107,7 @@ ResetKeyRepeat (void)
 	Times.page_down = initTime;
 	Times.zoom_in   = initTime;
 	Times.zoom_out  = initTime;
-}
-
-static void
-_check_gestalt (void)
-{
-	BOOLEAN reset = FALSE;
-	if (OldMenuState.up != CachedMenuState.up) reset = TRUE;
-	if (OldMenuState.down != CachedMenuState.down) reset = TRUE;
-	if (OldMenuState.left != CachedMenuState.left) reset = TRUE;
-	if (OldMenuState.right != CachedMenuState.right) reset = TRUE;
-	if (OldMenuState.select != CachedMenuState.select) reset = TRUE;
-	if (OldMenuState.cancel != CachedMenuState.cancel) reset = TRUE;
-	if (OldMenuState.special != CachedMenuState.special) reset = TRUE;
-	if (OldMenuState.page_up != CachedMenuState.page_up) reset = TRUE;
-	if (OldMenuState.page_down != CachedMenuState.page_down) reset = TRUE;
-	if (OldMenuState.zoom_in != CachedMenuState.zoom_in) reset = TRUE;
-	if (OldMenuState.zoom_out != CachedMenuState.zoom_out) reset = TRUE;
-	if (reset)
-	{
-		ResetKeyRepeat ();
-	}
+	GestaltTime     = initTime;
 }
 
 static void
@@ -154,6 +137,46 @@ _check_for_pulse (int *current, int *cached, int *old, DWORD *accel, DWORD *newt
 	}
 }
 
+static void
+_check_gestalt (DWORD NewTime)
+{
+	BOOLEAN CurrentGestalt;
+	OldGestalt = CachedGestalt;
+	CachedGestalt = ImmediateMenuState.up || ImmediateMenuState.down || ImmediateMenuState.left || ImmediateMenuState.right;
+	CurrentGestalt = CurrentMenuState.up || CurrentMenuState.down || CurrentMenuState.left || CurrentMenuState.right;
+	if (OldGestalt && CachedGestalt)
+	{
+		if (NewTime - GestaltTime < GestaltRepeatDelay)
+		{
+			CurrentMenuState.up = 0;
+			CurrentMenuState.down = 0;
+			CurrentMenuState.left = 0;
+			CurrentMenuState.right = 0;
+		}
+		else
+		{
+			CurrentMenuState.up = CachedMenuState.up;
+			CurrentMenuState.down = CachedMenuState.down;
+			CurrentMenuState.left = CachedMenuState.left;
+			CurrentMenuState.right = CachedMenuState.right;
+			if (GestaltRepeatDelay > _min_accel)
+				GestaltRepeatDelay -= _step_accel;
+			if (GestaltRepeatDelay < _min_accel)
+				GestaltRepeatDelay = _min_accel;
+			GestaltTime = NewTime;
+		}
+	}
+	else
+	{
+		CurrentMenuState.up = CachedMenuState.up;
+		CurrentMenuState.down = CachedMenuState.down;
+		CurrentMenuState.left = CachedMenuState.left;
+		CurrentMenuState.right = CachedMenuState.right;
+		GestaltTime = NewTime;
+		GestaltRepeatDelay = _max_accel;
+	}
+}
+
 void
 UpdateInputState (void)
 {
@@ -174,15 +197,18 @@ UpdateInputState (void)
 	CurrentInputState = ImmediateInputState;
 	OldMenuState = CachedMenuState;
 	CachedMenuState = ImmediateMenuState;
+	NewTime = GetTimeCounter ();
 	if (_gestalt_keys)
 	{
-		_check_gestalt ();
+		_check_gestalt (NewTime);
 	}
-	NewTime = GetTimeCounter ();
-	_check_for_pulse(&CurrentMenuState.up, &CachedMenuState.up, &OldMenuState.up, &RepeatDelays.up, &NewTime, &Times.up);
-	_check_for_pulse(&CurrentMenuState.down, &CachedMenuState.down, &OldMenuState.down, &RepeatDelays.down, &NewTime, &Times.down);
-	_check_for_pulse(&CurrentMenuState.left, &CachedMenuState.left, &OldMenuState.left, &RepeatDelays.left, &NewTime, &Times.left);
-	_check_for_pulse(&CurrentMenuState.right, &CachedMenuState.right, &OldMenuState.right, &RepeatDelays.right, &NewTime, &Times.right);
+	else
+	{
+		_check_for_pulse(&CurrentMenuState.up, &CachedMenuState.up, &OldMenuState.up, &RepeatDelays.up, &NewTime, &Times.up);
+		_check_for_pulse(&CurrentMenuState.down, &CachedMenuState.down, &OldMenuState.down, &RepeatDelays.down, &NewTime, &Times.down);
+		_check_for_pulse(&CurrentMenuState.left, &CachedMenuState.left, &OldMenuState.left, &RepeatDelays.left, &NewTime, &Times.left);
+		_check_for_pulse(&CurrentMenuState.right, &CachedMenuState.right, &OldMenuState.right, &RepeatDelays.right, &NewTime, &Times.right);
+	}
 	_check_for_pulse(&CurrentMenuState.select, &CachedMenuState.select, &OldMenuState.select, &RepeatDelays.select, &NewTime, &Times.select);
 	_check_for_pulse(&CurrentMenuState.cancel, &CachedMenuState.cancel, &OldMenuState.cancel, &RepeatDelays.cancel, &NewTime, &Times.cancel);
 	_check_for_pulse(&CurrentMenuState.special, &CachedMenuState.special, &OldMenuState.special, &RepeatDelays.special, &NewTime, &Times.special);

@@ -1,4 +1,6 @@
 Changes towards version 0.3:
+- Gestalt mode accelerates continuously as long as some key is held; 
+  should resolve to PC-style input wrt bug #381 - Michael
 - Fixed some more false key cancels, addressing 378 again - Michael
 - Added "gestalt mode" for acceleration cancels; fixes #381 - Michael
 - Fixed some "false key cancels" in the input system, addressing bugs 
