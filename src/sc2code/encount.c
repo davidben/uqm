@@ -23,6 +23,7 @@
 static BOOLEAN
 DoSelectAction (PMENU_STATE pMS)
 {
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		pMS->CurState = ATTACK + 1;

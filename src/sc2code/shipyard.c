@@ -643,6 +643,11 @@ DoModifyShips (PMENU_STATE pMS)
 		SBYTE dx = 0, dy = 0;
 		BYTE NewState;
 
+		if (!(pMS->delta_item & MODIFY_CREW_FLAG))
+		{
+			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+		}
+
 		if (CurrentMenuState.right) dx = 1;
 		if (CurrentMenuState.left) dx = -1;
 		if (CurrentMenuState.up) dy = -1;
@@ -709,7 +714,15 @@ DoModifyShips (PMENU_STATE pMS)
 						&GLOBAL (built_ship_q), hStarShip
 						);
 			}
-
+			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip)) 
+			{
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+			}
+			else
+			{
+				SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+			}
+	
 			LockMutex (GraphicsLock);
 
 #ifdef WANT_SHIP_SPINS
@@ -759,6 +772,7 @@ DoModifyShips (PMENU_STATE pMS)
 						SetFlashRect ((PRECT)~0L, (FRAME)0);
 						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
+						SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 					}
 					else if (select)
 					{
@@ -845,7 +859,9 @@ DoModifyShips (PMENU_STATE pMS)
 					}
 					
 					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
+					{
 						goto ChangeFlashRect;
+					}
 					else if (hStarShip == 0)
 					{
 						SetContext (StatusContext);
@@ -1201,6 +1217,7 @@ DoShipyard (PMENU_STATE pMS)
 	select = CurrentMenuState.select;
 	cancel = CurrentMenuState.cancel;
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = DoShipyard;

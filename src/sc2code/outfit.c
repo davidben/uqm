@@ -181,6 +181,8 @@ DoInstallModule (PMENU_STATE pMS)
 	cancel = CurrentMenuState.cancel;
 	motion = CurrentMenuState.left || CurrentMenuState.right || CurrentMenuState.up || CurrentMenuState.down;
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
 	FirstItem = 0;
 	switch (NewState = pMS->CurState)
 	{
@@ -754,6 +756,16 @@ ExitOutfit:
 	}
 	else
 	{
+		switch (pMS->CurState)
+		{
+			case OUTFIT_DOFUEL:
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+				break;
+			default:
+				SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+				break;
+		}
+
 		if (pMS->CurState == OUTFIT_DOFUEL)
 			ChangeFuelQuantity ();
 		else

@@ -289,6 +289,7 @@ LastActivity = WON_LAST_BATTLE;
 
 			FlushInput ();
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 			DoInput ((PVOID)&MenuState, TRUE);
 			
 			LockMutex (GraphicsLock);

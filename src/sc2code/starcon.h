@@ -171,6 +171,21 @@ extern void Introduction (void);
 int initIO (void);
 void uninitIO (void);
 
+/* Constants for DoInput */
+typedef UWORD MENU_SOUND_FLAGS;
+#define MENU_SOUND_UP       ((MENU_SOUND_FLAGS)(1 << 0))
+#define MENU_SOUND_DOWN     ((MENU_SOUND_FLAGS)(1 << 1))
+#define MENU_SOUND_LEFT     ((MENU_SOUND_FLAGS)(1 << 2))
+#define MENU_SOUND_RIGHT    ((MENU_SOUND_FLAGS)(1 << 3))
+#define MENU_SOUND_SELECT   ((MENU_SOUND_FLAGS)(1 << 4))
+#define MENU_SOUND_CANCEL   ((MENU_SOUND_FLAGS)(1 << 5))
+#define MENU_SOUND_SPECIAL  ((MENU_SOUND_FLAGS)(1 << 6))
+#define MENU_SOUND_PAGEUP   ((MENU_SOUND_FLAGS)(1 << 7))
+#define MENU_SOUND_PAGEDOWN ((MENU_SOUND_FLAGS)(1 << 8))
+#define MENU_SOUND_DELETE   ((MENU_SOUND_FLAGS)(1 << 9))
+#define MENU_SOUND_ARROWS   (MENU_SOUND_UP | MENU_SOUND_DOWN | MENU_SOUND_LEFT | MENU_SOUND_RIGHT)
+#define MENU_SOUND_NONE     ((MENU_SOUND_FLAGS)0)
+
 extern void SetFlashRect (PRECT pRect, FRAME f);
 
 extern void DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR
@@ -179,6 +194,8 @@ extern void DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR
 extern BOOLEAN ConfirmExit (void);
 extern DWORD SeedRandomNumbers (void);
 extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
+void SetMenuSounds (MENU_SOUND_FLAGS sound_0, MENU_SOUND_FLAGS sound_1);
+void GetMenuSounds (MENU_SOUND_FLAGS *sound_0, MENU_SOUND_FLAGS *sound_1);
 extern BOOLEAN Battle (void);
 extern void EncounterBattle (void);
 extern void SetPlayerInput (void);

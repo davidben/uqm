@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fine-grained control of menu sounds, "MenuSounds" global now 
+  guaranteed to always be non-null  -Michael
 - Added support for stdio file access through temporary files to uio.
   added uio_copyFile to uio - SvdB
 - Added uio_getFileLocation() and uio_getMountFileSystemType() to uio.

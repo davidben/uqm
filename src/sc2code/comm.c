@@ -1557,6 +1557,8 @@ AlienTalkSegue (COUNT wait_track)
 static BOOLEAN
 DoCommunication (PENCOUNTER_STATE pES)
 {
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
+
 	if (!(CommData.AlienTransitionDesc.AnimFlags & (TALK_INTRO | TALK_DONE)))
 	{
 		AlienTalkSegue ((COUNT)~0);

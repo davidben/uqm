@@ -844,6 +844,8 @@ DoLoadTeam (PMELEE_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN, MENU_SOUND_SELECT);
+
 	if (!pMS->Initialized)
 	{
 		LockMutex (GraphicsLock);
@@ -1164,6 +1166,7 @@ DoEdit (PMELEE_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT | MENU_SOUND_DELETE);
 	if (!pMS->Initialized)
 	{
 		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
@@ -1307,6 +1310,8 @@ DoPickShip (PMELEE_STATE pMS)
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	if (pMS->Initialized <= 0)
 	{
@@ -1585,6 +1590,7 @@ DoMelee (PMELEE_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)
 	{
 		pMS->Initialized = TRUE;
@@ -2049,6 +2055,7 @@ Melee (void)
 		MenuState.side = 0;
 		MenuState.star_bucks[0] = GetTeamValue (&MenuState.TeamImage[0]);
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput ((PVOID)&MenuState, TRUE);
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);

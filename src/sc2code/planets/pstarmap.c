@@ -1078,7 +1078,6 @@ DoneSphereGrowth:
 static BOOLEAN
 DoStarMap (void)
 {
-	SOUND OldMenuSounds;
 	MENU_STATE MenuState;
 	POINT universe;
 	//FRAME OldFrame;
@@ -1134,11 +1133,9 @@ DoStarMap (void)
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
-	OldMenuSounds = MenuSounds;
-	MenuSounds = 0;
-
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput ((PVOID)&MenuState, FALSE);
-	MenuSounds = OldMenuSounds;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	pMenuState = 0;
 

@@ -444,6 +444,8 @@ DoNaming (PMENU_STATE pMS)
 		DoInput (pMS, TRUE);
 		DisableCharacterMode ();
 
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
 		pMS->InputFunc = DoSettings;
 		pMS->CurState = (BYTE)pMS->delta_item;
 		pMS->delta_item = 0;
@@ -502,6 +504,7 @@ DoSettings (PMENU_STATE pMS)
 		return (FALSE);
 
 	cur_speed = (BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >> COMBAT_SPEED_SHIFT;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)
 	{
 		DrawMenuStateStrings (PM_SOUND_ON, pMS->CurState);
@@ -570,6 +573,8 @@ DoQuitMenu (PMENU_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	if (!pMS->Initialized)
 	{
@@ -984,6 +989,7 @@ DoPickGame (PMENU_STATE pMS)
 		return (FALSE);
 	}
 	first_time = (BOOLEAN)(pMS->Initialized == 0);
+	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN, MENU_SOUND_SELECT);
 
 	if (!pMS->Initialized)
 	{
@@ -1288,8 +1294,7 @@ PickGame (PMENU_STATE pMS)
 	pMS->CurString = (STRING)&desc_array[0];
 	UnlockMutex (GraphicsLock);
 
-	DoInput (pMS, TRUE);
-
+	DoInput (pMS, TRUE); 
 	LockMutex (GraphicsLock);
 	pMS->Initialized = -1;
 	pMS->InputFunc = DoGameOptions;
@@ -1357,6 +1362,8 @@ DoGameOptions (PMENU_STATE pMS)
 	if (LastActivity == CHECK_LOAD)
 		force_select = TRUE;
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
 	if (pMS->Initialized <= 0)
 	{
 		if (LastActivity == CHECK_LOAD)
@@ -1410,6 +1417,7 @@ GameOptions (void)
 
 	MenuState.InputFunc = DoGameOptions;
 	MenuState.CurState = SAVE_GAME;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput ((PVOID)&MenuState, TRUE);
 
 	pLocMenuState = 0;

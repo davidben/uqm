@@ -150,6 +150,8 @@ DoConfirmExit (void)
 			if (CurrentMenuState.select)
 			{
 				done = TRUE;
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			}
 			else if (CurrentMenuState.cancel)
 			{
@@ -160,6 +162,9 @@ DoConfirmExit (void)
 			{
 				response = !response;
 				DrawConfirmationWindow (response);
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 0),
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+
 			}
 			TaskSwitch ();
 		} while (!done);

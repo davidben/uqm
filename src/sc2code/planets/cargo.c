@@ -358,6 +358,7 @@ Cargo (PMENU_STATE pMS)
 	DrawStatusMessage ((UNICODE *)~0);
 	UnlockMutex (GraphicsLock);
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput ((PVOID)pMS, TRUE);
 
 	pMS->InputFunc = DoFlagshipCommands;

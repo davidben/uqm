@@ -1926,6 +1926,7 @@ ExploreSolarSys (void)
 	SolarSysState.GenFunc = GenerateIP (CurStarDescPtr->Index);
 
 	InitSolarSys ();
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput ((PVOID)&SolarSysState.MenuState, FALSE);
 	UninitSolarSys ();
 	pSolarSysState = 0;

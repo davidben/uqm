@@ -669,11 +669,7 @@ PickPlanetSide (PMENU_STATE pMS)
 	{
 		pMS->InputFunc = PickPlanetSide;
 		SetMenuRepeatDelay (0, 0, 0, FALSE);
-		if (pMS->CurFrame == 0)
-		{
-			pMS->CurFrame = (FRAME)MenuSounds;
-			MenuSounds = 0;
-		}
+		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 		if (!select)
 		{
 			RECT r;
@@ -706,8 +702,7 @@ PickPlanetSide (PMENU_STATE pMS)
 	{
 		STAMP s;
 
-		MenuSounds = (SOUND)pMS->CurFrame;
-		pMS->CurFrame = 0;
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL_PTR);
@@ -801,15 +796,12 @@ PickPlanetSide (PMENU_STATE pMS)
 		UnlockMutex (GraphicsLock);
 
 ExitPlanetSide:
-		if (pMS->CurFrame)
-		{
-			MenuSounds = (SOUND)pMS->CurFrame;
-			pMS->CurFrame = 0;
-		}
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 		pMS->InputFunc = DoScan;
 		pMS->CurState = DISPATCH_SHUTTLE;
 		SetDefaultMenuRepeatDelay ();
+		return (FALSE);
 	}
 	else
 	{
@@ -1019,7 +1011,7 @@ DoScan (PMENU_STATE pMS)
 		
 			pMS->Initialized = FALSE;
 			pMS->CurFrame = 0;
-			return (PickPlanetSide (pMS));
+			return PickPlanetSide (pMS);
 		}
 
 		pSolarSysState->MenuState.Initialized += 4;
@@ -1235,6 +1227,7 @@ ScanSystem (void)
 		PrintCoarseScan3DO ();
 
 	pMenuState = &MenuState;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput ((PVOID)&MenuState, FALSE);
 	pMenuState = 0;
 

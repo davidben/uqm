@@ -225,6 +225,15 @@ DoModifyRoster (PMENU_STATE pMS)
 	down = CurrentMenuState.down;
 	horiz = CurrentMenuState.left || CurrentMenuState.right;
 
+	if (pMS->Initialized && (pMS->CurState & SHIP_TOGGLE))
+	{
+		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+	}
+	else
+	{
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	}
+
 	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = DoModifyRoster;
@@ -436,6 +445,7 @@ Roster (void)
 		
 		MenuState.flash_frame0 = (FRAME)ship_pos;
 		MenuState.flash_frame1 = (FRAME)modified_ship_pos;
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput ((PVOID)&MenuState, TRUE);
 
 		pMenuState = pOldMenuState;

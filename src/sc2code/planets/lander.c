@@ -611,7 +611,7 @@ CheckObjectCollision (COUNT index)
 									&& CurStarDescPtr->Index != ANDROSYNTH_DEFINED)
 							{
 								UnbatchGraphics ();
-								DoDiscoveryReport (pPSD->OldMenuSounds);
+								DoDiscoveryReport (MenuSounds);
 								BatchGraphics ();
 							}
 							if (ElementPtr->mass_points == 0)
@@ -1890,8 +1890,6 @@ PlanetSide (PMENU_STATE pMS)
 
 	memset ((PPLANETSIDE_DESC)&PSD, 0, sizeof (PSD));
 	PSD.InTransit = TRUE;
-	PSD.OldMenuSounds = MenuSounds;
-	MenuSounds = 0;
 
 	PSD.TectonicsChance =
 			TectonicsChanceTab[pSolarSysState->SysInfo.PlanetInfo.Tectonics];
@@ -1973,6 +1971,7 @@ PlanetSide (PMENU_STATE pMS)
 
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPlanetSide;
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput ((PVOID)pMS, FALSE);
 
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -2079,7 +2078,7 @@ PlanetSide (PMENU_STATE pMS)
 	}
 
 	ZeroVelocityComponents (&GLOBAL (velocity));
-	MenuSounds = PSD.OldMenuSounds;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	
 	pSolarSysState->MenuState.Initialized -= 4;
 	pSolarSysState->PauseRotate = 0;

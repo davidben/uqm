@@ -50,6 +50,8 @@ static DWORD _max_accel, _min_accel, _step_accel;
 static BOOLEAN _gestalt_keys;
 int ExitState;
 
+static MENU_SOUND_FLAGS sound_0, sound_1;
+
 volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 volatile MENU_INPUT_STATE       ImmediateMenuState;
 
@@ -269,6 +271,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 	}
 	do
 	{
+		MENU_SOUND_FLAGS input;
 		TaskSwitch ();
 
 		UpdateInputState ();
@@ -284,17 +287,25 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 
 		if (CurrentInputState.exit)
 			ExitState = ConfirmExit ();
+
+		input = MENU_SOUND_NONE;
+		if (CurrentMenuState.up) input |= MENU_SOUND_UP;
+		if (CurrentMenuState.down) input |= MENU_SOUND_DOWN;
+		if (CurrentMenuState.left) input |= MENU_SOUND_LEFT;
+		if (CurrentMenuState.right) input |= MENU_SOUND_RIGHT;
+		if (CurrentMenuState.select) input |= MENU_SOUND_SELECT;
+		if (CurrentMenuState.cancel) input |= MENU_SOUND_CANCEL;
+		if (CurrentMenuState.special) input |= MENU_SOUND_SPECIAL;
+		if (CurrentMenuState.page_up) input |= MENU_SOUND_PAGEUP;
+		if (CurrentMenuState.page_down) input |= MENU_SOUND_PAGEDOWN;
+		if (CurrentMenuState.del) input |= MENU_SOUND_DELETE;
 			
 		if (MenuSounds
 				&& (pSolarSysState == 0
 						/* see if in menu */
 				|| pSolarSysState->MenuState.CurState
 				|| pSolarSysState->MenuState.Initialized > 2)
-				&& (CurrentMenuState.select
-				||  CurrentMenuState.up
-				||  CurrentMenuState.down
-				||  CurrentMenuState.left
-				||  CurrentMenuState.right)
+		                && (input & (sound_0 | sound_1))
 #ifdef NEVER
 				&& !PLRPlaying ((MUSIC_REF)~0)
 #endif /* NEVER */
@@ -303,7 +314,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 			SOUND S;
 
 			S = MenuSounds;
-			if (CurrentMenuState.select)
+			if (input & sound_1)
 				S = SetAbsSoundIndex (S, 1);
 
 			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
@@ -316,6 +327,21 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 	}
 
 }
+
+void
+SetMenuSounds (MENU_SOUND_FLAGS s0, MENU_SOUND_FLAGS s1)
+{
+	sound_0 = s0;
+	sound_1 = s1;
+}
+
+void
+GetMenuSounds (MENU_SOUND_FLAGS *s0, MENU_SOUND_FLAGS *s1)
+{
+	*s0 = sound_0;
+	*s1 = sound_1;
+}
+
 
 BATTLE_INPUT_STATE
 p1_combat_summary (void)

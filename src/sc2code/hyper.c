@@ -1614,6 +1614,7 @@ UnbatchGraphics ();
 	SetFlashRect ((PRECT)~0L, (FRAME)0);
 	UnlockMutex (GraphicsLock);
 
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput ((PVOID)&MenuState, TRUE);
 
 	LockMutex (GraphicsLock);

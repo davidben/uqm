@@ -315,7 +315,7 @@ GenerateVUX (BYTE control)
 
 						pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
 						UnbatchGraphics ();
-						DoDiscoveryReport (pPSD->OldMenuSounds);
+						DoDiscoveryReport (MenuSounds);
 						BatchGraphics ();
 						pPSD->InTransit = TRUE;
 

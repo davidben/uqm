@@ -279,6 +279,7 @@ DoStarBase (PMENU_STATE pMS)
 		pMS->CurState = DEPART_BASE;
 		goto ExitStarBase;
 	}
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	if (!pMS->Initialized)
 	{
@@ -385,6 +386,7 @@ ExitStarBase:
 					break;
 			}
 
+			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 			DoInput ((PVOID)pMS, TRUE);
 
 			pMS->Initialized = FALSE;

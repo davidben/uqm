@@ -445,6 +445,7 @@ TFB_VideoInput (VIDEO_REF VidRef)
 	vis.InputFunc = TFB_DoVideoInput;
 	vis.CurVideo = VidRef;
 
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput (&vis, TRUE);
 }
 
