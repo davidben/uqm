@@ -1014,7 +1014,9 @@ Restart:
 	}
 	else if (CurrentMenuState.cancel)
 	{
+		LockMutex (GraphicsLock);
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		UnlockMutex (GraphicsLock);
 		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
 		ResumeMusic ();

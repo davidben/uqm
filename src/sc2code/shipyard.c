@@ -755,7 +755,9 @@ DoModifyShips (PMENU_STATE pMS)
 					else if (cancel)
 					{
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
+						LockMutex (GraphicsLock);
 						SetFlashRect ((PRECT)~0L, (FRAME)0);
+						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 					}
 					else if (select)

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Patches to enforce the invariant that the GraphicsLock is held when 
+  SetFlashRect is called (bug #504) -Michael
 - Major refactoring of threadlib; see doc/devel/threads -Michael
 - Downgraded the GraphicsLock to an ordinary Mutex -Michael
 - Added movie player; only movies defined are intro and ending;
