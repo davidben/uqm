@@ -53,7 +53,6 @@ main (int argc, char *argv[])
 	int gfxflags = 0;
 	int soundflags = TFB_SOUNDFLAGS_MQAUDIO;
 	int width = 640, height = 480, bpp = 16;
-	int frequency = 44100;
 	int vol;
 	char contentdir[1000];
 	char str[1000];
