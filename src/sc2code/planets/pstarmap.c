@@ -1221,21 +1221,23 @@ DoFlagshipCommands (INPUT_STATE InputState, PMENU_STATE pMS)
 						if (GameOptions () == 0)
 							return (FALSE);
 						
-
-						ClearSISRect(DRAW_SIS_DISPLAY);
-						DrawSISFrame();
-						RepairSISBorder();
-						DrawSISMessage(NULL_PTR);
-						DrawSISTitle(GLOBAL_SIS(PlanetName));
-						DrawStarBackGround(TRUE);
-						OldContext = SetContext(SpaceContext);
-						SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
-						SetSemaphore(GraphicsSem);
-						BatchGraphics();
-						DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
-						UnbatchGraphics();
-						SetContext(OldContext);
-						ClearSemaphore(GraphicsSem);
+						if (LOBYTE (GLOBAL(CurrentActivity)) == IN_INTERPLANETARY)
+						{
+							ClearSISRect(DRAW_SIS_DISPLAY);
+							DrawSISFrame();
+							RepairSISBorder();
+							DrawSISMessage(NULL_PTR);
+							DrawSISTitle(GLOBAL_SIS(PlanetName));
+							DrawStarBackGround(TRUE);
+							OldContext = SetContext(SpaceContext);
+							SetContextDrawState(DEST_PIXMAP | DRAW_REPLACE);
+							SetSemaphore(GraphicsSem);
+							BatchGraphics();
+							DrawPlanet(SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+							UnbatchGraphics();
+							SetContext(OldContext);
+							ClearSemaphore(GraphicsSem);
+						}
 // else
 // DrawMenuStateStrings (PM_SCAN, ROSTER + 1);
 						break;
