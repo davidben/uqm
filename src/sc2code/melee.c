@@ -821,7 +821,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 							StarShipPtr = LockStarShip (&master_q, hStarShip);
 							s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
 							DrawStamp (&s);
-							s.origin.x += 18;
+							s.origin.x += 17;
 							UnlockStarShip (&master_q, hStarShip);
 						}
 					}
