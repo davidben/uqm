@@ -185,9 +185,6 @@ LoadSolarSys (void)
 			CurStarDescPtr->star_pt.y)
 			);
 
-	/* 2002-12-20 = fOSSiL = Star size fix
-	 * set the frame index for the star size
-	 */
 	SunFrame = SetAbsFrameIndex (SunFrame,
 			STAR_TYPE (CurStarDescPtr->Type)
 			);
