@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Savegame slot now defaults to the last one used during one execution
+  of uqm (bug #477), from chmmravatar
 - Fixed one-pixel glitch in shipyard when scrapping (bug #461),
   from Paxtez
 - Adjusted subtitle timings when there are no oggs (part of bug #362),

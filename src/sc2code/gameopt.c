@@ -37,6 +37,7 @@ void SaveProblem (void);
 #define SAVES_PER_PAGE 5  //Should divide evenly into MAX_SAVED_GAMES for 'Per-Page' Scrolling
 
 static PMENU_STATE pLocMenuState;
+static BYTE prev_save; //keeps track of the last slot that was saved or loaded
 
 void
 ConfirmSaveLoad (STAMP *MsgStamp)
@@ -987,8 +988,7 @@ DoPickGame (PMENU_STATE pMS)
 	if (!pMS->Initialized)
 	{
 		pMS->delta_item = (SIZE)pMS->CurState;
-		pMS->CurState = NewState = 0;
-
+		pMS->CurState = NewState = prev_save;
 		pMS->InputFunc = DoPickGame;
 		SleepThreadUntil ((DWORD)pMS->CurFrame);
 		pMS->CurFrame = 0;
@@ -1033,6 +1033,7 @@ Restart:
 	else if (CurrentMenuState.select)
 	{
 		pSD = &((SUMMARY_DESC *)pMS->CurString)[pMS->CurState];
+		prev_save = pMS->CurState;
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
 		{
 			SetSemaphore (GraphicsSem);
