@@ -2510,16 +2510,16 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = src_p[0];
-			if (y < h - 2)
+			if (y < h - 1)
 				p[2] = src_p[src->w];
 			else
 				p[2] = 0;
 
 			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (y < h - 2)
+				if (y < h - 1)
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 					{
 						p[1] = src_p[1];
 						p[3] = src_p[src->w + 1];
@@ -2532,7 +2532,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				}
 				else
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 						p[1] = src_p[1];
 					else
 						p[1] = 0;
@@ -2578,16 +2578,16 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = GET_PIX_24BIT (src_p);
-			if (y < h - 2)
+			if (y < h - 1)
 				p[2] = GET_PIX_24BIT (src_p + src->w);
 			else
 				p[2] = 0;
 
 			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (y < h - 2)
+				if (y < h - 1)
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 					{
 						p[1] = GET_PIX_24BIT (src_p + 1);
 						p[3] = GET_PIX_24BIT (src_p + src->w + 1);
@@ -2600,7 +2600,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				}
 				else
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 						p[1] = GET_PIX_24BIT (src_p + 1);
 					else
 						p[1] = 0;
@@ -2646,16 +2646,16 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			p[0] = src_p[0];
-			if (y < h - 2)
+			if (y < h - 1)
 				p[2] = src_p[src->w];
 			else
 				p[2] = 0;
 
 			for (x = region->x; x < xend; ++x, ++src_p)
 			{
-				if (y < h - 2)
+				if (y < h - 1)
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 					{
 						p[1] = src_p[1];
 						p[3] = src_p[src->w + 1];
@@ -2668,7 +2668,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				}
 				else
 				{
-					if (x < w - 2)
+					if (x < w - 1)
 						p[1] = src_p[1];
 					else
 						p[1] = 0;
