@@ -24,7 +24,7 @@
 static Uint8 KeyboardDown[SDLK_LAST];
 #define KBDBUFSIZE (1 << 8)
 static int kbdhead=0, kbdtail=0;
-static SDLKey kbdbuf[KBDBUFSIZE];
+static UNICODE kbdbuf[KBDBUFSIZE];
 
 static int nJoysticks = 0;
 static SDL_Joystick **Joysticks = 0;
@@ -47,6 +47,8 @@ TFB_InitInput (int driver, int flags)
 	(void)flags;
 
 	atexit (TFB_UninitInput);
+
+	SDL_EnableUNICODE(1);
 
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
@@ -113,7 +115,10 @@ ProcessKeyboardEvent(const SDL_Event *Event)
 
 	if (Event->type == SDL_KEYDOWN)
 	{
-		kbdbuf[kbdtail] = k;
+		if (Event->key.keysym.unicode != 0)
+			kbdbuf[kbdtail] = Event->key.keysym.unicode;
+		else
+			kbdbuf[kbdtail] = KBDToUNICODE(k);
 		kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
 		if (kbdtail == kbdhead)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
@@ -316,11 +321,11 @@ GetUNICODEKey (void)
 {
 	if (kbdtail != kbdhead)
 	{
-		SDLKey ch;
+		UNICODE ch;
 
 		ch = kbdbuf[kbdhead];
 		kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-		return KBDToUNICODE(ch);
+		return (ch);
 	}
 	return (0);
 }

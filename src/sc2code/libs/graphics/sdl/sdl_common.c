@@ -69,7 +69,6 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
 	}
 
-	SDL_EnableUNICODE (1);
 	sprintf (caption, "The Ur-Quan Masters v%d.%d", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
 	SDL_WM_SetCaption (caption, NULL);
 
