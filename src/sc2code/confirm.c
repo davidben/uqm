@@ -103,10 +103,13 @@ DoConfirmExit (void)
 		STAMP s;
 		FRAME F;
 		CONTEXT oldContext;
+		RECT oldRect;
 		BOOLEAN response = FALSE, done;
 
 		in_confirm = TRUE;
 		oldContext = SetContext (ScreenContext);
+		GetContextClipRect (&oldRect);
+		SetContextClipRect (NULL_PTR);
 
 		r.extent.width = CONFIRM_WIN_WIDTH + 4;
 		r.extent.height = CONFIRM_WIN_HEIGHT + 4;
@@ -170,6 +173,7 @@ DoConfirmExit (void)
 		ExitRequested = FALSE;
 		GamePaused = FALSE;
 		FlushInput ();
+		SetContextClipRect (&oldRect);
 		SetContext (oldContext);
 	}
 	UnlockMutex (GraphicsLock);
