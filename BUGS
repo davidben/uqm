@@ -1,0 +1,98 @@
+IMPORTANT!
+Before sending new bug reports, read the TODO file, Changelog file,
+and this file. Do not report a bug that has already been reported.
+Time we spend on reading duplicate bug reports could have been spent
+on fixing them. Also note that these files are changed when new bugs
+are found, so if you haven't read them for a while, please do so before
+reporting a bug.
+
+Don't expect a reply on your bug reports. Though we do appreciate them, it
+would take too much time to reply to them all. All bugs will be noted
+and addressed in time.
+
+The TODO file contains verified bugs.
+The Changelog file contains issues fixed since the last release.
+This file contains issues that need further inspection before deciding
+it's a bug.
+
+
+Some general comments:
+- Keyboard problems are very likely caused by your keyboard. Not all
+  keyboards accept all combinations. Results may be that the new key is
+  ignored, or the old key is seen as released (or both).
+  The original PC sc2 had a key jamming program so you could test which
+  combinations had problems. We intend to bring back in some form
+  a key configurationg program and some key jammer (possibly the same
+  program).
+  The only keyboard I know that can accept every key at the same time being
+  pressed are is an old BTC type. For typing it wasn't really that good
+  though IMHO. [Meep-Eep]
+
+
+The bugs reported but not yet verified:
+- "If you win a Melee, and then are blown up (by, say, an asteroid with only 1
+  crew left), the sound loops 'till the game is quit. It still functions, it
+  just has the last 3-or-so seconds after the melee ended repeating over and
+  over in the background."
+
+- "minor graphic glitch around fwiffo's eye"
+
+- "minor sound glitch when fighting the sylandro probe the lightning bolts it
+  uses sounds like lightning on planets"
+
+- "Whenever i'm in autopilot mode in hyperspace and i enter into combat with
+  the slylandro, the combat moves at the fastest speed possible"
+
+- melee: "some times the bottom ships portrait appears on opposite side of
+  the screen"
+
+- "I've tried using 2xSaI and Super2xSaI and neither of them work. Maybe I
+  was configuring something incorrectly, but from what I've read (and
+  experimented with in other SDL programs) it should have worked. I set UQM
+  to 640x480, 16bpp, SDL (not OGL), --scale=sai && --scale=supersai. It
+  always came back with no filtering."
+
+- "After visiting all the rainbow worlds and getting the new melnorme
+  technology (enhancing your planet lander) you aren't able to land on
+  planets anymore.  As soon as your lander hits the surface, it takes off
+  again, as if a key was stuck down (which I checked for, of course..).  I'm
+  sure this is just a minor problem in the lander code, but it does need to
+  be fixed for sure."
+
+- "When getting the planetary reports on the surface (at least with the Moon
+  starbase in the beginning), when changing pages at the '(more)' prompt, the
+  periods are not erased, though everything else is, leaving highlighted
+  pixels around the text are."
+
+- "Have the speech voices turned down? I noticed that even you have the speech
+  voices off, it playes them and it takes a while until it has, how would I
+  say it, "spoken" the speeches. Pretty annoying especially when you don't
+  have the speeches on to just wait for an eternity for the conversation to
+  stop. You notice this also by pressing space immidiately whent the Ur-Quan
+  Drone pops up to bother you."
+
+- "another difference or bug vs. pc version, the sun
+  in all the large stars e.g. alpha centauri is too small"
+
+- "The fuel range calculator on the starmap does not work correctly.  If you
+  set course for a system that apears in range, you will run out of fuel
+  before you get there. "
+
+- "i was at autopilot, and just saved the game.
+  after quitting the game and reloading to save, it continues to fly to
+  sol(the location I have set to auto pilot) only it flies like it flies
+  right, instead of down. probably the flagship images prob"
+
+- Activating Portal scanner sounds the 'device failed' sound.
+
+- "For some odd reason, the new graphical menus are constantly freezing on
+  me.  I've played 15 times so far.  10 times it froze while I was trying to
+  use the menu (in regular, Bilateral, and Sai graphics modes), once while I
+  was landing on a planet (Bilateral), once when talking to Fwiffo
+  (Bilateral), once while leaving a planet (Bilateral), and twice as soon as
+  I pressed the thrust key upon starting the game (only times I ever used
+  SuperSai)." (slow computer)
+
+- "The laser beam for the Arilou ship should be white (I think) but it is
+  displayed as yellow in UQM."
+

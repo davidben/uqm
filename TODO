@@ -10,8 +10,12 @@ Serious bugs (crash the game, high priority):
 - Communication screens nonrepeatably but inevitably hang the system.  This
   is probably a deadlock issue.
   - Often more probable when heavy color table transformations are going on
-- Occasional lockups when entering a star system
-  (only happens when using autopilot?)
+- Load/save code doesn't work perfectly, hangs sometimes when after loading
+  trying to enter some star first time etc
+- In OpenGL mode on Windows lockups frequently occur when entering a
+  star system. Sometimes, no lockup occurs, but the graphics are messed up
+  (doesn't draw background so leaves trails, etc).
+  - This appears to occur more frequently when autopilot is on.
   - Could be related to load/save code too
 
 Glitches (don't crash the game, medium priority):
@@ -68,16 +72,25 @@ Glitches (don't crash the game, medium priority):
 - Melee menu's 5x5 ship selection grid doesn't show up always
   - On win32, works with release build, not debug
   - On linux, works with SDL_mixer, not OpenAL
-- When entering to star system, graphics might go wild
-  (doesn't draw background so leaves trails, etc)
 - Currently some sound effects are perhaps from PC version.. 3DO ones should be
   extracted to check/fix this
-- When saving game in the Outfit Starship menu is done, and game goes
-  back to the outfit, screen doesn't reset itself
-  - Probably happens on some other situations too
+- After saving the game, the screen is not always redrawn
+  - outfit starship
+  - orbit around planet
+  - possibly other situations
 - Team names are switched when selecting next ship to fight with.
+- Druuge speech file 'druuge011.ogg' contains earlier bad take.
+  (save original sample for posterity).
+- Captains portraits in melee aren't updated after a battle.
 - Win32 version runs a bit faster than it should, due to some problems
   with timer accuracies
+- Missing earth missing surface map.
+  eartmap.ani wasn't in the 3DO release. So how was it handled there?
+- precursor ships' crew count is misplaced in melee (SAFE_Y)
+- Dialog choices sometimes exceed the rectangle they're supposed to be
+  bounded by. (SAFE_X?)
+- keys are always referenced as gamepad buttons ("Press (B) to exit")
+- lander speed varies per computer
 
 Implementation bugs (low priority):
 - Scaling code problems:
@@ -101,21 +114,33 @@ Stuff still to do (large):
 - 3d planet view when entering orbit
 - some packaging system for resources. zlib looks like something
   which is suitable for this.
+  Addition: Physfs looks just what we want: http://icculus.org/physfs/
 - reconcile all of the differences between the voice (3DO) script and the
   text script, then do it all again for the PC version.  This will involve
   extensive poking around the 3DO game to make sure that the Human Captain's
   lines are all correct, too.
 - Match timing between subtitles and speech clips
+  - also, currently the subtitles sometimes overlap
 - Intro and end credits (both 3DO and PC version ones)
 - add an install program (in particularly for Windows).
   How to handle the libraries?
-- Configuration and saved games should be written at ~/.sc/ for example, so that
-  game can be installed globally for many users.
+- Configuration and saved games should be written at ~/.sc/ for example, so
+  that game can be installed globally for many users.
+- new resource system. This should enable us to fix a lot of conversation
+  bugs, such as:
+  - Melnorme conversation Will repeat the same sentence 3 times.
+    (because of numbers to be inserted).
+  - In the dialog with the commander, your and the commanders sentences are
+    mixed up in some places.
+  - The Mycons can actually say "Bye sun device"
 
 Stuff still to do (medium size):
 - oscilloscope
 - loading teams in melee
 - pixel-perfect collision checks
+  Currently bounding boxes are used for checks, causing (among others)
+  Spathi and Mycon to frequently hit themselves, and making the Sa-Matra
+  indestructable.
 - remove libtool dependancy
   This will probably mean the empty dummy.c files can be removed too.
   (note that src/sc2code/dummy.c DOES contain data)
@@ -139,14 +164,15 @@ Stuff still to do (small):
   There are at the moment 3 systems: int16, DWORD, and Sint16.
   I suggest we keep int16, as 'word' is confusing. Sint16 is an SDL define
   and should only be used in SDL calls.
+- Kohr-Ah FRIED colour is blue on 3DO (and currently UQM), while red on PC.
+  (add switch?)
+- '-T 0' option to turn speech off doesn't work when using SDL_mixer.
 
 Questions:
 - remove src/sc2code/test.c?
 - Is there some way to automatically do CRLF translations on commits,
   with the -t and -f options in cvswrapper disabled by sourceforge?
 - What is the displist stuff for? Is it needed at all?
-- are there still threads killing themselves instead of just exiting?
-  Answer: "find . -name \*.c | xargs grep Killthread" says "no."
 - w_memlib used (now commented out) MS Windows functions to show messages
   when memory couldn't be allocated. If we want to have those return, some
   work will have to be done. If not, there's some dead code to remove.
