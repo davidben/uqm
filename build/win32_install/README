@@ -1,0 +1,82 @@
+Directions for building the Windows Installer.
+
+it is required that you have cygwin with tar, gzip, 'zip', and perl installed
+  http://www.cygwin.org
+alternatively, steps 3 and 4 can be completed on a linux machine (which
+will probably work better anyway)
+
+The following additional tools are required:
+NSIS 2.0b0 or newer: nsis.sourceforge.net
+NSIS 'ZipDLL' http://nsis.sourceforge.net/archive/download.php?file=ZipDLL.zip
+NSIS 'unTGZ' http://nsis.sourceforge.net/archive/viewpage.php?pageid=84
+
+Optionally:
+upx 1.90 or newer: http://upx.sourceforge.net/#unstable
+resource hacker: http://www.users.on.net/johnson/resourcehacker/
+
+1) Compile uqm.exe
+
+This doesn't seem to work.  If someone can figure outhow to add an icon,
+please update these directions
+#2) Use resource hacker or some other program to  attach the uqm icon:
+#    reshacker -modify uqm.exe,uqm.exe,build\\win32_install\\uqm.ico,icongroup,100,0
+
+2) If you have upx, run it  on uqm.exe as follows:
+    upx --best --crp-ms=100000 uqm.exe
+
+3) Update the 'upgrade' reference.
+   The UQM installer can install either a 'full' version of the content dir
+   or an 'upgrade' from a previous version.  The last official version was
+   0.1 as of Jan 31, 2003.  To build the upgrade, it is necessary to determine
+   what has changed since the previous release.  Each release is taggged in
+   the CVS repository with something like 'version_0_1'.  A perl script is
+   included which can build a list of file versions tagged with a specific tag.
+   The procedure is:
+      cvs log -h > logfile
+      build_contour.pl logfile version_0_1 >content_0_1
+   This will generate a reference contour to compare the current CVS build
+   against.  This only needs to be done once (after each release)
+
+4) Build content .zip files and content.nsh
+     For this procedure, you must have no modifications in the content tree.
+     having additional files won't cause any issues, but there can't be any
+     modified files.
+     use the 'full' option when building a production release where you plan
+     to create a full content directory rather than just the upgrade zip
+      ./build_archives.pl 0.2 content_0_1 [full]
+     This will generate .zip files of the content directory:
+        uqm_0_2_upgrade_0_1.zip
+     and (if 'full' is specified)
+        uqm_0_2_content.zip
+     These files should be uploaded to the disrtibution web page
+
+     It will also generate content.nsh which is a list of all files in the
+     content directory, for use in building the uninstaller
+
+     Lastly, this script will display the sizes of the uncompressed archives
+     which are needed for the next step
+
+5) Modify the install script:
+     Edit uqm.nsi, and change the following variables:
+       MUI_VERSION: The version you are building
+       OLD_VERSION: The earliest version that can be upgraded from
+       MIRROR_LOCATION: Where the mirror file lives (probbaly ok as is)
+       NO_MIRROR_LOCATION: Where to get non-mirrored files from
+       FULL_NEEDS_UPGRADE: If you built the 'content' archive, set  to '0'
+                           otherwise set to '1' (i.e. official builds should
+                           have this set  to '0' dev builds set to '1')
+       CONTENT_USE_MIRROR: Whether to use the mirror for the 'content' archive
+       CONTENT_PACKAGE_FILE: the name of the 'content' file (from step 4)
+       CONTENT_TYPE_ZIP/CONTENT_TYPE_TGZ: set the correct define
+       CONTENT_SIZE: The size of the content archive  (uncompressed)
+
+       UPGRADE_USE_MIRROR: Whether to use the mirror for the 'upgrade' archive
+       UPGRADE_PACKAGE_FILE: the name of the 'upgrade' file (from step 4)
+       UPGRADE_TYPE_ZIP/CONTENT_TYPE_TGZ: set the correct define
+       UPGRADE_SIZE: The size of the upgrade archive  (uncompressed)
+
+6) run NSIS to build the installer:
+     makensis uqm.nsi
+   the installer expects all the dlls to be in the same directory as uqm.exe
+
+7) you should be done.
