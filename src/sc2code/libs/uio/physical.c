@@ -63,12 +63,57 @@ uio_PRoot_new(uio_PDirHandle *topDirHandle,
 	pRoot->handle = handle;
 	pRoot->extra = extra;
 	pRoot->flags = flags;
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+	pRoot->numCloseHandlers = 0;
+	pRoot->closeHandlers = NULL;
+#endif
 
 	return pRoot;
 }
 
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+// Closehandlers code disabled.
+// It was only meant for internal use, but I don't need it any more.
+// Keeping it around for a while until I'm confident I won't need it in the
+// future.
+
+void
+uio_PRoot_addCloseHandler(uio_PRoot *pRoot, void (*fun)(void *), void *arg) {
+	pRoot->numCloseHandlers++;
+	pRoot->closeHandlers = uio_realloc(pRoot->closeHandlers,
+			pRoot->numCloseHandlers * sizeof (uio_PRoot_CloseHandler));
+	pRoot->closeHandlers[pRoot->numCloseHandlers - 1].fun = fun;
+	pRoot->closeHandlers[pRoot->numCloseHandlers - 1].arg = arg;
+}
+
+void
+uio_PRoot_callCloseHandlers(uio_PRoot *pRoot) {
+	int i;
+
+	i = pRoot->numCloseHandlers;
+	while (i--) {
+		uio_PRoot_CloseHandler *closeHandler;
+
+		closeHandler = &pRoot->closeHandlers[i];
+		(closeHandler->fun)(closeHandler->arg);
+	}
+}
+
+void
+uio_PRoot_removeCloseHandlers(uio_PRoot *pRoot) {
+	pRoot->numCloseHandlers = 0;
+	if (pRoot->closeHandlers != NULL)
+		uio_free(pRoot->closeHandlers);
+	pRoot->closeHandlers = NULL;
+}
+#endif
+
 static inline void
 uio_PRoot_delete(uio_PRoot *pRoot) {
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+	uio_PRoot_callCloseHandlers(pRoot);
+	uio_PRoot_removeCloseHandlers(pRoot);
+#endif
 	assert(pRoot->handler->umount != NULL);
 	pRoot->handler->umount(pRoot);
 	if (pRoot->handle)

@@ -51,9 +51,9 @@ static inline void uio_PDirHandle_free(uio_PDirHandle *pDirHandle);
 static inline uio_PFileHandle *uio_PFileHandle_alloc(void);
 static inline void uio_PFileHandle_free(uio_PFileHandle *pFileHandle);
 
-static uio_DirHandle *uio_newDirHandle(uio_Repository *repository, char *path,
+static uio_DirHandle *uio_DirHandle_new(uio_Repository *repository, char *path,
 		char *rootEnd);
-static inline uio_DirHandle *uio_allocDirHandle(void);
+static inline uio_DirHandle *uio_DirHandle_alloc(void);
 static inline void uio_DirHandle_free(uio_DirHandle *dirHandle);
 
 static inline uio_Handle *uio_Handle_alloc(void);
@@ -354,10 +354,10 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 	if (uio_getPhysicalAccess(newDir, newPath, O_WRONLY | O_CREAT | O_EXCL,
 			uio_GPA_NOWRITE, &newReadMountInfo, &newPReadDir, NULL,
 			&newWriteMountInfo, &newPWriteDir, NULL, &newName) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_PDirHandle_unref(oldPReadDir);
 		uio_free(oldName);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -393,13 +393,13 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 	retVal = oldReadMountInfo->pDirHandle->pRoot->handler->rename(
 			oldPReadDir, oldName, newPReadDir, newName);
 	if (retVal == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_PDirHandle_unref(oldPReadDir);
 		uio_PDirHandle_unref(newPReadDir);
 		uio_PDirHandle_unref(newPWriteDir);
 		uio_free(oldName);
 		uio_free(newName);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -469,9 +469,9 @@ uio_statDir(uio_DirHandle *dirHandle, const char *path,
 	}
 
 	if (uio_statOneDir(pDirHandles[0], statBuf) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 	// TODO: atm, fstat'ing a dir will show the info for the topmost
@@ -484,9 +484,9 @@ uio_statDir(uio_DirHandle *dirHandle, const char *path,
 
 		if (statOneDir(pDirHandles[i], &statOne) == -1) {
 			// errno is set
-			int saveErrno = errno;
+			int savedErrno = errno;
 			uio_PDirHandles_delete(pDirHandles, numPDirHandles);
-			errno = saveErrno;
+			errno = savedErrno;
 			return -1;
 		}
 
@@ -536,10 +536,10 @@ uio_mkdir(uio_DirHandle *dir, const char *path, mode_t mode) {
 
 	newDirHandle = pWriteDir->pRoot->handler->mkdir(pWriteDir, name, mode);
 	if (newDirHandle == NULL) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(name);
 		uio_PDirHandle_unref(pWriteDir);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -597,11 +597,11 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 				// file needs to be copied
 				if (uio_copyFilePhysical(readPDirHandle, name, writePDirHandle,
 							name) == -1) {
-					int saveErrno = errno;
+					int savedErrno = errno;
 					uio_free(name);
 					uio_PDirHandle_unref(readPDirHandle);
 					uio_PDirHandle_unref(writePDirHandle);
-					errno = saveErrno;
+					errno = savedErrno;
 					return NULL;
 				}
 			}
@@ -623,10 +623,10 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 	handle = pDirHandle->pRoot->handler->open(pDirHandle, name, flags, mode);
 			// Also adds a new entry to the physical dir if appropriate.
 	if (handle == NULL) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(name);
 		uio_PDirHandle_unref(pDirHandle);
-		errno = saveErrno;
+		errno = savedErrno;
 		return NULL;
 	}
 
@@ -640,14 +640,17 @@ uio_openDir(uio_Repository *repository, const char *path, int flags) {
 	uio_DirHandle *dirHandle;
 	const char * const rootStr = "/";
 
-	dirHandle = uio_newDirHandle(repository,
+	dirHandle = uio_DirHandle_new(repository,
 			unconst(rootStr), unconst(rootStr));
+			// dirHandle->path will be replaced before uio_openDir()
+			// exits()
 	if (uio_verifyPath(dirHandle, path, &dirHandle->path) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_DirHandle_free(dirHandle);
-		errno = saveErrno;
+		errno = savedErrno;
 		return NULL;
 	}
+	// dirHandle->path is no longer equal to 'path' at this point.
 	// TODO: increase ref in repository?
 	dirHandle->rootEnd = dirHandle->path;
 	if (flags & uio_OD_ROOT)
@@ -665,12 +668,12 @@ uio_openDirRelative(uio_DirHandle *base, const char *path, int flags) {
 		return NULL;
 	}
 	if (flags & uio_OD_ROOT) {
-		dirHandle = uio_newDirHandle(base->repository,
+		dirHandle = uio_DirHandle_new(base->repository,
 				newPath, newPath + strlen(newPath));
 		// TODO: increase ref in base->repository?
 	} else {
 		// use the root of the base dir
-		dirHandle = uio_newDirHandle(base->repository,
+		dirHandle = uio_DirHandle_new(base->repository,
 				newPath, newPath + (base->rootEnd - base->path));
 	}
 	return dirHandle;
@@ -678,8 +681,7 @@ uio_openDirRelative(uio_DirHandle *base, const char *path, int flags) {
 
 int
 uio_closeDir(uio_DirHandle *dirHandle) {
-	uio_free(dirHandle->path);
-	uio_DirHandle_free(dirHandle);
+	uio_DirHandle_unref(dirHandle);
 	return 0;
 }
 
@@ -765,12 +767,12 @@ uio_rmdir(uio_DirHandle *dirHandle, const char *path) {
 
 err:
 	{
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
 		uio_free(items);
 		if (entry != NULL)
 			uio_PDirEntryHandle_unref(entry);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 }
@@ -875,12 +877,12 @@ uio_unlink(uio_DirHandle *dirHandle, const char *path) {
 
 err:
 	{
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
 		uio_free(items);
 		if (entry != NULL)
 			uio_PDirEntryHandle_unref(entry);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 }
@@ -945,13 +947,13 @@ uio_getFileLocation(uio_DirHandle *dir, const char *inPath,
 				// file needs to be copied
 				if (uio_copyFilePhysical(readPDirHandle, name, writePDirHandle,
 							name) == -1) {
-					int saveErrno = errno;
+					int savedErrno = errno;
 					uio_free(name);
 					uio_PDirHandle_unref(readPDirHandle);
 					uio_free(readPRootPath);
 					uio_PDirHandle_unref(writePDirHandle);
 					uio_free(writePRootPath);
-					errno = saveErrno;
+					errno = savedErrno;
 					return -1;
 				}
 			}
@@ -1054,16 +1056,16 @@ uio_getDirList(uio_DirHandle *dirHandle, const char *path, const char *pattern,
 			matchType);
 
 	{
-		int saveErrno;
-		saveErrno = errno;
+		int savedErrno;
+		savedErrno = errno;
 		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
-		errno = saveErrno;
+		errno = savedErrno;
 	}
 	return result;
 }
 
 // Names and newNames may point to the same location.
-// &numNames and numNewNames may point to the same location.
+// numNewNames may point to &numNames.
 static void
 uio_filterDoubleNames(const char * const *names, int numNames,
 		const char **newNames, int *numNewNames) {
@@ -1538,19 +1540,27 @@ uio_Handle_free(uio_Handle *handle) {
 	uio_free(handle);
 }
 
+// ref count set to 1
 static uio_DirHandle *
-uio_newDirHandle(uio_Repository *repository, char *path, char *rootEnd) {
+uio_DirHandle_new(uio_Repository *repository, char *path, char *rootEnd) {
 	uio_DirHandle *result;
 	
-	result = uio_allocDirHandle();
+	result = uio_DirHandle_alloc();
+	result->ref = 1;
 	result->repository = repository;
 	result->path = path;
 	result->rootEnd = rootEnd;
 	return result;
 }
 
+void
+uio_DirHandle_delete(uio_DirHandle *dirHandle) {
+	uio_free(dirHandle->path);
+	uio_DirHandle_free(dirHandle);
+}
+
 static inline uio_DirHandle *
-uio_allocDirHandle(void) {
+uio_DirHandle_alloc(void) {
 	uio_DirHandle *result = uio_malloc(sizeof (uio_DirHandle));
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugAlloc(uio_DirHandle, (void *) result);

@@ -580,13 +580,13 @@ zip_mount(uio_Handle *handle, int flags) {
 
 	rootDirHandle = uio_PRoot_getRootDirHandle(result);
 	if (zip_fillDirStructure(rootDirHandle->extra, handle) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 #ifdef DEBUG
 		fprintf(stderr, "Error: failed to read the zip directory "
 				"structure - %d.\n", errno);
 #endif
 		uio_GPRoot_umount(result);
-		errno = saveErrno;
+		errno = savedErrno;
 		return NULL;
 	}
 	
@@ -662,11 +662,11 @@ zip_fillDirStructureCentral(uio_GPDir *top, uio_Handle *handle) {
 
 err:
 	{
-		int saveErrno = errno;
+		int savedErrno = errno;
 
 		if (fileBlock != NULL)
 			uio_closeFileBlock(fileBlock);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 }
@@ -845,10 +845,10 @@ zip_findEndOfCentralDirectoryRecord(uio_Handle *handle,
 	bufLen = uio_accessFileBlock(fileBlock, startPos, endPos - startPos + 4,
 			&buf);
 	if (bufLen == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		fprintf(stderr, "Error: Read error while searching for "
 				"'end-of-central-directory record'.\n");
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 	if (bufLen != endPos - startPos + 4) {
@@ -973,8 +973,8 @@ zip_fillDirStructureLocal(uio_GPDir *top, uio_Handle *handle) {
 
 	pos = uio_lseek(handle, 0, SEEK_SET);
 	if (pos == -1) {
-		int saveErrno = errno;
-		errno = saveErrno;
+		int savedErrno = errno;
+		errno = savedErrno;
 		return -1;
 	}
 	if (pos != 0) {
@@ -1015,10 +1015,10 @@ zip_fillDirStructureLocal(uio_GPDir *top, uio_Handle *handle) {
 
 err:
 	{
-		int saveErrno = errno;
+		int savedErrno = errno;
 
 		uio_closeFileBlock(fileBlock);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 }
@@ -1209,9 +1209,9 @@ zip_updateFileDataFromLocalHeader(uio_Handle *handle,
 	}
 	if (zip_updatePFileDataFromLocalFileHeader(gPFileData,
 			fileBlock, gPFileData->headerOffset) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_closeFileBlock(fileBlock);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 	if (gPFileData->ctime == (time_t) 0)

@@ -137,9 +137,9 @@ stdio_stat(uio_PDirHandle *pDirHandle, const char *name,
 
 	result = stat(path, statBuf);
 	if (result == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(path);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -159,9 +159,9 @@ stdio_mkdir(uio_PDirHandle *pDirHandle, const char *name, mode_t mode) {
 	}
 
 	if (MKDIR(path, mode) == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(path);
-		errno = saveErrno;
+		errno = savedErrno;
 		return NULL;
 	}
 	uio_free(path);
@@ -244,10 +244,10 @@ stdio_rename(uio_PDirHandle *oldPDirHandle, const char *oldName,
 	
 	result = rename(oldPath, newPath);
 	if (result == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(oldPath);
 		uio_free(newPath);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -283,9 +283,9 @@ stdio_rmdir(uio_PDirHandle *pDirHandle, const char *name) {
 	
 	result = rmdir(path);
 	if (result == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(path);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 
@@ -319,9 +319,9 @@ stdio_unlink(uio_PDirHandle *pDirHandle, const char *name) {
 	
 	result = unlink(path);
 	if (result == -1) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		uio_free(path);
-		errno = saveErrno;
+		errno = savedErrno;
 		return -1;
 	}
 

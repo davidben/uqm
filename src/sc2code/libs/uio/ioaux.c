@@ -124,9 +124,9 @@ uio_makePath(uio_PDirHandle *pDirHandle, const char *path, size_t pathLen,
 
 		newPDirHandle = mkdirFun(pDirHandle, buf, mode);
 		if (newPDirHandle == NULL) {
-			int saveErrno = errno;
+			int savedErrno = errno;
 			uio_PDirHandle_unref(pDirHandle);
-			errno = saveErrno;
+			errno = savedErrno;
 			return NULL;
 		}
 		uio_PDirHandle_unref(pDirHandle);
@@ -366,8 +366,8 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 			// component is present in this dir.
 			entry = uio_getPDirEntryHandle(pDirHandle, rest);
 			if (entry != NULL) {
-				// Entry is not a dir, as otherwise uio_getPDirEntryHandle
-				// wouldn't have stopped where it did.
+				// 'rest' exists, and it is not a dir, as otherwise
+				// uio_getPDirEntryHandle wouldn't have stopped where it did.
 				uio_PDirEntryHandle_unref(entry);
 				readItem = item;
 				if (readPDirHandle != NULL)
@@ -378,7 +378,9 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 				entryExists = true;
 				break;
 			} else {
-				if (readItem == NULL) {
+				// 'rest' doesn't exist
+				// We're only interested in this dir if we want to write too.
+				if (((flags & O_ACCMODE) != O_RDONLY) && readItem == NULL) {
 					// Keep the first one.
 					readItem = item;
 					assert(readPDirHandle == NULL);
@@ -490,17 +492,17 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		writePDirHandle = uio_makePath(writeItem->mountInfo->pDirHandle,
 				pRootPath, rest - pRootPath, 0777);
 		if (writePDirHandle == NULL) {
-			int saveErrno;
+			int savedErrno;
 			if (errno == ENOSYS) {
 				// mkdir not supported. We want to report that we failed
 				// because of an error in the underlying layer.
 				// EIO sounds like the best choice.
 				errno = EIO;
 			}
-			saveErrno = errno;
+			savedErrno = errno;
 			uio_PDirHandle_unref(readPDirHandle);
 			uio_free(fullPath);
-			errno = saveErrno;
+			errno = savedErrno;
 			return -1;
 		}
 		rest++;  // skip the '/'

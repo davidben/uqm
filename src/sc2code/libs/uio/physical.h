@@ -28,6 +28,7 @@ typedef void *uio_NativeEntriesContext;
 
 // 'forward' declarations
 typedef struct uio_PRoot uio_PRoot;
+typedef struct uio_PRoot_CloseHandler uio_PRoot_CloseHandler;
 
 
 #include "iointrn.h"
@@ -55,14 +56,31 @@ struct uio_PRoot {
 			/* The handle through which this PRoot is opened,
 			 * this is NULL for the top PRoot */
 			// TODO: move this to extra?
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+	int numCloseHandlers;
+	uio_PRoot_CloseHandler *closeHandlers;
+#endif
 	uio_PRootExtra extra;
 			/* extra internal data for some filesystem types */
 };
+
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+struct uio_PRoot_CloseHandler {
+	void (*fun)(void *);
+	void *arg;
+};
+#endif
 
 void uio_PRoot_deletePRootExtra(uio_PRoot *pRoot);
 uio_PRoot *uio_PRoot_new(uio_PDirHandle *topDirHandle,
 		uio_FileSystemHandler *handler, uio_Handle *handle,
 		uio_PRootExtra extra, int flags);
+#ifdef uio_PROOT_HAVE_CLOSE_HANDLERS
+void uio_PRoot_addCloseHandler(uio_PRoot *pRoot, void (*fun)(void *),
+		void *arg);
+void uio_PRoot_callCloseHandlers(uio_PRoot *pRoot);
+void uio_PRoot_removeCloseHandlers(uio_PRoot *pRoot);
+#endif
 uio_PDirHandle *uio_PRoot_getRootDirHandle(uio_PRoot *pRoot);
 void uio_PRoot_refHandle(uio_PRoot *pRoot);
 void uio_PRoot_unrefHandle(uio_PRoot *pRoot);

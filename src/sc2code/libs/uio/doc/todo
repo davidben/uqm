@@ -1,6 +1,9 @@
 Needed before use in UQM:
 - documentation
 - configuring for HAVE_REGEX and GLOB
+- when doing uio_getStdioPhysical(), if write access is required, but
+  not available on the original location, also copy the file to the
+  temporary dir.
 
 Documentation:
 - use doxygen
@@ -35,6 +38,7 @@ Bugs:
 - uio_Stream file might get unaligned (not sure).
 - 'openDir(repository, "dir/")' will have the trailing '/'
   in the dirHandle, which will cause problems.
+- 'openDirRelative(repository, "/")' causes segfaults lateron
 - uio_rename() doesn't work on directories
   uio_getPhysicalAccess() needs to be changed so that it works the same on
   dirs as on files. stat() can be cleaned up too then.

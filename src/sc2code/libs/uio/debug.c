@@ -32,6 +32,7 @@
 #include "debug.h"
 #include "uioport.h"
 #include "io.h"
+#include "utils.h"
 #include "types.h"
 #include "mem.h"
 #include "uioutils.h"
@@ -134,11 +135,11 @@ debugMountOne(uio_Repository *destRep, const char *mountPoint,
 	mountHandle = uio_mountDir(destRep, mountPoint, fsType, sourceDir,
 			sourcePath, inPath, autoMount, flags, relative);
 	if (mountHandle == NULL) {
-		int saveErrno = errno;
+		int savedErrno = errno;
 		fprintf(stderr, "Could not mount '%s' and graft '%s' from that "
 				"into the repository at '%s': %s\n",
 				sourcePath, inPath, mountPoint, strerror(errno));
-		errno = saveErrno;
+		errno = savedErrno;
 	}
 	return mountHandle;
 }
@@ -213,9 +214,15 @@ initRepository(void) {
 			uio_closeDir(rootDir);
 		}
 	}
+	mountHandles[8] = debugMountOne(repository, "/tmp/",
+			uio_FSTYPE_STDIO, NULL, NULL, "/tmp/", autoMount,
+			uio_MOUNT_TOP, NULL);
+
+#if 1
 	mountHandles[8] = debugMountOne(repository, "/root/root/",
 			uio_FSTYPE_STDIO, NULL, NULL, "/", autoMount,
 			uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
+#endif
 
 }
 
@@ -432,40 +439,55 @@ debugCmdCd(DebugContext *debugContext, int argc, char *argv[]) {
 static int
 debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 	int i;
-	char **newArgs;
+	const char **newArgs;
 	int errCode = 0;
+	uio_StdioAccessHandle **handles;
+	uio_DirHandle *tempDir;
 
 	if (argc < 2) {
 		fprintf(debugContext->err, "Invalid number of arguments.\n");
 		return 1;
 	}
 
+	tempDir = uio_openDirRelative(debugContext->cwd, "/tmp", 0);
+	if (tempDir == 0) {
+		fprintf(debugContext->err, "Could not open temp dir: %s.\n",
+				strerror(errno));
+		return 1;
+	}
+
 	newArgs = uio_malloc(argc * sizeof (char *));
 	newArgs[0] = argv[1];
+	handles = uio_malloc(argc * sizeof (uio_StdioAccessHandle *));
+	handles[0] = NULL;
 	
 	for (i = 2; i < argc; i++) {
-		int retVal;
-		uio_FileSystemID fsID;
-		uio_MountHandle *mountHandle;
-		
-		retVal = uio_getFileLocation(debugContext->cwd, argv[i], O_RDONLY,
-				&mountHandle, &newArgs[i - 1]);
-		if (retVal == -1) {
-			// No match; we keep what's typed litterally.
+#if 0
+		if (argv[i][0] == '-') {
+			// Don't try to parse arguments that start with '-'.
+			// They are probably option flags.
 			newArgs[i - 1] = argv[i];
-			continue;
 		}
-		
-		fsID = uio_getMountFileSystemType(mountHandle);
-		if (fsID != uio_FSTYPE_STDIO) {
-			// Wrong file system type.
+#endif
+		handles[i - 1] = uio_getStdioAccess(debugContext->cwd, argv[i],
+				O_RDONLY, tempDir);
+		if (handles[i - 1] == NULL) {
+			if (errno == ENOENT) {
+				// No match; we keep what's typed litterally.
+				newArgs[i - 1] = argv[i];
+				continue;
+			}
+
+			// error
 			fprintf(debugContext->err,
-					"Cannot execute: %s is not in a stdio filesystem.\n",
-					argv[i]);
-			errCode = 0;
+					"Cannot execute: Cannot get stdio access to %s: %s.\n",
+					argv[i], strerror(errno));
+			errCode = 1;
 			argc = i + 1;
 			goto err;
 		}
+
+		newArgs[i - 1] = uio_StdioAccessHandle_getPath(handles[i - 1]);
 	}
 	newArgs[argc - 1] = NULL;
 
@@ -486,7 +508,7 @@ debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 				break;
 			case 0:
 				// child
-				execvp(newArgs[0], newArgs);
+				execvp(newArgs[0], (char * const *) newArgs);
 				fprintf(debugContext->err, "Error: execvp() failed: %s.\n",
 						strerror(errno));
 				_exit(EXIT_FAILURE);
@@ -528,11 +550,13 @@ debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 #endif
 
 err:
-	for (i = 1; i < argc; i++) {
-		if (argv[i] != newArgs[i - 1])
-			uio_free(newArgs[i - 1]);
+	for (i = 1; i < argc - 1; i++) {
+		if (handles[i] != NULL)
+			uio_releaseStdioAccess(handles[i]);
 	}
+	uio_free(handles);
 	uio_free(newArgs);
+	uio_closeDir(tempDir);
 
 	return errCode;
 }
@@ -822,11 +846,11 @@ debugCmdStat(DebugContext *debugContext, int argc, char *argv[]) {
 	
 	if (uio_stat(debugContext->cwd, argv[1], &statBuf) == -1) {
 		// errno is set
-		int saveErrno;
-		saveErrno = errno;
+		int savedErrno;
+		savedErrno = errno;
 		fprintf(debugContext->err, "Could not stat file: %s\n",
 				strerror(errno));
-		errno = saveErrno;
+		errno = savedErrno;
 		return 1;
 	}
 

@@ -50,6 +50,7 @@ struct uio_Handle {
 };
 
 struct uio_DirHandle {
+	int ref;
 	struct uio_Repository *repository;
 	char *path;
 			// does not contain any '.' or '..'
@@ -102,6 +103,7 @@ struct uio_EntriesContext {
 uio_Handle *uio_Handle_new(uio_PRoot *root, uio_NativeHandle native,
 		int openFlags);
 void uio_Handle_delete(uio_Handle *handle);
+void uio_DirHandle_delete(uio_DirHandle *dirHandle);
 
 uio_PDirEntryHandle *uio_getPDirEntryHandle(
 		const uio_PDirHandle *dirHandle, const char *name);
@@ -128,6 +130,19 @@ uio_Handle_unref(uio_Handle *handle) {
 	handle->ref--;
 	if (handle->ref == 0)
 		uio_Handle_delete(handle);
+}
+
+static inline void
+uio_DirHandle_ref(uio_DirHandle *dirHandle) {
+	dirHandle->ref++;
+}
+
+static inline void
+uio_DirHandle_unref(uio_DirHandle *dirHandle) {
+	assert(dirHandle->ref > 0);
+	dirHandle->ref--;
+	if (dirHandle->ref == 0)
+		uio_DirHandle_delete(dirHandle);
 }
 
 static inline uio_bool

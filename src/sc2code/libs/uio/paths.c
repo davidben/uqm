@@ -188,6 +188,7 @@ joinPathsAbsolute(const char *first, const char *second) {
 		result = uio_malloc(secondLen + 2);
 		result[0] = '/';
 		memcpy(&result[1], second, secondLen);
+		result[secondLen + 1] = '\0';
 		return result;
 	}
 
