@@ -21,7 +21,7 @@
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;
-ALfloat listenerPos[] = {0.0f, 0.0f, 0.2f};
+ALfloat listenerPos[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerVel[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerOri[] = {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
 static Task StreamDecoderTask;
