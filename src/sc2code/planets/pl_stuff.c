@@ -176,6 +176,9 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 #else
 		add_sub_frame (tintLine, NULL, tintFrame, &drect, 0);
 #endif
+		if (GetFrameHeight (tintFrame) == dy)
+			pSolarSysState->Tint_rgb = 0;
+
 		s.frame = tintFrame;
 		DrawStamp (&s);
 	}
