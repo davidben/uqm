@@ -226,6 +226,8 @@ GetSphereRect (EXTENDED_SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect, PRECT
 			pRepairRect->corner.y = SIS_SCREEN_HEIGHT - pRepairRect->extent.height - 1;
 
 		BoxUnion (pRepairRect, pRect, pRepairRect);
+		pRepairRect->extent.width++;
+		pRepairRect->extent.height++;
 	}
 }
 

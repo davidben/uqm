@@ -1,4 +1,5 @@
 0.2:
+- Spheres of influence now move correctly in starmap, from l0ci@hotmail.com
 - Linux OpenAL fixes (music plays now as stereo)
 - Fuel giveaway bug fixed, from steve@blckknght.org
 - Starmap fuel range calculator and actual consumption matches now
