@@ -21,13 +21,13 @@
 
 extern Uint8 KeyboardDown[512];
 
-extern UBYTE ControlA;
-extern UBYTE ControlB;
-extern UBYTE ControlC;
-extern UBYTE ControlX;
-extern UBYTE ControlStart;
-extern UBYTE ControlLeftShift;
-extern UBYTE ControlRightShift;
+extern SDLKey ControlA;
+extern SDLKey ControlB;
+extern SDLKey ControlC;
+extern SDLKey ControlX;
+extern SDLKey ControlStart;
+extern SDLKey ControlLeftShift;
+extern SDLKey ControlRightShift;
 
 Uint16 GetUNICODEKey ();
 void FlushInput ();

@@ -27,13 +27,13 @@ Uint8 KeyboardDown[512];
 int kbdhead, kbdtail;
 Uint16 kbdbuf[KBDBUFSIZE];
 
-UBYTE ControlA;
-UBYTE ControlB;
-UBYTE ControlC;
-UBYTE ControlX;
-UBYTE ControlStart;
-UBYTE ControlLeftShift;
-UBYTE ControlRightShift;
+SDLKey ControlA;
+SDLKey ControlB;
+SDLKey ControlC;
+SDLKey ControlX;
+SDLKey ControlStart;
+SDLKey ControlLeftShift;
+SDLKey ControlRightShift;
 
 
 static UNICODE PauseKey;
