@@ -18,6 +18,8 @@ Changes are broadly classified into the following categories:
 NEW FEATURES
 
 - PC-style shipyard graphics, complete with animated power lines
+- Selling ships in the shipyards has slightly different controls
+  that make it harder to sell ships accidentally
 - Main menu displays version number
 - Added a '-g' option to control gamma correction
 - Planet spin has been improved
