@@ -68,10 +68,7 @@ Glitches (don't crash the game, medium priority):
 - Under some conditions, the direction the ship is facing in Hyperspace
   isn't restored when loading.
 - You seem to be able to do certain things before you're supposed to
-  - saying the phrase 'What you are doing it wrong'
-  - demanding the Shofixti Maidens from Zex
-    - This always happens, regardless of game state.  This is a bug in
-      both predecessors as well.
+  - saying the phrase 'What you are doing is wrong'
   Probably the negative shift for GET_STATE and SET_STATE
 - From main menu, choose 'load game', then space, and space again and
   there will be no selection icon.
