@@ -52,9 +52,6 @@ Glitches (don't crash the game, medium priority):
 - Currently some sound effects are perhaps from PC version / otherwise 
   messed up.. 3DO ones should be extracted to fix this
   - Slylandro probe lightning bolt sound shouldn't be same as lightning on planets
-- After saving the game, the screen is not always redrawn
-  - outfit starship
-  - possibly other situations
 - Druuge speech file 'druuge011.ogg' contains earlier bad take.
   (save original sample for posterity).
 - Win32 version runs a bit faster than it should, due to some problems

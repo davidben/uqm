@@ -1146,6 +1146,8 @@ PickGame (PMENU_STATE
 	FRAME OldFrame;
 	DRAW_STATE OldDrawState;
 	SUMMARY_DESC desc_array[MAX_SAVED_GAMES];
+	RECT DlgRect;
+	STAMP DlgStamp;
 
 	if (pSolarSysState)
 	{
@@ -1158,6 +1160,16 @@ PickGame (PMENU_STATE
 	OldContext = SetContext (SpaceContext);
 	OldFrame = SetContextBGFrame (NULL_PTR);
 	OldDrawState = SetContextDrawState (DEST_PIXMAP | DRAW_REPLACE);
+
+	DlgStamp.origin.x = 0;
+	DlgStamp.origin.y = 0;
+	DlgRect.corner.x = SIS_ORG_X;
+	DlgRect.corner.y = SIS_ORG_Y;
+	DlgRect.extent.width = SIS_SCREEN_WIDTH;
+	DlgRect.extent.height = SIS_SCREEN_HEIGHT;
+	DlgStamp.frame = CaptureDrawable (LoadDisplayPixmap (
+			&DlgRect, (FRAME)0)
+			);
 
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPickGame;
@@ -1181,19 +1193,15 @@ PickGame (PMENU_STATE
 
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
-if (CommData.ConversationPhrases
-		|| !(pSolarSysState && pSolarSysState->MenuState.Initialized < 3))
-{
-	RECT r;
-	
-	BatchGraphics ();
-	r.corner.x = SIS_ORG_X;
-	r.corner.y = SIS_ORG_Y;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = SIS_SCREEN_HEIGHT;
-	ScreenTransition (3, &r);
-	UnbatchGraphics ();
-}
+		if (CommData.ConversationPhrases
+				|| !(pSolarSysState
+				&& pSolarSysState->MenuState.Initialized < 3))
+		{
+			BatchGraphics ();
+			DrawStamp(&DlgStamp);
+			ScreenTransition (3, &DlgRect);
+			UnbatchGraphics ();
+		}
 
 		if (pSolarSysState)
 		{
@@ -1217,6 +1225,8 @@ if (CommData.ConversationPhrases
 			}
 		}
 	}
+
+	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
 	SetContextDrawState (OldDrawState);
 	SetContextBGFrame (OldFrame);

@@ -1,4 +1,5 @@
 0.2:
+- Better fix for clearing load/save screen - fOSSiL
 - Implemented bilinear scaling in pure SDL mode - Mika
 - Planet surface is now smoothed, from PhracturedBlue
 - Implemented scanlines in pure SDL mode - Mika
