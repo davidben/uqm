@@ -1,7 +1,8 @@
 0.2:
+- 'additional credits' amount for Melnorme correct now, by Windplume.
 - Spheres of influence now move correctly in starmap, from l0ci@hotmail.com
 - Linux OpenAL fixes (music plays now as stereo)
-- Fuel giveaway bug fixed, from steve@blckknght.org
+- Fuel giveaway bug fixed, from steve@blckknght.org and Windplume.
 - Starmap fuel range calculator and actual consumption matches now
 - Collision detection is now pixel-perfect (fixes Sa-Matra, BUTT missile, etc)
 - Fixed lander position sign bug which was introduced by previous fixes

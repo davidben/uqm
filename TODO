@@ -12,8 +12,6 @@ Serious bugs (crash the game, high priority):
   - Often more probable when heavy color table transformations are going on
 
 Glitches (don't crash the game, medium priority):
-- The melnorme don't charge for fuel when you ask "fill 'er up"
-  Instead, they pay you a Credit.
 - momentary slowdown of scrolling in hyperspace about once per second
   You can see this if you look very closely, or increase the resolution of
   the frame counter to 10 times per second and start with -ttl.
