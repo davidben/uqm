@@ -19,6 +19,7 @@
 #include <ctype.h>
 #include "starcon.h"
 #include "commglue.h"
+#include "options.h"
 #include "libs/graphics/gfx_common.h"
 
 //Added by Chris
@@ -104,6 +105,7 @@ static void
 FeedbackSetting (BYTE which_setting)
 {
 	UNICODE buf[20];
+	char tmpstr[3];
 
 	buf[0] = '\0';
 	switch (which_setting)
@@ -126,10 +128,20 @@ FeedbackSetting (BYTE which_setting)
 		case CYBORG_NORMAL_SETTING:
 		case CYBORG_DOUBLE_SETTING:
 		case CYBORG_SUPER_SETTING:
-			wsprintf (buf, "%s %s",
+			if (optPCmenu && which_setting > CYBORG_NORMAL_SETTING)
+			{
+				if (which_setting == CYBORG_DOUBLE_SETTING)
+					strcpy (tmpstr, "+");
+				else
+					strcpy (tmpstr, "++");
+			}
+			else
+				tmpstr[0] = 0;
+			wsprintf (buf, "%s %s%s",
 					GAME_STRING (OPTION_STRING_BASE + 2),
 					!(GLOBAL (glob_flags) & CYBORG_ENABLED)
-					? GAME_STRING (OPTION_STRING_BASE + 3) : GAME_STRING (OPTION_STRING_BASE + 4));
+					? GAME_STRING (OPTION_STRING_BASE + 3) : GAME_STRING (OPTION_STRING_BASE + 4),
+					tmpstr);
 			break;
 		case CHANGE_CAPTAIN_SETTING:
 		case CHANGE_SHIP_SETTING:

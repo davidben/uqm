@@ -1111,38 +1111,45 @@ DrawPCMenuFrame (RECT *r)
 }
 
 static char menu_string[][11]  = {
-		"SCAN",
-		"STARMAP",
-		"DEVICES",
-		"CARGO",
-		"ROSTER",
-		"GAME",
-		"NAVIGATE",
+		"scan",
+		"starmap",
+		"devices",
+		"cargo",
+		"roster",
+		"game",
+		"navigate",
 
-		"MINERAL",
-		"ENERGY",
-		"BIOLOGICAL",
-		"EXIT MENU",
-		"AUTO SCAN",
-		"DISPATCH",
+		"mineral",
+		"energy",
+		"biological",
+		"exit menu",
+		"autoscan",
+		"dispatch",
 
-		"SAVE GAME",
-		"LOAD GAME",
-		"SETTINGS",
-		"EXIT MENU",
+		"save game",
+		"load game",
+		"settings",
+		"exit menu",
 
-		"CONVERSE",
-		"ATTACK!",
-		"GAME",
+		"converse",
+		"attack!",
+		"game",
 
-		"FUEL",
-		"MODULE",
-		"GAME",
-		"EXIT MENU",
+		"fuel",
+		"module",
+		"game",
+		"exit menu",
 
-		"CREW",
-		"GAME",
-		"EXIT MENU",
+		"crew",
+		"game",
+		"exit menu",
+
+		"sound",
+		"music",
+		"cyborg",
+		"captain",
+		"ship",
+		"exit menu"
 	};
 
 static void
@@ -1151,24 +1158,24 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 #define PC_MENU_HEIGHT 8
 	BYTE pos;
 	COUNT i;
-	int num_items, offset;
+	int num_items;
 	FONT OldFont;
 	TEXT t;
 	UNICODE buf[40];
 	pos = beg_index + NewState;
 	num_items = 1 + end_index - beg_index;
+	r->corner.x -= 1;
+	r->extent.width += 1;
 	DrawFilledRectangle (r);
-	r->corner.x += 1;
-	r->extent.width -= 1;
 	if (num_items * PC_MENU_HEIGHT > r->extent.height)
 		fprintf (stderr, "Warning, no room for all menu items!\n");
 	else
 		r->corner.y += (r->extent.height - num_items * PC_MENU_HEIGHT) / 2;
 	r->extent.height = num_items * PC_MENU_HEIGHT + 4;
 	DrawPCMenuFrame (r);
-	OldFont = SetContextFont (TinyFont);
+	OldFont = SetContextFont (StarConFont);
 	t.align = ALIGN_LEFT;
-	t.baseline.x = r->corner.x + 3;
+	t.baseline.x = r->corner.x + 2;
 	t.baseline.y = r->corner.y + PC_MENU_HEIGHT -1;
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
@@ -1252,19 +1259,56 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	r.extent.width = RADAR_WIDTH + 2;
 	BatchGraphics ();
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-	if (s.frame && optPCmenu && beg_index != PM_SOUND_ON)
+	if (s.frame && optPCmenu)
 	{
 		if (beg_index == PM_CREW)
-			sprintf (menu_string[PM_CREW], "CREW(%d)", GLOBAL (CrewCost));
+			sprintf (menu_string[PM_CREW], "crew(%d)", GLOBAL (CrewCost));
 		if (beg_index == PM_FUEL)
-			sprintf (menu_string[PM_FUEL], "FUEL(%d)", GLOBAL (FuelCost));
+			sprintf (menu_string[PM_FUEL], "fuel(%d)", GLOBAL (FuelCost));
+		if (beg_index == PM_SOUND_ON)
+		{
+			end_index = beg_index + 5;
+			switch (beg_index + NewState)
+			{
+				case PM_SOUND_ON:
+				case PM_SOUND_OFF:
+					NewState = 0;
+					break;
+				case PM_MUSIC_ON:
+				case PM_MUSIC_OFF:
+					NewState = 1;
+					break;
+				case PM_CYBORG_OFF:
+				case PM_CYBORG_NORMAL:
+				case PM_CYBORG_DOUBLE:
+				case PM_CYBORG_SUPER:
+					NewState = 2;
+					break;
+				case PM_CHANGE_CAPTAIN:
+					NewState = 3;
+					break;
+				case PM_CHANGE_SHIP:
+					NewState = 4;
+					break;
+				case PM_EXIT_MENU4:
+					NewState = 5;
+					break;
+			}
+		}
 		r.extent.height = RADAR_HEIGHT + 11;
 		DrawPCMenu (beg_index, end_index, (BYTE)NewState, hilite, &r);
 		s.frame = 0;
 	}
 	else
 	{
-		r.extent.height = 11;
+		if(optPCmenu)
+		{
+			r.corner.x -= 1;
+			r.extent.width += 1;
+			r.extent.height = RADAR_HEIGHT + 11;
+		}
+		else
+			r.extent.height = 11;
 		DrawFilledRectangle (&r);
 	}
 	if (s.frame)

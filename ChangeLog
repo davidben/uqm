@@ -1,7 +1,8 @@
 Changes towards version 0.2:
+- PCMenus now suports 'settings', and menu font is correct -PhracturedBlue
 - Added '-b' option to get PC Menus -PhracturedBlue
 - Check for a deadlock in savedgames and try to continue -PhracturedBlue
-- Added an option ('-a') to display 'PC-style' course-scan -PhracturedBlue
+- Added an option ('-a') to display 'PC-style' coarse-scan -PhracturedBlue
 - Fixed deadlock races in new FlushGraphics method -PhracturedBlue
 - FlushGraphics now waits and notifies on a per-thread level
 - No longer using SHGetFolderPath on Windows - SvdB

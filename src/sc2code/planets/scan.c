@@ -193,7 +193,7 @@ PrintCoarseScanPC (void)
 	if (temp >= 10 * 100)
 		wsprintf (buf, "%u.%u a.u.", temp / 100, (temp / 10) % 10);
 	else
-		wsprintf (buf, "%u.%02u a.u", temp / 100, temp % 100);
+		wsprintf (buf, "%u.%02u a.u.", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
@@ -267,9 +267,9 @@ PrintCoarseScanPC (void)
 				/ (DWORD)(100L * 100L)) == 0)
 			tr = 1;
 		if (tr >= 10 * 100)
-			wsprintf (buf, "%lu.%lu e.s", tr / 100, (tr / 10) % 10);
+			wsprintf (buf, "%lu.%lu e.s.", tr / 100, (tr / 10) % 10);
 		else
-			wsprintf (buf, "%lu.%02lu e.s", tr / 100, tr % 100);
+			wsprintf (buf, "%lu.%02lu e.s.", tr / 100, tr % 100);
 	}
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
@@ -282,7 +282,7 @@ PrintCoarseScanPC (void)
 	if ((temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius) >= 10 * 100)
 		wsprintf (buf, "%u.%u e.s.", temp / 100, (temp / 10) % 10);
 	else
-		wsprintf (buf, "%u.%02u e.s", temp / 100, temp % 100);
+		wsprintf (buf, "%u.%02u e.s.", temp / 100, temp % 100);
 	t.CharCount = (COUNT)~0;
 	DrawText (&t);
 	t.baseline.y += SCAN_LEADING_PC;
