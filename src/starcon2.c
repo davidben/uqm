@@ -79,6 +79,7 @@ main (int argc, char *argv[])
 	int gammaset = 0;
 	const char **addons;
 	int numAddons;
+	int i;
 
 	enum
 	{
@@ -122,6 +123,23 @@ main (int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
+	/*
+		"pre-process" the cmdline args looking for a -l ("logfile")
+		option.  If it was given, redirect stderr to the named file
+	*/
+	opterr = 0;
+	while ((c = getopt_long (argc, argv, "l:", NULL, 0)) != -1)
+	{
+		switch (c) {
+			case 'l':
+				freopen (optarg, "w", stderr);
+				for (i = 0; i < argc; ++i)
+						fprintf (stderr, "argv[%d] = [%s]\n", i, argv[i]);
+				break;
+		}
+	}
+	opterr = optind = 1;
+
 	/* TODO: Once threading is gone, these become local variables
 	   again.  In the meantime, they must be global so that
 	   initAudio (in StarCon2Main) can see them.  initAudio needed
@@ -157,7 +175,7 @@ main (int argc, char *argv[])
 	addons[0] = NULL;
 	numAddons = 0;
 	
-	while ((c = getopt_long(argc, argv, "r:d:foc:b:spn:?hM:S:T:m:q:ug:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "r:d:foc:b:spn:?hM:S:T:m:q:ug:l:", long_options, &option_index)) != -1)
 	{
 		switch (c) {
 			case 'r':
@@ -255,6 +273,9 @@ main (int argc, char *argv[])
 				sscanf(optarg, "%f", &gamma);
 				gammaset = 1;
 			break;
+			case 'l':
+				// -l is a no-op on the second pass..
+				break;
 			case CSCAN_OPT:
 				if ((val = Check_PC_3DO_opt (optarg, 
 						OPT_PC | OPT_3DO, 
@@ -328,6 +349,7 @@ main (int argc, char *argv[])
 				printf("  -q, --audioquality=QUALITY (high, medium or low, "
 						"default medium)\n");
 				printf("  -u, --nosubtitles\n");
+				printf("  -l FILE (sends console output to logfile FILE)\n");
 				printf("  --addon <addon> (using a specific addon; "
 						"may be specified multiple times)\n");
 				printf("  --sound=DRIVER (openal, mixsdl, none; default "

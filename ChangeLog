@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Added the -l option to produce logfiles (bug #560), from Nic
 - Zoq-Fot-Pik speech properly vertically centered (bug #579), from Nic
 - Input code refactoring, phase 2: All player input is brokered by 
   DoInput -Michael
