@@ -65,35 +65,42 @@
 #define UNIT_SCREEN_WIDTH 63
 #define UNIT_SCREEN_HEIGHT 50
 
+static inline COORD
+logxToUniverse (long lx)
+{
+	return (lx * ((MAX_X_UNIVERSE + 1) >> 4)) * 10
+			/ ((long) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH);
+}
 #define LOGX_TO_UNIVERSE(lx) \
-		(COORD)( \
-				((long)(lx) \
-				* ((MAX_X_UNIVERSE + 1) >> 4)) \
-				* 10 \
-				/ ((long)((LOG_SPACE_WIDTH) >> 4) \
-				* SECTOR_WIDTH) \
-		)
-#define  LOGY_TO_UNIVERSE(ly) \
-		(COORD)( \
-				MAX_Y_UNIVERSE - (COORD)(((long)(ly) \
-				* ((MAX_Y_UNIVERSE + 1) >> 4)) \
-				/ ((long)((LOG_SPACE_HEIGHT) >> 4) \
-				* SECTOR_HEIGHT)) \
-		)
+		logxToUniverse (lx)
+static inline COORD
+logyToUniverse (long ly)
+{
+	return MAX_Y_UNIVERSE -
+			(COORD)(((long) (ly) * ((MAX_Y_UNIVERSE + 1) >> 4))
+			/ ((long) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT));
+}
+#define LOGY_TO_UNIVERSE(ly) \
+		logyToUniverse (ly)
+static inline long
+universeToLogx (COORD ux)
+{
+	return ((long) ux * ((long) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH)
+			+ ((((MAX_X_UNIVERSE + 1) >> 4) * 10) >> 1))
+			/ (((MAX_X_UNIVERSE + 1) >> 4) * 10);
+}
 #define UNIVERSE_TO_LOGX(ux) \
-		( \
-				((long)(ux) \
-				* ((long)((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH) \
-				+ ((((MAX_X_UNIVERSE + 1) >> 4) * 10) >> 1)) \
-				/ (((MAX_X_UNIVERSE + 1) >> 4) * 10) \
-		)
+		universeToLogx (ux)
+static inline long
+universeToLogy (COORD uy)
+{
+	return ((long) (MAX_Y_UNIVERSE - uy)
+			* ((long) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT)
+			+ (((MAX_Y_UNIVERSE + 1) >> 4) >> 1))
+			/ ((MAX_Y_UNIVERSE + 1) >> 4);
+}
 #define UNIVERSE_TO_LOGY(uy) \
-		( \
-				((long)(MAX_Y_UNIVERSE - (uy)) \
-				* ((long)((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT) \
-				+ (((MAX_Y_UNIVERSE + 1) >> 4) >> 1)) \
-				/ ((MAX_Y_UNIVERSE + 1) >> 4) \
-		)
+		universeToLogy (uy)
 
 #define CIRCLE_SHIFT 6
 #define FULL_CIRCLE (1 << CIRCLE_SHIFT)
