@@ -21,6 +21,7 @@
 #include "starcon.h"
 #include "commglue.h"
 #include "comm/starbas/strings.h"
+#include "libs/graphics/gfx_common.h"
 
 //Added by Chris
 
@@ -1719,6 +1720,8 @@ SellMinerals (RESPONSE_REF R)
 	COUNT i, total;
 	BOOLEAN Sleepy;
 	RESPONSE_REF pStr1, pStr2;
+
+	TFB_ReleaseColorMap();
 
 	total = 0;
 	Sleepy = TRUE;
