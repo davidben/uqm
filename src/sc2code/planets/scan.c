@@ -991,10 +991,9 @@ DoScan (PMENU_STATE pMS)
 				return (TRUE);
 			}
 
-			wsprintf (buf, "%s%u.%u",
+			wsprintf (buf, "%s%1.1f",
 					GAME_STRING (NAVIGATION_STRING_BASE + 5),
-					fuel_required / FUEL_TANK_SCALE,
-					((fuel_required % FUEL_TANK_SCALE) + 5) / 10);
+					(float) fuel_required / FUEL_TANK_SCALE);
 			LockMutex (GraphicsLock);
 			ClearSISRect (CLEAR_SIS_RADAR);
 			DrawStatusMessage (buf);
