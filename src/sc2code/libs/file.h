@@ -45,6 +45,8 @@
 #	define write _write
 #	define stat _stat
 #	define unlink _unlink
+#elif defined (__MINGW32__)
+#	define ssize_t int
 #else
 #	include <unistd.h>
 #endif
