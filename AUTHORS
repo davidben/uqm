@@ -1,25 +1,133 @@
-# Original programming:
-Paul Reiche III
-Fred Ford
-Ken Ford
+We worship these two higher beings for making such a legendary game originally:
+    Fred Ford
+    Paul Reiche III
 
-# Ur-Quan Masters port:
 
-# Core team (in alphabetic order)
-Serge van den Boom <svdb@stack.nl>
-Mika Kolehmainen <mimakole@cc.jyu.fi>
-Michael Chapman Martin <mcmartin@stanford.edu>
-Chris Nelson <chris@toysforbob.com>
+The Ur-Quan Masters port:
+-------------------------
 
-# Additional programming (in alphabetic order)
-Mudrony László <mudronyl@dragon.klte.hu> (makefiles)
-Karl Bartel <karlb@gmx.net>
+Core team (in alphabetic order):
+    Serge van den Boom <svdb@stack.nl>
+    Mika Kolehmainen <mimakole@cc.jyu.fi>
+    Michael Chapman Martin <mcmartin@stanford.edu>
+    Chris Nelson <chris@toysforbob.com>
 
-# 3DO consultance (in alphabetic order)
-Burpmaster (?)
-Felix Lazarev <felix@freedo.org> (3DO internals)
-Parker (?)
+Additional programming (in alphabetic order):
+    Mudrony László <mudronyl@dragon.klte.hu> (makefiles)
+    Karl Bartel <karlb@gmx.net>
 
-# Using code from
-MikMod (http://mikmod.darkorb.net/)
+3DO consultance (in alphabetic order):
+    Burpmaster (?)
+    Felix Lazarev <felix@freedo.org> (3DO internals)
+    Parker (?)
 
+Using code from:
+    MikMod (http://mikmod.darkorb.net/)
+    SDL_gfx (http://www.ferzkopp.net/Software/SDL_gfx-2.0/)
+
+
+Original 3DO game:
+------------------
+
+Programming & technology:
+    Fred Ford
+
+Game design and fiction:
+    Paul Reiche III
+
+3DO programming:
+    Ken Ford
+    Fred Ford
+    Brad Van Tighem
+
+Producer:
+    Mark Wallace
+
+3DO production:
+    Paul Reiche III
+    Richard Antaki
+
+Starring the voices of:
+    Richard Antaki ....... Thraddash
+    Alex Bennett ......... Starbase Commander
+    Rich Betz ............ Ariloulaleelay
+              ............ Druuge
+    Roy Blumenfeld ....... Zoq-Fot-Pik
+    David Bryce .......... Kohr-Ah
+                .......... Ilwrath
+                .......... Shofixti
+                .......... Spathi
+    Lauren Forcella ...... Supox
+    Greg Johnson ......... Orz
+                 ......... Pkunk
+                 ......... Utwig
+    Bruce Leyland ........ Yehat
+    Erol Otus ............ Chmmr
+    Paul Reiche III ...... Mycon
+                    ...... Talking Pet
+    Brad Van Tighem ...... Slylandro Speaker
+    Madeleine Wild ....... Zoq-Fot-Pik
+                   ....... Syreen
+                   ....... VUX
+    Larry Zee ............ Umgah
+              ............ Melnorme
+              ............ Ur-Quan
+    840-AV ............... Slylandro Probe
+    Paul II, Paul III .... Victory Sequence
+    Arianna & Devin Reiche
+
+Voice effects:
+    Jeff Forehan
+    Burke Treischmann
+    Mark Miller
+
+Voice editing:
+    Richard Antaki
+    Paul Reiche III
+    Burke Treischmann
+    Steve Henefin
+    Jeromy Bredow
+    Erik Griss
+    Brad Van Tighem
+
+Art and animation:
+    George Barr
+    Paul Reiche III
+    Erol Otus
+    Greg Johnson
+    Kyle Balda
+    Jeff Rianda
+    Taunya Shiffer
+    Leonard Robel
+    Greg Hammond
+    Armand Cabrera
+    Silicon Knights
+
+Additional writing:
+    Greg Johnson
+    Mat Genser
+    Robert Leyland
+    Iain McCaig
+    Tomi Quintana
+    Erol Otus
+    Leonard Robel
+    John Estes
+
+Music:
+    Burke Treischmann
+    Dan Nicholson
+    Riku Nuottajarvi
+    Eric Berge
+    Erol Otus
+    Marc Brown
+    Aaron Grier
+    Kevin Palivec
+    Tommy Dunbar
+
+3D cinemagraphics:
+    Gene Bodio
+    Phil Le Marbre
+
+Special thanks to:
+    Greg Johnson
+    John Ratcliffe
