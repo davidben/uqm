@@ -90,6 +90,7 @@ Glitches (don't crash the game, medium priority):
   entries will be wrong.
 - Temp files don't get deleted if the game is exited in full game mode.
   (and the temp dir doesn't get deleted if it's not empty)
+- autopilot does not work in Quasispace when you have no fuel.
 
 Implementation bugs (low priority):
 - Scaling code problems:

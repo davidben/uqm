@@ -108,7 +108,10 @@ The bugs reported but not yet verified:
 - "Got a segfault too, on cvs version compiled today (2002/12/05), when activating Sun Device over 
    the Chmmr homeworld. Worked fine on 0.1 alpha."
 
-- Unconfirmed report of lander cargo upgrade rendering as weapon upgrade
-
 - In starmap, when any zone of influence is moving, the starmap cursor behaves badly 
   (erases what it passes over). Leaving and returning to the starmap fixes it
+
+- sometimes on starmap the crosshair cursor step becomes too large (all arrow
+  keys released), so it is next to impossible to point it to a star, it keeps
+  overshooting all the time
+
