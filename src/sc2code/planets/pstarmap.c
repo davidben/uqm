@@ -1251,6 +1251,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 							}
 
 							AutoPilotSet = DoStarMap ();
+							SetDefaultMenuRepeatDelay ();
 
 							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
 									|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
