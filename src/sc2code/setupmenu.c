@@ -198,7 +198,12 @@ static OPTION resdriver_opts[] = {
 		{ "1024x768 resolution.",
 		  "Uses OpenGL graphics drivers.",
 		  ""
-		} }
+		} },
+	{ "Custom",
+		{ "Custom resolution set from the commandline.",
+		  "Uses OpenGL graphics drivers.",
+		  ""
+		} },
 #endif
 };
 
@@ -256,6 +261,14 @@ SetDefaults (void)
 	GLOBALOPTS opts;
 	
 	GetGlobalOptions (&opts);
+	if (opts.driver == OPTVAL_CUSTOM_GL)
+	{
+		cmdline_opts[0].numopts = RES_OPTS + 1;
+	}
+	else
+	{
+		cmdline_opts[0].numopts = RES_OPTS;
+	}
 	cmdline_opts[0].selected = opts.driver;
 	cmdline_opts[1].selected = opts.depth;
 	cmdline_opts[2].selected = opts.scaler;
@@ -529,8 +542,6 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		break;
 	}
 
-	/* Warning: This is a filthy lie, as it's assuming that the
-	 * res must be one of the options. */
 	switch (ScreenWidthActual)
 	{
 	case 320:
@@ -540,7 +551,14 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 		else
 		{
-			opts->driver = OPTVAL_320_240_GL;
+			if (ScreenHeightActual != 240)
+			{
+				opts->driver = OPTVAL_CUSTOM_GL;
+			}
+			else
+			{
+				opts->driver = OPTVAL_320_240_GL;
+			}
 		}
 		break;
 	case 640:
@@ -550,14 +568,38 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 		else
 		{
-			opts->driver = OPTVAL_640_480_GL;
+			if (ScreenHeightActual != 480)
+			{
+				opts->driver = OPTVAL_CUSTOM_GL;
+			}
+			else
+			{
+				opts->driver = OPTVAL_640_480_GL;
+			}
 		}
 		break;
 	case 800:
-		opts->driver = OPTVAL_800_600_GL;
+		if (ScreenHeightActual != 600)
+		{
+			opts->driver = OPTVAL_CUSTOM_GL;
+		}
+		else
+		{
+			opts->driver = OPTVAL_800_600_GL;
+		}
 		break;
 	case 1024:
-		opts->driver = OPTVAL_1024_768_GL;
+		if (ScreenHeightActual != 768)
+		{
+			opts->driver = OPTVAL_CUSTOM_GL;
+		}
+		else
+		{
+			opts->driver = OPTVAL_1024_768_GL;
+		}		
+		break;
+	default:
+		opts->driver = OPTVAL_CUSTOM_GL;
 		break;
 	}
 }
@@ -608,7 +650,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
 		break;
 	default:
-		fprintf (stderr, "Can't Happen: Impossible value for Driver/Resolution\n");
+		/* Don't mess with the custom value */
 		break;
 	}
 

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Setup Menu no longer crashes or misbehaves on custom resolutions (bug 
+  #693) - Michael
 - Quit confirmation window (on F10) undraws correctly during intro slides
   (bug #673) -Alex
 - Attempting to set to a mode that Doesn't Work in Setup no longer ends 
