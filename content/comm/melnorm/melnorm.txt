@@ -518,10 +518,10 @@ I have some data on alien lifeforms.
 #(SOLD_LIFE_DATA1) melno074.ogg
 The 
 
-#(SOLD_LIFE_DATA2) melno074.ogg
+#(SOLD_LIFE_DATA2)
  units of biological data we downloaded from your ship earn you 
 
-#(SOLD_LIFE_DATA3) melno074.ogg
+#(SOLD_LIFE_DATA3)
  Credits.
 
 #(sell_rainbow_locations)
@@ -534,7 +534,7 @@ Your ship's log indicates that you discovered the whereabouts of
  of the Rainbow worlds which so fascinate us.
 In exchange, we will give you 
 
-#(SOLD_RAINBOW_LOCATIONS3)	melno076.ogg
+#(SOLD_RAINBOW_LOCATIONS3)
  Credits.
 	     
 #(sell_precursor_find)
@@ -648,7 +648,7 @@ We will share this crucial knowledge with you for a fee of 75 Credits
 per informative fact.
 No refunds.
 
-#(OK_BUY_INFO)	melno093.ogg
+#(OK_BUY_INFO)	melno088.ogg
 Good!  I wish to SELL information.
 
 #(OK_NO_BUY_INFO)	melno089.ogg

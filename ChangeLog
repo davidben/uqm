@@ -1,4 +1,5 @@
 0.2:
+- Melnorme comm fix, from TD.
 - Planet scan font character fixes (micro.fon), from fOSSiL
 - Temporary files are deleted on exit. - SvdB
 - Font png's no longer need to have alpha channel, black background with
