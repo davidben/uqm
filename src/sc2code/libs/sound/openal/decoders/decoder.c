@@ -313,7 +313,7 @@ ALuint SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 					if (decoder->looping)
 					{
 						int err;
-						if ((err = ov_raw_seek (vf, 0)) != 0)
+						if ((err = ov_pcm_seek (vf, 0)) != 0)
 						{
 							fprintf (stderr, "SoundDecoder_Decode(): tried to loop %s but couldn't rewind, error code %d\n", decoder->filename, err);
 						}
@@ -411,7 +411,7 @@ void SoundDecoder_Rewind (TFB_SoundDecoder *decoder)
 		{
 			int err;
 			OggVorbis_File *vf = (OggVorbis_File *) decoder->data;
-			if ((err = ov_raw_seek (vf, 0)) != 0)
+			if ((err = ov_pcm_seek (vf, 0)) != 0)
 			{
 				fprintf (stderr, "SoundDecoder_Rewind(): couldn't rewind %s, error code %d\n", decoder->filename, err);
 				break;
