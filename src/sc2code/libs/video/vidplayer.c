@@ -402,7 +402,8 @@ TFB_DoVideoInput (PVOID pIS)
 
 	if (PulsedInputState.key[KEY_MENU_SELECT]
 			|| PulsedInputState.key[KEY_MENU_CANCEL]
-			|| PulsedInputState.key[KEY_MENU_SPECIAL])
+			|| PulsedInputState.key[KEY_MENU_SPECIAL]
+			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{	// abort movie
 		TFB_StopVideo (pVIS->CurVideo);
 		return FALSE;
