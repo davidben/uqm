@@ -865,7 +865,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 
 			wsprintf (buf, "%lu", GLOBAL_SIS (ResUnits));
 			t.baseline.y = 102;
-			r.extent.width = 30;
+			r.extent.width = 76;
 			r.extent.height = SHIP_NAME_HEIGHT;
 			r.corner.x = t.baseline.x - (r.extent.width >> 1);
 			r.corner.y = t.baseline.y - SHIP_NAME_HEIGHT + 1;
