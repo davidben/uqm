@@ -90,6 +90,8 @@ Stuff still to do (large):
 - Intro and end credits (both 3DO and PC version ones)
 - add an install program (in particularly for Windows).
   How to handle the libraries?
+- Configuration and saved games should be written at ~/.sc/ for example, so that
+  game can be installed globally for many users.
 
 Stuff still to do (medium size):
 - oscilloscope
