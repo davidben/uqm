@@ -53,6 +53,7 @@ Glitches (don't crash the game, medium priority):
   - Linux OpenAL implementation sucks, so for now we are using SDL_mixer
     on that platform.
   - Volume levels aren't maybe exactly as they should
+  - Crashes if no audio device available
 - Color table transformations are very slow.
   - We should try to get rid of excessive creation of new threads
 - Circles of influence aren't shown the first time (after load?) a player
