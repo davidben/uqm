@@ -24,6 +24,7 @@
 #include "commglue.h"
 #include "options.h"
 #include "comm.h"
+#include "libs/sound/sound.h"
 
 void InitOscilloscope (int x, int y, int width, int height, FRAME_DESC *f);
 void SetSliderImage (void *f);
@@ -45,6 +46,7 @@ void Slider (void);
 LOCDATA CommData;
 int cur_comm;
 UNICODE shared_phrase_buf[256];
+volatile BOOLEAN summary = FALSE;
 
 typedef struct encounter_state
 {
@@ -385,6 +387,8 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 	COUNT i;
 	STAMP s;
 	ANIMATION_DESCPTR ADPtr;
+	if (summary)
+		return;
 
 	s.origin.x = -SAFE_X;
 	s.origin.y = 0;
@@ -880,7 +884,7 @@ int ambient_anim_task(void* data)
 
 		pSeq = &Sequencer[i];
 		ADPtr = &CommData.AlienAmbientArray[i];
-		while (i-- && !Task_ReadState (task, TASK_EXIT))
+		while (i-- && !Task_ReadState (task, TASK_EXIT) && !summary)
 		{
 			--ADPtr;
 			--pSeq;
@@ -1018,7 +1022,8 @@ int ambient_anim_task(void* data)
 		if (CanTalk
 				&& ADPtr->NumFrames
 				&& (ADPtr->AnimFlags & WAIT_TALKING)
-				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
+				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING)
+				&& !summary)
 		{
 			BOOLEAN done = 0;
 			for (i = 0; i < CommData.NumAnimations; i++)
@@ -1160,6 +1165,7 @@ int ambient_anim_task(void* data)
 			}
 		}
 
+		if (!summary)
 		{
 			CONTEXT OldContext;
 			BOOLEAN CheckSub = 0;
@@ -1398,7 +1404,8 @@ AlienTalkSegue (COUNT wait_track)
 		{
 			RECT r;
 	
-			if (pMenuState == 0)
+			if (pMenuState == 0 && 
+					LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 			{
 				r.corner.x = SIS_ORG_X;
 				r.corner.y = SIS_ORG_Y;
@@ -1482,6 +1489,9 @@ AlienTalkSegue (COUNT wait_track)
 	}
 
 	ClearSemaphore (GraphicsSem);
+	FlushInput ();
+	while (AnyButtonPress (TRUE))
+		TaskSwitch ();
 
 	do
 		TaskSwitch ();
@@ -1514,6 +1524,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				SetSemaphore (GraphicsSem);
 				SpewPhrases (0);
 				ClearSemaphore (GraphicsSem);
+				FlushInput ();
+				while (AnyButtonPress (TRUE))
+					TaskSwitch ();
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
 				TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
@@ -1555,6 +1568,155 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 			(*pES->response_list[pES->cur_response].response_func)
 					(pES->response_list[pES->cur_response].response_ref);
 		}
+		else if (InputState & DEVICE_BUTTON2 && 
+				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
+		{
+			extern TFB_SoundChain *first_chain;
+			TFB_SoundChain *curr;
+			RECT r;
+			TEXT t;
+#define DELTA_Y_SUMMARY 8
+#define SUMMARY_CHARS (SIS_SCREEN_WIDTH - 34) / 4
+#define MAX_SUMMARY_CHARS 52
+#define MAX_COLS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT - DELTA_Y_SUMMARY) / 8) - 1
+			UNICODE buffer[MAX_SUMMARY_CHARS];
+			UNICODE *temp;
+			int i;
+			int col = 0;
+			DWORD CurTime;
+			FONT fLast;
+
+			SetSemaphore (GraphicsSem);
+			DrawSISComWindow ();
+			FeedbackPlayerPhrase (pES->phrase_buf);
+			summary = TRUE;
+			CommData.AlienTransitionDesc.AnimFlags |= PAUSE_TALKING;
+			ClearSemaphore (GraphicsSem);
+			CurTime = GetTimeCounter ();
+			SleepThreadUntil (CurTime + ONE_SECOND / 30);
+			SetSemaphore (GraphicsSem);
+			r.corner.x = 0;
+			r.corner.y = 0;
+			r.extent.width = SIS_SCREEN_WIDTH;
+			r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			DrawFilledRectangle (&r);
+			ClearSemaphore (GraphicsSem);
+
+			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+
+			t.baseline.x = SAFE_X + 2;
+			t.align = ALIGN_LEFT;
+			t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+			fLast = SetContextFont (TinyFont);
+
+			for (curr = first_chain; curr != NULL; curr = curr->next)
+			{
+				temp = curr->tag.data;
+				// fprintf (stderr, "%s\n", temp);
+				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS)
+				{
+					int space_index;
+					// find last space before it goes over the max chars per line
+					for (i = SUMMARY_CHARS - 1; i > 0; i--)
+					{
+						if (temp[i] == ' ')
+						{
+							space_index = i;
+							break;
+						}
+					}
+					for (i = 0; i < space_index; i++, temp++)
+					{
+						buffer[i] = *temp;
+					}
+					buffer[i] = '\0';
+					temp++;
+					t.pStr = buffer;
+					SetSemaphore (GraphicsSem);
+					font_DrawText (&t);
+					ClearSemaphore (GraphicsSem);
+					t.baseline.y += DELTA_Y_SUMMARY;
+					col++;
+					if (col > MAX_COLS)
+					{
+						t.baseline.x = SIS_SCREEN_WIDTH >> 1;
+						t.align = ALIGN_CENTER;
+						t.pStr = "-MORE-";
+						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x04, 0xBB, 0x04), 0x01));
+						SetSemaphore (GraphicsSem);
+						font_DrawText (&t);
+						ClearSemaphore (GraphicsSem);
+						col = 0;
+						t.baseline.x = SAFE_X + 2;
+						t.align = ALIGN_LEFT;
+						t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+						while (AnyButtonPress (TRUE))
+							TaskSwitch ();
+				
+						while (!AnyButtonPress (TRUE))
+							TaskSwitch ();
+
+						SetSemaphore (GraphicsSem);
+						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+						DrawFilledRectangle (&r);
+						ClearSemaphore (GraphicsSem);
+						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+					}
+				}
+				
+				t.pStr = temp;
+				SetSemaphore (GraphicsSem);
+				font_DrawText (&t);
+				ClearSemaphore (GraphicsSem);
+				t.baseline.y += DELTA_Y_SUMMARY;
+				col++;
+				if (col > MAX_COLS && curr->next != NULL)
+				{
+					
+					t.baseline.x = SIS_SCREEN_WIDTH >> 1;
+					t.align = ALIGN_CENTER;
+					t.pStr = "-MORE-";
+					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x04, 0xBB, 0x04), 0x01));
+					SetSemaphore (GraphicsSem);
+					font_DrawText (&t);
+					ClearSemaphore (GraphicsSem);
+					col = 0;
+					t.baseline.x = SAFE_X + 2;
+					t.align = ALIGN_LEFT;
+					t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+					while (AnyButtonPress (TRUE))
+						TaskSwitch ();
+				
+					while (!AnyButtonPress (TRUE))
+						TaskSwitch ();
+
+					SetSemaphore (GraphicsSem);
+					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+					DrawFilledRectangle (&r);
+					ClearSemaphore (GraphicsSem);
+					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+				}
+			}
+
+			while (AnyButtonPress (TRUE))
+				TaskSwitch ();
+				
+			while (!AnyButtonPress (TRUE))
+				TaskSwitch ();
+
+			SetSemaphore (GraphicsSem);
+			SetContextFont (fLast);
+			RefreshResponses (pES);
+			ClearSemaphore (GraphicsSem);
+			ColorChange = TRUE;
+			CommData.AlienTransitionDesc.AnimFlags &= ~(PAUSE_TALKING);
+			summary = FALSE;
+			FlushInput ();
+			while (AnyButtonPress (TRUE))
+				TaskSwitch ();
+		}
 		else
 		{
 			response = pES->cur_response;
@@ -1563,6 +1725,7 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				SetSemaphore (GraphicsSem);
 				FeedbackPlayerPhrase (pES->phrase_buf);
+
 				SpewPhrases (0);
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
@@ -1570,6 +1733,9 @@ DoCommunication (INPUT_STATE InputState, PENCOUNTER_STATE pES)
 					FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 				}
 				ClearSemaphore (GraphicsSem);
+				FlushInput ();
+				while (AnyButtonPress (TRUE))
+					TaskSwitch ();
 			}
 			else if (GetInputYComponent (InputState) < 0)
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))

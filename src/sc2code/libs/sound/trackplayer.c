@@ -32,7 +32,7 @@ static TFB_SoundTag *last_tag = NULL;
 #define is_sample_playing(samp) (((samp)->read_chain_ptr && (samp)->play_chain_ptr) ||\
 			(!(samp)->read_chain_ptr && (samp)->decoder))
 static TFB_SoundSample *sound_sample = NULL;
-static TFB_SoundChain *first_chain = NULL; //first decoder in linked list
+TFB_SoundChain *first_chain = NULL; //first decoder in linked list
 static TFB_SoundChain *last_chain = NULL;  //last decoder in linked list
 static TFB_SoundChain *last_ts_chain = NULL; //last element in the chain with a subtitle
 
