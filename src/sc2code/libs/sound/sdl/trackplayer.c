@@ -16,22 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-
-*****************************************/
-
-#if defined (GFXMODULE_SDL_OPENGL) || defined (GFXMODULE_SDL_PURE)
+#ifdef SOUNDMODULE_SDL
 
 #include "libs/graphics/sdl/sdl_common.h"
+#include "libs/sound/sound_common.h"
 #include "libs/sound/trackplayer.h"
+#include "SDL_mixer.h"
+
 
 #define VOICE_CHANNEL 0
 

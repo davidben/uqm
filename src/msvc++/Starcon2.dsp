@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "GFXMODULE_SDL_PURE" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "SOUNDMODULE_SDL" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=snBsc.exe
@@ -66,7 +66,7 @@ LINK32=snLink.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "GFXMODULE_SDL_PURE" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D SAFE_X=0 /D SAFE_Y=0 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "SOUNDMODULE_SDL" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=snBsc.exe
@@ -236,38 +236,52 @@ SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
 # End Source File
-# Begin Group "opengl"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\opengl\opengl.c
+SOURCE=..\sc2code\libs\graphics\sdl\primitives.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\opengl\opengl.h
-# End Source File
-# End Group
-
-# Begin Group "pure"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\sdl\pure\pure.c
+SOURCE=..\sc2code\libs\graphics\sdl\primitives.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\pure\pure.h
+SOURCE=..\sc2code\libs\graphics\sdl\opengl.c
 # End Source File
-# End Group
+# Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\opengl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\pure.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_blt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_funcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
+# End Source File
 # End Group
 # End Group
 # Begin Group "input"
@@ -280,6 +294,10 @@ SOURCE=..\sc2code\libs\input\inpintrn.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\input\input_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\input\input_common.h
 # End Source File
 # Begin Group "sdl"
 
@@ -332,7 +350,7 @@ SOURCE=..\sc2code\libs\memory\w_memlib.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\DIRECT.C
+SOURCE=..\sc2code\libs\resource\direct.c
 # End Source File
 # Begin Source File
 
@@ -393,6 +411,10 @@ SOURCE=..\sc2code\libs\sound\trackplayer.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\sound\sound_common.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\sound_common.h
 # End Source File
 # Begin Group "sdl"
 

@@ -9,9 +9,14 @@
 
 */
 
+#ifdef GFXMODULE_SDL
+
+#ifdef WIN32
+#pragma warning (disable:4018)
+#endif
+
 #include <stdlib.h>
 #include <string.h>
-
 #include "rotozoom.h"
 
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
@@ -330,7 +335,7 @@ void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, 
 {
     int x, y, t1, t2, dx, dy, xd, yd, sdx, sdy, ax, ay, ex, ey, sw, sh;
     tColorRGBA c00, c01, c10, c11;
-    tColorRGBA *pc, *sp, *spb;
+    tColorRGBA *pc, *sp;
     int gap;
 
     /*
@@ -590,7 +595,6 @@ SDL_Surface *rotozoomSurface(SDL_Surface * src, double angle, double zoom, int s
     double zoominv;
     double sanglezoom, canglezoom, sanglezoominv, canglezoominv;
     int dstwidthhalf, dstwidth, dstheighthalf, dstheight;
-    double x, y, cx, cy, sx, sy;
     int is32bit;
     int i, src_converted;
 
@@ -936,3 +940,5 @@ SDL_Surface *zoomSurface(SDL_Surface * src, double zoomx, double zoomy, int smoo
      */
     return (rz_dst);
 }
+
+#endif

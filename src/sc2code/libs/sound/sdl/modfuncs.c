@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined (GFXMODULE_SDL_OPENGL) || defined (GFXMODULE_SDL_PURE)
+#ifdef SOUNDMODULE_SDL
 
 #include "libs/strings/strintrn.h"
 #include "libs/sound/sndintrn.h"
@@ -26,6 +26,9 @@
 #include <fcntl.h>
 
 #include "libs/graphics/sdl/sdl_common.h"
+#include "libs/sound/sound_common.h"
+#include "SDL_mixer.h"
+
 
 MEM_HANDLE
 _GetSoundBankData (FILE *fp, DWORD length)

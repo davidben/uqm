@@ -16,20 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-  
-*****************************************/
-
-
 #ifndef GFX_COMMON_H
 #define GFX_COMMON_H
+
+#ifdef WIN32
+#pragma warning (disable:4244)	/* Disable bogus conversion warnings. */
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,11 +32,24 @@
 #include "libs/vidlib.h"
 #include "libs/misc.h"
 
+#define TFB_WINDOW_CAPTION "The Ur-Quan Masters"
 
-int Main(int argc, char *argv[]);
-int Starcon2Main (void *);
+// driver for TFB_InitGraphics
+enum
+{
+	TFB_GFXDRIVER_SDL_OPENGL,
+	TFB_GFXDRIVER_SDL_PURE,
+};
 
-// Graphics Stuff
+// flags for TFB_InitGraphics
+#define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
+#define TFB_GFXFLAGS_BILINEAR_FILTERING (1<<1)
+
+int TFB_InitGraphics (int driver, int flags, int width, int height, int bpp);
+int TFB_CreateGamePlayThread ();
+void TFB_ProcessEvents ();
+
+// 3DO Graphics Stuff
 
 void LoadIntoExtraScreen (PRECT r);
 void DrawFromExtraScreen (PRECT r);
@@ -54,7 +59,6 @@ void SetGraphicScale (int scale);
 void SetGraphicUseOtherExtra (int other);
 void *GetScreenBitmap ();
 void ScreenTransition (int transition, PRECT pRect);
-void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 
 extern float FrameRate;
 extern int FrameRateTickBase;
@@ -223,6 +227,8 @@ extern int ScreenWidth;
 extern int ScreenHeight;
 extern int ScreenWidthActual;
 extern int ScreenHeightActual;
-extern int ScreenBPPActual;
+extern int GraphicsDriver;
+
+int Starcon2Main (void *);
 
 #endif

@@ -13,5 +13,5 @@ INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
 noinst_LTLIBRARIES = libinput.la
 libinput_la_SOURCES = input_common.c
 libinput_la_LIBADD = sdl/libsdlinput.la
-noinst_HEADERS = inpintrn.h
+noinst_HEADERS = input_common.h inpintrn.h
 

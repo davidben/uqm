@@ -17,6 +17,7 @@
  */
 
 #include "libs/graphics/gfx_common.h"
+#include "libs/sound/sound_common.h"
 
 extern int _music_volume;
 

@@ -16,18 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-  
-*****************************************/
-
-#if defined (GFXMODULE_SDL_OPENGL) || defined (GFXMODULE_SDL_PURE)
+#ifdef GFXMODULE_SDL
 
 #include "libs/graphics/sdl/sdl_common.h"
 
@@ -52,6 +41,218 @@ static UNICODE OtherKey;
 
 static BOOLEAN (* PauseFunc) (void);
 
+
+int 
+TFB_InitInput (int driver, int flags)
+{
+	int i;
+	SDL_Joystick *Joystick1;
+
+	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
+	{
+		printf("Couldn't initialize joystick subsystem: %s\n", SDL_GetError());
+		exit(-1);
+	}
+
+	printf ("%i joysticks were found.\n", SDL_NumJoysticks ());
+	
+	if(SDL_NumJoysticks() > 0)
+	{
+		printf ("The names of the joysticks are:\n");
+		for(i = 0; i < SDL_NumJoysticks (); i++)
+		{
+			printf("    %s\n", SDL_JoystickName (i));
+		}
+		SDL_JoystickEventState (SDL_ENABLE);
+		Joystick1 = SDL_JoystickOpen (0);
+		if (SDL_NumJoysticks () > 1)
+			SDL_JoystickOpen(1);
+	}
+
+	for(i = 0; i < 512; i++)
+	{
+		KeyboardDown[i] = FALSE;
+		//KeyboardStroke[i] = FALSE;
+	}
+
+	ControlA =          SDLK_f;
+	ControlB =          SDLK_d;
+	ControlC =          SDLK_s;
+	ControlX =          SDLK_a;
+	ControlStart =      SDLK_RETURN;
+	ControlLeftShift =  SDLK_LSHIFT;
+	ControlRightShift = SDLK_RSHIFT;
+
+	return 0;
+}
+
+void
+ProcessKeyboardEvent(const SDL_Event *Event)
+{
+    if(Event->key.keysym.sym == SDLK_BACKQUOTE)
+	{
+		exit(0);
+	}
+	else
+	{
+		if (Event->type == SDL_KEYDOWN)
+		{
+			if ((kbdbuf[kbdtail] = Event->key.keysym.unicode)
+					|| (kbdbuf[kbdtail] = Event->key.keysym.sym) <= 0x7F)
+			{
+				kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
+				if (kbdtail == kbdhead)
+					kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
+			}
+			KeyboardDown[Event->key.keysym.sym]=TRUE;
+		}
+		else
+		{
+			KeyboardDown[Event->key.keysym.sym]=FALSE;
+		}
+	}
+}
+
+void
+ProcessJoystickEvent (const SDL_Event* Event)
+{
+	SDL_Event PseudoEvent;
+
+	return;
+
+	if (Event->type == SDL_JOYAXISMOTION)
+	{
+		if (Event->jaxis.axis == 0)
+		{
+			//x-axis
+
+			if (Event->jaxis.value <= -5) //Left
+			{
+				PseudoEvent.type = SDL_KEYDOWN;
+				PseudoEvent.key.keysym.sym = SDLK_LEFT;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+			if (Event->jaxis.value >= 5) //Right
+			{
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_LEFT;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYDOWN;
+				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+			if (Event->jaxis.value > -5 && Event->jaxis.value < 5)
+					//Neither Left nor Right
+			{
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_LEFT;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+		}
+		if (Event->jaxis.axis == 1)
+		{
+			//y-axis
+
+			if (Event->jaxis.value <= -5) //Down
+			{
+				PseudoEvent.type = SDL_KEYDOWN;
+				PseudoEvent.key.keysym.sym = SDLK_DOWN;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_UP;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+			if (Event->jaxis.value >= 5) //Up
+			{
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_DOWN;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYDOWN;
+				PseudoEvent.key.keysym.sym = SDLK_UP;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+			if (Event->jaxis.value >-5 && Event->jaxis.value < 5)
+					//Neither Down nor Up
+			{
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_DOWN;
+				ProcessKeyboardEvent (&PseudoEvent);
+
+				PseudoEvent.type = SDL_KEYUP;
+				PseudoEvent.key.keysym.sym = SDLK_UP;
+				ProcessKeyboardEvent (&PseudoEvent);
+			}
+		}
+	}
+	if (Event->type == SDL_JOYBUTTONDOWN)
+	{
+		printf("Joystick %i down\n", Event->jbutton.button);
+
+		if (Event->jbutton.button % 3 == 0)
+		{
+			//Mimic the Primary key
+
+			PseudoEvent.type=SDL_KEYDOWN;
+			PseudoEvent.key.keysym.sym = ControlA;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+		if (Event->jbutton.button % 3 == 1)
+		{
+			//Mimic the Secondary key
+
+			PseudoEvent.type = SDL_KEYDOWN;
+			PseudoEvent.key.keysym.sym = ControlB;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+		if (Event->jbutton.button % 3 == 2)
+		{
+			//Mimic the Tertiary key
+
+			PseudoEvent.type = SDL_KEYDOWN;
+			PseudoEvent.key.keysym.sym = ControlC;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+	}
+	if (Event->type == SDL_JOYBUTTONUP)
+	{
+		if (Event->jbutton.button % 3 == 0)
+		{
+			//Mimic the Primary key
+
+			PseudoEvent.type = SDL_KEYUP;
+			PseudoEvent.key.keysym.sym = ControlA;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+		if (Event->jbutton.button % 3 == 1)
+		{
+			//Mimic the Secondary key
+
+			PseudoEvent.type = SDL_KEYUP;
+			PseudoEvent.key.keysym.sym = ControlB;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+		if (Event->jbutton.button % 3 == 2)
+		{
+			//Mimic the Tertiary key
+
+			PseudoEvent.type = SDL_KEYUP;
+			PseudoEvent.key.keysym.sym = ControlC;
+			ProcessKeyboardEvent (&PseudoEvent);
+		}
+	}
+}
+
 // Status: Unimplemented
 extern BOOLEAN
 InitInput (UNICODE Pause, UNICODE Exit, BOOLEAN (*PFunc) (void))
@@ -68,6 +269,241 @@ InitInput (UNICODE Pause, UNICODE Exit, BOOLEAN (*PFunc) (void))
 	PauseFunc = PFunc;
 
 	return (TRUE);
+}
+
+//Status: Ignored
+BOOLEAN
+UninitInput () // Looks like it'll be empty
+{
+		BOOLEAN ret;
+
+		// printf("Unimplemented function activated: UninitInput()\n");
+		ret = TRUE;
+		return (ret);
+}
+
+void
+FlushInput ()
+{
+	kbdtail = kbdhead = 0;
+}
+
+//Status: Unimplemented
+UNICODE
+KBDToUNICODE (UNICODE SK_in)
+		//This one'll probably require a big table. Arg.
+{
+	return (SK_in);
+}
+
+Uint16
+GetUNICODEKey ()
+{
+	if (kbdtail != kbdhead)
+	{
+		Uint16 ch;
+
+		ch = kbdbuf[kbdhead];
+		kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
+		return (ch);
+	}
+
+	return (0);
+}
+
+// Status: Unimplemented
+UNICODE
+KeyHit () // Does this clear the top of a queue, or just read it?
+{
+	int i;
+
+	for (i = 0; i < sizeof (KeyboardDown) / sizeof (KeyboardDown[0]); ++i)
+	{
+		if (KeyboardDown[i])
+		{
+			if (i == SDLK_RETURN)
+				return ('\n');
+			else if (i >= 256)
+			{
+				switch (i)
+				{
+					case SDLK_KP_ENTER:
+						return ('\n');
+					case SDLK_KP4:
+					case SDLK_LEFT:
+						return (SK_LF_ARROW);
+					case SDLK_KP6:
+					case SDLK_RIGHT:
+						return (SK_RT_ARROW);
+					case SDLK_KP8:
+					case SDLK_UP:
+						return (SK_UP_ARROW);
+					case SDLK_KP2:
+					case SDLK_DOWN:
+						return (SK_DN_ARROW);
+					case SDLK_KP7:
+					case SDLK_HOME:
+						return (SK_HOME);
+					case SDLK_KP9:
+					case SDLK_PAGEUP:
+						return (SK_PAGE_UP);
+					case SDLK_KP1:
+					case SDLK_END:
+						return (SK_END);
+					case SDLK_KP3:
+					case SDLK_PAGEDOWN:
+						return (SK_PAGE_DOWN);
+					case SDLK_KP0:
+					case SDLK_INSERT:
+						return (SK_INSERT);
+					case SDLK_KP_PERIOD:
+					case SDLK_DELETE:
+						return (SK_DELETE);
+					case SDLK_KP_PLUS:
+						return (SK_KEYPAD_PLUS);
+					case SDLK_KP_MINUS:
+						return (SK_KEYPAD_MINUS);
+					case SDLK_LSHIFT:
+						return (SK_LF_SHIFT);
+					case SDLK_RSHIFT:
+						return (SK_RT_SHIFT);
+					case SDLK_LCTRL:
+					case SDLK_RCTRL:
+						return (SK_CTL);
+					case SDLK_LALT:
+					case SDLK_RALT:
+						return (SK_ALT);
+					case SDLK_F1:
+					case SDLK_F2:
+					case SDLK_F3:
+					case SDLK_F4:
+					case SDLK_F5:
+					case SDLK_F6:
+					case SDLK_F7:
+					case SDLK_F8:
+					case SDLK_F9:
+					case SDLK_F10:
+					case SDLK_F11:
+					case SDLK_F12:
+						return ((UNICODE) ((i - SDLK_F1) + SK_F1));
+				}
+				continue;
+			}
+
+			return ((UNICODE) i);
+		}
+	}
+
+	return (0);
+}
+
+//Status: Unimplemented
+int
+KeyDown (UNICODE which_scan)
+		// This might use SK_* stuff, of just plain old chars
+{
+	int i;
+
+	i = which_scan;
+	if (i == '\n')
+	{
+		if (KeyboardDown[SDLK_KP_ENTER])
+			return (1);
+		i = SDLK_RETURN;
+	}
+	else if (i >= 128)
+	{
+		switch (i)
+		{
+			case SK_LF_ARROW:
+				if (KeyboardDown[SDLK_KP4])
+					return (1);
+				i = SDLK_LEFT;
+				break;
+			case SK_RT_ARROW:
+				if (KeyboardDown[SDLK_KP6])
+					return (1);
+				i = SDLK_RIGHT;
+				break;
+			case SK_UP_ARROW:
+				if (KeyboardDown[SDLK_KP8])
+					return (1);
+				i = SDLK_UP;
+				break;
+			case SK_DN_ARROW:
+				if (KeyboardDown[SDLK_KP2])
+					return (1);
+				i = SDLK_DOWN;
+				break;
+			case SK_HOME:
+				if (KeyboardDown[SDLK_KP7])
+					return (1);
+				i = SDLK_HOME;
+				break;
+			case SK_PAGE_UP:
+				if (KeyboardDown[SDLK_KP9])
+					return (1);
+				i = SDLK_PAGEUP;
+				break;
+			case SK_END:
+				if (KeyboardDown[SDLK_KP1])
+					return (1);
+				i = SDLK_END;
+				break;
+			case SK_PAGE_DOWN:
+				if (KeyboardDown[SDLK_KP3])
+					return (1);
+				i = SDLK_PAGEDOWN;
+				break;
+			case SK_INSERT:
+				if (KeyboardDown[SDLK_KP0])
+					return (1);
+				i = SDLK_INSERT;
+				break;
+			case SK_DELETE:
+				if (KeyboardDown[SDLK_KP_PERIOD])
+					return (1);
+				i = SDLK_DELETE;
+				break;
+			case SK_KEYPAD_PLUS:
+				i = SDLK_KP_PLUS;
+				break;
+			case SK_KEYPAD_MINUS:
+				i = SDLK_KP_MINUS;
+				break;
+			case SK_LF_SHIFT:
+				i = SDLK_LSHIFT;
+				break;
+			case SK_RT_SHIFT:
+				i = SDLK_RSHIFT;
+				break;
+			case SK_CTL:
+				if (KeyboardDown[SDLK_LCTRL])
+					return (1);
+				i = SDLK_RCTRL;
+				break;
+			case SK_ALT:
+				if (KeyboardDown[SDLK_LALT])
+					return (1);
+				i = SDLK_RALT;
+				break;
+			case SK_F1:
+			case SK_F2:
+			case SK_F3:
+			case SK_F4:
+			case SK_F5:
+			case SK_F6:
+			case SK_F7:
+			case SK_F8:
+			case SK_F9:
+			case SK_F10:
+			case SK_F11:
+			case SK_F12:
+				i = (i - SK_F1) + SDLK_F1;
+		}
+	}
+
+	return (KeyboardDown[i]);
 }
 
 INPUT_STATE
@@ -141,21 +577,6 @@ _get_pause_exit_state (void)
 #endif
 
 	return (InputState);
-}
-
-Uint16
-GetUNICODEKey ()
-{
-	if (kbdtail != kbdhead)
-	{
-		Uint16 ch;
-
-		ch = kbdbuf[kbdhead];
-		kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-		return (ch);
-	}
-
-	return (0);
 }
 
 // Status: Unimplemented
@@ -366,394 +787,6 @@ _get_joystick_state (INPUT_REF ref, INPUT_STATE InputState)
 #endif
 	
 	return (InputState);
-}
-
-
-void
-FlushInput ()
-{
-	kbdtail = kbdhead = 0;
-}
-
-void
-ProcessKeyboardEvent(const SDL_Event *Event)
-{
-    if(Event->key.keysym.sym == SDLK_BACKQUOTE)
-	{
-		exit(0);
-	}
-	else
-	{
-		if (Event->type == SDL_KEYDOWN)
-		{
-			if ((kbdbuf[kbdtail] = Event->key.keysym.unicode)
-					|| (kbdbuf[kbdtail] = Event->key.keysym.sym) <= 0x7F)
-			{
-				kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
-				if (kbdtail == kbdhead)
-					kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
-			}
-			KeyboardDown[Event->key.keysym.sym]=TRUE;
-		}
-		else
-		{
-			KeyboardDown[Event->key.keysym.sym]=FALSE;
-		}
-	}
-}
-
-void
-ProcessJoystickEvent (const SDL_Event* Event)
-{
-	SDL_Event PseudoEvent;
-
-	return;
-
-	if (Event->type == SDL_JOYAXISMOTION)
-	{
-		if (Event->jaxis.axis == 0)
-		{
-			//x-axis
-
-			if (Event->jaxis.value <= -5) //Left
-			{
-				PseudoEvent.type = SDL_KEYDOWN;
-				PseudoEvent.key.keysym.sym = SDLK_LEFT;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-			if (Event->jaxis.value >= 5) //Right
-			{
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_LEFT;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYDOWN;
-				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-			if (Event->jaxis.value > -5 && Event->jaxis.value < 5)
-					//Neither Left nor Right
-			{
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_LEFT;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_RIGHT;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-		}
-		if (Event->jaxis.axis == 1)
-		{
-			//y-axis
-
-			if (Event->jaxis.value <= -5) //Down
-			{
-				PseudoEvent.type = SDL_KEYDOWN;
-				PseudoEvent.key.keysym.sym = SDLK_DOWN;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_UP;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-			if (Event->jaxis.value >= 5) //Up
-			{
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_DOWN;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYDOWN;
-				PseudoEvent.key.keysym.sym = SDLK_UP;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-			if (Event->jaxis.value >-5 && Event->jaxis.value < 5)
-					//Neither Down nor Up
-			{
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_DOWN;
-				ProcessKeyboardEvent (&PseudoEvent);
-
-				PseudoEvent.type = SDL_KEYUP;
-				PseudoEvent.key.keysym.sym = SDLK_UP;
-				ProcessKeyboardEvent (&PseudoEvent);
-			}
-		}
-	}
-	if (Event->type == SDL_JOYBUTTONDOWN)
-	{
-		printf("Joystick %i down\n", Event->jbutton.button);
-
-		if (Event->jbutton.button % 3 == 0)
-		{
-			//Mimic the Primary key
-
-			PseudoEvent.type=SDL_KEYDOWN;
-			PseudoEvent.key.keysym.sym = ControlA;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-		if (Event->jbutton.button % 3 == 1)
-		{
-			//Mimic the Secondary key
-
-			PseudoEvent.type = SDL_KEYDOWN;
-			PseudoEvent.key.keysym.sym = ControlB;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-		if (Event->jbutton.button % 3 == 2)
-		{
-			//Mimic the Tertiary key
-
-			PseudoEvent.type = SDL_KEYDOWN;
-			PseudoEvent.key.keysym.sym = ControlC;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-	}
-	if (Event->type == SDL_JOYBUTTONUP)
-	{
-		if (Event->jbutton.button % 3 == 0)
-		{
-			//Mimic the Primary key
-
-			PseudoEvent.type = SDL_KEYUP;
-			PseudoEvent.key.keysym.sym = ControlA;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-		if (Event->jbutton.button % 3 == 1)
-		{
-			//Mimic the Secondary key
-
-			PseudoEvent.type = SDL_KEYUP;
-			PseudoEvent.key.keysym.sym = ControlB;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-		if (Event->jbutton.button % 3 == 2)
-		{
-			//Mimic the Tertiary key
-
-			PseudoEvent.type = SDL_KEYUP;
-			PseudoEvent.key.keysym.sym = ControlC;
-			ProcessKeyboardEvent (&PseudoEvent);
-		}
-	}
-}
-
-//Status: Unimplemented
-UNICODE
-KBDToUNICODE (UNICODE SK_in)
-		//This one'll probably require a big table. Arg.
-{
-	return (SK_in);
-}
-
-//Status: Ignored
-BOOLEAN
-UninitInput () // Looks like it'll be empty
-{
-		BOOLEAN ret;
-
-		// printf("Unimplemented function activated: UninitInput()\n");
-		ret = TRUE;
-		return (ret);
-}
-
-// Status: Unimplemented
-UNICODE
-KeyHit () // Does this clear the top of a queue, or just read it?
-{
-	int i;
-
-	for (i = 0; i < sizeof (KeyboardDown) / sizeof (KeyboardDown[0]); ++i)
-	{
-		if (KeyboardDown[i])
-		{
-			if (i == SDLK_RETURN)
-				return ('\n');
-			else if (i >= 256)
-			{
-				switch (i)
-				{
-					case SDLK_KP_ENTER:
-						return ('\n');
-					case SDLK_KP4:
-					case SDLK_LEFT:
-						return (SK_LF_ARROW);
-					case SDLK_KP6:
-					case SDLK_RIGHT:
-						return (SK_RT_ARROW);
-					case SDLK_KP8:
-					case SDLK_UP:
-						return (SK_UP_ARROW);
-					case SDLK_KP2:
-					case SDLK_DOWN:
-						return (SK_DN_ARROW);
-					case SDLK_KP7:
-					case SDLK_HOME:
-						return (SK_HOME);
-					case SDLK_KP9:
-					case SDLK_PAGEUP:
-						return (SK_PAGE_UP);
-					case SDLK_KP1:
-					case SDLK_END:
-						return (SK_END);
-					case SDLK_KP3:
-					case SDLK_PAGEDOWN:
-						return (SK_PAGE_DOWN);
-					case SDLK_KP0:
-					case SDLK_INSERT:
-						return (SK_INSERT);
-					case SDLK_KP_PERIOD:
-					case SDLK_DELETE:
-						return (SK_DELETE);
-					case SDLK_KP_PLUS:
-						return (SK_KEYPAD_PLUS);
-					case SDLK_KP_MINUS:
-						return (SK_KEYPAD_MINUS);
-					case SDLK_LSHIFT:
-						return (SK_LF_SHIFT);
-					case SDLK_RSHIFT:
-						return (SK_RT_SHIFT);
-					case SDLK_LCTRL:
-					case SDLK_RCTRL:
-						return (SK_CTL);
-					case SDLK_LALT:
-					case SDLK_RALT:
-						return (SK_ALT);
-					case SDLK_F1:
-					case SDLK_F2:
-					case SDLK_F3:
-					case SDLK_F4:
-					case SDLK_F5:
-					case SDLK_F6:
-					case SDLK_F7:
-					case SDLK_F8:
-					case SDLK_F9:
-					case SDLK_F10:
-					case SDLK_F11:
-					case SDLK_F12:
-						return ((UNICODE) ((i - SDLK_F1) + SK_F1));
-				}
-				continue;
-			}
-
-			return ((UNICODE) i);
-		}
-	}
-
-	return (0);
-}
-
-//Status: Unimplemented
-int
-KeyDown (UNICODE which_scan)
-		// This might use SK_* stuff, of just plain old chars
-{
-	int i;
-
-	i = which_scan;
-	if (i == '\n')
-	{
-		if (KeyboardDown[SDLK_KP_ENTER])
-			return (1);
-		i = SDLK_RETURN;
-	}
-	else if (i >= 128)
-	{
-		switch (i)
-		{
-			case SK_LF_ARROW:
-				if (KeyboardDown[SDLK_KP4])
-					return (1);
-				i = SDLK_LEFT;
-				break;
-			case SK_RT_ARROW:
-				if (KeyboardDown[SDLK_KP6])
-					return (1);
-				i = SDLK_RIGHT;
-				break;
-			case SK_UP_ARROW:
-				if (KeyboardDown[SDLK_KP8])
-					return (1);
-				i = SDLK_UP;
-				break;
-			case SK_DN_ARROW:
-				if (KeyboardDown[SDLK_KP2])
-					return (1);
-				i = SDLK_DOWN;
-				break;
-			case SK_HOME:
-				if (KeyboardDown[SDLK_KP7])
-					return (1);
-				i = SDLK_HOME;
-				break;
-			case SK_PAGE_UP:
-				if (KeyboardDown[SDLK_KP9])
-					return (1);
-				i = SDLK_PAGEUP;
-				break;
-			case SK_END:
-				if (KeyboardDown[SDLK_KP1])
-					return (1);
-				i = SDLK_END;
-				break;
-			case SK_PAGE_DOWN:
-				if (KeyboardDown[SDLK_KP3])
-					return (1);
-				i = SDLK_PAGEDOWN;
-				break;
-			case SK_INSERT:
-				if (KeyboardDown[SDLK_KP0])
-					return (1);
-				i = SDLK_INSERT;
-				break;
-			case SK_DELETE:
-				if (KeyboardDown[SDLK_KP_PERIOD])
-					return (1);
-				i = SDLK_DELETE;
-				break;
-			case SK_KEYPAD_PLUS:
-				i = SDLK_KP_PLUS;
-				break;
-			case SK_KEYPAD_MINUS:
-				i = SDLK_KP_MINUS;
-				break;
-			case SK_LF_SHIFT:
-				i = SDLK_LSHIFT;
-				break;
-			case SK_RT_SHIFT:
-				i = SDLK_RSHIFT;
-				break;
-			case SK_CTL:
-				if (KeyboardDown[SDLK_LCTRL])
-					return (1);
-				i = SDLK_RCTRL;
-				break;
-			case SK_ALT:
-				if (KeyboardDown[SDLK_LALT])
-					return (1);
-				i = SDLK_RALT;
-				break;
-			case SK_F1:
-			case SK_F2:
-			case SK_F3:
-			case SK_F4:
-			case SK_F5:
-			case SK_F6:
-			case SK_F7:
-			case SK_F8:
-			case SK_F9:
-			case SK_F10:
-			case SK_F11:
-			case SK_F12:
-				i = (i - SK_F1) + SDLK_F1;
-		}
-	}
-
-	return (KeyboardDown[i]);
 }
 
 #endif

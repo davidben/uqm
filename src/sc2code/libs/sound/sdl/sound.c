@@ -16,20 +16,54 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-  
-*****************************************/
-
-#if defined (GFXMODULE_SDL_OPENGL) || defined (GFXMODULE_SDL_PURE)
+#ifdef SOUNDMODULE_SDL
 
 #include "libs/graphics/sdl/sdl_common.h"
+#include "libs/sound/sound_common.h"
+#include "SDL_mixer.h"
+
+int 
+TFB_InitSound (int driver, int flags, int frequency)
+{
+	char SoundcardName[256];
+	int audio_rate,audio_channels;
+	Uint16 audio_format;
+	SDL_version compile_version;
+
+	if ((SDL_InitSubSystem(SDL_INIT_AUDIO)) == -1)
+	{
+		printf("Couldn't initialize audio subsystem: %s\n", SDL_GetError());
+		exit(-1);
+	}
+
+	if (Mix_OpenAudio(frequency, AUDIO_S16, 2, 4096))
+	{
+		printf ("Unable to open audio!\n");
+		exit (-1);
+	}
+
+	atexit (Mix_CloseAudio);
+
+	SDL_AudioDriverName (SoundcardName, sizeof (SoundcardName));
+
+	Mix_QuerySpec (&audio_rate, &audio_format, &audio_channels);
+	printf ("Opened %s at %d Hz %d bit %s, %d bytes audio buffer\n",
+			SoundcardName, audio_rate, audio_format & 0xFF,
+			audio_channels > 1 ? "stereo" : "mono", 4096);
+
+	MIX_VERSION (&compile_version);
+	printf ("Compiled with SDL_mixer version: %d.%d.%d\n",
+			compile_version.major,
+			compile_version.minor,
+			compile_version.patch);
+	printf ("Running with SDL_mixer version: %d.%d.%d\n",
+			Mix_Linked_Version()->major,
+			Mix_Linked_Version()->minor,
+			Mix_Linked_Version()->patch);
+
+	return 0;
+}
+
 
 //Status: Unimplemented
 void

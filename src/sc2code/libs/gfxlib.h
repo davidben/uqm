@@ -39,7 +39,7 @@ typedef TIME_VALUE *PTIME_VALUE;
 typedef SWORD COORD;
 typedef COORD *PCOORD;
 
-typedef UWORD COLOR;
+typedef DWORD COLOR;
 typedef COLOR *PCOLOR;
 
 #define BUILD_COLOR(c32k,c256) \

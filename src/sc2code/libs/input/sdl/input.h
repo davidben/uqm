@@ -16,18 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-  
-*****************************************/
-
-
 #ifndef INPUT_H
 #define INPUT_H
 

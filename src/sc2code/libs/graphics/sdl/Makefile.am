@@ -3,8 +3,6 @@
 # Written by Mudry <mudry@user.sf.net>, protected by GNU GPL.
 # CVS $ Id: $
 
-SUBDIRS = opengl pure
-
 CFLAGS = -Wall
 
 INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
@@ -14,9 +12,8 @@ INCLUDES = @SDL_CFLAGS@ @SMPEG_CFLAGS@ \
 
 noinst_LTLIBRARIES = libsdl.la
 
-libsdl_la_SOURCES = sdl_common.c rotozoom.c
+libsdl_la_SOURCES = 3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c \
+	primitives.c pure.c rotozoom.c sdl_common.c
 
-libsdl_la_LIBADD = opengl/libopengl.la pure/libpure.la
-
-noinst_HEADERS = sdl_common.h rotozoom.h
+noinst_HEADERS = opengl.h primitives.h pure.h rotozoom.h sdl_common.h
 

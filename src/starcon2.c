@@ -16,25 +16,63 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-
-/****************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-
-*****************************************/
-
 #include "libs/graphics/gfx_common.h"
+#include "libs/sound/sound_common.h"
+#include "libs/input/input_common.h"
 
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
-	// TODO: Currently every graphics module has to implement its own main function.
-	//       Should be divided later into smaller parts with common code.
+	int i;
+	int gfxdriver = TFB_GFXDRIVER_SDL_PURE;
+	int gfxflags = 0;
+	int width = 640, height = 480, bpp = 16;
+	int frequency = 44100;
 
-	return Main(argc,argv);
+	// TODO: proper commandline parser, this is just a quick hack
+	for (i=1;i<argc;++i) 
+	{
+		if (!strcmp(argv[i],"-res")) 
+		{
+			i++;
+			sscanf(argv[i],"%dx%d",&width,&height);
+		}
+		else if (!strcmp(argv[i],"-bpp")) 
+		{
+			i++;
+			sscanf(argv[i],"%d",&bpp);
+		}
+		else if (!strcmp(argv[i],"-fullscreen")) 
+		{
+			gfxflags |= TFB_GFXFLAGS_FULLSCREEN;
+		}
+		else if (!strcmp(argv[i],"-opengl")) 
+		{
+			gfxdriver = TFB_GFXDRIVER_SDL_OPENGL;
+			gfxflags |= TFB_GFXFLAGS_BILINEAR_FILTERING;
+		}
+		else if (!strcmp(argv[i],"-linear")) 
+		{
+			gfxflags &= ~TFB_GFXFLAGS_BILINEAR_FILTERING;
+		}
+		else if (!strcmp(argv[i],"-frequency"))
+		{
+			i++;
+			sscanf(argv[i],"%d",&frequency);
+		}
+	}
+
+	TFB_InitGraphics (gfxdriver, gfxflags, width, height, bpp);
+	TFB_InitSound (TFB_SOUNDDRIVER_SDL, 0, frequency);
+	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
+
+	TFB_CreateGamePlayThread ();
+
+	for (;;)
+	{
+		TFB_ProcessEvents ();
+		TFB_FlushGraphics ();
+	}
+
+	return 0;
 }

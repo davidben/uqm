@@ -16,21 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/******************************************
-
-  Star Control II: 3DO => SDL Port
-
-  Copyright Toys for Bob, 2002
-
-  Programmer: Chris Nelson
-
-*******************************************/
-
-
 #include "libs/graphics/gfxintrn.h"
 #include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
-
 
 #define NUMBER_OF_PLUTVALS 32
 #define NUMBER_OF_PLUT_UINT32s (NUMBER_OF_PLUTVALS >> 1)
@@ -46,7 +34,6 @@ int ScreenWidth;
 int ScreenHeight;
 int ScreenWidthActual;
 int ScreenHeightActual;
-int ScreenBPPActual;
+int GraphicsDriver;
 
 int TFB_DEBUG_HALT;
-
