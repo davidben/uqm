@@ -12,8 +12,8 @@ Serious bugs (crash the game, high priority):
   - Often more probable when heavy color table transformations are going on
 - Load/save code doesn't work perfectly, hangs sometimes when after loading
   trying to enter some star first time etc
-- OpenGL mode might cause lockups when entering a star system, while
-  pure SDL mode does not; can others confirm this?
+- OpenGL causes lockups when entering a star system, while
+  pure SDL mode does not (only happens when using autopilot?)
 
 Glitches (don't crash the game, medium priority):
 - The melnorme don't charge for fuel when you ask "fill 'er up"
