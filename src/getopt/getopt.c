@@ -31,6 +31,7 @@
 # include <config.h>
 #endif
 
+#ifndef HAVE_GETOPT_H
 #if !defined __STDC__ || !__STDC__
 /* This is a separate conditional since some stdc systems
    reject `defined (const)'.  */
@@ -1057,3 +1058,5 @@ main (argc, argv)
 }
 
 #endif /* TEST */
+
+#endif /* HAVE_GETOPT_H */

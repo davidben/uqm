@@ -18,10 +18,14 @@
 
 #ifndef WIN32
 #include <unistd.h>
-#include <getopt.h>
 #include "config.h"
 #else
 #include <direct.h>
+#endif
+
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
 #include "getopt/getopt.h"
 #endif
 

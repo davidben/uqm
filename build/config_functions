@@ -253,6 +253,43 @@ EOF
 	fi
 }
 
+# Description: check if a header is available.
+# Arguments:   $1 - the name of the header file
+have_header() {
+	local HEADER
+	HEADER="$1"
+
+	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF 2>&1 > /dev/null
+#include <$HEADER>
+int main() {
+	return 0;
+}
+EOF
+	if [ $? -gt 0 ]; then
+		build_message "Header '$HEADER' not found."
+		return 1
+	fi
+	build_message "Header '$HEADER' found."
+	return 0
+}
+
+# Description: check if a header is available.
+#              set HAVE_<NAME> accordingly, where <NAME> is the capitalized
+#              name of the header file. "sys/time.h" becomes "SYS_TIME_H".
+# Arguments:   $1 - the name of the symbol
+define_have_header() {
+	local NAME VALUE
+	NAME=`$TR /.a-z __A-Z << EOF
+$1
+EOF
+`
+	if have_header "$1"; then
+		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
+	else
+		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
+	fi
+}
+
 # Description: Add a symbol to be replaced by substitute_vars
 #              $HAVE_SYMBOLS will contain the variable names of all
 #              symbols added by define_have_symbol and should be passed to
@@ -303,14 +340,11 @@ substitute_vars() {
 	eval FILES=\"\$$2\"
 
 	for VAR in $VARS; do
-		# Using CR as a seperator, as it's unlikely that's used in
-		# $VAR itself.
+		# Escape all / in VAR so that we can use / as seperator char for sed
 		eval VALUE=\"\$$VAR\"
+		VALUE=$(echo "$VALUE" | sed 's,\([\&/]\),\\\1,g')
 		cat << EOF
-s
-@${VAR}@
-${VALUE}
-g
+s/@${VAR}@/${VALUE}/g
 EOF
 	done > "${TEMPFILE}.sed"
 
