@@ -254,31 +254,37 @@ static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
 			src_p2 = src_p;
 			j = i;
 
+			p[0] = src_p[0];
+			if (y < h - 2)
+				p[2] = src_p[src->w];
+			else
+				p[2] = 0;
+
 			for (x = 0; x < w; ++x)
 			{
-				p[0] = src_p[0];
-				if (y < h - 2)
+				if (j == i)
 				{
-					p[2] = src_p[src->w];					
-					if (x < w - 2)
+					if (y < h - 2)
 					{
-						p[3] = src_p[src->w + 1];
-						p[1] = src_p[1];
+						if (x < w - 2)
+						{
+							p[1] = src_p[1];
+							p[3] = src_p[src->w + 1];
+						}
+						else
+						{
+							p[1] = 0;
+							p[3] = 0;
+						}
 					}
 					else
 					{
-						p[3] = p[2];
-						p[1] = p[0];
+						if (x < w - 2)
+							p[1] = src_p[1];
+						else
+							p[1] = 0;
+						p[3] = 0;
 					}
-				}
-				else
-				{
-					if (x < w - 2)
-						p[1] = src_p[1];
-					else
-						p[1] = p[0];
-					p[2] = p[0];
-					p[3] = p[1];
 				}
 
 				fa = bilinear_table[j][0];
@@ -304,6 +310,8 @@ static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
 				{
 					j = i;
 					src_p++;
+					p[0] = p[1];
+					p[2] = p[3];
 				}
 				else
 				{
@@ -336,31 +344,37 @@ static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
 			src_p2 = src_p;
 			j = i;
 
+			p[0] = src_p[0];
+			if (y < h - 2)
+				p[2] = src_p[src->w];
+			else
+				p[2] = 0;
+
 			for (x = 0; x < w; ++x)
 			{
-				p[0] = src_p[0];
-				if (y < h - 2)
+				if (j == i)
 				{
-					p[2] = src_p[src->w];					
-					if (x < w - 2)
+					if (y < h - 2)
 					{
-						p[3] = src_p[src->w + 1];
-						p[1] = src_p[1];
+						if (x < w - 2)
+						{
+							p[1] = src_p[1];
+							p[3] = src_p[src->w + 1];
+						}
+						else
+						{
+							p[1] = 0;
+							p[3] = 0;
+						}
 					}
 					else
 					{
-						p[3] = p[2];
-						p[1] = p[0];
+						if (x < w - 2)
+							p[1] = src_p[1];
+						else
+							p[1] = 0;
+						p[3] = 0;
 					}
-				}
-				else
-				{
-					if (x < w - 2)
-						p[1] = src_p[1];
-					else
-						p[1] = p[0];
-					p[2] = p[0];
-					p[3] = p[1];
 				}
 
 				fa = bilinear_table[j][0];
@@ -386,6 +400,8 @@ static void Scale_Bilinear (SDL_Surface *src, SDL_Surface *dst)
 				{
 					j = i;
 					src_p++;
+					p[0] = p[1];
+					p[2] = p[3];
 				}
 				else
 				{
