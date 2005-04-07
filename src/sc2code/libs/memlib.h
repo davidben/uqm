@@ -99,7 +99,7 @@ typedef UWORD MEM_FLAGS;
 
 typedef struct mem_header {
 	MEM_HANDLE handle;
-} MEM_HEADER _ALIGNED_ANY;
+} _ALIGNED_ANY MEM_HEADER;
 
 #define GET_MEM_HEADER(addr) ((MEM_HEADER *) \
 		(((char *) addr) - sizeof (MEM_HEADER)))
