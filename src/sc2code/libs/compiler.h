@@ -73,5 +73,16 @@ typedef DWORD    (*PDWORDFUNC) (void);
 #define LOWORD(x)    ((UWORD) ((DWORD) (x)))
 #define HIWORD(x)    ((UWORD) ((DWORD) (x) >> 16))
 
+
+// _ALIGNED_ANY specifies an alignment suitable for any type
+// _ALIGNED_ON specifies a caller-supplied alignment (should be a power of 2)
+#if defined(__GNUC__)
+#	define _ALIGNED_ANY __attribute__((aligned))
+#	define _ALIGNED_ON(bytes) __attribute__((aligned(bytes)))
+#elif defined(_MSC_VER)
+#	define _ALIGNED_ANY
+#	define _ALIGNED_ON(bytes) __declspec(align(bytes))
+#endif
+
 #endif /* _COMPILER_H */
 

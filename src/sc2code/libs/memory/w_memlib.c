@@ -596,12 +596,12 @@ _alloc_mem (int size)
 	void *p;
 	int h;
 
-	h = mem_allocate (size + sizeof (int),0,0,0);
+	h = mem_allocate (sizeof (MEM_HEADER) + size, 0, 0, 0);
 	p = (void *)mem_simple_access (h);
 	if (p)
 	{
-		*(int *)p = h;
-		p = (int *)p + 1;
+		((MEM_HEADER *) p)->handle = h;
+		p = (char *)p + sizeof (MEM_HEADER);
 	}
 
 	return (p);
@@ -630,9 +630,11 @@ HFree (void *p)
 {
 	if (p)
 	{
-		int h;
+		MEM_HEADER *hdr;
+		MEM_HANDLE h;
 
-		h = *(int *)((int *)p - 1);
+		hdr = GET_MEM_HEADER(p);
+		h = hdr->handle;
 		mem_simple_unaccess (h);
 		mem_release (h);
 	}
@@ -658,7 +660,12 @@ HRealloc (void *p, int size)
 
 	if ((np = _alloc_mem (size)) && p)
 	{
-		osize = mem_get_size (*(int *)((int *)p - 1)) - sizeof (int);
+		MEM_HEADER *hdr;
+		MEM_HANDLE h;
+
+		hdr = GET_MEM_HEADER (p);
+		h = hdr->handle;
+		osize = mem_get_size (h) - sizeof (MEM_HEADER);
 		if (size > osize)
 			size = osize;
 		memcpy (np, p, size);
@@ -667,3 +674,4 @@ HRealloc (void *p, int size)
 
 	return (np);
 }
+

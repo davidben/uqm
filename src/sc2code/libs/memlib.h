@@ -97,6 +97,13 @@ typedef UWORD MEM_FLAGS;
 #define HIGHEST_MEM_PRIORITY (MEM_PRIORITY)1
 #define LOWEST_MEM_PRIORITY (MEM_PRIORITY)100
 
+typedef struct mem_header {
+	MEM_HANDLE handle;
+} MEM_HEADER _ALIGNED_ANY;
+
+#define GET_MEM_HEADER(addr) ((MEM_HEADER *) \
+		(((char *) addr) - sizeof (MEM_HEADER)))
+
 //Newer verion from w_memlib.c to follow...
 /*
 extern MEM_BOOL mem_init (MEM_SIZE core_size, PMEM_SIZE pmin_addressable,
