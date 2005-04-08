@@ -26,6 +26,9 @@
 /* Defined if words are stored with the most significant byte first */
 @WORDS_BIGENDIAN@
 
+/* Defined if your system has readdir_r of its own */
+@HAVE_READDIR_R@
+
 /* Defined if your system has setenv of its own */
 @HAVE_SETENV@
 

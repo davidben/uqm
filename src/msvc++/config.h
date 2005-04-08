@@ -27,6 +27,9 @@
 /* Define if words are stored with the most significant byte first */
 #undef WORDS_BIGENDIAN
 
+/* Defined if your system has readdir_r of its own */
+#undef HAVE_READDIR_R
+
 /* Defined if your system has setenv of its own */
 #undef HAVE_SETENV
 
