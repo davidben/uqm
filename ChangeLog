@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- It is now possible to complete the game w/o ever allying with the
+  Starbase at Earth; known as 'Beating the Game Differently' mode;
+  (bug #592) -Alex
 - The direction flagship is facing is now preserved through an
   encounter in Hyperspace -Alex
 - Added support for PC-style 3-step melee zooming; -b=pc|step option;
