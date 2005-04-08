@@ -446,14 +446,15 @@ unhyper_transition (PELEMENT ElementPtr)
 	{
 		cleanup_hyperspace ();
 
-		GLOBAL (ShipStamp.frame) = 0;
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 		switch (ElementPtr->turn_wait)
 		{
 			case RANDOM_ENCOUNTER_TRANSITION:
+				SaveFlagshipState ();
 				GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 				break;
 			case INTERPLANETARY_TRANSITION:
+				GLOBAL (ShipStamp.frame) = 0;
 				SET_GAME_STATE (USED_BROADCASTER, 0);
 				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 				{
@@ -512,6 +513,7 @@ unhyper_transition (PELEMENT ElementPtr)
 				 * or HyperSpace from QuasiSpace through the periodically
 				 * opening portal.
 				 */
+				GLOBAL (ShipStamp.frame) = 0;
 				SET_GAME_STATE (USED_BROADCASTER, 0);
 				GLOBAL (autopilot.x) =
 						GLOBAL (autopilot.y) = ~0;
