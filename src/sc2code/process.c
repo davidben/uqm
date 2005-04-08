@@ -40,7 +40,7 @@ SIZE zoom_out = 1 << ZOOM_SHIFT;
 static SIZE opt_max_zoom_out;
 
 #if 0
-static void inline
+static inline void
 CALC_ZOOM_STUFF (COUNT* idx, COUNT* sc)
 {
 	int i, z;
@@ -52,7 +52,7 @@ CALC_ZOOM_STUFF (COUNT* idx, COUNT* sc)
 	*sc = ((1 << i) << (ZOOM_SHIFT + 8)) / zoom_out;
 }
 #else
-static void inline
+static inline void
 CALC_ZOOM_STUFF (COUNT* idx, COUNT* sc)
 {
 	int i;
@@ -723,10 +723,12 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	if ((min_reduction > opt_max_zoom_out || min_reduction <= max_reduction)
 			&& (min_reduction = max_reduction) > opt_max_zoom_out
 			&& (min_reduction = zoom_out) > opt_max_zoom_out)
+	{
 		if (optMeleeScale == TFB_SCALE_STEP)
 			min_reduction = 0;
 		else
 			min_reduction = 1 << ZOOM_SHIFT;
+	}
 
 #ifdef KDEBUG
 	fprintf (stderr, "PreProcess: exit\n");
