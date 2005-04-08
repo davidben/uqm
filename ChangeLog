@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- The direction flagship is facing is now preserved through an
+  encounter in Hyperspace -Alex
 - Added support for PC-style 3-step melee zooming; -b=pc|step option;
   (bug #694) -Alex
 - Melee team building pick-ship box is now generated with actual ship
