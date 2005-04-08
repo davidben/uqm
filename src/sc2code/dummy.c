@@ -25,7 +25,17 @@
 
 #include "coderes.h"
 #include "races.h"
+
+#include "libs/compiler.h"
+
 #include <ctype.h>
+
+
+typedef struct
+{
+	MEM_HANDLE handle _ALIGNED_ON(sizeof (MEM_HANDLE));
+	RACE_DESC data _ALIGNED_ANY;
+} CODERES_STRUCT;
 
 
 MEM_HANDLE
@@ -82,7 +92,7 @@ enum
 	MEM_HANDLE hData;
 
 	which_res = GetResFileChar (fp);
-	hData = mem_request (sizeof (MEM_HANDLE) + sizeof (RACE_DESC));
+	hData = mem_request (sizeof (CODERES_STRUCT));
 	if (hData)
 	{
 		RACE_DESCPTR RDPtr;
@@ -298,10 +308,11 @@ enum
 		}
 		else
 		{
-			MEM_HANDLE *lp;
+			CODERES_STRUCT *cs;
 
-			lp = (MEM_HANDLE *)mem_lock (hData);
-			*((RACE_DESCPTR)&lp[1]) = *RDPtr;
+			cs = (CODERES_STRUCT *) mem_lock (hData);
+			cs->data = *RDPtr;
+					// Structure assignment.
 			mem_unlock (hData);
 		}
 	}
@@ -341,20 +352,20 @@ DestroyCodeRes (MEM_HANDLE hCode)
 PVOID
 CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID *ppLocData)
 {
-	MEM_HANDLE *p;
+	CODERES_STRUCT *cs;
 
-	if(hCode==0)
+	if (hCode == 0)
 	{
 		fprintf(stderr, "Ack! dummy.c::CaptureCodeRes() hCode==0! FATAL!\n");
 		return(0);
 	}
 
-	p = (MEM_HANDLE *)mem_lock (hCode);
-	*p = hCode;
-	*ppLocData = &p[1];
+	cs = (CODERES_STRUCT *) mem_lock (hCode);
+	cs->handle = hCode;
+	*ppLocData = (void *) &cs->data;
 
 	(void) pData;  /* Satisfying compiler (unused parameter) */
-	return (p);
+	return (void *) cs;
 }
 
 

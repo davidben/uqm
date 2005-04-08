@@ -21,6 +21,7 @@
 
 #include "units.h"
 #include "element.h"
+#include "libs/compiler.h"
 #include "libs/sndlib.h"
 
 
@@ -62,7 +63,11 @@
 
 typedef struct captain_stuff
 {
-	FRAME background, turn, thrust, weapon, special;
+	FRAME background;
+	FRAME turn;
+	FRAME thrust;
+	FRAME weapon;
+	FRAME special;
 } CAPTAIN_STUFF;
 typedef CAPTAIN_STUFF *PCAPTAIN_STUFF;
 #define CAPTAIN_STUFFPTR PCAPTAIN_STUFF
@@ -189,19 +194,25 @@ typedef struct
 typedef DATA_STUFF *PDATA_STUFF;
 #define DATA_STUFFPTR PDATA_STUFF
 
+typedef void (PREPROCESS_FUNC) (PELEMENT ElementPtr);
+typedef void (POSTPROCESS_FUNC) (PELEMENT ElementPtr);
+typedef COUNT (INIT_WEAPON_FUNC) (PELEMENT ElementPtr, HELEMENT Weapon[]);
+
 typedef struct race_desc
 {
-	SHIP_INFO ship_info;
-	CHARACTERISTIC_STUFF characteristics;
-	DATA_STUFF ship_data;
-	INTEL_STUFF cyborg_control;
+	SHIP_INFO ship_info _ALIGNED_ANY;
+	CHARACTERISTIC_STUFF characteristics _ALIGNED_ANY;
+	DATA_STUFF ship_data _ALIGNED_ANY;
+	INTEL_STUFF cyborg_control _ALIGNED_ANY;
 
-	void (*preprocess_func) (PELEMENT ElementPtr);
-	void (*postprocess_func) (PELEMENT ElementPtr);
-	COUNT (*init_weapon_func) (PELEMENT ElementPtr, HELEMENT
-			Weapon[]);
+	PREPROCESS_FUNC *preprocess_func
+			_ALIGNED_ON(sizeof (PREPROCESS_FUNC *));
+	POSTPROCESS_FUNC *postprocess_func 
+			_ALIGNED_ON(sizeof (POSTPROCESS_FUNC *));
+	INIT_WEAPON_FUNC *init_weapon_func
+			_ALIGNED_ON(sizeof (INIT_WEAPON_FUNC *));
 
-	PVOID CodeRef;
+	PVOID CodeRef _ALIGNED_ON(sizeof (PVOID));
 } RACE_DESC;
 typedef RACE_DESC *PRACE_DESC;
 #define RACE_DESCPTR PRACE_DESC
@@ -210,29 +221,32 @@ typedef QUEUE_HANDLE HSTARSHIP;
 
 typedef struct
 {
-	HSTARSHIP pred, succ;
+	HSTARSHIP pred;
+	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
 	RACE_DESCPTR RaceDescPtr;
 	BYTE captains_name_index;
 
-	BYTE weapon_counter,
-	     special_counter,
-	     energy_counter;
+	BYTE weapon_counter;
+	BYTE special_counter;
+	BYTE energy_counter;
 
 	BYTE ship_input_state;
-	UWORD cur_status_flags, old_status_flags;
+	UWORD cur_status_flags _ALIGNED_ON(sizeof (UWORD));
+	UWORD old_status_flags _ALIGNED_ON(sizeof (UWORD));
 
-	HELEMENT hShip;
-	COUNT ShipFacing;
-	FRAME silhouette;
+	FRAME silhouette _ALIGNED_ON(sizeof (FRAME));
+	HELEMENT hShip _ALIGNED_ON(sizeof (HELEMENT));
+	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));
 } STARSHIP;
 typedef STARSHIP *PSTARSHIP;
 #define STARSHIPPTR PSTARSHIP
 
 typedef struct
 {
-	HSTARSHIP pred, succ;
+	HSTARSHIP pred;
+	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
 	RACE_DESCPTR RaceDescPtr;
@@ -243,7 +257,8 @@ typedef SHIP_FRAGMENT *PSHIP_FRAGMENT;
 
 typedef struct
 {
-	HSTARSHIP pred, succ;
+	HSTARSHIP pred;
+	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
 	RACE_DESCPTR RaceDescPtr;

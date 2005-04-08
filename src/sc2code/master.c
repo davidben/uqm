@@ -54,6 +54,7 @@ if (master_q.head != 0)
 			SHIP_INFOPTR ShipInfoPtr;
 
 			TaskSwitch ();
+					// XXX: what is this doing here?
 
 			BuiltShipPtr = LockStarShip (&master_q, hBuiltShip);
 			load_ship (BuiltShipPtr, FALSE);
@@ -92,6 +93,7 @@ if (master_q.head != 0)
 	}
 
 	TaskSwitch ();
+			// XXX: what is this doing here?
 }
 
 void
