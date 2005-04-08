@@ -59,6 +59,7 @@ typedef MENU_STATE *PMENU_STATE;
 
 extern PMENU_STATE pMenuState;
 
+extern void InstallBombAtEarth (void);
 extern void VisitStarBase (void);
 extern BOOLEAN DoStarBase (PMENU_STATE pMS);
 extern BOOLEAN DoOutfit (PMENU_STATE pMS);

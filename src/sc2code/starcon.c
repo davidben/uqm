@@ -149,12 +149,22 @@ while (--ac > 0)
 				if ((GLOBAL (CurrentActivity) & START_ENCOUNTER)
 						|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 				{
-					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
-					if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == (BYTE)~0
+					if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 2
+							&& !GET_GAME_STATE (STARBASE_AVAILABLE))
+					{	/* BGD mode */
+						InstallBombAtEarth ();
+					}
+					else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == (BYTE)~0
 							|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
+					{
+						GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 						VisitStarBase ();
+					}
 					else
+					{
+						GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 						RaceCommunication ();
+					}
 
 					if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 					{

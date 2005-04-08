@@ -432,6 +432,26 @@ ExitStarBase:
 	return (TRUE);
 }
 
+static void
+DoTimePassage (void)
+{
+#define LOST_DAYS 14
+	COUNT i;
+	BYTE clut_buf[1];
+
+	clut_buf[0] = FadeAllToBlack;
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
+	for (i = 0; i < LOST_DAYS; ++i)
+	{
+		while (ClockTick () > 0)
+			;
+
+		ResumeGameClock ();
+		SleepThread (ONE_SECOND / 60);
+		SuspendGameClock ();
+	}
+}
+
 void
 VisitStarBase (void)
 {
@@ -474,26 +494,12 @@ VisitStarBase (void)
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 
 		{
-#define LOST_DAYS 14
-			COUNT i;
-			BYTE clut_buf[1];
-
 			pMenuState = &MenuState;
 			InitCommunication (COMMANDER_CONVERSATION);
 
 TimePassage:
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
-			clut_buf[0] = FadeAllToBlack;
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
-			for (i = 0; i < LOST_DAYS; ++i)
-			{
-				while (ClockTick () > 0)
-					;
-
-				ResumeGameClock ();
-				SleepThread (ONE_SECOND / 60);
-				SuspendGameClock ();
-			}
+			DoTimePassage ();
 		}
 	}
 
@@ -525,6 +531,28 @@ ExitStarBase:
 		NextActivity = MAKE_WORD (IN_INTERPLANETARY, 0)
 				| START_INTERPLANETARY;
 	}
+}
+
+void
+InstallBombAtEarth (void)
+{
+	BYTE clut_buf[1];
+
+	DoTimePassage ();
+
+	LockMutex (GraphicsLock);
+	SetContext (ScreenContext);
+	SetTransitionSource (NULL);
+	SetContextBackGroundColor (BLACK_COLOR);
+	ClearDrawable ();
+	UnlockMutex (GraphicsLock);
+	
+	clut_buf[0] = FadeAllToColor;
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, 0));
+	
+	SET_GAME_STATE (CHMMR_BOMB_STATE, 3); /* bomb processed */
+	GLOBAL (CurrentActivity) = CHECK_LOAD; /* fake a load game */
+	CurStarDescPtr = 0; /* force SolarSys reload */
 }
 
 // XXX: Doesn't really belong in this file.

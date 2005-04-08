@@ -252,7 +252,8 @@ NoRadioactives (RESPONSE_REF R)
 			GiveRadios (NULL_PTR);
 		else
 		{
-			if (GLOBAL_SIS (NumLanders) == 0)
+			if (GLOBAL_SIS (NumLanders) == 0
+					&& GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
 			{
 				if (GET_GAME_STATE (LANDERS_LOST))
 					Response (i_lost_another_lander, NoRadioactives);
@@ -323,7 +324,8 @@ AskAfterRadios (RESPONSE_REF R)
 	}
 
 	{
-		if (GLOBAL_SIS (NumLanders) == 0)
+		if (GLOBAL_SIS (NumLanders) == 0
+				&& GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
 		{
 			if (GET_GAME_STATE (LANDERS_LOST))
 				Response (i_lost_another_lander, AskAfterRadios);
@@ -430,7 +432,8 @@ TellMoonBase (RESPONSE_REF R)
 		NPCPhrase (ABOUT_BASE_AGAIN);
 	}
 
-	if (GLOBAL_SIS (NumLanders) == 0)
+	if (GLOBAL_SIS (NumLanders) == 0
+			&& GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
 	{
 		if (GET_GAME_STATE (LANDERS_LOST))
 			Response (i_lost_another_lander, TellMoonBase);

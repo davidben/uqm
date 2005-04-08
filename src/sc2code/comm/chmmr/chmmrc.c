@@ -119,7 +119,7 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase (GOODBYE_AFTER_BOMB);
 	else if (PLAYER_SAID (R, proceed))
 	{
-		BYTE i;
+		int i;
 
 		NPCPhrase (TAKE_2_WEEKS);
 
@@ -130,20 +130,82 @@ ExitConversation (RESPONSE_REF R)
 		SET_GAME_STATE (CHMMR_BOMB_STATE, 2);
 		SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 0);
 		GLOBAL_SIS (ResUnits) = 1000000L;
-		GLOBAL_SIS (FuelOnBoard) = FUEL_RESERVE;
-		GLOBAL_SIS (CrewEnlisted) = 0;
 		GLOBAL_SIS (NumLanders) = 0;
 		GLOBAL (ModuleCost[PLANET_LANDER]) = 0;
-		GLOBAL (ModuleCost[STORAGE_BAY]) = 0;
-		GLOBAL_SIS (TotalElementMass) = 0;
-		for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
-			GLOBAL_SIS (ElementAmounts[i]) = 0;
+
+#define EARTH_INDEX 2 /* earth is 3rd planet --> 3 - 1 = 2 */
+/* Magic numbers for Earth */
+#define EARTH_OUTER_X (-725)
+#define EARTH_OUTER_Y (597)
+#define EARTH_INNER_X (121)
+#define EARTH_INNER_Y (113)
+/* Magic numbers for Earth Starbase */
+#define STARBASE_INNER_X (86)
+#define STARBASE_INNER_Y (113)
+
+		/* transport player to Earth */
+		GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);
+		GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (SOL_Y);
+		GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (1, EARTH_INDEX + 1);
+		/* XXX : this should be unhardcoded eventually */
+		GLOBAL (ip_location.x) = EARTH_OUTER_X;
+		GLOBAL (ip_location.y) = EARTH_OUTER_Y;
+
+		if (GET_GAME_STATE (STARBASE_AVAILABLE))
+		{	/* Normal game mode - you are transported to Starbase */
+			GLOBAL_SIS (FuelOnBoard) = FUEL_RESERVE;
+			GLOBAL_SIS (CrewEnlisted) = 0;
+			GLOBAL_SIS (TotalElementMass) = 0;
+			GLOBAL (ModuleCost[STORAGE_BAY]) = 0; /* disable Storage Bay */
+			for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
+				GLOBAL_SIS (ElementAmounts[i]) = 0;
+			for (i = NUM_BOMB_MODULES; i < NUM_MODULE_SLOTS; ++i)
+				GLOBAL_SIS (ModuleSlots[i]) = EMPTY_SLOT + 2;
+
+			/* XXX : this should be unhardcoded eventually */
+			/* transport to Starbase */
+			GLOBAL (ShipStamp.origin.x) = STARBASE_INNER_X - SAFE_X;
+			GLOBAL (ShipStamp.origin.y) = STARBASE_INNER_Y - SAFE_Y;
+		}
+		else
+		{	/* 'Beating Game Differently' mode - never visited Starbase,
+			 * so you are transported to Earth */
+			/* compress the layout -- move all to front */
+			for (i = NUM_MODULE_SLOTS - 1; i > 0; --i)
+			{
+				int m;
+
+				/* find next unused slot */
+				for (; i > 0
+						&& GLOBAL_SIS (ModuleSlots[i]) != EMPTY_SLOT + 2;
+						--i)
+					;
+				if (i == 0)
+					break;
+				/* find next module to move */
+				for (m = i - 1; m >= 0
+						&& GLOBAL_SIS (ModuleSlots[m]) == EMPTY_SLOT + 2;
+						--m)
+					;
+				if (m < 0)
+					break;
+								
+				/* move the module */
+				GLOBAL_SIS (ModuleSlots[i]) = GLOBAL_SIS (ModuleSlots[m]);
+				GLOBAL_SIS (ModuleSlots[m]) = EMPTY_SLOT + 2;
+			}
+
+			/* XXX : this should be unhardcoded eventually */
+			/* transport to Earth itself */
+			GLOBAL (ShipStamp.origin.x) = EARTH_INNER_X - SAFE_X;
+			GLOBAL (ShipStamp.origin.y) = EARTH_INNER_Y - SAFE_Y;
+		}
+
+		/* install Chmmr-supplied modules */
 		for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
 			GLOBAL_SIS (DriveSlots[i]) = FUSION_THRUSTER;
 		for (i = 0; i < NUM_JET_SLOTS; ++i)
 			GLOBAL_SIS (JetSlots[i]) = TURNING_JETS;
-		for (i = NUM_BOMB_MODULES; i < NUM_MODULE_SLOTS; ++i)
-			GLOBAL_SIS (ModuleSlots[i]) = EMPTY_SLOT + 2;
 		GLOBAL_SIS (ModuleSlots[0]) = BOMB_MODULE_4;
 		GLOBAL_SIS (ModuleSlots[1]) = BOMB_MODULE_5;
 		GLOBAL_SIS (ModuleSlots[2]) = BOMB_MODULE_3;
@@ -154,17 +216,6 @@ ExitConversation (RESPONSE_REF R)
 		GLOBAL_SIS (ModuleSlots[7]) = BOMB_MODULE_4;
 		GLOBAL_SIS (ModuleSlots[8]) = BOMB_MODULE_5;
 		GLOBAL_SIS (ModuleSlots[9]) = BOMB_MODULE_2;
-
-#define EARTH_INDEX 2 /* earth is 3rd planet --> 3 - 1 = 2 */
-		GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);
-		GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (SOL_Y);
-		GLOBAL (ShipStamp.frame) =
-				(FRAME)MAKE_DWORD (1, EARTH_INDEX + 1);
-			/* Magic numbers for Earth */
-		GLOBAL (ip_location.x) = -725;
-		GLOBAL (ip_location.y) = 597;
-		GLOBAL (ShipStamp.origin.x) = 86 - SAFE_X;
-		GLOBAL (ShipStamp.origin.y) = 113 - SAFE_Y;
 	}
 }
 
