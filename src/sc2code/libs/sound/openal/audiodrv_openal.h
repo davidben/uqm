@@ -33,8 +33,18 @@
 #else
 #	include <AL/al.h>
 #	include <AL/alc.h>
-#	define AL_INVALID_ENUM      AL_ILLEGAL_ENUM
-#	define AL_INVALID_OPERATION AL_ILLEGAL_COMMAND
+	/* XXX: In new versions of OpenAL the defines AL_INVALID_ENUM and
+	 *      AL_INVALID_OPERATION are already defined.
+	 *      As you can only get OpenAL from CVS (or a 3rd party package),
+	 *      we can probably remove these defines altogether in the near
+	 *      future.
+	 */
+#	ifndef AL_INVALID_ENUM
+#		define AL_INVALID_ENUM      AL_ILLEGAL_ENUM
+#	endif
+#	ifndef AL_INVALID_OPERATION
+#		define AL_INVALID_OPERATION AL_ILLEGAL_COMMAND
+#	endif
 #	define AL_DATA              0x2005
 #endif
 

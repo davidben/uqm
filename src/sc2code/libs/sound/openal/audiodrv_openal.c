@@ -23,6 +23,8 @@
 #include "audiodrv_openal.h"
 #include "libs/tasklib.h"
 
+#include <stdlib.h>
+
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;
