@@ -28,6 +28,39 @@ EOF
 	"$@"
 }
 
+# Description: Get the contents of a variable with a specific name,
+#              but don't expand it. (evalVar does expand it)
+#              Use this instead of 'eval', so that you won't have to
+#              worry about escaping.
+#              NB. this function only works on global variables.
+# Arguments:   $1 - the name of the variable
+# Returns:     0
+# Prints:      the value of the variable
+getVar() {
+	local RESULT
+	eval RESULT=\$$1
+	cat << EOF
+$RESULT
+EOF
+}
+
+# Description: Get the contents of a variable with a specific name,
+#              and expand it. (getVar doesn't expand it)
+#              Use this instead of 'eval', so that you won't have to
+#              worry about escaping.
+#              NB. this function only works on global variables.
+# Arguments:   $1 - the name of the variable
+# Returns:     0
+# Prints:      the value of the variable
+evalVar() {
+	local RESULT
+	eval RESULT=\$$1
+	eval RESULT=\""$RESULT"\"
+	cat << EOF
+$RESULT
+EOF
+}
+
 # Description: read text from stdin to use as a c file to compile
 # Arguments:   $1 - CFLAGS to use for compilation (optional)
 #              $2 - LDFLAGS to use for linking (optional)
@@ -133,7 +166,7 @@ have_program() {
 	local TEMP_DEPEND_DETECT_PROG TEMP_DEPEND_DETECT_LIB
 
 	PROG="$1"
-	eval eval TEMP_NAME="\\\"\$PROG_${PROG}_NAME\\\""
+	TEMP_NAME=`evalVar PROG_${PROG}_NAME`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Program '$PROG' is not defined!" >&2
 		exit 1
@@ -143,11 +176,11 @@ have_program() {
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
-	
-	eval eval TEMP_DETECT="\\\"\$PROG_${PROG}_DETECT\\\""
+
+	TEMP_DETECT=`evalVar PROG_${PROG}_DETECT`	
 	if [ -n "$TEMP_DETECT" ]; then
-		eval eval TEMP_DEPEND_PROG="\\\"\$PROG_${PROG}_DEPEND_DETECT_PROG\\\""
-		eval eval TEMP_DEPEND_LIB="\\\"\$PROG_${PROG}_DEPEND_DETECT_LIB\\\""
+		TEMP_DEPEND_PROG=`evalVar PROG_${PROG}_DEPEND_DETECT_PROG`
+		TEMP_DEPEND_LIB=`evalVar PROG_${PROG}_DEPEND_DETECT_LIB`
 		detect_dependencies_program "$TEMP_DEPEND_PROG"
 		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		$TEMP_DETECT
@@ -160,7 +193,7 @@ have_program() {
 		fi
 	fi
 
-	eval eval TEMP_FILE="\\\"\$PROG_${PROG}_FILE\\\""
+	TEMP_FILE=`evalVar PROG_${PROG}_FILE`
 
 	type "${TEMP_FILE%% *}" > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
@@ -171,7 +204,7 @@ have_program() {
 
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
-		eval eval TEMP_VERSION="\\\"\$PROG_${PROG}_VERSION\\\""
+		TEMP_VERSION=`evalVar PROG_${PROG}_VERSION`
 		if [ -z "$TEMP_VERSION" ]; then
 			eval "PROG_${PROG}_PRESENT"=1
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
@@ -208,7 +241,7 @@ have_library() {
 	local TEMP_DEPEND_DETECT_PROG TEMP_DEPEND_DETECT_LIB
 
 	LIB="$1"
-	eval eval TEMP_NAME="\\\"\$LIB_${LIB}_NAME\\\""
+	TEMP_NAME=`evalVar LIB_${LIB}_NAME`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Library '$LIB' is not defined!" >&2
 		exit 1
@@ -219,18 +252,18 @@ have_library() {
 		return "$TEMP_PRESENT"
 	fi
 	
-	eval eval TEMP_DETECT="\\\"\$LIB_${LIB}_DETECT\\\""
+	TEMP_DETECT=`evalVar LIB_${LIB}_DETECT`
 	if [ -n "$TEMP_DETECT" ]; then
 		$TEMP_DETECT
-		eval eval TEMP_DEPEND_PROG="\\\"\$PROG_${PROG}_DEPEND_DETECT_PROG\\\""
-		eval eval TEMP_DEPEND_LIB="\\\"\$PROG_${PROG}_DEPEND_DETECT_LIB\\\""
+		TEMP_DEPEND_PROG=`evalVar LIB_${LIB}_DEPEND_DETECT_PROG`
+		TEMP_DEPEND_LIB=`evalVar LIB_${LIB}_DEPEND_DETECT_LIB`
 		detect_dependencies_program "$TEMP_DEPEND_PROG"
 		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		# NB. TEMP_DETECT should make sure PROG_$LIB_VERSION is set.
 		# return value of $TEMP_DETECT is used below.
 	else
-		eval eval TEMP_LDFLAGS="\\\"\$LIB_${LIB}_LDFLAGS\\\""
-		eval eval TEMP_CFLAGS="\\\"\$LIB_${LIB}_CFLAGS\\\""
+		TEMP_CFLAGS=`evalVar LIB_${LIB}_CFLAGS`
+		TEMP_LDFLAGS=`evalVar LIB_${LIB}_LDFLAGS`
 
 		try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
 int main(int argc, char *argv[]) {
@@ -249,7 +282,7 @@ EOF
 
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
-		eval eval TEMP_VERSION="\\\"\$LIB_${LIB}_VERSION\\\""
+		TEMP_VERSION=`evalVar LIB_${LIB}_VERSION`
 		if [ -z "$TEMP_VERSION" ]; then
 			eval "LIB_${LIB}_PRESENT"=1
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
@@ -285,8 +318,8 @@ use_library() {
 	have_library "$@"
 	[ $? -eq 0 ] || exit 1
 
-	eval eval TEMP_CFLAGS="\\\"\$LIB_${1}_CFLAGS\\\""
-	eval eval TEMP_LDFLAGS="\\\"\$LIB_${1}_LDFLAGS\\\""
+	TEMP_CFLAGS=`evalVar LIB_${1}_CFLAGS`
+	TEMP_LDFLAGS=`evalVar LIB_${1}_LDFLAGS`
 	CFLAGS="$CFLAGS $TEMP_CFLAGS"
 	LDFLAGS="$LDFLAGS $TEMP_LDFLAGS"
 	return 0
@@ -298,14 +331,14 @@ use_library() {
 have_symbol_generic() {
 	local CODE DETECT EXTRA
 
-	eval eval DETECT="\\\"\$SYMBOL_${1}_DETECT\\\""
+	DETECT=`evalVar SYMBOL_${1}_DETECT`
 	if [ -n "$DETECT" ]; then
 		$DETECT
 		return $?
 	fi
 
-	eval eval EXTRA="\\\"\$SYMBOL_${1}_EXTRA\\\""
-	eval eval CODE="\\\"\$SYMBOL_${1}_CODE\\\""
+	EXTRA=`evalVar SYMBOL_${1}_EXTRA`
+	CODE=`evalVar SYMBOL_${1}_CODE`
 	if [ -z "$CODE" ]; then
 		CODE=$2
 	fi
@@ -491,7 +524,7 @@ try_pkgconfig_prog() {
 	PROG=$1
 	PKG_NAME=$2
 
-	eval eval TEMP_NAME="\\\"\$PROG_${PROG}_NAME\\\""
+	TEMP_NAME=`evalVar PROG_${PROG}_NAME`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Program '$PROG' is not defined!" >&2
 		exit 1
@@ -523,7 +556,7 @@ try_pkgconfig_lib() {
 	LIB=$1
 	PKG_NAME=$2
 
-	eval eval TEMP_NAME="\\\"\$LIB_${LIB}_NAME\\\""
+	TEMP_NAME=`evalVar LIB_${LIB}_NAME`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Library '$LIB' is not defined!" >&2
 		exit 1

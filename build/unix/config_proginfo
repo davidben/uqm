@@ -260,7 +260,8 @@ LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
 # Describe the symbols (possibly) used:                                      #
 ##############################################################################
 
-SYMBOL_readdir_r_EXTRA="#include <dirent.h>
+SYMBOL_readdir_r_EXTRA="#include <sys/types.h>
+#include <dirent.h>
 "
 
 SYMBOL_wchar_t_EXTRA="#include <stddef.h>
