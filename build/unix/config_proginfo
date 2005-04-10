@@ -132,9 +132,7 @@ case "$OSNAME" in
 		LIB_SDL_VERSION='$(sdl11-config --version)'
 		;;
 	Darwin)
-		LIB_SDL_CFLAGS='-I/System/Library/Frameworks/SDL.framework/Headers
-				-I/Library/Frameworks/SDL.framework/Headers
-				-I$HOME/Library/Frameworks/SDL.framework/Headers'
+		LIB_SDL_CFLAGS='-I/System/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL.framework/Headers -I$HOME/Library/Frameworks/SDL.framework/Headers'
 		LIB_SDL_LDFLAGS='-framework SDL -framework Cocoa -lobjc'
 		LIB_SDL_VERSION=$(echo \
                       "SDL_MAJOR_VERSION.SDL_MINOR_VERSION.SDL_PATCHLEVEL" | \
@@ -160,9 +158,7 @@ LIB_SDL_mixer_VERSION=""
 LIB_SDL_image_NAME="SDL_image"
 case "$OSNAME" in
 	Darwin)
-		LIB_SDL_image_CFLAGS="-I/System/Library/Frameworks/SDL_image.framework/Headers
-			-I/Library/Frameworks/SDL_image.framework/Headers
-			-I$HOME/Library/Frameworks/SDL_image.framework/Headers"
+		LIB_SDL_image_CFLAGS='-I/System/Library/Frameworks/SDL_image.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers -I$HOME/Library/Frameworks/SDL_image.framework/Headers'
 		LIB_SDL_image_LDFLAGS="-framework SDL_image"
 	;;
 	*)
