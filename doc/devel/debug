@@ -1,9 +1,9 @@
-The file src/sc2code/debug.c and src/sc2code/debug.h contain various
+The file src/sc2code/uqmdebug.c and src/sc2code/uqmdebug.h contain various
 debugging functions, which are included in the binary when the game
 is built in debug mode.
 These functions can be called from anywhere in the code, though some
 require the game to be in a specific state.
-The function debugKeyPressed() in debug.c is called when the debug key
+The function debugKeyPressed() in uqmdebug.c is called when the debug key
 is pressed. This function is a suitable place to put various debugging
 calls.
 The debug key can be specified in keys.cfg by adding a line with a text
@@ -25,6 +25,9 @@ listed below:
   be set to them. Your realspace coordinates are not changed, so if you
   are exploring a solar system, you'll only notice it when you leave to
   HyperSpace.
+- the function showSpheres()
+  When this function is called, all spheres of influence of the active
+  races will be shown.
 - the function forwardToNextEvent()
   Fast forwards the clock until the next event. If TRUE is given as an
   argument, the HYPERSPACE_ENCOUNTER_EVENTs, which normally happen every
@@ -38,8 +41,8 @@ listed below:
   With the 'flags' variable, the amount of detail can be specified.
   At this time this function will only work when called from the top of
   ExploreSolarSys().
-- uio_debugInteractive()
-  This function is not defined in sc2code/debug.h, but in libs/uio.h.
+- the function uio_debugInteractive()
+  This function is not defined in sc2code/uqmdebug.h, but in libs/uio.h.
   This function can interactively (tty-based) display information on
   the state of the uio file system, and modifications can be made.
 
