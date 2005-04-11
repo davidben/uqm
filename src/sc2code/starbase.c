@@ -29,6 +29,7 @@
 #include "libs/tasklib.h"
 #include "libs/inplib.h"
 
+extern ACTIVITY NextActivity;
 
 PMENU_STATE pMenuState;
 
@@ -524,8 +525,6 @@ TimePassage:
 ExitStarBase:
 	if (!(GLOBAL (CurrentActivity) & (CHECK_LOAD | CHECK_ABORT)))
 	{
-		extern ACTIVITY NextActivity;
-
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 0);
 		GLOBAL (CurrentActivity) = CHECK_LOAD;
 		NextActivity = MAKE_WORD (IN_INTERPLANETARY, 0)
@@ -552,6 +551,7 @@ InstallBombAtEarth (void)
 	
 	SET_GAME_STATE (CHMMR_BOMB_STATE, 3); /* bomb processed */
 	GLOBAL (CurrentActivity) = CHECK_LOAD; /* fake a load game */
+	NextActivity = MAKE_WORD (IN_INTERPLANETARY, 0) | START_INTERPLANETARY;
 	CurStarDescPtr = 0; /* force SolarSys reload */
 }
 
