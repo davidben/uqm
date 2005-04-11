@@ -81,7 +81,12 @@ typedef DWORD    (*PDWORDFUNC) (void);
 #	define _ALIGNED_ON(bytes) __attribute__((aligned(bytes)))
 #elif defined(_MSC_VER)
 #	define _ALIGNED_ANY
-#	define _ALIGNED_ON(bytes) __declspec(align(bytes))
+//#	define _ALIGNED_ON(bytes) __declspec(align(bytes))
+			// __declspec(align(bytes)) expects a constant. 'sizeof (type)'
+			// will not do. This is something that needs some attention,
+			// once we find someone with a 64 bits Windows machine.
+			// Leaving it alone for now.
+#	define _ALIGNED_ON(bytes)
 #endif
 
 #endif /* _COMPILER_H */
