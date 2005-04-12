@@ -12,10 +12,8 @@ Fury
 Awwky
 #(Tweety)
 Tweety
-#(Wud)
-Wud
-#(Stok)
-Stok
+#(WudStok)
+WudStok
 #(Poppy)
 Poppy
 #(Brakky)
