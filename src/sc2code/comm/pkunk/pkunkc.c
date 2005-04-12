@@ -785,10 +785,10 @@ PkunkNeutralSpace (RESPONSE_REF R)
 				NPCPhrase (GENERAL_INFO_SPACE_2);
 				break;
 			case 2:
-				NPCPhrase (GENERAL_INFO_SPACE_3);
+				NPCPhrase (GENERAL_INFO_SPACE_6 /* was 3 */);
 				break;
 			case 3:
-				NPCPhrase (GENERAL_INFO_SPACE_4);
+				NPCPhrase (GENERAL_INFO_SPACE_7 /* was 4 */);
 				--NumVisits;
 				break;
 		}
