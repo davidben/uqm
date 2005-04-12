@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Pkunk Spindle news items are now disabled until you befriend them
+  (bug #315), from Paxtez
+- Melee captain names re-extracted and fixed (bug #188) -Alex
 - It is now possible to complete the game w/o ever allying with the
   Starbase at Earth; known as 'Beating the Game Differently' mode;
   (bug #592) -Alex
