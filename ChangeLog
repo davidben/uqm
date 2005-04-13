@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Separate 'ask for fuel' player responses for Mercury and Luna missions
+  (bug #716), from Nic
 - Stereo SFX model changed slightly (fixes #472) -Alex
 - Pkunk Spindle news items are now disabled until you befriend them
   (bug #315), from Paxtez
