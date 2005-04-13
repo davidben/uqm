@@ -117,7 +117,7 @@ CalcSoundPosition (ELEMENTPTR ElementPtr)
 		}
 
 		pos.x -= (SPACE_WIDTH >> 1);
-		pos.y -= (SPACE_HEIGHT);
+		pos.y -= (SPACE_HEIGHT >> 1);
 		pos.positional = TRUE;
 	}
 

@@ -17,6 +17,7 @@
 #include "options.h"
 #include "sound.h"
 #include "libs/reslib.h"
+#include <math.h>
 
 #ifdef WIN32
 #include <io.h>
@@ -105,20 +106,33 @@ void
 UpdateSoundPosition (COUNT channel, SoundPosition pos)
 {
 	const float ATTENUATION = 160.0f;
+	const float MIN_DISTANCE = 0.5f;
 	float fpos[3];
 
 	if (pos.positional)
 	{
+		float dist;
+
 		fpos[0] = pos.x / ATTENUATION;
 		fpos[1] = 0.0f;
 		fpos[2] = pos.y / ATTENUATION;
+		dist = (float) sqrt (fpos[0] * fpos[0] + fpos[2] * fpos[2]);
+		if (dist < MIN_DISTANCE)
+		{	// object is too close to listener
+			// move it away along the same vector
+			float scale = MIN_DISTANCE / dist;
+			fpos[0] *= scale;
+			fpos[2] *= scale;
+		}
+
 		audio_Sourcefv (soundSource[channel].handle, audio_POSITION, fpos);
 		//fprintf (stderr, "UpdateSoundPosition(): channel %d, pos %d %d, posobj %x\n",
 		//		channel, pos.x, pos.y, (unsigned int)soundSource[channel].positional_object);
 	}
 	else
 	{
-		fpos[0] = fpos[1] = fpos[2] = 0.0f;
+		fpos[0] = fpos[1] = 0.0f;
+		fpos[2] = -1.0f;
 		audio_Sourcefv (soundSource[channel].handle, audio_POSITION, fpos);
 	}
 }
