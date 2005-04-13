@@ -231,7 +231,8 @@ NoRadioactives (RESPONSE_REF R)
 			DeltaSISGauges (4, 0, 0);
 			UnlockMutex (GraphicsLock);
 		}
-		else if (PLAYER_SAID (R, need_fuel))
+		else if (PLAYER_SAID (R, need_fuel_mercury) ||
+				PLAYER_SAID (R, need_fuel_luna))
 		{
 			NPCPhrase (GIVE_FUEL);
 			LockMutex (GraphicsLock);
@@ -265,7 +266,7 @@ NoRadioactives (RESPONSE_REF R)
 				if (GET_GAME_STATE (GIVEN_FUEL_BEFORE))
 					Response (need_fuel_again, NoRadioactives);
 				else
-					Response (need_fuel, NoRadioactives);
+					Response (need_fuel_mercury, NoRadioactives);
 			}
 	
 			Response (ok_i_will_get_radios, ByeBye);
@@ -300,7 +301,8 @@ AskAfterRadios (RESPONSE_REF R)
 		DeltaSISGauges (4, 0, 0);
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PLAYER_SAID (R, need_fuel))
+	else if (PLAYER_SAID (R, need_fuel_mercury) ||
+			PLAYER_SAID (R, need_fuel_luna))
 	{
 		NPCPhrase (GIVE_FUEL);
 		LockMutex (GraphicsLock);
@@ -337,7 +339,7 @@ AskAfterRadios (RESPONSE_REF R)
 			if (GET_GAME_STATE (GIVEN_FUEL_BEFORE))
 				Response (need_fuel_again, AskAfterRadios);
 			else
-				Response (need_fuel, AskAfterRadios);
+				Response (need_fuel_mercury, AskAfterRadios);
 		}
 		Response (well_go_get_them_now, ByeBye);
 		if (PHRASE_ENABLED (where_get_radios))
@@ -401,7 +403,8 @@ TellMoonBase (RESPONSE_REF R)
 		DeltaSISGauges (4, 0, 0);
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PLAYER_SAID (R, need_fuel))
+	else if (PLAYER_SAID (R, need_fuel_mercury) ||
+			PLAYER_SAID (R, need_fuel_luna))
 	{
 		NPCPhrase (GIVE_FUEL);
 		LockMutex (GraphicsLock);
@@ -445,7 +448,7 @@ TellMoonBase (RESPONSE_REF R)
 		if (GET_GAME_STATE (GIVEN_FUEL_BEFORE))
 			Response (need_fuel_again, TellMoonBase);
 		else
-			Response (need_fuel, TellMoonBase);
+			Response (need_fuel_luna, TellMoonBase);
 	}
 	if (GET_GAME_STATE (WILL_DESTROY_BASE) == 0)
 		Response (we_will_take_care_of_base, ByeBye);

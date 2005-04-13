@@ -392,8 +392,11 @@ Due to circumstances beyond our control, our only landing vehicle was destroyed.
 #(i_lost_another_lander)
 Um... er... well... We lost another lander.
 
-#(need_fuel)
+#(need_fuel_mercury)
 We are unable to land on Mercury and retrieve radioactives due to an unforeseen fuel shortage.
+
+#(need_fuel_luna)
+We are unable to land on the moon and neutralize the base due to an unforeseen fuel shortage.
 
 #(need_fuel_again)
 Boy, mileage sure does vary. Could you spare us some more fuel?

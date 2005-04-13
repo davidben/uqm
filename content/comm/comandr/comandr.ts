@@ -1,5 +1,5 @@
 #(GLAD_WHEN_YOU_COME_BACK) 
-#(GIVE_FUEL) 4587,3204
+#(GIVE_FUEL) 4643
 #(GIVE_FUEL_AGAIN) 3304,3255
 #(ARE_YOU_SUPPLY_SHIP) 2463,3445,3485,3866,3144,2894,3225
 #(DO_YOU_HAVE_RADIO_THIS_TIME) 
@@ -88,7 +88,8 @@
 #(name_41) 
 #(i_lost_my_lander) 
 #(i_lost_another_lander) 
-#(need_fuel) 
+#(need_fuel_mercury) 
+#(need_fuel_luna) 
 #(need_fuel_again) 
 #(what_was_red_thing) 
 #(it_went_away) 
