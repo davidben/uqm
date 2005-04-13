@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Stereo SFX model changed slightly (fixes #472) -Alex
 - Pkunk Spindle news items are now disabled until you befriend them
   (bug #315), from Paxtez
 - Melee captain names re-extracted and fixed (bug #188) -Alex
