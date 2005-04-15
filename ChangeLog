@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Properly handling Thraddash-Ilwrath mission overlap (bug #530) -Alex
 - Separate 'ask for fuel' player responses for Mercury and Luna missions
   (bug #716), from Nic
 - Stereo SFX model changed slightly (fixes #472) -Alex
