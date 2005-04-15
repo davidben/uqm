@@ -495,13 +495,24 @@ thradd_mission (void)
 	MissionState = GET_GAME_STATE (THRADD_MISSION);
 	if (ThraddPtr->ShipInfo.actual_strength && MissionState < 3)
 	{
-		if (MissionState & 1)
-		{
+		COORD x, y;
+
+		if (MissionState < 2)
+		{	/* attacking */
+			x = 4879;
+			y = 7201;
+		}
+		else
+		{	/* returning */
+			x = 2535;
+			y = 8358;
+		}
+
+		if (MissionState == 1)
+		{	/* arrived at Kohr-Ah, engaging */
 			SIZE strength_loss;
 
-			AddEvent (RELATIVE_EVENT, 0, 14, 0, ADVANCE_THRADD_MISSION);
 			strength_loss = (SIZE)(ThraddPtr->ShipInfo.actual_strength >> 1);
-
 			ThraddPtr->ShipInfo.energy_level =
 					(BYTE)(-strength_loss / 14);
 			ThraddPtr->ShipInfo.growth_fract =
@@ -510,25 +521,21 @@ thradd_mission (void)
 		}
 		else
 		{
-			COORD x, y;
-
-			if (MissionState == 0)
-			{
-				x = 4879;
-				y = 7201;
-			}
-			else
-			{
-				x = 2535;
-				y = 8358;
-
+			if (MissionState != 0)
+			{	/* stop losses */
 				ThraddPtr->ShipInfo.energy_level = 0;
 				ThraddPtr->ShipInfo.growth_fract = 0;
 			}
-			SetRaceDest (THRADDASH_SHIP, x, y, 14, ADVANCE_THRADD_MISSION);
 		}
+		SetRaceDest (THRADDASH_SHIP, x, y, 14, ADVANCE_THRADD_MISSION);
 	}
-	SET_GAME_STATE (THRADD_MISSION, MissionState + 1);
+	++MissionState;
+	SET_GAME_STATE (THRADD_MISSION, MissionState);
+
+	if (MissionState == 4 && GET_GAME_STATE (ILWRATH_FIGHT_THRADDASH))
+	{	/* returned home - notify the Ilwrath */
+		AddEvent (RELATIVE_EVENT, 0, 0, 0, ADVANCE_ILWRATH_MISSION);
+	}
 
 	UnlockStarShip (&GLOBAL (avail_race_q), hThradd);
 }
@@ -536,6 +543,7 @@ thradd_mission (void)
 static void
 ilwrath_mission (void)
 {
+	BYTE ThraddState;
 	HSTARSHIP hIlwrath, hThradd;
 	EXTENDED_SHIP_FRAGMENTPTR IlwrathPtr, ThraddPtr;
 
@@ -556,37 +564,55 @@ ilwrath_mission (void)
 	}
 	else if (IlwrathPtr->ShipInfo.actual_strength)
 	{
-		if (IlwrathPtr->ShipInfo.dest_loc.x != 2500
-				|| IlwrathPtr->ShipInfo.dest_loc.y != 8070)
+		if (!GET_GAME_STATE (ILWRATH_FIGHT_THRADDASH)
+				&& (IlwrathPtr->ShipInfo.dest_loc.x != 2500
+				|| IlwrathPtr->ShipInfo.dest_loc.y != 8070))
+		{
 			SetRaceDest (ILWRATH_SHIP, 2500, 8070, 90,
 					ADVANCE_ILWRATH_MISSION);
+		}
 		else
 		{
 #define MADD_LENGTH 128
 			SIZE strength_loss;
 
-			SET_GAME_STATE (ILWRATH_FIGHT_THRADDASH, 1);
-			SET_GAME_STATE (HELIX_UNPROTECTED, 1);
-			strength_loss = (SIZE)IlwrathPtr->ShipInfo.actual_strength;
-			IlwrathPtr->ShipInfo.energy_level =
-					(BYTE)(-strength_loss / MADD_LENGTH);
-			IlwrathPtr->ShipInfo.growth_fract =
-					(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
-			SetRaceDest (ILWRATH_SHIP,
-					(2500 + 2535) >> 1, (8070 + 8358) >> 1,
-					MADD_LENGTH - 1, ADVANCE_ILWRATH_MISSION);
+			if (IlwrathPtr->ShipInfo.days_left == 0)
+			{	/* arrived for battle */
+				SET_GAME_STATE (ILWRATH_FIGHT_THRADDASH, 1);
+				SET_GAME_STATE (HELIX_UNPROTECTED, 1);
+				strength_loss = (SIZE)IlwrathPtr->ShipInfo.actual_strength;
+				IlwrathPtr->ShipInfo.energy_level =
+						(BYTE)(-strength_loss / MADD_LENGTH);
+				IlwrathPtr->ShipInfo.growth_fract =
+						(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
+				SetRaceDest (ILWRATH_SHIP,
+						(2500 + 2535) >> 1, (8070 + 8358) >> 1,
+						MADD_LENGTH - 1, ADVANCE_ILWRATH_MISSION);
 
-			strength_loss = (SIZE)ThraddPtr->ShipInfo.actual_strength;
-			ThraddPtr->ShipInfo.energy_level =
-					(BYTE)(-strength_loss / MADD_LENGTH);
-			ThraddPtr->ShipInfo.growth_fract =
-					(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
-			SetRaceDest (THRADDASH_SHIP,
-					(2500 + 2535) >> 1, (8070 + 8358) >> 1,
-					MADD_LENGTH, (BYTE)~0);
-			SET_GAME_STATE (THRADD_VISITS, 0);
-			if (ThraddPtr->ShipInfo.ship_flags & GOOD_GUY)
-				ActivateStarShip (THRADDASH_SHIP, -1);
+				strength_loss = (SIZE)ThraddPtr->ShipInfo.actual_strength;
+				ThraddPtr->ShipInfo.energy_level =
+						(BYTE)(-strength_loss / MADD_LENGTH);
+				ThraddPtr->ShipInfo.growth_fract =
+						(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
+
+				SET_GAME_STATE (THRADD_VISITS, 0);
+				if (ThraddPtr->ShipInfo.ship_flags & GOOD_GUY)
+					ActivateStarShip (THRADDASH_SHIP, -1);
+			}
+
+			ThraddState = GET_GAME_STATE (THRADD_MISSION);
+			if (ThraddState == 0 || ThraddState > 3)
+			{	/* never went to Kohr-Ah or returned */
+				SetRaceDest (THRADDASH_SHIP,
+						(2500 + 2535) >> 1, (8070 + 8358) >> 1,
+						IlwrathPtr->ShipInfo.days_left + 1, (BYTE)~0);
+			}
+			else if (ThraddState < 3)
+			{	/* recall on the double */
+				SetRaceDest (THRADDASH_SHIP, 2535, 8358, 10,
+						ADVANCE_THRADD_MISSION);
+				SET_GAME_STATE (THRADD_MISSION, 3);
+			}
 		}
 	}
 
