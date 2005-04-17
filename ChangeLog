@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Music volume normalized throughout the game (bug #718) -Alex
 - VControl parse errors suppressed unless critical - attempting to set
   the threshold of a nonexistent joystick no longer makes the game refuse
   to run (Bug #660, again) - Michael
