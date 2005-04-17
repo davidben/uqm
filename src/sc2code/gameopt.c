@@ -1007,7 +1007,7 @@ DoPickGame (PMENU_STATE pMS)
 		pMS->CurFrame = 0;
 		PauseMusic ();
 		StopSound ();
-		FadeMusic (128, 0);
+		FadeMusic (NORMAL_VOLUME, 0);
 
 		{
 			extern FRAME PlayFrame;

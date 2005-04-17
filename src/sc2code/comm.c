@@ -53,8 +53,9 @@ static BOOLEAN getLineWithinWidth(TEXT *pText,
 		 const unsigned char **startNext, SIZE maxWidth, COUNT maxChars);
 
 #define MAX_RESPONSES 8
-#define BACKGROUND_VOL speechVolumeScale == 0.0f ? MAX_VOLUME : (MAX_VOLUME >> 1)
-#define FOREGROUND_VOL MAX_VOLUME
+#define BACKGROUND_VOL \
+		(speechVolumeScale == 0.0f ? NORMAL_VOLUME : (NORMAL_VOLUME >> 1))
+#define FOREGROUND_VOL NORMAL_VOLUME
 
 #define SLIDER_Y 107
 #define SLIDER_HEIGHT 15
@@ -1913,7 +1914,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 	StopMusic ();
 	StopSound ();
 	StopTrack ();
-	SleepThreadUntil (FadeMusic (FOREGROUND_VOL, 0) + ONE_SECOND / 60);
+	SleepThreadUntil (FadeMusic (NORMAL_VOLUME, 0) + ONE_SECOND / 60);
 
 	return (FALSE);
 }

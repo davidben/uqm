@@ -24,7 +24,7 @@ static Task FadeTask;
 static SIZE TTotal;
 static SIZE volume_end;
 
-int musicVolume = (MAX_VOLUME >> 1);
+int musicVolume = NORMAL_VOLUME;
 float musicVolumeScale;
 float sfxVolumeScale;
 float speechVolumeScale;
