@@ -238,7 +238,7 @@ VControl_SetJoyThreshold (int port, int threshold)
 	}
 	else
 	{
-		fprintf (stderr, "VControl_SetJoyThreshold passed illegal port %d\n", port);
+		// fprintf (stderr, "VControl_SetJoyThreshold passed illegal port %d\n", port);
 		return -1;
 	}
 }
@@ -449,19 +449,19 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 			}
 			else
 			{
-				fprintf (stderr, "VControl: Attempted to bind to polarity zero\n");
+				// fprintf (stderr, "VControl: Attempted to bind to polarity zero\n");
 				return -1;
 			}
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to bind to illegal axis %d\n", axis);
+			// fprintf (stderr, "VControl: Attempted to bind to illegal axis %d\n", axis);
 			return -1;
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
 		return -1;
 	}
 	return 0;
@@ -516,13 +516,13 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to bind to illegal button %d\n", button);
+			// fprintf (stderr, "VControl: Attempted to bind to illegal button %d\n", button);
 			return -1;
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
 		return -1;
 	}
 }
@@ -578,20 +578,20 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 			}
 			else
 			{
-				fprintf (stderr, "VControl: Attempted to bind to illegal direction\n");
+				// fprintf (stderr, "VControl: Attempted to bind to illegal direction\n");
 				return -1;
 			}
 			return 0;
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to bind to illegal hat %d\n", which);
+			// fprintf (stderr, "VControl: Attempted to bind to illegal hat %d\n", which);
 			return -1;
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
 		return -1;
 	}
 }
@@ -1459,7 +1459,8 @@ parse_config_line (parse_state *state)
 		{
 			if (VControl_SetJoyThreshold (sticknum, threshold))
 			{
-				state->error = 1;
+				// Don't count this as an error
+				// state->error = 1;
 			}
 		}
 		if (!state->error)

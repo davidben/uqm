@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- VControl parse errors suppressed unless critical - attempting to set
+  the threshold of a nonexistent joystick no longer makes the game refuse
+  to run (Bug #660, again) - Michael
 - Properly handling Thraddash-Ilwrath mission overlap (bug #530) -Alex
 - Separate 'ask for fuel' player responses for Mercury and Luna missions
   (bug #716), from Nic
