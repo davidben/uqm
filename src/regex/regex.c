@@ -83,9 +83,9 @@
 #include <regex.h>
 #include "regex_internal.h"
 
-#include "regex_internal.c"
-#include "regcomp.c"
-#include "regexec.c"
+#include "regex_internal.ci"
+#include "regcomp.ci"
+#include "regexec.ci"
 
 /* Binary backward compatibility.  */
 #if _LIBC
