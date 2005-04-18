@@ -343,7 +343,8 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_DirList *dirList;
 
-	dirList = uio_getDirList (dirHandle, "", ".zip", match_MATCH_SUFFIX);
+	dirList = uio_getDirList (dirHandle, "", ".(zip|uqm)$",
+			match_MATCH_REGEX);
 	if (dirList != NULL) {
 		int i;
 		

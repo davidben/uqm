@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Accept files with .uqm extension for packages (bug #558)
+  Added regex fallback files. - SvdB
 - Music volume normalized throughout the game (bug #718) -Alex
 - VControl parse errors suppressed unless critical - attempting to set
   the threshold of a nonexistent joystick no longer makes the game refuse
@@ -29,7 +31,7 @@ Changes towards version 0.4:
   (bug #683) - Michael
 - Fixed crash when restarting Sa-Matra battle after abort (bug #700) -Alex
 - Some cleanups, enabling successful build with GCC 4 (bug #710),
-  mostly from Ville Skytt√ - SvdB
+  mostly from Ville Skytt√ -SvdB
 - Sa-Matra portrait now fills the portrait space (bug #514), from Nic
 - Updated melee images with original DOS content; should resolve most
   captain portrait issues (bug #183)  -Alex

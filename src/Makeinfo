@@ -5,6 +5,10 @@ case "$OSNAME" in
 		;;
 esac
 
+if [ "$uqm_HAVE_REGEX" = 0 ]; then
+	uqm_SUBDIRS="$uqm_SUBDIRS regex"
+fi
+
 uqm_CFILES="options.c port.c starcon2.c"
 
 test_CFILES=test.c

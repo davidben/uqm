@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-BUILDLOG=/dev/null
+BUILDLOG=/tmp/build.log
 TEMPFILE="/tmp/build.$$.tmp"
 
 # Description: prints a command to stdout and then executes it
@@ -75,7 +75,14 @@ try_compile_c() {
 	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
 			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
 	RESULT=$?
+	if [ $RESULT -ne 0 ]; then
+		echo "Failed program was:" >> "$BUILDLOG"
+		echo "+++ START $TEMPFILE.c" >> "$BUILDLOG"
+		cat "$TEMPFILE.c" >> "$BUILDLOG"
+		echo "+++ END $TEMPFILE.c" >> "$BUILDLOG"
+	fi
 	rm -f "$TEMPFILE.c" "$TEMPFILE.out"
+	echo >> "$BUILDLOG"
 	return $RESULT
 }
 
@@ -99,6 +106,7 @@ try_compile_and_run_c() {
 	"$TEMPFILE.out"
 	RESULT=$?
 	rm -f -- "$TEMPFILE.out"
+	echo >> "$BUILDLOG"
 	return $RESULT
 }
 
@@ -344,7 +352,9 @@ have_symbol_generic() {
 	fi
 
 	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+#include <sys/types.h>
 $EXTRA
+
 $CODE
 EOF
 }
@@ -356,11 +366,6 @@ have_symbol() {
 	SYMBOL="$1"
 
 	CODE=`cat << EOF	
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 int main(void) {
 	(void) $SYMBOL;
 	return 0;
@@ -384,11 +389,6 @@ have_type() {
 	TYPE="$1"
 
 	CODE=`cat << EOF	
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 int main(void) {
 	$TYPE var;
 	(void) var;
@@ -418,8 +418,10 @@ EOF
 `
 	if have_symbol "$1"; then
 		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 1
 	else
 		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 0
 	fi
 }
 
@@ -435,18 +437,24 @@ EOF
 `
 	if have_type "$1"; then
 		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 1
 	else
 		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 0
 	fi
 }
 
 # Description: check if a header is available.
 # Arguments:   $1 - the name of the header file
 have_header() {
-	local HEADER
+	local HEADER NAME EXTRA
 	HEADER="$1"
 
+	NAME=${HEADER%.h}
+	EXTRA=`evalVar HEADER_${NAME}_EXTRA`
+
 	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+$EXTRA
 #include <$HEADER>
 int main() {
 	return 0;
@@ -472,8 +480,10 @@ EOF
 `
 	if have_header "$1"; then
 		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 1
 	else
 		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
+		add_symbol "HAVE_${NAME}_FLAG" 0
 	fi
 }
 
@@ -503,9 +513,11 @@ EOF
 	if [ $? -eq 0 ]; then
 		build_message "Big-endian machine."
 		add_symbol WORDS_BIGENDIAN "#define WORDS_BIGENDIAN"
+		add_symbol "WORDS_BIGENDIAN_FLAG" 1
 	else
 		build_message "Little-endian machine."
 		add_symbol WORDS_BIGENDIAN "#undef WORDS_BIGENDIAN"
+		add_symbol "WORDS_BIGENDIAN_FLAG" 0
 	fi
 }
 
