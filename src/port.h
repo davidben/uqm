@@ -11,6 +11,8 @@
 
 #ifndef HAVE_STRICMP
 #	define stricmp strcasecmp
+#else
+#	define strcasecmp stricmp
 #endif
 
 #ifndef HAVE_STRUPR
