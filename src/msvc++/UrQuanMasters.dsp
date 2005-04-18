@@ -102,6 +102,38 @@ SOURCE=..\getopt\getopt.h
 SOURCE=..\getopt\getopt1.c
 # End Source File
 # End Group
+# Begin Group "regex"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\regex\Makeinfo
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regcomp.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regex.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regex_internal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regex_internal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\regex\regexec.c
+# End Source File
+# End Group
 # Begin Group "sc2code"
 
 # PROP Default_Filter ""
