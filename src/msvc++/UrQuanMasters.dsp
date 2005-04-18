@@ -107,7 +107,7 @@ SOURCE=..\getopt\getopt1.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\regex\regcomp.c
+SOURCE=..\regex\regcomp.ci
 # End Source File
 # Begin Source File
 
@@ -119,7 +119,7 @@ SOURCE=..\regex\regex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regex_internal.c
+SOURCE=..\regex\regex_internal.ci
 # End Source File
 # Begin Source File
 
@@ -127,7 +127,7 @@ SOURCE=..\regex\regex_internal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regexec.c
+SOURCE=..\regex\regexec.ci
 # End Source File
 # End Group
 # Begin Group "sc2code"
