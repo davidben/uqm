@@ -44,6 +44,7 @@ Changes towards version 0.4:
 - Battle planet images now have corrected transparency info, so there
   is no more black square overlaping ships (bug #128); and coincidently
   3DO credits now have a starfield background (bug #470) -Alex
+- Unicode support for fonts and strings - SvdB
 - Fixed image clipping with --meleescale=nearest (bug #126) -Alex
 - Setup menu now uses a background contributed by Joffrey Smith
 - If keys.cfg refers to a nonexistent joystick, the game will stil run 

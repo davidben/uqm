@@ -17,8 +17,9 @@ Changes are broadly classified into the following categories:
 
 NEW FEATURES
 - Savegame slot defaults to the last one used during this play
-- Movie player and slide player present; PC and 3DO intro and ending
-  movies are now present
+- PC intro and ending sequence are now present
+- 3DO intro and ending movies are supported for those who have these
+  movies from the 3DO CD of Star Control II
 - Improved slave shield graphics
 - Added a new -l option to produce logfiles
 - Added a new 'triscan' scaler derived from scale2x
@@ -56,7 +57,6 @@ BUGFIXES
 - Quitting from the Roster screen no longer crashes
 - Many dialog fixes
 - The "Blue Comm Screen" problem no longer occurs
-- Handling bogus content directories made cleaner
 - Combat Energy computation in Outfit Flagship screen corrected
 - A game crash that manifested when pausing after 85 minutes has been
   corrected
@@ -70,7 +70,6 @@ BUGFIXES
 
 INTERNAL CHANGES
 
-- Legacy C keywords removed
 - Thread system completely reworked to provide more detailed thread
   information, and to prevent resource leaks
 - Sound code is now virtualized and separate from game logic
@@ -80,7 +79,10 @@ INTERNAL CHANGES
 - Build scripts made more robust
 - Window-drawing code was lifted out of confirm.c and made more general
 - Lots of debugging functions
-- Character codes over 136 may now be part of fonts
+- Unicode support for game dialogs and fonts
+- Lots of code cleanups
+- Documentation of more internals
+
 
 			     Version 0.3
 			    -------------
