@@ -33,16 +33,6 @@ typedef struct uio_GPDirEntries_Iterator *uio_NativeEntriesContext;
 #include "../types.h"
 #include "../fileblock.h"
 
-#ifdef _MSC_VER
-// these are needed to avoid zlib linking problems in VC
-#ifndef ZLIB_WINAPI
-#define ZLIB_WINAPI
-#endif
-#ifndef ZLIB_DLL
-#define ZLIB_DLL
-#endif
-#endif
-
 #include <zlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
