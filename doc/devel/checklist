@@ -1,31 +1,48 @@
-Checklist for releases:
-- make a final build in release mode
-- make sure the permissions in the .zip files are ok (0644 for data files
-  and 0755 for executables and dirs)
-- make a new tag for the cvs repository
-- for the source archive:
-  - use a clean cvs dir.
-    'cvs export' will produce a clean structure, without CVS dirs.
-    This requires a tag having been created though.
-    Just using 'cvs update' and watching the output will not be
-    enough, as some files like those beginning with '.#'will be ignored.
-- Clean up the Changelog file
+                    -== Checklist for releases ==-
+
+
+Preparing for the release:
+- update the 'version' file in the content dir
+- update 'uqmversion.h'
+- update uqm.lsm (needs to be done after the content packages are generated)
+- test on all relevant platforms
 - make sure the documentation files are up-to-date
-  - Whatsnew
+  - Clean up the ChangeLog file
+  - generate Whatsnew from the ChangeLog
   - doc/users/manual.txt
   - doc/users/unixinstall
   - Contributing
   - AUTHORS
   - INSTALL
   - unix man pages (in the future)
-- update the 'version' file in the content dir
-- update 'uqmversion.h'
+
+
+Building the release:
+- make a new tag for the cvs repository
+- make a final build in release mode
+- for the source archive:
+  - use a clean cvs dir.
+    'cvs export' will produce a clean structure, without CVS dirs.
+    This requires a tag having been created though.
+    Just using 'cvs update' and watching the output will not be
+    enough, as some files like those beginning with '.#'will be ignored.
+- Building the content packages:
+  - make sure the permissions in the .zip files are ok (0644 for data files
+    and 0755 for executables and dirs)
+  - don't compress .ogg files
+
+
+Announcing the release:
 - provide md5 sums for the released files
 - add a new entry for the release in the bugs database
-- test on all relevant platforms
 - update the home page
   - news
   - download
 - send a mail to sc2-announce
+
+
+Moving on to the next version:
+- update the snapshots page so that content diffs are generated to the
+  most recent release
 
 
