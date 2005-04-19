@@ -46,24 +46,24 @@ SDL_image
 OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org/
-	SDK download: ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
+	SDK download: http://developer.creative.com/articles/article.asp?cat=1&sbcat=31&aid=45&file=OpenALSDK.zip
 
 Ogg Vorbis
 	Audio codec used for music and speech.
 	Homepage: http://www.xiph.org/ogg/vorbis/index.html
 	Download:
-		For Windows:
+	    For Windows:
 			SDK download: http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
 	    For Linux:
 			http://www.vorbis.com/download_unix.psp
 			download libogg and libvorbis.
 
-Zlib
+Zlib v1.2
 	Data compression / decompression library
 	Homepage: http://www.gzip.org/zlib/
 	Download:
-		For Windows:
-			http://www.winimage.com/zLibDll/
+	    For Windows:
+		http://www.gzip.org/zlib/ (mid-page 'zlib compiled DLL')
 
 
 If you find these aren't enough, or if you know the names
