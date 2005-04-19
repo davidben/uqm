@@ -12,6 +12,76 @@ Changes are broadly classified into the following categories:
   unlikely to be of interest to you unless you plan on coding
   extensions.
 
+			     Version 0.4
+			    -------------
+
+NEW FEATURES
+- Savegame slot defaults to the last one used during this play
+- Movie player and slide player present; PC and 3DO intro and ending
+  movies are now present
+- Improved slave shield graphics
+- Added a new -l option to produce logfiles
+- Added a new 'triscan' scaler derived from scale2x
+- Made the fact that self-destructing ships grant resources more obvious
+- Added a "config dir" option for holding saves and melee information
+- Cocoa hooks
+- Setup menu now permits configuration of some options.  They do not
+  yet persist past program quit, though.
+- Added a "--version" option
+- Melee images are now based on the (richer) DOS content
+- 3-step melee zooming as per the PC version is now implemented
+- It is now possible to complete the game without ever allying with the
+  Starbase (if one is insane; this is known on the forum as "Beating The
+  Game Differently" - but bugs and plot elements preventing this have been
+  fixed or evaded under this circumstance).
+
+BUGFIXES
+
+- Fixes to the Quit Confirmation dialog
+- Collisions/encounters with "invisible" fleeing ships gone
+- Other ships insystem remain in proper locations after planet landing
+- Fixed some keyboard "focus" problems where flight controls were
+  being cleared at inappropriate times, or interfering with menus
+- Graphics fixes
+- Subtitle timings work in the absence of oggs
+- Conversation summaries with Melnorme no longer crash
+- --contentdir argument may now have spaces
+- $HOME isn't required for Unix systems anymore
+- Fuel estimates fixed (original bug)
+- Fuel usage on planet landing now correcly reported on all versions
+- MOD music will play on big-endian machines under high-quality now
+- Space marines die in a self-destructing Scout
+- ZFP speech is properly vertically aligned now
+- Various odd behaviors when loading in HyperSpace now fixed
+- Quitting from the Roster screen no longer crashes
+- Many dialog fixes
+- The "Blue Comm Screen" problem no longer occurs
+- Handling bogus content directories made cleaner
+- Combat Energy computation in Outfit Flagship screen corrected
+- A game crash that manifested when pausing after 85 minutes has been
+  corrected
+- Main menu version number drawn more consistently
+- Transparency bugfixes - 3DO ending credits, planets in battle
+- Content packs may also be named ".uqm" - these are really still
+  zip files, but you can't expand them by accident.
+- One may now configure a joystick without crashing the game if the
+  joystick is not present
+- Music volume normalized throughout the game
+
+INTERNAL CHANGES
+
+- Legacy C keywords removed
+- Thread system completely reworked to provide more detailed thread
+  information, and to prevent resource leaks
+- Sound code is now virtualized and separate from game logic
+- Fine-grained control of menu sounds
+- Input system fully unified - all parts of the game use the same
+  basic structure now
+- Build scripts made more robust
+- Window-drawing code was lifted out of confirm.c and made more general
+- Lots of debugging functions
+- Character codes over 136 may now be part of fonts
+
 			     Version 0.3
 			    -------------
 
