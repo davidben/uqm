@@ -212,6 +212,7 @@ UninitGameClock (void)
 		GLOBAL (GameClock.clock_task) = 0;
 	}
 	DestroyMutex (clock_mutex);
+	clock_mutex = NULL;
 
 	UninitQueue (&GLOBAL (GameClock.event_q));
 
@@ -221,6 +222,9 @@ UninitGameClock (void)
 void
 SuspendGameClock (void)
 {
+	if (! clock_mutex)
+		return;
+
 	LockMutex (clock_mutex);
 	if (GameClockRunning ())
 	{
@@ -233,6 +237,9 @@ SuspendGameClock (void)
 void
 ResumeGameClock (void)
 {
+	if (! clock_mutex)
+		return;
+
 	LockMutex (clock_mutex);
 	if (!GameClockRunning ())
 	{
