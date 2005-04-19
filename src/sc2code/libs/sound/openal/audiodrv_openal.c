@@ -28,6 +28,7 @@
 
 ALCcontext *alcContext = NULL;
 ALCdevice *alcDevice = NULL;
+ALfloat defaultPos[] = {0.0f, 0.0f, -1.0f};
 ALfloat listenerPos[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerVel[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerOri[] = {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
@@ -161,7 +162,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		
 		alGenSources (1, &soundSource[i].handle);
 		alSourcei (soundSource[i].handle, AL_LOOPING, AL_FALSE);
-		alSourcefv (soundSource[i].handle, AL_POSITION, zero);
+		alSourcefv (soundSource[i].handle, AL_POSITION, defaultPos);
 		alSourcefv (soundSource[i].handle, AL_VELOCITY, zero);
 		alSourcefv (soundSource[i].handle, AL_DIRECTION, zero);
 		
