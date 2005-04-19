@@ -1,6 +1,6 @@
-THE UR-QUAN MASTERS v0.3 alpha -- homepage: http://sc2.sf.net/
+THE UR-QUAN MASTERS v0.4 alpha -- homepage: http://sc2.sf.net/
 
-Welcome to the third release of the Ur-Quan Masters port.  This
+Welcome to the fourth release of the Ur-Quan Masters port.  This
 document will tell you everything you need to play, even if you've
 never played the original.
 
@@ -19,7 +19,7 @@ various command line options to customize your experience:
 	-r 320x240       (or --res)
 
 Sets the screen resolution.  Unless --opengl is set, the only valid
-values are 640x480 and 320x240
+values are 640x480 and 320x240.
 
 	-d 32            (or --bpp)
 
@@ -29,12 +29,13 @@ autodetect an appropriate value.  Valid values are 16, 24, and 32.
 	-f               (or --fullscreen)
 
 Uses full screen mode.  Pretty straightforward.  Usually good to
-combine with -r 320x240.
+combine with -r 320x240 unless you're using a scaler.
 
 	-o               (or --opengl)
 
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
-faster as well -- but it also may not work on older cards.
+faster as well -- but it also may not work on older cards.  It also
+permits use of any screen resolution.
 
 	-c               (or --scale=mode)
 
@@ -43,10 +44,11 @@ none. Try these to get smoother graphics with cost on performance.
 
 	-b               (or --meleescale=mode)
 
-Melee scaling mode (nearest, trilinear, pc/step). Default is trilinear.
-Slower machine owners can set it to nearest to get better performance
-in melee but degraded visual quality. The fastest mode is step, it is
-also the mode DOS original used (step and pc modes are equivalent).
+Melee scaling mode (nearest, trilinear, pc/step). Default is
+trilinear.  Slower machine owners can set it to nearest to get better
+performance in melee but degraded visual quality. The fastest mode is
+step, which is also the mode DOS original used (step and pc modes are
+equivalent).
 
 	-s               (or --scanlines)
 
@@ -89,8 +91,8 @@ Set sound effects volume (0-100).
 
 	-T               (or --speechvol)
 
-Set speech volume (0-100). If set to 0, game runs in 'no speech' mode and 
-oscilloscope reacts to the music.
+Set speech volume (0-100). If set to 0, the game runs in 'no speech'
+mode and the oscilloscope reacts to the music.
 
 	-m 3do           (or --music 3do)
 
@@ -132,21 +134,20 @@ Disables subtitles.
 
 	--cscan pc
 
-Use PC style planet information when scanning (text).
+Use PC style planet information when scanning (text).  Default.
 
 	--cscan 3do
 
 Use 3DO style planet information when scanning (pictograms).
-Default.
 
 	--menu pc
 
 Use PC style menus (text) and 'CREW'/'BATT' in melee instead of icons.
+Default.
 
 	--menu 3do
 
 Use 3DO style menus (pictograms).
-Default.
 
 	--font pc
 
@@ -587,8 +588,9 @@ and vice versa.
 
 			   ADD-ONS
 
-Version 0.3 of The Ur-Quan Masters has basic support for add-on packages.
-Though it is not very elaborate yet, you can install some content add-ons.
+As of version 0.3, The Ur-Quan Masters has basic support for add-on
+packages.  Though it is not very elaborate yet, you can install some
+content add-ons.
 
 Inside the directory where the content is installed, in the content/packages/
 directory, there is a directory 'addons/'. In this directory, you can
@@ -599,9 +601,8 @@ inside the directory content/packages/addons/<addon> will be included
 in the game. '--addon' may be specified more than once to enable multiple
 add-ons.
 
-At the time this version of The Ur-Quan masters is released, there aren't
-any official add-ons yet. Keep an eye on http://sc2.sf.net/ for those.
-Our boards, which can be found on this site too, are a good place
-to start looking for unofficial ones.
-
+The Precursors UQM Remix project is intended to be used as an addon.
+If you installed UQM 0.4 from the Windows installer, the remix packs
+are available as options.  Installing any of them will cause the
+default shortcuts to include the "remix" addon by default.
 
