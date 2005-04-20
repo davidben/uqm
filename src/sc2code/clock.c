@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <stdlib.h>
 #include "gameev.h"
 #include "globdata.h"
 #include "setup.h"
@@ -222,9 +223,14 @@ UninitGameClock (void)
 void
 SuspendGameClock (void)
 {
-	if (! clock_mutex)
+	if (!clock_mutex)
+	{
+		fprintf (stderr, "BUG: Attempted to suspend non-existent game clock\n");
+#ifdef DEBUG
+		abort();
+#endif
 		return;
-
+	}
 	LockMutex (clock_mutex);
 	if (GameClockRunning ())
 	{
@@ -237,9 +243,14 @@ SuspendGameClock (void)
 void
 ResumeGameClock (void)
 {
-	if (! clock_mutex)
+	if (!clock_mutex)
+	{
+		fprintf (stderr, "BUG: Attempted to resume non-existent game clock\n");
+#ifdef DEBUG
+		abort();
+#endif
 		return;
-
+	}
 	LockMutex (clock_mutex);
 	if (!GameClockRunning ())
 	{

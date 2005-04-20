@@ -86,7 +86,8 @@ DoConfirmExit (void)
 	BOOLEAN result;
 	static BOOLEAN in_confirm = FALSE;
 	fprintf (stderr, "Confirming Exit!\n");
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		SuspendGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
@@ -178,7 +179,8 @@ DoConfirmExit (void)
 	}
 	UnlockMutex (GraphicsLock);
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		ResumeGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 	{
