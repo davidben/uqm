@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed incomplete memset()s in comm alien animation code (comm should
+  be saner now), from jdorje
 - Guard access to the Clock so that accessing it is a no-op when the game 
   isn't actually in progress (bug #678), from Nic
 - Accept files with .uqm extension for packages (bug #558)
