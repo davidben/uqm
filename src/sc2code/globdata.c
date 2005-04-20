@@ -28,6 +28,9 @@
 #include "gamestr.h"
 
 #include <stdlib.h>
+#ifdef STATE_DEBUG
+#	include <stdio.h>
+#endif
 
 
 static void CreateRadar (void);
@@ -39,6 +42,42 @@ GLOBDATA GlobData;
 
 extern FRAME flagship_status, misc_data;
 BOOLEAN initedSIS = 0;
+
+
+BYTE
+getGameState (int startBit, int endBit)
+{
+	return (BYTE) (((startBit >> 3) == (endBit >> 3)
+			? (GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
+			: ((GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
+			  | (GLOBAL (GameState[endBit >> 3])
+			  << (endBit - startBit - (endBit & 7)))))
+			& ((1 << (endBit - startBit + 1)) - 1));
+}
+
+void
+setGameState (int startBit, int endBit, BYTE val
+#ifdef STATE_DEBUG
+		, const char *name
+#endif
+)
+{
+	GLOBAL (GameState[startBit >> 3]) =
+			(GLOBAL (GameState[startBit >> 3])
+			& (BYTE) ~(((1 << (endBit - startBit + 1)) - 1) << (startBit & 7)))
+			| (BYTE)((val) << (startBit & 7));
+
+	if ((startBit >> 3) < (endBit >> 3)) {
+		GLOBAL (GameState[endBit >> 3]) =
+				(GLOBAL (GameState[endBit >> 3])
+				& (BYTE)~((1 << ((endBit & 7) + 1)) - 1))
+				| (BYTE)((val) >> (endBit - startBit - (endBit & 7)));
+	}
+#ifdef STATE_DEBUG
+	fprintf (stderr, "State '%s' set to %d.\n", name, val);
+#endif
+}
+
 
 static void
 CreateRadar (void)

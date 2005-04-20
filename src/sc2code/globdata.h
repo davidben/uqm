@@ -919,41 +919,12 @@ extern GLOBDATA GlobData;
 
 //#define STATE_DEBUG
 	
-#ifdef STATE_DEBUG
-#	include <stdio.h>
-#endif
-	
-static inline BYTE
-getGameState (int startBit, int endBit) {
-	return (BYTE) (((startBit >> 3) == (endBit >> 3)
-			? (GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
-			: ((GLOBAL (GameState[startBit >> 3]) >> (startBit & 7))
-			  | (GLOBAL (GameState[endBit >> 3])
-			  << (endBit - startBit - (endBit & 7)))))
-			& ((1 << (endBit - startBit + 1)) - 1));
-}
-
-static inline
-void setGameState (int startBit, int endBit, BYTE val
+extern BYTE getGameState (int startBit, int endBit);
+extern void setGameState (int startBit, int endBit, BYTE val
 #ifdef STATE_DEBUG
 		, const char *name
 #endif
-		) {
-	GLOBAL (GameState[startBit >> 3]) =
-			(GLOBAL (GameState[startBit >> 3])
-			& (BYTE) ~(((1 << (endBit - startBit + 1)) - 1) << (startBit & 7)))
-			| (BYTE)((val) << (startBit & 7));
-
-	if ((startBit >> 3) < (endBit >> 3)) {
-		GLOBAL (GameState[endBit >> 3]) =
-				(GLOBAL (GameState[endBit >> 3])
-				& (BYTE)~((1 << ((endBit & 7) + 1)) - 1))
-				| (BYTE)((val) >> (endBit - startBit - (endBit & 7)));
-	}
-#ifdef STATE_DEBUG
-	fprintf (stderr, "State '%s' set to %d.\n", name, val);
-#endif
-}
+		);
 
 #define GET_GAME_STATE(SName) getGameState ((SName), (END_##SName))
 #ifdef STATE_DEBUG
