@@ -873,8 +873,8 @@ ambient_anim_task (void *data)
 	TalkFrame = 0;
 	LastTime = GetTimeCounter ();
 	LastOscillTime = LastTime;
-	memset (&FrameChanged[0], 0 , MAX_ANIMATIONS);
-	memset (&AnimFrame[0], 0, sizeof (FRAME) * MAX_ANIMATIONS);
+	memset (FrameChanged, 0, sizeof (FrameChanged));
+	memset (AnimFrame, 0, sizeof (AnimFrame));
 	for (i = 0; i <= CommData.NumAnimations; i++)
 		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
 			AnimFrame[i] =  SetAbsFrameIndex (
