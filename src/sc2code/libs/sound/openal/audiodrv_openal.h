@@ -24,7 +24,7 @@
 #include "libs/sound/sound.h"
 #include "options.h"
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
 #	include <al.h>
 #	include <alc.h>
 #	ifdef _MSC_VER
@@ -51,7 +51,7 @@
 /* This is just a simple endianness setup for decoders */
 #ifdef WORDS_BIGENDIAN
 #	define MIX_IS_BIG_ENDIAN   true
-#	define MIX_WANT_BIG_ENDIAN false
+#	define MIX_WANT_BIG_ENDIAN true
 #else
 #	define MIX_IS_BIG_ENDIAN   false
 #	define MIX_WANT_BIG_ENDIAN false
