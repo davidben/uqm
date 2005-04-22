@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 /* Added for UQM */
-#include "port.h"
+#include "uio/uioport.h"
 
 /* Allow the use in C++ code.  */
 #ifdef __cplusplus
