@@ -1,6 +1,6 @@
 Needed before use in UQM:
 - documentation
-- configuring for HAVE_REGEX and GLOB
+- configuring for GLOB
 - when doing uio_getStdioPhysical(), if write access is required, but
   not available on the original location, also copy the file to the
   temporary dir.
@@ -120,5 +120,6 @@ Cleanups (not necessary for UQM):
   uio_PRoot_unref etc
 - Add uio_fatal(), uio_error(), uio_warning()
 - Clean up the include structure
+
 
 

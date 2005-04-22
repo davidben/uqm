@@ -52,11 +52,6 @@ typedef int match_Result;
 #define match_ECUSTOM   -3
 #define match_ENOTINIT  -4
 
-#include <sys/types.h>
-#ifdef HAVE_REGEX
-#	include <regex.h>
-#endif
-
 typedef struct match_LitteralContext match_LitteralContext;
 typedef struct match_PrefixContext match_PrefixContext;
 typedef struct match_SuffixContext match_SuffixContext;
@@ -79,6 +74,11 @@ void match_freeContext(match_MatchContext *context);
 
 /* *** Internal definitions follow *** */
 #ifdef uio_INTERNAL
+
+#include <sys/types.h>
+#ifdef HAVE_REGEX
+#	include <regex.h>
+#endif
 
 #include "uioport.h"
 
