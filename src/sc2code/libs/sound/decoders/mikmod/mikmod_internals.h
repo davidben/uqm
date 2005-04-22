@@ -33,9 +33,9 @@
 #include <malloc.h>
 #endif
 #include <stdarg.h>
-#if defined(__OS2__)||defined(__EMX__)||defined(WIN32)
-#define strcasecmp(s,t) stricmp(s,t)
-#endif
+//#if defined(__OS2__)||defined(__EMX__)||defined(WIN32)
+//#define strcasecmp(s,t) stricmp(s,t)
+//#endif
 
 #include "mikmod_build.h"
 #include "port.h"
