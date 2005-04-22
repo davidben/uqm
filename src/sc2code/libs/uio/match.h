@@ -73,7 +73,7 @@ void match_freeContext(match_MatchContext *context);
 
 
 /* *** Internal definitions follow *** */
-#ifdef uio_INTERNAL
+#ifdef match_INTERNAL
 
 #include <sys/types.h>
 #ifdef HAVE_REGEX
@@ -174,7 +174,7 @@ const char *match_errorStringRegex(match_RegexContext *context,
 void match_freeRegex(match_RegexContext *context);
 #endif
 
-#endif  /* uio_INTERNAL */
+#endif  /* match_INTERNAL */
 
 #endif  /* _MATCH_H */
 

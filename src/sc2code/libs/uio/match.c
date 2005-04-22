@@ -23,7 +23,8 @@
 #	include <stdio.h>
 #endif
 
-#include "iointrn.h"
+#define match_INTERNAL
+
 #include "match.h"
 #include "mem.h"
 #include "uioport.h"
