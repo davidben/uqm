@@ -353,7 +353,7 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
 	else
 	{
 #ifdef DEBUG
-		fprintf (stderr, "Character %u not present\n", ch);
+		fprintf (stderr, "Character %u not present\n", (unsigned int) ch);
 #endif
 		return NULL;
 	}
