@@ -10,6 +10,9 @@ else
 	uqm_NAME=uqm           # File name of executable
 fi
 uqm_CFLAGS="$uqm_CFLAGS -I src -I src/sc2code -I src/sc2code/libs"
+if [ "$uqm_HAVE_REGEX" = 0 ]; then
+	uqm_CFLAGS="$uqm_CFLAGS -I src/regex"
+fi
 
 # Stuff to install under the directory for libraries, as specified during
 # config.
