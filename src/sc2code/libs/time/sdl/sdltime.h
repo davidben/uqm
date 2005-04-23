@@ -20,7 +20,8 @@
 #ifndef _SDLTIME_H
 #define _SDLTIME_H
 
-#include "SDL.h"
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 #include "../timecommon.h"
 
 #define NativeInitTimeSystem()

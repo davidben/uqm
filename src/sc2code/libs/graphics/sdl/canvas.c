@@ -1,4 +1,5 @@
-#include "SDL.h"
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 #include "sdl_common.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"

@@ -1,11 +1,11 @@
-#include <SDL.h>
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "vcontrol.h"
 #include "vcontrol_malloc.h"
 #include "keynames.h"
-#include "port.h"
 
 /* How many binding slots are allocated at once. */
 #define POOL_CHUNK_SIZE 64

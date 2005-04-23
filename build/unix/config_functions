@@ -194,17 +194,30 @@ have_program() {
 		$TEMP_DETECT
 		# NB. TEMP_DETECT should make sure PROG_${PROG}_VERSION and
                 # PROG_${PROG}_FILE are set.
-		if [ $? -ne 0 ]; then
-			eval "PROG_${PROG}_PRESENT"=1
-			build_message "$TEMP_NAME not found."
-			return 1
-		fi
+		case $? in
+			0)  # Program found
+				eval "PROG_${PROG}_PRESENT"=0
+				;;
+			1)  # Lib not found
+				eval "PROG_${PROG}_PRESENT"=1
+				;;
+			2)  # Use default detection
+				;;
+		esac
 	fi
 
-	TEMP_FILE=`evalVar PROG_${PROG}_FILE`
-
-	type "${TEMP_FILE%% *}" > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
+	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	if [ -z "$TEMP_PRESENT" ]; then
+		TEMP_FILE=`evalVar PROG_${PROG}_FILE`
+		type "${TEMP_FILE%% *}" > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			# Program found
+			eval "PROG_${PROG}_PRESENT"=0
+		fi
+	fi
+	
+	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	if [ -z "$TEMP_PRESENT" ]; then
 		eval "PROG_${PROG}_PRESENT"=1
 		build_message "$TEMP_NAME not found."
 		return 1
@@ -262,14 +275,27 @@ have_library() {
 	
 	TEMP_DETECT=`evalVar LIB_${LIB}_DETECT`
 	if [ -n "$TEMP_DETECT" ]; then
-		$TEMP_DETECT
 		TEMP_DEPEND_PROG=`evalVar LIB_${LIB}_DEPEND_DETECT_PROG`
 		TEMP_DEPEND_LIB=`evalVar LIB_${LIB}_DEPEND_DETECT_LIB`
 		detect_dependencies_program "$TEMP_DEPEND_PROG"
 		detect_dependencies_library "$TEMP_DEPEND_LIB"
+		$TEMP_DETECT
 		# NB. TEMP_DETECT should make sure PROG_$LIB_VERSION is set.
 		# return value of $TEMP_DETECT is used below.
-	else
+		case $? in
+			0)  # Lib found
+				eval "LIB_${LIB}_PRESENT"=0
+				;;
+			1)  # Lib not found
+				eval "LIB_${LIB}_PRESENT"=1
+				;;
+			2)  # Use default detection
+				;;
+		esac
+	fi
+
+	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	if [ -z "$TEMP_PRESENT" ]; then
 		TEMP_CFLAGS=`evalVar LIB_${LIB}_CFLAGS`
 		TEMP_LDFLAGS=`evalVar LIB_${LIB}_LDFLAGS`
 
@@ -280,9 +306,14 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 EOF
-	fi  # TEMP_DETECT not defined
+		if [ $? -eq 0 ]; then
+			# Build successful
+			eval "LIB_${LIB}_PRESENT"=0
+		fi
+	fi
 	
-	if [ $? -ne 0 ]; then
+	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	if [ -z "$TEMP_PRESENT" ]; then
 		eval "LIB_${LIB}_PRESENT"=1
 		build_message "$TEMP_NAME not found."
 		return 1
@@ -548,7 +579,7 @@ try_pkgconfig_prog() {
 		eval PROG_${PROG}_VERSION=\$TEMP_VERSION
 		return 0
 	else
-		return 1
+		return 2
 	fi
 }
 
@@ -582,9 +613,10 @@ try_pkgconfig_lib() {
 		eval LIB_${LIB}_VERSION=\$TEMP_VERSION
 		eval LIB_${LIB}_CFLAGS=\$TEMP_CFLAGS
 		eval LIB_${LIB}_LDFLAGS=\$TEMP_LDFLAGS
-		return 0
+		return 2  # Force testing using the new CFLAGS and LDFLAGS
+		#return 0
 	else
-		return 1
+		return 2
 	fi
 }
 

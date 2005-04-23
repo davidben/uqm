@@ -3,8 +3,8 @@
 
 #include "port.h"
 #include "libs/uio.h"
-#include "SDL.h"
-#include "SDL_rwops.h"
+#include SDL_INCLUDE(SDL.h)
+#include SDL_INCLUDE(SDL_rwops.h)
 
 SDL_Surface *sdluio_loadImage (uio_DirHandle *dir, const char *fileName);
 int sdluio_seek (SDL_RWops *context, int offset, int whence);

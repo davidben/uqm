@@ -137,6 +137,20 @@ iswgraph(wint_t wc)
 }
 #endif
 
+// Use SDL_INCLUDE to portably include the SDL files from the right
+// location. TODO: Where SDL_H is located could be detected from the build
+// script.
+#ifdef APPLE
+#	define HAVE_SDL_SDL_H
+#else
+#	define HAVE_SDL_H
+#endif
+#ifdef HAVE_SDL_H
+#	define SDL_INCLUDE(file) <file>
+#elif defined(HAVE_SDL_SDL_H)
+#	define SDL_INCLUDE(file) <SDL/file>
+#endif
+
 #endif  /* _PORT_H */
 
 

@@ -1,7 +1,7 @@
-#include <SDL.h>
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 #include <string.h>
 #include "keynames.h"
-#include "port.h"
 
 /* This code is adapted from the code in SDL_keysym.h.  Though this
  * would almost certainly be fast if we were to use a direct char *

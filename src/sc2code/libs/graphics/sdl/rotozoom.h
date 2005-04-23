@@ -18,7 +18,8 @@
 #define M_PI	3.141592654
 #endif
 
-#include "SDL.h"
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 
 
 /* ---- Defines */

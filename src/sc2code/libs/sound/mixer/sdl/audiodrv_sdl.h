@@ -20,10 +20,10 @@
 #ifndef _AUDIODRV_SDL_H
 #define _AUDIODRV_SDL_H
 
-#include "config.h"
+#include "port.h"
 #include "libs/sound/sound.h"
 #include "libs/sound/mixer/mixer.h"
-#include <SDL.h>
+#include SDL_INCLUDE(SDL.h)
 
 /* General */
 sint32 mixSDL_Init (audio_Driver *driver, sint32 flags);

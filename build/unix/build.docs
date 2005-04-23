@@ -122,7 +122,8 @@ Information about programs used should be supplied in the following form:
     done configuring.
   - PROG_${PROGRAM}_DETECT (optional)
     A command to be executed which should return 0 if the program is present
-    on the system, or 1 otherwise. If not supplied, 'type' is
+    on the system, 1 if it is not present, or 2 to fallback to the default
+    detection. If no detect function was set, or it returned 2, 'type' is
     used to check for the program in the path.
     This command may include a shell command that modifies any of the
     variables PROG_${PROGRAM}_FILE, PROG_${PROGRAM}_ACTION, or
@@ -156,9 +157,10 @@ Information about libraries used should be supplied in the following form:
     is used.
   - PROG_${LIB}_DETECT (optional)
     A command to be executed which should return 0 if the library is present
-    on the system, or 1 otherwise. If not supplied, an attempt is
-    made to compile and link an empty C program with the flags as in
-    LIB_${LIB}_CFLAGS and LIB_${LIB}_LDFLAGS.
+    on the system, 1 if it is not present, or 2 to fallback to the default
+    detection. If no detect function was set, or it returned 2,
+    an attempt is made to compile and link an empty C program with
+    the flags as in LIB_${LIB}_CFLAGS and LIB_${LIB}_LDFLAGS.
     This command may include a shell command that modifies any of the
     variables PROG_${LIB}_CFLAGS, PROG_${LIB}_LDFLAGS, or
     PROG_${LIB}_VERSION.

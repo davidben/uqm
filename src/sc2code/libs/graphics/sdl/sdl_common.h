@@ -19,9 +19,10 @@
 #ifndef SDL_COMMON_H
 #define SDL_COMMON_H
 
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_byteorder.h"
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
+#include SDL_INCLUDE(SDL_image.h)
+#include SDL_INCLUDE(SDL_byteorder.h)
 
 #include "libs/graphics/gfxintrn.h"
 #include "libs/graphics/tfb_draw.h"

@@ -1,10 +1,9 @@
-#include <SDL.h>
-
 #ifndef _VCONTROL_H_
 #define _VCONTROL_H_
 
 #include "port.h"
 #include "libs/uio.h"
+#include SDL_INCLUDE(SDL.h)
 
 /* Initialization routines */
 void VControl_Init (void);

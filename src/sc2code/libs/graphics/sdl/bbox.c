@@ -1,4 +1,5 @@
-#include "SDL.h"
+#include "port.h"
+#include SDL_INCLUDE(SDL.h)
 #include "bbox.h"
 
 TFB_BoundingBox TFB_BBox;
