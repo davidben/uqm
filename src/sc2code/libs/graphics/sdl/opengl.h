@@ -82,7 +82,8 @@ typedef unsigned short wchar_t;
 
 #else /* !defined(WIN32) */
 
-#include <SDL_opengl.h>
+#include "port.h"
+#include SDL_INCLUDE(SDL_opengl.h)
 
 #endif /* WIN32 */
 #endif /* HAVE_OPENGL */

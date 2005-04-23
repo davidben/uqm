@@ -18,9 +18,10 @@
 
 #ifdef GFXMODULE_SDL
 
+#include "port.h"
 #include "sdl_common.h"
 #include "libs/threadlib.h"
-#include "SDL_thread.h"
+#include SDL_INCLUDE(SDL_thread.h)
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
 

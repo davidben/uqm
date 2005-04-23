@@ -25,7 +25,6 @@
 #include "dcqueue.h"
 #include "options.h"
 #include "uqmversion.h"
-#include "SDL_thread.h"
 #include "libs/graphics/drawcmd.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "bbox.h"
@@ -34,6 +33,7 @@
 #include "controls.h"
 		// XXX: Should not be included from here.
 #include "uqmdebug.h"
+#include SDL_INCLUDE(SDL_thread.h)
 
 SDL_Surface *SDL_Video;
 SDL_Surface *SDL_Screen;
