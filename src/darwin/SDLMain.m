@@ -10,7 +10,7 @@
 
 #import "port.h"
 #import SDL_INCLUDE(SDL.h)
-#import SDL_INCLUDE(SDLMain.h)
+#import "SDLMain.h"
 #import <sys/param.h>
 		/* for PATH_MAX */
 #import <string.h>
