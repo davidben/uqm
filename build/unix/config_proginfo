@@ -136,7 +136,7 @@ case "$OSNAME" in
 		LIB_SDL_LDFLAGS='-framework SDL -framework Cocoa -lobjc'
 		LIB_SDL_VERSION=$(echo \
                       "SDL_MAJOR_VERSION.SDL_MINOR_VERSION.SDL_PATCHLEVEL" | \
-                      gcc -E -include SDL_version.h $LIB_SDL_CFLAGS - | \
+                      gcc -E -include SDL/SDL_version.h $LIB_SDL_CFLAGS - | \
                       tail -1 | tr -d ' ')
 		;;
 	*)
