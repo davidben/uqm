@@ -21,8 +21,8 @@
 
 #include "port.h"
 #include SDL_INCLUDE(SDL.h)
-#include SDL_INCLUDE(SDL_image.h)
 #include SDL_INCLUDE(SDL_byteorder.h)
+#include SDL_IMAGE_INCLUDE(SDL_image.h)
 
 #include "libs/graphics/gfxintrn.h"
 #include "libs/graphics/tfb_draw.h"

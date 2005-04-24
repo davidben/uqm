@@ -137,20 +137,35 @@ iswgraph(wint_t wc)
 }
 #endif
 
-// Use SDL_INCLUDE to portably include the SDL files from the right
-// location. TODO: Where SDL_H is located could be detected from the build
-// script.
+// Use SDL_INCLUDE and SDL_IMAGE_INCLUDE to portably include the SDL files
+// from the right location.
+// TODO: Where the SDL and SDL_image headers are located could be detected
+//       from the build script.
 #ifdef __APPLE__
-#	define HAVE_SDL_SDL_H
+	// SDL_image.h in a directory SDL_image under the include dir.
+#	define SDL_DIR SDL
+#	define SDL_IMAGE_DIR SDL_image
 #else
-#	define HAVE_SDL_H
+	// SDL_image.h directly under the include dir.
+#	define SDL_DIR 
+#	define SDL_IMAGE_DIR 
 #endif
-#ifdef HAVE_SDL_H
+
+#define xSDL_DIR x##SDL_DIR
+#if xSDL_DIR == x
 #	define SDL_INCLUDE(file) <file>
-#elif defined(HAVE_SDL_SDL_H)
-#	define SDL_INCLUDE(file) <SDL/file>
+#else
+#	define SDL_INCLUDE(file) <SDL_DIR/file>
 #endif
+#undef xSDL_DIR
+
+#define xSDL_IMAGE_DIR x##SDL_IMAGE_DIR
+#if xSDL_IMAGE_DIR == x
+#	define SDL_IMAGE_INCLUDE(file) <file>
+#else
+#	define SDL_IMAGE_INCLUDE(file) <SDL_IMAGE_DIR/file>
+#endif
+#undef xSDL_IMAGE_DIR
 
 #endif  /* _PORT_H */
-
 
