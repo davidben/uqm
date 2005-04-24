@@ -24,12 +24,15 @@
 #include "libs/sound/sound.h"
 #include "options.h"
 
-#if defined(WIN32) || defined(__APPLE__)
+#if defined(WIN32)
 #	include <al.h>
 #	include <alc.h>
 #	ifdef _MSC_VER
 #		pragma comment (lib, "OpenAL32.lib")
 #	endif
+#elif defined (__APPLE__)
+#	include <OpenAL/al.h>
+#	include <OpenAL/alc.h>
 #else
 #	include <AL/al.h>
 #	include <AL/alc.h>
