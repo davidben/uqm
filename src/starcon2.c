@@ -42,6 +42,11 @@
 #include "starcon.h"
 
 
+#if defined(GFXMODULE_SDL)
+#	include SDL_INCLUDE(SDL.h)
+			// Including this is actually necessary on OSX.
+#endif
+
 struct options_struct {
 	const char *logFile;
 	enum {
