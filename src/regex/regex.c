@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include "port.h"
+
 #ifdef _AIX
 #pragma alloca
 #else
