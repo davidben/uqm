@@ -16,8 +16,8 @@ CLS
 #(Restore color)
 FTC 0
 
-#(Sync frame)
-SYNC 0
+#(Establish new sync point)
+RESYNC
 #(Draw frame image)
 DRAW 0
 #(Sync frame)

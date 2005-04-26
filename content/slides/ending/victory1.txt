@@ -23,8 +23,6 @@ SYNC 400
 
 #(Save background)
 SAVEBG
-#(Establish new sync point)
-RESYNC
 
 
 #(Start batch)
@@ -35,8 +33,8 @@ RESTBG
 DRAW SIS 202 310 256 270
 #(End batch)
 UNBATCH
-#(Sync frame)
-DSYNC 0
+#(Establish new sync point)
+RESYNC
 
 #(Start batch)
 BATCH
