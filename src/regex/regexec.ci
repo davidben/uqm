@@ -2371,7 +2371,7 @@ find_recover_state (err, mctx)
 
       cur_state = merge_state_with_log (err, mctx, NULL);
     }
-  while (err == REG_NOERROR && cur_state == NULL);
+  while (*err == REG_NOERROR && cur_state == NULL);
   return cur_state;
 }
 
