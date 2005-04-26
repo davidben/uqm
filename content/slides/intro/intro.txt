@@ -31,13 +31,13 @@ TVA B
 #(Draw slide; param1=ANI index)
 DRAW 0
 #(Fade-in a slide; param1=fade time)
-FTC 2000
+FTC 1500
 #(Wait)
-WAIT 3000
+WAIT 2000
 #(Fade slide to black; param1=fade time)
-FTB 4000
+FTB 2000
 #(Wait)
-WAIT 1000
+WAIT 500
 
 #(++++++++++++ Title 2 +++++++++++++++++++++++++++++++++++)
 
