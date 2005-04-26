@@ -147,25 +147,21 @@ iswgraph(wint_t wc)
 #	define SDL_IMAGE_DIR SDL_image
 #else
 	// SDL_image.h directly under the include dir.
-#	define SDL_DIR 
-#	define SDL_IMAGE_DIR 
+#	undef SDL_DIR
+#	undef SDL_IMAGE_DIR
 #endif
 
-#define xSDL_DIR x##SDL_DIR
-#if xSDL_DIR == x
-#	define SDL_INCLUDE(file) <file>
-#else
+#ifdef SDL_DIR
 #	define SDL_INCLUDE(file) <SDL_DIR/file>
-#endif
-#undef xSDL_DIR
-
-#define xSDL_IMAGE_DIR x##SDL_IMAGE_DIR
-#if xSDL_IMAGE_DIR == x
-#	define SDL_IMAGE_INCLUDE(file) <file>
 #else
+#	define SDL_INCLUDE(file) <file>
+#endif  /* SDL_DIR */
+
+#ifdef SDL_IMAGE_DIR
 #	define SDL_IMAGE_INCLUDE(file) <SDL_IMAGE_DIR/file>
-#endif
-#undef xSDL_IMAGE_DIR
+#else
+#	define SDL_IMAGE_INCLUDE(file) <file>
+#endif  /* SDL_IMAGE_DIR */
 
 #endif  /* _PORT_H */
 
