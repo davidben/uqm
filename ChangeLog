@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Option change: --meleescale to --meleezoom (bug #694) -Alex
 - The alpha icon is now default (for XP/2003); bug #474 -Alex
 - Fixed incomplete memset()s in comm alien animation code (comm should
   be saner now), from jdorje
