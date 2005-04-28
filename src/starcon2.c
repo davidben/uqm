@@ -265,7 +265,7 @@ static struct option longOptions[] =
 	{"fullscreen", 0, NULL, 'f'},
 	{"opengl", 0, NULL, 'o'},
 	{"scale", 1, NULL, 'c'},
-	{"meleescale", 1, NULL, 'b'},
+	{"meleezoom", 1, NULL, 'b'},
 	{"scanlines", 0, NULL, 's'},
 	{"fps", 0, NULL, 'p'},
 	{"configdir", 1, NULL, 'C'},
@@ -410,15 +410,13 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			case 'b':
-				if (!strcmp (optarg, "nearest"))
-					options->meleeScale = TFB_SCALE_NEAREST;
-				else if (!strcmp (optarg, "trilinear"))
+				if (!strcmp (optarg, "smooth") || !strcmp (optarg, "3do"))
 					options->meleeScale = TFB_SCALE_TRILINEAR;
 				else if (!strcmp (optarg, "step") || !strcmp (optarg, "pc"))
 					options->meleeScale = TFB_SCALE_STEP;
 				else
 				{
-					InvalidArgument(optarg, "--meleescale or -b");
+					InvalidArgument(optarg, "--meleezoom or -b");
 					badArg = TRUE;
 				}
 				break;
@@ -677,8 +675,8 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "  -o, --opengl (default off)\n");
 	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
 			"default is none)\n");
-	fprintf (out, "  -b, --meleescale=MODE (nearest, trilinear, step; "
-			"default is trilinear)\n");
+	fprintf (out, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
+			"default is 3do)\n");
 	fprintf (out, "  -s, --scanlines (default off)\n");
 	fprintf (out, "  -p, --fps (default off)\n");
 	fprintf (out, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
