@@ -42,13 +42,11 @@ permits use of any screen resolution.
 Graphics scaling mode (bilinear, biadapt, biadv or triscan). Default is
 none. Try these to get smoother graphics with cost on performance.
 
-	-b               (or --meleescale=mode)
+	-b               (or --meleezoom=mode)
 
-Melee scaling mode (nearest, trilinear, pc/step). Default is
-trilinear.  Slower machine owners can set it to nearest to get better
-performance in melee but degraded visual quality. The fastest mode is
-step, which is also the mode DOS original used (step and pc modes are
-equivalent).
+Melee zooming mode (pc or 3do); 'step' is an alias for 'pc' and 'smooth'
+is an alias for '3do'. Default is 3do. Slower machine owners can set it
+to 'pc' to get better performance in melee.
 
 	-s               (or --scanlines)
 
