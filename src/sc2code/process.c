@@ -1004,7 +1004,7 @@ InitDisplayList (void)
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 }
 
-UWORD nth_frame;
+UWORD nth_frame = 0;
 
 void
 RedrawQueue (BOOLEAN clear)
