@@ -26,6 +26,7 @@
 static LOCDATA talkpet_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)TALKING_PET_PMAP_ANIM, /* AlienFrame */
 	(FONT)TALKING_PET_FONT, /* AlienFont */
@@ -790,12 +791,19 @@ uninit_talkpet (void)
 	return (0);
 }
 
+static void
+post_talkpet_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_talkpet_comm (void)
 {
 	LOCDATAPTR retval;
 
 	talkpet_desc.init_encounter_func = Intro;
+	talkpet_desc.post_encounter_func = post_talkpet_enc;
 	talkpet_desc.uninit_encounter_func = uninit_talkpet;
 
 	talkpet_desc.AlienTextTemplate.baseline.x =

@@ -25,6 +25,7 @@
 static LOCDATA orz_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)ORZ_PMAP_ANIM, /* AlienFrame */
 	(FONT)ORZ_FONT, /* AlienFont */
@@ -848,6 +849,12 @@ ExitIntro:
 static COUNT
 uninit_orz (void)
 {
+	return (0);
+}
+
+static void
+post_orz_enc (void)
+{
 	BYTE Manner;
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
@@ -861,8 +868,6 @@ uninit_orz (void)
 			SET_GAME_STATE (TAALO_VISITS, 0);
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -871,6 +876,7 @@ init_orz_comm (void)
 	LOCDATAPTR retval;
 
 	orz_desc.init_encounter_func = Intro;
+	orz_desc.post_encounter_func = post_orz_enc;
 	orz_desc.uninit_encounter_func = uninit_orz;
 
 	orz_desc.AlienTextTemplate.baseline.x =

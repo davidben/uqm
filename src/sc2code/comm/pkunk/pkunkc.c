@@ -27,6 +27,7 @@
 static LOCDATA pkunk_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)PKUNK_PMAP_ANIM, /* AlienFrame */
 	(FONT)PKUNK_FONT, /* AlienFont */
@@ -1084,6 +1085,12 @@ ExitIntro:
 static COUNT
 uninit_pkunk (void)
 {
+	return (0);
+}
+
+static void
+post_pkunk_enc (void)
+{
 	BYTE Manner;
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
@@ -1096,8 +1103,6 @@ uninit_pkunk (void)
 			SET_GAME_STATE (PKUNK_HOME_VISITS, 0);
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -1106,6 +1111,7 @@ init_pkunk_comm (void)
 	LOCDATAPTR retval;
 
 	pkunk_desc.init_encounter_func = Intro;
+	pkunk_desc.post_encounter_func = post_pkunk_enc;
 	pkunk_desc.uninit_encounter_func = uninit_pkunk;
 
 	pkunk_desc.AlienTextTemplate.baseline.x =

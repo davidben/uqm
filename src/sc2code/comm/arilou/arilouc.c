@@ -26,6 +26,7 @@
 static LOCDATA arilou_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)ARILOU_PMAP_ANIM, /* AlienFrame */
 	(FONT)ARILOU_FONT, /* AlienFont */
@@ -785,6 +786,12 @@ ExitIntro:
 static COUNT
 uninit_arilou (void)
 {
+	return (0);
+}
+
+static void
+post_arilou_enc (void)
+{
 	BYTE Manner;
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
@@ -810,8 +817,6 @@ uninit_arilou (void)
 			SET_GAME_STATE (ARILOU_MANNER, 3);
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -820,6 +825,7 @@ init_arilou_comm (void)
 	LOCDATAPTR retval;
 
 	arilou_desc.init_encounter_func = Intro;
+	arilou_desc.post_encounter_func = post_arilou_enc;
 	arilou_desc.uninit_encounter_func = uninit_arilou;
 
 	arilou_desc.AlienTextTemplate.baseline.x =

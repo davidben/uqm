@@ -27,6 +27,7 @@
 static LOCDATA thradd_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)THRADD_PMAP_ANIM, /* AlienFrame */
 	(FONT)THRADD_FONT, /* AlienFont */
@@ -911,12 +912,19 @@ uninit_thradd (void)
 	return (0);
 }
 
+static void
+post_thradd_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_thradd_comm (void)
 {
 	LOCDATAPTR retval;
 
 	thradd_desc.init_encounter_func = Intro;
+	thradd_desc.post_encounter_func = post_thradd_enc;
 	thradd_desc.uninit_encounter_func = uninit_thradd;
 
 	thradd_desc.AlienTextTemplate.baseline.x =

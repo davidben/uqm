@@ -43,6 +43,7 @@ static void SellMinerals (RESPONSE_REF R);
 static LOCDATA commander_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
 	(FONT)COMMANDER_FONT, /* AlienFont */
@@ -1926,13 +1927,17 @@ Intro (void)
 static COUNT
 uninit_starbase (void)
 {
+	return (0);
+}
+
+static void
+post_starbase_enc (void)
+{
 	SET_GAME_STATE (MOONBASE_ON_SHIP, 0);
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
 		SET_GAME_STATE (CHMMR_BOMB_STATE, 3);
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -1941,6 +1946,7 @@ init_starbase_comm ()
 	LOCDATAPTR retval;
 
 	commander_desc.init_encounter_func = Intro;
+	commander_desc.post_encounter_func = post_starbase_enc;
 	commander_desc.uninit_encounter_func = uninit_starbase;
 
 	commander_desc.AlienTextWidth = 143;

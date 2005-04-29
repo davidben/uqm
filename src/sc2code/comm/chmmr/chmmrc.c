@@ -26,6 +26,7 @@
 static LOCDATA chmmr_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)CHMMR_PMAP_ANIM, /* AlienFrame */
 	(FONT)CHMMR_FONT, /* AlienFont */
@@ -600,12 +601,19 @@ uninit_chmmr (void)
 	return (0);
 }
 
+static void
+post_chmmr_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_chmmr_comm (void)
 {
 	LOCDATAPTR retval;
 
 	chmmr_desc.init_encounter_func = Intro;
+	chmmr_desc.post_encounter_func = post_chmmr_enc;
 	chmmr_desc.uninit_encounter_func = uninit_chmmr;
 
 	chmmr_desc.AlienTextTemplate.baseline.x =

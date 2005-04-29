@@ -27,6 +27,7 @@
 static LOCDATA slylandro_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SLYLAND_PMAP_ANIM, /* AlienFrame */
 	(FONT)SLYLAND_FONT, /* AlienFont */
@@ -374,12 +375,19 @@ uninit_slyland (void)
 	return (0);
 }
 
+static void
+post_slyland_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_slyland_comm (void)
 {
 	LOCDATAPTR retval;
 
 	slylandro_desc.init_encounter_func = Intro;
+	slylandro_desc.post_encounter_func = post_slyland_enc;
 	slylandro_desc.uninit_encounter_func = uninit_slyland;
 
 	slylandro_desc.AlienTextTemplate.baseline.x =

@@ -26,6 +26,7 @@
 static LOCDATA shofixti_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SHOFIXTI_PMAP_ANIM, /* AlienFrame */
 	(FONT)SHOFIXTI_FONT, /* AlienFont */
@@ -629,12 +630,19 @@ uninit_shofixti (void)
 	return(0);
 }
 
+static void
+post_shofixti_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_shofixti_comm (void)
 {
 	LOCDATAPTR retval;
 
 	shofixti_desc.init_encounter_func = Intro;
+	shofixti_desc.post_encounter_func = post_shofixti_enc;
 	shofixti_desc.uninit_encounter_func = uninit_shofixti;
 
 	shofixti_desc.AlienTextTemplate.baseline.x =

@@ -42,6 +42,7 @@ static NUMBER_SPEECH_DESC melnorme_numbers_english;
 static LOCDATA melnorme_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)MELNORME_PMAP_ANIM, /* AlienFrame */
 	(FONT)MELNORME_FONT, /* AlienFont */
@@ -1840,11 +1841,15 @@ Intro (void)
 static COUNT
 uninit_melnorme (void)
 {
+	return (0);
+}
+
+static void
+post_melnorme_enc (void)
+{
 	LockMutex (GraphicsLock);
 	DrawStatusMessage (0);
 	UnlockMutex (GraphicsLock);
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -1853,6 +1858,7 @@ init_melnorme_comm (void)
 	LOCDATAPTR retval;
 
 	melnorme_desc.init_encounter_func = Intro;
+	melnorme_desc.post_encounter_func = post_melnorme_enc;
 	melnorme_desc.uninit_encounter_func = uninit_melnorme;
 
 	melnorme_desc.AlienTextTemplate.baseline.x =

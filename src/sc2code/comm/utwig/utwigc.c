@@ -27,6 +27,7 @@
 static LOCDATA utwig_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)UTWIG_PMAP_ANIM, /* AlienFrame */
 	(FONT)UTWIG_FONT, /* AlienFont */
@@ -939,12 +940,19 @@ uninit_utwig (void)
 	return (0);
 }
 
+static void
+post_utwig_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_utwig_comm (void)
 {
 	LOCDATAPTR retval;
 
 	utwig_desc.init_encounter_func = Intro;
+	utwig_desc.post_encounter_func = post_utwig_enc;
 	utwig_desc.uninit_encounter_func = uninit_utwig;
 
 	utwig_desc.AlienTextTemplate.baseline.x =

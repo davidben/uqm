@@ -26,6 +26,7 @@
 static LOCDATA umgah_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)UMGAH_PMAP_ANIM, /* AlienFrame */
 	(FONT)UMGAH_FONT, /* AlienFont */
@@ -682,12 +683,16 @@ Intro (void)
 static COUNT
 uninit_umgah (void)
 {
+	return (0);
+}
+
+static void
+post_umgah_enc (void)
+{
 	if (!GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES))
 	{
 		SET_GAME_STATE (MET_NORMAL_UMGAH, 1);
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -696,6 +701,7 @@ init_umgah_comm (void)
 	LOCDATAPTR retval;
 
 	umgah_desc.init_encounter_func = Intro;
+	umgah_desc.post_encounter_func = post_umgah_enc;
 	umgah_desc.uninit_encounter_func = uninit_umgah;
 
 	umgah_desc.AlienTextTemplate.baseline.x =

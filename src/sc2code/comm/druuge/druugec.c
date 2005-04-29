@@ -27,6 +27,7 @@
 static LOCDATA druuge_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)DRUUGE_PMAP_ANIM, /* AlienFrame */
 	(FONT)DRUUGE_FONT, /* AlienFont */
@@ -877,6 +878,12 @@ ExitIntro:
 static COUNT
 uninit_druuge (void)
 {
+	return (0);
+}
+
+static void
+post_druuge_enc (void)
+{
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
 			&& !GET_GAME_STATE (DRUUGE_MANNER))
 	{
@@ -886,8 +893,6 @@ uninit_druuge (void)
 			SET_GAME_STATE (DRUUGE_VISITS, 0);
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -896,6 +901,7 @@ init_druuge_comm (void)
 	LOCDATAPTR retval;
 
 	druuge_desc.init_encounter_func = Intro;
+	druuge_desc.post_encounter_func = post_druuge_enc;
 	druuge_desc.uninit_encounter_func = uninit_druuge;
 
 	druuge_desc.AlienTextTemplate.baseline.x =

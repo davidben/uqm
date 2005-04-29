@@ -23,6 +23,7 @@
 static LOCDATA vux_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)VUX_PMAP_ANIM, /* AlienFrame */
 	(FONT)VUX_FONT, /* AlienFont */
@@ -754,12 +755,19 @@ uninit_vux (void)
 	return (0);
 }
 
+static void
+post_vux_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_vux_comm (void)
 {
 	LOCDATAPTR retval;
 
 	vux_desc.init_encounter_func = Intro;
+	vux_desc.post_encounter_func = post_vux_enc;
 	vux_desc.uninit_encounter_func = uninit_vux;
 
 	vux_desc.AlienTextTemplate.baseline.x =

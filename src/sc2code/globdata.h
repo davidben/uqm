@@ -115,8 +115,10 @@ typedef struct
 {
 	void (*init_encounter_func) (void);
 			/* Called when entering communications */
+	void (*post_encounter_func) (void);
+			/* Called when leaving communications or combat normally */
 	COUNT (*uninit_encounter_func) (void);
-			/* Called when leaving communications or combat */
+			/* Called when encounter is done for cleanup */
 
 	FRAME AlienFrame;
 	FONT AlienFont;

@@ -25,6 +25,7 @@
 static LOCDATA commander_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
 	(FONT)COMMANDER_FONT, /* AlienFont */
@@ -669,12 +670,19 @@ uninit_commander (void)
 	return (0);
 }
 
+static void
+post_commander_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_commander_comm ()
 {
 	LOCDATAPTR retval;
 
 	commander_desc.init_encounter_func = Intro;
+	commander_desc.post_encounter_func = post_commander_enc;
 	commander_desc.uninit_encounter_func = uninit_commander;
 
 	if (GET_GAME_STATE (RADIOACTIVES_PROVIDED))

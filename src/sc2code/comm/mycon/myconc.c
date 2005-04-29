@@ -27,6 +27,7 @@
 static LOCDATA mycon_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)MYCON_PMAP_ANIM, /* AlienFrame */
 	(FONT)MYCON_FONT, /* AlienFont */
@@ -599,12 +600,19 @@ uninit_mycon (void)
 	return (0);
 }
 
+static void
+post_mycon_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_mycon_comm (void)
 {
 	LOCDATAPTR retval;
 
 	mycon_desc.init_encounter_func = Intro;
+	mycon_desc.post_encounter_func = post_mycon_enc;
 	mycon_desc.uninit_encounter_func = uninit_mycon;
 
 	mycon_desc.AlienTextTemplate.baseline.x =

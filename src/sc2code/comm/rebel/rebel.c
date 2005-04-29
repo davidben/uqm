@@ -26,6 +26,7 @@
 static LOCDATA yehat_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)YEHAT_PMAP_ANIM, /* AlienFrame */
 	(FONT)YEHAT_FONT, /* AlienFont */
@@ -411,12 +412,19 @@ uninit_yehat (void)
 	return (0);
 }
 
+static void
+post_yehat_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_rebel_yehat_comm (void)
 {
 	LOCDATAPTR retval;
 
 	yehat_desc.init_encounter_func = Intro;
+	yehat_desc.post_encounter_func = post_yehat_enc;
 	yehat_desc.uninit_encounter_func = uninit_yehat;
 
 	yehat_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH * 2 / 3;

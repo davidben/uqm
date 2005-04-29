@@ -43,6 +43,7 @@
 static LOCDATA zoqfot_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)ZOQFOTPIK_PMAP_ANIM, /* AlienFrame */
 	(FONT)ZOQFOTPIK_FONT, /* AlienFont */
@@ -925,12 +926,19 @@ uninit_zoqfot (void)
 	return (0);
 }
 
+static void
+post_zoqfot_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_zoqfot_comm (void)
 {
 	LOCDATAPTR retval;
 
 	zoqfot_desc.init_encounter_func = Intro;
+	zoqfot_desc.post_encounter_func = post_zoqfot_enc;
 	zoqfot_desc.uninit_encounter_func = uninit_zoqfot;
 
 	zoqfot_desc.AlienTextTemplate.align = ALIGN_CENTER;

@@ -26,6 +26,7 @@
 static LOCDATA supox_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SUPOX_PMAP_ANIM, /* AlienFrame */
 	(FONT)SUPOX_FONT, /* AlienFont */
@@ -670,12 +671,19 @@ uninit_supox (void)
 	return (0);
 }
 
+static void
+post_supox_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_supox_comm (void)
 {
 	LOCDATAPTR retval;
 
 	supox_desc.init_encounter_func = Intro;
+	supox_desc.post_encounter_func = post_supox_enc;
 	supox_desc.uninit_encounter_func = uninit_supox;
 
 	supox_desc.AlienTextTemplate.baseline.x =

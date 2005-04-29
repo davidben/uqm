@@ -26,6 +26,7 @@
 static LOCDATA ilwrath_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)ILWRATH_PMAP_ANIM, /* AlienFrame */
 	(FONT)ILWRATH_FONT, /* AlienFont */
@@ -601,12 +602,19 @@ uninit_ilwrath (void)
 	return (0);
 }
 
+static void
+post_ilwrath_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_ilwrath_comm (void)
 {
 	LOCDATAPTR retval;
 
 	ilwrath_desc.init_encounter_func = Intro;
+	ilwrath_desc.post_encounter_func = post_ilwrath_enc;
 	ilwrath_desc.uninit_encounter_func = uninit_ilwrath;
 
 	ilwrath_desc.AlienTextTemplate.baseline.x =

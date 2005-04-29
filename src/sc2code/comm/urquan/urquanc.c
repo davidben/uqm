@@ -23,6 +23,7 @@
 static LOCDATA urquan_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)URQUAN_PMAP_ANIM, /* AlienFrame */
 	(FONT)URQUAN_FONT, /* AlienFont */
@@ -521,9 +522,13 @@ ExitIntro:
 static COUNT
 uninit_urquan (void)
 {
-	SET_GAME_STATE (PLAYER_HYPNOTIZED, 0);
-
 	return (0);
+}
+
+static void
+post_urquan_enc (void)
+{
+	SET_GAME_STATE (PLAYER_HYPNOTIZED, 0);
 }
 
 LOCDATAPTR
@@ -534,6 +539,7 @@ init_urquan_comm (void)
 	BYTE b0, b1, b2, b3;
 
 	urquan_desc.init_encounter_func = Intro;
+	urquan_desc.post_encounter_func = post_urquan_enc;
 	urquan_desc.uninit_encounter_func = uninit_urquan;
 
 	urquan_desc.AlienTextTemplate.baseline.x =

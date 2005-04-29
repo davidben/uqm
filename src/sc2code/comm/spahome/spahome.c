@@ -27,6 +27,7 @@
 static LOCDATA spahome_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SPATHI_HOME_PMAP_ANIM, /* AlienFrame */
 	(FONT)SPATHI_FONT, /* AlienFont */
@@ -959,6 +960,12 @@ Intro (void)
 static COUNT
 uninit_spahome (void)
 {
+	return (0);
+}
+
+static void
+post_spahome_enc (void)
+{
 	BYTE Manner;
 
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
@@ -971,8 +978,6 @@ uninit_spahome (void)
 			SET_GAME_STATE (SPATHI_HOME_VISITS, 0);
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -981,6 +986,7 @@ init_spahome_comm ()
 	LOCDATAPTR retval;
 
 	spahome_desc.init_encounter_func = Intro;
+	spahome_desc.post_encounter_func = post_spahome_enc;
 	spahome_desc.uninit_encounter_func = uninit_spahome;
 
 	spahome_desc.AlienTextTemplate.baseline.x =

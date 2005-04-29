@@ -2051,7 +2051,8 @@ HailAlien (void)
 	(*CommData.init_encounter_func) ();
 	DoInput ((PVOID)&ES, FALSE);
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-		(*CommData.uninit_encounter_func) ();
+		(*CommData.post_encounter_func) ();
+	(*CommData.uninit_encounter_func) ();
 
 	LockMutex (GraphicsLock);
 
@@ -2175,7 +2176,12 @@ InitCommunication (RESOURCE which_comm)
 		cur_comm = 0;
 	}
 	else if (LocDataPtr)
-		(*CommData.uninit_encounter_func) ();
+	{	// only when comm initied successfully
+		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+			(*CommData.post_encounter_func) (); // process states
+
+		(*CommData.uninit_encounter_func) (); // cleanup
+	}
 
 	SetResourceIndex (hOldIndex);
 	CloseResourceIndex (hIndex);

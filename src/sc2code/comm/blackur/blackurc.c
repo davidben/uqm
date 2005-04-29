@@ -23,6 +23,7 @@
 static LOCDATA blackurq_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)BLACKURQ_PMAP_ANIM, /* AlienFrame */
 	(FONT)BLACKURQ_FONT, /* AlienFont */
@@ -529,12 +530,19 @@ uninit_blackurq (void)
 	return (0);
 }
 
+static void
+post_blackurq_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_blackurq_comm (void)
 {
 	LOCDATAPTR retval;
 
 	blackurq_desc.init_encounter_func = Intro;
+	blackurq_desc.post_encounter_func = post_blackurq_enc;
 	blackurq_desc.uninit_encounter_func = uninit_blackurq;
 
 	blackurq_desc.AlienTextTemplate.baseline.x =

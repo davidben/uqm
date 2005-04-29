@@ -26,6 +26,7 @@
 static LOCDATA syreen_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SYREEN_PMAP_ANIM, /* AlienFrame */
 	(FONT)SYREEN_FONT, /* AlienFont */
@@ -835,12 +836,19 @@ uninit_syreen (void)
 	return (0);
 }
 
+static void
+post_syreen_enc (void)
+{
+	// nothing defined so far
+}
+
 LOCDATAPTR
 init_syreen_comm (void)
 {
 	LOCDATAPTR retval;
 
 	syreen_desc.init_encounter_func = Intro;
+	syreen_desc.post_encounter_func = post_syreen_enc;
 	syreen_desc.uninit_encounter_func = uninit_syreen;
 
 	syreen_desc.AlienTextTemplate.baseline.x =

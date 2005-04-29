@@ -26,6 +26,7 @@
 static LOCDATA spathi_desc =
 {
 	NULL_PTR, /* init_encounter_func */
+	NULL_PTR, /* post_encounter_func */
 	NULL_PTR, /* uninit_encounter_func */
 	(FRAME)SPATHI_PMAP_ANIM, /* AlienFrame */
 	(FONT)SPATHI_FONT, /* AlienFont */
@@ -755,6 +756,12 @@ Intro (void)
 static COUNT
 uninit_spathi (void)
 {
+	return (0);
+}
+
+static void
+post_spathi_enc (void)
+{
 	BYTE Manner;
 
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
@@ -775,8 +782,6 @@ uninit_spathi (void)
 			}
 		}
 	}
-
-	return (0);
 }
 
 LOCDATAPTR
@@ -785,6 +790,7 @@ init_spathi_comm (void)
 	LOCDATAPTR retval;
 
 	spathi_desc.init_encounter_func = Intro;
+	spathi_desc.post_encounter_func = post_spathi_enc;
 	spathi_desc.uninit_encounter_func = uninit_spathi;
 
 	spathi_desc.AlienTextTemplate.baseline.x =
