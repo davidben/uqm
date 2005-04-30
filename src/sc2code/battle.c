@@ -177,6 +177,7 @@ DoBattle (BATTLE_STATE *bs)
 {
 	extern UWORD nth_frame;
 	RECT r;
+	BYTE battle_speed;
 
 	bs->MenuRepeatDelay = 0;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
@@ -209,11 +210,16 @@ DoBattle (BATTLE_STATE *bs)
 	{
 		return FALSE;
 	}
-	if (nth_frame)
+
+	battle_speed = HIBYTE (nth_frame);
+	if (battle_speed == (BYTE)~0)
+	{	// maximum speed, nothing rendered at all
 		TaskSwitch ();
+	}
 	else
 	{
-		SleepThreadUntil (bs->NextTime + BATTLE_FRAME_RATE);
+		SleepThreadUntil (bs->NextTime
+				+ BATTLE_FRAME_RATE / (battle_speed + 1));
 		bs->NextTime = GetTimeCounter ();
 	}
 	return (BOOLEAN) ((GLOBAL (CurrentActivity) & IN_BATTLE) != 0);
