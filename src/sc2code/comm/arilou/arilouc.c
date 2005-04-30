@@ -643,13 +643,14 @@ Intro (void)
 	{
 		RESPONSE_FUNC  RespFunc;
 
-		NPCPhrase (INIT_HELLO);
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		{
+			NPCPhrase (INIT_HELLO);
 			RespFunc = (RESPONSE_FUNC)FriendlySpaceArilou;
 		}
 		else
 		{
+			NPCPhrase (FRDLY_HOMEWORLD_HELLO_1);
 			RespFunc = (RESPONSE_FUNC)ArilouHome;
 			SET_GAME_STATE (ARILOU_HOME_VISITS, 1);
 		}
