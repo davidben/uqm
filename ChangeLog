@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed spurious story-line changes (usually the manner of the encountered
+  race) caused by loading a game from an Encounter screen (bug #519) -Alex
 - Option change: --meleescale to --meleezoom (bug #694) -Alex
 - The alpha icon is now default (for XP/2003); bug #474 -Alex
 - Fixed incomplete memset()s in comm alien animation code (comm should
