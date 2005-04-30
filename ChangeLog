@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed warp-escape in Cyborg mode removed by previous game input
+  patches (bug #563) -Alex
 - Fixed spurious story-line changes (usually the manner of the encountered
   race) caused by loading a game from an Encounter screen (bug #519) -Alex
 - Option change: --meleescale to --meleezoom (bug #694) -Alex
