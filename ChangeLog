@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed first contact with Arilou at homeworld; Talking Pet confusion
+  (bug #638), from Paxtez
 - Fixed warp-escape in Cyborg mode removed by previous game input
   patches (bug #563) -Alex
 - Fixed spurious story-line changes (usually the manner of the encountered
