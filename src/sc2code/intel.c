@@ -38,7 +38,13 @@ computer_intelligence (void)
 	if (CyborgDescPtr)
 	{
 		if (PlayerControl[cur_player] & CYBORG_CONTROL)
+		{
 			InputState = tactical_intelligence ();
+
+			// allow a player to warp-escape in cyborg mode
+			if (cur_player == 0)
+				InputState |= (*(HumanInput[cur_player])) () & BATTLE_ESCAPE;
+		}
 		else
 			InputState = (*(HumanInput[cur_player])) ();
 	}
