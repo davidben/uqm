@@ -82,7 +82,7 @@ JumpTrack (void)
 			(sint32)cur_time - total_length;
 	track_pos_changed = 1;
 	scd->play_chain_ptr = last_chain;
-	recompute_track_pos(sound_sample, first_chain, total_length);
+	recompute_track_pos(sound_sample, first_chain, total_length + 1);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	PlayingTrack();
 }
@@ -780,7 +780,7 @@ FastForward_Smooth ()
 		soundSource[SPEECH_SOURCE].start_time -= ACCEL_SCROLL_SPEED;
 		if ((sint32)cur_time - soundSource[SPEECH_SOURCE].start_time > total_length)
 			soundSource[SPEECH_SOURCE].start_time = 
-				(sint32)cur_time - total_length;
+				(sint32)cur_time - total_length - 1;
 		offset = cur_time - soundSource[SPEECH_SOURCE].start_time;
 		track_pos_changed = 1;
 		recompute_track_pos(sound_sample, first_chain, offset);
