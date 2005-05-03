@@ -19,6 +19,7 @@
 #include "sndintrn.h"
 #include "options.h"
 #include "reslib.h"
+#include <string.h>
 
 
 SOUND_REF
@@ -52,18 +53,26 @@ MUSIC_REF
 LoadMusicFile (PVOID pStr)
 {
 	uio_Stream *fp;
+	char filename[256];
 
 	// FIXME: this theoretically needs a mechanism to prevent races
 	if (_cur_resfile_name)
 		// something else is loading resources atm
 		return 0;
 
-	fp = res_OpenResFile (contentDir, pStr, "rb");
+	strncpy (filename, pStr, sizeof(filename) - 1);
+	filename[sizeof(filename) - 1] = '\0';
+	CheckMusicResName (filename);
+
+	// Opening the res file is not technically necessary right now
+	// since _GetMusicData() completely ignores the arguments
+	// But just for the sake of correctness
+	fp = res_OpenResFile (contentDir, filename, "rb");
 	if (fp)
 	{
 		MEM_HANDLE hData;
 
-		_cur_resfile_name = pStr;
+		_cur_resfile_name = filename;
 		hData = _GetMusicData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 

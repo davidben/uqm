@@ -108,6 +108,43 @@ SetMusicVolume (COUNT Volume)
 	audio_Sourcef (soundSource[MUSIC_SOURCE].handle, audio_GAIN, f);
 }
 
+char*
+CheckMusicResName (char* fileName)
+{
+	char otherName[256];
+	const char* otherExt;
+	char* curExt;
+
+	if (strlen (fileName) < 4)
+		return fileName;
+
+	strncpy (otherName, fileName, sizeof (otherName) - 1);
+	otherName[sizeof (otherName) - 1] = '\0';
+	
+	switch (optWhichMusic)
+	{
+		default:
+		case OPT_3DO:
+			otherExt = "ogg";
+			break;
+		case OPT_PC:
+			otherExt = "mod";
+			break;
+	}
+
+	curExt = otherName + strlen (otherName) - strlen (otherExt);
+	if (strcmp(curExt, otherExt) != 0)
+	{
+		strcpy (curExt, otherExt);
+		if (fileExists2 (contentDir, otherName))
+			strcpy (fileName, otherName);
+		else
+			fprintf (stderr, "Requested track '%s' not found!\n", otherName);
+	}
+
+	return fileName;
+}
+
 MEM_HANDLE
 _GetMusicData (uio_Stream *fp, DWORD length)
 {
@@ -127,33 +164,14 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 		}		
 		else
 		{
-            char filename[1000];
+            char filename[256];
 
-            *pmus = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
-            strcpy (filename, _cur_resfile_name);
+			*pmus = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
+			strncpy (filename, _cur_resfile_name, sizeof(filename) - 1);
+			filename[sizeof(filename) - 1] = '\0';
+			CheckMusicResName (filename);
 
-            switch (optWhichMusic)
-            {
-                default:
-                case OPT_3DO:
-                {
-                    char threedoname[1000];
-                    
-                    strcpy (threedoname, filename);
-                    strcpy (&threedoname[strlen (threedoname)-3], "ogg");
-                    if (fileExists2 (contentDir, threedoname))
-                    {
-                        strcpy (filename, threedoname);
-                    }
-                    break;
-                }
-                case OPT_PC:
-                {
-                    break;
-                }
-            }
-
-            fprintf (stderr, "_GetMusicData(): loading %s\n", filename);
+			fprintf (stderr, "_GetMusicData(): loading %s\n", filename);
 			if (((*pmus)->decoder = SoundDecoder_Load (contentDir, filename,
 							4096, 0, 0)) == 0)
 			{

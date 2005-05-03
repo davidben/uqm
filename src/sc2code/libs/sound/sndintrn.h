@@ -34,5 +34,7 @@ extern BOOLEAN _ReleaseSoundBankData (MEM_HANDLE handle);
 #define UnlockMusicData UnlockResourceData
 #define FreeMusicData _ReleaseMusicData
 
+extern char* CheckMusicResName (char* filename);
+
 #endif /* _SNDINTRN_H */
 
