@@ -148,6 +148,10 @@ GenerateSamatra (BYTE control)
 		case INIT_NPCS:
 			if (!GET_GAME_STATE (URQUAN_MESSED_UP))
 				BuildUrquanGuard ();
+			else
+			{	// Exorcise Ur-Quan ghosts upon system reentry
+				PutGroupInfo (0L, (BYTE)~0); // wipe out the group
+			}
 			break;
 		case REINIT_NPCS:
 			GetGroupInfo (0L, 0);
