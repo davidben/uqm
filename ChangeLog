@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Can now switch mod->ogg in intro/outro player (thanks Nic), and
+  mod<->ogg everywhere in general -Alex
 - Fixed crash after T.Pet conversation upon reentering D.Crateris
   once Ur-Quan have been confused (bug #531) -Alex
 - Fixed last subtitle flashing after fast-forwarding to the end,
