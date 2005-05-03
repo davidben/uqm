@@ -1,5 +1,5 @@
 #(========== This is the PC ending script =====================)
-#(======== Sequence 1 -- Position the Bomb ====================)
+#(======== Sequence 2 -- Countdown and explosion ==============)
 
 #(Set sequence dimensions; param1=width; param2=height)
 DIMS 320 200
