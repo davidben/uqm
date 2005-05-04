@@ -756,11 +756,11 @@ EncounterBattle (void)
 		cur_speed = (BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK)
 				>> COMBAT_SPEED_SHIFT;
 		if (cur_speed == 1)
-			cur_speed = 0;
+			cur_speed = 0; /* normal speed */
 		else if (cur_speed == 2)
-			++cur_speed;
+			++cur_speed;   /* 4x speed, 3 of 4 frames skipped */
 		else /* if (cur_speed == 3) */
-			cur_speed = (BYTE)~0;
+			cur_speed = (BYTE)~0; /* maximum speed - no rendering */
 		nth_frame = MAKE_WORD (1, cur_speed);
 		PlayerControl[0] = CYBORG_CONTROL | AWESOME_RATING;
 		PlayerInput[0] = ComputerInput;
