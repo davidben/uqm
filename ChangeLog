@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Main menu and Super Melee menu can now play music tracks; drop in
+  'lbm/mainmenu.ogg' and 'melee/melemenu.ogg', respectively -Alex
 - Can now switch mod->ogg in intro/outro player (thanks Nic), and
   mod<->ogg everywhere in general -Alex
 - Fixed crash after T.Pet conversation upon reentering D.Crateris
