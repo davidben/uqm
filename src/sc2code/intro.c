@@ -730,7 +730,7 @@ ShowPresentation (const char *name)
 
 	SleepThreadUntil (FadeMusic (0, ONE_SECOND));
 	StopMusic ();
-	FadeMusic (MAX_VOLUME, 0);
+	FadeMusic (NORMAL_VOLUME, 0);
 
 	DestroyMusic (pis.MusicRef);
 	DestroyDrawable (ReleaseDrawable (pis.RotatedFrame));
