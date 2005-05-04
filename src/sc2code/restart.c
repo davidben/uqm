@@ -121,11 +121,23 @@ DWORD InTime;
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
+	static DWORD InactTimeOut;
+
 	/* Cancel any presses of the Pause key. */
 	GamePaused = FALSE;
 
 	if (!pMS->Initialized)
 	{
+		if (pMS->hMusic)
+		{
+			StopMusic ();
+			DestroyMusic (pMS->hMusic);
+			pMS->hMusic = 0;
+		}
+		pMS->hMusic = LoadMusicFile ("lbm/mainmenu.ogg");
+		InactTimeOut = (pMS->hMusic ? 120 : 20) * ONE_SECOND;
+		
+		PlayMusic (pMS->hMusic, TRUE, 1);
 		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
 		pMS->Initialized = TRUE;
 
@@ -152,8 +164,12 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 			PulsedInputState.key[KEY_MENU_SELECT]))
 
 	{
-		if (GetTimeCounter () - InTime < ONE_SECOND * 15)
+		if (GetTimeCounter () - InTime < InactTimeOut)
 			return (TRUE);
+
+		SleepThreadUntil (FadeMusic (0, ONE_SECOND));
+		StopMusic ();
+		FadeMusic (NORMAL_VOLUME, 0);
 
 		GLOBAL (CurrentActivity) = (ACTIVITY)~0;
 		return (FALSE);
@@ -319,6 +335,13 @@ LastActivity = WON_LAST_BATTLE;
 			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 			DoInput ((PVOID)&MenuState, TRUE);
 			
+			StopMusic ();
+			if (MenuState.hMusic)
+			{
+				DestroyMusic (MenuState.hMusic);
+				MenuState.hMusic = 0;
+			}
+
 			LockMutex (GraphicsLock);
 			SetFlashRect ((PRECT)0, (FRAME)0);
 			UnlockMutex (GraphicsLock);

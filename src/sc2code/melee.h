@@ -22,6 +22,7 @@
 #include "init.h"
 #include "libs/tasklib.h"
 #include "libs/gfxlib.h"
+#include "libs/sndlib.h"
 #include "libs/reslib.h"
 
 
@@ -97,6 +98,8 @@ typedef struct melee_state
 	Task flash_task;
 	TEAM_IMAGE FileList[MAX_VIS_TEAMS];
 	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
+
+	MUSIC_REF hMusic;
 } MELEE_STATE;
 typedef MELEE_STATE *PMELEE_STATE;
 

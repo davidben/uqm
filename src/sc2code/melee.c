@@ -1536,6 +1536,12 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
 	pMS->TeamDE = 0;
 
+	if (pMS->hMusic)
+	{
+		DestroyMusic (pMS->hMusic);
+		pMS->hMusic = 0;
+	}
+
 	UninitSpace ();
 
 	DestroyDrawable (ReleaseDrawable (MeleeFrame));
@@ -1650,8 +1656,17 @@ DoMelee (PMELEE_STATE pMS)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)
 	{
+		if (pMS->hMusic)
+		{
+			StopMusic ();
+			DestroyMusic (pMS->hMusic);
+			pMS->hMusic = 0;
+		}
+		pMS->hMusic = LoadMusicFile ("melee/melemenu.ogg");
 		pMS->Initialized = TRUE;
+		
 		pMS->MeleeOption = START_MELEE;
+		PlayMusic (pMS->hMusic, TRUE, 1);
 		LockMutex (GraphicsLock);
 		InitMelee (pMS);
 		UnlockMutex (GraphicsLock);
@@ -1739,11 +1754,20 @@ DoMelee (PMELEE_STATE pMS)
 					{
 						BYTE black_buf[] = {FadeAllToBlack};
 						
+						FadeMusic (0, ONE_SECOND / 2);
 						SleepThreadUntil (XFormColorMap (
 								(COLORMAPPTR)black_buf, ONE_SECOND / 2
 								) + ONE_SECOND / 60);
 						FlushColorXForms ();
+						StopMusic ();
 					}
+					FadeMusic (NORMAL_VOLUME, 0);
+					if (pMS->hMusic)
+					{
+						DestroyMusic (pMS->hMusic);
+						pMS->hMusic = 0;
+					}
+
 					do
 					{
 						LockMutex (GraphicsLock);
@@ -1757,7 +1781,8 @@ DoMelee (PMELEE_STATE pMS)
 						Battle ();
 						free_gravity_well ();
 
-						if (GLOBAL (CurrentActivity) & CHECK_ABORT) return (FALSE);
+						if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+							return (FALSE);
 
 						{
 							BYTE black_buf[] = {FadeAllToBlack};
@@ -2121,6 +2146,7 @@ Melee (void)
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput ((PVOID)&MenuState, TRUE);
 
+		StopMusic ();
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
 		{
