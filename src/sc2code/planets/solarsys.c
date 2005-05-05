@@ -761,17 +761,12 @@ flagship_inertial_thrust (COUNT CurrentAngle)
 extern void DrawIPRadar (BOOLEAN FirstTime);
 
 static void
-UndrawShip (void)
+ProcessShipControls (void)
 {
 	COUNT index;
-	SIZE radius, delta_x, delta_y;
-	BOOLEAN LeavingInnerSystem;
+	SIZE delta_x, delta_y;
 
 	ClockTick ();
-
-#ifdef SHOW_RADAR
-	DrawIPRadar (FALSE);
-#endif /* SHOW_RADAR */
 
 	if (CurrentInputState.key[KEY_P1_THRUST])
 		delta_y = -1;
@@ -820,6 +815,17 @@ UndrawShip (void)
 
 		pSolarSysState->thrust_counter = THRUST_WAIT;
 	}
+}
+
+static void
+UndrawShip (void)
+{
+	SIZE radius, delta_x, delta_y;
+	BOOLEAN LeavingInnerSystem;
+
+#ifdef SHOW_RADAR
+	DrawIPRadar (FALSE);
+#endif /* SHOW_RADAR */
 
 	LeavingInnerSystem = FALSE;
 	radius = pSolarSysState->SunDesc[0].radius;
@@ -1074,6 +1080,8 @@ IP_frame (void)
 			DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 		}
 		
+		if (!(draw_sys_flags & DRAW_REFRESH))
+			ProcessShipControls ();
 		UndrawShip ();
 		if (pSolarSysState->MenuState.Initialized != 1)
 		{
