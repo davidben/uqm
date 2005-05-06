@@ -51,6 +51,8 @@ static LOCDATA melnorme_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	MELNORME_COLOR_MAP, /* AlienColorMap */
 	MELNORME_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	MELNORME_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
 	{

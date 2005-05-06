@@ -34,6 +34,8 @@ static LOCDATA orz_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	(COLORMAP)ORZ_COLOR_MAP, /* AlienColorMap */
 	ORZ_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	ORZ_CONVERSATION_PHRASES, /* PlayerPhrases */
 	12 /* 13 */, /* NumAnimations */
 	{

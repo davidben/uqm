@@ -35,6 +35,8 @@ static LOCDATA arilou_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	ARILOU_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	ARILOU_CONVERSATION_PHRASES, /* PlayerPhrases */
 	20, /* NumAnimations */
 	{

@@ -36,6 +36,8 @@ static LOCDATA utwig_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	UTWIG_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	UTWIG_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
 	{
@@ -961,6 +963,16 @@ init_utwig_comm (void)
 	utwig_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	utwig_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	utwig_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
+
+	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON))
+	{	// use alternate 'Happy Utwig!' track
+		utwig_desc.AlienAltSong = "comm/utwig/utwigult.ogg";
+		utwig_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
+	}
+	else
+	{	// regular track -- let's make sure
+		utwig_desc.AlienSongFlags &= ~LDASF_USE_ALTERNATE;
+	}
 
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)

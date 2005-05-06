@@ -35,6 +35,8 @@ static LOCDATA umgah_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	UMGAH_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	UMGAH_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
 	{

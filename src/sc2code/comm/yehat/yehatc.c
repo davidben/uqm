@@ -37,6 +37,8 @@ static LOCDATA yehat_desc =
 	0, /* (SIS_TEXT_WIDTH - 16) * 2 / 3, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	YEHAT_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	YEHAT_CONVERSATION_PHRASES, /* PlayerPhrases */
 	15, /* NumAnimations */
 	{

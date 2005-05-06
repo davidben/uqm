@@ -34,6 +34,8 @@ static LOCDATA slylandro_desc =
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	(COLORMAP)SLYLANDRO_COLOR_MAP, /* AlienColorMap */
 	SLYLANDRO_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	SLYLANDRO_CONVERSATION_PHRASES, /* PlayerPhrases */
 	13, /* NumAnimations */
 	{

@@ -36,6 +36,8 @@ static LOCDATA druuge_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	DRUUGE_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	DRUUGE_CONVERSATION_PHRASES, /* PlayerPhrases */
 	11,
 	{

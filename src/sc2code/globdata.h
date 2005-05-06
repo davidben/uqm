@@ -111,6 +111,10 @@ typedef NUMBER_SPEECH_DESC *PNUMBER_SPEECH_DESC;
 #define NUMBER_SPEECH_DESCPTR PNUMBER_SPEECH_DESC
 typedef NUMBER_SPEECH_DESC *NUMBER_SPEECH;
 
+typedef DWORD LDAS_FLAGS;
+#define LDASF_NONE           ((LDAS_FLAGS)      0 )
+#define LDASF_USE_ALTERNATE  ((LDAS_FLAGS)(1 << 0))
+
 typedef struct
 {
 	void (*init_encounter_func) (void);
@@ -126,6 +130,8 @@ typedef struct
 	COUNT AlienTextWidth;
 	COLORMAP AlienColorMap;
 	DWORD AlienSong;
+	PVOID AlienAltSong;
+	LDAS_FLAGS AlienSongFlags;
 
 	STRING ConversationPhrases;
 

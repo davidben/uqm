@@ -32,6 +32,8 @@ static LOCDATA vux_desc =
 	0, /* (SIS_TEXT_WIDTH - 16) >> 1, */ /* AlienTextWidth */
 	VUX_COLOR_MAP, /* AlienColorMap */
 	VUX_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	VUX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	17, /* NumAnimations */
 	{

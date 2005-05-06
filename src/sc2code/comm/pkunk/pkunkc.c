@@ -36,6 +36,8 @@ static LOCDATA pkunk_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	PKUNK_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	PKUNK_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
 	{

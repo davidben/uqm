@@ -35,6 +35,8 @@ static LOCDATA spathi_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	SPATHI_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	SPATHI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	8, /* NumAnimations */
 	{

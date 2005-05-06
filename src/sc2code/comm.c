@@ -1966,6 +1966,7 @@ HailAlien (void)
 	MEM_HANDLE hOldIndex;
 	ENCOUNTER_STATE ES;
 	FONT PlayerFont, OldFont;
+	MUSIC_REF SongRef = 0;
 
 	pCurInputState = &ES;
 	memset (pCurInputState, 0, sizeof (*pCurInputState));
@@ -1984,7 +1985,14 @@ HailAlien (void)
 	CommData.AlienColorMap = CaptureColorMap (
 			LoadColorMapInstance ((RESOURCE)CommData.AlienColorMap)
 			);
-	CommData.AlienSong = LoadMusicInstance ((RESOURCE)CommData.AlienSong);
+	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
+			&& CommData.AlienAltSong)
+		SongRef = LoadMusicFile (CommData.AlienAltSong);
+	if (SongRef)
+		CommData.AlienSong = SongRef;
+	else
+		CommData.AlienSong = LoadMusicInstance ((RESOURCE)CommData.AlienSong);
+
 	CommData.ConversationPhrases = CaptureStringTable (
 			LoadStringTableInstance ((RESOURCE)CommData.ConversationPhrases)
 			);

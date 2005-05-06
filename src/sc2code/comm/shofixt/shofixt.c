@@ -35,6 +35,8 @@ static LOCDATA shofixti_desc =
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	SHOFIXTI_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	SHOFIXTI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	11, /* NumAnimations */
 	{

@@ -35,6 +35,8 @@ static LOCDATA supox_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	SUPOX_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	SUPOX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
 	{

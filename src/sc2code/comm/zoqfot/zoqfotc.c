@@ -52,6 +52,8 @@ static LOCDATA zoqfot_desc =
 	0, /* SIS_SCREEN_WIDTH, */ /* AlienTextWidth */
 	0, /* AlienColorMap */
 	ZOQFOTPIK_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	ZOQFOTPIK_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
 	{

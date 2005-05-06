@@ -35,6 +35,8 @@ static LOCDATA talkpet_desc =
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	(COLORMAP)TALKING_PET_COLOR_MAP, /* AlienColorMap */
 	TALKING_PET_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	TALKING_PET_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
 	{

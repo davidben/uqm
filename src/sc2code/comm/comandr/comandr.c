@@ -34,6 +34,8 @@ static LOCDATA commander_desc =
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	COMMANDER_COLOR_MAP, /* AlienColorMap */
 	COMMANDER_MUSIC, /* AlienSong */
+	0, /* AlienAltSong */
+	0, /* AlienSongFlags */
 	COMMANDER_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
 	{
