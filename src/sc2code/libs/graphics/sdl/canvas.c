@@ -1041,6 +1041,22 @@ TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
 }
 
 void
+TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, int *r, int *g, int *b)
+{
+	SDL_Surface* surf = (SDL_Surface *)canvas;
+	Uint8 ur, ug, ub;
+	Uint32 pixel;
+	GetPixelFn getpixel;
+
+	getpixel = getpixel_for(surf);
+	pixel = (*getpixel)(surf, x, y);
+	SDL_GetRGB (pixel, surf->format, &ur, &ug, &ub);
+	*r = ur;
+	*g = ug;
+	*b = ub;
+}
+
+void
 TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, EXTENT size)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;

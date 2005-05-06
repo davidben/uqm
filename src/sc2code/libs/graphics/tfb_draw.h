@@ -126,5 +126,6 @@ void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b,
 void TFB_DrawCanvas_Initialize (void);
 void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
 void* TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
+void TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, int *r, int *g, int *b);
 
 #endif
