@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Fixed potential crash with a truecolor oscilloscope image (thanks
+  jdorje) and made it generally more flexible (bug #729) -Alex
 - Added missing Tanaka battle portrait images (new artwork; oldcap) and
   minor fixes to other shofixti images (bug #183), from Nic
 - Mycon captain portrait finally fixed (bug #183), from Nic
