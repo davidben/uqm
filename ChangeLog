@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Added missing Tanaka battle portrait images (new artwork; oldcap) and
+  minor fixes to other shofixti images (bug #183), from Nic
 - Mycon captain portrait finally fixed (bug #183), from Nic
 - Saving the game while on autopilot inside an interplanetary system
   will no longer reset the autopilot (bug #725) -Alex
