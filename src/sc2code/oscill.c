@@ -37,11 +37,21 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
 	if (!scope_init)
 	{
 		TFB_Canvas scope_bg_canvas, scope_surf_canvas;
-		scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height,
-				scope_frame->image->Palette, -1);
+		if (TFB_DrawCanvas_IsPaletted (scope_frame->image->NormalImg))
+		{
+			scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height,
+					scope_frame->image->Palette, -1);
+			scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height,
+					scope_frame->image->Palette, -1);
+		}
+		else
+		{
+			scope_bg_canvas = TFB_DrawCanvas_New_ForScreen (width, height,
+					FALSE);
+			scope_surf_canvas = TFB_DrawCanvas_New_ForScreen (width, height,
+					FALSE);
+		}
 		scope_bg = TFB_DrawImage_New (scope_bg_canvas);
-		scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height,
-				scope_frame->image->Palette, -1);
 		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
 		TFB_DrawImage_Image (scope_frame->image, 0, 0, 0, NULL, scope_bg);
 		scope_init = 1;
@@ -81,9 +91,9 @@ Oscilloscope (DWORD grab_data)
 	if (GetSoundData (scope_data)) 
 	{
 		int i, r, g, b;		
-		r = scope_surf->Palette[238].r;
-		g = scope_surf->Palette[238].g;
-		b = scope_surf->Palette[238].b;
+		TFB_DrawCanvas_GetPixel (scope_bg->NormalImg,
+				scope_bg->extent.width / 2, scope_bg->extent.height / 2,
+				&r, &g, &b);
 		for (i = 0; i < RADAR_WIDTH - 3; ++i)
 			TFB_DrawImage_Line (i + 1, scope_data[i], i + 2,
 					scope_data[i + 1], r, g, b, scope_surf);
