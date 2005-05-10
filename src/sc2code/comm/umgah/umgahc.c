@@ -457,7 +457,7 @@ UmgahReward (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, owe_me_big_time))
 	{
-		NPCPhrase (GIVE_LIFEDATA);
+		NPCPhrase (THANKS);
 
 		GLOBAL_SIS (TotalBioMass) += 1000 / BIO_CREDIT_VALUE;
 		DISABLE_PHRASE (owe_me_big_time);
@@ -465,7 +465,7 @@ UmgahReward (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, our_largesse))
 	{
-		NPCPhrase (THANKS);
+		NPCPhrase (GIVE_LIFEDATA);
 
 		GLOBAL_SIS (TotalBioMass) += 1000 / BIO_CREDIT_VALUE;
 		DISABLE_PHRASE (our_largesse);
