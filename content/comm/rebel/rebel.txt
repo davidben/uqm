@@ -1,19 +1,19 @@
 #(REBEL_HELLO_1)	rebel000.ogg
-HOOT! Welcome to ye, human friend and ally!
-The revolution has begun and, BRAAK!... Clans flock to our cause!
+Welcome to ye, human friend and ally!
+The revolution has begun and clans flock to our cause!
 
 #(REBEL_HELLO_2)	rebel001.ogg
-Greetings friend from Earth, BRAAK!
+Greetings friend from Earth!
 The head of our revolution, Cheep-Guava, has led us to many great victories.
 We have cleaned the Royalist traitors from five star systems!
 
 #(REBEL_HELLO_3)	rebel002.ogg
-BRAAK! A greeting to ye, Captain!
-We hope yer battles have been fierce and yer enemies, HOOT!.. are left in ruin.
+A greeting to ye, Captain!
+We hope yer battles have been fierce and yer enemies are left in ruin.
 Now what can we be doing fer ye?
 
 #(REBEL_HELLO_4)	rebel003.ogg
-Hello Captain. What are you needing from us this day? BRAAK!
+Hello Captain. What are you needing from us this day?
 
 #(how_goes_revolution)
 How is the revolution going?
@@ -25,7 +25,7 @@ and even the Veep-Kreep Clan is joining with us against the false Queen!
 #(REBEL_REVOLUTION_2)	rebel005.ogg
 It is a sad thing, this battle that has pitched Clan against Clan, ship against ship
 I myself have sent three Royalist Terminators and their brave crew to the Great Beyond!
-AWK! What a waste.
+What a waste.
 We pray that the struggle ends quickly.
 
 #(REBEL_REVOLUTION_3)	rebel006.ogg
@@ -40,7 +40,7 @@ or perhaps the next.
 Do you have any ships available to join our fleet?
 
 #(NO_ROOM)	rebel008.ogg
-The question is moot, HOOT!... is it not, since ye have no room fer such ships in yer fleet.
+The question is moot, is it not, since ye have no room fer such ships in yer fleet?
 
 #(HAVE_ALL_SHIPS)	rebel009.ogg
 We are honored to help ye, Captain!
@@ -52,7 +52,7 @@ We shall provide ye with enough of our Terminator vessels to complete yer fleet.
 Fight well with them, Captain. They are our best and brightest.
 
 #(NO_SHIPS_YET)	rebel011.ogg
-AWK! Alas, as yet we have no ships which we can be making available to ye at this time.
+Alas, as yet we have no ships which we can be making available to ye at this time.
 However, if ye return at a later date, perhaps then we shall have something fer ye.
 
 #(give_info_rebels)
@@ -100,8 +100,8 @@ They make fer a tale, Captain, wrought with sadness... and heroism!... and betra
 After the Chenjesu, Mmrnmhrm and yer species were defeated
 We prepared a defense in the Shofixti homestar, Delta Gorno.
 Aside our Shofixti, our adopted children, we awaited the onslaught of the Ur-Quan armada.
-We waited with eagerness and the hot anticipation of battle!
-But then we received an unbelievable message from our Queen... retreat.
+We waited with eagerness, with the hot anticipation of battle!
+But then we received an unbelievable message from our Queen... `Retreat'.
 We could not believe it! Tactical withdrawals, yes... but to pull back the entire fleet?
 There was no mistake... no garbled orders.
 We obeyed.
@@ -112,7 +112,7 @@ When the Ur-Quan came, the Shofixti fought as immortal heroes!...
 darting in and out of the Dreadnought formations
 and then suddenly BLAZING!... like dying stars.
 But... in only a few hours... the Shofixti fleet was gone
-and the Dreadnoughts moved toward the homeworld.
+and the Dreadnoughts moved towards the homeworld.
 
 #(what_about_urquan)
 How were the Shofixti defeated?
@@ -124,7 +124,7 @@ Suddenly the screens flared and went black... burnt out! We ran to the windows
 just in time to see the Shofixti's sun burning with incredible light
 many orders of magnitude greater than its normal brilliance!
 A million tongues of fusion fire spread through the star system
-devastating the inner system planets, but incinerating ALL the Ur-Quan vessels!
+devastating the inner system's planets, but incinerating ALL the Ur-Quan vessels!
 In that moment, the Hierarchy's war fleet was reduced by almost thirty percent.
 We later remembered that not too many years before the appearance of the Ur-Quan
 the Shofixti had told us that they had found `something'.
@@ -134,11 +134,11 @@ Across its surface were a million characters scrawled in an alien script.
 The message was clear... DANGER! DO NOT TOUCH!
 We trusted the Shofixti to respect the warning, and left the device in their possession.
 At the end, when the Ur-Quan were approaching their planet
-the Shofixti must have realized they could not win
+the Shofixti must have realized that they could not win
 but at least they could insure that both sides would lose.
 They must have detonated the device in the outer layer of their sun.
 The sudden removal of a section of the sun's surface layers
-must have allowed the pressurized plasma from the interior to burst out
+allowed the pressurized plasma from the interior to burst out
 like a miniature super nova.
 
 #(what_about_vux)
@@ -167,8 +167,8 @@ When we were being Hierarchy battle slaves
 we learned that the Ur-Quan were possessing some kind of super-weapon
 a huge battleship they called `Sa-Matra' with the firepower to destroy an entire star fleet.
 For some reason, the Ur-Quan were reluctant to use the vessel.
-It wasn't until their armada was held back at the coreward front
-that they finally brought the Sa-Matra's power to bear on the Alliance.
+It wasn't until their armada was finally held back at the coreward front
+that they brought the Sa-Matra's power to bear on the Alliance.
 Captain, here's my advice... ye can be destroying Dreadnoughts until the breegs come home
 but ye are never going to defeat the Ur-Quan Hierarchy until ye eliminate their Sa-Matra.
 
@@ -192,30 +192,27 @@ We have pulled the Veep-Neep harpy Queen and her cronies from the High Perch!
 And better yet... we have found a new Queen!...
 ...A Queen who will unite the Clans in peace and harmony as never before!
 You will never guess who it is, Captain!
-A PKUNK!
-Yes! It is TRUE! They survived their absorption into our culture
+A PKUNK! Yes! It is TRUE!
+They survived their absorption into our culture
 and are now providing us with insights into ourselves we never dreamed of!
-We only THOUGHT we were happy being birds of prey! We were fooling ourselves!
+We only THOUGHT we were being happy birds of prey! We were fooling ourselves!
 Our new Queen's name is Braky Girdy the First!... and her first command
 was to rush here and bring ye these ships...Yehat Terminators and Pkunk Furies.
-Now, Captain, together we can attack the Sa-Matra! BRAAK! HOOT! HOOT!
+Now, Captain, together we can attack the Sa-Matra!
 
 #(what_about_pkunk_rebel)
 We have encountered an offshoot of your species, the Pkunk. Tell us about them.
 
 #(PKUNK_ABSORBED_REBEL)	rebel021.ogg
-The Pkunk have been absorbed. They are no more.
-This is how it should be.
-Now the matter is settled, human. Do not be bringing it up again... BRAAK!
+The Pkunk have been absorbed.
+They are no more. This is how it should be.
+Now the matter is settled, human. Do not be bringing it up again.
 
 #(HATE_PKUNK_REBEL)	rebel022.ogg
-BRAAAK! CLACK!! HISS!! CLACK!!
-The cowards live?!! HISS!! It is unbelievable!!
-AWK! It is a SAD, SAD day to be hearing this thing from ye, human.
-The P... the Pku... BRAK!! I canna even say their vile name!
+The cowards live?!! This is unbelievable!!
+It is a SAD, SAD day to be hearing this thing from ye, human.
+The P... the Pku... I canna even say their vile name!
 The Pku... PKU-NK! are the greatest embarrassment our species has ever suffered!
-Do not be calling these wretched creatures an offshoot of our species! BRAAK!
-Better it is that ye be calling them GARBAGE! or DROPPINGS!... or better yet
-do not be talking about them at all! CLACK!
-
-
+Do not be calling these wretched creatures an offshoot of our species!
+Better it is that ye be calling them GARBAGE! or DROPPINGS!
+Or better yet do not be talking about them at all!
