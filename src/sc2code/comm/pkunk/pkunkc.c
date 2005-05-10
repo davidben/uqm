@@ -276,11 +276,14 @@ DiscussConquer (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, conquer_because_1))
 	{
+#if 0
 		NPCPhrase (NOT_CONQUER_10);
 		NPCPhrase (GLOBAL_ALLIANCE_NAME + name_1);
 		NPCPhrase (NOT_CONQUER_11);
 		NPCPhrase (GLOBAL_ALLIANCE_NAME + name_1);
 		NPCPhrase (NOT_CONQUER_12);
+#endif
+		NPCPhrase (NOT_CONQUER_1);
 
 		DISABLE_PHRASE (conquer_because_1);
 	}
@@ -293,6 +296,7 @@ DiscussConquer (RESPONSE_REF R)
 
 	if (PHRASE_ENABLED (conquer_because_1))
 	{
+#if 0
 		UNICODE buf[80];
 
 		GetAllianceName (buf, name_1);
@@ -303,6 +307,8 @@ DiscussConquer (RESPONSE_REF R)
 				(RESPONSE_REF)-1
 				);
 		DoResponsePhrase (conquer_because_1, DiscussConquer, shared_phrase_buf);
+#endif
+		Response(conquer_because_1, DiscussConquer);
 	}
 	if (PHRASE_ENABLED (conquer_because_2))
 		Response (conquer_because_2, DiscussConquer);

@@ -100,9 +100,12 @@ enum
 	we_conquer,
 	WHY_CONQUER,
 	conquer_because_1,
+#if 0
 	NOT_CONQUER_10,
 	NOT_CONQUER_11,
 	NOT_CONQUER_12,
+#endif
+	NOT_CONQUER_1,
 	conquer_because_2,
 	NOT_CONQUER_2,
 	must_conquer,
