@@ -19,7 +19,7 @@ Tanaka
 Katana
 
 #(HOSTILE_KATANA_1)	shofi002.ogg
-I, Katana the Warrior, have travelled for long years through space to finally come home
+I, Katana the Warrior, have travelled for long years through space, finally to come home
 only to witness you blasting my brother to atoms!
 Now you die!
 
@@ -39,8 +39,8 @@ I swear by the hero, Daikon, this time I will kill you.
 #(HOSTILE_TANAKA_1)	shofi006.ogg
 Attention huge alien vessel!
 Though most of my sensory instruments are malfunctioning
-my mass indicator shows the huge size vessel
-revealing that you are none other
+my mass indicator shows the huge size of your vessel
+revealing you are none other
 than a disgusting Ur-Quan slimewad!
 I am the glorious Shofixti warrior Tanaka.
 You killed my father... my mother... my many brothers
@@ -50,9 +50,9 @@ Prepare to die!
 
 #(HOSTILE_TANAKA_2)	shofi007.ogg
 Ah, so the cowardly slug-spawn has returned!
-You were most fortunate last time, you hideous, pouchless freak
-but this time I shall surely destroy your vessel
-you slithering eater of putrid hairballs.
+You were most fortunate last time, you hideous, pouchless freak!
+But this time I shall surely destroy your vessel
+you slithering eater of putrid hairballs!
 
 #(HOSTILE_TANAKA_3)	shofi008.ogg
 I see you're back for even more humiliation, you flatulent, Ur-Quan pus-cup.
@@ -77,13 +77,14 @@ Don't attack -- we're not the Ur-Quan! We're your allies!
 
 #(TYPICAL_PLOY)	shofi014.ogg
 A typical Ur-Quan gambit... which has failed.
-And now I howl the scream of death -- Kyaiee!
+And now I howl the scream of death!
+Kyaiee!
 
 #(hey_stop)
 Hey, stop shooting! Someone could get hurt!
 
 #(ONLY_STOP)	shofi015.ogg
-I will only stop when you are dead.
+I will only stop when you are dead!
 Kyaiee!
 
 #(look_you_are)
@@ -97,7 +98,7 @@ Kyaiee!
 Don't you know the war is over?
 
 #(NEVER)	shofi017.ogg
-For me it will never be over.
+For me it will never be over!
 Kyaiee!
 
 #(look0)
@@ -106,7 +107,7 @@ Look
 , the war is over -- really!
 
 #(FOR_YOU)	shofi018.ogg
-For you perhaps, fat cowardly lard-log.
+For you perhaps, fat cowardly lard-log!
 Kyaiee!
 
 #(no_bloodshed)
@@ -121,19 +122,19 @@ Kyaiee!
 Gee, if that's the way you feel, then I'll be on my way.
 
 #(MUST_FIGHT_YOU_URQUAN_1)	shofi020.ogg
-Oh no you don't
+Oh no you don't!
 Kyaiee!
 
 #(MUST_FIGHT_YOU_URQUAN_2)	shofi021.ogg
-Oh no you don't
+Oh no you don't!
 Kyaiee!
 
 #(MUST_FIGHT_YOU_URQUAN_3)	shofi022.ogg
-Oh no you don't
+Oh no you don't!
 Kyaiee!
 
 #(MUST_FIGHT_YOU_URQUAN_4)	shofi023.ogg
-Oh no you don't
+Oh no you don't!
 Kyaiee!
 
 #(no_one_insults)
@@ -185,11 +186,11 @@ When you failed to launch fighter craft, I should have guessed.
 Just one of those mistakes you make in war...
 
 #(NICE_BUT_WHAT_IS_DONKEY)	shofi029.ogg
-Ah, Earth humor! Very funny . Ha-ha-ha!
+Ah, Earth humor! Very funny! Ha-ha-ha!
 But what is don...
 
 #(IS_DEFEAT_TRUE)	shofi030.ogg
-Suddenly your words ring in my ears...`the war is over.'
+Suddenly your words ring in my ears.
 Captain, is this true? Have the Ur-Quan been destroyed?
 Has the ultimate sacrifice of my people resulted in freedom for the Alliance?
 
@@ -204,8 +205,6 @@ Er... maybe we should talk about this later.
 
 #(VERY_SAD_KILL_SELF)	shofi031.ogg
 HYAIEEE!
-GYAIEEE!
-IEEE!
 I am a defeated warrior! A worthless shell!
 I must die!!!!
 
@@ -232,7 +231,7 @@ Like what?!
 My race is dead. My world is an airless rock. And I've seen all my FunRoms at least a hundred times.
 My life is over.
 I have already picked out a nice asteroid to smash into
-so if you don't mind, I'll just go destroy myself.
+so if you don't mind, I'll just go and kill myself.
 Unless you want to annihilate me yourself.
 
 #(go_ahead)
@@ -306,23 +305,24 @@ Where is your life-filled homeworld, Kyabetsu?
 #(BLEW_IT_UP)	shofi039.ogg
 My people blew up the sun, heh, heh, heh!
 Or at least they caused it to flare like a nova, destroying the many hundreds of
-Hierarchy vessels that had invaded our system to enslave the Shofixti.
+Hierarchy vessels that had invaded our system to enslave us Shofixti.
 
 #(how_survive)
 If your sun went nova, how did you survive?
 
 #(NOT_HERE)	shofi040.ogg
 I wasn't here when they made the sun flare.
-I was assigned to a Yahat squadron as a forward scout performing a deep recon in Mycon space.
+I was assigned to a Yehat squadron as a forward scout performing a deep recon in Mycon space.
 We were sent to investigate reports of unusual Mycon activity around Beta Brahe.
-I was the first ship to enter the system. My scanners showed a small fleet showed a
-small fleet of Mycon vessels clustered around the planet conducting a test of some a device.
-The unit was small, not even half the size of a ship. When the Mycon activated it
-a glow began radiating outward. I crept closer, to get a better look.
+I was the first ship to enter the system.
+My scanners showed a small fleet of Mycon clustered around the planet conducting a test of some device.
+The unit was small, not even half the size of my ship.
+When the Mycon activated it a glow began to radiate outward.
+I crept closer, to get a better look.
 Suddenly there was a flare, like a newborn sun, blinding me and overloading my sensors.
 When I recovered my vision, hours later, the Mycon and their device were gone.
-I was able to affect repairs to my ship and depart the systems but I had been
-cut off from my squadron, and had to travel home alone.
+I was able to affect repairs on my sensors and depart the system
+but I had been cut off from my squadron, and had to travel home alone.
 
 #(what_happened)
 So what happened to your ship?
@@ -335,7 +335,7 @@ I did find one thing interesting though as I skimmed through the edge of Yehat s
 I dropped into Zeta Sextantis to re-charge some of my depleted energy cells
 so I moved into the extreme inner system. There, right next to the sun
 I found a very strange planet... it messed up my sensors somehow
-that's why I couldn't recognize your ship at first.
+that's why I could not recognize your ship at first.
 I'd never seen a planet like that before, so maybe you should investigate?
 
 #(glory_device)
@@ -343,7 +343,7 @@ When we were fighting, why didn't you use your Glory Device?
 
 #(SWITCH_BROKE)	shofi042.ogg
 During my battle with the VUX, I decided to employ the weapon.
-I guess I used too much gusto
+But I guess I used too much gusto
 and the switch broke.
 
 #(bye)
@@ -352,24 +352,18 @@ Goodbye, Tanaka.
 #(GOODBYE)	shofi043.ogg
 Good hunting.
 
-#(FRIENDLY_HELLO0)	shofi044.ogg
-Greetings Captain 
-#(FRIENDLY_HELLO1)
-. It is good to see you and the 
-#(FRIENDLY_HELLO2)
- again.
+#(FRIENDLY_HELLO)	shofi044.ogg
+Greetings Captain. It is good to see you again.
 
 #(report0)
 What's your report 
 #(report1)
 ?
 
-#(NOTHING_NEW0)	shofi045.ogg
-Nothing new to report 
-#(NOTHING_NEW1)
-, sir.
+#(NOTHING_NEW)	shofi045.ogg
+Nothing new to report, sir.
 
-#(OUT_TAKES) shofi046.ogg
+#(OUT_TAKES)
 Ah, I see someone approaches, but who is it?
 Ho, ho! It is the creature which I wrongly called a disgusting Ur-Quan slimewad...
 ...and a cowardly slug-spawn...
