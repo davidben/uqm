@@ -34,15 +34,11 @@ Evil Dogar, Cruel Kazon! How Can We Be So Fortunate To Hear From You Again?
 We Pray Thee Gods, Forgive Us For Not Yet Beginning The Slaying Of The Thraddash.
 Quickly Now, I Must Rend Three Limbs From My Thorax As A Sign Of My Supplication.
 AIEE!
-AIEE!
-AIEE!
 It Is Done! Dogar And Kazon See My Fluids And Must Smile. I Am Happy!
 We Make All Haste, But Are Limited By The Speed Of Our Avenger Starcraft.
 We Know Our Pitiful Excuses Are Worthless...
 We Must Show Our Shame With The Removal Of Yet More Limbs.
-AIEE
-AIEE
-AIEE
+AIEE!
 
 #(GLORIOUS_WORSHIP) ilwra007.ogg
 Attend! The Cruel Twins Of Pain And Death Have Returned To Instruct Us!
@@ -72,7 +68,7 @@ Thus Was Our Gods' Arrival Foretold!
 
 #(JUST_GRUNTS) ilwra012.ogg
 What Is That? The Voices Of Our Gods Dogar And Kazon? Surely It Cannot Be!
-And Yet My Set Is Tuned To The Mystic 44 -- Who Else Can It Be?
+And Yet My Set Is Tuned To The Mystic 44 -- Who Else Could It Be?
 I Am Unworthy Of Such Attention As This!
 Dogar -- Kazon! Your Divine Words Will Surely Consume Me.
 I Beeseech Thee! Speak Directly To The Leaders At Homeworld!
@@ -101,7 +97,7 @@ For This We Thank You!
 We Shall Make Instant Obeisance, Divine Lords Of Darkness!
 Acolyte! Light The Candles Of Torment -- Quickly!
 No You Idiot! Not The White Ones...
-Use The Yellow And Red Ones We Made From The Prisoners Last Week, The Ones With The Lumps.
+Use The Yellow And Red Ones We Made From The Prisoners Last Week, The Ones With The Lumps. Yes, Yes!
 No Fool, Not Those! They Are Still Wet!
 
 #(WE_WORSHIP_3) ilwra017.ogg
@@ -112,7 +108,7 @@ This We Shall Do In Your Names!
 We Shall Bring Forth The Last Remaining Hu-Man Prisoner
 And Pull Its Head Apart Slowly, So That Its Cries Last For Hours.
 This We Shall Do In Your Names!
-We Shall Torment, Terrorize, Maim And Kill, Again, Again And AGAIN!
+We Shall Torment, Terrorize, Maim And Kill, Again, And Again, And AGAIN!
 This We Shall Do In Your Names!
 
 #(SUBSEQUENT_CHMMR_HELLO) ilwra018.ogg
@@ -163,7 +159,7 @@ And Now, YOU DIE!
 
 #(WHO_BLASTS_WHO) ilwra024.ogg
 I Have No Fear Of You, Feeble Mammal.
-Though My Ship Lacks A Functional Cloaking Device, And Many Of Our Crew Are Dead,
+Though My Ship Lacks A Functioning Cloaking Device, And Many Of Our Crew Are Dead,
 My Gods, Dogar The Black And Kazon The Unseen, Have Personally Confided To Me
 That They Despise You Hu-Mans, And That They Will Help Us To Kill You All!
 
@@ -188,7 +184,7 @@ Today, Hu-Man, Is Your Lucky Day!
 
 #(GENERAL_INFO) ilwra028.ogg
 Though Such Information Is Normally Holy And Secret,
-I Find I Am Unable To Contain Myself. Know This Fact, Hu-Man
+I Find I Am Unable To Contain Myself. Know This Fact
 You Are Hu-Man, Weak And Alone In This Universe With No Gods To Protect You.
 I Know This, Because The Only True Gods Are Our Own Ilwrath Deities, Dogar And Kazon!
 Dogar Is The Killer In A Black Cloak...
@@ -234,11 +230,10 @@ The Pkunk Are Unfit For OUR Sacramental Tortures!
 We Relish The Prospect Of Killing Worthy Prey!
 We Will Leave Immediately So That We Can Begin Our Glorious, Evil Devotions...
 But Who Shall We Prey Upon Next?
-Who Will Suffer Our Inspired Torment?
-Hmm
+Who Shall Suffer Our Inspired Torment?
+Hmm.
 Didn't Those Loathsome Umgah Once Mention A Race Near Their Region Of Space?
-Hmm
-YES! I Have It! The THRADDASH!
+Hmm... YES! I Have It! The THRADDASH!
 We Will Go NOW, And Kill All Of Them!
 
 #(GOODBYE_GODS) ilwra035.ogg
@@ -252,7 +247,7 @@ The Hu-Man Dies With Such Agony That It Cannot Help But Please
 Dogar And Kazon.
 
 #(SUBSEQUENT_HELLO_SPACE_1) ilwra037.ogg
-What Is It? Mmmm, Hu-Man! It Has Been Long Since I Have Seen A Hu-Man Die! 
+What Is It? Mmmm, Hu-Man! It Has Been So Long Since I Have Seen A Hu-Man Die!
 We Will Bet On How Many Parts We Can Remove Before It Stops Making Noise!
 Now, You Space-Ship Captain, Begin The Expedient Transfer Of All Hu-Man Crew
 So That We May Waste No Time.
@@ -269,7 +264,7 @@ Rejoice! The Duo Of Deception Shall Receive Their Supplication.
 #(SUBSEQUENT_HELLO_SPACE_3) ilwra039.ogg
 Your Fortuitous Arrival Bodes Well For Our Ceremony Of Consumption!
 The Hu-Man Must Prepare: It Must Perform A Complete Depilation,
-And Then Anoint Its Surface With The Larval Paste Of Our Stillborn Offspring.
+Then Anoint Its Surface With The Larval Paste Of Our Stillborn Offspring.
 At The Altar Of The Duo Of Darkness We Suck The Bony Strength From The Fleshy Weakness
 While The Hu-Man Squeals For Either Dogar Or Kazon!
 Hu-Man, Listen Closely To These Words
@@ -309,17 +304,16 @@ Else, You Will Bless The Altar Of Consumption With Your Ceremonial Blood!
 #(GENERAL_INFO_SPACE_4) ilwra044.ogg
 In The Brief Golden Moment - During The War With Your Alliance -
 We Ilwrath Enjoyed Unequaled Merriment And Festivities.
-So Much Blood And Lymph Fluid -- Ecstasy!
+So Much Blood And Lymph Fluid!
 Then, After The Ur-Quan Made Your Kind Fallow Slaves,
 We Were Forced To Use Species Indigenous To Our Planet For Amusement.
 We Lived A Pleasant Existence Until A Scandal Rocked The Ilwrath!
 The Grah -- Our Favorite Species To Torment, Which We Carefully Maintained At The Brink Of Extinction,
 Had Been Completely Consumed!
 A Bureaucratic Error Was To Blame.
-Quality Death Became Rare. Our Highly Advanced Civilization Began To Show Signs Of
-Degeneracy.
+Quality Death Became Rare. Our Highly Advanced Civilization Began To Show Signs Of Degeneracy.
 In Our Moment Of Need, We Prayed To The Mighty Duo For Direction,  And They Answered.
-`Go Forth', They Said. `Seek The Bird Beings.
+`Go Forth. Seek The Bird Beings.
 Pluck Them Slowly. Eviscerate Their Gasping Husks. Let Dogar And Kazon Drink Their Death And Pain!'
 We Went Forth And We Found The Pkunk, But Hu-Man, Now We Are Supremely Joyful...
 Because You Die So Much Better!
@@ -331,7 +325,7 @@ And Spit Your Thin Soul Onto The Ninth Mountain Of Hell.
 Therefore We Shall Simply Cut You Up And Feed You To The Pets.
 
 #(STRENGTH_NOT_ALL) ilwra046.ogg
-Ha Foolish Flesh Sac, Your Obsession With Strength Spells Your Doom. 
+Ha! Foolish Flesh Sac, Your Obsession With Strength Spells Your Doom.
 Only Through Enlightenment Achieved With Diligent Ritual Worship Of The Twins Of Darkness
 Can A Being Truly Be Victorious!
 Death, No Matter What The Source, Feeds The Wicked Pair.
@@ -384,7 +378,7 @@ From That Moment On, The Directives And Philosophies Of Dogar And Kazon
 Are Manifested By The Hatchling.
 
 #(KILLED_GOOD_GODS) ilwra054.ogg
-During The Dark Ages, Yes, We Were Confused By The Many Gods.
+During The Dark Ages, We Were Confused By The Many Gods.
 There Were Dozens Of Deities Ranging From Zith Of The Pelt
 To Awk Of The Seds.
 It Was Only Through The Careful Formation Of A Priestly Ruling Body
@@ -393,13 +387,13 @@ This New Priestly Cabal Revealed That We Must Discard All Other Gods
 Be They Of Hearth Or Flowing Web.
 Only The Priests Were Capable Of Interpreting The Will Of The Gods.
 Their Order Refined Our Worship Until We Could Do No Better.
-Specifically, All Heretics Were To Be Eaten,
+All Heretics Were To Be Eaten,
 And All Possessions Were To Be Delivered To The Holy Sites
 Or The Priestly Dwellings.
 
 #(CHANNEL_44) ilwra055.ogg
 The Deific Duo Broadcast On Channel 44. Their Words Of Wisdom Are
-Available To All And The Instructions Are Carried Out To The Best Of Our
+Available To All And Their Instructions Are Carried Out To The Best Of Our
 Mortal Ability. We Know That We Are Pleasing The Gods Because They
 No Longer Find It Necessary To Guide Us. In The Past, The Dark Twins
 Were Compelled To Direct Us Almost Daily, But Now Have Received No
@@ -408,28 +402,27 @@ Channel Should Dogar And Kazon Choose To Be Heard.
 
 #(BECAUSE_44) ilwra056.ogg
 They Do It For Us.
-First, They Clear The Channel Of Messy Static And
-Interference. Second, It Made It Easy For Us To Properly Identify What
-Might Be Mistaken For Mad Rambling As The Sacred Words. You See,
-Dogar Possesses 44 Eyes That See Into The 44 Planes Of Existence And
-Each Of Kazon's 44 Sub-Tongues Is Made Up Of 44 Plump, Writhing
-Cilia. Besides, They Knew We Were 'Captain Satellite' Viewers.
+First, They Clear The Channel Of Messy Static And Interference.
+Second, It Made It Easy For Us To Properly Identify
+What Might Be Mistaken For Mad Rambling As The Sacred Words.
+You See, Dogar Possesses 44 Eyes That See Into The 44 Planes Of Existence
+And Each Of Kazon's 44 Sub-Tongues Is Made Up Of 44 Plump, Writhing Cilia.
+Besides, They Knew We Were 'Captain Satellite' Viewers.
 
 #(WHAT_ABOUT_ILWRATH) ilwra057.ogg
-Yes, Your Interest Is Not Unusual. It Is Through The Omniscient Guidance
-Of Our Mighty Lords Of Darkness That We Have Achieved This State Of
-Near Perfection. We Will Dispel Your Ignorance Concerning The First
-Child Species Of The Unmerciful Dogar And Kazon.
+Your Interest Is Not Unusual. It Is Through The Omniscient Guidance
+Of Our Mighty Lords Of Darkness That We Have Achieved This State Of Near Perfection.
+We Will Dispel Your Ignorance Concerning The First Child Species
+Of The Unmerciful Dogar And Kazon.
 
 #(ABOUT_PHYSIO) ilwra058.ogg
-Yes, Our Striking Appearance Only Hints At The True Strength That
-Resides Inside. Coursing Through Our Thorax Are The Fluids Of Life. 
-Like Yourselves, If We Leak In Excess, We Will Satiate The Sacrificial
-Needs Of Dogar And Kazon. Our Mandibles Allow Us To Communicate,
-Take Sustenance, And Deliver Pain. The Appendages You See Here
-Allow Us To Manipulate Our Technologies And Will Regenerate When
-Damaged Or Lost As Often Happens In Many Of The Rituals Of Pain. Our
-Sensory Cluster Lets Us Monitor The Whim And Will Of The Deadly Duo
+Yes, Our Striking Appearance Only Hints At The True Strength That Resides Inside.
+Coursing Through Our Thorax Are The Fluids Of Life.
+Like Yourselves, If We Leak In Excess, We Will Satiate The Sacrificial Needs Of Dogar And Kazon.
+Our Mandibles Allow Us To Communicate, Take Sustenance, And Deliver Pain.
+The Appendages You See Here Allow Us To Manipulate Our Technologies
+And Will Regenerate When Damaged Or Lost As Often Happens In Many Of The Rituals Of Pain.
+Our Sensory Cluster Lets Us Monitor The Whim And Will Of The Deadly Duo
 In The Complex Sequence Of Events That Leads Us All To Death.
 
 #(ABOUT_HISTORY) ilwra059.ogg
@@ -447,8 +440,8 @@ We Honored The Wishes Of The Soft And Merciful Ur-Quan And Stopped Eating You Hu
 To Continue Our Festive Ceremonies Of Death We Began Employing Our Native Species For Ceremony.
 Things Seemed To Be Going Well Until We Accidentally Exhausted Our Supply Of All These Life Forms.
 We Became Distraught And Called To Our Gods For Guidance!
-Then, Eight Years Ago, Dogar And Kazon Responded To Our Wails Of
-Dismay By Directing Us To Devour Feathered Bird Beings-The Pkunk!
+Then, Eight Years Ago, Dogar And Kazon Responded To Our Wails Of Dismay
+By Directing Us To Devour Feathered Bird Beings-The Pkunk!
 We Now Penetrate Deeply Into Their Home Space!
 When We Complete Our Mission Of Genocide
 We Are Certain That We Will Once Again Hear From Dogar And Kazon.
@@ -465,11 +458,11 @@ How Can They Help But Notice The Scream Caused By The Mangled Nervous Tissue?
 #(ABOUT_URQUAN) ilwra061.ogg
 The Ur-Quan Are But The Instruments Of Dogar And Kazon, Even Though They May Not Admit To It.
 This Is Because It Was The Evil Twins That Had Them Assist Us With Their Technologies And Resources.
-Their Soft Merciful Nature Sickens Both Gods But They See The Potential That The Ur-Quan Possess.
+Their Soft, Merciful Nature Sickens Both Gods But They See The Potential That The Ur-Quan Possess.
 If You Doubt This Statement, Notice That The Ur-Quan Dreadnought Is Staffed With 42 Crew Members.
 Since Dogar And Kazon Exhibit The Quality Of Omnipresence
 The Total Crew Complement Is Actually At The Auspicious Count Of 44!
-That The Ur-Quan Are But Instruments Of The Dark Twins Of Death Is A Foregone Conclusion.
+That The Ur-Quan Are But Instruments Of The Dark Twins Is A Foregone Conclusion.
 
 #(URQUAN_TOO_NICE) ilwra062.ogg
 Simply Put, The Ur-Quan Are Far Too Kind To Please Dogar And Kazon.
@@ -496,9 +489,8 @@ Evil Is Doing Things That Make Others Hurt Or Fear.
 We ALL Do That, Of Course.
 But Since We ALL Do Such Things, As Sanctioned By Our Culture,
 It Would Be `Bad' To Do Otherwise.
-Which Means...
-Er... 
-Puny Hu-Man, Do Not Play With Words! You Anger Both Dogar And Kazon! Now You Must Die!
+Which Means...  Er...  Er...
+Blasphemer! Do Not Play With Words! You Anger Both Dogar And Kazon! Now You Must Die!
 
 #(ON_WAY_TO_THRADDASH) ilwra065.ogg
 Begone Hu-Mans!

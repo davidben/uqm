@@ -3,8 +3,10 @@ WAIT!... a spirit voice rings within my soul
 it tells me that I must give you something
 something to aid you on your noble quest!
 What, spirit? What must we give this young human?
-Mineral resources?... no. Important secrets?... no. Starships?...
-no. Then what IS it spirit, spit it out!
+Mineral resources?... no.
+Important secrets?... no.
+Starships?...  no.
+Then what IS it spirit, spit it out!
 What?!... that thing? Are you sure? Okay.
 Here you go, Captain. Take this Clear Spindle.
 It is an ancient and powerful device built by the Precursors hundreds of thousands of years ago.
@@ -28,8 +30,8 @@ The Empire of
 #(NEUTRAL_SPACE_HELLO_1)	pkunk001.ogg
 Welcome to our home stars. We are the Pkunk. Pkunk we are.
 Seekers of the deepest truths, askers of interesting and significant questions.
-Even now a question of great transcendental significance comes unbidden to our minds.
-Who are you and what do you want?'
+Even now a question of great transcendental significance comes unbidden to our minds:
+`Who are you and what do you want?'
 
 #(NEUTRAL_SPACE_HELLO_3)	pkunk002.ogg
 Greetings and various apropos felicitations!  We are Pkunk.
@@ -39,11 +41,10 @@ purveyors of blissful love, birdlike manifestations of glorious light energies f
 How about yourselves?
 
 #(NEUTRAL_SPACE_HELLO_2)	pkunk003.ogg
-Do not be frightened.  We are powerful creatures, yes
-but we could not hurt you anymore than we could squish the helpless Pootworm.
+Do not be frightened.  We are powerful creatures, yes,
+but we could not hurt you any more than we could squish the helpless Pootworm.
 We love the Pootworm.  We are one with the Pootworm.  We are one with you.
-Of course you realize that this means you are one with the Pootworm.
-Rejoice!!
+Of course you realize this means you are one with the Pootworm. Rejoice!!
 To be one with the Pootworm is to be alive, and why not be alive?
 Is that not what living is for?
 
@@ -59,37 +60,37 @@ Go. Go now, young one. Go quickly!
 
 #(FRIENDLY_SPACE_HELLO_1)	pkunk005.ogg
 Whoopdy Dee and Trolly Bazoo!  What a good day I am having.
-First, my nest mate surprises me with extra fat and spicy grubs for earlymeal
-and then I am complimented on my fine display of ceremonial tongs.
+First, my nest mate surprises me with extra fat and spicy grubs for earlymeal.
+Then I am complimented on my fine display of ceremonial tongs.
 To top it off, I encounter the human friend, loved by all Pkunk.
 Can things get any better?
 
 #(FRIENDLY_SPACE_HELLO_2)	pkunk006.ogg
 The stars are in auspicious alignment, the various significant moons
-are in the correct houses, and ambient psychic energies are in
-balance. All is well, and the universe is at peace.  Well, actually 2/3
-of our civilization has been decimated by the Ilwrath, but besides
-that, all is well.  It is good to see you again.
+are in the correct houses, and ambient psychic energies are in balance.
+All is well, and the universe is at peace.
+Well, actually 2/3 of our civilization has been decimated by the Ilwrath
+but besides that, all is well.  It is good to see you again.
 
 #(FRIENDLY_SPACE_HELLO_3)	pkunk007.ogg
-Human!  I was just thinking of you! Ah, but I see you are not
-surprised, and why should you be? Amazing psychic occurences are
-commonplace for us Pkunk.  I am filled with love at the sight of you.
-Perhaps we can converse together, or just coexist for a few special
-moments.
+Human!  I was just thinking of you!
+Ah, but I see you are not surprised, and why should you be?
+Amazing psychic occurences are commonplace for us Pkunk.
+I am filled with love at the sight of you.
+Perhaps we can converse together, or just coexist for a few special moments.
 
 #(FRIENDLY_SPACE_HELLO_4)	pkunk008.ogg
-So fledgling, you have returned for your spiritual training. You seek
-to be as we Pkunk are.  An admirable if somewhat naive goal.
-Of course, as a loving parent I must push you from the nest.  Try as
-you might to cling to the side, I must step on your fingers and kick
-you over the edge.  Ah but I cannot.  I see those sad Human eyes,
-and I must give in.  My love gushes forth.
+So fledgling, you have returned for your spiritual training.
+You seek to be as we Pkunk are.  An admirable if somewhat naive goal.
+Of course, as a loving parent I must push you from the nest.
+Try as you might to cling to the side, I must step on your fingers and kick you over the edge.
+Ah, but I cannot.  I see those sad Human eyes, and I must give in.
+My love gushes forth.
 
 #(FRIENDLY_SPACE_HELLO_5)	pkunk009.ogg
 Ah, Captain human! I was hoping you would return. I have great news!
 Were you aware that in one of your previous lives, you were Duke Franz Ferdinand?
-It's true! And before that, you were the Egyptian god-pharoah Atum-ta, the sixth?
+It's true! And before that, you were the Egyptian god-pharoah Atum-ta, the sixth!
 This is amazing, Captain, just fantastic. Imagine, having been so many important people!
 Well, to be frank, your case is not all that unusual.
 It just so happens that almost everyone's past lives were as famous, rich or interesting people.
@@ -118,13 +119,14 @@ Auspicious portents and serendipitous omens have foretold your arrival.
 Welcome alien guest to the home of the gentle and playful Pkunk
 Children of the Cosmic Light
 Hobgoblins of Joy
-Seekers of Spiritual Truth...
-... and other neat stuff like that.
+Seekers of Spiritual Truth
+and other neat stuff like that.
 
 #(NEUTRAL_HOMEWORLD_HELLO_2)	pkunk014.ogg
-Oh jubilation and moderate amounts of spiritual-type ecstasy, our sensitive
-friend and intimate soulmate has returned to our homeworld, bringing with
-him his most beautiful aura and radiant smile. How do you fare, Captain?
+Oh jubilation and moderate amounts of spiritual-type ecstasy!
+Our sensitive friend and intimate soulmate has returned to our homeworld,
+bringing with him his most beautiful aura and radiant smile.
+How do you fare, Captain?
 
 #(NEUTRAL_HOMEWORLD_HELLO_3)	pkunk015.ogg
 Hello human! We are warm and fuzzy with the news of your return.
@@ -135,16 +137,16 @@ Hello human! We are warm and fuzzy with the news of your return.
 What wisdom do you seek today?
 
 #(FRIENDLY_HOMEWORLD_HELLO_1)	pkunk017.ogg
-Captain. We have been expecting you, of course. In fact, you are here because
-we wished you to be here. By channeling our psychic energies through
-a transdimensional flux inducer, we are able to affect the low frequency
-stream of a soul particle such as yourself, and direct its course.
+Captain. We have been expecting you, of course.
+In fact, you are here because we wished you to be here.
+By channeling our psychic energies through a transdimensional flux inducer
+we are able to affect the low frequency stream of a soul particle such as yourself, and direct its course.
 The only thing is, we can't remember why we brought you here.
 
 #(FRIENDLY_HOMEWORLD_HELLO_2)	pkunk018.ogg
-Welcome back, Captain, to our humble planet. It is good, once again, to merge our
-chakras with the totality of your spiritual essence. We speak, of course,
-metaphorically. How can we best be of aid to you?
+Welcome back, Captain, to our humble planet.
+It is good, once again, to merge our chakras with the totality of your spiritual essence.
+We speak, of course, metaphorically. How can we best be of aid to you?
 
 #(FRIENDLY_HOMEWORLD_HELLO_3)	pkunk019.ogg
 Hello human! We are warm and fuzzy with the news of your return.
@@ -177,9 +179,9 @@ We are seekers of truth. Enlighten us!
 Since you are a perceptive individual, you have noticed that we are physiologically similar to the Yehat.
 This relationship is not coincidence, for indeed in the Harmonic Realm of Creation, there IS no coincidence.
 To be more specific, we are an off-shoot of the Yehat species
- -- a peaceful, empathic off-shoot! --
+ -- a peaceful, empathetic off-shoot! --
 which fractured from the Yehat race early in its Space Age.
-You see, we create Peace...Tranquility... and Harmony
+You see, we create Peace, Tranquility and Harmony
 whereas, the Yehat are birds of prey
 who live in a constant balance of terror with their fellow creatures.
 
@@ -196,7 +198,7 @@ Over many long years, we have investigated the mysteries of the Universe
 the powers of crystal energy
 regression into past lives
 the truth behind crop circles
-and in doing so we have been Transformed!
+and how to keep largely free of lice and other annoying parasites that tend to get into your feathers.
 
 #(GENERAL_INFO_NEUTRAL_4)	pkunk028.ogg
 You may wonder about our name... Pkunk.
@@ -236,26 +238,26 @@ We Pkunk, having risen to the ninty-ninth psychic plane, plus a tad
 are far beyond trapping our spiritual needs with crude matter.
 
 #(SENSE_KOHRAH_VICTORY)	pkunk033.ogg
-Before we proceed Captain, I must speak. Many of my people have not been
-sleeping well these past few nights. In fact, I myself did not sleep well last
-night. Well, actually I slept okay in the first part of the night, and then had
-a little trouble a little later on, maybe halfway through, until I got up and
-had something to eat. Anyway, the reason we're not sleeping is because of a
-dream. Yes, a dream. We have seen that in the center of this region of space,
-near stars that form the shape of a cup, and are in a constellation that begins
-with the letter C and ends with the letter S, and whose letters rearranged
-spell Asteric, two great armadas fight. One of black ships, the other of green.
-Our dream tells us that if the black ships should win this fight, they will
-destroy all life in this region. Captain, they are winning now. If there is
-anything you can do to stop them, you must do it... please! Okay, that's all I
-wanted to say.
+Before we proceed Captain, I must speak.
+Many of my people have not been sleeping well these past few nights.
+In fact, I myself did not sleep well last night.
+Well, actually I slept okay in the first part of the night, and then had a little trouble a little later on
+maybe halfway through, until I got up and had something to eat.
+Anyway, the reason we're not sleeping is because of a dream. Yes, a dream.
+We have seen that in the center of this region of space, near stars that form the shape of a cup
+and are in a constellation that begins with the letter C and ends with the letter S
+and whose letters rearranged spell `Asteric', two great armadas fight.
+One of black ships, the other of green.
+Our dream tells us that if the black ships should win this fight, they will destroy all life in this region.
+Captain, they are winning now. If there is anything you can do to stop them you must do it... please!
+Okay, that's all I wanted to say.
 
 #(SPIRITUAL_PROBLEMS_1)	pkunk034.ogg
 We welcome you to our space, perversely misguided spirits of hostile intent that you are.
 Perhaps it is simply that your species does not comprehend such subtle concepts
 as the unification of the inner self child with the universal love stream.
 So sad.
-Perhaps if we put it in terms you could understand
+Perhaps if we put it in terms you could understand:
 Killing bad, bad.
 Is that better?
 
@@ -302,7 +304,7 @@ I shall be in my chambers, recuperating.
 Yes. Yes. This is just as it was foretold.
 You will now open fire on our peaceful, and all but harmless ship
 missing us by 2.7 of your metric units.
-We will then regrettably but efficiently destroy you and continue on our way.
+We will then regrettably, but efficiently, destroy you and continue on our way.
 Ah, but perhaps you are alarmed by our prescience.
 Yes. Sometimes it amazes even us Pkunk.
 
@@ -355,7 +357,7 @@ I have no patience for this absurd idiocy. Prepare yourselves for battle!
 #(VERY_WELL)	pkunk050.ogg
 So, you choose the dark path.
 I am saddened, and yet I feel a certain exhilaration, for with your destruction
-the universe will be a better place, and it will be I who cause the change.
+the universe will be a better place, and it will be I who caused the change.
 
 #(why_insults)
 Just tell me one thing.  Why do you transmit insults during the course of a battle?
@@ -381,36 +383,37 @@ Suddenly I find myself very curious about your species.
 You are right. Perhaps we should be friends after all. Please forgive my past actions.
 
 #(YES_FRIENDS)	pkunk053.ogg
-Forgive? We Pkunk are hardly in a position to forgive. We ourselves are but
-spiritual wayfarers on the road to perfection. Admittedly, we are approaching
-the end of the road, while you are still leaving the driveway -- but we are all
-travellers together.
+Forgive? We Pkunk are hardly in a position to forgive.
+We ourselves are but spiritual wayfarers on the road to perfection.
+Admittedly, we are approaching the end of the road, while you are still leaving the driveway
+but we are all travellers together.
 
 #(try_to_be_nicer)
 Well, I feel pretty bad about killing you guys and stuff. I'll try not to blow up any more of your ships.
 
 #(CANT_ASK_FOR_MORE)	pkunk054.ogg
-That's all anyone can do... try. We absolve you of your past wrong-doings.
-And please, do not thank us. We have taken pity on you and helped you to change
-your inner self because we have chosen to heal ourselves and we are you and you
-are us, therefore we help only those who heal themselves, and are thereby
-helping others. You see?
+That's all anyone can do... try. We absolve you of all your past wrong-doings.
+And please, do not thank us.
+We have taken pity on you and helped you to change your inner self because we have chosen to heal ourselves
+and we are you and you are us, therefore we help only those who heal themselves, and are thereby helping others.
+You see?
 
 #(VISIT_OUR_HOMEWORLD)	pkunk055.ogg
 If you wish our assistance, you should consult with our wise ones
 at our homeworld. Its coordinates are 52.2, 52.5.
 
 #(CAN_BE_FRIENDS)	pkunk056.ogg
-Now that we've cleared the air and can completely trust each other, we'll just
-tell you where our home planet is located. It is the first planet in the Gamma
-Krueger system, located at 52.2 : 52.5 on the standard HyperSpace starmap. Ah,
-now that feels so much better, doesn't it, friend?
+Now that we've cleared the air and can completely trust each other
+we'll just tell you where our home planet is located.
+It is the first planet in the Gamma Krueger system, located at 52.2, 52.5 on the standard HyperSpace starmap.
+Ah, now that feels so much better, doesn't it, friend?
 
 #(bye_angry)
 Hello! Is anybody in there? You are a sentient species aren't you? Oh forget it. I'm leaving.
 
 #(GOODBYE_ANGRY)	pkunk057.ogg
-GOODBYE ANGRY
+Violent fool! Begone!
+My feathers are ruffled! Away!
 
 #(we_conquer)
 Avast! Delinquent Alien Birds. You are now being conquered. Submit!
@@ -420,14 +423,12 @@ Ah. Yes. Well. At least you are honest.
 Uh, excuse me if I may be so bold, but exactly why do you want to conquer us?
 
 #(conquer_because_1)
-I conquer for the greater glory of 
+I conquer for the greater glory of the human race!
 
-#(NOT_CONQUER_10)	pkunk059.ogg
-Did you say the 
-#(NOT_CONQUER_11)
-?  We Pkunk have long loved the 
-#(NOT_CONQUER_12)
-. It's our favorite alliance!
+#(NOT_CONQUER_1)	pkunk059.ogg
+Did you say the humans?
+We Pkunk have long loved the humans!
+Why they're our favorite, uh... non-feathered friends!
 
 #(conquer_because_2)
 It is regrettable, but your resources are needed to fight the war against the Ur-Quan
@@ -451,7 +452,7 @@ I turned to my first officer, Chrupp, and said
 `Chrupp, would you just look at that creature's aura! It's magnificent!'
 `the soft blues... the gentle greens... the unusual shades of chartreuse and ocher!'
 `This human must be on the side of Truth and Light, Chrupp, he must!'
-And then Chrupp said, `Just in case, I am raising shields and warming up the guns.'
+And then Chrupp said, `Just in case, I am raising the shields and warming up the guns.'
 I don't think Chrupp likes you, Captain.
 
 #(we_are_vindicator0)
@@ -488,16 +489,17 @@ I have come to ask you for your help in the fight against the Ur-Quan.
 The fight.  Always the fight.  We Pkunk are Yin and you are Yang.
 I suppose the problem is that the Ur-Quan are a little more Yang than you are.
 Well, be that as it may, we are sympathetic to your concerns.
-We were not always the mystical, aloof and yet caring, enlightened beings that we are now.
+We were not always the mystical, aloof -- and yet caring -- enlightened beings that we are now.
+If need be, we can still kick some serious butt!
 
 #(exploring_universe)
 We are on a five year mission, to seek out new life and new civilizations to boldly go where no.....well you get the idea.  We're kind of exploring.
 
 #(SENSE_DEEPER_CONFLICT)	pkunk066.ogg
 I sense a deeper reason, a deeper conflict.
-A conflict of immense proportion, a proportion of deeper reason.
-A deeper thing that is not too terribly deep.
-A conflicting deeper thing.......uh, I'm not really sure what I sense.
+A conflict of immense proportion, a proportion of... deeper reason.
+A deeper thing that is... not too terribly deep.
+A conflicting deeper thing... uh, I'm not really sure what I sense.
 Are you sure there isn't something you want to say to me?
 
 #(fun_cruise)
@@ -505,8 +507,10 @@ Oh ....uh, no reason.  We thought we'd just take this baby out for a little crui
 
 #(REPRESS)	pkunk067.ogg
 My telepathic sensors are telling me that you are repressing something.
-Repress, repress, repress.  What is is?  Come on.  What is it?  I see a smile.
-You're smiling.  Tell Pkunky the secret.  Come on, nasty alien gonna tell Birdy Pkunky big secret?
+Repress, repress, repress.  What is it?  Come on.
+What is it?  I see a smile.
+You're smiling.  Tell Pkunky the secret.
+Come on, nasty alien gonna tell Birdy Pkunky big secret?
 
 #(why_ilwrath_fight)
 This is just my impression, but they seem rather hostile. Why is that?
@@ -543,7 +547,7 @@ How are you faring in the fight against them?
 We have calculated that at our present rate of attrition
 we will exist only on the spiritual plane in a matter of a year or so.
 Of course, the physical realm does hold a certain coarse attraction
-a material type quaintness, if you will.
+a material quaintness, if you will.
 We will be somewhat disappointed to have to leave it.
 
 #(how_goes_war)
@@ -552,17 +556,17 @@ Do you have any helpful advice for me?
 
 #(WAR_GOES_1)	pkunk071.ogg
 Well, not advice exactly, but I can offer you plenty of moral support.
-Also, I can tell you about another dream.  Yes, perhaps I will tell you
-about my dream.  In this dream there was a small creature, fragile
-and weak.  Above it loomed a much larger creature, dark and
-foreboding.  The large creature was preparing to take the smaller one
-into its slavering jaws, when the little one looked up and said,
+Also, I can tell you about another dream.  Yes, perhaps I will tell you about my dream.
+In this dream there was a small creature, fragile and weak.
+Above it loomed a much larger creature, dark and foreboding.
+The large creature was preparing to take the smaller one into its slavering jaws
+when the little one looked up and said,
 `Hold!  Why do you do this!  What you are doing is wrong!'
 This made the large creature pause, while it pondered the question.
 Then I woke up, and I'm not sure if the little creature got eaten or not.
 Come to think of it, it really wasn't much of a dream.
 I would have much preferred Awkky Birdy's dream.
-Anyway just thought I would tell you about that.
+Anyway, just thought I would tell you about that.
 
 #(WAR_GOES_2)	pkunk072.ogg
 I can only tell you to contemplate the small gobbet stone.
@@ -620,8 +624,7 @@ or the 7 dimensions of psychic beings.
 It was not until Weeny Wikki Beeki Birdi sat on the mystical egg of Icelike Temperature
 and gave the Original Squawk
 `Rup-Rup-Rup-BGAK!'
-that our transformation began.
-It was the Squawk
+that our transformation began.  It was the Squawk
 `Rup-Rup-Rup-BGAK!'
 that triggered the Harmonic Oscillations that would lead us to become the enlightened avians that we are.
 
@@ -645,9 +648,8 @@ Just off the top of my beak, I suppose I would say
 that our culture could be defined as the ultimate unification
 or Oneness if you will
 of the extradimensional convergent-chakra being-energies
-to form a togetherness self which both is
-and is not
-a culmination of the now essence.
+to form a togetherness self
+which both is and is not a culmination of the now essence.
 
 #(elaborate_culture)
 Do you refer to the Now Essence as an extension of the Cosmic Whole, or as a subset of the totality of Oneness?
@@ -655,7 +657,7 @@ Do you refer to the Now Essence as an extension of the Cosmic Whole, or as a sub
 #(OK_ELABORATE_CULTURE)	pkunk080.ogg
 An excellent question. The answer is in itself, an answer, containing the explanation you seek.
 And more!
-Let me just say the revelation includes the mysteries of Pyramid Power
+Let me say the revelation includes the mysteries of Pyramid Power
 which is merely a subset of the greater and more general Pointy Power.
 UFO's and FO's are significant, but their role should not be overplayed.
 I'm sorry, but I can be no more specific than that.
@@ -681,9 +683,9 @@ Yes, you are right. I should be careful not to overwhelm you with my psychic int
 Perhaps we could talk something less overwhelming, albeit less interesting.
 
 #(ABOUT_US)	pkunk083.ogg
-Not at all, we are after all a fascinating species. Of course, modesty prevents
-me from talking at length, although perhaps if you were to ask me specific
-questions, propriety might be better served.
+Not at all, we are after all a fascinating species.
+Of course, modesty prevents me from talking at length
+although perhaps if you were to ask me specific questions, propriety might be better served.
 
 #(where_fleet_1)
 Where are all your ships?
@@ -709,10 +711,12 @@ from joining our long-lost Yehat brothers and sisters.
 This time we shall not fail.
 
 #(RETURNING_FROM_YEHAT_1)	pkunk087.ogg
-RETURNING FROM YEHAT 1
+We have consulted with our inner chickadees, and must hurry home.
+Farewell, somehwat-enlightened mammal.
 
 #(RETURNING_FROM_YEHAT_2)	pkunk088.ogg
-RETURNING FROM YEHAT 2
+We must make haste, Captain!
+To the nest!  The nest!
 
 #(am_worried_1)
 Frankly, Pkunk, I believe the Yehat will barbecue your peaceful crusaders. Recall them, please!
@@ -751,7 +755,7 @@ We are friendly beings who seek to establish friendly relations with your specie
 #(GO_TO_HOMEWORLD)	pkunk092.ogg
 Although we Pkunk have no rank, no pecking order, no arbitrary scheme of dominance
 we do recognize that some of the souls in this universe have lived many lives
-while others are but spiritual tyros.
+while others are but spiritual chickadees.
 I, Captain, have lived thirty-eight lives
 a paltry number compared to those wise and ancient souls who guide our race.
 You must consult them, Captain. They will help you to understand yourself
@@ -787,8 +791,8 @@ Duty calls. I must go now.
 
 #(NEUTRAL_GOODBYE_SPACE)	pkunk096.ogg
 Yes, by all means, if duty is calling. I'm sure we'll see each other again.
-Perhaps when the stars are aligned in an appropriate configuration. Yes, my
-inner voice is telling me that is correct. When the stars align, Captain...
+Perhaps when the stars are aligned in an appropriate configuration.
+Yes, my inner voice is telling me that is correct. When the stars align, Captain...
 
 #(SHIP_GIFT)	pkunk097.ogg
 Since you are our friends
@@ -815,21 +819,23 @@ Farewell kind human. Return soon.
 
 #(ALMOST_ALLIANCE)	pkunk101.ogg
 Let us unite and form an alliance!!
-We will provide you with all of the crew, ships, and resources that you desire.
-We will give you.....wait!  I sense that you are offended by our crass material offer.
+We will provide you with all of the crew, ships, and resources you desire.
+We will give you.....wait!
+I sense that you are offended by our crass material offer.
 Yes, I am ashamed.  Any war mongering species could offer this... we are Pkunk!...Children of the Stellar Breeze!
-We shall give you what all others could not! The greatest of gifts!  We shall give you our love.
+We shall give you what all others could not! The greatest of gifts!
+We shall give you our love.
 Ah, you are speechless.  Do not talk now.  I can feel the energy connecting us.
 Let us part while the silence remains. Farewell...
 
 #(INIT_NO_ROOM)	pkunk102.ogg
-but wait!  before we go, we would give you a small token of our love
+But wait!  Before we go, we would give you a small token of our love,
 4 of our meager ships, fully crewed
 but alas, you do not possess sufficient room in your fleet for all of the ships we wish to give you.
 Ah, well. Such are the vagaries of life...
 
 #(INIT_SHIP_GIFT)	pkunk103.ogg
-but wait!  before we go, as a small token of our love
+But wait!  Before we go, as a small token of our love,
 not as a material gift, mind you, we give you 4 of our meager ships, fully crewed.
 Good luck!
 
@@ -861,7 +867,7 @@ waiting for you at our homeworld.  Use them in good health, and with love.
 Ahh, vague omens and mysterious portents.  Tangled webs of fate
 intertwined with the branches of destiny, blown by the capricious winds of happenstance.
 News, news....uh, actually there is some news!
-It so happens that it has come to our attention that Dogar and Kazon
+It just so happens that it has come to our attention that Dogar and Kazon
 the two gods of the Ilwrath, may actually be a hoax.
 We don't know who this hoax would have been perpetrated by
 but it seems someone has used these fictitious gods
@@ -874,7 +880,8 @@ we also recently went back and listened carefully to a recording of one of their
 which was sent to the Ilwrath on HyperWave channel 44.
 We were able to detect some giggling at the end of the message.
 Someone out there is playing some kind of joke on the Ilwrath. Or is it a joke on us?
-We're not quite sure, but it may be awhile before we can look back and fully appreciate the humor.
+We're not quite sure, but what with all the vaporized planets and total carnage
+it may be a while before we can look back and fully appreciate the humor.
 
 #(GENERAL_INFO_SPACE_3)	pkunk109.ogg
 News? Here is news.  Did you know that the lovely clear spindle which we gave you
@@ -888,7 +895,7 @@ We hope you like it.
 I believe we may have mentioned that the clear spindle thing-a-ma-jig
 has two other pieces that fit together with it.
 Just the other day one of our psychics, while in the Trance of Plam Prikky
-cried out the location of one of these curious alien widgy whatsits.
+cried out the location of one of these curious alien widgy-whatsits.
 Perhaps you are interested.  Just before she fainted she said
 `A Sphere of Rosy Color, a Ball of Red
 grasped by the greedy hands of a Foul Race deep in Persei. The sphere waits.
@@ -911,8 +918,7 @@ Quite a dream, eh?
 #(GENERAL_INFO_SPACE_6)	pkunk112.ogg
 Yes.  We have good news!  Well, that is to say, we have no news.
 But it is good news.
-Hmmmmm.
-This is your expression, human Captain. We Pkunk do not pretend to understand it.
+Hmmmmm. This is your expression, human Captain. We Pkunk do not pretend to understand it.
 
 #(GENERAL_INFO_SPACE_7)	pkunk113.ogg
 I am afraid that our good, no-news is still the same.
@@ -933,7 +939,8 @@ called ArilouLaleelay, or LalilouArilay, or LoopylooHappyday, or something like 
 Also I sense that you will have 14 children, and die at an early age.
 
 #(FORTUNE_IS_2)	pkunk116.ogg
-Let me call upon the spirits of light. Spirits of Light! Hellooo!
+Let me call upon the spirits of light.
+Spirits of Light! Hellooo!
 Spirits!! Ah yes, I feel them approaching. Spirits of Liiiight
 what is in store for this strange but not altogether unpleasing alien creature?....
 The Spirits now speak through me - I gaze with a strange intensity
@@ -969,9 +976,9 @@ As a matter of fact, our last successful contact with the world beyond
 was when my cousin Braky channeled an angry 5000 year-old warrior named Rumdumdaddy.
 He explained that the spirits have been so busy answering summonings
 pushing around the little Ouija thingies and acting as guides to Astral travellers
-that they havn't had a speck of time to themselves.
+that they haven't had a speck of time to themselves.
 Through Braky's voice, Rumdumdaddy complained that we should all be more respectful of the dead
-and stop hassling them all the time, just leave them alone.
+and stop hassling them all the time, and just leave them alone.
 Ever since then, we can't get squat out of the spirit world.
 
 #(FORTUNE_IS_6)	pkunk120.ogg
@@ -987,7 +994,7 @@ Sorry.
 #(FORTUNE_IS_8)	pkunk122.ogg
 We have exhausted our capacity to foretell your future, Captain. Sorry.
 
-#(OUT_TAKES) pkunk124.ogg
+#(OUT_TAKES)
 Ah, a final parting with our favorite seeker of enlightenment... how sad.
 But wait! This doesn't have to be the end!
 We have established a conduit from the reams of our Harmonic Awareness directly to you!

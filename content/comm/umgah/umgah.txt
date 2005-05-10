@@ -2,12 +2,12 @@
 Why HELLO human Earthling! Har! Har! Har!
 Must say, your appearance here comes as quite surprise to us!
 We never expected to see any of you ever again
-after Ur-Quan masters put your species under slave shield!
+after our Ur-Quan masters put your species under slave shield!
 
 #(HWLD_PRE_ZOMBIE_HELLO_2)	umgah001.ogg
 Hey look everybody! Human Earthling came back!
-Har! Har! Har! Wonder if we'll kill him this time?
-Har! Har! Har! 
+Har! Har! Har! Say, I wonder we'll kill him this time?
+Har! Har! Har!
 
 #(HWLD_PRE_ZOMBIE_HELLO_3)	umgah002.ogg
 You're back? Har! Har! Har! More fun! More fun!
@@ -16,7 +16,7 @@ You're back? Har! Har! Har! More fun! More fun!
 Howdy human Earthling! Back for more fun?
 
 #(SPACE_PRE_ZOMBIE_HELLO_1)	umgah004.ogg
-Well bloat my belly! It a human Earthling!
+Well bloat my belly! It's a human Earthling!
 Har! Har! Har! Haven't seen a human Earthling since... since
 why heck! NEVER seen a human Earthling!
 What coincidence!
@@ -25,35 +25,35 @@ What coincidence!
 Hi there human! How old fluid sacks today?
 What?! You don't HAVE fluid sacks?
 Har! Har! Har! What do you call your mate then?!! Har! Har! Har!...
-you don't HAVE mate?
+you don't HAVE a mate?
 THAT'S EVEN FUNNIER! Har! Har! Har!
 
 #(SPACE_PRE_ZOMBIE_HELLO_3)	umgah006.ogg
 Hi there, human Earthling! What'cha here for today?
-What? Can't quite hear you? You have to speak up!
+What? Can't quite hear you? You'll have to speak up!
 Hey! What problem here?
 Human Earthling making fun of me?
 THIS SOME KIND OF STUPID HUMAN EARTHLING TRICK? BECAUSE IF IS
 Har! Har! Har!... fooled ya, didn't I?
 
 #(SPACE_PRE_ZOMBIE_HELLO_4)	umgah007.ogg
-Yo! Human Earthling! What up?!
+Yo! Human Earthling! What up?!  Har! Har! Har!
 
 #(UNKNOWN_ZOMBIE_HELLO_1)	umgah008.ogg
 HELLO. HUMAN. EARTHLING.
-HAR.
+HAR.  HAR.  HAR.
 
 #(UNKNOWN_ZOMBIE_HELLO_2)	umgah009.ogg
 HAPPY. GREETINGS. AND. WELCOME. EARTHLING. HUMAN.
-HAR.
+HAR.  HAR.  HAR.
 
 #(UNKNOWN_ZOMBIE_HELLO_3)	umgah010.ogg
 WHAT. SO. FUNNY. HUMAN. EARTHLING. YOUR. FACE. FUNNY. THING.
-HAR.
+HAR.  HAR.  HAR.
 
 #(UNKNOWN_ZOMBIE_HELLO_4)	umgah011.ogg
 WE. FUNNY. UMGAH. SO. FUNNY.
-HAR.
+HAR.  HAR.  HAR.
 
 #(DESTROY_INTERFERER_1)	umgah012.ogg
 THE. HUMAN. INTERFERES. WITH. PLAN.
@@ -90,12 +90,12 @@ Har! Har! Har! We pretty crazy blobbies, no?!
 #(HOSTILE_HELLO_2)	umgah021.ogg
 Well pop my pupae! It human Earthling again!
 It just doesn't learn, does it? To Arms! To Arms!... wait a minute! Don't HAVE any arms!
-AIEE!! MY ARMS!! WHO HAS STOLEN MY ARMS!!! AIEEE!! ARM THIEF!!!
+AIEE!! MY ARMS!! MY ARMS!! WHO HAS STOLEN MY ARMS!!! AIEEE!! ARM THIEF!!!
 Har! Har! Har!... Never HAD any arms! Har! Har! Har!
 
 #(HOSTILE_HELLO_3)	umgah022.ogg
-Look, we all decided that our treating you this way
-and by that mean, attacking you without mercy all time
+Look, we all decided that our treating you this way,
+attacking you without mercy all time,
 well, we decided that it just plain unfair.
 REALLY, after all things you've done for our people!
 So we decided to make you our honorary KING! Congratulations!
@@ -112,7 +112,6 @@ Hurray! Hurray! It human Earthling! Our Savior!!
 Oh hurry, human Earthling, HURRY! Your reward awaits at our homeworld!
 In case you have forgotten, that at Beta Orionis!
 Hurry, human Earthling, HURRY!
-(Har! Har! Har!)
 
 #(REWARD_AT_HOMEWORLD_2)	umgah025.ogg
 Hust! Hust! You must make haste, human Earthling!
@@ -159,9 +158,9 @@ Vigorous esters?... no, too common.
 HAVE IT! HAVE IT! GENETIC MODIFICATION!! YES! IT PERFECT GIFT!!
 Listen human Earthling! We add some extra eyes! A few tentacles!
 Other organs of whatever size and shape you desire!!
-What?! You not want more organs?... How strange... how sad.
+What?! You not want more organs?... You sure?... How strange... how sad.
 This was best gift. We Umgah have nothing but vast supply of biological skills and data.
-Huh? What did you say?
+Huh? What you say?
 You want Biological Data?! Just plain raw Biological Data?
 What you do with it?
 Oh, well, you Hero. Whatever you want, you get.
@@ -170,18 +169,18 @@ Oh, well, you Hero. Whatever you want, you get.
 So how did that Talking Pet get control of your species?
 
 #(TRICK_URQUAN)	umgah029.ogg
-Well Ariloulaleelay, who kind of our neighbors, gave us Talking Pet
+Ah, well Arilou Lalee'lay, who kind of our neighbors, gave us Talking Pet
 hoping we could heal it more severe injuries, which we did.
 While we working on it, we do routine brain structure scan
-and discovered that creature had extemely sophisticated set of neural pathways
+and discovered that creature have extemely sophisticated set of neural pathways
 even more complex than own!
 Further analysis showed that with minor genetic manipulations
 Talking Pet intelligence greatly expanded, perhaps even to sentience!
 Little did know what monster we creating.
-Only a few hours after injected nanots with modification program, creature wakes up.
+Only few hours after injected nanots with modification program, creature wakes up.
 Almost immediately, took control of Hospital... then city... then whole planet.
-We try to resist, but creature, even in a drugged, weakened state, too strong.
-From that day on, we just mindless slaves who lived only serve Talking Pet, and `Big Plan'.
+We try to resist, but creature, even in drugged, weakened state, too strong.
+From that day on, we just mindless slaves who live only serve Talking Pet, and `Big Plan'.
 What `Big Plan'?
 We never quite sure about details of `Big Plan', except it involved getting revenge
 and mean LOTS of revenge...
@@ -213,7 +212,7 @@ Hmmm... as general rule, corpses aren't too much fun.
 When we were first starting to mess with its brain
 our intention to get it smart enough to accept orders from us
 and then repeat them as though they legitimate Ur-Quan commands.
-Har! Har! Har! We going to play a little joke this way!
+Har! Har! Har! Har! We going to play little joke this way!
 We going to use Talking Pet to order Spathi to attack VUX!
 Har! Har Har! That been great! ZAP! ZAP! KABOOM!!! Har! Har! Har!...
 ...even better than old Dogar and Kazon routine we pull on Ilwrath few years back
@@ -226,10 +225,10 @@ So, since I'm your Great Hero Guy, tell me all your secrets.
 Secrets, huh? You want secrets? OUR SECRETS!? YOU MADE FATAL MISTAKE, HUMAN!!
 ... Har! Har! Har! Good joke, eh? Scared you!
 Sure! We'll tell our secrets. Now let me see... what ARE secrets?
-Oh, yeah!... remember! It about Mycons!
+Oh, yes!... remember! It about Mycons!
 You see, Mycons only other race we know of
 that have same kind of biotechincal skills as Umgah.
-But amazing thing that they do all with their own bodies, don't need tools.
+But amazing thing, they do all with their own bodies, don't need tools.
 They just THINK genetic modification, and it happen!
 We found that pretty hard understand, so when nobody looking, we clonk one on head
 bring it back here to homeworld and slice it up for detailed study.
@@ -239,7 +238,7 @@ We don't know who made them or for what purpose
 but they WAY beyond anything we ever heard of.
 We not figure out much more before tissue samples all gross
 so guess that pretty much all of big secret.
-Oh... do us a favor? Please not tell anybody about clonking Mycon.
+Oh... do us favor? Please not tell anybody about clonking Mycon.
 It kind of against Ur-Quan Laws, and not want get Mycons mad at us.
 
 #(bye_post_zombie)
@@ -249,9 +248,8 @@ Well, your Great Hero must leave now, but rest assured, I'll be back.
 You know, Great Hero... I getting this funny feeling.
 Would like to know what feeling is? Good, I tell you.
 My feeling that Great Hero stuff... well, boring... not funny at all.
-You only say HAIL! HAIL! HAIL! so many times before starts to lose appeal
-so
-instituting slight deviation in course of our relationship.
+You only say HAIL! HAIL! HAIL! so many times before starts to lose appeal,
+so... instituting slight deviation in course of our relationship.
 Specifically, instead of being dull and lifeless Great Hero
 you now glamorous and exciting... Great Enemy!
 We give you some our Drone ships to make even more interesting!
@@ -264,7 +262,7 @@ Umgah! Reveal your secrets!
 #(GENERAL_INFO_PRE_ZOMBIE)	umgah035.ogg
 Okay, since you ask so nicely, we will tell you a thing or two.
 For instance, did know that even now we performing surgery on Talking Pet?
-Arilou found it alone and dying in wreck of Ur-Quan Dreadnought on Alpha Pavonis .
+Arilou found it alone and dying in wreck of Ur-Quan Dreadnought on Alpha Pavonis.
 They couldn't heal so they brought to us.
 We discovered that animal has potential for high intelligence
 provided we make few minor genetic modifications.
@@ -289,7 +287,6 @@ Look, I know we've had our differences in the past, but can't we be friends?
 Sure! Sure! Friends for sure!
 Who cares about boring old Ur-Quan and their slave laws? Har! Har! Har!
 Here we come to say hello to new friends!
-(Har! Har! Har!)
 
 #(want_to_defeat_urquan)
 Here's our credo: Freedom from Ur-Quan! What do you say?
@@ -297,7 +294,7 @@ Here's our credo: Freedom from Ur-Quan! What do you say?
 #(FINE_BY_US)	umgah039.ogg
 Har! Har! Har! Freedom very good thing!
 It so much easier to make good jokes without boring old Ur-Quan slave laws!
-We wanting to pull a real good one on those stupid nosers from Draconis for long time
+We wanting to pull real good one on those stupid nosers from Draconis for long time
 but since they battle thralls too, we not allowed do even small pranks on them
 like, say... dropping planetoid in their ocean.
 Big waves! Big waves! Har! Har! Har!
@@ -390,6 +387,7 @@ JOKE. YES. JOKE. HERE. IS. JOKE.
 WHEN. IS. A. SLAVE. NOT. A. SLAVE.
 ANSWER.
 WHEN. HE. IS. A. SLAVE. MASTER.
+HAR.  HAR.  HAR.
 
 #(better_joke)
 Uh... that wasn't very funny. Can't you do better?
@@ -400,6 +398,7 @@ WHAT. YOU. GET. WHEN. COMBINE. DEUTERIUM. PELLET. TERAWATT. LASER.
 AND. PRIMITIVE. EARTH. LEADER. FROM. ASIAN. STEPPES.
 ANSWER.
 KHAN. FUSION.
+HAR.  HAR.  HAR.
 
 #(not_very_funny)
 Ugh! That wasn't a very good joke either. I don't think you guys are very funny.

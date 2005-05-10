@@ -1,7 +1,7 @@
 #(TELL_US_ABOUT_WORLD)	mycon000.ogg
 Your suggestion is appropriate.
 Acceptable new worlds are a priority for the rapid and complete spread of Juffo-Wup.
-We wish to know more for suitability assessment.
+We wish to know more for our suitability assessment.
 Tell us of this world.
 
 #(BYE_AND_DIE_HOMEWORLD)	mycon001.ogg
@@ -10,15 +10,16 @@ We will now remove this clog.
 We will now aid Juffo-Wup by eliminating you!
 
 #(RAMBLE_1)	mycon002.ogg
-A single spore lands, finds nourishment in decay and attains maturity..
-In turn it exhales a cloud of life, a thousand spores land... so progresses Juffo-Wup.
+A single spore lands, finds nourishment in decay and soon attains maturity..
+In turn it exhales a cloud of new life, a thousand spores, each lands, finds nourishment in decay
+so progresses Juffo-Wup.
 
 #(RAMBLE_2)	mycon003.ogg
 Our bodies seethe with the passion of our genes.
 A thousand of your species do not possess the richness in one of my cells.
 
 #(RAMBLE_3)	mycon004.ogg
-I fill with my parents parents parents parents parents parents parents
+I fill with my parents parents parents parents parents
 I am they -- they are us. Then, and now.
 
 #(RAMBLE_4)	mycon005.ogg
@@ -108,7 +109,7 @@ to learn the weakness that will allow us to Void the Non.
 
 #(RAMBLE_23)	mycon024.ogg
 At times, I meet another, who shares with me the life of parent inside the mind
-and if we speak this fragment is predominant in the both of us
+and if we speak this fragment becomes predominant in the both of us
 self meets self with occasionally enlightening results.
 
 #(RAMBLE_24)	mycon025.ogg
@@ -125,7 +126,7 @@ The tough casing warms as it passes through the atmosphere, glowing white as it 
 solid rock flows like liquid, and the child slips into the warm, safe depths beneath the crust.
 
 #(RAMBLE_26)	mycon027.ogg
-`...look... think... act... look... learn... remember... teach...look... think...'
+`...look... think... act... look... learn... remember... teach... repeat...'
 
 #(RAMBLE_27)	mycon028.ogg
 The implantation fleet has assembled in orbit above the green world
@@ -141,7 +142,7 @@ I do not know how.
 
 #(RAMBLE_29)	mycon030.ogg
 When Juffo-Wup is complete
-when at last there is no Void or Non
+when at last there is no Void, no Non
 when the Creators return
 then we can finally rest.
 
@@ -150,7 +151,7 @@ Darkness is Void
 Juffo-Wup is light.
 
 #(RAMBLE_31)	mycon032.ogg
-`... planetary transformer biot 94-18: take your place at the dais...'
+`... planetary transformer biot 94-18: take your place at the transporter dais...'
 
 #(RAMBLE_32)	mycon033.ogg
 You are the Non. You must go now, and never return.
@@ -241,7 +242,7 @@ Mycon. Please try to understand. We wish peace between our peoples.
 
 #(HELLO_HOMEWORLD_1)	mycon035.ogg
 Juffo-Wup is All... omni-existent, spreading and changing the Non into Juffo-Wup.
-You are the Non, who must become Juffo-Wup or Void.
+You are Non, who must become Juffo-Wup or Void.
 We are the agents of Juffo-Wup.
 We are the Mycon.
 
@@ -383,11 +384,11 @@ However, Juffo-Wup is inevitable.  The Deep Children WILL be born.
 
 #(DIE_THIEF)	mycon062.ogg
 You have taken something from us which we value... which is important to Juffo-Wup.
-Return the Solar Manipulator.
+Return the Solar Manipulator immediately.
 
 #(DIE_THIEF_AGAIN)	mycon063.ogg
 You have taken something from us which we value... which is important to Juffo-Wup.
-Return the Solar Manipulator.
+Return the Solar Manipulator immediately.
 
 #(GOODBYE_AND_DIE)	mycon064.ogg
 Juffo-Wup is All
