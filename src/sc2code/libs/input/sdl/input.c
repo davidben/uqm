@@ -237,6 +237,7 @@ ProcessInputEvent(const SDL_Event *Event)
 {
 	if (!InputInitialized)
 		return;
+	ProcessMouseEvent (Event);
 	if (!_in_character_mode)
 	{
 		VControl_HandleEvent (Event);
@@ -262,6 +263,25 @@ ProcessInputEvent(const SDL_Event *Event)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
 	}
 }
+
+volatile int MouseButtonDown = 0;
+
+void
+ProcessMouseEvent (SDL_Event *e)
+{
+	switch (e->type)
+	{
+	case SDL_MOUSEBUTTONDOWN:
+		MouseButtonDown = 1;
+		break;
+	case SDL_MOUSEBUTTONUP:
+		MouseButtonDown = 0;
+		break;
+	default:
+		break;
+	}
+}
+
 
 void
 TFB_ResetControls (void)

@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Attempting to click the screen pops up an error message, from
+  Nic, heavily modified (dodge on #533) -Michael
 - Fixed potential crash with a truecolor oscilloscope image (thanks
   jdorje) and made it generally more flexible (bug #729) -Alex
 - Added missing Tanaka battle portrait images (new artwork; oldcap) and

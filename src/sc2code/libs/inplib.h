@@ -73,6 +73,8 @@ extern void MoveMouse (SWORD x, SWORD y);
 extern BYTE LocateMouse (PSWORD px, PSWORD py);
 */
 
+extern volatile int MouseButtonDown;
+
 /* Functions for dealing with Character Mode */
 
 void EnableCharacterMode (void);

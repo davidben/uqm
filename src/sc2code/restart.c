@@ -36,7 +36,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
-
 //Added by Chris
 
 void FreeHyperData (void);
@@ -121,6 +120,7 @@ DWORD InTime;
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
+	extern void MouseError (void);
 	static DWORD InactTimeOut;
 
 	/* Cancel any presses of the Pause key. */
@@ -161,7 +161,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 	}
 	else if (!(PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN] ||
 			PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT] ||
-			PulsedInputState.key[KEY_MENU_SELECT]))
+			PulsedInputState.key[KEY_MENU_SELECT] || MouseButtonDown))
 
 	{
 		if (GetTimeCounter () - InTime < InactTimeOut)
@@ -243,6 +243,23 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 			UnbatchGraphics ();
 			pMS->CurState = NewState;
 		}
+	}
+
+	if (MouseButtonDown)
+	{
+		LockMutex (GraphicsLock);
+		SetFlashRect (NULL_PTR, (FRAME)0);
+		UnlockMutex (GraphicsLock);
+		MouseError ();
+		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);	
+		InTime = GetTimeCounter ();
+		SetTransitionSource (NULL);
+		BatchGraphics ();
+		DrawRestartMenuGraphic (pMS);
+		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
+		ScreenTransition (3, NULL);
+		UnbatchGraphics ();
+		return TRUE;
 	}
 
 	InTime = GetTimeCounter ();
@@ -346,7 +363,7 @@ LastActivity = WON_LAST_BATTLE;
 			SetFlashRect ((PRECT)0, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 			DestroyDrawable (ReleaseDrawable (MenuState.CurFrame));
-			
+
 			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
 				goto TimedOut;
 
