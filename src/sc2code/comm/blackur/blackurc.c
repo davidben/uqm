@@ -198,8 +198,9 @@ CombatIsInevitable (RESPONSE_REF R)
 				NPCPhrase (PLEADING_IS_USELESS_2);
 				break;
 			case 2:
-				NPCPhrase (PLEADING_IS_USELESS_3);
-				break;
+				// This response disabled due to lack of a speech file.
+				// NPCPhrase (PLEADING_IS_USELESS_3);
+				// break;
 			case 3:
 				NPCPhrase (PLEADING_IS_USELESS_4);
 				--NumVisits;
@@ -421,8 +422,9 @@ DieHuman (RESPONSE_REF R)
 			Response (plead_2, CombatIsInevitable);
 			break;
 		case 2:
-			Response (plead_3, CombatIsInevitable);
-			break;
+			// This response disabled due to lack of a speech file.
+			// Response (plead_3, CombatIsInevitable);
+			// break;
 		case 3:
 			Response (plead_4, CombatIsInevitable);
 			break;
