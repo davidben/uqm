@@ -509,6 +509,14 @@ stdio_openEntries(uio_PDirHandle *pDirHandle) {
 	result = stdio_EntriesIterator_new(dirHandle);
 	result->status = readdir_r(dirHandle, result->direntBuffer,
 			&result->entry);
+#ifndef WIN32
+#	ifdef DEBUG
+	if (result->status != 0) {
+		fprintf(stderr, "Warning: readdir_r() failed: %s\n",
+				strerror(result->status));
+	}
+#	endif
+#endif
 	return result;
 }
 #endif
@@ -577,7 +585,7 @@ stdio_readEntries(stdio_EntriesIterator **iteratorPtr,
 #ifndef WIN32
 #	ifdef DEBUG
 	if (iterator->status != 0) {
-		fprintf(stderr, "Warning: readdir() failed: %s\n",
+		fprintf(stderr, "Warning: readdir_r() failed: %s\n",
 				strerror(iterator->status));
 	}
 #	endif
