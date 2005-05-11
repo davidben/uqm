@@ -19,6 +19,11 @@
 char *strupr (char *str);
 #endif
 
+#ifndef HAVE_READDIR_R
+#	include <dirent.h>
+int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
+#endif
+
 
 // Compilation related
 #ifdef _MSC_VER

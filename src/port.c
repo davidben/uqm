@@ -21,8 +21,12 @@
  */
 
 #include <ctype.h>
+#include "errno.h"
 #include <stdlib.h>
 #include <string.h>
+#ifndef HAVE_READDIR_R
+#	include <dirent.h>
+#endif
 #include "port.h"
 
 #ifndef HAVE_STRUPR
@@ -75,6 +79,33 @@ setenv (const char *name, const char *value, int overwrite)
 	strcpy (ptr, value);
 	
 	return putenv (string);
+}
+#endif
+
+#ifndef HAVE_READDIR_R
+// NB. This function calls readdir() directly, and as such has the same
+//     reentrance issues as that function. For the purposes of UQM it will
+//     do though.
+//     Note the POSIX requires that "The pointer returned by readdir()
+//     points to data which may be overwritten by another call to
+//     readdir( ) on the same directory stream. This data is not
+//     overwritten by another call to readdir() on a different directory
+//     stream."
+// NB. This function makes an extra copy of the dirent and will hence be
+//     slower than a direct call to readdir() or readdir_r().
+int
+readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result) {
+	struct dirent *readdir_entry;
+
+	readdir_entry = readdir(dirp);
+	if (readdir_entry == NULL) {
+		*result = NULL;
+		return errno;
+	}
+
+	*entry = *readdir_entry;
+	*result = entry;
+	return 0;
 }
 #endif
 
