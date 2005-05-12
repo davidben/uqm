@@ -70,10 +70,8 @@ typedef short gid_t;
 #endif
 
 // Some types
-#ifdef WIN32
-typedef int ssize_t;
-#endif
 #ifdef _MSC_VER
+typedef int ssize_t;
 typedef unsigned short mode_t;
 #endif
 
