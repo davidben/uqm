@@ -232,6 +232,25 @@ GetCharacter (void)
 	return result;
 }	
 
+volatile int MouseButtonDown = 0;
+
+void
+ProcessMouseEvent (const SDL_Event *e)
+{
+	switch (e->type)
+	{
+	case SDL_MOUSEBUTTONDOWN:
+		MouseButtonDown = 1;
+		break;
+	case SDL_MOUSEBUTTONUP:
+		MouseButtonDown = 0;
+		break;
+	default:
+		break;
+	}
+}
+
+
 void
 ProcessInputEvent(const SDL_Event *Event)
 {
@@ -263,25 +282,6 @@ ProcessInputEvent(const SDL_Event *Event)
 			kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
 	}
 }
-
-volatile int MouseButtonDown = 0;
-
-void
-ProcessMouseEvent (SDL_Event *e)
-{
-	switch (e->type)
-	{
-	case SDL_MOUSEBUTTONDOWN:
-		MouseButtonDown = 1;
-		break;
-	case SDL_MOUSEBUTTONUP:
-		MouseButtonDown = 0;
-		break;
-	default:
-		break;
-	}
-}
-
 
 void
 TFB_ResetControls (void)
