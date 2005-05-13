@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- Improvements to the unix build system for cross-compilation - SvdB
+- Do not define ssize_t for MinGW. - SvdB
+- Fallback readdir_r() - SvdB
 - Attempting to click the screen pops up an error message, from
   Nic, heavily modified (dodge on #533) -Michael
 - Fixed potential crash with a truecolor oscilloscope image (thanks
