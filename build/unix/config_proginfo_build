@@ -1,0 +1,132 @@
+# Set information on used programs and libraries
+# This file contains the information for the programs that test the
+# system on which the software is built.
+# Copyright (c) 2002 Serge van den Boom
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+##############################################################################
+# Describe the programs (possibly) used:                                     #
+##############################################################################
+
+
+### gcc ###
+PROG_gcc_NAME="GNU C compiler"
+PROG_gcc_FILE="gcc"
+PROG_gcc_ACTION=""
+PROG_gcc_VERSION='$(gcc --version)'
+
+
+### sed ###
+PROG_sed_NAME="Sed stream editor"
+PROG_sed_FILE="sed"
+PROG_sed_ACTION=""
+PROG_sed_VERSION=''
+
+
+### echo -n ###
+PROG_echon_NAME="'echo -n' capable echo"
+PROG_echon_FILE=""
+PROG_echon_ACTION=""
+PROG_echon_VERSION=''
+PROG_echon_DETECT="echon_detect"
+echon_detect() {
+	local TEST LOCATIONS LOCATION
+	
+	# Default echo (probably builtin)
+	TEST=`echo -n X`
+	if [ "$TEST" = X ]; then
+		PROG_echon_FILE="echo -n"
+		return 0;
+	fi
+
+	# External echo
+	LOCATIONS="/bin/ /usr/ucb/"
+	for LOCATION in $LOCATIONS; do
+		if [ -x ${LOCATION}echo ]; then
+			TEST=`${LOCATION}echo -n X`
+			if [ "$TEST" = X ]; then
+				PROG_echon_FILE="${LOCATION}echo -n"
+				return 0;
+			fi
+		fi
+	done
+
+	# Using printf as echo
+	TEST=`printf %s X`
+	if [ "$TEST" = X ]; then
+		PROG_echon_FILE="printf %s"
+		return 0;
+	fi
+
+	# No good echo found	
+	return 1
+}
+
+
+### GNU Make ###
+PROG_make_NAME="Make"
+case "$BUILD_SYSTEM" in
+	FreeBSD|OpenBSD|SunOS)
+		PROG_make_FILE="gmake"
+		;;
+	*)
+		PROG_make_FILE="make"
+		;;
+esac
+PROG_make_ACTION=""
+PROG_make_VERSION=''
+
+
+### tr ###
+PROG_tr_NAME="tr"
+PROG_tr_FILE="tr"
+PROG_tr_ACTION=""
+PROG_tr_VERSION=''
+
+
+### windres (for Windows) ###
+PROG_windres_NAME=windres
+PROG_windres_FILE=windres
+PROG_windres_ACTION=""
+PROG_windres_VERSION='windres --version'
+
+
+### Rez resource compiler (for MacOS X) only ###
+PROG_Rez_NAME="Rez resource compiler (Apple Developer Tools)"
+PROG_Rez_FILE="/Developer/Tools/Rez"
+PROG_Rez_ACTION=""
+PROG_Rez_VERSION=''
+
+
+### pkg-config ###
+PROG_pkgconfig_NAME="pkg-config"
+PROG_pkgconfig_FILE="pkg-config"
+PROG_pkgconfig_ACTION=""
+PROG_pkgconfig_VERSION='$(pkg-config --version)'
+
+
+##############################################################################
+# Describe the libaries (possibly) used:                                     #
+##############################################################################
+
+
+
+##############################################################################
+# Describe the symbols (possibly) used:                                      #
+##############################################################################
+
+

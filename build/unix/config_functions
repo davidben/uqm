@@ -533,7 +533,30 @@ add_symbol() {
 }
 
 check_endianness() {
-	try_compile_and_run_c << EOF
+	local ENDIAN	
+
+	if [ "$BUILD_SYSTEM" '!=' "$HOST_SYSTEM" ]; then
+		case "$BUILD_HOST_ENDIAN" in
+			"")
+				build_message "Cross-compiling - assuming little-endian host."
+				ENDIAN=little
+				;;
+			big)
+				build_message "Cross-compiling for a big-endian host."
+				ENDIAN=big
+				;;
+			little)
+				build_message "Cross-compiling for a little-endian host."
+				ENDIAN=little
+				;;
+			*)
+				build_message "Bad endianness specified. Use \"little\" or \"big\""
+				exit 1
+				;;
+		esac
+	else
+		# Detect endianness
+		try_compile_and_run_c << EOF
 int main() {
 	int i;
 
@@ -541,15 +564,25 @@ int main() {
 	return *((unsigned char *) &i);
 }
 EOF
-	if [ $? -eq 0 ]; then
-		build_message "Big-endian machine."
-		add_symbol WORDS_BIGENDIAN "#define WORDS_BIGENDIAN"
-		add_symbol "WORDS_BIGENDIAN_FLAG" 1
-	else
-		build_message "Little-endian machine."
-		add_symbol WORDS_BIGENDIAN "#undef WORDS_BIGENDIAN"
-		add_symbol "WORDS_BIGENDIAN_FLAG" 0
+		if [ $? -eq 0 ]; then
+			build_message "Big-endian machine detected."
+			ENDIAN=big
+		else
+			build_message "Little-endian machine detected."
+			ENDIAN=little
+		fi
 	fi
+
+	case "$ENDIAN" in
+		big)
+			add_symbol WORDS_BIGENDIAN "#define WORDS_BIGENDIAN"
+			add_symbol "WORDS_BIGENDIAN_FLAG" 1
+			;;
+		little)
+			add_symbol WORDS_BIGENDIAN "#undef WORDS_BIGENDIAN"
+			add_symbol "WORDS_BIGENDIAN_FLAG" 0
+			;;
+	esac
 }
 
 
@@ -660,10 +693,58 @@ EOF
 	rm -- "${TEMPFILE}.sed"
 }
 
+# Define the build system type.
+set_build_system() {
+	BUILD_SYSTEM=`uname -s`
+}
 
+# Define the host system type.
+set_host_system() {
+	local UHOST
 
-# Include information about programs we can detect
-. build/unix/config_proginfo
+	if [ -z "$BUILD_HOST" ]; then
+		HOST_SYSTEM=$BUILD_SYSTEM
+	else
+		case "$BUILD_HOST" in
+			*-*-*)
+				HOST_SYSTEM="${BUILD_HOST#*-}"
+				HOST_SYSTEM="${OSNAME%-*}"
+				;;
+		esac
+
+		# Use a single capitalization.
+        # What is used is whatever 'uname -s' would give on such a platform.
+		UHOST=`$TR "[:lower:]" "[:upper:]" << EOF
+$BUILD_HOST
+EOF
+`
+		case "$UHOST" in
+			LINUX)         HOST_SYSTEM="Linux" ;;
+			FREEBSD)       HOST_SYSTEM="FreeBSD" ;;
+			OPENBSD)       HOST_SYSTEM="OpenBSD" ;;
+			MINGW|MINGW32) HOST_SYSTEM="MINGW32" ;;
+			DARWIN)        HOST_SYSTEM="Darwin" ;;
+			SUNOS)         HOST_SYSTEM="SunOS" ;;
+			QNX)           HOST_SYSTEM="QNX" ;;
+			*)
+				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
+				;;
+		esac
+	fi
+
+}
+
+prepare_build_system() {
+	set_build_system
+	# Include information about programs we can detect for the build system.
+	. build/unix/config_proginfo_build
+}
+
+prepare_host_system() {
+	set_host_system
+	# Include information about programs we can detect for the host system.
+	. build/unix/config_proginfo_host
+}
 
 # Some initialisations
 HAVE_SYMBOLS=""
@@ -679,5 +760,4 @@ config_requirements() {
 	have_program make || exit 1
 	MAKE="$PROG_make_FILE"
 }
-
 

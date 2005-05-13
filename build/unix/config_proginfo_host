@@ -1,4 +1,6 @@
 # Set information on used programs and libraries
+# This file contains the information for the programs that test the
+# system on which the software will be run.
 # Copyright (c) 2002 Serge van den Boom
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,107 +17,11 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-OSNAME=`uname -s`
 
 ##############################################################################
 # Describe the programs (possibly) used:                                     #
 ##############################################################################
 
-
-### gcc ###
-PROG_gcc_NAME="GNU C compiler"
-PROG_gcc_FILE="gcc"
-PROG_gcc_ACTION=""
-PROG_gcc_VERSION='$(gcc --version)'
-
-
-### sed ###
-PROG_sed_NAME="Sed stream editor"
-PROG_sed_FILE="sed"
-PROG_sed_ACTION=""
-PROG_sed_VERSION=''
-
-
-### echo -n ###
-PROG_echon_NAME="'echo -n' capable echo"
-PROG_echon_FILE=""
-PROG_echon_ACTION=""
-PROG_echon_VERSION=''
-PROG_echon_DETECT="echon_detect"
-echon_detect() {
-	local TEST LOCATIONS LOCATION
-	
-	# Default echo (probably builtin)
-	TEST=`echo -n X`
-	if [ "$TEST" = X ]; then
-		PROG_echon_FILE="echo -n"
-		return 0;
-	fi
-
-	# External echo
-	LOCATIONS="/bin/ /usr/ucb/"
-	for LOCATION in $LOCATIONS; do
-		if [ -x ${LOCATION}echo ]; then
-			TEST=`${LOCATION}echo -n X`
-			if [ "$TEST" = X ]; then
-				PROG_echon_FILE="${LOCATION}echo -n"
-				return 0;
-			fi
-		fi
-	done
-
-	# Using printf as echo
-	TEST=`printf %s X`
-	if [ "$TEST" = X ]; then
-		PROG_echon_FILE="printf %s"
-		return 0;
-	fi
-
-	# No good echo found	
-	return 1
-}
-
-
-### GNU Make ###
-PROG_make_NAME="Make"
-case "$OSNAME" in
-	FreeBSD|OpenBSD|SunOS)
-		PROG_make_FILE="gmake"
-		;;
-	*)
-		PROG_make_FILE="make"
-		;;
-esac
-PROG_make_ACTION=""
-PROG_make_VERSION=''
-
-
-### tr ###
-PROG_tr_NAME="tr"
-PROG_tr_FILE="tr"
-PROG_tr_ACTION=""
-PROG_tr_VERSION=''
-
-
-### windres (for Windows) ###
-PROG_windres_NAME=windres
-PROG_windres_FILE=windres
-PROG_windres_ACTION=""
-PROG_windres_VERSION='windres --version'
-
-
-### Rez resource compiler (for MacOS X) only ###
-PROG_Rez_NAME="Rez resource compiler (Apple Developer Tools)"
-PROG_Rez_FILE="/Developer/Tools/Rez"
-PROG_Rez_ACTION=""
-PROG_Rez_VERSION=''
-
-
-### pkg-config ###
-PROG_pkgconfig_NAME="pkg-config"
-PROG_pkgconfig_FILE="pkg-config"
-PROG_pkgconfig_ACTION=""
-PROG_pkgconfig_VERSION='$(pkg-config --version)'
 
 
 ##############################################################################
@@ -125,7 +31,7 @@ PROG_pkgconfig_VERSION='$(pkg-config --version)'
 
 ### SDL ###
 LIB_SDL_NAME="Simple DirectMedia Layer"
-case "$OSNAME" in
+case "$TARGET_SYSTEM" in
 	FreeBSD)
 		LIB_SDL_CFLAGS='$(sdl11-config --cflags)'
 		LIB_SDL_LDFLAGS='$(sdl11-config --libs)'
@@ -156,7 +62,7 @@ LIB_SDL_mixer_VERSION=""
 
 ### SDL_image ###
 LIB_SDL_image_NAME="SDL_image"
-case "$OSNAME" in
+case "$TARGET_SYSTEM" in
 	Darwin)
 		LIB_SDL_image_CFLAGS=''
 		LIB_SDL_image_LDFLAGS="-framework SDL_image"
@@ -172,7 +78,7 @@ LIB_SDL_image_VERSION=""
 ### OpenAL ###
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
-case "$OSNAME" in
+case "$TARGET_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal"
 		;;
@@ -194,7 +100,7 @@ LIB_openal_DEPEND_DETECT_BIN="pkgconfig"
 
 ### OpenGL ###
 LIB_opengl_NAME="OpenGL"
-case "$OSNAME" in
+case "$TARGET_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
 		LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
@@ -224,10 +130,14 @@ LIB_vorbis_VERSION=""
 
 ### Vorbisfile ###
 LIB_vorbisfile_NAME="vorbisfile"
-case "$OSNAME" in
+case "$TARGET_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
+		;;
+	MINGW32*)
+		LIB_vorbisfile_CFLAGS=""
+		LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis -lm -logg"
 		;;
 	Darwin)
 		LIB_vorbisfile_CFLAGS="-D__MACOSX__"
@@ -250,7 +160,14 @@ LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
 ### zlib ###
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""
-LIB_zlib_LDFLAGS="-lz"
+case "$TARGET_SYSTEM" in
+	MINGW32*)
+		LIB_zlib_LDFLAGS="-lzdll"
+		;;
+	*)
+		LIB_zlib_LDFLAGS="-lz"
+		;;
+esac
 LIB_zlib_VERSION=""
 LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
 LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
@@ -275,4 +192,5 @@ SYMBOL_wchar_t_EXTRA="#include <stddef.h>"
 SYMBOL_wint_t_EXTRA="#include <wchar.h>"
 
 SYMBOL_iswgraph_EXTRA="#include <wctype.h>"
+
 

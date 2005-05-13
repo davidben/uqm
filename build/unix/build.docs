@@ -22,21 +22,27 @@ For unknown dependencies, additions to config_proginfo might need to be
 made. The other files should not be modified.
 Only build.sh is to be called directly.
 
-ansi                ansi colour definitions.
-build.config        configuration options for the program to build.
-                    It contains the description of the configuration
-                    menu, and specifies the dependencies.
-                    The format of the menu description is listed briefly
-                    below.
-build.sh            the sh script that is to be called for configuration,
-                    building, and installation.
-build_functions     auxiliary functions to build.sh for building.
-config_functions    auxiliary functions to build.sh for configuration.
-config_proginfo     contains descriptions of dependencies.
-                    The information in this file is used in particular for
-                    detecting if those libraries and other external programs
-                    are present.
-menu_functions      auxiliary functions to build.sh for menus.
+ansi                   ansi colour definitions.
+build.config           configuration options for the program to build.
+                       It contains the description of the configuration
+                       menu, and specifies the dependencies.
+                       The format of the menu description is listed briefly
+                       below.
+build.sh               the sh script that is to be called for configuration,
+                       building, and installation.
+build_functions        auxiliary functions to build.sh for building.
+config_functions       auxiliary functions to build.sh for configuration.
+config_proginfo_build  contains descriptions of dependencies for the
+                       system where the code is being built.
+                       The information in this file is used in particular
+                       for detecting if those libraries and other external
+                       programs are present.
+config_proginfo_host   contains descriptions of dependencies for the
+                       system where the software will eventually be run.
+                       The information in this file is used in particular
+                       for detecting if those libraries and other external
+                       programs are present.
+menu_functions         auxiliary functions to build.sh for menus.
 
 
 The menu (from build.config)

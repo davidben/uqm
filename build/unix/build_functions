@@ -36,7 +36,7 @@ usage() {
 }
 
 escape_string() {
-	$PROG_sed_FILE -e s,[\\\'\"\`\	\ \$\&\\\*\\\?\#\!],\\\\\&,g << EOF
+	$SED -e s,[\\\'\"\`\	\ \$\&\\\*\\\?\#\!],\\\\\&,g << EOF
 $1
 EOF
 }
@@ -136,7 +136,12 @@ build_rec_collect_o_files() {
 # Start the configure program.
 # $1 = target
 build_config() {
+	prepare_build_system
 	config_requirements
+	prepare_host_system
+	if [ "$BUILD_SYSTEM" '!=' "$HOST_SYSTEM" ]; then
+		build_message "Cross-compiling to $HOST_SYSTEM."
+	fi
 	eval "${TARGET}_requirements"
 	eval "${TARGET}_prepare_config"
 	eval "${TARGET}_load_config"
@@ -149,7 +154,12 @@ build_reconfig() {
 		echo "*** Warning: file 'config.state' not found - using defaults."
 	fi
 
+	prepare_build_system
 	config_requirements
+	prepare_host_system
+	if [ "$BUILD_SYSTEM" '!=' "$HOST_SYSTEM" ]; then
+		build_message "Cross-compiling to $HOST_SYSTEM."
+	fi
 	eval "${TARGET}_requirements"
 	eval "${TARGET}_prepare_config"
 	eval "${TARGET}_load_config"
@@ -212,10 +222,10 @@ build_distclean() {
 # Description: check if the config files are present and load them.
 #              If they're not present, remake them.
 build_check_config() {
-	[ ! -e "$BUILD_WORK/build.vars" ] || return
-
-	build_config || exit $?
-	build_process_config
+	if [ ! -e "$BUILD_WORK/build.vars" ]; then
+		build_config || exit $?
+		build_process_config
+	fi
 	. "$BUILD_WORK/build.vars"
 	. "${BUILD_REC_PATH:=./}Makeinfo"
 }
