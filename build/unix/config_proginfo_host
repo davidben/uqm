@@ -31,7 +31,7 @@
 
 ### SDL ###
 LIB_SDL_NAME="Simple DirectMedia Layer"
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	FreeBSD)
 		LIB_SDL_CFLAGS='$(sdl11-config --cflags)'
 		LIB_SDL_LDFLAGS='$(sdl11-config --libs)'
@@ -62,7 +62,7 @@ LIB_SDL_mixer_VERSION=""
 
 ### SDL_image ###
 LIB_SDL_image_NAME="SDL_image"
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	Darwin)
 		LIB_SDL_image_CFLAGS=''
 		LIB_SDL_image_LDFLAGS="-framework SDL_image"
@@ -78,7 +78,7 @@ LIB_SDL_image_VERSION=""
 ### OpenAL ###
 LIB_openal_NAME="OpenAL"
 LIB_openal_CFLAGS=""
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal"
 		;;
@@ -100,7 +100,7 @@ LIB_openal_DEPEND_DETECT_BIN="pkgconfig"
 
 ### OpenGL ###
 LIB_opengl_NAME="OpenGL"
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
 		LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
@@ -130,7 +130,7 @@ LIB_vorbis_VERSION=""
 
 ### Vorbisfile ###
 LIB_vorbisfile_NAME="vorbisfile"
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
@@ -160,7 +160,7 @@ LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
 ### zlib ###
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""
-case "$TARGET_SYSTEM" in
+case "$HOST_SYSTEM" in
 	MINGW32*)
 		LIB_zlib_LDFLAGS="-lzdll"
 		;;
