@@ -187,8 +187,7 @@ Yow! That sounds like the Precursors! What else can you tell us about this race?
 I wish I knew more of the information you seek, Traveller
 but we last saw the Shaggy Ones just over 39 Drahn ago
 and very little from that era has remained intact in our history chants.
-Hold on a moment, let me consult with associates Joyous Lifting and Sullen Plummet.
-  
+Hold on a minute, let me consult with associates Joyous Lifting and Sullen Plummet.
 Joyous Lifting, who has a better memory than I
 recalls that the Shaggy Ones were described as being... worried.
 They were always hurrying from place to place, seeking knowledge
@@ -234,8 +233,8 @@ Tell us about your home... this gas giant planet.
 #(ABOUT_HOME)	slyho022.ogg
 Our planet, which we call Source, has no solid surface as yours likely does.
 Our `world' is the five hundred kilometer band of atmosphere in which we can survive.
-Below this are the Depths... a dark and hostile region
-which grows increasingly darker and more hostile the farther one goes.
+Below this are the Depths... a dark, hostile region
+which grows increasingly darker, and more hostile, the farther one goes.
 A typical feat of courage for Slylandro juveniles is to sink far enough into the Depths
 so that the juvenile's gas bag is almost ruptured by the pressure.
 The tissue scars left by the trip last many rotations
@@ -275,10 +274,10 @@ until ships from the Sentient Milieu arrived.
 Tell us about your biology.
 
 #(ABOUT_BIOLOGY)	slyho025.ogg
-Our world, which we call Source has been home to our species for many thousands of Drahn.
+Our world, which we call Source, has been home to our species for many thousands of Drahn.
 We evolved from simpler, unimodular beings who thrive in atmospheric convection cells.
 At first, we were little more than mindless consumers
-who glided at the edge of windwalls straining the air for small animacules.
+who glided at the edge of windwalls straining the air for small animalcules.
 But even then we were social creatures, who invented language
 so that we could better cooperate when herding food into dense concentrations.
 There are many hundreds of species here in Source
@@ -295,10 +294,10 @@ My pleasure. Now let's talk about you and your peoples.
 What are those glowy bits inside of you?
 
 #(DOWN_HERE)	slyho027.ogg
-OH MY! I forgot! You creatures see in the visual range and can see our... well
-our, er... well, WE can't see them
-Ehhh... Ahem... What I mean to say is... they are... well we use them for
-when the male and the female... ahem
+OH MY! I forgot! You creatures see in the visual range and can see our...
+well our, er... well, WE can't see them
+Ehhh... Ahem... What I mean to say is... they are...
+well we use them for when the male and the female... ahem
 Look, I'd rather if you didn't ask about them, okay?
 (especially not if front of Sullen Plummet... she's shy.)
 
@@ -360,12 +359,12 @@ the economy model.
 Why did the Melnorme sell it to you?
 
 #(SELL_FOR_INFO)	slyho035.ogg
-The Melnorme traded it to us for data on the life in Source.
+The Melnorme traded it to us for data on the life on Source.
 They said the information was unique, and was worth
 oh, I don't really understand their units of exchange
 somthing like 10,000 Gree-dots... or something like that.
-Fortunately, that was EXACTLY the price of their
-catalog item 2418... Remote Self-Replicating Robot Explorer Probe.
+Fortunately, that was EXACTLY the price of their catalog item 2418
+Remote Self-Replicating Robot Explorer Probe.
 
 #(how_long_ago)
 How long ago did you get the probe?
@@ -422,7 +421,7 @@ Would you explain the general outline of the probe's program?
 
 #(BASIC_COMMANDS)	slyho042.ogg
 Sure. It was a difficult task for us, since we'd never done anything like that before
-but for the most part we just adjusted its standard program which went something like
+but for the most part we just adjusted its standard program which went something like:
     SCAN (for targets, as defined in Target List).
     IF (no current target).
     THEN (select New target from Current Targets list, using specified priorities).
@@ -430,7 +429,7 @@ but for the most part we just adjusted its standard program which went something
     THEN (Set Current Behavior to New Behavior, based on Behavior Priority Settings).
     PERFORM (Current Behavior).
 Okay, that's the basic program... I said it was simple
-and here are the tables used by the program.
+and here are the tables used by the program:
     TARGET LIST (with associated Target Priority).
         Space Vessel (5).
         Transmission Source (4).
@@ -449,7 +448,7 @@ That's it.
 What's the general outline of the probe's program again?
 
 #(OK_BASICS_AGAIN)	slyho043.ogg
-The program was...
+The program was:
     SCAN (for targets, as defined in Target List).
     IF (no current target).
     THEN (select New target from Current Targets list, using specified priorities).
@@ -457,7 +456,7 @@ The program was...
     THEN (Set Current Behavior to New Behavior, based on Behavior Priority Settings).
     PERFORM (Current Behavior).
 Okay, that's the basic program... I said it was simple
-and here are the tables used by the program.
+and here are the tables used by the program:
     TARGET LIST (with associated Target Priority).
         Space Vessel (5).
         Transmission Source (4).
@@ -523,8 +522,8 @@ Well, the factory setting was two, in between Movement at one
 and Analyze Data at three. I told Joyous Lifting to set it a bit higher
 let me ask him what he set it to...
 Oh! My! That was a bit extreme, wasn't it?
-Joyous Lifting told me he changed it to nine hundred ninety nine
-the highest setting on the dial.
+Joyous Lifting told me he changed it to nine hundred ninety-nine
+...the highest setting on the dial.
 
 #(enough_problem)
 Let's talk more about this later on.
@@ -568,7 +567,6 @@ Like I said, alien ships are THE top priority target.
 Once a probe scanned a ship, it would instantly move toward it.
 Then, when it got to the ship, it would initiate communication automatically.
 When communications were terminated, a new behavior would be selected, and...
-  
 Uh-oh.
 A new behavior would be selected, and since the Replication setting was set to maximum
 the probe wouldn't get time to pick a new target... it would use the current target
@@ -577,7 +575,7 @@ for raw Replication materials
 it would process the ship
 break it into component compounds
 with electrical discharges.
-Oh no
+Oh no!
 what have we done?
 Traveller! You must tell us what we can do!
 How can we stop the probes from destroying all life in the galaxy?!
@@ -615,5 +613,3 @@ You're a genius, Traveller! Why didn't we remember that!?
 Oh... there's a problem though! How are we going to transmit the code?
 Well, while we ponder that problem, at least we can give you the code sequence.
 That way, if you run into a probe, you can destroy it without getting shot at.
-
-

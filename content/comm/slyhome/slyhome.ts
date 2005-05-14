@@ -50,7 +50,7 @@
 #(enough_info) 
 #(OK_ENOUGH_INFO) 
 #(where_are_you) 
-#(DOWN_HERE) 6830,2704,7641,2884,4497
+#(DOWN_HERE) 6171,3759,5319,5150,4718
 #(thats_impossible_1) 
 #(NO_ITS_NOT_1) 4737
 #(thats_impossible_2) 
@@ -65,7 +65,7 @@
 #(where_probes_from) 
 #(PROBES_FROM_MELNORME) 2523,6620
 #(why_sell) 
-#(SELL_FOR_INFO) 4536,2934,4327,4375,3636
+#(SELL_FOR_INFO) 4923,3369,3760,4288,6259
 #(how_long_ago) 
 #(FIFTY_THOUSAND_ROTATIONS) 
 #(whats_probes_mission) 
@@ -105,7 +105,7 @@
 #(what_about_rep_priorities) 
 #(MAXIMUM_SO_WHAT) 4366
 #(think_about_rep_priorities) 
-#(UH_OH) 4016,4226,3956,5698,4997,961,892,5618,4797,871,2494,2053,2283,1852,1392,1923,3786
+#(UH_OH) 4126,4389,4079,5809,5610,1289,5459,5129,929,2279,2100,2269,2010,1380,2069,3679
 #(hunt_them_down) 
 #(GROW_TOO_FAST) 2053,2573
 #(sue_melnorme) 
