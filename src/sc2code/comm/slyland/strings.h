@@ -55,6 +55,7 @@ enum
 	THIS_IS_PROBE_3,
 	THIS_IS_PROBE_40,
 	THIS_IS_PROBE_41,
+	THIS_IS_PROBE_42,
 	why_attack_1,
 	why_attack_2,
 	why_attack_3,

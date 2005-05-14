@@ -19,6 +19,7 @@
 #include "comm/commall.h"
 #include "comm/slyland/resinst.h"
 #include "comm/slyland/strings.h"
+#include "options.h"
 
 #include "battle.h"
 #include "setup.h"
@@ -259,6 +260,13 @@ CombatIsInevitable (RESPONSE_REF R)
 		else if (PLAYER_SAID (R, we_are_us))
 		{
 			NumVisits = GET_GAME_STATE (SLYLANDRO_PROBE_ID);
+			if (NumVisits == 3 && !optSubtitles)
+			{
+				/* If playing without subtitles, don't use the
+				 * last item in the conversation tree, which mentions
+				 * coordinates which can't be spoken. */
+				NumVisits--;
+			}
 			switch (NumVisits++)
 			{
 				case 0:
@@ -273,8 +281,9 @@ CombatIsInevitable (RESPONSE_REF R)
 				case 3:
 				{
 					NPCPhrase (THIS_IS_PROBE_40);
-					NPCPhrase (GLOBAL_PLAYER_LOCATION);
 					NPCPhrase (THIS_IS_PROBE_41);
+					NPCPhrase (GLOBAL_PLAYER_LOCATION);
+					NPCPhrase (THIS_IS_PROBE_42);
 
 					--NumVisits;
 					break;
