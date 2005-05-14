@@ -19,7 +19,7 @@
 char *strupr (char *str);
 #endif
 
-#ifndef HAVE_READDIR_R
+#if !defined (_MSC_VER) && !defined (HAVE_READDIR_R)
 #	include <dirent.h>
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
 #endif
