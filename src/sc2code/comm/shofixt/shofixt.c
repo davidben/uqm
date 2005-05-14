@@ -428,9 +428,7 @@ Friendly (RESPONSE_REF R)
 	memset (Resp, 0, sizeof (Resp));
 	if (PLAYER_SAID (R, report0))
 	{
-		NPCPhrase (NOTHING_NEW0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
-		NPCPhrase (NOTHING_NEW1);
+		NPCPhrase (NOTHING_NEW);
 
 		DISABLE_PHRASE (report0);
 	}
@@ -555,11 +553,7 @@ Intro (void)
 
 	if (GET_GAME_STATE (SHOFIXTI_STACK2) > 2)
 	{
-		NPCPhrase (FRIENDLY_HELLO0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
-		NPCPhrase (FRIENDLY_HELLO1);
-		NPCPhrase (GLOBAL_SHIP_NAME);
-		NPCPhrase (FRIENDLY_HELLO2);
+		NPCPhrase (FRIENDLY_HELLO);
 
 		Friendly ((RESPONSE_REF)0);
 	}
