@@ -49,8 +49,6 @@ We regret our past deeds, so why dwell on the past? Let's look forward to a brig
 #(DONT_BELIEVE)	spaho007.ogg
 I am probably just an old stick-in-the-mud, Captain, but I just can't let go of the idea
 that this is all part of some devious trick of yours to torture and kill my species.
-An unreasonable fear?
-No doubt.
 
 #(HELLO_AGAIN)	spaho008.ogg
 We did not expect to see you again so soon, Hunam!
@@ -152,10 +150,8 @@ as indicated by this report from the Spathi patrol vessel you attacked.
 #(misunderstanding)
 Uh, that was just kind of a misunderstanding.
 
-#(JUST_MISUNDERSTANDING0)	spaho020.ogg
-Of course Captain 
-#(JUST_MISUNDERSTANDING1)
-, we realize that misunderstandings happen... occasionally.
+#(JUST_MISUNDERSTANDING)	spaho020.ogg
+Of course Captain, we realize that misunderstandings happen... occasionally.
 Let us just hope that no similar `misunderstanding' causes us to open fire on you
 with our planetary defense batteries.
 
@@ -203,12 +199,12 @@ Since we never wanted to be in the Hierarchy, and we're afraid of all the other 
 our knowledge on this subject is a bit limited, but I'll tell you what I know.
 The Hierarchy is the construct of the Ur-Quan. It exists to maintain their supreme authority
 over all sentient lifeforms in the galaxy.
-As far as we know, there are 6 other races active in the Hierarchy, including
-the gelatinous Umgah pranksters
-the multi-legged, super-violent Ilwrath who are fanatical in their worship of Dogar and Kazon
-the Thraddash - a weak and obnoxious race from the Draconis group of stars
-the humanoid clones you call Androsynth, though they have been strangely absent for some years
-the vain VUX, commanded by the brilliant and eccentric general ZEX
+As far as we know, there are 6 other races active in the Hierarchy, including:
+the gelatinous Umgah pranksters,
+the multi-legged, super-violent Ilwrath who are fanatical in their worship of Dogar and Kazon,
+the Thraddash - a weak and obnoxious race from the Draconis group of stars,
+the humanoid clones you call Androsynth, though they have been strangely absent for some years,
+the vain VUX, commanded by the brilliant and eccentric general ZEX,
 and the mysterious Mycon, who ramble endlessly about people, places and events from long ago
 as though they happened just today.
 If there are other Hierarchy races, we are not aware of them.
@@ -533,7 +529,7 @@ Am I correct in understanding that you refuse to live up to your end of the barg
 
 #(ADULT_VIEW)	spaho066.ogg
 No, no, no!
-We are simply taking a more adult, `welcome to the real world' view of this situation.
+We are simply taking a more adult, `welcome to the real world' view of the situation.
 We cannot simply say, `Hurrah!' and form an alliance with you this very moment.
 Surely you see that?
 
@@ -605,7 +601,7 @@ What more do you want?
 Oh, right! The thing I forgot.
 Yes, I remember now! It was something odd that happened to us when we first met the Ur-Quan.
 We sent out a ship to meet the oncoming Dreadnoughts
-we wanted to tell the Ur-Quan about the Evil Ones, so that they could safely avoid our planet
+we wanted to tell the Ur-Quan about the Evil Ones, so they could safely avoid our planet
 but when we got close, the Ur-Quan started blasting out this overwhelming signal
 `SENTIENT LIFE.  WE ARE THE UR-QUAN. INDEPENDENCE IS INTOLERABLE. BLAH, BLAH, BLAH.' -- you get the idea
 anyway, in a moment of panicked genius, the Captain blurted out
