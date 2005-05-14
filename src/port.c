@@ -20,14 +20,15 @@
  * Created by Serge van den Boom
  */
 
+#include "port.h"
+
 #include <ctype.h>
-#include "errno.h"
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef HAVE_READDIR_R
+#if !defined (_MSC_VER) && !defined (HAVE_READDIR_R)
 #	include <dirent.h>
 #endif
-#include "port.h"
 
 #ifndef HAVE_STRUPR
 char *
@@ -82,7 +83,7 @@ setenv (const char *name, const char *value, int overwrite)
 }
 #endif
 
-#ifndef HAVE_READDIR_R
+#if !defined (_MSC_VER) && !defined (HAVE_READDIR_R)
 // NB. This function calls readdir() directly, and as such has the same
 //     reentrance issues as that function. For the purposes of UQM it will
 //     do though.
