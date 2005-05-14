@@ -1,7 +1,7 @@
 #(HOSTILE_SPACE_HELLO_1)	thrad000.ogg
 So, what's this? SNORT! An unknown alien species?
 How wonderful! Someone new to fight!
-We, the Thraddash of Culture Nineteen  -- famous Ur-Quan Combat Thralls
+We, the Thraddash of Culture Nineteen -- famous Ur-Quan Combat Thralls
 know well the value of a good fight.
 Either you win and prove your superiority...
 SNORT! Or you lose and are vanquished.
@@ -182,7 +182,7 @@ our ships were either blasted to smithereens by the Ur-Quan's fusion bolts
 or were picked apart by the swarms of Ur-Quan fighter-vessels.
 You may wonder why we didn't use our afterburners to escape. The answer is simple.
 Fifty years ago, our ships had not yet been modified for this enhancement!
-It was not until 2143 that  Maintainance Engineer Reeunk invented the afterburner effect
+It was not until 2143 that Maintainance Engineer Reeunk invented the afterburner effect
 when he accidentally stuck his cigar in the aft fuel valve of the ship we was working on.
 WHABOOM!!! The ship took off like a farg out of hell, and Reeunk was fried to a crisp.
 Yes, we remember Reeunk with much fondness. Of course, we have refined the device
@@ -275,7 +275,7 @@ Go away!
 
 #(HOSTILE_HELIX_HELLO_2)	thrad024.ogg
 Begone Stupid, Ugly Ones!
-SNARL!
+SNORT!
 Leave before we break from our guard posts and give you a good Thraddashing!
 
 #(submit_1)
@@ -310,7 +310,7 @@ You are strong! We like strong! We be friends, now, okay?
 #(NO_FRIENDS_2)	thrad028.ogg
 We are strong. You are weak. And HARG! HARG!...
 we HATE weak.
-We do not need weak friends! We want only slaves and teachers.
+We do not need weak friends! We only want slaves and teachers.
 Since you have nothing to teach us and refuse to be our slave
 then you are our enemy.
 Such logic must be obvious even to a stupid being like yourself.
@@ -382,8 +382,7 @@ on the dark continent of Funt
 high on a mountain
 in an ancient shrine
 resting in a special ceremonial cradle
-glowing with its magical blue light
-is the
+glowing with its magical blue light, is the
 NO! I've changed my mind! You don't get to know the answer.
 Sorry.
 
@@ -397,8 +396,7 @@ on the dark continent of Funt
 high on a mountain
 in an ancient shrine
 resting in a special ceremonial cradle
-glowing with its magical blue light
-is the
+glowing with its magical blue light, is the
 AQUA HELIX!
 ...the most revered of all Thraddash relics
 the sign of any Culture's authority.
@@ -407,8 +405,7 @@ the sign of any Culture's authority.
 Uh... I left something important on the surface last week. Can I just go down and get it?
 
 #(CAUGHT_LIE)	thrad037.ogg
-Okay.
-Go ahead.
+Okay. Go ahead.
 Hey, WAIT A MINUTE!
 You are after our most ancient and important relic, AREN'T YOU?
 You were going to steal it, WEREN'T YOU? SNARL!
@@ -571,7 +568,7 @@ largely because all our previous nineteen cultures have known this to be true!
 If the Aqua Helix wasn't anything special
 WHY would we spend so much blood and passion over the little thing?
 It would be a colossal waste! An absurd travesty!...
-...actually, this is much what Culture Nine said
+...actually, this is what Culture Nine said
 during their two-week period of dominance before Culture Ten wiped them out.
 Anyway we remain convinced!...
 ...we are Thraddash and all Thraddash know the significance of the Aqua Helix.
@@ -604,7 +601,7 @@ One was clearly a Dreadnought, the ship of our ex-masters, the Ur-Quan.
 The other ship was a dark and ominous ship equally as huge as the Dreadnought.
 The vessels were locked in mortal combat. They fought valiantly!
 Eventually, the Ur-Quan destroyed the black ship, but not before receiving mortal wounds itself.
-The last we saw of the ship, it was tumbling out of control toward Alpha Pavonis.
+The last we saw of the ship, it was tumbling out of control towards Alpha Pavonis.
 We do not know its eventual fate.
 
 #(GENERAL_INFO_ALLY_3)	thrad071.ogg
@@ -663,7 +660,7 @@ We will be just like you!
 #(WORK_TO_DO)	thrad077.ogg
 We have much work to do to implement these sweeping cultural changes.
 Transferring from the allegiances and mores of one culture to another
-is a difficult and time consuming task.
+is a difficult and time-consuming task.
 We beg you, great warrior from Earth, give us time to make the changes you have suggested.
 Return later to see our brave new world.
 
@@ -687,8 +684,7 @@ the planets, and even our navels
 which for a Thraddash is very uncomfortable and requires at least two mirrors.
 
 #(CONTEMP_GOES_2)	thrad080.ogg
-So studious! So quiet! So contemplative!
-SNORT!
+So studious! So quiet! So contemplative! SNORT!
 We are not made for this. We are beginning to break out in spots!
 
 #(FRIENDLY_GOES_1)	thrad081.ogg
@@ -718,9 +714,11 @@ You see, Captain. Perhaps we are not suited to being wacky
 and SNIFF!... that was my only penguin.
 
 #(WACKY_GOES_2)	thrad084.ogg
-We are getting a better handle on this wacky thing. The key?...Slapstick!
+We are getting a better handle on this wacky thing.
+The key? Slapstick!
 We Thraddash have found our mode, our idiom, our way to be wacky.
-Jabbing the eyes with outstretched digits! Striking the head with planks!
+Jabbing the eyes with outstretched digits!
+Striking the head with planks!
 HARG! HARG! HARG! We like and understand this perfectly, Captain.
 And with the addition of our native elements, high-explosives and nausea gas
 Thraddash space has become Pratfall City!
@@ -764,8 +762,8 @@ Try being polite and friendly in your greetings.
 
 #(OK_POLITE)	thrad091.ogg
 Ok, we will be polite.
-That will cause visitors to let their guard down
-and then we attack them!
+That will cause visitors to let their guard down,
+then we attack them!
 Yes, that is an excellent plan!
 
 #(speak_pig_latin)
@@ -773,7 +771,7 @@ To really capture the spirit of Interstellar Diplomactic Protocol you should spe
 
 #(OK_PIG_LATIN)	thrad092.ogg
 Pig-Latin, eh? Isn't that where you take the first letter or two of a word, put it at the end
-and then add an `ay' at the very end?  Hmm.. let me try
+and then add an `ay' at the very end? Hmm.. let me try
 `Upidstay Eaturecray! Eparepray otay ieday!'
 Hey! I like that! It gives one the semblance of wit and education
 without all that dreary studying!
@@ -786,7 +784,7 @@ I know for a fact that rhyming in your introductions wins big points.
 Rhymes? Like in poetry? SNORT!
 Isn't that kind of... you know... not-tough stuff?
 SNORT! What am I saying! You are the Great Teacher! You know best!
-If rhyming is necessary, then Teacher we will be rhyming all the timing.
+If rhyming is necessary, then Teacher, we will be rhyming all the timing.
 
 #(just_the_way_we_do)
 Just greet people the way we do.
@@ -844,8 +842,8 @@ It will be `The Glorious Slave Empire of
 '!
 
 #(OK_SLAVE)	thrad098.ogg
-Ulp!  Well... you're the one with the big starship
-So be it 
+Ulp! Well... you're the one with the big starship.
+So be it.
 
 #(FAT_JERKS)	thrad099.ogg
 Fat Obstreperous Jerks
