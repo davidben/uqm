@@ -115,11 +115,11 @@
 #(why_lights_off) 
 #(LIGHTS_OFF_BECAUSE) 5500,2000,2700
 #(evil_monster) 
-#(NOT_EVIL_MONSTER) 5147,5738,3275,761
+#(NOT_EVIL_MONSTER) 5118,5899,3570
 #(disease) 
 #(JUST_RELAX) 
 #(what_happens_if_i_touch_this) 
-#(THIS_HAPPENS) 1543,1772,1272,1492,1953
+#(THIS_HAPPENS) 1835,1839,1169,3621
 #(are_you_sure_this_is_ok) 
 #(YES_SURE) 2774,2674
 #(boy_they_never_taught) 

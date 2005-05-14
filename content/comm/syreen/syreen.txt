@@ -6,7 +6,7 @@ Your ship is not responding to standard Hierarchy identification sequences.
 You are therefore classed as Independent and... WHAT?!
 Is my monitor display correct?!
 Is that a human commanding that vessel?
-Who are you guys?
+Who are you?
 
 #(HELLO_BEFORE_AMBUSH_2)	syree001.ogg
 Hello again, pleasant Human.
@@ -105,7 +105,6 @@ Now get serious... please.
 What I need right now, is a Touch-o-Vision.
 
 #(TOUCH_O_VISION)	syree012.ogg
-Why only fantasize, Captain, when you can... no... wait a minute. What am I saying!?
 Look. Human. Get this through your head.
 Under other circumstances, I might be interested in your antics, you're kind of cute
 but we've got a serious situation here and we don't have time to fool around.
@@ -120,7 +119,7 @@ Talana, have you ever heard of the `Deep Children?'
 Yes, I think so. Aren't they part of the Mycon religion somehow?
 We have recordings of Mycon HyperWave transmissions from the War... pretty weird stuff.
 The Mycons just kind of.. rambled, never making much sense.
-They talked a lot about the `Deep Children', and `Spears of Light'
+They talked a lot about `Deep Children', and `Spears of Light',
 but we couldn't ever understand what they were talking about.
 
 #(mycons_involved)
@@ -141,11 +140,11 @@ Captain, if what you say is true, it would turn my world upside down.
 You have no sorrow to match what each of us Syreen feels every day of our lives
 when we remember what we have lost... Syra... our Eden.
 The very idea that the Mycons, or any alien race, may have been responsible for Syra's destruction
-fills me with BURNING RAGE!... then I want to lash out and STRIKE the viewer!
-It it were true, none of us here would rest until we had avenged ourselves on the perpetrators.
+fills me with BURNING RAGE!
+If it were true, none of us here would rest until we had avenged ourselves on the perpetrators.
 We would find some way leave this starbase, locate our starships, and hunt down the evil monsters!
 Captain, if you ever gather proof of what you say, you MUST inform us immediately.
-but until then... do not mention the subject again. It is too painful.
+But until then... do not mention the subject again. It is too painful.
 
 #(have_proof)
 Talana. I have brought proof that the Mycon Deep Children destroyed your world Syra.
@@ -177,20 +176,20 @@ My older sister, Diani, was a starship officer in the Space Patrol
 she was part of the final defense at Raynet... she didn't make it back.
 When the Ur-Quan caught us in open space, we all thought we were going to die
 but then, instead of killing us, the Ur-Quan offered us a choice
-we could join the ranks of their combat thralls, or we could be slave-shielded on our homeworld.
+we could join the ranks of their combat thralls, or we could be slave-shielded in our homeworld.
 Like the people of Earth, we choose peace. We became fallow slaves.
 When the Ur-Quan told us to return to our homeworld, we explained that we had none.
 Ur-Quan Master Nine explained that they had encountered this situation before
 and if we would provide them with a list of our requirements
 they would use their extensive astronomical datastores to find a planet for us!
-So we told them about Syra... about the color of its sky... about the abundant, varied lifeforms
+So we told them about Syra... about the color of its sky... about the abundant lifeforms,
 about the fertility of the soil and seas.
 Less than an hour later, we received a terse message from Master Nine
 we were to proceed to these coordinates and disembark. This was to be our new home.
-I don't know how, or why, but our new world, Gaia, was everything we described, and more.
+But our new world, Gaia, was everything we described.
 We'd been searching for a home planet for seventy-five years
 and in the end, it was our enemies who gave one to us.
-I grew up on a small island off the main continent, and like all my people
+I grew up on a small island off the main continent, and like all of my people
 we lived each day under the sick, red glow of the slave shield.
 When the Ur-Quan arrived seven years ago to refurbish and recrew this starbase
 I was selected as the new commander.
@@ -199,7 +198,7 @@ I was selected as the new commander.
 So what happened to you at the end of the war?
 
 #(ABOUT_WAR)	syree019.ogg
-When we first met your people, we'd been wandering through the stars for almost seventy five years
+When we first met your people, we'd been wandering through the stars for almost seventy-five years,
 ever since the death of Syra... our home planet.
 We joined your Alliance, and I use the word `joined' loosely, because we had no other choice.
 The VUX were raiding our slow Habitat columns, and we had nowhere else to go.
@@ -257,20 +256,20 @@ Again, like so many other things about our two species, our worlds were very muc
 at least before you began encasing yours in concrete and plastic.
 Syra's gravity was a bit lighter than Earth's, and its day was fifty percent longer.
 Our diurnal cycle is therefore different from yours.
-We spend twenty hours awake, followed by ten hours of sleep... or at least... horizontal.
+We spend twenty hours awake, followed by ten hours... horizontal.
 
 #(what_happened)
 What happened to Syra?
 
 #(DONT_KNOW_HOW)	syree023.ogg
-Ah... the death of our world. This subject is very difficult for us, Captain
+This subject is very difficult for us, Captain,
 but I will try to recount those sad days.
 Like your solar system, ours had a large population of comets and asteroids.
 Large meteor impacts, though rare, were not unheard of on our planet.
 So it was not a total shock when an asteroid penetrated our atmosphere and hit the surface.
 What was odd was that unlike most other meteors, this one was not pulverized on impact.
 It penetrated the crust, and indeed went all the way through to the mantle
-causing a major caldera... kind of a super volcano.
+causing a `super volcano'.
 The earthquakes caused by the impact were severe.
 The magma pumped out of the caldera wreaked significant damage on the nearby terrain
 but within a few weeks, it had cooled, forming a solid rock bandage over the wound.
@@ -280,8 +279,8 @@ Then, just over a year after the impact, all hell broke loose on the surface of 
 Huge calderas were opening all over... not just around the meteor impact, but everywhere!
 The scope of the disaster is impossible to imagine
 Entire cities sliding into oceans of molten lava
-kilometer-wide sections of land being instantly pulverized by cataclysmic explosions
-and clouds of poison gas and superheated steam which created a death shroud around Syra.
+kilometer-wide sections of land pulverized by a cataclysmic explosion
+and clouds of poison gas and superheated steam created a death shroud around Syra.
 
 #(what_about_outfit)
 Come on now, isn't that outfit, knife included, a bit absurd?
@@ -305,8 +304,8 @@ and actually found a handful of survivors, but their main activity was preparati
 The Space Patrol fitted makeshift drive units to anything that could hold air
 orbital factories, research pods, even hotels. When the fleet was ready, they left orbit and never looked back.
 The final population of our species was less than ten thousand, with only five hundred males
-but they were the best and brightest of our people.
-For the next seventy five years, our people wandered at sub-light speed through the stars
+but they were the best and the brightest.
+For the next seventy-five years, our people wandered at sub-light speed through the stars
 looking for a new home.
 
 #(get_lonely)
@@ -314,7 +313,7 @@ Don't you ever get... lonely? Hmmm?
 
 #(MAKE_OUT_ALL_RIGHT)	syree026.ogg
 Ha! ha! ha! Don't worry about us, Captain!
-We make out all right with just us females.
+We make out all right.
 
 #(bye)
 Goodbye, Commander Talana. I will be back.
@@ -322,7 +321,7 @@ Goodbye, Commander Talana. I will be back.
 #(GOODBYE)	syree027.ogg
 Until then, Earthling.
 
-#(MUST_ACT)	syree028.ogg
+#(MUST_ACT)	
 Captain. The secret of the Mycon's monstrous murder of our planet has changed the attitudes of many of my people.
 We will not sit here and do nothing while the Mycon fiends are free to roam the galaxy, perpetrating their evil.
 You wanted our cooperation in fighting the Ur-Quan. You've got it... provided
@@ -333,7 +332,7 @@ Okay. So what do you want us to do?
 
 #(OPEN_VAULT)	syree028.ogg
 Our first step is to get some mobility.
-We have some fine starship officers on board, and they are all eager to go after the Mycons
+We have some fine starship officers on board, and they are all eager to go after the Mycons,
 but without our Penetrator starships, we're totally ineffectual.
 So our first step HAS to be recovering our Space Patrol combat fleet.
 We know that the Ur-Quan didn't destroy them... they never waste anything
@@ -350,7 +349,7 @@ The only thing they could use for navigation was the presence of the Dreadnought
 When they arrived at their destination and lowered their ships into the immense vault
 they were transported to the Dreadnoughts and only caught a split-second glimpse of the outside world.
 As far as they could tell, the sun was either red or orange. Based on their trip-time calculations
-the farthest they could have travelled is about 200 standard HyperSpace distance units.
+the farthest they could have travelled is about 200 HyperSpace distance units.
 
 #(been_there)
 I've already been there. The vault is on the moon of Epsilon Camelopardalis I, but I couldn't open it.
@@ -394,7 +393,7 @@ Captain, we need your services again. Here is what you must do.
 You must go to the Mycon and tell them of this world.
 They will find that the world is suitable, and when they go to Organon
 we shall be there... waiting for them.
-Then we shall destroy them.
+Then we shall destroy them!
 
 #(what_now)
 Are you sure the Mycon are going to fall for this? Why should they believe me?
@@ -422,11 +421,11 @@ Don't worry, my human. We will be together again... some day.
 SUCCESS, Captain! The Mycons' fleet is in shambles!
 JUSTICE IS OURS!
 We have revenged ourselves against the heinous Mycons!
-Oh! They fell for our trap so completely!
+They fell for our trap so completely!
 When they approached Organon I, we were hiding behind its moon.
 As they approached, their ships broke combat formation
 in preparation for their hideous implanting ceremony.
-We waited until they were fully dispersed around the planet then we attacked!
+We waited until they were fully dispersed around the planet, then we attacked!
 The standard Mycon tactic would have been to speed out of orbit using a gravity whip maneuver
 but the Podships refused to abandon their slow-moving Deep Children spore pods.
 They remained in the gravity well, and WE SLICED THEM TO RIBBONS!
@@ -587,7 +586,7 @@ Hey... what have you got in mind here?
 Well to start off, I thought we'd do something like this
 unless your species isn't limber enough
 and then I thought we could move on to something a bit more like... Mmmm... this.
-and after you had recovered, I thought this might be fun!
+and after you have recovered, I thought this might be fun!
 and if you're still conscious, I thought we could try this
 even though I've never done it before!
 
@@ -618,7 +617,6 @@ You're not going to turn into some weird alien monster now, and bite my head off
 Ha!-ha!-ha! An alien monster? Me?
 ME?! WHY CAAPTAIN! WHYEVER DOO YOOU SAAY THAAAT!!!
 REEAARRGGGG!!!!
-  
 ...just kidding!
 
 #(disease)
@@ -634,7 +632,6 @@ Hmmm... what happens if I do this?
 ...mmm
 MMMm!...
 Ohh!...
-MMMmm!!...
 ...MMMMMmmmmmm!!!...
 does that answer your question?
 
@@ -661,10 +658,7 @@ Then stop wasting your lips on words, you silly fool
 and come here!...
 
 #(LATER)	syree069.ogg
-(...)  
-(...later...)
-(...much later...)
-(...quite a good bit later...)
+(...several hours later...)  
 
 #(SEX_GOODBYE)	syree070.ogg
 Goodbye Captain, darling... we each have our jobs to do
