@@ -29,7 +29,7 @@ Hail Fellow and Well Met. We trust that your seed distributes widely.
 Be Welcome Friendly Allies. We hope that the Good Green Sunlight warms you.
 
 #(ALLIED_HOMEWORLD_HELLO_3)	supox008.ogg
-Greetings and Salutations. May the fertilizer flow on your roots.
+Greetings and Salutations. May fertilizer flow on your roots.
 
 #(ALLIED_HOMEWORLD_HELLO_4)	supox009.ogg
 Hello there Good Folk. May your flowers always be pollinated.
@@ -65,9 +65,9 @@ We are the Supox Utricularia from Earth.
 You're from Earth??? Hey! Are you just copying whatever I say?
 
 #(YEAH_SORRY)	supox013.ogg
-Oh yes, we apologize for the confusion, our homeworld is also called Earth,
-or more properly Vlik, which means `Perfectly Good and Nutritious Dirt'.
-Earth is pretty close, is it not?
+Oh yes, we apologize for the confusion, our homeworld is also called `Earth',
+or more properly `Vlik', which means `Perfectly Good and Nutritious Dirt'.
+`Earth' is pretty close, is it not?
 
 #(why_copy)
 Why do you copy our speech and mannerisms?
@@ -84,7 +84,7 @@ Symbionts, how interesting! Please tell us more.
 Our kind evolved on a beautiful planet orbiting the wonderfully green-hued star, Root.
 From the canopy of the great jungles to the shores of the azure seas
 Our species has flowered and grown well.
-Early in our evolution, we adapted to exist in symbiosis with other hardier life, both flora and fauna
+Early in our evolution, we adapted to exist in symbiosis with other, hardier life, both flora and fauna,
 who supplied us with nutrients while we supplied them with reproductive assistance.
 
 #(plants_arent_intelligent)
@@ -173,7 +173,7 @@ We hope we have repaired the Ultron completely.
 
 #(ALMOST_THERE)	supox024.ogg
 Yes! Yes!
-but no... it is still not quite as brightly lit as it once was.
+But, but no... it is still not quite as brightly lit as it once was.
 One more repair job should do it!
 
 #(look_i_slightly_repaired)
@@ -201,12 +201,10 @@ May Sunlight and Water always fall upon you.
 
 #(ABOUT_BATTLE)	supox028.ogg
 Hello Captain.
-We fought the Kohr-Ah and, well, perhaps it's better to say
-that the Kohr-Ah killed us.
-Our buddies the Utwig did some pretty serious damage
+We fought the Kohr-Ah; our buddies the Utwig did some pretty serious damage
 to several fleets, but we mostly just watched helplessly.
-The Ur-Quan did not seem to realize
-that we were helping them, and as often as not they attacked us too!
+The Ur-Quan did not seem to realize that we were helping them
+and as often as not they attacked us too!
 We may have delayed the outcome of the fight, but it still seems clear that the Kohr-Ah are winning.
 
 #(HELLO_BEFORE_KOHRAH_SPACE_1)	supox029.ogg
@@ -237,13 +235,13 @@ We met the Kohr-Ah at the sides of our Utwig allies.
 The destructive power of the black ships was greater than anticipated
 however we did eventually develop tactics in conjunction with the Utwig
 that were effective against them. We destroyed dozens of their battleships!
-Alas, we lost many of our blade-brothers to the spinning blades and the fiery ring.
+Alas, we lost many of our brothers to the spinning blades and the fiery ring.
 
 #(GENERAL_INFO_AFTER_SPACE_2)	supox036.ogg
 As dictated by the Utwig, our policy was to focus our weapons on the Kohr-Ah only.
 In this way, we would reduce the strength of the black fleet, thus evening the balance of power
 between the Ur-Quan and the Kohr-Ah. The plan worked well, save for one slight factor.
-The green ships... the Ur-Quan failed to notice our efforts on their behalf
+The green ships failed to notice our efforts on their behalf
 and fired upon our vessels at every opportunity.
 
 #(what_now_after_space)
@@ -251,7 +249,7 @@ What do you think we should do now?
 
 #(DO_THIS_AFTER_SPACE)	supox037.ogg
 We are but humble plants, mere saplings in knowledge of such things.
-If you seek wisdom visit the Utwig Proctors.
+If you seek wisdom, visit the Utwig Proctors.
 
 #(bye_after_space)
 Goodbye Supox. Thanks for everything.
@@ -274,9 +272,9 @@ So what should we do now?
 
 #(DO_THIS_BEFORE_SPACE)	supox041.ogg
 We must defer to the Utwig, who have superior knowledge of such things.
-One thing, though... they specifically instructed us to inform you
+They specifically instructed us to inform you
 that you should NOT endanger yourself by joining us in this battle.
-Your destiny, they claim, lies along a more subtle though crucial course.
+Your destiny lies along a more subtle though crucial course.
 
 #(bye_before_space)
 G'bye plant dudes.
@@ -357,13 +355,13 @@ Is there any knowledge which you alone possess?
 
 #(GOOD_HINTS)	supox053.ogg
 Knowledge is the purview of the Utwig. We Supox are but the effectuators.
-In truth though, we have learned a fact or two unknown to others
-largely because we did not think anyone would care in the slightest, but since you ask, listen.
+In truth though, we have learned a fact or two unknown to others.
+We did not think anyone would care in the slightest, but since you ask, listen.
 We have not fared far from our region of space, but we have explored this region thoroughly.
 Of all the oddities we have found, from the firefalls of Nalnar to the servants of Mali
 the truest mystery was the nature of a world we found at the orange star, Beta Leporis.
 As a general rule, we prefer not to dwell in such long-wavelength regions
-as the light lacks tang, but we were on a mapping mission. That was when we found the planet.
+but we were on a mapping mission. That was when we found the planet.
 At first we thought our scanners had failed, for they showed us a world of chromatic aspect.
 Then we located the source of our malfunction... the planet itself!
 Somehow the planet generates a field of unusual radiations which scramble delicate circuitry.
