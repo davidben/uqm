@@ -25,7 +25,7 @@ If you don't go, it will greatly complicate our master-slave relationship with t
 who stationed us here to watch over the Earthlings.
 
 #(hi_there)
-Hi there friend!  We come in peace and mean you no harm.
+Hi there friend! We come in peace and mean you no harm.
 
 #(ARE_YOU_SURE)	spath002.ogg
 Are you sure?
@@ -69,7 +69,7 @@ must know that the formalities of Wezzy-Wezzah are invalid unless
 performed on the large moon orbiting our homeworld, Spathiwa
 which is only 143 light years distant, and, if I remember correctly,
 is especially beautiful this time of year.
-Shall we go there now?
+Shall we go now there?
 
 #(you_wont_die_yet)
 Because I am compassionate, you will not die until you have exhausted your usefulness.
@@ -93,7 +93,7 @@ and in all likelihood die horribly
 but you never know when you are going to get lucky, so go for it!'
 
 #(you_may_live)
-I find myself moved by your deep commitment to your rituals and ancestral ways.  You may live.
+I find myself moved by your deep commitment to your rituals and ancestral ways. You may live.
 
 #(HONEST_AND_FRIENDLY)	spath008.ogg
 That settles it, for now I am certain that you are an honest and friendly being
@@ -102,7 +102,7 @@ to travel the galaxy in a ship which, according to my sensors
 is best suited to conducting planetary-scale genocide.
 
 #(what_are_coordinates)
-We'd be delighted to accompany you to your homeworld.  What are its HyperSpace coordinates?
+We'd be delighted to accompany you to your homeworld. What are its HyperSpace coordinates?
 
 #(COORDINATES_ARE)	spath009.ogg
 My most wonderful planet Spathiwa circles a safe distance from the orange giant star Yuffo
@@ -116,7 +116,7 @@ Just tell me the coordinates, alien dog-slime!
 
 #(FAKE_COORDINATES)	spath010.ogg
 Hmmm... I see
-Very well then, your threats have convinced me to reveal this secret
+Very well then, your threats have convinced me to reveal this secret.
 Spathiwa is the 1st planet out from the star at HyperSpace (570.4, 979.5)
 
 #(TOO_SCARY)	spath011.ogg
@@ -124,7 +124,7 @@ You've got so many ships in your fleet, that instead of joining you
 I think I'll just run away.
 
 #(youve_got_me_all_wrong)
-No, no, no!  You've got me all wrong.  I promise I'll be nice.
+No, no, no! You've got me all wrong. I promise I'll be nice.
 
 #(SORRY_NO_COORDS)	spath012.ogg
 Er... I just don't know.
@@ -192,11 +192,11 @@ The female parent was kind and sweet to all of us.
 Why, she once even called me by NAME; she said
 `Fwiffo! Fwiffo darling! Would you please answer the door? I think someone's there.'
 What a treat! A golden memory.
-I swiftly matured into a fine example of my species and with my parents' assistance, achieved independence.
+I swiftly matured into a fine example of my species, with my parents' assistance, achieved independence.
 Specifically, they pried me from the doorjamb, and rolled me into the street.
 Thus prepared, I set out to make my fortune.
 I had great dreams in those days, yes, great dreams!
-I knew that someday I would be vastly rich, wealthy enough to afford a large, well-fortified  mansion.
+I knew that someday I would be vastly rich, wealthy enough to afford a large, well-fortified mansion.
 Surrounding my mansion would be vast tracts of land, through which I could slide at any time I wished!
 Of course, one can never be too sure that there aren't monsters hiding just behind the next bush
 so I would plant trees to climb at regular, easy to reach intervals.
@@ -205,7 +205,7 @@ so I would have my servants place in each tree a basket of perfect stones
 not too heavy, not too light -- just the right size for throwing at monsters.
 I was thinking about what color the stones would be painted (aqua, mauve or magenta)
 when a vegetable cart came careening down the street outside my house, and knocked me unconscious.
-When I awoke, I was aboard the voidship StarRunner, heading for Earth.
+When I awoke, I was aboard the voidship StarRunner, headed for Earth.
 Apparently I had been out of my head for quite some time after the accident
 and with the assistance of some kind strangers
 had been relieved of my funds and convinced to join the navy
@@ -216,14 +216,14 @@ Originally, we were stationed on Earth's moon, which made us Spathi a bit uneasy
 because with each passing day we grew more and more worried about the sneaky Earthlings making a surprise attack
 though the Ilwrath kept telling us that was impossible
 since the Earthlings had no ships or weapons whatsoever.
-That made us feel a bit better, but when the Ilwrath left, we again grew fearful
+That made us feel a bit better, but when the Ilwrath left, again we grew fearful
 and decided to make a strategic redeployment to Mars.
 Later on we decided it would be prudent to relocate to Jupiter's moon, Ganymede
 then later Saturn's moon, Titan
 and finally here to Pluto.
 
 #(what_blaze_of_glory)
-What do you mean, 'blaze of glory'?  What happened to the Shofixti?
+What do you mean, `blaze of glory'? What happened to the Shofixti?
 
 #(BLAZE_IS)	spath019.ogg
 The Shofixti were half feral, as you know, having been uplifted by the Yehat
@@ -270,7 +270,7 @@ to our homeworld in case of a sudden surprise attack by a vicious, unrelenting a
 The Ultimate Evil!
 
 #(what_enemy)
-Who or what is this 'Ultimate Evil'?
+Who or what is this `Ultimate Evil'?
 
 #(ENEMY_IS)	spath023.ogg
 As yet, the Ultimate Evil remains largely unmanifest, and its powers and exact intentions are still a bit obscure
@@ -283,7 +283,7 @@ When do you expect the Ilwrath to return?
 #(THEN_ILWRATH)	spath024.ogg
 Well, when they were pushing up into HyperSpace 18 years ago, we asked them that very question
 and I think they said something to the effect of
-'Real Soon'.
+`Real Soon'.
 
 #(why_you_here)
 Why are you still here, Captain Fwiffo?
@@ -293,7 +293,7 @@ Since it was our most powerful and unforgiving masters, the Ur-Quan, who station
 we knew it would be grossly stupid to disobey them completely
 but we decided that it would be okay to send just one ship home.
 We used one of our most ancient and solemn rituals, Puun-Taffy, to pick the lucky ship.
-Then... some months later,  we decided that it wouldn't REALLY hurt if we sent one more ship home
+Then... some months later, we decided that it wouldn't REALLY hurt if we sent one more ship home
 and then later we sent another, and then another...well, you get the idea.
 Alas, as fate would have it, when the final ritual was performed
 I, Fwiffo, was left here alone, for as even the most immature encrustling knows
@@ -313,24 +313,24 @@ and in fact my vessel is somewhat understaffed right now
 seeing as how I am the only Spathi on board, which is a bit frightening as I am sure you can understand.
 
 #(THOUSANDS)	spath027.ogg
-Dozens- that is to say, scores and perhaps even hundreds of my brethren stride through the corridors
+Dozens -- that is to say, scores and perhaps even hundreds of my brethren stride through the corridors
 of this specially modified, super-efficient, mass-destruction-oriented starship
 which could lay siege to an entire planetary system should we choose to do so
 which, fortunately for you, we have decided not to do, today.
 
 #(full_of_monsters)
-The galaxy teems with threatening monsters.  Are you happy here -- alone and vulnerable?
+The galaxy teems with threatening monsters. Are you happy here -- alone and vulnerable?
 
 #(HOW_TRUE)	spath028.ogg
 How true, Captain, how true!
 In truth, just between us, during the past seven years, I have been quite ill at ease
-yet now I find myself enjoying your company, this witty dialog
+and yet now I find myself enjoying your company, this witty dialog
 and the presence of your huge, powerful, death-dealing starship which being my friend
 you would certainly feel compelled to use in order to save me from any hostile lifeforms
 who threatened me with death.
 
 #(join_us)
-I'm sure you'd feel a lot safer if you were with us.  Come on, Fwiffo, join our fleet!
+I'm sure you'd feel a lot safer if you were with us. Come on, Fwiffo, join our fleet!
 
 #(WILL_JOIN)	spath029.ogg
 Happy days and jubilation!
@@ -410,7 +410,8 @@ Hello friend Hunam! How nice to see you again. Kill any one today?
 #(SUBSEQUENT_FRIENDLY_HELLO_SPACE)	spath041.ogg
 ...No! No! Weapons Officer, don't fire! It's the Hunam again, you idiot!
 What! The viewscreen? What are you...oh.
-Hello Friend Hunam! How are you? We are just fine, real swell. No problems at all! Just fine. No problems at all!
+Hello Friend Hunam! How are you? We are just fine, real swell.
+No problems at all! Just fine. No problems at all!
 
 #(INIT_ALLIED_HELLO_SPACE)	spath042.ogg
 Hello Captain Ally Hunam! We are here in this place at this time
@@ -544,7 +545,7 @@ where they were read a long and complicated document explaining the choices give
 When our leaders heard the term `forever encased' and `impenetrable shield'
 they grew over-excited, I'm afraid, and made a fatal error.
 The decision was to be transmitted to the Ur-Quan via one of two rods, one colored black, the other white.
-Our leader handed the white rod to one of the Ur-Quan's servants, signifying `Fallow' Slavery
+Our leader handed the white rod to one of the Ur-Quan's servants, signifying `Fallow Slavery',
 but the servant somehow exchanged rods and handed the Ur-Quan Lord a black rod
 indicating our desire to become fighting slaves!
 By the time we learned of the switch, it was too late -- the Ur-Quan would not permit a change in status.
@@ -563,7 +564,7 @@ We can best be described as `Meta-Mollusks'
 possessing the best qualities of both the clam and the Dravatz, which is not native to your world.
 We are intelligent and clever, though you would never call us cunning.
 Each day when we awaken we call forth the traditional Spathi prayer
-Oh God...Please don't let me die today! Tomorrow would be so much better!
+`Oh God...Please don't let me die today! Tomorrow would be so much better!'
 
 #(what_you_really_want)
 But what do you really want out of this great mystery called `Life'?
@@ -577,7 +578,6 @@ Under the circumstances, I think it would be best if you allied with Earth immed
 
 #(SURE)	spath059.ogg
 Sure, consider it done. Allies to the bitter end.
-  
 NOT!
 
 #(part_in_peace)
@@ -656,7 +656,7 @@ What do you guys do for fun out here in deep space?
 We used to be bored, but then we bought this cool entertainment product.
 It simulated a grand adventure through a thousand parsecs of hostile space
 where we met interesting aliens, uncovered the secrets of a long-lost superior race
-and eventually, to save our worlds from destruction, we had to face the dread
+and eventually, to save our world from destruction, we had to face the dread...
 never mind, I can tell you aren't really interested.
 
 #(bye_ally_space)
@@ -668,7 +668,7 @@ Same to you.
 #(OK_WE_FIGHT_AT_PLUTO)	spath071.ogg
 My ichors pulse through my body with unusual ferocity!
 Your arrogance has whipped me into a violent frenzy
-and I am compelled to engage you in preemptive-defensive action.
+and I am compelled to engage you in a preemptive-defensive action.
 Now you shall never learn my important secrets
 such as the location of the Orange Giant star around which my home planet orbits
 oops -- dang! -- you made me give that away!
