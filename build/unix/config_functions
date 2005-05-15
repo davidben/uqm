@@ -708,7 +708,7 @@ set_host_system() {
 		case "$BUILD_HOST" in
 			*-*-*)
 				HOST_SYSTEM="${BUILD_HOST#*-}"
-				HOST_SYSTEM="${OSNAME%-*}"
+				HOST_SYSTEM="${HOST_SYSTEM%-*}"
 				;;
 		esac
 
