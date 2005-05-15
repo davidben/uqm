@@ -1,4 +1,6 @@
 Changes towards version 0.4:
+- Lots and lots of dialog fixes, from Nic.
+- Some speech is dependant on whether spoken voices are on, from Nic.
 - OpenAL header cleanup. Updating OpenAL may be necessary.
   Windows users should put the OpenAL headers in an AL/ directory
   now too (should be the default). - SvdB
