@@ -9,9 +9,9 @@
 #(BEFORE_WE_GO_ON_5) starb004.ogg
  I have some information I think you should hear
 #(BEFORE_WE_GO_ON_6) starb005.ogg
- I've been waiting for you to return to inform you of a new situation
+ I've been waiting to inform you of a new situation
 #(BEFORE_WE_GO_ON_7) starb006.ogg
- I know you're busy, but I have some news
+ I know you're busy, but I've got some news
 
 #(NORMAL_HELLO_A0) starb007.ogg
 Welcome back, Captain 
@@ -116,7 +116,7 @@ I don't mean to criticize, Captain
 #(LIGHT_LOAD_E0) starb029.ogg
 Pretty small amounts, Captain 
 #(LIGHT_LOAD_E1)
-.  Bringing these small amounts of minerals is not cost-effective. Try getting larger loads.
+.  Bringing those small amounts of minerals is not cost-effective. Try getting larger loads.
 
 #(LIGHT_LOAD_F0) starb030.ogg
 Not too much today, Captain 
@@ -201,7 +201,7 @@ More fuel for the fire, eh, Captain
 #(STARBASE_IS_READY_A) starb045.ogg
 I have good news to report, Captain.
 We have successfully integrated the Precursor technology from your ship into our fabricator system
-and as you can see, we have already begun minor repairs on the 
+and as you can see, we have already begun minor repairs on 
 
 #(STARBASE_IS_READY_B)
 , patching up some of the micro-meteorite holes.
@@ -237,7 +237,7 @@ Can you be more specific?
 Fine. Is there anything else you need?
 
 #(ABOUT_FUEL) starb051.ogg
-This base was designed to service Hierarchy ships.
+This base is designed to service Hierarchy ships.
 Fortunately, your flagship uses the same stabilized antimatter technology as Hierarchy vessels
 and we'll be able to synthesize what you need.
 However, due to the size of your ship, we'll have to produce vast quantities of fuel
@@ -245,9 +245,9 @@ which will be a substantial drain on our resources.
 
 #(ABOUT_MODULES) starb052.ogg
 Our engineers and Precursor specialists agree with the scientists from your world
-that your starship was designed to be a 'workhorse' vehicle
+that your starship was designed to be a `workhorse' vehicle
 which can be easily reconfigured for different missions
-by adding or swapping self-contained equipment packs which we call 'modules'.
+by adding or swapping self-contained equipment packs which we call `modules'.
 The modules we can build right now are:
 Thruster units which make your ship move faster
 Attitude Jets which allow you to rotate the ship more quickly
@@ -257,14 +257,14 @@ Fuel Tanks which hold an additional 50 units of fuel
 Dynamos which feed energy into your combat energy batteries, improving your weapons' rate of fire.
 And last but not least
 Ion-Bolt Guns - combat weaponry, the exact function of which depends on its location aboard the ship
-when put in the first or front module slot, it fires a single shot forward
+when put in the first, or front module slot, it fires a single shot forward
 when put in the second slot, it fires two shots spread to the left and right of center
 when put in the third slot, it fires two shots directly left and right
 and when put in the last or rear slot, it fires a single shot straight backwards.
 
 #(ABOUT_CREW0) starb053.ogg
 We have almost 2000 highly-motivated, skilled professionals aboard this starbase
-and every single one of them wants a berth aboard the 
+and every single one of them wants a berth aboard 
 #(ABOUT_CREW1)
 . However, each hand we lose to your ship means less manpower here at the starbase
 and this is reflected in the Crew RU cost.
@@ -276,8 +276,8 @@ the cost could increase dramatically.
 #(ABOUT_SHIPS) starb054.ogg
 Our shipyard facilities are sophisticated and fully automated,
 permitting a handful of starbase personnel to do the same job
-as five-hundred, vac-suited construction workers. However,
-the only designs we had in our computers were incomplete, Hierarchy ship designs.
+as five-hundred, vac-suited construction workers.
+However, the only designs that we had in our computers were incomplete, Hierarchy ship designs.
 Things looked grim until one of the officers came forward with an amazing story.
 Even though the Ur-Quan destroyed every Earthling Cruiser in the fleet nearly 20 years ago
 one of my maintenance engineers was a starship production assistant at the Detroit shipyards.
@@ -291,13 +291,13 @@ without native starship captains at the helm.
 
 #(ABOUT_RU) starb055.ogg
 As you know, Captain, we've committed the entire output of this station
-to building your flagship and your battle fleet into the strongest force possible; however
-our resources are very limited, and we feel YOU must decide
+to building your flagship and your battle fleet into the strongest force possible.
+However, our resources are very limited, and we feel YOU must decide
 how we are to spend our effort and materials.
 To aid you in making these decisions, we have implemented a resource allocation scheme.
 We provide you with a numerical assessment of the station's resources
 and ascribe a cost to each task we can perform and each device we can build.
-It's up to you to decide how you are going to 'spend' your resource units or 'RU' as we call them.
+It's up to you to decide how you are going to `spend' your resource units or `RU' as we call them.
 To acquire more RU, you must bring resources back to the starbase.
 These resources can be either in the form of mineral ores gathered from planet surfaces
 or already-refined metals and other valuable materials from the wreckage of enemy starships.
@@ -309,7 +309,7 @@ There are probably enough resources in just the nearby dozen stars
 to build your ship into a powerful battleship, or
 to create a strong task force of combat vessels.
 I would also recommend that you build several additional Storage Bays.
-When gathering minerals, focus on 'cleaning-out' one star system at a time.
+When gathering minerals, focus on `cleaning-out' one star system at a time.
 This way, you minimize the cost of travel through HyperSpace.
 
 #(ABOUT_LIFE) starb057.ogg
@@ -334,7 +334,7 @@ An old miner once told me that you could tell the relative quality of a planet's
 based on the planet's color as seen from space.
 To remember the color sequence from good to bad
 The miner had a mnemonic which went something like
-Very Young Orangutans Could Grow Bananas, Perhaps Rather Well.
+`Very Young Orangutans Could Grow Bananas, Perhaps Rather Well'.
 It is also the case that mineral yields will be better at hotter stars.
 Temperature is related to the size and color of a star
 Red stars are the coolest, then orange, yellow, green, blue
@@ -372,8 +372,7 @@ At first, your ship will be far too vulnerable to permit frontal assaults on the
 Even when your ship is at full power, we are faced with the reality
 that the Hierarchy has THOUSANDS of ships
 You cannot win the fight alone, Captain. You need allies.
-Also
-towards the end of the War, when the Hierarchy broke through the coreward front,
+Also, towards the end of the War, when the Hierarchy broke through the coreward front,
 we heard rumors that the Ur-Quan had unleashed some kind of super-weapon
 which was unstoppable by normal means.
 You need to find out if that rumor was true, Captain
@@ -385,14 +384,14 @@ If you encounter an unknown alien race, proceed carefully and diplomatically --
 -- we need all the friends we can get, and we certainly can't afford any more enemies. 
 Remember, Captain, with your Precursor starship, you hold awesome power
 but there will be situations when dealing with an alien race
-where a 'carrot' will serve better than a stick.
-But first you must determine what 'carrot' the alien wants.
+where a `carrot' will serve better than a `stick'.
+But first you must determine what `carrot' the alien wants.
 
 #(STRONG_LIKE_SO) starb067.ogg
 You need to accumulate enough resources so that we can build up your flagship
 and assemble a strong fleet. I'd also recommend
 that you acquire blueprints for other, more powerful ships than our trusty Cruiser.
-I suspect that aliens will not give you such 'prints unless you form an alliance with them.
+I suspect that aliens will not give you such `prints unless you form an alliance with them.
 
 #(OK_ENOUGH_DEFEAT) starb068.ogg
 What else can we discuss?
@@ -419,7 +418,7 @@ Which species?
 None that we had made formal contact with.
 The Chenjesu implied that they had met 2 other starfaring species
 one near the Giclas constellation, and the other directly coreward from Procyon.
-The Ariloulaleelay once mentioned having 'some fun' with an alien race in Draconis
+The Ariloulaleelay once mentioned having `some fun' with an alien race in Draconis
 but like so much else with the Arilou, they never revealed the whole story.
 I am sure there are hundreds more alien races in our galaxy,
 but beyond what I've told you, your guess is as good as mine.
@@ -527,9 +526,9 @@ but I don't know any details.
 #(ABOUT_ANDROSYNTH) starb088.ogg
 When I was flying combat missions along the Coreward Front
 there was nothing we feared more than the Androsynth Hit-And-Run Squadron.
-Their Blazer starships were more than a match for our cruisers
+Their Blazer ships were more than a match for our Cruisers
 so we stayed clear of Eta Vulpeculae, their home star.
-In addition, I think each of us aboard ship knew deep down in our hearts
+In addition, I think each of us aboard the ship knew deep down in our hearts
 that the Androsynth had a damn good reason for hating us.
 Our grandparents had kept them as slaves for nearly 50 years.
 
@@ -540,9 +539,9 @@ with an inadvertent insult.
 
 #(ABOUT_ILWRATH) starb090.ogg
 I still have nightmares about those spiders
-taking me prisoner -- using me in one of their sick sacrifices to Dogar and Kazon
+taking me prisoner -- using me as one of their sick sacrifices to Dogar and Kazon
 their twin gods of destruction and torment.
-Those guys were almost as scary as the Androsynth to those of us on deep-space patrol.
+Those guys were almost as scary as the Androsynth to those of us in deep-space patrol.
 Their Avenger ships could appear out of nowhere and melt a Cruiser down to slag in seconds.
 Luckily for us, the bulk of the Ilwrath fleet was thrown against the Chenjesu and the Mmrnmhrm.
 
@@ -558,7 +557,7 @@ from an orbital platform in Alpha Centauri, to a stack of DataPlates in a cave o
 to some nameless widget found in a voodoo shop in New Orleans.
 Though we've never found a Precursor body, or even a picture of one
 we can conjecture what they looked like by examining the scale and layout of their equipment.
-Such an analysis indicates that they were giants, say 5 to 8 meters tall and twice as wide.
+Such an analysis indicates they were giants, say 5 to 8 meters tall, and twice as wide.
 I don't know if they looked more like a brontosaur or an elephant
 Anyway, about three thousand years after the Precursors made their dramatic appearance
 they vanished, poof! As far as we can tell, it took less than a decade to happen.
@@ -568,7 +567,7 @@ You mean besides the Precursors? Well, the only information we have is second-ha
 based on some research by a Chenjesu historian that I read at the Academy.
 Tzzz-Tzer-Tzak, the historian, found some evidence that there was a group of alien races
 who formed an interstellar empire not too far from here about 22,000 years ago.
-The only species in this empire who actually lived in our region of space
+The only species in this empire actually lived in our region of space
 was a race of rocklike creatures who lived in the Vulpeculae constellation.
 The presence of the hostile Androsynth in that part of space
 severely limited Tzzz-Tzer-Tzak's research.
@@ -577,21 +576,21 @@ He never even found out the race's name.
 #(ABOUT_ALIENS_ON_EARTH) starb094.ogg
 Yes, there is.
 Aside from the Precursor relics we have found on Earth --
--- often in museums, mislabeled as 'modern art' --
+-- often in museums, mislabeled as `modern art' --
 -- we have discovered disturbing evidence of much more recent visitations.
 Perhaps you are already aware that during the mid-to-late 20th century
-there were uncountable UFO sightings, as well as dozens of reported 'encounters' with alien life forms.
+there were uncountable UFO sightings, as well as dozens of reported `encounters' with alien life forms.
 Although we can discount many of the reports as wishful fabrication or traumatic-translation
-the military authorities of that time kept a secret record of the 'incidents' which were legitimate.
+the military authorities of that time kept a secret record of the `incidents' which were legitimate.
 In each such case, the aliens are almost identical in appearance.
 They have white skin and minimal facial features, except for huge, almond-shaped eyes
-which are often described as 'glowing' or 'luminescent'.
+which are often described as `glowing' or `luminescent'.
 This description fits, almost perfectly, the Ariloulaleelay.
 In most of the legitimate encounters
 the people involved described being physically examined or modified by the aliens.
 In come cases, unusual pregnancies occurred, and in almost every instance, there were repeat visitations
-as though the Ariloulaleelay were doing 'check-ups' on their subjects.
-We never got a chance to confront the Ariloulaleelay about what they did to us and why.
+as though the Ariloulaleelay were doing `check-ups' on their subjects.
+We never got the chance to confront the Ariloulaleelay about what they did to us and why.
 I wonder if we ever will?
 
 #(OK_ENOUGH_ANCIENT) starb095.ogg
@@ -602,7 +601,7 @@ Earth got involved late in the game, in 2112, when the Chenjesu arrived in our s
 so let's back up a few years to 2098
 when the Chenjesu's super-sensitive receivers detected a strange signal from the Ophiuchi constellation.
 Though even the Chenjesu didn't know it, it was the first sign of the Ur-Quan's arrival.
-The Ur-Quan, having detected the presence of many sentient species, were beaming out an exultant hunting cry.
+The Ur-Quan, having detected the presence of many sentient species, were beaming out an exulting hunting cry.
 The first direct evidence of the Ur-Quan's intent
 was the sudden conquest of the Umgah, a solitary, though not unfriendly, species in the Orionis constellation.
 The Chenjesu, distraught by the invasion, were further angered when the Ur-Quan
@@ -642,7 +641,7 @@ but we held the line -- The Coreward front remained intact.
 Over the following ten years, there were many great battles between the combined Alliance starfleet
 and the Ur-Quan and their Hierarchy of Battle Thralls.
 Then, in 2134, a dramatic shift in the balance of power took place --
--- this must have been just about the time the science research mission was sent to the planet at Vela --
+-- this must have been about the time the science research mission was sent to the planet at Vela --
 -- our fleets were pushed back from the Indi-Mira line to beyond Raynet.
 Holding Rigel cost grievously in Chenjesu forces and the Ur-Quan, recognizing this weakness
 shifted to focus the brunt of their forces on Procyon.
@@ -665,7 +664,7 @@ we had become a fallow slave world.
 We were given a month to withdraw all of our people and equipment to Earth.
 Anyone or anything we left off-planet would be destroyed after the shield went up.
 Then the Ur-Quan broadcast an odd message
-all objects of human construction more than 500 years old were 'to be abandoned'.
+all objects of human construction more than 500 years old were `to be abandoned'.
 We didn't know what the Ur-Quan meant until they moved their Dreadnoughts to new orbital positions
 and opened fire on the surface with their fusion weapons.
 In seconds, large sections of London, Paris, and other European cities were incinerated.
@@ -700,14 +699,14 @@ also
 #(STARBASE_BULLETIN_1) starb103.ogg
 Captain, a delegation of Spathi has just arrived here under orders from their High Council
 to form an alliance and assist you against the Hierarchy!
-They have provided fabricator blueprint data for their 'Eluder' spacecraft
+They have provided fabricator blueprint data for their `Eluder' spacecraft
 and promise a steady supply of captains for as many ships as we build.
 Excellent work, Captain!
 
 #(STARBASE_BULLETIN_2) starb104.ogg
 It would appear that your diplomatic efforts have struck gold, Captain.
-We have been contacted by a race called the Zoq-Fot-Pik
-who wish to fulfill their part of 'the Unification' --
+We have been contacted by a race called the Zoq-Fot-Pik,
+who wish to fulfill their part of `the Unification' --
 -- something you have arranged with them, I gather.
 They have sent us specifications for their Stinger-class attack vessels
 as well as a large number of Zoq-Fot-Pik commanding officers.
@@ -753,12 +752,12 @@ and finally
 
 #(STARBASE_BULLETIN_8) starb110.ogg
 A previously unknown alien race has recently made contact with our base.
-They call themselves the Melnorme, and are anxious to initiate trading relations with us.
+They call themselves the Melnorme, and they are anxious to initiate trading relations with us.
 If we are interested, they suggest making a rendezvous at Alpha Centauri.
 
 #(STARBASE_BULLETIN_9) starb111.ogg
-The Melnorme returned to the starbase, wondering when you want to meet them.
-They seemed friendly but were unwilling to deal with us,
+The Melnorme have returned, wondering when you want to meet them.
+They seemed friendly but are unwilling to deal with us,
 claiming that we have no data they consider valuable.
 They said to make contact with them in any supergiant star system.
 
@@ -820,7 +819,7 @@ their own crystalline amplification devices to boost dramatically the power of t
 This work is now complete, and your flagship is ready for what ever final modifications you desire.
 The Chmmr technicians wanted me to explain to you that the bomb and its crystal power boosters
 are fragile and cannot be moved from their positions at the back of your vehicle.
-Now I have some bad news and some good news.
+Now I have some bad news, and some good news.
 The Chmmr had to remove all your main modules, weapons, crew pods, and the whole lot
 including your emergency warp escape unit
 so pick your engagements carefully, Captain.
@@ -832,11 +831,11 @@ We no longer have limits on what we can build for your flagship, or your fleet.
 #(STARBASE_BULLETIN_22) starb121.ogg
 I have some somber news.
 For weeks now we have been scanning space in the direction of the Tucanae stars
-hoping to hear some word from our Zoq-Fot-Pik allies
+hoping to hear some word from our Zoq-Fot-Pik allies,
 with no success. We must assume that something grave has happened to them.
 We did receive an alien broadcast however -- it rang through space like an electronic howl.
-I think the best way to describe it would be
-exultant.
+I think the best way to describe it would be...
+`exultant'.
 
 #(STARBASE_BULLETIN_27) starb122.ogg
 Captain, I have an unpleasant topic to discuss with you, but this needs to be resolved right away.
@@ -897,13 +896,13 @@ The hazards and benefits of this process are impossible to gauge without field s
 
 #(ABOUT_TALKPET) starb130.ogg
 SUBJECT: Talking Pet Lifeform.
-DATA: This creature is physiologically identical to the so-called Ur-Quan `Talking Pet' with one notable exception.
+DATA: This creature is physiologically identical to the so-called Ur-Quan `Talking Pet', with one notable exception:
 It is highly intelligent, and evidences strong psychic capabilities.
 Initial AIQR tests rated it well above human super-genius
 though immediately after we made this shocking assessment
-its scores dropped into the normal-sub-normal range.
+its scores dropped to the normal-sub-normal range.
 Interviews with the subject have shown it to be cooperative
-though a class-IV pan-species psychological profile places the creature far into the Furtive-Hateful domain.
+though a class-IV pan-species psychological profile places the creature far into the `Furtive-Hateful' domain.
 There were also some disturbing incidents where
 we talked about roses, daisies, and other pretty flowers!
 SUMMARY: Everything's okay! Nothing to worry about with this cuddly little guy.
@@ -913,7 +912,7 @@ Not one thing!
 SUBJECT: Utwig Bomb Device.
 DATA: Analysis has yielded little information about this device
 largely because of our technicians' unwillingness to open it, or even remove the bomb from your ship.
-That aside, here's what we know so far
+That aside, here's what we know so far:
 The device is correctly defined as a Bomb... one of enormous destructive potential
 but it is not of Utwig origin -- nothing about it relates to the technology we see in the Jugger ship.
 We believe it to be of late Precursor origin
@@ -927,9 +926,9 @@ and preferably a bit further.
 #(ABOUT_SUN) starb132.ogg
 SUBJECT: Sun Device.
 DATA: The unit contains a power generator whose output magnitude is simply mind-croggling.
-When activated, the device radiates visible light equivalent to less than 1/100 of 1% of our sun
+When activated, the device radiates energy equivalent to less than 1/100 of 1% of our sun
 however, when placed close to a planet, perhaps in orbit, its output would rival Sol's.
-SUMMARY: Another Precursor tool the energy output of which can replace or augment a sun's radiance.
+SUMMARY: Another Precursor tool, the energy output of which can replace or augment a sun's radiance.
 
 #(ABOUT_MAIDENS) starb133.ogg
 SUBJECT: Shofixti Maidens.
@@ -992,14 +991,14 @@ SUBJECT: Ultron.
 DATA: We have determined that the so-called `Ultron' is in fact the `Appendages of Dawn'
 described in the Precursor fragment found on Rigel in 2123.
 In the partially translated Precursor text, the device is described as a `Mental Amplifier'
-which focuses the mental energies of the holder `for the purpose of discreet change'.
+which focuses mental energies of the holder `for the purpose of discreet change'.
 Unfortunately, human brain emanations do not seem compatible with the Ultron
 nor do those of the allied species we have tested.
 SUMMARY: Perhaps the Utwig, who claim to understand this device, can shed some light
 on its true function and power.
 
 #(ABOUT_UCASTER) starb141.ogg
-SUBJECT: HyperWave Broad`Caster - Umgah Design.
+SUBJECT: HyperWave Broadcaster - Umgah Design.
 DATA: This unit is capable of generating extremely intense HyperWave transmissions
 though it is otherwise similar to our own `Casters.
 SUMMARY: This thing would be great for practical jokes. You could scream `Boo!' from an Oort Cloud
@@ -1007,7 +1006,7 @@ and scare the pants, or whatever, off everyone in the system.
 If you used it in HyperSpace, there's no telling who might hear you and come running.
 
 #(ABOUT_BCASTER) starb142.ogg
-SUBJECT: HyperWave Broad`Caster - Unknown Design.
+SUBJECT: HyperWave Broadcaster - Unknown Design.
 DATA: This technology is new to us, but though a bit primitive by Alliance standards
 is capable of generating a VERY strong signal.
 SUMMARY: Should you wish to call someone in HyperSpace, or send a message through a mile of steel
@@ -1016,9 +1015,9 @@ this baby will do just fine.
 #(ABOUT_SHIELD) starb143.ogg
 SUBJECT: Taalo Device.
 DATA: Whoever the Taalo were, they were clever -- way past us, probably even beyond the Chenjesu.
-As far as I can tell, with all our equipment, this thing is
-a rock. Just a rock; nothing but a rock. However
-If you feed a current into it, anywhere along its surface
+As far as I can tell, with all our equipment, this thing is a rock.
+Just a rock; nothing but a rock. However,
+if you feed a current into it, anywhere along its surface
 everyone on board this starbase who has esper potential gets a bad headache.
 Well we checked a bit more into that, and when the Taalo thing is active
 all evidence of psychon interaction is flatlined -- nothing gets through.
@@ -1030,7 +1029,7 @@ or at least mostly immune.
 SUBJECT: Mycon Egg Case.
 DATA: We really didn't know Mycon came from eggs, but our analysis of this sheath
 shows that it has been subjected to phenomenal temperatures and pressures.
-The most unusual aspect of the egg cases is its size
+The most unusual aspect of the egg case is its size
 we know Mycons range in height from .5 to 3.5 meters
 but our reconstruction of the whole egg case shows it to be over 25 meters high!
 SUMMARY: If a Mycon came out of this, it's gotta be really big.
@@ -1052,7 +1051,7 @@ He's been there ever since that thing took a swipe at him and he got too close t
 I guess it's got like, triple-jointed arms or something... with spikes and razor-plates all over.
 Uh... data? Oh yeah, right, right
 Subject is a Xenoteratomorph -- a big honkin' one, I might add.
-It eats everything -- plant and animal tissue, wood
+It eats everything -- plants, animal tissue, wood
 ceramics, plastics, asbestos fibers
 several types of metal
 chairs, a desk and about half of everything a security officer wears.
@@ -1095,7 +1094,7 @@ SUMMARY: In the future, Captain, I would be very careful of what I bought from t
 Hmm... let's see...
 
 #(GO_GET_MINERALS) starb152.ogg
-I guess I'd go gather more minerals to build up a good supply of resource units.
+I guess I'd gather more minerals to build up a good supply of resource units.
 
 #(IMPROVE_FLAGSHIP_WITH_RU) starb153.ogg
 Use the Resource Units you have accumulated to improve your flagship.
@@ -1180,7 +1179,7 @@ to make it more than a match for any enemy ship you might encounter.
 
 #(NEED_THRUSTERS_1) starb175.ogg
 I would add thrusters up to say, 5 or 6.
-Speed is essential in combat, but it will also pay off over the long haul in HyperSpace
+Speed is essential in combat, but it would also pay off over the long haul in HyperSpace
 and if you prefer to avoid confrontation, nothing beats a great pair of legs.
 
 #(NEED_THRUSTERS_2) starb176.ogg
@@ -1204,8 +1203,6 @@ You need more crew, at least 50, to make productive voyages into space
 
 #(NEED_CREW_2) starb182.ogg
 You need even more crew, perhaps as many as 200, to face the challenges ahead
-You need additional fuel, at least 50 units
-You need large quantities of fuel, at least 150 units
 
 #(NEED_FUEL_1) starb183.ogg
 You need additional fuel, at least 50 units
@@ -1230,7 +1227,7 @@ You need more dynamo power;
 otherwise your weapon re-energizing delays will be your undoing in combat
 
 #(NEED_POINT) starb190.ogg
-I suggest you invest in one or more point-defense laser batteries.
+I suggest you invest in one or more point-defense laser systems.
 
 #(have_minerals)
 Commander, I have minerals to offload.
@@ -1416,3 +1413,11 @@ What is the fastest way for us to build up our strength?
 #(what_do_now)
 If you were in my shoes, what would you do now?
 
+#(YOUR_FLAGSHIP_PC) 
+the 
+#(YOUR_FLAGSHIP_3DO0) 
+flagship
+#(YOUR_FLAGSHIP_3DO1) 
+your ship
+#(YOUR_FLAGSHIP_3DO2) 
+your starship
