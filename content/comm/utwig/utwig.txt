@@ -9,12 +9,12 @@ Just go away. Leave us to ponder our grief.
 
 #(HOSTILE_SPACE_HELLO_1)	utwig002.ogg
 Yagh! Your attitude toward us is not acceptable!
-We apologize for having to deal with you this way but
-since the loss of the Ultron, we have no choice.
+We apologize for having to deal with you this way,
+but since the loss of the Ultron, we have no choice.
 As we prepare to die, so should you.
 
 #(HOSTILE_SPACE_HELLO_2)	utwig003.ogg
-You have caught us in a private dark moment.
+You have caught us in a private, dark moment.
 We must guarantee your silence with your complete and total destruction.
 
 #(BOMB_WORLD_HELLO_1)	utwig004.ogg
@@ -61,7 +61,7 @@ we find within ourselves the verve required to engage you in a duel to the death
 Indeed, we will find satisfaction in your demise or in our release from our mortal burden.
 
 #(HOSTILE_HOMEWORLD_HELLO_2)	utwig013.ogg
-Attention! Offending vessel! Your presence here is deeply appreciated!
+Attention Offending vessel! Your presence here is deeply appreciated!
 You have stirred us from our depression-induced apathy
 to the point where our desire actually registers as a sensation!
 We look forward to either finding personal release in the netherworld
@@ -106,8 +106,7 @@ We stand ready!
 Wow, that is pretty neat! May we have the Bomb?
 
 #(NO_BOMB)	utwig018.ogg
-Yes
-it IS a remarkable device.
+Yes, it IS a remarkable device.
 It is understandable that you would like to possess it yourselves.
 Our mandate, however, requires that we maintain full control of the Bomb.
 
@@ -129,7 +128,7 @@ an ancient Precursor supply base.
 It had been dismantled and appeared to be empty.
 In the staging area there was a collection of what appeared to be refuse.
 During the cataloging of these various items, this device was discovered in a damaged container.
-From what our scientist can tell, it appears to be a planeteering tool
+From what our scientists can tell, it appears to be a planeteering tool
 capable of reducing moon-sized objects to particulate dust clouds.
 We believe that it was either accidentally forgotten
 or simply left because of a lack of room on the departing vessel.
@@ -183,13 +182,13 @@ We agonized for hours wondering if it was a cruel twist of fate
 or simply a serious case of butterfingery.
 Ah, the lifetimes that have been spent in the pursuit of the elusive answer
 to this deceptively simple question has driven many of us down the dark road of self-destruction.
-Indeed, even as these words strike the ears of any that care to listen
+Indeed, even as these words strike the ears of any who care to listen
 the real question is, Does It Matter? I cannot say, I wallow in a quandary
 unable to determine what better atones for my part of the Great Sin.
 Should I engage in slow and painful self-termination?
 Should I commit myself to a long life of painful self-flagellation?
 Should I throw myself with enthusiastic verve at the problem of collective annihilation?
-I do not know. Even now my mind writhes in the anguish of indecision lest the outcome be inadequate.
+I do not know. Even now my mind writhes in anguish of indecision, lest the outcome be inadequate.
 
 #(why_sad)
 Hmm, I detect that recent events have not gone your way. Why don't you start at the beginning?
@@ -199,7 +198,7 @@ Hmm, I detect that recent events have not gone your way. Why don't you start at 
 After all, we have a famous Utwig saying: when one loses the reason for existence
 one tends to get less motivated.
 This goes hand-in-hand with the painfully appropriate credo
-'We broke it so we are paying for it'.
+`We broke it so we are paying for it'.
 Of course, this isn't really accurate; the situation is so much more hideous!
 Imagine, if you can, holding within your hands The Answer!...
 ...only to have it taunt you with its former potential!
@@ -228,8 +227,8 @@ Hop hop hop! Okay, that's it! Put up your dukes! Nobody makes fun of the Ultron!
 Sniff. That reminds me when my pet dog Splib, ran in front of a... rock chipper!
 
 #(APPRECIATE_SYMPATHY)	utwig030.ogg
-You are kind. If we could wield the Ultron to resurrect your Splib, we would... but
-I suddenly am overcome with waves of depression.
+You are kind. If we could wield the Ultron to resurrect your Splib, we would.
+But I suddenly am overcome with waves of depression.
 I must retire now to perform rituals of anguish.
 Waves of trauma wash across my being even now. I must go.
 
@@ -238,7 +237,7 @@ A truly unique set of events put you in your current state. Am I right?
 
 #(ABOUT_US_1)	utwig031.ogg
 Hah, to say the least!
-Our past is one of both a glorious and proud people coupled with a cataclysm that rocks the Universe
+Our past is one of a glorious and proud people coupled with a cataclysm that rocks the Universe
 to its very core!
 It all began when the Chimt rose from the Murky Bog and the Utwig emerged as well.
 In these primitive times we cavorted about our world oblivious to any sort of higher purpose
@@ -251,12 +250,13 @@ You see, the face is the mechanism that expresses many of the primitive qualitie
 Now rid of constant reminders of greed, rage, hatred, and lust
 the wisdom of the Utwig was no longer hampered by constant reminders of the primitive urge.
 Over many generations mask etiquette was refined to a rock-solid foundation of our society.
-Sure, the Morality Riots were expensive both in lives and infrastructure
+Sure, the Morality Riots were expensive, both in lives and infrastructure
 but the result was better mask regulation; specification from your basic Mask of Gruelling but Neccessary Activity
 to the most highly decorated Countenance of Stellar Representation. These were clearly defined.
 Recognizing the importance of flexibility, clear-cut and efficient procedures for revision and redesign
 dealt with the few anomalies.  From that moment when we covered the source of our intellectual oppression
 we knew that it was a grand purpose that defined our destiny.
+Are you still listening?!
 Our entire development as a sentient species was coordinated to coincide with the appearance of a remarkable device
 the Ultron!
 We were oblivious to its tragic implication.
@@ -287,25 +287,26 @@ Hmm, sounds like things were going pretty well. So what happened?
 
 #(ABOUT_US_3)	utwig033.ogg
 Yes, things were perfect. What happened is, well, I... it is difficult to talk about.
-I saw it happen. I witnessed the Chinz-Rahl celebration.
+But I saw it happen. I witnessed the Chinz-Rahl celebration.
 I felt the Ultron fill the empty place that I did not know was there.
-I saw the Grand Proctor pass it to
+I saw the Grand Proctor pass it to...
 well, they say that the Chief Groo did not know that it was so heavy and slippery.
 Perhaps it was a combination of factors.
 Some who have reviewed the records claim it was actually a conspiracy!
-The commission investigation officially stated that the Ultron was rendered inoperative by the fall to the ground
-yet many feel that the whole story has not been told!
+The commission investigation officially stated that the Ultron was rendered inoperative by the fall to the ground,
+yet many feel that the whole story has not yet been told!
 As it struck the ground, I saw its glow fade, and then the painful void incapacitated all.
 All Utwig immediately donned the mask of Ultimate Embarrassment and Shame with a vow to wear it forever!
 Bonfires all over Fahz consumed all but this mask; no other mask was spared!
-The Visage of Ceremonial Orations in all of its contexts and revisions
+The Visage of Ceremonial Orations in all of its contexts and revisions,
+as I'm sure you understand,
 all of the courting masks from the clever and intriguing Veil of Flirtatious Prancing
 to the infamous Lewd Monacle... all consumed by the hungry flames.
 Even the most fundamental fixtures were committed to this irreversible fate.
 The Mask of Natural Bodily Excretions once hung in every lavatory!
 Most of the public facilities have removed the disposable mask dispensers
 but every once in a while I still see such a repository... always empty.
-At that time, many suggested that we use the Precursor relic as a form of self punishment.
+*Sigh*. At that time, many suggested that we use the Precursor relic as a form of self punishment.
 The proposal was that we collectively go to the second moon of the sixth planet of Zeta Hyades
 (at coordinates 850.3, 937.2)
 and use the ancient planeteering device to end our existence.
@@ -329,7 +330,7 @@ In our skirmishes with the race, who called themselves the Kohr-Ah
 we found that by using our own shielding capability we could sweep through the mines, absorb the corona
 and then get close enough to the dark ships to give a lick of our own.
 In truth, however, they are very powerful and ruthless.
-When the Kohr-Ah started to press towards our homeworld
+When the Kohr-Ah started to press toward our homeworld
 we thought that our deserved punishment was being administered.
 But then, a mystery? They suddenly became disinterested and veered away. Bah! Confounding frustration!
 With the Ultron I could speak knowledgeably on this subject!
@@ -405,6 +406,7 @@ it is the image of the Ultron BEFORE!... a trick? A TRICK?!
 Oooh! I had no idea that any species could sink so low!
 How dare you try to manipulate me with that cheap stage prop?!... why it's not even
 Hey, wait a second, it looks like... CAN IT BE?... YES, IT IS!...A MIRACLE!!
+OH HAPPY DAY!!  JOYOUS OCCASION!!
 You have our eternal thanks, good Captain!
 You will be immortalized as the blessed figure that delivered unto us our future!
 We will revere your very likeness!
@@ -483,7 +485,7 @@ We prepare an armada composed of the collective might of both the Utwig and Supo
 that will pursue the invaders with the intent of foiling their plan of doom.
 
 #(GENERAL_INFO_BEFORE_SPACE_2)	utwig048.ogg
-We have determined that the Kohr-Ah are engaging in battle the species that you call Ur-Quan.
+We have determined that the Kohr-Ah are engaging in battle with the species you call Ur-Quan.
 We are unable to determine the cause of this conflict.
 Even meticulous employment of the Ultron in this matter has yielded only minimal insight.
 In any case, after interpreting the direction provided by the Ultron
@@ -497,7 +499,8 @@ Your request is within our capabilities. One moment
 Mmmm, emanations from the Ultron... orange furry air breathes tender yawns
 Yes, it all becomes clear now... you must do something with the great Bomb
 the Precursor relic we kept at Zeta Hyades VI-B.
-It seems that this Bomb must be, ah... eaten?...no. Hugged?... no
+It seems that this Bomb must be, ah...
+eaten?... no. Hugged?... no
 Ah! IMPROVED! That's it!  The Bomb must be improved to fulfill its final destiny!
 
 #(bye_before_space)
@@ -512,7 +515,7 @@ What were the results of your actions against the Ur-Quan and Kohr-Ah?
 #(ABOUT_BATTLE)	utwig051.ogg
 Ah Captain! The battle against the Kohr-Ah was fearsome.
 As we and our allied Supox approached the main force
-we found that the Kohr-Ah and the species that you call the Ur-Quan
+we found that the Kohr-Ah and the species you call the Ur-Quan
 were engaged in a conflict of fundamental doctrine in which the Kohr-Ah thesis seemed superior.
 Acting under the guidance of the Ultron, we engaged the Kohr-Ah in an effort to balance the battle.
 We met with some success. We would sweep the mines clear and deplete the energy reserves of the Kohr-Ah vessels.
@@ -527,7 +530,7 @@ How is your engagement with the Kohr-Ah and Ur-Quan going?
 Even as I speak, brave Utwig and noble Supox launch themselves against the merciless arsenal of the Kohr-Ah.
 We continue to refine our tactics.
 Alas, the Kohr-Ah are winning their war with the Ur-Quan.
-We grow uncomfortable with the success that the Kohr-Ah currently enjoy
+We grow uncomfortable with the success that the Kohr-Ah are currently enjoying,
 so we fight only the Kohr-Ah in hopes of weakening their stand against the Ur-Quan.
 The Ur-Quan complicate matters by blasting our vessels with fusion bolts
 thus we have made it a policy to avoid Ur-Quan ships whenever possible.
@@ -536,7 +539,7 @@ thus we have made it a policy to avoid Ur-Quan ships whenever possible.
 We have discovered that the Kohr-Ah, in addition to their formidable battle vessels
 will soon possess an immense ship capable of inflicting destruction on a vast scale.
 I do not need to examine the pulsations of the Ultron to know that they will use this instrument
-to implement their stated objective, the elimination all intelligent life besides their own.
+to implement their stated objective, the elimination of all intelligent life besides their own.
 
 #(FLEET_ON_WAY)	utwig054.ogg
 Even as I utter these words, the combined military resource of both the Utwig and Supox
@@ -592,7 +595,7 @@ we are, as yet, deficient operators of this grand device.
 We will, however, make a best attempt to help you from afar.
 
 #(ALLIED_HOMEWORLD_HELLO_1)	utwig060.ogg
-It is the legendary Earth Captain! A grand celebration is in order!
+Ah! It is the legendary Earth Captain! A grand celebration is in order!
 We prepare now for the festivities!
 Many will bow before you and offer their profuse thanks!
 Proceed now to our main spaceport and then on to the parade!
@@ -604,15 +607,15 @@ Our spirits are lifted by your visit!
 I sense through the Ultron's powers that you are curious
 about the status of your well-deserved facial appliance. Fear not!
 Even though we currently have no masks worthy of your stature
-with the reestablishment of the Ultron within the structure of the Utwig wholeness
+with the re-establishment of the Ultron within the structure of the Utwig wholeness
 we proceed with the design and implementation of what will truly be the pinnacle of Utwig ingenuity.
 At long last, you will be able to cover your unsightly mug with distinction!
 
 #(ALLIED_HOMEWORLD_HELLO_3)	utwig062.ogg
-Ah, I see that it is the great Earth Captain honoring my own lowly self with undeserved attention.
+Ah, I see that it is the great Earth Captain honoring my lowly self with undeserved attention.
 Even now my skin prickles with embarrassment since I am unable to don a mask
 that accurately indicates my awed and respectful attitude toward you.
-I am glad to say, however, that we are in the process
+I am glad to say, however, that we are in a process
 of redefining and restructuring our entire countenance catalog.
 The results will be dramatic since the Ultron is now integrated in this process.
 In the meantime, I beg that you bear with us while we complete this task.
@@ -631,7 +634,7 @@ I sense your excitement concerning this project!
 #(HELLO_BEFORE_KOHRAH_SPACE_1)	utwig064.ogg
 Suddenly I am overcome with embarrassment!
 I possess the distinguished honor of addressing the legendary Earth Captain!
-Please excuse my lack of a proper facial appliance.
+Please excuse my lack of proper facial appliance.
 This occasion ideally calls for me to don the Expression of Ultimate Gratitude.
 Eegh! I am compelled by the forceful Emanations of the Ultron to describe the appearance of the mask.
 Its foundation is composed entirely of a matrix of beetle secretions and Trooba Fern
@@ -659,7 +662,7 @@ We are currently engaging the Kohr-Ah in an attempt to balance the conflict. Sta
 Battle rages in the immediate area. Beware!
 The Ur-Quan and the Kohr-Ah are engaged in a conflict of doctrinal extremes.
 The Ur-Quan argument seems inferior.
-You must clear the area before you become a victim of either the Ur-Quan or Kohr-Ah theses.
+You must clear the area before you become a victim of either the Ur-Quan or Kohr-Ah.
 Leave now! We shall remain in an attempt to balance the conflict
 so that the two forces of evil might more effectively negate each other.
 
@@ -694,7 +697,7 @@ Further assistance would be redundant.
 
 #(HAVE_4_SHIPS)	utwig073.ogg
 Just so. The Ultron has hummed its assent.
-Take possession of four of our Jugger craft instantly.
+Take possession of four of our Jugger craft this instant!
 
 #(NO_ULTRON_AT_BOMB)	utwig074.ogg
 We are the stewards of the Bomb.
