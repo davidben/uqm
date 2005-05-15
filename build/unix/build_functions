@@ -321,6 +321,11 @@ installsome() {
 
 # Install the program
 build_install() {
+	eval "${TARGET}_install"
+}
+
+# Generic installation routine
+generic_install() {
 	local SRC DEST MODE OWNER
 	
 	eval "${TARGET}_pre_install"

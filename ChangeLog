@@ -1,4 +1,5 @@
 Changes towards version 0.4:
+- Installation routine for MacOS X, from Nic.
 - Lots and lots of dialog fixes, from Nic.
 - Some speech is dependant on whether spoken voices are on, from Nic.
 - OpenAL header cleanup. Updating OpenAL may be necessary.
