@@ -28,8 +28,7 @@ ziggerfau-gerrrnuf, Ah-ah, Pahoy-hoy.
 #(SCOUT_HELLO2)	zoqfo010.ogg
 No, you idiot, in their coordinate system!
 #(SCOUT_HELLO3)	zoqfo011.ogg
-Oh!
-Er
+Oh! Er
 Coordinates 400.0 : 543.7.
 
 #(INIT_HOME_HELLO0)	zoqfo012.ogg
@@ -209,7 +208,7 @@ You mean his WHOLE SPECIES are jerks?
 #(NOT_HELPFUL4)	zoqfo074.ogg
 Let us give him one more chance.
 #(NOT_HELPFUL5)	zoqfo075.ogg
-Just look at him. He's a killer, I tell you.
+Just look at him! He's a killer, I tell you!
 
 #(what_look_like)
 Who is attacking you? What do they look like?
@@ -401,7 +400,7 @@ Yeah. I bet THIS is the time they try to trick us.
 Alien Captain, do you bring word from your Leaders?
 #(NEUTRAL_HOME_HELLO_23)	zoqfo131.ogg
 If he does, I bet it's something like
-Submit or be Eaten!
+`Submit or be Eaten'!
 
 #(ALLIED_HOME_HELLO_10)	zoqfo132.ogg
 Hello friend and ally!
@@ -467,9 +466,9 @@ have been annihilated... entire ecosystems destroyed.
 #(THANKS_FOR_RESCUE7)	zoqfo155.ogg
 Oh! That makes me REALLY mad!
 I mean, attacking helpless, intelligent, alien species
-that's one thing
+that's one thing,
 but toasting our cute little wood Jukes and tree Narfs
-that's really low!
+that is really low!
 #(THANKS_FOR_RESCUE8)	zoqfo156.ogg
 If the black ship had been accompanied by others of its kind
 we wouldn't have been able stop the rain of destruction.
@@ -599,7 +598,7 @@ Yeah! Big news!
 Two alien races have entered that region of space
 from the coreward direction.
 #(UTWIG_DELAY3)	zoqfo195.ogg
-One of the races looks like big talkin' weeds
+One of the races look like big talkin' weeds
 and the other wears a funny mask.
 #(UTWIG_DELAY4)	zoqfo196.ogg
 And they are attacking our enemies!
@@ -680,7 +679,7 @@ Poor Yip, Tun and Haffy! I'll really miss those guys!
 Although none of our scouts returned home alive
 #(KOHRAH_FRENZY3)	zoqfo225.ogg
 ...and Jiff... and Fod... and (sniff!)...
-...my best pal, Rogi!
+...and my best pal, Rogi!
 #(KOHRAH_FRENZY4)	zoqfo226.ogg
 They were able to send a last message.
 The Kohr-Ah have won their war against the Ur-Quan
@@ -792,8 +791,6 @@ AIEE! That means if there was only one last week
 then next month... ah
 wait a minute... let me calculate
 uh
-uh
-uh
 That means, next month there will be
 ...A WHOLE MESS OF THOSE THINGS!
 #(ABOUT_OTHERS12)	zoqfo261.ogg
@@ -823,7 +820,7 @@ Why, I'll bet right now he's wondering
 `What kind of equipment do you need to play Frungy?'
 and `I wonder who's ahead in the Frungy Championships?'
 #(ABOUT_ZEBRANKY4)	zoqfo267.ogg
-AUGH! Will you just SHUT UP ABOUT FRUNGY?!
+AUGH! Will you SHUT UP ABOUT FRUNGY?!
 If you say another word about that STUPID GAME
 I'm going to lose control and blow a cloud of spores at you!
 #(ABOUT_ZEBRANKY5)	zoqfo268.ogg
@@ -852,7 +849,7 @@ which would advance in art, technology and social sophistication?...
 #(ABOUT_PAST3)	zoqfo274.ogg
 ...Or should we just go back into the forest
 and kick back and enjoy ourselves
-knowing that a Zebranky wasn't gonna jump out of a bush and eat us!
+knowing that a Zebranky wasn't gonna jump out of the bush and eat us!
 #(ABOUT_PAST4)	zoqfo275.ogg
 Well, we DID go back into the forest.
 We stayed there for about five thousand years and had a great time
