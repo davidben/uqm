@@ -78,7 +78,7 @@ build_dependencies() {
 build_rec_dependencies() {
 	local DEPEND_FILE EXTRA_OFILES
 
-	echo "Building dependency information..." 1>&2
+	echo "Building dependency information..." >&2
 	
 	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
 	export BUILD_WORK_ESC
@@ -165,7 +165,7 @@ build_reconfig() {
 	eval "${TARGET}_load_config"
 	build_process_config
 
-	echo "Reconfiguring complete..." 1>&2
+	echo "Reconfiguring complete..." >&2
 }
 
 # Process the configuration information
@@ -331,7 +331,7 @@ generic_install() {
 	eval "${TARGET}_pre_install"
 
 	local LIB LIBS LIBDIR
-	echo "Installing system-dependent data..." 1>&2
+	echo "Installing system-dependent data..." >&2
 	eval LIBS="\${${BUILD_PROJECT}_INSTALL_LIBS}"
 	eval LIBDIR="\${${BUILD_PROJECT}_INSTALL_LIBDIR%/}/"
 	mkdirhier "$LIBDIR" 0755
@@ -344,7 +344,7 @@ generic_install() {
 	done
 
 	local SHARE SHARED SHAREDIR
-	echo "Installing system-independent data..." 1>&2
+	echo "Installing system-independent data..." >&2
 	eval SHARED="\${${BUILD_PROJECT}_INSTALL_SHARED}"
 	eval SHAREDIR="\${${BUILD_PROJECT}_INSTALL_SHAREDIR%/}/"
 	mkdirhier "$SHAREDIR" 0755
@@ -357,7 +357,7 @@ generic_install() {
 	done
 
 	local BINS BINDIR
-	echo "Installing binaries..." 1>&2
+	echo "Installing binaries..." >&2
 	eval BINS="\${${BUILD_PROJECT}_INSTALL_BINS}"
 	eval BINDIR="\${${BUILD_PROJECT}_INSTALL_BINDIR%/}/"
 	mkdirhier "$BINDIR" 0755
