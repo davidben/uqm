@@ -67,6 +67,9 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	clut_buf[0] = FadeAllToColor;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
 	FlushColorXForms ();
+#else
+	(void) index;  /* Satisfy compiler */
+	(void) hMusic;  /* Satisfy compiler */
 #endif  /* WANT_SHIP_SPINS */
 }
 
