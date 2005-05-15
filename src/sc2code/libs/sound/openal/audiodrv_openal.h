@@ -24,31 +24,15 @@
 #include "libs/sound/sound.h"
 #include "options.h"
 
-#if defined(WIN32)
-#	include <al.h>
-#	include <alc.h>
-#	ifdef _MSC_VER
-#		pragma comment (lib, "OpenAL32.lib")
-#	endif
-#elif defined (__APPLE__)
+#if defined (__APPLE__)
 #	include <OpenAL/al.h>
 #	include <OpenAL/alc.h>
 #else
 #	include <AL/al.h>
 #	include <AL/alc.h>
-	/* XXX: In new versions of OpenAL the defines AL_INVALID_ENUM and
-	 *      AL_INVALID_OPERATION are already defined.
-	 *      As you can only get OpenAL from CVS (or a 3rd party package),
-	 *      we can probably remove these defines altogether in the near
-	 *      future.
-	 */
-#	ifndef AL_INVALID_ENUM
-#		define AL_INVALID_ENUM      AL_ILLEGAL_ENUM
+#	ifdef _MSC_VER
+#		pragma comment (lib, "OpenAL32.lib")
 #	endif
-#	ifndef AL_INVALID_OPERATION
-#		define AL_INVALID_OPERATION AL_ILLEGAL_COMMAND
-#	endif
-#	define AL_DATA              0x2005
 #endif
 
 /* This is just a simple endianness setup for decoders */

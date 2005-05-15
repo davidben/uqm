@@ -1,4 +1,7 @@
 Changes towards version 0.4:
+- OpenAL header cleanup. Updating OpenAL may be necessary.
+  Windows users should put the OpenAL headers in an AL/ directory
+  now too (should be the default). - SvdB
 - Improvements to the unix build system for cross-compilation - SvdB
 - Do not define ssize_t for MinGW. - SvdB
 - Fallback readdir_r() - SvdB
