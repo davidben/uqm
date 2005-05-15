@@ -19,6 +19,7 @@
 #include "comm/commall.h"
 #include "comm/syreen/resinst.h"
 #include "comm/syreen/strings.h"
+#include "libs/sound/sound.h"
 
 #include "build.h"
 
@@ -648,10 +649,13 @@ InitialSyreen (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, we_are_vindicator0))
 	{
 		NPCPhrase (WELCOME_VINDICATOR0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
-		NPCPhrase (WELCOME_VINDICATOR1);
-		NPCPhrase (GLOBAL_SHIP_NAME);
-		NPCPhrase (WELCOME_VINDICATOR2);
+		if (speechVolumeScale == 0.0f)
+		{
+			NPCPhrase (GLOBAL_PLAYER_NAME);
+			NPCPhrase (WELCOME_VINDICATOR1);
+			NPCPhrase (GLOBAL_SHIP_NAME);
+			NPCPhrase (WELCOME_VINDICATOR2);
+		}
 		NPCPhrase (HOW_CAN_YOU_BE_HERE);
 	}
 	else if (PLAYER_SAID (R, we_are_impressed))

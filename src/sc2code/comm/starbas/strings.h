@@ -317,6 +317,11 @@ enum
 	new_devices,
 	how_get_strong,
 	what_do_now,
+	YOUR_FLAGSHIP_PC,
+	YOUR_FLAGSHIP_3DO0,
+	YOUR_FLAGSHIP_3DO1,
+	YOUR_FLAGSHIP_3DO2,
+	SPACE,
 };
 
 #endif /* _STRINGS_H */

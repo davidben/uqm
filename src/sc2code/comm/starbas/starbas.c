@@ -26,6 +26,7 @@
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
+#include "libs/sound/sound.h"
 
 
 //Added by Chris
@@ -226,7 +227,11 @@ ByeBye (RESPONSE_REF R)
 		}
 
 		NPCPhrase (pStr0);
-		NPCPhrase (GLOBAL_PLAYER_NAME);
+		if (speechVolumeScale == 0.0f)
+		{
+			NPCPhrase (SPACE);
+			NPCPhrase (GLOBAL_PLAYER_NAME);
+		}
 		NPCPhrase (pStr1);
 	}
 }
@@ -900,7 +905,12 @@ TellStarBase (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, tell_me_about_crew))
 	{
 		NPCPhrase (ABOUT_CREW0);
-		NPCPhrase (GLOBAL_SHIP_NAME);
+		if (speechVolumeScale > 0.0f)
+			NPCPhrase (YOUR_FLAGSHIP_3DO2);
+		else {
+			NPCPhrase (YOUR_FLAGSHIP_PC);
+			NPCPhrase (GLOBAL_SHIP_NAME);
+		}
 		NPCPhrase (ABOUT_CREW1);
 
 		stack2 = 2;
@@ -1660,11 +1670,18 @@ NormalStarbase (RESPONSE_REF R)
 		if (GET_GAME_STATE (MOONBASE_ON_SHIP))
 		{
 			NPCPhrase (STARBASE_IS_READY_A);
-			NPCPhrase (GLOBAL_SHIP_NAME);
+			if (speechVolumeScale > 0.0f)
+				NPCPhrase (YOUR_FLAGSHIP_3DO1);
+			else {
+				NPCPhrase (YOUR_FLAGSHIP_PC);
+				NPCPhrase (GLOBAL_SHIP_NAME);
+			}
 			NPCPhrase (STARBASE_IS_READY_B);
-			NPCPhrase (GLOBAL_SHIP_NAME);
+			if (speechVolumeScale > 0.0f)
+				NPCPhrase (YOUR_FLAGSHIP_3DO0);
+			else
+				NPCPhrase (GLOBAL_SHIP_NAME);
 			NPCPhrase (STARBASE_IS_READY_C);
-
 			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, 0, 2500);
 			UnlockMutex (GraphicsLock);
@@ -1717,7 +1734,11 @@ NormalStarbase (RESPONSE_REF R)
 					break;
 			}
 			NPCPhrase (pStr0);
-			NPCPhrase (GLOBAL_PLAYER_NAME);
+			if (speechVolumeScale == 0.0f)
+			{
+				NPCPhrase (SPACE);
+				NPCPhrase (GLOBAL_PLAYER_NAME);
+			}
 			NPCPhrase (pStr1);
 			CheckBulletins (FALSE);
 		}
@@ -1914,7 +1935,11 @@ SellMinerals (RESPONSE_REF R)
 	}
 
 	NPCPhrase (pStr1);
-	NPCPhrase (GLOBAL_PLAYER_NAME);
+	if (speechVolumeScale == 0.0f)
+	{
+		NPCPhrase (SPACE);
+		NPCPhrase (GLOBAL_PLAYER_NAME);
+	}
 	NPCPhrase (pStr2);
 
 	NormalStarbase (R);

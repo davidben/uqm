@@ -537,10 +537,13 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			case SOUND_OPT:
 				if (!strcmp (optarg, "openal"))
 					options->soundDriver = audio_DRIVER_OPENAL;
-				else if (!strcmp (optarg, "none"))
-					options->soundDriver = audio_DRIVER_NOSOUND;
 				else if (!strcmp (optarg, "mixsdl"))
 					options->soundDriver = audio_DRIVER_MIXSDL;
+				else if (!strcmp (optarg, "none"))
+				{
+					options->soundDriver = audio_DRIVER_NOSOUND;
+					options->speechVolumeScale = 0.0f;
+				}
 				else
 				{
 					fprintf (stderr, "Error: Invalid sound driver "
