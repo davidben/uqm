@@ -111,7 +111,7 @@ please get some and bring them back here before it's too late.
 #(THATS_IMPOSSIBLE) coman020.ogg
 Star Control science mission, eh?
 Captain, I served as a Star Control officer during the war, aboard several cruisers in the Coreward Front
-and if there had been any 'scientific mission' to Vela
+and if there had been any `scientific mission' to Vela
 I would have heard about it.
 
 #(ASK_AWAY) coman021.ogg
