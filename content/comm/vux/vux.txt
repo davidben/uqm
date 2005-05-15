@@ -1,7 +1,7 @@
 #(ZEX_HELLO_1)	vux000.ogg
 Ah Human visitors! What a treat!
 I am Admiral ZEX. Please do not be frightened. Unlike the rest of my species, I... enjoy humans.
-You may know me by reputation, my leadership of VUX forces during the war with your Alliance.
+You may know me by my reputation, my leadership of VUX forces during the war with your Alliance.
 I assure you that this behavior, a sad necessity of those times, belies a much kinder, gentler being.
 Please be welcome! We can get to know one another... expand our interspecies relationship.
 But wait. How silly of me. You aren't here for polite repartee.
@@ -100,18 +100,16 @@ Effect its transfer and then... we shall give you the Maidens you desire.
 Okay, the beast is ALL yours! But be careful, it's a killer!
 
 #(FOOL_AIEE0)	vux011.ogg
-Ah! My new child is now on board. Such a big one, isn't he!?...
+Ah! My new child is on board. Such a big one, isn't he!?...
 ...and so frisky!
 I am delighted beyond words that you have given me the beast, Captain
-but
-I am afraid that there has been a slight change in our plans. Regrettable, but necessary.
-Oh, my beautiful, luscious human, I had thought that the hideous, violent monster you have just given me
+but I am afraid that there has been a slight change in our plans. Regrettable, but necessary.
+Oh, my beautiful, luscious human, I had thought that the hideous, violent monster you have given me
 would complete my collection of Ugliness, my Menagerie of Monsters... I was wrong!
 YOU, my human love, are the most vile, the most fierce and wretched!
-My collection could never be complete without you. I need you, Captain
-but alas, I fear you will not give your consent willingly. Am I right?
-Therefore
-Sub-commander DAX, terminate communications... warm up my modified Intruder.
+My collection could never be complete without you. I need you, Captain.
+But alas, I fear you will not give your consent willingly. Am I right?
+Therefore, sub-commander DAX, terminate communications... warm up my modified Intruder.
 Engage the Precursor warp nullifier. Hee! Hee! Hee!... prepare for battle!
 
 #(FOOL_AIEE1)	vux012.ogg
@@ -167,7 +165,7 @@ Ah, Commander Zex? Why do you like us? We thought all VUX hated humans.
 
 #(LIKE_BECAUSE)	vux017.ogg
 No, No, not all VUX, Captain! Most... but not all.
-It is true that when the majority of my people view one of your species
+It is true when the majority of my people view one of your species
 they are forced to regurgitate
 but there are those among us who have grown beyond such childishness to take a more liberal view.
 We, the few sophisticates, are not subject to the whims and fads of current fashion.
