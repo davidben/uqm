@@ -1,17 +1,17 @@
 #(BEFORE_WE_GO_ON_1) starb000.ogg
- Before we go on, I have something important to tell you
+ Before we go on, I have something important to tell you.
 #(BEFORE_WE_GO_ON_2) starb001.ogg
- There is something I think you should know
+ There is something I think you should know.
 #(BEFORE_WE_GO_ON_3) starb002.ogg
- By the way, I thought you should know
+ By the way, I thought you should know.
 #(BEFORE_WE_GO_ON_4) starb003.ogg
- Before we proceed, I wanted you to know
+ Before we proceed, I wanted you to know.
 #(BEFORE_WE_GO_ON_5) starb004.ogg
- I have some information I think you should hear
+ I have some information I think you should hear.
 #(BEFORE_WE_GO_ON_6) starb005.ogg
- I've been waiting to inform you of a new situation
+ I've been waiting to inform you of a new situation.
 #(BEFORE_WE_GO_ON_7) starb006.ogg
- I know you're busy, but I've got some news
+ I know you're busy, but I've got some news.
 
 #(NORMAL_HELLO_A0) starb007.ogg
 Welcome back, Captain
@@ -93,23 +93,23 @@ Be careful out there, Captain
 .
 
 #(LIGHT_LOAD_A0) starb024.ogg
-The more minerals you bring us, Captain 
+The more minerals you bring us, Captain
 #(LIGHT_LOAD_A1) 
 , the faster we'll be able to tackle the Ur-Quan.
 
 #(LIGHT_LOAD_B0) starb025.ogg
-Light load this time, Captain 
+Light load this time, Captain
 #(LIGHT_LOAD_B1)
 .
 
 #(LIGHT_LOAD_C0) starb026.ogg
-Another small load, Captain 
+Another small load, Captain
 
 #(LIGHT_LOAD_C1) starb027.ogg
 . Well, I suppose something is better than nothing.
 
 #(LIGHT_LOAD_D0) starb028.ogg
-I don't mean to criticize, Captain 
+I don't mean to criticize, Captain
 #(LIGHT_LOAD_D1) 
 , but, uh, wouldn't it be more efficient if you could return with larger loads?
 
@@ -119,82 +119,82 @@ Pretty small amounts, Captain
 .  Bringing those small amounts of minerals is not cost-effective. Try getting larger loads.
 
 #(LIGHT_LOAD_F0) starb030.ogg
-Not too much today, Captain 
+Not too much today, Captain
 #(LIGHT_LOAD_F1) 
 . I hope you have better luck next time.
 
 #(LIGHT_LOAD_G0) starb030.ogg
-Not too much today, Captain 
+Not too much today, Captain
 #(LIGHT_LOAD_G1) 
 . I hope you have better luck next time.
 
 #(MEDIUM_LOAD_A0) starb031.ogg
-Not a bad job, Captain 
+Not a bad job, Captain
 #(MEDIUM_LOAD_A1)
 .
 
 #(MEDIUM_LOAD_B0) starb032.ogg
-Good work, Captain 
+Good work, Captain
 #(MEDIUM_LOAD_B1)
 .
 
 #(MEDIUM_LOAD_C0) starb033.ogg
-Thanks, Captain 
+Thanks, Captain
 #(MEDIUM_LOAD_C1)
 .
 
 #(MEDIUM_LOAD_D0) starb034.ogg
-Keep it coming, Captain 
+Keep it coming, Captain
 #(MEDIUM_LOAD_D1)
 .
 
 #(MEDIUM_LOAD_E0) starb035.ogg
-Pretty fair load, Captain 
+Pretty fair load, Captain
 #(MEDIUM_LOAD_E1)
 . Can you do better next time?
 
 #(MEDIUM_LOAD_F0) starb036.ogg
-Don't stop now, Captain 
+Don't stop now, Captain
 #(MEDIUM_LOAD_F1) 
 . We can use every bit you bring us.
 
 #(MEDIUM_LOAD_G0) starb037.ogg
-A fair haul, Captain 
+A fair haul, Captain
 #(MEDIUM_LOAD_G1) 
 . Maybe you should consider adding a storage bay so you can gather larger loads.
 
 #(HEAVY_LOAD_A0) starb038.ogg
-Excellent work, Captain 
+Excellent work, Captain
 #(HEAVY_LOAD_A1)
 !
 
 #(HEAVY_LOAD_B0) starb039.ogg
-This will really help, Captain 
+This will really help, Captain
 #(HEAVY_LOAD_B1)
 .
 
 #(HEAVY_LOAD_C0) starb040.ogg
-A fine job, Captain 
+A fine job, Captain
 #(HEAVY_LOAD_C1)
 !
 
 #(HEAVY_LOAD_D0) starb041.ogg
-Wow, 
+Wow,
 #(HEAVY_LOAD_D1)
 , you really hit the mother lode this time!
 
 #(HEAVY_LOAD_E0) starb042.ogg
-If you can keep this up, 
+If you can keep this up,
 #(HEAVY_LOAD_E1) 
 , we'll turn that flagship of yours into a genuine Dreadnought-Killer.
 
 #(HEAVY_LOAD_F0) starb043.ogg
-Captain 
+Captain
 #(HEAVY_LOAD_F1) 
 , you are to be commended. Keep up the good work!
 
 #(HEAVY_LOAD_G0) starb044.ogg
-More fuel for the fire, eh, Captain 
+More fuel for the fire, eh, Captain
 #(HEAVY_LOAD_G1) 
 ?  That last load should keep it blazing!
 
@@ -1100,14 +1100,14 @@ I guess I'd gather more minerals to build up a good supply of resource units.
 Use the Resource Units you have accumulated to improve your flagship.
 
 #(GOT_OK_FLAGSHIP) starb154.ogg
-Your flagship is in pretty good shape
+Your flagship is in pretty good shape.
 
 #(GO_ALLY_WITH_ALIENS) starb155.ogg
 You should investigate building alliances with non-hostile alien races.
 Their assistance is crucial to our success.
 
 #(MADE_SOME_ALLIES) starb156.ogg
-You have established several successful alliances with alien races
+You have established several successful alliances with alien races.
 
 #(GET_SHIPS_BY_MINING_OR_ALLIANCE) starb157.ogg
 Build up your fleet of combat vessels.
@@ -1115,7 +1115,7 @@ Their additional strength and the flexibility granted by their various powers
 will greatly enhance your ability to survive in space.
 
 #(GOT_OK_FLEET) starb158.ogg
-You've assembled a good-sized fleet of combat ships
+You've assembled a good-sized fleet of combat ships.
 
 #(BUY_COMBAT_SHIPS) starb159.ogg
 You need to build combat escorts and assemble a fleet to accompany you through space.
@@ -1128,26 +1128,26 @@ that we can destroy their entire empire in a single, bold stroke.
 #(MAKE_FLAGSHIP_AWESOME) starb161.ogg
 My guess is you need to upgrade further your flagship
 to make it more than a match for any enemy ship you might encounter.
-You know the Ur-Quan's Achilles' heel -- their Sa-Matra super-starship
+You know the Ur-Quan's Achilles' heel -- their Sa-Matra super-starship.
 
 #(KNOW_ABOUT_SAMATRA) starb162.ogg
-You know the Ur-Quan's Achilles' heel -- their Sa-Matra super-starship
+You know the Ur-Quan's Achilles' heel -- their Sa-Matra super-starship.
 
 #(GOT_AWESOME_FLAGSHIP) starb163.ogg
-You have constructed a flagship of unrivaled power
+You have constructed a flagship of unrivaled power.
 
 #(GOT_BOMB) starb164.ogg
-You've got the bomb from the Utwig
+You've got the bomb from the Utwig.
 
 #(FIND_WAY_TO_DESTROY_SAMATRA) starb165.ogg
 You must find some way to destroy the Ur-Quan supership, the Sa-Matra.
 
 #(MUST_INCREASE_BOMB_STRENGTH) starb166.ogg
-Although the bomb you got from the Utwig is horrendously powerful
+Although the bomb you got from the Utwig is horrendously powerful,
 I'm afraid our computer projections show that the explosion will not be sufficient
 to break through the Sa-Matra's defenses.
 You must find some way to increase the energy output of the weapon.
-Perhaps the Chenjesu and their superior scientific knowledge could have done this
+Perhaps the Chenjesu and their superior scientific knowledge could have done this,
 but unfortunately, we do not currently possess the technology to achieve this modification.
 
 #(MUST_ACQUIRE_AWESOME_FLEET) starb167.ogg
@@ -1157,14 +1157,14 @@ I'm certain we need to assemble a more powerful fleet of combat ships before you
 You must figure out how to eliminate or destroy the Ur-Quan and Kohr-Ah ships guarding the Sa-Matra.
 
 #(CHMMR_IMPROVED_BOMB) starb169.ogg
-The Chmmr have modified your ship to route its weapon power through the Utwig bomb
+The Chmmr have modified your ship to route its weapon power through the Utwig bomb.
 
 #(GOT_AWESOME_FLEET) starb170.ogg
-You have amassed a powerful fleet of combat ships
+You have amassed a powerful fleet of combat ships.
 
 #(GO_DESTROY_SAMATRA) starb171.ogg
 Go attack the Ur-Quan Sa-Matra vessel!
-Although I'm sure it will be a difficult battle
+Although I'm sure it will be a difficult battle,
 you have everything you need to achieve victory.
 
 #(GOOD_LUCK_AGAIN) starb172.ogg
@@ -1186,45 +1186,45 @@ and if you prefer to avoid confrontation, nothing beats a great pair of legs.
 I would maximize your ship's thrusters. You will need speed when you confront the Ur-Quan.
 
 #(NEED_TURN_1) starb177.ogg
-I would add turning jets for increased maneuverability
+I would add turning jets for increased maneuverability.
 
 #(NEED_TURN_2) starb178.ogg
-I would maximize rotation speed by filling your turning jet slots
+I would maximize rotation speed by filling your turning jet slots.
 
 #(NEED_GUNS_1) starb179.ogg
-I would add enough weapons to defend yourself if you are caught without escort ships
+I would add enough weapons to defend yourself if you are caught without escort ships.
 
 #(NEED_GUNS_2) starb180.ogg
 I would take advantage of your ship's capacity for combat by increasing its firepower.
-Add more weaponry
+Add more weaponry.
 
 #(NEED_CREW_1) starb181.ogg
-You need more crew, at least 50, to make productive voyages into space
+You need more crew, at least 50, to make productive voyages into space.
 
 #(NEED_CREW_2) starb182.ogg
-You need even more crew, perhaps as many as 200, to face the challenges ahead
+You need even more crew, perhaps as many as 200, to face the challenges ahead.
 
 #(NEED_FUEL_1) starb183.ogg
-You need additional fuel, at least 50 units
+You need additional fuel, at least 50 units.
 
 #(NEED_FUEL_2) starb184.ogg
-You need large quantities of fuel, at least 150 units
+You need large quantities of fuel, at least 150 units.
 
 #(NEED_STORAGE_1) starb185.ogg
-Increase your cargo capacity by adding more Storage Bays to your flagship
+Increase your cargo capacity by adding more Storage Bays to your flagship.
 
 #(NEED_LANDERS_2) starb186.ogg
-You need at least one lander
+You need at least one lander.
 
 #(NEED_LANDERS_1) starb187.ogg
-Build more landers
+Build more landers.
 
 #(NEED_DYNAMOS_1) starb188.ogg
-Your weapons will be underpowered in combat if you don't have at least 1 dynamo
+Your weapons will be underpowered in combat if you don't have at least 1 dynamo.
 
 #(NEED_DYNAMOS_2) starb189.ogg
 You need more dynamo power;
-otherwise your weapon re-energizing delays will be your undoing in combat
+otherwise your weapon re-energizing delays will be your undoing in combat.
 
 #(NEED_POINT) starb190.ogg
 I suggest you invest in one or more point-defense laser systems.
