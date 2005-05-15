@@ -14,42 +14,42 @@
  I know you're busy, but I've got some news
 
 #(NORMAL_HELLO_A0) starb007.ogg
-Welcome back, Captain 
+Welcome back, Captain
 #(NORMAL_HELLO_A1)
 .
 
 #(NORMAL_HELLO_B0) starb008.ogg
-Greetings, Captain 
+Greetings, Captain
 #(NORMAL_HELLO_B1) 
 . I am ready to assist you.
 
 #(NORMAL_HELLO_C0) starb009.ogg
-It's good to see you again, Captain 
+It's good to see you again, Captain
 #(NORMAL_HELLO_C1)
 .
 
 #(NORMAL_HELLO_D0) starb010.ogg
-Ah, Captain 
+Ah, Captain
 #(NORMAL_HELLO_D1) 
 , I'm glad you're back.
 
 #(NORMAL_HELLO_E0) starb011.ogg
-Hello Captain 
+Hello Captain
 #(NORMAL_HELLO_E1)
 .
 
 #(NORMAL_HELLO_F0) starb012.ogg
-I am at your disposal, Captain 
+I am at your disposal, Captain
 #(NORMAL_HELLO_F1)
 .
 
 #(NORMAL_HELLO_G0) starb013.ogg
-Captain 
+Captain
 #(NORMAL_HELLO_G1) 
 . I'm glad you made it back in one piece.
 
 #(NORMAL_HELLO_H0) starb014.ogg
-I hope the battle fares well, Captain 
+I hope the battle fares well, Captain
 #(NORMAL_HELLO_H1)
 .
 
@@ -60,35 +60,35 @@ Yes, Captain?
  
 
 #(NORMAL_GOODBYE_A0) starb016.ogg
-Goodbye, Captain 
+Goodbye, Captain
 #(NORMAL_GOODBYE_A1)
 .
 #(NORMAL_GOODBYE_B0) starb017.ogg
-Bring back lots of minerals, Captain 
+Bring back lots of minerals, Captain
 #(NORMAL_GOODBYE_B1)
 .
 #(NORMAL_GOODBYE_C0) starb018.ogg
-Return soon, Captain 
+Return soon, Captain
 #(NORMAL_GOODBYE_C1)
 .
 #(NORMAL_GOODBYE_D0) starb019.ogg
-Farewell Captain 
+Farewell Captain
 #(NORMAL_GOODBYE_D1)
 .
 #(NORMAL_GOODBYE_E0) starb020.ogg
-Try to avoid getting gruesomely killed, Captain 
+Try to avoid getting gruesomely killed, Captain
 #(NORMAL_GOODBYE_E1)
 .
 #(NORMAL_GOODBYE_F0) starb021.ogg
-We shall await your return, Captain 
+We shall await your return, Captain
 #(NORMAL_GOODBYE_F1)
 .
 #(NORMAL_GOODBYE_G0) starb022.ogg
-Blow up an Ur-Quan for me, Captain 
+Blow up an Ur-Quan for me, Captain
 #(NORMAL_GOODBYE_G1)
 .
 #(NORMAL_GOODBYE_H0) starb023.ogg
-Be careful out there, Captain 
+Be careful out there, Captain
 #(NORMAL_GOODBYE_H1)
 .
 
@@ -1421,3 +1421,5 @@ flagship
 your ship
 #(YOUR_FLAGSHIP_3DO2) 
 your starship
+#(SPACE) 
+ 
