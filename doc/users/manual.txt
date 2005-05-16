@@ -483,71 +483,70 @@ does grievous damage.
 
 			   GENERAL GAME CONTROLS SUMMARY
 
-F1                       Pause game
-F10                      Exit game
-F12                      Emergency exit
+F1 or PAUSE                  Pause game
+F10                          Exit game
 
 			   FULL GAME CONTROLS SUMMARY
 
 	Space flight
 
-UP or ENTER:             Thrust
-LEFT and RIGHT:          Steer
-SPACE:                   Main menu
+UP                           Thrust
+LEFT and RIGHT:              Steer
+SPACE or RIGHT SHIFT:        Main menu
 
 	Menus
 
-Arrow Keys:              Scroll through selections
-ENTER:                   Make selection
-SPACE:                   Up one level
+Arrow Keys:                  Scroll through selections
+ENTER or RIGHT CTRL:         Make selection
+SPACE or RIGHT SHIFT:        Up one level
 
 	Conversations
 
-LEFT and RIGHT:          Rewind/Forward
-UP and DOWN:             Scroll through selections
-ENTER:                   Make selection
-SPACE:                   Skip, Show/Hide summary
+LEFT and RIGHT:              Rewind/Forward
+UP and DOWN:                 Scroll through selections
+ENTER or RIGHT CTRL:         Make selection
+SPACE or RIGHT SHIFT:        Skip, Show/Hide summary
 
 	Star Map
 
-Arrow Keys:              Move the crosshair
-ENTER:                   Select destination
-SPACE:                   Main menu
-Keypad +:                Zoom in
-Keypad -:                Zoom out
+Arrow Keys:                  Move the crosshair
+ENTER or RIGHT CTRL:         Select destination
+SPACE or RIGHT SHIFT:        Main menu
+Keypad +:                    Zoom in
+Keypad -:                    Zoom out
 
 	Space Combat
 
-UP or ENTER:             Thrust
-LEFT and RIGHT:          Steer
-RIGHT SHIFT:             Fire Primary Weapon
-RIGHT CTRL:              Fire Secondary Weapon
-ESCAPE:                  Emergency Warp Escape
+UP:                          Thrust
+LEFT and RIGHT:              Steer
+RIGHT CTRL or ] or ENTER:    Fire Primary Weapon
+RIGHT SHIFT or [:            Fire Secondary Weapon
+ESCAPE:                      Emergency Warp Escape
 
 
 	Planet Exploration
 
-UP or ENTER:             Forward
-LEFT and RIGHT:          Steer
-RIGHT SHIFT:             Fire stun bolt
-ESCAPE:                  Blast off
+UP:                          Forward
+LEFT and RIGHT:              Steer
+RIGHT CTRL or ] or ENTER:    Fire stun bolt
+RIGHT SHIFT or [ or ESCAPE:  Blast off
 
 
 			   MELEE CONTROLS SUMMARY
 
 	Top Player
 
-E:                       Thrust
-S and F:                 Steer
-Q:                       Fire Primary Weapon
-A:                       Fire Secondary Weapon
+E:                           Thrust
+S and F:                     Steer
+Q:                           Fire Primary Weapon
+A:                           Fire Secondary Weapon
 
 	Bottom Player
 
-UP or ENTER:             Thrust
-LEFT and RIGHT:          Steer
-RIGHT SHIFT:             Fire Primary Weapon
-RIGHT CTRL:              Fire Secondary Weapon
+UP or ENTER:                 Thrust
+LEFT and RIGHT:              Steer
+RIGHT CTRL or ] or ENTER:    Fire Primary Weapon
+RIGHT SHIFT or [:            Fire Secondary Weapon
 
 
 These controls are configurable by editing the keys.cfg file which will
