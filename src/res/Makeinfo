@@ -1,4 +1,4 @@
-case "$OSNAME" in
+case "$HOST_SYSTEM" in
 	MINGW32*)
 		uqm_EXTRA_OFILES="UrQuanMasters.rc.o"
 		;;
