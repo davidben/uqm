@@ -173,6 +173,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 								fprintf (stderr, "Invalid timestamp data "
 										"for '%s'.  Disabling timestamps\n", s);
 								HFree (ts_data);
+								ts_data = NULL;
 								uio_fclose (timestamp_fp);
 								timestamp_fp = NULL;
 								TSOffs = 0;
@@ -260,8 +261,10 @@ _GetStringData (uio_Stream *fp, DWORD length)
 						strdata, StringOffs);
 				memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets]
 						+ StringOffs, clipdata, ClipOffs);
-				memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets] 
-						+ StringOffs + ClipOffs, ts_data, TSOffs);
+				if (TSOffs)
+					memcpy ((BYTE *)&lpST->StringOffsets[
+							(n + 1) * num_data_sets] + StringOffs + ClipOffs,
+							ts_data, TSOffs);
 				TSOffs = ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets]
 						- (BYTE *)lpST) + StringOffs + ClipOffs;
 				ClipOffs = TSOffs - ClipOffs;
