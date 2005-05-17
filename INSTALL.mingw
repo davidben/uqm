@@ -6,16 +6,16 @@ First, download and install the latest version of MinGW and then MSYS.
 
 You'll need all the libraries described in the INSTALL file in CVS.
 You should get the 'mingw' development build for SDL, and follow the
-instructions to install it into mingw. All others will be either for win32 
+instructions to install it into mingw. All others will be either for win32
 or VC.
 
 These are the files you need to download:
 
-http://www.libsdl.org/release/SDL-devel-1.2.5a-mingw32.tar.gz
+http://www.libsdl.org/release/SDL-devel-1.2.8-mingw32.tar.gz
 http://www.libsdl.org/projects/SDL_image/release/SDL_image-devel-1.2.4-VC6.zip
 ftp://opensource.creative.com/pub/sdk/OpenALSDK.exe
 http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
-http://gnuwin32.sourceforge.net/packages/zlib.htm (both binaries and devel files)
+http://www.gzip.org/zlib/zlib122-dll.zip
 
 
 You can now do either of the following:
@@ -55,3 +55,4 @@ If you did everything correctly, it should now build successfully.
 
 To run the built executable, you should copy all the required DLLs to the
 same directory the executable is in, or copy them to your Windows directory.
+
