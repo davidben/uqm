@@ -97,8 +97,9 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height, int bpp)
 		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
 	}
 
-	sprintf (caption, "The Ur-Quan Masters v%d.%d%s", 
-			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
+	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s",
+			UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
 	SDL_WM_SetCaption (caption, NULL);
 
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)

@@ -15,20 +15,23 @@
  */
 
 #ifndef UQMVERSION_H
-#define UQMVERSION_H 
+#define UQMVERSION_H
 
 #define UQM_MAJOR_VERSION     0
 #define UQM_MAJOR_VERSION_S  "0"
-#define UQM_MINOR_VERSION     3
-#define UQM_MINOR_VERSION_S  "3"
-#define UQM_SUB_VERSION       4
-#define UQM_EXTRA_VERSION    "4"
+#define UQM_MINOR_VERSION     4
+#define UQM_MINOR_VERSION_S  "4"
+#define UQM_PATCH_VERSION     0
+#define UQM_PATCH_VERSION_S  "0"
+#define UQM_EXTRA_VERSION    ""
 /* The final version is interpreted as:
-   printf ("%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
-*/
+ * printf ("%d.%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+ * 		UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
+ */
 
 #define UQM_STRING_VERSION \
-	UQM_MAJOR_VERSION_S "." UQM_MINOR_VERSION_S UQM_EXTRA_VERSION
+		UQM_MAJOR_VERSION_S "." UQM_MINOR_VERSION_S "." UQM_PATCH_VERSION_S \
+		UQM_EXTRA_VERSION
 
 #define UQM_CVS_DATE "$Date$"
 

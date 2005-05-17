@@ -38,8 +38,10 @@ typedef struct
 	cdp_ApiVersion api_ver;  // version of cdp API used, set to CDPAPI_VERSION
 	uint16 ver_major;        // module version, somewhat informational
 	uint16 ver_minor;
+	uint16 ver_patch;
 	uint16 host_ver_major;   // minimum host version required, purely informational
 	uint16 host_ver_minor;
+	uint16 host_ver_patch;
 	
 	// reserved members: set all to 0 or use CDP_MODINFO_RESERVED1
 	uint32 _32_reserved1;

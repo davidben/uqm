@@ -106,8 +106,8 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	t.align = ALIGN_RIGHT;
 	t.valign = VALIGN_BOTTOM;
 	t.CharCount = (COUNT)~0;
-	wsprintf (buf, "v%d.%d%s", UQM_MAJOR_VERSION,
-			UQM_MINOR_VERSION, UQM_EXTRA_VERSION);
+	wsprintf (buf, "v%d.%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
 	SetContextForeGroundColor (WHITE_COLOR);
 	font_DrawText (&t);
 

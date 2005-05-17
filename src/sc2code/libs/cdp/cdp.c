@@ -54,8 +54,8 @@ cdp_ModuleInfo cdp_kernel_info =
 {
 	sizeof (cdp_ModuleInfo),
 	CDPAPI_VERSION,              // API version we are using
-	UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
-	UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+	UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_PATCH_VERSION,
+	UQM_MAJOR_VERSION, UQM_MINOR_VERSION, UQM_PATCH_VERSION,
 	CDP_MODINFO_RESERVED1,
 	"UQM",                       // CDP context cannonical name
 	"UQM Kernel",                // CDP mod name
