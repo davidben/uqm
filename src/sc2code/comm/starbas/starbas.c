@@ -1982,6 +1982,10 @@ init_starbase_comm ()
 	commander_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	commander_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 
+	// use alternate Starbase track if available
+	commander_desc.AlienAltSong = "comm/starbas/starbas.ogg";
+	commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
+
 	CurBulletinMask = 0;
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 	retval = &commander_desc;
