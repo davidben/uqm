@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -51,7 +51,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=Stripping debug info...
+PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
 
