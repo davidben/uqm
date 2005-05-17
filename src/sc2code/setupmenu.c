@@ -189,12 +189,12 @@ static OPTION resdriver_opts[] = {
 		  "Uses OpenGL graphics drivers.",
 		  ""
 		} },
-	{ "800x600",
+	{ "800x600 GL",
 		{ "800x600 resolution.",
 		  "Uses OpenGL graphics drivers.",
 		  ""
 		} },
-	{ "1024x768",
+	{ "1024x768 GL",
 		{ "1024x768 resolution.",
 		  "Uses OpenGL graphics drivers.",
 		  ""
