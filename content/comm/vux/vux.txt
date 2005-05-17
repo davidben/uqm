@@ -280,7 +280,7 @@ simply place both hands over your eyes and count to three.
 Salutations, and may your sense of self-preservation always be so dim.
 As our Intruders surround your vessel, you may care to raise both hands into the air above you
 and practice the ancient chant of the prancing oowee master, ZEN DUX, which begins...
-`AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHH!!!'
+`AAAAAAAAA AAAAAAHH!!!'
 
 #(SPACE_HELLO_3)	vux030.ogg
 This is VUX Commander YAX.  On behalf of the team here
