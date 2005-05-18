@@ -384,7 +384,7 @@ Your efforts to resist us are futile.
 You are defeated!
 
 #(OUT_TAKES) black045.ogg
-We are the the Ur-Quan Kohr-Ah...
+We are the Ur-Quan Kohr-Ah...
 ...The followers of the Path of Now and Forever!
 You are filth. We shall cleanse.
 You WILL be annigilated... I mean annihigated.. damn!
