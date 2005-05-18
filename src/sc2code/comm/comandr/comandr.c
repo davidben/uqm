@@ -688,7 +688,16 @@ init_commander_comm ()
 	commander_desc.uninit_encounter_func = uninit_commander;
 
 	if (GET_GAME_STATE (RADIOACTIVES_PROVIDED))
+	{
 		commander_desc.AlienAmbientArray[2].AnimFlags |= ANIM_DISABLED;
+		// regular track -- let's make sure
+		commander_desc.AlienSongFlags &= ~LDASF_USE_ALTERNATE;
+	}
+	else
+	{	// use alternate 'low-power' track if available
+		commander_desc.AlienAltSong = "comm/comandr/comlowpw.mod";
+		commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
+	}
 
 	commander_desc.AlienTextWidth = 143;
 	commander_desc.AlienTextTemplate.baseline.x = 164;

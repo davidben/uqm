@@ -997,6 +997,10 @@ init_spahome_comm ()
 	spahome_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	spahome_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
+	// use alternate "Safe Ones" track if available
+	spahome_desc.AlienAltSong = "comm/spahome/spahome.mod";
+	spahome_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
+
 	if (GET_GAME_STATE (SPATHI_MANNER) == 3)
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);

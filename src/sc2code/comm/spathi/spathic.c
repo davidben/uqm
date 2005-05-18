@@ -801,6 +801,16 @@ init_spathi_comm (void)
 	spathi_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	spathi_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
+	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
+	{	// use alternate Fwiffo track if available
+		spathi_desc.AlienAltSong = "comm/spathi/spafwiff.mod";
+		spathi_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
+	}
+	else
+	{	// regular track -- let's make sure
+		spathi_desc.AlienSongFlags &= ~LDASF_USE_ALTERNATE;
+	}
+
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1
 			|| GET_GAME_STATE (SPATHI_MANNER) == 3
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
