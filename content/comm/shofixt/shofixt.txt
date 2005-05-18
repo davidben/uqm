@@ -363,7 +363,7 @@ What's your report
 #(NOTHING_NEW)	shofi045.ogg
 Nothing new to report, sir.
 
-#(OUT_TAKES)
+#(OUT_TAKES)	shofi046.ogg
 Ah, I see someone approaches, but who is it?
 Ho, ho! It is the creature which I wrongly called a disgusting Ur-Quan slimewad...
 ...and a cowardly slug-spawn...
