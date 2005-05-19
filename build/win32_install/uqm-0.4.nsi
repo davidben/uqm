@@ -5,6 +5,8 @@ Var UQMARGS
 Var MAKEICON
 Var UQMUSERDATA
 
+AllowRootDirInstall true
+
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "The Ur-Quan Masters"
 !define PRODUCT_VERSION "0.4.0"
@@ -71,7 +73,6 @@ InstallDir "$PROGRAMFILES\The Ur-Quan Masters\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
-AllowRootDirInstall true
 DirText "" "" "" "Please select a folder."
 InstType "Typical"
 InstType "Minimal"
