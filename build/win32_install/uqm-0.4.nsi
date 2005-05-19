@@ -5,8 +5,6 @@ Var UQMARGS
 Var MAKEICON
 Var UQMUSERDATA
 
-AllowRootDirInstall true
-
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "The Ur-Quan Masters"
 !define PRODUCT_VERSION "0.4.0"
@@ -40,6 +38,7 @@ AllowRootDirInstall true
 !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will look for already-downloaded content packages in the following folder.  To copy them from a different folder, click Browse and select another folder.  If you are doing a net install, leave this field alone. Click Next to continue."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Source Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE $PACKAGEDIR
+!define MUI_DIRECTORYPAGE_VERIFYONLEAVE
 !insertmacro MUI_PAGE_DIRECTORY
 ; Start menu page
 var ICONS_GROUP
@@ -73,6 +72,7 @@ InstallDir "$PROGRAMFILES\The Ur-Quan Masters\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
+AllowRootDirInstall true
 DirText "" "" "" "Please select a folder."
 InstType "Typical"
 InstType "Minimal"
