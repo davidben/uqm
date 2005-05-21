@@ -17,7 +17,7 @@ Primary-site:   ftp.sourceforge.net /pub/sourceforge/s/sc/sc2/
 		18980505 uqm-0.4.0-3domusic.uqm
 		114823413 uqm-0.4.0-voice.uqm
                 13369624 uqm-0.4.0-macosx.dmg
-                ? uqm-0.4.0-source.tgz
+                1198621 uqm-0.4.0-source.tgz
 Platforms:      Windows, Linux, FreeBSD, OpenBSD, MacOS X, BeOS
 Copying-policy: GPL for the C code, custom for the graphics and audio content
 End
