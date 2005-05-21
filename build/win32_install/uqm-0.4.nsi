@@ -266,6 +266,17 @@ SectionGroup "!UQM" SECGRP01
     SetOverwrite off
     SetOutPath $UQMUSERDATA
     File "keys.cfg" 
+    
+    IfFileExists "$INSTDIR\content\packages\uqm-0.3-3domusic.zip" 0 No03Content
+      StrCpy $MD5SUM "9073251b0d96393441f0b40016010576"
+      md5dll::GetFileMD5 "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
+      Pop $0
+      StrCmp $MD5SUM $0 0 No03Content
+      CopyFiles "$INSTDIR\content\packages\uqm-0.3-3domusic.zip" "$INSTDIR\content\packages\uqm-0.4.0-3domusic.uqm"
+No03Content:
+    Delete "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
+    Delete "$INSTDIR\content\packages\uqm-0.3-voice.zip"
+    Delete "$INSTDIR\content\packages\uqm-0.3-content.zip"
 
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -301,7 +312,7 @@ SectionGroup /e "3DO Content" SECGRP02
     SectionIn 1 3
     AddSize 18536
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "8e9f1e777719e2934c8b8a9835c5452d"
+    StrCpy $MD5SUM "9073251b0d96393441f0b40016010576"
     Push "uqm-0.4.0-3domusic.uqm"
     Push "$INSTDIR\content\packages"
     Call HandlePackage
