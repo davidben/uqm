@@ -85,8 +85,8 @@ cdp_ModuleInfo CDPEXPORT CDP_INFO_SYM =
 {
 	sizeof (cdp_ModuleInfo),    // size of struct for version control
 	CDPAPI_VERSION,             // API version we are using
-	1, 0,                       // our module version
-	0, 3,                       // host version required, purely informational
+	1, 0, 2,                    // our module version
+	0, 3, 0,                    // host version required, purely informational
 	CDP_MODINFO_RESERVED1,      // reserved
 	"UQM",                      // CDP context name (we can use UQM)
 	"Abx Decoder",              // CDP mod name
