@@ -75,7 +75,7 @@ static TFB_SoundDecoderFuncs abxa_DecoderVtbl =
 	abxa_GetFrame,
 };
 
-static bool abxa_module_init (cdp_Itf_Host* hostitf);
+static bool abxa_module_init (cdp_Module* module, cdp_Itf_Host* hostitf);
 static void abxa_module_term ();
 
 // The one and only "cdpmodinfo" symbol
@@ -85,9 +85,10 @@ cdp_ModuleInfo CDPEXPORT CDP_INFO_SYM =
 {
 	sizeof (cdp_ModuleInfo),    // size of struct for version control
 	CDPAPI_VERSION,             // API version we are using
-	1, 0,                       // out module version
+	1, 0,                       // our module version
 	0, 3,                       // host version required, purely informational
 	CDP_MODINFO_RESERVED1,      // reserved
+	"UQM",                      // CDP context name (we can use UQM)
 	"Abx Decoder",              // CDP mod name
 	"1.0",                      // CDP mod version
 	"Alex Volkov",              // CDP mod author
@@ -160,6 +161,17 @@ typedef struct
 
 } abxa_SoundDecoder;
 
+// interfaces our decoder needs
+cdp_ItfDef game_itfs[] =
+{
+	{CDPITF_KIND_MEMORY},
+	{CDPITF_KIND_IO},
+	{CDPITF_KIND_SOUND},
+	
+	{CDPITF_KIND_INVALID} // term
+};
+
+static cdp_Module* abxa_mod = NULL;       // our module handle
 static cdp_Itf_Host* abxa_ihost = NULL;   // HOST interface ptr
 static cdp_Itf_Memory* abxa_imem = NULL;  // MEMORY interface ptr
 static cdp_Itf_Io* abxa_iio = NULL;       // IO interface ptr
@@ -168,18 +180,17 @@ static const TFB_DecoderFormats* abxa_formats = NULL;
 static TFB_RegSoundDecoder* abxa_regdec = NULL;   // registered decoder
 
 static bool
-abxa_module_init (cdp_Itf_Host* hostitf)
+abxa_module_init (cdp_Module* module, cdp_Itf_Host* hostitf)
 {
+	abxa_mod = module;
 	abxa_ihost = hostitf;
-	abxa_imem = hostitf->GetItf (CDPITF_KIND_MEMORY);
-	if (!abxa_imem)
+
+	if (!hostitf->GetItfs (game_itfs))
 		return false;
-	abxa_iio = hostitf->GetItf (CDPITF_KIND_IO);
-	if (!abxa_iio)
-		return false;
-	abxa_isnd = hostitf->GetItf (CDPITF_KIND_SOUND);
-	if (!abxa_isnd)
-		return false;
+
+	abxa_imem = game_itfs[0].itf;
+	abxa_iio = game_itfs[1].itf;
+	abxa_isnd = game_itfs[2].itf;
 
 	abxa_regdec = abxa_isnd->RegisterDecoder ("abx", &abxa_DecoderVtbl);
 	if (!abxa_regdec)
