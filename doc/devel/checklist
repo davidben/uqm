@@ -26,6 +26,7 @@ Building the release:
     This requires a tag having been created though.
     Just using 'cvs update' and watching the output will not be
     enough, as some files like those beginning with '.#'will be ignored.
+  - be sure to include content/version
 - Building the content packages:
   - make sure the permissions in the .zip files are ok (0644 for data files
     and 0755 for executables and dirs)

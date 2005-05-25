@@ -9,8 +9,8 @@ They are listed in the file INSTALL in the top dir.
 2.
 If you haven't done so already, download the content .zip files packages
 that you want, from where you got this source package.
-You'll need uqm-0.3-content.zip; uqm-0.3-3domusic.zip (music from the 3DO
-version) and uqm-0.3-voice.zip (spoken alien dialogs) are optional.
+You'll need uqm-0.4.0-content.zip; uqm-0.4.0-3domusic.zip (music from the 3DO
+version) and uqm-0.4.0-voice.zip (spoken alien dialogs) are optional.
 
 Put these .zip files, still packed, in the directory content/packages/
 which exists in the top directory of the source tree (the dir with (among
