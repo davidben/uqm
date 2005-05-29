@@ -43,6 +43,7 @@
 
 static char *expandPathAbsolute (char *dest, size_t destLen,
 		const char *src, int what);
+static char *strrchr2(const char *start, int c, const char *end);
 
 
 int
@@ -183,8 +184,19 @@ getHomeDir (void)
 #endif
 }
 
-// Expand ~/ in a path, and replaces \ by / on Windows.
-// Environment variable parsing could be added here if we need it.
+// Performs various types of string expansions on a path.
+// 'what' is an OR'd compination of the folowing flags, which
+// specify what type of exmansions will be performed.
+// EP_HOME - Expand '~' for home dirs.
+// EP_ABSOLUTE - Make relative paths absolute
+// EP_ENVVARS - Expand environment variables
+// EP_DOTS - Process ".." and "."
+// EP_SLASHES - Consider backslashes as path component separators.
+//              They will be replaced by slashes.
+// Additionally, there's EP_ALL, which indicates all of the above,
+// and EP_SYSTEM_ALL, which does the same as EP_ALL, with the exception
+// of EP_SLASHES, which will only be included if the operating system
+// accepts backslashes as path terminators.
 // Returns 0 on success.
 // Returns -1 on failure, setting errno.
 int
@@ -360,7 +372,6 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	else
 		srcend = src + strlen (src);
 
-	
 	if (what & EP_HOME)
 	{
 		if (src[0] == '~')
@@ -429,6 +440,77 @@ expandPath (char *dest, size_t len, const char *src, int what)
 			destptr++;
 		}
 	}
+	
+	if (what & EP_DOTS) {
+		// At this point backslashes are already replaced by slashes if they
+		// are specified to be path seperators.
+		// Note that the path can only get smaller, so no size checks
+		// need to be done.
+		char *pathStart;
+				// Start of the first path component, after any
+				// leading slashes or drive letters.
+		char *startPart;
+		char *endPart;
+
+		pathStart = dest;
+#ifdef WIN32
+		if (isDriveLetter(src[0]) && (src[1] == ':'))
+			pathStart += 2;
+#endif
+		if (pathStart[0] == '/')
+			pathStart++;
+
+		startPart = pathStart;
+		destptr = pathStart;
+		for (;;)
+		{
+			endPart = strchr(startPart, '/');
+			if (endPart == NULL)
+				endPart = startPart + strlen(startPart);
+
+			if (endPart - startPart == 1 && startPart[0] == '.')
+			{
+				// Found "." as path component. Ignore this component.
+			}
+			else if (endPart - startPart == 2 &&
+					startPart[0] == '.' && startPart[1] == '.')
+			{
+				// Found ".." as path component. Remove the previous
+				// component, and ignore this one.
+				char *lastSlash;
+				lastSlash = strrchr2(pathStart, '/', destptr - 1);
+				if (lastSlash == NULL)
+				{
+					if (destptr == pathStart)
+					{
+						// We ran out of path components to back out of.
+						errno = EINVAL;
+						return -1;
+					}
+					destptr = pathStart;
+				}
+				else
+					destptr = lastSlash;
+			}
+			else
+			{
+				// A normal path component; copy it.
+				// Using memmove as source and destination may overlap.
+				memmove(destptr, startPart, endPart - startPart);
+				destptr += (endPart - startPart);
+				if (*endPart == '/')
+				{
+					*destptr = '/';
+					destptr++;
+				}
+			}
+			if (*endPart == '\0')
+				break;
+			startPart = endPart + 1;
+		}
+		*destptr = '\0';	
+	}
+	
 	return 0;
 }
 
@@ -474,6 +556,18 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src, int what)
 		destLen--;
 	}
 	return dest;
+}
+
+// As strrchr, but starts searching from the indicated end of the string.
+static char *
+strrchr2(const char *start, int c, const char *end) {
+	for (;;) {
+		end--;
+		if (end < start)
+			return (char *) NULL;
+		if (*end == c)
+			return (char *) end;
+	}
 }
 
 

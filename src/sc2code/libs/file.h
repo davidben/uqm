@@ -46,9 +46,10 @@ int expandPath (char *dest, size_t len, const char *src, int what);
 #define EP_ENVVARS   4
 		// Expand environment variables.
 #define EP_DOTS      8
-		// Process '..' and '.' (not implemented)
+		// Process ".." and "."
 #define EP_SLASHES   16
-		// Change (Windows style) backslashes to (Unix style) slashes.
+		// Consider backslashes as path component separators.
+		// They will be replaced by slashes.
 #define EP_ALL (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS | EP_SLASHES)
 		// Everything
 // Everything except Windows style backslashes on Unix Systems:
