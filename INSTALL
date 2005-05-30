@@ -5,7 +5,7 @@ GCC - GNU C Compiler
 	http://gcc.gnu.org/
 	Debian package: gcc
 
-GNU Make
+GNU Make 3.80
 	ftp://ftp.gnu.org/
 	Debian package: make
 
