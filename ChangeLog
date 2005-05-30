@@ -1,3 +1,9 @@
+Changes towards version 0.5:
+- Cleaner build output. Set '$BUILD_VERBOSE' to 1 for old output. - SvdB
+- Improved dependency tracking for unix build system. - SvdB
+  "./build.sh uqm depend" is only needed for checking for new source files.
+- handle "." and ".." in paths - SvdB
+
 Changes towards version 0.4:
 - Nicer title image during intro, from Nic
 - Installation routine for MacOS X, from Nic.
