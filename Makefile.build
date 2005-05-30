@@ -1,49 +1,63 @@
 # Make file for the uqm build system. Invoked from build/unix/build_functions
 # By Serge van den Boom
 
-default:
-	./build.sh sc2
+SOURCES := $(shell cat "$(DEPEND_FILE)")
+-include $(SOURCES:=.d)
 
-%.rc.o:
-	@DIR=$(dir $@); \
-	if [ ! -d $$DIR ]; then \
-		mkdir -p "$$DIR"; \
-	fi
+ifeq ($(MAKE_VERBOSE),1)
+define act
+	$(call $(1))
+endef
+else
+define act
+	@echo "  $(2)  $(3)"
+	@$(call $(1))
+endef
+endif
+
+define act_mkdep_c
+	$(MKDEPEND) -o - $(CFLAGS) "$<" | \
+			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.c.o:,' > "$@"
+endef
+
+define act_windres
 	$(WINDRES) --include-dir $(dir $<) -o "$@" "$<"
+endef
 
-%.o:
+define act_cc
+	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
+endef
+
+define act_link
+	$(COMPILE) -o "$@" $^ $(LDFLAGS)
+endef
+
+
+default:
+	./build.sh uqm
+
+$(OBJDIR)%.c.d: $(BUILD_ROOT)%.c
 	@DIR=$(dir $@); \
 	if [ ! -d $$DIR ]; then \
 		mkdir -p "$$DIR"; \
 	fi
-	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
+	$(call act,act_mkdep_c,MKDEP  ,$@)
 
-target-%:
-	$(COMPILE) -o "$*" $^ $(LDFLAGS)
+%.rc.o: %.rc
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_windres,WINDRES,$@)
 
+%.c.o:
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_cc,CC     ,$@)
 
-## The following kludge is necessary because the GNU make 'include'
-## statement does not accept spaces etc in the argument.
-#define ESCAPE_DEPEND
-#sed -e 's/["$$ 	#\*\?\\]/\\&/g' << EOF
-#$${DEPEND_FILE}
-#EOF
-#endef
-#export ESCAPE_DEPEND
-#.PHONY: escape_depend
-#.INTERMEDIATE: escape_depend
-#escape_depend:
-##	@set > set.out
-#	@sh -x -v -c "$$ESCAPE_DEPEND"
-#ifneq ($(MAKECMDGOALS),escape_depend)
-#include $(shell $(MAKE) -f Makefile.build escape_depend)
-#endif
+$(TARGET_FILE): $(SOURCES:=.o)
+	$(call act,act_link,LINK   ,$@)
 
-include $(DEPEND_FILE)
-
-# Temporary:
-$(BUILD_WORK)/obj/release/./src/res/UrQuanMasters.rc.o: \
-		 ./src/res/UrQuanMasters.rc
-$(BUILD_WORK)/obj/debug/./src/res/UrQuanMasters.rc.o: \
-		./src/res/UrQuanMasters.rc
 

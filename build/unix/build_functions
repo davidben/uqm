@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+DEPEND_NAME=make.depend
+
 # Show usage information
 usage() {
 	echo "Main build script"
@@ -39,98 +41,6 @@ escape_string() {
 	$SED -e s,[\\\'\"\`\	\ \$\&\\\*\\\?\#\!],\\\\\&,g << EOF
 $1
 EOF
-}
-
-# The actual recursing function
-build_recurse() {
-	local FILES SUBDIRS
-	# Perform an action for this dir
-	eval FILES="\${$BUILD_FILES_VAR}"
-	for FILE in $FILES; do
-		$BUILD_REC_COMMAND "$BUILD_REC_PATH$FILE"
-	done
-
-	# Recurse for all subdirs
-	eval SUBDIRS="\$${BUILD_PROJECT}_SUBDIRS"
-	for DIR in $SUBDIRS; do
-		BUILD_REC_PATH="$BUILD_REC_PATH$DIR/" $SH "$0"
-		$BUILD_REC_DIR_COMMAND "$BUILD_REC_PATH$DIR"
-	done
-}
-
-# Start the recursion
-build_do_recursive() {
-	BUILD_COMMAND=build_recurse
-	BUILD_REC_COMMAND="$1"
-	BUILD_REC_DIR_COMMAND="$2"
-	export BUILD_COMMAND BUILD_REC_COMMAND BUILD_REC_DIR_COMMAND
-	build_recurse
-}
-
-# Build dependency information for one file
-build_dependencies() {
-	eval $ECHON \$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$BUILD_REC_PATH
-	eval eval \\\$MKDEPEND \"\${${BUILD_PROJECT}_CFLAGS}\" \"\\\$1\" | \
-			grep -v '#'
-}
-
-# Recursively build dependency information
-build_rec_dependencies() {
-	local DEPEND_FILE EXTRA_OFILES
-
-	echo "Building dependency information..." >&2
-	
-	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
-	export BUILD_WORK_ESC
-
-	eval mkdir -p "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}"
-	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
-
-	# Remove the old dependency file, if it exists.
-	# The .tmp file is used to detect interrupted dependency builds.
-	rm -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
-
-	BUILD_FILES_VAR=${BUILD_PROJECT}_EXTRA_OFILES
-	export BUILD_FILES_VAR
-	EXTRA_OFILES=`build_do_recursive build_collect_extra_o_files :`
-
-	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
-	OFILES=`build_do_recursive build_collect_o_files :`
-
-	{
-		eval $ECHON "\$BUILD_WORK_ESC/target-\${${BUILD_PROJECT}_NAME}:"
-		for OFILE in $OFILES $EXTRA_OFILES; do
-			$ECHON " $OFILE"
-		done
-		echo
-		build_do_recursive build_dependencies :
-	} > "$DEPEND_FILE".tmp
-	mv -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
-}
-
-# Output the .o file for a given .c or .m (Objective-C) file
-build_collect_o_files() {
-	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\${1%.[cm]}.o"
-}
-
-# Output the extra .o file with the complete path
-build_collect_extra_o_files() {
-	eval echo "\$BUILD_WORK_ESC/\${${BUILD_PROJECT}_OBJS}\$1"
-}
-
-# Recursively collect .o-files
-build_rec_collect_o_files() {
-	local EXTRA_OFILES
-
-	BUILD_WORK_ESC=`escape_string "$BUILD_WORK"`
-	export BUILD_WORK_ESC
-
-	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
-	export BUILD_FILES_VAR
-	build_do_recursive build_collect_o_files :
-
-	BUILD_FILES_VAR=${BUILD_PROJECT}_EXTRA_OFILES
-	build_do_recursive build_collect_extra_o_files :
 }
 
 # Start the configure program.
@@ -173,36 +83,54 @@ build_process_config() {
 	eval "${TARGET}_process_config"
 }
 
+# Recursively build dependency index
+build_depend() {
+	local DEPEND_FILE EXTRA_OFILES
+
+	echo "Building file dependency index..." >&2
+	
+	eval mkdir -p "\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}"
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\$DEPEND_NAME"
+
+	# Remove the old dependency file, if it exists.
+	# The .tmp file is used to detect interrupted dependency builds.
+	rm -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
+
+	BUILD_ROOT=./ $SH ./build/unix/build_collect > "$DEPEND_FILE".tmp
+	mv -f -- "$DEPEND_FILE".tmp "$DEPEND_FILE"
+}
+
 # Compile the lot.
 # With the depend info set up, we can leave everything to make.
 build_compile() {
+	local CFLAGS LDFLAGS TARGET_FILE DEPEND_FILE OBJDIR
+
+	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}"
+	eval LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}"
+	eval OBJDIR=\""\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}"\"
+	eval TARGET_FILE=\""\$BUILD_WORK/\${${BUILD_PROJECT}_NAME}"\"
+	DEPEND_FILE=$OBJDIR$DEPEND_NAME
+
 	eval "${TARGET}_pre_build"
-	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}" \
-			LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}" \
-			DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend" \
-			\$MAKE -f Makefile.build \"\$BUILD_WORK/target-\${${BUILD_PROJECT}_NAME}\"
+
+	CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS \
+			OBJDIR=$OBJDIR \
+			BUILD_ROOT= \
+			TARGET_FILE=$TARGET_FILE DEPEND_FILE=$DEPEND_FILE \
+			SED=$SED \
+			$MAKE -f Makefile.build "$TARGET_FILE"
+
 	eval "${TARGET}_post_build"
-}
-
-# Description: Remove the .o file for one .c file
-# Arguments:   $1 - the .c file
-build_clean_file() {
-	eval rm -f -- "\"\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1%.c}.o\""
-}
-
-build_clean_dir() {
-	eval rmdir -- "\"\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}\${1}\"" 2> /dev/null
-	return 0
 }
 
 build_clean() {
 	local DEPEND_FILE
-	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
+
+	BUILD_ROOT=./ $SH ./build/unix/build_clean
+
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}${DEPEND_NAME}"
 	rm -f "$DEPEND_FILE" "$BUILD_WORK/build.vars" \
 			"$BUILD_WORK/config.state" "$BUILD_WORK/config_unix.h"
-	BUILD_FILES_VAR=${BUILD_PROJECT}_CFILES
-	export BUILD_FILES_VAR
-	build_do_recursive build_clean_file build_clean_dir
 }
 
 build_cleanall() {
@@ -227,16 +155,16 @@ build_check_config() {
 		build_process_config
 	fi
 	. "$BUILD_WORK/build.vars"
-	. "${BUILD_REC_PATH:=./}Makeinfo"
+	. "${BUILD_REC_PATH:=./}Makeproject"
 }
 
-# Description: check if the necessary .depend file is present,
+# Description: check if the necessary depend file is present,
 #              if not, build it.
 build_check_dependencies() {
-	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}.depend"
+	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}${DEPEND_NAME}"
 	[ ! -e "$DEPEND_FILE" -o -n "$BUILD_RUN_DEPEND" ] || return
 
-	build_rec_dependencies || exit $?
+	build_depend || exit $?
 }
 
 # Description: check if the program is compiled, and otherwise compile

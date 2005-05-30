@@ -29,23 +29,17 @@ fi
 
 # Read in the config settings that affect the build, if present.
 # Don't reread for every dir when recursing.
-if [ -r "$BUILD_WORK/build.vars" -a -z "$BUILD_COMMAND" ]; then
+if [ -r "$BUILD_WORK/build.vars" ]; then
 	. "$BUILD_WORK/build.vars"
 fi
 
-# Read in the Makeinfo file for the dir currently being processed
-. "${BUILD_REC_PATH:=./}Makeinfo"
-
-# If we're recursing, go on.
-if [ -n "$BUILD_COMMAND" ]; then
-	$BUILD_COMMAND
-	exit $?
-fi
+# Read in the Makeproject file
+. ./Makeproject
 
 for VAR in TARGETS "$BUILD_PROJECT_NAME" "$BUILD_PROJECT_OBJS"; do
 	eval VALUE="\$$VAR"
 	if [ -z "$VALUE" ]; then
-		echo "$VAR needs to be defined in the top Makeinfo file"
+		echo "$VAR needs to be defined in the top Makeproject file"
 		exit 1
 	fi
 done
@@ -115,7 +109,7 @@ case "$2" in
 		;;
 	depend)
 		build_check_config
-		build_rec_dependencies
+		build_depend
 		;;
 	install)
 		build_check_config
