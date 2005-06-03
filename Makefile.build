@@ -20,6 +20,11 @@ define act_mkdep_c
 			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.c.o:,' > "$@"
 endef
 
+define act_mkdep_m
+	$(MKDEPEND) -o - $(CFLAGS) "$<" | \
+			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.m.o:,' > "$@"
+endef
+
 define act_windres
 	$(WINDRES) --include-dir $(dir $<) -o "$@" "$<"
 endef
@@ -46,6 +51,13 @@ $(OBJDIR)%.c.d: $(BUILD_ROOT)%.c
 		mkdir -p "$$DIR"; \
 	fi
 	$(call act,act_mkdep_c,MKDEP  ,$@)
+
+$(OBJDIR)%.m.d: $(BUILD_ROOT)%.m
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_mkdep_m,MKDEP  ,$@)
 
 %.rc.o: %.rc
 	@DIR=$(dir $@); \
