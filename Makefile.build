@@ -28,6 +28,10 @@ define act_cc
 	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
 endef
 
+define act_objcc
+	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
+endef
+
 define act_link
 	$(COMPILE) -o "$@" $^ $(LDFLAGS)
 endef
@@ -56,6 +60,13 @@ $(OBJDIR)%.c.d: $(BUILD_ROOT)%.c
 		mkdir -p "$$DIR"; \
 	fi
 	$(call act,act_cc,CC     ,$@)
+
+%.m.o:
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_objcc,OBJCC  ,$@)
 
 $(TARGET_FILE): $(SOURCES:=.o)
 	$(call act,act_link,LINK   ,$@)

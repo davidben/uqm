@@ -1,2 +1,2 @@
-uqm_CFILES="SDLMain.m"
+uqm_MFILES="SDLMain.m"
 
