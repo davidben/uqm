@@ -45,7 +45,11 @@ int leak_size = -1;
 #endif
 static Mutex _MemoryLock;
 
-#define MAX_EXTENTS 100000
+//#define MAX_EXTENTS 100000
+#define MAX_EXTENTS (MEM_HANDLE) 32766
+		// Changed to 32766 to get rid of warnings that an expression
+		// 'h <= MAX_EXTENTS' is always true due to limited range of
+		// MEM_HANDLE.
 
 /* Keep track of memory allocations. */
 
@@ -110,6 +114,7 @@ static void Message(char *fmt, ...)
 #endif
 }
 
+#if 0
 /*****************************************************************************/
 /*FUNCTION
 **
@@ -176,6 +181,7 @@ static int MessageWithRetry(char *fmt, ...)
 #endif
 				return FALSE;
 }
+#endif
 
 /*****************************************************************************/
 /*FUNCTION
@@ -302,8 +308,13 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 				memset (node->memory, 0, node->size);
 #ifdef LEAK_DEBUG
 		if (leak_debug)
-			fprintf (stderr, "alloc %d: %08x, %lu\n", (int) node->handle,
-					(int) node->memory, node->size);
+		{
+			fprintf (stderr, "alloc %d: %p, %lu\n", (int) node->handle,
+					(void *) node->memory, node->size);
+			// Prefered form:
+			//fprintf (stderr, "alloc %d: %#8" PRIxPTR ", %lu\n",
+			//		(int) node->handle,	(intptr_t) node->memory, node->size);
+		}
 		if (node->handle == leak_idx && node->size == leak_size)
 			node = node;
 		if (node->size == leak_size)
@@ -434,9 +445,13 @@ mem_uninit(void)
 	{
 		if (extents[i].handle != -1)
 		{
-			fprintf (stderr, "LEAK: unreleased extent %d: %08x, %lu\n",
-					extents[i].handle, (unsigned int) extents[i].memory,
+			fprintf (stderr, "LEAK: unreleased extent %d: %p, %lu\n",
+					extents[i].handle, (void *) extents[i].memory,
 					extents[i].size);
+			// Prefered form:
+			//fprintf (stderr, "LEAK: unreleased extent %d: %#8" PRIxPTR
+			//		", %lu\n", extents[i].handle,
+			//		(intptr_t) extents[i].memory, extents[i].size);
 			fflush (stderr);
 			extents[i].handle = -1;
 			if (extents[i].memory)
@@ -493,8 +508,13 @@ mem_release(MEM_HANDLE h)
 	{
 #ifdef LEAK_DEBUG
 		if (leak_debug)
-			fprintf (stderr, "free %d: %08x\n",
-					extents[h].handle, (unsigned int) extents[h].memory);
+		{
+			fprintf (stderr, "free %d: %p\n",
+					extents[h].handle, (void *) extents[h].memory);
+			// Prefered form:
+			//fprintf (stderr, "free %d: %#8" PRIxPTR "\n",
+			//		extents[h].handle, (intptr_t) extents[h].memory);
+		}
 #endif
 		if (extents[h].memory)
 		{
