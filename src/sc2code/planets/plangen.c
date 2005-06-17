@@ -681,8 +681,9 @@ RenderLevelMasks (int offset)
 	t += clock() - t1;
 	if (frames_done == MAP_WIDTH)
 	{
-		fprintf (stderr, "frames/sec: %d/%ld(msec)=%f\n", frames_done, t,
-			frames_done / ((double)t / CLOCKS_PER_SEC));
+		fprintf (stderr, "frames/sec: %d/%ld(msec)=%f\n", frames_done,
+				(long int) (((double)t / CLOCKS_PER_SEC) * 1000.0 + 0.5),
+				frames_done / ((double)t / CLOCKS_PER_SEC + 0.5));
 		frames_done = 1;
 		t = clock () - t1;
 	}
