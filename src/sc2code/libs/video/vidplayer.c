@@ -515,7 +515,7 @@ static void
 vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
 	TFB_VideoClip* vid = sample->data;
-	uint32 frame = (uint32) tag->data;
+	uint32 frame = (uint32) (intptr_t) tag->data;
 	
 	LockMutex (vid->guard);
 	vid->want_frame = frame; // let it go!
@@ -528,6 +528,6 @@ vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer)
 	//TFB_VideoClip* vid = sample->data;
 
 	TFB_TagBuffer (sample, buffer,
-			(void *) SoundDecoder_GetFrame (sample->decoder));
+			(void *) (intptr_t) SoundDecoder_GetFrame (sample->decoder));
 }
 
