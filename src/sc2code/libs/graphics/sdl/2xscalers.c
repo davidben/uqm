@@ -54,13 +54,13 @@ typedef union
 // several times
 //
 #	define GET_PIX_24BIT(p) \
-		( ((Uint32)(p)) & 3 ? \
+		( ((intptr_t)(p)) & 3 ? \
 			(*(Uint32 *)((Uint8 *)(p) - 1) & 0x00ffffff) : \
 			(*(Uint32 *)(p) >> 8) \
 		)
 
 #	define SET_PIX_24BIT(p, c) \
-		( ((Uint32)(p)) & 3 ? \
+		( ((intptr_t)(p)) & 3 ? \
 			( *(Uint32 *)((Uint8 *)(p) - 1) = \
 				(*(Uint32 *)((Uint8 *)(p) - 1) & 0xff000000) | \
 				((c) & 0x00ffffff) \
@@ -75,13 +75,13 @@ typedef union
 // Same page-safety assumption applies as for big-endian
 //
 #	define GET_PIX_24BIT(p) \
-		( ((Uint32)(p)) & 3 ? \
+		( ((intptr_t)(p)) & 3 ? \
 			(*(Uint32 *)((Uint8 *)(p) - 1) >> 8) : \
 			(*(Uint32 *)(p) & 0x00ffffff) \
 		)
 
 #	define SET_PIX_24BIT(p, c) \
-		( ((Uint32)(p)) & 3 ? \
+		( ((intptr_t)(p)) & 3 ? \
 			( *(Uint32 *)((Uint8 *)(p) - 1) = \
 				(*(Uint32 *)((Uint8 *)(p) - 1) & 0x000000ff) | \
 				((c) << 8) \
