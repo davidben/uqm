@@ -327,8 +327,8 @@ noSound_GetSourcei (audio_Object srcobj, audio_SourceProp pname,
 				*value = audio_PAUSED;
 				break;
 			default:
-				fprintf (stderr, "noSound_GetSourcei(): unknown value %x\n",
-						*value);
+				fprintf (stderr, "noSound_GetSourcei(): unknown value %lx\n",
+						(long int) *value);
 				*value = audio_DRIVER_FAILURE;
 		}
 	}
