@@ -490,7 +490,11 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					destptr = pathStart;
 				}
 				else
+				{
 					destptr = lastSlash;
+					if (*endPart == '/')
+						destptr++;
+				}
 			}
 			else
 			{
