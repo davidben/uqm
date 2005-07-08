@@ -132,7 +132,8 @@ PrintCoarseScanPC (void)
 
 	if (CurStarDescPtr->Index == SOL_DEFINED)
 	{
-		if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->SunDesc[0])
+		if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
+				&pSolarSysState->SunDesc[0])
 			wstrcpy (buf, GLOBAL_SIS (PlanetName));
 		else
 		{
@@ -880,8 +881,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 
 	OldColor = SetContextForeGroundColor (0);
 
-	for (hElement = GetHeadElement ();
-			hElement; hElement = hNextElement)
+	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
 		ELEMENTPTR ElementPtr;
 		//COLOR OldColor;
@@ -1041,113 +1041,112 @@ DoScan (PMENU_STATE pMS)
 #ifndef SPIN_ON_SCAN
 		pSolarSysState->PauseRotate = 1;
 #endif
-		if ((min_scan = pMS->CurState) != AUTO_SCAN)
+		min_scan = pMS->CurState;
+		if (min_scan != AUTO_SCAN)
 			max_scan = min_scan;
 		else
-			min_scan = MINERAL_SCAN, max_scan = BIOLOGICAL_SCAN;
+		{
+			min_scan = MINERAL_SCAN;
+			max_scan = BIOLOGICAL_SCAN;
+		}
 
 		do
 		{
-		TEXT t;
-		SWORD i;
+			TEXT t;
+			SWORD i;
 
-		t.baseline.x = SIS_SCREEN_WIDTH >> 1;
-		t.baseline.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7;
-		t.align = ALIGN_CENTER;
-		t.CharCount = (COUNT)~0;
+			t.baseline.x = SIS_SCREEN_WIDTH >> 1;
+			t.baseline.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7;
+			t.align = ALIGN_CENTER;
+			t.CharCount = (COUNT)~0;
 
-		pSolarSysState->CurNode = (COUNT)~0;
-		(*pSolarSysState->GenFunc) (
-				(BYTE)(min_scan + GENERATE_MINERAL)
-				);
-		pMS->delta_item = (SIZE)pSolarSysState->CurNode;
-		t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
+			pSolarSysState->CurNode = (COUNT)~0;
+			(*pSolarSysState->GenFunc) ((BYTE)(min_scan + GENERATE_MINERAL));
+			pMS->delta_item = (SIZE)pSolarSysState->CurNode;
+			t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
 
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		r.corner.x = 0;
-		r.corner.y = t.baseline.y - 10;
-		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = t.baseline.y - r.corner.y + 1;
-		RepairBackRect (&r);
-
-		SetContextFont (MicroFont);
-		switch (min_scan)
-		{
-			case MINERAL_SCAN:
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C)
-						);
-				break;
-			case ENERGY_SCAN:
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0xC, 0xC, 0xC), 0x1C)
-						);
-				break;
-			case BIOLOGICAL_SCAN:
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C)
-						);
-				break;
-		}
-		font_DrawText (&t);
-
-		SetContext (ScanContext);
-		UnlockMutex (GraphicsLock);
-
-	{
-		DWORD rgb;
-		
-		switch (min_scan)
-		{
-			case MINERAL_SCAN:
-				rgb = 0x1f << 10;
-				break;
-			case ENERGY_SCAN:
-				rgb = (0x1f << 10) | (0x1f << 5) | 0x1f;
-				break;
-			case BIOLOGICAL_SCAN:
-				rgb = 0x1f << 5;
-				break;
-		}
-
-		LockMutex (GraphicsLock);
-		BatchGraphics ();
-		DrawPlanet (0, 0, 0, 0);
-		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
-
-		PressState = AnyButtonPress (TRUE);
-		WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
-//		LockMutex (GraphicsLock);
-		TimeIn = GetTimeCounter ();
-		for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
-		{
-			ButtonState = AnyButtonPress (TRUE);
-			if (PressState)
-			{
-				PressState = ButtonState;
-				ButtonState = FALSE;
-			}
-			if (ButtonState)
-				i = -i;
 			LockMutex (GraphicsLock);
-			BatchGraphics ();
-			DrawPlanet (0, 0, i, rgb);
-			if (i < 0) 
-				i = MAP_HEIGHT + NUM_FLASH_COLORS;
-			if (pMS->delta_item)
-				DrawScannedStuff (i, min_scan);
-			UnbatchGraphics ();
-			UnlockMutex (GraphicsLock);
-//			FlushGraphics ();
-			SleepThreadUntil (TimeIn + WaitTime);
-			TimeIn = GetTimeCounter ();
-		}
-//		UnlockMutex (GraphicsLock);
-		pSolarSysState->Tint_rgb = 0;
+			SetContext (SpaceContext);
+			r.corner.x = 0;
+			r.corner.y = t.baseline.y - 10;
+			r.extent.width = SIS_SCREEN_WIDTH;
+			r.extent.height = t.baseline.y - r.corner.y + 1;
+			RepairBackRect (&r);
 
-	}
+			SetContextFont (MicroFont);
+			switch (min_scan)
+			{
+				case MINERAL_SCAN:
+					SetContextForeGroundColor (
+							BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
+					break;
+				case ENERGY_SCAN:
+					SetContextForeGroundColor (
+							BUILD_COLOR (MAKE_RGB15 (0xC, 0xC, 0xC), 0x1C));
+					break;
+				case BIOLOGICAL_SCAN:
+					SetContextForeGroundColor (
+							BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
+					break;
+			}
+			font_DrawText (&t);
+
+			SetContext (ScanContext);
+			UnlockMutex (GraphicsLock);
+
+			{
+				DWORD rgb;
+				
+				switch (min_scan)
+				{
+					case MINERAL_SCAN:
+						rgb = MAKE_RGB15 (0x1f, 0x00, 0x00);
+						break;
+					case ENERGY_SCAN:
+						rgb = MAKE_RGB15 (0x1f, 0x1f, 0x1f);
+						break;
+					case BIOLOGICAL_SCAN:
+						rgb = MAKE_RGB15 (0x00, 0x1f, 0x00);
+						break;
+				}
+
+				LockMutex (GraphicsLock);
+				BatchGraphics ();
+				DrawPlanet (0, 0, 0, 0);
+				UnbatchGraphics ();
+				UnlockMutex (GraphicsLock);
+
+				PressState = AnyButtonPress (TRUE);
+				WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
+//				LockMutex (GraphicsLock);
+				TimeIn = GetTimeCounter ();
+				for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
+				{
+					ButtonState = AnyButtonPress (TRUE);
+					if (PressState)
+					{
+						PressState = ButtonState;
+						ButtonState = FALSE;
+					}
+					if (ButtonState)
+						i = -i;
+					LockMutex (GraphicsLock);
+					BatchGraphics ();
+					DrawPlanet (0, 0, i, rgb);
+					if (i < 0)
+						i = MAP_HEIGHT + NUM_FLASH_COLORS;
+					if (pMS->delta_item)
+						DrawScannedStuff (i, min_scan);
+					UnbatchGraphics ();
+					UnlockMutex (GraphicsLock);
+//					FlushGraphics ();
+					SleepThreadUntil (TimeIn + WaitTime);
+					TimeIn = GetTimeCounter ();
+				}
+//				UnlockMutex (GraphicsLock);
+				pSolarSysState->Tint_rgb = 0;
+
+			}
 
 		} while (++min_scan <= max_scan);
 
@@ -1156,7 +1155,8 @@ DoScan (PMENU_STATE pMS)
 		r.corner.x = 0;
 		r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
 		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - r.corner.y + 1;
+		r.extent.height = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7)
+				- r.corner.y + 1;
 		RepairBackRect (&r);
 
 		SetContext (ScanContext);
@@ -1166,7 +1166,8 @@ DoScan (PMENU_STATE pMS)
 			DrawScannedObjects (FALSE);
 			UnlockMutex (GraphicsLock);
 
-			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState = DISPATCH_SHUTTLE);
+			pMS->CurState = DISPATCH_SHUTTLE;
+			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState);
 		}
 		else
 			UnlockMutex (GraphicsLock);
@@ -1220,8 +1221,10 @@ ScanSystem (void)
 	else
 	{
 		MenuState.CurState = AUTO_SCAN;
-		pSolarSysState->MenuState.first_item.x = (MAP_WIDTH >> 1) << MAG_SHIFT;
-		pSolarSysState->MenuState.first_item.y = (MAP_HEIGHT >> 1) << MAG_SHIFT;
+		pSolarSysState->MenuState.first_item.x =
+				(MAP_WIDTH >> 1) << MAG_SHIFT;
+		pSolarSysState->MenuState.first_item.y =
+				(MAP_HEIGHT >> 1) << MAG_SHIFT;
 
 		LockMutex (GraphicsLock);
 		ScanContext = CaptureContext (CreateContext ());
@@ -1230,8 +1233,7 @@ ScanSystem (void)
 		MenuState.flash_rect0.extent.height = FLASH_HEIGHT;
 		MenuState.flash_frame0 = CaptureDrawable (
 				CreateDrawable (WANT_PIXMAP | MAPPED_TO_DISPLAY,
-				FLASH_WIDTH, FLASH_HEIGHT, 1)
-				);
+				FLASH_WIDTH, FLASH_HEIGHT, 1));
 		SetContextFGFrame (Screen);
 		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
@@ -1281,158 +1283,134 @@ GeneratePlanetSide (void)
 		COUNT num_nodes;
 		FRAME f;
 
-		f = SetAbsFrameIndex (
-				misc_data,
-				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN)
-				);
+		f = SetAbsFrameIndex (misc_data,
+				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
 		pSolarSysState->CurNode = (COUNT)~0;
-		(*pSolarSysState->GenFunc) (
-				(BYTE)(scan + GENERATE_MINERAL)
-				);
+		(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+
 		num_nodes = pSolarSysState->CurNode;
-		if (num_nodes)
+		while (num_nodes--)
 		{
-			while (num_nodes--)
+			HELEMENT hNodeElement;
+			ELEMENTPTR NodeElementPtr;
+
+			if (pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan]
+					& (1L << num_nodes))
+				continue;
+
+			hNodeElement = AllocElement ();
+			if (!hNodeElement)
+				continue;
+
+			LockElement (hNodeElement, &NodeElementPtr);
+
+			pSolarSysState->CurNode = num_nodes;
+			(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+
+			NodeElementPtr->life_span = MAKE_WORD (scan, num_nodes + 1);
+			NodeElementPtr->state_flags = BAD_GUY;
+			NodeElementPtr->current.location.x =
+					pSolarSysState->SysInfo.PlanetInfo.CurPt.x;
+			NodeElementPtr->current.location.y =
+					pSolarSysState->SysInfo.PlanetInfo.CurPt.y;
+
+			SetPrimType (&DisplayArray[NodeElementPtr->PrimIndex], STAMP_PRIM);
+			if (scan == MINERAL_SCAN)
 			{
-				HELEMENT hNodeElement;
+				COUNT EType;
 
-				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan]
-						& (1L << num_nodes))
-						&& (hNodeElement = AllocElement ()))
+				EType = pSolarSysState->SysInfo.PlanetInfo.CurType;
+				NodeElementPtr->turn_wait = (BYTE)EType;
+				NodeElementPtr->mass_points = HIBYTE (
+						pSolarSysState->SysInfo.PlanetInfo.CurDensity);
+				NodeElementPtr->current.image.frame = SetAbsFrameIndex (
+						misc_data, (NUM_SCANDOT_TRANSITIONS << 1)
+						+ ElementCategory (EType) * 5);
+				NodeElementPtr->next.image.frame = SetRelFrameIndex (
+						NodeElementPtr->current.image.frame, LOBYTE (
+						pSolarSysState->SysInfo.PlanetInfo.CurDensity) + 1);
+				DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
+						IncFrameIndex (NodeElementPtr->next.image.frame);
+			}
+			else
+			{
+				extern void object_animation (PELEMENT ElementPtr);
+
+				NodeElementPtr->current.image.frame = f;
+				NodeElementPtr->next.image.frame = SetRelFrameIndex (
+						f, NUM_SCANDOT_TRANSITIONS - 1);
+				NodeElementPtr->turn_wait = MAKE_BYTE (4, 4);
+				NodeElementPtr->preprocess_func = object_animation;
+				if (scan == ENERGY_SCAN)
 				{
-					ELEMENTPTR NodeElementPtr;
-
-					LockElement (hNodeElement, &NodeElementPtr);
-
-					pSolarSysState->CurNode = num_nodes;
-					(*pSolarSysState->GenFunc) (
-							(BYTE)(scan + GENERATE_MINERAL)
-							);
-
-					NodeElementPtr->life_span = MAKE_WORD (scan, num_nodes + 1);
-					NodeElementPtr->state_flags = BAD_GUY;
-					NodeElementPtr->current.location.x =
-							pSolarSysState->SysInfo.PlanetInfo.CurPt.x;
-					NodeElementPtr->current.location.y =
-							pSolarSysState->SysInfo.PlanetInfo.CurPt.y;
-
-					SetPrimType (&DisplayArray[NodeElementPtr->PrimIndex], STAMP_PRIM);
-					if (scan == MINERAL_SCAN)
-					{
-						COUNT EType;
-
-						EType = pSolarSysState->SysInfo.PlanetInfo.CurType;
-						NodeElementPtr->turn_wait = (BYTE)EType;
-						NodeElementPtr->mass_points =
-								HIBYTE (
-								pSolarSysState->SysInfo.PlanetInfo.CurDensity
-								);
-						NodeElementPtr->current.image.frame =
-								SetAbsFrameIndex (
-								misc_data,
-								(NUM_SCANDOT_TRANSITIONS << 1)
-								+ ElementCategory (EType) * 5
-								);
-						NodeElementPtr->next.image.frame =
-								SetRelFrameIndex (
-								NodeElementPtr->current.image.frame,
-								LOBYTE (
-								pSolarSysState->SysInfo.PlanetInfo.CurDensity
-								) + 1
-								);
-						DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
-								IncFrameIndex (
-								NodeElementPtr->next.image.frame
-								);
-					}
+					if (pSolarSysState->SysInfo.PlanetInfo.CurType == 1)
+						NodeElementPtr->mass_points = 0;
+					else if (pSolarSysState->SysInfo.PlanetInfo.CurType == 2)
+						NodeElementPtr->mass_points = 1;
 					else
+						NodeElementPtr->mass_points = MAX_SCROUNGED;
+					DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
+							pSolarSysState->PlanetSideFrame[1];
+				}
+				else
+				{
+					COUNT i, which_node;
+
+					which_node = pSolarSysState->SysInfo.PlanetInfo.CurType;
+
+					if (CreatureData[which_node].Attributes & SPEED_MASK)
 					{
-						extern void
-								object_animation
-								(PELEMENT
-								ElementPtr);
-
-						NodeElementPtr->current.image.frame = f;
-						NodeElementPtr->next.image.frame =
-								SetRelFrameIndex (
-								f, NUM_SCANDOT_TRANSITIONS - 1
-								);
-						NodeElementPtr->turn_wait = MAKE_BYTE (4, 4);
-						NodeElementPtr->preprocess_func = object_animation;
-						if (scan == ENERGY_SCAN)
-						{
-							if (pSolarSysState->SysInfo.PlanetInfo.CurType == 1)
-								NodeElementPtr->mass_points = 0;
-							else if (pSolarSysState->SysInfo.PlanetInfo.CurType == 2)
-								NodeElementPtr->mass_points = 1;
-							else
-								NodeElementPtr->mass_points = MAX_SCROUNGED;
-							DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
-									pSolarSysState->PlanetSideFrame[1];
-						}
-						else
-						{
-							COUNT i, which_node;
-
-							which_node = pSolarSysState->SysInfo.PlanetInfo.CurType;
-
-							if (CreatureData[which_node].Attributes & SPEED_MASK)
-							{
-								i = (COUNT)TFB_Random ();
-								NodeElementPtr->current.location.x =
-										(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
-								NodeElementPtr->current.location.y =
-										(HIBYTE (i) % (MAP_HEIGHT - (8 << 1))) + 8;
-							}
-
-							if (pSolarSysState->PlanetSideFrame[0] == 0)
-								pSolarSysState->PlanetSideFrame[0] =
-										CaptureDrawable (LoadGraphic (
-										CANNISTER_MASK_PMAP_ANIM
-										));
-							for (i = 0; i < MAX_LIFE_VARIATION
-									&& life_init_tab[i] != (BYTE)(which_node + 1);
-									++i)
-							{
-								if (life_init_tab[i] == 0)
-								{
-									life_init_tab[i] = (BYTE)which_node + 1;
-
-									pSolarSysState->PlanetSideFrame[i + 3] =
-											CaptureDrawable (LoadGraphic (
-											MAKE_RESOURCE (
-											GET_PACKAGE (LIFE00_MASK_PMAP_ANIM)
-											+ which_node, GFXRES,
-											GET_INSTANCE (LIFE00_MASK_PMAP_ANIM)
-											+ which_node)));
-
-									break;
-								}
-							}
-
-							NodeElementPtr->mass_points = (BYTE)which_node;
-							NodeElementPtr->hit_points = HINIBBLE (
-									CreatureData[which_node].ValueAndHitPoints
-									);
-							DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
-									SetAbsFrameIndex (
-									pSolarSysState->PlanetSideFrame[i + 3],
-									(COUNT)TFB_Random ()
-									);
-						}
+						i = (COUNT)TFB_Random ();
+						NodeElementPtr->current.location.x =
+								(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
+						NodeElementPtr->current.location.y =
+								(HIBYTE (i) % (MAP_HEIGHT - (8 << 1))) + 8;
 					}
 
-					NodeElementPtr->next.location.x =
-							NodeElementPtr->current.location.x << MAG_SHIFT;
-					NodeElementPtr->next.location.y =
-							NodeElementPtr->current.location.y << MAG_SHIFT;
-					UnlockElement (hNodeElement);
+					if (pSolarSysState->PlanetSideFrame[0] == 0)
+						pSolarSysState->PlanetSideFrame[0] =
+								CaptureDrawable (LoadGraphic (
+								CANNISTER_MASK_PMAP_ANIM));
+					for (i = 0; i < MAX_LIFE_VARIATION
+							&& life_init_tab[i] != (BYTE)(which_node + 1);
+							++i)
+					{
+						if (life_init_tab[i] != 0)
+							continue;
 
-					PutElement (hNodeElement);
+						life_init_tab[i] = (BYTE)which_node + 1;
+
+						pSolarSysState->PlanetSideFrame[i + 3] =
+								CaptureDrawable (LoadGraphic (
+								MAKE_RESOURCE (
+								GET_PACKAGE (LIFE00_MASK_PMAP_ANIM)
+								+ which_node, GFXRES,
+								GET_INSTANCE (LIFE00_MASK_PMAP_ANIM)
+								+ which_node)));
+
+						break;
+					}
+
+					NodeElementPtr->mass_points = (BYTE)which_node;
+					NodeElementPtr->hit_points = HINIBBLE (
+							CreatureData[which_node].ValueAndHitPoints);
+					DisplayArray[NodeElementPtr->PrimIndex].
+							Object.Stamp.frame = SetAbsFrameIndex (
+							pSolarSysState->PlanetSideFrame[i + 3],
+							(COUNT)TFB_Random ());
 				}
 			}
+
+			NodeElementPtr->next.location.x =
+					NodeElementPtr->current.location.x << MAG_SHIFT;
+			NodeElementPtr->next.location.y =
+					NodeElementPtr->current.location.y << MAG_SHIFT;
+			UnlockElement (hNodeElement);
+
+			PutElement (hNodeElement);
 		}
 	}
 }
+
 
