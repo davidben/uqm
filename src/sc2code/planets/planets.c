@@ -30,6 +30,7 @@ DrawPlanet(int x, int y, int dy, unsigned int rgb);
 
 //End Added by Chris
 
+extern void SetPlanetMusic (BYTE planet_type);
 extern int rotate_planet_task (PVOID Blah);
 
 void
@@ -98,6 +99,7 @@ LoadPlanet (BOOLEAN IsDefined)
 
 			GeneratePlanetMask (pPlanetDesc, IsDefined);
 		}
+		SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
 
 		if (pPlanetDesc->pPrevDesc != &pSolarSysState->SunDesc[0])
 			pPlanetDesc = pPlanetDesc->pPrevDesc;

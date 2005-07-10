@@ -40,8 +40,6 @@
 extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
 		PRECT pRect, SIZE depth_delta);
 
-void SetPlanetMusic (BYTE planet_type);
-
 void SetPlanetTilt (int da);
 
 void RepairBackRect (PRECT pRect);
@@ -1229,12 +1227,12 @@ void planet_orbit_init ()
 
 	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
 	Orbit->TopoZoomFrame = CaptureDrawable (
-				CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
-					(COUNT)(MAP_HEIGHT << 2), 1));
-	Orbit->lpTopoMap=(DWORD *)HMalloc (sizeof(DWORD)
-		* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
-	Orbit->ScratchArray = (DWORD *)HMalloc (sizeof (DWORD *)
-		* (SHIELD_DIAM) * (SHIELD_DIAM));
+			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
+			(COUNT)(MAP_HEIGHT << 2), 1));
+	Orbit->lpTopoMap=(DWORD *)HMalloc (
+			sizeof(DWORD) * (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
+	Orbit->ScratchArray = (DWORD *)HMalloc (
+			sizeof (DWORD *) * (SHIELD_DIAM) * (SHIELD_DIAM));
 }
 
 void
@@ -1256,17 +1254,13 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	{
 		//Earth uses a pixmap for the topography
 		pSolarSysState->TopoFrame = CaptureDrawable (
-				LoadGraphic (EARTH_MASK_ANIM)
-				);
+				LoadGraphic (EARTH_MASK_ANIM));
 		pSolarSysState->TopoFrame = stretch_frame (
-				pSolarSysState->TopoFrame, MAP_WIDTH, MAP_HEIGHT, 1
-				);
+				pSolarSysState->TopoFrame, MAP_WIDTH, MAP_HEIGHT, 1);
 
 	} else {
 
-		PlanDataPtr = &PlanData[
-				pPlanetDesc->data_index & ~PLANET_SHIELDED
-				];
+		PlanDataPtr = &PlanData[pPlanetDesc->data_index & ~PLANET_SHIELDED];
 		r.corner.x = r.corner.y = 0;
 		r.extent.width = MAP_WIDTH;
 		r.extent.height = MAP_HEIGHT;
@@ -1389,8 +1383,6 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	SetContext (OldContext);
 
 	TFB_SeedRandom (old_seed);
-
-	SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
 }
 
 int
