@@ -29,6 +29,8 @@
 #include "globdata.h"
 #include "races.h"
 #include "setup.h"
+#include "state.h"
+#include "libs/misc.h"
 
 #include <stdio.h>
 
@@ -596,10 +598,12 @@ dumpPlanet (FILE *out, const PLANET_DESC *planet, UWORD flags)
 {
 	PLANET_DESC *oldPlanetDesc;
 	
-	oldPlanetDesc= pSolarSysState->pBaseDesc;
+	oldPlanetDesc = pSolarSysState->pBaseDesc;
 
 	// For now, only the name is printed. Other data may be added later.
 	pSolarSysState->pBaseDesc = (PLANET_DESC *) planet;
+	//GetPlanetInfo ();
+	//(*pSolarSysState->GenFunc) (GENERATE_ORBITAL);
 	(*pSolarSysState->GenFunc) (GENERATE_NAME);
 	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
 			planetTypeString (planet->data_index));

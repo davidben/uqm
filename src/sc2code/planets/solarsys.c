@@ -1891,15 +1891,16 @@ ExploreSolarSys (void)
 {
 	SOLARSYS_STATE SolarSysState;
 	
-#if 0
+#ifdef DUMP_STARS
 	{
 		FILE *out;
 
-		// Write the star and planet info to a file in the current
-		// directory (which currently is the content/ directory).
+		// Write the star and planet info to a file in the current directory.
 		out = fopen("PlanetInfo", "w");
 		if (out == NULL)
 			exit(1);
+		TFB_DEBUG_HALT = 1;
+				// Disable drawing.
 		dumpStars(out, DUMP_PLANETS);
 		fclose(out);
 		fprintf(stdout, "*** Star dump complete. You can terminate the "

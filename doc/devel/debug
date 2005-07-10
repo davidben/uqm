@@ -40,7 +40,8 @@ listed below:
   Outputs information on all stars to a FILE.
   With the 'flags' variable, the amount of detail can be specified.
   At this time this function will only work when called from the top of
-  ExploreSolarSys().
+  ExploreSolarSys(). Defining DUMP_STARS in sc2code/uqmdebug.h
+  will make this happen.
 - the function uio_debugInteractive()
   This function is not defined in sc2code/uqmdebug.h, but in libs/uio.h.
   This function can interactively (tty-based) display information on

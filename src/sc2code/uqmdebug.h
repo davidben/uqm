@@ -24,6 +24,12 @@
 #include <stdio.h>
 
 
+// Define DUMP_STARS to dump a list of stars to ./PlanetInfo.
+// The list is generated when a new game is started. Normal
+// gameplay is not available in this situation.
+//#define DUMP_STARS
+
+
 // Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
 extern void debugKeyPressed (void);
 

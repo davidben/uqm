@@ -30,6 +30,7 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "uqmdebug.h"
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
@@ -2085,6 +2086,10 @@ InitCommunication (RESOURCE which_comm)
 	MEM_HANDLE hOldIndex, hIndex;
 	LOCDATAPTR LocDataPtr;
 
+#ifdef DUMP_STARS
+	return 0;
+#endif
+	
 	last_subtitle = NULL;
 
 	LockMutex (GraphicsLock);
