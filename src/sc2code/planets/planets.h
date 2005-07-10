@@ -203,8 +203,8 @@ extern void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
 extern void DrawOval (PRECT pRect, BYTE num_off_pixels);
 extern void DrawFilledOval (PRECT pRect);
 extern void DoMissions (void);
-extern void FillOrbits (BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN
-		TypesDefined);
+extern void FillOrbits (PSOLARSYS_STATE system,
+		BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN TypesDefined);
 extern void ScanSystem (void);
 extern void ChangeSolarSys (void);
 extern BOOLEAN DoFlagshipCommands (PMENU_STATE pMS);

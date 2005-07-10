@@ -62,15 +62,15 @@ static SIZE old_radius;
 BYTE draw_sys_flags = DRAW_STARS | DRAW_PLANETS | DRAW_ORBITS
 		| DRAW_HYPER_COORDS | GRAB_BKGND;
 
+// NB. This function modifies the RNG state.
 static void
-GeneratePlanets (void)
+GeneratePlanets (PSOLARSYS_STATE system)
 {
 	COUNT i;
-	PPLANET_DESC pCurDesc;
+	PPLANET_DESC planet;
 
-	for (i = pSolarSysState->SunDesc[0].NumPlanets,
-			pCurDesc = &pSolarSysState->PlanetDesc[0]; i;
-			--i, ++pCurDesc)
+	for (i = system->SunDesc[0].NumPlanets,
+			planet = &system->PlanetDesc[0]; i; --i, ++planet)
 	{
 		DWORD rand_val;
 		BYTE byte_val;
@@ -81,7 +81,7 @@ GeneratePlanets (void)
 		byte_val = LOBYTE (rand_val);
 
 		num_moons = 0;
-		type = PlanData[pCurDesc->data_index & ~PLANET_SHIELDED].Type;
+		type = PlanData[planet->data_index & ~PLANET_SHIELDED].Type;
 		switch (PLANSIZE (type))
 		{
 			case LARGE_ROCKY_WORLD:
@@ -109,7 +109,7 @@ GeneratePlanets (void)
 				}
 				break;
 		}
-		pCurDesc->NumPlanets = num_moons;
+		planet->NumPlanets = num_moons;
 	}
 }
 
@@ -1638,13 +1638,15 @@ GenerateRandomIP (BYTE control)
 			break;
 		}
 		case GENERATE_MOONS:
-			FillOrbits (pSolarSysState->pBaseDesc->NumPlanets,
+			FillOrbits (pSolarSysState,
+					pSolarSysState->pBaseDesc->NumPlanets,
 					&pSolarSysState->MoonDesc[0], FALSE);
 			break;
 		case GENERATE_PLANETS:
 		{
-			FillOrbits ((BYTE)~0, &pSolarSysState->PlanetDesc[0], FALSE);
-			GeneratePlanets();
+			FillOrbits (pSolarSysState,
+					(BYTE)~0, &pSolarSysState->PlanetDesc[0], FALSE);
+			GeneratePlanets (pSolarSysState);
 			break;
 		}
 	}

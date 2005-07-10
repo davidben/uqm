@@ -82,7 +82,7 @@ GenerateColony (BYTE control)
 			PPLANET_DESC pMinPlanet;
 
 			pMinPlanet = &pSolarSysState->PlanetDesc[0];
-			FillOrbits ((BYTE)~0, pMinPlanet, FALSE);
+			FillOrbits (pSolarSysState, (BYTE)~0, pMinPlanet, FALSE);
 
 			pMinPlanet->radius = EARTH_RADIUS * 115L / 100;
 			angle = ARCTAN (pMinPlanet->location.x, pMinPlanet->location.y);

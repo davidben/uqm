@@ -254,7 +254,8 @@ GenerateLifeForms (SYSTEM_INFOPTR SysInfoPtr, PCOUNT pwhich_life)
 {
 	DWORD old_rand;
 
-	old_rand = TFB_SeedRandom (SysInfoPtr->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+	old_rand = TFB_SeedRandom (
+			SysInfoPtr->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 	*pwhich_life = CalcLifeForms (SysInfoPtr, *pwhich_life);
 	return (TFB_SeedRandom (old_rand));
 }

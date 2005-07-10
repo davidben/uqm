@@ -94,7 +94,9 @@ GenerateSpathi (BYTE control)
 			PPLANET_DESC pMinPlanet;
 
 			pMinPlanet = &pSolarSysState->PlanetDesc[0];
-			FillOrbits (pSolarSysState->SunDesc[0].NumPlanets = 1, pMinPlanet, FALSE);
+			FillOrbits (pSolarSysState,
+					pSolarSysState->SunDesc[0].NumPlanets = 1, pMinPlanet,
+					FALSE);
 
 			pMinPlanet->radius = EARTH_RADIUS * 1150L / 100;
 			angle = ARCTAN (pMinPlanet->location.x, pMinPlanet->location.y);

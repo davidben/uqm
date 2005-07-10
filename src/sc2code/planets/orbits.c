@@ -469,8 +469,8 @@ YellowDistribution (BYTE which_world)
 #define SUPERGIANT_GASG_DIST SCALE_RADIUS (33)
 
 void
-FillOrbits (BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN
-		TypesDefined)
+FillOrbits (PSOLARSYS_STATE system,
+		BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN TypesDefined)
 { /* Generate Planets in orbit around star */
 	BYTE StarColor, PlanetCount, MaxPlanet;
 	BOOLEAN GeneratingMoons;
@@ -492,7 +492,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 #endif /* DEBUG_ORBITS */
 
 	pPD = pBaseDesc;
-	StarSize = pSolarSysState->SunDesc[0].data_index;
+	StarSize = system->SunDesc[0].data_index;
 	StarColor = STAR_COLOR (CurStarDescPtr->Type);
 
 	if (NumPlanets == (BYTE)~0)
@@ -501,7 +501,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 		while ((NumPlanets = (BYTE)(LOWORD (TFB_Random())
 				% MAX_GENERATED_PLANETS)) == 0)
 			;
-		pSolarSysState->SunDesc[0].NumPlanets = NumPlanets;
+		system->SunDesc[0].NumPlanets = NumPlanets;
 	}
 
 #ifdef DEBUG_ORBITS
@@ -510,7 +510,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 			scolor[STAR_COLOR (CurStarDescPtr->Type)],
 			stype[STAR_TYPE (CurStarDescPtr->Type)]);
 #endif /* DEBUG_ORBITS */
-	GeneratingMoons = (BOOLEAN) (pBaseDesc == pSolarSysState->MoonDesc);
+	GeneratingMoons = (BOOLEAN) (pBaseDesc == system->MoonDesc);
 	if (GeneratingMoons)
 		MaxPlanet = FIRST_LARGE_ROCKY_WORLD;
 	else

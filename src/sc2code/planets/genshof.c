@@ -130,7 +130,8 @@ GenerateShofixti (BYTE control)
 					pCurDesc->data_index = METAL_WORLD;
 			}
 
-			FillOrbits (NUM_PLANETS, &pSolarSysState->PlanetDesc[0], TRUE);
+			FillOrbits (pSolarSysState,
+					NUM_PLANETS, &pSolarSysState->PlanetDesc[0], TRUE);
 			break;
 		}
 		default:
