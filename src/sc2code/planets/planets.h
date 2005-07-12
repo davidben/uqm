@@ -153,17 +153,29 @@ typedef struct planet_orbit
 	DWORD *ScratchArray;
 }  PLANET_ORBIT;
 
+// See doc/devel/generate for information on how this structure is
+// filled.
 typedef struct solarsys_state
 {
 	MENU_STATE MenuState;
 
 	COUNT WaitIntersect;
-	PLANET_DESC SunDesc[MAX_SUNS], PlanetDesc[MAX_PLANETS], MoonDesc[MAX_MOONS];
-	PPLANET_DESC pBaseDesc, pOrbitalDesc;
+	PLANET_DESC SunDesc[MAX_SUNS];
+	PLANET_DESC PlanetDesc[MAX_PLANETS];
+			// Description of the planets in the system.
+			// Only defined after a call to GenFunc with GENERATE_PLANETS
+			// as its argument, and overwritten by subsequent calls.
+	PLANET_DESC MoonDesc[MAX_MOONS];
+			// Description of the moons orbiting the planet pointed to
+			// by pBaseDesc.
+			// Only defined after a call to GenFunc with GENERATE_MOONS
+			// as its argument, and overwritten by subsequent calls.
+	PPLANET_DESC pBaseDesc;
+	PPLANET_DESC pOrbitalDesc;
 	SIZE FirstPlanetIndex, LastPlanetIndex;
 			// The planets get sorted on their image.origin.y value.
 			// PlanetDesc[FirstPlanetIndex] is the planet with the lowest
-			// image.origin.y, and PlanetDesc[FirstPlanetIndex] has the
+			// image.origin.y, and PlanetDesc[LastPlanetIndex] has the
 			// highest image.origin.y.
 			// PlanetDesc[PlanetDesc[i].NextIndex] is the next planet
 			// after PlanetDesc[i] in the ordering.
@@ -179,6 +191,8 @@ typedef struct solarsys_state
 
 	COUNT CurNode;
 	PLAN_GEN_FUNC GenFunc;
+			// Function to call to fill in various parts of this structure.
+			// See doc/devel/generate.
 
 	FRAME PlanetSideFrame[6];
 	UWORD Tint_rgb;

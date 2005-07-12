@@ -30,6 +30,8 @@
 typedef struct
 {
 	BOOLEAN InTransit;
+			// Landing on or taking of from a planet.
+			// Setting it while landed will initiate takeoff.
 
 	SOUND OldMenuSounds;
 

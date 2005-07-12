@@ -206,6 +206,8 @@ typedef struct
 			 */
 } ElementEntry;
 
+// PlanetFrame describes a type of planet. It is not used to describe
+// individual planets.
 typedef struct
 {
 	BYTE Type;
@@ -215,8 +217,8 @@ typedef struct
 			 *           CRATERED_ALGO, or GAS_GIANT_ALGO
 			 * bits 4-7: interplanetary color, one of BLUE_BODY, GREEN_BODY,
 			 *           ORANGE_BODY, RED_BODY, WHITE_BODY (same as
-			 *           GRAY_BODY), YELLOW_BODY, NUM_STAR_COLORS,
-			 *           CYAN_BODY, PURPLE_BODY, VIOLET_BODY)
+			 *           GRAY_BODY), YELLOW_BODY, CYAN_BODY, PURPLE_BODY,
+			 *           VIOLET_BODY)
              */
 	BYTE BaseTectonics;
 			/* Base constant for calculation of tectonic activity,
@@ -272,9 +274,27 @@ typedef struct
 
 	DWORD ScanSeed[NUM_SCAN_TYPES];
 	DWORD ScanRetrieveMask[NUM_SCAN_TYPES];
+
+	// The CurPt, CurDensity and CurType fields are filled in
+	// when a GENERATE_MINERAL, GENERATE_ENERGY, or GENERATE_LIFE
+	// call is made.
 	POINT CurPt;
+			// Position of the mineral/bio/energy node on the planet.
 	COUNT CurDensity;
+			// For bio and energy: undefined
+			// For minerals the low byte is the gross size of the
+			// deposit (this determines the image), and the high
+			// byte is the fine size (the actual quantity).
 	COUNT CurType;
+			// For minerals: the type of element
+			// For bio: the type of the creature.
+			//          0 through NUM_CREATURE_TYPES are normal creatures,
+			//          NUM_CREATURE_TYPES + 1 is an Evil One
+			//          NUM_CREATURE_TYPES + 2 is a Brainbox Bulldozer
+			//          NUM_CREATURE_TYPES + 3 is Zex' Beauty
+			// For energy: 0 - Liftoff on collision
+			//             1 - No liftoff on collision
+			//             2 - (special case) Fwiffo
 
 	STRING DiscoveryString;
 	FONT LanderFont;

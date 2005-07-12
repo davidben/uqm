@@ -204,6 +204,8 @@ typedef struct
 
 	DWORD FuelOnBoard;
 	COUNT CrewEnlisted;
+			// Number of crew on board, not counting the captain.
+			// Set to (COUNT) ~0 to indicate game over.
 	COUNT TotalElementMass, TotalBioMass;
 
 	BYTE ModuleSlots[NUM_MODULE_SLOTS];

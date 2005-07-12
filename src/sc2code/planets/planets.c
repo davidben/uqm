@@ -61,6 +61,12 @@ DrawScannedObjects (BOOLEAN Reversed)
 	}
 }
 
+// Initialise the surface graphics, and start the planet music.
+// Called from the GENERATE_ORBITAL case of an IP generation function
+// (when orbit is entered; either from IP, or from loading a saved game)
+// and when "starmap" is selected from orbit and then cancelled.
+// IsDefined is true only when the planet comes with its own bitmap,
+// namely for Earth.
 void
 LoadPlanet (BOOLEAN IsDefined)
 {
@@ -74,6 +80,9 @@ LoadPlanet (BOOLEAN IsDefined)
 
 	if (pSolarSysState->MenuState.flash_task == 0)
 	{
+		// The "rotate planets" task is not initialised yet.
+		// This means the call to LoadPlanet is made from a
+		// GENERATE_ORBITAL case of an IP generation function.
 		PPLANET_DESC pPlanetDesc;
 		extern void GeneratePlanetSide (void);
 

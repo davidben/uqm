@@ -220,6 +220,7 @@ CalcTilt (void)
 	return (tilt);
 }
 
+// NB. Returns the RNG to the state it found it in.
 DWORD
 DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 		pPlanetDesc)
