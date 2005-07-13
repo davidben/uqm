@@ -789,13 +789,13 @@ dumpMoon (FILE *out, const PLANET_DESC *moon)
 static void
 dumpWorld (FILE *out, const PLANET_DESC *world)
 {
-	if (world->data_index == (BYTE) ~0)
+	if ((world->data_index == (BYTE) ~0) ||
+			(world->data_index & PLANET_SHIELDED))
 	{
 		// StarBase
 		return;
 	}
 
-	fflush(stdout); // XXX temporary
 	fprintf (out, "          Bio: %4d    Min: %4d\n",
 			calculateBioValue (pSolarSysState, world),
 			calculateMineralValue (pSolarSysState, world));
