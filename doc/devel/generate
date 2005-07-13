@@ -87,13 +87,13 @@ Pre: pSolarSysState->SysInfo is filled in by a GENERATE_ORBITAL call
 This function determines the properties of one mineral deposit, energy node,
 or life form on a planet or moon. On entry the caller sets
 pSolarSysState->CurNode to the index of the requested item. This function
-will then fill in SysInfoPtr->PlanetInfo.CurPt,
-SysInfoPtr->PlanetInfo.CurType, and in the case of minerals also
-SysInfoPtr->PlanetInfo.CurDensity.
+will then fill in pSolarSysState->SysInfo.PlanetInfo.CurPt,
+pSolarSysState->SysInfo.PlanetInfo.CurType, and in the case of minerals also
+pSolarSysState->SysInfo.PlanetInfo.CurDensity.
 In case pSolarSysState->CurNode is set to a value larger than or equal to
 the number of items of the requested kind ((COUNT) ~0 in practice), it is
 set to the real number of nodes. In this case the CurXXX fields of
-pSolarSysState->PlanetInfo are set to the values corresponding to
+pSolarSysState->SysInfo.PlanetInfo are set to the values corresponding to
 the largest valid CurNode index, but should probably be considered to be
 undefined.
 These functions may also change the game state, cause the lander

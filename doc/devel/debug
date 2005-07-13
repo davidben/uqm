@@ -6,6 +6,11 @@ require the game to be in a specific state.
 The function debugKeyPressed() in uqmdebug.c is called when the debug key
 is pressed. This function is a suitable place to put various debugging
 calls.
+There is also a global variable 'debugHook', which can be set to a function
+to be called the next iteration of the main game loop (which will occur
+when the current activity (IP, HyperSpace, Communication, Battle) changes.
+By setting this, a function can be called from the main loop, thereby
+eliminating threading issues that may otherwise arrise.
 The debug key can be specified in keys.cfg by adding a line with a text
 similar to "Debug: key F11".
 An interactive way to access various debugging code, similar to
@@ -36,12 +41,10 @@ listed below:
   Outputs information on all scheduled events to a FILE.
 - the function dumpPlanetTypes()
   Outputs information on all planet types to a FILE.
-- the function dumpStars()
-  Outputs information on all stars to a FILE.
-  With the 'flags' variable, the amount of detail can be specified.
-  At this time this function will only work when called from the top of
-  ExploreSolarSys(). Defining DUMP_STARS in sc2code/uqmdebug.h
-  will make this happen.
+- the function dumpUniverseToFile()
+  Outputs information on the universe to "./PlanetInfo". This function
+  should only be called from debugHook, as threading issues would otherwise
+  arrise.
 - the function uio_debugInteractive()
   This function is not defined in sc2code/uqmdebug.h, but in libs/uio.h.
   This function can interactively (tty-based) display information on
