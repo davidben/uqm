@@ -792,7 +792,7 @@ dumpWorld (FILE *out, const PLANET_DESC *world)
 	if ((world->data_index == (BYTE) ~0) ||
 			(world->data_index & PLANET_SHIELDED))
 	{
-		// StarBase
+		// StarBase or slave shielded planet.
 		return;
 	}
 
