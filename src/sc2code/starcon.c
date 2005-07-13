@@ -27,6 +27,7 @@
 #include "restart.h"
 #include "setup.h"
 #include "starcon.h"
+#include "uqmdebug.h"
 #include "libs/tasklib.h"
 
 
@@ -138,6 +139,19 @@ while (--ac > 0)
 
 				SuspendGameClock ();
 
+#ifdef DEBUG
+				if (debugHook != NULL)
+				{
+					void (*saveDebugHook) (void);
+					saveDebugHook = debugHook;
+					debugHook = NULL;
+							// No further debugHook callse unless the called
+							// function resets debugHook.
+					(*saveDebugHook) ();
+					continue;
+				}
+#endif
+				
 				if (!((GLOBAL (CurrentActivity) | NextActivity) & CHECK_LOAD))
 					ZeroVelocityComponents (
 							&GLOBAL (velocity)

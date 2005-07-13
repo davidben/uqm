@@ -27,20 +27,39 @@
 #include "gamestr.h"
 #include "gameev.h"
 #include "globdata.h"
+#include "planets/lifeform.h"
 #include "races.h"
 #include "setup.h"
 #include "state.h"
+#include "libs/mathlib.h"
 #include "libs/misc.h"
 
 #include <stdio.h>
+#include <errno.h>
 
-static void dumpEventCallback (EVENTPTR eventPtr, void *arg);
-static void dumpStarCallback(STAR_DESC *star, void *arg);
-static void dumpPlanetCallback (PLANET_DESC *planet, void *arg);
+
+static void dumpEventCallback (const EVENTPTR eventPtr, void *arg);
+
+static void starRecurse (STAR_DESC *star, void *arg);
+static void planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
+		PLANET_DESC *planet, void *arg);
+static void moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
+		PLANET_DESC *planet, PLANET_DESC *moon, void *arg);
+
+static void dumpSystemCallback (const STAR_DESC *star,
+		const SOLARSYS_STATE *system, void *arg);
+static void dumpPlanetCallback (const PLANET_DESC *planet, void *arg);
+static void dumpMoonCallback (const PLANET_DESC *moon, void *arg);
+static void dumpWorld (FILE *out, const PLANET_DESC *world);
+
 static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 		void *arg);
 
+
 BOOLEAN instantMove = FALSE;
+BOOLEAN disableInteractivity = FALSE;
+volatile void (*debugHook) (void) = NULL;
+
 
 void
 debugKeyPressed (void)
@@ -54,13 +73,16 @@ debugKeyPressed (void)
 	// Informational:
 //	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);
-//	dumpStars (stderr, DUMP_PLANETS);
-			// Currently dumpStars() does not work when called from here.
-			// It needs to be called from the top of ExploreSolarSys().
+	// debugHook = dumpUniverseToFile;
+			// This will cause dumpUniverseToFile to be called from the
+			// main loop. Calling it from here would give threading
+			// problems.
 
 	// Interactive:
 //	uio_debugInteractive(stdin, stdout, stderr);
 }
+
+////////////////////////////////////////////////////////////////////////////
 
 // Fast forwards to the next event.
 // If skipHEE is set, HYPERSPACE_ENCOUNTER_EVENTs are skipped.
@@ -158,7 +180,7 @@ eventName (BYTE func_index)
 }
 
 static void
-dumpEventCallback (EVENTPTR eventPtr, void *arg)
+dumpEventCallback (const EVENTPTR eventPtr, void *arg)
 {
 	FILE *out = (FILE *) arg;
 	dumpEvent (out, eventPtr);
@@ -167,7 +189,7 @@ dumpEventCallback (EVENTPTR eventPtr, void *arg)
 void
 dumpEvent (FILE *out, EVENTPTR eventPtr)
 {
-	fprintf (out, "%04u/%02u/%02u: %s\n",
+	fprintf (out, "%4u/%02u/%02u: %s\n",
 			eventPtr->year_index,
 			eventPtr->month_index,
 			eventPtr->day_index,
@@ -188,6 +210,7 @@ dumpEvents (FILE *out)
 		ResumeGameClock ();
 }
 
+////////////////////////////////////////////////////////////////////////////
 
 // NB: Ship maximum speed and turning rate aren't updated in
 // HyperSpace/QuasiSpace or in melee.
@@ -299,6 +322,8 @@ equipShip (void)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////
+
 void
 showSpheres (void)
 {
@@ -326,6 +351,8 @@ showSpheres (void)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////
+
 void
 forAllStars (void (*callback) (STAR_DESC *, void *), void *arg)
 {
@@ -335,33 +362,222 @@ forAllStars (void (*callback) (STAR_DESC *, void *), void *arg)
 	for (i = 0; i < NUM_SOLAR_SYSTEMS; i++)
 		callback (&starmap_array[i], arg);
 }
-	
-typedef struct
-{
-	FILE *out;
-	UWORD flags;
-} DumpStarsArg;
 
 void
-dumpStars (FILE *out, UWORD flags)
+forAllPlanets (STAR_DESC *star, SOLARSYS_STATE *system, void (*callback) (
+		STAR_DESC *, SOLARSYS_STATE *, PLANET_DESC *, void *), void *arg)
 {
-	DumpStarsArg dumpStarsArg;
-	dumpStarsArg.out = out;
-	dumpStarsArg.flags = flags;
+	COUNT i;
 
-	forAllStars (dumpStarCallback, (void *) &dumpStarsArg);
+	assert(CurStarDescPtr = star);
+	assert(pSolarSysState == system);
+
+	for (i = 0; i < system->SunDesc[0].NumPlanets; i++)
+		callback (star, system, &system->PlanetDesc[i], arg);
+}
+
+void
+forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
+		void (*callback) (STAR_DESC *, SOLARSYS_STATE *, PLANET_DESC *,
+		PLANET_DESC *, void *), void *arg)
+{
+	COUNT i;
+
+	assert(pSolarSysState == system);
+	assert(system->pBaseDesc == planet);
+
+	for (i = 0; i < planet->NumPlanets; i++)
+		callback (star, system, planet, &system->MoonDesc[i], arg);
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void
+UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
+{
+	BOOLEAN clockRunning;
+	ACTIVITY savedActivity;
+	
+	if (universeRecurseArg->systemFunc == NULL
+			&& universeRecurseArg->planetFunc == NULL
+			&& universeRecurseArg->moonFunc == NULL)
+		return;
+	
+	clockRunning = GameClockRunning ();
+	if (clockRunning)
+		SuspendGameClock ();
+	//TFB_DEBUG_HALT = 1;
+	savedActivity = GLOBAL (CurrentActivity);
+	disableInteractivity = TRUE;
+
+	forAllStars (starRecurse, (void *) universeRecurseArg);
+	
+	disableInteractivity = FALSE;
+	GLOBAL (CurrentActivity) = savedActivity;
+	if (clockRunning)
+		ResumeGameClock ();
 }
 
 static void
-dumpStarCallback (STAR_DESC *star, void *arg)
+starRecurse (STAR_DESC *star, void *arg)
 {
-	DumpStarsArg *dumpStarsArg = (DumpStarsArg *) arg;
+	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
 
-	dumpStar(dumpStarsArg->out, star, dumpStarsArg->flags);
+	SOLARSYS_STATE SolarSysState;
+	PSOLARSYS_STATE oldPSolarSysState = pSolarSysState;
+	DWORD oldSeed =
+			TFB_SeedRandom (MAKE_DWORD (star->star_pt.x, star->star_pt.y));
+
+	STAR_DESCPTR oldStarDescPtr = CurStarDescPtr;
+	CurStarDescPtr = star;
+
+	memset (&SolarSysState, 0, sizeof (SolarSysState));
+	SolarSysState.SunDesc[0].pPrevDesc = 0;
+	SolarSysState.SunDesc[0].rand_seed = TFB_Random ();
+	SolarSysState.SunDesc[0].data_index = STAR_TYPE (star->Type);
+	SolarSysState.SunDesc[0].location.x = 0;
+	SolarSysState.SunDesc[0].location.y = 0;
+	//SolarSysState.SunDesc[0].radius = MIN_ZOOM_RADIUS;
+	SolarSysState.GenFunc = GenerateIP (star->Index);
+
+	pSolarSysState = &SolarSysState;
+	(*pSolarSysState->GenFunc) (GENERATE_PLANETS);
+
+	if (universeRecurseArg->systemFunc != NULL)
+	{
+		(*universeRecurseArg->systemFunc) (
+				star, &SolarSysState, universeRecurseArg->arg);
+	}
+	
+	if (universeRecurseArg->planetFunc != NULL
+			|| universeRecurseArg->moonFunc != NULL)
+	{
+		forAllPlanets (star, &SolarSysState, planetRecurse,
+				(void *) universeRecurseArg);
+	}
+
+	pSolarSysState = oldPSolarSysState;
+	CurStarDescPtr = oldStarDescPtr;
+	TFB_SeedRandom (oldSeed);
+}
+
+static void
+planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
+		PLANET_DESC *planet, void *arg)
+{
+	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
+	
+	assert(CurStarDescPtr = star);
+	assert(pSolarSysState == system);
+
+	system->pBaseDesc = planet;
+	planet->pPrevDesc = &system->SunDesc[0];
+
+	if (universeRecurseArg->planetFunc != NULL)
+	{
+		system->pOrbitalDesc = planet;
+		DoPlanetaryAnalysis (&system->SysInfo, planet);
+				// When GenerateRandomIP is used as GenFunc,
+				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
+				// but with other GenFuncs this is not guaranteed.
+		(*system->GenFunc) (GENERATE_ORBITAL);
+		(*universeRecurseArg->planetFunc) (
+				planet, universeRecurseArg->arg);
+	}
+
+	if (universeRecurseArg->moonFunc != NULL)
+	{
+		DWORD oldSeed = TFB_SeedRandom (planet->rand_seed);
+		
+		(*system->GenFunc) (GENERATE_MOONS);
+
+		forAllMoons (star, system, planet, moonRecurse,
+				(void *) universeRecurseArg);
+
+		TFB_SeedRandom (oldSeed);
+	}
+}
+
+static void
+moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
+		PLANET_DESC *moon, void *arg)
+{
+	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
+	
+	assert(CurStarDescPtr = star);
+	assert(pSolarSysState == system);
+	assert(system->pBaseDesc == planet);
+	
+	moon->pPrevDesc = planet;
+
+	if (universeRecurseArg->moonFunc != NULL)
+	{
+		system->pOrbitalDesc = moon;
+		DoPlanetaryAnalysis (&system->SysInfo, moon);
+				// When GenerateRandomIP is used as GenFunc,
+				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
+				// but with other GenFuncs this is not guaranteed.
+		(*system->GenFunc) (GENERATE_ORBITAL);
+		(*universeRecurseArg->moonFunc) (
+				moon, universeRecurseArg->arg);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+typedef struct
+{
+	FILE *out;
+} DumpUniverseArg;
+
+void
+dumpUniverse (FILE *out)
+{
+	DumpUniverseArg dumpUniverseArg;
+	UniverseRecurseArg universeRecurseArg;
+	
+	dumpUniverseArg.out = out;
+
+	universeRecurseArg.systemFunc = dumpSystemCallback;
+	universeRecurseArg.planetFunc = dumpPlanetCallback;
+	universeRecurseArg.moonFunc = dumpMoonCallback;
+	universeRecurseArg.arg = (void *) &dumpUniverseArg;
+
+	UniverseRecurse (&universeRecurseArg);
 }
 
 void
-dumpStar (FILE *out, const STAR_DESC *star, UWORD flags)
+dumpUniverseToFile (void)
+{
+	FILE *out;
+
+#	define UNIVERSE_DUMP_FILE "PlanetInfo"
+	out = fopen(UNIVERSE_DUMP_FILE, "w");
+	if (out == NULL)
+	{
+		fprintf(stderr, "Error: Could not open file '%s' for "
+				"writing: %s\n", UNIVERSE_DUMP_FILE, strerror(errno));
+		return;
+	}
+
+	dumpUniverse (out);
+	
+	fclose(out);
+
+	fprintf(stdout, "*** Star dump complete. The game may be in an "
+			"undefined state.\n");
+}
+
+static void
+dumpSystemCallback (const STAR_DESC *star, const SOLARSYS_STATE *system,
+		void *arg)
+{
+	FILE *out = ((DumpUniverseArg *) arg)->out;
+	dumpSystem (out, star, system);
+}
+
+void
+dumpSystem (FILE *out, const STAR_DESC *star, const SOLARSYS_STATE *system)
 {
 	UNICODE name[40];
 	UNICODE buf[40];
@@ -376,8 +592,8 @@ dumpStar (FILE *out, const STAR_DESC *star, UWORD flags)
 			star->star_pt.y / 10, star->star_pt.y % 10,
 			buf,
 			starPresenceString (star->Index));
-	if (flags & DUMP_PLANETS)
-		dumpPlanets (out, star, flags);
+
+	(void) system;  /* satisfy compiler */
 }
 
 const char *
@@ -527,91 +743,116 @@ starPresenceString (BYTE index)
 	}
 }
 
-// Currently, this function only works when called from the top of
-// ExploreSolarSys(). The state afterwards is undefined.
-void
-forAllPlanets (STAR_DESC *star,
-		void (*callback) (PLANET_DESC *, void *), void *arg)
+static void
+dumpPlanetCallback (const PLANET_DESC *planet, void *arg)
 {
-	// These two functions were originally static to solarsys.c
-	extern void InitSolarSys(void);
-	extern void UninitSolarSys(void);
-	
-	SOLARSYS_STATE solarSysState;
-	STAR_DESC *oldStarDescPtr;
-	COUNT i;
-
-	oldStarDescPtr = CurStarDescPtr;
-	CurStarDescPtr = star;
-
-	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (CurStarDescPtr->star_pt.x);
-	GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (CurStarDescPtr->star_pt.y);
-
-	memset (&solarSysState, 0, sizeof solarSysState);
-	solarSysState.GenFunc = GenerateIP (CurStarDescPtr->Index);
-	
-	pSolarSysState = &solarSysState;
-
-	GLOBAL (CurrentActivity) = MAKE_WORD (IN_INTERPLANETARY, 0);
-	SuspendGameClock ();
-	InitSolarSys ();
-
-	for (i = 0; i < pSolarSysState->SunDesc[0].NumPlanets; i++)
-		callback (&pSolarSysState->PlanetDesc[i], arg);
-	
-	GLOBAL (autopilot.x) = ~0;
-	GLOBAL (autopilot.y) = ~0;
-	GLOBAL (ShipStamp.frame) = 0;
-	GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
-	UninitSolarSys ();
-	pSolarSysState = 0;
-
-	CurStarDescPtr = oldStarDescPtr;
+	FILE *out = ((DumpUniverseArg *) arg)->out;
+	dumpPlanet (out, planet);
 }
 
-typedef struct
-{
-	FILE *out;
-	UWORD flags;
-} DumpPlanetsArg;
-
 void
-dumpPlanets (FILE *out, const STAR_DESC *star, UWORD flags)
+dumpPlanet (FILE *out, const PLANET_DESC *planet)
 {
-	DumpPlanetsArg dumpPlanetsArg;
-	dumpPlanetsArg.out = out;
-	dumpPlanetsArg.flags = flags;
-
-	forAllPlanets ((STAR_DESC *) star, dumpPlanetCallback,
-			(void *) &dumpPlanetsArg);
+	(*pSolarSysState->GenFunc) (GENERATE_NAME);
+	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
+			planetTypeString (planet->data_index & ~PLANET_SHIELDED));
+	dumpWorld (out, planet);
 }
 
 static void
-dumpPlanetCallback (PLANET_DESC *planet, void *arg)
+dumpMoonCallback (const PLANET_DESC *moon, void *arg)
 {
-	DumpPlanetsArg *dumpPlanetsArg = (DumpPlanetsArg *) arg;
-	dumpPlanet (dumpPlanetsArg->out, planet, dumpPlanetsArg->flags);
+	FILE *out = ((DumpUniverseArg *) arg)->out;
+	dumpMoon (out, moon);
 }
 
 void
-dumpPlanet (FILE *out, const PLANET_DESC *planet, UWORD flags)
+dumpMoon (FILE *out, const PLANET_DESC *moon)
 {
-	PLANET_DESC *oldPlanetDesc;
+	const char *typeStr;
 	
-	oldPlanetDesc = pSolarSysState->pBaseDesc;
+	if (moon->data_index == (BYTE) ~0)
+	{
+		// StarBase
+		typeStr = "StarBase";
+	}
+	else
+	{
+		typeStr = planetTypeString (moon->data_index & ~PLANET_SHIELDED);
+	}
+	fprintf (out, "  - Moon %-30c  %s\n",
+			'a' + (moon - &pSolarSysState->MoonDesc[0]), typeStr);
 
-	// For now, only the name is printed. Other data may be added later.
-	pSolarSysState->pBaseDesc = (PLANET_DESC *) planet;
-	//GetPlanetInfo ();
-	//(*pSolarSysState->GenFunc) (GENERATE_ORBITAL);
-	(*pSolarSysState->GenFunc) (GENERATE_NAME);
-	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
-			planetTypeString (planet->data_index));
-
-	pSolarSysState->pBaseDesc = oldPlanetDesc;
-
-	(void) flags;
+	dumpWorld (out, moon);
 }
+
+static void
+dumpWorld (FILE *out, const PLANET_DESC *world)
+{
+	if (world->data_index == (BYTE) ~0)
+	{
+		// StarBase
+		return;
+	}
+
+	fflush(stdout); // XXX temporary
+	fprintf (out, "          Bio: %4d    Min: %4d\n",
+			calculateBioValue (pSolarSysState, world),
+			calculateMineralValue (pSolarSysState, world));
+}
+
+COUNT
+calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
+{
+	COUNT result;
+	COUNT numBio;
+	COUNT i;
+	extern const LIFEFORM_DESC CreatureData[];
+
+	assert(system->pOrbitalDesc == world);
+	
+	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
+	(*system->GenFunc) (GENERATE_LIFE);
+	numBio = system->CurNode;
+
+	result = 0;
+	for (i = 0; i < numBio; i++)
+	{
+		((SOLARSYS_STATE *) system)->CurNode = i;
+		(*system->GenFunc) (GENERATE_LIFE);
+		result += BIO_CREDIT_VALUE * LONIBBLE (CreatureData[
+				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
+	}
+	return result;
+}
+
+COUNT
+calculateMineralValue (const SOLARSYS_STATE *system,
+		const PLANET_DESC *world)
+{
+	COUNT result;
+	COUNT numDeposits;
+	COUNT i;
+
+	assert(system->pOrbitalDesc == world);
+	
+	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
+	(*system->GenFunc) (GENERATE_MINERAL);
+	numDeposits = system->CurNode;
+
+	result = 0;
+	for (i = 0; i < numDeposits; i++)
+	{
+		((SOLARSYS_STATE *) system)->CurNode = i;
+		(*system->GenFunc) (GENERATE_MINERAL);
+		result += HIBYTE (system->SysInfo.PlanetInfo.CurDensity) *
+				GLOBAL (ElementWorth[ElementCategory (
+				system->SysInfo.PlanetInfo.CurType)]);
+	}
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////
 
 void
 forAllPlanetTypes (void (*callback) (int, const PlanetFrame *, void *),

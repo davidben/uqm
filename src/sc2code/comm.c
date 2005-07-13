@@ -2086,8 +2086,9 @@ InitCommunication (RESOURCE which_comm)
 	MEM_HANDLE hOldIndex, hIndex;
 	LOCDATAPTR LocDataPtr;
 
-#ifdef DUMP_STARS
-	return 0;
+#ifdef DEBUG
+	if (disableInteractivity)
+		return 0;
 #endif
 	
 	last_subtitle = NULL;

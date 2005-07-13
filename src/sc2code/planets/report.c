@@ -24,6 +24,7 @@
 #include "sounds.h"
 #include "planets/lander.h"
 #include "planets/planets.h"
+#include "uqmdebug.h"
 #include "libs/inplib.h"
 
 #include <ctype.h>
@@ -240,6 +241,11 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	POINT old_curs;
 	CONTEXT OldContext;
 	extern void DrawScannedObjects (BOOLEAN Reversed);
+
+#ifdef DEBUG
+	if (disableInteractivity)
+		return;
+#endif
 
 	if (pMenuState)
 	{

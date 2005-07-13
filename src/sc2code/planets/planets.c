@@ -20,6 +20,7 @@
 #include "scan.h"
 #include "settings.h"
 #include "setup.h"
+#include "uqmdebug.h"
 #include "libs/graphics/gfx_common.h"
 
 
@@ -71,6 +72,12 @@ void
 LoadPlanet (BOOLEAN IsDefined)
 {
 	STAMP s;
+
+#ifdef DEBUG
+	if (disableInteractivity)
+		return;
+#endif
+	
 	LockMutex (GraphicsLock);
 
 	BatchGraphics ();

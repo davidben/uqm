@@ -1891,25 +1891,6 @@ ExploreSolarSys (void)
 {
 	SOLARSYS_STATE SolarSysState;
 	
-#ifdef DUMP_STARS
-	{
-		FILE *out;
-
-		// Write the star and planet info to a file in the current directory.
-		out = fopen("PlanetInfo", "w");
-		if (out == NULL)
-			exit(1);
-		TFB_DEBUG_HALT = 1;
-				// Disable drawing.
-		dumpStars(out, DUMP_PLANETS);
-		fclose(out);
-		fprintf(stdout, "*** Star dump complete. You can terminate the "
-				"program now if it does not do so automatically.\n");
-		exit(0);
-				// There may be other threads left.
-	}
-#endif
-
 	if (CurStarDescPtr == 0)
 	{
 		POINT universe;

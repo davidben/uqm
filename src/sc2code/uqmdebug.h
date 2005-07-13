@@ -24,62 +24,92 @@
 #include <stdio.h>
 
 
-// Define DUMP_STARS to dump a list of stars to ./PlanetInfo.
-// The list is generated when a new game is started. Normal
-// gameplay is not available in this situation.
-//#define DUMP_STARS
+// If set to true, interactive routines that are called (indirectly) in debug
+// functions are a no-op.
+extern BOOLEAN disableInteractivity;
+
+// If a function is assigned to this, it will be called from the main loop.
+extern volatile void (*debugHook) (void);
 
 
 // Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
-extern void debugKeyPressed (void);
+void debugKeyPressed (void);
 
 // Forward time to the next event. If skipHEE is set, the event named
 // HYPERSPACE_ENCOUNTER_EVENT, which normally occurs every game day,
 // is skipped.
-extern void forwardToNextEvent (BOOLEAN skipHEE);
+void forwardToNextEvent (BOOLEAN skipHEE);
 // Generate a list of all events in the event queue.
-extern void dumpEvents (FILE *out);
+void dumpEvents (FILE *out);
 // Describe one event.
-extern void dumpEvent (FILE *out, EVENTPTR eventPtr);
+void dumpEvent (FILE *out, EVENTPTR eventPtr);
 // Get the name of one event.
-extern const char *eventName (BYTE func_index);
+const char *eventName (BYTE func_index);
 
 // Give the flagship a decent equipment for debugging.
-extern void equipShip (void);
+void equipShip (void);
 
 // Show all active spheres of influence.
 void showSpheres (void);
 
+
 // Call a function for all stars.
-extern void forAllStars (void (*callBack) (STAR_DESC *, void *),
-		void *arg);
-// Flags for dumpStar(), dumpStars(), dumpPlanets(), and dumpPlanet().
-#define DUMP_PLANETS (1 << 0)
-// Describe one star system.
-extern void dumpStar(FILE *out, const STAR_DESC *star, UWORD flags);
-// Generate a list of all stars.
-extern void dumpStars(FILE *out, UWORD flags);
-// Get a star color as a string.
-extern const char *bodyColorString (BYTE col);
-// Get a star type as a string.
-extern const char *starTypeString (BYTE type);
-// Get a string describing special presence in the star system.
-extern const char *starPresenceString (BYTE index);
+void forAllStars (void (*callback) (STAR_DESC *, void *), void *arg);
 // Call a function for all planets in a star system.
-extern void forAllPlanets(STAR_DESC *star,
-		void (*callback) (PLANET_DESC *, void *), void *arg);
+void forAllPlanets (STAR_DESC *star, SOLARSYS_STATE *system,
+		void (*callback) (STAR_DESC *, SOLARSYS_STATE *, PLANET_DESC *,
+		void *), void *arg);
+// Call a function for all moons of a planet.
+void forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
+		void (*callback) (STAR_DESC *, SOLARSYS_STATE *, PLANET_DESC *,
+		PLANET_DESC *, void *), void *arg);
+
+// Argument to UniverseRecurse()
+typedef struct
+{
+	void (*systemFunc) (const STAR_DESC *star, const SOLARSYS_STATE *system,
+			void *arg);
+	void (*planetFunc) (const PLANET_DESC *planet, void *arg);
+	void (*moonFunc) (const PLANET_DESC *moon, void *arg);
+	void *arg;
+} UniverseRecurseArg;
+// Recurse through all systems, planets, and moons in the universe.
+void UniverseRecurse (UniverseRecurseArg *universeRecurseArg);
+
+// Describe the entire universe.
+void dumpUniverse (FILE *out);
+// Describe the entire universe, output to a file "./PlanetInfo".
+void dumpUniverseToFile (void);
+// Describe one star system.
+void dumpSystem (FILE *out, const STAR_DESC *star,
+		const SOLARSYS_STATE *system);
+// Get a star color as a string.
+const char *bodyColorString (BYTE col);
+// Get a star type as a string.
+const char *starTypeString (BYTE type);
+// Get a string describing special presence in the star system.
+const char *starPresenceString (BYTE index);
 // Get a list describing all planets in a star.
-extern void dumpPlanets (FILE *out, const STAR_DESC *star, UWORD flags);
+void dumpPlanets (FILE *out, const STAR_DESC *star);
 // Describe one planet.
-extern void dumpPlanet(FILE *out, const PLANET_DESC *planet, UWORD flags);
+void dumpPlanet(FILE *out, const PLANET_DESC *planet);
+// Describe one moon.
+void dumpMoon (FILE *out, const PLANET_DESC *moon);
+// Calculate the total value of all minerals on a world.
+COUNT calculateMineralValue (const SOLARSYS_STATE *system,
+		const PLANET_DESC *world);
+// Calculate the total value of all bio on a world.
+COUNT calculateBioValue (const SOLARSYS_STATE *system,
+		const PLANET_DESC *world);
+
 
 // Call a function for all planet types.
-extern void forAllPlanetTypes (void (*callBack) (int, const PlanetFrame *,
+void forAllPlanetTypes (void (*callBack) (int, const PlanetFrame *,
 		void *), void *arg);
 // Describe one planet type.
-extern void dumpPlanetType(FILE *out, int index, const PlanetFrame *planetFrame);
+void dumpPlanetType(FILE *out, int index, const PlanetFrame *planetFrame);
 // Generate a list of all planet types.
-extern void dumpPlanetTypes(FILE *out);
+void dumpPlanetTypes(FILE *out);
 // Get a string describing a planet type.
 const char *planetTypeString (int typeIndex);
 // Get a string describing the size of a type of planet.

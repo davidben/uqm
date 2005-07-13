@@ -24,6 +24,7 @@
 #include "dummy.h"
 
 #include "coderes.h"
+#include "globdata.h"
 #include "races.h"
 
 #include "libs/compiler.h"
@@ -36,7 +37,6 @@ typedef struct
 	MEM_HANDLE handle _ALIGNED_ON(sizeof (MEM_HANDLE));
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
-
 
 MEM_HANDLE
 LoadVidInstance (DWORD res)
