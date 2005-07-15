@@ -130,43 +130,47 @@ enum
 static void
 FeedbackSetting (BYTE which_setting)
 {
-	UNICODE buf[20];
-	char tmpstr[3];
+	UNICODE buf[64];
+	const char *tmpstr;
 
 	buf[0] = '\0';
 	switch (which_setting)
 	{
 		case SOUND_ON_SETTING:
 		case SOUND_OFF_SETTING:
-			wsprintf (buf, "%s %s",
+			snprintf (buf, sizeof buf, "%s %s",
 					GAME_STRING (OPTION_STRING_BASE + 0),
 					GLOBAL (glob_flags) & SOUND_DISABLED
-					? GAME_STRING (OPTION_STRING_BASE + 3) : GAME_STRING (OPTION_STRING_BASE + 4));
+					? GAME_STRING (OPTION_STRING_BASE + 3) :
+					GAME_STRING (OPTION_STRING_BASE + 4));
 			break;
 		case MUSIC_ON_SETTING:
 		case MUSIC_OFF_SETTING:
-			wsprintf (buf, "%s %s",
+			snprintf (buf, sizeof buf, "%s %s",
 					GAME_STRING (OPTION_STRING_BASE + 1),
 					GLOBAL (glob_flags) & MUSIC_DISABLED
-					? GAME_STRING (OPTION_STRING_BASE + 3) : GAME_STRING (OPTION_STRING_BASE + 4));
+					? GAME_STRING (OPTION_STRING_BASE + 3) :
+					GAME_STRING (OPTION_STRING_BASE + 4));
 			break;
 		case CYBORG_OFF_SETTING:
 		case CYBORG_NORMAL_SETTING:
 		case CYBORG_DOUBLE_SETTING:
 		case CYBORG_SUPER_SETTING:
-			if (optWhichMenu == OPT_PC && which_setting > CYBORG_NORMAL_SETTING)
+			if (optWhichMenu == OPT_PC &&
+					which_setting > CYBORG_NORMAL_SETTING)
 			{
 				if (which_setting == CYBORG_DOUBLE_SETTING)
-					strcpy (tmpstr, "+");
+					tmpstr = "+";
 				else
-					strcpy (tmpstr, "++");
+					tmpstr = "++";
 			}
 			else
-				tmpstr[0] = 0;
-			wsprintf (buf, "%s %s%s",
+				tmpstr = "";
+			snprintf (buf, sizeof buf, "%s %s%s",
 					GAME_STRING (OPTION_STRING_BASE + 2),
 					!(GLOBAL (glob_flags) & CYBORG_ENABLED)
-					? GAME_STRING (OPTION_STRING_BASE + 3) : GAME_STRING (OPTION_STRING_BASE + 4),
+					? GAME_STRING (OPTION_STRING_BASE + 3) :
+					GAME_STRING (OPTION_STRING_BASE + 4),
 					tmpstr);
 			break;
 		case CHANGE_CAPTAIN_SETTING:
