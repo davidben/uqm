@@ -26,6 +26,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
 
+#include <stdio.h>
 
 static const UNICODE *describeWeapon (BYTE moduleType);
 
