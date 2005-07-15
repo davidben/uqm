@@ -225,28 +225,12 @@ SetContextClipRect (NULL_PTR);
 }
 
 void
-DateToString (UNICODE *buf, BYTE month_index, BYTE day_index, COUNT
-		year_index)
+DateToString (unsigned char *buf, size_t bufLen,
+		BYTE month_index, BYTE day_index, COUNT year_index)
 {
-	COUNT i;
-
-	wstrcpy (buf, GAME_STRING (MONTHS_STRING_BASE + month_index - 1));
-	buf[3] = ' ';
-	i = day_index;
-	buf[5] = (UNICODE)((i % 10) + '0');
-	i /= 10;
-	buf[4] = (UNICODE)((i % 10) + '0');
-	buf[6] = '_';
-
-	i = year_index;
-	buf[10] = (UNICODE)((i % 10) + '0');
-	i /= 10;
-	buf[9] = (UNICODE)((i % 10) + '0');
-	i /= 10;
-	buf[8] = (UNICODE)((i % 10) + '0');
-	i /= 10;
-	buf[7] = (UNICODE)((i % 10) + '0');
-	buf[11] = '\0';
+	snprintf (buf, bufLen, "%s %02d_%04d",
+			GAME_STRING (MONTHS_STRING_BASE + month_index - 1),
+			day_index, year_index);
 }
 
 void
@@ -291,7 +275,7 @@ DrawStatusMessage (UNICODE *pStr)
 	}
 	else if (pStr == 0)
 	{
-		DateToString (buf,
+		DateToString (buf, sizeof buf,
 				GLOBAL (GameClock.month_index),
 				GLOBAL (GameClock.day_index),
 				GLOBAL (GameClock.year_index));

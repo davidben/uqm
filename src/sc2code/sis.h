@@ -256,8 +256,8 @@ extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
 extern void DrawSISMessage (UNICODE *pStr);
 extern void DrawGameDate (void);
-extern void DateToString (UNICODE *buf, BYTE month_index, BYTE day_index,
-		COUNT year_index);
+extern void DateToString (unsigned char *buf, size_t bufLen,
+		BYTE month_index, BYTE day_index, COUNT year_index);
 extern void DrawStatusMessage (UNICODE *pStr);
 extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);

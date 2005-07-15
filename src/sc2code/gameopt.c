@@ -789,7 +789,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		QUEUE player_q;
 		CONTEXT OldContext;
 		SIS_STATE SaveSS;
-		UNICODE buf[80];
+		unsigned char buf[80];
 
 		SaveSS = GlobData.SIS_state;
 		player_q = GLOBAL (built_ship_q);
@@ -810,7 +810,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 				MAX_BUILT_SHIPS, sizeof (SHIP_FRAGMENT));
 		for (i = 0; i < pSD->NumShips; ++i)
 			CloneShipFragment (pSD->ShipList[i], &GLOBAL (built_ship_q), 0);
-		DateToString (buf, pSD->month_index, pSD->day_index, pSD->year_index),
+		DateToString (buf, sizeof buf,
+				pSD->month_index, pSD->day_index, pSD->year_index),
 		ClearSISRect (DRAW_SIS_DISPLAY);
 		DrawStatusMessage (buf);
 		UninitQueue (&GLOBAL (built_ship_q));
@@ -1146,7 +1147,8 @@ Restart:
 			RECT r;
 			TEXT t;
 			BYTE i, SHIFT;
-			UNICODE buf[80],buf2[15];
+			UNICODE buf[80];
+			unsigned char buf2[15];
 			LockMutex (GraphicsLock);
 
 			BatchGraphics ();
@@ -1224,7 +1226,7 @@ ChangeGameSelection:
 					wsprintf (buf, "Empty Slot");
 				else
 				{
-					DateToString (buf2,
+					DateToString (buf2, sizeof buf2,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].month_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].day_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index);
