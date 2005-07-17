@@ -16,12 +16,12 @@ endef
 endif
 
 define act_mkdep_c
-	$(MKDEPEND) -o - $(CFLAGS) "$<" | \
+	$(MKDEPEND) $(CFLAGS) "$<" | \
 			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.c.o:,' > "$@"
 endef
 
 define act_mkdep_m
-	$(MKDEPEND) -o - $(CFLAGS) "$<" | \
+	$(MKDEPEND) $(CFLAGS) "$<" | \
 			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.m.o:,' > "$@"
 endef
 
