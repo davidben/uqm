@@ -73,7 +73,7 @@ debugKeyPressed (void)
 	// Informational:
 //	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);
-	// debugHook = dumpUniverseToFile;
+//	debugHook = dumpUniverseToFile;
 			// This will cause dumpUniverseToFile to be called from the
 			// main loop. Calling it from here would give threading
 			// problems.
@@ -773,8 +773,11 @@ dumpMoon (FILE *out, const PLANET_DESC *moon)
 	
 	if (moon->data_index == (BYTE) ~0)
 	{
-		// StarBase
 		typeStr = "StarBase";
+	}
+	else if (moon->data_index == (BYTE) (~0 - 1))
+	{
+		typeStr = "Sa-Matra";
 	}
 	else
 	{
@@ -789,10 +792,18 @@ dumpMoon (FILE *out, const PLANET_DESC *moon)
 static void
 dumpWorld (FILE *out, const PLANET_DESC *world)
 {
-	if ((world->data_index == (BYTE) ~0) ||
-			(world->data_index & PLANET_SHIELDED))
-	{
-		// StarBase or slave shielded planet.
+	if (world->data_index == (BYTE) ~0) {
+		// StarBase
+		return;
+	}
+	
+	if (world->data_index == (BYTE)(~0 - 1)) {
+		// Sa-Matra
+		return;
+	}
+
+	if (world->data_index & PLANET_SHIELDED) {
+		// Slave-shielded planet
 		return;
 	}
 
