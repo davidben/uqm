@@ -288,10 +288,10 @@ typedef struct
 	COUNT CurType;
 			// For minerals: the type of element
 			// For bio: the type of the creature.
-			//          0 through NUM_CREATURE_TYPES are normal creatures,
-			//          NUM_CREATURE_TYPES + 1 is an Evil One
-			//          NUM_CREATURE_TYPES + 2 is a Brainbox Bulldozer
-			//          NUM_CREATURE_TYPES + 3 is Zex' Beauty
+			//          0 through NUM_CREATURE_TYPES - 1 are normal creatures,
+			//          NUM_CREATURE_TYPES     is an Evil One
+			//          NUM_CREATURE_TYPES + 1 is a Brainbox Bulldozer
+			//          NUM_CREATURE_TYPES + 2 is Zex' Beauty
 			// For energy: 0 - Liftoff on collision
 			//             1 - No liftoff on collision
 			//             2 - (special case) Fwiffo
