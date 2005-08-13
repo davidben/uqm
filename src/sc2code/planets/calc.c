@@ -156,6 +156,14 @@ GeneratePlanetComposition (PLANET_INFOPTR PlanetInfoPtr, SIZE
 	}
 }
 
+// This function is called both when the solar system is generated,
+// and when planetary orbit is entered.
+// In the former case, the if() block will not be executed,
+// which means that the temperature calculated in that case will be
+// slightly lower. The result is that the orbits may not always
+// have the colour you'd expect based on the true temperature.
+// (eg. Beta Corvi I). I don't know what the idea behind this is,
+// but the if statement must be there for a reason. -- SvdB
 static SIZE
 CalcTemp (SYSTEM_INFOPTR SysInfoPtr, SIZE radius)
 {
