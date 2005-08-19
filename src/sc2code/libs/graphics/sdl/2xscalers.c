@@ -421,13 +421,16 @@ void
 Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, h = src->h, dw = dst->w;
+	const int w = src->w, h = src->h;
 	int xend, yend;
 	int dsrc, ddst;
 	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 	BLEND_PARAMS blend2, blend4;
+	const int p = src->pitch, dp = dst->pitch;
+	const int bpp = fmt->BytesPerPixel;
+	const int len = p / bpp, dlen = dp / bpp;
 
 	// expand updated region if necessary
 	// pixels neighbooring the updated region may
@@ -440,8 +443,8 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	xend = region->x + region->w;
 	yend = region->y + region->h;
-	dsrc = w - region->w;
-	ddst = (dw - region->w) * 2;
+	dsrc = len - region->w;
+	ddst = (dlen - region->w) * 2;
 
 	// precompute the blending masks and shifts
 	Scale_CalcBlendMasks (fmt, 2, &blend2);
@@ -459,8 +462,8 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -473,19 +476,19 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = BIADAPT_GETPIX (src_p + w);
+					pixval_bl = BIADAPT_GETPIX (src_p + len);
 
 					if (pixval_tl == pixval_bl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, pixval_tl, pixval_bl)
 								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				dst_p++;
 
@@ -494,7 +497,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in row - propagate
 					BIADAPT_SETPIX (dst_p, pixval_tl);
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
@@ -511,12 +514,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 >= h)
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
 				// check pixel to the bottom-right
-				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + len);
 
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
@@ -526,7 +529,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (pixval_tl == pixval_tr)
 					{
 						// all 4 are equal - propagate
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 						continue;
 					}
 
@@ -545,7 +548,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						clr = BIADAPT_GETPIX (src_p - 1 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -554,13 +557,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y > 0)
 					{
-						clr = BIADAPT_GETPIX (src_p - w);
+						clr = BIADAPT_GETPIX (src_p - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						clr = BIADAPT_GETPIX (src_p + 1 - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -575,7 +578,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						clr = BIADAPT_GETPIX (src_p + 2 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -584,13 +587,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y + 2 < h)
 					{
-						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -599,11 +602,11 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					
 					// least count wins
 					if (cl > cr)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 					else if (cr > cl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw,
+						BIADAPT_SETPIX (dst_p + dlen,
 								Scale_BlendPixels_2 (blend2, pixval_tl,
 								pixval_tr));
 				}
@@ -611,18 +614,18 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				else if (pixval_tr == pixval_bl)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, pixval_tl, pixval_bl, pixval_tr, pixval_br
 							));
 				}
@@ -644,8 +647,8 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -658,19 +661,19 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = BIADAPT_GETPIX (src_p + w);
+					pixval_bl = BIADAPT_GETPIX (src_p + len);
 
 					if (pixval_tl == pixval_bl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, pixval_tl, pixval_bl)
 								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				dst_p++;
 
@@ -679,7 +682,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in row - propagate
 					BIADAPT_SETPIX (dst_p, pixval_tl);
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
@@ -696,12 +699,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 >= h)
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
 				// check pixel to the bottom-right
-				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + len);
 
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
@@ -711,7 +714,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (pixval_tl == pixval_tr)
 					{
 						// all 4 are equal - propagate
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 						continue;
 					}
 
@@ -730,7 +733,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						clr = BIADAPT_GETPIX (src_p - 1 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -739,13 +742,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y > 0)
 					{
-						clr = BIADAPT_GETPIX (src_p - w);
+						clr = BIADAPT_GETPIX (src_p - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						clr = BIADAPT_GETPIX (src_p + 1 - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -760,7 +763,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						clr = BIADAPT_GETPIX (src_p + 2 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -769,13 +772,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y + 2 < h)
 					{
-						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -784,11 +787,11 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					
 					// least count wins
 					if (cl > cr)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 					else if (cr > cl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw,
+						BIADAPT_SETPIX (dst_p + dlen,
 								Scale_BlendPixels_2 (blend2, pixval_tl,
 								pixval_tr));
 				}
@@ -796,18 +799,18 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				else if (pixval_tr == pixval_bl)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, pixval_tl, pixval_bl, pixval_tr, pixval_br
 							));
 				}
@@ -829,8 +832,8 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 pixval_tl, pixval_tr, pixval_bl, pixval_br;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -843,19 +846,19 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 < h)
 				{
 					// check pixel below the current one
-					pixval_bl = BIADAPT_GETPIX (src_p + w);
+					pixval_bl = BIADAPT_GETPIX (src_p + len);
 
 					if (pixval_tl == pixval_bl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, pixval_tl, pixval_bl)
 								);
 				}
 				else
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				dst_p++;
 
@@ -864,7 +867,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in row - propagate
 					BIADAPT_SETPIX (dst_p, pixval_tl);
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
@@ -881,12 +884,12 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				if (y + 1 >= h)
 				{
 					// last pixel in column - propagate
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					continue;
 				}
 				
 				// check pixel to the bottom-right
-				pixval_br = BIADAPT_GETPIX (src_p + 1 + w);
+				pixval_br = BIADAPT_GETPIX (src_p + 1 + len);
 
 				if (pixval_tl == pixval_br && pixval_tr == pixval_bl)
 				{
@@ -896,7 +899,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (pixval_tl == pixval_tr)
 					{
 						// all 4 are equal - propagate
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 						continue;
 					}
 
@@ -915,7 +918,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p - 1 + w);
+						clr = BIADAPT_GETPIX (src_p - 1 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -924,13 +927,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y > 0)
 					{
-						clr = BIADAPT_GETPIX (src_p - w);
+						clr = BIADAPT_GETPIX (src_p - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 - w);
+						clr = BIADAPT_GETPIX (src_p + 1 - len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -945,7 +948,7 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 2 + w);
+						clr = BIADAPT_GETPIX (src_p + 2 + len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -954,13 +957,13 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (y + 2 < h)
 					{
-						clr = BIADAPT_GETPIX (src_p + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
 							cr++;
 
-						clr = BIADAPT_GETPIX (src_p + 1 + 2 * w);
+						clr = BIADAPT_GETPIX (src_p + 1 + 2 * len);
 						if (clr == pixval_tl)
 							cl++;
 						else if (clr == pixval_tr)
@@ -969,11 +972,11 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					
 					// least count wins
 					if (cl > cr)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 					else if (cr > cl)
-						BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+						BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 					else
-						BIADAPT_SETPIX (dst_p + dw,
+						BIADAPT_SETPIX (dst_p + dlen,
 								Scale_BlendPixels_2 (blend2, pixval_tl,
 								pixval_tr));
 				}
@@ -981,18 +984,18 @@ Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tl);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tl);
 				}
 				else if (pixval_tr == pixval_bl)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, pixval_tr);
+					BIADAPT_SETPIX (dst_p + dlen, pixval_tr);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, pixval_tl, pixval_bl, pixval_tr, pixval_br
 							));
 				}
@@ -1012,13 +1015,16 @@ void
 Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, h = src->h, dw = dst->w;
+	const int w = src->w, h = src->h;
 	int xend, yend;
 	int dsrc, ddst;
 	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 	BLEND_PARAMS blend2, blend4;
+	const int p = src->pitch, dp = dst->pitch;
+	const int bpp = fmt->BytesPerPixel;
+	const int len = p / bpp, dlen = dp / bpp;
 	// for clarity purposes, the 'pixels' array here is transposed
 	Uint32 pixels[4][4];
 	static int resolve_coord[][2] = 
@@ -1068,8 +1074,8 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	xend = region->x + region->w;
 	yend = region->y + region->h;
-	dsrc = w - region->w;
-	ddst = (dw - region->w) * 2;
+	dsrc = len - region->w;
+	ddst = (dlen - region->w) * 2;
 
 	// precompute the blending masks and shifts
 	Scale_CalcBlendMasks (fmt, 2, &blend2);
@@ -1085,8 +1091,8 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -1110,7 +1116,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (PIX (0, 0) == PIX (0, 1))
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						cmatch |= 1;
 					}
 				}
@@ -1118,7 +1124,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in column - propagate
 					PIX (0, 1) = PIX (0, 0);
-					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					cmatch |= 1;
 					
 				}
@@ -1149,7 +1155,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						// last pixel in row/column and nearest
 						// neighboor is identical
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 
@@ -1160,7 +1166,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					{
 						// all 4 are equal - propagate
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 				}
@@ -1280,7 +1286,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 						cmatch |= 1;
@@ -1309,7 +1315,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					}
 					// detect a 2:1 line going across the pixel below current
 					else if ( (PIX (0, 1) == PIX (-1, 0)
@@ -1335,10 +1341,10 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 1));
 					}
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 				}
@@ -1446,7 +1452,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						clr = Scale_BlendPixels_2 (blend2,
 								PIX (0, 0), PIX (1, 0));
 
-					BIADAPT_SETPIX (dst_p + dw, clr);
+					BIADAPT_SETPIX (dst_p + dlen, clr);
 					continue;
 				}
 
@@ -1454,14 +1460,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
 						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 1), PIX (1, 0))
 							);
 					continue;
 				}
 				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 					continue;
@@ -1474,13 +1480,13 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (Scale_GetPixY (fmt, PIX (0, 0))
 							> Scale_GetPixY (fmt, PIX (1, 0)))
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (1, 1))
 								);
 					}
 					else
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (1, 0), PIX (0, 1))
 								);
 					}
@@ -1489,7 +1495,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 				}
@@ -1497,14 +1503,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (1, 0), PIX (0, 1))
 							);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, PIX (0, 0), PIX (0, 1),
 							PIX (1, 0), PIX (1, 1)
 							));
@@ -1525,8 +1531,8 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -1550,7 +1556,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (PIX (0, 0) == PIX (0, 1))
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						cmatch |= 1;
 					}
 				}
@@ -1558,7 +1564,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in column - propagate
 					PIX (0, 1) = PIX (0, 0);
-					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					cmatch |= 1;
 					
 				}
@@ -1589,7 +1595,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						// last pixel in row/column and nearest
 						// neighboor is identical
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 
@@ -1600,7 +1606,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					{
 						// all 4 are equal - propagate
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 				}
@@ -1720,7 +1726,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 						cmatch |= 1;
@@ -1749,7 +1755,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					}
 					// detect a 2:1 line going across the pixel below current
 					else if ( (PIX (0, 1) == PIX (-1, 0)
@@ -1775,10 +1781,10 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 1));
 					}
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 				}
@@ -1886,7 +1892,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						clr = Scale_BlendPixels_2 (blend2,
 								PIX (0, 0), PIX (1, 0));
 
-					BIADAPT_SETPIX (dst_p + dw, clr);
+					BIADAPT_SETPIX (dst_p + dlen, clr);
 					continue;
 				}
 
@@ -1894,14 +1900,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
 						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 1), PIX (1, 0))
 							);
 					continue;
 				}
 				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 					continue;
@@ -1914,13 +1920,13 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (Scale_GetPixY (fmt, PIX (0, 0))
 							> Scale_GetPixY (fmt, PIX (1, 0)))
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (1, 1))
 								);
 					}
 					else
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (1, 0), PIX (0, 1))
 								);
 					}
@@ -1929,7 +1935,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 				}
@@ -1937,14 +1943,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (1, 0), PIX (0, 1))
 							);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, PIX (0, 0), PIX (0, 1),
 							PIX (1, 0), PIX (1, 1)
 							));
@@ -1965,8 +1971,8 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		BIADAPT_BUF *src_p = (BIADAPT_BUF *)src->pixels;
 		BIADAPT_BUF *dst_p = (BIADAPT_BUF *)dst->pixels;
 
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -1990,7 +1996,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 					if (PIX (0, 0) == PIX (0, 1))
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						cmatch |= 1;
 					}
 				}
@@ -1998,7 +2004,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// last pixel in column - propagate
 					PIX (0, 1) = PIX (0, 0);
-					BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+					BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					cmatch |= 1;
 					
 				}
@@ -2029,7 +2035,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						// last pixel in row/column and nearest
 						// neighboor is identical
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 
@@ -2040,7 +2046,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					{
 						// all 4 are equal - propagate
 						dst_p++;
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 						continue;
 					}
 				}
@@ -2160,7 +2166,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					if (BIADAPT_CMPYUV (PIX (0, 0), PIX (0, 1)) <= BIADAPT_YUVLOW)
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 						cmatch |= 1;
@@ -2189,7 +2195,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 0), PIX (2, 0))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 0));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 0));
 					}
 					// detect a 2:1 line going across the pixel below current
 					else if ( (PIX (0, 1) == PIX (-1, 0)
@@ -2215,10 +2221,10 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (1, 1))
 							&& !BIADAPT_CMPRGB_HIGH (PIX (0, 1), PIX (2, 1))))) )
 					{
-						BIADAPT_SETPIX (dst_p + dw, PIX (0, 1));
+						BIADAPT_SETPIX (dst_p + dlen, PIX (0, 1));
 					}
 					else
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (0, 1))
 								);
 				}
@@ -2326,7 +2332,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						clr = Scale_BlendPixels_2 (blend2,
 								PIX (0, 0), PIX (1, 0));
 
-					BIADAPT_SETPIX (dst_p + dw, clr);
+					BIADAPT_SETPIX (dst_p + dlen, clr);
 					continue;
 				}
 
@@ -2334,14 +2340,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						|| (BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (0, 1))
 						&& BIADAPT_CMPYUV_LOW (PIX (1, 0), PIX (1, 1))))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 1), PIX (1, 0))
 							);
 					continue;
 				}
 				else if (cmatch && BIADAPT_CMPYUV_LOW (PIX (0, 0), PIX (1, 1)))
 				{
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 					continue;
@@ -2354,13 +2360,13 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (Scale_GetPixY (fmt, PIX (0, 0))
 							> Scale_GetPixY (fmt, PIX (1, 0)))
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (0, 0), PIX (1, 1))
 								);
 					}
 					else
 					{
-						BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+						BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 								blend2, PIX (1, 0), PIX (0, 1))
 								);
 					}
@@ -2369,7 +2375,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// main diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (0, 0), PIX (1, 1))
 							);
 				}
@@ -2377,14 +2383,14 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 				{
 					// 2nd diagonal is same color
 					// use its value
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 							blend2, PIX (1, 0), PIX (0, 1))
 							);
 				}
 				else
 				{
 					// blend all 4
-					BIADAPT_SETPIX (dst_p + dw, Scale_BlendPixels_4 (
+					BIADAPT_SETPIX (dst_p + dlen, Scale_BlendPixels_4 (
 							blend4, PIX (0, 0), PIX (0, 1),
 							PIX (1, 0), PIX (1, 1)
 							));
@@ -2416,7 +2422,7 @@ void
 Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, h = src->h, dw = dst->w;
+	const int w = src->w, h = src->h;
 	int xend, yend;
 	int dsrc, ddst;
 	SDL_Rect *region = r;
@@ -2424,6 +2430,9 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	SDL_PixelFormat *fmt = dst->format;
 	BLEND_PARAMS blend2;
 	bool eqflag;
+	const int p = src->pitch, dp = dst->pitch;
+	const int bpp = fmt->BytesPerPixel;
+	const int len = p / bpp, dlen = dp / bpp;
 	// for clarity purposes, the 'pixels' array here is transposed
 	Uint32 pixels[3][3];
 
@@ -2454,8 +2463,8 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	xend = region->x + region->w;
 	yend = region->y + region->h;
-	dsrc = w - region->w;
-	ddst = (dw - region->w) * 2;
+	dsrc = len - region->w;
+	ddst = (dlen - region->w) * 2;
 
 	// precompute the blending masks and shifts
 	Scale_CalcBlendMasks (fmt, 2, &blend2);
@@ -2471,8 +2480,8 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -2509,14 +2518,14 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (-1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (-1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 					++dst_p;
 
@@ -2535,23 +2544,23 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 				}
 				else
 				{
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 					++dst_p;
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 				}
 			}
 		}
@@ -2570,8 +2579,8 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -2608,14 +2617,14 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (-1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (-1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 					++dst_p;
 
@@ -2634,23 +2643,23 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 				}
 				else
 				{
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 					++dst_p;
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 				}
 			}
 		}
@@ -2669,8 +2678,8 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		TRISCAN_BUF *dst_p = (TRISCAN_BUF *)dst->pixels;
 		
 		// move ptrs to the first updated pixel
-		src_p += w * region->y + region->x;
-		dst_p += (dw * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -2707,14 +2716,14 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (-1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (-1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (-1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (-1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 					++dst_p;
 
@@ -2733,23 +2742,23 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (TRISCAN_CMPYUV_FLAG(PIX (1, 0), PIX (0, 1)))
 					{
 						if (eqflag)
-							TRISCAN_SETPIX (dst_p + dw, PIX (1, 0));
+							TRISCAN_SETPIX (dst_p + dlen, PIX (1, 0));
 						else
-							TRISCAN_SETPIX (dst_p + dw, Scale_BlendPixels_2 (
+							TRISCAN_SETPIX (dst_p + dlen, Scale_BlendPixels_2 (
 									blend2, PIX (1, 0), PIX (0, 1))
 									);
 					}
 					else
-						TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+						TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 
 				}
 				else
 				{
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 					++dst_p;
 					TRISCAN_SETPIX (dst_p, PIX (0, 0));
-					TRISCAN_SETPIX (dst_p + dw, PIX (0, 0));
+					TRISCAN_SETPIX (dst_p + dlen, PIX (0, 0));
 				}
 			}
 		}
@@ -2769,9 +2778,11 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, dw = dst->w;
 	const int x0 = r->x, y0 = r->y, rw = r->w, rh = r->h;
-	const int ds = w-rw, dd = (dw-rw) * 2;
+	const int p = src->pitch, dp = dst->pitch;
+	const int bpp = dst->format->BytesPerPixel;
+	const int len = p / bpp, dlen = dp / bpp;
+	const int ds = len-rw, dd = (dlen-rw) * 2;
 
 	switch (dst->format->BytesPerPixel)
 	{
@@ -2779,16 +2790,16 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		Uint16 *src_p = (Uint16 *)src->pixels, *dst_p = (Uint16 *)dst->pixels;
 		Uint16 pixval_16;
-		src_p += w*y0 + x0;
-		dst_p += (dw*y0 + x0) * 2;
+		src_p += len*y0 + x0;
+		dst_p += (dlen*y0 + x0) * 2;
 		for (y = 0; y < rh; ++y)
 		{
 			for (x = 0; x < rw; ++x)
 			{
 				pixval_16 = *src_p++;
-				dst_p[dw] = pixval_16;
+				dst_p[dlen] = pixval_16;
 				*dst_p++ = pixval_16;
-				dst_p[dw] = pixval_16;
+				dst_p[dlen] = pixval_16;
 				*dst_p++ = pixval_16;
 			}
 			dst_p += dd;
@@ -2801,18 +2812,18 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		PIXEL_24BIT *src_p = (PIXEL_24BIT *)src->pixels;
 		PIXEL_24BIT *dst_p = (PIXEL_24BIT *)dst->pixels;
 		Uint32 pixval_32;
-		src_p += w*y0 + x0;
-		dst_p += (dw*y0 + x0) * 2;
+		src_p += len*y0 + x0;
+		dst_p += (dlen*y0 + x0) * 2;
 		for (y = 0; y < rh; ++y)
 		{
 			for (x = 0; x < rw; ++x, ++src_p)
 			{
 				pixval_32 = GET_PIX_24BIT (src_p);
 				SET_PIX_24BIT (dst_p, pixval_32);
-				SET_PIX_24BIT (dst_p + dw, pixval_32);
+				SET_PIX_24BIT (dst_p + dlen, pixval_32);
 				dst_p++;
 				SET_PIX_24BIT (dst_p, pixval_32);
-				SET_PIX_24BIT (dst_p + dw, pixval_32);
+				SET_PIX_24BIT (dst_p + dlen, pixval_32);
 				dst_p++;
 			}
 			dst_p += dd;
@@ -2824,16 +2835,16 @@ void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	{
 		Uint32 *src_p = (Uint32 *)src->pixels, *dst_p = (Uint32 *)dst->pixels;
 		Uint32 pixval_32;
-		src_p += w*y0 + x0;
-		dst_p += (dw*y0 + x0) * 2;
+		src_p += len*y0 + x0;
+		dst_p += (dlen*y0 + x0) * 2;
 		for (y = 0; y < rh; ++y)
 		{
 			for (x = 0; x < rw; ++x)
 			{
 				pixval_32 = *src_p++;
-				dst_p[dw] = pixval_32;
+				dst_p[dlen] = pixval_32;
 				*dst_p++ = pixval_32;
-				dst_p[dw] = pixval_32;
+				dst_p[dlen] = pixval_32;
 				*dst_p++ = pixval_32;
 			}
 			dst_p += dd;
@@ -2880,13 +2891,16 @@ Scale_BlendPixels_bilinear (BLEND_PARAMS bp, Uint32* p, const Uint32* w)
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 {
 	int x, y;
-	const int w = src->w, h = src->h, dw = dst->w;
+	const int w = src->w, h = src->h;
 	int xend, yend;
 	int dsrc, ddst;
 	SDL_Rect *region = r;
 	SDL_Rect limits;
 	SDL_PixelFormat *fmt = dst->format;
 	BLEND_PARAMS blend16;
+	const int pitch = src->pitch, dp = dst->pitch;
+	const int bpp = fmt->BytesPerPixel;
+	const int len = pitch / bpp, dlen = dp / bpp;
 	Uint32 p[4];	// influential pixels array
 
 
@@ -2901,8 +2915,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	xend = region->x + region->w;
 	yend = region->y + region->h;
-	dsrc = w - region->w;
-	ddst = (dw - region->w) * 2;
+	dsrc = len - region->w;
+	ddst = (dlen - region->w) * 2;
 
 	// precompute the blending masks and shifts
 	Scale_CalcChannelMasks (fmt, 16, &blend16);
@@ -2918,8 +2932,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint16 *dst_p = (Uint16 *) dst->pixels;
 
 		// move ptrs to the first updated pixel
-		src_p += src->w * region->y + region->x;
-		dst_p += (dst->w * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -2957,7 +2971,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[0]
 						);
 
-				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+				*(dst_p + dlen) = Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[1]
 						);
 				
@@ -2967,7 +2981,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[2]
 						);
 
-				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+				*(dst_p + dlen) = Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[3]
 						);
 
@@ -2986,8 +3000,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		PIXEL_24BIT *dst_p = (PIXEL_24BIT *) dst->pixels;
 
 		// move ptrs to the first updated pixel
-		src_p += src->w * region->y + region->x;
-		dst_p += (dst->w * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -3025,7 +3039,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[0]
 						));
 
-				SET_PIX_24BIT (dst_p + dw, Scale_BlendPixels_bilinear (
+				SET_PIX_24BIT (dst_p + dlen, Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[1]
 						));
 
@@ -3035,7 +3049,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[2]
 						));
 
-				SET_PIX_24BIT (dst_p + dw, Scale_BlendPixels_bilinear (
+				SET_PIX_24BIT (dst_p + dlen, Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[3]
 						));
 
@@ -3054,8 +3068,8 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		Uint32 *dst_p = (Uint32 *) dst->pixels;
 
 		// move ptrs to the first updated pixel
-		src_p += src->w * region->y + region->x;
-		dst_p += (dst->w * region->y + region->x) * 2;
+		src_p += len * region->y + region->x;
+		dst_p += (dlen * region->y + region->x) * 2;
 
 		for (y = region->y; y < yend; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -3093,7 +3107,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[0]
 						);
 
-				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+				*(dst_p + dlen) = Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[1]
 						);
 				
@@ -3103,7 +3117,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 						blend16, p, bilinear_table[2]
 						);
 
-				*(dst_p + dw) = Scale_BlendPixels_bilinear (
+				*(dst_p + dlen) = Scale_BlendPixels_bilinear (
 						blend16, p, bilinear_table[3]
 						);
 			

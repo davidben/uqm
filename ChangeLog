@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Modified scalers to use surface pitch instead of width - reported to
+  fix bug #740 - Michael
 - Cleaner build output. Set '$MAKE_VERBOSE' to 1 for old output. - SvdB
 - Improved dependency tracking for unix build system. - SvdB
   "./build.sh uqm depend" is only needed for checking for new source files.
