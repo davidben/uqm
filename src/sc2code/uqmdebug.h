@@ -98,9 +98,15 @@ void dumpMoon (FILE *out, const PLANET_DESC *moon);
 // Calculate the total value of all minerals on a world.
 COUNT calculateMineralValue (const SOLARSYS_STATE *system,
 		const PLANET_DESC *world);
+// Determine how much of each mineral type is present on a world
+void generateMineralIndex(const SOLARSYS_STATE *system,
+		const PLANET_DESC *world, COUNT minerals[]);
 // Calculate the total value of all bio on a world.
 COUNT calculateBioValue (const SOLARSYS_STATE *system,
 		const PLANET_DESC *world);
+// Determine how much of each mineral type is present on a world
+void generateBioIndex(const SOLARSYS_STATE *system,
+		const PLANET_DESC *world, COUNT bio[]);
 
 
 // Call a function for all planet types.

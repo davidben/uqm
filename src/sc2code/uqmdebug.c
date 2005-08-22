@@ -566,6 +566,8 @@ dumpUniverseToFile (void)
 
 	fprintf(stdout, "*** Star dump complete. The game may be in an "
 			"undefined state.\n");
+			// Data generation may have changed the game state,
+			// in particular for special planet generation.
 }
 
 static void
@@ -792,6 +794,8 @@ dumpMoon (FILE *out, const PLANET_DESC *moon)
 static void
 dumpWorld (FILE *out, const PLANET_DESC *world)
 {
+	PLANET_INFO *info;
+	
 	if (world->data_index == (BYTE) ~0) {
 		// StarBase
 		return;
@@ -801,6 +805,19 @@ dumpWorld (FILE *out, const PLANET_DESC *world)
 		// Sa-Matra
 		return;
 	}
+
+	info = &pSolarSysState->SysInfo.PlanetInfo;
+	fprintf(out, "          AxialTilt:  %d\n", info->AxialTilt);
+	fprintf(out, "          Tectonics:  %d\n", info->Tectonics);
+	fprintf(out, "          Weather:    %d\n", info->Weather);
+	fprintf(out, "          Density:    %d\n", info->PlanetDensity);
+	fprintf(out, "          Radius:     %d\n", info->PlanetRadius);
+	fprintf(out, "          Gravity:    %d\n", info->SurfaceGravity);
+	fprintf(out, "          Temp:       %d\n", info->SurfaceTemperature);
+	fprintf(out, "          Day:        %d\n", info->RotationPeriod);
+	fprintf(out, "          Atmosphere: %d\n", info->AtmoDensity);
+	fprintf(out, "          LifeChance: %d\n", info->LifeChance);
+	fprintf(out, "          DistToSun:  %d\n", info->PlanetToSunDist);
 
 	if (world->data_index & PLANET_SHIELDED) {
 		// Slave-shielded planet
@@ -818,7 +835,6 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 	COUNT result;
 	COUNT numBio;
 	COUNT i;
-	extern const LIFEFORM_DESC CreatureData[];
 
 	assert(system->pOrbitalDesc == world);
 	
@@ -835,6 +851,30 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
 	}
 	return result;
+}
+
+void
+generateBioIndex(const SOLARSYS_STATE *system,
+		const PLANET_DESC *world, COUNT bio[])
+{
+	COUNT numBio;
+	COUNT i;
+
+	assert(system->pOrbitalDesc == world);
+	
+	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
+	(*system->GenFunc) (GENERATE_LIFE);
+	numBio = system->CurNode;
+
+	for (i = 0; i < NUM_CREATURE_TYPES + NUM_SPECIAL_CREATURE_TYPES; i++)
+		bio[i] = 0;
+	
+	for (i = 0; i < numBio; i++)
+	{
+		((SOLARSYS_STATE *) system)->CurNode = i;
+		(*system->GenFunc) (GENERATE_LIFE);
+		bio[system->SysInfo.PlanetInfo.CurType]++;
+	}
 }
 
 COUNT
@@ -861,6 +901,31 @@ calculateMineralValue (const SOLARSYS_STATE *system,
 				system->SysInfo.PlanetInfo.CurType)]);
 	}
 	return result;
+}
+
+void
+generateMineralIndex(const SOLARSYS_STATE *system,
+		const PLANET_DESC *world, COUNT minerals[])
+{
+	COUNT numDeposits;
+	COUNT i;
+
+	assert(system->pOrbitalDesc == world);
+	
+	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
+	(*system->GenFunc) (GENERATE_MINERAL);
+	numDeposits = system->CurNode;
+
+	for (i = 0; i < NUM_ELEMENT_CATEGORIES; i++)
+		minerals[i] = 0;
+	
+	for (i = 0; i < numDeposits; i++)
+	{
+		((SOLARSYS_STATE *) system)->CurNode = i;
+		(*system->GenFunc) (GENERATE_MINERAL);
+		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
+				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
