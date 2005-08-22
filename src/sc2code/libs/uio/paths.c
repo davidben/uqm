@@ -61,10 +61,10 @@ getFirstPath0Component(const char *dir,
 		*endComp = *startComp + strlen(*startComp);
 }
 
-// gets the next component of path
+// gets the next component of a path
 // '*start' should be set to the start of the last component
 // '*end' should be set to the end of the last component
-// '*start' will be set to the start of the next componentt
+// '*start' will be set to the start of the next component
 // '*end' will be set to the end of the next component
 // if *start >= dirEnd, then the end has been reached.
 void
@@ -82,10 +82,10 @@ getNextPathComponent(const char *dirEnd,
 		*endComp = dirEnd;
 }
 
-// gets the next component of path
+// gets the next component of a path
 // '*start' should be set to the start of the last component
 // '*end' should be set to the end of the last component
-// '*start' will be set to the start of the next componentt
+// '*start' will be set to the start of the next component
 // '*end' will be set to the end of the next component
 // if **start == '\0', then the end has been reached.
 void
