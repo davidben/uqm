@@ -570,296 +570,299 @@ CheckObjectCollision (COUNT index)
 	for (; index != END_OF_LIST; index = GetPredLink (GetPrimLinks (pPrim)))
 	{
 		INTERSECT_CONTROL ElementControl;
+		HELEMENT hElement, hNextElement;
 
 		pPrim = &DisplayArray[index];
 		ElementControl.IntersectStamp = pPrim->Object.Stamp;
-		ElementControl.EndPoint =
-				ElementControl.IntersectStamp.origin;
+		ElementControl.EndPoint = ElementControl.IntersectStamp.origin;
 
-		if (GetFrameHandle (
-				ElementControl.IntersectStamp.frame
-				) == LanderHandle)
-			CheckObjectCollision (index);
-		else if (DrawablesIntersect (&LanderControl,
-				&ElementControl, MAX_TIME_VALUE))
+		if (GetFrameHandle (ElementControl.IntersectStamp.frame)
+				== LanderHandle)
 		{
-			HELEMENT hElement, hNextElement;
+			CheckObjectCollision (index);
+			continue;
+		}
 
-			for (hElement = GetHeadElement ();
-					hElement; hElement = hNextElement)
+		if (!DrawablesIntersect (&LanderControl,
+				&ElementControl, MAX_TIME_VALUE))
+			continue;
+
+		for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
+		{
+			ELEMENTPTR ElementPtr;
+
+			LockElement (hElement, &ElementPtr);
+			hNextElement = GetSuccElement (ElementPtr);
+
+			if (&DisplayArray[ElementPtr->PrimIndex] == pLanderPrim)
 			{
-				ELEMENTPTR ElementPtr;
+				ElementPtr->state_flags |= DISAPPEARING;
+				UnlockElement (hElement);
+				continue;
+			}
+			
+			if (&DisplayArray[ElementPtr->PrimIndex] != pPrim
+					|| !(ElementPtr->state_flags & BAD_GUY))
+			{
+				UnlockElement (hElement);
+				continue;
+			}
 
-				LockElement (hElement, &ElementPtr);
-				hNextElement = GetSuccElement (ElementPtr);
+			{
+				COUNT scan, NumRetrieved;
+				SIZE which_node;
 
-				if (&DisplayArray[ElementPtr->PrimIndex] == pLanderPrim)
+				scan = LOBYTE (ElementPtr->life_span);
+				if (pLanderPrim == 0)
 				{
-					ElementPtr->state_flags |= DISAPPEARING;
-					UnlockElement (hElement);
+					if (HIBYTE (pMenuState->delta_item) == 0
+							|| pPSD->InTransit)
+						break;
 
-					continue;
-				}
-				else if (&DisplayArray[ElementPtr->PrimIndex] == pPrim
-						&& (ElementPtr->state_flags & BAD_GUY))
-				{
-					COUNT scan, NumRetrieved;
-					SIZE which_node;
-
-					scan = LOBYTE (ElementPtr->life_span);
-					if (pLanderPrim == 0)
+					if (ElementPtr->state_flags & FINITE_LIFE)
 					{
-						if (HIBYTE (pMenuState->delta_item) == 0
-								|| pPSD->InTransit)
-							break;
-
-								/* if a natural disaster */
-						if (ElementPtr->state_flags & FINITE_LIFE)
+						/* A natural disaster */
+						scan = ElementPtr->mass_points;
+						switch (scan)
 						{
-							scan = ElementPtr->mass_points;
-							switch (scan)
-							{
-								case EARTHQUAKE_DISASTER:
-								case LAVASPOT_DISASTER:
-									if ((BYTE)TFB_Random () < (256 >> 2))
-										DeltaLanderCrew (-1, scan);
-									break;
-							}
-
-							UnlockElement (hElement);
-							continue;
-						}
-						else if (scan == ENERGY_SCAN)
-						{
-							if (ElementPtr->mass_points == 1)
-							{
-								DWORD TimeIn;
-
-								/* ran into Spathi on Pluto */
-								TimeIn = GetTimeCounter ();
-								which_node = 8;
-								do
-								{
-									DeltaLanderCrew (-1, LANDER_INJURED);
-									SleepThreadUntil (TimeIn + ONE_SECOND / 20);
-									TimeIn = GetTimeCounter();
-								} while (HIBYTE (pMenuState->delta_item) && --which_node);
-							}
-
-							if (HIBYTE (pMenuState->delta_item)
-									&& pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-									&& CurStarDescPtr->Index != ANDROSYNTH_DEFINED)
-							{
-								UnbatchGraphics ();
-								DoDiscoveryReport (MenuSounds);
-								BatchGraphics ();
-							}
-							if (ElementPtr->mass_points == 0)
-							{
-								DestroyStringTable (ReleaseStringTable (
-										pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-										));
-								pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-								UnlockElement (hElement);
-								continue;
-							}
-						}
-						else if (scan == BIOLOGICAL_SCAN
-								&& ElementPtr->hit_points)
-						{
-							BYTE danger_vals[] =
-							{
-								0, 6, 13, 26
-							};
-
-							if (((COUNT)TFB_Random () & 127) < danger_vals[
-									(CreatureData[
-											ElementPtr->mass_points
-											& ~CREATURE_AWARE
-											].Attributes & DANGER_MASK)
-									>> DANGER_SHIFT
-									])
-							{
-								PlaySound (SetAbsSoundIndex (
-										LanderSounds, BIOLOGICAL_DISASTER
-										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
-								DeltaLanderCrew (-1, BIOLOGICAL_DISASTER);
-							}
-							UnlockElement (hElement);
-							continue;
+							case EARTHQUAKE_DISASTER:
+							case LAVASPOT_DISASTER:
+								if ((BYTE)TFB_Random () < (256 >> 2))
+									DeltaLanderCrew (-1, scan);
+								break;
 						}
 
-						NumRetrieved = ElementPtr->mass_points;
-					}
-						/* if a natural disaster */
-					else if (ElementPtr->state_flags & FINITE_LIFE)
-					{
 						UnlockElement (hElement);
 						continue;
 					}
-					else
+					else if (scan == ENERGY_SCAN)
 					{
-						BYTE value;
+						if (ElementPtr->mass_points == 1)
+						{
+							DWORD TimeIn;
 
-						if (scan == ENERGY_SCAN)
-						{
-							UnlockElement (hElement);
-							break;
-						}
-						else if (scan == BIOLOGICAL_SCAN
-								&& (value = LONIBBLE (CreatureData[
-								ElementPtr->mass_points
-								& ~CREATURE_AWARE
-								].ValueAndHitPoints)))
-						{
-							if (ElementPtr->hit_points)
+							/* Ran into Spathi on Pluto */
+							TimeIn = GetTimeCounter ();
+							which_node = 8;
+							do
 							{
-								if (--ElementPtr->hit_points == 0)
-								{
-									ElementPtr->mass_points = value;
-									DisplayArray[
-											ElementPtr->PrimIndex
-											].Object.Stamp.frame =
-											pSolarSysState->PlanetSideFrame[0];
-								}
-								else if (CreatureData[
-										ElementPtr->mass_points
-										& ~CREATURE_AWARE
-										].Attributes & SPEED_MASK)
-								{
-									COUNT angle;
-
-									angle = FACING_TO_ANGLE (GetFrameIndex (
-											LanderControl.IntersectStamp.frame
-											) - ANGLE_TO_FACING (FULL_CIRCLE));
-									DeltaVelocityComponents (
-											&ElementPtr->velocity,
-											COSINE (angle, WORLD_TO_VELOCITY (1)),
-											SINE (angle, WORLD_TO_VELOCITY (1))
-											);
-									ElementPtr->thrust_wait = 0;
-									ElementPtr->mass_points |= CREATURE_AWARE;
-								}
-
-								SetPrimType (pPrim, STAMPFILL_PRIM);
-								SetPrimColor (pPrim, WHITE_COLOR);
-
-								PlaySound (SetAbsSoundIndex (
-										LanderSounds, LANDER_HITS), NotPositional (), NULL, GAME_SOUND_PRIORITY);
-							}
-							UnlockElement (hElement);
-							break;
+								DeltaLanderCrew (-1, LANDER_INJURED);
+								SleepThreadUntil (TimeIn + ONE_SECOND / 20);
+								TimeIn = GetTimeCounter();
+							} while (HIBYTE (pMenuState->delta_item) && --which_node);
 						}
 
-						NumRetrieved = 0;
-					}
-
-					if (NumRetrieved)
-					{
-						switch (scan)
+						if (HIBYTE (pMenuState->delta_item)
+								&& pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
+								&& CurStarDescPtr->Index != ANDROSYNTH_DEFINED)
 						{
-							case ENERGY_SCAN:
-								break;
-							case MINERAL_SCAN:
-								if (pPSD->ElementLevel < pPSD->MaxElementLevel)
-								{
-									if (pPSD->ElementLevel
-											+ NumRetrieved > pPSD->MaxElementLevel)
-										NumRetrieved = (COUNT)(pPSD->MaxElementLevel
-												- pPSD->ElementLevel);
-									FillLanderHold (pPSD, scan, NumRetrieved);
-									if (scan == MINERAL_SCAN)
-									{
-										BYTE EType;
-										UNICODE ch, *pStr;
-
-										EType = ElementPtr->turn_wait;
-										pPSD->ElementAmounts[
-												ElementCategory (EType)
-												] += NumRetrieved;
-
-										pPSD->NumFrames = NUM_TEXT_FRAMES;
-										wsprintf (pPSD->AmountBuf, "%u", NumRetrieved);
-										pStr = GAME_STRING (EType + ELEMENTS_STRING_BASE);
-
-										pPSD->MineralText[0].baseline.x =
-												(SURFACE_WIDTH >> 1)
-												+ (ElementControl.EndPoint.x
-												- LanderControl.EndPoint.x);
-										pPSD->MineralText[0].baseline.y =
-												(SURFACE_HEIGHT >> 1)
-												+ (ElementControl.EndPoint.y
-												- LanderControl.EndPoint.y);
-										pPSD->MineralText[0].CharCount = (COUNT)~0;
-										pPSD->MineralText[1].pStr = pStr;
-										while ((ch = *pStr++) && ch != ' ')
-											;
-										if (ch == '\0')
-										{
-											pPSD->MineralText[1].CharCount = (COUNT)~0;
-											pPSD->MineralText[2].CharCount = 0;
-										}
-										else
-										{
-											pPSD->MineralText[1].CharCount =
-													(pStr - pPSD->MineralText[1].pStr) - 1;
-											pPSD->MineralText[2].pStr = pStr;
-											pPSD->MineralText[2].CharCount = (COUNT)~0;
-										}
-									}
-									break;
-								}
-								PlaySound (SetAbsSoundIndex (
-										LanderSounds, LANDER_FULL
-										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
-								continue;
-							case BIOLOGICAL_SCAN:
-								if (pPSD->BiologicalLevel < MAX_SCROUNGED)
-								{
-									if (pPSD->BiologicalLevel
-											+ NumRetrieved > MAX_SCROUNGED)
-										NumRetrieved = (COUNT)(
-												MAX_SCROUNGED
-												- pPSD->BiologicalLevel
-												);
-									FillLanderHold (pPSD, scan, NumRetrieved);
-									break;
-								}
-								PlaySound (SetAbsSoundIndex (
-										LanderSounds, LANDER_FULL
-										), NotPositional (), NULL, GAME_SOUND_PRIORITY);
-								continue;
+							UnbatchGraphics ();
+							DoDiscoveryReport (MenuSounds);
+							BatchGraphics ();
+						}
+						if (ElementPtr->mass_points == 0)
+						{
+							DestroyStringTable (ReleaseStringTable (
+									pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
+									));
+							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
+							UnlockElement (hElement);
+							continue;
 						}
 					}
-
-					which_node = HIBYTE (ElementPtr->life_span) - 1;
-					pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
-							(1L << which_node);
-					pSolarSysState->CurNode = (COUNT)~0;
-					(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
-
-					if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
-							(1L << which_node)))
+					else if (scan == BIOLOGICAL_SCAN
+							&& ElementPtr->hit_points)
 					{
-						if (DestroyStringTable (ReleaseStringTable (
-								pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-								)))
-							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-					}
-					else
-					{
-						if (NumRetrieved && scan == ENERGY_SCAN)
-							pPSD->InTransit = TRUE;
+						BYTE danger_vals[] =
+						{
+							0, 6, 13, 26
+						};
+						int creatureIndex = ElementPtr->mass_points
+								& ~CREATURE_AWARE;
+						int dangerLevel =
+								(CreatureData[creatureIndex].Attributes &
+								DANGER_MASK) >> DANGER_SHIFT;
 
-						SET_GAME_STATE (PLANETARY_CHANGE, 1);
-						ElementPtr->state_flags |= DISAPPEARING;
+						if (((COUNT)TFB_Random () & 127) <
+								danger_vals[dangerLevel])
+						{
+							PlaySound (SetAbsSoundIndex (
+									LanderSounds, BIOLOGICAL_DISASTER
+									), NotPositional (), NULL, GAME_SOUND_PRIORITY);
+							DeltaLanderCrew (-1, BIOLOGICAL_DISASTER);
+						}
+						UnlockElement (hElement);
+						continue;
 					}
+
+					NumRetrieved = ElementPtr->mass_points;
+				}
+					/* if a natural disaster */
+				else if (ElementPtr->state_flags & FINITE_LIFE)
+				{
 					UnlockElement (hElement);
+					continue;
 				}
 				else
 				{
-					UnlockElement (hElement);
+					BYTE value;
+
+					if (scan == ENERGY_SCAN)
+					{
+						UnlockElement (hElement);
+						break;
+					}
+					else if (scan == BIOLOGICAL_SCAN
+							&& (value = LONIBBLE (CreatureData[
+							ElementPtr->mass_points
+							& ~CREATURE_AWARE
+							].ValueAndHitPoints)))
+					{
+						if (ElementPtr->hit_points)
+						{
+							if (--ElementPtr->hit_points == 0)
+							{
+								ElementPtr->mass_points = value;
+								DisplayArray[
+										ElementPtr->PrimIndex
+										].Object.Stamp.frame =
+										pSolarSysState->PlanetSideFrame[0];
+							}
+							else if (CreatureData[
+									ElementPtr->mass_points
+									& ~CREATURE_AWARE
+									].Attributes & SPEED_MASK)
+							{
+								COUNT angle;
+
+								angle = FACING_TO_ANGLE (GetFrameIndex (
+										LanderControl.IntersectStamp.frame
+										) - ANGLE_TO_FACING (FULL_CIRCLE));
+								DeltaVelocityComponents (
+										&ElementPtr->velocity,
+										COSINE (angle, WORLD_TO_VELOCITY (1)),
+										SINE (angle, WORLD_TO_VELOCITY (1))
+										);
+								ElementPtr->thrust_wait = 0;
+								ElementPtr->mass_points |= CREATURE_AWARE;
+							}
+
+							SetPrimType (pPrim, STAMPFILL_PRIM);
+							SetPrimColor (pPrim, WHITE_COLOR);
+
+							PlaySound (SetAbsSoundIndex (
+									LanderSounds, LANDER_HITS),
+									NotPositional (), NULL,
+									GAME_SOUND_PRIORITY);
+						}
+						UnlockElement (hElement);
+						break;
+					}
+
+					NumRetrieved = 0;
 				}
+
+				if (NumRetrieved)
+				{
+					switch (scan)
+					{
+						case ENERGY_SCAN:
+							break;
+						case MINERAL_SCAN:
+							if (pPSD->ElementLevel < pPSD->MaxElementLevel)
+							{
+								if (pPSD->ElementLevel
+										+ NumRetrieved > pPSD->MaxElementLevel)
+									NumRetrieved = (COUNT)(pPSD->MaxElementLevel
+											- pPSD->ElementLevel);
+								FillLanderHold (pPSD, scan, NumRetrieved);
+								if (scan == MINERAL_SCAN)
+								{
+									BYTE EType;
+									UNICODE ch, *pStr;
+
+									EType = ElementPtr->turn_wait;
+									pPSD->ElementAmounts[
+											ElementCategory (EType)
+											] += NumRetrieved;
+
+									pPSD->NumFrames = NUM_TEXT_FRAMES;
+									wsprintf (pPSD->AmountBuf, "%u", NumRetrieved);
+									pStr = GAME_STRING (EType + ELEMENTS_STRING_BASE);
+
+									pPSD->MineralText[0].baseline.x =
+											(SURFACE_WIDTH >> 1)
+											+ (ElementControl.EndPoint.x
+											- LanderControl.EndPoint.x);
+									pPSD->MineralText[0].baseline.y =
+											(SURFACE_HEIGHT >> 1)
+											+ (ElementControl.EndPoint.y
+											- LanderControl.EndPoint.y);
+									pPSD->MineralText[0].CharCount = (COUNT)~0;
+									pPSD->MineralText[1].pStr = pStr;
+									while ((ch = *pStr++) && ch != ' ')
+										;
+									if (ch == '\0')
+									{
+										pPSD->MineralText[1].CharCount = (COUNT)~0;
+										pPSD->MineralText[2].CharCount = 0;
+									}
+									else
+									{
+										pPSD->MineralText[1].CharCount =
+												(pStr - pPSD->MineralText[1].pStr) - 1;
+										pPSD->MineralText[2].pStr = pStr;
+										pPSD->MineralText[2].CharCount = (COUNT)~0;
+									}
+								}
+								break;
+							}
+							PlaySound (SetAbsSoundIndex (
+									LanderSounds, LANDER_FULL
+									), NotPositional (), NULL, GAME_SOUND_PRIORITY);
+							continue;
+						case BIOLOGICAL_SCAN:
+							if (pPSD->BiologicalLevel < MAX_SCROUNGED)
+							{
+								if (pPSD->BiologicalLevel
+										+ NumRetrieved > MAX_SCROUNGED)
+									NumRetrieved = (COUNT)(
+											MAX_SCROUNGED
+											- pPSD->BiologicalLevel
+											);
+								FillLanderHold (pPSD, scan, NumRetrieved);
+								break;
+							}
+							PlaySound (SetAbsSoundIndex (
+									LanderSounds, LANDER_FULL
+									), NotPositional (), NULL, GAME_SOUND_PRIORITY);
+							continue;
+					}
+				}
+
+				which_node = HIBYTE (ElementPtr->life_span) - 1;
+				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
+						(1L << which_node);
+				pSolarSysState->CurNode = (COUNT)~0;
+				(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+
+				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
+						(1L << which_node)))
+				{
+					if (DestroyStringTable (ReleaseStringTable (
+							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
+							)))
+						pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
+				}
+				else
+				{
+					if (NumRetrieved && scan == ENERGY_SCAN)
+						pPSD->InTransit = TRUE;
+
+					SET_GAME_STATE (PLANETARY_CHANGE, 1);
+					ElementPtr->state_flags |= DISAPPEARING;
+				}
+				UnlockElement (hElement);
 			}
 		}
 	}
