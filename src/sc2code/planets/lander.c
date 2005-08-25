@@ -798,28 +798,36 @@ CheckObjectCollision (COUNT index)
 											(SURFACE_HEIGHT >> 1)
 											+ (ElementControl.EndPoint.y
 											- LanderControl.EndPoint.y);
-									pPSD->MineralText[0].CharCount = (COUNT)~0;
+									pPSD->MineralText[0].CharCount =
+											(COUNT)~0;
 									pPSD->MineralText[1].pStr = pStr;
 									while ((ch = *pStr++) && ch != ' ')
 										;
 									if (ch == '\0')
 									{
-										pPSD->MineralText[1].CharCount = (COUNT)~0;
+										pPSD->MineralText[1].CharCount =
+												(COUNT)~0;
 										pPSD->MineralText[2].CharCount = 0;
 									}
-									else
+									else  /* ch == ' ' */
 									{
+										// Name contains a space. Print over
+										// two lines.
 										pPSD->MineralText[1].CharCount =
-												(pStr - pPSD->MineralText[1].pStr) - 1;
+												utf8StringCountN(
+												pPSD->MineralText[1].pStr,
+												pStr - 1);
 										pPSD->MineralText[2].pStr = pStr;
-										pPSD->MineralText[2].CharCount = (COUNT)~0;
+										pPSD->MineralText[2].CharCount =
+												(COUNT)~0;
 									}
 								}
 								break;
 							}
 							PlaySound (SetAbsSoundIndex (
-									LanderSounds, LANDER_FULL
-									), NotPositional (), NULL, GAME_SOUND_PRIORITY);
+									LanderSounds, LANDER_FULL),
+									NotPositional (), NULL,
+									GAME_SOUND_PRIORITY);
 							continue;
 						case BIOLOGICAL_SCAN:
 							if (pPSD->BiologicalLevel < MAX_SCROUNGED)
