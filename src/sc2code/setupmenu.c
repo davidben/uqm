@@ -35,28 +35,13 @@ typedef struct setup_menu_state {
 	BOOLEAN initialized;
 	int anim_frame_count;
 	DWORD NextTime;
-	int category;
-	int option;
 } SETUP_MENU_STATE;
 
 typedef SETUP_MENU_STATE *PSETUP_MENU_STATE;
 
-typedef struct {
-	const char *optname;
-	const char *tooltip[3];
-} OPTION;
-
-typedef struct {
-	const char *category;
-	int numopts;
-	OPTION *options;
-	int selected;
-} MENU_CATEGORY;
-
 static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
-static STAMP bkgStamp = { {0, 0}, NULL };
 
-static OPTION scaler_opts[] = {
+static CHOICE_OPTION scaler_opts[] = {
 	{ "None",
 	  { "No scaling.",
 	    "Simulates the original 320x240 display.", 
@@ -83,7 +68,7 @@ static OPTION scaler_opts[] = {
 	    "Based on the Scale2x algorithm.",
 	  } } };
 
-static OPTION scanlines_opts[] = {
+static CHOICE_OPTION scanlines_opts[] = {
 	{ "Disabled",
 		{ "Do not attempt to simulate an interlaced display.",
 		  "",
@@ -95,7 +80,7 @@ static OPTION scanlines_opts[] = {
 		  ""
 		} } };
 
-static OPTION music_opts[] = {
+static CHOICE_OPTION music_opts[] = {
 	{ "PC",
 		{ "Uses the music from the Original PC version.",
 		  "Prefers .MOD files to .OGG files.",
@@ -107,7 +92,7 @@ static OPTION music_opts[] = {
 		  "Prefers .OGG files over .MOD."
 		} } };
 
-static OPTION menu_opts[] = {
+static CHOICE_OPTION menu_opts[] = {
 	{ "Text",
 		{ "In-game menus resemble the Original PC version.",
 		  "",
@@ -119,7 +104,7 @@ static OPTION menu_opts[] = {
 		  ""
 		} } };
 
-static OPTION font_opts[] = {
+static CHOICE_OPTION font_opts[] = {
 	{ "Gradients",
 		{ "Certain menu texts and dialogs use gradients,",
 		  "as per the original PC version.",
@@ -131,7 +116,7 @@ static OPTION font_opts[] = {
 		  "Easier to read."
 		} } };
 
-static OPTION scan_opts[] = {
+static CHOICE_OPTION scan_opts[] = {
 	{ "Text",
 		{ "Displays planet scan information as text,",
 		  "as per the original PC version.",
@@ -143,7 +128,7 @@ static OPTION scan_opts[] = {
 		  ""
 		} } };
 
-static OPTION scroll_opts[] = {
+static CHOICE_OPTION scroll_opts[] = {
 	{ "Per-Page",
 		{ "When fast-forwarding or rewinding conversations",
 		  "in-game, advance one screen of subtitles at a time.",
@@ -155,7 +140,7 @@ static OPTION scroll_opts[] = {
 		  "This mimics the 3do version."
 		} } };
 
-static OPTION subtitles_opts[] = {
+static CHOICE_OPTION subtitles_opts[] = {
 	{ "Disabled",
 		{ "Do not subtitle alien speech.",
 		  "",
@@ -167,7 +152,7 @@ static OPTION subtitles_opts[] = {
 		  ""
 		} } };
 
-static OPTION resdriver_opts[] = {
+static CHOICE_OPTION resdriver_opts[] = {
 	{ "320x240",
 		{ "320x240 resolution.",
 		  "Uses the SDL frame buffer directly.",
@@ -207,7 +192,7 @@ static OPTION resdriver_opts[] = {
 #endif
 };
 
-static OPTION bpp_opts[] = {
+static CHOICE_OPTION bpp_opts[] = {
 	{ "16",
 		{ "16-bit color depth.",
 		  "",
@@ -224,12 +209,6 @@ static OPTION bpp_opts[] = {
 		  ""
 		} } };
 
-//static char *title_str = "Ur-Quan Masters Setup";
-//static char *subtitle_str = "Graphics Options";
-static const char *title_str = "Use arrows and fire to select options";
-static const char *subtitle_str = "Press cancel when done";
-static const char **tooltip;
-
 #ifdef HAVE_OPENGL
 #define RES_OPTS 6
 #else
@@ -238,17 +217,40 @@ static const char **tooltip;
 
 #define NUM_OPTS 9
 
-static MENU_CATEGORY cmdline_opts[] = {
-	{ "Resolution", RES_OPTS, resdriver_opts, 0 },
-	{ "Color depth", 3, bpp_opts, 0 },
-	{ "Scaler", 5, scaler_opts, 0 },
-  	{ "Scanlines", 2, scanlines_opts, 0 },
-	{ "Menu Style", 2, menu_opts, 0 },
-	{ "Font Style", 2, font_opts, 0 },
-	{ "Scan Style", 2, scan_opts, 0 },
-	{ "Scroll Style", 2, scroll_opts, 0 },
-	{ "Subtitles", 2, subtitles_opts, 0 },
-	{ NULL, 0, NULL, 0 } };
+#define CHOICE_PREFACE NULL, Widget_HandleEventChoice, Widget_ReceiveFocusChoice, Widget_DrawChoice, Widget_HeightChoice, Widget_WidthFullScreen
+
+static WIDGET_CHOICE cmdline_opts[] = {
+	{ CHOICE_PREFACE, "Resolution", RES_OPTS, resdriver_opts, 0, 0},
+	{ CHOICE_PREFACE, "Color depth", 3, bpp_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scaler", 5, scaler_opts, 0, 0 },
+  	{ CHOICE_PREFACE, "Scanlines", 2, scanlines_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Menu Style", 2, menu_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Font Style", 2, font_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scan Style", 2, scan_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scroll Style", 2, scroll_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Subtitles", 2, subtitles_opts, 0, 0 } };
+
+static WIDGET *opt_widgets[] = {
+	(WIDGET *)(&cmdline_opts[0]),
+	(WIDGET *)(&cmdline_opts[1]),
+	(WIDGET *)(&cmdline_opts[2]),
+	(WIDGET *)(&cmdline_opts[3]),
+	(WIDGET *)(&cmdline_opts[4]),
+	(WIDGET *)(&cmdline_opts[5]),
+	(WIDGET *)(&cmdline_opts[6]),
+	(WIDGET *)(&cmdline_opts[7]),
+	(WIDGET *)(&cmdline_opts[8]) } ;
+
+static WIDGET_MENU_SCREEN menu = {
+	NULL, Widget_HandleEventMenuScreen, Widget_ReceiveFocusMenuScreen,
+	Widget_DrawMenuScreen, Widget_HeightFullScreen, Widget_WidthFullScreen,
+	// "Ur-Quan Masters Setup",
+	// "Graphics Options",
+	"Use arrows and fire to select options",
+	"Press cancel when done",
+	{ {0, 0}, NULL },
+	9, opt_widgets,
+	0 };	
 
 #define NUM_STEPS 20
 #define X_STEP (SCREEN_WIDTH / NUM_STEPS)
@@ -297,176 +299,46 @@ PropagateResults (void)
 	SetGlobalOptions (&opts);
 }
 
-static void
-DrawMenu (PSETUP_MENU_STATE pInputState)
-{
-	RECT r;
-	COLOR title, oldtext;
-	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
-	TEXT t;
-	MENU_CATEGORY *menu;
-	int cat_index;
-	
-	r.corner.x = 2;
-	r.corner.y = 2;
-	r.extent.width = SCREEN_WIDTH - 4;
-	r.extent.height = SCREEN_HEIGHT - 4;
-	
-	title = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
-	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
-	default_color = title;
-	
-	if (!bkgStamp.frame)
-	{
-		bkgStamp.origin.x = 0;
-		bkgStamp.origin.y = 0;
-		bkgStamp.frame = CaptureDrawable (LoadCelFile (MENU_BKG));
-	}
-
-	DrawStamp (&bkgStamp);
-	
-	oldtext = SetContextForeGroundColor (title);
-	t.baseline.x = r.corner.x + (r.extent.width >> 1);
-	t.baseline.y = r.corner.y + 8;
-	t.pStr = title_str;
-	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
-	t.CharCount = ~0;
-	font_DrawText (&t);
-	t.baseline.y += 8;
-	t.pStr = subtitle_str;
-	font_DrawText (&t);
-
-	t.baseline.y += 8;
-	menu = cmdline_opts;
-	cat_index = 0;
-
-	while (menu->category)
-	{
-		int i, home_x, home_y;
-
-		t.baseline.x = r.corner.x; // + (r.extent.width / 8);
-		t.baseline.y += 16;
-		t.align = ALIGN_LEFT;
-		t.pStr = menu->category;
-		if (pInputState->category == cat_index)
-		{
-			SetContextForeGroundColor (selected);
-		}
-		else
-		{
-			SetContextForeGroundColor (title);
-		}
-		font_DrawText (&t);
-
-		home_x = t.baseline.x + 3 * (r.extent.width / 8);
-		home_y = t.baseline.y;
-		t.align = ALIGN_CENTER;
-		for (i = 0; i < menu->numopts; i++)
-		{
-			t.baseline.x = home_x + ((i % 3) * (r.extent.width / 4));
-			t.baseline.y = home_y + (8 * (i / 3));
-			t.pStr = menu->options[i].optname;
-			if ((pInputState->category == cat_index) &&
-			    (pInputState->option == i))
-			{
-				SetContextForeGroundColor (selected);
-				tooltip = menu->options[i].tooltip;
-			} 
-			else if (i == menu->selected)
-			{
-				SetContextForeGroundColor (default_color);
-			}
-			else
-			{
-				SetContextForeGroundColor (inactive);
-			}
-			font_DrawText (&t);
-		}
-		menu++;
-		cat_index++;
-	}
-	t.baseline.x = r.corner.x + (r.extent.width >> 1);
-	t.baseline.y = r.corner.y + (r.extent.height - 32);
-	t.pStr = tooltip[0];
-	SetContextForeGroundColor (title);
-	font_DrawText(&t);
-	t.baseline.y += 8;
-	t.pStr = tooltip[1];
-	font_DrawText(&t);
-	t.baseline.y += 8;
-	t.pStr = tooltip[2];
-	font_DrawText(&t);
-
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
-	SetContextFont (oldfont);
-	SetContextForeGroundColor (oldtext);
-}
-
 static BOOLEAN
 DoSetupMenu (PSETUP_MENU_STATE pInputState)
 {
-	int opt, cat;
-	MENU_CATEGORY *menu = cmdline_opts;
-
 	if (!pInputState->initialized) 
 	{
 		SetDefaultMenuRepeatDelay ();
 		SetTransitionSource (NULL);
 		pInputState->NextTime = GetTimeCounter ();
-		pInputState->category = 0;
 		SetDefaults ();
-		pInputState->option = menu[0].selected;
+		(*menu.receiveFocus) ((WIDGET *)(&menu), WIDGET_EVENT_DOWN);
+	}
+	if (!menu.bgStamp.frame)
+	{
+		menu.bgStamp.origin.x = 0;
+		menu.bgStamp.origin.y = 0;
+		menu.bgStamp.frame = CaptureDrawable (LoadCelFile (MENU_BKG));
 	}
 	
 	BatchGraphics ();
-	DrawMenu (pInputState);
-	cat = pInputState->category;
-	opt = pInputState->option;
+	(*menu.draw)((WIDGET *)(&menu), 0, 0);
 
 	if (PulsedInputState.key[KEY_MENU_UP])
 	{
-		cat--;
-		if (cat < 0)
-		{
-			cat = NUM_OPTS-1;
-		}
-		/* Preserve column if possible */
-		opt = menu[cat].selected;
+		Widget_Event (WIDGET_EVENT_UP);
 	}
 	else if (PulsedInputState.key[KEY_MENU_DOWN])
 	{
-		cat++;
-		if (cat >= NUM_OPTS)
-		{
-			cat = 0;
-		}
-		opt = menu[cat].selected;
+		Widget_Event (WIDGET_EVENT_DOWN);
 	}
 	else if (PulsedInputState.key[KEY_MENU_LEFT])
 	{
-		opt--;
-		if (opt < 0)
-		{
-			opt = menu[cat].numopts - 1;
-		}	
+		Widget_Event (WIDGET_EVENT_LEFT);
 	}
 	else if (PulsedInputState.key[KEY_MENU_RIGHT])
 	{
-		opt++;
-		if (opt >= menu[cat].numopts)
-		{
-			opt = 0;
-		}	
+		Widget_Event (WIDGET_EVENT_RIGHT);
 	}
-	pInputState->category = cat;
-	pInputState->option = opt;
 	if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
-		cmdline_opts[cat].selected = opt;
+		Widget_Event (WIDGET_EVENT_SELECT);
 	}
 
 	if (!pInputState->initialized) 

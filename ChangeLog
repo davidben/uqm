@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Refactored setupmenu code to use generic widgets - Michael
 - Support UTF-8 chars in mineral names (bug #770) - SvdB
 - Modified scalers to use surface pitch instead of width - reported to
   fix bug #740 - Michael
