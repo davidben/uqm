@@ -51,6 +51,8 @@ uio_DirHandle *configDir;
 uio_DirHandle *saveDir;
 uio_DirHandle *meleeDir;
 
+uio_DirList *availableAddons;
+
 extern uio_Repository *repository;
 extern uio_DirHandle *rootDir;
 
@@ -273,6 +275,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	uio_MountHandle *contentHandle;
 	uio_DirHandle *packagesDir, *addonsDir, *addonDir;
 	static uio_AutoMount *autoMount[] = { NULL };
+	availableAddons = NULL;
 
 	contentHandle = uio_mountDir (repository, "/",
 			uio_FSTYPE_STDIO, NULL, NULL, contentPath, autoMount,
@@ -319,6 +322,26 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	}
 			
 	uio_closeDir (packagesDir);
+
+	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
+	if (availableAddons != NULL) {
+		int i, count;
+		count = availableAddons->numNames;
+		
+		if (count != 1)
+		{
+			fprintf (stderr, "%d available addon packs.\n", count);
+		}
+		else
+		{
+			fprintf (stderr, "1 available addon pack.\n");
+		}
+		for (i = 0; i < count; i++) {
+			fprintf (stderr, "    %d. %s\n", i+1, availableAddons->names[i]);
+		}
+	} else {
+		fprintf (stderr, "0 available addon packs.\n");
+	}
 
 	for (; *addons != NULL; addons++)
 	{
