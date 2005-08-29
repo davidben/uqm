@@ -40,6 +40,19 @@ typedef struct setup_menu_state {
 typedef SETUP_MENU_STATE *PSETUP_MENU_STATE;
 
 static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
+static BOOLEAN done;
+
+static int
+quit_main_menu (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		done = TRUE;
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
 
 static CHOICE_OPTION scaler_opts[] = {
 	{ "None",
@@ -230,6 +243,11 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Scroll Style", 2, scroll_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Subtitles", 2, subtitles_opts, 0, 0 } };
 
+static WIDGET_BUTTON quit_button = {
+	NULL, quit_main_menu, Widget_ReceiveFocusButton, Widget_DrawButton,
+	Widget_HeightOneLine, Widget_WidthFullScreen,
+	"Quit Setup Menu", {"Return to the main menu.", "", ""} };
+
 static WIDGET *opt_widgets[] = {
 	(WIDGET *)(&cmdline_opts[0]),
 	(WIDGET *)(&cmdline_opts[1]),
@@ -239,17 +257,16 @@ static WIDGET *opt_widgets[] = {
 	(WIDGET *)(&cmdline_opts[5]),
 	(WIDGET *)(&cmdline_opts[6]),
 	(WIDGET *)(&cmdline_opts[7]),
-	(WIDGET *)(&cmdline_opts[8]) } ;
+	(WIDGET *)(&cmdline_opts[8]),
+	(WIDGET *)(&quit_button) } ;
 
 static WIDGET_MENU_SCREEN menu = {
 	NULL, Widget_HandleEventMenuScreen, Widget_ReceiveFocusMenuScreen,
 	Widget_DrawMenuScreen, Widget_HeightFullScreen, Widget_WidthFullScreen,
-	// "Ur-Quan Masters Setup",
-	// "Graphics Options",
-	"Use arrows and fire to select options",
-	"Press cancel when done",
+	"Ur-Quan Masters Setup",
+	"",
 	{ {0, 0}, NULL },
-	9, opt_widgets,
+	10, opt_widgets,
 	0 };	
 
 #define NUM_STEPS 20
@@ -350,7 +367,7 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
 	return !((GLOBAL (CurrentActivity) & CHECK_ABORT) || 
-		 PulsedInputState.key[KEY_MENU_CANCEL]);
+		 PulsedInputState.key[KEY_MENU_CANCEL] || done);
 }
 
 void
@@ -361,6 +378,7 @@ SetupMenu (void)
 	s.InputFunc = DoSetupMenu;
 	s.initialized = FALSE;
 	SetMenuSounds (0, MENU_SOUND_SELECT);
+	done = FALSE;
 	DoInput ((PVOID)&s, TRUE);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	PropagateResults ();

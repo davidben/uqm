@@ -61,6 +61,7 @@ Widget_DrawToolTips (int numlines, const char **tips)
 
 	t.align = ALIGN_CENTER;
 	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + (r.extent.height - 8 - 8 * numlines);
 
@@ -134,6 +135,9 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
+
+	(void) x;
+	(void) y;
 }
 
 void
@@ -155,6 +159,7 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
 	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
 	t.pStr = self->category;
 	if (widget_focus == _self)
 	{
@@ -204,7 +209,6 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	FONT  oldfont = SetContextFont (StarConFont);
 	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
 	TEXT t;
-	int i, home_x, home_y;
 	
 	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
 	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
@@ -213,12 +217,12 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	t.baseline.y = y;
 	t.align = ALIGN_CENTER;
 	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
 	t.pStr = self->name;
 	if (widget_focus == _self)
 	{
+		Widget_DrawToolTips (3, self->tooltip);		
 		oldtext = SetContextForeGroundColor (selected);
-		Widget_DrawToolTips (3, self->tooltip);
-		
 	}
 	else
 	{
@@ -228,6 +232,7 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
+	(void) x;
 }
 
 int
@@ -239,17 +244,20 @@ Widget_HeightChoice (WIDGET *_self)
 int
 Widget_HeightFullScreen (WIDGET *_self)
 {
+	(void)_self;
 	return SCREEN_HEIGHT;
 }
 
 int
 Widget_HeightOneLine (WIDGET *_self)
 {
+	(void)_self;
 	return 8;
 }
 
 int Widget_WidthFullScreen (WIDGET *_self)
 {
+	(void)_self;
 	return SCREEN_WIDTH;
 }
 
@@ -257,6 +265,7 @@ int
 Widget_ReceiveFocusButton (WIDGET *_self, int event)
 {
 	widget_focus = _self;
+	(void)event;
 	return TRUE;
 }
 
@@ -266,6 +275,7 @@ Widget_ReceiveFocusChoice (WIDGET *_self, int event)
 	WIDGET_CHOICE *self = (WIDGET_CHOICE *)_self;
 	widget_focus = _self;
 	self->highlighted = self->selected;
+	(void)event;
 	return TRUE;
 }
 
@@ -305,6 +315,8 @@ Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event)
 int
 Widget_HandleEventIgnoreAll (WIDGET *self, int event)
 {
+	(void)event;
+	(void)self;
 	return FALSE;
 }
 
