@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Commander Hayes flickering lights animation now properly reenabled
+  when applicable (bug #777) - Alex
 - Refactored setupmenu code to use generic widgets - Michael
 - Support UTF-8 chars in mineral names (bug #770) - SvdB
 - Modified scalers to use surface pitch instead of width - reported to
