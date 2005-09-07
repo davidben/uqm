@@ -180,7 +180,7 @@ getHomeDir (void)
 		return NULL;
 	// NB: pw points to a static buffer.
 
-	return pw->pw_name;
+	return pw->pw_dir;
 #endif
 }
 
