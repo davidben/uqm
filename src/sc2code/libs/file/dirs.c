@@ -282,11 +282,11 @@ expandPath (char *dest, size_t len, const char *src, int what)
 							break;
 						}
 						
-						// fallback to "../userdata"
+						// fallback to "./userdata"
+#define APPDATA_FALLBACK_STRING ".\\userdata"
 						fprintf(stderr, "Warning: %%USERPROFILE%% is not set. "
-								"Falling back to \"..\\userdata\" for %%APPDATA%%"
-								"\n");
-#define APPDATA_FALLBACK_STRING "..\\userdata"
+								"Falling back to \"%s\" for %%APPDATA%%\n",
+								APPDATA_FALLBACK_STRING);
 						CHECKLEN (buf, sizeof (APPDATA_FALLBACK_STRING) - 1);
 						strcpy (bufptr, APPDATA_FALLBACK_STRING);
 						bufptr += sizeof (APPDATA_FALLBACK_STRING) - 1;
