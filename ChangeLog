@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed fallback in getHomeDir() for when $HOME is not defined on *nix
+  - SvdB
 - %APPDATA% fallback no longer to "../userdata", but to "./userdata",
   as we don't chdir() to the content dir anymore. - SvdB
 - Commander Hayes flickering lights animation now properly reenabled
