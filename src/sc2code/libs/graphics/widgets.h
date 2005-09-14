@@ -69,6 +69,7 @@ typedef struct _widget_choice {
 	int (*width)(struct _widget *self);
 	const char *category;
 	int numopts;
+	int maxcolumns;
 	CHOICE_OPTION *options;
 	int selected, highlighted;
 } WIDGET_CHOICE;
@@ -84,6 +85,17 @@ typedef struct _widget_button {
 	const char *tooltip[3];
 } WIDGET_BUTTON;
 
+typedef struct _widget_label {
+	struct _widget *parent;
+	int (*handleEvent)(struct _widget *self, int event);
+	int (*receiveFocus)(struct _widget *self, int event);
+	void (*draw)(struct _widget *self, int x, int y);
+	int (*height)(struct _widget *self);
+	int (*width)(struct _widget *self);
+	int line_count;
+	const char **lines;
+} WIDGET_LABEL;
+
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
 
 int Widget_Event (int event);
@@ -93,6 +105,7 @@ int Widget_Event (int event);
 int Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event);
 int Widget_ReceiveFocusChoice (WIDGET *_self, int event);
 int Widget_ReceiveFocusButton (WIDGET *_self, int event);
+int Widget_ReceiveFocusRefuseFocus (WIDGET *_self, int event);
 
 int Widget_HandleEventMenuScreen (WIDGET *_self, int event);
 int Widget_HandleEventChoice (WIDGET *_self, int event);
@@ -101,11 +114,33 @@ int Widget_HandleEventIgnoreAll (WIDGET *_self, int event);
 int Widget_HeightChoice (WIDGET *_self);
 int Widget_HeightFullScreen (WIDGET *_self);
 int Widget_HeightOneLine (WIDGET *_self);
+int Widget_HeightLabel (WIDGET *_self);
 
 int Widget_WidthFullScreen (WIDGET *_self);
 
 void Widget_DrawMenuScreen (WIDGET *_self, int x, int y);
 void Widget_DrawChoice (WIDGET *_self, int x, int y);
 void Widget_DrawButton (WIDGET *_self, int x, int y);
+void Widget_DrawLabel (WIDGET *_self, int x, int y);
+
+/* "Constructor" macros */
+
+#define BUTTON_INIT(handler, name, ttip1, ttip2, ttip3) { \
+	NULL, handler, Widget_ReceiveFocusButton, Widget_DrawButton, \
+	Widget_HeightOneLine, Widget_WidthFullScreen, \
+	(name), { (ttip1), (ttip2), (ttip3) } }
+
+#define CHOICE_PREFACE NULL, Widget_HandleEventChoice, \
+		Widget_ReceiveFocusChoice, Widget_DrawChoice, \
+		Widget_HeightChoice, Widget_WidthFullScreen
+
+#define LABEL_PREFACE NULL, Widget_HandleEventIgnoreAll, \
+		Widget_ReceiveFocusRefuseFocus, Widget_DrawLabel, \
+		Widget_HeightLabel, Widget_WidthFullScreen
+
+#define MENU_SCREEN_PREFACE NULL, Widget_HandleEventMenuScreen, \
+		Widget_ReceiveFocusMenuScreen, \
+		Widget_DrawMenuScreen, Widget_HeightFullScreen, \
+		Widget_WidthFullScreen
 
 #endif /* _WIDGETS_H */

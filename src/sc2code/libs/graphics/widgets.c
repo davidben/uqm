@@ -171,12 +171,12 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	}
 	font_DrawText (&t);
 
-	home_x = t.baseline.x + 3 * (SCREEN_WIDTH / 8);
+	home_x = t.baseline.x + 3 * (SCREEN_WIDTH / ((self->maxcolumns + 1) * 2));
 	home_y = t.baseline.y;
 	t.align = ALIGN_CENTER;
 	for (i = 0; i < self->numopts; i++)
 	{
-		t.baseline.x = home_x + ((i % 3) * (SCREEN_WIDTH / 4));
+		t.baseline.x = home_x + ((i % 3) * (SCREEN_WIDTH / (self->maxcolumns + 1)));
 		t.baseline.y = home_y + (8 * (i / 3));
 		t.pStr = self->options[i].optname;
 		if ((widget_focus == _self) &&
@@ -235,6 +235,35 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	(void) x;
 }
 
+void
+Widget_DrawLabel (WIDGET *_self, int x, int y)
+{
+	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
+	COLOR oldtext = SetContextForeGroundColor (
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+;	FONT  oldfont = SetContextFont (StarConFont);
+	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	TEXT t;
+	int i;
+	
+	t.baseline.x = 160;
+	t.baseline.y = y;
+	t.align = ALIGN_CENTER;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+
+	for (i = 0; i < self->line_count; i++)
+	{
+		t.pStr = self->lines[i];
+		font_DrawText (&t);
+		t.baseline.y += 8;
+	}
+	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldtext);
+	(void) x;
+}
+
 int
 Widget_HeightChoice (WIDGET *_self)
 {
@@ -255,7 +284,15 @@ Widget_HeightOneLine (WIDGET *_self)
 	return 8;
 }
 
-int Widget_WidthFullScreen (WIDGET *_self)
+int
+Widget_HeightLabel (WIDGET *_self)
+{
+	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
+	return self->line_count * 8;
+}
+
+int
+Widget_WidthFullScreen (WIDGET *_self)
 {
 	(void)_self;
 	return SCREEN_WIDTH;
@@ -309,6 +346,14 @@ Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event)
 			return TRUE;
 		}
 	}
+	return FALSE;
+}
+
+int
+Widget_ReceiveFocusRefuseFocus (WIDGET *self, int event)
+{
+	(void)self;
+	(void)event;
 	return FALSE;
 }
 

@@ -41,18 +41,14 @@ typedef SETUP_MENU_STATE *PSETUP_MENU_STATE;
 
 static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
 static BOOLEAN done;
+static WIDGET *current, *next;
 
-static int
-quit_main_menu (WIDGET *self, int event)
-{
-	if (event == WIDGET_EVENT_SELECT)
-	{
-		done = TRUE;
-		return TRUE;
-	}
-	(void)self;
-	return FALSE;
-}
+static int quit_main_menu (WIDGET *self, int event);
+static int quit_sub_menu (WIDGET *self, int event);
+static int do_graphics (WIDGET *self, int event);
+static int do_engine (WIDGET *self, int event);
+static int do_resources (WIDGET *self, int event);
+static int do_keyconfig (WIDGET *self, int event);
 
 static CHOICE_OPTION scaler_opts[] = {
 	{ "None",
@@ -228,46 +224,189 @@ static CHOICE_OPTION bpp_opts[] = {
 #define RES_OPTS 2
 #endif
 
-#define NUM_OPTS 9
-
-#define CHOICE_PREFACE NULL, Widget_HandleEventChoice, Widget_ReceiveFocusChoice, Widget_DrawChoice, Widget_HeightChoice, Widget_WidthFullScreen
-
 static WIDGET_CHOICE cmdline_opts[] = {
-	{ CHOICE_PREFACE, "Resolution", RES_OPTS, resdriver_opts, 0, 0},
-	{ CHOICE_PREFACE, "Color depth", 3, bpp_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scaler", 5, scaler_opts, 0, 0 },
-  	{ CHOICE_PREFACE, "Scanlines", 2, scanlines_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Menu Style", 2, menu_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Font Style", 2, font_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scan Style", 2, scan_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scroll Style", 2, scroll_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Subtitles", 2, subtitles_opts, 0, 0 } };
+	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, resdriver_opts, 0, 0},
+	{ CHOICE_PREFACE, "Color depth", 3, 3, bpp_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scaler", 5, 3, scaler_opts, 0, 0 },
+  	{ CHOICE_PREFACE, "Scanlines", 2, 3, scanlines_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Menu Style", 2, 2, menu_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Font Style", 2, 2, font_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scan Style", 2, 2, scan_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scroll Style", 2, 2, scroll_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Subtitles", 2, 2, subtitles_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Music Driver", 2, 3, music_opts, 0, 0 } };
 
-static WIDGET_BUTTON quit_button = {
-	NULL, quit_main_menu, Widget_ReceiveFocusButton, Widget_DrawButton,
-	Widget_HeightOneLine, Widget_WidthFullScreen,
-	"Quit Setup Menu", {"Return to the main menu.", "", ""} };
+static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
+		"Quit Setup Menu", 
+		"Return to the main menu.", "", "");
 
-static WIDGET *opt_widgets[] = {
+static WIDGET_BUTTON prev_button = BUTTON_INIT (quit_sub_menu, 
+		"Return to Main Menu",
+		"Save changes and return to main menu.",
+		"Changes will not be applied until",
+		"you quit setup entirely.");
+
+static WIDGET_BUTTON graphics_button = BUTTON_INIT (do_graphics, "Graphics Options",
+	     "Configure display options for UQM.",
+	     "Graphics drivers, resolution, and scalers.", "");
+
+static WIDGET_BUTTON engine_button = BUTTON_INIT (do_engine, "PC/3do Compatibility Options",
+	     "Configure behavior of UQM", 
+	     "to more closely match the PC or 3do behavior.", "");
+
+static WIDGET_BUTTON resources_button = BUTTON_INIT (do_resources, "Resources Options",
+	     "Configure UQM Addon Packs.", "", "Currently unimplemented.");
+
+static WIDGET_BUTTON keyconfig_button = BUTTON_INIT (do_keyconfig, "Configure Controls",
+	     "Set up keyboard and joystick controls.", "", "Currently unimplemented.");
+
+static const char *incomplete_msg[] = { 
+	"This part of the configuration",
+	"has not yet been implemented.",
+	"",
+	"Expect it in a future version." };
+
+static WIDGET_LABEL incomplete_label = {
+	LABEL_PREFACE,
+	4, incomplete_msg };
+
+static WIDGET *main_widgets[] = {
+	(WIDGET *)(&graphics_button),
+	(WIDGET *)(&engine_button),
+	(WIDGET *)(&resources_button),
+	(WIDGET *)(&keyconfig_button),
+	(WIDGET *)(&quit_button) };
+
+static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&cmdline_opts[0]),
 	(WIDGET *)(&cmdline_opts[1]),
 	(WIDGET *)(&cmdline_opts[2]),
 	(WIDGET *)(&cmdline_opts[3]),
+	(WIDGET *)(&prev_button) };
+
+static WIDGET *engine_widgets[] = {
 	(WIDGET *)(&cmdline_opts[4]),
 	(WIDGET *)(&cmdline_opts[5]),
 	(WIDGET *)(&cmdline_opts[6]),
 	(WIDGET *)(&cmdline_opts[7]),
 	(WIDGET *)(&cmdline_opts[8]),
-	(WIDGET *)(&quit_button) } ;
+	(WIDGET *)(&prev_button) };
 
+static WIDGET *incomplete_widgets[] = {
+	(WIDGET *)(&incomplete_label),
+	(WIDGET *)(&prev_button) };
+	     
 static WIDGET_MENU_SCREEN menu = {
-	NULL, Widget_HandleEventMenuScreen, Widget_ReceiveFocusMenuScreen,
-	Widget_DrawMenuScreen, Widget_HeightFullScreen, Widget_WidthFullScreen,
+	MENU_SCREEN_PREFACE,
 	"Ur-Quan Masters Setup",
 	"",
 	{ {0, 0}, NULL },
-	10, opt_widgets,
+	5, main_widgets,
+	0 };
+
+static WIDGET_MENU_SCREEN graphics_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"Graphics Options",
+	{ {0, 0}, NULL },
+	5, graphics_widgets,
 	0 };	
+
+static WIDGET_MENU_SCREEN engine_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"3do/PC Options",
+	{ {0, 0}, NULL },
+	6, engine_widgets,
+	0 };	
+
+static WIDGET_MENU_SCREEN resources_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"Addon Packs",
+	{ {0, 0}, NULL },
+	2, incomplete_widgets,
+	0 };
+
+static WIDGET_MENU_SCREEN keyconfig_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"Controls Setup",
+	{ {0, 0}, NULL },
+	2, incomplete_widgets,
+	0 };
+
+static int
+quit_main_menu (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = NULL;
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+quit_sub_menu (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+do_graphics (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&graphics_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+do_engine (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&engine_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+do_resources (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&resources_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+do_keyconfig (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&keyconfig_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
 
 #define NUM_STEPS 20
 #define X_STEP (SCREEN_WIDTH / NUM_STEPS)
@@ -322,20 +461,49 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	if (!pInputState->initialized) 
 	{
 		SetDefaultMenuRepeatDelay ();
-		SetTransitionSource (NULL);
 		pInputState->NextTime = GetTimeCounter ();
 		SetDefaults ();
-		(*menu.receiveFocus) ((WIDGET *)(&menu), WIDGET_EVENT_DOWN);
+
+		current = NULL;
+		next = (WIDGET *)(&menu);
+		
+		pInputState->initialized = TRUE;
 	}
 	if (!menu.bgStamp.frame)
 	{
+		FRAME f = CaptureDrawable (LoadCelFile (MENU_BKG));
 		menu.bgStamp.origin.x = 0;
 		menu.bgStamp.origin.y = 0;
-		menu.bgStamp.frame = CaptureDrawable (LoadCelFile (MENU_BKG));
+		menu.bgStamp.frame = SetAbsFrameIndex (f, 0);
+		graphics_menu.bgStamp.origin.x = 0;
+		graphics_menu.bgStamp.origin.y = 0;
+		graphics_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
+		engine_menu.bgStamp.origin.x = 0;
+		engine_menu.bgStamp.origin.y = 0;
+		engine_menu.bgStamp.frame = SetAbsFrameIndex (f, 2);
+		resources_menu.bgStamp.origin.x = 0;
+		resources_menu.bgStamp.origin.y = 0;
+		resources_menu.bgStamp.frame = SetAbsFrameIndex (f, 3);
+		keyconfig_menu.bgStamp.origin.x = 0;
+		keyconfig_menu.bgStamp.origin.y = 0;
+		keyconfig_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
+	}
+	if (current != next)
+	{
+		SetTransitionSource (NULL);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 	}
 	
 	BatchGraphics ();
-	(*menu.draw)((WIDGET *)(&menu), 0, 0);
+	(*next->draw)(next, 0, 0);
+
+	if (current != next)
+	{
+		ScreenTransition (3, NULL);
+		current = next;
+	}
+
+	UnbatchGraphics ();
 
 	if (PulsedInputState.key[KEY_MENU_UP])
 	{
@@ -358,16 +526,10 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		Widget_Event (WIDGET_EVENT_SELECT);
 	}
 
-	if (!pInputState->initialized) 
-	{
-		pInputState->initialized = TRUE;
-		ScreenTransition (3, NULL);
-	}
-	UnbatchGraphics ();
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
 	return !((GLOBAL (CurrentActivity) & CHECK_ABORT) || 
-		 PulsedInputState.key[KEY_MENU_CANCEL] || done);
+		 PulsedInputState.key[KEY_MENU_CANCEL] || (next == NULL));
 }
 
 void
