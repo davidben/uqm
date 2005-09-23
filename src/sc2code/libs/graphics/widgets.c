@@ -241,7 +241,7 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
 	COLOR oldtext = SetContextForeGroundColor (
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
-;	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = SetContextFont (StarConFont);
 	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
 	TEXT t;
 	int i;
