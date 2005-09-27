@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed Recursive Mutexes to still work even if the ThreadID is 0
+  (bug 779) - Michael
 - Permit independent selection of graphics driver and resolution in
   setup menu - Michael
 - Changed comm subtitle caching to use own context instead of

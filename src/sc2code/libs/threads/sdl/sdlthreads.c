@@ -547,7 +547,7 @@ LockRecursiveMutex_SDL (RecursiveMutex val)
 {
 	RecM *mtx = (RecM *)val;
 	Uint32 thread_id = SDL_ThreadID();
-	if (mtx->thread_id != thread_id)
+	if (!mtx->locks || mtx->thread_id != thread_id)
 	{
 #ifdef TRACK_CONTENTION
 		if (mtx->thread_id && (mtx->syncClass & TRACK_CONTENTION_CLASSES))
@@ -567,7 +567,7 @@ UnlockRecursiveMutex_SDL (RecursiveMutex val)
 {
 	RecM *mtx = (RecM *)val;
 	Uint32 thread_id = SDL_ThreadID();
-	if (mtx->thread_id != thread_id)
+	if (!mtx->locks || mtx->thread_id != thread_id)
 	{
 #ifdef NAMED_SYNCHRO
 		fprintf (stderr, "'%s' attempted to unlock %s when it didn't hold it\n", MyThreadName (), mtx->name);
