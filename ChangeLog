@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Permit independent selection of graphics driver and resolution in
+  setup menu - Michael
 - Changed comm subtitle caching to use own context instead of
   screen grabs; should resolve Blue Comm Screen universally - Alex
 - Added missing break statement in DrawBatch:RECT_PRIM - Alex

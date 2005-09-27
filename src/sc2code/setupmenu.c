@@ -161,44 +161,47 @@ static CHOICE_OPTION subtitles_opts[] = {
 		  ""
 		} } };
 
-static CHOICE_OPTION resdriver_opts[] = {
+static CHOICE_OPTION res_opts[] = {
 	{ "320x240",
 		{ "320x240 resolution.",
-		  "Uses the SDL frame buffer directly.",
+		  "Available with SDL framebuffer or OpenGL.",
 		  ""
 		} },
 	{ "640x480",
 		{ "640x480 resolution.",
-		  "Uses the SDL frame buffer directly.",
+		  "Available with SDL framebuffer or OpenGL.",
 		  ""
 		} },
 #ifdef HAVE_OPENGL
-	{ "320x240 GL",
-		{ "320x240 resolution.",
-		  "Uses OpenGL graphics drivers.",
-		  ""
-		} },
-	{ "640x480 GL",
-		{ "640x480 resolution.",
-		  "Uses OpenGL graphics drivers.",
-		  ""
-		} },
-	{ "800x600 GL",
+	{ "800x600",
 		{ "800x600 resolution.",
-		  "Uses OpenGL graphics drivers.",
+		  "Requires OpenGL graphics drivers.",
 		  ""
 		} },
-	{ "1024x768 GL",
+	{ "1024x768",
 		{ "1024x768 resolution.",
-		  "Uses OpenGL graphics drivers.",
+		  "Requires OpenGL graphics drivers.",
 		  ""
 		} },
 	{ "Custom",
 		{ "Custom resolution set from the commandline.",
-		  "Uses OpenGL graphics drivers.",
+		  "Requires OpenGL graphics drivers.",
 		  ""
 		} },
 #endif
+};
+
+static CHOICE_OPTION driver_opts[] = {
+	{ "If Possible",
+		{ "Uses SDL Framebuffer mode if possible,",
+		  "and OpenGL otherwise.  Framebuffer mode",
+		  "is available for 320x240 and 640x480."
+		} },
+	{ "Never",
+		{ "Uses SDL Framebuffer mode if possible,",
+		  "and OpenGL otherwise.  Framebuffer mode",
+		  "is available for 320x240 and 640x480."
+		} },
 };
 
 static CHOICE_OPTION bpp_opts[] = {
@@ -219,13 +222,14 @@ static CHOICE_OPTION bpp_opts[] = {
 		} } };
 
 #ifdef HAVE_OPENGL
-#define RES_OPTS 6
+#define RES_OPTS 4
 #else
 #define RES_OPTS 2
 #endif
 
 static WIDGET_CHOICE cmdline_opts[] = {
-	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, resdriver_opts, 0, 0},
+	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, res_opts, 0, 0},
+	{ CHOICE_PREFACE, "Use Framebuffer?", 2, 2, driver_opts, 0, 0},
 	{ CHOICE_PREFACE, "Color depth", 3, 3, bpp_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Scaler", 5, 3, scaler_opts, 0, 0 },
   	{ CHOICE_PREFACE, "Scanlines", 2, 3, scanlines_opts, 0, 0 },
@@ -279,17 +283,20 @@ static WIDGET *main_widgets[] = {
 
 static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&cmdline_opts[0]),
+#ifdef HAVE_OPENGL
 	(WIDGET *)(&cmdline_opts[1]),
+#endif
 	(WIDGET *)(&cmdline_opts[2]),
 	(WIDGET *)(&cmdline_opts[3]),
+	(WIDGET *)(&cmdline_opts[4]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *engine_widgets[] = {
-	(WIDGET *)(&cmdline_opts[4]),
 	(WIDGET *)(&cmdline_opts[5]),
 	(WIDGET *)(&cmdline_opts[6]),
 	(WIDGET *)(&cmdline_opts[7]),
 	(WIDGET *)(&cmdline_opts[8]),
+	(WIDGET *)(&cmdline_opts[9]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *incomplete_widgets[] = {
@@ -309,7 +316,11 @@ static WIDGET_MENU_SCREEN graphics_menu = {
 	"Ur-Quan Masters Setup",
 	"Graphics Options",
 	{ {0, 0}, NULL },
+#ifdef HAVE_OPENGL
 	5, graphics_widgets,
+#else
+	4, graphics_widgets,
+#endif
 	0 };	
 
 static WIDGET_MENU_SCREEN engine_menu = {
@@ -419,7 +430,7 @@ SetDefaults (void)
 	GLOBALOPTS opts;
 	
 	GetGlobalOptions (&opts);
-	if (opts.driver == OPTVAL_CUSTOM_GL)
+	if (opts.driver == OPTVAL_CUSTOM)
 	{
 		cmdline_opts[0].numopts = RES_OPTS + 1;
 	}
@@ -427,30 +438,32 @@ SetDefaults (void)
 	{
 		cmdline_opts[0].numopts = RES_OPTS;
 	}
-	cmdline_opts[0].selected = opts.driver;
-	cmdline_opts[1].selected = opts.depth;
-	cmdline_opts[2].selected = opts.scaler;
-	cmdline_opts[3].selected = opts.scanlines;
-	cmdline_opts[4].selected = opts.menu;
-	cmdline_opts[5].selected = opts.text;
-	cmdline_opts[6].selected = opts.cscan;
-	cmdline_opts[7].selected = opts.scroll;
-	cmdline_opts[8].selected = opts.subtitles;
+	cmdline_opts[0].selected = opts.res;
+	cmdline_opts[1].selected = opts.driver;
+	cmdline_opts[2].selected = opts.depth;
+	cmdline_opts[3].selected = opts.scaler;
+	cmdline_opts[4].selected = opts.scanlines;
+	cmdline_opts[5].selected = opts.menu;
+	cmdline_opts[6].selected = opts.text;
+	cmdline_opts[7].selected = opts.cscan;
+	cmdline_opts[8].selected = opts.scroll;
+	cmdline_opts[9].selected = opts.subtitles;
 }
 
 static void
 PropagateResults (void)
 {
 	GLOBALOPTS opts;
-	opts.driver = cmdline_opts[0].selected;
-	opts.depth = cmdline_opts[1].selected;
-	opts.scaler = cmdline_opts[2].selected;
-	opts.scanlines = cmdline_opts[3].selected;
-	opts.menu = cmdline_opts[4].selected;
-	opts.text = cmdline_opts[5].selected;
-	opts.cscan = cmdline_opts[6].selected;
-	opts.scroll = cmdline_opts[7].selected;
-	opts.subtitles = cmdline_opts[8].selected;
+	opts.res = cmdline_opts[0].selected;
+	opts.driver = cmdline_opts[1].selected;
+	opts.depth = cmdline_opts[2].selected;
+	opts.scaler = cmdline_opts[3].selected;
+	opts.scanlines = cmdline_opts[4].selected;
+	opts.menu = cmdline_opts[5].selected;
+	opts.text = cmdline_opts[6].selected;
+	opts.cscan = cmdline_opts[7].selected;
+	opts.scroll = cmdline_opts[8].selected;
+	opts.subtitles = cmdline_opts[9].selected;
 
 	SetGlobalOptions (&opts);
 }
@@ -599,59 +612,66 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	case 320:
 		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
 		{
-			opts->driver = OPTVAL_320_240_PURE;
+			opts->res = OPTVAL_320_240;
+			opts->driver = OPTVAL_PURE_IF_POSSIBLE;
 		}
 		else
 		{
+			opts->driver = OPTVAL_ALWAYS_GL;
 			if (ScreenHeightActual != 240)
 			{
-				opts->driver = OPTVAL_CUSTOM_GL;
+				opts->res = OPTVAL_CUSTOM;
 			}
 			else
 			{
-				opts->driver = OPTVAL_320_240_GL;
+				opts->res = OPTVAL_320_240;
 			}
 		}
 		break;
 	case 640:
 		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
 		{
-			opts->driver = OPTVAL_640_480_PURE;
+			opts->res = OPTVAL_640_480;
+			opts->driver = OPTVAL_PURE_IF_POSSIBLE;
 		}
 		else
 		{
+			opts->driver = OPTVAL_ALWAYS_GL;
 			if (ScreenHeightActual != 480)
 			{
-				opts->driver = OPTVAL_CUSTOM_GL;
+				opts->res = OPTVAL_CUSTOM;
 			}
 			else
 			{
-				opts->driver = OPTVAL_640_480_GL;
+				opts->res = OPTVAL_640_480;
 			}
 		}
 		break;
 	case 800:
+		opts->driver = OPTVAL_ALWAYS_GL;
 		if (ScreenHeightActual != 600)
 		{
-			opts->driver = OPTVAL_CUSTOM_GL;
+			opts->res = OPTVAL_CUSTOM;
 		}
 		else
 		{
-			opts->driver = OPTVAL_800_600_GL;
+			opts->res = OPTVAL_800_600;
 		}
 		break;
 	case 1024:
+		opts->driver = OPTVAL_ALWAYS_GL;
 		if (ScreenHeightActual != 768)
 		{
-			opts->driver = OPTVAL_CUSTOM_GL;
+			opts->res = OPTVAL_CUSTOM;
 		}
 		else
 		{
-			opts->driver = OPTVAL_1024_768_GL;
+			opts->res = OPTVAL_1024_768;
 		}		
 		break;
 	default:
-		opts->driver = OPTVAL_CUSTOM_GL;
+		opts->driver = OPTVAL_ALWAYS_GL;
+		opts->res = OPTVAL_CUSTOM;
 		break;
 	}
 }
@@ -670,33 +690,31 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPTADV;
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_TRISCAN;
 
-	switch (opts->driver) {
-	case OPTVAL_320_240_PURE:
+	switch (opts->res) {
+	case OPTVAL_320_240:
 		NewWidth = 320;
 		NewHeight = 240;
+#ifdef HAVE_OPENGL	       
+		NewDriver = (opts->res == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
+#else
 		NewDriver = TFB_GFXDRIVER_SDL_PURE;
+#endif
 		break;
-	case OPTVAL_320_240_GL:
-		NewWidth = 320;
-		NewHeight = 240;
-		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
-		break;
-	case OPTVAL_640_480_PURE:
+	case OPTVAL_640_480:
 		NewWidth = 640;
 		NewHeight = 480;
+#ifdef HAVE_OPENGL	       
+		NewDriver = (opts->res == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
+#else
 		NewDriver = TFB_GFXDRIVER_SDL_PURE;
+#endif
 		break;
-	case OPTVAL_640_480_GL:
-		NewWidth = 640;
-		NewHeight = 480;
-		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
-		break;
-	case OPTVAL_800_600_GL:
+	case OPTVAL_800_600:
 		NewWidth = 800;
 		NewHeight = 600;
 		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
 		break;
-	case OPTVAL_1024_768_GL:
+	case OPTVAL_1024_768:
 		NewWidth = 1024;
 		NewHeight = 768;
 		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;

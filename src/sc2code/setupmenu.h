@@ -38,14 +38,17 @@ typedef enum {
 } OPT_SCALETYPE;
 
 typedef enum {
-	OPTVAL_320_240_PURE,
-	OPTVAL_640_480_PURE,
-	OPTVAL_320_240_GL,
-	OPTVAL_640_480_GL,
-	OPTVAL_800_600_GL,
-	OPTVAL_1024_768_GL,
-	OPTVAL_CUSTOM_GL
-} OPT_RESDRIVERTYPE;
+	OPTVAL_320_240,
+	OPTVAL_640_480,
+	OPTVAL_800_600,
+	OPTVAL_1024_768,
+	OPTVAL_CUSTOM
+} OPT_RESTYPE;
+
+typedef enum {
+	OPTVAL_PURE_IF_POSSIBLE,
+	OPTVAL_ALWAYS_GL
+} OPT_DRIVERTYPE;
 
 typedef enum {
 	OPTVAL_16,
@@ -55,7 +58,8 @@ typedef enum {
 
 typedef struct globalopts_struct {
 	OPT_SCALETYPE scaler;
-	OPT_RESDRIVERTYPE driver;
+	OPT_RESTYPE res;
+	OPT_DRIVERTYPE driver;
 	OPT_DEPTH depth;
 	OPT_ENABLABLE subtitles, scanlines;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll;
