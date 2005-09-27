@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Changed comm subtitle caching to use own context instead of
+  screen grabs; should resolve Blue Comm Screen universally - Alex
 - Added missing break statement in DrawBatch:RECT_PRIM - Alex
 - Setup menu split into four submenus - Michael
 - Fixed fallback in getHomeDir() for when $HOME is not defined on *nix
