@@ -695,7 +695,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		NewWidth = 320;
 		NewHeight = 240;
 #ifdef HAVE_OPENGL	       
-		NewDriver = (opts->res == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
+		NewDriver = (opts->driver == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
 #else
 		NewDriver = TFB_GFXDRIVER_SDL_PURE;
 #endif
@@ -704,7 +704,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		NewWidth = 640;
 		NewHeight = 480;
 #ifdef HAVE_OPENGL	       
-		NewDriver = (opts->res == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
+		NewDriver = (opts->driver == OPTVAL_ALWAYS_GL ? TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE);
 #else
 		NewDriver = TFB_GFXDRIVER_SDL_PURE;
 #endif
