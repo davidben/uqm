@@ -127,7 +127,9 @@ static int subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 
 static const UNICODE * volatile last_subtitle;
-static TFB_Image *subtitle_cache;
+
+CONTEXT TextCacheContext;
+FRAME TextCacheFrame;
 
 /* _count_lines - sees how many lines a given input string would take to
  * display given the line wrapping information
@@ -167,28 +169,29 @@ add_text (int status, PTEXT pTextIn)
 	int num_lines = 0;
 	static COORD last_baseline;
 	BOOLEAN eol;
+	CONTEXT OldContext;
 	
 	BatchGraphics ();
 
 	maxchars = (COUNT)~0;
 	if (status == 1)
 	{
-		RECT r;
-		GetContextClipRect (&r);
-
 		if (last_subtitle == pTextIn->pStr)
 		{
 			// draws cached subtitle
-			TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0, TFB_SCREEN_MAIN);
+			STAMP s;
+
+			s.origin.x = s.origin.y = 0;
+			s.frame = TextCacheFrame;
+			DrawStamp (&s);
 			UnbatchGraphics ();
 			return last_baseline;
 		}
 		else
 		{
-			// saves background to extra screen
-			TFB_DrawScreen_Copy (&r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
-			// fills screen with transparent color
-			TFB_DrawScreen_Rect (&r, 0, 0, 128, TFB_SCREEN_MAIN);
+			// draw to subtitle cache; prepare first
+			OldContext = SetContext (TextCacheContext);
+			ClearDrawable ();
 
 			last_subtitle = pTextIn->pStr;
 		}
@@ -303,16 +306,13 @@ add_text (int status, PTEXT pTextIn)
 
 	if (status == 1)
 	{
-		RECT r;
-		GetContextClipRect (&r);
+		STAMP s;
 		
-		// copies subtitle to cache
-		TFB_DrawScreen_CopyToImage (subtitle_cache, &r, TFB_SCREEN_MAIN);
-		// restores background
-		TFB_DrawScreen_Copy (&r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
-		// draws cached subtitle
-		TFB_DrawScreen_Image (subtitle_cache, r.corner.x, r.corner.y, 0, 0,
-				TFB_SCREEN_MAIN);
+		// we were drawing to cache -- flush to screen
+		SetContext (OldContext);
+		s.origin.x = s.origin.y = 0;
+		s.frame = TextCacheFrame;
+		DrawStamp (&s);
 		
 		last_baseline = pText->baseline.y;
 	}
@@ -548,15 +548,8 @@ xform_complete (void)
 void
 init_communication (void)
 {
-	TFB_Canvas canvas;
-
 	subtitle_mutex = CreateMutex ("Subtitle Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 	init_xform_control ();
-
-	canvas = TFB_DrawCanvas_New_TrueColor (SIS_SCREEN_WIDTH,
-		SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, FALSE);
-	subtitle_cache = TFB_DrawImage_New (canvas);
-	TFB_DrawCanvas_SetTransparentColor (subtitle_cache->NormalImg, 0, 0, 128, TRUE);
 }
 
 void
@@ -564,8 +557,6 @@ uninit_communication (void)
 {
 	DestroyMutex (subtitle_mutex);
 	uninit_xform_control ();
-	TFB_DrawImage_Delete (subtitle_cache);
-	subtitle_cache = NULL;
 }
 
 static volatile BOOLEAN ColorChange;
@@ -1968,6 +1959,7 @@ HailAlien (void)
 	ENCOUNTER_STATE ES;
 	FONT PlayerFont, OldFont;
 	MUSIC_REF SongRef = 0;
+	COLOR TextBack;
 
 	pCurInputState = &ES;
 	memset (pCurInputState, 0, sizeof (*pCurInputState));
@@ -1997,6 +1989,18 @@ HailAlien (void)
 	CommData.ConversationPhrases = CaptureStringTable (
 			LoadStringTableInstance ((RESOURCE)CommData.ConversationPhrases)
 			);
+
+	// init subtitle cache context
+	TextCacheContext = CaptureContext (CreateContext ());
+	TextCacheFrame = CaptureDrawable (CreateDrawable (WANT_PIXMAP | WANT_MASK,
+		SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2,
+		1));
+	SetContext (TextCacheContext);
+	SetContextFGFrame (TextCacheFrame);
+	TextBack = BUILD_COLOR (MAKE_RGB15 (0, 0, 0x10), 1);
+	SetContextBackGroundColor (TextBack);
+	ClearDrawable ();
+	SetFrameTransparentColor (TextCacheFrame, TextBack);
 
 	ES.phrase_buf_index = 1;
 	ES.phrase_buf[0] = '\0';
@@ -2070,6 +2074,9 @@ HailAlien (void)
 	DestroyColorMap (ReleaseColorMap (CommData.AlienColorMap));
 	DestroyFont (ReleaseFont (CommData.AlienFont));
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));
+
+	DestroyContext (ReleaseContext (TextCacheContext));
+	DestroyDrawable (ReleaseDrawable (TextCacheFrame));
 
 	SetContext (SpaceContext);
 	SetContextFont (OldFont);
