@@ -18,6 +18,7 @@
 
 #include "gfxintrn.h"
 #include "tfb_prim.h"
+#include "gfxother.h"
 
 
 extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to,
@@ -258,12 +259,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	if (FontPtr == NULL)
 		return;
 	
-	{
-		DWORD c32k = _get_context_fg_color () >> 8;
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-	}
+	COLORtoPalette (_get_context_fg_color (), &color);
 
 	TextPtr = &PrimPtr->Object.Text;
 	s.origin.x = _save_stamp.origin.x;

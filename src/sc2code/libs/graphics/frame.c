@@ -21,6 +21,7 @@
 #include "gfx_common.h"
 #include "tfb_draw.h"
 #include "tfb_prim.h"
+#include "gfxother.h"
 
 HOT_SPOT
 MAKE_HOT_SPOT (COORD x, COORD y)
@@ -88,12 +89,8 @@ void
 ClearBackGround (PRECT pClipRect)
 {
 	TFB_Palette color;
-	DWORD c32k;
 
-	c32k = _get_context_bg_color () >> 8; //shift out color index
-	color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-	color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-	color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+	COLORtoPalette (_get_context_bg_color (), &color);
 	TFB_Prim_FillRect (pClipRect, &color);
 }
 
@@ -144,7 +141,6 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 			PPRIMITIVE lpWorkPrim;
 			RECT ClipRect;
 			TFB_Palette color;
-			DWORD c32k;
 
 			lpPrim = &lpBasePrim[CurIndex];
 			PrimType = GetPrimType (lpPrim);
@@ -156,29 +152,18 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 			switch (PrimType)
 			{
 				case POINT_PRIM:
-					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-					
+					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_Point (&lpWorkPrim->Object.Point, &color);
 					break;
 				case STAMP_PRIM:
 					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp);
 					break;
 				case STAMPFILL_PRIM:
-					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, &color);
 					break;
 				case LINE_PRIM:
-					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-
+					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_Line (&lpWorkPrim->Object.Line, &color);
 					break;
 				case TEXT_PRIM:
@@ -191,16 +176,10 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 					_text_blt (&ClipRect, lpWorkPrim);
 					break;
 				case RECT_PRIM:
-					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, &color);
 				case RECTFILL_PRIM:
-					c32k = GetPrimColor (lpWorkPrim) >> 8; //shift out color index
-					color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-					color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-					color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, &color);
 					break;
 			}
@@ -243,13 +222,8 @@ DrawPoint (PPOINT lpPoint)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Palette color;
-		DWORD c32k;
 		
-		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-		
+		COLORtoPalette (GetPrimColor (&_locPrim), &color);
 		TFB_Prim_Point (lpPoint, &color);
 		_CurFramePtr->HotSpot = OldHot;
 	}
@@ -264,13 +238,8 @@ DrawRectangle (PRECT lpRect)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Palette color;
-		DWORD c32k;
 		
-		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-		
+		COLORtoPalette (GetPrimColor (&_locPrim), &color);
 		TFB_Prim_Rect (lpRect, &color);  
 		_CurFramePtr->HotSpot = OldHot;
 	}
@@ -285,13 +254,8 @@ DrawFilledRectangle (PRECT lpRect)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Palette color;
-		DWORD c32k;
 		
-		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-		
+		COLORtoPalette (GetPrimColor (&_locPrim), &color);
 		TFB_Prim_FillRect (lpRect, &color);  
 		_CurFramePtr->HotSpot = OldHot;
 	}
@@ -306,13 +270,8 @@ DrawLine (PLINE lpLine)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Palette color;
-		DWORD c32k;
 
-		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
-		
+		COLORtoPalette (GetPrimColor (&_locPrim), &color);
 		TFB_Prim_Line (lpLine, &color);
 		_CurFramePtr->HotSpot = OldHot;
 	} 
@@ -340,12 +299,8 @@ DrawFilledStamp (PSTAMP stmp)
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
 		TFB_Palette color;
-		DWORD c32k;
 		
-		c32k = GetPrimColor (&_locPrim) >> 8; //shift out color index
-		color.r = (UBYTE)((c32k >> (10 - (8 - 5))) & 0xF8);
-		color.g = (UBYTE)((c32k >> (5 - (8 - 5))) & 0xF8);
-		color.b = (UBYTE)((c32k << (8 - 5)) & 0xF8);
+		COLORtoPalette (GetPrimColor (&_locPrim), &color);
 		TFB_Prim_StampFill (stmp, &color);
 		_CurFramePtr->HotSpot = OldHot;
 	}

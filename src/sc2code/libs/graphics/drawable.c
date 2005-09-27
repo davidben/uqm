@@ -21,6 +21,7 @@
 #include "tfb_draw.h"
 #include "units.h"
 #include "libs/mathlib.h"
+#include "gfxother.h"
 
 FRAMEPTR _CurFramePtr;
 
@@ -244,4 +245,14 @@ RotateFrame (FRAMEPTR Frame, COUNT angle)
 	ReleaseDrawable (RotFramePtr);
 
 	return Drawable;
+}
+
+void
+SetFrameTransparentColor (FRAMEPTR Frame, COLOR c32k)
+{
+	TFB_Palette color;
+	
+	COLORtoPalette (c32k, &color);
+	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg,
+			color.r, color.g, color.b, TRUE);
 }
