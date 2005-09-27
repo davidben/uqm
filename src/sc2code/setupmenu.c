@@ -430,7 +430,7 @@ SetDefaults (void)
 	GLOBALOPTS opts;
 	
 	GetGlobalOptions (&opts);
-	if (opts.driver == OPTVAL_CUSTOM)
+	if (opts.res == OPTVAL_CUSTOM)
 	{
 		cmdline_opts[0].numopts = RES_OPTS + 1;
 	}
