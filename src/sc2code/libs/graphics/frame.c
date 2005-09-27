@@ -178,6 +178,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 				case RECT_PRIM:
 					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, &color);
+					break;
 				case RECTFILL_PRIM:
 					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
 					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, &color);
