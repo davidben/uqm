@@ -352,6 +352,10 @@ SOURCE=..\sc2code\libs\graphics\gfxintrn.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\gfxother.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\intersec.c
 # End Source File
 # Begin Source File
