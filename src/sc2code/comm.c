@@ -42,6 +42,18 @@
 
 #include <ctype.h>
 
+// Maximum ambient animation frame rate (actual execution rate)
+// A gfx frame is not always produced during an execution frame,
+// and several animations are combined into one gfx frame.
+// The rate was originally 120fps which allowed for more animation
+// precision which is ultimately wasted on the human eye anyway.
+// The highest known stable animation rate is 40fps, so that's what we use.
+#define AMBIENT_ANIM_RATE   40
+
+// Oscilloscope frame rate
+// Should be <= AMBIENT_ANIM_RATE
+// XXX: was 32 picked experimentally?
+#define OSCILLOSCOPE_RATE   32
 
 static void init_xform_control (void);
 static void uninit_xform_control (void);
@@ -885,7 +897,7 @@ ambient_anim_task (void *data)
 		BOOLEAN Change, CanTalk;
 		DWORD CurTime, ElapsedTicks;
 
-		SleepThreadUntil (LastTime + ONE_SECOND / 120);
+		SleepThreadUntil (LastTime + ONE_SECOND / AMBIENT_ANIM_RATE);
 
 		LockMutex (GraphicsLock);
 		BatchGraphics ();
@@ -1267,7 +1279,7 @@ ambient_anim_task (void *data)
 
 			SetContext (OldContext);
 		}
-		if (LastOscillTime + (ONE_SECOND / 32) < CurTime)
+		if (LastOscillTime + (ONE_SECOND / OSCILLOSCOPE_RATE) < CurTime)
 		{
 			LastOscillTime = CurTime;
 			UpdateSpeechGraphics (FALSE);

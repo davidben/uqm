@@ -23,8 +23,10 @@
 
 /* ONE_SECOND is the LCM of all the fractions of a second the game uses.
  * Battle is 24 FPS, Landers are 35 FPS, most UI-level things are 15 FPS,
- * The Interplanetary flight is 30 FPS.  Thus, the minimum value for
- * ONE_SECOND is 840. */
+ * The Interplanetary flight is 30 FPS, Comm ambient animation is 40 FPS,
+ * (also Comm Oscilloscope is 32 FPS, but it does not require a stable
+ * timer and currently runs within the Comm ambient anim paradigm anyway)
+ * Thus, the minimum value for ONE_SECOND is 840. */
 #if TIMELIB == SDL
 #	define ONE_SECOND 840
 #endif
