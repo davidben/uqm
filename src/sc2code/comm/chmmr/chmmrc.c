@@ -101,8 +101,8 @@ static LOCDATA chmmr_desc =
 		1, /* StartIndex */
 		11, /* NumFrames */
 		0, /* AnimFlags */
-		ONE_SECOND / 120, 0, /* FrameRate */
-		ONE_SECOND / 120, 0, /* RestartRate */
+		ONE_SECOND / 60, 0, /* FrameRate */
+		ONE_SECOND / 60, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
