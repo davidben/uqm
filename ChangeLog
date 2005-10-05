@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Lowered the Comm ambient animation rate from 120 to 40fps, thus
+  limiting the CPU usage - Alex
 - Fixed Recursive Mutexes to still work even if the ThreadID is 0
   (bug 779) - Michael
 - Permit independent selection of graphics driver and resolution in
