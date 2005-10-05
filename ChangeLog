@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed a bug that prevented Slylandro Probes from ever showing up
+  in interplanetary exploration (found by SvdB, bug #768)
 - Lowered the Comm ambient animation rate from 120 to 40fps, thus
   limiting the CPU usage - Alex
 - Fixed Recursive Mutexes to still work even if the ThreadID is 0
