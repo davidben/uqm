@@ -134,16 +134,23 @@ BuildGroups (void)
 		{
 			SIZE dx, dy;
 			DWORD d_squared;
+			BYTE race_enc;
 
-			// XXX: BUG: i is redefined in the line below, so the assignment
-			//      to i a few lines ago is useless.
-			//      EncounterPercent is never used in practice.
-			//      BestIndex may be used uninitialised. - SvdB
-			if ((i = HomeWorld[Index]) && CurStarDescPtr->Index == (BYTE)i)
-			{
+			race_enc = HomeWorld[Index];
+			if (race_enc && CurStarDescPtr->Index == race_enc)
+			{	// In general, there are always ships at the Homeworld for
+				// the races specified in HomeWorld[] array.
+				// XXX: This code is somewhat broken and the intent is not
+				// 100% clear. Finding a Homeworld does not break you out
+				// of the loop, so another race could override with its
+				// ships when another race's SoI covers the Homeworld.
+				// However, only a race later in the order can do that, so
+				// for example, there will *always* be Yehat Rebel ships
+				// at the Rebel Homeworld, but the same is not true for the
+				// regular Yehat.
 				BestIndex = Index;
 				BestPercent = 70;
-				if (i == SPATHI_DEFINED || i == SUPOX_DEFINED)
+				if (race_enc == SPATHI_DEFINED || race_enc == SUPOX_DEFINED)
 					BestPercent = 2;
 				hNextShip = 0;
 
@@ -166,6 +173,9 @@ BuildGroups (void)
 			{
 				DWORD rand_val;
 
+				// EncounterPercent is only used in practice for the Slylandro
+				// Probes, for the rest of races the chance of encounter is
+				// calced directly below from the distance to the Homeworld
 				if (TemplatePtr->ShipInfo.actual_strength != (COUNT)~0)
 				{
 					i = 70 - (COUNT)((DWORD)square_root (d_squared)
@@ -178,9 +188,9 @@ BuildGroups (void)
 						|| (HIWORD (rand_val) % (i + BestPercent)) < i))
 				{
 					if (TemplatePtr->ShipInfo.actual_strength == (COUNT)~0)
-					{
-						// XXX: BUG: This code is never reached.
-						//      When actual_strength == ~0, i is always 0.
+					{	// The prevailing encounter chance is hereby limitted
+						// to 4% for races with infinite SoI (currently, it
+						// is only the Slylandro Probes)
 						i = 4;
 					}
 
