@@ -1,12 +1,12 @@
-UQM Dynamically Loadable Executable Code Payload Plug-in Module
-(did I miss any terms? :)
+UQM Code DataPlate modules
 =====================================================================
 Terminology:
 ------------
-adlm			Addon Dynamically Loadable Module
-			(official name to be agreed upon)
+cdp			Code DataPlate
+			refers to either a module or the architecture
+			itself;
 
-module			ditto ^
+module			cdp module (ditto ^)
 
 interface		a set of functions defined by either the core
 			engine or a module aimed at performing various
@@ -57,7 +57,17 @@ vtbl			virtual table; a table of interface functions;
 			pointer to vtbl is semantically equivalent to
 			an interface pointer
 
+event			a bindable point in code of the engine or any
+			module; event observer recieves event
+			notifications via event handlers it installs
+
 h_foo			handle to 'foo'
+
+plate			cdp module
+fork			interface; something to poke a plate with
+spoon			event;
+			"hit the plate with a spoon" == "notify via
+			event handler"
 
 
 Typical calling sequence:
@@ -112,8 +122,8 @@ Typical calling sequence:
 11) the_mod.module_term() calls host_itf->UnregisterItf(h_itf) to
    unregister the interfaces it had exposed previously; then it
    unregisters any other objects it registered, releases all objects
-   it acquired through interfaces and (sometimes) destroys the objects
-   it created;
+   it acquired through interfaces and destroys any objects it is
+   responsible for;
 
 12) the_mod.module_term() performs internal cleanup;
 
