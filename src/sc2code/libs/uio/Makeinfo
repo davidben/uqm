@@ -13,6 +13,6 @@ fi
 #fi
 
 if [ -n "$MEMDEBUG" ]; then
-	uqm_CFILES="$uqm_CFILES memdebug.c"
+	uqm_CFILES="$uqm_CFILES hashtable.c memdebug.c"
 fi
 
