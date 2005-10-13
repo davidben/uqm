@@ -48,9 +48,9 @@
 #	define HashTable_EQUAL(hashTable, hashKey1, hashKey2) \
 		(hashTable)->equalFunction(hashKey1, hashKey2)
 #	define HashTable_COPY(hashTable, hashKey) \
-		(hashTable)->copyFunction(hashKey)
+		(hashTable)->copyFunction(hashTable, hashKey)
 #	define HashTable_FREE(hashTable, hashKey) \
-		(hashTable)->copyFunction(hashKey)
+		(hashTable)->freeFunction(hashTable, hashKey)
 #endif
 
 
