@@ -921,6 +921,15 @@ SOURCE=..\sc2code\libs\uio\charhashtable.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\debug.c
+
+!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -961,6 +970,17 @@ SOURCE=..\sc2code\libs\uio\gphys.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\hashtable.c
+
+!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -1001,6 +1021,17 @@ SOURCE=..\sc2code\libs\uio\mem.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\memdebug.c
+
+!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
