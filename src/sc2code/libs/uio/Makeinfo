@@ -1,6 +1,6 @@
 uqm_SUBDIRS="stdio"
 uqm_CFILES="charhashtable.c defaultfs.c fileblock.c fstypes.c
-		gphys.c hashtable.c io.c ioaux.c match.c mount.c
+		gphys.c io.c ioaux.c match.c mount.c
 		mounttree.c paths.c physical.c uiostream.c uioutils.c
 		utils.c"
 

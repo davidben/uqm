@@ -912,10 +912,6 @@ SOURCE=..\sc2code\libs\uio\zip\zip.h
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\charhashtable.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\uio\charhashtable.h
 # End Source File
 # Begin Source File
