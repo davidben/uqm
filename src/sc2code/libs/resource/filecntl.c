@@ -17,7 +17,6 @@
  */
 
 #ifdef WIN32
-#include <dos.h>
 #include <io.h>
 #endif
 #include <stdio.h>
