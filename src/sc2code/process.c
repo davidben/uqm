@@ -16,14 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "process.h"
-
 #include "build.h"
 #include "collide.h"
 #include "options.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "element.h"
 #include "weapon.h"
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/drawcmd.h"

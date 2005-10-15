@@ -210,5 +210,7 @@ extern void SetUpElement (ELEMENTPTR
 extern void BattleSong (BOOLEAN DoPlay);
 extern void FreeBattleSong (void);
 
+extern void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
+
 #endif /* _ELEMENT_H */
 

@@ -26,6 +26,7 @@
 #include "resinst.h"
 #include "setup.h"
 #include "sounds.h"
+#include "element.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 
@@ -43,8 +44,6 @@
 #define PLANET_SIDE_RATE (ONE_SECOND / 35)
 
 //Added by Chris
-
-void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
 
 void
 DrawPlanet(int x, int y, int dy, unsigned int rgb);

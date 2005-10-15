@@ -32,11 +32,6 @@
 extern COUNT zoom_out;
 extern PRIM_LINKS DisplayLinks;
 
-//Added by Chris
-
-void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
-
-//End Added by Chris
 
 #define BIG_STAR_COUNT 30
 #define MED_STAR_COUNT 60
