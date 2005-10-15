@@ -1,8 +1,9 @@
 /* This file contains some compile-time configuration options.
  */
 
-#ifdef WIN32
-	/* If we're compiling in windows, we're using the msvc++/config.h file
+#ifdef _MSC_VER
+	/* In this case, build.sh is not run to generate a config file, so
+	 * we use a default file msvc++/config.h instead.
 	 * If you want anything else than the defaults, you'll have to edit
 	 * that file manually. */
 #	include "msvc++/config.h"
