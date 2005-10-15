@@ -3597,10 +3597,6 @@ SOURCE=..\sc2code\process.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\process.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\races.h
 # End Source File
 # Begin Source File
