@@ -713,7 +713,7 @@ set_host_system() {
 		esac
 
 		# Use a single capitalization.
-        # What is used is whatever 'uname -s' would give on such a platform.
+		# What is used is whatever 'uname -s' would give on such a platform.
 		UHOST=`$TR "[:lower:]" "[:upper:]" << EOF
 $BUILD_HOST
 EOF
@@ -723,6 +723,7 @@ EOF
 			FREEBSD)       HOST_SYSTEM="FreeBSD" ;;
 			OPENBSD)       HOST_SYSTEM="OpenBSD" ;;
 			MINGW|MINGW32) HOST_SYSTEM="MINGW32" ;;
+			CYGWIN*)       HOST_SYSTEM="CYGWIN" ;;
 			DARWIN)        HOST_SYSTEM="Darwin" ;;
 			SUNOS)         HOST_SYSTEM="SunOS" ;;
 			QNX)           HOST_SYSTEM="QNX" ;;
