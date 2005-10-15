@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #	include <io.h>
 #else
 #	include <unistd.h>
@@ -66,12 +66,10 @@ typedef unsigned short mode_t;
 
 // Directories
 #include <sys/stat.h>
-#ifdef WIN32
-#	ifdef _MSC_VER
-#		define MKDIR(name, mode) ((void) mode, _mkdir(name))
-#	else
-#		define MKDIR(name, mode) ((void) mode, mkdir(name))
-#	endif
+#ifdef _MSC_VER
+#	define MKDIR(name, mode) ((void) mode, _mkdir(name))
+#elif defined(__MINGW32__)
+#	define MKDIR(name, mode) ((void) mode, mkdir(name))
 #else
 #	define MKDIR mkdir
 #endif
