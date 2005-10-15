@@ -21,7 +21,7 @@
 #ifndef _UIOPORT_H
 #define _UIOPORT_H
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #	include <io.h>
 #else
 #	include <unistd.h>
