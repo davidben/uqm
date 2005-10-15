@@ -20,10 +20,6 @@
 #include "strintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/reslib.h"
-#ifdef WIN32
-#include <io.h>
-#endif
-#include <fcntl.h>
 
 
 static void

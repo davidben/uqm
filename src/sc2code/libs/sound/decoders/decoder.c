@@ -18,11 +18,6 @@
  * API is heavily influenced by SDL_sound.
  */
 
-#ifdef WIN32
-#include <io.h>
-#include <fcntl.h>
-#endif
-
 #include <string.h>
 #include <stdlib.h>
 #include "port.h"

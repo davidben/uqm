@@ -19,11 +19,6 @@
 #include "libs/reslib.h"
 #include <math.h>
 
-#ifdef WIN32
-#include <io.h>
-#endif
-#include <fcntl.h>
-
 
 static void CheckFinishedChannels (void);
 
