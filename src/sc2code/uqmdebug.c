@@ -58,7 +58,7 @@ static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 
 BOOLEAN instantMove = FALSE;
 BOOLEAN disableInteractivity = FALSE;
-volatile void (*debugHook) (void) = NULL;
+void (* volatile debugHook) (void) = NULL;
 
 
 void

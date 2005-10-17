@@ -29,7 +29,7 @@
 extern BOOLEAN disableInteractivity;
 
 // If a function is assigned to this, it will be called from the main loop.
-extern volatile void (*debugHook) (void);
+extern void (* volatile debugHook) (void);
 
 
 // Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
