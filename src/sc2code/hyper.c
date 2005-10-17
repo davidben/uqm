@@ -423,12 +423,12 @@ cleanup_hyperspace (void)
 	}
 }
 
-enum
+typedef enum
 {
 	RANDOM_ENCOUNTER_TRANSITION,
 	INTERPLANETARY_TRANSITION,
 	ARILOU_SPACE_TRANSITION
-};
+} TRANSITION_TYPE;
 
 static void
 unhyper_transition (PELEMENT ElementPtr)
@@ -447,7 +447,7 @@ unhyper_transition (PELEMENT ElementPtr)
 		cleanup_hyperspace ();
 
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
-		switch (ElementPtr->turn_wait)
+		switch ((TRANSITION_TYPE) ElementPtr->turn_wait)
 		{
 			case RANDOM_ENCOUNTER_TRANSITION:
 				SaveFlagshipState ();
@@ -558,8 +558,8 @@ unhyper_transition (PELEMENT ElementPtr)
 }
 
 static void
-init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, BYTE
-		which_transition)
+init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1,
+		TRANSITION_TYPE which_transition)
 {
 	SIZE dx, dy, num_turns;
 	STARSHIPPTR StarShipPtr;
@@ -572,7 +572,7 @@ init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, BYTE
 	ElementPtr1->state_flags |= NONSOLID;
 	ElementPtr1->preprocess_func = unhyper_transition;
 	ElementPtr1->postprocess_func = NULL_PTR;
-	ElementPtr1->turn_wait = which_transition;
+	ElementPtr1->turn_wait = (BYTE) which_transition;
 
 	GetElementStarShip (ElementPtr1, &StarShipPtr);
 	if ((num_turns = GetFrameCount (ElementPtr1->next.image.frame)
@@ -1385,7 +1385,7 @@ SeedUniverse (void)
 		STAR_DESC SD[2];
 				// This array is filled with the STAR_DESC's of
 				// QuasiSpace portals that need to be taken into account.
-				// i is set the the number of active portals (max 2).
+				// i is set to the number of active portals (max 2).
 
 		i = 0;
 		if (portalCounter)
