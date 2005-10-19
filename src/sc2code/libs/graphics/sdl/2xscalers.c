@@ -1037,7 +1037,7 @@ Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	// these macros are for clarity; they make the current pixel (0,0)
 	// and allow to access pixels in all directions
 	#define PIX(x, y)   (pixels[1 + (x)][1 + (y)])
-	#define SRC(x, y)   (src_p + (x) + ((y) * w))
+	#define SRC(x, y)   (src_p + (x) + ((y) * len))
 	// commonly used operations, for clarity also
 	// others are defined at their respective bpp levels
 	#define BIADAPT_RGBHIGH   8000
@@ -2439,7 +2439,7 @@ Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	// these macros are for clarity; they make the current pixel (0,0)
 	// and allow to access pixels in all directions
 	#define PIX(x, y)   (pixels[1 + (x)][1 + (y)])
-	#define SRC(x, y)   (src_p + (x) + ((y) * w))
+	#define SRC(x, y)   (src_p + (x) + ((y) * len))
 
 	#define TRISCAN_YUV_MED     100
 
@@ -2939,7 +2939,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		{
 			p[0] = src_p[0];
 			if (y < h - 1)
-				p[2] = src_p[src->w];
+				p[2] = src_p[len];
 			else
 				p[2] = 0;
 
@@ -2950,7 +2950,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (x < w - 1)
 					{
 						p[1] = src_p[1];
-						p[3] = src_p[src->w + 1];
+						p[3] = src_p[len + 1];
 					}
 					else
 					{
@@ -3007,7 +3007,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		{
 			p[0] = GET_PIX_24BIT (src_p);
 			if (y < h - 1)
-				p[2] = GET_PIX_24BIT (src_p + src->w);
+				p[2] = GET_PIX_24BIT (src_p + len);
 			else
 				p[2] = 0;
 
@@ -3018,7 +3018,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (x < w - 1)
 					{
 						p[1] = GET_PIX_24BIT (src_p + 1);
-						p[3] = GET_PIX_24BIT (src_p + src->w + 1);
+						p[3] = GET_PIX_24BIT (src_p + len + 1);
 					}
 					else
 					{
@@ -3075,7 +3075,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 		{
 			p[0] = src_p[0];
 			if (y < h - 1)
-				p[2] = src_p[src->w];
+				p[2] = src_p[len];
 			else
 				p[2] = 0;
 
@@ -3086,7 +3086,7 @@ void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 					if (x < w - 1)
 					{
 						p[1] = src_p[1];
-						p[3] = src_p[src->w + 1];
+						p[3] = src_p[len + 1];
 					}
 					else
 					{
