@@ -61,6 +61,7 @@ typedef struct globalopts_struct {
 	OPT_RESTYPE res;
 	OPT_DRIVERTYPE driver;
 	OPT_DEPTH depth;
+	OPT_ENABLABLE fullscreen;
 	OPT_ENABLABLE subtitles, scanlines;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll;
 } GLOBALOPTS;

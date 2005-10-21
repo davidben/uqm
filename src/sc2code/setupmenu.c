@@ -198,9 +198,9 @@ static CHOICE_OPTION driver_opts[] = {
 		  "is available for 320x240 and 640x480."
 		} },
 	{ "Never",
-		{ "Uses SDL Framebuffer mode if possible,",
-		  "and OpenGL otherwise.  Framebuffer mode",
-		  "is available for 320x240 and 640x480."
+		{ "Always use OpenGL.",
+		  "OpenGL can produce any resolution and is",
+		  "usually hardware-accelerated."
 		} },
 };
 
@@ -221,6 +221,20 @@ static CHOICE_OPTION bpp_opts[] = {
 		  ""
 		} } };
 
+static CHOICE_OPTION fullscreen_opts[] = {
+	{ "Windowed",
+		{ "Display everything in a window.",
+		  "(if windowing is available)",
+		  ""
+		} },
+	{ "Fullscreen",
+		{ "Game occupies the entire screen.",
+		  "(if available)",
+		  ""
+		} },
+};
+
+
 #ifdef HAVE_OPENGL
 #define RES_OPTS 4
 #else
@@ -238,7 +252,8 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Scan Style", 2, 2, scan_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Scroll Style", 2, 2, scroll_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Subtitles", 2, 2, subtitles_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Music Driver", 2, 3, music_opts, 0, 0 } };
+	{ CHOICE_PREFACE, "Music Driver", 2, 3, music_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Display", 2, 2, fullscreen_opts, 0, 0} };
 
 static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
 		"Quit Setup Menu", 
@@ -286,6 +301,7 @@ static WIDGET *graphics_widgets[] = {
 #ifdef HAVE_OPENGL
 	(WIDGET *)(&cmdline_opts[1]),
 #endif
+	(WIDGET *)(&cmdline_opts[11]),
 	(WIDGET *)(&cmdline_opts[2]),
 	(WIDGET *)(&cmdline_opts[3]),
 	(WIDGET *)(&cmdline_opts[4]),
@@ -317,9 +333,9 @@ static WIDGET_MENU_SCREEN graphics_menu = {
 	"Graphics Options",
 	{ {0, 0}, NULL },
 #ifdef HAVE_OPENGL
-	5, graphics_widgets,
+	6, graphics_widgets,
 #else
-	4, graphics_widgets,
+	5, graphics_widgets,
 #endif
 	0 };	
 
@@ -448,6 +464,7 @@ SetDefaults (void)
 	cmdline_opts[7].selected = opts.cscan;
 	cmdline_opts[8].selected = opts.scroll;
 	cmdline_opts[9].selected = opts.subtitles;
+	cmdline_opts[11].selected = opts.fullscreen;
 }
 
 static void
@@ -464,6 +481,7 @@ PropagateResults (void)
 	opts.cscan = cmdline_opts[7].selected;
 	opts.scroll = cmdline_opts[8].selected;
 	opts.subtitles = cmdline_opts[9].selected;
+	opts.fullscreen = cmdline_opts[11].selected;
 
 	SetGlobalOptions (&opts);
 }
@@ -582,6 +600,8 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	{
 		opts->scaler = OPTVAL_NO_SCALE;
 	}
+	opts->fullscreen = (GfxFlags & TFB_GFXFLAGS_FULLSCREEN) ?
+			OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->subtitles = optSubtitles ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->scanlines = (GfxFlags & TFB_GFXFLAGS_SCANLINES) ? 
 		OPTVAL_ENABLED : OPTVAL_DISABLED;
@@ -761,6 +781,10 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	} else {
 		NewGfxFlags &= ~TFB_GFXFLAGS_SCANLINES;
 	}
+	if (opts->fullscreen)
+		NewGfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
+	else
+		NewGfxFlags &= ~TFB_GFXFLAGS_FULLSCREEN;
 
 	if ((NewWidth != ScreenWidthActual) ||
 	    (NewHeight != ScreenHeightActual) ||
