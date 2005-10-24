@@ -175,6 +175,69 @@ main (int argc, char *argv[])
 	TFB_PreInit ();
 	mem_init ();
 	InitThreadSystem ();
+	initIO ();
+	prepareConfigDir (options.configDir);
+
+	// Fill in the options struct based on uqm.cfg
+	res_LoadFilename (configDir, "uqm.cfg");
+	if (res_HasKey ("config.reswidth"))
+	{
+		options.width = res_GetInteger ("config.reswidth");
+	}
+	if (res_HasKey ("config.resheight"))
+	{
+		options.height = res_GetInteger ("config.resheight");
+	}
+	if (res_HasKey ("config.bpp"))
+	{
+		options.bpp = res_GetInteger ("config.bpp");
+	}
+	if (res_HasKey ("config.alwaysgl"))
+	{
+		options.gfxDriver = res_GetBoolean ("config.alwaysgl") ? 
+				TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
+	}
+	if (res_HasKey ("config.scaler"))
+	{
+		const char *optarg = res_GetString ("config.scaler");
+
+		if (!strcmp (optarg, "bilinear"))
+			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
+		else if (!strcmp (optarg, "biadapt"))
+			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPT;
+		else if (!strcmp (optarg, "biadv"))
+			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
+		else if (!strcmp (optarg, "triscan"))
+			options.gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+	}
+	if (res_HasKey ("config.scanlines") && res_GetBoolean ("config.scanlines"))
+	{
+		options.gfxFlags |= TFB_GFXFLAGS_SCANLINES;
+	}
+	if (res_HasKey ("config.fullscreen") && res_GetBoolean ("config.fullscreen"))
+	{
+		options.gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
+	}
+	if (res_HasKey ("config.subtitles"))
+	{
+		options.subTitles = res_GetBoolean ("config.subtitles");
+	}
+	if (res_HasKey ("config.textmenu"))
+	{
+		options.whichMenu = res_GetBoolean ("config.textmenu") ? OPT_PC : OPT_3DO;
+	}
+	if (res_HasKey ("config.textgradients"))
+	{
+		options.whichFonts = res_GetBoolean ("config.textgradients") ? OPT_PC : OPT_3DO;
+	}
+	if (res_HasKey ("config.iconicscan"))
+	{
+		options.whichCoarseScan = res_GetBoolean ("config.iconicscan") ? OPT_3DO : OPT_PC;
+	}
+	if (res_HasKey ("config.smoothscroll"))		
+	{
+		options.smoothScroll = res_GetBoolean ("config.smoothscroll") ? OPT_3DO : OPT_PC;
+	}
 
 	optionsResult = parseOptions(argc, argv, &options);
 	if (optionsResult != 0)
@@ -206,10 +269,8 @@ main (int argc, char *argv[])
 	sfxVolumeScale = options.sfxVolumeScale;
 	speechVolumeScale = options.speechVolumeScale;
 
-	initIO ();
 	prepareContentDir (options.contentDir, options.addons);
 	HFree ((void *) options.addons);
-	prepareConfigDir (options.configDir);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 	initTempDir ();
@@ -316,6 +377,11 @@ preParseOptions(int argc, char *argv[], struct options_struct *options)
 				options->logFile = optarg;
 				break;
 			}
+			case 'C':
+			{
+				options->configDir = optarg;
+				break;
+			}
 			case '?':
 			case 'h':
 				options->runMode = runMode_usage;
@@ -353,9 +419,6 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			break;
 
 		switch (c) {
-			case 'C':
-				options->configDir = optarg;
-				break;
 			case 'r':
 			{
 				int width, height;
@@ -501,8 +564,9 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				break;
 			}
 			case 'l':
-				// -l is a no-op on the second pass..
-				break;
+			case 'C':
+				// -l and -C are no-ops on the second pass.
+				break;			
 			case 'i':
 			{
 				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,

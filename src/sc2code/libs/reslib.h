@@ -120,5 +120,27 @@ extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 #define GetDirEntryAddress GetStringAddress
 #define GetDirEntryContents GetStringContents
 
+/* Key-Value resources */
+void res_ClearTables (void);
+
+void res_LoadFilename (uio_DirHandle *path, const char *fname);
+void res_SaveFilename (uio_DirHandle *path, const char *fname, const char *root);
+
+void res_LoadFile (uio_Stream *fname);
+void res_SaveFile (uio_Stream *fname, const char *root);
+
+BOOLEAN res_HasKey (const char *key);
+
+const char *res_GetString (const char *key);
+void res_PutString (const char *key, const char *value);
+
+BOOLEAN res_IsInteger (const char *key);
+int res_GetInteger (const char *key);
+void res_PutInteger (const char *key, int value);
+
+BOOLEAN res_IsBoolean (const char *key);
+BOOLEAN res_GetBoolean (const char *key);
+void res_PutBoolean (const char *key, BOOLEAN value);
+
 #endif /* _RESLIB_H */
 

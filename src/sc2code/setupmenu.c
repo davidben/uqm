@@ -26,6 +26,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
+#include "libs/reslib.h"
 
 #define MENU_BKG "lbm/setupmenu.ani"
 
@@ -333,9 +334,9 @@ static WIDGET_MENU_SCREEN graphics_menu = {
 	"Graphics Options",
 	{ {0, 0}, NULL },
 #ifdef HAVE_OPENGL
-	6, graphics_widgets,
+	7, graphics_widgets,
 #else
-	5, graphics_widgets,
+	6, graphics_widgets,
 #endif
 	0 };	
 
@@ -759,21 +760,32 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		break;
 	}
 
+	res_PutInteger ("config.reswidth", NewWidth);
+	res_PutInteger ("config.resheight", NewHeight);
+	res_PutInteger ("config.bpp", NewDepth);
+	res_PutBoolean ("config.alwaysgl", opts->driver == OPTVAL_ALWAYS_GL);
+
+
 	switch (opts->scaler) {
 	case OPTVAL_BILINEAR_SCALE:
 		NewGfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
+		res_PutString ("config.scaler", "bilinear");
 		break;
 	case OPTVAL_BIADAPT_SCALE:
 		NewGfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPT;
+		res_PutString ("config.scaler", "biadapt");
 		break;
 	case OPTVAL_BIADV_SCALE:
 		NewGfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
+		res_PutString ("config.scaler", "biadv");
 		break;
 	case OPTVAL_TRISCAN_SCALE:
 		NewGfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+		res_PutString ("config.scaler", "triscan");
 		break;
 	default:
 		/* OPTVAL_NO_SCALE has no equivalent in gfxflags. */
+		res_PutString ("config.scaler", "no");
 		break;
 	}
 	if (opts->scanlines) {
@@ -785,6 +797,10 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		NewGfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
 	else
 		NewGfxFlags &= ~TFB_GFXFLAGS_FULLSCREEN;
+
+	res_PutBoolean ("config.scanlines", opts->scanlines);
+	res_PutBoolean ("config.fullscreen", opts->fullscreen);
+
 
 	if ((NewWidth != ScreenWidthActual) ||
 	    (NewHeight != ScreenHeightActual) ||
@@ -803,4 +819,11 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichCoarseScan = (opts->cscan == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optSmoothScroll = (opts->scroll == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 
+	res_PutBoolean ("config.subtitles", opts->subtitles == OPTVAL_ENABLED);
+	res_PutBoolean ("config.textmenu", opts->menu == OPTVAL_PC);
+	res_PutBoolean ("config.textgradients", opts->text == OPTVAL_PC);
+	res_PutBoolean ("config.iconicscan", opts->cscan == OPTVAL_3DO);
+	res_PutBoolean ("config.smoothscroll", opts->scroll == OPTVAL_3DO);
+
+	res_SaveFilename (configDir, "uqm.cfg", "config.");
 }

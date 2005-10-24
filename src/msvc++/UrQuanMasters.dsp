@@ -480,6 +480,14 @@ SOURCE=..\sc2code\libs\memory\w_memlib.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sc2code\libs\resource\alist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\resource\alist.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\resource\direct.c
 # End Source File
 # Begin Source File
@@ -500,6 +508,10 @@ SOURCE=..\sc2code\libs\resource\loadres.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\resource\mapres.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\resource\resdata.c
 # End Source File
 # Begin Source File
@@ -509,6 +521,14 @@ SOURCE=..\sc2code\libs\resource\resinit.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\resource\resintrn.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\resource\stringbank.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\resource\stringbank.h
 # End Source File
 # End Group
 # Begin Group "sound"

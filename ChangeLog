@@ -1,4 +1,7 @@
 Changes towards version 0.5:
+- Options selected in the Setup Menu now persist across runs -Michael
+- Added a simple implementation of key-value pair "resource" files
+  for organizing simple data such as configuration options -Michael
 - Added a 'fullscreen' setup menu option - Alex
 - Fixed a bug that prevented Slylandro Probes from ever showing up
   in interplanetary exploration (found by SvdB, bug #768)
