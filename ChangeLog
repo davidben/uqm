@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Corrected grammar in Umgah 'Caster lander report (bug #781);
+  from James Ho
 - Options selected in the Setup Menu now persist across runs -Michael
 - Added a simple implementation of key-value pair "resource" files
   for organizing simple data such as configuration options -Michael
