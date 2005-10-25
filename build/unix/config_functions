@@ -67,12 +67,14 @@ EOF
 # Returns:     0 - if compile successful
 #              something else - if compile failed
 try_compile_c() {
+	local SYSTEM_FLAGS
 	if [ -z "$COMPILE" ]; then
 		echo "Fatal: Program \$COMPILE is not defined!" >&2
 		exit 1
 	fi
+	SYSTEM_FLAGS="$SYSTEM_BUILD_CFLAGS $SYSTEM_BUILD_LDFLAGS $SYSTEM_HOST_CFLAGS $SYSTEM_HOST_LDFLAGS"
 	cat > "$TEMPFILE.c"
-	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
+	echo_and_perform $COMPILE $SYSTEM_FLAGS $1 $2 "$TEMPFILE.c" \
 			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
 	RESULT=$?
 	if [ $RESULT -ne 0 ]; then
@@ -92,12 +94,14 @@ try_compile_c() {
 # Returns:     -1 - if compile failed
 #              otherwise - exit status of the program
 try_compile_and_run_c() {
+	local SYSTEM_FLAGS
 	if [ -z "$COMPILE" ]; then
 		echo "Fatal: Program \$COMPILE is not defined!" >&2
 		exit 1
 	fi
+	SYSTEM_FLAGS="$SYSTEM_BUILD_CFLAGS $SYSTEM_BUILD_LDFLAGS $SYSTEM_HOST_CFLAGS $SYSTEM_HOST_LDFLAGS"
 	cat > "$TEMPFILE.c"
-	echo_and_perform $COMPILE $1 $2 "$TEMPFILE.c" \
+	echo_and_perform $COMPILE $SYSTEM_FLAGS $1 $2 "$TEMPFILE.c" \
 			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
 	if [ $? -ne 0 ]; then
 		return -1

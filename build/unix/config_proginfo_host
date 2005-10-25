@@ -19,6 +19,28 @@
 
 
 ##############################################################################
+# System specific build flags                                                #
+##############################################################################
+
+
+# CFLAGS
+case "$HOST_SYSTEM" in
+	CYGWIN*)
+		# HACK: sdl-config on Cygwin supplies -mno-cygwin which means that
+		# dependencies detected without that flag may not be available at
+		# the actual build.
+		SYSTEM_HOST_CFLAGS="-mno-cygwin"
+		;;
+	*)
+		SYSTEM_HOST_CFLAGS=""
+		;;
+esac
+
+# LDFLAGS
+SYSTEM_HOST_LDFLAGS=""
+
+
+##############################################################################
 # Describe the programs (possibly) used:                                     #
 ##############################################################################
 
