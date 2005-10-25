@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Separate config_win.h file for build.sh builds on Windows - SvdB
 - Fixed a typo ("we" -> "he") in Thraddash dialog (bug #783) - Alex
 - Corrected grammar in Umgah 'Caster lander report (bug #781);
   from James Ho
