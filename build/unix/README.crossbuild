@@ -38,9 +38,9 @@ library dirs in LDFLAGS.
 
 Run configure:
 	./build.sh uqm config
-This will produce the file 'build.vars' and 'config_unix.h'. If there
-are any problems during the build, you can usually easilly solve them
-by editing these files manually.
+This will produce the file 'build.vars' and 'config_unix.h' (or config_win.h
+on MinGW or Cygwin). If there are any problems during the build, you can
+usually easilly solve them by editing these files manually.
 
 Start the compilation:
 	./build.sh uqm

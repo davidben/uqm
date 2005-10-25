@@ -130,7 +130,8 @@ build_clean() {
 
 	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}${DEPEND_NAME}"
 	rm -f "$DEPEND_FILE" "$BUILD_WORK/build.vars" \
-			"$BUILD_WORK/config.state" "$BUILD_WORK/config_unix.h"
+			"$BUILD_WORK/config.state"
+	eval "${TARGET}_clean"
 }
 
 build_cleanall() {
