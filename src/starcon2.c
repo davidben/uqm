@@ -459,6 +459,8 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				options->gfxDriver = TFB_GFXDRIVER_SDL_OPENGL;
 				break;
 			case 'c':
+				// make sure whatever was set by saved config is cleared
+				options->gfxFlags &= ~TFB_GFXFLAGS_SCALE_ANY;
 				if (!strcmp (optarg, "bilinear"))
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
 				else if (!strcmp (optarg, "biadapt"))
