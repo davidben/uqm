@@ -199,21 +199,7 @@ LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
 # Describe the symbols (possibly) used:                                      #
 ##############################################################################
 
-# HACK: The detected regex.h on Cygwin is from Cygwin itself, but as
-#       the precompiled SDL for Cygwin uses -mno-cygwin in both the
-#       CFLAGS and LDFLAGS, the actual build would fail when SDL is used.
-#       The workaround below is is a hack as the detection of regex should
-#       not depend on SDL, and in theory the program built using these
-#       scripts need not use SDL.
-case "$HOST_SYSTEM" in
-	CYGWIN*)
-		# Make sure Cygwin's regex.h is not detected.
-		HEADER_regex_EXTRA='#error "Forced Cygwin regex.h detection failure."'
-		;;
-	*)
-		HEADER_regex_EXTRA="#include <sys/types.h>"
-		;;
-esac
+HEADER_regex_EXTRA="#include <sys/types.h>"
 
 SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
