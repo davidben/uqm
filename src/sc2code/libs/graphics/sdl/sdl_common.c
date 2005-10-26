@@ -197,7 +197,7 @@ TFB_ProcessEvents ()
 	}
 	if (ImmediateInputState.key[KEY_ABORT] || abortFlag)
 		exit (0);
-#ifdef DEBUG
+#if defined(DEBUG) || defined(USE_DEBUG_KEY)
 	if (ImmediateInputState.key[KEY_DEBUG])
 	{
 		FlushInput ();
