@@ -706,10 +706,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	int NewDepth = ScreenColorDepth;
 	int NewDriver = GraphicsDriver;
 
-	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BILINEAR;
-	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPT;
-	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_BIADAPTADV;
-	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_TRISCAN;
+	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_ANY;
 
 	switch (opts->res) {
 	case OPTVAL_320_240:
