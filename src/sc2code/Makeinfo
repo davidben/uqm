@@ -9,8 +9,3 @@ uqm_CFILES="battle.c border.c build.c cleanup.c clock.c collide.c comm.c
 		settings.c setup.c setupmenu.c ship.c shipstat.c shipyard.c
 		sis.c sounds.c starbase.c starcon.c starmap.c state.c status.c
 		tactrans.c trans.c uqmdebug.c util.c velocity.c weapon.c"
-
-if [ "$DEBUG" = 1 ]; then
-	uqm_CFILES="$uqm_CFILES uqmdebug.c"
-fi
-
