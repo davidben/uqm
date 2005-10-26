@@ -14,10 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef DEBUG
-		/* This file is not even looked at in the unix debug build,
-		 * but MSVC will compile and link it.
-		 */
+#if defined(DEBUG) || defined(USE_DEBUG_KEY)
 
 #include "uqmdebug.h"
 
