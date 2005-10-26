@@ -122,9 +122,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
 	{
 		if (scaled_display)
 		{
@@ -173,10 +171,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		return -1;
 	}
 
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
-		GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_ANY)
 		ScreenFilterMode = GL_LINEAR;
 	else
 		ScreenFilterMode = GL_NEAREST;
@@ -327,9 +322,7 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		updated.w = TFB_BBox.region.extent.width;
 		updated.h = TFB_BBox.region.extent.height;
 
-		if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-			GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
-			GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+		if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
 		{
 			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
 				Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
@@ -369,9 +362,7 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		
 		if (upload_transitiontexture) 
 		{
-			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT ||
-				GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV ||
-				GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
+			if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
 			{
 				SDL_Rect r;
 				r.x = r.y = 0;
