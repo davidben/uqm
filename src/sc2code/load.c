@@ -105,7 +105,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 	in_fp = res_OpenResFile (saveDir, file, "rb");
 	if (in_fp)
 	{
-		uio_Stream *fp;
+		GAME_STATE_FILE *fp;
 		DECODE_REF fh;
 		COUNT num_links;
 		Semaphore clock_sem;
@@ -238,7 +238,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			}
 		}
 
-		fp = res_OpenResFile (tempDir, STARINFO_FILE, "wb");
+		fp = OpenStateFile (STARINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -250,14 +250,14 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
 				cread ((PBYTE)buf, num_bytes, 1, fh);
-				WriteResFile (buf, num_bytes, 1, fp);
+				WriteStateFile (buf, num_bytes, 1, fp);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
-		fp = res_OpenResFile (tempDir, DEFGRPINFO_FILE, "wb");
+		fp = OpenStateFile (DEFGRPINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -269,14 +269,14 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
 				cread ((PBYTE)buf, num_bytes, 1, fh);
-				WriteResFile (buf, num_bytes, 1, fp);
+				WriteStateFile (buf, num_bytes, 1, fp);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
-		fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "wb");
+		fp = OpenStateFile (RANDGRPINFO_FILE, "wb");
 		if (fp)
 		{
 			DWORD flen;
@@ -288,11 +288,11 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
 				cread ((PBYTE)buf, num_bytes, 1, fh);
-				WriteResFile (buf, num_bytes, 1, fp);
+				WriteStateFile (buf, num_bytes, 1, fp);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
 		cread ((PBYTE)&SD, sizeof (SD), 1, fh);

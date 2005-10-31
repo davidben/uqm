@@ -273,7 +273,7 @@ RetrySave:
 	}
 	else
 	{
-		uio_Stream *fp;
+		GAME_STATE_FILE *fp;
 		DWORD flen;
 		COUNT num_links;
 		FRAME frame;
@@ -354,58 +354,58 @@ RetrySave:
 			}
 		}
 
-		fp = res_OpenResFile (tempDir, STARINFO_FILE, "rb");
+		fp = OpenStateFile (STARINFO_FILE, "rb");
 		if (fp)
 		{
-			flen = LengthResFile (fp);
+			flen = LengthStateFile (fp);
 			cwrite ((PBYTE)&flen, sizeof (flen), 1, fh);
 			while (flen)
 			{
 				COUNT num_bytes;
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
-				ReadResFile (buf, num_bytes, 1, fp);
+				ReadStateFile (buf, num_bytes, 1, fp);
 				cwrite ((PBYTE)buf, num_bytes, 1, fh);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
-		fp = res_OpenResFile (tempDir, DEFGRPINFO_FILE, "rb");
+		fp = OpenStateFile (DEFGRPINFO_FILE, "rb");
 		if (fp)
 		{
-			flen = LengthResFile (fp);
+			flen = LengthStateFile (fp);
 			cwrite ((PBYTE)&flen, sizeof (flen), 1, fh);
 			while (flen)
 			{
 				COUNT num_bytes;
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
-				ReadResFile (buf, num_bytes, 1, fp);
+				ReadStateFile (buf, num_bytes, 1, fp);
 				cwrite ((PBYTE)buf, num_bytes, 1, fh);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
-		fp = res_OpenResFile (tempDir, RANDGRPINFO_FILE, "rb");
+		fp = OpenStateFile (RANDGRPINFO_FILE, "rb");
 		if (fp)
 		{
-			flen = LengthResFile (fp);
+			flen = LengthStateFile (fp);
 			cwrite ((PBYTE)&flen, sizeof (flen), 1, fh);
 			while (flen)
 			{
 				COUNT num_bytes;
 
 				num_bytes = flen >= sizeof (buf) ? sizeof (buf) : (COUNT)flen;
-				ReadResFile (buf, num_bytes, 1, fp);
+				ReadStateFile (buf, num_bytes, 1, fp);
 				cwrite ((PBYTE)buf, num_bytes, 1, fh);
 
 				flen -= num_bytes;
 			}
-			res_CloseResFile (fp);
+			CloseStateFile (fp);
 		}
 
 		cwrite ((PBYTE)&SD, sizeof (SD), 1, fh);

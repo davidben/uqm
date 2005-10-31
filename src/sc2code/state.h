@@ -35,12 +35,17 @@ extern void BuildGroups (void);
 #define MAX_DESC_CHARS 60
 typedef UNICODE GAME_DESC[MAX_DESC_CHARS + 1];
 
-#define STARINFO_FILE "starinfo.dat"
+typedef struct GAME_STATE_FILE GAME_STATE_FILE;
+
+#define STARINFO_FILE 0
+	//"starinfo.dat"
 #define STAR_BUFSIZE (NUM_SOLAR_SYSTEMS * sizeof (DWORD) \
 		+ 3800 * (3 * sizeof (DWORD)))
-#define RANDGRPINFO_FILE "randgrp.dat"
+#define RANDGRPINFO_FILE 1
+	//"randgrp.dat"
 #define RAND_BUFSIZE (4 * 1024)
-#define DEFGRPINFO_FILE "defgrp.dat"
+#define DEFGRPINFO_FILE 2
+	//"defgrp.dat"
 #define DEF_BUFSIZE (10 * 1024)
 
 typedef enum
@@ -50,6 +55,14 @@ typedef enum
 	DEFGRPINFO
 } INFO_TYPE;
 
+GAME_STATE_FILE* OpenStateFile (int stateFile, const char* mode);
+void CloseStateFile (GAME_STATE_FILE* fp);
+void DeleteStateFile (int stateFile);
+DWORD LengthStateFile (GAME_STATE_FILE* fp);
+int ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
+int WriteStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
+int PutStateFileChar (char ch, GAME_STATE_FILE *fp);
+int SeekStateFile (GAME_STATE_FILE *fp, long offset, int whence);
 
 #endif /* _STATE_H */
 
