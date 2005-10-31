@@ -19,9 +19,6 @@
 #ifdef HAVE_UNISTD_H
 #	include <unistd.h>
 #endif
-#ifdef WIN32
-#	include <direct.h>
-#endif
 
 #ifdef HAVE_GETOPT_H
 #	include <getopt.h>
