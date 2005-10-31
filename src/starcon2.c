@@ -466,7 +466,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
 				else if (!strcmp (optarg, "triscan"))
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
-				else
+				else if (strcmp (optarg, "none") != 0)
 				{
 					InvalidArgument(optarg, "--scale or -c");
 					badArg = TRUE;
@@ -740,8 +740,8 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 16)\n");
 	fprintf (out, "  -f, --fullscreen (default off)\n");
 	fprintf (out, "  -o, --opengl (default off)\n");
-	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv or triscan, "
-			"default is none)\n");
+	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan "
+			"or none (default) )\n");
 	fprintf (out, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
 			"default is 3do)\n");
 	fprintf (out, "  -s, --scanlines (default off)\n");
