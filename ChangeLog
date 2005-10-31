@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Doing game-state file I/O in memory instead of temp files;
+  should avoid problems as in bug #752 - Alex
 - Separate config_win.h file for build.sh builds on Windows - SvdB
 - Fixed a typo ("we" -> "he") in Thraddash dialog (bug #783) - Alex
 - Corrected grammar in Umgah 'Caster lander report (bug #781);
