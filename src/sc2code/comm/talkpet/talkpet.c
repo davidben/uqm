@@ -22,7 +22,6 @@
 
 #include "build.h"
 
-
 static LOCDATA talkpet_desc =
 {
 	NULL_PTR, /* init_encounter_func */
@@ -192,7 +191,9 @@ static LOCDATA talkpet_desc =
 	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
-#define NUM_STROBES 10
+#define STROBE_RATE   15
+#define STROBE_LENGTH (ONE_SECOND * 3 / 2)
+#define NUM_STROBES   (STROBE_LENGTH * STROBE_RATE / ONE_SECOND)
 
 static void
 ExitConversation (RESPONSE_REF R)
@@ -257,10 +258,27 @@ MindFuckUrquan (RESPONSE_REF R)
 static void PetDevice (RESPONSE_REF R);
 
 static void
-MindControl (RESPONSE_REF R)
+MindControlStrobe (void)
 {
 	BYTE i;
-RESPONSE_FUNC  RespFunc;
+
+	for (i = 0; i < NUM_STROBES; ++i)
+	{
+		XFormPLUT (GetColorMapAddress (
+				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
+				), 0);
+		SleepThread (ONE_SECOND / (STROBE_RATE * 2));
+		XFormPLUT (GetColorMapAddress (
+				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
+				), 0);
+		SleepThread (ONE_SECOND / (STROBE_RATE * 2));
+	}
+}
+
+static void
+MindControl (RESPONSE_REF R)
+{
+	RESPONSE_FUNC RespFunc;
 
 	if (PLAYER_SAID (R, what_about_powers))
 	{
@@ -278,18 +296,7 @@ RESPONSE_FUNC  RespFunc;
 	}
 
 	AlienTalkSegue ((COUNT)~0);
-
-	for (i = 0; i < NUM_STROBES; ++i)
-	{
-		XFormPLUT (GetColorMapAddress (
-				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
-				), 0);
-		SleepThread (ONE_SECOND / 120);
-		XFormPLUT (GetColorMapAddress (
-				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
-				), 0);
-		SleepThread (ONE_SECOND / 120);
-	}
+	MindControlStrobe ();
 
 	Response (R, RespFunc);
 }
@@ -547,22 +554,10 @@ KillPet (RESPONSE_REF R)
 {
 	if (PLAYER_SAID (R, must_kill))
 	{
-		BYTE i;
-
 		NPCPhrase (DONT_KILL);
 		AlienTalkSegue ((COUNT)~0);
 
-		for (i = 0; i < NUM_STROBES; ++i)
-		{
-			XFormPLUT (GetColorMapAddress (
-					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
-					), 0);
-			SleepThread (ONE_SECOND / 120);
-			XFormPLUT (GetColorMapAddress (
-					SetAbsColorMapIndex (CommData.AlienColorMap, 0)
-					), 0);
-			SleepThread (ONE_SECOND / 120);
-		}
+		MindControlStrobe ();
 	}
 
 	Response (want_kill_1, ExitConversation);
