@@ -616,6 +616,10 @@ xform_PLUT_step (SIZE TDelta)
 		}
 		ColorChange = TRUE;
 	}
+	else if (control->TOrig == 0)
+	{	// asked for immediate xform
+		ColorChange = TRUE;
+	}
 	control->TTotal -= TDelta;
 	if (!control->TTotal)
 	{
