@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Fixed T-Pet compulsion graphics (partially); bug #772 - Alex
 - Doing game-state file I/O in memory instead of temp files;
   should avoid problems as in bug #752 - Alex
 - Separate config_win.h file for build.sh builds on Windows - SvdB
