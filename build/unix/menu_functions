@@ -77,6 +77,10 @@ menu_init_menu() {
 	eval TEMP_ITEMS="\$MENU_${MENU}_ITEMS"
 	for ITEM in $TEMP_ITEMS; do
 		eval TEMP_TYPE="\$MENU_${MENU}_ITEM_${ITEM}_TYPE"
+		if [ -z "$TEMP_TYPE" ]; then
+			echo "Fatal: \$MENU_${MENU}_ITEM_${ITEM}_TYPE is not defined!" >&2
+			exit 1
+		fi
 		menu_init "$TEMP_TYPE" "$ITEM"
 	done
 }
