@@ -179,6 +179,26 @@ LIB_vorbisfile_DETECT="try_pkgconfig_lib vorbisfile vorbisfile"
 LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
 
 
+### Tremor ###
+LIB_tremor_NAME="tremor"
+case "$HOST_SYSTEM" in
+	FreeBSD|OpenBSD)
+		LIB_tremor_CFLAGS="-I/usr/local/include"
+		LIB_tremor_LDFLAGS="-L/usr/local/lib -lvorbisidec"
+		;;
+	Darwin)
+		# Assumed values - please let me know if you can verify this.
+		LIB_tremor_CFLAGS=""
+		LIB_tremor_LDFLAGS="-framework Tremor"
+		;;
+	*)
+		LIB_tremor_CFLAGS=""
+		LIB_tremor_LDFLAGS="-lvorbisidec"
+		;;
+esac
+LIB_tremor_VERSION=""
+
+
 ### zlib ###
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""

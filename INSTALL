@@ -26,7 +26,7 @@ OpenGL v1.2 (if HAVE_OPENGL is defined, which is the default)
 	http://www.xfree86.org/
 	Debian package: xlibmesa-dev OR nvidia-glx OR <vendor specific>
 	XFree86 4.x comes with Mesa, which is a clone.
-	Note: Mesa is a software emulation. For enjoyable results 
+	Note: Mesa is a software emulation. For enjoyable results
 	you will need hardware accelerated OpenGL (GLX).
 	These usually conflict with mesa (can result in X server crash).
 
@@ -48,8 +48,8 @@ OpenAL (Win32 only)
 	Homepage: http://www.openal.org/
 	SDK download: http://developer.creative.com/articles/article.asp?cat=1&sbcat=31&aid=45&file=OpenALSDK.zip
 
-Ogg Vorbis
-	Audio codec used for music and speech.
+libogg and libvorbis
+	Audio codec to play Ogg Vorbis files, used for music and speech.
 	Homepage: http://www.xiph.org/ogg/vorbis/index.html
 	Download:
 	    For Windows:
@@ -57,6 +57,14 @@ Ogg Vorbis
 	    For Linux:
 			http://www.vorbis.com/download_unix.psp
 			download libogg and libvorbis.
+
+Tremor (alternative for libogg and libvorbis)
+	Audio codec to play Ogg Vorbis files, used for music and speech.
+	This library avoids floating point math and should be used instead
+	of libogg and libvorbis when floating point support is not available
+	or slow (on some handhelds and game consoles).
+	Homepage: http://www.xiph.org/vorbis/
+	Download: http://svn.xiph.org/trunk/Tremor (Subversion)
 
 Zlib v1.2
 	Data compression / decompression library
@@ -68,5 +76,6 @@ Zlib v1.2
 
 If you find these aren't enough, or if you know the names
 of the corresponding RPM etc. packages, please report to
-<sc2-devel@lists.sourceforge.net> or visit 
+<sc2-devel@lists.sourceforge.net> or visit
 http://sourceforge.net/projects/sc2
+

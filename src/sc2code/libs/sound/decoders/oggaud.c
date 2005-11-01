@@ -25,8 +25,13 @@
 #include "types.h"
 #include "uio.h"
 #include "decoder.h"
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
+#ifdef OVCODEC_TREMOR
+#	include <tremor/ivorbiscodec.h>
+#	include <tremor/ivorbisfile.h>
+#else
+#	include <vorbis/codec.h>
+#	include <vorbis/vorbisfile.h>
+#endif  /* OVCODEC_TREMOR */
 #include "oggaud.h"
 
 
@@ -221,8 +226,12 @@ ova_Decode (THIS_PTR, void* buf, sint32 bufsize)
 	long rc;
 	int bitstream;
 
+#ifdef OVCODEC_TREMOR
+	rc = ov_read (&ova->vf, buf, bufsize, &bitstream);
+#else
 	rc = ov_read (&ova->vf, buf, bufsize, ova_formats->want_big_endian,
 			2, 1, &bitstream);
+#endif  /* OVCODEC_TREMOR */
 	
 	if (rc < 0)
 		ova->last_error = rc;
@@ -254,5 +263,10 @@ ova_GetFrame (THIS_PTR)
 	TFB_OggSoundDecoder* ova = (TFB_OggSoundDecoder*) This;
 	// this is the closest to a frame there is in ogg vorbis stream
 	// doesn't seem to be a func to retrive it
+#ifdef OVCODEC_TREMOR
+	return ova->vf.os->pageno;
+#else
 	return ova->vf.os.pageno;
+#endif  /* OVCODEC_TREMOR */
 }
+
