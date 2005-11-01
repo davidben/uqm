@@ -199,8 +199,14 @@ ova_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	}
 	
 	This->frequency = vinfo->rate;
+#ifdef OVCODEC_TREMOR
+	// With tremor ov_time_total returns an integer, in milliseconds.
+	This->length = ((float) ov_time_total (&ova->vf, -1)) / 1000.0f;
+#else
+	// With libvorbis ov_time_total returns a double, in seconds.
 	This->length = (float) ov_time_total (&ova->vf, -1);
-
+#endif  /* OVCODEC_TREMOR */
+	
 	if (vinfo->channels == 1)
 		This->format = ova_formats->mono16;
 	else
