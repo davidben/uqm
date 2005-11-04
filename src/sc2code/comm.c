@@ -2008,7 +2008,7 @@ HailAlien (void)
 
 	// init subtitle cache context
 	TextCacheContext = CaptureContext (CreateContext ());
-	TextCacheFrame = CaptureDrawable (CreateDrawable (WANT_PIXMAP | WANT_MASK,
+	TextCacheFrame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
 		SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2,
 		1));
 	SetContext (TextCacheContext);
