@@ -58,8 +58,6 @@ void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 
 void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int num, int denom);
 
-FRAME scale16xRandomizeFrame(FRAME ZoomFrame, FRAME FramePtr);
-
 void getpixelarray(DWORD *array, FRAME FramePtr, int width, int height);
 
 #define NUM_BATCH_POINTS 64
@@ -112,15 +110,15 @@ typedef struct {
 	double x, y, z;
 } POINT3;
 
-void
-RenderTopography (BOOLEAN Reconstruct)
+static void
+TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 {
 	CONTEXT OldContext;
 	FRAME OldFrame;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	OldContext = SetContext (TaskContext);
-	OldFrame = SetContextFGFrame (pSolarSysState->TopoFrame);
+	OldFrame = SetContextFGFrame (DstFrame);
 
 	if (pSolarSysState->XlatRef == 0)
 	{
@@ -131,9 +129,8 @@ RenderTopography (BOOLEAN Reconstruct)
 		s.frame = SetAbsFrameIndex (
 				pSolarSysState->PlanetFrameArray[2], 1
 				);
-#endif
-		s.frame = pSolarSysState->TopoFrame;
 		DrawStamp (&s);
+#endif
 	}
 	else
 	{
@@ -144,12 +141,11 @@ RenderTopography (BOOLEAN Reconstruct)
 		PLANDATAPTR PlanDataPtr;
 		PRIMITIVE BatchArray[NUM_BATCH_POINTS];
 		PPRIMITIVE pBatch;
-		PBYTE lpDst, xlat_tab, cbase;
+		PBYTE pSrc, xlat_tab, cbase;
 		HOT_SPOT OldHot;
 		RECT ClipRect;
 
-		OldHot = SetFrameHot (pSolarSysState->TopoFrame,
-				MAKE_HOT_SPOT (0, 0));
+		OldHot = SetFrameHot (DstFrame, MAKE_HOT_SPOT (0, 0));
 		GetContextClipRect (&ClipRect);
 		SetContextClipRect (NULL_PTR);
 		SetContextClipping (FALSE);
@@ -166,28 +162,22 @@ RenderTopography (BOOLEAN Reconstruct)
 				pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED
 				];
 		AlgoType = PLANALGO (PlanDataPtr->Type);
-		if (Reconstruct && AlgoType != GAS_GIANT_ALGO)
-			base = 0;
-		else
-			base = PlanDataPtr->base_elevation;
+		base = PlanDataPtr->base_elevation;
 		xlat_tab = (PBYTE)((XLAT_DESCPTR)pSolarSysState->XlatPtr)->xlat_tab;
 		cbase = GetColorMapAddress (pSolarSysState->OrbitalCMap);
 
-		pBatch = &BatchArray[i = NUM_BATCH_POINTS];
-		lpDst = Orbit->lpTopoData;
-		for (pt.y = 0; pt.y < MAP_HEIGHT; ++pt.y)
+		i = NUM_BATCH_POINTS;
+		pBatch = &BatchArray[i];
+		pSrc = pTopoData;
+		for (pt.y = 0; pt.y < h; ++pt.y)
 		{
-			for (pt.x = 0; pt.x < MAP_WIDTH; ++pt.x)
+			for (pt.x = 0; pt.x < w; ++pt.x, ++pSrc)
 			{
-				d = (SBYTE)*lpDst;
-				if (Reconstruct)
+				PBYTE ctab;
+
+				d = (SBYTE)*pSrc;
+				if (AlgoType == GAS_GIANT_ALGO)
 				{
-					d = (SIZE)((BYTE)((BYTE)d - (BYTE)base));
-					++lpDst;
-				}
-				else if (AlgoType == GAS_GIANT_ALGO)
-				{
-					*lpDst++ = (BYTE)((SBYTE)d + base);
 					d &= 255;
 				}
 				else
@@ -197,14 +187,11 @@ RenderTopography (BOOLEAN Reconstruct)
 						d = 0;
 					else if (d > 255)
 						d = 255;
-					*lpDst++ = (BYTE)d;
 				}
 
 				--pBatch;
 				pBatch->Object.Point.x = pt.x;
 				pBatch->Object.Point.y = pt.y;
-{
-				PBYTE ctab;
 
 				d = xlat_tab[d] - cbase[0];
 				ctab = (cbase + 2) + d * 3;
@@ -214,12 +201,12 @@ RenderTopography (BOOLEAN Reconstruct)
 				SetPrimColor (pBatch, BUILD_COLOR (MAKE_RGB15 (ctab[0] >> 1,
 								ctab[1] >> 1, ctab[2] >> 1), d));
 				
-}
-				if (--i)
-					continue;
-
-				DrawBatch (BatchArray, 0, 0);
-				pBatch = &BatchArray[i = NUM_BATCH_POINTS];
+				if (--i == 0)
+				{	// flush the batch and start the next one
+					DrawBatch (BatchArray, 0, 0);
+					i = NUM_BATCH_POINTS;
+					pBatch = &BatchArray[i];
+				}
 			}
 		}
 
@@ -230,11 +217,21 @@ RenderTopography (BOOLEAN Reconstruct)
 
 		SetContextClipping (TRUE);
 		SetContextClipRect (&ClipRect);
-		SetFrameHot (pSolarSysState->TopoFrame, OldHot);
+		SetFrameHot (DstFrame, OldHot);
 	}
 
 	SetContextFGFrame (OldFrame);
 	SetContext (OldContext);
+}
+
+void
+RenderTopography (BOOLEAN Reconstruct)
+		// Reconstruct arg was not used on 3DO and is not needed here either
+{
+	TransformTopography (pSolarSysState->TopoFrame,
+			pSolarSysState->Orbit.lpTopoData, MAP_WIDTH, MAP_HEIGHT);
+
+	(void)Reconstruct; // swallow compiler whining
 }
 
 void P3mult (POINT3 *res, POINT3 *vec,  double cnst)
@@ -1223,16 +1220,237 @@ void planet_orbit_init ()
 			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH,
 				(SWORD)MAP_HEIGHT, 2));
 	Orbit->ShieldFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM, SHIELD_DIAM, 1));
+			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM,
+				SHIELD_DIAM, 1));
 
 	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
 	Orbit->TopoZoomFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
-			(COUNT)(MAP_HEIGHT << 2), 1));
-	Orbit->lpTopoMap=(DWORD *)HMalloc (
-			sizeof(DWORD) * (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
-	Orbit->ScratchArray = (DWORD *)HMalloc (
-			sizeof (DWORD *) * (SHIELD_DIAM) * (SHIELD_DIAM));
+				(COUNT)(MAP_HEIGHT << 2), 1));
+	Orbit->lpTopoMap = (DWORD *)HMalloc (sizeof(DWORD)
+			* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
+	Orbit->ScratchArray = (DWORD *)HMalloc (sizeof (DWORD *)
+			* (SHIELD_DIAM) * (SHIELD_DIAM));
+}
+
+static unsigned
+frandom ()
+{
+	static unsigned seed = 0x12345678;
+	
+	if (seed == 0)
+		seed = 15807;
+	seed = (seed >> 4) * 227;
+
+	return seed;
+}
+
+static inline int
+TopoVarianceFactor (int step, int allowed, int min)
+{
+#define SCALE_SHIFT 8
+	return ((abs(step) * allowed) >> SCALE_SHIFT) + min;
+}
+
+static inline int
+TopoVarianceCalc (int factor)
+{
+	if (factor == 0)
+		return 0;
+	else
+		return (frandom () % factor) - (factor >> 1);
+}
+
+static void
+TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
+{
+		// Interpolate the topographical data by connecting the elevations
+		// to their nearest neighboors using straight lines (in random
+		// direction) with random variance factors defined by
+		// num_faults and fault_var args
+#define AVG_VARIANCE 250
+	int x, y;
+	const int w = MAP_WIDTH, h = MAP_HEIGHT;
+	const int spitch = MAP_WIDTH, dpitch = MAP_WIDTH * 4;
+	PSBYTE pSrc, pDst;
+	int* prevrow;
+	int* prow;
+	int elev[5][5];
+	int var_allow, var_min;
+	static const struct line_def_t
+	{
+		int x0, y0, x1, y1;
+		int dx, dy;
+	}
+	fill_lines[4][6] = 
+	{
+		{	// diag set 0
+			{ 0,  2,  2,  0,  1, -1},
+			{ 0,  3,  3,  0,  1, -1},
+			{ 0,  4,  4,  0,  1, -1},
+			{ 1,  4,  4,  1,  1, -1},
+			{ 2,  4,  4,  2,  1, -1},
+			{-1, -1, -1, -1,  0,  0}, // term
+		},
+		{	// diag set 1
+			{ 0,  2,  2,  4,  1,  1},
+			{ 0,  1,  3,  4,  1,  1},
+			{ 0,  0,  4,  4,  1,  1},
+			{ 1,  0,  4,  3,  1,  1},
+			{ 2,  0,  4,  2,  1,  1},
+			{-1, -1, -1, -1,  0,  0}, // term
+		},
+		{	// horizontal
+			{ 0,  1,  4,  1,  1,  0},
+			{ 0,  2,  4,  2,  1,  0},
+			{ 0,  3,  4,  3,  1,  0},
+			{-1, -1, -1, -1,  0,  0}, // term
+		},
+		{	// vertical
+			{ 1,  0,  1,  4,  0,  1},
+			{ 2,  0,  2,  4,  0,  1},
+			{ 3,  0,  3,  4,  0,  1},
+			{-1, -1, -1, -1,  0,  0}, // term
+		},
+	};
+	
+	prevrow = (int *) alloca ((MAP_WIDTH * 4 + 1) * sizeof(prevrow[0]));
+
+	var_allow = (num_faults << SCALE_SHIFT) / AVG_VARIANCE;
+	var_min = fault_var << SCALE_SHIFT;
+
+	//memset (pDstTopo, 0, MAP_WIDTH * MAP_HEIGHT * 16);
+
+	// init the first row in advance
+	pSrc = pSrcTopo;
+	prow = prevrow;
+#define STEP_RANGE (4 - 1)
+	prow[0] = ((int)pSrc[0]) << SCALE_SHIFT;;
+	for (x = 0; x < w; ++x, ++pSrc, prow += 4)
+	{
+		int x2;
+		int val, step, rndfact;
+
+		// next point in row
+		if (x < w - 1)
+			// one right
+			prow[4] = ((int)pSrc[1]) << SCALE_SHIFT;
+		else
+			// wrap around
+			prow[4] = ((int)pSrc[1 - spitch]) << SCALE_SHIFT;
+
+		// compute elevations between 2 points
+		val = prow[0];
+		step = (prow[4] - val) / STEP_RANGE;
+		rndfact = TopoVarianceFactor (step, var_allow, var_min);
+		for (x2 = 1, val += step; x2 < 4; ++x2, val += step)
+			prow[x2] = val + TopoVarianceCalc (rndfact);
+	}
+
+	pSrc = pSrcTopo;
+	pDst = pDstTopo;
+	for (y = 0; y < h; ++y, pDst += dpitch * 3)
+	{
+		int x2, y2;
+		PSBYTE p;
+		int val, step, rndfact;
+		const struct line_def_t* pld;
+
+		prow = prevrow;
+		// prime the first interpolated column
+		elev[4][0] = prow[0];
+		if (y < h - 1)
+			elev[4][4] = ((int)pSrc[spitch]) << SCALE_SHIFT;
+		else
+			elev[4][4] = elev[4][0];
+		// compute elevations for interpolated column
+		val = elev[4][0];
+		step = (elev[4][4] - val) / STEP_RANGE;
+		rndfact = TopoVarianceFactor (step, var_allow, var_min);
+		for (y2 = 1, val += step; y2 < 4; ++y2, val += step)
+			elev[4][y2] = val + TopoVarianceCalc (rndfact);
+
+		for (x = 0; x < w; ++x, ++pSrc, pDst += 4, prow += 4)
+		{
+			// recall the first interpolated row from prevrow
+			for (x2 = 0; x2 <= 4; ++x2)
+				elev[x2][0] = prow[x2];
+			// recall the first interpolated column
+			for (y2 = 1; y2 <= 4; ++y2)
+				elev[0][y2] = elev[4][y2];
+			
+			if (y < h - 1)
+			{
+				if (x < w - 1)
+					// one right, one down
+					elev[4][4] = ((int)pSrc[1 + spitch]) << SCALE_SHIFT;
+				else
+					// wrap around, one down
+					elev[4][4] = ((int)pSrc[1]) << SCALE_SHIFT;
+			}
+			else
+			{
+				elev[4][4] = elev[4][0];
+			}
+
+			// compute elevations for the rest of square borders first
+			val = elev[0][4];
+			step = (elev[4][4] - val) / STEP_RANGE;
+			rndfact = TopoVarianceFactor (step, var_allow, var_min);
+			for (x2 = 1, val += step; x2 < 4; ++x2, val += step)
+				elev[x2][4] = val + TopoVarianceCalc (rndfact);
+
+			val = elev[4][0];
+			step = (elev[4][4] - val) / STEP_RANGE;
+			rndfact = TopoVarianceFactor (step, var_allow, var_min);
+			for (y2 = 1, val += step; y2 < 4; ++y2, val += step)
+				elev[4][y2] = val + TopoVarianceCalc (rndfact);
+
+			// fill in the rest by connecting opposing elevations
+			// some randomness to determine which elevations to connect
+			for (pld = fill_lines[frandom () & 3]; pld->x0 >= 0; ++pld)
+			{
+				int num_steps;
+
+				x2 = pld->x0;
+				y2 = pld->y0;
+				val = elev[x2][y2];
+				num_steps = pld->x1 - pld->x0;
+				if (num_steps == 0)
+					num_steps = pld->y1 - pld->y0;
+				step = (elev[pld->x1][pld->y1] - val) / num_steps;
+				rndfact = TopoVarianceFactor (step, var_allow, var_min);
+				
+				for (x2 += pld->dx, y2 += pld->dy, val += step;
+						x2 != pld->x1 || y2 != pld->y1;
+						x2 += pld->dx, y2 += pld->dy, val += step)
+				{
+					elev[x2][y2] = val + TopoVarianceCalc (rndfact);
+				}
+			}
+
+			// output the interpolated topography
+			for (y2 = 0; y2 < 4; ++y2)
+			{
+				p = pDst + y2 * dpitch;
+				for (x2 = 0; x2 < 4; ++x2, ++p)
+				{
+					int e = elev[x2][y2] >> SCALE_SHIFT;
+					if (e > 127)
+						e = 127;
+					else if (e < -128)
+						e = -128;
+					*p = (SBYTE)e;
+				}
+			}
+
+			// save last interpolated row to prevrow for later
+			for (x2 = 0; x2 < 4; ++x2)
+				prow[x2] = elev[x2][4];
+		}
+		// save last row point
+		prow[0] = elev[4][4];
+	}
 }
 
 void
@@ -1245,6 +1463,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	POINT loc;
 	CONTEXT OldContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+	PBYTE pScaledTopo = 0;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
@@ -1351,15 +1570,27 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 		}
 		pSolarSysState->XlatPtr = GetStringAddress (pSolarSysState->XlatRef);
 		RenderTopography (FALSE);
+
+		pScaledTopo = HMalloc (MAP_WIDTH * 4 * MAP_HEIGHT * 4);
+		if (pScaledTopo)
+		{
+			TopoScale4x (pScaledTopo, Orbit->lpTopoData,
+					PlanDataPtr->num_faults, PlanDataPtr->fault_depth
+					* (PLANALGO (PlanDataPtr->Type) == CRATERED_ALGO ? 2 : 1  ));
+			TransformTopography (Orbit->TopoZoomFrame, pScaledTopo,
+					MAP_WIDTH * 4, MAP_HEIGHT * 4);
+
+			HFree (pScaledTopo);
+		}
 	}
-	// Generate a pixel array fromthe Topography map.
+
+	// Generate a pixel array from the Topography map.
 	// We use this instead of lpTopoData because it needs to be
 	// WAP_WIDTH+MAP_HEIGHT wide and we need this method for Earth anyway.
 	// It may be more efficient to build it from lpTopoData instead of the
 	// FRAMPTR though.
 	x = MAP_WIDTH + MAP_HEIGHT;
 	y = MAP_HEIGHT;
-	scale16xRandomizeFrame(Orbit->TopoZoomFrame, pSolarSysState->TopoFrame);
 	getpixelarray (Orbit->lpTopoMap, pSolarSysState->TopoFrame, x, y);
 	// Extend the width from MAP_WIDTH to MAP_WIDTH+MAP_HEIGHT
 	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT);
