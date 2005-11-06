@@ -172,6 +172,9 @@ prepareConfigDir (const char *configDirName) {
 		}
 		configDirName = buf;
 	}
+#ifdef DEBUG
+	fprintf (stderr, "Using config dir '%s'\n", configDirName);
+#endif
 
 	// Set the environment variable UQM_CONFIG_DIR so UQM_MELEE_DIR
 	// and UQM_SAVE_DIR can refer to it.
