@@ -102,7 +102,8 @@ if ((InputState & DEVICE_BUTTON3)
 						if (GetPrimType (&DisplayArray[ElementPtr->PrimIndex]) == STAMP_PRIM
 								&& ElementPtr->life_span == NORMAL_LIFE
 								&& !(ElementPtr->state_flags & FINITE_LIFE)
-								&& ElementPtr->mass_points != MAX_SHIP_MASS * 10)
+								&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
+								&& !(ElementPtr->state_flags & APPEARING))
 						{
 							extern void flee_preprocess (PELEMENT);
 
