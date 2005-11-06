@@ -213,18 +213,12 @@ Alist_Dump (alist *m, uio_Stream *s, const char *prefix)
 		prefix_len = strlen (prefix);
 	while (e) {
 		if (!prefix || !strncmp (prefix, e->key, prefix_len)) {
-			char *i = e->key;
-			while (*i) {
-				PutResFileChar (*i++, s);
-			}
+			WriteResFile (e->key, 1, strlen (e->key), s);
 			PutResFileChar(' ', s);
 			PutResFileChar('=', s);
 			PutResFileChar(' ', s);
-			i = e->value;
-			while (*i) {
-				PutResFileChar (*i++, s);
-			}
-			PutResFileChar ('\n', s);
+			WriteResFile (e->value, 1, strlen (e->value), s);
+			PutResFileChar('\n', s);
 		}
 		e = e->next;
 	}
