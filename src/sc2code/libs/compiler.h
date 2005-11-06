@@ -37,6 +37,7 @@ typedef SDWORD          *PSDWORD;
 typedef SBYTE           *PSTR;
 
 typedef void            *PVOID;
+typedef const void     *PCVOID;
 
 typedef UWORD             COUNT;
 typedef COUNT           *PCOUNT;

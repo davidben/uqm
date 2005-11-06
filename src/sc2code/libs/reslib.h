@@ -56,7 +56,7 @@ const char *_cur_resfile_name;
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
 extern int ReadResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp);
-extern int WriteResFile (PVOID lpBuf, COUNT size, COUNT count,
+extern int WriteResFile (PCVOID lpBuf, COUNT size, COUNT count,
 		uio_Stream *fp);
 extern int GetResFileChar (uio_Stream *fp);
 extern int PutResFileChar (char ch, uio_Stream *fp);

@@ -71,7 +71,7 @@ ReadResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp)
 }
 
 int
-WriteResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp)
+WriteResFile (PCVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp)
 {
 	int retval;
 
