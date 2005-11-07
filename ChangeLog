@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Removed MikMod i/o hacks (using MREADER i/o now; bug #787) - Alex
 - Fixed fast escape weirdness (bug #619) - from Jan Lönnberg
 - New topographical 4x planet surface scaler (bug #786) - Alex
 - Added support for Tremor for Ogg Vorbis decoding (avoids floating point
