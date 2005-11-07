@@ -19,29 +19,44 @@
 
 #include "pure.h"
 #include "bbox.h"
-#include "2xscalers.h"
+#include "scalers.h"
 
 static SDL_Surface *fade_black = NULL;
 static SDL_Surface *fade_white = NULL;
 static SDL_Surface *fade_temp = NULL;
+static SDL_Surface *scaled_display = NULL;
+
+static TFB_ScaleFunc scaler = NULL;
 
 static SDL_Surface *
-Create_Screen (SDL_Surface *template)
+Create_Screen (SDL_Surface *template, int w, int h)
 {
-	SDL_Surface *newsurf = SDL_DisplayFormat (template);
+	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
+			template->format->BitsPerPixel,
+			template->format->Rmask, template->format->Gmask,
+			template->format->Bmask, 0);
 	if (newsurf == 0) {
 		fprintf (stderr, "Couldn't create screen buffers: %s\n", SDL_GetError());
-		exit(-1);
 	}
 	return newsurf;
+}
+
+static int
+ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
+{
+	if (*screen)
+		SDL_FreeSurface (*screen);
+	*screen = Create_Screen (template, w, h);
+	
+	return *screen == 0 ? -1 : 0;
 }
 
 int
 TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 {
 	int i, videomode_flags;
-	SDL_Surface *test_extra;
-
+	SDL_Surface *temp_surf;
+	
 	GraphicsDriver = driver;
 	ScreenColorDepth = bpp;
 
@@ -83,51 +98,67 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 			SDL_GetVideoSurface()->format->BitsPerPixel);
 	}
 
-	test_extra = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);
-
-	if (test_extra == NULL)
+	// Create a 32bpp surface in a compatible format which will supply
+	// the format information to all other surfaces used in the game
+	if (format_conv_surf)
 	{
-		fprintf (stderr, "Couldn't create back buffer: %s\n", SDL_GetError());
+		SDL_FreeSurface (format_conv_surf);
+		format_conv_surf = NULL;
+	}
+	temp_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
+			0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+	if (temp_surf)
+	{	// acquire a fast compatible format from SDL
+		format_conv_surf = SDL_DisplayFormatAlpha (temp_surf);
+		if (!format_conv_surf || format_conv_surf->format->BitsPerPixel != 32)
+		{	// absolute fallback case
+			format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
+					0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+		}
+		SDL_FreeSurface (temp_surf);
+	}
+	if (!format_conv_surf)
+	{
+		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
 		return -1;
 	}
-
+	
+	
 	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 	{
-		SDL_Screens[i] = Create_Screen (test_extra);
+		if (0 != ReInit_Screen (&SDL_Screens[i], format_conv_surf,
+				ScreenWidth, ScreenHeight))
+			return -1;
 	}
 
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
 
-	if (fade_white)
-	{
-		SDL_FreeSurface (fade_white);
-		fade_white = NULL;
-	}
-	fade_white = Create_Screen(test_extra);
-	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
-	if (fade_black)
-	{
-		SDL_FreeSurface (fade_black);
-		fade_black = NULL;
-	}
-	fade_black = Create_Screen(test_extra);
-	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
-	if (fade_temp)
-	{
-		SDL_FreeSurface (fade_temp);
-		fade_temp = NULL;
-	}
-	fade_temp = Create_Screen(test_extra);
-
-	SDL_FreeSurface (test_extra);
-
-	if (SDL_Video->format->BytesPerPixel != SDL_Screen->format->BytesPerPixel)
-	{
-		fprintf (stderr, "Fatal error: SDL_Video and SDL_Screen bpp doesn't match (%d vs. %d)\n",
-			SDL_Video->format->BytesPerPixel,SDL_Screen->format->BytesPerPixel);
+	if (0 != ReInit_Screen (&fade_white, format_conv_surf,
+			ScreenWidth, ScreenHeight))
 		return -1;
+	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
+	
+	if (0 != ReInit_Screen (&fade_black, format_conv_surf,
+			ScreenWidth, ScreenHeight))
+		return -1;
+	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
+	
+	if (0 != ReInit_Screen (&fade_temp, format_conv_surf,
+			ScreenWidth, ScreenHeight))
+		return -1;
+
+	if (ScreenWidthActual > ScreenWidth || ScreenHeightActual > ScreenHeight)
+	{
+		if (0 != ReInit_Screen (&scaled_display, format_conv_surf,
+				ScreenWidthActual, ScreenHeightActual))
+			return -1;
+
+		scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
+	}
+	else
+	{	// no need to scale
+		scaler = NULL;
 	}
 
 	return 0;
@@ -160,88 +191,35 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit (-1);
 	}
 
-	// pre-compute the RGB->YUV transformations
-	Scale_PrepYUV();
+	// Initialize scalers (let them precompute whatever)
+	Scale_Init ();
 
 	return 0;
 }
 
-static void ScanLines (SDL_Surface *dst, SDL_Rect *r)
+static void
+ScanLines (SDL_Surface *dst, SDL_Rect *r)
 {
-	const int rx = r->x * 2;
 	const int rw = r->w * 2;
-	const int ry1 = r->y * 2;
-	const int ry2 = ry1 + r->h * 2;
-	Uint8 *pixels = (Uint8 *) dst->pixels;
+	const int rh = r->h * 2;
 	SDL_PixelFormat *fmt = dst->format;
+	const int pitch = dst->pitch;
+	const int len = pitch / fmt->BytesPerPixel;
+	int ddst;
+	Uint32 *p = (Uint32 *) dst->pixels;
 	int x, y;
 
-	switch (dst->format->BytesPerPixel)
+	p += len * (r->y * 2) + (r->x * 2);
+	ddst = len + len - rw;
+
+	for (y = rh; y; y -= 2, p += ddst)
 	{
-	case 2:
-	{
-		for (y = ry1; y < ry2; y += 2)
+		for (x = rw; x; --x, ++p)
 		{
-			Uint16 *p = (Uint16 *) &pixels[y * dst->pitch + (rx << 1)];
-			for (x = 0; x < rw; ++x)
-			{
-				*p = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-				      ((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-				      ((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
-				++p;
-			}
+			// we ignore the lower bits as the difference
+			// of 1 in 255 is negligible
+			*p = ((*p >> 1) & 0x7f7f7f7f) + ((*p >> 2) & 0x3f3f3f3f);
 		}
-		break;
-	}
-	case 3:
-	{
-		for (y = ry1; y < ry2; y += 2)
-		{
-			Uint8 *p = (Uint8 *) &pixels[y * dst->pitch + rx * 3];
-			Uint32 pixval;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			for (x = 0; x < rw; ++x)
-			{
-				pixval = p[0] << 16 | p[1] << 8 | p[2];
-				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-					((((pixval & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-					((((pixval & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
-				p[0] = (pixval >> 16) & 0xff;
-				p[1] = (pixval >> 8) & 0xff;
-				p[2] = pixval & 0xff;
-				p += 3;
-			}
-#else
-			for (x = 0; x < rw; ++x)
-			{
-				pixval = p[0] | p[1] << 8 | p[2] << 16;
-				pixval = ((((pixval & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-					((((pixval & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-					((((pixval & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
-				p[0] = pixval & 0xff;
-				p[1] = (pixval >> 8) & 0xff;
-				p[2] = (pixval >> 16) & 0xff;
-				p += 3;
-			}
-#endif
-		}
-		break;
-	}
-	case 4:
-	{
-		for (y = ry1; y < ry2; y += 2)
-		{
-			Uint32 *p = (Uint32 *) &pixels[y * dst->pitch + (rx << 2)];
-			for (x = 0; x < rw; ++x)
-			{
-				*p = ((((*p & fmt->Rmask) * 3) >> 2) & fmt->Rmask) |
-				      ((((*p & fmt->Gmask) * 3) >> 2) & fmt->Gmask) |
-				      ((((*p & fmt->Bmask) * 3) >> 2) & fmt->Bmask);
-				++p;
-			}
-		}
-		break;
-	}
 	}
 }
 
@@ -274,12 +252,17 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 	last_fade_amount = fade_amount;
 	last_transition_amount = transition_amount;	
 	
-	if (ScreenWidth == 320 && ScreenHeight == 240 &&
-		ScreenWidthActual == 640 && ScreenHeightActual == 480)
+	if (ScreenWidthActual == ScreenWidth * 2 &&
+			ScreenHeightActual == ScreenHeight * 2)
 	{
 		// scales 320x240 backbuffer to 640x480
 
 		SDL_Surface *backbuffer = SDL_Screen;
+		SDL_Surface *scalebuffer = scaled_display;
+
+		// we can scale directly onto SDL_Video if video is compatible
+		if (SDL_Video->format->BitsPerPixel == SDL_Screen->format->BitsPerPixel)
+			scalebuffer = SDL_Video;
 		
 		if (transition_amount != 255)
 		{
@@ -310,27 +293,26 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 			}
 		}
 
-		SDL_LockSurface (SDL_Video);
+		SDL_LockSurface (scalebuffer);
 		SDL_LockSurface (backbuffer);
 
-		if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR)
-			Scale_BilinearFilter (backbuffer, SDL_Video, &updated);
-		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
-			Scale_BiAdaptFilter (backbuffer, SDL_Video, &updated);
-		else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-			Scale_BiAdaptAdvFilter (backbuffer, SDL_Video, &updated);
-		else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
-			Scale_TriScanFilter (backbuffer, SDL_Video, &updated);
-		else
-			Scale_Nearest (backbuffer, SDL_Video, &updated);
+		if (scaler)
+			scaler (backbuffer, scalebuffer, &updated);
 
 		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-			ScanLines (SDL_Video, &updated);
+			ScanLines (scalebuffer, &updated);
 		
 		SDL_UnlockSurface (backbuffer);
-		SDL_UnlockSurface (SDL_Video);
+		SDL_UnlockSurface (scalebuffer);
 
-		SDL_UpdateRect (SDL_Video, updated.x * 2, updated.y * 2, updated.w * 2, updated.h * 2);
+		updated.x *= 2;
+		updated.y *= 2;
+		updated.w *= 2;
+		updated.h *= 2;
+		if (scalebuffer != SDL_Video)
+			SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
+
+		SDL_UpdateRects (SDL_Video, 1, &updated);
 	}
 	else
 	{
@@ -360,6 +342,52 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 
 		SDL_UpdateRect (SDL_Video, updated.x, updated.y, updated.w, updated.h);
 	}
+}
+
+void
+Scale_PerfTest (void)
+{
+	int fps = 0;
+	DWORD TimeStart, TimeIn, Now;
+	SDL_Rect updated = {0, 0, ScreenWidth, ScreenHeight};
+	int i;
+
+	if (!scaler)
+	{
+		fprintf (stderr, "No scaler configured! Run with larger resolution, please\n");
+		return;
+	}
+	if (!scaled_display)
+	{
+		fprintf (stderr, "Run scaler performance tests in Pure mode, please\n");
+		return;
+	}
+
+	SDL_LockSurface (SDL_Screen);
+	SDL_LockSurface (scaled_display);
+
+	TimeStart = TimeIn = SDL_GetTicks ();
+
+	for (i = 1; i < 1001; ++i) // run for 1000 frames
+	{
+		scaler (SDL_Screen, scaled_display, &updated);
+		
+		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
+			ScanLines (scaled_display, &updated);
+
+		if (i % 100 == 0)
+		{
+			Now = SDL_GetTicks ();
+			fprintf(stderr, "%03d(%04d) ", 100*1000 / (Now - TimeIn), Now - TimeIn);
+			TimeIn = Now;
+		}
+	}
+
+	fprintf (stderr, "Full frames scaled: %d; over %d ms; %d fps\n",
+			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
+
+	SDL_UnlockSurface (scaled_display);
+	SDL_UnlockSurface (SDL_Screen);
 }
 
 #endif

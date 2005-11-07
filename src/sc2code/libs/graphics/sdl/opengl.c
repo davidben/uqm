@@ -20,17 +20,17 @@
 
 #include "libs/graphics/sdl/opengl.h"
 #include "bbox.h"
-#include "2xscalers.h"
+#include "scalers.h"
 
-static SDL_Surface *format_conv_surf = NULL;
 static SDL_Surface *scaled_display = NULL;
 static SDL_Surface *scaled_transition = NULL;
 
 static int ScreenFilterMode;
 static GLuint DisplayTexture;
 static GLuint TransitionTexture;
-static BOOLEAN scanlines;
 static BOOLEAN upload_transitiontexture = FALSE;
+
+static TFB_ScaleFunc scaler = NULL;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define R_MASK 0xff000000
@@ -46,16 +46,26 @@ static BOOLEAN upload_transitiontexture = FALSE;
 
 
 static SDL_Surface *
-Create_Screen (void)
+Create_Screen (SDL_Surface *template, int w, int h)
 {
-	SDL_Surface *result = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth, ScreenHeight, 32,
-		R_MASK, G_MASK, B_MASK, 0x00000000);
-	if (result == NULL)
-	{
-		fprintf (stderr, "Couldn't create screen buffer: %s\n", SDL_GetError());
-		exit (-1);
+	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
+			template->format->BitsPerPixel,
+			template->format->Rmask, template->format->Gmask,
+			template->format->Bmask, 0);
+	if (newsurf == 0) {
+		fprintf (stderr, "Couldn't create screen buffers: %s\n", SDL_GetError());
 	}
-	return result;
+	return newsurf;
+}
+
+static int
+ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
+{
+	if (*screen)
+		SDL_FreeSurface (*screen);
+	*screen = Create_Screen (template, w, h);
+	
+	return *screen == 0 ? -1 : 0;
 }
 
 int
@@ -122,48 +132,9 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
-	{
-		if (scaled_display)
-		{
-			SDL_FreeSurface (scaled_display);
-			scaled_display = NULL;
-		}
-		scaled_display = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth * 2,
-			ScreenHeight * 2, 32, R_MASK, G_MASK, B_MASK, 0x00000000);
-		if (scaled_display == NULL)
-		{
-			fprintf (stderr, "Couldn't create scaled_display: %s\n", SDL_GetError());
-			return -1;
-		}
-		if (scaled_transition)
-		{
-			SDL_FreeSurface (scaled_transition);
-			scaled_transition = NULL;
-		}
-		scaled_transition = SDL_CreateRGBSurface(SDL_SWSURFACE, ScreenWidth * 2,
-			ScreenHeight * 2, 32, R_MASK, G_MASK, B_MASK, 0x00000000);
-		if (scaled_transition == NULL)
-		{
-			fprintf (stderr, "Couldn't create scaled_transition: %s\n", SDL_GetError());
-			return -1;
-		}
-
-		texture_width = 1024;
-		texture_height = 512;
-	}
-	else
-	{
-		texture_width = 512;
-		texture_height = 256;
-	}
-
 	if (format_conv_surf)
-	{
 		SDL_FreeSurface (format_conv_surf);
-		format_conv_surf = NULL;
-	}
-	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
+	format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
 		R_MASK, G_MASK, B_MASK, A_MASK);
 	if (format_conv_surf == NULL)
 	{
@@ -171,24 +142,43 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		return -1;
 	}
 
-	if (GfxFlags & TFB_GFXFLAGS_SCALE_ANY)
-		ScreenFilterMode = GL_LINEAR;
-	else
-		ScreenFilterMode = GL_NEAREST;
-
-	if (flags & TFB_GFXFLAGS_SCANLINES)
-		scanlines = TRUE;
-	else
-		scanlines = FALSE;
-
-	/* TODO: This leaks */
 	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 	{
-		SDL_Screens[i] = Create_Screen ();
+		if (0 != ReInit_Screen (&SDL_Screens[i], format_conv_surf,
+				ScreenWidth, ScreenHeight))
+			return -1;
 	}
 
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
+
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
+	{
+		if (0 != ReInit_Screen (&scaled_display, format_conv_surf,
+				ScreenWidth * 2, ScreenHeight * 2))
+			return -1;
+
+		if (0 != ReInit_Screen (&scaled_transition, format_conv_surf,
+				ScreenWidth * 2, ScreenHeight * 2))
+			return -1;
+
+		texture_width = 1024;
+		texture_height = 512;
+
+		scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
+	}
+	else
+	{
+		texture_width = 512;
+		texture_height = 256;
+
+		scaler = NULL;
+	}
+
+	if (GfxFlags & TFB_GFXFLAGS_SCALE_ANY)
+		ScreenFilterMode = GL_LINEAR;
+	else
+		ScreenFilterMode = GL_NEAREST;
 
 	glViewport (0, 0, ScreenWidthActual, ScreenHeightActual);
 	glClearColor (0,0,0,0);
@@ -236,8 +226,8 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 		exit (-1);
 	}	 
 
-	// pre-compute the RGB->YUV transformations
-	Scale_PrepYUV();
+	// Initialize scalers (let them precompute whatever)
+	Scale_Init ();
 
 	return 0;
 }
@@ -290,7 +280,7 @@ TFB_GL_DrawQuad (void)
 	glEnd ();
 }
 
-void 
+void
 TFB_GL_SwapBuffers (int force_full_redraw)
 {
 	int fade_amount = FadeAmount;
@@ -322,14 +312,9 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		updated.w = TFB_BBox.region.extent.width;
 		updated.h = TFB_BBox.region.extent.height;
 
-		if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
+		if (scaler)
 		{
-			if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
-				Scale_BiAdaptFilter (SDL_Screen, scaled_display, &updated);
-			else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-				Scale_BiAdaptAdvFilter (SDL_Screen, scaled_display, &updated);
-			else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
-				Scale_TriScanFilter (SDL_Screen, scaled_display, &updated);
+			scaler (SDL_Screen, scaled_display, &updated);
 
 			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
 			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
@@ -362,18 +347,14 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		
 		if (upload_transitiontexture) 
 		{
-			if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
+			if (scaler)
 			{
 				SDL_Rect r;
 				r.x = r.y = 0;
 				r.w = ScreenWidth;
 				r.h = ScreenHeight;
-				if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPT)
-					Scale_BiAdaptFilter (TransitionScreen, scaled_transition, &r);
-				else if (GfxFlags & TFB_GFXFLAGS_SCALE_BIADAPTADV)
-					Scale_BiAdaptAdvFilter (TransitionScreen, scaled_transition, &r);
-				else if (GfxFlags & TFB_GFXFLAGS_SCALE_TRISCAN)
-					Scale_TriScanFilter (TransitionScreen, scaled_transition, &r);
+				
+				scaler (TransitionScreen, scaled_transition, &r); 
 
 				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
 				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
@@ -439,22 +420,6 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 		TFB_GL_ScanLines ();
 
 	SDL_GL_SwapBuffers ();
-}
-
-SDL_Surface* 
-TFB_GL_DisplayFormatAlpha (SDL_Surface *surface)
-{
-	SDL_Surface* newsurf;
-	
-	newsurf = SDL_ConvertSurface (surface, format_conv_surf->format, surface->flags);
-	// SDL_SRCCOLORKEY and SDL_SRCALPHA cannot work at the same time,
-	// so we need to disable one of them
-	if ((surface->flags & SDL_SRCCOLORKEY) && newsurf
-			&& (newsurf->flags & SDL_SRCCOLORKEY)
-			&& (newsurf->flags & SDL_SRCALPHA))
-		SDL_SetAlpha (newsurf, 0, 255);
-
-	return newsurf;
 }
 
 #endif

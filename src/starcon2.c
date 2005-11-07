@@ -32,6 +32,7 @@
 #include "libs/tasklib.h"
 #include "file.h"
 #include "port.h"
+#include "libs/platform.h"
 #include "options.h"
 #include "uqmversion.h"
 #include "comm.h"
@@ -108,7 +109,7 @@ main (int argc, char *argv[])
 		/* .soundFlags = */         audio_QUALITY_MEDIUM,
 		/* .width = */              640,
 		/* .height = */             480,
-		/* .bpp = */                16,
+		/* .bpp = */                32,
 		/* .configDir = */          NULL,
 		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
@@ -313,7 +314,8 @@ enum
 	SCROLL_OPT,
 	SOUND_OPT,
 	STEREOSFX_OPT,
-	ADDON_OPT
+	ADDON_OPT,
+	ACCEL_OPT,
 };
 
 static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:v";
@@ -349,6 +351,7 @@ static struct option longOptions[] =
 	{"sound", 1, NULL, SOUND_OPT},
 	{"stereosfx", 0, NULL, STEREOSFX_OPT},
 	{"addon", 1, NULL, ADDON_OPT},
+	{"accel", 1, NULL, ACCEL_OPT},
 	{0, 0, 0, 0}
 };
 
@@ -466,6 +469,8 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
 				else if (!strcmp (optarg, "triscan"))
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+				else if (!strcmp (optarg, "hq"))
+					options->gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;
 				else if (strcmp (optarg, "none") != 0)
 				{
 					InvalidArgument(optarg, "--scale or -c");
@@ -625,6 +630,22 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				options->addons[options->numAddons - 1] = optarg;
 				options->addons[options->numAddons] = NULL;
 				break;
+			case ACCEL_OPT:
+				force_platform = PLATFORM_NULL;
+				if (!strcmp (optarg, "mmx"))
+					force_platform = PLATFORM_MMX;
+				else if (!strcmp (optarg, "sse"))
+					force_platform = PLATFORM_SSE;
+				else if (!strcmp (optarg, "3dnow"))
+					force_platform = PLATFORM_3DNOW;
+				else if (!strcmp (optarg, "none"))
+					force_platform = PLATFORM_C;
+				else if (strcmp (optarg, "detect") != 0)
+				{
+					InvalidArgument (optarg, "--accel");
+					badArg = TRUE;
+				}
+				break;
 			default:
 				fprintf (stderr, "Error: Invalid option '%s' not found.\n",
 							longOptions[optionIndex].name);
@@ -740,8 +761,8 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 16)\n");
 	fprintf (out, "  -f, --fullscreen (default off)\n");
 	fprintf (out, "  -o, --opengl (default off)\n");
-	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan "
-			"or none (default) )\n");
+	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
+			"hq or none (default) )\n");
 	fprintf (out, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
 			"default is 3do)\n");
 	fprintf (out, "  -s, --scanlines (default off)\n");

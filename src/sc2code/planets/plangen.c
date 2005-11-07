@@ -1214,13 +1214,13 @@ void planet_orbit_init ()
 
 	Orbit->isPFADefined = (BYTE *)HCalloc (sizeof(BYTE) * MAP_WIDTH);
 	Orbit->PlanetFrameArray = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, DIAMETER, DIAMETER,
+			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, DIAMETER, DIAMETER,
 				(COUNT)MAP_WIDTH));
 	Orbit->TintFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, (SWORD)MAP_WIDTH,
+			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, (SWORD)MAP_WIDTH,
 				(SWORD)MAP_HEIGHT, 2));
 	Orbit->ShieldFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, SHIELD_DIAM,
+			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, SHIELD_DIAM,
 				SHIELD_DIAM, 1));
 
 	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);

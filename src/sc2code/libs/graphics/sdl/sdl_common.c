@@ -41,6 +41,8 @@ SDL_Surface *TransitionScreen;
 
 SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
+SDL_Surface *format_conv_surf = NULL;
+
 volatile int TransitionAmount = 255;
 SDL_Rect TransitionClipRect;
 static volatile BOOLEAN abortFlag = FALSE;
@@ -223,14 +225,32 @@ TFB_SwapBuffers (int force_full_redraw)
 SDL_Surface* 
 TFB_DisplayFormatAlpha (SDL_Surface *surface)
 {
-#ifdef HAVE_OPENGL
-	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
-	{
-		return TFB_GL_DisplayFormatAlpha (surface);
-	}
-#endif
+	SDL_Surface* newsurf;
+	SDL_PixelFormat* dstfmt;
+	const SDL_PixelFormat* srcfmt = surface->format;
+	
+	// figure out what format to use (alpha/no alpha)
+	if (surface->format->Amask)
+		dstfmt = format_conv_surf->format;
+	else
+		dstfmt = SDL_Screen->format;
 
-	return SDL_DisplayFormatAlpha (surface);
+	if (srcfmt->BytesPerPixel == dstfmt->BytesPerPixel && 
+			srcfmt->Rmask == dstfmt->Rmask &&
+			srcfmt->Gmask == dstfmt->Gmask &&
+			srcfmt->Bmask == dstfmt->Bmask &&
+			srcfmt->Amask == dstfmt->Amask)
+		return surface; // no conversion needed
+
+	newsurf = SDL_ConvertSurface (surface, dstfmt, surface->flags);
+	// SDL_SRCCOLORKEY and SDL_SRCALPHA cannot work at the same time,
+	// so we need to disable one of them
+	if ((surface->flags & SDL_SRCCOLORKEY) && newsurf
+			&& (newsurf->flags & SDL_SRCCOLORKEY)
+			&& (newsurf->flags & SDL_SRCALPHA))
+		SDL_SetAlpha (newsurf, 0, 255);
+
+	return newsurf;
 }
 
 void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,

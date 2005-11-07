@@ -388,6 +388,7 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 	to_a = to & 0xFF;
 
 	clear = SDL_MapRGBA (img->format, 0, 0, 0, 0);
+	TFB_DrawCanvas_SetTransparentColor (img, 0, 0, 0, FALSE);
 	for (y = 0; y < 2; y++)
 		for (x = 0; x < width; x++)
 			putpix (img, x, y, clear);
@@ -842,7 +843,8 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 				TFB_Image *Image;
 
 				if (DrawableType == RAM_DRAWABLE && imgw > 0 && imgh > 0
-						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (imgw, imgh, FALSE))))
+						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (
+							imgw, imgh, (flags & WANT_ALPHA) ? TRUE : FALSE))))
 				{
 					FramePtr->image = Image;
 				}

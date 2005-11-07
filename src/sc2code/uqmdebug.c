@@ -67,6 +67,9 @@ debugKeyPressed (void)
 	showSpheres ();
 //	forwardToNextEvent (TRUE);		
 
+	// Tests
+	//Scale_PerfTest ();
+
 	// Informational:
 //	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);

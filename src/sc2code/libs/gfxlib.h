@@ -52,6 +52,7 @@ typedef BYTE CREATE_FLAGS;
 #define WANT_MASK (CREATE_FLAGS)(1 << 0)
 #define WANT_PIXMAP (CREATE_FLAGS)(1 << 1)
 #define MAPPED_TO_DISPLAY (CREATE_FLAGS)(1 << 2)
+#define WANT_ALPHA (CREATE_FLAGS)(1 << 3)
 
 typedef struct extent
 {

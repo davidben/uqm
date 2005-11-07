@@ -123,7 +123,8 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 
 	Drawable = _request_drawable (
 			(COUNT)num_frames, (DRAWABLE_TYPE)RAM_DRAWABLE,
-			(CREATE_FLAGS)(CreateFlags & (WANT_MASK | WANT_PIXMAP | MAPPED_TO_DISPLAY)),
+			(CREATE_FLAGS)(CreateFlags & (WANT_MASK | WANT_PIXMAP
+				| WANT_ALPHA | MAPPED_TO_DISPLAY)),
 			(SIZE)width, (SIZE)height
 			);
 	if (Drawable)

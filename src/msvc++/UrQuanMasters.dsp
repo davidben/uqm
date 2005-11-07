@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
-CFG=UrQuanMasters - Win32 Debug
+CFG=URQUANMASTERS - WIN32 DEBUG
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,19 +13,20 @@ CFG=UrQuanMasters - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "UrQuanMasters.mak" CFG="UrQuanMasters - Win32 Debug"
+!MESSAGE NMAKE /f "UrQuanMasters.mak" CFG="URQUANMASTERS - WIN32 DEBUG"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "UrQuanMasters - Win32 Release" (based on "Win32 (x86) Console Application")
 !MESSAGE "UrQuanMasters - Win32 Debug" (based on "Win32 (x86) Console Application")
+!MESSAGE "UrQuanMasters - Win32 Release NoAL" (based on "Win32 (x86) Console Application")
 !MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
@@ -42,14 +43,14 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
+# ADD CPP /nologo /G6 /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "USE_PLATFORM_ACCEL" /D "USE_DEBUG_KEY" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 # Begin Special Build Tool
@@ -72,17 +73,49 @@ PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "USE_PLATFORM_ACCEL" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAL"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "UrQuanMasters___Win32_Release_NoAL"
+# PROP BASE Intermediate_Dir "UrQuanMasters___Win32_Release_NoAL"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release_NoAL"
+# PROP Intermediate_Dir "Release_NoAL"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "USE_PLATFORM_ACCEL" /D "USE_DEBUG_KEY" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
+# SUBTRACT BASE CPP /YX
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "USE_PLATFORM_ACCEL" /D "USE_DEBUG_KEY" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_ZIP" /D "ZLIB_DLL" /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=xilink6.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=Stripping debug info...
+PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
+# End Special Build Tool
 
 !ENDIF 
 
@@ -90,6 +123,7 @@ LINK32=link.exe
 
 # Name "UrQuanMasters - Win32 Release"
 # Name "UrQuanMasters - Win32 Debug"
+# Name "UrQuanMasters - Win32 Release NoAL"
 # Begin Group "Source Files"
 
 # PROP Default_Filter ""
@@ -186,10 +220,6 @@ SOURCE=..\sc2code\libs\file\temp.c
 # Begin Group "graphics"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\graphics\prim.h
-# End Source File
 # Begin Group "sdl"
 
 # PROP Default_Filter ""
@@ -200,6 +230,22 @@ SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_3dnow.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_mmx.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_mmx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_sse.c
 # End Source File
 # Begin Source File
 
@@ -223,11 +269,27 @@ SOURCE=..\sc2code\libs\graphics\sdl\bbox.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\biadv2x.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\bilinear2x.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\canvas.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\hq2x.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\nearest2x.c
 # End Source File
 # Begin Source File
 
@@ -259,11 +321,27 @@ SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
+SOURCE=..\sc2code\libs\graphics\sdl\scaleint.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\scalemmx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\scalers.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\scalers.h
 # End Source File
 # Begin Source File
 
@@ -280,6 +358,10 @@ SOURCE=..\sc2code\libs\graphics\sdl\sdluio.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\sdl\sdluio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\sdl\triscan2x.c
 # End Source File
 # End Group
 # Begin Source File
@@ -365,6 +447,10 @@ SOURCE=..\sc2code\libs\graphics\loaddisp.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\pixmap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\graphics\prim.h
 # End Source File
 # Begin Source File
 
@@ -952,6 +1038,11 @@ SOURCE=..\sc2code\libs\uio\debug.c
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
 
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAL"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1003,6 +1094,11 @@ SOURCE=..\sc2code\libs\uio\hashtable.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAL"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1052,6 +1148,11 @@ SOURCE=..\sc2code\libs\uio\memdebug.c
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAL"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1157,6 +1258,10 @@ SOURCE=..\sc2code\libs\memlib.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\misc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\platform.h
 # End Source File
 # Begin Source File
 
@@ -1338,10 +1443,6 @@ SOURCE=..\sc2code\comm\comandr\restypes.h
 SOURCE=..\sc2code\comm\comandr\strings.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\sc2code\comm\commall.h
-# End Source File
 # Begin Group "druuge.comm"
 
 # PROP Default_Filter ""
@@ -2102,6 +2203,10 @@ SOURCE=..\sc2code\comm\zoqfot\strings.h
 SOURCE=..\sc2code\comm\zoqfot\zoqfotc.c
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\comm\commall.h
+# End Source File
 # End Group
 # Begin Group "planets"
 
@@ -2306,10 +2411,6 @@ SOURCE=..\sc2code\planets\surface.c
 # Begin Group "ships"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\ships\ship.h
-# End Source File
 # Begin Group "androsyn"
 
 # PROP Default_Filter ""
@@ -3314,6 +3415,10 @@ SOURCE=..\sc2code\ships\zoqfot\restypes.h
 SOURCE=..\sc2code\ships\zoqfot\zoqfot.c
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\sc2code\ships\ship.h
+# End Source File
 # End Group
 # Begin Source File
 
@@ -3709,10 +3814,6 @@ SOURCE=..\sc2code\starbase.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\strtemp.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\starbase.h
 # End Source File
 # Begin Source File
@@ -3738,6 +3839,10 @@ SOURCE=..\sc2code\state.h
 # Begin Source File
 
 SOURCE=..\sc2code\status.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\strtemp.h
 # End Source File
 # Begin Source File
 

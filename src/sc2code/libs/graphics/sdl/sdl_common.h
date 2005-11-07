@@ -39,6 +39,8 @@ extern SDL_Surface *TransitionScreen;
 
 extern SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
+extern SDL_Surface *format_conv_surf;
+
 extern volatile int TransitionAmount;
 extern SDL_Rect TransitionClipRect;
 

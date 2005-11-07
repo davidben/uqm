@@ -154,7 +154,11 @@ TFB_Canvas
 TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
 {
 	SDL_Surface *new_surf;
-	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, hasalpha ? 0xff000000 : 0);
+	SDL_PixelFormat* fmt = format_conv_surf->format;
+
+	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
+			fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask,
+			hasalpha ? fmt->Amask : 0);
 	if (!new_surf) {
 		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s", SDL_GetError());
 		exit(-1);
@@ -173,12 +177,13 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 		fprintf(stderr, "TFB_DrawCanvas_New_ForScreen() WARNING:"
 				"Paletted display format will be slow");
 
-		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
-				32, 0x000000ff, 0x0000ff00, 0x00ff0000,
-				withalpha ? 0xff000000 : 0);
+		new_surf = TFB_DrawCanvas_New_TrueColor (w, h, withalpha);
 	}
 	else
 	{
+		if (withalpha && fmt->Amask == 0)
+			fmt = format_conv_surf->format; // Screen has no alpha and we need it
+
 		new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
 				fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask,
 				withalpha ? fmt->Amask : 0);
@@ -259,8 +264,10 @@ TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int typ
 		}
 		if (!old)
 		{
-			newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w, src->h, 32,
-				0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+			if (SDL_Screen->format->BitsPerPixel == 32)
+				newsurf = TFB_DrawCanvas_New_ForScreen (src->w, src->h, TRUE);
+			else
+				newsurf = TFB_DrawCanvas_New_TrueColor (src->w, src->h, TRUE);
 		}
 	}
 		
@@ -348,8 +355,12 @@ TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas)
 		fprintf (stderr, "WARNING: Could not convert sprite-canvas to display format.\n");
 		return canvas;
 	}
+	else if (result == canvas)
+	{	// no conversion was necessary
+		return canvas;
+	}
 	else
-	{
+	{	// converted
 		TFB_DrawCanvas_Delete (canvas);
 		return result;
 	}
@@ -590,7 +601,8 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
 	SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
 	SDL_PixelFormat *dstfmt = dst->format;
-	const int dstopaque = 0xff << dstfmt->Ashift;
+	const int dstopaque = dstfmt->Amask;
+	const int dsttransparent = (dst->flags & SDL_SRCCOLORKEY) ? dstfmt->colorkey : 0;
 	const int w = size.width, h = size.height;
 	const int ALPHA_THRESHOLD = 128;
 	
@@ -785,7 +797,7 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				}
 				else
 				{
-					*dst_p++ = 0;
+					*dst_p++ = dsttransparent;
 				}
 
 				sx0 += fsx0;
@@ -985,7 +997,7 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 				}
 				else
 				{
-					*dst_p++ = 0;
+					*dst_p++ = dsttransparent;
 				}
 
 				sx0 += fsx0;

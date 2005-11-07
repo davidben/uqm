@@ -1,3 +1,6 @@
 uqm_CFILES="3do_blt.c 3do_funcs.c 3do_getbody.c dcqueue.c opengl.c
 		primitives.c pure.c rndzoom.c sdl_common.c
-		canvas.c bbox.c 2xscalers.c sdluio.c rotozoom.c"
+		scalers.c 2xscalers.c
+		2xscalers_mmx.c 2xscalers_sse.c 2xscalers_3dnow.c
+		nearest2x.c bilinear2x.c biadv2x.c triscan2x.c hq2x.c
+		canvas.c bbox.c sdluio.c rotozoom.c"

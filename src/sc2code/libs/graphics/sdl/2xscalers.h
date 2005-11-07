@@ -1,4 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,11 +17,14 @@
 #ifndef _2XSCALERS_H_
 #define _2XSCALERS_H_
 
-void Scale_PrepYUV (void);
 void Scale_Nearest (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BilinearFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BiAdaptFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_BiAdaptAdvFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 void Scale_TriScanFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
+void Scale_HqFilter (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r);
 
-#endif
+extern const Scale_FuncDef_t Scale_C_Functions[];
+
+
+#endif /* _2XSCALERS_H_ */
