@@ -224,7 +224,7 @@ This drone-vessel speaks with the voice and authority of the Ur-Quan.
 You are trespassing within Ur-Quan space.
 This world, Earth, may not be approached for any reason.
 Nor will hostilities against our orbital platform be tolerated.
-In addition, your ship does not respond to standard Hierarachy identification transmissions
+In addition, your ship does not respond to standard Hierarchy identification transmissions
 and is therefore deemed to be... independent.
 This is not permissible -- only subservience shall be tolerated.
 This drone now leaves to inform the Ur-Quan of your transgressions.
