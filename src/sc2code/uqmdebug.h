@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(_DEBUG_H) && defined(DEBUG)
+#if !defined(_DEBUG_H) && (defined(DEBUG) || defined(USE_DEBUG_KEY))
 #define _DEBUG_H
 
 #include "clock.h"
