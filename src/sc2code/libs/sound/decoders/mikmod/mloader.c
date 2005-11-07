@@ -32,8 +32,6 @@
 #include <string.h>
 
 #include "mikmod_internals.h"
-#include "port.h"
-#include "libs/uio.h"
 
 
 		MREADER *modreader;
@@ -374,20 +372,20 @@ static CHAR* Player_LoadTitle_internal(MREADER *reader)
 	return l->LoadTitle();
 }
 
-CHAR* Player_LoadTitle(uio_DirHandle *dir, CHAR* filename)
+CHAR* Player_LoadTitle(CHAR* filename)
 {
 	CHAR* result=NULL;
-	uio_Stream* fp;
+	FILE* fp;
 	MREADER* reader;
 
-	if((fp=_mm_fopen(dir, filename,"rb"))) {
+	if((fp=_mm_fopen(filename,"rb"))) {
 		if((reader=_mm_new_file_reader(fp))) {
 			MUTEX_LOCK(lists);
 			result=Player_LoadTitle_internal(reader);
 			MUTEX_UNLOCK(lists);
 			_mm_delete_file_reader(reader);
 		}
-		uio_fclose(fp);
+		fclose(fp);
 	}
 	return result;
 }
@@ -509,7 +507,7 @@ MODULE* Player_LoadGeneric(MREADER *reader,int maxchan,BOOL curious)
 
 /* Loads a module given a file pointer.
    File is loaded from the current file seek position. */
-MODULE* Player_LoadFP(uio_Stream* fp,int maxchan,BOOL curious)
+MODULE* Player_LoadFP(FILE* fp,int maxchan,BOOL curious)
 {
 	MODULE* result=NULL;
 	struct MREADER* reader=_mm_new_file_reader (fp);
@@ -523,36 +521,16 @@ MODULE* Player_LoadFP(uio_Stream* fp,int maxchan,BOOL curious)
 
 /* Open a module via its filename.  The loader will initialize the specified
    song-player 'player'. */
-MODULE* Player_Load(uio_DirHandle *dir,CHAR* filename,int maxchan,BOOL curious)
+MODULE* Player_Load(CHAR* filename,int maxchan,BOOL curious)
 {
-	uio_Stream *fp;
+	FILE *fp;
 	MODULE *mf=NULL;
 
-	if((fp=_mm_fopen(dir, filename,"rb"))) {
+	if((fp=_mm_fopen(filename,"rb"))) {
 		mf=Player_LoadFP(fp,maxchan,curious);
-		uio_fclose(fp);
+		fclose(fp);
 	}
 	return mf;
 }
-
-/* SDL_RWops compatability */
-#ifdef USE_RWOPS
-
-/* Open a module via an SDL_rwop.  The loader will initialize the specified
-   song-player 'player'. */
-MODULE* Player_LoadRW(SDL_RWops *rw,int maxchan,BOOL curious)
-{
-	MODULE* result=NULL;
-	struct MREADER* reader=_mm_new_rwops_reader (rw);
-
-	if (reader) {
-		result=Player_LoadGeneric(reader,maxchan,curious);
-		_mm_delete_rwops_reader(reader);
-	}
-	return result;
-}
-
-#endif /* USE_RWOPS */
-/* End SDL_RWops compatability */
 
 /* ex:set ts=4: */

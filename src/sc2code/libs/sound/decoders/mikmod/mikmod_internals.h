@@ -33,13 +33,11 @@
 #include <malloc.h>
 #endif
 #include <stdarg.h>
-//#if defined(__OS2__)||defined(__EMX__)||defined(WIN32)
-//#define strcasecmp(s,t) stricmp(s,t)
-//#endif
+#if defined(__OS2__)||defined(__EMX__)||defined(_MSC_VER)
+#define strcasecmp(s,t) stricmp(s,t)
+#endif
 
 #include "mikmod_build.h"
-#include "port.h"
-#include "libs/uio.h"
 
 #ifdef macintosh
 #ifndef __MWERKS__
@@ -139,20 +137,13 @@ DECLARE_MUTEX(vars);
 
 /*========== Portable file I/O */
 
-/* SDL_RWops compatability */
-#ifdef USE_RWOPS
-extern MREADER *_mm_new_rwops_reader(SDL_RWops * rw);
-extern void _mm_delete_rwops_reader (MREADER*);
-#endif /* USE_RWOPS */
-/* End SDL_RWops compatability */
-
-extern MREADER* _mm_new_file_reader(uio_Stream* fp);
+extern MREADER* _mm_new_file_reader(FILE* fp);
 extern void _mm_delete_file_reader(MREADER*);
 
-extern MWRITER* _mm_new_file_writer(uio_Stream *fp);
+extern MWRITER* _mm_new_file_writer(FILE *fp);
 extern void _mm_delete_file_writer(MWRITER*);
 
-extern BOOL _mm_FileExists(uio_DirHandle *dir,CHAR *fname);
+extern BOOL _mm_FileExists(CHAR *fname);
 
 #define _mm_write_SBYTE(x,y) y->Put(y,(int)x)
 #define _mm_write_UBYTE(x,y) y->Put(y,(int)x)
@@ -173,7 +164,7 @@ extern BOOL _mm_FileExists(uio_DirHandle *dir,CHAR *fname);
 
 extern void _mm_iobase_setcur(MREADER*);
 extern void _mm_iobase_revert(void);
-extern uio_Stream *_mm_fopen(uio_DirHandle *,CHAR*,CHAR*);
+extern FILE *_mm_fopen(CHAR*,CHAR*);
 extern void _mm_write_string(CHAR*,MWRITER*);
 extern int  _mm_read_string (CHAR*,int,MREADER*);
 
