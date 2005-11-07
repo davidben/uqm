@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,9 +15,6 @@
  */
 
 /* 
-   Install the rndzoom.diff patch, and copy this file into libs/graphics/sdl
-   Then add rndzoom.c to your Makefile
-
    The adjustments are as follows:
    BLUR_TYPE:
 		0: No blur
