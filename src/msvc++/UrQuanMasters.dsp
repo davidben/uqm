@@ -582,7 +582,7 @@ SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod_build.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod_internal.h
+SOURCE=..\sc2code\libs\sound\decoders\mikmod\mikmod_internals.h
 # End Source File
 # Begin Source File
 
