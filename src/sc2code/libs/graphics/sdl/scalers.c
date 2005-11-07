@@ -18,7 +18,7 @@
 
 #include "types.h"
 #include "libs/graphics/sdl/sdl_common.h"
-#include SDL_INCLUDE(sdl_cpuinfo.h)
+#include SDL_INCLUDE(SDL_cpuinfo.h)
 #include "libs/platform.h"
 #include "scalers.h"
 #include "scaleint.h"
