@@ -27,6 +27,7 @@
 #include "uio.h"
 #include "decoder.h"
 #include "mikmod/mikmod.h"
+#include "mikmod/drv_openal.h"
 #include "libs/sound/audiocore.h"
 #include "modaud.h"
 
@@ -72,8 +73,71 @@ typedef struct tfb_modsounddecoder
 
 } TFB_ModSoundDecoder;
 
-MIKMODAPI extern struct MDRIVER drv_openal;
 static const TFB_DecoderFormats* moda_formats = NULL;
+
+// MikMod READER interface
+//  we provide our own so that we can do loading via uio 
+//
+typedef struct MUIOREADER
+{
+	MREADER     core;
+	uio_Stream* file;
+
+} MUIOREADER;
+
+static BOOL
+moda_uioReader_Eof (MREADER* reader)
+{
+	return uio_feof (((MUIOREADER*)reader)->file);
+}
+
+static BOOL
+moda_uioReader_Read (MREADER* reader, void* ptr, size_t size)
+{
+	return uio_fread (ptr, size, 1, ((MUIOREADER*)reader)->file);
+}
+
+static int
+moda_uioReader_Get (MREADER* reader)
+{
+	return uio_fgetc (((MUIOREADER*)reader)->file);
+}
+
+static BOOL
+moda_uioReader_Seek (MREADER* reader, long offset, int whence)
+{
+	return uio_fseek (((MUIOREADER*)reader)->file, offset, whence);
+}
+
+static long
+moda_uioReader_Tell (MREADER* reader)
+{
+	return uio_ftell (((MUIOREADER*)reader)->file);
+}
+
+MREADER*
+moda_new_uioReader (uio_Stream* fp)
+{
+	MUIOREADER* reader = (MUIOREADER*) HMalloc (sizeof(MUIOREADER));
+	if (reader)
+	{
+		reader->core.Eof  = &moda_uioReader_Eof;
+		reader->core.Read = &moda_uioReader_Read;
+		reader->core.Get  = &moda_uioReader_Get;
+		reader->core.Seek = &moda_uioReader_Seek;
+		reader->core.Tell = &moda_uioReader_Tell;
+		reader->file = fp;
+	}
+	return (MREADER*)reader;
+}
+
+void
+moda_delete_uioReader (MREADER* reader)
+{
+	if (reader)
+		HFree (reader);
+}
+
 
 static const char*
 moda_GetName (void)
@@ -166,9 +230,30 @@ static bool
 moda_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 {
 	TFB_ModSoundDecoder* moda = (TFB_ModSoundDecoder*) This;
+	uio_Stream *fp;
+	MREADER* reader;
 	MODULE* mod;
 
-	mod = Player_Load (dir, (char*) filename, 4, 0);
+	fp = uio_fopen (dir, filename, "rb");
+	if (!fp)
+	{
+		moda->last_error = errno;
+		return false;
+	}
+
+	reader = moda_new_uioReader (fp);
+	if (!reader)
+	{
+		moda->last_error = -1;
+		uio_fclose (fp);
+		return false;
+	}
+
+	mod = Player_LoadGeneric (reader, 8, 0);
+	
+	// can already dispose of reader and fileh
+	moda_delete_uioReader (reader);
+	uio_fclose (fp);
 	if (!mod)
 	{
 		fprintf (stderr, "moda_Open(): could not load %s\n", filename);
@@ -206,12 +291,16 @@ static int
 moda_Decode (THIS_PTR, void* buf, sint32 bufsize)
 {
 	TFB_ModSoundDecoder* moda = (TFB_ModSoundDecoder*) This;
+	volatile ULONG* poutsize;
 
 	Player_Start (moda->module);
 	if (!Player_Active())
 		return 0;
 
-	return VC_WriteBytes (buf, bufsize);
+	poutsize = ALDRV_SetOutputBuffer (buf, bufsize);
+	MikMod_Update ();
+	
+	return *poutsize;
 }
 
 static uint32

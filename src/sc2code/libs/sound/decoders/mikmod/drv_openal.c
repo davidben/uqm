@@ -1,7 +1,36 @@
-// OpenAL driver for mikmod
+/*
+	This library is free software; you can redistribute it and/or modify
+	it under the terms of the GNU Library General Public License as
+	published by the Free Software Foundation; either version 2 of
+	the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+	02111-1307, USA.
+*/
+
+// Memory driver for mikmod
 // based on SDL driver (c) Sam Lantinga
 
-#include "mikmod_internals.h"
+#include "mikmod.h"
+
+static void* buffer;
+ULONG bufsize;
+ULONG written;
+
+ULONG* ALDRV_SetOutputBuffer(void* buf, ULONG size)
+{
+	buffer = buf;
+	bufsize = size;
+	written = 0;
+	return &written;
+}
 
 
 static BOOL ALDRV_IsThere(void)
@@ -25,7 +54,10 @@ static void ALDRV_Exit(void)
 
 static void ALDRV_Update(void)
 {
-    /* does nothing, buffers are updated in the background */
+	if (!buffer || bufsize == 0)
+		return;
+
+	written = VC_WriteBytes(buffer, bufsize);
 }
 
 
