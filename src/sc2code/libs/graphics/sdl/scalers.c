@@ -203,9 +203,6 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 
 	Scale_Platform = SCALEPLAT_NULL;
 
-	// XXX: Hack to test some code
-	Scale_MMX_PrepPlatform (fmt);
-
 	// first match wins
 	// add better platform techs to the top
 #ifdef MMX_ASM
