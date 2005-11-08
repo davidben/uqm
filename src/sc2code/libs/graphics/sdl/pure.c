@@ -36,7 +36,8 @@ Create_Screen (SDL_Surface *template, int w, int h)
 			template->format->Rmask, template->format->Gmask,
 			template->format->Bmask, 0);
 	if (newsurf == 0) {
-		fprintf (stderr, "Couldn't create screen buffers: %s\n", SDL_GetError());
+		fprintf (stderr, "Couldn't create screen buffers: %s\n",
+				SDL_GetError());
 	}
 	return newsurf;
 }
@@ -52,7 +53,8 @@ ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
 }
 
 int
-TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
+TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height,
+						int bpp)
 {
 	int i, videomode_flags;
 	SDL_Surface *temp_surf;
@@ -60,7 +62,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	GraphicsDriver = driver;
 	ScreenColorDepth = bpp;
 
-	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly with fades/scaling
+	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly
+	// with fades/scaling
 	if (width == 320 && height == 240)
 	{
 		videomode_flags = SDL_SWSURFACE;
@@ -74,7 +77,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 		ScreenHeightActual = 480;
 
 		if (width != 640 || height != 480)
-			fprintf (stderr, "Screen resolution of %dx%d not supported under pure SDL, using 640x480\n", width, height);
+			fprintf (stderr, "Screen resolution of %dx%d not supported "
+					"under pure SDL, using 640x480\n", width, height);
 	}
 
 	videomode_flags |= SDL_ANYFORMAT;
@@ -110,7 +114,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	if (temp_surf)
 	{	// acquire a fast compatible format from SDL
 		format_conv_surf = SDL_DisplayFormatAlpha (temp_surf);
-		if (!format_conv_surf || format_conv_surf->format->BitsPerPixel != 32)
+		if (!format_conv_surf ||
+				format_conv_surf->format->BitsPerPixel != 32)
 		{	// absolute fallback case
 			format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
 					0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -119,7 +124,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	}
 	if (!format_conv_surf)
 	{
-		fprintf (stderr, "Couldn't create format_conv_surf: %s\n", SDL_GetError());
+		fprintf (stderr, "Couldn't create format_conv_surf: %s\n",
+				SDL_GetError());
 		return -1;
 	}
 	
@@ -137,12 +143,14 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	if (0 != ReInit_Screen (&fade_white, format_conv_surf,
 			ScreenWidth, ScreenHeight))
 		return -1;
-	SDL_FillRect (fade_white, NULL, SDL_MapRGB (fade_white->format, 255, 255, 255));
+	SDL_FillRect (fade_white, NULL,
+			SDL_MapRGB (fade_white->format, 255, 255, 255));
 	
 	if (0 != ReInit_Screen (&fade_black, format_conv_surf,
 			ScreenWidth, ScreenHeight))
 		return -1;
-	SDL_FillRect (fade_black, NULL, SDL_MapRGB (fade_black->format, 0, 0, 0));
+	SDL_FillRect (fade_black, NULL,
+			SDL_MapRGB (fade_black->format, 0, 0, 0));
 	
 	if (0 != ReInit_Screen (&fade_temp, format_conv_surf,
 			ScreenWidth, ScreenHeight))
@@ -187,7 +195,8 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	if (TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp))
 	{
-		fprintf (stderr, "Could not initialize video: no fallback at start of program!\n");
+		fprintf (stderr, "Could not initialize video: "
+				"no fallback at start of program!\n");
 		exit (-1);
 	}
 
@@ -261,7 +270,8 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 		SDL_Surface *scalebuffer = scaled_display;
 
 		// we can scale directly onto SDL_Video if video is compatible
-		if (SDL_Video->format->BitsPerPixel == SDL_Screen->format->BitsPerPixel)
+		if (SDL_Video->format->BitsPerPixel ==
+				SDL_Screen->format->BitsPerPixel)
 			scalebuffer = SDL_Video;
 		
 		if (transition_amount != 255)
@@ -269,8 +279,10 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 			backbuffer = fade_temp;
 			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
 
-			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
-			SDL_BlitSurface (TransitionScreen, &TransitionClipRect, backbuffer, &TransitionClipRect);
+			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA,
+					255 - transition_amount);
+			SDL_BlitSurface (TransitionScreen, &TransitionClipRect,
+					backbuffer, &TransitionClipRect);
 		}
 
 		if (fade_amount != 255)
@@ -322,8 +334,10 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 
 		if (transition_amount != 255)
 		{
-			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA, 255 - transition_amount);
-			SDL_BlitSurface (TransitionScreen, &TransitionClipRect, SDL_Video, &TransitionClipRect);
+			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA,
+					255 - transition_amount);
+			SDL_BlitSurface (TransitionScreen, &TransitionClipRect,
+					SDL_Video, &TransitionClipRect);
 		}
 
 		if (fade_amount != 255)
@@ -340,7 +354,8 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 			}
 		}
 
-		SDL_UpdateRect (SDL_Video, updated.x, updated.y, updated.w, updated.h);
+		SDL_UpdateRect (SDL_Video, updated.x, updated.y,
+				updated.w, updated.h);
 	}
 }
 
@@ -353,12 +368,14 @@ Scale_PerfTest (void)
 
 	if (!scaler)
 	{
-		fprintf (stderr, "No scaler configured! Run with larger resolution, please\n");
+		fprintf (stderr, "No scaler configured! "
+				"Run with larger resolution, please\n");
 		return;
 	}
 	if (!scaled_display)
 	{
-		fprintf (stderr, "Run scaler performance tests in Pure mode, please\n");
+		fprintf (stderr, "Run scaler performance tests "
+				"in Pure mode, please\n");
 		return;
 	}
 
