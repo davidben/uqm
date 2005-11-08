@@ -60,7 +60,7 @@ OpenStateFile (int stateFile, const char* mode)
 	if (fp->open_count > 1)
 		fprintf (stderr, "WARNING: "
 				"State file %s open count is %d after open()\n",
-				fp->open_count);
+				fp->symname, fp->open_count);
 	
 	if (!fp->data)
 	{
@@ -87,7 +87,7 @@ OpenStateFile (int stateFile, const char* mode)
 	{
 		fprintf (stderr, "WARNING: "
 				"State file %s opened with unsupported mode '%s'\n",
-				mode);
+				fp->symname, mode);
 	}
 	fp->ptr = 0;
 	
@@ -102,7 +102,7 @@ CloseStateFile (GAME_STATE_FILE* fp)
 	if (fp->open_count < 0)
 		fprintf (stderr, "WARNING: "
 				"State file %s open count is %d after close()\n",
-				fp->open_count);
+				fp->symname, fp->open_count);
 	// Erm, Ok, it's closed! Honest!
 }
 
@@ -118,7 +118,7 @@ DeleteStateFile (int stateFile)
 	if (fp->open_count != 0)
 		fprintf (stderr, "WARNING: "
 				"State file %s open count is %d during delete()\n",
-				fp->open_count);
+				fp->symname, fp->open_count);
 
 	fp->used = 0;
 	fp->ptr = 0;
