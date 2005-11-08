@@ -115,7 +115,6 @@ TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 {
 	CONTEXT OldContext;
 	FRAME OldFrame;
-	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	OldContext = SetContext (TaskContext);
 	OldFrame = SetContextFGFrame (DstFrame);
