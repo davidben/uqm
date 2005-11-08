@@ -180,7 +180,7 @@ typedef struct
 } Scale_PlatDef_t;
 
 
-const static Scale_PlatDef_t
+static const Scale_PlatDef_t
 Scale_PlatDefs[] =
 {
 #if defined(MMX_ASM)

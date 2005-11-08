@@ -347,7 +347,6 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 void
 Scale_PerfTest (void)
 {
-	int fps = 0;
 	DWORD TimeStart, TimeIn, Now;
 	SDL_Rect updated = {0, 0, ScreenWidth, ScreenHeight};
 	int i;
@@ -378,12 +377,13 @@ Scale_PerfTest (void)
 		if (i % 100 == 0)
 		{
 			Now = SDL_GetTicks ();
-			fprintf(stderr, "%03d(%04d) ", 100*1000 / (Now - TimeIn), Now - TimeIn);
+			fprintf(stderr, "%03ld(%04ld) ", 100*1000 / (Now - TimeIn),
+					Now - TimeIn);
 			TimeIn = Now;
 		}
 	}
 
-	fprintf (stderr, "Full frames scaled: %d; over %d ms; %d fps\n",
+	fprintf (stderr, "Full frames scaled: %d; over %ld ms; %ld fps\n",
 			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
 
 	SDL_UnlockSurface (scaled_display);
