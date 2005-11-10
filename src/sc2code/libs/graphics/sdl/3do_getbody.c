@@ -113,6 +113,8 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 	Uint32 p;
 	SDL_Color colors[256];
 	SDL_Surface *new_surf;				
+	SDL_PixelFormat* srcfmt = surf->format;
+	SDL_PixelFormat* dstfmt;
 	GetPixelFn getpix;
 	PutPixelFn putpix;
 
@@ -120,13 +122,21 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 	INDEX_SET (FramePtr->TypeIndexAndFlags, charInd);
 			// XXX: Is this still relevant?
 
+//#define ALPHA_FONTS
+
 	SDL_LockSurface (surf);
 
-	// convert 32-bit png font to indexed
+#if defined(ALPHA_FONTS)
+	// convert png font to truecolor + alpha
+	new_surf = TFB_DrawCanvas_New_TrueColor (surf->w, surf->h, TRUE);
 
+#else // indexed fonts
+	// convert 32-bit png font to indexed
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, surf->w, surf->h,
 			8, 0, 0, 0, 0);
+#endif
 
+	dstfmt = new_surf->format;
 	getpix = getpixel_for (surf);
 	putpix = putpixel_for (new_surf);
 
@@ -135,15 +145,29 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 		for (x = 0; x < surf->w; ++x)
 		{
 			p = getpix (surf, x, y);
-			SDL_GetRGBA (p, surf->format, &r, &g, &b, &a);
+			SDL_GetRGBA (p, srcfmt, &r, &g, &b, &a);
 
+#if defined(ALPHA_FONTS)
+			if (!srcfmt->Amask)
+			{	// produce alpha from intensity (Y component)
+				// using a fast approximation
+				// contributions to Y are: R=2, G=4, B=1
+				a = (((int)r << 1) + ((int)g << 2) + b) / 7;
+			}
+			// normalize font pixel
+			putpix (new_surf, x, y, SDL_MapRGBA (dstfmt,
+					255, 255, 255, a));
+
+#else // indexed fonts
 			if (r == 0 && g == 0 && b == 0)
 				putpix (new_surf, x, y, 0);
 			else
 				putpix (new_surf, x, y, 1);
+#endif
 		}
 	}
 
+#if !defined(ALPHA_FONTS)
 	colors[0].r = 0;
 	colors[0].g = 0;
 	colors[0].b = 0;
@@ -156,6 +180,7 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 
 	SDL_SetColors (new_surf, colors, 0, 256);
 	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
+#endif
 
 	SDL_UnlockSurface (surf);
 	SDL_FreeSurface (surf);
@@ -355,6 +380,7 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 	int x, y;
 	int width, height;
 	Uint32 color, clear;
+	Uint32 srcmask, threshold;
 	BYTE from_r, from_g, from_b, from_a;
 	BYTE to_r, to_g, to_b, to_a;
 	TFB_Image *tfbImg, *tfbOrigImg;
@@ -362,13 +388,16 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 	PutPixelFn putpix;
 	GetPixelFn getpix;
 
-	width = GetFrameWidth (FramePtr);
-	height = GetFrameHeight (FramePtr);
-	NewFrame = CaptureDrawable (CreateDrawable ((CREATE_FLAGS)RAM_DRAWABLE, 
-			(SIZE)width, (SIZE)height, 1));
 	tfbOrigImg = FramePtr->image;
 	OrigImg = (SDL_Surface *)tfbOrigImg->NormalImg;
 	SDL_LockSurface (OrigImg);
+
+	width = OrigImg->w;
+	height = OrigImg->h;
+	NewFrame = CaptureDrawable (CreateDrawable ((CREATE_FLAGS)RAM_DRAWABLE, 
+			(SIZE)width, (SIZE)height, 1));
+	NewFrame->Bounds = FramePtr->Bounds;
+	NewFrame->HotSpot = FramePtr->HotSpot;
 
 	tfbImg = NewFrame->image;
 	img = (SDL_Surface *)tfbImg->NormalImg;
@@ -389,19 +418,24 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 
 	clear = SDL_MapRGBA (img->format, 0, 0, 0, 0);
 	TFB_DrawCanvas_SetTransparentColor (img, 0, 0, 0, FALSE);
-	for (y = 0; y < 2; y++)
-		for (x = 0; x < width; x++)
-			putpix (img, x, y, clear);
+#if defined(ALPHA_FONTS)
+	srcmask = OrigImg->format->Amask;
+	threshold = (srcmask >> 1) & srcmask;
+#else // indexed fonts
+	srcmask = 255;
+	threshold = 0; // any index != 0
+#endif
 
-	width--;
 	if (type == GRADIENT_EFFECT)
 	{
 		int clrstep_r, clrstep_g, clrstep_b, clrstep_a;
-		clrstep_r = (to_r - from_r) /  (height - 5);
-		clrstep_g = (to_g - from_g) /  (height - 5);
-		clrstep_b = (to_b - from_b) /  (height - 5);
-		clrstep_a = (to_a - from_a) /  (height - 5);
-		for (; y < height - 1; y++)
+		
+		clrstep_r = (to_r - from_r) / (height - 1);
+		clrstep_g = (to_g - from_g) / (height - 1);
+		clrstep_b = (to_b - from_b) / (height - 1);
+		clrstep_a = (to_a - from_a) / (height - 1);
+
+		for (y = 0; y < height; y++)
 		{
 			color = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
 			from_r += clrstep_r;
@@ -409,41 +443,46 @@ FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type
 			from_b += clrstep_b;
 			from_a += clrstep_a;
 			for (x = 0; x < width; x++)
-				if (getpix (OrigImg, x, y) == 1)
+			{
+				Uint32 p = getpix (OrigImg, x, y);
+
+				if ((p & srcmask) > threshold)
 					putpix (img, x, y, color);
 				else
 					putpix (img, x, y, clear);
-			putpix (img, x, y, clear);
+			}
 		}
 	}
 	else if (type == ALTERNATE_EFFECT)
 	{
 		Uint32 color1, color2;
+		
 		color1 = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
 		color2 = SDL_MapRGBA (img->format, to_r, to_g, to_b, to_a);
-		for (; y < height - 1; y++)
+		
+		for (y = 0; y < height; y++)
 		{
 			for (x = 0; x < width; x++)
-				if (getpix (OrigImg, x, y) == 1)
+			{
+				Uint32 p = getpix (OrigImg, x, y);
+
+				if ((p & srcmask) > threshold)
 				{
 					color = ((y & 0x01) ^ (x & 0x01)) ? color2 : color1;
 					putpix (img, x, y, color);
 				}
 				else
 					putpix (img, x, y, clear);
-			putpix (img, x, y, clear);
+			}
 		}
 	}
 
-	width++;
-	for (x = 0; x < width; x++)
-		putpix (img, x, y, clear);
 	SDL_UnlockSurface (img);
 	SDL_UnlockSurface (OrigImg);
-	NewFrame->HotSpot = FramePtr->HotSpot;
-	return (NewFrame);
 
+	return (NewFrame);
 }
+
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
 // r,g,b,a values supplied
 Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)

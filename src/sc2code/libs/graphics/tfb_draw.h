@@ -53,9 +53,11 @@ typedef struct tfb_image
 	TFB_Canvas NormalImg;
 	TFB_Canvas ScaledImg;
 	TFB_Canvas MipmapImg;
+	TFB_Canvas FilledImg;
 	TFB_Palette *Palette;
 	int colormap_index;
 	int last_scale_type;
+	TFB_Palette last_fill;
 	EXTENT extent;
 	Mutex mutex;
 	BOOLEAN dirty;

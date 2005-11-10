@@ -76,6 +76,9 @@ extern Uint64 mmx_YUV_threshold;
 #	undef  HAVE_PREFETCH
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+#	pragma warning( disable : 4799 )
+#endif
 
 static inline void
 SCALE_(PlatInit) (void)

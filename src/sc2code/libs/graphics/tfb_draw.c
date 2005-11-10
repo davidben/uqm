@@ -289,6 +289,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->mutex = CreateMutex ("image lock", SYNC_CLASS_VIDEO);
 	img->ScaledImg = NULL;
 	img->MipmapImg = NULL;
+	img->FilledImg = NULL;
 	img->colormap_index = -1;
 	img->last_scale_type = -1;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
@@ -314,6 +315,7 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->mutex = CreateMutex ("image lock", SYNC_CLASS_VIDEO);
 	img->ScaledImg = NULL;
 	img->MipmapImg = NULL;
+	img->FilledImg = NULL;
 	img->colormap_index = -1;
 	img->last_scale_type = -1;
 	img->Palette = NULL;

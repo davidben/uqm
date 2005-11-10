@@ -104,12 +104,90 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 }
 
 void
+TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
+					Uint32 fillcolor, TFB_Canvas target)
+{
+	SDL_Surface *src = (SDL_Surface *)source;
+	SDL_Surface *dst = (SDL_Surface *)target;
+	const SDL_PixelFormat *srcfmt = src->format;
+	SDL_PixelFormat *dstfmt = dst->format;
+	const int bpp = dstfmt->BytesPerPixel;
+	const int sp = src->pitch, dp = dst->pitch;
+	const int slen = sp / bpp, dlen = dp / bpp;
+	const int dsrc = slen - width, ddst = dlen - width;
+
+	Uint32 *src_p = (Uint32 *)src->pixels;
+	Uint32 *dst_p = (Uint32 *)dst->pixels;
+	int x, y;
+
+	if (srcfmt->BytesPerPixel != 4 || dstfmt->BytesPerPixel != 4)
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported surface formats: "
+				"%d bytes/pixel source, %d bytes/pixel destination\n",
+				(int)srcfmt->BytesPerPixel, (int)dstfmt->BytesPerPixel);
+		return;
+	}
+
+	if ((src->flags & SDL_SRCALPHA) && srcfmt->Amask)
+	{	// alpha-based fill
+		Uint32 amask = srcfmt->Amask;
+		
+		for (y = 0; y < height; ++y)
+		{
+			for (x = 0; x < width; ++x, ++src_p, ++dst_p)
+			{
+				*dst_p = (*src_p & amask) | fillcolor;
+			}
+			dst_p += ddst;
+			src_p += dsrc;
+		}
+	}
+	else if (src->flags & SDL_SRCCOLORKEY)
+	{	// colorkey-based fill
+		Uint32 srckey = srcfmt->colorkey;
+		Uint32 dstkey = srckey;
+		Uint32 notmask = ~srcfmt->Amask;
+
+		if (src->flags & SDL_RLEACCEL)
+		{
+			fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported source "
+					"surface format: SDL_RLEACCEL\n");
+			return;
+		}
+
+		if (dstkey == fillcolor)
+		{	// color collision, must switch colorkey
+			if (dstkey != 0)
+				// new colorkey is black (0,0,0)
+				dstkey = 0;
+			else
+				// new colorkey is grey (1/2,1/2,1/2)
+				dstkey = SDL_MapRGB (dstfmt, 127, 127, 127);
+		}
+		SDL_SetColorKey (dst, SDL_SRCCOLORKEY, dstkey);
+
+		for (y = 0; y < height; ++y)
+		{
+			for (x = 0; x < width; ++x, ++src_p, ++dst_p)
+			{
+				Uint32 p = *src_p & notmask;
+
+				*dst_p = (p == srckey) ? dstkey : p;
+			}
+			dst_p += ddst;
+			src_p += dsrc;
+		}
+	}
+}
+
+void
 TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
 	int i;
 	SDL_Color pal[256];
+	EXTENT prevextent = img->extent;
 
 	if (img == 0)
 	{
@@ -137,16 +215,59 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 		surf = img->NormalImg;
 		pSrcRect = NULL;
 	}
-				
-	for (i = 0; i < 256; i++)
-	{
-		pal[i].r = r;
-		pal[i].g = g;
-		pal[i].b = b;
-	}
-	SDL_SetColors (surf, pal, 0, 256);
 
-	SDL_BlitSurface(surf, pSrcRect, (NativeCanvas) target, &targetRect);
+	if (surf->format->palette)
+	{	// set palette for fill-stamp
+		for (i = 0; i < 256; i++)
+		{
+			pal[i].r = r;
+			pal[i].g = g;
+			pal[i].b = b;
+		}
+		SDL_SetColors (surf, pal, 0, 256);
+	}
+	else
+	{	// fill the non-transparent parts of the image with fillcolor
+		SDL_Surface *src = img->NormalImg;
+		SDL_Surface *newfill = img->FilledImg;
+		BOOLEAN force = FALSE;
+
+		// prepare the filled image
+		if (!newfill)
+		{
+			newfill = SDL_CreateRGBSurface (SDL_SWSURFACE,
+						src->w, src->h,
+						surf->format->BitsPerPixel,
+						surf->format->Rmask,
+						surf->format->Gmask,
+						surf->format->Bmask,
+						surf->format->Amask);
+			force = TRUE;
+		}
+
+		if (force ||
+				prevextent.height != img->extent.height ||
+				prevextent.width != img->extent.width ||
+				img->last_fill.r != r ||
+				img->last_fill.g != g ||
+				img->last_fill.b != b)
+		{	// image or fillcolor changed - regenerate
+			TFB_DrawCanvas_Fill (surf, img->extent.width, img->extent.height,
+					SDL_MapRGBA (newfill->format, r, g, b, 0), newfill);
+					// important to keep alpha=0 in fillcolor
+					// -- we process alpha ourselves
+		}
+
+		// cache filled image if possible
+		img->last_fill.r = r;
+		img->last_fill.g = g;
+		img->last_fill.b = b;
+		img->FilledImg = newfill;
+
+		surf = newfill;
+	}
+
+	SDL_BlitSurface (surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
 
