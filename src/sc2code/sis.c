@@ -377,12 +377,12 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	if (optWhichFonts == OPT_PC) {
 		if (InStatusArea)
 			SetContextFontEffect (GRADIENT_EFFECT, 
-				BUILD_COLOR_RGBA (0xF7, 0x2C, 0x00, 0xFF),
-				BUILD_COLOR_RGBA (0xF7, 0xBA, 0x00, 0xFF));
+				BUILD_COLOR_RGBA (0xF7, 0x08, 0x00, 0xFF),
+				BUILD_COLOR_RGBA (0xF7, 0xCD, 0x00, 0xFF));
 		else
 			SetContextFontEffect (GRADIENT_EFFECT, 
-				BUILD_COLOR_RGBA (0x00, 0x00, 0x9C, 0xFF),
-				BUILD_COLOR_RGBA (0x08, 0x14, 0xFF, 0xFF));
+				BUILD_COLOR_RGBA (0x00, 0x00, 0x80, 0xFF),
+				BUILD_COLOR_RGBA (0x0C, 0x18, 0xFF, 0xFF));
 	}
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
@@ -475,8 +475,8 @@ DrawFlagshipStats (void)
 	t.CharCount = (COUNT)~0;
 
 	SetContextFontEffect (GRADIENT_EFFECT, 
-			BUILD_COLOR_RGBA (0x00, 0x00, 0xC0, 0xFF),
-			BUILD_COLOR_RGBA (0x60, 0x6C, 0xFC, 0xFF));
+			BUILD_COLOR_RGBA (0x00, 0x00, 0xA0, 0xFF),
+			BUILD_COLOR_RGBA (0x70, 0x7C, 0xFF, 0xFF));
 
 	wsprintf (buf, "nose:");
 	font_DrawText (&t);
@@ -511,8 +511,8 @@ DrawFlagshipStats (void)
 	t.align = ALIGN_RIGHT;
 
 	SetContextFontEffect (GRADIENT_EFFECT, 
-			BUILD_COLOR_RGBA (0x00, 0x44, 0x64, 0xFF),
-			BUILD_COLOR_RGBA (0x58, 0x9C, 0xBC, 0xFF));
+			BUILD_COLOR_RGBA (0x00, 0x30, 0x48, 0xFF),
+			BUILD_COLOR_RGBA (0x68, 0xAC, 0xCC, 0xFF));
 
 	wsprintf (buf, "maximum velocity:");
 	font_DrawText (&t);
@@ -711,8 +711,8 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x6B, 0x00, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0xF7, 0x00, 0x00, 0xFF));
+		BUILD_COLOR_RGBA (0x40, 0x00, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0xFF, 0x00, 0x00, 0xFF));
 	wsprintf (buf, "FUEL");
 	font_DrawText (&t);
 
@@ -721,8 +721,8 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x00, 0x4D, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0x00, 0xAE, 0x00, 0xFF));
+		BUILD_COLOR_RGBA (0x00, 0x28, 0x00, 0xFF),
+		BUILD_COLOR_RGBA (0x00, 0xC0, 0x00, 0xFF));
 	wsprintf (buf, "CREW");
 	font_DrawText (&t);
 	SetContextFontEffect (0, 0, 0);
