@@ -172,7 +172,7 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 			{
 				Uint32 p = *src_p & notmask;
 
-				*dst_p = (p == srckey) ? dstkey : p;
+				*dst_p = (p == srckey) ? dstkey : fillcolor;
 			}
 			dst_p += ddst;
 			src_p += dsrc;
