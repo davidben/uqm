@@ -569,7 +569,7 @@ static bool
 dukv_Init (THIS_PTR, TFB_PixelFormat* fmt)
 {
 	This->format = fmt;
-	This->audio_synced = 1;
+	This->audio_synced = true;
 	return true;
 }
 
