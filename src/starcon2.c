@@ -399,7 +399,7 @@ static int
 parseOptions(int argc, char *argv[], struct options_struct *options)
 {
 	int optionIndex = 0;
-	BOOLEAN badArg = 0;
+	BOOLEAN badArg = FALSE;
 
 	options->addons = HMalloc(1 * sizeof (const char *));
 	options->addons[0] = NULL;
@@ -651,7 +651,6 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 							longOptions[optionIndex].name);
 				badArg = TRUE;
 				break;
-			break;
 		}
 	}
 
