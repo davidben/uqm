@@ -255,5 +255,5 @@ SetFrameTransparentColor (FRAMEPTR Frame, COLOR c32k)
 	
 	COLORtoPalette (c32k, &color);
 	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg,
-			color.r, color.g, color.b, TRUE);
+			color.r, color.g, color.b, FALSE);
 }
