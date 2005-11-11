@@ -51,7 +51,7 @@ typedef COUNT RES_PACKAGE;
 		((RESOURCE)(i) << TYPE_BITS) | \
 		((RESOURCE)(t)))
 
-const char *_cur_resfile_name;
+extern const char *_cur_resfile_name;
 
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
