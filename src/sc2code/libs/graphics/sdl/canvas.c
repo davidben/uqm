@@ -38,13 +38,24 @@ TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Ca
 void
 TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas target)
 {
+	SDL_Surface *dst = target;
+	SDL_PixelFormat *fmt = dst->format;
+	Uint32 color;
 	SDL_Rect sr;
 	sr.x = rect->corner.x;
 	sr.y = rect->corner.y;
 	sr.w = rect->extent.width;
 	sr.h = rect->extent.height;
+
+	color = SDL_MapRGB (fmt, r, g, b);
+	if (fmt->Amask && (dst->flags & SDL_SRCCOLORKEY))
+	{	// special case -- alpha surface with colorkey
+		// colorkey rects are transparent
+		if ((color & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
+			color &= ~fmt->Amask; // make transparent
+	}
 	
-	SDL_FillRect((NativeCanvas) target, &sr, SDL_MapRGB(((NativeCanvas) target)->format, r, g, b));
+	SDL_FillRect (dst, &sr, color);
 }
 
 void
@@ -115,10 +126,10 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 	const int sp = src->pitch, dp = dst->pitch;
 	const int slen = sp / bpp, dlen = dp / bpp;
 	const int dsrc = slen - width, ddst = dlen - width;
-
-	Uint32 *src_p = (Uint32 *)src->pixels;
-	Uint32 *dst_p = (Uint32 *)dst->pixels;
+	Uint32 *src_p;
+	Uint32 *dst_p;
 	int x, y;
+	Uint32 dstkey = 0; // 0 means alpha=0 too
 
 	if (srcfmt->BytesPerPixel != 4 || dstfmt->BytesPerPixel != 4)
 	{
@@ -128,15 +139,29 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 		return;
 	}
 
-	if ((src->flags & SDL_SRCALPHA) && srcfmt->Amask)
+	SDL_LockSurface(src);
+	SDL_LockSurface(dst);
+
+	src_p = (Uint32 *)src->pixels;
+	dst_p = (Uint32 *)dst->pixels;
+
+	if (dstkey == fillcolor)
+	{	// color collision, must switch colorkey
+		// new colorkey is grey (1/2,1/2,1/2)
+		dstkey = SDL_MapRGBA (dstfmt, 127, 127, 127, 0);
+	}
+
+	if (srcfmt->Amask)
 	{	// alpha-based fill
 		Uint32 amask = srcfmt->Amask;
-		
+
 		for (y = 0; y < height; ++y)
 		{
 			for (x = 0; x < width; ++x, ++src_p, ++dst_p)
 			{
-				*dst_p = (*src_p & amask) | fillcolor;
+				Uint32 p = *src_p & amask;
+				
+				*dst_p = (p == 0) ? dstkey : (p | fillcolor);
 			}
 			dst_p += ddst;
 			src_p += dsrc;
@@ -145,26 +170,7 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 	else if (src->flags & SDL_SRCCOLORKEY)
 	{	// colorkey-based fill
 		Uint32 srckey = srcfmt->colorkey;
-		Uint32 dstkey = srckey;
 		Uint32 notmask = ~srcfmt->Amask;
-
-		if (src->flags & SDL_RLEACCEL)
-		{
-			fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported source "
-					"surface format: SDL_RLEACCEL\n");
-			return;
-		}
-
-		if (dstkey == fillcolor)
-		{	// color collision, must switch colorkey
-			if (dstkey != 0)
-				// new colorkey is black (0,0,0)
-				dstkey = 0;
-			else
-				// new colorkey is grey (1/2,1/2,1/2)
-				dstkey = SDL_MapRGB (dstfmt, 127, 127, 127);
-		}
-		SDL_SetColorKey (dst, SDL_SRCCOLORKEY, dstkey);
 
 		for (y = 0; y < height; ++y)
 		{
@@ -178,6 +184,20 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 			src_p += dsrc;
 		}
 	}
+	else
+	{
+		fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported source surface "
+				"format\n");
+	}
+
+	SDL_UnlockSurface(dst);
+	SDL_UnlockSurface(src);
+
+	// save the colorkey (dynamic image -- not using RLE coding here)
+	SDL_SetColorKey (dst, SDL_SRCCOLORKEY, dstkey);
+			// if the filled surface is RGBA, colorkey will only be used
+			// when SDL_SRCALPHA flag is cleared. this allows us to blit
+			// the surface in different ways to diff targets
 }
 
 void
@@ -551,10 +571,12 @@ TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
 void
 TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel)
 {
+	Uint32 color;
 	int flags = SDL_SRCCOLORKEY;
 	if (rleaccel)
 		flags |= SDL_RLEACCEL;
-	SDL_SetColorKey ((SDL_Surface *)canvas, flags, SDL_MapRGB (((SDL_Surface *)canvas)->format, r, g, b));
+	color = SDL_MapRGBA (((SDL_Surface *)canvas)->format, r, g, b, 0);
+	SDL_SetColorKey ((SDL_Surface *)canvas, flags, color);
 	
 	if (!TFB_DrawCanvas_IsPaletted (canvas))
 	{
@@ -1208,7 +1230,7 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 	{
 		TFB_DrawCanvas_SetTransparentColor (dst, r, g, b, FALSE);
 		/* fill destination with transparent color before rotating */
-		SDL_FillRect(dst, NULL, SDL_MapRGB(dst->format, r, g, b));
+		SDL_FillRect(dst, NULL, SDL_MapRGBA (dst->format, r, g, b, 0));
 	}
 
 	ret = rotateSurface (src, dst, angle, 0);
