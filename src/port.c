@@ -39,7 +39,7 @@ strupr (char *str)
 	ptr = str;
 	while (*ptr)
 	{
-		*ptr = toupper (*ptr);
+		*ptr = (char) toupper (*ptr);
 		ptr++;
 	}
 	return str;
