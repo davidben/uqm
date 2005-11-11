@@ -1208,8 +1208,8 @@ IP_frame (void)
 		if (pSolarSysState->MenuState.CurState
 		    || pSolarSysState->MenuState.Initialized != 1)
 		{
-			cancel = 0;
-			select = 0;
+			cancel = FALSE;
+			select = FALSE;
 		}
 		else
 		{

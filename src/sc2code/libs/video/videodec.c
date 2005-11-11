@@ -20,7 +20,7 @@
 
 #define MAX_REG_DECODERS 31
 
-static bool vd_inited = 0;
+static bool vd_inited = false;
 static TFB_PixelFormat vd_vidfmt;
 static int vd_flags = 0;
 
@@ -53,7 +53,7 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 {
 	TFB_RegVideoDecoder* info;
 
-	vd_inited = 0;
+	vd_inited = false;
 
 	if (depth < 15 || depth > 32)
 	{
@@ -94,7 +94,7 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 	}
 
 	vd_flags = flags;
-	vd_inited = 1;
+	vd_inited = true;
 
 	return true;
 }
@@ -118,7 +118,7 @@ VideoDecoder_Uninit (void)
 		}
 	}
 	
-	vd_inited = 0;
+	vd_inited = false;
 }
 
 TFB_RegVideoDecoder*
