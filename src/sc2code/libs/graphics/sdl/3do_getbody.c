@@ -63,7 +63,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 		if (ani[cel_ct].transparent_color == 0)
 			// make RGB=0,0,0 transparent
 		    SDL_SetColorKey (img[cel_ct], SDL_SRCCOLORKEY,
-					SDL_MapRGB (img[cel_ct]->format, 0, 0, 0));
+					SDL_MapRGBA (img[cel_ct]->format, 0, 0, 0, 0));
 	}
 	if (ani[cel_ct].transparent_color == -1)
 	{	// enforce -1 to mean 'no transparency'
@@ -111,6 +111,7 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 	int x,y;
 	Uint8 r,g,b,a;
 	Uint32 p;
+	Uint32 clear, opaque;
 	SDL_Color colors[256];
 	SDL_Surface *new_surf;				
 	SDL_PixelFormat* srcfmt = surf->format;
@@ -118,17 +119,26 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 	GetPixelFn getpix;
 	PutPixelFn putpix;
 
-	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
+	TYPE_SET (FramePtr->TypeIndexAndFlags, ROM_DRAWABLE);
 	INDEX_SET (FramePtr->TypeIndexAndFlags, charInd);
 			// XXX: Is this still relevant?
 
 //#define ALPHA_FONTS
+//#define RGB_FONTS
 
 	SDL_LockSurface (surf);
+
+	clear = 0;
+	opaque = 1;
 
 #if defined(ALPHA_FONTS)
 	// convert png font to truecolor + alpha
 	new_surf = TFB_DrawCanvas_New_TrueColor (surf->w, surf->h, TRUE);
+
+#elif defined(RGB_FONTS)
+	// convert png font to truecolor w/ colorkey
+	new_surf = TFB_DrawCanvas_New_TrueColor (surf->w, surf->h, FALSE);
+	opaque = SDL_MapRGB (new_surf->format, 255, 255, 255);
 
 #else // indexed fonts
 	// convert 32-bit png font to indexed
@@ -158,16 +168,18 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 			putpix (new_surf, x, y, SDL_MapRGBA (dstfmt,
 					255, 255, 255, a));
 
-#else // indexed fonts
+#else // indexed/rgb colorkey fonts
+			// normalize font pixel
 			if (r == 0 && g == 0 && b == 0)
-				putpix (new_surf, x, y, 0);
+				putpix (new_surf, x, y, clear);
 			else
-				putpix (new_surf, x, y, 1);
+				putpix (new_surf, x, y, opaque);
 #endif
 		}
 	}
 
 #if !defined(ALPHA_FONTS)
+#if !defined(RGB_FONTS)	
 	colors[0].r = 0;
 	colors[0].g = 0;
 	colors[0].b = 0;
@@ -179,8 +191,9 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 	}
 
 	SDL_SetColors (new_surf, colors, 0, 256);
-	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, 0);
-#endif
+#endif /* !RGB_FONTS */
+	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, clear);
+#endif /* !ALPHA_FONTS */
 
 	SDL_UnlockSurface (surf);
 	SDL_FreeSurface (surf);
@@ -193,6 +206,8 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 			// I brought it into this function from the only calling
 			// function, but I don't know why it was there in the first
 			// place.
+			// XXX: the +1 appears to be for character and line spacing
+			//  text_blt just adds the frame width to move to the next char
 	
 	{
 		// This tunes the font positioning to be about what it should
@@ -218,14 +233,15 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 {
 	FRAMEPTR NewFrame;
-	UBYTE type;
+	CREATE_FLAGS flags;
 	TFB_Image *tfbImg;
 	TFB_Canvas src, dst;
 	EXTENT ext;
-	type = (UBYTE)TYPE_GET (GetFrameParentDrawable (FramePtr)
+
+	flags = TYPE_GET (GetFrameParentDrawable (FramePtr)
 			->FlagsAndIndex) >> FTYPE_SHIFT;
 	NewFrame = CaptureDrawable (
-				CreateDrawable (type, (SIZE)neww, (SIZE)newh, 1));
+				CreateDrawable (flags, (SIZE)neww, (SIZE)newh, 1));
 	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
 	src = tfbImg->NormalImg;
@@ -246,11 +262,6 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 	SDL_Surface *img;
 	PutPixelFn putpix;
 
-//	TYPE_SET (FramePtr->TypeIndexAndFlags, WANT_PIXMAP << FTYPE_SHIFT);
-//	INDEX_SET (FramePtr->TypeIndexAndFlags,  1);
-
-
-	// convert 32-bit png font to indexed
 	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
 	img = (SDL_Surface *)tfbImg->NormalImg;
