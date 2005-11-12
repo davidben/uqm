@@ -33,7 +33,6 @@ spawn_planet (void)
 	hPlanetElement = AllocElement ();
 	if (hPlanetElement)
 	{
-		POINT loc;
 		ELEMENTPTR PlanetElementPtr;
 		extern FRAME planet[];
 
@@ -41,10 +40,10 @@ spawn_planet (void)
 		PlanetElementPtr->hit_points = 200;
 		PlanetElementPtr->state_flags = APPEARING;
 		PlanetElementPtr->life_span = NORMAL_LIFE + 1;
-		SetPrimType (&DisplayArray[PlanetElementPtr->PrimIndex], NO_PRIM);
+		SetPrimType (&DisplayArray[PlanetElementPtr->PrimIndex], STAMP_PRIM);
 		PlanetElementPtr->current.image.farray = planet;
 		PlanetElementPtr->current.image.frame =
-				SetAbsFrameIndex (PlanetElementPtr->current.image.farray[0], 1);
+				PlanetElementPtr->current.image.farray[0];
 		PlanetElementPtr->collision_func = collision;
 		PlanetElementPtr->postprocess_func =
 				(void (*) (struct element *ElementPtr))CalculateGravity;
@@ -57,29 +56,10 @@ spawn_planet (void)
 					WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
 		} while (CalculateGravity (PlanetElementPtr)
 				|| TimeSpaceMatterConflict (PlanetElementPtr));
-		loc = PlanetElementPtr->current.location;
 		PlanetElementPtr->mass_points = PlanetElementPtr->hit_points;
 		UnlockElement (hPlanetElement);
 
 		PutElement (hPlanetElement);
-		hPlanetElement = AllocElement ();
-		if (hPlanetElement)
-		{
-			LockElement (hPlanetElement, &PlanetElementPtr);
-			PlanetElementPtr->hit_points = 1;
-			PlanetElementPtr->mass_points = PlanetElementPtr->hit_points;
-			PlanetElementPtr->state_flags = APPEARING | NONSOLID;
-			PlanetElementPtr->life_span = NORMAL_LIFE + 1;
-			SetPrimType (&DisplayArray[PlanetElementPtr->PrimIndex], STAMP_PRIM);
-			PlanetElementPtr->current.image.farray = planet;
-			PlanetElementPtr->current.image.frame =
-					PlanetElementPtr->current.image.farray[0];
-			ZeroVelocityComponents (&PlanetElementPtr->velocity);
-			PlanetElementPtr->current.location = loc;
-			UnlockElement (hPlanetElement);
-
-			PutElement (hPlanetElement);
-		}
 	}
 }
 
