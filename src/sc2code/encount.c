@@ -510,10 +510,7 @@ UninitEncounter (void)
 					VictoryState = 0;
 				else
 				{
-					UnlockMutex (GraphicsLock);
 					DrawSISFrame ();
-					LockMutex (GraphicsLock);
-
 					DrawSISMessage (NULL_PTR);
 					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 						DrawHyperCoords (GLOBAL (ShipStamp.origin));

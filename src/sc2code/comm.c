@@ -2055,9 +2055,7 @@ HailAlien (void)
 			}
 			else /* in starbase */
 			{
-				UnlockMutex (GraphicsLock);
 				DrawSISFrame ();
-				LockMutex (GraphicsLock);
 				if (GET_GAME_STATE (STARBASE_AVAILABLE))
 				{
 					DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 1));
@@ -2125,9 +2123,7 @@ InitCommunication (RESOURCE which_comm)
 		{
 			if (LOBYTE (LastActivity) == 0)
 			{
-				UnlockMutex (GraphicsLock);
 				DrawSISFrame ();
-				LockMutex (GraphicsLock);
 			}
 			else
 			{

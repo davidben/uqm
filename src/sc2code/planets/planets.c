@@ -127,9 +127,7 @@ LoadPlanet (BOOLEAN IsDefined)
 	{
 		if (LOBYTE (LastActivity) == 0)
 		{
-			UnlockMutex (GraphicsLock);
 			DrawSISFrame ();
-			LockMutex (GraphicsLock);
 		}
 		else
 		{

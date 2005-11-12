@@ -1455,6 +1455,8 @@ InitSolarSys (void)
 
 	if (pSolarSysState->MenuState.Initialized == 0)
 	{
+		LockMutex (GraphicsLock);
+
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		draw_sys_flags |= UNBATCH_SYS;
@@ -1472,9 +1474,7 @@ InitSolarSys (void)
 			}
 			else
 			{
-				LockMutex (GraphicsLock);
 				ClearSISRect (DRAW_SIS_DISPLAY);
-				UnlockMutex (GraphicsLock);
 
 				LastActivity &= ~CHECK_LOAD;
 			}
@@ -1482,8 +1482,6 @@ InitSolarSys (void)
 
 		// Enabled graphics synchronization again, as in 3DO code originally.
 		// This should fix the 'entering star' lockup/messed graphics problems.
-		// 2002/11/30 by Mika
-		LockMutex (GraphicsLock);
 		DrawSISMessage (NULL_PTR);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);

@@ -1215,11 +1215,10 @@ DoShipyard (PMENU_STATE pMS)
 
 			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
 
+			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);
 			BatchGraphics ();
-
 			DrawSISFrame ();
-			LockMutex (GraphicsLock);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 3));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 			UnlockMutex (GraphicsLock);

@@ -602,10 +602,10 @@ DoOutfit (PMENU_STATE pMS)
 			s.frame = CaptureDrawable (
 					LoadGraphic (OUTFIT_PMAP_ANIM));
 
+			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
-			LockMutex (GraphicsLock);
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 2));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 
