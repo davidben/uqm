@@ -1,5 +1,10 @@
 #(========== This is the PC ending slides script =====================)
 
+#( !!!WARNING!!! Do not mess with the timing of this script starting )
+#( from MUSIC opcode. The music is synchronized to the slides.       )
+#( If you MUST change timing of a subtitle, make sure this change is )
+#( balanced off by another subtitle within the same slide!           )
+
 #(Set sequence dimensions; param1=width; param2=height)
 DIMS 320 200
 #(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
