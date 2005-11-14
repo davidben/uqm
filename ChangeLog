@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Entering Planetary Orbit wait screen is back (from DOS) - Alex
 - Gfx engine changes: now always 32bpp internally (facilitates
   alpha channel usage); accelerated platform-specific scaler code;
   only using alpha channel where needed - Alex
