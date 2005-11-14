@@ -90,7 +90,7 @@
 #(no_look_really_weird) 
 #(NO_YOU_LOOK_REALLY_WEIRD) 1822,832
 #(come_in_peace) 
-#(AGAINST_NATURE) 5090,3999,5849,4969
+#(AGAINST_NATURE) 4900,700,3400,5849,1000
 #(prepare_to_die) 
 #(ALWAYS_PREPARED) 4136,2423
 #(since_friendly_give_stuff) 
