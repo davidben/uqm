@@ -1652,6 +1652,10 @@ rotate_planet_task (void *data)
 	zoom_frames = init_zoom_array (zoom_arr);
 	zoom_amt = zoom_arr[frame_num];
 
+	// Disable zooming when already in orbit
+	if (LastActivity & CHECK_LOAD)
+		zoom_amt = 0;
+
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
