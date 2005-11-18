@@ -21,6 +21,7 @@
 
 static MEM_HANDLE hIndexList;
 
+// Add a package index to the global list of package indices.
 static void
 _add_index_list (MEM_HANDLE hRH)
 {
@@ -46,6 +47,7 @@ _add_index_list (MEM_HANDLE hRH)
 	hIndexList = hRH;
 }
 
+// Remove a package index from the global list of package indices.
 static void
 _sub_index_list (MEM_HANDLE hRH)
 {
@@ -409,4 +411,22 @@ CountResourceTypes (void)
 	ResHeaderPtr = _get_current_index_header ();
 	return ((COUNT)ResHeaderPtr->num_types);
 }
+
+void
+forAllResourceIndices(
+		void (*callback) (INDEX_HEADERPTR ResHeaderPtr, void *extra),
+		void *extra) {
+	MEM_HANDLE hRH;
+	MEM_HANDLE hNextRH;
+	INDEX_HEADERPTR ResHeaderPtr;
+
+	for (hRH = hIndexList; hRH != 0; hRH = hNextRH)
+	{
+		ResHeaderPtr = LockResourceHeader (hRH);
+		hNextRH = ResHeaderPtr->hSuccHeader;
+		(*callback) (ResHeaderPtr, extra);
+		UnlockResourceHeader (hRH);
+	}
+}
+
 

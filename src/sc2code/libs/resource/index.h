@@ -80,6 +80,10 @@ typedef INDEX_HEADER *PINDEX_HEADER;
 
 typedef PINDEX_HEADER INDEX_HEADERPTR;
 
+void forAllResourceIndices(
+		void (*callback)(INDEX_HEADERPTR ResHeaderPtr, void *extra),
+		void *extra);
+
 #define PackageList index_info.lists.package_list
 #define TypeList index_info.lists.type_list
 

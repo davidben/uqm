@@ -392,11 +392,14 @@ res_GetResource (RESOURCE res)
 
 	hi = HIWORD (ResHeaderPtr->PackageList[res_package - 1].flags_and_data_loc);
 	if (HIBYTE (hi) == 0)
+		// Package is loaded.
 		hList = (MEM_HANDLE)LOWORD (
 				ResHeaderPtr->PackageList[res_package - 1].flags_and_data_loc);
 	else
 	{
-		if ((hList = load_package (ResHeaderPtr, res_package)) == NULL_HANDLE)
+		// Package is not loaded. Load now.
+		hList = load_package (ResHeaderPtr, res_package);
+		if (hList == NULL_HANDLE)
 		{
 #ifdef DEBUG
 			fprintf (stderr, "Unable to load package %u\n", res_package);
