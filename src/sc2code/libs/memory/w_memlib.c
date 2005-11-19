@@ -672,6 +672,9 @@ HCalloc (int size)
 	return (p);
 }
 
+// BUG: HRealloc() is does not behave like realloc():
+// From the C standard: "If memory for the new object cannot be allocated,
+// the old object is not deallocated and its value is unchanged."
 void *
 HRealloc (void *p, int size)
 {
