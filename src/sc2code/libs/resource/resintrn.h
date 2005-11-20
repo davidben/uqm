@@ -20,59 +20,14 @@
 #define _RESINTRN_H
 
 #include <string.h>
-#include "reslib.h"
+#include "libs/reslib.h"
 #include "index.h"
 
-typedef struct
-{
-	DWORD flags_and_data_loc;
-	COUNT num_valid_handles;
-} RES_HANDLE_LIST;
-typedef RES_HANDLE_LIST *PRES_HANDLE_LIST;
-typedef PRES_HANDLE_LIST RES_HANDLE_LISTPTR;
+MEM_HANDLE loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc);
+MEM_HANDLE loadResource(const char *path, ResourceLoadFun *loadFun);
 
-typedef PDWORD ENCODEPTR;
-typedef PBYTE DATAPTR;
-
-#define RES_HANDLE_LIST_PRIORITY DEFAULT_MEM_PRIORITY
-
-#define AllocResourceHandleList(nt,ni) \
-	mem_allocate ((MEM_SIZE)(sizeof (RES_HANDLE_LIST) \
-			+ (PACKMEM_LIST_SIZE * (nt)) \
-			+ (INSTANCE_LIST_SIZE * (ni))), MEM_ZEROINIT | MEM_PRIMARY, \
-			RES_HANDLE_LIST_PRIORITY, MEM_SIMPLE)
-#define LockResourceHandleList(pRH,h,p,rp,tp,dp) \
-do \
-{ \
-	*(rp) = (RES_HANDLE_LISTPTR)mem_lock ((MEM_HANDLE)h); \
-	*(tp) = (ENCODEPTR)&(*(rp))[1]; \
-	*(dp) = (DATAPTR)&(*(tp))[CountPackageTypes (pRH,p)]; \
-} while (0)
-#define UnlockResourceHandleList(h) mem_unlock((MEM_HANDLE)h)
-#define FreeResourceHandleList(h) mem_release((MEM_HANDLE)h)
-
-#define DoLoad(pRH, t,fp,len) (*(pRH)->TypeList[t-1].func_vectors.load_func)(fp,len)
-#define DoFree(pRH, t,h) (*(pRH)->TypeList[t-1].func_vectors.free_func)(h)
-
-extern MEM_HANDLE _GetResFileData (uio_Stream *res_fp, DWORD flen);
-#define IsIndexType(pRH, t) ((pRH)->TypeList[t-1].func_vectors.load_func \
-										==_GetResFileData)
-
-#define LastResPackage(pRH) ((pRH)->num_packages)
-#define LastResType(pRH) ((pRH)->num_types)
-#define GetInstanceCount(pRH,t) \
-		((pRH)->TypeList[(t)-1].instance_count)
-
-#define ValidResPackage(pRH,p) ((p)<=LastResPackage(pRH))
-#define ValidResType(pRH,t) ((t)!=0&&(t)<=LastResType(pRH))
-
-#define CountPackageTypes(pRH,p) \
-		(COUNT)GET_TYPE ((pRH)->PackageList[(p)-1].packmem_info)
-#define CountPackageInstances(pRH,p) \
-		(COUNT)GET_INSTANCE ((pRH)->PackageList[(p)-1].packmem_info)
-
-extern void _set_current_index_header (INDEX_HEADERPTR ResHeaderPtr);
-extern INDEX_HEADERPTR _get_current_index_header (void);
+void _set_current_index_header (ResourceIndex *newResourceIndex);
+ResourceIndex *_get_current_index_header (void);
 
 
 #endif /* _RESINTRN_H */

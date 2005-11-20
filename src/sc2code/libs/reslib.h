@@ -24,8 +24,8 @@
 #include "memlib.h"
 #include  "libs/uio.h"
 
+
 typedef DWORD RESOURCE;
-typedef RESOURCE *PRESOURCE;
 
 typedef BYTE RES_TYPE;
 typedef COUNT RES_INSTANCE;
@@ -34,10 +34,6 @@ typedef COUNT RES_PACKAGE;
 #define TYPE_BITS 8
 #define INSTANCE_BITS 13
 #define PACKAGE_BITS 11
-
-#define MAX_TYPES ((1 << TYPE_BITS) - 1) /* zero is invalid */
-#define MAX_INSTANCES (1 << INSTANCE_BITS)
-#define MAX_PACKAGES ((1 << PACKAGE_BITS) - 1) /* zero is invalid */
 
 #define GET_TYPE(res) \
 		((RES_TYPE)(res) & (RES_TYPE)((1 << TYPE_BITS) - 1))
@@ -51,7 +47,11 @@ typedef COUNT RES_PACKAGE;
 		((RESOURCE)(i) << TYPE_BITS) | \
 		((RESOURCE)(t)))
 
+
 extern const char *_cur_resfile_name;
+
+typedef MEM_HANDLE (ResourceLoadFun) (uio_Stream *fp, DWORD len);
+typedef BOOLEAN (ResourceFreeFun) (MEM_HANDLE handle);
 
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
@@ -66,21 +66,20 @@ extern long LengthResFile (uio_Stream *fp);
 extern BOOLEAN res_CloseResFile (uio_Stream *fp);
 extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern MEM_HANDLE InitResourceSystem (const char *resfile,
-		COUNT resindex_type, BOOLEAN (*FileErrorFunc) (const char *filename));
-extern BOOLEAN UninitResourceSystem (void);
-extern BOOLEAN InstallResTypeVectors (COUNT res_type,
-		MEM_HANDLE (*load_func) (uio_Stream *fp, DWORD len),
-		BOOLEAN (*free_func) (MEM_HANDLE handle));
+extern MEM_HANDLE InitResourceSystem (const char *resfile, RES_TYPE resType,
+		BOOLEAN (*FileErrorFun) (const char *filename));
+extern void UninitResourceSystem (void);
+extern BOOLEAN InstallResTypeVectors (RES_TYPE res_type,
+		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
 extern MEM_HANDLE res_GetResource (RESOURCE res);
 extern MEM_HANDLE res_DetachResource (RESOURCE res);
 extern BOOLEAN FreeResource (RESOURCE res);
 extern COUNT CountResourceTypes (void);
 
 extern MEM_HANDLE OpenResourceIndexFile (const char *resfile);
-extern MEM_HANDLE OpenResourceIndexInstance (DWORD res);
-extern MEM_HANDLE SetResourceIndex (MEM_HANDLE hRH);
-extern BOOLEAN CloseResourceIndex (MEM_HANDLE hRH);
+extern MEM_HANDLE OpenResourceIndexInstance (RESOURCE res);
+extern MEM_HANDLE SetResourceIndex (MEM_HANDLE newIndexHandle);
+extern BOOLEAN CloseResourceIndex (MEM_HANDLE newIndexHandle);
 
 extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD length,
 		MEM_FLAGS mem_flags);

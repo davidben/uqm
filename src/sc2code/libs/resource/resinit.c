@@ -17,277 +17,347 @@
  */
 
 #include "resintrn.h"
+#include "misc.h"
 #include "options.h"
+#include "types.h"
+#include "libs/list.h"
+#include <ctype.h>
+#include <stdlib.h>
 
-static MEM_HANDLE hIndexList;
 
-// Add a package index to the global list of package indices.
+static bool copyResTypeHandlers (ResourceIndex *dest,
+		const ResourceIndex *src);
+static bool setResTypeHandlers (ResourceIndex *idx, RES_TYPE resType,
+		const ResourceHandlers *handlers);
+static MEM_HANDLE allocResourceIndex(void);
+static void freeResourceIndex (MEM_HANDLE h);
+
+
+static List_List *indexList;
+
+
 static void
-_add_index_list (MEM_HANDLE hRH)
+initIndexList (void)
 {
-#ifndef PACKAGING
-	INDEX_HEADERPTR ResHeaderPtr;
-
-	ResHeaderPtr = LockResourceHeader (hRH);
-	strncpy (ResHeaderPtr->index_file_name, _cur_resfile_name,
-			sizeof (ResHeaderPtr->index_file_name) - 1);
-	ResHeaderPtr->hPredHeader = 0;
-	ResHeaderPtr->hSuccHeader = hIndexList;
-	if (ResHeaderPtr->hSuccHeader)
-	{
-		INDEX_HEADERPTR SuccResHeaderPtr;
-
-		SuccResHeaderPtr = LockResourceHeader (hIndexList);
-		SuccResHeaderPtr->hPredHeader = hRH;
-		UnlockResourceHeader (hIndexList);
-	}
-	UnlockResourceHeader (hRH);
-#endif /* PACKAGING */
-
-	hIndexList = hRH;
+	indexList = List_newList ();
 }
 
-// Remove a package index from the global list of package indices.
 static void
-_sub_index_list (MEM_HANDLE hRH)
+uninitIndexList (void)
 {
-#ifdef PACKAGING
-	hIndexList = 0;
-#else /* !PACKAGING */
-	INDEX_HEADERPTR ResHeaderPtr;
-	MEM_HANDLE hPred, hSucc;
-
-	ResHeaderPtr = LockResourceHeader (hRH);
-
-	hPred = ResHeaderPtr->hPredHeader;
-	hSucc = ResHeaderPtr->hSuccHeader;
-	if (hRH == hIndexList)
-		hIndexList = hSucc;
-
-	if (hPred)
-	{
-		INDEX_HEADERPTR PredResHeaderPtr;
-
-		PredResHeaderPtr = LockResourceHeader (hPred);
-		PredResHeaderPtr->hSuccHeader = hSucc;
-		UnlockResourceHeader (hPred);
-	}
-	if (hSucc)
-	{
-		INDEX_HEADERPTR SuccResHeaderPtr;
-
-		SuccResHeaderPtr = LockResourceHeader (hSucc);
-		SuccResHeaderPtr->hPredHeader = hPred;
-		UnlockResourceHeader (hSucc);
-	}
-
-	UnlockResourceHeader (hRH);
-#endif /* PACKAGING */
+	List_deleteList (indexList);
+	indexList = NULL;
 }
 
-MEM_HANDLE
-_GetResFileData (uio_Stream *res_fp, DWORD flen)
-{
-	UWORD lo_word, hi_word;
-	DWORD res_offs;
-	DWORD remainder = 0;
-			// Initialisation is to keep the compiler quiet.
-	MEM_SIZE HeaderSize;
-	INDEX_HEADER h;
-	INDEX_HEADERPTR ResHeaderPtr;
-	MEM_HANDLE hRH;
-	char buf[32];
+void
+forAllResourceIndices(
+		void (*callback) (ResourceIndex *idx, void *extra),
+		void *extra) {
+	List_Link *link;
 
-	res_offs = TellResFile (res_fp);
-
-	ReadResFile (buf, 1, 22, res_fp);
-
-	h.res_fp = res_fp;
-	h.res_flags = MAKE_WORD (buf[0], buf[1]) ? IS_PACKAGED : 0;
-
-	lo_word = MAKE_WORD (buf[2], buf[3]);
-	hi_word = MAKE_WORD (buf[4], buf[5]);
-	h.packmem_list_offs = MAKE_DWORD (lo_word, hi_word);
-
-	lo_word = MAKE_WORD (buf[6], buf[7]);
-	hi_word = MAKE_WORD (buf[8], buf[9]);
-	h.path_list_offs = MAKE_DWORD (lo_word, hi_word);
-
-	lo_word = MAKE_WORD (buf[10], buf[11]);
-	hi_word = MAKE_WORD (buf[12], buf[13]);
-	h.file_list_offs = MAKE_DWORD (lo_word, hi_word);
-
-	h.num_packages = (RES_PACKAGE)MAKE_WORD (buf[14], buf[15]);
-	h.num_types = (RES_TYPE)MAKE_WORD (buf[16], buf[17]);
-
-	lo_word = MAKE_WORD (buf[18], buf[19]);
-	hi_word = MAKE_WORD (buf[20], buf[21]);
-	h.index_info.header_len = MAKE_DWORD (lo_word, hi_word);
-
-	HeaderSize = (MEM_SIZE)(sizeof (INDEX_HEADER)
-			+ (sizeof (PACKAGE_DESC) * h.num_packages)
-			+ (sizeof (TYPE_DESC) * h.num_types));
-	if (h.res_flags & IS_PACKAGED)
+	for (link = indexList->first; link != NULL; link = link->next)
 	{
-		DWORD offs;
+		ResourceIndex *idx = (ResourceIndex *) link->entry;
+		(*callback) (idx, extra);
+	}
+}
 
-		remainder = h.index_info.header_len - h.packmem_list_offs;
-		offs = HeaderSize - h.packmem_list_offs;
-		HeaderSize += remainder;
-		h.packmem_list_offs += offs;
-		h.file_list_offs += offs;
-		h.path_list_offs += offs;
+
+#if 0
+static ResourceDesc *
+lookupResourceIndex (const char *path)
+{
+	List_Link *link;
+
+	for (link = indexList->first; link != NULL; link = link->next)
+	{
+		ResourceDesc *desc = (ResourceDesc *) link->entry;
+		
+		if (strcmp (desc->path, path) == 0)
+			return link->entry;
 	}
 
-#ifndef PACKAGING
-	{
-		MEM_HANDLE hNextRH;
+	return NULL;
+}
+#endif
 
-		h.data_offs = res_offs;
-		for (hRH = hIndexList; hRH != 0; hRH = hNextRH)
+static ResourceDesc *
+newResourceDesc (RESOURCE res, char *path)
+{
+	ResourceDesc *result;
+
+	result = HMalloc (sizeof (ResourceDesc));
+	if (result == NULL)
+		return NULL;
+
+	result->res = res;
+	result->path = path;
+	result->handle = NULL_HANDLE;
+	//result->ref = 0;
+	return result;
+}
+
+static MEM_HANDLE
+loadResourceIndex (uio_Stream *stream, const char *fileName) {
+	size_t lineNum;
+	ResourceDesc **descs = NULL;
+	COUNT numRes;
+	int numDescsAlloced = 0;
+	MEM_HANDLE indexHandle = NULL_HANDLE;
+	ResourceIndex *ndx = NULL;
+#ifdef DEBUG
+	RESOURCE lastResource = 0x00000000;
+#endif
+	
+	// This loop parses lines of the format "<resnum> <path>".
+	// Resnum is in hex. '#' can be used to add comments.
+	lineNum = 0;
+	numRes = 0;
+	for (;;)
+	{
+		char lineBuf[PATH_MAX + 80];
+		char *ptr;
+		char *endResPtr;
+		char *endPtr;
+		char *path;
+		char *newPath;
+		RESOURCE res;
+		ResourceDesc *desc;
+		
+		if (uio_fgets (lineBuf, sizeof lineBuf, stream) == NULL)
 		{
-			ResHeaderPtr = LockResourceHeader (hRH);
-			if (h.data_offs == ResHeaderPtr->data_offs
-					&& strncmp (ResHeaderPtr->index_file_name,
-					_cur_resfile_name,
-					sizeof (ResHeaderPtr->index_file_name) - 1) == 0)
-				return (hRH); /* DON'T UNLOCK IT */
-
-			hNextRH = ResHeaderPtr->hSuccHeader;
-			UnlockResourceHeader (hRH);
+			if (uio_ferror (stream))
+				goto err;
+			else
+				break;  // EOF
 		}
-	}
-#endif /* PACKAGING */
 
-	if ((hRH = AllocResourceHeader (HeaderSize))
-			&& (ResHeaderPtr = LockResourceHeader (hRH)))
-	{
-		*ResHeaderPtr = h;
+		lineNum++;
 
+		// Skip comments.
+		ptr = strchr (lineBuf, '#');
+		if (ptr != NULL)
+			*ptr = '\0';
+
+		// Omit leading whitespace.
+		ptr = lineBuf;
+		while (isspace (*ptr))
+			ptr++;
+		
+		// Omit trailing whitespace.
+		endPtr = ptr + strlen(ptr);
+		while (endPtr != ptr && isspace (endPtr[-1]))
 		{
-			RES_PACKAGE p;
+			endPtr--;
+			*endPtr = '\0';
+		}
 
-			ResHeaderPtr->PackageList = (PPACKAGE_DESC)&ResHeaderPtr[1];
-			for (p = 0; p < ResHeaderPtr->num_packages; ++p)
+		// If the line is empty (apart from comments and whitespace)
+		// go to the next one.
+		if (*ptr == 0)
+			continue;
+
+		// Find the separator between the resource number and the path.
+		endResPtr = ptr;
+		do {
+			endResPtr++;
+		} while (*endResPtr != '\0' && !isspace (*endResPtr));
+	
+		// Skip the separator
+		path = endResPtr;
+		while (isspace (*path))
+			path++;
+	
+		if (*path == 0)
+		{
+			// No path present after the line number.
+			fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
+					fileName, lineNum);
+			continue;
+		}
+
+		// Parse the resource number.
+		{
+			*endResPtr = '\0';
+			res = strtoul (ptr, &endResPtr, 16);
+			if (*endResPtr != '\0')
 			{
-				ReadResFile (buf, 1, 8, res_fp);
-
-				lo_word = MAKE_WORD (buf[0], buf[1]);
-				hi_word = MAKE_WORD (buf[2], buf[3]);
-				ResHeaderPtr->PackageList[p].packmem_info =
-						(RESOURCE)MAKE_DWORD (lo_word, hi_word);
-
-				lo_word = MAKE_WORD (buf[4], buf[5]);
-				hi_word = MAKE_WORD (buf[6], buf[7]);
-				ResHeaderPtr->PackageList[p].flags_and_data_loc =
-						MAKE_DWORD (lo_word, hi_word) + res_offs;
+				// Invalid characters in the resource number.
+				fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
+						fileName, lineNum);
+				continue;
 			}
 		}
 
+#ifdef DEBUG
+		// We need the list to be sorted, as we binary search through it.
+		if (res <= lastResource)
 		{
-			RES_TYPE t;
-			INDEX_HEADERPTR CurResHeaderPtr;
+			fprintf (stderr, "Fatal: resource index '%s' is not sorted "
+					"on the resource number, or contains a double entry. "
+					"Problem encountered on line %d.\n", fileName, lineNum);
+			abort ();
+		}
+		lastResource = res;
+#endif
 
-			CurResHeaderPtr = _get_current_index_header ();
-
-			ResHeaderPtr->TypeList =
-					(PTYPE_DESC)&ResHeaderPtr->PackageList[ResHeaderPtr->num_packages];
-			for (t = 0; t < ResHeaderPtr->num_types; ++t)
-			{
-				ReadResFile (buf, 1, 2, res_fp);
-
-				ResHeaderPtr->TypeList[t].instance_count =
-						MAKE_WORD (buf[0], buf[1]);
-				if (CurResHeaderPtr)
-					ResHeaderPtr->TypeList[t].func_vectors =
-							CurResHeaderPtr->TypeList[t].func_vectors;
-			}
+#define DESC_NUM_INCREMENT 80
+		if (numDescsAlloced <= numRes)
+		{
+			// Need to enlarge the array of resource descs.
+			ResourceDesc **newDescs = HRealloc (descs,
+					sizeof (ResourceDesc *) *
+					(numDescsAlloced + DESC_NUM_INCREMENT));
+			if (newDescs == NULL)
+				goto err;  // Original descs is untouched.
+			descs = newDescs;
+			numDescsAlloced += DESC_NUM_INCREMENT;
 		}
 
-		if (h.res_flags & IS_PACKAGED)
-			ReadResFile (&ResHeaderPtr->TypeList[ResHeaderPtr->num_types],
-					1, (COUNT)remainder, res_fp);
+		// Can't use strdup; it doesn't use HMalloc.
+		newPath = HMalloc (endPtr - path + 1);
+		if (newPath == NULL)
+			goto err;
+		strcpy (newPath, path);
 
-		_add_index_list (hRH);
+		desc = newResourceDesc (res, newPath);
+		if (desc == NULL)
+			goto err;
 
-		return (hRH); /* DON'T UNLOCK IT */
+		descs[numRes] = desc;	
+		numRes++;
 	}
 
-	FreeResourceHeader (hRH);
-	(void) flen;  /* Satisfy compiler (unused parameter) */
-	return (NULL_HANDLE);
+	{
+		ResourceDesc **newDescs = HRealloc (descs,
+				sizeof (ResourceDesc *) * numRes);
+		if (newDescs == NULL && numRes != 0)
+			goto err;  // Original descs is untouched.
+		descs = newDescs;
+	}
+
+#ifdef DEBUG
+	if (numRes == 0)
+		fprintf (stderr, "Warning: Resource index '%s' contains no valid "
+				"entries.\n", fileName);
+#endif
+
+	indexHandle = allocResourceIndex ();
+	if (indexHandle == NULL_HANDLE)
+		goto err;
+	
+	ndx = lockResourceIndex (indexHandle);
+	ndx->res = descs;
+	ndx->numRes = numRes;
+	ndx->typeInfo.numTypes = 0;
+	ndx->typeInfo.handlers = NULL;
+	List_add (indexList, (void *) ndx);
+	unlockResourceIndex (indexHandle);
+
+	return indexHandle;
+
+err:
+	if (indexHandle != NULL_HANDLE)
+		freeResourceIndex (indexHandle);
+	HFree (descs);
+	return NULL_HANDLE;
 }
 
+// Get the data associated with a resource of type RES_INDEX
+// (In other words, a ResourceIndex)
 MEM_HANDLE
-InitResourceSystem (const char *resfile, COUNT resindex_type, BOOLEAN
-		(*FileErrorFunc) (const char *filename))
+_GetResFileData (uio_Stream *res_fp, DWORD fileLength)
 {
-	MEM_HANDLE h;
+	MEM_HANDLE handle;
+	ResourceIndex *ndx;
+	ResourceIndex *parentNdx;
 
-	h = OpenResourceIndexFile (resfile);
-	if (h)
-	{
-		SetResourceIndex (h);
+#if 0
+	ResourceDesc *desc;
 
-		InstallResTypeVectors (resindex_type,
-				_GetResFileData, FreeResourceHeader);
-	}
+	desc = lookupResourceIndex (_cur_resfile_name);
+	assert(desc != NULL);
 
-	(void) FileErrorFunc;  /* Satisfy compiler (unused parameter) */
-	return (h);
+	if (desc->handle != NULL_HANDLE)
+		return desc->handle;
+#endif
+
+	handle = loadResourceIndex (res_fp, _cur_resfile_name);
+	if (handle == NULL_HANDLE)
+		return NULL_HANDLE;
+
+	ndx = lockResourceIndex (handle);
+	parentNdx = _get_current_index_header ();
+	if (parentNdx != NULL)
+		copyResTypeHandlers (ndx, parentNdx);
+	
+	unlockResourceIndex (handle);
+
+	(void) fileLength;
+	return handle;
 }
 
 BOOLEAN
+_ReleaseResFileData (MEM_HANDLE handle)
+{
+	ResourceIndex *ndx;
+
+	ndx = lockResourceIndex (handle);
+	if (ndx->typeInfo.handlers != NULL)
+		HFree (ndx->typeInfo.handlers);
+	unlockResourceIndex (handle);
+	mem_release (handle);
+	return TRUE;
+}
+
+MEM_HANDLE
+InitResourceSystem (const char *resfile, RES_TYPE resType, BOOLEAN
+		(*FileErrorFun) (const char *filename))
+{
+	MEM_HANDLE handle;
+	ResourceIndex *ndx;
+
+	initIndexList ();
+	
+	ResourceHandlers handlers;
+	
+	handlers.loadFun = _GetResFileData;
+	handlers.freeFun = _ReleaseResFileData;
+
+	SetResourceIndex (NULL_HANDLE);
+	handle = loadResource (resfile, handlers.loadFun);
+	if (handle == NULL_HANDLE)
+		return NULL_HANDLE;
+
+	ndx = lockResourceIndex (handle);
+	setResTypeHandlers (ndx, resType, &handlers);
+	unlockResourceIndex (handle);
+
+	SetResourceIndex (handle);
+
+	(void) FileErrorFun;
+	return handle;
+}
+
+void
 UninitResourceSystem (void)
 {
-	if (hIndexList)
+#if 0
+	List_Link *link;
+
+	for (link = indexList->first; link != NULL; link = link->next)
 	{
-		do
-			CloseResourceIndex (hIndexList);
-		while (hIndexList);
-
-		return (TRUE);
+		ResourceIndex *ndx = (ResourceIndex *) link->entry;
+		
 	}
-
-	return (FALSE);
+#endif
+	uninitIndexList ();
+	
+	SetResourceIndex (NULL_HANDLE);
 }
 
 MEM_HANDLE
-OpenResourceIndexFile (const char *resfile)
-{
-	uio_Stream *res_fp;
-	char fullname[256];
-
-	strcpy (fullname, resfile);
-	res_fp = res_OpenResFile (contentDir, fullname, "rb");
-	if (res_fp == 0)
-	{
-		sprintf (fullname, "%s.pkg", resfile);
-		res_fp = res_OpenResFile (contentDir, fullname, "rb");
-		if (res_fp == 0)
-		{
-			sprintf (fullname, "%s.ndx", resfile);
-			res_fp = res_OpenResFile (contentDir, fullname, "rb");
-		}
-	}
-
-	if (res_fp)
-	{
-		MEM_HANDLE hRH;
-
-		_cur_resfile_name = fullname;
-
-		hRH = _GetResFileData (res_fp, LengthResFile (res_fp));
-		/* DO NOT res_CloseResFile!!! */
-
-		return (hRH);
-	}
-
-	return (0);
-}
-
-MEM_HANDLE
-OpenResourceIndexInstance (DWORD res)
+OpenResourceIndexInstance (RESOURCE res)
 {
 	MEM_HANDLE hRH;
 
@@ -298,135 +368,119 @@ OpenResourceIndexInstance (DWORD res)
 	return (hRH);
 }
 
+// Sets the current global resource index.
+// This is the index res_GetResource() calls will use.
 MEM_HANDLE
-SetResourceIndex (MEM_HANDLE hRH)
+SetResourceIndex (MEM_HANDLE newIndexHandle)
 {
-	MEM_HANDLE hOldRH;
-	static MEM_HANDLE hCurResHeader;
+	static MEM_HANDLE currentIndexHandle;
+			// NB: currentIndexHandle is locked.
+	MEM_HANDLE oldIndexHandle;
+	
+	if (currentIndexHandle != NULL_HANDLE)
+		unlockResourceIndex (currentIndexHandle);
 
-	if ((hOldRH = hCurResHeader) != hRH)
-	{
-		INDEX_HEADERPTR ResHeaderPtr;
+	oldIndexHandle = currentIndexHandle;
+	currentIndexHandle = newIndexHandle;
 
-		ResHeaderPtr = LockResourceHeader (hRH);
-		UnlockResourceHeader (hRH);
-		_set_current_index_header (ResHeaderPtr);
-		hCurResHeader = hRH;
-	}
+	if (currentIndexHandle != NULL_HANDLE) {
+		ResourceIndex *ndx;
 
-	return (hOldRH);
+		ndx = lockResourceIndex (currentIndexHandle);
+		_set_current_index_header (ndx);
+	} else
+		_set_current_index_header (NULL);
+	
+	return oldIndexHandle;
 }
 
 BOOLEAN
-CloseResourceIndex (MEM_HANDLE hRH)
+CloseResourceIndex (MEM_HANDLE handle)
 {
-	if (UnlockResourceHeader (hRH))
-	{
-		uio_Stream *res_fp;
-		INDEX_HEADERPTR ResHeaderPtr;
+	ResourceIndex *ndx;
+	
+	unlockResourceIndex (handle);
 
-		ResHeaderPtr = LockResourceHeader (hRH);
-#ifdef DEBUG
-		{
-			COUNT i;
+	ndx = lockResourceIndex (handle);
+	if (ndx == _get_current_index_header ())
+		SetResourceIndex (NULL_HANDLE);
 
-			for (i = 0; i < ResHeaderPtr->num_packages; ++i)
-			{
-				UWORD hi;
+	List_remove ((void *) indexList, ndx);
+	
+	unlockResourceIndex (handle);
 
-				hi = HIWORD (ResHeaderPtr->PackageList[i].flags_and_data_loc);
-				if (HIBYTE (hi) == 0)
-				{
-					MEM_HANDLE hList;
-					RES_HANDLE_LISTPTR ResourceHandleListPtr;
-					ENCODEPTR TypeEncodePtr;
-					DATAPTR DataPtr;
+	_ReleaseResFileData (handle);
 
-					hList = (MEM_HANDLE)LOWORD (
-							ResHeaderPtr->PackageList[i].flags_and_data_loc);
-					LockResourceHandleList (ResHeaderPtr, hList, i + 1,
-							&ResourceHandleListPtr, &TypeEncodePtr, &DataPtr);
-					fprintf (stderr, "Package %u has %u instances left\n",
-							i + 1, ResourceHandleListPtr->num_valid_handles);
-					UnlockResourceHandleList (hList);
-				}
-			}
-		}
-#endif /* DEBUG */
-
-		_sub_index_list (hRH);
-		res_fp = ResHeaderPtr->res_fp;
-		if (ResHeaderPtr == _get_current_index_header ())
-			SetResourceIndex (hIndexList);
-		UnlockResourceHeader (hRH);
-		FreeResourceHeader (hRH);
-
-		if (res_fp)
-		{
-			MEM_HANDLE hNextRH;
-
-			for (hRH = hIndexList; hRH && res_fp; hRH = hNextRH)
-			{
-				ResHeaderPtr = LockResourceHeader (hRH);
-				if (res_fp == ResHeaderPtr->res_fp)
-					res_fp = 0;
-				hNextRH = ResHeaderPtr->hSuccHeader;
-				UnlockResourceHeader (hRH);
-			}
-
-			if (res_fp)
-				res_CloseResFile (res_fp);
-		}
-
-		return (TRUE);
-	}
-
-	return (FALSE);
+	return TRUE;
 }
 
 BOOLEAN
-InstallResTypeVectors (COUNT res_type, 
-		MEM_HANDLE (*load_func) (uio_Stream *fp, DWORD len),
-		BOOLEAN (*free_func) (MEM_HANDLE handle))
+InstallResTypeVectors (RES_TYPE resType, ResourceLoadFun *loadFun,
+		ResourceFreeFun *freeFun)
 {
-	INDEX_HEADERPTR ResHeaderPtr;
+	ResourceHandlers handlers;
+	handlers.loadFun = loadFun;
+	handlers.freeFun = freeFun;
 
-	ResHeaderPtr = _get_current_index_header ();
-	if (ValidResType (ResHeaderPtr, res_type))
-	{
-		ResHeaderPtr->TypeList[res_type - 1].func_vectors.load_func = load_func;
-		ResHeaderPtr->TypeList[res_type - 1].func_vectors.free_func = free_func;
-
-		return (TRUE);
-	}
-
-	return (FALSE);
+	setResTypeHandlers(_get_current_index_header (), resType, &handlers);
+	return TRUE;
 }
 
-COUNT
-CountResourceTypes (void)
+static bool
+setResTypeHandlers (ResourceIndex *idx, RES_TYPE resType,
+		const ResourceHandlers *handlers)
 {
-	INDEX_HEADERPTR ResHeaderPtr;
+	if (resType >= idx->typeInfo.numTypes) {
+		// Have to enlarge the handler array.
+		ResourceHandlers *newHandlers = HRealloc (idx->typeInfo.handlers,
+				(resType + 1) * sizeof (ResourceHandlers));
+		if (newHandlers == NULL)
+			return false;  // idx->typeInfo.handlers is untouched
 
-	ResHeaderPtr = _get_current_index_header ();
-	return ((COUNT)ResHeaderPtr->num_types);
+		// Clear the space for new entries. No need to init the last one;
+		// it's going to be used immediately.
+		memset (&newHandlers[idx->typeInfo.numTypes], 0,
+				(resType - idx->typeInfo.numTypes /* + 1 - 1 */)
+				* sizeof (ResourceHandlers));
+
+		idx->typeInfo.handlers = newHandlers;
+		idx->typeInfo.numTypes = resType + 1;
+	}
+
+	idx->typeInfo.handlers[resType] = *handlers;
+	return true;
 }
 
-void
-forAllResourceIndices(
-		void (*callback) (INDEX_HEADERPTR ResHeaderPtr, void *extra),
-		void *extra) {
-	MEM_HANDLE hRH;
-	MEM_HANDLE hNextRH;
-	INDEX_HEADERPTR ResHeaderPtr;
+static bool
+copyResTypeHandlers (ResourceIndex *dest, const ResourceIndex *src)
+{
+	assert (src != dest);
 
-	for (hRH = hIndexList; hRH != 0; hRH = hNextRH)
-	{
-		ResHeaderPtr = LockResourceHeader (hRH);
-		hNextRH = ResHeaderPtr->hSuccHeader;
-		(*callback) (ResHeaderPtr, extra);
-		UnlockResourceHeader (hRH);
-	}
+	if (dest->typeInfo.handlers != NULL)
+		HFree (dest->typeInfo.handlers);
+
+	dest->typeInfo.handlers = HMalloc (src->typeInfo.numTypes *
+			sizeof (ResourceHandlers));
+	if (dest->typeInfo.handlers == NULL)
+		return false;
+	
+	memcpy (dest->typeInfo.handlers, src->typeInfo.handlers,
+			src->typeInfo.numTypes * sizeof (ResourceHandlers));
+	dest->typeInfo.numTypes = src->typeInfo.numTypes;
+	
+	return true;
+}
+
+
+static MEM_HANDLE
+allocResourceIndex (void) {
+	return mem_allocate (sizeof (ResourceIndex), MEM_PRIMARY,
+			INDEX_HEADER_PRIORITY, MEM_SIMPLE);
+}
+
+static void
+freeResourceIndex (MEM_HANDLE h) {
+	mem_release (h);
 }
 
 
