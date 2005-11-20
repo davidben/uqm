@@ -472,10 +472,10 @@ START_GAME_STATE
 	ADD_GAME_STATE (BOMB_VISITS, 3)
 	ADD_GAME_STATE (ULTRON_CONDITION, 3)
 			/* 0 if the Supox still have the Ultron
-			 * 1 if the player has the Ultron, completely broken
-			 * 2 if the player has the Ultron, with 1 fix
-			 * 3 if the player has the Ultron, with 2 fixes
-			 * 4 if the player has the Ultron, completely restored
+			 * 1 if the Captain has the Ultron, completely broken
+			 * 2 if the Captain has the Ultron, with 1 fix
+			 * 3 if the Captain has the Ultron, with 2 fixes
+			 * 4 if the Captain has the Ultron, completely restored
 			 * 5 if the Ultron has been returned to the Utwig
 			 */
 	ADD_GAME_STATE (UTWIG_HAVE_ULTRON, 1)
@@ -486,7 +486,9 @@ START_GAME_STATE
 	ADD_GAME_STATE (TALKING_PET_VISITS, 3)
 	ADD_GAME_STATE (TALKING_PET_HOME_VISITS, 3)
 	ADD_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES, 1)
+			/* The Umgah have come under the influence of the Talking Pet */
 	ADD_GAME_STATE (KNOW_UMGAH_ZOMBIES, 1)
+			/* The Captain is aware that something is up with the Umgah */
 
 	ADD_GAME_STATE (ARILOU_VISITS, 3)
 	ADD_GAME_STATE (ARILOU_HOME_VISITS, 3)
