@@ -20,7 +20,7 @@
 #include "misc.h"
 #include "options.h"
 #include "types.h"
-#include "libs/list.h"
+#include "../list.h"
 #include <ctype.h>
 #include <stdlib.h>
 
