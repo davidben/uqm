@@ -495,6 +495,18 @@ SOURCE=..\sc2code\libs\input\input_common.c
 SOURCE=..\sc2code\libs\input\input_common.h
 # End Source File
 # End Group
+# Begin Group "list"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\list\list.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\list\list.c
+# End Source File
+# End Group
 # Begin Group "math"
 
 # PROP Default_Filter ""
@@ -1197,6 +1209,10 @@ SOURCE=..\sc2code\libs\gfxlib.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\inplib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\list.h
 # End Source File
 # Begin Source File
 
