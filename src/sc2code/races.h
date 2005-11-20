@@ -72,12 +72,13 @@ typedef struct captain_stuff
 typedef CAPTAIN_STUFF *PCAPTAIN_STUFF;
 #define CAPTAIN_STUFFPTR PCAPTAIN_STUFF
 
+typedef void (IntelligenceFunc) (PVOID ShipPtr, PVOID ObjectsOfConcern,
+		COUNT ConcernCounter);
 typedef struct
 {
 	COUNT ManeuverabilityIndex;
 	COUNT WeaponRange;
-	void (*intelligence_func) (PVOID ShipPtr, PVOID ObjectsOfConcern,
-			COUNT ConcernCounter);
+	IntelligenceFunc *intelligence_func;
 } INTEL_STUFF;
 
 typedef struct
