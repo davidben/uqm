@@ -161,6 +161,7 @@ res_FreeResource (RESOURCE res)
 {
 	ResourceDesc *desc;
 	ResourceFreeFun *freeFun;
+	ResourceIndex *idx;
 
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)
@@ -181,7 +182,7 @@ res_FreeResource (RESOURCE res)
 		return;
 	}
 
-	ResourceIndex *idx = _get_current_index_header ();
+	idx = _get_current_index_header ();
 	freeFun = idx->typeInfo.handlers[GET_TYPE (res)].freeFun;
 	(*freeFun) (desc->handle);
 	desc->handle = NULL_HANDLE;

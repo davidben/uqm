@@ -316,10 +316,9 @@ InitResourceSystem (const char *resfile, RES_TYPE resType, BOOLEAN
 {
 	MEM_HANDLE handle;
 	ResourceIndex *ndx;
+	ResourceHandlers handlers;
 
 	initIndexList ();
-	
-	ResourceHandlers handlers;
 	
 	handlers.loadFun = _GetResFileData;
 	handlers.freeFun = _ReleaseResFileData;
