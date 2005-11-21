@@ -71,8 +71,8 @@ typedef enum
 static void
 DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 {
-	RECT r = { SIS_ORG_X, SIS_ORG_Y,
-				SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT };
+	RECT r = { { SIS_ORG_X, SIS_ORG_Y }, 
+				{ SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT } };
 
 	BatchGraphics ();
 	
