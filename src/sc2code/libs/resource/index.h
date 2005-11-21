@@ -37,10 +37,6 @@ typedef struct
 
 typedef struct
 {
-} ResourceType;
-
-typedef struct
-{
 	RES_TYPE numTypes;
 			/* Number of types in the handlers array (whether NULL or not).
 			 * == the highest stored vector number + 1.
