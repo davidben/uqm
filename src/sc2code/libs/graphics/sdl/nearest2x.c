@@ -94,6 +94,7 @@ SCALE_(Nearest) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	even_x:
 		shr        ecx, 1      // x = rw / 2
+		jz         end_x       // rw was 1
 
 	loop_x:
 		// two-pixel transfer
@@ -111,7 +112,8 @@ SCALE_(Nearest) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 		dec        ecx
 		jnz        loop_x
-
+	
+	end_x:
 		// try to prefetch as early as possible to have it on time
 		PREFETCH  (esi + eax)
 
