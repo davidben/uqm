@@ -203,11 +203,6 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 
 	SkelFrame = CaptureDrawable (LoadCelFile ("slides/ending/sis_skel.ani"));
 	ModuleFrame = CaptureDrawable (LoadGraphic (SISMODS_MASK_PMAP_ANIM));
-	/* TODO: fix this eventually;
-	 * we need to load *all* gfx resources from this package
-	 * otherwise we will leave the package hanging, literally
-	 */
-	DestroyDrawable (LoadGraphic (OUTFIT_PMAP_ANIM));
 
 	GetFrameRect (SkelFrame, &r);
 	SisFrame = CaptureDrawable (CreateDrawable (
