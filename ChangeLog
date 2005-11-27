@@ -1,5 +1,6 @@
 Changes towards version 0.5:
-- Replaced the binary resource indexes by textual ones - SvdB
+- Replaced the binary resource indexes by textual ones
+  (also resolves bug #687) - SvdB
 - Some subtitle timing fixes (bug #s 771, 780) - Alex
 - Entering Planetary Orbit wait screen is back (from DOS) - Alex
 - Gfx engine changes: now always 32bpp internally (facilitates
