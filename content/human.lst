@@ -1,13 +1,13 @@
-00200002  human/humicons.ani
-00200004  human/humtext.txt
-00200008  human/human.cod
-00200102  human/hummicon.ani
-00400005  human/humsound.snd
-00400006  human/humditty.mod
-00400202  human/human.big
-00400302  human/human.med
-00400402  human/human.sml
-00400502  human/saturn.big
-00400602  human/saturn.med
-00400702  human/saturn.sml
-00400802  human/humcap.ani
+1 0 2 human/humicons.ani
+1 0 4 human/humtext.txt
+1 0 8 human/human.cod
+1 1 2 human/hummicon.ani
+2 0 5 human/humsound.snd
+2 0 6 human/humditty.mod
+2 2 2 human/human.big
+2 3 2 human/human.med
+2 4 2 human/human.sml
+2 5 2 human/saturn.big
+2 6 2 human/saturn.med
+2 7 2 human/saturn.sml
+2 8 2 human/humcap.ani

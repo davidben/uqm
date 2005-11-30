@@ -1,12 +1,12 @@
-00200008  sis_ship/sis.cod
-00400002  sis_ship/sisicons.ani
-00400005  sis_ship/sissound.snd
-00400006  sis_ship/sisditty.mod
-00400102  sis_ship/sis.big
-00400202  sis_ship/sis.med
-00400302  sis_ship/sis.sml
-00400402  sis_ship/blasbig.ani
-00400502  sis_ship/blasmed.ani
-00400602  sis_ship/blassml.ani
-00400702  sis_ship/siscap.ani
-00600802  sis_ship/sishyper.ani
+1 0 8 sis_ship/sis.cod
+2 0 2 sis_ship/sisicons.ani
+2 0 5 sis_ship/sissound.snd
+2 0 6 sis_ship/sisditty.mod
+2 1 2 sis_ship/sis.big
+2 2 2 sis_ship/sis.med
+2 3 2 sis_ship/sis.sml
+2 4 2 sis_ship/blasbig.ani
+2 5 2 sis_ship/blasmed.ani
+2 6 2 sis_ship/blassml.ani
+2 7 2 sis_ship/siscap.ani
+3 8 2 sis_ship/sishyper.ani

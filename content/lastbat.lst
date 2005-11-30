@@ -1,12 +1,12 @@
-00200008  lastbat/lastbat.cod
-00400002  lastbat/lastbat.big
-00400005  lastbat/lassound.snd
-00400102  lastbat/lastbat.med
-00400202  lastbat/lastbat.sml
-00400302  lastbat/senbig.ani
-00400402  lastbat/senmed.ani
-00400502  lastbat/sensml.ani
-00400602  lastbat/genbig.ani
-00400702  lastbat/genmed.ani
-00400802  lastbat/gensml.ani
-00600902  lastbat/lascap.ani
+1 0 8 lastbat/lastbat.cod
+2 0 2 lastbat/lastbat.big
+2 0 5 lastbat/lassound.snd
+2 1 2 lastbat/lastbat.med
+2 2 2 lastbat/lastbat.sml
+2 3 2 lastbat/senbig.ani
+2 4 2 lastbat/senmed.ani
+2 5 2 lastbat/sensml.ani
+2 6 2 lastbat/genbig.ani
+2 7 2 lastbat/genmed.ani
+2 8 2 lastbat/gensml.ani
+3 9 2 lastbat/lascap.ani

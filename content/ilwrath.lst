@@ -1,13 +1,13 @@
-00200002  ilwrath/ilwicons.ani
-00200004  ilwrath/ilwtext.txt
-00200008  ilwrath/ilwrath.cod
-00200102  ilwrath/ilwmicon.ani
-00400005  ilwrath/ilwsound.snd
-00400006  ilwrath/ilwditty.mod
-00400202  ilwrath/ilwrath.big
-00400302  ilwrath/ilwrath.med
-00400402  ilwrath/ilwrath.sml
-00400502  ilwrath/fire.big
-00400602  ilwrath/fire.med
-00400702  ilwrath/fire.sml
-00400802  ilwrath/ilwcap.ani
+1 0 2 ilwrath/ilwicons.ani
+1 0 4 ilwrath/ilwtext.txt
+1 0 8 ilwrath/ilwrath.cod
+1 1 2 ilwrath/ilwmicon.ani
+2 0 5 ilwrath/ilwsound.snd
+2 0 6 ilwrath/ilwditty.mod
+2 2 2 ilwrath/ilwrath.big
+2 3 2 ilwrath/ilwrath.med
+2 4 2 ilwrath/ilwrath.sml
+2 5 2 ilwrath/fire.big
+2 6 2 ilwrath/fire.med
+2 7 2 ilwrath/fire.sml
+2 8 2 ilwrath/ilwcap.ani

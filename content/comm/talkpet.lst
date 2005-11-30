@@ -1,5 +1,5 @@
-00200002  comm/talkpet/talkpet.ani
-00200003  comm/talkpet/talkpet.fon
-00200004  comm/talkpet/talkpet.txt
-00200006  comm/talkpet/talkpet.mod
-00200104  comm/talkpet/talkpet.ct
+1 0 2 comm/talkpet/talkpet.ani
+1 0 3 comm/talkpet/talkpet.fon
+1 0 4 comm/talkpet/talkpet.txt
+1 0 6 comm/talkpet/talkpet.mod
+1 1 4 comm/talkpet/talkpet.ct

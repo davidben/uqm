@@ -1,13 +1,13 @@
-00200002  arilou/ariicons.ani
-00200004  arilou/aritext.txt
-00200008  arilou/arilou.cod
-00200102  arilou/arimicon.ani
-00400005  arilou/arisound.snd
-00400006  arilou/ariditty.mod
-00400202  arilou/arilou.big
-00400302  arilou/arilou.med
-00400402  arilou/arilou.sml
-00400502  arilou/warp.big
-00400602  arilou/warp.med
-00400702  arilou/warp.sml
-00400802  arilou/aricap.ani
+1 0 2 arilou/ariicons.ani
+1 0 4 arilou/aritext.txt
+1 0 8 arilou/arilou.cod
+1 1 2 arilou/arimicon.ani
+2 0 5 arilou/arisound.snd
+2 0 6 arilou/ariditty.mod
+2 2 2 arilou/arilou.big
+2 3 2 arilou/arilou.med
+2 4 2 arilou/arilou.sml
+2 5 2 arilou/warp.big
+2 6 2 arilou/warp.med
+2 7 2 arilou/warp.sml
+2 8 2 arilou/aricap.ani

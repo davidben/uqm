@@ -1,16 +1,16 @@
-00200002  thradd/thricons.ani
-00200004  thradd/thrtext.txt
-00200008  thradd/thradd.cod
-00200102  thradd/thrmicon.ani
-00400005  thradd/thrsound.snd
-00400006  thradd/thrditty.mod
-00400202  thradd/thradd.big
-00400302  thradd/thradd.med
-00400402  thradd/thradd.sml
-00400502  thradd/horbig.ani
-00400602  thradd/hormed.ani
-00400702  thradd/horsml.ani
-00400802  thradd/napbig.ani
-00400902  thradd/napmed.ani
-00400a02  thradd/napsml.ani
-00400b02  thradd/thrcap.ani
+1  0 2 thradd/thricons.ani
+1  0 4 thradd/thrtext.txt
+1  0 8 thradd/thradd.cod
+1  1 2 thradd/thrmicon.ani
+2  0 5 thradd/thrsound.snd
+2  0 6 thradd/thrditty.mod
+2  2 2 thradd/thradd.big
+2  3 2 thradd/thradd.med
+2  4 2 thradd/thradd.sml
+2  5 2 thradd/horbig.ani
+2  6 2 thradd/hormed.ani
+2  7 2 thradd/horsml.ani
+2  8 2 thradd/napbig.ani
+2  9 2 thradd/napmed.ani
+2 10 2 thradd/napsml.ani
+2 11 2 thradd/thrcap.ani

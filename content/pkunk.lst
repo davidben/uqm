@@ -1,13 +1,13 @@
-00200002  pkunk/pkuicons.ani
-00200004  pkunk/pkutext.txt
-00200008  pkunk/pkunk.cod
-00200102  pkunk/pkumicon.ani
-00400005  pkunk/pkusound.snd
-00400006  pkunk/pkuditty.mod
-00400202  pkunk/pkunk.big
-00400302  pkunk/pkunk.med
-00400402  pkunk/pkunk.sml
-00400502  pkunk/bugbig.ani
-00400602  pkunk/bugmed.ani
-00400702  pkunk/bugsml.ani
-00400802  pkunk/pkucap.ani
+1 0 2 pkunk/pkuicons.ani
+1 0 4 pkunk/pkutext.txt
+1 0 8 pkunk/pkunk.cod
+1 1 2 pkunk/pkumicon.ani
+2 0 5 pkunk/pkusound.snd
+2 0 6 pkunk/pkuditty.mod
+2 2 2 pkunk/pkunk.big
+2 3 2 pkunk/pkunk.med
+2 4 2 pkunk/pkunk.sml
+2 5 2 pkunk/bugbig.ani
+2 6 2 pkunk/bugmed.ani
+2 7 2 pkunk/bugsml.ani
+2 8 2 pkunk/pkucap.ani

@@ -1,16 +1,16 @@
-00200002  chenjesu/cheicons.ani
-00200004  chenjesu/chetext.txt
-00200008  chenjesu/chenjesu.cod
-00200102  chenjesu/chemicon.ani
-00400005  chenjesu/chesound.snd
-00400006  chenjesu/cheditty.mod
-00400202  chenjesu/chenjesu.big
-00400302  chenjesu/chenjesu.med
-00400402  chenjesu/chenjesu.sml
-00400502  chenjesu/spark.big
-00400602  chenjesu/spark.med
-00400702  chenjesu/spark.sml
-00400802  chenjesu/doggy.big
-00400902  chenjesu/doggy.med
-00400a02  chenjesu/doggy.sml
-00400b02  chenjesu/checap.ani
+1  0 2 chenjesu/cheicons.ani
+1  0 4 chenjesu/chetext.txt
+1  0 8 chenjesu/chenjesu.cod
+1  1 2 chenjesu/chemicon.ani
+2  0 5 chenjesu/chesound.snd
+2  0 6 chenjesu/cheditty.mod
+2  2 2 chenjesu/chenjesu.big
+2  3 2 chenjesu/chenjesu.med
+2  4 2 chenjesu/chenjesu.sml
+2  5 2 chenjesu/spark.big
+2  6 2 chenjesu/spark.med
+2  7 2 chenjesu/spark.sml
+2  8 2 chenjesu/doggy.big
+2  9 2 chenjesu/doggy.med
+2 10 2 chenjesu/doggy.sml
+2 11 2 chenjesu/checap.ani

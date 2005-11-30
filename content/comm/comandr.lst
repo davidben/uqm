@@ -1,6 +1,6 @@
-00200002  comm/comandr/comandr.ani
-00200003  comm/comandr/comandr.fon
-00200004  comm/comandr/comandr.ct
-00200006  comm/comandr/comandr.mod
-00400104  comm/comandr/comandr.txt
-00600204  comm/starbas/starbas.txt
+1 0 2 comm/comandr/comandr.ani
+1 0 3 comm/comandr/comandr.fon
+1 0 4 comm/comandr/comandr.ct
+1 0 6 comm/comandr/comandr.mod
+2 1 4 comm/comandr/comandr.txt
+3 2 4 comm/starbas/starbas.txt

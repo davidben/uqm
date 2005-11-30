@@ -1,13 +1,13 @@
-00200002  mycon/mycicons.ani
-00200004  mycon/myctext.txt
-00200008  mycon/mycon.cod
-00200102  mycon/mycmicon.ani
-00400005  mycon/mycsound.snd
-00400006  mycon/mycditty.mod
-00400202  mycon/mycon.big
-00400302  mycon/mycon.med
-00400402  mycon/mycon.sml
-00400502  mycon/plasma.big
-00400602  mycon/plasma.med
-00400702  mycon/plasma.sml
-00400802  mycon/myccap.ani
+1 0 2 mycon/mycicons.ani
+1 0 4 mycon/myctext.txt
+1 0 8 mycon/mycon.cod
+1 1 2 mycon/mycmicon.ani
+2 0 5 mycon/mycsound.snd
+2 0 6 mycon/mycditty.mod
+2 2 2 mycon/mycon.big
+2 3 2 mycon/mycon.med
+2 4 2 mycon/mycon.sml
+2 5 2 mycon/plasma.big
+2 6 2 mycon/plasma.med
+2 7 2 mycon/plasma.sml
+2 8 2 mycon/myccap.ani

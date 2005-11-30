@@ -1,10 +1,10 @@
-00200002  slylandr/slyicons.ani
-00200004  slylandr/slytext.txt
-00200008  slylandr/slylandr.cod
-00200102  slylandr/slymicon.ani
-00400005  slylandr/slysound.snd
-00400006  slylandr/slyditty.mod
-00400202  slylandr/slylandr.big
-00400302  slylandr/slylandr.med
-00400402  slylandr/slylandr.sml
-00400502  slylandr/slycap.ani
+1 0 2 slylandr/slyicons.ani
+1 0 4 slylandr/slytext.txt
+1 0 8 slylandr/slylandr.cod
+1 1 2 slylandr/slymicon.ani
+2 0 5 slylandr/slysound.snd
+2 0 6 slylandr/slyditty.mod
+2 2 2 slylandr/slylandr.big
+2 3 2 slylandr/slylandr.med
+2 4 2 slylandr/slylandr.sml
+2 5 2 slylandr/slycap.ani

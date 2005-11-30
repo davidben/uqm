@@ -1,16 +1,16 @@
-00200002  mmrnmhrm/mmricons.ani
-00200004  mmrnmhrm/mmrtext.txt
-00200008  mmrnmhrm/mmrnmhrm.cod
-00200102  mmrnmhrm/mmrmicon.ani
-00400005  mmrnmhrm/mmrsound.snd
-00400006  mmrnmhrm/mmrditty.mod
-00400202  mmrnmhrm/mmrnmhrm.big
-00400302  mmrnmhrm/mmrnmhrm.med
-00400402  mmrnmhrm/mmrnmhrm.sml
-00400502  mmrnmhrm/torp.big
-00400602  mmrnmhrm/torp.med
-00400702  mmrnmhrm/torp.sml
-00400802  mmrnmhrm/ywing.big
-00400902  mmrnmhrm/ywing.med
-00400a02  mmrnmhrm/ywing.sml
-00400b02  mmrnmhrm/mmrcap.ani
+1  0 2 mmrnmhrm/mmricons.ani
+1  0 4 mmrnmhrm/mmrtext.txt
+1  0 8 mmrnmhrm/mmrnmhrm.cod
+1  1 2 mmrnmhrm/mmrmicon.ani
+2  0 5 mmrnmhrm/mmrsound.snd
+2  0 6 mmrnmhrm/mmrditty.mod
+2  2 2 mmrnmhrm/mmrnmhrm.big
+2  3 2 mmrnmhrm/mmrnmhrm.med
+2  4 2 mmrnmhrm/mmrnmhrm.sml
+2  5 2 mmrnmhrm/torp.big
+2  6 2 mmrnmhrm/torp.med
+2  7 2 mmrnmhrm/torp.sml
+2  8 2 mmrnmhrm/ywing.big
+2  9 2 mmrnmhrm/ywing.med
+2 10 2 mmrnmhrm/ywing.sml
+2 11 2 mmrnmhrm/mmrcap.ani

@@ -1,13 +1,13 @@
-00200002  syreen/syricons.ani
-00200004  syreen/syrtext.txt
-00200008  syreen/syreen.cod
-00200102  syreen/syrmicon.ani
-00400005  syreen/syrsound.snd
-00400006  syreen/syrditty.mod
-00400202  syreen/syreen.big
-00400302  syreen/syreen.med
-00400402  syreen/syreen.sml
-00400502  syreen/dagger.big
-00400602  syreen/dagger.med
-00400702  syreen/dagger.sml
-00400802  syreen/syrcap.ani
+1 0 2 syreen/syricons.ani
+1 0 4 syreen/syrtext.txt
+1 0 8 syreen/syreen.cod
+1 1 2 syreen/syrmicon.ani
+2 0 5 syreen/syrsound.snd
+2 0 6 syreen/syrditty.mod
+2 2 2 syreen/syreen.big
+2 3 2 syreen/syreen.med
+2 4 2 syreen/syreen.sml
+2 5 2 syreen/dagger.big
+2 6 2 syreen/dagger.med
+2 7 2 syreen/dagger.sml
+2 8 2 syreen/syrcap.ani

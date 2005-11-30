@@ -117,7 +117,6 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 	{
 		char lineBuf[PATH_MAX + 80];
 		char *ptr;
-		char *endResPtr;
 		char *endPtr;
 		char *path;
 		char *newPath;
@@ -157,36 +156,32 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		if (*ptr == 0)
 			continue;
 
-		// Find the separator between the resource number and the path.
-		endResPtr = ptr;
-		do {
-			endResPtr++;
-		} while (*endResPtr != '\0' && !isspace (*endResPtr));
-	
-		// Skip the separator
-		path = endResPtr;
-		while (isspace (*path))
-			path++;
-	
-		if (*path == 0)
 		{
-			// No path present after the line number.
-			fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
-					fileName, lineNum);
-			continue;
-		}
+			unsigned int resPackage;
+			unsigned int resInstance;
+			unsigned int resType;
+			unsigned int numParsed;
 
-		// Parse the resource number.
-		{
-			*endResPtr = '\0';
-			res = strtoul (ptr, &endResPtr, 16);
-			if (*endResPtr != '\0')
+			if (sscanf (ptr, "%i %i %i %n",
+					&resPackage, &resInstance, &resType, &numParsed) != 3)
 			{
-				// Invalid characters in the resource number.
 				fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
 						fileName, lineNum);
 				continue;
 			}
+			path = ptr + numParsed;
+		
+			res = MAKE_RESOURCE (resPackage, resType, resInstance);
+		}
+
+		while (isspace (*path))
+			path++;
+		if (*path == '\0')
+		{
+			// No path supplied.
+			fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
+					fileName, lineNum);
+			continue;
 		}
 
 #ifdef DEBUG

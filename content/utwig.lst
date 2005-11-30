@@ -1,13 +1,13 @@
-00200002  utwig/utwicons.ani
-00200004  utwig/utwtext.txt
-00200008  utwig/utwig.cod
-00200102  utwig/utwmicon.ani
-00400005  utwig/utwsound.snd
-00400006  utwig/utwditty.mod
-00400202  utwig/utwig.big
-00400302  utwig/utwig.med
-00400402  utwig/utwig.sml
-00400502  utwig/lanbig.ani
-00400602  utwig/lanmed.ani
-00400702  utwig/lansml.ani
-00400802  utwig/utwcap.ani
+1 0 2 utwig/utwicons.ani
+1 0 4 utwig/utwtext.txt
+1 0 8 utwig/utwig.cod
+1 1 2 utwig/utwmicon.ani
+2 0 5 utwig/utwsound.snd
+2 0 6 utwig/utwditty.mod
+2 2 2 utwig/utwig.big
+2 3 2 utwig/utwig.med
+2 4 2 utwig/utwig.sml
+2 5 2 utwig/lanbig.ani
+2 6 2 utwig/lanmed.ani
+2 7 2 utwig/lansml.ani
+2 8 2 utwig/utwcap.ani

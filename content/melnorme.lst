@@ -1,16 +1,16 @@
-00200002  melnorme/melicons.ani
-00200004  melnorme/meltext.txt
-00200008  melnorme/melnorme.cod
-00200102  melnorme/melmicon.ani
-00400005  melnorme/melsound.snd
-00400006  melnorme/melditty.mod
-00400202  melnorme/melnorme.big
-00400302  melnorme/melnorme.med
-00400402  melnorme/melnorme.sml
-00400502  melnorme/pumpbig.ani
-00400602  melnorme/pumpmed.ani
-00400702  melnorme/pumpsml.ani
-00400802  melnorme/confubig.ani
-00400902  melnorme/confumed.ani
-00400a02  melnorme/confusml.ani
-00400b02  melnorme/melcap.ani
+1  0 2 melnorme/melicons.ani
+1  0 4 melnorme/meltext.txt
+1  0 8 melnorme/melnorme.cod
+1  1 2 melnorme/melmicon.ani
+2  0 5 melnorme/melsound.snd
+2  0 6 melnorme/melditty.mod
+2  2 2 melnorme/melnorme.big
+2  3 2 melnorme/melnorme.med
+2  4 2 melnorme/melnorme.sml
+2  5 2 melnorme/pumpbig.ani
+2  6 2 melnorme/pumpmed.ani
+2  7 2 melnorme/pumpsml.ani
+2  8 2 melnorme/confubig.ani
+2  9 2 melnorme/confumed.ani
+2 10 2 melnorme/confusml.ani
+2 11 2 melnorme/melcap.ani

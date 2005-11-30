@@ -1,16 +1,16 @@
-00200002  zoqfot/zoqicons.ani
-00200004  zoqfot/zoqtext.txt
-00200008  zoqfot/zoqfot.cod
-00200102  zoqfot/zoqmicon.ani
-00400005  zoqfot/zoqsound.snd
-00400006  zoqfot/zoqditty.mod
-00400202  zoqfot/zoqfot.big
-00400302  zoqfot/zoqfot.med
-00400402  zoqfot/zoqfot.sml
-00400502  zoqfot/spitbig.ani
-00400602  zoqfot/spitmed.ani
-00400702  zoqfot/spitsml.ani
-00400802  zoqfot/stibig.ani
-00400902  zoqfot/stimed.ani
-00400a02  zoqfot/stisml.ani
-00400b02  zoqfot/zoqcap.ani
+1  0 2 zoqfot/zoqicons.ani
+1  0 4 zoqfot/zoqtext.txt
+1  0 8 zoqfot/zoqfot.cod
+1  1 2 zoqfot/zoqmicon.ani
+2  0 5 zoqfot/zoqsound.snd
+2  0 6 zoqfot/zoqditty.mod
+2  2 2 zoqfot/zoqfot.big
+2  3 2 zoqfot/zoqfot.med
+2  4 2 zoqfot/zoqfot.sml
+2  5 2 zoqfot/spitbig.ani
+2  6 2 zoqfot/spitmed.ani
+2  7 2 zoqfot/spitsml.ani
+2  8 2 zoqfot/stibig.ani
+2  9 2 zoqfot/stimed.ani
+2 10 2 zoqfot/stisml.ani
+2 11 2 zoqfot/zoqcap.ani

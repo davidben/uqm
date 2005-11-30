@@ -1,5 +1,5 @@
-00200002  comm/vux/vux.ani
-00200003  comm/vux/vux.fon
-00200004  comm/vux/vux.txt
-00200006  comm/vux/vux.mod
-00200104  comm/vux/vux.ct
+1 0 2 comm/vux/vux.ani
+1 0 3 comm/vux/vux.fon
+1 0 4 comm/vux/vux.txt
+1 0 6 comm/vux/vux.mod
+1 1 4 comm/vux/vux.ct

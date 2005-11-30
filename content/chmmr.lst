@@ -1,16 +1,16 @@
-00200002  chmmr/chmicons.ani
-00200004  chmmr/chmtext.txt
-00200008  chmmr/chmmr.cod
-00200102  chmmr/chmmicon.ani
-00400005  chmmr/chmsound.snd
-00400006  chmmr/chmditty.mod
-00400202  chmmr/chmmr.big
-00400302  chmmr/chmmr.med
-00400402  chmmr/chmmr.sml
-00400502  chmmr/muzbig.ani
-00400602  chmmr/muzmed.ani
-00400702  chmmr/muzsml.ani
-00400802  chmmr/satbig.ani
-00400902  chmmr/satmed.ani
-00400a02  chmmr/satsml.ani
-00400b02  chmmr/chmcap.ani
+1  0 2 chmmr/chmicons.ani
+1  0 4 chmmr/chmtext.txt
+1  0 8 chmmr/chmmr.cod
+1  1 2 chmmr/chmmicon.ani
+2  0 5 chmmr/chmsound.snd
+2  0 6 chmmr/chmditty.mod
+2  2 2 chmmr/chmmr.big
+2  3 2 chmmr/chmmr.med
+2  4 2 chmmr/chmmr.sml
+2  5 2 chmmr/muzbig.ani
+2  6 2 chmmr/muzmed.ani
+2  7 2 chmmr/muzsml.ani
+2  8 2 chmmr/satbig.ani
+2  9 2 chmmr/satmed.ani
+2 10 2 chmmr/satsml.ani
+2 11 2 chmmr/chmcap.ani
