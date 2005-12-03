@@ -56,6 +56,9 @@ typedef struct tfb_image
 	TFB_Canvas FilledImg;
 	TFB_Palette *Palette;
 	int colormap_index;
+	HOT_SPOT NormalHs;
+	HOT_SPOT MipmapHs;
+	HOT_SPOT last_scale_hs;
 	int last_scale_type;
 	TFB_Palette last_fill;
 	EXTENT extent;
@@ -107,7 +110,9 @@ TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
 BOOLEAN TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas);
 void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
 void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas dst, TFB_Canvas mipmap, EXTENT size);
-void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, int scale, PEXTENT size);
+void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
+		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
+		int scale, PEXTENT size, HOT_SPOT *hs);
 void TFB_DrawCanvas_Rotate (TFB_Canvas src, TFB_Canvas dst, int angle, EXTENT size);
 void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, PEXTENT size);
 void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size);

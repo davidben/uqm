@@ -19,6 +19,7 @@
 #include "drawcmd.h"
 #include "units.h"
 
+static const HOT_SPOT NullHs = {0, 0};
 
 void
 TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
@@ -291,6 +292,9 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->MipmapImg = NULL;
 	img->FilledImg = NULL;
 	img->colormap_index = -1;
+	img->NormalHs = NullHs;
+	img->MipmapHs = NullHs;
+	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
@@ -317,6 +321,9 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->MipmapImg = NULL;
 	img->FilledImg = NULL;
 	img->colormap_index = -1;
+	img->NormalHs = NullHs;
+	img->MipmapHs = NullHs;
+	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
 	img->Palette = NULL;
 	img->extent.width = w;
@@ -386,12 +393,16 @@ void
 TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 {
 	EXTENT old = image->extent;
-	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->MipmapImg,
-			target, &image->extent);
+	HOT_SPOT oldhs = image->last_scale_hs;
+	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->NormalHs,
+			image->MipmapImg, image->MipmapHs, target,
+			&image->extent, &image->last_scale_hs);
 
 	if ((old.width != image->extent.width) ||
 			(old.height != image->extent.height) || image->dirty ||
-			!image->ScaledImg || type != image->last_scale_type)
+			!image->ScaledImg || type != image->last_scale_type ||
+			(oldhs.x != image->last_scale_hs.x) ||
+			(oldhs.y != image->last_scale_hs.y))
 	{
 		image->dirty = FALSE;
 		image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg,

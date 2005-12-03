@@ -947,6 +947,8 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 									TFB_Image *mmimg = frame->image;
 									DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
 									DC.data.setmipmap.image = ((PFRAME_DESC)ElementPtr->next.image.frame)->image;
+									DC.data.setmipmap.hotx = frame->HotSpot.x;
+									DC.data.setmipmap.hoty = frame->HotSpot.y;
 									LockMutex (mmimg->mutex);
 									DC.data.setmipmap.mipmap = mmimg->NormalImg;
 									UnlockMutex (mmimg->mutex);

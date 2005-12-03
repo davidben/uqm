@@ -140,17 +140,10 @@ TFB_Prim_Stamp (PSTAMP stmp)
 
 	LockMutex (img->mutex);
 
-	x = stmp->origin.x - _CurFramePtr->HotSpot.x - SrcFramePtr->HotSpot.x;
-	y = stmp->origin.y - _CurFramePtr->HotSpot.y - SrcFramePtr->HotSpot.y;
+	img->NormalHs = SrcFramePtr->HotSpot;
+	x = stmp->origin.x - _CurFramePtr->HotSpot.x;
+	y = stmp->origin.y - _CurFramePtr->HotSpot.y;
 	paletted = FALSE;
-
-	if (gscale != GSCALE_IDENTITY)
-	{	// rounding error correction here
-		x += (SrcFramePtr->HotSpot.x * (GSCALE_IDENTITY - gscale)
-				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-		y += (SrcFramePtr->HotSpot.y * (GSCALE_IDENTITY - gscale)
-				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-	}
 
 	if (TFB_DrawCanvas_IsPaletted(img->NormalImg) && img->colormap_index != -1)
 	{
@@ -198,19 +191,13 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 
 	LockMutex (img->mutex);
 
-	x = stmp->origin.x - _CurFramePtr->HotSpot.x - SrcFramePtr->HotSpot.x;
-	y = stmp->origin.y - _CurFramePtr->HotSpot.y - SrcFramePtr->HotSpot.y;
+	img->NormalHs = SrcFramePtr->HotSpot;
+	x = stmp->origin.x - _CurFramePtr->HotSpot.x;
+	y = stmp->origin.y - _CurFramePtr->HotSpot.y;
+
 	r = color->r;
 	g = color->g;
 	b = color->b;
-
-	if (gscale != GSCALE_IDENTITY)
-	{	// rounding error correction here
-		x += (SrcFramePtr->HotSpot.x * (GSCALE_IDENTITY - gscale)
-				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-		y += (SrcFramePtr->HotSpot.y * (GSCALE_IDENTITY - gscale)
-				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-	}
 
 	UnlockMutex (img->mutex);
 

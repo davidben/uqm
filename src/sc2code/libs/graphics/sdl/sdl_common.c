@@ -607,6 +607,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SETMIPMAP:
 			LockMutex (DC.data.setmipmap.image->mutex);
 			DC.data.setmipmap.image->MipmapImg = DC.data.setmipmap.mipmap;
+			DC.data.setmipmap.image->MipmapHs.x = DC.data.setmipmap.hotx;
+			DC.data.setmipmap.image->MipmapHs.y = DC.data.setmipmap.hoty;
 			UnlockMutex (DC.data.setmipmap.image->mutex);
 			break;
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
@@ -629,9 +631,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 				{
 					LockMutex (DC_image->mutex);
 					if (DC.data.image.scale)
-						TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg,
+								x - DC_image->last_scale_hs.x,
+								y - DC_image->last_scale_hs.y);
 					else
-						TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg,
+								x - DC_image->NormalHs.x,
+								y - DC_image->NormalHs.y);
 					UnlockMutex (DC_image->mutex);
 				}
 
@@ -653,9 +659,13 @@ TFB_FlushGraphics () // Only call from main thread!!
 				{
 					LockMutex (DC_image->mutex);
 					if (DC.data.filledimage.scale)
-						TFB_BBox_RegisterCanvas (DC_image->ScaledImg, x, y);
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg,
+								x - DC_image->last_scale_hs.x,
+								y - DC_image->last_scale_hs.y);
 					else
-						TFB_BBox_RegisterCanvas (DC_image->NormalImg, x, y);
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg,
+								x - DC_image->NormalHs.x,
+								y - DC_image->NormalHs.y);
 					UnlockMutex (DC_image->mutex);
 				}
 
