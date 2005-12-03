@@ -1,4 +1,7 @@
 Changes towards version 0.5:
+- Miscellaneous Sa-Matra gfx fixes (Generator collision masks and
+  explosion frame 0 were off; Shield position was off in med and sml;
+  Main sml gfx was 2 pixels too narrow) - Alex
 - Replaced the binary resource indexes by textual ones
   (also resolves bug #687) - SvdB
 - Some subtitle timing fixes (bug #s 771, 780) - Alex
