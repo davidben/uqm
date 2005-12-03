@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Trilinear melee scaler overhaul (melee smooth mode should look
+  nicer now; melee can now fully use alpha gfx) - Alex
 - Miscellaneous Sa-Matra gfx fixes (Generator collision masks and
   explosion frame 0 were off; Shield position was off in med and sml;
   Main sml gfx was 2 pixels too narrow) - Alex
