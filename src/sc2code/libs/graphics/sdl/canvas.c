@@ -10,6 +10,7 @@
 
 typedef SDL_Surface *NativeCanvas;
 
+// BYTE x BYTE weight (mult >> 8) table
 static Uint8 btable[256][256];
 
 void
@@ -18,7 +19,8 @@ TFB_DrawCanvas_Initialize (void)
 	int i, j;
 	for (i = 0; i < 256; ++i)
 		for (j = 0; j < 256; ++j)
-			btable[j][i] = (j * i) >> 8;
+			btable[j][i] = (j * i + 0x80) >> 8;
+				// need error correction here
 }
 
 void
@@ -71,8 +73,6 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 	}
 
 	LockMutex (img->mutex);
-	targetRect.x = x;
-	targetRect.y = y;
 
 	if (palette == 0)
 		palette = img->Palette;
@@ -100,17 +100,23 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 		srcRect.w = img->extent.width;
 		srcRect.h = img->extent.height;
 		pSrcRect = &srcRect;
+
+		targetRect.x = x - img->last_scale_hs.x;
+		targetRect.y = y - img->last_scale_hs.y;
 	}
 	else
 	{
 		surf = img->NormalImg;
 		pSrcRect = NULL;
+
+		targetRect.x = x - img->NormalHs.x;
+		targetRect.y = y - img->NormalHs.y;
 	}
 	
 	if (surf->format->palette)
 		SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
 	
-	SDL_BlitSurface(surf, pSrcRect, (NativeCanvas) target, &targetRect);
+	SDL_BlitSurface (surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
 }
 
@@ -217,9 +223,6 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 	LockMutex (img->mutex);
 
-	targetRect.x = x;
-	targetRect.y = y;
-
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
 		TFB_DrawImage_FixScaling (img, scale, TFB_SCALE_NEAREST);
@@ -229,11 +232,17 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 		srcRect.w = img->extent.width;
 		srcRect.h = img->extent.height;
 		pSrcRect = &srcRect;
+
+		targetRect.x = x - img->last_scale_hs.x;
+		targetRect.y = y - img->last_scale_hs.y;
 	}
 	else
 	{
 		surf = img->NormalImg;
 		pSrcRect = NULL;
+		
+		targetRect.x = x - img->NormalHs.x;
+		targetRect.y = y - img->NormalHs.y;
 	}
 
 	if (surf->format->palette)
@@ -586,21 +595,26 @@ TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOL
 }
 
 void
-TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, int scale, PEXTENT size)
+TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
+		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
+		int scale, PEXTENT size, HOT_SPOT *hs)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	
 	if (!src_mipmap)
 	{
-		size->width = (int) (src->w * scale / (float)GSCALE_IDENTITY + 0.5);
-		size->height = (int) (src->h * scale / (float)GSCALE_IDENTITY + 0.5);
+		size->width  = src->w * scale / GSCALE_IDENTITY;
+		size->height = src->h * scale / GSCALE_IDENTITY;
+
+		hs->x = src_hs.x * scale / GSCALE_IDENTITY;
+		hs->y = src_hs.y * scale / GSCALE_IDENTITY;
 	}
 	else
 	{
 		// interpolates extents between src and mipmap to get smoother
 		// transition when surface changes
-
 		SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
+
 		float ratio = (scale / (float)GSCALE_IDENTITY) * 2.0f - 1.0f;
 		if (ratio < 0.0f)
 			ratio = 0.0f;
@@ -609,6 +623,9 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, TFB_Canvas src_mipmap, in
 
 		size->width = (int)((src->w - mipmap->w) * ratio + mipmap->w + 0.5);
 		size->height = (int)((src->h - mipmap->h) * ratio + mipmap->h + 0.5);
+
+		hs->x = (int)((src_hs.x - mm_hs.x) * ratio + mm_hs.x + 0.5);
+		hs->y = (int)((src_hs.y - mm_hs.y) * ratio + mm_hs.y + 0.5);
 	}
 		
 	if (!size->width && src->w)
@@ -650,9 +667,9 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 
 	sx = sy = 0;
 	if (size.width  > 1)
-		sx = 65536 * (src->w - 1) / (size.width  - 1);
+		sx = ((src->w - 1) << 16) / (size.width  - 1);
 	if (size.height > 1)
-		sy = 65536 * (src->h - 1) / (size.height - 1);
+		sy = ((src->h - 1) << 16) / (size.height - 1);
 
 	sax = saspace;
 	say = saspace + size.width;
@@ -737,19 +754,142 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 	SDL_UnlockSurface (src);
 }
 
+typedef union
+{
+	Uint32 value;
+	Uint8 chan[4];
+	struct
+	{
+		Uint8 r, g, b, a;
+	} c;
+} pixel_t;
+
+static inline Uint8
+dot_product_8_4 (pixel_t* p, int c, Uint8* v)
+{	// math expanded for speed
+#if 0	
+	return (
+			(Uint32)p[0].chan[c] * v[0] + (Uint32)p[1].chan[c] * v[1] +
+			(Uint32)p[2].chan[c] * v[2] + (Uint32)p[3].chan[c] * v[3]
+		) >> 8;
+#else
+	// mult-table driven version
+	return
+			btable[p[0].chan[c]][v[0]] + btable[p[1].chan[c]][v[1]] +
+			btable[p[2].chan[c]][v[2]] + btable[p[3].chan[c]][v[3]];
+#endif
+}
+
+static inline Uint8
+weight_product_8_4 (pixel_t* p, int c, Uint8* w)
+{	// math expanded for speed
+	return (
+			(Uint32)p[0].chan[c] * w[0] + (Uint32)p[1].chan[c] * w[1] +
+			(Uint32)p[2].chan[c] * w[2] + (Uint32)p[3].chan[c] * w[3]
+		) / (w[0] + w[1] + w[2] + w[3]);
+}
+
+static inline Uint8
+blend_ratio_2 (Uint8 c1, Uint8 c2, int ratio)
+{	// blend 2 color values according to ratio (0..256)
+	// identical to proper alpha blending
+	return (((c1 - c2) * ratio) >> 8) + c2;
+}
+
+static inline Uint32
+tri_get_pixel (void* ppix, SDL_PixelFormat *fmt, SDL_Color *pal,
+				Uint32 mask, Uint32 key)
+{
+	pixel_t p;
+
+	// start off with non-present pixel
+	p.value = 0;
+
+	if (pal)
+	{	// paletted pixel; mask not used
+		Uint32 c = *(Uint8 *)ppix;
+		
+		if (c != key)
+		{
+			p.c.r = pal[c].r;
+			p.c.g = pal[c].g;
+			p.c.b = pal[c].b;
+			p.c.a = SDL_ALPHA_OPAQUE;
+		}
+	}
+	else
+	{	// RGB(A) pixel; (pix & mask) != key
+		Uint32 c = *(Uint32 *)ppix;
+
+		if ((c & mask) != key)
+		{
+#if 0
+			SDL_GetRGBA (c, fmt, &p.c.r, &p.c.g, &p.c.b, &p.c.a);
+#else
+			p.c.r = (c >> fmt->Rshift) & 0xff;
+			p.c.g = (c >> fmt->Gshift) & 0xff;
+			p.c.b = (c >> fmt->Bshift) & 0xff;
+			if (fmt->Amask)
+				p.c.a = (c >> fmt->Ashift) & 0xff;
+			else
+				p.c.a = SDL_ALPHA_OPAQUE;
+		}
+#endif
+	}
+
+	return p.value;
+}
+
 void
-TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, TFB_Canvas src_mipmap, EXTENT size)
+TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
+		TFB_Canvas dest_canvas, TFB_Canvas src_mipmap, EXTENT size)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
 	SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
+	SDL_PixelFormat *srcfmt = src->format;
+	SDL_PixelFormat *mmfmt = mipmap->format;
 	SDL_PixelFormat *dstfmt = dst->format;
-	const int dstopaque = dstfmt->Amask;
-	const int dsttransparent = (dst->flags & SDL_SRCCOLORKEY) ? dstfmt->colorkey : 0;
+	SDL_Color *srcpal = srcfmt->palette? srcfmt->palette->colors : 0;
+	SDL_Color *mmpal = mmfmt->palette ? mmfmt->palette->colors : 0;
+	const int sbpp = srcfmt->BytesPerPixel;
+	const int mmbpp = mmfmt->BytesPerPixel;
+	const int slen = src->pitch;
+	const int mmlen = mipmap->pitch;
+	const int dst_has_alpha = (dstfmt->Amask != 0);
+	const int transparent = (dst->flags & SDL_SRCCOLORKEY) ?
+			dstfmt->colorkey : 0;
 	const int w = size.width, h = size.height;
-	const int ALPHA_THRESHOLD = 128;
-	
-	int ratio = (int)(256.0f * (((float)w / src->w) * 2.0f - 1.0f));
+	const int alpha_threshold = dst_has_alpha ? 0 : 127;
+	// src v. mipmap importance factor
+	int ratio;
+	// source masks and keys
+	Uint32 mk0 = 0, ck0 = ~0, mk1 = 0, ck1 = ~0;
+	// source fractional x and y positions
+	int sx0, sy0, sx1, sy1;
+	// source fractional dx and dy increments
+	int fsx0 = 0, fsy0 = 0, fsx1 = 0, fsy1 = 0;
+	// source fractional x and y starting points
+	int ssx0 = 0, ssy0 = 0, ssx1 = 0, ssy1 = 0;
+	int x, y;
+
+	fsx0 = (src->w << 16) / w;
+	fsy0 = (src->h << 16) / h;
+
+	if (w > 1)
+		fsx1 = ((mipmap->w - 1) << 16) / (w - 1);
+	if (h > 1)
+		fsy1 = ((mipmap->h - 1) << 16) / (h - 1);
+
+	// give equal importance to both edges
+	ssx0 = (((src->w - 1) << 16) - fsx0 * (w - 1)) >> 1;
+	ssy0 = (((src->h - 1) << 16) - fsy0 * (h - 1)) >> 1;
+
+	ssx1 = (((mipmap->w - 1) << 16) - fsx1 * (w - 1)) >> 1;
+	ssy1 = (((mipmap->h - 1) << 16) - fsy1 * (h - 1)) >> 1;
+
+	// src v. mipmap importance factor
+	ratio = (w << 9) / src->w - 256;
 	if (ratio < 0)
 		ratio = 0;
 	if (ratio > 256)
@@ -762,404 +902,237 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas dest_canvas,
 		return;
 	}
 
-	if (src->format->BytesPerPixel == 1 && dst->format->BytesPerPixel == 4 &&
-		mipmap->format->BytesPerPixel == 1)
-	{
-		SDL_Color *srcpal = src->format->palette->colors;
-		SDL_Color *mmpal = mipmap->format->palette->colors;
-		int fsx0 = (int)(65536.0f * (float)src->w / w);
-		int fsy0 = (int)(65536.0f * (float)src->h / h);
-		int fsx1 = (int)(65536.0f * (float)mipmap->w / w);
-		int fsy1 = (int)(65536.0f * (float)mipmap->h / h);
-		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
-		int x, y;
-		Uint32 ck0 = src->format->colorkey;
-		Uint32 ck1 = mipmap->format->colorkey;
-
-		SDL_LockSurface(src);
-		SDL_LockSurface(dst);
-		SDL_LockSurface(mipmap);
-		
-		for (y = 0; y < h; ++y)
-		{
-			Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w;
-			Uint8 *src_a0 = (Uint8 *)src->pixels + (sy0 >> 16) * src->pitch;
-			Uint8 *src_a1 = (Uint8 *)mipmap->pixels + (sy1 >> 16) * mipmap->pitch;
-
-			for (x = 0; x < w; ++x)
-			{
-				Uint8 u0 = (sx0 >> 8) & 0xff;
-				Uint8 u1 = (sx1 >> 8) & 0xff;
-				Uint8 v0 = (sy0 >> 8) & 0xff;
-				Uint8 v1 = (sy1 >> 8) & 0xff;
-				Uint8 ul0 = btable[255 - u0][255 - v0];
-				Uint8 ul1 = btable[255 - u1][255 - v1];
-				Uint8 ur0 = btable[u0][255 - v0];
-				Uint8 ur1 = btable[u1][255 - v1];
-				Uint8 ll0 = btable[255 - u0][v0];
-				Uint8 ll1 = btable[255 - u1][v1];
-				Uint8 lr0 = btable[u0][v0];
-				Uint8 lr1 = btable[u1][v1];
-
-				Uint8 r0[5], r1[5], g0[5], g1[5], b0[5], b1[5], a0[5], a1[5];
-				Uint8 c;
-				
-				Uint8 *src_p0 = src_a0 + (sx0 >> 16);
-				Uint8 *src_p1 = src_a1 + (sx1 >> 16);
-
-				if ((sx0 >> 16) <= src->w - 2)
-				{						
-					a0[0] = ((c = *src_p0) == ck0) ? 0 : 255;
-					r0[0] = srcpal[c].r;
-					g0[0] = srcpal[c].g;
-					b0[0] = srcpal[c].b;
-					a0[1] = ((c = *(src_p0 + 1)) == ck0) ? 0 : 255;
-					r0[1] = srcpal[c].r;
-					g0[1] = srcpal[c].g;
-					b0[1] = srcpal[c].b;
-
-					if ((sy0 >> 16) <= src->h - 2)
-					{
-						a0[2] = ((c = *(src_p0 + src->pitch)) == ck0) ? 0 : 255;
-						r0[2] = srcpal[c].r;
-						g0[2] = srcpal[c].g;
-						b0[2] = srcpal[c].b;
-						a0[3] = ((c = *(src_p0 + src->pitch + 1)) == ck0) ? 0 : 255;
-						r0[3] = srcpal[c].r;
-						g0[3] = srcpal[c].g;
-						b0[3] = srcpal[c].b;
-					}
-					else
-					{
-						a0[2] = a0[0];
-						r0[2] = r0[0];
-						g0[2] = g0[0];
-						b0[2] = b0[0];
-						a0[3] = a0[1];
-						r0[3] = r0[1];
-						g0[3] = g0[1];
-						b0[3] = b0[1];
-					}
-				}
-				else
-				{
-					a0[0] = a0[1] = ((c = *src_p0) == ck0) ? 0 : 255;
-					r0[0] = r0[1] = srcpal[c].r;
-					g0[0] = g0[1] = srcpal[c].g;
-					b0[0] = b0[1] = srcpal[c].b;
-					if ((sy0 >> 16) <= src->h - 2)
-					{
-						a0[2] = a0[3] = ((c = *(src_p0 + src->pitch)) == ck0) ? 0 : 255;
-						r0[2] = r0[3] = srcpal[c].r;
-						g0[2] = g0[3] = srcpal[c].g;
-						b0[2] = b0[3] = srcpal[c].b;
-					}
-					else
-					{
-						a0[2] = a0[3] = a0[0];
-						r0[2] = r0[3] = r0[0];
-						g0[2] = g0[3] = g0[0];
-						b0[2] = b0[3] = b0[0];
-					}
-				}
-
-				if ((sx1 >> 16) <= mipmap->w - 2)
-				{						
-					a1[0] = ((c = *src_p1) == ck1) ? 0 : 255;
-					r1[0] = mmpal[c].r;
-					g1[0] = mmpal[c].g;
-					b1[0] = mmpal[c].b;
-					a1[1] = ((c = *(src_p1 + 1)) == ck1) ? 0 : 255;
-					r1[1] = mmpal[c].r;
-					g1[1] = mmpal[c].g;
-					b1[1] = mmpal[c].b;
-
-					if ((sy1 >> 16) <= mipmap->h - 2)
-					{
-						a1[2] = ((c = *(src_p1 + mipmap->pitch)) == ck1) ? 0 : 255;
-						r1[2] = mmpal[c].r;
-						g1[2] = mmpal[c].g;
-						b1[2] = mmpal[c].b;
-						a1[3] = ((c = *(src_p1 + mipmap->pitch + 1)) == ck1) ? 0 : 255;
-						r1[3] = mmpal[c].r;
-						g1[3] = mmpal[c].g;
-						b1[3] = mmpal[c].b;
-					}
-					else
-					{
-						a1[2] = a1[0];
-						r1[2] = r1[0];
-						g1[2] = g1[0];
-						b1[2] = b1[0];
-						a1[3] = a1[1];
-						r1[3] = r1[1];
-						g1[3] = g1[1];
-						b1[3] = b1[1];
-					}
-				}
-				else
-				{
-					a1[0] = a1[1] = ((c = *src_p1) == ck1) ? 0 : 255;
-					r1[0] = r1[1] = mmpal[c].r;
-					g1[0] = g1[1] = mmpal[c].g;
-					b1[0] = b1[1] = mmpal[c].b;
-					if ((sy1 >> 16) <= mipmap->h - 2)
-					{
-						a1[2] = a1[3] = ((c = *(src_p1 + mipmap->pitch)) == ck1) ? 0 : 255;
-						r1[2] = r1[3] = mmpal[c].r;
-						g1[2] = g1[3] = mmpal[c].g;
-						b1[2] = b1[3] = mmpal[c].b;
-					}
-					else
-					{
-						a1[2] = a1[3] = a1[0];
-						r1[2] = r1[3] = r1[0];
-						g1[2] = g1[3] = g1[0];
-						b1[2] = b1[3] = b1[0];
-					}
-				}
-
-				a0[4] = ((ul0 * a0[0]) >> 8) + ((ur0 * a0[1]) >> 8) + ((ll0 * a0[2]) >> 8) + ((lr0 * a0[3]) >> 8);
-				a1[4] = ((ul1 * a1[0]) >> 8) + ((ur1 * a1[1]) >> 8) + ((ll1 * a1[2]) >> 8) + ((lr1 * a1[3]) >> 8);
-				
-				if ((((a0[4] - a1[4]) * ratio) >> 8) + a1[4] > ALPHA_THRESHOLD)
-				{
-					r0[4] = ((ul0 * r0[0]) >> 8) + ((ur0 * r0[1]) >> 8) + ((ll0 * r0[2]) >> 8) + ((lr0 * r0[3]) >> 8);
-					g0[4] = ((ul0 * g0[0]) >> 8) + ((ur0 * g0[1]) >> 8) + ((ll0 * g0[2]) >> 8) + ((lr0 * g0[3]) >> 8);
-					b0[4] = ((ul0 * b0[0]) >> 8) + ((ur0 * b0[1]) >> 8) + ((ll0 * b0[2]) >> 8) + ((lr0 * b0[3]) >> 8);
-
-					r1[4] = ((ul1 * r1[0]) >> 8) + ((ur1 * r1[1]) >> 8) + ((ll1 * r1[2]) >> 8) + ((lr1 * r1[3]) >> 8);
-					g1[4] = ((ul1 * g1[0]) >> 8) + ((ur1 * g1[1]) >> 8) + ((ll1 * g1[2]) >> 8) + ((lr1 * g1[3]) >> 8);
-					b1[4] = ((ul1 * b1[0]) >> 8) + ((ur1 * b1[1]) >> 8) + ((ll1 * b1[2]) >> 8) + ((lr1 * b1[3]) >> 8);
-
-					*dst_p++ =
-						(((((r0[4] - r1[4]) * ratio) >> 8) + r1[4]) << dstfmt->Rshift) |
-						(((((g0[4] - g1[4]) * ratio) >> 8) + g1[4]) << dstfmt->Gshift) |
-						(((((b0[4] - b1[4]) * ratio) >> 8) + b1[4]) << dstfmt->Bshift) |
-						dstopaque;
-				}
-				else
-				{
-					*dst_p++ = dsttransparent;
-				}
-
-				sx0 += fsx0;
-				sx1 += fsx1;
-			}
-			sx0 = sx1 = 0;
-			sy0 += fsy0;
-			sy1 += fsy1;
-		}
-
-		SDL_UnlockSurface(mipmap);
-		SDL_UnlockSurface(dst);
-		SDL_UnlockSurface(src);
-	}
-	else if (src->format->BytesPerPixel == 4 && dst->format->BytesPerPixel == 4 &&
-		mipmap->format->BytesPerPixel == 4)
-	{
-		int fsx0 = (int)(65536.0f * (float)src->w / w);
-		int fsy0 = (int)(65536.0f * (float)src->h / h);
-		int fsx1 = (int)(65536.0f * (float)mipmap->w / w);
-		int fsy1 = (int)(65536.0f * (float)mipmap->h / h);
-		int sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0;
-		int x, y;
-		Uint32 ck0 = 0; // 0 means alpha=0 too, so it's safe
-		Uint32 ck1 = 0;
-
-		// use colorkeys where appropriate
-		if (src->flags & SDL_SRCCOLORKEY)
-			ck0 = src->format->colorkey;
-		if (mipmap->flags & SDL_SRCCOLORKEY)
-			ck1 = mipmap->format->colorkey;
-
-		SDL_LockSurface(src);
-		SDL_LockSurface(dst);
-		SDL_LockSurface(mipmap);
-		
-		for (y = 0; y < h; ++y)
-		{
-			Uint32 *dst_p = (Uint32 *)dst->pixels + y * dst->w;
-			Uint32 *src_a0 = (Uint32 *)src->pixels + (sy0 >> 16) * src->w;
-			Uint32 *src_a1 = (Uint32 *)mipmap->pixels + (sy1 >> 16) * mipmap->w;
-
-			for (x = 0; x < w; ++x)
-			{
-				Uint8 u0 = (sx0 >> 8) & 0xff;
-				Uint8 u1 = (sx1 >> 8) & 0xff;
-				Uint8 v0 = (sy0 >> 8) & 0xff;
-				Uint8 v1 = (sy1 >> 8) & 0xff;
-				Uint8 ul0 = btable[255 - u0][255 - v0];
-				Uint8 ul1 = btable[255 - u1][255 - v1];
-				Uint8 ur0 = btable[u0][255 - v0];
-				Uint8 ur1 = btable[u1][255 - v1];
-				Uint8 ll0 = btable[255 - u0][v0];
-				Uint8 ll1 = btable[255 - u1][v1];
-				Uint8 lr0 = btable[u0][v0];
-				Uint8 lr1 = btable[u1][v1];
-
-				Uint8 r0[5], r1[5], g0[5], g1[5], b0[5], b1[5], a0[5], a1[5];
-				
-				Uint32 *src_p0 = src_a0 + (sx0 >> 16);
-				Uint32 *src_p1 = src_a1 + (sx1 >> 16);
-
-				if ((sx0 >> 16) <= src->w - 2)
-				{						
-					SDL_GetRGBA (*src_p0, src->format, &r0[0], &g0[0], &b0[0], &a0[0]);
-					SDL_GetRGBA (*(src_p0 + 1), src->format, &r0[1], &g0[1], &b0[1], &a0[1]);
-					if (src_p0[0] == ck0)
-						a0[0] = 0;
-					if (src_p0[1] == ck0)
-						a0[1] = 0;
-
-					if ((sy0 >> 16) <= src->h - 2)
-					{
-						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
-						SDL_GetRGBA (*(src_p0 + src->w + 1), src->format, &r0[3], &g0[3], &b0[3], &a0[3]);
-						if (src_p0[src->w] == ck0)
-							a0[2] = 0;
-						if (src_p0[src->w + 1] == ck0)
-							a0[3] = 0;
-					}
-					else
-					{
-						r0[2] = r0[0];
-						g0[2] = g0[0];
-						b0[2] = b0[0];
-						a0[2] = a0[0];
-						r0[3] = r0[1];
-						g0[3] = g0[1];
-						b0[3] = b0[1];
-						a0[3] = a0[1];
-					}
-				}
-				else
-				{
-					SDL_GetRGBA (*src_p0, src->format, &r0[0], &g0[0], &b0[0], &a0[0]);
-					if (src_p0[0] == ck0)
-						a0[0] = 0;
-					r0[1] = r0[0];
-					g0[1] = g0[0];
-					b0[1] = b0[0];
-					a0[1] = a0[0];
-					if ((sy0 >> 16) <= src->h - 2)
-					{
-						SDL_GetRGBA (*(src_p0 + src->w), src->format, &r0[2], &g0[2], &b0[2], &a0[2]);
-						if (src_p0[src->w] == ck0)
-							a0[2] = 0;
-						r0[3] = r0[2];
-						g0[3] = g0[2];
-						b0[3] = b0[2];
-						a0[3] = a0[2];
-					}
-					else
-					{
-						r0[2] = r0[3] = r0[0];
-						g0[2] = g0[3] = g0[0];
-						b0[2] = b0[3] = b0[0];
-						a0[2] = a0[3] = a0[0];
-					}
-				}
-
-				if ((sx1 >> 16) <= mipmap->w - 2)
-				{						
-					SDL_GetRGBA (*src_p1, mipmap->format, &r1[0], &g1[0], &b1[0], &a1[0]);
-					SDL_GetRGBA (*(src_p1 + 1), mipmap->format, &r1[1], &g1[1], &b1[1], &a1[1]);
-					if (src_p1[0] == ck1)
-						a1[0] = 0;
-					if (src_p1[1] == ck1)
-						a1[1] = 0;
-
-					if ((sy1 >> 16) <= mipmap->h - 2)
-					{
-						SDL_GetRGBA (*(src_p1 + mipmap->w) , mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
-						SDL_GetRGBA (*(src_p1 + mipmap->w + 1), mipmap->format, &r1[3], &g1[3], &b1[3], &a1[3]);
-						if (src_p1[mipmap->w] == ck1)
-							a1[2] = 0;
-						if (src_p1[mipmap->w + 1] == ck1)
-							a1[3] = 0;
-					}
-					else
-					{
-						r1[2] = r1[0];
-						g1[2] = g1[0];
-						b1[2] = b1[0];
-						a1[2] = a1[0];
-						r1[3] = r1[1];
-						g1[3] = g1[1];
-						b1[3] = b1[1];
-						a1[3] = a1[1];
-					}
-				}
-				else
-				{
-					SDL_GetRGBA (*src_p1, mipmap->format, &r1[0], &g1[0], &b1[0], &a1[0]);
-					if (src_p1[0] == ck1)
-						a1[0] = 0;
-					r1[1] = r1[0];
-					g1[1] = g1[0];
-					b1[1] = b1[0];
-					a1[1] = a1[0];
-					if ((sy1 >> 16) <= mipmap->h - 2)
-					{
-						SDL_GetRGBA (*(src_p1 + mipmap->w), mipmap->format, &r1[2], &g1[2], &b1[2], &a1[2]);
-						if (src_p1[mipmap->w] == ck1)
-							a1[2] = 0;
-						r1[3] = r1[2];
-						g1[3] = g1[2];
-						b1[3] = b1[2];
-						a1[3] = a1[2];
-					}
-					else
-					{
-						r1[2] = r1[3] = r1[0];
-						g1[2] = g1[3] = g1[0];
-						b1[2] = b1[3] = b1[0];
-						a1[2] = a1[3] = a1[0];
-					}
-				}
-
-				a0[4] = ((ul0 * a0[0]) >> 8) + ((ur0 * a0[1]) >> 8) + ((ll0 * a0[2]) >> 8) + ((lr0 * a0[3]) >> 8);
-				a1[4] = ((ul1 * a1[0]) >> 8) + ((ur1 * a1[1]) >> 8) + ((ll1 * a1[2]) >> 8) + ((lr1 * a1[3]) >> 8);
-				
-				if ((((a0[4] - a1[4]) * ratio) >> 8) + a1[4] > ALPHA_THRESHOLD)
-				{
-					r0[4] = ((ul0 * r0[0]) >> 8) + ((ur0 * r0[1]) >> 8) + ((ll0 * r0[2]) >> 8) + ((lr0 * r0[3]) >> 8);
-					g0[4] = ((ul0 * g0[0]) >> 8) + ((ur0 * g0[1]) >> 8) + ((ll0 * g0[2]) >> 8) + ((lr0 * g0[3]) >> 8);
-					b0[4] = ((ul0 * b0[0]) >> 8) + ((ur0 * b0[1]) >> 8) + ((ll0 * b0[2]) >> 8) + ((lr0 * b0[3]) >> 8);
-
-					r1[4] = ((ul1 * r1[0]) >> 8) + ((ur1 * r1[1]) >> 8) + ((ll1 * r1[2]) >> 8) + ((lr1 * r1[3]) >> 8);
-					g1[4] = ((ul1 * g1[0]) >> 8) + ((ur1 * g1[1]) >> 8) + ((ll1 * g1[2]) >> 8) + ((lr1 * g1[3]) >> 8);
-					b1[4] = ((ul1 * b1[0]) >> 8) + ((ur1 * b1[1]) >> 8) + ((ll1 * b1[2]) >> 8) + ((lr1 * b1[3]) >> 8);
-
-					*dst_p++ =
-						(((((r0[4] - r1[4]) * ratio) >> 8) + r1[4]) << dstfmt->Rshift) |
-						(((((g0[4] - g1[4]) * ratio) >> 8) + g1[4]) << dstfmt->Gshift) |
-						(((((b0[4] - b1[4]) * ratio) >> 8) + b1[4]) << dstfmt->Bshift) |
-						dstopaque;
-				}
-				else
-				{
-					*dst_p++ = dsttransparent;
-				}
-
-				sx0 += fsx0;
-				sx1 += fsx1;
-			}
-			sx0 = sx1 = 0;
-			sy0 += fsy0;
-			sy1 += fsy1;
-		}
-
-		SDL_UnlockSurface(mipmap);
-		SDL_UnlockSurface(dst);
-		SDL_UnlockSurface(src);
-	}
-	else
+	if ((srcfmt->BytesPerPixel != 1 && srcfmt->BytesPerPixel != 4) ||
+		(mmfmt->BytesPerPixel != 1 && mmfmt->BytesPerPixel != 4) ||
+		(dst->format->BytesPerPixel != 4))
 	{
 		fprintf (stderr, "Tried to deal with unknown BPP: %d -> %d, mipmap %d\n",
-			src->format->BitsPerPixel, dst->format->BitsPerPixel, mipmap->format->BitsPerPixel);
+			srcfmt->BitsPerPixel, dst->format->BitsPerPixel, mmfmt->BitsPerPixel);
 	}
+
+	// use colorkeys where appropriate
+	if (srcfmt->Amask)
+	{	// alpha transparency
+		mk0 = srcfmt->Amask;
+		ck0 = 0;
+	}
+	else if (src->flags & SDL_SRCCOLORKEY)
+	{	// colorkey transparency
+		mk0 = ~srcfmt->Amask;
+		ck0 = srcfmt->colorkey & mk0;
+	}
+
+	if (mmfmt->Amask)
+	{	// alpha transparency
+		mk1 = mmfmt->Amask;
+		ck1 = 0;
+	}
+	else if (mipmap->flags & SDL_SRCCOLORKEY)
+	{	// colorkey transparency
+		mk1 = ~mmfmt->Amask;
+		ck1 = mmfmt->colorkey & mk1;
+	}
+
+	SDL_LockSurface(src);
+	SDL_LockSurface(dst);
+	SDL_LockSurface(mipmap);
+	
+	for (y = 0, sy0 = ssy0, sy1 = ssy1;
+			y < h;
+			++y, sy0 += fsy0, sy1 += fsy1)
+	{
+		Uint32 *dst_p = (Uint32 *) ((Uint8*)dst->pixels + y * dst->pitch);
+		Uint8 *src_a0 = (Uint8*)src->pixels + (sy0 >> 16) * slen;
+		Uint8 *src_a1 = (Uint8*)mipmap->pixels + (sy1 >> 16) * mmlen;
+		// retrieve the fractional portions of y
+		const Uint8 v0 = (sy0 >> 8) & 0xff;
+		const Uint8 v1 = (sy1 >> 8) & 0xff;
+		Uint8 w0[4], w1[4]; // pixel weight vectors
+
+		for (x = 0, sx0 = ssx0, sx1 = ssx1;
+				x < w;
+				++x, ++dst_p, sx0 += fsx0, sx1 += fsx1)
+		{
+			Uint8 *src_p0 = src_a0 + (sx0 >> 16) * sbpp;
+			Uint8 *src_p1 = src_a1 + (sx1 >> 16) * mmbpp;
+			// retrieve the fractional portions of x
+			const Uint8 u0 = (sx0 >> 8) & 0xff;
+			const Uint8 u1 = (sx1 >> 8) & 0xff;
+			// pixels are examined and numbered in pattern
+			//  0  1
+			//  2  3
+			// the ideal pixel (4) is somewhere between these four
+			// and is calculated from these using weight vector (w)
+			// with a dot product
+			pixel_t p0[5], p1[5];
+			Uint8 res_a;
+			
+			w0[0] = btable[255 - u0][255 - v0];
+			w0[1] = btable[u0][255 - v0];
+			w0[2] = btable[255 - u0][v0];
+			w0[3] = btable[u0][v0];
+			w1[0] = btable[255 - u1][255 - v1];
+			w1[1] = btable[u1][255 - v1];
+			w1[2] = btable[255 - u1][v1];
+			w1[3] = btable[u1][v1];
+
+			// collect interesting pixels from src image
+			p0[0].value = tri_get_pixel (src_p0, srcfmt, srcpal, mk0, ck0);
+
+			if ((sx0 >> 16) <= src->w - 2)
+			{						
+				p0[1].value = tri_get_pixel (src_p0 + sbpp,
+						srcfmt, srcpal, mk0, ck0);
+				
+				if ((sy0 >> 16) <= src->h - 2)
+				{
+					p0[2].value = tri_get_pixel (src_p0 + slen,
+							srcfmt, srcpal, mk0, ck0);
+					p0[3].value = tri_get_pixel (src_p0 + slen + sbpp,
+							srcfmt, srcpal, mk0, ck0);
+				}
+				else
+				{
+					p0[2].value = p0[0].value;
+					p0[3].value = p0[1].value;
+				}
+			}
+			else
+			{
+				p0[1].value = p0[0].value;
+				if ((sy0 >> 16) <= src->h - 2)
+				{
+					p0[2].value = tri_get_pixel (src_p0 + slen,
+							srcfmt, srcpal, mk0, ck0);
+				}
+				else
+				{
+					p0[2].value = p0[0].value;
+				}
+				p0[3].value = p0[2].value;
+			}
+
+			// collect interesting pixels from mipmap image
+			p1[0].value = tri_get_pixel (src_p1, mmfmt, mmpal, mk1, ck1);
+
+			if ((sx1 >> 16) <= mipmap->w - 2)
+			{						
+				p1[1].value = tri_get_pixel (src_p1 + mmbpp,
+						mmfmt, mmpal, mk1, ck1);
+
+				if ((sy1 >> 16) <= mipmap->h - 2)
+				{
+					p1[2].value = tri_get_pixel (src_p1 + mmlen,
+							mmfmt, mmpal, mk1, ck1);
+					p1[3].value = tri_get_pixel (src_p1 + mmlen + mmbpp,
+							mmfmt, mmpal, mk1, ck1);
+				}
+				else
+				{
+					p1[2].value = p1[0].value;
+					p1[3].value = p1[1].value;
+				}
+			}
+			else
+			{
+				p1[1].value = p1[0].value;
+				if ((sy1 >> 16) <= mipmap->h - 2)
+				{
+					p1[2].value = tri_get_pixel (src_p1 + mmlen,
+							mmfmt, mmpal, mk1, ck1);
+				}
+				else
+				{
+					p1[2].value = p1[0].value;
+				}
+				p1[3].value = p1[2].value;
+			}
+
+			p0[4].c.a = dot_product_8_4 (p0, 3, w0);
+			p1[4].c.a = dot_product_8_4 (p1, 3, w1);
+			
+			res_a = blend_ratio_2 (p0[4].c.a, p1[4].c.a, ratio);
+
+			if (res_a <= alpha_threshold)
+			{
+				*dst_p = transparent;
+			}
+			else if (!dst_has_alpha)
+			{	// RGB surface handling
+				p0[4].c.r = dot_product_8_4 (p0, 0, w0);
+				p0[4].c.g = dot_product_8_4 (p0, 1, w0);
+				p0[4].c.b = dot_product_8_4 (p0, 2, w0);
+
+				p1[4].c.r = dot_product_8_4 (p1, 0, w1);
+				p1[4].c.g = dot_product_8_4 (p1, 1, w1);
+				p1[4].c.b = dot_product_8_4 (p1, 2, w1);
+
+				p0[4].c.r = blend_ratio_2 (p0[4].c.r, p1[4].c.r, ratio);
+				p0[4].c.g = blend_ratio_2 (p0[4].c.g, p1[4].c.g, ratio);
+				p0[4].c.b = blend_ratio_2 (p0[4].c.b, p1[4].c.b, ratio);
+
+				*dst_p =
+					(p0[4].c.r << dstfmt->Rshift) |
+					(p0[4].c.g << dstfmt->Gshift) |
+					(p0[4].c.b << dstfmt->Bshift);
+			}
+			else
+			{	// RGBA surface handling
+
+				// we do not want to blend with non-present pixels
+				// (pixels that have alpha == 0) as these will
+				// skew the result and make resulting alpha useless
+				if (p0[4].c.a != 0)
+				{
+					int i;
+					for (i = 0; i < 4; ++i)
+						if (p0[i].c.a == 0)
+							w0[i] = 0;
+
+					p0[4].c.r = weight_product_8_4 (p0, 0, w0);
+					p0[4].c.g = weight_product_8_4 (p0, 1, w0);
+					p0[4].c.b = weight_product_8_4 (p0, 2, w0);
+				}
+				if (p1[4].c.a != 0)
+				{
+					int i;
+					for (i = 0; i < 4; ++i)
+						if (p1[i].c.a == 0)
+							w1[i] = 0;
+
+					p1[4].c.r = weight_product_8_4 (p1, 0, w1);
+					p1[4].c.g = weight_product_8_4 (p1, 1, w1);
+					p1[4].c.b = weight_product_8_4 (p1, 2, w1);
+				}
+
+				if (p0[4].c.a != 0 && p1[4].c.a != 0)
+				{	// blend if both present
+					p0[4].c.r = blend_ratio_2 (p0[4].c.r, p1[4].c.r, ratio);
+					p0[4].c.g = blend_ratio_2 (p0[4].c.g, p1[4].c.g, ratio);
+					p0[4].c.b = blend_ratio_2 (p0[4].c.b, p1[4].c.b, ratio);
+				}
+				else if (p1[4].c.a != 0)
+				{	// other pixel is present
+					p0[4].value = p1[4].value;
+				}
+
+				// error-correct alpha to fully opaque to remove
+				// the often unwanted and unnecessary blending
+				if (res_a > 0xf8)
+					res_a = 0xff;
+
+				*dst_p =
+					(p0[4].c.r << dstfmt->Rshift) |
+					(p0[4].c.g << dstfmt->Gshift) |
+					(p0[4].c.b << dstfmt->Bshift) |
+					(res_a << dstfmt->Ashift);
+			}
+		}
+	}
+
+	SDL_UnlockSurface(mipmap);
+	SDL_UnlockSurface(dst);
+	SDL_UnlockSurface(src);
 }
 
 void
