@@ -1,4 +1,4 @@
-lastbat.sml.0.png 0 2 39 17
+lastbat.sml.0.png 0 2 40 17
 lastbat.sml.1.png 0 2 5 4
 lastbat.sml.2.png 0 2 5 4
 lastbat.sml.3.png 0 2 5 4
