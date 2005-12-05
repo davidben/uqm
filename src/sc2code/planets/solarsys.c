@@ -47,6 +47,7 @@ void RenderTopography (BOOLEAN Reconstruct);
 PSOLARSYS_STATE pSolarSysState;
 FRAME SISIPFrame, SunFrame, OrbitalFrame, SpaceJunkFrame;
 COLORMAP OrbitalCMap;
+COLORMAP SunCMap;
 MUSIC_REF SpaceMusic;
 
 #define DRAW_STARS (1 << 0)
@@ -177,6 +178,8 @@ FreeIPData (void)
 	SISIPFrame = 0;
 	DestroyDrawable (ReleaseDrawable (SunFrame));
 	SunFrame = 0;
+	DestroyColorMap (ReleaseColorMap (SunCMap));
+	SunCMap = 0;
 	DestroyColorMap (ReleaseColorMap (OrbitalCMap));
 	OrbitalCMap = 0;
 	DestroyDrawable (ReleaseDrawable (OrbitalFrame));
@@ -199,6 +202,7 @@ LoadIPData (void)
 		OrbitalCMap = CaptureColorMap (LoadColorMap (ORBPLAN_COLOR_MAP));
 		OrbitalFrame = CaptureDrawable (
 				LoadGraphic (ORBPLAN_MASK_PMAP_ANIM));
+		SunCMap = CaptureColorMap (LoadColorMap (IPSUN_COLOR_MAP));
 		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
 		SpaceMusic = LoadMusicInstance (IP_MUSIC);
@@ -1709,18 +1713,21 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 	{
 		for (;;)
 		{
-			COUNT color_index;
-
 			pCurDesc = &pSolarSysState->PlanetDesc[index];
-			/* Star color fix - draw the star using OrbitalCMap */
+			/* Star color fix - draw the star using own cmap */
 			if (pCurDesc == &pSolarSysState->SunDesc[0])
-				color_index = STAR_COLOR (CurStarDescPtr->Type);
+			{
+				SetColorMap (GetColorMapAddress (SetAbsColorMapIndex (
+						SunCMap, STAR_COLOR (CurStarDescPtr->Type)
+						)));
+			}
 			else
-				color_index = PLANCOLOR (PlanData[
-						pCurDesc->data_index & ~PLANET_SHIELDED ].Type);
-
-			SetColorMap (GetColorMapAddress (
-					SetAbsColorMapIndex (OrbitalCMap, color_index)));
+			{
+				SetColorMap (GetColorMapAddress (SetAbsColorMapIndex (
+						OrbitalCMap, PLANCOLOR (PlanData[
+						pCurDesc->data_index & ~PLANET_SHIELDED].Type)
+						)));
+			}
 			DrawStamp (&pCurDesc->image);
 
 			if (index == pSolarSysState->LastPlanetIndex)
