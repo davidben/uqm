@@ -134,7 +134,7 @@ DoRestart (PMENU_STATE pMS)
 			DestroyMusic (pMS->hMusic);
 			pMS->hMusic = 0;
 		}
-		pMS->hMusic = LoadMusicFile ("lbm/mainmenu.ogg");
+		pMS->hMusic = LoadMusicInstance (MAINMENU_MUSIC);
 		InactTimeOut = (pMS->hMusic ? 120 : 20) * ONE_SECOND;
 		
 		PlayMusic (pMS->hMusic, TRUE, 1);

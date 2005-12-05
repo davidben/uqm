@@ -966,7 +966,7 @@ init_utwig_comm (void)
 
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON))
 	{	// use alternate 'Happy Utwig!' track
-		utwig_desc.AlienAltSong = "comm/utwig/utwigult.mod";
+		utwig_desc.AlienAltSong = UTWIG_ULTRON_MUSIC;
 		utwig_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 	else

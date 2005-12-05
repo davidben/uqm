@@ -130,7 +130,7 @@ typedef struct
 	COUNT AlienTextWidth;
 	COLORMAP AlienColorMap;
 	DWORD AlienSong;
-	PVOID AlienAltSong;
+	DWORD AlienAltSong;
 	LDAS_FLAGS AlienSongFlags;
 
 	STRING ConversationPhrases;

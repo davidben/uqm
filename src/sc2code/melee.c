@@ -1662,7 +1662,7 @@ DoMelee (PMELEE_STATE pMS)
 			DestroyMusic (pMS->hMusic);
 			pMS->hMusic = 0;
 		}
-		pMS->hMusic = LoadMusicFile ("melee/melemenu.ogg");
+		pMS->hMusic = LoadMusicInstance (MELEE_MUSIC);
 		pMS->Initialized = TRUE;
 		
 		pMS->MeleeOption = START_MELEE;

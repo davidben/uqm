@@ -201,7 +201,7 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (OffScreenContext);
 
-	SkelFrame = CaptureDrawable (LoadCelFile ("slides/ending/sis_skel.ani"));
+	SkelFrame = CaptureDrawable (LoadGraphic (SISSKEL_MASK_PMAP_ANIM));
 	ModuleFrame = CaptureDrawable (LoadGraphic (SISMODS_MASK_PMAP_ANIM));
 
 	GetFrameRect (SkelFrame, &r);

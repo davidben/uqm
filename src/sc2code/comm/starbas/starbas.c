@@ -1983,7 +1983,7 @@ init_starbase_comm ()
 	commander_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 
 	// use alternate Starbase track if available
-	commander_desc.AlienAltSong = "comm/starbas/starbas.mod";
+	commander_desc.AlienAltSong = STARBASE_ALT_MUSIC;
 	commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	CurBulletinMask = 0;

@@ -25,6 +25,7 @@
 #include "melee.h"
 #include "options.h"
 #include "races.h"
+#include "nameref.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
@@ -1210,8 +1211,8 @@ DoShipyard (PMENU_STATE pMS)
 
 			s.frame = CaptureDrawable (LoadGraphic (SHIPYARD_PMAP_ANIM));
 
-			pMS->CurString = CaptureColorMap (LoadColorMapFile (
-					contentDir, "lbm/dockpani.ct"));
+			pMS->CurString = CaptureColorMap (
+					LoadColorMap (HANGAR_COLOR_TAB));
 
 			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
 

@@ -27,8 +27,8 @@
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
 #include "libs/reslib.h"
+#include "resinst.h"
 
-#define MENU_BKG "lbm/setupmenu.ani"
 
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);
@@ -503,7 +503,7 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	}
 	if (!menu.bgStamp.frame)
 	{
-		FRAME f = CaptureDrawable (LoadCelFile (MENU_BKG));
+		FRAME f = CaptureDrawable (LoadGraphic (MENUBKG_PMAP_ANIM));
 		menu.bgStamp.origin.x = 0;
 		menu.bgStamp.origin.y = 0;
 		menu.bgStamp.frame = SetAbsFrameIndex (f, 0);

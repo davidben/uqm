@@ -803,7 +803,7 @@ init_spathi_comm (void)
 
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 	{	// use alternate Fwiffo track if available
-		spathi_desc.AlienAltSong = "comm/spathi/spafwiff.mod";
+		spathi_desc.AlienAltSong = FWIFFO_MUSIC;
 		spathi_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 	else

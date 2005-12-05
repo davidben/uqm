@@ -1,3 +1,5 @@
 #define YEHAT_MUSIC 0x00200006L
 
+#define REBEL_MUSIC 0x00800106L
+
 

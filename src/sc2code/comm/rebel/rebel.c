@@ -436,7 +436,7 @@ init_rebel_yehat_comm (void)
 	yehat_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) * 2 / 3;
 
 	// use alternate "Rebels" track if available
-	yehat_desc.AlienAltSong = "comm/rebel/rebel.mod";
+	yehat_desc.AlienAltSong = REBEL_MUSIC;
 	yehat_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);

@@ -1996,7 +1996,7 @@ HailAlien (void)
 			);
 	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
 			&& CommData.AlienAltSong)
-		SongRef = LoadMusicFile (CommData.AlienAltSong);
+		SongRef = LoadMusicInstance ((RESOURCE)CommData.AlienAltSong);
 	if (SongRef)
 		CommData.AlienSong = SongRef;
 	else

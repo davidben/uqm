@@ -697,7 +697,7 @@ init_commander_comm ()
 	{	
 		commander_desc.AlienAmbientArray[2].AnimFlags &= ~ANIM_DISABLED;
 		// use alternate 'low-power' track if available
-		commander_desc.AlienAltSong = "comm/comandr/comlowpw.mod";
+		commander_desc.AlienAltSong = COMMANDER_LOWPOW_MUSIC;
 		commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 
