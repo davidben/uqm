@@ -40,46 +40,45 @@ extern FRAME SpaceJunkFrame;
 static void
 ClearReportArea (void)
 {
-	COUNT i;
+	COUNT x, y;
 	RECT r;
 	STAMP s;
-	PRIMITIVE prim_row[MAX_CELL_COLS];
+	COORD startx;
 
 	if (optWhichFonts == OPT_PC)
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 21);
 	else
 		s.frame = SetAbsFrameIndex (SpaceJunkFrame, 18);
 	GetFrameRect (s.frame, &r);
-	s.origin.x = 1 + (r.extent.width >> 1) - 1;
-	s.origin.y = 1;
-	for (i = 0; i < NUM_CELL_COLS; ++i)
-	{
-		prim_row[i].Object.Stamp = s;
-		s.origin.x += r.extent.width + 1;
 
-		SetPrimNextLink (&prim_row[i], i + 1);
-		if (optWhichFonts == OPT_PC)
-			SetPrimType (&prim_row[i], STAMP_PRIM);
-		else
-		{
-			SetPrimType (&prim_row[i], STAMPFILL_PRIM);
-			SetPrimColor (&prim_row[i], BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
-		}
-	}
-	SetPrimNextLink (&prim_row[i - 1], END_OF_LIST);
+	BatchGraphics ();
 
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
 	SetContextClipping (FALSE);
-	for (i = 0; i < NUM_CELL_ROWS; ++i)
+	SetContextForeGroundColor (BUILD_COLOR (
+			MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
+	
+	startx = 1 + (r.extent.width >> 1) - 1;
+	s.origin.y = 1;
+	for (y = 0; y < NUM_CELL_ROWS; ++y)
 	{
-		DrawBatch (prim_row, 0, 0);
-		r.corner.y -= r.extent.height + 1;
-		SetFrameHot (s.frame, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
+		s.origin.x = startx;
+		for (x = 0; x < NUM_CELL_COLS; ++x)
+		{
+			if (optWhichFonts == OPT_PC)
+				DrawStamp (&s);
+			else
+				DrawFilledStamp (&s);
+			
+			s.origin.x += r.extent.width + 1;
+		}
+		s.origin.y += r.extent.height + 1;
 	}
+
 	SetContextClipping (TRUE);
-	r.corner.y = 0;
-	SetFrameHot (s.frame, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
+
+	UnbatchGraphics ();
 }
 
 static void
