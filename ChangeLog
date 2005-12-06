@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed problems with pausing the game during ending sequences
+  (game-clock bug; undrawing incorrectly due to cliprect) - Alex
 - Removed hotspot abuse from lander report drawing to fix bad
   positioning desync brought on by new hotspot handling - Alex
 - Trilinear melee scaler overhaul (melee smooth mode should look
