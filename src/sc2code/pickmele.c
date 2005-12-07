@@ -237,8 +237,6 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 			StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
 			if (StarShipPtr == LastStarShipPtr)
 			{
-				extern FRAME status;
-
 				LastStarShipPtr->RaceResIndex = 0;
 
 				gmstate.col = LastStarShipPtr->ShipFacing;
@@ -246,7 +244,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 					+ ((ICON_WIDTH + 2) * (gmstate.col % NUM_MELEE_COLS_ORIG));
 				s.origin.y = 9
 					+ ((ICON_HEIGHT + 2) * (gmstate.col / NUM_MELEE_COLS_ORIG));
-				s.frame = SetAbsFrameIndex (status, 3);
+				s.frame = SetAbsFrameIndex (StatusFrame, 3);
 				DrawStamp (&s);
 				s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
 			}

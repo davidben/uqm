@@ -633,7 +633,6 @@ DrawCargo (COUNT redraw_state)
 {
 	BYTE i;
 	RECT r;
-	extern FRAME misc_data;
 
 	SetContext (SpaceContext);
 	if (redraw_state)
@@ -683,7 +682,7 @@ DrawCargo (COUNT redraw_state)
 		}
 
 		s.frame = SetAbsFrameIndex (
-				misc_data,
+				MiscDataFrame,
 				(NUM_SCANDOT_TRANSITIONS << 1) + 3
 				);
 		if (redraw_state == 2
@@ -841,10 +840,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 				}
 				else
 				{
-					extern FRAME misc_data;
-
 					s.frame = SetAbsFrameIndex (
-							misc_data, 77 + pSD->DeviceList[(i << 2) + j]
+							MiscDataFrame, 77 + pSD->DeviceList[(i << 2) + j]
 							);
 					DrawStamp (&s);
 				}

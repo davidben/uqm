@@ -70,7 +70,6 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			|| NewDevice >= (BYTE)(pMS->first_item.y + MAX_VIS_DEVICES))))
 	{
 		STAMP s;
-		extern FRAME misc_data;
 
 		r.corner.x = 2;
 		r.extent.width = FIELD_WIDTH + 1;
@@ -124,7 +123,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 				++OldDevice)
 		{
 			s.frame = SetAbsFrameIndex (
-					misc_data, 77 + pDeviceMap[OldDevice]
+					MiscDataFrame, 77 + pDeviceMap[OldDevice]
 					);
 			DrawStamp (&s);
 

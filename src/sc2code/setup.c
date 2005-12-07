@@ -59,7 +59,10 @@ FONT StarConFont;
 FONT MicroFont;
 FONT TinyFont;
 QUEUE race_q[NUM_PLAYERS];
-FRAME ActivityFrame, status, flagship_status, misc_data;
+FRAME ActivityFrame;
+FRAME StatusFrame;
+FRAME FlagStatFrame;
+FRAME MiscDataFrame;
 Mutex GraphicsLock;
 STRING GameStrings;
 
@@ -175,8 +178,8 @@ InitKernel (void)
 	if (ActivityFrame == NULL)
 		return FALSE;
 
-	status = CaptureDrawable (LoadGraphic (STATUS_MASK_PMAP_ANIM));
-	if (status == NULL)
+	StatusFrame = CaptureDrawable (LoadGraphic (STATUS_MASK_PMAP_ANIM));
+	if (StatusFrame == NULL)
 		return FALSE;
 
 	GameStrings = CaptureStringTable (LoadStringTableInstance (

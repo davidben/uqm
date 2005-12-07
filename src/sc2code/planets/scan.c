@@ -49,7 +49,6 @@ void WaitForNoInput (SIZE Duration);
 #define FLASH_INDEX 105
 #define FLASH_WIDTH 9
 #define FLASH_HEIGHT 9
-extern FRAME misc_data;
 
 extern void DrawScannedObjects (BOOLEAN Reversed);
 
@@ -627,7 +626,7 @@ flash_planet_loc_func(void *data)
 	SetPrimNextLink (&p, END_OF_LIST);
 
 	p.Object.Stamp.origin.x = p.Object.Stamp.origin.y = -1;
-	p.Object.Stamp.frame = SetAbsFrameIndex (misc_data, FLASH_INDEX);
+	p.Object.Stamp.frame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
 	c = 0x00;
 	val = -0x02;
 	TimeIn = 0;
@@ -761,7 +760,7 @@ PickPlanetSide (PMENU_STATE pMS)
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
 			SetContext (ScanContext);
 			s.origin = pMenuState->flash_rect0.corner;
-			s.frame = SetAbsFrameIndex (misc_data, FLASH_INDEX);
+			s.frame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
 			DrawStamp (&s);
 			UnlockMutex (GraphicsLock);
 
@@ -1283,7 +1282,7 @@ GeneratePlanetSide (void)
 		COUNT num_nodes;
 		FRAME f;
 
-		f = SetAbsFrameIndex (misc_data,
+		f = SetAbsFrameIndex (MiscDataFrame,
 				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
 		pSolarSysState->CurNode = (COUNT)~0;
@@ -1325,7 +1324,7 @@ GeneratePlanetSide (void)
 				NodeElementPtr->mass_points = HIBYTE (
 						pSolarSysState->SysInfo.PlanetInfo.CurDensity);
 				NodeElementPtr->current.image.frame = SetAbsFrameIndex (
-						misc_data, (NUM_SCANDOT_TRANSITIONS << 1)
+						MiscDataFrame, (NUM_SCANDOT_TRANSITIONS << 1)
 						+ ElementCategory (EType) * 5);
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (
 						NodeElementPtr->current.image.frame, LOBYTE (

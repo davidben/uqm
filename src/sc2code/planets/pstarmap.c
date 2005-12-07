@@ -1107,14 +1107,13 @@ DoStarMap (void)
 	//FRAME OldFrame;
 	RECT clip_r;
 	CONTEXT OldContext;
-	extern FRAME misc_data;
 
 	pMenuState = &MenuState;
 	memset (pMenuState, 0, sizeof (*pMenuState));
 
 	MenuState.flash_rect1.corner.x = MAX_X_UNIVERSE >> 1;
 	MenuState.flash_rect1.corner.y = MAX_Y_UNIVERSE >> 1;
-	MenuState.CurFrame = SetAbsFrameIndex (misc_data, 48);
+	MenuState.CurFrame = SetAbsFrameIndex (MiscDataFrame, 48);
 	MenuState.delta_item = 0;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)

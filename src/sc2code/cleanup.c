@@ -76,14 +76,12 @@ UninitContexts (void)
 static void
 UninitKernel (BOOLEAN ships)
 {
-	extern FRAME status;
-
 	UninitSpace ();
 
 	DestroySound (ReleaseSound (MenuSounds));
 	DestroyFont (ReleaseFont (MicroFont));
 	DestroyStringTable (ReleaseStringTable (GameStrings));
-	DestroyDrawable (ReleaseDrawable (status));
+	DestroyDrawable (ReleaseDrawable (StatusFrame));
 	DestroyDrawable (ReleaseDrawable (ActivityFrame));
 	DestroyFont (ReleaseFont (TinyFont));
 	DestroyFont (ReleaseFont (StarConFont));

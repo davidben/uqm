@@ -507,11 +507,9 @@ SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
 				DrawStamp (&s);
 				if (StarShipPtr->RaceResIndex == 0)
 				{
-					extern FRAME status;
-					
 					/* Dead ship - mark with an X. */
 					s.origin.x -= 1;
-					s.frame = SetAbsFrameIndex (status, 3);
+					s.frame = SetAbsFrameIndex (StatusFrame, 3);
 					DrawStamp (&s);
 				}
 			}

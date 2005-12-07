@@ -28,24 +28,23 @@ void
 DrawCrewFuelString (COORD y, SIZE state)
 {
 	STAMP Stamp;
-	extern FRAME status;
 
 	Stamp.origin.y = y + GAUGE_YOFFS + STARCON_TEXT_HEIGHT;
 	if (state == 0)
 	{
 		Stamp.origin.x = CREW_XOFFS + (STAT_WIDTH >> 1) + 6;
 		if (optWhichMenu == OPT_PC)
-			Stamp.frame = SetAbsFrameIndex (status, 4);
+			Stamp.frame = SetAbsFrameIndex (StatusFrame, 4);
 		else
-			Stamp.frame = SetAbsFrameIndex (status, 0);
+			Stamp.frame = SetAbsFrameIndex (StatusFrame, 0);
 		DrawStamp (&Stamp);
 	}
 
 	Stamp.origin.x = ENERGY_XOFFS + (STAT_WIDTH >> 1) - 5;
 	if (optWhichMenu == OPT_PC)
-		Stamp.frame = SetAbsFrameIndex (status, 5);
+		Stamp.frame = SetAbsFrameIndex (StatusFrame, 5);
 	else
-		Stamp.frame = SetAbsFrameIndex (status, 1);
+		Stamp.frame = SetAbsFrameIndex (StatusFrame, 1);
 	if (state >= 0)
 		DrawStamp (&Stamp);
 	else

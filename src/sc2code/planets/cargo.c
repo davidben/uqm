@@ -84,7 +84,6 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 	if (OldElement > NUM_ELEMENT_CATEGORIES)
 	{
 		STAMP s;
-		extern FRAME misc_data;
 
 		r.corner.x = 2;
 		r.extent.width = FIELD_WIDTH + 1;
@@ -118,7 +117,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 		s.origin.x = r.corner.x + (r.extent.width >> 1);
 		s.frame = SetAbsFrameIndex (
-				misc_data,
+				MiscDataFrame,
 				(NUM_SCANDOT_TRANSITIONS << 1) + 3
 				);
 		cy = y;

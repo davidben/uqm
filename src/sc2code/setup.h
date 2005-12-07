@@ -28,6 +28,9 @@ extern MEM_HANDLE hResIndex;
 
 extern FRAME Screen;
 extern FRAME ActivityFrame;
+extern FRAME StatusFrame;
+extern FRAME FlagStatFrame;
+extern FRAME MiscDataFrame;
 
 extern CONTEXT OffScreenContext;
 extern CONTEXT ScreenContext;

@@ -583,11 +583,10 @@ DrawLanders (void)
 	RECT r;
 	STAMP s;
 	CONTEXT OldContext;
-	extern FRAME flagship_status;
 
 	OldContext = SetContext (StatusContext);
 
-	s.frame = IncFrameIndex (flagship_status);
+	s.frame = IncFrameIndex (FlagStatFrame);
 	GetFrameRect (s.frame, &r);
 
 	i = GLOBAL_SIS (NumLanders);
@@ -757,10 +756,9 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	if (crew_delta == UNDEFINED_DELTA)
 	{
 		COUNT i;
-		extern FRAME flagship_status;
 
 		s.origin.x = s.origin.y = 0;
-		s.frame = flagship_status;
+		s.frame = FlagStatFrame;
 		DrawStamp (&s);
 		if (optWhichFonts == OPT_PC)
 			DrawPC_SIS();
@@ -775,7 +773,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					GLOBAL_SIS (DriveSlots[i])) < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						flagship_status, which_piece + 1 + 0
+						FlagStatFrame, which_piece + 1 + 0
 						);
 				DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
@@ -793,7 +791,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					GLOBAL_SIS (JetSlots[i])) < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						flagship_status, which_piece + 1 + 1
+						FlagStatFrame, which_piece + 1 + 1
 						);
 				DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
@@ -812,7 +810,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					GLOBAL_SIS (ModuleSlots[i])) < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						flagship_status, which_piece + 1 + 2
+						FlagStatFrame, which_piece + 1 + 2
 						);
 				DrawStamp (&s);
 			}

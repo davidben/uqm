@@ -1196,10 +1196,9 @@ RepairScan (void)
 	{
 #define FLASH_INDEX 105
 		STAMP s;
-		extern FRAME misc_data;
 		
 		s.origin = pMenuState->flash_rect0.corner;
-		s.frame = SetAbsFrameIndex (misc_data, FLASH_INDEX);
+		s.frame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
 		DrawStamp (&s);
 	}
 	UnbatchGraphics ();

@@ -40,7 +40,6 @@ FRAME PlayFrame;
 
 GLOBDATA GlobData;
 
-extern FRAME flagship_status, misc_data;
 BOOLEAN initedSIS = 0;
 
 
@@ -102,20 +101,20 @@ CreateRadar (void)
 BOOLEAN
 LoadSC2Data (void)
 {
-	if (flagship_status == 0)
+	if (FlagStatFrame == 0)
 	{
 		MEM_HANDLE hOldIndex;
 
 		hOldIndex = SetResourceIndex (hResIndex);
 
-		flagship_status = CaptureDrawable (
+		FlagStatFrame = CaptureDrawable (
 				LoadGraphic (FLAGSTAT_MASK_PMAP_ANIM));
-		if (flagship_status == NULL)
+		if (FlagStatFrame == NULL)
 			return FALSE;
 
-		misc_data = CaptureDrawable (
+		MiscDataFrame = CaptureDrawable (
 				LoadGraphic (MISCDATA_MASK_PMAP_ANIM));
-		if (misc_data == NULL)
+		if (MiscDataFrame == NULL)
 			return FALSE;
 
 		SetResourceIndex (hOldIndex);
@@ -312,10 +311,10 @@ FreeSC2Data (void)
 {
 	DestroyContext (ReleaseContext (RadarContext));
 	RadarContext = 0;
-	DestroyDrawable (ReleaseDrawable (misc_data));
-	misc_data = 0;
-	DestroyDrawable (ReleaseDrawable (flagship_status));
-	flagship_status = 0;
+	DestroyDrawable (ReleaseDrawable (MiscDataFrame));
+	MiscDataFrame = 0;
+	DestroyDrawable (ReleaseDrawable (FlagStatFrame));
+	FlagStatFrame = 0;
 }
 
 void
