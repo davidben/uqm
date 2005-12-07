@@ -22,6 +22,7 @@
 #include "setup.h"
 #include "uqmdebug.h"
 #include "libs/graphics/gfx_common.h"
+#include "resinst.h"
 
 
 extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
@@ -93,7 +94,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 		STAMP s;
 
 		s.frame = CaptureDrawable (
-				LoadCelFile ("ipanims/orbenter.ani"));
+				LoadGraphic (ORBENTER_PMAP_ANIM));
 		s.origin.x = -SAFE_X;
 		s.origin.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
 		DrawStamp (&s);
