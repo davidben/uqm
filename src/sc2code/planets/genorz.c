@@ -133,10 +133,7 @@ GenerateAndrosynth (BYTE control)
 			{
 				UWORD retval;
 
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (
-								LoadGraphic (LANDER_FONT)
-								);
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
 						LoadGraphic (RUINS_MASK_PMAP_ANIM)
@@ -352,10 +349,7 @@ GenerateOrz (BYTE control)
 				SET_GAME_STATE (TAALO_UNPROTECTED, 1);
 				if (CurStarDescPtr->Index == TAALO_PROTECTOR_DEFINED)
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 									LoadGraphic (TAALO_DEVICE_MASK_PMAP_ANIM)
@@ -367,10 +361,7 @@ GenerateOrz (BYTE control)
 				}
 				else
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (RUINS_MASK_PMAP_ANIM)

@@ -27,6 +27,7 @@ enum
 	TFB_DRAWCOMMANDTYPE_RECTANGLE,
 	TFB_DRAWCOMMANDTYPE_IMAGE,
 	TFB_DRAWCOMMANDTYPE_FILLEDIMAGE,
+	TFB_DRAWCOMMANDTYPE_FONTCHAR,
 
 	TFB_DRAWCOMMANDTYPE_COPY,
 	TFB_DRAWCOMMANDTYPE_COPYTOIMAGE,
@@ -37,6 +38,7 @@ enum
 	TFB_DRAWCOMMANDTYPE_SETPALETTE,
 	TFB_DRAWCOMMANDTYPE_SETMIPMAP,
 	TFB_DRAWCOMMANDTYPE_DELETEIMAGE,
+	TFB_DRAWCOMMANDTYPE_DELETEDATA,
 	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
 	TFB_DRAWCOMMANDTYPE_REINITVIDEO,
 };
@@ -72,6 +74,14 @@ typedef struct tfb_dc_filledimg
 	SCREEN destBuffer;
 	int scale;
 } TFB_DrawCommand_FilledImage;
+
+typedef struct tfb_dc_fontchar
+{
+	TFB_Char *fontchar;
+	TFB_Image *backing;
+	int x, y;
+	SCREEN destBuffer;
+} TFB_DrawCommand_FontChar;
 
 typedef struct tfb_dc_copy
 {
@@ -109,6 +119,12 @@ typedef struct tfb_dc_delimg
 	TFB_Image *image;
 } TFB_DrawCommand_DeleteImage;
 
+typedef struct tfb_dc_deldata
+{
+	void *data;
+		// data must be a result of HXalloc() call
+} TFB_DrawCommand_DeleteData;
+
 typedef struct tfb_dc_signal
 {
 	Semaphore sem;
@@ -127,12 +143,14 @@ typedef struct tfb_drawcommand
 		TFB_DrawCommand_Rect rect;
 		TFB_DrawCommand_Image image;
 		TFB_DrawCommand_FilledImage filledimage;
+		TFB_DrawCommand_FontChar fontchar;
 		TFB_DrawCommand_Copy copy;
 		TFB_DrawCommand_CopyToImage copytoimage;
 		TFB_DrawCommand_Scissor scissor;
 		TFB_DrawCommand_SetPalette setpalette;
 		TFB_DrawCommand_SetMipmap setmipmap;
 		TFB_DrawCommand_DeleteImage deleteimage;
+		TFB_DrawCommand_DeleteData deletedata;
 		TFB_DrawCommand_SendSignal sendsignal;
 		TFB_DrawCommand_ReinitVideo reinitvideo;
 	} data;

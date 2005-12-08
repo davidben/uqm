@@ -300,6 +300,77 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	UnlockMutex (img->mutex);
 }
 
+void
+TFB_DrawCanvas_FontChar (TFB_Char *fontChar, TFB_Image *backing,
+		int x, int y, TFB_Canvas target)
+{
+	SDL_Rect srcRect, targetRect;
+	SDL_Surface *surf;
+	int w, h;
+
+	if (fontChar == 0)
+	{
+		fprintf (stderr, "ERROR: "
+				"TFB_DrawCanvas_FontChar passed null char ptr\n");
+		return;
+	}
+	if (backing == 0)
+	{
+		fprintf (stderr, "ERROR: "
+				"TFB_DrawCanvas_FontChar passed null backing ptr\n");
+		return;
+	}
+
+	w = fontChar->extent.width;
+	h = fontChar->extent.height;
+
+	LockMutex (backing->mutex);
+
+	surf = backing->NormalImg;
+	if (surf->format->BytesPerPixel != 4
+			|| surf->w < w || surf->h < h)
+	{
+		fprintf (stderr, "ERROR: "
+				"TFB_DrawCanvas_FontChar bad backing surface: %dx%dx%d; "
+				"char: %dx%d\n",
+				surf->w, surf->h, (int)surf->format->BytesPerPixel, w, h);
+		UnlockMutex (backing->mutex);
+		return;
+	}
+
+	srcRect.x = 0;
+	srcRect.y = 0;
+	srcRect.w = fontChar->extent.width;
+	srcRect.h = fontChar->extent.height;
+
+	targetRect.x = x - fontChar->HotSpot.x;
+	targetRect.y = y - fontChar->HotSpot.y;
+
+	// transfer the alpha channel to the backing surface
+	SDL_LockSurface (surf);
+	{
+		int x, y;
+		const int sskip = fontChar->pitch - w;
+		const int dskip = (surf->pitch / 4) - w;
+		const Uint32 dmask = ~surf->format->Amask;
+		const int ashift = surf->format->Ashift;
+		Uint8 *src_p = fontChar->data;
+		Uint32 *dst_p = (Uint32 *)surf->pixels;
+
+		for (y = 0; y < h; ++y, src_p += sskip, dst_p += dskip)
+		{
+			for (x = 0; x < w; ++x, ++src_p, ++dst_p)
+			{
+				*dst_p = (*dst_p & dmask) | (((Uint32)*src_p) << ashift);
+			}
+		}
+	}
+	SDL_UnlockSurface (surf);
+
+	SDL_BlitSurface (surf, &srcRect, (NativeCanvas) target, &targetRect);
+	UnlockMutex (backing->mutex);
+}
+
 TFB_Canvas
 TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
 {

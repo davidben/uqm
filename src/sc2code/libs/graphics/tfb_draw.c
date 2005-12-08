@@ -161,6 +161,22 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
 }
 
 void
+TFB_DrawScreen_FontChar (TFB_Char *fontChar, TFB_Image *backing,
+		int x, int y, SCREEN dest)
+{
+	TFB_DrawCommand DC;
+	
+	DC.Type = TFB_DRAWCOMMANDTYPE_FONTCHAR;
+	DC.data.fontchar.fontchar = fontChar;
+	DC.data.fontchar.backing = backing;
+	DC.data.fontchar.x = x;
+	DC.data.fontchar.y = y;
+	DC.data.fontchar.destBuffer = dest;
+
+	TFB_EnqueueDrawCommand (&DC);
+}
+
+void
 TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src)
 {
 	TFB_DrawCommand DC;
@@ -210,6 +226,21 @@ TFB_DrawScreen_DeleteImage (TFB_Image *img)
 
 		DC.Type = TFB_DRAWCOMMANDTYPE_DELETEIMAGE;
 		DC.data.deleteimage.image = img;
+
+		TFB_EnqueueDrawCommand (&DC);
+	}
+}
+
+void
+TFB_DrawScreen_DeleteData (void *data)
+		// data must be a result of HXalloc() call
+{
+	if (data)
+	{
+		TFB_DrawCommand DC;
+
+		DC.Type = TFB_DRAWCOMMANDTYPE_DELETEDATA;
+		DC.data.deletedata.data = data;
 
 		TFB_EnqueueDrawCommand (&DC);
 	}
@@ -282,6 +313,17 @@ TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
+
+void
+TFB_DrawImage_FontChar (TFB_Char *fontChar, TFB_Image *backing,
+		int x, int y, TFB_Image *target)
+{
+	LockMutex (target->mutex);
+	TFB_DrawCanvas_FontChar (fontChar, backing, x, y, target->NormalImg);
+	target->dirty = TRUE;
+	UnlockMutex (target->mutex);
+}
+
 
 TFB_Image *
 TFB_DrawImage_New (TFB_Canvas canvas)

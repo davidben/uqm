@@ -217,10 +217,7 @@ GenerateUtwig (BYTE control)
 
 				if (CurStarDescPtr->Index == BOMB_DEFINED)
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 									LoadGraphic (BOMB_MASK_PMAP_ANIM)
@@ -232,10 +229,7 @@ GenerateUtwig (BYTE control)
 				}
 				else
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (RUINS_MASK_PMAP_ANIM)

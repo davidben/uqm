@@ -196,10 +196,7 @@ GenerateSpathi (BYTE control)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 28;
 				if (!GET_GAME_STATE (UMGAH_BROADCASTERS))
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (UMGAH_BCS_MASK_PMAP_ANIM)

@@ -213,4 +213,24 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	}
 }
 
+void
+TFB_Prim_FontChar (PPOINT origin, TFB_Char *fontChar, TFB_Image *backing)
+{
+	int x, y;
+
+	x = origin->x - _CurFramePtr->HotSpot.x;
+	y = origin->y - _CurFramePtr->HotSpot.y;
+
+	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	{
+		TFB_DrawScreen_FontChar (fontChar, backing, x, y,
+					    TFB_SCREEN_MAIN);
+	}
+	else
+	{
+		TFB_DrawImage_FontChar (fontChar, backing, x, y,
+					   _CurFramePtr->image);
+	}
+}
+
 // Text rendering is in font.c, under the name _text_blt

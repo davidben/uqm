@@ -183,10 +183,7 @@ GenerateThradd (BYTE control)
 				if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
 						&& !GET_GAME_STATE (AQUA_HELIX))
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 									LoadGraphic (AQUA_MASK_PMAP_ANIM)
@@ -198,10 +195,7 @@ GenerateThradd (BYTE control)
 				}
 				else if (CurStarDescPtr->Index == THRADD_DEFINED)
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (RUINS_MASK_PMAP_ANIM)

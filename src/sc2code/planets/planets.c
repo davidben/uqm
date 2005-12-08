@@ -262,17 +262,30 @@ FreePlanet (void)
 
 	DestroyContext (ReleaseContext (TaskContext));
 	TaskContext = 0;
-
+	
 	DestroyStringTable (ReleaseStringTable (
 			pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
 			));
 	pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-	DestroyFont (ReleaseFont (
-			pSolarSysState->SysInfo.PlanetInfo.LanderFont
-			));					    
-	pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
+	FreeLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 	pSolarSysState->PauseRotate = 0;
 
 	UnlockMutex (GraphicsLock);
 }
 
+void
+LoadStdLanderFont (PLANET_INFO *info)
+{
+	info->LanderFont = CaptureFont (LoadGraphic (LANDER_FONT));
+	info->LanderFontEff = CaptureDrawable (
+			LoadGraphic (LANDER_FONTEFF_PMAP_ANIM));
+}
+
+void
+FreeLanderFont (PLANET_INFO *info)
+{
+	DestroyFont (ReleaseFont (info->LanderFont));
+	info->LanderFont = 0;
+	DestroyDrawable (ReleaseDrawable (info->LanderFontEff));
+	info->LanderFontEff = 0;
+}

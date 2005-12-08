@@ -19,6 +19,12 @@
 #ifndef _CONTEXT_H
 #define _CONTEXT_H
 
+#include "tfb_draw.h"
+
+typedef UWORD FBK_FLAGS;
+#define FBK_DIRTY (1 << 0)
+#define FBK_IMAGE (1 << 1)
+
 typedef struct
 {
 	CONTEXT_REF ContextRef;
@@ -29,6 +35,11 @@ typedef struct
 	FONT Font;
 
 	RECT ClipRect;
+
+	FRAME FontEffect;
+	TFB_Image *FontBacking;
+	FBK_FLAGS BackingFlags;
+
 } CONTEXT_DESC;
 typedef CONTEXT_DESC *PCONTEXT_DESC;
 
@@ -51,6 +62,9 @@ extern PRIMITIVE _locPrim;
 #define _get_context_flags() (_pCurContext->Flags)
 #define _get_context_fg_frame() (_pCurContext->ForeGroundFrame)
 #define _get_context_font() (_pCurContext->Font)
+#define _get_context_fbk_flags() (_pCurContext->BackingFlags)
+#define _get_context_fonteff() (_pCurContext->FontEffect)
+#define _get_context_font_backing() (_pCurContext->FontBacking)
 
 #define SwitchContextDrawState(s) \
 { \
@@ -79,10 +93,24 @@ extern PRIMITIVE _locPrim;
 #define SwitchContextFont(f) \
 { \
 	_pCurContext->Font = (f); \
+	SetContextFBkFlags (FBK_DIRTY); \
 }
 #define SwitchContextBGFunc(f) \
 { \
 	_pCurContext->BackGroundFunc = (f); \
+}
+#define SetContextFBkFlags(f) \
+{ \
+	_pCurContext->BackingFlags |= (f); \
+}
+#define UnsetContextFBkFlags(f) \
+{ \
+	_pCurContext->BackingFlags &= ~(f); \
+}
+#define SwitchContextFontEffect(f) \
+{ \
+	_pCurContext->FontEffect = (f); \
+	SetContextFBkFlags (FBK_DIRTY); \
 }
 
 /*

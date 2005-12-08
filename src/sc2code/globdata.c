@@ -117,6 +117,9 @@ LoadSC2Data (void)
 		if (MiscDataFrame == NULL)
 			return FALSE;
 
+		FontGradFrame = CaptureDrawable (
+				LoadGraphic (FONTGRAD_PMAP_ANIM));
+
 		SetResourceIndex (hOldIndex);
 	}
 
@@ -311,6 +314,8 @@ FreeSC2Data (void)
 {
 	DestroyContext (ReleaseContext (RadarContext));
 	RadarContext = 0;
+	DestroyDrawable (ReleaseDrawable (FontGradFrame));
+	FontGradFrame = 0;
 	DestroyDrawable (ReleaseDrawable (MiscDataFrame));
 	MiscDataFrame = 0;
 	DestroyDrawable (ReleaseDrawable (FlagStatFrame));

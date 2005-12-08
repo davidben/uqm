@@ -26,3 +26,4 @@ void TFB_Prim_Rect (PRECT r, TFB_Palette *color);
 void TFB_Prim_FillRect (PRECT r, TFB_Palette *color);
 void TFB_Prim_Stamp (PSTAMP stamp);
 void TFB_Prim_StampFill (PSTAMP stamp, TFB_Palette *color);
+void TFB_Prim_FontChar (PPOINT origin, TFB_Char *, TFB_Image *backing);

@@ -128,10 +128,7 @@ GeneratePkunk (BYTE control)
 				}
 				else
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (RUINS_MASK_PMAP_ANIM)

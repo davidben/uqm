@@ -256,22 +256,21 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	OldContext = SetContext (ScanContext);
 	{
 		FONT OldFont;
+		FRAME OldFontEffect;
 
-		OldFont = SetContextFont (pSolarSysState->SysInfo.PlanetInfo.LanderFont);
+		OldFont = SetContextFont (
+				pSolarSysState->SysInfo.PlanetInfo.LanderFont);
 		if (optWhichFonts == OPT_PC)
-		{
-			SetContextFontEffect (ALTERNATE_EFFECT,
-				BUILD_COLOR_RGBA (0x00, 0x00, 0xD6, 0xFF),
-				BUILD_COLOR_RGBA (0x00, 0x04, 0xFF, 0xFF));
-			MakeReport (ReadOutSounds,
-				(UNICODE *)GetStringAddress (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString),
-				GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
-			SetContextFontEffect (0, 0, 0);
-		}
+			OldFontEffect = SetContextFontEffect (
+					pSolarSysState->SysInfo.PlanetInfo.LanderFontEff);
 		else
-			MakeReport (ReadOutSounds,
-				(UNICODE *)GetStringAddress (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString),
-				GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
+			OldFontEffect = SetContextFontEffect (NULL);
+
+		MakeReport (ReadOutSounds,
+			(UNICODE *)GetStringAddress (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString),
+			GetStringLength (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString));
+		
+		SetContextFontEffect (OldFontEffect);
 		SetContextFont (OldFont);
 	}
 #ifdef OLD

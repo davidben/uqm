@@ -81,10 +81,7 @@ GenerateShipVault (BYTE control)
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->PlanetDesc[0]
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0])
 			{
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (
-								LoadGraphic (LANDER_FONT)
-								);
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
 								LoadGraphic (VAULT_MASK_PMAP_ANIM)

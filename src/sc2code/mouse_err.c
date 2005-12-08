@@ -72,7 +72,7 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 		RECT r;
 		COLOR bg, dark, medium, text, oldtext;
 		FONT  oldfont = SetContextFont (StarConFont);
-		FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+		FRAME oldFontEffect = SetContextFontEffect (NULL);
 		TEXT t;
 		
 		r.corner.x = 2;
@@ -104,8 +104,7 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 		t.baseline.y += 16;
 		font_DrawText (&t);
 
-		SetContextFontEffect (oldFontEffect.type, oldFontEffect.from,
-				oldFontEffect.to);
+		SetContextFontEffect (oldFontEffect);
 		SetContextFont (oldfont);
 		SetContextForeGroundColor (oldtext);
 	}

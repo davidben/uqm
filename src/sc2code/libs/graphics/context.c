@@ -17,6 +17,7 @@
  */
 
 #include "gfxintrn.h"
+#include "gfxother.h"
 
 GRAPHICS_STATUS _GraphicsStatusFlags;
 CONTEXTPTR _pCurContext;
@@ -142,6 +143,11 @@ SetContextForeGroundColor (COLOR Color)
 	if ((oldColor = _get_context_fg_color ()) != Color)
 	{
 		SwitchContextForeGroundColor (Color);
+
+		if (!(_get_context_fbk_flags () & FBK_IMAGE))
+		{
+			SetContextFBkFlags (FBK_DIRTY);
+		}
 	}
 	SetPrimColor (&_locPrim, Color);
 
@@ -210,3 +216,67 @@ GetContextClipRect (PRECT lpRect)
 }
 
 
+FRAME
+SetContextFontEffect (FRAME EffectFrame)
+{
+	FRAME LastEffect;
+
+	if (!ContextActive ())
+		return (NULL);
+
+	LastEffect = _get_context_fonteff ();
+	if (EffectFrame != LastEffect)
+	{
+		SwitchContextFontEffect (EffectFrame);
+
+		if (EffectFrame != 0)
+		{
+			SetContextFBkFlags (FBK_IMAGE);
+		}
+		else
+		{
+			UnsetContextFBkFlags (FBK_IMAGE);
+		}
+	}
+
+	return LastEffect;
+}
+
+void
+FixContextFontEffect (void)
+{
+	SIZE w, h;
+	TFB_Image* img;
+
+	if (!ContextActive () || (_get_context_font_backing () != 0
+			&& !(_get_context_fbk_flags () & FBK_DIRTY)))
+		return;
+
+	if (!GetContextFontLeading (&h) || !GetContextFontLeadingWidth (&w))
+		return;
+
+	img = _pCurContext->FontBacking;
+	if (img)
+		TFB_DrawScreen_DeleteImage (img);
+
+	img = TFB_DrawImage_CreateForScreen (w, h, TRUE);
+	if (_get_context_fbk_flags () & FBK_IMAGE)
+	{	// image pattern backing
+		FRAMEPTR EffectFrame = (FRAMEPTR)_get_context_fonteff ();
+		
+		TFB_DrawImage_Image (EffectFrame->image,
+				-EffectFrame->HotSpot.x, -EffectFrame->HotSpot.y,
+				0, NULL, img);
+	}
+	else
+	{	// solid color backing
+		TFB_Palette color;
+		RECT r = { {0, 0}, {w, h} };
+
+		COLORtoPalette (_get_context_fg_color (), &color);
+		TFB_DrawImage_Rect (&r, color.r, color.g, color.b, img);
+	}
+	
+	_pCurContext->FontBacking = img;
+	UnsetContextFBkFlags (FBK_DIRTY);
+}

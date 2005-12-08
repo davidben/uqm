@@ -66,6 +66,18 @@ typedef struct tfb_image
 	BOOLEAN dirty;
 } TFB_Image;
 
+typedef struct tfb_char
+{
+	EXTENT extent;
+	EXTENT disp;
+		// Display extent
+	HOT_SPOT HotSpot;
+	BYTE* data;
+	DWORD pitch;
+		// Pitch is for storing all chars of a page
+		// in one rectangular pixel matrix
+} TFB_Char;
+
 // we do not support paletted format for now
 typedef struct tfb_pixelformat
 {
@@ -83,8 +95,11 @@ void TFB_DrawScreen_Rect (PRECT rect, int r, int g, int b, SCREEN dest);
 void TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, SCREEN dest);
 void TFB_DrawScreen_Copy (PRECT r, SCREEN src, SCREEN dest);
 void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, SCREEN dest);
+void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, SCREEN dest);
+
 void TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
+void TFB_DrawScreen_DeleteData (void *);
 void TFB_DrawScreen_WaitForSignal (void);
 void TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height, int bpp);
 void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
@@ -100,6 +115,7 @@ void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TF
 void TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Image *target);
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Image *target);
+void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, TFB_Image *target);
 
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha);
@@ -123,6 +139,7 @@ void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, T
 void TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas image);
 void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Canvas target);
 void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Canvas target);
+void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, TFB_Canvas target);
 
 TFB_Palette *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette);

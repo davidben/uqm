@@ -202,10 +202,7 @@ GenerateVUX (BYTE control)
 				{
 					if (!GET_GAME_STATE (SHOFIXTI_MAIDENS))
 					{
-						pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-								CaptureFont (
-										LoadGraphic (LANDER_FONT)
-										);
+						LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 						pSolarSysState->PlanetSideFrame[1] =
 								CaptureDrawable (
 										LoadGraphic (MAIDENS_MASK_PMAP_ANIM)
@@ -220,10 +217,7 @@ GenerateVUX (BYTE control)
 				{
 					if (!GET_GAME_STATE (VUX_BEAST))
 					{
-						pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-								CaptureFont (
-										LoadGraphic (LANDER_FONT)
-										);
+						LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 						pSolarSysState->PlanetSideFrame[1] = 0;
 						pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 								CaptureStringTable (
@@ -233,10 +227,7 @@ GenerateVUX (BYTE control)
 				}
 				else
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (RUINS_MASK_PMAP_ANIM)

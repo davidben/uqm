@@ -153,8 +153,7 @@ GenerateBurvixes (BYTE control)
 			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 			if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[0])
 			{
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (LoadGraphic (LANDER_FONT));
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
 						LoadGraphic (RUINS_MASK_PMAP_ANIM));
@@ -168,8 +167,7 @@ GenerateBurvixes (BYTE control)
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0]
 					&& !GET_GAME_STATE (BURVIXESE_BROADCASTERS))
 			{
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (LoadGraphic (LANDER_FONT));
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
 						LoadGraphic (BURV_BCS_MASK_PMAP_ANIM));

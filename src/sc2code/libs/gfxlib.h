@@ -162,14 +162,6 @@ extern INTERSECT_CODE BoxIntersect (PRECT pr1, PRECT pr2, PRECT
 		printer);
 extern void BoxUnion (PRECT pr1, PRECT pr2, PRECT punion);
 
-typedef struct
-{
-	BOOLEAN Use;
-	DWORD from;
-	DWORD to;
-	BYTE type;
-} FONTEFFECT;
-
 enum
 {
 	FadeAllToWhite = 250,
@@ -232,13 +224,14 @@ extern DWORD LoadFontFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
 extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
-extern FONTEFFECT SetContextFontEffect (BYTE type, DWORD from, DWORD to);
+extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT_REF FontRef);
 extern FONT CaptureFont (FONT_REF FontRef);
 extern FONT_REF ReleaseFont (FONT Font);
 extern BOOLEAN TextRect (PTEXT pText, PRECT pRect, PBYTE pdelta);
 extern BOOLEAN GetContextFontLeading (PSIZE pheight);
+extern BOOLEAN GetContextFontLeadingWidth (PSIZE pwidth);
 extern COUNT GetFrameCount (FRAME Frame);
 extern COUNT GetFrameIndex (FRAME Frame);
 extern FRAME SetAbsFrameIndex (FRAME Frame, COUNT FrameIndex);

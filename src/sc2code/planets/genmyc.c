@@ -193,10 +193,7 @@ GenerateMycon (BYTE control)
 					case SUN_DEVICE_DEFINED:
 						if (!GET_GAME_STATE (SUN_DEVICE))
 						{
-							pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-									CaptureFont (
-											LoadGraphic (LANDER_FONT)
-											);
+							LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 							pSolarSysState->PlanetSideFrame[1] =
 									CaptureDrawable (
 											LoadGraphic (SUN_DEVICE_MASK_PMAP_ANIM)
@@ -217,10 +214,7 @@ GenerateMycon (BYTE control)
 						if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 								& (1L << 0)))
 						{
-							pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-									CaptureFont (
-											LoadGraphic (LANDER_FONT)
-											);
+							LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 							pSolarSysState->PlanetSideFrame[1] =
 									CaptureDrawable (
 											LoadGraphic (EGG_CASE_MASK_PMAP_ANIM)

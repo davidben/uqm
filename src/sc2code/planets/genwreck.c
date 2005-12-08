@@ -72,10 +72,7 @@ GenerateUrquanWreck (BYTE control)
 		case GENERATE_ORBITAL:
 			if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[6])
 			{
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (
-								LoadGraphic (LANDER_FONT)
-								);
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->PlanetSideFrame[1] =
 						CaptureDrawable (
 								LoadGraphic (WRECK_MASK_PMAP_ANIM)

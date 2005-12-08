@@ -49,7 +49,7 @@ Widget_DrawToolTips (int numlines, const char **tips)
 {
 	RECT r;
 	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	COLOR oldtext = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 	TEXT t;
 	int i;
@@ -72,7 +72,7 @@ Widget_DrawToolTips (int numlines, const char **tips)
 		t.baseline.y += 8;
 	}
 
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
@@ -84,7 +84,7 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	COLOR title, oldtext;
 	COLOR inactive, default_color, selected;
 	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int widget_index, height, widget_y;
 
@@ -132,7 +132,7 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 		widget_y += (*c->height)(c) + 8;
 	}
 	
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 
@@ -147,7 +147,7 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
 	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int i, home_x, home_y;
 	
@@ -195,7 +195,7 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 		}
 		font_DrawText (&t);
 	}
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
@@ -207,7 +207,7 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	COLOR oldtext;
 	COLOR inactive, selected;
 	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	
 	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
@@ -229,7 +229,7 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 		oldtext = SetContextForeGroundColor (inactive);
 	}
 	font_DrawText (&t);
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 	(void) x;
@@ -242,7 +242,7 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 	COLOR oldtext = SetContextForeGroundColor (
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 	FONT  oldfont = SetContextFont (StarConFont);
-	FONTEFFECT oldFontEffect = SetContextFontEffect (0, 0, 0);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int i;
 	
@@ -258,7 +258,7 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 		font_DrawText (&t);
 		t.baseline.y += 8;
 	}
-	SetContextFontEffect (oldFontEffect.type, oldFontEffect.from, oldFontEffect.to);
+	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 	(void) x;

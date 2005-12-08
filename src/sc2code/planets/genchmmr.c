@@ -107,10 +107,7 @@ GenerateChmmr (BYTE control)
 
 				LockMutex (GraphicsLock);
 
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-						CaptureFont (
-								LoadGraphic (LANDER_FONT)
-								);
+				LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 						CaptureStringTable (
 								LoadStringTable (CHMMR_BASE_STRTAB));
@@ -134,9 +131,7 @@ GenerateChmmr (BYTE control)
 						pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
 						));
 				pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-				DestroyFont (ReleaseFont (
-						pSolarSysState->SysInfo.PlanetInfo.LanderFont));
-				pSolarSysState->SysInfo.PlanetInfo.LanderFont = 0;
+				FreeLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 
 				UnlockMutex (GraphicsLock);
 				break;

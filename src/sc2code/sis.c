@@ -339,6 +339,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	FONT OldFont;
 	COLOR OldColor;
 	CONTEXT OldContext;
+	FRAME OldFontEffect;
 	UNICODE buf[60];
 
 	if (InStatusArea)
@@ -367,6 +368,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		wsprintf (buf, "%s %s", GAME_STRING (NAMING_STRING_BASE + 1), GLOBAL_SIS (ShipName));
 		wstrupr (buf);
 	}
+	OldFontEffect = SetContextFontEffect (NULL);
 	OldColor = SetContextForeGroundColor (BLACK_COLOR);
 	DrawFilledRectangle (&r);
 
@@ -374,22 +376,15 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	t.baseline.y = r.corner.y + (SHIP_NAME_HEIGHT - InStatusArea);
 	t.align = ALIGN_CENTER;
 	t.CharCount = (COUNT)~0;
-	if (optWhichFonts == OPT_PC) {
-		if (InStatusArea)
-			SetContextFontEffect (GRADIENT_EFFECT, 
-				BUILD_COLOR_RGBA (0xF7, 0x08, 0x00, 0xFF),
-				BUILD_COLOR_RGBA (0xF7, 0xCD, 0x00, 0xFF));
-		else
-			SetContextFontEffect (GRADIENT_EFFECT, 
-				BUILD_COLOR_RGBA (0x00, 0x00, 0x80, 0xFF),
-				BUILD_COLOR_RGBA (0x0C, 0x18, 0xFF, 0xFF));
-	}
+	if (optWhichFonts == OPT_PC)
+		SetContextFontEffect (SetAbsFrameIndex (FontGradFrame,
+				InStatusArea ? 0 : 3));
 	else
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
+	
 	font_DrawText (&t);
-	if (optWhichFonts == OPT_PC)
-		SetContextFontEffect (0, 0, 0);
 
+	SetContextFontEffect (OldFontEffect);
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);
 	SetContext (OldContext);
@@ -402,6 +397,7 @@ DrawFlagshipStats (void)
 	TEXT t;
 	FONT OldFont;
 	COLOR OldColor;
+	FRAME OldFontEffect;
 	CONTEXT OldContext;
 	UNICODE buf[60];
 	SIZE leading;
@@ -452,6 +448,7 @@ DrawFlagshipStats (void)
 
 	OldContext = SetContext (SpaceContext);
 	OldFont = SetContextFont (StarConFont);
+	OldFontEffect = SetContextFontEffect (NULL);
 	GetContextFontLeading (&leading);
 
 	/* we need room to play.  full screen width, 4 lines tall */
@@ -474,9 +471,7 @@ DrawFlagshipStats (void)
 	t.align = ALIGN_RIGHT;
 	t.CharCount = (COUNT)~0;
 
-	SetContextFontEffect (GRADIENT_EFFECT, 
-			BUILD_COLOR_RGBA (0x00, 0x00, 0xA0, 0xFF),
-			BUILD_COLOR_RGBA (0x70, 0x7C, 0xFF, 0xFF));
+	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 4));
 
 	wsprintf (buf, "nose:");
 	font_DrawText (&t);
@@ -510,9 +505,7 @@ DrawFlagshipStats (void)
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_RIGHT;
 
-	SetContextFontEffect (GRADIENT_EFFECT, 
-			BUILD_COLOR_RGBA (0x00, 0x30, 0x48, 0xFF),
-			BUILD_COLOR_RGBA (0x68, 0xAC, 0xCC, 0xFF));
+	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 5));
 
 	wsprintf (buf, "maximum velocity:");
 	font_DrawText (&t);
@@ -548,7 +541,7 @@ DrawFlagshipStats (void)
 	wsprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
 	font_DrawText (&t);
 
-	SetContextFontEffect (0, 0, 0);
+	SetContextFontEffect (OldFontEffect);
 	SetContextForeGroundColor (OldColor);
 	SetContextFont (OldFont);
 	SetContext (OldContext);
@@ -695,6 +688,7 @@ DrawPC_SIS (void)
 	TEXT t;
 	RECT r;
 	UNICODE buf[10];
+
 	GetGaugeRect (&r, FALSE);
 	t.baseline.x = STATUS_WIDTH >> 1;
 	t.baseline.y = r.corner.y - 1;
@@ -709,9 +703,7 @@ DrawPC_SIS (void)
 	r.extent.width += 2;
 	DrawFilledRectangle (&r);
 
-	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x40, 0x00, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0xFF, 0x00, 0x00, 0xFF));
+	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 1));
 	wsprintf (buf, "FUEL");
 	font_DrawText (&t);
 
@@ -719,12 +711,10 @@ DrawPC_SIS (void)
 	t.baseline.y += 79;
 	DrawFilledRectangle (&r);
 
-	SetContextFontEffect (GRADIENT_EFFECT,
-		BUILD_COLOR_RGBA (0x00, 0x28, 0x00, 0xFF),
-		BUILD_COLOR_RGBA (0x00, 0xC0, 0x00, 0xFF));
+	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 2));
 	wsprintf (buf, "CREW");
 	font_DrawText (&t);
-	SetContextFontEffect (0, 0, 0);
+	SetContextFontEffect (NULL);
 
 	r.corner.x = 2 + 1;
 	r.corner.y = 3;

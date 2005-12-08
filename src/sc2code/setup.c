@@ -63,6 +63,7 @@ FRAME ActivityFrame;
 FRAME StatusFrame;
 FRAME FlagStatFrame;
 FRAME MiscDataFrame;
+FRAME FontGradFrame;
 Mutex GraphicsLock;
 STRING GameStrings;
 

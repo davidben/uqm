@@ -671,6 +671,31 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				break;
 			}
+		case TFB_DRAWCOMMANDTYPE_FONTCHAR:
+			{
+				TFB_Char *DC_char = DC.data.fontchar.fontchar;
+				int x = DC.data.fontchar.x;
+				int y = DC.data.fontchar.y;
+
+				TFB_DrawCanvas_FontChar (DC.data.fontchar.fontchar,
+						DC.data.fontchar.backing,
+						DC.data.fontchar.x, DC.data.fontchar.y,
+						SDL_Screens[DC.data.fontchar.destBuffer]);
+
+				if (DC.data.fontchar.destBuffer == 0)
+				{
+					RECT r;
+					
+					r.corner.x = x - DC_char->HotSpot.x;
+					r.corner.y = y - DC_char->HotSpot.y;
+					r.extent.width = DC_char->extent.width;
+					r.extent.height = DC_char->extent.height;
+
+					TFB_BBox_RegisterRect (&r);
+				}
+
+				break;
+			}
 		case TFB_DRAWCOMMANDTYPE_LINE:
 			{
 				if (DC.data.line.destBuffer == 0)
@@ -758,6 +783,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 			{
 				TFB_Image *DC_image = (TFB_Image *)DC.data.deleteimage.image;
 				TFB_DrawImage_Delete(DC_image);
+				break;
+			}
+		case TFB_DRAWCOMMANDTYPE_DELETEDATA:
+			{
+				void *data = DC.data.deletedata.data;
+				HFree (data);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:

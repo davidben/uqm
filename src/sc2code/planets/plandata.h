@@ -298,6 +298,7 @@ typedef struct
 
 	STRING DiscoveryString;
 	FONT LanderFont;
+	FRAME LanderFontEff;
 } PLANET_INFO;
 typedef PLANET_INFO *PPLANET_INFO;
 

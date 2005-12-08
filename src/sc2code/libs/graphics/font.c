@@ -21,37 +21,11 @@
 #include "gfxother.h"
 
 
-extern FRAME Build_Font_Effect (FRAME FramePtr, DWORD from, DWORD to,
-		BYTE type);
-static inline FRAME_DESC *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
+extern void FixContextFontEffect (void);
+static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
 
 static BYTE char_delta_array[MAX_DELTAS];
 		// XXX: This does not seem to be used.
-
-static FONTEFFECT FontEffect = {0,0,0,0};
-
-FONTEFFECT
-SetContextFontEffect (BYTE type, DWORD from, DWORD to)
-{
-	FONTEFFECT oldFontEffect = FontEffect;
-
-	if (from == to)
-		FontEffect.Use = 0;
-	else
-	{
-		FontEffect.Use = 1;
-		FontEffect.from = from;
-		FontEffect.to = to;
-		FontEffect.type = type;
-	}
-
-	if (!oldFontEffect.Use)
-		// reset fields so that when struct passed back
-		// the logic works correctly
-		oldFontEffect.to = oldFontEffect.from = 0;
-
-	return oldFontEffect;
-}
 
 
 FONT
@@ -113,6 +87,7 @@ ReleaseFont (FONT Font)
 void
 font_DrawText (PTEXT lpText)
 {
+	FixContextFontEffect ();
 	SetPrimType (&_locPrim, TEXT_PRIM);
 	_locPrim.Object.Text = *lpText;
 	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
@@ -128,6 +103,19 @@ GetContextFontLeading (PSIZE pheight)
 	}
 
 	*pheight = 0;
+	return (FALSE);
+}
+
+BOOLEAN
+GetContextFontLeadingWidth (PSIZE pwidth)
+{
+	if (_CurFontPtr != 0)
+	{
+		*pwidth = (SIZE)_CurFontPtr->LeadingWidth;
+		return (TRUE);
+	}
+
+	*pwidth = 0;
 	return (FALSE);
 }
 
@@ -174,7 +162,7 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 		{
 			wchar_t ch;
 			SIZE last_width;
-			FRAME_DESC *charFrame;
+			TFB_Char *charFrame;
 
 			last_width = width;
 
@@ -190,18 +178,18 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 			}
 
 			charFrame = getCharFrame (FontPtr, ch);
-			if (charFrame != NULL && GetFrameWidth (charFrame))
+			if (charFrame != NULL && charFrame->disp.width)
 			{
 				COORD y;
 
 				y = -charFrame->HotSpot.y;
 				if (y < top_y)
 					top_y = y;
-				y += GetFrameHeight (charFrame);
+				y += charFrame->disp.height;
 				if (y > bot_y)
 					bot_y = y;
 
-				width += GetFrameWidth (charFrame);
+				width += charFrame->disp.width;
 #if 0
 				if (num_chars && next_ch < (UNICODE) MAX_CHARS
 						&& !(FontPtr->KernTab[ch]
@@ -252,18 +240,22 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	wchar_t next_ch;
 	const unsigned char *pStr;
 	TEXTPTR TextPtr;
-	STAMP s;
+	POINT origin;
 	TFB_Palette color;
+	TFB_Image *backing;
 
 	FontPtr = _CurFontPtr;
 	if (FontPtr == NULL)
+		return;
+	backing = _get_context_font_backing ();
+	if (!backing)
 		return;
 	
 	COLORtoPalette (_get_context_fg_color (), &color);
 
 	TextPtr = &PrimPtr->Object.Text;
-	s.origin.x = _save_stamp.origin.x;
-	s.origin.y = TextPtr->baseline.y;
+	origin.x = _save_stamp.origin.x;
+	origin.y = TextPtr->baseline.y;
 	num_chars = TextPtr->CharCount;
 	if (num_chars == 0)
 		return;
@@ -276,6 +268,7 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 	while (num_chars--)
 	{
 		wchar_t ch;
+		TFB_Char* fontChar;
 
 		ch = next_ch;
 		if (num_chars > 0)
@@ -285,44 +278,33 @@ _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 				num_chars = 0;
 		}
 
-		s.frame = getCharFrame (FontPtr, ch);
-		if (s.frame != NULL && GetFrameWidth (s.frame))
+		fontChar = getCharFrame (FontPtr, ch);
+		if (fontChar != NULL && fontChar->disp.width)
 		{
 			RECT r;
 
-			r.corner.x = s.origin.x - ((FRAMEPTR)s.frame)->HotSpot.x;
-			r.corner.y = s.origin.y - ((FRAMEPTR)s.frame)->HotSpot.y;
-			r.extent.width = GetFrameWidth (s.frame);
-			r.extent.height = GetFrameHeight (s.frame);
+			r.corner.x = origin.x - fontChar->HotSpot.x;
+			r.corner.y = origin.y - fontChar->HotSpot.y;
+			r.extent.width = fontChar->disp.width;
+			r.extent.height = fontChar->disp.height;
 			_save_stamp.origin = r.corner;
 			if (BoxIntersect (&r, pClipRect, &r))
 			{
-				if (FontEffect.Use)
-				{
-					FRAME origFrame = s.frame;
-					s.frame = Build_Font_Effect(
-							s.frame, FontEffect.from,
-							FontEffect.to, FontEffect.type);
-					TFB_Prim_Stamp (&s);
-					DestroyDrawable (ReleaseDrawable (s.frame));
-					s.frame = origFrame;
-				}
-				else
-					TFB_Prim_StampFill (&s, &color);
+				TFB_Prim_FontChar (&origin, fontChar, backing);
 			}
 
-			s.origin.x += GetFrameWidth (s.frame);
+			origin.x += fontChar->disp.width;
 #if 0
 			if (num_chars && next_ch < (UNICODE) MAX_CHARS
 					&& !(FontPtr->KernTab[ch]
 					& (FontPtr->KernTab[next_ch] >> 2)))
-				s.origin.x -= FontPtr->KernAmount;
+				origin.x -= FontPtr->KernAmount;
 #endif
 		}
 	}
 }
 
-static inline FRAME_DESC *
+static inline TFB_Char *
 getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
 {
 	wchar_t pageStart = ch & CHARACTER_PAGE_MASK;
@@ -342,7 +324,7 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
 
 	charIndex = ch - page->firstChar;
 	if (ch >= page->firstChar && charIndex < page->numChars
-			&& page->charDesc[charIndex].image)
+			&& page->charDesc[charIndex].data)
 	{
 		return &page->charDesc[charIndex];
 	}

@@ -297,10 +297,7 @@ generate_orbital (void)
 			case 8: /* PLUTO */
 				if (!GET_GAME_STATE (FOUND_PLUTO_SPATHI))
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (SPAPLUTO_MASK_PMAP_ANIM)
@@ -342,10 +339,7 @@ generate_orbital (void)
 
 				if (!GET_GAME_STATE (MOONBASE_DESTROYED))
 				{
-					pSolarSysState->SysInfo.PlanetInfo.LanderFont =
-							CaptureFont (
-									LoadGraphic (LANDER_FONT)
-									);
+					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
 							LoadGraphic (MOONBASE_MASK_PMAP_ANIM)

@@ -106,102 +106,55 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 }
 
 static void
-processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
+processFontChar (TFB_Char* CharPtr, SDL_Surface *surf, int charInd)
 {
 	int x,y;
 	Uint8 r,g,b,a;
 	Uint32 p;
-	Uint32 clear, opaque;
-	SDL_Color colors[256];
-	SDL_Surface *new_surf;				
 	SDL_PixelFormat* srcfmt = surf->format;
-	SDL_PixelFormat* dstfmt;
 	GetPixelFn getpix;
-	PutPixelFn putpix;
+	BYTE* newdata;
+	Uint32 dpitch;
 
-	TYPE_SET (FramePtr->TypeIndexAndFlags, ROM_DRAWABLE);
-	INDEX_SET (FramePtr->TypeIndexAndFlags, charInd);
-			// XXX: Is this still relevant?
-
-//#define ALPHA_FONTS
-//#define RGB_FONTS
+	// Currently, each font char has its own separate data
+	//  but that can change to common mem area
+	newdata = HMalloc (surf->w * surf->h * sizeof(BYTE));
+	dpitch = surf->w;
 
 	SDL_LockSurface (surf);
 
-	clear = 0;
-	opaque = 1;
-
-#if defined(ALPHA_FONTS)
-	// convert png font to truecolor + alpha
-	new_surf = TFB_DrawCanvas_New_TrueColor (surf->w, surf->h, TRUE);
-
-#elif defined(RGB_FONTS)
-	// convert png font to truecolor w/ colorkey
-	new_surf = TFB_DrawCanvas_New_TrueColor (surf->w, surf->h, FALSE);
-	opaque = SDL_MapRGB (new_surf->format, 255, 255, 255);
-
-#else // indexed fonts
-	// convert 32-bit png font to indexed
-	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, surf->w, surf->h,
-			8, 0, 0, 0, 0);
-#endif
-
-	dstfmt = new_surf->format;
 	getpix = getpixel_for (surf);
-	putpix = putpixel_for (new_surf);
 
+	// produce an alpha-only image in internal BYTE[] format
+	//  from the SDL surface
 	for (y = 0; y < surf->h; ++y)
 	{
-		for (x = 0; x < surf->w; ++x)
+		BYTE* dst = newdata + dpitch * y;
+
+		for (x = 0; x < surf->w; ++x, ++dst)
 		{
 			p = getpix (surf, x, y);
 			SDL_GetRGBA (p, srcfmt, &r, &g, &b, &a);
 
-#if defined(ALPHA_FONTS)
 			if (!srcfmt->Amask)
 			{	// produce alpha from intensity (Y component)
 				// using a fast approximation
 				// contributions to Y are: R=2, G=4, B=1
 				a = (((int)r << 1) + ((int)g << 2) + b) / 7;
 			}
-			// normalize font pixel
-			putpix (new_surf, x, y, SDL_MapRGBA (dstfmt,
-					255, 255, 255, a));
-
-#else // indexed/rgb colorkey fonts
-			// normalize font pixel
-			if (r == 0 && g == 0 && b == 0)
-				putpix (new_surf, x, y, clear);
-			else
-				putpix (new_surf, x, y, opaque);
-#endif
+			
+			*dst = a;
 		}
 	}
 
-#if !defined(ALPHA_FONTS)
-#if !defined(RGB_FONTS)	
-	colors[0].r = 0;
-	colors[0].g = 0;
-	colors[0].b = 0;
-	for (x = 1; x < 256; ++x)
-	{
-		colors[x].r = 255;
-		colors[x].g = 255;
-		colors[x].b = 255;
-	}
-
-	SDL_SetColors (new_surf, colors, 0, 256);
-#endif /* !RGB_FONTS */
-	SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, clear);
-#endif /* !ALPHA_FONTS */
-
 	SDL_UnlockSurface (surf);
-	SDL_FreeSurface (surf);
 
-	FramePtr->image = TFB_DrawImage_New (new_surf);
-	surf = FramePtr->image->NormalImg;
-	
-	SetFrameBounds (FramePtr, surf->w + 1, surf->h + 1);
+	CharPtr->data = newdata;
+	CharPtr->pitch = dpitch;
+	CharPtr->extent.width = surf->w;
+	CharPtr->extent.height = surf->h;
+	CharPtr->disp.width = surf->w + 1;
+	CharPtr->disp.height = surf->h + 1;
 			// XXX: why the +1?
 			// I brought it into this function from the only calling
 			// function, but I don't know why it was there in the first
@@ -215,14 +168,15 @@ processFontChar (FRAMEPTR FramePtr, SDL_Surface *surf, int charInd)
 
 		int tune_amount = 0;
 
-		if (surf->h == 8)
+		if (CharPtr->extent.height == 8)
 			tune_amount = -1;
-		else if (surf->h == 9)
+		else if (CharPtr->extent.height == 9)
 			tune_amount = -2;
-		else if (surf->h > 9)
+		else if (CharPtr->extent.height > 9)
 			tune_amount = -3;
 
-		FramePtr->HotSpot = MAKE_HOT_SPOT (0, surf->h + tune_amount);
+		CharPtr->HotSpot = MAKE_HOT_SPOT (0,
+				CharPtr->extent.height + tune_amount);
 	}
 }
 
@@ -385,114 +339,6 @@ void getpixelarray(Uint32 *map, FRAMEPTR FramePtr, int width, int height)
 	UnlockMutex (tfbImg->mutex);
 }
 
-FRAMEPTR Build_Font_Effect (FRAMEPTR FramePtr, Uint32 from, Uint32 to, BYTE type)
-{
-	FRAMEPTR NewFrame;
-	int x, y;
-	int width, height;
-	Uint32 color, clear;
-	Uint32 srcmask, threshold;
-	BYTE from_r, from_g, from_b, from_a;
-	BYTE to_r, to_g, to_b, to_a;
-	TFB_Image *tfbImg, *tfbOrigImg;
-	SDL_Surface *img, *OrigImg;
-	PutPixelFn putpix;
-	GetPixelFn getpix;
-
-	tfbOrigImg = FramePtr->image;
-	OrigImg = (SDL_Surface *)tfbOrigImg->NormalImg;
-	SDL_LockSurface (OrigImg);
-
-	width = OrigImg->w;
-	height = OrigImg->h;
-	NewFrame = CaptureDrawable (CreateDrawable ((CREATE_FLAGS)RAM_DRAWABLE, 
-			(SIZE)width, (SIZE)height, 1));
-	NewFrame->Bounds = FramePtr->Bounds;
-	NewFrame->HotSpot = FramePtr->HotSpot;
-
-	tfbImg = NewFrame->image;
-	img = (SDL_Surface *)tfbImg->NormalImg;
-	SDL_LockSurface (img);
-
-	putpix = putpixel_for (img);
-	getpix = getpixel_for (OrigImg);
-
-	from_r = (from >> 24);
-	from_g = (from >> 16) & 0xFF;
-	from_b = (from >> 8) & 0xFF;
-	from_a = from & 0xFF;
-
-	to_r = (to >> 24);
-	to_g = (to >> 16) & 0xFF;
-	to_b = (to >> 8) & 0xFF;
-	to_a = to & 0xFF;
-
-	clear = SDL_MapRGBA (img->format, 0, 0, 0, 0);
-	TFB_DrawCanvas_SetTransparentColor (img, 0, 0, 0, FALSE);
-#if defined(ALPHA_FONTS)
-	srcmask = OrigImg->format->Amask;
-	threshold = (srcmask >> 1) & srcmask;
-#else // indexed fonts
-	srcmask = 255;
-	threshold = 0; // any index != 0
-#endif
-
-	if (type == GRADIENT_EFFECT)
-	{
-		int clrstep_r, clrstep_g, clrstep_b, clrstep_a;
-		
-		clrstep_r = (to_r - from_r) / (height - 1);
-		clrstep_g = (to_g - from_g) / (height - 1);
-		clrstep_b = (to_b - from_b) / (height - 1);
-		clrstep_a = (to_a - from_a) / (height - 1);
-
-		for (y = 0; y < height; y++)
-		{
-			color = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
-			from_r += clrstep_r;
-			from_g += clrstep_g;
-			from_b += clrstep_b;
-			from_a += clrstep_a;
-			for (x = 0; x < width; x++)
-			{
-				Uint32 p = getpix (OrigImg, x, y);
-
-				if ((p & srcmask) > threshold)
-					putpix (img, x, y, color);
-				else
-					putpix (img, x, y, clear);
-			}
-		}
-	}
-	else if (type == ALTERNATE_EFFECT)
-	{
-		Uint32 color1, color2;
-		
-		color1 = SDL_MapRGBA (img->format, from_r, from_g, from_b, from_a);
-		color2 = SDL_MapRGBA (img->format, to_r, to_g, to_b, to_a);
-		
-		for (y = 0; y < height; y++)
-		{
-			for (x = 0; x < width; x++)
-			{
-				Uint32 p = getpix (OrigImg, x, y);
-
-				if ((p & srcmask) > threshold)
-				{
-					color = ((y & 0x01) ^ (x & 0x01)) ? color2 : color1;
-					putpix (img, x, y, color);
-				}
-				else
-					putpix (img, x, y, clear);
-			}
-		}
-	}
-
-	SDL_UnlockSurface (img);
-	SDL_UnlockSurface (OrigImg);
-
-	return (NewFrame);
-}
 
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
 // r,g,b,a values supplied
@@ -729,6 +575,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	
 	fontPtr->FontRef = fontRef;
 	fontPtr->Leading = 0;
+	fontPtr->LeadingWidth = 0;
 
 	{
 		size_t startBCD = 0;
@@ -760,10 +607,10 @@ _GetFontData (uio_Stream *fp, DWORD length)
 				{
 					// Process one character.
 					BuildCharDesc *bcd = &bcds[bcdI];
-					FRAME_DESC *destFrame =
+					TFB_Char *destChar =
 							&page->charDesc[bcd->index - page->firstChar];
 				
-					if (destFrame->image != NULL)
+					if (destChar->data != NULL)
 					{
 						// There's already an image for this character.
 #ifdef DEBUG
@@ -775,14 +622,14 @@ _GetFontData (uio_Stream *fp, DWORD length)
 						continue;
 					}
 					
-					processFontChar (destFrame, bcd->surface,
+					processFontChar (destChar, bcd->surface,
 							bcd->index - page->firstChar);
-					// bcd->surface is handed over to destFrame.
-					// Don't access it through bcd->surface any more.
-					// It may be freed from within ProcessFontChar().
+					SDL_FreeSurface (bcd->surface);
 
-					if (GetFrameHeight (destFrame) > fontPtr->Leading)
-						fontPtr->Leading = GetFrameHeight (destFrame);
+					if (destChar->disp.height > fontPtr->Leading)
+						fontPtr->Leading = destChar->disp.height;
+					if (destChar->disp.width > fontPtr->LeadingWidth)
+						fontPtr->LeadingWidth = destChar->disp.width;
 				}
 			}
 
@@ -836,12 +683,14 @@ _ReleaseFontData (MEM_HANDLE handle)
 			size_t charI;
 			for (charI = 0; charI < page->numChars; charI++)
 			{
-				FRAME_DESC *frame = &page->charDesc[charI];
+				TFB_Char *c = &page->charDesc[charI];
 				
-				if (frame->image == NULL)
+				if (c->data == NULL)
 					continue;
 				
-				TFB_DrawScreen_DeleteImage (frame->image);
+				// XXX: fix this if fonts get per-page data
+				//  rather than per-char
+				TFB_DrawScreen_DeleteData (c->data);
 			}
 		
 			nextPage = page->next;

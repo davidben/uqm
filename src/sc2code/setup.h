@@ -31,6 +31,7 @@ extern FRAME ActivityFrame;
 extern FRAME StatusFrame;
 extern FRAME FlagStatFrame;
 extern FRAME MiscDataFrame;
+extern FRAME FontGradFrame;
 
 extern CONTEXT OffScreenContext;
 extern CONTEXT ScreenContext;

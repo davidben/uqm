@@ -28,7 +28,7 @@ typedef struct FontPage
 #define CHARACTER_PAGE_MASK 0xff800
 	wchar_t firstChar;
 	size_t numChars;
-	FRAME_DESC *charDesc;
+	TFB_Char *charDesc;
 } FONT_PAGE;
 typedef FONT_PAGE *PFONT_PAGE;
 
@@ -51,7 +51,8 @@ typedef struct
 {
 	FONT_REF FontRef;
 
-	BYTE Leading;
+	UWORD Leading;
+	UWORD LeadingWidth;
 	FONT_PAGE *fontPages;
 } FONT_DESC;
 typedef FONT_DESC *PFONT_DESC;
