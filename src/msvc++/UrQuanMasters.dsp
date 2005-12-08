@@ -3577,6 +3577,10 @@ SOURCE=..\sc2code\hyper.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\ifontres.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\igfxres.h
 # End Source File
 # Begin Source File
