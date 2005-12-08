@@ -67,10 +67,10 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-102                ICON    DISCARDABLE     "ur-quan-icon-alpha.ico"
+SDL_app            ICON    PRELOAD DISCARDABLE "ur-quan-icon-alpha.ico"
+102                ICON    DISCARDABLE     "ur-quan-icon-std.ico"
 103                ICON    DISCARDABLE     "ur-quan1.ico"
 104                ICON    DISCARDABLE     "sis1.ico"
 105                ICON    DISCARDABLE     "ur-quan2.ico"
 106                ICON    DISCARDABLE     "kohr-ah1.ico"
 107                ICON    DISCARDABLE     "starcon2.ico"
-108                ICON    DISCARDABLE     "ur-quan-icon-std.ico"
