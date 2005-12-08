@@ -55,10 +55,10 @@ typedef enum
 	DEFGRPINFO
 } INFO_TYPE;
 
-GAME_STATE_FILE* OpenStateFile (int stateFile, const char* mode);
-void CloseStateFile (GAME_STATE_FILE* fp);
+GAME_STATE_FILE* OpenStateFile (int stateFile, const char *mode);
+void CloseStateFile (GAME_STATE_FILE *fp);
 void DeleteStateFile (int stateFile);
-DWORD LengthStateFile (GAME_STATE_FILE* fp);
+DWORD LengthStateFile (GAME_STATE_FILE *fp);
 int ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
 int WriteStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
 int PutStateFileChar (char ch, GAME_STATE_FILE *fp);

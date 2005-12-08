@@ -27,10 +27,10 @@
 // in-memory file i/o
 struct GAME_STATE_FILE
 {
-	const char* symname;
+	const char *symname;
 	DWORD size_hint;
 	int   open_count;
-	BYTE* data;
+	BYTE *data;
 	DWORD used;
 	DWORD size;
 	DWORD ptr;
@@ -47,10 +47,10 @@ static GAME_STATE_FILE state_files[NUM_STATE_FILES] =
 };
 
 
-GAME_STATE_FILE*
-OpenStateFile (int stateFile, const char* mode)
+GAME_STATE_FILE *
+OpenStateFile (int stateFile, const char *mode)
 {
-	GAME_STATE_FILE* fp;
+	GAME_STATE_FILE *fp;
 
 	if (stateFile < 0 || stateFile >= NUM_STATE_FILES)
 		return NULL_PTR;
@@ -95,7 +95,7 @@ OpenStateFile (int stateFile, const char* mode)
 }
 
 void
-CloseStateFile (GAME_STATE_FILE* fp)
+CloseStateFile (GAME_STATE_FILE *fp)
 {
 	fp->ptr = 0;
 	fp->open_count--;
@@ -109,7 +109,7 @@ CloseStateFile (GAME_STATE_FILE* fp)
 void
 DeleteStateFile (int stateFile)
 {
-	GAME_STATE_FILE* fp;
+	GAME_STATE_FILE *fp;
 
 	if (stateFile < 0 || stateFile >= NUM_STATE_FILES)
 		return;
@@ -125,7 +125,7 @@ DeleteStateFile (int stateFile)
 }
 
 DWORD
-LengthStateFile (GAME_STATE_FILE* fp)
+LengthStateFile (GAME_STATE_FILE *fp)
 {
 	return fp->used;
 }
@@ -214,7 +214,7 @@ SeekStateFile (GAME_STATE_FILE *fp, long offset, int whence)
 void
 InitPlanetInfo (void)
 {
-	GAME_STATE_FILE* fp;
+	GAME_STATE_FILE *fp;
 
 	fp = OpenStateFile (STARINFO_FILE, "wb");
 	if (fp)
