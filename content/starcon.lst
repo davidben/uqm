@@ -34,6 +34,7 @@
  30   2 3 lbm/micro.fon
  31   4 2 lbm/flagstat.ani
  31   5 2 lbm/miscdata.ani
+ 31 287 2 lbm/fontgrad.ani
  32   0 5 lbm/menusnd.snd
  33   1 5 lbm/gamesnd.snd
  34   6 2 lbm/stars.ani
@@ -169,6 +170,7 @@
 136  75 4 ipanims/viogasgi.ct
 137  76 4 ipanims/yelgasgi.ct
 138   3 3 ipanims/lander.fon
+138 288 2 ipanims/landfeff.ani
 139  59 2 ipanims/moonbase.ani
 139  77 4 ipanims/moonbase.txt
 140  60 2 ipanims/maidens.ani
