@@ -1,4 +1,7 @@
 Changes towards version 0.5:
+- Refactored font engine: fonts are loaded and treated as
+  alpha-channel-only images (allowing for antialiased fonts now);
+  solid color and gradient/alternate effects processing is unified - Alex
 - Fixed problems with pausing the game during ending sequences
   (game-clock bug; undrawing incorrectly due to cliprect) - Alex
 - Removed hotspot abuse from lander report drawing to fix bad
