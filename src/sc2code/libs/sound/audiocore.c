@@ -23,6 +23,9 @@
 
 static audio_Driver audiodrv;
 
+/* The globals that control the sound drivers. */
+int snddriver, soundflags;
+
 /*
  * Declarations for driver init funcs
  */

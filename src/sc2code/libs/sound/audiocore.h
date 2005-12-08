@@ -83,6 +83,8 @@ enum
 	audio_ENUM_SIZE
 };
 
+extern int snddriver, soundflags;
+
 typedef struct {
 	/* General */
 	void (* Uninitialize) (void);

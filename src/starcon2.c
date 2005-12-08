@@ -94,9 +94,6 @@ static int Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt,
 		int *result);
 static const char *PC_3DO_optString (DWORD optMask);
 
-/* TODO: Remove these global variables once threading is gone. */
-int snddriver, soundflags;
-
 int
 main (int argc, char *argv[])
 {
