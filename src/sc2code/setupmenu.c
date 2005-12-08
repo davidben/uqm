@@ -27,6 +27,7 @@
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
 #include "libs/reslib.h"
+#include "libs/sound/sound.h"
 #include "resinst.h"
 
 
@@ -47,9 +48,11 @@ static WIDGET *current, *next;
 static int quit_main_menu (WIDGET *self, int event);
 static int quit_sub_menu (WIDGET *self, int event);
 static int do_graphics (WIDGET *self, int event);
+static int do_audio (WIDGET *self, int event);
 static int do_engine (WIDGET *self, int event);
 static int do_resources (WIDGET *self, int event);
 static int do_keyconfig (WIDGET *self, int event);
+static int do_advanced (WIDGET *self, int event);
 
 static CHOICE_OPTION scaler_opts[] = {
 	{ "None",
@@ -102,6 +105,36 @@ static CHOICE_OPTION music_opts[] = {
 		  "Prefers .OGG files over .MOD."
 		} } };
 
+static CHOICE_OPTION meleezoom_opts[] = {
+	{ "Stepped",
+		{ "Cut between three zoom levels in combat.",
+		  "Resembles PC combat.",
+		  "" } },
+	{ "Smooth",
+		{ "Continuously scale the combat view.",
+		   "Resembles 3do combat.",
+		   "" } } };
+
+static CHOICE_OPTION stereo_opts[] = {
+	{ "Disabled", { "Sound effects are center-channel.", "", "" } },
+	{ "Enabled", 
+		{ "Uses positional SFX if possible..", 
+		  "Currently only supported on OpenAL.", "" } } };
+
+static CHOICE_OPTION fps_opts[] = {
+	{ "No", { "Do not show FPS in the console window.", "", "" } } ,
+	{ "Yes", { "Show FPS in the console window.", "", "" } } };
+
+static CHOICE_OPTION intro_opts[] = {
+	{ "Slides",
+		{ "Prefer slides to movies if both are present.",
+		  "Forces the PC intro.",
+		  "" } },
+	{ "Movie",
+		{ "Prefer movies to slides.",
+		  "Will use 3do content if present.",
+		  "", } } };
+
 static CHOICE_OPTION menu_opts[] = {
 	{ "Text",
 		{ "In-game menus resemble the Original PC version.",
@@ -142,7 +175,7 @@ static CHOICE_OPTION scroll_opts[] = {
 	{ "Per-Page",
 		{ "When fast-forwarding or rewinding conversations",
 		  "in-game, advance one screen of subtitles at a time.",
-		  "This mimics the Original PC version."
+		  "This mimics the original PC version."
 		} },
 	{ "Smooth",
 		{ "When fast-forwarding or rewinding conversations",
@@ -235,6 +268,23 @@ static CHOICE_OPTION fullscreen_opts[] = {
 		} },
 };
 
+static CHOICE_OPTION aquality_opts[] = {
+	{ "Low",
+		{ "Low audio quality.", "", "" } },
+	{ "Medium",
+		{ "Medium audio quality.", "", "" } },
+	{ "High",
+		{ "Highest audio quality.",
+		  "May not work on all architectures.", "" } } 
+};
+		 
+static CHOICE_OPTION adriver_opts[] = {
+	{ "None",
+		{ "Play silently.", "", "" } },
+	{ "MixSDL",
+		{ "Use the default audio mixer.", "", "" } },
+	{ "OpenAL",
+		{ "Use the Creative Labs OpenAL driver.", "", "" } } };
 
 #ifdef HAVE_OPENGL
 #define RES_OPTS 4
@@ -253,8 +303,14 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Scan Style", 2, 2, scan_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Scroll Style", 2, 2, scroll_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Subtitles", 2, 2, subtitles_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Music Driver", 2, 3, music_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Display", 2, 2, fullscreen_opts, 0, 0} };
+	{ CHOICE_PREFACE, "Music Format", 2, 2, music_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Display", 2, 2, fullscreen_opts, 0, 0},
+	{ CHOICE_PREFACE, "Cutscenes", 2, 2, intro_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Show FPS", 2, 3, fps_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Melee Zoom", 2, 2, meleezoom_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Positional Audio", 2, 2, stereo_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Sound Driver", 3, 3, adriver_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Sound Quality", 3, 3, aquality_opts, 0, 0 } };
 
 static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
 		"Quit Setup Menu", 
@@ -267,18 +323,24 @@ static WIDGET_BUTTON prev_button = BUTTON_INIT (quit_sub_menu,
 		"you quit setup entirely.");
 
 static WIDGET_BUTTON graphics_button = BUTTON_INIT (do_graphics, "Graphics Options",
-	     "Configure display options for UQM.",
-	     "Graphics drivers, resolution, and scalers.", "");
+		"Configure display options for UQM.",
+		"Graphics drivers, resolution, and scalers.", "");
 
 static WIDGET_BUTTON engine_button = BUTTON_INIT (do_engine, "PC/3do Compatibility Options",
-	     "Configure behavior of UQM", 
-	     "to more closely match the PC or 3do behavior.", "");
+		"Configure behavior of UQM", 
+		"to more closely match the PC or 3do behavior.", "");
+
+static WIDGET_BUTTON audio_button = BUTTON_INIT (do_audio, "Sound Options",
+		"Configure sound and audio options for UQM.", "", "");
 
 static WIDGET_BUTTON resources_button = BUTTON_INIT (do_resources, "Resources Options",
 	     "Configure UQM Addon Packs.", "", "Currently unimplemented.");
 
 static WIDGET_BUTTON keyconfig_button = BUTTON_INIT (do_keyconfig, "Configure Controls",
 	     "Set up keyboard and joystick controls.", "", "Currently unimplemented.");
+
+static WIDGET_BUTTON advanced_button = BUTTON_INIT (do_advanced, "Advanced Options",
+		"Select underlying drivers or other", "hardware-dependent options.", "");
 
 static const char *incomplete_msg[] = { 
 	"This part of the configuration",
@@ -292,20 +354,22 @@ static WIDGET_LABEL incomplete_label = {
 
 static WIDGET *main_widgets[] = {
 	(WIDGET *)(&graphics_button),
+	(WIDGET *)(&audio_button),
 	(WIDGET *)(&engine_button),
 	(WIDGET *)(&resources_button),
 	(WIDGET *)(&keyconfig_button),
+	(WIDGET *)(&advanced_button),
 	(WIDGET *)(&quit_button) };
 
 static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&cmdline_opts[0]),
-#ifdef HAVE_OPENGL
-	(WIDGET *)(&cmdline_opts[1]),
-#endif
 	(WIDGET *)(&cmdline_opts[11]),
-	(WIDGET *)(&cmdline_opts[2]),
 	(WIDGET *)(&cmdline_opts[3]),
 	(WIDGET *)(&cmdline_opts[4]),
+	(WIDGET *)(&prev_button) };
+
+static WIDGET *audio_widgets[] = {
+	(WIDGET *)(&cmdline_opts[15]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *engine_widgets[] = {
@@ -314,7 +378,21 @@ static WIDGET *engine_widgets[] = {
 	(WIDGET *)(&cmdline_opts[7]),
 	(WIDGET *)(&cmdline_opts[8]),
 	(WIDGET *)(&cmdline_opts[9]),
+	(WIDGET *)(&cmdline_opts[14]),
+	(WIDGET *)(&cmdline_opts[12]),
+	(WIDGET *)(&cmdline_opts[10]),
 	(WIDGET *)(&prev_button) };
+
+static WIDGET *advanced_widgets[] = {
+#ifdef HAVE_OPENGL
+	(WIDGET *)(&cmdline_opts[1]),
+#endif
+	(WIDGET *)(&cmdline_opts[2]),
+	(WIDGET *)(&cmdline_opts[13]),
+	(WIDGET *)(&cmdline_opts[16]),
+	(WIDGET *)(&cmdline_opts[17]),
+	(WIDGET *)(&prev_button) };
+	
 
 static WIDGET *incomplete_widgets[] = {
 	(WIDGET *)(&incomplete_label),
@@ -325,7 +403,7 @@ static WIDGET_MENU_SCREEN menu = {
 	"Ur-Quan Masters Setup",
 	"",
 	{ {0, 0}, NULL },
-	5, main_widgets,
+	7, main_widgets,
 	0 };
 
 static WIDGET_MENU_SCREEN graphics_menu = {
@@ -333,19 +411,23 @@ static WIDGET_MENU_SCREEN graphics_menu = {
 	"Ur-Quan Masters Setup",
 	"Graphics Options",
 	{ {0, 0}, NULL },
-#ifdef HAVE_OPENGL
-	7, graphics_widgets,
-#else
-	6, graphics_widgets,
-#endif
+	5, graphics_widgets,
 	0 };	
+
+static WIDGET_MENU_SCREEN audio_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"Audio Options",
+	{ {0, 0}, NULL },
+	2, audio_widgets,
+	0 };
 
 static WIDGET_MENU_SCREEN engine_menu = {
 	MENU_SCREEN_PREFACE,
 	"Ur-Quan Masters Setup",
 	"3do/PC Options",
 	{ {0, 0}, NULL },
-	6, engine_widgets,
+	9, engine_widgets,
 	0 };	
 
 static WIDGET_MENU_SCREEN resources_menu = {
@@ -362,6 +444,18 @@ static WIDGET_MENU_SCREEN keyconfig_menu = {
 	"Controls Setup",
 	{ {0, 0}, NULL },
 	2, incomplete_widgets,
+	0 };
+
+static WIDGET_MENU_SCREEN advanced_menu = {
+	MENU_SCREEN_PREFACE,
+	"Ur-Quan Masters Setup",
+	"Advanced Options",
+	{ {0, 0}, NULL },
+#ifdef HAVE_OPENGL
+	6, advanced_widgets,
+#else
+	5, advanced_widgets,
+#endif
 	0 };
 
 static int
@@ -394,6 +488,18 @@ do_graphics (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&graphics_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static int
+do_audio (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&audio_menu);
 		return TRUE;
 	}
 	(void)self;
@@ -436,6 +542,18 @@ do_keyconfig (WIDGET *self, int event)
 	return FALSE;
 }
 
+static int
+do_advanced (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&advanced_menu);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
 #define NUM_STEPS 20
 #define X_STEP (SCREEN_WIDTH / NUM_STEPS)
 #define Y_STEP (SCREEN_HEIGHT / NUM_STEPS)
@@ -465,7 +583,14 @@ SetDefaults (void)
 	cmdline_opts[7].selected = opts.cscan;
 	cmdline_opts[8].selected = opts.scroll;
 	cmdline_opts[9].selected = opts.subtitles;
+	cmdline_opts[10].selected = opts.music;
 	cmdline_opts[11].selected = opts.fullscreen;
+	cmdline_opts[12].selected = opts.intro;
+	cmdline_opts[13].selected = opts.fps;
+	cmdline_opts[14].selected = opts.meleezoom;
+	cmdline_opts[15].selected = opts.stereo;
+	cmdline_opts[16].selected = opts.adriver;
+	cmdline_opts[17].selected = opts.aquality;
 }
 
 static void
@@ -482,7 +607,14 @@ PropagateResults (void)
 	opts.cscan = cmdline_opts[7].selected;
 	opts.scroll = cmdline_opts[8].selected;
 	opts.subtitles = cmdline_opts[9].selected;
+	opts.music = cmdline_opts[10].selected;
 	opts.fullscreen = cmdline_opts[11].selected;
+	opts.intro = cmdline_opts[12].selected;
+	opts.fps = cmdline_opts[13].selected;
+	opts.meleezoom = cmdline_opts[14].selected;
+	opts.stereo = cmdline_opts[15].selected;
+	opts.adriver = cmdline_opts[16].selected;
+	opts.aquality = cmdline_opts[17].selected;
 
 	SetGlobalOptions (&opts);
 }
@@ -510,6 +642,9 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		graphics_menu.bgStamp.origin.x = 0;
 		graphics_menu.bgStamp.origin.y = 0;
 		graphics_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
+		audio_menu.bgStamp.origin.x = 0;
+		audio_menu.bgStamp.origin.y = 0;
+		audio_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
 		engine_menu.bgStamp.origin.x = 0;
 		engine_menu.bgStamp.origin.y = 0;
 		engine_menu.bgStamp.frame = SetAbsFrameIndex (f, 2);
@@ -519,6 +654,9 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		keyconfig_menu.bgStamp.origin.x = 0;
 		keyconfig_menu.bgStamp.origin.y = 0;
 		keyconfig_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
+		advanced_menu.bgStamp.origin.x = 0;
+		advanced_menu.bgStamp.origin.y = 0;
+		advanced_menu.bgStamp.frame = SetAbsFrameIndex (f, 2);
 	}
 	if (current != next)
 	{
@@ -606,11 +744,41 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->subtitles = optSubtitles ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->scanlines = (GfxFlags & TFB_GFXFLAGS_SCANLINES) ? 
 		OPTVAL_ENABLED : OPTVAL_DISABLED;
-	// opts->music = (optWhichMusic == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->menu = (optWhichMenu == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->text = (optWhichFonts == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->cscan = (optWhichCoarseScan == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->scroll = (optSmoothScroll == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
+	opts->intro = (optWhichIntro == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
+	opts->fps = (GfxFlags & TFB_GFXFLAGS_SHOWFPS) ? 
+			OPTVAL_ENABLED : OPTVAL_DISABLED;
+	opts->meleezoom = (optMeleeScale == TFB_SCALE_TRILINEAR) ? 
+			OPTVAL_3DO : OPTVAL_PC;
+	opts->stereo = optStereoSFX ? OPTVAL_ENABLED : OPTVAL_DISABLED;
+	/* These values are read in, but won't change during a run. */
+	opts->music = (optWhichMusic == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
+	switch (snddriver) {
+	case audio_DRIVER_OPENAL:
+		opts->adriver = OPTVAL_OPENAL;
+		break;
+	case audio_DRIVER_MIXSDL:
+		opts->adriver = OPTVAL_MIXSDL;
+		break;
+	default:
+		opts->adriver = OPTVAL_SILENCE;
+		break;
+	}
+	if (soundflags & audio_QUALITY_HIGH)
+	{
+		opts->aquality = OPTVAL_HIGH;
+	}
+	else if (soundflags & audio_QUALITY_LOW)
+	{
+		opts->aquality = OPTVAL_LOW;
+	}
+	else
+	{
+		opts->aquality = OPTVAL_MEDIUM;
+	}
 
 	switch (ScreenColorDepth) 
 	{
@@ -821,6 +989,41 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutBoolean ("config.textgradients", opts->text == OPTVAL_PC);
 	res_PutBoolean ("config.iconicscan", opts->cscan == OPTVAL_3DO);
 	res_PutBoolean ("config.smoothscroll", opts->scroll == OPTVAL_3DO);
+
+	res_PutBoolean ("config.3domusic", opts->music == OPTVAL_3DO);
+	res_PutBoolean ("config.3domovies", opts->intro == OPTVAL_3DO);
+	res_PutBoolean ("config.showfps", opts->fps == OPTVAL_ENABLED);
+	res_PutBoolean ("config.smoothmelee", opts->meleezoom == OPTVAL_3DO);
+	res_PutBoolean ("config.positionalsfx", opts->stereo == OPTVAL_ENABLED); 
+
+	switch (opts->adriver) {
+	case OPTVAL_SILENCE:
+		res_PutString ("config.audiodriver", "silence");
+		break;
+	case OPTVAL_MIXSDL:
+		res_PutString ("config.audiodriver", "mixsdl");
+		break;
+	case OPTVAL_OPENAL:
+		res_PutString ("config.audiodriver", "openal");
+	default:
+		/* Shouldn't happen; leave config untouched */
+		break;
+	}
+
+	switch (opts->aquality) {
+	case OPTVAL_LOW:
+		res_PutString ("config.audioquality", "low");
+		break;
+	case OPTVAL_MEDIUM:
+		res_PutString ("config.audioquality", "medium");
+		break;
+	case OPTVAL_HIGH:
+		res_PutString ("config.audioquality", "high");
+		break;
+	default:
+		/* Shouldn't happen; leave config untouched */
+		break;
+	}
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
 }

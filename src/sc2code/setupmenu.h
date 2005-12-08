@@ -51,6 +51,18 @@ typedef enum {
 } OPT_DRIVERTYPE;
 
 typedef enum {
+	OPTVAL_SILENCE,
+	OPTVAL_MIXSDL,
+	OPTVAL_OPENAL
+} OPT_ADRIVERTYPE;
+
+typedef enum {
+	OPTVAL_LOW,
+	OPTVAL_MEDIUM,
+	OPTVAL_HIGH
+} OPT_AQUALITYTYPE;
+
+typedef enum {
 	OPTVAL_16,
 	OPTVAL_24,
 	OPTVAL_32
@@ -60,10 +72,11 @@ typedef struct globalopts_struct {
 	OPT_SCALETYPE scaler;
 	OPT_RESTYPE res;
 	OPT_DRIVERTYPE driver;
+	OPT_ADRIVERTYPE adriver;
+	OPT_AQUALITYTYPE aquality;
 	OPT_DEPTH depth;
-	OPT_ENABLABLE fullscreen;
-	OPT_ENABLABLE subtitles, scanlines;
-	OPT_CONSOLETYPE music, menu, text, cscan, scroll;
+	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
+	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom;
 } GLOBALOPTS;
 
 void SetupMenu (void);

@@ -233,6 +233,67 @@ main (int argc, char *argv[])
 	{
 		options.smoothScroll = res_GetBoolean ("config.smoothscroll") ? OPT_3DO : OPT_PC;
 	}
+	if (res_HasKey ("config.3domusic"))
+	{
+		options.whichMusic = res_GetBoolean ("config.3domusic") ? OPT_3DO : OPT_PC;
+	}
+	if (res_HasKey ("config.3domovies"))
+	{
+		options.whichIntro = res_GetBoolean ("config.3domovies") ? OPT_3DO : OPT_PC;
+	}
+	if (res_HasKey ("config.showfps") && res_GetBoolean ("config.showfps"))
+	{
+		options.gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
+	}
+	if (res_HasKey ("config.smoothmelee"))
+	{
+		options.meleeScale = res_GetBoolean ("config.smoothmelee") ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
+	}
+	if (res_HasKey ("config.positionalsfx"))
+	{
+		options.stereoSFX = res_GetBoolean ("config.positionalsfx");
+	}
+	if (res_HasKey ("config.audiodriver"))
+	{
+		const char *driverstr = res_GetString ("config.audiodriver");
+		if (!strcmp (driverstr, "openal"))
+		{
+			options.soundDriver = audio_DRIVER_OPENAL;
+		}
+		else if (!strcmp (driverstr, "none"))
+		{
+			options.soundDriver = audio_DRIVER_NOSOUND;
+			options.speechVolumeScale = 0.0f;
+		}
+		else if (!strcmp (driverstr, "mixsdl"))
+		{
+			options.soundDriver = audio_DRIVER_MIXSDL;
+		}
+		else
+		{
+			/* Can't figure it out, leave as initial default */
+		}
+	}
+	if (res_HasKey ("config.audioquality"))
+	{
+		const char *qstr = res_GetString ("config.audioquality");
+		if (!strcmp (qstr, "low"))
+		{
+			options.soundDriver = audio_QUALITY_LOW;
+		}
+		else if (!strcmp (qstr, "medium"))
+		{
+			options.soundDriver = audio_QUALITY_MEDIUM;
+		}
+		else if (!strcmp (qstr, "high"))
+		{
+			options.soundDriver = audio_QUALITY_HIGH;
+		}
+		else
+		{
+			/* Can't figure it out, leave as initial default */
+		}
+	}
 
 	optionsResult = parseOptions(argc, argv, &options);
 	if (optionsResult != 0)
