@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Split off alien comm colormaps from global scclrtab into
+  corresponding race dirs (avoids potential mod collisions) - Alex
 - Refactored font engine: fonts are loaded and treated as
   alpha-channel-only images (allowing for antialiased fonts now);
   solid color and gradient/alternate effects processing is unified - Alex
