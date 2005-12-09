@@ -33,7 +33,7 @@ static LOCDATA yehat_desc =
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	0, /* (SIS_TEXT_WIDTH - 16) * 2 / 3, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)YEHAT_COLOR_MAP, /* AlienColorMap */
 	YEHAT_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */

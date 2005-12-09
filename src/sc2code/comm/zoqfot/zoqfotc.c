@@ -50,7 +50,7 @@ static LOCDATA zoqfot_desc =
 	0, /* AlienTextFColor */
 	0, /* AlienTextBColor */
 	0, /* SIS_SCREEN_WIDTH, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)ZOQFOTPIK_COLOR_MAP, /* AlienColorMap */
 	ZOQFOTPIK_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */

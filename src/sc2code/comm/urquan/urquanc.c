@@ -30,7 +30,7 @@ static LOCDATA urquan_desc =
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)URQUAN_COLOR_MAP, /* AlienColorMap */
 	URQUAN_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */

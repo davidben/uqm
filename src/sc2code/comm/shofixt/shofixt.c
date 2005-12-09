@@ -33,7 +33,7 @@ static LOCDATA shofixti_desc =
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)SHOFIXTI_COLOR_MAP, /* AlienColorMap */
 	SHOFIXTI_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */

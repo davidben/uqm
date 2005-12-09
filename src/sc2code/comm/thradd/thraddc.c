@@ -34,7 +34,7 @@ static LOCDATA thradd_desc =
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)THRADD_COLOR_MAP, /* AlienColorMap */
 	THRADD_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */

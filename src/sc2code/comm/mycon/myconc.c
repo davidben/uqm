@@ -34,7 +34,7 @@ static LOCDATA mycon_desc =
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
-	0, /* AlienColorMap */
+	(COLORMAP)MYCON_COLOR_MAP, /* AlienColorMap */
 	MYCON_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
