@@ -1,7 +1,7 @@
 Changes towards version 0.5:
 - Refactored colormaps storage, management and transforms; paletted
   images rendering should be much faster now - Alex
-- Corrected intro slide 5 (crosshair removed); bug #794, from Benjamin
+- Corrected intro slide 5 (crosshair removed); bug #794, from AusME
 - Split off alien comm colormaps from global scclrtab into
   corresponding race dirs (avoids potential mod collisions) - Alex
 - Refactored font engine: fonts are loaded and treated as
