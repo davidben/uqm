@@ -29,7 +29,7 @@ extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 
 extern BOOLEAN DoFMV (const char *name, const char *loopname,
 		BOOLEAN uninit);
-extern BOOLEAN ShowPresentation (const char *name);
+extern BOOLEAN ShowPresentation (STRING PresStr);
 
 
 #endif  /* _FMV_H */

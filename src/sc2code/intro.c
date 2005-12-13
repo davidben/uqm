@@ -271,6 +271,13 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 	pPIS->SisFrame = SisFrame;
 }
 
+BOOLEAN
+ShowPresentationFile (const char *name)
+{
+	return ShowPresentation (CaptureStringTable (
+			LoadStringTableFile (contentDir, name)));
+}
+
 static BOOLEAN
 DoPresentation (PVOID pIS)
 {
@@ -668,7 +675,7 @@ DoPresentation (PVOID pIS)
 			Present_UnbatchGraphics (pPIS, TRUE);
 
 			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
-			ShowPresentation (pPIS->Buffer);
+			ShowPresentationFile (pPIS->Buffer);
 		}
 		else if (strcmp (Opcode, "NOOP") == 0)
 		{	/* no operation - must be a comment in script */
@@ -680,7 +687,7 @@ DoPresentation (PVOID pIS)
 }
 
 BOOLEAN
-ShowPresentation (const char *name)
+ShowPresentation (STRING PresStr)
 {
 	CONTEXT OldContext;
 	FONT OldFont;
@@ -688,8 +695,7 @@ ShowPresentation (const char *name)
 	PRESENTATION_INPUT_STATE pis;
 	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
 
-	pis.SlideShow = CaptureStringTable (
-			LoadStringTableFile (contentDir, name));
+	pis.SlideShow = PresStr;
 	if (!pis.SlideShow)
 		return FALSE;
 	pis.SlideShow = SetAbsStringTableIndex (pis.SlideShow, 0);

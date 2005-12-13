@@ -23,6 +23,7 @@
 #include "options.h"
 #include "master.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
 #include "setup.h"
 #include "vidlib.h"
@@ -141,7 +142,8 @@ Introduction (void)
 		 * not present */
 		if (optWhichIntro == OPT_PC ||
 				!DoFMV ("slides/intro/intro.duk", NULL, TRUE))
-			ShowPresentation ("slides/intro/intro.txt");
+			ShowPresentation ( CaptureStringTable (
+					LoadStringTable (INTROPRES_STRTAB)));
 	}
 }
 
@@ -157,7 +159,8 @@ Victory (void)
 	 * not present */
 	if (optWhichIntro == OPT_PC ||
 			!DoFMV ("slides/ending/victory.duk", NULL, TRUE))
-		ShowPresentation ("slides/ending/ending.txt");
+		ShowPresentation ( CaptureStringTable (
+					LoadStringTable (FINALPRES_STRTAB)));
 		
 	xform_buf[0] = FadeAllToBlack;
 	XFormColorMap ((COLORMAPPTR)xform_buf, 0);
