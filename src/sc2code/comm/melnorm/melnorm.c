@@ -1425,6 +1425,9 @@ NatureOfConversation (RESPONSE_REF R)
 static void
 DoBluster (RESPONSE_REF R)
 {
+	// BUG: these should really be GAME_STATE vars
+	//  currently, you can reload a game and skip some responses
+	//  that you've said before
 	static BYTE local_stack0 = 0, local_stack1 = 0;
 
 	if (PLAYER_SAID (R, trade_is_for_the_weak))
