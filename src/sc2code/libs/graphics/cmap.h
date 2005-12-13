@@ -21,12 +21,10 @@
 #ifndef CMAP_H
 #define CMAP_H
 
-#define NUMBER_OF_VARPLUTS      256
+#define MAX_COLORMAPS           250
 #define PLUTVAL_BYTE_SIZE       3
 #define NUMBER_OF_PLUTVALS      256
 #define PLUT_BYTE_SIZE          (PLUTVAL_BYTE_SIZE * NUMBER_OF_PLUTVALS)
-#define VARPLUTS_SIZE           (NUMBER_OF_VARPLUTS * PLUT_BYTE_SIZE)
-#define GET_VAR_PLUT(i)         (_varPLUTs + (i) * PLUT_BYTE_SIZE)
 
 #define BUILD_FRAME    (1 << 0)
 #define FIND_PAGE      (1 << 1)
@@ -40,9 +38,25 @@
 #define FADE_NORMAL_INTENSITY  255
 #define FADE_FULL_INTENSITY    510
 
-extern UBYTE* _varPLUTs;
+typedef struct tfb_colormap
+{
+	TFB_Palette colors[NUMBER_OF_PLUTVALS];
+	int index;
+	int version;
+	int refcount;
+	struct tfb_colormap *next;
+} TFB_ColorMap;
+
 extern volatile int FadeAmount;
 
-void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index);
+extern void InitColorMaps (void);
+extern void UninitColorMaps (void);
+
+extern void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index);
+extern TFB_ColorMap * TFB_GetColorMap (int index);
+extern void TFB_ReturnColorMap (TFB_ColorMap *map);
+
+extern BOOLEAN XFormColorMap_step ();
+
 
 #endif

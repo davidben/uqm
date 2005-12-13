@@ -228,7 +228,7 @@ ExitConversation (RESPONSE_REF R)
 		if (PLAYER_SAID (R, about_andro_3))
 			ActivateStarShip (ORZ_SHIP, -1);
 
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), ONE_SECOND / 2);
 	}

@@ -207,7 +207,7 @@ CombatIsInevitable (RESPONSE_REF R)
 		NPCPhrase (FOOL_AIEE1);
 
 		AlienTalkSegue (1);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), ONE_SECOND / 4);
 		AlienTalkSegue ((COUNT)~0);

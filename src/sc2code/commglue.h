@@ -126,7 +126,5 @@ extern LOCDATAPTR init_zoqfot_comm (void);
 
 extern LOCDATAPTR init_umgah_comm (void);
 
-extern DWORD XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval);
-
 #endif /* _COMMGLUE_H */
 

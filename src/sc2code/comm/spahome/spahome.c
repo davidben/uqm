@@ -575,7 +575,7 @@ AllianceOffer (RESPONSE_REF R)
 	if (PLAYER_SAID (R, misunderstanding))
 	{
 		NPCPhrase (JUST_MISUNDERSTANDING);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), ONE_SECOND / 4);
 
@@ -753,7 +753,7 @@ SpathiCouncil (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, good_password))
 	{
 		NPCPhrase (YES_GOOD_PASSWORD);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), ONE_SECOND / 4);
 

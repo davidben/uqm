@@ -214,7 +214,7 @@ FriendlyExit (RESPONSE_REF R)
 
 		AlienTalkSegue (1);
 		AlienTalkSegue (2);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), ONE_SECOND / 2);
 		AlienTalkSegue ((COUNT)~0);
@@ -279,7 +279,7 @@ Foreplay (RESPONSE_REF R)
 			NPCPhrase (ABOUT_US);
 		NPCPhrase (MORE_COMFORTABLE);
 		AlienTalkSegue (1);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), ONE_SECOND);
 		AlienTalkSegue ((COUNT)~0);

@@ -61,10 +61,12 @@ TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas target)
 }
 
 void
-TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *palette, TFB_Canvas target)
+TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
+		TFB_ColorMap *cmap, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
+	TFB_Palette* palette;
 
 	if (img == 0)
 	{
@@ -74,8 +76,15 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 
 	LockMutex (img->mutex);
 
-	if (palette == 0)
+	if (cmap)
+		palette = cmap->colors;
+	else
 		palette = img->Palette;
+
+	// only set the new palette if it changed
+	if (((SDL_Surface *)img->NormalImg)->format->palette
+			&& cmap && img->colormap_version != cmap->version)
+		SDL_SetColors (img->NormalImg, (SDL_Color*)palette, 0, 256);
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
@@ -83,9 +92,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 		if (optMeleeScale == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
 			type = TFB_SCALE_TRILINEAR;
-			if (((SDL_Surface *)img->NormalImg)->format->palette)
-				SDL_SetColors (img->NormalImg, (SDL_Color*)palette, 0, 256);
-			if (((SDL_Surface *)img->MipmapImg)->format->palette)
+			// only set the new palette if it changed
+			if (((SDL_Surface *)img->MipmapImg)->format->palette
+					&& cmap && img->colormap_version != cmap->version)
 				SDL_SetColors (img->MipmapImg, (SDL_Color*)palette, 0, 256);
 		}
 		else
@@ -95,6 +104,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 
 		TFB_DrawImage_FixScaling (img, scale, type);
 		surf = img->ScaledImg;
+		if (surf->format->palette)
+			SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
+
 		srcRect.x = 0;
 		srcRect.y = 0;
 		srcRect.w = img->extent.width;
@@ -113,8 +125,11 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_Palette *pale
 		targetRect.y = y - img->NormalHs.y;
 	}
 	
-	if (surf->format->palette)
-		SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
+	if (cmap)
+	{
+		img->colormap_version = cmap->version;
+		TFB_ReturnColorMap (cmap);
+	}
 	
 	SDL_BlitSurface (surf, pSrcRect, (NativeCanvas) target, &targetRect);
 	UnlockMutex (img->mutex);
@@ -254,6 +269,8 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 			pal[i].b = b;
 		}
 		SDL_SetColors (surf, pal, 0, 256);
+		// reflect the change in *actual* image palette
+		img->colormap_version--;
 	}
 	else
 	{	// fill the non-transparent parts of the image with fillcolor

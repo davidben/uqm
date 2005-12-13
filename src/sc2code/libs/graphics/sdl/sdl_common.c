@@ -152,7 +152,6 @@ TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
 
 	Init_DrawCommandQueue ();
 
-	TFB_FlushPaletteCache ();
 	TFB_DrawCanvas_Initialize ();
 
 	RenderingCond = CreateCondVar ("DCQ empty",
@@ -614,17 +613,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
 				TFB_Image *DC_image = DC.data.image.image;
-				TFB_Palette *pal;
+				TFB_ColorMap *cmap = DC.data.image.colormap;
 				int x = DC.data.image.x;
 				int y = DC.data.image.y;
 
-				if (DC.data.image.UsePalette)
-					pal = palette;
-				else
-					pal = 0;
-
 				TFB_DrawCanvas_Image (DC_image, x, y,
-						DC.data.image.scale, pal,
+						DC.data.image.scale, cmap,
 						SDL_Screens[DC.data.image.destBuffer]);
 
 				if (DC.data.image.destBuffer == 0)

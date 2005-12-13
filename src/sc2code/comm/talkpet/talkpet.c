@@ -264,11 +264,11 @@ MindControlStrobe (void)
 
 	for (i = 0; i < NUM_STROBES; ++i)
 	{
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 				), 0);
 		SleepThread (ONE_SECOND / (STROBE_RATE * 2));
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), 0);
 		SleepThread (ONE_SECOND / (STROBE_RATE * 2));

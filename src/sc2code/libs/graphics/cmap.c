@@ -30,37 +30,222 @@ static struct
 		COUNT NumCycles;
 		Task XFormTask;
 	} tc;
-} TaskControl;
+} FadeControl;
+
+typedef struct xform_control
+{
+	int CMapIndex; // -1 means unused
+	COLORMAPPTR CMapPtr;
+	SIZE Ticks;
+	DWORD StartTime;
+	DWORD EndTime;
+	TFB_Palette OldCMap[NUMBER_OF_PLUTVALS];
+} XFORM_CONTROL;
+
+#define MAX_XFORMS 16
+static struct
+{
+	XFORM_CONTROL TaskControl[MAX_XFORMS];
+	volatile int Highest;
+			// 'pending' is Highest >= 0
+	Mutex Lock;
+} XFormControl;
 
 volatile int FadeAmount = FADE_NORMAL_INTENSITY;
-static volatile int end, XForming;
+static volatile int FadeEnd, XForming;
 
-UBYTE* _varPLUTs;
-static unsigned int varPLUTsize = 0;
+#define SPARE_COLORMAPS  20
+#define MAP_POOL_SIZE    (MAX_COLORMAPS + SPARE_COLORMAPS)
+
+static TFB_ColorMap mappool[MAP_POOL_SIZE];
+static TFB_ColorMap *poolhead;
+
+static TFB_ColorMap * colormaps[MAX_COLORMAPS];
+static int mapcount;
+Mutex maplock;
 
 
-void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index)
+void
+InitColorMaps (void)
 {
 	int i;
-	UBYTE *colors;
 
-	colors = GET_VAR_PLUT (colormap_index);
+	// init colormaps
+	maplock = CreateMutex ("Colormaps Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	// init static pool
+	for (i = 0; i < MAP_POOL_SIZE - 1; ++i)
+		mappool[i].next = mappool + i + 1;
+	mappool[i].next = NULL;
+	poolhead = mappool;
 
-	for (i = 0; i < NUMBER_OF_PLUTVALS; i++)
+	// init xform control
+	XFormControl.Highest = -1;
+	XFormControl.Lock = CreateMutex ("Transform Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	for (i = 0; i < MAX_XFORMS; ++i)
+		XFormControl.TaskControl[i].CMapIndex = -1;
+}
+
+void
+UninitColorMaps (void)
+{
+	// uninit xform control
+	DestroyMutex (XFormControl.Lock);
+	
+	// uninit colormaps
+	DestroyMutex (maplock);
+}
+
+static inline TFB_ColorMap *
+alloc_colormap (void)
+		// returns an addrefed object
+{
+	TFB_ColorMap *map;
+
+	if (!poolhead)
+		return NULL;
+
+	map = poolhead;
+	poolhead = map->next;
+	
+	map->next = NULL;
+	map->index = -1;
+	map->refcount = 1;
+	map->version = 0;
+
+	return map;
+}
+
+static TFB_ColorMap *
+clone_colormap (TFB_ColorMap *from, int index)
+		// returns an addrefed object
+{
+	TFB_ColorMap *map;
+
+	map = alloc_colormap ();
+	if (!map)
 	{
-		pal[i].r = *colors++;
-		pal[i].g = *colors++;
-		pal[i].b = *colors++;
+		static DWORD NextTime = 0;
+		DWORD Now;
+
+		if (!from)
+		{
+			fprintf (stderr, "FATAL: clone_colormap(): no maps available\n");
+			abort ();
+		}
+		
+		Now = GetTimeCounter ();
+		if (Now >= NextTime)
+		{
+			fprintf (stderr, "clone_colormap(): static pool exhausted\n");
+			NextTime = Now + ONE_SECOND;
+		}	
+		
+		// just overwrite the current one -- better than aborting
+		map = from;
+		from->refcount++;
 	}
+	else
+	{	// fresh new map
+		map->index = index;
+		if (from)
+			map->version = from->version;
+	}
+	map->version++;
+	
+	return map;
+}
+
+static inline void
+free_colormap (TFB_ColorMap *map)
+{
+	if (!map)
+	{
+		fprintf (stderr, "free_colormap(): tried to free a NULL map\n");
+		return;
+	}
+
+	map->next = poolhead;
+	poolhead = map;
+}
+
+static inline TFB_ColorMap *
+get_colormap (int index)
+{
+	TFB_ColorMap *map;
+
+	map = colormaps[index];
+	if (!map)
+	{
+		fprintf (stderr, "BUG: get_colormap(): map not present\n");
+		abort ();
+	}
+
+	map->refcount++;
+	return map;
+}
+
+static inline void
+release_colormap (TFB_ColorMap *map)
+{
+	if (!map)
+		return;
+
+	if (map->refcount <= 0)
+	{
+		fprintf (stderr, "BUG: release_colormap(): refcount not >0\n");
+		return;
+	}
+
+	map->refcount--;
+	if (map->refcount == 0)
+		free_colormap (map);
+}
+
+void
+TFB_ReturnColorMap (TFB_ColorMap *map)
+{
+	LockMutex (maplock);
+	release_colormap (map);
+	UnlockMutex (maplock);
+}
+
+TFB_ColorMap *
+TFB_GetColorMap (int index)
+{
+	TFB_ColorMap *map;
+
+	LockMutex (maplock);
+	map = get_colormap (index);
+	UnlockMutex (maplock);
+
+	return map;
+}
+
+void
+TFB_ColorMapToRGB (TFB_Palette *pal, int index)
+{
+	TFB_ColorMap *map = NULL;
+
+	if (index < mapcount)
+		map = colormaps[index];
+
+	if (!map)
+	{
+		fprintf (stderr, "TFB_ColorMapToRGB(): "
+				"requested non-present colormap %d\n", index);
+		return;
+	}
+
+	memcpy (pal, map->colors, sizeof (map->colors));
 }
 
 BOOLEAN
 SetColorMap (COLORMAPPTR map)
 {
 	int start, end;
-	DWORD size, total_size;
+	int total_size;
 	UBYTE *colors = (UBYTE*)map;
-	UBYTE *vp;
+	TFB_ColorMap **mpp;
 	
 	if (!map)
 		return TRUE;
@@ -68,46 +253,77 @@ SetColorMap (COLORMAPPTR map)
 	start = *colors++;
 	end = *colors++;
 	if (start > end)
-		return TRUE;
-	
-	size = (end - start + 1) * PLUT_BYTE_SIZE;
-	total_size = (end + 1) * PLUT_BYTE_SIZE;
+	{
+		fprintf (stderr, "ERROR: SetColorMap(): "
+				"starting map (%d) not less or eq ending (%d)\n",
+				start, end);
+		return FALSE;
+	}
+	if (start >= MAX_COLORMAPS)
+	{
+		fprintf (stderr, "ERROR: SetColorMap(): "
+				"starting map (%d) beyond range (0-%d)\n",
+				start, (int)MAX_COLORMAPS - 1);
+		return FALSE;
+	}
+	if (end >= MAX_COLORMAPS)
+	{
+		fprintf (stderr, "SetColorMap(): "
+				"ending map (%d) beyond range (0-%d)\n",
+				end, (int)MAX_COLORMAPS - 1);
+		end = MAX_COLORMAPS - 1;
+	}
 
-	if (!_varPLUTs)
-	{
-		_varPLUTs = (UBYTE *) HMalloc (total_size);
-		varPLUTsize = total_size;
-	}
-	else if (total_size > varPLUTsize)
-	{
-		_varPLUTs = (UBYTE *) HRealloc (_varPLUTs, total_size);
-		varPLUTsize = total_size;
-	}
-	if (!_varPLUTs)
-	{
-		varPLUTsize = 0;
-		return TRUE;
-	}
+	total_size = end + 1;
+
+	LockMutex (maplock);
+
+	if (total_size > mapcount)
+		mapcount = total_size;
 	
-	vp = GET_VAR_PLUT (start);
-	memcpy (vp, colors, size);
+	// parse the supplied PLUTs into our colormaps
+	for (mpp = colormaps + start; start <= end; ++start, ++mpp)
+	{
+		int i;
+		TFB_Palette *pal;
+		TFB_ColorMap *newmap;
+		TFB_ColorMap *oldmap;
+
+		oldmap = *mpp;
+		newmap = clone_colormap (oldmap, start);
+		
+		for (i = 0, pal = newmap->colors; i < NUMBER_OF_PLUTVALS; ++i, ++pal)
+		{
+			pal->r = *colors++;
+			pal->g = *colors++;
+			pal->b = *colors++;
+		}
+
+		*mpp = newmap;
+		release_colormap (oldmap);
+	}
+
+	UnlockMutex (maplock);
 
 	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n", vp, map, bytes, start, end);
 	return TRUE;
 }
 
+/* Fade Transforms */
+
 static int 
-xform_clut_task (void *data)
+fade_xform_task (void *data)
 {
 	SIZE TDelta, TTotal;
 	DWORD CurTime;
 	Task task = (Task)data;
 
 	XForming = TRUE;
-	while (TaskControl.tc.XFormTask == 0 && (!Task_ReadState (task, TASK_EXIT)))
+	while (FadeControl.tc.XFormTask == 0
+			&& (!Task_ReadState (task, TASK_EXIT)))
 		TaskSwitch ();
-	TTotal = TaskControl.Ticks;
-	TaskControl.tc.XFormTask = 0;
+	TTotal = FadeControl.Ticks;
+	FadeControl.tc.XFormTask = 0;
 
 	{
 		CurTime = GetTimeCounter ();
@@ -121,8 +337,8 @@ xform_clut_task (void *data)
 			if (!XForming || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
 				TDelta = TTotal;
 
-			FadeAmount += (end - FadeAmount) * TDelta / TTotal;
-			//fprintf (stderr, "xform_clut_task FadeAmount %d\n", FadeAmount);
+			FadeAmount += (FadeEnd - FadeAmount) * TDelta / TTotal;
+			//fprintf (stderr, "fade_xform_task FadeAmount %d\n", FadeAmount);
 		} while ((TTotal -= TDelta) && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
@@ -132,49 +348,56 @@ xform_clut_task (void *data)
 	return 0;
 }
 
-DWORD
-XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
+static void
+FlushFadeXForms (void)
+{
+	if (XForming)
+	{
+		XForming = FALSE;
+		TaskSwitch ();
+	}
+}
+
+static DWORD
+XFormFade (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
 	BYTE what;
 	DWORD TimeOut;
 
-	FlushColorXForms ();
-
-	if (ColorMapPtr == (COLORMAPPTR)0)
-		return (0);
+	FlushFadeXForms ();
 
 	what = *ColorMapPtr;
 	switch (what)
 	{
 	case FadeAllToBlack:
 	case FadeSomeToBlack:
-		end = FADE_NO_INTENSITY;
+		FadeEnd = FADE_NO_INTENSITY;
 		break;
 	case FadeAllToColor:
 	case FadeSomeToColor:
-		end = FADE_NORMAL_INTENSITY;
+		FadeEnd = FADE_NORMAL_INTENSITY;
 		break;
 	case FadeAllToWhite:
 	case FadeSomeToWhite:
-		end = FADE_FULL_INTENSITY;
+		FadeEnd = FADE_FULL_INTENSITY;
 		break;
 	default:
 		return (GetTimeCounter ());
 	}
 
-	TaskControl.Ticks = TimeInterval;
-	if (TaskControl.Ticks <= 0 ||
-			(TaskControl.tc.XFormTask = AssignTask (xform_clut_task,
-					1024, "transform colormap")) == 0)
+	FadeControl.Ticks = TimeInterval;
+	if (FadeControl.Ticks <= 0 ||
+			(FadeControl.tc.XFormTask = AssignTask (fade_xform_task,
+					1024, "fade transform")) == 0)
 	{
-		FadeAmount = end;
+		FadeAmount = FadeEnd;
 		TimeOut = GetTimeCounter ();
 	}
 	else
 	{
 		do
 			TaskSwitch ();
-		while (TaskControl.tc.XFormTask);
+		while (FadeControl.tc.XFormTask);
 
 		TimeOut = GetTimeCounter () + TimeInterval + 1;
 	}
@@ -182,12 +405,218 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	return (TimeOut);
 }
 
-void
-FlushColorXForms()
+/* Colormap Transforms */
+
+static void
+finish_colormap_xform (int which)
 {
-	if (XForming)
+	SetColorMap (XFormControl.TaskControl[which].CMapPtr);
+	XFormControl.TaskControl[which].CMapIndex = -1;
+	// check Highest ptr
+	if (which == XFormControl.Highest)
 	{
-		XForming = FALSE;
-		TaskSwitch ();
+		do
+			--which;
+		while (which >= 0 && XFormControl.TaskControl[which].CMapIndex == -1);
+		
+		XFormControl.Highest = which;
 	}
+}
+
+
+/* This gives the XFormColorMap task a timeslice to do its thing
+ * Only one thread should ever be allowed to be calling this at any time
+ */
+BOOLEAN
+XFormColorMap_step ()
+{
+	BOOLEAN Changed = FALSE;
+	int x;
+	DWORD Now = GetTimeCounter ();
+
+	LockMutex (XFormControl.Lock);
+
+	for (x = 0; x <= XFormControl.Highest; ++x)
+	{
+		XFORM_CONTROL *control = &XFormControl.TaskControl[x];
+		int index = control->CMapIndex;
+		int TicksLeft = control->EndTime - Now;
+		TFB_ColorMap *curmap;
+
+		if (index < 0)
+			continue; // unused slot
+
+		LockMutex (maplock);
+
+		curmap = colormaps[index];
+		if (!curmap)
+		{
+			UnlockMutex (maplock);
+			fprintf (stderr, "BUG: XFormColorMap_step(): no current map\n");
+			finish_colormap_xform (x);
+			continue;
+		}
+
+		if (TicksLeft > 0)
+		{
+#define XFORM_SCALE 0x10000
+			TFB_ColorMap *newmap = NULL;
+			UBYTE *pNewCMap;
+			TFB_Palette *pCurCMap, *pOldCMap;
+			int frac;
+			int i;
+
+			newmap = clone_colormap (curmap, index);
+
+			pCurCMap = newmap->colors;
+			pOldCMap = control->OldCMap;
+			pNewCMap = (UBYTE*)control->CMapPtr + 2;
+
+			frac = (int)(control->Ticks - TicksLeft) * XFORM_SCALE
+					/ control->Ticks;
+
+			for (i = 0; i < NUMBER_OF_PLUTVALS; i++, ++pCurCMap, ++pOldCMap)
+			{
+				
+				pCurCMap->r = (UBYTE)(pOldCMap->r + ((int)*pNewCMap - pOldCMap->r)
+							* frac / XFORM_SCALE);
+				pNewCMap++;
+
+				pCurCMap->g = (UBYTE)(pOldCMap->g + ((int)*pNewCMap - pOldCMap->g)
+							* frac / XFORM_SCALE);
+				pNewCMap++;
+				
+				pCurCMap->b = (UBYTE)(pOldCMap->b + ((int)*pNewCMap - pOldCMap->b)
+							* frac / XFORM_SCALE);
+				pNewCMap++;
+			}
+
+			colormaps[index] = newmap;
+			release_colormap (curmap);
+		}
+
+		UnlockMutex (maplock);
+
+		if (TicksLeft <= 0)
+		{	// asked for immediate xform or already done
+			finish_colormap_xform (x);
+		}
+		
+		Changed = TRUE;
+	}
+
+	UnlockMutex (XFormControl.Lock);
+
+	return Changed;
+}
+
+static void
+FlushPLUTXForms (void)
+{
+	int i;
+
+	LockMutex (XFormControl.Lock);
+
+	for (i = 0; i <= XFormControl.Highest; ++i)
+	{
+		if (XFormControl.TaskControl[i].CMapIndex >= 0)
+			finish_colormap_xform (i);
+	}
+	XFormControl.Highest = -1; // all gone
+
+	UnlockMutex (XFormControl.Lock);
+}
+
+static DWORD
+XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
+{
+	TFB_ColorMap *map;
+	XFORM_CONTROL *control;
+	int index;
+	int x;
+	int first_avail = -1;
+	DWORD EndTime;
+	DWORD Now;
+
+	Now = GetTimeCounter ();
+	index = *ColorMapPtr;
+
+	LockMutex (XFormControl.Lock);
+	// Find an available slot, or reuse if required
+	for (x = 0; x <= XFormControl.Highest
+			&& index != XFormControl.TaskControl[x].CMapIndex;
+			++x)
+	{
+		if (first_avail == -1 && XFormControl.TaskControl[x].CMapIndex == -1)
+			first_avail = x;
+	}
+
+	if (index == XFormControl.TaskControl[x].CMapIndex)
+	{	// already xforming this colormap -- cancel and reuse slot
+		finish_colormap_xform (x);
+	}
+	else if (first_avail >= 0)
+	{	// picked up a slot along the way
+		x = first_avail;
+	}
+	else if (x >= MAX_XFORMS)
+	{	// flush some xforms if the queue is full
+#ifdef DEBUG
+		fprintf (stderr, "WARNING: XFormPLUT(): no slots available\n");
+#endif
+		x = XFormControl.Highest;
+		finish_colormap_xform (x);
+	}
+	// take next unused one
+	control = &XFormControl.TaskControl[x];
+	if (x > XFormControl.Highest)
+		XFormControl.Highest = x;
+
+	// make a copy of the current map
+	LockMutex (maplock);
+	map = colormaps[index];
+	if (!map)
+	{
+		UnlockMutex (maplock);
+		UnlockMutex (XFormControl.Lock);
+		fprintf (stderr, "BUG: XFormPLUT(): no current map\n");
+		return (0);
+	}
+	memcpy (control->OldCMap, map->colors, sizeof (map->colors));
+	UnlockMutex (maplock);
+
+	control->CMapIndex = index;
+	control->CMapPtr = ColorMapPtr;
+	control->Ticks = TimeInterval;
+	if (control->Ticks < 0)
+		control->Ticks = 0; /* prevent negative fade */
+	control->StartTime = Now;
+	control->EndTime = EndTime = Now + control->Ticks;
+
+	UnlockMutex (XFormControl.Lock);
+
+	return (EndTime);
+}
+
+
+DWORD
+XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
+{
+	int what;
+
+	if (!ColorMapPtr)
+		return (0);
+
+	what = *ColorMapPtr;
+	if (what >= (int)FadeAllToWhite && what <= (int)FadeSomeToColor)
+		return XFormFade (ColorMapPtr, TimeInterval);
+	else
+		return XFormPLUT (ColorMapPtr, TimeInterval);
+}
+
+void
+FlushColorXForms (void)
+{
+	FlushFadeXForms ();
+	FlushPLUTXForms ();
 }

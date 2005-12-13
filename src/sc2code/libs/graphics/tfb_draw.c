@@ -78,67 +78,21 @@ TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b)
 	TFB_EnqueueDrawCommand (&DC);
 }
 
-/* This value is protected by the DCQ's lock. */
-static int _localpal[256][3];
-
-void
-TFB_FlushPaletteCache ()
-{
-	int i;
-	Lock_DCQ (-1);
-	for (i = 0; i < 256; i++)
-	{
-		_localpal[i][0] = -1;
-		_localpal[i][1] = -1;
-		_localpal[i][2] = -1;
-	}
-	Unlock_DCQ ();
-}
-
 void
 TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_Palette *palette, SCREEN dest)
+		TFB_ColorMap *cmap, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
 	DC.Type = TFB_DRAWCOMMANDTYPE_IMAGE;
 	DC.data.image.image = img;
+	DC.data.image.colormap = cmap;
 	DC.data.image.x = x;
 	DC.data.image.y = y;
 	DC.data.image.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
-
-	if (palette != NULL)
-	{
-		int i, changed;
-		Lock_DCQ(257);
-		changed = 0;
-		for (i = 0; i < 256; i++)
-		{
-			if ((_localpal[i][0] != palette[i].r) ||
-			    (_localpal[i][1] != palette[i].g) ||
-			    (_localpal[i][2] != palette[i].b))
-			{
-				changed++;
-				_localpal[i][0] = palette[i].r;
-				_localpal[i][1] = palette[i].g;
-				_localpal[i][2] = palette[i].b;
-				TFB_DrawScreen_SetPalette (i, palette[i].r, palette[i].g,
-						palette[i].b);
-			}
-		}
-		// if (changed) { fprintf (stderr, "Actually changing palette! "); }
-		DC.data.image.UsePalette = TRUE;
-	}
-	else
-	{
-		Lock_DCQ (1);
-		DC.data.image.UsePalette = FALSE;
-	}
-
 	DC.data.image.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
-	Unlock_DCQ ();
 }
 
 void
@@ -296,10 +250,10 @@ TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image)
 
 void
 TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_Palette *palette, TFB_Image *target)
+		TFB_ColorMap *cmap, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_Image (img, x, y, scale, palette, target->NormalImg);
+	TFB_DrawCanvas_Image (img, x, y, scale, cmap, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
@@ -334,6 +288,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->MipmapImg = NULL;
 	img->FilledImg = NULL;
 	img->colormap_index = -1;
+	img->colormap_version = 0;
 	img->NormalHs = NullHs;
 	img->MipmapHs = NullHs;
 	img->last_scale_hs = NullHs;
@@ -363,6 +318,7 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->MipmapImg = NULL;
 	img->FilledImg = NULL;
 	img->colormap_index = -1;
+	img->colormap_version = 0;
 	img->NormalHs = NullHs;
 	img->MipmapHs = NullHs;
 	img->last_scale_hs = NullHs;

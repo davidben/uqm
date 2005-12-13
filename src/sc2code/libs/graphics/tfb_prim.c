@@ -119,8 +119,7 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	int x, y;
 	PFRAME_DESC SrcFramePtr;
 	TFB_Image *img;
-	BOOLEAN paletted;
-	TFB_Palette palette[256];
+	TFB_ColorMap *cmap = NULL;
 	int gscale;
 
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
@@ -143,25 +142,22 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	img->NormalHs = SrcFramePtr->HotSpot;
 	x = stmp->origin.x - _CurFramePtr->HotSpot.x;
 	y = stmp->origin.y - _CurFramePtr->HotSpot.y;
-	paletted = FALSE;
 
 	if (TFB_DrawCanvas_IsPaletted(img->NormalImg) && img->colormap_index != -1)
 	{
-		TFB_ColorMapToRGB (palette, img->colormap_index);
-		paletted = TRUE;
+		// returned cmap is addrefed, must release later
+		cmap = TFB_GetColorMap (img->colormap_index);
 	}
 
 	UnlockMutex (img->mutex);
 
 	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_Image (img, x, y, gscale, (paletted ? palette : NULL),
-				      TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Image (img, x, y, gscale, cmap, TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_Image (img, x, y, gscale, (paletted ? palette : NULL),
-				     _CurFramePtr->image);
+		TFB_DrawImage_Image (img, x, y, gscale, cmap, _CurFramePtr->image);
 	}
 }
 

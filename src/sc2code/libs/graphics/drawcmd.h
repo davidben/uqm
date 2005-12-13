@@ -62,7 +62,7 @@ typedef struct tfb_dc_img
 	TFB_Image *image;
 	int x, y;
 	SCREEN destBuffer;
-	BOOLEAN UsePalette;
+	TFB_ColorMap *colormap;
 	int scale;
 } TFB_DrawCommand_Image;
 

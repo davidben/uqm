@@ -1342,7 +1342,7 @@ NatureOfConversation (RESPONSE_REF R)
 				/* Melnorme reports any news and turns purple */
 			NPCPhrase (BUY_OR_SELL);
 			AlienTalkSegue(1);
-			XFormPLUT (GetColorMapAddress (
+			XFormColorMap (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 					), ONE_SECOND / 2);
 			AlienTalkSegue((COUNT)~0);
@@ -1432,7 +1432,7 @@ DoBluster (RESPONSE_REF R)
 
 	if (PLAYER_SAID (R, trade_is_for_the_weak))
 	{
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 2)
 				), ONE_SECOND / 2);
 
@@ -1629,7 +1629,7 @@ DoFirstMeeting (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, yes_really_testing))
 	{
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), ONE_SECOND / 2);
 
@@ -1638,7 +1638,7 @@ DoFirstMeeting (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, we_apologize))
 	{
 		SET_GAME_STATE (MELNORME_ANGER, 0);
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), ONE_SECOND / 2);
 
@@ -1677,7 +1677,7 @@ DoMelnormeMiffed (RESPONSE_REF R)
 		}
 		SET_GAME_STATE (MELNORME_MIFFED_COUNT, miffed_count);
 
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 2)
 				), ONE_SECOND / 2);
 	}
@@ -1749,7 +1749,7 @@ DoMelnormePissed (RESPONSE_REF R)
 		}
 		SET_GAME_STATE (MELNORME_PISSED_COUNT, pissed_count);
 
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 2)
 				), ONE_SECOND / 2);
 	}
@@ -1804,7 +1804,7 @@ DoMelnormeHate (RESPONSE_REF R)
 	}
 	SET_GAME_STATE (MELNORME_HATE_COUNT, hate_count);
 
-	XFormPLUT (GetColorMapAddress (
+	XFormColorMap (GetColorMapAddress (
 			SetAbsColorMapIndex (CommData.AlienColorMap, 2)
 			), ONE_SECOND / 2);
 

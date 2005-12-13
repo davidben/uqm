@@ -55,11 +55,6 @@
 // XXX: was 32 picked experimentally?
 #define OSCILLOSCOPE_RATE   32
 
-static void init_xform_control (void);
-static void uninit_xform_control (void);
-static void xform_complete (void);
-static void xform_PLUT_step (SIZE TDelta);
-static void FlushPLUTXForms (void);
 static int ambient_anim_task (void *data);
 
 static BOOLEAN getLineWithinWidth(TEXT *pText,
@@ -509,176 +504,20 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 	UnbatchGraphics ();
 }
 
-typedef struct xform_control
-{
-	COLORMAPPTR CMapPtr;
-	SIZE Ticks, TTotal, TOrig;
-	UBYTE OldCMap[PLUT_BYTE_SIZE];
-} XFORM_CONTROL;
-
-#define MAX_XFORMS 32
-static struct {
-	XFORM_CONTROL TaskControl[MAX_XFORMS];
-	volatile int XFormCurrent, XFormInsertPoint;
-	volatile BOOLEAN XFormsPending;
-	Mutex XFormLock;
-} XFormControl;
-
-static void
-init_xform_control (void)
-{
-	XFormControl.XFormCurrent = XFormControl.XFormInsertPoint = 0;
-	XFormControl.XFormsPending = FALSE;
-	XFormControl.XFormLock = CreateMutex ("Transform Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-}
-
-static void
-uninit_xform_control (void)
-{
-	DestroyMutex (XFormControl.XFormLock);
-}
-
-static void
-xform_complete (void)
-{
-	LockMutex (XFormControl.XFormLock);
-	if (XFormControl.XFormsPending)
-	{
-		SetColorMap (XFormControl.TaskControl[XFormControl.XFormCurrent].CMapPtr);
-		if (++XFormControl.XFormCurrent >= MAX_XFORMS)
-		{
-			XFormControl.XFormCurrent = 0;
-		}
-		if (XFormControl.XFormCurrent == XFormControl.XFormInsertPoint)
-		{
-			XFormControl.XFormsPending = FALSE;
-		}
-	}
-	UnlockMutex (XFormControl.XFormLock);
-}
-
 void
 init_communication (void)
 {
 	subtitle_mutex = CreateMutex ("Subtitle Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-	init_xform_control ();
 }
 
 void
 uninit_communication (void)
 {
 	DestroyMutex (subtitle_mutex);
-	uninit_xform_control ();
 }
 
-static volatile BOOLEAN ColorChange;
 static volatile BOOLEAN SummaryChange;
 static volatile BOOLEAN ClearSubtitle;
-
-/* Only one thread should ever be allowed to be calling this at any time */
-static void
-xform_PLUT_step (SIZE TDelta)
-{
-	XFORM_CONTROL *control;
-	COLORMAPPTR ColorMapPtr;
-	int i;
-
-	if (!XFormControl.XFormsPending)
-		return;
-
-	control = &XFormControl.TaskControl[XFormControl.XFormCurrent];
-
-	ColorMapPtr = control->CMapPtr;
-
-	if (TDelta > control->TTotal)
-		TDelta = control->TTotal;
-
-	if (_varPLUTs && control->TOrig != 0)
-	{
-#define XFORM_SCALE 0x10000
-		UBYTE *pCurCMap, *pOldCMap, *pNewCMap;
-		int frac;
-
-		pCurCMap = GET_VAR_PLUT (*ColorMapPtr);
-		pOldCMap = control->OldCMap;
-		pNewCMap = (UBYTE*)ColorMapPtr + 2;
-
-		frac = (int)(control->TOrig - control->TTotal) * XFORM_SCALE
-				/ control->TOrig;
-
-		for (i = 0; i < PLUT_BYTE_SIZE; i++)
-		{
-			*pCurCMap = (UBYTE)(*pOldCMap + ((int)*pNewCMap - *pOldCMap)
-						* frac / XFORM_SCALE);
-			pOldCMap++;
-			pCurCMap++;
-			pNewCMap++;
-		}
-		ColorChange = TRUE;
-	}
-	else if (control->TOrig == 0)
-	{	// asked for immediate xform
-		ColorChange = TRUE;
-	}
-	control->TTotal -= TDelta;
-	if (!control->TTotal)
-	{
-		xform_complete ();
-	}
-}
-
-/* This should be thread-safe without locking the XFormControl because
- * only one thread should be Flushing at any given time, constant
- * writes are atomic anyway, and Flush is the only routine that writes
- * XFormFlush. */
-
-static void
-FlushPLUTXForms (void)
-{
-	while (XFormControl.XFormsPending)
-	{
-		xform_complete ();
-	}
-}
-
-DWORD
-XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
-{
-	if (ColorMapPtr)
-	{
-		XFORM_CONTROL *control;
-
-		// FlushPLUTXForms ();
-
-		LockMutex (XFormControl.XFormLock);
-		while (XFormControl.XFormsPending
-				&& (XFormControl.XFormInsertPoint == XFormControl.XFormCurrent))
-		{
-			UnlockMutex (XFormControl.XFormLock);
-			FlushPLUTXForms ();
-			LockMutex (XFormControl.XFormLock);
-		}
-		
-		control = &XFormControl.TaskControl[XFormControl.XFormInsertPoint];
-
-		memcpy (control->OldCMap, GET_VAR_PLUT (*ColorMapPtr), PLUT_BYTE_SIZE);
-
-		control->CMapPtr = ColorMapPtr;
-		if ((control->Ticks = TimeInterval) <= 0)
-			control->Ticks = 1; /* prevent divide by zero and negative fade */
-		control->TTotal = control->TOrig = TimeInterval;
-
-		if (++XFormControl.XFormInsertPoint >= MAX_XFORMS)
-			XFormControl.XFormInsertPoint = 0;
-
-		XFormControl.XFormsPending = TRUE;
-
-		UnlockMutex (XFormControl.XFormLock);		
-
-	}
-
-	return (0);
-}
 
 static void
 RefreshResponses (PENCOUNTER_STATE pES)
@@ -867,6 +706,7 @@ ambient_anim_task (void *data)
 	BOOLEAN TransitionDone = FALSE;
 	BOOLEAN TalkFrameChanged = FALSE;
 	BOOLEAN FrameChanged[MAX_ANIMATIONS];
+	BOOLEAN ColorChange = FALSE;
 
 	while ((CommFrame = CommData.AlienFrame) == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
@@ -963,7 +803,7 @@ ambient_anim_task (void *data)
 
 				if (pSeq->AnimType == COLOR_ANIM)
 				{
-					XFormPLUT (
+					XFormColorMap (
 							GetColorMapAddress (pSeq->AnimObj.CurCMap),
 							(COUNT) (pSeq->Alarm - 1)
 							);
@@ -1208,7 +1048,7 @@ ambient_anim_task (void *data)
 		if (!summary)
 		{
 			CONTEXT OldContext;
-			BOOLEAN CheckSub = 0;
+			BOOLEAN CheckSub = FALSE;
 			BOOLEAN ClearSub;
 			int sub_state;
 
@@ -1228,8 +1068,8 @@ ambient_anim_task (void *data)
 				CommData.AlienFrame = CommFrame;
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
-				CheckSub = 1;
-				ClearSub = SummaryChange ? TRUE : FALSE;
+				CheckSub = TRUE;
+				ClearSub = SummaryChange;
 				ColorChange = SummaryChange = FALSE;
 			}
 			if (Change || ClearSub)
@@ -1270,7 +1110,7 @@ ambient_anim_task (void *data)
 					TalkFrameChanged = FALSE;
 				}
 				Change = FALSE;
-				CheckSub = 1;
+				CheckSub = TRUE;
 			}
 
 			if (optSubtitles && CheckSub && sub_state >= SPACE_SUBTITLE)
@@ -1290,7 +1130,7 @@ ambient_anim_task (void *data)
 		}
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
-		xform_PLUT_step(ElapsedTicks);
+		ColorChange = XFormColorMap_step ();
 	}
 	FinishTask (task);
 	return(0);
@@ -1914,11 +1754,9 @@ DoCommunication (PENCOUNTER_STATE pES)
 
 	UnlockMutex (GraphicsLock);
 
-	FlushPLUTXForms ();
-	ColorChange = FALSE;
+	FlushColorXForms ();
 	ClearSubtitle = FALSE;
 
-	FlushColorXForms ();
 	StopMusic ();
 	StopSound ();
 	StopTrack ();

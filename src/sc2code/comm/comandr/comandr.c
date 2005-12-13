@@ -588,7 +588,7 @@ GiveRadios (RESPONSE_REF R)
 		CommData.AlienAmbientArray[2].AnimFlags |= ANIM_DISABLED;
 		UnlockMutex (GraphicsLock);
 
-		XFormPLUT (GetColorMapAddress (
+		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
 				), ONE_SECOND / 2);
 
