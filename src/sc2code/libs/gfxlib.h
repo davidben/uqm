@@ -265,9 +265,6 @@ extern void FlushColorXForms (void);
 #define GetColorMapAddress GetStringAddress
 #define GetColorMapContents GetStringContents
 
-// Font effect defines
-#define GRADIENT_EFFECT 0
-#define ALTERNATE_EFFECT 1
 
 #endif /* _GFX_PROTOS */
 
