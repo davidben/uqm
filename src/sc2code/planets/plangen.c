@@ -750,55 +750,6 @@ RenderLevelMasks (int offset)
 #endif
 }
 
-#ifdef NOTYET
-static void
-ExpandMap (PSBYTE DepthArray)
-{
-	BYTE i, j;
-	PSBYTE lpSrc, lpDst;
-
-	lpSrc = &DepthArray[(MAP_WIDTH >> 1) * ((MAP_HEIGHT >> 1) + 1) - 1];
-	lpDst = &DepthArray[MAP_WIDTH * MAP_HEIGHT - 1];
-	i = (MAP_HEIGHT >> 1) + 1;
-	do
-	{
-		SBYTE lf, rt;
-
-		rt = lpSrc[-(MAP_WIDTH >> 1) + 1];
-		lf = *lpSrc--;
-		*lpDst-- = (SBYTE)((rt + lf) >> 1);
-		*lpDst-- = lf;
-
-		j = (MAP_WIDTH >> 1) - 1;
-		do
-		{
-			rt = lf;
-			lf = *lpSrc--;
-			*lpDst-- = (SBYTE)((rt + lf) >> 1);
-			*lpDst-- = lf;
-		} while (--j);
-
-		lpDst -= MAP_WIDTH;
-	} while (--i);
-
-	lpDst = &DepthArray[MAP_WIDTH];
-	i = MAP_HEIGHT >> 1;
-	do
-	{
-		SBYTE top, bot;
-
-		j = MAP_WIDTH;
-		do
-		{
-			top = lpDst[-MAP_WIDTH];
-			bot = lpDst[MAP_WIDTH];
-			*lpDst++ = (SBYTE)((top + bot) >> 1);
-		} while (--j);
-
-		lpDst += MAP_WIDTH;
-	} while (--i);
-}
-#endif /* NOTYET */
 
 #define RANGE_SHIFT 6
 
