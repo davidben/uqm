@@ -106,7 +106,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 }
 
 static void
-processFontChar (TFB_Char* CharPtr, SDL_Surface *surf, int charInd)
+processFontChar (TFB_Char* CharPtr, SDL_Surface *surf)
 {
 	int x,y;
 	Uint8 r,g,b,a;
@@ -622,8 +622,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 						continue;
 					}
 					
-					processFontChar (destChar, bcd->surface,
-							bcd->index - page->firstChar);
+					processFontChar (destChar, bcd->surface);
 					SDL_FreeSurface (bcd->surface);
 
 					if (destChar->disp.height > fontPtr->Leading)
