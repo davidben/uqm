@@ -343,6 +343,7 @@ main (int argc, char *argv[])
 			options.width, options.height, options.bpp);
 	if (options.gammaSet)
 		TFB_SetGamma (options.gamma);
+	InitColorMaps ();
 	init_communication ();
 	/* TODO: Once threading is gone, restore initAudio here.
 	   initAudio calls AssignTask, which currently blocks on
