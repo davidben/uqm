@@ -35,6 +35,7 @@ Other contributions (in alphabetical order):
     Parker MacMillan
     Sanjay Madhav <madhav@usc.edu> (code patches)
     Robert McNamara <robert@americantenor.com> (MacOS X stuff)
+    Mike Melanson (ADPCM basis from MPlayer used for DUK audio)
     Erol Otus <erol@toysforbob.com> (Splash screen)
     Brian Rogers <burpmaster@truffula.net>
     Horatiu Romosan <hory@post.ro> (v0.1 Win32 installer)
