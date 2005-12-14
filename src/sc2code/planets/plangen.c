@@ -60,6 +60,9 @@ void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, i
 
 void getpixelarray(DWORD *array, FRAME FramePtr, int width, int height);
 
+#define SHIELD_GLOW_COMP    120
+#define SHIELD_REFLECT_COMP 100
+
 #define NUM_BATCH_POINTS 64
 #define USE_3D_PLANET 1
 #define RADIUS 37
@@ -67,16 +70,13 @@ void getpixelarray(DWORD *array, FRAME FramePtr, int width, int height);
 #define TWORADIUS (RADIUS << 1)
 //RADIUS^2
 #define RADIUS_2 (RADIUS * RADIUS)
+// distance beyond which all pixels are transparent (for aa)
+#define RADIUS_THRES  ((RADIUS + 1) * (RADIUS + 1))
 #define DIAMETER (TWORADIUS + 1)
 #define DIFFUSE_BITS 24
 
-#if 0
-#define GET_LIGHT(val, dif, sp) \
-	( (UBYTE)min ((sp) + \
-		( ( ( (DWORD)(val) << DIFFUSE_BITS ) - (DWORD)(val) * (dif) ) >> DIFFUSE_BITS ) \
-		, 255) )
-#endif
-UBYTE GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
+static inline UBYTE
+GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
 {
 	DWORD i = (DWORD)val << DIFFUSE_BITS;
 	i -= val * dif;
@@ -99,14 +99,17 @@ UBYTE GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
 
 DWORD light_diff[DIAMETER][DIAMETER];
 UBYTE light_spec[DIAMETER][DIAMETER];
+
 typedef struct 
 {
 	POINT p[4];
 	DWORD m[4];
 } MAP3D_POINT;
+
 MAP3D_POINT map_rotate[DIAMETER][DIAMETER];
-//POINT map_rotate[DIAMETER][DIAMETER];
-typedef struct {
+
+typedef struct
+{
 	double x, y, z;
 } POINT3;
 
@@ -263,13 +266,13 @@ RenderPhongMask (POINT loc)
 	POINT pt;
 	POINT3 light, view;
 	double lrad;
-	DWORD step;
+	const DWORD step = 1 << DIFFUSE_BITS;
 	int y, x;
 
-#define LIGHT_INTENS 0.4
-#define AMBIENT_LIGHT 0.1
-#define MSHI 2
-#define LIGHT_Z 1.2
+#define LIGHT_INTENS  0.3
+#define AMBIENT_LIGHT 0.2
+#define MSHI          2
+#define LIGHT_Z       1.2
 	// lrad is the distance from the sun to the planet
 	lrad = sqrt (loc.x * loc.x + loc.y * loc.y);
 	// light is the sun's position.  the z-coordinate is whatever
@@ -285,36 +288,37 @@ RenderPhongMask (POINT loc)
 	view.x = 0;
 	view.y = 0;
 	view.z = 1.0;
-	step = 1 << DIFFUSE_BITS;
+	
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, y++)
 	{
-		DWORD y_2;
-		y_2 = y * y;
+		DWORD y_2 = y * y;
+
 		for (pt.x = 0, x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, x++)
 		{
-			DWORD x_2, rad_2, stepint;
+			DWORD x_2 = x * x;
+			DWORD rad_2 = x_2 + y_2;
+			DWORD diff_int;
 			POINT3 norm, rvec;
 			double diff, spec = 0.0, fb;
-			x_2 = x * x;
-			rad_2 = x_2 + y_2;
-			if (rad_2 <= RADIUS_2) 
+			
+			if (rad_2 < RADIUS_THRES) 
 			{
 				// norm is the sphere's surface normal.
 				norm.x = (double)x;
 				norm.y = (double)y;
 				norm.z = (sqrt (RADIUS_2 - x_2) * sqrt (RADIUS_2 - y_2)) /
 						RADIUS;
-				P3norm(&norm,&norm);
+				P3norm (&norm, &norm);
 				// diffuse component is norm dot light
-				diff =P3dot (&norm, &light);
+				diff = P3dot (&norm, &light);
 				// negative diffuse is bad
-				if(diff < 0)
+				if (diff < 0)
 					diff = 0.0;
 				// specular highlight is the phong equation:
 				// (rvec dot view)^MSHI
 				// where rvec = (2*diff)*norm - light (reflection of light
 				// around norm)
-				P3mult (&rvec,&norm,2 * diff);
+				P3mult (&rvec, &norm, 2 * diff);
 				P3sub (&rvec, &rvec, &light);
 				fb = P3dot (&rvec, &view);
 				if (fb > 0.0)
@@ -324,24 +328,27 @@ RenderPhongMask (POINT loc)
 				// adjust for the ambient light
 				if (diff < AMBIENT_LIGHT)
 					diff = AMBIENT_LIGHT;
-				// stepint allows us multiply by a ratio without using
+				// Now we antialias the edge of the spere to look nice
+				if (rad_2 > RADIUS_2) 
+				{
+					diff *= 1 - (sqrt(rad_2) - RADIUS);
+					if (diff < 0) 
+						diff = 0;
+				}
+				// diff_int allows us multiply by a ratio without using
 				// floating-point.
 				// instead of color*diff, we use ((color << 24) -
 				// stepint*color) >> 24
-				stepint = step - (DWORD)(diff * step + 0.5);
-				// Now we antialias the edge of the spere to look nice
-				if(rad_2 > (RADIUS - 1) * (RADIUS - 1)) 
-				{
-					DWORD r;
-					r = rad_2 - (RADIUS - 1) * (RADIUS - 1);
-					stepint += (step >> 7) * (r + 1);
-					if (stepint > step) 
-						stepint = step;
-				}
-			} else
-				stepint = 1 << 31;
-			light_diff[pt.y][pt.x] = (DWORD)stepint;
-			light_spec[pt.y][pt.x] = (UBYTE)(spec*255);
+				diff_int = step - (DWORD)(diff * step + 0.5);
+
+			}
+			else
+			{	// outside sphere bounds
+				diff_int = 1 << 31;
+			}
+
+			light_diff[pt.y][pt.x] = diff_int;
+			light_spec[pt.y][pt.x] = (UBYTE)(spec * 255);
 		}
 	}
 }
@@ -349,74 +356,82 @@ RenderPhongMask (POINT loc)
 //create_aa_points creates weighted averages for
 //  4 points around the 'ideal' point at x,y
 //  the concept is to compute the weight based on the
-//  distance from the integer location poinnts to the ideal point
+//  distance from the integer location points to the ideal point
 static void
 create_aa_points (MAP3D_POINT *ppt, double x, double y)
 {
-	double deltax = 0, deltay = 0, inv_deltax, inv_deltay;
+	double deltax, deltay, inv_deltax, inv_deltay;
 	COORD nextx, nexty;
 	COUNT i;
 	double d1, d2, d3, d4, m[4];
+
+	if (x < 0)
+		x = 0;
+	else if (x >= MAP_HEIGHT)
+		x = MAP_HEIGHT - 1;
+	if (y < 0)
+		y = 0;
+	else if (y >= MAP_HEIGHT)
+		y = MAP_HEIGHT - 1;
+
 	// get  the integer value of this point
-	ppt->p[0].x = (COORD)(0.5 + x);
-	ppt->p[0].y = (COORD)(0.5 + y);
-	if (ppt->p[0].x >= TWORADIUS)
-		ppt->p[0].x = TWORADIUS;
-	else if (ppt->p[0].x != 0)
-		deltax = x - ppt->p[0].x;
-	if (ppt->p[0].y >= TWORADIUS)
-		ppt->p[0].y = TWORADIUS;
-	else if (ppt->p[0].y != 0)
-		deltay = y - ppt->p[0].y;
-	//if this point doesn't need modificaton, set m[0]=0
+	ppt->p[0].x = (COORD)x;
+	ppt->p[0].y = (COORD)y;
+	deltax = x - ppt->p[0].x;
+	deltay = y - ppt->p[0].y;
+	
+	// if this point doesn't need modificaton, set m[0]=0
 	if (deltax == 0 && deltay == 0)
-		ppt->m[0] = 0;
-	else
 	{
-		//get the neighbboring points surrounding the 'ideal' poinnt
-		if (deltax != 0)
-			nextx = ppt->p[0].x + ((deltax > 0) ? 1 : -1);
-		else
-			nextx = ppt->p[0].x;
-		if (deltay != 0)
-			nexty = ppt->p[0].y + ((deltay > 0) ? 1 : -1);
-		else 
-			nexty = ppt->p[0].y;
-		//(x1,y)
-		ppt->p[1].x = nextx;
-		ppt->p[1].y = ppt->p[0].y;
-		//(x,y1)
-		ppt->p[2].x = ppt->p[0].x;
-		ppt->p[2].y = nexty;
-		//(x1y1)
-		ppt->p[3].x = nextx;
-		ppt->p[3].y = nexty;
-		//the square  1x1, so opposite poinnts are at 1-delta
-		inv_deltax = 1.0 - fabs (deltax);
-		inv_deltax *= inv_deltax;
-		inv_deltay = 1.0 - fabs (deltay);
-		inv_deltay *= inv_deltay;
-		deltax *= deltax;
-		deltay *= deltay;
-		//d1-d4 contain the distances from the poinnts to the ideal point
-		d1 = sqrt (deltax + deltay);
-		d2 = sqrt (inv_deltax + deltay);
-		d3 = sqrt (deltax + inv_deltay);
-		d4 = sqrt (inv_deltax + inv_deltay);
-		//compute the weights.  the sum(ppt->m[])=65536
-		m[0] = 1 / (1 + d1 * (1 / d2 + 1 / d3 + 1 / d4));
-		m[1] = m[0] * d1 / d2;
-		m[2] = m[0] * d1 / d3;
-		m[3] = m[0] * d1 / d4;
-		for (i=0; i<4; i++)
-			ppt->m[i] = (DWORD)((1 << 16) * m[i] + 0.5);
+		ppt->m[0] = 0;
+		return;
 	}
+
+	// get the neighboring points surrounding the 'ideal' point
+	if (deltax != 0)
+		nextx = ppt->p[0].x + 1;
+	else
+		nextx = ppt->p[0].x;
+	if (deltay != 0)
+		nexty = ppt->p[0].y + 1;
+	else 
+		nexty = ppt->p[0].y;
+	//(x1,y)
+	ppt->p[1].x = nextx;
+	ppt->p[1].y = ppt->p[0].y;
+	//(x,y1)
+	ppt->p[2].x = ppt->p[0].x;
+	ppt->p[2].y = nexty;
+	//(x1y1)
+	ppt->p[3].x = nextx;
+	ppt->p[3].y = nexty;
+	//the square  1x1, so opposite poinnts are at 1-delta
+	inv_deltax = 1.0 - fabs (deltax);
+	inv_deltax *= inv_deltax;
+	inv_deltay = 1.0 - fabs (deltay);
+	inv_deltay *= inv_deltay;
+	deltax *= deltax;
+	deltay *= deltay;
+	//d1-d4 contain the distances from the poinnts to the ideal point
+	d1 = sqrt (deltax + deltay);
+	d2 = sqrt (inv_deltax + deltay);
+	d3 = sqrt (deltax + inv_deltay);
+	d4 = sqrt (inv_deltax + inv_deltay);
+	//compute the weights.  the sum(ppt->m[])=65536
+	m[0] = 1 / (1 + d1 * (1 / d2 + 1 / d3 + 1 / d4));
+	m[1] = m[0] * d1 / d2;
+	m[2] = m[0] * d1 / d3;
+	m[3] = m[0] * d1 / d4;
+
+	for (i = 0; i < 4; i++)
+		ppt->m[i] = (DWORD)((1 << 16) * m[i] + 0.5);
 }
 
 //get_avg_rgb creates either a red, green, or blue value by
 //computing the  weightd averages of the 4 points in p1
 static UBYTE 
-get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset) {
+get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
+{
 	COUNT i, j;
 	UBYTE c;
 	DWORD ci = 0;
@@ -431,8 +446,9 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset) {
 	}
 	ci >>= 16;
 	//check for overflow
-	if ( ci > 255)
+	if (ci > 255)
 		ci = 255;
+	
 	return ((UBYTE)ci);
 }
 
@@ -441,45 +457,63 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset) {
 void
 SetPlanetTilt (int angle)
 {
-	int x, y, y_2;
-	double multx = (MAP_HEIGHT / M_PI) / RADIUS;
-	double multy = (MAP_HEIGHT / M_PI) / RADIUS;
+	int x, y;
+	const double multx = (MAP_HEIGHT / M_PI);
+	const double multy = (MAP_HEIGHT / M_PI);
+	const double xadj = ((double)MAP_HEIGHT / 2.0);
+
 	for (y = -RADIUS; y <= RADIUS; y++)
 	{
-		y_2 = y * y;
+		int y_2 = y * y;
+
 		for (x = -RADIUS; x <= RADIUS; x++)
 		{
 			double dx, dy, newx, newy;
-			double da, rad, rad2;
+			double da, rad, rad_2;
+			double xa, ya;
 			MAP3D_POINT *ppt = &map_rotate[y + RADIUS][x + RADIUS];
-			rad2 = x * x + y_2;
-			if (rad2 <= RADIUS_2) {
-				rad = sqrt (rad2);
-				da = atan2 ((double)y, (double)x);
-				// compute the planet-tilt
-				if (angle != 0) {
-					dx = rad * cos (da + M_DEG2RAD * angle);
-					dy = rad * sin (da + M_DEG2RAD * angle);
-				} else {
-					dx = x;
-					dy = y;
-				}
-				//Map the sphere onto a plane
-				newx = RADIUS * (multx * acos (-dx / RADIUS));
-				newy = RADIUS * (multy * acos (-dy / RADIUS));
-				create_aa_points (ppt, newx, newy);
-			} else {
+			
+			rad_2 = x * x + y_2;
+
+			if (rad_2 >= RADIUS_THRES)
+			{	// pixel won't be present
 				ppt->p[0].x = x + RADIUS;
 				ppt->p[0].y = y + RADIUS;
 				ppt->m[0] = 0;
+
+				continue;
 			}
+			
+			rad = sqrt (rad_2);
+			// antialiasing goes beyond the actual radius
+			if (rad >= RADIUS)
+				rad = (double)RADIUS - 0.1;
+			
+			da = atan2 ((double)y, (double)x);
+			// compute the planet-tilt
+			da += M_DEG2RAD * angle;
+			dx = rad * cos (da);
+			dy = rad * sin (da);
+
+			// Map the sphere onto a plane
+			xa = acos (-dx / RADIUS);
+			ya = acos (-dy / RADIUS);
+			newx = multx * xa;
+			newy = multy * ya;
+			// Adjust for vertical curvature
+			if (ya <= 0.05 || ya >= 3.1 /* almost PI */)
+				newx = xadj; // exact centerline
+			else
+				newx = xadj + ((newx - xadj) / sin (ya));
+
+			create_aa_points (ppt, newx, newy);
 		}
 	}
 }
 
 //init_zoom_array
 // evaluate the function 5/6*(1-e^(-x/14)) to get a decelerating zoom
-// on entering planet orbit.  This gives is nearly equivalent to what
+// on entering planet orbit.  This gives us nearly equivalent to what
 // the 3DO does.
 #define ZOOM_TIME (1.13)
 #define ZOOM_FACT1 (6.0 / 5)
@@ -499,83 +533,93 @@ init_zoom_array (COUNT *zoom_arr)
 				(1 - exp (-(i + 1) / (ZOOM_FACT2 * num_frames))));
 	}
 	zoom_arr[i] = base;
+	
 	return i;
 }
 
 //CreateShieldMask
 // The shield is created in two parts.  This routine creates the Halo.
 // The red tint of the planet is currently applied in RenderLevelMasks
-// This was done because the shield lows, and needs to modfy how the planet
-// gets lit.  urrently, the planet area is transparent in the mask made by
+// This was done because the shield glows and needs to modify how the planet
+// gets lit. Currently, the planet area is transparent in the mask made by
 // this routine, but a filter can be applied if desired too.
 
-//Outer diameter of HALO
-#define SHIELD_RADIUS (RADIUS + 6) 
-#define SHIELD_DIAM ((SHIELD_RADIUS << 1) + 1)
-#define SHIELD_RADIUS_2 (SHIELD_RADIUS * SHIELD_RADIUS)
-static void CreateShieldMask (void)
-{
+// HALO rim size
+#define SHIELD_HALO          7
+#define SHIELD_RADIUS        (RADIUS + SHIELD_HALO)
+#define SHIELD_DIAM          ((SHIELD_RADIUS << 1) + 1)
+#define SHIELD_RADIUS_2      (SHIELD_RADIUS * SHIELD_RADIUS)
+#define SHIELD_RADIUS_THRES  ((SHIELD_RADIUS + 1) * (SHIELD_RADIUS + 1))
+#define SHIELD_HALO_GLOW     (SHIELD_GLOW_COMP + SHIELD_REFLECT_COMP)
+#define SHIELD_HALO_GLOW_MIN (SHIELD_HALO_GLOW >> 2)
 
-	DWORD rad2, clear, *rgba, *p_rgba, p;
-	UBYTE red_nt;
+static void
+CreateShieldMask (void)
+{
+	DWORD clear, *rgba, *p_rgba;
 	int x, y;
 	FRAME ShieldFrame;
-	DWORD aa_delta, aa_delta2;
 
 	ShieldFrame = pSolarSysState->Orbit.ShieldFrame;
 	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
-	// This is a non-transparent red for the halo
-	red_nt = 222;
 	//  This is 100% transparent.
 	clear = frame_mapRGBA (ShieldFrame, 0, 0, 0, 0);
-	aa_delta = SHIELD_RADIUS_2 - (SHIELD_RADIUS - 1) * (SHIELD_RADIUS - 1);
-	aa_delta2 =  (RADIUS + 1) * (RADIUS + 1) - RADIUS_2;
+
 	for (y = -SHIELD_RADIUS; y <= SHIELD_RADIUS; y++)
 	{
-		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; x++)
+		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; x++, p_rgba++)
 		{
-			rad2 = x * x + y * y;
-			if (rad2 <= SHIELD_RADIUS_2)
-			{
-				//Inside the halo
-				if (rad2 <= RADIUS_2)
-					// The mask for the planet
-					p=clear;
-				else
-				{
-					// The halo itself
-					UBYTE red = red_nt;
-					if (rad2 < (RADIUS + 1) * (RADIUS + 1))
-					{
-						DWORD r;
-						r = rad2 - RADIUS_2;
-						red = (UBYTE)(red_nt * r / aa_delta2);
-					}
-					else if (rad2 > (RADIUS + 2) * (RADIUS + 2))
-					{
-						DWORD r;
-						r = rad2 - ((RADIUS + 1) * (RADIUS + 1));
-						red = (UBYTE)red - (red * r / (SHIELD_RADIUS_2 -
-								RADIUS_2 + 1));
-					}
-					p = frame_mapRGBA (ShieldFrame, red, 0, 0, 255);
-				}
-			} 
-			else
-				p = clear;
+			int rad_2 = x * x + y * y;
+			// This is a non-transparent red for the halo
+			int red = SHIELD_HALO_GLOW;
+			int alpha = 255;
+			double rad;
+			
+			if (rad_2 >= SHIELD_RADIUS_THRES)
+			{	// outside all bounds
+				*p_rgba = clear;
+				continue;
+			}
+			// Inside the halo
+			if (rad_2 <= RADIUS_2)
+			{	// planet's pixels, ours transparent
+				*p_rgba = clear;
+				continue;
+			}
+			
+			// The halo itself
+			rad = sqrt (rad_2);
 
-			*p_rgba++ = p;
+			if (rad <= RADIUS + 0.8)
+			{	// pixels common between the shield and planet
+				// do antialiasing using alpha
+				alpha = (int) (red * (rad - RADIUS));
+				red = 255;
+			}
+			else
+			{	// shield pixels
+				red -= (int) ((red - SHIELD_HALO_GLOW_MIN) * (rad - RADIUS)
+						/ SHIELD_HALO);
+				if (red < 0)
+					red = 0;
+			}
+			
+			*p_rgba = frame_mapRGBA (ShieldFrame, red, 0, 0, alpha);
 		}
 	}
+	
 	process_rgb_bmp (ShieldFrame, rgba, SHIELD_DIAM, SHIELD_DIAM);
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,
 				SHIELD_RADIUS + 1));
+
 	{
-		// Applythe shield to the topo data
+		// Apply the shield to the topo data
 		UBYTE a;
 		int blit_type;
 		FRAME tintFrame = pSolarSysState->Orbit.TintFrame;
+		DWORD p;
+
 #ifdef USE_ALPHA_SHIELD
 		a = 200;
 		blit_type = 0;
@@ -601,6 +645,7 @@ RenderLevelMasks (int offset)
 {
 	POINT pt;
 	DWORD *rgba, *p_rgba;
+	DWORD clear;
 	int x, y;
 	DWORD p, *pixels;
 	FRAME MaskFrame;
@@ -611,66 +656,85 @@ RenderLevelMasks (int offset)
 	clock_t t1;
 	t1 = clock ();
 #endif
+
 	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
 	// Choose the correct Frame to write to
 	MaskFrame = SetAbsFrameIndex (pSolarSysState->Orbit.PlanetFrameArray,
 			(COUNT)(offset + 1));
+	clear = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
 	pixels = pSolarSysState->Orbit.lpTopoMap;
+	
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, ++y)
 	{
-		for (pt.x = 0,  x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x)
+		for (pt.x = 0, x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x, ++p_rgba)
 		{
 			UBYTE c[3];
-			DWORD diffus;
-			UBYTE spec;
-			COUNT i;
+			DWORD diffus = light_diff[pt.y][pt.x];
+			UBYTE spec = light_spec[pt.y][pt.x];
+			int i;
 			DWORD p1[4];
 			MAP3D_POINT *ppt = &map_rotate[pt.y][pt.x];
-			diffus = light_diff[pt.y][pt.x];
-			spec = light_spec[pt.y][pt.x];
-			if (diffus < 1 << DIFFUSE_BITS)
+	
+			if (diffus >= (1 << DIFFUSE_BITS))
+			{	// full diffusion
+				*p_rgba = clear;
+				continue;
+			}
+
+			if (ppt->m[0] == 0) 
 			{
-				if (ppt->m[0] == 0) 
-				{
-					p = pixels[PT_TO_ADDR (ppt->p[0].y, ppt->p[0].x) +
-							offset];
-					c[0] = (UBYTE)(p >> 8);
-					c[1] = (UBYTE)(p >> 16);
-					c[2] = (UBYTE)(p >> 24);
-				}
-				else
-				{
-					for (i = 0; i < 4; i++)
-						p1[i] = pixels[PT_TO_ADDR (ppt->p[i].y, ppt->p[i].x)
-								+ offset];
-					for (i = 1; i < 4; i++)
-						c[i-1] = get_avg_rgb (p1, ppt->m, i);
-				}
-				// Apply the lighting model.  This also bounds the sphere
-				// to make it circular.
-				if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
-				{
-					c[2] = GET_LIGHT (255, diffus, spec);
-					c[1] = GET_LIGHT ((UBYTE)(c[1] >> 1), diffus, spec);
-					c[0] = GET_LIGHT ((UBYTE)(c[0] >> 1), diffus, spec);
-				} 
-				else
-				{
-					c[2] = GET_LIGHT (c[2], diffus, spec);
-					c[1] = GET_LIGHT (c[1], diffus, spec);
-					c[0] = GET_LIGHT (c[0], diffus, spec);
-				}
-				*p_rgba++ = frame_mapRGBA (
-					MaskFrame, c[2], c[1], c[0], (UBYTE)255);
+				p = pixels[PT_TO_ADDR (ppt->p[0].y, ppt->p[0].x) +
+						offset];
+				c[0] = (UBYTE)(p >> 8);
+				c[1] = (UBYTE)(p >> 16);
+				c[2] = (UBYTE)(p >> 24);
+			}
+			else
+			{
+				for (i = 0; i < 4; i++)
+					p1[i] = pixels[PT_TO_ADDR (ppt->p[i].y, ppt->p[i].x)
+							+ offset];
+				for (i = 1; i < 4; i++)
+					c[i - 1] = get_avg_rgb (p1, ppt->m, i);
+			}
+	
+			// Apply the lighting model.  This also bounds the sphere
+			// to make it circular.
+			if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+			{
+				int r;
+				
+				// add lite red filter (3/4) component
+				c[1] = (c[1] >> 1) + (c[1] >> 2);
+				c[0] = (c[0] >> 1) + (c[0] >> 2);
+
+				c[2] = GET_LIGHT (c[2], diffus, spec);
+				c[1] = GET_LIGHT (c[1], diffus, spec);
+				c[0] = GET_LIGHT (c[0], diffus, spec);
+
+				// The shield is glow + reflect (+ filter for others)
+				r = GET_LIGHT (SHIELD_REFLECT_COMP, diffus, spec);
+				r = r + SHIELD_GLOW_COMP + c[2];
+				if (r > 255)
+					r = 255;
+				c[2] = r;
 			} 
 			else
-				*p_rgba++ = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
+			{
+				c[2] = GET_LIGHT (c[2], diffus, spec);
+				c[1] = GET_LIGHT (c[1], diffus, spec);
+				c[0] = GET_LIGHT (c[0], diffus, spec);
+			}
+
+			*p_rgba = frame_mapRGBA (MaskFrame, c[2], c[1], c[0], 255);
 		}
 	}
+	
 	// Map the rgb bitmap onto the SDL_Surface
 	process_rgb_bmp (MaskFrame, rgba, DIAMETER, DIAMETER);
 	SetFrameHot (MaskFrame, MAKE_HOT_SPOT (RADIUS + 1, RADIUS + 1));
+
 #if PROFILE
 	t += clock() - t1;
 	if (frames_done == MAP_WIDTH)
@@ -1608,7 +1672,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 	RenderPhongMask (loc);
 
 	if (pPlanetDesc->data_index & PLANET_SHIELDED)
-		CreateShieldMask();
+		CreateShieldMask ();
 
 	SetContext (OldContext);
 
