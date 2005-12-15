@@ -31,17 +31,12 @@
 #include "libs/file.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/threadlib.h"
+#include "libs/vidlib.h"
 
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
 
-
-//Added by Chris
-
-extern BOOLEAN InitVideo (BOOLEAN UseCDROM);
-
-//End Added by Chris
 
 ACTIVITY LastActivity;
 BYTE PlayerControl[NUM_PLAYERS];

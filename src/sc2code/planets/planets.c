@@ -18,6 +18,7 @@
 
 #include "element.h"
 #include "scan.h"
+#include "lander.h"
 #include "settings.h"
 #include "setup.h"
 #include "uqmdebug.h"
@@ -25,13 +26,8 @@
 #include "resinst.h"
 
 
-extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
-extern void GeneratePlanetSide (void);
-extern void GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth);
-extern void SetPlanetMusic (BYTE planet_type);
-extern int rotate_planet_task (PVOID Blah);
+extern int rotate_planet_task (PVOID data);
 
-extern MUSIC_REF LanderMusic;
 
 void
 DrawScannedObjects (BOOLEAN Reversed)
@@ -127,7 +123,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 // IsDefined is true only when the planet comes with its own bitmap,
 // namely for Earth.
 void
-LoadPlanet (BOOLEAN IsDefined)
+LoadPlanet (FRAME SurfDefFrame)
 {
 	BOOLEAN WaitMode;
 
@@ -169,7 +165,7 @@ LoadPlanet (BOOLEAN IsDefined)
 			LoadLanderData ();
 		*/
 
-		GeneratePlanetMask (pPlanetDesc, IsDefined);
+		GeneratePlanetMask (pPlanetDesc, SurfDefFrame);
 		SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
 
 		if (pPlanetDesc->pPrevDesc != &pSolarSysState->SunDesc[0])
@@ -254,7 +250,7 @@ FreePlanet (void)
 	DestroyDrawable (ReleaseDrawable (Orbit->ShieldFrame));
 	Orbit->ShieldFrame = 0;
 
-	if (Orbit->lpTopoMap!=0)
+	if (Orbit->lpTopoMap != 0)
 	{
 		HFree (Orbit->lpTopoMap);
 		Orbit->lpTopoMap = 0;

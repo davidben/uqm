@@ -25,6 +25,9 @@
 #include "options.h"
 #include "resinst.h"
 #include "settings.h"
+#include "load.h"
+#include "util.h"
+#include "lander.h"
 #include "setup.h"
 #include "sounds.h"
 #include "state.h"
@@ -33,14 +36,7 @@
 #include "libs/mathlib.h"
 
 
-//Added by Chris
-
-void
-DrawPlanet(int x, int y, int dy, unsigned int rgb);
-
-void WaitForNoInput (SIZE Duration);
-
-//End Added by Chris
+extern FRAME SpaceJunkFrame;
 
 // define SPIN_ON_SCAN to allow the planet to spin 
 // while scaning  is going on
@@ -49,8 +45,6 @@ void WaitForNoInput (SIZE Duration);
 #define FLASH_INDEX 105
 #define FLASH_WIDTH 9
 #define FLASH_HEIGHT 9
-
-extern void DrawScannedObjects (BOOLEAN Reversed);
 
 CONTEXT ScanContext;
 
@@ -73,7 +67,6 @@ static void
 EraseCoarseScan (void)
 {
 	RECT r, tr;
-	extern FRAME SpaceJunkFrame;
 	const int leftScanWidth   = 80;
 	const int rightScanWidth  = 80;
 	const int leftScanOffset  = 5;
@@ -368,7 +361,6 @@ PrintCoarseScan3DO (void)
 	TEXT t;
 	STAMP s;
 	UNICODE buf[40];
-	extern FRAME SpaceJunkFrame;
 
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
@@ -746,7 +738,6 @@ PickPlanetSide (PMENU_STATE pMS)
 		else
 		{
 			COUNT fuel_required;
-			extern void PlanetSide (PMENU_STATE pMS);
 
 			fuel_required = (COUNT)(
 					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1
@@ -771,7 +762,6 @@ PickPlanetSide (PMENU_STATE pMS)
 			if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 			{
 				HSTARSHIP hStarShip;
-				extern ACTIVITY NextActivity;
 
 				if (pMenuState->flash_task)
 				{

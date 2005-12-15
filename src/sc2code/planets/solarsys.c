@@ -25,6 +25,8 @@
 #include "nameref.h"
 #include "resinst.h"
 #include "settings.h"
+#include "lander.h"
+#include "load.h"
 #include "setup.h"
 #include "sounds.h"
 #include "state.h"
@@ -36,13 +38,6 @@
 
 //#define DEBUG_SOLARSYS
 
-//Added by Chris
-
-void LoadLanderData (void);
-
-void RenderTopography (BOOLEAN Reconstruct);
-
-//End Added by Chris
 
 PSOLARSYS_STATE pSolarSysState;
 FRAME SISIPFrame, SunFrame, OrbitalFrame, SpaceJunkFrame;
@@ -807,8 +802,6 @@ flagship_inertial_thrust (COUNT CurrentAngle)
 	}
 }
 
-extern void DrawIPRadar (BOOLEAN FirstTime);
-
 static void
 ProcessShipControls (void)
 {
@@ -871,6 +864,7 @@ UndrawShip (void)
 	BOOLEAN LeavingInnerSystem;
 
 #ifdef SHOW_RADAR
+	extern void DrawIPRadar (BOOLEAN FirstTime);
 	DrawIPRadar (FALSE);
 #endif /* SHOW_RADAR */
 
@@ -1470,8 +1464,6 @@ InitSolarSys (void)
 			if ((LastActivity & (CHECK_LOAD | CHECK_RESTART)) ==
 					LastActivity)
 			{
-				extern ACTIVITY NextActivity;
-
 				DrawSISFrame ();
 				if (NextActivity)
 					LastActivity &= ~(CHECK_LOAD | CHECK_RESTART);
@@ -1627,7 +1619,7 @@ GenerateRandomIP (BYTE control)
 
 			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] =
 					rand_val;
-			LoadPlanet (FALSE);
+			LoadPlanet (NULL);
 			break;
 		}
 		case GENERATE_NAME:

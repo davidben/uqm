@@ -19,10 +19,7 @@
 #ifndef _STARBASE_H
 #define _STARBASE_H
 
-#include "libs/gfxlib.h"
-#include "libs/sndlib.h"
-#include "libs/tasklib.h"
-
+#include "menustat.h"
 
 enum
 {
@@ -33,31 +30,6 @@ enum
 };
 typedef BYTE STARBASE_STATE;
 
-#define FIELD_WIDTH (STATUS_WIDTH - 5)
-
-typedef struct menu_state
-{
-	BOOLEAN (*InputFunc) (struct menu_state *pMS);
-	COUNT MenuRepeatDelay;
-
-	SIZE Initialized;
-
-	BYTE CurState;
-	FRAME CurFrame;
-	STRING CurString;
-	POINT first_item;
-	SIZE delta_item;
-
-	FRAME ModuleFrame;
-	Task flash_task;
-	RECT flash_rect0, flash_rect1;
-	FRAME flash_frame0, flash_frame1;
-
-	MUSIC_REF hMusic;
-} MENU_STATE;
-typedef MENU_STATE *PMENU_STATE;
-
-extern PMENU_STATE pMenuState;
 
 extern void InstallBombAtEarth (void);
 extern void VisitStarBase (void);

@@ -206,7 +206,7 @@ GenerateSpathi (BYTE control)
 									LoadStringTable (UMGAH_BCS_STRTAB)
 									);
 				}
-				LoadPlanet (FALSE);
+				LoadPlanet (NULL);
 				break;
 			}
 			else if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[0])
@@ -230,7 +230,7 @@ GenerateSpathi (BYTE control)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 31;
 
-				LoadPlanet (FALSE);
+				LoadPlanet (NULL);
 				break;
 			}
 		default:

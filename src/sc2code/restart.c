@@ -28,25 +28,16 @@
 #include "melee.h"
 #include "resinst.h"
 #include "settings.h"
+#include "load.h"
 #include "setup.h"
 #include "sounds.h"
 #include "setupmenu.h"
 #include "util.h"
+#include "starcon.h"
 #include "uqmversion.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
-//Added by Chris
-
-void FreeHyperData (void);
-
-void FreeIPData (void);
-
-void FreeSC2Data (void);
-
-void FreeLanderData (void);
-
-//End Added by Chris
 
 enum
 {
@@ -120,7 +111,6 @@ DWORD InTime;
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
-	extern void MouseError (void);
 	static DWORD InactTimeOut;
 
 	/* Cancel any presses of the Pause key. */
@@ -289,7 +279,6 @@ TimedOut:
 	{
 		DWORD TimeOut;
 		BYTE black_buf[1];
-		extern ACTIVITY NextActivity;
 
 TryAgain:
 		ReinitQueue (&race_q[0]);
@@ -330,10 +319,7 @@ LastActivity = WON_LAST_BATTLE;
 				OutTakes ();
 				Credits ();
 
-				FreeSC2Data ();
-				FreeLanderData ();
-				FreeIPData ();
-				FreeHyperData ();
+				FreeGameData ();
 				
 				TimeOut = ONE_SECOND / 2;
 				GLOBAL (CurrentActivity) = CHECK_ABORT;
@@ -382,10 +368,7 @@ LastActivity = WON_LAST_BATTLE;
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 		{
-FreeSC2Data ();
-FreeLanderData ();
-FreeIPData ();
-FreeHyperData ();
+			FreeGameData ();
 			Melee ();
 			MenuState.Initialized = FALSE;
 			goto TryAgain;

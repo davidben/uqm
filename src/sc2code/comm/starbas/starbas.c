@@ -22,20 +22,13 @@
 
 #include "build.h"
 #include "setup.h"
+#include "shipcont.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
 #include "libs/sound/sound.h"
 
-
-//Added by Chris
-
-void ShowRemainingCapacity (void);
-
-void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
-
-//End Added by Chris
 
 static void TellMission (RESPONSE_REF R);
 static void SellMinerals (RESPONSE_REF R);

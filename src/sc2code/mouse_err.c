@@ -22,6 +22,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
+#include "util.h"
 
 typedef struct mouse_error_state {
 	BOOLEAN (*InputFunc) (struct mouse_error_state *pInputState);

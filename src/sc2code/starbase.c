@@ -21,6 +21,8 @@
 #include "controls.h"
 #include "encount.h"
 #include "gamestr.h"
+#include "load.h"
+#include "starbase.h"
 #include "resinst.h"
 #include "settings.h"
 #include "setup.h"
@@ -29,7 +31,6 @@
 #include "libs/tasklib.h"
 #include "libs/inplib.h"
 
-extern ACTIVITY NextActivity;
 
 PMENU_STATE pMenuState;
 

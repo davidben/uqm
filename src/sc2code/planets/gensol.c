@@ -323,7 +323,8 @@ generate_orbital (void)
 		pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity =
 				CalcGravity (pSolarSysState->SysInfo.PlanetInfo.PlanetDensity,
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius);
-		LoadPlanet (i == 2);
+		LoadPlanet (i == 2 ? CaptureDrawable (LoadGraphic (EARTH_MASK_ANIM))
+				: NULL);
 	}
 	else
 	{
@@ -415,7 +416,7 @@ generate_orbital (void)
 		pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity =
 				CalcGravity (pSolarSysState->SysInfo.PlanetInfo.PlanetDensity,
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius);
-		LoadPlanet (FALSE);
+		LoadPlanet (NULL);
 	}
 }
 

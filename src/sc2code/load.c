@@ -23,6 +23,7 @@
 #include "encount.h"
 #include "file.h"
 #include "globdata.h"
+#include "load.h"
 #include "options.h"
 #include "setup.h"
 #include "state.h"

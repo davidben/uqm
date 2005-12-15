@@ -22,15 +22,10 @@
 
 #include "gameev.h"
 #include "setup.h"
+#include "shipcont.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 
-
-//Added by Chris
-
-void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
-
-//End Added by Chris
 
 #define NUM_HISTORY_ITEMS 9
 #define NUM_EVENT_ITEMS 8

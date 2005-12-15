@@ -20,6 +20,7 @@
 #include "setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
+#include "planets/scan.h"
 
 #include <math.h>
 
@@ -30,21 +31,15 @@
 #define USE_ADDITIVE_SCAN_BLIT
 
 
-DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
+// XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
+//  they should be sorted out and cleaned up at some point
+extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
+		UBYTE b, UBYTE a);
+extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
+		int x, int y);
+extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
+		RECT *rdst, int num, int denom);
 
-DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
-
-void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
-
-void fill_frame_rgb (FRAMEPTR FramePtr, DWORD color, int x0, int y0, int x, int y);
-
-void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int num, int denom);
-
-extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
-
-extern void RenderLevelMasks (int);
-
-void RepairBackRect (PRECT pRect);
 
 // RotatePlanet
 // This will take care of zooming into a planet on orbit, generating the planet frames

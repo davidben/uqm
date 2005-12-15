@@ -175,7 +175,7 @@ GenerateBurvixes (BYTE control)
 						CaptureStringTable (
 								LoadStringTable (BURV_BCS_STRTAB));
 			}
-			LoadPlanet (FALSE);
+			LoadPlanet (NULL);
 			break;
 		}
 		default:

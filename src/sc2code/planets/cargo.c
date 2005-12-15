@@ -19,12 +19,11 @@
 #include "colors.h"
 #include "controls.h"
 #include "gamestr.h"
+#include "shipcont.h"
 #include "setup.h"
 #include "sounds.h"
 #include "util.h"
 
-
-void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
 
 void
 ShowRemainingCapacity (void)

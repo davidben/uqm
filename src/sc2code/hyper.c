@@ -33,14 +33,6 @@
 #include "libs/mathlib.h"
 
 
-//Added by Chris
-
-void WaitForNoInput (SIZE Duration);
-
-//End Added by Chris
-
-static void LoadHyperData (void);
-
 
 #define XOFFS ((RADAR_SCAN_WIDTH + (UNIT_SCREEN_WIDTH << 2)) >> 1)
 #define YOFFS ((RADAR_SCAN_HEIGHT + (UNIT_SCREEN_HEIGHT << 2)) >> 1)

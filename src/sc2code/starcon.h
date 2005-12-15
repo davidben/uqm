@@ -17,7 +17,8 @@
 #ifndef _STARCON_H
 #define _STARCON_H
 
-extern int Starcon2Main(void *threadArg);
+extern int Starcon2Main (void *threadArg);
+extern void FreeGameData (void);
 
 #endif  /* _STARCON_H */
 

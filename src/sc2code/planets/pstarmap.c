@@ -23,6 +23,8 @@
 #include "gamestr.h"
 #include "globdata.h"
 #include "options.h"
+#include "scan.h"
+#include "shipcont.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
@@ -33,11 +35,6 @@
 #include "libs/mathlib.h"
 
 
-//Added by Chris
-
-void RepairBackRect (PRECT pRect);
-
-//End Added by Chris
 
 #define UNIVERSE_TO_DISPX(ux) \
 		(COORD)(((((long)(ux) - pMenuState->flash_rect1.corner.x) \
@@ -1239,8 +1236,6 @@ DoFlagshipCommands (PMENU_STATE pMS)
 							break;
 						case EQUIP_DEVICE:
 						{
-							extern BOOLEAN Devices (PMENU_STATE pMS);
-
 							pMenuState = pMS;
 							if (!Devices (pMS))
 								select = FALSE;
@@ -1254,15 +1249,11 @@ DoFlagshipCommands (PMENU_STATE pMS)
 						}
 						case CARGO:
 						{
-							extern void Cargo (PMENU_STATE pMS);
-
 							Cargo (pMS);
 							break;
 						}
 						case ROSTER:
 						{
-							extern BOOLEAN Roster (void);
-
 							if (!Roster ())
 								select = FALSE;
 							break;
@@ -1299,7 +1290,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 
 							if (!AutoPilotSet && pMS->Initialized >= 3)
 							{
-								LoadPlanet (FALSE);
+								LoadPlanet (NULL);
 								--pMS->Initialized;
 								pSolarSysState->PauseRotate = 0;
 								LockMutex (GraphicsLock);

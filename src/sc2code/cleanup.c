@@ -22,22 +22,17 @@
 #include "reslib.h"
 #include "gamestr.h"
 #include "init.h"
+#include "hyper.h"
+#include "planets/lander.h"
+#include "starcon.h"
 #include "setup.h"
 #include "sounds.h"
 #include "libs/sndlib.h"
 #include "libs/vidlib.h"
 
-//Added by Chris
-
-void FreeSC2Data (void);
-
-void FreeLanderData (void);
-
-void FreeIPData (void);
-
-void FreeHyperData (void);
-
-//End Added by Chris
+// XXX: we do not current have a header for this prototype to live in
+//  should be something like solarsys.h
+extern void FreeIPData (void);
 
 static void UninitContexts (void);
 static void UninitKernel (BOOLEAN ships);
@@ -95,16 +90,22 @@ UninitKernel (BOOLEAN ships)
 	ActivityFrame = 0;
 }
 
+void
+FreeGameData (void)
+{
+	FreeSC2Data ();
+	FreeLanderData ();
+	FreeIPData ();
+	FreeHyperData ();
+}
+
 static void
 UninitGameKernel (void)
 {
 	// XXX: this function is never called. Why not? (BUG?)
 	if (ActivityFrame)
 	{
-		FreeSC2Data ();
-		FreeLanderData ();
-		FreeIPData ();
-		FreeHyperData ();
+		FreeGameData ();
 
 		UninitKernel (FALSE);
 		UninitContexts ();

@@ -23,6 +23,7 @@
 #include "gamestr.h"
 #include "resinst.h"
 #include "settings.h"
+#include "starbase.h"
 #include "setup.h"
 #include "sis.h"
 #include "sounds.h"

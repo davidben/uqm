@@ -19,6 +19,7 @@
 #include "commglue.h"
 #include "comm.h"
 #include "controls.h"
+#include "util.h"
 #include "setup.h"
 #include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"

@@ -21,6 +21,8 @@
 #include "gamestr.h"
 #include "controls.h"
 #include "settings.h"
+#include "shipcont.h"
+#include "load.h"
 #include "setup.h"
 #include "state.h"
 #include "sounds.h"
@@ -194,7 +196,6 @@ static UWORD
 DeviceFailed (BYTE which_device)
 {
 	BYTE val;
-	extern ACTIVITY NextActivity;
 
 	switch (which_device)
 	{

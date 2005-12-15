@@ -239,7 +239,6 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 {
 	POINT old_curs;
 	CONTEXT OldContext;
-	extern void DrawScannedObjects (BOOLEAN Reversed);
 
 #ifdef DEBUG
 	if (disableInteractivity)

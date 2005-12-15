@@ -106,7 +106,7 @@ GenerateColony (BYTE control)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 28;
 
-				LoadPlanet (FALSE);
+				LoadPlanet (NULL);
 				break;
 			}
 		default:

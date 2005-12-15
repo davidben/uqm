@@ -32,6 +32,7 @@
 #include "resinst.h"
 #include "save.h"
 #include "settings.h"
+#include "gameopt.h"
 #include "setup.h"
 #include "sounds.h"
 #include "util.h"
@@ -46,11 +47,6 @@
 #include <string.h>
 
 
-//Added by Chris
-
-void ConfirmSaveLoad (STAMP *MsgStamp);
-
-//End Added by Chris
 static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip);
 
 

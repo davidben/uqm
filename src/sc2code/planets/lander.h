@@ -23,6 +23,7 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
+#include "menustat.h"
 
 
 #define NUM_TEXT_FRAMES 32
@@ -50,8 +51,14 @@ typedef struct
 typedef PLANETSIDE_DESC *PPLANETSIDE_DESC;
 
 extern CONTEXT ScanContext;
+extern MUSIC_REF LanderMusic;
 
+extern void PlanetSide (PMENU_STATE pMS);
 extern void DoDiscoveryReport (SOUND ReadOutSounds);
+extern void SetPlanetMusic (BYTE planet_type);
+extern void LoadLanderData (void);
+extern void FreeLanderData (void);
+
 
 #endif /* _LANDER_H */
 

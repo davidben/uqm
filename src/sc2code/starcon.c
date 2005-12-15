@@ -23,8 +23,10 @@
 #include "gameev.h"
 #include "types.h"
 #include "globdata.h"
+#include "load.h"
 #include "resinst.h"
 #include "restart.h"
+#include "starbase.h"
 #include "setup.h"
 #include "starcon.h"
 #include "uqmdebug.h"
@@ -135,8 +137,6 @@ while (--ac > 0)
 			AddInitialGameEvents();
 			do
 			{
-				extern ACTIVITY NextActivity;
-
 				SuspendGameClock ();
 
 #ifdef DEBUG

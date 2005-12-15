@@ -19,7 +19,7 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
-#include "starbase.h"
+#include "menustat.h"
 #include "units.h"
 
 #define END_INTERPLANETARY START_INTERPLANETARY
@@ -203,9 +203,10 @@ typedef struct solarsys_state
 typedef SOLARSYS_STATE *PSOLARSYS_STATE;
 
 extern PSOLARSYS_STATE pSolarSysState;
+extern MUSIC_REF SpaceMusic;
 
-extern void LoadPlanet (BOOLEAN IsDefined);
-extern void DrawPlanet(int x, int y, int dy, unsigned int rgb);
+extern void LoadPlanet (FRAME SurfDefFrame);
+extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
 extern void FreePlanet (void);
 extern void LoadStdLanderFont (PLANET_INFO *info);
 extern void FreeLanderFont (PLANET_INFO *info);
@@ -230,6 +231,14 @@ extern void InitLander (BYTE LanderFlags);
 extern BOOLEAN ValidateOrbits (void);
 extern void IP_reset (void);
 extern void IP_frame (void);
+
+extern PRECT RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
+		UBYTE zoom_from, PRECT r);
+extern void SetPlanetTilt (int da);
+extern void DrawScannedObjects (BOOLEAN Reversed);
+extern void GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame);
+extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
+		PRECT pRect, SIZE depth_delta);
 
 #endif /* _PLANETS_H */
 

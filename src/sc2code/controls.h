@@ -91,6 +91,7 @@ BOOLEAN PauseGame (void);
 BOOLEAN DoConfirmExit (void);
 void TFB_Abort (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
+extern void WaitForNoInput (SIZE Duration);
 extern BOOLEAN ConfirmExit (void);
 extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
 

@@ -18,6 +18,7 @@
 
 #include "gfxlib.h"
 #include "mathlib.h"
+#include "planets.h"
 
 void
 DeltaTopography (COUNT num_iterations, PSBYTE DepthArray, PRECT pRect,

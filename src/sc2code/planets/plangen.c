@@ -20,7 +20,9 @@
 #include "resinst.h"
 #include "setup.h"
 #include "planets/planets.h"
+#include "planets/scan.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/drawable.h"
 #include "libs/mathlib.h"
 
 #include <math.h>
@@ -37,28 +39,19 @@
 // an additive overlay for the shield effect
 #undef USE_ALPHA_SHIELD
 
-extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
-		PRECT pRect, SIZE depth_delta);
-
-void SetPlanetTilt (int da);
-
-void RepairBackRect (PRECT pRect);
-
-PRECT RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
-		PRECT r);
-
-DWORD frame_mapRGBA (FRAME FramePtr,UBYTE r, UBYTE g,  UBYTE b, UBYTE a);
-
-void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
-
-FRAME stretch_frame (FRAME FramePtr, int neww, int newh,int destroy);
-
-void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
+// XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
+//  they should be sorted out and cleaned up at some point
+extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
+		UBYTE b, UBYTE a);
+extern void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
+extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy);
+extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
+extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
+		RECT *rdst, int num, int denom);
+extern void getpixelarray (DWORD *array, FRAME FramePtr,
+		int width, int height);
 
-void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame, RECT *rdst, int num, int denom);
-
-void getpixelarray(DWORD *array, FRAME FramePtr, int width, int height);
 
 #define SHIELD_GLOW_COMP    120
 #define SHIELD_REFLECT_COMP 100
@@ -226,7 +219,7 @@ TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 	SetContext (OldContext);
 }
 
-void
+static void
 RenderTopography (BOOLEAN Reconstruct)
 		// Reconstruct arg was not used on 3DO and is not needed here either
 {
@@ -1222,7 +1215,8 @@ ValidateMap (PSBYTE DepthArray)
 	} while (--i);
 }
 
-void planet_orbit_init ()
+void
+planet_orbit_init ()
 {
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
@@ -1241,9 +1235,9 @@ void planet_orbit_init ()
 	Orbit->TopoZoomFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
 				(COUNT)(MAP_HEIGHT << 2), 1));
-	Orbit->lpTopoMap = (DWORD *)HMalloc (sizeof(DWORD)
+	Orbit->lpTopoMap = HMalloc (sizeof (DWORD)
 			* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
-	Orbit->ScratchArray = (DWORD *)HMalloc (sizeof (DWORD *)
+	Orbit->ScratchArray = HMalloc (sizeof (DWORD)
 			* (SHIELD_DIAM) * (SHIELD_DIAM));
 }
 
@@ -1468,7 +1462,7 @@ TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
 }
 
 void
-GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
+GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 {
 	RECT r;
 	DWORD old_seed;
@@ -1483,15 +1477,22 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 
 	OldContext = SetContext (TaskContext);
 	planet_orbit_init ();
-	if (IsEarth)
-	{
-		//Earth uses a pixmap for the topography
-		pSolarSysState->TopoFrame = CaptureDrawable (
-				LoadGraphic (EARTH_MASK_ANIM));
-		pSolarSysState->TopoFrame = stretch_frame (
-				pSolarSysState->TopoFrame, MAP_WIDTH, MAP_HEIGHT, 1);
 
-	} else {
+	if (SurfDefFrame)
+	{	// This is a defined planet; pixmap for the topography and
+		// elevation data is supplied in Surface Definition frame
+		
+		// surface pixmap
+		SurfDefFrame = SetAbsFrameIndex (SurfDefFrame, 0);
+		if (GetFrameWidth (SurfDefFrame) != MAP_WIDTH
+				|| GetFrameHeight (SurfDefFrame) != MAP_HEIGHT)
+			pSolarSysState->TopoFrame = stretch_frame (SurfDefFrame,
+				MAP_WIDTH, MAP_HEIGHT, 1);
+		else
+			pSolarSysState->TopoFrame = SurfDefFrame;
+	}
+	else
+	{	// Generate planet surface elevation data and look
 
 		PlanDataPtr = &PlanData[pPlanetDesc->data_index & ~PLANET_SHIELDED];
 		r.corner.x = r.corner.y = 0;
@@ -1611,15 +1612,17 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, BOOLEAN IsEarth)
 			y += MAP_WIDTH + MAP_HEIGHT)
 		for (x = 0; x < MAP_HEIGHT; x++)
 			Orbit->lpTopoMap[y + x + MAP_WIDTH] = Orbit->lpTopoMap[y + x];
+	
 	if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 			&pSolarSysState->SunDesc[0])
-	{
-		// This is a planet.  Get its location
+	{	// this is a planet -- get its location
 		loc = pSolarSysState->pOrbitalDesc->location;
-	} else {
-		// This is a moon.  Get its planet's location
+	}
+	else
+	{	// this is a moon -- get its planet's location
 		loc = pSolarSysState->pOrbitalDesc->pPrevDesc->location;
 	}
+	
 	RenderPhongMask (loc);
 
 	if (pPlanetDesc->data_index & PLANET_SHIELDED)
@@ -1655,7 +1658,6 @@ rotate_planet_task (void *data)
 
 //	SetPlanetTilt ((pSS->SysInfo.PlanetInfo.AxialTilt << 8) / 360);
 	SetPlanetTilt (pSS->SysInfo.PlanetInfo.AxialTilt);
-//	angle=pSS->SysInfo.PlanetInfo.AxialTilt;
 			
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
 	init_x = (i == 1) ? (0) : (MAP_WIDTH - 1);
@@ -1689,7 +1691,7 @@ rotate_planet_task (void *data)
 			// to guarantee that PauseRotate doesn't change while waiting
 			// to acquire the graphics lock
 			LockMutex (GraphicsLock);
-			if (*(volatile UBYTE *)&pSS->PauseRotate !=1
+			if (*(volatile UBYTE *)&pSS->PauseRotate != 1
 //			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
@@ -1707,15 +1709,18 @@ rotate_planet_task (void *data)
 					++pSS->MenuState.Initialized;
 				}
 				x += i;
-			} else
+			}
+			else
 				view_index++;
 
 			UnlockMutex (GraphicsLock);
 			// If this frame hasn't been generted, generate it
-			if (! pSolarSysState->Orbit.isPFADefined[x]) {
+			if (! pSolarSysState->Orbit.isPFADefined[x])
+			{
 				RenderLevelMasks (x);
 				pSolarSysState->Orbit.isPFADefined[x] = 1;
 			}
+			
 			if (zooming)
 			{
 				frame_num++;

@@ -23,11 +23,13 @@
 #include "commglue.h"
 #include "controls.h"
 #include "encount.h"
+#include "planets/lander.h"
 #include "gamestr.h"
 #include "inplib.h"
 #include "load.h"
 #include "options.h"
 #include "save.h"
+#include "starbase.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
@@ -1343,14 +1345,10 @@ PickGame (PMENU_STATE pMS)
 			{
 				if (pSolarSysState->MenuState.Initialized < 3)
 				{
-					extern MUSIC_REF SpaceMusic;
-						
 					PlayMusic (SpaceMusic, TRUE, 1);
 				}
 				else
 				{
-					extern MUSIC_REF LanderMusic;
-						
 					PlayMusic (LanderMusic, TRUE, 1);
 				}
 			}

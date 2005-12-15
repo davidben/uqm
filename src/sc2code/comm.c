@@ -25,6 +25,7 @@
 #include "endian_uqm.h"
 #include "gamestr.h"
 #include "options.h"
+#include "load.h"
 #include "oscill.h"
 #include "resinst.h"
 #include "settings.h"
@@ -2096,7 +2097,6 @@ RaceCommunication (void)
 	{
 		RACE_COMMUNICATION
 	};
-	extern ACTIVITY NextActivity;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{

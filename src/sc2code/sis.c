@@ -21,6 +21,7 @@
 #include "encount.h"
 #include "gamestr.h"
 #include "options.h"
+#include "starbase.h"
 #include "setup.h"
 #include "state.h"
 #include "libs/graphics/gfx_common.h"
@@ -1174,8 +1175,10 @@ static FRAME flash_frame;
 static FRAME flash_screen_frame = 0;
 static int flash_changed;
 Mutex flash_mutex = 0;
-void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
-	   RECT *rdst, int num, int denom);
+// XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
+//  they should be sorted out and cleaned up at some point
+extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
+		RECT *rdst, int num, int denom);
 
 static int
 flash_rect_func (void *data)

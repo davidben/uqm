@@ -27,6 +27,7 @@
 #include "globdata.h"
 #include "options.h"
 #include "races.h"
+#include "shipcont.h"
 #include "setup.h"
 #include "state.h"
 #include "util.h"
@@ -87,8 +88,6 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 static void
 PrepareSummary (SUMMARY_DESC *summary_desc)
 {
-	extern SIZE InventoryDevices (BYTE *pDeviceMap);
-
 	summary_desc->SS = GlobData.SIS_state;
 
 	switch (summary_desc->Activity = LOBYTE (GLOBAL (CurrentActivity)))

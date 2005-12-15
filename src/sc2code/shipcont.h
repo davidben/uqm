@@ -1,3 +1,5 @@
+//Copyright Paul Reiche, Fred Ford. 1992-2002
+
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -11,20 +13,24 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _LOAD_H
-#define _LOAD_H
+#ifndef _SHIPCONT_H
+#define _SHIPCONT_H
 
-#include "sis.h"
-#include "libs/compiler.h"
-#include "globdata.h"
+#include "menustat.h"
 
-extern ACTIVITY NextActivity;
+#define FIELD_WIDTH (STATUS_WIDTH - 5)
 
-extern BOOLEAN LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc);
+extern void Cargo (PMENU_STATE pMS);
+extern BOOLEAN Roster (void);
+extern BOOLEAN Devices (PMENU_STATE pMS);
 
+extern void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
+extern void ShowRemainingCapacity (void);
 
-#endif  /* _LOAD_H */
+extern SIZE InventoryDevices (BYTE *pDeviceMap);
+
+#endif /* _SHIPCONT_H */
 

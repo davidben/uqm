@@ -20,13 +20,14 @@
 #include "colors.h"
 #include "controls.h"
 #include "races.h"
+#include "shipcont.h"
 #include "setup.h"
 #include "sounds.h"
 #include "libs/gfxlib.h"
 #include "libs/tasklib.h"
 
 
-int
+static int
 flash_ship_task (void *data)
 {
 	DWORD TimeIn;

@@ -22,6 +22,7 @@
 #include "gamestr.h"
 #include "lander.h"
 #include "lifeform.h"
+#include "scan.h"
 #include "nameref.h"
 #include "resinst.h"
 #include "setup.h"
@@ -43,19 +44,6 @@
 // ONE_SECOND.
 #define PLANET_SIDE_RATE (ONE_SECOND / 35)
 
-//Added by Chris
-
-void
-DrawPlanet(int x, int y, int dy, unsigned int rgb);
-
-void RepairBackRect (PRECT pRect);
-
-void
-SetPlanetTilt (int da);
-
-//End Added by Chris
-
-extern void DrawScannedObjects (BOOLEAN Reversed);
 
 FRAME LanderFrame[8];
 static SOUND LanderSounds;
@@ -1152,7 +1140,6 @@ RepairScan (void)
 {
 	CONTEXT OldContext;
 	HELEMENT hElement, hNextElement;
-	extern void DrawScannedObjects (BOOLEAN Reversed);
 
 	OldContext = SetContext (ScanContext);
 
