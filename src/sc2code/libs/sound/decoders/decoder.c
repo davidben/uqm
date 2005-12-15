@@ -22,14 +22,13 @@
 #include <stdlib.h>
 #include "port.h"
 #include "libs/misc.h"
+#include "libs/file.h"
 #include "decoder.h"
 #include "wav.h"
 #include "dukaud.h"
 #include "modaud.h"
 #include "oggaud.h"
 
-extern bool fileExists2(uio_DirHandle *dir, const char *fileName);
-		// Can't '#include "libs/file.h"' due to some type conflicts.
 
 #define MAX_REG_DECODERS 31
 
