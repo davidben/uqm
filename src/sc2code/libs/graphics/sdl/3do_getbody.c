@@ -255,7 +255,8 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0,
 	UnlockMutex (tfbImg->mutex);
 }
 
-void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *rdst, int num,int denom)
+void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame,
+		RECT *rdst, int num, int denom)
 {
 	TFB_Image *srcImg, *dstImg;
 	SDL_Surface *src, *dst;
@@ -305,36 +306,60 @@ void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame, RECT *r
 }
 
 // Generate an array of all pixels in FramePtr
-// The pixel format is :
-//  bits 25-32 : red
-//  bits 17-24 : green
-//  bits 9-16  : blue
-//  bits 1-8   : alpha
-void getpixelarray(Uint32 *map, FRAMEPTR FramePtr, int width, int height)
+// The 32bpp pixel format is :
+//  bits 24-31 : red
+//  bits 16-23 : green
+//  bits 8-15  : blue
+//  bits 0-7   : alpha
+// The 8bpp pixel format is 1 index per pixel
+void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
+		int width, int height)
 {
 	Uint8 r,g,b,a;
 	Uint32 p, pos, row;
 	TFB_Image *tfbImg;
 	SDL_Surface *img;
 	GetPixelFn getpix;
-	int x,y;
+	int x, y, w, h;
 
 	tfbImg = FramePtr->image;
 	LockMutex (tfbImg->mutex);
 	img = (SDL_Surface *)tfbImg->NormalImg;
-	SDL_LockSurface (img);
 	getpix = getpixel_for (img);
-	for (y = 0, row = 0; y < height; y++, row += width)
+
+	w = width < img->w ? width : img->w;
+	h = height < img->h ? height : img->h;
+	
+	SDL_LockSurface (img);
+
+	if (Bpp == 4)
 	{
-		if(y >= img->h)
-			continue;
-		for(x = 0, pos = row; x < img->w; x++, pos++)
+		Uint32 *dp = (Uint32 *)map;
+
+		for (y = 0, row = 0; y < h; y++, row += width)
 		{
+			for (x = 0, pos = row; x < w; x++, pos++)
+			{
 				p = getpix (img, x, y);
-				SDL_GetRGBA (p,img->format, &r, &g, &b, &a);
-				map[pos] = r << 24 | g << 16 | b << 8 | a;
+				SDL_GetRGBA (p, img->format, &r, &g, &b, &a);
+				dp[pos] = r << 24 | g << 16 | b << 8 | a;
+			}
 		}
 	}
+	else if (Bpp == 1)
+	{
+		Uint8 *dp = (Uint8 *)map;
+
+		for (y = 0, row = 0; y < h; y++, row += width)
+		{
+			for (x = 0, pos = row; x < w; x++, pos++)
+			{
+				p = getpix (img, x, y);
+				dp[pos] = p;
+			}
+		}
+	}
+
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
 }

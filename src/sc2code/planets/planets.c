@@ -120,8 +120,8 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 // (when orbit is entered; either from IP, or from loading a saved game)
 // and when "starmap" is selected from orbit and then cancelled;
 // also after in-orbit comm and after defeating planet guards in combat.
-// IsDefined is true only when the planet comes with its own bitmap,
-// namely for Earth.
+// SurfDefFrame contains surface definition images when a planet comes
+// with its own bitmap (currently only for Earth)
 void
 LoadPlanet (FRAME SurfDefFrame)
 {

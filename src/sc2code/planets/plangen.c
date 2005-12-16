@@ -49,7 +49,7 @@ extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
 extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
 		RECT *rdst, int num, int denom);
-extern void getpixelarray (DWORD *array, FRAME FramePtr,
+extern void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
 		int width, int height);
 
 
@@ -66,19 +66,8 @@ extern void getpixelarray (DWORD *array, FRAME FramePtr,
 // distance beyond which all pixels are transparent (for aa)
 #define RADIUS_THRES  ((RADIUS + 1) * (RADIUS + 1))
 #define DIAMETER (TWORADIUS + 1)
-#define DIFFUSE_BITS 24
-
-static inline UBYTE
-GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
-{
-	DWORD i = (DWORD)val << DIFFUSE_BITS;
-	i -= val * dif;
-	i >>= DIFFUSE_BITS;
-	i += sp;
-	if (i > 255)
-		i = 255;
-	return ((UBYTE)i);
-}
+#define DIFFUSE_BITS 16
+#define AA_WEIGHT_BITS 16
 
 #ifndef M_TWOPI
   #ifndef M_PI
@@ -91,7 +80,6 @@ GET_LIGHT (UBYTE val, DWORD dif, UBYTE sp)
 #endif
 
 DWORD light_diff[DIAMETER][DIAMETER];
-UBYTE light_spec[DIAMETER][DIAMETER];
 
 typedef struct 
 {
@@ -229,23 +217,30 @@ RenderTopography (BOOLEAN Reconstruct)
 	(void)Reconstruct; // swallow compiler whining
 }
 
-void P3mult (POINT3 *res, POINT3 *vec,  double cnst)
+static inline void
+P3mult (POINT3 *res, POINT3 *vec, double cnst)
 {
 	res->x = vec->x * cnst;
 	res->y = vec->y * cnst;
 	res->z = vec->z * cnst;
 }
-void P3sub (POINT3 *res, POINT3 *v1,  POINT3 *v2)
+
+static inline void
+P3sub (POINT3 *res, POINT3 *v1, POINT3 *v2)
 {
 	res->x = v1->x - v2->x;
 	res->y = v1->y - v2->y;
 	res->z = v1->z - v2->z;
 }
-double P3dot (POINT3 *v1, POINT3 *v2)
+
+static inline double
+P3dot (POINT3 *v1, POINT3 *v2)
 {
 	return (v1->x * v2->x + v1->y * v2->y + v1->z * v2->z);
 }
-void P3norm (POINT3 *res, POINT3 *vec)
+
+static inline void
+P3norm (POINT3 *res, POINT3 *vec)
 {
 	double mag = sqrt (P3dot (vec, vec));
 	P3mult (res, vec, 1/mag);
@@ -257,14 +252,12 @@ static void
 RenderPhongMask (POINT loc)
 {
 	POINT pt;
-	POINT3 light, view;
+	POINT3 light;
 	double lrad;
 	const DWORD step = 1 << DIFFUSE_BITS;
 	int y, x;
 
-#define LIGHT_INTENS  0.3
-#define AMBIENT_LIGHT 0.2
-#define MSHI          2
+#define AMBIENT_LIGHT 0.1
 #define LIGHT_Z       1.2
 	// lrad is the distance from the sun to the planet
 	lrad = sqrt (loc.x * loc.x + loc.y * loc.y);
@@ -274,13 +267,6 @@ RenderPhongMask (POINT loc)
 	light.y = -((double)loc.y);
 	light.z = LIGHT_Z * lrad;
 	P3norm (&light, &light);
-	// always view along the z-axis
-	// ideally use a view point, and have the view change per pixel
-	// but that is too much effort for now.
-	// the view MUST be normalized!
-	view.x = 0;
-	view.y = 0;
-	view.z = 1.0;
 	
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, y++)
 	{
@@ -290,9 +276,9 @@ RenderPhongMask (POINT loc)
 		{
 			DWORD x_2 = x * x;
 			DWORD rad_2 = x_2 + y_2;
-			DWORD diff_int;
-			POINT3 norm, rvec;
-			double diff, spec = 0.0, fb;
+			DWORD diff_int = 0;
+			POINT3 norm;
+			double diff;
 			
 			if (rad_2 < RADIUS_THRES) 
 			{
@@ -307,6 +293,26 @@ RenderPhongMask (POINT loc)
 				// negative diffuse is bad
 				if (diff < 0)
 					diff = 0.0;
+#if 0
+				// Specular is not used in practice and is left here
+				//  if someone decides to use it later for some reason.
+				//  Specular highlight is only good for perfectly smooth
+				//  surfaces, like balls (of which planets are not)
+				//  This wouldn't be RenderPhongMask without the Phong eq.
+#define LIGHT_INTENS  0.3
+#define MSHI          2
+				double fb, spec;
+				POINT3 rvec;
+				POINT3 view;
+
+				// always view along the z-axis
+				// ideally use a view point, and have the view change
+				// per pixel, but that is too much effort for now.
+				// the view MUST be normalized!
+				view.x = 0;
+				view.y = 0;
+				view.z = 1.0;
+
 				// specular highlight is the phong equation:
 				// (rvec dot view)^MSHI
 				// where rvec = (2*diff)*norm - light (reflection of light
@@ -318,6 +324,7 @@ RenderPhongMask (POINT loc)
 					spec = LIGHT_INTENS * pow (fb, MSHI);
 				else
 					spec = 0;
+#endif
 				// adjust for the ambient light
 				if (diff < AMBIENT_LIGHT)
 					diff = AMBIENT_LIGHT;
@@ -330,18 +337,10 @@ RenderPhongMask (POINT loc)
 				}
 				// diff_int allows us multiply by a ratio without using
 				// floating-point.
-				// instead of color*diff, we use ((color << 24) -
-				// stepint*color) >> 24
-				diff_int = step - (DWORD)(diff * step + 0.5);
-
-			}
-			else
-			{	// outside sphere bounds
-				diff_int = 1 << 31;
+				diff_int = (DWORD)(diff * step);
 			}
 
 			light_diff[pt.y][pt.x] = diff_int;
-			light_spec[pt.y][pt.x] = (UBYTE)(spec * 255);
 		}
 	}
 }
@@ -417,7 +416,7 @@ create_aa_points (MAP3D_POINT *ppt, double x, double y)
 	m[3] = m[0] * d1 / d4;
 
 	for (i = 0; i < 4; i++)
-		ppt->m[i] = (DWORD)((1 << 16) * m[i] + 0.5);
+		ppt->m[i] = (DWORD)(m[i] * (1 << AA_WEIGHT_BITS) + 0.5);
 }
 
 //get_avg_rgb creates either a red, green, or blue value by
@@ -437,7 +436,7 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
 		c = (UBYTE)(p1[j] >> i);
 		ci += c * mult[j];
 	}
-	ci >>= 16;
+	ci >>= AA_WEIGHT_BITS;
 	//check for overflow
 	if (ci > 255)
 		ci = 255;
@@ -629,10 +628,39 @@ CreateShieldMask (void)
 
 }
 
+static inline UBYTE
+calc_map_light (UBYTE val, DWORD dif, int lvf)
+{
+	int i;
+
+	// apply diffusion
+	i = (dif * val) >> DIFFUSE_BITS;
+	// apply light variance for 3d lighting effect
+	i += (lvf * val) >> 7;
+
+	if (i < 0)
+		i = 0;
+	else if (i > 255)
+		i = 255;
+
+	return ((UBYTE)i);
+}
+
+static inline DWORD
+get_map_pixel (DWORD *pixels, int x, int y)
+{
+	return pixels[y * (MAP_WIDTH + MAP_HEIGHT) + x];
+}
+
+static inline int
+get_map_elev (SBYTE *elevs, int x, int y, int offset)
+{
+	return elevs[y * MAP_WIDTH + (offset + x) % MAP_WIDTH];
+}
+
 // RenderLevelMasks builds a frame for the rotating planet view
 // offset is effectively the angle of rotation around the planet's axis
 // We use the SDL routines to directly write to the SDL_Surface to improve performance
-#define PT_TO_ADDR(y, x) ((y) * (MAP_WIDTH + MAP_HEIGHT) + (x))
 void
 RenderLevelMasks (int offset)
 {
@@ -640,7 +668,8 @@ RenderLevelMasks (int offset)
 	DWORD *rgba, *p_rgba;
 	DWORD clear;
 	int x, y;
-	DWORD p, *pixels;
+	DWORD *pixels;
+	SBYTE *elevs;
 	FRAME MaskFrame;
 
 #if PROFILE
@@ -656,7 +685,8 @@ RenderLevelMasks (int offset)
 	MaskFrame = SetAbsFrameIndex (pSolarSysState->Orbit.PlanetFrameArray,
 			(COUNT)(offset + 1));
 	clear = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
-	pixels = pSolarSysState->Orbit.lpTopoMap;
+	pixels = pSolarSysState->Orbit.lpTopoMap + offset;
+	elevs = pSolarSysState->Orbit.lpTopoData;
 	
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, ++y)
 	{
@@ -664,34 +694,44 @@ RenderLevelMasks (int offset)
 		{
 			UBYTE c[3];
 			DWORD diffus = light_diff[pt.y][pt.x];
-			UBYTE spec = light_spec[pt.y][pt.x];
 			int i;
-			DWORD p1[4];
 			MAP3D_POINT *ppt = &map_rotate[pt.y][pt.x];
+			int lvf; // light variance factor
 	
-			if (diffus >= (1 << DIFFUSE_BITS))
+			if (diffus == 0)
 			{	// full diffusion
 				*p_rgba = clear;
 				continue;
 			}
 
+			// get pixel from topo map and factor from light variance map
 			if (ppt->m[0] == 0) 
-			{
-				p = pixels[PT_TO_ADDR (ppt->p[0].y, ppt->p[0].x) +
-						offset];
+			{	// exact pixel from the topo map
+				DWORD p = get_map_pixel (pixels, ppt->p[0].x, ppt->p[0].y);
 				c[0] = (UBYTE)(p >> 8);
 				c[1] = (UBYTE)(p >> 16);
 				c[2] = (UBYTE)(p >> 24);
+
+				lvf = get_map_elev (elevs, ppt->p[0].x, ppt->p[0].y, offset);
 			}
 			else
-			{
+			{	// fractional pixel -- blend from 4
+				DWORD p[4];
+				int lvsum;
+
+				// compute 'ideal' pixel
 				for (i = 0; i < 4; i++)
-					p1[i] = pixels[PT_TO_ADDR (ppt->p[i].y, ppt->p[i].x)
-							+ offset];
+					p[i] = get_map_pixel (pixels, ppt->p[i].x, ppt->p[i].y);
 				for (i = 1; i < 4; i++)
-					c[i - 1] = get_avg_rgb (p1, ppt->m, i);
+					c[i - 1] = get_avg_rgb (p, ppt->m, i);
+
+				// compute 'ideal' light variance
+				for (i = 0, lvsum = 0; i < 4; i++)
+					lvsum += get_map_elev (elevs, ppt->p[0].x, ppt->p[0].y,
+							offset) * ppt->m[i];
+				lvf = lvsum >> AA_WEIGHT_BITS;
 			}
-	
+		
 			// Apply the lighting model.  This also bounds the sphere
 			// to make it circular.
 			if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
@@ -702,12 +742,12 @@ RenderLevelMasks (int offset)
 				c[1] = (c[1] >> 1) + (c[1] >> 2);
 				c[0] = (c[0] >> 1) + (c[0] >> 2);
 
-				c[2] = GET_LIGHT (c[2], diffus, spec);
-				c[1] = GET_LIGHT (c[1], diffus, spec);
-				c[0] = GET_LIGHT (c[0], diffus, spec);
+				c[2] = calc_map_light (c[2], diffus, lvf);
+				c[1] = calc_map_light (c[1], diffus, lvf);
+				c[0] = calc_map_light (c[0], diffus, lvf);
 
 				// The shield is glow + reflect (+ filter for others)
-				r = GET_LIGHT (SHIELD_REFLECT_COMP, diffus, spec);
+				r = calc_map_light (SHIELD_REFLECT_COMP, diffus, 0);
 				r = r + SHIELD_GLOW_COMP + c[2];
 				if (r > 255)
 					r = 255;
@@ -715,9 +755,9 @@ RenderLevelMasks (int offset)
 			} 
 			else
 			{
-				c[2] = GET_LIGHT (c[2], diffus, spec);
-				c[1] = GET_LIGHT (c[1], diffus, spec);
-				c[0] = GET_LIGHT (c[0], diffus, spec);
+				c[2] = calc_map_light (c[2], diffus, lvf);
+				c[1] = calc_map_light (c[1], diffus, lvf);
+				c[0] = calc_map_light (c[0], diffus, lvf);
 			}
 
 			*p_rgba = frame_mapRGBA (MaskFrame, c[2], c[1], c[0], 255);
@@ -1461,6 +1501,190 @@ TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
 	}
 }
 
+
+// GenerateLightMap produces a surface light variance map for the
+//  rotating planet by, first, transforming absolute elevation data
+//  into normalized relative and then applying a weighted
+//  average-median of surrounding points
+// Lots of pure Voodoo here ;)
+//  the goal is a 3D illusion, not mathematically correct lighting
+
+#define LMAP_AVG_BLOCK    ((MAP_HEIGHT + 4) / 5)
+#define LMAP_MAX_DIST     ((LMAP_AVG_BLOCK + 1) >> 1)
+#define LMAP_WEIGHT_THRES (LMAP_MAX_DIST * 2 / 3)
+
+typedef struct
+{
+	int min;
+	int max;
+	int avg;
+
+} elev_block_t;
+
+static inline void
+get_vblock_avg (elev_block_t *pblk, PSBYTE pTopo, int x, int y)
+{
+	SBYTE *elev = pTopo;
+	int y0, y1, i;
+	int min = 127, max = -127;
+	int avg = 0, total_weight = 0;
+
+	// surface wraps around along x
+	x = (x + MAP_WIDTH) % MAP_WIDTH;
+	
+	y0 = y - LMAP_MAX_DIST;
+	y1 = y + LMAP_MAX_DIST;
+	if (y0 < 0)
+		y0 = 0;
+	if (y1 > MAP_HEIGHT)
+		y1 = MAP_HEIGHT;
+
+	elev = pTopo + y0 * MAP_HEIGHT + x;
+	for (i = y0; i < y1; ++i, elev += MAP_HEIGHT)
+	{
+		int delta = abs (i - y);
+		int weight = 255; // full weight
+		int v = *elev;
+
+		if (delta >= LMAP_WEIGHT_THRES)
+		{	// too far -- progressively reduced weight
+			weight = weight * (LMAP_MAX_DIST - delta + 1)
+					/ (LMAP_MAX_DIST - LMAP_WEIGHT_THRES + 2);
+		}
+
+		if (v > max)
+			max = v;
+		if (v < min)
+			min = v;
+		avg += pblk->avg * weight;
+		total_weight += weight;
+	}
+	avg /= total_weight;
+
+	pblk->min = min;
+	pblk->max = max;
+	pblk->avg = avg / (y1 - y0);
+}
+
+// See description above
+static void
+GenerateLightMap (PSBYTE pTopo, int w, int h)
+{
+#define LMAP_BLOCKS       (2 * LMAP_MAX_DIST + 1)
+	int x, y;
+	elev_block_t vblocks[LMAP_BLOCKS];
+			// we use a running block average to reduce the amount of work
+			// where a block is a vertical line of map points
+	SBYTE *elev;
+	int min, max, med;
+	int sfact, spread;
+
+	// normalize the topo data
+	min = 127;
+	max = -128;
+	for (x = 0, elev = pTopo; x < w * h; ++x, ++elev)
+	{
+		int v = *elev;
+		if (v > max)
+			max = v;
+		if (v < min)
+			min = v;
+	}
+	med = (min + max) / 2;
+	spread = max - med;
+
+	if (spread == 0)
+	{	// perfectly smooth surface -- nothing to do but
+		// level it out completely
+		if (max != 0)
+			memset (pTopo, 0, w * h);
+		return;
+	}
+
+	// these are whatever looks right
+	if (spread < 10)
+		sfact = 30; // minimal spread
+	else if (spread < 30)
+		sfact = 60;
+	else
+		sfact = 100; // full spread
+	
+	// apply spread
+	for (x = 0, elev = pTopo; x < w * h; ++x, ++elev)
+	{
+		int v = *elev;
+		v = (v - med) * sfact / spread;
+		*elev = v;
+	}
+
+	// compute and apply weighted averages of surrounding points
+	for (y = 0, elev = pTopo; y < h; ++y)
+	{
+		elev_block_t *pblk;
+		int i;
+
+		// prime the running block average
+		// get the minimum, maximum and avg elevation for each block
+		for (i = -LMAP_MAX_DIST; i < LMAP_MAX_DIST; ++i)
+		{
+			// blocks wrap around on both sides
+			pblk = vblocks + ((i + LMAP_BLOCKS) % LMAP_BLOCKS);
+
+			get_vblock_avg (pblk, pTopo, i, y);
+		}
+
+		for (x = 0; x < w; ++x, ++elev)
+		{
+			int avg = 0, total_weight = 0;
+
+			min = 127;
+			max = -127;
+
+			// prepare next block as we move along x
+			pblk = vblocks + ((x + LMAP_MAX_DIST) % LMAP_BLOCKS);
+			get_vblock_avg (pblk, pTopo, x + LMAP_MAX_DIST, y);
+
+			// compute the min, max and weighted avg of blocks
+			for (i = x - LMAP_MAX_DIST; i <= x + LMAP_MAX_DIST; ++i)
+			{
+				int delta = abs (i - x);
+				int weight = 255; // full weight
+
+				pblk = vblocks + ((i + LMAP_BLOCKS) % LMAP_BLOCKS);
+
+				if (delta >= LMAP_WEIGHT_THRES)
+				{	// too far -- progressively reduced weight
+					weight = weight * (LMAP_MAX_DIST - delta + 1)
+							/ (LMAP_MAX_DIST - LMAP_WEIGHT_THRES + 2);
+				}
+
+				if (pblk->max > max)
+					max = pblk->max;
+				if (pblk->min < min)
+					min = pblk->min;
+				
+				avg += pblk->avg * weight;
+				total_weight += weight;
+			}
+			avg /= total_weight;
+
+			// This is mostly Voodoo
+			// figure out what kind of relative lighting factor
+			// to assign to this point
+#if 0
+			// relative to median
+			med = (min + max) / 2; // median
+			*elev = (int)*elev - med;
+#else
+			// relative to median of (average, median)
+			med = (min + max) / 2; // median
+			med = (med + avg) / 2;
+			*elev = (int)*elev - med;
+#endif
+		}
+	}
+}
+
 void
 GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 {
@@ -1478,23 +1702,52 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 	OldContext = SetContext (TaskContext);
 	planet_orbit_init ();
 
+	PlanDataPtr = &PlanData[pPlanetDesc->data_index & ~PLANET_SHIELDED];
+
 	if (SurfDefFrame)
 	{	// This is a defined planet; pixmap for the topography and
 		// elevation data is supplied in Surface Definition frame
-		
+		BOOLEAN DeleteDef = FALSE;
+		FRAME ElevFrame;
+
 		// surface pixmap
 		SurfDefFrame = SetAbsFrameIndex (SurfDefFrame, 0);
 		if (GetFrameWidth (SurfDefFrame) != MAP_WIDTH
 				|| GetFrameHeight (SurfDefFrame) != MAP_HEIGHT)
+		{
 			pSolarSysState->TopoFrame = stretch_frame (SurfDefFrame,
-				MAP_WIDTH, MAP_HEIGHT, 1);
+				MAP_WIDTH, MAP_HEIGHT, 0);
+			// will not need the passed FRAME anymore
+			DeleteDef = TRUE;
+		}
 		else
 			pSolarSysState->TopoFrame = SurfDefFrame;
+
+		if (GetFrameCount (SurfDefFrame) > 1)
+		{	// 2nd frame is elevation data 
+			ElevFrame = SetAbsFrameIndex (SurfDefFrame, 1);
+			if (GetFrameWidth (ElevFrame) != MAP_WIDTH
+					|| GetFrameHeight (ElevFrame) != MAP_HEIGHT)
+			{
+				ElevFrame = stretch_frame (ElevFrame, MAP_WIDTH,
+						MAP_HEIGHT, 0);
+			}
+
+			// grab the elevation data in 1 byte per pixel format
+			getpixelarray (Orbit->lpTopoData, 1, ElevFrame,
+					MAP_WIDTH, MAP_HEIGHT);
+		}
+		else
+		{	// no elevation data -- planet flat as a pancake
+			memset (Orbit->lpTopoData, 0, MAP_WIDTH * MAP_HEIGHT);
+		}
+
+		if (DeleteDef)
+			DestroyDrawable (ReleaseDrawable (SurfDefFrame));
 	}
 	else
 	{	// Generate planet surface elevation data and look
 
-		PlanDataPtr = &PlanData[pPlanetDesc->data_index & ~PLANET_SHIELDED];
 		r.corner.x = r.corner.y = 0;
 		r.extent.width = MAP_WIDTH;
 		r.extent.height = MAP_HEIGHT;
@@ -1585,7 +1838,13 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 		}
 		pSolarSysState->XlatPtr = GetStringAddress (pSolarSysState->XlatRef);
 		RenderTopography (FALSE);
+	}
 
+	if (!(pPlanetDesc->data_index & PLANET_SHIELDED)
+			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity
+				!= GAS_GIANT_ATMOSPHERE)
+	{	// produce 4x scaled topo image for IP
+		// for the planets that we can land on
 		pScaledTopo = HMalloc (MAP_WIDTH * 4 * MAP_HEIGHT * 4);
 		if (pScaledTopo)
 		{
@@ -1606,13 +1865,23 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 	// FRAMPTR though.
 	x = MAP_WIDTH + MAP_HEIGHT;
 	y = MAP_HEIGHT;
-	getpixelarray (Orbit->lpTopoMap, pSolarSysState->TopoFrame, x, y);
+	getpixelarray (Orbit->lpTopoMap, 4, pSolarSysState->TopoFrame, x, y);
 	// Extend the width from MAP_WIDTH to MAP_WIDTH+MAP_HEIGHT
 	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT);
 			y += MAP_WIDTH + MAP_HEIGHT)
-		for (x = 0; x < MAP_HEIGHT; x++)
-			Orbit->lpTopoMap[y + x + MAP_WIDTH] = Orbit->lpTopoMap[y + x];
-	
+		memcpy (Orbit->lpTopoMap + y + MAP_WIDTH, Orbit->lpTopoMap + y,
+				MAP_HEIGHT * sizeof (Orbit->lpTopoMap[0]));
+
+	if (PLANALGO (PlanDataPtr->Type) != GAS_GIANT_ALGO)
+	{	// convert topo data to a light map, based on relative
+		// map point elevations
+		GenerateLightMap (Orbit->lpTopoData, MAP_WIDTH, MAP_HEIGHT);
+	}
+	else
+	{	// gas giants are pretty much flat
+		memset (Orbit->lpTopoData, 0, MAP_WIDTH * MAP_HEIGHT);
+	}
+			
 	if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 			&pSolarSysState->SunDesc[0])
 	{	// this is a planet -- get its location
@@ -1656,7 +1925,6 @@ rotate_planet_task (void *data)
 			!Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
-//	SetPlanetTilt ((pSS->SysInfo.PlanetInfo.AxialTilt << 8) / 360);
 	SetPlanetTilt (pSS->SysInfo.PlanetInfo.AxialTilt);
 			
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
@@ -1736,11 +2004,12 @@ rotate_planet_task (void *data)
 
 			SleepThreadUntil (TimeIn + (ONE_SECOND * ROTATION_TIME) /
 					(MAP_WIDTH));
-//			SleepThreadUntil (TimeIn + (ONE_SECOND * 5 / (MAP_WIDTH-32)));
 			TimeIn = GetTimeCounter ();
 		} while (--view_index && !Task_ReadState (task, TASK_EXIT));
 	}
+	
 	FinishTask (task);
+
 	return 0;
 }
 
