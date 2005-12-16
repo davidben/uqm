@@ -59,13 +59,17 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	int base = GSCALE_IDENTITY;
 
-	num_frames = (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED) ? 2 : 1;
+	num_frames = 1;
 	pFrame[0] = SetAbsFrameIndex (Orbit->PlanetFrameArray, (COUNT)(x + 1));
-	if (num_frames == 2)
-		pFrame[1] = Orbit->ShieldFrame;
+	if (Orbit->ObjectFrame)
+	{
+		pFrame[1] = Orbit->ObjectFrame;
+		num_frames++;
+	}
+
 	if (scale_amt)
 	{	
-		if(zoomr->extent.width)
+		if (zoomr->extent.width)
 			rp = zoomr;
 		//  we're zooming in, take care of scaling the frames
 		//Translate the planet so it comes from the bottom right corner
@@ -126,23 +130,25 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	s.frame = pSolarSysState->TopoFrame;
 	BatchGraphics ();
 	if (! rgb)
+	{	// no tint -- just draw the surface
 		DrawStamp (&s);
+	}
 	else
-	{
+	{	// apply different scan type tints
 		UBYTE r, g, b;
 		DWORD p;
 		COUNT framew, frameh;
 		RECT srect, drect, *psrect = NULL, *pdrect = NULL;
 		FRAME tintFrame[2];
-		tintFrame[0] = SetAbsFrameIndex (Orbit->TintFrame, (COUNT)(1));
-		tintFrame[1] = SetAbsFrameIndex (Orbit->TintFrame, (COUNT)(2));
+		tintFrame[0] = SetAbsFrameIndex (Orbit->TintFrame, 0);
+		tintFrame[1] = SetAbsFrameIndex (Orbit->TintFrame, 1);
 
 		framew = GetFrameWidth (tintFrame[0]);
 		frameh = GetFrameHeight (tintFrame[0]);
 
 		if (rgb != pSolarSysState->Tint_rgb)
-			{
-			pSolarSysState->Tint_rgb=rgb;
+		{
+			pSolarSysState->Tint_rgb = rgb;
 			// Buffer the topoMap to the tintFrame;
 			arith_frame_blit (s.frame, NULL, tintFrame[0], NULL, 0, 0);
 			r = (rgb & (0x1f << 10)) >> 8;
@@ -154,19 +160,22 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 			p = frame_mapRGBA (tintFrame[1], r, g, b, a);
 			fill_frame_rgb (tintFrame[1], p, 0, 0, 0, 0);
 		}
+		
 		drect.corner.x = 0;
 		drect.extent.width = framew;
 		srect.corner.x = 0;
 		srect.corner.y = 0;
 		srect.extent.width = framew;
-		if (dy >= 0 && dy <= frameh) {
+		if (dy >= 0 && dy <= frameh)
+		{
 			drect.corner.y = dy;
 			drect.extent.height = 1;
 			pdrect = &drect;
 			srect.extent.height = 1;
 			psrect = &srect;
 		}
-		if (dy < 0) {
+		if (dy < 0)
+		{
 			drect.corner.y = -dy;
 			drect.extent.height = frameh + dy;
 			pdrect = &drect;
@@ -174,8 +183,8 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 			psrect = &srect;
 		}
 
-		if (dy <= frameh) {
-
+		if (dy <= frameh)
+		{
 #ifdef USE_ADDITIVE_SCAN_BLIT
 			arith_frame_blit (tintFrame[1], psrect, tintFrame[0], pdrect, 0, -1);
 #else

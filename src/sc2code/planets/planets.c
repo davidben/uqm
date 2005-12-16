@@ -247,13 +247,21 @@ FreePlanet (void)
 	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
 	Orbit->TintFrame = 0;
 	pSolarSysState->Tint_rgb = 0;
-	DestroyDrawable (ReleaseDrawable (Orbit->ShieldFrame));
-	Orbit->ShieldFrame = 0;
+
+	DestroyDrawable (ReleaseDrawable (Orbit->ObjectFrame));
+	Orbit->ObjectFrame = 0;
+	DestroyDrawable (ReleaseDrawable (Orbit->WorkFrame));
+	Orbit->WorkFrame = 0;
 
 	if (Orbit->lpTopoMap != 0)
 	{
 		HFree (Orbit->lpTopoMap);
 		Orbit->lpTopoMap = 0;
+	}
+	if (Orbit->ScratchArray != 0)
+	{
+		HFree (Orbit->ScratchArray);
+		Orbit->ScratchArray = 0;
 	}
 
 	DestroyContext (ReleaseContext (TaskContext));

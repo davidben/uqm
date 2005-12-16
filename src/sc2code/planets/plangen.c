@@ -545,15 +545,19 @@ init_zoom_array (COUNT *zoom_arr)
 #define SHIELD_HALO_GLOW     (SHIELD_GLOW_COMP + SHIELD_REFLECT_COMP)
 #define SHIELD_HALO_GLOW_MIN (SHIELD_HALO_GLOW >> 2)
 
-static void
+static FRAME
 CreateShieldMask (void)
 {
 	DWORD clear, *rgba, *p_rgba;
 	int x, y;
 	FRAME ShieldFrame;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
-	ShieldFrame = pSolarSysState->Orbit.ShieldFrame;
-	rgba = pSolarSysState->Orbit.ScratchArray;
+	ShieldFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP | WANT_ALPHA,
+				SHIELD_DIAM, SHIELD_DIAM, 1));
+
+	rgba = Orbit->ScratchArray;
 	p_rgba = rgba;
 	//  This is 100% transparent.
 	clear = frame_mapRGBA (ShieldFrame, 0, 0, 0, 0);
@@ -604,28 +608,31 @@ CreateShieldMask (void)
 	process_rgb_bmp (ShieldFrame, rgba, SHIELD_DIAM, SHIELD_DIAM);
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,
 				SHIELD_RADIUS + 1));
+	
+	return ShieldFrame;
+}
 
-	{
-		// Apply the shield to the topo data
-		UBYTE a;
-		int blit_type;
-		FRAME tintFrame = pSolarSysState->Orbit.TintFrame;
-		DWORD p;
+// Apply the shield to the topo data
+static void
+ApplyShieldTint (void)
+{
+	UBYTE a;
+	int blit_type;
+	FRAME tintFrame = pSolarSysState->Orbit.TintFrame;
+	DWORD p;
 
 #ifdef USE_ALPHA_SHIELD
-		a = 200;
-		blit_type = 0;
+	a = 200;
+	blit_type = 0;
 #else
-		//additive_blit
-		a = 255;
-		blit_type = -1;
+	//additive_blit
+	a = 255;
+	blit_type = -1;
 #endif
-		p = frame_mapRGBA (tintFrame, 255, 0, 0, a);
-		fill_frame_rgb (tintFrame, p, 0, 0, 0, 0);
-		arith_frame_blit (tintFrame, NULL, pSolarSysState->TopoFrame, NULL,
-				0, blit_type);
-	}
-
+	p = frame_mapRGBA (tintFrame, 255, 0, 0, a);
+	fill_frame_rgb (tintFrame, p, 0, 0, 0, 0);
+	arith_frame_blit (tintFrame, NULL, pSolarSysState->TopoFrame, NULL,
+			0, blit_type);
 }
 
 static inline UBYTE
@@ -1267,16 +1274,15 @@ planet_orbit_init ()
 	Orbit->TintFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, (SWORD)MAP_WIDTH,
 				(SWORD)MAP_HEIGHT, 2));
-	Orbit->ShieldFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, SHIELD_DIAM,
-				SHIELD_DIAM, 1));
-
+	Orbit->ObjectFrame = 0;
+	Orbit->WorkFrame = 0;
 	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
 	Orbit->TopoZoomFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
 				(COUNT)(MAP_HEIGHT << 2), 1));
 	Orbit->lpTopoMap = HMalloc (sizeof (DWORD)
 			* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
+	// always allocate the scratch array to largest needed size
 	Orbit->ScratchArray = HMalloc (sizeof (DWORD)
 			* (SHIELD_DIAM) * (SHIELD_DIAM));
 }
@@ -1905,7 +1911,10 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 	RenderPhongMask (loc);
 
 	if (pPlanetDesc->data_index & PLANET_SHIELDED)
-		CreateShieldMask ();
+	{
+		Orbit->ObjectFrame = CreateShieldMask ();
+		ApplyShieldTint ();
+	}
 
 	SetContext (OldContext);
 
@@ -1915,6 +1924,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 int
 rotate_planet_task (void *data)
 {
+	Task task = (Task) data;
 	SIZE i;
 	COORD init_x;
 	DWORD TimeIn;
@@ -1924,8 +1934,7 @@ rotate_planet_task (void *data)
 	UBYTE zoom_from;
 	COUNT zoom_arr[50];
 	COUNT zoom_amt, frame_num = 0, zoom_frames;
-
-	Task task = (Task) data;
+	PLANET_ORBIT *Orbit;
 
 	r.extent.width = 0;
 	zooming = TRUE;
@@ -1936,7 +1945,8 @@ rotate_planet_task (void *data)
 		TaskSwitch ();
 
 	SetPlanetTilt (pSS->SysInfo.PlanetInfo.AxialTilt);
-			
+	Orbit = &pSolarSysState->Orbit;
+
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
 	init_x = (i == 1) ? (0) : (MAP_WIDTH - 1);
 	// Render the first planet frame
@@ -1992,11 +2002,12 @@ rotate_planet_task (void *data)
 				view_index++;
 
 			UnlockMutex (GraphicsLock);
+			
 			// If this frame hasn't been generted, generate it
-			if (! pSolarSysState->Orbit.isPFADefined[x])
+			if (!Orbit->isPFADefined[x])
 			{
 				RenderLevelMasks (x);
-				pSolarSysState->Orbit.isPFADefined[x] = 1;
+				Orbit->isPFADefined[x] = 1;
 			}
 			
 			if (zooming)

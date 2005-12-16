@@ -144,13 +144,26 @@ typedef void (*PLAN_GEN_FUNC) (BYTE control);
 typedef struct planet_orbit
 {
 	FRAME TopoZoomFrame;
+			// 4x scaled topo image for planet-side
 	PBYTE lpTopoData;
+			// normal topo data; expressed in elevation levels
+			// data is signed for planets other than gas giants
+			// transformed to light variance map for 3d planet
 	FRAME PlanetFrameArray;
+			// cached rotating 3d planet frames
 	BYTE *isPFADefined;
-	FRAME ShieldFrame;
+			// cached frames 'present' flags
+	FRAME ObjectFrame;
+			// any extra planetary object (shield, atmo, rings)
+			// automatically drawn if present
 	FRAME TintFrame;
+			// tinted topo images for current scan type (dynamic)
 	DWORD *lpTopoMap;
+			// RGBA version of topo image; for 3d planet
 	DWORD *ScratchArray;
+			// temp RGBA data for whatever transforms (nuked often)
+	FRAME WorkFrame;
+			// any extra frame workspace (for dynamic objects)
 }  PLANET_ORBIT;
 
 // See doc/devel/generate for information on how this structure is
