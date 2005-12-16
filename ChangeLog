@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Added 3DO-style throbbing slave shield (--shield; bug #32);
+  special thanks to Nic for inspiration and some code - Alex
 - Rotating 3D planet changes: nicer looking slave shield; planet now
   finally looks like a rotating sphere (and not cylinder); added some
   lighting variance to give it a 3D feel (not a smooth ball) - Alex
