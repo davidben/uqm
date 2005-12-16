@@ -1,6 +1,7 @@
 Changes towards version 0.5:
 - Rotating 3D planet changes: nicer looking slave shield; planet now
-  finally looks like a rotating sphere (and not cylinder) - Alex
+  finally looks like a rotating sphere (and not cylinder); added some
+  lighting variance to give it a 3D feel (not a smooth ball) - Alex
 - Refactored colormaps storage, management and transforms; paletted
   images rendering should be much faster now - Alex
 - Corrected intro slide 5 (crosshair removed); bug #794, from AusME
