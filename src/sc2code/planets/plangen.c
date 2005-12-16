@@ -1725,6 +1725,9 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 
 		if (GetFrameCount (SurfDefFrame) > 1)
 		{	// 2nd frame is elevation data 
+			int i;
+			BYTE* elev;
+
 			ElevFrame = SetAbsFrameIndex (SurfDefFrame, 1);
 			if (GetFrameWidth (ElevFrame) != MAP_WIDTH
 					|| GetFrameHeight (ElevFrame) != MAP_HEIGHT)
@@ -1736,6 +1739,13 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 			// grab the elevation data in 1 byte per pixel format
 			getpixelarray (Orbit->lpTopoData, 1, ElevFrame,
 					MAP_WIDTH, MAP_HEIGHT);
+			// the supplied data is in unsigned format, must convert
+			for (i = 0, elev = Orbit->lpTopoData;
+					i < MAP_WIDTH * MAP_HEIGHT;
+					++i, ++elev)
+			{
+				*elev -= 128;
+			}
 		}
 		else
 		{	// no elevation data -- planet flat as a pancake
