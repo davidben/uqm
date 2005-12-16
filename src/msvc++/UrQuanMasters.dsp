@@ -3653,6 +3653,10 @@ SOURCE=..\sc2code\menu.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\menustat.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\misc.c
 # End Source File
 # Begin Source File
@@ -3754,6 +3758,10 @@ SOURCE=..\sc2code\setupmenu.h
 # Begin Source File
 
 SOURCE=..\sc2code\ship.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\shipcont.h
 # End Source File
 # Begin Source File
 
