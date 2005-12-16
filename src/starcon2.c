@@ -70,6 +70,7 @@ struct options_struct {
 	int whichMenu;
 	int whichFonts;
 	int whichIntro;
+	int whichShield;
 	int smoothScroll;
 	int meleeScale;
 	BOOLEAN subTitles;
@@ -118,6 +119,7 @@ main (int argc, char *argv[])
 		/* .whichMenu = */          OPT_PC,
 		/* .whichFont = */          OPT_PC,
 		/* .whichIntro = */         OPT_3DO,
+		/* .whichShield	= */        OPT_PC,
 		/* .smoothScroll = */       OPT_PC,
 		/* .meleeScale = */         TFB_SCALE_TRILINEAR,
 		/* .subtitles = */          TRUE,
@@ -317,6 +319,7 @@ main (int argc, char *argv[])
 	optWhichMenu = options.whichMenu;
 	optWhichFonts = options.whichFonts;
 	optWhichIntro = options.whichIntro;
+	optWhichShield = options.whichShield;
 	optSmoothScroll = options.smoothScroll;
 	optMeleeScale = options.meleeScale;
 	optSubtitles = options.subTitles;
@@ -370,6 +373,7 @@ enum
 	CSCAN_OPT = 1000,
 	MENU_OPT,
 	FONT_OPT,
+	SHIELD_OPT,
 	SCROLL_OPT,
 	SOUND_OPT,
 	STEREOSFX_OPT,
@@ -406,6 +410,7 @@ static struct option longOptions[] =
 	{"cscan", 1, NULL, CSCAN_OPT},
 	{"menu", 1, NULL, MENU_OPT},
 	{"font", 1, NULL, FONT_OPT},
+	{"shield", 1, NULL, SHIELD_OPT},
 	{"scroll", 1, NULL, SCROLL_OPT},
 	{"sound", 1, NULL, SOUND_OPT},
 	{"stereosfx", 0, NULL, STEREOSFX_OPT},
@@ -656,6 +661,12 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 						&options->whichFonts) == -1)
 					badArg = TRUE;
 				break;
+			case SHIELD_OPT:
+				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
+						longOptions[optionIndex].name,
+						&options->whichShield) == -1)
+					badArg = TRUE;
+				break;
 			case SCROLL_OPT:
 				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
 						longOptions[optionIndex].name,
@@ -856,6 +867,9 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 			"(default %s)\n", PC_3DO_optString(defaultOptions->whichMenu));
 	fprintf (out, "  --font      : font types and colors (default %s)\n",
 			PC_3DO_optString(defaultOptions->whichFonts));
+	fprintf (out, "  --shield    : slave shield type; pc=static, "
+			"3do=throbbing (default %s)\n",
+			PC_3DO_optString(defaultOptions->whichShield));
 	fprintf (out, "  --scroll    : ff/frev during comm.  pc=per-page, "
 			"3do=smooth (default %s)\n",
 			PC_3DO_optString(defaultOptions->smoothScroll));

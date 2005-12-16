@@ -19,6 +19,7 @@
 #include "nameref.h"
 #include "resinst.h"
 #include "setup.h"
+#include "options.h"
 #include "planets/planets.h"
 #include "planets/scan.h"
 #include "libs/graphics/gfx_common.h"
@@ -612,7 +613,75 @@ CreateShieldMask (void)
 	return ShieldFrame;
 }
 
-// Apply the shield to the topo data
+// SetShieldThrobEffect adjusts the red levels in the shield glow graphic
+//  the throbbing cycle MUST be == 0 (mod MAP_WIDTH), or it will go
+//  out of sync with RenderLevelMasks()
+#define SHIELD_THROBS 6
+		// throb cycles per revolution
+#define THROB_CYCLE      ((MAP_WIDTH << 8) / SHIELD_THROBS)
+#define THROB_HALF_CYCLE (THROB_CYCLE >> 1)
+
+#define THROB_MAX_LEVEL 256
+#define THROB_MIN_LEVEL 100
+#define THROB_D_LEVEL   (THROB_MAX_LEVEL - THROB_MIN_LEVEL)
+
+static inline int
+shield_level (int offset)
+{
+	int level;
+
+	offset = (offset << 8) % THROB_CYCLE;
+	level = abs (offset - THROB_HALF_CYCLE);
+	level = THROB_MIN_LEVEL + level * THROB_D_LEVEL / THROB_HALF_CYCLE;
+
+	return level;
+}
+
+// See description above
+// offset is effectively the angle of rotation around the planet's axis
+static void
+SetShieldThrobEffect (FRAME ShieldFrame, int offset, FRAME ThrobFrame)
+{
+	int i;
+	int width, height;
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+	DWORD *rgba;
+	int level;
+
+	level = shield_level (offset);
+
+	width = GetFrameWidth (ShieldFrame);
+	height = GetFrameHeight (ShieldFrame);
+	getpixelarray (Orbit->ScratchArray, 4, ShieldFrame, width, height);
+	
+	for (i = 0, rgba = Orbit->ScratchArray; i < width * height; ++i, ++rgba)
+	{
+		DWORD p = *rgba;
+		int r, g, b, a;
+
+		r = (UBYTE)(p >> 24);
+		g = (UBYTE)(p >> 16);
+		b = (UBYTE)(p >> 8);
+		a = (UBYTE)(p);
+
+		if (a == 255)
+		{	// adjust color data for full-alpha pixels
+			r = r * level / THROB_MAX_LEVEL;
+			g = g * level / THROB_MAX_LEVEL;
+			b = b * level / THROB_MAX_LEVEL;
+		}
+		else if (a > 0)
+		{	// adjust alpha for translucent pixels
+			a = a * level / THROB_MAX_LEVEL;
+		}
+
+		*rgba = frame_mapRGBA (ThrobFrame, r, g, b, a);
+	}
+	
+	process_rgb_bmp (ThrobFrame, Orbit->ScratchArray, width, height);
+}
+
+// Apply the shield to the topo image
 static void
 ApplyShieldTint (void)
 {
@@ -669,7 +738,7 @@ get_map_elev (SBYTE *elevs, int x, int y, int offset)
 // offset is effectively the angle of rotation around the planet's axis
 // We use the SDL routines to directly write to the SDL_Surface to improve performance
 void
-RenderLevelMasks (int offset)
+RenderLevelMasks (int offset, BOOLEAN doThrob)
 {
 	POINT pt;
 	DWORD *rgba, *p_rgba;
@@ -678,6 +747,7 @@ RenderLevelMasks (int offset)
 	DWORD *pixels;
 	SBYTE *elevs;
 	FRAME MaskFrame;
+	int shLevel;
 
 #if PROFILE
 	static clock_t t = 0;
@@ -685,6 +755,9 @@ RenderLevelMasks (int offset)
 	clock_t t1;
 	t1 = clock ();
 #endif
+
+
+	shLevel = shield_level (offset);
 
 	rgba = pSolarSysState->Orbit.ScratchArray;
 	p_rgba = rgba;
@@ -755,7 +828,14 @@ RenderLevelMasks (int offset)
 
 				// The shield is glow + reflect (+ filter for others)
 				r = calc_map_light (SHIELD_REFLECT_COMP, diffus, 0);
-				r = r + SHIELD_GLOW_COMP + c[2];
+				r += SHIELD_GLOW_COMP;
+				
+				if (doThrob)
+				{	// adjust red level for throbbing shield
+					r = r * shLevel / THROB_MAX_LEVEL;
+				}
+
+				r += c[2];
 				if (r > 255)
 					r = 255;
 				c[2] = r;
@@ -1935,6 +2015,9 @@ rotate_planet_task (void *data)
 	COUNT zoom_arr[50];
 	COUNT zoom_amt, frame_num = 0, zoom_frames;
 	PLANET_ORBIT *Orbit;
+	FRAME OldShieldFrame = 0;
+	FRAME ShieldFrame = 0;
+	BOOLEAN doThrob = FALSE;
 
 	r.extent.width = 0;
 	zooming = TRUE;
@@ -1949,8 +2032,25 @@ rotate_planet_task (void *data)
 
 	i = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
 	init_x = (i == 1) ? (0) : (MAP_WIDTH - 1);
+
+	if (optWhichShield == OPT_3DO &&
+			pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+	{	// prepare the shield throb effect
+		doThrob = TRUE;
+
+		OldShieldFrame = Orbit->ObjectFrame;
+		ShieldFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP | WANT_ALPHA,
+				GetFrameWidth (OldShieldFrame),
+				GetFrameHeight (OldShieldFrame), 1));
+		SetFrameHot (ShieldFrame, GetFrameHot (OldShieldFrame));
+		Orbit->ObjectFrame = ShieldFrame;
+
+		SetShieldThrobEffect (OldShieldFrame, init_x, ShieldFrame);
+	}
+	
 	// Render the first planet frame
-	RenderLevelMasks (init_x);
+	RenderLevelMasks (init_x, doThrob);
 	pSolarSysState->Orbit.isPFADefined[init_x] = 1;
 
 	zoom_from = (UBYTE)TFB_Random () & 0x03;
@@ -2006,8 +2106,12 @@ rotate_planet_task (void *data)
 			// If this frame hasn't been generted, generate it
 			if (!Orbit->isPFADefined[x])
 			{
-				RenderLevelMasks (x);
+				RenderLevelMasks (x, doThrob);
 				Orbit->isPFADefined[x] = 1;
+			}
+			if (doThrob)
+			{	// prepare next throb frame
+				SetShieldThrobEffect (OldShieldFrame, x, ShieldFrame);
 			}
 			
 			if (zooming)
@@ -2028,7 +2132,13 @@ rotate_planet_task (void *data)
 			TimeIn = GetTimeCounter ();
 		} while (--view_index && !Task_ReadState (task, TASK_EXIT));
 	}
-	
+
+	if (OldShieldFrame)
+	{
+		Orbit->ObjectFrame = OldShieldFrame;
+		DestroyDrawable (ReleaseDrawable (ShieldFrame));
+	}
+
 	FinishTask (task);
 
 	return 0;

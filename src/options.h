@@ -35,6 +35,7 @@ extern int optWhichCoarseScan;
 extern int optWhichMenu;
 extern int optWhichFonts;
 extern int optWhichIntro;
+extern int optWhichShield;
 extern int optSmoothScroll;
 extern int optMeleeScale;
 

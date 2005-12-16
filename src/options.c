@@ -41,6 +41,7 @@ int optWhichCoarseScan;
 int optWhichMenu;
 int optWhichFonts;
 int optWhichIntro;
+int optWhichShield;
 int optSmoothScroll;
 int optMeleeScale;
 
