@@ -281,15 +281,21 @@ main (int argc, char *argv[])
 		const char *qstr = res_GetString ("config.audioquality");
 		if (!strcmp (qstr, "low"))
 		{
-			options.soundDriver = audio_QUALITY_LOW;
+			options.soundFlags &=
+					~(audio_QUALITY_MEDIUM | audio_QUALITY_HIGH);
+			options.soundFlags |= audio_QUALITY_LOW;
 		}
 		else if (!strcmp (qstr, "medium"))
 		{
-			options.soundDriver = audio_QUALITY_MEDIUM;
+			options.soundFlags &=
+					~(audio_QUALITY_HIGH | audio_QUALITY_LOW);
+			options.soundFlags |= audio_QUALITY_MEDIUM;
 		}
 		else if (!strcmp (qstr, "high"))
 		{
-			options.soundDriver = audio_QUALITY_HIGH;
+			options.soundFlags &=
+					~(audio_QUALITY_MEDIUM | audio_QUALITY_LOW);
+			options.soundFlags |= audio_QUALITY_HIGH;
 		}
 		else
 		{
