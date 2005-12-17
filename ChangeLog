@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed lockup when skipping past VUX beast analysis data in Starbase
+  (bug #790; should take care of all spliced comm edge cases) - Alex
 - Added 3DO-style throbbing slave shield (--shield; bug #32);
   special thanks to Nic for inspiration and some code - Alex
 - Rotating 3D planet changes: nicer looking slave shield; planet now
