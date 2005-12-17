@@ -1273,18 +1273,78 @@ Rewind:
 	CommData.AlienFrame = F;
 	do_subtitles ((void *)~0);
 
-	if (wait_track == (COUNT)~0)
+	if (!which_track || wait_track == (COUNT)~0)
+	{	// reached the end
 		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
+		return (FALSE);
+	}
+	
 	return (passed);
+}
+
+static BOOLEAN
+DoTalkSegue (COUNT wait_track)
+{
+	BOOLEAN done;
+
+	// Transition animation to talking state, if necessary
+	if (CommData.AlienTalkDesc.NumFrames)
+	{
+		if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+		{
+			CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
+			if (CommData.AlienTransitionDesc.NumFrames)
+				CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
+		}
+					
+		CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
+		if (CommData.AlienTalkDesc.NumFrames)
+			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
+		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
+		{	// wait until the trasition finishes
+			UnlockMutex (GraphicsLock);
+			TaskSwitch ();
+			LockMutex (GraphicsLock);
+		}
+	}
+
+	done = !SpewPhrases (wait_track);
+
+	// transition back to silent, if necessary
+	if (CommData.AlienTalkDesc.NumFrames)
+	{
+		// must set the TALK_DONE flag so that the animation task
+		// releases WAIT_TALKING from AlienTalkDesc
+		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+		if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
+			CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
+	}
+
+	return done;
+}
+
+static void
+FlushTalkSegue (void)
+{
+	FlushInput ();
+	while (AnyButtonPress (TRUE))
+		TaskSwitch ();
+
+	do
+		TaskSwitch ();
+	while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
 }
 
 void
 AlienTalkSegue (COUNT wait_track)
 {
-	BOOLEAN abort;
+	BOOLEAN done;
+
+	// this skips any talk segues that follow an aborted one
 	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
-			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
+			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE))
 		return;
+
 	LockMutex (GraphicsLock);
 
 	if (!pCurInputState->Initialized)
@@ -1354,46 +1414,24 @@ AlienTalkSegue (COUNT wait_track)
 
 		LastActivity &= ~CHECK_LOAD;
 	}
-	if (wait_track == (COUNT)~0 || CommData.AlienTalkDesc.NumFrames)
-	{
-		if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
-		{
-			CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
-			if (CommData.AlienTransitionDesc.NumFrames)
-				CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
-		}
-					
-		CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
-		if (CommData.AlienTalkDesc.NumFrames)
-			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
-		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
-		{
-			UnlockMutex (GraphicsLock);
-			TaskSwitch ();
-			LockMutex (GraphicsLock);
-		}
-	}
-
-	if (!(abort = SpewPhrases (wait_track)) || wait_track == (COUNT)~0)
+	
+	done = DoTalkSegue (wait_track);
+	if (done || wait_track == (COUNT)~0)
 		FadeMusic (FOREGROUND_VOL, ONE_SECOND);
-	else
-		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
-
-	if (wait_track == (COUNT)~0 || ! abort || CommData.AlienTalkDesc.NumFrames)
-	{
-		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-		if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-			CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
-	}
 
 	UnlockMutex (GraphicsLock);
-	FlushInput ();
-	while (AnyButtonPress (TRUE))
-		TaskSwitch ();
+	FlushTalkSegue ();
 
-	do
-		TaskSwitch ();
-	while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+	if (done || wait_track == (COUNT)~0)
+	{	// all done talking here
+		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+	}
+	else
+	{	// there is more to come
+		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_DONE;
+		// allow a transition to talking state again later
+		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
+	}
 }
 
 static BOOLEAN
@@ -1401,7 +1439,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 {
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 
-	if (!(CommData.AlienTransitionDesc.AnimFlags & (TALK_INTRO | TALK_DONE)))
+	if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_DONE))
 	{
 		AlienTalkSegue ((COUNT)~0);
 	}
@@ -1424,43 +1462,13 @@ DoCommunication (PENCOUNTER_STATE pES)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
+				// reset transition state
 				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
-				if (CommData.AlienTalkDesc.NumFrames)
-				{
-					if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
-					{
-						CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
-						if (CommData.AlienTransitionDesc.NumFrames)
-							CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
-					}
-					
-					CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
-					if (CommData.AlienTalkDesc.NumFrames)
-						CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
-					while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
-					{
-						UnlockMutex (GraphicsLock);
-						TaskSwitch ();
-						LockMutex (GraphicsLock);
-					}
-				}
-				
-				SpewPhrases (0);
-				
-				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-				if (CommData.AlienTalkDesc.NumFrames)
-				{
-					if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-						CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
-				}
-
+				DoTalkSegue (0);
 				UnlockMutex (GraphicsLock);
-				FlushInput ();
-				while (AnyButtonPress (TRUE))
-					TaskSwitch ();
-				do
-					TaskSwitch ();
-				while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+				FlushTalkSegue ();
+				// done one way or the other
+				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
@@ -1659,48 +1667,21 @@ DoCommunication (PENCOUNTER_STATE pES)
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
 				FeedbackPlayerPhrase (pES->phrase_buf);
-
+				// reset transition state
 				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
-				if (CommData.AlienTalkDesc.NumFrames)
-				{
-					if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
-					{
-						CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
-						if (CommData.AlienTransitionDesc.NumFrames)
-							CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
-					}
-					
-					CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
-					if (CommData.AlienTalkDesc.NumFrames)
-						CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
-					while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
-					{
-						UnlockMutex (GraphicsLock);
-						TaskSwitch ();
-						LockMutex (GraphicsLock);
-					}
-				}
+				DoTalkSegue (0);
 
-				SpewPhrases (0);
-
-				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-				if (CommData.AlienTalkDesc.NumFrames)
-				{
-					if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-						CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
-				}
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					RefreshResponses (pES);
 					FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 				}
+				
 				UnlockMutex (GraphicsLock);
-				FlushInput ();
-				while (AnyButtonPress (TRUE))
-					TaskSwitch ();
-				do
-					TaskSwitch ();
-				while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+				FlushTalkSegue ();
+				// done one way or the other
+				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+
 			}
 			else if (PulsedInputState.key[KEY_MENU_UP])
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
