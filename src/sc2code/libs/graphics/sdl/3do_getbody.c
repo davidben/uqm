@@ -54,7 +54,7 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	// handle transparency cases
 	if (img[cel_ct]->format->palette)
 	{	// indexed color image
-		if (ani[cel_ct].transparent_color != -1)
+		if (ani[cel_ct].transparent_color >= 0)
 		    SDL_SetColorKey (img[cel_ct], SDL_SRCCOLORKEY,
 					ani[cel_ct].transparent_color);
 	}
