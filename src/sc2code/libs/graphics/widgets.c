@@ -264,6 +264,77 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 	(void) x;
 }
 
+void
+Widget_DrawSlider(WIDGET *_self, int x, int y)
+{
+	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
+	COLOR oldtext;
+	COLOR inactive, default_color, selected;
+	FONT  oldfont = SetContextFont (StarConFont);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
+	TEXT t;
+	RECT r;
+	int tick = (SCREEN_WIDTH - x) / 8;
+	
+	default_color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
+	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
+	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
+
+	t.baseline.x = x;
+	t.baseline.y = y;
+	t.align = ALIGN_LEFT;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	t.pStr = self->category;
+	if (widget_focus == _self)
+	{
+		Widget_DrawToolTips (3, self->tooltip);		
+		oldtext = SetContextForeGroundColor (selected);
+	}
+	else
+	{
+		oldtext = SetContextForeGroundColor (default_color);
+	}
+	font_DrawText (&t);
+
+	r.corner.x = t.baseline.x + 3 * tick;
+	r.corner.y = t.baseline.y - 4;
+	r.extent.height = 2;
+	r.extent.width = 3 * tick;
+	DrawFilledRectangle (&r);
+
+	r.extent.width = 3;
+	r.extent.height = 8;
+	r.corner.y = t.baseline.y - 7;
+	r.corner.x = t.baseline.x + 3 * tick + (3 * tick * (self->value - self->min) /
+		(self->max - self->min)) - 1;
+	DrawFilledRectangle (&r);
+
+	(*self->draw_value)(self, t.baseline.x + 7 * tick, t.baseline.y);
+
+	SetContextFontEffect (oldFontEffect);
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldtext);
+}
+
+void
+Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y)
+{
+	TEXT t;
+	char buffer[16];
+
+	sprintf (buffer, "%d", self->value);
+
+	t.baseline.x = x;
+	t.baseline.y = y;
+	t.align = ALIGN_CENTER;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	t.pStr = buffer;
+
+	font_DrawText (&t);
+}
+
 int
 Widget_HeightChoice (WIDGET *_self)
 {
@@ -299,7 +370,7 @@ Widget_WidthFullScreen (WIDGET *_self)
 }
 
 int
-Widget_ReceiveFocusButton (WIDGET *_self, int event)
+Widget_ReceiveFocusSimple (WIDGET *_self, int event)
 {
 	widget_focus = _self;
 	(void)event;
@@ -389,6 +460,26 @@ Widget_HandleEventChoice (WIDGET *_self, int event)
 	}
 }
 
+int
+Widget_HandleEventSlider (WIDGET *_self, int event)
+{
+	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
+	switch (event)
+	{
+	case WIDGET_EVENT_LEFT:
+		self->value -= self->step;
+		if (self->value < self->min)
+			self->value = self->min;			
+		return TRUE;
+	case WIDGET_EVENT_RIGHT:
+		self->value += self->step;
+		if (self->value > self->max)
+			self->value = self->max;
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
 
 int
 Widget_HandleEventMenuScreen (WIDGET *_self, int event)

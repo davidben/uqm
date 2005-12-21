@@ -78,6 +78,7 @@ typedef struct globalopts_struct {
 	OPT_DEPTH depth;
 	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom, shield;
+	int speechvol, musicvol, sfxvol;
 } GLOBALOPTS;
 
 void SetupMenu (void);

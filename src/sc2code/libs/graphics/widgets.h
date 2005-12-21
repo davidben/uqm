@@ -96,6 +96,20 @@ typedef struct _widget_label {
 	const char **lines;
 } WIDGET_LABEL;
 
+typedef struct _widget_slider {
+	struct _widget *parent;
+	int (*handleEvent)(struct _widget *self, int event);
+	int (*receiveFocus)(struct _widget *self, int event);
+	void (*draw)(struct _widget *self, int x, int y);
+	int (*height)(struct _widget *self);
+	int (*width)(struct _widget *self);
+	void (*draw_value)(struct _widget_slider *self, int x, int y);
+	int min, max, step;
+	int value;
+	const char *category;
+	const char *tooltip[3];
+} WIDGET_SLIDER;
+
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
 
 int Widget_Event (int event);
@@ -104,11 +118,13 @@ int Widget_Event (int event);
 
 int Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event);
 int Widget_ReceiveFocusChoice (WIDGET *_self, int event);
-int Widget_ReceiveFocusButton (WIDGET *_self, int event);
+int Widget_ReceiveFocusSimple (WIDGET *_self, int event);
+int Widget_ReceiveFocusSlider (WIDGET *_self, int event);
 int Widget_ReceiveFocusRefuseFocus (WIDGET *_self, int event);
 
 int Widget_HandleEventMenuScreen (WIDGET *_self, int event);
 int Widget_HandleEventChoice (WIDGET *_self, int event);
+int Widget_HandleEventSlider (WIDGET *_self, int event);
 int Widget_HandleEventIgnoreAll (WIDGET *_self, int event);
 
 int Widget_HeightChoice (WIDGET *_self);
@@ -122,11 +138,14 @@ void Widget_DrawMenuScreen (WIDGET *_self, int x, int y);
 void Widget_DrawChoice (WIDGET *_self, int x, int y);
 void Widget_DrawButton (WIDGET *_self, int x, int y);
 void Widget_DrawLabel (WIDGET *_self, int x, int y);
+void Widget_DrawSlider (WIDGET *_self, int x, int y);
+
+void Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y);
 
 /* "Constructor" macros */
 
 #define BUTTON_INIT(handler, name, ttip1, ttip2, ttip3) { \
-	NULL, handler, Widget_ReceiveFocusButton, Widget_DrawButton, \
+	NULL, handler, Widget_ReceiveFocusSimple, Widget_DrawButton, \
 	Widget_HeightOneLine, Widget_WidthFullScreen, \
 	(name), { (ttip1), (ttip2), (ttip3) } }
 
@@ -142,5 +161,10 @@ void Widget_DrawLabel (WIDGET *_self, int x, int y);
 		Widget_ReceiveFocusMenuScreen, \
 		Widget_DrawMenuScreen, Widget_HeightFullScreen, \
 		Widget_WidthFullScreen
+
+#define SLIDER_PREFACE NULL, Widget_HandleEventSlider, \
+		Widget_ReceiveFocusSimple, Widget_DrawSlider, \
+		Widget_HeightOneLine, Widget_WidthFullScreen, \
+		Widget_Slider_DrawValue
 
 #endif /* _WIDGETS_H */

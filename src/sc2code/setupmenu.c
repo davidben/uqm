@@ -329,6 +329,12 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Sound Quality", 3, 3, aquality_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Slave Shields", 2, 2, shield_opts, 0, 0 } };
 
+static WIDGET_SLIDER sliders_opts[] = {
+	{ SLIDER_PREFACE, 0, 100, 5, 75, "Music Volume", { "Sets the music volume.", "", "" } },
+	{ SLIDER_PREFACE, 0, 100, 5, 75, "SFX Volume", { "Sets the sound effects volume.", "", "" } },
+	{ SLIDER_PREFACE, 0, 100, 5, 75, "Speech Volume", { "Sets the speech volume.", "", "" } }, 
+};
+
 static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
 		"Quit Setup Menu", 
 		"Return to the main menu.", "", "");
@@ -386,6 +392,9 @@ static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *audio_widgets[] = {
+	(WIDGET *)(&sliders_opts[0]),
+	(WIDGET *)(&sliders_opts[1]),
+	(WIDGET *)(&sliders_opts[2]),
 	(WIDGET *)(&cmdline_opts[15]),
 	(WIDGET *)(&cmdline_opts[10]),
 	(WIDGET *)(&prev_button) };
@@ -437,7 +446,7 @@ static WIDGET_MENU_SCREEN audio_menu = {
 	"Ur-Quan Masters Setup",
 	"Audio Options",
 	{ {0, 0}, NULL },
-	3, audio_widgets,
+	6, audio_widgets,
 	0 };
 
 static WIDGET_MENU_SCREEN engine_menu = {
@@ -610,6 +619,10 @@ SetDefaults (void)
 	cmdline_opts[16].selected = opts.adriver;
 	cmdline_opts[17].selected = opts.aquality;
 	cmdline_opts[18].selected = opts.shield;
+
+	sliders_opts[0].value = opts.musicvol;
+	sliders_opts[1].value = opts.sfxvol;
+	sliders_opts[2].value = opts.speechvol;
 }
 
 static void
@@ -636,6 +649,9 @@ PropagateResults (void)
 	opts.aquality = cmdline_opts[17].selected;
 	opts.shield = cmdline_opts[18].selected;
 
+	opts.musicvol = sliders_opts[0].value;
+	opts.sfxvol = sliders_opts[1].value;
+	opts.speechvol = sliders_opts[2].value;
 	SetGlobalOptions (&opts);
 }
 
@@ -888,6 +904,10 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		opts->res = OPTVAL_CUSTOM;
 		break;
 	}
+
+	opts->musicvol = (((int)(musicVolumeScale * 100.0f) + 2) / 5) * 5;
+	opts->sfxvol = (((int)(sfxVolumeScale * 100.0f) + 2) / 5) * 5;
+	opts->speechvol = (((int)(speechVolumeScale * 100.0f) + 2) / 5) * 5;
 }
 
 void
@@ -1055,6 +1075,13 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		/* Shouldn't happen; leave config untouched */
 		break;
 	}
+
+	res_PutInteger ("config.musicvol", opts->musicvol);
+	res_PutInteger ("config.sfxvol", opts->sfxvol);
+	res_PutInteger ("config.speechvol", opts->speechvol);
+	musicVolumeScale = opts->musicvol / 100.0f;
+	sfxVolumeScale = opts->sfxvol / 100.0f;
+	speechVolumeScale = opts->speechvol / 100.0f;
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
 }

@@ -308,6 +308,21 @@ main (int argc, char *argv[])
 	{
 		options.whichShield = res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
 	}
+	if (res_HasKey ("config.musicvol"))
+	{
+		int err = parseVolume(res_GetString ("config.musicvol"), 
+				&options.musicVolumeScale, "music volume");
+	}		
+	if (res_HasKey ("config.sfxvol"))
+	{
+		int err = parseVolume(res_GetString ("config.sfxvol"), 
+				&options.sfxVolumeScale, "SFX volume");
+	}		
+	if (res_HasKey ("config.speechvol"))
+	{
+		int err = parseVolume(res_GetString ("config.speechvol"), 
+				&options.speechVolumeScale, "speech volume");
+	}		
 
 	optionsResult = parseOptions(argc, argv, &options);
 	if (optionsResult != 0)
