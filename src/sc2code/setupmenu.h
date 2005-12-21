@@ -34,7 +34,8 @@ typedef enum {
 	OPTVAL_BILINEAR_SCALE,
 	OPTVAL_BIADAPT_SCALE,
 	OPTVAL_BIADV_SCALE,
-	OPTVAL_TRISCAN_SCALE
+	OPTVAL_TRISCAN_SCALE,
+	OPTVAL_HQXX_SCALE,
 } OPT_SCALETYPE;
 
 typedef enum {
@@ -76,7 +77,7 @@ typedef struct globalopts_struct {
 	OPT_AQUALITYTYPE aquality;
 	OPT_DEPTH depth;
 	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
-	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom;
+	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom, shield;
 } GLOBALOPTS;
 
 void SetupMenu (void);

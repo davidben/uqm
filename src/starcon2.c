@@ -206,6 +206,8 @@ main (int argc, char *argv[])
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
 		else if (!strcmp (optarg, "triscan"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
+		else if (!strcmp (optarg, "hq"))
+			options.gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;	
 	}
 	if (res_HasKey ("config.scanlines") && res_GetBoolean ("config.scanlines"))
 	{
@@ -301,6 +303,10 @@ main (int argc, char *argv[])
 		{
 			/* Can't figure it out, leave as initial default */
 		}
+	}
+	if (res_HasKey ("config.pulseshield"))
+	{
+		options.whichShield = res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
 	}
 
 	optionsResult = parseOptions(argc, argv, &options);

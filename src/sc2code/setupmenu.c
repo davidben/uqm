@@ -79,7 +79,11 @@ static CHOICE_OPTION scaler_opts[] = {
 	  { "An interpolating scaler.",
 	    "Produces sharp edges, but at a higher resolution.",
 	    "Based on the Scale2x algorithm.",
-	  } } };
+	  } },
+	{ "HQ",
+	  { "A high quality, very expensive interpolating scaler.",
+		"Produces sharp edges, but at a higher resolution.",
+		"Based on the HQ2X algorithm.", } } };
 
 static CHOICE_OPTION scanlines_opts[] = {
 	{ "Disabled",
@@ -195,6 +199,18 @@ static CHOICE_OPTION subtitles_opts[] = {
 		  ""
 		} } };
 
+static CHOICE_OPTION shield_opts[] = {
+	{ "Static",
+		{ "Slave shields maintain a static glow.",
+		  "This mimics the PC version.",
+		  ""
+		} },
+	{ "Pulsating",
+		{ "Slave shields pulsate.",
+		  "This mimics the 3do verion.",
+		  ""
+		} } };
+
 static CHOICE_OPTION res_opts[] = {
 	{ "320x240",
 		{ "320x240 resolution.",
@@ -296,7 +312,7 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, res_opts, 0, 0},
 	{ CHOICE_PREFACE, "Use Framebuffer?", 2, 2, driver_opts, 0, 0},
 	{ CHOICE_PREFACE, "Color depth", 3, 3, bpp_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scaler", 5, 3, scaler_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Scaler", 6, 3, scaler_opts, 0, 0 },
   	{ CHOICE_PREFACE, "Scanlines", 2, 3, scanlines_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Menu Style", 2, 2, menu_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Font Style", 2, 2, font_opts, 0, 0 },
@@ -310,7 +326,8 @@ static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Melee Zoom", 2, 2, meleezoom_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Positional Audio", 2, 2, stereo_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Sound Driver", 3, 3, adriver_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Sound Quality", 3, 3, aquality_opts, 0, 0 } };
+	{ CHOICE_PREFACE, "Sound Quality", 3, 3, aquality_opts, 0, 0 },
+	{ CHOICE_PREFACE, "Slave Shields", 2, 2, shield_opts, 0, 0 } };
 
 static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
 		"Quit Setup Menu", 
@@ -370,6 +387,7 @@ static WIDGET *graphics_widgets[] = {
 
 static WIDGET *audio_widgets[] = {
 	(WIDGET *)(&cmdline_opts[15]),
+	(WIDGET *)(&cmdline_opts[10]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *engine_widgets[] = {
@@ -380,7 +398,7 @@ static WIDGET *engine_widgets[] = {
 	(WIDGET *)(&cmdline_opts[9]),
 	(WIDGET *)(&cmdline_opts[14]),
 	(WIDGET *)(&cmdline_opts[12]),
-	(WIDGET *)(&cmdline_opts[10]),
+	(WIDGET *)(&cmdline_opts[18]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *advanced_widgets[] = {
@@ -419,7 +437,7 @@ static WIDGET_MENU_SCREEN audio_menu = {
 	"Ur-Quan Masters Setup",
 	"Audio Options",
 	{ {0, 0}, NULL },
-	2, audio_widgets,
+	3, audio_widgets,
 	0 };
 
 static WIDGET_MENU_SCREEN engine_menu = {
@@ -591,6 +609,7 @@ SetDefaults (void)
 	cmdline_opts[15].selected = opts.stereo;
 	cmdline_opts[16].selected = opts.adriver;
 	cmdline_opts[17].selected = opts.aquality;
+	cmdline_opts[18].selected = opts.shield;
 }
 
 static void
@@ -615,6 +634,7 @@ PropagateResults (void)
 	opts.stereo = cmdline_opts[15].selected;
 	opts.adriver = cmdline_opts[16].selected;
 	opts.aquality = cmdline_opts[17].selected;
+	opts.shield = cmdline_opts[18].selected;
 
 	SetGlobalOptions (&opts);
 }
@@ -735,6 +755,10 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	{
 		opts->scaler = OPTVAL_TRISCAN_SCALE;
 	} 
+	else if (GfxFlags & TFB_GFXFLAGS_SCALE_HQXX)
+	{
+		opts->scaler = OPTVAL_HQXX_SCALE;
+	}
 	else
 	{
 		opts->scaler = OPTVAL_NO_SCALE;
@@ -749,6 +773,7 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->cscan = (optWhichCoarseScan == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->scroll = (optSmoothScroll == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->intro = (optWhichIntro == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
+	opts->shield = (optWhichShield == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->fps = (GfxFlags & TFB_GFXFLAGS_SHOWFPS) ? 
 			OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->meleezoom = (optMeleeScale == TFB_SCALE_TRILINEAR) ? 
@@ -948,6 +973,10 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		NewGfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
 		res_PutString ("config.scaler", "triscan");
 		break;
+	case OPTVAL_HQXX_SCALE:
+		NewGfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;
+		res_PutString ("config.scaler", "hq");
+		break;
 	default:
 		/* OPTVAL_NO_SCALE has no equivalent in gfxflags. */
 		res_PutString ("config.scaler", "no");
@@ -983,6 +1012,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichFonts = (opts->text == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichCoarseScan = (opts->cscan == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optSmoothScroll = (opts->scroll == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
+	optWhichShield = (opts->shield == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 
 	res_PutBoolean ("config.subtitles", opts->subtitles == OPTVAL_ENABLED);
 	res_PutBoolean ("config.textmenu", opts->menu == OPTVAL_PC);
@@ -995,6 +1025,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutBoolean ("config.showfps", opts->fps == OPTVAL_ENABLED);
 	res_PutBoolean ("config.smoothmelee", opts->meleezoom == OPTVAL_3DO);
 	res_PutBoolean ("config.positionalsfx", opts->stereo == OPTVAL_ENABLED); 
+	res_PutBoolean ("config.pulseshield", opts->shield == OPTVAL_3DO);
 
 	switch (opts->adriver) {
 	case OPTVAL_SILENCE:
