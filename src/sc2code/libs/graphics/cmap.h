@@ -56,7 +56,7 @@ extern void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index);
 extern TFB_ColorMap * TFB_GetColorMap (int index);
 extern void TFB_ReturnColorMap (TFB_ColorMap *map);
 
-extern BOOLEAN XFormColorMap_step ();
+extern BOOLEAN XFormColorMap_step (void);
 
 
 #endif

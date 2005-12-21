@@ -428,7 +428,7 @@ finish_colormap_xform (int which)
  * Only one thread should ever be allowed to be calling this at any time
  */
 BOOLEAN
-XFormColorMap_step ()
+XFormColorMap_step (void)
 {
 	BOOLEAN Changed = FALSE;
 	int x;
