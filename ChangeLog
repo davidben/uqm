@@ -1,4 +1,7 @@
 Changes towards version 0.5:
+- Comm animation fixes (bugs 557, 705, 806); from chmmravatar, Alex
+- Imported DOS versions of alien comm graphics which have richer
+  palettes and look better in most cases (bug #314) - Alex
 - Added slider controls for volume to setup menu - Michael
 - Added --shield and --scaler hq to setup menu - Michael
 - Fixed lockup when skipping past VUX beast analysis data in Starbase
