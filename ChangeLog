@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed PNG transparency info (tRNS chunk) in all images according
+  to info specified by .ani - Alex
 - Comm animation fixes (bugs 557, 705, 806); from chmmravatar, Alex
 - Imported DOS versions of alien comm graphics which have richer
   palettes and look better in most cases (bug #314) - Alex
