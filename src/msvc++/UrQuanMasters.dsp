@@ -4005,7 +4005,43 @@ SOURCE=..\uqmversion.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\doc\devel\aniformat
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\checklist
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\debug
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\dialogs
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\doc\devel\files
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\fontres
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\generate
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\gfxlib
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\gfxres
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\gfxversions
 # End Source File
 # Begin Source File
 
@@ -4013,7 +4049,67 @@ SOURCE=..\..\doc\devel\glossary
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\doc\devel\graphicslock
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\input
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\musicres
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\pkgformat
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\planetrender
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\planetrotate
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\plugins
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\resources
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\doc\devel\script
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\sfx
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\strtab
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\threads
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\devel\timing
+# End Source File
+# End Group
+# Begin Group "Users"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\doc\users\manual.txt
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\users\unixinstall
 # End Source File
 # End Group
 # Begin Source File
