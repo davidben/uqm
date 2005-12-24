@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Added the rest of devel/ and users/ documentation into MSVC .dsp
+  files (but #589) -- Michael
 - Fixed PNG transparency info (tRNS chunk) in all images according
   to info specified by .ani - Alex
 - Comm animation fixes (bugs 557, 705, 806); from chmmravatar, Alex
