@@ -1049,7 +1049,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 
 	switch (opts->adriver) {
 	case OPTVAL_SILENCE:
-		res_PutString ("config.audiodriver", "silence");
+		res_PutString ("config.audiodriver", "none");
 		break;
 	case OPTVAL_MIXSDL:
 		res_PutString ("config.audiodriver", "mixsdl");
