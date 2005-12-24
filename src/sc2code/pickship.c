@@ -272,7 +272,7 @@ OldContext = SetContext (SpaceContext);
 		UnlockMutex (GraphicsLock);
 		pMenuState = &MenuState;
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput ((PVOID)&MenuState, TRUE);
+		DoInput ((PVOID)&MenuState, FALSE);
 		pMenuState = 0;
 		LockMutex (GraphicsLock);
 

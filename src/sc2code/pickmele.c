@@ -342,7 +342,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 	UnlockMutex (GraphicsLock);
 	ResetKeyRepeat ();
-	DoInput ((PVOID)&gmstate, TRUE);
+	DoInput ((PVOID)&gmstate, FALSE);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL_PTR, (FRAME)0);
