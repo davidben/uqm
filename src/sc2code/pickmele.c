@@ -299,18 +299,19 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 
-		PressState = AnyButtonPress (TRUE);
+		PressState = PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_CANCEL];
 		do
 		{
-			ButtonState = AnyButtonPress (TRUE);
+			UpdateInputState ();
+			ButtonState = PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_CANCEL];
 			if (PressState)
 			{
 				PressState = ButtonState;
 				ButtonState = FALSE;
 			}
-		} while (!ButtonState
+		} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
 				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut));
+				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut)));
 
 		LockMutex (GraphicsLock);
 

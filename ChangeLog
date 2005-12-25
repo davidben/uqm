@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Only SELECT and CANCEL trigger the fade-to-black at the end of a
+  Super Melee, solving the issue in bug #547 - Michael
 - Admiral ZEX is no longer referred to as "Commander" or "Zex" (bug 
   #811) - Michael
 - Keypress status is not reset when entering battle mode (solves
