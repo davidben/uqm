@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Admiral ZEX is no longer referred to as "Commander" or "Zex" (bug 
+  #811) - Michael
 - Keypress status is not reset when entering battle mode (solves
   bug #596) - Michael  
 - Added the rest of devel/ and users/ documentation into MSVC .dsp

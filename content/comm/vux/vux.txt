@@ -88,7 +88,7 @@ I am afraid this is all that I know.
 I hope it is sufficient.
 
 #(i_have_beast)
-Commander ZEX, we have captured the hideous monster from Delta Lyncis. Let us make an exchange.
+Admiral ZEX, we have captured the hideous monster from Delta Lyncis. Let us make an exchange.
 
 #(GIVE_BEAST)	vux010.ogg
 Ah, a most excellent piece of news! My chiton rasps and moistens with excitement!
@@ -126,7 +126,7 @@ behind me?
 WH- Wh- what- wh- AIEEEEE!!!!!...
 
 #(why_trust_1)
-Ah, Commander ZEX, aren't you forgetting something? The Shofixti Maidens?
+Ah, Admiral ZEX, aren't you forgetting something? The Shofixti Maidens?
 
 #(TRUST_1)	vux013.ogg
 Oh yes, no problem. Even now my subordinates are bringing them up from the surface.
@@ -141,7 +141,7 @@ If I say that the Shofixti Maidens are on their way up from the surface, then th
 You will have them shortly, accept my word... now please, Captain, the beast?
 
 #(why_trust_3)
-Now see here Zex! Humans and VUX have had a pretty stormy relationship. Why should we trust you?
+Now see here ZEX! Humans and VUX have had a pretty stormy relationship. Why should we trust you?
 
 #(TRUST_3)	vux015.ogg
 Really, Captain! My honor is impugned!
@@ -154,14 +154,14 @@ With my influence, the High Council could easily have been swayed to view
 the Human cause in a more favorable light.
 
 #(why_dont_you_attack)
-Admiral Zex, why don't you attack us, as all other VUX have?
+Admiral ZEX, why don't you attack us, as all other VUX have?
 
 #(LIKE_YOU)	vux016.ogg
 Because I like Humans, Captain. I respect and admire your species.
 I do not share the bigoted views of most of my people.
 
 #(why_like_me)
-Ah, Commander Zex? Why do you like us? We thought all VUX hated humans.
+Ah, Admiral ZEX? Why do you like us? We thought all VUX hated humans.
 
 #(LIKE_BECAUSE)	vux017.ogg
 No, No, not all VUX, Captain! Most... but not all.
@@ -179,7 +179,7 @@ leaving other parts bare and smooth! Mmmmmm!
 I value your species, Captain. I see you as just `people'... like us VUX.
 
 #(are_you_a_pervert)
-Whoa, Commander Zex! This is just a bit too weird. Are you some kind of perv-- er... aesthete?
+Whoa, Admiral ZEX! This is just a bit too weird. Are you some kind of perv-- er... aesthete?
 
 #(CALL_ME_WHAT_YOU_WISH)	vux018.ogg
 You have talked with my VUX countrymen, haven't you?
@@ -222,7 +222,7 @@ We will fight you regardless of your Precursor Artifact!
 Very well... to the Death!
 
 #(you_lied)
-You lied, Commander Zex!!! There was no `warp nullification field'! Cheater!
+You lied, Admiral ZEX!!! There was no `warp nullification field'! Cheater!
 
 #(YUP_LIED)	vux021.ogg
 Yes, I lied.
@@ -240,7 +240,7 @@ You cannot beat me here. It is impossible.
 But... if a fight is what you demand, so be it.
 
 #(bye_zex)
-Goodbye, Commander ZEX.
+Goodbye, Admiral ZEX.
 
 #(GOODBYE_ZEX)	vux023.ogg
 Goodbye, beautiful human. I hope we can meet someday as friends... perhaps even more.
