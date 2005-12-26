@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed the problem with Melnorme stripping Chmmr bomb/crystal
+  modules from the ship in a fuel deal (bug #803) - Alex
 - Corrected baseline of 'j' in Micro font (bug #797) - Alex
 - Fixed small VUX animation glitch (out of order frames; bug #808) - Alex
 - CANCEL now behaves as expected in setup menu - Michael
