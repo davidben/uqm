@@ -191,8 +191,15 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.alwaysgl"))
 	{
-		options.gfxDriver = res_GetBoolean ("config.alwaysgl") ? 
-				TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
+		if (res_GetBoolean ("config.alwaysgl"))
+		{
+			options.gfxDriver = TFB_GFXDRIVER_SDL_OPENGL;
+		}
+	}
+	if (res_HasKey ("config.usegl"))
+	{
+		options.gfxDriver = res_GetBoolean ("config.usegl") ? TFB_GFXDRIVER_SDL_OPENGL :
+			TFB_GFXDRIVER_SDL_PURE;
 	}
 	if (res_HasKey ("config.scaler"))
 	{

@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Split config.alwaysgl and config.usegl so that "Use Pure Mode If Possible"
+  persists across runs even when using a GL mode - Michael
 - Fixed Yehat Rebel left hand doubling up problem (bug #807) - Alex
 - Fixed the problem with Melnorme stripping Chmmr bomb/crystal
   modules from the ship in a fuel deal (bug #803) - Alex

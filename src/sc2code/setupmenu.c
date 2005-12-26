@@ -841,17 +841,18 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		break;
 	}
 
+	/* Work out resolution.  On the way, try to guess a good default
+	 * for config.alwaysgl, then overwrite it if it was set previously. */
+	opts->driver = OPTVAL_PURE_IF_POSSIBLE;
 	switch (ScreenWidthActual)
 	{
 	case 320:
 		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
 		{
 			opts->res = OPTVAL_320_240;
-			opts->driver = OPTVAL_PURE_IF_POSSIBLE;
 		}
 		else
 		{
-			opts->driver = OPTVAL_ALWAYS_GL;
 			if (ScreenHeightActual != 240)
 			{
 				opts->res = OPTVAL_CUSTOM;
@@ -859,6 +860,7 @@ GetGlobalOptions (GLOBALOPTS *opts)
 			else
 			{
 				opts->res = OPTVAL_320_240;
+				opts->driver = OPTVAL_ALWAYS_GL;
 			}
 		}
 		break;
@@ -866,11 +868,9 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		if (GraphicsDriver == TFB_GFXDRIVER_SDL_PURE)
 		{
 			opts->res = OPTVAL_640_480;
-			opts->driver = OPTVAL_PURE_IF_POSSIBLE;
 		}
 		else
 		{
-			opts->driver = OPTVAL_ALWAYS_GL;
 			if (ScreenHeightActual != 480)
 			{
 				opts->res = OPTVAL_CUSTOM;
@@ -878,11 +878,11 @@ GetGlobalOptions (GLOBALOPTS *opts)
 			else
 			{
 				opts->res = OPTVAL_640_480;
+				opts->driver = OPTVAL_ALWAYS_GL;
 			}
 		}
 		break;
 	case 800:
-		opts->driver = OPTVAL_ALWAYS_GL;
 		if (ScreenHeightActual != 600)
 		{
 			opts->res = OPTVAL_CUSTOM;
@@ -893,7 +893,6 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 		break;
 	case 1024:
-		opts->driver = OPTVAL_ALWAYS_GL;
 		if (ScreenHeightActual != 768)
 		{
 			opts->res = OPTVAL_CUSTOM;
@@ -904,9 +903,20 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}		
 		break;
 	default:
-		opts->driver = OPTVAL_ALWAYS_GL;
 		opts->res = OPTVAL_CUSTOM;
 		break;
+	}
+
+	if (res_HasKey ("config.alwaysgl"))
+	{
+		if (res_GetBoolean ("config.alwaysgl"))
+		{
+			opts->driver = OPTVAL_ALWAYS_GL;
+		}
+		else
+		{
+			opts->driver = OPTVAL_PURE_IF_POSSIBLE;
+		}
 	}
 
 	opts->musicvol = (((int)(musicVolumeScale * 100.0f) + 2) / 5) * 5;
@@ -978,7 +988,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutInteger ("config.resheight", NewHeight);
 	res_PutInteger ("config.bpp", NewDepth);
 	res_PutBoolean ("config.alwaysgl", opts->driver == OPTVAL_ALWAYS_GL);
-
+	res_PutBoolean ("config.usegl", NewDriver == TFB_GFXDRIVER_SDL_OPENGL);
 
 	switch (opts->scaler) {
 	case OPTVAL_BILINEAR_SCALE:
