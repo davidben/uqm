@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Corrected baseline of 'j' in Micro font (bug #797) - Alex
 - Fixed small VUX animation glitch (out of order frames; bug #808) - Alex
 - CANCEL now behaves as expected in setup menu - Michael
 - Only SELECT and CANCEL trigger the fade-to-black at the end of a
