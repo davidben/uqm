@@ -221,10 +221,9 @@ ShipWorth (void)
 
 		which_module = GLOBAL_SIS (ModuleSlots[i]);
 		if (which_module < BOMB_MODULE_0
-				|| which_module != CREW_POD
-				|| ++crew_pods > 0)
+				&& (which_module != CREW_POD || ++crew_pods > 0))
 		{
-			worth += GLOBAL (ModuleCost[i]);
+			worth += GLOBAL (ModuleCost[which_module]);
 		}
 	}
 
@@ -363,7 +362,8 @@ StripShip (COUNT fuel_required)
 					break;
 				case CREW_POD:
 					i = HIBYTE (LOWORD (rand_val)) % NUM_MODULE_SLOTS;
-					if ((which_module = SIS_copy.ModuleSlots[i]) >= EMPTY_SLOT
+					which_module = SIS_copy.ModuleSlots[i];
+					if (which_module >= BOMB_MODULE_0
 							|| which_module == FUEL_TANK
 							|| which_module == HIGHEFF_FUELSYS
 							|| (which_module == STORAGE_BAY
