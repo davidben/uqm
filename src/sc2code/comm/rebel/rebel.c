@@ -39,24 +39,24 @@ static LOCDATA yehat_desc =
 	0, /* AlienSongFlags */
 	REBEL_CONVERSATION_PHRASES, /* PlayerPhrases */
 	15, /* NumAnimations */
-	{
-		{
+	{ /* AlienAmbientArray (ambient animations) */
+		{ /* right hand-wing tapping keyboard; front guy */
 			4, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
-			(1 << 6),
+			(1 << 6) | (1 << 7),
 		},
-		{
+		{ /* left hand-wing tapping keyboard; front guy */
 			7, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM
 					| WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 10, ONE_SECOND / 10, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
-			(1 << 6),
+			(1 << 6) | (1 << 7),
 		},
 		{
 			10, /* StartIndex */
@@ -90,7 +90,7 @@ static LOCDATA yehat_desc =
 			ONE_SECOND * 10, ONE_SECOND * 3,/* RestartRate */
 			(1 << 3),
 		},
-		{
+		{ /* right arm-wing rising; front guy */
 			26, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM
@@ -99,7 +99,7 @@ static LOCDATA yehat_desc =
 			ONE_SECOND * 10, ONE_SECOND * 3,/* RestartRate */
 			(1 << 0) | (1 << 1),
 		},
-		{
+		{ /* left arm-wing rising; front guy */
 			28, /* StartIndex */
 			2, /* NumFrames */
 			YOYO_ANIM
@@ -166,7 +166,7 @@ static LOCDATA yehat_desc =
 			(1 << 2) | (1 << 4),
 		},
 	},
-	{
+	{ /* AlienTransitionDesc - empty */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -174,7 +174,7 @@ static LOCDATA yehat_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
