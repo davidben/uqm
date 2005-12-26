@@ -412,18 +412,18 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 
 		if (fade_amount < 255)
 		{
-			c = fade_amount / 255.0f;
-			glBlendFunc (GL_DST_COLOR, GL_ZERO);
+			c = (255 - fade_amount) / 255.0f;
+			glColor4f (0, 0, 0, c);
 		}
 		else
 		{
 			c = (fade_amount - 255) / 255.0f;
-			glBlendFunc (GL_ONE, GL_ONE);
+			glColor4f (1, 1, 1, c);
 		}
 
 		glDisable (GL_TEXTURE_2D);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable (GL_BLEND);
-		glColor4f (c, c, c, 1);
 
 		TFB_GL_DrawQuad ();
 	}
