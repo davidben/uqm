@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- CANCEL now behaves as expected in setup menu - Michael
 - Only SELECT and CANCEL trigger the fade-to-black at the end of a
   Super Melee, solving the issue in bug #547 - Michael
 - Admiral ZEX is no longer referred to as "Commander" or "Zex" (bug 

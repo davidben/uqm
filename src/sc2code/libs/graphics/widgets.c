@@ -494,6 +494,11 @@ Widget_HandleEventMenuScreen (WIDGET *_self, int event)
 	case WIDGET_EVENT_DOWN:
 		dx = 1;
 		break;
+	case WIDGET_EVENT_CANCEL:
+		/* On cancel, shift focus to last element and send a SELECT. */
+		self->highlighted = self->num_children - 1;
+		widget_focus = self->child[self->highlighted];
+		return (widget_focus->handleEvent)(widget_focus, WIDGET_EVENT_SELECT);
 	default:
 		return FALSE;
 	}

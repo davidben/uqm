@@ -731,11 +731,15 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	{
 		Widget_Event (WIDGET_EVENT_SELECT);
 	}
+	if (PulsedInputState.key[KEY_MENU_CANCEL])
+	{
+		Widget_Event (WIDGET_EVENT_CANCEL);
+	}
 
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
 	return !((GLOBAL (CurrentActivity) & CHECK_ABORT) || 
-		 PulsedInputState.key[KEY_MENU_CANCEL] || (next == NULL));
+		 (next == NULL));
 }
 
 void
