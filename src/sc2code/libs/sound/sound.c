@@ -138,7 +138,8 @@ UninitSound (void)
 {
 }
 
-void SetSFXVolume (float volume)
+void
+SetSFXVolume (float volume)
 {
 	int i;
 	for (i = FIRST_SFX_SOURCE; i <= LAST_SFX_SOURCE; ++i)
@@ -147,7 +148,8 @@ void SetSFXVolume (float volume)
 	}	
 }
 
-void SetSpeechVolume (float volume)
+void
+SetSpeechVolume (float volume)
 {
 	audio_Sourcef (soundSource[SPEECH_SOURCE].handle, audio_GAIN, volume);
 }
