@@ -1096,6 +1096,9 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	musicVolumeScale = opts->musicvol / 100.0f;
 	sfxVolumeScale = opts->sfxvol / 100.0f;
 	speechVolumeScale = opts->speechvol / 100.0f;
+	// update actual volumes
+	SetMusicVolume (musicVolume);
+	SetSpeechVolume (speechVolumeScale);
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
 }
