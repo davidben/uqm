@@ -503,6 +503,7 @@ quit_sub_menu (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_SELECT);
 		return TRUE;
 	}
 	(void)self;
@@ -515,6 +516,7 @@ do_graphics (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&graphics_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -527,6 +529,7 @@ do_audio (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&audio_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -539,6 +542,7 @@ do_engine (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&engine_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -551,6 +555,7 @@ do_resources (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&resources_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -563,6 +568,7 @@ do_keyconfig (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&keyconfig_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -575,6 +581,7 @@ do_advanced (WIDGET *self, int event)
 	if (event == WIDGET_EVENT_SELECT)
 	{
 		next = (WIDGET *)(&advanced_menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
 	(void)self;
@@ -666,6 +673,7 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 
 		current = NULL;
 		next = (WIDGET *)(&menu);
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		
 		pInputState->initialized = TRUE;
 	}
@@ -697,7 +705,6 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	if (current != next)
 	{
 		SetTransitionSource (NULL);
-		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 	}
 	
 	BatchGraphics ();

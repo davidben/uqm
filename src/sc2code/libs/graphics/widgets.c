@@ -402,11 +402,18 @@ Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event)
 		dx = -1;
 		last_x = -1;
 	}
-	else
+	else if (event == WIDGET_EVENT_DOWN)
 	{
 		x = 0;
 		dx = 1;
 		last_x = self->num_children;
+	}
+	else 
+	{
+		/* Leave highlighted value the same */
+		WIDGET *child = self->child[self->highlighted];
+		child->receiveFocus (child, event);
+		return TRUE;
 	}
 	for ( ; x != last_x; x += dx) 
 	{
