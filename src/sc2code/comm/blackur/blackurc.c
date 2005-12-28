@@ -36,7 +36,7 @@ static LOCDATA blackurq_desc =
 	0, /* AlienSongFlags */
 	BLACKURQ_CONVERSATION_PHRASES, /* PlayerPhrases */
 	8, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			7, /* StartIndex */
 			6, /* NumFrames */
@@ -103,7 +103,7 @@ static LOCDATA blackurq_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		1, /* StartIndex */
 		2, /* NumFrames */
 		0, /* AnimFlags */
@@ -111,7 +111,7 @@ static LOCDATA blackurq_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		2, /* StartIndex */
 		5, /* NumFrames */
 		0, /* AnimFlags */
