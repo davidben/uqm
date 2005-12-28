@@ -693,7 +693,6 @@ ShowPresentation (STRING PresStr)
 	FONT OldFont;
 	RECT OldRect;
 	PRESENTATION_INPUT_STATE pis;
-	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
 
 	pis.SlideShow = PresStr;
 	if (!pis.SlideShow)
@@ -706,9 +705,9 @@ ShowPresentation (STRING PresStr)
 	GetContextClipRect (&OldRect);
 	OldFont = SetContextFont (NULL);
 	/* paint black rect over screen	*/
-	SetContextForeGroundColor (BUILD_COLOR (
+	SetContextBackGroundColor (BUILD_COLOR (
 			MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
-	DrawFilledRectangle (&r);
+	ClearDrawable ();
 	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
