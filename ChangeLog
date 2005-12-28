@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Added a unified credit roll combined with outtakes (bug #46) - Alex
 - Setup menu selection doesn't reset when you quit a submenu now - Michael
 - Split config.alwaysgl and config.usegl so that "Use Pure Mode If Possible"
   persists across runs even when using a GL mode - Michael
