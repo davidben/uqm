@@ -1,0 +1,404 @@
+#(======== This is the Credit Roll script ================)
+#(===                                                  ===)
+#( Each text line has the following format:               )
+#(   font-size SP alignment SP text                       )
+#( SP        : any whitespace character                   )
+#( LF        : linefeed character; UTF8 code 0x0A         )
+#( TAB       : horizontal tab character; UTF8 code 0x09   )
+#( *N        : denotes zero or more instances             )
+#( font-size : in points; integer; anything you think     )
+#(             is useful                                  )
+#( alignment : column-def ["," column-def]*N              )
+#(   column-def  : align-char ["/" align-point]           )
+#(   align-char  : is one of L(eft), C(enter), R(ight)    )
+#(   align-point : a point relative to which the aligment )
+#(                 is applied to a given column; if not   )
+#(                 specified, the default point is used   )
+#( text      : ( chars [TAB chars]*N LF )*N               )
+#( Example:                                               )
+#(   13 L,C/130,R/250 Chunk1<tab>Chunk2<tab>Chunk3        )
+#( "Chunk1" will be left-justified at the default point;  )
+#( "Chunk2" will be centered around point 130;            )
+#( "Chunk3" will be right-justified at point 250.         )
+#(===                                                  ===)
+
+
+#(Port caption)
+13 C
+The Ur-Quan Masters port
+CREW
+...................................................
+ 
+
+#(Core team caption)
+13 C
+CORE TEAM
+(in alphabetical order)
+
+#(Core team members)
+13 C
+Serge van den Boom
+Mika Kolehmainen
+Michael Chapman Martin
+Chris Nelson
+ 
+#(AP caption)
+13 C
+ADDITIONAL PROGRAMMING
+(in alphabetical order)
+
+#(AP crew)
+13 C
+Geoffrey Hausheer
+Nicolas Simonds
+Alex Volkov
+ 
+#(Music remixers caption)
+13 C
+MUSIC REMIXERS
+(in alphabetical order)
+
+#(Music remixers)
+13 C
+Jouni Airaksinen
+Tore Aune Fjellstad
+Espen Gätzschman
+Aaron J. Grier
+Dan Nicholson
+George Nowik
+Riku Nuottajärvi
+Erol Otus
+ 
+#(Other contrib caption)
+13 C
+OTHER CONTRIBUTIONS
+(in alphabetical order)
+
+#(Other contrib crew)
+13 C
+Jouni Airaksinen
+(Startup Menu)
+ 
+Karl Bartel
+ 
+Travis Chase
+(BeOS port)
+ 
+Felix Lazarev
+(3DO internals)
+ 
+Parker MacMillan
+ 
+Sanjay Madhav
+(code patches)
+ 
+Robert McNamara
+(MacOS X stuff)
+ 
+Mike Melanson
+(ADPCM basis from MPlayer
+  used for DUK audio)
+ 
+Erol Otus
+(Splash screen)
+ 
+Brian Rogers
+ 
+Horatiu Romosan
+(v0.1 Win32 installer)
+ 
+Joffrey Smith
+(setup graphics)
+ 
+Peter van Valderen
+ 
+Alex Volkov
+(additional slides)
+ 
+Alexander Waseleski
+(code patches)
+ 
+Yukki
+(v0.1 Win32 installer graphics)
+ 
+#(Original Game caption)
+13 C
+Original Game
+CREW
+...................................................
+ 
+
+#(P&T caption)
+13 C
+ORIGINAL PROGRAMMING
+& TECHNOLOGY
+
+#(P&T crew)
+17 C
+FRED FORD
+ 
+#(D&F caption)
+13 C
+GAME DESIGN & FICTION
+
+#(D&F crew)
+17 C
+PAUL REICHE III 
+ 
+#(3DO Prog caption)
+13 C
+3DO PROGRAMMING
+
+#(3DO Prog crew)
+17 C
+KEN FORD
+FRED FORD
+BRAD VAN TIGHEM
+ 
+#(3DO Producer caption)
+13 C
+PRODUCER (3DO Version)
+
+#(3DO Producer)
+17 C
+MARK WALLACE
+ 
+#(3DO Production caption)
+13 C
+3DO PRODUCTION
+
+#(3DO Production crew)
+17 C
+PAUL REICHE III
+RICHARD ANTAKI
+ 
+#(PC Producer caption)
+13 C
+PRODUCER (PC/DOS Version)
+
+#(PC Producer)
+17 C
+PAM LEVINS
+ 
+#(Voice actors caption)
+13 C
+STARRING THE VOICES OF:
+
+#(Voice actors, batch 1)
+13 R/146,L/165
+Richard Antaki	Thraddash
+Alex Bennett	 Starbase
+	Commander
+Rich Betz	Ariloulaleelay
+	Druuge
+Roy Blumenfeld	Zoq-Fot-Pik
+David Bryce	Kohr-Ah
+	Ilwrath
+	Shofixti
+	Spathi
+Lauren Forcella	Supox
+Greg Johnson	Orz
+	Pkunk
+	Utwig
+
+#(Voice actors, batch 2)
+13 R/146,L/165
+Bruce Leyland	Yehat
+Erol Otus	Chmmr
+Paul Reiche III	Mycon
+	Talking Pet
+Brad Van Tighem	Slylandro Speaker
+Madeleine Wild	Zoq-Fot-Pik
+	Syreen
+	VUX
+Larry Zee	Umgah
+	Melnorme
+	Ur-Quan
+840-AV	Slylandro Probe
+Paul II, Paul III	Victory Sequence
+Arianna
+& Devin Reiche
+ 
+#(V.Eff caption)
+13 C
+VOICE EFFECTS
+
+#(V.Eff crew)
+17 C
+JEFF FOREHAN
+BURKE TREISCHMANN
+MARK MILLER 
+ 
+#(V.Edit caption)
+13 C
+VOICE EDITING
+
+#(V.Edit crew)
+13 C
+Richard Antaki
+Paul Reiche III
+Burke Treischmann
+Steve Henefin
+Jeremy Bredow
+Erik Griss
+Brad Van Tighem 
+ 
+#(A&A caption)
+13 C
+ART AND ANIMATION
+
+#(A&A crew)
+13 C
+George Barr
+Paul Reiche III
+Erol Otus
+Greg Johnson
+Kyle Balda
+Jeff Rianda
+Taunya Shiffer
+Leonard Robel
+Greg Hammond
+Armand Cabrera
+Silicon Knights 
+ 
+#(Writers caption)
+13 C
+ADDITIONAL WRITING
+
+#(Writing crew)
+13 C
+Greg Johnson
+Mat Genser
+Robert Leyland
+Iain McCaig
+Tomi Quintana
+Erol Otus
+Leonard Robel
+John Estes 
+ 
+#(Composers caption)
+13 C
+MUSIC
+
+#(Composers)
+13 C
+Burke Treischmann
+Dan Nicholson
+Riku Nuottajärvi
+Eric Berge
+Erol Otus
+Marc Brown
+Aaron Grier
+Kevin Palivec
+Tommy Dunbar 
+ 
+#(3D.gfx caption)
+13 C
+3D CINEMAGRAPHICS
+
+#(3D.gfx crew)
+13 C
+Gene Bodio
+Phil Le Marbre
+ 
+#(DUCK codec)
+13 C
+TrueMotion(R) "S" Video Compression
+by The Duck Corporation 
+ 
+#(Marketing caption)
+13 C
+PRODUCT MARKETING MANAGER
+(3DO Version)
+
+#(Marketing crew)
+13 C
+Jim Curry 
+ 
+#(3DO testers caption)
+13 C
+3DO TESTERS
+
+#(3DO tester crew)
+13 C
+Susan Michele
+Jeremy Bredow
+Wes Gittens
+Ty Johnson
+Tate Schieferle
+Carolina Esmurdoc
+Rob Johnson
+Kevin Kwan
+Joe Ganis
+Chang Fadel
+Erik Griss
+Eugene Law
+Mark Ybarra
+Steve Groll
+Tim Jordan
+Matt Young 
+ 
+#(PC testers caption)
+13 C
+PC/DOS TESTERS
+
+#(PC tester crew)
+13 C
+Pam Levins
+Tomi Quintana
+Joel Dinolt
+Robert Daly
+Greg Hammond
+B.J. Shea
+Robert Leyland
+Sean Vikoren
+Mike Ebert
+Tony Hsieh
+ROL
+Ed Gwynn
+Akila Redmer
+Russell Bornschlegel
+Steve Graziano
+Mark Voorsanger 
+ 
+#(Special caption)
+13 C
+SPECIAL THANKS TO
+
+#(Special crew)
+13 C
+Greg Johnson
+John Ratcliffe
+ 
+#(Paul's family)
+13 C
+PAUL'S FOUNDATION
+
+#(Paul's family)
+13 C
+Laurie
+Devin
+and Arianna
+ 
+
+#(C/D boss)
+13 C
+GOT US 86'ED OUT OF A
+RESTAURANT IN LAS VEGAS
+ 
+Madeline Canepa
+ 
+(WE LOVE HER ANYWAY) 
+ 
+#(padding)
+13 C
+...................................................
+ 
+ 
+ 
+ 
+ 
+#(The End)
+45 C
+THE END
+ 
