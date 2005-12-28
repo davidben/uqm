@@ -17,8 +17,9 @@
 #ifndef _CREDITS_H
 #define _CREDITS_H
 
-void OutTakes (void);
-void Credits (void);
+#include "libs/compiler.h"
+
+extern void Credits (BOOLEAN WithOuttakes);
 
 #endif  /* _CREDITS_H */
 

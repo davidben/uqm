@@ -18,11 +18,14 @@
 #define _COMM_H
 
 #include "libs/compiler.h"
+#include "libs/gfxlib.h"
 
 extern void init_communication (void);
 extern void uninit_communication (void);
 extern int do_subtitles (UNICODE *pStr);
 extern void AlienTalkSegue (COUNT wait_track);
+
+extern RECT CommWndRect; /* comm window rect */
 
 #endif  /* _COMM_H */
 

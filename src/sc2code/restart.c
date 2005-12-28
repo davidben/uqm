@@ -316,8 +316,7 @@ LastActivity = WON_LAST_BATTLE;
 				GLOBAL (CurrentActivity) = WON_LAST_BATTLE;
 				Victory ();
 				InitGameKernel ();
-				OutTakes ();
-				Credits ();
+				Credits (TRUE);
 
 				FreeGameData ();
 				

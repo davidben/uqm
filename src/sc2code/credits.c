@@ -22,100 +22,577 @@
 #include "encount.h"
 #include "options.h"
 #include "oscill.h"
+#include "comm.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
+#include "sounds.h"
 #include "setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound.h"
+#include <math.h>
 
+// Rates in pixel lines per second
+#define CREDITS_BASE_RATE   9
+#define CREDITS_MAX_RATE    130
+// Maximum frame rate
+#define CREDITS_FRAME_RATE  36
 
-void
-Credits (void)
+#define CREDITS_TIMEOUT   (ONE_SECOND * 5)
+
+static volatile int CreditsRate;
+static volatile BOOLEAN OutTakesRunning;
+static volatile BOOLEAN CreditsRunning;
+static STRING CreditsTab;
+static FRAME CreditsBack;
+
+typedef struct
 {
-#define NUM_CREDITS 20
-	COUNT i;
-	RES_TYPE rt;
-	RES_INSTANCE ri;
-	RES_PACKAGE rp;
-	RECT r;
-	FRAME f[NUM_CREDITS];
-	STAMP s;
-	DWORD TimeIn;
-	MUSIC_REF hMusic;
-	BYTE fade_buf[1];
+	int size;
+	DWORD res;
+	FONT font;
+} FONT_SIZE_DEF;
 
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return;
-	
-	rt = GET_TYPE (CREDIT00_ANIM);
-	ri = GET_INSTANCE (CREDIT00_ANIM);
-	rp = GET_PACKAGE (CREDIT00_ANIM);
-	for (i = 0; i < NUM_CREDITS; ++i, ++rp, ++ri)
+static FONT_SIZE_DEF CreditsFont[] =
+{
+	{ 13, PT13AA_FONT, 0 },
+	{ 17, PT17AA_FONT, 0 },
+	{ 45, PT45AA_FONT, 0 },
+	{  0,           0, 0 },
+};
+
+
+static FRAME
+Credits_MakeTextFrame (int w, int h, COLOR TransColor)
+{
+	FRAME OldFrame;
+	FRAME f;
+
+	f = CaptureDrawable (CreateDrawable (WANT_PIXMAP, w, h, 1));
+	SetFrameTransparentColor (f, TransColor);
+
+	OldFrame = SetContextFGFrame (f);
+	SetContextBackGroundColor (TransColor);
+	ClearDrawable ();
+	SetContextFGFrame (OldFrame);
+
+	return f;
+}
+
+static void
+CopyTextString (char *Buffer, COUNT BufSize, const char *Src)
+{
+	strncpy (Buffer, Src, BufSize);
+	Buffer[BufSize - 1] = '\0';
+}
+
+static int
+ParseTextLines (TEXT *Lines, int MaxLines, char *Buffer)
+{
+	int i;
+	const char* pEnd = Buffer + strlen(Buffer);
+
+	for (i = 0; i < MaxLines && Buffer < pEnd; ++i, ++Lines)
 	{
-		f[i] = CaptureDrawable (LoadGraphic (
-				MAKE_RESOURCE (rp, rt, ri)
-				));
+		char* pTerm = strchr(Buffer, '\n');
+		if (!pTerm)
+			pTerm = Buffer + strlen(Buffer);
+		*pTerm = '\0'; /* terminate string */
+		Lines->pStr = Buffer;
+		Lines->CharCount = ~0;
+		Buffer = pTerm + 1;
 	}
+	return i;
+}
+
+#define MAX_TEXT_LINES 50
+#define MAX_TEXT_COLS  5
+
+static FRAME
+Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
+		COLOR BackColor, COLOR ForeColor)
+{
+	FRAME f;
+	CONTEXT OldContext;
+	FRAME OldFrame;
+	TEXT TextLines[MAX_TEXT_LINES];
+	STRINGPTR pStr;
+	int size;
+	char salign[32];
+	char *scol;
+	int scaned;
+	int i, rows, cnt;
+	char buf[2048];
+	FONT_SIZE_DEF *fdef;
+	SIZE leading;
+	TEXT t;
+	RECT r;
+	typedef struct
+	{
+		TEXT_ALIGN align;
+		COORD basex;
+	} col_format_t;
+	col_format_t colfmt[MAX_TEXT_COLS];
+
+	if (*istr < 0 || *istr >= GetStringTableCount (CreditsTab))
+	{	// check if next one is within range
+		int next_s = *istr + dir;
+
+		if (next_s < 0 || next_s >= GetStringTableCount (CreditsTab))
+			return 0;
+
+		*istr = next_s;
+	}
+
+	// skip empty lines
+	while (*istr >= 0 && *istr < GetStringTableCount (CreditsTab))
+	{
+		pStr = GetStringAddress (
+				SetAbsStringTableIndex (CreditsTab, *istr));
+		*istr += dir;
+		if (pStr && *pStr != '\0')
+			break;
+	}
+
+	if (!pStr || *pStr == '\0')
+		return 0;
 	
-	hMusic = LoadMusicInstance (CREDITS_MUSIC);
-	if (hMusic)
-		PlayMusic (hMusic, TRUE, 1);
+	if (2 != sscanf (pStr, "%d %32s %n", &size, salign, &scaned)
+			|| size <= 0)
+		return 0;
+	pStr += scaned;
+	
+	CopyTextString (buf, sizeof (buf), pStr);
+	rows = ParseTextLines (TextLines, MAX_TEXT_LINES, buf);
+	if (rows == 0)
+		return 0;
+	// parse text columns
+	for (i = 0, cnt = rows; i < rows; ++i)
+	{
+		char *nextcol;
+		int icol;
+
+		// we abuse the baseline here, but only a tiny bit
+		// every line starts at col 0
+		TextLines[i].baseline.x = 0;
+		TextLines[i].baseline.y = i + 1;
+
+		for (icol = 1, nextcol = strchr (TextLines[i].pStr, '\t');
+				icol < MAX_TEXT_COLS && nextcol;
+				++icol, nextcol = strchr (nextcol, '\t'))
+		{
+			*nextcol = '\0';
+			++nextcol;
+
+			if (cnt < MAX_TEXT_LINES)
+			{
+				TextLines[cnt].pStr = nextcol;
+				TextLines[cnt].CharCount = ~0;
+				TextLines[cnt].baseline.x = icol;
+				TextLines[cnt].baseline.y = i + 1;
+				++cnt;
+			}
+		}
+	}
+
+	// init alignments
+	for (i = 0; i < MAX_TEXT_COLS; ++i)
+	{
+		colfmt[i].align = ALIGN_LEFT;
+		colfmt[i].basex = SCREEN_WIDTH / 64;
+	}
+
+	// find the right font
+	for (fdef = CreditsFont; fdef->size && size > fdef->size; ++fdef)
+		;
+	if (!fdef->size)
+		return 0;
+
+	t.align = ALIGN_LEFT;
+	t.valign = VALIGN_MIDDLE;
+	t.baseline.x = 100; // any value will do
+	t.baseline.y = 100; // any value will do
+	t.pStr = " ";
+	t.CharCount = 1;
 
 	LockMutex (GraphicsLock);
-	SetContext (ScreenContext);
-	GetContextClipRect (&r);
-	s.origin.x = s.origin.y = 0;
-	
-	BatchGraphics ();
-	s.frame = f[0];
-	DrawStamp (&s);
-	UnbatchGraphics ();
-	
-	fade_buf[0] = FadeAllToColor;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
-	
-	TimeIn = GetTimeCounter ();
-	for (i = 1; (i < NUM_CREDITS) &&
-			!(GLOBAL (CurrentActivity) & CHECK_ABORT); ++i)
+	OldContext = SetContext (TempContext);
+
+	// get font dimensions
+	SetContextFont (fdef->font);
+	GetContextFontLeading (&leading);
+	// get left/right margin
+	TextRect (&t, &r, NULL_PTR);
+
+	// parse text column alignment
+	for (i = 0, scol = strtok (salign, ",");
+			scol && i < MAX_TEXT_COLS;
+			++i, scol = strtok (NULL, ","))
 	{
-		SetTransitionSource (&r);
-		BatchGraphics ();
-		s.frame = f[0];
-		DrawStamp (&s);
-		s.frame = f[i];
-		DrawStamp (&s);
-		ScreenTransition (3, &r);
-		UnbatchGraphics ();
-		DestroyDrawable (ReleaseDrawable (f[i]));
-		
-		UnlockMutex (GraphicsLock);
-		while ((GetTimeCounter () - TimeIn < ONE_SECOND * 5) &&
-			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
-		{
-			UpdateInputState ();
-			SleepThreadUntil (ONE_SECOND / 20);
+		char c;
+		int x;
+		int n;
+
+		// default
+		colfmt[i].align = ALIGN_LEFT;
+		colfmt[i].basex = r.extent.width;
+
+		n = sscanf (scol, "%c/%d", &c, &x);
+		if (n < 1)
+		{	// DOES NOT COMPUTE! :)
+			continue;
 		}
-		LockMutex (GraphicsLock);
-		TimeIn = GetTimeCounter ();
+
+		switch (c)
+		{
+			case 'L':
+				colfmt[i].align = ALIGN_LEFT;
+				if (n >= 2)
+					colfmt[i].basex = x;
+				break;
+			case 'C':
+				colfmt[i].align = ALIGN_CENTER;
+				if (n >= 2)
+					colfmt[i].basex = x;
+				else
+					colfmt[i].basex = SCREEN_WIDTH / 2;
+				break;
+			case 'R':
+				colfmt[i].align = ALIGN_RIGHT;
+				if (n >= 2)
+					colfmt[i].basex = x;
+				else
+					colfmt[i].basex = SCREEN_WIDTH - r.extent.width;
+				break;
+		}
 	}
+
+	for (i = 0; i < cnt; ++i)
+	{	
+		// baseline contains coords in row/col quantities
+		col_format_t *fmt = colfmt + TextLines[i].baseline.x;
+		
+		TextLines[i].align = fmt->align;
+		TextLines[i].valign = VALIGN_MIDDLE;
+		TextLines[i].baseline.x = fmt->basex;
+		TextLines[i].baseline.y *= leading;
+	}
+
+	f = Credits_MakeTextFrame (SCREEN_WIDTH, leading * rows + (leading >> 1),
+			BackColor);
+	OldFrame = SetContextFGFrame (f);
+	// draw text
+	SetContextForeGroundColor (ForeColor);
+	for (i = 0; i < cnt; ++i)
+		font_DrawText (TextLines + i);
 	
-	DestroyDrawable (ReleaseDrawable (f[0]));
+	SetContextFGFrame (OldFrame);
+	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
 
-	WaitAnyButtonOrQuit (FALSE);
+	return f;
+}
+
+#define CREDIT_FRAMES 32
+
+static int
+credit_roll_task (void *data)
+{
+	Task task = (Task) data;
+	CONTEXT OldContext;
+	DWORD TimeIn;
+	CONTEXT DrawContext;
+	CONTEXT LocalContext;
+	FRAME Frame;
+	COLOR TransColor, TextFore, TextBack;
+	STAMP TaskStamp;
+	STAMP s;
+	FRAME cf[CREDIT_FRAMES]; // preped text frames
+	int ci[CREDIT_FRAMES];   // strtab indices
+	int first = 0, last;
+	int dy = 0, total_h, disp_h, deficit_h = 0;
+	int strcnt;
+
+	CreditsRunning = TRUE;
+
+	memset(cf, 0, sizeof(cf));
+
+	strcnt = GetStringTableCount (CreditsTab);
+
+	TransColor = BUILD_COLOR (MAKE_RGB15 (0, 0, 0x10), 1);
+	TextBack = BUILD_COLOR (MAKE_RGB15 (0, 0, 0), 0);
+	TextFore = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
+
+	LocalContext = CaptureContext (CreateContext ());
+	DrawContext = CaptureContext (CreateContext ());
 	
-	fade_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
-	FlushColorXForms ();
+	total_h = disp_h = SCREEN_HEIGHT;
+
+	LockMutex (GraphicsLock);
+	// prep our local context
+	OldContext = SetContext (LocalContext);
 	
-	if (hMusic)
+	// prep the first frame
+	cf[0] = Credits_MakeTextFrame (1, total_h, TransColor);
+	ci[0] = -1;
+	last = 1;
+	// prep the local screen copy
+	Frame = Credits_MakeTextFrame (SCREEN_WIDTH, disp_h, TransColor);
+	SetContextFGFrame (Frame);
+	
+	// prep our task context
+	SetContext (DrawContext);
+	SetContextFGFrame (Screen);
+
+	SetContext (OldContext);
+	UnlockMutex (GraphicsLock);
+
+	TaskStamp.origin.x = TaskStamp.origin.y = 0;
+	TaskStamp.frame = Frame;
+
+	// stary background is the first screen frame
+	LockMutex (GraphicsLock);
+	OldContext = SetContext (LocalContext);
+	// draw 
+	s.origin.x = s.origin.y = 0;
+	s.frame = CreditsBack;
+	DrawStamp (&s);
+	// draw clipped rect, if any
+	if (OutTakesRunning)
 	{
-		StopMusic ();
-		DestroyMusic (hMusic);
+		SetContextForeGroundColor (TransColor);
+		DrawFilledRectangle (&CommWndRect);
+	}
+	SetContext (OldContext);
+	UnlockMutex (GraphicsLock);
+
+	while (!Task_ReadState (task, TASK_EXIT))
+	{
+		RECT fr;
+		int i;
+		int rate, direction, dirstep;
+
+		TimeIn = GetTimeCounter ();
+
+		rate = abs (CreditsRate);
+		if (rate != 0)
+		{
+			// scroll direction; forward or backward
+			direction = CreditsRate / rate;
+			// step in pixels
+			dirstep = (rate + CREDITS_FRAME_RATE - 1) / CREDITS_FRAME_RATE;
+			rate = ONE_SECOND * dirstep / rate;
+			// step is also directional
+			dirstep *= direction;
+		}
+		else
+		{	// scroll stopped
+			direction = 0;
+			dirstep = 0;
+			// one second interframe
+			rate = ONE_SECOND;
+		}
+
+		// draw the credits
+		//  comm animations play with contexts so we need to make
+		//  sure the context is not desynced
+		LockMutex (GraphicsLock);
+		OldContext = SetContext (DrawContext);
+		DrawStamp (&TaskStamp);
+		SetContext (OldContext);
+		FlushGraphics ();
+		UnlockMutex (GraphicsLock);
+
+		// prepare next screen frame
+		dy += dirstep;
+		// cap scroll
+		if (dy < -(disp_h / 20))
+		{	// at the begining
+			// accelerated slow down
+			if (CreditsRate < 0)
+				CreditsRate -= CreditsRate / 10 - 1;
+		}
+		else if (deficit_h > disp_h / 25)
+		{	// frame deficit -- task almost over
+			// accelerated slow down
+			if (CreditsRate > 0)
+				CreditsRate -= CreditsRate / 10 + 1;
+
+			CreditsRunning = (CreditsRate != 0);
+		}
+		else if (!CreditsRunning)
+		{	// resumed
+			CreditsRunning = TRUE;
+		}
+
+		if (first != last)
+		{	// clean up frames that scrolled off the screen
+			if (direction > 0)
+			{	// forward scroll
+				GetFrameRect (cf[first], &fr);
+				if (dy >= (int)fr.extent.height)
+				{	// past this frame already
+					total_h -= fr.extent.height;
+					DestroyDrawable (ReleaseDrawable (cf[first]));
+					cf[first] = 0;
+					// next frame
+					first = (first + 1) % CREDIT_FRAMES;
+					dy = 0;
+				}
+			}
+			else if (direction < 0)
+			{	// backward scroll
+				int index = (last - 1 + CREDIT_FRAMES) % CREDIT_FRAMES; 
+				
+				GetFrameRect (cf[index], &fr);
+				if (total_h - dy - (int)fr.extent.height >= disp_h)
+				{	// past this frame already
+					last = index;
+					total_h -= fr.extent.height;
+					DestroyDrawable (ReleaseDrawable (cf[last]));
+					cf[last] = 0;
+				}
+			}
+		}
+
+		// render new text frames if needed
+		if (direction > 0)
+		{	// forward scroll
+			int next_s = 0;
+
+			// get next string
+			if (first != last)
+				next_s = ci[(last - 1 + CREDIT_FRAMES) % CREDIT_FRAMES] + 1;
+
+			while (total_h - dy < disp_h && next_s < strcnt)
+			{
+				cf[last] = Credits_RenderTextFrame (LocalContext,
+						&next_s, direction, TextBack, TextFore);
+				ci[last] = next_s - 1;
+				if (cf[last])
+				{
+					GetFrameRect (cf[last], &fr);
+					total_h += fr.extent.height;
+					
+					last = (last + 1) % CREDIT_FRAMES;
+				}
+			}
+		}
+		else if (direction < 0)
+		{	// backward scroll
+			int next_s = strcnt - 1;
+
+			// get next string
+			if (first != last)
+				next_s = ci[first] - 1;
+			
+			while (dy < 0 && next_s >= 0)
+			{
+				int index = (first - 1 + CREDIT_FRAMES) % CREDIT_FRAMES;
+				cf[index] = Credits_RenderTextFrame (LocalContext,
+						&next_s, direction, TextBack, TextFore);
+				ci[index] = next_s + 1;
+				if (cf[index])
+				{
+					GetFrameRect (cf[index], &fr);
+					total_h += fr.extent.height;
+					
+					first = index;
+					dy += fr.extent.height;
+				}
+			}
+		}
+
+		// draw next screen frame
+		LockMutex (GraphicsLock);
+		OldContext = SetContext (LocalContext);
+		// draw background
+		s.origin.x = s.origin.y = 0;
+		s.frame = CreditsBack;
+		DrawStamp (&s);
+		// draw text frames
+		s.origin.y = -dy;
+		for (i = first; i != last; i = (i + 1) % CREDIT_FRAMES)
+		{
+			s.frame = cf[i];
+			DrawStamp (&s);
+			GetFrameRect (s.frame, &fr);
+			s.origin.y += fr.extent.height;
+		}
+		if (direction > 0)
+			deficit_h = disp_h - s.origin.y;
+
+		// draw clipped rect, if any
+		if (OutTakesRunning)
+		{
+			SetContextForeGroundColor (TransColor);
+			DrawFilledRectangle (&CommWndRect);
+		}
+		SetContext (OldContext);
+		UnlockMutex (GraphicsLock);
+
+		// wait till begining of next screen frame
+		while (GetTimeCounter () < TimeIn + rate
+				&& !Task_ReadState (task, TASK_EXIT))
+		{
+			SleepThreadUntil (ONE_SECOND / CREDITS_FRAME_RATE / 2);
+		}
+	}
+
+	DestroyContext (ReleaseContext (DrawContext));
+	DestroyContext (ReleaseContext (LocalContext));
+
+	// free remaining frames
+	DestroyDrawable (ReleaseDrawable (Frame));
+	for ( ; first != last; first = (first + 1) % CREDIT_FRAMES)
+		DestroyDrawable (ReleaseDrawable (cf[first]));
+
+	FinishTask (task);
+	return 0;
+}
+
+static Task
+StartCredits (void)
+{
+	Task task;
+	FONT_SIZE_DEF *fdef;
+
+	CreditsTab = CaptureStringTable (LoadStringTable (CREDITS_STRTAB));
+	if (!CreditsTab)
+		return 0;
+	CreditsBack = CaptureDrawable (LoadGraphic (CREDITS_BACK_ANIM));
+	// load fonts
+	for (fdef = CreditsFont; fdef->size; ++fdef)
+		fdef->font = CaptureFont (LoadGraphic (fdef->res));
+
+	CreditsRate = CREDITS_BASE_RATE;
+	CreditsRunning = FALSE;
+
+	task = AssignTask (credit_roll_task, 4096, "credit roll");
+
+	return task;
+}
+
+static void
+FreeCredits (void)
+{
+	FONT_SIZE_DEF *fdef;
+
+	DestroyStringTable (ReleaseStringTable (CreditsTab));
+	CreditsTab = 0;
+	
+	DestroyDrawable (ReleaseDrawable (CreditsBack));
+	CreditsBack = 0;
+
+	// free fonts
+	for (fdef = CreditsFont; fdef->size; ++fdef)
+	{
+		DestroyFont (ReleaseFont (fdef->font));
+		fdef->font = 0;
 	}
 }
 
-void
+static void
 OutTakes (void)
 {
 #define NUM_OUTTAKES 15
@@ -138,25 +615,12 @@ OutTakes (void)
 		ARILOU_CONVERSATION
 	};
 
-	RECT r;
 	BOOLEAN oldsubtitles = optSubtitles;
 	int i = 0;
-	BYTE fade_buf[1];
 
 	optSubtitles = TRUE;
 	sliderDisabled = TRUE;
-
-	LockMutex (GraphicsLock);
-	SetContext (ScreenContext);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
-	fade_buf[0] = FadeAllToColor;
-	XFormColorMap ((COLORMAPPTR)fade_buf, 0);
-
-	r.corner.x = r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	DrawFilledRectangle (&r);	
-	UnlockMutex (GraphicsLock);
+	oscillDisabled = TRUE;
 
 	for (i = 0; (i < NUM_OUTTAKES) &&
 			!(GLOBAL (CurrentActivity) & CHECK_ABORT); i++)
@@ -164,12 +628,163 @@ OutTakes (void)
 		InitCommunication (outtake_list[i]);
 	}
 
+	optSubtitles = oldsubtitles;
+	sliderDisabled = FALSE;
+	oscillDisabled = FALSE;
+}
+
+typedef struct
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (PVOID pInputState);
+	COUNT MenuRepeatDelay;
+
+	BOOLEAN AllowCancel;
+	BOOLEAN AllowSpeedChange;
+	BOOLEAN CloseWhenDone;
+	DWORD CloseTimeOut;
+
+} CREDITS_INPUT_STATE;
+
+static BOOLEAN
+DoCreditsInput (PVOID pIS)
+{
+	CREDITS_INPUT_STATE *pCIS = (CREDITS_INPUT_STATE *) pIS;
+
+	if (CreditsRunning)
+	{	// cancel timeout if resumed (or just running)
+		pCIS->CloseTimeOut = 0;
+	}
+
+	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
+			|| (pCIS->AllowCancel &&
+				(PulsedInputState.key[KEY_MENU_SELECT] ||
+				PulsedInputState.key[KEY_MENU_CANCEL]))
+		)
+	{	// aborted
+		return FALSE;
+	}
+	
+	if (pCIS->AllowSpeedChange
+			&& (PulsedInputState.key[KEY_MENU_UP]
+			|| PulsedInputState.key[KEY_MENU_DOWN]))
+	{	// speed adjustment
+		int newrate = CreditsRate;
+		int step = abs (CreditsRate) / 5 + 1;
+
+		if (PulsedInputState.key[KEY_MENU_DOWN])
+			newrate += step;
+		else if (PulsedInputState.key[KEY_MENU_UP])
+			newrate -= step;
+		if (newrate < -CREDITS_MAX_RATE)
+			newrate = -CREDITS_MAX_RATE;
+		else if (newrate > CREDITS_MAX_RATE)
+			newrate = CREDITS_MAX_RATE;
+			
+		CreditsRate = newrate;
+	}
+
+	if (!CreditsRunning)
+	{	// always allow cancelling once credits run through
+		pCIS->AllowCancel = TRUE;
+	}
+
+	if (!CreditsRunning && pCIS->CloseWhenDone)
+	{	// auto-close controlled by timeout
+		if (pCIS->CloseTimeOut == 0)
+		{	// set timeout
+			pCIS->CloseTimeOut = GetTimeCounter () + CREDITS_TIMEOUT;
+		}
+		else if (GetTimeCounter () > pCIS->CloseTimeOut)
+		{	// all done!
+			return FALSE;
+		}
+	}
+	
+	if (!CreditsRunning
+			&& (PulsedInputState.key[KEY_MENU_SELECT]
+			|| PulsedInputState.key[KEY_MENU_CANCEL]))
+	{	// credits finished and exit requested
+		return FALSE;
+	}
+
+	SleepThread (ONE_SECOND / 30);
+
+	return TRUE;
+}
+
+void
+Credits (BOOLEAN WithOuttakes)
+{
+	BYTE fade_buf[1];
+	MUSIC_REF hMusic;
+	Task CredTask;
+	CREDITS_INPUT_STATE cis;
+
+	hMusic = LoadMusicInstance (CREDITS_MUSIC);
+
+	LockMutex (GraphicsLock);
+	SetContext (ScreenContext);
+	SetContextClipRect (NULL_PTR);
+	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	ClearDrawable ();
+	fade_buf[0] = FadeAllToColor;
+	XFormColorMap ((COLORMAPPTR)fade_buf, 0);
+	UnlockMutex (GraphicsLock);
+
+	// set the position of outtakes comm
+	CommWndRect.corner.x = ((SCREEN_WIDTH - SIS_SCREEN_WIDTH) >> 1);
+	CommWndRect.corner.y = 5;
+	
+	// launch credits and wait for the task to start up
+	CredTask = StartCredits ();
+	while (CredTask && !CreditsRunning
+			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		UpdateInputState ();
+		SleepThread(ONE_SECOND / 20);
+	}
+	
+	if (WithOuttakes)
+	{
+		OutTakesRunning = TRUE;
+		OutTakes ();
+		OutTakesRunning = FALSE;
+	}
+	
+	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		if (hMusic)
+			PlayMusic (hMusic, TRUE, 1);
+
+		// nothing to do now but wait until credits
+		//  are done or canceled by user
+		cis.MenuRepeatDelay = 0;
+		cis.InputFunc = DoCreditsInput;
+		cis.AllowCancel = !WithOuttakes;
+		cis.CloseWhenDone = !WithOuttakes;
+		cis.AllowSpeedChange = TRUE;
+		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+		DoInput (&cis, TRUE);
+	}
+
+	if (CredTask)
+		ConcludeTask (CredTask);
+
+	FadeMusic (0, ONE_SECOND / 2);
+	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	fade_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 	FlushColorXForms ();
+	UnlockMutex (GraphicsLock);
 
-	optSubtitles = oldsubtitles;
-	sliderDisabled = FALSE;
+	if (hMusic)
+	{
+		StopMusic ();
+		DestroyMusic (hMusic);
+	}
+	FadeMusic (NORMAL_VOLUME, 0);
+
+	FreeCredits ();
 }
-

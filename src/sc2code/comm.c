@@ -139,6 +139,12 @@ static const UNICODE * volatile last_subtitle;
 CONTEXT TextCacheContext;
 FRAME TextCacheFrame;
 
+RECT CommWndRect = {
+	// default values; actually inited by HailAlien()
+	{SIS_ORG_X, SIS_ORG_Y},
+	{0, 0}
+};
+
 /* _count_lines - sees how many lines a given input string would take to
  * display given the line wrapping information
  */
@@ -1373,11 +1379,7 @@ AlienTalkSegue (COUNT wait_track)
 			}
 			else
 			{
-				r.corner.x = 0;
-				r.corner.y = 0;
-				r.extent.width = SCREEN_WIDTH;
-				r.extent.height = SCREEN_HEIGHT;
-				ScreenTransition (3, &r);
+				ScreenTransition (3, &CommWndRect);
 			}
 			UnbatchGraphics ();
 		}
@@ -1851,20 +1853,22 @@ HailAlien (void)
 		SetContext (TaskContext);
 		SetContextFGFrame (Screen);
 		GetFrameRect (CommData.AlienFrame, &r);
-		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
-
+		CommWndRect.extent = r.extent;
+		
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 		{
-			r.corner.x = (SCREEN_WIDTH - SIS_SCREEN_WIDTH) >> 1;
+			r.corner = CommWndRect.corner;
 			SetContextClipRect (&r);
 		}
 		else
 		{
 			r.corner.x = SIS_ORG_X;
+			r.corner.y = SIS_ORG_Y;
 			SetContextClipRect (&r);
+			CommWndRect.corner = r.corner;
 
 			if (pMenuState == 0)
 			{

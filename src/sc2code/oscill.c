@@ -29,6 +29,7 @@ static int scope_init = 0;
 static TFB_Image *scope_bg = NULL;
 static TFB_Image *scope_surf = NULL;
 static UBYTE scope_data[RADAR_WIDTH - 2];
+BOOLEAN oscillDisabled = FALSE;
 
 void
 InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
@@ -83,6 +84,9 @@ void
 Oscilloscope (DWORD grab_data)
 {
 	STAMP s;
+
+	if (oscillDisabled)
+		return;
 
 	if (!grab_data)
 		return;

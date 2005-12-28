@@ -21,6 +21,7 @@
 #include "libs/gfxlib.h"
 
 extern BOOLEAN sliderDisabled;
+extern BOOLEAN oscillDisabled;
 
 extern void InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height,
 		FRAME f);
