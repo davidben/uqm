@@ -990,6 +990,15 @@ DoScan (PMENU_STATE pMS)
 			COUNT fuel_required;
 			UNICODE buf[20];
 
+			if ((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+					|| (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==
+						GAS_GIANT_ATMOSPHERE))
+			{	// cannot dispatch to shielded planets or gas giants
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
+						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+				return (TRUE);
+			}
+
 			fuel_required = (COUNT)(
 					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1
 					);
@@ -1026,10 +1035,19 @@ DoScan (PMENU_STATE pMS)
 			return PickPlanetSide (pMS);
 		}
 
+		// Various scans
+		if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+		{	// cannot scan shielded planets
+			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
+					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+			return (TRUE);
+		}
+
 		pSolarSysState->MenuState.Initialized += 4;
 #ifndef SPIN_ON_SCAN
 		pSolarSysState->PauseRotate = 1;
 #endif
+	
 		min_scan = pMS->CurState;
 		if (min_scan != AUTO_SCAN)
 			max_scan = min_scan;
@@ -1165,9 +1183,10 @@ DoScan (PMENU_STATE pMS)
 		pSolarSysState->PauseRotate = 0;
 		FlushInput ();
 	}
-	else if (!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+	else if (optWhichMenu == OPT_PC ||
+			(!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity !=
-			GAS_GIANT_ATMOSPHERE)
+				GAS_GIANT_ATMOSPHERE))
 		DoMenuChooser (pMS, PM_MIN_SCAN);
 
 	return (TRUE);
@@ -1200,9 +1219,10 @@ ScanSystem (void)
 	}
 }
 
-	if ((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
+	if (optWhichMenu == OPT_3DO &&
+			((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			|| pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==
-			GAS_GIANT_ATMOSPHERE)
+				GAS_GIANT_ATMOSPHERE))
 	{
 		MenuState.CurState = EXIT_SCAN;
 		ScanContext = 0;
