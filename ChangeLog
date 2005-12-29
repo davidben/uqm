@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Selecting the scan methods for shielded and gas giant planets
+  is now allowed when using PC menus (bug #800) - Alex
 - Added a unified credit roll combined with outtakes (bug #46) - Alex
 - Setup menu selection doesn't reset when you quit a submenu now - Michael
 - Split config.alwaysgl and config.usegl so that "Use Pure Mode If Possible"
