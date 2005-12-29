@@ -251,7 +251,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -53;
 				break;
 			case 4: /* JUPITER */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 0xFFFF;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 24;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 1120;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 3;
@@ -262,7 +262,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 520L / 100;
 				break;
 			case 5: /* SATURN */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 0xFFFF;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 13;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 945;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 27;
@@ -273,7 +273,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 952L / 100;
 				break;
 			case 6: /* URANUS */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 0xFFFF;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 21;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 411;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 98;
@@ -284,7 +284,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 1916L / 100;
 				break;
 			case 7: /* NEPTUNE */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 0xFFFF;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 28;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 396;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 30;
