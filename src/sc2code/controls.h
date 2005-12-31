@@ -55,9 +55,14 @@ enum {
 	KEY_MENU_SPECIAL,
 	KEY_MENU_PAGE_UP,
 	KEY_MENU_PAGE_DOWN,
+	KEY_MENU_HOME,
+	KEY_MENU_END,
 	KEY_MENU_ZOOM_IN,
 	KEY_MENU_ZOOM_OUT,
 	KEY_MENU_DELETE,
+	KEY_MENU_BACKSPACE,
+	KEY_MENU_EDIT_CANCEL,
+	KEY_CHARACTER, /* abstract char key */
 	NUM_KEYS
 };
 
@@ -99,6 +104,30 @@ BATTLE_INPUT_STATE p1_combat_summary (void);
 BATTLE_INPUT_STATE p2_combat_summary (void);
 
 extern volatile BOOLEAN GamePaused, ExitRequested;
+
+typedef struct textentry_state
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (struct textentry_state *pTES);
+	COUNT MenuRepeatDelay;
+
+	// these are semi-private read-only
+	BOOLEAN Initialized;
+	BOOLEAN Success;   // edit confirmed or canceled
+	UNICODE *CacheStr; // cached copy to revert immediate changes
+	// these are public and must be set before calling DoTextEntry
+	UNICODE *BaseStr;  // set to string to edit
+	UNICODE *InsPt;    // set to curremt pos of insertion point
+	int MaxSize;       // set to max size of edited string
+
+	BOOLEAN (*ChangeCallback) (struct textentry_state *pTES);
+			// returns TRUE if last change is OK
+	void *CbParam;     // callback parameter, use as you like
+	
+} TEXTENTRY_STATE;
+typedef TEXTENTRY_STATE *PTEXTENTRY_STATE;
+
+BOOLEAN DoTextEntry (PTEXTENTRY_STATE pTES);
 
 #endif
 

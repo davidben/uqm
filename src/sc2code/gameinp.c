@@ -192,7 +192,9 @@ UpdateInputState (void)
 		int i;
 		for (i = 0; i < NUM_KEYS; i++)
 		{
-			_check_for_pulse(&PulsedInputState.key[i], &CachedInputState.key[i], &OldInputState.key[i], &RepeatDelays.key[i], &NewTime, &Times.key[i]);
+			_check_for_pulse (&PulsedInputState.key[i],
+					&CachedInputState.key[i], &OldInputState.key[i],
+					&RepeatDelays.key[i], &NewTime, &Times.key[i]);
 		}
 	}
 
@@ -270,6 +272,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 		if (PulsedInputState.key[KEY_MENU_PAGE_UP]) input |= MENU_SOUND_PAGEUP;
 		if (PulsedInputState.key[KEY_MENU_PAGE_DOWN]) input |= MENU_SOUND_PAGEDOWN;
 		if (PulsedInputState.key[KEY_MENU_DELETE]) input |= MENU_SOUND_DELETE;
+		if (PulsedInputState.key[KEY_MENU_BACKSPACE]) input |= MENU_SOUND_DELETE;
 			
 		if (MenuSounds
 				&& (pSolarSysState == 0

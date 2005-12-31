@@ -43,7 +43,6 @@
 #define MAX_SAVED_GAMES 50
 #define SUMMARY_X_OFFS 14
 #define SUMMARY_SIDE_OFFS 7
-#define MAX_NAME_CHARS 15
 #define SAVES_PER_PAGE 5
 
 static BOOLEAN DoSettings (PMENU_STATE pMS);
@@ -225,7 +224,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		r.extent.height = SHIP_NAME_HEIGHT;
 
 		SetContext (StatusContext);
-		if (pMS->delta_item == CHANGE_CAPTAIN_SETTING)
+		if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
 		{
 			Font = TinyFont;
 			r.corner.y = 10;
@@ -251,14 +250,16 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	}
 
 	SetContextFont (Font);
+	// XXX: nasty hack; CurString may not be large enough to
+	//   contain a pointer on some platforms
 	lf.pStr = ((GAME_DESC *)pMS->CurString)[rel_index];
 	lf.CharCount = (COUNT)~0;
 
 	if (state <= 0)
-	{
+	{	// normal state
 		if (pMS->InputFunc == DoNaming)
 		{
-			if (pMS->delta_item == CHANGE_CAPTAIN_SETTING)
+			if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
 				DrawCaptainsName ();
 			else
 			{
@@ -283,7 +284,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 		SetFlashRect ((PRECT)~0L, (FRAME)0);
 	}
 	else
-	{
+	{	// editing state
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[MAX_DESC_CHARS];
@@ -291,8 +292,10 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 
 		TextRect (&lf, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
-		{
+		{	// the text does not fit the input box size and so
+			// will not fit when displayed later
 			UnlockMutex (GraphicsLock);
+			// disallow the change
 			return (FALSE);
 		}
 
@@ -330,183 +333,71 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	return (TRUE);
 }
 
-static UWORD
-DoTextEntry (PMENU_STATE pMS)
+static BOOLEAN
+OnNameChange (PTEXTENTRY_STATE pTES)
 {
-	UWORD ch;
-	UNICODE *pStr, *pBaseStr;
-	COUNT len;
-	BOOLEAN left = FALSE, right = FALSE;
-
-	pBaseStr = ((GAME_DESC *)pMS->CurString)[pMS->CurState - pMS->first_item.y];
-	pStr = &pBaseStr[pMS->first_item.x];
-	len = wstrlen (pStr);
-
-	ch = GetCharacter ();
-
-#if 0
-	/* This code goes away, but is listed here anyway just in case someone decides
-	   to port this to a keyboardless platform later */
-	   
-	if (SerialInput)
-	{
-		ch = GetInputUNICODE (GetInputState (SerialInput));
-	}
-	else
-	{
-		extern UWORD GetJoystickChar (INPUT_STATE InputState);
-
-		ch = GetJoystickChar ();
-	}
-#endif
-
-	switch (ch)
-	{
-	case SK_DELETE:
-		if (len)
-		{
-			memmove (pStr, pStr + 1, len * sizeof (*pStr));
-			len = (COUNT)~0;
-		}
-		break;
-	case '\b':
-		if (pMS->first_item.x)
-		{
-			memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
-			--pMS->first_item.x;
-			
-			len = (COUNT)~0;
-		}
-		break;
-	case SK_LF_ARROW:
-		left = TRUE;
-		break;
-	case SK_RT_ARROW:
-		right = TRUE;
-		break;
-	default:
-		if (isprint (ch) && (len + (pStr - pBaseStr) < MAX_NAME_CHARS))
-		{
-			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
-			if (len == 0)
-				*(pStr + 1) = '\0';
-			*pStr++ = ch;
-			++pMS->first_item.x;
-#if 0
-			/* Joystick letter-entry mode */
-				*pStr = ch;
-				if (len == 0)
-					*(pStr + 1) = '\0';
-#endif			
-			len = (COUNT)~0;
-		}
-		break;
-	}
-
-	if (len == (COUNT)~0)
-	{
-		if (!DrawDescriptionString (pMS, pMS->CurState, 1))
-		{
-			len = wstrlen (pStr);
-			memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
-			--pMS->first_item.x;
-		}
-	}
-	else if (left)
-	{
-		if (pMS->first_item.x)
-		{
-			--pMS->first_item.x;
-			DrawDescriptionString (pMS, pMS->CurState, 1);
-		}
-	}
-	else if (right)
-	{
-		if (len)
-		{
-			++pMS->first_item.x;
-			DrawDescriptionString (pMS, pMS->CurState, 1);
-		}
-	}
-
-	return (ch);
+	PMENU_STATE pMS = (PMENU_STATE) pTES->CbParam;
+	pMS->first_item.x = pTES->InsPt - pTES->BaseStr;
+	return DrawDescriptionString (pMS, 0, 1);
 }
 
 static BOOLEAN
 DoNaming (PMENU_STATE pMS)
 {
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
-	
-	if (!pMS->Initialized)
+	GAME_DESC buf;
+	TEXTENTRY_STATE tes;
+	UNICODE *Setting;
+
+	pMS->Initialized = TRUE;
+	pMS->InputFunc = DoNaming;
+
+	buf[0] = '\0';
+	// XXX: this code abuses MENU_STATE struct members to store
+	//  some values:
+	//   first_item.x - current cursor position
+	//   first_item.y - must be set to 0; DrawDescriptionString()
+	//     treats it as base index into array of strings
+	//     supplied in CurString
+	pMS->first_item.x = 0;
+	pMS->first_item.y = 0;
+	// XXX: nasty hack; CurString may not be large enough to
+	//   contain a pointer on some platforms
+	pMS->CurString = (STRING)buf;
+	DrawDescriptionString (pMS, 0, 1);
+
+	LockMutex (GraphicsLock);
+	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
+	UnlockMutex (GraphicsLock);
+
+	if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
 	{
-		GAME_DESC GD[1];
-
-		pMS->Initialized = 1;
-		pMS->InputFunc = DoNaming;
-
-		GD[0][0] = '\0';
-		pMS->delta_item = pMS->CurState;
-		pMS->first_item.x = pMS->first_item.y = 0;
-		pMS->CurState = 0;
-		pMS->CurString = (STRING)&GD[0];
-		DrawDescriptionString (pMS, pMS->CurState, 1);
-
-		LockMutex (GraphicsLock);
-		DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
-		UnlockMutex (GraphicsLock);
-
-		EnableCharacterMode ();
-		DoInput (pMS, TRUE);
-		DisableCharacterMode ();
-
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-		pMS->InputFunc = DoSettings;
-		pMS->CurState = (BYTE)pMS->delta_item;
-		pMS->delta_item = 0;
-		if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
-			FeedbackSetting (pMS->CurState);
+		Setting = GLOBAL_SIS (CommanderName);
+		tes.MaxSize = sizeof (GLOBAL_SIS (CommanderName));
 	}
 	else
 	{
-		UWORD ch;
-
-		if (pMS->Initialized == 1)
-		{
-			FlushInput ();
-			pMS->Initialized = 2;
-			return (TRUE);
-		}
-
-		ch = DoTextEntry (pMS);
-
-		if (ch == '\n' || ch == '\r' || ch == 0x1B)
-		{
-			if (ch == '\n' || ch == '\r')
-			{
-				if (pMS->delta_item == CHANGE_CAPTAIN_SETTING)
-					wstrcpy (GLOBAL_SIS (CommanderName),
-							(const UNICODE *)((GAME_DESC *)pMS->CurString)[0]);
-				else
-					wstrcpy (GLOBAL_SIS (ShipName),
-							(const UNICODE *)((GAME_DESC *)pMS->CurString)[0]);
-			}
-			else
-			{
-				if (pMS->delta_item == CHANGE_CAPTAIN_SETTING)
-					wstrcpy ((UNICODE *)((GAME_DESC *)pMS->CurString)[0],
-							GLOBAL_SIS (CommanderName));
-				else
-					wstrcpy ((UNICODE *)((GAME_DESC *)pMS->CurString)[0],
-							GLOBAL_SIS (ShipName));
-			}
-
-			DrawDescriptionString (pMS, pMS->CurState, 0);
-
-			return (FALSE);
-		}
+		Setting = GLOBAL_SIS (ShipName);
+		tes.MaxSize = sizeof (GLOBAL_SIS (ShipName));
 	}
+
+	// text entry setup
+	tes.Initialized = FALSE;
+	tes.MenuRepeatDelay = 0;
+	tes.BaseStr = buf;
+	tes.CbParam = pMS;
+	tes.ChangeCallback = OnNameChange;
+
+	if (DoTextEntry (&tes))
+		wstrcpy (Setting, buf);
+	else
+		wstrcpy (buf, Setting);
+	DrawDescriptionString (pMS, 0, 0);
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	pMS->InputFunc = DoSettings;
+	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+		FeedbackSetting (pMS->CurState);
 
 	return (TRUE);
 }

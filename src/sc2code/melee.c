@@ -138,7 +138,7 @@ PMELEE_STATE volatile pMeleeState;
 static BOOLEAN DoMelee (PMELEE_STATE pMS);
 static BOOLEAN DoEdit (PMELEE_STATE pMS);
 static BOOLEAN DoPickShip (PMELEE_STATE pMS);
-static void DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState);
+static BOOLEAN DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState);
 static BOOLEAN DoLoadTeam (PMELEE_STATE pMS);
 static void DrawFileStrings (PMELEE_STATE pMS, int HiLiteState);
 
@@ -326,7 +326,7 @@ RepairMeleeFrame (PRECT pRect)
 	SetContext (OldContext);
 }
 
-static void
+static BOOLEAN
 DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 {
 	RECT r;
@@ -340,7 +340,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 	if (HiLiteState == 4)
 	{
 		RepairMeleeFrame (&r);
-		return;
+		return (TRUE);
 	}
 		
 	if (HiLiteState & 1)
@@ -357,7 +357,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 
 	BatchGraphics ();
 	if (!(HiLiteState & 1))
-	{
+	{	// normal or selected state
 		TEXT rtText;
 		UNICODE buf[10];
 
@@ -374,18 +374,26 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		font_DrawText (&rtText);
 	}
 	else
-	{
+	{	// editing state
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[MAX_TEAM_CHARS];
 		PBYTE pchar_deltas;
 
 		TextRect (&lfText, &text_r, char_deltas);
+		if ((text_r.extent.width + 2) >= r.extent.width)
+		{	// the text does not fit the input box size and so
+			// will not fit when displayed later
+			UnbatchGraphics ();
+			// disallow the change
+			return (FALSE);
+		}
 
 		text_r = r;
 		SetContextForeGroundColor (TEAM_NAME_EDIT_RECT_COLOR);
 		DrawFilledRectangle (&text_r);
 
+		// calculate the cursor position and draw it
 		pchar_deltas = char_deltas;
 		for (i = pMS->CurIndex; i > 0; --i)
 			text_r.corner.x += (SIZE)*pchar_deltas++;
@@ -412,6 +420,8 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		font_DrawText (&lfText);
 	}
 	UnbatchGraphics ();
+
+	return (TRUE);
 }
 
 static void
@@ -988,88 +998,6 @@ DoLoadTeam (PMELEE_STATE pMS)
 	return (TRUE);
 }
 
-// XXX: TODO: to be merged with DoTextEntry in gameopt.c
-static UWORD
-DoTextEntry (PMELEE_STATE pMS)
-{
-	UWORD ch;
-	UNICODE *pStr, *pBaseStr;
-	COUNT len, max_chars;
-	BOOLEAN left = FALSE, right = FALSE;
-
-	if (pMS->MeleeOption == EDIT_MELEE)
-	{
-		pBaseStr = pMS->TeamImage[pMS->side].TeamName;
-		max_chars = MAX_TEAM_CHARS;
-	}
-	else
-	{
-		// Should not happen. Satisfying compiler.
-		return 0;
-	}
-
-	ch = GetCharacter ();
-
-	pStr = &pBaseStr[pMS->CurIndex];
-	len = wstrlen (pStr);
-	switch (ch)
-	{
-	case SK_DELETE:
-		if (len)
-		{
-			memmove (pStr, pStr + 1, len * sizeof (*pStr));
-			len = (COUNT)~0;
-		}
-		break;
-	case '\b':
-		if (pMS->CurIndex)
-		{
-			memmove (pStr - 1, pStr, (len + 1) * sizeof (*pStr));
-			--pMS->CurIndex;
-			
-			len = (COUNT)~0;
-		}
-		break;
-	case SK_LF_ARROW:
-		left = TRUE;
-		break;
-	case SK_RT_ARROW:
-		right = TRUE;
-		break;
-	default:
-		if (isprint (ch) && (len + pStr - pBaseStr < (int)(max_chars)))
-		{
-			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
-			*pStr++ = ch;
-			++pMS->CurIndex;
-			
-			len = (COUNT)~0;
-		}
-		break;
-	}
-
-	if (len == (COUNT)~0)
-		DrawTeamString (pMS, 1);
-	else if (left)
-	{
-		if (pMS->CurIndex)
-		{
-			--pMS->CurIndex;
-			DrawTeamString (pMS, 1);
-		}
-	}
-	else if (right)
-	{
-		if (len)
-		{
-			++pMS->CurIndex;
-			DrawTeamString (pMS, 1);
-		}
-	}
-
-	return (ch);
-}
-
 static int
 WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp)
 {
@@ -1206,6 +1134,21 @@ AdvanceCursor (PMELEE_STATE pMS)
 }
 
 static BOOLEAN
+OnTeamNameChange (PTEXTENTRY_STATE pTES)
+{
+	PMELEE_STATE pMS = (PMELEE_STATE) pTES->CbParam;
+	BOOLEAN ret;
+
+	pMS->CurIndex = pTES->InsPt - pTES->BaseStr;
+
+	LockMutex (GraphicsLock);
+	ret = DrawTeamString (pMS, 1);
+	UnlockMutex (GraphicsLock);
+
+	return ret;
+}
+
+static BOOLEAN
 DoEdit (PMELEE_STATE pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -1257,32 +1200,32 @@ DoEdit (PMELEE_STATE pMS)
 
 		if (row == NUM_MELEE_ROWS)
 		{
-			if (pMS->CurIndex != (BYTE)~0)
+			if (PulsedInputState.key[KEY_MENU_SELECT])
 			{
-				UNICODE ch;
-				LockMutex (GraphicsLock);
-				if (pMS->Initialized == 1)
-				{
-					FlushInput ();
-					pMS->Initialized = 2;
-				}
-				else if (((ch = DoTextEntry (pMS)) == '\n') || (ch == '\r'))
-				{
-					pMS->CurIndex = (BYTE)~0;
-					DrawTeamString (pMS, 4);
-					pMS->Initialized = 1;
-					DisableCharacterMode ();
-				}
-				UnlockMutex (GraphicsLock);
-				return (TRUE);
-			}
-			else if (PulsedInputState.key[KEY_MENU_SELECT])
-			{
+				TEXTENTRY_STATE tes;
+
+				// going to enter text
+				// XXX: CurIndex is abused here; DrawTeamString expects
+				//   CurIndex to contain the current cursor position
 				pMS->CurIndex = 0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, 1);
+				DrawTeamString (pMS, 1); /* draw input state */
 				UnlockMutex (GraphicsLock);
-				EnableCharacterMode ();
+
+				tes.Initialized = FALSE;
+				tes.MenuRepeatDelay = 0;
+				tes.BaseStr = pMS->TeamImage[pMS->side].TeamName;
+				tes.MaxSize = MAX_TEAM_CHARS + 1;
+				tes.CbParam = pMS;
+				tes.ChangeCallback = OnTeamNameChange;
+				DoTextEntry (&tes);
+				
+				// done entering
+				pMS->CurIndex = (BYTE)~0;
+				LockMutex (GraphicsLock);
+				DrawTeamString (pMS, 4); /* draw normal state */
+				UnlockMutex (GraphicsLock);
+				
 				return (TRUE);
 			}
 		}

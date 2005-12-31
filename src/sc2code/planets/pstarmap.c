@@ -619,10 +619,7 @@ DoMoveCursor (PMENU_STATE pMS)
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
 	{
-		pMS->Initialized = MAKE_WORD (
-				KBDToUNICODE (SK_INSERT),
-				KBDToUNICODE (SK_DELETE)
-				);
+		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoMoveCursor;
 
 		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
