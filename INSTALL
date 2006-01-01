@@ -11,7 +11,8 @@ GNU Make 3.80
 
 For Windows:
 Microsoft Visual C++ 6 or 7 (or MinGW+MSYS, see INSTALL.mingw for that)
-Processor Pack 5 for VC6 (if using VC6, to build MMX-accelerated code)
+Visual C++ 6.0 Processor Pack (if using VC6, to build MMX-accelerated code)
+	http://msdn.microsoft.com/vstudio/downloads/tools/ppack/
 
 For Mac OS X:
 Apple Developer Tools (for Mac OS X 10.2 and older)
