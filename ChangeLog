@@ -58,7 +58,8 @@ Changes towards version 0.5:
 - Entering Planetary Orbit wait screen is back (from DOS) - Alex
 - Gfx engine changes: now always 32bpp internally (facilitates
   alpha channel usage); accelerated platform-specific scaler code;
-  only using alpha channel where needed - Alex
+  only using alpha channel where needed. Processor pack is necessary
+  for compilation on VC6. - Alex
 - New 2x scaler 'hq' (by Maxim Stepin; www.hiend3d.com/hq2x.html) - Alex
 - Removed MikMod i/o hacks (using MREADER i/o now; bug #787) - Alex
 - Fixed fast escape weirdness (bug #619) - from Jan Lönnberg
