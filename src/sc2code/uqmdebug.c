@@ -65,10 +65,11 @@ debugKeyPressed (void)
 	equipShip ();
 	instantMove = !instantMove;
 	showSpheres ();
+	activateAllShips ();
 //	forwardToNextEvent (TRUE);		
 
 	// Tests
-	//Scale_PerfTest ();
+//	Scale_PerfTest ();
 
 	// Informational:
 //	dumpEvents (stderr);
@@ -345,6 +346,33 @@ showSpheres (void)
 			StarShipPtr->ShipInfo.known_strength =
 					StarShipPtr->ShipInfo.actual_strength;
 			StarShipPtr->ShipInfo.known_loc = StarShipPtr->ShipInfo.loc;
+		}
+
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void
+activateAllShips (void)
+{
+	HSTARSHIP hStarShip, hNextShip;
+	
+	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
+			hStarShip != NULL; hStarShip = hNextShip)
+	{
+		EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+
+		if (StarShipPtr->ShipInfo.icons != NULL)
+				// Skip the Ur-Quan probe.
+		{
+			StarShipPtr->ShipInfo.ship_flags &= ~(GOOD_GUY | BAD_GUY);
+			StarShipPtr->ShipInfo.ship_flags |= GOOD_GUY;
 		}
 
 		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);

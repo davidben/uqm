@@ -52,6 +52,8 @@ void equipShip (void);
 // Show all active spheres of influence.
 void showSpheres (void);
 
+// Make the ships of all races available for building at the shipyard.
+void activateAllShips (void);
 
 // Call a function for all stars.
 void forAllStars (void (*callback) (STAR_DESC *, void *), void *arg);
