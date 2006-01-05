@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Re-added joystick text input (w/ Up/Down/PageUp/PageDown keys);
+  joystick alphabet in content/lbm/joyalpha.txt (bug #495) - Alex
 - Text input refactoring: enabled key repeat, added support for
   Home, End and BackSpace keys; (bugs #671, #815) - Alex
 - Selecting the scan methods for shielded and gas giant planets
