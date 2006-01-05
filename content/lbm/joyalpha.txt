@@ -1,0 +1,2 @@
+#(Joystick Alphabet)
+ ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,-!?&()
