@@ -20,6 +20,7 @@
 #define _CONTROLS_H_
 
 #include "libs/compiler.h"
+#include "libs/strlib.h"
 
 
 // Enumerated type for controls
@@ -115,6 +116,10 @@ typedef struct textentry_state
 	BOOLEAN Initialized;
 	BOOLEAN Success;   // edit confirmed or canceled
 	UNICODE *CacheStr; // cached copy to revert immediate changes
+	STRING JoyAlphaString; // joystick alphabet definition
+	BOOLEAN JoystickMode;  // TRUE when doing joystick input
+	BOOLEAN UpperRegister; // TRUE when entering Caps
+	UNICODE *JoyAlphaStr;  // joystick alphabet
 	// these are public and must be set before calling DoTextEntry
 	UNICODE *BaseStr;  // set to string to edit
 	UNICODE *InsPt;    // set to curremt pos of insertion point

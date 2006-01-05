@@ -205,8 +205,12 @@ FeedbackQuit (BYTE which_setting)
 	UnlockMutex (GraphicsLock);
 }
 
+#define DDSHS_NORMAL   0
+#define DDSHS_EDIT     1
+#define DDSHS_BLOCKCUR 2
+
 static BOOLEAN
-DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
+DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 {
 	COUNT rel_index;
 	RECT r;
@@ -255,8 +259,10 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 	lf.pStr = ((GAME_DESC *)pMS->CurString)[rel_index];
 	lf.CharCount = (COUNT)~0;
 
-	if (state <= 0)
+	if (!(state & DDSHS_EDIT))
 	{	// normal state
+		SetFlashRect ((PRECT)~0L, (FRAME)0);
+
 		if (pMS->InputFunc == DoNaming)
 		{
 			if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
@@ -269,7 +275,9 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 			}
 		}
 		else
-		{
+		{	// XXX: remnants of DOS? this function is never actually
+			//   called outside DoNaming nowadays, which makes this
+			//   code utterly dead
 			if (state == 0)
 			{
 				COLOR OldColor;
@@ -280,8 +288,6 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 			}
 			font_DrawText (&lf);
 		}
-		SetFlashRect (&r, (FRAME)0);
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
 	}
 	else
 	{	// editing state
@@ -307,17 +313,27 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, SIZE state)
 			text_r.corner.x += (SIZE)*pchar_deltas++;
 		if ((COUNT)pMS->first_item.x < lf.CharCount) /* end of line */
 			--text_r.corner.x;
-		text_r.extent.width = 1;
-#if 0
-		/* This is code that's a remnant of non-keyboard systems */
-		else
-		{
-			if ((COUNT)pMS->first_item.x == lf.CharCount) /* end of line */
+		
+		if (state & DDSHS_BLOCKCUR)
+		{	// Use block cursor for keyboardless systems
+			if ((COUNT)pMS->first_item.x == lf.CharCount)
+			{	// cursor at end-line -- use insertion point
 				text_r.extent.width = 1;
+			}
+			else if ((COUNT)pMS->first_item.x + 1 == lf.CharCount)
+			{	// extra pixel for last char margin
+				text_r.extent.width = (SIZE)*pchar_deltas + 2;
+			}
 			else
-				text_r.extent.width = (SIZE)*pchar_deltas;
+			{	// normal mid-line char
+				text_r.extent.width = (SIZE)*pchar_deltas + 1;
+			}
 		}
-#endif
+		else
+		{	// Insertion point cursor
+			text_r.extent.width = 1;
+		}
+		
 		text_r.corner.y = r.corner.y;
 		text_r.extent.height = r.extent.height;
 		SetContextForeGroundColor (BLACK_COLOR);
@@ -337,8 +353,13 @@ static BOOLEAN
 OnNameChange (PTEXTENTRY_STATE pTES)
 {
 	PMENU_STATE pMS = (PMENU_STATE) pTES->CbParam;
+	COUNT hl = DDSHS_EDIT;
+
 	pMS->first_item.x = pTES->InsPt - pTES->BaseStr;
-	return DrawDescriptionString (pMS, 0, 1);
+	if (pTES->JoystickMode)
+		hl |= DDSHS_BLOCKCUR;
+
+	return DrawDescriptionString (pMS, 0, hl);
 }
 
 static BOOLEAN
@@ -363,7 +384,7 @@ DoNaming (PMENU_STATE pMS)
 	// XXX: nasty hack; CurString may not be large enough to
 	//   contain a pointer on some platforms
 	pMS->CurString = (STRING)buf;
-	DrawDescriptionString (pMS, 0, 1);
+	DrawDescriptionString (pMS, 0, DDSHS_EDIT);
 
 	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
@@ -391,7 +412,7 @@ DoNaming (PMENU_STATE pMS)
 		wstrcpy (Setting, buf);
 	else
 		wstrcpy (buf, Setting);
-	DrawDescriptionString (pMS, 0, 0);
+	DrawDescriptionString (pMS, 0, DDSHS_NORMAL);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 

@@ -23,71 +23,9 @@
 #include "globdata.h"
 #include "sounds.h"
 #include "settings.h"
+#include "resinst.h"
+#include "nameref.h"
 
-
-static UWORD cur_char = ' ';
-
-void
-SetJoystickChar (UWORD which_char)
-{
-	if (!isalnum (cur_char = which_char))
-		cur_char = ' ';
-}
-
-UWORD
-GetJoystickChar (void)
-{
-	int dy;
-	UWORD old_char;
-
-	if (PulsedInputState.key[KEY_MENU_SELECT])
-		return ('\n');
-	else if (PulsedInputState.key[KEY_MENU_CANCEL])
-		return (0x1B);
-	else if (PulsedInputState.key[KEY_MENU_SPECIAL])
-		return (0x7F);
-		
-	old_char = cur_char;
-	dy = 0;
-	if (PulsedInputState.key[KEY_MENU_UP]) dy = -1;
-	else if (PulsedInputState.key[KEY_MENU_DOWN]) dy = 1;
-	if (dy)
-	{
-		if (cur_char == ' ')
-		{
-			if (dy > 0)
-				cur_char = 'a';
-			else /* if (dy < 0) */
-				cur_char = '9';
-		}
-		else if (isdigit (cur_char))
-		{
-			cur_char += dy;
-			if (cur_char < '0')
-				cur_char = 'z';
-			else if (cur_char > '9')
-				cur_char = ' ';
-		}
-		else if (!isalpha (cur_char += dy))
-		{
-			cur_char -= dy;
-			if (cur_char == 'a' || cur_char == 'A')
-				cur_char = ' ';
-			else
-				cur_char = '0';
-		}
-	}
-	
-	if ((PulsedInputState.key[KEY_MENU_PAGE_UP] || PulsedInputState.key[KEY_MENU_PAGE_DOWN]) && isalpha (cur_char))
-	{
-		if (islower (cur_char))
-			cur_char = toupper (cur_char);
-		else
-			cur_char = tolower (cur_char);
-	}
-	
-	return (cur_char == old_char ? 0 : cur_char);
-}
 
 BOOLEAN
 DoTextEntry (PTEXTENTRY_STATE pTES)
@@ -108,11 +46,18 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		pTES->CacheStr = HMalloc (pTES->MaxSize);
 		pTES->Success = FALSE;
 		pTES->Initialized = TRUE;
+		pTES->JoystickMode = FALSE;
+		pTES->UpperRegister = TRUE;
+		pTES->JoyAlphaString = CaptureStringTable (
+				LoadStringTable (JOYSTICK_ALPHA_STRTAB));
+		pTES->JoyAlphaStr = GetStringAddress (
+				SetAbsStringTableIndex (pTES->JoyAlphaString, 0));
 
 		DoInput (pTES, TRUE);
 
 		if (pTES->CacheStr)
 			HFree (pTES->CacheStr);
+		DestroyStringTable ( ReleaseStringTable (pTES->JoyAlphaString));
 
 		return pTES->Success;
 	}
@@ -125,8 +70,15 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 	pTES->CacheStr[pTES->MaxSize - 1] = '\0';
 
 	// process the pending character buffer
-	while (ch = GetNextCharacter ())
+	ch = GetNextCharacter ();
+	if (!ch && PulsedInputState.key[KEY_CHARACTER])
+	{	// keyboard repeat, but only when buffer empty
+		ch = GetLastCharacter ();
+	}
+	while (ch)
 	{
+		pTES->JoystickMode = FALSE;
+
 		if (isprint (ch) && (pStr + len - pTES->BaseStr + 1 < pTES->MaxSize))
 		{
 			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
@@ -135,22 +87,9 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			++len;
 			changed = TRUE;
 		}
+		ch = GetNextCharacter ();
 	}
 
-	if (!changed && PulsedInputState.key[KEY_CHARACTER])
-	{	// keyboard repeat, but only when buffer empty
-		ch = GetLastCharacter ();
-		if (ch && isprint (ch) &&
-				(pStr + len - pTES->BaseStr + 1 < pTES->MaxSize))
-		{
-			memmove (pStr + 1, pStr, (len + 1) * sizeof (*pStr));
-			*pStr = ch;
-			++pStr;
-			++len;
-			changed = TRUE;
-		}
-	}
-	
 	if (PulsedInputState.key[KEY_MENU_DELETE])
 	{
 		if (len)
@@ -202,13 +141,86 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_UP])
-	{
-		// do joystick text
-	}
-	else if (PulsedInputState.key[KEY_MENU_DOWN])
-	{
-		// do joystick text
+	
+	if (pTES->JoyAlphaStr && (
+			PulsedInputState.key[KEY_MENU_UP] ||
+			PulsedInputState.key[KEY_MENU_DOWN] ||
+			PulsedInputState.key[KEY_MENU_PAGE_UP] ||
+			PulsedInputState.key[KEY_MENU_PAGE_DOWN]) )
+	{	// do joystick text
+		UNICODE newch;
+		UNICODE cmpch;
+		int i;
+
+		pTES->JoystickMode = TRUE;
+
+		if (len)
+			ch = *pStr;
+		else
+			ch = pTES->JoyAlphaStr[0];
+		
+		newch = ch;
+		cmpch = toupper (ch);
+
+		// find current char in the alphabet
+		for (i = 0; pTES->JoyAlphaStr[i] != cmpch
+				&& pTES->JoyAlphaStr[i] != '\0'; ++i)
+			;
+
+		if (PulsedInputState.key[KEY_MENU_UP])
+		{
+			--i;
+			if (i < 0)
+				i = wstrlen (pTES->JoyAlphaStr) - 1;
+			newch = pTES->JoyAlphaStr[i];
+		}
+		else if (PulsedInputState.key[KEY_MENU_DOWN])
+		{
+			++i;
+			if (i >= (int)wstrlen(pTES->JoyAlphaStr))
+				newch = pTES->JoyAlphaStr[0];
+			else
+				newch = pTES->JoyAlphaStr[i];
+		}
+
+		if (PulsedInputState.key[KEY_MENU_PAGE_UP] ||
+				PulsedInputState.key[KEY_MENU_PAGE_DOWN])
+		{
+			if (len)
+			{	// single char change
+				if (islower (newch))
+					newch = toupper (newch);
+				else
+					newch = tolower (newch);
+			}
+			else
+			{	// register change
+				pTES->UpperRegister = !pTES->UpperRegister;
+			}
+		}
+		else
+		{	// check register
+			if (pTES->UpperRegister)
+				newch = toupper (newch);
+			else
+				newch = tolower (newch);
+		}
+
+		if (newch != ch)
+		{
+			if (len)
+			{	// change current
+				pStr[0] = newch;
+				changed = TRUE;
+			}
+			else if (pStr + len - pTES->BaseStr + 1 < pTES->MaxSize)
+			{	// append
+				pStr[0] = newch;
+				pStr[1] = '\0';
+				++len;
+				changed = TRUE;
+			}
+		}
 	}
 	
 	if (PulsedInputState.key[KEY_MENU_SELECT])

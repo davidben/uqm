@@ -138,9 +138,18 @@ PMELEE_STATE volatile pMeleeState;
 static BOOLEAN DoMelee (PMELEE_STATE pMS);
 static BOOLEAN DoEdit (PMELEE_STATE pMS);
 static BOOLEAN DoPickShip (PMELEE_STATE pMS);
+
+#define DTSHS_NORMAL   0
+#define DTSHS_EDIT     1
+#define DTSHS_SELECTED 2
+#define DTSHS_REPAIR   4
+#define DTSHS_BLOCKCUR 8
+
 static BOOLEAN DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState);
+
 static BOOLEAN DoLoadTeam (PMELEE_STATE pMS);
 static void DrawFileStrings (PMELEE_STATE pMS, int HiLiteState);
+
 
 static void
 DrawMeleeIcon (COUNT which_icon)
@@ -310,7 +319,7 @@ RepairMeleeFrame (PRECT pRect)
 					DrawShipBox (pMeleeState, FALSE);
 			}
 
-			DrawTeamString (pMeleeState, 0);
+			DrawTeamString (pMeleeState, DTSHS_NORMAL);
 		}
 		pMeleeState->side = old_side;
 		pMeleeState->row = old_row;
@@ -337,15 +346,12 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
 	r.extent.width = NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE);
 	r.extent.height = 13;
-	if (HiLiteState == 4)
+	if (HiLiteState == DTSHS_REPAIR)
 	{
 		RepairMeleeFrame (&r);
 		return (TRUE);
 	}
 		
-	if (HiLiteState & 1)
-		r.extent.width -= 29;
-
 	SetContextFont (MicroFont);
 
 	lfText.pStr = pMS->TeamImage[pMS->side].TeamName;
@@ -356,7 +362,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 	lfText.CharCount = wstrlen (lfText.pStr); // (COUNT)~0;
 
 	BatchGraphics ();
-	if (!(HiLiteState & 1))
+	if (!(HiLiteState & DTSHS_EDIT))
 	{	// normal or selected state
 		TEXT rtText;
 		UNICODE buf[10];
@@ -368,7 +374,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		rtText.baseline.y = lfText.baseline.y;
 		rtText.baseline.x = lfText.baseline.x + r.extent.width - 1;
 
-		SetContextForeGroundColor (HiLiteState == 0
+		SetContextForeGroundColor (!(HiLiteState & DTSHS_SELECTED)
 				? TEAM_NAME_TEXT_COLOR : TEAM_NAME_EDIT_TEXT_COLOR);
 		font_DrawText (&lfText);
 		font_DrawText (&rtText);
@@ -379,6 +385,9 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		RECT text_r;
 		BYTE char_deltas[MAX_TEAM_CHARS];
 		PBYTE pchar_deltas;
+
+		// not drawing team bucks
+		r.extent.width -= 29;
 
 		TextRect (&lfText, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
@@ -397,19 +406,28 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		pchar_deltas = char_deltas;
 		for (i = pMS->CurIndex; i > 0; --i)
 			text_r.corner.x += (SIZE)*pchar_deltas++;
-		if (pMS->CurIndex < lfText.CharCount) /* end of line */
+		if (pMS->CurIndex < lfText.CharCount) /* cursor mid-line */
 			--text_r.corner.x;
-		text_r.extent.width = 1;
-#if 0
-		/* Code for keyboardless systems */
-		else
-		{
-			if (pMS->CurIndex == lfText.CharCount) /* end of line */
+		if (HiLiteState & DTSHS_BLOCKCUR)
+		{	// Use block cursor for keyboardless systems
+			if (pMS->CurIndex == lfText.CharCount)
+			{	// cursor at end-line -- use insertion point
 				text_r.extent.width = 1;
+			}
+			else if (pMS->CurIndex + 1 == lfText.CharCount)
+			{	// extra pixel for last char margin
+				text_r.extent.width = (SIZE)*pchar_deltas + 2;
+			}
 			else
-				text_r.extent.width = (SIZE)*pchar_deltas;
+			{	// normal mid-line char
+				text_r.extent.width = (SIZE)*pchar_deltas + 1;
+			}
 		}
-#endif
+		else
+		{	// Insertion point cursor
+			text_r.extent.width = 1;
+		}
+		// position cursor within input field rect
 		++text_r.corner.x;
 		++text_r.corner.y;
 		text_r.extent.height -= 2;
@@ -490,7 +508,7 @@ Deselect (BYTE opt)
 				if (pMeleeState->row < NUM_MELEE_ROWS)
 					DrawShipBox (pMeleeState, FALSE);
 				else if (pMeleeState->CurIndex == (BYTE)~0)
-					DrawTeamString (pMeleeState, 0);
+					DrawTeamString (pMeleeState, DTSHS_NORMAL);
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
@@ -536,7 +554,7 @@ Select (BYTE opt)
 				if (pMeleeState->row < NUM_MELEE_ROWS)
 					DrawShipBox (pMeleeState, TRUE);
 				else if (pMeleeState->CurIndex == (BYTE)~0)
-					DrawTeamString (pMeleeState, 2);
+					DrawTeamString (pMeleeState, DTSHS_SELECTED);
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
@@ -1113,7 +1131,7 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 	RepairMeleeFrame (&r);
 
-	DrawTeamString (pMS, 4);
+	DrawTeamString (pMS, DTSHS_REPAIR);
 	UnlockMutex (GraphicsLock);
 
 }
@@ -1138,11 +1156,14 @@ OnTeamNameChange (PTEXTENTRY_STATE pTES)
 {
 	PMELEE_STATE pMS = (PMELEE_STATE) pTES->CbParam;
 	BOOLEAN ret;
+	COUNT hl = DTSHS_EDIT;
 
 	pMS->CurIndex = pTES->InsPt - pTES->BaseStr;
+	if (pTES->JoystickMode)
+		hl |= DTSHS_BLOCKCUR;
 
 	LockMutex (GraphicsLock);
-	ret = DrawTeamString (pMS, 1);
+	ret = DrawTeamString (pMS, hl);
 	UnlockMutex (GraphicsLock);
 
 	return ret;
@@ -1209,7 +1230,7 @@ DoEdit (PMELEE_STATE pMS)
 				//   CurIndex to contain the current cursor position
 				pMS->CurIndex = 0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, 1); /* draw input state */
+				DrawTeamString (pMS, DTSHS_EDIT);
 				UnlockMutex (GraphicsLock);
 
 				tes.Initialized = FALSE;
@@ -1223,7 +1244,7 @@ DoEdit (PMELEE_STATE pMS)
 				// done entering
 				pMS->CurIndex = (BYTE)~0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, 4); /* draw normal state */
+				DrawTeamString (pMS, DTSHS_REPAIR);
 				UnlockMutex (GraphicsLock);
 				
 				return (TRUE);
@@ -1346,7 +1367,7 @@ DoPickShip (PMELEE_STATE pMS)
 
 			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = pMS->CurIndex;
 			LockMutex (GraphicsLock);
-			DrawTeamString (pMS, 4);
+			DrawTeamString (pMS, DTSHS_REPAIR);
 			DrawShipBox (pMS, FALSE);
 			UnlockMutex (GraphicsLock);
 			AdvanceCursor (pMS);
