@@ -1,2 +1,8 @@
 #(Joystick Alphabet)
  ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,-!?&()
+
+#(Joystick upper register)
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+#(Joystick lower register)
+abcdefghijklmnopqrstuvwxyz
