@@ -861,7 +861,7 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "Options:\n");
 	fprintf (out, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
 			"works only with --opengl)\n");
-	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 16)\n");
+	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 32)\n");
 	fprintf (out, "  -f, --fullscreen (default off)\n");
 	fprintf (out, "  -o, --opengl (default off)\n");
 	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
