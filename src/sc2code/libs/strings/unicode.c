@@ -244,4 +244,166 @@ skipUTF8Chars(const unsigned char *ptr, size_t num) {
 	return (unsigned char *) ptr;
 }
 
+// Decodes a UTF-8 string (start) into a wide char string (wstr)
+// returns number of chars decoded and stored, not counting 0-term
+// any chars that do not fit are truncated
+// wide string term 0 is always appended, unless the destination
+// buffer is 0 chars long
+size_t
+getWideFromStringN(wchar_t *wstr, size_t maxcount,
+		const unsigned char *start, const unsigned char *end)
+{
+	wchar_t *next;
 
+	if (maxcount == 0)
+		return 0;
+
+	// always leave room for 0-term
+	--maxcount;
+
+	for (next = wstr; maxcount > 0; ++next, --maxcount)
+	{
+		*next = getCharFromStringN(&start, end);
+		if (*next == 0)
+			break;
+	}
+
+	*next = 0; // term
+
+	return next - wstr;
+}
+
+// See getStringFromWideN() for functionality
+//  the only difference is that the source string (start) length is
+//  calculated by searching for 0-term
+size_t
+getWideFromString(wchar_t *wstr, size_t maxcount, unsigned char *start)
+{
+	wchar_t *next;
+
+	if (maxcount == 0)
+		return 0;
+
+	// always leave room for 0-term
+	--maxcount;
+
+	for (next = wstr; maxcount > 0; ++next, --maxcount)
+	{
+		*next = getCharFromString(&start);
+		if (*next == 0)
+			break;
+	}
+
+	*next = 0; // term
+
+	return next - wstr;
+}
+
+// Encode one wide character into UTF-8
+// returns number of bytes used in the buffer,
+//  0  : invalid or unsupported char
+//  <0 : negative of bytes needed if buffer too small
+// string term '\0' is *not* appended or counted
+int
+getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch)
+{
+	int i;
+	static const struct range_def
+	{
+		wchar_t lim;
+		int marker;
+		int mask;
+	}
+	ranges[] = 
+	{
+		{0x0000007f, 0x00, 0x7f},
+		{0x000007ff, 0xc0, 0x1f},
+		{0x0000ffff, 0xe0, 0x0f},
+		{0x001fffff, 0xf0, 0x07},
+		{0x03ffffff, 0xf8, 0x03},
+		{0x7fffffff, 0xfc, 0x01},
+		{0x00000000, 0x00, 0x00} // term
+	};
+	const struct range_def *def;
+
+	// lookup the range
+	for (i = 0, def = ranges; ch > def->lim && def->mask != 0; ++i, ++def)
+		;
+	if (def->mask == 0)
+	{	// invalid or unsupported char
+		fprintf(stderr, "Warning: Invalid or unsupported wide char (%lu)\n",
+				(unsigned long)ch);
+		return 0;
+	}
+
+	if ((size_t)i + 1 > size)
+		return -(i + 1);
+
+	// unrolled for speed
+	switch (i)
+	{
+		case 5: ptr[5] = (ch & 0x3f) | 0x80;
+				ch >>= 6;
+		case 4: ptr[4] = (ch & 0x3f) | 0x80;
+				ch >>= 6;
+		case 3: ptr[3] = (ch & 0x3f) | 0x80;
+				ch >>= 6;
+		case 2: ptr[2] = (ch & 0x3f) | 0x80;
+				ch >>= 6;
+		case 1: ptr[1] = (ch & 0x3f) | 0x80;
+				ch >>= 6;
+		case 0: ptr[0] = (ch & def->mask) | def->marker;
+	}
+
+	return i + 1;
+}
+
+// Encode a wide char string (wstr) into a UTF-8 string (ptr)
+// returns number of bytes used in the buffer (includes 0-term)
+// any chars that do not fit are truncated
+// string term '\0' is always appended, unless the destination
+// buffer is 0 bytes long
+size_t
+getStringFromWideN(unsigned char *ptr, size_t size,
+		const wchar_t *wstr, size_t count)
+{
+	unsigned char *next;
+	int used;
+
+	if (size == 0)
+		return 0;
+
+	// always leave room for 0-term
+	--size;
+	
+	for (next = ptr; size > 0 && count > 0;
+			size -= used, next += used, --count, ++wstr)
+	{
+		used = getStringFromChar(next, size, *wstr);
+		if (used < 0)
+			break; // not enough room
+		if (used == 0)
+		{	// bad char?
+			*next = '?';
+			used = 1;
+		}
+	}
+
+	*next = '\0'; // term
+
+	return next - ptr + 1;
+}
+
+// See getStringFromWideN() for functionality
+//  the only difference is that the source string (wstr) length is
+//  calculated by searching for 0-term
+size_t
+getStringFromWide(unsigned char *ptr, size_t size, const wchar_t *wstr)
+{
+	const wchar_t *end;
+
+	for (end = wstr; *end != 0; ++end)
+		;
+	
+	return getStringFromWideN(ptr, size, wstr, (end - wstr));
+}

@@ -59,6 +59,16 @@ size_t utf8StringCount(const unsigned char *start);
 size_t utf8StringCountN(const unsigned char *start,
 		const unsigned char *end);
 unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
+size_t getWideFromString(wchar_t *wstr, size_t maxcount,
+		const unsigned char *start);
+size_t getWideFromStringN(wchar_t *wstr, size_t maxcount,
+		const unsigned char *start, const unsigned char *end);
+int getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch);
+size_t getStringFromWideN(unsigned char *ptr, size_t size,
+		const wchar_t *wstr, size_t count);
+size_t getStringFromWide(unsigned char *ptr, size_t size,
+		const wchar_t *wstr);
+
 
 #endif /* _STRLIB_H */
 
