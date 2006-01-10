@@ -277,7 +277,7 @@ getWideFromStringN(wchar_t *wstr, size_t maxcount,
 //  the only difference is that the source string (start) length is
 //  calculated by searching for 0-term
 size_t
-getWideFromString(wchar_t *wstr, size_t maxcount, unsigned char *start)
+getWideFromString(wchar_t *wstr, size_t maxcount, const unsigned char *start)
 {
 	wchar_t *next;
 
