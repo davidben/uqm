@@ -20,6 +20,7 @@
 #define _INPLIB_H
 
 #include "memlib.h"
+#include <stddef.h>
 
 typedef DWORD INPUT_STATE;
 
@@ -42,8 +43,8 @@ extern volatile int MouseButtonDown;
 
 void EnableCharacterMode (void);
 void DisableCharacterMode (void);
-UNICODE GetNextCharacter (void);
-UNICODE GetLastCharacter (void);
+wchar_t GetNextCharacter (void);
+wchar_t GetLastCharacter (void);
 
 
 #endif /* _INPLIB_H */

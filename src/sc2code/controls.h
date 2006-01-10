@@ -106,6 +106,8 @@ BATTLE_INPUT_STATE p2_combat_summary (void);
 
 extern volatile BOOLEAN GamePaused, ExitRequested;
 
+typedef struct joy_char joy_char_t;
+
 typedef struct textentry_state
 {
 	// standard state required by DoInput
@@ -119,10 +121,15 @@ typedef struct textentry_state
 	STRING JoyAlphaString; // joystick alphabet definition
 	BOOLEAN JoystickMode;  // TRUE when doing joystick input
 	BOOLEAN UpperRegister; // TRUE when entering Caps
-	UNICODE *JoyAlphaStr;  // joystick alphabet
+	joy_char_t *JoyAlpha;  // joystick alphabet
+	int JoyAlphaLength;
+	joy_char_t *JoyUpper;  // joystick upper register
+	joy_char_t *JoyLower;  // joystick lower register
+	int JoyRegLength;
+	UNICODE *InsPt;        // set to current pos of insertion point
 	// these are public and must be set before calling DoTextEntry
 	UNICODE *BaseStr;  // set to string to edit
-	UNICODE *InsPt;    // set to curremt pos of insertion point
+	int CursorPos;     // set to current cursor pos in chars
 	int MaxSize;       // set to max size of edited string
 
 	BOOLEAN (*ChangeCallback) (struct textentry_state *pTES);

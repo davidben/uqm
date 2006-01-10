@@ -355,7 +355,7 @@ OnNameChange (PTEXTENTRY_STATE pTES)
 	PMENU_STATE pMS = (PMENU_STATE) pTES->CbParam;
 	COUNT hl = DDSHS_EDIT;
 
-	pMS->first_item.x = pTES->InsPt - pTES->BaseStr;
+	pMS->first_item.x = pTES->CursorPos;
 	if (pTES->JoystickMode)
 		hl |= DDSHS_BLOCKCUR;
 
@@ -405,6 +405,7 @@ DoNaming (PMENU_STATE pMS)
 	tes.Initialized = FALSE;
 	tes.MenuRepeatDelay = 0;
 	tes.BaseStr = buf;
+	tes.CursorPos = 0;
 	tes.CbParam = pMS;
 	tes.ChangeCallback = OnNameChange;
 

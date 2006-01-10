@@ -30,12 +30,11 @@
 
 #define KBDBUFSIZE (1 << 8)
 static int kbdhead=0, kbdtail=0;
-static UNICODE kbdbuf[KBDBUFSIZE];
-static UNICODE lastchar;
+static wchar_t kbdbuf[KBDBUFSIZE];
+static wchar_t lastchar;
 static int kbdstate[SDLK_LAST];
 
 static BOOLEAN InputInitialized = FALSE;
-UWORD UNICODEToKBD (UNICODE which_key);
 
 static BOOLEAN _in_character_mode = FALSE;
 
@@ -238,10 +237,10 @@ DisableCharacterMode (void)
 	lastchar = 0;
 }
 
-UNICODE
+wchar_t
 GetNextCharacter (void)
 {
-	UNICODE result;
+	wchar_t result;
 	if (kbdhead == kbdtail)
 		return 0;
 	result = kbdbuf[kbdhead];
@@ -249,7 +248,7 @@ GetNextCharacter (void)
 	return result;
 }	
 
-UNICODE
+wchar_t
 GetLastCharacter (void)
 {
 	return lastchar;
@@ -285,7 +284,7 @@ ProcessInputEvent (const SDL_Event *Event)
 
 	{	// process character input event, if any
 		SDLKey k = Event->key.keysym.sym;
-		UNICODE map_key = (UNICODE) Event->key.keysym.unicode;
+		wchar_t map_key = Event->key.keysym.unicode;
 
 		if (Event->type == SDL_KEYDOWN)
 		{

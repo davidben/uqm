@@ -1158,7 +1158,7 @@ OnTeamNameChange (PTEXTENTRY_STATE pTES)
 	BOOLEAN ret;
 	COUNT hl = DTSHS_EDIT;
 
-	pMS->CurIndex = pTES->InsPt - pTES->BaseStr;
+	pMS->CurIndex = pTES->CursorPos;
 	if (pTES->JoystickMode)
 		hl |= DTSHS_BLOCKCUR;
 
@@ -1236,6 +1236,7 @@ DoEdit (PMELEE_STATE pMS)
 				tes.Initialized = FALSE;
 				tes.MenuRepeatDelay = 0;
 				tes.BaseStr = pMS->TeamImage[pMS->side].TeamName;
+				tes.CursorPos = 0;
 				tes.MaxSize = MAX_TEAM_CHARS + 1;
 				tes.CbParam = pMS;
 				tes.ChangeCallback = OnTeamNameChange;
