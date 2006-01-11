@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Color depth is now determined entirely automatically - Michael
 - Text input is now available in languages other than English
   (UCS/Unicode; SDL does not support Unicode input on Windows yet;
   you must have proper font chars installed -- see translations) - Alex

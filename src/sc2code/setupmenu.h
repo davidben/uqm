@@ -63,19 +63,12 @@ typedef enum {
 	OPTVAL_HIGH
 } OPT_AQUALITYTYPE;
 
-typedef enum {
-	OPTVAL_16,
-	OPTVAL_24,
-	OPTVAL_32
-} OPT_DEPTH;
-
 typedef struct globalopts_struct {
 	OPT_SCALETYPE scaler;
 	OPT_RESTYPE res;
 	OPT_DRIVERTYPE driver;
 	OPT_ADRIVERTYPE adriver;
 	OPT_AQUALITYTYPE aquality;
-	OPT_DEPTH depth;
 	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom, shield;
 	int speechvol, musicvol, sfxvol;

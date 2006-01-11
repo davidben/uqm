@@ -69,11 +69,10 @@ ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
 	return *screen == 0 ? -1 : 0;
 }
 
-int
-TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
+static int
+AttemptColorDepth (int flags, int width, int height, int bpp)
 {
-	int i, videomode_flags, texture_width, texture_height;
-	GraphicsDriver = driver;
+	int videomode_flags;
 	ScreenColorDepth = bpp;
 	ScreenWidthActual = width;
 	ScreenHeightActual = height;
@@ -125,13 +124,31 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 	}
 	else
 	{
-		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
+		fprintf (stderr, "Set the resolution to: %ix%ix%i (surface reports %ix%ix%i)\n",
+				width, height, bpp,			 
 				SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 				SDL_GetVideoSurface()->format->BitsPerPixel);
 
 		fprintf (stderr, "OpenGL renderer: %s version: %s\n",
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
+	return 0;
+}
+
+int
+TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
+{
+	int i, texture_width, texture_height;
+	GraphicsDriver = driver;
+
+	if (AttemptColorDepth (flags, width, height, 32) &&
+			AttemptColorDepth (flags, width, height, 24) &&
+			AttemptColorDepth (flags, width, height, 16))
+	{
+		fprintf (stderr, "Couldn't set any OpenGL %ix%i video mode!\n",
+			 width, height);
+		return -1;
+	}		
 
 	if (format_conv_surf)
 		SDL_FreeSurface (format_conv_surf);
@@ -210,7 +227,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int bpp)
 }
 
 int
-TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 {
 	char VideoName[256];
 
@@ -224,7 +241,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	if (TFB_GL_ConfigureVideo (driver, flags, width, height, bpp))
+	if (TFB_GL_ConfigureVideo (driver, flags, width, height))
 	{
 		fprintf (stderr, "Could not initialize video: "
 				"no fallback at start of program!\n");

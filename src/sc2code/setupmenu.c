@@ -254,23 +254,6 @@ static CHOICE_OPTION driver_opts[] = {
 		} },
 };
 
-static CHOICE_OPTION bpp_opts[] = {
-	{ "16",
-		{ "16-bit color depth.",
-		  "",
-		  ""
-		} },
-	{ "24",
-		{ "24-bit color depth.",
-		  "",
-		  ""
-		} },
-	{ "32",
-		{ "32-bit color depth.",
-		  "",
-		  ""
-		} } };
-
 static CHOICE_OPTION fullscreen_opts[] = {
 	{ "Windowed",
 		{ "Display everything in a window.",
@@ -311,7 +294,6 @@ static CHOICE_OPTION adriver_opts[] = {
 static WIDGET_CHOICE cmdline_opts[] = {
 	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, res_opts, 0, 0},
 	{ CHOICE_PREFACE, "Use Framebuffer?", 2, 2, driver_opts, 0, 0},
-	{ CHOICE_PREFACE, "Color depth", 3, 3, bpp_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Scaler", 6, 3, scaler_opts, 0, 0 },
   	{ CHOICE_PREFACE, "Scanlines", 2, 3, scanlines_opts, 0, 0 },
 	{ CHOICE_PREFACE, "Menu Style", 2, 2, menu_opts, 0, 0 },
@@ -386,38 +368,37 @@ static WIDGET *main_widgets[] = {
 
 static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&cmdline_opts[0]),
-	(WIDGET *)(&cmdline_opts[11]),
+	(WIDGET *)(&cmdline_opts[10]),
+	(WIDGET *)(&cmdline_opts[2]),
 	(WIDGET *)(&cmdline_opts[3]),
-	(WIDGET *)(&cmdline_opts[4]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *audio_widgets[] = {
 	(WIDGET *)(&sliders_opts[0]),
 	(WIDGET *)(&sliders_opts[1]),
 	(WIDGET *)(&sliders_opts[2]),
-	(WIDGET *)(&cmdline_opts[15]),
-	(WIDGET *)(&cmdline_opts[10]),
+	(WIDGET *)(&cmdline_opts[14]),
+	(WIDGET *)(&cmdline_opts[9]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *engine_widgets[] = {
+	(WIDGET *)(&cmdline_opts[4]),
 	(WIDGET *)(&cmdline_opts[5]),
 	(WIDGET *)(&cmdline_opts[6]),
 	(WIDGET *)(&cmdline_opts[7]),
 	(WIDGET *)(&cmdline_opts[8]),
-	(WIDGET *)(&cmdline_opts[9]),
-	(WIDGET *)(&cmdline_opts[14]),
-	(WIDGET *)(&cmdline_opts[12]),
-	(WIDGET *)(&cmdline_opts[18]),
+	(WIDGET *)(&cmdline_opts[13]),
+	(WIDGET *)(&cmdline_opts[11]),
+	(WIDGET *)(&cmdline_opts[17]),
 	(WIDGET *)(&prev_button) };
 
 static WIDGET *advanced_widgets[] = {
 #ifdef HAVE_OPENGL
 	(WIDGET *)(&cmdline_opts[1]),
 #endif
-	(WIDGET *)(&cmdline_opts[2]),
-	(WIDGET *)(&cmdline_opts[13]),
+	(WIDGET *)(&cmdline_opts[12]),
+	(WIDGET *)(&cmdline_opts[15]),
 	(WIDGET *)(&cmdline_opts[16]),
-	(WIDGET *)(&cmdline_opts[17]),
 	(WIDGET *)(&prev_button) };
 	
 
@@ -479,9 +460,9 @@ static WIDGET_MENU_SCREEN advanced_menu = {
 	"Advanced Options",
 	{ {0, 0}, NULL },
 #ifdef HAVE_OPENGL
-	6, advanced_widgets,
-#else
 	5, advanced_widgets,
+#else
+	4, advanced_widgets,
 #endif
 	0 };
 
@@ -609,23 +590,22 @@ SetDefaults (void)
 	}
 	cmdline_opts[0].selected = opts.res;
 	cmdline_opts[1].selected = opts.driver;
-	cmdline_opts[2].selected = opts.depth;
-	cmdline_opts[3].selected = opts.scaler;
-	cmdline_opts[4].selected = opts.scanlines;
-	cmdline_opts[5].selected = opts.menu;
-	cmdline_opts[6].selected = opts.text;
-	cmdline_opts[7].selected = opts.cscan;
-	cmdline_opts[8].selected = opts.scroll;
-	cmdline_opts[9].selected = opts.subtitles;
-	cmdline_opts[10].selected = opts.music;
-	cmdline_opts[11].selected = opts.fullscreen;
-	cmdline_opts[12].selected = opts.intro;
-	cmdline_opts[13].selected = opts.fps;
-	cmdline_opts[14].selected = opts.meleezoom;
-	cmdline_opts[15].selected = opts.stereo;
-	cmdline_opts[16].selected = opts.adriver;
-	cmdline_opts[17].selected = opts.aquality;
-	cmdline_opts[18].selected = opts.shield;
+	cmdline_opts[2].selected = opts.scaler;
+	cmdline_opts[3].selected = opts.scanlines;
+	cmdline_opts[4].selected = opts.menu;
+	cmdline_opts[5].selected = opts.text;
+	cmdline_opts[6].selected = opts.cscan;
+	cmdline_opts[7].selected = opts.scroll;
+	cmdline_opts[8].selected = opts.subtitles;
+	cmdline_opts[9].selected = opts.music;
+	cmdline_opts[10].selected = opts.fullscreen;
+	cmdline_opts[11].selected = opts.intro;
+	cmdline_opts[12].selected = opts.fps;
+	cmdline_opts[13].selected = opts.meleezoom;
+	cmdline_opts[14].selected = opts.stereo;
+	cmdline_opts[15].selected = opts.adriver;
+	cmdline_opts[16].selected = opts.aquality;
+	cmdline_opts[17].selected = opts.shield;
 
 	sliders_opts[0].value = opts.musicvol;
 	sliders_opts[1].value = opts.sfxvol;
@@ -638,23 +618,22 @@ PropagateResults (void)
 	GLOBALOPTS opts;
 	opts.res = cmdline_opts[0].selected;
 	opts.driver = cmdline_opts[1].selected;
-	opts.depth = cmdline_opts[2].selected;
-	opts.scaler = cmdline_opts[3].selected;
-	opts.scanlines = cmdline_opts[4].selected;
-	opts.menu = cmdline_opts[5].selected;
-	opts.text = cmdline_opts[6].selected;
-	opts.cscan = cmdline_opts[7].selected;
-	opts.scroll = cmdline_opts[8].selected;
-	opts.subtitles = cmdline_opts[9].selected;
-	opts.music = cmdline_opts[10].selected;
-	opts.fullscreen = cmdline_opts[11].selected;
-	opts.intro = cmdline_opts[12].selected;
-	opts.fps = cmdline_opts[13].selected;
-	opts.meleezoom = cmdline_opts[14].selected;
-	opts.stereo = cmdline_opts[15].selected;
-	opts.adriver = cmdline_opts[16].selected;
-	opts.aquality = cmdline_opts[17].selected;
-	opts.shield = cmdline_opts[18].selected;
+	opts.scaler = cmdline_opts[2].selected;
+	opts.scanlines = cmdline_opts[3].selected;
+	opts.menu = cmdline_opts[4].selected;
+	opts.text = cmdline_opts[5].selected;
+	opts.cscan = cmdline_opts[6].selected;
+	opts.scroll = cmdline_opts[7].selected;
+	opts.subtitles = cmdline_opts[8].selected;
+	opts.music = cmdline_opts[9].selected;
+	opts.fullscreen = cmdline_opts[10].selected;
+	opts.intro = cmdline_opts[11].selected;
+	opts.fps = cmdline_opts[12].selected;
+	opts.meleezoom = cmdline_opts[13].selected;
+	opts.stereo = cmdline_opts[14].selected;
+	opts.adriver = cmdline_opts[15].selected;
+	opts.aquality = cmdline_opts[16].selected;
+	opts.shield = cmdline_opts[17].selected;
 
 	opts.musicvol = sliders_opts[0].value;
 	opts.sfxvol = sliders_opts[1].value;
@@ -832,22 +811,6 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		opts->aquality = OPTVAL_MEDIUM;
 	}
 
-	switch (ScreenColorDepth) 
-	{
-	case 16:
-		opts->depth = OPTVAL_16;
-		break;
-	case 24:
-		opts->depth = OPTVAL_24;
-		break;
-	case 32:
-		opts->depth = OPTVAL_32;
-		break;
-	default:
-		opts->depth = OPTVAL_32+1;
-		break;
-	}
-
 	/* Work out resolution.  On the way, try to guess a good default
 	 * for config.alwaysgl, then overwrite it if it was set previously. */
 	opts->driver = OPTVAL_PURE_IF_POSSIBLE;
@@ -937,7 +900,6 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	int NewGfxFlags = GfxFlags;
 	int NewWidth = ScreenWidthActual;
 	int NewHeight = ScreenHeightActual;
-	int NewDepth = ScreenColorDepth;
 	int NewDriver = GraphicsDriver;
 
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_ANY;
@@ -976,24 +938,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		break;
 	}
 
-	switch (opts->depth) {
-	case OPTVAL_16:
-		NewDepth = 16;
-		break;
-	case OPTVAL_24:
-		NewDepth = 24;
-		break;
-	case OPTVAL_32:
-		NewDepth = 32;
-		break;
-	default:
-		fprintf (stderr, "Can't Happen: Impossible value for BPP\n");
-		break;
-	}
-
 	res_PutInteger ("config.reswidth", NewWidth);
 	res_PutInteger ("config.resheight", NewHeight);
-	res_PutInteger ("config.bpp", NewDepth);
 	res_PutBoolean ("config.alwaysgl", opts->driver == OPTVAL_ALWAYS_GL);
 	res_PutBoolean ("config.usegl", NewDriver == TFB_GFXDRIVER_SDL_OPENGL);
 
@@ -1039,12 +985,11 @@ SetGlobalOptions (GLOBALOPTS *opts)
 
 	if ((NewWidth != ScreenWidthActual) ||
 	    (NewHeight != ScreenHeightActual) ||
-	    (NewDepth != ScreenColorDepth) ||
 	    (NewDriver != GraphicsDriver) ||
 	    (NewGfxFlags != GfxFlags)) 
 	{
 		FlushGraphics ();
-		TFB_DrawScreen_ReinitVideo (NewDriver, NewGfxFlags, NewWidth, NewHeight, NewDepth);
+		TFB_DrawScreen_ReinitVideo (NewDriver, NewGfxFlags, NewWidth, NewHeight);
 		FlushGraphics ();
 	}
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;

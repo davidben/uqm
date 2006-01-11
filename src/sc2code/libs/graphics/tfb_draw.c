@@ -216,8 +216,7 @@ TFB_DrawScreen_WaitForSignal (void)
 }
 
 void
-TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height,
-		int bpp)
+TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height)
 {
 	TFB_DrawCommand DrawCommand;
 	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_REINITVIDEO;
@@ -225,7 +224,6 @@ TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height,
 	DrawCommand.data.reinitvideo.flags = flags;
 	DrawCommand.data.reinitvideo.width = width;
 	DrawCommand.data.reinitvideo.height = height;
-	DrawCommand.data.reinitvideo.bpp = bpp;
 	TFB_EnqueueDrawCommand(&DrawCommand);
 }
 

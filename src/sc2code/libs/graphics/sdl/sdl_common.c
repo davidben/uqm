@@ -76,7 +76,7 @@ TFB_PreInit (void)
 }
 
 int
-TFB_ReInitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_ReInitGraphics (int driver, int flags, int width, int height)
 {
 	int result;
 	char caption[200];
@@ -86,17 +86,17 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height, int bpp)
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
-		result = TFB_GL_ConfigureVideo (driver, flags, width, height, bpp);
+		result = TFB_GL_ConfigureVideo (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
 		fprintf (stderr, "OpenGL support not compiled in, so using pure "
 				"sdl driver\n");
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
 #endif
 	}
 	else
 	{
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
 	}
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s",
@@ -113,33 +113,27 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height, int bpp)
 }
 
 int
-TFB_InitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_InitGraphics (int driver, int flags, int width, int height)
 {
 	int result;
 	char caption[200];
-
-	if (bpp != 15 && bpp != 16 && bpp != 24 && bpp != 32)
-	{
-		fprintf(stderr, "Fatal error: bpp of %d not supported\n", bpp);
-		exit(-1);
-	}
 
 	GfxFlags = flags;
 
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
-		result = TFB_GL_InitGraphics (driver, flags, width, height, bpp);
+		result = TFB_GL_InitGraphics (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
 		fprintf (stderr, "OpenGL support not compiled in, so using pure "
 				"sdl driver\n");
-		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
+		result = TFB_Pure_InitGraphics (driver, flags, width, height);
 #endif
 	}
 	else
 	{
-		result = TFB_Pure_InitGraphics (driver, flags, width, height, bpp);
+		result = TFB_Pure_InitGraphics (driver, flags, width, height);
 	}
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s", 
@@ -791,15 +785,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
 			{
 				int oldDriver = GraphicsDriver;
-				int oldBpp = ScreenColorDepth;
 				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
-							DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
-							DC.data.reinitvideo.bpp))
+							DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 				{
-					fprintf (stderr, "Could not provide requested mode: reverting to last known driver and bpp.\n");
+					fprintf (stderr, "Could not provide requested mode: reverting to last known driver.\n");
 					if (TFB_ReInitGraphics (oldDriver, DC.data.reinitvideo.flags,
-								DC.data.reinitvideo.width, DC.data.reinitvideo.height, 
-								oldBpp))
+								DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 					{
 						fprintf (stderr, "Couldn't reinit at that point either.  Your video has been somehow tied in knots.\n");
 						exit (-1);

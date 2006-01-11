@@ -132,7 +132,7 @@ typedef struct tfb_dc_signal
 
 typedef struct tfb_dc_reinit_video
 {
-	int driver, flags, width, height, bpp;
+	int driver, flags, width, height;
 } TFB_DrawCommand_ReinitVideo;
 
 typedef struct tfb_drawcommand

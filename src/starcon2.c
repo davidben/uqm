@@ -58,7 +58,6 @@ struct options_struct {
 	int soundFlags;
 	int width;
 	int height;
-	int bpp;
 	const char *configDir;
 	const char *contentDir;
 	const char **addons;
@@ -107,7 +106,6 @@ main (int argc, char *argv[])
 		/* .soundFlags = */         audio_QUALITY_MEDIUM,
 		/* .width = */              640,
 		/* .height = */             480,
-		/* .bpp = */                32,
 		/* .configDir = */          NULL,
 		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
@@ -184,10 +182,6 @@ main (int argc, char *argv[])
 	if (res_HasKey ("config.resheight"))
 	{
 		options.height = res_GetInteger ("config.resheight");
-	}
-	if (res_HasKey ("config.bpp"))
-	{
-		options.bpp = res_GetInteger ("config.bpp");
 	}
 	if (res_HasKey ("config.alwaysgl"))
 	{
@@ -317,17 +311,17 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.musicvol"))
 	{
-		int err = parseVolume(res_GetString ("config.musicvol"), 
+		parseVolume(res_GetString ("config.musicvol"), 
 				&options.musicVolumeScale, "music volume");
 	}		
 	if (res_HasKey ("config.sfxvol"))
 	{
-		int err = parseVolume(res_GetString ("config.sfxvol"), 
+		parseVolume(res_GetString ("config.sfxvol"), 
 				&options.sfxVolumeScale, "SFX volume");
 	}		
 	if (res_HasKey ("config.speechvol"))
 	{
-		int err = parseVolume(res_GetString ("config.speechvol"), 
+		parseVolume(res_GetString ("config.speechvol"), 
 				&options.speechVolumeScale, "speech volume");
 	}		
 
@@ -377,7 +371,7 @@ main (int argc, char *argv[])
 			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	TFB_InitGraphics (options.gfxDriver, options.gfxFlags,
-			options.width, options.height, options.bpp);
+			options.width, options.height);
 	if (options.gammaSet)
 		TFB_SetGamma (options.gamma);
 	InitColorMaps ();
@@ -419,7 +413,6 @@ static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:v";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
-	{"bpp", 1, NULL, 'd'},
 	{"fullscreen", 0, NULL, 'f'},
 	{"opengl", 0, NULL, 'o'},
 	{"scale", 1, NULL, 'c'},
@@ -529,25 +522,6 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				options->width = width;
 				options->height = height;
-				break;
-			}
-			case 'd':
-			{
-				int bpp;
-				int err = parseIntOption(optarg, &bpp, "bpp");
-				if (err)
-				{
-					badArg = TRUE;
-					break;
-				}
-				if (bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32)
-				{
-					fprintf (stderr, "Error: Invalid value specified for "
-							"bpp; it should be either 8, 16, 24, or 32.\n");
-					badArg = TRUE;
-					break;
-				}
-				options->bpp = bpp;
 				break;
 			}
 			case 'f':
@@ -861,7 +835,6 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	fprintf (out, "Options:\n");
 	fprintf (out, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
 			"works only with --opengl)\n");
-	fprintf (out, "  -d, --bpp=BITSPERPIXEL (default 32)\n");
 	fprintf (out, "  -f, --fullscreen (default off)\n");
 	fprintf (out, "  -o, --opengl (default off)\n");
 	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "

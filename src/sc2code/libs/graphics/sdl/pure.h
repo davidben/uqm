@@ -21,8 +21,8 @@
 
 #include "libs/graphics/sdl/sdl_common.h"
 
-int TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp);
-int TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int bpp);
+int TFB_Pure_InitGraphics (int driver, int flags, int width, int height);
+int TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height);
 void TFB_Pure_SwapBuffers (int force_full_redraw);
 
 #endif

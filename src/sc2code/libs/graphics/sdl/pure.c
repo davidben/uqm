@@ -53,14 +53,12 @@ ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
 }
 
 int
-TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height,
-						int bpp)
+TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 {
 	int i, videomode_flags;
 	SDL_Surface *temp_surf;
 	
 	GraphicsDriver = driver;
-	ScreenColorDepth = bpp;
 
 	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly
 	// with fades/scaling
@@ -85,13 +83,15 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height,
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		videomode_flags |= SDL_FULLSCREEN;
 
+	/* We'll ask for a 32bpp frame, but it doesn't really matter, because we've set
+	   SDL_ANYFORMAT */
 	SDL_Video = SDL_SetVideoMode (ScreenWidthActual, ScreenHeightActual, 
-		bpp, videomode_flags);
+		32, videomode_flags);
 
 	if (SDL_Video == NULL)
 	{
-		fprintf (stderr, "Couldn't set %ix%ix%i video mode: %s\n",
-			ScreenWidthActual, ScreenHeightActual, bpp,
+		fprintf (stderr, "Couldn't set %ix%i video mode: %s\n",
+			ScreenWidthActual, ScreenHeightActual,
 			SDL_GetError ());
 		return -1;
 	}
@@ -100,6 +100,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height,
 		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
 			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 			SDL_GetVideoSurface()->format->BitsPerPixel);
+		ScreenColorDepth = SDL_GetVideoSurface()->format->BitsPerPixel;
 	}
 
 	// Create a 32bpp surface in a compatible format which will supply
@@ -173,7 +174,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height,
 }
 
 int
-TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
+TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 {
 	char VideoName[256];
 
@@ -193,7 +194,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height, int bpp)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	if (TFB_Pure_ConfigureVideo (driver, flags, width, height, bpp))
+	if (TFB_Pure_ConfigureVideo (driver, flags, width, height))
 	{
 		fprintf (stderr, "Could not initialize video: "
 				"no fallback at start of program!\n");
