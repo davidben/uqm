@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Remaped special chars used in the game (degree, infinity and earth
+  signs; middle dot) to their UCS equivalent codes (bug #818) - Alex
 - Color depth is now determined entirely automatically - Michael
 - Text input is now available in languages other than English
   (UCS/Unicode; SDL does not support Unicode input on Windows yet;
