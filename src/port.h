@@ -133,8 +133,8 @@ typedef unsigned int wint_t;
 #	include <ctype.h>
 static inline int
 iswgraph(wint_t wc)
-{
-	return wc > 0x7f || isgraph((int) wc);
+{	// this is not exact as UCS defines many more non-printable
+	return wc > 0xa0 || (wc < 0x80 && isgraph((int) wc));
 }
 #endif
 
