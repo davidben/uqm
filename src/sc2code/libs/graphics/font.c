@@ -204,8 +204,11 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 		if (width > 0 && (bot_y -= top_y) > 0)
 		{
 			/* subtract off default character spacing */
-			--pdelta[-1];
-			--width;
+			if (pdelta[-1] > 0)
+			{
+				--pdelta[-1];
+				--width;
+			}
 
 			if (lpText->align == ALIGN_LEFT)
 				pRect->corner.x = 0;
