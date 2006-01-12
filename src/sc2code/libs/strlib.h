@@ -71,6 +71,14 @@ size_t getStringFromWide(unsigned char *ptr, size_t size,
 int isWideGraphChar(wchar_t ch);
 int isWidePrintChar(wchar_t ch);
 
-#endif /* _STRLIB_H */
+#define WCHAR_DEGREE_SIGN   0x00b0
+#define STR_DEGREE_SIGN     "\xC2\xB0"
+#define WCHAR_INFINITY_SIGN 0x221e
+#define STR_INFINITY_SIGN   "\xE2\x88\x9E"
+#define WCHAR_EARTH_SIGN    0x2641
+#define STR_EARTH_SIGN      "\xE2\x99\x81"
+#define WCHAR_MIDDLE_DOT    0x00b7
+#define STR_MIDDLE_DOT      "\xC2\xB7"
 
+#endif /* _STRLIB_H */
 

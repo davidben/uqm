@@ -230,7 +230,7 @@ void
 DateToString (unsigned char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index)
 {
-	snprintf (buf, bufLen, "%s %02d_%04d",
+	snprintf (buf, bufLen, "%s %02d" STR_MIDDLE_DOT "%04d",
 			GAME_STRING (MONTHS_STRING_BASE + month_index - 1),
 			day_index, year_index);
 }
@@ -272,7 +272,7 @@ DrawStatusMessage (UNICODE *pStr)
 			if (optWhichMenu == OPT_PC)
 				wstrcpy (buf, "UNLIMITED RU");
 			else
-				wstrcpy (buf, "\x7f RU");
+				wstrcpy (buf, STR_INFINITY_SIGN " RU");
 		pStr = buf;
 	}
 	else if (pStr == 0)

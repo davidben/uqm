@@ -111,13 +111,26 @@ PrintScanTitlePC (TEXT *t, RECT *r, const char *txt, int xpos)
 }
 
 static void
+MakeScanValue (UNICODE *buf, long val, const UNICODE *extra)
+{
+	if (val >= 10 * 100)
+	{	// 1 decimal place
+		sprintf (buf, "%ld.%ld%s", val / 100, (val / 10) % 10, extra);
+	}
+	else
+	{	// 2 decimal places
+		sprintf (buf, "%ld.%02ld%s", val / 100, val % 100, extra);
+	}
+}
+
+static void
 PrintCoarseScanPC (void)
 {
 #define SCAN_LEADING_PC 14
-	SIZE temp;
+	SDWORD val;
 	TEXT t;
 	RECT r;
-	UNICODE buf[40];
+	UNICODE buf[200];
 
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
@@ -164,12 +177,12 @@ PrintCoarseScanPC (void)
 	}
 	else
 	{
-		temp = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
-		if (temp >= FIRST_GAS_GIANT)
-			wsprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
+		val = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
+		if (val >= FIRST_GAS_GIANT)
+			sprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
 		else
-			wsprintf (buf, "%s %s",
-					GAME_STRING (SCAN_STRING_BASE + 4 + temp),
+			sprintf (buf, "%s %s",
+					GAME_STRING (SCAN_STRING_BASE + 4 + val),
 					GAME_STRING (SCAN_STRING_BASE + 4 + 50));
 	}
 
@@ -195,12 +208,9 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Orbit: ", LEFT_SIDE_BASELINE_X_PC);
-	temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
+	val = ((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
 			+ (EARTH_RADIUS >> 1)) / EARTH_RADIUS);
-	if (temp >= 10 * 100)
-		wsprintf (buf, "%u.%u a.u.", temp / 100, (temp / 10) % 10);
-	else
-		wsprintf (buf, "%u.%02u a.u.", temp / 100, temp % 100);
+	MakeScanValue (buf, val, " a.u.");
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -210,17 +220,14 @@ PrintCoarseScanPC (void)
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Atmo: ", LEFT_SIDE_BASELINE_X_PC);
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
-		wsprintf (buf, "Super Thick");
+		sprintf (buf, "Super Thick");
 	else if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0)
-		wsprintf (buf, "Vacuum");
+		sprintf (buf, "Vacuum");
 	else
 	{
-		temp = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
+		val = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
 			+ (EARTH_ATMOSPHERE >> 1)) / EARTH_ATMOSPHERE;
-		if (temp >= 10 * 100)
-			wsprintf (buf, "%u.%u atm", temp / 100, (temp / 10) % 10);
-		else
-			wsprintf (buf, "%u.%02u atm", temp / 100, temp % 100);
+		MakeScanValue (buf, val, " atm");
 	}
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
@@ -230,7 +237,7 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Temp: ", LEFT_SIDE_BASELINE_X_PC);
-	wsprintf (buf, "%d^ c",
+	sprintf (buf, "%d" STR_DEGREE_SIGN " c",
 			pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
@@ -244,7 +251,7 @@ PrintCoarseScanPC (void)
 		t.pStr = "None";
 	else
 	{
-		wsprintf (buf, "Class %u",
+		sprintf (buf, "Class %u",
 				pSolarSysState->SysInfo.PlanetInfo.Weather + 1);
 		t.pStr = buf;
 	}
@@ -260,7 +267,7 @@ PrintCoarseScanPC (void)
 		t.pStr = "None";
 	else
 	{
-		wsprintf (buf, "Class %u",
+		sprintf (buf, "Class %u",
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1);
 		t.pStr = buf;
 	}
@@ -272,20 +279,13 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Mass: ", RIGHT_SIDE_BASELINE_X_PC);
-	{
-		DWORD tr;
-
-		tr = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
-		tr = (tr * tr * tr / 100L
-				* (DWORD)pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
-				+ (DWORD)((100L * 100L) >> 1)) / (DWORD)(100L * 100L);
-		if (tr == 0)
-			tr = 1;
-		if (tr >= 10 * 100)
-			wsprintf (buf, "%lu.%lu e.s.", tr / 100, (tr / 10) % 10);
-		else
-			wsprintf (buf, "%lu.%02lu e.s.", tr / 100, tr % 100);
-	}
+	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
+	val = (val * val * val / 100L
+			* pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
+			+ ((100L * 100L) >> 1)) / (100L * 100L);
+	if (val == 0)
+		val = 1;
+	MakeScanValue (buf, val, " e.s.");
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -294,11 +294,8 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Radius: ", RIGHT_SIDE_BASELINE_X_PC);
-	temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
-	if (temp >= 10 * 100)
-		wsprintf (buf, "%u.%u e.s.", temp / 100, (temp / 10) % 10);
-	else
-		wsprintf (buf, "%u.%02u e.s.", temp / 100, temp % 100);
+	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
+	MakeScanValue (buf, val, " e.s.");
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -307,15 +304,10 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Gravity: ", RIGHT_SIDE_BASELINE_X_PC);
-	temp = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity;
-	if (temp >= 10 * 100)
-		wsprintf (buf, "%u.%u g.", temp / 100, (temp / 10) % 10);
-	else
-	{
-		if (temp == 0)
-			temp = 1;
-		wsprintf (buf, "%u.%02u g.", temp / 100, temp % 100);
-	}
+	val = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity;
+	if (val == 0)
+		val = 1;
+	MakeScanValue (buf, val, " g.");
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -324,18 +316,9 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Day: ", RIGHT_SIDE_BASELINE_X_PC);
-	if (pSolarSysState->SysInfo.PlanetInfo.RotationPeriod < 240 * 10)
-	{
-		temp = (SIZE)(pSolarSysState->SysInfo.PlanetInfo.RotationPeriod *
-				10 / 24);
-		wsprintf (buf, "%u.%02u days", temp / 100, temp % 100);
-	}
-	else
-	{
-		temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.RotationPeriod
-				+ (24 >> 1)) / 24);
-		wsprintf (buf, "%u.%u days", temp / 10, temp % 10);
-	}
+	val = (SDWORD)pSolarSysState->SysInfo.PlanetInfo.RotationPeriod
+			* 10 / 24;
+	MakeScanValue (buf, val, " days");
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -344,10 +327,11 @@ PrintCoarseScanPC (void)
 
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Tilt: ", RIGHT_SIDE_BASELINE_X_PC);
-	if ((temp = pSolarSysState->SysInfo.PlanetInfo.AxialTilt) < 0)
-		temp = -temp;
+	val = pSolarSysState->SysInfo.PlanetInfo.AxialTilt;
+	if (val < 0)
+		val = -val;
 	t.pStr = buf;
-	wsprintf (buf, "%u^", temp);
+	sprintf (buf, "%ld" STR_DEGREE_SIGN, val);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	UnlockMutex (GraphicsLock);
@@ -357,10 +341,10 @@ static void
 PrintCoarseScan3DO (void)
 {
 #define SCAN_LEADING 19
-	SIZE temp;
+	SDWORD val;
 	TEXT t;
 	STAMP s;
-	UNICODE buf[40];
+	UNICODE buf[200];
 
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
@@ -406,12 +390,12 @@ PrintCoarseScan3DO (void)
 	}
 	else
 	{
-		temp = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
-		if (temp >= FIRST_GAS_GIANT)
-			wsprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
+		val = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
+		if (val >= FIRST_GAS_GIANT)
+			sprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
 		else
-			wsprintf (buf, "%s %s",
-					GAME_STRING (SCAN_STRING_BASE + 4 + temp),
+			sprintf (buf, "%s %s",
+					GAME_STRING (SCAN_STRING_BASE + 4 + val),
 					GAME_STRING (SCAN_STRING_BASE + 4 + 50));
 	}
 
@@ -441,12 +425,9 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
+	val = ((pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist * 100L
 			+ (EARTH_RADIUS >> 1)) / EARTH_RADIUS);
-	if (temp >= 10 * 100)
-		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
-	else
-		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
+	MakeScanValue (buf, val, STR_EARTH_SIGN);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -455,15 +436,12 @@ PrintCoarseScan3DO (void)
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
-		wsprintf (buf, "\x7f");
+		strcpy (buf, STR_INFINITY_SIGN);
 	else
 	{
-		temp = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
+		val = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
 				+ (EARTH_ATMOSPHERE >> 1)) / EARTH_ATMOSPHERE;
-		if (temp >= 10 * 100)
-			wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
-		else
-			wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
+		MakeScanValue (buf, val, STR_EARTH_SIGN);
 	}
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -472,7 +450,8 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	wsprintf (buf, "%d^", pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
+	sprintf (buf, "%d" STR_DEGREE_SIGN,
+			pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -480,7 +459,7 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	wsprintf (buf, "<%u>", pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0
+	sprintf (buf, "<%u>", pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0
 			? 0 : (pSolarSysState->SysInfo.PlanetInfo.Weather + 1));
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
@@ -489,7 +468,7 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	wsprintf (buf, "<%u>",
+	sprintf (buf, "<%u>",
 			PLANSIZE (
 			pSolarSysState->SysInfo.PlanetInfo.PlanDataPtr->Type
 			) == GAS_GIANT
@@ -504,20 +483,13 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	{
-		DWORD tr;
-
-		tr = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
-		if ((tr = (tr * tr * tr / 100L
-				* (DWORD)pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
-				+ (DWORD)((100L * 100L) >> 1))
-				/ (DWORD)(100L * 100L)) == 0)
-			tr = 1;
-		if (tr >= 10 * 100)
-			wsprintf (buf, "%lu.%lu&", tr / 100, (tr / 10) % 10);
-		else
-			wsprintf (buf, "%lu.%02lu&", tr / 100, tr % 100);
-	}
+	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
+	val = (val * val * val / 100L
+			* pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
+			+ ((100L * 100L) >> 1)) / (100L * 100L);
+	if (val == 0)
+		val = 1;
+	MakeScanValue (buf, val, STR_EARTH_SIGN);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -525,10 +497,9 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	if ((temp = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius) >= 10 * 100)
-		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
-	else
-		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
+	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
+	MakeScanValue (buf, val, STR_EARTH_SIGN);
+
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -536,14 +507,10 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	if ((temp = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity) >= 10 * 100)
-		wsprintf (buf, "%u.%u&", temp / 100, (temp / 10) % 10);
-	else
-	{
-		if (temp == 0)
-			temp = 1;
-		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
-	}
+	val = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity;
+	if (val == 0)
+		val = 1;
+	MakeScanValue (buf, val, STR_EARTH_SIGN);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -551,9 +518,10 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	if ((temp = pSolarSysState->SysInfo.PlanetInfo.AxialTilt) < 0)
-		temp = -temp;
-	wsprintf (buf, "%u^", temp);
+	val = pSolarSysState->SysInfo.PlanetInfo.AxialTilt;
+	if (val < 0)
+		val = -val;
+	sprintf (buf, "%ld" STR_DEGREE_SIGN, val);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;
@@ -561,17 +529,9 @@ PrintCoarseScan3DO (void)
 
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
-	if (pSolarSysState->SysInfo.PlanetInfo.RotationPeriod < 240 * 10)
-	{
-		temp = (SIZE)(pSolarSysState->SysInfo.PlanetInfo.RotationPeriod * 10 / 24);
-		wsprintf (buf, "%u.%02u&", temp / 100, temp % 100);
-	}
-	else
-	{
-		temp = (SIZE)((pSolarSysState->SysInfo.PlanetInfo.RotationPeriod
-				+ (24 >> 1)) / 24);
-		wsprintf (buf, "%u.%u&", temp / 10, temp % 10);
-	}
+	val = (SDWORD)pSolarSysState->SysInfo.PlanetInfo.RotationPeriod
+			* 10 / 24;
+	MakeScanValue (buf, val, STR_EARTH_SIGN);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	UnlockMutex (GraphicsLock);
