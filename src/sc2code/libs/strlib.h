@@ -68,7 +68,8 @@ size_t getStringFromWideN(unsigned char *ptr, size_t size,
 		const wchar_t *wstr, size_t count);
 size_t getStringFromWide(unsigned char *ptr, size_t size,
 		const wchar_t *wstr);
-
+int isWideGraphChar(wchar_t ch);
+int isWidePrintChar(wchar_t ch);
 
 #endif /* _STRLIB_H */
 

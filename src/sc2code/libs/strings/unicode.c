@@ -407,3 +407,18 @@ getStringFromWide(unsigned char *ptr, size_t size, const wchar_t *wstr)
 	
 	return getStringFromWideN(ptr, size, wstr, (end - wstr));
 }
+
+int
+isWideGraphChar(wchar_t ch)
+{	// this is not technically sufficient, but close enough for us
+	// we'll consider all non-control (CO and C1) chars in 'graph' class
+	return (ch > 0xa0) || (ch > 0x20 && ch < 0x7f);
+}
+
+int
+isWidePrintChar(wchar_t ch)
+{	// this is not technically sufficient, but close enough for us
+	// chars in 'print' class are 'graph' + 'space' classes
+	// the only space we currently have defined is 0x20
+	return (ch == 0x20) || isWideGraphChar(ch);
+}

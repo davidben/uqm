@@ -74,12 +74,6 @@ LoadJoystickAlpha (STRING String, int *count)
 	return chars;
 }
 
-static inline int
-IsPrintableChar (wchar_t ch)
-{
-	return iswgraph (ch) || (ch == ' ');
-}
-
 static int
 JoyCharFindIn (const joy_char_t *ch, const joy_char_t *set,
 		int setsize)
@@ -212,7 +206,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		pTES->JoystickMode = FALSE;
 
 		chsize = getStringFromChar (chbuf, sizeof (chbuf), ch);
-		if (IsPrintableChar (ch) && chsize > 0
+		if (isWidePrintChar (ch) && chsize > 0
 				&& (pStr + len - pTES->BaseStr + chsize < pTES->MaxSize))
 		{	// insert character
 			memmove (pStr + chsize, pStr, len + 1);
