@@ -221,7 +221,8 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 165;
 				break;
 			case 1: /* VENUS */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 9000;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 90 *
+						EARTH_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 95;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 95;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 177;
@@ -241,6 +242,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 22;
 				break;
 			case 3: /* MARS */
+				// XXX: Mars atmo should actually be 1/2 in current units
 				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 1;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 72;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 53;
