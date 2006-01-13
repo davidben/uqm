@@ -127,17 +127,6 @@ typedef unsigned short wchar_t;
 typedef unsigned int wint_t;
 #endif
 
-#ifdef HAVE_ISWGRAPH
-#	include <wctype.h>
-#else
-#	include <ctype.h>
-static inline int
-iswgraph(wint_t wc)
-{	// this is not exact as UCS defines many more non-printable
-	return wc > 0xa0 || (wc < 0x80 && isgraph((int) wc));
-}
-#endif
-
 // Use SDL_INCLUDE and SDL_IMAGE_INCLUDE to portably include the SDL files
 // from the right location.
 // TODO: Where the SDL and SDL_image headers are located could be detected
