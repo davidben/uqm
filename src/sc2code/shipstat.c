@@ -234,7 +234,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 				GetStringLength (locString),y);
 
 		{
-			UNICODE buf[3];
+			UNICODE buf[30];
 			TEXT Text;
 			FONT OldFont;
 
@@ -242,7 +242,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 
 			if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 			{
-				wsprintf (buf, "%d", SIPtr->ship_cost);
+				sprintf (buf, "%d", SIPtr->ship_cost);
 				Text.pStr = buf;
 				Text.CharCount = (COUNT)~0;
 			}

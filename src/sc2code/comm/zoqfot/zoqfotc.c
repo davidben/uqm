@@ -403,7 +403,7 @@ AquaintZoqFot (RESPONSE_REF R)
 
 	if (PHRASE_ENABLED (we_are_vindicator0))
 	{
-		UNICODE buf[80];
+		UNICODE buf[ALLIANCE_NAME_BUFSIZE];
 
 		GetAllianceName (buf, name_1);
 		construct_response (

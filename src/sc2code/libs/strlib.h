@@ -58,6 +58,9 @@ unsigned char *getLineFromString(const unsigned char *start,
 size_t utf8StringCount(const unsigned char *start);
 size_t utf8StringCountN(const unsigned char *start,
 		const unsigned char *end);
+int utf8StringPos (const unsigned char *pStr, wchar_t ch);
+unsigned char *utf8StringCopy (unsigned char *dst, size_t size,
+		const unsigned char *src);
 unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
 size_t getWideFromString(wchar_t *wstr, size_t maxcount,
 		const unsigned char *start);

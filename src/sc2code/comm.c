@@ -72,7 +72,7 @@ static BOOLEAN getLineWithinWidth(TEXT *pText,
 
 LOCDATA CommData;
 int cur_comm;
-UNICODE shared_phrase_buf[256];
+UNICODE shared_phrase_buf[2048];
 volatile BOOLEAN summary = FALSE;
 
 typedef struct response_entry
@@ -1564,12 +1564,14 @@ DoCommunication (PENCOUNTER_STATE pES)
 				if (temp == NULL)
 					continue;
 				// fprintf (stderr, "%s\n", temp);
-				while (wstrlen (temp) > (unsigned int) SUMMARY_CHARS
+				while (utf8StringCount (temp) > (unsigned int) SUMMARY_CHARS
 						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
-					int space_index = SUMMARY_CHARS;
+					UNICODE *pend = skipUTF8Chars (temp, SUMMARY_CHARS);
+					int space_index = pend - temp;
+
 					// find last space before it goes over the max chars per line
-					for (i = SUMMARY_CHARS - 1; i > 0; i--)
+					for (i = space_index; i > 0; i--)
 					{
 						if (temp[i] == ' ')
 						{
@@ -1577,12 +1579,9 @@ DoCommunication (PENCOUNTER_STATE pES)
 							break;
 						}
 					}
-					for (i = 0; i < space_index; i++, temp++)
-					{
-						buffer[i] = *temp;
-					}
-					buffer[i] = '\0';
-					temp++;
+					strncpy (buffer, temp, space_index);
+					buffer[space_index] = '\0';
+					temp += space_index + 1;
 					t.pStr = buffer;
 					LockMutex (GraphicsLock);
 					font_DrawText (&t);
@@ -1593,7 +1592,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 					{
 						t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 						t.align = ALIGN_CENTER;
-						t.pStr = "_MORE_";
+						t.pStr = STR_MIDDLE_DOT "MORE" STR_MIDDLE_DOT;
 						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 						LockMutex (GraphicsLock);
 						font_DrawText (&t);
@@ -1627,7 +1626,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 					
 					t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 					t.align = ALIGN_CENTER;
-					t.pStr = "_MORE_";
+					t.pStr = STR_MIDDLE_DOT "MORE" STR_MIDDLE_DOT;
 					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 					LockMutex (GraphicsLock);
 					font_DrawText (&t);

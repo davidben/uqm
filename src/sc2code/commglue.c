@@ -28,7 +28,7 @@ int NPCNumberPhrase (int number, UNICODE **ptrack);
 void
 NPCPhrase_cb (int index,  TFB_TrackCB cb)
 {
-	UNICODE *pStr, numbuf[100];
+	UNICODE *pStr, numbuf[400];
 	void *pClip, *pTimeStamp;
 
 	switch (index)
@@ -52,7 +52,7 @@ NPCPhrase_cb (int index,  TFB_TrackCB cb)
 			adx = dx >= 0 ? dx : -dx;
 			dy = 9812 - LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 			ady = dy >= 0 ? dy : -dy;
-			wsprintf (numbuf,
+			sprintf (numbuf,
 					"%+04d.%01u,%+04d.%01u",
 					(SIZE)(dy / 10), (COUNT)(ady % 10),
 					(SIZE)(dx / 10), (COUNT)(adx % 10));
@@ -86,9 +86,9 @@ NPCPhrase_cb (int index,  TFB_TrackCB cb)
 
 					i = GET_GAME_STATE (NEW_ALLIANCE_NAME);
 					S = SetAbsStringTableIndex (CommData.ConversationPhrases, (index - 1) + i);
-					wstrcpy (numbuf, (UNICODE *)GetStringAddress (S));
+					strcpy (numbuf, (UNICODE *)GetStringAddress (S));
 					if (i == 3)
-						wstrcat (numbuf, GLOBAL_SIS (CommanderName));
+						strcat (numbuf, GLOBAL_SIS (CommanderName));
 				}
 				pStr = numbuf;
 				pClip = 0;
@@ -121,7 +121,7 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 	int queued = 0;
 	int toplevel = 0;
 	UNICODE *TrackNames[MAX_NUMBER_TRACKS];
-	UNICODE numbuf[32];
+	UNICODE numbuf[60];
 
 	if (!speech)
 		return 0;
@@ -224,17 +224,20 @@ GetAllianceName (UNICODE *buf, RESPONSE_REF name_1)
 
 	i = GET_GAME_STATE (NEW_ALLIANCE_NAME);
 	S = SetAbsStringTableIndex (CommData.ConversationPhrases, (name_1 - 1) + i);
-	wstrcpy (buf, (UNICODE *)GetStringAddress (S));
+	// XXX: this should someday be changed so that the function takes
+	//   the buffer size as an argument
+	strcpy (buf, (UNICODE *)GetStringAddress (S));
 	if (i == 3)
 	{
-		wstrcat (buf, GLOBAL_SIS (CommanderName));
-		wstrcat (buf, (UNICODE *)GetStringAddress (SetRelStringTableIndex (S, 1)));
+		strcat (buf, GLOBAL_SIS (CommanderName));
+		strcat (buf, (UNICODE *)GetStringAddress (SetRelStringTableIndex (S, 1)));
 	}
 }
 
 void
 construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 {
+	UNICODE *buf_start = buf;
 	UNICODE *name;
 	va_list vlist;
 	
@@ -247,9 +250,9 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 		
 		S = SetAbsStringTableIndex (CommData.ConversationPhrases, R - 1);
 		
-		wstrcpy (buf, (UNICODE *)GetStringAddress (S));
+		strcpy (buf, (UNICODE *)GetStringAddress (S));
 		
-		len = wstrlen (buf);
+		len = strlen (buf);
 		
 		buf += len;
 		
@@ -257,8 +260,8 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 		
 		if (name)
 		{
-			len = wstrlen (name);
-			wstrncpy (buf, name, len);
+			len = strlen (name);
+			strncpy (buf, name, len);
 			buf += len;
 			
 			/*
@@ -274,6 +277,16 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	va_end (vlist);
 	
 	*buf = '\0';
+
+	// XXX: this should someday be changed so that the function takes
+	//   the buffer size as an argument
+	if ((buf_start == shared_phrase_buf) &&
+			(buf - shared_phrase_buf > sizeof (shared_phrase_buf)))
+	{
+		fprintf (stderr, "Error: shared_phrase_buf size exceeded,"
+				" please increase!\n");
+		abort ();
+	}
 }
 
 LOCDATAPTR

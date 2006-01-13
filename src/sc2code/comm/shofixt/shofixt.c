@@ -339,7 +339,7 @@ RealizeMistake (RESPONSE_REF R)
 	SET_GAME_STATE (SHOFIXTI_STACK2, 3);
 
 	{
-		UNICODE buf[80];
+		UNICODE buf[ALLIANCE_NAME_BUFSIZE];
 
 		GetAllianceName (buf, name_1);
 		construct_response (

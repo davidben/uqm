@@ -26,7 +26,7 @@
 
 extern LOCDATA CommData;
 extern int cur_comm;
-extern UNICODE shared_phrase_buf[256];
+extern UNICODE shared_phrase_buf[2048];
 
 #define PLAYER_SAID(r,i) ((r)==(i))
 #define PHRASE_ENABLED(p) \
@@ -63,6 +63,7 @@ extern void DoNPCPhrase (UNICODE *pStr);
 extern void NPCPhrase_cb (int index, TFB_TrackCB cb);
 #define NPCPhrase(index) NPCPhrase_cb ((index), NULL)
 
+#define ALLIANCE_NAME_BUFSIZE 256
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 
 extern void construct_response (UNICODE *buf, int R /* promoted from

@@ -69,7 +69,7 @@ DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
 	else if (pMS->CurFrame)
 	{
 		TEXT t;
-		UNICODE buf[10];
+		UNICODE buf[40];
 
 		s.frame = SetAbsFrameIndex (pMS->CurFrame, NewModule);
 		DrawStamp (&s);
@@ -78,7 +78,7 @@ DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
 		t.align = ALIGN_RIGHT;
 		t.CharCount = (COUNT)~0;
 		t.pStr = buf;
-		wsprintf (buf, "%u", GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
+		sprintf (buf, "%u", GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
 		font_DrawText (&t);

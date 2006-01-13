@@ -304,13 +304,14 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 {
 	int pos;
 	int num = 0;
-	while (*TimeStamps && (pos = wstrcspn (TimeStamps, ",\r\n")))
+	while (*TimeStamps && (pos = strcspn (TimeStamps, ",\r\n")))
 	{
-		UNICODE valStr[10];
+		UNICODE valStr[32];
 		uint32 val;
-		wstrncpy (valStr, TimeStamps, pos);
+		
+		strncpy (valStr, TimeStamps, pos);
 		valStr[pos] = '\0';
-		val = wstrtoul(valStr,NULL,10);
+		val = strtoul (valStr, NULL, 10);
 		if (val)
 		{
 			*time_stamps = (sint32)val;
@@ -318,7 +319,7 @@ GetTimeStamps(UNICODE *TimeStamps, sint32 *time_stamps)
 			time_stamps++;
 		}
 		TimeStamps += pos;
-		TimeStamps += strspn(TimeStamps, ",\r\n");
+		TimeStamps += strspn (TimeStamps, ",\r\n");
 	}
 	return (num);
 }
@@ -339,13 +340,15 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 			else
 				split_text = (UNICODE **) HRealloc (split_text, 
 						sizeof (UNICODE *) * (page + 1));
+			// XXX: this will only work when ASCII punctuation and spaces
+			//   are used exclusively
 			if (!ispunct (text[pos - 1]) && !isspace (text[pos - 1]))
 			{
 				split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 4));
 				if (ellips)
-					wstrcpy (split_text[page], "..");
-				wstrncpy (split_text[page] + ellips, text, pos);
-				wstrcpy (split_text[page] + ellips + pos, "...");
+					strcpy (split_text[page], "..");
+				strncpy (split_text[page] + ellips, text, pos);
+				strcpy (split_text[page] + ellips + pos, "...");
 				timestamp[page] = - pos * TEXT_SPEED;
 				if (timestamp[page] > -1000)
 					timestamp[page] = -1000;
@@ -358,8 +361,8 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 			{
 				split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 1));
 				if (ellips)
-					wstrcpy (split_text[page], "..");
-				wstrncpy (split_text[page] + ellips, text, pos);
+					strcpy (split_text[page], "..");
+				strncpy (split_text[page] + ellips, text, pos);
 				*(split_text[page] + ellips + pos) = 0;
 				timestamp[page] = - pos * TEXT_SPEED;
 				if (timestamp[page] > -1000)
@@ -384,8 +387,8 @@ SplitSubPages (UNICODE *text, sint32 *timestamp, int *num_pages)
 					sizeof (UNICODE *) * (page + 1));
 		split_text[page] = HMalloc (sizeof (UNICODE) * (pos + ellips + 1));
 		if (ellips)
-			wstrcpy (split_text[page], "..");
-		wstrncpy (split_text[page] + ellips, text, pos);
+			strcpy (split_text[page], "..");
+		strncpy (split_text[page] + ellips, text, pos);
 		*(split_text[page] + ellips + pos) = 0;
 		timestamp[page] = - pos * TEXT_SPEED;
 		if (timestamp[page] > -1000)
@@ -464,19 +467,18 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 		return;
 	}
 
-	slen = wstrlen (TrackText);
+	slen = strlen (TrackText);
 	if (tct)
 	{
-		int slen1;
-		slen1 = wstrlen ((UNICODE *)cur_text_chain->text);
+		int slen1 = strlen ((UNICODE *)cur_text_chain->text);
 		cur_text_chain->text = HRealloc (
 				(UNICODE *)cur_text_chain->text, slen1 + slen + 1);
-		wstrcpy (&((UNICODE *)cur_text_chain->text)[slen1], TrackText);
+		strcpy (&((UNICODE *)cur_text_chain->text)[slen1], TrackText);
 	}
 	else
 	{
 		begin_chain->text = HMalloc (slen + 1);
-		wstrcpy ((UNICODE *)begin_chain->text, TrackText);
+		strcpy ((UNICODE *)begin_chain->text, TrackText);
 		cur_text_chain = begin_chain;
 		begin_chain->tag_me = 1;
 		begin_chain->track_num = tct;
@@ -521,10 +523,10 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 					return;
 				}
 				oTT = (UNICODE *)last_ts_chain->text;
-				slen1 = wstrlen (oTT);
-				slen2 = wstrlen (split_text[0]);
+				slen1 = strlen (oTT);
+				slen2 = strlen (split_text[0]);
 				last_ts_chain->text = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&((UNICODE *)last_ts_chain->text)[slen1], split_text[0]);
+				strcpy (&((UNICODE *)last_ts_chain->text)[slen1], split_text[0]);
 				HFree (split_text[0]);
 				for (page_counter = 1; page_counter < num_pages; page_counter++)
 				{
@@ -559,10 +561,10 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				UNICODE *oTT;
 
 				oTT = (UNICODE *)cur_text_chain->text;
-				slen1 = wstrlen (oTT);
-				slen2 = wstrlen (split_text[0]);
+				slen1 = strlen (oTT);
+				slen2 = strlen (split_text[0]);
 				cur_text_chain->text = HRealloc (oTT, slen1 + slen2 + 1);
-				wstrcpy (&((UNICODE *)cur_text_chain->text)[slen1], split_text[0]);
+				strcpy (&((UNICODE *)cur_text_chain->text)[slen1], split_text[0]);
 				HFree (split_text[0]);
 			}
 			else

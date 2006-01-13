@@ -459,10 +459,10 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 
 #ifdef NOTYET
 {
-UNICODE buf[40];
+UNICODE buf[256];
 
 GetClusterName (SDPtr, buf);
-wprintf ("%s\n", buf);
+printf ("%s\n", buf);
 }
 #endif /* NOTYET */
 		s.origin.x = UNIVERSE_TO_DISPX (SDPtr->star_pt.x);
@@ -613,7 +613,7 @@ DoMoveCursor (PMENU_STATE pMS)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
 #define STEP_ACCEL_DELAY (ONE_SECOND / 120)
 	STAMP s;
-	UNICODE buf[30];
+	UNICODE buf[256];
 	static UNICODE last_buf;
 
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
@@ -793,7 +793,8 @@ UpdateCursorInfo:
 						&& UNIVERSE_TO_DISPY (pt.y) == s.origin.y)
 				{
 					pMS->first_item = pt;
-					wstrcpy (buf, GAME_STRING (STAR_STRING_BASE + 132));
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (STAR_STRING_BASE + 132));
 				}
 			}
 
@@ -824,7 +825,7 @@ UpdateCursorInfo:
 					last_buf = buf[0];
 					DrawSISMessage (buf);
 				}
-				wsprintf (buf, "%s %u.%u",
+				sprintf (buf, "%s %u.%u",
 						GAME_STRING (NAVIGATION_STRING_BASE + 4),
 						fuel_required / FUEL_TANK_SCALE,
 						(fuel_required % FUEL_TANK_SCALE) / 10);

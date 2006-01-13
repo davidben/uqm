@@ -1497,7 +1497,7 @@ yack0_respond (void)
 	{
 		case 0:
 		{
-			UNICODE buf[80];
+			UNICODE buf[ALLIANCE_NAME_BUFSIZE];
 
 			GetAllianceName (buf, name_1);
 			construct_response (

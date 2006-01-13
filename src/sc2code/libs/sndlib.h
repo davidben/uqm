@@ -40,7 +40,6 @@ typedef struct soundposition
 #define GetSoundIndex GetStringTableIndex
 #define SetAbsSoundIndex SetAbsStringTableIndex
 #define SetRelSoundIndex SetRelStringTableIndex
-#define GetSoundLength GetStringLength
 #define GetSoundAddress GetStringAddress
 #define GetSoundContents GetStringContents
 

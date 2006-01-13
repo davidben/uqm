@@ -79,24 +79,17 @@ Credits_MakeTextFrame (int w, int h, COLOR TransColor)
 	return f;
 }
 
-static void
-CopyTextString (char *Buffer, COUNT BufSize, const char *Src)
-{
-	strncpy (Buffer, Src, BufSize);
-	Buffer[BufSize - 1] = '\0';
-}
-
 static int
 ParseTextLines (TEXT *Lines, int MaxLines, char *Buffer)
 {
 	int i;
-	const char* pEnd = Buffer + strlen(Buffer);
+	const char* pEnd = Buffer + strlen (Buffer);
 
 	for (i = 0; i < MaxLines && Buffer < pEnd; ++i, ++Lines)
 	{
-		char* pTerm = strchr(Buffer, '\n');
+		char* pTerm = strchr (Buffer, '\n');
 		if (!pTerm)
-			pTerm = Buffer + strlen(Buffer);
+			pTerm = Buffer + strlen (Buffer);
 		*pTerm = '\0'; /* terminate string */
 		Lines->pStr = Buffer;
 		Lines->CharCount = ~0;
@@ -162,7 +155,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 		return 0;
 	pStr += scaned;
 	
-	CopyTextString (buf, sizeof (buf), pStr);
+	utf8StringCopy (buf, sizeof (buf), pStr);
 	rows = ParseTextLines (TextLines, MAX_TEXT_LINES, buf);
 	if (rows == 0)
 		return 0;

@@ -131,15 +131,18 @@ enum
 static void
 FeedbackSetting (BYTE which_setting)
 {
-	UNICODE buf[64];
+	UNICODE buf[128];
 	const char *tmpstr;
 
 	buf[0] = '\0';
+	// pre-terminate buffer in case snprintf() overflows
+	buf[sizeof (buf) - 1] = '\0';
+
 	switch (which_setting)
 	{
 		case SOUND_ON_SETTING:
 		case SOUND_OFF_SETTING:
-			snprintf (buf, sizeof buf, "%s %s",
+			snprintf (buf, sizeof (buf) - 1, "%s %s",
 					GAME_STRING (OPTION_STRING_BASE + 0),
 					GLOBAL (glob_flags) & SOUND_DISABLED
 					? GAME_STRING (OPTION_STRING_BASE + 3) :
@@ -147,7 +150,7 @@ FeedbackSetting (BYTE which_setting)
 			break;
 		case MUSIC_ON_SETTING:
 		case MUSIC_OFF_SETTING:
-			snprintf (buf, sizeof buf, "%s %s",
+			snprintf (buf, sizeof (buf) - 1, "%s %s",
 					GAME_STRING (OPTION_STRING_BASE + 1),
 					GLOBAL (glob_flags) & MUSIC_DISABLED
 					? GAME_STRING (OPTION_STRING_BASE + 3) :
@@ -167,7 +170,7 @@ FeedbackSetting (BYTE which_setting)
 			}
 			else
 				tmpstr = "";
-			snprintf (buf, sizeof buf, "%s %s%s",
+			snprintf (buf, sizeof (buf) - 1, "%s %s%s",
 					GAME_STRING (OPTION_STRING_BASE + 2),
 					!(GLOBAL (glob_flags) & CYBORG_ENABLED)
 					? GAME_STRING (OPTION_STRING_BASE + 3) :
@@ -176,7 +179,8 @@ FeedbackSetting (BYTE which_setting)
 			break;
 		case CHANGE_CAPTAIN_SETTING:
 		case CHANGE_SHIP_SETTING:
-			wstrcpy (buf, GAME_STRING (NAMING_STRING_BASE + 0));
+			utf8StringCopy (buf, sizeof (buf),
+					GAME_STRING (NAMING_STRING_BASE + 0));
 			break;
 	}
 
@@ -188,15 +192,15 @@ FeedbackSetting (BYTE which_setting)
 static void
 FeedbackQuit (BYTE which_setting)
 {
-	UNICODE buf[20];
+	UNICODE buf[80];
 	buf[0] = '\0';
 	switch (which_setting)
 	{
 		case NO_QUIT_MENU:
-			wsprintf (buf, "Don't Quit");
+			utf8StringCopy (buf, sizeof (buf), "Don't Quit");
 			break;
 		case YES_QUIT_MENU:
-			wsprintf (buf, "Quit Game");
+			utf8StringCopy (buf, sizeof (buf), "Quit Game");
 			break;
 	}
 
@@ -410,9 +414,9 @@ DoNaming (PMENU_STATE pMS)
 	tes.ChangeCallback = OnNameChange;
 
 	if (DoTextEntry (&tes))
-		wstrcpy (Setting, buf);
+		utf8StringCopy (Setting, sizeof (Setting), buf);
 	else
-		wstrcpy (buf, Setting);
+		utf8StringCopy (buf, sizeof (buf), Setting);
 	DrawDescriptionString (pMS, 0, DDSHS_NORMAL);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -627,7 +631,7 @@ DrawCargo (COUNT redraw_state)
 	else
 	{
 		TEXT t;
-		UNICODE buf[10];
+		UNICODE buf[40];
 		COLOR cargo_color[] =
 		{
 			BUILD_COLOR (MAKE_RGB15 (2, 14, 19), 0x00),
@@ -660,7 +664,7 @@ DrawCargo (COUNT redraw_state)
 			r.corner.y = t.baseline.y - r.extent.height + 1;
 			DrawFilledRectangle (&r);
 			SetContextForeGroundColor (cargo_color[i]);
-			wsprintf (buf, "%u", GLOBAL_SIS (ElementAmounts[i]));
+			sprintf (buf, "%u", GLOBAL_SIS (ElementAmounts[i]));
 			t.CharCount = (COUNT)~0;
 			font_DrawText (&t);
 			t.baseline.y += 12;
@@ -672,7 +676,7 @@ DrawCargo (COUNT redraw_state)
 		r.corner.y = t.baseline.y - r.extent.height + 1;
 		DrawFilledRectangle (&r);
 		SetContextForeGroundColor (cargo_color[i]);
-		wsprintf (buf, "%u", GLOBAL_SIS (TotalBioMass));
+		sprintf (buf, "%u", GLOBAL_SIS (TotalBioMass));
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 	}
@@ -707,7 +711,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		QUEUE player_q;
 		CONTEXT OldContext;
 		SIS_STATE SaveSS;
-		unsigned char buf[80];
+		UNICODE buf[256];
 
 		SaveSS = GlobData.SIS_state;
 		player_q = GLOBAL (built_ship_q);
@@ -796,7 +800,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
-			wsprintf (buf, "%lu", GLOBAL_SIS (ResUnits));
+			sprintf (buf, "%lu", GLOBAL_SIS (ResUnits));
 			t.baseline.y = 102;
 			r.extent.width = 76;
 			r.extent.height = SHIP_NAME_HEIGHT;
@@ -809,7 +813,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 			t.CharCount = (COUNT)~0;
 		}
 		t.baseline.y = 126;
-		wsprintf (buf, "%u", MAKE_WORD (pSD->MCreditLo, pSD->MCreditHi));
+		sprintf (buf, "%u", MAKE_WORD (pSD->MCreditLo, pSD->MCreditHi));
 		r.extent.width = 30;
 		r.extent.height = SHIP_NAME_HEIGHT;
 		r.corner.x = t.baseline.x - (r.extent.width >> 1);
@@ -856,10 +860,12 @@ ShowSummary (SUMMARY_DESC *pSD)
 				buf[0] = '\0';
 				break;
 			case IN_HYPERSPACE:
-				wstrcpy (buf, GAME_STRING (NAVIGATION_STRING_BASE + 0));
+				utf8StringCopy (buf, sizeof (buf),
+						GAME_STRING (NAVIGATION_STRING_BASE + 0));
 				break;
 			case IN_QUASISPACE:
-				wstrcpy (buf, GAME_STRING (NAVIGATION_STRING_BASE + 1));
+				utf8StringCopy (buf, sizeof (buf),
+						GAME_STRING (NAVIGATION_STRING_BASE + 1));
 				break;
 		}
 
@@ -870,11 +876,12 @@ ShowSummary (SUMMARY_DESC *pSD)
 		t.align = ALIGN_CENTER;
 		t.baseline.x = SIS_SCREEN_WIDTH - 57 - 3 + (SIS_TITLE_WIDTH >> 1);
 		if (pSD->Activity == IN_STARBASE)
-			wstrcpy (buf, GAME_STRING (STARBASE_STRING_BASE));
+			utf8StringCopy (buf, sizeof (buf),
+					GAME_STRING (STARBASE_STRING_BASE));
 		else if (pSD->Activity == IN_PLANET_ORBIT)
-			wstrcpy (buf, GLOBAL_SIS (PlanetName));
+			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
 		else
-			wsprintf (buf, "%03u.%01u : %03u.%01u",
+			sprintf (buf, "%03u.%01u : %03u.%01u",
 					r.corner.x / 10, r.corner.x % 10,
 					r.corner.y / 10, r.corner.y % 10);
 		t.CharCount = (COUNT)~0;
@@ -1063,8 +1070,8 @@ Restart:
 			RECT r;
 			TEXT t;
 			BYTE i, SHIFT;
-			UNICODE buf[80];
-			unsigned char buf2[15];
+			UNICODE buf[256];
+			UNICODE buf2[80];
 			LockMutex (GraphicsLock);
 
 			BatchGraphics ();
@@ -1128,9 +1135,9 @@ ChangeGameSelection:
 
 				t.baseline.x = r.corner.x + 3;
 				t.baseline.y = r.corner.y + 8;
-				wsprintf (buf, "%02i", NewState - SHIFT + i);
+				sprintf (buf, "%02i", NewState - SHIFT + i);
 				if (MAX_SAVED_GAMES > 99)
-					wsprintf (buf, "%03i", NewState - SHIFT + i);
+					sprintf (buf, "%03i", NewState - SHIFT + i);
 				font_DrawText (&t);
 
 				r.extent.width = 204 - SAFE_X;
@@ -1139,14 +1146,14 @@ ChangeGameSelection:
 
 				t.baseline.x = r.corner.x + 3;
 				if (((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index == 0)
-					wsprintf (buf, "Empty Slot");
+					utf8StringCopy (buf, sizeof (buf), "Empty Slot");
 				else
 				{
 					DateToString (buf2, sizeof buf2,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].month_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].day_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index);
-					wsprintf (buf, "Saved Game - Date: %s",buf2);
+					sprintf (buf, "%s %s", "Saved Game - Date:", buf2);
 				}
 				font_DrawText (&t);
 			}

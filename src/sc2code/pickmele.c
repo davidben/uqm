@@ -212,7 +212,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 {
 	COUNT ships_left;
 	TEXT t;
-	UNICODE buf[10];
+	UNICODE buf[40];
 	STAMP s;
 	CONTEXT OldContext;
 	GETMELEE_STATE gmstate;
@@ -266,7 +266,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContextForeGroundColor (PICK_BG_COLOR);
 		DrawFilledRectangle (&gmstate.flash_rect);
 
-		wsprintf (buf, "%d", cur_bucks);
+		sprintf (buf, "%d", cur_bucks);
 		t.baseline.y = 7;
 		t.align = ALIGN_RIGHT;
 		t.pStr = buf;

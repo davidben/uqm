@@ -119,7 +119,7 @@ DrawBattleCrewAmount (STARSHIPPTR StarShipPtr, BOOLEAN CountPlayer)
 #define MAX_CREW_DIGITS 3
 	RECT r;
 	TEXT t;
-	UNICODE buf[10];
+	UNICODE buf[40];
 
 	t.baseline.x = BATTLE_CREW_X + 2;
 	if (optWhichMenu == OPT_PC)
@@ -136,7 +136,7 @@ DrawBattleCrewAmount (STARSHIPPTR StarShipPtr, BOOLEAN CountPlayer)
 	r.extent.width = 6 * MAX_CREW_DIGITS + 6;
 	r.extent.height = 5;
 
-	wsprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted) + (CountPlayer ? 1 : 0));
+	sprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted) + (CountPlayer ? 1 : 0));
 	SetContextFont (StarConFont);
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));

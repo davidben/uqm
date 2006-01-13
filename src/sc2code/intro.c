@@ -86,13 +86,6 @@ DoFMV (const char *name, const char *loopname, BOOLEAN uninit)
 	return TRUE;
 }
 
-static void
-CopyTextString (char *Buffer, COUNT BufSize, const char *Src)
-{
-	strncpy (Buffer, Src, BufSize);
-	Buffer[BufSize - 1] = '\0';
-}
-
 static BOOLEAN
 ParseColorString (const char *Src, COLOR* pColor)
 {
@@ -141,13 +134,13 @@ static COUNT
 ParseTextLines (TEXT *Lines, COUNT MaxLines, char* Buffer)
 {
 	COUNT i;
-	const char* pEnd = Buffer + strlen(Buffer);
+	const char* pEnd = Buffer + strlen (Buffer);
 
 	for (i = 0; i < MaxLines && Buffer < pEnd; ++i, ++Lines)
 	{
-		char* pTerm = strchr(Buffer, '\n');
+		char* pTerm = strchr (Buffer, '\n');
 		if (!pTerm)
-			pTerm = Buffer + strlen(Buffer);
+			pTerm = Buffer + strlen (Buffer);
 		*pTerm = '\0'; /* terminate string */
 		Lines->pStr = Buffer;
 		Lines->CharCount = ~0;
@@ -320,10 +313,10 @@ DoPresentation (PVOID pIS)
 			continue;
 		if (1 != sscanf (pStr, "%15s", Opcode))
 			continue;
-		pStr += strlen(Opcode);
+		pStr += strlen (Opcode);
 		if (*pStr != '\0')
 			++pStr;
-		strupr(Opcode);
+		strupr (Opcode);
 
 		if (strcmp (Opcode, "DIMS") == 0)
 		{	/* set dimensions */
@@ -342,7 +335,7 @@ DoPresentation (PVOID pIS)
 		}
 		else if (strcmp (Opcode, "FONT") == 0)
 		{	/* set font */
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			if (pPIS->Font)
 				DestroyFont (ReleaseFont (pPIS->Font));
 			pPIS->Font = CaptureFont ((FONT_REF) LoadFontFile (pPIS->Buffer));
@@ -355,14 +348,14 @@ DoPresentation (PVOID pIS)
 		}
 		else if (strcmp (Opcode, "ANI") == 0)
 		{	/* set ani */
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			if (pPIS->Frame)
 				DestroyDrawable (ReleaseDrawable (pPIS->Frame));
 			pPIS->Frame = CaptureDrawable (LoadCelFile (pPIS->Buffer));
 		}
 		else if (strcmp (Opcode, "MUSIC") == 0)
 		{	/* set music */
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			if (pPIS->MusicRef)
 			{
 				StopMusic ();
@@ -434,7 +427,7 @@ DoPresentation (PVOID pIS)
 			COUNT i;
 			COORD y;
 			
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			pPIS->LinesCount = ParseTextLines (pPIS->TextLines,
 					MAX_TEXT_LINES, pPIS->Buffer);
 			
@@ -478,7 +471,7 @@ DoPresentation (PVOID pIS)
 			COUNT i;
 			COORD y;
 			
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			pPIS->LinesCount = ParseTextLines (pPIS->TextLines,
 					MAX_TEXT_LINES, pPIS->Buffer);
 			
@@ -674,7 +667,7 @@ DoPresentation (PVOID pIS)
 		{	/* call another script */
 			Present_UnbatchGraphics (pPIS, TRUE);
 
-			CopyTextString (pPIS->Buffer, sizeof(pPIS->Buffer), pStr);
+			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			ShowPresentationFile (pPIS->Buffer);
 		}
 		else if (strcmp (Opcode, "NOOP") == 0)

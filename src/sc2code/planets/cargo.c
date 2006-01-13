@@ -31,12 +31,12 @@ ShowRemainingCapacity (void)
 	RECT r;
 	TEXT rt;
 	CONTEXT OldContext;
-	UNICODE rt_amount_buf[10];
+	UNICODE rt_amount_buf[40];
 
 	OldContext = SetContext (StatusContext);
 	SetContextFont (TinyFont);
 
-	wsprintf (rt_amount_buf, "%u",
+	sprintf (rt_amount_buf, "%u",
 			GetSBayCapacity (NULL_PTR)
 			- GLOBAL_SIS (TotalElementMass));
 	rt.baseline.x = 59;
@@ -67,7 +67,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 	TEXT rt;
 	RECT r;
 	CONTEXT OldContext;
-	UNICODE rt_amount_buf[10];
+	UNICODE rt_amount_buf[40];
 
 	LockMutex (GraphicsLock);
 
@@ -150,14 +150,14 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
 				rt.baseline.x = 32;
-				wsprintf (rt_amount_buf, "%u",
+				sprintf (rt_amount_buf, "%u",
 						GLOBAL (ElementWorth[OldElement]));
 				rt.CharCount = (COUNT)~0;
 				font_DrawText (&rt);
 
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 				rt.baseline.x = 58;
-				wsprintf (rt_amount_buf, "%u",
+				sprintf (rt_amount_buf, "%u",
 						GLOBAL_SIS (ElementAmounts[OldElement]));
 				rt.CharCount = (COUNT)~0;
 				font_DrawText (&rt);
@@ -180,7 +180,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		rt.baseline.x = 58;
-		wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
+		sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		rt.CharCount = (COUNT)~0;
 		font_DrawText (&rt);
 
@@ -222,15 +222,15 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		rt.baseline.y = cy;
 
 		if (OldElement == NUM_ELEMENT_CATEGORIES)
-			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
+			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		else
 		{
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
 			rt.baseline.x = 32;
-			wsprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[OldElement]));
+			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[OldElement]));
 			rt.CharCount = (COUNT)~0;
 			font_DrawText (&rt);
-			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[OldElement]));
+			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[OldElement]));
 		}
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
@@ -252,15 +252,15 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		rt.baseline.y = cy;
 
 		if (NewElement == NUM_ELEMENT_CATEGORIES)
-			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
+			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		else
 		{
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 			rt.baseline.x = 32;
-			wsprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[NewElement]));
+			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[NewElement]));
 			rt.CharCount = (COUNT)~0;
 			font_DrawText (&rt);
-			wsprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[NewElement]));
+			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[NewElement]));
 		}
 
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));

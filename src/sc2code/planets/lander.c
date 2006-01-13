@@ -774,7 +774,7 @@ CheckObjectCollision (COUNT index)
 											] += NumRetrieved;
 
 									pPSD->NumFrames = NUM_TEXT_FRAMES;
-									wsprintf (pPSD->AmountBuf, "%u", NumRetrieved);
+									sprintf (pPSD->AmountBuf, "%u", NumRetrieved);
 									pStr = GAME_STRING (EType + ELEMENTS_STRING_BASE);
 
 									pPSD->MineralText[0].baseline.x =

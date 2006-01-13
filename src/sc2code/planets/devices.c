@@ -27,24 +27,13 @@
 #include "state.h"
 #include "sounds.h"
 #include "util.h"
+#include "strlib.h"
 
 
 // If DEBUG_DEVICES is defined, the device list shown in the game will
 // include the pictures of all devices defined, regardless of which
 // devices the player actually possesses.
 //#define DEBUG_DEVICES
-
-static COUNT
-lpstrchr (const UNICODE *pStr, UNICODE ch)
-{
-	COUNT skip_chars;
-
-	skip_chars = 0;
-	while (*pStr++ != ch)
-		++skip_chars;
-
-	return (skip_chars);
-}
 
 static void
 DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
@@ -134,10 +123,10 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 				t.baseline.y = cy;
 				t.pStr = GAME_STRING (pDeviceMap[OldDevice] +
 						DEVICE_STRING_BASE + 1);
-				t.CharCount = lpstrchr (t.pStr, ' ');
+				t.CharCount = utf8StringPos (t.pStr, ' ');
 				font_DrawText (&t);
 				t.baseline.y += 7;
-				t.pStr += t.CharCount + 1;
+				t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
 				t.CharCount = (COUNT)~0;
 				font_DrawText (&t);
 			}
@@ -163,10 +152,10 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
-		t.CharCount = lpstrchr (t.pStr, ' ');
+		t.CharCount = utf8StringPos (t.pStr, ' ');
 		font_DrawText (&t);
 		t.baseline.y += 7;
-		t.pStr += t.CharCount + 1;
+		t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 	}
@@ -181,10 +170,10 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[NewDevice] + DEVICE_STRING_BASE + 1);
-		t.CharCount = lpstrchr (t.pStr, ' ');
+		t.CharCount = utf8StringPos (t.pStr, ' ');
 		font_DrawText (&t);
 		t.baseline.y += 7;
-		t.pStr += t.CharCount + 1;
+		t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 	}

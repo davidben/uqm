@@ -144,9 +144,9 @@ SetContextClipRect (&r);
 void
 DrawHyperCoords (POINT universe)
 {
-	UNICODE buf[20];
+	UNICODE buf[100];
 
-	wsprintf (buf, "%03u.%01u : %03u.%01u",
+	sprintf (buf, "%03u.%01u : %03u.%01u",
 			universe.x / 10, universe.x % 10,
 			universe.y / 10, universe.y % 10);
 
@@ -156,7 +156,7 @@ DrawHyperCoords (POINT universe)
 void
 DrawSISMessage (UNICODE *pStr)
 {
-	UNICODE buf[40];
+	UNICODE buf[256];
 	CONTEXT OldContext;
 
 	OldContext = SetContext (OffScreenContext);
@@ -196,8 +196,9 @@ SetContextClipRect (&r);
 					GetClusterName (CurStarDescPtr, buf);
 					break;
 				case IN_HYPERSPACE:
-					wstrcpy (buf, GAME_STRING (NAVIGATION_STRING_BASE
-										+ (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1 ? 0 : 1)));
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (NAVIGATION_STRING_BASE
+								+ (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1 ? 0 : 1)));
 					break;
 			}
 
@@ -240,7 +241,7 @@ DrawStatusMessage (UNICODE *pStr)
 {
 	RECT r;
 	TEXT t;
-	UNICODE buf[20];
+	UNICODE buf[128];
 	CONTEXT OldContext;
 
 	OldContext = SetContext (StatusContext);
@@ -262,17 +263,16 @@ DrawStatusMessage (UNICODE *pStr)
 		if (pMenuState == 0
 				&& CommData.ConversationPhrases /* Melnorme shenanigans */
 				&& cur_comm == MELNORME_CONVERSATION)
-			wsprintf (buf, "%u Cr", MAKE_WORD (
+			sprintf (buf, "%u %s", MAKE_WORD (
 					GET_GAME_STATE (MELNORME_CREDIT0),
 					GET_GAME_STATE (MELNORME_CREDIT1)
-					));
+					), "Cr");
 		else if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
-			wsprintf (buf, "%lu RU", GLOBAL_SIS (ResUnits));
+			sprintf (buf, "%lu %s", GLOBAL_SIS (ResUnits), "RU");
 		else
-			if (optWhichMenu == OPT_PC)
-				wstrcpy (buf, "UNLIMITED RU");
-			else
-				wstrcpy (buf, STR_INFINITY_SIGN " RU");
+			sprintf (buf, "%s %s",
+					(optWhichMenu == OPT_PC) ? "UNLIMITED" : STR_INFINITY_SIGN,
+					"RU");
 		pStr = buf;
 	}
 	else if (pStr == 0)
@@ -341,7 +341,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	COLOR OldColor;
 	CONTEXT OldContext;
 	FRAME OldFontEffect;
-	UNICODE buf[60];
+	UNICODE buf[250];
 
 	if (InStatusArea)
 	{
@@ -366,8 +366,10 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		r.extent.height = SHIP_NAME_HEIGHT;
 
 		t.pStr = buf;
-		wsprintf (buf, "%s %s", GAME_STRING (NAMING_STRING_BASE + 1), GLOBAL_SIS (ShipName));
-		wstrupr (buf);
+		sprintf (buf, "%s %s", GAME_STRING (NAMING_STRING_BASE + 1),
+				GLOBAL_SIS (ShipName));
+		// XXX: this will not work with UTF-8 strings
+		strupr (buf);
 	}
 	OldFontEffect = SetContextFontEffect (NULL);
 	OldColor = SetContextForeGroundColor (BLACK_COLOR);
@@ -400,7 +402,7 @@ DrawFlagshipStats (void)
 	COLOR OldColor;
 	FRAME OldFontEffect;
 	CONTEXT OldContext;
-	UNICODE buf[60];
+	UNICODE buf[128];
 	SIZE leading;
 	BYTE i;
 	BYTE energy_regeneration, energy_wait, turn_wait;
@@ -474,32 +476,32 @@ DrawFlagshipStats (void)
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 4));
 
-	wsprintf (buf, "nose:");
+	utf8StringCopy (buf, sizeof (buf), "nose:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "spread:");
+	utf8StringCopy (buf, sizeof (buf), "spread:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "side:");
+	utf8StringCopy (buf, sizeof (buf), "side:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "tail:");
+	utf8StringCopy (buf, sizeof (buf), "tail:");
 	font_DrawText (&t);
 
 	t.baseline.x += 5;
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_LEFT;
 
-	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
+	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[14])));
+	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[14])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[13])));
+	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[13])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[0])));
+	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[0])));
 	font_DrawText (&t);
 
 	t.baseline.x = r.extent.width - 25;
@@ -508,38 +510,38 @@ DrawFlagshipStats (void)
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 5));
 
-	wsprintf (buf, "maximum velocity:");
+	utf8StringCopy (buf, sizeof (buf), "maximum velocity:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "turning rate:");
+	utf8StringCopy (buf, sizeof (buf), "turning rate:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "combat energy:");
+	utf8StringCopy (buf, sizeof (buf), "combat energy:");
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "maximum fuel:");
+	utf8StringCopy (buf, sizeof (buf), "maximum fuel:");
 	font_DrawText (&t);
 
 	t.baseline.x = r.extent.width - 2;
 	t.baseline.y = r.corner.y + leading + 3;
 
-	wsprintf (buf, "%4u", max_thrust * 4);
+	sprintf (buf, "%4u", max_thrust * 4);
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%4u", 1 + TURN_WAIT - turn_wait);
+	sprintf (buf, "%4u", 1 + TURN_WAIT - turn_wait);
 	font_DrawText (&t);
 	t.baseline.y += leading;
 	{
 		unsigned int energy_per_10_sec =
 				(((100 * ONE_SECOND * energy_regeneration) /
 				((1 + energy_wait) * BATTLE_FRAME_RATE)) + 5) / 10;
-		wsprintf (buf, "%2u.%1u",
+		sprintf (buf, "%2u.%1u",
 				energy_per_10_sec / 10,
 				energy_per_10_sec % 10);
 	}
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	wsprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
+	sprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
 	font_DrawText (&t);
 
 	SetContextFontEffect (OldFontEffect);
@@ -688,13 +690,11 @@ DrawPC_SIS (void)
 {
 	TEXT t;
 	RECT r;
-	UNICODE buf[10];
 
 	GetGaugeRect (&r, FALSE);
 	t.baseline.x = STATUS_WIDTH >> 1;
 	t.baseline.y = r.corner.y - 1;
 	t.align = ALIGN_CENTER;
-	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 	SetContextFont (TinyFont);
 	SetContextForeGroundColor (BLACK_COLOR);
@@ -705,7 +705,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 1));
-	wsprintf (buf, "FUEL");
+	t.pStr = "FUEL";
 	font_DrawText (&t);
 
 	r.corner.y += 79;
@@ -713,7 +713,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 2));
-	wsprintf (buf, "CREW");
+	t.pStr = "CREW";
 	font_DrawText (&t);
 	SetContextFontEffect (NULL);
 
@@ -725,7 +725,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
 	t.baseline.y = r.corner.y + 6;
-	wsprintf (buf, "CAPTAIN");
+	t.pStr = "CAPTAIN";
 	font_DrawText (&t);
 }
 
@@ -735,7 +735,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	STAMP s;
 	RECT r;
 	TEXT t;
-	UNICODE buf[12];
+	UNICODE buf[60];
 	CONTEXT OldContext;
 
 	if (crew_delta == 0 && fuel_delta == 0 && resunit_delta == 0)
@@ -865,7 +865,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
 		}
 
-		wsprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted));
+		sprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted));
 		GetGaugeRect (&r, TRUE);
 		t.baseline.y = r.corner.y + r.extent.height;
 		t.CharCount = (COUNT)~0;
@@ -901,7 +901,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				);
 		if (new_coarse_fuel != old_coarse_fuel)
 		{
-			wsprintf (buf, "%u", new_coarse_fuel);
+			sprintf (buf, "%u", new_coarse_fuel);
 			GetGaugeRect (&r, FALSE);
 			t.baseline.y = r.corner.y + r.extent.height;
 			t.CharCount = (COUNT)~0;

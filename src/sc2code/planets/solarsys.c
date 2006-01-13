@@ -1625,7 +1625,8 @@ GenerateRandomIP (BYTE control)
 		case GENERATE_NAME:
 		{
 			i = pSolarSysState->pBaseDesc - pSolarSysState->PlanetDesc;
-			wsprintf (GLOBAL_SIS (PlanetName), "%s",
+			utf8StringCopy (GLOBAL_SIS (PlanetName),
+					sizeof (GLOBAL_SIS (PlanetName)),
 					GAME_STRING (PLANET_NUMBER_BASE + (9 + 7) + i));
 			SET_GAME_STATE (BATTLE_PLANET,
 					pSolarSysState->PlanetDesc[i].data_index);

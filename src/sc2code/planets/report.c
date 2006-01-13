@@ -86,42 +86,44 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 {
 	BYTE ButtonState;
 	int end_page_len;
-	UNICODE last_c, end_page_buf[80];
+	UNICODE end_page_buf[200];
+	wchar_t last_c;
 	COUNT row_cells;
 	BOOLEAN Sleepy;
 	RECT r;
 	TEXT t;
 
-	wsprintf (end_page_buf, "%s\n", GAME_STRING (SCAN_STRING_BASE + NUM_SCAN_TYPES));
-	end_page_len = wstrlen (end_page_buf);
+	sprintf (end_page_buf, "%s\n", GAME_STRING (SCAN_STRING_BASE + NUM_SCAN_TYPES));
+	end_page_len = utf8StringCount (end_page_buf);
 
 	GetFrameRect (SetAbsFrameIndex (SpaceJunkFrame, 18), &r);
 
 	t.align = ALIGN_LEFT;
 	t.CharCount = 1;
 	t.pStr = pStr;
-	last_c = *pStr;
 
 	Sleepy = TRUE;
 	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
+	// XXX: this is a pretty ugly goto
 	goto InitPageCell;
+
 	while (StrLen)
 	{
 		COUNT col_cells;
 		const UNICODE *pLastStr;
-		const UNICODE *pTempStr;
+		const UNICODE *pNextStr;
 		COUNT lf_pos;
 
 		pLastStr = t.pStr;
 
 		// scan for LFs in the remaining string
 		// trailing LF will be ignored
-		for (lf_pos = StrLen, pTempStr = t.pStr;
-				lf_pos && *pTempStr != '\n';
-				--lf_pos, ++pTempStr)
-			;
+		for (lf_pos = StrLen, pNextStr = t.pStr;
+				lf_pos && getCharFromString (&pNextStr) != '\n';
+				--lf_pos)
+ 			;
 
 		col_cells = 0;
 		// check if the remaining text fits on current screen
@@ -138,12 +140,14 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 		{
 			COUNT word_chars;
 			const UNICODE *pStr;
-
+			wchar_t c;
+ 
 			pStr = t.pStr;
-			while (isgraph (*pStr))
-				++pStr;
+			pNextStr = t.pStr;
+			while (isWideGraphChar (getCharFromString (&pNextStr)))
+				pStr = pNextStr;
 
-			word_chars = (COUNT)(pStr - t.pStr);
+			word_chars = utf8StringCountN (t.pStr, pStr);
 			if ((col_cells += word_chars) <= NUM_CELL_COLS)
 			{
 				DWORD TimeOut;
@@ -153,6 +157,9 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 				TimeOut = GetTimeCounter ();
 				while (word_chars--)
 				{
+					pNextStr = t.pStr;
+					c = getCharFromString (&pNextStr);
+					
 					if (!Sleepy || (GLOBAL (CurrentActivity) & CHECK_ABORT))
 						font_DrawText (&t);
 					else
@@ -164,17 +171,16 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						PlaySound (ReadOutSounds, NotPositional (), NULL,
 								GAME_SOUND_PRIORITY);
 
-						if (t.pStr[0] == ',')
+						if (c == ',')
 							TimeOut += ONE_SECOND / 4;
-						if (t.pStr[0] == '.' || t.pStr[0] == '!' ||
-								t.pStr[0] == '?')
+						if (c == '.' || c == '!' || c == '?')
 							TimeOut += ONE_SECOND / 2;
 						else
 							TimeOut += ONE_SECOND / 20;
 						if (word_chars == 0)
 							TimeOut += ONE_SECOND / 20;
 
-						TaskSwitch();
+						TaskSwitch ();
 						while (GetTimeCounter () < TimeOut)
 						{
 							if (ButtonState)
@@ -192,12 +198,12 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 							TaskSwitch();
 						}
 					}
-					++t.pStr;
+					t.pStr = pNextStr;
 					t.baseline.x += r.extent.width + 1;
 				}
 
 				++col_cells;
-				last_c = *t.pStr++;
+				last_c = getCharFromString (&t.pStr);
 				t.baseline.x += r.extent.width + 1;
 			}
 		} while (col_cells <= NUM_CELL_COLS && last_c != '\n' && StrLen);

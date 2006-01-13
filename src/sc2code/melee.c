@@ -359,15 +359,15 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 
 	lfText.baseline.x = r.corner.x + 1;
 	lfText.align = ALIGN_LEFT;
-	lfText.CharCount = wstrlen (lfText.pStr); // (COUNT)~0;
+	lfText.CharCount = strlen (lfText.pStr);
 
 	BatchGraphics ();
 	if (!(HiLiteState & DTSHS_EDIT))
 	{	// normal or selected state
 		TEXT rtText;
-		UNICODE buf[10];
+		UNICODE buf[30];
 
-		wsprintf (buf, "%d", pMS->star_bucks[pMS->side]);
+		sprintf (buf, "%d", pMS->star_bucks[pMS->side]);
 		rtText.pStr = buf;
 		rtText.align = ALIGN_RIGHT;
 		rtText.CharCount = (COUNT)~0;
@@ -813,7 +813,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 		font_DrawText (&Text);
 
 		rtText.baseline.y = Text.baseline.y;
-		wsprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot]));
+		sprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot]));
 		rtText.CharCount = (COUNT)~0;
 		font_DrawText (&rtText);
 	}
@@ -855,7 +855,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					font_DrawText (&Text);
 
 					rtText.baseline.y = Text.baseline.y;
-					wsprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot - top]));
+					sprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot - top]));
 					rtText.CharCount = (COUNT)~0;
 					font_DrawText (&rtText);
 				}
@@ -1048,7 +1048,7 @@ GetNewList:
 			goto GetNewList;
 		}
 
-		if (pbuf && wstricmp (file, pbuf) == 0)
+		if (pbuf && stricmp (file, pbuf) == 0)
 		{
 			pMS->CurIndex = GetDirEntryTableIndex (pMS->TeamDE) + NUM_PREBUILT;
 			pbuf = 0;
@@ -1525,7 +1525,7 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 		RECT r;
 		TEXT t;
 		STAMP s;
-		UNICODE buf[10];
+		UNICODE buf[30];
 
 		side = !i;
 
@@ -1554,7 +1554,7 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 				MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
 		font_DrawText (&t);
 
-		wsprintf (buf, "%d", pMS->star_bucks[i]);
+		sprintf (buf, "%d", pMS->star_bucks[i]);
 		t.baseline.x = 4;
 		t.baseline.y = 7;
 		t.align = ALIGN_LEFT;
@@ -1802,7 +1802,9 @@ DoMelee (PMELEE_STATE pMS)
 static void
 InitPreBuilt (PMELEE_STATE pMS)
 {
-	wstrcpy (pMS->PreBuiltList[0].TeamName, GAME_STRING (MELEE_STRING_BASE + 4));
+	utf8StringCopy (pMS->PreBuiltList[0].TeamName,
+			sizeof (pMS->PreBuiltList[0].TeamName),
+			GAME_STRING (MELEE_STRING_BASE + 4));
 	pMS->PreBuiltList[0].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[0].ShipList[0][1] = MELEE_CHMMR;
 	pMS->PreBuiltList[0].ShipList[0][2] = MELEE_DRUUGE;
@@ -1818,7 +1820,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[0].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[0].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[1].TeamName, GAME_STRING (MELEE_STRING_BASE + 5));
+	utf8StringCopy (pMS->PreBuiltList[1].TeamName,
+			sizeof (pMS->PreBuiltList[1].TeamName),
+			GAME_STRING (MELEE_STRING_BASE + 5));
 	pMS->PreBuiltList[1].ShipList[0][0] = MELEE_ARILOU;
 	pMS->PreBuiltList[1].ShipList[0][1] = MELEE_CHENJESU;
 	pMS->PreBuiltList[1].ShipList[0][2] = MELEE_EARTHLING;
@@ -1834,7 +1838,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[1].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[1].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[2].TeamName, GAME_STRING (MELEE_STRING_BASE + 6));
+	utf8StringCopy (pMS->PreBuiltList[2].TeamName,
+			sizeof (pMS->PreBuiltList[2].TeamName),
+			GAME_STRING (MELEE_STRING_BASE + 6));
 	pMS->PreBuiltList[2].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[2].ShipList[0][1] = MELEE_CHMMR;
 	pMS->PreBuiltList[2].ShipList[0][2] = MELEE_DRUUGE;
@@ -1850,7 +1856,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[2].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[2].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[3].TeamName, GAME_STRING (MELEE_STRING_BASE + 7));
+	utf8StringCopy (pMS->PreBuiltList[3].TeamName,
+			sizeof (pMS->PreBuiltList[3].TeamName),
+			GAME_STRING (MELEE_STRING_BASE + 7));
 	pMS->PreBuiltList[3].ShipList[0][0] = MELEE_CHENJESU;
 	pMS->PreBuiltList[3].ShipList[0][1] = MELEE_CHENJESU;
 	pMS->PreBuiltList[3].ShipList[0][2] = MELEE_CHMMR;
@@ -1866,7 +1874,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[3].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[3].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[4].TeamName, GAME_STRING (MELEE_STRING_BASE + 8));
+	utf8StringCopy (pMS->PreBuiltList[4].TeamName,
+			sizeof (pMS->PreBuiltList[4].TeamName),
+			GAME_STRING (MELEE_STRING_BASE + 8));
 	pMS->PreBuiltList[4].ShipList[0][0] = MELEE_URQUAN;
 	pMS->PreBuiltList[4].ShipList[0][1] = MELEE_CHENJESU;
 	pMS->PreBuiltList[4].ShipList[0][2] = MELEE_MYCON;
@@ -1882,7 +1892,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[4].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[4].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[5].TeamName, "Ford's Fighters");
+	utf8StringCopy (pMS->PreBuiltList[5].TeamName,
+			sizeof (pMS->PreBuiltList[5].TeamName),
+			"Ford's Fighters");
 	pMS->PreBuiltList[5].ShipList[0][0] = MELEE_CHMMR;
 	pMS->PreBuiltList[5].ShipList[0][1] = MELEE_ZOQFOTPIK;
 	pMS->PreBuiltList[5].ShipList[0][2] = MELEE_MELNORME;
@@ -1898,7 +1910,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[5].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[5].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[6].TeamName, "Leyland's Lashers");
+	utf8StringCopy (pMS->PreBuiltList[6].TeamName,
+			sizeof (pMS->PreBuiltList[6].TeamName),
+			"Leyland's Lashers");
 	pMS->PreBuiltList[6].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[6].ShipList[0][1] = MELEE_EARTHLING;
 	pMS->PreBuiltList[6].ShipList[0][2] = MELEE_MYCON;
@@ -1914,7 +1928,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[6].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[6].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[7].TeamName, "The Gregorizers 200");
+	utf8StringCopy (pMS->PreBuiltList[7].TeamName,
+			sizeof (pMS->PreBuiltList[7].TeamName),
+			"The Gregorizers 200");
 	pMS->PreBuiltList[7].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[7].ShipList[0][1] = MELEE_CHMMR;
 	pMS->PreBuiltList[7].ShipList[0][2] = MELEE_DRUUGE;
@@ -1930,7 +1946,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[7].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[7].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[8].TeamName, "300 point Armada!");
+	utf8StringCopy (pMS->PreBuiltList[8].TeamName,
+			sizeof (pMS->PreBuiltList[8].TeamName),
+			"300 point Armada!");
 	pMS->PreBuiltList[8].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[8].ShipList[0][1] = MELEE_CHMMR;
 	pMS->PreBuiltList[8].ShipList[0][2] = MELEE_CHENJESU;
@@ -1946,7 +1964,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[8].ShipList[1][5] = MELEE_URQUAN;
 	pMS->PreBuiltList[8].ShipList[1][6] = MELEE_YEHAT;
 
-	wstrcpy (pMS->PreBuiltList[9].TeamName, "Little Dudes with Attitudes");
+	utf8StringCopy (pMS->PreBuiltList[9].TeamName,
+			sizeof (pMS->PreBuiltList[9].TeamName),
+			"Little Dudes with Attitudes");
 	pMS->PreBuiltList[9].ShipList[0][0] = MELEE_UMGAH;
 	pMS->PreBuiltList[9].ShipList[0][1] = MELEE_THRADDASH;
 	pMS->PreBuiltList[9].ShipList[0][2] = MELEE_SHOFIXTI;
@@ -1962,7 +1982,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[9].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[9].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[10].TeamName, "New Alliance Ships");
+	utf8StringCopy (pMS->PreBuiltList[10].TeamName,
+			sizeof (pMS->PreBuiltList[10].TeamName),
+			"New Alliance Ships");
 	pMS->PreBuiltList[10].ShipList[0][0] = MELEE_ARILOU;
 	pMS->PreBuiltList[10].ShipList[0][1] = MELEE_CHMMR;
 	pMS->PreBuiltList[10].ShipList[0][2] = MELEE_EARTHLING;
@@ -1978,7 +2000,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[10].ShipList[1][5] = MELEE_THRADDASH;
 	pMS->PreBuiltList[10].ShipList[1][6] = MELEE_SPATHI;
 
-	wstrcpy (pMS->PreBuiltList[11].TeamName, "Old Alliance Ships");
+	utf8StringCopy (pMS->PreBuiltList[11].TeamName,
+			sizeof (pMS->PreBuiltList[11].TeamName),
+			"Old Alliance Ships");
 	pMS->PreBuiltList[11].ShipList[0][0] = MELEE_ARILOU;
 	pMS->PreBuiltList[11].ShipList[0][1] = MELEE_CHENJESU;
 	pMS->PreBuiltList[11].ShipList[0][2] = MELEE_EARTHLING;
@@ -1994,7 +2018,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[11].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[11].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[12].TeamName, "Old Hierarchy Ships");
+	utf8StringCopy (pMS->PreBuiltList[12].TeamName,
+			sizeof (pMS->PreBuiltList[12].TeamName),
+			"Old Hierarchy Ships");
 	pMS->PreBuiltList[12].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[12].ShipList[0][1] = MELEE_ILWRATH;
 	pMS->PreBuiltList[12].ShipList[0][2] = MELEE_MYCON;
@@ -2010,7 +2036,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[12].ShipList[1][5] = (BYTE)~0;
 	pMS->PreBuiltList[12].ShipList[1][6] = (BYTE)~0;
 
-	wstrcpy (pMS->PreBuiltList[13].TeamName, "Star Control 1");
+	utf8StringCopy (pMS->PreBuiltList[13].TeamName,
+			sizeof (pMS->PreBuiltList[13].TeamName),
+			"Star Control 1");
 	pMS->PreBuiltList[13].ShipList[0][0] = MELEE_ANDROSYNTH;
 	pMS->PreBuiltList[13].ShipList[0][1] = MELEE_ARILOU;
 	pMS->PreBuiltList[13].ShipList[0][2] = MELEE_CHENJESU;
@@ -2026,7 +2054,9 @@ InitPreBuilt (PMELEE_STATE pMS)
 	pMS->PreBuiltList[13].ShipList[1][5] = MELEE_VUX;
 	pMS->PreBuiltList[13].ShipList[1][6] = MELEE_YEHAT;
 
-	wstrcpy (pMS->PreBuiltList[14].TeamName, "Star Control 2");
+	utf8StringCopy (pMS->PreBuiltList[14].TeamName,
+			sizeof (pMS->PreBuiltList[14].TeamName),
+			"Star Control 2");
 	pMS->PreBuiltList[14].ShipList[0][0] = MELEE_CHMMR;
 	pMS->PreBuiltList[14].ShipList[0][1] = MELEE_DRUUGE;
 	pMS->PreBuiltList[14].ShipList[0][2] = MELEE_KOHR_AH;

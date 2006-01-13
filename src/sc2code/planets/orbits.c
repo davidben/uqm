@@ -486,7 +486,7 @@ FillOrbits (PSOLARSYS_STATE system,
 		{SUPERGIANT_ROCK_DIST, SUPERGIANT_GASG_DIST},
 	};
 #ifdef DEBUG_ORBITS
-UNICODE buf[40];
+UNICODE buf[256];
 char stype[] = {'D', 'G', 'S'};
 char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 #endif /* DEBUG_ORBITS */

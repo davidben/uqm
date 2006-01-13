@@ -609,7 +609,7 @@ dumpSystemCallback (const STAR_DESC *star, const SOLARSYS_STATE *system,
 void
 dumpSystem (FILE *out, const STAR_DESC *star, const SOLARSYS_STATE *system)
 {
-	UNICODE name[40];
+	UNICODE name[256];
 	UNICODE buf[40];
 
 	GetClusterName ((STAR_DESCPTR) star, name);

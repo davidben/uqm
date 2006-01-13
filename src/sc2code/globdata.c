@@ -284,8 +284,11 @@ InitSIS (void)
 
 	GLOBAL_SIS (NumLanders) = 1;
 
-	wstrcpy (GLOBAL_SIS (ShipName), GAME_STRING (NAMING_STRING_BASE + 2));
-	wstrcpy (GLOBAL_SIS (CommanderName), GAME_STRING (NAMING_STRING_BASE + 3));
+	utf8StringCopy (GLOBAL_SIS (ShipName), sizeof (GLOBAL_SIS (ShipName)),
+			GAME_STRING (NAMING_STRING_BASE + 2));
+	utf8StringCopy (GLOBAL_SIS (CommanderName),
+			sizeof (GLOBAL_SIS (CommanderName)),
+			GAME_STRING (NAMING_STRING_BASE + 3));
 
 	ActivateStarShip (HUMAN_SHIP, 0);
 	CloneShipFragment (HUMAN_SHIP, &GLOBAL (built_ship_q), 0);

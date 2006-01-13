@@ -99,7 +99,7 @@ MatchSupportShip (PMENU_STATE pMS)
 static void
 DeltaSupportCrew (SIZE crew_delta)
 {
-	UNICODE buf[10];
+	UNICODE buf[40];
 	HSTARSHIP hTemplate;
 	SHIP_FRAGMENTPTR StarShipPtr, TemplatePtr;
 
@@ -122,9 +122,9 @@ DeltaSupportCrew (SIZE crew_delta)
 	{
 		if (StarShipPtr->ShipInfo.crew_level >=
 				TemplatePtr->RaceDescPtr->ship_info.crew_level)
-			wsprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
+			sprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
 		else
-			wsprintf (buf, "%u/%u",
+			sprintf (buf, "%u/%u",
 					StarShipPtr->ShipInfo.crew_level,
 					TemplatePtr->RaceDescPtr->ship_info.crew_level);
 

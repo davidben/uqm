@@ -139,38 +139,45 @@ PrintCoarseScanPC (void)
 	{
 		if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 				&pSolarSysState->SunDesc[0])
-			wstrcpy (buf, GLOBAL_SIS (PlanetName));
+			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
 		else
 		{
 			switch (pSolarSysState->pOrbitalDesc->pPrevDesc
 					- pSolarSysState->PlanetDesc)
 			{
 				case 2: /* EARTH */
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 9));
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 9));
 					break;
 				case 4: /* JUPITER */
 					switch (pSolarSysState->pOrbitalDesc
 							- pSolarSysState->MoonDesc)
 					{
 						case 0:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 10));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 10));
 							break;
 						case 1:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 11));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 11));
 							break;
 						case 2:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 12));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 12));
 							break;
 						case 3:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 13));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 13));
 							break;
 					}
 					break;
-				case 5:
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 14));
+				case 5: /* SATURN */
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 14));
 					break;
-				case 7:
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 15));
+				case 7: /* NEPTUNE */
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 15));
 					break;
 			}
 		}
@@ -220,9 +227,9 @@ PrintCoarseScanPC (void)
 	LockMutex (GraphicsLock);
 	PrintScanTitlePC (&t, &r, "Atmo: ", LEFT_SIDE_BASELINE_X_PC);
 	if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == GAS_GIANT_ATMOSPHERE)
-		sprintf (buf, "Super Thick");
+		utf8StringCopy (buf, sizeof (buf), "Super Thick");
 	else if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity == 0)
-		sprintf (buf, "Vacuum");
+		utf8StringCopy (buf, sizeof (buf), "Vacuum");
 	else
 	{
 		val = (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity * 100
@@ -251,7 +258,7 @@ PrintCoarseScanPC (void)
 		t.pStr = "None";
 	else
 	{
-		sprintf (buf, "Class %u",
+		sprintf (buf, "%s %u", "Class",
 				pSolarSysState->SysInfo.PlanetInfo.Weather + 1);
 		t.pStr = buf;
 	}
@@ -267,7 +274,7 @@ PrintCoarseScanPC (void)
 		t.pStr = "None";
 	else
 	{
-		sprintf (buf, "Class %u",
+		sprintf (buf, "%s %u", "Class",
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics + 1);
 		t.pStr = buf;
 	}
@@ -352,38 +359,45 @@ PrintCoarseScan3DO (void)
 	if (CurStarDescPtr->Index == SOL_DEFINED)
 	{
 		if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->SunDesc[0])
-			wstrcpy (buf, GLOBAL_SIS (PlanetName));
+			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
 		else
 		{
 			switch (pSolarSysState->pOrbitalDesc->pPrevDesc
 					- pSolarSysState->PlanetDesc)
 			{
 				case 2: /* EARTH */
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 9));
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 9));
 					break;
 				case 4: /* JUPITER */
 					switch (pSolarSysState->pOrbitalDesc
 							- pSolarSysState->MoonDesc)
 					{
 						case 0:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 10));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 10));
 							break;
 						case 1:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 11));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 11));
 							break;
 						case 2:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 12));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 12));
 							break;
 						case 3:
-							wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 13));
+							utf8StringCopy (buf, sizeof (buf),
+									GAME_STRING (PLANET_NUMBER_BASE + 13));
 							break;
 					}
 					break;
-				case 5:
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 14));
+				case 5: /* SATURN */
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 14));
 					break;
-				case 7:
-					wstrcpy (buf, GAME_STRING (PLANET_NUMBER_BASE + 15));
+				case 7: /* NEPTUNE */
+					utf8StringCopy (buf, sizeof (buf),
+							GAME_STRING (PLANET_NUMBER_BASE + 15));
 					break;
 			}
 		}
@@ -915,6 +929,7 @@ DoScan (PMENU_STATE pMS)
 {
 	DWORD TimeIn, WaitTime;
 	BOOLEAN select, cancel;
+
 	select = PulsedInputState.key[KEY_MENU_SELECT];
 	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -948,7 +963,7 @@ DoScan (PMENU_STATE pMS)
 		if (pMS->CurState == DISPATCH_SHUTTLE)
 		{
 			COUNT fuel_required;
-			UNICODE buf[20];
+			UNICODE buf[100];
 
 			if ((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 					|| (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==
@@ -974,7 +989,7 @@ DoScan (PMENU_STATE pMS)
 				return (TRUE);
 			}
 
-			wsprintf (buf, "%s%1.1f",
+			sprintf (buf, "%s%1.1f",
 					GAME_STRING (NAVIGATION_STRING_BASE + 5),
 					(float) fuel_required / FUEL_TANK_SCALE);
 			LockMutex (GraphicsLock);

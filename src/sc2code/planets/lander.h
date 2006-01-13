@@ -41,7 +41,7 @@ typedef struct
 	COUNT ElementAmounts[NUM_ELEMENT_CATEGORIES];
 
 	COUNT NumFrames;
-	UNICODE AmountBuf[10];
+	UNICODE AmountBuf[40];
 	TEXT MineralText[3];
 
 	COLOR ColorCycle[NUM_TEXT_FRAMES >> 1];

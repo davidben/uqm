@@ -138,7 +138,8 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	int num_items;
 	FONT OldFont;
 	TEXT t;
-	UNICODE buf[40];
+	UNICODE buf[256];
+
 	pos = beg_index + NewState;
 	num_items = 1 + end_index - beg_index;
 	r->corner.x -= 1;
@@ -161,7 +162,7 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
 	for (i = beg_index; i <= end_index; i++)
 	{
-		wsprintf (buf, menu_string[i]);
+		utf8StringCopy (buf, sizeof (buf), menu_string[i]);
 		if (hilite && pos == i)
 		{
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
@@ -539,9 +540,9 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	if (s.frame && optWhichMenu == OPT_PC)
 	{
 		if (beg_index == PM_CREW)
-			sprintf (menu_string[PM_CREW], "crew(%d)", GLOBAL (CrewCost));
+			sprintf (menu_string[PM_CREW], "%s(%d)", "crew", GLOBAL (CrewCost));
 		if (beg_index == PM_FUEL)
-			sprintf (menu_string[PM_FUEL], "fuel(%d)", GLOBAL (FuelCost));
+			sprintf (menu_string[PM_FUEL], "%s(%d)", "fuel", GLOBAL (FuelCost));
 		if (beg_index == PM_SOUND_ON)
 		{
 			end_index = beg_index + 5;
@@ -607,7 +608,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 		switch (beg_index + NewState)
 		{
 			TEXT t;
-			UNICODE buf[4];
+			UNICODE buf[20];
 
 			case PM_CREW:
 				t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
@@ -615,7 +616,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.align = ALIGN_RIGHT;
 				t.CharCount = (COUNT)~0;
 				t.pStr = buf;
-				wsprintf (buf, "%u", GLOBAL (CrewCost));
+				sprintf (buf, "%u", GLOBAL (CrewCost));
 				SetContextFont (TinyFont);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
 				font_DrawText (&t);
@@ -626,7 +627,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.align = ALIGN_RIGHT;
 				t.CharCount = (COUNT)~0;
 				t.pStr = buf;
-				wsprintf (buf, "%u", GLOBAL (FuelCost));
+				sprintf (buf, "%u", GLOBAL (FuelCost));
 				SetContextFont (TinyFont);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
 				font_DrawText (&t);

@@ -231,7 +231,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 		TEXT t;
 		HSTARSHIP hStarShip;
 		STARSHIPPTR StarShipPtr;
-		UNICODE buf[10];
+		UNICODE buf[30];
 		COUNT ShipCost[] =
 		{
 			RACE_SHIP_COST
@@ -255,7 +255,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 		t.align = ALIGN_RIGHT;
 		t.CharCount = (COUNT)~0;
 		t.pStr = buf;
-		wsprintf (buf, "%u", ShipCost[NewRaceItem]);
+		sprintf (buf, "%u", ShipCost[NewRaceItem]);
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (
 						0x00, 0x1F, 0x00), 0x02));
@@ -287,7 +287,7 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 {
 	RECT r;
 	TEXT t;
-	UNICODE buf[20];
+	UNICODE buf[80];
 	HSTARSHIP hTemplate;
 	SHIP_FRAGMENTPTR TemplatePtr;
 
@@ -297,11 +297,11 @@ ShowShipCrew (SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect)
 			&GLOBAL (avail_race_q), hTemplate);
 	if (StarShipPtr->ShipInfo.crew_level >=
 			TemplatePtr->RaceDescPtr->ship_info.crew_level)
-		wsprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
+		sprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
 	else if (StarShipPtr->ShipInfo.crew_level == 0)
-		wsprintf (buf, "SCRAP");
+		utf8StringCopy (buf, sizeof (buf), "SCRAP");
 	else
-		wsprintf (buf, "%u/%u",
+		sprintf (buf, "%u/%u",
 				StarShipPtr->ShipInfo.crew_level,
 				TemplatePtr->RaceDescPtr->ship_info.crew_level);
 	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);

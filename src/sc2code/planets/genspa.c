@@ -77,7 +77,9 @@ GenerateSpathi (BYTE control)
 			if (pSolarSysState->pBaseDesc == &pSolarSysState->PlanetDesc[0])
 			{
 #ifdef NOTYET
-				wstrcpy (GLOBAL_SIS (PlanetName), "Spathiwa");
+				utf8StringCopy (GLOBAL_SIS (PlanetName),
+						sizeof (GLOBAL_SIS (PlanetName)),
+						"Spathiwa");
 #endif /* NOTYET */
 
 				pSolarSysState->MoonDesc[0].data_index = PELLUCID_WORLD;

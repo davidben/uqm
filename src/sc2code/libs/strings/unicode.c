@@ -18,6 +18,9 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
+#include "strlib.h"
+
 
 // Resynchronise (skip everything starting with 0x10xxxxxx):
 static inline void
@@ -228,6 +231,41 @@ utf8StringCountN(const unsigned char *start, const unsigned char *end) {
 			return count;
 		count++;
 	}
+}
+
+// Locates a wide char (ch) in a UTF-8 string (pStr)
+// returns the char positions when found
+//  -1 when not found
+int
+utf8StringPos (const unsigned char *pStr, wchar_t ch)
+{
+	int pos;
+ 
+	for (pos = 0; *pStr != '\0'; ++pos)
+	{
+		if (getCharFromString (&pStr) == ch)
+			return pos;
+	}
+
+	if (ch == '\0' && *pStr == '\0')
+		return pos;
+
+	return -1;
+}
+
+// Safe version of strcpy(), somewhat analogous to strncpy()
+// except it guarantees a 0-term when size > 0
+// when size == 0, returns NULL
+unsigned char *
+utf8StringCopy (unsigned char *dst, size_t size, const unsigned char *src)
+{
+	if (size == 0)
+		return 0;
+
+	strncpy (dst, src, size);
+	dst[size - 1] = '\0';
+	
+	return dst;
 }
 
 unsigned char *

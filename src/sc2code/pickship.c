@@ -218,15 +218,15 @@ ChangeSelection:
 
 			if (crew_level)
 			{
-				char buf[20];
+				char buf[80];
 
 				t.baseline.x = r.corner.x + (r.extent.width >> 1);
 				t.pStr = buf;
 				t.CharCount = (COUNT)~0;
 				if (crew_level >= max_crew)
-					wsprintf (buf, "%u", crew_level);
+					sprintf (buf, "%u", crew_level);
 				else
-					wsprintf (buf, "%u/%u", crew_level, max_crew);
+					sprintf (buf, "%u/%u", crew_level, max_crew);
 				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
 				font_DrawText (&t);
 			}

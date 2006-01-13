@@ -246,7 +246,7 @@ InitEncounter (void)
 	}
 	else
 	{
-		UNICODE buf[40];
+		UNICODE buf[256];
 
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 2);
 		t.CharCount = (COUNT)~0;
@@ -452,7 +452,7 @@ UninitEncounter (void)
 		STAMP ship_s;
 		const UNICODE *str1 = NULL;
 		const UNICODE *str2 = NULL;
-		UNICODE buf[20];
+		UNICODE buf[80];
 		HSTARSHIP hStarShip;
 		SHIP_FRAGMENTPTR FragPtr;
 		COLOR fade_ship_cycle[] =
@@ -563,7 +563,8 @@ UninitEncounter (void)
 								GetStringContents (
 										FragPtr->ShipInfo.race_strings,
 										(STRINGPTR)buf, FALSE);
-								wstrupr (buf);
+								// XXX: this will not work with UTF-8 strings
+								strupr (buf);
 
 								t.baseline.x = scavenge_r.corner.x + 100;
 								t.baseline.y = scavenge_r.corner.y + 68;
@@ -601,7 +602,7 @@ UninitEncounter (void)
 							/* collect bounty ResUnits */
 							j = race_bounty[battle_counter - 1] >> 3;
 							RecycleAmount += j;
-							wsprintf (buf, "%u", RecycleAmount);
+							sprintf (buf, "%u", RecycleAmount);
 							t.baseline.x = r.corner.x + r.extent.width - 1;
 							t.baseline.y = r.corner.y + 14;
 							t.align = ALIGN_RIGHT;
@@ -680,7 +681,7 @@ UninitEncounter (void)
 					r.corner.x = scavenge_r.corner.x + 10;
 					r.extent.width = 132;
 					DrawFilledRectangle (&r);
-					wsprintf (buf, "%u RU", RecycleAmount);
+					sprintf (buf, "%u %s", RecycleAmount, "RU");
 					t.baseline.x = r.corner.x + (r.extent.width >> 1);
 					t.baseline.y = r.corner.y + 14;
 					t.align = ALIGN_CENTER;
