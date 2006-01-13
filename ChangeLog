@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Internationalization fixes: better or, in some cases, fixed support of
+  non-Latin UTF-8 strings (more to come; bug #778), from Andrew Zabolotny
 - Remaped special chars used in the game (degree, infinity and earth
   signs; middle dot) to their UCS equivalent codes (bug #818) - Alex
 - Color depth is now determined entirely automatically - Michael
