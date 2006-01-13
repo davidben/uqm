@@ -263,6 +263,7 @@ ExitConversation (RESPONSE_REF R)
 static void
 TaaloWorld (RESPONSE_REF R)
 {
+	// We can only get here when ORZ_MANNER != HOSTILE (2)
 	BYTE Manner;
 
 	Manner = GET_GAME_STATE (ORZ_MANNER);
@@ -316,7 +317,7 @@ TaaloWorld (RESPONSE_REF R)
 				) & GOOD_GUY))
 			Response (may_we_land, ExitConversation);
 		else
-				Response (may_we_land, TaaloWorld);
+			Response (may_we_land, TaaloWorld);
 	}
 	else if (PHRASE_ENABLED (make_alliance))
 		Response (make_alliance, TaaloWorld);
@@ -640,7 +641,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (!GET_GAME_STATE (MET_ORZ_BEFORE))
@@ -670,7 +671,7 @@ Intro (void)
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
 	{
 		NumVisits = GET_GAME_STATE (TAALO_VISITS);
-		if (Manner == 0)
+		if (Manner != 1)
 		{
 			switch (NumVisits++)
 			{
@@ -843,9 +844,6 @@ Intro (void)
 		AlienTalkSegue (1);
 		CommData.AlienTalkDesc.NumFrames = N;
 	}
-
-ExitIntro:
-	;
 }
 
 static COUNT
