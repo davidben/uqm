@@ -71,14 +71,15 @@ EraseCoarseScan (void)
 	const int rightScanWidth  = 80;
 	const int leftScanOffset  = 5;
 	const int rightScanOffset = 50;
+	const int nameEraseWidth = SIS_SCREEN_WIDTH - 2;
 
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
-	r.corner.x = (SIS_SCREEN_WIDTH >> 1) - (160 >> 1);
-	r.corner.y = 13 - 7;
-	r.extent.width = 160;
-	r.extent.height = 10;
+	r.corner.x = (SIS_SCREEN_WIDTH >> 1) - (nameEraseWidth >> 1);
+	r.corner.y = 13 - 10;
+	r.extent.width = nameEraseWidth;
+	r.extent.height = 14;
 	RepairBackRect (&r);
 
 	GetFrameRect (SetAbsFrameIndex (SpaceJunkFrame, 20), &tr);
