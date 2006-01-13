@@ -639,7 +639,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 	else if (!GET_GAME_STATE (MET_ARILOU))
 	{
@@ -660,7 +660,7 @@ Intro (void)
 		Response (happy_by_hello, RespFunc);
 		Response (miffed_by_hello, RespFunc);
 		SET_GAME_STATE (MET_ARILOU, 1);
-		goto ExitIntro;
+		return;
 	}
 
 	Manner = GET_GAME_STATE (ARILOU_MANNER);
@@ -782,8 +782,6 @@ Intro (void)
 			ArilouHome ((RESPONSE_REF)0);
 		}
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

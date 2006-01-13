@@ -548,7 +548,7 @@ ProbeInfo (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, talk_more_probe_attack))
 	{
 		ProbeFunction (R);
-		goto ExitProbeInfo;
+		return;
 	}
 	else if (PLAYER_SAID (R, where_probes_from))
 	{
@@ -641,8 +641,6 @@ ProbeInfo (RESPONSE_REF R)
 	{
 		DISABLE_PHRASE (know_more_probe);
 	}
-ExitProbeInfo:
-	;
 }
 
 static void
@@ -728,7 +726,7 @@ HomeWorld (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, like_more_about_you))
 	{
 		SlylandroInfo (R);
-		goto ExitHomeWorld;
+		return;
 	}
 	else if (PLAYER_SAID (R, enough_about_me))
 		NPCPhrase (OK_ENOUGH_YOU);
@@ -845,8 +843,6 @@ HomeWorld (RESPONSE_REF R)
 		}
 	}
 	Response (bye, ExitConversation);
-ExitHomeWorld:
-	;
 }
 
 static void

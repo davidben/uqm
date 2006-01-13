@@ -727,7 +727,7 @@ SpathiParty (RESPONSE_REF R)
 			Response (fellowship, SpathiParty);
 		Response (do_as_we_say, ExitConversation);
 
-		goto ExitParty;
+		return;
 	}
 	switch (GET_GAME_STATE (SPATHI_HOME_VISITS) - 1)
 	{
@@ -741,8 +741,6 @@ SpathiParty (RESPONSE_REF R)
 			Response (bye_from_party_3, ExitConversation);
 			break;
 	}
-ExitParty:
-	;
 }
 
 static void

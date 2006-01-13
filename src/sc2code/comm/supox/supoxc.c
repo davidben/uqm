@@ -377,7 +377,7 @@ NeutralSupox (RESPONSE_REF R)
 		Response (what_do_i_do_now, ExitConversation);
 		Response (thanks_now_we_eat_you, ExitConversation);
 
-		goto ExitSupox;
+		return;
 	}
 	else if (PLAYER_SAID (R, got_fixed_ultron))
 	{
@@ -515,8 +515,6 @@ NeutralSupox (RESPONSE_REF R)
 		}
 	}
 	Response (bye_neutral, ExitConversation);
-ExitSupox:
-	;
 }
 
 static void
@@ -529,7 +527,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (SUPOX_HOSTILE))
@@ -663,8 +661,6 @@ Intro (void)
 
 		NeutralSupox ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

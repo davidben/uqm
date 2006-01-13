@@ -555,7 +555,7 @@ NormalSyreen (RESPONSE_REF R)
 		SET_GAME_STATE (SYREEN_KNOW_ABOUT_MYCON, 1);
 
 		SyreenShuttle ((RESPONSE_REF)0);
-		goto ExitSyreen;
+		return;
 	}
 
 	if (GET_GAME_STATE (KNOW_ABOUT_SHATTERED) < 3)
@@ -629,8 +629,6 @@ NormalSyreen (RESPONSE_REF R)
 			Response (pStr[i], NormalSyreen);
 	}
 	Response (bye, FriendlyExit);
-ExitSyreen:
-	;
 }
 
 static void
@@ -724,7 +722,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	NumVisits = GET_GAME_STATE (SYREEN_HOME_VISITS);
@@ -832,8 +830,6 @@ Intro (void)
 		SyreenVault ((RESPONSE_REF)0);
 	}
 	SET_GAME_STATE (SYREEN_HOME_VISITS, NumVisits);
-ExitIntro:
-	;
 }
 
 static COUNT

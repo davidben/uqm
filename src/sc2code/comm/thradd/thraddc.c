@@ -693,7 +693,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (AQUA_HELIX))
@@ -904,8 +904,6 @@ Intro (void)
 			ThraddHostile ((RESPONSE_REF)0);
 		}
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

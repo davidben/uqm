@@ -410,7 +410,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	b0 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS0);
@@ -454,7 +454,7 @@ Intro (void)
 			NPCPhrase (CAUGHT_YA);
 
 			SET_GAME_STATE (BATTLE_SEGUE, 1);
-			goto ExitIntro;
+			return;
 		}
 
 		b0 = GET_GAME_STATE (SAMATRA_GRPOFFS0);
@@ -517,8 +517,6 @@ Intro (void)
 			SET_GAME_STATE (URQUAN_VISITS, NumVisits);
 		}
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

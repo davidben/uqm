@@ -498,14 +498,14 @@ NeutralUtwig (RESPONSE_REF R)
 		SET_GAME_STATE (UTWIG_HOME_VISITS, 0);
 		SET_GAME_STATE (UTWIG_VISITS, 0);
 		SET_GAME_STATE (BOMB_VISITS, 0);
-		goto ExitUtwig;
+		return;
 	}
 	else if (PLAYER_SAID (R, real_sorry_about_ultron))
 	{
 		NPCPhrase (APPRECIATE_SYMPATHY);
 
 		SET_GAME_STATE (UTWIG_STACK1, 4);
-		goto ExitUtwig;
+		return;
 	}
 	else if (PLAYER_SAID (R, what_about_you_1))
 	{
@@ -613,8 +613,6 @@ NeutralUtwig (RESPONSE_REF R)
 	if (GET_GAME_STATE (ULTRON_CONDITION))
 		Response (got_ultron, ExitConversation);
 	Response (bye_neutral, ExitConversation);
-ExitUtwig:
-	;
 }
 
 static void
@@ -653,7 +651,7 @@ BombWorld (RESPONSE_REF R)
 		SET_GAME_STATE (UTWIG_HOME_VISITS, 0);
 		SET_GAME_STATE (UTWIG_VISITS, 0);
 		SET_GAME_STATE (BOMB_VISITS, 0);
-		goto ExitBomb;
+		return;
 	}
 	else if (PLAYER_SAID (R, may_we_have_bomb))
 	{
@@ -720,8 +718,6 @@ BombWorld (RESPONSE_REF R)
 			&& !GET_GAME_STATE (REFUSED_ULTRON_AT_BOMB))
 		Response (got_ultron, ExitConversation);
 	Response (bye_bomb, ExitConversation);
-ExitBomb:
-	;
 }
 
 static void
@@ -734,7 +730,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (UTWIG_HOSTILE))
@@ -932,8 +928,6 @@ Intro (void)
 
 		NeutralUtwig ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

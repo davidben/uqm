@@ -341,7 +341,7 @@ Zombies (RESPONSE_REF R)
 			NPCPhrase (NOT_GIVE_UP);
 
 			SET_GAME_STATE (BATTLE_SEGUE, 1);
-			goto ExitZombies;
+			return;
 		}
 		else if (PLAYER_SAID (R, arilou_told_us))
 		{
@@ -350,7 +350,7 @@ Zombies (RESPONSE_REF R)
 			SET_GAME_STATE (BATTLE_SEGUE, 1);
 			SET_GAME_STATE (KNOW_UMGAH_ZOMBIES, 1);
 			SET_GAME_STATE (UMGAH_VISITS, 0);
-			goto ExitZombies;
+			return;
 		}
 
 		if (PHRASE_ENABLED (evil_blobbies))
@@ -402,8 +402,6 @@ Zombies (RESPONSE_REF R)
 			}
 		}
 		Response (bye_zombie, CombatIsInevitable);
-ExitZombies:
-		;
 	}
 }
 

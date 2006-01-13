@@ -505,21 +505,18 @@ OrzNeutral (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, where_androsyn))
 	{
 		WhereAndrosyn (R);
-
-		goto ExitNeutral;
+		return;
 	}
 	else if (PLAYER_SAID (R, talk_about_alliance)
 			|| PLAYER_SAID (R, seem_like_nice_guys))
 	{
 		OfferAlliance (R);
-
-		goto ExitNeutral;
+		return;
 	}
 	else if (PLAYER_SAID (R, hostile_2))
 	{
 		ExitConversation (R);
-
-		goto ExitNeutral;
+		return;
 	}
 
 	if (GET_GAME_STATE (ORZ_ANDRO_STATE) == 0)
@@ -569,8 +566,6 @@ OrzNeutral (RESPONSE_REF R)
 		}
 	}
 	Response (bye_neutral, ExitConversation);
-ExitNeutral:
-	;
 }
 
 static void

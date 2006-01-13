@@ -763,7 +763,7 @@ Intro (void)
 		NPCPhrase_cb (OUT_TAKES13, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (ZOQFOT_HOSTILE))
@@ -918,8 +918,6 @@ Intro (void)
 
 		ZoqFotHome (0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

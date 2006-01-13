@@ -497,7 +497,7 @@ CompelPlayer (RESPONSE_REF R)
 			SET_GAME_STATE (BATTLE_SEGUE, 1);
 		}
 
-		goto ExitCompel;
+		return;
 	}
 
 	if (PHRASE_ENABLED (what_are_you))
@@ -543,8 +543,6 @@ CompelPlayer (RESPONSE_REF R)
 		}
 	}
 	Response (bye_at_umgah, CompelPlayer);
-ExitCompel:
-	;
 }
 
 static void PetDeal (RESPONSE_REF R);
@@ -649,7 +647,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
@@ -778,8 +776,6 @@ Intro (void)
 
 		PetDeal ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

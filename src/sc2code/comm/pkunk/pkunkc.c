@@ -849,7 +849,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	Manner = GET_GAME_STATE (PKUNK_MANNER);
@@ -1085,8 +1085,6 @@ Intro (void)
 
 		PkunkMigrate ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 // Called after combat or communications

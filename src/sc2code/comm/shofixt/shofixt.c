@@ -546,7 +546,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	GetShofixtiName ();
@@ -616,8 +616,6 @@ Intro (void)
 
 		Hostile ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

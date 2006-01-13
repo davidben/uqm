@@ -691,7 +691,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
@@ -747,8 +747,6 @@ Intro (void)
 
 		NormalVux ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

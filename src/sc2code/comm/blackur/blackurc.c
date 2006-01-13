@@ -442,7 +442,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (KOHR_AH_KILLED_ALL))
@@ -450,7 +450,7 @@ Intro (void)
 		NPCPhrase (GAME_OVER_DUDE);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (!GET_GAME_STATE (KOHR_AH_SENSES_EVIL)
@@ -524,8 +524,6 @@ Intro (void)
 		}
 		SET_GAME_STATE (KOHR_AH_VISITS, NumVisits);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT

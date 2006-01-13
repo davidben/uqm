@@ -437,7 +437,7 @@ YehatSpace (RESPONSE_REF R)
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 		SET_GAME_STATE (NO_YEHAT_ALLY_SPACE, 2);
 
-		goto ExitYehat;
+		return;
 	}
 	else if (PLAYER_SAID (R, at_least_help_us_space))
 	{
@@ -550,8 +550,6 @@ YehatSpace (RESPONSE_REF R)
 		}
 	}
 	Response (bye_space, ExitConversation);
-ExitYehat:
-	;
 }
 
 static void
@@ -564,7 +562,7 @@ Intro (void)
 		NPCPhrase (OUT_TAKES);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		goto ExitIntro;
+		return;
 	}
 
 	if (GET_GAME_STATE (YEHAT_CIVIL_WAR))
@@ -642,8 +640,6 @@ Intro (void)
 
 		YehatSpace ((RESPONSE_REF)0);
 	}
-ExitIntro:
-	;
 }
 
 static COUNT
