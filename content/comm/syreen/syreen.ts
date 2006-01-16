@@ -22,7 +22,7 @@
 #(i_need_you) 
 #(OK_NEED) 3866,6029,4917,6279,3465
 #(i_need_touch_o_vision) 
-#(TOUCH_O_VISION) 30,2944,5758,5088,6529,3565
+#(TOUCH_O_VISION) 2944,5758,5088,6529,3565
 #(know_about_deep_children) 
 #(WHAT_ABOUT_DEEP_CHILDREN) 5588,7220,4397,4586
 #(mycons_involved) 
