@@ -48,7 +48,7 @@ SDL_image
 OpenAL (Win32 only)
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org/
-	SDK download: http://developer.creative.com/articles/article.asp?cat=1&sbcat=31&aid=45&file=OpenALSDK.zip
+	SDK download: http://developer.creative.com/articles/article.asp?aid=45&file=OpenAL11CoreSDK.exe
 
 libogg and libvorbis
 	Audio codec to play Ogg Vorbis files, used for music and speech.
