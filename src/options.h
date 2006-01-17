@@ -53,7 +53,6 @@ void prepareContentDir (const char *contentDirName, const char **addons);
 void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
 void prepareSaveDir (void);
-void initLanguage (void);
 
 #endif
 

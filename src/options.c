@@ -388,23 +388,3 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 	uio_freeDirList (dirList);
 }
 
-void
-initLanguage (void)
-{
-	STRING_TABLE langDef;
-	STRING locString;
-	UNICODE *str;
-
-	langDef = LoadStringTableFile (contentDir, "language.txt");
-	if (!langDef)
-		return;
-
-	locString = SetAbsStringTableIndex (langDef, 0);
-	str = GetStringAddress (locString);
-	if (str)
-		setlocale (LC_ALL, str);
-
-	DestroyStringTable (langDef);
-}
-
-

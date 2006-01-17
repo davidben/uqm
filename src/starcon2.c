@@ -362,8 +362,6 @@ main (int argc, char *argv[])
 	prepareSaveDir ();
 	initTempDir ();
 
-	initLanguage ();
-
 	InitTimeSystem ();
 	InitTaskSystem ();
 
