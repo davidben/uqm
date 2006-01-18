@@ -16,6 +16,7 @@
 
 #include "port.h"
 
+#include <ctype.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
