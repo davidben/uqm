@@ -269,6 +269,58 @@ utf8StringCopy (unsigned char *dst, size_t size, const unsigned char *src)
 	return dst;
 }
 
+// TODO: Better matching. It's now just based on the char number.
+static inline int
+utf8CompareChar (wchar_t ch1, wchar_t ch2)
+{
+	if (ch1 < ch2)
+		return -1;
+
+	if (ch1 > ch2)
+		return 1;
+
+	return 0;
+}
+
+int
+utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
+{
+	wchar_t ch1;
+	wchar_t ch2;
+
+	for (;;)
+	{
+		int cmp;
+		
+		ch1 = getCharFromString(&str1);
+		ch2 = getCharFromString(&str2);
+		if (ch1 == '\0' || ch2 == '\0')
+			break;
+
+		cmp = utf8CompareChar (ch1, ch2);
+		if (cmp != 0)
+			return cmp;
+	}
+
+	if (ch1 != '\0')
+	{
+		// ch2 == '\0'
+		// str2 ends, str1 continues
+		return 1;
+	}
+	
+	if (ch2 != '\0')
+	{
+		// ch1 == '\0'
+		// str1 ends, str2 continues
+		return -1;
+	}
+	
+	// ch1 == '\0' && ch2 == '\0'.
+	// Strings match completely.
+	return 0;
+}
+
 unsigned char *
 skipUTF8Chars(const unsigned char *ptr, size_t num) {
 	wchar_t ch;

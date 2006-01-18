@@ -1,6 +1,6 @@
 Changes towards version 0.5:
 - Added star search in Starmap (define Menu-Search and Menu-Next keys
-  in your keys.cfg) from kworces, Alex
+  in your keys.cfg) from kworces, Alex, SvdB
 - Fixed Orz greeting at Taalo homeworld inconsistency (bug #819) - Alex
 - Fixed Venus' atmo density to 90 times that of Earth (bug #821) - Alex
 - Internationalization fixes: better or, in some cases, fixed support of

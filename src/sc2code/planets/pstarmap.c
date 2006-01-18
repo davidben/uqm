@@ -802,9 +802,42 @@ typedef struct starsearch_state
 	UNICODE Buffer[STAR_SEARCH_BUFSIZE];
 	UNICODE *Prefix;
 	UNICODE *Cluster;
+	int SortedStars[NUM_SOLAR_SYSTEMS];
 	int PrefixLen;
 	int ClusterLen;
 } STAR_SEARCH_STATE;
+
+static int
+compStarName (const void *ptr1, const void *ptr2) {
+	int index1;
+	int index2;
+
+	index1 = *(const int *) ptr1;
+	index2 = *(const int *) ptr2;
+	if (star_array[index1].Postfix != star_array[index2].Postfix) {
+		return utf8StringCompare (GAME_STRING (star_array[index1].Postfix),
+				GAME_STRING (star_array[index2].Postfix));
+	}
+
+	if (star_array[index1].Prefix < star_array[index2].Prefix)
+		return -1;
+	
+	if (star_array[index1].Prefix > star_array[index2].Prefix)
+		return 1;
+
+	return 0;
+}
+
+static void
+SortStarsOnName (STAR_SEARCH_STATE *pSS) {
+	int i;
+	int *sorted = pSS->SortedStars;
+
+	for (i = 0; i < NUM_SOLAR_SYSTEMS; i++)
+		sorted[i] = i;
+
+	qsort (sorted, NUM_SOLAR_SYSTEMS, sizeof (int), compStarName);
+}
 
 static BOOLEAN
 OnStarNameChange (PTEXTENTRY_STATE pTES)
@@ -878,31 +911,22 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 	pSS->PrefixLen = utf8StringCount (pSS->Prefix);
 }
 
+// Returns the index in the sorted array with the specified Postfix.
 static int
-GetFirstClusterStar (BYTE Postfix)
+GetFirstClusterStarIndex (int *sortedStars, BYTE Postfix)
 {
+	// Linear search. A binary search would work, but why bother.
 	int i;
-	int min = -1;
-	int min_pref = 1000;
-	STAR_DESCPTR SDPtr;
-	
-	for (i = 0, SDPtr = star_array; i < NUM_SOLAR_SYSTEMS; ++i, ++SDPtr)
-	{
-		if (SDPtr->Postfix != Postfix)
-			continue;
 
-		if (SDPtr->Prefix < min_pref)
-		{
-			min_pref = SDPtr->Prefix;
-			min = i;
-		}
+	for (i = 0; i < NUM_SOLAR_SYSTEMS; i++) {
+		if (star_array[sortedStars[i]].Postfix == Postfix)
+			return i;
 	}
-
-	return min;
+	return -1;
 }
 
 static int
-FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
+FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 {
 	int i;
 
@@ -911,7 +935,7 @@ FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 
 	for (i = from; i < NUM_SOLAR_SYSTEMS; ++i)
 	{
-		STAR_DESCPTR SDPtr = star_array + i;
+		STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[i]];
 		UNICODE FullName[STAR_SEARCH_BUFSIZE];
 		UNICODE *ClusterName = GAME_STRING (SDPtr->Postfix);
 		UNICODE *sptr;
@@ -944,7 +968,8 @@ FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		if (!pSS->Prefix)
 		{	// searching for cluster name only
 			// return only the first stars in a cluster
-			if (i == GetFirstClusterStar (SDPtr->Postfix))
+			if (i == GetFirstClusterStarIndex (
+					pSS->SortedStars, SDPtr->Postfix))
 				break;
 			else
 				continue;
@@ -980,7 +1005,7 @@ DrawMatchedStarName (PTEXTENTRY_STATE pTES)
 	PMENU_STATE pMS = pSS->pMS;
 	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
-	STAR_DESCPTR SDPtr = star_array + pSS->CurIndex;
+	STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
 
 	if (pSS->SingleClust || pSS->SingleMatch)
 	{	// draw full star name
@@ -1033,7 +1058,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 			SplitStarName (pSS);
 		}
 
-		pSS->CurIndex = FindNextStar (pSS, pSS->CurIndex + 1,
+		pSS->CurIndex = FindNextStarIndex (pSS, pSS->CurIndex + 1,
 				pSS->SingleClust);
 		if (pSS->FirstIndex < 0) // first search
 			pSS->FirstIndex = pSS->CurIndex;
@@ -1052,7 +1077,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 				{	// only one cluster matching
 					pSS->SingleClust = TRUE;
 					// reset the first
-					pSS->FirstIndex = FindNextStar (pSS, 0, TRUE);
+					pSS->FirstIndex = FindNextStarIndex (pSS, 0, TRUE);
 				}
 				else
 				{	//exact match
@@ -1070,7 +1095,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 		}
 
 		// move the cursor to the found star
-		SDPtr = star_array + pSS->CurIndex;
+		SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
 		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
 
 		DrawMatchedStarName (pTES);
@@ -1101,6 +1126,7 @@ DoStarSearch (PMENU_STATE pMS)
 	pss->LastChangeTime = 0;
 	pss->LastText[0] = '\0';
 	pss->FirstIndex = -1;
+	SortStarsOnName (pss);
 
 	// text entry setup
 	tes.Initialized = FALSE;
