@@ -412,6 +412,7 @@ DoNaming (PMENU_STATE pMS)
 	tes.CursorPos = 0;
 	tes.CbParam = pMS;
 	tes.ChangeCallback = OnNameChange;
+	tes.FrameCallback = 0;
 
 	if (DoTextEntry (&tes))
 		utf8StringCopy (Setting, sizeof (Setting), buf);

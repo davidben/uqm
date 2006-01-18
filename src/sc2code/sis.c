@@ -156,23 +156,29 @@ DrawHyperCoords (POINT universe)
 void
 DrawSISMessage (UNICODE *pStr)
 {
+	DrawSISMessageEx (pStr, -1, -1, DSME_NONE);
+}
+
+BOOLEAN
+DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
+{
 	UNICODE buf[256];
 	CONTEXT OldContext;
+	TEXT t;
+	RECT r;
 
 	OldContext = SetContext (OffScreenContext);
-{
-RECT r;
-
-r.corner.x = SIS_ORG_X + 1;
-r.corner.y = SIS_ORG_Y - SIS_MESSAGE_HEIGHT;
-r.extent.width = SIS_MESSAGE_WIDTH;
-r.extent.height = SIS_MESSAGE_HEIGHT - 1;
-SetContextFGFrame (Screen);
-SetContextClipRect (&r);
-}
+	// prepare the context
+	r.corner.x = SIS_ORG_X + 1;
+	r.corner.y = SIS_ORG_Y - SIS_MESSAGE_HEIGHT;
+	r.extent.width = SIS_MESSAGE_WIDTH;
+	r.extent.height = SIS_MESSAGE_HEIGHT - 1;
+	SetContextFGFrame (Screen);
+	SetContextClipRect (&r);
+	
 	BatchGraphics ();
-	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-	ClearDrawable ();
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 
 	if (pStr == (UNICODE *)~0L)
 	{
@@ -198,33 +204,128 @@ SetContextClipRect (&r);
 				case IN_HYPERSPACE:
 					utf8StringCopy (buf, sizeof (buf),
 							GAME_STRING (NAVIGATION_STRING_BASE
-								+ (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1 ? 0 : 1)));
+								+ (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1
+									? 0 : 1)));
 					break;
 			}
 
 			pStr = buf;
 		}
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 	}
 
+	t.baseline.x = SIS_MESSAGE_WIDTH >> 1;
+	t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
+	t.align = ALIGN_CENTER;
+	t.pStr = pStr;
+	t.CharCount = utf8StringCount(pStr);
+	SetContextFont (TinyFont);
+
+	if (flags & DSME_CLEARFR)
 	{
-		TEXT t;
+		SetFlashRect (NULL_PTR, (FRAME)0);
+	}
 
-		t.baseline.x = SIS_MESSAGE_WIDTH >> 1;
-		t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
-		t.align = ALIGN_CENTER;
-		t.pStr = pStr;
-		t.CharCount = (COUNT)~0;
-
-		SetContextFont (TinyFont);
+	if (CurPos < 0 && ExPos < 0)
+	{	// normal state
+		ClearDrawable ();
 		font_DrawText (&t);
 	}
+	else
+	{	// editing state
+		int i;
+		RECT text_r;
+		BYTE char_deltas[MAX_DESC_CHARS];
+		PBYTE pchar_deltas;
+
+		TextRect (&t, &text_r, char_deltas);
+		if (text_r.extent.width + 2 >= r.extent.width)
+		{	// the text does not fit the input box size and so
+			// will not fit when displayed later
+			// disallow the change
+			UnbatchGraphics ();
+			SetContextClipRect (NULL_PTR);
+			SetContext (OldContext);
+			return (FALSE);
+		}
+
+		ClearDrawable ();
+
+		t.baseline.x = text_r.corner.x;
+		t.align = ALIGN_LEFT;
+
+		if (CurPos >= 0)
+		{	// calc and draw the cursor
+			RECT cur_r = text_r;
+
+			for (i = CurPos, pchar_deltas = char_deltas; i > 0; --i)
+				cur_r.corner.x += (SIZE)*pchar_deltas++;
+			if (CurPos < t.CharCount) /* end of line */
+				--cur_r.corner.x;
+			
+			if (flags & DSME_BLOCKCUR)
+			{	// Use block cursor for keyboardless systems
+				if (CurPos == t.CharCount)
+				{	// cursor at end-line -- use insertion point
+					cur_r.extent.width = 1;
+				}
+				else if (CurPos + 1 == t.CharCount)
+				{	// extra pixel for last char margin
+					cur_r.extent.width = (SIZE)*pchar_deltas + 2;
+				}
+				else
+				{	// normal mid-line char
+					cur_r.extent.width = (SIZE)*pchar_deltas + 1;
+				}
+			}
+			else
+			{	// Insertion point cursor
+				cur_r.extent.width = 1;
+			}
+			
+			cur_r.corner.y = 0;
+			cur_r.extent.height = r.extent.height;
+			SetContextForeGroundColor (BLACK_COLOR);
+			DrawFilledRectangle (&cur_r);
+		}
+
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+
+		if (ExPos >= 0)
+		{	// handle extra characters
+			t.CharCount = ExPos;
+			font_DrawText (&t);
+
+			// print extra chars
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x12, 0x00, 0x12), 0x33));
+			for (i = ExPos, pchar_deltas = char_deltas; i > 0; --i)
+				t.baseline.x += (SIZE)*pchar_deltas++;
+			t.pStr = skipUTF8Chars (t.pStr, ExPos);
+			t.CharCount = (COUNT)~0;
+			font_DrawText (&t);
+		}
+		else
+		{	// just print the text
+			font_DrawText (&t);
+		}
+	}
+
+	if (flags & DSME_SETFR)
+	{
+		r.corner.x = r.corner.y = 0;
+		SetFlashRect (&r, (FRAME)0);
+	}
+
 	UnbatchGraphics ();
 
-SetContextClipRect (NULL_PTR);
-
+	SetContextClipRect (NULL_PTR);
 	SetContext (OldContext);
+
+	return (TRUE);
 }
 
 void

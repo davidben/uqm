@@ -1240,6 +1240,7 @@ DoEdit (PMELEE_STATE pMS)
 				tes.MaxSize = MAX_TEAM_CHARS + 1;
 				tes.CbParam = pMS;
 				tes.ChangeCallback = OnTeamNameChange;
+				tes.FrameCallback = 0;
 				DoTextEntry (&tes);
 				
 				// done entering

@@ -57,6 +57,8 @@ static VControl_NameBinding control_names[] = {
 	{ "Menu-Delete", (int *)&ImmediateInputState.key[KEY_MENU_DELETE] },
 	{ "Menu-Backspace", (int *)&ImmediateInputState.key[KEY_MENU_BACKSPACE] },
 	{ "Menu-Edit-Cancel", (int *)&ImmediateInputState.key[KEY_MENU_EDIT_CANCEL] },
+	{ "Menu-Search", (int *)&ImmediateInputState.key[KEY_MENU_SEARCH] },
+	{ "Menu-Next", (int *)&ImmediateInputState.key[KEY_MENU_NEXT] },
 	{ "Player-1-Thrust", (int *)&ImmediateInputState.key[KEY_P1_THRUST] },
 	{ "Player-1-Left", (int *)&ImmediateInputState.key[KEY_P1_LEFT] },
 	{ "Player-1-Right", (int *)&ImmediateInputState.key[KEY_P1_RIGHT] },

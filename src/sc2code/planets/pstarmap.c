@@ -31,6 +31,7 @@
 #include "state.h"
 #include "uqmdebug.h"
 #include "libs/inplib.h"
+#include "libs/strlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 
@@ -606,15 +607,495 @@ ZoomStarMap (SIZE dir)
 	}
 }
 
+static void
+UpdateCursorLocation (PMENU_STATE pMS, int sx, int sy, const POINT *newpt)
+{
+	STAMP s;
+	POINT pt;
+
+	pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
+	pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+
+	if (newpt)
+	{	// absolute move
+		sx = sy = 0;
+		s.origin.x = UNIVERSE_TO_DISPX (newpt->x);
+		s.origin.y = UNIVERSE_TO_DISPY (newpt->y);
+		pMS->first_item = *newpt;
+	}
+	else
+	{	// incremental move
+		s.origin.x = pt.x + sx;
+		s.origin.y = pt.y + sy;
+	}
+
+	if (sx)
+	{
+		pMS->first_item.x =
+				DISP_TO_UNIVERSEX (s.origin.x) - sx;
+		while (UNIVERSE_TO_DISPX (pMS->first_item.x) == pt.x)
+		{
+			pMS->first_item.x += sx;
+			if (pMS->first_item.x < 0)
+			{
+				pMS->first_item.x = 0;
+				break;
+			}
+			else if (pMS->first_item.x > MAX_X_UNIVERSE)
+			{
+				pMS->first_item.x = MAX_X_UNIVERSE;
+				break;
+			}
+		}
+		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
+	}
+
+	if (sy)
+	{
+		pMS->first_item.y =
+				DISP_TO_UNIVERSEY (s.origin.y) + sy;
+		while (UNIVERSE_TO_DISPY (pMS->first_item.y) == pt.y)
+		{
+			pMS->first_item.y -= sy;
+			if (pMS->first_item.y < 0)
+			{
+				pMS->first_item.y = 0;
+				break;
+			}
+			else if (pMS->first_item.y > MAX_Y_UNIVERSE)
+			{
+				pMS->first_item.y = MAX_Y_UNIVERSE;
+				break;
+			}
+		}
+		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+	}
+
+	if (s.origin.x < 0 || s.origin.y < 0
+			|| s.origin.x >= SIS_SCREEN_WIDTH
+			|| s.origin.y >= SIS_SCREEN_HEIGHT)
+	{
+		pMS->flash_rect1.corner = pMS->first_item;
+		DrawStarMap (0, NULL_PTR);
+
+		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
+		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+	}
+	else
+	{
+		LockMutex (GraphicsLock);
+		EraseCursor (pt.x, pt.y);
+		// ClearDrawable ();
+		DrawCursor (s.origin.x, s.origin.y);
+		UnlockMutex (GraphicsLock);
+	}
+}
+
+#define CURSOR_INFO_BUFSIZE 256
+
+static void
+UpdateCursorInfo (PMENU_STATE pMS, UNICODE *prevbuf)
+{
+	UNICODE buf[CURSOR_INFO_BUFSIZE] = "";
+	POINT pt;
+	STAR_DESCPTR SDPtr, BestSDPtr;
+
+	pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
+	pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+
+	SDPtr = BestSDPtr = 0;
+	while ((SDPtr = FindStar (SDPtr, &pMS->first_item, 75, 75)))
+	{
+		if (UNIVERSE_TO_DISPX (SDPtr->star_pt.x) == pt.x
+				&& UNIVERSE_TO_DISPY (SDPtr->star_pt.y) == pt.y
+				&& (BestSDPtr == 0
+				|| STAR_TYPE (SDPtr->Type) >= STAR_TYPE (BestSDPtr->Type)))
+			BestSDPtr = SDPtr;
+	}
+
+	if (BestSDPtr)
+	{
+		pMS->first_item = BestSDPtr->star_pt;
+		GetClusterName (BestSDPtr, buf);
+	}
+
+	if (GET_GAME_STATE (ARILOU_SPACE))
+	{
+		POINT ari_pt;
+
+		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+		{
+			ari_pt.x = ARILOU_SPACE_X;
+			ari_pt.y = ARILOU_SPACE_Y;
+		}
+		else
+		{
+			ari_pt.x = QUASI_SPACE_X;
+			ari_pt.y = QUASI_SPACE_Y;
+		}
+
+		if (UNIVERSE_TO_DISPX (ari_pt.x) == pt.x
+				&& UNIVERSE_TO_DISPY (ari_pt.y) == pt.y)
+		{
+			pMS->first_item = ari_pt;
+			utf8StringCopy (buf, sizeof (buf),
+					GAME_STRING (STAR_STRING_BASE + 132));
+		}
+	}
+
+	{
+		COUNT fuel_required;
+		DWORD f;
+
+		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+			pt = CurStarDescPtr->star_pt;
+		else
+		{
+			pt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
+			pt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+		}
+		pt.x -= pMS->first_item.x;
+		pt.y -= pMS->first_item.y;
+
+		f = (DWORD)((long)pt.x * pt.x + (long)pt.y * pt.y);
+		if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
+			fuel_required = 0;
+		else
+			fuel_required = square_root (f) + (FUEL_TANK_SCALE / 20);
+		LockMutex (GraphicsLock);
+		DrawHyperCoords (pMenuState->first_item);
+		if (strcmp (buf, prevbuf) != 0)
+		{
+			strcpy (prevbuf, buf);
+			DrawSISMessage (buf);
+		}
+		sprintf (buf, "%s %u.%u",
+				GAME_STRING (NAVIGATION_STRING_BASE + 4),
+				fuel_required / FUEL_TANK_SCALE,
+				(fuel_required % FUEL_TANK_SCALE) / 10);
+		DrawStatusMessage (buf);
+		UnlockMutex (GraphicsLock);
+	}
+}
+
+#define STAR_SEARCH_BUFSIZE 256
+
+typedef struct starsearch_state
+{
+	PMENU_STATE pMS;
+	UNICODE LastText[STAR_SEARCH_BUFSIZE];
+	DWORD LastChangeTime;
+	int FirstIndex;
+	int CurIndex;
+	int LastIndex;
+	BOOLEAN SingleClust;
+	BOOLEAN SingleMatch;
+	UNICODE Buffer[STAR_SEARCH_BUFSIZE];
+	UNICODE *Prefix;
+	UNICODE *Cluster;
+	int PrefixLen;
+	int ClusterLen;
+} STAR_SEARCH_STATE;
+
+static BOOLEAN
+OnStarNameChange (PTEXTENTRY_STATE pTES)
+{
+	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
+	COUNT flags = DSME_SETFR;
+	BOOLEAN ret;
+
+	if (strcmp (pTES->BaseStr, pSS->LastText) != 0)
+	{	// string changed
+		pSS->LastChangeTime = GetTimeCounter ();
+		strcpy (pSS->LastText, pTES->BaseStr);
+	}
+
+	if (pTES->JoystickMode)
+		flags |= DSME_BLOCKCUR;
+
+	LockMutex (GraphicsLock);
+	ret = DrawSISMessageEx (pTES->BaseStr, pTES->CursorPos, -1, flags);
+	UnlockMutex (GraphicsLock);
+
+	return ret;
+}
+
+static void
+SplitStarName (STAR_SEARCH_STATE *pSS)
+{
+	UNICODE *buf = pSS->Buffer;
+	UNICODE *next;
+
+	pSS->Prefix = 0;
+	pSS->PrefixLen = 0;
+	pSS->Cluster = 0;
+	pSS->ClusterLen = 0;
+
+	// skip leading space
+	for (next = buf; *next != '\0' && getCharFromString (&next) == ' ';
+			buf = next)
+		;
+	if (*buf == '\0')
+	{	// no text
+		return;
+	}
+
+	pSS->Prefix = buf;
+
+	// See if player gave a prefix
+	for (buf = next; *next != '\0' && getCharFromString (&next) != ' ';
+			buf = next)
+		;
+	if (*buf != '\0')
+	{	// found possibly separating ' '
+		*buf = '\0'; // split
+		// skip separating space
+		for (buf = next; *next != '\0' && getCharFromString (&next) == ' ';
+				buf = next)
+			;
+	}
+
+	if (*buf == '\0')
+	{	// reached the end -- cluster only
+		pSS->Cluster = pSS->Prefix;
+		pSS->ClusterLen = utf8StringCount (pSS->Cluster);
+		pSS->Prefix = 0;
+		return;
+	}
+
+	// consider the rest cluster name (whatever there is)
+	pSS->Cluster = buf;
+	pSS->ClusterLen = utf8StringCount (pSS->Cluster);
+	pSS->PrefixLen = utf8StringCount (pSS->Prefix);
+}
+
+static int
+FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
+{
+	int i;
+
+	if (!pSS->Cluster)
+		return -1; // nothing to search for
+
+	for (i = from; i < NUM_SOLAR_SYSTEMS; ++i)
+	{
+		STAR_DESCPTR SDPtr = star_array + i;
+		UNICODE FullName[STAR_SEARCH_BUFSIZE];
+		UNICODE *ClusterName = GAME_STRING (SDPtr->Postfix);
+		UNICODE *sptr;
+		UNICODE *dptr;
+		int dlen;
+		int c;
+		
+		dlen = utf8StringCount (ClusterName);
+		if (pSS->ClusterLen > dlen)
+			continue;
+
+		for (c = 0, sptr = pSS->Cluster, dptr = ClusterName;
+				c < pSS->ClusterLen; ++c)
+		{
+			wchar_t sc = getCharFromString (&sptr);
+			wchar_t dc = getCharFromString (&dptr);
+
+			if (toWideUpper (sc) != toWideUpper (dc))
+				break;
+		}
+
+		if (c < pSS->ClusterLen)
+			continue; // no match here
+
+		if (!SDPtr->Prefix || WithinClust)
+			// singular star - prefix not checked
+			// or searching within clusters
+			break;
+
+		if (!pSS->Prefix)
+		{	// searching for cluster name only
+			// only return Alpha stars
+			if (SDPtr->Prefix == 1)
+				break;
+			else
+				continue;
+		}
+
+		// check prefix
+		GetClusterName (SDPtr, FullName);
+		dlen = utf8StringCount (FullName);
+		if (pSS->PrefixLen > dlen)
+			continue;
+
+		for (c = 0, sptr = pSS->Prefix, dptr = FullName;
+				c < pSS->PrefixLen; ++c)
+		{
+			wchar_t sc = getCharFromString (&sptr);
+			wchar_t dc = getCharFromString (&dptr);
+
+			if (toWideUpper (sc) != toWideUpper (dc))
+				break;
+		}
+
+		if (c >= pSS->PrefixLen)
+			break; // found one
+	}
+
+	return (i < NUM_SOLAR_SYSTEMS) ? i : -1;
+}
+
+static void
+DrawMatchedStarName (PTEXTENTRY_STATE pTES)
+{
+	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
+	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
+	SIZE ExPos = 0;
+	STAR_DESCPTR SDPtr = star_array + pSS->CurIndex;
+
+	if (pSS->SingleClust || pSS->SingleMatch)
+	{	// draw full star name
+		GetClusterName (SDPtr, buf);
+		ExPos = -1;
+	}
+	else
+	{	// draw substring match
+		if (pSS->Prefix)
+		{
+			strcpy (buf, pSS->Prefix);
+			strcat (buf, " ");
+			ExPos = pSS->PrefixLen + 1;
+		}
+		strcat (buf, GAME_STRING (SDPtr->Postfix));
+		ExPos += pSS->ClusterLen;
+	}
+	
+	LockMutex (GraphicsLock);
+	DrawSISMessageEx (buf, -1, ExPos, DSME_SETFR);
+	UnlockMutex (GraphicsLock);
+}
+
+static BOOLEAN
+OnStarNameFrame (PTEXTENTRY_STATE pTES)
+{
+#define FEEDBACK_DELAY (ONE_SECOND / 2)
+	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
+	PMENU_STATE pMS = pSS->pMS;
+
+	if (PulsedInputState.key[KEY_MENU_NEXT] ||
+			(pSS->LastChangeTime != 0 &&
+			GetTimeCounter () > pSS->LastChangeTime + FEEDBACK_DELAY))
+	{	// search for matches
+		STAR_DESCPTR SDPtr;
+
+		if (pSS->LastChangeTime != 0)
+			pSS->FirstIndex = -1; // reset cache
+		
+		pSS->LastChangeTime = 0; // reset delayed feedback
+
+		if (pSS->FirstIndex < 0)
+		{	// first time after changes
+			pSS->CurIndex = -1;
+			pSS->LastIndex = -1;
+			pSS->SingleClust = FALSE;
+			pSS->SingleMatch = FALSE;
+			strcpy (pSS->Buffer, pTES->BaseStr);
+			SplitStarName (pSS);
+		}
+
+		pSS->CurIndex = FindNextStar (pSS, pSS->CurIndex + 1,
+				pSS->SingleClust);
+		if (pSS->FirstIndex < 0) // first search
+			pSS->FirstIndex = pSS->CurIndex;
+		
+		if (pSS->CurIndex >= 0)
+		{	// remember as last (searching forward-only)
+			pSS->LastIndex = pSS->CurIndex;
+		}
+		else
+		{	// wrap around
+			pSS->CurIndex = pSS->FirstIndex;
+
+			if (pSS->FirstIndex == pSS->LastIndex && pSS->FirstIndex != -1)
+			{
+				if (!pSS->Prefix)
+				{	// only one cluster matching
+					pSS->SingleClust = TRUE;
+					// reset the first
+					pSS->FirstIndex = FindNextStar (pSS, 0, TRUE);
+				}
+				else
+				{	//exact match
+					pSS->SingleMatch = TRUE;
+				}
+			}
+		}
+
+		if (pSS->CurIndex < 0)
+		{	// nothing found
+			if (PulsedInputState.key[KEY_MENU_NEXT])
+				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
+						0, NotPositional (), NULL, 0);
+			return TRUE;
+		}
+
+		DrawMatchedStarName (pTES);
+
+		// move the cursor to the found star
+		SDPtr = star_array + pSS->CurIndex;
+		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
+	}
+	
+	return TRUE;
+}
+
+static BOOLEAN
+DoStarSearch (PMENU_STATE pMS)
+{
+	TEXTENTRY_STATE tes;
+	STAR_SEARCH_STATE *pss;
+	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
+	BOOLEAN success;
+
+	pss = HMalloc (sizeof (*pss));
+	if (!pss)
+		return FALSE;
+
+	//searchPoint = pMS->first_item;
+	LockMutex (GraphicsLock);
+	DrawSISMessageEx (buf, 0, 0, DSME_SETFR);
+	UnlockMutex (GraphicsLock);
+
+	pss->pMS = pMS;
+	pss->LastChangeTime = 0;
+	pss->LastText[0] = '\0';
+	pss->FirstIndex = -1;
+
+	// text entry setup
+	tes.Initialized = FALSE;
+	tes.MenuRepeatDelay = 0;
+	tes.BaseStr = buf;
+	tes.MaxSize = sizeof (buf);
+	tes.CursorPos = 0;
+	tes.CbParam = pss;
+	tes.ChangeCallback = OnStarNameChange;
+	tes.FrameCallback = OnStarNameFrame;
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	success = DoTextEntry (&tes);
+
+	LockMutex (GraphicsLock);
+	DrawSISMessageEx (buf, -1, -1, DSME_CLEARFR);
+	UnlockMutex (GraphicsLock);
+
+	HFree (pss);
+
+	return success;
+} 
+
 static BOOLEAN
 DoMoveCursor (PMENU_STATE pMS)
 {
 #define MIN_ACCEL_DELAY (ONE_SECOND / 60)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
 #define STEP_ACCEL_DELAY (ONE_SECOND / 120)
-	STAMP s;
-	UNICODE buf[256];
-	static UNICODE last_buf;
+	static UNICODE last_buf[CURSOR_INFO_BUFSIZE];
 
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
@@ -622,16 +1103,16 @@ DoMoveCursor (PMENU_STATE pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoMoveCursor;
 
+		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
 
 		pMS->flash_task = AssignTask (flash_cursor_func, 2048,
 				"flash location on star map");
-		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
 		
-		last_buf = ~0;
-		buf[0] = '\0';
-		goto UpdateCursorInfo;
+		last_buf[0] = '\0';
+		UpdateCursorInfo (pMS, last_buf);
+
+		return TRUE;
 	}
 	else if (PulsedInputState.key[KEY_MENU_CANCEL])
 	{
@@ -662,10 +1143,23 @@ DoMoveCursor (PMENU_STATE pMS)
 #endif
 		DrawStarMap (0, NULL_PTR);
 	}
+	else if (PulsedInputState.key[KEY_MENU_SEARCH])
+	{
+		POINT oldpt = pMS->first_item;
+
+		if (!DoStarSearch (pMS))
+		{	// search failed or canceled - return cursor
+			UpdateCursorLocation (pMS, 0, 0, &oldpt);
+		}
+		last_buf[0] = '\0';
+		UpdateCursorInfo (pMS, last_buf);
+
+		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
+		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+	}
 	else
 	{
 		SBYTE sx, sy;
-		POINT pt;
 		SIZE ZoomIn, ZoomOut;
 
 		ZoomIn = ZoomOut = 0;
@@ -687,151 +1181,8 @@ DoMoveCursor (PMENU_STATE pMS)
 		}
 		else
 		{
-			pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-			pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
-
-			s.origin.x = pt.x + sx;
-			s.origin.y = pt.y + sy;
-
-			buf[0] = '\0';
-			if (sx)
-			{
-				pMS->first_item.x =
-						DISP_TO_UNIVERSEX (s.origin.x) - sx;
-				while (UNIVERSE_TO_DISPX (pMS->first_item.x) == pt.x)
-				{
-					pMS->first_item.x += sx;
-					if (pMS->first_item.x < 0)
-					{
-						pMS->first_item.x = 0;
-						break;
-					}
-					else if (pMS->first_item.x > MAX_X_UNIVERSE)
-					{
-						pMS->first_item.x = MAX_X_UNIVERSE;
-						break;
-					}
-				}
-				s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-			}
-
-			if (sy)
-			{
-				pMS->first_item.y =
-						DISP_TO_UNIVERSEY (s.origin.y) + sy;
-				while (UNIVERSE_TO_DISPY (pMS->first_item.y) == pt.y)
-				{
-					pMS->first_item.y -= sy;
-					if (pMS->first_item.y < 0)
-					{
-						pMS->first_item.y = 0;
-						break;
-					}
-					else if (pMS->first_item.y > MAX_Y_UNIVERSE)
-					{
-						pMS->first_item.y = MAX_Y_UNIVERSE;
-						break;
-					}
-				}
-				s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
-			}
-
-			if (s.origin.x < 0 || s.origin.y < 0
-					|| s.origin.x >= SIS_SCREEN_WIDTH
-					|| s.origin.y >= SIS_SCREEN_HEIGHT)
-			{
-				pMS->flash_rect1.corner = pMS->first_item;
-				DrawStarMap (0, NULL_PTR);
-
-				s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-				s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
-			}
-			else
-			{
-				LockMutex (GraphicsLock);
-				EraseCursor (pt.x, pt.y);
-				// ClearDrawable ();
-				DrawCursor (s.origin.x, s.origin.y);
-				UnlockMutex (GraphicsLock);
-			}
-
-UpdateCursorInfo:
-			{
-				STAR_DESCPTR SDPtr, BestSDPtr;
-
-				SDPtr = BestSDPtr = 0;
-				while ((SDPtr = FindStar (SDPtr, &pMS->first_item, 75, 75)))
-				{
-					if (UNIVERSE_TO_DISPX (SDPtr->star_pt.x) == s.origin.x
-							&& UNIVERSE_TO_DISPY (SDPtr->star_pt.y) == s.origin.y
-							&& (BestSDPtr == 0
-							|| STAR_TYPE (SDPtr->Type) >= STAR_TYPE (BestSDPtr->Type)))
-						BestSDPtr = SDPtr;
-				}
-
-				if (BestSDPtr)
-				{
-					pMS->first_item = BestSDPtr->star_pt;
-					GetClusterName (BestSDPtr, buf);
-				}
-			}
-
-			if (GET_GAME_STATE (ARILOU_SPACE))
-			{
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
-				{
-					pt.x = ARILOU_SPACE_X;
-					pt.y = ARILOU_SPACE_Y;
-				}
-				else
-				{
-					pt.x = QUASI_SPACE_X;
-					pt.y = QUASI_SPACE_Y;
-				}
-
-				if (UNIVERSE_TO_DISPX (pt.x) == s.origin.x
-						&& UNIVERSE_TO_DISPY (pt.y) == s.origin.y)
-				{
-					pMS->first_item = pt;
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (STAR_STRING_BASE + 132));
-				}
-			}
-
-			{
-				COUNT fuel_required;
-				DWORD f;
-
-				if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
-					pt = CurStarDescPtr->star_pt;
-				else
-				{
-					pt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
-					pt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
-				}
-				pt.x -= pMS->first_item.x;
-				pt.y -= pMS->first_item.y;
-
-				f = (DWORD)((long)pt.x * pt.x + (long)pt.y * pt.y);
-				if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
-					fuel_required = 0;
-				else
-					fuel_required = square_root (f) + (FUEL_TANK_SCALE / 20);
-				LockMutex (GraphicsLock);
-				DrawHyperCoords (pMenuState->first_item);
-				if (last_buf == (UNICODE) ~0
-						|| (buf[0] && !last_buf) || (!buf[0] && last_buf))
-				{
-					last_buf = buf[0];
-					DrawSISMessage (buf);
-				}
-				sprintf (buf, "%s %u.%u",
-						GAME_STRING (NAVIGATION_STRING_BASE + 4),
-						fuel_required / FUEL_TANK_SCALE,
-						(fuel_required % FUEL_TANK_SCALE) / 10);
-				DrawStatusMessage (buf);
-				UnlockMutex (GraphicsLock);
-			}
+			UpdateCursorLocation (pMS, sx, sy, NULL_PTR);
+			UpdateCursorInfo (pMS, last_buf);
 		}
 	}
 
@@ -1128,7 +1479,6 @@ DoStarMap (void)
 
 	MenuState.InputFunc = DoMoveCursor;
 	MenuState.Initialized = FALSE;
-	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
 
 	transition_pending = TRUE;
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
@@ -1144,14 +1494,13 @@ DoStarMap (void)
 	GetContextClipRect (&clip_r);
 	SetContext (OldContext);
 	LoadIntoExtraScreen (&clip_r);
-			DrawCursor (
-			UNIVERSE_TO_DISPX (pMenuState->first_item.x),
-			UNIVERSE_TO_DISPY (pMenuState->first_item.y)
+	DrawCursor (
+			UNIVERSE_TO_DISPX (MenuState.first_item.x),
+			UNIVERSE_TO_DISPY (MenuState.first_item.y)
 			);
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
-	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput ((PVOID)&MenuState, FALSE);
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 

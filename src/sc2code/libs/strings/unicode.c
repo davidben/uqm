@@ -460,3 +460,17 @@ isWidePrintChar(wchar_t ch)
 	// the only space we currently have defined is 0x20
 	return (ch == 0x20) || isWideGraphChar(ch);
 }
+
+wchar_t
+toWideUpper(wchar_t ch)
+{	// this is a very basic Latin-1 implementation
+	// just to get things going
+	return (ch < 0x100) ? toupper(ch) : ch;
+}
+
+wchar_t
+toWideLower(wchar_t ch)
+{	// this is a very basic Latin-1 implementation
+	// just to get things going
+	return (ch < 0x100) ? tolower(ch) : ch;
+}

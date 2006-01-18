@@ -63,6 +63,8 @@ enum {
 	KEY_MENU_DELETE,
 	KEY_MENU_BACKSPACE,
 	KEY_MENU_EDIT_CANCEL,
+	KEY_MENU_SEARCH,
+	KEY_MENU_NEXT,
 	KEY_CHARACTER, /* abstract char key */
 	NUM_KEYS
 };
@@ -134,6 +136,9 @@ typedef struct textentry_state
 
 	BOOLEAN (*ChangeCallback) (struct textentry_state *pTES);
 			// returns TRUE if last change is OK
+	BOOLEAN (*FrameCallback) (struct textentry_state *pTES);
+			// called on every input frame; do whatever;
+			// returns TRUE to continue processing
 	void *CbParam;     // callback parameter, use as you like
 	
 } TEXTENTRY_STATE;

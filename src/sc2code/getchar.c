@@ -407,6 +407,9 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		}
 	}
 		
+	if (pTES->FrameCallback)
+		return pTES->FrameCallback (pTES);
+
 	return TRUE;
 }
 
