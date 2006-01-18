@@ -743,39 +743,48 @@ UpdateCursorInfo (PMENU_STATE pMS, UNICODE *prevbuf)
 		}
 	}
 
+	LockMutex (GraphicsLock);
+	DrawHyperCoords (pMS->first_item);
+	if (strcmp (buf, prevbuf) != 0)
 	{
-		COUNT fuel_required;
-		DWORD f;
-
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
-			pt = CurStarDescPtr->star_pt;
-		else
-		{
-			pt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
-			pt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
-		}
-		pt.x -= pMS->first_item.x;
-		pt.y -= pMS->first_item.y;
-
-		f = (DWORD)((long)pt.x * pt.x + (long)pt.y * pt.y);
-		if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
-			fuel_required = 0;
-		else
-			fuel_required = square_root (f) + (FUEL_TANK_SCALE / 20);
-		LockMutex (GraphicsLock);
-		DrawHyperCoords (pMenuState->first_item);
-		if (strcmp (buf, prevbuf) != 0)
-		{
-			strcpy (prevbuf, buf);
-			DrawSISMessage (buf);
-		}
-		sprintf (buf, "%s %u.%u",
-				GAME_STRING (NAVIGATION_STRING_BASE + 4),
-				fuel_required / FUEL_TANK_SCALE,
-				(fuel_required % FUEL_TANK_SCALE) / 10);
-		DrawStatusMessage (buf);
-		UnlockMutex (GraphicsLock);
+		strcpy (prevbuf, buf);
+		DrawSISMessage (buf);
 	}
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+UpdateFuelRequirement (PMENU_STATE pMS)
+{
+	UNICODE buf[80];
+	COUNT fuel_required;
+	DWORD f;
+	POINT pt;
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		pt = CurStarDescPtr->star_pt;
+	else
+	{
+		pt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
+		pt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+	}
+	pt.x -= pMS->first_item.x;
+	pt.y -= pMS->first_item.y;
+
+	f = (DWORD)((long)pt.x * pt.x + (long)pt.y * pt.y);
+	if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
+		fuel_required = 0;
+	else
+		fuel_required = square_root (f) + (FUEL_TANK_SCALE / 20);
+
+	sprintf (buf, "%s %u.%u",
+			GAME_STRING (NAVIGATION_STRING_BASE + 4),
+			fuel_required / FUEL_TANK_SCALE,
+			(fuel_required % FUEL_TANK_SCALE) / 10);
+
+	LockMutex (GraphicsLock);
+	DrawStatusMessage (buf);
+	UnlockMutex (GraphicsLock);
 }
 
 #define STAR_SEARCH_BUFSIZE 256
@@ -945,6 +954,7 @@ static void
 DrawMatchedStarName (PTEXTENTRY_STATE pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
+	PMENU_STATE pMS = pSS->pMS;
 	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
 	STAR_DESCPTR SDPtr = star_array + pSS->CurIndex;
@@ -968,6 +978,7 @@ DrawMatchedStarName (PTEXTENTRY_STATE pTES)
 	
 	LockMutex (GraphicsLock);
 	DrawSISMessageEx (buf, -1, ExPos, DSME_SETFR);
+	DrawHyperCoords (pMS->first_item);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -1035,11 +1046,12 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 			return TRUE;
 		}
 
-		DrawMatchedStarName (pTES);
-
 		// move the cursor to the found star
 		SDPtr = star_array + pSS->CurIndex;
 		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
+
+		DrawMatchedStarName (pTES);
+		UpdateFuelRequirement (pMS);
 	}
 	
 	return TRUE;
@@ -1111,6 +1123,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		
 		last_buf[0] = '\0';
 		UpdateCursorInfo (pMS, last_buf);
+		UpdateFuelRequirement (pMS);
 
 		return TRUE;
 	}
@@ -1156,6 +1169,7 @@ DoMoveCursor (PMENU_STATE pMS)
 			// make sure cmp fails
 			strcpy (last_buf, "  <random garbage>  ");
 			UpdateCursorInfo (pMS, last_buf);
+			UpdateFuelRequirement (pMS);
 
 			SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY,
 					STEP_ACCEL_DELAY, TRUE);
@@ -1193,6 +1207,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		{
 			UpdateCursorLocation (pMS, sx, sy, NULL_PTR);
 			UpdateCursorInfo (pMS, last_buf);
+			UpdateFuelRequirement (pMS);
 		}
 	}
 
