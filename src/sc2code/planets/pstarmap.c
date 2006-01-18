@@ -1145,17 +1145,27 @@ DoMoveCursor (PMENU_STATE pMS)
 	}
 	else if (PulsedInputState.key[KEY_MENU_SEARCH])
 	{
-		POINT oldpt = pMS->first_item;
+		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+		{	// HyperSpace search
+			POINT oldpt = pMS->first_item;
 
-		if (!DoStarSearch (pMS))
-		{	// search failed or canceled - return cursor
-			UpdateCursorLocation (pMS, 0, 0, &oldpt);
+			if (!DoStarSearch (pMS))
+			{	// search failed or canceled - return cursor
+				UpdateCursorLocation (pMS, 0, 0, &oldpt);
+			}
+			// make sure cmp fails
+			strcpy (last_buf, "  <random garbage>  ");
+			UpdateCursorInfo (pMS, last_buf);
+
+			SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY,
+					STEP_ACCEL_DELAY, TRUE);
+			SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 		}
-		last_buf[0] = '\0';
-		UpdateCursorInfo (pMS, last_buf);
-
-		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
-		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+		else
+		{	// no search in QuasiSpace
+			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
+					0, NotPositional (), NULL, 0);
+		}
 	}
 	else
 	{
