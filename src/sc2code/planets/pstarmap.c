@@ -879,6 +879,29 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 }
 
 static int
+GetFirstClusterStar (BYTE Postfix)
+{
+	int i;
+	int min = -1;
+	int min_pref = 1000;
+	STAR_DESCPTR SDPtr;
+	
+	for (i = 0, SDPtr = star_array; i < NUM_SOLAR_SYSTEMS; ++i, ++SDPtr)
+	{
+		if (SDPtr->Postfix != Postfix)
+			continue;
+
+		if (SDPtr->Prefix < min_pref)
+		{
+			min_pref = SDPtr->Prefix;
+			min = i;
+		}
+	}
+
+	return min;
+}
+
+static int
 FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 {
 	int i;
@@ -920,8 +943,8 @@ FindNextStar (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 
 		if (!pSS->Prefix)
 		{	// searching for cluster name only
-			// only return Alpha stars
-			if (SDPtr->Prefix == 1)
+			// return only the first stars in a cluster
+			if (i == GetFirstClusterStar (SDPtr->Postfix))
 				break;
 			else
 				continue;
