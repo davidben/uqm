@@ -283,7 +283,7 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	// XXX: this should someday be changed so that the function takes
 	//   the buffer size as an argument
 	if ((buf_start == shared_phrase_buf) &&
-			(buf - shared_phrase_buf > (ptrdiff_t) sizeof (shared_phrase_buf)))
+			(buf > shared_phrase_buf + sizeof (shared_phrase_buf)))
 	{
 		fprintf (stderr, "Error: shared_phrase_buf size exceeded,"
 				" please increase!\n");
