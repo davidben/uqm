@@ -55,6 +55,12 @@ void showSpheres (void);
 // Make the ships of all races available for building at the shipyard.
 void activateAllShips (void);
 
+// Move the Flagship to the destination of the autopilot.
+// Should only be called from HS/QS.
+// It can be called from debugHook directly after entering HS/QS though.
+void doInstantMove (void);
+
+
 // Call a function for all stars.
 void forAllStars (void (*callback) (STAR_DESC *, void *), void *arg);
 // Call a function for all planets in a star system.

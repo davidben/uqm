@@ -325,6 +325,70 @@ equipShip (void)
 
 ////////////////////////////////////////////////////////////////////////////
 
+#if 0
+// Not needed anymore, but could be useful in the future.
+
+// Find the HELEMENT belonging to the Flagship.
+static HELEMENT
+findFlagshipElement (void)
+{
+	HELEMENT hElement, hNextElement;
+	ELEMENTPTR ElementPtr;
+
+	// Find the ship element.
+	for (hElement = GetTailElement (); hElement != 0;
+			hElement = hNextElement)
+	{
+		LockElement (hElement, &ElementPtr);
+
+		if ((ElementPtr->state_flags & PLAYER_SHIP) != 0)
+		{
+			UnlockElement (hElement);
+			return hElement;
+		}
+
+		hNextElement = GetPredElement (ElementPtr);
+		UnlockElement (hElement);
+	}
+	return 0;
+}
+#endif
+
+// Move the Flagship to the destination of the autopilot.
+// Should only be called from HyperSpace/QuasiSpace.
+// It can be called from debugHook directly after entering HS/QS though.
+void
+doInstantMove (void)
+{
+	// Move to the new location:
+	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX((GLOBAL (autopilot)).x);
+	GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY((GLOBAL (autopilot)).y);
+
+	// Check for a solar systems at the destination.
+	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+	{
+		// If there's a solar system at the destination, enter it.
+		CurStarDescPtr = FindStar (0, &(GLOBAL (autopilot)), 0, 0);
+		if (CurStarDescPtr)
+		{
+			// Leave HyperSpace/QuasiSpace if we're there:
+			SET_GAME_STATE (USED_BROADCASTER, 0);
+			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+
+			// Enter IP:
+			GLOBAL (ShipStamp.frame) = 0;
+					// This causes the ship position in IP to be reset.
+			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
+		}
+	}
+
+	// Turn off the autopilot:
+	(GLOBAL (autopilot)).x = ~0;
+	(GLOBAL (autopilot)).y = ~0;
+}
+
+////////////////////////////////////////////////////////////////////////////
+
 void
 showSpheres (void)
 {

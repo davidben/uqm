@@ -1237,9 +1237,8 @@ DoMoveCursor (PMENU_STATE pMS)
 	{
 		GLOBAL (autopilot) = pMS->first_item;
 #ifdef DEBUG
-		if (instantMove) {
-			GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX(pMS->first_item.x);
-			GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY(pMS->first_item.y);
+		if (instantMove)
+		{
 			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3), 0,
 					NotPositional (), NULL, GAME_SOUND_PRIORITY);
 			if (pMS->flash_task)
@@ -1247,6 +1246,21 @@ DoMoveCursor (PMENU_STATE pMS)
 				ConcludeTask (pMS->flash_task);
 				pMS->flash_task = 0;
 			}
+
+			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			{
+				// Move to the new location immediately.
+				doInstantMove ();
+			}
+			else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
+			{
+				// We're in a solar system; exit it.
+				GLOBAL (CurrentActivity) |= END_INTERPLANETARY;
+			
+				// Set a hook to move to the new location:
+				debugHook = doInstantMove;
+			}
+
 			return (FALSE);
 		}
 #endif
