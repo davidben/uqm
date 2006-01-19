@@ -502,6 +502,8 @@ VisitStarBase (void)
 TimePassage:
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 			DoTimePassage ();
+			if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
+				return; // You are now dead! Thank you!
 		}
 	}
 
