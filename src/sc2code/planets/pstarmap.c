@@ -1080,7 +1080,7 @@ OnStarNameChange (PTEXTENTRY_STATE pTES)
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
 	PMENU_STATE pMS = pSS->pMS;
 	COUNT flags;
-	BOOLEAN ret;
+	BOOLEAN ret = TRUE;
 
 	if (strcmp (pSS->Text, pSS->LastText) != 0)
 	{	// string changed
