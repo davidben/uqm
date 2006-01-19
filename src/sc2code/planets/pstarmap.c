@@ -792,6 +792,7 @@ UpdateFuelRequirement (PMENU_STATE pMS)
 typedef struct starsearch_state
 {
 	PMENU_STATE pMS;
+	UNICODE Text[STAR_SEARCH_BUFSIZE];
 	UNICODE LastText[STAR_SEARCH_BUFSIZE];
 	DWORD LastChangeTime;
 	int FirstIndex;
@@ -802,19 +803,22 @@ typedef struct starsearch_state
 	UNICODE Buffer[STAR_SEARCH_BUFSIZE];
 	UNICODE *Prefix;
 	UNICODE *Cluster;
-	int SortedStars[NUM_SOLAR_SYSTEMS];
 	int PrefixLen;
 	int ClusterLen;
+	int ClusterPos;
+	int SortedStars[NUM_SOLAR_SYSTEMS];
 } STAR_SEARCH_STATE;
 
 static int
-compStarName (const void *ptr1, const void *ptr2) {
+compStarName (const void *ptr1, const void *ptr2)
+{
 	int index1;
 	int index2;
 
 	index1 = *(const int *) ptr1;
 	index2 = *(const int *) ptr2;
-	if (star_array[index1].Postfix != star_array[index2].Postfix) {
+	if (star_array[index1].Postfix != star_array[index2].Postfix)
+	{
 		return utf8StringCompare (GAME_STRING (star_array[index1].Postfix),
 				GAME_STRING (star_array[index2].Postfix));
 	}
@@ -829,7 +833,8 @@ compStarName (const void *ptr1, const void *ptr2) {
 }
 
 static void
-SortStarsOnName (STAR_SEARCH_STATE *pSS) {
+SortStarsOnName (STAR_SEARCH_STATE *pSS)
+{
 	int i;
 	int *sorted = pSS->SortedStars;
 
@@ -839,39 +844,18 @@ SortStarsOnName (STAR_SEARCH_STATE *pSS) {
 	qsort (sorted, NUM_SOLAR_SYSTEMS, sizeof (int), compStarName);
 }
 
-static BOOLEAN
-OnStarNameChange (PTEXTENTRY_STATE pTES)
-{
-	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	COUNT flags = DSME_SETFR;
-	BOOLEAN ret;
-
-	if (strcmp (pTES->BaseStr, pSS->LastText) != 0)
-	{	// string changed
-		pSS->LastChangeTime = GetTimeCounter ();
-		strcpy (pSS->LastText, pTES->BaseStr);
-	}
-
-	if (pTES->JoystickMode)
-		flags |= DSME_BLOCKCUR;
-
-	LockMutex (GraphicsLock);
-	ret = DrawSISMessageEx (pTES->BaseStr, pTES->CursorPos, -1, flags);
-	UnlockMutex (GraphicsLock);
-
-	return ret;
-}
-
 static void
 SplitStarName (STAR_SEARCH_STATE *pSS)
 {
 	UNICODE *buf = pSS->Buffer;
 	UNICODE *next;
+	UNICODE *sep;
 
 	pSS->Prefix = 0;
 	pSS->PrefixLen = 0;
 	pSS->Cluster = 0;
 	pSS->ClusterLen = 0;
+	pSS->ClusterPos = 0;
 
 	// skip leading space
 	for (next = buf; *next != '\0' && getCharFromString (&next) == ' ';
@@ -890,7 +874,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 		;
 	if (*buf != '\0')
 	{	// found possibly separating ' '
-		*buf = '\0'; // split
+		sep = buf;
 		// skip separating space
 		for (buf = next; *next != '\0' && getCharFromString (&next) == ' ';
 				buf = next)
@@ -901,6 +885,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 	{	// reached the end -- cluster only
 		pSS->Cluster = pSS->Prefix;
 		pSS->ClusterLen = utf8StringCount (pSS->Cluster);
+		pSS->ClusterPos = utf8StringCountN (pSS->Buffer, pSS->Cluster);
 		pSS->Prefix = 0;
 		return;
 	}
@@ -908,21 +893,21 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 	// consider the rest cluster name (whatever there is)
 	pSS->Cluster = buf;
 	pSS->ClusterLen = utf8StringCount (pSS->Cluster);
+	pSS->ClusterPos = utf8StringCountN (pSS->Buffer, pSS->Cluster);
+	*sep = '\0'; // split
 	pSS->PrefixLen = utf8StringCount (pSS->Prefix);
 }
 
-// Returns the index in the sorted array with the specified Postfix.
-static int
-GetFirstClusterStarIndex (int *sortedStars, BYTE Postfix)
+static inline int
+SkipStarCluster (int *sortedStars, int istar)
 {
-	// Linear search. A binary search would work, but why bother.
-	int i;
+	int Postfix = star_array[sortedStars[istar]].Postfix;
 
-	for (i = 0; i < NUM_SOLAR_SYSTEMS; i++) {
-		if (star_array[sortedStars[i]].Postfix == Postfix)
-			return i;
-	}
-	return -1;
+	for (++istar; istar < NUM_SOLAR_SYSTEMS &&
+			star_array[sortedStars[istar]].Postfix == Postfix;
+			++istar)
+		;
+	return istar;
 }
 
 static int
@@ -945,7 +930,10 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		
 		dlen = utf8StringCount (ClusterName);
 		if (pSS->ClusterLen > dlen)
+		{	// no match, skip the rest of cluster
+			i = SkipStarCluster (pSS->SortedStars, i) - 1;
 			continue;
+		}
 
 		for (c = 0, sptr = pSS->Cluster, dptr = ClusterName;
 				c < pSS->ClusterLen; ++c)
@@ -958,7 +946,10 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		}
 
 		if (c < pSS->ClusterLen)
-			continue; // no match here
+		{	// no match here, skip the rest of cluster
+			i = SkipStarCluster (pSS->SortedStars, i) - 1;
+			continue;
+		}
 
 		if (!SDPtr->Prefix || WithinClust)
 			// singular star - prefix not checked
@@ -968,11 +959,16 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		if (!pSS->Prefix)
 		{	// searching for cluster name only
 			// return only the first stars in a cluster
-			if (i == GetFirstClusterStarIndex (
-					pSS->SortedStars, SDPtr->Postfix))
+			if (i == 0 || SDPtr->Postfix !=
+					star_array[pSS->SortedStars[i - 1]].Postfix)
+			{	// found one
 				break;
+			}
 			else
+			{	// another star in the same cluster, skip cluster
+				i = SkipStarCluster (pSS->SortedStars, i) - 1;
 				continue;
+			}
 		}
 
 		// check prefix
@@ -1005,86 +1001,135 @@ DrawMatchedStarName (PTEXTENTRY_STATE pTES)
 	PMENU_STATE pMS = pSS->pMS;
 	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
+	SIZE CurPos = -1;
 	STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
+	COUNT flags;
 
 	if (pSS->SingleClust || pSS->SingleMatch)
 	{	// draw full star name
 		GetClusterName (SDPtr, buf);
 		ExPos = -1;
+		flags = DSME_SETFR;
 	}
 	else
 	{	// draw substring match
-		if (pSS->Prefix)
-		{
-			strcpy (buf, pSS->Prefix);
-			strcat (buf, " ");
-			ExPos = pSS->PrefixLen + 1;
-		}
-		strcat (buf, GAME_STRING (SDPtr->Postfix));
+		UNICODE *pstr = buf;
+
+		strcpy (pstr, pSS->Text);
+		ExPos = pSS->ClusterPos;
+		pstr = skipUTF8Chars (pstr, pSS->ClusterPos);
+
+		strcpy (pstr, GAME_STRING (SDPtr->Postfix));
 		ExPos += pSS->ClusterLen;
+		CurPos = pTES->CursorPos;
+		flags = DSME_CLEARFR;
 	}
 	
 	LockMutex (GraphicsLock);
-	DrawSISMessageEx (buf, -1, ExPos, DSME_SETFR);
+	DrawSISMessageEx (buf, CurPos, ExPos, flags);
 	DrawHyperCoords (pMS->first_item);
 	UnlockMutex (GraphicsLock);
+}
+
+static void
+MatchNextStar (STAR_SEARCH_STATE *pSS, BOOLEAN Reset)
+{
+	if (Reset)
+		pSS->FirstIndex = -1; // reset cache
+	
+	if (pSS->FirstIndex < 0)
+	{	// first time after changes
+		pSS->CurIndex = -1;
+		pSS->LastIndex = -1;
+		pSS->SingleClust = FALSE;
+		pSS->SingleMatch = FALSE;
+		strcpy (pSS->Buffer, pSS->Text);
+		SplitStarName (pSS);
+	}
+
+	pSS->CurIndex = FindNextStarIndex (pSS, pSS->CurIndex + 1,
+			pSS->SingleClust);
+	if (pSS->FirstIndex < 0) // first search
+		pSS->FirstIndex = pSS->CurIndex;
+	
+	if (pSS->CurIndex >= 0)
+	{	// remember as last (searching forward-only)
+		pSS->LastIndex = pSS->CurIndex;
+	}
+	else
+	{	// wrap around
+		pSS->CurIndex = pSS->FirstIndex;
+
+		if (pSS->FirstIndex == pSS->LastIndex && pSS->FirstIndex != -1)
+		{
+			if (!pSS->Prefix)
+			{	// only one cluster matching
+				pSS->SingleClust = TRUE;
+			}
+			else
+			{	// exact match
+				pSS->SingleMatch = TRUE;
+			}
+		}
+	}
+}
+
+static BOOLEAN
+OnStarNameChange (PTEXTENTRY_STATE pTES)
+{
+	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
+	PMENU_STATE pMS = pSS->pMS;
+	COUNT flags;
+	BOOLEAN ret;
+
+	if (strcmp (pSS->Text, pSS->LastText) != 0)
+	{	// string changed
+		pSS->LastChangeTime = GetTimeCounter ();
+		strcpy (pSS->LastText, pSS->Text);
+		
+		// reset the search
+		MatchNextStar (pSS, TRUE);
+	}
+
+	if (pSS->CurIndex < 0)
+	{	// nothing found
+		if (pSS->Text[0] == '\0')
+			flags = DSME_SETFR;
+		else
+			flags = DSME_CLEARFR;
+		if (pTES->JoystickMode)
+			flags |= DSME_BLOCKCUR;
+
+		LockMutex (GraphicsLock);
+		ret = DrawSISMessageEx (pSS->Text, pTES->CursorPos, -1, flags);
+		UnlockMutex (GraphicsLock);
+	}
+	else
+	{
+		STAR_DESCPTR SDPtr;
+
+		// move the cursor to the found star
+		SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
+		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
+
+		DrawMatchedStarName (pTES);
+		UpdateFuelRequirement (pMS);
+	}
+
+	return ret;
 }
 
 static BOOLEAN
 OnStarNameFrame (PTEXTENTRY_STATE pTES)
 {
-#define FEEDBACK_DELAY (ONE_SECOND / 2)
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
 	PMENU_STATE pMS = pSS->pMS;
 
-	if (PulsedInputState.key[KEY_MENU_NEXT] ||
-			(pSS->LastChangeTime != 0 &&
-			GetTimeCounter () > pSS->LastChangeTime + FEEDBACK_DELAY))
-	{	// search for matches
+	if (PulsedInputState.key[KEY_MENU_NEXT])
+	{	// search for next match
 		STAR_DESCPTR SDPtr;
 
-		if (pSS->LastChangeTime != 0)
-			pSS->FirstIndex = -1; // reset cache
-		
-		pSS->LastChangeTime = 0; // reset delayed feedback
-
-		if (pSS->FirstIndex < 0)
-		{	// first time after changes
-			pSS->CurIndex = -1;
-			pSS->LastIndex = -1;
-			pSS->SingleClust = FALSE;
-			pSS->SingleMatch = FALSE;
-			strcpy (pSS->Buffer, pTES->BaseStr);
-			SplitStarName (pSS);
-		}
-
-		pSS->CurIndex = FindNextStarIndex (pSS, pSS->CurIndex + 1,
-				pSS->SingleClust);
-		if (pSS->FirstIndex < 0) // first search
-			pSS->FirstIndex = pSS->CurIndex;
-		
-		if (pSS->CurIndex >= 0)
-		{	// remember as last (searching forward-only)
-			pSS->LastIndex = pSS->CurIndex;
-		}
-		else
-		{	// wrap around
-			pSS->CurIndex = pSS->FirstIndex;
-
-			if (pSS->FirstIndex == pSS->LastIndex && pSS->FirstIndex != -1)
-			{
-				if (!pSS->Prefix)
-				{	// only one cluster matching
-					pSS->SingleClust = TRUE;
-					// reset the first
-					pSS->FirstIndex = FindNextStarIndex (pSS, 0, TRUE);
-				}
-				else
-				{	//exact match
-					pSS->SingleMatch = TRUE;
-				}
-			}
-		}
+		MatchNextStar (pSS, FALSE);
 
 		if (pSS->CurIndex < 0)
 		{	// nothing found
@@ -1110,20 +1155,19 @@ DoStarSearch (PMENU_STATE pMS)
 {
 	TEXTENTRY_STATE tes;
 	STAR_SEARCH_STATE *pss;
-	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	BOOLEAN success;
 
 	pss = HMalloc (sizeof (*pss));
 	if (!pss)
 		return FALSE;
 
-	//searchPoint = pMS->first_item;
 	LockMutex (GraphicsLock);
-	DrawSISMessageEx (buf, 0, 0, DSME_SETFR);
+	DrawSISMessageEx ("", 0, 0, DSME_SETFR);
 	UnlockMutex (GraphicsLock);
 
 	pss->pMS = pMS;
 	pss->LastChangeTime = 0;
+	pss->Text[0] = '\0';
 	pss->LastText[0] = '\0';
 	pss->FirstIndex = -1;
 	SortStarsOnName (pss);
@@ -1131,8 +1175,8 @@ DoStarSearch (PMENU_STATE pMS)
 	// text entry setup
 	tes.Initialized = FALSE;
 	tes.MenuRepeatDelay = 0;
-	tes.BaseStr = buf;
-	tes.MaxSize = sizeof (buf);
+	tes.BaseStr = pss->Text;
+	tes.MaxSize = sizeof (pss->Text);
 	tes.CursorPos = 0;
 	tes.CbParam = pss;
 	tes.ChangeCallback = OnStarNameChange;
@@ -1142,7 +1186,7 @@ DoStarSearch (PMENU_STATE pMS)
 	success = DoTextEntry (&tes);
 
 	LockMutex (GraphicsLock);
-	DrawSISMessageEx (buf, -1, -1, DSME_CLEARFR);
+	DrawSISMessageEx (pss->Text, -1, -1, DSME_CLEARFR);
 	UnlockMutex (GraphicsLock);
 
 	HFree (pss);
@@ -1249,10 +1293,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		if (PulsedInputState.key[KEY_MENU_UP])      sy =   -1;
 		if (PulsedInputState.key[KEY_MENU_DOWN])    sy =    1;
 
-		if (sx == 0 && sy == 0)
-		{
-		}
-		else
+		if (sx != 0 || sy != 0)
 		{
 			UpdateCursorLocation (pMS, sx, sy, NULL_PTR);
 			UpdateCursorInfo (pMS, last_buf);

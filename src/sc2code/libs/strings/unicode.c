@@ -269,22 +269,12 @@ utf8StringCopy (unsigned char *dst, size_t size, const unsigned char *src)
 	return dst;
 }
 
-// TODO: Better matching. It's now just based on the char number.
-static inline int
-utf8CompareChar (wchar_t ch1, wchar_t ch2)
-{
-	if (ch1 < ch2)
-		return -1;
-
-	if (ch1 > ch2)
-		return 1;
-
-	return 0;
-}
-
+// TODO: this is not implemented with respect to collating order
 int
 utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 {
+#if 0
+	// wchar_t comparing version
 	wchar_t ch1;
 	wchar_t ch2;
 
@@ -319,6 +309,10 @@ utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 	// ch1 == '\0' && ch2 == '\0'.
 	// Strings match completely.
 	return 0;
+#else
+	// this will do for now
+	return strcmp (str1, str2);
+#endif
 }
 
 unsigned char *

@@ -61,6 +61,7 @@ size_t utf8StringCountN(const unsigned char *start,
 int utf8StringPos (const unsigned char *pStr, wchar_t ch);
 unsigned char *utf8StringCopy (unsigned char *dst, size_t size,
 		const unsigned char *src);
+int utf8StringCompare (const unsigned char *str1, const unsigned char *str2);
 unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
 size_t getWideFromString(wchar_t *wstr, size_t maxcount,
 		const unsigned char *start);

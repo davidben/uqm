@@ -216,9 +216,7 @@ DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 	}
 
-	t.baseline.x = SIS_MESSAGE_WIDTH >> 1;
 	t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
-	t.align = ALIGN_CENTER;
 	t.pStr = pStr;
 	t.CharCount = utf8StringCount(pStr);
 	SetContextFont (TinyFont);
@@ -231,6 +229,8 @@ DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	if (CurPos < 0 && ExPos < 0)
 	{	// normal state
 		ClearDrawable ();
+		t.baseline.x = SIS_MESSAGE_WIDTH >> 1;
+		t.align = ALIGN_CENTER;
 		font_DrawText (&t);
 	}
 	else
@@ -240,8 +240,11 @@ DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 		BYTE char_deltas[MAX_DESC_CHARS];
 		PBYTE pchar_deltas;
 
+		t.baseline.x = 3;
+		t.align = ALIGN_LEFT;
+
 		TextRect (&t, &text_r, char_deltas);
-		if (text_r.extent.width + 2 >= r.extent.width)
+		if (text_r.extent.width + t.baseline.x + 2 >= r.extent.width)
 		{	// the text does not fit the input box size and so
 			// will not fit when displayed later
 			// disallow the change
@@ -253,10 +256,7 @@ DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 
 		ClearDrawable ();
 
-		t.baseline.x = text_r.corner.x;
-		t.align = ALIGN_LEFT;
-
-		if (CurPos >= 0)
+		if (CurPos >= 0 && CurPos <= t.CharCount)
 		{	// calc and draw the cursor
 			RECT cur_r = text_r;
 
@@ -294,7 +294,7 @@ DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 
-		if (ExPos >= 0)
+		if (ExPos >= 0 && ExPos < t.CharCount)
 		{	// handle extra characters
 			t.CharCount = ExPos;
 			font_DrawText (&t);
