@@ -72,6 +72,9 @@ if (master_q.head != 0)
 			UnlockStarShip (&master_q, hBuiltShip);
 
 			RemoveQueue (&master_q, hBuiltShip);
+
+			// Insert the ship in the master queue in the right location
+			// to keep the list sorted on the name of the race.
 			for (hStarShip = GetHeadLink (&master_q);
 					hStarShip; hStarShip = hNextShip)
 			{

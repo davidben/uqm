@@ -145,7 +145,7 @@ while (--ac > 0)
 					void (*saveDebugHook) (void);
 					saveDebugHook = debugHook;
 					debugHook = NULL;
-							// No further debugHook callse unless the called
+							// No further debugHook calls unless the called
 							// function resets debugHook.
 					(*saveDebugHook) ();
 					continue;
