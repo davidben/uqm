@@ -1022,7 +1022,10 @@ DrawMatchedStarName (PTEXTENTRY_STATE pTES)
 		strcpy (pstr, GAME_STRING (SDPtr->Postfix));
 		ExPos += pSS->ClusterLen;
 		CurPos = pTES->CursorPos;
+
 		flags = DSME_CLEARFR;
+		if (pTES->JoystickMode)
+			flags |= DSME_BLOCKCUR;
 	}
 	
 	LockMutex (GraphicsLock);
