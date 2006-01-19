@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed two-week bomb installation at the Starbase bypassing the
+  defeat condition (bug #757), from Nic, Alex
 - Added star search in Starmap (define Menu-Search and Menu-Next keys
   in your keys.cfg) from kworces, Alex, SvdB
 - Fixed Orz greeting at Taalo homeworld inconsistency (bug #819) - Alex
