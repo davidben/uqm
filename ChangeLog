@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fixed version checking in unix build scripts. SDL 1.2.10 is
+  now recognised as newer than 1.2.9. - SvdB
 - Some small improvements to the portability of the build system,
   from Jim Paris
 - Fixed two-week bomb installation at the Starbase bypassing the
