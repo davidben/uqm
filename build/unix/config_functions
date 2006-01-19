@@ -18,6 +18,19 @@
 BUILDLOG=/dev/null
 TEMPFILE="/tmp/build.$$.tmp"
 
+
+# Description: perform a command, and set the exit status to the opposite.
+#              (true 
+# Arguments:   $1 - the command to run
+#              rest - arguments to the command
+not() {
+	local CMD
+	CMD=$1
+	shift
+	"$CMD" "$@"
+	return "$(($? == 0))"
+}
+
 # Description: prints a command to stdout and then executes it
 # Arguments:   command with arguments
 # Returns:     the return value of the command
@@ -139,6 +152,89 @@ lexlt() {
 	return `expr "$1" ">=" "$2"`
 }
 
+# Description: Check if one version is sufficiently new.
+# Arguments:   $1 - the required version
+#              $2 - the available version
+# Returns:     0 - if $2 is at least as new as $1
+#              1 - if $2 is older than $1, or the two strings don't compare
+version_match() {
+	# To compare the two version strings, the numbers in the version
+	# compared numerically, and all string parts should be equal.
+	local REST1 REST2 NUM1 NUM2 STR1 STR2 CHECKNUMS
+	REST1=$1
+	REST2=$2
+	CHECKNUMS=0
+
+	while [ -n "$REST1" -a -n "$REST2" ]; do
+		NUM1=`$SED -e 's/^\([0-9]*\).*$/\1/' << EOF
+$REST1
+EOF
+`
+		NUM2=`$SED -e 's/^\([0-9]*\).*$/\1/' << EOF
+$REST2
+EOF
+`
+		REST1=`$SED -e 's/^[0-9]*//' << EOF
+$REST1
+EOF
+`
+		REST2=`$SED -e 's/^[0-9]*//' << EOF
+$REST2
+EOF
+`
+		if [ "(" -n "$NUM1" -a -z "$NUM2" ")" -o \
+				"(" -z "$NUM1" -a -n "$NUM2" ")" ]; then
+			# Only one of the versions contains a number here. No match.
+			return 1
+		fi
+		if [ "(" -n "$NUM1" -a -z "$NUM2" ")" -o \
+				"(" -z "$NUM1" -a -n "$NUM2" ")" ]; then
+			# Only one of the versions contains a number here. No match.
+			return 1
+		fi
+
+		if [ "$CHECKNUMS" -eq 0 ]; then
+			if [ "$NUM1" -gt "$NUM2" ]; then
+				# Too old.
+				return 1
+			fi
+			if [ "$NUM1" -lt "$NUM2" ]; then
+				# A major number is larger. Minor numbers may be smaller.
+				CHECKNUMS=1
+			fi
+		fi
+
+		STR1=`$SED -e 's/^\([^0-9]*\).*$/\1/' << EOF
+$REST1
+EOF
+`
+		STR2=`$SED -e 's/^\([^0-9]*\).*$/\1/' << EOF
+$REST2
+EOF
+`
+		REST1=`$SED -e 's/^[^0-9]*//' << EOF
+$REST1
+EOF
+`
+		REST2=`$SED -e 's/^[^0-9]*//' << EOF
+$REST2
+EOF
+`
+
+		if [ "x$STR1" "!=" "x$STR2" ]; then
+			# String parts don't match
+			return 1
+		fi
+	done
+
+	if [ -n "$REST1" -o -n "$REST2" ]; then
+		# One version string contains extra information. No match.
+		return 1
+	fi
+
+	return 0
+}
+
 # Description: try to detect a list of program dependencies.
 #              This only makes sure the PROG_xxx_PRESENT flag is set.
 #              It does not bail out if a dependency is not found.
@@ -235,7 +331,7 @@ have_program() {
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
 		fi
-		if lexlt "$TEMP_VERSION" "$2" ; then
+		if not version_match "$2" "$TEMP_VERSION"; then
 			eval "PROG_${PROG}_PRESENT"=1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required!"
@@ -331,10 +427,10 @@ EOF
 			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
 			exit 1
 		fi
-		if lexlt "$TEMP_VERSION" "$2" ; then
+		if not version_match "$2" "$TEMP_VERSION"; then
 			eval "LIB_${LIB}_PRESENT"=1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
-but version $2 is required"
+but version $2 is required!"
 			return 1
 		fi
 		eval "LIB_${LIB}_PRESENT"=0
