@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#ifndef HAVE_GETOPT_H
+#ifndef HAVE_GETOPT_LONG
 #include "getopt.h"
 
 #if !defined __STDC__ || !__STDC__
@@ -186,4 +186,4 @@ main (argc, argv)
 
 #endif /* TEST */
 
-#endif /* HAVE_GETOPT_H */
+#endif /* HAVE_GETOPT_LONG */

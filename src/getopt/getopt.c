@@ -29,7 +29,7 @@
 
 #include <config.h>
 
-#ifndef HAVE_GETOPT_H
+#ifndef HAVE_GETOPT_LONG
 #if !defined __STDC__ || !__STDC__
 /* This is a separate conditional since some stdc systems
    reject `defined (const)'.  */
@@ -1057,4 +1057,4 @@ main (argc, argv)
 
 #endif /* TEST */
 
-#endif /* HAVE_GETOPT_H */
+#endif /* HAVE_GETOPT_LONG */

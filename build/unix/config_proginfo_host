@@ -235,4 +235,6 @@ SYMBOL_wint_t_EXTRA="#include <wchar.h>"
 
 SYMBOL_iswgraph_EXTRA="#include <wctype.h>"
 
+SYMBOL_getopt_long_EXTRA="#include <getopt.h>"
+
 

@@ -20,7 +20,6 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <memory.h>
 #include "port.h"
 #include "types.h"
 #include "uio.h"

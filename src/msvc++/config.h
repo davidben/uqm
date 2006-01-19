@@ -41,8 +41,8 @@
 /* Defined if your system has stricmp of its own */
 #define HAVE_STRICMP
 
-/* Defined if your system has getopt.h */
-#undef HAVE_GETOPT_H
+/* Defined if your system has getopt_long */
+#undef HAVE_GETOPT_LONG
 
 /* Defined if your system has iswgraph of its own*/
 #define HAVE_ISWGRAPH

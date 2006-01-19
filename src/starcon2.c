@@ -20,7 +20,7 @@
 #	include <unistd.h>
 #endif
 
-#ifdef HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_LONG
 #	include <getopt.h>
 #else
 #	include "getopt/getopt.h"
