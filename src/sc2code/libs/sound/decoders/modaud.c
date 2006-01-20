@@ -153,13 +153,8 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 
 	if (flags & audio_QUALITY_HIGH)
 	{
-#ifndef WORDS_BIGENDIAN
 		md_mode = DMODE_HQMIXER|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
-#else
-		// disable hqmixer on big endian machines (workaround for bug #166)
-		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS|DMODE_INTERP|DMODE_SURROUND;
-#endif
-	    md_mixfreq = 44100;
+		md_mixfreq = 44100;
 		md_reverb = 1;
 	}
 	else if (flags & audio_QUALITY_LOW)
