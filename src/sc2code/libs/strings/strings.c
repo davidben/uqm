@@ -296,7 +296,7 @@ GetStringContents (STRING String, STRINGPTR StringBuf, BOOLEAN
 	COUNT StringLength;
 
 	if ((StringAddr = GetStringAddress (String)) != 0 &&
-			(StringLength = GetDirEntryLength (String)) != 0)
+			(StringLength = GetStringLengthBin (String)) != 0)
 	{
 		memcpy (StringBuf, StringAddr, StringLength);
 		if (AppendSpace)
