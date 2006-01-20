@@ -1517,8 +1517,8 @@ zip_unInitZipStream(z_stream *zipStream) {
 	if (retVal != Z_OK) {
 		switch (retVal) {
 			case Z_STREAM_ERROR:
-				// This means zipHandle->zipStream is bad, which is
-				// most likely an error in the code using zlib.
+				// This means zipStream is bad, which is most likely an
+				// error in the code using zlib.
 				fprintf(stderr, "Fatal: internal error using zlib.\n");
 				abort();
 				break;
@@ -1545,8 +1545,8 @@ zip_reInitZipStream(z_stream *zipStream) {
 	if (retVal != Z_OK) {
 		switch (retVal) {
 			case Z_STREAM_ERROR:
-				// This means zipHandle->zipStream is bad, which is
-				// most likely an error in the code using zlib.
+				// This means zipStream is bad, which is  most likely an
+				// error in the code using zlib.
 				fprintf(stderr, "Fatal: internal error using zlib.\n");
 				abort();
 				break;
