@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- fixed uio_rename() and some other cases where a new file is created
+  under specific circumstances. - SvdB
 - Fix bug in GetStringContents which used the number of chars where it
   should have used the memory size. - SvdB
 - Control scheme upgrades checked (VControl Version upgrade) - Michael
