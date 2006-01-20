@@ -441,6 +441,9 @@ START_GAME_STATE
 	ADD_GAME_STATE (MYCON_HOME_VISITS, 3)
 	ADD_GAME_STATE (MYCON_AMBUSH, 1)
 	ADD_GAME_STATE (MYCON_FELL_FOR_AMBUSH, 1)
+			/* Set to 1 when the Mycon have been told about Organon
+			 * and are moving towards it.
+			 */
 
 	ADD_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 8)
 			/* This state seems to be used to distinguish between different
@@ -681,6 +684,9 @@ START_GAME_STATE
 			 */
 	ADD_GAME_STATE (MYCON_INSULTS, 3)
 	ADD_GAME_STATE (MYCON_KNOW_AMBUSH, 1)
+			/* Set to 1 when the Mycon have been butchered at Organon,
+			 * just before the remaining Mycon head back home.
+			 */
 
 	ADD_GAME_STATE (SYREEN_INFO, 2)
 	ADD_GAME_STATE (KNOW_SYREEN_WORLD_SHATTERED, 1)

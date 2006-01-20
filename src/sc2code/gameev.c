@@ -726,6 +726,7 @@ mycon_mission (void)
 	{
 		if (MyconPtr->ShipInfo.energy_level)
 		{
+			// Head back.
 			SET_GAME_STATE (MYCON_KNOW_AMBUSH, 1);
 			SetRaceDest (MYCON_SHIP, 6392, 2200, 30, (BYTE)~0);
 
@@ -735,8 +736,10 @@ mycon_mission (void)
 		else if (MyconPtr->ShipInfo.loc.x != 6858
 				|| MyconPtr->ShipInfo.loc.y != 577)
 			SetRaceDest (MYCON_SHIP, 6858, 577, 30, ADVANCE_MYCON_MISSION);
+					// To Organon.
 		else
 		{
+			// Endure losses at Organon.
 			SIZE strength_loss;
 
 			AddEvent (RELATIVE_EVENT, 0, 14, 0, ADVANCE_MYCON_MISSION);
