@@ -40,9 +40,6 @@
 
 #include "mikmod_internals.h"
 
-#if defined(macintosh) || defined(__APPLE__)
-#define NO_64BIT_MIXER
-#endif
 /*
    Constant Definitions
    ====================
@@ -266,8 +263,6 @@ static SLONG Mix32StereoSurround(SWORD* srce,SLONG* dest,SLONG index,SLONG incre
 
 /*========== 64 bit mixers */
 
-#ifndef NO_64BIT_MIXER
-
 static SLONGLONG MixMonoNormal(SWORD* srce,SLONG* dest,SLONGLONG index,SLONGLONG increment,SLONG todo)
 {
 	SWORD sample=0;
@@ -382,8 +377,6 @@ static SLONGLONG MixStereoSurround(SWORD* srce,SLONG* dest,SLONGLONG index,SLONG
 
 	return index;
 }
-
-#endif /* NO_64BIT_MIXER */
 
 static	void(*Mix32to16)(SWORD* dste,SLONG* srce,NATIVE count);
 static	void(*Mix32to8)(SBYTE* dste,SLONG* srce,NATIVE count);
@@ -649,9 +642,6 @@ static void AddChannel(SLONG* ptr,NATIVE todo)
 					                   (s,ptr,vnf->current,vnf->increment,done);
 			} else
 #endif
-#ifdef NO_64BIT_MIXER
-				/* Uh oh, the 64-bit mixers don't compile... */;
-#else
 			       {
 				if(vc_mode & DMODE_STEREO) {
 					if((vnf->pan==PAN_SURROUND)&&(vc_mode&DMODE_SURROUND))
@@ -664,7 +654,6 @@ static void AddChannel(SLONG* ptr,NATIVE todo)
 					vnf->current=MixMonoNormal
 					                   (s,ptr,vnf->current,vnf->increment,done);
 			}
-#endif
 		} else  {
 			vnf->lastvalL = vnf->lastvalR = 0;
 			/* update sample position */
