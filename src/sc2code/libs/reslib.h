@@ -115,7 +115,7 @@ extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 #define GetDirEntryTableIndex GetStringTableIndex
 #define SetAbsDirEntryTableIndex SetAbsStringTableIndex
 #define SetRelDirEntryTableIndex SetRelStringTableIndex
-#define GetDirEntryLength GetStringLength
+#define GetDirEntryLength GetStringLengthBin
 #define GetDirEntryAddress GetStringAddress
 #define GetDirEntryContents GetStringContents
 

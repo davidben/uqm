@@ -172,6 +172,32 @@ GetStringLength (STRING String)
 	return (StringLength);
 }
 
+COUNT
+GetStringLengthBin (STRING String)
+{
+	COUNT StringLength;
+	STRING_TABLE StringTable;
+
+	StringTable = GetStringTable (String);
+	if (StringTable == 0)
+		StringLength = 0;
+	else
+	{
+		COUNT StringIndex;
+		STRING_TABLEPTR StringTablePtr;
+
+		StringIndex = STRING_INDEX (String);
+		LockStringTable (StringTable, &StringTablePtr);
+
+		StringLength = (COUNT)(
+				StringTablePtr->StringOffsets[StringIndex + 1]
+				- StringTablePtr->StringOffsets[StringIndex]);
+		UnlockStringTable (StringTable);
+	}
+
+	return (StringLength);
+}
+
 STRINGPTR
 GetStringSoundClip (STRING String)
 {
@@ -270,7 +296,7 @@ GetStringContents (STRING String, STRINGPTR StringBuf, BOOLEAN
 	COUNT StringLength;
 
 	if ((StringAddr = GetStringAddress (String)) != 0 &&
-			(StringLength = GetStringLength (String)) != 0)
+			(StringLength = GetDirEntryLength (String)) != 0)
 	{
 		memcpy (StringBuf, StringAddr, StringLength);
 		if (AppendSpace)

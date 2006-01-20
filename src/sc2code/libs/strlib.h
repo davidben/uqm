@@ -44,6 +44,7 @@ extern STRING SetAbsStringTableIndex (STRING String, COUNT
 extern STRING SetRelStringTableIndex (STRING String, SIZE
 		StringTableOffs);
 extern COUNT GetStringLength (STRING String);
+extern COUNT GetStringLengthBin (STRING String);
 extern STRINGPTR GetStringAddress (STRING String);
 extern STRINGPTR GetStringSoundClip (STRING String);
 extern STRINGPTR GetStringTimeStamp (STRING String);
