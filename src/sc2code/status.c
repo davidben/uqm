@@ -321,13 +321,12 @@ DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
 		SHIP_INFOPTR ShipInfoPtr;
 
 		ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
-		if ((ElementPtr->crew_level += (BYTE)crew_delta) >
-					ShipInfoPtr->max_crew)
+
+		ElementPtr->crew_level += (BYTE)crew_delta;
+		if (ElementPtr->crew_level > ShipInfoPtr->max_crew)
 		{
-			crew_delta = ShipInfoPtr->max_crew
-					- ShipInfoPtr->crew_level;
-			ElementPtr->crew_level =
-					ShipInfoPtr->max_crew;
+			crew_delta = ShipInfoPtr->max_crew - ShipInfoPtr->crew_level;
+			ElementPtr->crew_level = ShipInfoPtr->max_crew;
 		}
 	}
 	else if (crew_delta < 0)
