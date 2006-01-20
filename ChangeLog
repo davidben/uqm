@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Fix bug in GetStringContents which used the number of chars where it
+  should have used the memory size. - SvdB
 - Control scheme upgrades checked (VControl Version upgrade) - Michael
 - Better instant-move (for debugging) - SvdB
 - Fixed version checking in unix build scripts. SDL 1.2.10 is
