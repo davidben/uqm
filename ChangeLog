@@ -1,4 +1,5 @@
 Changes towards version 0.5:
+- Control scheme upgrades checked (VControl Version upgrade) - Michael
 - Better instant-move (for debugging) - SvdB
 - Fixed version checking in unix build scripts. SDL 1.2.10 is
   now recognised as newer than 1.2.9. - SvdB

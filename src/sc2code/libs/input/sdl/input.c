@@ -38,7 +38,7 @@ static BOOLEAN InputInitialized = FALSE;
 
 static BOOLEAN _in_character_mode = FALSE;
 
-#define VCONTROL_VERSION 1
+#define VCONTROL_VERSION 2
 
 static VControl_NameBinding control_names[] = {
 	{ "Menu-Up", (int *)&ImmediateInputState.key[KEY_MENU_UP] },
