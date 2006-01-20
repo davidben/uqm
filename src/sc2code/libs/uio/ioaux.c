@@ -257,6 +257,10 @@ copyError(int error,
  *              		Either O_RDONLY, O_RDWR, O_WRONLY. They may be
  *              		OR'd with other values accepted by open(). These
  *              		are ignored.
+ *                      XXX: this is no longer true.
+ *                      TODO: update this doc, and check uio_open() and
+ *                            perhaps others (uio_mkdir()) for unnecessary
+ *                            checks on O_CREAT and O_EXCL.
  *              extraFlags - either 0 or uio_GPA_NOWRITE
  *              		When 0, the path will be created if it doesn't
  *              		exist in the writing location, but does exist
@@ -320,13 +324,18 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 			// Set if the entry pointed to by path exists (including
 			// the last component of the path)
 
-	// Determine the absolute path from 'path' which is relative to dirHandle.
+	// 'path' is relative to dirHandle.
+	// Fill 'fullPath' with the absolute path.
 	if (uio_resolvePath(dirHandle, path, strlen(path), &fullPath) == -1) {
 		// errno is set
 		return -1;
 	}
-	
-	// get the MountTree effective for the path
+
+	// Walk the tree of mount points along 'fullPath'.
+	// 'tree' will be the part of the tree where we end up when we can go
+	// no further. tree->pLocs are all the mounts relevant there.
+	// 'rest' will point within 'fullPath' to what is left, after we can
+	// walk the tree of mountpoints no further.
 	uio_findMountTree(dirHandle->repository->mountTree, fullPath,
 			&tree, &rest);
 
@@ -346,7 +355,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 				strlen(pRootPath), &pDirHandle, &rest);
 				// rest points inside fullPath
 		if (retVal == 0) {
-			// even the last component appeared to be a dir
+			// Even the last component appeared to be a dir.
 			// As the last component did exist, we don't go on.
 			uio_free(fullPath);
 			uio_PDirHandle_unref(pDirHandle);
@@ -359,7 +368,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		if (writeItem == NULL && !uio_mountInfoIsReadOnly(item->mountInfo))
 			writeItem = item;
 		if (strchr(rest, '/') == NULL) {
-			// There's only dir component that was not matched.
+			// There's only one dir component that was not matched.
 			uio_PDirEntryHandle *entry;
 
 			// This MountInfo will do for reading, if the file from the last
@@ -429,14 +438,31 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		uio_free(fullPath);
 		return 0;
 	} else {
-		if (!entryExists && !(flags & O_CREAT)) {
-			// Though the path to the entry existed (readPDirHandle is set to
-			// it), the entry itself doesn't, so we can't use it unless we
-			// intend to create it.
-			uio_PDirHandle_unref(readPDirHandle);
-			uio_free(fullPath);
-			errno = ENOENT;
-			return -1;
+		if (entryExists) {
+			if ((flags & O_CREAT) && (flags & O_EXCL)) {
+				// An entry should be created, but it already exists and
+				// it may not be overwritten.
+				uio_PDirHandle_unref(readPDirHandle);
+				uio_free(fullPath);
+				errno = EEXIST;
+				return -1;
+			}
+		} else {
+			// Though the path to the entry existed (readPDirHandle is
+			// set to it), the entry itself doesn't, so we can't use it
+			// unless we intend to create it.
+			if (flags & O_CREAT) {
+				// The entry does not exist, but we can create it.
+				readItem = writeItem;
+			} else {
+				// O_CREAT was not specified, so we cannot create
+				// this entry.
+				uio_PDirHandle_unref(readPDirHandle);
+				uio_free(fullPath);
+				errno = ENOENT;
+				return -1;
+			}
+
 		}
 	}
 	if (writeItem == readItem) {
