@@ -34,9 +34,6 @@ LoadMasterShipList (void)
 	RES_INSTANCE ri;
 	RES_PACKAGE rp;
 
-if (master_q.head != 0)
-	return;
-	
 	rt = GET_TYPE (ARILOU_SHIP_INDEX);
 	ri = GET_INSTANCE (ARILOU_SHIP_INDEX);
 	rp = GET_PACKAGE (ARILOU_SHIP_INDEX);
@@ -94,9 +91,6 @@ if (master_q.head != 0)
 			InsertQueue (&master_q, hBuiltShip, hStarShip);
 		}
 	}
-
-	TaskSwitch ();
-			// XXX: what is this doing here?
 }
 
 void

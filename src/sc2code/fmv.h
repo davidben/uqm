@@ -21,6 +21,7 @@
 
 
 extern void Logo (void);
+extern void SplashScreen (void (* DoProcessing)(DWORD TimeOut));
 extern void Introduction (void);
 extern void Victory (void);
 

@@ -28,6 +28,8 @@
 #include "restart.h"
 #include "starbase.h"
 #include "setup.h"
+#include "master.h"
+#include "controls.h"
 #include "starcon.h"
 #include "uqmdebug.h"
 #include "libs/tasklib.h"
@@ -75,6 +77,20 @@ arilou_gate_task(void *data)
 	return(0);
 }
 
+static void
+BackgroundInitKernel (DWORD TimeOut)
+{
+	LoadMasterShipList ();
+	TaskSwitch ();
+	InitGameKernel ();
+
+	while ((GetTimeCounter () <= TimeOut) &&
+	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		UpdateInputState ();
+		TaskSwitch ();
+	}
+}
 
 #define DEBUG_PSYTRON 0
 
@@ -127,6 +143,10 @@ while (--ac > 0)
 		fprintf (stderr, "We've loaded the Kernel\n");
 	
 		Logo ();
+		
+		GLOBAL (CurrentActivity) = 0;
+		// show splash and init the kernel in the meantime
+		SplashScreen (BackgroundInitKernel);
 
 // OpenJournal ();
 		while (StartGame ())
@@ -249,12 +269,18 @@ while (--ac > 0)
 			UninitSIS ();
 		}
 //		CloseJournal ();
+
+		FreeGameData ();
 	}
 	else
 	{
 		fprintf (stderr, "Kernel failed to load!\n");
 	}
 	FreeKernel ();
+
+	// XXX: the abort can now be changed to something cleaner;
+	//   something to terminate the for(;;) loop in main()
+	TFB_Abort ();
 
 	(void) threadArg;  /* Satisfying compiler (unused parameter) */
 	return 0;

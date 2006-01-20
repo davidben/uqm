@@ -75,7 +75,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 }
 
 void
-Introduction (void)
+SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 {
 	BYTE xform_buf[1];
 	STAMP s;
@@ -95,16 +95,9 @@ Introduction (void)
 
 	xform_buf[0] = FadeAllToColor;
 	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
-	LoadMasterShipList ();
-	FlushInput ();
-	InitGameKernel ();
 
-	while ((GetTimeCounter () <= TimeOut) &&
-	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-	{
-		UpdateInputState ();
-		TaskSwitch ();
-	}
+	if (DoProcessing)
+		DoProcessing (TimeOut);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		return;
@@ -136,15 +129,22 @@ Introduction (void)
 	 * engine. -- Michael */
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+}
 
-	if (InputState == 0)
-	{	/* by default we do 3DO cinematics; or PC slides when 3DO files are
-		 * not present */
-		if (optWhichIntro == OPT_PC ||
-				!DoFMV ("slides/intro/intro.duk", NULL, TRUE))
-			ShowPresentation ( CaptureStringTable (
-					LoadStringTable (INTROPRES_STRTAB)));
-	}
+void
+Introduction (void)
+{
+	BYTE xform_buf[1];
+
+	/* by default we do 3DO cinematics; or PC slides when 3DO files are
+	 * not present */
+	if (optWhichIntro == OPT_PC ||
+			!DoFMV ("slides/intro/intro.duk", NULL, TRUE))
+		ShowPresentation ( CaptureStringTable (
+				LoadStringTable (INTROPRES_STRTAB)));
+
+	xform_buf[0] = FadeAllToBlack;
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 }
 
 void

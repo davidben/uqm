@@ -257,138 +257,161 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 }
 
 BOOLEAN
-StartGame (void)
+RestartMenu (PMENU_STATE pMS)
 {
-	MENU_STATE MenuState;
+	DWORD TimeOut;
+	BYTE black_buf[1];
 
-TimedOut:
-	LastActivity = GLOBAL (CurrentActivity);
-	GLOBAL (CurrentActivity) = 0;
-	if (LastActivity == (ACTIVITY)~0)
+	ReinitQueue (&race_q[0]);
+	ReinitQueue (&race_q[1]);
+
+	black_buf[0] = FadeAllToBlack;
+
+	SetContext (ScreenContext);
+
+	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
+			&& GET_GAME_STATE (UTWIG_BOMB_ON_SHIP)
+			&& !GET_GAME_STATE (UTWIG_BOMB))
+	{	// player blew himself up with Utwig bomb
+		BYTE white_buf[] = {FadeAllToWhite};
+
+		SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 0);
+
+		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf,
+				ONE_SECOND / 8) + ONE_SECOND / 60);
+		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+		ClearDrawable ();
+		FlushColorXForms ();
+
+		TimeOut = ONE_SECOND / 8;
+	}
+	else
 	{
-		Introduction ();
-		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		TimeOut = ONE_SECOND / 2;
+
+		if (LOBYTE (LastActivity) == WON_LAST_BATTLE)
 		{
-			TFB_Abort ();
+			GLOBAL (CurrentActivity) = WON_LAST_BATTLE;
+			Victory ();
+			Credits (TRUE);
+
+			FreeGameData ();
+			
+			TimeOut = ONE_SECOND / 2;
+			GLOBAL (CurrentActivity) = CHECK_ABORT;
 		}
 	}
 
-	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
+	LastActivity = NextActivity = 0;
+
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
+	if (TimeOut == ONE_SECOND / 8)
+		SleepThread (ONE_SECOND * 3);
+	DrawRestartMenuGraphic (pMS);
+	FlushInput ();
+	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
+	DoInput (pMS, TRUE);
+	
+	StopMusic ();
+	if (pMS->hMusic)
+	{
+		DestroyMusic (pMS->hMusic);
+		pMS->hMusic = 0;
+	}
+
+	LockMutex (GraphicsLock);
+	SetFlashRect ((PRECT)0, (FRAME)0);
+	UnlockMutex (GraphicsLock);
+	DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
+
+	if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
+		return (FALSE); // timed out
+
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return (FALSE); // quit
+
+	TimeOut = XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND / 2);
+	
+	SleepThreadUntil (TimeOut);
+	FlushColorXForms ();
+
+	SeedRandomNumbers ();
+
+	return (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE);
+}
+
+BOOLEAN
+TryStartGame (void)
+{
+	MENU_STATE MenuState;
+
+	LastActivity = GLOBAL (CurrentActivity);
+	GLOBAL (CurrentActivity) = 0;
+
+	memset (&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoRestart;
 
-	{
-		DWORD TimeOut;
-		BYTE black_buf[1];
-
-TryAgain:
-		ReinitQueue (&race_q[0]);
-		ReinitQueue (&race_q[1]);
-	
-		black_buf[0] = FadeAllToBlack;
-
-		SetContext (ScreenContext);
-
-		GLOBAL (CurrentActivity) |= CHECK_ABORT;
-		if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
-				&& GET_GAME_STATE (UTWIG_BOMB_ON_SHIP)
-				&& !GET_GAME_STATE (UTWIG_BOMB))
-		{
-			BYTE white_buf[] = {FadeAllToWhite};
-
-			SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 0);
-
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf,
-					ONE_SECOND / 8) + ONE_SECOND / 60);
-			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
-			ClearDrawable ();
-			FlushColorXForms ();
-
-			TimeOut = ONE_SECOND / 8;
-		}
-		else
-		{
-			TimeOut = ONE_SECOND / 2;
-#ifdef NOTYET
-LastActivity = WON_LAST_BATTLE;
-#endif /* NOTYET */
-			if (LOBYTE (LastActivity) == WON_LAST_BATTLE)
-			{
-				GLOBAL (CurrentActivity) = WON_LAST_BATTLE;
-				Victory ();
-				InitGameKernel ();
-				Credits (TRUE);
-
-				FreeGameData ();
-				
-				TimeOut = ONE_SECOND / 2;
-				GLOBAL (CurrentActivity) = CHECK_ABORT;
-			}
-		}
-
-		LastActivity = NextActivity = 0;
-
-		{
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
-			if (TimeOut == ONE_SECOND / 8)
-				SleepThread (ONE_SECOND * 3);
-			DrawRestartMenuGraphic (&MenuState);
-			FlushInput ();
-			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
-			DoInput ((PVOID)&MenuState, TRUE);
-			
-			StopMusic ();
-			if (MenuState.hMusic)
-			{
-				DestroyMusic (MenuState.hMusic);
-				MenuState.hMusic = 0;
-			}
-
-			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)0, (FRAME)0);
-			UnlockMutex (GraphicsLock);
-			DestroyDrawable (ReleaseDrawable (MenuState.CurFrame));
-
-			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
-				goto TimedOut;
-
-			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-			{
-				TFB_Abort ();
-			}
-
-			TimeOut = XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND / 2);
-		}
-		
-		SleepThreadUntil (TimeOut);
-		FlushColorXForms ();
-
-		SeedRandomNumbers ();
-
-		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
+	while (!RestartMenu (&MenuState))
+	{	// spin until a game is started or loaded
+		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE &&
+				!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 		{
 			FreeGameData ();
 			Melee ();
 			MenuState.Initialized = FALSE;
-			goto TryAgain;
 		}
-
-{
-extern STAR_DESC starmap_array[];
-extern const BYTE element_array[];
-extern const PlanetFrame planet_array[];
-
-star_array = starmap_array;
-Elements = element_array;
-PlanData = planet_array;
-}
-
-		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-		PlayerControl[1] =  COMPUTER_CONTROL | AWESOME_RATING;
-		SetPlayerInput ();
-		return (TRUE);
+		else if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
+		{	// timed out
+			BYTE black_buf[] = {FadeAllToBlack};
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf,
+					ONE_SECOND / 2));
+			return (FALSE);
+		}
+		else if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		{	// quit
+			return (FALSE);
+		}
 	}
 
-	return (FALSE);
+	return TRUE;
 }
 
+BOOLEAN
+StartGame (void)
+{
+	while (!TryStartGame ())
+	{
+		if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
+		{	// timed out
+			GLOBAL (CurrentActivity) = 0;
+			SplashScreen (0);
+			Credits (FALSE);
+		}
+
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+			return (FALSE); // quit
+	}
+
+	if (LastActivity & CHECK_RESTART)
+	{	// starting a new game
+		Introduction ();
+	}
+
+	{
+		extern STAR_DESC starmap_array[];
+		extern const BYTE element_array[];
+		extern const PlanetFrame planet_array[];
+
+		star_array = starmap_array;
+		Elements = element_array;
+		PlanData = planet_array;
+	}
+
+	PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
+	PlayerControl[1] =  COMPUTER_CONTROL | AWESOME_RATING;
+	SetPlayerInput ();
+
+	return (TRUE);
+}
