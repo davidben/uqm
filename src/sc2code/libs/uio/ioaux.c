@@ -453,7 +453,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 			// unless we intend to create it.
 			if (flags & O_CREAT) {
 				// The entry does not exist, but we can create it.
-				readItem = writeItem;
+				// Handled below.
 			} else {
 				// O_CREAT was not specified, so we cannot create
 				// this entry.
@@ -494,16 +494,8 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		return -1;
 	}
 
-	// There exists no path for a write dir, so it will have to be created.
-	// writeMountInfo indicates the physical tree where it should end up.
-
-	if (extraFlags & uio_GPA_NOWRITE) {
-		// The caller has specified that the path should not be created.
-		uio_PDirHandle_unref(readPDirHandle);
-		uio_free(fullPath);
-		errno = ENOENT;
-		return -1;
-	}
+	// Left is the case where the write location is different from the
+	// read location.
 	
 	pRootPath = uio_mountTreeItemRestPath(writeItem, tree->lastComp,
 			fullPath);
@@ -515,6 +507,17 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 		uio_PDirHandle_ref(writeItem->mountInfo->pDirHandle);
 		writePDirHandle = writeItem->mountInfo->pDirHandle;
 	} else {
+		// There exists no path for a write dir, so it will have to be created.
+		// writeMountInfo indicates the physical tree where it should end up.
+
+		if (extraFlags & uio_GPA_NOWRITE) {
+			// The caller has specified that the path should not be created.
+			uio_PDirHandle_unref(readPDirHandle);
+			uio_free(fullPath);
+			errno = ENOENT;
+			return -1;
+		}
+	
 		writePDirHandle = uio_makePath(writeItem->mountInfo->pDirHandle,
 				pRootPath, rest - pRootPath, 0777);
 		if (writePDirHandle == NULL) {
@@ -550,7 +553,7 @@ uio_getPhysicalAccess(uio_DirHandle *dirHandle, const char *path,
 	if (readPRootPathPtr != NULL)
 		*readPRootPathPtr = joinPathsAbsolute(
 				readItem->mountInfo->dirName, readPRootPath);
-	*mountInfoReadPtr = writeItem->mountInfo;
+	*mountInfoWritePtr = writeItem->mountInfo;
 	*writePDirHandlePtr = writePDirHandle;
 	if (writePRootPathPtr != NULL)
 		*writePRootPathPtr = joinPathsAbsolute(

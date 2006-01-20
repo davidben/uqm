@@ -372,6 +372,8 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 	}
 
 	if (uio_mountInfoIsReadOnly(oldReadMountInfo)) {
+		// XXX: Doesn't uio_getPhysicalAccess already handle this?
+		//      It doesn't return EROFS though; perhaps it should.
 		uio_PDirHandle_unref(oldPReadDir);
 		uio_PDirHandle_unref(newPReadDir);
 		uio_PDirHandle_unref(newPWriteDir);
@@ -391,7 +393,7 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 		return -1;
 	}
 	retVal = (oldReadMountInfo->pDirHandle->pRoot->handler->rename)(
-			oldPReadDir, oldName, newPReadDir, newName);
+			oldPReadDir, oldName, newPWriteDir, newName);
 	if (retVal == -1) {
 		int savedErrno = errno;
 		uio_PDirHandle_unref(oldPReadDir);
