@@ -1044,14 +1044,16 @@ GetNewList:
 
 		if (status == -1)
 		{
-			fprintf(stderr, "Could not load '%s'\n", file);
+			BOOLEAN deleteStatus;
 
-			BOOLEAN deleteStatus = DeleteResFile (meleeDir, file);
+			fprintf (stderr, "Could not load '%s'\n", file);
+
+			deleteStatus = DeleteResFile (meleeDir, file);
 			if (deleteStatus == FALSE)
 			{
 				// XXX: see bug #823
-				fprintf(stderr, "FATAL: Could not delete '%s'\n", file);
-				abort();
+				fprintf (stderr, "FATAL: Could not delete '%s'\n", file);
+				abort ();
 			}
 			goto GetNewList;
 		}
