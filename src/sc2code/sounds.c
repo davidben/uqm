@@ -32,7 +32,6 @@ void
 PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
 		BYTE Priority)
 {
-		/* obviously number of channels is assumed to be at least 5 */
 	BYTE chan, c;
 	static BYTE lru_channel[NUM_FX_CHANNELS] = {0, 1, 2, 3};
 	static SOUND channel[NUM_FX_CHANNELS] = {0, 0, 0, 0};

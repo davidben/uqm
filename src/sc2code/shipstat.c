@@ -327,8 +327,9 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 					&& (ShipInfoPtr->ship_flags & GOOD_GUY)
 					&& LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 			{
-				if ((crew_delta =
-						GLOBAL_SIS (CrewEnlisted)) >= MAX_CREW_SIZE)
+				// SIS in full game.
+				crew_delta = GLOBAL_SIS (CrewEnlisted);
+				if (crew_delta >= MAX_CREW_SIZE)
 					crew_delta = MAX_CREW_SIZE;
 				else /* if (crew_delta < MAX_CREW_SIZE) */
 				{
@@ -349,8 +350,7 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 #define ROBOT_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08)
 			SetContextForeGroundColor (
 					(ShipInfoPtr->ship_flags & CREW_IMMUNE) ?
-					ROBOT_UNIT_COLOR : CREW_UNIT_COLOR
-					);
+					ROBOT_UNIT_COLOR : CREW_UNIT_COLOR);
 			while (crew_delta--)
 			{
 				r.corner.x = x + (CREW_XOFFS + 1);
@@ -363,7 +363,7 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 				++ShipInfoPtr->crew_level;
 			}
 		}
-		else
+		else  /* crew_delta < 0 */
 		{
 			if (StarShipPtr->captains_name_index == 0
 					&& (ShipInfoPtr->ship_flags & GOOD_GUY)
