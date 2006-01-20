@@ -999,6 +999,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichCoarseScan = (opts->cscan == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optSmoothScroll = (opts->scroll == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichShield = (opts->shield == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
+	optMeleeScale = (opts->meleezoom == OPTVAL_3DO) ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
+	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 
 	res_PutBoolean ("config.subtitles", opts->subtitles == OPTVAL_ENABLED);
 	res_PutBoolean ("config.textmenu", opts->menu == OPTVAL_PC);
