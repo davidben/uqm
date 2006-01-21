@@ -923,8 +923,8 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[i]];
 		UNICODE FullName[STAR_SEARCH_BUFSIZE];
 		UNICODE *ClusterName = GAME_STRING (SDPtr->Postfix);
-		UNICODE *sptr;
-		UNICODE *dptr;
+		const UNICODE *sptr;
+		const UNICODE *dptr;
 		int dlen;
 		int c;
 		
