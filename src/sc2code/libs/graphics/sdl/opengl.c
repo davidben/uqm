@@ -105,7 +105,7 @@ AttemptColorDepth (int flags, int width, int height, int bpp)
 			break;
 	}
 
-	SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, bpp);
+	SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, 0);
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
 	videomode_flags = SDL_OPENGL;
