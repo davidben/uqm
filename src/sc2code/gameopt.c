@@ -415,7 +415,7 @@ DoNaming (PMENU_STATE pMS)
 	tes.FrameCallback = 0;
 
 	if (DoTextEntry (&tes))
-		utf8StringCopy (Setting, sizeof (Setting), buf);
+		utf8StringCopy (Setting, tes.MaxSize, buf);
 	else
 		utf8StringCopy (buf, sizeof (buf), Setting);
 	DrawDescriptionString (pMS, 0, DDSHS_NORMAL);
