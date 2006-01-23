@@ -1524,9 +1524,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 			TEXT t;
 #define DELTA_Y_SUMMARY 8
 #define SUMMARY_CHARS (SIS_SCREEN_WIDTH - 34) / 4
-#define MAX_SUMMARY_CHARS 52
 #define MAX_COLS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT - DELTA_Y_SUMMARY) / 8) - 1
-			UNICODE buffer[MAX_SUMMARY_CHARS];
+			UNICODE buffer[320]; // SUMMARY_CHARS * 6
 			UNICODE *temp;
 			int i;
 			int col = 0;
@@ -1563,7 +1562,6 @@ DoCommunication (PENCOUNTER_STATE pES)
 				temp = curr->text;
 				if (temp == NULL)
 					continue;
-				// fprintf (stderr, "%s\n", temp);
 				while (utf8StringCount (temp) > (unsigned int) SUMMARY_CHARS
 						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
@@ -1578,6 +1576,13 @@ DoCommunication (PENCOUNTER_STATE pES)
 							space_index = i;
 							break;
 						}
+					}
+					if ((unsigned)space_index >= sizeof (buffer))
+					{
+						fprintf (stderr, "DoCommunication() BUG: buffer[%u] "
+								"too small to fit %d bytes\n",
+								sizeof (buffer), space_index);
+						abort ();
 					}
 					strncpy (buffer, temp, space_index);
 					buffer[space_index] = '\0';
