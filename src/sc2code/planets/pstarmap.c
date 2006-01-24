@@ -801,8 +801,8 @@ typedef struct starsearch_state
 	BOOLEAN SingleClust;
 	BOOLEAN SingleMatch;
 	UNICODE Buffer[STAR_SEARCH_BUFSIZE];
-	UNICODE *Prefix;
-	UNICODE *Cluster;
+	const UNICODE *Prefix;
+	const UNICODE *Cluster;
 	int PrefixLen;
 	int ClusterLen;
 	int ClusterPos;
@@ -858,7 +858,8 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 	pSS->ClusterPos = 0;
 
 	// skip leading space
-	for (next = buf; *next != '\0' && getCharFromString (&next) == ' ';
+	for (next = buf; *next != '\0' &&
+			getCharFromString ((const UNICODE **)&next) == ' ';
 			buf = next)
 		;
 	if (*buf == '\0')
@@ -869,14 +870,16 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 	pSS->Prefix = buf;
 
 	// See if player gave a prefix
-	for (buf = next; *next != '\0' && getCharFromString (&next) != ' ';
+	for (buf = next; *next != '\0' &&
+			getCharFromString ((const UNICODE **)&next) != ' ';
 			buf = next)
 		;
 	if (*buf != '\0')
 	{	// found possibly separating ' '
 		sep = buf;
 		// skip separating space
-		for (buf = next; *next != '\0' && getCharFromString (&next) == ' ';
+		for (buf = next; *next != '\0' &&
+				getCharFromString ((const UNICODE **)&next) == ' ';
 				buf = next)
 			;
 	}
