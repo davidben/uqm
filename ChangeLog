@@ -1,4 +1,6 @@
 Changes towards version 0.5:
+- Internationalization fixes: moved many hardcoded English strings
+  into string resource file starcon.txt (bug #778), from Andrew Zabolotny
 - Melee Scale and Slides/Movies now take effect immediately - Michael
 - The intro now plays only when a new game is started - Alex
 - fixed uio_rename() and some other cases where a new file is created
