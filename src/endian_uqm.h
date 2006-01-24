@@ -36,7 +36,7 @@
 /* The macros used to swap values */
 /* Try to use superfast macros on systems that support them */
 #ifdef linux
-#include <asm/byteorder.h>
+#include <endian.h>
 #ifdef __arch__swab16
 #define UQM_Swap16  __arch__swab16
 #endif
