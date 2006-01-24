@@ -1,6 +1,6 @@
-THE UR-QUAN MASTERS v0.4 alpha -- homepage: http://sc2.sf.net/
+THE UR-QUAN MASTERS v0.5 alpha -- homepage: http://sc2.sf.net/
 
-Welcome to the fourth release of the Ur-Quan Masters port.  This
+Welcome to the fifth release of the Ur-Quan Masters port.  This
 document will tell you everything you need to play, even if you've
 never played the original.
 
@@ -20,11 +20,6 @@ various command line options to customize your experience:
 
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240.
-
-	-d 32            (or --bpp)
-
-Sets the color depth.  If you don't set this, the game should
-autodetect an appropriate value.  Valid values are 16, 24, and 32.
 
 	-f               (or --fullscreen)
 
@@ -226,7 +221,7 @@ we'd like you to report it, but before you do, please do the following:
 
 - If your issue is more like "support request" than bug report and you
   want help from other users, then posting it to our forum might be
-  more appropriate: http://uqm.stack.nl/cgi-bin/yabb/YaBB.pl
+  more appropriate: http://uqm.stack.nl/forum/
 
 
 
@@ -537,6 +532,10 @@ ENTER or RIGHT CTRL:         Select destination
 SPACE or RIGHT SHIFT:        Main menu
 Keypad +:                    Zoom in
 Keypad -:                    Zoom out
+/:			     Begin search.
+			     (Type star or constellation name to 
+			      find matches)
+TAB:			     Jump to next match.
 
 	Space Combat
 
@@ -622,7 +621,7 @@ in the game. '--addon' may be specified more than once to enable multiple
 add-ons.
 
 The Precursors UQM Remix project is intended to be used as an addon.
-If you installed UQM 0.4 from the Windows installer, the remix packs
+If you installed UQM 0.5 from the Windows installer, the remix packs
 are available as options.  Installing any of them will cause the
 default shortcuts to include the "remix" addon by default.
 
