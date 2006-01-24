@@ -254,17 +254,17 @@ extern void ClearSISRect (BYTE ClearFlags);
 extern void SetFlashRect (PRECT pRect, FRAME f);
 extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
-extern BOOLEAN DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos,
-		COUNT flags);
+extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
+		SIZE ExPos, COUNT flags);
 #define DSME_NONE     0
 #define DSME_SETFR    (1 << 0)
 #define DSME_CLEARFR  (1 << 1)
 #define DSME_BLOCKCUR (1 << 2)
-extern void DrawSISMessage (UNICODE *pStr);
+extern void DrawSISMessage (const UNICODE *pStr);
 extern void DrawGameDate (void);
 extern void DateToString (unsigned char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index);
-extern void DrawStatusMessage (UNICODE *pStr);
+extern void DrawStatusMessage (const UNICODE *pStr);
 extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);
 extern void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);

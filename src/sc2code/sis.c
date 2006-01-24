@@ -154,13 +154,13 @@ DrawHyperCoords (POINT universe)
 }
 
 void
-DrawSISMessage (UNICODE *pStr)
+DrawSISMessage (const UNICODE *pStr)
 {
 	DrawSISMessageEx (pStr, -1, -1, DSME_NONE);
 }
 
 BOOLEAN
-DrawSISMessageEx (UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
+DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 {
 	UNICODE buf[256];
 	CONTEXT OldContext;
@@ -338,7 +338,7 @@ DateToString (unsigned char *buf, size_t bufLen,
 }
 
 void
-DrawStatusMessage (UNICODE *pStr)
+DrawStatusMessage (const UNICODE *pStr)
 {
 	RECT r;
 	TEXT t;
@@ -367,13 +367,16 @@ DrawStatusMessage (UNICODE *pStr)
 			sprintf (buf, "%u %s", MAKE_WORD (
 					GET_GAME_STATE (MELNORME_CREDIT0),
 					GET_GAME_STATE (MELNORME_CREDIT1)
-					), "Cr");
+					), GAME_STRING (STATUS_STRING_BASE + 0)); // "Cr"
 		else if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
-			sprintf (buf, "%lu %s", GLOBAL_SIS (ResUnits), "RU");
+			sprintf (buf, "%lu %s", GLOBAL_SIS (ResUnits),
+					GAME_STRING (STATUS_STRING_BASE + 1)); // "RU"
 		else
 			sprintf (buf, "%s %s",
-					(optWhichMenu == OPT_PC) ? "UNLIMITED" : STR_INFINITY_SIGN,
-					"RU");
+					(optWhichMenu == OPT_PC) ?
+						GAME_STRING (STATUS_STRING_BASE + 2)
+						: STR_INFINITY_SIGN, // "UNLIMITED"
+					GAME_STRING (STATUS_STRING_BASE + 1)); // "RU"
 		pStr = buf;
 	}
 	else if (pStr == 0)
@@ -569,7 +572,6 @@ DrawFlagshipStats (void)
 	   fact that the leading is way more than is generally needed.
 	*/
 	leading -= 3;
-	t.pStr = buf;
 	t.baseline.x = SIS_SCREEN_WIDTH / 6; //wild-assed guess, but it worked
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_RIGHT;
@@ -577,21 +579,22 @@ DrawFlagshipStats (void)
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 4));
 
-	utf8StringCopy (buf, sizeof (buf), "nose:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 0); // "nose:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "spread:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 1); // "spread:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "side:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 2); // "side:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "tail:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 3); // "tail:"
 	font_DrawText (&t);
 
 	t.baseline.x += 5;
 	t.baseline.y = r.corner.y + leading + 3;
 	t.align = ALIGN_LEFT;
+	t.pStr = buf;
 
 	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
 	font_DrawText (&t);
@@ -611,20 +614,21 @@ DrawFlagshipStats (void)
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 5));
 
-	utf8StringCopy (buf, sizeof (buf), "maximum velocity:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 4); // "maximum velocity:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "turning rate:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 5); // "turning rate:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "combat energy:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 6); // "combat energy:"
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	utf8StringCopy (buf, sizeof (buf), "maximum fuel:");
+	t.pStr = GAME_STRING (FLAGSHIP_STRING_BASE + 7); // "maximum fuel:"
 	font_DrawText (&t);
 
 	t.baseline.x = r.extent.width - 2;
 	t.baseline.y = r.corner.y + leading + 3;
+	t.pStr = buf;
 
 	sprintf (buf, "%4u", max_thrust * 4);
 	font_DrawText (&t);
@@ -652,23 +656,25 @@ DrawFlagshipStats (void)
 }
 
 static const UNICODE *
-describeWeapon (BYTE moduleType) {
-	switch (moduleType) {
+describeWeapon (BYTE moduleType)
+{
+	switch (moduleType)
+	{
 		case GUN_WEAPON:
-			return "gun";
+			return GAME_STRING (FLAGSHIP_STRING_BASE + 8); // "gun"
 		case BLASTER_WEAPON:
-			return "blaster";
+			return GAME_STRING (FLAGSHIP_STRING_BASE + 9); // "blaster"
 		case CANNON_WEAPON:
-			return "cannon";
+			return GAME_STRING (FLAGSHIP_STRING_BASE + 10); // "cannon"
 		case BOMB_MODULE_0:
 		case BOMB_MODULE_1:
 		case BOMB_MODULE_2:
 		case BOMB_MODULE_3:
 		case BOMB_MODULE_4:
 		case BOMB_MODULE_5:
-			return "n/a";
+			return GAME_STRING (FLAGSHIP_STRING_BASE + 11); // "n/a"
 		default:
-			return "none";
+			return GAME_STRING (FLAGSHIP_STRING_BASE + 12); // "none"
 	}
 }
 
@@ -806,7 +812,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 1));
-	t.pStr = "FUEL";
+	t.pStr = GAME_STRING (STATUS_STRING_BASE + 3); // "FUEL"
 	font_DrawText (&t);
 
 	r.corner.y += 79;
@@ -814,7 +820,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 
 	SetContextFontEffect (SetAbsFrameIndex (FontGradFrame, 2));
-	t.pStr = "CREW";
+	t.pStr = GAME_STRING (STATUS_STRING_BASE + 4); // "CREW"
 	font_DrawText (&t);
 	SetContextFontEffect (NULL);
 
@@ -826,7 +832,7 @@ DrawPC_SIS (void)
 	DrawFilledRectangle (&r);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
 	t.baseline.y = r.corner.y + 6;
-	t.pStr = "CAPTAIN";
+	t.pStr = GAME_STRING (STATUS_STRING_BASE + 5); // "CAPTAIN"
 	font_DrawText (&t);
 }
 

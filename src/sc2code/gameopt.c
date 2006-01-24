@@ -192,15 +192,15 @@ FeedbackSetting (BYTE which_setting)
 static void
 FeedbackQuit (BYTE which_setting)
 {
-	UNICODE buf[80];
-	buf[0] = '\0';
+	const UNICODE *buf = "";
+
 	switch (which_setting)
 	{
 		case NO_QUIT_MENU:
-			utf8StringCopy (buf, sizeof (buf), "Don't Quit");
+			buf = GAME_STRING (QUITMENU_STRING_BASE + 3); // "Don't Quit"
 			break;
 		case YES_QUIT_MENU:
-			utf8StringCopy (buf, sizeof (buf), "Quit Game");
+			buf = GAME_STRING (QUITMENU_STRING_BASE + 4); // "Quit Game"
 			break;
 	}
 
@@ -1147,14 +1147,14 @@ ChangeGameSelection:
 
 				t.baseline.x = r.corner.x + 3;
 				if (((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index == 0)
-					utf8StringCopy (buf, sizeof (buf), "Empty Slot");
+					sprintf (buf, GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
 				else
 				{
 					DateToString (buf2, sizeof buf2,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].month_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].day_index,
 							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index);
-					sprintf (buf, "%s %s", "Saved Game - Date:", buf2);
+					sprintf (buf, "%s %s", GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2); // "Saved Game - Date:"
 				}
 				font_DrawText (&t);
 			}

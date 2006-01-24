@@ -20,6 +20,7 @@
 #include "controls.h"
 #include "options.h"
 #include "setup.h"
+#include "gamestr.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
 
@@ -57,76 +58,8 @@ DrawPCMenuFrame (RECT *r)
 #define ALT_MANIFEST 0x80
 #define ALT_EXIT_MENU0 0x81
 
-/* Define all menu text.  There is 1 item for each PM_* enum*/
-static char menu_string[][11]  = {
-		"scan",
-		"starmap",
-		"devices",
-		"cargo",
-		"roster",
-		"game",
-		"navigate",
-
-		"mineral",
-		"energy",
-		"biological",
-		"exit menu",
-		"autoscan",
-		"dispatch",
-
-		"save game",
-		"load game",
-		"quit game",
-		"settings",
-		"exit menu",
-
-		"converse",
-		"attack!",
-		"game",
-
-		"fuel",
-		"module",
-		"game",
-		"exit menu",
-
-		"crew",
-		"game",
-		"exit menu",
-
-		"sound",
-		"music",
-		"cyborg",
-		"captain",
-		"flagship",
-		"exit menu",
-		"",
-		"",
-		"",
-		"",
-		"",
-//PM_QUIT
-		"no, play!",
-		"yes, quit!",
-//PM_ALTSCAN
-		"scan",
-		"starmap",
-		"manifest",
-		"game",
-		"navigate",
-//PM_ALTERNATE_2
-		"cargo",
-		"devices",
-		"roster",
-		"exit menu",
-//PM_ALTERNATE3 replaces PM_MIN_SCAN
-		"mineral",
-		"energy",
-		"biological",
-		"autoscan",
-		"dispatch",
-		"exit menu"
-
-	};
+static UNICODE pm_crew_str[128];
+static UNICODE pm_fuel_str[128];
 
 /* Actually display the menu text */
 static void
@@ -162,7 +95,10 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
 	for (i = beg_index; i <= end_index; i++)
 	{
-		utf8StringCopy (buf, sizeof (buf), menu_string[i]);
+		utf8StringCopy (buf, sizeof (buf),
+						(i == PM_FUEL) ? pm_fuel_str :
+						(i == PM_CREW) ? pm_crew_str :
+						GAME_STRING (MAINMENU_STRING_BASE + i));
 		if (hilite && pos == i)
 		{
 			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
@@ -540,9 +476,13 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	if (s.frame && optWhichMenu == OPT_PC)
 	{
 		if (beg_index == PM_CREW)
-			sprintf (menu_string[PM_CREW], "%s(%d)", "crew", GLOBAL (CrewCost));
+			sprintf (pm_crew_str, "%s(%d)",
+					 GAME_STRING (MAINMENU_STRING_BASE + PM_CREW),
+					 GLOBAL (CrewCost));
 		if (beg_index == PM_FUEL)
-			sprintf (menu_string[PM_FUEL], "%s(%d)", "fuel", GLOBAL (FuelCost));
+			sprintf (pm_fuel_str, "%s(%d)",
+					 GAME_STRING (MAINMENU_STRING_BASE + PM_FUEL),
+					 GLOBAL (FuelCost));
 		if (beg_index == PM_SOUND_ON)
 		{
 			end_index = beg_index + 5;

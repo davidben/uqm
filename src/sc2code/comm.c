@@ -1597,7 +1597,11 @@ DoCommunication (PENCOUNTER_STATE pES)
 					{
 						t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 						t.align = ALIGN_CENTER;
-						t.pStr = STR_MIDDLE_DOT "MORE" STR_MIDDLE_DOT;
+						snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
+								  STR_MIDDLE_DOT,
+								  GAME_STRING (FEEDBACK_STRING_BASE + 1),
+								  STR_MIDDLE_DOT);
+						t.pStr = buffer;
 						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 						LockMutex (GraphicsLock);
 						font_DrawText (&t);
@@ -1628,10 +1632,13 @@ DoCommunication (PENCOUNTER_STATE pES)
 				col++;
 				if (col > MAX_COLS && curr->next != NULL)
 				{
-					
 					t.baseline.x = SIS_SCREEN_WIDTH >> 1;
 					t.align = ALIGN_CENTER;
-					t.pStr = STR_MIDDLE_DOT "MORE" STR_MIDDLE_DOT;
+					snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
+							  STR_MIDDLE_DOT,
+							  GAME_STRING (FEEDBACK_STRING_BASE + 1),
+							  STR_MIDDLE_DOT);
+					t.pStr = buffer;
 					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
 					LockMutex (GraphicsLock);
 					font_DrawText (&t);

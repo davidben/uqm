@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "gamestr.h"
 #include "libs/graphics/widgets.h"
 #include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"
@@ -55,18 +56,18 @@ DrawConfirmationWindow (BOOLEAN answer)
 
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + 8;
-	t.pStr = "Really Quit?";
+	t.pStr = GAME_STRING (QUITMENU_STRING_BASE); // "Really Quit?"
 	t.align = ALIGN_CENTER;
 	t.valign = VALIGN_BOTTOM;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += 10;
 	t.baseline.x = r.corner.x + (r.extent.width >> 2);
-	t.pStr = "Yes";
+	t.pStr = GAME_STRING (QUITMENU_STRING_BASE + 1); // "Yes"
 	SetContextForeGroundColor (answer ? MENU_HIGHLIGHT_COLOR : MENU_TEXT_COLOR);
 	font_DrawText (&t);
 	t.baseline.x += (r.extent.width >> 1);
-	t.pStr = "No";
+	t.pStr = GAME_STRING (QUITMENU_STRING_BASE + 2); // "No"
 	SetContextForeGroundColor (answer ? MENU_TEXT_COLOR : MENU_HIGHLIGHT_COLOR);	
 	font_DrawText (&t);
 

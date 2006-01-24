@@ -921,6 +921,7 @@ Cerium
 #(Praseo- dymium)
 Praseo- dymium
 
+
 #(Neodymium)
 Neodymium
 
@@ -1677,6 +1678,10 @@ DEC
 (In response to your statement)
 
 
+#(MORE)
+MORE
+
+
 #(Starbase)
 Starbase
 
@@ -1817,6 +1822,14 @@ Loading . . .
 Unable to save game!
 
 
+#(Empty Slot)
+Empty Slot
+
+
+#(Saved Game - Date:)
+Saved Game - Date:
+
+
 #(Sound)
 Sound
 
@@ -1835,5 +1848,401 @@ OFF
 
 #(ON)
 ON
+
+
+#(Really Quit)
+Really Quit?
+
+
+#(Yes)
+Yes
+
+
+#(No)
+No
+
+
+#(Don't Quit)
+Don't Quit
+
+
+#(Quit Game)
+Quit Game
+
+
+#(Cr)
+Cr
+
+
+#(RU)
+RU
+
+
+#(UNLIMITED)
+UNLIMITED
+
+
+#(FUEL)
+FUEL
+
+
+#(CREW)
+CREW
+
+
+#(CAPTAIN)
+CAPTAIN
+
+
+#(nose:)
+nose:
+
+
+#(spread:)
+spread:
+
+
+#(side:)
+side:
+
+
+#(tail:)
+tail:
+
+
+#(maximum velocity:)
+maximum velocity:
+
+
+#(turning rate:)
+turning rate:
+
+
+#(combat energy:)
+combat energy:
+
+
+#(maximum fuel:)
+maximum fuel:
+
+
+#(gun)
+gun
+
+
+#(blaster)
+blaster
+
+
+#(cannon)
+cannon
+
+
+#(n/a)
+n/a
+
+
+#(none)
+none
+
+
+#(Orbit: )
+Orbit: 
+
+
+#( a.u.)
+ a.u.
+
+
+#(Atmo: )
+Atmo: 
+
+
+#(Super Thick)
+Super Thick
+
+
+#(Vacuum)
+Vacuum
+
+
+#( atm)
+ atm
+
+
+#(Temp: )
+Temp: 
+
+
+#(Weather: )
+Weather: 
+
+
+#(None)
+None
+
+
+#(Class)
+Class
+
+
+#(Tectonics: )
+Tectonics: 
+
+
+#(Mass: )
+Mass: 
+
+
+#( e.s.)
+ e.s.
+
+
+#(Radius: )
+Radius: 
+
+
+#(Gravity: )
+Gravity: 
+
+
+#( g.)
+ g.
+
+
+#(Day: )
+Day: 
+
+
+#( days)
+ days
+
+
+#(Tilt: )
+Tilt: 
+
+
+#(scan)
+scan
+
+
+#(starmap)
+starmap
+
+
+#(devices)
+devices
+
+
+#(cargo)
+cargo
+
+
+#(roster)
+roster
+
+
+#(game)
+game
+
+
+#(navigate)
+navigate
+
+
+#(mineral)
+mineral
+
+
+#(energy)
+energy
+
+
+#(biological)
+biological
+
+
+#(exit menu)
+exit menu
+
+
+#(autoscan)
+autoscan
+
+
+#(dispatch)
+dispatch
+
+
+#(save game)
+save game
+
+
+#(load game)
+load game
+
+
+#(quit game)
+quit game
+
+
+#(settings)
+settings
+
+
+#(exit menu)
+exit menu
+
+
+#(converse)
+converse
+
+
+#(attack!)
+attack!
+
+
+#(game)
+game
+
+
+#(fuel)
+fuel
+
+
+#(module)
+module
+
+
+#(game)
+game
+
+
+#(exit menu)
+exit menu
+
+
+#(crew)
+crew
+
+
+#(game)
+game
+
+
+#(exit menu)
+exit menu
+
+
+#(sound)
+sound
+
+
+#(music)
+music
+
+
+#(cyborg)
+cyborg
+
+
+#(captain)
+captain
+
+
+#(flagship)
+flagship
+
+
+#(exit menu)
+exit menu
+
+
+#()
+
+
+
+#()
+
+
+
+#()
+
+
+
+#()
+
+
+
+#()
+
+
+
+#(no, play!)
+no, play!
+
+
+#(yes, quit!)
+yes, quit!
+
+
+#(scan)
+scan
+
+
+#(starmap)
+starmap
+
+
+#(manifest)
+manifest
+
+
+#(game)
+game
+
+
+#(navigate)
+navigate
+
+
+#(cargo)
+cargo
+
+
+#(devices)
+devices
+
+
+#(roster)
+roster
+
+
+#(exit menu)
+exit menu
+
+
+#(mineral)
+mineral
+
+
+#(energy)
+energy
+
+
+#(biological)
+biological
+
+
+#(autoscan)
+autoscan
+
+
+#(dispatch)
+dispatch
+
+
+#(exit menu)
+exit menu
 
 

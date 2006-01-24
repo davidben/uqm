@@ -681,7 +681,8 @@ UninitEncounter (void)
 					r.corner.x = scavenge_r.corner.x + 10;
 					r.extent.width = 132;
 					DrawFilledRectangle (&r);
-					sprintf (buf, "%u %s", RecycleAmount, "RU");
+					sprintf (buf, "%u %s", RecycleAmount,
+							GAME_STRING (STATUS_STRING_BASE + 1)); // "RU"
 					t.baseline.x = r.corner.x + (r.extent.width >> 1);
 					t.baseline.y = r.corner.y + 14;
 					t.align = ALIGN_CENTER;
