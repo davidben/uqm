@@ -162,17 +162,18 @@ prepareConfigDir (const char *configDirName) {
 
 		if (configDirName == NULL)
 			configDirName = CONFIGDIR;
-
-		if (expandPath (buf, PATH_MAX - 13, configDirName, EP_ALL_SYSTEM)
-				== -1)
-		{
-			// Doesn't have to be fatal, but might mess up things when saving
-			// config files.
-			fprintf (stderr, "Fatal error: Invalid path to config files.\n");
-			exit (EXIT_FAILURE);
-		}
-		configDirName = buf;
 	}
+
+	if (expandPath (buf, PATH_MAX - 13, configDirName, EP_ALL_SYSTEM)
+			== -1)
+	{
+		// Doesn't have to be fatal, but might mess up things when saving
+		// config files.
+		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		exit (EXIT_FAILURE);
+	}
+	configDirName = buf;
+
 #ifdef DEBUG
 	fprintf (stderr, "Using config dir '%s'\n", configDirName);
 #endif

@@ -117,6 +117,9 @@ uio_closeRepository(uio_Repository *repository) {
  *                inPath - the location relative to the root of the newly
  *                		mounted fileSystem, pointing to the directory
  *                      that is to be grafted.
+ *                      Note: If fsType is uio_FSTYPE_STDIO, inPath is
+ *                      relative to the root of the filesystem, NOT to
+ *                      the current working dir.
  *                autoMount - array of automount options in function
  *                		in this mountPoint.
  *                flags - one of uio_MOUNT_TOP, uio_MOUNT_BOTTOM,
