@@ -75,7 +75,6 @@ enum
 	audio_BITS,
 	audio_CHANNELS,
 	audio_SIZE,
-	audio_DATA,
 	audio_FORMAT_MONO16,
 	audio_FORMAT_STEREO16,
 	audio_FORMAT_MONO8,

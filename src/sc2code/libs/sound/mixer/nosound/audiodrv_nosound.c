@@ -63,7 +63,6 @@ static const audio_Driver noSound_Driver =
 		MIX_BITS,
 		MIX_CHANNELS,
 		MIX_SIZE,
-		MIX_DATA,
 		MIX_FORMAT_MONO16,
 		MIX_FORMAT_STEREO16,
 		MIX_FORMAT_MONO8,

@@ -69,7 +69,6 @@ static const audio_Driver openAL_Driver =
 		AL_BITS,
 		AL_CHANNELS,
 		AL_SIZE,
-		AL_DATA,
 		AL_FORMAT_MONO16,
 		AL_FORMAT_STEREO16,
 		AL_FORMAT_MONO8,
