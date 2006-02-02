@@ -254,8 +254,10 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	if (pMenuState)
 	{
 		old_curs = pMenuState->flash_rect0.corner;
-		pMenuState->flash_rect0.corner.x = /* disable cursor */
-				pMenuState->flash_rect0.corner.x = -1000;
+		
+		/* Disable cursor: */
+		pMenuState->flash_rect0.corner.x = -1000;
+		pMenuState->flash_rect0.corner.y = -1000;
 	}
 
 	OldContext = SetContext (ScanContext);
