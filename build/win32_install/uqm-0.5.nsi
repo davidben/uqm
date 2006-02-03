@@ -312,7 +312,7 @@ DelOldContent:
     SetOverwrite ifnewer
     AddSize 12261
     StrCpy $MANDATORY 1
-    StrCpy $MD5SUM "186e9c307e999ece3a9303ed0edc8118"
+    StrCpy $MD5SUM "1d03864b141a2626a7284bc7cfdefb47"
     File "content\version"
     Push "uqm-0.5.0-content.uqm"
     Push "$INSTDIR\content\packages"
