@@ -60,6 +60,8 @@ var ICONS_GROUP
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
+!define MUI_UNCONFIRMPAGE_TEXT_TOP "This program will now uninstall The Ur-Quan Masters entirely.  If you wish to preserve content or expansion packs, select Cancel now and back them up.  Otherwise, press Uninstall to continue."
+!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
