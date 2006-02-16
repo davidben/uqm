@@ -1,3 +1,6 @@
+Changes towards version 0.6:
+- RMPLIFIED PRECURSOR BOMB is now AMPLIFIED, from Vorn (bug #812) 
+  -Michael
 Changes towards version 0.5:
 - Innocent origiginal c&p bug fixed, from bpoint.
 - Handle relative dirs in -C correctly, from Jan Lönnberg (part of bug #738).
