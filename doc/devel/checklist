@@ -22,10 +22,10 @@ Building the release:
 - make a final build in release mode
 - for the source archive:
   - use a clean cvs dir.
-    'cvs export' will produce a clean structure, without CVS dirs.
-    This requires a tag having been created though.
     Just using 'cvs update' and watching the output will not be
     enough, as some files like those beginning with '.#'will be ignored.
+    Make sure it is the most recent version (check out using authenticated
+    cvs), but modify the CVS/Root files to refer to anonymous CVS.
   - be sure to include content/version
 - Building the content packages:
   - make sure the permissions in the .zip files are ok (0644 for data files
@@ -37,8 +37,9 @@ Announcing the release:
 - provide md5 sums for the released files
 - add a new entry for the release in the bugs database
 - update the home page
-  - news
-  - download
+  - http://sc2.sourceforge.net/index.php (News item)
+  - http://sc2.sf.net/downloads.php
+  - http://sc2.sf.net/WhatsNew
 - send a mail to sc2-announce
 
 
