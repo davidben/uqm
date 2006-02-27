@@ -11,8 +11,8 @@ Main header: (resinit.c, _GetResFileData())
 position   length  meaning
 0x00       2       Whether or not the file is packaged (res_flags)
                        (has all files in the .pkg file itself)
-                   0 - the .pkg file is not packaged
-                   else - the .pkg file is packaged
+                   bit 0: 0 - the .pkg file is not packaged
+                          1 - the .pkg file is packaged
 0x02       4       offset from the beginning of the file where the list
                        of package information is stored (packmem_list_offs)
 0x06       4       offset from the beginning of the file where the list
