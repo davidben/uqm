@@ -1,0 +1,64 @@
+The various ship queues used in the game:
+
+GlobData.Game_state.avail_race_q:
+	Contains all the ships from the enum from races.h that defines
+	NUM_AVAILABLE_RACES.
+	Elements are of type EXTENDED_SHIP_FRAGMENT.
+	It contains information about the various races, not really about
+	specific ships.
+	Filled in InitSIS().
+	ShipInfo->RaceDescPtr is an actual pointer.
+	Several pointers point to within master_q (TODO: more info).
+	Partially included in savegames.
+
+GlobData.Game_state.built_ship_q:
+	The fleet accompanying the flagship.
+	Elements are of type SHIP_FRAGMENT.
+	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	and the side that this ship is on (always GOOD_GUY here).
+	Partially included in savegames.
+
+master_q:
+	Queue of all the ships that exist in the game.
+	Elements are of type SHIP_FRAGMENT.
+	Sorted on the (abbreviated) race name (see doc/racestrings).
+	Filled in LoadMasterShipList().
+	ShipInfo->RaceDescPtr is an actual pointer.
+
+GlobData.Game_state.npc_built_ship_q:
+	The npc ships in an encounter. Empty when not in an encounter.
+	Elements are of type SHIP_FRAGMENT.
+	For encounters with an infinite number of ships, the queue consists
+	of a single ship with ShipInfo.crew_level set to (BYTE)~0.
+	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	and the side that this ship is on.
+	Partially included in savegames.
+
+race_q[NUM_PLAYERS]:
+	Contains the ships participating in a battle for each player.
+	Elements are of type STARSHIP.
+	Filled in BuildBattle().
+	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	and the side that this ship is on.
+
+
+Other queues:
+
+GlobData.Game_state.GameClock.event_q:
+	Queue of game events.
+	Elements are of type EVENT.
+
+disp_q:
+	Display queue. This contains all visible elements; everything
+	that floats in TrueSpace, HyperSpace/QuasiSpace, battle.
+	Elements are of type ELEMENT.
+
+GlobData.Game_state.encounter_q:
+	Contains information regarding the black globes flying around
+	in HyperSpace.
+	Elements are of type ENCOUNTER.
+
+
+Initial version of this document created by Serge van den Boom, on 2006-03-08.
+
+
