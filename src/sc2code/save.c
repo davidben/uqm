@@ -40,6 +40,7 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 	COUNT num_links;
 	HSTARSHIP hStarShip;
 
+	// Write the number of entries in the queue.
 	num_links = CountLinks (pQueue);
 	cwrite ((PBYTE)&num_links, sizeof (num_links), 1, fh);
 
@@ -57,6 +58,7 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 		if (pQueue == &GLOBAL (avail_race_q))
 		{
 			Index = GetIndexFromStarShip (pQueue, hStarShip);
+					// The index is the position in the queue.
 			Offset = 0;
 		}
 		else
@@ -66,18 +68,35 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 					- (PBYTE)&FragPtr->RaceDescPtr;
 		}
 
+		// Write the number identifying this ship type.
+		// See races.h; look for the enum containing NUM_AVAILABLE_RACES.
 		cwrite ((PBYTE)&Index, sizeof (Index), 1, fh);
 
+		// Write part of FragPtr, starting with FragPtr->ShipInfo for
+		// GLOBAL(avail_race_q), and FragPtr->RaceDescPtr for other queues.
+		// When FragPtr->RaceDescPtr is saved, it does not actually
+		// contain a pointer (see the definition of SHIP_FRAGMENT).
+		// This is only so because SaveShipQueue() is only ever called with
+		// GLOBAL_avail_race_q), GLOBAL(built_ship_q) and
+		// GLOBAL(npc_built_ship_q).
 		Ptr = ((PBYTE)&FragPtr->ShipInfo) - Offset;
 		cwrite ((PBYTE)Ptr, ((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr,
 				1, fh);
+
 		if (Offset == 0)
 		{
+			// The queue being saved is avail_race_q.
+			// It contains information not about specific ships, but about
+			// a race. What is saved is everything in the EXTENDED_SHIP_INFO
+			// structure from the field 'actual_strength' onwards,
+			// for each of the races.
 			EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr;
 
 			ExtFragPtr = (EXTENDED_SHIP_FRAGMENTPTR)FragPtr;
 			Ptr = (PBYTE)&ExtFragPtr->ShipInfo.actual_strength;
 			cwrite ((PBYTE)Ptr, ((PBYTE)&ExtFragPtr[1]) - Ptr, 1, fh);
+					// XXX: This saves padding too, which may contain
+					//      garbage.
 		}
 
 		UnlockStarShip (pQueue, hStarShip);
