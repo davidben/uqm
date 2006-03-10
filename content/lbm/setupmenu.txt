@@ -1,0 +1,356 @@
+#(TITLE)
+Ur-Quan Masters Setup
+
+#(SUBTITLES)
+
+Graphics Options
+Audio Options
+3do/PC Options
+Addon Packs
+Controls Setup
+Advanced Options
+
+#(CHOICES)
+Resolution
+Use Framebuffer?
+Scaler
+Scanlines
+Menu Style
+Font Style
+Scan Style
+Scroll Style
+Subtitles
+Music Format
+Display
+Cutscenes
+Show FPS
+Melee Zoom
+Positional Audio
+Sound Driver
+Sound Quality
+Slave Shields
+
+#(CAT_0_OPTS)
+320x240
+640x480
+800x600
+1024x768
+Custom
+
+#(CAT_0_OPT_0_DESC)
+320x240 resolution.
+Available with SDL framebuffer or OpenGL.
+
+#(CAT_0_OPT_1_DESC)
+640x480 resolution.
+Available with SDL framebuffer or OpenGL.
+
+#(CAT_0_OPT_2_DESC)
+800x600 resolution.
+Requires OpenGL graphics drivers.
+
+#(CAT_0_OPT_3_DESC)
+1024x768 resolution.
+Requires OpenGL graphics drivers.
+
+#(CAT_0_OPT_4_DESC)
+Custom resolution set from the commandline.
+Requires OpenGL graphics drivers.
+
+#(CAT_1_OPTS)
+If Possible
+Never
+
+#(CAT_1_OPT_0_DESC)
+Uses SDL Framebuffer mode if possible,
+and OpenGL otherwise.  Framebuffer mode
+is available for 320x240 and 640x480.
+
+#(CAT_1_OPT_1_DESC)
+Always use OpenGL.
+OpenGL can produce any resolution and is
+usually hardware-accelerated.
+
+#(CAT_2_OPTS)
+None
+Bilinear
+Biadapt
+Biadv
+Triscan
+HQ
+
+#(CAT_2_OPT_0_DESC)
+No scaling.
+Simulates the original 320x240 display.
+Fastest, though least attractive, option.
+
+#(CAT_2_OPT_1_DESC)
+Bilinear average scaling.
+A simple, fast blending technique.
+Hardware-accelerated in OpenGL mode.
+
+#(CAT_2_OPT_2_DESC)
+Adaptive bilinear scaling.
+A slower, less blurry blending technique.
+
+#(CAT_2_OPT_3_DESC)
+Advanced bilinear scaling.
+Hand-weighted blend that produces smoother curves.
+The most expensive scaler.
+
+#(CAT_2_OPT_4_DESC)
+An interpolating scaler.
+Produces sharp edges, but at a higher resolution.
+Based on the Scale2x algorithm.
+
+#(CAT_2_OPT_5_DESC)
+A high quality, very expensive interpolating scaler.
+Produces sharp edges, but at a higher resolution.
+Based on the HQ2X algorithm.
+
+#(CAT_3_OPTS)
+Disabled
+Enabled
+
+#(CAT_3_OPT_0_DESC)
+Do not attempt to simulate an interlaced display.
+
+#(CAT_3_OPT_1_DESC)
+Simulate an interlaced display.
+
+#(CAT_4_OPTS)
+Text
+Pictographic
+
+#(CAT_4_OPT_0_DESC)
+In-game menus resemble the Original PC version.
+
+#(CAT_4_OPT_1_DESC)
+In-game menus resemble the 3do version.
+
+#(CAT_5_OPTS)
+Gradients
+Flat
+
+#(CAT_5_OPT_0_DESC)
+Certain menu texts and dialogs use gradients,
+as per the original PC version.
+Looks nicer.
+
+#(CAT_5_OPT_1_DESC)
+All text and menus use a "flat" colour scheme,
+as per the 3do version.
+Easier to read.
+
+#(CAT_6_OPTS)
+Text
+Pictograms
+
+#(CAT_6_OPT_0_DESC)
+Displays planet scan information as text,
+as per the original PC version.
+
+#(CAT_6_OPT_1_DESC)
+Displays planet scan information as pictograms,
+as per the 3do version..
+
+#(CAT_7_OPTS)
+Per-Page
+Smooth
+
+#(CAT_7_OPT_0_DESC)
+When fast-forwarding or rewinding conversations
+in-game, advance one screen of subtitles at a time.
+This mimics the original PC version.
+
+#(CAT_7_OPT_1_DESC)
+When fast-forwarding or rewinding conversations
+in-game, advance at a linear rate.
+This mimics the 3do version.
+
+#(CAT_8_OPTS)
+Disabled
+Enabled
+
+#(CAT_8_OPT_0_DESC)
+Do not subtitle alien speech.
+
+#(CAT_8_OPT_1_DESC)
+Show subtitles for alien speech.
+
+#(CAT_9_OPTS)
+PC
+3do/Remixes
+
+#(CAT_9_OPT_0_DESC)
+Uses the music from the Original PC version.
+Prefers .MOD files to .OGG files.
+
+#(CAT_9_OPT_1_DESC)
+Uses the music from the 3do version and/or the
+Ur-Quan Masters Remix Project, if available.
+Prefers .OGG files over .MOD.
+
+#(CAT_10_OPTS)
+Windowed
+Fullscreen
+
+#(CAT_10_OPT_0_DESC)
+Display everything in a window.
+(if windowing is available)
+
+#(CAT_10_OPT_1_DESC)
+Game occupies the entire screen.
+(if available)
+
+#(CAT_11_OPTS)
+Slides
+Movie
+
+#(CAT_11_OPT_0_DESC)
+Prefer slides to movies if both are present.
+Forces the PC intro.
+
+#(CAT_11_OPT_1_DESC)
+Prefer movies to slides.
+Will use 3do content if present.
+
+#(CAT_12_OPTS)
+No
+Yes
+
+#(CAT_12_OPT_0_DESC)
+Do not show FPS in the console window.
+
+#(CAT_12_OPT_1_DESC)
+Show FPS in the console window.
+
+#(CAT_13_OPTS)
+Stepped
+Smooth
+
+#(CAT_13_OPT_0_DESC)
+Cut between three zoom levels in combat.
+Resembles PC combat.
+
+#(CAT_13_OPT_1_DESC)
+Continuously scale the combat view.
+Resembles 3do combat.
+
+#(CAT_14_OPTS)
+Disabled
+Enabled
+
+#(CAT_14_OPT_0_DESC)
+Sound effects are center-channel.
+
+#(CAT_14_OPT_1_DESC)
+Uses positional SFX if possible..
+Currently only supported on OpenAL.
+
+#(CAT_15_OPTS)
+None
+MixSDL
+OpenAL
+
+#(CAT_15_OPT_0_DESC)
+Play silently.
+
+#(CAT_15_OPT_1_DESC)
+Use the default audio mixer.
+
+#(CAT_15_OPT_2_DESC)
+Use the Creative Labs OpenAL driver.
+
+#(CAT_16_OPTS)
+Low
+Medium
+High
+
+#(CAT_16_OPT_0_DESC)
+Low audio quality.
+
+#(CAT_16_OPT_1_DESC)
+Medium audio quality.
+
+#(CAT_16_OPT_2_DESC)
+Highest audio quality.
+May not work on all architectures.
+
+#(CAT_17_OPTS)
+Static
+Pulsating
+
+#(CAT_17_OPT_0_DESC)
+Slave shields maintain a static glow.
+This mimics the PC version.
+
+#(CAT_17_OPT_1_DESC)
+Slave shields pulsate.
+This mimics the 3do verion.
+
+#(SLIDERS)
+Music Volume
+SFX Volume
+Speech Volume
+
+#(SLIDER_0_DESC)
+Sets the music volume.
+
+#(SLIDER_1_DESC)
+Sets the sound effects volume.
+
+#(SLIDER_2_DESC)
+Sets the speech volume.
+
+#(BUTTONS)
+Quit Setup Menu
+Return to Main Menu
+Graphics Options
+PC/3do Compatibility Options
+Sound Options
+Resources Options
+Configure Controls
+Advanced Options
+
+#(BUTTON_0_DESC)
+Return to the main menu.
+
+#(BUTTON_1_DESC)
+Save changes and return to main menu.
+Changes will not be applied until
+you quit setup entirely.
+
+#(BUTTON_2_DESC)
+Configure display options for UQM.
+Graphics drivers, resolution, and scalers.
+
+#(BUTTON_3_DESC)
+Configure behavior of UQM
+to more closely match the PC or 3do behavior.
+
+#(BUTTON_4_DESC)
+Configure sound and audio options for UQM.
+
+#(BUTTON_5_DESC)
+Configure UQM Addon Packs.
+
+Currently unimplemented.
+
+#(BUTTON_6_DESC)
+Set up keyboard and joystick controls.
+
+Currently unimplemented.
+
+#(BUTTON_7_DESC)
+Select underlying drivers or other
+hardware-dependent options.
+
+#(LABELS)
+Incomplete
+
+#(LABEL_0)
+This part of the configuration
+has not yet been implemented.
+
+Expect it in a future version.
