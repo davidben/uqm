@@ -26,10 +26,13 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
 #include "libs/graphics/tfb_draw.h"
+#include "libs/strlib.h"
 #include "libs/reslib.h"
 #include "libs/sound/sound.h"
 #include "resinst.h"
+#include "nameref.h"
 
+static STRING SetupTab;
 
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);
@@ -736,10 +739,25 @@ SetupMenu (void)
 	s.InputFunc = DoSetupMenu;
 	s.initialized = FALSE;
 	SetMenuSounds (0, MENU_SOUND_SELECT);
+	SetupTab = CaptureStringTable (LoadStringTable (SETUP_MENU_STRTAB));
+	if (SetupTab) 
+	{
+		fprintf (stderr, "GetStringTableCount reports %d entries.\n", GetStringTableCount (SetupTab));
+	}
+	else
+	{
+		fprintf (stderr, "Could not find setup strings!\n");
+	}
 	done = FALSE;
+
 	DoInput ((PVOID)&s, TRUE);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	PropagateResults ();
+	if (SetupTab)
+	{
+		DestroyStringTable (ReleaseStringTable (SetupTab));
+		SetupTab = 0;
+	}
 }
 
 void
