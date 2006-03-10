@@ -19,6 +19,7 @@
 
 #include "clock.h"
 #include "planets/planets.h"
+#include "races.h"
 #include "libs/compiler.h"
 
 #include <stdio.h>
@@ -141,6 +142,11 @@ const char *densityString (BYTE density);
 const char *depositQualityString (BYTE quality);
 
 
+// Find a player ship. Setting which to BAD_GUY is only meaningful in battle.
+STARSHIPPTR findPlayerShip(ELEMENT_FLAGS which);
+
+// Resets the crew of the first player (the bottom one) to its maximum.
+void resetCrewBattle(void);
 
 
 // Move instantly across hyperspace/quasispace.

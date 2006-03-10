@@ -63,6 +63,7 @@ debugKeyPressed (void)
 {
 	// State modifying:
 	equipShip ();
+	resetCrewBattle ();
 	instantMove = !instantMove;
 	showSpheres ();
 	activateAllShips ();
@@ -1232,6 +1233,57 @@ depositQualityString (BYTE quality)
 			// Should not happen
 			return "???";
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+// Which should be GOOD_GUY or BAD_GUY
+STARSHIPPTR
+findPlayerShip(ELEMENT_FLAGS which) {
+	HELEMENT hElement, hNextElement;
+
+	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
+	{
+		ELEMENTPTR ElementPtr;
+
+		LockElement (hElement, &ElementPtr);
+		hNextElement = GetSuccElement (ElementPtr);
+					
+		if ((ElementPtr->state_flags & PLAYER_SHIP)	&&
+				(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY)) == which)
+		{
+			STARSHIPPTR StarShipPtr;
+			GetElementStarShip (ElementPtr, &StarShipPtr);
+			UnlockElement (hElement);
+			return StarShipPtr;
+		}
+		
+		UnlockElement (hElement);
+	}
+	return NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void
+resetCrewBattle(void) {
+	STARSHIPPTR StarShipPtr;
+	COUNT delta;
+	CONTEXT OldContext;
+	
+	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
+		return;
+	
+	StarShipPtr = findPlayerShip (GOOD_GUY);
+	if (StarShipPtr == NULL || StarShipPtr->RaceDescPtr == NULL)
+		return;
+
+	delta = StarShipPtr->RaceDescPtr->ship_info.max_crew -
+			StarShipPtr->RaceDescPtr->ship_info.crew_level;
+
+	OldContext = SetContext (StatusContext);
+	DeltaCrew (StarShipPtr->hShip, delta);
+	SetContext (OldContext);
 }
 
 #endif  /* DEBUG */
