@@ -42,7 +42,7 @@
 @HAVE_STRICMP@
 
 /* Defined if your system has getopt.h */
-@HAVE_GETOPT_H@
+@HAVE_GETOPT_LONG@
 
 /* Defined if your system has iswgraph of its own*/
 @HAVE_ISWGRAPH@
