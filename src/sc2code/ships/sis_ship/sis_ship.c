@@ -131,9 +131,7 @@ sis_hyper_preprocess (PELEMENT ElementPtr)
 	STARSHIPPTR StarShipPtr;
 
 	if (ElementPtr->state_flags & APPEARING)
-	{
 		ElementPtr->velocity = GLOBAL (velocity);
-	}
 
 	AccelerateDirection = 0;
 
@@ -211,10 +209,7 @@ LeaveAutoPilot:
 			}
 		}
 
-		GetCurrentVelocityComponents (
-				&ElementPtr->velocity,
-				&dx, &dy
-				);
+		GetCurrentVelocityComponents (&ElementPtr->velocity, &dx, &dy);
 		if ((GLOBAL_SIS (FuelOnBoard)
 				|| GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
 				&& (int)facing == (int)StarShipPtr->ShipFacing)
@@ -236,8 +231,7 @@ LeaveAutoPilot:
 		SIZE speed, velocity_increment;
 
 		velocity_increment = WORLD_TO_VELOCITY (
-				StarShipPtr->RaceDescPtr->characteristics.thrust_increment
-				);
+				StarShipPtr->RaceDescPtr->characteristics.thrust_increment);
 
 		if ((dist = square_root ((long)udx * udx + (long)udy * udy)) == 0)
 			dist = 1; /* prevent divide by zero */
@@ -261,8 +255,7 @@ LeaveAutoPilot:
 			AccelerateDirection = 0;
 
 			max_velocity = WORLD_TO_VELOCITY (
-					StarShipPtr->RaceDescPtr->characteristics.max_thrust
-					);
+					StarShipPtr->RaceDescPtr->characteristics.max_thrust);
 
 			dy = (speed / velocity_increment + 1)
 					* velocity_increment;
@@ -292,7 +285,8 @@ sis_hyper_postprocess (PELEMENT ElementPtr)
 	GLOBAL (velocity) = ElementPtr->velocity;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	if (((StarShipPtr->cur_status_flags & WEAPON) || PulsedInputState.key[KEY_MENU_CANCEL])
+	if (((StarShipPtr->cur_status_flags & WEAPON) ||
+			PulsedInputState.key[KEY_MENU_CANCEL])
 			&& StarShipPtr->special_counter == 0)
 	{
 #define MENU_DELAY 10
@@ -335,18 +329,18 @@ spawn_point_defense (PELEMENT ElementPtr)
 		BOOLEAN PaidFor;
 		HELEMENT hObject, hNextObject;
 		ELEMENTPTR ShipPtr;
-		COLOR LaserColor,
-					ColorRange[] =
-					{
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
-					};
+		COLOR LaserColor;
+		COLOR ColorRange[] =
+		{
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
+		};
 
 		PaidFor = FALSE;
 
@@ -407,8 +401,8 @@ spawn_point_defense (PELEMENT ElementPtr)
 							- ShipPtr->next.location.x;
 					LaserBlock.ey = ObjectPtr->next.location.y
 							- ShipPtr->next.location.y;
-					LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-							| IGNORE_SIMILAR;
+					LaserBlock.sender = (ShipPtr->state_flags &
+							(GOOD_GUY | BAD_GUY)) | IGNORE_SIMILAR;
 					LaserBlock.pixoffs = 0;
 					LaserBlock.color = LaserColor;
 					hPointDefense = initialize_laser (&LaserBlock);
@@ -455,7 +449,6 @@ sis_battle_preprocess (PELEMENT ElementPtr)
 static void
 sis_battle_postprocess (PELEMENT ElementPtr)
 {
-//	SIZE crew_delta;
 	STARSHIPPTR StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -465,21 +458,6 @@ sis_battle_postprocess (PELEMENT ElementPtr)
 	{
 		spawn_point_defense (ElementPtr);
 	}
-
-#if 0
-	if (ElementPtr->crew_level > 0
-			&& ElementPtr->crew_level < StarShipPtr->RaceDescPtr->ship_info.max_crew
-			&& ElementPtr->crew_level != (crew_delta =
-			(SIZE)GLOBAL_SIS (CrewEnlisted) + 1))
-	{
-		ElementPtr->crew_level = 0;
-		StarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
-		if (crew_delta <= StarShipPtr->RaceDescPtr->ship_info.max_crew)
-			DeltaCrew (ElementPtr, crew_delta);
-		else
-			DeltaCrew (ElementPtr, StarShipPtr->RaceDescPtr->ship_info.max_crew);
-	}
-#endif
 }
 
 #define BLASTER_DAMAGE 2
@@ -489,8 +467,7 @@ blaster_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 {
 	HELEMENT hBlastElement;
 
-	hBlastElement =
-			weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
+	hBlastElement = weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 	if (hBlastElement)
 	{
 		ELEMENTPTR BlastElementPtr;
@@ -552,13 +529,9 @@ blaster_preprocess (PELEMENT ElementPtr)
 		COUNT facing;
 
 		facing = NORMALIZE_FACING (ANGLE_TO_FACING (
-				GetVelocityTravelAngle (&ElementPtr->velocity)
-				));
+				GetVelocityTravelAngle (&ElementPtr->velocity)));
 		if (TrackShip (ElementPtr, &facing) > 0)
-		{
-			SetVelocityVector (&ElementPtr->velocity,
-					BLASTER_SPEED, facing);
-		}
+			SetVelocityVector (&ElementPtr->velocity, BLASTER_SPEED, facing);
 
 		ElementPtr->turn_wait = MAKE_BYTE (wait, wait);
 	}
@@ -588,9 +561,7 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 
 		if (i == 3)
 			i = NUM_MODULE_SLOTS - 1;
-		which_gun = GLOBAL_SIS (ModuleSlots[
-				(NUM_MODULE_SLOTS - 1) - i
-				]);
+		which_gun = GLOBAL_SIS (ModuleSlots[(NUM_MODULE_SLOTS - 1) - i]);
 		if (which_gun >= GUN_WEAPON && which_gun <= CANNON_WEAPON)
 		{
 			which_gun -= GUN_WEAPON - 1;
@@ -623,33 +594,28 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 				case 1: /* SPREAD WEAPON */
 					lpMB->pixoffs = SIS_VERT_OFFSET;
 					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing + 1
-							);
+							StarShipPtr->ShipFacing + 1);
 					lpMB[1] = lpMB[0];
 					++lpMB;
 					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing - 1
-							);
+							StarShipPtr->ShipFacing - 1);
 					break;
 				case 2: /* SIDE WEAPON */
 					lpMB->pixoffs = SIS_HORZ_OFFSET;
 					lpMB->face = NORMALIZE_FACING (
 							StarShipPtr->ShipFacing
-							+ ANGLE_TO_FACING (QUADRANT)
-							);
+							+ ANGLE_TO_FACING (QUADRANT));
 					lpMB[1] = lpMB[0];
 					++lpMB;
 					lpMB->face = NORMALIZE_FACING (
 							StarShipPtr->ShipFacing
-							- ANGLE_TO_FACING (QUADRANT)
-							);
+							- ANGLE_TO_FACING (QUADRANT));
 					break;
 				case NUM_MODULE_SLOTS - 1: /* TAIL WEAPON */
 					lpMB->pixoffs = SIS_VERT_OFFSET;
 					lpMB->face = NORMALIZE_FACING (
 							StarShipPtr->ShipFacing
-							+ ANGLE_TO_FACING (HALF_CIRCLE)
-							);
+							+ ANGLE_TO_FACING (HALF_CIRCLE));
 					break;
 			}
 
@@ -677,7 +643,8 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 }
 
 static void
-sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	PEVALUATE_DESC lpEvalDesc;
 	STARSHIPPTR StarShipPtr;
@@ -699,7 +666,8 @@ sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Conce
 				StarShipPtr->ship_input_state &= ~SPECIAL;
 			lpEvalDesc->ObjectPtr = NULL_PTR;
 		}
-		else if (MANEUVERABILITY (&StarShipPtr->RaceDescPtr->cyborg_control) < MEDIUM_SHIP
+		else if (MANEUVERABILITY (&StarShipPtr->RaceDescPtr->cyborg_control)
+				< MEDIUM_SHIP
 				&& lpEvalDesc->MoveState == ENTICE
 				&& (!(lpEvalDesc->ObjectPtr->state_flags & CREW_OBJECT)
 				|| lpEvalDesc->which_turn <= 8)
@@ -729,8 +697,7 @@ sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Conce
 		delta_y = lpEvalDesc->ObjectPtr->current.location.y
 				- ShipPtr->current.location.y;
 		direction_facing = NORMALIZE_FACING (
-				ANGLE_TO_FACING (ARCTAN (delta_x, delta_y))
-				);
+				ANGLE_TO_FACING (ARCTAN (delta_x, delta_y)));
 
 		ship_flags = StarShipPtr->RaceDescPtr->ship_info.ship_flags;
 		for (fire_flags = FIRES_FORE, facing = StarShipPtr->ShipFacing;
@@ -889,9 +856,7 @@ init_sis (void)
 		InitModuleSlots(&new_sis_desc, GLOBAL_SIS (ModuleSlots));
 				
 		if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
-		{
 			SET_GAME_STATE (BOMB_CARRIER, 1);
-		}
 	}
 
 	InitDriveSlots(&new_sis_desc, GLOBAL_SIS (DriveSlots));
