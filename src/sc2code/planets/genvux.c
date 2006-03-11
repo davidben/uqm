@@ -163,7 +163,7 @@ GenerateVUX (BYTE control)
 				ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 				CloneShipFragment (VUX_SHIP,
-						&GLOBAL (npc_built_ship_q), (BYTE)~0);
+						&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 				if (CurStarDescPtr->Index == VUX_DEFINED)
 				{
 					SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);

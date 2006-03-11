@@ -48,7 +48,7 @@ static RACE_DESC orz_desc =
 		FIRES_FORE | SEEKING_SPECIAL,
 		23, /* Super Melee cost */
 		333 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			3608, 2637,
@@ -56,6 +56,7 @@ static RACE_DESC orz_desc =
 		(STRING)ORZ_RACE_STRINGS,
 		(FRAME)ORZ_ICON_MASK_PMAP_ANIM,
 		(FRAME)ORZ_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -101,9 +102,10 @@ static RACE_DESC orz_desc =
 		MISSILE_SPEED * MISSILE_LIFE,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

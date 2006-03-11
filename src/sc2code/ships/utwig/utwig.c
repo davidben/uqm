@@ -47,7 +47,7 @@ static RACE_DESC utwig_desc =
 		FIRES_FORE | POINT_DEFENSE | SHIELD_DEFENSE,
 		22, /* Super Melee cost */
 		666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY >> 1, MAX_ENERGY,
 		{
 			8534, 8797,
@@ -55,6 +55,7 @@ static RACE_DESC utwig_desc =
 		(STRING)UTWIG_RACE_STRINGS,
 		(FRAME)UTWIG_ICON_MASK_PMAP_ANIM,
 		(FRAME)UTWIG_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -100,9 +101,10 @@ static RACE_DESC utwig_desc =
 		CLOSE_RANGE_WEAPON,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

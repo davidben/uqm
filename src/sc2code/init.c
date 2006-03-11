@@ -205,7 +205,19 @@ UninitShips (void)
 	for (i = 0; i < NUM_PLAYERS; ++i)
 		SPtr[i] = 0;
 
+	// Count the crew floating in space.
 	crew_retrieved = 0;
+	for (hElement = GetHeadElement ();
+			hElement != 0; hElement = hNextElement)
+	{
+		ELEMENTPTR ElementPtr;
+		LockElement (hElement, &ElementPtr);
+		hNextElement = GetSuccElement (ElementPtr);
+		if (ElementPtr->state_flags & CREW_OBJECT)
+			++crew_retrieved;
+		UnlockElement (hElement);
+	}
+
 	for (hElement = GetHeadElement ();
 			hElement != 0; hElement = hNextElement)
 	{
@@ -214,14 +226,20 @@ UninitShips (void)
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
-		if (ElementPtr->state_flags & CREW_OBJECT)
-			++crew_retrieved;
-		else if ((ElementPtr->state_flags & PLAYER_SHIP)
+		if ((ElementPtr->state_flags & PLAYER_SHIP)
 				|| ElementPtr->death_func == new_ship)
 		{
 			STARSHIPPTR StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
+			// There should only be one ship left in battle.
+			// He gets the crew still floating in space.
+			if (StarShipPtr->RaceDescPtr->ship_info.crew_level)
+				StarShipPtr->RaceDescPtr->ship_info.crew_level +=
+						crew_retrieved;
+			if (StarShipPtr->RaceDescPtr->uninit_func != NULL)
+				(*StarShipPtr->RaceDescPtr->uninit_func) (
+						StarShipPtr->RaceDescPtr);
 			StarShipPtr->ShipFacing =
 					StarShipPtr->RaceDescPtr->ship_info.var2;
 			StarShipPtr->special_counter =
@@ -243,12 +261,7 @@ UninitShips (void)
 		for (i = NUM_PLAYERS - 1; i >= 0; --i)
 		{
 			if (SPtr[i])
-			{
-				if (SPtr[i]->special_counter)
-					SPtr[i]->special_counter += crew_retrieved;
-
 				GetEncounterStarShip (SPtr[i], i);
-			}
 		}
 	}
 
@@ -261,4 +274,5 @@ UninitShips (void)
 			FreeHyperspace ();
 	}
 }
+
 

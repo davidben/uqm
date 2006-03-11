@@ -383,14 +383,16 @@ NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
 	return name_index;
 }
 
+// crew_level can be set to INFINITE_FLEET for a ship which is to
+// represent an infinite number of ships.
 HSTARSHIP
-CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE crew_level)
+CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, COUNT crew_level)
 {
 	HSTARSHIP hStarShip, hBuiltShip;
 	SHIP_FRAGMENTPTR TemplatePtr;
 
-	if ((hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q),
-			shipIndex)) == 0)
+	hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), shipIndex);
+	if (hStarShip == 0)
 		return 0;
 
 	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (

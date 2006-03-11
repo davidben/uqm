@@ -308,7 +308,7 @@ GenerateOrz (BYTE control)
 					if (CurStarDescPtr->Index == ORZ_DEFINED)
 					{
 						CloneShipFragment (ORZ_SHIP,
-								&GLOBAL (npc_built_ship_q), (BYTE)~0);
+								&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 						SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 					}
 					else

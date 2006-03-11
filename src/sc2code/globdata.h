@@ -210,6 +210,11 @@ START_GAME_STATE
 			 */
 	ADD_GAME_STATE (PLANETARY_LANDING, 1)
 	ADD_GAME_STATE (PLANETARY_CHANGE, 1)
+			/* Flag set to 1 when the planet information for the current
+			 * world is changed since it was last saved to the starinfo.dat
+			 * file. Set when picking up bio, mineral, or energy nodes.
+			 * When there's no current world, it should be 0.
+			 */
 
 		/* Spathi states */
 	ADD_GAME_STATE (SPATHI_VISITS, 3)
@@ -741,6 +746,14 @@ START_GAME_STATE
 	ADD_GAME_STATE (UMGAH_MENTIONED_TRICKS, 2)
 
 	ADD_GAME_STATE (BOMB_CARRIER, 1)
+			/* 0 when the flagship is not in battle, or it doesn't have the
+			 *   enhanced precursor bomb installed.
+			 * 1 when the flagship is in battle and the bomb is installed.
+			 * This determines whether you can flee (if the warp escape unit
+			 * is installed at all), and whether taking the ship into the
+			 * Sa-Matra defense structure will trigger the end of the game.
+			 */
+	
 	ADD_GAME_STATE (THRADD_MANNER, 1)
 	ADD_GAME_STATE (THRADD_INTRO, 2)
 	ADD_GAME_STATE (THRADD_DEMEANOR, 3)

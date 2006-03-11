@@ -72,6 +72,12 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 		// See races.h; look for the enum containing NUM_AVAILABLE_RACES.
 		cwrite ((PBYTE)&Index, sizeof (Index), 1, fh);
 
+		// Hack to retain savegame backwards compatibility, after
+		// increasing crew_level and max_crew from BYTE to COUNT.
+		// For the queues that are saved here, a BYTE is large enough.
+		FragPtr->ShipInfo.dummy_max_crew = FragPtr->ShipInfo.max_crew;
+		FragPtr->ShipInfo.dummy_crew_level = FragPtr->ShipInfo.crew_level;
+		
 		// Write part of FragPtr, starting with FragPtr->ShipInfo for
 		// GLOBAL(avail_race_q), and FragPtr->RaceDescPtr for other queues.
 		// When FragPtr->RaceDescPtr is saved, it does not actually
@@ -102,6 +108,36 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 		UnlockStarShip (pQueue, hStarShip);
 		hStarShip = hNextShip;
 	}
+}
+
+static void
+SaveEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
+{
+	COUNT i;
+#define SAVE_BLOCK(file, start, end) \
+		cwrite((PBYTE) (start), (PBYTE) (end) - (PBYTE) start, \
+		1, (file))
+	// An ENCOUNTER structure (indirectly) contains an array of
+	// SHIP_INFO  structure, which is bigger now because of the
+	// larger type for crew.
+	// This hack makes sure the savegames format is unchanged.
+	// The original code consisted of jsut one line:
+	// cwrite ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
+
+	// Save the stuff before the SHIP_INFO array:
+	SAVE_BLOCK(fh, EncounterPtr, EncounterPtr->SD.ShipList);
+
+	// Save each entry in the SHIP_INFO array:
+	for (i = 0; i < MAX_HYPER_SHIPS; i++)
+	{
+		SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
+		ShipInfo->dummy_crew_level = (BYTE) ShipInfo->crew_level;
+		ShipInfo->dummy_max_crew = (BYTE) ShipInfo->max_crew;
+		SAVE_BLOCK(fh, ShipInfo, &ShipInfo->crew_level);
+	}
+	
+	// Save the stuff after the SHIP_INFO array:
+	SAVE_BLOCK(fh, &EncounterPtr->log_x, &EncounterPtr[1]);
 }
 
 static void
@@ -259,6 +295,8 @@ SaveProblem (void)
 	return;
 }
 
+// This function first writes to a memory file, and then writes the whole
+// lot to the actual save file at once.
 BOOLEAN
 SaveGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 {
@@ -320,7 +358,8 @@ RetrySave:
 				& (START_ENCOUNTER | START_INTERPLANETARY)))
 			PutGroupInfo (0L, (BYTE)~0);
 
-		cwrite ((PBYTE)&GlobData.Game_state, sizeof (GlobData.Game_state), 1, fh);
+		cwrite ((PBYTE)&GlobData.Game_state, sizeof (GlobData.Game_state),
+				1, fh);
 
 		GLOBAL (ip_location) = pt;
 		GLOBAL (ShipStamp.frame) = frame;
@@ -330,8 +369,10 @@ RetrySave:
 			SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
 		SaveShipQueue (fh, &GLOBAL (built_ship_q));
 
+		// Save the number of game events (compressed).
 		num_links = CountLinks (&GLOBAL (GameClock.event_q));
 		cwrite ((PBYTE)&num_links, sizeof (num_links), 1, fh);
+		// Save the game events themselves (compressed):
 		{
 			HEVENT hEvent;
 
@@ -351,7 +392,9 @@ RetrySave:
 			}
 		}
 
+		// Save the number of encounters (black globes in HS/QS (compressed))
 		num_links = CountLinks (&GLOBAL (encounter_q));
+		// Save the encounters themselves (compressed):
 		cwrite ((PBYTE)&num_links, sizeof (num_links), 1, fh);
 		{
 			HENCOUNTER hEncounter;
@@ -365,6 +408,8 @@ RetrySave:
 				LockEncounter (hEncounter, &EncounterPtr);
 				hNextEncounter = GetSuccEncounter (EncounterPtr);
 
+				//cwrite ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
+				SaveEncounter(EncounterPtr, fh);
 				cwrite ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
 
 				UnlockEncounter (hEncounter);
@@ -372,10 +417,12 @@ RetrySave:
 			}
 		}
 
+		// Copy the star info file to the memory file (compressed).
 		fp = OpenStateFile (STARINFO_FILE, "rb");
 		if (fp)
 		{
 			flen = LengthStateFile (fp);
+			// (DWORD) Write the uncompressed size.
 			cwrite ((PBYTE)&flen, sizeof (flen), 1, fh);
 			while (flen)
 			{
@@ -390,10 +437,12 @@ RetrySave:
 			CloseStateFile (fp);
 		}
 
+		// Copy the ? groupinfo file into the memory file (compressed).
 		fp = OpenStateFile (DEFGRPINFO_FILE, "rb");
 		if (fp)
 		{
 			flen = LengthStateFile (fp);
+			// (DWORD) Write the uncompressed size.
 			cwrite ((PBYTE)&flen, sizeof (flen), 1, fh);
 			while (flen)
 			{
@@ -408,6 +457,7 @@ RetrySave:
 			CloseStateFile (fp);
 		}
 
+		// Copy the ? groupinfo file into the memory file (compressed).
 		fp = OpenStateFile (RANDGRPINFO_FILE, "rb");
 		if (fp)
 		{
@@ -426,18 +476,23 @@ RetrySave:
 			CloseStateFile (fp);
 		}
 
+		// Write the current star desc into the memory file (compressed).
 		cwrite ((PBYTE)&SD, sizeof (SD), 1, fh);
 
 		flen = cclose (fh);
 
+		// Write the memory file to the actual savegame file.
 		sprintf (file, "starcon2.%02u", which_game);
 //		fprintf (stderr, "'%s' is %lu bytes long\n", file, flen + sizeof (*summary_desc));
 		if (flen && (out_fp = (PVOID)res_OpenResFile (saveDir, file, "wb")))
 		{
 			PrepareSummary (summary_desc);
 
+			// First write the summary.
 			success = (BOOLEAN)(WriteResFile (
 					summary_desc, sizeof (*summary_desc), 1, out_fp) != 0);
+			
+			// Then write the rest of the data.
 			if (success && WriteResFile (mem_lock (h), (COUNT)flen, 1,
 						out_fp) == 0)
 				success = FALSE;

@@ -46,7 +46,7 @@ static RACE_DESC zoqfotpik_desc =
 		FIRES_FORE,
 		6, /* Super Melee cost */
 		320 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			3761, 5333,
@@ -54,6 +54,7 @@ static RACE_DESC zoqfotpik_desc =
 		(STRING)ZOQFOTPIK_RACE_STRINGS,
 		(FRAME)ZOQFOTPIK_ICON_MASK_PMAP_ANIM,
 		(FRAME)ZOQFOTPIK_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -99,9 +100,10 @@ static RACE_DESC zoqfotpik_desc =
 		MISSILE_RANGE,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

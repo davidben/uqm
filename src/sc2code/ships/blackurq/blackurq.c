@@ -47,7 +47,7 @@ static RACE_DESC black_urquan_desc =
 		FIRES_FORE,
 		30, /* Super Melee cost */
 		2666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			6000, 6250,
@@ -55,6 +55,7 @@ static RACE_DESC black_urquan_desc =
 		(STRING)KOHR_AH_RACE_STRINGS,
 		(FRAME)KOHR_AH_ICON_MASK_PMAP_ANIM,
 		(FRAME)KOHR_AH_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -100,9 +101,10 @@ static RACE_DESC black_urquan_desc =
 		CLOSE_RANGE_WEAPON,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

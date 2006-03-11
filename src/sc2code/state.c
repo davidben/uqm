@@ -246,9 +246,10 @@ GetPlanetInfo (void)
 {
 	PVOID fp;
 
-	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] =
-			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] =
-			pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN] = 0;
+	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] = 0;
+	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] = 0;
+	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN] = 0;
+
 	fp = OpenStateFile (STARINFO_FILE, "rb");
 	if (fp)
 	{
@@ -269,19 +270,19 @@ GetPlanetInfo (void)
 
 		if (offset)
 		{
-			 COUNT i;
+			COUNT i;
 
-			 for (i = 0; i < planet_index; ++i)
+			for (i = 0; i < planet_index; ++i)
 				offset += sizeof (
 						pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask
 						) * (pSolarSysState->PlanetDesc[i].NumPlanets + 1);
 				
-			 offset += sizeof (
+			offset += sizeof (
 					pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask
 					) * moon_index;
 
-			 SeekStateFile (fp, offset, SEEK_SET);
-			 ReadStateFile (pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask,
+			SeekStateFile (fp, offset, SEEK_SET);
+			ReadStateFile (pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask,
 						sizeof (
 						pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask
 						), 1, fp);

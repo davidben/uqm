@@ -1,4 +1,7 @@
 Changes towards version 0.6:
+- Flagship crew numbers are no longer continuously synchronised during
+  melee, but only at the beginning and end of the battle. - SvdB
+- Various small cleanups. - SvdB
 - Debugging function to add crew during battle. - SvdB
 - More documentation - SvdB.
 - RMPLIFIED PRECURSOR BOMB is now AMPLIFIED, from Vorn (bug #812) 

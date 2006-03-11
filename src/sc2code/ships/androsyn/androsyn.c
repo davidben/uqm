@@ -43,7 +43,7 @@ static RACE_DESC androsynth_desc =
 		FIRES_FORE | SEEKING_WEAPON,
 		15, /* Super Melee cost */
 		~0, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			MAX_X_UNIVERSE >> 1, MAX_Y_UNIVERSE >> 1,
@@ -51,6 +51,7 @@ static RACE_DESC androsynth_desc =
 		(STRING)ANDROSYNTH_RACE_STRINGS,
 		(FRAME)ANDROSYNTH_ICON_MASK_PMAP_ANIM,
 		(FRAME)ANDROSYNTH_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -96,9 +97,10 @@ static RACE_DESC androsynth_desc =
 		LONG_RANGE_WEAPON >> 2,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 
@@ -110,7 +112,7 @@ blazer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 {
 #define BLAZER_OFFSET 10
 	BYTE old_offs;
-	BYTE old_crew_level;
+	COUNT old_crew_level;
 	COUNT old_life;
 
 	old_crew_level = ElementPtr0->crew_level;
@@ -252,7 +254,7 @@ androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUN
 					|| StarShipPtr->RaceDescPtr->ship_info.energy_level < MAX_ENERGY / 3
 					|| ((WEAPON_RANGE (&pEnemyStarShip->RaceDescPtr->cyborg_control) <= CLOSE_RANGE_WEAPON
 					&& lpEvalDesc->ObjectPtr->crew_level > BLAZER_DAMAGE)
-					|| (lpEvalDesc->ObjectPtr->crew_level > (BYTE)(BLAZER_DAMAGE * 3)
+					|| (lpEvalDesc->ObjectPtr->crew_level > (BLAZER_DAMAGE * 3)
 					&& MANEUVERABILITY (&pEnemyStarShip->RaceDescPtr->cyborg_control) > SLOW_SHIP))))
 				lpEvalDesc->MoveState = ENTICE;
 		}
@@ -271,7 +273,7 @@ androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUN
 					|| (lpEvalDesc->which_turn < 16
 					&& (WEAPON_RANGE (&pEnemyStarShip->RaceDescPtr->cyborg_control) > CLOSE_RANGE_WEAPON
 					|| lpEvalDesc->ObjectPtr->crew_level <= BLAZER_DAMAGE)
-					&& (lpEvalDesc->ObjectPtr->crew_level <= (BYTE)(BLAZER_DAMAGE * 3)
+					&& (lpEvalDesc->ObjectPtr->crew_level <= (BLAZER_DAMAGE * 3)
 					|| MANEUVERABILITY (&pEnemyStarShip->RaceDescPtr->cyborg_control) <=
 					SLOW_SHIP)))))
 				StarShipPtr->ship_input_state |= SPECIAL;

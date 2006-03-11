@@ -163,7 +163,7 @@ GenerateSpathi (BYTE control)
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					CloneShipFragment (SPATHI_SHIP,
-							&GLOBAL (npc_built_ship_q), (BYTE)~0);
+							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 
 					pSolarSysState->MenuState.Initialized += 2;
 					SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);

@@ -251,10 +251,7 @@ check_hyperspace_encounter (void)
 			}
 		}
 
-		UnlockStarShip (
-				&GLOBAL (avail_race_q),
-				hStarShip
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 	}
 
 	SET_GAME_STATE (USED_BROADCASTER, 0);
@@ -952,8 +949,7 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 
 
 		EncounterPtr->SD.Index = MAKE_BYTE (
-				NumShips, HINIBBLE (EncounterPtr->SD.Index)
-				);
+				NumShips, HINIBBLE (EncounterPtr->SD.Index));
 		for (i = 0; i < NumShips; ++i)
 		{
 			HSTARSHIP hStarShip;

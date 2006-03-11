@@ -149,6 +149,7 @@ SpinStarShip (HSTARSHIP hStarShip)
 }
 #endif
 
+// Count the ships which can be built by the player.
 static COUNT
 GetAvailableRaceCount (void)
 {
@@ -382,9 +383,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 			while (hStarShip)
 			{
 				StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (built_ship_q),
-						hStarShip
-						);
+						&GLOBAL (built_ship_q), hStarShip);
 				if (GET_GROUP_LOC (StarShipPtr) > which_window)
 				{
 					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
@@ -407,9 +406,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 		for (i = 0; i < num_ships; ++i)
 		{
 			StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-					&GLOBAL (built_ship_q),
-					hStarShip
-					);
+					&GLOBAL (built_ship_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
 
 			pship_win_info->StarShipPtr = StarShipPtr;
@@ -435,10 +432,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENTPTR YankedStarShipPtr)
 					(which_window / HANGAR_SHIPS_ROW));
 			++pship_win_info;
 
-			UnlockStarShip (
-					&GLOBAL (built_ship_q),
-					hStarShip
-					);
+			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 			hStarShip = hNextShip;
 		}
 	}

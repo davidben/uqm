@@ -105,7 +105,8 @@ typedef struct element
 
 	ELEMENT_FLAGS state_flags;
 	COUNT life_span;
-	BYTE crew_level, mass_points;
+	COUNT crew_level;
+	BYTE mass_points;
 	BYTE turn_wait, thrust_wait;
 	VELOCITY_DESC velocity;
 	INTERSECT_CONTROL IntersectControl;

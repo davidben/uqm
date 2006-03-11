@@ -52,7 +52,7 @@ static RACE_DESC sis_desc =
 		0,
 		16, /* Super Melee cost */
 		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			0, 0,
@@ -60,6 +60,7 @@ static RACE_DESC sis_desc =
 		0,
 		(FRAME)SIS_ICON_MASK_PMAP_ANIM,
 		0,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -105,11 +106,20 @@ static RACE_DESC sis_desc =
 		BLASTER_SPEED * BLASTER_LIFE,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
+
+static void InitModuleSlots (RACE_DESCPTR RaceDescPtr,
+		const BYTE *ModuleSlots);
+static void InitDriveSlots (RACE_DESCPTR RaceDescPtr,
+		const BYTE *DriveSlots);
+static void InitJetSlots (RACE_DESCPTR RaceDescPtr,
+		const BYTE *JetSlots);
+void uninit_sis (RACE_DESCPTR pRaceDesc);
 
 static BYTE num_trackers = 0;
 
@@ -445,7 +455,7 @@ sis_battle_preprocess (PELEMENT ElementPtr)
 static void
 sis_battle_postprocess (PELEMENT ElementPtr)
 {
-	SIZE crew_delta;
+//	SIZE crew_delta;
 	STARSHIPPTR StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -456,6 +466,7 @@ sis_battle_postprocess (PELEMENT ElementPtr)
 		spawn_point_defense (ElementPtr);
 	}
 
+#if 0
 	if (ElementPtr->crew_level > 0
 			&& ElementPtr->crew_level < StarShipPtr->RaceDescPtr->ship_info.max_crew
 			&& ElementPtr->crew_level != (crew_delta =
@@ -468,6 +479,7 @@ sis_battle_postprocess (PELEMENT ElementPtr)
 		else
 			DeltaCrew (ElementPtr, StarShipPtr->RaceDescPtr->ship_info.max_crew);
 	}
+#endif
 }
 
 #define BLASTER_DAMAGE 2
@@ -736,6 +748,102 @@ sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Conce
 	}
 }
 
+static void
+InitModuleSlots (RACE_DESCPTR RaceDescPtr, const BYTE *ModuleSlots) {
+	COUNT i;
+
+	RaceDescPtr->ship_info.max_crew = 0;
+	num_trackers = 0;
+	for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+	{
+		BYTE which_mod;
+
+		which_mod = ModuleSlots[(NUM_MODULE_SLOTS - 1) - i];
+		switch (which_mod)
+		{
+			case CREW_POD:
+				RaceDescPtr->ship_info.max_crew += CREW_POD_CAPACITY;
+				break;
+			case GUN_WEAPON:
+			case BLASTER_WEAPON:
+			case CANNON_WEAPON:
+				RaceDescPtr->characteristics.weapon_energy_cost +=
+						(which_mod - GUN_WEAPON + 1) * 2;
+				if (i <= 1)
+					RaceDescPtr->ship_info.ship_flags |= FIRES_FORE;
+				else if (i == 2)
+					RaceDescPtr->ship_info.ship_flags |=
+							FIRES_LEFT | FIRES_RIGHT;
+				else
+					RaceDescPtr->ship_info.ship_flags |= FIRES_AFT;
+				break;
+			case TRACKING_SYSTEM:
+				++num_trackers;
+				break;
+			case ANTIMISSILE_DEFENSE:
+				++RaceDescPtr->characteristics.special_energy_cost;
+				break;
+			case SHIVA_FURNACE:
+				++RaceDescPtr->characteristics.energy_regeneration;
+				break;
+			case DYNAMO_UNIT:
+				RaceDescPtr->characteristics.energy_wait -= 2;
+				if (RaceDescPtr->characteristics.energy_wait < 4)
+					RaceDescPtr->characteristics.energy_wait = 4;
+				break;
+		}
+	}
+
+	if (num_trackers > MAX_TRACKING)
+		num_trackers = MAX_TRACKING;
+	RaceDescPtr->characteristics.weapon_energy_cost += num_trackers * 3;
+	if (RaceDescPtr->characteristics.special_energy_cost)
+	{
+		RaceDescPtr->ship_info.ship_flags |= POINT_DEFENSE;
+		if (RaceDescPtr->characteristics.special_energy_cost > MAX_DEFENSE)
+			RaceDescPtr->characteristics.special_energy_cost = MAX_DEFENSE;
+	}
+}
+
+static void
+InitDriveSlots (RACE_DESCPTR RaceDescPtr, const BYTE *DriveSlots) {
+	COUNT i;
+
+	// NB. RaceDescPtr->characteristics.max_thrust is already initialised.
+	RaceDescPtr->characteristics.thrust_wait = 0;
+	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+	{
+		switch (DriveSlots[i])
+		{
+			case FUSION_THRUSTER:
+				RaceDescPtr->characteristics.max_thrust += 2;
+				++RaceDescPtr->characteristics.thrust_wait;
+				break;
+		}
+	}
+	RaceDescPtr->characteristics.thrust_wait = (BYTE)(
+			THRUST_WAIT - (RaceDescPtr->characteristics.thrust_wait >> 1));
+	RaceDescPtr->characteristics.max_thrust =
+			((RaceDescPtr->characteristics.max_thrust /
+			RaceDescPtr->characteristics.thrust_increment) + 1)
+			* RaceDescPtr->characteristics.thrust_increment;
+}
+
+static void
+InitJetSlots (RACE_DESCPTR RaceDescPtr, const BYTE *JetSlots) {
+	COUNT i;
+
+	for (i = 0; i < NUM_JET_SLOTS; ++i)
+	{
+		switch (JetSlots[i])
+		{
+			case TURNING_JETS:
+				RaceDescPtr->characteristics.turn_wait -= 2;
+				break;
+		}
+	}
+}
+
 RACE_DESCPTR
 init_sis (void)
 {
@@ -746,6 +854,8 @@ init_sis (void)
 
 	/* copy initial ship settings to new_sis_desc */
 	new_sis_desc = sis_desc;
+	
+	new_sis_desc.uninit_func = uninit_sis;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
@@ -760,7 +870,7 @@ init_sis (void)
 		new_sis_desc.ship_data.victory_ditty = 0;
 		new_sis_desc.ship_data.ship_sounds = 0;
 
-			new_sis_desc.ship_data.ship[0] = (FRAME)SIS_HYPER_MASK_PMAP_ANIM;
+		new_sis_desc.ship_data.ship[0] = (FRAME)SIS_HYPER_MASK_PMAP_ANIM;
 
 		new_sis_desc.preprocess_func = sis_hyper_preprocess;
 		new_sis_desc.postprocess_func = sis_hyper_postprocess;
@@ -773,101 +883,45 @@ init_sis (void)
 		new_sis_desc.postprocess_func = sis_battle_postprocess;
 		new_sis_desc.init_weapon_func = initialize_blasters;
 		new_sis_desc.cyborg_control.intelligence_func =
-				(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-						ConcernCounter)) sis_intelligence;
+				(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern,
+				COUNT ConcernCounter)) sis_intelligence;
 
-		num_trackers = 0;
-		for (i = 0; i < NUM_MODULE_SLOTS; ++i)
-		{
-			BYTE which_mod;
-
-			which_mod = GLOBAL_SIS (ModuleSlots[
-					(NUM_MODULE_SLOTS - 1) - i
-					]);
-			switch (which_mod)
-			{
-				case GUN_WEAPON:
-				case BLASTER_WEAPON:
-				case CANNON_WEAPON:
-					new_sis_desc.characteristics.weapon_energy_cost +=
-							(which_mod - GUN_WEAPON + 1) * 2;
-					if (i <= 1)
-						new_sis_desc.ship_info.ship_flags |= FIRES_FORE;
-					else if (i == 2)
-						new_sis_desc.ship_info.ship_flags |= FIRES_LEFT | FIRES_RIGHT;
-					else
-						new_sis_desc.ship_info.ship_flags |= FIRES_AFT;
-					break;
-				case TRACKING_SYSTEM:
-					++num_trackers;
-					break;
-				case ANTIMISSILE_DEFENSE:
-					++new_sis_desc.characteristics.special_energy_cost;
-					break;
-				case SHIVA_FURNACE:
-					++new_sis_desc.characteristics.energy_regeneration;
-					break;
-				case DYNAMO_UNIT:
-					if ((new_sis_desc.characteristics.energy_wait -= 2) < 4)
-						new_sis_desc.characteristics.energy_wait = 4;
-					break;
-			}
-		}
-
-		if (num_trackers > MAX_TRACKING)
-			num_trackers = MAX_TRACKING;
-		new_sis_desc.characteristics.weapon_energy_cost += num_trackers * 3;
-		if (new_sis_desc.characteristics.special_energy_cost)
-		{
-			new_sis_desc.ship_info.ship_flags |= POINT_DEFENSE;
-			if (new_sis_desc.characteristics.special_energy_cost > MAX_DEFENSE)
-				new_sis_desc.characteristics.special_energy_cost = MAX_DEFENSE;
-		}
-
+		InitModuleSlots(&new_sis_desc, GLOBAL_SIS (ModuleSlots));
+				
 		if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 		{
 			SET_GAME_STATE (BOMB_CARRIER, 1);
 		}
 	}
 
-	new_sis_desc.characteristics.thrust_wait = 0;
-	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+	InitDriveSlots(&new_sis_desc, GLOBAL_SIS (DriveSlots));
+	InitJetSlots(&new_sis_desc, GLOBAL_SIS (JetSlots));
+	
+	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
-		switch (GLOBAL_SIS (DriveSlots[i]))
-		{
-			case FUSION_THRUSTER:
-				new_sis_desc.characteristics.max_thrust += 2;
-				++new_sis_desc.characteristics.thrust_wait;
-				break;
-		}
+		new_sis_desc.ship_info.crew_level = new_sis_desc.ship_info.max_crew;
 	}
-	new_sis_desc.characteristics.thrust_wait = (BYTE)(
-			THRUST_WAIT
-			- (new_sis_desc.characteristics.thrust_wait >> 1)
-			);
-	new_sis_desc.characteristics.max_thrust =
-			((new_sis_desc.characteristics.max_thrust /
-			new_sis_desc.characteristics.thrust_increment) + 1)
-			* new_sis_desc.characteristics.thrust_increment;
-
-	for (i = 0; i < NUM_JET_SLOTS; ++i)
+	else
 	{
-		switch (GLOBAL_SIS (JetSlots[i]))
-		{
-			case TURNING_JETS:
-				new_sis_desc.characteristics.turn_wait -= 2;
-				break;
-		}
+		// Count the captain too.
+		new_sis_desc.ship_info.max_crew++;
+		new_sis_desc.ship_info.crew_level = GLOBAL_SIS (CrewEnlisted) + 1;
+		new_sis_desc.ship_info.ship_flags |= PLAYER_CAPTAIN;
 	}
-
-	if (GLOBAL_SIS (CrewEnlisted) < MAX_CREW - 1)
-		new_sis_desc.ship_info.crew_level = (BYTE)(
-				GLOBAL_SIS (CrewEnlisted) + 1
-				);
+	
 	new_sis_desc.ship_info.energy_level = new_sis_desc.ship_info.max_energy;
 
 	RaceDescPtr = &new_sis_desc;
 
 	return (RaceDescPtr);
 }
+
+void
+uninit_sis (RACE_DESCPTR pRaceDesc)
+{
+	GLOBAL_SIS (CrewEnlisted) = pRaceDesc->ship_info.crew_level;
+	if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
+		GLOBAL_SIS (CrewEnlisted)--;
+}
+
 

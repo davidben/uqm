@@ -1271,7 +1271,8 @@ resetCrewBattle(void) {
 	COUNT delta;
 	CONTEXT OldContext;
 	
-	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
+	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
+			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
 		return;
 	
 	StarShipPtr = findPlayerShip (GOOD_GUY);

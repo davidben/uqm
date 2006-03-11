@@ -42,9 +42,7 @@ check_old_shofixti (void)
 				FLEE | IGNORE_FLAGSHIP | (task & REFORM_GROUP));
 		SET_GROUP_DEST (FragPtr, 0);
 
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 
@@ -69,9 +67,7 @@ GenerateShofixti (BYTE control)
 					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
 					);
 			if (GLOBAL (BattleGroupRef) == 0
-					|| !GetGroupInfo (
-							GLOBAL (BattleGroupRef), (BYTE)~0
-							))
+					|| !GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0))
 			{
 				if (GLOBAL (BattleGroupRef) == 0)
 					GLOBAL (BattleGroupRef) = ~0L;
@@ -80,8 +76,7 @@ GenerateShofixti (BYTE control)
 						&GLOBAL (npc_built_ship_q), 1);
 
 				GLOBAL (BattleGroupRef) = PutGroupInfo (
-						GLOBAL (BattleGroupRef), 1
-						);
+						GLOBAL (BattleGroupRef), 1);
 				b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 				b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 				b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));

@@ -140,7 +140,8 @@ GenerateMycon (BYTE control)
 						if (CurStarDescPtr->Index == MYCON_DEFINED
 								|| !GET_GAME_STATE (MYCON_FELL_FOR_AMBUSH))
 							CloneShipFragment (MYCON_SHIP,
-									&GLOBAL (npc_built_ship_q), (BYTE)~0);
+									&GLOBAL (npc_built_ship_q),
+									INFINITE_FLEET);
 						else
 						{
 							COUNT i;

@@ -66,19 +66,6 @@ ProcessInput (void)
 				JournalInput (InputState);
 #endif /* CREATE_JOURNAL */
 
-#ifdef TESTING
-if ((InputState & DEVICE_BUTTON3)
-		&& LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-{
-	COUNT i;
-	
-	for (i = ARILOU_SHIP; i <= BLACK_URQUAN_SHIP; ++i)
-		ActivateStarShip (i, SPHERE_TRACKING);
-	while (GLOBAL (GameClock.tick_count) > 1)
-		ClockTick ();
-}
-#endif /* TESTING */
-
 				CyborgDescPtr->ship_input_state = 0;
 				if (CyborgDescPtr->RaceDescPtr->ship_info.crew_level)
 				{
@@ -94,12 +81,14 @@ if ((InputState & DEVICE_BUTTON3)
 					if (InputState & BATTLE_SPECIAL)
 						CyborgDescPtr->ship_input_state |= SPECIAL;
 
-					if (CanRunAway && cur_player == 0 && (InputState & BATTLE_ESCAPE))
+					if (CanRunAway && cur_player == 0 &&
+							(InputState & BATTLE_ESCAPE))
 					{
 						ELEMENTPTR ElementPtr;
 
 						LockElement (StarShipPtr->hShip, &ElementPtr);
-						if (GetPrimType (&DisplayArray[ElementPtr->PrimIndex]) == STAMP_PRIM
+						if (GetPrimType (&DisplayArray[
+								ElementPtr->PrimIndex]) == STAMP_PRIM
 								&& ElementPtr->life_span == NORMAL_LIFE
 								&& !(ElementPtr->state_flags & FINITE_LIFE)
 								&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
@@ -118,8 +107,10 @@ if ((InputState & DEVICE_BUTTON3)
 									~(SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
 
 							SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
-									BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
-							SetPrimType (&DisplayArray[ElementPtr->PrimIndex], STAMPFILL_PRIM);
+									BUILD_COLOR (
+									MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
+							SetPrimType (&DisplayArray[
+									ElementPtr->PrimIndex], STAMPFILL_PRIM);
 						
 							CyborgDescPtr->ship_input_state = 0;
 						}

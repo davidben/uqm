@@ -45,8 +45,8 @@
 
 extern HSTARSHIP Build (PQUEUE pQueue, DWORD RaceResIndex, COUNT
 		which_player, BYTE captains_name_index);
-extern HSTARSHIP CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, BYTE
-		crew_level);
+extern HSTARSHIP CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue,
+		COUNT crew_level);
 extern HSTARSHIP GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index);
 extern BYTE NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr);
 
@@ -75,8 +75,7 @@ extern void OutlineShipStatus (COORD y);
 extern void InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect);
 extern void DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta,
 		SIZE energy_delta);
-extern void DrawBattleCrewAmount (STARSHIPPTR StarShipPtr,
-		BOOLEAN CountPlayer);
+extern void DrawBattleCrewAmount (STARSHIPPTR StarShipPtr);
 
 #endif /* _BUILD_H */
 

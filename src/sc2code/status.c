@@ -114,7 +114,7 @@ CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, ELEMENT_FLAGS
 }
 
 void
-DrawBattleCrewAmount (STARSHIPPTR StarShipPtr, BOOLEAN CountPlayer)
+DrawBattleCrewAmount (STARSHIPPTR StarShipPtr)
 {
 #define MAX_CREW_DIGITS 3
 	RECT r;
@@ -136,7 +136,7 @@ DrawBattleCrewAmount (STARSHIPPTR StarShipPtr, BOOLEAN CountPlayer)
 	r.extent.width = 6 * MAX_CREW_DIGITS + 6;
 	r.extent.height = 5;
 
-	sprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted) + (CountPlayer ? 1 : 0));
+	sprintf (buf, "%u", StarShipPtr->RaceDescPtr->ship_info.crew_level);
 	SetContextFont (StarConFont);
 
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
@@ -247,6 +247,7 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 	{
 		if (RDPtr->ship_info.ship_flags & GOOD_GUY)
 		{
+			// SIS
 			TEXT t;
 
 			t.baseline.x = STATUS_WIDTH >> 1;
@@ -254,11 +255,18 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 			t.align = ALIGN_CENTER;
 			t.pStr = GLOBAL_SIS (CommanderName);
 			t.CharCount = (COUNT)~0;
-			DrawBattleCrewAmount (StarShipPtr, TRUE);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
 			SetContextFont (TinyFont);
 			font_DrawText (&t);
 		}
+	}
+	if (RDPtr->ship_info.max_crew > MAX_CREW_SIZE ||
+			RDPtr->ship_info.ship_flags & PLAYER_CAPTAIN)
+	{
+		// All crew doesn't fit in the graphics; print a number.
+		// Always print a number for the SIS in the full game.
+		DrawBattleCrewAmount (StarShipPtr);
 	}
 
 	UnbatchGraphics ();
@@ -322,7 +330,7 @@ DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
 
 		ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
 
-		ElementPtr->crew_level += (BYTE)crew_delta;
+		ElementPtr->crew_level += crew_delta;
 		if (ElementPtr->crew_level > ShipInfoPtr->max_crew)
 		{
 			crew_delta = ShipInfoPtr->max_crew - ShipInfoPtr->crew_level;
@@ -331,8 +339,8 @@ DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
 	}
 	else if (crew_delta < 0)
 	{
-		if (ElementPtr->crew_level > (BYTE)-crew_delta)
-			ElementPtr->crew_level += (BYTE)crew_delta;
+		if (ElementPtr->crew_level > (COUNT)-crew_delta)
+			ElementPtr->crew_level += crew_delta;
 		else
 		{
 			crew_delta = -(SIZE)ElementPtr->crew_level;

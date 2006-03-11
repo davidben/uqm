@@ -47,7 +47,7 @@ static RACE_DESC chmmr_desc =
 		FIRES_FORE | IMMEDIATE_WEAPON | SEEKING_SPECIAL | POINT_DEFENSE,
 		30, /* Super Melee cost */
 		0, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			0, 0,
@@ -55,6 +55,7 @@ static RACE_DESC chmmr_desc =
 		(STRING)CHMMR_RACE_STRINGS,
 		(FRAME)CHMMR_ICON_MASK_PMAP_ANIM,
 		(FRAME)CHMMR_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -100,9 +101,10 @@ static RACE_DESC chmmr_desc =
 		CLOSE_RANGE_WEAPON,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

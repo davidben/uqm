@@ -252,7 +252,7 @@ GenerateSamatra (BYTE control)
 				if (!GET_GAME_STATE (URQUAN_MESSED_UP))
 					CloneShipFragment (!GET_GAME_STATE (KOHR_AH_FRENZY) ?
 							URQUAN_SHIP : BLACK_URQUAN_SHIP,
-							&GLOBAL (npc_built_ship_q), (BYTE)~0);
+							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 				else
 				{
 #define URQUAN_REMNANTS 3

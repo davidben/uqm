@@ -74,6 +74,13 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 			Ptr = ((PBYTE)&FragPtr->ShipInfo) - Offset;
 			cread ((PBYTE)Ptr,
 					((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1, fh);
+
+			// Hack to retain savegame backwards compatibility, after
+			// increasing crew_level and max_crew from BYTE to COUNT.
+			// For the queues that are saved here, a BYTE is large enough.
+			FragPtr->ShipInfo.max_crew = FragPtr->ShipInfo.dummy_max_crew;
+			FragPtr->ShipInfo.crew_level = FragPtr->ShipInfo.dummy_crew_level;
+
 			if (Offset == 0)
 			{
 				EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr;
@@ -85,6 +92,36 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 			UnlockStarShip (pQueue, hStarShip);
 		} while (--num_links);
 	}
+}
+
+static void
+LoadEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
+{
+	COUNT i;
+#define LOAD_BLOCK(file, start, end) \
+		cread((PBYTE) (start), (PBYTE) (end) - (PBYTE) start, \
+		1, (file))
+	// An ENCOUNTER structure (indirectly) contains an array of
+	// SHIP_INFO  structure, which is bigger now because of the
+	// larger type for crew.
+	// This hack makes sure the savegames format is unchanged.
+	// The original code consisted of just one line:
+	// cread ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
+
+	// Load the stuff before the SHIP_INFO array:
+	LOAD_BLOCK(fh, EncounterPtr, EncounterPtr->SD.ShipList);
+
+	// Load each entry in the SHIP_INFO array:
+	for (i = 0; i < MAX_HYPER_SHIPS; i++)
+	{
+		SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
+		LOAD_BLOCK(fh, ShipInfo, &ShipInfo->crew_level);
+		ShipInfo->crew_level = ShipInfo->dummy_crew_level;
+		ShipInfo->max_crew = ShipInfo->dummy_max_crew;
+	}
+	
+	// Load the stuff after the SHIP_INFO array:
+	LOAD_BLOCK(fh, &EncounterPtr->log_x, &EncounterPtr[1]);
 }
 
 static BOOLEAN
@@ -211,7 +248,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 				hEncounter = AllocEncounter ();
 				LockEncounter (hEncounter, &EncounterPtr);
 
-				cread ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
+				//cread ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
+				LoadEncounter(EncounterPtr, fh);
 				EncounterPtr->hElement = 0;
 				NumShips = LONIBBLE (EncounterPtr->SD.Index);
 				for (i = 0; i < NumShips; ++i)
@@ -223,8 +261,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 							&GLOBAL (avail_race_q),
 							EncounterPtr->SD.ShipList[i].var1);
 					TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-							&GLOBAL (avail_race_q), hStarShip
-							);
+							&GLOBAL (avail_race_q), hStarShip);
 					EncounterPtr->SD.ShipList[i].race_strings =
 							TemplatePtr->ShipInfo.race_strings;
 					EncounterPtr->SD.ShipList[i].icons =

@@ -110,7 +110,7 @@ GeneratePkunk (BYTE control)
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					CloneShipFragment (PKUNK_SHIP,
-							&GLOBAL (npc_built_ship_q), (BYTE)~0);
+							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 
 					pSolarSysState->MenuState.Initialized += 2;
 					GLOBAL (CurrentActivity) |= START_INTERPLANETARY;

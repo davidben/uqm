@@ -1565,14 +1565,18 @@ SetFlashRect (PRECT pRect, FRAME f)
 	SetContext (OldContext);
 }
 
-
 void
 SaveFlagshipState (void)
 {
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
+		// Player is in HyperSpace or QuasiSpace.
+		// Update 'GLOBAL (ShipStamp.frame)' to the direction the flagship
+		// is facing.
+
 		HELEMENT hElement, hNextElement;
 
+		// Find the flagship element.
 		for (hElement = GetHeadElement ();
 				hElement != 0; hElement = hNextElement)
 		{
@@ -1586,8 +1590,7 @@ SaveFlagshipState (void)
 
 				GetElementStarShip (ElementPtr, &StarShipPtr);
 				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
-						StarShipPtr->ShipFacing + 1, 0
-						);
+						StarShipPtr->ShipFacing + 1, 0);
 				hNextElement = 0;
 			}
 			UnlockElement (hElement);
@@ -1595,6 +1598,7 @@ SaveFlagshipState (void)
 	}
 	else if (pSolarSysState)
 	{
+		// Player is in a solar system.
 		UWORD index1, index2;
 		FRAME frame;
 
@@ -1604,7 +1608,9 @@ SaveFlagshipState (void)
 		{
 			index1 = GetFrameIndex (frame) + 1;
 			if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+			{
 				index2 = 0;
+			}
 			else
 			{
 				index2 = (UWORD)(pSolarSysState->pBaseDesc->pPrevDesc
@@ -1615,6 +1621,9 @@ SaveFlagshipState (void)
 		}
 		else
 		{
+			// In orbit around a planet.
+			
+			// Update the starinfo.dat file if necessary.
 			if (GET_GAME_STATE (PLANETARY_CHANGE))
 			{
 				PutPlanetInfo ();
@@ -1634,4 +1643,5 @@ SaveFlagshipState (void)
 				(FRAME)MAKE_DWORD (index1, index2);
 	}
 }
+
 

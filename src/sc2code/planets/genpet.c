@@ -183,7 +183,7 @@ GenerateTalkingPet (BYTE control)
 					if (!GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES))
 					{
 						CloneShipFragment (UMGAH_SHIP,
-								&GLOBAL (npc_built_ship_q), (BYTE)~0);
+								&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 						InitCommunication (UMGAH_CONVERSATION);
 					}
 					else

@@ -167,7 +167,7 @@ InitSIS (void)
 				ship_ref = MAKE_RESOURCE (rp++, rt, ri++);
 			else if (i == num_ships - 2)
 				ship_ref = YEHAT_SHIP_INDEX;
-			else
+			else  /* (i == num_ships - 1) */
 				ship_ref = PROBE_RES_INDEX;
 			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref, 0, 0);
 			if (hStarShip)
@@ -190,6 +190,7 @@ InitSIS (void)
 				}
 				else
 				{
+					// Ur-Quan probe.
 					load_ship ((STARSHIPPTR)FragPtr, FALSE);
 					FragPtr->ShipInfo = FragPtr->RaceDescPtr->ship_info;
 					FragPtr->RaceDescPtr->ship_info.melee_icon = 0;

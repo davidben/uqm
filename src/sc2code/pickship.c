@@ -197,8 +197,7 @@ ChangeSelection:
 
 					locString = SetAbsStringTableIndex (
 							StarShipPtr->RaceDescPtr->ship_info.race_strings,
-							StarShipPtr->captains_name_index
-							);
+							StarShipPtr->captains_name_index);
 					t.pStr = (UNICODE *)GetStringAddress (locString);
 					t.CharCount = GetStringLength (locString);
 					crew_level = StarShipPtr->RaceDescPtr->ship_info.crew_level;
@@ -206,7 +205,8 @@ ChangeSelection:
 				}
 				UnlockStarShip (&race_q[0], hBattleShip);
 
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 				font_DrawText (&t);
 				SetContextForeGroundColor (BLACK_COLOR);
 			}
@@ -227,7 +227,8 @@ ChangeSelection:
 					sprintf (buf, "%u", crew_level);
 				else
 					sprintf (buf, "%u/%u", crew_level, max_crew);
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02));
 				font_DrawText (&t);
 			}
 
@@ -324,10 +325,12 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				{
 					hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 					FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
-					if (FragPtr->ShipInfo.crew_level == (BYTE)~0)
+							&GLOBAL (npc_built_ship_q), hStarShip);
+					if (FragPtr->ShipInfo.crew_level == INFINITE_FLEET)
+					{
+						// Infinite number of ships.
 						battle_counter += MAKE_WORD (0, 1);
+					}
 					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 			}
@@ -354,7 +357,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
 				if (SPtr == LastStarShipPtr)
 				{
-					if (FragPtr->ShipInfo.crew_level != (BYTE)~0)
+					if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
 					{
 						FragPtr->ShipInfo.crew_level = SPtr->special_counter;
 						SPtr->RaceDescPtr = (RACE_DESCPTR)&FragPtr->ShipInfo;
@@ -391,8 +394,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 #ifndef TESTING
 					else if (GLOBAL_SIS (FuelOnBoard) >
 							RUN_AWAY_FUEL_COST)
-						GLOBAL_SIS (FuelOnBoard) -=
-								RUN_AWAY_FUEL_COST;
+						GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
 					else
 						GLOBAL_SIS (FuelOnBoard) = 0;
 #endif /* TESTING */
@@ -430,9 +432,7 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, PRECT pPickRect)
 	hLastIndex = SetResourceIndex (hResIndex);
 	OldContext = SetContext (SpaceContext);
 
-	PickFrame = CaptureDrawable (
-			LoadGraphic (SC2_PICK_PMAP_ANIM)
-			);
+	PickFrame = CaptureDrawable (LoadGraphic (SC2_PICK_PMAP_ANIM));
 
 	BatchGraphics ();
 
@@ -469,7 +469,8 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, PRECT pPickRect)
 	t.align = ALIGN_CENTER;
 	t.pStr = GLOBAL_SIS (ShipName);
 	t.CharCount = (COUNT)~0;
-SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
 	SetContextFont (StarConFont);
 	font_DrawText (&t);
 
@@ -485,8 +486,7 @@ SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
 			COUNT ship_index;
 
 			ship_index = (COUNT)LONIBBLE (
-					StarShipPtr->RaceDescPtr->ship_info.var2
-					);
+					StarShipPtr->RaceDescPtr->ship_info.var2);
 
 			s.origin.x = pick_r.corner.x
 					+ (5 + ((ICON_WIDTH + 4)
@@ -515,8 +515,9 @@ SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17));
 			}
 			else
 			{
-					/* Ship ran away */
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+				/* Ship ran away */
+				SetContextForeGroundColor (BUILD_COLOR (
+						MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 				DrawFilledStamp (&s);
 			}
 		}

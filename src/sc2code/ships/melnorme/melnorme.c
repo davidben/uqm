@@ -46,7 +46,7 @@ static RACE_DESC melnorme_desc =
 		FIRES_FORE,
 		18, /* Super Melee cost */
 		~0, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			MAX_X_UNIVERSE >> 1, MAX_Y_UNIVERSE >> 1,
@@ -54,6 +54,7 @@ static RACE_DESC melnorme_desc =
 		(STRING)MELNORME_RACE_STRINGS,
 		(FRAME)MELNORME_ICON_MASK_PMAP_ANIM,
 		(FRAME)MELNORME_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -99,9 +100,10 @@ static RACE_DESC melnorme_desc =
 		PUMPUP_SPEED * PUMPUP_LIFE,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

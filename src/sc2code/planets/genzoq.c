@@ -51,9 +51,7 @@ check_scout (void)
 			SET_GROUP_DEST (FragPtr, 0);
 		}
 
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 
@@ -201,7 +199,7 @@ GenerateZoqFotPik (BYTE control)
 					}
 
 					CloneShipFragment (ZOQFOTPIK_SHIP,
-							&GLOBAL (npc_built_ship_q), (BYTE)~0);
+							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 
 					pSolarSysState->MenuState.Initialized += 2;
 					GLOBAL (CurrentActivity) |= START_INTERPLANETARY;

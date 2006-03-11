@@ -73,8 +73,14 @@ new_ship (PELEMENT DeadShipPtr)
 				DeadStarShipPtr->RaceDescPtr->ship_info.crew_level;
 		if (DeadStarShipPtr->special_counter)
 		{
+			// We've just warped out. new_ship() will still be called
+			// a few times, to process the trace left behind (I assume).
 			StopMusic ();
-			DeadStarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
+
+			// Even after much investigation, I could find no purpose for
+			// the next line, but with the crew management changes I need
+			// it not to be here. - SvdB
+			// DeadStarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
 		}
 
 		MusicStarted = FALSE;
@@ -144,6 +150,9 @@ new_ship (PELEMENT DeadShipPtr)
 		SetElementStarShip (DeadShipPtr, 0);
 		RestartMusic = OpponentAlive (DeadStarShipPtr);
 
+		if (DeadStarShipPtr->RaceDescPtr->uninit_func != NULL)
+			(*DeadStarShipPtr->RaceDescPtr->uninit_func) (
+					DeadStarShipPtr->RaceDescPtr);
 		free_ship (DeadStarShipPtr, TRUE);
 UnbatchGraphics ();
 		if (GetNextStarShip (DeadStarShipPtr,

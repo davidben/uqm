@@ -227,8 +227,8 @@ FoundHome:
 			{
 				if (Index <= LONIBBLE (EncounterMakeup[BestIndex])
 						|| (COUNT)TFB_Random () % 100 < 50)
-					CloneShipFragment (BestIndex, &GLOBAL (npc_built_ship_q),
-							0);
+					CloneShipFragment (BestIndex,
+							&GLOBAL (npc_built_ship_q), 0);
 			}
 
 			PutGroupInfo (0L, ++which_group);
@@ -261,16 +261,14 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 			for (hStarShip = GetHeadLink (&temp_q);
 					hStarShip; hStarShip = hNextShip)
 			{
-				BYTE crew_level;
+				COUNT crew_level;
 
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 						&temp_q, hStarShip);
 				hNextShip = _GetSuccLink (FragPtr);
 				crew_level = FragPtr->ShipInfo.crew_level;
 				which_group = GET_GROUP_ID (FragPtr);
-				UnlockStarShip (
-						&temp_q, hStarShip
-						);
+				UnlockStarShip (&temp_q, hStarShip);
 
 				if (crew_level == 0)
 				{
@@ -590,9 +588,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 									NAME_OFFSET + NUM_CAPTAINS_NAMES + 1;
 						OwnStarShip (FragPtr, BAD_GUY, captains_name_index);
 					}
-					UnlockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 				else
 				{
@@ -631,6 +627,8 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 			GH.GroupOffset[0] = 0;
 			SeekStateFile (fp, offset, SEEK_SET);
 			WriteStateFile (&GH, sizeof (GH), 1, fp);
+			// XXX: It seems that GH is not completely initialised.
+			//      Some garbage is saved. -- SvdB
 		}
 
 		if (which_group)

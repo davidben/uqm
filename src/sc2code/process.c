@@ -144,8 +144,8 @@ PreProcess (ELEMENTPTR ElementPtr)
 		{
 			(*ElementPtr->preprocess_func) (ElementPtr);
 
-			if (((state_flags = ElementPtr->state_flags) & CHANGING)
-					&& CollidingElement (ElementPtr))
+			state_flags = ElementPtr->state_flags;
+			if ((state_flags & CHANGING) && CollidingElement (ElementPtr))
 				InitIntersectFrame (ElementPtr);
 		}
 
@@ -170,8 +170,7 @@ PreProcess (ELEMENTPTR ElementPtr)
 			--ElementPtr->life_span;
 	}
 
-	ElementPtr->state_flags = (state_flags
-			& ~(POST_PROCESS | COLLISION))
+	ElementPtr->state_flags = (state_flags & ~(POST_PROCESS | COLLISION))
 			| PRE_PROCESS;
 }
 
@@ -845,7 +844,8 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 					ProcessCollisions (GetHeadElement (), PostElementPtr,
 							MAX_TIME_VALUE, PRE_PROCESS | POST_PROCESS);
 				UnlockElement (hPostElement);
-			} while ((hPostElement = hNextElement) != 0);
+				hPostElement = hNextElement;
+			} while (hPostElement != 0);
 
 			scroll_x = 0;
 			scroll_y = 0;
@@ -920,20 +920,20 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 							ElementPtr->next.image.frame =
 #ifdef SAFE
 									SetAbsFrameIndex (
-									ElementPtr->next.image.farray
-									[index],
+									ElementPtr->next.image.farray[index],
 									GetFrameIndex (ElementPtr->next.image.frame));
 #else /* SAFE */
 									SetEquFrameIndex (
-									ElementPtr->next.image.farray
-									[index],
+									ElementPtr->next.image.farray[index],
 									ElementPtr->next.image.frame);
 #endif /* SAFE */
 
-							if (optMeleeScale == TFB_SCALE_TRILINEAR && index < 2 && scale != 256)
+							if (optMeleeScale == TFB_SCALE_TRILINEAR &&
+									index < 2 && scale != 256)
 							{
-								// enqueues drawcommand to assign next (smaller) zoom
-								// level image as mipmap, needed for trilinear scaling
+								// enqueues drawcommand to assign next
+								// (smaller) zoom level image as mipmap,
+								// needed for trilinear scaling
 
 								PFRAME_DESC frame = 
 									SetAbsFrameIndex (
@@ -1027,7 +1027,8 @@ RedrawQueue (BOOLEAN clear)
 	{
 		BYTE skip_frames;
 
-		if ((skip_frames = HIBYTE (nth_frame)) != (BYTE)~0
+		skip_frames = HIBYTE (nth_frame);
+		if (skip_frames != (BYTE)~0
 			&& (skip_frames == 0 || (--nth_frame & 0x00FF) == 0))
 		{
 			nth_frame += skip_frames;

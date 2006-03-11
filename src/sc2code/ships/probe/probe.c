@@ -40,7 +40,7 @@ static RACE_DESC probe_desc =
 		0,
 		0, /* Super Melee cost */
 		0, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			0, 0,
@@ -48,6 +48,7 @@ static RACE_DESC probe_desc =
 		0,
 		0,
 		(FRAME)PROBE_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -93,9 +94,10 @@ static RACE_DESC probe_desc =
 		0,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 

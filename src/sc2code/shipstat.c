@@ -152,9 +152,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 		r.extent.height += pClipRect->corner.y & 1;
 		SetContextClipRect (&r);
 		SetFrameHot (Screen, MAKE_HOT_SPOT (
-				pClipRect->corner.x,
-				(pClipRect->corner.y & ~1)
-				));
+				pClipRect->corner.x, (pClipRect->corner.y & ~1)));
 	}
 
 	BatchGraphics ();
@@ -170,10 +168,13 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 	{
 		SIZE crew_height, energy_height;
 
-		crew_height = (((SIPtr->max_crew + 1) >> 1) << 1) + 1;
+#define MIN(a, b) (((a) <= (b)) ? (a) : (b))
+		crew_height = ((MIN(SIPtr->max_crew, MAX_CREW_SIZE) + 1) & ~1) + 1;
+#undef MIN
 		energy_height = (((SIPtr->max_energy + 1) >> 1) << 1) + 1;
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
 		r.corner.x = CREW_XOFFS - 1;
 		r.corner.y = GAUGE_YOFFS + 1 + y;
 		r.extent.width = STAT_WIDTH + 2;
@@ -191,7 +192,8 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 		r.extent.width = 1;
 		r.extent.height = crew_height;
 		DrawFilledRectangle (&r);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 		r.corner.x = CREW_XOFFS - 1;
 		r.corner.y = GAUGE_YOFFS - crew_height + y;
 		r.extent.width = STAT_WIDTH + 2;
@@ -297,6 +299,8 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 	SetContext (OldContext);
 }
 
+// Pre: -crew_delta <= StarShipPtr->crew_level
+//      crew_delta <= StarShipPtr->max_crew - StarShipPtr->crew_level
 void
 DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 		energy_delta)
@@ -311,96 +315,83 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 	ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
 
 	x = 0;
-	y = GAUGE_YOFFS
-			+ ((ShipInfoPtr->ship_flags & GOOD_GUY) ?
+	y = GAUGE_YOFFS + ((ShipInfoPtr->ship_flags & GOOD_GUY) ?
 			GOOD_GUY_YOFFS : BAD_GUY_YOFFS);
 
 	r.extent.width = UNIT_WIDTH;
 	r.extent.height = UNIT_HEIGHT;
+
 	if (crew_delta != 0)
 	{
+		COUNT oldNumBlocks, newNumBlocks, blockI;
+		COUNT newCrewLevel;
+
+#define MIN(a, b) (((a) <= (b)) ? (a) : (b))
+		oldNumBlocks = MIN(ShipInfoPtr->crew_level, MAX_CREW_SIZE);
+		newCrewLevel = ShipInfoPtr->crew_level + crew_delta;
+		newNumBlocks = MIN(newCrewLevel, MAX_CREW_SIZE);
+#undef MIN
+
 		if (crew_delta > 0)
 		{
 			r.corner.y = (y + 1) -
-					(((ShipInfoPtr->crew_level + 1) >> 1) * (UNIT_HEIGHT + 1));
-			if (StarShipPtr->captains_name_index == 0
-					&& (ShipInfoPtr->ship_flags & GOOD_GUY)
-					&& LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
-			{
-				// SIS in full game.
-				crew_delta = GLOBAL_SIS (CrewEnlisted);
-				if (crew_delta >= MAX_CREW_SIZE)
-					crew_delta = MAX_CREW_SIZE;
-				else /* if (crew_delta < MAX_CREW_SIZE) */
-				{
-#define PLAYER_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09)
-					SetContextForeGroundColor (PLAYER_UNIT_COLOR);
-					r.corner.x = x + (CREW_XOFFS + 1);
-					if (!(ShipInfoPtr->crew_level & 1))
-					{
-						r.corner.x += UNIT_WIDTH + 1;
-						r.corner.y -= UNIT_HEIGHT + 1;
-					}
-					DrawFilledRectangle (&r);
-					++ShipInfoPtr->crew_level;
-				}
-			}
-
+					(((oldNumBlocks + 1) >> 1) * (UNIT_HEIGHT + 1));
 #define CREW_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)
 #define ROBOT_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08)
 			SetContextForeGroundColor (
 					(ShipInfoPtr->ship_flags & CREW_IMMUNE) ?
 					ROBOT_UNIT_COLOR : CREW_UNIT_COLOR);
-			while (crew_delta--)
+			for (blockI = oldNumBlocks; blockI < newNumBlocks; blockI++)
 			{
 				r.corner.x = x + (CREW_XOFFS + 1);
-				if (!(ShipInfoPtr->crew_level & 1))
+				if (!(blockI & 1))
 				{
 					r.corner.x += UNIT_WIDTH + 1;
 					r.corner.y -= UNIT_HEIGHT + 1;
 				}
 				DrawFilledRectangle (&r);
-				++ShipInfoPtr->crew_level;
 			}
 		}
 		else  /* crew_delta < 0 */
 		{
-			if (StarShipPtr->captains_name_index == 0
-					&& (ShipInfoPtr->ship_flags & GOOD_GUY)
-					&& LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
-			{
-				COUNT death_count;
-
-				death_count = (COUNT)-crew_delta;
-				if (GLOBAL_SIS (CrewEnlisted) >= death_count)
-				{
-					GLOBAL_SIS (CrewEnlisted) -= death_count;
-					death_count = 0;
-				}
-				else
-				{
-					death_count -= GLOBAL_SIS (CrewEnlisted);
-					GLOBAL_SIS (CrewEnlisted) = 0;
-				}
-
-				DrawBattleCrewAmount (StarShipPtr,
-						(BOOLEAN)(death_count == 0));
-			}
-
 			SetContextForeGroundColor (BLACK_COLOR);
 			r.corner.y = (y + 1) -
-					(((ShipInfoPtr->crew_level + 2) >> 1) * (UNIT_HEIGHT + 1));
-			do
+					(((oldNumBlocks + 2) >> 1) * (UNIT_HEIGHT + 1));
+			for (blockI = oldNumBlocks; blockI > newNumBlocks; blockI--)
 			{
 				r.corner.x = x + (CREW_XOFFS + 1 + UNIT_WIDTH + 1);
-				if (!(ShipInfoPtr->crew_level & 1))
+				if (!(blockI & 1))
 				{
 					r.corner.x -= UNIT_WIDTH + 1;
 					r.corner.y += UNIT_HEIGHT + 1;
 				}
 				DrawFilledRectangle (&r);
-				--ShipInfoPtr->crew_level;
-			} while (++crew_delta);
+			}
+		}
+	
+		if (ShipInfoPtr->ship_flags & PLAYER_CAPTAIN) {
+			if (((ShipInfoPtr->crew_level > MAX_CREW_SIZE) !=
+					(newCrewLevel > MAX_CREW_SIZE) ||
+					ShipInfoPtr->crew_level == 0) && newCrewLevel != 0)
+			{
+				// The block indicating the captain needs to change color.
+#define PLAYER_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09)
+				SetContextForeGroundColor (
+						(newCrewLevel > MAX_CREW_SIZE) ?
+						CREW_UNIT_COLOR : PLAYER_UNIT_COLOR);
+				r.corner.x = x + (CREW_XOFFS + 1) + (UNIT_WIDTH + 1);
+				r.corner.y = y - UNIT_HEIGHT;
+				DrawFilledRectangle (&r);
+			}
+		}
+
+		ShipInfoPtr->crew_level = newCrewLevel;
+		if (ShipInfoPtr->max_crew > MAX_CREW_SIZE ||
+				ShipInfoPtr->ship_flags & PLAYER_CAPTAIN)
+		{
+			// All crew doesn't fit in the graphics; print a number.
+			// Always print a number for the SIS in the full game.
+			DrawBattleCrewAmount (StarShipPtr);
 		}
 	}
 

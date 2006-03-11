@@ -57,9 +57,9 @@
 #define FIRES_LEFT        (1 << 10)
 #define SHIELD_DEFENSE    (1 << 11)
 #define DONT_CHASE        (1 << 12)
+#define PLAYER_CAPTAIN    (1 << 13)
+		/* The protagonist himself is on board. He gets a different color. */
 
-#define MAX_SHAPES_ACTIVE 2
-		/* SHIP_SHAPE_ACTIVE && SPECIAL_SHAPE_ACTIVE */
 
 typedef struct captain_stuff
 {
@@ -101,12 +101,24 @@ typedef struct
 {
 	UWORD ship_flags;
 	BYTE var1, var2;
-	BYTE crew_level, max_crew;
+	BYTE dummy_crew_level, dummy_max_crew;
+			/* Necessary for savegame backwards compatibility.
+			 * Unused during the game, only used during save/load.
+			 */
 	BYTE energy_level, max_energy;
 	POINT loc;
 
+	/* The fields above this line are included in queues in savegames,
+	 * All fields, including those below, are saved in ENCOUNTER structures
+	 * in savegames. The latter was probably not supposed to happen.
+	 */
+
 	STRING race_strings;
 	FRAME icons, melee_icon;
+	COUNT crew_level, max_crew;
+			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
+			 * crew_level indicates an infinite number of ships. */
+#define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_INFO;
 typedef SHIP_INFO *PSHIP_INFO;
 #define SHIP_INFOPTR PSHIP_INFO
@@ -152,13 +164,22 @@ typedef struct
 	BYTE days_left;
 			/* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
-	BYTE crew_level, max_crew;
+	BYTE dummy_crew_level, dummy_max_crew;
+			/* Necessary for savegame backwards compatibility.
+			 * Unused during the game, only used during save/load.
+			 */
 	BYTE energy_level, max_energy;
 	POINT loc;
 			/* Location of the fleet (center) */
 
 	STRING race_strings;
+			/* Race specific strings, see doc/devel/racestrings. */
 	FRAME icons, melee_icon;
+	COUNT crew_level, max_crew;
+			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
+			 * crew_level indicates an infinite number of ships. */
+
+	/*   -== The fields below this line are included in savegames. ==-   */
 
 	COUNT actual_strength;
 			/* Measure for the size of the sphere of influence.
@@ -195,17 +216,25 @@ typedef struct
 typedef DATA_STUFF *PDATA_STUFF;
 #define DATA_STUFFPTR PDATA_STUFF
 
+
+typedef struct race_desc RACE_DESC;
+typedef RACE_DESC *PRACE_DESC;
+#define RACE_DESCPTR PRACE_DESC
+
 typedef void (PREPROCESS_FUNC) (PELEMENT ElementPtr);
 typedef void (POSTPROCESS_FUNC) (PELEMENT ElementPtr);
 typedef COUNT (INIT_WEAPON_FUNC) (PELEMENT ElementPtr, HELEMENT Weapon[]);
+typedef void (UNINIT_FUNC) (RACE_DESCPTR pRaceDesc);
 
-typedef struct race_desc
+struct race_desc
 {
 	SHIP_INFO ship_info _ALIGNED_ANY;
 	CHARACTERISTIC_STUFF characteristics _ALIGNED_ANY;
 	DATA_STUFF ship_data _ALIGNED_ANY;
 	INTEL_STUFF cyborg_control _ALIGNED_ANY;
 
+	UNINIT_FUNC *uninit_func
+			_ALIGNED_ON(sizeof (UNINIT_FUNC *));
 	PREPROCESS_FUNC *preprocess_func
 			_ALIGNED_ON(sizeof (PREPROCESS_FUNC *));
 	POSTPROCESS_FUNC *postprocess_func 
@@ -214,9 +243,8 @@ typedef struct race_desc
 			_ALIGNED_ON(sizeof (INIT_WEAPON_FUNC *));
 
 	PVOID CodeRef _ALIGNED_ON(sizeof (PVOID));
-} RACE_DESC;
-typedef RACE_DESC *PRACE_DESC;
-#define RACE_DESCPTR PRACE_DESC
+};
+
 
 typedef QUEUE_HANDLE HSTARSHIP;
 
@@ -251,6 +279,12 @@ typedef struct
 
 	DWORD RaceResIndex;
 	RACE_DESCPTR RaceDescPtr;
+			/* This field is abused to store other data when the ship
+			 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
+			 * or race_q[], namely the side this ship is on (accessed
+			 * through StarShipPlayer()), and the captains name for
+			 * the ship (accessed through StarShipCaptain()).
+			 * These values are set using OwnStarShip(). */
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
 typedef SHIP_FRAGMENT *PSHIP_FRAGMENT;

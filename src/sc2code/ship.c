@@ -156,8 +156,7 @@ ship_preprocess (PELEMENT ElementPtr)
 				& (LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
 	else
 	{
-		ElementPtr->crew_level =
-				(BYTE)RDPtr->ship_info.crew_level;
+		ElementPtr->crew_level = RDPtr->ship_info.crew_level;
 
 		if ((ElementPtr->state_flags & BAD_GUY)
 				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
@@ -352,20 +351,19 @@ ship_postprocess (PELEMENT ElementPtr)
 }
 
 void
-collision (PELEMENT
-		ElementPtr0, PPOINT
-		pPt0, PELEMENT
-		ElementPtr1, PPOINT
-		pPt1)
+collision (PELEMENT ElementPtr0, PPOINT pPt0,
+		PELEMENT ElementPtr1, PPOINT pPt1)
 {
 	if (!(ElementPtr1->state_flags & FINITE_LIFE))
 	{
 		ElementPtr0->state_flags |= COLLISION;
 		if (GRAVITY_MASS (ElementPtr1->mass_points))
 		{
+			// Collision with a planet.
 			SIZE damage;
 
-			if ((damage = ElementPtr0->hit_points >> 2) == 0)
+			damage = ElementPtr0->hit_points >> 2;
+			if (damage == 0)
 				damage = 1;
 			do_damage ((ELEMENTPTR)ElementPtr0, damage);
 
@@ -380,8 +378,7 @@ collision (PELEMENT
 }
 
 static BOOLEAN
-spawn_ship (STARSHIPPTR
-		StarShipPtr)
+spawn_ship (STARSHIPPTR StarShipPtr)
 {
 	HELEMENT hShip;
 	RACE_DESCPTR RDPtr;
@@ -399,20 +396,32 @@ spawn_ship (STARSHIPPTR
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
 			|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{
-		if ((RDPtr->ship_info.crew_level = StarShipPtr->special_counter) >
-				RDPtr->ship_info.max_crew)
+		if (StarShipPtr->special_counter == 0)
+		{
+			// SIS, already handled from sis_ship.c.
+			// RDPtr->ship_info.crew_level = GLOBAL_SIS (CrewEnlisted);
+		}
+		else
+			RDPtr->ship_info.crew_level = StarShipPtr->special_counter;
+
+		if (RDPtr->ship_info.crew_level > RDPtr->ship_info.max_crew)
 			RDPtr->ship_info.crew_level = RDPtr->ship_info.max_crew;
 	}
 
-	StarShipPtr->energy_counter =
-			StarShipPtr->weapon_counter =
-			StarShipPtr->special_counter = 0;
+	StarShipPtr->energy_counter = 0;
+	StarShipPtr->weapon_counter = 0;
+	StarShipPtr->special_counter = 0;
 
-	if ((hShip = StarShipPtr->hShip) == 0
-			&& (hShip = AllocElement ()) != 0)
-		InsertElement (hShip, GetHeadElement ());
+	hShip = StarShipPtr->hShip;
+	if (hShip == 0)
+	{
+		hShip = AllocElement ();
+		if (hShip != 0)
+			InsertElement (hShip, GetHeadElement ());
+	}
 
-	if ((StarShipPtr->hShip = hShip) != 0)
+	StarShipPtr->hShip = hShip;
+	if (StarShipPtr->hShip != 0)
 	{
 		ELEMENTPTR ShipElementPtr;
 
@@ -450,8 +459,7 @@ spawn_ship (STARSHIPPTR
 					--facing;
 
 				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
-						StarShipPtr->ShipFacing + 1, 0
-						);
+						StarShipPtr->ShipFacing + 1, 0);
 				StarShipPtr->ShipFacing = facing;
 			}
 			ShipElementPtr->current.image.frame =

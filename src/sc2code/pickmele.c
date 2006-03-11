@@ -110,7 +110,8 @@ DoGetMelee (GETMELEE_STATE *gms)
 
 	if (select)
 	{
-		if (gms->hBattleShip || (gms->col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
+		if (gms->hBattleShip ||
+				(gms->col == NUM_MELEE_COLS_ORIG && ConfirmExit ()))
 		{
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 			return FALSE;
@@ -171,14 +172,17 @@ ChangeSelection:
 					for (gms->hBattleShip = GetHeadLink (&race_q[which_player]);
 					     gms->hBattleShip != 0; gms->hBattleShip = hNextShip)
 					{
-						STARSHIPPTR StarShipPtr = LockStarShip (&race_q[which_player], gms->hBattleShip);
+						STARSHIPPTR StarShipPtr = LockStarShip (
+								&race_q[which_player], gms->hBattleShip);
 						if (StarShipPtr->RaceResIndex && ship_index-- == 0)
 						{
-							UnlockStarShip (&race_q[which_player], gms->hBattleShip);
+							UnlockStarShip (&race_q[which_player],
+									gms->hBattleShip);
 							break;
 						}
 						hNextShip = _GetSuccLink (StarShipPtr);
-						UnlockStarShip (&race_q[which_player], gms->hBattleShip);
+						UnlockStarShip (&race_q[which_player],
+								gms->hBattleShip);
 					}
 				}
 			}
@@ -188,7 +192,8 @@ ChangeSelection:
 				for (gms->hBattleShip = GetHeadLink (&race_q[which_player]);
 				     gms->hBattleShip != 0; gms->hBattleShip = hNextShip)
 				{
-					STARSHIPPTR StarShipPtr = LockStarShip (&race_q[which_player], gms->hBattleShip);
+					STARSHIPPTR StarShipPtr = LockStarShip (
+							&race_q[which_player], gms->hBattleShip);
 					if (StarShipPtr->ShipFacing == ship_index)
 					{
 						hNextShip = gms->hBattleShip;
@@ -272,16 +277,15 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		t.pStr = buf;
 		t.CharCount = (COUNT)~0;
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
 		font_DrawText (&t);
 	}
 
 	SetContext (SpaceContext);
 	
 	s.origin.x = PICK_X_OFFS - 3;
-	s.origin.y = PICK_Y_OFFS - 9
-		+ ((1 - which_player) * PICK_SIDE_OFFS);
+	s.origin.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
 
 	DrawStamp (&s);
 
@@ -299,11 +303,13 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 
-		PressState = PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_CANCEL];
+		PressState = PulsedInputState.key[KEY_MENU_SELECT] ||
+				PulsedInputState.key[KEY_MENU_CANCEL];
 		do
 		{
 			UpdateInputState ();
-			ButtonState = PulsedInputState.key[KEY_MENU_SELECT] || PulsedInputState.key[KEY_MENU_CANCEL];
+			ButtonState = PulsedInputState.key[KEY_MENU_SELECT] ||
+					PulsedInputState.key[KEY_MENU_CANCEL];
 			if (PressState)
 			{
 				PressState = ButtonState;
@@ -323,8 +329,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		BYTE fade_buf[] = {FadeAllToColor};
 						
 		SleepThreadUntil (XFormColorMap
-				((COLORMAPPTR) fade_buf, ONE_SECOND / 2)
-				+ ONE_SECOND / 60);
+				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + ONE_SECOND / 60);
 		FlushColorXForms ();
 	}
 

@@ -48,7 +48,7 @@ static RACE_DESC vux_desc =
 		FIRES_FORE | SEEKING_SPECIAL | IMMEDIATE_WEAPON,
 		12, /* Super Melee cost */
 		900 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		MAX_CREW, MAX_CREW,
+		0, 0, /* Hack; old crew field */
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			4412, 1558,
@@ -56,6 +56,7 @@ static RACE_DESC vux_desc =
 		(STRING)VUX_RACE_STRINGS,
 		(FRAME)VUX_ICON_MASK_PMAP_ANIM,
 		(FRAME)VUX_MICON_MASK_PMAP_ANIM,
+		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
@@ -101,9 +102,10 @@ static RACE_DESC vux_desc =
 		CLOSE_RANGE_WEAPON,
 		NULL_PTR,
 	},
-	NULL_PTR,
-	NULL_PTR,
-	NULL_PTR,
+	(UNINIT_FUNC *) NULL,
+	(PREPROCESS_FUNC *) NULL,
+	(POSTPROCESS_FUNC *) NULL,
+	(INIT_WEAPON_FUNC *) NULL,
 	0,
 };
 
