@@ -33,6 +33,9 @@ listed below:
 - the function showSpheres()
   When this function is called, all spheres of influence of the active
   races will be shown.
+- the function activateAllShips()
+  When this function is called, it will make all ships available for
+  purchase in the shipyard.
 - the function forwardToNextEvent()
   Fast forwards the clock until the next event. If TRUE is given as an
   argument, the HYPERSPACE_ENCOUNTER_EVENTs, which normally happen every
@@ -45,6 +48,10 @@ listed below:
   Outputs information on the universe to "./PlanetInfo". This function
   should only be called from debugHook, as threading issues would otherwise
   arrise.
+- the function resetCrewBattle()
+  This function, when called in melee, sets the current crew level of the
+  bottom player's ship to its maximum. This works both in Supermelee and in
+  the full game.
 - the function uio_debugInteractive()
   This function is not defined in sc2code/uqmdebug.h, but in libs/uio.h.
   This function can interactively (tty-based) display information on
