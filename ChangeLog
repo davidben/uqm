@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Crew retrieved from space after the end of an encounter will no
+  longer set the crew larger than the ship's maximum. - SvdB
 - Flagship crew numbers are no longer continuously synchronised during
   melee, but only at the beginning and end of the battle. - SvdB
 - Various small cleanups. - SvdB

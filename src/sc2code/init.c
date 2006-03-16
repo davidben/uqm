@@ -232,11 +232,21 @@ UninitShips (void)
 			STARSHIPPTR StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
+
 			// There should only be one ship left in battle.
 			// He gets the crew still floating in space.
 			if (StarShipPtr->RaceDescPtr->ship_info.crew_level)
-				StarShipPtr->RaceDescPtr->ship_info.crew_level +=
-						crew_retrieved;
+			{
+				if (crew_retrieved >=
+						StarShipPtr->RaceDescPtr->ship_info.max_crew -
+						StarShipPtr->RaceDescPtr->ship_info.crew_level)
+					StarShipPtr->RaceDescPtr->ship_info.crew_level =
+							StarShipPtr->RaceDescPtr->ship_info.max_crew;
+				else
+					StarShipPtr->RaceDescPtr->ship_info.crew_level +=
+							crew_retrieved;
+			}
+
 			if (StarShipPtr->RaceDescPtr->uninit_func != NULL)
 				(*StarShipPtr->RaceDescPtr->uninit_func) (
 						StarShipPtr->RaceDescPtr);
