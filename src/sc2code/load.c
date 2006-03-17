@@ -248,7 +248,6 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 				hEncounter = AllocEncounter ();
 				LockEncounter (hEncounter, &EncounterPtr);
 
-				//cread ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
 				LoadEncounter(EncounterPtr, fh);
 				EncounterPtr->hElement = 0;
 				NumShips = LONIBBLE (EncounterPtr->SD.Index);

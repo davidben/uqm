@@ -408,9 +408,7 @@ RetrySave:
 				LockEncounter (hEncounter, &EncounterPtr);
 				hNextEncounter = GetSuccEncounter (EncounterPtr);
 
-				//cwrite ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
 				SaveEncounter(EncounterPtr, fh);
-				cwrite ((PBYTE)EncounterPtr, sizeof (*EncounterPtr), 1, fh);
 
 				UnlockEncounter (hEncounter);
 				hEncounter = hNextEncounter;
