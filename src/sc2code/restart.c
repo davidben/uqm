@@ -196,8 +196,6 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				UnbatchGraphics ();
 				return TRUE;
 			case QUIT_GAME:
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
 				fade_buf[0] = FadeAllToBlack;
 				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 

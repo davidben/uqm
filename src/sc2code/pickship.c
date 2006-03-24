@@ -63,8 +63,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 	{
 		if ((HSTARSHIP)pMS->CurFrame)
 		{
-			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
-					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+			PlayMenuSound (MENU_SOUND_SUCCESS);
 			return (FALSE);
 		}
 	}
@@ -99,8 +98,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 			else if (new_row == NUM_PICK_SHIP_ROWS)
 				new_row = 0;
 
-			PlaySoundEffect (MenuSounds, 0, NotPositional (),
-					NULL, GAME_SOUND_PRIORITY);
+			PlayMenuSound (MENU_SOUND_MOVE);
 
 			LockMutex (GraphicsLock);
 

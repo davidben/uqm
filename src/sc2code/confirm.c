@@ -142,8 +142,7 @@ DoConfirmExit (void)
 			if (PulsedInputState.key[KEY_MENU_SELECT])
 			{
 				done = TRUE;
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+				PlayMenuSound (MENU_SOUND_SUCCESS);
 			}
 			else if (PulsedInputState.key[KEY_MENU_CANCEL])
 			{
@@ -154,9 +153,7 @@ DoConfirmExit (void)
 			{
 				response = !response;
 				DrawConfirmationWindow (response);
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 0),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
-
+				PlayMenuSound (MENU_SOUND_MOVE);
 			}
 			TaskSwitch ();
 		} while (!done);

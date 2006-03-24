@@ -1712,8 +1712,7 @@ DoMelee (PMELEE_STATE pMS)
 				case START_MELEE:
 					if (pMS->star_bucks[0] == 0 || pMS->star_bucks[1] == 0)
 					{
-						PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-								0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+						PlayMenuSound (MENU_SOUND_FAILURE);
 						break;
 					}
 
@@ -1781,8 +1780,7 @@ DoMelee (PMELEE_STATE pMS)
 					if (pMS->star_bucks[pMS->side])
 						DoSaveTeam (pMS);
 					else
-						PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-								0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+						PlayMenuSound (MENU_SOUND_FAILURE);
 					break;
 				case CONTROLS_TOP:
 				case CONTROLS_BOT:

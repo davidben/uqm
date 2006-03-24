@@ -767,6 +767,10 @@ DoModifyShips (PMENU_STATE pMS)
 							SetFlashRect (&r, (FRAME)0);
 							UnlockMutex (GraphicsLock);
 						}
+						else
+						{	// not enough RUs to build
+							PlayMenuSound (MENU_SOUND_FAILURE);
+						}
 						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 							
@@ -890,6 +894,10 @@ DoModifyShips (PMENU_STATE pMS)
 								SetFlashRect (&r, (FRAME)0);
 								SetContext (SpaceContext);
 							}
+							else
+							{	// at capacity or not enough RUs
+								PlayMenuSound (MENU_SOUND_FAILURE);
+							}
 						}
 						else
 						{
@@ -925,6 +933,10 @@ DoModifyShips (PMENU_STATE pMS)
 								SetContext (SpaceContext);
 								SetFlashRect (&r, (FRAME)0);
 							}
+							else
+							{	// at capacity or not enough RUs
+								PlayMenuSound (MENU_SOUND_FAILURE);
+							}
 							UnlockStarShip (&GLOBAL (avail_race_q),
 									hTemplate);
 						}
@@ -952,6 +964,10 @@ DoModifyShips (PMENU_STATE pMS)
 								SetFlashRect (&r, (FRAME)0);
 								SetContext (SpaceContext);
 							}
+							else
+							{	// no crew to dismiss
+								PlayMenuSound (MENU_SOUND_FAILURE);
+							}
 						}
 						else
 						{
@@ -966,6 +982,10 @@ DoModifyShips (PMENU_STATE pMS)
 											GET_RACE_ID (StarShipPtr)]);
 								crew_delta = -1;
 								--StarShipPtr->ShipInfo.crew_level;
+							}
+							else
+							{	// no crew to dismiss
+								PlayMenuSound (MENU_SOUND_FAILURE);
 							}
 							ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
 							r.corner.x = pMS->flash_rect0.corner.x;

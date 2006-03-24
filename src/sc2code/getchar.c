@@ -402,8 +402,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			pTES->InsPt = CacheInsPt;
 			pTES->CursorPos = CacheCursorPos;
 
-			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-					0, NotPositional (), NULL, 0);
+			PlayMenuSound (MENU_SOUND_FAILURE);
 		}
 	}
 		

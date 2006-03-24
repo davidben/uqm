@@ -289,7 +289,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 
 			S = MenuSounds;
 			if (input & sound_1)
-				S = SetAbsSoundIndex (S, 1);
+				S = SetAbsSoundIndex (S, MENU_SOUND_SUCCESS);
 
 			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
 		}

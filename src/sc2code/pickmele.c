@@ -151,7 +151,7 @@ DoGetMelee (GETMELEE_STATE *gms)
 			gms->row = new_row;
 			gms->col = new_col;
 			
-			PlaySoundEffect (MenuSounds, 0, NotPositional (), NULL, 0);
+			PlayMenuSound (MENU_SOUND_MOVE);
 ChangeSelection:
 			LockMutex (GraphicsLock);
 			gms->flash_rect.corner.x = PICK_X_OFFS
@@ -363,8 +363,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		StarShipPtr->captains_name_index = 0;
 		UnlockStarShip (&race_q[which_player], gmstate.hBattleShip);
 
-		PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 1), 0,
-				NotPositional (), NULL, 0);
+		PlayMenuSound (MENU_SOUND_SUCCESS);
 
 		WaitForSoundEnd (0);
 	}

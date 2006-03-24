@@ -244,7 +244,10 @@ DoInstallModule (PMENU_STATE pMS)
 				if (GLOBAL_SIS (ResUnits) <
 						(DWORD)(GLOBAL (ModuleCost[new_slot_piece])
 						* MODULE_COST_SCALE))
+				{	// not enough RUs to build
+					PlayMenuSound (MENU_SOUND_FAILURE);
 					return (TRUE);
+				}
 			}
 			else if (new_slot_piece == EMPTY_SLOT + 2)
 			{
@@ -252,7 +255,10 @@ DoInstallModule (PMENU_STATE pMS)
 				{
 					if (GLOBAL_SIS (CrewEnlisted) > CREW_POD_CAPACITY
 							* (CountSISPieces (CREW_POD) - 1))
+					{	// crew pod still needed for crew recruited
+						PlayMenuSound (MENU_SOUND_FAILURE);
 						return (TRUE);
+					}
 				}
 				else if (old_slot_piece == FUEL_TANK
 						|| old_slot_piece == HIGHEFF_FUELSYS)
@@ -266,13 +272,19 @@ DoInstallModule (PMENU_STATE pMS)
 					volume -= (old_slot_piece == FUEL_TANK
 							? FUEL_TANK_CAPACITY : HEFUEL_TANK_CAPACITY);
 					if (GLOBAL_SIS (FuelOnBoard) > volume + FUEL_RESERVE)
+					{	// fuel tank still needed for the fuel on board
+						PlayMenuSound (MENU_SOUND_FAILURE);
 						return (TRUE);
+					}
 				}
 				else if (old_slot_piece == STORAGE_BAY)
 				{
 					if (GLOBAL_SIS (TotalElementMass) > STORAGE_BAY_CAPACITY
 							* (CountSISPieces (STORAGE_BAY) - 1))
+					{	// storage bay still needed for the cargo
+						PlayMenuSound (MENU_SOUND_FAILURE);
 						return (TRUE);
+					}
 				}
 			}
 		}
@@ -552,6 +564,10 @@ ChangeFuelQuantity (void)
 			GetGaugeRect (&r, FALSE);
 			SetFlashRect (&r, (FRAME)0);
 		}
+		else
+		{	// no more room for fuel or not enough RUs
+			PlayMenuSound (MENU_SOUND_FAILURE);
+		}
 		UnlockMutex (GraphicsLock);
 	}
 	else if (PulsedInputState.key[KEY_MENU_DOWN])
@@ -570,6 +586,10 @@ ChangeFuelQuantity (void)
 				r.extent.width = 5;
 				DrawFilledRectangle (&r);
 			}
+		}
+		else
+		{	// no fuel left to drain
+			PlayMenuSound (MENU_SOUND_FAILURE);
 		}
 		SetContext (StatusContext);
 		GetGaugeRect (&r, FALSE);
