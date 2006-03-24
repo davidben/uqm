@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Flashing outfit modules to build w/ PC menus too; bug #871 - Alex
 - Corrected caption Orbit: to Tilt: in planet scan; bug #847 - Alex
 - Added missing failure sounds in Outfit, Shipyard, Cargo and Roster;
   played when over/under capacity, not enough RUs, etc; bug #842 -Alex
