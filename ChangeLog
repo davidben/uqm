@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Added missing failure sounds in Outfit, Shipyard, Cargo and Roster;
+  played when over/under capacity, not enough RUs, etc; bug #842 -Alex
 - Crew retrieved from space after the end of an encounter will no
   longer set the crew larger than the ship's maximum. - SvdB
 - Flagship crew numbers are no longer continuously synchronised during
