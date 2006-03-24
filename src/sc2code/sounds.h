@@ -33,6 +33,14 @@ typedef enum
 	TARGET_DAMAGED_FOR_6_PLUS_PT
 } SOUND_EFFECTS;
 
+typedef enum
+{
+	MENU_SOUND_MOVE = 0,
+	MENU_SOUND_SUCCESS,
+	MENU_SOUND_FAILURE,
+	MENU_SOUND_INVOKED,
+} MENU_SOUND_EFFECT;
+
 extern SOUND MenuSounds;
 extern SOUND GameSounds;
 
@@ -58,6 +66,7 @@ extern void GetMenuSounds (MENU_SOUND_FLAGS *sound_0,
 
 extern void PlaySound (SOUND S, SoundPosition Pos,
 		ELEMENTPTR PositionalObject, BYTE Priority);
+extern void PlayMenuSound (MENU_SOUND_EFFECT S);
 extern void ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject);
 extern SoundPosition CalcSoundPosition (ELEMENTPTR ElementPtr);
 extern SoundPosition NotPositional (void);

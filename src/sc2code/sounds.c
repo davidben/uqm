@@ -27,7 +27,6 @@ static BYTE num_sounds = 0;
 static SOUND sound_buf[MAX_SOUNDS];
 static ELEMENTPTR sound_posobj[MAX_SOUNDS];
 
-
 void
 PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
 		BYTE Priority)
@@ -71,6 +70,14 @@ PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
 	lru_channel[NUM_FX_CHANNELS - 1] = chan;
 
 	PlaySoundEffect (S, chan + MIN_FX_CHANNEL, Pos, PositionalObject, Priority);
+}
+
+void
+PlayMenuSound (MENU_SOUND_EFFECT S)
+{
+	PlaySoundEffect (SetAbsSoundIndex (MenuSounds, S),
+			0, NotPositional (), NULL,
+			GAME_SOUND_PRIORITY);
 }
 
 void
