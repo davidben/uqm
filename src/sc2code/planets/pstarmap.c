@@ -1140,8 +1140,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 		if (pSS->CurIndex < 0)
 		{	// nothing found
 			if (PulsedInputState.key[KEY_MENU_NEXT])
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-						0, NotPositional (), NULL, 0);
+				PlayMenuSound (MENU_SOUND_FAILURE);
 			return TRUE;
 		}
 
@@ -1242,8 +1241,7 @@ DoMoveCursor (PMENU_STATE pMS)
 #ifdef DEBUG
 		if (instantMove)
 		{
-			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 3), 0,
-					NotPositional (), NULL, GAME_SOUND_PRIORITY);
+			PlayMenuSound (MENU_SOUND_INVOKED);
 			if (pMS->flash_task)
 			{
 				ConcludeTask (pMS->flash_task);
@@ -1290,8 +1288,7 @@ DoMoveCursor (PMENU_STATE pMS)
 		}
 		else
 		{	// no search in QuasiSpace
-			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-					0, NotPositional (), NULL, 0);
+			PlayMenuSound (MENU_SOUND_FAILURE);
 		}
 	}
 	else

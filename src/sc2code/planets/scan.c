@@ -990,8 +990,7 @@ DoScan (PMENU_STATE pMS)
 					|| (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==
 						GAS_GIANT_ATMOSPHERE))
 			{	// cannot dispatch to shielded planets or gas giants
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+				PlayMenuSound (MENU_SOUND_FAILURE);
 				return (TRUE);
 			}
 
@@ -1005,8 +1004,7 @@ DoScan (PMENU_STATE pMS)
 					|| GLOBAL_SIS (NumLanders) == 0
 					|| GLOBAL_SIS (CrewEnlisted) == 0)
 			{
-				PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-						0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+				PlayMenuSound (MENU_SOUND_FAILURE);
 				return (TRUE);
 			}
 
@@ -1034,8 +1032,7 @@ DoScan (PMENU_STATE pMS)
 		// Various scans
 		if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 		{	// cannot scan shielded planets
-			PlaySoundEffect (SetAbsSoundIndex (MenuSounds, 2),
-					0, NotPositional (), NULL, GAME_SOUND_PRIORITY);
+			PlayMenuSound (MENU_SOUND_FAILURE);
 			return (TRUE);
 		}
 

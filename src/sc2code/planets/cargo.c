@@ -316,6 +316,10 @@ DoDiscardCargo (PMENU_STATE pMS)
 			ShowRemainingCapacity ();
 			UnlockMutex (GraphicsLock);
 		}
+		else
+		{	// no element left in cargo hold
+			PlayMenuSound (MENU_SOUND_FAILURE);
+		}
 	}
 	else
 	{

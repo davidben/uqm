@@ -96,9 +96,10 @@ MatchSupportShip (PMENU_STATE pMS)
 	return 0;
 }
 
-static void
+static BOOLEAN
 DeltaSupportCrew (SIZE crew_delta)
 {
+	BOOLEAN ret = FALSE;
 	UNICODE buf[40];
 	HSTARSHIP hTemplate;
 	SHIP_FRAGMENTPTR StarShipPtr, TemplatePtr;
@@ -141,10 +142,13 @@ DeltaSupportCrew (SIZE crew_delta)
 			SetContext (StatusContext);
 			SetFlashRect (&r, (FRAME)0);
 		}
+		ret = TRUE;
 	}
 
 	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
 	UnlockStarShip (&GLOBAL (built_ship_q), (HSTARSHIP)pMenuState->CurFrame);
+
+	return ret;
 }
 
 #define SHIP_TOGGLE ((BYTE)(1 << 7))
@@ -260,26 +264,35 @@ DoModifyRoster (PMENU_STATE pMS)
 	}
 	else if (pMS->CurState & SHIP_TOGGLE)
 	{
+		SIZE delta = 0;
+		BOOLEAN failed = FALSE;
+
 		if (up)
 		{
 			sy = -1;
 			if (GLOBAL_SIS (CrewEnlisted))
-			{
-				LockMutex (GraphicsLock);
-				DeltaSupportCrew (1);
-				UnlockMutex (GraphicsLock);
-			}
+				delta = 1;
+			else
+				failed = TRUE;
 		}
 		else if (down)
 		{
 			sy = 1;
-			if (GLOBAL_SIS (CrewEnlisted)
-					< GetCPodCapacity (NULL_PTR))
-			{
-				LockMutex (GraphicsLock);
-				DeltaSupportCrew (-1);
-				UnlockMutex (GraphicsLock);
-			}
+			if (GLOBAL_SIS (CrewEnlisted) < GetCPodCapacity (NULL_PTR))
+				delta = -1;
+			else
+				failed = TRUE;
+		}
+		
+		if (delta != 0)
+		{
+			LockMutex (GraphicsLock);
+			failed = !DeltaSupportCrew (delta);
+			UnlockMutex (GraphicsLock);
+		}
+		if (failed)
+		{	// not enough room or crew
+			PlayMenuSound (MENU_SOUND_FAILURE);
 		}
 	}
 	else
