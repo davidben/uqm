@@ -353,7 +353,7 @@ PrintCoarseScanPC (void)
 	UnlockMutex (GraphicsLock);
 
 	LockMutex (GraphicsLock);
-	PrintScanTitlePC (&t, &r, GAME_STRING (ORBITSCAN_STRING_BASE),
+	PrintScanTitlePC (&t, &r, GAME_STRING (ORBITSCAN_STRING_BASE + 18),
 			RIGHT_SIDE_BASELINE_X_PC); // "Tilt: "
 	val = pSolarSysState->SysInfo.PlanetInfo.AxialTilt;
 	if (val < 0)
