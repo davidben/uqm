@@ -580,7 +580,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 			&& flash_rect.corner.y == RADAR_Y
 			&& flash_rect.extent.width == RADAR_WIDTH
 			&& flash_rect.extent.height == RADAR_HEIGHT)
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
 }

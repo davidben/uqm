@@ -320,7 +320,7 @@ RestartMenu (PMENU_STATE pMS)
 	}
 
 	LockMutex (GraphicsLock);
-	SetFlashRect ((PRECT)0, (FRAME)0);
+	SetFlashRect (NULL_PTR, (FRAME)0);
 	UnlockMutex (GraphicsLock);
 	DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 

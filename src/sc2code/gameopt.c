@@ -265,7 +265,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 
 	if (!(state & DDSHS_EDIT))
 	{	// normal state
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 
 		if (pMS->InputFunc == DoNaming)
 		{
@@ -953,7 +953,7 @@ Restart:
 	else if (PulsedInputState.key[KEY_MENU_CANCEL])
 	{
 		LockMutex (GraphicsLock);
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
@@ -1180,7 +1180,7 @@ ChangeGameSelection:
 				}
 				UnbatchGraphics ();
 			}
-			SetFlashRect (0, (FRAME)0);
+			SetFlashRect (NULL_PTR, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
 	}

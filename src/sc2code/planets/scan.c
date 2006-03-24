@@ -802,7 +802,7 @@ PickPlanetSide (PMENU_STATE pMS)
 
 		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
 		LockMutex (GraphicsLock);
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 
 ExitPlanetSide:

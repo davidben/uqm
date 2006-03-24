@@ -1773,7 +1773,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 								--pMS->Initialized;
 								pSolarSysState->PauseRotate = 0;
 								LockMutex (GraphicsLock);
-								SetFlashRect ((PRECT)~0L, (FRAME)0);
+								SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 								UnlockMutex (GraphicsLock);
 								break;
 							}
@@ -1809,7 +1809,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 					else if (pMS->CurState)
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect ((PRECT)~0L, (FRAME)0);
+						SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 						UnlockMutex (GraphicsLock);
 						if (select)
 						{

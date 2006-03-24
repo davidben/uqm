@@ -1237,7 +1237,7 @@ IP_frame (void)
 			pSolarSysState->MenuState.CurState = STARMAP + 1;
 			IP_input_state = 0;
 		}
-		SetFlashRect ((PRECT)~0L, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 		FlushInput ();
 		UnlockMutex (GraphicsLock);
 	}
@@ -1401,7 +1401,7 @@ StartGroups:
 			DrawMenuStateStrings (PM_SCAN, SCAN);
 			LockMutex (GraphicsLock);
 			pSolarSysState->MenuState.CurState = SCAN + 1;
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 			FlushInput ();
 			UnlockMutex (GraphicsLock);
 		}
