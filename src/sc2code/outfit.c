@@ -189,7 +189,8 @@ DoInstallModule (PMENU_STATE pMS)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	FirstItem = 0;
-	switch (NewState = pMS->CurState)
+	NewState = pMS->CurState;
+	switch (NewState)
 	{
 		case PLANET_LANDER:
 		case EMPTY_SLOT + 3:
@@ -376,7 +377,7 @@ DoInstallModule (PMENU_STATE pMS)
 			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
 			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
@@ -435,8 +436,10 @@ DoInstallModule (PMENU_STATE pMS)
 		{
 			if (NewItem != pMS->CurState)
 			{
-				DrawModuleStrings (pMS, pMS->CurState = NewItem);
-				SetFlashRect ((PRECT)~0L, (FRAME)0);
+				pMS->CurState = NewItem;
+				DrawModuleStrings (pMS, NewItem);
+				// flash with PC menus too
+				SetFlashRect (SFR_MENU_ANY, (FRAME)0);
 			}
 		}
 		else if (NewItem != pMS->delta_item || NewState != pMS->CurState)
@@ -523,7 +526,8 @@ InitFlash:
 
 			DrawModuleStrings (pMS, new_slot_piece);
 			if (pMS->CurState < EMPTY_SLOT)
-				SetFlashRect ((PRECT)~0L, (FRAME)0);
+				// flash with PC menus too
+				SetFlashRect (SFR_MENU_ANY, (FRAME)0);
 			else
 				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 		}
@@ -703,7 +707,7 @@ DoOutfit (PMENU_STATE pMS)
 			UnbatchGraphics ();
 			
 			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (FuelOnBoard) =
@@ -722,7 +726,7 @@ DoOutfit (PMENU_STATE pMS)
 		{
 			pMS->CurState = OUTFIT_FUEL;
 			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
 		else
@@ -755,7 +759,7 @@ ExitOutfit:
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
 				LockMutex (GraphicsLock);
-				SetFlashRect ((PRECT)~0L, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 				break;
 			case OUTFIT_MODULES:
@@ -773,7 +777,7 @@ ExitOutfit:
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
 				LockMutex (GraphicsLock);
-				SetFlashRect ((PRECT)~0L, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 				break;
 		}

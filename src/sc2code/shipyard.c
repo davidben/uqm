@@ -263,19 +263,10 @@ DrawRaceStrings (BYTE NewRaceItem)
 		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
+	SetContext (OldContext);
 
 	// Flash the ship purchase menu even when optMenu == OPT_PC
-	{
-		RECT flash_r;
-		GetContextClipRect (&flash_r);
-		flash_r.corner.x = RADAR_X - flash_r.corner.x;
-		flash_r.corner.y = RADAR_Y - flash_r.corner.y;
-		flash_r.extent.width = RADAR_WIDTH;
-		flash_r.extent.height = RADAR_HEIGHT;
-		SetFlashRect (&flash_r, (FRAME)0);
-	}
-	//SetFlashRect ((PRECT)~0L, (FRAME)0);
-	SetContext (OldContext);
+	SetFlashRect (SFR_MENU_ANY, (FRAME)0);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -703,7 +694,7 @@ DoModifyShips (PMENU_STATE pMS)
 					SpinStarShip (hSpinShip);
 					if (hStarShip)
 						goto ChangeFlashRect;
-					SetFlashRect ((PRECT)~0L, (FRAME)0);
+					SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 				}
 			}
 			else
@@ -732,7 +723,7 @@ DoModifyShips (PMENU_STATE pMS)
 					{
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
 						LockMutex (GraphicsLock);
-						SetFlashRect ((PRECT)~0L, (FRAME)0);
+						SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 						SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -751,7 +742,7 @@ DoModifyShips (PMENU_STATE pMS)
 									(SHIP_FRAGMENTPTR) 0);
 							//Reset flash rectangle
 							LockMutex (GraphicsLock);
-							SetFlashRect ((PRECT)~0L, (FRAME)0);
+							SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 							UnlockMutex (GraphicsLock);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
@@ -1014,9 +1005,10 @@ DoModifyShips (PMENU_STATE pMS)
 				UnlockMutex (GraphicsLock);
 
 				pMS->InputFunc = DoShipyard;
-				DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
+				pMS->CurState = SHIPYARD_CREW;
+				DrawMenuStateStrings (PM_CREW, pMS->CurState);
 				LockMutex (GraphicsLock);
-				SetFlashRect ((PRECT)~0L, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 
 				return TRUE;
@@ -1279,7 +1271,7 @@ DoShipyard (PMENU_STATE pMS)
 
 			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENTPTR)0);
 			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
 
@@ -1313,7 +1305,7 @@ ExitShipyard:
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 			LockMutex (GraphicsLock);
-			SetFlashRect ((PRECT)~0L, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 			BeginHangarAnim (pMS);
 			UnlockMutex (GraphicsLock);
 		}
