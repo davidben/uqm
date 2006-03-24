@@ -252,6 +252,8 @@ extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
 extern void SetFlashRect (PRECT pRect, FRAME f);
+#define SFR_MENU_3DO ((PRECT)~0L)
+#define SFR_MENU_ANY ((PRECT)~1L)
 extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
 extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,

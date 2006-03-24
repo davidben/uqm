@@ -1476,7 +1476,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 	old_f = flash_frame;
 	flash_rect1 = flash_rect;
 		
-	if (pRect != (PRECT)~0L)
+	if (pRect != SFR_MENU_3DO && pRect != SFR_MENU_ANY)
 	{
 		GetContextClipRect (&clip_r);
 		OldContext = SetContext (ScreenContext);
@@ -1484,7 +1484,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 	else
 	{
 		//Don't flash when using the PC menu
- 		if (optWhichMenu == OPT_PC)
+ 		if (optWhichMenu == OPT_PC && pRect != SFR_MENU_ANY)
  		{
  			OldContext = SetContext (ScreenContext);
  			pRect = 0;
