@@ -34,11 +34,12 @@
 #define NUM_CAPTAINS_NAMES 16
 
 #define OwnStarShip(S,p,n) \
-		(S)->RaceDescPtr = (RACE_DESCPTR)MAKE_DWORD(p, n)
+		(S)->s.Player = (p); \
+		(S)->s.Captain = (n);
 #define StarShipCaptain(S) \
-		(BYTE)HIWORD ((S)->RaceDescPtr)
+		(S)->s.Captain
 #define StarShipPlayer(S) \
-		(COUNT)LOWORD ((S)->RaceDescPtr)
+		(S)->s.Player
 #define PickCaptainName() (((COUNT)TFB_Random () \
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)

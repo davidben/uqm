@@ -254,7 +254,21 @@ typedef struct
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
-	RACE_DESCPTR RaceDescPtr;
+	
+	/* This field is abused to store other data when the ship
+	 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
+	 * or race_q[], namely the side this ship is on (accessed
+	 * through StarShipPlayer()), and the captains name for
+	 * the ship (accessed through StarShipCaptain()).
+	 * These values are set using OwnStarShip(). */
+	union {
+		RACE_DESCPTR RaceDescPtr;
+		struct {
+			COUNT Player;
+			BYTE Captain;
+		} s;
+	};
+
 	BYTE captains_name_index;
 
 	BYTE weapon_counter;
@@ -278,13 +292,21 @@ typedef struct
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
-	RACE_DESCPTR RaceDescPtr;
-			/* This field is abused to store other data when the ship
-			 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
-			 * or race_q[], namely the side this ship is on (accessed
-			 * through StarShipPlayer()), and the captains name for
-			 * the ship (accessed through StarShipCaptain()).
-			 * These values are set using OwnStarShip(). */
+
+	/* This field is abused to store other data when the ship
+	 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
+	 * or race_q[], namely the side this ship is on (accessed
+	 * through StarShipPlayer()), and the captains name for
+	 * the ship (accessed through StarShipCaptain()).
+	 * These values are set using OwnStarShip(). */
+	union {
+		RACE_DESCPTR RaceDescPtr;
+		struct {
+			COUNT Player;
+			BYTE Captain;
+		} s;
+	};
+
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
 typedef SHIP_FRAGMENT *PSHIP_FRAGMENT;
