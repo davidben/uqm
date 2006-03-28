@@ -19,19 +19,21 @@
 #ifndef _COMPILER_H
 #define _COMPILER_H
 
-typedef unsigned char     BYTE;
+#include "types.h"
+
+typedef uint8             BYTE;
 typedef BYTE            *PBYTE;
-typedef unsigned char     UBYTE;
+typedef uint8             UBYTE;
 typedef UBYTE           *PUBYTE;
-typedef signed char       SBYTE;
+typedef sint8             SBYTE;
 typedef SBYTE           *PSBYTE;
-typedef unsigned short    UWORD;
+typedef uint16            UWORD;
 typedef UWORD           *PUWORD;
-typedef signed short      SWORD;
+typedef sint16            SWORD;
 typedef SWORD           *PSWORD;
-typedef unsigned long     DWORD;
+typedef uint32            DWORD;
 typedef DWORD           *PDWORD;
-typedef signed long       SDWORD;
+typedef sint32           SDWORD;
 typedef SDWORD          *PSDWORD;
 
 typedef SBYTE           *PSTR;
@@ -76,6 +78,7 @@ typedef DWORD    (*PDWORDFUNC) (void);
 // _ALIGNED_ANY specifies an alignment suitable for any type
 // _ALIGNED_ON specifies a caller-supplied alignment (should be a power of 2)
 #if defined(__GNUC__)
+#	define _PACKED __attribute__((packed))
 #	define _ALIGNED_ANY __attribute__((aligned))
 #	define _ALIGNED_ON(bytes) __attribute__((aligned(bytes)))
 #elif defined(_MSC_VER)
@@ -85,6 +88,7 @@ typedef DWORD    (*PDWORDFUNC) (void);
 			// will not do. This is something that needs some attention,
 			// once we find someone with a 64 bits Windows machine.
 			// Leaving it alone for now.
+#	define _PACKED
 #	define _ALIGNED_ON(bytes)
 #endif
 
