@@ -111,11 +111,11 @@ static LOCDATA slylandro_desc =
 	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
-static RESPONSE_REF threat = 0,
-						something_wrong = 0,
-						we_are_us = 0,
-						why_attack = 0,
-						bye = 0;
+static RESPONSE_REF threat,
+			something_wrong,
+			we_are_us,
+			why_attack,
+			bye;
 
 static void
 CombatIsInevitable (RESPONSE_REF R)

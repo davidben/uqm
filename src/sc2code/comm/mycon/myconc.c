@@ -102,7 +102,7 @@ static LOCDATA mycon_desc =
 	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
-static BYTE MadeChoice = 0;
+static BYTE MadeChoice;
 
 static void
 DoRamble (RESPONSE_REF R)
@@ -622,6 +622,8 @@ init_mycon_comm (void)
 	mycon_desc.AlienTextTemplate.baseline.y = 0;
 	mycon_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	mycon_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
+
+	MadeChoice = 0;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 	{

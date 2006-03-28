@@ -230,10 +230,7 @@ ShipWorth (void)
 	return (worth);
 }
 
-static COUNT rescue_fuel = 0;
-
-/* We're relying on this large, #define-dependent-size structure to be
-   automatically initialized to 0 across the board here. */
+static COUNT rescue_fuel;
 static SIS_STATE SIS_copy;
 
 static BOOLEAN
@@ -394,7 +391,8 @@ StripShip (COUNT fuel_required)
 		else
 		{
 			NPCPhrase (RESCUE_OFFER);
-			if ((rescue_fuel = fuel_required) == capacity)
+			rescue_fuel = fuel_required;
+			if (rescue_fuel == capacity)
 				NPCPhrase (RESCUE_TANKS);
 			else
 				NPCPhrase (RESCUE_HOME);

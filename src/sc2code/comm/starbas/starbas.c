@@ -233,10 +233,10 @@ static void NeedInfo (RESPONSE_REF R);
 static void TellHistory (RESPONSE_REF R);
 static void AlienRaces (RESPONSE_REF R);
 
-static BYTE stack0 = 0,
-				stack1 = 0,
-				stack2 = 0,
-				stack3 = 0;
+static BYTE stack0,
+			stack1,
+			stack2,
+			stack3;
 
 static void
 AllianceInfo (RESPONSE_REF R)
