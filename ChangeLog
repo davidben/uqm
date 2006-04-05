@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Fixes to logic in the Utwig conversations (Bugs 327, 647), from Nic 
+  and Michael
 - Removed unused and invalid lander font chars - Alex
 - Setup menu reads strings out of lbm/setupmenu.txt - Michael
 - More fixes towards working 64-bits binaries.

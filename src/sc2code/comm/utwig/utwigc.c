@@ -519,6 +519,7 @@ NeutralUtwig (RESPONSE_REF R)
 		NPCPhrase (ABOUT_US_2);
 
 		LastStack = 2;
+		ActivateStarShip (SUPOX_SHIP, SPHERE_TRACKING);
 		SET_GAME_STATE (UTWIG_WAR_NEWS, 2);
 	}
 	else if (PLAYER_SAID (R, what_about_you_3))
@@ -712,12 +713,22 @@ BombWorld (RESPONSE_REF R)
 	LastStack ^= 1;
 	if (pStr[LastStack])
 		Response (pStr[LastStack], BombWorld);
-	if (PHRASE_ENABLED (whats_up_bomb))
+
+	if (PHRASE_ENABLED (whats_up_bomb) && (GET_GAME_STATE (BOMB_STACK1) > 1))
 		Response (whats_up_bomb, BombWorld);
+
 	if (GET_GAME_STATE (ULTRON_CONDITION)
 			&& !GET_GAME_STATE (REFUSED_ULTRON_AT_BOMB))
 		Response (got_ultron, ExitConversation);
-	Response (bye_bomb, ExitConversation);
+
+	if (GET_GAME_STATE (BOMB_INFO))
+	{
+		Response (bye_bomb, ExitConversation);
+	}
+	else
+	{
+		Response (bye_neutral, ExitConversation);
+	}
 }
 
 static void
