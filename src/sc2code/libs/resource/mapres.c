@@ -53,7 +53,7 @@ static const char *
 int2str (int i) {
 	char buf[20];
 	sprintf (buf, "%d", i);
-	return StringBank_AddOrFindString (buf);
+	return StringBank_AddOrFindString (map->bank, buf);
 }
 
 static int

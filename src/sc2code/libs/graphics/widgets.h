@@ -142,29 +142,4 @@ void Widget_DrawSlider (WIDGET *_self, int x, int y);
 
 void Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y);
 
-/* "Constructor" macros */
-
-#define BUTTON_INIT(handler, name, ttip1, ttip2, ttip3) { \
-	NULL, handler, Widget_ReceiveFocusSimple, Widget_DrawButton, \
-	Widget_HeightOneLine, Widget_WidthFullScreen, \
-	(name), { (ttip1), (ttip2), (ttip3) } }
-
-#define CHOICE_PREFACE NULL, Widget_HandleEventChoice, \
-		Widget_ReceiveFocusChoice, Widget_DrawChoice, \
-		Widget_HeightChoice, Widget_WidthFullScreen
-
-#define LABEL_PREFACE NULL, Widget_HandleEventIgnoreAll, \
-		Widget_ReceiveFocusRefuseFocus, Widget_DrawLabel, \
-		Widget_HeightLabel, Widget_WidthFullScreen
-
-#define MENU_SCREEN_PREFACE NULL, Widget_HandleEventMenuScreen, \
-		Widget_ReceiveFocusMenuScreen, \
-		Widget_DrawMenuScreen, Widget_HeightFullScreen, \
-		Widget_WidthFullScreen
-
-#define SLIDER_PREFACE NULL, Widget_HandleEventSlider, \
-		Widget_ReceiveFocusSimple, Widget_DrawSlider, \
-		Widget_HeightOneLine, Widget_WidthFullScreen, \
-		Widget_Slider_DrawValue
-
 #endif /* _WIDGETS_H */

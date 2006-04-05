@@ -6,7 +6,7 @@ Ur-Quan Masters Setup
 Graphics Options
 Audio Options
 3do/PC Options
-Addon Packs
+Resources Options
 Controls Setup
 Advanced Options
 
@@ -185,11 +185,12 @@ PC
 #(CAT_9_OPT_0_DESC)
 Uses the music from the Original PC version.
 Prefers .MOD files to .OGG files.
+Requires a restart of UQM to take effect.
 
 #(CAT_9_OPT_1_DESC)
-Uses the music from the 3do version and/or the
-Ur-Quan Masters Remix Project, if available.
-Prefers .OGG files over .MOD.
+Uses more modern music, if available.
+Prefers .OGG files to .MOD files.
+Requires a restart of UQM to take effect.
 
 #(CAT_10_OPTS)
 Windowed
@@ -255,12 +256,18 @@ OpenAL
 
 #(CAT_15_OPT_0_DESC)
 Play silently.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_15_OPT_1_DESC)
 Use the default audio mixer.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_15_OPT_2_DESC)
 Use the Creative Labs OpenAL driver.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_16_OPTS)
 Low
@@ -269,13 +276,18 @@ High
 
 #(CAT_16_OPT_0_DESC)
 Low audio quality.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_16_OPT_1_DESC)
 Medium audio quality.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_16_OPT_2_DESC)
 Highest audio quality.
-May not work on all architectures.
+This option will not take effect until
+you restart UQM.
 
 #(CAT_17_OPTS)
 Static

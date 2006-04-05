@@ -19,19 +19,39 @@
 #ifndef _STRINGBANK_H_
 #define _STRINGBANK_H_
 
-#ifdef DEBUG
+#ifdef SB_DEBUG
 #include <stdio.h>
 #endif
 
-/* Put str into the string bank. */
-const char *StringBank_AddString (const char *str);
+#define STRBANK_CHUNK_SIZE (1024 - sizeof (void *) - sizeof (int))
 
-/* Put str into the string bank if it's not already there.  Much slower. */
-const char *StringBank_AddOrFindString (const char *str);
+typedef struct _stringbank_chunk {
+	char data[STRBANK_CHUNK_SIZE];
+	int len;
+	struct _stringbank_chunk *next;
+} stringbank;
 
-#ifdef DEBUG
+/* Constructors and destructors */
+stringbank *StringBank_Create (void);
+void StringBank_Free (stringbank *bank);
+
+/* Put str or n chars after str into the string bank. */
+const char *StringBank_AddString (stringbank *bank, const char *str);
+const char *StringBank_AddSubstring (stringbank *bank, const char *str, unsigned int n);
+
+/* Put str or n chars after str into the string bank if it's not already
+   there.  Much slower. */
+const char *StringBank_AddOrFindString (stringbank *bank, const char *str);
+const char *StringBank_AddOrFindSubstring (stringbank *bank, const char *str, unsigned int n);
+
+/* Split a string s into at most n substrings, separated by splitchar.
+   Pointers to these substrings will be stored in result; the
+   substrings themselves will be filed in the specified stringbank. */
+int SplitString (const char *s, char splitchar, int n, const char **result, stringbank *bank);
+
+#ifdef SB_DEBUG
 /* Print out a list of the contents of the string bank to the named stream. */
-void StringBank_Dump (FILE *s);
-#endif  /* DEBUG */
+void StringBank_Dump (stringbank *bank, FILE *s);
+#endif  /* SB_DEBUG */
 
 #endif  /* _STRINGBANK_H_ */

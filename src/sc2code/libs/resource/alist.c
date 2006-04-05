@@ -21,7 +21,6 @@
 #include <ctype.h>
 #include "libs/reslib.h"
 #include "alist.h"
-#include "stringbank.h"
 
 alist_entry *
 AlistEntry_New (const char *key, const char *value)
@@ -48,6 +47,7 @@ Alist_New (void)
 {
 	alist *result = malloc (sizeof(alist));
 	result->first = NULL;
+	result->bank = StringBank_Create ();
 	return result;
 }
 
@@ -55,6 +55,7 @@ void
 Alist_Free (alist *m) {
 	if (m == NULL) return;
 	AlistEntry_Free (m->first);
+	StringBank_Free (m->bank);
 	free (m);
 }
 
@@ -198,8 +199,8 @@ Alist_New_FromString (char *d)
 		   make a new map entry. */
 		d[key_end] = '\0';
 		d[value_end] = '\0';
-		Alist_PutString (m, StringBank_AddOrFindString(d+key_start), 
-				  StringBank_AddOrFindString(d+value_start));
+		Alist_PutString (m, StringBank_AddOrFindString(m->bank, d+key_start), 
+				  StringBank_AddOrFindString(m->bank, d+value_start));
 	}
 	return m;
 }

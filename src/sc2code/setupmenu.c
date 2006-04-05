@@ -29,6 +29,7 @@
 #include "libs/strlib.h"
 #include "libs/reslib.h"
 #include "libs/sound/sound.h"
+#include "libs/resource/stringbank.h"
 #include "resinst.h"
 #include "nameref.h"
 
@@ -57,417 +58,100 @@ static int do_resources (WIDGET *self, int event);
 static int do_keyconfig (WIDGET *self, int event);
 static int do_advanced (WIDGET *self, int event);
 
-static CHOICE_OPTION scaler_opts[] = {
-	{ "None",
-	  { "No scaling.",
-	    "Simulates the original 320x240 display.", 
-	    "Fastest, though least attractive, option.",
-	  } },
-	{ "Bilinear",
-	  { "Bilinear average scaling.",
-	    "A simple, fast blending technique.",
-	    "Hardware-accelerated in OpenGL mode."
-	  } },
-	{ "Biadapt",
-	  { "Adaptive bilinear scaling.",
-	    "A slower, less blurry blending technique.",
-	    ""
-	  } },
-	{ "Biadv",
-	  { "Advanced bilinear scaling.",
-	    "Hand-weighted blend that produces smoother curves.",
-	    "The most expensive scaler."
-	  } },
-	{ "Triscan",
-	  { "An interpolating scaler.",
-	    "Produces sharp edges, but at a higher resolution.",
-	    "Based on the Scale2x algorithm.",
-	  } },
-	{ "HQ",
-	  { "A high quality, very expensive interpolating scaler.",
-		"Produces sharp edges, but at a higher resolution.",
-		"Based on the HQ2X algorithm.", } } };
-
-static CHOICE_OPTION scanlines_opts[] = {
-	{ "Disabled",
-		{ "Do not attempt to simulate an interlaced display.",
-		  "",
-		  ""
-		} },
-	{ "Enabled",
-		{ "Simulate an interlaced display.",
-		  "",
-		  ""
-		} } };
-
-static CHOICE_OPTION music_opts[] = {
-	{ "PC",
-		{ "Uses the music from the Original PC version.",
-		  "Prefers .MOD files to .OGG files.",
-		  ""
-		} },
-	{ "3do/Remixes",
-		{ "Uses the music from the 3do version and/or the",
-		  "Ur-Quan Masters Remix Project, if available.",
-		  "Prefers .OGG files over .MOD."
-		} } };
-
-static CHOICE_OPTION meleezoom_opts[] = {
-	{ "Stepped",
-		{ "Cut between three zoom levels in combat.",
-		  "Resembles PC combat.",
-		  "" } },
-	{ "Smooth",
-		{ "Continuously scale the combat view.",
-		   "Resembles 3do combat.",
-		   "" } } };
-
-static CHOICE_OPTION stereo_opts[] = {
-	{ "Disabled", { "Sound effects are center-channel.", "", "" } },
-	{ "Enabled", 
-		{ "Uses positional SFX if possible..", 
-		  "Currently only supported on OpenAL.", "" } } };
-
-static CHOICE_OPTION fps_opts[] = {
-	{ "No", { "Do not show FPS in the console window.", "", "" } } ,
-	{ "Yes", { "Show FPS in the console window.", "", "" } } };
-
-static CHOICE_OPTION intro_opts[] = {
-	{ "Slides",
-		{ "Prefer slides to movies if both are present.",
-		  "Forces the PC intro.",
-		  "" } },
-	{ "Movie",
-		{ "Prefer movies to slides.",
-		  "Will use 3do content if present.",
-		  "", } } };
-
-static CHOICE_OPTION menu_opts[] = {
-	{ "Text",
-		{ "In-game menus resemble the Original PC version.",
-		  "",
-		  ""
-		} },
-	{ "Pictographic",
-		{ "In-game menus resemble the 3do version.",
-		  "",
-		  ""
-		} } };
-
-static CHOICE_OPTION font_opts[] = {
-	{ "Gradients",
-		{ "Certain menu texts and dialogs use gradients,",
-		  "as per the original PC version.",
-		  "Looks nicer."
-		} },
-	{ "Flat",
-		{ "All text and menus use a \"flat\" colour scheme,",
-		  "as per the 3do version.",
-		  "Easier to read."
-		} } };
-
-static CHOICE_OPTION scan_opts[] = {
-	{ "Text",
-		{ "Displays planet scan information as text,",
-		  "as per the original PC version.",
-		  ""
-		} },
-	{ "Pictograms",
-		{ "Displays planet scan information as pictograms,",
-		  "as per the 3do version..",
-		  ""
-		} } };
-
-static CHOICE_OPTION scroll_opts[] = {
-	{ "Per-Page",
-		{ "When fast-forwarding or rewinding conversations",
-		  "in-game, advance one screen of subtitles at a time.",
-		  "This mimics the original PC version."
-		} },
-	{ "Smooth",
-		{ "When fast-forwarding or rewinding conversations",
-		  "in-game, advance at a linear rate.",
-		  "This mimics the 3do version."
-		} } };
-
-static CHOICE_OPTION subtitles_opts[] = {
-	{ "Disabled",
-		{ "Do not subtitle alien speech.",
-		  "",
-		  ""
-		} },
-	{ "Enabled",
-		{ "Show subtitles for alien speech.",
-		  "",
-		  ""
-		} } };
-
-static CHOICE_OPTION shield_opts[] = {
-	{ "Static",
-		{ "Slave shields maintain a static glow.",
-		  "This mimics the PC version.",
-		  ""
-		} },
-	{ "Pulsating",
-		{ "Slave shields pulsate.",
-		  "This mimics the 3do verion.",
-		  ""
-		} } };
-
-static CHOICE_OPTION res_opts[] = {
-	{ "320x240",
-		{ "320x240 resolution.",
-		  "Available with SDL framebuffer or OpenGL.",
-		  ""
-		} },
-	{ "640x480",
-		{ "640x480 resolution.",
-		  "Available with SDL framebuffer or OpenGL.",
-		  ""
-		} },
-#ifdef HAVE_OPENGL
-	{ "800x600",
-		{ "800x600 resolution.",
-		  "Requires OpenGL graphics drivers.",
-		  ""
-		} },
-	{ "1024x768",
-		{ "1024x768 resolution.",
-		  "Requires OpenGL graphics drivers.",
-		  ""
-		} },
-	{ "Custom",
-		{ "Custom resolution set from the commandline.",
-		  "Requires OpenGL graphics drivers.",
-		  ""
-		} },
-#endif
-};
-
-static CHOICE_OPTION driver_opts[] = {
-	{ "If Possible",
-		{ "Uses SDL Framebuffer mode if possible,",
-		  "and OpenGL otherwise.  Framebuffer mode",
-		  "is available for 320x240 and 640x480."
-		} },
-	{ "Never",
-		{ "Always use OpenGL.",
-		  "OpenGL can produce any resolution and is",
-		  "usually hardware-accelerated."
-		} },
-};
-
-static CHOICE_OPTION fullscreen_opts[] = {
-	{ "Windowed",
-		{ "Display everything in a window.",
-		  "(if windowing is available)",
-		  ""
-		} },
-	{ "Fullscreen",
-		{ "Game occupies the entire screen.",
-		  "(if available)",
-		  ""
-		} },
-};
-
-static CHOICE_OPTION aquality_opts[] = {
-	{ "Low",
-		{ "Low audio quality.", "", "" } },
-	{ "Medium",
-		{ "Medium audio quality.", "", "" } },
-	{ "High",
-		{ "Highest audio quality.",
-		  "May not work on all architectures.", "" } } 
-};
-		 
-static CHOICE_OPTION adriver_opts[] = {
-	{ "None",
-		{ "Play silently.", "", "" } },
-	{ "MixSDL",
-		{ "Use the default audio mixer.", "", "" } },
-	{ "OpenAL",
-		{ "Use the Creative Labs OpenAL driver.", "", "" } } };
-
 #ifdef HAVE_OPENGL
 #define RES_OPTS 4
 #else
 #define RES_OPTS 2
 #endif
 
-static WIDGET_CHOICE cmdline_opts[] = {
-	{ CHOICE_PREFACE, "Resolution", RES_OPTS, 3, res_opts, 0, 0},
-	{ CHOICE_PREFACE, "Use Framebuffer?", 2, 2, driver_opts, 0, 0},
-	{ CHOICE_PREFACE, "Scaler", 6, 3, scaler_opts, 0, 0 },
-  	{ CHOICE_PREFACE, "Scanlines", 2, 3, scanlines_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Menu Style", 2, 2, menu_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Font Style", 2, 2, font_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scan Style", 2, 2, scan_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Scroll Style", 2, 2, scroll_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Subtitles", 2, 2, subtitles_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Music Format", 2, 2, music_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Display", 2, 2, fullscreen_opts, 0, 0},
-	{ CHOICE_PREFACE, "Cutscenes", 2, 2, intro_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Show FPS", 2, 3, fps_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Melee Zoom", 2, 2, meleezoom_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Positional Audio", 2, 2, stereo_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Sound Driver", 3, 3, adriver_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Sound Quality", 3, 3, aquality_opts, 0, 0 },
-	{ CHOICE_PREFACE, "Slave Shields", 2, 2, shield_opts, 0, 0 } };
+#define MENU_COUNT    7
+#define CHOICE_COUNT 18
+#define SLIDER_COUNT  3
+#define BUTTON_COUNT  8
+#define LABEL_COUNT   1
 
-static WIDGET_SLIDER sliders_opts[] = {
-	{ SLIDER_PREFACE, 0, 100, 5, 75, "Music Volume", { "Sets the music volume.", "", "" } },
-	{ SLIDER_PREFACE, 0, 100, 5, 75, "SFX Volume", { "Sets the sound effects volume.", "", "" } },
-	{ SLIDER_PREFACE, 0, 100, 5, 75, "Speech Volume", { "Sets the speech volume.", "", "" } }, 
-};
+/* The space for our widgets */
+static WIDGET_MENU_SCREEN menus[MENU_COUNT];
+static WIDGET_CHOICE choices[CHOICE_COUNT];
+static WIDGET_SLIDER sliders[SLIDER_COUNT];
+static WIDGET_BUTTON buttons[BUTTON_COUNT];
+static WIDGET_LABEL labels[LABEL_COUNT];
 
-static WIDGET_BUTTON quit_button = BUTTON_INIT (quit_main_menu, 
-		"Quit Setup Menu", 
-		"Return to the main menu.", "", "");
+/* The hardcoded data that isn't strings */
 
-static WIDGET_BUTTON prev_button = BUTTON_INIT (quit_sub_menu, 
-		"Return to Main Menu",
-		"Save changes and return to main menu.",
-		"Changes will not be applied until",
-		"you quit setup entirely.");
+typedef int (*HANDLER)(WIDGET *, int);
 
-static WIDGET_BUTTON graphics_button = BUTTON_INIT (do_graphics, "Graphics Options",
-		"Configure display options for UQM.",
-		"Graphics drivers, resolution, and scalers.", "");
+static int choice_widths[CHOICE_COUNT] = {
+	3, 2, 3, 3, 2, 2, 2, 2, 2,
+	2, 2, 2, 3, 2, 2, 3, 3, 2 };
 
-static WIDGET_BUTTON engine_button = BUTTON_INIT (do_engine, "PC/3do Compatibility Options",
-		"Configure behavior of UQM", 
-		"to more closely match the PC or 3do behavior.", "");
+static HANDLER button_handlers[BUTTON_COUNT] = {
+	quit_main_menu, quit_sub_menu, do_graphics, do_engine,
+	do_audio, do_resources, do_keyconfig, do_advanced };
 
-static WIDGET_BUTTON audio_button = BUTTON_INIT (do_audio, "Sound Options",
-		"Configure sound and audio options for UQM.", "", "");
+static int menu_sizes[MENU_COUNT] = {
+	7, 5, 6, 9, 2, 2,
+#ifdef HAVE_OPENGL
+	5 };
+#else
+	4 };
+#endif
 
-static WIDGET_BUTTON resources_button = BUTTON_INIT (do_resources, "Resources Options",
-	     "Configure UQM Addon Packs.", "", "Currently unimplemented.");
+static int menu_bgs[MENU_COUNT] = { 0, 1, 1, 2, 3, 1, 2 };
 
-static WIDGET_BUTTON keyconfig_button = BUTTON_INIT (do_keyconfig, "Configure Controls",
-	     "Set up keyboard and joystick controls.", "", "Currently unimplemented.");
-
-static WIDGET_BUTTON advanced_button = BUTTON_INIT (do_advanced, "Advanced Options",
-		"Select underlying drivers or other", "hardware-dependent options.", "");
-
-static const char *incomplete_msg[] = { 
-	"This part of the configuration",
-	"has not yet been implemented.",
-	"",
-	"Expect it in a future version." };
-
-static WIDGET_LABEL incomplete_label = {
-	LABEL_PREFACE,
-	4, incomplete_msg };
-
+/* These refer to uninitialized widgets, but that's OK; we'll fill
+ * them in before we touch them */
 static WIDGET *main_widgets[] = {
-	(WIDGET *)(&graphics_button),
-	(WIDGET *)(&audio_button),
-	(WIDGET *)(&engine_button),
-	(WIDGET *)(&resources_button),
-	(WIDGET *)(&keyconfig_button),
-	(WIDGET *)(&advanced_button),
-	(WIDGET *)(&quit_button) };
+	(WIDGET *)(&buttons[2]),
+	(WIDGET *)(&buttons[3]),
+	(WIDGET *)(&buttons[4]),
+	(WIDGET *)(&buttons[5]),
+	(WIDGET *)(&buttons[6]),
+	(WIDGET *)(&buttons[7]),
+	(WIDGET *)(&buttons[0]) };
 
 static WIDGET *graphics_widgets[] = {
-	(WIDGET *)(&cmdline_opts[0]),
-	(WIDGET *)(&cmdline_opts[10]),
-	(WIDGET *)(&cmdline_opts[2]),
-	(WIDGET *)(&cmdline_opts[3]),
-	(WIDGET *)(&prev_button) };
+	(WIDGET *)(&choices[0]),
+	(WIDGET *)(&choices[10]),
+	(WIDGET *)(&choices[2]),
+	(WIDGET *)(&choices[3]),
+	(WIDGET *)(&buttons[1]) };
 
 static WIDGET *audio_widgets[] = {
-	(WIDGET *)(&sliders_opts[0]),
-	(WIDGET *)(&sliders_opts[1]),
-	(WIDGET *)(&sliders_opts[2]),
-	(WIDGET *)(&cmdline_opts[14]),
-	(WIDGET *)(&cmdline_opts[9]),
-	(WIDGET *)(&prev_button) };
+	(WIDGET *)(&sliders[0]),
+	(WIDGET *)(&sliders[1]),
+	(WIDGET *)(&sliders[2]),
+	(WIDGET *)(&choices[14]),
+	(WIDGET *)(&choices[9]),
+	(WIDGET *)(&buttons[1]) };
 
 static WIDGET *engine_widgets[] = {
-	(WIDGET *)(&cmdline_opts[4]),
-	(WIDGET *)(&cmdline_opts[5]),
-	(WIDGET *)(&cmdline_opts[6]),
-	(WIDGET *)(&cmdline_opts[7]),
-	(WIDGET *)(&cmdline_opts[8]),
-	(WIDGET *)(&cmdline_opts[13]),
-	(WIDGET *)(&cmdline_opts[11]),
-	(WIDGET *)(&cmdline_opts[17]),
-	(WIDGET *)(&prev_button) };
+	(WIDGET *)(&choices[4]),
+	(WIDGET *)(&choices[5]),
+	(WIDGET *)(&choices[6]),
+	(WIDGET *)(&choices[7]),
+	(WIDGET *)(&choices[8]),
+	(WIDGET *)(&choices[13]),
+	(WIDGET *)(&choices[11]),
+	(WIDGET *)(&choices[17]),
+	(WIDGET *)(&buttons[1]) };
 
 static WIDGET *advanced_widgets[] = {
 #ifdef HAVE_OPENGL
-	(WIDGET *)(&cmdline_opts[1]),
+	(WIDGET *)(&choices[1]),
 #endif
-	(WIDGET *)(&cmdline_opts[12]),
-	(WIDGET *)(&cmdline_opts[15]),
-	(WIDGET *)(&cmdline_opts[16]),
-	(WIDGET *)(&prev_button) };
+	(WIDGET *)(&choices[12]),
+	(WIDGET *)(&choices[15]),
+	(WIDGET *)(&choices[16]),
+	(WIDGET *)(&buttons[1]) };
 	
-
 static WIDGET *incomplete_widgets[] = {
-	(WIDGET *)(&incomplete_label),
-	(WIDGET *)(&prev_button) };
-	     
-static WIDGET_MENU_SCREEN menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"",
-	{ {0, 0}, NULL },
-	7, main_widgets,
-	0 };
+	(WIDGET *)(&labels[0]),
+	(WIDGET *)(&buttons[1]) };
 
-static WIDGET_MENU_SCREEN graphics_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"Graphics Options",
-	{ {0, 0}, NULL },
-	5, graphics_widgets,
-	0 };	
-
-static WIDGET_MENU_SCREEN audio_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"Audio Options",
-	{ {0, 0}, NULL },
-	6, audio_widgets,
-	0 };
-
-static WIDGET_MENU_SCREEN engine_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"3do/PC Options",
-	{ {0, 0}, NULL },
-	9, engine_widgets,
-	0 };	
-
-static WIDGET_MENU_SCREEN resources_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"Addon Packs",
-	{ {0, 0}, NULL },
-	2, incomplete_widgets,
-	0 };
-
-static WIDGET_MENU_SCREEN keyconfig_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"Controls Setup",
-	{ {0, 0}, NULL },
-	2, incomplete_widgets,
-	0 };
-
-static WIDGET_MENU_SCREEN advanced_menu = {
-	MENU_SCREEN_PREFACE,
-	"Ur-Quan Masters Setup",
-	"Advanced Options",
-	{ {0, 0}, NULL },
-#ifdef HAVE_OPENGL
-	5, advanced_widgets,
-#else
-	4, advanced_widgets,
-#endif
-	0 };
+static WIDGET **menu_widgets[MENU_COUNT] = {
+	main_widgets, graphics_widgets, audio_widgets, engine_widgets, 
+	incomplete_widgets, incomplete_widgets, advanced_widgets };
 
 static int
 quit_main_menu (WIDGET *self, int event)
@@ -486,7 +170,7 @@ quit_sub_menu (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&menu);
+		next = (WIDGET *)(&menus[0]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_SELECT);
 		return TRUE;
 	}
@@ -499,7 +183,7 @@ do_graphics (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&graphics_menu);
+		next = (WIDGET *)(&menus[1]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -512,7 +196,7 @@ do_audio (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&audio_menu);
+		next = (WIDGET *)(&menus[2]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -525,7 +209,7 @@ do_engine (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&engine_menu);
+		next = (WIDGET *)(&menus[3]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -538,7 +222,7 @@ do_resources (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&resources_menu);
+		next = (WIDGET *)(&menus[4]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -551,7 +235,7 @@ do_keyconfig (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&keyconfig_menu);
+		next = (WIDGET *)(&menus[5]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -564,7 +248,7 @@ do_advanced (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		next = (WIDGET *)(&advanced_menu);
+		next = (WIDGET *)(&menus[6]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -585,62 +269,62 @@ SetDefaults (void)
 	GetGlobalOptions (&opts);
 	if (opts.res == OPTVAL_CUSTOM)
 	{
-		cmdline_opts[0].numopts = RES_OPTS + 1;
+		choices[0].numopts = RES_OPTS + 1;
 	}
 	else
 	{
-		cmdline_opts[0].numopts = RES_OPTS;
+		choices[0].numopts = RES_OPTS;
 	}
-	cmdline_opts[0].selected = opts.res;
-	cmdline_opts[1].selected = opts.driver;
-	cmdline_opts[2].selected = opts.scaler;
-	cmdline_opts[3].selected = opts.scanlines;
-	cmdline_opts[4].selected = opts.menu;
-	cmdline_opts[5].selected = opts.text;
-	cmdline_opts[6].selected = opts.cscan;
-	cmdline_opts[7].selected = opts.scroll;
-	cmdline_opts[8].selected = opts.subtitles;
-	cmdline_opts[9].selected = opts.music;
-	cmdline_opts[10].selected = opts.fullscreen;
-	cmdline_opts[11].selected = opts.intro;
-	cmdline_opts[12].selected = opts.fps;
-	cmdline_opts[13].selected = opts.meleezoom;
-	cmdline_opts[14].selected = opts.stereo;
-	cmdline_opts[15].selected = opts.adriver;
-	cmdline_opts[16].selected = opts.aquality;
-	cmdline_opts[17].selected = opts.shield;
+	choices[0].selected = opts.res;
+	choices[1].selected = opts.driver;
+	choices[2].selected = opts.scaler;
+	choices[3].selected = opts.scanlines;
+	choices[4].selected = opts.menu;
+	choices[5].selected = opts.text;
+	choices[6].selected = opts.cscan;
+	choices[7].selected = opts.scroll;
+	choices[8].selected = opts.subtitles;
+	choices[9].selected = opts.music;
+	choices[10].selected = opts.fullscreen;
+	choices[11].selected = opts.intro;
+	choices[12].selected = opts.fps;
+	choices[13].selected = opts.meleezoom;
+	choices[14].selected = opts.stereo;
+	choices[15].selected = opts.adriver;
+	choices[16].selected = opts.aquality;
+	choices[17].selected = opts.shield;
 
-	sliders_opts[0].value = opts.musicvol;
-	sliders_opts[1].value = opts.sfxvol;
-	sliders_opts[2].value = opts.speechvol;
+	sliders[0].value = opts.musicvol;
+	sliders[1].value = opts.sfxvol;
+	sliders[2].value = opts.speechvol;
 }
 
 static void
 PropagateResults (void)
 {
 	GLOBALOPTS opts;
-	opts.res = cmdline_opts[0].selected;
-	opts.driver = cmdline_opts[1].selected;
-	opts.scaler = cmdline_opts[2].selected;
-	opts.scanlines = cmdline_opts[3].selected;
-	opts.menu = cmdline_opts[4].selected;
-	opts.text = cmdline_opts[5].selected;
-	opts.cscan = cmdline_opts[6].selected;
-	opts.scroll = cmdline_opts[7].selected;
-	opts.subtitles = cmdline_opts[8].selected;
-	opts.music = cmdline_opts[9].selected;
-	opts.fullscreen = cmdline_opts[10].selected;
-	opts.intro = cmdline_opts[11].selected;
-	opts.fps = cmdline_opts[12].selected;
-	opts.meleezoom = cmdline_opts[13].selected;
-	opts.stereo = cmdline_opts[14].selected;
-	opts.adriver = cmdline_opts[15].selected;
-	opts.aquality = cmdline_opts[16].selected;
-	opts.shield = cmdline_opts[17].selected;
+	opts.res = choices[0].selected;
+	opts.driver = choices[1].selected;
+	opts.scaler = choices[2].selected;
+	opts.scanlines = choices[3].selected;
+	opts.menu = choices[4].selected;
+	opts.text = choices[5].selected;
+	opts.cscan = choices[6].selected;
+	opts.scroll = choices[7].selected;
+	opts.subtitles = choices[8].selected;
+	opts.music = choices[9].selected;
+	opts.fullscreen = choices[10].selected;
+	opts.intro = choices[11].selected;
+	opts.fps = choices[12].selected;
+	opts.meleezoom = choices[13].selected;
+	opts.stereo = choices[14].selected;
+	opts.adriver = choices[15].selected;
+	opts.aquality = choices[16].selected;
+	opts.shield = choices[17].selected;
 
-	opts.musicvol = sliders_opts[0].value;
-	opts.sfxvol = sliders_opts[1].value;
-	opts.speechvol = sliders_opts[2].value;
+	opts.musicvol = sliders[0].value;
+	opts.sfxvol = sliders[1].value;
+	opts.speechvol = sliders[2].value;
 	SetGlobalOptions (&opts);
 }
 
@@ -654,35 +338,10 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		SetDefaults ();
 
 		current = NULL;
-		next = (WIDGET *)(&menu);
+		next = (WIDGET *)(&menus[0]);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		
 		pInputState->initialized = TRUE;
-	}
-	if (!menu.bgStamp.frame)
-	{
-		FRAME f = CaptureDrawable (LoadGraphic (MENUBKG_PMAP_ANIM));
-		menu.bgStamp.origin.x = 0;
-		menu.bgStamp.origin.y = 0;
-		menu.bgStamp.frame = SetAbsFrameIndex (f, 0);
-		graphics_menu.bgStamp.origin.x = 0;
-		graphics_menu.bgStamp.origin.y = 0;
-		graphics_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
-		audio_menu.bgStamp.origin.x = 0;
-		audio_menu.bgStamp.origin.y = 0;
-		audio_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
-		engine_menu.bgStamp.origin.x = 0;
-		engine_menu.bgStamp.origin.y = 0;
-		engine_menu.bgStamp.frame = SetAbsFrameIndex (f, 2);
-		resources_menu.bgStamp.origin.x = 0;
-		resources_menu.bgStamp.origin.y = 0;
-		resources_menu.bgStamp.frame = SetAbsFrameIndex (f, 3);
-		keyconfig_menu.bgStamp.origin.x = 0;
-		keyconfig_menu.bgStamp.origin.y = 0;
-		keyconfig_menu.bgStamp.frame = SetAbsFrameIndex (f, 1);
-		advanced_menu.bgStamp.origin.x = 0;
-		advanced_menu.bgStamp.origin.y = 0;
-		advanced_menu.bgStamp.frame = SetAbsFrameIndex (f, 2);
 	}
 	if (current != next)
 	{
@@ -731,6 +390,327 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		 (next == NULL));
 }
 
+static stringbank *bank = NULL;
+static FRAME setup_frame = NULL;
+
+
+static void
+init_widgets (void)
+{
+	const char *buffer[100], *str, *title;
+	int count, i, index;
+
+	if (bank == NULL)
+	{
+		bank = StringBank_Create ();
+	}
+	
+	if (setup_frame == NULL)
+	{
+		setup_frame = CaptureDrawable (LoadGraphic (MENUBKG_PMAP_ANIM));
+	}
+
+	count = GetStringTableCount (SetupTab);
+
+	if (count < 3)
+	{
+		fprintf (stderr, "PANIC: Setup string table too short to even hold all indices!\n");
+		exit (1);
+	}
+
+	/* Menus */
+	title = StringBank_AddOrFindString (bank, GetStringAddress (SetAbsStringTableIndex (SetupTab, 0)));
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 1)), '\n', 100, buffer, bank) != MENU_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		fprintf (stderr, "PANIC: Incorrect number of Menu Subtitles\n");
+		exit (1);
+	}
+
+	for (i = 0; i < MENU_COUNT; i++)
+	{
+		menus[i].parent = NULL;
+		menus[i].handleEvent = Widget_HandleEventMenuScreen;
+		menus[i].receiveFocus = Widget_ReceiveFocusMenuScreen;
+		menus[i].draw = Widget_DrawMenuScreen;
+		menus[i].height = Widget_HeightFullScreen;
+		menus[i].width = Widget_WidthFullScreen;
+		menus[i].title = title;
+		menus[i].subtitle = buffer[i];
+		menus[i].bgStamp.origin.x = 0;
+		menus[i].bgStamp.origin.y = 0;
+		menus[i].bgStamp.frame = SetAbsFrameIndex (setup_frame, menu_bgs[i]);
+		menus[i].num_children = menu_sizes[i];
+		menus[i].child = menu_widgets[i];
+		menus[i].highlighted = 0;
+	}
+		
+	/* Options */
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 2)), '\n', 100, buffer, bank) != CHOICE_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		fprintf (stderr, "PANIC: Incorrect number of Choice Options\n");
+		exit (1);
+	}
+
+	for (i = 0; i < CHOICE_COUNT; i++)
+	{
+		choices[i].parent = NULL;
+		choices[i].handleEvent = Widget_HandleEventChoice;
+		choices[i].receiveFocus = Widget_ReceiveFocusChoice;
+		choices[i].draw = Widget_DrawChoice;
+		choices[i].height = Widget_HeightChoice;
+		choices[i].width = Widget_WidthFullScreen;
+		choices[i].category = buffer[i];
+		choices[i].numopts = 0;
+		choices[i].options = NULL;
+		choices[i].selected = 0;
+		choices[i].highlighted = 0;
+		choices[i].maxcolumns = choice_widths[i];
+	}
+
+	/* Fill in the options now */
+	index = 3;  /* Index into string table */
+	for (i = 0; i < CHOICE_COUNT; i++)
+	{
+		int j, optcount;
+
+		if (index >= count)
+		{
+			fprintf (stderr, "PANIC: String table cut short while reading choices\n");
+			exit (1);
+		}
+		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		optcount = SplitString (str, '\n', 100, buffer, bank);
+		choices[i].numopts = optcount;
+		choices[i].options = HMalloc (optcount * sizeof (CHOICE_OPTION));
+		for (j = 0; j < optcount; j++)
+		{
+			choices[i].options[j].optname = buffer[j];
+			choices[i].options[j].tooltip[0] = "";
+			choices[i].options[j].tooltip[1] = "";
+			choices[i].options[j].tooltip[2] = "";
+		}
+		for (j = 0; j < optcount; j++)
+		{
+			int k, tipcount;
+
+			if (index >= count)
+			{
+				fprintf (stderr, "PANIC: String table cut short while reading choices\n");
+				exit (1);
+			}
+			str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+			tipcount = SplitString (str, '\n', 100, buffer, bank);			
+			if (tipcount > 3)
+			{
+				tipcount = 3;
+			}
+			for (k = 0; k < tipcount; k++)
+			{
+				choices[i].options[j].tooltip[k] = buffer[k];
+			}
+		}
+	}
+
+	/* The first choice is resolution, and is handled specially */
+	choices[0].numopts = RES_OPTS;
+
+	/* Sliders */
+	if (index >= count)
+	{
+		fprintf (stderr, "PANIC: String table cut short while reading sliders\n");
+		exit (1);
+	}
+
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != SLIDER_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		fprintf (stderr, "PANIC: Incorrect number of Slider Options\n");
+		exit (1);
+	}
+
+	for (i = 0; i < SLIDER_COUNT; i++)
+	{
+		sliders[i].parent = NULL;
+		sliders[i].handleEvent = Widget_HandleEventSlider;
+		sliders[i].receiveFocus = Widget_ReceiveFocusSimple;
+		sliders[i].draw = Widget_DrawSlider;
+		sliders[i].height = Widget_HeightOneLine;
+		sliders[i].width = Widget_WidthFullScreen;
+		sliders[i].draw_value = Widget_Slider_DrawValue;
+		sliders[i].min = 0;
+		sliders[i].max = 100;
+		sliders[i].step = 5;
+		sliders[i].value = 75;
+		sliders[i].category = buffer[i];
+		sliders[i].tooltip[0] = "";
+		sliders[i].tooltip[1] = "";
+		sliders[i].tooltip[2] = "";
+	}
+
+	for (i = 0; i < SLIDER_COUNT; i++)
+	{
+		int j, tipcount;
+		
+		if (index >= count)
+		{
+			fprintf (stderr, "PANIC: String table cut short while reading sliders\n");
+			exit (1);
+		}
+		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		tipcount = SplitString (str, '\n', 100, buffer, bank);
+		if (tipcount > 3)
+		{
+			tipcount = 3;
+		}
+		for (j = 0; j < tipcount; j++)
+		{
+			sliders[i].tooltip[j] = buffer[j];
+		}
+	}
+
+	/* Buttons */
+	if (index >= count)
+	{
+		fprintf (stderr, "PANIC: String table cut short while reading buttons\n");
+		exit (1);
+	}
+
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != BUTTON_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		fprintf (stderr, "PANIC: Incorrect number of Button Options\n");
+		exit (1);
+	}
+
+	for (i = 0; i < BUTTON_COUNT; i++)
+	{
+		buttons[i].parent = NULL;
+		buttons[i].handleEvent = button_handlers[i];
+		buttons[i].receiveFocus = Widget_ReceiveFocusSimple;
+		buttons[i].draw = Widget_DrawButton;
+		buttons[i].height = Widget_HeightOneLine;
+		buttons[i].width = Widget_WidthFullScreen;
+		buttons[i].name = buffer[i];
+		buttons[i].tooltip[0] = "";
+		buttons[i].tooltip[1] = "";
+		buttons[i].tooltip[2] = "";
+	}
+
+	for (i = 0; i < BUTTON_COUNT; i++)
+	{
+		int j, tipcount;
+		
+		if (index >= count)
+		{
+			fprintf (stderr, "PANIC: String table cut short while reading buttons\n");
+			exit (1);
+		}
+		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		tipcount = SplitString (str, '\n', 100, buffer, bank);
+		if (tipcount > 3)
+		{
+			tipcount = 3;
+		}
+		for (j = 0; j < tipcount; j++)
+		{
+			buttons[i].tooltip[j] = buffer[j];
+		}
+	}
+
+	/* Labels */
+	if (index >= count)
+	{
+		fprintf (stderr, "PANIC: String table cut short while reading labels\n");
+		exit (1);
+	}
+
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != LABEL_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		fprintf (stderr, "PANIC: Incorrect number of Label Options\n");
+		exit (1);
+	}
+
+	for (i = 0; i < LABEL_COUNT; i++)
+	{
+		labels[i].parent = NULL;
+		labels[i].handleEvent = Widget_HandleEventIgnoreAll;
+		labels[i].receiveFocus = Widget_ReceiveFocusRefuseFocus;
+		labels[i].draw = Widget_DrawLabel;
+		labels[i].height = Widget_HeightLabel;
+		labels[i].width = Widget_WidthFullScreen;
+		labels[i].line_count = 0;
+		labels[i].lines = NULL;
+	}
+
+	for (i = 0; i < LABEL_COUNT; i++)
+	{
+		int j, linecount;
+		
+		if (index >= count)
+		{
+			fprintf (stderr, "PANIC: String table cut short while reading labels\n");
+			exit (1);
+		}
+		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		linecount = SplitString (str, '\n', 100, buffer, bank);
+		labels[i].line_count = linecount;
+		labels[i].lines = (const char **)HMalloc(linecount * sizeof(const char *));
+		for (j = 0; j < linecount; j++)
+		{
+			labels[i].lines[j] = buffer[j];
+		}
+	}
+
+	/* Check for garbage at the end */
+	if (index < count)
+	{
+		fprintf (stderr, "WARNING: Setup strings had %d garbage entries at the end.\n", count - index);
+	}
+}
+
+static void
+clean_up_widgets (void)
+{
+	int i;
+
+	for (i = 0; i < CHOICE_COUNT; i++)
+	{
+		if (choices[i].options)
+		{
+			HFree (choices[i].options);
+		}
+	}
+
+	for (i = 0; i < LABEL_COUNT; i++)
+	{
+		if (labels[i].lines)
+		{
+			HFree (labels[i].lines);
+		}
+	}
+
+	/* Clear out the master tables */
+	
+	if (SetupTab)
+	{
+		DestroyStringTable (ReleaseStringTable (SetupTab));
+		SetupTab = 0;
+	}
+	if (bank)
+	{
+		StringBank_Free (bank);
+		bank = NULL;
+	}
+	if (setup_frame)
+	{
+		DestroyDrawable (ReleaseDrawable (setup_frame));
+		setup_frame = NULL;
+	}
+}
+
 void
 SetupMenu (void)
 {
@@ -742,11 +722,12 @@ SetupMenu (void)
 	SetupTab = CaptureStringTable (LoadStringTable (SETUP_MENU_STRTAB));
 	if (SetupTab) 
 	{
-		fprintf (stderr, "GetStringTableCount reports %d entries.\n", GetStringTableCount (SetupTab));
+		init_widgets ();
 	}
 	else
 	{
-		fprintf (stderr, "Could not find setup strings!\n");
+		fprintf (stderr, "PANIC: Could not find strings for the setup menu!\n");
+		exit (1);
 	}
 	done = FALSE;
 
@@ -755,8 +736,7 @@ SetupMenu (void)
 	PropagateResults ();
 	if (SetupTab)
 	{
-		DestroyStringTable (ReleaseStringTable (SetupTab));
-		SetupTab = 0;
+		clean_up_widgets ();
 	}
 }
 

@@ -20,6 +20,7 @@
 #define _ALIST_H_
 
 #include "libs/uio.h"
+#include "stringbank.h"
 
 /* Associative List types. */
 
@@ -30,6 +31,7 @@ typedef struct _alist_entry {
 
 typedef struct _alist_map {
 	alist_entry *first;
+	stringbank *bank;
 } alist;
 
 /* ***** alist_entry operations ***** */
