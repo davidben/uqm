@@ -110,7 +110,7 @@ enum
 	PIK_ALIEN
 };
 
-static int LastAlien = FOT_ALIEN;
+static int LastAlien;
 
 static void
 SelectAlienZOQ (void)
@@ -153,10 +153,11 @@ SelectAlienPIK (void)
 static void
 ZFPTalkSegue (COUNT wait_track)
 {
-	LastAlien = PIK_ALIEN;
+	LastAlien = FOT_ALIEN;
 	SelectAlienZOQ ();
 	AlienTalkSegue (wait_track);
 }
+
 static void
 ExitConversation (RESPONSE_REF R)
 {
