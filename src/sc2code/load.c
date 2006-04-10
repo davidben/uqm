@@ -169,7 +169,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		if (summary_desc->year_index < START_YEAR ||
 				summary_desc->year_index >= START_YEAR +
 				YEARS_TO_KOHRAH_VICTORY + 1 /* Utwig intervention */ +
-				1 /* time to destroy all races, plenty */)
+				1 /* time to destroy all races, plenty */ +
+				25 /* for cheaters */)
 		{
 			fprintf (stderr, "Warning: Savegame corrupt or from an "
 					"an incompatible platform.\n");
