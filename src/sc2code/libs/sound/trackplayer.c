@@ -595,7 +595,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 					sound_sample->callbacks = trackCBs;
 					sound_sample->num_buffers = 8;
 					sound_sample->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * sound_sample->num_buffers);
-					sound_sample->buffer = HMalloc (sizeof (uint32) * sound_sample->num_buffers);
+					sound_sample->buffer = HMalloc (sizeof (audio_Object) * sound_sample->num_buffers);
 					audio_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					decoder = SoundDecoder_Load (contentDir, TrackName, 4096,
 							startTime, time_stamps[page_counter]);

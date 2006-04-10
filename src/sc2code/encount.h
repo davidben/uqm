@@ -51,7 +51,7 @@ typedef struct
 
 	EXTENDED_STAR_DESC SD;
 
-	long log_x, log_y;
+	SDWORD log_x, log_y;
 } ENCOUNTER;
 typedef ENCOUNTER *PENCOUNTER;
 

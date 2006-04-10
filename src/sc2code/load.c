@@ -163,6 +163,20 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 			return TRUE;
 		}
 
+		// Crude check for big-endian/little-endian incompatibilities.
+		// year_index is suitable as it's a multi-byte value within
+		// a specific recognisable range.
+		if (summary_desc->year_index < START_YEAR ||
+				summary_desc->year_index >= START_YEAR +
+				YEARS_TO_KOHRAH_VICTORY + 1 /* Utwig intervention */ +
+				1 /* time to destroy all races, plenty */)
+		{
+			fprintf (stderr, "Warning: Savegame corrupt or from an "
+					"an incompatible platform.\n");
+			res_CloseResFile (in_fp);
+			return FALSE;
+		}
+
 		GlobData.SIS_state = summary_desc->SS;
 
 		if ((fh = copen (in_fp, FILE_STREAM, STREAM_READ)) == 0)
@@ -187,7 +201,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		memset ((PBYTE)&GLOBAL (GameState[0]),
 				0, sizeof (GLOBAL (GameState)));
 		Activity = GLOBAL (CurrentActivity);
-		cread ((PBYTE)&GlobData.Game_state, sizeof (GlobData.Game_state), 1, fh);
+		cread ((PBYTE)&GlobData.Game_state, sizeof (GlobData.Game_state), 1,
+				fh);
 		NextActivity = GLOBAL (CurrentActivity);
 		GLOBAL (CurrentActivity) = Activity;
 
@@ -202,7 +217,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		// But if it does happen, it needs to be reset to 0, since on load
 		// the clock semaphore is gauranteed to be 0
 		if (GLOBAL (GameClock.TimeCounter) != 0)
-			fprintf (stderr, "Warning: Game clock wasn't stopped during save, Savegame may be corrupt!\n");
+			fprintf (stderr, "Warning: Game clock wasn't stopped during "
+					"save, Savegame may be corrupt!\n");
 		GLOBAL (GameClock.TimeCounter) = 0;
 
 		LoadShipQueue (fh, &GLOBAL (avail_race_q), FALSE);

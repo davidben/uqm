@@ -258,9 +258,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 	}
 
 	SetContextFont (Font);
-	// XXX: nasty hack; CurString may not be large enough to
-	//   contain a pointer on some platforms
-	lf.pStr = ((GAME_DESC *)pMS->CurString)[rel_index];
+	lf.pStr = ((GAME_DESC *)pMS->Extra)[rel_index];
 	lf.CharCount = (COUNT)~0;
 
 	if (!(state & DDSHS_EDIT))
@@ -382,12 +380,10 @@ DoNaming (PMENU_STATE pMS)
 	//   first_item.x - current cursor position
 	//   first_item.y - must be set to 0; DrawDescriptionString()
 	//     treats it as base index into array of strings
-	//     supplied in CurString
+	//     supplied in Extra
 	pMS->first_item.x = 0;
 	pMS->first_item.y = 0;
-	// XXX: nasty hack; CurString may not be large enough to
-	//   contain a pointer on some platforms
-	pMS->CurString = (STRING)buf;
+	pMS->Extra = buf;
 	DrawDescriptionString (pMS, 0, DDSHS_EDIT);
 
 	LockMutex (GraphicsLock);
@@ -586,7 +582,7 @@ DrawCargo (COUNT redraw_state)
 				if (pLocMenuState->delta_item == SAVE_GAME)
 					s.frame = DecFrameIndex (s.frame);
 				DrawStamp (&s);
-				if (((SUMMARY_DESC *)pLocMenuState->CurString)
+				if (((SUMMARY_DESC *)pLocMenuState->Extra)
 						[pLocMenuState->CurState].year_index == 0)
 					return;
 			}
@@ -607,7 +603,7 @@ DrawCargo (COUNT redraw_state)
 				);
 		if (redraw_state == 2
 				|| (redraw_state == 1
-				/*&& !(((SUMMARY_DESC *)pLocMenuState->CurString)
+				/*&& !(((SUMMARY_DESC *)pLocMenuState->Extra)
 				[pLocMenuState->CurState].Flags & AFTER_BOMB_INSTALLED)*/))
 		{
 			s.origin.x = 7 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
@@ -945,7 +941,7 @@ DoPickGame (PMENU_STATE pMS)
 		BatchGraphics ();
 Restart:
 		SetContext (SpaceContext);
-		LoadGameDescriptions ((SUMMARY_DESC *)pMS->CurString);
+		LoadGameDescriptions ((SUMMARY_DESC *)pMS->Extra);
 		DrawCargo (1);
 		pMS->Initialized = TRUE;
 		goto ChangeGameSelection;
@@ -973,7 +969,7 @@ Restart:
 	}
 	else if (PulsedInputState.key[KEY_MENU_SELECT])
 	{
-		pSD = &((SUMMARY_DESC *)pMS->CurString)[pMS->CurState];
+		pSD = &((SUMMARY_DESC *)pMS->Extra)[pMS->CurState];
 		prev_save = pMS->CurState;
 		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
 		{
@@ -1076,24 +1072,24 @@ Restart:
 			LockMutex (GraphicsLock);
 
 			BatchGraphics ();
-			if (((SUMMARY_DESC *)pMS->CurString)[NewState].year_index != 0)
+			if (((SUMMARY_DESC *)pMS->Extra)[NewState].year_index != 0)
 			{
-				if (!(((SUMMARY_DESC *)pMS->CurString)[NewState].Flags
+				if (!(((SUMMARY_DESC *)pMS->Extra)[NewState].Flags
 						& AFTER_BOMB_INSTALLED))
 				{
-					if (((SUMMARY_DESC *)pMS->CurString)[pMS->CurState].year_index == 0)
+					if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].year_index == 0)
 						DrawCargo (1);
-					else if (((SUMMARY_DESC *)pMS->CurString)[pMS->CurState].Flags
+					else if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].Flags
 							& AFTER_BOMB_INSTALLED)
 						DrawCargo (2);
 				}
-				else if (((SUMMARY_DESC *)pMS->CurString)[pMS->CurState].year_index == 0)
+				else if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].year_index == 0)
 					DrawCargo (3);
 			}
 
 ChangeGameSelection:
 			pMS->CurState = NewState;
-			ShowSummary (&((SUMMARY_DESC *)pMS->CurString)[pMS->CurState]);
+			ShowSummary (&((SUMMARY_DESC *)pMS->Extra)[pMS->CurState]);
 
 			SetContextFont (TinyFont);
 			r.extent.width = 240;
@@ -1146,14 +1142,14 @@ ChangeGameSelection:
 				DrawRectangle (&r);
 
 				t.baseline.x = r.corner.x + 3;
-				if (((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index == 0)
+				if (((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index == 0)
 					sprintf (buf, GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
 				else
 				{
 					DateToString (buf2, sizeof buf2,
-							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].month_index,
-							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].day_index,
-							((SUMMARY_DESC *)pMS->CurString)[NewState - SHIFT + i].year_index);
+							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].month_index,
+							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].day_index,
+							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index);
 					sprintf (buf, "%s %s", GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2); // "Saved Game - Date:"
 				}
 				font_DrawText (&t);
@@ -1214,12 +1210,11 @@ PickGame (PMENU_STATE pMS)
 	DlgRect.extent.width = SIS_SCREEN_WIDTH;
 	DlgRect.extent.height = SIS_SCREEN_HEIGHT;
 	DlgStamp.frame = CaptureDrawable (LoadDisplayPixmap (
-			&DlgRect, (FRAME)0)
-			);
+			&DlgRect, (FRAME)0));
 
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPickGame;
-	pMS->CurString = (STRING)&desc_array[0];
+	pMS->Extra = desc_array;
 	UnlockMutex (GraphicsLock);
 
 	DoInput (pMS, TRUE); 

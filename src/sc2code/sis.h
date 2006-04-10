@@ -198,7 +198,7 @@ enum
 
 typedef struct
 {
-	long log_x, log_y;
+	SDWORD log_x, log_y;
 
 	DWORD ResUnits;
 

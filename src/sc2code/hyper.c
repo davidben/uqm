@@ -369,7 +369,7 @@ FreeHyperspace (void)
 static void
 ElementToUniverse (ELEMENTPTR ElementPtr, PPOINT pPt)
 {
-	long log_x, log_y;
+	SDWORD log_x, log_y;
 
 	log_x = GLOBAL_SIS (log_x)
 			+ (ElementPtr->next.location.x - (LOG_SPACE_WIDTH >> 1));

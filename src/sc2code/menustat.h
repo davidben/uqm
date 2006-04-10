@@ -43,6 +43,8 @@ typedef struct menu_state
 	FRAME flash_frame0, flash_frame1;
 
 	MUSIC_REF hMusic;
+
+	void *Extra;
 } MENU_STATE;
 
 typedef MENU_STATE *PMENU_STATE;
