@@ -59,7 +59,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 
 		goto ChangeSelection;
 	}
-	else if (PulsedInputState.key[KEY_MENU_SELECT])
+	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		if ((HSTARSHIP)pMS->CurFrame)
 		{
@@ -71,10 +71,10 @@ DoPickBattleShip (PMENU_STATE pMS)
 	{
 		COORD new_row, new_col;
 		int dx = 0, dy = 0;
-		if (PulsedInputState.key[KEY_MENU_RIGHT]) dx = 1;
-		if (PulsedInputState.key[KEY_MENU_LEFT]) dx = -1;
-		if (PulsedInputState.key[KEY_MENU_UP]) dy = -1;
-		if (PulsedInputState.key[KEY_MENU_DOWN]) dy = 1;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT]) dx = 1;
+		if (PulsedInputState.menu[KEY_MENU_LEFT]) dx = -1;
+		if (PulsedInputState.menu[KEY_MENU_UP]) dy = -1;
+		if (PulsedInputState.menu[KEY_MENU_DOWN]) dy = 1;
 
 		new_col = pMS->first_item.x + dx;
 		new_row = pMS->first_item.y + dy;

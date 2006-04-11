@@ -1203,7 +1203,7 @@ SpewPhrases (COUNT wait_track)
 #endif
 
 		LockMutex (GraphicsLock);
-		if (PulsedInputState.key[KEY_MENU_CANCEL])
+		if (PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
 			JumpTrack ();
@@ -1217,13 +1217,13 @@ SpewPhrases (COUNT wait_track)
 			BOOLEAN left=FALSE, right=FALSE;
 			if (optSmoothScroll == OPT_PC)
 			{
-				left = PulsedInputState.key[KEY_MENU_LEFT];
-				right = PulsedInputState.key[KEY_MENU_RIGHT];
+				left = PulsedInputState.menu[KEY_MENU_LEFT];
+				right = PulsedInputState.menu[KEY_MENU_RIGHT];
 			}
 			else if (optSmoothScroll == OPT_3DO)
 			{
-				left = ImmediateInputState.key[KEY_MENU_LEFT];
-				right = ImmediateInputState.key[KEY_MENU_RIGHT];
+				left = ImmediateInputState.menu[KEY_MENU_LEFT];
+				right = ImmediateInputState.menu[KEY_MENU_RIGHT];
 			}
 			if (right)
 			{
@@ -1460,7 +1460,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			TimeIn = GetTimeCounter ();
 			// Warning!  This used to re-gather input data to check for rewind.
 			UpdateInputState ();
-			if (PulsedInputState.key[KEY_MENU_LEFT])
+			if (PulsedInputState.menu[KEY_MENU_LEFT])
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
@@ -1491,7 +1491,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			UnlockMutex (GraphicsLock);
 		}
 
-		if (PulsedInputState.key[KEY_MENU_SELECT])
+		if (PulsedInputState.menu[KEY_MENU_SELECT])
 		{
 			const unsigned char *end;
 			PTEXT response_text =
@@ -1516,7 +1516,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			(*pES->response_list[pES->cur_response].response_func)
 					(pES->response_list[pES->cur_response].response_ref);
 		}
-		else if (PulsedInputState.key[KEY_MENU_CANCEL] && 
+		else if (PulsedInputState.menu[KEY_MENU_CANCEL] && 
 				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		{
 			TFB_SoundChain *curr;
@@ -1675,7 +1675,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 		else
 		{
 			response = pES->cur_response;
-			if (PulsedInputState.key[KEY_MENU_LEFT])
+			if (PulsedInputState.menu[KEY_MENU_LEFT])
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
@@ -1696,10 +1696,10 @@ DoCommunication (PENCOUNTER_STATE pES)
 				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 
 			}
-			else if (PulsedInputState.key[KEY_MENU_UP])
+			else if (PulsedInputState.menu[KEY_MENU_UP])
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
 						% pES->num_responses);
-			else if (PulsedInputState.key[KEY_MENU_DOWN])
+			else if (PulsedInputState.menu[KEY_MENU_DOWN])
 				response = (BYTE)((BYTE)(response + 1)
 						% pES->num_responses);
 

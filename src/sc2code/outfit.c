@@ -179,12 +179,12 @@ DoInstallModule (PMENU_STATE pMS)
 		return (TRUE);
 	}
 
-	select = PulsedInputState.key[KEY_MENU_SELECT];
-	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
-	motion = PulsedInputState.key[KEY_MENU_LEFT] ||
-			PulsedInputState.key[KEY_MENU_RIGHT] ||
-			PulsedInputState.key[KEY_MENU_UP] ||
-			PulsedInputState.key[KEY_MENU_DOWN];
+	select = PulsedInputState.menu[KEY_MENU_SELECT];
+	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
+	motion = PulsedInputState.menu[KEY_MENU_LEFT] ||
+			PulsedInputState.menu[KEY_MENU_RIGHT] ||
+			PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_DOWN];
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
@@ -391,9 +391,9 @@ DoInstallModule (PMENU_STATE pMS)
 		NewItem = NewState < EMPTY_SLOT ? pMS->CurState : pMS->delta_item;
 		do
 		{
-			if (NewState >= EMPTY_SLOT && (PulsedInputState.key[KEY_MENU_UP] || PulsedInputState.key[KEY_MENU_DOWN]))
+			if (NewState >= EMPTY_SLOT && (PulsedInputState.menu[KEY_MENU_UP] || PulsedInputState.menu[KEY_MENU_DOWN]))
 			{
-				if (PulsedInputState.key[KEY_MENU_UP])
+				if (PulsedInputState.menu[KEY_MENU_UP])
 				{
 					if (NewState-- == EMPTY_SLOT)
 						NewState = EMPTY_SLOT + 3;
@@ -407,21 +407,21 @@ DoInstallModule (PMENU_STATE pMS)
 				if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 				{
 					if (NewState == EMPTY_SLOT + 3)
-						NewState = PulsedInputState.key[KEY_MENU_UP] ?
+						NewState = PulsedInputState.menu[KEY_MENU_UP] ?
 								EMPTY_SLOT + 2 : EMPTY_SLOT;
 					if (NewState == EMPTY_SLOT + 2)
 						NewItem = NUM_BOMB_MODULES;
 				}
 				pMS->delta_item = NewItem;
 			}
-			else if (PulsedInputState.key[KEY_MENU_LEFT] ||
-					PulsedInputState.key[KEY_MENU_UP])
+			else if (PulsedInputState.menu[KEY_MENU_LEFT] ||
+					PulsedInputState.menu[KEY_MENU_UP])
 			{
 				if (NewItem-- == FirstItem)
 					NewItem = LastItem;
 			}
-			else if (PulsedInputState.key[KEY_MENU_RIGHT] ||
-					PulsedInputState.key[KEY_MENU_DOWN])
+			else if (PulsedInputState.menu[KEY_MENU_RIGHT] ||
+					PulsedInputState.menu[KEY_MENU_DOWN])
 			{
 				if (NewItem++ == LastItem)
 					NewItem = FirstItem;
@@ -544,7 +544,7 @@ ChangeFuelQuantity (void)
 	
 	r.extent.height = 1;
 	
-	if (PulsedInputState.key[KEY_MENU_UP])
+	if (PulsedInputState.menu[KEY_MENU_UP])
 	{
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
@@ -574,7 +574,7 @@ ChangeFuelQuantity (void)
 		}
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PulsedInputState.key[KEY_MENU_DOWN])
+	else if (PulsedInputState.menu[KEY_MENU_DOWN])
 	{
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
@@ -718,8 +718,8 @@ DoOutfit (PMENU_STATE pMS)
 
 		SetContext (StatusContext);
 	}
-	else if (PulsedInputState.key[KEY_MENU_CANCEL]
-			|| (PulsedInputState.key[KEY_MENU_SELECT]
+	else if (PulsedInputState.menu[KEY_MENU_CANCEL]
+			|| (PulsedInputState.menu[KEY_MENU_SELECT]
 			&& pMS->CurState == OUTFIT_EXIT))
 	{
 		if (pMS->CurState == OUTFIT_DOFUEL)
@@ -740,7 +740,7 @@ ExitOutfit:
 			return (FALSE);
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_SELECT])
+	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		switch (pMS->CurState)
 		{

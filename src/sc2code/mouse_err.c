@@ -113,8 +113,8 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 	UnbatchGraphics ();
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
-	return !(PulsedInputState.key[KEY_MENU_CANCEL] ||
-		 PulsedInputState.key[KEY_MENU_SELECT]);
+	return !(PulsedInputState.menu[KEY_MENU_CANCEL] ||
+		 PulsedInputState.menu[KEY_MENU_SELECT]);
 }
 
 void

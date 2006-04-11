@@ -810,15 +810,15 @@ ProcessShipControls (void)
 
 	ClockTick ();
 
-	if (CurrentInputState.key[KEY_P1_THRUST])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
 		delta_y = -1;
 	else
 		delta_y = 0;
 
 	delta_x = 0;
-	if (CurrentInputState.key[KEY_P1_LEFT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT])
 		delta_x -= 1;
-	if (CurrentInputState.key[KEY_P1_RIGHT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT])
 		delta_x += 1;
 		
 	if (delta_x || delta_y < 0)
@@ -1215,8 +1215,8 @@ IP_frame (void)
 			 * DoFlagshipCommands, which is running in
 			 * parallel with us */
 			// UpdateInputState ();
-			cancel = PulsedInputState.key[KEY_MENU_CANCEL];
-			select = PulsedInputState.key[KEY_MENU_SELECT];
+			cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
+			select = PulsedInputState.menu[KEY_MENU_SELECT];
 			IP_input_state = (cancel << 1) | select;
 		}
 		// JournalInput (InputState);

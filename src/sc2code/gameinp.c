@@ -44,7 +44,8 @@ typedef INPUT_STATE_DESC *PINPUT_STATE_DESC;
 
 typedef struct 
 {
-	DWORD key [NUM_KEYS];
+	DWORD key [NUM_TEMPLATES][NUM_KEYS];
+	DWORD menu [NUM_MENU_KEYS];
 } MENU_ANNOTATIONS;
 
 
@@ -64,12 +65,20 @@ volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 static void
 _clear_menu_state (void)
 {
-	int i;
-	for (i = 0; i < NUM_KEYS; i++)
+	int i, j;
+	for (i = 0; i < NUM_TEMPLATES; i++)
 	{
-		PulsedInputState.key[i] = 0;
-		CachedInputState.key[i] = 0;
+		for (j = 0; j < NUM_KEYS; j++)
+		{
+			PulsedInputState.key[i][j] = 0;
+			CachedInputState.key[i][j] = 0;
+		}
 	}
+	for (i = 0; i < NUM_MENU_KEYS; i++)
+	{
+		PulsedInputState.menu[i] = 0;
+		CachedInputState.menu[i] = 0;
+	}		
 	CachedGestalt = FALSE;
 }
 
@@ -77,11 +86,19 @@ void
 ResetKeyRepeat (void)
 {
 	DWORD initTime = GetTimeCounter ();
-	int i;
-	for (i = 0; i < NUM_KEYS; i++)
+	int i, j;
+	for (i = 0; i < NUM_TEMPLATES; i++)
 	{
-		RepeatDelays.key[i] = _max_accel;
-		Times.key[i] = initTime;
+		for (j = 0; j < NUM_KEYS; j++)
+		{
+			RepeatDelays.key[i][j] = _max_accel;
+			Times.key[i][j] = initTime;
+		}
+	}
+	for (i = 0; i < NUM_MENU_KEYS; i++)
+	{
+		RepeatDelays.menu[i] = _max_accel;
+		Times.menu[i] = initTime;
 	}
 	GestaltRepeatDelay = _max_accel;
 	GestaltTime = initTime;
@@ -114,35 +131,61 @@ _check_for_pulse (int *current, int *cached, int *old, DWORD *accel, DWORD *newt
 	}
 }
 
+/* BUG: If a key from a currently unused control template is held,
+ * this will affect the gestalt repeat rate.  This isn't a problem
+ * *yet*, but it will be once the user gets to define control
+ * templates on his own --McM */
 static void
 _check_gestalt (DWORD NewTime)
 {
 	BOOLEAN CurrentGestalt;
-	int i;
+	int i,j;
 	OldGestalt = CachedGestalt;
 
 	CachedGestalt = 0;
 	CurrentGestalt = 0;
-	for (i = 0; i < NUM_KEYS; i++)
+	for (i = 0; i < NUM_TEMPLATES; i++)
 	{
-		CachedGestalt |= ImmediateInputState.key[i];
-		CurrentGestalt |= PulsedInputState.key[i];
+		for (j = 0; j < NUM_KEYS; j++)
+		{
+			CachedGestalt |= ImmediateInputState.key[i][j];
+			CurrentGestalt |= PulsedInputState.key[i][j];
+		}
+	}
+	for (i = 0; i < NUM_MENU_KEYS; i++)
+	{
+		CachedGestalt |= ImmediateInputState.menu[i];
+		CurrentGestalt |= PulsedInputState.menu[i];
 	}
 
 	if (OldGestalt && CachedGestalt)
 	{
 		if (NewTime - GestaltTime < GestaltRepeatDelay)
 		{
-			for (i = 0; i < NUM_KEYS; i++)
+			for (i = 0; i < NUM_TEMPLATES; i++)
 			{
-				PulsedInputState.key[i] = 0;
+				for (j = 0; j < NUM_KEYS; j++)
+				{
+					PulsedInputState.key[i][j] = 0;
+				}
+			}
+			for (i = 0; i < NUM_MENU_KEYS; i++)
+			{
+				PulsedInputState.menu[i] = 0;
 			}
 		}
 		else
 		{
-			for (i = 0; i < NUM_KEYS; i++)
+			for (i = 0; i < NUM_TEMPLATES; i++)
 			{
-				PulsedInputState.key[i] = CachedInputState.key[i];
+				for (j = 0; j < NUM_KEYS; j++)
+				{
+					PulsedInputState.key[i][j] = CachedInputState.key[i][j];
+				}
+			}
+			for (i = 0; i < NUM_MENU_KEYS; i++)
+			{
+				PulsedInputState.menu[i] = CachedInputState.menu[i];
 			}
 			if (GestaltRepeatDelay > _min_accel)
 				GestaltRepeatDelay -= _step_accel;
@@ -153,9 +196,16 @@ _check_gestalt (DWORD NewTime)
 	}
 	else
 	{
-		for (i = 0; i < NUM_KEYS; i++)
+		for (i = 0; i < NUM_TEMPLATES; i++)
 		{
-			PulsedInputState.key[i] = CachedInputState.key[i];
+			for (j = 0; j < NUM_KEYS; j++)
+			{
+				PulsedInputState.key[i][j] = CachedInputState.key[i][j];
+			}
+		}
+		for (i = 0; i < NUM_MENU_KEYS; i++)
+		{
+			PulsedInputState.menu[i] = CachedInputState.menu[i];
 		}
 		GestaltTime = NewTime;
 		GestaltRepeatDelay = _max_accel;
@@ -189,19 +239,28 @@ UpdateInputState (void)
 	}
 	else
 	{
-		int i;
-		for (i = 0; i < NUM_KEYS; i++)
+		int i, j;
+		for (i = 0; i < NUM_TEMPLATES; i++)
 		{
-			_check_for_pulse (&PulsedInputState.key[i],
-					&CachedInputState.key[i], &OldInputState.key[i],
-					&RepeatDelays.key[i], &NewTime, &Times.key[i]);
+			for (j = 0; j < NUM_KEYS; j++)
+			{
+				_check_for_pulse (&PulsedInputState.key[i][j],
+						&CachedInputState.key[i][j], &OldInputState.key[i][j],
+						&RepeatDelays.key[i][j], &NewTime, &Times.key[i][j]);
+			}
+		}
+		for (i = 0; i < NUM_MENU_KEYS; i++)
+		{
+			_check_for_pulse (&PulsedInputState.menu[i],
+					&CachedInputState.menu[i], &OldInputState.menu[i],
+					&RepeatDelays.menu[i], &NewTime, &Times.menu[i]);
 		}
 	}
 
-	if (CurrentInputState.key[KEY_PAUSE])
+	if (CurrentInputState.menu[KEY_PAUSE])
 		GamePaused = TRUE;
 
-	if (CurrentInputState.key[KEY_EXIT])
+	if (CurrentInputState.menu[KEY_EXIT])
 		ExitRequested = TRUE;
 }
 
@@ -258,21 +317,21 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 #endif /* CREATE_JOURNAL */
 		}
 
-		if (CurrentInputState.key[KEY_EXIT])
+		if (CurrentInputState.menu[KEY_EXIT])
 			ExitState = ConfirmExit ();
 
 		input = MENU_SOUND_NONE;
-		if (PulsedInputState.key[KEY_MENU_UP]) input |= MENU_SOUND_UP;
-		if (PulsedInputState.key[KEY_MENU_DOWN]) input |= MENU_SOUND_DOWN;
-		if (PulsedInputState.key[KEY_MENU_LEFT]) input |= MENU_SOUND_LEFT;
-		if (PulsedInputState.key[KEY_MENU_RIGHT]) input |= MENU_SOUND_RIGHT;
-		if (PulsedInputState.key[KEY_MENU_SELECT]) input |= MENU_SOUND_SELECT;
-		if (PulsedInputState.key[KEY_MENU_CANCEL]) input |= MENU_SOUND_CANCEL;
-		if (PulsedInputState.key[KEY_MENU_SPECIAL]) input |= MENU_SOUND_SPECIAL;
-		if (PulsedInputState.key[KEY_MENU_PAGE_UP]) input |= MENU_SOUND_PAGEUP;
-		if (PulsedInputState.key[KEY_MENU_PAGE_DOWN]) input |= MENU_SOUND_PAGEDOWN;
-		if (PulsedInputState.key[KEY_MENU_DELETE]) input |= MENU_SOUND_DELETE;
-		if (PulsedInputState.key[KEY_MENU_BACKSPACE]) input |= MENU_SOUND_DELETE;
+		if (PulsedInputState.menu[KEY_MENU_UP]) input |= MENU_SOUND_UP;
+		if (PulsedInputState.menu[KEY_MENU_DOWN]) input |= MENU_SOUND_DOWN;
+		if (PulsedInputState.menu[KEY_MENU_LEFT]) input |= MENU_SOUND_LEFT;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT]) input |= MENU_SOUND_RIGHT;
+		if (PulsedInputState.menu[KEY_MENU_SELECT]) input |= MENU_SOUND_SELECT;
+		if (PulsedInputState.menu[KEY_MENU_CANCEL]) input |= MENU_SOUND_CANCEL;
+		if (PulsedInputState.menu[KEY_MENU_SPECIAL]) input |= MENU_SOUND_SPECIAL;
+		if (PulsedInputState.menu[KEY_MENU_PAGE_UP]) input |= MENU_SOUND_PAGEUP;
+		if (PulsedInputState.menu[KEY_MENU_PAGE_DOWN]) input |= MENU_SOUND_PAGEDOWN;
+		if (PulsedInputState.menu[KEY_MENU_DELETE]) input |= MENU_SOUND_DELETE;
+		if (PulsedInputState.menu[KEY_MENU_BACKSPACE]) input |= MENU_SOUND_DELETE;
 			
 		if (MenuSounds
 				&& (pSolarSysState == 0
@@ -316,24 +375,25 @@ GetMenuSounds (MENU_SOUND_FLAGS *s0, MENU_SOUND_FLAGS *s1)
 	*s1 = sound_1;
 }
 
+/* These can really be refactored */
 
 BATTLE_INPUT_STATE
 p1_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[KEY_P1_THRUST])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[KEY_P1_LEFT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[KEY_P1_RIGHT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[KEY_P1_WEAPON])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[KEY_P1_SPECIAL])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[KEY_P1_ESCAPE])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE])
 		InputState |= BATTLE_ESCAPE;
-	if (CurrentInputState.key[KEY_P1_DOWN])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }
@@ -342,17 +402,17 @@ BATTLE_INPUT_STATE
 p2_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[KEY_P2_THRUST])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[KEY_P2_LEFT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[KEY_P2_RIGHT])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[KEY_P2_WEAPON])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[KEY_P2_SPECIAL])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[KEY_P2_DOWN])
+	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }
@@ -360,12 +420,20 @@ p2_combat_summary (void)
 BOOLEAN
 AnyButtonPress (BOOLEAN CheckSpecial)
 {
-	int i;
+	int i, j;
 	(void) CheckSpecial;   // Ignored
 	UpdateInputState ();
-	for (i = 0; i < NUM_KEYS; i++)
+	for (i = 0; i < NUM_TEMPLATES; i++)
 	{
-		if (CurrentInputState.key[i])
+		for (j = 0; j < NUM_KEYS; j++)
+		{
+			if (CurrentInputState.key[i][j])
+				return TRUE;
+		}
+	}
+	for (i = 0; i < NUM_MENU_KEYS; i++)
+	{
+		if (CurrentInputState.menu[i])
 			return TRUE;
 	}
 	return FALSE;

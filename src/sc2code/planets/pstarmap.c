@@ -1131,7 +1131,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
 	PMENU_STATE pMS = pSS->pMS;
 
-	if (PulsedInputState.key[KEY_MENU_NEXT])
+	if (PulsedInputState.menu[KEY_MENU_NEXT])
 	{	// search for next match
 		STAR_DESCPTR SDPtr;
 
@@ -1139,7 +1139,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 
 		if (pSS->CurIndex < 0)
 		{	// nothing found
-			if (PulsedInputState.key[KEY_MENU_NEXT])
+			if (PulsedInputState.menu[KEY_MENU_NEXT])
 				PlayMenuSound (MENU_SOUND_FAILURE);
 			return TRUE;
 		}
@@ -1225,7 +1225,7 @@ DoMoveCursor (PMENU_STATE pMS)
 
 		return TRUE;
 	}
-	else if (PulsedInputState.key[KEY_MENU_CANCEL])
+	else if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
 		if (pMS->flash_task)
 		{
@@ -1235,7 +1235,7 @@ DoMoveCursor (PMENU_STATE pMS)
 
 		return (FALSE);
 	}
-	else if (PulsedInputState.key[KEY_MENU_SELECT])
+	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		GLOBAL (autopilot) = pMS->first_item;
 #ifdef DEBUG
@@ -1267,7 +1267,7 @@ DoMoveCursor (PMENU_STATE pMS)
 #endif
 		DrawStarMap (0, NULL_PTR);
 	}
-	else if (PulsedInputState.key[KEY_MENU_SEARCH])
+	else if (PulsedInputState.menu[KEY_MENU_SEARCH])
 	{
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		{	// HyperSpace search
@@ -1297,18 +1297,18 @@ DoMoveCursor (PMENU_STATE pMS)
 		SIZE ZoomIn, ZoomOut;
 
 		ZoomIn = ZoomOut = 0;
-		if (PulsedInputState.key[KEY_MENU_ZOOM_IN])
+		if (PulsedInputState.menu[KEY_MENU_ZOOM_IN])
 			ZoomIn = 1;
-		else if (PulsedInputState.key[KEY_MENU_ZOOM_OUT])
+		else if (PulsedInputState.menu[KEY_MENU_ZOOM_OUT])
 			ZoomOut = 1;
 
 		ZoomStarMap (ZoomIn - ZoomOut);
 
 		sx = sy = 0;
-		if (PulsedInputState.key[KEY_MENU_LEFT])    sx =   -1;
-		if (PulsedInputState.key[KEY_MENU_RIGHT])   sx =    1;
-		if (PulsedInputState.key[KEY_MENU_UP])      sy =   -1;
-		if (PulsedInputState.key[KEY_MENU_DOWN])    sy =    1;
+		if (PulsedInputState.menu[KEY_MENU_LEFT])    sx =   -1;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT])   sx =    1;
+		if (PulsedInputState.menu[KEY_MENU_UP])      sy =   -1;
+		if (PulsedInputState.menu[KEY_MENU_DOWN])    sy =    1;
 
 		if (sx != 0 || sy != 0)
 		{
@@ -1665,7 +1665,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 	}
 	else
 	{
-		BOOLEAN select = PulsedInputState.key[KEY_MENU_SELECT];
+		BOOLEAN select = PulsedInputState.menu[KEY_MENU_SELECT];
 		LockMutex (GraphicsLock);
 		if (*(volatile BYTE *)&pMS->CurState == 0
 				&& (*(volatile SIZE *)&pMS->Initialized & 1)

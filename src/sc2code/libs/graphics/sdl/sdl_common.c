@@ -190,10 +190,10 @@ TFB_ProcessEvents ()
 				break;
 		}
 	}
-	if (ImmediateInputState.key[KEY_ABORT] || abortFlag)
+	if (ImmediateInputState.menu[KEY_ABORT] || abortFlag)
 		exit (0);
 #if defined(DEBUG) || defined(USE_DEBUG_KEY)
-	if (ImmediateInputState.key[KEY_DEBUG])
+	if (ImmediateInputState.menu[KEY_DEBUG])
 	{
 		FlushInput ();
 		debugKeyPressed ();

@@ -651,23 +651,23 @@ DoCreditsInput (PVOID pIS)
 
 	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
 			|| (pCIS->AllowCancel &&
-				(PulsedInputState.key[KEY_MENU_SELECT] ||
-				PulsedInputState.key[KEY_MENU_CANCEL]))
+				(PulsedInputState.menu[KEY_MENU_SELECT] ||
+				PulsedInputState.menu[KEY_MENU_CANCEL]))
 		)
 	{	// aborted
 		return FALSE;
 	}
 	
 	if (pCIS->AllowSpeedChange
-			&& (PulsedInputState.key[KEY_MENU_UP]
-			|| PulsedInputState.key[KEY_MENU_DOWN]))
+			&& (PulsedInputState.menu[KEY_MENU_UP]
+			|| PulsedInputState.menu[KEY_MENU_DOWN]))
 	{	// speed adjustment
 		int newrate = CreditsRate;
 		int step = abs (CreditsRate) / 5 + 1;
 
-		if (PulsedInputState.key[KEY_MENU_DOWN])
+		if (PulsedInputState.menu[KEY_MENU_DOWN])
 			newrate += step;
-		else if (PulsedInputState.key[KEY_MENU_UP])
+		else if (PulsedInputState.menu[KEY_MENU_UP])
 			newrate -= step;
 		if (newrate < -CREDITS_MAX_RATE)
 			newrate = -CREDITS_MAX_RATE;
@@ -695,8 +695,8 @@ DoCreditsInput (PVOID pIS)
 	}
 	
 	if (!CreditsRunning
-			&& (PulsedInputState.key[KEY_MENU_SELECT]
-			|| PulsedInputState.key[KEY_MENU_CANCEL]))
+			&& (PulsedInputState.menu[KEY_MENU_SELECT]
+			|| PulsedInputState.menu[KEY_MENU_CANCEL]))
 	{	// credits finished and exit requested
 		return FALSE;
 	}

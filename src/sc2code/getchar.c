@@ -194,7 +194,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 
 	// process the pending character buffer
 	ch = GetNextCharacter ();
-	if (!ch && PulsedInputState.key[KEY_CHARACTER])
+	if (!ch && PulsedInputState.menu[KEY_MENU_ANY])
 	{	// keyboard repeat, but only when buffer empty
 		ch = GetLastCharacter ();
 	}
@@ -218,7 +218,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		ch = GetNextCharacter ();
 	}
 
-	if (PulsedInputState.key[KEY_MENU_DELETE])
+	if (PulsedInputState.menu[KEY_MENU_DELETE])
 	{
 		if (len)
 		{
@@ -230,7 +230,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_BACKSPACE])
+	else if (PulsedInputState.menu[KEY_MENU_BACKSPACE])
 	{
 		if (pStr > pTES->BaseStr)
 		{
@@ -243,7 +243,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_LEFT])
+	else if (PulsedInputState.menu[KEY_MENU_LEFT])
 	{
 		if (pStr > pTES->BaseStr)
 		{
@@ -256,7 +256,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_RIGHT])
+	else if (PulsedInputState.menu[KEY_MENU_RIGHT])
 	{
 		if (len > 0)
 		{
@@ -269,7 +269,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_HOME])
+	else if (PulsedInputState.menu[KEY_MENU_HOME])
 	{
 		if (pStr > pTES->BaseStr)
 		{
@@ -279,7 +279,7 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			changed = TRUE;
 		}
 	}
-	else if (PulsedInputState.key[KEY_MENU_END])
+	else if (PulsedInputState.menu[KEY_MENU_END])
 	{
 		if (len > 0)
 		{
@@ -291,10 +291,10 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 	}
 	
 	if (pTES->JoyAlpha && (
-			PulsedInputState.key[KEY_MENU_UP] ||
-			PulsedInputState.key[KEY_MENU_DOWN] ||
-			PulsedInputState.key[KEY_MENU_PAGE_UP] ||
-			PulsedInputState.key[KEY_MENU_PAGE_DOWN]) )
+			PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_DOWN] ||
+			PulsedInputState.menu[KEY_MENU_PAGE_UP] ||
+			PulsedInputState.menu[KEY_MENU_PAGE_DOWN]) )
 	{	// do joystick text
 		joy_char_t ch;
 		joy_char_t newch;
@@ -314,14 +314,14 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		// find current char in the alphabet
 		i = JoyCharFindIn (&cmpch, pTES->JoyAlpha, pTES->JoyAlphaLength);
 
-		if (PulsedInputState.key[KEY_MENU_UP])
+		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
 			--i;
 			if (i < 0)
 				i = pTES->JoyAlphaLength - 1;
 			newch = pTES->JoyAlpha[i];
 		}
-		else if (PulsedInputState.key[KEY_MENU_DOWN])
+		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
 			++i;
 			if (i >= pTES->JoyAlphaLength)
@@ -329,8 +329,8 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 			newch = pTES->JoyAlpha[i];
 		}
 
-		if (PulsedInputState.key[KEY_MENU_PAGE_UP] ||
-				PulsedInputState.key[KEY_MENU_PAGE_DOWN])
+		if (PulsedInputState.menu[KEY_MENU_PAGE_UP] ||
+				PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
 		{
 			if (len)
 			{	// single char change
@@ -381,12 +381,12 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		}
 	}
 	
-	if (PulsedInputState.key[KEY_MENU_SELECT])
+	if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{	// done entering
 		pTES->Success = TRUE;
 		return FALSE;
 	}
-	else if (PulsedInputState.key[KEY_MENU_EDIT_CANCEL])
+	else if (PulsedInputState.menu[KEY_MENU_EDIT_CANCEL])
 	{	// canceled entering
 		pTES->Success = FALSE;
 		return FALSE;

@@ -406,15 +406,15 @@ TFB_DoVideoInput (PVOID pIS)
 	if (!pVIS->CurVideo || !TFB_VideoPlaying (pVIS->CurVideo))
 		return FALSE;
 
-	if (PulsedInputState.key[KEY_MENU_SELECT]
-			|| PulsedInputState.key[KEY_MENU_CANCEL]
-			|| PulsedInputState.key[KEY_MENU_SPECIAL]
+	if (PulsedInputState.menu[KEY_MENU_SELECT]
+			|| PulsedInputState.menu[KEY_MENU_CANCEL]
+			|| PulsedInputState.menu[KEY_MENU_SPECIAL]
 			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{	// abort movie
 		TFB_StopVideo (pVIS->CurVideo);
 		return FALSE;
 	}
-	else if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_RIGHT])
+	else if (PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_RIGHT])
 	{
 		if (vid->decoder->audio_synced)
 		{
@@ -424,9 +424,9 @@ TFB_DoVideoInput (PVOID pIS)
 			newpos = vid->decoder->pos;
 			UnlockMutex (vid->guard);
 
-			if (PulsedInputState.key[KEY_MENU_LEFT])
+			if (PulsedInputState.menu[KEY_MENU_LEFT])
 				newpos -= 2;
-			else if (PulsedInputState.key[KEY_MENU_RIGHT])
+			else if (PulsedInputState.menu[KEY_MENU_RIGHT])
 				newpos += 1;
 			if (newpos < 0)
 				newpos = 0;

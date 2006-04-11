@@ -666,8 +666,8 @@ static BOOLEAN
 PickPlanetSide (PMENU_STATE pMS)
 {
 	BOOLEAN select, cancel;
-	select = PulsedInputState.key[KEY_MENU_SELECT];
-	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+	select = PulsedInputState.menu[KEY_MENU_SELECT];
+	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		if (pMenuState->flash_task)
@@ -819,10 +819,10 @@ ExitPlanetSide:
 
 		new_pt = pSolarSysState->MenuState.first_item;
 
-		if (PulsedInputState.key[KEY_MENU_LEFT]) dx = -1;
-		if (PulsedInputState.key[KEY_MENU_RIGHT]) dx = 1;
-		if (PulsedInputState.key[KEY_MENU_UP]) dy = -1;
-		if (PulsedInputState.key[KEY_MENU_DOWN]) dy = 1;
+		if (PulsedInputState.menu[KEY_MENU_LEFT]) dx = -1;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT]) dx = 1;
+		if (PulsedInputState.menu[KEY_MENU_UP]) dy = -1;
+		if (PulsedInputState.menu[KEY_MENU_DOWN]) dy = 1;
 
 		dx = dx << MAG_SHIFT;
 		if (dx)
@@ -951,8 +951,8 @@ DoScan (PMENU_STATE pMS)
 	DWORD TimeIn, WaitTime;
 	BOOLEAN select, cancel;
 
-	select = PulsedInputState.key[KEY_MENU_SELECT];
-	cancel = PulsedInputState.key[KEY_MENU_CANCEL];
+	select = PulsedInputState.menu[KEY_MENU_SELECT];
+	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 

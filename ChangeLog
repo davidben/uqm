@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Control scheme shifted to Menus + Control Templates in preparation for 
+  the online keyconfig - Michael
 - Fixes to logic in the Utwig conversations (Bugs 327, 647), from Nic 
   and Michael
 - Removed unused and invalid lander font chars - Alex

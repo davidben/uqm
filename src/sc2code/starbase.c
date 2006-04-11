@@ -349,7 +349,7 @@ s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
 				"rotate starbase");
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PulsedInputState.key[KEY_MENU_SELECT]
+	else if (PulsedInputState.menu[KEY_MENU_SELECT]
 			|| GET_GAME_STATE (MOONBASE_ON_SHIP)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
@@ -411,12 +411,12 @@ ExitStarBase:
 		STARBASE_STATE NewState;
 
 		NewState = pMS->CurState;
-		if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_UP])
+		if (PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_UP])
 		{
 			if (NewState-- == TALK_COMMANDER)
 				NewState = DEPART_BASE;
 		}
-		else if (PulsedInputState.key[KEY_MENU_RIGHT] || PulsedInputState.key[KEY_MENU_DOWN])
+		else if (PulsedInputState.menu[KEY_MENU_RIGHT] || PulsedInputState.menu[KEY_MENU_DOWN])
 		{
 			if (NewState++ == DEPART_BASE)
 				NewState = TALK_COMMANDER;

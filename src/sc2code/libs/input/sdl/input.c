@@ -38,49 +38,73 @@ static BOOLEAN InputInitialized = FALSE;
 
 static BOOLEAN _in_character_mode = FALSE;
 
-#define VCONTROL_VERSION 2
+#define VCONTROL_VERSION 3
 
 static VControl_NameBinding control_names[] = {
-	{ "Menu-Up", (int *)&ImmediateInputState.key[KEY_MENU_UP] },
-	{ "Menu-Down", (int *)&ImmediateInputState.key[KEY_MENU_DOWN] },
-	{ "Menu-Left", (int *)&ImmediateInputState.key[KEY_MENU_LEFT] },
-	{ "Menu-Right", (int *)&ImmediateInputState.key[KEY_MENU_RIGHT] },
-	{ "Menu-Select", (int *)&ImmediateInputState.key[KEY_MENU_SELECT] },
-	{ "Menu-Cancel", (int *)&ImmediateInputState.key[KEY_MENU_CANCEL] },
-	{ "Menu-Special", (int *)&ImmediateInputState.key[KEY_MENU_SPECIAL] },
-	{ "Menu-Page-Up", (int *)&ImmediateInputState.key[KEY_MENU_PAGE_UP] },
-	{ "Menu-Page-Down", (int *)&ImmediateInputState.key[KEY_MENU_PAGE_DOWN] },
-	{ "Menu-Home", (int *)&ImmediateInputState.key[KEY_MENU_HOME] },
-	{ "Menu-End", (int *)&ImmediateInputState.key[KEY_MENU_END] },
-	{ "Menu-Zoom-In", (int *)&ImmediateInputState.key[KEY_MENU_ZOOM_IN] },
-	{ "Menu-Zoom-Out", (int *)&ImmediateInputState.key[KEY_MENU_ZOOM_OUT] },
-	{ "Menu-Delete", (int *)&ImmediateInputState.key[KEY_MENU_DELETE] },
-	{ "Menu-Backspace", (int *)&ImmediateInputState.key[KEY_MENU_BACKSPACE] },
-	{ "Menu-Edit-Cancel", (int *)&ImmediateInputState.key[KEY_MENU_EDIT_CANCEL] },
-	{ "Menu-Search", (int *)&ImmediateInputState.key[KEY_MENU_SEARCH] },
-	{ "Menu-Next", (int *)&ImmediateInputState.key[KEY_MENU_NEXT] },
-	{ "Player-1-Thrust", (int *)&ImmediateInputState.key[KEY_P1_THRUST] },
-	{ "Player-1-Left", (int *)&ImmediateInputState.key[KEY_P1_LEFT] },
-	{ "Player-1-Right", (int *)&ImmediateInputState.key[KEY_P1_RIGHT] },
-	{ "Player-1-Down", (int *)&ImmediateInputState.key[KEY_P1_DOWN] },
-	{ "Player-1-Weapon", (int *)&ImmediateInputState.key[KEY_P1_WEAPON] },
-	{ "Player-1-Special", (int *)&ImmediateInputState.key[KEY_P1_SPECIAL] },
-	{ "Player-1-Escape", (int *)&ImmediateInputState.key[KEY_P1_ESCAPE] },
-	{ "Player-2-Thrust", (int *)&ImmediateInputState.key[KEY_P2_THRUST] },
-	{ "Player-2-Left", (int *)&ImmediateInputState.key[KEY_P2_LEFT] },
-	{ "Player-2-Right", (int *)&ImmediateInputState.key[KEY_P2_RIGHT] },
-	{ "Player-2-Down", (int *)&ImmediateInputState.key[KEY_P2_DOWN] },
-	{ "Player-2-Weapon", (int *)&ImmediateInputState.key[KEY_P2_WEAPON] },
-	{ "Player-2-Special", (int *)&ImmediateInputState.key[KEY_P2_SPECIAL] },
-	{ "Lander-Thrust", (int *)&ImmediateInputState.key[KEY_LANDER_THRUST] },
-	{ "Lander-Left", (int *)&ImmediateInputState.key[KEY_LANDER_LEFT] },
-	{ "Lander-Right", (int *)&ImmediateInputState.key[KEY_LANDER_RIGHT] },
-	{ "Lander-Weapon", (int *)&ImmediateInputState.key[KEY_LANDER_WEAPON] },
-	{ "Lander-Escape", (int *)&ImmediateInputState.key[KEY_LANDER_ESCAPE] },
-	{ "Pause", (int *)&ImmediateInputState.key[KEY_PAUSE] },
-	{ "Exit", (int *)&ImmediateInputState.key[KEY_EXIT] },
-	{ "Abort", (int *)&ImmediateInputState.key[KEY_ABORT] },
-	{ "Debug", (int *)&ImmediateInputState.key[KEY_DEBUG] },
+	{ "Menu-Up", (int *)&ImmediateInputState.menu[KEY_MENU_UP] },
+	{ "Menu-Down", (int *)&ImmediateInputState.menu[KEY_MENU_DOWN] },
+	{ "Menu-Left", (int *)&ImmediateInputState.menu[KEY_MENU_LEFT] },
+	{ "Menu-Right", (int *)&ImmediateInputState.menu[KEY_MENU_RIGHT] },
+	{ "Menu-Select", (int *)&ImmediateInputState.menu[KEY_MENU_SELECT] },
+	{ "Menu-Cancel", (int *)&ImmediateInputState.menu[KEY_MENU_CANCEL] },
+	{ "Menu-Special", (int *)&ImmediateInputState.menu[KEY_MENU_SPECIAL] },
+	{ "Menu-Page-Up", (int *)&ImmediateInputState.menu[KEY_MENU_PAGE_UP] },
+	{ "Menu-Page-Down", (int *)&ImmediateInputState.menu[KEY_MENU_PAGE_DOWN] },
+	{ "Menu-Home", (int *)&ImmediateInputState.menu[KEY_MENU_HOME] },
+	{ "Menu-End", (int *)&ImmediateInputState.menu[KEY_MENU_END] },
+	{ "Menu-Zoom-In", (int *)&ImmediateInputState.menu[KEY_MENU_ZOOM_IN] },
+	{ "Menu-Zoom-Out", (int *)&ImmediateInputState.menu[KEY_MENU_ZOOM_OUT] },
+	{ "Menu-Delete", (int *)&ImmediateInputState.menu[KEY_MENU_DELETE] },
+	{ "Menu-Backspace", (int *)&ImmediateInputState.menu[KEY_MENU_BACKSPACE] },
+	{ "Menu-Edit-Cancel", (int *)&ImmediateInputState.menu[KEY_MENU_EDIT_CANCEL] },
+	{ "Menu-Search", (int *)&ImmediateInputState.menu[KEY_MENU_SEARCH] },
+	{ "Menu-Next", (int *)&ImmediateInputState.menu[KEY_MENU_NEXT] },
+	{ "Keyboard-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] },
+	{ "Keyboard-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] },
+	{ "Keyboard-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] },
+	{ "Keyboard-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] },
+	{ "Keyboard-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] },
+	{ "Keyboard-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL] },
+	{ "Keyboard-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE] },
+	{ "Keyboard-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] },
+	{ "Keyboard-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] },
+	{ "Keyboard-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] },
+	{ "Keyboard-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] },
+	{ "Keyboard-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] },
+	{ "Keyboard-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL] },
+	{ "Keyboard-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_ESCAPE] },
+	{ "Keyboard-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_UP] },
+	{ "Keyboard-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_DOWN] },
+	{ "Keyboard-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_LEFT] },
+	{ "Keyboard-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_RIGHT] },
+	{ "Keyboard-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_WEAPON] },
+	{ "Keyboard-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_SPECIAL] },
+	{ "Keyboard-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_ESCAPE] },
+	{ "Joystick-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_UP] },
+	{ "Joystick-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_DOWN] },
+	{ "Joystick-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_LEFT] },
+	{ "Joystick-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_RIGHT] },
+	{ "Joystick-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_WEAPON] },
+	{ "Joystick-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_SPECIAL] },
+	{ "Joystick-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_ESCAPE] },
+	{ "Joystick-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_UP] },
+	{ "Joystick-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_DOWN] },
+	{ "Joystick-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_LEFT] },
+	{ "Joystick-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_RIGHT] },
+	{ "Joystick-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_WEAPON] },
+	{ "Joystick-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_SPECIAL] },
+	{ "Joystick-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_ESCAPE] },
+	{ "Joystick-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_UP] },
+	{ "Joystick-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_DOWN] },
+	{ "Joystick-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_LEFT] },
+	{ "Joystick-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_RIGHT] },
+	{ "Joystick-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_WEAPON] },
+	{ "Joystick-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_SPECIAL] },
+	{ "Joystick-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_ESCAPE] },
+	{ "Pause", (int *)&ImmediateInputState.menu[KEY_PAUSE] },
+	{ "Exit", (int *)&ImmediateInputState.menu[KEY_EXIT] },
+	{ "Abort", (int *)&ImmediateInputState.menu[KEY_ABORT] },
+	{ "Debug", (int *)&ImmediateInputState.menu[KEY_DEBUG] },
 	{ "Illegal", NULL}};
 
 
@@ -163,7 +187,7 @@ static void
 resetKeyboardState (void)
 {
 	memset (kbdstate, 0, sizeof (kbdstate));
-	ImmediateInputState.key[KEY_CHARACTER] = 0;
+	ImmediateInputState.menu[KEY_MENU_ANY] = 0;
 }
 
 int 
@@ -295,7 +319,7 @@ ProcessInputEvent (const SDL_Event *Event)
 				return;
 
 			kbdstate[k]++;
-			ImmediateInputState.key[KEY_CHARACTER]++;
+			ImmediateInputState.menu[KEY_MENU_ANY]++;
 			
 			lastchar = map_key;
 			kbdbuf[kbdtail] = map_key;
@@ -308,13 +332,13 @@ ProcessInputEvent (const SDL_Event *Event)
 			if (kbdstate[k] == 0)
 			{	// something is fishy -- better to reset the
 				// repeatable state to avoid big problems
-				ImmediateInputState.key[KEY_CHARACTER] = 0;
+				ImmediateInputState.menu[KEY_MENU_ANY] = 0;
 			}
 			else
 			{
 				kbdstate[k]--;
-				if (ImmediateInputState.key[KEY_CHARACTER] > 0)
-					ImmediateInputState.key[KEY_CHARACTER]--;
+				if (ImmediateInputState.menu[KEY_MENU_ANY] > 0)
+					ImmediateInputState.menu[KEY_MENU_ANY]--;
 			}
 		}
 	}

@@ -280,8 +280,8 @@ SaveProblem (void)
 	{
 		TaskSwitch ();
 		UpdateInputState ();
-	} while (!(PulsedInputState.key[KEY_MENU_SELECT] ||
-			PulsedInputState.key[KEY_MENU_SPECIAL] ||
+	} while (!(PulsedInputState.menu[KEY_MENU_SELECT] ||
+			PulsedInputState.menu[KEY_MENU_SPECIAL] ||
 		 	(GLOBAL (CurrentActivity) & CHECK_ABORT)));
 
 	LockMutex (GraphicsLock);

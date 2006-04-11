@@ -1625,7 +1625,7 @@ SetVelocityComponents (
 	}
 	else if (pMS->delta_item == 0
 			|| (HIBYTE (pMS->delta_item) 
-			&& (CurrentInputState.key[KEY_LANDER_ESCAPE]
+			&& (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE]
 			|| ((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit)))
 	{
 		if (pMS->delta_item || pMS->CurState > EXPLOSION_LIFE + 60)
@@ -1686,9 +1686,9 @@ SetVelocityComponents (
 			index = GetFrameIndex (LanderFrame[0]);
 			if (LONIBBLE (pMS->CurState))
 				pMS->CurState -= MAKE_BYTE (1, 0);
-			else if (CurrentInputState.key[KEY_LANDER_LEFT] || CurrentInputState.key[KEY_LANDER_RIGHT])
+			else if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] || CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT])
 			{
-				if (CurrentInputState.key[KEY_LANDER_LEFT])
+				if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT])
 				{
 					dx = -1;
 					--index;
@@ -1728,7 +1728,7 @@ SetVelocityComponents (
 						);
 			}
 
-			if (!CurrentInputState.key[KEY_LANDER_THRUST])
+			if (!CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
 				dx = dy = 0;
 			else
 				GetNextVelocityComponents (
@@ -1737,7 +1737,7 @@ SetVelocityComponents (
 
 			if (HINIBBLE (pMS->CurState))
 				pMS->CurState -= MAKE_BYTE (0, 1);
-			else if (CurrentInputState.key[KEY_LANDER_WEAPON])
+			else if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON])
 			{
 				HELEMENT hWeaponElement;
 
@@ -1766,7 +1766,7 @@ SetVelocityComponents (
 							index + ANGLE_TO_FACING (FULL_CIRCLE)
 							);
 
-					if (!CurrentInputState.key[KEY_LANDER_THRUST])
+					if (!CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
 						wdx = wdy = 0;
 					else
 						GetCurrentVelocityComponents (

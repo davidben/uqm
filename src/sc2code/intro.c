@@ -276,7 +276,7 @@ DoPresentation (PVOID pIS)
 {
 	PRESENTATION_INPUT_STATE* pPIS = (PRESENTATION_INPUT_STATE*) pIS;
 
-	if (PulsedInputState.key[KEY_MENU_CANCEL]
+	if (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 		return FALSE; /* abort requested - we are done */
 
@@ -289,9 +289,9 @@ DoPresentation (PVOID pIS)
 		}
 		
 		if (pPIS->TimeOutOnSkip &&
-			(PulsedInputState.key[KEY_MENU_SELECT]
-			|| PulsedInputState.key[KEY_MENU_SPECIAL]
-			|| PulsedInputState.key[KEY_MENU_RIGHT]) )
+			(PulsedInputState.menu[KEY_MENU_SELECT]
+			|| PulsedInputState.menu[KEY_MENU_SPECIAL]
+			|| PulsedInputState.menu[KEY_MENU_RIGHT]) )
 		{	/* skip requested - continue normal ops */
 			pPIS->TimeOut = 0;
 			return TRUE;

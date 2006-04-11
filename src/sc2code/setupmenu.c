@@ -359,27 +359,27 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 
 	UnbatchGraphics ();
 
-	if (PulsedInputState.key[KEY_MENU_UP])
+	if (PulsedInputState.menu[KEY_MENU_UP])
 	{
 		Widget_Event (WIDGET_EVENT_UP);
 	}
-	else if (PulsedInputState.key[KEY_MENU_DOWN])
+	else if (PulsedInputState.menu[KEY_MENU_DOWN])
 	{
 		Widget_Event (WIDGET_EVENT_DOWN);
 	}
-	else if (PulsedInputState.key[KEY_MENU_LEFT])
+	else if (PulsedInputState.menu[KEY_MENU_LEFT])
 	{
 		Widget_Event (WIDGET_EVENT_LEFT);
 	}
-	else if (PulsedInputState.key[KEY_MENU_RIGHT])
+	else if (PulsedInputState.menu[KEY_MENU_RIGHT])
 	{
 		Widget_Event (WIDGET_EVENT_RIGHT);
 	}
-	if (PulsedInputState.key[KEY_MENU_SELECT])
+	if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		Widget_Event (WIDGET_EVENT_SELECT);
 	}
-	if (PulsedInputState.key[KEY_MENU_CANCEL])
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
 		Widget_Event (WIDGET_EVENT_CANCEL);
 	}

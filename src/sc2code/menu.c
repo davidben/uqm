@@ -398,11 +398,11 @@ DoMenuChooser (PMENU_STATE pMS, BYTE BaseState)
 		BOOLEAN useAltMenu = FALSE;
 		if (optWhichMenu == OPT_PC)
 			useAltMenu = GetAlternateMenu (&BaseState, &NewState);
-		if (PulsedInputState.key[KEY_MENU_LEFT] || PulsedInputState.key[KEY_MENU_UP])
+		if (PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_UP])
 			NewState = PreviousMenuState (BaseState, NewState);
-		else if (PulsedInputState.key[KEY_MENU_RIGHT] || PulsedInputState.key[KEY_MENU_DOWN])
+		else if (PulsedInputState.menu[KEY_MENU_RIGHT] || PulsedInputState.menu[KEY_MENU_DOWN])
 			NewState = NextMenuState (BaseState, NewState);
-		else if (useAltMenu && PulsedInputState.key[KEY_MENU_SELECT])
+		else if (useAltMenu && PulsedInputState.menu[KEY_MENU_SELECT])
 		{
 			NewState = ConvertAlternateMenu (BaseState, NewState);
 			if (NewState == ALT_MANIFEST)

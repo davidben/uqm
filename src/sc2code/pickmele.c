@@ -76,29 +76,29 @@ DoGetMelee (GETMELEE_STATE *gms)
 	}
 	else if (which_player == 0)
 	{
-		left = PulsedInputState.key[KEY_P1_LEFT] ||
-				PulsedInputState.key[KEY_MENU_LEFT];
-		right = PulsedInputState.key[KEY_P1_RIGHT] ||
-				PulsedInputState.key[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[KEY_P1_THRUST] ||
-				PulsedInputState.key[KEY_MENU_UP];
-		down = PulsedInputState.key[KEY_P1_DOWN] ||
-				PulsedInputState.key[KEY_MENU_DOWN];
-		select = PulsedInputState.key[KEY_P1_WEAPON] ||
-				PulsedInputState.key[KEY_MENU_SELECT];
+		left = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] ||
+				PulsedInputState.menu[KEY_MENU_LEFT];
+		right = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] ||
+				PulsedInputState.menu[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] ||
+				PulsedInputState.menu[KEY_MENU_UP];
+		down = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] ||
+				PulsedInputState.menu[KEY_MENU_DOWN];
+		select = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] ||
+				PulsedInputState.menu[KEY_MENU_SELECT];
 	}
 	else
 	{
-		left = PulsedInputState.key[KEY_P2_LEFT] ||
-				PulsedInputState.key[KEY_MENU_LEFT];
-		right = PulsedInputState.key[KEY_P2_RIGHT] ||
-				PulsedInputState.key[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[KEY_P2_THRUST] ||
-				PulsedInputState.key[KEY_MENU_UP];
-		down = PulsedInputState.key[KEY_P2_DOWN] ||
-				PulsedInputState.key[KEY_MENU_DOWN];
-		select = PulsedInputState.key[KEY_P2_WEAPON] ||
-				PulsedInputState.key[KEY_MENU_SELECT];
+		left = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] ||
+				PulsedInputState.menu[KEY_MENU_LEFT];
+		right = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] ||
+				PulsedInputState.menu[KEY_MENU_RIGHT];
+		up = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] ||
+				PulsedInputState.menu[KEY_MENU_UP];
+		down = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] ||
+				PulsedInputState.menu[KEY_MENU_DOWN];
+		select = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] ||
+				PulsedInputState.menu[KEY_MENU_SELECT];
 	}
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -303,13 +303,13 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 
-		PressState = PulsedInputState.key[KEY_MENU_SELECT] ||
-				PulsedInputState.key[KEY_MENU_CANCEL];
+		PressState = PulsedInputState.menu[KEY_MENU_SELECT] ||
+				PulsedInputState.menu[KEY_MENU_CANCEL];
 		do
 		{
 			UpdateInputState ();
-			ButtonState = PulsedInputState.key[KEY_MENU_SELECT] ||
-					PulsedInputState.key[KEY_MENU_CANCEL];
+			ButtonState = PulsedInputState.menu[KEY_MENU_SELECT] ||
+					PulsedInputState.menu[KEY_MENU_CANCEL];
 			if (PressState)
 			{
 				PressState = ButtonState;
