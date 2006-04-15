@@ -49,6 +49,7 @@ typedef struct
 } MENU_ANNOTATIONS;
 
 
+CONTROL_TEMPLATE PlayerOne, PlayerTwo;
 CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 static CONTROLLER_INPUT_STATE CachedInputState, OldInputState;
 static MENU_ANNOTATIONS RepeatDelays, Times;
@@ -381,19 +382,19 @@ BATTLE_INPUT_STATE
 p1_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
+	if (CurrentInputState.key[PlayerOne][KEY_UP])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT])
+	if (CurrentInputState.key[PlayerOne][KEY_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT])
+	if (CurrentInputState.key[PlayerOne][KEY_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON])
+	if (CurrentInputState.key[PlayerOne][KEY_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL])
+	if (CurrentInputState.key[PlayerOne][KEY_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE])
+	if (CurrentInputState.key[PlayerOne][KEY_ESCAPE])
 		InputState |= BATTLE_ESCAPE;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN])
+	if (CurrentInputState.key[PlayerOne][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }
@@ -402,17 +403,17 @@ BATTLE_INPUT_STATE
 p2_combat_summary (void)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP])
+	if (CurrentInputState.key[PlayerTwo][KEY_UP])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT])
+	if (CurrentInputState.key[PlayerTwo][KEY_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT])
+	if (CurrentInputState.key[PlayerTwo][KEY_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON])
+	if (CurrentInputState.key[PlayerTwo][KEY_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL])
+	if (CurrentInputState.key[PlayerTwo][KEY_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN])
+	if (CurrentInputState.key[PlayerTwo][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
 	return InputState;
 }

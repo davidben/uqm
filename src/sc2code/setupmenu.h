@@ -19,6 +19,8 @@
 #ifndef _SETUPMENU_H
 #define _SETUPMENU_H
 
+#include "controls.h"
+
 typedef enum {
 	OPTVAL_DISABLED,
 	OPTVAL_ENABLED
@@ -63,6 +65,9 @@ typedef enum {
 	OPTVAL_HIGH
 } OPT_AQUALITYTYPE;
 
+/* At the moment, CONTROL_TEMPLATE is directly in this structure.  If
+ * CONTROL_TEMPLATE and the options available diverge, this will need
+ * to change */
 typedef struct globalopts_struct {
 	OPT_SCALETYPE scaler;
 	OPT_RESTYPE res;
@@ -71,6 +76,7 @@ typedef struct globalopts_struct {
 	OPT_AQUALITYTYPE aquality;
 	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
 	OPT_CONSOLETYPE music, menu, text, cscan, scroll, intro, meleezoom, shield;
+	CONTROL_TEMPLATE player1, player2;
 	int speechvol, musicvol, sfxvol;
 } GLOBALOPTS;
 

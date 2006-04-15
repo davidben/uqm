@@ -30,6 +30,7 @@
 #include "libs/sound/sound.h"
 #include "libs/input/input_common.h"
 #include "libs/tasklib.h"
+#include "controls.h"
 #include "file.h"
 #include "port.h"
 #include "libs/platform.h"
@@ -173,6 +174,9 @@ main (int argc, char *argv[])
 	initIO ();
 	prepareConfigDir (options.configDir);
 
+	PlayerOne = CONTROL_TEMPLATE_KB_1;
+	PlayerTwo = CONTROL_TEMPLATE_KB_2;
+
 	// Fill in the options struct based on uqm.cfg
 	res_LoadFilename (configDir, "uqm.cfg");
 	if (res_HasKey ("config.reswidth"))
@@ -308,6 +312,26 @@ main (int argc, char *argv[])
 	if (res_HasKey ("config.pulseshield"))
 	{
 		options.whichShield = res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
+	}
+	if (res_HasKey ("config.player1control"))
+	{
+		PlayerOne = res_GetInteger ("config.player1control");
+		/* This is an unsigned, so no < 0 check is necessary */
+		if (PlayerOne >= NUM_TEMPLATES)
+		{
+			fprintf (stderr, "Illegal control template '%d' for Player One.\n", PlayerOne);
+			PlayerOne = CONTROL_TEMPLATE_KB_1;
+		}
+	}
+	if (res_HasKey ("config.player2control"))
+	{
+		/* This is an unsigned, so no < 0 check is necessary */
+		PlayerTwo = res_GetInteger ("config.player2control");
+		if (PlayerOne >= NUM_TEMPLATES)
+		{
+			fprintf (stderr, "Illegal control template '%d' for Player Two.\n", PlayerOne);
+			PlayerTwo = CONTROL_TEMPLATE_KB_2;
+		}
 	}
 	if (res_HasKey ("config.musicvol"))
 	{

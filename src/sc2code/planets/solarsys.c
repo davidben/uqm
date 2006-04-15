@@ -810,15 +810,15 @@ ProcessShipControls (void)
 
 	ClockTick ();
 
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP])
+	if (CurrentInputState.key[PlayerOne][KEY_UP])
 		delta_y = -1;
 	else
 		delta_y = 0;
 
 	delta_x = 0;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT])
+	if (CurrentInputState.key[PlayerOne][KEY_LEFT])
 		delta_x -= 1;
-	if (CurrentInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT])
+	if (CurrentInputState.key[PlayerOne][KEY_RIGHT])
 		delta_x += 1;
 		
 	if (delta_x || delta_y < 0)

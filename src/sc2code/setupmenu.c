@@ -65,10 +65,10 @@ static int do_advanced (WIDGET *self, int event);
 #endif
 
 #define MENU_COUNT    7
-#define CHOICE_COUNT 18
+#define CHOICE_COUNT 20
 #define SLIDER_COUNT  3
 #define BUTTON_COUNT  8
-#define LABEL_COUNT   1
+#define LABEL_COUNT   2
 
 /* The space for our widgets */
 static WIDGET_MENU_SCREEN menus[MENU_COUNT];
@@ -83,14 +83,15 @@ typedef int (*HANDLER)(WIDGET *, int);
 
 static int choice_widths[CHOICE_COUNT] = {
 	3, 2, 3, 3, 2, 2, 2, 2, 2,
-	2, 2, 2, 3, 2, 2, 3, 3, 2 };
+	2, 2, 2, 3, 2, 2, 3, 3, 2,
+	3, 3 };
 
 static HANDLER button_handlers[BUTTON_COUNT] = {
 	quit_main_menu, quit_sub_menu, do_graphics, do_engine,
 	do_audio, do_resources, do_keyconfig, do_advanced };
 
 static int menu_sizes[MENU_COUNT] = {
-	7, 5, 6, 9, 2, 2,
+	7, 5, 6, 9, 2, 4,
 #ifdef HAVE_OPENGL
 	5 };
 #else
@@ -145,13 +146,19 @@ static WIDGET *advanced_widgets[] = {
 	(WIDGET *)(&choices[16]),
 	(WIDGET *)(&buttons[1]) };
 	
+static WIDGET *keyconfig_widgets[] = {
+	(WIDGET *)(&choices[18]),
+	(WIDGET *)(&choices[19]),
+	(WIDGET *)(&labels[1]),
+	(WIDGET *)(&buttons[1]) };
+
 static WIDGET *incomplete_widgets[] = {
 	(WIDGET *)(&labels[0]),
 	(WIDGET *)(&buttons[1]) };
 
 static WIDGET **menu_widgets[MENU_COUNT] = {
 	main_widgets, graphics_widgets, audio_widgets, engine_widgets, 
-	incomplete_widgets, incomplete_widgets, advanced_widgets };
+	incomplete_widgets, keyconfig_widgets, advanced_widgets };
 
 static int
 quit_main_menu (WIDGET *self, int event)
@@ -293,6 +300,8 @@ SetDefaults (void)
 	choices[15].selected = opts.adriver;
 	choices[16].selected = opts.aquality;
 	choices[17].selected = opts.shield;
+	choices[18].selected = opts.player1;
+	choices[19].selected = opts.player2;
 
 	sliders[0].value = opts.musicvol;
 	sliders[1].value = opts.sfxvol;
@@ -321,6 +330,8 @@ PropagateResults (void)
 	opts.adriver = choices[15].selected;
 	opts.aquality = choices[16].selected;
 	opts.shield = choices[17].selected;
+	opts.player1 = choices[18].selected;
+	opts.player2 = choices[19].selected;
 
 	opts.musicvol = sliders[0].value;
 	opts.sfxvol = sliders[1].value;
@@ -887,9 +898,13 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 	}
 
+	opts->player1 = PlayerOne;
+	opts->player2 = PlayerTwo;
+
 	opts->musicvol = (((int)(musicVolumeScale * 100.0f) + 2) / 5) * 5;
 	opts->sfxvol = (((int)(sfxVolumeScale * 100.0f) + 2) / 5) * 5;
 	opts->speechvol = (((int)(speechVolumeScale * 100.0f) + 2) / 5) * 5;
+	
 }
 
 void
@@ -999,6 +1014,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichShield = (opts->shield == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optMeleeScale = (opts->meleezoom == OPTVAL_3DO) ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
 	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
+	PlayerOne = opts->player1;
+	PlayerTwo = opts->player2;
 
 	res_PutBoolean ("config.subtitles", opts->subtitles == OPTVAL_ENABLED);
 	res_PutBoolean ("config.textmenu", opts->menu == OPTVAL_PC);
@@ -1012,6 +1029,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutBoolean ("config.smoothmelee", opts->meleezoom == OPTVAL_3DO);
 	res_PutBoolean ("config.positionalsfx", opts->stereo == OPTVAL_ENABLED); 
 	res_PutBoolean ("config.pulseshield", opts->shield == OPTVAL_3DO);
+	res_PutInteger ("config.player1control", opts->player1);
+	res_PutInteger ("config.player2control", opts->player2);
 
 	switch (opts->adriver) {
 	case OPTVAL_SILENCE:

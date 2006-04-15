@@ -61,7 +61,7 @@ enum {
 	NUM_MENU_KEYS
 };
 
-enum {
+typedef enum {
 	CONTROL_TEMPLATE_KB_1,
 	CONTROL_TEMPLATE_KB_2,
 	CONTROL_TEMPLATE_KB_3,
@@ -69,7 +69,7 @@ enum {
 	CONTROL_TEMPLATE_JOY_2,
 	CONTROL_TEMPLATE_JOY_3,
 	NUM_TEMPLATES
-};
+} CONTROL_TEMPLATE;
 
 typedef struct _controller_input_state {
 	int key[NUM_TEMPLATES][NUM_KEYS];
@@ -91,6 +91,7 @@ extern battle_summary_func PlayerInput[];
 
 extern CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
+extern CONTROL_TEMPLATE PlayerOne, PlayerTwo;
 
 void UpdateInputState (void);
 void FlushInputState (void);

@@ -29,6 +29,8 @@ Positional Audio
 Sound Driver
 Sound Quality
 Slave Shields
+Player One
+Player Two
 
 #(CAT_0_OPTS)
 320x240
@@ -301,6 +303,82 @@ This mimics the PC version.
 Slave shields pulsate.
 This mimics the 3do verion.
 
+#(CAT_18_OPTS)
+Keyboard #1
+Keyboard #2
+Keyboard #3
+Joystick #1
+Joystick #2
+Joystick #3
+
+#(CAT_18_OPT_0_DESC)
+Player 1 uses the Keyboard 1 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_18_OPT_1_DESC)
+Player 1 uses the Keyboard 2 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_18_OPT_2_DESC)
+Player 1 uses the Keyboard 3 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_18_OPT_3_DESC)
+Player 1 uses the Joystick 1 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_18_OPT_4_DESC)
+Player 1 uses the Joystick 2 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_18_OPT_5_DESC)
+Player 1 uses the Joystick 3 template.
+Player 1 controls the bottom player in
+Super Melee, and the entire Full Game.
+
+#(CAT_19_OPTS)
+Keyboard #1
+Keyboard #2
+Keyboard #3
+Joystick #1
+Joystick #2
+Joystick #3
+
+#(CAT_19_OPT_0_DESC)
+Player 2 uses the Keyboard 1 template.
+Player 2 controls the top player
+in Super Melee.
+
+#(CAT_19_OPT_1_DESC)
+Player 2 uses the Keyboard 2 template.
+Player 2 controls the top player
+in Super Melee.
+
+#(CAT_19_OPT_2_DESC)
+Player 2 uses the Keyboard 3 template.
+Player 2 controls the top player
+in Super Melee.
+
+#(CAT_19_OPT_3_DESC)
+Player 2 uses the Joystick 1 template.
+Player 2 controls the top player
+in Super Melee.
+
+#(CAT_19_OPT_4_DESC)
+Player 2 uses the Joystick 2 template.
+Player 2 controls the top player
+in Super Melee.
+
+#(CAT_19_OPT_5_DESC)
+Player 2 uses the Joystick 3 template.
+Player 2 controls the top player
+in Super Melee.
+
 #(SLIDERS)
 Music Volume
 SFX Volume
@@ -352,7 +430,7 @@ Currently unimplemented.
 #(BUTTON_6_DESC)
 Set up keyboard and joystick controls.
 
-Currently unimplemented.
+Currently partially implemented.
 
 #(BUTTON_7_DESC)
 Select underlying drivers or other
@@ -360,9 +438,16 @@ hardware-dependent options.
 
 #(LABELS)
 Incomplete
+Keyconfig incomplete
 
 #(LABEL_0)
 This part of the configuration
 has not yet been implemented.
 
 Expect it in a future version.
+
+#(LABEL_1)
+Control templates are currently defined
+in the KEYS.CFG file stored near your
+save games.  A future UQM version will
+offer in-game key configuration.

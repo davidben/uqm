@@ -76,28 +76,28 @@ DoGetMelee (GETMELEE_STATE *gms)
 	}
 	else if (which_player == 0)
 	{
-		left = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] ||
+		left = PulsedInputState.key[PlayerOne][KEY_LEFT] ||
 				PulsedInputState.menu[KEY_MENU_LEFT];
-		right = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] ||
+		right = PulsedInputState.key[PlayerOne][KEY_RIGHT] ||
 				PulsedInputState.menu[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] ||
+		up = PulsedInputState.key[PlayerOne][KEY_UP] ||
 				PulsedInputState.menu[KEY_MENU_UP];
-		down = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] ||
+		down = PulsedInputState.key[PlayerOne][KEY_DOWN] ||
 				PulsedInputState.menu[KEY_MENU_DOWN];
-		select = PulsedInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] ||
+		select = PulsedInputState.key[PlayerOne][KEY_WEAPON] ||
 				PulsedInputState.menu[KEY_MENU_SELECT];
 	}
 	else
 	{
-		left = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] ||
+		left = PulsedInputState.key[PlayerTwo][KEY_LEFT] ||
 				PulsedInputState.menu[KEY_MENU_LEFT];
-		right = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] ||
+		right = PulsedInputState.key[PlayerTwo][KEY_RIGHT] ||
 				PulsedInputState.menu[KEY_MENU_RIGHT];
-		up = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] ||
+		up = PulsedInputState.key[PlayerTwo][KEY_UP] ||
 				PulsedInputState.menu[KEY_MENU_UP];
-		down = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] ||
+		down = PulsedInputState.key[PlayerTwo][KEY_DOWN] ||
 				PulsedInputState.menu[KEY_MENU_DOWN];
-		select = PulsedInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] ||
+		select = PulsedInputState.key[PlayerTwo][KEY_WEAPON] ||
 				PulsedInputState.menu[KEY_MENU_SELECT];
 	}
 
