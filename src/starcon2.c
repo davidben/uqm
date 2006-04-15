@@ -327,7 +327,7 @@ main (int argc, char *argv[])
 	{
 		/* This is an unsigned, so no < 0 check is necessary */
 		PlayerTwo = res_GetInteger ("config.player2control");
-		if (PlayerOne >= NUM_TEMPLATES)
+		if (PlayerTwo >= NUM_TEMPLATES)
 		{
 			fprintf (stderr, "Illegal control template '%d' for Player Two.\n", PlayerOne);
 			PlayerTwo = CONTROL_TEMPLATE_KB_2;
