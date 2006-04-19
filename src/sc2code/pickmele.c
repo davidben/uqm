@@ -315,9 +315,11 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				PressState = ButtonState;
 				ButtonState = FALSE;
 			}
+
+			TaskSwitch ();
 		} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
 				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				|| (TaskSwitch (), GetTimeCounter ()) < TimeOut)));
+				|| GetTimeCounter () < TimeOut)));
 
 		LockMutex (GraphicsLock);
 

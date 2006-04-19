@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Fixed a spinlock in Melee's final score screen (Bug 879) - Michael
 - Phase 2 of online keyconfig - Setup Menu can configure assignment of 
   templates to players - Michael
 - Control scheme shifted to Menus + Control Templates in preparation for 
