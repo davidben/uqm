@@ -1415,14 +1415,11 @@ NatureOfConversation (RESPONSE_REF R)
 	}
 }
 
+static BYTE local_stack0, local_stack1;
+
 static void
 DoBluster (RESPONSE_REF R)
 {
-	// BUG: these should really be GAME_STATE vars
-	//  currently, you can reload a game and skip some responses
-	//  that you've said before
-	static BYTE local_stack0 = 0, local_stack1 = 0;
-
 	if (PLAYER_SAID (R, trade_is_for_the_weak))
 	{
 		XFormColorMap (GetColorMapAddress (
@@ -1864,6 +1861,9 @@ init_melnorme_comm (void)
 	melnorme_desc.AlienTextTemplate.baseline.y = 0;
 	melnorme_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	melnorme_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
+
+	local_stack0 = 0;
+	local_stack1 = 0;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 	AskedToBuy = FALSE;
