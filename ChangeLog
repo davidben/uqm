@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Fixed static vars not reinited in alien comm code (caused various
+  side-effects; bug #870) - Alex
 - Fixed a spinlock in Melee's final score screen (Bug 879) - Michael
 - Phase 2 of online keyconfig - Setup Menu can configure assignment of 
   templates to players - Michael
