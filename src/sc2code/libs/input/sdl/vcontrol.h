@@ -9,6 +9,27 @@
 void VControl_Init (void);
 void VControl_Uninit (void);
 
+/* Structures for representing actual VControl Inputs.  Returned by
+   iterators and used to construct bindings. */
+
+typedef enum {
+	VCONTROL_KEY,
+	VCONTROL_JOYAXIS,
+	VCONTROL_JOYBUTTON,
+	VCONTROL_JOYHAT,
+	NUM_VCONTROL_GESTURES
+} VCONTROL_GESTURE_TYPE;
+
+typedef struct {
+	VCONTROL_GESTURE_TYPE type;
+	union {
+		SDLKey key;
+		struct { int port, index, polarity; } axis;
+		struct { int port, index; } button;
+		struct { int port, index; Uint8 dir; } hat;
+	} gesture;
+} VCONTROL_GESTURE;			
+
 /* Control of bindings */
 int  VControl_AddKeyBinding (SDLKey symbol, int *target);
 void VControl_RemoveKeyBinding (SDLKey symbol, int *target);
@@ -55,18 +76,20 @@ void VControl_SetConfigFileVersion (int v);
 
 /* Dump a configuration file corresponding to the current bindings and names. */
 void VControl_Dump (FILE *out);
+
 /* Read a configuration file.  Returns number of errors encountered. */
 int VControl_ReadConfiguration (uio_Stream *in);
 int VControl_GetErrorCount (void);
 int VControl_GetValidCount (void);
 
+
 /* Iterator control.  Start an iteration with StartIter or
-   StartIterByName; then call NextBindingName with a char array of at
-   least 40 bytes in size until it returns 0.  Produces names. */
+   StartIterByName; then call NextBindingName until it returns 0.  
+   Produces gestures. */
 
 void VControl_StartIter (int *target);
 void VControl_StartIterByName (char *targetname);
-int  VControl_NextBindingName (char *buffer);
+int  VControl_NextBinding (VCONTROL_GESTURE *gesture);
 
 /* Tracking the "last interesting event."  Used to poll to find new
    control keys. */

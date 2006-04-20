@@ -941,9 +941,9 @@ VControl_StartIterByName (char *targetname)
 }
 
 int
-VControl_NextBindingName (char *buffer)
+VControl_NextBinding (VCONTROL_GESTURE *gesture)
 {
-	if ((buffer == NULL) || (iter_target == NULL)
+	if ((gesture == NULL) || (iter_target == NULL)
 			|| iter_device >= (joycount * 3))
 		return 0;
 	while (iter_device < (joycount * 3))
@@ -956,8 +956,8 @@ VControl_NextBindingName (char *buffer)
 			{
 				if (kb->target == iter_target)
 				{
-					strncpy (buffer, VControl_code2name (iter_index), 40);
-					buffer[39] = 0;
+					gesture->type = VCONTROL_KEY;
+					gesture->gesture.key = iter_index;
 					done = 1;
 				}
 				kb = kb->next;
@@ -999,13 +999,10 @@ VControl_NextBindingName (char *buffer)
 							if (kb->target == iter_target)
 							{
 								done = 1;
-								switch (iter_index) {
-								case 0: sprintf (buffer, "Joy%d left", i); break;
-								case 1: sprintf (buffer, "Joy%d right", i); break;
-								case 2: sprintf (buffer, "Joy%d up", i); break;
-								case 3: sprintf (buffer, "Joy%d down", i); break;
-								default: sprintf (buffer, "Joy%d A%d %s", i, axis, dir ? "high" : "low"); break;
-								}
+								gesture->type = VCONTROL_JOYAXIS;
+								gesture->gesture.axis.port = i;
+								gesture->gesture.axis.index = axis;
+								gesture->gesture.axis.polarity = (dir) ? 1 : -1;
 							}
 							kb = kb->next;
 						}
@@ -1026,8 +1023,10 @@ VControl_NextBindingName (char *buffer)
 						{
 							if (kb->target == iter_target)
 							{
+								gesture->type = VCONTROL_JOYBUTTON;
+								gesture->gesture.button.port = i;
+								gesture->gesture.button.index = iter_index;
 								done = 1;
-								sprintf (buffer, "Joy%d B%d", i, iter_index);
 							}
 							kb = kb->next;
 						}
@@ -1046,25 +1045,23 @@ VControl_NextBindingName (char *buffer)
 					else
 					{
 						keybinding *kb;
+						Uint8 targetdir;
 						switch (hatd) 
 						{
-						case 0: kb = joysticks[i].hats[hat].left; break;
-						case 1: kb = joysticks[i].hats[hat].right; break;
-						case 2: kb = joysticks[i].hats[hat].up; break;
-						default: kb = joysticks[i].hats[hat].down; break;
+						case 0: kb = joysticks[i].hats[hat].left; targetdir = SDL_HAT_LEFT; break;
+						case 1: kb = joysticks[i].hats[hat].right; targetdir = SDL_HAT_RIGHT; break;
+						case 2: kb = joysticks[i].hats[hat].up; targetdir = SDL_HAT_UP; break;
+						default: kb = joysticks[i].hats[hat].down; targetdir = SDL_HAT_DOWN; break;
 						}
 						while (kb != NULL) 
 						{
 							if (kb->target == iter_target)
 							{
 								done = 1;
-								switch (hatd) 
-								{
-								case 0: sprintf (buffer, "Joy%d hat%d left", i, hat); break;
-								case 1: sprintf (buffer, "Joy%d hat%d right", i, hat); break;
-								case 2: sprintf (buffer, "Joy%d hat%d up", i, hat); break;
-								default: sprintf (buffer, "Joy%d hat%d down", i, hat); break;
-								}
+								gesture->type = VCONTROL_JOYHAT;
+								gesture->gesture.hat.port = i;
+								gesture->gesture.hat.index = hat;
+								gesture->gesture.hat.dir = targetdir;
 							}
 							kb = kb->next;
 						}
