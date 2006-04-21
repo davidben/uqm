@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Fixed recently introduced bug with crew count on exit to HyperSpace.
+  (bug #875) - SvdB
 - Fixed static vars not reinited in alien comm code (caused various
   side-effects; bug #870) - Alex
 - Fixed a spinlock in Melee's final score screen (Bug 879) - Michael

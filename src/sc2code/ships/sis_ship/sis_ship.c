@@ -239,8 +239,7 @@ LeaveAutoPilot:
 		speed = square_root ((long)dx * dx + (long)dy * dy);
 		if (AccelerateDirection < 0)
 		{
-			dy = (speed / velocity_increment - 1)
-					* velocity_increment;
+			dy = (speed / velocity_increment - 1) * velocity_increment;
 			if (dy < speed - velocity_increment)
 				dy = speed - velocity_increment;
 			if ((speed = dy) < 0)
@@ -853,12 +852,11 @@ init_sis (void)
 				(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern,
 				COUNT ConcernCounter)) sis_intelligence;
 
-		InitModuleSlots(&new_sis_desc, GLOBAL_SIS (ModuleSlots));
-				
 		if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 			SET_GAME_STATE (BOMB_CARRIER, 1);
 	}
 
+	InitModuleSlots(&new_sis_desc, GLOBAL_SIS (ModuleSlots));
 	InitDriveSlots(&new_sis_desc, GLOBAL_SIS (DriveSlots));
 	InitJetSlots(&new_sis_desc, GLOBAL_SIS (JetSlots));
 	
