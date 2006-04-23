@@ -148,6 +148,9 @@ STARSHIPPTR findPlayerShip(ELEMENT_FLAGS which);
 // Resets the crew of the first player (the bottom one) to its maximum.
 void resetCrewBattle(void);
 
+// Resets the energy of the first player (the bottom one) to its maximum.
+void resetEnergyBattle(void);
+
 
 // Move instantly across hyperspace/quasispace.
 extern BOOLEAN instantMove;

@@ -64,6 +64,7 @@ debugKeyPressed (void)
 	// State modifying:
 	equipShip ();
 	resetCrewBattle ();
+	resetEnergyBattle ();
 	instantMove = !instantMove;
 	showSpheres ();
 	activateAllShips ();
@@ -1286,6 +1287,29 @@ resetCrewBattle(void) {
 	DeltaCrew (StarShipPtr->hShip, delta);
 	SetContext (OldContext);
 }
+
+void
+resetEnergyBattle(void) {
+	STARSHIPPTR StarShipPtr;
+	COUNT delta;
+	CONTEXT OldContext;
+	
+	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
+			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
+		return;
+	
+	StarShipPtr = findPlayerShip (GOOD_GUY);
+	if (StarShipPtr == NULL || StarShipPtr->RaceDescPtr == NULL)
+		return;
+
+	delta = StarShipPtr->RaceDescPtr->ship_info.max_energy -
+			StarShipPtr->RaceDescPtr->ship_info.energy_level;
+
+	OldContext = SetContext (StatusContext);
+	DeltaEnergy (StarShipPtr->hShip, delta);
+	SetContext (OldContext);
+}
+
 
 #endif  /* DEBUG */
 
