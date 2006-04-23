@@ -174,16 +174,36 @@ GetShipBox (PRECT pRect, COUNT side, COUNT row, COUNT col)
 	pRect->extent.height = MELEE_BOX_HEIGHT;
 }
 
+static FleetShipIndex
+GetShipIndex (BYTE row, BYTE col)
+{
+	return row * NUM_MELEE_COLUMNS + col;
+}
+
+static BYTE
+GetShipRow (FleetShipIndex index)
+{
+	return index / NUM_MELEE_COLUMNS;
+}
+
+static BYTE
+GetShipColumn (int index)
+{
+	return index % NUM_MELEE_COLUMNS;
+}
+
 static void
 DrawShipBox (PMELEE_STATE pMS, BOOLEAN HiLite)
 {
 	RECT r;
 	BYTE StarShip;
+	FleetShipIndex index;
 
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 
 	BatchGraphics ();
-	StarShip = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+	index = GetShipIndex (pMS->row, pMS->col);
+	StarShip = pMS->TeamImage[pMS->side].ShipList[index];
 	if (HiLite)
 		DrawStarConBox (&r, 1,
 				BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0xC), 0x3E),
@@ -694,31 +714,29 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 static COUNT
 GetTeamValue (TEAM_IMAGE *pTI)
 {
-	COUNT row, col, val;
+	FleetShipIndex index;
+	COUNT val;
 
 	val = 0;
-	for (row = 0; row < NUM_MELEE_ROWS; ++row)
+	for (index = 0; index < MELEE_FLEET_SIZE; index++)
 	{
-		for (col = 0; col < NUM_MELEE_COLUMNS; ++col)
+		BYTE StarShip;
+
+		StarShip = pTI->ShipList[index];
+		if (StarShip != MELEE_NONE)
 		{
-			BYTE StarShip;
+			HSTARSHIP hStarShip;
 
-			StarShip = pTI->ShipList[row][col];
-			if (StarShip != MELEE_NONE)
+			hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+			if (hStarShip == 0)
+				pTI->ShipList[index] = MELEE_NONE;
+			else
 			{
-				HSTARSHIP hStarShip;
+				STARSHIPPTR StarShipPtr;
 
-				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-				if (hStarShip == 0)
-					pTI->ShipList[row][col] = MELEE_NONE;
-				else
-				{
-					STARSHIPPTR StarShipPtr;
-
-					StarShipPtr = LockStarShip (&master_q, hStarShip);
-					val += StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-					UnlockStarShip (&master_q, hStarShip);
-				}
+				StarShipPtr = LockStarShip (&master_q, hStarShip);
+				val += StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+				UnlockStarShip (&master_q, hStarShip);
 			}
 		}
 	}
@@ -831,7 +849,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 			bot = top - 1;
 			do
 			{
-				COUNT row, col;
+				FleetShipIndex index;
 				STAMP s;
 
 				if (++bot < NUM_PREBUILT)
@@ -862,25 +880,22 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 
 				s.origin.x = Text.baseline.x + 1;
 				s.origin.y = Text.baseline.y + 4;
-				for (row = 0; row < NUM_MELEE_ROWS; ++row)
+				for (index = 0; index < MELEE_FLEET_SIZE; index++)
 				{
-					for (col = 0; col < NUM_MELEE_COLUMNS; ++col)
-					{
-						BYTE StarShip;
+					BYTE StarShip;
 						
-						StarShip = pMS->FileList[bot - top].ShipList[row][col];
-						if (StarShip != MELEE_NONE)
-						{
-							HSTARSHIP hStarShip;
-							STARSHIPPTR StarShipPtr;
+					StarShip = pMS->FileList[bot - top].ShipList[index];
+					if (StarShip != MELEE_NONE)
+					{
+						HSTARSHIP hStarShip;
+						STARSHIPPTR StarShipPtr;
 
-							hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-							StarShipPtr = LockStarShip (&master_q, hStarShip);
-							s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
-							DrawStamp (&s);
-							s.origin.x += 17;
-							UnlockStarShip (&master_q, hStarShip);
-						}
+						hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+						StarShipPtr = LockStarShip (&master_q, hStarShip);
+						s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+						DrawStamp (&s);
+						s.origin.x += 17;
+						UnlockStarShip (&master_q, hStarShip);
 					}
 				}
 
@@ -1124,9 +1139,11 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 	RECT r;
 	HSTARSHIP hStarShip;
 	STARSHIPPTR StarShipPtr;
+	FleetShipIndex fleetShipIndex;
 	int CurIndex;
 
-	CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+	fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
+	CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
 	hStarShip = GetStarShipFromIndex (&master_q, CurIndex);
 	StarShipPtr = LockStarShip (&master_q, hStarShip);
 	if (StarShipPtr)
@@ -1135,7 +1152,7 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 			StarShipPtr->RaceDescPtr->ship_info.ship_cost;
 		UnlockStarShip (&master_q, hStarShip);
 	
-		pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = MELEE_NONE;
+		pMS->TeamImage[pMS->side].ShipList[fleetShipIndex] = MELEE_NONE;
 	}
 	LockMutex (GraphicsLock);
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
@@ -1187,7 +1204,8 @@ DoEdit (PMELEE_STATE pMS)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT | MENU_SOUND_DELETE);
 	if (!pMS->Initialized)
 	{
-		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+		FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
+		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
 		DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
 
 		pMS->Initialized = TRUE;
@@ -1313,7 +1331,10 @@ DoEdit (PMELEE_STATE pMS)
 			if (row == NUM_MELEE_ROWS)
 				pMS->CurIndex = MELEE_NONE;
 			else
-				pMS->CurIndex = pMS->TeamImage[side].ShipList[row][col];
+			{
+				FleetShipIndex fleetShipIndex = GetShipIndex (row, col);
+				pMS->CurIndex = pMS->TeamImage[side].ShipList[fleetShipIndex];
+			}
 			UnlockMutex (GraphicsLock);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
@@ -1353,22 +1374,26 @@ DoPickShip (PMELEE_STATE pMS)
 		}
 		else
 		{
+			FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 			LockMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->Initialized = TRUE;
 			AdvanceCursor (pMS);
-			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
 			UnlockMutex (GraphicsLock);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 		}
 	}
-	else if (PulsedInputState.menu[KEY_MENU_SELECT] || PulsedInputState.menu[KEY_MENU_CANCEL])
+	else if (PulsedInputState.menu[KEY_MENU_SELECT] ||
+			PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
+		FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
 		pMS->InputFunc = 0; /* disable ship flashing */
 
 		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
+			// Add the currently selected ship to the fleet.
 			HSTARSHIP hStarShip;
 			
 			hStarShip = GetStarShipFromIndex (&master_q, pMS->CurIndex);
@@ -1377,7 +1402,7 @@ DoPickShip (PMELEE_STATE pMS)
 					StarShipPtr->RaceDescPtr->ship_info.ship_cost;
 			UnlockStarShip (&master_q, hStarShip);
 
-			pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col] = pMS->CurIndex;
+			pMS->TeamImage[pMS->side].ShipList[index] = pMS->CurIndex;
 			LockMutex (GraphicsLock);
 			DrawTeamString (pMS, DTSHS_REPAIR);
 			DrawShipBox (pMS, FALSE);
@@ -1394,7 +1419,7 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockMutex (GraphicsLock);
 		}
 
-		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[pMS->row][pMS->col];
+		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[index];
 		DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
 
 		pMS->InputFunc = DoEdit;
@@ -1532,11 +1557,12 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 
 	for (i = 0; i < NUM_SIDES; ++i)
 	{
-		COUNT j, side;
+		COUNT side;
 		RECT r;
 		TEXT t;
 		STAMP s;
 		UNICODE buf[30];
+		FleetShipIndex index;
 
 		side = !i;
 
@@ -1574,44 +1600,39 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 		SetContextForeGroundColor (BUILD_COLOR (
 				MAKE_RGB15 (0x4, 0x5, 0x1F), 0x4B));
 		font_DrawText (&t);
-									
-		for (j = 0; j < NUM_MELEE_ROWS; ++j)
+
+		for (index = 0; index < MELEE_FLEET_SIZE; index++)
 		{
-			COUNT k;
+			BYTE StarShip;
 
-			for (k = 0; k < NUM_MELEE_COLUMNS; ++k)
+			StarShip = pMS->TeamImage[i].ShipList[index];
+			if (StarShip != MELEE_NONE)
 			{
-				BYTE StarShip;
+				BYTE row, col;
+				BYTE ship_cost;
+				HSTARSHIP hStarShip, hBuiltShip;
+				STARSHIPPTR StarShipPtr, BuiltShipPtr;
 
-				StarShip = pMS->TeamImage[i].ShipList[j][k];
-				if (StarShip != MELEE_NONE)
-				{
-					BYTE ship_cost;
-					HSTARSHIP hStarShip, hBuiltShip;
-					STARSHIPPTR StarShipPtr, BuiltShipPtr;
+				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+				StarShipPtr = LockStarShip (&master_q, hStarShip);
+				hBuiltShip = Build (&race_q[side], StarShipPtr->RaceResIndex,
+						1 << side, NameCaptain (&race_q[side], StarShipPtr));
+				row = GetShipRow (index);
+				col = GetShipColumn (index);
+				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);
+				s.origin.y = 10 + ((ICON_HEIGHT + 2) * row);
+				s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+				DrawStamp (&s);
+				ship_cost = StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+				UnlockStarShip (&master_q, hStarShip);
 
-					hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-					StarShipPtr = LockStarShip (&master_q, hStarShip);
-					hBuiltShip = Build (&race_q[side],
-							StarShipPtr->RaceResIndex,
-							1 << side,
-							NameCaptain (&race_q[side], StarShipPtr));
-					s.origin.x = 4 + ((ICON_WIDTH + 2) * k);
-					s.origin.y = 10 + ((ICON_HEIGHT + 2) * j);
-					s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
-					DrawStamp (&s);
-					ship_cost = StarShipPtr->RaceDescPtr->
-							ship_info.ship_cost;
-					UnlockStarShip (&master_q, hStarShip);
-
-					BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
-					BuiltShipPtr->ShipFacing = (j * NUM_MELEE_COLUMNS) + k;
-					BuiltShipPtr->special_counter = ship_cost;
-					BuiltShipPtr->captains_name_index =
-							StarShipCaptain (BuiltShipPtr);
-					BuiltShipPtr->RaceDescPtr = StarShipPtr->RaceDescPtr;
-					UnlockStarShip (&race_q[side], hBuiltShip);
-				}
+				BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
+				BuiltShipPtr->ShipFacing = index;
+				BuiltShipPtr->special_counter = ship_cost;
+				BuiltShipPtr->captains_name_index =
+						StarShipCaptain (BuiltShipPtr);
+				BuiltShipPtr->RaceDescPtr = StarShipPtr->RaceDescPtr;
+				UnlockStarShip (&race_q[side], hBuiltShip);
 			}
 		}
 	}
@@ -1749,7 +1770,8 @@ DoMelee (PMELEE_STATE pMS)
 						WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
 						SeedRandomNumbers ();
-						load_gravity_well ((BYTE)((COUNT)TFB_Random () % NUMBER_OF_PLANET_TYPES));
+						load_gravity_well ((BYTE)((COUNT)TFB_Random () %
+									NUMBER_OF_PLANET_TYPES));
 						Battle ();
 						free_gravity_well ();
 
@@ -1790,9 +1812,11 @@ DoMelee (PMELEE_STATE pMS)
 
 					which_side = pMS->MeleeOption == CONTROLS_TOP ? 1 : 0;
 					if (PlayerControl[which_side] & HUMAN_CONTROL)
-						PlayerControl[which_side] = COMPUTER_CONTROL | STANDARD_RATING;
+						PlayerControl[which_side] =
+								COMPUTER_CONTROL | STANDARD_RATING;
 					else if (PlayerControl[which_side] & AWESOME_RATING)
-						PlayerControl[which_side] = HUMAN_CONTROL | STANDARD_RATING;
+						PlayerControl[which_side] =
+								HUMAN_CONTROL | STANDARD_RATING;
 					else
 						PlayerControl[which_side] = ((
 								PlayerControl[which_side]
@@ -1812,275 +1836,269 @@ DoMelee (PMELEE_STATE pMS)
 static void
 InitPreBuilt (PMELEE_STATE pMS)
 {
-	utf8StringCopy (pMS->PreBuiltList[0].TeamName,
-			sizeof (pMS->PreBuiltList[0].TeamName),
-			GAME_STRING (MELEE_STRING_BASE + 4));
-	pMS->PreBuiltList[0].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[0].ShipList[0][1] = MELEE_CHMMR;
-	pMS->PreBuiltList[0].ShipList[0][2] = MELEE_DRUUGE;
-	pMS->PreBuiltList[0].ShipList[0][3] = MELEE_URQUAN;
-	pMS->PreBuiltList[0].ShipList[0][4] = MELEE_MELNORME;
-	pMS->PreBuiltList[0].ShipList[0][5] = MELEE_ORZ;
-	pMS->PreBuiltList[0].ShipList[0][6] = MELEE_SPATHI;
-	pMS->PreBuiltList[0].ShipList[1][0] = MELEE_SYREEN;
-	pMS->PreBuiltList[0].ShipList[1][1] = MELEE_UTWIG;
-	pMS->PreBuiltList[0].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[0].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[0].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[0].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[0].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex shipI = 0;
+		int fleetI;
 
-	utf8StringCopy (pMS->PreBuiltList[1].TeamName,
-			sizeof (pMS->PreBuiltList[1].TeamName),
-			GAME_STRING (MELEE_STRING_BASE + 5));
-	pMS->PreBuiltList[1].ShipList[0][0] = MELEE_ARILOU;
-	pMS->PreBuiltList[1].ShipList[0][1] = MELEE_CHENJESU;
-	pMS->PreBuiltList[1].ShipList[0][2] = MELEE_EARTHLING;
-	pMS->PreBuiltList[1].ShipList[0][3] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[1].ShipList[0][4] = MELEE_MYCON;
-	pMS->PreBuiltList[1].ShipList[0][5] = MELEE_YEHAT;
-	pMS->PreBuiltList[1].ShipList[0][6] = MELEE_PKUNK;
-	pMS->PreBuiltList[1].ShipList[1][0] = MELEE_SUPOX;
-	pMS->PreBuiltList[1].ShipList[1][1] = MELEE_THRADDASH;
-	pMS->PreBuiltList[1].ShipList[1][2] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[1].ShipList[1][3] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[1].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[1].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[1].ShipList[1][6] = MELEE_NONE;
+		for (fleetI = 0; fleetI < NUM_PREBUILT; fleetI++)
+			for (shipI = 0; shipI < MELEE_FLEET_SIZE; shipI++)
+				pMS->PreBuiltList[fleetI].ShipList[shipI] = MELEE_NONE;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[2].TeamName,
-			sizeof (pMS->PreBuiltList[2].TeamName),
-			GAME_STRING (MELEE_STRING_BASE + 6));
-	pMS->PreBuiltList[2].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[2].ShipList[0][1] = MELEE_CHMMR;
-	pMS->PreBuiltList[2].ShipList[0][2] = MELEE_DRUUGE;
-	pMS->PreBuiltList[2].ShipList[0][3] = MELEE_MELNORME;
-	pMS->PreBuiltList[2].ShipList[0][4] = MELEE_EARTHLING;
-	pMS->PreBuiltList[2].ShipList[0][5] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[2].ShipList[0][6] = MELEE_SUPOX;
-	pMS->PreBuiltList[2].ShipList[1][0] = MELEE_ORZ;
-	pMS->PreBuiltList[2].ShipList[1][1] = MELEE_SPATHI;
-	pMS->PreBuiltList[2].ShipList[1][2] = MELEE_ILWRATH;
-	pMS->PreBuiltList[2].ShipList[1][3] = MELEE_VUX;
-	pMS->PreBuiltList[2].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[2].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[2].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[0].TeamName,
+				sizeof (pMS->PreBuiltList[0].TeamName),
+				GAME_STRING (MELEE_STRING_BASE + 4));
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_SPATHI;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_SYREEN;
+		pMS->PreBuiltList[0].ShipList[i++] = MELEE_UTWIG;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[3].TeamName,
-			sizeof (pMS->PreBuiltList[3].TeamName),
-			GAME_STRING (MELEE_STRING_BASE + 7));
-	pMS->PreBuiltList[3].ShipList[0][0] = MELEE_CHENJESU;
-	pMS->PreBuiltList[3].ShipList[0][1] = MELEE_CHENJESU;
-	pMS->PreBuiltList[3].ShipList[0][2] = MELEE_CHMMR;
-	pMS->PreBuiltList[3].ShipList[0][3] = MELEE_CHMMR;
-	pMS->PreBuiltList[3].ShipList[0][4] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[3].ShipList[0][5] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[3].ShipList[0][6] = MELEE_URQUAN;
-	pMS->PreBuiltList[3].ShipList[1][0] = MELEE_URQUAN;
-	pMS->PreBuiltList[3].ShipList[1][1] = MELEE_UTWIG;
-	pMS->PreBuiltList[3].ShipList[1][2] = MELEE_UTWIG;
-	pMS->PreBuiltList[3].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[3].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[3].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[3].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[1].TeamName,
+				sizeof (pMS->PreBuiltList[1].TeamName),
+				GAME_STRING (MELEE_STRING_BASE + 5));
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_ARILOU;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_YEHAT;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_THRADDASH;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[1].ShipList[i++] = MELEE_SHOFIXTI;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[4].TeamName,
-			sizeof (pMS->PreBuiltList[4].TeamName),
-			GAME_STRING (MELEE_STRING_BASE + 8));
-	pMS->PreBuiltList[4].ShipList[0][0] = MELEE_URQUAN;
-	pMS->PreBuiltList[4].ShipList[0][1] = MELEE_CHENJESU;
-	pMS->PreBuiltList[4].ShipList[0][2] = MELEE_MYCON;
-	pMS->PreBuiltList[4].ShipList[0][3] = MELEE_SYREEN;
-	pMS->PreBuiltList[4].ShipList[0][4] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[4].ShipList[0][5] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[4].ShipList[0][6] = MELEE_EARTHLING;
-	pMS->PreBuiltList[4].ShipList[1][0] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[4].ShipList[1][1] = MELEE_MELNORME;
-	pMS->PreBuiltList[4].ShipList[1][2] = MELEE_DRUUGE;
-	pMS->PreBuiltList[4].ShipList[1][3] = MELEE_PKUNK;
-	pMS->PreBuiltList[4].ShipList[1][4] = MELEE_ORZ;
-	pMS->PreBuiltList[4].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[4].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[2].TeamName,
+				sizeof (pMS->PreBuiltList[2].TeamName),
+				GAME_STRING (MELEE_STRING_BASE + 6));
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_SPATHI;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_ILWRATH;
+		pMS->PreBuiltList[2].ShipList[i++] = MELEE_VUX;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[5].TeamName,
-			sizeof (pMS->PreBuiltList[5].TeamName),
-			"Ford's Fighters");
-	pMS->PreBuiltList[5].ShipList[0][0] = MELEE_CHMMR;
-	pMS->PreBuiltList[5].ShipList[0][1] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[5].ShipList[0][2] = MELEE_MELNORME;
-	pMS->PreBuiltList[5].ShipList[0][3] = MELEE_SUPOX;
-	pMS->PreBuiltList[5].ShipList[0][4] = MELEE_UTWIG;
-	pMS->PreBuiltList[5].ShipList[0][5] = MELEE_UMGAH;
-	pMS->PreBuiltList[5].ShipList[0][6] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][0] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][1] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[5].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[3].TeamName,
+				sizeof (pMS->PreBuiltList[3].TeamName),
+				GAME_STRING (MELEE_STRING_BASE + 7));
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_UTWIG;
+		pMS->PreBuiltList[3].ShipList[i++] = MELEE_UTWIG;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[6].TeamName,
-			sizeof (pMS->PreBuiltList[6].TeamName),
-			"Leyland's Lashers");
-	pMS->PreBuiltList[6].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[6].ShipList[0][1] = MELEE_EARTHLING;
-	pMS->PreBuiltList[6].ShipList[0][2] = MELEE_MYCON;
-	pMS->PreBuiltList[6].ShipList[0][3] = MELEE_ORZ;
-	pMS->PreBuiltList[6].ShipList[0][4] = MELEE_URQUAN;
-	pMS->PreBuiltList[6].ShipList[0][5] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[0][6] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][0] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][1] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[6].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[4].TeamName,
+				sizeof (pMS->PreBuiltList[4].TeamName),
+				GAME_STRING (MELEE_STRING_BASE + 8));
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_SYREEN;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_SHOFIXTI;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[4].ShipList[i++] = MELEE_ORZ;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[7].TeamName,
-			sizeof (pMS->PreBuiltList[7].TeamName),
-			"The Gregorizers 200");
-	pMS->PreBuiltList[7].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[7].ShipList[0][1] = MELEE_CHMMR;
-	pMS->PreBuiltList[7].ShipList[0][2] = MELEE_DRUUGE;
-	pMS->PreBuiltList[7].ShipList[0][3] = MELEE_MELNORME;
-	pMS->PreBuiltList[7].ShipList[0][4] = MELEE_EARTHLING;
-	pMS->PreBuiltList[7].ShipList[0][5] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[7].ShipList[0][6] = MELEE_SUPOX;
-	pMS->PreBuiltList[7].ShipList[1][0] = MELEE_ORZ;
-	pMS->PreBuiltList[7].ShipList[1][1] = MELEE_PKUNK;
-	pMS->PreBuiltList[7].ShipList[1][2] = MELEE_SPATHI;
-	pMS->PreBuiltList[7].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[7].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[7].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[7].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[5].TeamName,
+				sizeof (pMS->PreBuiltList[5].TeamName),
+				"Ford's Fighters");
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_UTWIG;
+		pMS->PreBuiltList[5].ShipList[i++] = MELEE_UMGAH;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[8].TeamName,
-			sizeof (pMS->PreBuiltList[8].TeamName),
-			"300 point Armada!");
-	pMS->PreBuiltList[8].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[8].ShipList[0][1] = MELEE_CHMMR;
-	pMS->PreBuiltList[8].ShipList[0][2] = MELEE_CHENJESU;
-	pMS->PreBuiltList[8].ShipList[0][3] = MELEE_DRUUGE;
-	pMS->PreBuiltList[8].ShipList[0][4] = MELEE_EARTHLING;
-	pMS->PreBuiltList[8].ShipList[0][5] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[8].ShipList[0][6] = MELEE_MELNORME;
-	pMS->PreBuiltList[8].ShipList[1][0] = MELEE_MYCON;
-	pMS->PreBuiltList[8].ShipList[1][1] = MELEE_ORZ;
-	pMS->PreBuiltList[8].ShipList[1][2] = MELEE_PKUNK;
-	pMS->PreBuiltList[8].ShipList[1][3] = MELEE_SPATHI;
-	pMS->PreBuiltList[8].ShipList[1][4] = MELEE_SUPOX;
-	pMS->PreBuiltList[8].ShipList[1][5] = MELEE_URQUAN;
-	pMS->PreBuiltList[8].ShipList[1][6] = MELEE_YEHAT;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[6].TeamName,
+				sizeof (pMS->PreBuiltList[6].TeamName),
+				"Leyland's Lashers");
+		pMS->PreBuiltList[6].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[6].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[6].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[6].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[6].ShipList[i++] = MELEE_URQUAN;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[9].TeamName,
-			sizeof (pMS->PreBuiltList[9].TeamName),
-			"Little Dudes with Attitudes");
-	pMS->PreBuiltList[9].ShipList[0][0] = MELEE_UMGAH;
-	pMS->PreBuiltList[9].ShipList[0][1] = MELEE_THRADDASH;
-	pMS->PreBuiltList[9].ShipList[0][2] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[9].ShipList[0][3] = MELEE_EARTHLING;
-	pMS->PreBuiltList[9].ShipList[0][4] = MELEE_VUX;
-	pMS->PreBuiltList[9].ShipList[0][5] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[9].ShipList[0][6] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][0] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][1] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[9].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[7].TeamName,
+				sizeof (pMS->PreBuiltList[7].TeamName),
+				"The Gregorizers 200");
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[7].ShipList[i++] = MELEE_SPATHI;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[10].TeamName,
-			sizeof (pMS->PreBuiltList[10].TeamName),
-			"New Alliance Ships");
-	pMS->PreBuiltList[10].ShipList[0][0] = MELEE_ARILOU;
-	pMS->PreBuiltList[10].ShipList[0][1] = MELEE_CHMMR;
-	pMS->PreBuiltList[10].ShipList[0][2] = MELEE_EARTHLING;
-	pMS->PreBuiltList[10].ShipList[0][3] = MELEE_ORZ;
-	pMS->PreBuiltList[10].ShipList[0][4] = MELEE_PKUNK;
-	pMS->PreBuiltList[10].ShipList[0][5] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[10].ShipList[0][6] = MELEE_SUPOX;
-	pMS->PreBuiltList[10].ShipList[1][0] = MELEE_SYREEN;
-	pMS->PreBuiltList[10].ShipList[1][1] = MELEE_UTWIG;
-	pMS->PreBuiltList[10].ShipList[1][2] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[10].ShipList[1][3] = MELEE_YEHAT;
-	pMS->PreBuiltList[10].ShipList[1][4] = MELEE_DRUUGE;
-	pMS->PreBuiltList[10].ShipList[1][5] = MELEE_THRADDASH;
-	pMS->PreBuiltList[10].ShipList[1][6] = MELEE_SPATHI;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[8].TeamName,
+				sizeof (pMS->PreBuiltList[8].TeamName),
+				"300 point Armada!");
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_SPATHI;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[8].ShipList[i++] = MELEE_YEHAT;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[11].TeamName,
-			sizeof (pMS->PreBuiltList[11].TeamName),
-			"Old Alliance Ships");
-	pMS->PreBuiltList[11].ShipList[0][0] = MELEE_ARILOU;
-	pMS->PreBuiltList[11].ShipList[0][1] = MELEE_CHENJESU;
-	pMS->PreBuiltList[11].ShipList[0][2] = MELEE_EARTHLING;
-	pMS->PreBuiltList[11].ShipList[0][3] = MELEE_MMRNMHRM;
-	pMS->PreBuiltList[11].ShipList[0][4] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[11].ShipList[0][5] = MELEE_SYREEN;
-	pMS->PreBuiltList[11].ShipList[0][6] = MELEE_YEHAT;
-	pMS->PreBuiltList[11].ShipList[1][0] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][1] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[11].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[9].TeamName,
+				sizeof (pMS->PreBuiltList[9].TeamName),
+				"Little Dudes with Attitudes");
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_UMGAH;
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_THRADDASH;
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_SHOFIXTI;
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_VUX;
+		pMS->PreBuiltList[9].ShipList[i++] = MELEE_ZOQFOTPIK;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[12].TeamName,
-			sizeof (pMS->PreBuiltList[12].TeamName),
-			"Old Hierarchy Ships");
-	pMS->PreBuiltList[12].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[12].ShipList[0][1] = MELEE_ILWRATH;
-	pMS->PreBuiltList[12].ShipList[0][2] = MELEE_MYCON;
-	pMS->PreBuiltList[12].ShipList[0][3] = MELEE_SPATHI;
-	pMS->PreBuiltList[12].ShipList[0][4] = MELEE_UMGAH;
-	pMS->PreBuiltList[12].ShipList[0][5] = MELEE_URQUAN;
-	pMS->PreBuiltList[12].ShipList[0][6] = MELEE_VUX;
-	pMS->PreBuiltList[12].ShipList[1][0] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][1] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][2] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][3] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][4] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][5] = MELEE_NONE;
-	pMS->PreBuiltList[12].ShipList[1][6] = MELEE_NONE;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[10].TeamName,
+				sizeof (pMS->PreBuiltList[10].TeamName),
+				"New Alliance Ships");
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_ARILOU;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_SHOFIXTI;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_SYREEN;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_UTWIG;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_YEHAT;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_THRADDASH;
+		pMS->PreBuiltList[10].ShipList[i++] = MELEE_SPATHI;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[13].TeamName,
-			sizeof (pMS->PreBuiltList[13].TeamName),
-			"Star Control 1");
-	pMS->PreBuiltList[13].ShipList[0][0] = MELEE_ANDROSYNTH;
-	pMS->PreBuiltList[13].ShipList[0][1] = MELEE_ARILOU;
-	pMS->PreBuiltList[13].ShipList[0][2] = MELEE_CHENJESU;
-	pMS->PreBuiltList[13].ShipList[0][3] = MELEE_EARTHLING;
-	pMS->PreBuiltList[13].ShipList[0][4] = MELEE_ILWRATH;
-	pMS->PreBuiltList[13].ShipList[0][5] = MELEE_MMRNMHRM;
-	pMS->PreBuiltList[13].ShipList[0][6] = MELEE_MYCON;
-	pMS->PreBuiltList[13].ShipList[1][0] = MELEE_SHOFIXTI;
-	pMS->PreBuiltList[13].ShipList[1][1] = MELEE_SPATHI;
-	pMS->PreBuiltList[13].ShipList[1][2] = MELEE_SYREEN;
-	pMS->PreBuiltList[13].ShipList[1][3] = MELEE_UMGAH;
-	pMS->PreBuiltList[13].ShipList[1][4] = MELEE_URQUAN;
-	pMS->PreBuiltList[13].ShipList[1][5] = MELEE_VUX;
-	pMS->PreBuiltList[13].ShipList[1][6] = MELEE_YEHAT;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[11].TeamName,
+				sizeof (pMS->PreBuiltList[11].TeamName),
+				"Old Alliance Ships");
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_ARILOU;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_MMRNMHRM;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_SHOFIXTI;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_SYREEN;
+		pMS->PreBuiltList[11].ShipList[i++] = MELEE_YEHAT;
+	}
 
-	utf8StringCopy (pMS->PreBuiltList[14].TeamName,
-			sizeof (pMS->PreBuiltList[14].TeamName),
-			"Star Control 2");
-	pMS->PreBuiltList[14].ShipList[0][0] = MELEE_CHMMR;
-	pMS->PreBuiltList[14].ShipList[0][1] = MELEE_DRUUGE;
-	pMS->PreBuiltList[14].ShipList[0][2] = MELEE_KOHR_AH;
-	pMS->PreBuiltList[14].ShipList[0][3] = MELEE_MELNORME;
-	pMS->PreBuiltList[14].ShipList[0][4] = MELEE_ORZ;
-	pMS->PreBuiltList[14].ShipList[0][5] = MELEE_PKUNK;
-	pMS->PreBuiltList[14].ShipList[0][6] = MELEE_SLYLANDRO;
-	pMS->PreBuiltList[14].ShipList[1][0] = MELEE_SUPOX;
-	pMS->PreBuiltList[14].ShipList[1][1] = MELEE_THRADDASH;
-	pMS->PreBuiltList[14].ShipList[1][2] = MELEE_UTWIG;
-	pMS->PreBuiltList[14].ShipList[1][3] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[14].ShipList[1][4] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[14].ShipList[1][5] = MELEE_ZOQFOTPIK;
-	pMS->PreBuiltList[14].ShipList[1][6] = MELEE_ZOQFOTPIK;
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[12].TeamName,
+				sizeof (pMS->PreBuiltList[12].TeamName),
+				"Old Hierarchy Ships");
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_ILWRATH;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_SPATHI;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_UMGAH;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[12].ShipList[i++] = MELEE_VUX;
+	}
+
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[13].TeamName,
+				sizeof (pMS->PreBuiltList[13].TeamName),
+				"Star Control 1");
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_ANDROSYNTH;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_ARILOU;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_CHENJESU;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_EARTHLING;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_ILWRATH;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_MMRNMHRM;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_MYCON;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_SHOFIXTI;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_SPATHI;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_SYREEN;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_UMGAH;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_URQUAN;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_VUX;
+		pMS->PreBuiltList[13].ShipList[i++] = MELEE_YEHAT;
+	}
+
+	{
+		FleetShipIndex i = 0;
+		utf8StringCopy (pMS->PreBuiltList[14].TeamName,
+				sizeof (pMS->PreBuiltList[14].TeamName),
+				"Star Control 2");
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_CHMMR;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_DRUUGE;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_KOHR_AH;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_MELNORME;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_ORZ;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_PKUNK;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_SLYLANDRO;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_SUPOX;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_THRADDASH;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_UTWIG;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_ZOQFOTPIK;
+		pMS->PreBuiltList[14].ShipList[i++] = MELEE_ZOQFOTPIK;
+	}
 }
 
 void

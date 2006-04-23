@@ -62,6 +62,7 @@ enum
 #define NUM_MELEE_ROWS 2
 #define NUM_MELEE_COLUMNS 7
 //#define NUM_MELEE_COLUMNS 6
+#define MELEE_FLEET_SIZE (NUM_MELEE_ROWS * NUM_MELEE_COLUMNS)
 #define ICON_WIDTH 16
 #define ICON_HEIGHT 16
 
@@ -76,10 +77,11 @@ extern FRAME PickMeleeFrame;
 #define NUM_PICK_ROWS 5
 
 typedef BYTE MELEE_OPTIONS;
+typedef COUNT FleetShipIndex;
 
 typedef struct
 {
-	BYTE ShipList[NUM_MELEE_ROWS][NUM_MELEE_COLUMNS];
+	BYTE ShipList[MELEE_FLEET_SIZE];
 	UNICODE TeamName[MAX_TEAM_CHARS + 25]; /* in case default names in starcon.txt
 												   are unknowingly mangled */
 } TEAM_IMAGE;
