@@ -1,4 +1,7 @@
 Changes towards version 0.6:
+- One pixel fix in melee menu pictures. - SvdB
+- Debugging function to add energy during battle. - SvdB
+- Changed slaveshield throb rate to match the 3DO - SvdB
 - Fixed recently introduced bug with crew count on exit to HyperSpace.
   (bug #875) - SvdB
 - Fixed static vars not reinited in alien comm code (caused various
