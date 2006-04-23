@@ -616,7 +616,7 @@ CreateShieldMask (void)
 // SetShieldThrobEffect adjusts the red levels in the shield glow graphic
 //  the throbbing cycle MUST be == 0 (mod MAP_WIDTH), or it will go
 //  out of sync with RenderLevelMasks()
-#define SHIELD_THROBS 6
+#define SHIELD_THROBS 12
 		// throb cycles per revolution
 #define THROB_CYCLE      ((MAP_WIDTH << 8) / SHIELD_THROBS)
 #define THROB_HALF_CYCLE (THROB_CYCLE >> 1)
