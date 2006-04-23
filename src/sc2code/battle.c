@@ -33,17 +33,55 @@ QUEUE disp_q;
 SIZE battle_counter;
 BOOLEAN instantVictory;
 
+static BOOLEAN
+RunAwayAllowed (void)
+{
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
+			|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
+			&& GET_GAME_STATE (STARBASE_AVAILABLE)
+			&& !GET_GAME_STATE (BOMB_CARRIER);
+}
+
+static void
+DoRunAway (STARSHIPPTR StarShipPtr)
+{
+	ELEMENTPTR ElementPtr;
+
+	LockElement (StarShipPtr->hShip, &ElementPtr);
+	if (GetPrimType (&DisplayArray[ElementPtr->PrimIndex]) == STAMP_PRIM
+			&& ElementPtr->life_span == NORMAL_LIFE
+			&& !(ElementPtr->state_flags & FINITE_LIFE)
+			&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
+			&& !(ElementPtr->state_flags & APPEARING))
+	{
+		extern void flee_preprocess (PELEMENT);
+
+		battle_counter -= MAKE_WORD (1, 0);
+
+		ElementPtr->turn_wait = 3;
+		ElementPtr->thrust_wait = MAKE_BYTE (4, 0);
+		ElementPtr->preprocess_func = flee_preprocess;
+		ElementPtr->mass_points = MAX_SHIP_MASS * 10;
+		ZeroVelocityComponents (&ElementPtr->velocity);
+		StarShipPtr->cur_status_flags &=
+				~(SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
+
+		SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
+				BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
+		SetPrimType (&DisplayArray[ElementPtr->PrimIndex], STAMPFILL_PRIM);
+	
+		CyborgDescPtr->ship_input_state = 0;
+	}
+	UnlockElement (StarShipPtr->hShip);
+}
+
 static void
 ProcessInput (void)
 {
 	BOOLEAN CanRunAway;
 
-	CanRunAway = (BOOLEAN)(
-			(LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
-			|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-			&& GET_GAME_STATE (STARBASE_AVAILABLE)
-			&& !GET_GAME_STATE (BOMB_CARRIER)
-			);
+	CanRunAway = RunAwayAllowed ();
+		
 	for (cur_player = NUM_SIDES - 1; cur_player >= 0; --cur_player)
 	{
 		HSTARSHIP hBattleShip, hNextShip;
@@ -83,39 +121,7 @@ ProcessInput (void)
 
 					if (CanRunAway && cur_player == 0 &&
 							(InputState & BATTLE_ESCAPE))
-					{
-						ELEMENTPTR ElementPtr;
-
-						LockElement (StarShipPtr->hShip, &ElementPtr);
-						if (GetPrimType (&DisplayArray[
-								ElementPtr->PrimIndex]) == STAMP_PRIM
-								&& ElementPtr->life_span == NORMAL_LIFE
-								&& !(ElementPtr->state_flags & FINITE_LIFE)
-								&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
-								&& !(ElementPtr->state_flags & APPEARING))
-						{
-							extern void flee_preprocess (PELEMENT);
-
-							battle_counter -= MAKE_WORD (1, 0);
-
-							ElementPtr->turn_wait = 3;
-							ElementPtr->thrust_wait = MAKE_BYTE (4, 0);
-							ElementPtr->preprocess_func = flee_preprocess;
-							ElementPtr->mass_points = MAX_SHIP_MASS * 10;
-							ZeroVelocityComponents (&ElementPtr->velocity);
-							StarShipPtr->cur_status_flags &=
-									~(SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
-
-							SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
-									BUILD_COLOR (
-									MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
-							SetPrimType (&DisplayArray[
-									ElementPtr->PrimIndex], STAMPFILL_PRIM);
-						
-							CyborgDescPtr->ship_input_state = 0;
-						}
-						UnlockElement (StarShipPtr->hShip);
-					}
+						DoRunAway (StarShipPtr);
 				}
 			}
 

@@ -838,16 +838,13 @@ DoMissions (void)
 		SHIP_FRAGMENTPTR StarShipPtr;
 
 		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
 		if (StarShipPtr->ShipInfo.crew_level)
 			spawn_ip_group (StarShipPtr);
 
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 

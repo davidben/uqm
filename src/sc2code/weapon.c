@@ -130,11 +130,8 @@ initialize_missile (PMISSILE_BLOCK pMissileBlock)
 }
 
 HELEMENT
-weapon_collision (PELEMENT
-		WeaponElementPtr, PPOINT
-		pWPt, PELEMENT
-		HitElementPtr, PPOINT
-		pHPt)
+weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
+		PELEMENT HitElementPtr, PPOINT pHPt)
 {
 	SIZE damage;
 	HELEMENT hBlastElement;
@@ -202,21 +199,19 @@ weapon_collision (PELEMENT
 			if ((blast_offs = WeaponElementPtr->blast_offset) > 0)
 			{
 				BlastElementPtr->current.location.x +=
-						COSINE (angle,
-						DISPLAY_TO_WORLD (blast_offs));
+						COSINE (angle, DISPLAY_TO_WORLD (blast_offs));
 				BlastElementPtr->current.location.y +=
-						SINE (angle,
-						DISPLAY_TO_WORLD (blast_offs));
+						SINE (angle, DISPLAY_TO_WORLD (blast_offs));
 			}
 
-			blast_index = NORMALIZE_FACING (
-					ANGLE_TO_FACING (angle + HALF_CIRCLE)
-					);
-			blast_index = ((blast_index >> 2) << 1) + (blast_index & 0x3 ? 1 : 0);
+			blast_index = 
+					NORMALIZE_FACING (ANGLE_TO_FACING (angle + HALF_CIRCLE));
+			blast_index = ((blast_index >> 2) << 1) +
+					(blast_index & 0x3 ? 1 : 0);
 
-			if ((num_blast_frames =
-					GetFrameCount (WeaponElementPtr->next.image.frame)) <=
-					ANGLE_TO_FACING (FULL_CIRCLE))
+			num_blast_frames =
+					GetFrameCount (WeaponElementPtr->next.image.frame);
+			if (num_blast_frames <= ANGLE_TO_FACING (FULL_CIRCLE))
 			{
 				BlastElementPtr->life_span = 2;
 				BlastElementPtr->current.image.farray = blast;

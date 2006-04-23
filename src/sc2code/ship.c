@@ -268,9 +268,7 @@ ship_preprocess (PELEMENT ElementPtr)
 		if (!OBJECT_CLOAKED (ElementPtr)
 				&& LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER)
 		{
-			extern void spawn_ion_trail
-					(PELEMENT
-					ElementPtr);
+			extern void spawn_ion_trail (PELEMENT ElementPtr);
 
 			spawn_ion_trail (ElementPtr);
 		}

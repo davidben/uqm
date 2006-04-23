@@ -133,8 +133,7 @@ pump_up_preprocess (PELEMENT ElementPtr)
 		}
 
 		ElementPtr->next.image.frame = SetAbsFrameIndex (
-				ElementPtr->current.image.frame, frame_index
-				);
+				ElementPtr->current.image.frame, frame_index);
 
 		ElementPtr->state_flags |= CHANGING;
 	}
@@ -178,10 +177,10 @@ pump_up_postprocess (PELEMENT ElementPtr)
 			{
 				++EPtr->turn_wait;
 				EPtr->current.image.frame = SetRelFrameIndex (
-						EPtr->current.image.frame, NUM_PUMP_ANIMS
-						);
+						EPtr->current.image.frame, NUM_PUMP_ANIMS);
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), EPtr);
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2),
+						EPtr);
 			}
 			EPtr->thrust_wait = LEVEL_COUNTER;
 		}
@@ -210,12 +209,10 @@ pump_up_postprocess (PELEMENT ElementPtr)
 			}
 
 			EPtr->current.image.frame = SetAbsFrameIndex (
-					EPtr->current.image.frame, frame_index
-					);
+					EPtr->current.image.frame, frame_index);
 		}
 
-		if (StarShipPtr->cur_status_flags
-				& StarShipPtr->old_status_flags
+		if (StarShipPtr->cur_status_flags & StarShipPtr->old_status_flags
 				& WEAPON)
 		{
 			StarShipPtr->weapon_counter = WEAPON_WAIT;
@@ -240,10 +237,8 @@ pump_up_postprocess (PELEMENT ElementPtr)
 		UnlockElement (hPumpUp);
 		PutElement (hPumpUp);
 
-		SetPrimType (
-				&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
-				NO_PRIM
-				);
+		SetPrimType (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
+				NO_PRIM);
 		ElementPtr->state_flags |= NONSOLID;
 	}
 }
@@ -345,8 +340,7 @@ confuse_preprocess (PELEMENT ElementPtr)
 	{
 		ElementPtr->next.image.frame = SetAbsFrameIndex (
 				ElementPtr->current.image.frame,
-				(GetFrameIndex (ElementPtr->current.image.frame) + 1) & 7
-				);
+				(GetFrameIndex (ElementPtr->current.image.frame) + 1) & 7);
 		ElementPtr->state_flags |= CHANGING;
 	}
 	else if (ElementPtr->hTarget == 0)
@@ -388,10 +382,8 @@ confuse_preprocess (PELEMENT ElementPtr)
 				eptr->life_span = 1;
 				eptr->current = eptr->next = ElementPtr->next;
 				eptr->preprocess_func = confuse_preprocess;
-				SetPrimType (
-						&(GLOBAL (DisplayArray))[eptr->PrimIndex],
-						STAMP_PRIM
-						);
+				SetPrimType (&(GLOBAL (DisplayArray))[eptr->PrimIndex],
+						STAMP_PRIM);
 
 				GetElementStarShip (ElementPtr, &StarShipPtr);
 				SetElementStarShip (eptr, StarShipPtr);
