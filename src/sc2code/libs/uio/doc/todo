@@ -46,6 +46,8 @@ Bugs:
   component does not exist, even when O_RDONLY is used.
   For O_RDRW, O_CREAT should probably be checked too (function description
   needs to be updated too then).
+- A lot of inlining is not possible because of the order of function
+  definitions.
 
 Extra features (not necessary for UQM):
 - Make functions to use for uio_malloc, uio_free and uio_realloc
