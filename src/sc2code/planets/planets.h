@@ -150,9 +150,7 @@ typedef struct planet_orbit
 			// data is signed for planets other than gas giants
 			// transformed to light variance map for 3d planet
 	FRAME PlanetFrameArray;
-			// cached rotating 3d planet frames
-	BYTE *isPFADefined;
-			// cached frames 'present' flags
+			// rotating 3d planet frames (current and next)
 	FRAME ObjectFrame;
 			// any extra planetary object (shield, atmo, rings)
 			// automatically drawn if present

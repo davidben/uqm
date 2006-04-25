@@ -60,7 +60,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 	int base = GSCALE_IDENTITY;
 
 	num_frames = 1;
-	pFrame[0] = SetAbsFrameIndex (Orbit->PlanetFrameArray, (COUNT)(x + 1));
+	pFrame[0] = Orbit->PlanetFrameArray;
 	if (Orbit->ObjectFrame)
 	{
 		pFrame[1] = Orbit->ObjectFrame;
@@ -116,6 +116,8 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 		return zoomr;
 	}
 	return NULL;
+
+	(void)x; // unused param
 }
 
 void

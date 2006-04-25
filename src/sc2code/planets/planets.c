@@ -242,8 +242,6 @@ FreePlanet (void)
 	DestroyDrawable (ReleaseDrawable (Orbit->PlanetFrameArray));
 	Orbit->PlanetFrameArray = 0;
 
-	HFree (Orbit->isPFADefined);
-	Orbit->isPFADefined = 0;
 	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
 	Orbit->TintFrame = 0;
 	pSolarSysState->Tint_rgb = 0;
