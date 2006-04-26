@@ -115,7 +115,7 @@ Alist_New_FromFile (uio_Stream *f)
 		return NULL;
 	}
 
-	ReadResFile (data, 1, flen, f);
+	flen = ReadResFile (data, 1, flen, f);
 	data[flen] = '\0';
 
 	m = Alist_New_FromString (data);
@@ -161,12 +161,12 @@ Alist_New_FromString (char *d)
 		while ((i < len) && (d[i] != '=') &&
 		       (d[i] != '\n') && (d[i] != '#')) i++;
 		if (i >= len) {  /* Bare key at EOF */
-			fprintf (stderr, "Warning: Bare keyword at EOF");
+			fprintf (stderr, "Warning: Bare keyword at EOF\n");
 			break;
 		}
 		/* Comments here mean incomplete line too */
 		if (d[i] != '=') {
-			fprintf (stderr, "Warning: Key without value");
+			fprintf (stderr, "Warning: Key without value\n");
 			while ((i < len) && (d[i] != '\n')) i++;
 			if (i >= len) break;
 			continue; /* Back to keyword search */
