@@ -329,7 +329,7 @@ main (int argc, char *argv[])
 		PlayerTwo = res_GetInteger ("config.player2control");
 		if (PlayerTwo >= NUM_TEMPLATES)
 		{
-			fprintf (stderr, "Illegal control template '%d' for Player Two.\n", PlayerOne);
+			fprintf (stderr, "Illegal control template '%d' for Player Two.\n", PlayerTwo);
 			PlayerTwo = CONTROL_TEMPLATE_KB_2;
 		}
 	}
