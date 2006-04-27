@@ -25,7 +25,7 @@
 extern void log_init (int max_lines);
 extern void log_initThreads (void);
 extern int log_exit (int code);
-inline void logged_exit (int code) { exit (log_exit (code)); }
+static inline void logged_exit (int code) { exit (log_exit (code)); }
 extern void logged_abort (void);
 
 extern FILE * log_setOutput (FILE *out);
