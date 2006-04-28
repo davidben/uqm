@@ -17,6 +17,8 @@
 #include "uqmlog.h"
 #include <string.h>
 #include <stdio.h>
+#include <signal.h>
+#include <errno.h>
 #include "libs/threadlib.h"
 
 #ifndef MAX_LOG_ENTRY_SIZE
@@ -34,20 +36,25 @@ static log_Entry queue[MAX_LOG_ENTRIES];
 static log_Entry msgNoThread;
 static char msgBuf[16384];
 
-static int maxLevel = log_Debug;
+static int maxLevel = log_Always;
 static int maxStreamLevel = log_Debug;
 static int maxDisp = 10;
 static int qtotal = 0;
 static int qhead = 0;
 static int qtail = 0;
-static volatile bool noThreadReady = 0;
-static bool forceBox = 0;
+static volatile bool noThreadReady = false;
+static bool showBox = true;
+static bool errorBox = true;
 
 static FILE *streamOut;
 
 static volatile int qlock = 0;
 static Mutex qmutex;
 
+static void (* prevAbortFunc)(int) = SIG_ERR;
+
+static void exitCallback (void);
+static void abortHandler (int);
 static void displayLog (bool isError);
 static void displayBox (const char *title, bool isError, const char *msg);
 
@@ -131,6 +138,15 @@ log_init (int max_lines)
 	
 	msgBuf[sizeof (msgBuf) - 1] = '\0';
 	msgNoThread[sizeof (msgNoThread) - 1] = '\0';
+
+	// install exit and abort handlers
+	atexit (exitCallback);
+	prevAbortFunc = signal (SIGABRT, abortHandler);
+	if (prevAbortFunc == SIG_ERR)
+	{
+		fprintf (stderr, "Warning: cannot install SIGABRT handler, code %d\n",
+				errno);
+	}
 }
 
 void
@@ -143,10 +159,7 @@ log_initThreads (void)
 int
 log_exit (int code)
 {
-	if (code != EXIT_SUCCESS)
-		displayLog (true);
-	else if (forceBox)
-		displayLog (false);
+	showBox = false;
 
 	if (qlock)
 	{
@@ -154,14 +167,10 @@ log_exit (int code)
 		DestroyMutex (qmutex);
 	}
 
-	return code;
-}
+	if (prevAbortFunc != SIG_ERR)
+		signal (SIGABRT, prevAbortFunc);
 
-void
-logged_abort (void)
-{
-	log_exit (3);
-	abort ();
+	return code;
 }
 
 void
@@ -240,9 +249,10 @@ log_add_nothread (log_Level level, const char *fmt, ...)
 }
 
 void
-log_forceBox (bool force)
+log_showBox (bool show, bool err)
 {
-	forceBox = force;
+	showBox = show;
+	errorBox = err;
 }
 
 // sets the maximum log lines captured for the final
@@ -263,13 +273,35 @@ log_captureLines (int num)
 }
 
 static void
+exitCallback (void)
+{
+	if (showBox)
+		displayLog (errorBox);
+
+	log_exit (0);
+}
+
+static void
+abortHandler (int sig)
+{
+	if (showBox)
+		displayLog (true);
+
+	if (prevAbortFunc == SIG_ERR || prevAbortFunc == SIG_IGN)
+		; // do nothing
+	else if (prevAbortFunc == SIG_DFL)
+		raise (SIGABRT); // forward to default
+	else
+		prevAbortFunc (sig); // forward directly
+}
+
+static void
 displayLog (bool isError)
 {
 	char *p = msgBuf;
 	int left = sizeof (msgBuf) - 1;
 	int len;
-
-	queueNonThreaded ();
+	int ptr;
 
 	if (isError)
 	{
@@ -280,20 +312,35 @@ displayLog (bool isError)
 		left -= len;
 	}
 
-	// glue the log entries together
-	lockQueue ();
-	while (qtail != qhead && left > 0)
+	// Glue the log entries together
+	// Locking is not a good idea at this point and we do not
+	// really need it -- the worst that can happen is we get
+	// an extra or an incomplete message
+	for (ptr = qtail; ptr != qhead && left > 0;
+			ptr = (ptr + 1) % MAX_LOG_ENTRIES)
 	{
-		len = strlen (queue[qtail]) + 1;
+		len = strlen (queue[ptr]) + 1;
 		if (len > left)
 			len = left;
-		memcpy (p, queue[qtail], len);
+		memcpy (p, queue[ptr], len);
 		p[len - 1] = '\n';
 		p += len;
 		left -= len;
-		qtail = (qtail + 1) % MAX_LOG_ENTRIES;
 	}
-	unlockQueue ();
+
+	// Glue the non-threaded message if present
+	if (noThreadReady)
+	{
+		noThreadReady = false;
+		len = strlen (msgNoThread);
+		if (len > left)
+			len = left;
+		memcpy (p, msgNoThread, len);
+		p += len;
+		left -= len;
+	}
+	
+	*p = '\0';
 
 	displayBox ("The Ur-Quan Masters", isError, msgBuf);
 }

@@ -25,23 +25,22 @@
 extern void log_init (int max_lines);
 extern void log_initThreads (void);
 extern int log_exit (int code);
-static inline void logged_exit (int code) { exit (log_exit (code)); }
-extern void logged_abort (void);
 
 extern FILE * log_setOutput (FILE *out);
 		// sets the new output stream and returns the previous one
 extern void log_setLevel (int level);
-extern void log_forceBox (bool force);
+extern void log_showBox (bool show, bool err);
 extern void log_captureLines (int num);
 #define LOG_CAPTURE_ALL 1000000  // unreasonably big number
 
 typedef enum
 {
-	log_Never = -1,
+	log_Nothing = -1,
 	log_Always = 0,
 	log_Warning,
 	log_Info,
 	log_Debug,
+	log_Never,
 
 } log_Level;
 
