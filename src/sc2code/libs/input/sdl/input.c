@@ -25,6 +25,7 @@
 #include "libs/input/sdl/vcontrol.h"
 #include "controls.h"
 #include "libs/file.h"
+#include "libs/log.h"
 #include "options.h"
 
 
@@ -109,7 +110,8 @@ static VControl_NameBinding control_names[] = {
 
 
 static void
-initKeyConfig(void) {
+initKeyConfig (void)
+{
 	uio_Stream *fp;
 	int i, errors;
 	
@@ -120,16 +122,16 @@ initKeyConfig(void) {
 			if (copyFile (contentDir, "starcon.key",
 				configDir, "keys.cfg") == -1)
 			{
-				fprintf (stderr, "Error: Could not copy default key config "
-					"to user config dir: %s.\n", strerror (errno));
+				log_add (log_Always, "Error: Could not copy default key config "
+					"to user config dir: %s.", strerror (errno));
 				exit (EXIT_FAILURE);
 			}
-			fprintf(stderr, "Copying default key config file to user "
-				"config dir.\n");
+			log_add (log_Info, "Copying default key config file to user "
+				"config dir.");
 			
 			if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
 			{
-				fprintf (stderr, "Error: Could not open keys.cfg\n");
+				log_add (log_Always, "Error: Could not open keys.cfg");
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -141,45 +143,45 @@ initKeyConfig(void) {
 		{
 			bool do_rename = false;
 			if (errors)
-				fprintf (stderr, "%d errors encountered in key configuration file.\n", errors);			
+				log_add (log_Warning, "%d errors encountered in key configuration file.", errors);
 
 			if (VControl_GetValidCount () == 0)
 			{
-				fprintf (stderr, "\nI didn't understand a single line in your configuration file.\n");
-				fprintf (stderr, "This is likely because you're still using a 0.2 era or earlier keys.cfg.\n");
+				log_add (log_Always, "\nI didn't understand a single line in your configuration file.");
+				log_add (log_Always, "This is likely because you're still using a 0.2 era or earlier keys.cfg.");
 				do_rename = true;
 			}
 			if (VControl_GetConfigFileVersion () != VCONTROL_VERSION)
 			{
-				fprintf (stderr, "\nThe control scheme for UQM has changed since you last updated keys.cfg.\n");
-				fprintf (stderr, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)\n", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
+				log_add (log_Always, "\nThe control scheme for UQM has changed since you last updated keys.cfg.");
+				log_add (log_Always, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
 				do_rename = true;
 			}
 
 			if (do_rename)
 			{
-				fprintf (stderr, "\nRenaming keys.cfg to keys.old and retrying.\n");
+				log_add (log_Always, "\nRenaming keys.cfg to keys.old and retrying.");
 
 				if (fileExists2 (configDir, "keys.old"))
 					uio_unlink (configDir, "keys.old");
 				if ((uio_rename (configDir, "keys.cfg", configDir, "keys.old")) == -1)
 				{
-					fprintf (stderr, "Error: Renaming failed!\n");
-					fprintf (stderr, "You must delete keys.cfg manually before you can run the game.\n");
+					log_add (log_Always, "Error: Renaming failed!");
+					log_add (log_Always, "You must delete keys.cfg manually before you can run the game.");
 					exit (EXIT_FAILURE);
 				}
 				continue;
 			}
 			
-			fprintf (stderr, "\nRepair your keys.cfg file to continue.\n");
+			log_add (log_Always, "\nRepair your keys.cfg file to continue.");
 			exit (EXIT_FAILURE);
 		}
 		
 		return;
 	}
 
-	fprintf (stderr, "Error: Something went wrong and we were looping again and again so aborting.\n");
-	fprintf (stderr, "Possible cause is your content dir not being up-to-date.\n");
+	log_add (log_Always, "Error: Something went wrong and we were looping again and again so aborting.");
+	log_add (log_Always, "Possible cause is your content dir not being up-to-date.");
 	exit (EXIT_FAILURE);
 }
 
@@ -204,19 +206,20 @@ TFB_InitInput (int driver, int flags)
 	
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
-		fprintf (stderr, "Couldn't initialize joystick subsystem: %s\n", SDL_GetError());
-		exit(-1);
+		log_add (log_Always, "Couldn't initialize joystick subsystem: %s",
+				SDL_GetError());
+		exit (EXIT_FAILURE);
 	}
 
-	fprintf (stderr, "%i joysticks were found.\n", SDL_NumJoysticks ());
+	log_add (log_Info, "%i joysticks were found.", SDL_NumJoysticks ());
 	
 	nJoysticks = SDL_NumJoysticks ();
 	if (nJoysticks > 0)
 	{
-		fprintf (stderr, "The names of the joysticks are:\n");
-		for(i = 0; i < nJoysticks; i++)
+		log_add (log_Info, "The names of the joysticks are:");
+		for (i = 0; i < nJoysticks; i++)
 		{
-			fprintf (stderr, "    %s\n", SDL_JoystickName (i));
+			log_add (log_Info, "    %s", SDL_JoystickName (i));
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 	}

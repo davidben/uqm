@@ -24,6 +24,7 @@
 #include SDL_INCLUDE(SDL_thread.h)
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
+#include "libs/log.h"
 
 
 static RecursiveMutex DCQ_Mutex;
@@ -39,8 +40,8 @@ static void
 TFB_WaitForSpace (int requested_slots)
 {
 	int old_depth, i;
-	fprintf (stderr, "DCQ overload (Size = %d, FullSize = %d, "
-			"Requested = %d).  Sleeping until renderer is done.\n",
+	log_add (log_Debug, "DCQ overload (Size = %d, FullSize = %d, "
+			"Requested = %d).  Sleeping until renderer is done.",
 			DrawCommandQueue.Size, DrawCommandQueue.FullSize,
 			requested_slots);
 	// Restore the DCQ locking level.  I *think* this is
@@ -52,7 +53,7 @@ TFB_WaitForSpace (int requested_slots)
 	WaitCondVar (RenderingCond);
 	for (i = 0; i < old_depth; i++)
 		LockRecursiveMutex (DCQ_Mutex);
-	fprintf (stderr, "DCQ clear (Size = %d, FullSize = %d).  Continuing.\n",
+	log_add (log_Debug, "DCQ clear (Size = %d, FullSize = %d).  Continuing.",
 			DrawCommandQueue.Size, DrawCommandQueue.FullSize);
 }
 
@@ -173,8 +174,8 @@ TFB_DrawCommandQueue_Pop (TFB_DrawCommand *target)
 	if (DrawCommandQueue.Front == DrawCommandQueue.Back &&
 			DrawCommandQueue.Size != DCQ_MAX)
 	{
-		fprintf (stderr, "Augh!  Assertion failure in DCQ!  Front == Back, "
-				"Size != DCQ_MAX\n");
+		log_add (log_Debug, "Augh!  Assertion failure in DCQ!  "
+				"Front == Back, Size != DCQ_MAX");
 		DrawCommandQueue.Size = 0;
 		Unlock_DCQ ();
 		return (0);

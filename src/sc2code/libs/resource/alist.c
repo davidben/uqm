@@ -20,6 +20,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "libs/reslib.h"
+#include "libs/log.h"
 #include "alist.h"
 
 alist_entry *
@@ -161,12 +162,12 @@ Alist_New_FromString (char *d)
 		while ((i < len) && (d[i] != '=') &&
 		       (d[i] != '\n') && (d[i] != '#')) i++;
 		if (i >= len) {  /* Bare key at EOF */
-			fprintf (stderr, "Warning: Bare keyword at EOF\n");
+			log_add (log_Warning, "Warning: Bare keyword at EOF");
 			break;
 		}
 		/* Comments here mean incomplete line too */
 		if (d[i] != '=') {
-			fprintf (stderr, "Warning: Key without value\n");
+			log_add (log_Warning, "Warning: Key without value");
 			while ((i < len) && (d[i] != '\n')) i++;
 			if (i >= len) break;
 			continue; /* Back to keyword search */

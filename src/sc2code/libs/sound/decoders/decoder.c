@@ -23,6 +23,7 @@
 #include "port.h"
 #include "libs/misc.h"
 #include "libs/file.h"
+#include "libs/log.h"
 #include "decoder.h"
 #include "wav.h"
 #include "dukaud.h"
@@ -177,7 +178,7 @@ SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 
 	if (!formats)
 	{
-		fprintf (stderr, "SoundDecoder_Init(): missing decoder formats\n");
+		log_add (log_Always, "SoundDecoder_Init(): missing decoder formats");
 		return 1;		
 	}
 	decoder_formats = *formats;
@@ -187,8 +188,8 @@ SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 	{
 		if (!info->funcs->InitModule (flags, &decoder_formats))
 		{
-			fprintf (stderr, "SoundDecoder_Init(): "
-					"%s audio decoder init failed\n",
+			log_add (log_Always, "SoundDecoder_Init(): "
+					"%s audio decoder init failed",
 					info->funcs->GetName ());
 			ret = 1;
 		}
@@ -227,12 +228,12 @@ SoundDecoder_Register (const char* fileext, TFB_SoundDecoderFuncs* decvtbl)
 
 	if (!decvtbl)
 	{
-		fprintf (stderr, "SoundDecoder_Register(): Null decoder table\n");
+		log_add (log_Warning, "SoundDecoder_Register(): Null decoder table");
 		return NULL;
 	}
 	if (!fileext)
 	{
-		fprintf (stderr, "SoundDecoder_Register(): Bad file type for %s\n",
+		log_add (log_Warning, "SoundDecoder_Register(): Bad file type for %s",
 				decvtbl->GetName ());
 		return NULL;
 	}
@@ -249,20 +250,20 @@ SoundDecoder_Register (const char* fileext, TFB_SoundDecoderFuncs* decvtbl)
 
 	if (info >= sd_decoders + MAX_REG_DECODERS)
 	{
-		fprintf (stderr, "SoundDecoder_Register(): Decoders limit reached\n");
+		log_add (log_Warning, "SoundDecoder_Register(): Decoders limit reached");
 		return NULL;
 	}
 	else if (info->ext)
 	{
-		fprintf (stderr, "SoundDecoder_Register(): "
-				"'%s' decoder already registered (%s denied)\n",
+		log_add (log_Warning, "SoundDecoder_Register(): "
+				"'%s' decoder already registered (%s denied)",
 				fileext, decvtbl->GetName ());
 		return NULL;
 	}
 	
 	if (!decvtbl->InitModule (sd_flags, &decoder_formats))
 	{
-		fprintf (stderr, "SoundDecoder_Register(): %s decoder init failed\n",
+		log_add (log_Warning, "SoundDecoder_Register(): %s decoder init failed",
 				decvtbl->GetName ());
 		return NULL;
 	}
@@ -289,8 +290,8 @@ SoundDecoder_Unregister (TFB_RegSoundDecoder* regdec)
 	if (regdec < sd_decoders || regdec >= sd_decoders + MAX_REG_DECODERS ||
 			!regdec->ext || !regdec->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_Unregister(): "
-				"Invalid or expired decoder passed\n");
+		log_add (log_Warning, "SoundDecoder_Unregister(): "
+				"Invalid or expired decoder passed");
 		return;
 	}
 	
@@ -324,7 +325,7 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	pext = strrchr (filename, '.');
 	if (!pext)
 	{
-		fprintf (stderr, "SoundDecoder_Load(): Unknown file type (%s)\n",
+		log_add (log_Warning, "SoundDecoder_Load(): Unknown file type (%s)",
 				filename);
 		return NULL;
 	}
@@ -336,7 +337,7 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		;
 	if (!info->ext)
 	{
-		fprintf (stderr, "SoundDecoder_Load(): Unsupported file type (%s)\n",
+		log_add (log_Warning, "SoundDecoder_Load(): Unsupported file type (%s)",
 				filename);
 		return NULL;
 	}
@@ -352,7 +353,7 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		}
 		else
 		{
-			fprintf (stderr, "SoundDecoder_Load(): %s does not exist\n",
+			log_add (log_Warning, "SoundDecoder_Load(): %s does not exist",
 					filename);
 			return NULL;
 		}
@@ -366,8 +367,8 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	decoder->funcs = funcs;
 	if (!decoder->funcs->Init (decoder))
 	{
-		fprintf (stderr, "SoundDecoder_Load(): "
-				"%s decoder instance failed init\n",
+		log_add (log_Warning, "SoundDecoder_Load(): "
+				"%s decoder instance failed init",
 				decoder->funcs->GetName ());
 		HFree (decoder);
 		return NULL;
@@ -375,8 +376,8 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 
 	if (!decoder->funcs->Open (decoder, dir, filename))
 	{
-		fprintf (stderr, "SoundDecoder_Load(): "
-				"%s decoder could not load %s\n",
+		log_add (log_Warning, "SoundDecoder_Load(): "
+				"%s decoder could not load %s",
 				decoder->funcs->GetName (), filename);
 		decoder->funcs->Term (decoder);
 		HFree (decoder);
@@ -431,7 +432,7 @@ SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 
 	if (!decoder || !decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_Decode(): null or bad decoder\n");
+		log_add (log_Warning, "SoundDecoder_Decode(): null or bad decoder");
 		return 0;
 	}
 
@@ -456,8 +457,8 @@ SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 					buffer_size - decoded_bytes);
 		if (rc < 0)
 		{
-			fprintf (stderr, "SoundDecoder_Decode(): "
-					"error decoding %s, code %ld\n",
+			log_add (log_Warning, "SoundDecoder_Decode(): "
+					"error decoding %s, code %ld",
 					decoder->filename, rc);
 		}
 		else if (rc == 0)
@@ -467,21 +468,21 @@ SoundDecoder_Decode (TFB_SoundDecoder *decoder)
 				SoundDecoder_Rewind (decoder);
 				if (decoder->error)
 				{
-					fprintf (stderr, "SoundDecoder_Decode(): "
+					log_add (log_Warning, "SoundDecoder_Decode(): "
 							"tried to loop %s but couldn't rewind, "
-							"error code %d\n",
+							"error code %d",
 							decoder->filename, decoder->error);
 				}
 				else
 				{
-					fprintf (stderr, "SoundDecoder_Decode(): "
-							"looping %s\n", decoder->filename);
+					log_add (log_Info, "SoundDecoder_Decode(): "
+							"looping %s", decoder->filename);
 					rc = 1;	// prime the loop again
 				}
 			}
 			else
 			{
-				fprintf (stderr, "SoundDecoder_Decode(): eof for %s\n",
+				log_add (log_Info, "SoundDecoder_Decode(): eof for %s",
 						decoder->filename);
 			}
 		}
@@ -518,7 +519,7 @@ SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 
 	if (!decoder || !decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_DecodeAll(): null or bad decoder\n");
+		log_add (log_Warning, "SoundDecoder_DecodeAll(): null or bad decoder");
 		return 0;
 	}
 
@@ -526,19 +527,17 @@ SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 
 	if (decoder->looping)
 	{
-		fprintf (stderr, "SoundDecoder_DecodeAll(): "
-				"called for %s with looping\n", decoder->filename);
+		log_add (log_Warning, "SoundDecoder_DecodeAll(): "
+				"called for %s with looping", decoder->filename);
 		return 0;
 	}
 
 	if (reqbufsize < 4096)
 		reqbufsize = 4096;
 
-#ifdef DEBUG
 	if (reqbufsize < 16384)
-		fprintf (stderr, "SoundDecoder_DecodeAll(): WARNING, "
-				"called with a small buffer (%u)\n", reqbufsize);
-#endif
+		log_add (log_Debug, "SoundDecoder_DecodeAll(): WARNING, "
+				"called with a small buffer (%u)", reqbufsize);
 
 	for (decoded_bytes = 0, rc = 1; rc > 0; )
 	{	
@@ -570,8 +569,8 @@ SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 	if (rc < 0)
 	{
 		decoder->error = SOUNDDECODER_ERROR;
-		fprintf (stderr, "SoundDecoder_DecodeAll(): "
-				"error decoding %s, code %ld\n",
+		log_add (log_Warning, "SoundDecoder_DecodeAll(): "
+				"error decoding %s, code %ld",
 				decoder->filename, rc);
 		return decoded_bytes;
 	}
@@ -605,7 +604,7 @@ SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 		return;
 	if (!decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_Seek(): bad decoder passed\n");
+		log_add (log_Warning, "SoundDecoder_Seek(): bad decoder passed");
 		return;
 	}
 
@@ -623,7 +622,7 @@ SoundDecoder_Free (TFB_SoundDecoder *decoder)
 		return;
 	if (!decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_Free(): bad decoder passed\n");
+		log_add (log_Warning, "SoundDecoder_Free(): bad decoder passed");
 		return;
 	}
 
@@ -642,7 +641,7 @@ SoundDecoder_GetTime (TFB_SoundDecoder *decoder)
 		return 0.0f;
 	if (!decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_GetTime(): bad decoder passed\n");
+		log_add (log_Warning, "SoundDecoder_GetTime(): bad decoder passed");
 		return 0.0f;
 	}
 
@@ -659,7 +658,7 @@ SoundDecoder_GetFrame (TFB_SoundDecoder *decoder)
 		return 0;
 	if (!decoder->funcs)
 	{
-		fprintf (stderr, "SoundDecoder_GetFrame(): bad decoder passed\n");
+		log_add (log_Warning, "SoundDecoder_GetFrame(): bad decoder passed");
 		return 0;
 	}
 
@@ -679,7 +678,7 @@ static bool
 bufa_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
 	// this should never be called
-	fprintf (stderr, "bufa_InitModule(): dead function called\n");
+	log_add (log_Debug, "bufa_InitModule(): dead function called");
 	return false;
 	
 	(void)flags; (void)fmts; // laugh at compiler warning
@@ -689,7 +688,7 @@ static void
 bufa_TermModule (void)
 {
 	// this should never be called
-	fprintf (stderr, "bufa_TermModule(): dead function called\n");
+	log_add (log_Debug, "bufa_TermModule(): dead function called");
 }
 
 static uint32
@@ -731,7 +730,7 @@ static bool
 bufa_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 {
 	// this should never be called
-	fprintf (stderr, "bufa_Open(): dead function called\n");
+	log_add (log_Debug, "bufa_Open(): dead function called");
 	return false;
 
 	// laugh at compiler warnings
@@ -807,7 +806,7 @@ static bool
 nula_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
 	// this should never be called
-	fprintf (stderr, "nula_InitModule(): dead function called\n");
+	log_add (log_Debug, "nula_InitModule(): dead function called");
 	return false;
 	
 	(void)flags; (void)fmts; // laugh at compiler warning
@@ -817,7 +816,7 @@ static void
 nula_TermModule (void)
 {
 	// this should never be called
-	fprintf (stderr, "nula_TermModule(): dead function called\n");
+	log_add (log_Debug, "nula_TermModule(): dead function called");
 }
 
 static uint32

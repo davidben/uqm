@@ -25,12 +25,12 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/mathlib.h"
-
+#include "libs/log.h"
 #include <math.h>
 #include <time.h>
 
 
-#define PROFILE  1
+#define PROFILE_ROTATION  1
 #define ROTATION_TIME 12
 
 // The initial size of the planet when zooming.  MUST BE ODD
@@ -748,7 +748,7 @@ RenderLevelMasks (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 	SBYTE *elevs;
 	int shLevel;
 
-#if PROFILE
+#if PROFILE_ROTATION
 	static clock_t t = 0;
 	static int frames_done = 1;
 	clock_t t1;
@@ -851,11 +851,12 @@ RenderLevelMasks (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 	process_rgb_bmp (MaskFrame, rgba, DIAMETER, DIAMETER);
 	SetFrameHot (MaskFrame, MAKE_HOT_SPOT (RADIUS + 1, RADIUS + 1));
 
-#if PROFILE
+#if PROFILE_ROTATION
 	t += clock() - t1;
 	if (frames_done == MAP_WIDTH)
 	{
-		fprintf (stderr, "frames/sec: %d/%ld(msec)=%f\n", frames_done,
+		log_add (log_Debug, "Rotation frames/sec: %d/%ld(msec)=%f",
+				frames_done,
 				(long int) (((double)t / CLOCKS_PER_SEC) * 1000.0 + 0.5),
 				frames_done / ((double)t / CLOCKS_PER_SEC + 0.5));
 		frames_done = 1;
@@ -2121,8 +2122,8 @@ rotate_planet_task (void *data)
 				frame_num++;
 				if (frame_num > zoom_frames)
 				{
-					fprintf (stderr, "rotate_planet_task() : zoom frame "
-							"out of bounds!\n");
+					log_add (log_Warning, "rotate_planet_task() : zoom frame"
+							" out of bounds!");
 					frame_num = zoom_frames;
 				}
 				zoom_amt = zoom_arr[frame_num];

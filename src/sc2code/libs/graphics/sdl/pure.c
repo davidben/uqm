@@ -20,6 +20,7 @@
 #include "pure.h"
 #include "bbox.h"
 #include "scalers.h"
+#include "libs/log.h"
 
 static SDL_Surface *fade_black = NULL;
 static SDL_Surface *fade_white = NULL;
@@ -36,7 +37,7 @@ Create_Screen (SDL_Surface *template, int w, int h)
 			template->format->Rmask, template->format->Gmask,
 			template->format->Bmask, 0);
 	if (newsurf == 0) {
-		fprintf (stderr, "Couldn't create screen buffers: %s\n",
+		log_add (log_Always, "Couldn't create screen buffers: %s",
 				SDL_GetError());
 	}
 	return newsurf;
@@ -75,8 +76,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 		ScreenHeightActual = 480;
 
 		if (width != 640 || height != 480)
-			fprintf (stderr, "Screen resolution of %dx%d not supported "
-					"under pure SDL, using 640x480\n", width, height);
+			log_add (log_Always, "Screen resolution of %dx%d not supported "
+					"under pure SDL, using 640x480", width, height);
 	}
 
 	videomode_flags |= SDL_ANYFORMAT;
@@ -90,14 +91,14 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 
 	if (SDL_Video == NULL)
 	{
-		fprintf (stderr, "Couldn't set %ix%i video mode: %s\n",
+		log_add (log_Always, "Couldn't set %ix%i video mode: %s",
 			ScreenWidthActual, ScreenHeightActual,
 			SDL_GetError ());
 		return -1;
 	}
 	else
 	{
-		fprintf (stderr, "Set the resolution to: %ix%ix%i\n",
+		log_add (log_Always, "Set the resolution to: %ix%ix%i",
 			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 			SDL_GetVideoSurface()->format->BitsPerPixel);
 		ScreenColorDepth = SDL_GetVideoSurface()->format->BitsPerPixel;
@@ -125,7 +126,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 	}
 	if (!format_conv_surf)
 	{
-		fprintf (stderr, "Couldn't create format_conv_surf: %s\n",
+		log_add (log_Always, "Couldn't create format_conv_surf: %s",
 				SDL_GetError());
 		return -1;
 	}
@@ -178,27 +179,26 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 {
 	char VideoName[256];
 
-	fprintf (stderr, "Initializing Pure-SDL graphics.\n");
+	log_add (log_Always, "Initializing Pure-SDL graphics.");
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	fprintf (stderr, "SDL driver used: %s\n", VideoName);
+	log_add (log_Always, "SDL driver used: %s", VideoName);
 			// Set the environment variable SDL_VIDEODRIVER to override
 			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
 			//            ggi, aalib
 			// For Windows: directx (default), windib
 
-	fprintf (stderr, "SDL initialized.\n");
-
-	fprintf (stderr, "Initializing Screen.\n");
+	log_add (log_Always, "SDL initialized.");
+	log_add (log_Always, "Initializing Screen.");
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
 	if (TFB_Pure_ConfigureVideo (driver, flags, width, height))
 	{
-		fprintf (stderr, "Could not initialize video: "
-				"no fallback at start of program!\n");
-		exit (-1);
+		log_add (log_Always, "Could not initialize video: "
+				"no fallback at start of program!");
+		exit (EXIT_FAILURE);
 	}
 
 	// Initialize scalers (let them precompute whatever)
@@ -369,14 +369,14 @@ Scale_PerfTest (void)
 
 	if (!scaler)
 	{
-		fprintf (stderr, "No scaler configured! "
-				"Run with larger resolution, please\n");
+		log_add (log_Always, "No scaler configured! "
+				"Run with larger resolution, please");
 		return;
 	}
 	if (!scaled_display)
 	{
-		fprintf (stderr, "Run scaler performance tests "
-				"in Pure mode, please\n");
+		log_add (log_Always, "Run scaler performance tests "
+				"in Pure mode, please");
 		return;
 	}
 
@@ -395,13 +395,13 @@ Scale_PerfTest (void)
 		if (i % 100 == 0)
 		{
 			Now = SDL_GetTicks ();
-			fprintf(stderr, "%03ld(%04ld) ", 100*1000 / (Now - TimeIn),
+			log_add (log_Debug, "%03ld(%04ld) ", 100*1000 / (Now - TimeIn),
 					Now - TimeIn);
 			TimeIn = Now;
 		}
 	}
 
-	fprintf (stderr, "Full frames scaled: %d; over %ld ms; %ld fps\n",
+	log_add (log_Always, "Full frames scaled: %d; over %ld ms; %ld fps\n",
 			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
 
 	SDL_UnlockSurface (scaled_display);

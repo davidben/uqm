@@ -27,6 +27,7 @@
 #include "compiler.h"
 #include "libs/threadlib.h"
 #include "libs/memlib.h"
+#include "libs/log.h"
 
 #define GetToolFrame() 1
 
@@ -64,55 +65,6 @@ typedef struct _szMemoryNode {
 static szMemoryNode extents[MAX_EXTENTS];
 static szMemoryNode *freeListHead = NULL;
 
-/*****************************************************************************/
-/*FUNCTION
-**
-** SYNOPSIS
-**      Message(format, parms)
-**
-** DESCRIPTION
-** Presents a windows message box to the user and echoes the
-** message with printf().
-**
-** INPUT
-** As for printf().
-**
-** OUTPUT
-**
-** HISTORY
-**      10-Jul-96:AKL Creation.
-**
-** ASSUMPTIONS
-**END*/
-
-static void Message(char *fmt, ...)
-{
-		va_list ap;
-		char buffer[256];
-
-
-		va_start(ap, fmt);
-		vsprintf(buffer, fmt, ap);
-		va_end(ap);
-
-#ifndef FINAL
-		fprintf (stderr, "%s\n", buffer);
-		//fflush (stderr);
-#endif
-
-#if 0
-	if (GetToolFrame ())
-	{
-		ShowWindow(GetToolFrame (),SW_HIDE);
-	}
-		MessageBox(NULL, buffer, "Message From Programmer Dude", MB_OK);
-
-	if (GetToolFrame ())
-	{
-		ShowWindow(GetToolFrame (),SW_NORMAL);
-	}
-#endif
-}
 
 #if 0
 /*****************************************************************************/
@@ -151,10 +103,8 @@ static int MessageWithRetry(char *fmt, ...)
 		vsprintf(buffer, fmt, ap);
 		va_end(ap);
 
-#ifndef FINAL
-		fprintf (stderr, "%s\n", buffer);
+		log_add (log_Always, "%s", buffer);
 		// fflush(stderr);
-#endif
 
 #if 0
 	if (GetToolFrame ())
@@ -258,12 +208,10 @@ MallocWithRetry(int bytes, char *diagStr)
 		ptr = malloc (bytes);
 		if (ptr)
 			return (ptr);
-#ifndef FINAL
-		fprintf (stderr, "Malloc failed for %s. #Bytes %d.\n", diagStr, bytes);
-//		fflush (stderr);
-#endif
 
-		abort();
+		log_add (log_Always, "Malloc failed for %s. #Bytes %d.", diagStr, bytes);
+		fflush (stderr);
+        abort ();
 #if 0
 		/* The user gets a chance to close other applications and try again. */
 		if (!MessageWithRetry ("I'm out of memory!  "
@@ -272,8 +220,9 @@ MallocWithRetry(int bytes, char *diagStr)
 			if (MessageWithRetry ("Really OK to stop tfbtool?"))
 			{
 				/* User says "die". */
-				fprintf (stderr, "Killed by the user (%s).\n", diagStr);
-				exit (0);
+				log_add (log_Always, "Killed by the user (%s).", diagStr);
+				log_showBox (false, false);
+				exit (EXIT_SUCCESS);
 			}
 		}
 #endif
@@ -293,10 +242,11 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 #endif
 
 	if ((node = freeListHead) == NULL)
-		Message ("mem_allocate: out of extents.");
+		log_add (log_Always, "mem_allocate: out of extents.");
 	else if ((node->memory = MallocWithRetry (coreSize, "mem_allocate:")) == 0
 			&& coreSize)
-		Message ("mem_allocate: couldn't allocate %u bytes.", coreSize);
+		log_add (log_Always, "mem_allocate: couldn't allocate %u bytes.",
+				coreSize);
 	else
 	{
 		freeListHead = node->next;
@@ -309,10 +259,10 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 #ifdef LEAK_DEBUG
 		if (leak_debug)
 		{
-			fprintf (stderr, "alloc %d: %p, %lu\n", (int) node->handle,
+			log_add (log_Debug, "alloc %d: %p, %lu", (int) node->handle,
 					(void *) node->memory, node->size);
 			// Prefered form:
-			//fprintf (stderr, "alloc %d: %#8" PRIxPTR ", %lu\n",
+			//log_add (log_Debug, "alloc %d: %#8" PRIxPTR ", %lu",
 			//		(int) node->handle,	(intptr_t) node->memory, node->size);
 		}
 		if (node->handle == leak_idx && node->size == leak_size)
@@ -445,12 +395,12 @@ mem_uninit(void)
 	{
 		if (extents[i].handle != -1)
 		{
-			fprintf (stderr, "LEAK: unreleased extent %d: %p, %lu\n",
+			log_add (log_Debug, "LEAK: unreleased extent %d: %p, %lu",
 					extents[i].handle, (void *) extents[i].memory,
 					extents[i].size);
 			// Prefered form:
-			//fprintf (stderr, "LEAK: unreleased extent %d: %#8" PRIxPTR
-			//		", %lu\n", extents[i].handle,
+			//log_add (log_Debug, "LEAK: unreleased extent %d: %#8" PRIxPTR
+			//		", %lu", extents[i].handle,
 			//		(intptr_t) extents[i].memory, extents[i].size);
 			fflush (stderr);
 			extents[i].handle = -1;
@@ -501,18 +451,18 @@ mem_release(MEM_HANDLE h)
 
 	--h;
 	if (h < 0 || h >= MAX_EXTENTS)
-		fprintf (stderr, "LEAK: attempt to release invalid extent %d\n", h);
+		log_add (log_Debug, "LEAK: attempt to release invalid extent %d", h);
 	else if (extents[h].handle == -1)
-		fprintf (stderr, "LEAK: attempt to release unallocated extent %d\n",h);
+		log_add (log_Debug, "LEAK: attempt to release unallocated extent %d",h);
 	else if (extents[h].refcount == 0)
 	{
 #ifdef LEAK_DEBUG
 		if (leak_debug)
 		{
-			fprintf (stderr, "free %d: %p\n",
+			log_add (log_Debug, "free %d: %p",
 					extents[h].handle, (void *) extents[h].memory);
 			// Prefered form:
-			//fprintf (stderr, "free %d: %#8" PRIxPTR "\n",
+			//log_add (log_Debug, "free %d: %#8" PRIxPTR,
 			//		extents[h].handle, (intptr_t) extents[h].memory);
 		}
 #endif
@@ -635,12 +585,9 @@ HMalloc (int size)
 	if (size == 0) return (0);
 
     if ((p = _alloc_mem(size)) == NULL) {
-        fprintf(stderr, "Fatal Error: HMalloc(): out of memory.\n");
-#ifdef DEBUG
-        abort();
-#else
-        exit(1);
-#endif  /* #ifdef DEBUG */
+        log_add (log_Always, "Fatal Error: HMalloc(): out of memory.");
+		fflush (stderr);
+        abort ();
     }
     return (p);
 }

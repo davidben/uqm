@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 #ifdef STATE_DEBUG
-#	include <stdio.h>
+#	include "libs/log.h"
 #endif
 
 
@@ -73,7 +73,7 @@ setGameState (int startBit, int endBit, BYTE val
 				| (BYTE)((val) >> (endBit - startBit - (endBit & 7)));
 	}
 #ifdef STATE_DEBUG
-	fprintf (stderr, "State '%s' set to %d.\n", name, val);
+	log_add (log_Debug, "State '%s' set to %d.", name, val);
 #endif
 }
 

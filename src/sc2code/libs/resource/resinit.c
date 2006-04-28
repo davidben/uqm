@@ -21,6 +21,7 @@
 #include "options.h"
 #include "types.h"
 #include "libs/list.h"
+#include "libs/log.h"
 #include <ctype.h>
 #include <stdlib.h>
 
@@ -165,7 +166,7 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 			if (sscanf (ptr, "%i %i %i %n",
 					&resPackage, &resInstance, &resType, &numParsed) != 3)
 			{
-				fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
+				log_add (log_Warning, "Resource index '%s': Invalid line %d.",
 						fileName, lineNum);
 				continue;
 			}
@@ -179,7 +180,7 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		if (*path == '\0')
 		{
 			// No path supplied.
-			fprintf (stderr, "Resource index '%s': Invalid line %d.\n",
+			log_add (log_Warning, "Resource index '%s': Invalid line %d.",
 					fileName, lineNum);
 			continue;
 		}
@@ -188,9 +189,9 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		// We need the list to be sorted, as we binary search through it.
 		if (res <= lastResource)
 		{
-			fprintf (stderr, "Fatal: resource index '%s' is not sorted "
+			log_add (log_Always, "Fatal: resource index '%s' is not sorted "
 					"on the resource number, or contains a double entry. "
-					"Problem encountered on line %d.\n", fileName, lineNum);
+					"Problem encountered on line %d.", fileName, lineNum);
 			abort ();
 		}
 		lastResource = res;
@@ -231,11 +232,9 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		descs = newDescs;
 	}
 
-#ifdef DEBUG
 	if (numRes == 0)
-		fprintf (stderr, "Warning: Resource index '%s' contains no valid "
-				"entries.\n", fileName);
-#endif
+		log_add (log_Debug, "Warning: Resource index '%s' contains no valid "
+				"entries.", fileName);
 
 	indexHandle = allocResourceIndex ();
 	if (indexHandle == NULL_HANDLE)

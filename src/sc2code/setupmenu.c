@@ -30,6 +30,7 @@
 #include "libs/reslib.h"
 #include "libs/sound/sound.h"
 #include "libs/resource/stringbank.h"
+#include "libs/log.h"
 #include "resinst.h"
 #include "nameref.h"
 
@@ -425,8 +426,8 @@ init_widgets (void)
 
 	if (count < 3)
 	{
-		fprintf (stderr, "PANIC: Setup string table too short to even hold all indices!\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Setup string table too short to even hold all indices!");
+		exit (EXIT_FAILURE);
 	}
 
 	/* Menus */
@@ -434,8 +435,8 @@ init_widgets (void)
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 1)), '\n', 100, buffer, bank) != MENU_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
-		fprintf (stderr, "PANIC: Incorrect number of Menu Subtitles\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Incorrect number of Menu Subtitles");
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < MENU_COUNT; i++)
@@ -460,8 +461,8 @@ init_widgets (void)
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 2)), '\n', 100, buffer, bank) != CHOICE_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
-		fprintf (stderr, "PANIC: Incorrect number of Choice Options\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Incorrect number of Choice Options");
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < CHOICE_COUNT; i++)
@@ -488,8 +489,8 @@ init_widgets (void)
 
 		if (index >= count)
 		{
-			fprintf (stderr, "PANIC: String table cut short while reading choices\n");
-			exit (1);
+			log_add (log_Always, "PANIC: String table cut short while reading choices");
+			exit (EXIT_FAILURE);
 		}
 		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
 		optcount = SplitString (str, '\n', 100, buffer, bank);
@@ -508,8 +509,8 @@ init_widgets (void)
 
 			if (index >= count)
 			{
-				fprintf (stderr, "PANIC: String table cut short while reading choices\n");
-				exit (1);
+				log_add (log_Always, "PANIC: String table cut short while reading choices");
+				exit (EXIT_FAILURE);
 			}
 			str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
 			tipcount = SplitString (str, '\n', 100, buffer, bank);			
@@ -530,15 +531,15 @@ init_widgets (void)
 	/* Sliders */
 	if (index >= count)
 	{
-		fprintf (stderr, "PANIC: String table cut short while reading sliders\n");
-		exit (1);
+		log_add (log_Always, "PANIC: String table cut short while reading sliders");
+		exit (EXIT_FAILURE);
 	}
 
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != SLIDER_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
-		fprintf (stderr, "PANIC: Incorrect number of Slider Options\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Incorrect number of Slider Options");
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < SLIDER_COUNT; i++)
@@ -566,8 +567,8 @@ init_widgets (void)
 		
 		if (index >= count)
 		{
-			fprintf (stderr, "PANIC: String table cut short while reading sliders\n");
-			exit (1);
+			log_add (log_Always, "PANIC: String table cut short while reading sliders");
+			exit (EXIT_FAILURE);
 		}
 		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
 		tipcount = SplitString (str, '\n', 100, buffer, bank);
@@ -584,15 +585,15 @@ init_widgets (void)
 	/* Buttons */
 	if (index >= count)
 	{
-		fprintf (stderr, "PANIC: String table cut short while reading buttons\n");
-		exit (1);
+		log_add (log_Always, "PANIC: String table cut short while reading buttons");
+		exit (EXIT_FAILURE);
 	}
 
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != BUTTON_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
-		fprintf (stderr, "PANIC: Incorrect number of Button Options\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Incorrect number of Button Options");
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < BUTTON_COUNT; i++)
@@ -615,8 +616,8 @@ init_widgets (void)
 		
 		if (index >= count)
 		{
-			fprintf (stderr, "PANIC: String table cut short while reading buttons\n");
-			exit (1);
+			log_add (log_Always, "PANIC: String table cut short while reading buttons");
+			exit (EXIT_FAILURE);
 		}
 		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
 		tipcount = SplitString (str, '\n', 100, buffer, bank);
@@ -633,15 +634,15 @@ init_widgets (void)
 	/* Labels */
 	if (index >= count)
 	{
-		fprintf (stderr, "PANIC: String table cut short while reading labels\n");
-		exit (1);
+		log_add (log_Always, "PANIC: String table cut short while reading labels");
+		exit (EXIT_FAILURE);
 	}
 
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != LABEL_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
-		fprintf (stderr, "PANIC: Incorrect number of Label Options\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Incorrect number of Label Options");
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < LABEL_COUNT; i++)
@@ -662,8 +663,8 @@ init_widgets (void)
 		
 		if (index >= count)
 		{
-			fprintf (stderr, "PANIC: String table cut short while reading labels\n");
-			exit (1);
+			log_add (log_Always, "PANIC: String table cut short while reading labels");
+			exit (EXIT_FAILURE);
 		}
 		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
 		linecount = SplitString (str, '\n', 100, buffer, bank);
@@ -678,7 +679,8 @@ init_widgets (void)
 	/* Check for garbage at the end */
 	if (index < count)
 	{
-		fprintf (stderr, "WARNING: Setup strings had %d garbage entries at the end.\n", count - index);
+		log_add (log_Warning, "WARNING: Setup strings had %d garbage entries at the end.",
+				count - index);
 	}
 }
 
@@ -737,8 +739,8 @@ SetupMenu (void)
 	}
 	else
 	{
-		fprintf (stderr, "PANIC: Could not find strings for the setup menu!\n");
-		exit (1);
+		log_add (log_Always, "PANIC: Could not find strings for the setup menu!");
+		exit (EXIT_FAILURE);
 	}
 	done = FALSE;
 

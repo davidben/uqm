@@ -37,8 +37,6 @@
 #define R0 0.8
 #define RANDOM_METHOD 3
 
-#define RND_BLUR_PROFILE
-
 #ifdef GFXMODULE_SDL
 
 #ifdef WIN32
@@ -48,10 +46,7 @@
 
 #include "sdl_common.h"
 #include "primitives.h"
-
-#ifdef RND_BLUR_PROFILE
-#include <time.h>
-#endif
+#include "libs/log.h"
 
 #ifndef MAX
 #define MAX(x,y) ((x) < (y) ? (y) : (x))
@@ -81,9 +76,6 @@ void blurSurface32 (SDL_Surface *src)
 	Uint32 *ptr;
 	int y, x, yy, xx;
 	Uint32 i, offset, ypos, yof;
-#ifdef RND_BLUR_PROFILE
-	clock_t t1 = clock ();
-#endif
 #if BLUR_TYPE == 1
 	#define MWID 3
 	#define ARRAY_SIZE 4
@@ -172,7 +164,7 @@ void blurSurface32 (SDL_Surface *src)
 
 	if (src->format->BitsPerPixel != 32)
 	{
-		fprintf(stderr, "blurSurface32 requires a 32bit Surface, but surface is %d bits!\n",
+		log_add (log_Debug, "blurSurface32 requires a 32bit Surface, but surface is %d bits!\n",
 			src->format->BitsPerPixel);
 		return;
 	}
@@ -256,9 +248,6 @@ void blurSurface32 (SDL_Surface *src)
 	SDL_UnlockSurface (src);
 	for(i = 0; i < ARRAY_SIZE; i++)
 		HFree (blur_array[i]);
-#ifdef RND_BLUR_PROFILE
-	fprintf(stderr, "Blur took %f seconds\n",(float)(clock() - t1) / CLOCKS_PER_SEC);
-#endif
 }
 
 /* the rZF_nearestneighbor method fills the 'dst' image with the 'src' image
@@ -520,10 +509,6 @@ void rZF_continuous (SDL_Surface *src, SDL_Surface *dst)
 /* perform a 16x zoom, and then apply a blur filter to the result */
 void random16xZoomSurfaceRGBA (SDL_Surface *src, SDL_Surface *dst)
 {
-#ifdef RND_BLUR_PROFILE
-	clock_t t1 = clock();
-#endif
-
     /*
      * Alloc space to completely contain the zoomed surface 
      */
@@ -543,9 +528,6 @@ void random16xZoomSurfaceRGBA (SDL_Surface *src, SDL_Surface *dst)
 	SDL_UnlockSurface (src);
 	SDL_UnlockSurface (dst);
 	SDL_SetAlpha(dst, SDL_SRCALPHA, 255);
-#ifdef RND_BLUR_PROFILE
-	fprintf(stderr, "Randomize took %f seconds\n",(float)(clock() - t1) / CLOCKS_PER_SEC);
-#endif
 	blurSurface32 (dst);
 }
 

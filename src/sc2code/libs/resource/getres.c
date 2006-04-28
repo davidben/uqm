@@ -20,6 +20,7 @@
 #include "port.h"
 #include "resintrn.h"
 #include "libs/misc.h"
+#include "libs/log.h"
 
 
 const char *_cur_resfile_name;
@@ -75,8 +76,8 @@ loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
 	if (resType >= idx->typeInfo.numTypes ||
 			idx->typeInfo.handlers[resType].loadFun == NULL)
 	{
-		fprintf (stderr, "Warning: Unable to load '%s'; no handler "
-				"for type %d defined.\n", desc->path, resType);
+		log_add (log_Warning, "Warning: Unable to load '%s'; no handler "
+				"for type %d defined.", desc->path, resType);
 		return NULL_HANDLE;
 	}
 
@@ -95,19 +96,16 @@ loadResource(const char *path, ResourceLoadFun *loadFun)
 	stream = res_OpenResFile (contentDir, path, "rb");
 	if (stream == NULL)
 	{
-		fprintf (stderr, "Warning: Can't open '%s'\n", path);
+		log_add (log_Warning, "Warning: Can't open '%s'", path);
 		return NULL_HANDLE;
 	}
 
 	dataLen = LengthResFile (stream);
-//#ifdef DEBUG
-#if 1
-	fprintf (stderr, "\t'%s' -- %lu bytes\n", path, dataLen);
-#endif
+	log_add (log_Info, "\t'%s' -- %lu bytes", path, dataLen);
 	
 	if (dataLen == 0)
 	{
-		fprintf (stderr, "Warning: Trying to load empty file '%s'.\n", path);
+		log_add (log_Warning, "Warning: Trying to load empty file '%s'.", path);
 		goto err;
 	}
 
@@ -140,7 +138,7 @@ res_GetResource (RESOURCE res)
 	desc = lookupResourceDesc (resourceIndex, res);
 	if (desc == NULL)
 	{
-		fprintf (stderr, "Trying to get undefined resource %08lx\n",
+		log_add (log_Warning, "Trying to get undefined resource %08lx",
 				(DWORD) res);
 		return NULL_HANDLE;
 	}
@@ -166,19 +164,15 @@ res_FreeResource (RESOURCE res)
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "Warning: trying to free an unrecognised "
-				"resource.\n");
-#endif
+		log_add (log_Debug, "Warning: trying to free an unrecognised "
+				"resource.");
 		return;
 	}
 	
 	if (desc->handle == NULL_HANDLE)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "Warning: trying to free not loaded "
-				"resource.\n");
-#endif
+		log_add (log_Debug, "Warning: trying to free not loaded "
+				"resource.");
 		return;
 	}
 
@@ -201,19 +195,15 @@ res_DetachResource (RESOURCE res)
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "Warning: trying to detach from an unrecognised "
-				"resource.\n");
-#endif
+		log_add (log_Debug, "Warning: trying to detach from an unrecognised "
+				"resource.");
 		return NULL_HANDLE;
 	}
 	
 	if (desc->handle == NULL_HANDLE)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "Warning: trying to detach from a not loaded "
-				"resource.\n");
-#endif
+		log_add (log_Debug, "Warning: trying to detach from a not loaded "
+				"resource.");
 		return NULL_HANDLE;
 	}
 

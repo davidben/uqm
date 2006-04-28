@@ -21,6 +21,7 @@
 
 #include "audiodrv_nosound.h"
 #include "libs/tasklib.h"
+#include "libs/log.h"
 #include <stdlib.h>
 
 
@@ -109,26 +110,26 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 	
-	fprintf (stderr, "Using nosound audio driver.\n");
-	fprintf (stderr, "Initializing mixer.\n");
+	log_add (log_Always, "Using nosound audio driver.");
+	log_add (log_Always, "Initializing mixer.");
 
 	if (!mixer_Init (nosound_freq, MIX_FORMAT_MAKE (1, 1),
 			MIX_QUALITY_LOW, MIX_FAKE_DATA))
 	{
-		fprintf (stderr, "Mixer initialization failed: %x\n",
+		log_add (log_Always, "Mixer initialization failed: %x",
 				mixer_GetError ());
 		return -1;
 	}
-	fprintf (stderr, "Mixer initialized.\n");
+	log_add (log_Always, "Mixer initialized.");
 
-	fprintf (stderr, "Initializing sound decoders.\n");
+	log_add (log_Always, "Initializing sound decoders.");
 	if (SoundDecoder_Init (flags, &formats))
 	{
-		fprintf (stderr, "Sound decoders initialization failed.\n");
+		log_add (log_Always, "Sound decoders initialization failed.");
 		mixer_Uninit ();
 		return -1;
 	}
-	fprintf (stderr, "Sound decoders initialized.\n");
+	log_add (log_Always, "Sound decoders initialized.");
 
 	*driver = noSound_Driver;
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
@@ -250,7 +251,7 @@ noSound_GetError (void)
 		case MIX_OUT_OF_MEMORY:
 			return audio_OUT_OF_MEMORY;
 		default:
-			fprintf (stderr, "noSound_GetError: unknown value %x\n",
+			log_add (log_Debug, "noSound_GetError: unknown value %x",
 					value);
 			return audio_DRIVER_FAILURE;
 			break;
@@ -326,7 +327,7 @@ noSound_GetSourcei (audio_Object srcobj, audio_SourceProp pname,
 				*value = audio_PAUSED;
 				break;
 			default:
-				fprintf (stderr, "noSound_GetSourcei(): unknown value %lx\n",
+				log_add (log_Debug, "noSound_GetSourcei(): unknown value %lx",
 						(long int) *value);
 				*value = audio_DRIVER_FAILURE;
 		}

@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <unistd.h>
 #endif
+#include "libs/log.h"
 
 #if defined(PROFILE_THREADS) && !defined(WIN32)
 #include <sys/time.h>
@@ -151,8 +152,8 @@ UnQueueThread (TrueThread thread)
 		if (*ptr == NULL)
 		{
 			// Should not happen.
-			fprintf (stderr, "Error: Trying to remove non-present thread "
-					"from thread queue.\n");
+			log_add (log_Debug, "Error: Trying to remove non-present thread "
+					"from thread queue.");
 			fflush (stderr);
 			abort();
 		}
@@ -213,7 +214,7 @@ ThreadHelper (void *startInfo) {
 	result = (*func) (data);
 
 #ifdef DEBUG_THREADS
-	fprintf (stderr, "Thread '%s' done (returned %d).\n",
+	log_add (log_Debug, "Thread '%s' done (returned %d).",
 			thread->name, result);
 	fflush (stderr);
 #endif
@@ -271,8 +272,10 @@ CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize
 	QueueThread (thread);
 
 #ifdef DEBUG_THREADS
-//	fprintf (stderr, "Thread '%s' created.\n", ThreadName (thread));
-//	fflush (stderr);
+#if 0	
+	log_add (log_Debug, "Thread '%s' created.", ThreadName (thread));
+	fflush (stderr);
+#endif
 #endif
 
 	// Signal to the new thread that the thread structure is ready
@@ -358,11 +361,15 @@ CreateMutex_SDL (void)
 	if ((mutex == NULL) || (mutex->mutex == NULL))
 	{
 #ifdef NAMED_SYNCHRO
-		fprintf (stderr, "Could not initialize mutex '%s': aborting.\n", name);
+		/* logging depends on Mutexes, so we have to use the
+		 * non-threaded version instead */
+		log_add_nothread (log_Always, "Could not initialize mutex '%s':"
+				"aborting.", name);
 #else
-		fprintf (stderr, "Could not initialize mutex: aborting.\n");
+		log_add_nothread (log_Always, "Could not initialize mutex:"
+				"aborting.");
 #endif
-		abort ();
+		exit (EXIT_FAILURE);
 	}
 
 	return mutex;
@@ -391,8 +398,10 @@ LockMutex_SDL (Mutex m)
 	 * CrossThreadMutex code).  This almost-measure is being added
 	 * because for the most part it should suffice. */
 	if (mutex->owner && (mutex->syncClass & TRACK_CONTENTION_CLASSES))
-	{
-		fprintf (stderr, "Thread '%s' blocking on mutex '%s'\n", MyThreadName (), mutex->name);
+	{	/* logging depends on Mutexes, so we have to use the
+		 * non-threaded version instead */
+		log_add_nothread (log_Debug, "Thread '%s' blocking on mutex '%s'",
+				MyThreadName (), mutex->name);
 	}
 #endif
 	while (SDL_mutexP (mutex->mutex) != 0)
@@ -443,11 +452,13 @@ CreateSemaphore_SDL (DWORD initial
 	if (sem->sem == NULL)
 	{
 #ifdef NAMED_SYNCHRO
-		fprintf (stderr, "Could not initialize semaphore '%s': aborting.\n", name);
+		log_add (log_Always, "Could not initialize semaphore '%s':"
+				" aborting.", name);
 #else
-		fprintf (stderr, "Could not initialize semaphore: aborting.\n");
+		log_add (log_Always, "Could not initialize semaphore:"
+				" aborting.");
 #endif
-		abort ();
+		exit (EXIT_FAILURE);
 	}
 	return sem;
 }
@@ -468,7 +479,8 @@ SetSemaphore_SDL (Semaphore s)
 	BOOLEAN contention = !(SDL_SemValue (sem->sem));
 	if (contention && (sem->syncClass & TRACK_CONTENTION_CLASSES))
 	{
-		fprintf (stderr, "Thread '%s' blocking on semaphore '%s'\n", MyThreadName (), sem->name);
+		log_add (log_Debug, "Thread '%s' blocking on semaphore '%s'",
+				MyThreadName (), sem->name);
 	}
 #endif
 	while (SDL_SemWait (sem->sem) == -1)
@@ -478,7 +490,8 @@ SetSemaphore_SDL (Semaphore s)
 #ifdef TRACK_CONTENTION
 	if (contention && (sem->syncClass & TRACK_CONTENTION_CLASSES))
 	{
-		fprintf (stderr, "Thread '%s' awakens, released from semaphore '%s'\n", MyThreadName (), sem->name);
+		log_add (log_Debug, "Thread '%s' awakens,"
+				" released from semaphore '%s'", MyThreadName (), sem->name);
 	}
 #endif
 }
@@ -520,11 +533,13 @@ CreateRecursiveMutex_SDL (void)
 	if (mtx->mutex == NULL)
 	{
 #ifdef NAMED_SYNCHRO
-		fprintf (stderr, "Could not initialize recursive mutex '%s': aborting.\n", name);
+		log_add (log_Always, "Could not initialize recursive "
+				"mutex '%s': aborting.", name);
 #else
-		fprintf (stderr, "Could not initialize recursive mutex: aborting.\n");
+		log_add (log_Always, "Could not initialize recursive "
+				"mutex: aborting.");
 #endif
-		abort ();
+		exit (EXIT_FAILURE);
 	}
 #ifdef NAMED_SYNCHRO
 	mtx->name = name;
@@ -552,7 +567,8 @@ LockRecursiveMutex_SDL (RecursiveMutex val)
 #ifdef TRACK_CONTENTION
 		if (mtx->thread_id && (mtx->syncClass & TRACK_CONTENTION_CLASSES))
 		{
-			fprintf (stderr, "Thread '%s' blocking on '%s'\n", MyThreadName (), mtx->name);
+			log_add (log_Debug, "Thread '%s' blocking on '%s'",
+					MyThreadName (), mtx->name);
 		}
 #endif
 		while (SDL_mutexP (mtx->mutex))
@@ -570,7 +586,8 @@ UnlockRecursiveMutex_SDL (RecursiveMutex val)
 	if (!mtx->locks || mtx->thread_id != thread_id)
 	{
 #ifdef NAMED_SYNCHRO
-		fprintf (stderr, "'%s' attempted to unlock %s when it didn't hold it\n", MyThreadName (), mtx->name);
+		log_add (log_Debug, "'%s' attempted to unlock %s when it "
+				"didn't hold it", MyThreadName (), mtx->name);
 #endif
 	}
 	else
@@ -613,11 +630,13 @@ CreateCondVar_SDL (void)
 	if ((cv->cond == NULL) || (cv->mutex == NULL))
 	{
 #ifdef NAMED_SYNCHRO
-		fprintf (stderr, "Could not initialize condition variable '%s': aborting.\n", name);
+		log_add (log_Always, "Could not initialize condition variable '%s':"
+				" aborting.", name);
 #else
-		fprintf (stderr, "Could not initialize condition variable: aborting.\n");
+		log_add (log_Always, "Could not initialize condition variable:"
+				" aborting.");
 #endif
-		abort ();
+		exit (EXIT_FAILURE);
 	}
 #ifdef NAMED_SYNCHRO
 	cv->name = name;
@@ -643,7 +662,8 @@ WaitCondVar_SDL (CondVar c)
 #ifdef TRACK_CONTENTION
 	if (cv->syncClass & TRACK_CONTENTION_CLASSES)
 	{
-		fprintf (stderr, "Thread '%s' waiting for signal from '%s'\n", MyThreadName (), cv->name);
+		log_add (log_Debug, "Thread '%s' waiting for signal from '%s'",
+				MyThreadName (), cv->name);
 	}
 #endif
 	while (SDL_CondWait (cv->cond, cv->mutex) != 0)
@@ -653,7 +673,8 @@ WaitCondVar_SDL (CondVar c)
 #ifdef TRACK_CONTENTION
 	if (cv->syncClass & TRACK_CONTENTION_CLASSES)
 	{
-		fprintf (stderr, "Thread '%s' received signal from '%s', awakening.\n", MyThreadName (), cv->name);
+		log_add (log_Debug, "Thread '%s' received signal from '%s',"
+				" awakening.", MyThreadName (), cv->name);
 	}
 #endif
 	SDL_mutexV (cv->mutex);

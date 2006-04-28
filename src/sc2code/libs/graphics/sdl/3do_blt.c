@@ -20,6 +20,7 @@
 
 #include "sdl_common.h"
 #include "graphics/tfb_draw.h"
+#include "libs/log.h"
 
 static int gscale = GSCALE_IDENTITY;
 
@@ -44,7 +45,7 @@ read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 			->FlagsAndIndex)
 			& ((DWORD) MAPPED_TO_DISPLAY << FTYPE_SHIFT)))
 	{
-		fprintf (stderr, "Unimplemented function activated: read_screen()\n");
+		log_add (log_Warning, "Unimplemented function activated: read_screen()");
 	}
 	else
 	{

@@ -22,7 +22,7 @@
 #include "sounds.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/tfb_draw.h"
-
+#include "libs/log.h"
 
 // video callbacks
 static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);
@@ -324,8 +324,8 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 
 		if (!vid->hAudio)
 		{
-			fprintf (stderr, "TFB_PlayVideo: "
-					"Cannot load sound-track for audio-synced video\n");
+			log_add (log_Warning, "TFB_PlayVideo: "
+					"Cannot load sound-track for audio-synced video");
 			return false;
 		}
 

@@ -20,6 +20,7 @@
 #include "strintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/reslib.h"
+#include "libs/log.h"
 
 
 static void
@@ -97,7 +98,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 				if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
 						"rb")))
 				{
-					fprintf (stderr, "Found timestamp file: %s\n", ts_file_name);
+					log_add (log_Info, "Found timestamp file: %s", ts_file_name);
 					if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
 						return (0);
 				}
@@ -166,8 +167,8 @@ _GetStringData (uio_Stream *fp, DWORD length)
 							if (!ts_ok)
 							{
 								// timestamp data is invalid, remove all of it
-								fprintf (stderr, "Invalid timestamp data "
-										"for '%s'.  Disabling timestamps\n", s);
+								log_add (log_Warning, "Invalid timestamp data "
+										"for '%s'.  Disabling timestamps", s);
 								HFree (ts_data);
 								ts_data = NULL;
 								uio_fclose (timestamp_fp);

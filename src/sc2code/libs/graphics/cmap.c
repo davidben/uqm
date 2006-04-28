@@ -18,6 +18,7 @@
 
 #include "gfx_common.h"
 #include "libs/tasklib.h"
+#include "libs/log.h"
 #include <string.h>
 
 
@@ -129,14 +130,15 @@ clone_colormap (TFB_ColorMap *from, int index)
 
 		if (!from)
 		{
-			fprintf (stderr, "FATAL: clone_colormap(): no maps available\n");
-			abort ();
+			log_add (log_Warning, "FATAL: clone_colormap(): "
+					"no maps available");
+			exit (EXIT_FAILURE);
 		}
 		
 		Now = GetTimeCounter ();
 		if (Now >= NextTime)
 		{
-			fprintf (stderr, "clone_colormap(): static pool exhausted\n");
+			log_add (log_Warning, "clone_colormap(): static pool exhausted");
 			NextTime = Now + ONE_SECOND;
 		}	
 		
@@ -160,7 +162,7 @@ free_colormap (TFB_ColorMap *map)
 {
 	if (!map)
 	{
-		fprintf (stderr, "free_colormap(): tried to free a NULL map\n");
+		log_add (log_Warning, "free_colormap(): tried to free a NULL map");
 		return;
 	}
 
@@ -176,8 +178,8 @@ get_colormap (int index)
 	map = colormaps[index];
 	if (!map)
 	{
-		fprintf (stderr, "BUG: get_colormap(): map not present\n");
-		abort ();
+		log_add (log_Always, "BUG: get_colormap(): map not present");
+		exit (EXIT_FAILURE);
 	}
 
 	map->refcount++;
@@ -192,7 +194,7 @@ release_colormap (TFB_ColorMap *map)
 
 	if (map->refcount <= 0)
 	{
-		fprintf (stderr, "BUG: release_colormap(): refcount not >0\n");
+		log_add (log_Warning, "BUG: release_colormap(): refcount not >0");
 		return;
 	}
 
@@ -231,8 +233,8 @@ TFB_ColorMapToRGB (TFB_Palette *pal, int index)
 
 	if (!map)
 	{
-		fprintf (stderr, "TFB_ColorMapToRGB(): "
-				"requested non-present colormap %d\n", index);
+		log_add (log_Warning, "TFB_ColorMapToRGB(): "
+				"requested non-present colormap %d", index);
 		return;
 	}
 
@@ -254,21 +256,21 @@ SetColorMap (COLORMAPPTR map)
 	end = *colors++;
 	if (start > end)
 	{
-		fprintf (stderr, "ERROR: SetColorMap(): "
-				"starting map (%d) not less or eq ending (%d)\n",
+		log_add (log_Warning, "ERROR: SetColorMap(): "
+				"starting map (%d) not less or eq ending (%d)",
 				start, end);
 		return FALSE;
 	}
 	if (start >= MAX_COLORMAPS)
 	{
-		fprintf (stderr, "ERROR: SetColorMap(): "
-				"starting map (%d) beyond range (0-%d)\n",
+		log_add (log_Warning, "ERROR: SetColorMap(): "
+				"starting map (%d) beyond range (0-%d)",
 				start, (int)MAX_COLORMAPS - 1);
 		return FALSE;
 	}
 	if (end >= MAX_COLORMAPS)
 	{
-		fprintf (stderr, "SetColorMap(): "
+		log_add (log_Warning, "SetColorMap(): "
 				"ending map (%d) beyond range (0-%d)\n",
 				end, (int)MAX_COLORMAPS - 1);
 		end = MAX_COLORMAPS - 1;
@@ -305,7 +307,6 @@ SetColorMap (COLORMAPPTR map)
 
 	UnlockMutex (maplock);
 
-	//fprintf (stderr, "SetColorMap(): vp %x map %x bytes %d, start %d end %d\n", vp, map, bytes, start, end);
 	return TRUE;
 }
 
@@ -338,7 +339,7 @@ fade_xform_task (void *data)
 				TDelta = TTotal;
 
 			FadeAmount += (FadeEnd - FadeAmount) * TDelta / TTotal;
-			//fprintf (stderr, "fade_xform_task FadeAmount %d\n", FadeAmount);
+			//log_add (log_Debug, "fade_xform_task FadeAmount %d\n", FadeAmount);
 		} while ((TTotal -= TDelta) && (!Task_ReadState (task, TASK_EXIT)));
 	}
 
@@ -452,7 +453,7 @@ XFormColorMap_step (void)
 		if (!curmap)
 		{
 			UnlockMutex (maplock);
-			fprintf (stderr, "BUG: XFormColorMap_step(): no current map\n");
+			log_add (log_Always, "BUG: XFormColorMap_step(): no current map");
 			finish_colormap_xform (x);
 			continue;
 		}
@@ -561,9 +562,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	}
 	else if (x >= MAX_XFORMS)
 	{	// flush some xforms if the queue is full
-#ifdef DEBUG
-		fprintf (stderr, "WARNING: XFormPLUT(): no slots available\n");
-#endif
+		log_add (log_Debug, "WARNING: XFormPLUT(): no slots available");
 		x = XFormControl.Highest;
 		finish_colormap_xform (x);
 	}
@@ -579,7 +578,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	{
 		UnlockMutex (maplock);
 		UnlockMutex (XFormControl.Lock);
-		fprintf (stderr, "BUG: XFormPLUT(): no current map\n");
+		log_add (log_Warning, "BUG: XFormPLUT(): no current map");
 		return (0);
 	}
 	memcpy (control->OldCMap, map->colors, sizeof (map->colors));

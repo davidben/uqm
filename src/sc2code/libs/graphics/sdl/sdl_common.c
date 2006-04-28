@@ -30,6 +30,7 @@
 #include "bbox.h"
 #include "port.h"
 #include "libs/uio.h"
+#include "libs/log.h"
 #include "controls.h"
 		// XXX: Should not be included from here.
 #include "uqmdebug.h"
@@ -63,15 +64,15 @@ TFB_Abort (void)
 void
 TFB_PreInit (void)
 {
-	fprintf (stderr, "Initializing base SDL functionality.\n");
-	fprintf (stderr, "Using SDL version %d.%d.%d (compiled with "
-			"%d.%d.%d)\n", SDL_Linked_Version ()->major,
+	log_add (log_Always, "Initializing base SDL functionality.");
+	log_add (log_Always, "Using SDL version %d.%d.%d (compiled with "
+			"%d.%d.%d)", SDL_Linked_Version ()->major,
 			SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
 			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
-		fprintf (stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
-		exit(-1);
+		log_add (log_Always, "Could not initialize SDL: %s.", SDL_GetError());
+		exit (EXIT_FAILURE);
 	}
 }
 
@@ -89,8 +90,8 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 		result = TFB_GL_ConfigureVideo (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		fprintf (stderr, "OpenGL support not compiled in, so using pure "
-				"sdl driver\n");
+		log_add (log_Always, "OpenGL support not compiled in,"
+				" so using pure SDL driver");
 		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
 #endif
 	}
@@ -126,8 +127,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 		result = TFB_GL_InitGraphics (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		fprintf (stderr, "OpenGL support not compiled in, so using pure "
-				"sdl driver\n");
+		log_add (log_Always, "OpenGL support not compiled in,"
+				" so using pure SDL driver");
 		result = TFB_Pure_InitGraphics (driver, flags, width, height);
 #endif
 	}
@@ -178,7 +179,8 @@ TFB_ProcessEvents ()
 				// TODO
 				break;
 			case SDL_QUIT:
-				exit (0);
+				log_showBox (false, false);
+				exit (EXIT_SUCCESS);
 				break;
 			case SDL_VIDEORESIZE:    /* User resized video mode */
 				// TODO
@@ -191,7 +193,10 @@ TFB_ProcessEvents ()
 		}
 	}
 	if (ImmediateInputState.menu[KEY_ABORT] || abortFlag)
-		exit (0);
+	{
+		log_showBox (false, false);
+		exit (EXIT_SUCCESS);
+	}
 #if defined(DEBUG) || defined(USE_DEBUG_KEY)
 	if (ImmediateInputState.menu[KEY_DEBUG])
 	{
@@ -262,7 +267,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	{
 		// normal blit: dst = src
 		
-		// fprintf(stderr, "normal blit\n");
+		// log_add (log_Debug, "normal blit\n");
 		SDL_BlitSurface (src, srcrect, dst, dstrect);
 		return;
 	}
@@ -369,9 +374,11 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	if (blend_denom < 0)
 	{
 		// additive blit: dst = src + dst
-
-		// fprintf(stderr, "additive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
-		
+#if 0
+		log_add (log_Debug, "additive blit %d %d, src %d %d %d %d dst %d %d,"
+				" srcbpp %d", blend_numer, blend_denom, x1, y1, x2, y2,
+				dstrect->x, dstrect->y, src->format->BitsPerPixel);
+#endif		
 		for (y = y1; y < y2; ++y)
 		{
 			dst_y2 = dstrect->y + (y - y1);
@@ -407,9 +414,12 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	else if (blend_numer < 0)
 	{
 		// subtractive blit: dst = src - dst
-
-		// fprintf(stderr, "subtractive blit %d %d, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
-		
+#if 0
+		log_add (log_Debug, "subtractive blit %d %d, src %d %d %d %d"
+				" dst %d %d, srcbpp %d", blend_numer, blend_denom,
+					x1, y1, x2, y2, dstrect->x, dstrect->y,
+					src->format->BitsPerPixel);
+#endif		
 		for (y = y1; y < y2; ++y)
 		{
 			dst_y2 = dstrect->y + (y - y1);
@@ -447,9 +457,12 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 		// modulated blit: dst = src * (blend_numer / blend_denom) 
 
 		float f = blend_numer / (float)blend_denom;
-
-		// fprintf(stderr, "modulated blit %d %d, f %f, src %d %d %d %d dst %d %d, srcbpp %d\n",blend_numer, blend_denom, f, x1, y1, x2, y2, dstrect->x, dstrect->y, src->format->BitsPerPixel);
-		
+#if 0
+		log_add (log_Debug, "modulated blit %d %d, f %f, src %d %d %d %d"
+				" dst %d %d, srcbpp %d\n", blend_numer, blend_denom, f,
+				x1, y1, x2, y2, dstrect->x, dstrect->y,
+				src->format->BitsPerPixel);
+#endif		
 		for (y = y1; y < y2; ++y)
 		{
 			dst_y2 = dstrect->y + (y - y1);
@@ -494,7 +507,7 @@ TFB_ComputeFPS (void)
 	fps_counter += delta_time;
 	if (fps_counter > FPS_PERIOD)
 	{
-		fprintf (stderr, "fps %.2f, effective %.2f\n",
+		log_add (log_Always, "fps %.2f, effective %.2f",
 				1000.0 / delta_time,
 				1000.0 * RenderedFrames / fps_counter);
 
@@ -573,7 +586,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		if (!livelock_deterrence && commands_handled + DrawCommandQueue.Size
 				> DCQ_LIVELOCK_MAX)
 		{
-			// fprintf (stderr, "Initiating livelock deterrence!\n");
+			// log_add (log_Debug, "Initiating livelock deterrence!");
 			livelock_deterrence = TRUE;
 			
 			Lock_DCQ (-1);
@@ -586,7 +599,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 				int index = DC.data.setpalette.index;
 				if (index < 0 || index > 255)
 				{
-					fprintf(stderr, "DCQ panic: Tried to set palette #%i",
+					log_add (log_Debug, "DCQ panic: Tried to set palette #%i",
 							index);
 				}
 				else
@@ -731,8 +744,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				if (DC_image == 0)
 				{
-					fprintf (stderr, "DCQ ERROR: COPYTOIMAGE passed null "
-							"image ptr\n");
+					log_add (log_Debug, "DCQ ERROR: COPYTOIMAGE passed null "
+							"image ptr");
 					break;
 				}
 				LockMutex (DC_image->mutex);
@@ -788,12 +801,14 @@ TFB_FlushGraphics () // Only call from main thread!!
 				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
 							DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 				{
-					fprintf (stderr, "Could not provide requested mode: reverting to last known driver.\n");
+					log_add (log_Always, "Could not provide requested mode: "
+							"reverting to last known driver.");
 					if (TFB_ReInitGraphics (oldDriver, DC.data.reinitvideo.flags,
 								DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 					{
-						fprintf (stderr, "Couldn't reinit at that point either.  Your video has been somehow tied in knots.\n");
-						exit (-1);
+						log_add (log_Always, "Couldn't reinit at that point either."
+								" Your video has been somehow tied in knots.");
+						exit (EXIT_FAILURE);
 					}
 				}
 				break;
@@ -816,11 +831,11 @@ TFB_SetGamma (float gamma)
 {
 	if (SDL_SetGamma (gamma, gamma, gamma) == -1)
 	{
-		fprintf (stderr, "Unable to set gamma correction.\n");
+		log_add (log_Warning, "Unable to set gamma correction.");
 	}
 	else
 	{
-		fprintf (stderr, "Gamma correction set to %1.4f.\n", gamma);
+		log_add (log_Info, "Gamma correction set to %1.4f.", gamma);
 	}
 }
 

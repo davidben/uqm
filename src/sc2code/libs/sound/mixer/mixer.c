@@ -24,6 +24,7 @@
 #include "mixerint.h"
 #include "libs/misc.h"
 #include "libs/threadlib.h"
+#include "libs/log.h"
 
 static uint32 mixer_initialized = 0;
 static uint32 mixer_format;
@@ -249,9 +250,7 @@ mixer_GenSources (uint32 n, mixer_Object *psrcobj)
 	if (!psrcobj)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GenSources() called with null ptr\n");
-#endif
+		log_add (log_Debug, "mixer_GenSources() called with null ptr");
 		return;
 	}
 	for (; n; n--, psrcobj++)
@@ -290,9 +289,7 @@ mixer_DeleteSources (uint32 n, mixer_Object *psrcobj)
 	if (!psrcobj)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_DeleteSources() called with null ptr\n");
-#endif
+		log_add (log_Debug, "mixer_DeleteSources() called with null ptr");
 		return;
 	}
 
@@ -313,9 +310,7 @@ mixer_DeleteSources (uint32 n, mixer_Object *psrcobj)
 	if (i)
 	{	/* some source failed */
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_DeleteSources(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_DeleteSources(): not a source");
 	}
 	else
 	{	/* all sources checked out */
@@ -371,9 +366,7 @@ mixer_Sourcei (mixer_Object srcobj, mixer_SourceProp pname,
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_Sourcei() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_Sourcei() called with null source");
 		return;
 	}
 
@@ -382,9 +375,7 @@ mixer_Sourcei (mixer_Object srcobj, mixer_SourceProp pname,
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_Sourcei(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_Sourcei(): not a source");
 	}
 	else
 	{
@@ -419,14 +410,14 @@ mixer_Sourcei (mixer_Object srcobj, mixer_SourceProp pname,
 			}
 			else
 			{
-				fprintf (stderr, "mixer_Sourcei(MIX_SOURCE_STATE): "
-						"unsupported state, call ignored\n");
+				log_add (log_Debug, "mixer_Sourcei(MIX_SOURCE_STATE): "
+						"unsupported state, call ignored");
 			}
 			break;
 		default:
 			mixer_SetError (MIX_INVALID_ENUM);
-			fprintf (stderr, "mixer_Sourcei() called "
-					"with unsupported property %u\n", pname);
+			log_add (log_Debug, "mixer_Sourcei() called "
+					"with unsupported property %u", pname);
 		}
 	}
 
@@ -442,9 +433,7 @@ mixer_Sourcef (mixer_Object srcobj, mixer_SourceProp pname, float value)
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_Sourcef() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_Sourcef() called with null source");
 		return;
 	}
 
@@ -453,9 +442,7 @@ mixer_Sourcef (mixer_Object srcobj, mixer_SourceProp pname, float value)
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_Sourcef(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_Sourcef(): not a source");
 	}
 	else
 	{
@@ -465,8 +452,8 @@ mixer_Sourcef (mixer_Object srcobj, mixer_SourceProp pname, float value)
 			src->gain = value * MIX_GAIN_ADJ;
 			break;
 		default:
-			fprintf (stderr, "mixer_Sourcei() called "
-				"with unsupported property %u\n", pname);
+			log_add (log_Debug, "mixer_Sourcei() called "
+				"with unsupported property %u", pname);
 		}
 	}
 
@@ -492,9 +479,7 @@ mixer_GetSourcei (mixer_Object srcobj, mixer_SourceProp pname,
 	if (!src || !value)
 	{
 		mixer_SetError (src ? MIX_INVALID_VALUE : MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetSourcei() called with null param\n");
-#endif
+		log_add (log_Debug, "mixer_GetSourcei() called with null param");
 		return;
 	}
 
@@ -503,9 +488,7 @@ mixer_GetSourcei (mixer_Object srcobj, mixer_SourceProp pname,
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetSourcei(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_GetSourcei(): not a source");
 	}
 	else
 	{
@@ -528,8 +511,8 @@ mixer_GetSourcei (mixer_Object srcobj, mixer_SourceProp pname,
 			break;
 		default:
 			mixer_SetError (MIX_INVALID_ENUM);
-			fprintf (stderr, "mixer_GetSourcei() called "
-					"with unsupported property %u\n", pname);
+			log_add (log_Debug, "mixer_GetSourcei() called "
+					"with unsupported property %u", pname);
 		}
 	}
 
@@ -546,9 +529,7 @@ mixer_GetSourcef (mixer_Object srcobj, mixer_SourceProp pname,
 	if (!src || !value)
 	{
 		mixer_SetError (src ? MIX_INVALID_VALUE : MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetSourcef() called with null param\n");
-#endif
+		log_add (log_Debug, "mixer_GetSourcef() called with null param");
 		return;
 	}
 
@@ -557,9 +538,7 @@ mixer_GetSourcef (mixer_Object srcobj, mixer_SourceProp pname,
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetSourcef(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_GetSourcef(): not a source");
 	}
 	else
 	{
@@ -569,8 +548,8 @@ mixer_GetSourcef (mixer_Object srcobj, mixer_SourceProp pname,
 			*value = src->gain / MIX_GAIN_ADJ;
 			break;
 		default:
-			fprintf (stderr, "mixer_GetSourcef() called "
-					"with unsupported property %u\n", pname);
+			log_add (log_Debug, "mixer_GetSourcef() called "
+					"with unsupported property %u", pname);
 		}
 	}
 
@@ -586,9 +565,7 @@ mixer_SourcePlay (mixer_Object srcobj)
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourcePlay() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourcePlay() called with null source");
 		return;
 	}
 
@@ -597,9 +574,7 @@ mixer_SourcePlay (mixer_Object srcobj)
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourcePlay(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_SourcePlay(): not a source");
 	}
 	else /* should make the source active */
 	{
@@ -624,9 +599,7 @@ mixer_SourceRewind (mixer_Object srcobj)
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceRewind() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceRewind() called with null source");
 		return;
 	}
 
@@ -635,9 +608,7 @@ mixer_SourceRewind (mixer_Object srcobj)
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourcePlay(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_SourcePlay(): not a source");
 	}
 	else
 	{
@@ -656,9 +627,7 @@ mixer_SourcePause (mixer_Object srcobj)
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourcePause() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourcePause() called with null source");
 		return;
 	}
 
@@ -667,9 +636,7 @@ mixer_SourcePause (mixer_Object srcobj)
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourcePause(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_SourcePause(): not a source");
 	}
 	else /* should keep all buffers and offsets */
 	{
@@ -692,9 +659,7 @@ mixer_SourceStop (mixer_Object srcobj)
 	if (!src)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceStop() called with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceStop() called with null source");
 		return;
 	}
 
@@ -703,9 +668,7 @@ mixer_SourceStop (mixer_Object srcobj)
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceStop(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceStop(): not a source");
 	}
 	else /* should remove queued buffers */
 	{
@@ -730,10 +693,8 @@ mixer_SourceQueueBuffers (mixer_Object srcobj, uint32 n,
 	if (!src || !pbufobj)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceQueueBuffers() called "
-				"with null param\n");
-#endif
+		log_add (log_Debug, "mixer_SourceQueueBuffers() called "
+				"with null param");
 		return;
 	}
 
@@ -758,9 +719,7 @@ mixer_SourceQueueBuffers (mixer_Object srcobj, uint32 n,
 		if (src->magic != mixer_srcMagic)
 		{
 			mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-			fprintf (stderr, "mixer_SourceQueueBuffers(): not a source\n");
-#endif
+			log_add (log_Debug, "mixer_SourceQueueBuffers(): not a source");
 		}
 		else
 		{
@@ -801,10 +760,8 @@ mixer_SourceUnqueueBuffers (mixer_Object srcobj, uint32 n,
 	if (!src || !pbufobj)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceUnqueueBuffers() called "
-				"with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceUnqueueBuffers() called "
+				"with null source");
 		return;
 	}
 
@@ -813,9 +770,7 @@ mixer_SourceUnqueueBuffers (mixer_Object srcobj, uint32 n,
 	if (src->magic != mixer_srcMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceUnqueueBuffers(): not a source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceUnqueueBuffers(): not a source");
 	}
 	else if (n > src->cqueued)
 	{
@@ -834,10 +789,8 @@ mixer_SourceUnqueueBuffers (mixer_Object srcobj, uint32 n,
 		if (i)
 		{
 			mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-			fprintf (stderr, "mixer_SourceUnqueueBuffers(): "
-					"active buffer attempted\n");
-#endif
+			log_add (log_Debug, "mixer_SourceUnqueueBuffers(): "
+					"active buffer attempted");
 		}
 		else
 		{	/* all buffers checked out */
@@ -882,10 +835,8 @@ mixer_SourceUnqueueAll (mixer_Source *src)
 
 	if (!src)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "mixer_SourceUnqueueAll() called "
-				"with null source\n");
-#endif
+		log_add (log_Debug, "mixer_SourceUnqueueAll() called "
+				"with null source");
 		return;
 	}
 
@@ -893,13 +844,11 @@ mixer_SourceUnqueueAll (mixer_Source *src)
 
 	for (buf = src->firstqueued; buf; buf = nextbuf)
 	{
-#ifdef DEBUG
 		if (buf->state == MIX_BUF_PLAYING)
 		{
-			fprintf (stderr, "mixer_SourceUnqueueAll(): "
-					"attempted on active buffer\n");
+			log_add (log_Debug, "mixer_SourceUnqueueAll(): "
+					"attempted on active buffer");
 		}
-#endif
 		nextbuf = buf->next;
 		buf->state = MIX_BUF_FILLED;
 		buf->next = 0;
@@ -925,18 +874,16 @@ mixer_SourceActivate (mixer_Source* src)
 
 	LockRecursiveMutex (act_mutex);
 
-#ifdef DEBUG
 	/* check active sources, see if this source is there already */
 	for (i = 0; i < MAX_SOURCES && active_sources[i] != src; i++)
 		;
 	if (i < MAX_SOURCES)
 	{	/* source found */
-		fprintf (stderr, "mixer_SourceActivate(): "
-				"source already active in slot %u\n", i);
+		log_add (log_Debug, "mixer_SourceActivate(): "
+				"source already active in slot %u", i);
 		UnlockRecursiveMutex (act_mutex);
 		return;
 	}
-#endif
 
 	/* find an empty slot */
 	for (i = 0; i < MAX_SOURCES && active_sources[i] != 0; i++)
@@ -945,13 +892,11 @@ mixer_SourceActivate (mixer_Source* src)
 	{	/* slot found */
 		active_sources[i] = src;
 	}
-#ifdef DEBUG
 	else
 	{
-		fprintf (stderr, "mixer_SourceActivate(): "
-				"no more slots available (max=%d)\n", MAX_SOURCES);
+		log_add (log_Debug, "mixer_SourceActivate(): "
+				"no more slots available (max=%d)", MAX_SOURCES);
 	}
-#endif
 
 	UnlockRecursiveMutex (act_mutex);
 }
@@ -971,12 +916,10 @@ mixer_SourceDeactivate (mixer_Source* src)
 	{	/* source found */
 		active_sources[i] = 0;
 	}
-#ifdef DEBUG
 	else
 	{	/* source not found */
-		fprintf (stderr, "mixer_SourceDeactivate(): source not active\n");
+		log_add (log_Debug, "mixer_SourceDeactivate(): source not active");
 	}
-#endif
 
 	UnlockRecursiveMutex (act_mutex);
 }
@@ -990,15 +933,15 @@ mixer_SourceStop_internal (mixer_Source *src)
 	if (!src->firstqueued)
 		return;
 
-#ifdef DEBUG
 	/* assert the source buffers state */
 	if (!src->lastqueued)
 	{	
-		fprintf (stderr, "mixer_SourceStop_internal(): "
-				"desynced source state\n");
-		return;
-	}
+		log_add (log_Debug, "mixer_SourceStop_internal(): "
+				"desynced source state");
+#ifdef DEBUG
+		abort ();
 #endif
+	}
 
 	LockRecursiveMutex (buf_mutex);
 
@@ -1211,9 +1154,7 @@ mixer_GenBuffers (uint32 n, mixer_Object *pbufobj)
 	if (!pbufobj)
 	{
 		mixer_SetError (MIX_INVALID_VALUE);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GenBuffers() called with null ptr\n");
-#endif
+		log_add (log_Debug, "mixer_GenBuffers() called with null ptr");
 		return;
 	}
 	for (; n; n--, pbufobj++)
@@ -1250,9 +1191,7 @@ mixer_DeleteBuffers (uint32 n, mixer_Object *pbufobj)
 	if (!pbufobj)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_DeleteBuffers() called with null ptr\n");
-#endif
+		log_add (log_Debug, "mixer_DeleteBuffers() called with null ptr");
 		return;
 	}
 	
@@ -1269,26 +1208,20 @@ mixer_DeleteBuffers (uint32 n, mixer_Object *pbufobj)
 		if (buf->magic != mixer_bufMagic)
 		{
 			mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-			fprintf (stderr, "mixer_DeleteBuffers(): not a buffer\n");
-#endif
+			log_add (log_Debug, "mixer_DeleteBuffers(): not a buffer");
 			break;
 		}
 		else if (buf->locked)
 		{
 			mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-			fprintf (stderr, "mixer_DeleteBuffers(): locked buffer\n");
-#endif
+			log_add (log_Debug, "mixer_DeleteBuffers(): locked buffer");
 			break;
 		}
 		else if (buf->state >= MIX_BUF_QUEUED)
 		{
 			mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-			fprintf (stderr, "mixer_DeleteBuffers(): "
-					"attempted on queued/active buffer\n");
-#endif
+			log_add (log_Debug, "mixer_DeleteBuffers(): "
+					"attempted on queued/active buffer");
 			break;
 		}
 	}
@@ -1340,9 +1273,7 @@ mixer_GetBufferi (mixer_Object bufobj, mixer_BufferProp pname,
 	if (!buf || !value)
 	{
 		mixer_SetError (buf ? MIX_INVALID_VALUE : MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetBufferi() called with null param\n");
-#endif
+		log_add (log_Debug, "mixer_GetBufferi() called with null param");
 		return;
 	}
 
@@ -1352,18 +1283,14 @@ mixer_GetBufferi (mixer_Object bufobj, mixer_BufferProp pname,
 	{
 		UnlockRecursiveMutex (buf_mutex);
 		mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetBufferi() called with locked buffer\n");
-#endif
+		log_add (log_Debug, "mixer_GetBufferi() called with locked buffer");
 		return;
 	}
 
 	if (buf->magic != mixer_bufMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_GetBufferi(): not a buffer\n");
-#endif
+		log_add (log_Debug, "mixer_GetBufferi(): not a buffer");
 	}
 	else
 	{
@@ -1388,8 +1315,8 @@ mixer_GetBufferi (mixer_Object bufobj, mixer_BufferProp pname,
 			break;
 		default:
 			mixer_SetError (MIX_INVALID_ENUM);
-			fprintf (stderr, "mixer_GetBufferi() called "
-					"with invalid property %u\n", pname);
+			log_add (log_Debug, "mixer_GetBufferi() called "
+					"with invalid property %u", pname);
 		}
 	}
 
@@ -1408,9 +1335,7 @@ mixer_BufferData (mixer_Object bufobj, uint32 format, void* data,
 	if (!buf || !data || !size)
 	{
 		mixer_SetError (buf ? MIX_INVALID_VALUE : MIX_INVALID_NAME);
-#ifdef DEBUG
-//		fprintf (stderr, "mixer_BufferData() called with bad param\n");
-#endif
+		log_add (log_Debug, "mixer_BufferData() called with bad param");
 		return;
 	}
 
@@ -1420,27 +1345,21 @@ mixer_BufferData (mixer_Object bufobj, uint32 format, void* data,
 	{
 		UnlockRecursiveMutex (buf_mutex);
 		mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_BufferData() called "
-				"with locked buffer\n");
-#endif
+		log_add (log_Debug, "mixer_BufferData() called "
+				"with locked buffer");
 		return;
 	}
 
 	if (buf->magic != mixer_bufMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_BufferData(): not a buffer\n");
-#endif
+		log_add (log_Debug, "mixer_BufferData(): not a buffer");
 	}
 	else if (buf->state > MIX_BUF_FILLED)
 	{
 		mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-		fprintf (stderr, "mixer_BufferData() attempted "
-				"on in-use buffer\n");
-#endif
+		log_add (log_Debug, "mixer_BufferData() attempted "
+				"on in-use buffer");
 	}
 	else
 	{
@@ -1551,27 +1470,21 @@ mixer_CheckBufferState (mixer_Buffer *buf, const char* FuncName)
 	if (buf->magic != mixer_bufMagic)
 	{
 		mixer_SetError (MIX_INVALID_NAME);
-#ifdef DEBUG
-		fprintf (stderr, "%s(): not a buffer\n", FuncName);
-#endif
+		log_add (log_Debug, "%s(): not a buffer", FuncName);
 		return false;
 	}
 
 	if (buf->locked)
 	{
 		mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-		fprintf (stderr, "%s(): locked buffer attempted\n", FuncName);
-#endif
+		log_add (log_Debug, "%s(): locked buffer attempted", FuncName);
 		return false;
 	}
 
 	if (buf->state != MIX_BUF_FILLED)
 	{
 		mixer_SetError (MIX_INVALID_OPERATION);
-#ifdef DEBUG
-		fprintf (stderr, "%s: invalid buffer attempted\n", FuncName);
-#endif
+		log_add (log_Debug, "%s: invalid buffer attempted", FuncName);
 		return false;
 	}
 	return true;

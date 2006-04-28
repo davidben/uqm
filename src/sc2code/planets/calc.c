@@ -19,6 +19,7 @@
 /* ----------------------------- INCLUDES ---------------------------- */
 #include "encount.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 /* -------------------------------- DATA -------------------------------- */
 
 /* -------------------------------- CODE -------------------------------- */
@@ -259,10 +260,10 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 				"Supergiant",
 				};
 
-		fprintf (stderr, "%s %s\n",
+		log_add (log_Debug, "%s %s",
 			ColorClass[SysInfoPtr->StarIntensity],
 			SizeName[SysInfoPtr->StarSize]);
-		fprintf (stderr, "Stellar Energy: %d (sol = 3)\n",
+		log_add (log_Debug, "Stellar Energy: %d (sol = 3)",
 				SysInfoPtr->StarEnergy);
 	}
 #endif /* DEBUG_PLANET_CALC */
@@ -344,62 +345,62 @@ DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
 
 #ifdef DEBUG_PLANET_CALC
 		radius = (SIZE)((DWORD)UNSCALE_RADIUS (radius) * 100 / UNSCALE_RADIUS (EARTH_RADIUS));
-		fprintf (stderr, "\tOrbital Distance   : %d.%02d AU\n", radius / 100, radius % 100);
-		//fprintf (stderr, "\tPlanetary Mass : %d.%02d Earth masses\n",
+		log_add (log_Debug, "\tOrbital Distance   : %d.%02d AU", radius / 100, radius % 100);
+		//log_add (log_Debug, "\tPlanetary Mass : %d.%02d Earth masses",
 		// SysInfoPtr->PlanetInfo.PlanetMass / 100,
 		// SysInfoPtr->PlanetInfo.PlanetMass % 100);
-		fprintf (stderr, "\tPlanetary Radius   : %d.%02d Earth radii\n",
+		log_add (log_Debug, "\tPlanetary Radius   : %d.%02d Earth radii",
 				SysInfoPtr->PlanetInfo.PlanetRadius / 100,
 				SysInfoPtr->PlanetInfo.PlanetRadius % 100);
-		fprintf (stderr, "\tSurface Gravity: %d.%02d gravities\n",
+		log_add (log_Debug, "\tSurface Gravity: %d.%02d gravities",
 				SysInfoPtr->PlanetInfo.SurfaceGravity / 100,
 				SysInfoPtr->PlanetInfo.SurfaceGravity % 100);
-		fprintf (stderr, "\tSurface Temperature: %d degrees C\n",
+		log_add (log_Debug, "\tSurface Temperature: %d degrees C",
 				SysInfoPtr->PlanetInfo.SurfaceTemperature );
-		fprintf (stderr, "\tAxial Tilt : %d degrees\n",
+		log_add (log_Debug, "\tAxial Tilt : %d degrees",
 				abs (SysInfoPtr->PlanetInfo.AxialTilt));
-		fprintf (stderr, "\tTectonics : Class %u\n",
+		log_add (log_Debug, "\tTectonics : Class %u",
 				SysInfoPtr->PlanetInfo.Tectonics + 1);
-		fprintf (stderr, "\tAtmospheric Density: %u.%02u ",
+		log_add (log_Debug, "\tAtmospheric Density: %u.%02u",
 				SysInfoPtr->PlanetInfo.AtmoDensity / EARTH_ATMOSPHERE,
 				(SysInfoPtr->PlanetInfo.AtmoDensity * 100 / EARTH_ATMOSPHERE) % 100);
 		if (SysInfoPtr->PlanetInfo.AtmoDensity == 0)
 		{
-			fprintf (stderr, "(Vacuum)\n");
+			log_add (log_Debug, "\tAtmosphere: (Vacuum)");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < THIN_ATMOSPHERE)
 		{
-			fprintf (stderr, "(Thin)\n");
+			log_add (log_Debug, "\tAtmosphere: (Thin)");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < NORMAL_ATMOSPHERE)
 		{
-			fprintf (stderr, "(Normal)\n");
+			log_add (log_Debug, "\tAtmosphere: (Normal)");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < THICK_ATMOSPHERE)
 		{
-			fprintf (stderr, "(Thick)\n");
+			log_add (log_Debug, "\tAtmosphere: (Thick)");
 		}
 		else if (SysInfoPtr->PlanetInfo.AtmoDensity < SUPER_THICK_ATMOSPHERE)
 		{
-			fprintf (stderr, "(Super thick)\n");
+			log_add (log_Debug, "\tAtmosphere: (Super thick)");
 		}
 		else
 		{
-			fprintf (stderr, "(Gas Giant atmosphere)\n");
+			log_add (log_Debug, "\tAtmosphere: (Gas Giant)");
 		}
 
-		fprintf (stderr, "\tWeather   : Class %u\n",
+		log_add (log_Debug, "\tWeather   : Class %u",
 				SysInfoPtr->PlanetInfo.Weather + 1);
 
 		if (SysInfoPtr->PlanetInfo.RotationPeriod >= 480)
 		{
-			fprintf (stderr, "\tLength of day  : %d.%d Earth days\n",
+			log_add (log_Debug, "\tLength of day  : %d.%d Earth days",
 					SysInfoPtr->PlanetInfo.RotationPeriod / 240,
 					SysInfoPtr->PlanetInfo.RotationPeriod % 240);
 		}
 		else
 		{
-			fprintf (stderr, "\tLength of day  : %d.%d Earth hours\n",
+			log_add (log_Debug, "\tLength of day  : %d.%d Earth hours",
 					SysInfoPtr->PlanetInfo.RotationPeriod / 10,
 					SysInfoPtr->PlanetInfo.RotationPeriod % 10);
 		}

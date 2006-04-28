@@ -22,7 +22,7 @@
 
 #include "audiodrv_openal.h"
 #include "libs/tasklib.h"
-
+#include "libs/log.h"
 #include <stdlib.h>
 
 
@@ -115,7 +115,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 	
-	fprintf (stderr, "Initializing OpenAL.\n");
+	log_add (log_Always, "Initializing OpenAL.");
 #ifdef WIN32
 	alcDevice = alcOpenDevice ((ALubyte*)"DirectSound3D");
 #else
@@ -124,7 +124,8 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 
 	if (!alcDevice)
 	{
-		fprintf (stderr,"Couldn't initialize OpenAL: %d\n", alcGetError (NULL));
+		log_add (log_Always, "Couldn't initialize OpenAL: %d",
+				alcGetError (NULL));
 		return -1;
 	}
 
@@ -134,22 +135,37 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	alcContext = alcCreateContext (alcDevice, NULL);
 	if (!alcContext)
 	{
-		fprintf (stderr, "Couldn't create OpenAL context: %d\n", alcGetError (alcDevice));
+		log_add (log_Always, "Couldn't create OpenAL context: %d",
+				alcGetError (alcDevice));
+		alcCloseDevice (alcDevice);
+		alcDevice = NULL;
+		return -1;
 	}
 
 	alcMakeContextCurrent (alcContext);
 
-	fprintf (stderr, "OpenAL initialized.\n");
-	fprintf (stderr, "    version:     %s\n", alGetString (AL_VERSION));
-	fprintf (stderr, "    vendor:      %s\n", alGetString (AL_VENDOR));
-	fprintf (stderr, "    renderer:    %s\n", alGetString (AL_RENDERER));
-	fprintf (stderr, "    device:      %s\n",
-		alcGetString (alcDevice, ALC_DEFAULT_DEVICE_SPECIFIER));
-    //fprintf (stderr, "    extensions:  %s\n", alGetString (AL_EXTENSIONS));
+	log_add (log_Always, "OpenAL initialized.\n"
+			"    version:     %s\n",
+			"    vendor:      %s\n",
+			"    renderer:    %s\n",
+			"    device:      %s",
+			alGetString (AL_VERSION), alGetString (AL_VENDOR),
+			alGetString (AL_RENDERER),
+			alcGetString (alcDevice, ALC_DEFAULT_DEVICE_SPECIFIER));
+    //log_add (log_Info, "    extensions:  %s", alGetString (AL_EXTENSIONS));
 		
-	fprintf (stderr, "Initializing sound decoders.\n");
-	SoundDecoder_Init (flags, &formats);
-	fprintf (stderr, "Sound decoders initialized.\n");
+	log_add (log_Always, "Initializing sound decoders.");
+	if (SoundDecoder_Init (flags, &formats))
+	{
+		log_add (log_Always, "Sound decoders initialization failed.");
+		alcMakeContextCurrent (NULL);
+		alcDestroyContext (alcContext);
+		alcContext = NULL;
+		alcCloseDevice (alcDevice);
+		alcDevice = NULL;
+		return -1;
+	}
+	log_add (log_Always, "Sound decoders initialized.");
 
 	alListenerfv (AL_POSITION, listenerPos);
 	alListenerfv (AL_VELOCITY, listenerVel);
@@ -250,7 +266,7 @@ openAL_GetError (void)
 		case AL_OUT_OF_MEMORY:
 			return audio_OUT_OF_MEMORY;
 		default:
-			fprintf (stderr, "openAL_GetError: unknown value %x\n", value);
+			log_add (log_Debug, "openAL_GetError: unknown value %x", value);
 			return audio_DRIVER_FAILURE;
 			break;
 	}
@@ -323,7 +339,7 @@ openAL_GetSourcei (audio_Object srcobj, audio_SourceProp pname,
 				*value = audio_PAUSED;
 				break;
 			default:
-				fprintf (stderr, "openAL_GetSourcei(): unknown value %x\n",
+				log_add (log_Debug, "openAL_GetSourcei(): unknown value %x",
 						*value);
 				*value = audio_DRIVER_FAILURE;
 		}

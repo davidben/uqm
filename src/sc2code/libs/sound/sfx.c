@@ -17,6 +17,7 @@
 #include "options.h"
 #include "sound.h"
 #include "libs/reslib.h"
+#include "libs/log.h"
 #include <math.h>
 
 
@@ -121,7 +122,7 @@ UpdateSoundPosition (COUNT channel, SoundPosition pos)
 		}
 
 		audio_Sourcefv (soundSource[channel].handle, audio_POSITION, fpos);
-		//fprintf (stderr, "UpdateSoundPosition(): channel %d, pos %d %d, posobj %x\n",
+		//log_add (log_Debug, "UpdateSoundPosition(): channel %d, pos %d %d, posobj %x",
 		//		channel, pos.x, pos.y, (unsigned int)soundSource[channel].positional_object);
 	}
 	else
@@ -210,7 +211,7 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 	{
 		if (sscanf(CurrentLine, "%s", &filename[n]) == 1)
 		{
-			fprintf (stderr, "_GetSoundBankData(): loading %s\n", filename);
+			log_add (log_Info, "_GetSoundBankData(): loading %s", filename);
 
 			sndfx[snd_ct] = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
 
@@ -218,7 +219,7 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 					filename, 4096, 0, 0);
 			if (!sndfx[snd_ct]->decoder)
 			{
-				fprintf (stderr, "_GetSoundBankData(): couldn't load %s\n", filename);
+				log_add (log_Warning, "_GetSoundBankData(): couldn't load %s", filename);
 				HFree (sndfx[snd_ct]);
 			}
 			else
@@ -226,7 +227,7 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 				uint32 decoded_bytes;
 
 				decoded_bytes = SoundDecoder_DecodeAll (sndfx[snd_ct]->decoder);
-				//fprintf (stderr, "_GetSoundBankData(): decoded_bytes %d\n", decoded_bytes);
+				log_add (log_Info, "_GetSoundBankData(): decoded_bytes %d", decoded_bytes);
 				
 				sndfx[snd_ct]->num_buffers = 1;
 				sndfx[snd_ct]->buffer = (audio_Object *) HMalloc (
@@ -244,7 +245,7 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 		}
 		else
 		{
-			fprintf (stderr, "_GetSoundBankData: Bad file!\n");
+			log_add (log_Warning, "_GetSoundBankData: Bad file!");
 		}
 
 		// pkunk insult fix 2002/11/12 (ftell shouldn't be needed for loop to terminate)

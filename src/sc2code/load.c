@@ -29,7 +29,7 @@
 #include "state.h"
 
 #include "libs/tasklib.h"
-
+#include "libs/log.h"
 
 //#define DEBUG_LOAD
 
@@ -172,8 +172,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 				1 /* time to destroy all races, plenty */ +
 				25 /* for cheaters */)
 		{
-			fprintf (stderr, "Warning: Savegame corrupt or from an "
-					"an incompatible platform.\n");
+			log_add (log_Always, "Warning: Savegame corrupt or from an "
+					"an incompatible platform.");
 			res_CloseResFile (in_fp);
 			return FALSE;
 		}
@@ -218,7 +218,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		// But if it does happen, it needs to be reset to 0, since on load
 		// the clock semaphore is gauranteed to be 0
 		if (GLOBAL (GameClock.TimeCounter) != 0)
-			fprintf (stderr, "Warning: Game clock wasn't stopped during "
+			log_add (log_Always, "Warning: Game clock wasn't stopped during "
 					"save, Savegame may be corrupt!\n");
 		GLOBAL (GameClock.TimeCounter) = 0;
 
@@ -230,7 +230,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		cread ((PBYTE)&num_links, sizeof (num_links), 1, fh);
 		{
 #ifdef DEBUG_LOAD
-			fprintf (stderr, "EVENTS:\n");
+			log_add (log_Debug, "EVENTS:");
 #endif /* DEBUG_LOAD */
 			while (num_links--)
 			{
@@ -243,7 +243,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 				cread ((PBYTE)EventPtr, sizeof (*EventPtr), 1, fh);
 
 #ifdef DEBUG_LOAD
-			fprintf (stderr, "\t%u/%u/%u -- %u\n",
+			log_add (log_Debug, "\t%u/%u/%u -- %u",
 					EventPtr->month_index,
 					EventPtr->day_index,
 					EventPtr->year_index,

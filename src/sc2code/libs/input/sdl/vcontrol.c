@@ -6,6 +6,7 @@
 #include "vcontrol.h"
 #include "vcontrol_malloc.h"
 #include "keynames.h"
+#include "libs/log.h"
 
 /* How many binding slots are allocated at once. */
 #define POOL_CHUNK_SIZE 64
@@ -97,7 +98,7 @@ create_joystick (int index)
 	int axes, buttons, hats;
 	if (index >= joycount)
 	{
-		fprintf (stderr, "VControl warning: Tried to open a non-existent joystick!");
+		log_add (log_Warning, "VControl warning: Tried to open a non-existent joystick!");
 		return;
 	}
 	if (joysticks[index].stick)
@@ -110,11 +111,11 @@ create_joystick (int index)
 	{
 		joystick *x = &joysticks[index];
 		int j;
-		fprintf (stderr, "VControl opened joystick: %s\n", SDL_JoystickName (index));
+		log_add (log_Info, "VControl opened joystick: %s", SDL_JoystickName (index));
 		axes = SDL_JoystickNumAxes (stick);
 		buttons = SDL_JoystickNumButtons (stick);
 		hats = SDL_JoystickNumHats (stick);
-		fprintf (stderr, "%d axes, %d buttons, %d hats.\n", axes, buttons, hats);
+		log_add (log_Info, "%d axes, %d buttons, %d hats.", axes, buttons, hats);
 		x->numaxes = axes;
 		x->numbuttons = buttons;
 		x->numhats = hats;
@@ -139,7 +140,7 @@ create_joystick (int index)
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Could not initialize joystick #%d\n", index);
+		log_add (log_Warning, "VControl: Could not initialize joystick #%d", index);
 	}
 }
 			
@@ -238,7 +239,7 @@ VControl_SetJoyThreshold (int port, int threshold)
 	}
 	else
 	{
-		// fprintf (stderr, "VControl_SetJoyThreshold passed illegal port %d\n", port);
+		// log_add (log_Warning, "VControl_SetJoyThreshold passed illegal port %d", port);
 		return -1;
 	}
 }
@@ -293,7 +294,7 @@ add_binding (keybinding **newptr, int *target)
 	/* Sanity check. */
 	if (!newbinding)
 	{
-		fprintf (stderr, "add_binding failed to find a free binding slot!\n");
+		log_add (log_Warning, "add_binding failed to find a free binding slot!");
 		return;
 	}
 
@@ -378,7 +379,7 @@ VControl_AddBinding (SDL_Event *e, int *target)
 		result = VControl_AddJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
 		break;
 	default:
-		fprintf (stderr, "VControl_AddBinding didn't understand argument event\n");
+		log_add (log_Warning, "VControl_AddBinding didn't understand argument event");
 		result = -1;
 		break;
 	}
@@ -403,7 +404,7 @@ VControl_RemoveBinding (SDL_Event *e, int *target)
 		VControl_RemoveJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
 		break;
 	default:
-		fprintf (stderr, "VControl_RemoveBinding didn't understand argument event\n");
+		log_add (log_Warning, "VControl_RemoveBinding didn't understand argument event");
 		break;
 	}
 }
@@ -412,7 +413,7 @@ int
 VControl_AddKeyBinding (SDLKey symbol, int *target)
 {
 	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
-		fprintf (stderr, "VControl: Illegal key index %d\n", symbol);
+		log_add (log_Warning, "VControl: Illegal key index %d", symbol);
 		return -1;
 	}
 	add_binding(&bindings[symbol], target);
@@ -423,7 +424,7 @@ void
 VControl_RemoveKeyBinding (SDLKey symbol, int *target)
 {
 	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
-		fprintf (stderr, "VControl: Illegal key index %d\n", symbol);
+		log_add (log_Warning, "VControl: Illegal key index %d", symbol);
 		return;
 	}
 	remove_binding (&bindings[symbol], target);
@@ -449,19 +450,19 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 			}
 			else
 			{
-				// fprintf (stderr, "VControl: Attempted to bind to polarity zero\n");
+				log_add (log_Debug, "VControl: Attempted to bind to polarity zero");
 				return -1;
 			}
 		}
 		else
 		{
-			// fprintf (stderr, "VControl: Attempted to bind to illegal axis %d\n", axis);
+			// log_add (log_Debug, "VControl: Attempted to bind to illegal axis %d", axis);
 			return -1;
 		}
 	}
 	else
 	{
-		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
 	}
 	return 0;
@@ -487,17 +488,17 @@ VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 			}
 			else
 			{
-				fprintf (stderr, "VControl: Attempted to unbind from polarity zero\n");
+				log_add (log_Debug, "VControl: Attempted to unbind from polarity zero");
 			}
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to unbind from illegal axis %d\n", axis);
+			log_add (log_Debug, "VControl: Attempted to unbind from illegal axis %d", axis);
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to unbind from illegal port %d\n", port);
+		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
 }
 
@@ -516,13 +517,13 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 		}
 		else
 		{
-			// fprintf (stderr, "VControl: Attempted to bind to illegal button %d\n", button);
+			// log_add (log_Debug, "VControl: Attempted to bind to illegal button %d", button);
 			return -1;
 		}
 	}
 	else
 	{
-		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
 	}
 }
@@ -541,12 +542,12 @@ VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to unbind from illegal button %d\n", button);
+			log_add (log_Debug, "VControl: Attempted to unbind from illegal button %d", button);
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to unbind from illegal port %d\n", port);
+		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
 }
 
@@ -578,20 +579,20 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 			}
 			else
 			{
-				// fprintf (stderr, "VControl: Attempted to bind to illegal direction\n");
+				// log_add (log_Debug, "VControl: Attempted to bind to illegal direction");
 				return -1;
 			}
 			return 0;
 		}
 		else
 		{
-			// fprintf (stderr, "VControl: Attempted to bind to illegal hat %d\n", which);
+			// log_add (log_Debug, "VControl: Attempted to bind to illegal hat %d", which);
 			return -1;
 		}
 	}
 	else
 	{
-		// fprintf (stderr, "VControl: Attempted to bind to illegal port %d\n", port);
+		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
 	}
 }
@@ -624,17 +625,17 @@ VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target)
 			}
 			else
 			{
-				fprintf (stderr, "VControl: Attempted to unbind from illegal direction\n");
+				log_add (log_Debug, "VControl: Attempted to unbind from illegal direction");
 			}
 		}
 		else
 		{
-			fprintf (stderr, "VControl: Attempted to unbind from illegal hat %d\n", which);
+			log_add (log_Debug, "VControl: Attempted to unbind from illegal hat %d", which);
 		}
 	}
 	else
 	{
-		fprintf (stderr, "VControl: Attempted to unbind from illegal port %d\n", port);
+		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
 }
 
@@ -1213,7 +1214,8 @@ next_line (parse_state *state, uio_Stream *in)
 static void
 expected_error (parse_state *state, char *expected)
 {
-	fprintf (stderr, "VControl: Expected '%s' on config file line %d\n", expected, state->linenum);
+	log_add (log_Warning, "VControl: Expected '%s' on config file line %d",
+			expected, state->linenum);
 	state->error = 1;
 }
 
@@ -1233,7 +1235,8 @@ consume_keyname (parse_state *state)
 	int keysym = VControl_name2code (state->token);
 	if (!keysym)
 	{
-		fprintf (stderr, "VControl: Illegal key name '%s' on config file line %d\n", state->token, state->linenum);
+		log_add (log_Warning, "VControl: Illegal key name '%s' on config file line %d",
+				state->token, state->linenum);
 		state->error = 1;
 	}
 	next_token (state);
@@ -1252,7 +1255,8 @@ consume_idname (parse_state *state)
 
 	if (index == 0)
 	{
-		fprintf (stderr, "VControl: Can't happen: blank token to consume_idname (line %d)\n", state->linenum);
+		log_add (log_Debug, "VControl: Can't happen: blank token to consume_idname (line %d)",
+				state->linenum);
 		state->error = 1;
 		return NULL;
 	}
@@ -1270,7 +1274,8 @@ consume_idname (parse_state *state)
 
 	if (!result)
 	{
-		fprintf (stderr, "VControl: Illegal command type '%s' on config file line %d\n", state->token, state->linenum);
+		log_add (log_Warning, "VControl: Illegal command type '%s' on config file line %d",
+				state->token, state->linenum);
 		state->error = 1;
 	}
 	next_token (state);
@@ -1284,7 +1289,8 @@ consume_num (parse_state *state)
 	int result = strtol (state->token, &end, 10);
 	if (*end != '\0')
 	{
-		fprintf (stderr, "VControl: Expected integer on config line %d\n", state->linenum);
+		log_add (log_Warning, "VControl: Expected integer on config line %d",
+				state->linenum);
 		state->error = 1;
 	}
 	next_token (state);
@@ -1490,7 +1496,7 @@ VControl_ReadConfiguration (uio_Stream *in)
 	parse_state ps;
 	if (!in)
 	{
-		fprintf (stderr, "VControl: Invalid configuration file stream\n");
+		log_add (log_Warning, "VControl: Invalid configuration file stream");
 		return 1;
 	}
 	ps.linenum = 0;
@@ -1542,7 +1548,7 @@ VControl_TokenizeFile (FILE *in)
 	parse_state ps;
 	if (!in)
 	{
-		fprintf (stderr, "VControl: Invalid configuration file stream\n");
+		log_add (log_Warning, "VControl: Invalid configuration file stream");
 		return;
 	}
 	ps.linenum = 0;

@@ -19,7 +19,7 @@
 #include "gfxintrn.h"
 #include "tfb_prim.h"
 #include "gfxother.h"
-
+#include "libs/log.h"
 
 extern void FixContextFontEffect (void);
 static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
@@ -333,9 +333,7 @@ getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
 	}
 	else
 	{
-#ifdef DEBUG
-		fprintf (stderr, "Character %u not present\n", (unsigned int) ch);
-#endif
+		log_add (log_Debug, "Character %u not present", (unsigned int) ch);
 		return NULL;
 	}
 }

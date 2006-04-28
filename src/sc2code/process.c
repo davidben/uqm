@@ -27,7 +27,7 @@
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/gfx_common.h"
-
+#include "libs/log.h"
 
 //#define DEBUG_PROCESS
 
@@ -198,7 +198,7 @@ CalcReduction (SIZE dx, SIZE dy)
 	COUNT next_reduction;
 
 #ifdef KDEBUG
-	fprintf (stderr, "CalcReduction:\n");
+	log_add (log_Debug, "CalcReduction:");
 #endif
 
 	if (optMeleeScale == TFB_SCALE_STEP)
@@ -263,7 +263,7 @@ CalcReduction (SIZE dx, SIZE dy)
 	}
 
 #ifdef KDEBUG
-	fprintf (stderr, "CalcReduction: exit\n");
+	log_add (log_Debug, "CalcReduction: exit");
 #endif
 
 	return (next_reduction);
@@ -277,7 +277,7 @@ CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 	VIEW_STATE view_state;
 
 #ifdef KDEBUG
-	fprintf (stderr, "CalcView:\n");
+	log_add (log_Debug, "CalcView:");
 #endif
 	dx = ((COORD)(LOG_SPACE_WIDTH >> 1) - pNewScrollPt->x);
 	dy = ((COORD)(LOG_SPACE_HEIGHT >> 1) - pNewScrollPt->y);
@@ -340,7 +340,7 @@ CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 	*pdy = dy;
 
 #ifdef KDEBUG
-	fprintf (stderr, "CalcView: exit\n");
+	log_add (log_Debug, "CalcView: exit");
 #endif
 	return (view_state);
 }
@@ -388,7 +388,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 						&& !((state_flags | test_state_flags) & FINITE_LIFE))
 				{
 #ifdef DEBUG_PROCESS
-					fprintf (stderr, "BAD NEWS 0x%x <--> 0x%x\n", ElementPtr,
+					log_add (log_Debug, "BAD NEWS 0x%x <--> 0x%x", ElementPtr,
 							TestElementPtr);
 #endif /* DEBUG_PROCESS */
 					if (state_flags & COLLISION)
@@ -510,7 +510,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 				POINT SavePt, TestSavePt;
 
 #ifdef DEBUG_PROCESS
-				fprintf (stderr, "0x%x <--> 0x%x at %u\n", ElementPtr,
+				log_add (log_Debug, "0x%x <--> 0x%x at %u", ElementPtr,
 						TestElementPtr, time_val);
 #endif /* DEBUG_PROCESS */
 				SavePt = ElementPtr->IntersectControl.EndPoint;
@@ -532,7 +532,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 					test_state_flags = TestElementPtr->state_flags;
 
 #ifdef DEBUG_PROCESS
-					fprintf (stderr, "PROCESSING 0x%x <--> 0x%x at %u\n",
+					log_add (log_Debug, "PROCESSING 0x%x <--> 0x%x at %u",
 							ElementPtr, TestElementPtr, time_val);
 #endif /* DEBUG_PROCESS */
 					if (test_state_flags & PLAYER_SHIP)
@@ -625,7 +625,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	COUNT ships_alive;
 
 #ifdef KDEBUG
-	fprintf (stderr, "PreProcess:\n");
+	log_add (log_Debug, "PreProcess:");
 #endif
 	num_ships = (LOBYTE (battle_counter) ? 1 : 0)
 			+ (HIBYTE (battle_counter) ? 1 : 0);
@@ -710,7 +710,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 						|| reduction < min_reduction)
 					min_reduction = reduction;
 			}
-//			fprintf (stderr, "dx = %d dy = %d min_red = %d max_red = %d\n",
+//			log_add (log_Debug, "dx = %d dy = %d min_red = %d max_red = %d",
 //					dx, dy, min_reduction, max_reduction);
 		}
 
@@ -729,7 +729,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	}
 
 #ifdef KDEBUG
-	fprintf (stderr, "PreProcess: exit\n");
+	log_add (log_Debug, "PreProcess: exit");
 #endif
 	return (CalcView (&Origin, min_reduction, pscroll_x, pscroll_y, ships_alive));
 }
@@ -793,7 +793,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 	HELEMENT hElement;
 
 #ifdef KDEBUG
-	fprintf (stderr, "PostProcess:\n");
+	log_add (log_Debug, "PostProcess:");
 #endif
 	if (optMeleeScale == TFB_SCALE_STEP)
 		reduction = zoom_out + ONE_SHIFT;
@@ -976,7 +976,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 		hElement = hNextElement;
 	}
 #ifdef KDEBUG
-	fprintf (stderr, "PostProcess: exit\n");
+	log_add (log_Debug, "PostProcess: exit");
 #endif
 }
 

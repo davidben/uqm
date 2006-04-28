@@ -22,6 +22,7 @@
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 #include "libs/misc.h"
+#include "libs/log.h"
 #include "thrcommon.h"
 
 #define LIFECYCLE_SIZE 8
@@ -85,8 +86,8 @@ FlagStartThread (SpawnRequest s)
 			return NULL;
 		}
 	}
-	fprintf (stderr, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.\n", LIFECYCLE_SIZE);
-	exit (-1);
+	log_add (log_Always, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
+	exit (EXIT_FAILURE);
 }
 
 void
@@ -103,8 +104,8 @@ FinishThread (Thread thread)
 			return;
 		}
 	}
-	fprintf (stderr, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.\n", LIFECYCLE_SIZE);
-	exit (-1);
+	log_add (log_Always, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
+	exit (EXIT_FAILURE);
 }
 
 /* Only call from main thread! */

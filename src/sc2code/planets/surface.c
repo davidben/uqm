@@ -19,6 +19,7 @@
 #include "lifeform.h"
 #include "planets.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 //#define DEBUG_SURFACE
@@ -77,7 +78,7 @@ CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
 					);
 			SysInfoPtr->PlanetInfo.CurType = eptr->ElementType;
 #ifdef DEBUG_SURFACE
-			fprintf (stderr, "\t\t%d units of %Fs\n",
+			log_add (log_Debug, "\t\t%d units of %Fs",
 					SysInfoPtr->PlanetInfo.CurDensity,
 					Elements[eptr->ElementType].name);
 #endif /* DEBUG_SURFACE */
@@ -241,7 +242,7 @@ CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
 		}
 #ifdef DEBUG_SURFACE
 		else
-			fprintf (stderr, "It's dead, Jim! (%d >= %d)\n", life_var,
+			log_add (log_Debug, "It's dead, Jim! (%d >= %d)", life_var,
 				SysInfoPtr->PlanetInfo.LifeChance);
 #endif /* DEBUG_SURFACE */
 	}

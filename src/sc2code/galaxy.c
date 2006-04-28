@@ -27,7 +27,7 @@
 #include "libs/gfxlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
-
+#include "libs/log.h"
 
 extern COUNT zoom_out;
 extern PRIM_LINKS DisplayLinks;
@@ -238,7 +238,9 @@ InitGalaxy (void)
 	PPOINT ppt;
 	PRIM_LINKS Links;
 
-// fprintf (stderr, "transition_width = %d transition_height = %d\n", TRANSITION_WIDTH, TRANSITION_HEIGHT);
+	log_add (log_Debug, "InitGalaxy(): transition_width = %d, "
+			"transition_height = %d",
+			TRANSITION_WIDTH, TRANSITION_HEIGHT);
 
 	Links = MakeLinks (END_OF_LIST, END_OF_LIST);
 	factor = ONE_SHIFT + MAX_REDUCTION + (BACKGROUND_SHIFT - 3);

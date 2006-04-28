@@ -21,6 +21,7 @@
 #include "controls.h"
 #include "globdata.h"
 #include "setup.h"
+#include "libs/log.h"
 
 #include <stdio.h>
 
@@ -62,7 +63,7 @@ computer_intelligence (void)
 			}
 			default:
 				// Should not happen. Satisfying compiler.
-				fprintf (stderr, "Warning: Unexpected state in "
+				log_add (log_Warning, "Warning: Unexpected state in "
 						"computer_intelligence().");
 				InputState = 0;
 				break;

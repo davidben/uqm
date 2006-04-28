@@ -26,6 +26,7 @@
 #include "tfb_draw.h"
 #include "tfb_prim.h"
 #include "cmap.h"
+#include "libs/log.h"
 
 void
 TFB_Prim_Point (PPOINT p, TFB_Palette *color)
@@ -125,7 +126,8 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
 	if (!SrcFramePtr)
 	{
-		fprintf (stderr, "TFB_Prim_Stamp: Tried to draw a NULL frame  (Stamp address = %p)\n", stmp);
+		log_add (log_Warning, "TFB_Prim_Stamp: Tried to draw a NULL frame"
+				" (Stamp address = %p)", stmp);
 		return;
 	}
 	img = SrcFramePtr->image;
@@ -133,7 +135,7 @@ TFB_Prim_Stamp (PSTAMP stmp)
 	
 	if (!img)
 	{
-		fprintf (stderr, "Non-existent image to TFB_Prim_Stamp()\n");
+		log_add (log_Warning, "Non-existent image to TFB_Prim_Stamp()");
 		return;
 	}
 
@@ -173,7 +175,8 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 	SrcFramePtr = (PFRAME_DESC)stmp->frame;
 	if (!SrcFramePtr)
 	{
-		fprintf (stderr, "TFB_Prim_StampFill: Tried to draw a NULL frame  (Stamp address = %p)\n", stmp);
+		log_add (log_Warning, "TFB_Prim_StampFill: Tried to draw a NULL frame"
+				" (Stamp address = %p)", stmp);
 		return;
 	}
 	img = SrcFramePtr->image;
@@ -181,7 +184,7 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 
 	if (!img)
 	{
-		fprintf (stderr, "Non-existent image to TFB_Prim_StampFill()\n");
+		log_add (log_Warning, "Non-existent image to TFB_Prim_StampFill()");
 		return;
 	}
 

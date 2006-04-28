@@ -16,7 +16,8 @@
 
 #include <assert.h>
 #include "sound.h"
-#include "../tasklib.h"
+#include "libs/tasklib.h"
+#include "libs/log.h"
 
 
 void
@@ -58,9 +59,11 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope,
 		uint32 decoded_bytes;
 
 		decoded_bytes = SoundDecoder_Decode (sample->decoder);
-		//fprintf (stderr, "PlayStream(): source %d filename:%s start: %d position:%d bytes %d\n", source, 
-		//		sample->decoder->filename, sample->decoder->start_sample, 
-		//		sample->decoder->pos, decoded_bytes);
+#if 0		
+		log_add (log_Debug, "PlayStream(): source:%d filename:%s start:%d position:%d bytes:%d\n",
+				source, sample->decoder->filename, sample->decoder->start_sample,
+				sample->decoder->pos, decoded_bytes);
+#endif
 		if (decoded_bytes == 0)
 			break;
 		
@@ -245,8 +248,8 @@ StreamDecoderTaskFunc (void *data)
 					if (queued == 0 && soundSource[i].sample->decoder->error
 							== SOUNDDECODER_EOF)
 					{
-						fprintf (stderr, "StreamDecoderTaskFunc(): "
-								"finished playing %s, source %d\n",
+						log_add (log_Info, "StreamDecoderTaskFunc(): "
+								"finished playing %s, source %d",
 								soundSource[i].sample->decoder->filename, i);
 						soundSource[i].stream_should_be_playing = FALSE;
 						if (soundSource[i].sample->callbacks.OnEndStream)
@@ -255,15 +258,18 @@ StreamDecoderTaskFunc (void *data)
  					}
 					else
  					{
-						fprintf (stderr, "StreamDecoderTaskFunc(): buffer "
-								"underrun when playing %s, source %d\n",
+						log_add (log_Warning, "StreamDecoderTaskFunc(): buffer "
+								"underrun when playing %s, source %d",
 								soundSource[i].sample->decoder->filename, i);
 						audio_SourcePlay (soundSource[i].handle);
 					}
 				}
 			}
             
-			//fprintf (stderr, "StreamDecoderTaskFunc(): source %d, processed %d queued %d\n", i, processed, queued);
+#if 0
+			log_add (log_Debug, "StreamDecoderTaskFunc(): source %d, processed %d queued %d",
+					i, processed, queued);
+#endif
 
 			while (processed)
 			{
@@ -278,9 +284,9 @@ StreamDecoderTaskFunc (void *data)
 				error = audio_GetError();
 				if (error != audio_NO_ERROR)
 				{
-					fprintf (stderr, "StreamDecoderTaskFunc(): OpenAL "
+					log_add (log_Warning, "StreamDecoderTaskFunc(): OpenAL "
 							"error after alSourceUnqueueBuffers: %x, "
-							"file %s, source %d\n", error,
+							"file %s, source %d", error,
 							soundSource[i].sample->decoder->filename, i);
 					break;
 				}
@@ -315,14 +321,21 @@ StreamDecoderTaskFunc (void *data)
 								!soundSource[i].sample->callbacks.OnEndChunk (
 									soundSource[i].sample, last_buffer[i]))
 						{
-							//fprintf (stderr, "StreamDecoderTaskFunc(): decoder->error is eof for %s\n", soundSource[i].sample->decoder->filename);
+#if 0
+							log_add (log_Debug, "StreamDecoderTaskFunc(): decoder->error is eof for %s",
+									soundSource[i].sample->decoder->filename);
+#endif
 							processed--;
 							continue;
 						}
 					}
 					else
 					{
-						//fprintf (stderr, "StreamDecoderTaskFunc(): decoder->error is %d for %s\n", soundSource[i].sample->decoder->error, soundSource[i].sample->decoder->filename);
+#if 0						
+						log_add (log_Debug, "StreamDecoderTaskFunc(): decoder->error is %d for %s",
+								soundSource[i].sample->decoder->error,
+								soundSource[i].sample->decoder->filename);
+#endif
 						processed--;
 						continue;
 					}
@@ -333,9 +346,9 @@ StreamDecoderTaskFunc (void *data)
 				if (soundSource[i].sample->decoder->error ==
 						SOUNDDECODER_ERROR)
 				{
-					fprintf (stderr, "StreamDecoderTaskFunc(): "
+					log_add (log_Warning, "StreamDecoderTaskFunc(): "
 							"SoundDecoder_Decode error %d, file %s, "
-							"source %d\n",
+							"source %d",
 							soundSource[i].sample->decoder->error,
 							soundSource[i].sample->decoder->filename, i);
 					soundSource[i].stream_should_be_playing = FALSE;
@@ -354,9 +367,9 @@ StreamDecoderTaskFunc (void *data)
 					error = audio_GetError();
 					if (error != audio_NO_ERROR)
 					{
-						fprintf (stderr, "StreamDecoderTaskFunc(): "
+						log_add (log_Warning, "StreamDecoderTaskFunc(): "
 								"TFBSound error after audio_BufferData: "
-								"%x, file %s, source %d, decoded_bytes %d\n",
+								"%x, file %s, source %d, decoded_bytes %d",
 							error, soundSource[i].sample->decoder->filename,
 							i, decoded_bytes);
 					}
@@ -393,7 +406,6 @@ StreamDecoderTaskFunc (void *data)
 							
 							if (j - soundSource[i].sbuf_start >= 1)
 							{
-								//fprintf (stderr, "copying_a to %d - %d, %d bytes\n", soundSource[i].sbuf_start, j, j - soundSource[i].sbuf_start);
 								memcpy (&sbuffer[soundSource[i].sbuf_start],
 										decoder_buffer,
 										j - soundSource[i].sbuf_start);
@@ -401,7 +413,6 @@ StreamDecoderTaskFunc (void *data)
 
 							if (remaining_bytes)
 							{
-								//fprintf (stderr, "copying_b to 0 - %d\n", remaining_bytes);
 								memcpy (sbuffer, &decoder_buffer[
 										j - soundSource[i].sbuf_start],
 										remaining_bytes);
@@ -416,10 +427,10 @@ StreamDecoderTaskFunc (void *data)
 						error = audio_GetError();
 						if (error != audio_NO_ERROR)
 						{
-							fprintf (stderr, "StreamDecoderTaskFunc(): "
+							log_add (log_Warning, "StreamDecoderTaskFunc(): "
 									"TFBSound error after "
 									"audio_SourceQueueBuffers: %x, file %s, "
-									"source %d, decoded_bytes %d\n", error,
+									"source %d, decoded_bytes %d", error,
 									soundSource[i].sample->decoder->filename,
 									i, decoded_bytes);
 						}

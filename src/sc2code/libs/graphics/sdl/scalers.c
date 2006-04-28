@@ -19,6 +19,7 @@
 #include "types.h"
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/platform.h"
+#include "libs/log.h"
 #include "scalers.h"
 #include "scaleint.h"
 #include "2xscalers.h"
@@ -214,7 +215,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	if ( (!force_platform && (SDL_HasSSE () || SDL_HasMMXExt ()))
 			|| force_platform == SCALEPLAT_SSE)
 	{
-		fprintf (stderr, "Screen scalers are using SSE/MMX-Ext/MMX code\n");
+		log_add (log_Always, "Screen scalers are using SSE/MMX-Ext/MMX code");
 		Scale_Platform = SCALEPLAT_SSE;
 		
 		Scale_SSE_PrepPlatform (fmt);
@@ -223,15 +224,15 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	if ( (!force_platform && SDL_HasAltiVec ())
 			|| force_platform == SCALEPLAT_ALTIVEC)
 	{
-		fprintf (stderr, "Screen scalers would use AltiVec code "
-				"if someone actually wrote it\n");
+		log_add (log_Always, "Screen scalers would use AltiVec code "
+				"if someone actually wrote it");
 		//Scale_Platform = SCALEPLAT_ALTIVEC;
 	}
 	else
 	if ( (!force_platform && SDL_Has3DNow ())
 			|| force_platform == SCALEPLAT_3DNOW)
 	{
-		fprintf (stderr, "Screen scalers are using 3DNow/MMX code\n");
+		log_add (log_Always, "Screen scalers are using 3DNow/MMX code");
 		Scale_Platform = SCALEPLAT_3DNOW;
 		
 		Scale_3DNow_PrepPlatform (fmt);
@@ -240,7 +241,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	if ( (!force_platform && SDL_HasMMX ())
 			|| force_platform == SCALEPLAT_MMX)
 	{
-		fprintf (stderr, "Screen scalers are using MMX code\n");
+		log_add (log_Always, "Screen scalers are using MMX code");
 		Scale_Platform = SCALEPLAT_MMX;
 		
 		Scale_MMX_PrepPlatform (fmt);
@@ -259,15 +260,15 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 			Scale_Platform = SCALEPLAT_C_ABGR;
 		else
 		{	// use slowest default
-			fprintf (stderr, "Scale_PrepPlatform(): "
-					"unknown Red mask (0x%08x)\n", fmt->Rmask);
+			log_add (log_Warning, "Scale_PrepPlatform(): "
+					"unknown Red mask (0x%08x)", fmt->Rmask);
 			Scale_Platform = SCALEPLAT_C;
 		}
 
 		if (Scale_Platform == SCALEPLAT_C)
-			fprintf (stderr, "Screen scalers are using slow generic C code\n");
+			log_add (log_Always, "Screen scalers are using slow generic C code");
 		else
-			fprintf (stderr, "Screen scalers are using optimized C code\n");
+			log_add (log_Always, "Screen scalers are using optimized C code");
 	}
 
 	// Lookup the scaling function

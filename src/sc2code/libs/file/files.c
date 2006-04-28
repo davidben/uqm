@@ -27,6 +27,7 @@
 #include "types.h"
 #include "filintrn.h"
 #include "misc.h"
+#include "libs/log.h"
 
 static int copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,
 		uio_DirHandle *unlinkHandle, const char *unlinkPath, uint8 *buf);
@@ -144,9 +145,7 @@ copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,
 
 	savedErrno = errno;
 
-#ifdef DEBUG
-	fprintf (stderr, "Error while copying: %s\n", strerror (errno));
-#endif
+	log_add (log_Debug, "Error while copying: %s", strerror (errno));
 
 	if (srcHandle != NULL)
 		uio_close (srcHandle);

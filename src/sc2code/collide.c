@@ -21,6 +21,7 @@
 #include "races.h"
 #include "units.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 //#define DEBUG_COLLIDE
@@ -61,10 +62,10 @@ collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
 	}
 
 #ifdef DEBUG_COLLIDE
-	fprintf (stderr, "Centers: <%d, %d> <%d, %d>\n",
+	log_add (log_Debug, "Centers: <%d, %d> <%d, %d>",
 			ElementPtr0->next.location.x, ElementPtr0->next.location.y,
 			ElementPtr1->next.location.x, ElementPtr1->next.location.y);
-	fprintf (stderr, "RelTravelAngle : %d, ImpactAngles <%d, %d>\n",
+	log_add (log_Debug, "RelTravelAngle : %d, ImpactAngles <%d, %d>",
 			RelTravelAngle, ImpactAngle0, ImpactAngle1);
 #endif /* DEBUG_COLLIDE */
 
@@ -83,8 +84,10 @@ collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
 		ElementPtr0->state_flags |= (DEFY_PHYSICS | COLLISION);
 		ElementPtr1->state_flags |= (DEFY_PHYSICS | COLLISION);
 #ifdef DEBUG_COLLIDE
-		fprintf (stderr, "No movement before collision -- <(%d, %d) = %d, (%d, %d) = %d>\n",
-				dx0, dy0, ImpactAngle0 - OCTANT, dx1, dy1, ImpactAngle1 - OCTANT);
+		log_add (log_Debug, "No movement before collision -- "
+				"<(%d, %d) = %d, (%d, %d) = %d>",
+				dx0, dy0, ImpactAngle0 - OCTANT, dx1, dy1,
+				ImpactAngle1 - OCTANT);
 #endif /* DEBUG_COLLIDE */
 	}
 
@@ -172,7 +175,7 @@ collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
 #ifdef DEBUG_COLLIDE
 		GetCurrentVelocityComponents (&ElementPtr0->velocity, &dx0, &dy0);
 		GetCurrentVelocityComponents (&ElementPtr1->velocity, &dx1, &dy1);
-		fprintf (stderr, "After: <%d, %d> <%d, %d>\n\n",
+		log_add (log_Debug, "After: <%d, %d> <%d, %d>\n",
 				dx0, dy0, dx1, dy1);
 #endif /* DEBUG_COLLIDE */
 	}

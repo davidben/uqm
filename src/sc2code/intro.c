@@ -28,6 +28,7 @@
 #include "libs/sound/sound.h"
 //#include "libs/vidlib.h"
 #include "libs/inplib.h"
+#include "libs/log.h"
 
 #include <ctype.h>
 
@@ -576,7 +577,7 @@ DoPresentation (PVOID pIS)
 
 			if (cargs < 1)
 			{
-				fprintf (stderr, "Bad DRAW command '%s'\n", pStr);
+				log_add (log_Warning, "Bad DRAW command '%s'", pStr);
 				continue;
 			}
 			if (cargs < 5)

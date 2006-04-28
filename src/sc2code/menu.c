@@ -23,7 +23,7 @@
 #include "gamestr.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
-
+#include "libs/log.h"
 
 extern Task flash_task;
 extern RECT flash_rect;
@@ -79,7 +79,7 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	r->extent.width += 1;
 	DrawFilledRectangle (r);
 	if (num_items * PC_MENU_HEIGHT > r->extent.height)
-		fprintf (stderr, "Warning, no room for all menu items!\n");
+		log_add (log_Always, "Warning, no room for all menu items!");
 	else
 		r->corner.y += (r->extent.height - num_items * PC_MENU_HEIGHT) / 2;
 	r->extent.height = num_items * PC_MENU_HEIGHT + 4;
@@ -284,7 +284,8 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 				*CurState = PM_ALT_EXITMENU0 - PM_ALT_CARGO;
 				return (TRUE);
 		}
-		fprintf (stderr, "Unknown state combination: %d, %d\n",*BaseState, *CurState);
+		log_add (log_Always, "Unknown state combination: %d, %d",
+				*BaseState, *CurState);
 		return (FALSE);
 	}
 	else

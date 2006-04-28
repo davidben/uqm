@@ -26,6 +26,7 @@
 #include "state.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
+#include "libs/log.h"
 
 #include <stdio.h>
 
@@ -1542,7 +1543,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 			flash_screen_frame = 0;
 		}
 		else
-			fprintf (stderr, "couldn't locate flash_screen_rect\n");
+			log_add (log_Always, "Couldn't locate flash_screen_rect");
 	}
 	
 	if (flash_rect.extent.width)

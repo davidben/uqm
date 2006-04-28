@@ -26,7 +26,7 @@
 #include "units.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
-
+#include "libs/log.h"
 
 //#define DEBUG_CYBORG
 
@@ -308,7 +308,7 @@ InitCyborg (STARSHIPPTR StarShipPtr)
 		char buf[40];
 
 		GetStringContents (StarShipPtr->RaceDescPtr->ship_data.race_strings, buf, FALSE);
-		fprintf (stderr, "MI(%s) -- <%u:%u> = %u\n", buf,
+		log_add (log_Debug, "MI(%s) -- <%u:%u> = %u", buf,
 				StarShipPtr->RaceDescPtr->characteristics.max_thrust *
 				StarShipPtr->RaceDescPtr->characteristics.thrust_increment,
 				Divisor, Index);

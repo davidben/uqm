@@ -18,6 +18,7 @@
 #include "options.h"
 #include "sound.h"
 #include "libs/reslib.h"
+#include "libs/log.h"
 
 
 static MUSIC_REF curMusicRef;
@@ -139,7 +140,7 @@ CheckMusicResName (char* fileName)
 		if (fileExists2 (contentDir, otherName))
 			strcpy (fileName, otherName);
 		else
-			fprintf (stderr, "Requested track '%s' not found!\n", otherName);
+			log_add (log_Warning, "Requested track '%s' not found.", otherName);
 	}
 
 	return fileName;
@@ -171,11 +172,11 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 			filename[sizeof(filename) - 1] = '\0';
 			CheckMusicResName (filename);
 
-			fprintf (stderr, "_GetMusicData(): loading %s\n", filename);
+			log_add (log_Info, "_GetMusicData(): loading %s", filename);
 			if (((*pmus)->decoder = SoundDecoder_Load (contentDir, filename,
 							4096, 0, 0)) == 0)
 			{
-				fprintf (stderr, "_GetMusicData(): couldn't load %s\n", filename);
+				log_add (log_Warning, "_GetMusicData(): couldn't load %s", filename);
 
 				UnlockMusicData (h);
 				mem_release (h);
@@ -183,7 +184,7 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 			}
 			else
 			{
-				fprintf (stderr, "    decoder: %s, rate %d format %x\n",
+				log_add (log_Info, "    decoder: %s, rate %d format %x",
 					SoundDecoder_GetName ((*pmus)->decoder),
 					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
 

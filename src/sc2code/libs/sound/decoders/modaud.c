@@ -29,6 +29,7 @@
 #include "mikmod/mikmod.h"
 #include "mikmod/drv_openal.h"
 #include "libs/sound/audiocore.h"
+#include "libs/log.h"
 #include "modaud.h"
 
 #define THIS_PTR TFB_SoundDecoder* This
@@ -174,7 +175,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 
 	if (MikMod_Init (""))
 	{
-		fprintf (stderr, "MikMod_Init() failed, %s\n", 
+		log_add (log_Always, "MikMod_Init() failed, %s", 
 			MikMod_strerror (MikMod_errno));
 		return false;
 	}
@@ -251,7 +252,7 @@ moda_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	uio_fclose (fp);
 	if (!mod)
 	{
-		fprintf (stderr, "moda_Open(): could not load %s\n", filename);
+		log_add (log_Warning, "moda_Open(): could not load %s", filename);
 		return false;
 	}
 
@@ -305,8 +306,8 @@ moda_Seek (THIS_PTR, uint32 pcm_pos)
 	
 	Player_Start (moda->module);
 	if (pcm_pos)
-		fprintf (stderr, "moda_Seek(): "
-				"non-zero seek positions not supported for mod\n");
+		log_add (log_Debug, "moda_Seek(): "
+				"non-zero seek positions not supported for mod");
 	Player_SetPosition (0);
 
 	return 0;

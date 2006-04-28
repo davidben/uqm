@@ -20,6 +20,7 @@
 #include "planets/planets.h"
 #include "libs/compiler.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 //#define DEBUG_ORBITS
@@ -506,7 +507,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 
 #ifdef DEBUG_ORBITS
 	GetClusterName (CurStarDescPtr, buf);
-	fprintf (stderr, "cluster name = %s  color = %c type = %c\n", buf,
+	log_add (log_Debug, "cluster name = %s  color = %c type = %c", buf,
 			scolor[STAR_COLOR (CurStarDescPtr->Type)],
 			stype[STAR_TYPE (CurStarDescPtr->Type)]);
 #endif /* DEBUG_ORBITS */

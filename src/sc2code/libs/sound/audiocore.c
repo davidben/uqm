@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "audiocore.h"
+#include "libs/log.h"
 
 static audio_Driver audiodrv;
 
@@ -56,7 +57,7 @@ initAudio (sint32 driver, sint32 flags)
 #else
 	if (driver == audio_DRIVER_OPENAL)
 	{
-		fprintf (stderr, "OpenAL driver not compiled in, so using MixSDL\n");
+		log_add (log_Always, "OpenAL driver not compiled in, so using MixSDL");
 		driver = audio_DRIVER_MIXSDL;
 	}
 	if (driver == audio_DRIVER_MIXSDL)
@@ -67,10 +68,10 @@ initAudio (sint32 driver, sint32 flags)
 
 	if (ret != 0)
 	{
-		fprintf (stderr, "Sound driver initialization failed.\n"
+		log_add (log_Always, "Sound driver initialization failed.\n"
 				"This may happen when a soundcard is "
 				"not present or not available.\n"
-				"NOTICE: Try running UQM with '--sound=none' option\n");
+				"NOTICE: Try running UQM with '--sound=none' option");
 		exit (EXIT_FAILURE);
 	}
 	return ret;

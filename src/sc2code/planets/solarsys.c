@@ -34,6 +34,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
+#include "libs/log.h"
 
 
 //#define DEBUG_SOLARSYS
@@ -390,7 +391,8 @@ FreeSolarSys (void)
 		{			
 			if (pSolarSysState->MenuState.flash_task != (Task)(~0))
 			{
-				fprintf (stderr, "DIAGNOSTIC: FreeSolarSys cancels a flash_task that wasn't the placeholder for IP flight\n");
+				log_add (log_Warning, "DIAGNOSTIC: FreeSolarSys cancels a "
+						"flash_task that wasn't the placeholder for IP flight");
 				ConcludeTask (pSolarSysState->MenuState.flash_task);
 			}
 			pSolarSysState->MenuState.flash_task = 0;
@@ -445,7 +447,10 @@ CheckIntersect (BOOLEAN just_checking)
 	{
 		PlanetOffset = pCurDesc - pSolarSysState->PlanetDesc + 1;
 		MoonOffset = 1;
-//fprintf (stderr, "0: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
+#ifdef DEBUG_SOLARSYS
+		log_add (log_Debug, "0: Planet %d, Moon %d", PlanetOffset,
+				MoonOffset);
+#endif /* DEBUG_SOLARSYS */
 		NewWaitPlanet = MAKE_WORD (PlanetOffset, MoonOffset);
 		if (pSolarSysState->WaitIntersect != (COUNT)~0
 				&& pSolarSysState->WaitIntersect != NewWaitPlanet)
@@ -461,7 +466,7 @@ ShowPlanet:
 			}
 
 #ifdef DEBUG_SOLARSYS
-			fprintf (stderr, "Star index = %d, Planet index = %d, <%d, %d>\n",
+			log_add (log_Debug, "Star index = %d, Planet index = %d, <%d, %d>",
 					CurStarDescPtr - star_array,
 					pCurDesc - pSolarSysState->PlanetDesc,
 					pSolarSysState->SunDesc[0].location.x,
@@ -499,7 +504,10 @@ ShowPlanet:
 		if (DrawablesIntersect (&ShipIntersect,
 				&PlanetIntersect, MAX_TIME_VALUE))
 		{
-//				fprintf (stderr, "1: Planet %d, Moon %d\n", PlanetOffset, MoonOffset);
+#ifdef DEBUG_SOLARSYS
+			log_add (log_Debug, "1: Planet %d, Moon %d", PlanetOffset,
+					MoonOffset);
+#endif /* DEBUG_SOLARSYS */
 			NewWaitPlanet = MAKE_WORD (PlanetOffset, MoonOffset);
 			
 			if (pSolarSysState->WaitIntersect == (COUNT)~0)
@@ -1594,11 +1602,11 @@ GenerateRandomIP (BYTE control)
 #ifdef DEBUG_SOLARSYS
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
 					pSolarSysState->SunDesc)
-				fprintf (stderr, "Planet index = %d\n",
+				log_add (log_Debug, "Planet index = %d",
 						pSolarSysState->pOrbitalDesc -
 						pSolarSysState->PlanetDesc);
 			else
-				fprintf (stderr, "Planet index = %d, Moon index = %d\n",
+				log_add (log_Debug, "Planet index = %d, Moon index = %d",
 						pSolarSysState->pOrbitalDesc->pPrevDesc -
 						pSolarSysState->PlanetDesc,
 						pSolarSysState->pOrbitalDesc -

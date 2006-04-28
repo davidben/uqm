@@ -39,7 +39,7 @@ int TFB_DEBUG_HALT = 0;
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
 {
-	//fprintf(stderr, "SetGraphicUseOtherExtra %d\n", other);
+	//log_add (log_Debug, "SetGraphicUseOtherExtra %d", other);
 	(void)other; /* lint */
 }
 
@@ -47,7 +47,7 @@ SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
 void
 SetGraphicGrabOther (int grab_other)
 {
-	//fprintf(stderr, "SetGraphicGrabOther %d\n", grab_other);
+	//log_add (log_Debug, "SetGraphicGrabOther %d", grab_other);
 	(void)grab_other; /* lint */
 }
 

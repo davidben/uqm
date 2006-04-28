@@ -40,6 +40,7 @@
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
 #include "libs/strlib.h"
+#include "libs/log.h"
 
 #include <ctype.h>
 
@@ -1579,10 +1580,10 @@ DoCommunication (PENCOUNTER_STATE pES)
 					}
 					if ((unsigned)space_index >= sizeof (buffer))
 					{
-						fprintf (stderr, "DoCommunication() BUG: buffer[%u] "
-								"too small to fit %d bytes\n",
+						log_add (log_Always, "DoCommunication() BUG: "
+								"buffer[%u] too small to fit %d bytes\n",
 								sizeof (buffer), space_index);
-						abort ();
+						exit (EXIT_FAILURE);
 					}
 					strncpy (buffer, temp, space_index);
 					buffer[space_index] = '\0';
@@ -2251,7 +2252,6 @@ do_subtitles (UNICODE *pStr)
 		}
 		subtitle_state = READ_SUBTITLE;
 		ClearSubtitle = TRUE;
-//		fprintf (stderr, "changed page to: %d\n", cur_page);
 	}
 	last_page = pStr;
 

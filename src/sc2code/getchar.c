@@ -20,6 +20,7 @@
 #include "controls.h"
 #include "libs/inplib.h"
 #include "libs/misc.h"
+#include "libs/log.h"
 #include "globdata.h"
 #include "sounds.h"
 #include "settings.h"
@@ -163,8 +164,8 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		{
 			if (lwlen < pTES->JoyRegLength)
 				pTES->JoyRegLength = lwlen;
-			fprintf (stderr, "Warning: Joystick upper-lower registers size "
-					"mismatch; using the smallest subset (%d)\n",
+			log_add (log_Warning, "Warning: Joystick upper-lower registers"
+					" size mismatch; using the smallest subset (%d)",
 					pTES->JoyRegLength);
 		}
 

@@ -17,6 +17,7 @@
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
+#include "libs/log.h"
 #include "comm.h"
 #include "sis.h"
 #include "options.h"
@@ -267,7 +268,7 @@ OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer)
 	scd->read_chain_ptr = scd->read_chain_ptr->next;
 	sample->decoder = scd->read_chain_ptr->decoder;
 	SoundDecoder_Rewind (sample->decoder);
-	fprintf (stderr, "Switching to stream %s at pos %d\n",
+	log_add (log_Info, "Switching to stream %s at pos %d",
 			sample->decoder->filename, sample->decoder->start_sample);
 	
 	if (sample->buffer_tag && scd->read_chain_ptr->tag_me)
@@ -414,33 +415,31 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 
 	if (!TrackText)
 	{
-#ifdef DEBUG
-		fprintf (stderr, "SpliceMultiTrack(): no track text\n");
-#endif
+		log_add (log_Debug, "SpliceMultiTrack(): no track text");
 		return;
 	}
 
 	if (tct >= MAX_CLIPS)
 	{
-		fprintf (stderr, "SpliceMultiTrack(): no more clip slots (%d)\n",
+		log_add (log_Warning, "SpliceMultiTrack(): no more clip slots (%d)",
 				MAX_CLIPS);
 		return;
 	}
 
 	if (! sound_sample)
 	{
-		fprintf (stderr, "SpliceMultiTrack(): Cannot be called before SpliceTrack()\n");
+		log_add (log_Warning, "SpliceMultiTrack(): Cannot be called before SpliceTrack()");
 		return;
 	}
 
-	fprintf (stderr, "SpliceMultiTrack(): loading...\n");
+	log_add (log_Info, "SpliceMultiTrack(): loading...");
 	for (tracks = 0; *TrackNames && tracks < MAX_MULTI_TRACKS; TrackNames++, tracks++)
 	{
 		track_decs[tracks] = SoundDecoder_Load (contentDir, *TrackNames,
 				32768, 0, - 3 * TEXT_SPEED);
 		if (track_decs[tracks])
 		{
-			fprintf (stderr, "  track: %s, decoder: %s, rate %d format %x\n",
+			log_add (log_Info, "  track: %s, decoder: %s, rate %d format %x",
 					*TrackNames,
 					SoundDecoder_GetName (track_decs[tracks]),
 					track_decs[tracks]->frequency,
@@ -455,7 +454,8 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 		}
 		else
 		{
-			fprintf (stderr, "  couldn't load %s\n", *TrackNames);
+			log_add (log_Warning, "SpliceMultiTrack(): couldn't load %s\n",
+					*TrackNames);
 			tracks--;
 		}
 	}
@@ -463,7 +463,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 
 	if (tracks == 0)
 	{
-		fprintf (stderr, "  no tracks loaded\n");
+		log_add (log_Warning, "SpliceMultiTrack(): no tracks loaded");
 		return;
 	}
 
@@ -486,12 +486,6 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 	}
 	no_page_break = 1;
 	
-	if (tracks > 0)
-		return;
-	else
-	{
-		fprintf (stderr, "  no tracks loaded\n");
-	}
 }
 
 void
@@ -512,14 +506,14 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 
 				if (!last_ts_chain || !last_ts_chain->text)
 				{
-					fprintf (stderr, 
-						"SpliceTrack(): Tried to append a subtitle to a NULL string\n");
+					log_add (log_Warning, "SpliceTrack(): Tried to append"
+							" a subtitle to a NULL string");
 					return;
 				}
 				split_text = SplitSubPages (TrackText, time_stamps, &num_pages);
 				if (! split_text)
 				{
-					fprintf (stderr, "SpliceTrack(): Failed to parse sutitles\n");
+					log_add (log_Warning, "SpliceTrack(): Failed to parse sutitles");
 					return;
 				}
 				oTT = (UNICODE *)last_ts_chain->text;
@@ -532,7 +526,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				{
 					if (! last_ts_chain->next)
 					{
-						fprintf (stderr, "SpliceTrack(): More text pages than timestamps!\n");
+						log_add (log_Warning, "SpliceTrack(): More text pages than timestamps!");
 						break;
 					}
 					last_ts_chain = last_ts_chain->next;
@@ -552,7 +546,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 			split_text = SplitSubPages (TrackText, time_stamps, &num_pages);
 			if (! split_text)
 			{
-				fprintf (stderr, "SpliceTrack(): Failed to parse sutitles\n");
+				log_add (log_Warning, "SpliceTrack(): Failed to parse sutitles");
 				return;
 			}
 			if (no_page_break && tct)
@@ -570,13 +564,14 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 			else
 				tct++;
 
-			fprintf (stderr, "SpliceTrack(): loading %s\n", TrackName);
+			log_add (log_Info, "SpliceTrack(): loading %s", TrackName);
 
 			if (TimeStamp)
 			{
 				num_timestamps = GetTimeStamps (TimeStamp, time_stamps) + 1;
 				if (num_timestamps < num_pages)
-					fprintf (stderr, "SpliceTrack(): number of timestamps doesn't match number of pages!\n");
+					log_add (log_Warning, "SpliceTrack(): number of timestamps"
+							" doesn't match number of pages!");
 			}
 			else
 				num_timestamps = num_pages;
@@ -615,7 +610,11 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				}
 				startTime += abs (time_stamps[page_counter]);
 			
-				// fprintf (stderr, "page (%d of %d): %d ts: %d\n",page_counter, num_pages, startTime, time_stamps[page_counter]);
+#if 0
+				log_add (log_Debug, "page (%d of %d): %d ts: %d",
+						page_counter, num_pages,
+						startTime, time_stamps[page_counter]);
+#endif
 				if (last_chain->decoder)
 				{
 					static float old_volume = 0.0f;
@@ -627,13 +626,14 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 							ensure proper operation of oscilloscope and music fading */
 							old_volume = speechVolumeScale;
 							speechVolumeScale = 0.0f;
-							fprintf (stderr, "SpliceTrack(): no voice ogg available so setting speech volume to zero\n");
+							log_add (log_Warning, "SpliceTrack(): no voice ogg"
+									" available so setting speech volume to zero");
 						}
 					}
 					else if (old_volume != 0.0f && speechVolumeScale != old_volume)
 					{
 						/* This time voice ogg is there */
-						fprintf (stderr, "SpliceTrack(): restoring speech volume\n");
+						log_add (log_Warning, "SpliceTrack(): restoring speech volume");
 						speechVolumeScale = old_volume;
 						old_volume = 0.0f;
 					}
@@ -656,7 +656,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 				}
 				else
 				{
-					fprintf (stderr, "SpliceTrack(): couldn't load %s\n", TrackName);
+					log_add (log_Warning, "SpliceTrack(): couldn't load %s", TrackName);
 					audio_DeleteBuffers (sound_sample->num_buffers, sound_sample->buffer);
 					destroy_soundchain (first_chain);
 					first_chain = NULL;
@@ -848,17 +848,23 @@ GetSoundData (void *data)
 
 			if (delta < 0)
 			{
-				fprintf (stderr, "GetSoundData(): something's messed with timing, delta %ld\n", delta);
+				log_add (log_Debug, "GetSoundData(): something's messed"
+						" with timing, delta %ld", delta);
 				delta = 0;
 			}
 			else if (delta > (int)(soundSource[SPEECH_SOURCE].sbuf_size * 2))
 			{
-				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+#if 0
+				log_add (log_Debug, "GetSoundData(): something's messed"
+						" with timing, delta %d", delta);
+#endif
 				delta = 0;
 			}
-
-			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[SPEECH_SOURCE].total_decoded, delta);
-
+#if 0
+			log_add (log_Debug, "played_data %d total_decoded %d delta %d",
+					played_data, soundSource[SPEECH_SOURCE].total_decoded,
+					delta);
+#endif
 			pos = soundSource[SPEECH_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;
@@ -921,17 +927,25 @@ GetSoundData (void *data)
 
 			if (delta < 0)
 			{
-				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+#if 0				
+				log_add (log_Debug, "GetSoundData(): something's messed"
+						" with timing, delta %d", delta);
+#endif
 				delta = 0;
 			}
 			else if (delta > (int)(soundSource[MUSIC_SOURCE].sbuf_size * 2))
 			{
-				//fprintf (stderr, "GetSoundData(): something's messed with timing, delta %d\n", delta);
+#if 0				
+				log_add (log_Debug, "GetSoundData(): something's messed"
+						" with timing, delta %d", delta);
+#endif
 				delta = 0;
 			}
-
-			//fprintf (stderr, "played_data %d total_decoded %d delta %d\n", played_data, soundSource[MUSIC_SOURCE].total_decoded, delta);
-
+#if 0			
+			log_add (log_Debug, "played_data %d total_decoded %d delta %d",
+					played_data, soundSource[MUSIC_SOURCE].total_decoded,
+					delta);
+#endif
 			pos = soundSource[MUSIC_SOURCE].sbuf_offset + delta;
 			if (pos % 2 == 1)
 				pos++;

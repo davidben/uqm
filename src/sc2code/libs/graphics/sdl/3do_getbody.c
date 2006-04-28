@@ -29,6 +29,7 @@
 #include "sdluio.h"
 #include "libs/file.h"
 #include "libs/reslib.h"
+#include "libs/log.h"
 #include "../font.h"
 #include "primitives.h"
 
@@ -415,15 +416,15 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			const char *err;
 
 			err = SDL_GetError();
-			fprintf (stderr, "_GetCelData: Unable to load image!\n");
+			log_add (log_Warning, "_GetCelData: Unable to load image!");
 			if (err != NULL)
-				fprintf (stderr, "SDL reports: %s\n", err);
+				log_add (log_Warning, "SDL reports: %s", err);
 			SDL_FreeSurface (img[cel_ct]);
 		}
 		else if (img[cel_ct]->w < 0 || img[cel_ct]->h < 0 ||
 				img[cel_ct]->format->BitsPerPixel < 8)
 		{
-			fprintf (stderr, "_GetCelData: Bad file!\n");
+			log_add (log_Warning, "_GetCelData: Bad file!");
 			SDL_FreeSurface (img[cel_ct]);
 		}
 		else
@@ -466,7 +467,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	}
 
 	if (Drawable == 0)
-		fprintf (stderr, "Couldn't get cel data for '%s'\n",
+		log_add (log_Warning, "Couldn't get cel data for '%s'",
 				_cur_resfile_name);
 	return (GetDrawableHandle (Drawable));
 }
@@ -638,11 +639,9 @@ _GetFontData (uio_Stream *fp, DWORD length)
 					if (destChar->data != NULL)
 					{
 						// There's already an image for this character.
-#ifdef DEBUG
-						fprintf (stderr, "Duplicate image for character %d "
-								"for font %s.\n", (int) bcd->index,
+						log_add (log_Debug, "Duplicate image for character %d "
+								"for font %s.", (int) bcd->index,
 								_cur_resfile_name);
-#endif
 						SDL_FreeSurface (bcd->surface);
 						continue;
 					}

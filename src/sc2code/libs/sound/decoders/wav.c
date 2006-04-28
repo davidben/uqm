@@ -25,6 +25,7 @@
 #include "uio.h"
 #include "endian_uqm.h"
 #include "libs/misc.h"
+#include "libs/log.h"
 #include "wav.h"
 
 #define RIFF 0x46464952 /* "RIFF" */
@@ -234,8 +235,8 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	}
 	if (FileHdr.Id != RIFF || FileHdr.Type != WAVE)
 	{
-		fprintf (stderr, "wava_Open(): "
-				"not a wave file, ID 0x%08x, Type 0x%08x\n",
+		log_add (log_Warning, "wava_Open(): "
+				"not a wave file, ID 0x%08x, Type 0x%08x",
 				FileHdr.Id, FileHdr.Type);
 		wava_Close (This);
 		return false;
@@ -276,7 +277,8 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 
 	if (!wava->data_size || !wava->data_ofs)
 	{
-		fprintf (stderr, "wava_Open(): bad wave file, no DATA chunk found\n");
+		log_add (log_Warning, "wava_Open(): bad wave file,"
+				" no DATA chunk found");
 		wava_Close (This);
 		return false;
 	}
@@ -294,7 +296,8 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	} 
 	else
 	{
-		fprintf (stderr, "wava_Open(): unsupported format %x\n", wava->FmtHdr.Format);
+		log_add (log_Warning, "wava_Open(): unsupported format %x",
+				wava->FmtHdr.Format);
 		wava_Close (This);
 		return false;
 	}

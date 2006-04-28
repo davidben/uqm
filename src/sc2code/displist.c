@@ -17,6 +17,7 @@
  */
 
 #include "displist.h"
+#include "libs/log.h"
 
 /*
  * This file contains code for generic doubly linked lists.
@@ -35,7 +36,10 @@ InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size)
 	return (TRUE);
 #else /* QUEUE_TABLE */
 	SetFreeList (pq, NULL_HANDLE);
-//	fprintf (stderr, "num_elements = %d (%d)\n", num_elements, (BYTE)num_elements);
+#if 0	
+	log_add (log_Debug, "InitQueue(): num_elements = %d (%d)",
+			num_elements, (BYTE)num_elements);
+#endif
 	if (AllocQueueTab (pq, num_elements) && LockQueueTab (pq))
 	{
 		do
@@ -111,10 +115,9 @@ AllocLink (PQUEUE pq)
 		SetFreeList (pq, _GetSuccLink (LinkPtr));
 		UnlockLink (pq, hLink);
 	}
-/*
 	else
-		fprintf (stderr, "No more elements\n");
-*/
+		log_add (log_Debug, "AllocLink(): No more elements");
+
 	return (hLink);
 }
 

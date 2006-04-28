@@ -17,6 +17,7 @@
 #include "video.h"
 #include "videodec.h"
 #include "dukvid.h"
+#include "libs/log.h"
 
 #define MAX_REG_DECODERS 31
 
@@ -57,15 +58,15 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 
 	if (depth < 15 || depth > 32)
 	{
-		fprintf (stderr, "VideoDecoder_Init: "
-				"Unsupported video depth %d\n", depth);
+		log_add (log_Always, "VideoDecoder_Init: "
+				"Unsupported video depth %d", depth);
 		return false;
 	}
 
 	if ((Rmask & Gmask) || (Rmask & Bmask) || (Rmask & Amask) ||
 			(Gmask & Bmask) || (Gmask & Amask) || (Bmask & Amask))
 	{
-		fprintf (stderr, "VideoDecoder_Init: Invalid channel masks\n");
+		log_add (log_Always, "VideoDecoder_Init: Invalid channel masks");
 		return false;
 	}
 
@@ -87,8 +88,8 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 	{
 		if (!info->funcs->InitModule (flags))
 		{
-			fprintf (stderr, "VideoDecoder_Init(): "
-					"%s video decoder init failed\n",
+			log_add (log_Always, "VideoDecoder_Init(): "
+					"%s video decoder init failed",
 					info->funcs->GetName ());
 		}
 	}
@@ -129,12 +130,12 @@ VideoDecoder_Register (const char* fileext, TFB_VideoDecoderFuncs* decvtbl)
 
 	if (!decvtbl)
 	{
-		fprintf (stderr, "VideoDecoder_Register(): Null decoder table\n");
+		log_add (log_Warning, "VideoDecoder_Register(): Null decoder table");
 		return NULL;
 	}
 	if (!fileext)
 	{
-		fprintf (stderr, "VideoDecoder_Register(): Bad file type for %s\n",
+		log_add (log_Warning, "VideoDecoder_Register(): Bad file type for %s",
 				decvtbl->GetName ());
 		return NULL;
 	}
@@ -151,20 +152,20 @@ VideoDecoder_Register (const char* fileext, TFB_VideoDecoderFuncs* decvtbl)
 
 	if (info >= vd_decoders + MAX_REG_DECODERS)
 	{
-		fprintf (stderr, "VideoDecoder_Register(): Decoders limit reached\n");
+		log_add (log_Warning, "VideoDecoder_Register(): Decoders limit reached");
 		return NULL;
 	}
 	else if (info->ext)
 	{
-		fprintf (stderr, "VideoDecoder_Register(): "
-				"'%s' decoder already registered (%s denied)\n",
+		log_add (log_Warning, "VideoDecoder_Register(): "
+				"'%s' decoder already registered (%s denied)",
 				fileext, decvtbl->GetName ());
 		return NULL;
 	}
 
 	if (!decvtbl->InitModule (vd_flags))
 	{
-		fprintf (stderr, "VideoDecoder_Register(): %s decoder init failed\n",
+		log_add (log_Warning, "VideoDecoder_Register(): %s decoder init failed",
 				decvtbl->GetName ());
 		return NULL;
 	}
@@ -191,8 +192,8 @@ VideoDecoder_Unregister (TFB_RegVideoDecoder* regdec)
 	if (regdec < vd_decoders || regdec >= vd_decoders + MAX_REG_DECODERS ||
 			!regdec->ext || !regdec->funcs)
 	{
-		fprintf (stderr, "VideoDecoder_Unregister(): "
-				"Invalid or expired decoder passed\n");
+		log_add (log_Warning, "VideoDecoder_Unregister(): "
+				"Invalid or expired decoder passed");
 		return;
 	}
 	
@@ -227,7 +228,7 @@ VideoDecoder_Load (uio_DirHandle *dir, const char *filename)
 	pext = strrchr (filename, '.');
 	if (!pext)
 	{
-		fprintf (stderr, "VideoDecoder_Load: Unknown file type\n");
+		log_add (log_Warning, "VideoDecoder_Load: Unknown file type");
 		return NULL;
 	}
 	++pext;
@@ -238,7 +239,7 @@ VideoDecoder_Load (uio_DirHandle *dir, const char *filename)
 		;
 	if (!info->ext)
 	{
-		fprintf (stderr, "VideoDecoder_Load: Unsupported file type\n");
+		log_add (log_Warning, "VideoDecoder_Load: Unsupported file type");
 		return NULL;
 	}
 
@@ -246,8 +247,8 @@ VideoDecoder_Load (uio_DirHandle *dir, const char *filename)
 	decoder->funcs = info->funcs;
 	if (!decoder->funcs->Init (decoder, &vd_vidfmt))
 	{
-		fprintf (stderr, "VideoDecoder_Load: "
-				"Cannot init '%s' decoder, code %d\n",
+		log_add (log_Warning, "VideoDecoder_Load: "
+				"Cannot init '%s' decoder, code %d",
 				decoder->funcs->GetName (),
 				decoder->funcs->GetError (decoder));
 		HFree (decoder);
@@ -261,8 +262,8 @@ VideoDecoder_Load (uio_DirHandle *dir, const char *filename)
 
 	if (!decoder->funcs->Open (decoder, dir, filename))
 	{
-		fprintf (stderr, "VideoDecoder_Load: "
-				"'%s' decoder did not load %s, code %d\n",
+		log_add (log_Warning, "VideoDecoder_Load: "
+				"'%s' decoder did not load %s, code %d",
 				decoder->funcs->GetName (),	filename,
 				decoder->funcs->GetError (decoder));
 		

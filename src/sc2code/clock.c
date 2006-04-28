@@ -24,7 +24,7 @@
 #include "libs/gfxlib.h"
 #include "libs/tasklib.h"
 #include "libs/threadlib.h"
-
+#include "libs/log.h"
 
 // the running of the game-clock is based on game framerates
 // *not* on the system (or translated) timer
@@ -225,7 +225,8 @@ SuspendGameClock (void)
 {
 	if (!clock_mutex)
 	{
-		fprintf (stderr, "BUG: Attempted to suspend non-existent game clock\n");
+		log_add (log_Always, "BUG: "
+				"Attempted to suspend non-existent game clock");
 #ifdef DEBUG
 		abort();
 #endif
@@ -245,7 +246,8 @@ ResumeGameClock (void)
 {
 	if (!clock_mutex)
 	{
-		fprintf (stderr, "BUG: Attempted to resume non-existent game clock\n");
+		log_add (log_Always, "BUG: "
+				"Attempted to resume non-existent game clock\n");
 #ifdef DEBUG
 		abort();
 #endif
@@ -271,7 +273,6 @@ SetGameClockRate (COUNT seconds_per_day)
 {
 	SIZE new_day_in_ticks, new_tick_count;
 
-//if (GLOBAL (GameClock.clock_sem)) fprintf (stderr, "%u\n", GLOBAL (GameClock.clock_sem));
 	SetSemaphore (GLOBAL (GameClock.clock_sem));
 	new_day_in_ticks = (SIZE)(seconds_per_day * CLOCK_BASE_FRAMERATE);
 	if (GLOBAL (GameClock.day_in_ticks) == 0)

@@ -34,6 +34,7 @@
 #include "file.h"
 #include "port.h"
 #include "libs/platform.h"
+#include "libs/log.h"
 #include "options.h"
 #include "uqmversion.h"
 #include "comm.h"
@@ -127,8 +128,10 @@ main (int argc, char *argv[])
 		/* .sfxVolumeScale = */     1.0f,
 		/* .speechVolumeScale = */  1.0f,
 	};
-
 	int optionsResult;
+
+	log_init (15);
+
 	optionsResult = preParseOptions(argc, argv, &options);
 	if (optionsResult != 0)
 	{
@@ -141,19 +144,20 @@ main (int argc, char *argv[])
 		int i;
 		freopen (options.logFile, "w", stderr);
 		for (i = 0; i < argc; ++i)
-			fprintf (stderr, "argv[%d] = [%s]\n", i, argv[i]);
+			log_add (log_Always, "argv[%d] = [%s]", i, argv[i]);
 	}
 
 	if (options.runMode == runMode_version)
 	{
  		printf ("%d.%d.%d%s\n", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
 				UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
+		log_showBox (false, false);
 		return EXIT_SUCCESS;
 	}
 	
-	fprintf (stderr, "The Ur-Quan Masters v%d.%d.%d%s (compiled %s %s)\n"
+	log_add (log_Always, "The Ur-Quan Masters v%d.%d.%d%s (compiled %s %s)\n"
 	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
-			"for details see the included 'COPYING' file.\n\n",
+			"for details see the included 'COPYING' file.\n",
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
 			UQM_PATCH_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
@@ -161,6 +165,7 @@ main (int argc, char *argv[])
 	if (options.runMode == runMode_usage)
 	{
 		usage (stdout, &options);
+		log_showBox (true, false);
 		return EXIT_SUCCESS;
 	}
 
@@ -171,6 +176,7 @@ main (int argc, char *argv[])
 	TFB_PreInit ();
 	mem_init ();
 	InitThreadSystem ();
+	log_initThreads ();
 	initIO ();
 	prepareConfigDir (options.configDir);
 
@@ -319,7 +325,7 @@ main (int argc, char *argv[])
 		/* This is an unsigned, so no < 0 check is necessary */
 		if (PlayerOne >= NUM_TEMPLATES)
 		{
-			fprintf (stderr, "Illegal control template '%d' for Player One.\n", PlayerOne);
+			log_add (log_Always, "Illegal control template '%d' for Player One.", PlayerOne);
 			PlayerOne = CONTROL_TEMPLATE_KB_1;
 		}
 	}
@@ -329,7 +335,7 @@ main (int argc, char *argv[])
 		PlayerTwo = res_GetInteger ("config.player2control");
 		if (PlayerTwo >= NUM_TEMPLATES)
 		{
-			fprintf (stderr, "Illegal control template '%d' for Player Two.\n", PlayerTwo);
+			log_add (log_Always, "Illegal control template '%d' for Player Two.", PlayerTwo);
 			PlayerTwo = CONTROL_TEMPLATE_KB_2;
 		}
 	}
@@ -415,7 +421,8 @@ main (int argc, char *argv[])
 
 	unInitTempDir ();
 	uninitIO ();
-	exit (EXIT_SUCCESS);
+	
+	return EXIT_SUCCESS;
 }
 
 enum
@@ -511,7 +518,7 @@ preParseOptions(int argc, char *argv[], struct options_struct *options)
 static int
 parseOptions(int argc, char *argv[], struct options_struct *options)
 {
-	int optionIndex = 0;
+	int optionIndex;
 	BOOLEAN badArg = FALSE;
 
 	options->addons = HMalloc(1 * sizeof (const char *));
@@ -520,13 +527,14 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 
 	if (argc == 0)
 	{
-		fprintf (stderr, "Error: Bad command line.\n");
+		log_add (log_Always, "Error: Bad command line.");
 		return EXIT_FAILURE;
 	}
 
 	while (!badArg)
 	{
 		int c;
+		optionIndex = -1;
 		c = getopt_long(argc, argv, optString, longOptions, &optionIndex);
 		if (c == -1)
 			break;
@@ -537,8 +545,8 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				int width, height;
 				if (sscanf (optarg, "%dx%d", &width, &height) != 2)
 				{
-					fprintf (stderr, "Error: invalid argument specified "
-							"as resolution.\n");
+					log_add (log_Always, "Error: invalid argument specified "
+							"as resolution.");
 					badArg = TRUE;
 					break;
 				}
@@ -646,7 +654,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			case 'm':
 			{
 				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
-						longOptions[optionIndex].name,
+						optionIndex >= 0 ? longOptions[optionIndex].name : "m",
 						&options->whichMusic) == -1)
 					badArg = TRUE;
 				break;
@@ -668,7 +676,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			case 'i':
 			{
 				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
-						longOptions[optionIndex].name,
+						optionIndex >= 0 ? longOptions[optionIndex].name : "i",
 						&options->whichIntro) == -1)
 					badArg = TRUE;
 				break;
@@ -715,8 +723,8 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				else
 				{
-					fprintf (stderr, "Error: Invalid sound driver "
-							"specified.\n");
+					log_add (log_Always, "Error: Invalid sound driver "
+							"specified.");
 					badArg = TRUE;
 				}
 				break;
@@ -747,7 +755,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			default:
-				fprintf (stderr, "Error: Invalid option '%s' not found.\n",
+				log_add (log_Always, "Error: Invalid option '%s' not found.",
 							longOptions[optionIndex].name);
 				badArg = TRUE;
 				break;
@@ -756,14 +764,14 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 
 	if (optind != argc)
 	{
-		fprintf (stderr, "\nError: Extra arguments found on the command "
-				"line.\n");
+		log_add (log_Always, "\nError: Extra arguments found on the command "
+				"line.");
 		badArg = TRUE;
 	}
 
 	if (badArg)
 	{
-		fprintf (stderr, "Run with -h to see the allowed arguments.\n");
+		log_add (log_Always, "Run with -h to see the allowed arguments.");
 		return EXIT_FAILURE;
 	}
 
@@ -778,14 +786,14 @@ parseVolume (const char *str, float *vol, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	intVol = (int) strtol(str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
-		fprintf (stderr, "Error: Junk characters in volume specified "
-				"for '%s'.\n", optName);
+		log_add (log_Always, "Error: Junk characters in volume specified "
+				"for '%s'.", optName);
 		return -1;
 	}
 
@@ -813,13 +821,13 @@ parseIntOption (const char *str, int *result, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	temp = (int) strtol(str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
-		fprintf (stderr, "Error: Junk characters in argument '%s'.\n",
+		log_add (log_Always, "Error: Junk characters in argument '%s'.",
 				optName);
 		return -1;
 	}
@@ -836,13 +844,13 @@ parseFloatOption (const char *str, float *f, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		fprintf (stderr, "Error: Invalid value for '%s'.\n", optName);
+		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	temp = (float) strtod(str, &endPtr);
 	if (*endPtr != '\0')
 	{
-		fprintf (stderr, "Error: Junk characters in argument '%s'.\n",
+		log_add (log_Always, "Error: Junk characters in argument '%s'.",
 				optName);
 		return -1;
 	}
@@ -854,62 +862,67 @@ parseFloatOption (const char *str, float *f, const char *optName)
 static void
 usage (FILE *out, const struct options_struct *defaultOptions)
 {
-	fprintf (out, "Options:\n");
-	fprintf (out, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
-			"works only with --opengl)\n");
-	fprintf (out, "  -f, --fullscreen (default off)\n");
-	fprintf (out, "  -o, --opengl (default off)\n");
-	fprintf (out, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
-			"hq or none (default) )\n");
-	fprintf (out, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
-			"default is 3do)\n");
-	fprintf (out, "  -s, --scanlines (default off)\n");
-	fprintf (out, "  -p, --fps (default off)\n");
-	fprintf (out, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
-			"causes no change)\n");
-	fprintf (out, "  -C, --configdir=CONFIGDIR\n");
-	fprintf (out, "  -n, --contentdir=CONTENTDIR\n");
-	fprintf (out, "  -M, --musicvol=VOLUME (0-100, default 100)\n");
-	fprintf (out, "  -S, --sfxvol=VOLUME (0-100, default 100)\n");
-	fprintf (out, "  -T, --speechvol=VOLUME (0-100, default 100)\n");
-	fprintf (out, "  -q, --audioquality=QUALITY (high, medium or low, "
-			"default medium)\n");
-	fprintf (out, "  -u, --nosubtitles\n");
-	fprintf (out, "  -l, --logfile=FILE (sends console output to logfile "
-			"FILE)\n");
-	fprintf (out, "  --addon ADDON (using a specific addon; "
-			"may be specified multiple times)\n");
-	fprintf (out, "  --sound=DRIVER (openal, mixsdl, none; default "
-			"mixsdl)\n");
-	fprintf (out, "  --stereosfx (enables positional sound effects, "
-			"currently only for openal)\n");
-	fprintf (out, "The following options can take either '3do' or 'pc' "
-			"as an option:\n");
-	fprintf (out, "  -m, --music : Music version (default %s)\n",
+	FILE *old = log_setOutput (out);
+	log_captureLines (LOG_CAPTURE_ALL);
+	
+	log_add (log_Always, "Options:");
+	log_add (log_Always, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
+			"works only with --opengl)");
+	log_add (log_Always, "  -f, --fullscreen (default off)");
+	log_add (log_Always, "  -o, --opengl (default off)");
+	log_add (log_Always, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
+			"hq or none (default) )");
+	log_add (log_Always, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
+			"default is 3do)");
+	log_add (log_Always, "  -s, --scanlines (default off)");
+	log_add (log_Always, "  -p, --fps (default off)");
+	log_add (log_Always, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
+			"causes no change)");
+	log_add (log_Always, "  -C, --configdir=CONFIGDIR");
+	log_add (log_Always, "  -n, --contentdir=CONTENTDIR");
+	log_add (log_Always, "  -M, --musicvol=VOLUME (0-100, default 100)");
+	log_add (log_Always, "  -S, --sfxvol=VOLUME (0-100, default 100)");
+	log_add (log_Always, "  -T, --speechvol=VOLUME (0-100, default 100)");
+	log_add (log_Always, "  -q, --audioquality=QUALITY (high, medium or low, "
+			"default medium)");
+	log_add (log_Always, "  -u, --nosubtitles");
+	log_add (log_Always, "  -l, --logfile=FILE (sends console output to logfile "
+			"FILE)");
+	log_add (log_Always, "  --addon ADDON (using a specific addon; "
+			"may be specified multiple times)");
+	log_add (log_Always, "  --sound=DRIVER (openal, mixsdl, none; default "
+			"mixsdl)");
+	log_add (log_Always, "  --stereosfx (enables positional sound effects, "
+			"currently only for openal)");
+	log_add (log_Always, "The following options can take either '3do' or 'pc' "
+			"as an option:");
+	log_add (log_Always, "  -m, --music : Music version (default %s)",
 			PC_3DO_optString(defaultOptions->whichMusic));
-	fprintf (out, "  -i, --intro : Intro/ending version (default %s)\n",
+	log_add (log_Always, "  -i, --intro : Intro/ending version (default %s)",
 			PC_3DO_optString(defaultOptions->whichIntro));
-	fprintf (out, "  --cscan     : coarse-scan display, pc=text, "
-			"3do=hieroglyphs (default %s)\n",
+	log_add (log_Always, "  --cscan     : coarse-scan display, pc=text, "
+			"3do=hieroglyphs (default %s)",
 			PC_3DO_optString(defaultOptions->whichCoarseScan));
-	fprintf (out, "  --menu      : menu type, pc=text, 3do=graphical "
-			"(default %s)\n", PC_3DO_optString(defaultOptions->whichMenu));
-	fprintf (out, "  --font      : font types and colors (default %s)\n",
+	log_add (log_Always, "  --menu      : menu type, pc=text, 3do=graphical "
+			"(default %s)", PC_3DO_optString(defaultOptions->whichMenu));
+	log_add (log_Always, "  --font      : font types and colors (default %s)",
 			PC_3DO_optString(defaultOptions->whichFonts));
-	fprintf (out, "  --shield    : slave shield type; pc=static, "
-			"3do=throbbing (default %s)\n",
+	log_add (log_Always, "  --shield    : slave shield type; pc=static, "
+			"3do=throbbing (default %s)",
 			PC_3DO_optString(defaultOptions->whichShield));
-	fprintf (out, "  --scroll    : ff/frev during comm.  pc=per-page, "
-			"3do=smooth (default %s)\n",
+	log_add (log_Always, "  --scroll    : ff/frev during comm.  pc=per-page, "
+			"3do=smooth (default %s)",
 			PC_3DO_optString(defaultOptions->smoothScroll));
+	
+	log_setOutput (old);
 }
 
 static int
-InvalidArgument(const char *supplied, const char *opt_name)
+InvalidArgument (const char *supplied, const char *opt_name)
 {
-	fprintf(stderr, "Invalid argument '%s' to option %s.\n",
+	log_add (log_Always, "Invalid argument '%s' to option %s.",
 			supplied, opt_name);
-	fprintf (stderr, "Use -h to see the allowed arguments.\n");
+	log_add (log_Always, "Use -h to see the allowed arguments.");
 	return EXIT_FAILURE;
 }
 
@@ -919,7 +932,8 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 {
 	if (value == NULL)
 	{
-		fprintf (stderr, "Error: option '%s' requires a value.\n", optName);
+		log_add (log_Always, "Error: option '%s' requires a value.",
+				optName);
 		return -1;
 	}
 
@@ -933,12 +947,14 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 		*result = OPT_PC;
 		return 0;
 	}
-	fprintf (stderr, "Error: Invalid option '%s %s' found.", optName, value);
+	log_add (log_Always, "Error: Invalid option '%s %s' found.",
+			optName, value);
 	return -1;
 }
 
 static const char *
-PC_3DO_optString(DWORD optMask) {
+PC_3DO_optString (DWORD optMask)
+{
 	if (optMask & OPT_3DO)
 	{
 		if (optMask & OPT_PC)

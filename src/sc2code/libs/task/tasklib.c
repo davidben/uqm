@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "libs/tasklib.h"
+#include "libs/log.h"
 
 #define TASK_MAX 64
 
@@ -33,7 +34,7 @@ AssignTask (ThreadFunction task_func, SDWORD stackSize, const char *name)
 	{
 		if (!Task_SetState (task_array+i, TASK_INUSE))
 		{
-			// fprintf (stderr, "Assigning Task #%i: %s\n", i+1, name);
+			// log_add (log_Debug, "Assigning Task #%i: %s", i+1, name);
 			Task_ClearState (task_array+i, ~TASK_INUSE);
 			task_array[i].name = name;
 			task_array[i].thread = CreateThread (task_func, task_array+i,
@@ -41,19 +42,19 @@ AssignTask (ThreadFunction task_func, SDWORD stackSize, const char *name)
 			return task_array+i;
 		}
 	}
-	fprintf (stderr, "Task error!  Task array exhausted.  Check for thread leaks.\n");
+	log_add (log_Always, "Task error!  Task array exhausted.  Check for thread leaks.");
 	return NULL;
 }
 
 void
 FinishTask (Task task)
 {
-	// fprintf (stderr, "Releasing Task: %s\n", task->name);
+	// log_add (log_Debug, "Releasing Task: %s", task->name);
 	task->thread = 0;
 	if (!Task_ClearState (task, TASK_INUSE))
 	{
-		fprintf (stderr, "Task error!  Attempted to FinishTask \"%s\"... "
-				"but it was already done!\n", task->name);
+		log_add (log_Debug, "Task error!  Attempted to FinishTask '%s'... "
+				"but it was already done!", task->name);
 	}
 }
 
@@ -62,7 +63,7 @@ void
 ConcludeTask (Task task)
 {
 	Thread old = task->thread;
-	// fprintf (stderr, "Awaiting conclusion of %s\n", task->name);
+	// log_add (log_Debug, "Awaiting conclusion of %s", task->name);
 	if (old)
 	{
 		Task_SetState (task, TASK_EXIT);

@@ -28,6 +28,7 @@
 #include "races.h"
 
 #include "libs/compiler.h"
+#include "libs/log.h"
 
 #include <ctype.h>
 
@@ -356,7 +357,7 @@ CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID *ppLocData)
 
 	if (hCode == 0)
 	{
-		fprintf(stderr, "Ack! dummy.c::CaptureCodeRes() hCode==0! FATAL!\n");
+		log_add (log_Always, "dummy.c::CaptureCodeRes() hCode==0! FATAL!");
 		return(0);
 	}
 

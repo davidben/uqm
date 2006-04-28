@@ -32,6 +32,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/threadlib.h"
 #include "libs/vidlib.h"
+#include "libs/log.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -238,8 +239,9 @@ initIO (void)
 	repository = uio_openRepository (0);
 
 	rootDir = uio_openDir (repository, "/", 0);
-	if (rootDir == NULL) {
-		fprintf(stderr, "Could not open '/' dir.\n");
+	if (rootDir == NULL)
+	{
+		log_add (log_Always, "Could not open '/' dir.");
 		return -1;
 	}
 	return 0;
@@ -252,6 +254,4 @@ uninitIO (void)
 	uio_closeRepository (repository);
 	uio_unInit ();
 }
-
-
 

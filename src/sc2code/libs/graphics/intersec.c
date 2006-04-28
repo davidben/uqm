@@ -17,6 +17,7 @@
  */
 
 #include "gfxintrn.h"
+#include "libs/log.h"
 
 //#define DEBUG_INTERSEC
 
@@ -334,12 +335,14 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 				++time_x_1;
 
 #ifdef DEBUG_INTERSEC
-				fprintf (stderr, "FramePtr0<%d, %d> --> <%d, %d>\nFramePtr1<%d, %d> --> <%d, %d>\n",
+				log_add (log_Debug, "FramePtr0<%d, %d> --> <%d, %d>",
 						GetFrameWidth (FramePtr0), GetFrameHeight (FramePtr0),
-						r0.corner.x, r0.corner.y,
+						r0.corner.x, r0.corner.y);
+				log_add (log_Debug, "FramePtr1<%d, %d> --> <%d, %d>",
 						GetFrameWidth (FramePtr1), GetFrameHeight (FramePtr1),
 						r1.corner.x, r1.corner.y);
-				fprintf (stderr, "time_x(%d, %d)-%d, time_y(%d, %d)-%d\n", time_x_0, time_x_1, dx, time_y_0, time_y_1, dy);
+				log_add (log_Debug, "time_x(%d, %d)-%d, time_y(%d, %d)-%d",
+						time_x_0, time_x_1, dx, time_y_0, time_y_1, dy);
 #endif /* DEBUG_INTERSEC */
 				if (dx == 0)
 				{
@@ -382,7 +385,8 @@ DrawablesIntersect (PINTERSECT_CONTROL pControl0,
 			}
 
 #ifdef DEBUG_INTERSEC
-			fprintf (stderr, "start_time = %d, end_time = %d\n", time_y_0, time_y_1);
+			log_add (log_Debug, "start_time = %d, end_time = %d",
+					time_y_0, time_y_1);
 #endif /* DEBUG_INTERSEC */
 			if (time_y_0 <= time_y_1
 					&& (intersect_time = frame_intersect (

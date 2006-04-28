@@ -33,6 +33,7 @@
 #include "starcon.h"
 #include "uqmdebug.h"
 #include "libs/tasklib.h"
+#include "libs/log.h"
 
 
 // Open or close the periodically occuring QuasiSpace portal.
@@ -140,7 +141,7 @@ while (--ac > 0)
 
 	if (LoadKernel (0,0))
 	{
-		fprintf (stderr, "We've loaded the Kernel\n");
+		log_add (log_Info, "We've loaded the Kernel");
 	
 		Logo ();
 		
@@ -274,7 +275,7 @@ while (--ac > 0)
 	}
 	else
 	{
-		fprintf (stderr, "Kernel failed to load!\n");
+		log_add (log_Always, "Kernel failed to load!");
 	}
 	FreeKernel ();
 

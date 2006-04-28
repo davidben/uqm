@@ -21,6 +21,7 @@
 #include "libs/graphics/sdl/opengl.h"
 #include "bbox.h"
 #include "scalers.h"
+#include "libs/log.h"
 
 static SDL_Surface *scaled_display = NULL;
 static SDL_Surface *scaled_transition = NULL;
@@ -53,7 +54,7 @@ Create_Screen (SDL_Surface *template, int w, int h)
 			template->format->Rmask, template->format->Gmask,
 			template->format->Bmask, 0);
 	if (newsurf == 0) {
-		fprintf (stderr, "Couldn't create screen buffers: %s\n",
+		log_add (log_Always, "Couldn't create screen buffers: %s",
 				SDL_GetError());
 	}
 	return newsurf;
@@ -117,19 +118,20 @@ AttemptColorDepth (int flags, int width, int height, int bpp)
 		bpp, videomode_flags);
 	if (SDL_Video == NULL)
 	{
-		fprintf (stderr, "Couldn't set OpenGL %ix%ix%i video mode: %s\n",
+		log_add (log_Always, "Couldn't set OpenGL %ix%ix%i video mode: %s",
 				ScreenWidthActual, ScreenHeightActual, bpp,
 				SDL_GetError ());
 		return -1;
 	}
 	else
 	{
-		fprintf (stderr, "Set the resolution to: %ix%ix%i (surface reports %ix%ix%i)\n",
+		log_add (log_Always, "Set the resolution to: %ix%ix%i"
+				" (surface reports %ix%ix%i)",
 				width, height, bpp,			 
 				SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 				SDL_GetVideoSurface()->format->BitsPerPixel);
 
-		fprintf (stderr, "OpenGL renderer: %s version: %s\n",
+		log_add (log_Always, "OpenGL renderer: %s version: %s",
 				glGetString (GL_RENDERER), glGetString (GL_VERSION));
 	}
 	return 0;
@@ -145,7 +147,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 			AttemptColorDepth (flags, width, height, 24) &&
 			AttemptColorDepth (flags, width, height, 16))
 	{
-		fprintf (stderr, "Couldn't set any OpenGL %ix%i video mode!\n",
+		log_add (log_Always, "Couldn't set any OpenGL %ix%i video mode!",
 			 width, height);
 		return -1;
 	}		
@@ -156,7 +158,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 		R_MASK, G_MASK, B_MASK, A_MASK);
 	if (format_conv_surf == NULL)
 	{
-		fprintf (stderr, "Couldn't create format_conv_surf: %s\n",
+		log_add (log_Always, "Couldn't create format_conv_surf: %s",
 				SDL_GetError());
 		return -1;
 	}
@@ -231,21 +233,21 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 {
 	char VideoName[256];
 
-	fprintf (stderr, "Initializing SDL with OpenGL support.\n");
+	log_add (log_Always, "Initializing SDL with OpenGL support.");
 
 	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	fprintf (stderr, "SDL driver used: %s\n", VideoName);
-	fprintf (stderr, "SDL initialized.\n");
-	fprintf (stderr, "Initializing Screen.\n");
+	log_add (log_Always, "SDL driver used: %s", VideoName);
+	log_add (log_Always, "SDL initialized.");
+	log_add (log_Always, "Initializing Screen.");
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
 	if (TFB_GL_ConfigureVideo (driver, flags, width, height))
 	{
-		fprintf (stderr, "Could not initialize video: "
-				"no fallback at start of program!\n");
-		exit (-1);
+		log_add (log_Always, "Could not initialize video: "
+				"no fallback at start of program!");
+		exit (EXIT_FAILURE);
 	}	 
 
 	// Initialize scalers (let them precompute whatever)

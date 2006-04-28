@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <assert.h>
+#include "libs/log.h"
 
 int NPCNumberPhrase (int number, UNICODE **ptrack);
 
@@ -285,9 +286,9 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	if ((buf_start == shared_phrase_buf) &&
 			(buf > shared_phrase_buf + sizeof (shared_phrase_buf)))
 	{
-		fprintf (stderr, "Error: shared_phrase_buf size exceeded,"
+		log_add (log_Always, "Error: shared_phrase_buf size exceeded,"
 				" please increase!\n");
-		abort ();
+		exit (EXIT_FAILURE);
 	}
 }
 

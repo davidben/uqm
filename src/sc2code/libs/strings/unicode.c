@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "strlib.h"
+#include "libs/log.h"
 
 
 // Resynchronise (skip everything starting with 0x10xxxxxx):
@@ -117,7 +118,7 @@ getCharFromString(const unsigned char **ptr) {
 	}
 	
 err:
-	fprintf(stderr, "Warning: Invalid UTF8 sequence.\n");
+	log_add(log_Warning, "Warning: Invalid UTF8 sequence.");
 	
 	// Resynchronise (skip everything starting with 0x10xxxxxx):
 	resyncUTF8(ptr);
@@ -416,7 +417,7 @@ getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch)
 		;
 	if (def->mask == 0)
 	{	// invalid or unsupported char
-		fprintf(stderr, "Warning: Invalid or unsupported wide char (%lu)\n",
+		log_add(log_Warning, "Warning: Invalid or unsupported wide char (%lu)",
 				(unsigned long)ch);
 		return 0;
 	}

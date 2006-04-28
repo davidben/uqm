@@ -18,6 +18,7 @@
 #include "tfb_draw.h"
 #include "drawcmd.h"
 #include "units.h"
+#include "libs/log.h"
 
 static const HOT_SPOT NullHs = {0, 0};
 
@@ -340,8 +341,8 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	/* sanity check */
 	if (!img->NormalImg)
 	{
-		fprintf (stderr, "TFB_DrawImage_New_Rotated: "
-				"source canvas is NULL! Failing.\n");
+		log_add (log_Warning, "TFB_DrawImage_New_Rotated: "
+				"source canvas is NULL! Failing.");
 		return NULL;
 	}
 
@@ -349,8 +350,8 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	dst = TFB_DrawCanvas_New_RotationTarget (img->NormalImg, angle);
 	if (!dst)
 	{
-		fprintf (stderr, "TFB_DrawImage_New_Rotated: "
-				"rotation target canvas not created! Failing.\n");
+		log_add (log_Warning, "TFB_DrawImage_New_Rotated: "
+				"rotation target canvas not created! Failing.");
 		return NULL;
 	}
 	TFB_DrawCanvas_Rotate (img->NormalImg, dst, angle, size);
@@ -364,7 +365,7 @@ TFB_DrawImage_Delete (TFB_Image *image)
 {
 	if (image == 0)
 	{
-		fprintf (stderr, "INTERNAL ERROR: Tried to delete a null image!\n");
+		log_add (log_Warning, "INTERNAL ERROR: Tried to delete a null image!");
 		/* Should we die here? */
 		return;
 	}

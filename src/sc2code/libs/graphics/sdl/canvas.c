@@ -4,6 +4,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
+#include "libs/log.h"
 #include "rotozoom.h"
 #include "options.h"
 #include "types.h"
@@ -70,7 +71,7 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	if (img == 0)
 	{
-		fprintf (stderr, "ERROR: TFB_DrawCanvas_Image passed null image ptr\n");
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_Image passed null image ptr");
 		return;
 	}
 
@@ -154,8 +155,8 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 
 	if (srcfmt->BytesPerPixel != 4 || dstfmt->BytesPerPixel != 4)
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported surface formats: "
-				"%d bytes/pixel source, %d bytes/pixel destination\n",
+		log_add (log_Warning, "TFB_DrawCanvas_Fill: Unsupported surface "
+				"formats: %d bytes/pixel source, %d bytes/pixel destination",
 				(int)srcfmt->BytesPerPixel, (int)dstfmt->BytesPerPixel);
 		return;
 	}
@@ -207,8 +208,8 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 	}
 	else
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Fill: Unsupported source surface "
-				"format\n");
+		log_add (log_Warning, "TFB_DrawCanvas_Fill: Unsupported source"
+				"surface format\n");
 	}
 
 	SDL_UnlockSurface(dst);
@@ -232,7 +233,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 	if (img == 0)
 	{
-		fprintf (stderr, "ERROR: TFB_DrawCanvas_FilledImage passed null image ptr\n");
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_FilledImage passed null image ptr");
 		return;
 	}
 
@@ -327,14 +328,14 @@ TFB_DrawCanvas_FontChar (TFB_Char *fontChar, TFB_Image *backing,
 
 	if (fontChar == 0)
 	{
-		fprintf (stderr, "ERROR: "
-				"TFB_DrawCanvas_FontChar passed null char ptr\n");
+		log_add (log_Warning, "ERROR: "
+				"TFB_DrawCanvas_FontChar passed null char ptr");
 		return;
 	}
 	if (backing == 0)
 	{
-		fprintf (stderr, "ERROR: "
-				"TFB_DrawCanvas_FontChar passed null backing ptr\n");
+		log_add (log_Warning, "ERROR: "
+				"TFB_DrawCanvas_FontChar passed null backing ptr");
 		return;
 	}
 
@@ -347,9 +348,9 @@ TFB_DrawCanvas_FontChar (TFB_Char *fontChar, TFB_Image *backing,
 	if (surf->format->BytesPerPixel != 4
 			|| surf->w < w || surf->h < h)
 	{
-		fprintf (stderr, "ERROR: "
+		log_add (log_Warning, "ERROR: "
 				"TFB_DrawCanvas_FontChar bad backing surface: %dx%dx%d; "
-				"char: %dx%d\n",
+				"char: %dx%d",
 				surf->w, surf->h, (int)surf->format->BytesPerPixel, w, h);
 		UnlockMutex (backing->mutex);
 		return;
@@ -397,9 +398,11 @@ TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h,
 			fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask,
 			hasalpha ? fmt->Amask : 0);
-	if (!new_surf) {
-		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s", SDL_GetError());
-		exit(-1);
+	if (!new_surf)
+	{
+		log_add (log_Always, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
+				SDL_GetError());
+		exit (EXIT_FAILURE);
 	}
 	return new_surf;
 }
@@ -412,7 +415,7 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 
 	if (fmt->palette)
 	{
-		fprintf(stderr, "TFB_DrawCanvas_New_ForScreen() WARNING:"
+		log_add (log_Warning, "TFB_DrawCanvas_New_ForScreen() WARNING:"
 				"Paletted display format will be slow");
 
 		new_surf = TFB_DrawCanvas_New_TrueColor (w, h, withalpha);
@@ -429,9 +432,9 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 
 	if (!new_surf)
 	{
-		fprintf(stderr, "TFB_DrawCanvas_New_ForScreen() INTERNAL PANIC:"
+		log_add (log_Always, "TFB_DrawCanvas_New_ForScreen() INTERNAL PANIC:"
 				"Failed to create TFB_Canvas: %s", SDL_GetError());
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	return new_surf;
 }
@@ -441,9 +444,11 @@ TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent
 {
 	SDL_Surface *new_surf;
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 8, 0, 0, 0, 0);
-	if (!new_surf) {
-		fprintf(stderr, "INTERNAL PANIC: Failed to create TFB_Canvas: %s\n", SDL_GetError());
-		exit(-1);
+	if (!new_surf)
+	{
+		log_add (log_Always, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
+				SDL_GetError());
+		exit (EXIT_FAILURE);
 	}
 	if (palette != NULL)
 	{
@@ -530,9 +535,10 @@ TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src_canvas, int angle)
 				src->format->Amask);
 	if (!newsurf)
 	{
-		fprintf(stderr, "TFB_DrawCanvas_New_RotationTarget() INTERNAL PANIC:"
-				"Failed to create TFB_Canvas: %s", SDL_GetError());
-		exit (-1);
+		log_add (log_Always, "TFB_DrawCanvas_New_RotationTarget()"
+				" INTERNAL PANIC: Failed to create TFB_Canvas: %s",
+				SDL_GetError());
+		exit (EXIT_FAILURE);
 	}
 	if (src->format->palette)
 		TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
@@ -551,7 +557,8 @@ TFB_DrawCanvas_Delete (TFB_Canvas canvas)
 {
 	if (!canvas)
 	{
-		fprintf(stderr, "INTERNAL PANIC: Attempted to delete a NULL canvas!\n");
+		log_add (log_Warning, "INTERNAL PANIC: Attempted"
+				" to delete a NULL canvas!");
 		/* Should we actually die here? */
 	} 
 	else
@@ -590,7 +597,8 @@ TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas)
 	SDL_Surface *result = TFB_DisplayFormatAlpha ((SDL_Surface *)canvas);
 	if (result == NULL)
 	{
-		fprintf (stderr, "WARNING: Could not convert sprite-canvas to display format.\n");
+		log_add (log_Always, "WARNING: Could not convert"
+				" sprite-canvas to display format.");
 		return canvas;
 	}
 	else if (result == canvas)
@@ -743,13 +751,16 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 
 	if (size.width + size.height > NNS_MAX_DIMS)
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to zoom an image to unreasonable size!  Failing.\n");
+		log_add (log_Warning, "TFB_DrawCanvas_Scale: Tried to zoom"
+				" an image to unreasonable size! Failing.");
 		return;
 	}
 	if (size.width > dst->w || size.height > dst->h) 
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Scale: Tried to scale image to size %d %d when dest_canvas has only dimensions of %d %d!  Failing.\n",
-			size.width, size.height, dst->w, dst->h);
+		log_add (log_Warning, "TFB_DrawCanvas_Scale: Tried to scale"
+				" image to size %d %d when dest_canvas has only"
+				" dimensions of %d %d! Failing.",
+				size.width, size.height, dst->w, dst->h);
 		return;
 	}
 
@@ -836,7 +847,8 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 	}
 	else
 	{
-		fprintf (stderr, "Tried to deal with unknown BPP: %d -> %d\n", src->format->BitsPerPixel, dst->format->BitsPerPixel);
+		log_add (log_Warning, "Tried to deal with unknown BPP: %d -> %d",
+				src->format->BitsPerPixel, dst->format->BitsPerPixel);
 	}
 	SDL_UnlockSurface (dst);
 	SDL_UnlockSurface (src);
@@ -985,8 +997,10 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Rescale_Trilinear: Tried to scale image to size %d %d when dest_canvas has only dimensions of %d %d!  Failing.\n",
-			size.width, size.height, dst->w, dst->h);
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Trilinear: "
+				"Tried to scale image to size %d %d when dest_canvas"
+				" has only dimensions of %d %d! Failing.",
+				size.width, size.height, dst->w, dst->h);
 		return;
 	}
 
@@ -994,8 +1008,11 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 		(mmfmt->BytesPerPixel != 1 && mmfmt->BytesPerPixel != 4) ||
 		(dst->format->BytesPerPixel != 4))
 	{
-		fprintf (stderr, "Tried to deal with unknown BPP: %d -> %d, mipmap %d\n",
-			srcfmt->BitsPerPixel, dst->format->BitsPerPixel, mmfmt->BitsPerPixel);
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Trilinear: "
+				"Tried to deal with unknown BPP: %d -> %d, mipmap %d",
+				srcfmt->BitsPerPixel, dst->format->BitsPerPixel,
+				mmfmt->BitsPerPixel);
+		return;
 	}
 
 	// use colorkeys where appropriate
@@ -1230,7 +1247,7 @@ TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt)
 	
 	if (sdl->palette)
 	{
-		fprintf(stderr, "TFB_DrawCanvas_GetScreenFormat() WARNING:"
+		log_add (log_Warning, "TFB_DrawCanvas_GetScreenFormat() WARNING:"
 				"Paletted display format will be slow");
 
 		fmt->BitsPerPixel = 32;
@@ -1282,8 +1299,10 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Rotate: Tried to rotate image to size %d %d when dst_canvas has only dimensions of %d %d!  Failing.\n",
-			size.width, size.height, dst->w, dst->h);
+		log_add (log_Warning, "TFB_DrawCanvas_Rotate: Tried to rotate"
+				" image to size %d %d when dst_canvas has only dimensions"
+				" of %d %d! Failing.",
+				size.width, size.height, dst->w, dst->h);
 		return;
 	}
 
@@ -1297,7 +1316,8 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 	ret = rotateSurface (src, dst, angle, 0);
 	if (ret != 0)
 	{
-		fprintf (stderr, "TFB_DrawCanvas_Rotate: WARNING: actual rotation func returned failure\n");
+		log_add (log_Warning, "TFB_DrawCanvas_Rotate: WARNING:"
+				" actual rotation func returned failure\n");
 	}
 }
 

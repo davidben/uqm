@@ -27,6 +27,7 @@
 #include "filintrn.h"
 #include "compiler.h"
 #include "misc.h"
+#include "libs/log.h"
 
 #ifdef WIN32
 #	include <direct.h>
@@ -105,7 +106,7 @@ mkdirhier (const char *path)
 		{
 			if (errno != ENOENT)
 			{
-				fprintf (stderr, "Can't stat %s: %s\n", buf,
+				log_add (log_Always, "Can't stat %s: %s", buf,
 						strerror (errno));
 				return -1;
 			}
@@ -131,7 +132,7 @@ mkdirhier (const char *path)
 	{
 		if (createDirectory (buf, 0777) == -1)
 		{
-			fprintf (stderr, "Error: Can't create %s: %s\n", buf,
+			log_add (log_Always, "Error: Can't create %s: %s", buf,
 					strerror (errno));
 			return -1;
 		}
@@ -264,9 +265,9 @@ expandPath (char *dest, size_t len, const char *src, int what)
 						// fallback for when the APPDATA env var is not set
 						// Using SHGetFolderPath or SHGetSpecialFolderPath
 						// is problematic (not everywhere available).
-						fprintf(stderr, "Warning: %%APPDATA%% is not set. "
+						log_add (log_Warning, "Warning: %%APPDATA%% is not set. "
 								"Falling back to \"%%USERPROFILE%%\\Application "
-								"Data\"\n");
+								"Data\"");
 						envVar = getenv ("USERPROFILE");
 						if (envVar != NULL)
 						{
@@ -284,8 +285,9 @@ expandPath (char *dest, size_t len, const char *src, int what)
 						
 						// fallback to "./userdata"
 #define APPDATA_FALLBACK_STRING ".\\userdata"
-						fprintf(stderr, "Warning: %%USERPROFILE%% is not set. "
-								"Falling back to \"%s\" for %%APPDATA%%\n",
+						log_add (log_Warning,
+								"Warning: %%USERPROFILE%% is not set. "
+								"Falling back to \"%s\" for %%APPDATA%%",
 								APPDATA_FALLBACK_STRING);
 						CHECKLEN (buf, sizeof (APPDATA_FALLBACK_STRING) - 1);
 						strcpy (bufptr, APPDATA_FALLBACK_STRING);

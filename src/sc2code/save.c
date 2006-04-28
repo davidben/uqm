@@ -32,6 +32,7 @@
 #include "state.h"
 #include "util.h"
 #include "libs/inplib.h"
+#include "libs/log.h"
 
 
 static void
@@ -321,11 +322,13 @@ RetrySave:
 			mem_release (h);
 
 			FreeSC2Data ();
-//			fprintf (stderr, "Insufficient room for save buffers -- RETRYING\n");
+			log_add (log_Debug, "Insufficient room for save buffers"
+					" -- RETRYING");
 			goto RetrySave;
 		}
-//		else
-//			fprintf (stderr, "Insufficient room for save buffers -- GIVING UP!\n");
+		else
+			log_add (log_Debug, "Insufficient room for save buffers"
+					" -- GIVING UP!");
 	}
 	else
 	{
@@ -481,7 +484,8 @@ RetrySave:
 
 		// Write the memory file to the actual savegame file.
 		sprintf (file, "starcon2.%02u", which_game);
-//		fprintf (stderr, "'%s' is %lu bytes long\n", file, flen + sizeof (*summary_desc));
+		log_add (log_Debug, "'%s' is %lu bytes long", file,
+				flen + sizeof (*summary_desc));
 		if (flen && (out_fp = (PVOID)res_OpenResFile (saveDir, file, "wb")))
 		{
 			PrepareSummary (summary_desc);

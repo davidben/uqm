@@ -28,6 +28,7 @@
 #include "libs/compiler.h"
 #include "libs/uio.h"
 #include "libs/strlib.h"
+#include "libs/log.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -93,8 +94,8 @@ findFileInDirs (const char *locs[], int numLocs, const char *file)
 		if (locLen + (needSlash ? 1 : 0) + fileLen + 1 >= sizeof path)
 		{
 			// This dir plus the file name is too long.
-			fprintf (stderr, "Warning: path '%s' is ignored because it is "
-					"too long.\n", loc);
+			log_add (log_Warning, "Warning: path '%s' is ignored"
+					" because it is too long.", loc);
 			continue;
 		}
 		
@@ -134,20 +135,19 @@ prepareContentDir (const char *contentDirName, const char **addons)
 	}
 	if (loc == NULL)
 	{
-		fprintf (stderr, "Fatal error: Could not find content.\n");
+		log_add (log_Always, "Fatal error: Could not find content.");
 		exit (EXIT_FAILURE);
 	}
 
-	if (expandPath(path, sizeof path, loc, EP_ALL_SYSTEM) == -1)
+	if (expandPath (path, sizeof path, loc, EP_ALL_SYSTEM) == -1)
 	{
-		fprintf (stderr, "Fatal error: Could not expand path to content "
-				"directory: %s\n", strerror (errno));
+		log_add (log_Always, "Fatal error: Could not expand path to content "
+				"directory: %s", strerror (errno));
 		exit (EXIT_FAILURE);
 	}
 	
-#ifdef DEBUG
-	fprintf (stderr, "Using '%s' as base content dir.\n", path);
-#endif
+	log_add (log_Debug, "Using '%s' as base content dir.", path);
+
 	mountContentDir (repository, path, addons);
 }
 
@@ -157,7 +157,8 @@ prepareConfigDir (const char *configDirName) {
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_MountHandle *contentHandle;
 
-	if (configDirName == NULL) {
+	if (configDirName == NULL)
+	{
 		configDirName = getenv("UQM_CONFIG_DIR");
 
 		if (configDirName == NULL)
@@ -169,14 +170,12 @@ prepareConfigDir (const char *configDirName) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		log_add (log_Always, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 	configDirName = buf;
 
-#ifdef DEBUG
-	fprintf (stderr, "Using config dir '%s'\n", configDirName);
-#endif
+	log_add (log_Debug, "Using config dir '%s'", configDirName);
 
 	// Set the environment variable UQM_CONFIG_DIR so UQM_MELEE_DIR
 	// and UQM_SAVE_DIR can refer to it.
@@ -189,15 +188,17 @@ prepareConfigDir (const char *configDirName) {
 	contentHandle = uio_mountDir (repository, "/",
 			uio_FSTYPE_STDIO, NULL, NULL, configDirName, autoMount,
 			uio_MOUNT_TOP, NULL);
-	if (contentHandle == NULL) {
-		fprintf (stderr, "Fatal error: Could not mount config dir: %s\n",
+	if (contentHandle == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not mount config dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
 
 	configDir = uio_openDir (repository, "/", 0);
-	if (configDir == NULL) {
-		fprintf (stderr, "Fatal error: Could not open config dir: %s\n",
+	if (configDir == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not open config dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -216,7 +217,7 @@ prepareSaveDir (void) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		log_add (log_Always, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 
@@ -226,15 +227,15 @@ prepareSaveDir (void) {
 	// Create the path upto the save dir, if not already existing.
 	if (mkdirhier (saveDirName) == -1)
 		exit (EXIT_FAILURE);
-#ifdef DEBUG
-	fprintf(stderr, "Saved games are kept in %s.\n", saveDirName);
-#endif
+
+	log_add (log_Debug, "Saved games are kept in %s.", saveDirName);
 
 	saveDir = uio_openDirRelative (configDir, "save", 0);
 			// TODO: this doesn't work if the save dir is not
 			//       "save" in the config dir.
-	if (saveDir == NULL) {
-		fprintf (stderr, "Fatal error: Could not open save dir: %s\n",
+	if (saveDir == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not open save dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -253,7 +254,7 @@ prepareMeleeDir (void) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		fprintf (stderr, "Fatal error: Invalid path to config files.\n");
+		log_add (log_Always, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 
@@ -267,8 +268,9 @@ prepareMeleeDir (void) {
 	meleeDir = uio_openDirRelative (configDir, "teams", 0);
 			// TODO: this doesn't work if the save dir is not
 			//       "teams" in the config dir.
-	if (meleeDir == NULL) {
-		fprintf (stderr, "Fatal error: Could not open melee teams dir: %s\n",
+	if (meleeDir == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not open melee teams dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -285,28 +287,30 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	contentHandle = uio_mountDir (repository, "/",
 			uio_FSTYPE_STDIO, NULL, NULL, contentPath, autoMount,
 			uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
-	if (contentHandle == NULL) {
-		fprintf (stderr, "Fatal error: Could not mount content dir: %s\n",
+	if (contentHandle == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not mount content dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
 
 	contentDir = uio_openDir (repository, "/", 0);
-	if (contentDir == NULL) {
-		fprintf (stderr, "Fatal error: Could not open content dir: %s\n",
+	if (contentDir == NULL)
+	{
+		log_add (log_Always, "Fatal error: Could not open content dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
 
 	packagesDir = uio_openDir (repository, "/packages", 0);
-	if (packagesDir == NULL) {
-		// No packages dir means no packages to load.
-		if (addons[0] != NULL) {
-			// addons were specified, but there's no /packages dir,
+	if (packagesDir == NULL)
+	{	// No packages dir means no packages to load.
+		if (addons[0] != NULL)
+		{	// addons were specified, but there's no /packages dir,
 			// let alone a /packages/addons dir.
-			fprintf (stderr, "Warning: There's no 'packages/addons' "
+			log_add (log_Always, "Warning: There's no 'packages/addons' "
 					"directory in the 'content' directory;\n\t'--addon' "
-					"options are ignored.\n");
+					"options are ignored.");
 		}
 		return;
 	}
@@ -317,11 +321,11 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	//     the former is the dir 'packages/addons', the latter a directory
 	//     in that dir.
 	addonsDir = uio_openDirRelative (packagesDir, "addons", 0);
-	if (addonsDir == NULL) {
-		// No addon dir found.
-		fprintf (stderr, "Warning: There's no 'packages/addons' "
+	if (addonsDir == NULL)
+	{	// No addon dir found.
+		log_add (log_Always, "Warning: There's no 'packages/addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
-				"options are ignored.\n");
+				"options are ignored.");
 		uio_closeDir (packagesDir);
 		return;
 	}
@@ -329,31 +333,37 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	uio_closeDir (packagesDir);
 
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
-	if (availableAddons != NULL) {
+	if (availableAddons != NULL)
+	{
 		int i, count;
 		count = availableAddons->numNames;
 		
 		if (count != 1)
 		{
-			fprintf (stderr, "%d available addon packs.\n", count);
+			log_add (log_Always, "%d available addon packs.", count);
 		}
 		else
 		{
-			fprintf (stderr, "1 available addon pack.\n");
+			log_add (log_Always, "1 available addon pack.");
 		}
-		for (i = 0; i < count; i++) {
-			fprintf (stderr, "    %d. %s\n", i+1, availableAddons->names[i]);
+		for (i = 0; i < count; i++)
+		{
+			log_add (log_Always, "    %d. %s", i+1,
+				availableAddons->names[i]);
 		}
-	} else {
-		fprintf (stderr, "0 available addon packs.\n");
+	}
+	else
+	{
+		log_add (log_Always, "0 available addon packs.");
 	}
 
 	for (; *addons != NULL; addons++)
 	{
 		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
-		if (addonDir == NULL) {
-			fprintf (stderr, "Warning: directory 'packages/addons/%s' "
-					"not found; addon skipped.\n", *addons);
+		if (addonDir == NULL)
+		{
+			log_add (log_Always, "Warning: directory 'packages/addons/%s' "
+					"not found; addon skipped.", *addons);
 			continue;
 		}
 		
@@ -373,15 +383,18 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 
 	dirList = uio_getDirList (dirHandle, "", ".(zip|uqm)$",
 			match_MATCH_REGEX);
-	if (dirList != NULL) {
+	if (dirList != NULL)
+	{
 		int i;
 		
-		for (i = 0; i < dirList->numNames; i++) {
+		for (i = 0; i < dirList->numNames; i++)
+		{
 			if (uio_mountDir (repository, "/", uio_FSTYPE_ZIP,
 					dirHandle, dirList->names[i], "/", autoMount,
 					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
-					contentHandle) == NULL) {
-				fprintf (stderr, "Warning: Could not mount '%s': %s.\n",
+					contentHandle) == NULL)
+			{
+				log_add (log_Always, "Warning: Could not mount '%s': %s.",
 						dirList->names[i], strerror (errno));
 			}
 		}

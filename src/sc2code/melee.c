@@ -40,6 +40,7 @@
 #include "libs/gfxlib.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 #include <assert.h>
@@ -1061,14 +1062,14 @@ GetNewList:
 		{
 			BOOLEAN deleteStatus;
 
-			fprintf (stderr, "Could not load '%s'\n", file);
+			log_add (log_Always, "Could not load '%s'", file);
 
 			deleteStatus = DeleteResFile (meleeDir, file);
 			if (deleteStatus == FALSE)
 			{
 				// XXX: see bug #823
-				fprintf (stderr, "FATAL: Could not delete '%s'\n", file);
-				abort ();
+				log_add (log_Always, "FATAL: Could not delete '%s'", file);
+				exit (EXIT_FAILURE);
 			}
 			goto GetNewList;
 		}
