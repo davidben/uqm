@@ -17,6 +17,8 @@
 #include "uqmlog.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
 #include "libs/threadlib.h"
@@ -192,10 +194,12 @@ log_setOutput (FILE *out)
 void
 log_addV (log_Level level, const char *fmt, va_list list)
 {
+	log_Entry full_msg;
+	vsnprintf (full_msg, sizeof (full_msg) - 1, fmt, list);
+	
 	if ((int)level <= maxStreamLevel)
 	{
-		vfprintf (streamOut, fmt, list);
-		fputc ('\n', streamOut);
+		fprintf (streamOut, "%s\n", full_msg);
 	}
 
 	if ((int)level <= maxLevel)
@@ -205,7 +209,7 @@ log_addV (log_Level level, const char *fmt, va_list list)
 		queueNonThreaded ();
 		
 		slot = acquireSlot ();
-		vsnprintf (queue[slot], sizeof (queue[0]) - 1, fmt, list);
+		snprintf (queue[slot], sizeof (queue[0]) - 1, "%s", full_msg);
 	}
 }
 
@@ -225,15 +229,17 @@ log_add (log_Level level, const char *fmt, ...)
 void
 log_add_nothreadV (log_Level level, const char *fmt, va_list list)
 {
+	log_Entry full_msg;
+	vsnprintf (full_msg, sizeof (full_msg) - 1, fmt, list);
+	
 	if ((int)level <= maxStreamLevel)
 	{
-		vfprintf (streamOut, fmt, list);
-		fputc ('\n', streamOut);
+		fprintf (streamOut, "%s\n", full_msg);
 	}
 
 	if ((int)level <= maxLevel)
 	{
-		vsnprintf (msgNoThread, sizeof (msgNoThread) - 1, fmt, list);
+		snprintf (msgNoThread, sizeof (msgNoThread) - 1, "%s", full_msg);
 		noThreadReady = true;
 	}
 }
