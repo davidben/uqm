@@ -196,6 +196,7 @@ log_addV (log_Level level, const char *fmt, va_list list)
 {
 	log_Entry full_msg;
 	vsnprintf (full_msg, sizeof (full_msg) - 1, fmt, list);
+	full_msg[sizeof (full_msg) - 1] = '\0';
 	
 	if ((int)level <= maxStreamLevel)
 	{
@@ -209,7 +210,7 @@ log_addV (log_Level level, const char *fmt, va_list list)
 		queueNonThreaded ();
 		
 		slot = acquireSlot ();
-		snprintf (queue[slot], sizeof (queue[0]) - 1, "%s", full_msg);
+		memcpy (queue[slot], full_msg, sizeof (queue[0]));
 	}
 }
 
@@ -231,6 +232,7 @@ log_add_nothreadV (log_Level level, const char *fmt, va_list list)
 {
 	log_Entry full_msg;
 	vsnprintf (full_msg, sizeof (full_msg) - 1, fmt, list);
+	full_msg[sizeof (full_msg) - 1] = '\0';
 	
 	if ((int)level <= maxStreamLevel)
 	{
@@ -239,7 +241,7 @@ log_add_nothreadV (log_Level level, const char *fmt, va_list list)
 
 	if ((int)level <= maxLevel)
 	{
-		snprintf (msgNoThread, sizeof (msgNoThread) - 1, "%s", full_msg);
+		memcpy (msgNoThread, full_msg, sizeof (msgNoThread));
 		noThreadReady = true;
 	}
 }
