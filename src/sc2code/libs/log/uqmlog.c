@@ -146,8 +146,8 @@ log_init (int max_lines)
 	prevAbortFunc = signal (SIGABRT, abortHandler);
 	if (prevAbortFunc == SIG_ERR)
 	{
-		fprintf (stderr, "Warning: cannot install SIGABRT handler, code %d\n",
-				errno);
+		fprintf (stderr, "Warning: cannot install SIGABRT handler: %s\n",
+				strerror (errno));
 	}
 }
 
