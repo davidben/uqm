@@ -26,11 +26,15 @@
 #include "endian_uqm.h"
 #include "uio.h"
 #include "decoder.h"
-#include "mikmod/mikmod.h"
-#include "mikmod/drv_openal.h"
 #include "libs/sound/audiocore.h"
 #include "libs/log.h"
 #include "modaud.h"
+
+#ifdef USE_EXTERNAL_MIKMOD
+#	include "mikmod.h"
+#else
+#	include "mikmod/mikmod.h"
+#endif
 
 #define THIS_PTR TFB_SoundDecoder* This
 
@@ -73,6 +77,101 @@ typedef struct tfb_modsounddecoder
 	MODULE* module;
 
 } TFB_ModSoundDecoder;
+
+
+
+// MikMod Output driver
+//  we provide our own so that we can use MikMod as
+//  generic decoder
+
+static void* buffer;
+static ULONG bufsize;
+static ULONG written;
+
+ULONG*
+moda_mmout_SetOutputBuffer (void* buf, ULONG size)
+{
+	buffer = buf;
+	bufsize = size;
+	written = 0;
+	return &written;
+}
+
+static BOOL
+moda_mmout_IsThere (void)
+{
+    return 1;
+}
+
+static BOOL
+moda_mmout_Init (void)
+{
+    md_mode |= DMODE_SOFT_MUSIC | DMODE_SOFT_SNDFX;
+    return VC_Init ();
+}
+
+static void
+moda_mmout_Exit (void)
+{
+    VC_Exit ();
+}
+
+static void
+moda_mmout_Update (void)
+{
+	written = 0;
+	if (!buffer || bufsize == 0)
+		return;
+
+	written = VC_WriteBytes (buffer, bufsize);
+}
+
+static BOOL
+moda_mmout_Reset (void)
+{
+    return 0;
+}
+
+static MDRIVER moda_mmout_drv =
+{   NULL,
+    "Mem Buffer",              // Name
+    "Mem Buffer driver v1.1",  // Version
+    0, 255,                    // Voice limits
+    "membuf",                  // Alias
+
+// The minimum mikmod version we support is 3.1.8
+#if (LIBMIKMOD_VERSION_MAJOR > 3) || \
+		((LIBMIKMOD_VERSION_MAJOR == 3) && (LIBMIKMOD_VERSION_MINOR >= 2))
+	NULL,                      // Cmdline help
+#endif
+
+    NULL,
+    moda_mmout_IsThere,
+    VC_SampleLoad,
+    VC_SampleUnload,
+    VC_SampleSpace,
+    VC_SampleLength,
+    moda_mmout_Init,
+    moda_mmout_Exit,
+    moda_mmout_Reset,
+    VC_SetNumVoices,
+    VC_PlayStart,
+    VC_PlayStop,
+    moda_mmout_Update,
+    NULL,               /* FIXME: Pause */
+    VC_VoiceSetVolume,
+    VC_VoiceGetVolume,
+    VC_VoiceSetFrequency,
+    VC_VoiceGetFrequency,
+    VC_VoiceSetPanning,
+    VC_VoiceGetPanning,
+    VC_VoicePlay,
+    VC_VoiceStop,
+    VC_VoiceStopped,
+    VC_VoiceGetPosition,
+    VC_VoiceRealVolume
+};
+
 
 static const TFB_DecoderFormats* moda_formats = NULL;
 
@@ -149,7 +248,7 @@ moda_GetName (void)
 static bool
 moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 {
-    MikMod_RegisterDriver (&drv_openal);
+    MikMod_RegisterDriver (&moda_mmout_drv);
     MikMod_RegisterAllLoaders ();
 
 	if (flags & audio_QUALITY_HIGH)
@@ -293,7 +392,7 @@ moda_Decode (THIS_PTR, void* buf, sint32 bufsize)
 	if (!Player_Active())
 		return 0;
 
-	poutsize = ALDRV_SetOutputBuffer (buf, bufsize);
+	poutsize = moda_mmout_SetOutputBuffer (buf, bufsize);
 	MikMod_Update ();
 	
 	return *poutsize;

@@ -28,11 +28,8 @@
 
 #include "mikmod_internals.h"
 
-MIKMODAPI extern struct MDRIVER drv_openal;
-
 void _mm_registeralldrivers(void)
 {
-	_mm_registerdriver(&drv_openal);
 	_mm_registerdriver(&drv_nos);
 }
 
