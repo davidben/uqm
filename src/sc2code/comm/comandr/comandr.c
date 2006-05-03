@@ -138,7 +138,7 @@ ByeBye (RESPONSE_REF R)
 				name_40,
 				GLOBAL_SIS (CommanderName),
 				name_41,
-				0);
+				NULL_PTR);
 
 		NPCPhrase (THIS_MAY_SEEM_SILLY);
 
@@ -557,7 +557,7 @@ RevealSelf (RESPONSE_REF R)
 						we_are_vindicator1,
 						GLOBAL_SIS (ShipName),
 						we_are_vindicator2,
-						0);
+						NULL_PTR);
 				DoResponsePhrase (we_are_vindicator0, RevealSelf, shared_phrase_buf);
 			}
 			else if (PHRASE_ENABLED (our_mission_was_secret))
@@ -658,7 +658,7 @@ Intro (void)
 				no_but_well_help0,
 				GLOBAL_SIS (ShipName),
 				no_but_well_help1,
-				0
+				NULL_PTR
 				);
 		DoResponsePhrase (no_but_well_help0, NoRadioactives, shared_phrase_buf);
 		Response (yes_this_is_supply_ship, NoRadioactives);

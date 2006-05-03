@@ -789,7 +789,7 @@ Intro (void)
 					we_are_vindicator1,
 					GLOBAL_SIS (ShipName),
 					we_are_vindicator2,
-					0);
+					NULL_PTR);
 			Response (we_are_vice_squad, InitialSyreen);
 			Response (we_are_the_one_for_you_baby, InitialSyreen);
 			DoResponsePhrase (we_are_vindicator0, InitialSyreen, shared_phrase_buf);

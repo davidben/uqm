@@ -754,7 +754,7 @@ HomeWorld (RESPONSE_REF R)
 					we_are_us1,
 					GLOBAL_SIS (ShipName),
 					we_are_us2,
-					0);
+					NULL_PTR);
 			pStr[0] = we_are_us0;
 			break;
 		case 1:

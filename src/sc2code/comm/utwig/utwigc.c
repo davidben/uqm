@@ -556,7 +556,7 @@ NeutralUtwig (RESPONSE_REF R)
 						we_are_vindicator1,
 						buf,
 						we_are_vindicator2,
-						0
+						NULL_PTR
 						);
 			}
 			pStr[0] = we_are_vindicator0;

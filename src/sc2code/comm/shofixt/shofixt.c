@@ -351,7 +351,7 @@ RealizeMistake (RESPONSE_REF R)
 				i_am_captain2,
 				GLOBAL_SIS (ShipName),
 				i_am_captain3,
-				0
+				NULL_PTR
 				);
 	}
 	DoResponsePhrase (i_am_captain0, ExplainDefeat, shared_phrase_buf);
@@ -401,7 +401,7 @@ Hostile (RESPONSE_REF R)
 					shofixti_name,
 					"",
 					look1,
-					0
+					NULL_PTR
 					);
 			DoResponsePhrase (look0, ExitConversation, shared_phrase_buf);
 			break;
@@ -475,7 +475,7 @@ Friendly (RESPONSE_REF R)
 				shofixti_name,
 				"",
 				report1,
-				0
+				NULL_PTR
 				);
 		Resp[0].pStr = report0;
 		Resp[0].c_buf = buf0;
@@ -491,7 +491,7 @@ Friendly (RESPONSE_REF R)
 					shofixti_name,
 					"",
 					why_here1,
-					0
+					NULL_PTR
 					);
 			Resp[1].pStr = why_here0;
 			Resp[1].c_buf = buf1;
@@ -533,7 +533,7 @@ Friendly (RESPONSE_REF R)
 			shofixti_name,
 			"",
 			bye1,
-			0
+			NULL_PTR
 			);
 	DoResponsePhrase (bye0, ExitConversation, shared_phrase_buf);
 }

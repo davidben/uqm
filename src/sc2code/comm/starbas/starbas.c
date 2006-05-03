@@ -947,7 +947,7 @@ TellStarBase (RESPONSE_REF R)
 					tell_me_about_modules0,
 					GLOBAL_SIS (ShipName),
 					tell_me_about_modules1,
-					0
+					NULL_PTR
 					);
 			pstack[0] = tell_me_about_modules0;
 			break;
@@ -963,7 +963,7 @@ TellStarBase (RESPONSE_REF R)
 					tell_me_about_fuel0,
 					GLOBAL_SIS (ShipName),
 					tell_me_about_fuel1,
-					0
+					NULL_PTR
 					);
 			pstack[1] = tell_me_about_fuel0;
 			break;

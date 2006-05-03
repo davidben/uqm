@@ -622,7 +622,7 @@ PkunkHome (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				0);
+				NULL_PTR);
 		DoResponsePhrase (we_are_vindicator0, OfferAlliance, shared_phrase_buf);
 	}
 	if (PHRASE_ENABLED (what_about_you))

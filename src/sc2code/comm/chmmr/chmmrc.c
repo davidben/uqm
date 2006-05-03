@@ -585,7 +585,7 @@ Intro (void)
 						i_am_captain1,
 						GLOBAL_SIS (ShipName),
 						i_am_captain2,
-						0);
+						NULL_PTR);
 				DoResponsePhrase (i_am_captain0, ChmmrFree, shared_phrase_buf);
 				Response (i_am_savior, ChmmrFree);
 				Response (i_am_silly, ChmmrFree);

@@ -538,7 +538,7 @@ OrzNeutral (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				0);
+				NULL_PTR);
 		pStr[1] = we_are_vindicator0;
 	}
 	else

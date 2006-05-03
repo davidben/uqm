@@ -420,7 +420,7 @@ NeutralSupox (RESPONSE_REF R)
 					i_am0,
 					GLOBAL_SIS (CommanderName),
 					i_am1,
-					0);
+					NULL_PTR);
 			pStr[0] = i_am0;
 			pStr[1] = 0;
 			break;
@@ -429,7 +429,7 @@ NeutralSupox (RESPONSE_REF R)
 					my_ship0,
 					GLOBAL_SIS (ShipName),
 					my_ship1,
-					0);
+					NULL_PTR);
 			pStr[0] = my_ship0;
 			pStr[1] = 0;
 			break;
@@ -443,7 +443,7 @@ NeutralSupox (RESPONSE_REF R)
 						from_alliance0,
 						buf,
 						from_alliance1,
-						0
+						NULL_PTR
 						);
 			}
 			pStr[0] = from_alliance0;

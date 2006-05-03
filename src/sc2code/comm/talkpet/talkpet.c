@@ -518,7 +518,7 @@ CompelPlayer (RESPONSE_REF R)
 				we_are_vindicator0,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator1,
-				0
+				NULL_PTR
 				);
 		pStr[2] = we_are_vindicator0;
 	}

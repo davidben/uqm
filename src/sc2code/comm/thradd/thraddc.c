@@ -483,7 +483,7 @@ ThraddCulture (RESPONSE_REF R)
 			the_slave_empire0,
 			GLOBAL_SIS (CommanderName),
 			the_slave_empire1,
-			0);
+			NULL_PTR);
 
 	Response (you_decide, ThraddDemeanor);
 	Response (fat, ThraddDemeanor);

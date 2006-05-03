@@ -411,7 +411,7 @@ AquaintZoqFot (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				0
+				NULL_PTR
 				);
 	}
 

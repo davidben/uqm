@@ -366,7 +366,7 @@ Zombies (RESPONSE_REF R)
 					we_vindicator1,
 					GLOBAL_SIS (ShipName),
 					we_vindicator2,
-					0);
+					NULL_PTR);
 			pStr[1] = we_vindicator0;
 		}
 		else if (PHRASE_ENABLED (come_in_peace))

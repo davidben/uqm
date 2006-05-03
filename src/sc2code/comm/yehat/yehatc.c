@@ -379,7 +379,7 @@ YehatHome (RESPONSE_REF R)
 				i_demand_you_ally_homeworld2,
 				GLOBAL_SIS (ShipName),
 				i_demand_you_ally_homeworld3,
-				0
+				NULL_PTR
 				);
 		DoResponsePhrase (i_demand_you_ally_homeworld0,
 				ExitConversation, shared_phrase_buf);
@@ -506,7 +506,7 @@ YehatSpace (RESPONSE_REF R)
 					i_demand_you_ally_space2,
 					buf,
 					i_demand_you_ally_space3,
-					0
+					NULL_PTR
 					);
 			pStr[2] = i_demand_you_ally_space0;
 			break;
