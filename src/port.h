@@ -164,11 +164,11 @@ typedef unsigned int wint_t;
 #ifdef __GNUC__
 #	define PRINTF_FUNCTION(formatArg, firstArg) \
 			__attribute__((format(printf, formatArg, firstArg)))
-#	define VPRINTF_FUNCTION(formatArg, arglist) \
+#	define VPRINTF_FUNCTION(formatArg) \
 			__attribute__((format(printf, formatArg, 0)))
 #else
 #	define PRINTF_FUNCTION(formatArg, firstArg)
-#	define VPRINTF_FUNCTION(formatArg, arglist)
+#	define VPRINTF_FUNCTION(formatArg)
 #endif
 
 #endif  /* _PORT_H */
