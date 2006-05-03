@@ -1108,7 +1108,7 @@ mixer_SourceGetFakeSample (mixer_Source *src, float *psamp, bool left)
 }
 
 /* advance position in currently queued buffer */
-static __inline__ bool
+static __inline__ uint32
 mixer_SourceAdvance (mixer_Source *src, bool left)
 {
 	mixer_Buffer *curr = src->nextqueued;
