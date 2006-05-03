@@ -699,14 +699,6 @@ SOURCE=..\sc2code\libs\sound\decoders\mikmod\drv_nos.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\mikmod\drv_openal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\decoders\mikmod\drv_openal.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\sound\decoders\mikmod\load_mod.c
 # End Source File
 # Begin Source File
