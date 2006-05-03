@@ -44,10 +44,14 @@ typedef enum
 
 } log_Level;
 
-extern void log_add (log_Level, const char *fmt, ...);
-extern void log_addV (log_Level, const char *fmt, va_list);
-extern void log_add_nothread (log_Level, const char *fmt, ...);
-extern void log_add_nothreadV (log_Level, const char *fmt, va_list);
+extern void log_add (log_Level, const char *fmt, ...)
+		PRINTF_FUNCTION(2, 3);
+extern void log_addV (log_Level, const char *fmt, va_list)
+		VPRINTF_FUNCTION(2, 3);
+extern void log_add_nothread (log_Level, const char *fmt, ...)
+		PRINTF_FUNCTION(2, 3);
+extern void log_add_nothreadV (log_Level, const char *fmt, va_list)
+		VPRINTF_FUNCTION(2, 3);
 
 
 #endif /* _UQMLOG_H */

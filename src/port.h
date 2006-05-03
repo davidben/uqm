@@ -154,5 +154,22 @@ typedef unsigned int wint_t;
 #	define SDL_IMAGE_INCLUDE(file) <file>
 #endif  /* SDL_IMAGE_DIR */
 
+// Mark a function as using printf-style function arguments, so that
+// extra consistency checks can be made by the compiler.
+// The first argument to PRINTF_FUNCTION and VPRINTF_FUNCTION is the
+// index of the format string argument, the second is the index of
+// the first argument which is specified in the format string (in the
+// case of PRINTF_FUNCTION) or of the va_list argument (in the case of
+// VPRINTF_FUNCTION).
+#ifdef __GNUC__
+#	define PRINTF_FUNCTION(formatArg, firstArg) \
+			__attribute__((format(printf, formatArg, firstArg)))
+#	define VPRINTF_FUNCTION(formatArg, arglist) \
+			__attribute__((format(printf, formatArg, 0)))
+#else
+#	define PRINTF_FUNCTION(formatArg, firstArg)
+#	define VPRINTF_FUNCTION(formatArg, arglist)
+#endif
+
 #endif  /* _PORT_H */
 
