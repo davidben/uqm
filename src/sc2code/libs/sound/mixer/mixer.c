@@ -1005,7 +1005,7 @@ mixer_SourceRewind_internal (mixer_Source *src)
 }
 
 /* get the sample next in queue in internal format */
-static __inline__ bool
+static inline bool
 mixer_SourceGetNextSample (mixer_Source *src, float *psamp, bool left)
 {
 	/* fake the data if requested */
@@ -1064,7 +1064,7 @@ mixer_SourceGetNextSample (mixer_Source *src, float *psamp, bool left)
 }
 
 /* fake the next sample, but process buffers and states */
-static __inline__ bool
+static inline bool
 mixer_SourceGetFakeSample (mixer_Source *src, float *psamp, bool left)
 {	
 	while (src->nextqueued)
@@ -1108,7 +1108,7 @@ mixer_SourceGetFakeSample (mixer_Source *src, float *psamp, bool left)
 }
 
 /* advance position in currently queued buffer */
-static __inline__ uint32
+static inline uint32
 mixer_SourceAdvance (mixer_Source *src, bool left)
 {
 	mixer_Buffer *curr = src->nextqueued;
@@ -1461,7 +1461,7 @@ mixer_BufferData (mixer_Object bufobj, uint32 format, void* data,
  *  Buffer internals
  */
 
-static __inline__ bool
+static inline bool
 mixer_CheckBufferState (mixer_Buffer *buf, const char* FuncName)
 {
 	if (!buf)
@@ -1518,7 +1518,7 @@ mixer_ConvertBuffer_internal (mixer_Convertion *conv)
 /* get a sample from external buffer
  * in internal format
  */
-static __inline__ sint32
+static inline sint32
 mixer_GetSampleExt (void *src, uint32 bpc)
 {
 	if (bpc == 2)
@@ -1528,7 +1528,7 @@ mixer_GetSampleExt (void *src, uint32 bpc)
 }
 
 /* get a sample from internal buffer */
-static __inline__ sint32
+static inline sint32
 mixer_GetSampleInt (void *src, uint32 bpc)
 {
 	if (bpc == 2)
@@ -1540,7 +1540,7 @@ mixer_GetSampleInt (void *src, uint32 bpc)
 /* put a sample into an external buffer
  * from internal format
  */
-static __inline__ void
+static inline void
 mixer_PutSampleExt (void *dst, uint32 bpc, sint32 samp)
 {
 	if (bpc == 2)
@@ -1552,7 +1552,7 @@ mixer_PutSampleExt (void *dst, uint32 bpc, sint32 samp)
 /* put a sample into an internal buffer
  * in internal format
  */
-static __inline__ void
+static inline void
 mixer_PutSampleInt (void *dst, uint32 bpc, sint32 samp)
 {
 	if (bpc == 2)
@@ -1687,7 +1687,7 @@ mixer_UpsampleCubic (mixer_Source *src, bool left)
  * in internal format, while performing
  * convertion if necessary
  */
-static __inline__ sint32
+static inline sint32
 mixer_GetConvSample (uint8 **psrc, uint32 bpc, uint32 flags)
 {
 	sint32 samp;
@@ -1722,7 +1722,7 @@ mixer_GetConvSample (uint8 **psrc, uint32 bpc, uint32 flags)
  * in internal format, while performing
  * convertion if necessary
  */
-static __inline__ void
+static inline void
 mixer_PutConvSample (uint8 **pdst, uint32 bpc, uint32 flags, sint32 samp)
 {
 	mixer_PutSampleInt (*pdst, bpc, samp);

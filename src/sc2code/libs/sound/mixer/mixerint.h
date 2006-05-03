@@ -21,6 +21,8 @@
 #ifndef _MIXERINT_H
 #define _MIXERINT_H
 
+#include "port.h"
+#include "types.h"
 
 /*************************************************
  *  Internals
@@ -67,11 +69,11 @@ typedef struct
 static void mixer_ConvertBuffer_internal (mixer_Convertion *conv);
 static void mixer_ResampleFlat (mixer_Convertion *conv);
 
-static __inline__ sint32 mixer_GetSampleExt (void *src, uint32 bpc);
-static __inline__ sint32 mixer_GetSampleInt (void *src, uint32 bpc);
-static __inline__ void mixer_PutSampleInt (void *dst, uint32 bpc,
+static inline sint32 mixer_GetSampleExt (void *src, uint32 bpc);
+static inline sint32 mixer_GetSampleInt (void *src, uint32 bpc);
+static inline void mixer_PutSampleInt (void *dst, uint32 bpc,
 		sint32 samp);
-static __inline__ void mixer_PutSampleExt (void *dst, uint32 bpc,
+static inline void mixer_PutSampleExt (void *dst, uint32 bpc,
 		sint32 samp);
 
 static float mixer_ResampleNone (mixer_Source *src, bool left);
@@ -86,7 +88,7 @@ static void mixer_SourceRewind_internal (mixer_Source *src);
 static void mixer_SourceActivate (mixer_Source* src);
 static void mixer_SourceDeactivate (mixer_Source* src);
 
-static __inline__ bool mixer_CheckBufferState (mixer_Buffer *buf,
+static inline bool mixer_CheckBufferState (mixer_Buffer *buf,
 		const char* FuncName);
 
 /* Clipping boundaries */
@@ -99,10 +101,10 @@ static __inline__ bool mixer_CheckBufferState (mixer_Buffer *buf,
 #define MIX_GAIN_ADJ (0.75f)
 
 /* The Mixer */
-static __inline__ bool mixer_SourceGetNextSample (mixer_Source *src,
+static inline bool mixer_SourceGetNextSample (mixer_Source *src,
 		float *psamp, bool left);
-static __inline__ bool mixer_SourceGetFakeSample (mixer_Source *src,
+static inline bool mixer_SourceGetFakeSample (mixer_Source *src,
 		float *psamp, bool left);
-static __inline__ uint32 mixer_SourceAdvance (mixer_Source *src, bool left);
+static inline uint32 mixer_SourceAdvance (mixer_Source *src, bool left);
 
 #endif /* _MIXERINT_H */

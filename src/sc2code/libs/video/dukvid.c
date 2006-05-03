@@ -441,7 +441,7 @@ dukv_InitDeltas (TFB_DuckVideoDecoder* dukv, uint8* vectors,
 	}
 }
 
-static __inline__ uint32
+static inline uint32
 dukv_PixelConv (uint16 pix, const TFB_PixelFormat* fmt)
 {
 	uint32 r, g, b;
