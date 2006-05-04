@@ -207,14 +207,20 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 		pTES->JoystickMode = FALSE;
 
 		chsize = getStringFromChar (chbuf, sizeof (chbuf), ch);
-		if (isWidePrintChar (ch) && chsize > 0
-				&& (pStr + len - pTES->BaseStr + chsize < pTES->MaxSize))
-		{	// insert character
-			memmove (pStr + chsize, pStr, len + 1);
-			memcpy (pStr, chbuf, chsize);
-			pStr += chsize;
-			++pTES->CursorPos;
-			changed = TRUE;
+		if (isWidePrintChar (ch) && chsize > 0)
+		{
+			if (pStr + len - pTES->BaseStr + chsize < pTES->MaxSize)
+			{	// insert character, when fits
+				memmove (pStr + chsize, pStr, len + 1);
+				memcpy (pStr, chbuf, chsize);
+				pStr += chsize;
+				++pTES->CursorPos;
+				changed = TRUE;
+			}
+			else
+			{	// does not fit
+				PlayMenuSound (MENU_SOUND_FAILURE);
+			}
 		}
 		ch = GetNextCharacter ();
 	}
@@ -377,6 +383,10 @@ DoTextEntry (PTEXTENTRY_STATE pTES)
 					pStr[newch.len] = '\0';
 					len += newch.len;
 					changed = TRUE;
+				}
+				else
+				{	// does not fit
+					PlayMenuSound (MENU_SOUND_FAILURE);
 				}
 			}
 		}
