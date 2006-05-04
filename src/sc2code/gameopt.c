@@ -797,7 +797,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
-			sprintf (buf, "%lu", GLOBAL_SIS (ResUnits));
+			sprintf (buf, "%u", GLOBAL_SIS (ResUnits));
 			t.baseline.y = 102;
 			r.extent.width = 76;
 			r.extent.height = SHIP_NAME_HEIGHT;

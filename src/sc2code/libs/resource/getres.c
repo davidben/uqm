@@ -138,7 +138,7 @@ res_GetResource (RESOURCE res)
 	desc = lookupResourceDesc (resourceIndex, res);
 	if (desc == NULL)
 	{
-		log_add (log_Warning, "Trying to get undefined resource %08lx",
+		log_add (log_Warning, "Trying to get undefined resource %08x",
 				(DWORD) res);
 		return NULL_HANDLE;
 	}

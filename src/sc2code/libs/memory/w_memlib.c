@@ -246,7 +246,7 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 		log_add (log_Always, "mem_allocate: out of extents.");
 	else if ((node->memory = MallocWithRetry (coreSize, "mem_allocate:")) == 0
 			&& coreSize)
-		log_add (log_Always, "mem_allocate: couldn't allocate %u bytes.",
+		log_add (log_Always, "mem_allocate: couldn't allocate %ld bytes.",
 				coreSize);
 	else
 	{

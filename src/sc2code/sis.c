@@ -370,7 +370,7 @@ DrawStatusMessage (const UNICODE *pStr)
 					GET_GAME_STATE (MELNORME_CREDIT1)
 					), GAME_STRING (STATUS_STRING_BASE + 0)); // "Cr"
 		else if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
-			sprintf (buf, "%lu %s", GLOBAL_SIS (ResUnits),
+			sprintf (buf, "%u %s", GLOBAL_SIS (ResUnits),
 					GAME_STRING (STATUS_STRING_BASE + 1)); // "RU"
 		else
 			sprintf (buf, "%s %s",
@@ -647,7 +647,7 @@ DrawFlagshipStats (void)
 	}
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%4lu", (fuel / FUEL_TANK_SCALE));
+	sprintf (buf, "%4u", (fuel / FUEL_TANK_SCALE));
 	font_DrawText (&t);
 
 	SetContextFontEffect (OldFontEffect);

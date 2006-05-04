@@ -156,7 +156,7 @@ initTempDir (void) {
 	tempPtr = tempDirName + len;
 	for (i = 0; i < NUM_TEMP_RETRIES; i++)
 	{
-		sprintf (tempPtr, "%08lx", num + i);
+		sprintf (tempPtr, "%08x", num + i);
 		if (createDirectory (tempDirName, 0700) == -1)
 			continue;
 		

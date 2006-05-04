@@ -359,7 +359,7 @@ PrintCoarseScanPC (void)
 	if (val < 0)
 		val = -val;
 	t.pStr = buf;
-	sprintf (buf, "%ld" STR_DEGREE_SIGN, val);
+	sprintf (buf, "%d" STR_DEGREE_SIGN, val);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	UnlockMutex (GraphicsLock);
@@ -556,7 +556,7 @@ PrintCoarseScan3DO (void)
 	val = pSolarSysState->SysInfo.PlanetInfo.AxialTilt;
 	if (val < 0)
 		val = -val;
-	sprintf (buf, "%ld" STR_DEGREE_SIGN, val);
+	sprintf (buf, "%d" STR_DEGREE_SIGN, val);
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += SCAN_LEADING;

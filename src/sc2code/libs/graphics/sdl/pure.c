@@ -395,13 +395,13 @@ Scale_PerfTest (void)
 		if (i % 100 == 0)
 		{
 			Now = SDL_GetTicks ();
-			log_add (log_Debug, "%03ld(%04ld) ", 100*1000 / (Now - TimeIn),
+			log_add (log_Debug, "%03d(%04u) ", 100*1000 / (Now - TimeIn),
 					Now - TimeIn);
 			TimeIn = Now;
 		}
 	}
 
-	log_add (log_Always, "Full frames scaled: %d; over %ld ms; %ld fps\n",
+	log_add (log_Always, "Full frames scaled: %d; over %u ms; %d fps\n",
 			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
 
 	SDL_UnlockSurface (scaled_display);
