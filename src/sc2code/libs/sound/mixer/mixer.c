@@ -939,7 +939,7 @@ mixer_SourceStop_internal (mixer_Source *src)
 		log_add (log_Debug, "mixer_SourceStop_internal(): "
 				"desynced source state");
 #ifdef DEBUG
-		abort ();
+		explode ();
 #endif
 	}
 

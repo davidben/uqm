@@ -25,6 +25,7 @@
 #include "libs/tasklib.h"
 #include "libs/threadlib.h"
 #include "libs/log.h"
+#include "libs/misc.h"
 
 // the running of the game-clock is based on game framerates
 // *not* on the system (or translated) timer
@@ -228,7 +229,7 @@ SuspendGameClock (void)
 		log_add (log_Always, "BUG: "
 				"Attempted to suspend non-existent game clock");
 #ifdef DEBUG
-		abort();
+		explode ();
 #endif
 		return;
 	}
@@ -249,7 +250,7 @@ ResumeGameClock (void)
 		log_add (log_Always, "BUG: "
 				"Attempted to resume non-existent game clock\n");
 #ifdef DEBUG
-		abort();
+		explode ();
 #endif
 		return;
 	}

@@ -192,7 +192,7 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 			log_add (log_Always, "Fatal: resource index '%s' is not sorted "
 					"on the resource number, or contains a double entry. "
 					"Problem encountered on line %d.", fileName, lineNum);
-			abort ();
+			explode ();
 		}
 		lastResource = res;
 #endif

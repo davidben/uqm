@@ -23,6 +23,8 @@
 #define MISC_H
 
 #include <sys/types.h>
+#include <stdlib.h>
+#include "port.h"
 
 
 extern void *HMalloc (int size);
@@ -31,6 +33,16 @@ extern void *HCalloc (int size);
 extern void *HRealloc (void *p, int size);
 
 extern int TFB_DEBUG_HALT;
+
+static inline void explode (void)
+{
+#ifdef DEBUG
+	// give debugger a chance to hook
+	abort ();
+#else
+	exit (EXIT_FAILURE);
+#endif
+}
 
 #endif
 

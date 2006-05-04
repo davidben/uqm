@@ -155,7 +155,7 @@ UnQueueThread (TrueThread thread)
 			log_add (log_Debug, "Error: Trying to remove non-present thread "
 					"from thread queue.");
 			fflush (stderr);
-			abort();
+			explode ();
 		}
 #endif  /* DEBUG_THREADS */
 		ptr = &(*ptr)->next;

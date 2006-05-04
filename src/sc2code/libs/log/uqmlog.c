@@ -53,10 +53,7 @@ static FILE *streamOut;
 static volatile int qlock = 0;
 static Mutex qmutex;
 
-static void (* prevAbortFunc)(int) = SIG_ERR;
-
 static void exitCallback (void);
-static void abortHandler (int);
 static void displayLog (bool isError);
 static void displayBox (const char *title, bool isError, const char *msg);
 
@@ -141,14 +138,8 @@ log_init (int max_lines)
 	msgBuf[sizeof (msgBuf) - 1] = '\0';
 	msgNoThread[sizeof (msgNoThread) - 1] = '\0';
 
-	// install exit and abort handlers
+	// install exit handlers
 	atexit (exitCallback);
-	prevAbortFunc = signal (SIGABRT, abortHandler);
-	if (prevAbortFunc == SIG_ERR)
-	{
-		fprintf (stderr, "Warning: cannot install SIGABRT handler: %s\n",
-				strerror (errno));
-	}
 }
 
 void
@@ -168,9 +159,6 @@ log_exit (int code)
 		qlock = 0;
 		DestroyMutex (qmutex);
 	}
-
-	if (prevAbortFunc != SIG_ERR)
-		signal (SIGABRT, prevAbortFunc);
 
 	return code;
 }
@@ -287,20 +275,6 @@ exitCallback (void)
 		displayLog (errorBox);
 
 	log_exit (0);
-}
-
-static void
-abortHandler (int sig)
-{
-	if (showBox)
-		displayLog (true);
-
-	if (prevAbortFunc == SIG_ERR || prevAbortFunc == SIG_IGN)
-		; // do nothing
-	else if (prevAbortFunc == SIG_DFL)
-		raise (SIGABRT); // forward to default
-	else
-		prevAbortFunc (sig); // forward directly
 }
 
 static void

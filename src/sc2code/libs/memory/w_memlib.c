@@ -28,6 +28,7 @@
 #include "libs/threadlib.h"
 #include "libs/memlib.h"
 #include "libs/log.h"
+#include "libs/misc.h"
 
 #define GetToolFrame() 1
 
@@ -211,7 +212,7 @@ MallocWithRetry(int bytes, char *diagStr)
 
 		log_add (log_Always, "Malloc failed for %s. #Bytes %d.", diagStr, bytes);
 		fflush (stderr);
-        abort ();
+        explode ();
 #if 0
 		/* The user gets a chance to close other applications and try again. */
 		if (!MessageWithRetry ("I'm out of memory!  "
@@ -587,7 +588,7 @@ HMalloc (int size)
     if ((p = _alloc_mem(size)) == NULL) {
         log_add (log_Always, "Fatal Error: HMalloc(): out of memory.");
 		fflush (stderr);
-        abort ();
+        explode ();
     }
     return (p);
 }
