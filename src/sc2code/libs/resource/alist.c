@@ -97,7 +97,9 @@ Alist_PutAll (alist *dst, alist *src)
 {
 	alist_entry *e = src->first;
 	while (e) {
-		Alist_PutString (dst, e->key, e->value);
+		Alist_PutString (dst,
+				StringBank_AddOrFindString(dst->bank, e->key),
+				StringBank_AddOrFindString(dst->bank, e->value));
 		e = e->next;
 	}
 }
