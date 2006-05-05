@@ -87,7 +87,7 @@ DoConfirmExit (void)
 {
 	BOOLEAN result;
 	static BOOLEAN in_confirm = FALSE;
-	log_add (log_Info, "Confirming Exit!\n");
+	log_add (log_Info, "Confirming Exit!");
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
 			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE &&
 			!(LastActivity & CHECK_RESTART))
@@ -190,7 +190,7 @@ DoConfirmExit (void)
 			do_subtitles ((void *)~0);
 	}
 
-	log_add (log_Info, "Exit was %sconfirmed.\n", result ? "" : "NOT ");
+	log_add (log_Info, "Exit was %sconfirmed.", result ? "" : "NOT ");
 	in_confirm = FALSE;
 	return (result);
 }
