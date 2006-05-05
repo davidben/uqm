@@ -379,23 +379,27 @@ TryStartGame (void)
 BOOLEAN
 StartGame (void)
 {
-	while (!TryStartGame ())
+	do
 	{
-		if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
-		{	// timed out
-			GLOBAL (CurrentActivity) = 0;
-			SplashScreen (0);
-			Credits (FALSE);
+		while (!TryStartGame ())
+		{
+			if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
+			{	// timed out
+				GLOBAL (CurrentActivity) = 0;
+				SplashScreen (0);
+				Credits (FALSE);
+			}
+
+			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+				return (FALSE); // quit
 		}
 
-		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-			return (FALSE); // quit
-	}
-
-	if (LastActivity & CHECK_RESTART)
-	{	// starting a new game
-		Introduction ();
-	}
+		if (LastActivity & CHECK_RESTART)
+		{	// starting a new game
+			Introduction ();
+		}
+	
+	} while (GLOBAL (CurrentActivity) & CHECK_ABORT);
 
 	{
 		extern STAR_DESC starmap_array[];
