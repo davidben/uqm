@@ -67,6 +67,16 @@ extern void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
 // distance beyond which all pixels are transparent (for aa)
 #define RADIUS_THRES  ((RADIUS + 1) * (RADIUS + 1))
 #define DIAMETER (TWORADIUS + 1)
+#if 0
+#	define SPHERE_SPAN_X (MAP_WIDTH >> 1)
+#else
+#	define SPHERE_SPAN_X (MAP_HEIGHT)
+#endif
+		// XXX: technically, the sphere's span over X should be MAP_WIDTH/2
+		// but this causes visible surface compression over X, because
+		// the surface dims ratio is H x H*PI, instead of H x 2*H
+		// see bug #885
+
 #define DIFFUSE_BITS 16
 #define AA_WEIGHT_BITS 16
 
@@ -248,7 +258,7 @@ P3norm (POINT3 *res, POINT3 *vec)
 }
 
 // RenderPhongMask builds a shadow map for the rotating planet
-//  loc indicates the planets position relavtive to the sun
+//  loc indicates the planet's position relative to the sun
 static void
 RenderPhongMask (POINT loc)
 {
@@ -360,8 +370,8 @@ create_aa_points (MAP3D_POINT *ppt, double x, double y)
 
 	if (x < 0)
 		x = 0;
-	else if (x >= MAP_HEIGHT)
-		x = MAP_HEIGHT - 1;
+	else if (x >= SPHERE_SPAN_X)
+		x = SPHERE_SPAN_X - 1;
 	if (y < 0)
 		y = 0;
 	else if (y >= MAP_HEIGHT)
@@ -451,9 +461,9 @@ void
 SetPlanetTilt (int angle)
 {
 	int x, y;
-	const double multx = (MAP_HEIGHT / M_PI);
-	const double multy = (MAP_HEIGHT / M_PI);
-	const double xadj = ((double)MAP_HEIGHT / 2.0);
+	const double multx = ((double)SPHERE_SPAN_X / M_PI);
+	const double multy = ((double)MAP_HEIGHT / M_PI);
+	const double xadj = ((double)SPHERE_SPAN_X / 2.0);
 
 	for (y = -RADIUS; y <= RADIUS; y++)
 	{
@@ -725,7 +735,7 @@ calc_map_light (UBYTE val, DWORD dif, int lvf)
 static inline DWORD
 get_map_pixel (DWORD *pixels, int x, int y)
 {
-	return pixels[y * (MAP_WIDTH + MAP_HEIGHT) + x];
+	return pixels[y * (MAP_WIDTH + SPHERE_SPAN_X) + x];
 }
 
 static inline int
@@ -1357,7 +1367,7 @@ planet_orbit_init ()
 			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
 				(COUNT)(MAP_HEIGHT << 2), 1));
 	Orbit->lpTopoMap = HMalloc (sizeof (DWORD)
-			* (MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT)));
+			* (MAP_HEIGHT * (MAP_WIDTH + SPHERE_SPAN_X)));
 	// always allocate the scratch array to largest needed size
 	Orbit->ScratchArray = HMalloc (sizeof (DWORD)
 			* (SHIELD_DIAM) * (SHIELD_DIAM));
@@ -1773,7 +1783,7 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 	RECT r;
 	DWORD old_seed;
 	PLANDATAPTR PlanDataPtr;
-	COUNT i, x, y;
+	COUNT i, y;
 	POINT loc;
 	CONTEXT OldContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
@@ -1952,17 +1962,16 @@ GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
 
 	// Generate a pixel array from the Topography map.
 	// We use this instead of lpTopoData because it needs to be
-	// WAP_WIDTH+MAP_HEIGHT wide and we need this method for Earth anyway.
+	// WAP_WIDTH+SPHERE_SPAN_X wide and we need this method for Earth anyway.
 	// It may be more efficient to build it from lpTopoData instead of the
 	// FRAMPTR though.
-	x = MAP_WIDTH + MAP_HEIGHT;
-	y = MAP_HEIGHT;
-	getpixelarray (Orbit->lpTopoMap, 4, pSolarSysState->TopoFrame, x, y);
-	// Extend the width from MAP_WIDTH to MAP_WIDTH+MAP_HEIGHT
-	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + MAP_HEIGHT);
-			y += MAP_WIDTH + MAP_HEIGHT)
+	getpixelarray (Orbit->lpTopoMap, 4, pSolarSysState->TopoFrame,
+			MAP_WIDTH + SPHERE_SPAN_X, MAP_HEIGHT);
+	// Extend the width from MAP_WIDTH to MAP_WIDTH+SPHERE_SPAN_X
+	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + SPHERE_SPAN_X);
+			y += MAP_WIDTH + SPHERE_SPAN_X)
 		memcpy (Orbit->lpTopoMap + y + MAP_WIDTH, Orbit->lpTopoMap + y,
-				MAP_HEIGHT * sizeof (Orbit->lpTopoMap[0]));
+				SPHERE_SPAN_X * sizeof (Orbit->lpTopoMap[0]));
 
 	if (PLANALGO (PlanDataPtr->Type) != GAS_GIANT_ALGO)
 	{	// convert topo data to a light map, based on relative
