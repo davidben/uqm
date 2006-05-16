@@ -43,6 +43,18 @@ typedef COLOR *PCOLOR;
 
 #define BUILD_COLOR(c32k,c256) \
 	(COLOR)(((DWORD)(c32k)<<8)|(BYTE)(c256))
+		// BUILD_COLOR combines a 15-bit RGB color tripple with a
+		// destination VGA palette index into a 32-bit value.
+		// It is a remnant of 8bpp hardware paletted display (VGA).
+		// The palette index would be overwritten with the RGB value
+		// and the drawing op would use this index on screen.
+		// The palette indices 0-15, as used in DOS SC2, are unchanged
+		// from the standard VGA palette and are identical to 16-color EGA.
+		// Various frames, borders, menus, etc. frequently refer to these
+		// first 16 colors and normally do not change the RGB values from
+		// the standard ones (see colors.h; most likely unchanged from SC1)
+		// The palette index is meaningless in UQM for the most part.
+		// New code should just use index 0.
 #define COLOR_32k(c) (UWORD)((COLOR)(c)>>8)
 #define COLOR_256(c) LOBYTE((COLOR)c)
 #define MAKE_RGB15(r,g,b) (UWORD)(((r)<<10)|((g)<<5)|(b))
