@@ -62,6 +62,7 @@ enum
 	LOAD_BOT,
 	SAVE_BOT,
 	CONTROLS_BOT,
+	QUIT_BOT,
 	EDIT_MELEE
 };
 
@@ -514,6 +515,9 @@ Deselect (BYTE opt)
 		case SAVE_BOT:
 			DrawMeleeIcon (21);
 			break;
+		case QUIT_BOT:
+			DrawMeleeIcon (29);
+			break;
 		case CONTROLS_TOP:
 		case CONTROLS_BOT:
 		{
@@ -559,6 +563,9 @@ Select (BYTE opt)
 			break;
 		case SAVE_BOT:
 			DrawMeleeIcon (23);
+			break;
+		case QUIT_BOT:
+			DrawMeleeIcon (30);
 			break;
 		case CONTROLS_TOP:
 		case CONTROLS_BOT:
@@ -1708,8 +1715,8 @@ DoMelee (PMELEE_STATE pMS)
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
 			InTime = GetTimeCounter ();
-			if (NewMeleeOption++ == CONTROLS_BOT)
-				NewMeleeOption = CONTROLS_BOT;
+			if (NewMeleeOption++ == QUIT_BOT)
+				NewMeleeOption = QUIT_BOT;
 		}
 
 		if ((PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
@@ -1805,6 +1812,9 @@ DoMelee (PMELEE_STATE pMS)
 						DoSaveTeam (pMS);
 					else
 						PlayMenuSound (MENU_SOUND_FAILURE);
+					break;
+	 			case QUIT_BOT:
+					GLOBAL (CurrentActivity) |= CHECK_ABORT;
 					break;
 				case CONTROLS_TOP:
 				case CONTROLS_BOT:

@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Added a quit button for the Super Melee main menu - Michael
 - Fixed sporadic uqm.cfg loading errors in release builds - Alex
 - Quit (F10) now works correctly during intro (bug #862) - Alex
 - Playing failure sounds when entering text consistently (bug #884) - Alex
