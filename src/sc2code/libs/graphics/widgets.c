@@ -5,6 +5,11 @@
 
 WIDGET *widget_focus = NULL;
 
+/* Some basic color defines */
+#define WIDGET_ACTIVE_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E)
+#define WIDGET_INACTIVE_COLOR BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x09)
+#define WIDGET_INACTIVE_SELECTED_COLOR  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+
 void
 DrawShadowedBox(PRECT r, COLOR bg, COLOR dark, COLOR medium)
 {
@@ -50,7 +55,7 @@ Widget_DrawToolTips (int numlines, const char **tips)
 	RECT r;
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
-	COLOR oldtext = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
 	TEXT t;
 	int i;
 
@@ -95,9 +100,9 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	r.extent.width = SCREEN_WIDTH - 4;
 	r.extent.height = SCREEN_HEIGHT - 4;
 	
-	title = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
-	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
+	title = WIDGET_INACTIVE_SELECTED_COLOR;
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
 	default_color = title;
 	
 	DrawStamp (&self->bgStamp);
@@ -151,9 +156,9 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	TEXT t;
 	int i, home_x, home_y;
 	
-	default_color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
-	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
+	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
 
 	t.baseline.x = x;
 	t.baseline.y = y;
@@ -210,8 +215,8 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	
-	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
 
 	t.baseline.x = 160;
 	t.baseline.y = y;
@@ -239,8 +244,7 @@ void
 Widget_DrawLabel (WIDGET *_self, int x, int y)
 {
 	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
-	COLOR oldtext = SetContextForeGroundColor (
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -276,9 +280,9 @@ Widget_DrawSlider(WIDGET *_self, int x, int y)
 	RECT r;
 	int tick = (SCREEN_WIDTH - x) / 8;
 	
-	default_color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
-	selected = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
-	inactive = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x07);
+	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
 
 	t.baseline.x = x;
 	t.baseline.y = y;
@@ -333,6 +337,61 @@ Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y)
 	t.pStr = buffer;
 
 	font_DrawText (&t);
+}
+
+void
+Widget_DrawTextEntry (WIDGET *_self, int x, int y)
+{
+	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
+	COLOR oldtext;
+	COLOR inactive, default_color, selected;
+	FONT  oldfont = SetContextFont (StarConFont);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
+	TEXT t;
+	int i, home_x, home_y;
+	
+	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
+
+	t.baseline.x = x;
+	t.baseline.y = y;
+	t.align = ALIGN_LEFT;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	t.pStr = self->category;
+	if (widget_focus == _self)
+	{
+		oldtext = SetContextForeGroundColor (selected);
+	}
+	else
+	{
+		oldtext = SetContextForeGroundColor (default_color);
+	}
+	font_DrawText (&t);
+
+	/* Force string termination */
+	self->value[WIDGET_TEXTENTRY_WIDTH-1] = 0;
+
+	t.baseline.x = 160;
+	t.baseline.y = y;
+	t.align = ALIGN_CENTER;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	t.pStr = self->value;
+	if (widget_focus == _self)
+	{
+		oldtext = SetContextForeGroundColor (selected);
+	}
+	else
+	{
+		oldtext = SetContextForeGroundColor (inactive);
+	}
+	font_DrawText (&t);
+
+	SetContextFontEffect (oldFontEffect);
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldtext);
 }
 
 int
@@ -526,6 +585,19 @@ Widget_HandleEventMenuScreen (WIDGET *_self, int event)
 		}
 		x += dx;
 	}
+	return FALSE;
+}
+
+int
+Widget_HandleEventTextEntry (WIDGET *_self, int event)
+{
+	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
+	if (event == WIDGET_EVENT_SELECT) {
+		/* The TextEntry call goes here, editing self->value.
+		 * The string should cap at self->maxlen
+		 * characters. */
+	}
+	(void)self;
 	return FALSE;
 }
 

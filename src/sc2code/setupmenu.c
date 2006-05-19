@@ -65,11 +65,12 @@ static int do_advanced (WIDGET *self, int event);
 #define RES_OPTS 2
 #endif
 
-#define MENU_COUNT    7
-#define CHOICE_COUNT 20
-#define SLIDER_COUNT  3
-#define BUTTON_COUNT  8
-#define LABEL_COUNT   2
+#define MENU_COUNT       7
+#define CHOICE_COUNT    20
+#define SLIDER_COUNT     3
+#define BUTTON_COUNT     8
+#define LABEL_COUNT      2
+#define TEXTENTRY_COUNT  1
 
 /* The space for our widgets */
 static WIDGET_MENU_SCREEN menus[MENU_COUNT];
@@ -77,6 +78,7 @@ static WIDGET_CHOICE choices[CHOICE_COUNT];
 static WIDGET_SLIDER sliders[SLIDER_COUNT];
 static WIDGET_BUTTON buttons[BUTTON_COUNT];
 static WIDGET_LABEL labels[LABEL_COUNT];
+static WIDGET_TEXTENTRY textentries[TEXTENTRY_COUNT];
 
 /* The hardcoded data that isn't strings */
 
@@ -92,7 +94,7 @@ static HANDLER button_handlers[BUTTON_COUNT] = {
 	do_audio, do_resources, do_keyconfig, do_advanced };
 
 static int menu_sizes[MENU_COUNT] = {
-	7, 5, 6, 9, 2, 4,
+	8, 5, 6, 9, 2, 4,
 #ifdef HAVE_OPENGL
 	5 };
 #else
@@ -110,6 +112,7 @@ static WIDGET *main_widgets[] = {
 	(WIDGET *)(&buttons[5]),
 	(WIDGET *)(&buttons[6]),
 	(WIDGET *)(&buttons[7]),
+	(WIDGET *)(&textentries[0]),
 	(WIDGET *)(&buttons[0]) };
 
 static WIDGET *graphics_widgets[] = {
@@ -682,6 +685,23 @@ init_widgets (void)
 		log_add (log_Warning, "WARNING: Setup strings had %d garbage entries at the end.",
 				count - index);
 	}
+
+	/* Hardcode the test textentry for now. */
+	for (i = 0; i < TEXTENTRY_COUNT; i++)
+	{
+		textentries[i].parent = NULL;
+		textentries[i].handleEvent = Widget_HandleEventTextEntry;
+		textentries[i].receiveFocus = Widget_ReceiveFocusSimple;
+		textentries[i].draw = Widget_DrawTextEntry;
+		textentries[i].height = Widget_HeightOneLine;
+		textentries[i].width = Widget_WidthFullScreen;
+		textentries[i].category = NULL;
+		textentries[i].value[0] = 0;
+		textentries[i].maxlen = WIDGET_TEXTENTRY_WIDTH-1;
+	}
+
+	textentries[0].category = "TestText";
+	strcpy (textentries[0].value, "Sample value");
 }
 
 static void

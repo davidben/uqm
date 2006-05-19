@@ -31,6 +31,8 @@ enum {
 	NUM_WIDGET_EVENTS
 };
 
+#define WIDGET_TEXTENTRY_WIDTH 30
+
 typedef struct _widget {
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
@@ -110,6 +112,18 @@ typedef struct _widget_slider {
 	const char *tooltip[3];
 } WIDGET_SLIDER;
 
+typedef struct _widget_textentry {
+	struct _widget *parent;
+	int (*handleEvent)(struct _widget *self, int event);
+	int (*receiveFocus)(struct _widget *self, int event);
+	void (*draw)(struct _widget *self, int x, int y);
+	int (*height)(struct _widget *self);
+	int (*width)(struct _widget *self);
+	const char *category;
+	char value[WIDGET_TEXTENTRY_WIDTH];
+	int maxlen;
+} WIDGET_TEXTENTRY;
+
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
 
 int Widget_Event (int event);
@@ -125,6 +139,7 @@ int Widget_ReceiveFocusRefuseFocus (WIDGET *_self, int event);
 int Widget_HandleEventMenuScreen (WIDGET *_self, int event);
 int Widget_HandleEventChoice (WIDGET *_self, int event);
 int Widget_HandleEventSlider (WIDGET *_self, int event);
+int Widget_HandleEventTextEntry (WIDGET *_self, int event);
 int Widget_HandleEventIgnoreAll (WIDGET *_self, int event);
 
 int Widget_HeightChoice (WIDGET *_self);
@@ -139,6 +154,7 @@ void Widget_DrawChoice (WIDGET *_self, int x, int y);
 void Widget_DrawButton (WIDGET *_self, int x, int y);
 void Widget_DrawLabel (WIDGET *_self, int x, int y);
 void Widget_DrawSlider (WIDGET *_self, int x, int y);
+void Widget_DrawTextEntry (WIDGET *_self, int x, int y);
 
 void Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y);
 
