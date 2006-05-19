@@ -122,6 +122,7 @@ typedef struct textentry_state
 
 	// these are semi-private read-only
 	BOOLEAN Initialized;
+	DWORD NextTime;    // use this for input frame timing
 	BOOLEAN Success;   // edit confirmed or canceled
 	UNICODE *CacheStr; // cached copy to revert immediate changes
 	STRING JoyAlphaString; // joystick alphabet definition

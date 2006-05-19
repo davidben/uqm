@@ -405,6 +405,81 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 		 (next == NULL));
 }
 
+static void
+redraw_menu (void)
+{
+	BatchGraphics ();
+	(*next->draw)(next, 0, 0);
+	UnbatchGraphics ();
+}
+
+static BOOLEAN
+OnTextEntryChange (PTEXTENTRY_STATE pTES)
+{
+	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
+
+	widget->cursor_pos = pTES->CursorPos;
+	if (pTES->JoystickMode)
+		widget->state |= WTE_BLOCKCUR;
+	else
+		widget->state &= ~WTE_BLOCKCUR;
+	
+	// XXX TODO: Here, we can examine the text entered so far
+	// to make sure it fits on the screen, for example,
+	// and return FALSE to disallow the last change
+	
+	return TRUE; // allow change
+}
+
+static BOOLEAN
+OnTextEntryFrame (PTEXTENTRY_STATE pTES)
+{
+	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
+
+	redraw_menu ();
+
+	SleepThreadUntil (pTES->NextTime);
+	pTES->NextTime = GetTimeCounter () + MENU_FRAME_RATE;
+
+	return TRUE; // continue
+}
+
+static int
+OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
+{	// Going to edit the text
+	TEXTENTRY_STATE tes;
+	UNICODE revert_buf[256];
+
+	widget->cursor_pos = 0;
+	widget->state = WTE_EDITING;
+	redraw_menu ();
+
+	// make a backup copy for revert on cancel
+	utf8StringCopy (revert_buf, sizeof (revert_buf), widget->value);
+
+	// text entry setup
+	tes.Initialized = FALSE;
+	tes.MenuRepeatDelay = 0;
+	tes.NextTime = GetTimeCounter () + MENU_FRAME_RATE;
+	tes.BaseStr = widget->value;
+	tes.MaxSize = widget->maxlen;
+	tes.CursorPos = widget->cursor_pos;
+	tes.CbParam = widget;
+	tes.ChangeCallback = OnTextEntryChange;
+	tes.FrameCallback = OnTextEntryFrame;
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	if (!DoTextEntry (&tes))
+	{	// editing failed (canceled) -- revert the changes
+		utf8StringCopy (widget->value, widget->maxlen, revert_buf);
+	}
+
+	widget->state = WTE_NORMAL;
+	redraw_menu ();
+
+	return TRUE; // event handled
+}
+
 static stringbank *bank = NULL;
 static FRAME setup_frame = NULL;
 
@@ -695,9 +770,12 @@ init_widgets (void)
 		textentries[i].draw = Widget_DrawTextEntry;
 		textentries[i].height = Widget_HeightOneLine;
 		textentries[i].width = Widget_WidthFullScreen;
+		textentries[i].handleEventSelect = OnTextEntryEvent;
 		textentries[i].category = NULL;
 		textentries[i].value[0] = 0;
 		textentries[i].maxlen = WIDGET_TEXTENTRY_WIDTH-1;
+		textentries[i].state = WTE_NORMAL;
+		textentries[i].cursor_pos = 0;
 	}
 
 	textentries[0].category = "TestText";

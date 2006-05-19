@@ -593,11 +593,10 @@ Widget_HandleEventTextEntry (WIDGET *_self, int event)
 {
 	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
 	if (event == WIDGET_EVENT_SELECT) {
-		/* The TextEntry call goes here, editing self->value.
-		 * The string should cap at self->maxlen
-		 * characters. */
+		if (!self->handleEventSelect)
+			return FALSE;
+		return (*self->handleEventSelect)(self);
 	}
-	(void)self;
 	return FALSE;
 }
 

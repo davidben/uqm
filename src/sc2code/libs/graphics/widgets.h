@@ -112,6 +112,13 @@ typedef struct _widget_slider {
 	const char *tooltip[3];
 } WIDGET_SLIDER;
 
+typedef enum {
+	WTE_NORMAL = 0,
+	WTE_EDITING,
+	WTE_BLOCKCUR,
+
+} WIDGET_TEXTENTRY_STATE;
+
 typedef struct _widget_textentry {
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
@@ -119,9 +126,15 @@ typedef struct _widget_textentry {
 	void (*draw)(struct _widget *self, int x, int y);
 	int (*height)(struct _widget *self);
 	int (*width)(struct _widget *self);
+	int (*handleEventSelect)(struct _widget_textentry *self);
+			// handleEventSelect is an overridable callback event
+			// called by the default handleEvent implementation
+			// can be NULL, in which case SELECT is ignored
 	const char *category;
 	char value[WIDGET_TEXTENTRY_WIDTH];
 	int maxlen;
+	WIDGET_TEXTENTRY_STATE state;
+	int cursor_pos;
 } WIDGET_TEXTENTRY;
 
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
