@@ -497,7 +497,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 				if (offset)
 					InitGroupInfo (FALSE);
-						/* TFB_Random battle group */
+						/* Random battle group */
 				else if (ValidateEvent (ABSOLUTE_EVENT, /* still fresh */
 						&month_index, &day_index, &year_index))
 				{

@@ -21,7 +21,7 @@
 * DESC: a library of random number generators for general purpose use.
 *
 * References:
-* "TFB_Random Number Generators: Good ones are hard to find" S.K.Park & K.W.Miller
+* "Random Number Generators: Good ones are hard to find" S.K.Park & K.W.Miller
 * Communications of the ACM, Vol31 Number 10, October 1988, Pp 1192-1201
 *
 * HISTORY: Created 1/23/1989
