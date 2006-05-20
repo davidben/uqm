@@ -74,7 +74,7 @@ static BOOLEAN getLineWithinWidth(TEXT *pText,
 LOCDATA CommData;
 int cur_comm;
 UNICODE shared_phrase_buf[2048];
-volatile BOOLEAN summary = FALSE;
+volatile BOOLEAN PauseAnimTask = FALSE;
 
 typedef struct response_entry
 {
@@ -524,7 +524,7 @@ uninit_communication (void)
 	DestroyMutex (subtitle_mutex);
 }
 
-static volatile BOOLEAN SummaryChange;
+static volatile BOOLEAN ClearSummary;
 static volatile BOOLEAN ClearSubtitle;
 
 static void
@@ -1053,7 +1053,7 @@ ambient_anim_task (void *data)
 			}
 		}
 
-		if (!summary)
+		if (!PauseAnimTask)
 		{
 			CONTEXT OldContext;
 			BOOLEAN CheckSub = FALSE;
@@ -1069,7 +1069,7 @@ ambient_anim_task (void *data)
 
 			OldContext = SetContext (TaskContext);
 
-			if (ColorChange || SummaryChange)
+			if (ColorChange || ClearSummary)
 			{
 				FRAME F;
 				F = CommData.AlienFrame;
@@ -1077,8 +1077,8 @@ ambient_anim_task (void *data)
 				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				CheckSub = TRUE;
-				ClearSub = SummaryChange;
-				ColorChange = SummaryChange = FALSE;
+				ClearSub = ClearSummary;
+				ColorChange = ClearSummary = FALSE;
 			}
 			if (Change || ClearSub)
 			{
@@ -1437,6 +1437,177 @@ AlienTalkSegue (COUNT wait_track)
 	}
 }
 
+
+typedef struct summary_state
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (struct summary_state *pSS);
+	COUNT MenuRepeatDelay;
+
+	// extended state
+	BOOLEAN Initialized;
+	BOOLEAN PrintNext;
+	TFB_SoundChain *NextSub;
+	UNICODE *LeftOver;
+
+} SUMMARY_STATE;
+typedef SUMMARY_STATE *PSUMMARY_STATE;
+
+static BOOLEAN
+DoConvSummary (PSUMMARY_STATE pSS)
+{
+#define DELTA_Y_SUMMARY 8
+#define SUMMARY_CHARS (SIS_SCREEN_WIDTH - 34) / 4
+#define MAX_SUMM_ROWS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT) \
+			/ DELTA_Y_SUMMARY) - 1
+
+	if (!pSS->Initialized)
+	{
+		pSS->PrintNext = TRUE;
+		pSS->NextSub = first_chain;
+		pSS->LeftOver = NULL;
+		pSS->MenuRepeatDelay = 0;
+		pSS->InputFunc = DoConvSummary;
+		pSS->Initialized = TRUE;
+		DoInput (pSS, FALSE);
+	}
+	else if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+	{
+		return FALSE; // bail out
+	}
+	else if (PulsedInputState.menu[KEY_MENU_SELECT]
+			|| PulsedInputState.menu[KEY_MENU_CANCEL]
+			|| PulsedInputState.menu[KEY_MENU_RIGHT])
+	{
+		if (pSS->NextSub)
+		{	// we want the next page
+			pSS->PrintNext = TRUE;
+		}
+		else
+		{	// no more, we are done
+			return FALSE;
+		}
+	}
+	else if (pSS->PrintNext)
+	{	// print the next page
+		RECT r;
+		TEXT t;
+		UNICODE buffer[320]; // SUMMARY_CHARS * 6
+		int row;
+		FONT oldFont;
+
+		r.corner.x = 0;
+		r.corner.y = 0;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
+
+		LockMutex (GraphicsLock);
+		SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
+		DrawFilledRectangle (&r);
+
+		SetContextForeGroundColor (BUILD_COLOR (
+				MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+
+		t.baseline.x = SAFE_X + 2;
+		t.align = ALIGN_LEFT;
+		t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+		t.CharCount = (COUNT)~0;
+		oldFont = SetContextFont (TinyFont);
+
+		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
+				++row, pSS->NextSub = pSS->NextSub->next)
+		{
+			UNICODE *temp;
+
+			if (pSS->LeftOver)
+			{	// some text left from last subtitle
+				temp = pSS->LeftOver;
+				pSS->LeftOver = NULL;
+			}
+			else
+			{
+				temp = pSS->NextSub->text;
+				if (!temp)
+					continue;
+			}
+			
+			for ( ; row < MAX_SUMM_ROWS &&
+					utf8StringCount (temp) > (unsigned) SUMMARY_CHARS;
+					++row)
+			{
+				UNICODE *pend = skipUTF8Chars (temp, SUMMARY_CHARS);
+				int space_index = pend - temp;
+				int i;
+
+				// find last space before it goes over the max chars per line
+				for (i = space_index; i > 0; i--)
+				{
+					if (temp[i] == ' ')
+					{
+						space_index = i;
+						break;
+					}
+				}
+				if ((unsigned)space_index >= sizeof (buffer))
+				{
+					log_add (log_Always, "DoConvSummary() BUG: "
+							"buffer[%u] too small to fit %d bytes\n",
+							sizeof (buffer), space_index);
+					exit (EXIT_FAILURE);
+				}
+				strncpy (buffer, temp, space_index);
+				buffer[space_index] = '\0';
+				temp += space_index + 1;
+
+				t.pStr = buffer;
+				font_DrawText (&t);
+				t.baseline.y += DELTA_Y_SUMMARY;
+			}
+
+			if (row >= MAX_SUMM_ROWS)
+			{	// no more space on screen, but some text left over
+				// from the current subtitle
+				pSS->LeftOver = temp;
+				break;
+			}
+		
+			t.pStr = temp;
+			font_DrawText (&t);
+			t.baseline.y += DELTA_Y_SUMMARY;
+		}
+
+		if (row >= MAX_SUMM_ROWS && (pSS->NextSub || pSS->LeftOver))
+		{	// draw *MORE*
+			TEXT mt;
+
+			mt.baseline.x = SIS_SCREEN_WIDTH >> 1;
+			mt.baseline.y = t.baseline.y;
+			mt.align = ALIGN_CENTER;
+			snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
+					  STR_MIDDLE_DOT,
+					  GAME_STRING (FEEDBACK_STRING_BASE + 1),
+					  STR_MIDDLE_DOT);
+			mt.pStr = buffer;
+			SetContextForeGroundColor (BUILD_COLOR (
+					MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
+			font_DrawText (&mt);
+		}
+
+		SetContextFont (oldFont);
+		UnlockMutex (GraphicsLock);
+
+		pSS->PrintNext = FALSE;
+	}
+	else
+	{
+		SleepThread (ONE_SECOND / 20);
+	}
+
+	return TRUE; // keep going
+}
+
+
 static BOOLEAN
 DoCommunication (PENCOUNTER_STATE pES)
 {
@@ -1519,159 +1690,24 @@ DoCommunication (PENCOUNTER_STATE pES)
 		}
 		else if (PulsedInputState.menu[KEY_MENU_CANCEL] && 
 				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		{
-			TFB_SoundChain *curr;
-			RECT r;
-			TEXT t;
-#define DELTA_Y_SUMMARY 8
-#define SUMMARY_CHARS (SIS_SCREEN_WIDTH - 34) / 4
-#define MAX_COLS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT - DELTA_Y_SUMMARY) / 8) - 1
-			UNICODE buffer[320]; // SUMMARY_CHARS * 6
-			UNICODE *temp;
-			int i;
-			int col = 0;
-			DWORD CurTime;
-			FONT fLast;
-
-			LockMutex (GraphicsLock);
-			DrawSISComWindow ();
-			FeedbackPlayerPhrase (pES->phrase_buf);
-			summary = TRUE;
-			UnlockMutex (GraphicsLock);
-			CurTime = GetTimeCounter ();
-			SleepThreadUntil (CurTime + ONE_SECOND / 30);
-			LockMutex (GraphicsLock);
-			r.corner.x = 0;
-			r.corner.y = 0;
-			r.extent.width = SIS_SCREEN_WIDTH;
-			r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
-			DrawFilledRectangle (&r);
-			UnlockMutex (GraphicsLock);
-
-			SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
-
-			t.baseline.x = SAFE_X + 2;
-			t.align = ALIGN_LEFT;
-			t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
-			t.CharCount = (COUNT)~0;
-			fLast = SetContextFont (TinyFont);
-
-			for (curr = first_chain; curr != NULL; curr = curr->next)
-			{
-				temp = curr->text;
-				if (temp == NULL)
-					continue;
-				while (utf8StringCount (temp) > (unsigned int) SUMMARY_CHARS
-						&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-				{
-					UNICODE *pend = skipUTF8Chars (temp, SUMMARY_CHARS);
-					int space_index = pend - temp;
-
-					// find last space before it goes over the max chars per line
-					for (i = space_index; i > 0; i--)
-					{
-						if (temp[i] == ' ')
-						{
-							space_index = i;
-							break;
-						}
-					}
-					if ((unsigned)space_index >= sizeof (buffer))
-					{
-						log_add (log_Always, "DoCommunication() BUG: "
-								"buffer[%u] too small to fit %d bytes\n",
-								sizeof (buffer), space_index);
-						exit (EXIT_FAILURE);
-					}
-					strncpy (buffer, temp, space_index);
-					buffer[space_index] = '\0';
-					temp += space_index + 1;
-					t.pStr = buffer;
-					LockMutex (GraphicsLock);
-					font_DrawText (&t);
-					UnlockMutex (GraphicsLock);
-					t.baseline.y += DELTA_Y_SUMMARY;
-					col++;
-					if (col > MAX_COLS)
-					{
-						t.baseline.x = SIS_SCREEN_WIDTH >> 1;
-						t.align = ALIGN_CENTER;
-						snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
-								  STR_MIDDLE_DOT,
-								  GAME_STRING (FEEDBACK_STRING_BASE + 1),
-								  STR_MIDDLE_DOT);
-						t.pStr = buffer;
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
-						LockMutex (GraphicsLock);
-						font_DrawText (&t);
-						UnlockMutex (GraphicsLock);
-						col = 0;
-						t.baseline.x = SAFE_X + 2;
-						t.align = ALIGN_LEFT;
-						t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
-
-						WaitAnyButtonOrQuit (TRUE);
-
-						LockMutex (GraphicsLock);
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
-						DrawFilledRectangle (&r);
-						UnlockMutex (GraphicsLock);
-						SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
-					}
-				}
+		{	// Do the conversation summary
+			SUMMARY_STATE SummaryState;
 			
-				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-					break;				
-				
-				t.pStr = temp;
-				LockMutex (GraphicsLock);
-				font_DrawText (&t);
-				UnlockMutex (GraphicsLock);
-				t.baseline.y += DELTA_Y_SUMMARY;
-				col++;
-				if (col > MAX_COLS && curr->next != NULL)
-				{
-					t.baseline.x = SIS_SCREEN_WIDTH >> 1;
-					t.align = ALIGN_CENTER;
-					snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
-							  STR_MIDDLE_DOT,
-							  GAME_STRING (FEEDBACK_STRING_BASE + 1),
-							  STR_MIDDLE_DOT);
-					t.pStr = buffer;
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
-					LockMutex (GraphicsLock);
-					font_DrawText (&t);
-					UnlockMutex (GraphicsLock);
-					col = 0;
-					t.baseline.x = SAFE_X + 2;
-					t.align = ALIGN_LEFT;
-					t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
+			LockMutex (GraphicsLock);
+			FeedbackPlayerPhrase (pES->phrase_buf);
+			PauseAnimTask = TRUE;
+			UnlockMutex (GraphicsLock);
+			// wait for ambient anim task to pause
+			SleepThread (ONE_SECOND / 30);
 
-					WaitAnyButtonOrQuit (TRUE);
-
-					LockMutex (GraphicsLock);
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
-					DrawFilledRectangle (&r);
-					UnlockMutex (GraphicsLock);
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
-				}
-			}
-
-			WaitAnyButtonOrQuit (TRUE);
+			SummaryState.Initialized = FALSE;
+			DoConvSummary (&SummaryState);
 
 			LockMutex (GraphicsLock);
-			SetContextFont (fLast);
 			RefreshResponses (pES);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-			DrawFilledRectangle (&r);
+			ClearSummary = TRUE;
+			PauseAnimTask = FALSE;
 			UnlockMutex (GraphicsLock);
-			SummaryChange = TRUE;
-			summary = FALSE;
-			FlushInput ();
-			while (AnyButtonPress (TRUE))
-				TaskSwitch ();
 		}
 		else
 		{
