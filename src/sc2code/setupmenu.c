@@ -450,7 +450,8 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	TEXTENTRY_STATE tes;
 	UNICODE revert_buf[256];
 
-	widget->cursor_pos = 0;
+	// position cursor at the end of text
+	widget->cursor_pos = utf8StringCount (widget->value);
 	widget->state = WTE_EDITING;
 	redraw_menu ();
 
@@ -468,7 +469,7 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	tes.ChangeCallback = OnTextEntryChange;
 	tes.FrameCallback = OnTextEntryFrame;
 
-	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	SetMenuSounds (0, MENU_SOUND_SELECT);
 	if (!DoTextEntry (&tes))
 	{	// editing failed (canceled) -- revert the changes
 		utf8StringCopy (widget->value, widget->maxlen, revert_buf);

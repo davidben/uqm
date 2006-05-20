@@ -9,6 +9,7 @@ WIDGET *widget_focus = NULL;
 #define WIDGET_ACTIVE_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E)
 #define WIDGET_INACTIVE_COLOR BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x09)
 #define WIDGET_INACTIVE_SELECTED_COLOR  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+#define WIDGET_CURSOR_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
 
 void
 DrawShadowedBox(PRECT r, COLOR bg, COLOR dark, COLOR medium)
@@ -354,6 +355,8 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	selected = WIDGET_ACTIVE_COLOR;
 	inactive = WIDGET_INACTIVE_COLOR;
 
+	BatchGraphics ();
+
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
@@ -373,22 +376,101 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	/* Force string termination */
 	self->value[WIDGET_TEXTENTRY_WIDTH-1] = 0;
 
-	t.baseline.x = 160;
 	t.baseline.y = y;
-	t.align = ALIGN_CENTER;
 	t.valign = VALIGN_BOTTOM;
-	t.CharCount = ~0;
+	t.CharCount = utf8StringCount (self->value);
 	t.pStr = self->value;
-	if (widget_focus == _self)
-	{
-		oldtext = SetContextForeGroundColor (selected);
+
+	if (!(self->state & WTE_EDITING))
+	{	// normal or selected state
+		t.baseline.x = 160;
+		t.align = ALIGN_CENTER;
+
+		if (widget_focus == _self)
+		{
+			oldtext = SetContextForeGroundColor (selected);
+		}
+		else
+		{
+			oldtext = SetContextForeGroundColor (inactive);
+		}
+		font_DrawText (&t);
 	}
 	else
-	{
-		oldtext = SetContextForeGroundColor (inactive);
-	}
-	font_DrawText (&t);
+	{	// editing state
+		COUNT i;
+		RECT text_r;
+		BYTE char_deltas[WIDGET_TEXTENTRY_WIDTH];
+		PBYTE pchar_deltas;
+		RECT r;
+		SIZE leading;
 
+		t.baseline.x = 90;
+		t.align = ALIGN_LEFT;
+
+		// calc background box dimensions
+		// XXX: this may need some tuning, especially if a
+		//   different font is used. The font 'leading' values
+		//   are not what they should be.
+#define BOX_VERT_OFFSET 2
+		GetContextFontLeading (&leading);
+		r.corner.x = t.baseline.x - 1;
+		r.corner.y = t.baseline.y - leading + BOX_VERT_OFFSET;
+		r.extent.width = ScreenWidth - r.corner.x - 10;
+		r.extent.height = leading + 2;
+
+		TextRect (&t, &text_r, char_deltas);
+#if 0
+		// XXX: this should potentially be used in ChangeCallback
+		if ((text_r.extent.width + 2) >= r.extent.width)
+		{	// the text does not fit the input box size and so
+			// will not fit when displayed later
+			UnbatchGraphics ();
+			// disallow the change
+			return (FALSE);
+		}
+#endif
+
+		oldtext = SetContextForeGroundColor (selected);
+		DrawFilledRectangle (&r);
+
+		// calculate the cursor position and draw it
+		pchar_deltas = char_deltas;
+		for (i = self->cursor_pos; i > 0; --i)
+			r.corner.x += (SIZE)*pchar_deltas++;
+		if (self->cursor_pos < t.CharCount) /* cursor mid-line */
+			--r.corner.x;
+		if (self->state & WTE_BLOCKCUR)
+		{	// Use block cursor for keyboardless systems
+			if (self->cursor_pos == t.CharCount)
+			{	// cursor at end-line -- use insertion point
+				r.extent.width = 1;
+			}
+			else if (self->cursor_pos + 1 == t.CharCount)
+			{	// extra pixel for last char margin
+				r.extent.width = (SIZE)*pchar_deltas + 2;
+			}
+			else
+			{	// normal mid-line char
+				r.extent.width = (SIZE)*pchar_deltas + 1;
+			}
+		}
+		else
+		{	// Insertion point cursor
+			r.extent.width = 1;
+		}
+		// position cursor within input field rect
+		++r.corner.x;
+		++r.corner.y;
+		r.extent.height -= 2;
+		SetContextForeGroundColor (WIDGET_CURSOR_COLOR);
+		DrawFilledRectangle (&r);
+
+		SetContextForeGroundColor (inactive);
+		font_DrawText (&t);
+	}
+	
+	UnbatchGraphics ();
 	SetContextFontEffect (oldFontEffect);
 	SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
