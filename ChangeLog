@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- removed internal libmikmod, adding a dependancy on an external one - SvdB
 - Added a quit button for the Super Melee main menu - Michael
 - Fixed sporadic uqm.cfg loading errors in release builds - Alex
 - Quit (F10) now works correctly during intro (bug #862) - Alex
@@ -21,7 +22,7 @@ Changes towards version 0.6:
   and Michael
 - Removed unused and invalid lander font chars - Alex
 - Setup menu reads strings out of lbm/setupmenu.txt - Michael
-- More fixes towards working 64-bits binaries.
+- More fixes towards working 64-bits binaries. - SvdB
 - Flashing outfit modules to build w/ PC menus too; bug #871 - Alex
 - Corrected caption Orbit: to Tilt: in planet scan; bug #847 - Alex
 - Added missing failure sounds in Outfit, Shipyard, Cargo and Roster;

@@ -1,2 +1,1 @@
-uqm_SUBDIRS="mikmod"
 uqm_CFILES="decoder.c wav.c dukaud.c modaud.c oggaud.c"

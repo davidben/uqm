@@ -30,11 +30,7 @@
 #include "libs/log.h"
 #include "modaud.h"
 
-#ifdef USE_EXTERNAL_MIKMOD
-#	include "mikmod.h"
-#else
-#	include "mikmod/mikmod.h"
-#endif
+#include <mikmod.h>
 
 #define THIS_PTR TFB_SoundDecoder* This
 

@@ -1,7 +1,0 @@
-NOTE by UQM developers: this is a modified version of mikmod what was 
-included in SDL_mixer 1.2.4, so some code are (c) Sam Lantinga.
-
- --> MikMod Sound Libraries Version 3.1.9a
-
-This version of the library is based on the official UNIX MikMod
-library version 3.1.9, found at:  http://www.mikmod.org/

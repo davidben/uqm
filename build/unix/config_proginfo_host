@@ -199,6 +199,13 @@ esac
 LIB_tremor_VERSION=""
 
 
+### libmikmod ###
+LIB_libmikmod_NAME="libmikmod"
+LIB_libmikmod_CFLAGS=""
+LIB_libmikmod_LDFLAGS="-lmikmod"
+LIB_libmikmod_VERSION=""
+
+
 ### zlib ###
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""
