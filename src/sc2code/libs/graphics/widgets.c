@@ -349,7 +349,6 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
-	int i, home_x, home_y;
 	
 	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
