@@ -3832,10 +3832,6 @@ SOURCE=..\sc2code\status.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\strtemp.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\tactrans.c
 # End Source File
 # Begin Source File
