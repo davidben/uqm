@@ -98,6 +98,9 @@ Robert McNamara
 Mike Melanson
 (ADPCM basis from MPlayer
   used for DUK audio)
+
+Mudry
+(PC/DOS content unpacking)
  
 Erol Otus
 (Splash screen)
