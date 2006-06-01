@@ -28,13 +28,13 @@ It is a sure thing that we will not be casting flower petals in yer path of rebe
 I, 
 
 #(i_demand_you_ally_homeworld1)
-, of the 
+, of 
 
 #(i_demand_you_ally_homeworld2)
  commanding the 
 
 #(i_demand_you_ally_homeworld3)
- demand that you uphold your duties as allies of the human species!
+, demand that you uphold your duties as allies of the human species!
 
 #(ENEMY_MUST_DIE)	yehat004.ogg
 Are ye DAFT human!? Have ye not heard our words?
