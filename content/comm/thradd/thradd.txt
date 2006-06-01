@@ -546,7 +546,7 @@ We,
 , bid you welcome.
 
 #(why_you_here_ally)
-What's so special about about this planet?
+What's so special about this planet?
 
 #(GUARDING_HELIX_ALLY)	thrad066.ogg
 We orbit here guarding that most precious of our relics, that which we hold most dearly
