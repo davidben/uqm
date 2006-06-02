@@ -153,9 +153,9 @@ static LOCDATA druuge_desc =
 static COUNT SlaveryCount = 0;
 
 static void
-ExitConversation (RESPONSE_REF Response)
+ExitConversation (RESPONSE_REF R)
 {
-	if (PLAYER_SAID (Response, bye))
+	if (PLAYER_SAID (R, bye))
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 
@@ -199,7 +199,7 @@ ExitConversation (RESPONSE_REF Response)
 		else
 			NPCPhrase (GOODBYE_FROM_SPACE);
 	}
-	else /* if (Response == then_we_take_bomb) */
+	else /* if (R == then_we_take_bomb) */
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 
@@ -207,13 +207,13 @@ ExitConversation (RESPONSE_REF Response)
 	}
 }
 
-static void TradeWorld (RESPONSE_REF Response);
+static void TradeWorld (RESPONSE_REF R);
 
 static void
-Buy (RESPONSE_REF Response)
+Buy (RESPONSE_REF R)
 {
-	if (PLAYER_SAID (Response, want_to_buy)
-			|| PLAYER_SAID (Response, im_ready_to_buy))
+	if (PLAYER_SAID (R, want_to_buy)
+			|| PLAYER_SAID (R, im_ready_to_buy))
 	{
 		NPCPhrase (READY_TO_SELL);
 		if (!GET_GAME_STATE (ROSY_SPHERE))
@@ -226,7 +226,7 @@ Buy (RESPONSE_REF Response)
 
 		SET_GAME_STATE (KNOW_DRUUGE_SLAVERS, 3);
 	}
-	else if (PLAYER_SAID (Response, buy_druuge_ship))
+	else if (PLAYER_SAID (R, buy_druuge_ship))
 	{
 #define SHIP_CREW_COST 100
 		if (GLOBAL_SIS (CrewEnlisted) < SHIP_CREW_COST)
@@ -245,7 +245,7 @@ Buy (RESPONSE_REF Response)
 		}
 	}
 #define ARTIFACT_CREW_COST 100
-	else if (PLAYER_SAID (Response, buy_rosy_sphere))
+	else if (PLAYER_SAID (R, buy_rosy_sphere))
 	{
 		if (GLOBAL_SIS (CrewEnlisted) < ARTIFACT_CREW_COST)
 			NPCPhrase (NOT_ENOUGH_CREW);
@@ -261,7 +261,7 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (BOUGHT_SPHERE);
 		}
 	}
-	else if (PLAYER_SAID (Response, buy_art_1))
+	else if (PLAYER_SAID (R, buy_art_1))
 	{
 		if (GLOBAL_SIS (CrewEnlisted) < ARTIFACT_CREW_COST)
 			NPCPhrase (NOT_ENOUGH_CREW);
@@ -276,7 +276,7 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (BOUGHT_ART_1);
 		}
 	}
-	else if (PLAYER_SAID (Response, buy_art_2))
+	else if (PLAYER_SAID (R, buy_art_2))
 	{
 		if (GLOBAL_SIS (CrewEnlisted) < ARTIFACT_CREW_COST)
 			NPCPhrase (NOT_ENOUGH_CREW);
@@ -291,7 +291,7 @@ Buy (RESPONSE_REF Response)
 			NPCPhrase (BOUGHT_ART_2);
 		}
 	}
-	else if (PLAYER_SAID (Response, buy_fuel))
+	else if (PLAYER_SAID (R, buy_fuel))
 	{
 #define FUEL_CREW_COST 10
 		if (GLOBAL_SIS (CrewEnlisted) < FUEL_CREW_COST)
@@ -485,16 +485,16 @@ DoTransaction (RESPONSE_REF R)
 }
 
 static void
-Sell (RESPONSE_REF Response)
+Sell (RESPONSE_REF R)
 {
 	RESPONSE_FUNC RespFunc;
 
-	if (PLAYER_SAID (Response, want_to_sell))
+	if (PLAYER_SAID (R, want_to_sell))
 		NPCPhrase (READY_TO_BUY);
-	else if (PLAYER_SAID (Response, no_way)
-			|| PLAYER_SAID (Response, way))
+	else if (PLAYER_SAID (R, no_way)
+			|| PLAYER_SAID (R, way))
 	{
-		if (PLAYER_SAID (Response, no_way))
+		if (PLAYER_SAID (R, no_way))
 			NPCPhrase (OK_REGULAR_DEAL);
 		else
 		{
@@ -505,12 +505,12 @@ Sell (RESPONSE_REF Response)
 
 		DoTransaction (LastResponse);
 	}
-	else if (PLAYER_SAID (Response, sell_maidens)
-			|| PLAYER_SAID (Response, sell_fragments)
-			|| PLAYER_SAID (Response, sell_caster)
-			|| PLAYER_SAID (Response, sell_spawner))
+	else if (PLAYER_SAID (R, sell_maidens)
+			|| PLAYER_SAID (R, sell_fragments)
+			|| PLAYER_SAID (R, sell_caster)
+			|| PLAYER_SAID (R, sell_spawner))
 	{
-		DoTransaction (Response);
+		DoTransaction (R);
 	}
 
 	if (!GET_GAME_STATE (ROSY_SPHERE))
@@ -563,9 +563,9 @@ ExplainSlaveTrade (RESPONSE_REF R)
 }
 
 static void
-TradeWorld (RESPONSE_REF Response)
+TradeWorld (RESPONSE_REF R)
 {
-	if (PLAYER_SAID (Response, whats_up_at_trade_world))
+	if (PLAYER_SAID (R, whats_up_at_trade_world))
 	{
 		BYTE NumVisits;
 
@@ -593,11 +593,11 @@ TradeWorld (RESPONSE_REF Response)
 		SET_GAME_STATE (DRUUGE_HOME_INFO, NumVisits);
 		DISABLE_PHRASE (whats_up_at_trade_world);
 	}
-	else if (PLAYER_SAID (Response, done_selling))
+	else if (PLAYER_SAID (R, done_selling))
 		NPCPhrase (OK_DONE_SELLING);
-	else if (PLAYER_SAID (Response, done_buying))
+	else if (PLAYER_SAID (R, done_buying))
 		NPCPhrase (OK_DONE_BUYING);
-	else if (PLAYER_SAID (Response, i_will_never_trade_crew))
+	else if (PLAYER_SAID (R, i_will_never_trade_crew))
 		NPCPhrase (YOUR_LOSS);
 
 	if (PHRASE_ENABLED (whats_up_at_trade_world))
@@ -613,14 +613,14 @@ TradeWorld (RESPONSE_REF Response)
 }
 
 static void
-BombAmbush (RESPONSE_REF Response)
+BombAmbush (RESPONSE_REF R)
 {
-	if (PLAYER_SAID (Response, whats_up_at_bomb_planet))
+	if (PLAYER_SAID (R, whats_up_at_bomb_planet))
 	{
 		NPCPhrase (GEN_INFO_AT_BOMB_PLANET);
 		SET_GAME_STATE (BOMB_VISITS, 2);
 	}
-	else if (PLAYER_SAID (Response, we_get_bomb))
+	else if (PLAYER_SAID (R, we_get_bomb))
 	{
 		NPCPhrase (NOT_GET_BOMB);
 		SET_GAME_STATE (BOMB_VISITS, 3);
@@ -642,9 +642,9 @@ BombAmbush (RESPONSE_REF Response)
 }
 
 static void
-Space (RESPONSE_REF Response)
+Space (RESPONSE_REF R)
 {
-	if (PLAYER_SAID (Response, whats_up_in_space))
+	if (PLAYER_SAID (R, whats_up_in_space))
 	{
 		BYTE NumVisits;
 

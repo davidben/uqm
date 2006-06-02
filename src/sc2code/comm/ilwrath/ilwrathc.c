@@ -94,42 +94,42 @@ static LOCDATA ilwrath_desc =
 };
 
 static void
-CombatIsInevitable (RESPONSE_REF Response)
+CombatIsInevitable (RESPONSE_REF R)
 {
 	SET_GAME_STATE (BATTLE_SEGUE, 1);
 
-	if (PLAYER_SAID (Response, you_are_weak))
+	if (PLAYER_SAID (R, you_are_weak))
 		NPCPhrase (STRENGTH_NOT_ALL);
-	else if (PLAYER_SAID (Response, slay_by_thousands))
+	else if (PLAYER_SAID (R, slay_by_thousands))
 		NPCPhrase (NO_SLAY_BY_THOUSANDS);
-	else if (PLAYER_SAID (Response, ease_up))
+	else if (PLAYER_SAID (R, ease_up))
 		NPCPhrase (NO_EASE_UP);
-	else if (PLAYER_SAID (Response, bye_space))
+	else if (PLAYER_SAID (R, bye_space))
 		NPCPhrase (GOODBYE_AND_DIE_SPACE);
-	else if (PLAYER_SAID (Response, bye_homeworld))
+	else if (PLAYER_SAID (R, bye_homeworld))
 		NPCPhrase (GOODBYE_AND_DIE_HOMEWORLD);
-	else if (PLAYER_SAID (Response, want_peace))
+	else if (PLAYER_SAID (R, want_peace))
 		NPCPhrase (NO_PEACE);
-	else if (PLAYER_SAID (Response, want_alliance))
+	else if (PLAYER_SAID (R, want_alliance))
 		NPCPhrase (NO_ALLIANCE);
-	else if (PLAYER_SAID (Response, but_evil_is_defined))
+	else if (PLAYER_SAID (R, but_evil_is_defined))
 		NPCPhrase (DONT_CONFUSE_US);
-	else if (PLAYER_SAID (Response, bye_gods))
+	else if (PLAYER_SAID (R, bye_gods))
 	{
 		NPCPhrase (GOODBYE_GODS);
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
-	if (PLAYER_SAID (Response, whats_up))
+	if (PLAYER_SAID (R, whats_up))
 	{
 		NPCPhrase (GENERAL_INFO);
 		Response (bye, CombatIsInevitable);
 	}
-	else if (PLAYER_SAID (Response, whats_up_space_1)
-			|| PLAYER_SAID (Response, whats_up_space_2)
-			|| PLAYER_SAID (Response, whats_up_space_3)
-			|| PLAYER_SAID (Response, whats_up_space_4)
-			|| PLAYER_SAID (Response, whats_up_space_5))
+	else if (PLAYER_SAID (R, whats_up_space_1)
+			|| PLAYER_SAID (R, whats_up_space_2)
+			|| PLAYER_SAID (R, whats_up_space_3)
+			|| PLAYER_SAID (R, whats_up_space_4)
+			|| PLAYER_SAID (R, whats_up_space_5))
 	{
 		BYTE NumVisits;
 
@@ -157,15 +157,15 @@ CombatIsInevitable (RESPONSE_REF Response)
 	}
 	else
 	{
-		if (PLAYER_SAID (Response, bye))
+		if (PLAYER_SAID (R, bye))
 			NPCPhrase (GOODBYE_AND_DIE);
-		else if (PLAYER_SAID (Response, where_you_come_from))
+		else if (PLAYER_SAID (R, where_you_come_from))
 			NPCPhrase (CAME_FROM);
-		if (PLAYER_SAID (Response, it_will_be_a_pleasure))
+		if (PLAYER_SAID (R, it_will_be_a_pleasure))
 			NPCPhrase (WHO_BLASTS_WHO);
-		if (PLAYER_SAID (Response, surrender))
+		if (PLAYER_SAID (R, surrender))
 			NPCPhrase (NO_SURRENDER);
-		if (PLAYER_SAID (Response, be_reasonable))
+		if (PLAYER_SAID (R, be_reasonable))
 			NPCPhrase (NOT_REASONABLE);
 	}
 }
