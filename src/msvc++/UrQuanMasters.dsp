@@ -3500,10 +3500,6 @@ SOURCE=..\sc2code\dummy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\dummy.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\element.h
 # End Source File
 # Begin Source File
