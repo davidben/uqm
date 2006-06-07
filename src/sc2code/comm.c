@@ -1551,6 +1551,7 @@ DoConvSummary (PSUMMARY_STATE pSS)
 				}
 				if ((unsigned)space_index >= sizeof (buffer))
 				{
+					UnlockMutex (GraphicsLock);
 					log_add (log_Always, "DoConvSummary() BUG: "
 							"buffer[%u] too small to fit %d bytes\n",
 							sizeof (buffer), space_index);
