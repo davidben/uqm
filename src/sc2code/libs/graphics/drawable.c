@@ -56,12 +56,9 @@ CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth, PSIZE pheight)
 	if (!DisplayActive ())
 		return (0);
 
-	Drawable = _request_drawable (
-			(COUNT)1, (DRAWABLE_TYPE)SCREEN_DRAWABLE,
-			(CREATE_FLAGS)(CreateFlags & (WANT_PIXMAP | (GetDisplayFlags () & WANT_MASK))),
-			(SIZE)GetDisplayWidth (),
-			(SIZE)GetDisplayHeight ()
-			);
+	Drawable = _request_drawable (1, SCREEN_DRAWABLE,
+			(CreateFlags & (WANT_PIXMAP | (GetDisplayFlags () & WANT_MASK))),
+			GetDisplayWidth (), GetDisplayHeight ());
 	if (Drawable)
 	{
 		FRAMEPTR F;
@@ -101,9 +98,10 @@ AllocDrawable (COUNT n)
 			FRAMEPTR F;
 			F = &DrawablePtr->Frame[i];
 			F->parent = DrawablePtr;
-			F->TypeIndexAndFlags = 0;
+			F->Type = 0;
+			F->Index = 0;
 			F->image = 0;
-			F->Bounds = 0;
+			F->Bounds.width = F->Bounds.height = 0;
 			F->HotSpot.x = F->HotSpot.y = 0;
 		}
 		
@@ -121,12 +119,10 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 	if (!DisplayActive ())
 		return (0);
 
-	Drawable = _request_drawable (
-			(COUNT)num_frames, (DRAWABLE_TYPE)RAM_DRAWABLE,
-			(CREATE_FLAGS)(CreateFlags & (WANT_MASK | WANT_PIXMAP
+	Drawable = _request_drawable (num_frames, RAM_DRAWABLE,
+			(CreateFlags & (WANT_MASK | WANT_PIXMAP
 				| WANT_ALPHA | MAPPED_TO_DISPLAY)),
-			(SIZE)width, (SIZE)height
-			);
+			width, height);
 	if (Drawable)
 	{
 		FRAMEPTR F;

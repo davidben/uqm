@@ -48,46 +48,42 @@ typedef BRESENHAM_LINE *PBRESENHAM_LINE;
 #define PAD_WIDTH(w) (w)
 #endif /* MSDOS */
 
-#define FTYPE_SHIFT 12
-#define FINDEX_MASK ((1 << FTYPE_SHIFT) - 1)
-#define FTYPE_MASK (0xFFFF & ~FINDEX_MASK)
-
-#define ROM_DRAWABLE (0 << FTYPE_SHIFT)
-#define RAM_DRAWABLE (1 << FTYPE_SHIFT)
-#define SCREEN_DRAWABLE (2 << FTYPE_SHIFT)
-
 typedef UWORD DRAWABLE_TYPE;
+#define ROM_DRAWABLE 0
+#define RAM_DRAWABLE 1
+#define SCREEN_DRAWABLE 2
 
 #define DATA_HARDWARE (1 << 12)
 #define DATA_COPY (1 << 13)
 #define DATA_PACKED (1 << 14)
 #define X_FLIP (1 << 15)
 
-typedef struct
+typedef struct frame_desc
 {
-	DWORD TypeIndexAndFlags;
+	DRAWABLE_TYPE Type;
+	UWORD Index;
 	HOT_SPOT HotSpot;
-	DWORD Bounds;
+	EXTENT Bounds;
 	TFB_Image *image;
-	struct _drawable_desc *parent;
+	struct drawable_desc *parent;
 } FRAME_DESC;
 typedef FRAME_DESC *PFRAME_DESC;
 
-typedef struct _drawable_desc
+typedef struct drawable_desc
 {
 	MEM_HANDLE hDrawable;
 
-	UWORD FlagsAndIndex;
+	CREATE_FLAGS Flags;
+	UWORD MaxIndex;
 	FRAME_DESC *Frame;
 } DRAWABLE_DESC;
 typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
-#define GetFrameWidth(f) LOWORD (((FRAMEPTR)(f))->Bounds)
-#define GetFrameHeight(f) HIWORD (((FRAMEPTR)(f))->Bounds)
-#define SetFrameBounds(f,w,h) (((FRAMEPTR)(f))->Bounds=MAKE_DWORD(w,h))
-#define GetFrameFlags(f) HIWORD(((FRAMEPTR)(f))->TypeIndexAndFlags)
-#define AddFrameFlags(f,v) (((FRAMEPTR)(f))->TypeIndexAndFlags|=((DWORD)(v)<<16))
-#define SubFrameFlags(f,v) (((FRAMEPTR)(f))->TypeIndexAndFlags&=~((DWORD)(v)<<16))
+#define GetFrameWidth(f) (((PFRAME_DESC)(f))->Bounds.width)
+#define GetFrameHeight(f) (((PFRAME_DESC)(f))->Bounds.height)
+#define SetFrameBounds(f,w,h) \
+		(((PFRAME_DESC)(f))->Bounds.width=(w), \
+		((PFRAME_DESC)(f))->Bounds.height=(h))
 
 #define DRAWABLE_PRIORITY DEFAULT_MEM_PRIORITY
 

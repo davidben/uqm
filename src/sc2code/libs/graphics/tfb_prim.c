@@ -37,7 +37,7 @@ TFB_Prim_Point (PPOINT p, TFB_Palette *color)
 	r.corner.y = p->y - _CurFramePtr->HotSpot.y;
 	r.extent.width = r.extent.height = 1;
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 		TFB_DrawScreen_Rect (&r, color->r, color->g, color->b, TFB_SCREEN_MAIN);
 	else
 		TFB_DrawImage_Rect (&r, color->r, color->g, color->b, _CurFramePtr->image);
@@ -92,7 +92,7 @@ TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 				  rect.extent.height) >> 1;
 	}
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 		TFB_DrawScreen_Rect (&rect, color->r, color->g, color->b, TFB_SCREEN_MAIN);
 	else
 		TFB_DrawImage_Rect (&rect, color->r, color->g, color->b, _CurFramePtr->image);
@@ -108,7 +108,7 @@ TFB_Prim_Line (PLINE line, TFB_Palette *color)
 	x2=line->second.x - _CurFramePtr->HotSpot.x;
 	y2=line->second.y - _CurFramePtr->HotSpot.y;
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 		TFB_DrawScreen_Line (x1, y1, x2, y2, color->r, color->g, color->b, TFB_SCREEN_MAIN);
 	else
 		TFB_DrawImage_Line (x1, y1, x2, y2, color->r, color->g, color->b, _CurFramePtr->image);		
@@ -153,7 +153,7 @@ TFB_Prim_Stamp (PSTAMP stmp)
 
 	UnlockMutex (img->mutex);
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		TFB_DrawScreen_Image (img, x, y, gscale, cmap, TFB_SCREEN_MAIN);
 	}
@@ -200,7 +200,7 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 
 	UnlockMutex (img->mutex);
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		TFB_DrawScreen_FilledImage (img, x, y, gscale, r, g, b,
 					    TFB_SCREEN_MAIN);
@@ -220,7 +220,7 @@ TFB_Prim_FontChar (PPOINT origin, TFB_Char *fontChar, TFB_Image *backing)
 	x = origin->x - _CurFramePtr->HotSpot.x;
 	y = origin->y - _CurFramePtr->HotSpot.y;
 
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		TFB_DrawScreen_FontChar (fontChar, backing, x, y,
 					    TFB_SCREEN_MAIN);

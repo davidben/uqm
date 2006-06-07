@@ -39,11 +39,10 @@ GetGraphicScale ()
 static void
 read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
 {
-	if (TYPE_GET (_CurFramePtr->TypeIndexAndFlags) != SCREEN_DRAWABLE
-			|| TYPE_GET (DstFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE
-			|| !(TYPE_GET (GetFrameParentDrawable (DstFramePtr)
-			->FlagsAndIndex)
-			& ((DWORD) MAPPED_TO_DISPLAY << FTYPE_SHIFT)))
+	if (_CurFramePtr->Type != SCREEN_DRAWABLE
+			|| DstFramePtr->Type == SCREEN_DRAWABLE
+			|| !(GetFrameParentDrawable (DstFramePtr)->Flags
+				& MAPPED_TO_DISPLAY))
 	{
 		log_add (log_Warning, "Unimplemented function activated: read_screen()");
 	}

@@ -49,8 +49,8 @@ process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 	TFB_Image *tfbimg;
 	int hx, hy;
 
-	TYPE_SET (FramePtr->TypeIndexAndFlags, ROM_DRAWABLE);
-	INDEX_SET (FramePtr->TypeIndexAndFlags, cel_ct);
+	FramePtr->Type = ROM_DRAWABLE;
+	FramePtr->Index = cel_ct;
 
 	// handle transparency cases
 	if (img[cel_ct]->format->palette)
@@ -193,8 +193,7 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	TFB_Canvas src, dst;
 	EXTENT ext;
 
-	flags = TYPE_GET (GetFrameParentDrawable (FramePtr)
-			->FlagsAndIndex) >> FTYPE_SHIFT;
+	flags = GetFrameParentDrawable (FramePtr)->Flags;
 	NewFrame = CaptureDrawable (
 				CreateDrawable (flags, (SIZE)neww, (SIZE)newh, 1));
 	tfbImg = FramePtr->image;
@@ -454,9 +453,8 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			FRAMEPTR FramePtr;
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
-			TYPE_SET (DrawablePtr->FlagsAndIndex,
-					(DRAWABLE_TYPE)WANT_PIXMAP << FTYPE_SHIFT);
-			INDEX_SET (DrawablePtr->FlagsAndIndex, cel_ct - 1);
+			DrawablePtr->Flags = WANT_PIXMAP;
+			DrawablePtr->MaxIndex = cel_ct - 1;
 
 			FramePtr = &DrawablePtr->Frame[cel_ct];
 			while (--FramePtr, cel_ct--)
@@ -482,12 +480,12 @@ _ReleaseCelData (MEM_HANDLE handle)
 	if ((DrawablePtr = LockDrawable (handle)) == 0)
 		return (FALSE);
 
-	cel_ct = INDEX_GET (DrawablePtr->FlagsAndIndex)+1;
+	cel_ct = DrawablePtr->MaxIndex + 1;
 
 	if (DrawablePtr->Frame)
 	{
 		FramePtr = DrawablePtr->Frame;
-		if (TYPE_GET (FramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+		if (FramePtr->Type == SCREEN_DRAWABLE)
 		{
 			FramePtr = NULL;
 		}
@@ -753,8 +751,8 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			FRAMEPTR FramePtr;
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
-			TYPE_SET (DrawablePtr->FlagsAndIndex, flags << FTYPE_SHIFT);
-			INDEX_SET (DrawablePtr->FlagsAndIndex, NumFrames - 1);
+			DrawablePtr->Flags = flags;
+			DrawablePtr->MaxIndex = NumFrames - 1;
 
 			imgw = width;
 			imgh = height;
@@ -771,8 +769,8 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 					FramePtr->image = Image;
 				}
 
-				TYPE_SET (FramePtr->TypeIndexAndFlags, DrawableType);
-				INDEX_SET (FramePtr->TypeIndexAndFlags, NumFrames);
+				FramePtr->Type = DrawableType;
+				FramePtr->Index = NumFrames;
 				SetFrameBounds (FramePtr, width, height);
 				--FramePtr;
 			}

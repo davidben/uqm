@@ -19,13 +19,6 @@
 #ifndef _DISPLAY_H
 #define _DISPLAY_H
 
-/*
-#define WANT_MASK (CREATE_FLAGS)(1 << 0)
-#define WANT_PIXMAP (CREATE_FLAGS)(1 << 1)
-*/
-#define WANT_COMPRESSED (CREATE_FLAGS)(1 << 2)
-#define DOUBLE_RES (CREATE_FLAGS)(1 << 3)
-
 typedef struct
 {
 	CREATE_FLAGS DisplayFlags;

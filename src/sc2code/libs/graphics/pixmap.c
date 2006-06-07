@@ -44,9 +44,7 @@ ReleaseDrawable (FRAMEPTR FramePtr)
 		DRAWABLEPTR DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		Drawable = BUILD_DRAWABLE (
-				DrawablePtr->hDrawable, INDEX_GET (FramePtr->TypeIndexAndFlags)
-				);
+		Drawable = BUILD_DRAWABLE (DrawablePtr->hDrawable, FramePtr->Index);
 		UnlockDrawable (Drawable);
 
 		return (Drawable);
@@ -76,7 +74,7 @@ GetFrameCount (FRAMEPTR FramePtr)
 		return (0);
 
 	DrawablePtr = GetFrameParentDrawable (FramePtr);
-	return (INDEX_GET (DrawablePtr->FlagsAndIndex) + 1);
+	return DrawablePtr->MaxIndex + 1;
 }
 
 COUNT
@@ -85,7 +83,7 @@ GetFrameIndex (FRAMEPTR FramePtr)
 	if (FramePtr == 0)
 		return (0);
 
-	return ((UWORD)INDEX_GET (FramePtr->TypeIndexAndFlags));
+	return FramePtr->Index;
 }
 
 FRAME
@@ -97,8 +95,7 @@ SetAbsFrameIndex (FRAMEPTR FramePtr, COUNT FrameIndex)
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 
-		FrameIndex = FrameIndex
-				% (INDEX_GET (DrawablePtr->FlagsAndIndex) + 1);
+		FrameIndex = FrameIndex	% (DrawablePtr->MaxIndex + 1);
 		FramePtr = (FRAMEPTR)&DrawablePtr->Frame[FrameIndex];
 	}
 
@@ -114,14 +111,14 @@ SetRelFrameIndex (FRAMEPTR FramePtr, SIZE FrameOffs)
 		DRAWABLEPTR DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		num_frames = INDEX_GET (DrawablePtr->FlagsAndIndex) + 1;
+		num_frames = DrawablePtr->MaxIndex + 1;
 		if (FrameOffs < 0)
 		{
 			while ((FrameOffs += num_frames) < 0)
 				;
 		}
 
-		FrameOffs = ((SWORD)INDEX_GET (FramePtr->TypeIndexAndFlags) + FrameOffs) % num_frames;
+		FrameOffs = ((SWORD)FramePtr->Index + FrameOffs) % num_frames;
 		FramePtr = (FRAMEPTR)&DrawablePtr->Frame[FrameOffs];
 	}
 
@@ -150,7 +147,7 @@ IncFrameIndex (FRAMEPTR FramePtr)
 		return (0);
 
 	DrawablePtr = GetFrameParentDrawable (FramePtr);
-	if (INDEX_GET (FramePtr->TypeIndexAndFlags) < (DWORD)INDEX_GET (DrawablePtr->FlagsAndIndex))
+	if (FramePtr->Index < DrawablePtr->MaxIndex)
 		return ((FRAME)++FramePtr);
 	else
 		return ((FRAME)DrawablePtr->Frame);
@@ -162,13 +159,13 @@ DecFrameIndex (FRAMEPTR FramePtr)
 	if (FramePtr == 0)
 		return (0);
 
-	if (INDEX_GET (FramePtr->TypeIndexAndFlags))
+	if (FramePtr->Index > 0)
 		return ((FRAME)--FramePtr);
 	else
 	{
 		DRAWABLEPTR DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		return ((FRAME)&DrawablePtr->Frame[INDEX_GET (DrawablePtr->FlagsAndIndex)]);
+		return ((FRAME)&DrawablePtr->Frame[DrawablePtr->MaxIndex]);
 	}
 }

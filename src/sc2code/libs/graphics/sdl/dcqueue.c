@@ -213,7 +213,7 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	}
 
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
-			&& TYPE_GET (_CurFramePtr->TypeIndexAndFlags) == SCREEN_DRAWABLE)
+			&& _CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		static RECT scissor_rect;
 
