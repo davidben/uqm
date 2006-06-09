@@ -155,7 +155,8 @@ GenerateSamatra (BYTE control)
 			break;
 		case REINIT_NPCS:
 			GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
-			battle_counter = 0;
+			EncounterGroup = 0;
+			EncounterRace = -1; // Do not want guards to chase the player
 			{
 				BOOLEAN GuardEngaged;
 				HSTARSHIP hStarShip, hNextShip;
@@ -290,7 +291,8 @@ GenerateSamatra (BYTE control)
 					}
 					else
 					{
-						battle_counter = 0;
+						EncounterGroup = 0;
+						EncounterRace = -1;
 						GLOBAL (CurrentActivity) = IN_LAST_BATTLE | START_ENCOUNTER;
 						if (GET_GAME_STATE (YEHAT_CIVIL_WAR)
 								&& ActivateStarShip (YEHAT_SHIP, SPHERE_TRACKING)

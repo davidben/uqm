@@ -226,7 +226,7 @@ DeviceFailed (BYTE which_device)
 				{
 					SET_GAME_STATE (CHMMR_EMERGING, 1);
 
-					battle_counter = 0;
+					EncounterGroup = 0;
 					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
@@ -267,7 +267,7 @@ DeviceFailed (BYTE which_device)
 			}
 			else
 			{
-				battle_counter = 0;
+				EncounterGroup = 0;
 				if (GetHeadLink (&GLOBAL (npc_built_ship_q)))
 				{
 					SET_GAME_STATE (SHIP_TO_COMPEL, 1);
@@ -329,7 +329,7 @@ DeviceFailed (BYTE which_device)
 					NextActivity |= CHECK_LOAD; /* fake a load game */
 					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
-					battle_counter = 0;
+					EncounterGroup = 0;
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
@@ -366,7 +366,7 @@ DeviceFailed (BYTE which_device)
 						NextActivity |= CHECK_LOAD; /* fake a load game */
 						GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
-						battle_counter = 0;
+						EncounterGroup = 0;
 						PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 						ReinitQueue (&GLOBAL (npc_built_ship_q));
 

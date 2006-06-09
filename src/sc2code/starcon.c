@@ -124,7 +124,7 @@ while (--ac > 0)
 #endif //DEBUG_PSYTRON
 #if CREATE_JOURNAL
 			case 'j':
-				++battle_counter;
+				++create_journal;
 				break;
 #endif //CREATE_JOURNAL
 		}

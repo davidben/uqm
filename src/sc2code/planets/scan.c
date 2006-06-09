@@ -767,7 +767,7 @@ PickPlanetSide (PMENU_STATE pMS)
 				NextActivity |= CHECK_LOAD; /* fake a load game */
 				GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
-				battle_counter = 0;
+				EncounterGroup = 0;
 				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 				ReinitQueue (&GLOBAL (npc_built_ship_q));
 

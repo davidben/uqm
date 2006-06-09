@@ -176,5 +176,8 @@ extern void GenerateSupox (BYTE control);
 extern void GenerateRainbow (BYTE control);
 extern void GenerateIlwrath (BYTE control);
 
+extern SIZE EncounterRace;
+extern BYTE EncounterGroup;
+
 #endif /* _ENCOUNT_H */
 

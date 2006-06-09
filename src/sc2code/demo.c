@@ -76,7 +76,7 @@ OpenJournal (void)
 	DWORD start_seed;
 
 #if CREATE_JOURNAL
-	if (battle_counter)
+	if (create_journal)
 	{
 		if (journal_fh = copen (journal_buf, MEMORY_STREAM, STREAM_WRITE))
 		{

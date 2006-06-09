@@ -354,7 +354,9 @@ LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc)
 		cclose (fh);
 		res_CloseResFile (in_fp);
 
-		battle_counter = 0;
+		EncounterGroup = 0;
+		EncounterRace = -1;
+
 		ReinitQueue (&race_q[0]);
 		ReinitQueue (&race_q[1]);
 		CurStarDescPtr = FindStar (NULL_PTR, &SD.star_pt, 0, 0);

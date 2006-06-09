@@ -20,6 +20,7 @@
 #include "globdata.h"
 #include "init.h"
 #include "races.h"
+#include "encount.h"
 #include "libs/mathlib.h"
 
 
@@ -545,7 +546,7 @@ ip_group_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 	}
 	else
 	{
-		battle_counter = (SIZE)GET_GROUP_ID (StarShipPtr);
+		EncounterGroup = GET_GROUP_ID (StarShipPtr);
 
 		if (GET_RACE_ID (StarShipPtr) == URQUAN_PROBE_SHIP)
 		{
@@ -826,10 +827,10 @@ DoMissions (void)
 
 	spawn_flag_ship ();
 
-	if (battle_counter)
+	if (EncounterRace >= 0)
 	{
-		NotifyOthers ((COUNT)(battle_counter - 1), 0);
-		battle_counter = 0;
+		NotifyOthers (EncounterRace, 0);
+		EncounterRace = -1;
 	}
 
 	for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));

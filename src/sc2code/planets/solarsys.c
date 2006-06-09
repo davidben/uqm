@@ -46,6 +46,10 @@ COLORMAP OrbitalCMap;
 COLORMAP SunCMap;
 MUSIC_REF SpaceMusic;
 
+SIZE EncounterRace;
+BYTE EncounterGroup;
+		// last encountered group info
+
 #define DRAW_STARS (1 << 0)
 #define DRAW_PLANETS (1 << 1)
 #define DRAW_ORBITS (1 << 2)
@@ -1453,7 +1457,8 @@ InitSolarSys (void)
 	}
 	else
 	{
-		battle_counter = 0;
+		EncounterRace = -1;
+		EncounterGroup = 0;
 		GLOBAL (BattleGroupRef) = 0;
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		(*pSolarSysState->GenFunc) (INIT_NPCS);
@@ -1532,9 +1537,9 @@ UninitSolarSys (void)
 
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 	}
-	else if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && battle_counter)
+	else if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && EncounterGroup)
 	{
-		GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)battle_counter);
+		GetGroupInfo (GLOBAL (BattleGroupRef), EncounterGroup);
 		if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
 		{
 			BYTE i;

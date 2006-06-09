@@ -90,7 +90,8 @@ BuildBattle (COUNT which_player)
 	HSTARSHIP hBuiltShip;
 	STARSHIPPTR BuiltShipPtr;
 
-	battle_counter = 0;
+	EncounterRace = -1;
+
 	if (GetHeadLink (&GLOBAL (npc_built_ship_q)) == 0)
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
@@ -467,9 +468,8 @@ UninitEncounter (void)
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (&GLOBAL (npc_built_ship_q),
 				hStarShip);
-		battle_counter = GET_RACE_ID (FragPtr) + 1;
-		if (GetStarShipFromIndex (&GLOBAL (avail_race_q),
-				(COUNT)(battle_counter - 1)) == 0)
+		EncounterRace = GET_RACE_ID (FragPtr);
+		if (GetStarShipFromIndex (&GLOBAL (avail_race_q), EncounterRace) == 0)
 		{
 			VictoryState = -1;
 			InitSISContexts ();
@@ -580,7 +580,7 @@ UninitEncounter (void)
 							DrawFilledRectangle (&r);
 
 							/* collect bounty ResUnits */
-							j = race_bounty[battle_counter - 1] >> 3;
+							j = race_bounty[EncounterRace] >> 3;
 							RecycleAmount += j;
 							sprintf (buf, "%u", RecycleAmount);
 							t.baseline.x = r.corner.x + r.extent.width - 1;
@@ -689,7 +689,7 @@ UninitEncounter (void)
 			DrawStatusMessage (NULL_PTR);
 		}
 
-		if (ships_killed && (battle_counter - 1) == THRADDASH_SHIP
+		if (ships_killed && EncounterRace == THRADDASH_SHIP
 				&& !GET_GAME_STATE (THRADD_MANNER))
 		{
 			if ((ships_killed += GET_GAME_STATE (THRADDASH_BODY_COUNT)) >

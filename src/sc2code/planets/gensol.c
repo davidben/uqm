@@ -25,6 +25,7 @@
 #include "races.h"
 #include "resinst.h"
 #include "state.h"
+#include "encount.h"
 #include "planets/genall.h"
 #include "libs/mathlib.h"
 
@@ -189,7 +190,7 @@ generate_orbital (void)
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 
-		battle_counter = 0;
+		EncounterGroup = 0;
 		GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 		return;
