@@ -302,7 +302,7 @@ GenerateOrz (BYTE control)
 						&& ActivateStarShip (ORZ_SHIP, SPHERE_TRACKING))
 				{
 					NotifyOthers (ORZ_SHIP, (BYTE)~0);
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					if (CurStarDescPtr->Index == ORZ_DEFINED)
@@ -335,7 +335,7 @@ GenerateOrz (BYTE control)
 
 						GLOBAL (CurrentActivity) &= ~START_INTERPLANETARY;
 						ReinitQueue (&GLOBAL (npc_built_ship_q));
-						GetGroupInfo (0L, 0);
+						GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 
 						if (OrzSurvivors)
 							break;

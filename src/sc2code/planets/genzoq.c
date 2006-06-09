@@ -77,7 +77,7 @@ GenerateScout (BYTE control)
 						CloneShipFragment (ZOQFOTPIK_SHIP,
 								&GLOBAL (npc_built_ship_q), 0);
 
-						GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
+						GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
 						b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 						b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 						b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
@@ -171,7 +171,7 @@ GenerateZoqFotPik (BYTE control)
 			{
 				if (ActivateStarShip (ZOQFOTPIK_SHIP, SPHERE_TRACKING))
 				{
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					if (GET_GAME_STATE (ZOQFOT_DISTRESS))
@@ -192,8 +192,7 @@ GenerateZoqFotPik (BYTE control)
 						{
 							GLOBAL (CurrentActivity) &= ~START_INTERPLANETARY;
 							ReinitQueue (&GLOBAL (npc_built_ship_q));
-							GetGroupInfo (0L, 0);
-
+							GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 							break;
 						}
 					}
@@ -210,7 +209,7 @@ GenerateZoqFotPik (BYTE control)
 					{
 						GLOBAL (CurrentActivity) &= ~START_INTERPLANETARY;
 						ReinitQueue (&GLOBAL (npc_built_ship_q));
-						GetGroupInfo (0L, 0);
+						GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 					}
 					break;
 				}

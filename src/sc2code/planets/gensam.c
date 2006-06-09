@@ -53,7 +53,7 @@ BuildUrquanGuard (void)
 
 	if (GLOBAL (BattleGroupRef) == 0)
 	{
-			GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
+			GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
 			b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 			b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 			b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
@@ -76,7 +76,7 @@ BuildUrquanGuard (void)
 	for (b0 = 1; b0 <= NUM_URQUAN_GUARDS1; ++b0)
 		PutGroupInfo (GLOBAL (BattleGroupRef), (BYTE)(NUM_URQUAN_GUARDS0 + b0));
 
-	GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0);
+	GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP);
 
 	XFormIPLoc (
 			&pSolarSysState->PlanetDesc[4].image.origin,
@@ -150,11 +150,11 @@ GenerateSamatra (BYTE control)
 				BuildUrquanGuard ();
 			else
 			{	// Exorcise Ur-Quan ghosts upon system reentry
-				PutGroupInfo (0L, (BYTE)~0); // wipe out the group
+				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP); // wipe out the group
 			}
 			break;
 		case REINIT_NPCS:
-			GetGroupInfo (0L, 0);
+			GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 			battle_counter = 0;
 			{
 				BOOLEAN GuardEngaged;
@@ -246,7 +246,7 @@ GenerateSamatra (BYTE control)
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->PlanetDesc[4]
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0])
 			{
-				PutGroupInfo (0L, (BYTE)~0);
+				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 				ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 				if (!GET_GAME_STATE (URQUAN_MESSED_UP))
@@ -283,7 +283,7 @@ GenerateSamatra (BYTE control)
 
 					GLOBAL (CurrentActivity) &= ~START_INTERPLANETARY;
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
-					GetGroupInfo (0L, 0);
+					GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 					if (UrquanSurvivors)
 					{
 						SET_GAME_STATE (URQUAN_PROTECTING_SAMATRA, 0);

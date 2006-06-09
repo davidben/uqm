@@ -172,7 +172,7 @@ GenerateTalkingPet (BYTE control)
 					|| ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
 			{
 				NotifyOthers (UMGAH_SHIP, (BYTE)~0);
-				PutGroupInfo (0L, (BYTE)~0);
+				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 				ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 				if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
@@ -223,7 +223,7 @@ GenerateTalkingPet (BYTE control)
 					}
 
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
-					GetGroupInfo (0L, 0);
+					GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 				}
 				break;
 			}

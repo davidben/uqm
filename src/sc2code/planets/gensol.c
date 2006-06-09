@@ -64,7 +64,7 @@ init_probe (void)
 	HSTARSHIP hStarShip;
 
 	if (!GET_GAME_STATE (PROBE_MESSAGE_DELIVERED)
-			&& GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0)
+			&& GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP)
 			&& (hStarShip = GetHeadLink (
 					&GLOBAL (npc_built_ship_q)
 					)))
@@ -186,7 +186,7 @@ generate_orbital (void)
 	if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->PlanetDesc[2]
 			&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0])
 	{
-		PutGroupInfo (0L, (BYTE)~0);
+		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 		battle_counter = 0;
@@ -438,7 +438,7 @@ GenerateSOL (BYTE control)
 				CloneShipFragment (URQUAN_PROBE_SHIP,
 						&GLOBAL (npc_built_ship_q), 0);
 
-				GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
+				GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
 				SetProbeRef (GLOBAL (BattleGroupRef));
 			}
 			if (!init_probe ())

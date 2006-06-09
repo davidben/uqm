@@ -232,12 +232,12 @@ FoundHome:
 							&GLOBAL (npc_built_ship_q), 0);
 			}
 
-			PutGroupInfo (0L, ++which_group);
+			PutGroupInfo (GROUPS_RANDOM, ++which_group);
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 		} while (--num_groups);
 	}
 
-	GetGroupInfo (0L, (BYTE)~0);
+	GetGroupInfo (GROUPS_RANDOM, GROUP_INIT_IP);
 }
 
 static void
@@ -247,45 +247,43 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 	HSTARSHIP hStarShip;
 	SHIP_FRAGMENTPTR FragPtr;
 
-	if (which_group == 0)
+	if (which_group == GROUP_LIST)
 	{
+		QUEUE temp_q;
+		HSTARSHIP hNextShip;
+
 		if (pGH->GroupOffset[0] == 0)
 			pGH->GroupOffset[0] = LengthStateFile (fp);
 
+		temp_q = GLOBAL (npc_built_ship_q);
+		SetHeadLink (&GLOBAL (npc_built_ship_q), 0);
+		SetTailLink (&GLOBAL (npc_built_ship_q), 0);
+		for (hStarShip = GetHeadLink (&temp_q);
+				hStarShip; hStarShip = hNextShip)
 		{
-			QUEUE temp_q;
-			HSTARSHIP hNextShip;
+			COUNT crew_level;
 
-			temp_q = GLOBAL (npc_built_ship_q);
-			SetHeadLink (&GLOBAL (npc_built_ship_q), 0);
-			SetTailLink (&GLOBAL (npc_built_ship_q), 0);
-			for (hStarShip = GetHeadLink (&temp_q);
-					hStarShip; hStarShip = hNextShip)
+			FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+					&temp_q, hStarShip);
+			hNextShip = _GetSuccLink (FragPtr);
+			crew_level = FragPtr->ShipInfo.crew_level;
+			which_group = GET_GROUP_ID (FragPtr);
+			UnlockStarShip (&temp_q, hStarShip);
+
+			if (crew_level == 0)
 			{
-				COUNT crew_level;
-
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&temp_q, hStarShip);
-				hNextShip = _GetSuccLink (FragPtr);
-				crew_level = FragPtr->ShipInfo.crew_level;
-				which_group = GET_GROUP_ID (FragPtr);
-				UnlockStarShip (&temp_q, hStarShip);
-
-				if (crew_level == 0)
-				{
-					if (GLOBAL (BattleGroupRef))
-						PutGroupInfo (GLOBAL (BattleGroupRef), which_group);
-					else
-						FlushGroupInfo (pGH, 0L, which_group, fp);
-					pGH->GroupOffset[which_group] = 0;
-					RemoveQueue (&temp_q, hStarShip);
-					FreeStarShip (&temp_q, hStarShip);
-				}
+				if (GLOBAL (BattleGroupRef))
+					PutGroupInfo (GLOBAL (BattleGroupRef), which_group);
+				else
+					FlushGroupInfo (pGH, GROUPS_RANDOM, which_group, fp);
+				pGH->GroupOffset[which_group] = 0;
+				RemoveQueue (&temp_q, hStarShip);
+				FreeStarShip (&temp_q, hStarShip);
 			}
-			GLOBAL (npc_built_ship_q) = temp_q;
-
-			which_group = 0;
 		}
+		GLOBAL (npc_built_ship_q) = temp_q;
+
+		which_group = GROUP_LIST;
 	}
 	else if (which_group > pGH->NumGroups)
 	{
@@ -297,7 +295,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		RaceType = GET_RACE_ID (FragPtr);
 		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
-		WriteStateFile ((PBYTE)&RaceType, sizeof (RaceType), 1, fp);
+		WriteStateFile (&RaceType, sizeof (RaceType), 1, fp);
 		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 	SeekStateFile (fp, offset, SEEK_SET);
@@ -310,14 +308,16 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 
 	NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
 
-	if (which_group)
+	if (which_group != GROUP_LIST)
+	{
 		SeekStateFile (fp, pGH->GroupOffset[which_group]
 				+ sizeof (RaceType), SEEK_SET);
+	}
 	else
 	{
-		RaceType = (BYTE)cur_player;
+		BYTE BaseGroup = (BYTE)cur_player;
 		SeekStateFile (fp, pGH->GroupOffset[0], SEEK_SET);
-		WriteStateFile (&RaceType, sizeof (RaceType), 1, fp);
+		WriteStateFile (&BaseGroup, sizeof (BaseGroup), 1, fp);
 	}
 	WriteStateFile (&NumShips, sizeof (NumShips), 1, fp);
 
@@ -333,10 +333,10 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 		hNextShip = _GetSuccLink (FragPtr);
 
 		RaceType = GET_RACE_ID (FragPtr);
-		WriteStateFile ((PBYTE)&RaceType, sizeof (RaceType), 1, fp);
+		WriteStateFile (&RaceType, sizeof (RaceType), 1, fp);
 
 #ifdef DEBUG_GROUPS
-		if (which_group == 0)
+		if (which_group == GROUP_LIST)
 			log_add (log_Debug, "F) type %u, loc %u<%d, %d>, task 0x%02x:%u",
 					RaceType,
 					GET_GROUP_LOC (FragPtr),
@@ -346,7 +346,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 					GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
 		Ptr = (PBYTE)&FragPtr->RaceDescPtr;
-		WriteStateFile ((PBYTE)Ptr,
+		WriteStateFile (Ptr,
 				((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1, fp);
 		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
@@ -358,9 +358,11 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenStateFile (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
-			"r+b");
+	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)
+		fp = OpenStateFile (DEFGRPINFO_FILE, "r+b");
+	else
+		fp = OpenStateFile (RANDGRPINFO_FILE, "r+b");
+
 	if (fp)
 	{
 		BYTE RaceType, NumShips;
@@ -374,7 +376,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		log_add (log_Debug, "GetGroupInfo(%lu): %u(%lu) out of %u", offset,
 				which_group, GH.GroupOffset[which_group], GH.NumGroups);
 #endif /* DEBUG_GROUPS */
-		if (which_group == (BYTE)~0)
+		if (which_group == GROUP_INIT_IP)
 		{
 			COUNT month_index, day_index, year_index;
 
@@ -386,7 +388,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			day_index = GH.day_index;
 			month_index = GH.month_index;
 			year_index = GH.year_index;
-			if (offset == 0
+			if (offset == GROUPS_RANDOM
 					&& (GH.star_index != (COUNT)(CurStarDescPtr - star_array)
 					|| !ValidateEvent (ABSOLUTE_EVENT,
 					&month_index, &day_index, &year_index)))
@@ -495,9 +497,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 					}
 				}
 
-				if (offset)
-					InitGroupInfo (FALSE);
-						/* Random battle group */
+				if (offset != GROUPS_RANDOM)
+					InitGroupInfo (FALSE); 	/* Wipe out random battle groups */
 				else if (ValidateEvent (ABSOLUTE_EVENT, /* still fresh */
 						&month_index, &day_index, &year_index))
 				{
@@ -512,7 +513,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			COUNT ShipsLeft;
 
 			ShipsLeft = CountLinks (&GLOBAL (npc_built_ship_q));
-			if (which_group == 0)
+			if (which_group == GROUP_LIST)
 			{
 				SeekStateFile (fp, GH.GroupOffset[0], SEEK_SET);
 				ReadStateFile (&BaseGroup, sizeof (BaseGroup), 1, fp);
@@ -528,10 +529,10 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			else
 			{
 				cur_player = (SIZE)which_group;
-				if (offset)
-					PutGroupInfo (0L, 0);
+				if (offset != GROUPS_RANDOM)
+					PutGroupInfo (GROUPS_RANDOM, GROUP_LIST);
 				else
-					FlushGroupInfo (&GH, 0L, 0, fp);
+					FlushGroupInfo (&GH, GROUPS_RANDOM, GROUP_LIST, fp);
 
 				BaseGroup = which_group;
 			}
@@ -545,7 +546,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			{
 				PBYTE Ptr;
 
-				ReadStateFile ((PBYTE)&RaceType, sizeof (RaceType), 1, fp);
+				ReadStateFile (&RaceType, sizeof (RaceType), 1, fp);
 
 				hStarShip = CloneShipFragment (RaceType,
 						&GLOBAL (npc_built_ship_q), 0);
@@ -553,12 +554,12 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 						&GLOBAL (npc_built_ship_q), hStarShip);
 				Ptr = (PBYTE)&FragPtr->RaceDescPtr;
-				ReadStateFile ((PBYTE)Ptr,
+				ReadStateFile (Ptr,
 						((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1,
 						fp);
 
 #ifdef DEBUG_GROUPS
-				if (which_group == 0)
+				if (which_group == GROUP_LIST)
 					log_add (log_Debug, "G) type %u, loc %u<%d, %d>, "
 							"task 0x%02x:%u",
 							RaceType,
@@ -569,14 +570,14 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 							GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
 				if (GET_GROUP_ID (FragPtr) != BaseGroup
-						|| which_group
+						|| which_group != GROUP_LIST
 						|| ShipsLeft)
 				{
 #ifdef DEBUG_GROUPS
 					log_add (log_Debug, "\n");
 #endif /* DEBUG_GROUPS */
 					if (RaceType == SHOFIXTI_SHIP
-							&& which_group
+							&& which_group != GROUP_LIST
 							&& !GET_GAME_STATE (SHOFIXTI_RECRUITED))
 					{
 						BYTE captains_name_index;
@@ -614,14 +615,16 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 {
 	PVOID fp;
 
-	fp = OpenStateFile (
-			offset && which_group ? DEFGRPINFO_FILE : RANDGRPINFO_FILE,
-			"r+b");
+	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)
+		fp = OpenStateFile (DEFGRPINFO_FILE, "r+b");
+	else
+		fp = OpenStateFile (RANDGRPINFO_FILE, "r+b");
+
 	if (fp)
 	{
 		GROUP_HEADER GH;
 
-		if (offset == (DWORD) ~0L)
+		if (offset == GROUPS_ADD_NEW)
 		{
 			offset = LengthStateFile (fp);
 			GH.NumGroups = 0;
@@ -632,13 +635,13 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 			//      Some garbage is saved. -- SvdB
 		}
 
-		if (which_group)
+		if (which_group != GROUP_LIST)
 		{
 			SeekStateFile (fp, offset, SEEK_SET);
-			if (which_group == (BYTE)~0)
+			if (which_group == GROUP_SAVE_IP)
 			{
 				cur_player = 0;
-				which_group = 0;
+				which_group = GROUP_LIST;
 			}
 		}
 		ReadStateFile (&GH, sizeof (GH), 1, fp);

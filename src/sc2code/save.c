@@ -344,14 +344,7 @@ RetrySave:
 		if (CurStarDescPtr)
 			SD = *CurStarDescPtr;
 		else
-		{
-			SD.star_pt.x = 0;
-			SD.star_pt.y = 0;
-			SD.Type = 0;
-			SD.Index = 0;
-			SD.Prefix = 0;
-			SD.Postfix = 0;
-		}
+			memset (&SD, 0, sizeof (SD));
 
 		frame = GLOBAL (ShipStamp.frame);
 		pt = GLOBAL (ip_location);
@@ -359,7 +352,7 @@ RetrySave:
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 				&& !(GLOBAL (CurrentActivity)
 				& (START_ENCOUNTER | START_INTERPLANETARY)))
-			PutGroupInfo (0L, (BYTE)~0);
+			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 
 		cwrite ((PBYTE)&GlobData.Game_state, sizeof (GlobData.Game_state),
 				1, fh);

@@ -44,7 +44,7 @@ GenerateColony (BYTE control)
 					CloneShipFragment (URQUAN_SHIP,
 							&GLOBAL (npc_built_ship_q), 0);
 
-					GLOBAL (BattleGroupRef) = PutGroupInfo (~0L, 1);
+					GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
 					b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 					b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
 					b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));

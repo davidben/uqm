@@ -229,7 +229,7 @@ DeviceFailed (BYTE which_device)
 					battle_counter = 0;
 					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					CloneShipFragment (CHMMR_SHIP,
@@ -272,7 +272,7 @@ DeviceFailed (BYTE which_device)
 				{
 					SET_GAME_STATE (SHIP_TO_COMPEL, 1);
 
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 				}
 
@@ -330,7 +330,7 @@ DeviceFailed (BYTE which_device)
 					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
 					battle_counter = 0;
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
@@ -367,7 +367,7 @@ DeviceFailed (BYTE which_device)
 						GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
 						battle_counter = 0;
-						PutGroupInfo (0L, (BYTE)~0);
+						PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 						ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 						if (CurStarDescPtr->Index == ILWRATH_DEFINED)

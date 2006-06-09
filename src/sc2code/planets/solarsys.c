@@ -1573,17 +1573,17 @@ GenerateRandomIP (BYTE control)
 	switch (control)
 	{
 		case INIT_NPCS:
-			if (!GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0))
+			if (!GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 			{
 				GLOBAL (BattleGroupRef) = 0;
 				BuildGroups ();
 			}
 			break;
 		case REINIT_NPCS:
-			GetGroupInfo (0L, 0);
+			GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 			break;
 		case UNINIT_NPCS:
-			PutGroupInfo (0L, (BYTE)~0);
+			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 			break;
 		case GENERATE_MINERAL:

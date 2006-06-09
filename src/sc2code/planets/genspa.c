@@ -159,7 +159,7 @@ GenerateSpathi (BYTE control)
 						&& ActivateStarShip (SPATHI_SHIP, SPHERE_TRACKING))
 				{
 					NotifyOthers (SPATHI_SHIP, (BYTE)~0);
-					PutGroupInfo (0L, (BYTE)~0);
+					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 					CloneShipFragment (SPATHI_SHIP,
@@ -175,7 +175,7 @@ GenerateSpathi (BYTE control)
 					{
 						GLOBAL (CurrentActivity) &= ~START_INTERPLANETARY;
 						ReinitQueue (&GLOBAL (npc_built_ship_q));
-						GetGroupInfo (0L, 0);
+						GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 					}
 					break;
 				}

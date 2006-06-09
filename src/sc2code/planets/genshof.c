@@ -67,7 +67,7 @@ GenerateShofixti (BYTE control)
 					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
 					);
 			if (GLOBAL (BattleGroupRef) == 0
-					|| !GetGroupInfo (GLOBAL (BattleGroupRef), (BYTE)~0))
+					|| !GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 			{
 				if (GLOBAL (BattleGroupRef) == 0)
 					GLOBAL (BattleGroupRef) = ~0L;
