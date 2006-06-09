@@ -31,6 +31,8 @@
 #include <unistd.h>
 #endif
 
+static BYTE LastEncGroup;
+		// Last encountered group, saved into state files
 
 //#define DEBUG_GROUPS
 
@@ -311,13 +313,12 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 	if (which_group != GROUP_LIST)
 	{
 		SeekStateFile (fp, pGH->GroupOffset[which_group]
-				+ sizeof (RaceType), SEEK_SET);
+				+ sizeof (LastEncGroup), SEEK_SET);
 	}
 	else
 	{
-		BYTE BaseGroup = (BYTE)cur_player;
 		SeekStateFile (fp, pGH->GroupOffset[0], SEEK_SET);
-		WriteStateFile (&BaseGroup, sizeof (BaseGroup), 1, fp);
+		WriteStateFile (&LastEncGroup, sizeof (LastEncGroup), 1, fp);
 	}
 	WriteStateFile (&NumShips, sizeof (NumShips), 1, fp);
 
@@ -509,37 +510,34 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		}
 		else if (GH.GroupOffset[which_group])
 		{
-			BYTE BaseGroup;
 			COUNT ShipsLeft;
 
 			ShipsLeft = CountLinks (&GLOBAL (npc_built_ship_q));
 			if (which_group == GROUP_LIST)
 			{
 				SeekStateFile (fp, GH.GroupOffset[0], SEEK_SET);
-				ReadStateFile (&BaseGroup, sizeof (BaseGroup), 1, fp);
+				ReadStateFile (&LastEncGroup, sizeof (LastEncGroup), 1, fp);
 
-				if (BaseGroup)
+				if (LastEncGroup)
 				{
 					if (GLOBAL (BattleGroupRef))
-						PutGroupInfo (GLOBAL (BattleGroupRef), BaseGroup);
+						PutGroupInfo (GLOBAL (BattleGroupRef), LastEncGroup);
 					else
-						FlushGroupInfo (&GH, offset, BaseGroup, fp);
+						FlushGroupInfo (&GH, offset, LastEncGroup, fp);
 				}
 			}
 			else
 			{
-				cur_player = (SIZE)which_group;
+				LastEncGroup = which_group;
 				if (offset != GROUPS_RANDOM)
 					PutGroupInfo (GROUPS_RANDOM, GROUP_LIST);
 				else
 					FlushGroupInfo (&GH, GROUPS_RANDOM, GROUP_LIST, fp);
-
-				BaseGroup = which_group;
 			}
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 
 			SeekStateFile (fp, GH.GroupOffset[which_group]
-					+ sizeof (BaseGroup), SEEK_SET);
+					+ sizeof (LastEncGroup), SEEK_SET);
 
 			ReadStateFile (&NumShips, sizeof (NumShips), 1, fp);
 			while (NumShips--)
@@ -569,7 +567,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 							GET_GROUP_MISSION (FragPtr),
 							GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
-				if (GET_GROUP_ID (FragPtr) != BaseGroup
+				if (GET_GROUP_ID (FragPtr) != LastEncGroup
 						|| which_group != GROUP_LIST
 						|| ShipsLeft)
 				{
@@ -640,7 +638,7 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 			SeekStateFile (fp, offset, SEEK_SET);
 			if (which_group == GROUP_SAVE_IP)
 			{
-				cur_player = 0;
+				LastEncGroup = 0;
 				which_group = GROUP_LIST;
 			}
 		}
