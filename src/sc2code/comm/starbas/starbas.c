@@ -157,24 +157,10 @@ static DWORD CurBulletinMask;
 static void
 ByeBye (RESPONSE_REF R)
 {
-	BYTE b0, b1, b2, b3;
-
 	(void) R;  // ignored
-	b0 = GET_GAME_STATE (STARBASE_BULLETS0);
-	b1 = GET_GAME_STATE (STARBASE_BULLETS1);
-	b2 = GET_GAME_STATE (STARBASE_BULLETS2);
-	b3 = GET_GAME_STATE (STARBASE_BULLETS3);
-	CurBulletinMask |= MAKE_DWORD (
-			MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-			);
-	b0 = LOBYTE (LOWORD (CurBulletinMask));
-	b1 = HIBYTE (LOWORD (CurBulletinMask));
-	b2 = LOBYTE (HIWORD (CurBulletinMask));
-	b3 = HIBYTE (HIWORD (CurBulletinMask));
-	SET_GAME_STATE (STARBASE_BULLETS0, b0);
-	SET_GAME_STATE (STARBASE_BULLETS1, b1);
-	SET_GAME_STATE (STARBASE_BULLETS2, b2);
-	SET_GAME_STATE (STARBASE_BULLETS3, b3);
+
+	CurBulletinMask |= GET_GAME_STATE_32 (STARBASE_BULLETS0);
+	SET_GAME_STATE_32 (STARBASE_BULLETS0, CurBulletinMask);
 
 	/* if (R == goodbye_starbase_commander) */
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) >= 2)
@@ -1350,19 +1336,13 @@ static void
 CheckBulletins (BOOLEAN Repeat)
 {
 	RESPONSE_REF pIntro;
-	BYTE b0, b1, b2, b3;
+	BYTE b0;
 	DWORD BulletinMask;
 
 	if (Repeat)
 		BulletinMask = CurBulletinMask ^ 0xFFFFFFFFL;
 	else
-	{
-		b0 = GET_GAME_STATE (STARBASE_BULLETS0);
-		b1 = GET_GAME_STATE (STARBASE_BULLETS1);
-		b2 = GET_GAME_STATE (STARBASE_BULLETS2);
-		b3 = GET_GAME_STATE (STARBASE_BULLETS3);
-		BulletinMask = MAKE_DWORD (MAKE_WORD (b0, b1), MAKE_WORD (b2, b3));
-	}
+		BulletinMask = GET_GAME_STATE_32 (STARBASE_BULLETS0);
 
 	pIntro = 0;
 	for (b0 = 0; b0 < 32; ++b0)
@@ -1461,10 +1441,7 @@ CheckBulletins (BOOLEAN Repeat)
 					break;
 				case 11:
 					if (GET_GAME_STATE (ZOQFOT_HOME_VISITS)
-							|| GET_GAME_STATE (ZOQFOT_GRPOFFS0)
-							|| GET_GAME_STATE (ZOQFOT_GRPOFFS1)
-							|| GET_GAME_STATE (ZOQFOT_GRPOFFS2)
-							|| GET_GAME_STATE (ZOQFOT_GRPOFFS3))
+							|| GET_GAME_STATE_32 (ZOQFOT_GRPOFFS0))
 						BulletinMask |= 1L << b0;
 					else if (CheckTiming (0, 42))
 					{
@@ -1637,16 +1614,7 @@ CheckBulletins (BOOLEAN Repeat)
 	if (pIntro == 0 && GET_GAME_STATE (STARBASE_VISITED))
 		NPCPhrase (RETURN_HELLO);
 	else if (!Repeat)
-	{
-		b0 = LOBYTE (LOWORD (BulletinMask));
-		b1 = HIBYTE (LOWORD (BulletinMask));
-		b2 = LOBYTE (HIWORD (BulletinMask));
-		b3 = HIBYTE (HIWORD (BulletinMask));
-		SET_GAME_STATE (STARBASE_BULLETS0, b0);
-		SET_GAME_STATE (STARBASE_BULLETS1, b1);
-		SET_GAME_STATE (STARBASE_BULLETS2, b2);
-		SET_GAME_STATE (STARBASE_BULLETS3, b3);
-	}
+		SET_GAME_STATE_32 (STARBASE_BULLETS0, BulletinMask);
 }
 
 static void

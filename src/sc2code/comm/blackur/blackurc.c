@@ -435,7 +435,7 @@ DieHuman (RESPONSE_REF R)
 static void
 Intro (void)
 {
-	BYTE b0, b1, b2, b3;
+	DWORD GrpOffs;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
@@ -460,15 +460,10 @@ Intro (void)
 		SET_GAME_STATE (KOHR_AH_SENSES_EVIL, 1);
 	}
 
-	b0 = GET_GAME_STATE (SAMATRA_GRPOFFS0);
-	b1 = GET_GAME_STATE (SAMATRA_GRPOFFS1);
-	b2 = GET_GAME_STATE (SAMATRA_GRPOFFS2);
-	b3 = GET_GAME_STATE (SAMATRA_GRPOFFS3);
+	GrpOffs = GET_GAME_STATE_32 (SAMATRA_GRPOFFS0);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 			&& GLOBAL (BattleGroupRef)
-			&& GLOBAL (BattleGroupRef) == MAKE_DWORD (
-					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-					))
+			&& GLOBAL (BattleGroupRef) == GrpOffs)
 	{
 		NPCPhrase (HELLO_SAMATRA);
 

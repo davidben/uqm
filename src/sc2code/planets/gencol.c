@@ -29,30 +29,16 @@ GenerateColony (BYTE control)
 	{
 		case INIT_NPCS:
 		{
-			BYTE b0, b1, b2, b3;
 			HSTARSHIP hStarShip;
 
-			b0 = GET_GAME_STATE (COLONY_GRPOFFS0);
-			b1 = GET_GAME_STATE (COLONY_GRPOFFS1);
-			b2 = GET_GAME_STATE (COLONY_GRPOFFS2);
-			b3 = GET_GAME_STATE (COLONY_GRPOFFS3);
-			GLOBAL (BattleGroupRef) = MAKE_DWORD (
-					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-					);
+			GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (COLONY_GRPOFFS0);
 			if (GLOBAL (BattleGroupRef) == 0)
 			{
-					CloneShipFragment (URQUAN_SHIP,
-							&GLOBAL (npc_built_ship_q), 0);
+				CloneShipFragment (URQUAN_SHIP,
+						&GLOBAL (npc_built_ship_q), 0);
 
-					GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
-					b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-					b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-					b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-					b3 = HIBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-					SET_GAME_STATE (COLONY_GRPOFFS0, b0);
-					SET_GAME_STATE (COLONY_GRPOFFS1, b1);
-					SET_GAME_STATE (COLONY_GRPOFFS2, b2);
-					SET_GAME_STATE (COLONY_GRPOFFS3, b3);
+				GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
+				SET_GAME_STATE_32 (COLONY_GRPOFFS0, GLOBAL (BattleGroupRef));
 			}
 
 			GenerateRandomIP (INIT_NPCS);

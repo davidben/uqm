@@ -73,10 +73,47 @@ setGameState (int startBit, int endBit, BYTE val
 				| (BYTE)((val) >> (endBit - startBit - (endBit & 7)));
 	}
 #ifdef STATE_DEBUG
-	log_add (log_Debug, "State '%s' set to %d.", name, val);
+	log_add (log_Debug, "State '%s' set to %d.", name, (int)val);
 #endif
 }
 
+DWORD
+getGameState32 (int startBit)
+{
+	DWORD v;
+	int shift;
+
+	for (v = 0, shift = 0; shift < 32; shift += 8, startBit += 8)
+	{
+		v |= getGameState (startBit, startBit + 7) << shift;
+	}
+
+	return v;
+}
+
+void
+setGameState32 (int startBit, DWORD val
+#ifdef STATE_DEBUG
+		, const char *name
+#endif
+)
+{
+	DWORD v = val;
+	int i;
+
+	for (i = 0; i < 4; ++i, v >>= 8, startBit += 8)
+	{
+		setGameState (startBit, startBit + 7, v & 0xff
+#ifdef STATE_DEBUG
+				, "(ignored)"
+#endif
+				);
+	}
+
+#ifdef STATE_DEBUG
+	log_add (log_Debug, "State '%s' set to %u.", name, (unsigned)val);
+#endif
+}
 
 static void
 CreateRadar (void)

@@ -403,7 +403,7 @@ LoserUrquan (RESPONSE_REF R)
 static void
 Intro (void)
 {
-	BYTE b0, b1, b2, b3;
+	DWORD GrpOffs;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
@@ -413,15 +413,10 @@ Intro (void)
 		return;
 	}
 
-	b0 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS0);
-	b1 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS1);
-	b2 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS2);
-	b3 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS3);
+	GrpOffs = GET_GAME_STATE_32 (URQUAN_PROBE_GRPOFFS0);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 			&& GLOBAL (BattleGroupRef)
-			&& GLOBAL (BattleGroupRef) == MAKE_DWORD (
-					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-					))
+			&& GLOBAL (BattleGroupRef) == GrpOffs)
 	{
 		NPCPhrase (SEND_MESSAGE);
 		SET_GAME_STATE (PROBE_MESSAGE_DELIVERED, 1);
@@ -441,15 +436,10 @@ Intro (void)
 			SET_GAME_STATE (URQUAN_SENSES_EVIL, 1);
 		}
 
-		b0 = GET_GAME_STATE (COLONY_GRPOFFS0);
-		b1 = GET_GAME_STATE (COLONY_GRPOFFS1);
-		b2 = GET_GAME_STATE (COLONY_GRPOFFS2);
-		b3 = GET_GAME_STATE (COLONY_GRPOFFS3);
+		GrpOffs = GET_GAME_STATE_32 (COLONY_GRPOFFS0);
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 				&& GLOBAL (BattleGroupRef)
-				&& GLOBAL (BattleGroupRef) == MAKE_DWORD (
-						MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-						))
+				&& GLOBAL (BattleGroupRef) == GrpOffs)
 		{
 			NPCPhrase (CAUGHT_YA);
 
@@ -457,15 +447,10 @@ Intro (void)
 			return;
 		}
 
-		b0 = GET_GAME_STATE (SAMATRA_GRPOFFS0);
-		b1 = GET_GAME_STATE (SAMATRA_GRPOFFS1);
-		b2 = GET_GAME_STATE (SAMATRA_GRPOFFS2);
-		b3 = GET_GAME_STATE (SAMATRA_GRPOFFS3);
+		GrpOffs = GET_GAME_STATE_32 (SAMATRA_GRPOFFS0);
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 				&& GLOBAL (BattleGroupRef)
-				&& GLOBAL (BattleGroupRef) == MAKE_DWORD (
-						MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-						))
+				&& GLOBAL (BattleGroupRef) == GrpOffs)
 		{
 			NPCPhrase (HELLO_SAMATRA);
 
@@ -536,7 +521,7 @@ init_urquan_comm (void)
 {
 	LOCDATAPTR retval;
 
-	BYTE b0, b1, b2, b3;
+	DWORD GrpOffs;
 
 	urquan_desc.init_encounter_func = Intro;
 	urquan_desc.post_encounter_func = post_urquan_enc;
@@ -548,17 +533,12 @@ init_urquan_comm (void)
 	urquan_desc.AlienTextTemplate.align = ALIGN_CENTER;
 	urquan_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
-	b0 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS0);
-	b1 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS1);
-	b2 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS2);
-	b3 = GET_GAME_STATE (URQUAN_PROBE_GRPOFFS3);
+	GrpOffs = GET_GAME_STATE_32 (URQUAN_PROBE_GRPOFFS0);
 	if (GET_GAME_STATE (PLAYER_HYPNOTIZED)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE
 			|| (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 			&& GLOBAL (BattleGroupRef)
-			&& GLOBAL (BattleGroupRef) == MAKE_DWORD (
-					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-					)))
+			&& GLOBAL (BattleGroupRef) == GrpOffs))
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}

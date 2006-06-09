@@ -57,15 +57,7 @@ GenerateShofixti (BYTE control)
 				|| (!GET_GAME_STATE (SHOFIXTI_BRO_KIA)
 				&& GET_GAME_STATE (MAIDENS_ON_SHIP))))
 		{
-			BYTE b0, b1, b2, b3;
-
-			b0 = GET_GAME_STATE (SHOFIXTI_GRPOFFS0);
-			b1 = GET_GAME_STATE (SHOFIXTI_GRPOFFS1);
-			b2 = GET_GAME_STATE (SHOFIXTI_GRPOFFS2);
-			b3 = GET_GAME_STATE (SHOFIXTI_GRPOFFS3);
-			GLOBAL (BattleGroupRef) = MAKE_DWORD (
-					MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-					);
+			GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (SHOFIXTI_GRPOFFS0);
 			if (GLOBAL (BattleGroupRef) == 0
 					|| !GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 			{
@@ -77,14 +69,8 @@ GenerateShofixti (BYTE control)
 
 				GLOBAL (BattleGroupRef) = PutGroupInfo (
 						GLOBAL (BattleGroupRef), 1);
-				b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-				b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-				b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-				b3 = HIBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-				SET_GAME_STATE (SHOFIXTI_GRPOFFS0, b0);
-				SET_GAME_STATE (SHOFIXTI_GRPOFFS1, b1);
-				SET_GAME_STATE (SHOFIXTI_GRPOFFS2, b2);
-				SET_GAME_STATE (SHOFIXTI_GRPOFFS3, b3);
+				SET_GAME_STATE_32 (SHOFIXTI_GRPOFFS0,
+						GLOBAL (BattleGroupRef));
 			}
 		}
 		case REINIT_NPCS:

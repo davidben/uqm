@@ -30,17 +30,11 @@ static void
 BuildUrquanGuard (void)
 {
 	BYTE ship1, ship2;
-	BYTE b0, b1, b2, b3;
+	BYTE b0, b1;
 	POINT org;
 	HSTARSHIP hStarShip, hNextShip;
 
-	b0 = GET_GAME_STATE (SAMATRA_GRPOFFS0);
-	b1 = GET_GAME_STATE (SAMATRA_GRPOFFS1);
-	b2 = GET_GAME_STATE (SAMATRA_GRPOFFS2);
-	b3 = GET_GAME_STATE (SAMATRA_GRPOFFS3);
-	GLOBAL (BattleGroupRef) = MAKE_DWORD (
-			MAKE_WORD (b0, b1), MAKE_WORD (b2, b3)
-			);
+	GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (SAMATRA_GRPOFFS0);
 
 	if (!GET_GAME_STATE (KOHR_AH_FRENZY))
 		ship1 = URQUAN_SHIP, ship2 = BLACK_URQUAN_SHIP;
@@ -53,15 +47,8 @@ BuildUrquanGuard (void)
 
 	if (GLOBAL (BattleGroupRef) == 0)
 	{
-			GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
-			b0 = LOBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-			b1 = HIBYTE (LOWORD (GLOBAL (BattleGroupRef)));
-			b2 = LOBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-			b3 = HIBYTE (HIWORD (GLOBAL (BattleGroupRef)));
-			SET_GAME_STATE (SAMATRA_GRPOFFS0, b0);
-			SET_GAME_STATE (SAMATRA_GRPOFFS1, b1);
-			SET_GAME_STATE (SAMATRA_GRPOFFS2, b2);
-			SET_GAME_STATE (SAMATRA_GRPOFFS3, b3);
+		GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
+		SET_GAME_STATE_32 (SAMATRA_GRPOFFS0, GLOBAL (BattleGroupRef));
 	}
 
 #define NUM_URQUAN_GUARDS0 12
