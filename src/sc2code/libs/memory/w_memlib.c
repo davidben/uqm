@@ -262,7 +262,7 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 		{
 			log_add (log_Debug, "alloc %d: %p, %lu", (int) node->handle,
 					(void *) node->memory, node->size);
-			// Prefered form:
+			// Preferred form:
 			//log_add (log_Debug, "alloc %d: %#8" PRIxPTR ", %lu",
 			//		(int) node->handle,	(intptr_t) node->memory, node->size);
 		}
@@ -399,7 +399,7 @@ mem_uninit(void)
 			log_add (log_Debug, "LEAK: unreleased extent %d: %p, %lu",
 					extents[i].handle, (void *) extents[i].memory,
 					extents[i].size);
-			// Prefered form:
+			// Preferred form:
 			//log_add (log_Debug, "LEAK: unreleased extent %d: %#8" PRIxPTR
 			//		", %lu", extents[i].handle,
 			//		(intptr_t) extents[i].memory, extents[i].size);
@@ -462,7 +462,7 @@ mem_release(MEM_HANDLE h)
 		{
 			log_add (log_Debug, "free %d: %p",
 					extents[h].handle, (void *) extents[h].memory);
-			// Prefered form:
+			// Preferred form:
 			//log_add (log_Debug, "free %d: %#8" PRIxPTR,
 			//		extents[h].handle, (intptr_t) extents[h].memory);
 		}
