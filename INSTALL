@@ -1,7 +1,7 @@
 To build The Ur-Quan Masters, you need at least the following software:
 
-For Linux:
-GCC - GNU C Compiler
+For unix-like platforms (such as Linux, BSD, Solaris, MinGW):
+GCC 3.0 - GNU C Compiler
 	http://gcc.gnu.org/
 	Debian package: gcc
 
@@ -67,6 +67,11 @@ Tremor (alternative for libogg and libvorbis)
 	or slow (on some handhelds and game consoles).
 	Homepage: http://www.xiph.org/vorbis/
 	Download: http://svn.xiph.org/trunk/Tremor (Subversion)
+
+Libmikmod
+	Audio codec to play .mof files, used for the original PC music.
+	Homepage: http://mikmod.raphnet.net/
+	Download: http://sourceforge.net/project/showfiles.php?group_id=40531
 
 Zlib v1.2
 	Data compression / decompression library

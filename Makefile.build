@@ -1,6 +1,8 @@
 # Make file for the uqm build system. Invoked from build/unix/build_functions
 # By Serge van den Boom
 
+.DELETE_ON_ERROR:
+
 SOURCES := $(shell cat "$(DEPEND_FILE)")
 -include $(SOURCES:=.d)
 
@@ -16,13 +18,11 @@ endef
 endif
 
 define act_mkdep_c
-	$(MKDEPEND) $(CFLAGS) "$<" | \
-			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.c.o:,' > "$@"
+	$(MKDEPEND) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
 define act_mkdep_m
-	$(MKDEPEND) $(CFLAGS) "$<" | \
-			$(SED) -e 's,^\(.*\).o:,'"$(@D)"'/\1.m.o:,' > "$@"
+	$(MKDEPEND) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
 define act_windres

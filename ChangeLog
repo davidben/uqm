@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- (Unix build scripts) Failed mkdep doesn't result in empty .d files
+  anymore. Now using the gcc 3 "-MF" and "-MT" options. - SvdB
 - removed internal libmikmod, adding a dependancy on an external one - SvdB
 - Added a quit button for the Super Melee main menu - Michael
 - Fixed sporadic uqm.cfg loading errors in release builds - Alex
