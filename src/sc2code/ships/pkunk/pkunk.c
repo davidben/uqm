@@ -46,7 +46,7 @@ static RACE_DESC pkunk_desc =
 		FIRES_FORE | FIRES_LEFT | FIRES_RIGHT,
 		20, /* Super Melee cost */
 		666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			502, 401,
@@ -54,7 +54,6 @@ static RACE_DESC pkunk_desc =
 		(STRING)PKUNK_RACE_STRINGS,
 		(FRAME)PKUNK_ICON_MASK_PMAP_ANIM,
 		(FRAME)PKUNK_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

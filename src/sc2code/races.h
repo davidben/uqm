@@ -101,10 +101,9 @@ typedef struct
 {
 	UWORD ship_flags;
 	BYTE var1, var2;
-	BYTE dummy_crew_level, dummy_max_crew;
-			/* Necessary for savegame backwards compatibility.
-			 * Unused during the game, only used during save/load.
-			 */
+	COUNT crew_level, max_crew;
+			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
+			 * crew_level indicates an infinite number of ships. */
 	BYTE energy_level, max_energy;
 	POINT loc;
 
@@ -115,9 +114,6 @@ typedef struct
 
 	STRING race_strings;
 	FRAME icons, melee_icon;
-	COUNT crew_level, max_crew;
-			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
-			 * crew_level indicates an infinite number of ships. */
 #define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_INFO;
 typedef SHIP_INFO *PSHIP_INFO;
@@ -164,10 +160,9 @@ typedef struct
 	BYTE days_left;
 			/* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
-	BYTE dummy_crew_level, dummy_max_crew;
-			/* Necessary for savegame backwards compatibility.
-			 * Unused during the game, only used during save/load.
-			 */
+	COUNT crew_level, max_crew;
+			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
+			 * crew_level indicates an infinite number of ships. */
 	BYTE energy_level, max_energy;
 	POINT loc;
 			/* Location of the fleet (center) */
@@ -175,9 +170,6 @@ typedef struct
 	STRING race_strings;
 			/* Race specific strings, see doc/devel/racestrings. */
 	FRAME icons, melee_icon;
-	COUNT crew_level, max_crew;
-			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
-			 * crew_level indicates an infinite number of ships. */
 
 	/*   -== The fields below this line are included in savegames. ==-   */
 

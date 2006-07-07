@@ -19,7 +19,9 @@
 #ifndef _STATE_H
 #define _STATE_H
 
+#include "port.h"
 #include "libs/compiler.h"
+#include <assert.h>
 
 extern void InitPlanetInfo (void);
 extern void UninitPlanetInfo (void);
@@ -67,8 +69,76 @@ void DeleteStateFile (int stateFile);
 DWORD LengthStateFile (GAME_STATE_FILE *fp);
 int ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
 int WriteStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
-int PutStateFileChar (char ch, GAME_STATE_FILE *fp);
 int SeekStateFile (GAME_STATE_FILE *fp, long offset, int whence);
+
+static inline COUNT
+sread_8 (PVOID fp, PBYTE v)
+{
+	BYTE t;
+	if (!v) /* read value ignored */
+		v = &t;
+	return ReadStateFile (v, 1, 1, fp);
+}
+
+static inline COUNT
+sread_16 (PVOID fp, PUWORD v)
+{
+	UWORD t;
+	if (!v) /* read value ignored */
+		v = &t;
+	return ReadStateFile (v, 2, 1, fp);
+}
+
+static inline COUNT
+sread_32 (PVOID fp, PDWORD v)
+{
+	DWORD t;
+	if (!v) /* read value ignored */
+		v = &t;
+	return ReadStateFile (v, 4, 1, fp);
+}
+
+static inline COUNT
+sread_a32 (PVOID fp, PDWORD ar, COUNT count)
+{
+	assert (ar != NULL);
+
+	for ( ; count > 0; --count, ++ar)
+	{
+		if (sread_32 (fp, ar) != 1)
+			return 0;
+	}
+	return 1;
+}
+
+static inline COUNT
+swrite_8 (PVOID fp, BYTE v)
+{
+	return WriteStateFile (&v, 1, 1, fp);
+}
+
+static inline COUNT
+swrite_16 (PVOID fp, UWORD v)
+{
+	return WriteStateFile (&v, 2, 1, fp);
+}
+
+static inline COUNT
+swrite_32 (PVOID fp, DWORD v)
+{
+	return WriteStateFile (&v, 4, 1, fp);
+}
+
+static inline COUNT
+swrite_a32 (PVOID fp, PDWORD ar, COUNT count)
+{
+	for ( ; count > 0; --count, ++ar)
+	{
+		if (swrite_32 (fp, *ar) != 1)
+			return 0;
+	}
+	return 1;
+}
 
 #endif /* _STATE_H */
 

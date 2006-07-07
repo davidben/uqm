@@ -43,7 +43,7 @@ static RACE_DESC druuge_desc =
 		FIRES_FORE,
 		17, /* Super Melee cost */
 		1400 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			9500, 2792,
@@ -51,7 +51,6 @@ static RACE_DESC druuge_desc =
 		(STRING)DRUUGE_RACE_STRINGS,
 		(FRAME)DRUUGE_ICON_MASK_PMAP_ANIM,
 		(FRAME)DRUUGE_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

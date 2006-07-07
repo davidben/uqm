@@ -43,7 +43,7 @@ static RACE_DESC spathi_desc =
 		FIRES_FORE | FIRES_AFT | SEEKING_SPECIAL | DONT_CHASE,
 		18, /* Super Melee cost */
 		1000 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			2549, 3600,
@@ -51,7 +51,6 @@ static RACE_DESC spathi_desc =
 		(STRING)SPATHI_RACE_STRINGS,
 		(FRAME)SPATHI_ICON_MASK_PMAP_ANIM,
 		(FRAME)SPATHI_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

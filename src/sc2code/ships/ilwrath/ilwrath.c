@@ -45,7 +45,7 @@ static RACE_DESC ilwrath_desc =
 		FIRES_FORE,
 		10, /* Super Melee cost */
 		1410 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			48, 1700,
@@ -53,7 +53,6 @@ static RACE_DESC ilwrath_desc =
 		(STRING)ILWRATH_RACE_STRINGS,
 		(FRAME)ILWRATH_ICON_MASK_PMAP_ANIM,
 		(FRAME)ILWRATH_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

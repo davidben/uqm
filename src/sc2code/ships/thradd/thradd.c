@@ -46,7 +46,7 @@ static RACE_DESC thraddash_desc =
 		FIRES_FORE,
 		10, /* Super Melee cost */
 		833 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			2535, 8358,
@@ -54,7 +54,6 @@ static RACE_DESC thraddash_desc =
 		(STRING)THRADDASH_RACE_STRINGS,
 		(FRAME)THRADDASH_ICON_MASK_PMAP_ANIM,
 		(FRAME)THRADDASH_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

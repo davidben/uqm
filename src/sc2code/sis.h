@@ -196,6 +196,8 @@ enum
 #define STATUS_MESSAGE_WIDTH 60
 #define STATUS_MESSAGE_HEIGHT 7
 
+#define SIS_NAME_SIZE 16
+
 typedef struct
 {
 	SDWORD log_x, log_y;
@@ -216,9 +218,9 @@ typedef struct
 
 	COUNT ElementAmounts[NUM_ELEMENT_CATEGORIES];
 
-	UNICODE ShipName[16];
-	UNICODE CommanderName[16];
-	UNICODE PlanetName[16];
+	UNICODE ShipName[SIS_NAME_SIZE];
+	UNICODE CommanderName[SIS_NAME_SIZE];
+	UNICODE PlanetName[SIS_NAME_SIZE];
 } SIS_STATE;
 typedef SIS_STATE *PSIS_STATE;
 

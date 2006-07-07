@@ -924,13 +924,17 @@ typedef struct
 	VELOCITY_DESC velocity;
 
 	DWORD BattleGroupRef;
-	QUEUE avail_race_q, npc_built_ship_q;
+	QUEUE avail_race_q;
+	QUEUE npc_built_ship_q;
+			// Non-player-character list of ships (during encounter)
+			//   or list of groups present in solarsys (during IP)
 	QUEUE encounter_q;
 	QUEUE built_ship_q;
 			/* Queue of SIS escort ships */
 
 	BYTE GameState[(NUM_GAME_STATE_BITS + 7) >> 3];
 } GAME_STATE;
+typedef GAME_STATE *PGAME_STATE;
 
 typedef struct
 {

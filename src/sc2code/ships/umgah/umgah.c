@@ -45,7 +45,7 @@ static RACE_DESC umgah_desc =
 		FIRES_FORE | IMMEDIATE_WEAPON,
 		7, /* Super Melee cost */
 		833 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			1798, 6000,
@@ -53,7 +53,6 @@ static RACE_DESC umgah_desc =
 		(STRING)UMGAH_RACE_STRINGS,
 		(FRAME)UMGAH_ICON_MASK_PMAP_ANIM,
 		(FRAME)UMGAH_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

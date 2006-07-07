@@ -46,7 +46,7 @@ static RACE_DESC syreen_desc =
 		FIRES_FORE,
 		13, /* Super Melee cost */
 		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, SYREEN_MAX_CREW_SIZE,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			0, 0,
@@ -54,7 +54,6 @@ static RACE_DESC syreen_desc =
 		(STRING)SYREEN_RACE_STRINGS,
 		(FRAME)SYREEN_ICON_MASK_PMAP_ANIM,
 		(FRAME)SYREEN_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, SYREEN_MAX_CREW_SIZE,
 	},
 	{
 		MAX_THRUST,

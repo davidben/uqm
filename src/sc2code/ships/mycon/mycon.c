@@ -46,7 +46,7 @@ static RACE_DESC mycon_desc =
 		FIRES_FORE | SEEKING_WEAPON,
 		21, /* Super Melee cost */
 		1070 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			6392, 2200,
@@ -54,7 +54,6 @@ static RACE_DESC mycon_desc =
 		(STRING)MYCON_RACE_STRINGS,
 		(FRAME)MYCON_ICON_MASK_PMAP_ANIM,
 		(FRAME)MYCON_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

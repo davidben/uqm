@@ -50,7 +50,7 @@ static RACE_DESC samatra_desc =
 		/* FIRES_FORE | */ IMMEDIATE_WEAPON | CREW_IMMUNE,
 		16, /* Super Melee cost */
 		0, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			0, 0,
@@ -58,7 +58,6 @@ static RACE_DESC samatra_desc =
 		(STRING)0,
 		(FRAME)0,
 		(FRAME)0,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

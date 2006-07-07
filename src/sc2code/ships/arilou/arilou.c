@@ -45,7 +45,7 @@ static RACE_DESC arilou_desc =
 		/* FIRES_FORE | */ IMMEDIATE_WEAPON,
 		16, /* Super Melee cost */
 		250 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			438, 6372,
@@ -53,7 +53,6 @@ static RACE_DESC arilou_desc =
 		(STRING)ARILOU_RACE_STRINGS,
 		(FRAME)ARILOU_ICON_MASK_PMAP_ANIM,
 		(FRAME)ARILOU_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

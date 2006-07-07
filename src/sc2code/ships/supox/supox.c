@@ -45,7 +45,7 @@ static RACE_DESC supox_desc =
 		FIRES_FORE,
 		16, /* Super Melee cost */
 		333 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			7468, 9246,
@@ -53,7 +53,6 @@ static RACE_DESC supox_desc =
 		(STRING)SUPOX_RACE_STRINGS,
 		(FRAME)SUPOX_ICON_MASK_PMAP_ANIM,
 		(FRAME)SUPOX_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,

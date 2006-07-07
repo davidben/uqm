@@ -38,10 +38,94 @@ static BYTE LastEncGroup;
 
 typedef struct
 {
-	BYTE NumGroups, day_index, month_index;
+	BYTE NumGroups;
+	BYTE day_index, month_index;
 	COUNT star_index, year_index;
+			// day_index, month_index, year_index specify when
+			//   random groups expire (if you were to leave the system
+			//   by going to HSpace and stay there till such time)
+			// star_index is the index of a star this group header
+			//   applies to; ~0 means uninited
 	DWORD GroupOffset[MAX_BATTLE_GROUPS + 1];
+			// Absolute offsets of group definitions in a state file
+			// Group 0 is actually a list of groups present in solarsys
+			// Groups 1..max are definitions of actual battle groups
+			//    containing ships composition and status
+
+	// Each group has the following format:
+	// 1 byte, RaceType (LastEncGroup in Group 0)
+	// 1 byte, NumShips
+	// Ships follow:
+	// 1 byte, RaceType
+	// 16 bytes, part of SHIP_FRAGMENT struct
+
 } GROUP_HEADER;
+
+static void
+ReadGroupHeader (PVOID fp, GROUP_HEADER* pGH)
+{
+	sread_8   (fp, &pGH->NumGroups);
+	sread_8   (fp, &pGH->day_index);
+	sread_8   (fp, &pGH->month_index);
+	sread_8   (fp, NULL); /* padding */
+	sread_16  (fp, &pGH->star_index);
+	sread_16  (fp, &pGH->year_index);
+	sread_a32 (fp, pGH->GroupOffset, MAX_BATTLE_GROUPS + 1);
+}
+
+static void
+WriteGroupHeader (PVOID fp, GROUP_HEADER* pGH)
+{
+	swrite_8   (fp, pGH->NumGroups);
+	swrite_8   (fp, pGH->day_index);
+	swrite_8   (fp, pGH->month_index);
+	swrite_8   (fp, 0); /* padding */
+	swrite_16  (fp, pGH->star_index);
+	swrite_16  (fp, pGH->year_index);
+	swrite_a32 (fp, pGH->GroupOffset, MAX_BATTLE_GROUPS + 1);
+}
+
+static void
+ReadShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
+{
+	BYTE tmpb;
+
+	// Read SHIP_FRAGMENT elements
+	sread_16 (fp, &FragPtr->s.Player);
+	sread_8  (fp, &FragPtr->s.Captain);
+	sread_8  (fp, NULL); /* padding */
+	// Read SHIP_INFO elements
+	sread_16 (fp, &FragPtr->ShipInfo.ship_flags);
+	sread_8  (fp, &FragPtr->ShipInfo.var1);
+	sread_8  (fp, &FragPtr->ShipInfo.var2);
+	sread_8  (fp, &tmpb);
+	FragPtr->ShipInfo.crew_level = tmpb;
+	sread_8  (fp, &tmpb);
+	FragPtr->ShipInfo.max_crew = tmpb;
+	sread_8  (fp, &FragPtr->ShipInfo.energy_level);
+	sread_8  (fp, &FragPtr->ShipInfo.max_energy);
+	sread_16 (fp, &FragPtr->ShipInfo.loc.x);
+	sread_16 (fp, &FragPtr->ShipInfo.loc.y);
+}
+
+static void
+WriteShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
+{
+	// Write SHIP_FRAGMENT elements
+	swrite_16 (fp, FragPtr->s.Player);
+	swrite_8  (fp, FragPtr->s.Captain);
+	swrite_8  (fp, 0); /* padding */
+	// Write SHIP_INFO elements
+	swrite_16 (fp, FragPtr->ShipInfo.ship_flags);
+	swrite_8  (fp, FragPtr->ShipInfo.var1);
+	swrite_8  (fp, FragPtr->ShipInfo.var2);
+	swrite_8  (fp, FragPtr->ShipInfo.crew_level);
+	swrite_8  (fp, FragPtr->ShipInfo.max_crew);
+	swrite_8  (fp, FragPtr->ShipInfo.energy_level);
+	swrite_8  (fp, FragPtr->ShipInfo.max_energy);
+	swrite_16 (fp, FragPtr->ShipInfo.loc.x);
+	swrite_16 (fp, FragPtr->ShipInfo.loc.y);
+}
 
 void
 InitGroupInfo (BOOLEAN FirstTime)
@@ -56,14 +140,16 @@ InitGroupInfo (BOOLEAN FirstTime)
 		GH.NumGroups = 0;
 		GH.star_index = (COUNT)~0;
 		GH.GroupOffset[0] = 0;
-		WriteStateFile (&GH, sizeof (GH), 1, fp);
+		WriteGroupHeader (fp, &GH);
 
 		CloseStateFile (fp);
 	}
 
 	if (FirstTime && (fp = OpenStateFile (DEFGRPINFO_FILE, "wb")))
 	{
-		PutStateFileChar (0, fp);
+		// Group headers cannot start with offset 0 in
+		// defined group info file, so bump it
+		swrite_8 (fp, 0);
 
 		CloseStateFile (fp);
 	}
@@ -297,11 +383,11 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		RaceType = GET_RACE_ID (FragPtr);
 		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
-		WriteStateFile (&RaceType, sizeof (RaceType), 1, fp);
+		swrite_8 (fp, RaceType);
 		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 	SeekStateFile (fp, offset, SEEK_SET);
-	WriteStateFile (pGH, sizeof (*pGH), 1, fp);
+	WriteGroupHeader (fp, pGH);
 #ifdef DEBUG_GROUPS
 	log_add (log_Debug, "1)FlushGroupInfo(%lu): WG = %u(%lu), NG = %u, "
 			"SI = %u", offset, which_group, pGH->GroupOffset[which_group],
@@ -311,22 +397,20 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 	NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
 
 	if (which_group != GROUP_LIST)
-	{
-		SeekStateFile (fp, pGH->GroupOffset[which_group]
-				+ sizeof (LastEncGroup), SEEK_SET);
+	{	// skip RaceType
+		SeekStateFile (fp, pGH->GroupOffset[which_group] + 1, SEEK_SET);
 	}
 	else
 	{
 		SeekStateFile (fp, pGH->GroupOffset[0], SEEK_SET);
-		WriteStateFile (&LastEncGroup, sizeof (LastEncGroup), 1, fp);
+		swrite_8 (fp, LastEncGroup);
 	}
-	WriteStateFile (&NumShips, sizeof (NumShips), 1, fp);
+	swrite_8 (fp, NumShips);
 
 	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 	while (NumShips--)
 	{
 		HSTARSHIP hNextShip;
-		PBYTE Ptr;
 
 		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip
@@ -334,7 +418,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 		hNextShip = _GetSuccLink (FragPtr);
 
 		RaceType = GET_RACE_ID (FragPtr);
-		WriteStateFile (&RaceType, sizeof (RaceType), 1, fp);
+		swrite_8 (fp, RaceType);
 
 #ifdef DEBUG_GROUPS
 		if (which_group == GROUP_LIST)
@@ -346,9 +430,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 					GET_GROUP_MISSION (FragPtr),
 					GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
-		Ptr = (PBYTE)&FragPtr->RaceDescPtr;
-		WriteStateFile (Ptr,
-				((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1, fp);
+		WriteShipFragment (fp, FragPtr);
 		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
@@ -372,7 +454,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		SHIP_FRAGMENTPTR FragPtr;
 
 		SeekStateFile (fp, offset, SEEK_SET);
-		ReadStateFile (&GH, sizeof (GH), 1, fp);
+		ReadGroupHeader (fp, &GH);
 #ifdef DEBUG_GROUPS
 		log_add (log_Debug, "GetGroupInfo(%lu): %u(%lu) out of %u", offset,
 				which_group, GH.GroupOffset[which_group], GH.NumGroups);
@@ -402,11 +484,12 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 							"date %u/%u/%u!", month_index, day_index,
 							year_index);
 #endif /* DEBUG_GROUPS */
+				// Erase random groups (out of date)
 				fp = OpenStateFile (RANDGRPINFO_FILE, "wb");
 				GH.NumGroups = 0;
 				GH.star_index = (COUNT)~0;
 				GH.GroupOffset[0] = 0;
-				WriteStateFile (&GH, sizeof (GH), 1, fp);
+				WriteGroupHeader (fp, &GH);
 			}
 			else
 			{
@@ -417,8 +500,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 						continue;
 
 					SeekStateFile (fp, GH.GroupOffset[which_group], SEEK_SET);
-					ReadStateFile (&RaceType, sizeof (RaceType), 1, fp);
-					ReadStateFile (&NumShips, sizeof (NumShips), 1, fp);
+					sread_8 (fp, &RaceType);
+					sread_8 (fp, &NumShips);
 
 					if (NumShips)
 					{
@@ -516,7 +599,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			if (which_group == GROUP_LIST)
 			{
 				SeekStateFile (fp, GH.GroupOffset[0], SEEK_SET);
-				ReadStateFile (&LastEncGroup, sizeof (LastEncGroup), 1, fp);
+				sread_8 (fp, &LastEncGroup);
 
 				if (LastEncGroup)
 				{
@@ -536,25 +619,20 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			}
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 
-			SeekStateFile (fp, GH.GroupOffset[which_group]
-					+ sizeof (LastEncGroup), SEEK_SET);
-
-			ReadStateFile (&NumShips, sizeof (NumShips), 1, fp);
+			// skip RaceType
+			SeekStateFile (fp, GH.GroupOffset[which_group] + 1, SEEK_SET);
+			
+			sread_8 (fp, &NumShips);
 			while (NumShips--)
 			{
-				PBYTE Ptr;
-
-				ReadStateFile (&RaceType, sizeof (RaceType), 1, fp);
+				sread_8 (fp, &RaceType);
 
 				hStarShip = CloneShipFragment (RaceType,
 						&GLOBAL (npc_built_ship_q), 0);
 
 				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
 						&GLOBAL (npc_built_ship_q), hStarShip);
-				Ptr = (PBYTE)&FragPtr->RaceDescPtr;
-				ReadStateFile (Ptr,
-						((PBYTE)&FragPtr->ShipInfo.race_strings) - Ptr, 1,
-						fp);
+				ReadShipFragment (fp, FragPtr);
 
 #ifdef DEBUG_GROUPS
 				if (which_group == GROUP_LIST)
@@ -625,12 +703,13 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 		if (offset == GROUPS_ADD_NEW)
 		{
 			offset = LengthStateFile (fp);
-			GH.NumGroups = 0;
-			GH.GroupOffset[0] = 0;
 			SeekStateFile (fp, offset, SEEK_SET);
-			WriteStateFile (&GH, sizeof (GH), 1, fp);
-			// XXX: It seems that GH is not completely initialised.
-			//      Some garbage is saved. -- SvdB
+			// XXX: All important fields are inited here, and the
+			//   rest are inited below
+			GH.NumGroups = 0;
+			GH.star_index = (COUNT)~0;
+			GH.GroupOffset[0] = 0;
+			WriteGroupHeader (fp, &GH);
 		}
 
 		if (which_group != GROUP_LIST)
@@ -642,7 +721,7 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 				which_group = GROUP_LIST;
 			}
 		}
-		ReadStateFile (&GH, sizeof (GH), 1, fp);
+		ReadGroupHeader (fp, &GH);
 
 #ifdef NEVER
 		if (GetHeadLink (&GLOBAL (npc_built_ship_q))

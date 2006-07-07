@@ -43,7 +43,7 @@ static RACE_DESC androsynth_desc =
 		FIRES_FORE | SEEKING_WEAPON,
 		15, /* Super Melee cost */
 		~0, /* Initial sphere of influence radius */
-		0, 0, /* Hack; old crew field */
+		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
 		{
 			MAX_X_UNIVERSE >> 1, MAX_Y_UNIVERSE >> 1,
@@ -51,7 +51,6 @@ static RACE_DESC androsynth_desc =
 		(STRING)ANDROSYNTH_RACE_STRINGS,
 		(FRAME)ANDROSYNTH_ICON_MASK_PMAP_ANIM,
 		(FRAME)ANDROSYNTH_MICON_MASK_PMAP_ANIM,
-		MAX_CREW, MAX_CREW,
 	},
 	{
 		MAX_THRUST,
