@@ -1,4 +1,7 @@
 Changes towards version 0.6:
+- Restructed and normalized savegame and game-state reading/writing code;
+  savegames are now compatible between same-endian 32- and 64-bit systems;
+  savegames from prior 64-bit builds cannot be used - Alex
 - (Unix build scripts) Failed mkdep doesn't result in empty .d files
   anymore. Now using the gcc 3 "-MF" and "-MT" options. - SvdB
 - removed internal libmikmod, adding a dependancy on an external one - SvdB
