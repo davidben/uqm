@@ -128,7 +128,10 @@ err:
 
 wchar_t
 getCharFromStringN(const unsigned char **ptr, const unsigned char *end) {
-	int numBytes;
+	size_t numBytes;
+
+	if (*ptr == end)
+		goto err;
 
 	if (**ptr < 0x80) {
 		numBytes = 1;
