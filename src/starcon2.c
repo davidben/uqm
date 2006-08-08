@@ -661,7 +661,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 			}
 			case 'g':
 			{
-				int err = parseFloatOption(optarg, &options->gamma,
+				int err = parseFloatOption (optarg, &options->gamma,
 						"gamma correction");
 				if (err)
 					badArg = TRUE;
@@ -897,22 +897,22 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "The following options can take either '3do' or 'pc' "
 			"as an option:");
 	log_add (log_User, "  -m, --music : Music version (default %s)",
-			PC_3DO_optString(defaultOptions->whichMusic));
+			PC_3DO_optString (defaultOptions->whichMusic));
 	log_add (log_User, "  -i, --intro : Intro/ending version (default %s)",
-			PC_3DO_optString(defaultOptions->whichIntro));
+			PC_3DO_optString (defaultOptions->whichIntro));
 	log_add (log_User, "  --cscan     : coarse-scan display, pc=text, "
 			"3do=hieroglyphs (default %s)",
-			PC_3DO_optString(defaultOptions->whichCoarseScan));
+			PC_3DO_optString (defaultOptions->whichCoarseScan));
 	log_add (log_User, "  --menu      : menu type, pc=text, 3do=graphical "
 			"(default %s)", PC_3DO_optString(defaultOptions->whichMenu));
 	log_add (log_User, "  --font      : font types and colors (default %s)",
-			PC_3DO_optString(defaultOptions->whichFonts));
+			PC_3DO_optString (defaultOptions->whichFonts));
 	log_add (log_User, "  --shield    : slave shield type; pc=static, "
 			"3do=throbbing (default %s)",
-			PC_3DO_optString(defaultOptions->whichShield));
+			PC_3DO_optString (defaultOptions->whichShield));
 	log_add (log_User, "  --scroll    : ff/frev during comm.  pc=per-page, "
 			"3do=smooth (default %s)",
-			PC_3DO_optString(defaultOptions->smoothScroll));
+			PC_3DO_optString (defaultOptions->smoothScroll));
 	
 	log_setOutput (old);
 }
