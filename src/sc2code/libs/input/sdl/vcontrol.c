@@ -23,6 +23,9 @@ typedef struct vcontrol_keypool {
 	struct vcontrol_keypool *next;
 } keypool;
 
+
+#ifdef HAVE_JOYSTICK
+
 typedef struct vcontrol_joystick_axis {
 	keybinding *neg, *pos;
 	int polarity;
@@ -42,9 +45,12 @@ typedef struct vcontrol_joystick {
 	hat_type *hats;
 } joystick;
 
-static keybinding *bindings[SDLK_LAST];
 static joystick *joysticks;
+
+#endif /* HAVE_JOYSTICK */
+
 static int joycount;
+static keybinding *bindings[SDLK_LAST];
 
 static keypool *pool;
 static VControl_NameBinding *nametable;
@@ -90,6 +96,8 @@ free_key_pool (keypool *x)
 		vctrl_free (x);
 	}
 }
+
+#ifdef HAVE_JOYSTICK
 
 static void
 create_joystick (int index)
@@ -162,6 +170,8 @@ destroy_joystick (int index)
 	}
 }
 
+#endif /* HAVE_JOYSTICK */
+
 static void
 key_init (void)
 {
@@ -169,6 +179,8 @@ key_init (void)
 	pool = allocate_key_chunk ();
 	for (i = 0; i < SDLK_LAST; i++)
 		bindings[i] = NULL;
+
+#ifdef HAVE_JOYSTICK
 	/* Prepare for possible joystick controls.  We don't actually
 	   GRAB joysticks unless we're asked to make a joystick
 	   binding, though. */
@@ -188,6 +200,9 @@ key_init (void)
 	{
 		joysticks = NULL;
 	}
+#else
+	joycount = 0;
+#endif /* HAVE_JOYSTICK */
 }
 
 static void
@@ -198,9 +213,12 @@ key_uninit (void)
 	for (i = 0; i < SDLK_LAST; i++)
 		bindings[i] = NULL;
 	pool = NULL;
+
+#ifdef HAVE_JOYSTICK
 	for (i = 0; i < joycount; i++)
 		destroy_joystick (i);
 	vctrl_free (joysticks);
+#endif /* HAVE_JOYSTICK */
 }
 
 static void
@@ -232,12 +250,14 @@ VControl_Uninit (void)
 int
 VControl_SetJoyThreshold (int port, int threshold)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joysticks[port].threshold = threshold;
 		return 0;
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Warning, "VControl_SetJoyThreshold passed illegal port %d", port);
 		return -1;
@@ -369,6 +389,8 @@ VControl_AddBinding (SDL_Event *e, int *target)
 	case SDL_KEYDOWN:
 		result = VControl_AddKeyBinding (e->key.keysym.sym, target);
 		break;
+
+#ifdef HAVE_JOYSTICK
 	case SDL_JOYAXISMOTION:
 		result = VControl_AddJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
 		break;
@@ -378,6 +400,8 @@ VControl_AddBinding (SDL_Event *e, int *target)
 	case SDL_JOYBUTTONDOWN:
 		result = VControl_AddJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
 		break;
+#endif /* HAVE_JOYSTICK */
+
 	default:
 		log_add (log_Warning, "VControl_AddBinding didn't understand argument event");
 		result = -1;
@@ -394,6 +418,8 @@ VControl_RemoveBinding (SDL_Event *e, int *target)
 	case SDL_KEYDOWN:
 		VControl_RemoveKeyBinding (e->key.keysym.sym, target);
 		break;
+
+#ifdef HAVE_JOYSTICK
 	case SDL_JOYAXISMOTION:
 		VControl_RemoveJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
 		break;
@@ -403,6 +429,8 @@ VControl_RemoveBinding (SDL_Event *e, int *target)
 	case SDL_JOYBUTTONDOWN:
 		VControl_RemoveJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
 		break;
+#endif /* HAVE_JOYSTICK */
+
 	default:
 		log_add (log_Warning, "VControl_RemoveBinding didn't understand argument event");
 		break;
@@ -433,6 +461,7 @@ VControl_RemoveKeyBinding (SDLKey symbol, int *target)
 int
 VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -461,6 +490,7 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
@@ -471,6 +501,7 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 void
 VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -497,6 +528,7 @@ VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
@@ -505,6 +537,7 @@ VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 int
 VControl_AddJoyButtonBinding (int port, int button, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -522,6 +555,7 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
@@ -531,6 +565,7 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 void
 VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -546,6 +581,7 @@ VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
@@ -554,6 +590,7 @@ VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 int
 VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -591,6 +628,7 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
 		return -1;
@@ -600,6 +638,7 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 void
 VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target)
 {
+#ifdef HAVE_JOYSTICK
 	if (port >= 0 && port < joycount)
 	{
 		joystick *j = &joysticks[port];
@@ -634,6 +673,7 @@ VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target)
 		}
 	}
 	else
+#endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
 	}
@@ -661,22 +701,27 @@ VControl_ProcessKeyUp (SDLKey symbol)
 void
 VControl_ProcessJoyButtonDown (int port, int button)
 {
+#ifdef HAVE_JOYSTICK
 	if (!joysticks[port].stick)
 		return;
 	activate (joysticks[port].buttons[button]);
+#endif /* HAVE_JOYSTICK */
 }
 
 void
 VControl_ProcessJoyButtonUp (int port, int button)
 {
+#ifdef HAVE_JOYSTICK
 	if (!joysticks[port].stick)
 		return;
 	deactivate (joysticks[port].buttons[button]);
+#endif /* HAVE_JOYSTICK */
 }
 
 void
 VControl_ProcessJoyAxis (int port, int axis, int value)
 {
+#ifdef HAVE_JOYSTICK
 	int t;
 	if (!joysticks[port].stick)
 		return;
@@ -717,11 +762,13 @@ VControl_ProcessJoyAxis (int port, int axis, int value)
 		}
 		joysticks[port].axes[axis].polarity = 0;
 	}
+#endif /* HAVE_JOYSTICK */
 }
 
 void
 VControl_ProcessJoyHat (int port, int which, Uint8 value)
 {
+#ifdef HAVE_JOYSTICK
 	Uint8 old;
 	if (!joysticks[port].stick)
 		return;
@@ -743,6 +790,7 @@ VControl_ProcessJoyHat (int port, int which, Uint8 value)
 	if ((old & SDL_HAT_DOWN) && !(value & SDL_HAT_DOWN))
 		deactivate (joysticks[port].hats[which].down);
 	joysticks[port].hats[which].last = value;
+#endif /* HAVE_JOYSTICK */
 }
 
 void
@@ -780,6 +828,8 @@ VControl_HandleEvent (const SDL_Event *e)
 		case SDL_KEYUP:
 			VControl_ProcessKeyUp (e->key.keysym.sym);
 			break;
+
+#ifdef HAVE_JOYSTICK
 		case SDL_JOYAXISMOTION:
 			VControl_ProcessJoyAxis (e->jaxis.which, e->jaxis.axis, e->jaxis.value);
 			break;
@@ -796,6 +846,8 @@ VControl_HandleEvent (const SDL_Event *e)
 		case SDL_JOYBUTTONUP:
 			VControl_ProcessJoyButtonUp (e->jbutton.which, e->jbutton.button);
 			break;
+#endif /* HAVE_JOYSTICK */
+
 		default:
 			break;
 	}
@@ -865,6 +917,7 @@ VControl_Dump (FILE *out)
 		}
 	}
 
+#ifdef HAVE_JOYSTICK
 	/* Print out joystick bindings */
 	for (i = 0; i < joycount; i++)
 	{
@@ -902,6 +955,7 @@ VControl_Dump (FILE *out)
 			}
 		}
 	}
+#endif /* HAVE_JOYSTICK */
 
 #ifdef VCONTROL_DEBUG
 	/* Print out allocation data */
@@ -970,6 +1024,7 @@ VControl_NextBinding (VCONTROL_GESTURE *gesture)
 			}
 			if (done) return 1;
 		}
+#ifdef HAVE_JOYSTICK
 		else
 		{
 			int i = iter_device / 3;
@@ -1074,6 +1129,7 @@ VControl_NextBinding (VCONTROL_GESTURE *gesture)
 				if (done) return 1;
 			}
 		}
+#endif /* HAVE_JOYSTICK */
 	}
 	return 0;
 }
@@ -1321,6 +1377,7 @@ static Uint8
 consume_dir (parse_state *state)
 {
 	Uint8 result = 0;
+#ifdef HAVE_JOYSTICK
 	if (!stricmp (state->token, "left"))
 	{
 		result = SDL_HAT_LEFT;
@@ -1341,6 +1398,7 @@ consume_dir (parse_state *state)
 	{
 		expected_error (state, "left', 'right', 'up' or 'down");
 	}
+#endif /* HAVE_JOYSTICK */
 	next_token (state);
 	return result;
 }

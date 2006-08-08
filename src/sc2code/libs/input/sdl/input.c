@@ -203,7 +203,8 @@ TFB_InitInput (int driver, int flags)
 	GamePaused = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
-	
+
+#ifdef HAVE_JOYSTICK
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
 		log_add (log_Fatal, "Couldn't initialize joystick subsystem: %s",
@@ -223,6 +224,7 @@ TFB_InitInput (int driver, int flags)
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 	}
+#endif /* HAVE_JOYSTICK */
 
 	_in_character_mode = FALSE;
 	resetKeyboardState ();
