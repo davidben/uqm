@@ -132,7 +132,7 @@ main (int argc, char *argv[])
 
 	log_init (15);
 
-	optionsResult = preParseOptions(argc, argv, &options);
+	optionsResult = preParseOptions (argc, argv, &options);
 	if (optionsResult != 0)
 	{
 		// TODO: various uninitialisations
@@ -355,7 +355,7 @@ main (int argc, char *argv[])
 				&options.speechVolumeScale, "speech volume");
 	}		
 
-	optionsResult = parseOptions(argc, argv, &options);
+	optionsResult = parseOptions (argc, argv, &options);
 	if (optionsResult != 0)
 	{
 		// TODO: various uninitialisations
@@ -521,7 +521,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 	int optionIndex;
 	BOOLEAN badArg = FALSE;
 
-	options->addons = HMalloc(1 * sizeof (const char *));
+	options->addons = HMalloc (1 * sizeof (const char *));
 	options->addons[0] = NULL;
 	options->numAddons = 0;
 
