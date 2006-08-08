@@ -115,7 +115,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 	
-	log_add (log_Always, "Initializing OpenAL.");
+	log_add (log_Info, "Initializing OpenAL.");
 #ifdef WIN32
 	alcDevice = alcOpenDevice ((ALubyte*)"DirectSound3D");
 #else
@@ -124,7 +124,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 
 	if (!alcDevice)
 	{
-		log_add (log_Always, "Couldn't initialize OpenAL: %d",
+		log_add (log_Error, "Couldn't initialize OpenAL: %d",
 				alcGetError (NULL));
 		return -1;
 	}
@@ -135,7 +135,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	alcContext = alcCreateContext (alcDevice, NULL);
 	if (!alcContext)
 	{
-		log_add (log_Always, "Couldn't create OpenAL context: %d",
+		log_add (log_Error, "Couldn't create OpenAL context: %d",
 				alcGetError (alcDevice));
 		alcCloseDevice (alcDevice);
 		alcDevice = NULL;
@@ -144,7 +144,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 
 	alcMakeContextCurrent (alcContext);
 
-	log_add (log_Always, "OpenAL initialized.\n"
+	log_add (log_Info, "OpenAL initialized.\n"
 			"    version:     %s\n",
 			"    vendor:      %s\n",
 			"    renderer:    %s\n",
@@ -154,10 +154,10 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 			alcGetString (alcDevice, ALC_DEFAULT_DEVICE_SPECIFIER));
     //log_add (log_Info, "    extensions:  %s", alGetString (AL_EXTENSIONS));
 		
-	log_add (log_Always, "Initializing sound decoders.");
+	log_add (log_Info, "Initializing sound decoders.");
 	if (SoundDecoder_Init (flags, &formats))
 	{
-		log_add (log_Always, "Sound decoders initialization failed.");
+		log_add (log_Error, "Sound decoders initialization failed.");
 		alcMakeContextCurrent (NULL);
 		alcDestroyContext (alcContext);
 		alcContext = NULL;
@@ -165,7 +165,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		alcDevice = NULL;
 		return -1;
 	}
-	log_add (log_Always, "Sound decoders initialized.");
+	log_add (log_Error, "Sound decoders initialized.");
 
 	alListenerfv (AL_POSITION, listenerPos);
 	alListenerfv (AL_VELOCITY, listenerVel);

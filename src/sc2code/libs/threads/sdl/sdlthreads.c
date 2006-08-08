@@ -363,10 +363,10 @@ CreateMutex_SDL (void)
 #ifdef NAMED_SYNCHRO
 		/* logging depends on Mutexes, so we have to use the
 		 * non-threaded version instead */
-		log_add_nothread (log_Always, "Could not initialize mutex '%s':"
+		log_add_nothread (log_Fatal, "Could not initialize mutex '%s':"
 				"aborting.", name);
 #else
-		log_add_nothread (log_Always, "Could not initialize mutex:"
+		log_add_nothread (log_Fatal, "Could not initialize mutex:"
 				"aborting.");
 #endif
 		exit (EXIT_FAILURE);
@@ -452,10 +452,10 @@ CreateSemaphore_SDL (DWORD initial
 	if (sem->sem == NULL)
 	{
 #ifdef NAMED_SYNCHRO
-		log_add (log_Always, "Could not initialize semaphore '%s':"
+		log_add (log_Fatal, "Could not initialize semaphore '%s':"
 				" aborting.", name);
 #else
-		log_add (log_Always, "Could not initialize semaphore:"
+		log_add (log_Fatal, "Could not initialize semaphore:"
 				" aborting.");
 #endif
 		exit (EXIT_FAILURE);
@@ -533,10 +533,10 @@ CreateRecursiveMutex_SDL (void)
 	if (mtx->mutex == NULL)
 	{
 #ifdef NAMED_SYNCHRO
-		log_add (log_Always, "Could not initialize recursive "
+		log_add (log_Fatal, "Could not initialize recursive "
 				"mutex '%s': aborting.", name);
 #else
-		log_add (log_Always, "Could not initialize recursive "
+		log_add (log_Fatal, "Could not initialize recursive "
 				"mutex: aborting.");
 #endif
 		exit (EXIT_FAILURE);
@@ -630,10 +630,10 @@ CreateCondVar_SDL (void)
 	if ((cv->cond == NULL) || (cv->mutex == NULL))
 	{
 #ifdef NAMED_SYNCHRO
-		log_add (log_Always, "Could not initialize condition variable '%s':"
+		log_add (log_Fatal, "Could not initialize condition variable '%s':"
 				" aborting.", name);
 #else
-		log_add (log_Always, "Could not initialize condition variable:"
+		log_add (log_Fatal, "Could not initialize condition variable:"
 				" aborting.");
 #endif
 		exit (EXIT_FAILURE);

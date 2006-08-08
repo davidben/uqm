@@ -57,7 +57,7 @@ initAudio (sint32 driver, sint32 flags)
 #else
 	if (driver == audio_DRIVER_OPENAL)
 	{
-		log_add (log_Always, "OpenAL driver not compiled in, so using MixSDL");
+		log_add (log_Warning, "OpenAL driver not compiled in, so using MixSDL");
 		driver = audio_DRIVER_MIXSDL;
 	}
 	if (driver == audio_DRIVER_MIXSDL)
@@ -68,7 +68,7 @@ initAudio (sint32 driver, sint32 flags)
 
 	if (ret != 0)
 	{
-		log_add (log_Always, "Sound driver initialization failed.\n"
+		log_add (log_Fatal, "Sound driver initialization failed.\n"
 				"This may happen when a soundcard is "
 				"not present or not available.\n"
 				"NOTICE: Try running UQM with '--sound=none' option");

@@ -440,7 +440,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 
 	if (!LoadSummary (&loc_sd, in_fp))
 	{
-		log_add (log_Always, "Warning: Savegame is corrupt");
+		log_add (log_Error, "Warning: Savegame is corrupt");
 		res_CloseResFile (in_fp);
 		return FALSE;
 	}
@@ -465,7 +465,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 			1 /* time to destroy all races, plenty */ +
 			25 /* for cheaters */)
 	{
-		log_add (log_Always, "Warning: Savegame corrupt or from an "
+		log_add (log_Error, "Warning: Savegame corrupt or from "
 				"an incompatible platform.");
 		res_CloseResFile (in_fp);
 		return FALSE;
@@ -494,7 +494,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 	// But if it does happen, it needs to be reset to 0, since on load
 	// the clock semaphore is gauranteed to be 0
 	if (GLOBAL (GameClock.TimeCounter) != 0)
-		log_add (log_Always, "Warning: Game clock wasn't stopped during "
+		log_add (log_Warning, "Warning: Game clock wasn't stopped during "
 				"save, Savegame may be corrupt!\n");
 	GLOBAL (GameClock.TimeCounter) = 0;
 

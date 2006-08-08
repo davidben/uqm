@@ -38,7 +38,7 @@ static log_Entry queue[MAX_LOG_ENTRIES];
 static log_Entry msgNoThread;
 static char msgBuf[16384];
 
-static int maxLevel = log_Always;
+static int maxLevel = log_Error;
 static int maxStreamLevel = log_Debug;
 static int maxDisp = 10;
 static int qtotal = 0;

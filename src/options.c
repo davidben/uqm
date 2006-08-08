@@ -135,13 +135,13 @@ prepareContentDir (const char *contentDirName, const char **addons)
 	}
 	if (loc == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not find content.");
+		log_add (log_Fatal, "Fatal error: Could not find content.");
 		exit (EXIT_FAILURE);
 	}
 
 	if (expandPath (path, sizeof path, loc, EP_ALL_SYSTEM) == -1)
 	{
-		log_add (log_Always, "Fatal error: Could not expand path to content "
+		log_add (log_Fatal, "Fatal error: Could not expand path to content "
 				"directory: %s", strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -170,7 +170,7 @@ prepareConfigDir (const char *configDirName) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		log_add (log_Always, "Fatal error: Invalid path to config files.");
+		log_add (log_Fatal, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 	configDirName = buf;
@@ -190,7 +190,7 @@ prepareConfigDir (const char *configDirName) {
 			uio_MOUNT_TOP, NULL);
 	if (contentHandle == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not mount config dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not mount config dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -198,7 +198,7 @@ prepareConfigDir (const char *configDirName) {
 	configDir = uio_openDir (repository, "/", 0);
 	if (configDir == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not open config dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not open config dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -217,7 +217,7 @@ prepareSaveDir (void) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		log_add (log_Always, "Fatal error: Invalid path to config files.");
+		log_add (log_Fatal, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 
@@ -235,7 +235,7 @@ prepareSaveDir (void) {
 			//       "save" in the config dir.
 	if (saveDir == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not open save dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not open save dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -254,7 +254,7 @@ prepareMeleeDir (void) {
 	{
 		// Doesn't have to be fatal, but might mess up things when saving
 		// config files.
-		log_add (log_Always, "Fatal error: Invalid path to config files.");
+		log_add (log_Fatal, "Fatal error: Invalid path to config files.");
 		exit (EXIT_FAILURE);
 	}
 
@@ -270,7 +270,7 @@ prepareMeleeDir (void) {
 			//       "teams" in the config dir.
 	if (meleeDir == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not open melee teams dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not open melee teams dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -289,7 +289,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 			uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
 	if (contentHandle == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not mount content dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not mount content dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -297,7 +297,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	contentDir = uio_openDir (repository, "/", 0);
 	if (contentDir == NULL)
 	{
-		log_add (log_Always, "Fatal error: Could not open content dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not open content dir: %s",
 				strerror (errno));
 		exit (EXIT_FAILURE);
 	}
@@ -308,7 +308,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		if (addons[0] != NULL)
 		{	// addons were specified, but there's no /packages dir,
 			// let alone a /packages/addons dir.
-			log_add (log_Always, "Warning: There's no 'packages/addons' "
+			log_add (log_Error, "Warning: There's no 'packages/addons' "
 					"directory in the 'content' directory;\n\t'--addon' "
 					"options are ignored.");
 		}
@@ -323,7 +323,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	addonsDir = uio_openDirRelative (packagesDir, "addons", 0);
 	if (addonsDir == NULL)
 	{	// No addon dir found.
-		log_add (log_Always, "Warning: There's no 'packages/addons' "
+		log_add (log_Error, "Warning: There's no 'packages/addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
 				"options are ignored.");
 		uio_closeDir (packagesDir);
@@ -340,21 +340,21 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		
 		if (count != 1)
 		{
-			log_add (log_Always, "%d available addon packs.", count);
+			log_add (log_Info, "%d available addon packs.", count);
 		}
 		else
 		{
-			log_add (log_Always, "1 available addon pack.");
+			log_add (log_Info, "1 available addon pack.");
 		}
 		for (i = 0; i < count; i++)
 		{
-			log_add (log_Always, "    %d. %s", i+1,
+			log_add (log_Info, "    %d. %s", i+1,
 				availableAddons->names[i]);
 		}
 	}
 	else
 	{
-		log_add (log_Always, "0 available addon packs.");
+		log_add (log_Info, "0 available addon packs.");
 	}
 
 	for (; *addons != NULL; addons++)
@@ -362,7 +362,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
 		if (addonDir == NULL)
 		{
-			log_add (log_Always, "Warning: directory 'packages/addons/%s' "
+			log_add (log_Error, "Warning: directory 'packages/addons/%s' "
 					"not found; addon skipped.", *addons);
 			continue;
 		}
@@ -394,7 +394,7 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
 					contentHandle) == NULL)
 			{
-				log_add (log_Always, "Warning: Could not mount '%s': %s.",
+				log_add (log_Error, "Warning: Could not mount '%s': %s.",
 						dirList->names[i], strerror (errno));
 			}
 		}

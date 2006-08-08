@@ -1069,13 +1069,13 @@ GetNewList:
 		{
 			BOOLEAN deleteStatus;
 
-			log_add (log_Always, "Could not load '%s'", file);
+			log_add (log_Error, "Could not load '%s', deleting", file);
 
 			deleteStatus = DeleteResFile (meleeDir, file);
 			if (deleteStatus == FALSE)
 			{
 				// XXX: see bug #823
-				log_add (log_Always, "FATAL: Could not delete '%s'", file);
+				log_add (log_Fatal, "FATAL: Could not delete '%s'", file);
 				exit (EXIT_FAILURE);
 			}
 			goto GetNewList;

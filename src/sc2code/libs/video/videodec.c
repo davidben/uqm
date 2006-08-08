@@ -58,7 +58,7 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 
 	if (depth < 15 || depth > 32)
 	{
-		log_add (log_Always, "VideoDecoder_Init: "
+		log_add (log_Error, "VideoDecoder_Init: "
 				"Unsupported video depth %d", depth);
 		return false;
 	}
@@ -66,7 +66,7 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 	if ((Rmask & Gmask) || (Rmask & Bmask) || (Rmask & Amask) ||
 			(Gmask & Bmask) || (Gmask & Amask) || (Bmask & Amask))
 	{
-		log_add (log_Always, "VideoDecoder_Init: Invalid channel masks");
+		log_add (log_Error, "VideoDecoder_Init: Invalid channel masks");
 		return false;
 	}
 
@@ -88,7 +88,7 @@ VideoDecoder_Init (int flags, int depth, uint32 Rmask, uint32 Gmask,
 	{
 		if (!info->funcs->InitModule (flags))
 		{
-			log_add (log_Always, "VideoDecoder_Init(): "
+			log_add (log_Error, "VideoDecoder_Init(): "
 					"%s video decoder init failed",
 					info->funcs->GetName ());
 		}

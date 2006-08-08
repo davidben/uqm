@@ -270,7 +270,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 
 	if (MikMod_Init (""))
 	{
-		log_add (log_Always, "MikMod_Init() failed, %s", 
+		log_add (log_Error, "MikMod_Init() failed, %s", 
 			MikMod_strerror (MikMod_errno));
 		return false;
 	}

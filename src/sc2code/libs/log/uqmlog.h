@@ -35,12 +35,14 @@ extern void log_captureLines (int num);
 
 typedef enum
 {
-	log_Nothing = -1,
-	log_Always = 0,
+	log_Nothing = 0,
+	log_User,
+	log_Fatal = log_User,
+	log_Error,
 	log_Warning,
 	log_Info,
 	log_Debug,
-	log_Never,
+	log_All,
 
 } log_Level;
 

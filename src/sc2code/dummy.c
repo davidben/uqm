@@ -348,7 +348,7 @@ CaptureCodeRes (MEM_HANDLE hCode, PVOID pData, PVOID *ppLocData)
 
 	if (hCode == 0)
 	{
-		log_add (log_Always, "dummy.c::CaptureCodeRes() hCode==0! FATAL!");
+		log_add (log_Fatal, "dummy.c::CaptureCodeRes() hCode==0! FATAL!");
 		return(0);
 	}
 

@@ -42,7 +42,7 @@ AssignTask (ThreadFunction task_func, SDWORD stackSize, const char *name)
 			return task_array+i;
 		}
 	}
-	log_add (log_Always, "Task error!  Task array exhausted.  Check for thread leaks.");
+	log_add (log_Error, "Task error!  Task array exhausted.  Check for thread leaks.");
 	return NULL;
 }
 

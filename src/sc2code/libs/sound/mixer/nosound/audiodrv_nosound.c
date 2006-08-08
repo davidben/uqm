@@ -110,26 +110,26 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 	
-	log_add (log_Always, "Using nosound audio driver.");
-	log_add (log_Always, "Initializing mixer.");
+	log_add (log_Info, "Using nosound audio driver.");
+	log_add (log_Info, "Initializing mixer.");
 
 	if (!mixer_Init (nosound_freq, MIX_FORMAT_MAKE (1, 1),
 			MIX_QUALITY_LOW, MIX_FAKE_DATA))
 	{
-		log_add (log_Always, "Mixer initialization failed: %x",
+		log_add (log_Error, "Mixer initialization failed: %x",
 				mixer_GetError ());
 		return -1;
 	}
-	log_add (log_Always, "Mixer initialized.");
+	log_add (log_Info, "Mixer initialized.");
 
-	log_add (log_Always, "Initializing sound decoders.");
+	log_add (log_Info, "Initializing sound decoders.");
 	if (SoundDecoder_Init (flags, &formats))
 	{
-		log_add (log_Always, "Sound decoders initialization failed.");
+		log_add (log_Error, "Sound decoders initialization failed.");
 		mixer_Uninit ();
 		return -1;
 	}
-	log_add (log_Always, "Sound decoders initialized.");
+	log_add (log_Info, "Sound decoders initialized.");
 
 	*driver = noSound_Driver;
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)

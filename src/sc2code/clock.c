@@ -226,7 +226,7 @@ SuspendGameClock (void)
 {
 	if (!clock_mutex)
 	{
-		log_add (log_Always, "BUG: "
+		log_add (log_Fatal, "BUG: "
 				"Attempted to suspend non-existent game clock");
 #ifdef DEBUG
 		explode ();
@@ -247,7 +247,7 @@ ResumeGameClock (void)
 {
 	if (!clock_mutex)
 	{
-		log_add (log_Always, "BUG: "
+		log_add (log_Fatal, "BUG: "
 				"Attempted to resume non-existent game clock\n");
 #ifdef DEBUG
 		explode ();

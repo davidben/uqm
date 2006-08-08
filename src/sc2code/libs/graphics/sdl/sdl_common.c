@@ -64,14 +64,14 @@ TFB_Abort (void)
 void
 TFB_PreInit (void)
 {
-	log_add (log_Always, "Initializing base SDL functionality.");
-	log_add (log_Always, "Using SDL version %d.%d.%d (compiled with "
+	log_add (log_Info, "Initializing base SDL functionality.");
+	log_add (log_Info, "Using SDL version %d.%d.%d (compiled with "
 			"%d.%d.%d)", SDL_Linked_Version ()->major,
 			SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
 			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
-		log_add (log_Always, "Could not initialize SDL: %s.", SDL_GetError());
+		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
 }
@@ -90,7 +90,7 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 		result = TFB_GL_ConfigureVideo (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		log_add (log_Always, "OpenGL support not compiled in,"
+		log_add (log_Warning, "OpenGL support not compiled in,"
 				" so using pure SDL driver");
 		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
 #endif
@@ -127,7 +127,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 		result = TFB_GL_InitGraphics (driver, flags, width, height);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
-		log_add (log_Always, "OpenGL support not compiled in,"
+		log_add (log_Warning, "OpenGL support not compiled in,"
 				" so using pure SDL driver");
 		result = TFB_Pure_InitGraphics (driver, flags, width, height);
 #endif
@@ -507,7 +507,7 @@ TFB_ComputeFPS (void)
 	fps_counter += delta_time;
 	if (fps_counter > FPS_PERIOD)
 	{
-		log_add (log_Always, "fps %.2f, effective %.2f",
+		log_add (log_User, "fps %.2f, effective %.2f",
 				1000.0 / delta_time,
 				1000.0 * RenderedFrames / fps_counter);
 
@@ -801,12 +801,12 @@ TFB_FlushGraphics () // Only call from main thread!!
 				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
 							DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 				{
-					log_add (log_Always, "Could not provide requested mode: "
+					log_add (log_Error, "Could not provide requested mode: "
 							"reverting to last known driver.");
 					if (TFB_ReInitGraphics (oldDriver, DC.data.reinitvideo.flags,
 								DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 					{
-						log_add (log_Always, "Couldn't reinit at that point either."
+						log_add (log_Fatal, "Couldn't reinit at that point either."
 								" Your video has been somehow tied in knots.");
 						exit (EXIT_FAILURE);
 					}

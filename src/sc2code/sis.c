@@ -1543,7 +1543,7 @@ SetFlashRect (PRECT pRect, FRAME f)
 			flash_screen_frame = 0;
 		}
 		else
-			log_add (log_Always, "Couldn't locate flash_screen_rect");
+			log_add (log_Debug, "Couldn't locate flash_screen_rect");
 	}
 	
 	if (flash_rect.extent.width)

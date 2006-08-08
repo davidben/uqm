@@ -400,7 +400,7 @@ TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha)
 			hasalpha ? fmt->Amask : 0);
 	if (!new_surf)
 	{
-		log_add (log_Always, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
+		log_add (log_Fatal, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
 				SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
@@ -432,7 +432,7 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 
 	if (!new_surf)
 	{
-		log_add (log_Always, "TFB_DrawCanvas_New_ForScreen() INTERNAL PANIC:"
+		log_add (log_Fatal, "TFB_DrawCanvas_New_ForScreen() INTERNAL PANIC:"
 				"Failed to create TFB_Canvas: %s", SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
@@ -446,7 +446,7 @@ TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 8, 0, 0, 0, 0);
 	if (!new_surf)
 	{
-		log_add (log_Always, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
+		log_add (log_Fatal, "INTERNAL PANIC: Failed to create TFB_Canvas: %s",
 				SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
@@ -535,7 +535,7 @@ TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src_canvas, int angle)
 				src->format->Amask);
 	if (!newsurf)
 	{
-		log_add (log_Always, "TFB_DrawCanvas_New_RotationTarget()"
+		log_add (log_Fatal, "TFB_DrawCanvas_New_RotationTarget()"
 				" INTERNAL PANIC: Failed to create TFB_Canvas: %s",
 				SDL_GetError());
 		exit (EXIT_FAILURE);
@@ -597,7 +597,7 @@ TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas)
 	SDL_Surface *result = TFB_DisplayFormatAlpha ((SDL_Surface *)canvas);
 	if (result == NULL)
 	{
-		log_add (log_Always, "WARNING: Could not convert"
+		log_add (log_Debug, "WARNING: Could not convert"
 				" sprite-canvas to display format.");
 		return canvas;
 	}

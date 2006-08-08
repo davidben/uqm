@@ -189,7 +189,7 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		// We need the list to be sorted, as we binary search through it.
 		if (res <= lastResource)
 		{
-			log_add (log_Always, "Fatal: resource index '%s' is not sorted "
+			log_add (log_Fatal, "Fatal: resource index '%s' is not sorted "
 					"on the resource number, or contains a double entry. "
 					"Problem encountered on line %d.", fileName, lineNum);
 			explode ();

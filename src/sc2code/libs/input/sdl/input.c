@@ -122,7 +122,7 @@ initKeyConfig (void)
 			if (copyFile (contentDir, "starcon.key",
 				configDir, "keys.cfg") == -1)
 			{
-				log_add (log_Always, "Error: Could not copy default key config "
+				log_add (log_Fatal, "Error: Could not copy default key config "
 					"to user config dir: %s.", strerror (errno));
 				exit (EXIT_FAILURE);
 			}
@@ -131,7 +131,7 @@ initKeyConfig (void)
 			
 			if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
 			{
-				log_add (log_Always, "Error: Could not open keys.cfg");
+				log_add (log_Fatal, "Error: Could not open keys.cfg");
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -147,41 +147,41 @@ initKeyConfig (void)
 
 			if (VControl_GetValidCount () == 0)
 			{
-				log_add (log_Always, "\nI didn't understand a single line in your configuration file.");
-				log_add (log_Always, "This is likely because you're still using a 0.2 era or earlier keys.cfg.");
+				log_add (log_Error, "\nI didn't understand a single line in your configuration file.");
+				log_add (log_Error, "This is likely because you're still using a 0.2 era or earlier keys.cfg.");
 				do_rename = true;
 			}
 			if (VControl_GetConfigFileVersion () != VCONTROL_VERSION)
 			{
-				log_add (log_Always, "\nThe control scheme for UQM has changed since you last updated keys.cfg.");
-				log_add (log_Always, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
+				log_add (log_Error, "\nThe control scheme for UQM has changed since you last updated keys.cfg.");
+				log_add (log_Error, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
 				do_rename = true;
 			}
 
 			if (do_rename)
 			{
-				log_add (log_Always, "\nRenaming keys.cfg to keys.old and retrying.");
+				log_add (log_Error, "\nRenaming keys.cfg to keys.old and retrying.");
 
 				if (fileExists2 (configDir, "keys.old"))
 					uio_unlink (configDir, "keys.old");
 				if ((uio_rename (configDir, "keys.cfg", configDir, "keys.old")) == -1)
 				{
-					log_add (log_Always, "Error: Renaming failed!");
-					log_add (log_Always, "You must delete keys.cfg manually before you can run the game.");
+					log_add (log_Fatal, "Error: Renaming failed!");
+					log_add (log_Fatal, "You must delete keys.cfg manually before you can run the game.");
 					exit (EXIT_FAILURE);
 				}
 				continue;
 			}
 			
-			log_add (log_Always, "\nRepair your keys.cfg file to continue.");
+			log_add (log_Fatal, "\nRepair your keys.cfg file to continue.");
 			exit (EXIT_FAILURE);
 		}
 		
 		return;
 	}
 
-	log_add (log_Always, "Error: Something went wrong and we were looping again and again so aborting.");
-	log_add (log_Always, "Possible cause is your content dir not being up-to-date.");
+	log_add (log_Fatal, "Error: Something went wrong and we were looping again and again so aborting.");
+	log_add (log_Fatal, "Possible cause is your content dir not being up-to-date.");
 	exit (EXIT_FAILURE);
 }
 
@@ -206,7 +206,7 @@ TFB_InitInput (int driver, int flags)
 	
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
-		log_add (log_Always, "Couldn't initialize joystick subsystem: %s",
+		log_add (log_Fatal, "Couldn't initialize joystick subsystem: %s",
 				SDL_GetError());
 		exit (EXIT_FAILURE);
 	}

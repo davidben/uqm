@@ -106,7 +106,7 @@ mkdirhier (const char *path)
 		{
 			if (errno != ENOENT)
 			{
-				log_add (log_Always, "Can't stat %s: %s", buf,
+				log_add (log_Error, "Can't stat %s: %s", buf,
 						strerror (errno));
 				return -1;
 			}
@@ -132,7 +132,7 @@ mkdirhier (const char *path)
 	{
 		if (createDirectory (buf, 0777) == -1)
 		{
-			log_add (log_Always, "Error: Can't create %s: %s", buf,
+			log_add (log_Error, "Error: Can't create %s: %s", buf,
 					strerror (errno));
 			return -1;
 		}

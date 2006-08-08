@@ -81,9 +81,9 @@ struct options_struct {
 	float speechVolumeScale;
 };
 
-static int preParseOptions(int argc, char *argv[],
+static int preParseOptions (int argc, char *argv[],
 		struct options_struct *options);
-static int parseOptions(int argc, char *argv[],
+static int parseOptions (int argc, char *argv[],
 		struct options_struct *options);
 static void usage (FILE *out, const struct options_struct *defaultOptions);
 static int parseIntOption (const char *str, int *result,
@@ -91,7 +91,7 @@ static int parseIntOption (const char *str, int *result,
 static int parseFloatOption (const char *str, float *f,
 		const char *optName);
 static int parseVolume (const char *str, float *vol, const char *optName);
-static int InvalidArgument(const char *supplied, const char *opt_name);
+static int InvalidArgument (const char *supplied, const char *opt_name);
 static int Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt,
 		int *result);
 static const char *PC_3DO_optString (DWORD optMask);
@@ -144,7 +144,7 @@ main (int argc, char *argv[])
 		int i;
 		freopen (options.logFile, "w", stderr);
 		for (i = 0; i < argc; ++i)
-			log_add (log_Always, "argv[%d] = [%s]", i, argv[i]);
+			log_add (log_User, "argv[%d] = [%s]", i, argv[i]);
 	}
 
 	if (options.runMode == runMode_version)
@@ -155,7 +155,7 @@ main (int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 	
-	log_add (log_Always, "The Ur-Quan Masters v%d.%d.%d%s (compiled %s %s)\n"
+	log_add (log_User, "The Ur-Quan Masters v%d.%d.%d%s (compiled %s %s)\n"
 	        "This software comes with ABSOLUTELY NO WARRANTY;\n"
 			"for details see the included 'COPYING' file.\n",
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
@@ -325,7 +325,7 @@ main (int argc, char *argv[])
 		/* This is an unsigned, so no < 0 check is necessary */
 		if (PlayerOne >= NUM_TEMPLATES)
 		{
-			log_add (log_Always, "Illegal control template '%d' for Player One.", PlayerOne);
+			log_add (log_Error, "Illegal control template '%d' for Player One.", PlayerOne);
 			PlayerOne = CONTROL_TEMPLATE_KB_1;
 		}
 	}
@@ -335,23 +335,23 @@ main (int argc, char *argv[])
 		PlayerTwo = res_GetInteger ("config.player2control");
 		if (PlayerTwo >= NUM_TEMPLATES)
 		{
-			log_add (log_Always, "Illegal control template '%d' for Player Two.", PlayerTwo);
+			log_add (log_Error, "Illegal control template '%d' for Player Two.", PlayerTwo);
 			PlayerTwo = CONTROL_TEMPLATE_KB_2;
 		}
 	}
 	if (res_HasKey ("config.musicvol"))
 	{
-		parseVolume(res_GetString ("config.musicvol"), 
+		parseVolume (res_GetString ("config.musicvol"), 
 				&options.musicVolumeScale, "music volume");
 	}		
 	if (res_HasKey ("config.sfxvol"))
 	{
-		parseVolume(res_GetString ("config.sfxvol"), 
+		parseVolume (res_GetString ("config.sfxvol"), 
 				&options.sfxVolumeScale, "SFX volume");
 	}		
 	if (res_HasKey ("config.speechvol"))
 	{
-		parseVolume(res_GetString ("config.speechvol"), 
+		parseVolume (res_GetString ("config.speechvol"), 
 				&options.speechVolumeScale, "speech volume");
 	}		
 
@@ -476,7 +476,7 @@ static struct option longOptions[] =
 };
 
 static int
-preParseOptions(int argc, char *argv[], struct options_struct *options)
+preParseOptions (int argc, char *argv[], struct options_struct *options)
 {
 	/*
 	 *	"pre-process" the cmdline args looking for a -l ("logfile")
@@ -516,7 +516,7 @@ preParseOptions(int argc, char *argv[], struct options_struct *options)
 }
 
 static int
-parseOptions(int argc, char *argv[], struct options_struct *options)
+parseOptions (int argc, char *argv[], struct options_struct *options)
 {
 	int optionIndex;
 	BOOLEAN badArg = FALSE;
@@ -527,7 +527,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 
 	if (argc == 0)
 	{
-		log_add (log_Always, "Error: Bad command line.");
+		log_add (log_Fatal, "Error: Bad command line.");
 		return EXIT_FAILURE;
 	}
 
@@ -545,7 +545,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				int width, height;
 				if (sscanf (optarg, "%dx%d", &width, &height) != 2)
 				{
-					log_add (log_Always, "Error: invalid argument specified "
+					log_add (log_Fatal, "Error: invalid argument specified "
 							"as resolution.");
 					badArg = TRUE;
 					break;
@@ -575,7 +575,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 					options->gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;
 				else if (strcmp (optarg, "none") != 0)
 				{
-					InvalidArgument(optarg, "--scale or -c");
+					InvalidArgument (optarg, "--scale or -c");
 					badArg = TRUE;
 				}
 				break;
@@ -586,7 +586,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 					options->meleeScale = TFB_SCALE_STEP;
 				else
 				{
-					InvalidArgument(optarg, "--meleezoom or -b");
+					InvalidArgument (optarg, "--meleezoom or -b");
 					badArg = TRUE;
 				}
 				break;
@@ -601,7 +601,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				break;
 			case 'M':
 			{
-				int err = parseVolume(optarg, &options->musicVolumeScale,
+				int err = parseVolume (optarg, &options->musicVolumeScale,
 						"music volume");
 				if (err)
 					badArg = TRUE;
@@ -609,7 +609,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			}
 			case 'S':
 			{
-				int err = parseVolume(optarg, &options->sfxVolumeScale,
+				int err = parseVolume (optarg, &options->sfxVolumeScale,
 						"sfx volume");
 				if (err)
 					badArg = TRUE;
@@ -617,7 +617,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 			}
 			case 'T':
 			{
-				int err = parseVolume(optarg, &options->speechVolumeScale,
+				int err = parseVolume (optarg, &options->speechVolumeScale,
 						"speech volume");
 				if (err)
 					badArg = TRUE;
@@ -644,7 +644,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				else
 				{
-					InvalidArgument(optarg, "--audioquality or -q");
+					InvalidArgument (optarg, "--audioquality or -q");
 					badArg = TRUE;
 				}
 				break;
@@ -723,7 +723,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				else
 				{
-					log_add (log_Always, "Error: Invalid sound driver "
+					log_add (log_Fatal, "Error: Invalid sound driver "
 							"specified.");
 					badArg = TRUE;
 				}
@@ -755,7 +755,7 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			default:
-				log_add (log_Always, "Error: Invalid option '%s' not found.",
+				log_add (log_Fatal, "Error: Invalid option '%s' not found.",
 							longOptions[optionIndex].name);
 				badArg = TRUE;
 				break;
@@ -764,14 +764,14 @@ parseOptions(int argc, char *argv[], struct options_struct *options)
 
 	if (optind != argc)
 	{
-		log_add (log_Always, "\nError: Extra arguments found on the command "
+		log_add (log_Fatal, "\nError: Extra arguments found on the command "
 				"line.");
 		badArg = TRUE;
 	}
 
 	if (badArg)
 	{
-		log_add (log_Always, "Run with -h to see the allowed arguments.");
+		log_add (log_Fatal, "Run with -h to see the allowed arguments.");
 		return EXIT_FAILURE;
 	}
 
@@ -786,13 +786,13 @@ parseVolume (const char *str, float *vol, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
+		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	intVol = (int) strtol(str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
-		log_add (log_Always, "Error: Junk characters in volume specified "
+		log_add (log_Error, "Error: Junk characters in volume specified "
 				"for '%s'.", optName);
 		return -1;
 	}
@@ -821,13 +821,13 @@ parseIntOption (const char *str, int *result, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
+		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	temp = (int) strtol(str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
-		log_add (log_Always, "Error: Junk characters in argument '%s'.",
+		log_add (log_Error, "Error: Junk characters in argument '%s'.",
 				optName);
 		return -1;
 	}
@@ -844,13 +844,13 @@ parseFloatOption (const char *str, float *f, const char *optName)
 
 	if (str[0] == '\0')
 	{
-		log_add (log_Always, "Error: Invalid value for '%s'.", optName);
+		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
 	temp = (float) strtod(str, &endPtr);
 	if (*endPtr != '\0')
 	{
-		log_add (log_Always, "Error: Junk characters in argument '%s'.",
+		log_add (log_Error, "Error: Junk characters in argument '%s'.",
 				optName);
 		return -1;
 	}
@@ -865,52 +865,52 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	FILE *old = log_setOutput (out);
 	log_captureLines (LOG_CAPTURE_ALL);
 	
-	log_add (log_Always, "Options:");
-	log_add (log_Always, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
+	log_add (log_User, "Options:");
+	log_add (log_User, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
 			"works only with --opengl)");
-	log_add (log_Always, "  -f, --fullscreen (default off)");
-	log_add (log_Always, "  -o, --opengl (default off)");
-	log_add (log_Always, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
+	log_add (log_User, "  -f, --fullscreen (default off)");
+	log_add (log_User, "  -o, --opengl (default off)");
+	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
 			"hq or none (default) )");
-	log_add (log_Always, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
+	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
 			"default is 3do)");
-	log_add (log_Always, "  -s, --scanlines (default off)");
-	log_add (log_Always, "  -p, --fps (default off)");
-	log_add (log_Always, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
+	log_add (log_User, "  -s, --scanlines (default off)");
+	log_add (log_User, "  -p, --fps (default off)");
+	log_add (log_User, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
 			"causes no change)");
-	log_add (log_Always, "  -C, --configdir=CONFIGDIR");
-	log_add (log_Always, "  -n, --contentdir=CONTENTDIR");
-	log_add (log_Always, "  -M, --musicvol=VOLUME (0-100, default 100)");
-	log_add (log_Always, "  -S, --sfxvol=VOLUME (0-100, default 100)");
-	log_add (log_Always, "  -T, --speechvol=VOLUME (0-100, default 100)");
-	log_add (log_Always, "  -q, --audioquality=QUALITY (high, medium or low, "
+	log_add (log_User, "  -C, --configdir=CONFIGDIR");
+	log_add (log_User, "  -n, --contentdir=CONTENTDIR");
+	log_add (log_User, "  -M, --musicvol=VOLUME (0-100, default 100)");
+	log_add (log_User, "  -S, --sfxvol=VOLUME (0-100, default 100)");
+	log_add (log_User, "  -T, --speechvol=VOLUME (0-100, default 100)");
+	log_add (log_User, "  -q, --audioquality=QUALITY (high, medium or low, "
 			"default medium)");
-	log_add (log_Always, "  -u, --nosubtitles");
-	log_add (log_Always, "  -l, --logfile=FILE (sends console output to logfile "
+	log_add (log_User, "  -u, --nosubtitles");
+	log_add (log_User, "  -l, --logfile=FILE (sends console output to logfile "
 			"FILE)");
-	log_add (log_Always, "  --addon ADDON (using a specific addon; "
+	log_add (log_User, "  --addon ADDON (using a specific addon; "
 			"may be specified multiple times)");
-	log_add (log_Always, "  --sound=DRIVER (openal, mixsdl, none; default "
+	log_add (log_User, "  --sound=DRIVER (openal, mixsdl, none; default "
 			"mixsdl)");
-	log_add (log_Always, "  --stereosfx (enables positional sound effects, "
+	log_add (log_User, "  --stereosfx (enables positional sound effects, "
 			"currently only for openal)");
-	log_add (log_Always, "The following options can take either '3do' or 'pc' "
+	log_add (log_User, "The following options can take either '3do' or 'pc' "
 			"as an option:");
-	log_add (log_Always, "  -m, --music : Music version (default %s)",
+	log_add (log_User, "  -m, --music : Music version (default %s)",
 			PC_3DO_optString(defaultOptions->whichMusic));
-	log_add (log_Always, "  -i, --intro : Intro/ending version (default %s)",
+	log_add (log_User, "  -i, --intro : Intro/ending version (default %s)",
 			PC_3DO_optString(defaultOptions->whichIntro));
-	log_add (log_Always, "  --cscan     : coarse-scan display, pc=text, "
+	log_add (log_User, "  --cscan     : coarse-scan display, pc=text, "
 			"3do=hieroglyphs (default %s)",
 			PC_3DO_optString(defaultOptions->whichCoarseScan));
-	log_add (log_Always, "  --menu      : menu type, pc=text, 3do=graphical "
+	log_add (log_User, "  --menu      : menu type, pc=text, 3do=graphical "
 			"(default %s)", PC_3DO_optString(defaultOptions->whichMenu));
-	log_add (log_Always, "  --font      : font types and colors (default %s)",
+	log_add (log_User, "  --font      : font types and colors (default %s)",
 			PC_3DO_optString(defaultOptions->whichFonts));
-	log_add (log_Always, "  --shield    : slave shield type; pc=static, "
+	log_add (log_User, "  --shield    : slave shield type; pc=static, "
 			"3do=throbbing (default %s)",
 			PC_3DO_optString(defaultOptions->whichShield));
-	log_add (log_Always, "  --scroll    : ff/frev during comm.  pc=per-page, "
+	log_add (log_User, "  --scroll    : ff/frev during comm.  pc=per-page, "
 			"3do=smooth (default %s)",
 			PC_3DO_optString(defaultOptions->smoothScroll));
 	
@@ -920,9 +920,8 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 static int
 InvalidArgument (const char *supplied, const char *opt_name)
 {
-	log_add (log_Always, "Invalid argument '%s' to option %s.",
+	log_add (log_Fatal, "Invalid argument '%s' to option %s.",
 			supplied, opt_name);
-	log_add (log_Always, "Use -h to see the allowed arguments.");
 	return EXIT_FAILURE;
 }
 
@@ -932,7 +931,7 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 {
 	if (value == NULL)
 	{
-		log_add (log_Always, "Error: option '%s' requires a value.",
+		log_add (log_Error, "Error: option '%s' requires a value.",
 				optName);
 		return -1;
 	}
@@ -947,7 +946,7 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 		*result = OPT_PC;
 		return 0;
 	}
-	log_add (log_Always, "Error: Invalid option '%s %s' found.",
+	log_add (log_Error, "Error: Invalid option '%s %s' found.",
 			optName, value);
 	return -1;
 }

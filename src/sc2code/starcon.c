@@ -275,7 +275,7 @@ while (--ac > 0)
 	}
 	else
 	{
-		log_add (log_Always, "Kernel failed to load!");
+		log_add (log_Fatal, "Kernel failed to load!");
 	}
 	FreeKernel ();
 

@@ -111,14 +111,14 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 
-	log_add (log_Always, "Initializing SDL audio subsystem.");
+	log_add (log_Info, "Initializing SDL audio subsystem.");
 	if ((SDL_InitSubSystem(SDL_INIT_AUDIO)) == -1)
 	{
-		log_add (log_Always, "Couldn't initialize audio subsystem: %s",
+		log_add (log_Error, "Couldn't initialize audio subsystem: %s",
 				SDL_GetError());
 		return -1;
 	}
-	log_add (log_Always, "SDL audio subsystem initialized.");
+	log_add (log_Info, "SDL audio subsystem initialized.");
 	
 	if (flags & audio_QUALITY_HIGH)
 	{
@@ -143,10 +143,10 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 	desired.channels = 2;
 	desired.callback = mixer_MixChannels;
 	
-	log_add (log_Always, "Opening SDL audio device.");
+	log_add (log_Info, "Opening SDL audio device.");
 	if (SDL_OpenAudio (&desired, &obtained) < 0)
 	{
-		log_add (log_Always, "Unable to open audio device: %s",
+		log_add (log_Error, "Unable to open audio device: %s",
 				SDL_GetError ());
 		SDL_QuitSubSystem (SDL_INIT_AUDIO);
 		return -1;
@@ -154,41 +154,41 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 	if (obtained.format != desired.format ||
 		(obtained.channels != 1 && obtained.channels != 2))
 	{
-		log_add (log_Always, "Unable to obtain desired audio format.");
+		log_add (log_Error, "Unable to obtain desired audio format.");
 		SDL_CloseAudio ();
 		SDL_QuitSubSystem (SDL_INIT_AUDIO);
 		return -1;
 	}
 
 	SDL_AudioDriverName (devicename, sizeof (devicename));
-	log_add (log_Always, "    using %s at %d Hz 16 bit %s, "
+	log_add (log_Info, "    using %s at %d Hz 16 bit %s, "
 			"%d samples audio buffer",
 			devicename, obtained.freq,
 			obtained.channels > 1 ? "stereo" : "mono",
 			obtained.samples);
 
-	log_add (log_Always, "Initializing mixer.");
+	log_add (log_Info, "Initializing mixer.");
 	if (!mixer_Init (obtained.freq, MIX_FORMAT_MAKE (2, obtained.channels),
 			quality, 0))
 	{
-		log_add (log_Always, "Mixer initialization failed: %x",
+		log_add (log_Error, "Mixer initialization failed: %x",
 				mixer_GetError ());
 		SDL_CloseAudio ();
 		SDL_QuitSubSystem (SDL_INIT_AUDIO);
 		return -1;
 	}
-	log_add (log_Always, "Mixer initialized.");
+	log_add (log_Info, "Mixer initialized.");
 
-	log_add (log_Always, "Initializing sound decoders.");
+	log_add (log_Info, "Initializing sound decoders.");
 	if (SoundDecoder_Init (flags, &formats))
 	{
-		log_add (log_Always, "Sound decoders initialization failed.");
+		log_add (log_Error, "Sound decoders initialization failed.");
 		SDL_CloseAudio ();
 		mixer_Uninit ();
 		SDL_QuitSubSystem (SDL_INIT_AUDIO);
 		return -1;
 	}
-	log_add (log_Always, "Sound decoders initialized.");
+	log_add (log_Info, "Sound decoders initialized.");
 
 	*driver = mixSDL_Driver;
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)

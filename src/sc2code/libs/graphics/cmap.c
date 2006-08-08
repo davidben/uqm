@@ -178,7 +178,7 @@ get_colormap (int index)
 	map = colormaps[index];
 	if (!map)
 	{
-		log_add (log_Always, "BUG: get_colormap(): map not present");
+		log_add (log_Fatal, "BUG: get_colormap(): map not present");
 		exit (EXIT_FAILURE);
 	}
 
@@ -453,7 +453,7 @@ XFormColorMap_step (void)
 		if (!curmap)
 		{
 			UnlockMutex (maplock);
-			log_add (log_Always, "BUG: XFormColorMap_step(): no current map");
+			log_add (log_Error, "BUG: XFormColorMap_step(): no current map");
 			finish_colormap_xform (x);
 			continue;
 		}

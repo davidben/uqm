@@ -286,7 +286,7 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	if ((buf_start == shared_phrase_buf) &&
 			(buf > shared_phrase_buf + sizeof (shared_phrase_buf)))
 	{
-		log_add (log_Always, "Error: shared_phrase_buf size exceeded,"
+		log_add (log_Fatal, "Error: shared_phrase_buf size exceeded,"
 				" please increase!\n");
 		exit (EXIT_FAILURE);
 	}

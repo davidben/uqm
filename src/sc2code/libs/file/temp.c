@@ -100,7 +100,7 @@ getTempDir (char *buf, size_t buflen) {
 			tryTempDir (buf, buflen, "/tmp/") &&
 			tryTempDir (buf, buflen, getcwd (cwd, sizeof cwd)))
 	{
-		log_add (log_Always, "Fatal Error: Cannot find a suitable location "
+		log_add (log_Fatal, "Fatal Error: Cannot find a suitable location "
 				"to store temporary files.");
 		exit (EXIT_FAILURE);
 	}
@@ -118,7 +118,7 @@ mountTempDir(const char *name) {
 			uio_MOUNT_TOP, NULL);
 	if (tempHandle == NULL) {
 		int saveErrno = errno;
-		log_add (log_Always, "Fatal error: Couldn't mount temp dir '%s': "
+		log_add (log_Fatal, "Fatal error: Couldn't mount temp dir '%s': "
 				"%s", name, strerror (errno));
 		errno = saveErrno;
 		return -1;
@@ -127,7 +127,7 @@ mountTempDir(const char *name) {
 	tempDir = uio_openDir (repository, "/tmp", 0);
 	if (tempDir == NULL) {
 		int saveErrno = errno;
-		log_add (log_Always, "Fatal error: Could not open temp dir: %s",
+		log_add (log_Fatal, "Fatal error: Could not open temp dir: %s",
 				strerror (errno));
 		errno = saveErrno;
 		return -1;
@@ -169,7 +169,7 @@ initTempDir (void) {
 	}
 	
 	// Failure, could not make a temporary directory.
-	log_add (log_Always, "Fatal error: Cannot get a name for a temporary "
+	log_add (log_Fatal, "Fatal error: Cannot get a name for a temporary "
 			"directory.");
 	exit (EXIT_FAILURE);
 }
@@ -187,7 +187,7 @@ tempFilePath (const char *filename) {
 	static char file[PATH_MAX];
 	
 	if (snprintf (file, PATH_MAX, "%s/%s", tempDirName, filename) == -1) {
-		log_add (log_Always, "Path to temp file too long.");
+		log_add (log_Fatal, "Path to temp file too long.");
 		exit (EXIT_FAILURE);
 	}
 	return file;

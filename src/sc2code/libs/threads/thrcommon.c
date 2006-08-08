@@ -86,7 +86,7 @@ FlagStartThread (SpawnRequest s)
 			return NULL;
 		}
 	}
-	log_add (log_Always, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
+	log_add (log_Fatal, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
 	exit (EXIT_FAILURE);
 }
 
@@ -104,7 +104,7 @@ FinishThread (Thread thread)
 			return;
 		}
 	}
-	log_add (log_Always, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
+	log_add (log_Fatal, "Thread Lifecycle array filled.  This is a fatal error!  Make LIFECYCLE_SIZE something larger than %d.", LIFECYCLE_SIZE);
 	exit (EXIT_FAILURE);
 }
 

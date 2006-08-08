@@ -178,7 +178,7 @@ SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 
 	if (!formats)
 	{
-		log_add (log_Always, "SoundDecoder_Init(): missing decoder formats");
+		log_add (log_Error, "SoundDecoder_Init(): missing decoder formats");
 		return 1;		
 	}
 	decoder_formats = *formats;
@@ -188,7 +188,7 @@ SoundDecoder_Init (int flags, TFB_DecoderFormats *formats)
 	{
 		if (!info->funcs->InitModule (flags, &decoder_formats))
 		{
-			log_add (log_Always, "SoundDecoder_Init(): "
+			log_add (log_Error, "SoundDecoder_Init(): "
 					"%s audio decoder init failed",
 					info->funcs->GetName ());
 			ret = 1;

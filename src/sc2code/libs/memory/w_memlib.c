@@ -104,7 +104,7 @@ static int MessageWithRetry(char *fmt, ...)
 		vsprintf(buffer, fmt, ap);
 		va_end(ap);
 
-		log_add (log_Always, "%s", buffer);
+		log_add (log_User, "%s", buffer);
 		// fflush(stderr);
 
 #if 0
@@ -210,7 +210,7 @@ MallocWithRetry(int bytes, char *diagStr)
 		if (ptr)
 			return (ptr);
 
-		log_add (log_Always, "Malloc failed for %s. #Bytes %d.", diagStr, bytes);
+		log_add (log_Fatal, "Malloc failed for %s. #Bytes %d.", diagStr, bytes);
 		fflush (stderr);
         explode ();
 #if 0
@@ -221,7 +221,7 @@ MallocWithRetry(int bytes, char *diagStr)
 			if (MessageWithRetry ("Really OK to stop tfbtool?"))
 			{
 				/* User says "die". */
-				log_add (log_Always, "Killed by the user (%s).", diagStr);
+				log_add (log_Error, "Killed by the user (%s).", diagStr);
 				log_showBox (false, false);
 				exit (EXIT_SUCCESS);
 			}
@@ -243,10 +243,10 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 #endif
 
 	if ((node = freeListHead) == NULL)
-		log_add (log_Always, "mem_allocate: out of extents.");
+		log_add (log_Error, "mem_allocate: out of extents.");
 	else if ((node->memory = MallocWithRetry (coreSize, "mem_allocate:")) == 0
 			&& coreSize)
-		log_add (log_Always, "mem_allocate: couldn't allocate %ld bytes.",
+		log_add (log_Error, "mem_allocate: couldn't allocate %ld bytes.",
 				coreSize);
 	else
 	{
@@ -586,7 +586,7 @@ HMalloc (int size)
 	if (size == 0) return (0);
 
     if ((p = _alloc_mem(size)) == NULL) {
-        log_add (log_Always, "Fatal Error: HMalloc(): out of memory.");
+        log_add (log_Fatal, "Fatal Error: HMalloc(): out of memory.");
 		fflush (stderr);
         explode ();
     }
