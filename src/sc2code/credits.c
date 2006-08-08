@@ -150,7 +150,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	if (!pStr || *pStr == '\0')
 		return 0;
 	
-	if (2 != sscanf (pStr, "%d %32s %n", &size, salign, &scaned)
+	if (2 != sscanf (pStr, "%d %31s %n", &size, salign, &scaned)
 			|| size <= 0)
 		return 0;
 	pStr += scaned;
