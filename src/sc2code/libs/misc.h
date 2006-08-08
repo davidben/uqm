@@ -34,6 +34,8 @@ extern void *HRealloc (void *p, int size);
 
 extern int TFB_DEBUG_HALT;
 
+static inline void explode (void) _NORETURN;
+
 static inline void explode (void)
 {
 #ifdef DEBUG

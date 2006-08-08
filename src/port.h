@@ -171,5 +171,11 @@ typedef unsigned int wint_t;
 #	define VPRINTF_FUNCTION(formatArg)
 #endif
 
+#if defined(__GNUC__)
+#	define _NORETURN __attribute__((noreturn))
+#else
+#	define _NORETURN
+#endif
+
 #endif  /* _PORT_H */
 

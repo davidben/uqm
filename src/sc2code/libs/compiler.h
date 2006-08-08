@@ -75,6 +75,7 @@ typedef DWORD    (*PDWORDFUNC) (void);
 #define HIWORD(x)    ((UWORD) ((DWORD) (x) >> 16))
 
 
+// To be moved to port.h:
 // _ALIGNED_ANY specifies an alignment suitable for any type
 // _ALIGNED_ON specifies a caller-supplied alignment (should be a power of 2)
 #if defined(__GNUC__)
