@@ -690,9 +690,7 @@ flag_ship_preprocess (PELEMENT ElementPtr)
 		SIZE vdx, vdy, radius;
 		POINT pt;
 
-		GetCurrentVelocityComponents (
-				&GLOBAL (velocity), &vdx, &vdy
-				);
+		GetCurrentVelocityComponents (&GLOBAL (velocity), &vdx, &vdy);
 
 		if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
 		{

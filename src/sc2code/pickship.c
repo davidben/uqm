@@ -301,9 +301,11 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	HSTARSHIP hBattleShip;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+		// Get the next ship from the battle group.
 		hBattleShip = GetHeadLink (&race_q[which_player]);
 	else if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
+		// Let the player chose his own ship. (May be a computer player).
 		hBattleShip = GetMeleeStarShip (LastStarShipPtr, which_player);
 	}
 	else
@@ -389,13 +391,11 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 					if (LastStarShipPtr->special_counter == 0)
 								/* died in the line of duty */
 						GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-#ifndef TESTING
 					else if (GLOBAL_SIS (FuelOnBoard) >
 							RUN_AWAY_FUEL_COST)
 						GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
 					else
 						GLOBAL_SIS (FuelOnBoard) = 0;
-#endif /* TESTING */
 				}
 			}
 		}
@@ -403,8 +403,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		if (hBattleShip)
 		{
 			SPtr = LockStarShip (&race_q[which_player], hBattleShip);
-			OwnStarShip (SPtr,
-					SPtr->cur_status_flags,
+			OwnStarShip (SPtr, SPtr->cur_status_flags,
 					SPtr->captains_name_index);
 			UnlockStarShip (&race_q[which_player], hBattleShip);
 		}

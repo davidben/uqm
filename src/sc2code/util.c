@@ -104,7 +104,8 @@ SeedRandomNumbers (void)
 {
 	DWORD cur_time;
 
-	TFB_SeedRandom (cur_time = GetTimeCounter ());
+	cur_time = GetTimeCounter ();
+	TFB_SeedRandom (cur_time);
 
 	return (cur_time);
 }

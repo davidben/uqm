@@ -489,9 +489,7 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 }
 
 BOOLEAN
-GetNextStarShip (STARSHIPPTR
-		LastStarShipPtr,
-		COUNT which_side)
+GetNextStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_side)
 {
 	HSTARSHIP hBattleShip;
 
