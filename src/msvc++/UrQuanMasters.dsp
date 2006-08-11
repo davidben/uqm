@@ -207,6 +207,34 @@ SOURCE=..\regex\regexec.ci
 # Begin Group "libs"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\alarm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback.h
+# End Source File
+# Begin Group "callback"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback\alarm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback\alarm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback\callback.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback\callback.h
+# End Source File
+# End Group
 # Begin Group "decomp"
 
 # PROP Default_Filter ""
@@ -509,6 +537,22 @@ SOURCE=..\sc2code\libs\graphics\widgets.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\graphics\widgets.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\heap.h
+# End Source File
+# Begin Group "heap"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\heap\heap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\heap\heap.h
 # End Source File
 # End Group
 # Begin Group "input"
