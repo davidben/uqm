@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-
+#include "port.h"
 
 static inline size_t nextPower2(size_t x);
 

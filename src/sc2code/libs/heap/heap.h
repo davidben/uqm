@@ -22,6 +22,8 @@
 #include "types.h"
 
 #include <sys/types.h>
+#include <stdlib.h>
+
 
 typedef struct Heap Heap;
 typedef struct HeapValue HeapValue;
