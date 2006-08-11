@@ -1,5 +1,6 @@
 Changes towards version 0.6:
 - Added some generic lib code to be used by future code. - SvdB
+- Joystick support is now optional; from SvdB, Alex
 - Restructed and normalized savegame and game-state reading/writing code;
   savegames are now compatible between same-endian 32- and 64-bit systems;
   savegames from prior 64-bit builds cannot be used - Alex
