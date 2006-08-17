@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Fixed an integer-size error that was causing crashes on AMD64, from 
+  Solomon Peachy (#895) - Michael
 - Added some generic lib code to be used by future code. - SvdB
 - Joystick support is now optional; from SvdB, Alex
 - Restructed and normalized savegame and game-state reading/writing code;

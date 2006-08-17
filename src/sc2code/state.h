@@ -32,9 +32,9 @@ extern void InitGroupInfo (BOOLEAN FirstTime);
 extern void UninitGroupInfo (void);
 extern BOOLEAN GetGroupInfo (DWORD offset, BYTE which_group);
 extern DWORD PutGroupInfo (DWORD offset, BYTE which_group);
-#define GROUPS_RANDOM  0L
-#define GROUPS_ADD_NEW (~0L)
-#define GROUP_LIST     0
+#define GROUPS_RANDOM  ((DWORD)(0L))
+#define GROUPS_ADD_NEW ((DWORD)(~0L))
+#define GROUP_LIST     ((BYTE)0)
 #define GROUP_INIT_IP  ((BYTE)~0)
 #define GROUP_LOAD_IP  GROUP_LIST
 #define GROUP_SAVE_IP  ((BYTE)~0)
