@@ -68,7 +68,7 @@ Fees! Surely your culture is far beyond such pettiness as money?
 #(GIVING_IS_BAD_1)	melno008.ogg
 You are of course correct.
 We long ago abandoned currency,
-and now only deal with commodities that have intrinsic value, such as valuable information
+and now only deal with commodities that have intrinsic value, such as valuable information.
 
 #(giving_is_good_2)
 But our cause is just! Isn't altruism the highest pinnacle of morality?
