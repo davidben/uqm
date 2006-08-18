@@ -31,7 +31,7 @@ uqm_INSTALL_SHAREDIR='@INSTALL_SHAREDIR@'
 # Exported variables are available from all the Makeinfo files
 # Non-exported files only where build.vars is explicitely included.
 uqm_SOUNDMODULE='@SOUNDMODULE@'
-uqm_MIKMOD_INTERNAL='@MIKMOD_INTERNAL@'
+uqm_MIKMOD_INTERNAL='@USE_MIKMOD_INTERNAL@'
 uqm_HAVE_REGEX='@HAVE_REGEX_H_FLAG@'
 uqm_HAVE_OPENGL='@HAVE_OPENGL@'
 uqm_USE_ZIP_IO='@USE_ZIP_IO@'
