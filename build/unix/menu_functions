@@ -268,16 +268,22 @@ EOF
 $TEMP_TEXT
 EOF
 		fi
+		
+		# Count the number of options
+		I=0
+		for ITEM in $TEMP_ITEMS; do
+			I=$(($I + 1))
+		done
+		NUM_ITEMS="$I"
 
 		I=0
 		for ITEM in $TEMP_ITEMS; do
 			I=$(($I + 1))
 			eval TEMP_TYPE="\$MENU_${MENU}_ITEM_${ITEM}_TYPE"
 			eval TEMP_TITLE="\$${TEMP_TYPE}_${ITEM}_TITLE"
-			printf "  %i. %-36s %s\n" $I "$TEMP_TITLE" \
+			printf "  %${#NUM_ITEMS}i. %-36s %s\n" $I "$TEMP_TITLE" \
 					"$(menu_print_value $TEMP_TYPE $ITEM)"
 		done
-		NUM_ITEMS="$I"
 
 		echo
 		echo "Press a number plus <ENTER> if you want to change something, "
@@ -347,6 +353,7 @@ EOF
 		# Also, count the number of options
 		I=0
 		for OPTION in $TEMP_OPTIONS; do
+			I=$(($I + 1))
 			menu_have_choice "$MENU" "$OPTION"
 		done
 		NUM_OPTIONS="$I"
