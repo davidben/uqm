@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib libmikmod.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Stripping debug info...
@@ -83,7 +83,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib libmikmod.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug NoAccel"
@@ -111,7 +111,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib libmikmod.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAccel"
@@ -139,7 +139,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib libmikmod.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Stripping debug info...
@@ -207,14 +207,6 @@ SOURCE=..\regex\regexec.ci
 # Begin Group "libs"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\alarm.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\callback.h
-# End Source File
 # Begin Group "callback"
 
 # PROP Default_Filter ""
@@ -539,10 +531,6 @@ SOURCE=..\sc2code\libs\graphics\widgets.c
 SOURCE=..\sc2code\libs\graphics\widgets.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\sc2code\libs\heap.h
-# End Source File
 # Begin Group "heap"
 
 # PROP Default_Filter ""
@@ -1241,6 +1229,118 @@ SOURCE=..\sc2code\libs\uio\utils.c
 SOURCE=..\sc2code\libs\uio\utils.h
 # End Source File
 # End Group
+# Begin Group "mikmod"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\drv_nos.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\load_it.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\load_mod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\load_s3m.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\load_stm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\load_xm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mdreg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mdriver.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mikmod.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mikmod_build.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mikmod_internals.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mloader.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mlreg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mlutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mmalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mmerror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mmio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mplayer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\munitrk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\mwav.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\npertab.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\sloader.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\virtch.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\virtch2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\mikmod\virtch_common.c
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\sc2code\libs\alarm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\callback.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\compiler.h
@@ -1256,6 +1356,10 @@ SOURCE=..\sc2code\libs\file.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\gfxlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\heap.h
 # End Source File
 # Begin Source File
 
