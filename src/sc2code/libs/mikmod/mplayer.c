@@ -549,6 +549,9 @@ static int DoPTEffect0(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat = UniGetByte();
 	if (!tick) {
 		if (!dat && (flags & UF_ARPMEM))
@@ -566,6 +569,10 @@ static int DoPTEffect1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat = UniGetByte();
 	if (!tick && dat)
 		a->slidespeed = (UWORD)dat << 2;
@@ -579,6 +586,10 @@ static int DoPTEffect1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoPTEffect2(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat = UniGetByte();
 	if (!tick && dat)
@@ -623,6 +634,10 @@ static void DoToneSlide(UWORD tick, MP_CONTROL *a)
 static int DoPTEffect3(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if ((!tick)&&(dat)) a->portspeed=(UWORD)dat<<2;
@@ -676,6 +691,10 @@ static int DoPTEffect4(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+	
 	dat=UniGetByte();
 	if (!tick) {
 		if (dat&0x0f) a->vibdepth=dat&0xf;
@@ -704,6 +723,10 @@ static int DoPTEffect5(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (a->main.period)
 		DoToneSlide(tick, a);
@@ -721,6 +744,10 @@ static int DoPTEffect7(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 	UBYTE dat;
 	UBYTE q;
 	UWORD temp = 0;	/* silence warning */
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if (!tick) {
@@ -769,6 +796,9 @@ static int DoPTEffect8(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+
 	dat = UniGetByte();
 	if (mod->panflag)
 		a->main.panning = mod->panning[channel] = dat;
@@ -779,6 +809,10 @@ static int DoPTEffect8(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoPTEffect9(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if (!tick) {
@@ -796,6 +830,10 @@ static int DoPTEffect9(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoPTEffectA(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if (tick)
@@ -816,6 +854,9 @@ static int DoPTEffect6(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoPTEffectB(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 
@@ -851,6 +892,10 @@ static int DoPTEffectC(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 			dat=UniGetByte();
 			if (tick) return 0;
 			if (dat==(UBYTE)-1) a->anote=dat=0; /* note cut */
@@ -863,6 +908,9 @@ static int DoPTEffectC(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoPTEffectD(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
 
 			dat=UniGetByte();
 			if ((tick)||(mod->patdly2)) return 0;
@@ -1025,6 +1073,10 @@ static int DoPTEffectF(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (tick||mod->patdly2) return 0;
 	if (mod->extspd&&(dat>=mod->bpmlimit))
@@ -1043,6 +1095,10 @@ static int DoPTEffectF(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoS3MEffectA(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE speed;
+
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
 
 	speed = UniGetByte();
 
@@ -1093,6 +1149,9 @@ static void DoS3MVolSlide(UWORD tick, UWORD flags, MP_CONTROL *a, UBYTE inf)
 
 static int DoS3MEffectD(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+	
 	DoS3MVolSlide(tick, flags, a, UniGetByte());
 
 	return 1;
@@ -1123,6 +1182,10 @@ static void DoS3MSlideDn(UWORD tick, MP_CONTROL *a, UBYTE inf)
 static int DoS3MEffectE(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if (a->main.period)
@@ -1155,6 +1218,10 @@ static int DoS3MEffectF(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (a->main.period)
 		DoS3MSlideUp(tick, a,dat);
@@ -1165,6 +1232,10 @@ static int DoS3MEffectF(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoS3MEffectI(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf, on, off;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (inf)
@@ -1191,6 +1262,9 @@ static int DoS3MEffectI(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoS3MEffectQ(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf;
+
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (a->main.period) {
@@ -1254,6 +1328,10 @@ static int DoS3MEffectR(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 	UBYTE dat, q;
 	UWORD temp=0;	/* silence warning */
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat = UniGetByte();
 	if (!tick) {
 		if (dat&0x0f) a->trmdepth=dat&0xf;
@@ -1301,6 +1379,10 @@ static int DoS3MEffectT(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE tempo;
 
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
+
 	tempo = UniGetByte();
 
 	if (tick || mod->patdly2)
@@ -1315,6 +1397,10 @@ static int DoS3MEffectU(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat, q;
 	UWORD temp = 0;	/* silence warning */
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat = UniGetByte();
 	if (!tick) {
@@ -1360,6 +1446,11 @@ static int DoS3MEffectU(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 
 static int DoKeyOff(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	a->main.keyoff|=KEY_OFF;
 	if ((!(a->main.volflg&EF_ON))||(a->main.volflg&EF_LOOP))
 		a->main.keyoff=KEY_KILL;
@@ -1370,6 +1461,9 @@ static int DoKeyOff(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD c
 static int DoKeyFade(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if ((tick>=dat)||(tick==mod->sngspd-1)) {
@@ -1388,6 +1482,10 @@ static int DoKeyFade(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD 
 static int DoXMEffectA(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf, lo, hi;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (inf)
@@ -1423,6 +1521,10 @@ static int DoXMEffectE1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (!tick) {
 		if (dat) a->fportupspd=dat;
@@ -1436,6 +1538,10 @@ static int DoXMEffectE1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoXMEffectE2(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if (!tick) {
@@ -1451,6 +1557,10 @@ static int DoXMEffectEA(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (!tick)
 		if (dat) a->fslideupspd=dat;
@@ -1464,6 +1574,10 @@ static int DoXMEffectEB(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat=UniGetByte();
 	if (!tick)
 		if (dat) a->fslidednspd=dat;
@@ -1475,6 +1589,11 @@ static int DoXMEffectEB(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 
 static int DoXMEffectG(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
+
 	mod->volume=UniGetByte()<<1;
 	if (mod->volume>128) mod->volume=128;
 
@@ -1484,6 +1603,10 @@ static int DoXMEffectG(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoXMEffectH(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf;
+
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 
@@ -1505,6 +1628,10 @@ static int DoXMEffectH(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoXMEffectL(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat=UniGetByte();
 	if ((!tick)&&(a->main.i)) {
@@ -1531,6 +1658,9 @@ static int DoXMEffectP(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE inf, lo, hi;
 	SWORD pan;
+
+	(void)flags; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (!mod->panflag)
@@ -1560,6 +1690,10 @@ static int DoXMEffectX1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UBYTE dat;
 
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat = UniGetByte();
 	if (dat)
 		a->ffportupspd = dat;
@@ -1579,6 +1713,10 @@ static int DoXMEffectX1(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoXMEffectX2(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE dat;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat = UniGetByte();
 	if (dat)
@@ -1640,6 +1778,10 @@ static void DoITToneSlide(UWORD tick, MP_CONTROL *a, UBYTE dat)
 
 static int DoITEffectG(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	DoITToneSlide(tick, a, UniGetByte());
 
 	return 0;
@@ -1691,6 +1833,10 @@ static void DoITVibrato(UWORD tick, MP_CONTROL *a, UBYTE dat)
 
 static int DoITEffectH(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	DoITVibrato(tick, a, UniGetByte());
 
 	return 0;
@@ -1699,6 +1845,11 @@ static int DoITEffectH(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoITEffectI(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf, on, off;
+
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (inf)
@@ -1722,6 +1873,11 @@ static int DoITEffectI(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 
 static int DoITEffectM(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	a->main.chanvol=UniGetByte();
 	if (a->main.chanvol>64)
 		a->main.chanvol=64;
@@ -1734,6 +1890,10 @@ static int DoITEffectM(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 static int DoITEffectN(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE inf, lo, hi;
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 
@@ -1770,6 +1930,9 @@ static int DoITEffectP(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE inf, lo, hi;
 	SWORD pan;
+
+	(void)flags; /* unused arg */
+	(void)channel; /* unused arg */
 
 	inf = UniGetByte();
 	if (inf)
@@ -1808,6 +1971,11 @@ static int DoITEffectT(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 	UBYTE tempo;
 	SWORD temp;
 
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
+
    	tempo = UniGetByte();
 
 	if (mod->patdly2)
@@ -1828,6 +1996,10 @@ static int DoITEffectU(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE dat, q;
 	UWORD temp = 0;	/* silence warning */
+
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
 
 	dat = UniGetByte();
 	if (!tick) {
@@ -1873,6 +2045,10 @@ static int DoITEffectW(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 {
 	UBYTE inf, lo, hi;
 
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
+
 	inf = UniGetByte();
 
 	if (inf)
@@ -1909,6 +2085,7 @@ static int DoITEffectY(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWOR
 	UBYTE dat, q;
 	SLONG temp = 0;	/* silence warning */
 
+	(void)flags; /* unused arg */
 
 	dat=UniGetByte();
 	if (!tick) {
@@ -2032,6 +2209,8 @@ static int DoITEffectS0(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoVolEffects(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UBYTE c, inf;
+
+	(void)channel; /* unused arg */
 	
 	c = UniGetByte(); 
 	inf = UniGetByte(); 
@@ -2083,6 +2262,11 @@ static int DoULTEffect9(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 {
 	UWORD offset=UniGetWord();
 
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	if (offset)
 		a->ultoffset=offset;
 
@@ -2099,6 +2283,11 @@ static int DoULTEffect9(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWO
 static int DoMEDSpeed(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
 	UWORD speed=UniGetWord();
+
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)channel; /* unused arg */
 
 	mod->bpm=speed;
 
@@ -2132,6 +2321,9 @@ static int DoOktArp(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD c
 {
 	UBYTE dat, dat2;
 
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	dat2 = UniGetByte();	/* arpeggio style */
 	dat = UniGetByte();
 	if (!tick) {
@@ -2150,6 +2342,12 @@ static int DoOktArp(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD c
 
 static int DoNothing(UWORD tick, UWORD flags, MP_CONTROL *a, MODULE *mod, SWORD channel)
 {
+	(void)tick; /* unused arg */
+	(void)flags; /* unused arg */
+	(void)a; /* unused arg */
+	(void)mod; /* unused arg */
+	(void)channel; /* unused arg */
+
 	UniSkipOpcode();
 
 	return 0;
@@ -3241,7 +3439,7 @@ MIKMODAPI void Player_Mute(SLONG arg1,...)
 static void Player_ToggleMute_internal(SLONG arg1,va_list ap)
 {
 	SLONG arg2,arg3=0;
-	ULONG t;
+	SLONG t;
 
 	if (pf) {
 		switch (arg1) {

@@ -231,7 +231,7 @@ static BOOL STM_LoadPatterns(void)
 
 	/* Allocate temporary buffer for loading and converting the patterns */
 	for(t=0;t<of.numpat;t++) {
-		for(s=0;s<(64U*of.numchn);s++) {
+		for(s=0;s<(64*of.numchn);s++) {
 			stmbuf[s].note   = _mm_read_UBYTE(modreader);
 			stmbuf[s].insvol = _mm_read_UBYTE(modreader);
 			stmbuf[s].volcmd = _mm_read_UBYTE(modreader);
@@ -254,6 +254,8 @@ BOOL STM_Load(BOOL curious)
 	int t; 
 	ULONG MikMod_ISA; /* We must generate our own ISA, it's not stored in stm */
 	SAMPLE *q;
+
+	(void)curious; /* unused arg */
 
 	/* try to read stm header */
 	_mm_read_string(mh->songname,20,modreader);

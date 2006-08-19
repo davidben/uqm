@@ -775,7 +775,7 @@ void VC1_WriteSamples(SBYTE* buf,ULONG todo)
 			if(vc_mode & DMODE_SOFT_MUSIC) md_player();
 			tickleft=(md_mixfreq*125L)/(md_bpm*50L);
 		}
-		left = MIN(tickleft, todo);
+		left = MIN(tickleft, (long)todo);
 		buffer    = buf;
 		tickleft -= left;
 		todo     -= left;

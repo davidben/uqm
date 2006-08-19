@@ -651,6 +651,8 @@ BOOL XM_Load(BOOL curious)
 	BOOL dummypat=0;
 	char tracker[21],modtype[60];
 
+	(void)curious; /* unused arg */
+
 	/* try to read module header */
 	_mm_read_string(mh->id,17,modreader);
 	_mm_read_string(mh->songname,21,modreader);

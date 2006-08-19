@@ -710,7 +710,7 @@ void VC2_WriteSamples(SBYTE* buf,ULONG todo)
 			tickleft=(md_mixfreq*125L*SAMPLING_FACTOR)/(md_bpm*50L);
 			tickleft&=~(SAMPLING_FACTOR-1);
 		}
-		left = MIN(tickleft, todo);
+		left = MIN(tickleft, (long)todo);
 		buffer    = buf;
 		tickleft -= left;
 		todo     -= left;

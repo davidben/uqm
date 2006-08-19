@@ -93,7 +93,8 @@ void FreeLinear(void)
 
 int speed_to_finetune(ULONG speed,int sample)
 {
-    int ctmp=0,tmp,note=1,finetune=0;
+    int note=1,finetune=0;
+	ULONG ctmp=0,tmp;
 
     speed>>=1;
     while((tmp=getfrequency(of.flags,getlinearperiod(note<<1,0)))<speed) {

@@ -265,7 +265,7 @@ static BOOL _mm_MemReader_Read(MREADER* reader,void* ptr,size_t size)
 	s = ((MMEMREADER*)reader)->buffer;
 	s += ((MMEMREADER*)reader)->pos;
 
-	if ( ((MMEMREADER*)reader)->pos + size > ((MMEMREADER*)reader)->len) 
+	if ( ((MMEMREADER*)reader)->pos + (long)size > ((MMEMREADER*)reader)->len) 
 	{
 		((MMEMREADER*)reader)->pos = ((MMEMREADER*)reader)->len;
 		return 0; /* not enough remaining bytes */

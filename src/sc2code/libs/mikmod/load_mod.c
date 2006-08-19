@@ -323,7 +323,7 @@ static BOOL ML_LoadPatterns(void)
 	if (trekker && of.numchn == 8) {
 		/* Startrekker module dual pattern */
 		for (t = 0; t < of.numpat; t++) {
-			for (s = 0; s < (64U * 4); s++) {
+			for (s = 0; s < (64 * 4); s++) {
 				patbuf[s].a = _mm_read_UBYTE(modreader);
 				patbuf[s].b = _mm_read_UBYTE(modreader);
 				patbuf[s].c = _mm_read_UBYTE(modreader);
@@ -332,7 +332,7 @@ static BOOL ML_LoadPatterns(void)
 			for (s = 0; s < 4; s++)
 				if (!(of.tracks[tracks++] = ConvertTrack(patbuf + s, 4)))
 					return 0;
-			for (s = 0; s < (64U * 4); s++) {
+			for (s = 0; s < (64 * 4); s++) {
 				patbuf[s].a = _mm_read_UBYTE(modreader);
 				patbuf[s].b = _mm_read_UBYTE(modreader);
 				patbuf[s].c = _mm_read_UBYTE(modreader);
@@ -346,7 +346,7 @@ static BOOL ML_LoadPatterns(void)
 		/* Generic module pattern */
 		for (t = 0; t < of.numpat; t++) {
 			/* Load the pattern into the temp buffer and convert it */
-			for (s = 0; s < (64U * of.numchn); s++) {
+			for (s = 0; s < (64 * of.numchn); s++) {
 				patbuf[s].a = _mm_read_UBYTE(modreader);
 				patbuf[s].b = _mm_read_UBYTE(modreader);
 				patbuf[s].c = _mm_read_UBYTE(modreader);
