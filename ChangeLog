@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Input templates can now be renamed, both online and off - Michael
 - Fixed an integer-size error that was causing crashes on AMD64, from 
   Solomon Peachy (#895) - Michael
 - Added some generic lib code to be used by future code. - SvdB

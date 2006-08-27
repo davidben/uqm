@@ -58,6 +58,7 @@ uio_DirList *availableAddons;
 extern uio_Repository *repository;
 extern uio_DirHandle *rootDir;
 
+INPUT_TEMPLATE input_templates[6];
 
 static const char *findFileInDirs (const char *locs[], int numLocs,
 		const char *file);

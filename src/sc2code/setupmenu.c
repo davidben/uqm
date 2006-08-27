@@ -58,6 +58,10 @@ static int do_engine (WIDGET *self, int event);
 static int do_resources (WIDGET *self, int event);
 static int do_keyconfig (WIDGET *self, int event);
 static int do_advanced (WIDGET *self, int event);
+static int do_editkeys (WIDGET *self, int event);
+static void change_template (WIDGET_CHOICE *self, int oldval);
+static void rename_template (WIDGET_TEXTENTRY *self);
+
 
 #ifdef HAVE_OPENGL
 #define RES_OPTS 4
@@ -65,11 +69,11 @@ static int do_advanced (WIDGET *self, int event);
 #define RES_OPTS 2
 #endif
 
-#define MENU_COUNT       7
-#define CHOICE_COUNT    20
+#define MENU_COUNT       8
+#define CHOICE_COUNT    21
 #define SLIDER_COUNT     3
-#define BUTTON_COUNT     8
-#define LABEL_COUNT      2
+#define BUTTON_COUNT    10
+#define LABEL_COUNT      3
 #define TEXTENTRY_COUNT  1
 
 /* The space for our widgets */
@@ -85,23 +89,26 @@ static WIDGET_TEXTENTRY textentries[TEXTENTRY_COUNT];
 typedef int (*HANDLER)(WIDGET *, int);
 
 static int choice_widths[CHOICE_COUNT] = {
-	3, 2, 3, 3, 2, 2, 2, 2, 2,
-	2, 2, 2, 3, 2, 2, 3, 3, 2,
-	3, 3 };
+	3, 2, 3, 3, 2, 2, 2, 2, 2, 2, 
+	2, 2, 3, 2, 2, 3, 3, 2,	3, 3, 
+	3 };
 
 static HANDLER button_handlers[BUTTON_COUNT] = {
 	quit_main_menu, quit_sub_menu, do_graphics, do_engine,
-	do_audio, do_resources, do_keyconfig, do_advanced };
+	do_audio, do_resources, do_keyconfig, do_advanced, do_editkeys, 
+	do_keyconfig };
 
 static int menu_sizes[MENU_COUNT] = {
-	8, 5, 6, 9, 2, 4,
+	7, 5, 6, 9, 2, 5,
 #ifdef HAVE_OPENGL
-	5 };
+	5,
 #else
-	4 };
+	4,
 #endif
+	4
+};
 
-static int menu_bgs[MENU_COUNT] = { 0, 1, 1, 2, 3, 1, 2 };
+static int menu_bgs[MENU_COUNT] = { 0, 1, 1, 2, 3, 1, 2, 1 };
 
 /* These refer to uninitialized widgets, but that's OK; we'll fill
  * them in before we touch them */
@@ -112,7 +119,6 @@ static WIDGET *main_widgets[] = {
 	(WIDGET *)(&buttons[5]),
 	(WIDGET *)(&buttons[6]),
 	(WIDGET *)(&buttons[7]),
-	(WIDGET *)(&textentries[0]),
 	(WIDGET *)(&buttons[0]) };
 
 static WIDGET *graphics_widgets[] = {
@@ -154,7 +160,14 @@ static WIDGET *keyconfig_widgets[] = {
 	(WIDGET *)(&choices[18]),
 	(WIDGET *)(&choices[19]),
 	(WIDGET *)(&labels[1]),
+	(WIDGET *)(&buttons[8]),
 	(WIDGET *)(&buttons[1]) };
+
+static WIDGET *editkeys_widgets[] = {
+	(WIDGET *)(&choices[20]),
+	(WIDGET *)(&labels[2]),
+	(WIDGET *)(&textentries[0]),
+	(WIDGET *)(&buttons[9]) };
 
 static WIDGET *incomplete_widgets[] = {
 	(WIDGET *)(&labels[0]),
@@ -162,7 +175,7 @@ static WIDGET *incomplete_widgets[] = {
 
 static WIDGET **menu_widgets[MENU_COUNT] = {
 	main_widgets, graphics_widgets, audio_widgets, engine_widgets, 
-	incomplete_widgets, keyconfig_widgets, advanced_widgets };
+	incomplete_widgets, keyconfig_widgets, advanced_widgets, editkeys_widgets };
 
 static int
 quit_main_menu (WIDGET *self, int event)
@@ -267,6 +280,39 @@ do_advanced (WIDGET *self, int event)
 	return FALSE;
 }
 
+static int
+do_editkeys (WIDGET *self, int event)
+{
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		next = (WIDGET *)(&menus[7]);
+		/* Prepare the components */
+		choices[20].selected = 0;
+		strncpy (textentries[0].value, input_templates[0].name, textentries[0].maxlen);
+		textentries[0].value[textentries[0].maxlen] = 0;
+		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
+		return TRUE;
+	}
+	(void)self;
+	return FALSE;
+}
+
+static void
+change_template (WIDGET_CHOICE *self, int oldval)
+{
+	strncpy (textentries[0].value, input_templates[self->selected].name, WIDGET_TEXTENTRY_WIDTH);
+	textentries[0].value[WIDGET_TEXTENTRY_WIDTH-1] = 0;
+}
+
+static void
+rename_template (WIDGET_TEXTENTRY *self)
+{
+	strncpy (input_templates[choices[20].selected].name, self->value, WIDGET_TEXTENTRY_WIDTH);
+	/* TODO: This will have to change if the size of the input_templates name is changed */
+	input_templates[choices[20].selected].name[WIDGET_TEXTENTRY_WIDTH-1] = 0;
+	
+}
+
 #define NUM_STEPS 20
 #define X_STEP (SCREEN_WIDTH / NUM_STEPS)
 #define Y_STEP (SCREEN_HEIGHT / NUM_STEPS)
@@ -306,6 +352,7 @@ SetDefaults (void)
 	choices[17].selected = opts.shield;
 	choices[18].selected = opts.player1;
 	choices[19].selected = opts.player2;
+	choices[20].selected = 0;
 
 	sliders[0].value = opts.musicvol;
 	sliders[1].value = opts.sfxvol;
@@ -474,6 +521,13 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	{	// editing failed (canceled) -- revert the changes
 		utf8StringCopy (widget->value, widget->maxlen, revert_buf);
 	}
+	else
+	{
+		if (widget->onChange)
+		{
+			(*(widget->onChange))(widget);
+		}
+	}
 
 	widget->state = WTE_NORMAL;
 	redraw_menu ();
@@ -539,7 +593,6 @@ init_widgets (void)
 	/* Options */
 	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 2)), '\n', 100, buffer, bank) != CHOICE_COUNT)
 	{
-		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Choice Options");
 		exit (EXIT_FAILURE);
 	}
@@ -558,6 +611,7 @@ init_widgets (void)
 		choices[i].selected = 0;
 		choices[i].highlighted = 0;
 		choices[i].maxcolumns = choice_widths[i];
+		choices[i].onChange = NULL;
 	}
 
 	/* Fill in the options now */
@@ -606,6 +660,17 @@ init_widgets (void)
 
 	/* The first choice is resolution, and is handled specially */
 	choices[0].numopts = RES_OPTS;
+
+	/* Choices 18-20 are also special, being the names of the key configurations */
+	for (i = 0; i < 6; i++)
+	{
+		choices[18].options[i].optname = input_templates[i].name;
+		choices[19].options[i].optname = input_templates[i].name;
+		choices[20].options[i].optname = input_templates[i].name;
+	}
+
+	/* Choice 20 has a special onChange handler, too. */
+	choices[20].onChange = change_template;
 
 	/* Sliders */
 	if (index >= count)
@@ -755,14 +820,18 @@ init_widgets (void)
 		}
 	}
 
-	/* Check for garbage at the end */
-	if (index < count)
+	/* Text Entry boxes */
+	if (index >= count)
 	{
-		log_add (log_Warning, "WARNING: Setup strings had %d garbage entries at the end.",
-				count - index);
+		log_add (log_Fatal, "PANIC: String table cut short while reading text entries");
+		exit (EXIT_FAILURE);
 	}
 
-	/* Hardcode the test textentry for now. */
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
+	{
+		log_add (log_Fatal, "PANIC: Incorrect number of Text Entries");
+		exit (EXIT_FAILURE);
+	}
 	for (i = 0; i < TEXTENTRY_COUNT; i++)
 	{
 		textentries[i].parent = NULL;
@@ -772,15 +841,38 @@ init_widgets (void)
 		textentries[i].height = Widget_HeightOneLine;
 		textentries[i].width = Widget_WidthFullScreen;
 		textentries[i].handleEventSelect = OnTextEntryEvent;
-		textentries[i].category = NULL;
+		textentries[i].category = buffer[i];
 		textentries[i].value[0] = 0;
 		textentries[i].maxlen = WIDGET_TEXTENTRY_WIDTH-1;
 		textentries[i].state = WTE_NORMAL;
 		textentries[i].cursor_pos = 0;
 	}
 
-	textentries[0].category = "TestText";
-	strcpy (textentries[0].value, "Sample value");
+	if (index >= count)
+	{
+		log_add (log_Fatal, "PANIC: String table cut short while reading text entries");
+		exit (EXIT_FAILURE);
+	}
+
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
+	{
+		/* TODO: Ignore extras instead of dying. */
+		log_add (log_Fatal, "PANIC: Incorrect number of Text Entries");
+		exit (EXIT_FAILURE);
+	}
+	for (i = 0; i < TEXTENTRY_COUNT; i++)
+	{
+		strncpy (textentries[i].value, buffer[i], textentries[i].maxlen);
+		textentries[i].value[textentries[i].maxlen] = 0;
+	}
+	textentries[0].onChange = rename_template;
+
+	/* Check for garbage at the end */
+	if (index < count)
+	{
+		log_add (log_Warning, "WARNING: Setup strings had %d garbage entries at the end.",
+				count - index);
+	}
 }
 
 static void
@@ -1015,6 +1107,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	int NewWidth = ScreenWidthActual;
 	int NewHeight = ScreenHeightActual;
 	int NewDriver = GraphicsDriver;
+	int i;
 
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_ANY;
 
@@ -1171,6 +1264,13 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	// update actual volumes
 	SetMusicVolume (musicVolume);
 	SetSpeechVolume (speechVolumeScale);
+
+	res_PutString ("config.keys.1.name", input_templates[0].name);
+	res_PutString ("config.keys.2.name", input_templates[1].name);
+	res_PutString ("config.keys.3.name", input_templates[2].name);
+	res_PutString ("config.keys.4.name", input_templates[3].name);
+	res_PutString ("config.keys.5.name", input_templates[4].name);
+	res_PutString ("config.keys.6.name", input_templates[5].name);
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
 }

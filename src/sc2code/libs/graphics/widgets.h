@@ -74,6 +74,7 @@ typedef struct _widget_choice {
 	int maxcolumns;
 	CHOICE_OPTION *options;
 	int selected, highlighted;
+	void (*onChange)(struct _widget_choice *self, int oldval);
 } WIDGET_CHOICE;
 
 typedef struct _widget_button {
@@ -130,6 +131,7 @@ typedef struct _widget_textentry {
 			// handleEventSelect is an overridable callback event
 			// called by the default handleEvent implementation
 			// can be NULL, in which case SELECT is ignored
+	void (*onChange)(struct _widget_textentry *self);
 	const char *category;
 	char value[WIDGET_TEXTENTRY_WIDTH];
 	int maxlen;

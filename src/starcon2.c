@@ -354,6 +354,66 @@ main (int argc, char *argv[])
 		parseVolume (res_GetString ("config.speechvol"), 
 				&options.speechVolumeScale, "speech volume");
 	}		
+	if (res_HasKey ("config.keys.1.name"))
+	{
+		strncpy(input_templates[0].name, res_GetString ("config.keys.1.name"), 30);
+		input_templates[0].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[0].name, "Keyboard 1");
+		res_PutString ("config.keys.1.name", input_templates[0].name);
+	}
+	if (res_HasKey ("config.keys.2.name"))
+	{
+		strncpy(input_templates[1].name, res_GetString ("config.keys.2.name"), 30);
+		input_templates[1].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[1].name, "Keyboard 2");
+		res_PutString ("config.keys.2.name", input_templates[1].name);
+	}
+	if (res_HasKey ("config.keys.3.name"))
+	{
+		strncpy(input_templates[2].name, res_GetString ("config.keys.3.name"), 30);
+		input_templates[2].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[2].name, "Keyboard 3");
+		res_PutString ("config.keys.3.name", input_templates[2].name);
+	}
+	if (res_HasKey ("config.keys.4.name"))
+	{
+		strncpy(input_templates[3].name, res_GetString ("config.keys.4.name"), 30);
+		input_templates[3].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[3].name, "Joystick 1");
+		res_PutString ("config.keys.4.name", input_templates[3].name);
+	}
+	if (res_HasKey ("config.keys.5.name"))
+	{
+		strncpy(input_templates[4].name, res_GetString ("config.keys.5.name"), 30);
+		input_templates[4].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[4].name, "Joystick 2");
+		res_PutString ("config.keys.5.name", input_templates[4].name);
+	}
+	if (res_HasKey ("config.keys.6.name"))
+	{
+		strncpy(input_templates[5].name, res_GetString ("config.keys.6.name"), 30);
+		input_templates[5].name[29] = 0;
+	}
+	else
+	{
+		strcpy (input_templates[5].name, "Joystick 3");
+		res_PutString ("config.keys.6.name", input_templates[5].name);
+	}
 
 	optionsResult = parseOptions (argc, argv, &options);
 	if (optionsResult != 0)

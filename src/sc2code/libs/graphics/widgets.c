@@ -600,8 +600,15 @@ Widget_HandleEventChoice (WIDGET *_self, int event)
 			self->highlighted = 0;
 		return TRUE;
 	case WIDGET_EVENT_SELECT:
+	{
+		int oldval = self->selected;
 		self->selected = self->highlighted;
+		if (self->onChange)
+		{
+			(*(self->onChange))(self, oldval);
+		}
 		return TRUE;
+	}
 	default:
 		return FALSE;
 	}

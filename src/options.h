@@ -49,6 +49,19 @@ extern uio_DirHandle *meleeDir;
 
 extern uio_DirList *availableAddons;
 
+/* These get edited by TEXTENTRY widgets, so they should have room to
+ * hold as much as one of them allows by default. */
+typedef struct _input_template {
+	char name[30];
+
+	/* This should eventually also hold things like Joystick Port
+	 * and whether or not joysticks are enabled at all, and
+	 * possibly the whole configuration scheme.  If we do that, we
+	 * can actually ditch much of VControl. */
+} INPUT_TEMPLATE;
+
+extern INPUT_TEMPLATE input_templates[6];
+
 void prepareContentDir (const char *contentDirName, const char **addons);
 void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
