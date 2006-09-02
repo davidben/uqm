@@ -46,6 +46,9 @@ void DisableCharacterMode (void);
 wchar_t GetNextCharacter (void);
 wchar_t GetLastCharacter (void);
 
+/* Interrogating the current key configuration */
+
+void InterrogateInputState (int template, int control, int index, char *buffer, int maxlen);
 
 #endif /* _INPLIB_H */
 

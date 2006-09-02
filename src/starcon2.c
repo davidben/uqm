@@ -361,7 +361,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[0].name, "Keyboard 1");
+		strcpy (input_templates[0].name, "Arrows");
 		res_PutString ("config.keys.1.name", input_templates[0].name);
 	}
 	if (res_HasKey ("config.keys.2.name"))
@@ -371,7 +371,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[1].name, "Keyboard 2");
+		strcpy (input_templates[1].name, "WASD");
 		res_PutString ("config.keys.2.name", input_templates[1].name);
 	}
 	if (res_HasKey ("config.keys.3.name"))
@@ -381,7 +381,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[2].name, "Keyboard 3");
+		strcpy (input_templates[2].name, "Arrows (2)");
 		res_PutString ("config.keys.3.name", input_templates[2].name);
 	}
 	if (res_HasKey ("config.keys.4.name"))
@@ -391,7 +391,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[3].name, "Joystick 1");
+		strcpy (input_templates[3].name, "ESDF");
 		res_PutString ("config.keys.4.name", input_templates[3].name);
 	}
 	if (res_HasKey ("config.keys.5.name"))
@@ -401,7 +401,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[4].name, "Joystick 2");
+		strcpy (input_templates[4].name, "Joystick 1");
 		res_PutString ("config.keys.5.name", input_templates[4].name);
 	}
 	if (res_HasKey ("config.keys.6.name"))
@@ -411,7 +411,7 @@ main (int argc, char *argv[])
 	}
 	else
 	{
-		strcpy (input_templates[5].name, "Joystick 3");
+		strcpy (input_templates[5].name, "Joystick 2");
 		res_PutString ("config.keys.6.name", input_templates[5].name);
 	}
 

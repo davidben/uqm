@@ -475,6 +475,66 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	SetContextForeGroundColor (oldtext);
 }
 
+void
+Widget_DrawControlEntry (WIDGET *_self, int x, int y)
+{
+	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
+	COLOR oldtext;
+	COLOR inactive, default_color, selected;
+	FONT  oldfont = SetContextFont (StarConFont);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
+	TEXT t;
+	int i, home_x, home_y;
+	
+	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
+	selected = WIDGET_ACTIVE_COLOR;
+	inactive = WIDGET_INACTIVE_COLOR;
+
+	t.baseline.x = x;
+	t.baseline.y = y;
+	t.align = ALIGN_LEFT;
+	t.valign = VALIGN_BOTTOM;
+	t.CharCount = ~0;
+	t.pStr = self->category;
+	if (widget_focus == _self)
+	{
+		oldtext = SetContextForeGroundColor (selected);
+	}
+	else
+	{
+		oldtext = SetContextForeGroundColor (default_color);
+	}
+	font_DrawText (&t);
+
+        // 3 * SCREEN_WIDTH / ((self->maxcolumns + 1) * 2)) as per CHOICE, but only two options.
+	home_x = t.baseline.x + (SCREEN_WIDTH / 2); 
+	home_y = t.baseline.y;
+	t.align = ALIGN_CENTER;
+	for (i = 0; i < 2; i++)
+	{
+		t.baseline.x = home_x + ((i % 3) * (SCREEN_WIDTH / 3));  // self->maxcolumns + 1 as per CHOICE.
+		t.baseline.y = home_y + (8 * (i / 3));
+		t.pStr = self->controlname[i];
+		if (!t.pStr[0])
+		{
+			t.pStr = "---";
+		}
+		if ((widget_focus == _self) &&
+		    (self->highlighted == i))
+		{
+			SetContextForeGroundColor (selected);
+		} 
+		else
+		{
+			SetContextForeGroundColor (default_color);
+		}
+		font_DrawText (&t);
+	}
+	SetContextFontEffect (oldFontEffect);
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldtext);
+}
+
 int
 Widget_HeightChoice (WIDGET *_self)
 {
@@ -523,6 +583,21 @@ Widget_ReceiveFocusChoice (WIDGET *_self, int event)
 	WIDGET_CHOICE *self = (WIDGET_CHOICE *)_self;
 	widget_focus = _self;
 	self->highlighted = self->selected;
+	(void)event;
+	return TRUE;
+}
+
+int
+Widget_ReceiveFocusControlEntry (WIDGET *_self, int event)
+{
+	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
+	int oldval = 0;
+	if (widget_focus->tag == WIDGET_TYPE_CONTROLENTRY)
+	{
+		oldval = ((WIDGET_CONTROLENTRY *)widget_focus)->highlighted;
+	}
+	widget_focus = _self;
+	self->highlighted = oldval;
 	(void)event;
 	return TRUE;
 }
@@ -684,6 +759,23 @@ Widget_HandleEventTextEntry (WIDGET *_self, int event)
 		if (!self->handleEventSelect)
 			return FALSE;
 		return (*self->handleEventSelect)(self);
+	}
+	return FALSE;
+}
+
+int
+Widget_HandleEventControlEntry (WIDGET *_self, int event)
+{
+	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
+	if (event == WIDGET_EVENT_SELECT)
+	{
+		/* TODO: Something. */
+		(void)self;
+	}
+	if ((event == WIDGET_EVENT_RIGHT) ||
+	    (event == WIDGET_EVENT_LEFT))
+	{
+		self->highlighted = 1-self->highlighted;
 	}
 	return FALSE;
 }

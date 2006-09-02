@@ -31,9 +31,22 @@ enum {
 	NUM_WIDGET_EVENTS
 };
 
-#define WIDGET_TEXTENTRY_WIDTH 30
+typedef enum {
+	WIDGET_TYPE_MENU_SCREEN,
+	WIDGET_TYPE_CHOICE,
+	WIDGET_TYPE_BUTTON,
+	WIDGET_TYPE_LABEL,
+	WIDGET_TYPE_SLIDER,
+	WIDGET_TYPE_TEXTENTRY,
+	WIDGET_TYPE_CONTROLENTRY,
+	NUM_WIDGET_TYPES
+} WIDGET_TYPE;
+
+#define WIDGET_TEXTENTRY_WIDTH    30
+#define WIDGET_CONTROLENTRY_WIDTH 16
 
 typedef struct _widget {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -43,6 +56,7 @@ typedef struct _widget {
 } WIDGET;
 
 typedef struct _widget_menu_screen {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -63,6 +77,7 @@ typedef struct {
 } CHOICE_OPTION;
 
 typedef struct _widget_choice {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -78,6 +93,7 @@ typedef struct _widget_choice {
 } WIDGET_CHOICE;
 
 typedef struct _widget_button {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -89,6 +105,7 @@ typedef struct _widget_button {
 } WIDGET_BUTTON;
 
 typedef struct _widget_label {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -100,6 +117,7 @@ typedef struct _widget_label {
 } WIDGET_LABEL;
 
 typedef struct _widget_slider {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -121,6 +139,7 @@ typedef enum {
 } WIDGET_TEXTENTRY_STATE;
 
 typedef struct _widget_textentry {
+	WIDGET_TYPE tag;
 	struct _widget *parent;
 	int (*handleEvent)(struct _widget *self, int event);
 	int (*receiveFocus)(struct _widget *self, int event);
@@ -139,6 +158,19 @@ typedef struct _widget_textentry {
 	int cursor_pos;
 } WIDGET_TEXTENTRY;
 
+typedef struct _widget_controlentry {
+	WIDGET_TYPE tag;
+	struct _widget *parent;
+	int (*handleEvent)(struct _widget *self, int event);
+	int (*receiveFocus)(struct _widget *self, int event);
+	void (*draw)(struct _widget *self, int x, int y);
+	int (*height)(struct _widget *self);
+	int (*width)(struct _widget *self);
+	const char *category;
+	int highlighted;
+	char controlname[2][WIDGET_CONTROLENTRY_WIDTH];
+} WIDGET_CONTROLENTRY;
+
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
 
 int Widget_Event (int event);
@@ -149,12 +181,14 @@ int Widget_ReceiveFocusMenuScreen (WIDGET *_self, int event);
 int Widget_ReceiveFocusChoice (WIDGET *_self, int event);
 int Widget_ReceiveFocusSimple (WIDGET *_self, int event);
 int Widget_ReceiveFocusSlider (WIDGET *_self, int event);
+int Widget_ReceiveFocusControlEntry (WIDGET *_self, int event);
 int Widget_ReceiveFocusRefuseFocus (WIDGET *_self, int event);
 
 int Widget_HandleEventMenuScreen (WIDGET *_self, int event);
 int Widget_HandleEventChoice (WIDGET *_self, int event);
 int Widget_HandleEventSlider (WIDGET *_self, int event);
 int Widget_HandleEventTextEntry (WIDGET *_self, int event);
+int Widget_HandleEventControlEntry (WIDGET *_self, int event);
 int Widget_HandleEventIgnoreAll (WIDGET *_self, int event);
 
 int Widget_HeightChoice (WIDGET *_self);
@@ -170,6 +204,7 @@ void Widget_DrawButton (WIDGET *_self, int x, int y);
 void Widget_DrawLabel (WIDGET *_self, int x, int y);
 void Widget_DrawSlider (WIDGET *_self, int x, int y);
 void Widget_DrawTextEntry (WIDGET *_self, int x, int y);
+void Widget_DrawControlEntry (WIDGET *_self, int x, int y);
 
 void Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y);
 

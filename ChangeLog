@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Default key configuration changed slightly; online display of current 
+  key bindings - Michael
 - Input templates can now be renamed, both online and off - Michael
 - Fixed an integer-size error that was causing crashes on AMD64, from 
   Solomon Peachy (#895) - Michael

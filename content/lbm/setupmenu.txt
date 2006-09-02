@@ -378,21 +378,33 @@ Placeholder
 Placeholder
 
 #(CAT_20_OPT_0_DESC)
+
+
 Select the control template to edit.
 
 #(CAT_20_OPT_1_DESC)
+
+
 Select the control template to edit.
 
 #(CAT_20_OPT_2_DESC)
+
+
 Select the control template to edit.
 
 #(CAT_20_OPT_3_DESC)
+
+
 Select the control template to edit.
 
 #(CAT_20_OPT_4_DESC)
+
+
 Select the control template to edit.
 
 #(CAT_20_OPT_5_DESC)
+
+
 Select the control template to edit.
 
 #(SLIDERS)
@@ -458,6 +470,8 @@ hardware-dependent options.
 Edit key control sets.
 
 #(BUTTON_9_DESC)
+
+
 Return to control set selection screen.
 
 #(LABELS)
@@ -483,3 +497,12 @@ Name
 
 #(TEXT_ENTRIES_INITIAL)
 Placeholder
+
+#(CONTROL_ENTRIES)
+Up
+Down
+Left
+Right
+Weapon
+Special
+Escape

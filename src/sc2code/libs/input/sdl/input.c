@@ -23,6 +23,7 @@
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/input/input_common.h"
 #include "libs/input/sdl/vcontrol.h"
+#include "libs/input/sdl/keynames.h"
 #include "controls.h"
 #include "libs/file.h"
 #include "libs/log.h"
@@ -364,6 +365,41 @@ FlushInput (void)
 {
 	TFB_ResetControls ();
 	FlushInputState ();
+}
+
+void
+InterrogateInputState (int template, int control, int index, char *buffer, int maxlen)
+{
+	int i;
+	VCONTROL_GESTURE g;
+
+	VControl_StartIter (&ImmediateInputState.key[template][control]);
+	i = 0;
+	while (VControl_NextBinding (&g))
+	{
+		if (i++ < index)
+		{
+			continue;
+		}
+		switch (g.type)
+		{
+		case VCONTROL_KEY:
+			snprintf (buffer, maxlen, "%s", VControl_code2name (g.gesture.key));
+			buffer[maxlen-1] = 0;
+			break;
+		case VCONTROL_JOYBUTTON:
+			snprintf (buffer, maxlen, "[Button %d]", g.gesture.button.index + 1);
+			buffer[maxlen-1] = 0;
+			break;
+		default:
+			/* Something we don't handle yet */
+			buffer[0] = 0;
+			break;
+		}
+		return;
+	}
+	/* There aren't that many bindings, so return blank string */
+	buffer[0] = 0;
 }
 
 #endif

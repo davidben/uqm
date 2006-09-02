@@ -28,6 +28,7 @@
 #include "libs/graphics/tfb_draw.h"
 #include "libs/strlib.h"
 #include "libs/reslib.h"
+#include "libs/inplib.h"
 #include "libs/sound/sound.h"
 #include "libs/resource/stringbank.h"
 #include "libs/log.h"
@@ -69,12 +70,13 @@ static void rename_template (WIDGET_TEXTENTRY *self);
 #define RES_OPTS 2
 #endif
 
-#define MENU_COUNT       8
-#define CHOICE_COUNT    21
-#define SLIDER_COUNT     3
-#define BUTTON_COUNT    10
-#define LABEL_COUNT      3
-#define TEXTENTRY_COUNT  1
+#define MENU_COUNT          8
+#define CHOICE_COUNT       21
+#define SLIDER_COUNT        3
+#define BUTTON_COUNT       10
+#define LABEL_COUNT         3
+#define TEXTENTRY_COUNT     1
+#define CONTROLENTRY_COUNT  7
 
 /* The space for our widgets */
 static WIDGET_MENU_SCREEN menus[MENU_COUNT];
@@ -83,6 +85,7 @@ static WIDGET_SLIDER sliders[SLIDER_COUNT];
 static WIDGET_BUTTON buttons[BUTTON_COUNT];
 static WIDGET_LABEL labels[LABEL_COUNT];
 static WIDGET_TEXTENTRY textentries[TEXTENTRY_COUNT];
+static WIDGET_CONTROLENTRY controlentries[CONTROLENTRY_COUNT];
 
 /* The hardcoded data that isn't strings */
 
@@ -105,7 +108,7 @@ static int menu_sizes[MENU_COUNT] = {
 #else
 	4,
 #endif
-	4
+	11
 };
 
 static int menu_bgs[MENU_COUNT] = { 0, 1, 1, 2, 3, 1, 2, 1 };
@@ -167,6 +170,13 @@ static WIDGET *editkeys_widgets[] = {
 	(WIDGET *)(&choices[20]),
 	(WIDGET *)(&labels[2]),
 	(WIDGET *)(&textentries[0]),
+	(WIDGET *)(&controlentries[0]),
+	(WIDGET *)(&controlentries[1]),
+	(WIDGET *)(&controlentries[2]),
+	(WIDGET *)(&controlentries[3]),
+	(WIDGET *)(&controlentries[4]),
+	(WIDGET *)(&controlentries[5]),
+	(WIDGET *)(&controlentries[6]),
 	(WIDGET *)(&buttons[9]) };
 
 static WIDGET *incomplete_widgets[] = {
@@ -280,6 +290,23 @@ do_advanced (WIDGET *self, int event)
 	return FALSE;
 }
 
+static void
+populate_editkeys (int template)
+{
+	int i, j;
+	
+	strncpy (textentries[0].value, input_templates[template].name, textentries[0].maxlen);
+	textentries[0].value[textentries[0].maxlen-1] = 0;
+	
+	for (i = 0; i < NUM_KEYS; i++)
+	{
+		for (j = 0; j < 2; j++)
+		{
+			InterrogateInputState (template, i, j, controlentries[i].controlname[j], WIDGET_CONTROLENTRY_WIDTH);
+		}
+	}
+}
+
 static int
 do_editkeys (WIDGET *self, int event)
 {
@@ -288,8 +315,8 @@ do_editkeys (WIDGET *self, int event)
 		next = (WIDGET *)(&menus[7]);
 		/* Prepare the components */
 		choices[20].selected = 0;
-		strncpy (textentries[0].value, input_templates[0].name, textentries[0].maxlen);
-		textentries[0].value[textentries[0].maxlen] = 0;
+		
+		populate_editkeys (0);
 		(*next->receiveFocus) (next, WIDGET_EVENT_DOWN);
 		return TRUE;
 	}
@@ -300,8 +327,7 @@ do_editkeys (WIDGET *self, int event)
 static void
 change_template (WIDGET_CHOICE *self, int oldval)
 {
-	strncpy (textentries[0].value, input_templates[self->selected].name, WIDGET_TEXTENTRY_WIDTH);
-	textentries[0].value[WIDGET_TEXTENTRY_WIDTH-1] = 0;
+	populate_editkeys (self->selected);
 }
 
 static void
@@ -574,6 +600,7 @@ init_widgets (void)
 
 	for (i = 0; i < MENU_COUNT; i++)
 	{
+		menus[i].tag = WIDGET_TYPE_MENU_SCREEN;
 		menus[i].parent = NULL;
 		menus[i].handleEvent = Widget_HandleEventMenuScreen;
 		menus[i].receiveFocus = Widget_ReceiveFocusMenuScreen;
@@ -599,6 +626,7 @@ init_widgets (void)
 
 	for (i = 0; i < CHOICE_COUNT; i++)
 	{
+		choices[i].tag = WIDGET_TYPE_CHOICE;
 		choices[i].parent = NULL;
 		choices[i].handleEvent = Widget_HandleEventChoice;
 		choices[i].receiveFocus = Widget_ReceiveFocusChoice;
@@ -688,6 +716,7 @@ init_widgets (void)
 
 	for (i = 0; i < SLIDER_COUNT; i++)
 	{
+		sliders[i].tag = WIDGET_TYPE_SLIDER;
 		sliders[i].parent = NULL;
 		sliders[i].handleEvent = Widget_HandleEventSlider;
 		sliders[i].receiveFocus = Widget_ReceiveFocusSimple;
@@ -742,6 +771,7 @@ init_widgets (void)
 
 	for (i = 0; i < BUTTON_COUNT; i++)
 	{
+		buttons[i].tag = WIDGET_TYPE_BUTTON;
 		buttons[i].parent = NULL;
 		buttons[i].handleEvent = button_handlers[i];
 		buttons[i].receiveFocus = Widget_ReceiveFocusSimple;
@@ -791,6 +821,7 @@ init_widgets (void)
 
 	for (i = 0; i < LABEL_COUNT; i++)
 	{
+		labels[i].tag = WIDGET_TYPE_LABEL;
 		labels[i].parent = NULL;
 		labels[i].handleEvent = Widget_HandleEventIgnoreAll;
 		labels[i].receiveFocus = Widget_ReceiveFocusRefuseFocus;
@@ -834,6 +865,7 @@ init_widgets (void)
 	}
 	for (i = 0; i < TEXTENTRY_COUNT; i++)
 	{
+		textentries[i].tag = WIDGET_TYPE_TEXTENTRY;
 		textentries[i].parent = NULL;
 		textentries[i].handleEvent = Widget_HandleEventTextEntry;
 		textentries[i].receiveFocus = Widget_ReceiveFocusSimple;
@@ -866,6 +898,33 @@ init_widgets (void)
 		textentries[i].value[textentries[i].maxlen] = 0;
 	}
 	textentries[0].onChange = rename_template;
+
+	/* Control Entry boxes */
+	if (index >= count)
+	{
+		log_add (log_Fatal, "PANIC: String table cut short while reading control entries");
+		exit (EXIT_FAILURE);
+	}
+
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != CONTROLENTRY_COUNT)
+	{
+		log_add (log_Fatal, "PANIC: Incorrect number of Control Entries");
+		exit (EXIT_FAILURE);
+	}
+	for (i = 0; i < CONTROLENTRY_COUNT; i++)
+	{
+		controlentries[i].tag = WIDGET_TYPE_CONTROLENTRY;
+		controlentries[i].parent = NULL;
+		controlentries[i].handleEvent = Widget_HandleEventControlEntry;
+		controlentries[i].receiveFocus = Widget_ReceiveFocusControlEntry;
+		controlentries[i].draw = Widget_DrawControlEntry;
+		controlentries[i].height = Widget_HeightOneLine;
+		controlentries[i].width = Widget_WidthFullScreen;
+		controlentries[i].category = buffer[i];
+		controlentries[i].highlighted = 0;
+		controlentries[i].controlname[0][0] = 0;
+		controlentries[i].controlname[0][1] = 0;
+	}
 
 	/* Check for garbage at the end */
 	if (index < count)
