@@ -393,8 +393,10 @@ InterrogateInputState (int template, int control, int index, char *buffer, int m
 			break;
 		case VCONTROL_JOYAXIS:
 			snprintf (buffer, maxlen, "[J%d A%d %c]", g.gesture.axis.port, g.gesture.axis.index, g.gesture.axis.polarity > 0 ? '+' : '-');
+			break;
 		case VCONTROL_JOYHAT:
 			snprintf (buffer, maxlen, "[J%d H%d %d]", g.gesture.hat.port, g.gesture.hat.index, g.gesture.hat.dir);
+			break;
 		default:
 			/* Something we don't handle yet */
 			buffer[0] = 0;
