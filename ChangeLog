@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Tweak to Lander UI - Special Weapon is now explicitly Lander Escape, 
+  just as Warp Escape is - Michael
 - Default key configuration changed slightly; online display of current 
   key bindings - Michael
 - Input templates can now be renamed, both online and off - Michael

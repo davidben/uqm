@@ -1625,7 +1625,8 @@ SetVelocityComponents (
 	}
 	else if (pMS->delta_item == 0
 			|| (HIBYTE (pMS->delta_item) 
-			&& (CurrentInputState.key[PlayerOne][KEY_ESCAPE]
+			&& ((CurrentInputState.key[PlayerOne][KEY_ESCAPE] ||
+			     CurrentInputState.key[PlayerOne][KEY_SPECIAL])
 			|| ((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit)))
 	{
 		if (pMS->delta_item || pMS->CurState > EXPLOSION_LIFE + 60)
