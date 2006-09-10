@@ -28,6 +28,7 @@ enum {
 	WIDGET_EVENT_RIGHT,
 	WIDGET_EVENT_SELECT,
 	WIDGET_EVENT_CANCEL,
+	WIDGET_EVENT_DELETE,
 	NUM_WIDGET_EVENTS
 };
 
@@ -166,12 +167,16 @@ typedef struct _widget_controlentry {
 	void (*draw)(struct _widget *self, int x, int y);
 	int (*height)(struct _widget *self);
 	int (*width)(struct _widget *self);
+	void (*onChange)(struct _widget_controlentry *self);
+	void (*onDelete)(struct _widget_controlentry *self);
 	const char *category;
+	int controlindex;
 	int highlighted;
 	char controlname[2][WIDGET_CONTROLENTRY_WIDTH];
 } WIDGET_CONTROLENTRY;
 
 void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
+void DrawLabelAsWindow(WIDGET_LABEL *label);
 
 int Widget_Event (int event);
 

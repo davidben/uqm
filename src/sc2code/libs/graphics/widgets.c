@@ -1,5 +1,6 @@
 #include "graphics/gfx_common.h"
 #include "graphics/widgets.h"
+#include "strlib.h"
 #include "setup.h"
 #include "units.h"
 
@@ -10,6 +11,8 @@ WIDGET *widget_focus = NULL;
 #define WIDGET_INACTIVE_COLOR BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x09)
 #define WIDGET_INACTIVE_SELECTED_COLOR  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
 #define WIDGET_CURSOR_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
+#define WIDGET_DIALOG_COLOR BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x07)
+#define WIDGET_DIALOG_TEXT_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
 
 void
 DrawShadowedBox(PRECT r, COLOR bg, COLOR dark, COLOR medium)
@@ -48,6 +51,59 @@ DrawShadowedBox(PRECT r, COLOR bg, COLOR dark, COLOR medium)
 
 	SetContextForeGroundColor (oldcolor);
 	UnbatchGraphics ();
+}
+
+void
+DrawLabelAsWindow(WIDGET_LABEL *label)
+{
+	COLOR oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
+	COLOR dark, medium;
+	FONT  oldfont = SetContextFont (StarConFont);
+	FRAME oldFontEffect = SetContextFontEffect (NULL);
+	RECT r;
+	TEXT t;
+	int i, win_w, win_h;
+
+	dark = BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F);
+	medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
+
+	/* Compute the dimensions of the label */
+	win_h = label->height ((WIDGET *)label) + 16;
+	win_w = 0;
+	for (i = 0; i < label->line_count; i++)
+	{
+		int len = utf8StringCount (label->lines[i]);
+		if (len > win_w)
+		{
+			win_w = len;
+		}
+	}
+	win_w = (win_w * 6) + 16;
+
+	BatchGraphics ();
+	r.corner.x = (SCREEN_WIDTH - win_w) >> 1;
+	r.corner.y = (SCREEN_HEIGHT - win_h) >> 1;
+	r.extent.width = win_w;
+	r.extent.height = win_h;
+	DrawShadowedBox (&r, WIDGET_DIALOG_COLOR, dark, medium);
+
+	t.baseline.x = r.corner.x + (r.extent.width >> 1);
+	t.baseline.y = r.corner.y + 16;
+	for (i = 0; i < label->line_count; i++)
+	{
+		t.pStr = label->lines[i];
+		t.align = ALIGN_CENTER;
+		t.valign = VALIGN_BOTTOM;
+		t.CharCount = (COUNT)~0;
+		font_DrawText (&t);
+		t.baseline.y += 8;
+	}
+
+	UnbatchGraphics ();
+
+	SetContextFontEffect (oldFontEffect);
+	SetContextFont (oldfont);
+	SetContextForeGroundColor (oldfg);
 }
 
 static void
@@ -769,13 +825,25 @@ Widget_HandleEventControlEntry (WIDGET *_self, int event)
 	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
 	if (event == WIDGET_EVENT_SELECT)
 	{
-		/* TODO: Something. */
-		(void)self;
+		if (self->onChange)
+		{
+			(self->onChange)(self);
+			return TRUE;
+		}
+	}
+	if (event == WIDGET_EVENT_DELETE)
+	{
+		if (self->onDelete)
+		{
+			(self->onDelete)(self);
+			return TRUE;
+		}
 	}
 	if ((event == WIDGET_EVENT_RIGHT) ||
 	    (event == WIDGET_EVENT_LEFT))
 	{
 		self->highlighted = 1-self->highlighted;
+		return TRUE;
 	}
 	return FALSE;
 }

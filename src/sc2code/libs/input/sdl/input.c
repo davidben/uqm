@@ -27,6 +27,7 @@
 #include "controls.h"
 #include "libs/file.h"
 #include "libs/log.h"
+#include "libs/reslib.h"
 #include "options.h"
 
 
@@ -40,7 +41,7 @@ static BOOLEAN InputInitialized = FALSE;
 
 static BOOLEAN _in_character_mode = FALSE;
 
-#define VCONTROL_VERSION 3
+#define VCONTROL_VERSION 4
 
 static VControl_NameBinding control_names[] = {
 	{ "Menu-Up", (int *)&ImmediateInputState.menu[KEY_MENU_UP] },
@@ -61,48 +62,48 @@ static VControl_NameBinding control_names[] = {
 	{ "Menu-Edit-Cancel", (int *)&ImmediateInputState.menu[KEY_MENU_EDIT_CANCEL] },
 	{ "Menu-Search", (int *)&ImmediateInputState.menu[KEY_MENU_SEARCH] },
 	{ "Menu-Next", (int *)&ImmediateInputState.menu[KEY_MENU_NEXT] },
-	{ "Keyboard-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] },
-	{ "Keyboard-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] },
-	{ "Keyboard-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] },
-	{ "Keyboard-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] },
-	{ "Keyboard-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] },
-	{ "Keyboard-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL] },
-	{ "Keyboard-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE] },
-	{ "Keyboard-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] },
-	{ "Keyboard-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] },
-	{ "Keyboard-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] },
-	{ "Keyboard-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] },
-	{ "Keyboard-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] },
-	{ "Keyboard-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL] },
-	{ "Keyboard-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_ESCAPE] },
-	{ "Keyboard-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_UP] },
-	{ "Keyboard-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_DOWN] },
-	{ "Keyboard-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_LEFT] },
-	{ "Keyboard-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_RIGHT] },
-	{ "Keyboard-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_WEAPON] },
-	{ "Keyboard-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_SPECIAL] },
-	{ "Keyboard-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_ESCAPE] },
-	{ "Joystick-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_UP] },
-	{ "Joystick-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_DOWN] },
-	{ "Joystick-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_LEFT] },
-	{ "Joystick-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_RIGHT] },
-	{ "Joystick-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_WEAPON] },
-	{ "Joystick-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_SPECIAL] },
-	{ "Joystick-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_ESCAPE] },
-	{ "Joystick-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_UP] },
-	{ "Joystick-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_DOWN] },
-	{ "Joystick-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_LEFT] },
-	{ "Joystick-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_RIGHT] },
-	{ "Joystick-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_WEAPON] },
-	{ "Joystick-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_SPECIAL] },
-	{ "Joystick-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_ESCAPE] },
-	{ "Joystick-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_UP] },
-	{ "Joystick-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_DOWN] },
-	{ "Joystick-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_LEFT] },
-	{ "Joystick-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_RIGHT] },
-	{ "Joystick-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_WEAPON] },
-	{ "Joystick-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_SPECIAL] },
-	{ "Joystick-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_ESCAPE] },
+	{ "Template-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] },
+	{ "Template-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] },
+	{ "Template-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] },
+	{ "Template-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] },
+	{ "Template-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] },
+	{ "Template-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL] },
+	{ "Template-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE] },
+	{ "Template-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] },
+	{ "Template-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] },
+	{ "Template-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] },
+	{ "Template-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] },
+	{ "Template-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] },
+	{ "Template-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL] },
+	{ "Template-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_ESCAPE] },
+	{ "Template-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_UP] },
+	{ "Template-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_DOWN] },
+	{ "Template-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_LEFT] },
+	{ "Template-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_RIGHT] },
+	{ "Template-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_WEAPON] },
+	{ "Template-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_SPECIAL] },
+	{ "Template-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_ESCAPE] },
+	{ "Template-4-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_UP] },
+	{ "Template-4-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_DOWN] },
+	{ "Template-4-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_LEFT] },
+	{ "Template-4-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_RIGHT] },
+	{ "Template-4-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_WEAPON] },
+	{ "Template-4-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_SPECIAL] },
+	{ "Template-4-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_ESCAPE] },
+	{ "Template-5-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_UP] },
+	{ "Template-5-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_DOWN] },
+	{ "Template-5-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_LEFT] },
+	{ "Template-5-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_RIGHT] },
+	{ "Template-5-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_WEAPON] },
+	{ "Template-5-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_SPECIAL] },
+	{ "Template-5-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_ESCAPE] },
+	{ "Template-6-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_UP] },
+	{ "Template-6-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_DOWN] },
+	{ "Template-6-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_LEFT] },
+	{ "Template-6-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_RIGHT] },
+	{ "Template-6-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_WEAPON] },
+	{ "Template-6-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_SPECIAL] },
+	{ "Template-6-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_ESCAPE] },
 	{ "Pause", (int *)&ImmediateInputState.menu[KEY_PAUSE] },
 	{ "Exit", (int *)&ImmediateInputState.menu[KEY_EXIT] },
 	{ "Abort", (int *)&ImmediateInputState.menu[KEY_ABORT] },
@@ -406,6 +407,59 @@ InterrogateInputState (int template, int control, int index, char *buffer, int m
 	}
 	/* There aren't that many bindings, so return blank string */
 	buffer[0] = 0;
+}
+
+void
+RemoveInputState (int template, int control, int index)
+{
+	int i;
+	VCONTROL_GESTURE g;
+
+	VControl_StartIter (&ImmediateInputState.key[template][control]);
+	i = 0;
+	while (VControl_NextBinding (&g))
+	{
+		if (i++ < index)
+		{
+			continue;
+		}
+		VControl_RemoveGestureBinding (&g, &ImmediateInputState.key[template][control]);
+		return;
+	}
+	/* No such gesture! */
+	return;
+}
+
+void
+RebindInputState (int template, int control, int index)
+{
+	SDL_Event e;
+
+	/* Remove the old binding on this spot */
+	RemoveInputState (template, control, index);
+
+	/* Wait for the next interesting bit of user input */
+	VControl_ClearEvent ();
+	while (!VControl_GetLastEvent (&e))
+	{
+		TaskSwitch ();
+	}
+
+	/* And now, add the new binding. */
+	VControl_AddBinding (&e, &ImmediateInputState.key[template][control]);
+}
+
+void
+SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
+{
+	uio_Stream *f;
+	
+	f = res_OpenResFile (path, fname, "wt");
+	if (f) 
+	{
+		VControl_Dump (f);
+		res_CloseResFile (f);
+	}
 }
 
 #endif

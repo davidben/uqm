@@ -62,7 +62,8 @@ static int do_advanced (WIDGET *self, int event);
 static int do_editkeys (WIDGET *self, int event);
 static void change_template (WIDGET_CHOICE *self, int oldval);
 static void rename_template (WIDGET_TEXTENTRY *self);
-
+static void rebind_control (WIDGET_CONTROLENTRY *widget);
+static void clear_control (WIDGET_CONTROLENTRY *widget);
 
 #ifdef HAVE_OPENGL
 #define RES_OPTS 4
@@ -74,7 +75,7 @@ static void rename_template (WIDGET_TEXTENTRY *self);
 #define CHOICE_COUNT       21
 #define SLIDER_COUNT        3
 #define BUTTON_COUNT       10
-#define LABEL_COUNT         3
+#define LABEL_COUNT         4
 #define TEXTENTRY_COUNT     1
 #define CONTROLENTRY_COUNT  7
 
@@ -471,6 +472,10 @@ DoSetupMenu (PSETUP_MENU_STATE pInputState)
 	{
 		Widget_Event (WIDGET_EVENT_CANCEL);
 	}
+	if (PulsedInputState.menu[KEY_MENU_DELETE])
+	{
+		Widget_Event (WIDGET_EVENT_DELETE);
+	}
 
 	SleepThreadUntil (pInputState->NextTime + MENU_FRAME_RATE);
 	pInputState->NextTime = GetTimeCounter ();
@@ -561,9 +566,33 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	return TRUE; // event handled
 }
 
+static void
+rebind_control (WIDGET_CONTROLENTRY *widget)
+{
+	int template = choices[20].selected;
+	int control = widget->controlindex;
+	int index = widget->highlighted;
+
+	FlushInput ();
+	DrawLabelAsWindow (&labels[3]);
+	RebindInputState (template, control, index);
+	populate_editkeys (template);
+	FlushInput ();
+}
+
+static void
+clear_control (WIDGET_CONTROLENTRY *widget)
+{
+	int template = choices[20].selected;
+	int control = widget->controlindex;
+	int index = widget->highlighted;
+      
+	RemoveInputState (template, control, index);
+	populate_editkeys (template);
+}	
+
 static stringbank *bank = NULL;
 static FRAME setup_frame = NULL;
-
 
 static void
 init_widgets (void)
@@ -923,7 +952,10 @@ init_widgets (void)
 		controlentries[i].category = buffer[i];
 		controlentries[i].highlighted = 0;
 		controlentries[i].controlname[0][0] = 0;
-		controlentries[i].controlname[0][1] = 0;
+		controlentries[i].controlname[1][0] = 0;
+		controlentries[i].controlindex = i;
+		controlentries[i].onChange = rebind_control;
+		controlentries[i].onDelete = clear_control;
 	}
 
 	/* Check for garbage at the end */
@@ -1166,7 +1198,6 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	int NewWidth = ScreenWidthActual;
 	int NewHeight = ScreenHeightActual;
 	int NewDriver = GraphicsDriver;
-	int i;
 
 	NewGfxFlags &= ~TFB_GFXFLAGS_SCALE_ANY;
 
@@ -1332,4 +1363,5 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutString ("config.keys.6.name", input_templates[5].name);
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
+	SaveKeyConfiguration (configDir, "keys.cfg");
 }

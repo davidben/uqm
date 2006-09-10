@@ -31,6 +31,12 @@ typedef struct {
 } VCONTROL_GESTURE;			
 
 /* Control of bindings */
+int  VControl_AddBinding (SDL_Event *e, int *target);
+void VControl_RemoveBinding (SDL_Event *e, int *target);
+
+int  VControl_AddGestureBinding (VCONTROL_GESTURE *g, int *target);
+void VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target);
+
 int  VControl_AddKeyBinding (SDLKey symbol, int *target);
 void VControl_RemoveKeyBinding (SDLKey symbol, int *target);
 int  VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target);
@@ -75,7 +81,9 @@ int VControl_GetConfigFileVersion (void);
 void VControl_SetConfigFileVersion (int v);
 
 /* Dump a configuration file corresponding to the current bindings and names. */
-void VControl_Dump (FILE *out);
+void VControl_Dump (uio_Stream *out);
+void VControl_SaveFilename (uio_DirHandle *path, const char *fname);
+
 
 /* Read a configuration file.  Returns number of errors encountered. */
 int VControl_ReadConfiguration (uio_Stream *in);

@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Online key configuration menu actually functional now - Michael
 - Tweak to Lander UI - Special Weapon is now explicitly Lander Escape, 
   just as Warp Escape is - Michael
 - Default key configuration changed slightly; online display of current 

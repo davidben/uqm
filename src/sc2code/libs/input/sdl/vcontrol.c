@@ -7,6 +7,7 @@
 #include "vcontrol_malloc.h"
 #include "keynames.h"
 #include "libs/log.h"
+#include "libs/reslib.h"
 
 /* How many binding slots are allocated at once. */
 #define POOL_CHUNK_SIZE 64
@@ -343,7 +344,7 @@ remove_binding (keybinding **ptr, int *target)
 	else
 	{
 		keybinding *prev = *ptr;
-		while (prev->next != NULL)
+		while (prev && prev->next != NULL)
 		{
 			if (prev->next->target == target)
 			{
@@ -353,6 +354,7 @@ remove_binding (keybinding **ptr, int *target)
 				todel->next = NULL;
 				todel->parent->remaining++;
 			}
+			prev = prev->next;
 		}
 	}
 }
@@ -436,6 +438,64 @@ VControl_RemoveBinding (SDL_Event *e, int *target)
 		break;
 	}
 }
+
+int
+VControl_AddGestureBinding (VCONTROL_GESTURE *g, int *target)
+{
+	int result;
+	switch (g->type)
+	{
+	case VCONTROL_KEY:
+		result = VControl_AddKeyBinding (g->gesture.key, target);
+		break;
+
+#ifdef HAVE_JOYSTICK
+	case VCONTROL_JOYAXIS:
+		result = VControl_AddJoyAxisBinding (g->gesture.axis.port, g->gesture.axis.index, (g->gesture.axis.polarity < 0) ? -1 : 1, target);
+		break;
+	case VCONTROL_JOYHAT:
+		result = VControl_AddJoyHatBinding (g->gesture.hat.port, g->gesture.hat.index, g->gesture.hat.dir, target);
+		break;
+	case VCONTROL_JOYBUTTON:
+		result = VControl_AddJoyButtonBinding (g->gesture.button.port, g->gesture.button.index, target);
+		break;
+#endif /* HAVE_JOYSTICK */
+
+	default:
+		log_add (log_Warning, "VControl_AddGestureBinding didn't understand argument gesture");
+		result = -1;
+		break;
+	}
+	return result;
+}
+
+void
+VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target)
+{
+	switch (g->type)
+	{
+	case VCONTROL_KEY:
+		VControl_RemoveKeyBinding (g->gesture.key, target);
+		break;
+
+#ifdef HAVE_JOYSTICK
+	case VCONTROL_JOYAXIS:
+		VControl_RemoveJoyAxisBinding (g->gesture.axis.port, g->gesture.axis.index, (g->gesture.axis.polarity < 0) ? -1 : 1, target);
+		break;
+	case VCONTROL_JOYHAT:
+		VControl_RemoveJoyHatBinding (g->gesture.hat.port, g->gesture.hat.index, g->gesture.hat.dir, target);
+		break;
+	case VCONTROL_JOYBUTTON:
+		VControl_RemoveJoyButtonBinding (g->gesture.button.port, g->gesture.button.index, target);
+		break;
+#endif /* HAVE_JOYSTICK */
+
+	default:
+		log_add (log_Warning, "VControl_RemoveGestureBinding didn't understand argument gesture");
+		break;
+	}
+}
+
 
 int
 VControl_AddKeyBinding (SDLKey symbol, int *target)
@@ -832,6 +892,11 @@ VControl_HandleEvent (const SDL_Event *e)
 #ifdef HAVE_JOYSTICK
 		case SDL_JOYAXISMOTION:
 			VControl_ProcessJoyAxis (e->jaxis.which, e->jaxis.axis, e->jaxis.value);
+			if ((e->jaxis.value > 15000) || (e->jaxis.value < -15000))
+			{
+				last_interesting = *e;
+				event_ready = 1;
+			}
 			break;
 		case SDL_JOYHATMOTION:
 			VControl_ProcessJoyHat (e->jhat.which, e->jhat.hat, e->jhat.value);
@@ -890,21 +955,29 @@ name2target (char *name)
 }
 
 static void
-dump_keybindings (FILE *out, keybinding *kb, char *name)
+dump_keybindings (uio_Stream *out, keybinding *kb, char *name)
 {
 	while (kb != NULL)
 	{
 		char *targetname = target2name (kb->target);
-		fprintf (out, "%s: %s\n", targetname, name);
+		WriteResFile (targetname, 1, strlen (targetname), out);
+		PutResFileChar (':', out);
+		PutResFileChar (' ', out);
+		WriteResFile (name, 1, strlen (name), out);
+		PutResFileChar ('\n', out);
+
 		kb = kb->next;
 	}
 }
 
 void
-VControl_Dump (FILE *out)
+VControl_Dump (uio_Stream *out)
 {
 	int i;
 	char namebuffer[64];
+
+	sprintf (namebuffer, "version %d\n", version);
+	WriteResFile (namebuffer, 1, strlen (namebuffer), out);
 
 	/* Print out keyboard bindings */
 	for (i = 0; i < SDLK_LAST; i++)
@@ -925,7 +998,9 @@ VControl_Dump (FILE *out)
 		{
 			int j;
 
-			fprintf (out, "joystick %d threshold %d\n", i, joysticks[i].threshold);
+			sprintf (namebuffer, "joystick %d threshold %d\n", i, joysticks[i].threshold);
+			WriteResFile (namebuffer, 1, strlen (namebuffer), out);
+			
 			for (j = 0; j < joysticks[i].numaxes; j++)
 			{
 				sprintf (namebuffer, "joystick %d axis %d negative", i, j);

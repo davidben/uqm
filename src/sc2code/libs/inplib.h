@@ -21,6 +21,7 @@
 
 #include "memlib.h"
 #include <stddef.h>
+#include "libs/uio.h"
 
 typedef DWORD INPUT_STATE;
 
@@ -49,6 +50,10 @@ wchar_t GetLastCharacter (void);
 /* Interrogating the current key configuration */
 
 void InterrogateInputState (int template, int control, int index, char *buffer, int maxlen);
+void RemoveInputState (int template, int control, int index);
+void RebindInputState (int template, int control, int index);
+
+void SaveKeyConfiguration (uio_DirHandle *path, const char *fname);
 
 #endif /* _INPLIB_H */
 
