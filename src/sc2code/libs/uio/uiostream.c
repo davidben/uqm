@@ -415,18 +415,24 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 		return 0;
 	}
 
-	// TODO: It's possible that uio_Stream_flushBuffer just seeked back
-	//       from the end of the part written, to the end of the part
-	//       read. This seek will just undo that effect, so there's room
-	//       for optimisation here.
-	//       (decouple stream->seekLow from stream->readEnd by adding
-	//       a seekHigh var?)
-	if (uio_lseek(stream->handle, stream->seekLow -
-			(stream->readEnd - stream->bufPtr), SEEK_SET) == -1) {
-		// errno is set
-		return 0;
+	if (stream->openFlags & O_APPEND) {
+		// If a file is opened in append mode, the file position indicator
+		// is moved to the end of the file before writing.
+		// We leave that up to the physical layer.
+	} else {
+		// TODO: It's possible that uio_Stream_flushWriteBuffer() just
+		//       seeked back from the end of the part written, to the end of
+		//       the part read. This seek will just undo that effect, so
+		//       there's room for optimisation here. (decouple
+		//       stream->seekLow from stream->readEnd by adding a seekHigh
+		//       var?)
+		if (uio_lseek(stream->handle, stream->seekLow -
+				(stream->readEnd - stream->bufPtr), SEEK_SET) == -1) {
+			// errno is set
+			return 0;
+		}
+		stream->seekLow -= (stream->readEnd - stream->bufPtr);
 	}
-	stream->seekLow -= (stream->readEnd - stream->bufPtr);
 	
 	bytesWritten = uio_write(stream->handle, buf, bytesToWrite);
 	if (bytesWritten != bytesToWrite) {
@@ -434,7 +440,20 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 		if (bytesWritten == -1)
 			return 0;
 	}
-	stream->seekLow += bytesWritten;
+	if (stream->openFlags & O_APPEND) {
+		// Determine the new location in the file.
+		off_t newPos = uio_lseek(stream->handle, 0, SEEK_CUR);
+		if (newPos == -1) {
+			// errno is set
+			stream->status = uio_Stream_STATUS_ERROR;
+			return 0;
+					// XXX: is returning 0 the best thing to do? The data
+					//      has actually been successfully written.
+		}
+		stream->seekLow = newPos;
+	} else {
+		stream->seekLow += bytesWritten;
+	}
 	// TODO: readStart is no longer aligned on a block.
 	stream->readStart = stream->buf;
 	stream->bufPtr = stream->buf;
