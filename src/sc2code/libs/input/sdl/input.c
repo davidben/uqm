@@ -454,7 +454,7 @@ SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
 {
 	uio_Stream *f;
 	
-	f = res_OpenResFile (path, fname, "wt");
+	f = res_OpenResFile (path, fname, "wb");
 	if (f) 
 	{
 		VControl_Dump (f);

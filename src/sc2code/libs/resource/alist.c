@@ -222,7 +222,7 @@ Alist_Dump (alist *m, uio_Stream *s, const char *prefix)
 			PutResFileChar('=', s);
 			PutResFileChar(' ', s);
 			WriteResFile (e->value, 1, strlen (e->value), s);
-			PutResFileChar('\n', s);
+			PutResFileNewline(s);
 		}
 		e = e->next;
 	}

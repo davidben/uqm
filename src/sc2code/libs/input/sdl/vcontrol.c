@@ -964,7 +964,7 @@ dump_keybindings (uio_Stream *out, keybinding *kb, char *name)
 		PutResFileChar (':', out);
 		PutResFileChar (' ', out);
 		WriteResFile (name, 1, strlen (name), out);
-		PutResFileChar ('\n', out);
+		PutResFileNewline (out);
 
 		kb = kb->next;
 	}
@@ -976,8 +976,9 @@ VControl_Dump (uio_Stream *out)
 	int i;
 	char namebuffer[64];
 
-	sprintf (namebuffer, "version %d\n", version);
+	sprintf (namebuffer, "version %d", version);
 	WriteResFile (namebuffer, 1, strlen (namebuffer), out);
+	PutResFileNewline (out);
 
 	/* Print out keyboard bindings */
 	for (i = 0; i < SDLK_LAST; i++)
@@ -998,8 +999,9 @@ VControl_Dump (uio_Stream *out)
 		{
 			int j;
 
-			sprintf (namebuffer, "joystick %d threshold %d\n", i, joysticks[i].threshold);
+			sprintf (namebuffer, "joystick %d threshold %d", i, joysticks[i].threshold);
 			WriteResFile (namebuffer, 1, strlen (namebuffer), out);
+			PutResFileNewline (out);
 			
 			for (j = 0; j < joysticks[i].numaxes; j++)
 			{

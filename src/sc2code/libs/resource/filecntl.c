@@ -99,6 +99,18 @@ PutResFileChar (char ch, uio_Stream *fp)
 	return (retval);
 }
 
+int
+PutResFileNewline (uio_Stream *fp)
+{
+	int retval;
+
+#ifdef WIN32
+	PutResFileChar ('\r', fp);
+#endif
+	retval = PutResFileChar ('\n', fp);
+	return (retval);
+}
+
 long
 SeekResFile (uio_Stream *fp, long offset, int whence)
 {

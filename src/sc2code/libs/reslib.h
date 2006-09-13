@@ -60,6 +60,7 @@ extern int WriteResFile (PCVOID lpBuf, COUNT size, COUNT count,
 		uio_Stream *fp);
 extern int GetResFileChar (uio_Stream *fp);
 extern int PutResFileChar (char ch, uio_Stream *fp);
+extern int PutResFileNewline (uio_Stream *fp);
 extern long SeekResFile (uio_Stream *fp, long offset, int whence);
 extern long TellResFile (uio_Stream *fp);
 extern long LengthResFile (uio_Stream *fp);

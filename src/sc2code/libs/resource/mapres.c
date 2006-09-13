@@ -109,7 +109,7 @@ res_SaveFilename (uio_DirHandle *path, const char *fname, const char *root)
 	uio_Stream *f;
 	
 	check_map_init ();
-	f = res_OpenResFile (path, fname, "wt");
+	f = res_OpenResFile (path, fname, "wb");
 	if (f) {
 		res_SaveFile (f, root);
 		res_CloseResFile (f);
