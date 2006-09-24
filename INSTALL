@@ -55,7 +55,7 @@ libogg and libvorbis
 	Homepage: http://www.xiph.org/ogg/vorbis/index.html
 	Download:
 	    For Windows:
-			SDK download: http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip
+			SDK download: http://www.vorbis.com/files/1.0.1/windows/OggVorbis-win32sdk-1.0.1.zip
 	    For Linux:
 			http://www.vorbis.com/download_unix.psp
 			download libogg and libvorbis.
@@ -84,5 +84,5 @@ Zlib v1.2
 If you find these aren't enough, or if you know the names
 of the corresponding RPM etc. packages, please report to
 <sc2-devel@lists.sourceforge.net> or visit
-http://sourceforge.net/projects/sc2
+http://sourceforge.net/projects/sc2/
 
