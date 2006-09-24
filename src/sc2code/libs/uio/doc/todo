@@ -48,6 +48,25 @@ Bugs:
   needs to be updated too then).
 - A lot of inlining is not possible because of the order of function
   definitions.
+- sizeof(size_t) may be less than 4 on some platforms. Check what problems
+  this may cause. At least the size of zip_INPUT_BUFFER_SIZE is an
+  issue. SIZE_MAX can be used to check for sizeof(size_t) at runtime.
+- remove() is probably more compatible than unlink(). remove() is part
+  of the C standard (as well as POSIX), unlink() is just POSIX.
+- seeking in files opened as "text" on Windows goes wrong. As uiostream
+  seeks itself, this can happen when there are no explicit seeks
+  by the user of uio. Are the seeks really necessary anyhow?
+- Network paths on Windows are not accepted.
+- From the C standard: "[...] output shall not be directly followed by input
+  without an intervening call to the fflush function or to a file
+  positioning function (fseek, fsetpos, or rewind), and input shall not be
+  directly followed by output without an intervening call to a file
+  positioning function, unless the input operation encounters end-of- file."
+  This means some code in uiostream can be simplified, and a whole lot of
+  seeks will never be necessary. (It will not even be nessessary to keep
+  track of the current location in the file).
+- No CRLF translation (and ^Z recognition) is done for files read from
+  zip files, even though that may be expected on Windows.
 
 Extra features (not necessary for UQM):
 - Make functions to use for uio_malloc, uio_free and uio_realloc
