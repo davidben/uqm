@@ -1,0 +1,162 @@
+This file describes step-by-step how to use Microsoft Visual C++ to build
+The Ur-Quan Masters. It assumes you want to install the Microsoft Visual C++
+Express Edition, which can be downloaded for free from Microsoft.
+If you already have another version of MSVC++ installed, you can skip step 1,
+and you do not need to add the Platform SDK paths to the include and library
+locations in steps 5.2 and 5.3.
+The files and locations are for compilation on 32 bits systems; on 64 bits
+systems some will be slightly different.
+
+
+1. Install the Microsoft development environment
+
+1.1. Install Microsoft Visual C++ 2005 Express Edition:
+- Download the installer from http://www.tortoisecvs.org/download.shtml
+- Run the installer, and follow the instructions. There's no need
+  to register your copy of MSVC++ to use it for compiling UQM.
+
+1.2. Install the Microsoft Windows Platform SDK:
+- Download the installer from
+  http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB
+- Run the installer, and follow the instructions.
+
+
+2. Install the tools needed to install all the requirements:
+
+2.1. Install TortoiseCVS, a CVS client which we will use to check out the most
+recent development version of the UQM source:
+- Download the installer from http://www.tortoisecvs.org/download.shtml
+- Run the installer, and follow the instructions
+
+2.2. Install WinZip, which we use to extract the compressed .zip files.
+- Download WinZip from http://www.winzip.com/downwzeval.htm
+- Run the installer, and follow the instructions
+
+
+3. Install the dependencies
+
+3.1. Prepare the build location
+Create a folder "Build" in "C:\"; this is where we will put our dependency
+packages.
+
+3.2 Install the SDL SDK:
+- Download SDL-devel-1.2.11-VC6.zip from
+  http://www.libsdl.org/download-1.2.php
+- Use WinZip to Extract the .zip file in "C:\Build"
+  A folder "SDL-1.2.11" will be created.
+
+3.3 Install the SDL_image SDK:
+- Download SDL_image-devel-1.2.5-VC6.zip from
+  http://www.libsdl.org/projects/SDL_image/
+- Use WinZip to Extract the .zip file in "C:\Build"
+  A folder "SDL_image-1.2.5" will be created.
+
+3.4 Install the Ogg Vorbis SDK
+- Download
+  http://www.vorbis.com/files/1.0.1/windows/OggVorbis-win32sdk-1.0.1.zip
+- Use WinZip to Extract the .zip file in "C:\Build"
+  A folder "oggvorbis-win32sdk-1.0.1" will be created.
+
+3.5 Install zlib:
+- Download zlib123-dll.zip ("zlib compiled DLL") from
+  http://www.gzip.org/zlib/
+- Create a folder "zlib-1.2.3" in "C:\Build\"
+- Extract "zlib123-dll.zip" in C:\Build\zlib-1.2.3\"
+
+3.6 Install OpenAL
+- Download http://developer.creative.com/articles/article.asp?aid=45&file=OpenAL11CoreSDK.exe
+- Run the installer and follow the instructions
+- Create a directory AL in "C:\Program Files\OpenAL 1.1 SDK\include"
+- Move all the .h files from "C:\Program Files\OpenAL 1.1 SDK\include"
+  into the "AL" directory.
+
+
+4. Install the UQM files
+
+4.1. Checkout the UQM source
+- Open the folder "C:\"
+- Right click on "Build", and select "CVS Checkout..."
+- In the "CVSROOT:" field input
+  	:pserver:anonymous@sc2.cvs.sourceforge.net/cvsroot/sc2
+- In the "module" field input "sc2"
+- Press ok and the checkout will begin. This may take a while.
+  A folder "sc2" will be created in "C:\Build\".
+
+4.2. Copy the runtime libraries where they can be found by UQM when run
+     from MSVC++.
+- Copy the following files to "C:\Build\sc2\":
+  - "C:\Build\SDL-1.2.11\lib\SDL.dll"
+  - "C:\Build\SDL_image-1.2.5\lib\jpeg.dll"
+  - "C:\Build\SDL_image-1.2.5\lib\libpng12.dll"
+  - "C:\Build\SDL_image-1.2.5\lib\libtiff.dll"
+  - "C:\Build\SDL_image-1.2.5\lib\SDL_image.dll"
+  - "C:\Build\SDL_image-1.2.5\lib\zlib1.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\ogg.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\ogg_d.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbis.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbis_d.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbisenc.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbisenc_d.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbisfile.dll"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbisfile_d.dll"
+
+
+5. Set up the The Ur-Quan Masters project in Visual C++
+
+5.1. Import the VC6 .dsp file:
+- Open C:\Build\sc2\src\msvc++\ and double-click on "UrQuanMasters.dsp".
+  Visual C++ 2005 Express Edition will start. Confirm when it asks to
+  import the VC6 .dsp file.
+
+5.2. Setup the additional include locations for the project:
+- Still in MSVC++, right click on 'UrQuanMasters' in the Solution Explorer,
+  and choose "Properties"
+- In the left part of the screen, select "Configuration Properties",
+  and then "General"
+- In the right part, select "Additional Include Directories", then click on
+  "..."
+- Add the paths to the "include" folders of all of the dependency
+  libraries:
+  - "C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\include"
+  - "C:\Build\SDL-1.2.11\include"
+  - "C:\Build\SDL_image-1.2.5\include"
+  - "C:\Program Files\OpenAL 1.1 SDK\include"
+  - "C:\Build\zlib-1.2.3\include"
+
+5.3. Setup the additional library locations for the project:
+- Still in the project properties pages, in the left part of the screen,
+  click on "Linker", then "General"
+- In the right part, select "Additional Library Directories", then click on
+  "..."
+- Add the paths to the "lib" folders of all of the dependency
+  libraries:
+  - "C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib"
+  - "C:\Build\SDL-1.2.11\lib"
+  - "C:\Build\SDL_image-1.2.5\lib"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\lib"
+  - "C:\Program Files\OpenAL 1.1 SDK\libs\Win32"
+  - "C:\Build\zlib-1.2.3\lib"
+
+5.4. Remove ignore of msvcrt.lib
+- Still in the "Linker", "General" part of the project properties pages,
+  in the right part, select "Ignore Specific Library", and remove
+  "msvcrt.lib"
+
+5.5. Remove unnecessary dependencies
+- Still in the "Linker" part of the project properties pages, in the left
+  part of the screen, click on "Input".
+- In the right part, select "Additional Dependencies", then click on "..."
+- Remove odbc32.lib and odbccp32.lib
+
+5.6. Add user32.lib
+- Still in "Additional Dependencies", add "user32.lib"
+
+
+6. Build The Ur-Quan Masters
+- Still inside MSVC++, press F7
+  If MSVC++ asks to save the project, confirm.
+  If everything is right, you should now have a working uqm executable.
+  You can press F5 to run it from MSVC++.
+
+
