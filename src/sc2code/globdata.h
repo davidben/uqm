@@ -457,6 +457,11 @@ START_GAME_STATE
 			 * Why this needs 8 bits I don't know. Only specific
 			 * combinations of bits seem to be used (0, 1, or all bits).
 			 * A closer investigation is desirable. - SvdB
+			 * Bit 4 is set when initiating communication with the Ilwrath
+			 * 		homeworld by means of a HyperWave Broadcaster.
+			 * Bit 5 is set when initiating communication with an Ilwrath
+			 * 		ship by means of a HyperWave Broadcaster.
+			 * All bits are cleared when communication is over.
 			 */
 
 	ADD_GAME_STATE (ORZ_VISITS, 3)
@@ -605,7 +610,7 @@ START_GAME_STATE
 			 * with RAINBOW_DEFINED, and so on.
 			 */
 	ADD_GAME_STATE (RAINBOW_WORLD1, 2)
-			/* High byte of the bit array of which RAINBOW_WORLD0
+			/* High 2 bits of the bit array of which RAINBOW_WORLD0
 			 * is the low byte.
 			 */
 	ADD_GAME_STATE (MELNORME_RAINBOW_COUNT, 4)
@@ -701,6 +706,10 @@ START_GAME_STATE
 	ADD_GAME_STATE (TALKING_PET_SUGGESTIONS, 3)
 	ADD_GAME_STATE (LEARNED_TALKING_PET, 1)
 	ADD_GAME_STATE (DNYARRI_LIED, 1)
+			/* Set when the Talking Pet tells you his version of their
+			 * race's history with the Ur-Quan.
+			 * Cleared once you confront him about this lie.
+			 */
 	ADD_GAME_STATE (SHIP_TO_COMPEL, 1)
 
 	ADD_GAME_STATE (ORZ_GENERAL_INFO, 2)

@@ -71,7 +71,8 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			r.extent.width -= 2;
 			r.corner.y = 33;
 			r.extent.height = 89;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 			DrawFilledRectangle (&r);
 		}
 		else
@@ -92,7 +93,8 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			ct.align = ALIGN_CENTER;
 			ct.pStr = GAME_STRING (DEVICE_STRING_BASE);
 			ct.CharCount = (COUNT)~0;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
 			font_DrawText (&ct);
 
 			SetContextFont (TinyFont);
@@ -107,15 +109,15 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		s.origin.y = 34;
 		cy = y;
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		for (OldDevice = (BYTE)pMS->first_item.y;
 				OldDevice < (BYTE)(pMS->first_item.y + MAX_VIS_DEVICES)
 				&& OldDevice < (BYTE)pMS->first_item.x;
 				++OldDevice)
 		{
 			s.frame = SetAbsFrameIndex (
-					MiscDataFrame, 77 + pDeviceMap[OldDevice]
-					);
+					MiscDataFrame, 77 + pDeviceMap[OldDevice]);
 			DrawStamp (&s);
 
 			if (OldDevice != NewDevice)
@@ -146,10 +148,12 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	{
 		cy = y + ((OldDevice - pMS->first_item.y) * 18);
 		r.corner.y = cy - 6;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
 		t.CharCount = utf8StringPos (t.pStr, ' ');
@@ -164,10 +168,12 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	{
 		cy = y + ((NewDevice - pMS->first_item.y) * 18);
 		r.corner.y = cy - 6;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[NewDevice] + DEVICE_STRING_BASE + 1);
 		t.CharCount = utf8StringPos (t.pStr, ' ');
@@ -179,6 +185,92 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	}
 
 	UnlockMutex (GraphicsLock);
+}
+
+// Returns TRUE if the broadcaster has been successfully activated,
+// and FALSE otherwise.
+static BOOLEAN
+UseCaster (void)
+{
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	{
+		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+		{
+			SET_GAME_STATE (USED_BROADCASTER, 1);
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_INTERPLANETARY
+			|| pSolarSysState != NULL)
+		return FALSE;
+
+	if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[1]
+			&& pSolarSysState->MenuState.Initialized == 3
+			&& CurStarDescPtr->Index == CHMMR_DEFINED
+			&& !GET_GAME_STATE (CHMMR_UNLEASHED))
+	{
+		// In orbit around the Chenjesu/Mmrnmhrm home planet.
+		NextActivity |= CHECK_LOAD;  /* fake a load game */
+		GLOBAL (CurrentActivity) |= START_ENCOUNTER;
+
+		EncounterGroup = 0;
+		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
+		ReinitQueue (&GLOBAL (npc_built_ship_q));
+
+		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
+		SaveFlagshipState ();
+		return TRUE;
+	}
+
+	{
+		BOOLEAN FoundIlwrath;
+		HSTARSHIP hStarShip;
+
+		FoundIlwrath = (BOOLEAN)(CurStarDescPtr->Index == ILWRATH_DEFINED);
+				// In the Ilwrath home system?
+
+		if (!FoundIlwrath &&
+				(hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
+		{
+			// Ilwrath ship is in the system.
+			SHIP_FRAGMENTPTR FragPtr;
+
+			FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+					&GLOBAL (npc_built_ship_q), hStarShip);
+			FoundIlwrath = (BOOLEAN)(
+					GET_RACE_ID (FragPtr) == ILWRATH_SHIP);
+			UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		}
+
+		if (FoundIlwrath)
+		{
+			NextActivity |= CHECK_LOAD; /* fake a load game */
+			GLOBAL (CurrentActivity) |= START_ENCOUNTER;
+
+			EncounterGroup = 0;
+			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
+			ReinitQueue (&GLOBAL (npc_built_ship_q));
+
+			if (CurStarDescPtr->Index == ILWRATH_DEFINED)
+			{
+				// Ilwrath home system.
+				SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 4);
+			}
+			else
+			{
+				// Ilwrath ship.
+				SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 5);
+			}
+			
+			if (pSolarSysState->MenuState.Initialized >= 3)
+				SaveFlagshipState ();
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 static UWORD
@@ -213,7 +305,8 @@ DeviceFailed (BYTE which_device)
 
 				PlayMenuSound (MENU_SOUND_INVOKED);
 				fade_buf[0] = FadeAllToWhite;
-				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
+				SleepThreadUntil (
+						XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
 						+ (ONE_SECOND * 2));
 				if (CurStarDescPtr->Index != CHMMR_DEFINED
 						|| pSolarSysState->pOrbitalDesc !=
@@ -309,81 +402,8 @@ DeviceFailed (BYTE which_device)
 			break;
 		case UMGAH_HYPERWAVE_DEVICE:
 		case BURVIX_HYPERWAVE_DEVICE:
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-			{
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
-				{
-					SET_GAME_STATE (USED_BROADCASTER, 1);
-					return (FALSE);
-				}
-			}
-			else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
-					&& pSolarSysState)
-			{
-				if (pSolarSysState->pOrbitalDesc ==
-						&pSolarSysState->PlanetDesc[1]
-						&& pSolarSysState->MenuState.Initialized == 3
-						&& CurStarDescPtr->Index == CHMMR_DEFINED
-						&& !GET_GAME_STATE (CHMMR_UNLEASHED))
-				{
-					NextActivity |= CHECK_LOAD; /* fake a load game */
-					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
-
-					EncounterGroup = 0;
-					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
-
-					SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
-					SaveFlagshipState ();
-					return (FALSE);
-				}
-				else
-				{
-					BOOLEAN FoundIlwrath;
-					HSTARSHIP hStarShip;
-
-					FoundIlwrath = (BOOLEAN)(
-							CurStarDescPtr->Index == ILWRATH_DEFINED
-							);
-					if (!FoundIlwrath && (hStarShip =
-							GetHeadLink (&GLOBAL (npc_built_ship_q))))
-					{
-						SHIP_FRAGMENTPTR FragPtr;
-
-						FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-								&GLOBAL (npc_built_ship_q), hStarShip
-								);
-						FoundIlwrath = (BOOLEAN)(
-								GET_RACE_ID (FragPtr) == ILWRATH_SHIP
-								);
-						UnlockStarShip (
-								&GLOBAL (npc_built_ship_q), hStarShip
-								);
-					}
-
-					if (FoundIlwrath)
-					{
-						NextActivity |= CHECK_LOAD; /* fake a load game */
-						GLOBAL (CurrentActivity) |= START_ENCOUNTER;
-
-						EncounterGroup = 0;
-						PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-						ReinitQueue (&GLOBAL (npc_built_ship_q));
-
-						if (CurStarDescPtr->Index == ILWRATH_DEFINED)
-						{
-							SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 4);
-						}
-						else
-						{
-							SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 5);
-						}
-						if (pSolarSysState->MenuState.Initialized >= 3)
-							SaveFlagshipState ();
-						return (FALSE);
-					}
-				}
-			}
+			if (UseCaster ())
+				return FALSE;
 			break;
 		case TAALO_PROTECTOR_DEVICE:
 			break;
@@ -403,10 +423,9 @@ DeviceFailed (BYTE which_device)
 					&& GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1
 					&& GLOBAL_SIS (FuelOnBoard) >= PORTAL_FUEL_COST)
 			{
-						/* don't want to DeltaSISGauges
-						 * because the flagship picture
-						 * is currently obscured
-						 */
+				/* No DeltaSISGauges because the flagship picture
+				 * is currently obscured.
+				 */
 				GLOBAL_SIS (FuelOnBoard) -= PORTAL_FUEL_COST;
 				SET_GAME_STATE (PORTAL_COUNTER, 1);
 				return (FALSE);
@@ -428,8 +447,10 @@ DoManipulateDevices (PMENU_STATE pMS)
 	BOOLEAN select, cancel, back, forward;
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
-	back = PulsedInputState.menu[KEY_MENU_UP] || PulsedInputState.menu[KEY_MENU_LEFT];
-	forward = PulsedInputState.menu[KEY_MENU_DOWN] || PulsedInputState.menu[KEY_MENU_RIGHT];
+	back = PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_LEFT];
+	forward = PulsedInputState.menu[KEY_MENU_DOWN]
+			|| PulsedInputState.menu[KEY_MENU_RIGHT];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);

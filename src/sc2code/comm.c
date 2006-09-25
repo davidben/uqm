@@ -716,7 +716,8 @@ ambient_anim_task (void *data)
 	BOOLEAN FrameChanged[MAX_ANIMATIONS];
 	BOOLEAN ColorChange = FALSE;
 
-	while ((CommFrame = CommData.AlienFrame) == 0 && !Task_ReadState (task, TASK_EXIT))
+	while ((CommFrame = CommData.AlienFrame) == 0
+			&& !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
 	LockMutex (GraphicsLock);
@@ -733,16 +734,12 @@ ambient_anim_task (void *data)
 	memset (AnimFrame, 0, sizeof (AnimFrame));
 	for (i = 0; i <= CommData.NumAnimations; i++)
 		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
-			AnimFrame[i] =  SetAbsFrameIndex (
-					CommFrame,
-					CommData.AlienAmbientArray[i].StartIndex
-					);
+			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
+					CommData.AlienAmbientArray[i].StartIndex);
 		else
-			AnimFrame[i] =  SetAbsFrameIndex (
-					CommFrame,
+			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
 					(COUNT)(CommData.AlienAmbientArray[i].StartIndex
-					+ CommData.AlienAmbientArray[i].NumFrames - 1)
-					);
+					+ CommData.AlienAmbientArray[i].NumFrames - 1));
 
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
@@ -791,30 +788,24 @@ ambient_anim_task (void *data)
 						&& pSeq->Direction == UP_DIR)))
 				{
 					ActiveMask |= 1L << i;
-					pSeq->Alarm =
-							ADPtr->BaseFrameRate
+					pSeq->Alarm = ADPtr->BaseFrameRate
 							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomFrameRate + 1))
-							+ 1;
+							% (ADPtr->RandomFrameRate + 1)) + 1;
 				}
 				else
 				{
 					ActiveMask &= ~(1L << i);
-					pSeq->Alarm =
-							ADPtr->BaseRestartRate
+					pSeq->Alarm = ADPtr->BaseRestartRate
 							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomRestartRate + 1))
-							+ 1;
+							% (ADPtr->RandomRestartRate + 1)) + 1;
 					if (ActiveMask & ADPtr->BlockMask)
 						continue;
 				}
 
 				if (pSeq->AnimType == COLOR_ANIM)
 				{
-					XFormColorMap (
-							GetColorMapAddress (pSeq->AnimObj.CurCMap),
-							(COUNT) (pSeq->Alarm - 1)
-							);
+					XFormColorMap (GetColorMapAddress (pSeq->AnimObj.CurCMap),
+							(COUNT) (pSeq->Alarm - 1));
 				}
 				else
 				{
@@ -837,14 +828,12 @@ ambient_anim_task (void *data)
 						if (pSeq->AnimType == COLOR_ANIM)
 							pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
 									pSeq->AnimObj.CurCMap,
-									(SWORD) (-pSeq->FramesLeft)
-									);
+									(SWORD) (-pSeq->FramesLeft));
 						else
 						{
 							pSeq->AnimObj.CurFrame = SetRelFrameIndex (
 									pSeq->AnimObj.CurFrame,
-									(SWORD) (-pSeq->FramesLeft)
-									);
+									(SWORD) (-pSeq->FramesLeft));
 						}
 					}
 				}
@@ -868,12 +857,10 @@ ambient_anim_task (void *data)
 				{
 					if (pSeq->Direction == UP_DIR)
 						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, 1
-								);
+								pSeq->AnimObj.CurCMap, 1);
 					else
 						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, -1
-								);
+								pSeq->AnimObj.CurCMap, -1);
 				}
 				else
 				{
@@ -909,12 +896,12 @@ ambient_anim_task (void *data)
 				&& (ADPtr->AnimFlags & WAIT_TALKING)
 				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
 		{
-			BOOLEAN done = 0;
+			BOOLEAN done = FALSE;
 			for (i = 0; i < CommData.NumAnimations; i++)
 				if (ActiveMask & (1L << i) 
 					&& CommData.AlienAmbientArray[i].AnimFlags & WAIT_TALKING)
-					done = 1;
-			if (! done)
+					done = TRUE;
+			if (!done)
 			{
 
 				if (ADPtr->StartIndex != TalkBuffer.StartIndex)
@@ -968,12 +955,10 @@ ambient_anim_task (void *data)
 								{
 									CommData.AlienTransitionDesc.AnimFlags |=
 											PAUSE_TALKING;
-									ADPtr->AnimFlags &=
-											~PAUSE_TALKING;
+									ADPtr->AnimFlags &= ~PAUSE_TALKING;
 								}
 								else if (CommData.AlienTransitionDesc.NumFrames)
-									ADPtr->AnimFlags |=
-											TALK_DONE;
+									ADPtr->AnimFlags |= TALK_DONE;
 								else
 									ADPtr->AnimFlags &=
 											~(WAIT_TALKING | PAUSE_TALKING);
@@ -987,15 +972,14 @@ ambient_anim_task (void *data)
 						ADPtr = &CommData.AlienTransitionDesc;
 						if (AFlags & TALK_INTRO)
 						{
-							FrameRate =
-									ADPtr->BaseFrameRate
+							FrameRate = ADPtr->BaseFrameRate
 									+ ((COUNT)TFB_Random ()
 									% (ADPtr->RandomFrameRate + 1));
 							if (TalkAlarm < 0 || TransitionDone)
 							{
 								TalkFrame = SetAbsFrameIndex (CommFrame,
 										ADPtr->StartIndex);
-								TransitionDone = 0;
+								TransitionDone = FALSE;
 							}
 							else
 								TalkFrame = IncFrameIndex (TalkFrame);
@@ -1005,14 +989,13 @@ ambient_anim_task (void *data)
 									ADPtr->NumFrames)
 							{
 								CommData.AlienTalkDesc.AnimFlags &= ~TALK_INTRO;
-								TransitionDone = 1;
+								TransitionDone = TRUE;
 							}
 							TransitionFrame = TalkFrame;
 						}
 						else /* if (AFlags & TALK_DONE) */
 						{
-							FrameRate =
-									ADPtr->BaseFrameRate
+							FrameRate = ADPtr->BaseFrameRate
 									+ ((COUNT)TFB_Random ()
 									% (ADPtr->RandomFrameRate + 1));
 							if (TalkAlarm < 0)
@@ -1031,8 +1014,7 @@ ambient_anim_task (void *data)
 									CommData.AlienTalkDesc.AnimFlags &= ~WAIT_TALKING;
 								else
 								{
-									ADPtr->AnimFlags |=
-											PAUSE_TALKING;
+									ADPtr->AnimFlags |= PAUSE_TALKING;
 									ADPtr->AnimFlags &= ~TALK_DONE;
 								}
 								FrameRate = 0;
@@ -1049,7 +1031,7 @@ ambient_anim_task (void *data)
 			}
 			else if (done && (ADPtr->AnimFlags & PAUSE_TALKING))
 			{
-				ADPtr->AnimFlags &= ~(WAIT_TALKING | PAUSE_TALKING);				
+				ADPtr->AnimFlags &= ~(WAIT_TALKING | PAUSE_TALKING);	
 			}
 		}
 
@@ -1074,7 +1056,8 @@ ambient_anim_task (void *data)
 				FRAME F;
 				F = CommData.AlienFrame;
 				CommData.AlienFrame = CommFrame;
-				DrawAlienFrame (TalkFrame, &Sequencer[CommData.NumAnimations - 1]);
+				DrawAlienFrame (TalkFrame,
+						&Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				CheckSub = TRUE;
 				ClearSub = ClearSummary;
@@ -2048,8 +2031,8 @@ InitCommunication (RESOURCE which_comm)
 		SetResourceIndex (hIndex);
 
 		LocDataPtr = (LOCDATAPTR)init_race (
-						    status != YEHAT_REBEL_SHIP ? which_comm : (RESOURCE)YEHAT_REBEL_CONVERSATION
-				);
+				status != YEHAT_REBEL_SHIP ? which_comm :
+				(RESOURCE)YEHAT_REBEL_CONVERSATION);
 		if (LocDataPtr)
 			CommData = *LocDataPtr;
 	}
@@ -2156,6 +2139,7 @@ RaceCommunication (void)
 		else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == 0)
 			InitCommunication (TALKING_PET_CONVERSATION);
 		else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & ((1 << 4) | (1 << 5)))
+			// Communicate with the Ilwrath using a Hyperwave Broadcaster.
 			InitCommunication (ILWRATH_CONVERSATION);
 		else
 			InitCommunication (CHMMR_CONVERSATION);

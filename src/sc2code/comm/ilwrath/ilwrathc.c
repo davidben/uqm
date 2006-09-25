@@ -572,6 +572,7 @@ Intro (void)
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 5))
 	{
+		// Communicating with an Ilwrath ship using a HyperWave Broadcaster.
 		if (GET_GAME_STATE (ILWRATH_FIGHT_THRADDASH))
 			NPCPhrase (BIG_FUN);
 		else if (GET_GAME_STATE (ILWRATH_DECEIVED))
@@ -583,6 +584,8 @@ Intro (void)
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 4))
 	{
+		// Communicating with the Ilwrath homeworld using a
+		// Hyperwave Broadcaster.
 		GodsSpeak ((RESPONSE_REF)0);
 	}
 	else
