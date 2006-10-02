@@ -106,7 +106,7 @@ packages.
 5.1. Import the VC6 .dsp file:
 - Open C:\Build\sc2\src\msvc++\ and double-click on "UrQuanMasters.dsp".
   Visual C++ 2005 Express Edition will start. Confirm when it asks to
-  import the VC6 .dsp file.
+  convert the VC6 .dsp file.
 
 5.2. Setup the additional include locations for the project:
 - Still in MSVC++, right click on 'UrQuanMasters' in the Solution Explorer,
@@ -118,9 +118,9 @@ packages.
 - Add the paths to the "include" folders of all of the dependency
   libraries:
   - "C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include"
-  - "C:\Build\oggvorbis-win32sdk-1.0.1\include"
   - "C:\Build\SDL-1.2.11\include"
   - "C:\Build\SDL_image-1.2.5\include"
+  - "C:\Build\oggvorbis-win32sdk-1.0.1\include"
   - "C:\Program Files\OpenAL 1.1 SDK\include"
   - "C:\Build\zlib-1.2.3\include"
 
@@ -139,14 +139,14 @@ packages.
   - "C:\Build\zlib-1.2.3\lib"
 
 5.4. Remove ignore of msvcrt.lib
-- Still in the "Linker", "General" part of the project properties pages,
-  in the right part, select "Ignore Specific Library", and remove
+- Still in the "Linker" part of the project properties pages, in the left
+  part of the screen, click on "Input".
+- In the right part, select "Ignore Specific Library", and remove
   "msvcrt.lib"
 
 5.5. Remove unnecessary dependencies
-- Still in the "Linker" part of the project properties pages, in the left
-  part of the screen, click on "Input".
-- In the right part, select "Additional Dependencies", then click on "..."
+- Still in the "Linker", "Input" part of the project properties pages,
+  in the right part, select "Additional Dependencies", then click on "..."
 - Remove odbc32.lib and odbccp32.lib
 
 5.6. Add user32.lib
