@@ -31,6 +31,7 @@ extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 extern BOOLEAN DoFMV (const char *name, const char *loopname,
 		BOOLEAN uninit);
 extern BOOLEAN ShowPresentation (STRING PresStr);
+extern BOOLEAN ShowPresentationFile (const char *name);
 
 
 #endif  /* _FMV_H */
