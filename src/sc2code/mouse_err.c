@@ -39,7 +39,7 @@ typedef MOUSE_ERROR_STATE *PMOUSE_ERROR_STATE;
 #define Y_STEP (SCREEN_HEIGHT / NUM_STEPS)
 #define MENU_FRAME_RATE (ONE_SECOND / 60)
 
-BOOLEAN
+static BOOLEAN
 DoMouseError (PMOUSE_ERROR_STATE pInputState)
 {
 	if (!pInputState->initialized) 

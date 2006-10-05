@@ -254,7 +254,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 	return (TRUE);
 }
 
-BOOLEAN
+static BOOLEAN
 RestartMenu (PMENU_STATE pMS)
 {
 	DWORD TimeOut;
@@ -340,7 +340,7 @@ RestartMenu (PMENU_STATE pMS)
 	return (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE);
 }
 
-BOOLEAN
+static BOOLEAN
 TryStartGame (void)
 {
 	MENU_STATE MenuState;
