@@ -34,29 +34,10 @@ typedef struct bresenham_line
 } BRESENHAM_LINE;
 typedef BRESENHAM_LINE *PBRESENHAM_LINE;
 
-#define BYTE_WIDTH(w) (((w) + 7) >> 3)
-#define BYTE_OFFS(x) ((BYTE)(x) & (BYTE)0x7)
-#define BYTE_POS(x) ((x) >> 3)
-#define WORD_WIDTH(w) (((w) + 15) >> 4)
-#define WORD_OFFS(x) ((UWORD)(x) & (UWORD)0xF)
-#define WORD_POS(x) ((x) >> 4)
-#ifdef MSDOS
-#define SCAN_WIDTH BYTE_WIDTH
-#define PAD_WIDTH(w) ((w)+((sizeof (BYTE) << 3) - 1))
-#else /* !MSDOS */
-#define SCAN_WIDTH(w) ((BYTE_WIDTH(w)+1)&~1)
-#define PAD_WIDTH(w) (w)
-#endif /* MSDOS */
-
 typedef UWORD DRAWABLE_TYPE;
 #define ROM_DRAWABLE 0
 #define RAM_DRAWABLE 1
 #define SCREEN_DRAWABLE 2
-
-#define DATA_HARDWARE (1 << 12)
-#define DATA_COPY (1 << 13)
-#define DATA_PACKED (1 << 14)
-#define X_FLIP (1 << 15)
 
 typedef struct frame_desc
 {
