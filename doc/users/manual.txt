@@ -532,10 +532,10 @@ ENTER or RIGHT CTRL:         Select destination
 SPACE or RIGHT SHIFT:        Main menu
 Keypad +:                    Zoom in
 Keypad -:                    Zoom out
-/:			     Begin search.
-			     (Type star or constellation name to 
-			      find matches)
-TAB:			     Jump to next match.
+/ (not on the keypad):       Begin search.
+                             (Type star or constellation name to 
+                              find matches)
+TAB:                         Jump to next match.
 
 	Space Combat
 
