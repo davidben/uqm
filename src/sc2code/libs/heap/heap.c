@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "port.h"
 
 static inline size_t nextPower2(size_t x);
@@ -32,6 +33,7 @@ Heap_resize(Heap *heap, size_t size) {
 	heap->size = size;
 }
 
+// Heap inv: comparator(parent, child) <= 0 for every child of every parent.
 Heap *
 Heap_new(HeapValue_Comparator comparator, size_t initialSize, size_t minSize,
 		double minFillQuotient) {
@@ -74,7 +76,7 @@ Heap_add(Heap *heap, HeapValue *value) {
 
 	while (i > 0) {
 		size_t parentI = (i - 1) / 2;
-		if (heap->comparator(heap->entries[i], heap->entries[parentI]) <= 0)
+		if (heap->comparator(heap->entries[parentI], value) <= 0)
 			break;
 
 		heap->entries[i] = heap->entries[parentI];
@@ -83,6 +85,7 @@ Heap_add(Heap *heap, HeapValue *value) {
 	}
 	heap->entries[i] = value;
 	heap->entries[i]->index = i;
+	fprintf(stderr, "%d heap entries.\n", heap->numEntries);
 }
 
 HeapValue *
@@ -92,15 +95,6 @@ Heap_first(const Heap *heap) {
 	return heap->entries[0];
 }
 
-static inline void
-swapEntries(Heap *heap, size_t i0, size_t i1) {
-	HeapValue *temp = heap->entries[i0];
-	heap->entries[i0] = heap->entries[i1];
-	heap->entries[i0]->index = i0;
-	heap->entries[i1] = temp;
-	heap->entries[i1]->index = i1;
-}
-
 static void
 Heap_removeByIndex(Heap *heap, size_t i) {
 	assert(heap->numEntries > i);
@@ -108,35 +102,46 @@ Heap_removeByIndex(Heap *heap, size_t i) {
 	heap->numEntries--;
 
 	if (heap->numEntries != 0) {
-		heap->entries[i] = heap->entries[heap->numEntries];
-		heap->entries[i]->index = i;
-
-		// Restore the heap invariant:
+		// Restore the heap invariant. We're shifting entries into the
+		// gap that was created until we find the place where we can
+		// insert the last entry.
 		for (;;) {
-			size_t leftI = i * 2 + 1;
-			size_t rightI = leftI + 1;
-			size_t newI;
+			size_t childI = i * 2 + 1;
+			// The two children are childI and 'childI + 1'.
 
-			if (rightI < heap->numEntries) {
-				// rightI is unused.
-				if (leftI < heap->numEntries)
+			if (childI + 1 >= heap->numEntries) {
+				// There is no right child.
+
+				if (childI >= heap->numEntries) {
+					// There is no left child either.
 					break;
-				// leftI is used, rightI is unused.
-				if (heap->comparator(heap->entries[i],
-						heap->entries[leftI]) < 0)
-					swapEntries(heap, i, leftI);
+				}
+
+				if (heap->comparator(heap->entries[childI + 1],
+						heap->entries[childI]) < 0) {
+					// The right child is the child with the lowest value.
+					childI++;
+				}
+			}
+			// childI is now the child with the lowest value.
+
+			if (heap->comparator(heap->entries[heap->numEntries],
+					heap->entries[childI]) <= 0) {
+				// The last entry goes here.
 				break;
 			}
 
-			newI = (heap->comparator(heap->entries[leftI],
-					heap->entries[rightI]) >= 0) ? leftI : rightI;
-		
-			if (heap->comparator(heap->entries[i], heap->entries[newI]) >= 0)
-				break;
+			// Move the child into the gap.
+			heap->entries[i] = heap->entries[childI];
+			heap->entries[i]->index = i;
 
-			swapEntries(heap, i, newI);
-			i = newI;
+			// and repeat for the child.
+			i = childI;
 		}
+
+		// Fill the gap with the last entry.
+		heap->entries[i] = heap->entries[heap->numEntries];
+		heap->entries[i]->index = i;
 	}
 
 	// Resize if necessary:
