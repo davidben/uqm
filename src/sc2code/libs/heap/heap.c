@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "port.h"
 
 static inline size_t nextPower2(size_t x);
@@ -85,7 +84,6 @@ Heap_add(Heap *heap, HeapValue *value) {
 	}
 	heap->entries[i] = value;
 	heap->entries[i]->index = i;
-	fprintf(stderr, "%d heap entries.\n", heap->numEntries);
 }
 
 HeapValue *
