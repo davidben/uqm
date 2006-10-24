@@ -206,7 +206,7 @@ we'd like you to report it, but before you do, please do the following:
   is produced; if the game hangs, check to see if the game-exit key
   (F12) works.
 
-- Go to the bug database at http://uqm.stack.nl/cgi-bin/bugs/index.cgi
+- Go to the bug database at http://bugs.uqm.stack.nl/
   and post a report of the problem there. Search the database first if
   it has been already posted; if we get many duplicate reports, processing
   them eats our time from actual development. If it's been reported, and

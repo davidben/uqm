@@ -6,7 +6,7 @@ These guidelines are there so that you won't waste both our and your time.
 Before making changes:
 - Read this entire document
 - See if the the Bugzilla bug database at
-  http://uqm.stack.nl/bugs/ contains any comments on what you're planning
+  http://bugs.uqm.stack.nl/ contains any comments on what you're planning
   to do.
 - Make sure you're using the most recent cvs version
 - Discuss in advance what you're planning to do, with the core team.
