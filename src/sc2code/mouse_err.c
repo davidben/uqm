@@ -62,9 +62,9 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 		r.extent.width = X_STEP * (NUM_STEPS - frame) - 4;
 		r.extent.height = Y_STEP * (NUM_STEPS - frame) - 4;
 
-		dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x01);
-		medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
-		bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x09);
+		dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x00);
+		medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x00);
+		bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x00);
 
 		DrawShadowedBox(&r, bg, dark, medium);
 	}
@@ -81,9 +81,9 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 		r.extent.width = SCREEN_WIDTH - 4;
 		r.extent.height = SCREEN_HEIGHT - 4;
 
-		dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x01);
-		medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
-		bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x09);
+		dark = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x08), 0x00);
+		medium = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x00);
+		bg = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1A), 0x00);
 		text = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x0E);
 
 		DrawShadowedBox(&r, bg, dark, medium);
