@@ -21,6 +21,7 @@
 #include "build.h"
 #include "commglue.h"
 #include "controls.h"
+#include "colors.h"
 #include "encount.h"
 #include "endian_uqm.h"
 #include "gamestr.h"
@@ -172,6 +173,10 @@ static int _count_lines (PTEXT pText)
 	return numLines;
 }
 
+// status == -1: draw highlighted player dialog option
+// status == -2: draw non-highlighted player dialog option
+// status == -4: use current context, and baseline from pTextIn
+// status == 1:  draw alien speech; subtitle cache is used
 static COORD
 add_text (int status, PTEXT pTextIn)
 {
@@ -196,7 +201,8 @@ add_text (int status, PTEXT pTextIn)
 			// draws cached subtitle
 			STAMP s;
 
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = 0;
+			s.origin.y = 0;
 			s.frame = TextCacheFrame;
 			DrawStamp (&s);
 			UnbatchGraphics ();
@@ -230,16 +236,17 @@ add_text (int status, PTEXT pTextIn)
 		switch (status)
 		{
 			case -3:
+				// Unknown. Never reached; color matches the background color.
 				SetContextForeGroundColor (
 						BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 				break;
 			case -2:
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+				// Not highlighted dialog options.
+				SetContextForeGroundColor (COMM_PLAYER_TEXT_NORMAL_COLOR);
 				break;
 			case -1:
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x1A, 0x1A, 0x1A), 0x12));
+				// Currently highlighted dialog option.
+				SetContextForeGroundColor (COMM_PLAYER_TEXT_HIGHLIGHT_COLOR);
 				break;
 		}
 
@@ -283,17 +290,21 @@ add_text (int status, PTEXT pTextIn)
 		
 		if (status <= 0)
 		{
+			// Player dialog option or (status == -4) other non-alien
+			// text.
 			if (pText->baseline.y < SIS_SCREEN_HEIGHT)
 				font_DrawText (pText);
 
 			if (status < -4 && pText->baseline.y >= -status - 10)
 			{
+				// Never actually reached. Status is never <-4.
 				++pStr;
 				break;
 			}
 		}
 		else
 		{
+			// Alien speech
 			SetContextForeGroundColor (CommData.AlienTextBColor);
 
 			--pText->baseline.x;
@@ -336,6 +347,17 @@ add_text (int status, PTEXT pTextIn)
 	return (pText->baseline.y);
 }
 
+// This function calculates how much of a string can be fitted within
+// a specific width, up to a newline or terminating \0.
+// pText is the text to be fitted. pText->CharCount will be set to the
+// number of characters that fitted.
+// startNext will be filled with the start of the first word that
+// doesn't fit in one line.
+// maxWidth is the maximum number of pixels that a line may be wide
+// maxChars is the maximum number of characters (not bytes) that are to
+// be fitted.
+// TRUE is returned if a complete line fitted
+// FALSE otherwise
 static BOOLEAN
 getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars) {
@@ -415,7 +437,7 @@ DrawSISComWindow (void)
 		r.corner.y = SLIDER_Y + SLIDER_HEIGHT;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT - r.corner.y;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		SetContextForeGroundColor (COMM_PLAYER_BACKGROUND_COLOR);
 		DrawFilledRectangle (&r);
 
 		SetContext (OldContext);
@@ -475,7 +497,8 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 
 	s.origin.x = -SAFE_X;
 	s.origin.y = 0;
-	if ((s.frame = CommData.AlienFrame) == 0)
+	s.frame = CommData.AlienFrame;
+	if (s.frame == 0)
 		s.frame = aframe;
 	
 	BatchGraphics ();
@@ -487,10 +510,7 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 
 		if (!(ADPtr->AnimFlags & ANIM_MASK))
 		{
-			s.frame = SetAbsFrameIndex (
-					s.frame,
-					ADPtr->StartIndex
-					);
+			s.frame = SetAbsFrameIndex (s.frame, ADPtr->StartIndex);
 			DrawStamp (&s);
 			ADPtr->AnimFlags |= ANIM_DISABLED;
 		}
@@ -515,7 +535,8 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 void
 init_communication (void)
 {
-	subtitle_mutex = CreateMutex ("Subtitle Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	subtitle_mutex = CreateMutex ("Subtitle Lock",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
 void
@@ -541,7 +562,8 @@ RefreshResponses (PENCOUNTER_STATE pES)
 
 	DrawSISComWindow ();
 	y = SLIDER_Y + SLIDER_HEIGHT + 1;
-	for (response = pES->top_response; response < pES->num_responses; ++response)
+	for (response = pES->top_response; response < pES->num_responses;
+			++response)
 	{
 		pES->response_list[response].response_text.baseline.x = TEXT_X_OFFS + 8;
 		pES->response_list[response].response_text.baseline.y = y + leading;
@@ -593,12 +615,14 @@ FeedbackPlayerPhrase (UNICODE *pStr)
 		ct.baseline.y = SLIDER_Y + SLIDER_HEIGHT + 13;
 		ct.align = ALIGN_CENTER;
 		ct.CharCount = (COUNT)~0;
-		ct.pStr = GAME_STRING (FEEDBACK_STRING_BASE);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xC, 0x1F), 0x48));
+		ct.pStr = GAME_STRING (FEEDBACK_STRING_BASE);
+				// "(In response to your statement)"
+		SetContextForeGroundColor (COMM_RESPONSE_INTRO_TEXT_COLOR);
 		font_DrawText (&ct);
+
 		ct.baseline.y += 16;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x12, 0x14, 0x4F), 0x44));
+		SetContextForeGroundColor (COMM_FEEDBACK_TEXT_COLOR);
 		ct.pStr = pStr;
 		add_text (-4, &ct);
 	}
@@ -1485,12 +1509,10 @@ DoConvSummary (PSUMMARY_STATE pSS)
 		r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
 
 		LockMutex (GraphicsLock);
-		SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x00, 0x05, 0x00), 0x6E));
+		SetContextForeGroundColor (COMM_HISTORY_BACKGROUND_COLOR);
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+		SetContextForeGroundColor (COMM_HISTORY_TEXT_COLOR);
 
 		t.baseline.x = SAFE_X + 2;
 		t.align = ALIGN_LEFT;
@@ -1569,12 +1591,10 @@ DoConvSummary (PSUMMARY_STATE pSS)
 			mt.baseline.y = t.baseline.y;
 			mt.align = ALIGN_CENTER;
 			snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
-					  STR_MIDDLE_DOT,
-					  GAME_STRING (FEEDBACK_STRING_BASE + 1),
+					  STR_MIDDLE_DOT, GAME_STRING (FEEDBACK_STRING_BASE + 1),
 					  STR_MIDDLE_DOT);
 			mt.pStr = buffer;
-			SetContextForeGroundColor (BUILD_COLOR (
-					MAKE_RGB15 (0x00, 0x17, 0x00), 0x01));
+			SetContextForeGroundColor (COMM_MORE_TEXT_COLOR);
 			font_DrawText (&mt);
 		}
 
@@ -1598,14 +1618,13 @@ DoCommunication (PENCOUNTER_STATE pES)
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 
 	if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_DONE))
-	{
 		AlienTalkSegue ((COUNT)~0);
-	}
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		;
 	else if (pES->num_responses == 0)
 	{
+		// The player doesn't get a chance to say anything.
 		DWORD TimeIn, TimeOut;
 
 		TimeOut = FadeMusic (0, ONE_SECOND * 3) + ONE_SECOND / 60;
@@ -1621,7 +1640,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
 				// reset transition state
-				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+				CommData.AlienTransitionDesc.AnimFlags &=
+						~(TALK_INTRO | TALK_DONE);
 				DoTalkSegue (0);
 				UnlockMutex (GraphicsLock);
 				FlushTalkSegue ();
@@ -1672,7 +1692,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 			(*pES->response_list[pES->cur_response].response_func)
 					(pES->response_list[pES->cur_response].response_ref);
 		}
-		else if (PulsedInputState.menu[KEY_MENU_CANCEL] && 
+		else if (PulsedInputState.menu[KEY_MENU_CANCEL] &&
 				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 		{	// Do the conversation summary
 			SUMMARY_STATE SummaryState;
@@ -1702,7 +1722,8 @@ DoCommunication (PENCOUNTER_STATE pES)
 				LockMutex (GraphicsLock);
 				FeedbackPlayerPhrase (pES->phrase_buf);
 				// reset transition state
-				CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+				CommData.AlienTransitionDesc.AnimFlags &=
+						~(TALK_INTRO | TALK_DONE);
 				DoTalkSegue (0);
 
 				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -1721,8 +1742,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
 						% pES->num_responses);
 			else if (PulsedInputState.menu[KEY_MENU_DOWN])
-				response = (BYTE)((BYTE)(response + 1)
-						% pES->num_responses);
+				response = (BYTE)((BYTE)(response + 1) % pES->num_responses);
 
 			if (response != pES->cur_response)
 			{
@@ -1730,11 +1750,13 @@ DoCommunication (PENCOUNTER_STATE pES)
 
 				LockMutex (GraphicsLock);
 				BatchGraphics ();
-				add_text (-2, &pES->response_list[pES->cur_response].response_text);
+				add_text (-2,
+						&pES->response_list[pES->cur_response].response_text);
 
 				pES->cur_response = response;
 
-				y = add_text (-1, &pES->response_list[pES->cur_response].response_text);
+				y = add_text (-1,
+						&pES->response_list[pES->cur_response].response_text);
 				if (response < pES->top_response)
 				{
 					pES->top_response = 0;
@@ -1840,14 +1862,11 @@ HailAlien (void)
 	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
-			LoadGraphicInstance ((RESOURCE)CommData.AlienFrame)
-			);
+			LoadGraphicInstance ((RESOURCE)CommData.AlienFrame));
 	CommData.AlienFont = CaptureFont ((FONT_REF)
-			LoadGraphic ((RESOURCE)CommData.AlienFont)
-			);
+			LoadGraphic ((RESOURCE)CommData.AlienFont));
 	CommData.AlienColorMap = CaptureColorMap (
-			LoadColorMapInstance ((RESOURCE)CommData.AlienColorMap)
-			);
+			LoadColorMapInstance ((RESOURCE)CommData.AlienColorMap));
 	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
 			&& CommData.AlienAltSong)
 		SongRef = LoadMusicInstance ((RESOURCE)CommData.AlienAltSong);
@@ -1857,17 +1876,17 @@ HailAlien (void)
 		CommData.AlienSong = LoadMusicInstance ((RESOURCE)CommData.AlienSong);
 
 	CommData.ConversationPhrases = CaptureStringTable (
-			LoadStringTableInstance ((RESOURCE)CommData.ConversationPhrases)
-			);
+			LoadStringTableInstance ((RESOURCE)CommData.ConversationPhrases));
 
 	// init subtitle cache context
 	TextCacheContext = CaptureContext (CreateContext ());
-	TextCacheFrame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
-		SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2,
-		1));
+	TextCacheFrame = CaptureDrawable (
+			CreateDrawable (WANT_PIXMAP, SIS_SCREEN_WIDTH,
+			SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, 1));
 	SetContext (TextCacheContext);
 	SetContextFGFrame (TextCacheFrame);
-	TextBack = BUILD_COLOR (MAKE_RGB15 (0, 0, 0x10), 1);
+	TextBack = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x00);
+			// Color key for the background.
 	SetContextBackGroundColor (TextBack);
 	ClearDrawable ();
 	SetFrameTransparentColor (TextCacheFrame, TextBack);
@@ -1988,9 +2007,7 @@ InitCommunication (RESOURCE which_comm)
 			}
 			DrawSISMessage (NULL_PTR);
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-				DrawHyperCoords (
-						GLOBAL (ShipStamp.origin)
-						);
+				DrawHyperCoords (GLOBAL (ShipStamp.origin));
 			else if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
 				DrawHyperCoords (CurStarDescPtr->star_pt);
 			else
@@ -1999,11 +2016,17 @@ InitCommunication (RESOURCE which_comm)
 	}
 
 	if (which_comm == 0)
-		status = URQUAN_PROBE_SHIP, which_comm = URQUAN_CONVERSATION;
+	{
+		status = URQUAN_PROBE_SHIP;
+		which_comm = URQUAN_CONVERSATION;
+	}
 	else
 	{
 		if (which_comm == (RESOURCE) YEHAT_REBEL_CONVERSATION)
-			status = YEHAT_REBEL_SHIP, which_comm = YEHAT_CONVERSATION;
+		{
+			status = YEHAT_REBEL_SHIP;
+			which_comm = YEHAT_CONVERSATION;
+		}
 		else if (((status = GET_PACKAGE (which_comm)
 				- GET_PACKAGE (ARILOU_CONVERSATION)
 				+ ARILOU_SHIP) >= YEHAT_REBEL_SHIP))
@@ -2021,7 +2044,8 @@ InitCommunication (RESOURCE which_comm)
 	}
 
 	hOldIndex = SetResourceIndex (hResIndex);
-	if ((hIndex = OpenResourceIndexInstance (which_comm)) == 0)
+	hIndex = OpenResourceIndexInstance (which_comm);
+	if (hIndex == 0)
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 		LocDataPtr = 0;
@@ -2174,10 +2198,8 @@ RaceCommunication (void)
 			NumShips = LONIBBLE (EncounterPtr->SD.Index);
 			for (i = 0; i < NumShips; ++i)
 			{
-				CloneShipFragment (
-						EncounterPtr->SD.Type,
-						&GLOBAL (npc_built_ship_q), 0
-						);
+				CloneShipFragment (EncounterPtr->SD.Type,
+						&GLOBAL (npc_built_ship_q), 0);
 			}
 
 			CurStarDescPtr = (STAR_DESCPTR)&EncounterPtr->SD;
@@ -2187,12 +2209,9 @@ RaceCommunication (void)
 
 	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 	FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-			&GLOBAL (npc_built_ship_q), hStarShip
-			);
+			&GLOBAL (npc_built_ship_q), hStarShip);
 	i = GET_RACE_ID (FragPtr);
-	UnlockStarShip (
-			&GLOBAL (npc_built_ship_q), hStarShip
-			);
+	UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 
    status = InitCommunication (RaceComm[i]);
 
@@ -2231,16 +2250,12 @@ RaceCommunication (void)
 				SHIP_FRAGMENTPTR TemplatePtr;
 
 				hStarShip = GetStarShipFromIndex (
-						&GLOBAL (npc_built_ship_q), i
-						);
+						&GLOBAL (npc_built_ship_q), i);
 				TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip
-						);
+						&GLOBAL (npc_built_ship_q), hStarShip);
 				pESD->ShipList[i] = TemplatePtr->ShipInfo;
 				pESD->ShipList[i].var1 = GET_RACE_ID (TemplatePtr);
-				UnlockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip
-						);
+				UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 			}
 
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
