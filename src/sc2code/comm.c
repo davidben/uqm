@@ -176,7 +176,7 @@ static int _count_lines (PTEXT pText)
 // status == -1: draw highlighted player dialog option
 // status == -2: draw non-highlighted player dialog option
 // status == -4: use current context, and baseline from pTextIn
-// status == 1:  draw alien speech; subtitle cache is used
+// status ==  1:  draw alien speech; subtitle cache is used
 static COORD
 add_text (int status, PTEXT pTextIn)
 {
@@ -305,6 +305,9 @@ add_text (int status, PTEXT pTextIn)
 		else
 		{
 			// Alien speech
+
+			// Draw the background by drawing the same text in the
+			// background color one pixel shifted to all 4 directions.
 			SetContextForeGroundColor (CommData.AlienTextBColor);
 
 			--pText->baseline.x;
@@ -334,7 +337,7 @@ add_text (int status, PTEXT pTextIn)
 	{
 		STAMP s;
 		
-		// we were drawing to cache -- flush to screen
+		// We were drawing to cache -- flush to screen
 		SetContext (OldContext);
 		s.origin.x = s.origin.y = 0;
 		s.frame = TextCacheFrame;
@@ -352,13 +355,15 @@ add_text (int status, PTEXT pTextIn)
 // pText is the text to be fitted. pText->CharCount will be set to the
 // number of characters that fitted.
 // startNext will be filled with the start of the first word that
-// doesn't fit in one line.
+// doesn't fit in one line, or if an entire line fitted, to the character
+// past the newline, or if the entire string fitted, to the end of the
+// string.
 // maxWidth is the maximum number of pixels that a line may be wide
 // maxChars is the maximum number of characters (not bytes) that are to
 // be fitted.
 // TRUE is returned if a complete line fitted
 // FALSE otherwise
-static BOOLEAN
+BOOLEAN
 getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars) {
 	BOOLEAN eol;
@@ -650,14 +655,10 @@ SetUpSequence (PSEQUENCE pSeq)
 		pSeq->FramesLeft = ADPtr->NumFrames;
 		if (pSeq->AnimType == COLOR_ANIM)
 			pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
-					CommData.AlienColorMap,
-					ADPtr->StartIndex
-					);
+					CommData.AlienColorMap, ADPtr->StartIndex);
 		else
 			pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
-					CommData.AlienFrame,
-					ADPtr->StartIndex
-					);
+					CommData.AlienFrame, ADPtr->StartIndex);
 
 		if (ADPtr->AnimFlags & RANDOM_ANIM)
 		{
@@ -681,11 +682,8 @@ SetUpSequence (PSEQUENCE pSeq)
 						IncFrameIndex (pSeq->AnimObj.CurFrame);
 		}
 
-		pSeq->Alarm =
-				ADPtr->BaseRestartRate
-				+ ((COUNT)TFB_Random ()
-				% (ADPtr->RandomRestartRate + 1))
-				+ 1;
+		pSeq->Alarm = ADPtr->BaseRestartRate
+				+ ((COUNT)TFB_Random () % (ADPtr->RandomRestartRate + 1)) + 1;
 	}
 }
 
@@ -864,18 +862,15 @@ ambient_anim_task (void *data)
 
 				if (ADPtr->AnimFlags & RANDOM_ANIM)
 				{
+					COUNT nextIndex = ADPtr->StartIndex +
+							(TFB_Random () % ADPtr->NumFrames);
+
 					if (pSeq->AnimType == COLOR_ANIM)
-						pSeq->AnimObj.CurCMap =
-								SetAbsColorMapIndex (pSeq->AnimObj.CurCMap,
-								(COUNT) (ADPtr->StartIndex
-								+ ((COUNT)TFB_Random ()
-								% ADPtr->NumFrames)));
+						pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
+								pSeq->AnimObj.CurCMap, nextIndex);
 					else
-						pSeq->AnimObj.CurFrame =
-								SetAbsFrameIndex (pSeq->AnimObj.CurFrame,
-								(COUNT) (ADPtr->StartIndex
-								+ ((COUNT)TFB_Random ()
-								% ADPtr->NumFrames)));
+						pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
+								pSeq->AnimObj.CurFrame, nextIndex);
 				}
 				else if (pSeq->AnimType == COLOR_ANIM)
 				{
@@ -922,7 +917,7 @@ ambient_anim_task (void *data)
 		{
 			BOOLEAN done = FALSE;
 			for (i = 0; i < CommData.NumAnimations; i++)
-				if (ActiveMask & (1L << i) 
+				if (ActiveMask & (1L << i)
 					&& CommData.AlienAmbientArray[i].AnimFlags & WAIT_TALKING)
 					done = TRUE;
 			if (!done)
@@ -963,8 +958,7 @@ ambient_anim_task (void *data)
 									(COUNT) (ADPtr->StartIndex + 1
 									+ ((COUNT)TFB_Random ()
 									% (ADPtr->NumFrames - 1))));
-							FrameRate +=
-									ADPtr->BaseRestartRate
+							FrameRate += ADPtr->BaseRestartRate
 									+ ((COUNT)TFB_Random ()
 									% (ADPtr->RandomRestartRate + 1));
 						}
@@ -1012,7 +1006,8 @@ ambient_anim_task (void *data)
 									- ADPtr->StartIndex + 1) ==
 									ADPtr->NumFrames)
 							{
-								CommData.AlienTalkDesc.AnimFlags &= ~TALK_INTRO;
+								CommData.AlienTalkDesc.AnimFlags &=
+										~TALK_INTRO;
 								TransitionDone = TRUE;
 							}
 							TransitionFrame = TalkFrame;
@@ -1035,7 +1030,8 @@ ambient_anim_task (void *data)
 								CommData.AlienTalkDesc.AnimFlags &=
 										~(PAUSE_TALKING | TALK_DONE);
 								if (ADPtr->AnimFlags & TALK_INTRO)
-									CommData.AlienTalkDesc.AnimFlags &= ~WAIT_TALKING;
+									CommData.AlienTalkDesc.AnimFlags &=
+											~WAIT_TALKING;
 								else
 								{
 									ADPtr->AnimFlags |= PAUSE_TALKING;
@@ -1130,6 +1126,7 @@ ambient_anim_task (void *data)
 
 			if (optSubtitles && CheckSub && sub_state >= SPACE_SUBTITLE)
 			{
+				// Redraw the subtitles.
 				TEXT t;
 
 				t = CommData.AlienTextTemplate;
@@ -1166,11 +1163,13 @@ SpewPhrases (COUNT wait_track)
 	F = CommData.AlienFrame;
 	if (wait_track == 0)
 	{
-		wait_track = which_track = (COUNT)~0;
+		wait_track = (COUNT)~0;
+		which_track = (COUNT)~0;
 		goto Rewind;
 	}
 
-	if (!(which_track = PlayingTrack ()))
+	which_track = PlayingTrack ();
+	if (which_track == 0)
 	{
 		// initial start of player
 		if (wait_track == 1 || wait_track == (COUNT)~0)
@@ -1268,7 +1267,7 @@ Rewind:
 				{
 					if (optSmoothScroll == OPT_3DO)
 						ResumeTrack ();
-				} 
+				}
 				else
 				{
 					ContinuityBreak = FALSE;
@@ -1277,8 +1276,7 @@ Rewind:
 				}
 				ContinuityBreak = FALSE;
 			}
-			else if (which_track == wait_track
-					|| wait_track == (COUNT)~0)
+			else if (which_track == wait_track || wait_track == (COUNT)~0)
 				CommData.AlienFrame = F;
 		}
 	} while (ContinuityBreak
@@ -1591,8 +1589,8 @@ DoConvSummary (PSUMMARY_STATE pSS)
 			mt.baseline.y = t.baseline.y;
 			mt.align = ALIGN_CENTER;
 			snprintf (buffer, sizeof (buffer), "%s%s%s", // "MORE"
-					  STR_MIDDLE_DOT, GAME_STRING (FEEDBACK_STRING_BASE + 1),
-					  STR_MIDDLE_DOT);
+					STR_MIDDLE_DOT, GAME_STRING (FEEDBACK_STRING_BASE + 1),
+					STR_MIDDLE_DOT);
 			mt.pStr = buffer;
 			SetContextForeGroundColor (COMM_MORE_TEXT_COLOR);
 			font_DrawText (&mt);
@@ -2141,6 +2139,7 @@ RaceCommunication (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{
+		/* Going into talking pet conversation */
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		CloneShipFragment (SAMATRA_SHIP, &GLOBAL (npc_built_ship_q), 0);
 		InitCommunication (TALKING_PET_CONVERSATION);
@@ -2151,7 +2150,6 @@ RaceCommunication (void)
 		}
 		return;
 	}
-		/* going into talking pet conversation */
 	else if (NextActivity & CHECK_LOAD)
 	{
 		BYTE ec;
@@ -2162,12 +2160,13 @@ RaceCommunication (void)
 			InitCommunication (SPATHI_CONVERSATION);
 		else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == 0)
 			InitCommunication (TALKING_PET_CONVERSATION);
-		else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & ((1 << 4) | (1 << 5)))
+		else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) &
+				((1 << 4) | (1 << 5)))
 			// Communicate with the Ilwrath using a Hyperwave Broadcaster.
 			InitCommunication (ILWRATH_CONVERSATION);
 		else
 			InitCommunication (CHMMR_CONVERSATION);
-		 if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
+		if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 		{
 			NextActivity = GLOBAL (CurrentActivity) & ~START_ENCOUNTER;
 			if (LOBYTE (NextActivity) == IN_INTERPLANETARY)
@@ -2213,7 +2212,7 @@ RaceCommunication (void)
 	i = GET_RACE_ID (FragPtr);
 	UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 
-   status = InitCommunication (RaceComm[i]);
+	status = InitCommunication (RaceComm[i]);
 
 	if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 		return;
@@ -2237,9 +2236,7 @@ RaceCommunication (void)
 			BYTE i, NumShips;
 
 			NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
-			pESD->Index = MAKE_BYTE (
-					NumShips, HINIBBLE (pESD->Index)
-					);
+			pESD->Index = MAKE_BYTE (NumShips, HINIBBLE (pESD->Index));
 			pESD->Index |= ENCOUNTER_REFORMING;
 			if (status == 0)
 				pESD->Index |= ONE_SHOT_ENCOUNTER;
