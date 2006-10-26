@@ -147,7 +147,7 @@ destruct_preprocess (PELEMENT ElementPtr)
 	{
 		SetPrimType (lpPrim, STAMPFILL_PRIM);
 		if (ElementPtr->life_span == DESTRUCT_SWITCH + 2)
-			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E));
+			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E));
 		else
 			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 	}
@@ -156,12 +156,12 @@ destruct_preprocess (PELEMENT ElementPtr)
 		ElementPtr->next.image.frame =
 				IncFrameIndex (ElementPtr->current.image.frame);
 		if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F))
-			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E));
-		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E))
-			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x0C));
-		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x0C))
-			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x14, 0xA, 0x00), 0x06));
-		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x14, 0xA, 0x00), 0x06))
+			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E));
+		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E))
+			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C));
+		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C))
+			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x06));
+		else if (GetPrimColor (lpPrim) == BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x06))
 			SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04));
 	}
 	else

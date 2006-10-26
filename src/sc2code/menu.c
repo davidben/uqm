@@ -41,17 +41,20 @@ static BYTE ConvertAlternateMenu (BYTE BaseState, BYTE NewState);
 static void
 DrawPCMenuFrame (RECT *r)
 {
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x00));
 	DrawRectangle (r);
 	r->corner.x++;
 	r->corner.y++;
 	r->extent.height--;
 	r->extent.width--;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x00));
 	DrawRectangle (r);
 	r->extent.height--;
 	r->extent.width--;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x00));
 	DrawFilledRectangle (r);
 }
 
@@ -92,7 +95,8 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	t.CharCount = (COUNT)~0;
 	r->corner.x++;
 	r->extent.width -= 2;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x00));
 	for (i = beg_index; i <= end_index; i++)
 	{
 		utf8StringCopy (buf, sizeof (buf),
@@ -101,13 +105,16 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 						GAME_STRING (MAINMENU_STRING_BASE + i));
 		if (hilite && pos == i)
 		{
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x08));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x00));
 			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 2;
 			r->extent.height = PC_MENU_HEIGHT - 1;
 			DrawFilledRectangle (r);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x08));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x00));
 			font_DrawText (&t);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x08));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x00));
 		}
 		else
 			font_DrawText (&t);
@@ -473,7 +480,8 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	r.corner.y = s.origin.y - 11;
 	r.extent.width = RADAR_WIDTH + 2;
 	BatchGraphics ();
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D));
 	if (s.frame && optWhichMenu == OPT_PC)
 	{
 		if (beg_index == PM_CREW)
@@ -559,7 +567,8 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.pStr = buf;
 				sprintf (buf, "%u", GLOBAL (CrewCost));
 				SetContextFont (TinyFont);
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00));
 				font_DrawText (&t);
 				break;
 			case PM_FUEL:
@@ -570,7 +579,8 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.pStr = buf;
 				sprintf (buf, "%u", GLOBAL (FuelCost));
 				SetContextFont (TinyFont);
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00));
 				font_DrawText (&t);
 				break;
 		}

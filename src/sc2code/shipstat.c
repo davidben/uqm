@@ -49,7 +49,7 @@ DrawCrewFuelString (COORD y, SIZE state)
 		DrawStamp (&Stamp);
 	else
 	{
-#define LOW_FUEL_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E)
+#define LOW_FUEL_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E)
 		SetContextForeGroundColor (LOW_FUEL_COLOR);
 		DrawFilledStamp (&Stamp);
 	}
@@ -70,7 +70,8 @@ DrawShipNameString (UNICODE *pStr, COUNT CharCount, COORD y)
 	Text.baseline.y = STARCON_TEXT_HEIGHT + 3 + y;
 	Text.baseline.x = STATUS_WIDTH >> 1;
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 	font_DrawText (&Text);
 	--Text.baseline.y;
 	SetContextForeGroundColor (BLACK_COLOR);
@@ -84,7 +85,8 @@ ClearShipStatus (COORD y)
 {
 	RECT r;
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	r.corner.x = 2;
 	r.corner.y = 3 + y;
 	r.extent.width = STATUS_WIDTH - 4;
@@ -97,7 +99,8 @@ OutlineShipStatus (COORD y)
 {
 	RECT r;
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 	r.corner.x = 0;
 	r.corner.y = 1 + y;
 	r.extent.width = STATUS_WIDTH;
@@ -112,7 +115,8 @@ OutlineShipStatus (COORD y)
 	++r.corner.x;
 	DrawFilledRectangle (&r);
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 	r.corner.x = STATUS_WIDTH - 1;
 	DrawFilledRectangle (&r);
 	r.corner.x = STATUS_WIDTH - 2;
@@ -174,7 +178,7 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 		energy_height = (((SIPtr->max_energy + 1) >> 1) << 1) + 1;
 
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 		r.corner.x = CREW_XOFFS - 1;
 		r.corner.y = GAUGE_YOFFS + 1 + y;
 		r.extent.width = STAT_WIDTH + 2;
@@ -337,7 +341,7 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 			r.corner.y = (y + 1) -
 					(((oldNumBlocks + 1) >> 1) * (UNIT_HEIGHT + 1));
 #define CREW_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)
-#define ROBOT_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08)
+#define ROBOT_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08)
 			SetContextForeGroundColor (
 					(ShipInfoPtr->ship_flags & CREW_IMMUNE) ?
 					ROBOT_UNIT_COLOR : CREW_UNIT_COLOR);
@@ -375,7 +379,7 @@ DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
 					ShipInfoPtr->crew_level == 0) && newCrewLevel != 0)
 			{
 				// The block indicating the captain needs to change color.
-#define PLAYER_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09)
+#define PLAYER_UNIT_COLOR BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
 				SetContextForeGroundColor (
 						(newCrewLevel > MAX_CREW_SIZE) ?
 						CREW_UNIT_COLOR : PLAYER_UNIT_COLOR);

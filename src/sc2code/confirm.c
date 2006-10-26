@@ -44,7 +44,7 @@ DrawConfirmationWindow (BOOLEAN answer)
 	RECT r;
 	TEXT t;
 
-	dark = BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F);
+	dark = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F);
 	medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
 
 	BatchGraphics ();

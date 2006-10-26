@@ -139,7 +139,8 @@ DrawBattleCrewAmount (STARSHIPPTR StarShipPtr)
 	sprintf (buf, "%u", StarShipPtr->RaceDescPtr->ship_info.crew_level);
 	SetContextFont (StarConFont);
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	DrawFilledRectangle (&r);
 	SetContextForeGroundColor (BLACK_COLOR);
 	font_DrawText (&t);
@@ -179,12 +180,14 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 	r.corner.y = y_offs - 4;
 	r.extent.width = STATUS_WIDTH - CAPTAIN_XOFFS;
 	r.extent.height = SHIP_STATUS_HEIGHT - CAPTAIN_YOFFS + 2;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	DrawFilledRectangle (&r);
 
 	y = y_offs - CAPTAIN_YOFFS;
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 	r.corner.x = 1;
 	r.corner.y = SHIP_INFO_HEIGHT + y;
 	r.extent.width = 1;
@@ -194,7 +197,8 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 	++r.extent.height;
 	DrawFilledRectangle (&r);
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 	r.corner.x = STATUS_WIDTH - 1;
 	r.corner.y = SHIP_INFO_HEIGHT + y;
 	r.extent.width = 1;
@@ -213,7 +217,8 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 	DrawFilledRectangle (&r);
 
 	{
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 		r.corner.x = 59;
 		r.corner.y = y_offs;
 		r.extent.width = 1;
@@ -225,7 +230,8 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 		r.extent.height = 1;
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 		r.corner.x = 3;
 		r.extent.width = 57;
 		r.corner.y = y_offs - 1;
@@ -418,7 +424,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 				{
 					COLOR flash_tab0[] =
 					{
-						BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D),
+						BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24),
 						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
 						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
@@ -440,20 +446,20 @@ PostProcessStatus (PELEMENT ShipPtr)
 						COLOR flash_tab1[] =
 						{
 							BUILD_COLOR (MAKE_RGB15 (0x1E, 0x1F, 0x12), 0x70),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E),
+							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x71),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
+							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
+							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D),
+							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
+							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
 							BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
 							BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 							BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
-							BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D),
+							BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 						};
 
 						c = flash_tab1[i];
@@ -484,7 +490,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 							case 1:
 								r.corner.x = CAPTAIN_XOFFS + 16;
 								i = CAPTAIN_WIDTH - ((17 + 1) << 1);
-								c = BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0x00), 0x2F);
+								c = BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x00), 0x2F);
 								break;
 							case 2:
 								r.corner.x = CAPTAIN_XOFFS + 18;
@@ -500,7 +506,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 								r.corner.x = CAPTAIN_XOFFS + 25;
 								i = 1;
 								r.extent.width = 2;
-								c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x50, 0x5), 0x28);
+								c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x50, 0x05), 0x28);
 								break;
 							default:
 								// Should not happen.
@@ -522,8 +528,8 @@ PostProcessStatus (PELEMENT ShipPtr)
 							COLOR flash_tab2[] =
 							{
 								BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-								BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D),
-								BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E),
+								BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
+								BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E),
 							};
 
 							c = flash_tab2[i];

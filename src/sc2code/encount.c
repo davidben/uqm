@@ -214,7 +214,8 @@ InitEncounter (void)
 	t.align = ALIGN_CENTER;
 
 	SetContextFont (MicroFont);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 0);
@@ -341,13 +342,13 @@ DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
 	TEXT t1, t2;
 	COLOR fade_cycle[] =
 	{
-		BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x1D),
-		BUILD_COLOR (MAKE_RGB15 (0x9, 0x9, 0x9), 0x1E),
-		BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
-		BUILD_COLOR (MAKE_RGB15 (0x6, 0x6, 0x6), 0x20),
-		BUILD_COLOR (MAKE_RGB15 (0x5, 0x5, 0x5), 0x21),
-		BUILD_COLOR (MAKE_RGB15 (0x4, 0x4, 0x4), 0x22),
-		BUILD_COLOR (MAKE_RGB15 (0x3, 0x3, 0x3), 0x23),
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D),
+		BUILD_COLOR (MAKE_RGB15 (0x09, 0x09, 0x09), 0x1E),
+		BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
+		BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20),
+		BUILD_COLOR (MAKE_RGB15 (0x05, 0x05, 0x05), 0x21),
+		BUILD_COLOR (MAKE_RGB15 (0x04, 0x04, 0x04), 0x22),
+		BUILD_COLOR (MAKE_RGB15 (0x03, 0x03, 0x03), 0x23),
 	};
 #define NUM_FADES (sizeof (fade_cycle) / sizeof (fade_cycle[0]))
 
@@ -393,8 +394,8 @@ DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
 			SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
 			TimeIn = GetTimeCounter ();
 		}
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA),
-				0x08));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 		font_DrawText (&t1);
 		font_DrawText (&t2);
 	}
@@ -438,14 +439,14 @@ UninitEncounter (void)
 		SHIP_FRAGMENTPTR FragPtr;
 		COLOR fade_ship_cycle[] =
 		{
-			BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0x00), 0x2F),
-			BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D),
+			BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x00), 0x2F),
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x27),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x27),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x14, 0x14), 0x25),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x14, 0x14), 0x25),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x27),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x27),
 			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
 			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 		};
@@ -536,8 +537,8 @@ UninitEncounter (void)
 								ship_s.frame = IncFrameIndex (
 										FragPtr->ShipInfo.icons);
 								DrawStamp (&ship_s);
-								SetContextForeGroundColor (BUILD_COLOR (
-										MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+								SetContextForeGroundColor (
+										BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 								SetContextFont (TinyFont);
 
 								GetStringContents (
@@ -588,8 +589,8 @@ UninitEncounter (void)
 							t.align = ALIGN_RIGHT;
 							t.pStr = buf;
 							t.CharCount = (COUNT)~0;
-							SetContextForeGroundColor (BUILD_COLOR (
-										MAKE_RGB15 (0x00, 0x00, 0x18), 0x50));
+							SetContextForeGroundColor (
+									BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x18), 0x50));
 							font_DrawText (&t);
 							DeltaSISGauges (0, 0, j);
 

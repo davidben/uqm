@@ -91,9 +91,10 @@ ConfirmSaveLoad (STAMP *MsgStamp)
 	}
 	DrawStarConBox (&r, 2,
 			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-			BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
-			TRUE, BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x0F));
+			BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
+			TRUE, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x0F));
 	font_DrawText (&t);
 }
 
@@ -240,8 +241,8 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 			r.extent.width -= 2;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1) - 1;
 
-			BackGround = BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09);
-			ForeGround = BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B);
+			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09);
+			ForeGround = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B);
 		}
 		else
 		{
@@ -249,8 +250,8 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 			r.corner.y = 20;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1);
 
-			BackGround = BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D);
-			ForeGround = BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D);
+			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D);
+			ForeGround = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D);
 		}
 
 		lf.baseline.y = r.corner.y + r.extent.height - 1;
@@ -631,15 +632,15 @@ DrawCargo (COUNT redraw_state)
 		UNICODE buf[40];
 		COLOR cargo_color[] =
 		{
-			BUILD_COLOR (MAKE_RGB15 (2, 14, 19), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (25, 0x00, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x02, 0x0E, 0x13), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x19, 0x00, 0x00), 0x00),
 			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (3, 5, 30), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x00, 24, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (27, 27, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (30, 13, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (20, 0x00, 20), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (15, 0x00, 25), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x03, 0x05, 0x1E), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x18, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x1B, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x1E, 0x0D, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05),
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x00),
 		};
 
 		r.extent.width = 23;
@@ -696,7 +697,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 		r.corner.y = 139;
 		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
 	}
 	else
@@ -805,7 +807,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 			r.corner.y = t.baseline.y - SHIP_NAME_HEIGHT + 1;
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
 			font_DrawText (&t);
 			t.CharCount = (COUNT)~0;
 		}
@@ -817,14 +820,16 @@ ShowSummary (SUMMARY_DESC *pSD)
 		r.corner.y = t.baseline.y - SHIP_NAME_HEIGHT + 1;
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
 		font_DrawText (&t);
 		
 		r.corner.x = 2;
 		r.corner.y = 139;
 		r.extent.width = SIS_SCREEN_WIDTH - 4;
 		r.extent.height = 7;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
 		t.baseline.x = /*r.corner.x + (SIS_MESSAGE_WIDTH >> 1)*/ 6;
 		t.baseline.y = r.corner.y + (r.extent.height - 1);
@@ -867,7 +872,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 		}
 
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.align = ALIGN_CENTER;

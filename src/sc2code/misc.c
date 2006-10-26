@@ -209,7 +209,7 @@ crew_preprocess (PELEMENT ElementPtr)
 
 	SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
 			GetPrimColor (&DisplayArray[ElementPtr->PrimIndex])
-			^ BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+			^ BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	ElementPtr->state_flags |= CHANGING;
 
 	if ((hTarget = ElementPtr->hTarget) == 0)

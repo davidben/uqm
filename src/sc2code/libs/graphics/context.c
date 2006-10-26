@@ -31,7 +31,8 @@ SetContext (CONTEXT Context)
 {
 	CONTEXT LastContext;
 
-	if (Context != (LastContext = (CONTEXT)_pCurContext))
+	LastContext = (CONTEXT)_pCurContext;
+	if (Context != LastContext)
 	{
 		if (LastContext)
 		{
@@ -77,11 +78,9 @@ CreateContext (void)
 				/* initialize context */
 		OldContext = SetContext (CaptureContext (ContextRef));
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
-				);
+				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 		SetContextBackGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
-				);
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 		SetContextClipping (TRUE);
 		ReleaseContext (SetContext (OldContext));
 	}

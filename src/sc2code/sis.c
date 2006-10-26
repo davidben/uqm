@@ -49,7 +49,8 @@ RepairSISBorder (void)
 			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
 	DrawFilledRectangle (&r);
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 	r.corner.x += (SIS_SCREEN_WIDTH + 2) - 1;
 	DrawFilledRectangle (&r);
 
@@ -71,7 +72,8 @@ ClearSISRect (BYTE ClearFlags)
 	CONTEXT OldContext;
 
 	OldContext = SetContext (StatusContext);
-	OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	OldColor = SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 
 	r.corner.x = 2;
 	r.extent.width = STATUS_WIDTH - 4;
@@ -95,8 +97,8 @@ ClearSISRect (BYTE ClearFlags)
 
 		DrawStarConBox (&r, 1,
 				BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-				BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
-				TRUE, BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
+				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
+				TRUE, BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
 #endif /* NEVER */
 	}
 	UnbatchGraphics ();
@@ -131,9 +133,11 @@ SetContextClipRect (&r);
 	SetContextFont (TinyFont);
 
 	BatchGraphics ();
-	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	ClearDrawable ();
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
 	font_DrawText (&t);
 	UnbatchGraphics ();
 
@@ -357,7 +361,8 @@ DrawStatusMessage (const UNICODE *pStr)
 	SetContextClipRect (&r);
 
 	BatchGraphics ();
-	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
 	ClearDrawable ();
 
 	if (pStr == (UNICODE *)~0)
@@ -396,7 +401,8 @@ DrawStatusMessage (const UNICODE *pStr)
 	t.CharCount = (COUNT)~0;
 
 	SetContextFont (TinyFont);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
 	font_DrawText (&t);
 	UnbatchGraphics ();
 
@@ -416,7 +422,8 @@ DrawCaptainsName (void)
 
 	OldContext = SetContext (StatusContext);
 	OldFont = SetContextFont (TinyFont);
-	OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	OldColor = SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 
 	r.corner.x = 2 + 1;
 	r.corner.y = 10;
@@ -429,7 +436,8 @@ DrawCaptainsName (void)
 	t.align = ALIGN_CENTER;
 	t.pStr = GLOBAL_SIS (CommanderName);
 	t.CharCount = (COUNT)~0;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x16, 0xB, 0x1F), 0x38));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x16, 0x0B, 0x1F), 0x38));
 	font_DrawText (&t);
 
 	SetContextForeGroundColor (OldColor);
@@ -488,7 +496,8 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		SetContextFontEffect (SetAbsFrameIndex (FontGradFrame,
 				InStatusArea ? 0 : 3));
 	else
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
 	
 	font_DrawText (&t);
 
@@ -745,7 +754,8 @@ DrawStorageBays (BOOLEAN Refresh)
 
 		r.corner.x = (STATUS_WIDTH >> 1)
 				- ((i * (r.extent.width + 1)) >> 1);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 		for (j = GLOBAL_SIS (TotalElementMass);
 				j >= STORAGE_BAY_CAPACITY; j -= STORAGE_BAY_CAPACITY)
 		{
@@ -764,7 +774,8 @@ DrawStorageBays (BOOLEAN Refresh)
 			if (r.extent.height)
 			{
 				r.corner.y = 123;
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x6, 0x6, 0x6), 0x20));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20));
 				DrawFilledRectangle (&r);
 			}
 			r.corner.x += r.extent.width + 1;
@@ -773,7 +784,8 @@ DrawStorageBays (BOOLEAN Refresh)
 		}
 		r.extent.height = 4;
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x6, 0x6, 0x6), 0x20));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20));
 		while (i--)
 		{
 			DrawFilledRectangle (&r);
@@ -829,9 +841,11 @@ DrawPC_SIS (void)
 	r.corner.y = 3;
 	r.extent.width = 58;
 	r.extent.height = 7;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	DrawFilledRectangle (&r);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
 	t.baseline.y = r.corner.y + 6;
 	t.pStr = GAME_STRING (STATUS_STRING_BASE + 5); // "CAPTAIN"
 	font_DrawText (&t);
@@ -979,7 +993,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		t.CharCount = (COUNT)~0;
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
 		font_DrawText (&t);
 	}
 
@@ -1015,7 +1030,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			t.CharCount = (COUNT)~0;
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
 			font_DrawText (&t);
 		}
 	}
@@ -1046,7 +1062,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			r.corner.y = 130;
 			r.extent.width = STATUS_MESSAGE_WIDTH;
 			r.extent.height = STATUS_MESSAGE_HEIGHT;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
 			DrawFilledRectangle (&r);
 
 			if ((pMenuState == 0
@@ -1093,16 +1110,16 @@ GetCPodCapacity (PPOINT ppt)
 				COUNT pod_remainder, which_row;
 				COLOR crew_rows[] =
 				{
-					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E,0x09), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1B,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x18,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x15,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x12,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x10,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0D,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0A,0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x07,0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E, 0x09), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1B, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x18, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x12, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0D, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0A, 0x00), 0x65),
+					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x65),
 				};
 
 				pod_remainder = GLOBAL_SIS (CrewEnlisted) - capacity;
@@ -1155,10 +1172,10 @@ GetSBayCapacity (PPOINT ppt)
 					 BUILD_COLOR (MAKE_RGB15 (0x15, 0x15, 0x15), 0x15),
 					 BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17),
 					 BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					 BUILD_COLOR (MAKE_RGB15 (0xD, 0xD, 0xD), 0x1B),
-					 BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x1D),
-					 BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
-					 BUILD_COLOR (MAKE_RGB15 (0x5, 0x5, 0x5), 0x21),
+					 BUILD_COLOR (MAKE_RGB15 (0x0D, 0x0D, 0x0D), 0x1B),
+					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D),
+					 BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
+					 BUILD_COLOR (MAKE_RGB15 (0x05, 0x05, 0x05), 0x21),
 				};
 
 				bay_remainder = GLOBAL_SIS (TotalElementMass) - capacity;
@@ -1207,14 +1224,14 @@ GetFTankCapacity (PPOINT ppt)
 				COUNT which_row;
 				COLOR fuel_colors[] =
 				{
-					BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00), 0x2D),
+					BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 					BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
 					BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 					BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C),
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D),
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
 					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
 					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
 					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),

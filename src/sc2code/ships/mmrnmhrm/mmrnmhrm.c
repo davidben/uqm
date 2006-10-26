@@ -269,7 +269,7 @@ initialize_dual_weapons (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 
 		LaserBlock.sender = ShipPtr->state_flags & (GOOD_GUY | BAD_GUY);
 		LaserBlock.pixoffs = 0;
-		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0xA), 0x0C);
+		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C);
 		LaserBlock.face = facing;
 
 		ex = cx + COSINE (angle, LASER_RANGE);

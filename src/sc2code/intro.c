@@ -204,7 +204,7 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 			));
 	SetContextFGFrame (SisFrame);
 	SetContextClipRect (NULL_PTR);
-	SisBack = BUILD_COLOR (MAKE_RGB15 (1, 1, 1), 7);
+	SisBack = BUILD_COLOR (MAKE_RGB15 (0x01, 0x01, 0x01), 0x07);
 	SetContextBackGroundColor (SisBack);
 	ClearDrawable ();
 	SetFrameTransparentColor (SisFrame, SisBack);
@@ -659,8 +659,8 @@ DoPresentation (PVOID pIS)
 			GetContextClipRect (&r);
 			r.corner.x = r.corner.y = 0;
 			/* paint black rect over screen	*/
-			SetContextForeGroundColor (BUILD_COLOR (
-					MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 			DrawFilledRectangle (&r);	
 			UnlockMutex (GraphicsLock);
 		}
@@ -699,8 +699,8 @@ ShowPresentation (STRING PresStr)
 	GetContextClipRect (&OldRect);
 	OldFont = SetContextFont (NULL);
 	/* paint black rect over screen	*/
-	SetContextBackGroundColor (BUILD_COLOR (
-			MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	ClearDrawable ();
 	UnlockMutex (GraphicsLock);
 

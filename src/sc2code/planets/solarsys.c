@@ -1832,7 +1832,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 		SetContext (ScreenContext);
 
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 		r.corner.x = SIS_ORG_X - 1;
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 4;
 		r.extent.width = SIS_SCREEN_WIDTH + 2;
@@ -1840,7 +1840,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 		DrawFilledRectangle (&r);
 
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F));
+				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 		r.extent.width = 1;
 		r.extent.height = MAP_HEIGHT + 1;
 		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;

@@ -56,8 +56,8 @@ ClearReportArea (void)
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
 	SetContextClipping (FALSE);
-	SetContextForeGroundColor (BUILD_COLOR (
-			MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x57));
 	
 	startx = 1 + (r.extent.width >> 1) - 1;
 	s.origin.y = 1;
@@ -231,7 +231,8 @@ InitPageCell:
 				if (!Sleepy)
 					BatchGraphics ();
 				ClearReportArea();
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0, 0x1F, 0), 0xFF));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0xFF));
 				if (Sleepy)
 					UnlockMutex (GraphicsLock);
 			}

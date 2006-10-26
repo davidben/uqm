@@ -291,14 +291,17 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	if (which_space <= 1)
 	{
 		SDPtr = &star_array[0];
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x7), 0x57));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57));
 		SetContextBackGroundColor (BLACK_COLOR);
 	}
 	else
 	{
 		SDPtr = &star_array[NUM_SOLAR_SYSTEMS + 1];
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0xB, 0x00), 0x6D));
-		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x8, 0x00), 0x6E));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x0B, 0x00), 0x6D));
+		SetContextBackGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
 	}
 	ClearDrawable ();
 
@@ -330,7 +333,8 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 		r.corner.y = UNIVERSE_TO_DISPY (r.corner.y)
 				- (r.extent.height >> 1);
 
-		OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x3, 0x3, 0x3), 0x22));
+		OldColor = SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x03, 0x03, 0x03), 0x22));
 		DrawFilledOval (&r);
 		SetContextForeGroundColor (OldColor);
 	}

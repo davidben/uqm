@@ -83,7 +83,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			r.extent.height = 109;
 			DrawStarConBox (&r, 1,
 					BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
+					BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
 					TRUE,
 					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 
@@ -94,7 +94,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 			ct.pStr = GAME_STRING (DEVICE_STRING_BASE);
 			ct.CharCount = (COUNT)~0;
 			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 			font_DrawText (&ct);
 
 			SetContextFont (TinyFont);
@@ -169,11 +169,11 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 		cy = y + ((NewDevice - pMS->first_item.y) * 18);
 		r.corner.y = cy - 6;
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 		DrawFilledRectangle (&r);
 
 		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 		t.baseline.y = cy;
 		t.pStr = GAME_STRING (pDeviceMap[NewDevice] + DEVICE_STRING_BASE + 1);
 		t.CharCount = utf8StringPos (t.pStr, ' ');

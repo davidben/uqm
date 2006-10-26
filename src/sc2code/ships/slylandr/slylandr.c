@@ -211,7 +211,7 @@ initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
 				case 2:
 					SetPrimColor (
 							&(GLOBAL (DisplayArray))[LaserPtr->PrimIndex],
-							BUILD_COLOR (MAKE_RGB15 (0x6, 0x7, 0x1F), 0x4A)
+							BUILD_COLOR (MAKE_RGB15 (0x06, 0x07, 0x1F), 0x4A)
 							);
 					break;
 				case 3:

@@ -240,7 +240,7 @@ initialize_horrific_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
 			| IGNORE_SIMILAR;
 	LaserBlock.pixoffs = VUX_OFFSET;
-	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0xA), 0x0A);
+	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x0A), 0x0A);
 	LaserArray[0] = initialize_laser (&LaserBlock);
 
 	return (1);

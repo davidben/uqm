@@ -103,7 +103,8 @@ DoPickBattleShip (PMENU_STATE pMS)
 			LockMutex (GraphicsLock);
 
 #ifdef NEVER
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x1D));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D));
 			DrawRectangle (&pMS->flash_rect0);
 #endif /* NEVER */
 			pMS->first_item.y = new_row;
@@ -513,8 +514,8 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, PRECT pPickRect)
 			else
 			{
 				/* Ship ran away */
-				SetContextForeGroundColor (BUILD_COLOR (
-						MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 				DrawFilledStamp (&s);
 			}
 		}

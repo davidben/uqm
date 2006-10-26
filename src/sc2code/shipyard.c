@@ -218,14 +218,14 @@ DrawRaceStrings (BYTE NewRaceItem)
 	r.extent.height = 11;
 	BatchGraphics ();
 	ClearSISRect (CLEAR_SIS_RADAR);
-	SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	DrawFilledRectangle (&r);
 	r.corner = s.origin;
 	r.extent.width = RADAR_WIDTH;
 	r.extent.height = RADAR_HEIGHT;
-	SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	DrawFilledRectangle (&r);
 	if (NewRaceItem != (BYTE)~0)
 	{
@@ -258,8 +258,8 @@ DrawRaceStrings (BYTE NewRaceItem)
 		t.pStr = buf;
 		sprintf (buf, "%u", ShipCost[NewRaceItem]);
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (
-						0x00, 0x1F, 0x00), 0x02));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
 		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
@@ -1060,8 +1060,8 @@ DrawBluePrint (PMENU_STATE pMS)
 
 	s.origin.x = s.origin.y = 0;
 	s.frame = DecFrameIndex (pMS->ModuleFrame);
-	SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x00, 0x00, 0x16), 0x01));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x16), 0x01));
 	DrawFilledStamp (&s);
 
 	for (num_frames = 0; num_frames < NUM_DRIVE_SLOTS; ++num_frames)
@@ -1084,8 +1084,8 @@ DrawBluePrint (PMENU_STATE pMS)
 			DrawShipPiece (pMS, which_piece, num_frames, TRUE);
 	}
 
-	SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 	for (num_frames = 0; num_frames < NUM_MODULE_SLOTS; ++num_frames)
 	{
 		BYTE which_piece;

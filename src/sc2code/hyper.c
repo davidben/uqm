@@ -325,17 +325,20 @@ LoadHyperspace (void)
 	DrawSISMessage (NULL_PTR);
 
 	SetContext (RadarContext);
-	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
 
 	SetContext (SpaceContext);
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 	{
-		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0x00), 0x2F));
+		SetContextBackGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x00), 0x2F));
 		SetColorMap (GetColorMapAddress (hypercmaps[0]));
 	}
 	else
 	{
-		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1A, 0x00), 0x2F));
+		SetContextBackGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x1A, 0x00), 0x2F));
 		SetColorMap (GetColorMapAddress (hypercmaps[1]));
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 		SET_GAME_STATE (BROADCASTER_RESPONSE, 0);
@@ -1524,7 +1527,8 @@ SeedUniverse (void)
 		// draws borders to mini-map
 		
 		RECT r;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xE, 0xE, 0xE), 0x00));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0E, 0x0E, 0x0E), 0x00));
 		r.corner.x = 0;
 		r.corner.y = 0;
 		r.extent.width = RADAR_WIDTH - 1;
@@ -1534,7 +1538,8 @@ SeedUniverse (void)
 		r.extent.height = RADAR_HEIGHT - 1;
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x6, 0x6, 0x6), 0x00));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x00));
 		r.corner.x = RADAR_WIDTH - 1;
 		r.corner.y = 1;
 		r.extent.height = RADAR_HEIGHT - 1;
@@ -1545,7 +1550,8 @@ SeedUniverse (void)
 		r.extent.height = 1;
 		DrawFilledRectangle (&r);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x00));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x00));
 		r.corner.x = 0;
 		DrawPoint (&r.corner);
 		r.corner.x = RADAR_WIDTH - 1;

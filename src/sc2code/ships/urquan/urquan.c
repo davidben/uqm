@@ -161,7 +161,7 @@ fighter_postprocess (PELEMENT ElementPtr)
 	LaserBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
 			| IGNORE_SIMILAR;
 	LaserBlock.pixoffs = FIGHTER_OFFSET;
-	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E);
+	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E);
 	Laser = initialize_laser (&LaserBlock);
 	if (Laser)
 	{

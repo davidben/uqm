@@ -312,8 +312,8 @@ credit_roll_task (void *data)
 
 	strcnt = GetStringTableCount (CreditsTab);
 
-	TransColor = BUILD_COLOR (MAKE_RGB15 (0, 0, 0x10), 1);
-	TextBack = BUILD_COLOR (MAKE_RGB15 (0, 0, 0), 0);
+	TransColor = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
+	TextBack = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00);
 	TextFore = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
 
 	LocalContext = CaptureContext (CreateContext ());
@@ -719,7 +719,8 @@ Credits (BOOLEAN WithOuttakes)
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextClipRect (NULL_PTR);
-	SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	SetContextBackGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	ClearDrawable ();
 	fade_buf[0] = FadeAllToColor;
 	XFormColorMap ((COLORMAPPTR)fade_buf, 0);

@@ -67,7 +67,8 @@ DrawBaseStateStrings (STARBASE_STATE OldState, STARBASE_STATE NewState)
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E));
 	t.baseline.y = 106 + 28 + (SAFE_Y + 4) + ((23 - 4) * NewState);
 	t.pStr = GAME_STRING (STARBASE_STRING_BASE + 1 + NewState);
 	t.CharCount = (COUNT)~0;

@@ -238,14 +238,14 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 		{
 			if (Color == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F))
 				SetPrimType (lpPrim, STAMP_PRIM);
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B))
+			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B))
 				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09))
+				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
+			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09))
 				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 			else
 			{
 				ProcessSound (SetAbsSoundIndex (
@@ -329,14 +329,14 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 				SetPrimColor (lpPrim, BLACK_COLOR);
 				Untarget (ElementPtr);
 			}
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09))
+			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09))
 				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B))
+				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
+			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B))
 				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 			else
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 
 			ElementPtr->state_flags |= CHANGING;
 		}

@@ -203,9 +203,9 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 	COLOR cycle_array[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
 	};
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -217,12 +217,8 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 			+ DISPLAY_TO_WORLD (r.corner.x);
 	LaserBlock.cy = DISPLAY_ALIGN (ShipPtr->next.location.y)
 			+ DISPLAY_TO_WORLD (r.corner.y);
-	LaserBlock.ex = COSINE (
-			FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE
-			);
-	LaserBlock.ey = SINE (
-			FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE
-			);
+	LaserBlock.ex = COSINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
+	LaserBlock.ey = SINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
 	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
 			| IGNORE_SIMILAR;
 	LaserBlock.pixoffs = 0;
@@ -353,12 +349,11 @@ chmmr_postprocess (PELEMENT ElementPtr)
 					DISPLAY_TO_WORLD (8 + 9 + 11 + 14 + 18),
 				};
 					COLOR color_tab[] =
-					{
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x53),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xE),  0x54),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xC),  0x55),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x9),  0x56),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x7),  0x57),
+					{ BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x53),
+					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
+					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0C), 0x55),
+					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56),
+					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57),
 				};
 							
 
@@ -556,7 +551,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 				(SattPtr->state_flags & (GOOD_GUY | BAD_GUY))
 				| IGNORE_SIMILAR;
 		LaserBlock.pixoffs = 0;
-		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x00, 0x1, 0x1F), 0x4D);
+		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x1F), 0x4D);
 		hPointDefense = initialize_laser (&LaserBlock);
 		if (hPointDefense)
 		{

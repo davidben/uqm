@@ -56,14 +56,16 @@ DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
 	r.extent.width = RADAR_WIDTH + 2;
 	r.extent.height = 11;
 	BatchGraphics ();
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0xA), 0x08));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	DrawFilledRectangle (&r);
 	if (NewModule >= EMPTY_SLOT)
 	{
 		r.corner = s.origin;
 		r.extent.width = RADAR_WIDTH;
 		r.extent.height = RADAR_HEIGHT;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 		DrawFilledRectangle (&r);
 	}
 	else if (pMS->CurFrame)
@@ -80,7 +82,8 @@ DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
 		t.pStr = buf;
 		sprintf (buf, "%u", GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
 		font_DrawText (&t);
 	}
 	UnbatchGraphics ();
@@ -122,7 +125,8 @@ RedistributeFuel (void)
 	while ((GLOBAL_SIS (FuelOnBoard) += FUEL_VOLUME_PER_ROW) <
 			GetFTankCapacity (&r.corner))
 	{
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
 		DrawFilledRectangle (&r);
 	}
 
@@ -586,7 +590,8 @@ ChangeFuelQuantity (void)
 				% FUEL_VOLUME_PER_ROW == 0)
 			{
 				GetFTankCapacity (&r.corner);
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00), 0x2E));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
 				r.extent.width = 5;
 				DrawFilledRectangle (&r);
 			}

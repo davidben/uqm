@@ -108,7 +108,7 @@ PrintScanTitlePC (TEXT *t, RECT *r, const char *txt, int xpos)
 	TextRect (t, r, NULL_PTR);
 	t->baseline.x += r->extent.width;
 	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x19), 0x3B));
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x3B));
 }
 
 static void
@@ -200,10 +200,11 @@ PrintCoarseScanPC (void)
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 
-	SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
 	SetContextFont (MicroFont);
 	font_DrawText (&t);
+
 	SetContextFont (TinyFont);
 	UnlockMutex (GraphicsLock);
 
@@ -439,7 +440,9 @@ PrintCoarseScan3DO (void)
 	t.baseline.y = 13;
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x19), 0x3B));
+
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x3B));
 	SetContextFont (MicroFont);
 	font_DrawText (&t);
 
@@ -1082,11 +1085,11 @@ DoScan (PMENU_STATE pMS)
 					break;
 				case ENERGY_SCAN:
 					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0xC, 0xC, 0xC), 0x1C));
+							BUILD_COLOR (MAKE_RGB15 (0x0C, 0x0C, 0x0C), 0x1C));
 					break;
 				case BIOLOGICAL_SCAN:
 					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x00, 0xE, 0x00), 0x6C));
+							BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
 					break;
 			}
 			font_DrawText (&t);

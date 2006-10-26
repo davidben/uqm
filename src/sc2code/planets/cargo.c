@@ -51,9 +51,11 @@ ShowRemainingCapacity (void)
 	r.extent.height = 7;
 
 	BatchGraphics ();
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 	DrawFilledRectangle (&r);
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 	font_DrawText (&rt);
 	UnbatchGraphics ();
 	
@@ -94,7 +96,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			r.extent.height = 109;
 			DrawStarConBox (&r, 1,
 					BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					BUILD_COLOR (MAKE_RGB15 (0x8, 0x8, 0x8), 0x1F),
+					BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
 					TRUE,
 					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 
@@ -104,7 +106,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			ct.align = ALIGN_CENTER;
 			ct.pStr = GAME_STRING (CARGO_STRING_BASE);
 			ct.CharCount = (COUNT)~0;
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 			font_DrawText (&ct);
 
 			SetContextFont (TinyFont);
@@ -124,7 +127,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		rt.baseline.y = cy - 7;
 		rt.CharCount = 1;
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 		rt.baseline.x = 32;
 		rt_amount_buf[0] = '$';
 		font_DrawText (&rt);
@@ -148,14 +152,16 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			{
 				rt.baseline.y = cy;
 
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 				rt.baseline.x = 32;
 				sprintf (rt_amount_buf, "%u",
 						GLOBAL (ElementWorth[OldElement]));
 				rt.CharCount = (COUNT)~0;
 				font_DrawText (&rt);
 
-				SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 				rt.baseline.x = 58;
 				sprintf (rt_amount_buf, "%u",
 						GLOBAL_SIS (ElementAmounts[OldElement]));
@@ -178,7 +184,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		s.frame = SetAbsFrameIndex (s.frame, 68);
 		DrawStamp (&s);
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		rt.baseline.x = 58;
 		sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		rt.CharCount = (COUNT)~0;
@@ -188,7 +195,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		r.corner.y = 117;
 		r.extent.width = 56;
 		r.extent.height = 1;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 		DrawFilledRectangle (&r);
 
 		{
@@ -216,7 +224,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		else
 			cy = y + (OldElement * 9);
 		r.corner.y = cy - 6;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 		DrawFilledRectangle (&r);
 
 		rt.baseline.y = cy;
@@ -225,7 +234,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		else
 		{
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 			rt.baseline.x = 32;
 			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[OldElement]));
 			rt.CharCount = (COUNT)~0;
@@ -233,7 +243,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[OldElement]));
 		}
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 		rt.baseline.x = 58;
 		rt.CharCount = (COUNT)~0;
 		font_DrawText (&rt);
@@ -246,7 +257,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 		else
 			cy = y + (NewElement * 9);
 		r.corner.y = cy - 6;
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0xA, 0x1F), 0x09));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 		DrawFilledRectangle (&r);
 
 		rt.baseline.y = cy;
@@ -255,7 +267,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
 		else
 		{
-			SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 			rt.baseline.x = 32;
 			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[NewElement]));
 			rt.CharCount = (COUNT)~0;
@@ -263,7 +276,8 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[NewElement]));
 		}
 
-		SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0xA, 0x1F, 0x1F), 0x0B));
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 		rt.baseline.x = 58;
 		rt.CharCount = (COUNT)~0;
 		font_DrawText (&rt);

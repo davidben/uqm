@@ -93,8 +93,8 @@ TFB_FadeClearScreen (void)
 	// paint black rect over screen	
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
-	SetContextForeGroundColor (BUILD_COLOR (
-			MAKE_RGB15 (0x0, 0x0, 0x0), 0x00));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	DrawFilledRectangle (&r);	
 	UnlockMutex (GraphicsLock);
 

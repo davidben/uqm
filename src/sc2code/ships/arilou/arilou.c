@@ -126,7 +126,7 @@ initialize_autoaim_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
 			| IGNORE_SIMILAR;
 	LaserBlock.pixoffs = ARILOU_OFFSET;
-	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E);
+	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E);
 	LaserArray[0] = initialize_laser (&LaserBlock);
 
 	return (1);
