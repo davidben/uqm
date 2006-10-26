@@ -27,6 +27,12 @@
 #		include <stddef.h>
 #	else
 		typedef int intptr_t;
+		typedef unsigned int uintptr_t;
+#	endif
+#	ifdef _WIN64
+#		define PRIxPTR "lx"
+#	else
+#		define PRIxPTR "x"
 #	endif
 #else
 #	include <inttypes.h>
