@@ -60,8 +60,6 @@
 
 static int ambient_anim_task (void *data);
 
-static BOOLEAN getLineWithinWidth(TEXT *pText,
-		 const unsigned char **startNext, SIZE maxWidth, COUNT maxChars);
 
 #define MAX_RESPONSES 8
 #define BACKGROUND_VOL \
@@ -355,8 +353,8 @@ add_text (int status, PTEXT pTextIn)
 // pText is the text to be fitted. pText->CharCount will be set to the
 // number of characters that fitted.
 // startNext will be filled with the start of the first word that
-// doesn't fit in one line, or if an entire line fitted, to the character
-// past the newline, or if the entire string fitted, to the end of the
+// doesn't fit in one line, or if an entire line fits, to the character
+// past the newline, or if the entire string fits, to the end of the
 // string.
 // maxWidth is the maximum number of pixels that a line may be wide
 // maxChars is the maximum number of characters (not bytes) that are to

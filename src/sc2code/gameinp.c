@@ -26,7 +26,7 @@
 #include "libs/threadlib.h"
 
 
-battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS];
+battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS], NetworkInput;
 battle_summary_func PlayerInput[NUM_PLAYERS];
 
 #define ACCELERATION_INCREMENT (ONE_SECOND / 12)
@@ -379,7 +379,7 @@ GetMenuSounds (MENU_SOUND_FLAGS *s0, MENU_SOUND_FLAGS *s1)
 /* These can really be refactored */
 
 BATTLE_INPUT_STATE
-p1_combat_summary (void)
+p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState = 0;
 	if (CurrentInputState.key[PlayerOne][KEY_UP])
@@ -396,11 +396,14 @@ p1_combat_summary (void)
 		InputState |= BATTLE_ESCAPE;
 	if (CurrentInputState.key[PlayerOne][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
+
+	(void) player;
+	(void) StarShipPtr;
 	return InputState;
 }
 
 BATTLE_INPUT_STATE
-p2_combat_summary (void)
+p2_combat_summary (COUNT player, STARSHIPPTR StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState = 0;
 	if (CurrentInputState.key[PlayerTwo][KEY_UP])
@@ -415,6 +418,9 @@ p2_combat_summary (void)
 		InputState |= BATTLE_SPECIAL;
 	if (CurrentInputState.key[PlayerTwo][KEY_DOWN])
 		InputState |= BATTLE_DOWN;
+
+	(void) player;
+	(void) StarShipPtr;
 	return InputState;
 }
 

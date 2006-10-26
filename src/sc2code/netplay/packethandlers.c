@@ -1,0 +1,520 @@
+/*
+ *  Copyright 2006  Serge van den Boom <svdb@stack.nl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#define PORT_WANT_ERRNO
+#include "port.h"
+
+#define NETCONNECTION_INTERNAL
+#include "netplay.h"
+#include "packethandlers.h"
+
+#include "netinput.h"
+#include "netmisc.h"
+#include "packetsenders.h"
+#include "proto/npconfirm.h"
+#include "proto/ready.h"
+#include "libs/log.h"
+
+#include "controls.h"
+		// for BATTLE_INPUT_STATE
+#include "init.h"
+		// for NUM_PLAYERS
+#include "melee.h"
+		// for various update functions.
+#include "pickmele.h"
+		// for various update functions.
+#include "libs/mathlib.h"
+		// for TFB_SeedRandom
+
+#include <errno.h>
+
+
+static bool
+testNetState(bool condition, PacketType type) {
+	if (!condition) {
+		log_add(log_Error, "Packet of type '%s' received from wrong "
+				"state.\n", packetTypeData[type].name);
+		errno = EBADMSG;
+	}
+	return condition;
+}
+
+int
+PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
+	if (!testNetState(conn->state == NetState_init &&
+			!conn->stateFlags.ready.remoteReady, PACKET_INIT))
+		return -1;  // errno is set
+	
+	if (packet->protoVersion.major != NETPLAY_PROTOCOL_VERSION_MAJOR ||
+			packet->protoVersion.minor != NETPLAY_PROTOCOL_VERSION_MINOR) {
+		log_add(log_Error, "Protocol version %d.%d not supported.\n",
+				packet->protoVersion.major, packet->protoVersion.minor);
+		errno = ENOSYS;
+		return -1;
+	}
+
+	Netplay_remoteReady(conn);
+	
+	return 0;
+}
+
+int
+PacketHandler_Ping(NetConnection *conn, const Packet_Ping *packet) {
+	if (!testNetState(conn->state > NetState_init, PACKET_PING))
+		return -1;  // errno is set
+
+	sendAck(conn, packet->id);
+	return 0;
+}
+
+int
+PacketHandler_Ack(NetConnection *conn, const Packet_Ack *packet) {
+	if (!testNetState(conn->state > NetState_init, PACKET_ACK))
+		return -1;  // errno is set
+
+	(void) conn;
+	(void) packet;
+	return 0;
+}
+
+int
+PacketHandler_EndTurn(NetConnection *conn, const Packet_EndTurn *packet) {
+	if (!testNetState(conn->state > NetState_init &&
+			!conn->stateFlags.pendingTurnChange, PACKET_ENDTURN))
+		return -1;  // errno is set
+
+	if (conn->stateFlags.endingTurn) {
+		// This was the confirmation we were waiting for.
+		// NB. A remote request while we had sent a request serves as
+		// a confirmation.
+		conn->stateFlags.myTurn = !conn->stateFlags.myTurn;
+		conn->stateFlags.endingTurn = false;
+	} else {
+		// The other party wants to change whose turn it is.
+		// If it would become the other party's turn, we wait until
+		// the queue is flushed to actually carry out the turn change,
+		// and send the confirmation. I we wouldn't do that, and we still
+		// had some data to send in our own turn, we would end up asking
+		// for our turn back, and the turn would keep changing without
+		// any progress being made.
+		if (conn->stateFlags.myTurn) {
+			// Schedule the turn change until after the next queue flush.
+			conn->stateFlags.pendingTurnChange = true;
+		} else {
+			conn->stateFlags.myTurn = true;
+			sendEndTurn(conn);
+		}
+	}
+	
+	(void) packet;
+			// Its contents is not interesting.
+
+	return 0;
+}
+
+// Convert the side indication relative to a remote party to
+// a local player number.
+static inline int
+localSide(NetConnection *conn, NetplaySide side) {
+	if (side == NetplaySide_local) {
+		// "local" relative to the remote party.
+		return conn->player;
+	}
+
+	return 1 - conn->player;
+}
+
+static bool
+checkYourTurn(NetConnection *conn, PacketType type) {
+	if (conn->stateFlags.myTurn) {
+		log_add(log_Warning, "Packet of type '%s' received in an "
+				"inappropriate turn.\n", packetTypeData[type].name);
+		errno = EBADMSG;
+		return false;
+	}
+	return true;
+}
+
+int
+PacketHandler_Ready(NetConnection *conn, const Packet_Ready *packet) {
+	if (!testNetState(readyFlagsMeaningful(conn->state) &&
+			!conn->stateFlags.ready.remoteReady, PACKET_READY))
+		return -1;  // errno is set
+
+	Netplay_remoteReady(conn);
+	
+	(void) packet;
+			// Its contents is not interesting.
+	
+	return 0;
+}
+
+int
+PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
+	uint32 numShips = ntoh16(packet->numShips);
+	size_t i;
+	size_t len;
+	int player;
+	BattleStateData *battleStateData;
+
+	if (!testNetState(conn->state == NetState_inSetup, PACKET_FLEET))
+		return -1;  // errno is set
+
+	if (!checkYourTurn(conn, PACKET_FLEET)) {
+		// errno is set
+		return -1;
+	}
+	
+	player = localSide(conn, (NetplaySide) packet->side);
+
+	len = packetLength((const Packet *) packet);
+	if (sizeof packet + numShips * sizeof(packet->ships[0]) > len) {
+		// There is not enough room in the packet to contain all
+		// the ships it says it contains.
+		log_add(log_Warning, "Invalid fleet size. Specified size is %d, "
+				"actual size = %d\n",
+				numShips, (len - sizeof packet) / sizeof(packet->ships[0]));
+		errno = EBADMSG;
+		return -1;
+	}
+
+	if (conn->stateFlags.handshake.localOk)
+		Netplay_cancelConfirmation(conn);
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	for (i = 0; i < numShips; i++) {
+		int ship = packet->ships[i].ship;
+		int index = packet->ships[i].index;
+		
+		bool updateResult = updateFleetShip(
+				battleStateData->meleeState, player, index, ship);
+		if (!updateResult)
+		{
+			errno = EBADMSG;
+			return -1;
+		}
+	}
+
+	// Padding data may follow; it is ignored.
+	return 0;
+}
+
+int
+PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
+	size_t nameLen;
+	int side;
+	BattleStateData *battleStateData;
+
+	if (!testNetState(conn->state == NetState_inSetup, PACKET_TEAMNAME))
+		return -1;  // errno is set
+
+	if (!checkYourTurn(conn, PACKET_TEAMNAME)) {
+		// errno is set
+		return -1;
+	}
+
+	if (conn->stateFlags.handshake.localOk)
+		Netplay_cancelConfirmation(conn);
+	
+	side = localSide(conn, (NetplaySide) packet->side);
+
+	nameLen = packetLength((const Packet *) packet)
+			- sizeof (Packet_TeamName) - 1;
+			// The -1 is for not counting the terminating '\0'.
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	updateTeamName(battleStateData->meleeState, side, packet->name, nameLen);
+
+	// Padding data may follow; it is ignored.
+	return 0;
+}
+
+static void
+handshakeComplete(NetConnection *conn) {
+	assert(!conn->stateFlags.handshake.localOk);
+	assert(!conn->stateFlags.handshake.remoteOk);
+	assert(!conn->stateFlags.handshake.canceling);
+
+	assert(conn->state == NetState_inSetup);
+	NetConnection_setState(conn, NetState_preBattle);
+}
+
+int
+PacketHandler_Handshake0(NetConnection *conn,
+		const Packet_Handshake0 *packet) {
+	if (!testNetState(handshakeMeaningful(conn->state)
+			&& !conn->stateFlags.handshake.remoteOk, PACKET_HANDSHAKE0))
+		return -1;  // errno is set
+
+	conn->stateFlags.handshake.remoteOk = true;
+	if (conn->stateFlags.handshake.localOk &&
+			!conn->stateFlags.handshake.canceling)
+		sendHandshake1(conn);
+	
+	(void) packet;
+			// Its contents is not interesting.
+
+	return 0;
+}
+
+int
+PacketHandler_Handshake1(NetConnection *conn,
+		const Packet_Handshake1 *packet) {
+	if (!testNetState(handshakeMeaningful(conn->state) &&
+			(conn->stateFlags.handshake.localOk ||
+			conn->stateFlags.handshake.canceling), PACKET_HANDSHAKE1))
+		return -1;  // errno is set
+
+	if (conn->stateFlags.handshake.canceling) {
+		conn->stateFlags.handshake.remoteOk = true;
+	} else {
+		bool remoteWasOk = conn->stateFlags.handshake.remoteOk;
+
+		conn->stateFlags.handshake.localOk = false;	
+		conn->stateFlags.handshake.remoteOk = false;	
+	
+		if (!remoteWasOk) {
+			// Received Handshake1 without prior Handshake0.
+			// A Handshake0 is implied, but we still need to confirm
+			// it with a Handshake1.
+			sendHandshake1(conn);
+		}
+
+		handshakeComplete(conn);
+	}
+	
+	(void) packet;
+			// Its contents is not interesting.
+
+	return 0;
+}
+
+int
+PacketHandler_HandshakeCancel(NetConnection *conn,
+		const Packet_HandshakeCancel *packet) {
+	if (!testNetState(handshakeMeaningful(conn->state)
+			&& conn->stateFlags.handshake.remoteOk, PACKET_HANDSHAKECANCEL))
+		return -1;  // errno is set
+
+	conn->stateFlags.handshake.remoteOk = false;
+	sendHandshakeCancelAck(conn);
+	
+	(void) packet;
+			// Its contents is not interesting.
+
+	return 0;
+}
+
+int
+PacketHandler_HandshakeCancelAck(NetConnection *conn,
+		const Packet_HandshakeCancelAck *packet) {
+	if (!testNetState(handshakeMeaningful(conn->state)
+			&& conn->stateFlags.handshake.canceling,
+			PACKET_HANDSHAKECANCELACK))
+		return -1;  // errno is set
+
+	conn->stateFlags.handshake.canceling = false;
+	if (conn->stateFlags.handshake.localOk) {
+		if (conn->stateFlags.handshake.remoteOk) {
+			sendHandshake1(conn);
+		} else
+			sendHandshake0(conn);
+	}
+	
+	(void) packet;
+			// Its contents is not interesting.
+
+	return 0;
+}
+
+int
+PacketHandler_SeedRandom(NetConnection *conn,
+		const Packet_SeedRandom *packet) {
+	BattleStateData *battleStateData;
+
+	if (!testNetState(conn->state == NetState_preBattle &&
+			!conn->stateFlags.discriminant, PACKET_SEEDRANDOM))
+		return -1;  // errno is set
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	updateRandomSeed (battleStateData->meleeState, conn->player,
+			ntoh32(packet->seed));
+	
+	conn->stateFlags.agreement.randomSeed = true;
+	return 0;
+}
+
+int
+PacketHandler_InputDelay(NetConnection *conn,
+		const Packet_InputDelay *packet) {
+	BattleStateData *battleStateData;
+	uint32 delay;
+
+	if (!testNetState(conn->state == NetState_preBattle,
+			PACKET_INPUTDELAY))
+		return -1;  // errno is set
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	delay = ntoh32(packet->delay);
+	if (delay > 60 * BATTLE_FRAME_RATE) {
+		log_add(log_Error, "NETPLAY: [%d]     Received absurdly large "
+				"input delay value (%d).\n", conn->player, delay);
+		return -1;
+	}
+	conn->stateFlags.inputDelay = ntoh32(packet->delay);
+	
+	return 0;
+}
+
+int
+PacketHandler_SelectShip(NetConnection *conn,
+		const Packet_SelectShip *packet) {
+	bool updateResult;
+	BattleStateData *battleStateData;
+
+	if (!testNetState(conn->state == NetState_selectShip, PACKET_SELECTSHIP))
+		return -1;  // errno is set
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	updateResult = updateMeleeSelection(battleStateData->getMeleeState,
+			conn->player, ntoh16(packet->ship));
+	if (!updateResult)
+	{
+		errno = EBADMSG;
+		return -1;
+	}
+
+	return 0;
+}
+
+int
+PacketHandler_BattleInput(NetConnection *conn,
+		const Packet_BattleInput *packet) {
+	BATTLE_INPUT_STATE input;
+	BattleInputBuffer *bib;
+
+	if (!testNetState(conn->state == NetState_inBattle ||
+			conn->state == NetState_endingBattle ||
+			conn->state == NetState_endingBattle2, PACKET_BATTLEINPUT))
+		return -1;  // errno is set
+
+	input = (BATTLE_INPUT_STATE) packet->state;
+	bib = getBattleInputBuffer(conn->player);
+	if (!BattleInputBuffer_push(bib, input)) {
+		// errno is set
+		return -1;
+	}
+
+	return 0;
+}
+
+int
+PacketHandler_FrameCount(NetConnection *conn,
+		const Packet_FrameCount *packet) {
+	BattleStateData *battleStateData;
+	BattleFrameCounter frameCount;
+
+	if (!testNetState(conn->state == NetState_endingBattle,
+			PACKET_FRAMECOUNT))
+		return -1;  // errno is set
+	
+	frameCount = (BattleFrameCounter) ntoh32(packet->frameCount);
+#ifdef NETPLAY_DEBUG
+	log_add(log_Debug, "NETPLAY: [%d] <== Received battleFrameCount %u.\n",
+			conn->player, (unsigned int) frameCount);
+#endif
+
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	if (frameCount > battleStateData->endFrameCount)
+		battleStateData->endFrameCount = frameCount;
+	Netplay_remoteReady(conn);
+
+	return 0;
+}
+
+int
+PacketHandler_Checksum(NetConnection *conn, const Packet_Checksum *packet) {
+#ifdef NETPLAY_CHECKSUM
+	uint32 frameNr;
+	uint32 checksum;
+	size_t delay;
+	size_t interval;
+#endif
+
+	if (!testNetState(NetState_battleActive(conn->state), PACKET_CHECKSUM))
+		return -1;  // errno is set
+	
+#ifdef NETPLAY_CHECKSUM
+	frameNr = ntoh32(packet->frameNr);
+	checksum = ntoh32(packet->checksum);
+	interval = NetConnection_getChecksumInterval(conn);
+	delay = getBattleInputDelay();
+
+	if (frameNr % interval != 0) {
+		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
+				"for frame %u, while we only expect checksums on frames "
+				"divisable by %u -- discarding.\n", conn->player,
+				(unsigned int) frameNr, interval);
+		return 0;
+				// No need to close the connection; checksums are not
+				// essential.
+	}
+
+	// The checksum is sent at the beginning of a frame.
+	// If we're in frame n and have sent our input already,
+	// the remote side has got enough input to progress delay + 1 frames from
+	// frame n. The next frame is then n + delay + 1, for which we can
+	// receive a checksum.
+	if (frameNr > battleFrameCount + delay + 1) {
+		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
+				"for a frame too far in the future (frame %u, current "
+				"is %u, input delay is %u) -- discarding.\n", conn->player,
+				(unsigned int) frameNr, battleFrameCount, delay);
+		return 0;
+				// No need to close the connection; checksums are not
+				// essential.
+	}
+
+	// We can progress delay more frames after the last frame for which we
+	// received input. If we call that frame n, we can complete frames
+	// n through n + delay - 1. While we are waiting for the next input,
+	// in frame n + delay,  we will first receive the checksum that the
+	// remote side sent at the start of frame n + 1.
+	// In this situation frameNr is n + 1, and battleFrameCount is
+	// n + delay.
+	if (frameNr + delay < battleFrameCount) {
+		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
+				"for a frame too far in the past (frame %u, current "
+				"is %u, input delay is %u) -- discarding.\n", conn->player,
+				(unsigned int) frameNr, battleFrameCount, delay);
+		return 0;
+				// No need to close the connection; checksums are not
+				// essential.
+	}
+
+	addRemoteChecksum(conn, frameNr, checksum);
+#endif
+
+#ifndef NETPLAY_CHECKSUM
+	(void) packet;
+#endif
+	return 0;
+}
+
+
+

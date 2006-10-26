@@ -141,26 +141,26 @@ DamageColorCycle (COLOR c, COUNT i)
 	{
 		WHITE_COLOR,
 		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E),
 	};
 
 	if (i)
 		c = damage_tab[i];
 	else if (c == WHITE_COLOR)
 		c = damage_tab[6];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0xA), 0x0E))
+	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E))
 		c = damage_tab[5];
 	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78))
 		c = damage_tab[4];
 	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A))
 		c = damage_tab[3];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00), 0x7C))
+	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C))
 		c = damage_tab[2];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00), 0x7E))
+	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E))
 		c = damage_tab[1];
 	else
 		c = damage_tab[0];
@@ -1944,16 +1944,20 @@ PlanetSide (PMENU_STATE pMS)
 	PSD.MineralText[1] = PSD.MineralText[0];
 	PSD.MineralText[2] = PSD.MineralText[1];
 
-	PSD.ColorCycle[0] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F);
-	PSD.ColorCycle[1] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00), 0x7D);
+	PSD.ColorCycle[0] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F);
+	PSD.ColorCycle[1] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D);
 	PSD.ColorCycle[2] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B);
 	PSD.ColorCycle[3] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x71);
 	for (index = 4; index < (NUM_TEXT_FRAMES >> 1) - 4; ++index)
 		PSD.ColorCycle[index] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
-	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 4] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x71);
-	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 3] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B);
-	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 2] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x000), 0x7D);
-	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 1] = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00), 0x7F);
+	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 4] =
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x71);
+	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 3] =
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B);
+	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 2] =
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D);
+	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 1] =
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F);
 	pMS->ModuleFrame = (FRAME)&PSD;
 
 	index = NORMALIZE_FACING ((COUNT)TFB_Random ());

@@ -22,6 +22,9 @@
 #include "controls.h"
 #include "options.h"
 #include "nameref.h"
+#ifdef NETPLAY
+#	include "netplay/netmelee.h"
+#endif
 #include "init.h"
 #include "intel.h"
 #include "resinst.h"
@@ -72,7 +75,10 @@ InitPlayerInput (void)
 {
 	HumanInput[0] = p1_combat_summary;
 	HumanInput[1] = p2_combat_summary;
-	ComputerInput  = computer_intelligence;
+	ComputerInput = computer_intelligence;
+#ifdef NETPLAY
+	NetworkInput = networkBattleInput;
+#endif
 }
 
 void
@@ -215,10 +221,11 @@ SetPlayerInput (void)
 
 	for (which_player = 0; which_player < NUM_PLAYERS; ++which_player)
 	{
-		if (!(PlayerControl[which_player] & HUMAN_CONTROL))
+		if (PlayerControl[which_player] & COMPUTER_CONTROL)
 			PlayerInput[which_player] = ComputerInput;
 		else if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
 		{
+			// Full game.
 			if (which_player == 0)
 				PlayerInput[which_player] = HumanInput[0];
 			else
@@ -227,6 +234,10 @@ SetPlayerInput (void)
 				PlayerControl[which_player] = COMPUTER_CONTROL | AWESOME_RATING;
 			}
 		}
+#ifdef NETPLAY
+		else if (PlayerControl[which_player] & NETWORK_CONTROL)
+			PlayerInput[which_player] = NetworkInput;
+#endif
 		else
 			PlayerInput[which_player] = HumanInput[which_player];
 	}

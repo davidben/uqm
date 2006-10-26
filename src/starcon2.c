@@ -38,11 +38,17 @@
 #include "options.h"
 #include "uqmversion.h"
 #include "comm.h"
+#ifdef NETPLAY
+#	include "libs/callback.h"
+#	include "libs/alarm.h"
+#	include "libs/net.h"
+#	include "netplay/netoptions.h"
+#endif
 #include "setup.h"
 #include "starcon.h"
 
 
-#if defined(GFXMODULE_SDL)
+#if defined (GFXMODULE_SDL)
 #	include SDL_INCLUDE(SDL.h)
 			// Including this is actually necessary on OSX.
 #endif
@@ -455,6 +461,13 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
+#ifdef NETPLAY
+	Network_init ();
+	Alarm_init ();
+	Callback_init ();
+	NetManager_init ();
+#endif
+
 	GraphicsLock = CreateMutex ("Graphics",
 			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
@@ -481,6 +494,10 @@ main (int argc, char *argv[])
 
 	unInitTempDir ();
 	uninitIO ();
+
+#ifdef NETPLAY
+	Network_uninit ();
+#endif
 	
 	return EXIT_SUCCESS;
 }
@@ -496,6 +513,13 @@ enum
 	STEREOSFX_OPT,
 	ADDON_OPT,
 	ACCEL_OPT,
+#ifdef NETPLAY
+	NETHOST1_OPT,
+	NETPORT1_OPT,
+	NETHOST2_OPT,
+	NETPORT2_OPT,
+	NETDELAY_OPT,
+#endif
 };
 
 static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:v";
@@ -532,6 +556,13 @@ static struct option longOptions[] =
 	{"stereosfx", 0, NULL, STEREOSFX_OPT},
 	{"addon", 1, NULL, ADDON_OPT},
 	{"accel", 1, NULL, ACCEL_OPT},
+#ifdef NETPLAY
+	{"nethost1", 1, NULL, NETHOST1_OPT},
+	{"netport1", 1, NULL, NETPORT1_OPT},
+	{"nethost2", 1, NULL, NETHOST2_OPT},
+	{"netport2", 1, NULL, NETPORT2_OPT},
+	{"netdelay", 1, NULL, NETDELAY_OPT},
+#endif
 	{0, 0, 0, 0}
 };
 
@@ -595,7 +626,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 	{
 		int c;
 		optionIndex = -1;
-		c = getopt_long(argc, argv, optString, longOptions, &optionIndex);
+		c = getopt_long (argc, argv, optString, longOptions, &optionIndex);
 		if (c == -1)
 			break;
 
@@ -721,9 +752,9 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 			}
 			case 'g':
 			{
-				int err = parseFloatOption (optarg, &options->gamma,
+				int result = parseFloatOption (optarg, &options->gamma,
 						"gamma correction");
-				if (err)
+				if (result == -1)
 					badArg = TRUE;
 				else
 					options->gammaSet = TRUE;
@@ -814,6 +845,39 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 					badArg = TRUE;
 				}
 				break;
+#ifdef NETPLAY
+			case NETHOST1_OPT:
+				netplayOptions.peer[0].isServer = false;
+				netplayOptions.peer[0].host = optarg;
+				break;
+			case NETPORT1_OPT:
+				netplayOptions.peer[0].port = optarg;
+				break;
+			case NETHOST2_OPT:
+				netplayOptions.peer[1].isServer = false;
+				netplayOptions.peer[1].host = optarg;
+				break;
+			case NETPORT2_OPT:
+				netplayOptions.peer[1].port = optarg;
+				break;
+			case NETDELAY_OPT:
+			{
+				if (parseIntOption (optarg, &netplayOptions.inputDelay,
+						"network input delay") == -1)
+				{
+					badArg = TRUE;
+					break;
+				}
+
+				if (netplayOptions.inputDelay > 60 * BATTLE_FRAME_RATE)
+				{
+					log_add (log_Fatal, "Network input delay is absurdly "
+							"large.");
+					badArg = TRUE;
+				}
+				break;
+			}
+#endif
 			default:
 				log_add (log_Fatal, "Error: Invalid option '%s' not found.",
 							longOptions[optionIndex].name);
@@ -849,7 +913,7 @@ parseVolume (const char *str, float *vol, const char *optName)
 		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
-	intVol = (int) strtol(str, &endPtr, 10);
+	intVol = (int) strtol (str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
 		log_add (log_Error, "Error: Junk characters in volume specified "
@@ -884,7 +948,7 @@ parseIntOption (const char *str, int *result, const char *optName)
 		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
-	temp = (int) strtol(str, &endPtr, 10);
+	temp = (int) strtol (str, &endPtr, 10);
 	if (*endPtr != '\0')
 	{
 		log_add (log_Error, "Error: Junk characters in argument '%s'.",
@@ -907,7 +971,7 @@ parseFloatOption (const char *str, float *f, const char *optName)
 		log_add (log_Error, "Error: Invalid value for '%s'.", optName);
 		return -1;
 	}
-	temp = (float) strtod(str, &endPtr);
+	temp = (float) strtod (str, &endPtr);
 	if (*endPtr != '\0')
 	{
 		log_add (log_Error, "Error: Junk characters in argument '%s'.",
@@ -954,6 +1018,14 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 			"mixsdl)");
 	log_add (log_User, "  --stereosfx (enables positional sound effects, "
 			"currently only for openal)");
+#ifdef NETPLAY
+	log_add (log_User, "  --nethostN=HOSTNAME (server to connect to for "
+			"player N (1=bottom, 2=top)");
+	log_add (log_User, "  --netportN=PORT (port to connect to/listen on for "
+			"player N (1=bottom, 2=top)");
+	log_add (log_User, "  --netdelay=FRAMES (number of frames to "
+			"buffer/delay network input for");
+#endif
 	log_add (log_User, "The following options can take either '3do' or 'pc' "
 			"as an option:");
 	log_add (log_User, "  -m, --music : Music version (default %s)",
@@ -973,7 +1045,6 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "  --scroll    : ff/frev during comm.  pc=per-page, "
 			"3do=smooth (default %s)",
 			PC_3DO_optString (defaultOptions->smoothScroll));
-	
 	log_setOutput (old);
 }
 

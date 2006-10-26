@@ -1,0 +1,2 @@
+uqm_CFILES="ndesc.c netmanager_bsd.c"
+

@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -52,8 +52,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Stripping debug info...
@@ -74,7 +74,7 @@ PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -82,8 +82,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug NoAccel"
@@ -102,7 +102,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -110,8 +110,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo /o"UrQuanMasters.bsc"
 # ADD BSC32 /nologo /o"UrQuanMasters.bsc"
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../uqmdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAccel"
@@ -130,7 +130,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /D "USE_PLATFORM_ACCEL" /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -138,8 +138,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL.lib SDLmain.lib SDL_image.lib zdll.lib ws2_32.lib /nologo /subsystem:windows /pdb:none /debug /machine:I386 /nodefaultlib:"msvcrtd.lib" /out:"../../uqm.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Stripping debug info...
@@ -1333,6 +1333,114 @@ SOURCE=..\sc2code\libs\mikmod\virtch2.c
 SOURCE=..\sc2code\libs\mikmod\virtch_common.c
 # End Source File
 # End Group
+# Begin Group "network"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\bytesex.h
+# End Source File
+# Begin Group "connect"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\connect.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\connect.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\listen.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\listen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\resolve.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\connect\resolve.h
+# End Source File
+# End Group
+
+# Begin Group "netmanager"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\ndesc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\ndesc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\ndindex.ci
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\netmanager_common.ci
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\netmanager.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.h
+# End Source File
+# End Group
+
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netport.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netport.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\network_win.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\network.h
+# End Source File
+# Begin Group "socket"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\socket\socket.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\socket\socket.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\socket\socket_win.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\socket\socket_win.h
+# End Source File
+# End Group
+
+# End Group
+
 # Begin Source File
 
 SOURCE=..\sc2code\libs\alarm.h
@@ -1384,6 +1492,10 @@ SOURCE=..\sc2code\libs\memlib.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\misc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\net.h
 # End Source File
 # Begin Source File
 
@@ -2333,6 +2445,167 @@ SOURCE=..\sc2code\comm\zoqfot\zoqfotc.c
 
 SOURCE=..\sc2code\comm\commall.h
 # End Source File
+# End Group
+# Begin Group "netplay"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checksum.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checksum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checkbuf.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checkbuf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\crc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\crc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\nc_connect.ci
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netconnection.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netconnection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netinput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netoptions.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netoptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netmelee.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netmelee.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netmisc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netplay.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netrcv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netrcv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netsend.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netsend.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netstate.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\notify.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\notify.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packet.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packet.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packethandlers.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packethandlers.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packetsenders.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packetsenders.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packetq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\packetq.h
+# End Source File
+# Begin Group "proto"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\npconfirm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\npconfirm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\ready.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\ready.h
+# End Source File
+# End Group
+
 # End Group
 # Begin Group "planets"
 

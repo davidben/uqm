@@ -1,0 +1,63 @@
+NetState_unconnected is the initial state. When a connection attempt is made,
+the state is set to NetState_connecting.
+The state field of a NetConnection is NULL.
+
+NetState_connecting indicates a connection is in progress.
+When the connection is established, an INIT packet is sent, the state
+is changed to NetState_init and InputFunc is set to DoNetworkInit.
+The state field of a NetConnection is a ConnectStateData structure.
+
+NetState_init is for initialising the connection before actual game
+information is sent. When an INIT packet is received, the state is set
+to NetState_inSetup and InputFunc is set to DoMelee.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_inSetup is the state in which the fleet configuration is negotiated.
+Only the side who has myTurn set may send this ship information, by means
+of FLEET and TEAMNAME packets.
+The Turn negotiation is used to change myTurn.
+The Confirm negotiation is used to end this state and go to
+NetState_preBattle. At this time InputFunc is set to DoPreMelee.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_preBattle is used for non-interactive battle negotiations.
+One side sends the random seed; the other receives it.
+The Ready negotiation is used to end this state and go to
+NetState_interBattle.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_interBattle is used to allow either side to do some local
+initialisations before moving on.
+The Ready negotiation is used to end this state and go to
+NetState_selectShip, or if there are no more ships to be selected,
+to NetState_inBattle.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_selectShip is where a side may select his ship. The other
+side is waiting for notice of this selection.
+As soon as the selection has been sent or received, the state is changed
+back to NetState_interBattle.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_inBattle is where the actual melee takes place.
+Both sides send their input until the game is over, at which point
+the Ready negotiation is used to end this state and go to
+the NetState_endingBattle state. Until the Ready negotiation has been
+completed, the simulation is continuing.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_endingBattle is where the local side waits for the remote
+battle frame count, after it has sent its own. When it arrives,
+the state changes to NetState_endingBattle2.
+The state field of a NetConnection is a BattleStateData structure.
+
+NetState_endingBattle2 is where the side with the lowest battle frame count
+catches up with the other other side, while the other side waits.
+The Ready negotiation is used to signal that each side is ready,
+and the state changes back to NetState_interBattle.
+The state field of a NetConnection is a BattleStateData structure.
+
+
+When a connection is aborted, the state is returned to NetState_unconnected.
+
+

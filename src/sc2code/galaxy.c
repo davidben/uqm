@@ -260,7 +260,7 @@ InitGalaxy (void)
 		{
 			SetPrimType (&DisplayArray[p], STAMP_PRIM);
 			SetPrimColor (&DisplayArray[p],
-					BUILD_COLOR (MAKE_RGB15 (0xB, 0xB, 0x1F), 0x09));
+					BUILD_COLOR (MAKE_RGB15 (0x0B, 0x0B, 0x1F), 0x09));
 			DisplayArray[p].Object.Stamp.frame = stars_in_space;
 		}
 		else

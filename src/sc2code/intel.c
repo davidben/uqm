@@ -29,27 +29,28 @@
 SIZE cur_player;
 
 BATTLE_INPUT_STATE
-computer_intelligence (void)
+computer_intelligence (COUNT player, STARSHIPPTR StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 		return 0;
 
-	if (CyborgDescPtr)
+	if (StarShipPtr)
 	{
-		if (PlayerControl[cur_player] & CYBORG_CONTROL)
+		if (PlayerControl[player] & CYBORG_CONTROL)
 		{
-			InputState = tactical_intelligence ();
+			InputState = tactical_intelligence (player, StarShipPtr);
 
 			// allow a player to warp-escape in cyborg mode
-			if (cur_player == 0)
-				InputState |= (*(HumanInput[cur_player])) () & BATTLE_ESCAPE;
+			if (player == 0)
+				InputState |= (*(HumanInput[player])) (player, StarShipPtr)
+						& BATTLE_ESCAPE;
 		}
 		else
-			InputState = (*(HumanInput[cur_player])) ();
+			InputState = (*(HumanInput[player])) (player, StarShipPtr);
 	}
-	else if (!(PlayerControl[cur_player] & PSYTRON_CONTROL))
+	else if (!(PlayerControl[player] & PSYTRON_CONTROL))
 		InputState = 0;
 	else
 	{

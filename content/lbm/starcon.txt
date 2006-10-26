@@ -2246,3 +2246,65 @@ dispatch
 exit menu
 
 
+#(Unconnected. Press LEFT to connect.)
+Unconnected. Press LEFT to connect.
+
+
+#(Awaiting incoming connection...)
+Awaiting incoming connection...
+Press RIGHT to cancel.
+
+#(Attempting outgoing connection...)
+Attempting outgoing connection...
+Press RIGHT to cancel.
+
+#(Connected. Press RIGHT to disconnect.)
+Connected. Press RIGHT to disconnect.
+
+
+#(Confirmation cancelled. Press FIRE to reconfirm.)
+Confirmation cancelled. Press FIRE to reconfirm.
+
+
+#(Connection for bottom player not established.)
+Connection for bottom player not established.
+
+
+#(Connection for top player not established.)
+Connection for top player not established.
+
+
+#(Waiting for remote confirmation.)
+Waiting for remote confirmation.
+
+
+#(Bottom player is connected.)
+Bottom player is connected.
+
+
+#(Top player is connected.)
+Top player is connected.
+
+
+#(Bottom player: connection failed.)
+Bottom player: connection failed.
+
+
+#(Top player: connection failed.)
+Top player: connection failed.
+
+
+#(Bottom player: connection closed.)
+Bottom player: connection closed.
+
+
+#(Top player: connection closed.)
+Top player: connection closed.
+
+#(Connection for bottom player not ready.)
+Connection for bottom player not ready.
+
+
+#(Connection for top player not ready.)
+Connection for top player not ready.
+

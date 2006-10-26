@@ -20,6 +20,13 @@
 #include "collide.h"
 #include "globdata.h"
 #include "init.h"
+#ifdef NETPLAY
+#	include "netplay/netmelee.h"
+#	include "netplay/netmisc.h"
+#	include "netplay/notify.h"
+#	include "netplay/proto/ready.h"
+#	include "netplay/packetq.h"
+#endif
 #include "races.h"
 #include "settings.h"
 #include "sounds.h"
@@ -47,6 +54,151 @@ OpponentAlive (STARSHIPPTR TestStarShipPtr)
 	}
 
 	return TRUE;
+}
+
+#ifdef NETPLAY
+static void
+readyToEnd2Callback (NetConnection *conn, void *arg)
+{
+	NetConnection_setState (conn, NetState_endingBattle2);
+	(void) arg;
+}
+
+static void
+readyToEndCallback (NetConnection *conn, void *arg)
+{
+	// This callback function gets called from inside the function that
+	// updates the frame counter, but this is not a problem as the
+	// ending frame count will at least be 1 greater than the current
+	// frame count.
+
+	BattleStateData *battleStateData;
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+
+#ifdef NETPLAY_DEBUG
+	fprintf (stderr, "Both sides are ready to end the battle; starting "
+			"end-of-battle synchronisation.\n");
+#endif
+	NetConnection_setState (conn, NetState_endingBattle);
+	if (battleFrameCount + 1 > battleStateData->endFrameCount)
+		battleStateData->endFrameCount = battleFrameCount + 1;
+	Netplay_sendFrameCount (conn, battleFrameCount + 1);
+			// The +1 is to ensure that after the remote side receives the
+			// frame count it will still receive one more frame data packet,
+			// so it will know in advance when the last frame data packet
+			// will come so it won't block. It also ensures that the
+			// local frame counter won't go past the sent number, which
+			// could happen when the function triggering the call to this
+			// function is the frame update function which might update
+			// the frame counter one more time.
+	flushPacketQueue (conn);
+#ifdef NETPLAY_DEBUG
+    fprintf (stderr, "NETPLAY: [%d] ==> Sent battleFrameCount %d.\n",
+			NetConnection_getPlayerNr(conn), battleFrameCount + 1);
+#endif
+	Netplay_localReady(conn, readyToEnd2Callback, NULL, false);
+	(void) arg;
+}
+
+/*
+ * When one player's ship dies, there's a delay before the next ship
+ * can be chosen. This time depends on the time the ditty is playing
+ * and may differ for each side.
+ * To synchronise the time, the following protocol is followed:
+ * 1. (NetState_inBattle) The Ready protocol is used to let either
+ *    party know when they're ready to stop the battle.
+ * 2. (NetState_endingBattle) Each party sends the frame number of when
+ *    it wants to end the battle, and continues until that point, where
+ *    it waits until it has received the frame number of the other party.
+ * 3. After a player has both sent and received a frame count, the
+ *    simulation continues for each party, until the maximum of both
+ *    frame counts has been achieved.
+ * 4. The Ready protocol is used to let each side signal that the it has
+ *    reached the target frame count.
+ * 5. The battle ends.
+ */
+static bool
+readyForBattleEndPlayer (NetConnection *conn, void *arg)
+{
+	BattleStateData *battleStateData;
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+
+	if (NetConnection_getState (conn) == NetState_interBattle)
+	{
+		// This connection is already ready. The entire synchronisation
+		// protocol has already been done for this connection.
+		return true;
+	}
+
+	if (NetConnection_getState (conn) == NetState_inBattle)
+	{
+		if (Netplay_isLocalReady(conn))
+		{
+			// We've already sent notice that we are ready, but we're
+			// still waiting for the other side to say it's ready too.
+			return false;
+		}
+
+		// We haven't yet told the other side we're ready. We do so now.
+		Netplay_localReady (conn, readyToEndCallback, NULL, true);
+				// This may set the state to endingBattle.
+
+		if (NetConnection_getState (conn) == NetState_inBattle)
+			return false;
+	}
+
+	assert (NetConnection_getState (conn) == NetState_endingBattle ||
+			NetConnection_getState (conn) == NetState_endingBattle2);
+	
+	// Keep the simulation going as long as the target frame count
+	// hasn't been reached yet. Note that if the connection state is
+	// NetState_endingBattle, that we haven't yet received the
+	// remote frame count, so the target frame count may still rise.
+	if (battleFrameCount < battleStateData->endFrameCount)
+		return false;
+
+	if (NetConnection_getState (conn) == NetState_endingBattle)
+	{
+		// We have reached the target frame count, but we don't know
+		// the remote target frame count yet. So we wait until it has
+		// come in.
+		waitReady (conn);
+		// TODO: check whether all connections are still connected.
+		assert (NetConnection_getState (conn) == NetState_endingBattle2);
+
+		// Continue the simulation if the battleFrameCount has gone up.
+		if (battleFrameCount < battleStateData->endFrameCount)
+			return false;
+	}
+
+	// We are ready and wait for the other party to become ready too.
+	negotiateReady (conn, true, NetState_interBattle);
+
+	(void) arg;
+	return true;	
+}
+#endif
+
+static inline bool
+readyForBattleEnd (void)
+{
+#ifndef NETPLAY
+#if DEMO_MODE
+	// In Demo mode, the saved journal should be replayed with frame
+	// accuracy. PLRPlaying () isn't consistent enough.
+	return true;
+#else  /* !DEMO_MODE */
+	return PLRPlaying ((MUSIC_REF)~0);
+#endif  /* !DEMO_MODE */
+#else  /* defined (NETPLAY) */
+	if (PLRPlaying ((MUSIC_REF)~0))
+		return false;
+
+	if (!forAllConnectedPlayers (readyForBattleEndPlayer, NULL))
+		return false;
+
+	return true;
+#endif  /* defined (NETPLAY) */
 }
 
 void
@@ -86,6 +238,10 @@ new_ship (PELEMENT DeadShipPtr)
 		MusicStarted = FALSE;
 		DeadShipPtr->turn_wait = (BYTE)(
 				DeadShipPtr->state_flags & (GOOD_GUY | BAD_GUY));
+				// DeadShipPtr->turn_wait is abused to store which
+				// side this element is for, probably because this
+				// information will be lost from state_flags (why is this
+				// necessary?).
 		for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 		{
 			ELEMENTPTR ElementPtr;
@@ -105,9 +261,9 @@ new_ship (PELEMENT DeadShipPtr)
 					ElementPtr->life_span = 0;
 					ElementPtr->state_flags =
 							NONSOLID | DISAPPEARING | FINITE_LIFE;
-					ElementPtr->preprocess_func =
-							ElementPtr->postprocess_func =
-							ElementPtr->death_func = 0;
+					ElementPtr->preprocess_func = 0;
+					ElementPtr->postprocess_func = 0;
+					ElementPtr->death_func = 0;
 					ElementPtr->collision_func = 0;
 				}
 			}
@@ -124,23 +280,20 @@ new_ship (PELEMENT DeadShipPtr)
 			UnlockElement (hElement);
 		}
 
-		DeadShipPtr->life_span = MusicStarted ?
-				(ONE_SECOND * 3) / BATTLE_FRAME_RATE : 1;
+		DeadShipPtr->life_span =
+				MusicStarted ? (ONE_SECOND * 3) / BATTLE_FRAME_RATE : 1;
 		DeadShipPtr->death_func = new_ship;
 		DeadShipPtr->preprocess_func = new_ship;
 		SetElementStarShip (DeadShipPtr, DeadStarShipPtr);
 	}
 
-	if (DeadShipPtr->life_span
-#if !DEMO_MODE
-			|| PLRPlaying ((MUSIC_REF)~0)
-#endif /* DEMO_MODE */
-			)
+	if (DeadShipPtr->life_span || !readyForBattleEnd ())
 	{
 		DeadShipPtr->state_flags &= ~DISAPPEARING;
 		++DeadShipPtr->life_span;
+		return;
 	}
-	else
+
 	{
 		BOOLEAN RestartMusic;
 
@@ -155,12 +308,57 @@ new_ship (PELEMENT DeadShipPtr)
 					DeadStarShipPtr->RaceDescPtr);
 		free_ship (DeadStarShipPtr, TRUE);
 UnbatchGraphics ();
+
+#ifdef NETPLAY
+		initBattleStateDataConnections ();
+		{
+			bool allOk =
+					negotiateReadyConnections (true, NetState_interBattle);
+					// We are already in NetState_interBattle, but all
+					// sides just need to pass this checkpoint before
+					// going on.
+			if (!allOk)
+			{
+				// Some network connection has been reset.
+				GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+				BatchGraphics ();
+				return;
+			}
+		}
+#endif  /* NETPLAY */
+
 		if (GetNextStarShip (DeadStarShipPtr,
 				WHICH_SIDE (DeadShipPtr->turn_wait)) && RestartMusic)
+		{
+#ifdef NETPLAY
+			{
+				bool allOk =
+						negotiateReadyConnections (true, NetState_inBattle);
+				if (!allOk)
+				{
+					// Some network connection has been reset.
+					GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+					BatchGraphics ();
+					return;
+				}
+			}
+#endif
 			BattleSong (TRUE);
+		}
 		else if (LOBYTE (battle_counter) == 0
 				|| HIBYTE (battle_counter) == 0)
 			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+
+#ifdef NETPLAY
+		// Turn_wait was abused to store the side this element was on.
+		// We don't want this included in checksums, as it can be different
+		// for both sides of a connection.
+		// While preprocess_func == new_ship, turn_wait isn't included in
+		// the checksum at all all, but now that new_ship is done,
+		// it would be. As the value is irrelevant at this point, we can
+		// just set it to the same value on either side.
+		DeadShipPtr->turn_wait = 0;
+#endif
 BatchGraphics ();
 	}
 }
@@ -225,20 +423,16 @@ explosion_preprocess (PELEMENT ShipPtr)
 			if (HIBYTE (LOWORD (rand_val)) < 256 * 1 / 3)
 				dist += DISPLAY_TO_WORLD (8);
 			ElementPtr->current.location.x =
-					ShipPtr->current.location.x
-					+ COSINE (angle, dist);
+					ShipPtr->current.location.x + COSINE (angle, dist);
 			ElementPtr->current.location.y =
-					ShipPtr->current.location.y
-					+ SINE (angle, dist);
+					ShipPtr->current.location.y + SINE (angle, dist);
 			ElementPtr->preprocess_func = animation_preprocess;
 			rand_val = TFB_Random ();
 			angle = LOBYTE (LOWORD (rand_val));
 			dist = WORLD_TO_VELOCITY (
-					DISPLAY_TO_WORLD (HIBYTE (LOWORD (rand_val)) % 5)
-					);
+					DISPLAY_TO_WORLD (HIBYTE (LOWORD (rand_val)) % 5));
 			SetVelocityComponents (&ElementPtr->velocity,
-					COSINE (angle, dist),
-					SINE (angle, dist));
+					COSINE (angle, dist), SINE (angle, dist));
 			UnlockElement (hElement);
 		}
 	} while (--i);
@@ -380,14 +574,14 @@ spawn_ion_trail (PELEMENT ElementPtr)
 				  BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
 				  BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
 				  BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
-				  BUILD_COLOR (MAKE_RGB15 (0xF, 0x00, 0x00),  0x2e),
-				  BUILD_COLOR (MAKE_RGB15 (0xB, 0x00, 0x00),  0x2f),
+				  BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
+				  BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
 				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
-				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0xE, 0x00),  0x7c),
-				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0xA, 0x00),  0x7d),
-				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x7, 0x00),  0x7e),
-				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x3, 0x00),  0x7f), };
+				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7c),
+				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
+				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
+				  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7f), };
 #define NUM_TAB_COLORS (sizeof (color_tab) / sizeof (color_tab[0]))
 				
 		COUNT color_index = 0;
@@ -480,11 +674,12 @@ ship_transition (PELEMENT ElementPtr)
 
 			LockElement (hShipImage, &ShipImagePtr);
 			ShipImagePtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
-			ShipImagePtr->life_span = ShipImagePtr->thrust_wait = TRANSITION_LIFE;
-			SetPrimType (&DisplayArray[ShipImagePtr->PrimIndex], STAMPFILL_PRIM);
-			SetPrimColor (
-					&DisplayArray[ShipImagePtr->PrimIndex], START_ION_COLOR
-					);
+			ShipImagePtr->life_span = ShipImagePtr->thrust_wait =
+					TRANSITION_LIFE;
+			SetPrimType (&DisplayArray[ShipImagePtr->PrimIndex],
+					STAMPFILL_PRIM);
+			SetPrimColor (&DisplayArray[ShipImagePtr->PrimIndex],
+					START_ION_COLOR);
 			ShipImagePtr->current.image = ElementPtr->current.image;
 			ShipImagePtr->current.location = ElementPtr->current.location;
 			if (!(ElementPtr->state_flags & PLAYER_SHIP))
@@ -531,17 +726,17 @@ flee_preprocess (PELEMENT ElementPtr)
 		COLOR c;
 		COLOR color_tab[] =
 		{
-			BUILD_COLOR (MAKE_RGB15 (31, 25, 25), 0x24),
-			BUILD_COLOR (MAKE_RGB15 (31, 19, 19), 0x25),
-			BUILD_COLOR (MAKE_RGB15 (31, 15, 15), 0x26),
-			BUILD_COLOR (MAKE_RGB15 (31, 10, 10), 0x27),
-			BUILD_COLOR (MAKE_RGB15 (31, 4, 4), 0x28),
-			BUILD_COLOR (MAKE_RGB15 (31, 0, 0), 0x29),
-			BUILD_COLOR (MAKE_RGB15 (27, 0, 0), 0x2A),
-			BUILD_COLOR (MAKE_RGB15 (23, 0, 0), 0x2B),
-			BUILD_COLOR (MAKE_RGB15 (19, 0, 0), 0x2C),
-			BUILD_COLOR (MAKE_RGB15 (14, 0, 0), 0x2D),
-			BUILD_COLOR (MAKE_RGB15 (10, 0, 0), 0x2E),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x13, 0x13), 0x25),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0F, 0x0F), 0x26),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x27),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x04, 0x04), 0x28),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x29),
+			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
+			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
+			BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
+			BUILD_COLOR (MAKE_RGB15 (0x0E, 0x00, 0x00), 0x2D),
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x00, 0x00), 0x2E),
 		};
 
 		dir = HINIBBLE (ElementPtr->thrust_wait) - 1;

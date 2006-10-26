@@ -43,6 +43,7 @@
 
 typedef QUEUE_HANDLE HELEMENT;
 
+// Bits for ELEMENT_FLAGS:
 #define GOOD_GUY (1 << 0)
 #define BAD_GUY (1 << 1)
 #define PLAYER_SHIP (1 << 2)
@@ -64,6 +65,7 @@ typedef QUEUE_HANDLE HELEMENT;
 #define IGNORE_VELOCITY (1 << 13)
 #define CREW_OBJECT (1 << 14)
 #define BACKGROUND_OBJECT (1 << 15)
+
 
 #define HYPERJUMP_LIFE 15
 

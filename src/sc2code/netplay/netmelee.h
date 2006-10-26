@@ -1,0 +1,72 @@
+/*
+ *  Copyright 2006  Serge van den Boom <svdb@stack.nl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#if !defined(_NETMELEE_H) && defined(NETPLAY)
+#define _NETMELEE_H
+
+#include "netplay.h"
+#include "netinput.h"
+#include "netconnection.h"
+
+#include "../controls.h"
+		// for BATTLE_INPUT_STATE
+
+
+extern struct NetConnection *netConnections[];
+
+
+void addNetConnection(NetConnection *conn, int playerNr);
+void removeNetConnection(int playerNr);
+void closeAllConnections(void);
+void closeAllConnections(void);
+size_t getNumNetConnections(void);
+
+void netInput(void);
+void netInputBlocking(uint32 timeoutMs);
+void flushPacketQueues(void);
+
+void confirmConnections(void);
+void cancelConfirmations(void);
+void connectionsLocalReady(NetConnection_ReadyCallback callback, void *arg);
+
+void sendBattleInputConnections(BATTLE_INPUT_STATE input);
+void sendChecksumConnections(uint32 frameNr, uint32 checksum);
+void initBattleStateDataConnections(void);
+
+BATTLE_INPUT_STATE networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr);
+
+NetConnection *openPlayerNetworkConnection(COUNT player, void *extra);
+void closePlayerNetworkConnection(COUNT player);
+
+typedef bool(*ForAllCallback)(NetConnection *conn, void *arg);
+bool forAllConnectedPlayers(ForAllCallback callback, void *arg);
+
+bool setupInputDelay(size_t localInputDelay);
+bool sendInputDelayConnections(size_t delay);
+bool setStateConnections(NetState state);
+bool localReadyConnections(NetConnection_ReadyCallback readyCallback,
+		void *arg, bool notifyRemote);
+
+bool negotiateReady(NetConnection *conn, bool notifyRemote,
+		NetState nextState);
+bool negotiateReadyConnections(bool notifyRemote, NetState nextState);
+bool waitReady(NetConnection *conn);
+
+#endif  /* _NETMELEE_H */
+
+

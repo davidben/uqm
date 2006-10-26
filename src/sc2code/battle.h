@@ -22,6 +22,10 @@
 extern QUEUE disp_q;
 extern SIZE battle_counter;
 extern BOOLEAN instantVictory;
+#ifdef NETPLAY
+typedef DWORD BattleFrameCounter;
+extern BattleFrameCounter battleFrameCount;
+#endif
 
 extern BOOLEAN Battle (void);
 

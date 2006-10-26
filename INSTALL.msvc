@@ -138,18 +138,13 @@ packages.
   - "C:\Program Files\OpenAL 1.1 SDK\libs\Win32"
   - "C:\Build\zlib-1.2.3\lib"
 
-5.4. Remove ignore of msvcrt.lib
+5.4. Remove unnecessary dependencies
 - Still in the "Linker" part of the project properties pages, in the left
   part of the screen, click on "Input".
-- In the right part, select "Ignore Specific Library", and remove
-  "msvcrt.lib"
-
-5.5. Remove unnecessary dependencies
-- Still in the "Linker", "Input" part of the project properties pages,
-  in the right part, select "Additional Dependencies", then click on "..."
+- In the right part, select "Additional Dependencies", then click on "..."
 - Remove odbc32.lib and odbccp32.lib
 
-5.6. Add user32.lib
+5.5. Add user32.lib
 - Still in "Additional Dependencies", add "user32.lib"
 
 

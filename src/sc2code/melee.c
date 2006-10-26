@@ -20,6 +20,8 @@
 
 #include "build.h"
 #include "colors.h"
+#include "comm.h"
+		// for getLineWithinWidth
 #include "controls.h"
 #include "file.h"
 #include "fmv.h"
@@ -27,6 +29,11 @@
 #include "globdata.h"
 #include "intel.h"
 #include "nameref.h"
+#ifdef NETPLAY
+#	include "netplay/netconnection.h"
+#	include "netplay/netmelee.h"
+#	include "netplay/notify.h"
+#endif
 #include "options.h"
 #include "races.h"
 #include "resinst.h"
@@ -46,9 +53,12 @@
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
+#include <errno.h>
 
 
 static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip);
+static void StartMelee (PMELEE_STATE pMS);
+static ssize_t numPlayersReady (void);
 
 
 static int flash_selection_func (void *data);
@@ -86,6 +96,12 @@ enum
 #define RACE_INFO_ORIGIN_Y (SHIP_INFO_HEIGHT + 6)
 #define RACE_INFO_HEIGHT ((STATUS_HEIGHT - 3) - RACE_INFO_ORIGIN_Y)
 
+#define MELEE_STATUS_X_OFFS 1
+#define MELEE_STATUS_Y_OFFS 201
+#define MELEE_STATUS_WIDTH  (NUM_MELEE_COLUMNS * \
+		(MELEE_BOX_WIDTH + MELEE_BOX_SPACE))
+#define MELEE_STATUS_HEIGHT 38
+
 #define MELEE_BACKGROUND_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
 #define MELEE_TITLE_COLOR \
@@ -108,27 +124,51 @@ enum
 #define HI_STATE_BACKGROUND_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
 
+// XXX: The following entries are unused:
 #define LIST_INFO_BACKGROUND_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
 #define LIST_INFO_TITLE_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+		WHITE_COLOR
 #define LIST_INFO_TEXT_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x07)
+		LT_GRAY_COLOR
 #define LIST_INFO_CURENTRY_TEXT_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+		WHITE_COLOR
 #define HI_LIST_INFO_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x00), 0x04)
 #define HI_LIST_INFO_BACKGROUND_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x1F), 0x0D)
 
 #define TEAM_NAME_TEXT_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
+		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x10, 0x1B), 0x00)
 #define TEAM_NAME_EDIT_TEXT_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00)
+		BUILD_COLOR (MAKE_RGB15 (0x17, 0x18, 0x1D), 0x00)
 #define TEAM_NAME_EDIT_RECT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05)
 #define TEAM_NAME_EDIT_CURS_COLOR \
 		WHITE_COLOR
+
+#define PICKSHIP_TEAM_NAME_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
+#define PICKSHIP_TEAM_START_VALUE_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x04, 0x05, 0x1F), 0x4B)
+
+#define SHIPBOX_TOPLEFT_COLOR_NORMAL \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56)
+#define SHIPBOX_BOTTOMRIGHT_COLOR_NORMAL \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54)
+#define SHIPBOX_INTERIOR_COLOR_NORMAL \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0C), 0x55)
+
+#define SHIPBOX_TOPLEFT_COLOR_HILITE \
+		BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x0C), 0x3E)
+#define SHIPBOX_BOTTOMRIGHT_COLOR_HILITE \
+		BUILD_COLOR (MAKE_RGB15 (0x0C, 0x00, 0x14), 0x3C)
+#define SHIPBOX_INTERIOR_COLOR_HILITE \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x00, 0x11), 0x3D)
+
+#define MELEE_STATUS_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)
+
 
 FRAME PickMeleeFrame;
 static FRAME MeleeFrame;
@@ -140,6 +180,7 @@ PMELEE_STATE volatile pMeleeState;
 static BOOLEAN DoMelee (PMELEE_STATE pMS);
 static BOOLEAN DoEdit (PMELEE_STATE pMS);
 static BOOLEAN DoPickShip (PMELEE_STATE pMS);
+static BOOLEAN DoConfirmSettings (PMELEE_STATE pMS);
 
 #define DTSHS_NORMAL   0
 #define DTSHS_EDIT     1
@@ -147,7 +188,8 @@ static BOOLEAN DoPickShip (PMELEE_STATE pMS);
 #define DTSHS_REPAIR   4
 #define DTSHS_BLOCKCUR 8
 
-static BOOLEAN DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState);
+static BOOLEAN DrawTeamString (PMELEE_STATE pMS, COUNT side,
+		COUNT HiLiteState);
 
 static BOOLEAN DoLoadTeam (PMELEE_STATE pMS);
 static void DrawFileStrings (PMELEE_STATE pMS, int HiLiteState);
@@ -170,7 +212,7 @@ GetShipBox (PRECT pRect, COUNT side, COUNT row, COUNT col)
 			+ (col * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE));
 	pRect->corner.y = MELEE_Y_OFFS
 			+ (side * (MELEE_Y_OFFS + MELEE_BOX_SPACE
-					+ (NUM_MELEE_ROWS * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE))))
+			+ (NUM_MELEE_ROWS * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE))))
 			+ (row * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE));
 	pRect->extent.width = MELEE_BOX_WIDTH;
 	pRect->extent.height = MELEE_BOX_HEIGHT;
@@ -195,37 +237,33 @@ GetShipColumn (int index)
 }
 
 static void
-DrawShipBox (PMELEE_STATE pMS, BOOLEAN HiLite)
+DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 {
 	RECT r;
-	BYTE StarShip;
-	FleetShipIndex index;
 
-	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
+	GetShipBox (&r, side, row, col);
 
 	BatchGraphics ();
-	index = GetShipIndex (pMS->row, pMS->col);
-	StarShip = pMS->TeamImage[pMS->side].ShipList[index];
 	if (HiLite)
 		DrawStarConBox (&r, 1,
-				BUILD_COLOR (MAKE_RGB15 (0x7, 0x00, 0xC), 0x3E),
-				BUILD_COLOR (MAKE_RGB15 (0xC, 0x00, 0x14), 0x3C),
-				(BOOLEAN)(StarShip != MELEE_NONE),
-				BUILD_COLOR (MAKE_RGB15 (0xA, 0x00, 0x11), 0x3D));
+				SHIPBOX_TOPLEFT_COLOR_HILITE,
+				SHIPBOX_BOTTOMRIGHT_COLOR_HILITE,
+				(BOOLEAN)(ship != MELEE_NONE),
+				SHIPBOX_INTERIOR_COLOR_HILITE);
 	else
 		DrawStarConBox (&r, 1,
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x9), 0x56),
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xE), 0x54),
-				(BOOLEAN)(StarShip != MELEE_NONE),
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0xC), 0x55));
+				SHIPBOX_TOPLEFT_COLOR_NORMAL,
+				SHIPBOX_BOTTOMRIGHT_COLOR_NORMAL,
+				(BOOLEAN)(ship != MELEE_NONE),
+				SHIPBOX_INTERIOR_COLOR_NORMAL);
 
-	if (StarShip != MELEE_NONE)
+	if (ship != MELEE_NONE)
 	{
 		STAMP s;
 		HSTARSHIP hStarShip;
 		STARSHIPPTR StarShipPtr;
 
-		hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+		hStarShip = GetStarShipFromIndex (&master_q, ship);
 		StarShipPtr = LockStarShip (&master_q, hStarShip);
 		s.origin.x = r.corner.x + (r.extent.width >> 1);
 		s.origin.y = r.corner.y + (r.extent.height >> 1);
@@ -238,10 +276,25 @@ DrawShipBox (PMELEE_STATE pMS, BOOLEAN HiLite)
 }
 
 static void
+DrawShipBoxCurrent (PMELEE_STATE pMS, BOOLEAN HiLite)
+{
+	FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
+	BYTE ship = pMS->TeamImage[pMS->side].ShipList[index];
+	DrawShipBox (pMS->side, pMS->row, pMS->col, ship, HiLite);
+}
+
+// Draw an image for one of the control method selection buttons.
+static void
 DrawControls (COUNT which_side, BOOLEAN HiLite)
 {
 	COUNT which_icon;
 
+	if (PlayerControl[which_side] & NETWORK_CONTROL)
+	{
+		DrawMeleeIcon (31 + (HiLite ? 1 : 0) + 2 * (1 - which_side));
+		return;
+	}
+	
 	if (PlayerControl[which_side] & HUMAN_CONTROL)
 		which_icon = 0;
 	else
@@ -288,7 +341,8 @@ DrawPickFrame (PMELEE_STATE pMS)
 		r.corner.y = -(ship_r.corner.y
 				+ (ship_r.extent.height - r.extent.height));
 	SetFrameHot (s.frame, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
-	s.origin.x = s.origin.y = 0;
+	s.origin.x = 0;
+	s.origin.y = 0;
 	DrawStamp (&s);
 
 	UnlockMutex (GraphicsLock);
@@ -315,37 +369,32 @@ RepairMeleeFrame (PRECT pRect)
 	OldContext = SetContext (SpaceContext);
 	GetContextClipRect (&OldRect);
 	SetContextClipRect (&r);
-	SetFrameHot (Screen, MAKE_HOT_SPOT (r.corner.x - SAFE_X, r.corner.y - SAFE_Y));
+	SetFrameHot (Screen,
+			MAKE_HOT_SPOT (r.corner.x - SAFE_X, r.corner.y - SAFE_Y));
 	BatchGraphics ();
 
-	DrawMeleeIcon (0);
-	DrawMeleeIcon (26);
+	DrawMeleeIcon (0);   /* Entire melee screen */
+	DrawMeleeIcon (26);  /* "Battle!" (highlighted) */
 	{
-		COUNT old_side, old_row, old_col;
+		COUNT side;
+		COUNT row;
+		COUNT col;
 	
-		old_side = pMeleeState->side;
-		old_row = pMeleeState->row;
-		old_col = pMeleeState->col;
-		for (pMeleeState->side = 0;
-				pMeleeState->side < NUM_SIDES;
-				++pMeleeState->side)
+		for (side = 0; side < NUM_SIDES; side++)
 		{
-			DrawControls (pMeleeState->side, FALSE);
-			for (pMeleeState->row = 0;
-					pMeleeState->row < NUM_MELEE_ROWS;
-					++pMeleeState->row)
+			DrawControls (side, FALSE);
+			for (row = 0; row < NUM_MELEE_ROWS; row++)
 			{
-				for (pMeleeState->col = 0;
-						pMeleeState->col < NUM_MELEE_COLUMNS;
-						++pMeleeState->col)
-					DrawShipBox (pMeleeState, FALSE);
+				for (col = 0; col < NUM_MELEE_COLUMNS; col++)
+				{
+					FleetShipIndex index = GetShipIndex (row, col);
+					BYTE ship = pMeleeState->TeamImage[side].ShipList[index];
+					DrawShipBox (side, row, col, ship, FALSE);
+				}
 			}
 
-			DrawTeamString (pMeleeState, DTSHS_NORMAL);
+			DrawTeamString (pMeleeState, side, DTSHS_NORMAL);
 		}
-		pMeleeState->side = old_side;
-		pMeleeState->row = old_row;
-		pMeleeState->col = old_col;
 	}
 	
 	if (pMeleeState->InputFunc == DoPickShip)
@@ -358,13 +407,13 @@ RepairMeleeFrame (PRECT pRect)
 }
 
 static BOOLEAN
-DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
+DrawTeamString (PMELEE_STATE pMS, COUNT side, COUNT HiLiteState)
 {
 	RECT r;
 	TEXT lfText;
 
 	r.corner.x = MELEE_X_OFFS - 1;
-	r.corner.y = (pMS->side + 1) * (MELEE_Y_OFFS
+	r.corner.y = (side + 1) * (MELEE_Y_OFFS
 			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
 	r.extent.width = NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE);
 	r.extent.height = 13;
@@ -376,7 +425,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		
 	SetContextFont (MicroFont);
 
-	lfText.pStr = pMS->TeamImage[pMS->side].TeamName;
+	lfText.pStr = pMS->TeamImage[side].TeamName;
 	lfText.baseline.y = r.corner.y + r.extent.height - 3;
 
 	lfText.baseline.x = r.corner.x + 1;
@@ -389,7 +438,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 		TEXT rtText;
 		UNICODE buf[30];
 
-		sprintf (buf, "%d", pMS->star_bucks[pMS->side]);
+		sprintf (buf, "%d", pMS->star_bucks[side]);
 		rtText.pStr = buf;
 		rtText.align = ALIGN_RIGHT;
 		rtText.CharCount = (COUNT)~0;
@@ -464,6 +513,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT HiLiteState)
 	return (TRUE);
 }
 
+// Draw a ship icon in the ship selection popup.
 static void
 DrawPickIcon (COUNT iship, BYTE DrawErase)
 {
@@ -494,13 +544,142 @@ DrawPickIcon (COUNT iship, BYTE DrawErase)
 	UnlockStarShip (&master_q, hStarShip);
 }
 
+#ifdef NETPLAY
+// This function is generic. It should probably be moved to elsewhere.
+static void
+multiLineDrawText(TEXT *textIn, RECT *clipRect) {
+	RECT oldRect;
+
+	SIZE leading;
+	TEXT text;
+	SIZE lineWidth;
+
+	GetContextClipRect (&oldRect);
+
+	SetContextClipRect (clipRect);
+	GetContextFontLeading (&leading);
+
+	text = *textIn;
+	text.baseline.x = 1;
+	text.baseline.y = 0;
+
+	if (clipRect->extent.width <= text.baseline.x)
+		goto out;
+
+	lineWidth = clipRect->extent.width - text.baseline.x;
+
+	while (*text.pStr != '\0') {
+		const unsigned char *nextLine;
+
+		text.baseline.y += leading;
+		text.CharCount = (COUNT) ~0;
+		getLineWithinWidth(&text, &nextLine, lineWidth, text.CharCount);
+				// This will also fill in text->CharCount.
+			
+		font_DrawText (&text);
+
+		text.pStr = nextLine;
+	}
+
+out:
+	SetContextClipRect (&oldRect);
+}
+
+// Use an empty string to clear the status area.
+static void
+DrawMeleeStatusMessage (const char *message)
+{
+	CONTEXT oldContext;
+	RECT r;
+
+	LockMutex (GraphicsLock);
+	oldContext = SetContext (SpaceContext);
+
+	r.corner.x = MELEE_STATUS_X_OFFS;
+	r.corner.y = MELEE_STATUS_Y_OFFS;
+	r.extent.width = MELEE_STATUS_WIDTH;
+	r.extent.height = MELEE_STATUS_HEIGHT;
+
+	RepairMeleeFrame (&r);
+	
+	if (message[0] != '\0')
+	{
+		TEXT lfText;
+		lfText.pStr = message;
+		lfText.align = ALIGN_LEFT;
+		lfText.valign = VALIGN_TOP;
+		lfText.CharCount = (COUNT)~0;
+
+		SetContextFont (MicroFont);
+		SetContextForeGroundColor (MELEE_STATUS_COLOR);
+		
+		BatchGraphics ();
+		multiLineDrawText (&lfText, &r);
+		UnbatchGraphics ();
+	}
+
+	SetContext (oldContext);
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+UpdateMeleeStatusMessage (ssize_t player)
+{
+	NetConnection *conn;
+
+	assert (player == -1 || (player >= 0 && player < NUM_PLAYERS));
+
+	if (player == -1)
+	{
+		DrawMeleeStatusMessage ("");
+		return;
+	}
+
+	conn = netConnections[player];
+	if (conn == NULL)
+	{
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 0));
+				// "Unconnected. Press LEFT to connect."
+		return;
+	}
+	
+	switch (NetConnection_getState (conn)) {
+		case NetState_unconnected:
+			DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 0));
+					// "Unconnected. Press LEFT to connect."
+			break;
+		case NetState_connecting:
+			if (NetConnection_getPeerOptions(conn)->isServer)
+				DrawMeleeStatusMessage (
+						GAME_STRING (NETMELEE_STRING_BASE + 1));
+						// "Awaiting incoming connection...\n"
+						// "Press RIGHT to cancel."
+			else
+				DrawMeleeStatusMessage (
+						GAME_STRING (NETMELEE_STRING_BASE + 2));
+						// "Attempting outgoing connection...\n"
+						// "Press RIGHT to cancel."
+			break;
+		case NetState_init:
+		case NetState_inSetup:
+			DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 3));
+					// "Connected. Press RIGHT to disconnect."
+			break;
+		default:
+			DrawMeleeStatusMessage ("");
+			break;
+	}
+}
+#endif  /* NETPLAY */
+
+// XXX: this function is called when the current selection is blinking off.
 static void
 Deselect (BYTE opt)
 {
 	switch (opt)
 	{
 		case START_MELEE:
-			DrawMeleeIcon (25);
+			DrawMeleeIcon (25);  /* "Battle!" (not highlighted) */
 			break;
 		case LOAD_TOP:
 		case LOAD_BOT:
@@ -510,10 +689,10 @@ Deselect (BYTE opt)
 				DrawFileStrings (pMeleeState, 0);
 			break;
 		case SAVE_TOP:
-			DrawMeleeIcon (18);
+			DrawMeleeIcon (18);  /* "Save" (top; not highlighted) */
 			break;
 		case SAVE_BOT:
-			DrawMeleeIcon (21);
+			DrawMeleeIcon (21);  /* "Save" (bottom; not highlighted) */
 			break;
 		case QUIT_BOT:
 			DrawMeleeIcon (29);
@@ -531,9 +710,10 @@ Deselect (BYTE opt)
 			if (pMeleeState->InputFunc == DoEdit)
 			{
 				if (pMeleeState->row < NUM_MELEE_ROWS)
-					DrawShipBox (pMeleeState, FALSE);
+					DrawShipBoxCurrent (pMeleeState, FALSE);
 				else if (pMeleeState->CurIndex == (BYTE)~0)
-					DrawTeamString (pMeleeState, DTSHS_NORMAL);
+					DrawTeamString (pMeleeState, pMeleeState->side,
+							DTSHS_NORMAL);
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
@@ -543,13 +723,14 @@ Deselect (BYTE opt)
 	}
 }
 
+// XXX: this function is called when the current selection is blinking off.
 static void
 Select (BYTE opt)
 {
 	switch (opt)
 	{
 		case START_MELEE:
-			DrawMeleeIcon (26);
+			DrawMeleeIcon (26);  /* "Battle!" (highlighted) */
 			break;
 		case LOAD_TOP:
 		case LOAD_BOT:
@@ -559,10 +740,10 @@ Select (BYTE opt)
 				DrawFileStrings (pMeleeState, 1);
 			break;
 		case SAVE_TOP:
-			DrawMeleeIcon (20);
+			DrawMeleeIcon (20);  /* "Save" (top; highlighted) */
 			break;
 		case SAVE_BOT:
-			DrawMeleeIcon (23);
+			DrawMeleeIcon (23);  /* "Save" (bottom; highlighted) */
 			break;
 		case QUIT_BOT:
 			DrawMeleeIcon (30);
@@ -580,9 +761,10 @@ Select (BYTE opt)
 			if (pMeleeState->InputFunc == DoEdit)
 			{
 				if (pMeleeState->row < NUM_MELEE_ROWS)
-					DrawShipBox (pMeleeState, TRUE);
+					DrawShipBoxCurrent (pMeleeState, TRUE);
 				else if (pMeleeState->CurIndex == (BYTE)~0)
-					DrawTeamString (pMeleeState, DTSHS_SELECTED);
+					DrawTeamString (pMeleeState, pMeleeState->side,
+							DTSHS_SELECTED);
 			}
 			else if (pMeleeState->InputFunc == DoPickShip)
 			{
@@ -719,6 +901,30 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	UnlockMutex (GraphicsLock);
 }
 
+// returns (COUNT) ~0 for an invalid ship.
+static COUNT
+GetShipValue (BYTE StarShip)
+{
+	HSTARSHIP hStarShip;
+
+	if (StarShip == MELEE_NONE)
+		return 0;
+
+	hStarShip = GetStarShipFromIndex (&master_q, StarShip);
+	if (hStarShip == 0)
+		return (COUNT)~0;
+
+	{
+		STARSHIPPTR StarShipPtr;
+		COUNT val;
+
+		StarShipPtr = LockStarShip (&master_q, hStarShip);
+		val = StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+		UnlockStarShip (&master_q, hStarShip);
+		return val;
+	}
+}
+
 static COUNT
 GetTeamValue (TEAM_IMAGE *pTI)
 {
@@ -728,28 +934,14 @@ GetTeamValue (TEAM_IMAGE *pTI)
 	val = 0;
 	for (index = 0; index < MELEE_FLEET_SIZE; index++)
 	{
-		BYTE StarShip;
-
-		StarShip = pTI->ShipList[index];
-		if (StarShip != MELEE_NONE)
-		{
-			HSTARSHIP hStarShip;
-
-			hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-			if (hStarShip == 0)
-				pTI->ShipList[index] = MELEE_NONE;
-			else
-			{
-				STARSHIPPTR StarShipPtr;
-
-				StarShipPtr = LockStarShip (&master_q, hStarShip);
-				val += StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-				UnlockStarShip (&master_q, hStarShip);
-			}
-		}
+		BYTE StarShip = pTI->ShipList[index];
+		COUNT shipVal = GetShipValue (StarShip);
+		if (shipVal == (COUNT)~0)
+			pTI->ShipList[index] = MELEE_NONE;
+		val += shipVal;
 	}
 	
-	return (val);
+	return val;
 }
 
 static int
@@ -759,7 +951,7 @@ ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp)
 }
 
 static int
-LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
+LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI,
 		UNICODE* pFilePath)
 {
 	UNICODE file[NAME_MAX];	// local buf if needed
@@ -770,7 +962,8 @@ LoadTeamImage(DIRENTRY DirEntry, TEAM_IMAGE* pTI,
 	pfile = pFilePath != NULL_PTR ? pFilePath : file;
 
 	GetDirEntryContents (DirEntry, (STRINGPTR)pfile, FALSE);
-	if ((load_fp = res_OpenResFile (meleeDir, pfile, "rb")) == 0)
+	load_fp = res_OpenResFile (meleeDir, pfile, "rb");
+	if (load_fp == 0)
 		status = -1;
 	else
 	{
@@ -847,7 +1040,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 	{
 		COUNT teams_left;
 
-		DrawMeleeIcon (28);
+		DrawMeleeIcon (28);  /* Load team frame */
 
 		Text.baseline.y = y;
 		teams_left = (COUNT)(
@@ -865,8 +1058,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 				else
 				{
 					pMS->TeamDE = SetAbsDirEntryTableIndex (
-							pMS->TeamDE, bot - NUM_PREBUILT
-							);
+							pMS->TeamDE, bot - NUM_PREBUILT);
 					if (-1 == LoadTeamImage (pMS->TeamDE,
 							&pMS->FileList[bot - top], NULL_PTR))
 					{
@@ -877,11 +1069,13 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 				{
 					Text.pStr = pMS->FileList[bot - top].TeamName;
 					Text.CharCount = (COUNT)~0;
-					SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00));
+					SetContextForeGroundColor (
+							BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00));
 					font_DrawText (&Text);
 
 					rtText.baseline.y = Text.baseline.y;
-					sprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot - top]));
+					sprintf (buf, "%d",
+							GetTeamValue (&pMS->FileList[bot - top]));
 					rtText.CharCount = (COUNT)~0;
 					font_DrawText (&rtText);
 				}
@@ -931,8 +1125,12 @@ DoLoadTeam (PMELEE_STATE pMS)
 	{
 		LockMutex (GraphicsLock);
 		Select (pMS->MeleeOption);
-		if ((pMS->TopTeamIndex = pMS->CurIndex) == (COUNT)~0)
-			pMS->TopTeamIndex = pMS->CurIndex = 0;
+		pMS->TopTeamIndex = pMS->CurIndex;
+		if (pMS->TopTeamIndex == (COUNT)~0)
+		{
+			pMS->TopTeamIndex = 0;
+			pMS->CurIndex = 0;
+		}
 		else if (pMS->TopTeamIndex <= MAX_VIS_TEAMS / 2)
 			pMS->TopTeamIndex = 0;
 		else
@@ -948,10 +1146,12 @@ DoLoadTeam (PMELEE_STATE pMS)
 	{
 		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
-			pMS->TeamImage[pMS->side] = pMS->FileList[
-					pMS->CurIndex - pMS->TopTeamIndex];
+			pMS->TeamImage[pMS->side] =
+					pMS->FileList[pMS->CurIndex - pMS->TopTeamIndex];
 			pMS->star_bucks[pMS->side] =
 					GetTeamValue (&pMS->TeamImage[pMS->side]);
+			entireFleetChanged (pMS, pMS->side);
+			teamStringChanged (pMS, pMS->side);
 		}
 
 		pMS->InputFunc = DoMelee;
@@ -1063,7 +1263,7 @@ GetNewList:
 		int status;
 		TEAM_IMAGE TI;
 
-		status = LoadTeamImage(pMS->TeamDE, &TI, file);
+		status = LoadTeamImage (pMS->TeamDE, &TI, file);
 
 		if (status == -1)
 		{
@@ -1109,7 +1309,8 @@ DoSaveTeam (PMELEE_STATE pMS)
 	{
 		BOOLEAN err;
 
-		err = (BOOLEAN)(WriteTeamImage (&pMS->TeamImage[pMS->side], save_fp) == 0);
+		err = (BOOLEAN)(WriteTeamImage (
+				&pMS->TeamImage[pMS->side], save_fp) == 0);
 		if (res_CloseResFile (save_fp) == 0)
 			err = TRUE;
 		if (err)
@@ -1166,7 +1367,7 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 	RepairMeleeFrame (&r);
 
-	DrawTeamString (pMS, DTSHS_REPAIR);
+	DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
 	UnlockMutex (GraphicsLock);
 
 }
@@ -1198,7 +1399,7 @@ OnTeamNameChange (PTEXTENTRY_STATE pTES)
 		hl |= DTSHS_BLOCKCUR;
 
 	LockMutex (GraphicsLock);
-	ret = DrawTeamString (pMS, hl);
+	ret = DrawTeamString (pMS, pMS->side, hl);
 	UnlockMutex (GraphicsLock);
 
 	return ret;
@@ -1218,12 +1419,19 @@ DoEdit (PMELEE_STATE pMS)
 
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoEdit;
+		return TRUE;
 	}
-	else if ((pMS->row < NUM_MELEE_ROWS || pMS->CurIndex == (BYTE)~0)
+
+#ifdef NETPLAY
+	netInput ();
+#endif
+	if ((pMS->row < NUM_MELEE_ROWS || pMS->CurIndex == (BYTE)~0)
 			&& (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (PulsedInputState.menu[KEY_MENU_RIGHT]
-			&& (pMS->col == NUM_MELEE_COLUMNS - 1 || pMS->row == NUM_MELEE_ROWS))))
+			&& (pMS->col == NUM_MELEE_COLUMNS - 1
+			|| pMS->row == NUM_MELEE_ROWS))))
 	{
+		// Done editing the teams.
 		LockMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
 		pMS->CurIndex = (COUNT)~0;
@@ -1233,8 +1441,10 @@ DoEdit (PMELEE_STATE pMS)
 		InTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
-			&& (PulsedInputState.menu[KEY_MENU_SELECT] || PulsedInputState.menu[KEY_MENU_SPECIAL]))
+			&& (PulsedInputState.menu[KEY_MENU_SELECT] ||
+			PulsedInputState.menu[KEY_MENU_SPECIAL]))
 	{
+		// Show a popup to add a new ship to the current team.
 		if (PulsedInputState.menu[KEY_MENU_SELECT])
 			pMS->Initialized = 0;
 		else
@@ -1242,9 +1452,14 @@ DoEdit (PMELEE_STATE pMS)
 		TFB_ResetControls ();
 		DoPickShip (pMS);
 	}
-	else if (pMS->row < NUM_MELEE_ROWS && PulsedInputState.menu[KEY_MENU_DELETE])
+	else if (pMS->row < NUM_MELEE_ROWS &&
+			PulsedInputState.menu[KEY_MENU_DELETE])
 	{
+		// Remove the currently selected ship from the current team.
+		FleetShipIndex fleetShipIndex;
 		DeleteCurrentShip (pMS);
+		fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
+		fleetShipChanged (pMS, pMS->side, fleetShipIndex);
 		AdvanceCursor (pMS);
 	}
 	else
@@ -1257,6 +1472,7 @@ DoEdit (PMELEE_STATE pMS)
 
 		if (row == NUM_MELEE_ROWS)
 		{
+			// Edit the name of the current team.
 			if (PulsedInputState.menu[KEY_MENU_SELECT])
 			{
 				TEXTENTRY_STATE tes;
@@ -1266,7 +1482,7 @@ DoEdit (PMELEE_STATE pMS)
 				//   CurIndex to contain the current cursor position
 				pMS->CurIndex = 0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, DTSHS_EDIT);
+				DrawTeamString (pMS, pMS->side, DTSHS_EDIT);
 				UnlockMutex (GraphicsLock);
 
 				tes.Initialized = FALSE;
@@ -1282,8 +1498,10 @@ DoEdit (PMELEE_STATE pMS)
 				// done entering
 				pMS->CurIndex = (BYTE)~0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, DTSHS_REPAIR);
+				DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
 				UnlockMutex (GraphicsLock);
+		
+				teamStringChanged (pMS, pMS->side);
 				
 				return (TRUE);
 			}
@@ -1341,7 +1559,8 @@ DoEdit (PMELEE_STATE pMS)
 			else
 			{
 				FleetShipIndex fleetShipIndex = GetShipIndex (row, col);
-				pMS->CurIndex = pMS->TeamImage[side].ShipList[fleetShipIndex];
+				pMS->CurIndex =
+						pMS->TeamImage[side].ShipList[fleetShipIndex];
 			}
 			UnlockMutex (GraphicsLock);
 
@@ -1349,9 +1568,14 @@ DoEdit (PMELEE_STATE pMS)
 		}
 	}
 
+#ifdef NETPLAY
+	flushPacketQueues ();
+#endif
+
 	return (TRUE);
 }
 
+// Handle the popup from which a ship to add to the fleet can be chosen.
 static BOOLEAN
 DoPickShip (PMELEE_STATE pMS)
 {
@@ -1411,9 +1635,10 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockStarShip (&master_q, hStarShip);
 
 			pMS->TeamImage[pMS->side].ShipList[index] = pMS->CurIndex;
+			fleetShipChanged (pMS, pMS->side, index);
 			LockMutex (GraphicsLock);
-			DrawTeamString (pMS, DTSHS_REPAIR);
-			DrawShipBox (pMS, FALSE);
+			DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
+			DrawShipBoxCurrent (pMS, FALSE);
 			UnlockMutex (GraphicsLock);
 			AdvanceCursor (pMS);
 		}
@@ -1485,6 +1710,158 @@ DoPickShip (PMELEE_STATE pMS)
 	return (TRUE);
 }
 
+// Returns -1 if a connection has been aborted.
+static ssize_t
+numPlayersReady (void)
+{
+	size_t player;
+	size_t numDone;
+
+	numDone = 0;
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		if (!(PlayerControl[player] & NETWORK_CONTROL))
+		{
+			numDone++;
+			continue;
+		}
+
+#ifdef NETPLAY
+		{
+			NetConnection *conn;
+
+			conn = netConnections[player];
+
+			if (conn == NULL || !NetConnection_isConnected (conn))
+				return -1;
+
+			if (NetConnection_getState(conn) > NetState_inSetup)
+				numDone++;
+		}
+#endif
+	}
+
+	return numDone;
+}
+
+// The player has pressed "Start Game", and all Network players are
+// connected. We're now just waiting for the confirmation of the other
+// party.
+// When the other party changes something in the settings, the confirmation
+// is cancelled.
+static BOOLEAN
+DoConfirmSettings (PMELEE_STATE pMS)
+{
+#ifdef NETPLAY
+	ssize_t numDone;
+#endif
+
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
+	{
+		pMS->InputFunc = DoMelee;
+#ifdef NETPLAY
+		cancelConfirmations ();
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 4));
+				// "Confirmation cancelled. Press FIRE to reconfirm."
+#endif
+		return TRUE;
+	}
+
+	if (PulsedInputState.menu[KEY_MENU_LEFT] ||
+			PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_DOWN])
+	{
+		pMS->InputFunc = DoMelee;
+#ifdef NETPLAY
+		cancelConfirmations ();
+		DrawMeleeStatusMessage ("");
+#endif
+		return DoMelee (pMS);
+				// Let the pressed keys take effect immediately.
+	}
+
+#ifndef NETPLAY
+	pMS->InputFunc = DoMelee;
+	SeedRandomNumbers ();
+	StartMelee (pMS);
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return FALSE;
+	return TRUE;
+#else
+	netInput ();
+	SleepThread (ONE_SECOND / 120);
+
+	numDone = numPlayersReady ();
+	if (numDone == -1)
+	{
+		// Connection aborted
+		cancelConfirmations ();
+		flushPacketQueues ();
+		pMS->InputFunc = DoMelee;
+		return TRUE;
+	}
+	else if (numDone != NUM_SIDES)
+	{
+		// Still waiting for some confirmation.
+		return TRUE;
+	}
+		
+	// All sides have confirmed.
+
+	// Send our own prefered frame delay.
+	sendInputDelayConnections (netplayOptions.inputDelay);
+
+	// Synchronise the RNGs:
+	{
+		COUNT player;
+
+		for (player = 0; player < NUM_PLAYERS; player++)
+		{
+			NetConnection *conn;
+
+			if (!(PlayerControl[player] & NETWORK_CONTROL))
+				continue;
+
+			conn = netConnections[player];
+			assert (conn != NULL);
+
+			if (!NetConnection_isConnected (conn))
+				continue;
+
+			if (NetConnection_getDiscriminant(conn))
+				Netplay_seedRandom (conn, SeedRandomNumbers ());
+		}
+		flushPacketQueues ();
+	}
+
+	{
+		// One side will send the seed followed by 'Done' and wait
+		// for the other side to report 'Done'.
+		// The other side will report 'Done' and will wait for the other
+		// side to report 'Done', but before the reception of 'Done'
+		// it will have received the seed.
+		bool allOk = negotiateReadyConnections (true, NetState_interBattle);
+		if (!allOk)
+			return FALSE;
+	}
+
+	// The maximum value for all connections is used.
+	{
+		bool ok = setupInputDelay(netplayOptions.inputDelay);
+		if (!ok)
+			return FALSE;
+	}
+	
+	pMS->InputFunc = DoMelee;
+	
+	StartMelee (pMS);
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return FALSE;
+
+	return TRUE;
+#endif  /* defined (NETPLAY) */
+}
+
 static void
 LoadMeleeInfo (PMELEE_STATE pMS)
 {
@@ -1500,7 +1877,8 @@ LoadMeleeInfo (PMELEE_STATE pMS)
 		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
 	PickMeleeFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2));
-	s.origin.x = s.origin.y = 0;
+	s.origin.x = 0;
+	s.origin.y = 0;
 	s.frame = CaptureDrawable (LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM));
 	SetContextFGFrame (PickMeleeFrame);
 	DrawStamp (&s);
@@ -1553,6 +1931,10 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 	MeleeFrame = 0;
 	DestroyDrawable (ReleaseDrawable (BuildPickFrame));
 	BuildPickFrame = 0;
+
+#ifdef NETPLAY
+	closeAllConnections ();
+#endif
 }
 
 static void
@@ -1591,22 +1973,23 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 		r.corner.y += r.extent.height;
 		r.extent.height = NAME_AREA_HEIGHT;
 		DrawFilledRectangle (&r);
+
+		// Team name at the bottom of the frame:
 		t.align = ALIGN_CENTER;
 		t.pStr = pMS->TeamImage[i].TeamName;
 		t.CharCount = (COUNT)~0;
 		SetContextFont (TinyFont);
-		SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0xA, 0xA, 0x1F), 0x9));
+		SetContextForeGroundColor (PICKSHIP_TEAM_NAME_TEXT_COLOR);
 		font_DrawText (&t);
 
+		// Total team value of the starting team:
 		sprintf (buf, "%d", pMS->star_bucks[i]);
 		t.baseline.x = 4;
 		t.baseline.y = 7;
 		t.align = ALIGN_LEFT;
 		t.pStr = buf;
 		t.CharCount = (COUNT)~0;
-		SetContextForeGroundColor (BUILD_COLOR (
-				MAKE_RGB15 (0x4, 0x5, 0x1F), 0x4B));
+		SetContextForeGroundColor (PICKSHIP_TEAM_START_VALUE_COLOR);
 		font_DrawText (&t);
 
 		for (index = 0; index < MELEE_FLEET_SIZE; index++)
@@ -1614,7 +1997,9 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 			BYTE StarShip;
 
 			StarShip = pMS->TeamImage[i].ShipList[index];
-			if (StarShip != MELEE_NONE)
+			if (StarShip == MELEE_NONE)
+				continue;
+
 			{
 				BYTE row, col;
 				BYTE ship_cost;
@@ -1625,12 +2010,14 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 				StarShipPtr = LockStarShip (&master_q, hStarShip);
 				hBuiltShip = Build (&race_q[side], StarShipPtr->RaceResIndex,
 						1 << side, NameCaptain (&race_q[side], StarShipPtr));
+
 				row = GetShipRow (index);
 				col = GetShipColumn (index);
 				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);
 				s.origin.y = 10 + ((ICON_HEIGHT + 2) * row);
 				s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
 				DrawStamp (&s);
+
 				ship_cost = StarShipPtr->RaceDescPtr->ship_info.ship_cost;
 				UnlockStarShip (&master_q, hStarShip);
 
@@ -1646,6 +2033,133 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 	}
 
 	SetContext (OldContext);
+}
+
+static void
+StartMelee (PMELEE_STATE pMS)
+{
+	if (pMS->flash_task)
+	{
+		ConcludeTask (pMS->flash_task);
+		pMS->flash_task = 0;
+	}
+	
+	{
+		BYTE black_buf[] = {FadeAllToBlack};
+		
+		FadeMusic (0, ONE_SECOND / 2);
+		SleepThreadUntil (XFormColorMap (
+				(COLORMAPPTR)black_buf, ONE_SECOND / 2) + ONE_SECOND / 60);
+		FlushColorXForms ();
+		StopMusic ();
+	}
+	FadeMusic (NORMAL_VOLUME, 0);
+	if (pMS->hMusic)
+	{
+		DestroyMusic (pMS->hMusic);
+		pMS->hMusic = 0;
+	}
+
+	do
+	{
+		LockMutex (GraphicsLock);
+		BuildAndDrawShipList (pMS);
+		UnlockMutex (GraphicsLock);
+
+		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
+
+		load_gravity_well ((BYTE)((COUNT)TFB_Random () %
+					NUMBER_OF_PLANET_TYPES));
+		Battle ();
+		free_gravity_well ();
+
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+			return;
+
+		{
+			BYTE black_buf[] = { FadeAllToBlack };
+		
+			SleepThreadUntil (XFormColorMap (
+					(COLORMAPPTR)black_buf, ONE_SECOND / 2)
+					+ ONE_SECOND / 60);
+			FlushColorXForms ();
+		}
+	} while (0 /* !(GLOBAL (CurrentActivity) & CHECK_ABORT) */);
+	GLOBAL (CurrentActivity) = SUPER_MELEE;
+
+	pMS->Initialized = FALSE;
+}
+
+static void
+StartMeleeButtonPressed (PMELEE_STATE pMS)
+{
+	if (pMS->star_bucks[0] == 0 || pMS->star_bucks[1] == 0)
+	{
+		PlayMenuSound (MENU_SOUND_FAILURE);
+		return;
+	}
+
+#ifdef NETPLAY
+	// Check whether all network parties are ready;
+	{
+		COUNT player;
+		bool netReady = true;
+
+		// We collect all error conditions, instead of only reporting
+		// the first one.
+		for (player = 0; player < NUM_PLAYERS; player++)
+		{
+			NetConnection *conn;
+
+			if (!(PlayerControl[player] & NETWORK_CONTROL))
+				continue;
+
+			conn = netConnections[player];
+			if (conn == NULL || !NetConnection_isConnected (conn))
+			{
+				// Connection for player not established.
+				netReady = false;
+				if (player == 0)
+					DrawMeleeStatusMessage (
+							GAME_STRING (NETMELEE_STRING_BASE + 5));
+							// "Connection for bottom player not "
+							// "established."
+				else
+					DrawMeleeStatusMessage (
+							GAME_STRING (NETMELEE_STRING_BASE + 6));
+							// "Connection for top player not "
+							// "established."
+			}
+			else if (NetConnection_getState(conn) != NetState_inSetup)
+			{
+				// This side may be in the setup, but the network connection
+				// is not in a state that setup information can be sent.
+				netReady = false;
+				if (player == 0)
+					DrawMeleeStatusMessage (
+							GAME_STRING (NETMELEE_STRING_BASE + 14));
+							// "Connection for bottom player not ready."
+				else
+					DrawMeleeStatusMessage (
+							GAME_STRING (NETMELEE_STRING_BASE + 15));
+							// "Connection for top player not ready."
+
+			}
+		}
+		if (!netReady)
+		{
+			PlayMenuSound (MENU_SOUND_FAILURE);
+			return;
+		}
+		
+		if (numPlayersReady () != NUM_PLAYERS)
+			DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 7));
+					// "Waiting for remote confirmation."
+		confirmConnections ();
+	}
+#endif
+	
+	pMS->InputFunc = DoConfirmSettings;
 }
 
 static BOOLEAN
@@ -1678,29 +2192,82 @@ DoMelee (PMELEE_STATE pMS)
 			XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 		}
 		InTime = GetTimeCounter ();
+		return TRUE;
 	}
-	else if (PulsedInputState.menu[KEY_MENU_CANCEL] || PulsedInputState.menu[KEY_MENU_LEFT])
+
+#ifdef NETPLAY
+	netInput ();
+#endif
+	
+	if (PulsedInputState.menu[KEY_MENU_CANCEL] ||
+			PulsedInputState.menu[KEY_MENU_LEFT])
 	{
-		LockMutex (GraphicsLock);
-		InTime = GetTimeCounter ();
-		Deselect (pMS->MeleeOption);
-		UnlockMutex (GraphicsLock);
-		pMS->MeleeOption = EDIT_MELEE;
-		pMS->Initialized = FALSE;
-		if (PulsedInputState.menu[KEY_MENU_CANCEL])
+#ifdef NETPLAY
+		bool leftHandled = false;
+				// Pressing the 'left' key has already been handled.
+			
+		if (PulsedInputState.menu[KEY_MENU_LEFT] &&
+			((pMS->MeleeOption == CONTROLS_TOP &&
+			(PlayerControl[1] & NETWORK_CONTROL)) ||
+			(pMS->MeleeOption == CONTROLS_BOT &&
+			(PlayerControl[0] & NETWORK_CONTROL))))
 		{
-			pMS->side = 0;
-			pMS->row = 0;
-			pMS->col = 0;
+			// Build a network connection.
+			COUNT which_side = (pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
+			NetConnection *conn;
+			
+			if (netConnections[which_side] != NULL)
+				closePlayerNetworkConnection(which_side);
+
+			conn = openPlayerNetworkConnection (which_side, (void *) pMS);
+
+			pMS->InputFunc = DoMelee;
+			leftHandled = true;
+			UpdateMeleeStatusMessage (which_side);
 		}
-		else
+
+		if (!leftHandled)
+#endif
 		{
-			pMS->side = 0;
-			pMS->row = NUM_MELEE_ROWS - 1;
-			pMS->col = NUM_MELEE_COLUMNS - 1;
+			// Start editing the teams.
+			LockMutex (GraphicsLock);
+			InTime = GetTimeCounter ();
+			Deselect (pMS->MeleeOption);
+			UnlockMutex (GraphicsLock);
+			pMS->MeleeOption = EDIT_MELEE;
+			pMS->Initialized = FALSE;
+			if (PulsedInputState.menu[KEY_MENU_CANCEL])
+			{
+				pMS->side = 0;
+				pMS->row = 0;
+				pMS->col = 0;
+			}
+			else
+			{
+				pMS->side = 0;
+				pMS->row = NUM_MELEE_ROWS - 1;
+				pMS->col = NUM_MELEE_COLUMNS - 1;
+			}
+			DoEdit (pMS);
 		}
-		DoEdit (pMS);
 	}
+#ifdef NETPLAY
+	else if (PulsedInputState.menu[KEY_MENU_RIGHT])
+	{
+		if ((pMS->MeleeOption == CONTROLS_TOP &&
+			(PlayerControl[1] & NETWORK_CONTROL)) ||
+			(pMS->MeleeOption == CONTROLS_BOT &&
+			(PlayerControl[0] & NETWORK_CONTROL)))
+		{
+			// Terminate a network connection.
+			COUNT which_side = (pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
+			if (netConnections[which_side] != NULL) {
+				closePlayerNetworkConnection (which_side);
+				UpdateMeleeStatusMessage (which_side);
+			}
+		}
+	}
+#endif
 	else
 	{
 		MELEE_OPTIONS NewMeleeOption;
@@ -1728,11 +2295,27 @@ DoMelee (PMELEE_STATE pMS)
 
 		if (NewMeleeOption != pMS->MeleeOption)
 		{
+#ifdef NETPLAY
+			if (pMS->MeleeOption == CONTROLS_TOP ||
+					pMS->MeleeOption == CONTROLS_BOT)
+				UpdateMeleeStatusMessage (-1);
+#endif
 			LockMutex (GraphicsLock);
 			Deselect (pMS->MeleeOption);
 			pMS->MeleeOption = NewMeleeOption;
 			Select (pMS->MeleeOption);
 			UnlockMutex (GraphicsLock);
+#ifdef NETPLAY
+			if (NewMeleeOption == CONTROLS_TOP ||
+					NewMeleeOption == CONTROLS_BOT)
+			{
+				COUNT side = (NewMeleeOption == CONTROLS_TOP) ? 1 : 0;
+				if (PlayerControl[side] & NETWORK_CONTROL)
+					UpdateMeleeStatusMessage (side);
+				else
+					UpdateMeleeStatusMessage (-1);
+			}
+#endif
 		}
 
 		if (PulsedInputState.menu[KEY_MENU_SELECT] || force_select)
@@ -1740,64 +2323,9 @@ DoMelee (PMELEE_STATE pMS)
 			switch (pMS->MeleeOption)
 			{
 				case START_MELEE:
-					if (pMS->star_bucks[0] == 0 || pMS->star_bucks[1] == 0)
-					{
-						PlayMenuSound (MENU_SOUND_FAILURE);
-						break;
-					}
-
-					if (pMS->flash_task)
-					{
-						ConcludeTask (pMS->flash_task);
-						pMS->flash_task = 0;
-					}
-					
-					{
-						BYTE black_buf[] = {FadeAllToBlack};
-						
-						FadeMusic (0, ONE_SECOND / 2);
-						SleepThreadUntil (XFormColorMap (
-								(COLORMAPPTR)black_buf, ONE_SECOND / 2
-								) + ONE_SECOND / 60);
-						FlushColorXForms ();
-						StopMusic ();
-					}
-					FadeMusic (NORMAL_VOLUME, 0);
-					if (pMS->hMusic)
-					{
-						DestroyMusic (pMS->hMusic);
-						pMS->hMusic = 0;
-					}
-
-					do
-					{
-						LockMutex (GraphicsLock);
-						BuildAndDrawShipList (pMS);
-						UnlockMutex (GraphicsLock);
-
-						WaitForSoundEnd (TFBSOUND_WAIT_ALL);
-
-						SeedRandomNumbers ();
-						load_gravity_well ((BYTE)((COUNT)TFB_Random () %
-									NUMBER_OF_PLANET_TYPES));
-						Battle ();
-						free_gravity_well ();
-
-						if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-							return (FALSE);
-
-						{
-							BYTE black_buf[] = {FadeAllToBlack};
-						
-							SleepThreadUntil (XFormColorMap (
-									(COLORMAPPTR)black_buf, ONE_SECOND / 2)
-									+ ONE_SECOND / 60);
-							FlushColorXForms ();
-						}
-					} while (0 /* !(GLOBAL (CurrentActivity) & CHECK_ABORT) */);
-					GLOBAL (CurrentActivity) = SUPER_MELEE;
-
-					pMS->Initialized = FALSE;
+					StartMeleeButtonPressed (pMS);
+					if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+						return (FALSE);
 					break;
 				case LOAD_TOP:
 				case LOAD_BOT:
@@ -1826,13 +2354,26 @@ DoMelee (PMELEE_STATE pMS)
 						PlayerControl[which_side] =
 								COMPUTER_CONTROL | STANDARD_RATING;
 					else if (PlayerControl[which_side] & AWESOME_RATING)
+					{
+#ifdef NETPLAY
+						PlayerControl[which_side] =
+								NETWORK_CONTROL | STANDARD_RATING;
+						UpdateMeleeStatusMessage (which_side);
+					}
+					else if (PlayerControl[which_side] & NETWORK_CONTROL)
+					{
+						if (netConnections[which_side] != NULL)
+							closePlayerNetworkConnection (which_side);
+						UpdateMeleeStatusMessage (-1);
+#endif  /* NETPLAY */
 						PlayerControl[which_side] =
 								HUMAN_CONTROL | STANDARD_RATING;
+					}
 					else
 						PlayerControl[which_side] = ((
 								PlayerControl[which_side]
-								& (STANDARD_RATING | GOOD_RATING | AWESOME_RATING)
-								) << 1) | COMPUTER_CONTROL;
+								& (STANDARD_RATING | GOOD_RATING |
+								AWESOME_RATING)) << 1) | COMPUTER_CONTROL;
 					SetPlayerInput ();
 					DrawControls (which_side, TRUE);
 					break;
@@ -1840,6 +2381,10 @@ DoMelee (PMELEE_STATE pMS)
 			}
 		}
 	}
+
+#ifdef NETPLAY
+	flushPacketQueues ();
+#endif
 
 	return (TRUE);
 }
@@ -1857,6 +2402,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 
 	{
+		/* "Balanced Team 1" */
 		FleetShipIndex i = 0;
 		utf8StringCopy (pMS->PreBuiltList[0].TeamName,
 				sizeof (pMS->PreBuiltList[0].TeamName),
@@ -1873,6 +2419,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 
 	{
+		/* "Balanced Team 2" */
 		FleetShipIndex i = 0;
 		utf8StringCopy (pMS->PreBuiltList[1].TeamName,
 				sizeof (pMS->PreBuiltList[1].TeamName),
@@ -1891,6 +2438,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 
 	{
+		/* "200 points" */
 		FleetShipIndex i = 0;
 		utf8StringCopy (pMS->PreBuiltList[2].TeamName,
 				sizeof (pMS->PreBuiltList[2].TeamName),
@@ -1909,6 +2457,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 
 	{
+		/* "Behemoth Zenith" */
 		FleetShipIndex i = 0;
 		utf8StringCopy (pMS->PreBuiltList[3].TeamName,
 				sizeof (pMS->PreBuiltList[3].TeamName),
@@ -1926,6 +2475,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 
 	{
+		/* "The Peeled Eyes" */
 		FleetShipIndex i = 0;
 		utf8StringCopy (pMS->PreBuiltList[4].TeamName,
 				sizeof (pMS->PreBuiltList[4].TeamName),
@@ -2125,6 +2675,14 @@ Melee (void)
 		MenuState.InputFunc = DoMelee;
 		MenuState.Initialized = FALSE;
 
+#ifdef NETMELE
+		{
+			COUNT player;
+			for (player = 0; player < NUM_PLAYERS; player++)
+				netConnections[player] = NULL;
+		}
+#endif
+		
 		MenuState.CurIndex = (COUNT)~0;
 		InitPreBuilt (&MenuState);
 
@@ -2148,10 +2706,12 @@ Melee (void)
 					status = ReadTeamImage (&MenuState.TeamImage[0], load_fp);
 					if (status != -1)
 					{
-						if ((status = GetResFileChar (load_fp)) != -1)
+						status = GetResFileChar (load_fp);
+						if (status != -1)
 						{
 							PlayerControl[1] = (BYTE)status;
-							status = ReadTeamImage (&MenuState.TeamImage[1], load_fp);
+							status = ReadTeamImage (
+									&MenuState.TeamImage[1], load_fp);
 						}
 					}
 				}
@@ -2167,8 +2727,20 @@ Melee (void)
 				PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
 				MenuState.TeamImage[1] = MenuState.PreBuiltList[1];
 			}
+
+#ifndef NETPLAY
+			/* Do not allow netplay mode if it isn't compiled in. */
+			if (PlayerControl[0] & NETWORK_CONTROL)
+				PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
+			if (PlayerControl[1] & NETWORK_CONTROL)
+				PlayerControl[1] = HUMAN_CONTROL | STANDARD_RATING;
+#endif
 		}
 		SetPlayerInput ();
+		teamStringChanged (&MenuState, 0);
+		teamStringChanged (&MenuState, 1);
+		entireFleetChanged (&MenuState, 0);
+		entireFleetChanged (&MenuState, 1);
 
 		MenuState.side = 0;
 		MenuState.star_bucks[0] = GetTeamValue (&MenuState.TeamImage[0]);
@@ -2189,11 +2761,13 @@ Melee (void)
 			{
 				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
 					err = TRUE;
-				if (!err && WriteTeamImage (&MenuState.TeamImage[0], save_fp) == 0)
+				if (!err && WriteTeamImage (&MenuState.TeamImage[0],
+						save_fp) == 0)
 					err = TRUE;
 				if (!err && PutResFileChar (PlayerControl[1], save_fp) == -1)
 					err = TRUE;
-				if (!err && WriteTeamImage (&MenuState.TeamImage[1], save_fp) == 0)
+				if (!err && WriteTeamImage (&MenuState.TeamImage[1],
+						save_fp) == 0)
 					err = TRUE;
 				if (res_CloseResFile (save_fp) == 0)
 					err = TRUE;
@@ -2216,4 +2790,222 @@ Melee (void)
 		FlushInput ();
 	}
 }
+
+// Notify the network connections of a team name change.
+void
+teamStringChanged (PMELEE_STATE pMS, int player)
+{
+#ifdef NETPLAY
+	const char *name;
+	size_t len;
+	size_t playerI;
+
+	name = pMS->TeamImage[player].TeamName;
+	len = strlen (name);
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		NetConnection *conn = netConnections[playerI];
+
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected (conn))
+			continue;
+
+		if (NetConnection_getState (conn) != NetState_inSetup)
+			continue;
+
+		Netplay_teamStringChanged (conn, player, name, len);
+	}
+#else
+	(void) pMS;
+	(void) player;
+#endif
+}
+
+// Notify the network connections of the configuration of a fleet.
+void
+entireFleetChanged (PMELEE_STATE pMS, int player)
+{
+#ifdef NETPLAY
+	size_t playerI;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++) {
+		NetConnection *conn = netConnections[playerI];
+
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected (conn))
+			continue;
+
+		if (NetConnection_getState (conn) != NetState_inSetup)
+			continue;
+
+		Netplay_entireFleetChanged (conn, player,
+				pMS->TeamImage[player].ShipList, MELEE_FLEET_SIZE);
+	}
+#else
+	(void) player;
+#endif
+	(void) pMS;
+}
+
+// Notify the network of a change in the configuration of a fleet.
+void
+fleetShipChanged (PMELEE_STATE pMS, int player, size_t index)
+{
+#ifdef NETPLAY
+	size_t playerI;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		NetConnection *conn = netConnections[playerI];
+
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected (conn))
+			continue;
+
+		if (NetConnection_getState (conn) != NetState_inSetup)
+			continue;
+
+		Netplay_fleetShipChanged (conn, player, index,
+				pMS->TeamImage[player].ShipList[index]);
+	}
+#else
+	(void) player;
+	(void) index;
+#endif
+	(void) pMS;
+}
+
+#ifdef NETPLAY
+// NB: 'len' does not include the terminating 0.
+//     'len' counts in bytes, not in characters.
+void
+updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
+		size_t len)
+{
+	// NB: MAX_TEAM_CHARS is the maximum number of characters,
+	//     without the terminating '\0'.
+	if (len > MAX_TEAM_CHARS)
+		len = MAX_TEAM_CHARS;
+
+	// TeamName has space for at least MAX_TEAM_CHARS + 1 bytes.
+	strncpy (pMS->TeamImage[side].TeamName, name, len);
+	pMS->TeamImage[side].TeamName[len] = '\0';
+	
+#if 0  /* DTSHS_REPAIR does not combine with other options */
+	if (pMS->MeleeOption == EDIT_MELEE && pMS->side == side
+			&& pMS->row == NUM_MELEE_ROWS)
+		DrawTeamString (pMS, side, DTSHS_REPAIR | DTSHS_SELECTED);
+	else
+#endif
+		DrawTeamString (pMS, side, DTSHS_REPAIR);
+}
+
+// Update a ship in a fleet as specified by a remote party.
+bool
+updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship)
+{
+	BYTE row = GetShipRow (index);
+	BYTE col = GetShipColumn (index);
+	COUNT val;
+	
+	FleetShipIndex selectedShipIndex;
+	BOOLEAN isSelected;
+
+	if (ship >= NUM_MELEE_SHIPS && ship != MELEE_NONE) {
+		fprintf (stderr, "Invalid ship type number %d (max = %d).\n",
+				ship, NUM_MELEE_SHIPS - 1);
+		return false;
+	}
+	
+	if (index >= MELEE_FLEET_SIZE)
+	{
+		fprintf (stderr, "Invalid ship position number %d (max = %d).\n",
+				index, MELEE_FLEET_SIZE - 1);
+		return false;
+	}
+	
+	val = GetShipValue (ship);
+	if (val == (COUNT) ~0)
+		return false;
+
+	pMS->star_bucks[side] -=
+			GetShipValue (pMS->TeamImage[side].ShipList[index]);
+	pMS->star_bucks[side] += val;
+
+	pMS->TeamImage[side].ShipList[index] = ship;
+
+	selectedShipIndex = GetShipIndex (pMS->row, pMS->col);
+	isSelected = (pMS->MeleeOption == EDIT_MELEE) &&
+			(pMS->side == side) && (index == selectedShipIndex);
+			// Ship to be updated is the currently selected one.
+
+	if (ship == MELEE_NONE)
+	{
+		RECT r;
+		GetShipBox (&r, side, row, col);
+		RepairMeleeFrame (&r);
+	} else
+		DrawShipBox (side, row, col, ship, isSelected);
+
+	if (isSelected)
+	{
+		pMS->CurIndex = ship;
+		DrawMeleeShipStrings (pMS, ship);
+	}
+	
+	// Reprint the team value:
+	//DrawTeamString (pMeleeState, side, DTSHS_NORMAL);
+	DrawTeamString (pMS, side, DTSHS_REPAIR);
+
+	return true;
+}
+
+void
+updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed) {
+	TFB_SeedRandom (seed);
+	(void) pMS;
+	(void) side;
+}
+
+void
+connectedFeedback (PMELEE_STATE pMS, COUNT side) {
+	if (side == 0)
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 8));
+				// "Bottom player is connected."
+	else
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 9));
+				// "Top player is connected."
+
+	PlayMenuSound (MENU_SOUND_INVOKED);
+	(void) pMS;
+}
+
+void
+errorFeedback (PMELEE_STATE pMS, COUNT side) {
+	if (side == 0)
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 10));
+				// "Bottom player: connection failed."
+	else
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 11));
+				// "Top player: connection failed."
+	(void) pMS;
+}
+
+void
+closeFeedback (PMELEE_STATE pMS, COUNT side) {
+	if (side == 0)
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 12));
+				// "Bottom player: connection closed."
+	else
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 13));
+				// "Top player: connection closed."
+	(void) pMS;
+}
+#endif  /* NETPLAY */
+
+
 

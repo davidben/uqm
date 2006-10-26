@@ -1,0 +1,223 @@
+There are three types of negotiations used to synchronised the parties
+of a network connection.
+
+- Continue when we know the other is ready ("Ready")
+  This is used when both parties need to sending information to the
+  other side, but what each party is doing does not interfere with
+  what the other party is doing.
+- Only speak in your own turn ("Turn")
+  This is used when the parties have changes to make to common data.
+- Mutual agreement on an action ("Confirm")
+  This is used to end a state where both parties are modifying
+  common data. Both parties have to agree with the data for either
+  party to continue.
+
+
+============================================================================
+
+"Ready" negotiation.
+
+Sometimes the parties need to notify eachother of their local state,
+and then go on when both are ready. For this purpose both parties signify
+that they are ready by sending the READY message. When a party is ready
+and has received notice that the other party is ready, it can go on.
+
+States:
+0. notReady                     - send nor received READY
+   !localReady && !remoteReady
+1. localReady                   - sent READY, not yet received READY
+   localReady && !remoteReady
+2. remoteReady                  - received READY, not yet sent READY
+   !localReady && remoteReady
+3. ready                        - sent and received READY
+
+Messages:
+- READY - "I have nothing further to send at this point"
+
+
+From state 0 (notReady):
+local decision  -> Send READY,                    goto 1
+received READY  ->                                goto 2
+
+From state 1 (localReady):
+received READY  ->                                goto 3
+
+From state 2 (remoteReady):
+local decision  -> Send READY                     goto 3
+
+
+============================================================================
+
+"Turn" negotiation.
+
+For some actions (like changing a shared configuration option), it is
+important that both sides don't just send changes at once.
+To handle this, only one party may send these packets at any moment.
+If the party whose turn it isn't wants to speak, or if the party whose
+turn it is doesn't have anything further to say, he can send an ENDTURN
+packet. The other party should confirm this by sending another ENDTURN
+packet back.
+
+States:
+0. myTurn                - I may speak
+   myTurn && !endTurn
+1. endMyTurn             - I've given up speaking, waiting for confirmation
+   myTurn && endTurn
+2. yourTurn              - You may speak
+   !myTurn && !endTurn
+3. endYourTurn           - I want to speak, waiting for confirmation
+   !myTurn && endTurn
+
+Messages:
+- ENDTURN  - "this party ready to change turns"
+
+
+From state 0 (myTurn):
+local decision    -> Send ENDTURN,       goto 1
+received ENDTURN  -> Send ENDTURN,       goto 2
+
+From state 1 (endMyTurn):
+received ENDTURN  -> Send ENDTURN,       goto 2
+
+From state 2 (yourTurn):
+local decision    -> Send ENDTURN,       goto 3
+received ENDTURN  -> Send ENDTURN,       goto 0
+
+From state 3 (endYourTurn):
+received ENDTURN  -> Send ENDTURN,       goto 0
+
+
+============================================================================
+
+"Confirm" negotiation.
+
+Some actions (like agreeing on a configuration) require confirmation
+from both parties. This section documents the handshaking protocol involved.
+
+Each player must manually confirm the action.
+After a player has confirmed an action, he may cancel it as long as
+he hasn't received a confirmation from the other party.
+
+All messages arrive in the order sent.
+
+
+States:
+0. waiting
+   !handshake.canceling && !handshake.localOk && !handshake.remoteOk
+1. localOk (cancelable)          - sent CONFIRM1 (since last CANCEL)
+   !handshake.canceling && handshake.localOk && !handshake.remoteOk
+2. remoteOk (cancelable)         - received CONFIRM1
+   !handshake.canceling && !handshake.localOk && handshake.remoteOk
+3. committed                     - sent CONFIRM1 (since last CANCEL,
+                                   received CONFIRM1,
+                                   sent CONFIRM2 (since last CANCEL)
+   !handshake.canceling && handshake.localOk && handshake.remoteOk
+4. cancelWaiting                 - sent CANCEL
+   handshake.canceling && !handshake.localOk && !handshake.remoteOk
+5. cancelLocalOk                 - sent CANCEL and ready to send CONFIRM1,
+                                   but received no CANCELACK
+   handshake.canceling && handshake.localOk && !handshake.remoteOk
+6. cancelRemoteOk                - sent CANCEL and received CONFIRM1,
+                                   but received no CANCELACK
+   handshake.canceling && !handshake.localOk && handshake.remoteOk
+7. cancelCommitted               - sent CANCEL and ready to send CONFIRM2,
+                                   received CONFIRM1,
+                                   but received no CANCELACK
+   handshake.canceling && handshake.localOk && handshake.remoteOk
+8. done                          - sent and received CONFIRM1 and CONFIRM2
+                                   (since last CANCEL)
+
+
+Handshake messages:
+- CONFIRM1  - "the current local configuration OK for me"
+- CONFIRM2  - "acknowledging your CONFIRM1; my own configuration is unchanged
+              since I sent CONFIRM1 (after the last CANCEL)"
+- CANCEL    - "forget about my earlier CONFIRM1"
+- CANCELACK - "received your CANCEL"
+MESSAGE(x) indicates any other message.
+
+
+From state 0: (waiting)
+local confirmation         -> Send CONFIRM1,                  goto 1
+local changes              -> Send MESSAGE(changes)           (goto 0)
+received CONFIRM1          ->                                 goto 2
+received MESSAGE(changes)  -> Process(changes)                (goto 0)
+
+From state 1: (localOk)
+local cancel               -> Send CANCEL,                    goto 4
+received CONFIRM1          -> Send CONFIRM2,                  goto 3
+received CONFIRM2          -> Send CONFIRM2,                  goto 8
+received MESSAGE(changes)  -> Process(changes), Send CANCEL,  goto 4
+
+From state 2: (remoteOk)
+local confirmation         -> Send CONFIRM2,                  goto 3
+local changes              -> Send MESSAGE(changes),          (goto 2)
+received CANCEL            -> Send CANCELACK,                 goto 0
+
+From state 3: (committed)
+received CONFIRM2          ->                                 goto 8
+received CANCEL            -> Send CANCELACK,                 goto 1
+
+From state 4: (cancelWaiting)
+local changes              -> Send MESSAGE(changes),          (goto 4)
+local confirmation         ->                                 goto 5
+received CONFIRM1          ->                                 goto 6
+received CONFIRM2          ->                                 goto 6
+received CANCELACK         ->                                 goto 0
+received MESSAGE(changes)  -> Process(changes),               (goto 4)
+
+From state 5: (cancelLocalOk)
+local cancel               ->                                 goto 4
+received CONFIRM1          ->                                 goto 7
+received CONFIRM2          ->                                 goto 7
+received CANCELACK         -> SEND CONFIRM1                   goto 1
+received MESSAGE(changes)  -> Process(changes),               goto 4
+
+From state 6: (cancelRemoteOk)
+local confirmation         ->                                 goto 7
+local changes              -> Send MESSAGE(changes),          (goto 6)
+received CONFIRM2          ->                                 (goto 6)
+received CANCEL            -> Send CANCELACK,                 goto 4
+received CANCELACK         ->                                 goto 2
+
+From state 7: (cancelCommitted)
+received CONFIRM2          ->                                 (goto 7)
+received CANCEL            -> Send CANCELACK,                 goto 5
+received CANCELACK         -> Send CONFIRM2,                  goto 3
+
+On receiving local confirmation, sending CONFIRM2 is a shortcut for
+sending CONFIRM1 followed by CONFIRM2. Receiving CONFIRM2 from localOk
+and cancelLocalOk is accepted just for this shortcut.
+
+
+To prove there are no race conditions, I examine all the combinations
+of states and messages that are underway. Whenever the order of actions
+isn't fixed, the result should be the same (eg. recv(CONFIRM1) followed
+by send(CANCEL) should leave the party in the same state as when
+the send(CANCEL) preceded the recv(CONFIRM1)).
+I also check whether it is possible for packets to arrive that
+aren't expected.
+
+
+============================================================================
+
+Battle ending negotiation.
+
+This negotation consists of:
+1. a 'Ready' negotiation, before stopping sending frame data
+2. communication of each sides current battle frame count
+3. the side running behind processes more frames to catch up
+
+
+States:
+
+0. Playing
+1. localReady
+2. remoteReady
+3. countSent
+4. catchingUp
+5. awaitingCatchup
+
+// Unfinished... partially described in readyForBattleEndPlayer()
+
+

@@ -1,0 +1,103 @@
+High priority items:
+- test compilation on release mode (on both Linux and Windows)
+
+
+Medium-priority:
+- Test disconnection at various points.
+  Whenever there's a call to NetInput(), connections may get lost, and
+  this needs to be checked.
+- Setup menu for network options.
+- Don't check PlayerControl in netmelee etc. Make it an invariant that
+  (netConnections[player] != NULL) if
+  ((PlayerControl[player] & NETWORK_CONTROL) == NETWORK_CONTROL)
+- For the battle ending synchronisation, set the end at at least
+  getBattleInputDelay() + 1 frames in the future (instead of just 1),
+  so that there will be no hickup during the end synchronisation.
+  Also check this value for incoming packets.
+- Disconnect notification.
+- If a player only moves away from 'Battle!' there's no need for the other
+  to have to reconfirm.
+- decent pause handling
+- make compilation of crc.c and checksum.c conditional.
+- negotiate checksum interval
+- disconnect during battle will trigger the setup disconnect notification.
+
+
+Low-priority:
+- Different coloured icons for unconnected/connecting/connected.
+- Send error packets; at least when there's a protocol version mismatch.
+- Check whether the random seed and frame delay have been agreed before
+  continuing (in doConfirmSettings).
+- Replacement for TOS. It is IPv4 only.
+- Integrate network check functions with doInput
+  It will be easy to get rid of the separate threads then too.
+- The state changes from interBattle to interBattle. That shouldn't happen,
+  but it doesn't seem to cause any problems. Need to investigate.
+  Addition: negotiateReadyConnections() is called again just to make sure
+  all sides pass this checkpoint. This is not a problem. It should be
+  documented in STATES though.
+- More files define NETCONNECTION_INTERNAL than they should.
+- voice transmission during the game (using an external lib)
+  read ramjee94adaptive.pdf
+- Keep-alive packets. Store time of last packet sent, use alarms to determine
+  when to send the next one. Count received messages?
+
+
+Future improvements/optimisations:
+- For BSD sockets: use dup2() to move fds to lower values, so that less fds
+  have to be checked on select().
+- Use writev() to send multiple packets in one syscall, instead of
+  calling send() for each packet.
+- Refusing games with both parties network controlled is not always
+  necessary. In theory it should be possible to have a client work
+  as "proxy". The client can watch as the actual players play the game.
+  Checking for "loops" would be tricky (eventually there should be a human
+  or computer controller for each side).
+- Concurrent selection of ships. Note that if this is handled properly, it
+  will also be easy to take care of the "Allow Shofixti to choose last" bug.
+  Note that one party will still have to send his choice to the other side
+  first, which may be "eploited". Encryption would take care of this,
+  but at the least make sure the same player who gets to chose first
+  every time.
+- meta-server. Use HTTP? Existing libs can be used, no problems with NAT,
+  human-readable. Speed is not an issue.
+- move to UDP. Repeat past battleinput packets for each new packet that
+  is sent until they are confirmed.
+
+
+Bugs:
+- as positions are dependant on the screen resolution, you won't be able
+  to keep sync on games with a different resolution.
+- Both sides need identical battle frame rates. This value is not
+  negotiated.
+- When melee selection is aborted, the game crashes.
+
+
+Final actions:
+- Check out TODO, XXX, WORK tags
+- memleak testing
+  - check for and remove mtrace()/muntrace() calls.
+- update documentation
+  - FILES, also note which part of the separation they are in
+- check coding style (search for '\>(')
+- compile with maximum warnings
+
+When done:
+- cvs diff
+- Update uqm version number
+- Update changelog
+
+
+To put in the announcement of Netplay:
+- Slow connections is acceptable. Packet loss isn't.
+
+
+Bugs and todos unrelated to netplay.
+- When you insert a new ship, the cursor moves to the next square,
+  but the picture at the right doesn't change.
+- The "Battle!" icon is not positioned correctly.
+- other player being able to choose the next ship after 3 seconds
+  of inactivity
+- DoRunAway() shouldn't be handled in ProcessInput()
+
+

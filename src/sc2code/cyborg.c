@@ -1010,7 +1010,7 @@ Avoid (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 }
 
 BATTLE_INPUT_STATE
-tactical_intelligence (void)
+tactical_intelligence (COUNT player, STARSHIPPTR StarShipPtr)
 {
 	ELEMENTPTR ShipPtr;
 	ELEMENT Ship;
@@ -1019,10 +1019,9 @@ tactical_intelligence (void)
 	COUNT ConcernCounter;
 	EVALUATE_DESC ObjectsOfConcern[10];
 	BOOLEAN ShipMoved, UltraManeuverable;
-	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
+	STARSHIPPTR EnemyStarShipPtr;
 	RACE_DESCPTR RDPtr, EnemyRDPtr;
 
-	StarShipPtr = CyborgDescPtr;
 	RDPtr = StarShipPtr->RaceDescPtr;
 
 	if (RDPtr->cyborg_control.ManeuverabilityIndex == 0)
@@ -1037,7 +1036,7 @@ tactical_intelligence (void)
 	}
 
 	ShipMoved = TRUE;
-	if (PlayerControl[cur_player] & STANDARD_RATING)
+	if (PlayerControl[player] & STANDARD_RATING)
 		++StarShipPtr->special_counter;
 
 #ifdef DEBUG_CYBORG
@@ -1260,7 +1259,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 							ed.which_turn = 0;
 					}
 				}
-				else if (!(PlayerControl[cur_player] & AWESOME_RATING))
+				else if (!(PlayerControl[player] & AWESOME_RATING))
 					ed.which_turn = 0;
 				else
 				{

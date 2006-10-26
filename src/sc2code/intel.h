@@ -63,8 +63,10 @@ enum
 extern STARSHIPPTR CyborgDescPtr;
 extern SIZE cur_player;
 
-extern BATTLE_INPUT_STATE computer_intelligence (void);
-extern BATTLE_INPUT_STATE tactical_intelligence (void);
+extern BATTLE_INPUT_STATE computer_intelligence (COUNT player,
+		STARSHIPPTR StarShipPtr);
+extern BATTLE_INPUT_STATE tactical_intelligence (COUNT player,
+		STARSHIPPTR StarShipPtr);
 extern void ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR
 		ObjectsOfConcern, COUNT ConcernCounter);
 extern BOOLEAN ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr,
@@ -80,11 +82,12 @@ extern BOOLEAN ThrustShip (ELEMENTPTR ShipPtr, COUNT angle);
 #define HUMAN_CONTROL (BYTE)(1 << 0)
 #define CYBORG_CONTROL (BYTE)(1 << 1)
 #define PSYTRON_CONTROL (BYTE)(1 << 2)
+#define NETWORK_CONTROL (BYTE)(1 << 3)
 #define COMPUTER_CONTROL (CYBORG_CONTROL | PSYTRON_CONTROL)
 
-#define STANDARD_RATING (BYTE)(1 << 3)
-#define GOOD_RATING (BYTE)(1 << 4)
-#define AWESOME_RATING (BYTE)(1 << 5)
+#define STANDARD_RATING (BYTE)(1 << 4)
+#define GOOD_RATING (BYTE)(1 << 5)
+#define AWESOME_RATING (BYTE)(1 << 6)
 
 
 #endif /* _INTEL_H */

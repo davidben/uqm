@@ -24,6 +24,8 @@ extern void init_communication (void);
 extern void uninit_communication (void);
 extern int do_subtitles (UNICODE *pStr);
 extern void AlienTalkSegue (COUNT wait_track);
+BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
+		SIZE maxWidth, COUNT maxChars);
 
 extern RECT CommWndRect; /* comm window rect */
 

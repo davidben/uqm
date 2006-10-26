@@ -1,0 +1,54 @@
+/*
+ *  Copyright 2006  Serge van den Boom <svdb@stack.nl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#if !defined(_NETPLAY_H) && defined(NETPLAY)
+#define _NETPLAY_H
+
+// NETPLAY can either be unset (in which case we will never get here)
+// NETPLAY_FULL, or NETPLAY_IPV4 (disables IPv6)
+#define NETPLAY_IPV4  1
+#define NETPLAY_FULL  2
+
+#define NETPLAY_PROTOCOL_VERSION_MAJOR 0
+#define NETPLAY_PROTOCOL_VERSION_MINOR 1
+
+#define NETPLAY_DEBUG
+		/* Extra debugging for netplay */
+#define NETPLAY_STATISTICS
+		/* Keep some statistics */
+#define NETPLAY_CHECKSUM
+		/* Send/process checksums to verify that both sides of a network
+		  * connection are still in sync.
+		  * If not enabled, incoming checksum packets will be ignored.
+		  * TODO: make compilation of crc.c and checksum.c conditional. */
+#define NETPLAY_CHECKSUM_INTERVAL 1
+		/* If NETPLAY_CHECKSUM is defined, this define determines
+		 * every how many frames a checksum packet is sent. */
+
+#define NETPLAY_READBUFSIZE  2048
+#define NETPLAY_CONNECTTIMEOUT  2000
+		/* Time to wait for a connect() to succeed. In ms. */
+//#define NETPLAY_LISTENTIMEOUT   30000
+//		/* Time to wait for a listen() to succeed. In ms. */
+#define NETPLAY_RETRYDELAY   2000
+		/* Time to wait after all addresses of a host have been tried
+		 * before starting retrying them all. In ms. */
+
+
+#endif  /* _NETPLAY_H */
+

@@ -25,6 +25,7 @@
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
 
+typedef struct melee_state MELEE_STATE;
 
 enum
 {
@@ -68,7 +69,7 @@ enum
 
 extern FRAME PickMeleeFrame;
 
-#define PICK_BG_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x0F), 0x1)
+#define PICK_BG_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x0F), 0x01)
 
 #define MAX_TEAM_CHARS 30
 #define MAX_VIS_TEAMS 5
@@ -82,11 +83,12 @@ typedef COUNT FleetShipIndex;
 typedef struct
 {
 	BYTE ShipList[MELEE_FLEET_SIZE];
-	UNICODE TeamName[MAX_TEAM_CHARS + 25]; /* in case default names in starcon.txt
-												   are unknowingly mangled */
+	UNICODE TeamName[MAX_TEAM_CHARS + 1 + 24];
+			/* The +1 is for the terminating \0; the +24 is in case some
+			 * default name in starcon.txt is unknowingly mangled. */
 } TEAM_IMAGE;
 
-typedef struct melee_state
+struct melee_state
 {
 	BOOLEAN (*InputFunc) (struct melee_state *pInputState);
 	COUNT MenuRepeatDelay;
@@ -104,13 +106,24 @@ typedef struct melee_state
 	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
 
 	MUSIC_REF hMusic;
-} MELEE_STATE;
+};
 typedef MELEE_STATE *PMELEE_STATE;
 
 extern PMELEE_STATE volatile pMeleeState;
 
 extern void Melee (void);
 
+void teamStringChanged (PMELEE_STATE pMS, int player);
+void entireFleetChanged (PMELEE_STATE pMS, int player);
+void fleetShipChanged (PMELEE_STATE pMS, int player, size_t index);
+
+void updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
+		size_t len);
+bool updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship);
+void updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed);
+void connectedFeedback (PMELEE_STATE pMS, COUNT side);
+void errorFeedback (PMELEE_STATE pMS, COUNT side);
+void closeFeedback (PMELEE_STATE pMS, COUNT side);
 
 #endif /* _MELEE_H */
 

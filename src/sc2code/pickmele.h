@@ -23,6 +23,9 @@
 HSTARSHIP GetMeleeStarShip (STARSHIPPTR LastStarShipPtr,
 		COUNT which_player);
 
+typedef struct getmelee_struct GETMELEE_STATE;
+
+bool updateMeleeSelection (GETMELEE_STATE *gms, COUNT player, COUNT ship);
 
 #endif  /* _PICKMELE_H */
 

@@ -1,0 +1,3 @@
+uqm_SUBDIRS="connect netmanager socket"
+uqm_CFILES="netport.c network_bsd.c"
+

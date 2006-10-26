@@ -1,0 +1,268 @@
+/*
+ *  Copyright 2006  Serge van den Boom <svdb@stack.nl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifdef NETPLAY
+
+#include "checksum.h"
+#include "netoptions.h"
+
+#ifdef NETPLAY_CHECKSUM
+
+#include "checkbuf.h"
+#include "crc.h"
+		// for DUMP_CRC_OPS
+#include "netconnection.h"
+#include "netmelee.h"
+#include "libs/log.h"
+#include "libs/misc.h"
+
+
+ChecksumBuffer localChecksumBuffer;
+
+void
+crc_processEXTENT(crc_State *state, const EXTENT *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processEXTENT().");
+#endif
+	crc_processCOORD(state, val->width);
+	crc_processCOORD(state, val->height);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processEXTENT().");
+#endif
+}
+
+void
+crc_processVELOCITY_DESC(crc_State *state, const VELOCITY_DESC *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processVELOCITY_DESC().");
+#endif
+	crc_processCOUNT(state, val->TravelAngle);
+	crc_processEXTENT(state, &val->vector);
+	crc_processEXTENT(state, &val->fract);
+	crc_processEXTENT(state, &val->error);
+	crc_processEXTENT(state, &val->incr);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processVELOCITY_DESC().");
+#endif
+}
+
+#if 0
+void
+crc_processPOINT(crc_State *state, const POINT *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processPOINT().");
+#endif
+	crc_processCOORD(state, val->x);
+	crc_processCOORD(state, val->y);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processPOINT().");
+#endif
+}
+
+void
+crc_processSTAMP(crc_State *state, const STAMP *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processSTAMP().");
+#endif
+	crc_processPOINT(state, val->origin);
+	crc_processFRAME(state, val->frame);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processSTAMP().");
+#endif
+}
+
+void
+crc_processINTERSECT_CONTROL(crc_State *state, const INTERSECT_CONTROL *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processINTERSECT_CONTROL().");
+#endif
+	crc_processTIME_VALUE(state, val->last_time_val);
+	crc_processPOINT(state, &val->EndPoint);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processINTERSECT_CONTROL().");
+#endif
+}
+#endif
+
+void
+crc_processELEMENT(crc_State *state, const ELEMENT *val) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processELEMENT().");
+#endif
+	crc_processELEMENT_FLAGS(state, val->state_flags);
+	crc_processCOUNT(state, val->life_span);
+	crc_processCOUNT(state, val->crew_level);
+	crc_processBYTE(state, val->mass_points);
+
+	// HACK: when a ship is being destroyed, turn_wait is abused to store
+	// the side this ship is on. This must be excluded from the checksum
+	// as this does not have to be the same for both sides.
+	{
+		extern void new_ship(PELEMENT ElementPtr);
+		BYTE turn_wait = val->turn_wait;
+		
+		if (val->preprocess_func == new_ship)
+			turn_wait = 0;
+
+		crc_processBYTE(state, turn_wait);
+	}
+
+	crc_processBYTE(state, val->thrust_wait);
+	crc_processVELOCITY_DESC(state, &val->velocity);
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processELEMENT().");
+#endif
+}
+
+void
+crc_processDispQueue(crc_State *state) {
+	HELEMENT element;
+	HELEMENT nextElement;
+
+#ifdef DUMP_CRC_OPS
+	size_t i = 0;
+	log_add(log_Debug, "START crc_processDispQueue() (frame %u).",
+			battleFrameCount);
+#endif
+	for (element = GetHeadElement(); element != 0; element = nextElement) {
+		ELEMENTPTR elementPtr;
+
+#ifdef DUMP_CRC_OPS
+		log_add(log_Debug, "===== disp_q[%d]:", i);
+#endif
+		LockElement(element, &elementPtr);
+
+		crc_processELEMENT(state, element);
+
+		nextElement = GetSuccElement(elementPtr);
+		UnlockElement(element);
+#ifdef DUMP_CRC_OPS
+		i++;
+#endif
+	}
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processDispQueue() (frame %u).",
+			battleFrameCount);
+#endif
+}
+
+void
+initChecksumBuffers(void) {
+	size_t player;
+
+	for (player = 0; player < NETPLAY_NUM_PLAYERS; player++)
+	{
+		NetConnection *conn;
+		ChecksumBuffer *cb;
+
+		conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		cb = NetConnection_getChecksumBuffer(conn);
+		ChecksumBuffer_init(cb, getBattleInputDelay(),
+				NETPLAY_CHECKSUM_INTERVAL);
+	}
+
+	ChecksumBuffer_init(&localChecksumBuffer, getBattleInputDelay(),
+			NETPLAY_CHECKSUM_INTERVAL);
+}
+
+void
+uninitChecksumBuffers(void)
+{
+	size_t player;
+
+	for (player = 0; player < NETPLAY_NUM_PLAYERS; player++)
+	{
+		NetConnection *conn;
+		ChecksumBuffer *cb;
+
+		conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		cb = NetConnection_getChecksumBuffer(conn);
+
+		ChecksumBuffer_uninit(cb);
+	}
+	
+	ChecksumBuffer_uninit(&localChecksumBuffer);
+}
+
+void
+addLocalChecksum(BattleFrameCounter frameNr, Checksum checksum) {
+	assert(frameNr == battleFrameCount);
+
+	ChecksumBuffer_addChecksum(&localChecksumBuffer, frameNr, checksum);
+}
+
+void
+addRemoteChecksum(NetConnection *conn, BattleFrameCounter frameNr,
+		Checksum checksum) {
+	ChecksumBuffer *cb;
+	
+	assert(frameNr <= battleFrameCount + getBattleInputDelay() + 1);
+	assert(frameNr + getBattleInputDelay() >= battleFrameCount);
+
+	cb = NetConnection_getChecksumBuffer(conn);
+	ChecksumBuffer_addChecksum(cb, frameNr, checksum);
+}
+
+bool
+verifyChecksums(BattleFrameCounter frameNr) {
+	Checksum localChecksum;
+	size_t player;
+
+	if (!ChecksumBuffer_getChecksum(&localChecksumBuffer, frameNr,
+			&localChecksum)) {
+		// Right now, we require that a checksum is present.
+		// If/when we move to UDP, and packets may get lost, we may prefer
+		// not to do any checks in this case.
+		return false;
+	}
+
+	for (player = 0; player < NETPLAY_NUM_PLAYERS; player++)
+	{
+		NetConnection *conn;
+		ChecksumBuffer *cb;
+		Checksum remoteChecksum;
+
+		conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		cb = NetConnection_getChecksumBuffer(conn);
+		
+		if (!ChecksumBuffer_getChecksum(cb, frameNr, &remoteChecksum))
+			return false;
+
+		if (localChecksum != remoteChecksum) {
+			log_add(log_Error, "Network connections have gone out of "
+					"sync.\n");
+			return false;
+		}
+	}
+	return true;
+}
+
+
+#endif  /* NETPLAY_CHECKSUM */
+
+#endif  /* NETPLAY */
+
