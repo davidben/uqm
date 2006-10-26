@@ -46,31 +46,30 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 
 		CodeRef = CaptureCodeRes (LoadCodeRes (INITIAL_CODE_RES),
 				(PVOID)&GlobData, (PVOID)&StarShipPtr->RaceDescPtr);
-
 		if (CodeRef == 0)
 			goto BadLoad;
 		StarShipPtr->RaceDescPtr->CodeRef = CodeRef;
 
-		if ((StarShipPtr->RaceDescPtr->ship_info.icons =
+		StarShipPtr->RaceDescPtr->ship_info.icons =
 				CaptureDrawable (LoadGraphic (
-				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.icons
-				))) == 0)
+				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.icons));
+		if (StarShipPtr->RaceDescPtr->ship_info.icons == 0)
 		{
 			/* goto BadLoad */
 		}
 			
-		if ((StarShipPtr->RaceDescPtr->ship_info.melee_icon =
+		StarShipPtr->RaceDescPtr->ship_info.melee_icon =
 				CaptureDrawable (LoadGraphic (
-				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.melee_icon
-				))) == 0)
+				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.melee_icon));
+		if (StarShipPtr->RaceDescPtr->ship_info.melee_icon == 0)
 		{
 			/* goto BadLoad */
 		}
 
-		if ((StarShipPtr->RaceDescPtr->ship_info.race_strings =
+		StarShipPtr->RaceDescPtr->ship_info.race_strings =
 				CaptureStringTable (LoadStringTable (
-				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.race_strings
-				))) == 0)
+				(RESOURCE)StarShipPtr->RaceDescPtr->ship_info.race_strings));
+		if (StarShipPtr->RaceDescPtr->ship_info.race_strings == 0)
 		{
 			/* goto BadLoad */
 		}
@@ -107,31 +106,34 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 					goto BadLoad;
 			}
 
-			if (RawPtr->captain_control.background
-					&& (RawPtr->captain_control.background =
-					CaptureDrawable (LoadGraphic (
-					(RESOURCE)RawPtr->captain_control.background
-					))) == 0)
-				goto BadLoad;
+			if (RawPtr->captain_control.background != 0)
+			{
+				RawPtr->captain_control.background =
+						CaptureDrawable (LoadGraphic (
+						(RESOURCE)RawPtr->captain_control.background));
+				if (RawPtr->captain_control.background == 0)
+					goto BadLoad;
+			}
 
-			if (RawPtr->victory_ditty
-					&& (RawPtr->victory_ditty =
-					LoadMusic (
-					(RESOURCE)RawPtr->victory_ditty
-					)) == 0)
-				goto BadLoad;
+			if (RawPtr->victory_ditty != 0)
+			{
+				RawPtr->victory_ditty =
+						LoadMusic ((RESOURCE)RawPtr->victory_ditty);
+				if (RawPtr->victory_ditty == 0)
+					goto BadLoad;
+			}
 
-			if (RawPtr->ship_sounds
-					&& (RawPtr->ship_sounds =
-					CaptureSound (LoadSound (
-					(RESOURCE)RawPtr->ship_sounds
-					))) == 0)
-				goto BadLoad;
+			if (RawPtr->ship_sounds != 0)
+			{
+				RawPtr->ship_sounds = CaptureSound (
+						LoadSound ((RESOURCE)RawPtr->ship_sounds));
+				if (RawPtr->ship_sounds == 0)
+					goto BadLoad;
+			}
 
 			if (StarShipPtr->RaceDescPtr->ship_info.icons)
 				StarShipPtr->silhouette = IncFrameIndex (
-						StarShipPtr->RaceDescPtr->ship_info.icons
-						);
+						StarShipPtr->RaceDescPtr->ship_info.icons);
 		}
 
 		retval = TRUE;
@@ -146,31 +148,29 @@ BadLoad:
 void
 free_ship (STARSHIPPTR StarShipPtr, BOOLEAN FreeBattleData)
 {
+	RACE_DESCPTR raceDescPtr = StarShipPtr->RaceDescPtr;
+	SHIP_INFO *shipInfo = &raceDescPtr->ship_info;
+
 	if (FreeBattleData)
 	{
-		free_image (StarShipPtr->RaceDescPtr->ship_data.special);
-		free_image (StarShipPtr->RaceDescPtr->ship_data.weapon);
-		free_image (StarShipPtr->RaceDescPtr->ship_data.ship);
+		DATA_STUFF *shipData = &raceDescPtr->ship_data;
 
-		DestroyDrawable (ReleaseDrawable (
-				StarShipPtr->RaceDescPtr->ship_data.captain_control.background));
+		free_image (shipData->special);
+		free_image (shipData->weapon);
+		free_image (shipData->ship);
 
-		DestroyMusic ((MUSIC_REF)StarShipPtr->RaceDescPtr->ship_data.victory_ditty);
-
-		DestroySound (ReleaseSound (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds));
+		DestroyDrawable (
+				ReleaseDrawable (shipData->captain_control.background));
+		DestroyMusic ((MUSIC_REF)shipData->victory_ditty);
+		DestroySound (ReleaseSound (shipData->ship_sounds));
 	}
 
-	DestroyDrawable (ReleaseDrawable (
-			StarShipPtr->RaceDescPtr->ship_info.melee_icon));
+	DestroyDrawable (ReleaseDrawable (shipInfo->melee_icon));
+	DestroyDrawable (ReleaseDrawable (shipInfo->icons));
+	DestroyStringTable (ReleaseStringTable (shipInfo->race_strings));
 
-	DestroyDrawable (ReleaseDrawable (
-			StarShipPtr->RaceDescPtr->ship_info.icons));
+	DestroyCodeRes (ReleaseCodeRes (raceDescPtr->CodeRef));
 
-	DestroyStringTable (ReleaseStringTable (
-			StarShipPtr->RaceDescPtr->ship_info.race_strings));
-
-	DestroyCodeRes (ReleaseCodeRes (StarShipPtr->RaceDescPtr->CodeRef));
 	StarShipPtr->RaceDescPtr = 0;
 }
 

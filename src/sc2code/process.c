@@ -818,7 +818,10 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 				ElementPtr->state_flags &= ~COLLISION;
 
 			if (state_flags & POST_PROCESS)
-				delta.x = delta.y = 0;
+			{
+				delta.x = 0;
+				delta.y = 0;
+			}
 			else
 			{
 				delta.x = scroll_x;
