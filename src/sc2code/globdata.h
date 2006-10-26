@@ -25,8 +25,11 @@
 #include "velocity.h"
 
 
+// Animation types:
 #define RANDOM_ANIM (1 << 0)
+		// Next index is randomly chose
 #define CIRCULAR_ANIM (1 << 1)
+		//
 #define YOYO_ANIM (1 << 2)
 #define ANIM_MASK (RANDOM_ANIM | CIRCULAR_ANIM | YOYO_ANIM)
 
@@ -42,10 +45,19 @@
 typedef struct
 {
 	COUNT StartIndex;
+			// Index of the first image (for image animation) or
+			// index of the first color map (for palette animation)
 	BYTE NumFrames;
+			// number of frames
+
 	BYTE AnimFlags;
-	COUNT BaseFrameRate, RandomFrameRate,
-				BaseRestartRate, RandomRestartRate;
+			// One of RANDOM_ANIM, CIRCULAR_ANIM, or YOYO_ANIM
+
+	COUNT BaseFrameRate;
+	COUNT RandomFrameRate;
+	COUNT BaseRestartRate;
+	COUNT RandomRestartRate;
+
 	DWORD BlockMask;
 } ANIMATION_DESC;
 typedef ANIMATION_DESC *PANIMATION_DESC;
