@@ -28,7 +28,7 @@ Followed by:
 For .ct files an item is as follows (new 256x24bit format):
            1       Index of first clut in this item.
            1       Index of last clut in this item.
-  For each item:
+  For each clut:
     256 palette entries:
            1       red value
            1       green value
@@ -37,7 +37,7 @@ For .ct files an item is as follows (new 256x24bit format):
 For old .ct files an item is as follows (obsoleted by new 256x24bit format):
            1       Index of first clut in this item.
            1       Index of last clut in this item.
-  For each item:
+  For each clut:
     32 palette entries:
            2       bits 0-4: blue value
                    bits 5-9: green value
