@@ -19,9 +19,10 @@
 #ifndef _NETMANAGER_H
 #define _NETMANAGER_H
 
+#include "port.h"
 #include "types.h"
 
-#ifdef WIN32
+#ifdef USE_WINSOCK
 #	include "netmanager_win.h"
 #else
 #	include "netmanager_bsd.h"

@@ -20,7 +20,7 @@
 #include "port.h"
 #include "netport.h"
 
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 #	include <winsock2.h>
 
 int
@@ -87,5 +87,5 @@ int
 getWinsockErrno(void) {
 	return winsockErrorToErrno(WSAGetLastError());
 }
-#endif  /* defined (_MSC_VER) */
+#endif  /* defined (USE_WINSOCK) */
 

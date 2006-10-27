@@ -28,7 +28,9 @@ typedef enum {
 typedef struct ListenError ListenError;
 typedef struct ListenState ListenState;
 
-#ifdef _MSC_VER
+#include "port.h"
+
+#ifdef USE_WINSOCK
 // I do not want to include winsock2.h, because of possible conflicts with
 // code that includes this file.
 // Note that listen.c itself includes winsock2.h; SOCKLEN_T is used there

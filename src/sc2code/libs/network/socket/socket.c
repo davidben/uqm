@@ -16,10 +16,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "port.h"
+
 #define SOCKET_INTERNAL
 #include "socket.h"
 
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 #	include <winsock2.h>
 #else
 #	include <sys/socket.h>

@@ -28,9 +28,10 @@ typedef enum {
 } ResolveStateState;
 typedef struct ResolveState ResolveState;
 
+#include "port.h"
 
 // For addrinfo.
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 // Not including <winsock2.h> because of possible conflicts with files
 // including this file.
 struct addrinfo;
@@ -63,13 +64,13 @@ typedef void (*ResolveErrorCallback)(ResolveState *resolveState,
 		const ResolveError *error);
 
 #ifdef RESOLVE_INTERNAL
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
 #	include <wspiapi.h>
-#else  /* !defined(_MSC_VER) */
+#else  /* !defined(USE_WINSOCK) */
 #	include <netdb.h>
-#endif /* !defined(_MSC_VER) */
+#endif /* !defined(USE_WINSOCK) */
 
 struct ResolveState {
 	RefCount refCount;

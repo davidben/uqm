@@ -128,9 +128,13 @@ typedef unsigned short wchar_t;
 typedef unsigned int wint_t;
 #endif
 
+#if defined (_MSC_VER) || defined(__MINGW32__)
+#	define USE_WINSOCK
+#endif
+
 // errno error numbers. The values used don't matter, as long as they
 // don't conflict with existing errno error numbers.
-#if defined (PORT_WANT_ERRNO) && defined (_MSC_VER)
+#if defined (PORT_WANT_ERRNO) && defined (USE_WINSOCK)
 #	include <errno.h>
 #	ifndef E2BIG
 #		define E2BIG            0x01000001

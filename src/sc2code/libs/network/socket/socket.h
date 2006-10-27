@@ -24,7 +24,7 @@ typedef struct Socket Socket;
 
 #include "port.h"
 
-#ifdef WIN32
+#ifdef USE_WINSOCK
 #	include "socket_win.h"
 #else
 #	include "socket_bsd.h"

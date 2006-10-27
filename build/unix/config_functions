@@ -538,7 +538,7 @@ EOF
 }
 
 # Description: check if a symbol is defined.
-#              set HAVE_<NAME> accordingly, where <NAME> is the capitalized
+#              sets HAVE_<NAME> accordingly, where <NAME> is the capitalized
 #              name of the symbol.
 # Arguments:   $1 - the name of the symbol
 define_have_symbol() {
@@ -600,9 +600,9 @@ EOF
 }
 
 # Description: check if a header is available.
-#              set HAVE_<NAME> accordingly, where <NAME> is the capitalized
+#              sets HAVE_<NAME> accordingly, where <NAME> is the capitalized
 #              name of the header file. "sys/time.h" becomes "SYS_TIME_H".
-# Arguments:   $1 - the name of the symbol
+# Arguments:   $1 - the name of the header file
 define_have_header() {
 	local NAME VALUE
 	NAME=`$TR /.[:lower:] __[:upper:] << EOF
@@ -615,6 +615,48 @@ EOF
 	else
 		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
 		add_symbol "HAVE_${NAME}_FLAG" 0
+	fi
+}
+
+# Description: check if a macro is available.
+# Arguments:   $1 - the name of the macro
+have_macro() {
+	local MACRO EXTRA
+	MACRO="$1"
+
+	EXTRA=`evalVar MACRO_${NAME}_EXTRA`
+
+	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+$EXTRA
+#ifndef $MACRO
+#	error
+#endif
+int main() {
+	return 0;
+}
+EOF
+	if [ $? -gt 0 ]; then
+		build_message "Preprocessor macro '$MACRO' not found."
+		return 1
+	fi
+	build_message "Preprocessor macro '$MACRO' found."
+	return 0
+}
+
+# Description: check if a macro is defined
+#              sets MACRO_<NAME> to a non-empty string if the macro with
+#              the specified name is defined, and to an empty string if it
+#              is not.
+# Arguments:   $1 - the name of the symbol
+define_have_macro() {
+	local NAME
+
+	NAME=$1
+
+	if have_macro "$1"; then
+		add_symbol "MACRO_$NAME" "1"
+	else
+		add_symbol "MACRO_$NAME" ""
 	fi
 }
 

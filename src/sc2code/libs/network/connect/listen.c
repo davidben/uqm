@@ -32,14 +32,14 @@
 
 #include <assert.h>
 #include <errno.h>
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
 #else
 #	include <netdb.h>
 #endif
 #ifdef DEBUG
-#	ifdef _MSC_VER
+#	ifdef USE_WINSOCK
 #		include <wspiapi.h>
 #	endif
 #endif

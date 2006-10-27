@@ -33,7 +33,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _MSC_VER
+#ifdef USE_WINSOCK
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
 #	include <wspiapi.h>
