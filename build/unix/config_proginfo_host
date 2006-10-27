@@ -203,7 +203,7 @@ LIB_tremor_VERSION=""
 LIB_libmikmod_NAME="libmikmod"
 LIB_libmikmod_CFLAGS="$(libmikmod-config --cflags)"
 LIB_libmikmod_LDFLAGS="$(libmikmod-config --libs)"
-LIB_libmikmod_VERSION=""
+LIB_libmikmod_VERSION="$(libmikmod-config --version)"
 
 
 ### zlib ###
