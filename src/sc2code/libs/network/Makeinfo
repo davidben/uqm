@@ -1,6 +1,6 @@
 uqm_SUBDIRS="connect netmanager socket"
 uqm_CFILES="netport.c"
-if [ -n "$MACRO___MINGW32__" ]; then
+if [ -n "$uqm_USE_WINSOCK" ]; then
 	uqm_CFILES="$uqm_CFILES network_win.c"
 else
 	uqm_CFILES="$uqm_CFILES network_bsd.c"
