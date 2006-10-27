@@ -40,7 +40,7 @@
 #endif
 #ifdef DEBUG
 #	ifdef USE_WINSOCK
-#		include <wspiapi.h>
+#		include "../wspiapiwrap.h"
 #	endif
 #endif
 #include <stdlib.h>

@@ -1439,6 +1439,10 @@ SOURCE=..\sc2code\libs\network\socket\socket_win.h
 # End Source File
 # End Group
 
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\wspiapiwrap.h
+# End Source File
 # End Group
 
 # Begin Source File

@@ -20,6 +20,7 @@
 
 #define PORT_WANT_ERRNO
 #include "port.h"
+#include "../netport.h"
 
 #define SOCKET_INTERNAL
 #include "socket.h"

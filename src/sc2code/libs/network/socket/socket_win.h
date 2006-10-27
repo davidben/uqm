@@ -27,6 +27,7 @@ struct Socket {
 #endif  /* SOCKET_INTERNAL */
 
 typedef int socklen_t;
+struct sockaddr;
 
 #endif /* _SOCKET_WIN_H */
 

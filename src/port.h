@@ -3,6 +3,22 @@
 
 #include "config.h"
 
+#ifdef __MINGW32__
+// Microsoft Windows headers expect this to be set. The MSVC compiler sets
+// it, but MinGW doesn't.
+#	if defined(_X86_)
+#		define _M_IX86
+#	elif defined(_IA64_)
+#		define _M_IA64
+#	elif defined(__amd64__)
+#		define _M_AMD64
+#	elif defined(__m68k__)
+#		define _68K_
+#	elif defined(__ppc__)
+#		define _M_PPC
+#	endif
+#endif
+
 #ifdef _MSC_VER
 #	include <io.h>
 #else
@@ -30,6 +46,10 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
 #	define inline __inline
 #else
 #	define inline __inline__
+#	ifdef __MINGW32__
+		// For when including Microsoft Windows header files.
+#		define _inline inline
+#	endif
 #endif
 
 // Directories

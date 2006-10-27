@@ -26,6 +26,16 @@ int winsockErrorToErrno(int winsockError);
 int getWinsockErrno(void);
 #	define EAI_SYSTEM 0x02000001
 		// Any value will do that doesn't conflict with an existing value.
+
+#ifdef __MINGW32__
+// MinGW does not have a working gai_strerror() yet.
+static inline const char *
+gai_strerror(int err) {
+	(void) err;
+	return "[gai_strerror() is not available on MinGW]";
+}
+#endif  /* defined(__MINGW32__) */
+
 #endif
 
 #endif  /* _NETPORT_H */

@@ -29,6 +29,7 @@ typedef enum {
 typedef struct ResolveState ResolveState;
 
 #include "port.h"
+#include "../netport.h"
 
 // For addrinfo.
 #ifdef USE_WINSOCK
@@ -67,7 +68,7 @@ typedef void (*ResolveErrorCallback)(ResolveState *resolveState,
 #ifdef USE_WINSOCK
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
-#	include <wspiapi.h>
+#	include "../wspiapiwrap.h"
 #else  /* !defined(USE_WINSOCK) */
 #	include <netdb.h>
 #endif /* !defined(USE_WINSOCK) */

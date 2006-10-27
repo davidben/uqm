@@ -4,6 +4,8 @@ bytesex.h             Functions for endianness conversions.
 network.h             Functions for initialising the network subsystem.
 network_bsd.c         Network subsystem functions for BSD sockets.
 network_win.c         Network subsystem functions for Winsock sockets.
+wspiapiwrap.{c,h}     Hack to make sure <wspiapi.h> is #included in exactly
+                      one file.
 
 In libs/network/netmanager/:
 ndesc.{c,h}           Defines network descriptors.
