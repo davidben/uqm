@@ -111,8 +111,8 @@ packages.
 5.2. Setup the additional include locations for the project:
 - Still in MSVC++, right click on 'UrQuanMasters' in the Solution Explorer,
   and choose "Properties"
-- In the left part of the screen, select "Configuration Properties",
-  and then "General"
+- In the left part of the screen, select "Configuration Properties", then
+  "C/C++", and then "General"
 - In the right part, select "Additional Include Directories", then click on
   "..."
 - Add the paths to the "include" folders of all of the dependency
