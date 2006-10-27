@@ -13,7 +13,7 @@ game itself.
 --netport2
     As --netport1, but for the top player
 --nethost2
-    As --netport2, but for the bottom player
+    As --nethost1, but for the top player
 --netdelay
     The desired input delay (in frames). A keypress or keyrelease
     will only take effect after this many frames. The result is that while
