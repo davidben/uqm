@@ -132,7 +132,6 @@ ConnectState_getExtra(ConnectState *connectState) {
 	return connectState->extra;
 }
 
-// Try connecting to the next address.
 static void
 connectCallback(NetDescriptor *nd) {
 	// Called by the NetManager when a connection has been established.
@@ -207,6 +206,7 @@ setConnectTimeout(ConnectState *connectState) {
 			(AlarmCallback) connectTimeoutCallback, connectState);
 }
 
+// Try connecting to the next address.
 static Socket *
 tryConnectHostNext(ConnectState *connectState) {
 	struct addrinfo *info;

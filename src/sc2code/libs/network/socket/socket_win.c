@@ -88,6 +88,13 @@ Socket_connect(Socket *sock, const struct sockaddr *addr,
 		errno = getWinsockErrno();
 	} while (errno == EINTR);
 
+	if (errno == EWOULDBLOCK) {
+		// Windows returns (WSA)EWOULDBLOCK when a connection is being
+		// initiated on a non-blocking socket, while other platforms
+		// use EINPROGRESS in such cases.
+		errno = EINPROGRESS;
+	}
+
 	return -1;
 }
 

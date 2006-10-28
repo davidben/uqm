@@ -112,7 +112,7 @@ NetManager_addDesc(NetDescriptor *nd) {
 		eventMask |= FD_READ | FD_ACCEPT;
 
 	if (nd->writeCallback != NULL)
-		eventMask |= FD_WRITE | FD_CONNECT;
+		eventMask |= FD_WRITE /* | FD_CONNECT */;
 
 	if (nd->exceptionCallback != NULL)
 		eventMask |= FD_OOB;
@@ -299,12 +299,12 @@ NetManager_deactivateReadCallback(NetDescriptor *nd) {
 
 void
 NetManager_activateWriteCallback(NetDescriptor *nd) {
-	activateSomeCallback(nd, FD_WRITE | FD_CONNECT);
+	activateSomeCallback(nd, FD_WRITE /* | FD_CONNECT */);
 }
 
 void
 NetManager_deactivateWriteCallback(NetDescriptor *nd) {
-	deactivateSomeCallback(nd, FD_WRITE | FD_CONNECT);
+	deactivateSomeCallback(nd, FD_WRITE /* | FD_CONNECT */);
 }
 
 void
@@ -376,6 +376,9 @@ NetManager_processEvent(size_t index) {
 		if (closed)
 			goto closed;
 	}
+#if 0
+	// No need for this. Windows also sets FD_WRITE in this case, and
+	// writability is what we check for anyhow.
 	if (networkEvents.lNetworkEvents & FD_CONNECT) {
 		// There is no specific connect callback (because the BSD sockets
 		// don't work with specific notification for connect); we use
@@ -390,6 +393,7 @@ NetManager_processEvent(size_t index) {
 		if (closed)
 			goto closed;
 	}
+#endif
 	if (networkEvents.lNetworkEvents & FD_CLOSE) {
 		// The close event is handled last, in case there was still
 		// data in the buffers which could be processed.

@@ -21,7 +21,7 @@
 
 #include "port.h"
 
-#if defined (USE_WINSOCK)
+#ifdef USE_WINSOCK
 int winsockErrorToErrno(int winsockError);
 int getWinsockErrno(void);
 #	define EAI_SYSTEM 0x02000001
