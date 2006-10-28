@@ -35,13 +35,9 @@
 #ifdef USE_WINSOCK
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
+#	include "../wspiapiwrap.h"
 #else
 #	include <netdb.h>
-#endif
-#ifdef DEBUG
-#	ifdef USE_WINSOCK
-#		include "../wspiapiwrap.h"
-#	endif
 #endif
 #include <stdlib.h>
 #include <string.h>
