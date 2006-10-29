@@ -49,9 +49,8 @@ initialize_laser (PLASER_BLOCK pLaserBlock)
 				APPEARING | FINITE_LIFE | pLaserBlock->sender;
 		LaserElementPtr->life_span = LASER_LIFE;
 		LaserElementPtr->collision_func =
-					(void (*) (struct element *ElementPtr0, PPOINT pPt0,
-							struct element *ElementPtr1, PPOINT pPt1))
-							weapon_collision;
+				(void (*) (struct element *ElementPtr0, PPOINT pPt0,
+				struct element *ElementPtr1, PPOINT pPt1)) weapon_collision;
 		LaserElementPtr->blast_offset = 1;
 
 		LaserElementPtr->current.location.x = pLaserBlock->cx
@@ -61,7 +60,8 @@ initialize_laser (PLASER_BLOCK pLaserBlock)
 				+ SINE (FACING_TO_ANGLE (pLaserBlock->face),
 				DISPLAY_TO_WORLD (pLaserBlock->pixoffs));
 		SetPrimType (&DisplayArray[LaserElementPtr->PrimIndex], LINE_PRIM);
-		SetPrimColor (&DisplayArray[LaserElementPtr->PrimIndex], pLaserBlock->color);
+		SetPrimColor (&DisplayArray[LaserElementPtr->PrimIndex],
+				pLaserBlock->color);
 		LaserElementPtr->current.image.frame = DecFrameIndex (stars_in_space);
 		LaserElementPtr->current.image.farray = &stars_in_space;
 		SetVelocityComponents (&LaserElementPtr->velocity,
@@ -96,28 +96,22 @@ initialize_missile (PMISSILE_BLOCK pMissileBlock)
 		SetPrimType (&DisplayArray[MissileElementPtr->PrimIndex], STAMP_PRIM);
 		MissileElementPtr->current.image.farray = pMissileBlock->farray;
 		MissileElementPtr->current.image.frame =
-				SetAbsFrameIndex (pMissileBlock->farray[0], pMissileBlock->index);
+				SetAbsFrameIndex (pMissileBlock->farray[0],
+				pMissileBlock->index);
 		MissileElementPtr->preprocess_func = pMissileBlock->preprocess_func;
 		MissileElementPtr->collision_func =
-					(void (*) (struct element
-							*ElementPtr0, PPOINT
-							pPt0, struct element
-							*ElementPtr1, PPOINT
-							pPt1)) weapon_collision;
+				(void (*) (struct element *ElementPtr0, PPOINT pPt0,
+				struct element *ElementPtr1, PPOINT pPt1)) weapon_collision;
 		MissileElementPtr->blast_offset = (BYTE)pMissileBlock->blast_offs;
 
 		angle = FACING_TO_ANGLE (pMissileBlock->face);
 		MissileElementPtr->current.location.x = pMissileBlock->cx
-				+ COSINE (angle,
-				DISPLAY_TO_WORLD (pMissileBlock->pixoffs));
+				+ COSINE (angle, DISPLAY_TO_WORLD (pMissileBlock->pixoffs));
 		MissileElementPtr->current.location.y = pMissileBlock->cy
-				+ SINE (angle,
-				DISPLAY_TO_WORLD (pMissileBlock->pixoffs));
+				+ SINE (angle, DISPLAY_TO_WORLD (pMissileBlock->pixoffs));
 
-		delta_x = COSINE (angle,
-				WORLD_TO_VELOCITY (pMissileBlock->speed));
-		delta_y = SINE (angle,
-				WORLD_TO_VELOCITY (pMissileBlock->speed));
+		delta_x = COSINE (angle, WORLD_TO_VELOCITY (pMissileBlock->speed));
+		delta_y = SINE (angle, WORLD_TO_VELOCITY (pMissileBlock->speed));
 		SetVelocityComponents (&MissileElementPtr->velocity,
 				delta_x, delta_y);
 
@@ -167,10 +161,12 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 			damage = TARGET_DAMAGED_FOR_1_PT + (damage >> 1);
 			if (damage > TARGET_DAMAGED_FOR_6_PLUS_PT)
 				damage = TARGET_DAMAGED_FOR_6_PLUS_PT;
-			ProcessSound (SetAbsSoundIndex (GameSounds, damage), HitElementPtr);
+			ProcessSound (SetAbsSoundIndex (GameSounds, damage),
+					HitElementPtr);
 		}
 
-		if (GetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex]) != LINE_PRIM)
+		if (GetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex])
+				!= LINE_PRIM)
 			WeaponElementPtr->state_flags |= DISAPPEARING;
 
 		WeaponElementPtr->hit_points = 0;
@@ -204,7 +200,7 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 						SINE (angle, DISPLAY_TO_WORLD (blast_offs));
 			}
 
-			blast_index = 
+			blast_index =
 					NORMALIZE_FACING (ANGLE_TO_FACING (angle + HALF_CIRCLE));
 			blast_index = ((blast_index >> 2) << 1) +
 					(blast_index & 0x3 ? 1 : 0);
@@ -243,10 +239,8 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 }
 
 FRAME
-ModifySilhouette (ELEMENTPTR
-		ElementPtr, PSTAMP
-		modify_stamp, BYTE
-		modify_flags)
+ModifySilhouette (ELEMENTPTR ElementPtr, PSTAMP modify_stamp,
+		BYTE modify_flags)
 {
 	FRAME f;
 	RECT r, or;
@@ -261,14 +255,14 @@ ModifySilhouette (ELEMENTPTR
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (modify_flags & MODIFY_IMAGE)
 	{
-		if ((ShipIntersect.IntersectStamp.frame =
-				StarShipPtr->silhouette) == 0)
+		ShipIntersect.IntersectStamp.frame = StarShipPtr->silhouette;
+		if (ShipIntersect.IntersectStamp.frame == 0)
 			return (0);
 
 		GetFrameRect (ShipIntersect.IntersectStamp.frame, &r);
 
-		ShipIntersect.IntersectStamp.origin.x =
-				ShipIntersect.IntersectStamp.origin.y = 0;
+		ShipIntersect.IntersectStamp.origin.x = 0;
+		ShipIntersect.IntersectStamp.origin.y = 0;
 		ShipIntersect.EndPoint = ShipIntersect.IntersectStamp.origin;
 		do
 		{
@@ -278,8 +272,7 @@ ModifySilhouette (ELEMENTPTR
 			ObjectIntersect.IntersectStamp.origin.y = ((COUNT)TFB_Random ()
 					% (r.extent.height - or.extent.height))
 					+ ((or.extent.height - r.extent.height) >> 1);
-			ObjectIntersect.EndPoint =
-					ObjectIntersect.IntersectStamp.origin;
+			ObjectIntersect.EndPoint = ObjectIntersect.IntersectStamp.origin;
 		} while (!DrawablesIntersect (&ObjectIntersect,
 				&ShipIntersect, MAX_TIME_VALUE));
 
@@ -307,9 +300,15 @@ ModifySilhouette (ELEMENTPTR
 	return (f);
 }
 
+// Find the closest possible target ship, to be set in Tracker->hTarget.
+// *pfacing will be turned one angle unit into the direction towards the
+// target.
+// The return value will be the actual number of angle units to turn, or
+// -1 if no target was found.
+// Cloaked ships won't be detected, except when the APPEARING flag is
+// set for the Tracker.
 SIZE
-TrackShip (ELEMENTPTR Tracker,
-		PCOUNT pfacing)
+TrackShip (ELEMENTPTR Tracker, PCOUNT pfacing)
 {
 	SIZE best_delta_facing, best_delta;
 	HELEMENT hShip, hNextShip;
@@ -317,6 +316,7 @@ TrackShip (ELEMENTPTR Tracker,
 
 	best_delta = 0;
 	best_delta_facing = -1;
+
 	hShip = Tracker->hTarget;
 	if (hShip)
 	{
@@ -373,6 +373,9 @@ CheckTracking:
 				if (delta_y < 0)
 					delta_y = -delta_y;
 				delta_x += delta_y;
+						// 'delta_x + delta_y' is used as an approximation
+						// of the actual distance 'sqrt(sqr(delta_x) +
+						// sqr(delta_y))'.
 
 				if (best_delta == 0 || delta_x < best_delta)
 				{
