@@ -158,9 +158,16 @@ spawn_asteroid (PELEMENT ElementPtr)
 				AsteroidElementPtr->current.location.y = LOG_SPACE_HEIGHT;
 		}
 
-		SetVelocityVector (&AsteroidElementPtr->velocity,
-				DISPLAY_TO_WORLD (((SIZE)TFB_Random () & 7) + 4),
-				(COUNT)TFB_Random ());
+		{
+			// Using these temporary variables because the execution order
+			// of function arguments may vary per system, which may break
+			// synchronisation on network games.
+			SIZE magnitude =
+					DISPLAY_TO_WORLD (((SIZE)TFB_Random () & 7) + 4);
+			COUNT facing = (COUNT)TFB_Random ();
+			SetVelocityVector (&AsteroidElementPtr->velocity, magnitude,
+					facing);
+		}
 		AsteroidElementPtr->current.image.farray = asteroid;
 		AsteroidElementPtr->current.image.frame =
 				SetAbsFrameIndex (asteroid[0],
@@ -168,7 +175,8 @@ spawn_asteroid (PELEMENT ElementPtr)
 		AsteroidElementPtr->turn_wait =
 				AsteroidElementPtr->thrust_wait =
 				(BYTE)TFB_Random () & (BYTE)((1 << 2) - 1);
-		AsteroidElementPtr->thrust_wait |= (BYTE)TFB_Random () & (BYTE)(1 << 7);
+		AsteroidElementPtr->thrust_wait |=
+				(BYTE)TFB_Random () & (BYTE)(1 << 7);
 		AsteroidElementPtr->preprocess_func = asteroid_preprocess;
 		AsteroidElementPtr->death_func = spawn_rubble;
 		AsteroidElementPtr->collision_func = collision;
