@@ -157,7 +157,7 @@ buzztrack_preprocess (PELEMENT ElementPtr)
 		--ElementPtr->thrust_wait;
 	else
 	{
-		COUNT facing;
+		COUNT facing = 0;
 
 		if (ElementPtr->hTarget == 0
 				&& TrackShip (ElementPtr, &facing) < 0)
