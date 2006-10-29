@@ -239,9 +239,24 @@ networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
 	BATTLE_INPUT_STATE result;
 	
 	for (;;) {
-		bool ok = BattleInputBuffer_pop(bib, &result);
-				// Get the input from the front of the
-				// buffer.
+		bool ok;
+
+#if 0
+		// This is a useful debugging trick. By enabling this #if
+		// block, this side will always lag the maximum number of frames
+		// behind the other side. When the remote side stops on some event
+		// (a breakpoint or so), this side will stop too, waiting for input
+		// in the loop below, but it won't have processed the frame that
+		// triggered the event yet. If you then jump over this 'if'
+		// statement here, you can walk through the decisive frames
+		// manually. Works best with no input delay.
+		if (bib->size <= getBattleInputDelay() + 1) {
+			ok = false;
+		} else
+#endif
+			ok = BattleInputBuffer_pop(bib, &result);
+					// Get the input from the front of the
+					// buffer.
 		if (ok)
 			break;
 			
