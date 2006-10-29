@@ -25,7 +25,7 @@
 #define NETPLAY_FULL  2
 
 #define NETPLAY_PROTOCOL_VERSION_MAJOR 0
-#define NETPLAY_PROTOCOL_VERSION_MINOR 1
+#define NETPLAY_PROTOCOL_VERSION_MINOR 2
 
 #define NETPLAY_DEBUG
 		/* Extra debugging for netplay */
