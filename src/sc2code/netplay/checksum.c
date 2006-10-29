@@ -29,6 +29,7 @@
 #include "netconnection.h"
 #include "netmelee.h"
 #include "libs/log.h"
+#include "libs/mathlib.h"
 #include "libs/misc.h"
 
 
@@ -61,7 +62,6 @@ crc_processVELOCITY_DESC(crc_State *state, const VELOCITY_DESC *val) {
 #endif
 }
 
-#if 0
 void
 crc_processPOINT(crc_State *state, const POINT *val) {
 #ifdef DUMP_CRC_OPS
@@ -74,6 +74,7 @@ crc_processPOINT(crc_State *state, const POINT *val) {
 #endif
 }
 
+#if 0
 void
 crc_processSTAMP(crc_State *state, const STAMP *val) {
 #ifdef DUMP_CRC_OPS
@@ -100,6 +101,11 @@ crc_processINTERSECT_CONTROL(crc_State *state, const INTERSECT_CONTROL *val) {
 #endif
 
 void
+crc_processSTATE(crc_State *state, const STATE *val) {
+	crc_processPOINT(state, &val->location);
+}
+
+void
 crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 #ifdef DUMP_CRC_OPS
 	log_add(log_Debug, "START crc_processELEMENT().");
@@ -124,6 +130,8 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 
 	crc_processBYTE(state, val->thrust_wait);
 	crc_processVELOCITY_DESC(state, &val->velocity);
+	crc_processSTATE(state, &val->current);
+	crc_processSTATE(state, &val->next);
 #ifdef DUMP_CRC_OPS
 	log_add(log_Debug, "END   crc_processELEMENT().");
 #endif
@@ -136,8 +144,7 @@ crc_processDispQueue(crc_State *state) {
 
 #ifdef DUMP_CRC_OPS
 	size_t i = 0;
-	log_add(log_Debug, "START crc_processDispQueue() (frame %u).",
-			battleFrameCount);
+	log_add(log_Debug, "START crc_processDispQueue().");
 #endif
 	for (element = GetHeadElement(); element != 0; element = nextElement) {
 		ELEMENTPTR elementPtr;
@@ -156,7 +163,41 @@ crc_processDispQueue(crc_State *state) {
 #endif
 	}
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processDispQueue() (frame %u).",
+	log_add(log_Debug, "END   crc_processDispQueue().");
+#endif
+}
+
+void
+crc_processRNG(crc_State *state) {
+	DWORD seed;
+
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "START crc_processRNG().");
+#endif
+
+	seed = TFB_SeedRandom(0);
+			// This modifies the seed too.
+	crc_processDWORD(state, seed);
+	TFB_SeedRandom(seed);
+			// Restore the old seed.
+
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processRNG().");
+#endif
+}
+
+void
+crc_processState(crc_State *state) {
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "--------------------\n"
+			"START crc_processState() (frame %u).", battleFrameCount);
+#endif
+
+	crc_processRNG(state);
+	crc_processDispQueue(state);
+
+#ifdef DUMP_CRC_OPS
+	log_add(log_Debug, "END   crc_processState() (frame %u).",
 			battleFrameCount);
 #endif
 }

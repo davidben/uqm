@@ -258,7 +258,7 @@ DoBattle (BATTLE_STATE *bs)
 		Checksum checksum;
 
 		crc_init(&state);
-		crc_processDispQueue (&state);
+		crc_processState (&state);
 		checksum = (Checksum) crc_finish (&state);
 
 		sendChecksumConnections ((uint32) battleFrameCount,
