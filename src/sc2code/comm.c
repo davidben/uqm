@@ -16,9 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#define COMM_INTERNAL
 #include "comm.h"
 
 #include "build.h"
+#include "commanim.h"
 #include "commglue.h"
 #include "controls.h"
 #include "colors.h"
@@ -28,52 +30,27 @@
 #include "options.h"
 #include "load.h"
 #include "oscill.h"
-#include "resinst.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
 #include "uqmdebug.h"
-#include "libs/graphics/drawable.h"
 #include "libs/graphics/gfx_common.h"
-#include "libs/mathlib.h"
 #include "libs/inplib.h"
 #include "libs/sound/sound.h"
-#include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
-#include "libs/strlib.h"
 #include "libs/log.h"
 
 #include <ctype.h>
-
-// Maximum ambient animation frame rate (actual execution rate)
-// A gfx frame is not always produced during an execution frame,
-// and several animations are combined into one gfx frame.
-// The rate was originally 120fps which allowed for more animation
-// precision which is ultimately wasted on the human eye anyway.
-// The highest known stable animation rate is 40fps, so that's what we use.
-#define AMBIENT_ANIM_RATE   40
-
-// Oscilloscope frame rate
-// Should be <= AMBIENT_ANIM_RATE
-// XXX: was 32 picked experimentally?
-#define OSCILLOSCOPE_RATE   32
-
-static int ambient_anim_task (void *data);
-
 
 #define MAX_RESPONSES 8
 #define BACKGROUND_VOL \
 		(speechVolumeScale == 0.0f ? NORMAL_VOLUME : (NORMAL_VOLUME >> 1))
 #define FOREGROUND_VOL NORMAL_VOLUME
 
-#define SLIDER_Y 107
-#define SLIDER_HEIGHT 15
-
 
 LOCDATA CommData;
 int cur_comm;
 UNICODE shared_phrase_buf[2048];
-volatile BOOLEAN PauseAnimTask = FALSE;
 
 typedef struct response_entry
 {
@@ -99,39 +76,8 @@ typedef struct encounter_state
 } ENCOUNTER_STATE;
 typedef ENCOUNTER_STATE *PENCOUNTER_STATE;
 
-enum
-{
-	UP_DIR,
-	DOWN_DIR,
-	NO_DIR
-};
-enum
-{
-	PICTURE_ANIM,
-	COLOR_ANIM
-};
-typedef struct
-{
-	COUNT Alarm;
-	BYTE Direction, FramesLeft;
-	BYTE AnimType;
-	union
-	{
-		FRAME CurFrame;
-		COLORMAP CurCMap;
-	} AnimObj;
-} SEQUENCE, *PSEQUENCE;
-
 static PENCOUNTER_STATE pCurInputState;
-enum
-{
-	DONE_SUBTITLE,
-	NEXT_SUBTITLE,
-	READ_SUBTITLE,
-	SPACE_SUBTITLE,
-	WAIT_SUBTITLE,
-};
-static int subtitle_state = DONE_SUBTITLE;
+static SUBTITLE_STATE subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 
 static const UNICODE * volatile last_subtitle;
@@ -491,7 +437,7 @@ DrawSISComWindow (void)
 #endif /* NEVER */
 }
 
-static void
+void
 DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 {
 	COUNT i;
@@ -506,7 +452,8 @@ DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
 	
 	BatchGraphics ();
 	DrawStamp (&s);
-	ADPtr = &CommData.AlienAmbientArray[i = CommData.NumAnimations];
+	i = CommData.NumAnimations;
+	ADPtr = &CommData.AlienAmbientArray[i];
 	while (i--)
 	{
 		--ADPtr;
@@ -548,7 +495,7 @@ uninit_communication (void)
 	DestroyMutex (subtitle_mutex);
 }
 
-static volatile BOOLEAN ClearSummary;
+volatile BOOLEAN ClearSummary;
 static volatile BOOLEAN ClearSubtitle;
 
 static void
@@ -632,60 +579,7 @@ FeedbackPlayerPhrase (UNICODE *pStr)
 	UnbatchGraphics ();
 }
 
-static void
-SetUpSequence (PSEQUENCE pSeq)
-{
-	COUNT i;
-	ANIMATION_DESCPTR ADPtr;
-
-	pSeq = &pSeq[i = CommData.NumAnimations];
-	ADPtr = &CommData.AlienAmbientArray[i];
-	while (i--)
-	{
-		--ADPtr;
-		--pSeq;
-
-		if (ADPtr->AnimFlags & COLORXFORM_ANIM)
-			pSeq->AnimType = COLOR_ANIM;
-		else
-			pSeq->AnimType = PICTURE_ANIM;
-		pSeq->Direction = UP_DIR;
-		pSeq->FramesLeft = ADPtr->NumFrames;
-		if (pSeq->AnimType == COLOR_ANIM)
-			pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
-					CommData.AlienColorMap, ADPtr->StartIndex);
-		else
-			pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
-					CommData.AlienFrame, ADPtr->StartIndex);
-
-		if (ADPtr->AnimFlags & RANDOM_ANIM)
-		{
-			if (pSeq->AnimType == COLOR_ANIM)
-				pSeq->AnimObj.CurCMap =
-						SetRelColorMapIndex (pSeq->AnimObj.CurCMap,
-						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
-			else
-				pSeq->AnimObj.CurFrame =
-						SetRelFrameIndex (pSeq->AnimObj.CurFrame,
-						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
-		}
-		else if (ADPtr->AnimFlags & YOYO_ANIM)
-		{
-			--pSeq->FramesLeft;
-			if (pSeq->AnimType == COLOR_ANIM)
-				pSeq->AnimObj.CurCMap =
-						SetRelColorMapIndex (pSeq->AnimObj.CurCMap, 1);
-			else
-				pSeq->AnimObj.CurFrame =
-						IncFrameIndex (pSeq->AnimObj.CurFrame);
-		}
-
-		pSeq->Alarm = ADPtr->BaseRestartRate
-				+ ((COUNT)TFB_Random () % (ADPtr->RandomRestartRate + 1)) + 1;
-	}
-}
-
-static void
+void
 UpdateSpeechGraphics (BOOLEAN Initialize)
 {
 	CONTEXT OldContext;
@@ -711,439 +605,6 @@ UpdateSpeechGraphics (BOOLEAN Initialize)
 	SetContext (SpaceContext);
 	Slider ();
 	SetContext (OldContext);
-}
-
-static int
-ambient_anim_task (void *data)
-{
-	SIZE TalkAlarm;
-	FRAME TalkFrame;
-	FRAME ResetTalkFrame = NULL;
-	FRAME TransitionFrame = NULL;
-	FRAME AnimFrame[MAX_ANIMATIONS + 1];
-	COUNT i;
-	DWORD LastTime;
-	FRAME CommFrame;
-	SEQUENCE Sequencer[MAX_ANIMATIONS];
-	ANIMATION_DESC TalkBuffer = CommData.AlienTalkDesc;
-	PSEQUENCE pSeq;
-	ANIMATION_DESCPTR ADPtr;
-	DWORD ActiveMask;
-	DWORD LastOscillTime;
-	Task task = (Task) data;
-	BOOLEAN TransitionDone = FALSE;
-	BOOLEAN TalkFrameChanged = FALSE;
-	BOOLEAN FrameChanged[MAX_ANIMATIONS];
-	BOOLEAN ColorChange = FALSE;
-
-	while ((CommFrame = CommData.AlienFrame) == 0
-			&& !Task_ReadState (task, TASK_EXIT))
-		TaskSwitch ();
-
-	LockMutex (GraphicsLock);
-	memset ((PSTR)&DisplayArray[0], 0, sizeof (DisplayArray));
-	SetUpSequence (Sequencer);
-	UnlockMutex (GraphicsLock);
-
-	ActiveMask = 0;
-	TalkAlarm = 0;
-	TalkFrame = 0;
-	LastTime = GetTimeCounter ();
-	LastOscillTime = LastTime;
-	memset (FrameChanged, 0, sizeof (FrameChanged));
-	memset (AnimFrame, 0, sizeof (AnimFrame));
-	for (i = 0; i <= CommData.NumAnimations; i++)
-		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
-			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
-					CommData.AlienAmbientArray[i].StartIndex);
-		else
-			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
-					(COUNT)(CommData.AlienAmbientArray[i].StartIndex
-					+ CommData.AlienAmbientArray[i].NumFrames - 1));
-
-	while (!Task_ReadState (task, TASK_EXIT))
-	{
-		BOOLEAN Change, CanTalk;
-		DWORD CurTime, ElapsedTicks;
-
-		SleepThreadUntil (LastTime + ONE_SECOND / AMBIENT_ANIM_RATE);
-
-		LockMutex (GraphicsLock);
-		BatchGraphics ();
-		CurTime = GetTimeCounter ();
-		ElapsedTicks = CurTime - LastTime;
-		LastTime = CurTime;
-
-		Change = FALSE;
-		i = CommData.NumAnimations;
-		if (CommData.AlienFrame)
-			CanTalk = TRUE;
-		else
-		{
-			i = 0;
-			CanTalk = FALSE;
-		}
-
-		pSeq = &Sequencer[i];
-		ADPtr = &CommData.AlienAmbientArray[i];
-		while (i-- && !Task_ReadState (task, TASK_EXIT))
-		{
-			--ADPtr;
-			--pSeq;
-			if (ADPtr->AnimFlags & ANIM_DISABLED)
-				continue;
-			if (pSeq->Direction == NO_DIR)
-			{
-				if (!(ADPtr->AnimFlags
-						& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-					pSeq->Direction = UP_DIR;
-			}
-			else if ((DWORD)pSeq->Alarm > ElapsedTicks)
-				pSeq->Alarm -= (COUNT)ElapsedTicks;
-			else
-			{
-				if (!(ActiveMask & ADPtr->BlockMask)
-						&& (--pSeq->FramesLeft
-						|| ((ADPtr->AnimFlags & YOYO_ANIM)
-						&& pSeq->Direction == UP_DIR)))
-				{
-					ActiveMask |= 1L << i;
-					pSeq->Alarm = ADPtr->BaseFrameRate
-							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomFrameRate + 1)) + 1;
-				}
-				else
-				{
-					ActiveMask &= ~(1L << i);
-					pSeq->Alarm = ADPtr->BaseRestartRate
-							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomRestartRate + 1)) + 1;
-					if (ActiveMask & ADPtr->BlockMask)
-						continue;
-				}
-
-				if (pSeq->AnimType == COLOR_ANIM)
-				{
-					XFormColorMap (GetColorMapAddress (pSeq->AnimObj.CurCMap),
-							(COUNT) (pSeq->Alarm - 1));
-				}
-				else
-				{
-					Change = TRUE;
-					AnimFrame[i] = pSeq->AnimObj.CurFrame;
-					FrameChanged[i] = 1;
-				}
-
-				if (pSeq->FramesLeft == 0)
-				{
-					pSeq->FramesLeft = (BYTE)(ADPtr->NumFrames - 1);
-
-					if (pSeq->Direction == DOWN_DIR)
-						pSeq->Direction = UP_DIR;
-					else if (ADPtr->AnimFlags & YOYO_ANIM)
-						pSeq->Direction = DOWN_DIR;
-					else
-					{
-						++pSeq->FramesLeft;
-						if (pSeq->AnimType == COLOR_ANIM)
-							pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-									pSeq->AnimObj.CurCMap,
-									(SWORD) (-pSeq->FramesLeft));
-						else
-						{
-							pSeq->AnimObj.CurFrame = SetRelFrameIndex (
-									pSeq->AnimObj.CurFrame,
-									(SWORD) (-pSeq->FramesLeft));
-						}
-					}
-				}
-
-				if (ADPtr->AnimFlags & RANDOM_ANIM)
-				{
-					COUNT nextIndex = ADPtr->StartIndex +
-							(TFB_Random () % ADPtr->NumFrames);
-
-					if (pSeq->AnimType == COLOR_ANIM)
-						pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
-								pSeq->AnimObj.CurCMap, nextIndex);
-					else
-						pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
-								pSeq->AnimObj.CurFrame, nextIndex);
-				}
-				else if (pSeq->AnimType == COLOR_ANIM)
-				{
-					if (pSeq->Direction == UP_DIR)
-						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, 1);
-					else
-						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, -1);
-				}
-				else
-				{
-					if (pSeq->Direction == UP_DIR)
-						pSeq->AnimObj.CurFrame =
-								IncFrameIndex (pSeq->AnimObj.CurFrame);
-					else
-						pSeq->AnimObj.CurFrame =
-								DecFrameIndex (pSeq->AnimObj.CurFrame);
-				}
-			}
-
-			if (pSeq->AnimType == PICTURE_ANIM
-					&& (ADPtr->AnimFlags
-					& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING)
-					&& pSeq->Direction != NO_DIR)
-			{
-				COUNT index;
-
-				CanTalk = FALSE;
-				if (!(pSeq->Direction != UP_DIR
-						|| (index = GetFrameIndex (pSeq->AnimObj.CurFrame)) >
-						ADPtr->StartIndex + 1
-						|| (index == ADPtr->StartIndex + 1
-						&& (ADPtr->AnimFlags & CIRCULAR_ANIM))))
-					pSeq->Direction = NO_DIR;
-			}
-		}
-
-		ADPtr = &CommData.AlienTalkDesc;
-		if (CanTalk
-				&& ADPtr->NumFrames
-				&& (ADPtr->AnimFlags & WAIT_TALKING)
-				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
-		{
-			BOOLEAN done = FALSE;
-			for (i = 0; i < CommData.NumAnimations; i++)
-				if (ActiveMask & (1L << i)
-					&& CommData.AlienAmbientArray[i].AnimFlags & WAIT_TALKING)
-					done = TRUE;
-			if (!done)
-			{
-
-				if (ADPtr->StartIndex != TalkBuffer.StartIndex)
-				{
-					Change = TRUE;
-					ResetTalkFrame = SetAbsFrameIndex (CommFrame,
-							TalkBuffer.StartIndex);
-					TalkBuffer = CommData.AlienTalkDesc;
-				}
-
-				if ((long)TalkAlarm > (long)ElapsedTicks)
-					TalkAlarm -= (SIZE)ElapsedTicks;
-				else
-				{
-					BYTE AFlags;
-					SIZE FrameRate;
-
-					if (TalkAlarm > 0)
-						TalkAlarm = 0;
-					else
-						TalkAlarm = -1;
-
-					AFlags = ADPtr->AnimFlags;
-					if (!(AFlags & (TALK_INTRO | TALK_DONE)))
-					{
-						FrameRate =
-								ADPtr->BaseFrameRate
-								+ ((COUNT)TFB_Random ()
-								% (ADPtr->RandomFrameRate + 1));
-						if (TalkAlarm < 0
-								|| GetFrameIndex (TalkFrame) ==
-								ADPtr->StartIndex)
-						{
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									(COUNT) (ADPtr->StartIndex + 1
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->NumFrames - 1))));
-							FrameRate += ADPtr->BaseRestartRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomRestartRate + 1));
-						}
-						else
-						{
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									ADPtr->StartIndex);
-							if (ADPtr->AnimFlags & PAUSE_TALKING)
-							{
-								if (!(CommData.AlienTransitionDesc.AnimFlags
-										& TALK_DONE))
-								{
-									CommData.AlienTransitionDesc.AnimFlags |=
-											PAUSE_TALKING;
-									ADPtr->AnimFlags &= ~PAUSE_TALKING;
-								}
-								else if (CommData.AlienTransitionDesc.NumFrames)
-									ADPtr->AnimFlags |= TALK_DONE;
-								else
-									ADPtr->AnimFlags &=
-											~(WAIT_TALKING | PAUSE_TALKING);
-
-								FrameRate = 0;
-							}
-						}
-					}
-					else
-					{
-						ADPtr = &CommData.AlienTransitionDesc;
-						if (AFlags & TALK_INTRO)
-						{
-							FrameRate = ADPtr->BaseFrameRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomFrameRate + 1));
-							if (TalkAlarm < 0 || TransitionDone)
-							{
-								TalkFrame = SetAbsFrameIndex (CommFrame,
-										ADPtr->StartIndex);
-								TransitionDone = FALSE;
-							}
-							else
-								TalkFrame = IncFrameIndex (TalkFrame);
-
-							if ((BYTE)(GetFrameIndex (TalkFrame)
-									- ADPtr->StartIndex + 1) ==
-									ADPtr->NumFrames)
-							{
-								CommData.AlienTalkDesc.AnimFlags &=
-										~TALK_INTRO;
-								TransitionDone = TRUE;
-							}
-							TransitionFrame = TalkFrame;
-						}
-						else /* if (AFlags & TALK_DONE) */
-						{
-							FrameRate = ADPtr->BaseFrameRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomFrameRate + 1));
-							if (TalkAlarm < 0)
-								TalkFrame = SetAbsFrameIndex (CommFrame,
-										(COUNT) (ADPtr->StartIndex
-										+ ADPtr->NumFrames - 1));
-							else
-								TalkFrame = DecFrameIndex (TalkFrame);
-
-							if (GetFrameIndex (TalkFrame) ==
-									ADPtr->StartIndex)
-							{
-								CommData.AlienTalkDesc.AnimFlags &=
-										~(PAUSE_TALKING | TALK_DONE);
-								if (ADPtr->AnimFlags & TALK_INTRO)
-									CommData.AlienTalkDesc.AnimFlags &=
-											~WAIT_TALKING;
-								else
-								{
-									ADPtr->AnimFlags |= PAUSE_TALKING;
-									ADPtr->AnimFlags &= ~TALK_DONE;
-								}
-								FrameRate = 0;
-							}
-							TransitionFrame = NULL;
-						}
-					}
-					TalkFrameChanged = TRUE;
-
-					Change = TRUE;
-
-					TalkAlarm = FrameRate;
-				}
-			}
-			else if (done && (ADPtr->AnimFlags & PAUSE_TALKING))
-			{
-				ADPtr->AnimFlags &= ~(WAIT_TALKING | PAUSE_TALKING);	
-			}
-		}
-
-		if (!PauseAnimTask)
-		{
-			CONTEXT OldContext;
-			BOOLEAN CheckSub = FALSE;
-			BOOLEAN ClearSub;
-			int sub_state;
-
-			LockMutex (subtitle_mutex);
-			ClearSub = ClearSubtitle;
-			sub_state = subtitle_state;
-			ClearSubtitle = FALSE;
-			UnlockMutex (subtitle_mutex);
-
-
-			OldContext = SetContext (TaskContext);
-
-			if (ColorChange || ClearSummary)
-			{
-				FRAME F;
-				F = CommData.AlienFrame;
-				CommData.AlienFrame = CommFrame;
-				DrawAlienFrame (TalkFrame,
-						&Sequencer[CommData.NumAnimations - 1]);
-				CommData.AlienFrame = F;
-				CheckSub = TRUE;
-				ClearSub = ClearSummary;
-				ColorChange = ClearSummary = FALSE;
-			}
-			if (Change || ClearSub)
-			{
-				STAMP s;
-				s.origin.x = -SAFE_X;
-				s.origin.y = 0;
-				if (ClearSub)
-				{
-					s.frame = CommFrame;
-					DrawStamp (&s);
-				}
-				i = CommData.NumAnimations;
-				while (i--)
-				{
-					if ((ClearSub || FrameChanged[i]))
-					{
-						s.frame = AnimFrame[i];
-						DrawStamp (&s);
-						FrameChanged[i] = 0;
-					}
-				}
-				if (ClearSub && TransitionFrame)
-				{
-					s.frame = TransitionFrame;
-					DrawStamp (&s);
-				}
-				if (ResetTalkFrame)
-				{
-					s.frame = ResetTalkFrame;
-					DrawStamp (&s);
-					ResetTalkFrame = NULL;
-				}
-				if (TalkFrame && TalkFrameChanged)
-				{
-					s.frame = TalkFrame;
-					DrawStamp (&s);
-					TalkFrameChanged = FALSE;
-				}
-				Change = FALSE;
-				CheckSub = TRUE;
-			}
-
-			if (optSubtitles && CheckSub && sub_state >= SPACE_SUBTITLE)
-			{
-				// Redraw the subtitles.
-				TEXT t;
-
-				t = CommData.AlienTextTemplate;
-				add_text (1, &t);
-			}
-
-			SetContext (OldContext);
-		}
-		if (LastOscillTime + (ONE_SECOND / OSCILLOSCOPE_RATE) < CurTime)
-		{
-			LastOscillTime = CurTime;
-			UpdateSpeechGraphics (FALSE);
-		}
-		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
-		ColorChange = XFormColorMap_step ();
-	}
-	FinishTask (task);
-	return(0);
 }
 
 static BOOLEAN
@@ -1219,7 +680,8 @@ SpewPhrases (COUNT wait_track)
 
 		if (which_track)
 		{
-			BOOLEAN left=FALSE, right=FALSE;
+			BOOLEAN left = FALSE;
+			BOOLEAN right = FALSE;
 			if (optSmoothScroll == OPT_PC)
 			{
 				left = PulsedInputState.menu[KEY_MENU_LEFT];
@@ -1260,8 +722,8 @@ Rewind:
 			else if (ContinuityBreak)
 			{
 				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-				if ((which_track = PlayingTrack ())
-						&& which_track <= wait_track)
+				which_track = PlayingTrack ();
+				if (which_track && which_track <= wait_track)
 				{
 					if (optSmoothScroll == OPT_3DO)
 						ResumeTrack ();
@@ -1311,7 +773,7 @@ DoTalkSegue (COUNT wait_track)
 		if (CommData.AlienTalkDesc.NumFrames)
 			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
 		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
-		{	// wait until the trasition finishes
+		{	// wait until the transition finishes
 			UnlockMutex (GraphicsLock);
 			TaskSwitch ();
 			LockMutex (GraphicsLock);
@@ -1372,7 +834,7 @@ AlienTalkSegue (COUNT wait_track)
 		{
 			RECT r;
 	
-			if (pMenuState == 0 && 
+			if (pMenuState == 0 &&
 					LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 			{
 				r.corner.x = SIS_ORG_X;
@@ -1410,8 +872,7 @@ AlienTalkSegue (COUNT wait_track)
 
 			TimeOut = GetTimeCounter () + (ONE_SECOND >> 1);
 /* if (CommData.NumAnimations) */
-				pCurInputState->AnimTask = AssignTask (ambient_anim_task,
-						3072, "ambient animations");
+				pCurInputState->AnimTask = StartCommAnimTask ();
 
 			UnlockMutex (GraphicsLock);
 			SleepThreadUntil (TimeOut);
@@ -1607,6 +1068,136 @@ DoConvSummary (PSUMMARY_STATE pSS)
 	return TRUE; // keep going
 }
 
+// Called when the player presses the select button on a response.
+static void
+SelectResponse (PENCOUNTER_STATE pES)
+{
+	const unsigned char *end;
+	PTEXT response_text =
+			&pES->response_list[pES->cur_response].response_text;
+	end = skipUTF8Chars(response_text->pStr, response_text->CharCount);
+	pES->phrase_buf_index = end - response_text->pStr;
+	memcpy(pES->phrase_buf, response_text->pStr, pES->phrase_buf_index);
+	pES->phrase_buf[pES->phrase_buf_index++] = '\0';
+
+	LockMutex (GraphicsLock);
+	FeedbackPlayerPhrase (pES->phrase_buf);
+	StopTrack ();
+	SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
+	UnlockMutex (GraphicsLock);
+
+	FadeMusic (BACKGROUND_VOL, ONE_SECOND);
+
+	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+	pES->num_responses = 0;
+	(*pES->response_list[pES->cur_response].response_func)
+			(pES->response_list[pES->cur_response].response_ref);
+}
+
+// Called when the player presses the cancel button in comm.
+static void
+SelectConversationSummary (PENCOUNTER_STATE pES)
+{
+	SUMMARY_STATE SummaryState;
+	
+	LockMutex (GraphicsLock);
+	FeedbackPlayerPhrase (pES->phrase_buf);
+	PauseAnimTask = TRUE;
+	UnlockMutex (GraphicsLock);
+	// wait for ambient anim task to pause
+	SleepThread (ONE_SECOND / 30);
+
+	SummaryState.Initialized = FALSE;
+	DoConvSummary (&SummaryState);
+
+	LockMutex (GraphicsLock);
+	RefreshResponses (pES);
+	ClearSummary = TRUE;
+	PauseAnimTask = FALSE;
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+PlayerResponseInput (PENCOUNTER_STATE pES)
+{
+	BYTE response;
+
+	if (pES->top_response == (BYTE)~0)
+	{
+		pES->top_response = 0;
+		LockMutex (GraphicsLock);
+		RefreshResponses (pES);
+		UnlockMutex (GraphicsLock);
+	}
+
+	if (PulsedInputState.menu[KEY_MENU_SELECT])
+	{
+		SelectResponse (pES);
+	}
+	else if (PulsedInputState.menu[KEY_MENU_CANCEL] &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
+	{
+		SelectConversationSummary (pES);
+	}
+	else
+	{
+		response = pES->cur_response;
+		if (PulsedInputState.menu[KEY_MENU_LEFT])
+		{
+			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
+			LockMutex (GraphicsLock);
+			FeedbackPlayerPhrase (pES->phrase_buf);
+			// reset transition state
+			CommData.AlienTransitionDesc.AnimFlags &=
+					~(TALK_INTRO | TALK_DONE);
+			DoTalkSegue (0);
+
+			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+			{
+				RefreshResponses (pES);
+				FadeMusic (FOREGROUND_VOL, ONE_SECOND);
+			}
+			
+			UnlockMutex (GraphicsLock);
+			FlushTalkSegue ();
+			// done one way or the other
+			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
+
+		}
+		else if (PulsedInputState.menu[KEY_MENU_UP])
+			response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
+					% pES->num_responses);
+		else if (PulsedInputState.menu[KEY_MENU_DOWN])
+			response = (BYTE)((BYTE)(response + 1) % pES->num_responses);
+
+		if (response != pES->cur_response)
+		{
+			COORD y;
+
+			LockMutex (GraphicsLock);
+			BatchGraphics ();
+			add_text (-2,
+					&pES->response_list[pES->cur_response].response_text);
+
+			pES->cur_response = response;
+
+			y = add_text (-1,
+					&pES->response_list[pES->cur_response].response_text);
+			if (response < pES->top_response)
+			{
+				pES->top_response = 0;
+				RefreshResponses (pES);
+			}
+			else if (y > SIS_SCREEN_HEIGHT)
+			{
+				pES->top_response = response;
+				RefreshResponses (pES);
+			}
+			UnbatchGraphics ();
+			UnlockMutex (GraphicsLock);
+		}
+	}
+}
 
 static BOOLEAN
 DoCommunication (PENCOUNTER_STATE pES)
@@ -1653,121 +1244,7 @@ DoCommunication (PENCOUNTER_STATE pES)
 	}
 	else
 	{
-		BYTE response;
-
-		if (pES->top_response == (BYTE)~0)
-		{
-			pES->top_response = 0;
-			LockMutex (GraphicsLock);
-			RefreshResponses (pES);
-			UnlockMutex (GraphicsLock);
-		}
-
-		if (PulsedInputState.menu[KEY_MENU_SELECT])
-		{
-			const unsigned char *end;
-			PTEXT response_text =
-					&pES->response_list[pES->cur_response].response_text;
-			end = skipUTF8Chars(response_text->pStr,
-					 response_text->CharCount);
-			pES->phrase_buf_index = end - response_text->pStr;
-			memcpy(pES->phrase_buf, response_text->pStr,
-					 pES->phrase_buf_index);
-			pES->phrase_buf[pES->phrase_buf_index++] = '\0';
-
-			LockMutex (GraphicsLock);
-			FeedbackPlayerPhrase (pES->phrase_buf);
-			StopTrack ();
-			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-			UnlockMutex (GraphicsLock);
-
-			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-
-			CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
-			pES->num_responses = 0;
-			(*pES->response_list[pES->cur_response].response_func)
-					(pES->response_list[pES->cur_response].response_ref);
-		}
-		else if (PulsedInputState.menu[KEY_MENU_CANCEL] &&
-				LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		{	// Do the conversation summary
-			SUMMARY_STATE SummaryState;
-			
-			LockMutex (GraphicsLock);
-			FeedbackPlayerPhrase (pES->phrase_buf);
-			PauseAnimTask = TRUE;
-			UnlockMutex (GraphicsLock);
-			// wait for ambient anim task to pause
-			SleepThread (ONE_SECOND / 30);
-
-			SummaryState.Initialized = FALSE;
-			DoConvSummary (&SummaryState);
-
-			LockMutex (GraphicsLock);
-			RefreshResponses (pES);
-			ClearSummary = TRUE;
-			PauseAnimTask = FALSE;
-			UnlockMutex (GraphicsLock);
-		}
-		else
-		{
-			response = pES->cur_response;
-			if (PulsedInputState.menu[KEY_MENU_LEFT])
-			{
-				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-				LockMutex (GraphicsLock);
-				FeedbackPlayerPhrase (pES->phrase_buf);
-				// reset transition state
-				CommData.AlienTransitionDesc.AnimFlags &=
-						~(TALK_INTRO | TALK_DONE);
-				DoTalkSegue (0);
-
-				if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
-				{
-					RefreshResponses (pES);
-					FadeMusic (FOREGROUND_VOL, ONE_SECOND);
-				}
-				
-				UnlockMutex (GraphicsLock);
-				FlushTalkSegue ();
-				// done one way or the other
-				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-
-			}
-			else if (PulsedInputState.menu[KEY_MENU_UP])
-				response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
-						% pES->num_responses);
-			else if (PulsedInputState.menu[KEY_MENU_DOWN])
-				response = (BYTE)((BYTE)(response + 1) % pES->num_responses);
-
-			if (response != pES->cur_response)
-			{
-				COORD y;
-
-				LockMutex (GraphicsLock);
-				BatchGraphics ();
-				add_text (-2,
-						&pES->response_list[pES->cur_response].response_text);
-
-				pES->cur_response = response;
-
-				y = add_text (-1,
-						&pES->response_list[pES->cur_response].response_text);
-				if (response < pES->top_response)
-				{
-					pES->top_response = 0;
-					RefreshResponses (pES);
-				}
-				else if (y > SIS_SCREEN_HEIGHT)
-				{
-					pES->top_response = response;
-					RefreshResponses (pES);
-				}
-				UnbatchGraphics ();
-				UnlockMutex (GraphicsLock);
-			}
-		}
-		
+		PlayerResponseInput (pES);
 		return (TRUE);
 	}
 
@@ -1930,7 +1407,9 @@ HailAlien (void)
 				if (GET_GAME_STATE (STARBASE_AVAILABLE))
 				{
 					DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 1));
+							// "Starbase Commander"
 					DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE + 0));
+							// "Starbase"
 				}
 				else
 				{
@@ -2023,10 +1502,15 @@ InitCommunication (RESOURCE which_comm)
 			status = YEHAT_REBEL_SHIP;
 			which_comm = YEHAT_CONVERSATION;
 		}
-		else if (((status = GET_PACKAGE (which_comm)
-				- GET_PACKAGE (ARILOU_CONVERSATION)
-				+ ARILOU_SHIP) >= YEHAT_REBEL_SHIP))
-			status = HUMAN_SHIP; /* conversation exception, set to self */
+		else
+		{
+			status = GET_PACKAGE (which_comm)
+					- GET_PACKAGE (ARILOU_CONVERSATION) + ARILOU_SHIP;
+			if (status >= YEHAT_REBEL_SHIP) {
+				/* conversation exception, set to self */
+				status = HUMAN_SHIP;
+			}
+		}
 		ActivateStarShip (status, SPHERE_TRACKING);
 
 		if (which_comm == ORZ_CONVERSATION
@@ -2220,7 +1704,7 @@ RaceCommunication (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
 	{
-				/* if used destruct code in interplanetary */
+		/* if used destruct code in interplanetary */
 		if (i == SLYLANDRO_SHIP && status == 0)
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 	}
@@ -2259,7 +1743,7 @@ RaceCommunication (void)
 	}
 }
 
-int
+SUBTITLE_STATE
 do_subtitles (UNICODE *pStr)
 {
 	static UNICODE *last_page = NULL;
@@ -2308,8 +1792,39 @@ do_subtitles (UNICODE *pStr)
 		}
 		case DONE_SUBTITLE:
 			break;
+		default:
+			// Should not happen
+			assert(false);
+			break;
 	}
 	UnlockMutex (subtitle_mutex);
 
 	return (subtitle_state);
 }
+
+void
+RedrawSubtitles (void) {
+	TEXT t;
+
+	if (!optSubtitles)
+		return;
+
+	t = CommData.AlienTextTemplate;
+	add_text (1, &t);
+}
+
+// Sets ClearSubtitle, returning the old value. The current subtitle state
+// is also returned, through sub_state
+BOOLEAN
+SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state) {
+	BOOLEAN oldClearSubtitle;
+
+	LockMutex (subtitle_mutex);
+	oldClearSubtitle = ClearSubtitle;
+	*sub_state = subtitle_state;
+	ClearSubtitle = flag;
+	UnlockMutex (subtitle_mutex);
+
+	return oldClearSubtitle;
+}
+

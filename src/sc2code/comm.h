@@ -17,17 +17,45 @@
 #ifndef _COMM_H
 #define _COMM_H
 
+#include "globdata.h"
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
+
+typedef enum
+{
+	DONE_SUBTITLE,
+	NEXT_SUBTITLE,
+	READ_SUBTITLE,
+	SPACE_SUBTITLE,
+	WAIT_SUBTITLE,
+} SUBTITLE_STATE;
+
+#ifdef COMM_INTERNAL
+
+#define SLIDER_Y 107
+#define SLIDER_HEIGHT 15
+
+#include "commanim.h"
+
+void DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq);
+BOOLEAN SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state);
+
+extern LOCDATA CommData;
+extern volatile BOOLEAN ClearSummary;
+
+#endif
+
 extern void init_communication (void);
 extern void uninit_communication (void);
-extern int do_subtitles (UNICODE *pStr);
+extern SUBTITLE_STATE do_subtitles (UNICODE *pStr);
 extern void AlienTalkSegue (COUNT wait_track);
 BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars);
+void RedrawSubtitles (void);
 
 extern RECT CommWndRect; /* comm window rect */
 
 #endif  /* _COMM_H */
+
 

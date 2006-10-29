@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Clearnup of comm.c - SvdB
 - Netplay - SvdB
 - Added step-by-step instructions for compilation on MSVC++ - SvdB
 - All output done in binary mode, due to uio/Win32 conflicts (#912) - Michael

@@ -3881,6 +3881,14 @@ SOURCE=..\sc2code\comm.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\commanim.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\commanim.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\commglue.c
 # End Source File
 # Begin Source File
