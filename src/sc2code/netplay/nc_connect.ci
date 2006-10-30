@@ -29,9 +29,9 @@ static ConnectState *NetConnection_clientGo(NetConnection *conn);
 static void NetConnection_connected(NetConnection *conn);
 static void NetConnection_connectedServerCallback(ListenState *listenState,
 		NetDescriptor *listenNd, NetDescriptor *newNd,
-		const struct sockaddr *addr, socklen_t addrLen);
+		const struct sockaddr *addr, SOCKLEN_T addrLen);
 static void NetConnection_connectedClientCallback(ConnectState *connectState,
-		NetDescriptor *newNd, const struct sockaddr *addr, socklen_t addrLen);
+		NetDescriptor *newNd, const struct sockaddr *addr, SOCKLEN_T addrLen);
 static void NetConnection_connected(NetConnection *conn);
 static void NetConnection_connectedServerErrorCallback(
 		ListenState *listenState, const ListenError *listenError);
@@ -165,7 +165,7 @@ NetConnection_clientGo(NetConnection *conn) {
 static void
 NetConnection_connectedServerCallback(ListenState *listenState,
 		NetDescriptor *listenNd, NetDescriptor *newNd,
-		const struct sockaddr *addr, socklen_t addrLen) {
+		const struct sockaddr *addr, SOCKLEN_T addrLen) {
 	NetConnection *conn =
 			(NetConnection *) ListenState_getExtra(listenState);
 
@@ -194,7 +194,7 @@ NetConnection_connectedServerCallback(ListenState *listenState,
 static void
 NetConnection_connectedClientCallback(ConnectState *connectState,
 		NetDescriptor *newNd,
-		const struct sockaddr *addr, socklen_t addrLen) {
+		const struct sockaddr *addr, SOCKLEN_T addrLen) {
 	NetConnection *conn =
 			(NetConnection *) ConnectState_getExtra(connectState);
 
