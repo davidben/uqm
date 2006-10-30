@@ -556,7 +556,7 @@ StartCredits (void)
 	CreditsBack = CaptureDrawable (LoadGraphic (CREDITS_BACK_ANIM));
 	// load fonts
 	for (fdef = CreditsFont; fdef->size; ++fdef)
-		fdef->font = CaptureFont (LoadGraphic (fdef->res));
+		fdef->font = CaptureFont (LoadFont (fdef->res));
 
 	CreditsRate = CREDITS_BASE_RATE;
 	CreditsRunning = FALSE;
@@ -714,7 +714,7 @@ Credits (BOOLEAN WithOuttakes)
 	Task CredTask;
 	CREDITS_INPUT_STATE cis;
 
-	hMusic = LoadMusicInstance (CREDITS_MUSIC);
+	hMusic = LoadMusic (CREDITS_MUSIC);
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);

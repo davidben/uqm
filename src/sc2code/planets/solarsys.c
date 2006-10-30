@@ -205,7 +205,7 @@ LoadIPData (void)
 		SunCMap = CaptureColorMap (LoadColorMap (IPSUN_COLOR_MAP));
 		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
-		SpaceMusic = LoadMusicInstance (IP_MUSIC);
+		SpaceMusic = LoadMusic (IP_MUSIC);
 	}
 }
 

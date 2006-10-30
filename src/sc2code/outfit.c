@@ -22,6 +22,7 @@
 #include "gameopt.h"
 #include "gamestr.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
 #include "starbase.h"
 #include "setup.h"
@@ -624,7 +625,7 @@ DoOutfit (PMENU_STATE pMS)
 
 			pMS->CurFrame = CaptureDrawable (
 					LoadGraphic (MODULES_PMAP_ANIM));
-			pMS->hMusic = LoadMusicInstance (OUTFIT_MUSIC);
+			pMS->hMusic = LoadMusic (OUTFIT_MUSIC);
 			pMS->CurState = OUTFIT_FUEL;
 			pMS->ModuleFrame = CaptureDrawable (
 					LoadGraphic (SISMODS_MASK_PMAP_ANIM));

@@ -21,11 +21,13 @@
 
 #include "restypes.h"
 
-#define LoadCodeRes(r) LoadCodeResInstance (r)
-#define LoadColorMap(r) LoadColorMapInstance (r)
-#define LoadStringTable(r) LoadStringTableInstance(r)
-#define LoadSound(r) LoadSoundInstance(r)
-#define LoadMusic(r) LoadMusicInstance(r)
+#define LoadCodeRes     LoadCodeResInstance
+#define LoadGraphic     LoadGraphicInstance
+#define LoadFont        LoadGraphicInstance
+#define LoadColorMap    LoadColorMapInstance
+#define LoadStringTable LoadStringTableInstance
+#define LoadSound       LoadSoundInstance
+#define LoadMusic       LoadMusicInstance
 
 #define INIT_INSTANCES() do \
 		{ \

@@ -24,6 +24,7 @@
 #include "load.h"
 #include "starbase.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
@@ -261,8 +262,9 @@ rotate_starbase(void *data)
 	STAMP s;
 	Task task = (Task) data;
 	
-	s.origin.x = s.origin.y = 0;
-s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
+	//s.origin.x = s.origin.y = 0;
+	s.origin.x = SAFE_X;
+	s.origin.y = SAFE_Y + 4;
 	s.frame = IncFrameIndex (pMenuState->CurFrame);
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
@@ -322,11 +324,12 @@ DoStarBase (PMENU_STATE pMS)
 
 		UnlockMutex (GraphicsLock);
 
-		s.origin.x = s.origin.y = 0;
-s.origin.x = SAFE_X, s.origin.y = SAFE_Y + 4;
+		//s.origin.x = s.origin.y = 0;
+		s.origin.x = SAFE_X;
+		s.origin.y = SAFE_Y + 4;
 		s.frame = CaptureDrawable (LoadGraphic (STARBASE_ANIM));
 		pMS->CurFrame = s.frame;
-		pMS->hMusic = LoadMusicInstance (STARBASE_MUSIC);
+		pMS->hMusic = LoadMusic (STARBASE_MUSIC);
 
 		LockMutex (GraphicsLock);
 		SetTransitionSource (NULL);

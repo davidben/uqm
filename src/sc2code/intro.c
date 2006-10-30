@@ -23,6 +23,7 @@
 #include "sounds.h"
 #include "fmv.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"

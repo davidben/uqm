@@ -234,7 +234,6 @@ extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
 extern DWORD LoadCelFile (PVOID pStr);
 extern DWORD LoadFontFile (PVOID pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
-extern DWORD LoadGraphic (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
 extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);

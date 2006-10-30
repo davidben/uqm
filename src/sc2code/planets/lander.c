@@ -1859,7 +1859,7 @@ LoadLanderData (void)
 			ri = GET_INSTANCE (ORBIT1_MUSIC);
 			rp = GET_PACKAGE (ORBIT1_MUSIC);
 			for (i = 0; i < NUM_ORBIT_THEMES; ++i, ++ri)
-				OrbitMusic[i] = LoadMusicInstance (MAKE_RESOURCE (rp, rt, ri));
+				OrbitMusic[i] = LoadMusic (MAKE_RESOURCE (rp, rt, ri));
 		}
 	}
 }

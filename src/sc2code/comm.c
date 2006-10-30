@@ -33,6 +33,7 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "nameref.h"
 #include "uqmdebug.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
@@ -1331,25 +1332,25 @@ HailAlien (void)
 
 	ES.InputFunc = DoCommunication;
 	hOldIndex = SetResourceIndex (hResIndex);
-	PlayerFont = CaptureFont ((FONT_REF)LoadGraphic (PLAYER_FONT));
+	PlayerFont = CaptureFont ((FONT_REF)LoadFont (PLAYER_FONT));
 	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
-			LoadGraphicInstance ((RESOURCE)CommData.AlienFrame));
+			LoadGraphic ((RESOURCE)CommData.AlienFrame));
 	CommData.AlienFont = CaptureFont ((FONT_REF)
-			LoadGraphic ((RESOURCE)CommData.AlienFont));
+			LoadFont ((RESOURCE)CommData.AlienFont));
 	CommData.AlienColorMap = CaptureColorMap (
-			LoadColorMapInstance ((RESOURCE)CommData.AlienColorMap));
+			LoadColorMap ((RESOURCE)CommData.AlienColorMap));
 	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
 			&& CommData.AlienAltSong)
-		SongRef = LoadMusicInstance ((RESOURCE)CommData.AlienAltSong);
+		SongRef = LoadMusic ((RESOURCE)CommData.AlienAltSong);
 	if (SongRef)
 		CommData.AlienSong = SongRef;
 	else
-		CommData.AlienSong = LoadMusicInstance ((RESOURCE)CommData.AlienSong);
+		CommData.AlienSong = LoadMusic ((RESOURCE)CommData.AlienSong);
 
 	CommData.ConversationPhrases = CaptureStringTable (
-			LoadStringTableInstance ((RESOURCE)CommData.ConversationPhrases));
+			LoadStringTable ((RESOURCE)CommData.ConversationPhrases));
 
 	// init subtitle cache context
 	TextCacheContext = CaptureContext (CreateContext ());

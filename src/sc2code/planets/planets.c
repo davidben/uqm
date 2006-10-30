@@ -24,6 +24,7 @@
 #include "uqmdebug.h"
 #include "libs/graphics/gfx_common.h"
 #include "resinst.h"
+#include "nameref.h"
 
 
 extern int rotate_planet_task (PVOID data);
@@ -278,7 +279,7 @@ FreePlanet (void)
 void
 LoadStdLanderFont (PLANET_INFO *info)
 {
-	info->LanderFont = CaptureFont (LoadGraphic (LANDER_FONT));
+	info->LanderFont = CaptureFont (LoadFont (LANDER_FONT));
 	info->LanderFontEff = CaptureDrawable (
 			LoadGraphic (LANDER_FONTEFF_PMAP_ANIM));
 }

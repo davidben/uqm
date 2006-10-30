@@ -22,6 +22,7 @@
 #include "pickmele.h"
 #include "races.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"

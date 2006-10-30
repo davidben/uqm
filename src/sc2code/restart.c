@@ -27,6 +27,7 @@
 #include "intel.h"
 #include "melee.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "settings.h"
 #include "load.h"
 #include "setup.h"
@@ -124,7 +125,7 @@ DoRestart (PMENU_STATE pMS)
 			DestroyMusic (pMS->hMusic);
 			pMS->hMusic = 0;
 		}
-		pMS->hMusic = LoadMusicInstance (MAINMENU_MUSIC);
+		pMS->hMusic = LoadMusic (MAINMENU_MUSIC);
 		InactTimeOut = (pMS->hMusic ? 120 : 20) * ONE_SECOND;
 		
 		PlayMusic (pMS->hMusic, TRUE, 1);

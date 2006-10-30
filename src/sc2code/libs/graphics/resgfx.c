@@ -18,12 +18,10 @@
 
 #include "gfxintrn.h"
 
-static COUNT _gfx_type;
 
 BOOLEAN
 InstallGraphicResTypes (COUNT cel_type, COUNT font_type)
 {
-	_gfx_type = cel_type;
 	InstallResTypeVectors (cel_type, _GetCelData, _ReleaseCelData);
 	InstallResTypeVectors (font_type, _GetFontData, _ReleaseFontData);
 	return (TRUE);
@@ -39,14 +37,5 @@ LoadGraphicInstance (DWORD res)
 		res_DetachResource (res);
 
 	return ((DWORD)hData);
-}
-
-DWORD
-LoadGraphic (DWORD res)
-{
-	if (_gfx_type)
-		return (LoadGraphicInstance (res));
-	else
-		return (LoadCelFile ((PVOID)res));
 }
 

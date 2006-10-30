@@ -23,6 +23,7 @@
 #include "init.h"
 #include "port.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "setup.h"
 #include "units.h"
 

@@ -28,6 +28,7 @@
 #	endif
 #endif
 #include "resinst.h"
+#include "nameref.h"
 #include "setup.h"
 #include "settings.h"
 #include "sounds.h"
@@ -215,11 +216,11 @@ BattleSong (BOOLEAN DoPlay)
 	if (BattleRef == 0)
 	{
 		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
-			BattleRef = LoadMusicInstance (BATTLE_MUSIC);
+			BattleRef = LoadMusic (BATTLE_MUSIC);
 		else if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
-			BattleRef = LoadMusicInstance (HYPERSPACE_MUSIC);
+			BattleRef = LoadMusic (HYPERSPACE_MUSIC);
 		else
-			BattleRef = LoadMusicInstance (QUASISPACE_MUSIC);
+			BattleRef = LoadMusic (QUASISPACE_MUSIC);
 	}
 
 	if (DoPlay)

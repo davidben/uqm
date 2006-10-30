@@ -1221,7 +1221,7 @@ DoShipyard (PMENU_STATE pMS)
 			pMS->CurString = CaptureColorMap (
 					LoadColorMap (HANGAR_COLOR_TAB));
 
-			pMS->hMusic = LoadMusicInstance (SHIPYARD_MUSIC);
+			pMS->hMusic = LoadMusic (SHIPYARD_MUSIC);
 
 			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);

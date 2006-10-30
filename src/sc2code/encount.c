@@ -189,7 +189,7 @@ InitEncounter (void)
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 
-	MR = LoadMusicInstance (REDALERT_MUSIC);
+	MR = LoadMusic (REDALERT_MUSIC);
 	PlayMusic (MR, FALSE, 1);
 	SegueFrame = CaptureDrawable (LoadGraphic (SEGUE_PMAP_ANIM));
 	UnlockMutex (GraphicsLock);
@@ -767,7 +767,7 @@ EncounterBattle (void)
 
 	SetResourceIndex (hResIndex);
 //    MicroFont = CaptureFont (
-// LoadGraphic (MICRO_FONT)
+// LoadFont (MICRO_FONT)
 // );
 //    MenuSounds = CaptureSound (LoadSound (MENU_SOUNDS));
 //    LoadSC2Data ();

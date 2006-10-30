@@ -23,6 +23,7 @@
 #include "master.h"
 #include "setup.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "build.h"
 #include "state.h"
 #include "gamestr.h"

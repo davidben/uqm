@@ -18,6 +18,7 @@
 
 #include "element.h"
 #include "resinst.h"
+#include "nameref.h"
 #include "setup.h"
 
 

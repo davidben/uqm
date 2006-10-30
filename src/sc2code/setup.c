@@ -169,11 +169,11 @@ InitKernel (void)
 	for (counter = 0; counter < NUM_PLAYERS; ++counter)
 		InitQueue (&race_q[counter], MAX_SHIPS_PER_SIDE, sizeof (STARSHIP));
 
-	StarConFont = CaptureFont (LoadGraphic (STARCON_FONT));
+	StarConFont = CaptureFont (LoadFont (STARCON_FONT));
 	if (StarConFont == NULL)
 		return FALSE;
 
-	TinyFont = CaptureFont (LoadGraphic (TINY_FONT));
+	TinyFont = CaptureFont (LoadFont (TINY_FONT));
 	if (TinyFont == NULL)
 		return FALSE;
 
@@ -185,12 +185,11 @@ InitKernel (void)
 	if (StatusFrame == NULL)
 		return FALSE;
 
-	GameStrings = CaptureStringTable (LoadStringTableInstance (
-				STARCON_GAME_STRINGS));
+	GameStrings = CaptureStringTable (LoadStringTable (STARCON_GAME_STRINGS));
 	if (GameStrings == 0)
 		return FALSE;
 
-	MicroFont = CaptureFont (LoadGraphic (MICRO_FONT));
+	MicroFont = CaptureFont (LoadFont (MICRO_FONT));
 	if (MicroFont == NULL)
 		return FALSE;
 
