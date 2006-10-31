@@ -523,7 +523,8 @@ ambient_anim_task (void *data)
 }
 
 Task
-StartCommAnimTask(void) {
+StartCommAnimTask(void)
+{
 	return AssignTask (ambient_anim_task, 3072, "ambient animations");
 }
 

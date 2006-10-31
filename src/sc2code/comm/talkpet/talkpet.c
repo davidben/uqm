@@ -31,14 +31,17 @@ static LOCDATA talkpet_desc =
 	(FONT)TALKING_PET_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)TALKING_PET_COLOR_MAP, /* AlienColorMap */
 	TALKING_PET_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	TALKING_PET_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			7, /* StartIndex */
 			3, /* NumFrames */
@@ -171,7 +174,7 @@ static LOCDATA talkpet_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -179,7 +182,7 @@ static LOCDATA talkpet_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
@@ -188,7 +191,6 @@ static LOCDATA talkpet_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 #define STROBE_RATE   15
@@ -799,10 +801,8 @@ init_talkpet_comm (void)
 	talkpet_desc.post_encounter_func = post_talkpet_enc;
 	talkpet_desc.uninit_encounter_func = uninit_talkpet;
 
-	talkpet_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	talkpet_desc.AlienTextTemplate.baseline.y = 0;
-	talkpet_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	talkpet_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	talkpet_desc.AlienTextBaseline.y = 0;
 	talkpet_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_LAST_BATTLE)

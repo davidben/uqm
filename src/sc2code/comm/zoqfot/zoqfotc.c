@@ -49,14 +49,17 @@ static LOCDATA zoqfot_desc =
 	(FONT)ZOQFOTPIK_FONT, /* AlienFont */
 	0, /* AlienTextFColor */
 	0, /* AlienTextBColor */
-	0, /* SIS_SCREEN_WIDTH, */ /* AlienTextWidth */
+	{0, 0}, /* AlienTextBaseline */
+	0, /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_MIDDLE, /* AlienTextValign */
 	(COLORMAP)ZOQFOTPIK_COLOR_MAP, /* AlienColorMap */
 	ZOQFOTPIK_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	ZOQFOTPIK_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{ /* Eye blink */
 			1, /* StartIndex */
 			4, /* NumFrames */
@@ -83,7 +86,7 @@ static LOCDATA zoqfot_desc =
 			0, /* BlockMask */
 		},
 	},
-	{ /* Move Eye */
+	{ /* AlienTransitionDesc - Move Eye */
 		FOT_TO_ZOQ, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
@@ -91,7 +94,7 @@ static LOCDATA zoqfot_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		ZOQ_TALK_INDEX, /* StartIndex */
 		ZOQ_TALK_FRAMES, /* NumFrames */
 		0, /* AnimFlags */
@@ -100,7 +103,6 @@ static LOCDATA zoqfot_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 enum
@@ -124,8 +126,8 @@ SelectAlienZOQ (void)
 		CommData.AlienTalkDesc.NumFrames = ZOQ_TALK_FRAMES;
 		CommData.AlienAmbientArray[1].AnimFlags &= ~WAIT_TALKING;
 
-		CommData.AlienTextTemplate.baseline.x = (SWORD)ZOQ_BASE_X;
-		CommData.AlienTextTemplate.baseline.y = ZOQ_BASE_Y;
+		CommData.AlienTextBaseline.x = (SWORD)ZOQ_BASE_X;
+		CommData.AlienTextBaseline.y = ZOQ_BASE_Y;
 		CommData.AlienTextFColor = ZOQ_FG_COLOR;
 		CommData.AlienTextBColor = ZOQ_BG_COLOR;
 	}
@@ -143,8 +145,8 @@ SelectAlienPIK (void)
 		CommData.AlienTalkDesc.NumFrames = PIK_TALK_FRAMES;
 		CommData.AlienAmbientArray[1].AnimFlags |= WAIT_TALKING;
 
-		CommData.AlienTextTemplate.baseline.x = (SWORD)PIK_BASE_X;
-		CommData.AlienTextTemplate.baseline.y = PIK_BASE_Y;
+		CommData.AlienTextBaseline.x = (SWORD)PIK_BASE_X;
+		CommData.AlienTextBaseline.y = PIK_BASE_Y;
 		CommData.AlienTextFColor = PIK_FG_COLOR;
 		CommData.AlienTextBColor = PIK_BG_COLOR;
 	}
@@ -939,8 +941,6 @@ init_zoqfot_comm (void)
 	zoqfot_desc.post_encounter_func = post_zoqfot_enc;
 	zoqfot_desc.uninit_encounter_func = uninit_zoqfot;
 
-	zoqfot_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	zoqfot_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
 	zoqfot_desc.AlienTextWidth = (SIS_TEXT_WIDTH >> 1) - TEXT_X_OFFS;
 
 	if ((ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) & GOOD_GUY)

@@ -92,7 +92,6 @@ DoMouseError (PMOUSE_ERROR_STATE pInputState)
 		t.baseline.x = r.extent.width >> 1;
 		t.baseline.y = r.extent.height >> 1;
 		t.align = ALIGN_CENTER;
-		t.valign = VALIGN_MIDDLE;
 		t.pStr = "Mouse input is not supported at this time.";
 		t.CharCount = ~0;
 		font_DrawText (&t);

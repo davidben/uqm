@@ -607,7 +607,6 @@ DrawMeleeStatusMessage (const char *message)
 		TEXT lfText;
 		lfText.pStr = message;
 		lfText.align = ALIGN_LEFT;
-		lfText.valign = VALIGN_TOP;
 		lfText.CharCount = (COUNT)~0;
 
 		SetContextFont (MicroFont);

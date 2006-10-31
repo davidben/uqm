@@ -32,14 +32,17 @@ static LOCDATA spathi_desc =
 	(FONT)SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)SPATHI_COLOR_MAP, /* AlienColorMap */
 	SPATHI_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SPATHI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	8, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			1, /* StartIndex */
 			6, /* NumFrames */
@@ -107,7 +110,7 @@ static LOCDATA spathi_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -135,7 +138,6 @@ static LOCDATA spathi_desc =
 	},
 #endif /* NEVER */
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -795,10 +797,8 @@ init_spathi_comm (void)
 	spathi_desc.post_encounter_func = post_spathi_enc;
 	spathi_desc.uninit_encounter_func = uninit_spathi;
 
-	spathi_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	spathi_desc.AlienTextTemplate.baseline.y = 0;
-	spathi_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	spathi_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	spathi_desc.AlienTextBaseline.y = 0;
 	spathi_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)

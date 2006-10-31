@@ -453,7 +453,6 @@ DoPresentation (PVOID pIS)
 			for (i = 0; i < pPIS->LinesCount; ++i, y += leading)
 			{
 				pPIS->TextLines[i].align = ALIGN_CENTER;
-				pPIS->TextLines[i].valign = VALIGN_MIDDLE;
 				pPIS->TextLines[i].baseline.x = SCREEN_WIDTH / 2;
 				pPIS->TextLines[i].baseline.y = y;
 			}
@@ -501,7 +500,6 @@ DoPresentation (PVOID pIS)
 			for (i = 0; i < pPIS->LinesCount; ++i, y += leading)
 			{
 				pPIS->TextLines[i].align = ALIGN_CENTER;
-				pPIS->TextLines[i].valign = VALIGN_MIDDLE;
 				pPIS->TextLines[i].baseline.x = SCREEN_WIDTH / 2;
 				pPIS->TextLines[i].baseline.y = y;
 			}

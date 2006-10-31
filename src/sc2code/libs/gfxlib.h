@@ -117,7 +117,6 @@ typedef struct text
 	POINT baseline;
 	const UNICODE *pStr;
 	TEXT_ALIGN align;
-	TEXT_VALIGN valign;
 	COUNT CharCount;
 } TEXT;
 typedef TEXT *PTEXT;

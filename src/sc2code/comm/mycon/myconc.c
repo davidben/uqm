@@ -33,14 +33,17 @@ static LOCDATA mycon_desc =
 	(FONT)MYCON_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)MYCON_COLOR_MAP, /* AlienColorMap */
 	MYCON_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	MYCON_CONVERSATION_PHRASES, /* PlayerPhrases */
 	5, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			12, /* StartIndex */
 			6, /* NumFrames */
@@ -82,7 +85,7 @@ static LOCDATA mycon_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -90,7 +93,7 @@ static LOCDATA mycon_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		11, /* NumFrames */
 		0, /* AnimFlags */
@@ -99,7 +102,6 @@ static LOCDATA mycon_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static BYTE MadeChoice;
@@ -617,10 +619,8 @@ init_mycon_comm (void)
 	mycon_desc.post_encounter_func = post_mycon_enc;
 	mycon_desc.uninit_encounter_func = uninit_mycon;
 
-	mycon_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	mycon_desc.AlienTextTemplate.baseline.y = 0;
-	mycon_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	mycon_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	mycon_desc.AlienTextBaseline.y = 0;
 	mycon_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	MadeChoice = 0;

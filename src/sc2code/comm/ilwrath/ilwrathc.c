@@ -32,14 +32,17 @@ static LOCDATA ilwrath_desc =
 	(FONT)ILWRATH_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_MIDDLE, /* AlienTextValign */
 	(COLORMAP)ILWRATH_COLOR_MAP, /* AlienColorMap */
 	ILWRATH_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	ILWRATH_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			6, /* StartIndex */
 			5, /* NumFrames */
@@ -73,7 +76,7 @@ static LOCDATA ilwrath_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -81,7 +84,7 @@ static LOCDATA ilwrath_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		5, /* NumFrames */
 		0, /* AnimFlags */
@@ -90,7 +93,6 @@ static LOCDATA ilwrath_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -622,11 +624,8 @@ init_ilwrath_comm (void)
 	ilwrath_desc.post_encounter_func = post_ilwrath_enc;
 	ilwrath_desc.uninit_encounter_func = uninit_ilwrath;
 
-	ilwrath_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	ilwrath_desc.AlienTextTemplate.baseline.y = 70;
-	ilwrath_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	ilwrath_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
+	ilwrath_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	ilwrath_desc.AlienTextBaseline.y = 70;
 	ilwrath_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (GET_GAME_STATE (PROBE_ILWRATH_ENCOUNTER)

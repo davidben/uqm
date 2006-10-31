@@ -32,14 +32,17 @@ static LOCDATA supox_desc =
 	(FONT)SUPOX_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)SUPOX_COLOR_MAP, /* AlienColorMap */
 	SUPOX_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SUPOX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			4, /* StartIndex */
 			5, /* NumFrames */
@@ -74,7 +77,7 @@ static LOCDATA supox_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -82,7 +85,7 @@ static LOCDATA supox_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		3, /* NumFrames */
 		0, /* AnimFlags */
@@ -91,7 +94,6 @@ static LOCDATA supox_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -684,10 +686,8 @@ init_supox_comm (void)
 	supox_desc.post_encounter_func = post_supox_enc;
 	supox_desc.uninit_encounter_func = uninit_supox;
 
-	supox_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	supox_desc.AlienTextTemplate.baseline.y = 0;
-	supox_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	supox_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	supox_desc.AlienTextBaseline.y = 0;
 	supox_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (!GET_GAME_STATE (SUPOX_HOSTILE)

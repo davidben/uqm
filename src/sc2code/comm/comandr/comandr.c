@@ -31,14 +31,17 @@ static LOCDATA commander_desc =
 	(FONT)COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_MIDDLE, /* AlienTextValign */
 	COMMANDER_COLOR_MAP, /* AlienColorMap */
 	COMMANDER_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	COMMANDER_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{ /* Blink */
 			1, /* StartIndex */
 			3, /* NumFrames */
@@ -64,7 +67,7 @@ static LOCDATA commander_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -72,7 +75,7 @@ static LOCDATA commander_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		4, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
@@ -81,7 +84,6 @@ static LOCDATA commander_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -702,10 +704,8 @@ init_commander_comm ()
 	}
 
 	commander_desc.AlienTextWidth = 143;
-	commander_desc.AlienTextTemplate.baseline.x = 164;
-	commander_desc.AlienTextTemplate.baseline.y = 20;
-	commander_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	commander_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
+	commander_desc.AlienTextBaseline.x = 164;
+	commander_desc.AlienTextBaseline.y = 20;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 	retval = &commander_desc;

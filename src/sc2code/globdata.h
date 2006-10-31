@@ -139,7 +139,10 @@ typedef struct
 	FRAME AlienFrame;
 	FONT AlienFont;
 	COLOR AlienTextFColor, AlienTextBColor;
+	POINT AlienTextBaseline;
 	COUNT AlienTextWidth;
+	TEXT_ALIGN AlienTextAlign;
+	TEXT_VALIGN AlienTextValign;
 	COLORMAP AlienColorMap;
 	DWORD AlienSong;
 	DWORD AlienAltSong;
@@ -154,7 +157,6 @@ typedef struct
 	ANIMATION_DESC AlienTalkDesc;
 
 	NUMBER_SPEECH AlienNumberSpeech;
-	TEXT AlienTextTemplate;
 } LOCDATA;
 typedef LOCDATA *PLOCDATA;
 #define LOCDATAPTR PLOCDATA

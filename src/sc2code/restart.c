@@ -96,7 +96,6 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	t.baseline.x = SCREEN_WIDTH - 3;
 	t.baseline.y = SCREEN_HEIGHT - 2;
 	t.align = ALIGN_RIGHT;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = (COUNT)~0;
 	sprintf (buf, "v%d.%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
 			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);

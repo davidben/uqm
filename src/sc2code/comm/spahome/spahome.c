@@ -33,14 +33,17 @@ static LOCDATA spahome_desc =
 	(FONT)SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)SPATHI_HOME_COLOR_MAP, /* AlienColorMap */
 	SPATHI_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SPATHI_HOME_CONVERSATION_PHRASES, /* PlayerPhrases */
 	14, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			1, /* StartIndex */
 			3, /* NumFrames */
@@ -174,7 +177,6 @@ static LOCDATA spahome_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -989,10 +991,8 @@ init_spahome_comm ()
 	spahome_desc.post_encounter_func = post_spahome_enc;
 	spahome_desc.uninit_encounter_func = uninit_spahome;
 
-	spahome_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	spahome_desc.AlienTextTemplate.baseline.y = 0;
-	spahome_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	spahome_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	spahome_desc.AlienTextBaseline.y = 0;
 	spahome_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	// use alternate "Safe Ones" track if available

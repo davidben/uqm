@@ -43,14 +43,17 @@ static LOCDATA commander_desc =
 	(FONT)COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_MIDDLE, /* AlienTextValign */
 	(COLORMAP)COMMANDER_COLOR_MAP, /* AlienColorMap */
 	COMMANDER_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	STARBASE_CONVERSATION_PHRASES, /* PlayerPhrases */
 	10, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{ /* Blink */
 			1, /* StartIndex */
 			3, /* NumFrames */
@@ -132,7 +135,7 @@ static LOCDATA commander_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -140,7 +143,7 @@ static LOCDATA commander_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		4, /* StartIndex */
 		6, /* NumFrames */
 		0, /* AnimFlags */
@@ -149,7 +152,6 @@ static LOCDATA commander_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static DWORD CurBulletinMask;
@@ -1938,10 +1940,8 @@ init_starbase_comm ()
 	commander_desc.uninit_encounter_func = uninit_starbase;
 
 	commander_desc.AlienTextWidth = 143;
-	commander_desc.AlienTextTemplate.baseline.x = 164;
-	commander_desc.AlienTextTemplate.baseline.y = 20;
-	commander_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	commander_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
+	commander_desc.AlienTextBaseline.x = 164;
+	commander_desc.AlienTextBaseline.y = 20;
 
 	// use alternate Starbase track if available
 	commander_desc.AlienAltSong = STARBASE_ALT_MUSIC;

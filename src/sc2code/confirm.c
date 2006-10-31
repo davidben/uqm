@@ -58,7 +58,6 @@ DrawConfirmationWindow (BOOLEAN answer)
 	t.baseline.y = r.corner.y + 8;
 	t.pStr = GAME_STRING (QUITMENU_STRING_BASE); // "Really Quit?"
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = (COUNT)~0;
 	font_DrawText (&t);
 	t.baseline.y += 10;

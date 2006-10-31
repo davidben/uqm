@@ -29,14 +29,17 @@ static LOCDATA vux_desc =
 	(FONT)VUX_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* (SIS_TEXT_WIDTH - 16) >> 1, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	VUX_COLOR_MAP, /* AlienColorMap */
 	VUX_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	VUX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	17, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			12, /* StartIndex */
 			3, /* NumFrames */
@@ -174,7 +177,7 @@ static LOCDATA vux_desc =
 			0, /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -182,7 +185,7 @@ static LOCDATA vux_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		11, /* NumFrames */
 		0, /* AnimFlags */
@@ -191,7 +194,6 @@ static LOCDATA vux_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -770,11 +772,9 @@ init_vux_comm (void)
 	vux_desc.post_encounter_func = post_vux_enc;
 	vux_desc.uninit_encounter_func = uninit_vux;
 
-	vux_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1)
+	vux_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1)
 			+ (SIS_TEXT_WIDTH >> 2);
-	vux_desc.AlienTextTemplate.baseline.y = 0;
-	vux_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	vux_desc.AlienTextBaseline.y = 0;
 	vux_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) >> 1;
 
 	if ((GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))

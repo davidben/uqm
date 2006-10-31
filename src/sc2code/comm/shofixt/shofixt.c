@@ -32,14 +32,17 @@ static LOCDATA shofixti_desc =
 	(FONT)SHOFIXTI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)SHOFIXTI_COLOR_MAP, /* AlienColorMap */
 	SHOFIXTI_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SHOFIXTI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	11, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			5, /* StartIndex */
 			15, /* NumFrames */
@@ -130,7 +133,7 @@ static LOCDATA shofixti_desc =
 			(1 << 9), /* BlockMask */
 		},
 	},
-	{
+	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
 		0, /* NumFrames */
 		0, /* AnimFlags */
@@ -138,7 +141,7 @@ static LOCDATA shofixti_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	{
+	{ /* AlienTalkDesc */
 		1, /* StartIndex */
 		4, /* NumFrames */
 		0, /* AnimFlags */
@@ -147,7 +150,6 @@ static LOCDATA shofixti_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static RESPONSE_REF shofixti_name;
@@ -639,10 +641,8 @@ init_shofixti_comm (void)
 	shofixti_desc.post_encounter_func = post_shofixti_enc;
 	shofixti_desc.uninit_encounter_func = uninit_shofixti;
 
-	shofixti_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	shofixti_desc.AlienTextTemplate.baseline.y = 0;
-	shofixti_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	shofixti_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	shofixti_desc.AlienTextBaseline.y = 0;
 	shofixti_desc.AlienTextWidth = SIS_TEXT_WIDTH;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);

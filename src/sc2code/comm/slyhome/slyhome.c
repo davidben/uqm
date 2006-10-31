@@ -31,14 +31,17 @@ static LOCDATA slylandro_desc =
 	(FONT)SLYLANDRO_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)SLYLANDRO_COLOR_MAP, /* AlienColorMap */
 	SLYLANDRO_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SLYLANDRO_CONVERSATION_PHRASES, /* PlayerPhrases */
 	13, /* NumAnimations */
-	{
+	{ /* AlienAmbientArray (ambient animations) */
 		{
 			0, /* StartIndex */
 			5, /* NumFrames */
@@ -161,7 +164,6 @@ static LOCDATA slylandro_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -903,10 +905,8 @@ init_slylandro_comm (void)
 	slylandro_desc.post_encounter_func = post_slylandro_enc;
 	slylandro_desc.uninit_encounter_func = uninit_slylandro;
 
-	slylandro_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	slylandro_desc.AlienTextTemplate.baseline.y = 0;
-	slylandro_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	slylandro_desc.AlienTextBaseline.x = TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	slylandro_desc.AlienTextBaseline.y = 0;
 	slylandro_desc.AlienTextWidth = SIS_TEXT_WIDTH;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);

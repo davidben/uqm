@@ -29,7 +29,10 @@ static LOCDATA blackurq_desc =
 	(FONT)BLACKURQ_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_TOP, /* AlienTextValign */
 	(COLORMAP)BLACKURQ_COLOR_MAP, /* AlienColorMap */
 	BLACKURQ_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
@@ -120,7 +123,6 @@ static LOCDATA blackurq_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -542,10 +544,8 @@ init_blackurq_comm (void)
 	blackurq_desc.post_encounter_func = post_blackurq_enc;
 	blackurq_desc.uninit_encounter_func = uninit_blackurq;
 
-	blackurq_desc.AlienTextTemplate.baseline.x =
-			TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
-	blackurq_desc.AlienTextTemplate.baseline.y = 0;
-	blackurq_desc.AlienTextTemplate.align = ALIGN_CENTER;
+	blackurq_desc.AlienTextBaseline.x =	TEXT_X_OFFS + (SIS_TEXT_WIDTH >> 1);
+	blackurq_desc.AlienTextBaseline.y = 0;
 	blackurq_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	if (!GET_GAME_STATE (KOHR_AH_KILLED_ALL)

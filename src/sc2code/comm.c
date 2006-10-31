@@ -81,6 +81,7 @@ static PENCOUNTER_STATE pCurInputState;
 static SUBTITLE_STATE subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 
+TEXT SubtitleText;
 static const UNICODE * volatile last_subtitle;
 
 CONTEXT TextCacheContext;
@@ -95,7 +96,8 @@ RECT CommWndRect = {
 /* _count_lines - sees how many lines a given input string would take to
  * display given the line wrapping information
  */
-static int _count_lines (PTEXT pText)
+static int
+_count_lines (PTEXT pText)
 {
 	SIZE text_width;
 	COUNT maxchars = (COUNT)~0;
@@ -210,12 +212,13 @@ add_text (int status, PTEXT pTextIn)
 	numchars = 0;
 	pStr = pText->pStr;
 
-	if (status > 0 && (CommData.AlienTextTemplate.valign & (
-				VALIGN_MIDDLE|VALIGN_BOTTOM))) {
+	if (status > 0 && (CommData.AlienTextValign &
+			(VALIGN_MIDDLE | VALIGN_BOTTOM)))
+	{
 		num_lines = _count_lines(pText);
-		if (CommData.AlienTextTemplate.valign == VALIGN_BOTTOM)
+		if (CommData.AlienTextValign == VALIGN_BOTTOM)
 			pText->baseline.y -= (leading * num_lines);
-		else if (CommData.AlienTextTemplate.valign == VALIGN_MIDDLE)
+		else if (CommData.AlienTextValign == VALIGN_MIDDLE)
 			pText->baseline.y -= ((leading * num_lines) / 2);
 		if (pText->baseline.y < 0)
 			pText->baseline.y = 0;
@@ -1352,6 +1355,9 @@ HailAlien (void)
 	CommData.ConversationPhrases = CaptureStringTable (
 			LoadStringTable ((RESOURCE)CommData.ConversationPhrases));
 
+	SubtitleText.baseline = CommData.AlienTextBaseline;
+	SubtitleText.align = CommData.AlienTextAlign;
+
 	// init subtitle cache context
 	TextCacheContext = CaptureContext (CreateContext ());
 	TextCacheFrame = CaptureDrawable (
@@ -1775,14 +1781,8 @@ do_subtitles (UNICODE *pStr)
 	{
 		case READ_SUBTITLE:
 		{
-			TEXT t;
-			
-			CommData.AlienTextTemplate.pStr = pStr;
-			t = CommData.AlienTextTemplate;
-
-			CommData.AlienTextTemplate.CharCount =
-					utf8StringCountN(CommData.AlienTextTemplate.pStr,
-					t.pStr);
+			SubtitleText.pStr = pStr;
+			SubtitleText.CharCount = (COUNT)~0;
 			subtitle_state = WAIT_SUBTITLE;
 			break;
 		}
@@ -1804,20 +1804,22 @@ do_subtitles (UNICODE *pStr)
 }
 
 void
-RedrawSubtitles (void) {
+RedrawSubtitles (void)
+{
 	TEXT t;
 
 	if (!optSubtitles)
 		return;
 
-	t = CommData.AlienTextTemplate;
+	t = SubtitleText;
 	add_text (1, &t);
 }
 
 // Sets ClearSubtitle, returning the old value. The current subtitle state
 // is also returned, through sub_state
 BOOLEAN
-SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state) {
+SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state)
+{
 	BOOLEAN oldClearSubtitle;
 
 	LockMutex (subtitle_mutex);

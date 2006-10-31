@@ -32,7 +32,10 @@ static LOCDATA yehat_desc =
 	(FONT)YEHAT_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
+	{0, 0}, /* AlienTextBaseline */
 	0, /* (SIS_TEXT_WIDTH - 16) * 2 / 3, */ /* AlienTextWidth */
+	ALIGN_CENTER, /* AlienTextAlign */
+	VALIGN_MIDDLE, /* AlienTextValign */
 	(COLORMAP)YEHAT_COLOR_MAP, /* AlienColorMap */
 	YEHAT_MUSIC, /* AlienSong */
 	0, /* AlienAltSong */
@@ -183,7 +186,6 @@ static LOCDATA yehat_desc =
 		0, /* BlockMask */
 	},
 	NULL_PTR, /* AlienNumberSpeech - none */
-	{ {0, 0}, 0, 0, 0, 0 }, /* AlienTextTemplate - starts blank */
 };
 
 static void
@@ -429,10 +431,8 @@ init_rebel_yehat_comm (void)
 	yehat_desc.post_encounter_func = post_yehat_enc;
 	yehat_desc.uninit_encounter_func = uninit_yehat;
 
-	yehat_desc.AlienTextTemplate.baseline.x = SIS_SCREEN_WIDTH * 2 / 3;
-	yehat_desc.AlienTextTemplate.baseline.y = 60;
-	yehat_desc.AlienTextTemplate.align = ALIGN_CENTER;
-	yehat_desc.AlienTextTemplate.valign = VALIGN_MIDDLE;
+	yehat_desc.AlienTextBaseline.x = SIS_SCREEN_WIDTH * 2 / 3;
+	yehat_desc.AlienTextBaseline.y = 60;
 	yehat_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) * 2 / 3;
 
 	// use alternate "Rebels" track if available

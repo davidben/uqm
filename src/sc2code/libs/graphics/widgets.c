@@ -99,7 +99,6 @@ DrawLabelAsWindow(WIDGET_LABEL *label)
 	{
 		t.pStr = label->lines[i];
 		t.align = ALIGN_CENTER;
-		t.valign = VALIGN_BOTTOM;
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.baseline.y += 8;
@@ -128,7 +127,6 @@ Widget_DrawToolTips (int numlines, const char **tips)
 	r.extent.height = SCREEN_HEIGHT - 4;
 
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + (r.extent.height - 8 - 8 * numlines);
@@ -175,7 +173,6 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	t.baseline.y = r.corner.y + 8;
 	t.pStr = self->title;
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	font_DrawText (&t);
 	t.baseline.y += 8;
@@ -226,7 +223,6 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = self->category;
 	if (widget_focus == _self)
@@ -284,7 +280,6 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	t.baseline.x = 160;
 	t.baseline.y = y;
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = self->name;
 	if (widget_focus == _self)
@@ -316,7 +311,6 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 	t.baseline.x = 160;
 	t.baseline.y = y;
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 
 	for (i = 0; i < self->line_count; i++)
@@ -350,7 +344,6 @@ Widget_DrawSlider(WIDGET *_self, int x, int y)
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = self->category;
 	if (widget_focus == _self)
@@ -395,7 +388,6 @@ Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y)
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_CENTER;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = buffer;
 
@@ -421,7 +413,6 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = self->category;
 	if (widget_focus == _self)
@@ -438,7 +429,6 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	self->value[WIDGET_TEXTENTRY_WIDTH-1] = 0;
 
 	t.baseline.y = y;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = utf8StringCount (self->value);
 	t.pStr = self->value;
 
@@ -555,7 +545,6 @@ Widget_DrawControlEntry (WIDGET *_self, int x, int y)
 	t.baseline.x = x;
 	t.baseline.y = y;
 	t.align = ALIGN_LEFT;
-	t.valign = VALIGN_BOTTOM;
 	t.CharCount = ~0;
 	t.pStr = self->category;
 	if (widget_focus == _self)

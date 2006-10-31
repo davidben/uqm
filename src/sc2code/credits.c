@@ -202,7 +202,6 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 		return 0;
 
 	t.align = ALIGN_LEFT;
-	t.valign = VALIGN_MIDDLE;
 	t.baseline.x = 100; // any value will do
 	t.baseline.y = 100; // any value will do
 	t.pStr = " ";
@@ -266,7 +265,6 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 		col_format_t *fmt = colfmt + TextLines[i].baseline.x;
 		
 		TextLines[i].align = fmt->align;
-		TextLines[i].valign = VALIGN_MIDDLE;
 		TextLines[i].baseline.x = fmt->basex;
 		TextLines[i].baseline.y *= leading;
 	}
