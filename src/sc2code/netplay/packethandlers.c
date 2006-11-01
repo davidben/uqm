@@ -197,7 +197,7 @@ PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
 
 	if (conn->stateFlags.handshake.localOk) {
 		Netplay_cancelConfirmation(conn);
-		confirmationCancelled(battleStateData->meleeState, player);
+		confirmationCancelled(battleStateData->meleeState, conn->player);
 	}
 
 	for (i = 0; i < numShips; i++) {
@@ -231,14 +231,14 @@ PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
 		return -1;
 	}
 
-	side = localSide(conn, (NetplaySide) packet->side);
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 
 	if (conn->stateFlags.handshake.localOk) {
 		Netplay_cancelConfirmation(conn);
-		confirmationCancelled(battleStateData->meleeState, side);
+		confirmationCancelled(battleStateData->meleeState, conn->player);
 	}
 	
+	side = localSide(conn, (NetplaySide) packet->side);
 	nameLen = packetLength((const Packet *) packet)
 			- sizeof (Packet_TeamName) - 1;
 			// The -1 is for not counting the terminating '\0'.
