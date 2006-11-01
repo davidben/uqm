@@ -2301,10 +2301,20 @@ Bottom player: connection closed.
 #(Top player: connection closed.)
 Top player: connection closed.
 
+
 #(Connection for bottom player not ready.)
 Connection for bottom player not ready.
 
 
 #(Connection for top player not ready.)
 Connection for top player not ready.
+
+
+#(Bottom player changed something -- need to reconfirm.)
+Bottom player changed something -- need to reconfirm.
+
+
+#(Top player changed something -- need to reconfirm.)
+Top player changed something -- need to reconfirm.
+
 
