@@ -83,6 +83,9 @@ void
 netInput(void) {
 	uint32 timeoutMs = 0;
 	NetManager_process(&timeoutMs);
+			// This may cause more packets to be queued, hence the
+			// flushPacketQueues().
+	flushPacketQueues();
 
 	Alarm_process();
 	Callback_process();

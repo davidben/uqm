@@ -121,6 +121,7 @@ void updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
 		size_t len);
 bool updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship);
 void updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed);
+void confirmationCancelled(PMELEE_STATE pMS, COUNT side);
 void connectedFeedback (PMELEE_STATE pMS, COUNT side);
 void errorFeedback (PMELEE_STATE pMS, COUNT side);
 void closeFeedback (PMELEE_STATE pMS, COUNT side);

@@ -166,7 +166,7 @@ PacketHandler_Ready(NetConnection *conn, const Packet_Ready *packet) {
 
 int
 PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
-	uint32 numShips = ntoh16(packet->numShips);
+	uint16 numShips = ntoh16(packet->numShips);
 	size_t i;
 	size_t len;
 	int player;
@@ -193,10 +193,13 @@ PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
 		return -1;
 	}
 
-	if (conn->stateFlags.handshake.localOk)
-		Netplay_cancelConfirmation(conn);
-
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+
+	if (conn->stateFlags.handshake.localOk) {
+		Netplay_cancelConfirmation(conn);
+		confirmationCancelled(battleStateData->meleeState, player);
+	}
+
 	for (i = 0; i < numShips; i++) {
 		int ship = packet->ships[i].ship;
 		int index = packet->ships[i].index;
@@ -228,16 +231,18 @@ PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
 		return -1;
 	}
 
-	if (conn->stateFlags.handshake.localOk)
-		Netplay_cancelConfirmation(conn);
-	
 	side = localSide(conn, (NetplaySide) packet->side);
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 
+	if (conn->stateFlags.handshake.localOk) {
+		Netplay_cancelConfirmation(conn);
+		confirmationCancelled(battleStateData->meleeState, side);
+	}
+	
 	nameLen = packetLength((const Packet *) packet)
 			- sizeof (Packet_TeamName) - 1;
 			// The -1 is for not counting the terminating '\0'.
 
-	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 	updateTeamName(battleStateData->meleeState, side, packet->name, nameLen);
 
 	// Padding data may follow; it is ignored.

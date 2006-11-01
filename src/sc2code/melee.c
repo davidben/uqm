@@ -2970,6 +2970,19 @@ updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed) {
 	(void) side;
 }
 
+// The remote player has done something which invalidates our confirmation.
+void
+confirmationCancelled(PMELEE_STATE pMS, COUNT side) {
+	if (side == 0)
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 16));
+				// "Bottom player changed something -- need to reconfirm."
+	else
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 17));
+				// "Top player changed something -- need to reconfirm."
+	if (pMS->InputFunc == DoConfirmSettings)
+		pMS->InputFunc = DoMelee;
+}
+
 void
 connectedFeedback (PMELEE_STATE pMS, COUNT side) {
 	if (side == 0)
