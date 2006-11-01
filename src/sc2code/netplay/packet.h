@@ -44,6 +44,7 @@ typedef enum PacketType {
 } PacketType;
 
 
+#ifndef PACKET_H_STANDALONE
 #include "netconnection.h"
 
 #include "types.h"
@@ -65,6 +66,7 @@ typedef struct {
 } PacketTypeData;
 
 extern PacketTypeData packetTypeData[];
+#endif
 
 
 // When adding new packets, be sure to have all the fields properly aligned,
@@ -207,16 +209,6 @@ typedef struct {
 	uint16 padding;
 } Packet_SelectShip;
 
-typedef enum {
-	PK_THRUST,
-	PK_LEFT,
-	PK_RIGHT,
-	PK_FIRE,
-	PK_SPECIAL,
-
-	PK_NUM
-} PacketKey;
-
 typedef struct {
 	PacketHeader header;
 	uint8 state;  /* Actually BATTLE_INPUT_STATE */
@@ -236,6 +228,7 @@ typedef struct {
 } Packet_Checksum;
 
 
+#ifndef PACKET_H_STANDALONE
 void Packet_delete(Packet *packet);
 Packet_Init *Packet_Init_create(void);
 Packet_Ping *Packet_Ping_create(uint32 id);
@@ -255,6 +248,7 @@ Packet_SelectShip *Packet_SelectShip_create(uint16 ship);
 Packet_BattleInput *Packet_BattleInput_create(uint8 state);
 Packet_FrameCount *Packet_FrameCount_create(uint32 frameCount);
 Packet_Checksum *Packet_Checksum_create(uint32 frameNr, uint32 checksum);
+#endif
 
 
 #endif  /* _PACKET_H */
