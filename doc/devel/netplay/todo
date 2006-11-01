@@ -1,5 +1,4 @@
 High priority items:
-- test compilation on release mode (on both Linux and Windows)
 
 
 Medium-priority:
@@ -21,10 +20,19 @@ Medium-priority:
 - make compilation of crc.c and checksum.c conditional.
 - negotiate checksum interval
 - disconnect during battle will trigger the setup disconnect notification.
+- The game crashed on 'NetConnection_isConnected(conn)' in
+  networkBattleInput because 'conn' had become NULL, which means that
+  netConnections[player] had become NULL. This should never happen,
+  but it probably did happen, because of a call to
+  closePlayerNetworkConnection(). The only place which calls that is
+  flushPacketQueues(), but should that really call cPNC()?
+- Assertion 'NetState_battleActive(NetConnection_getState(conn))' in
+  Netplay_sendChecksum triggered. See #sc2 channel log.
 
 
 Low-priority:
 - Different coloured icons for unconnected/connecting/connected.
+  Maybe also for confirmed/unconfirmed. A check mark perhaps.
 - Send error packets; at least when there's a protocol version mismatch.
 - Check whether the random seed and frame delay have been agreed before
   continuing (in doConfirmSettings).
@@ -41,6 +49,18 @@ Low-priority:
   read ramjee94adaptive.pdf
 - Keep-alive packets. Store time of last packet sent, use alarms to determine
   when to send the next one. Count received messages?
+- Some way to (optionally) hide your fleet setup until the start of the
+  game? With either a previously determined maximum fleet value, or
+  just display a number to the opponent.
+- (when ships stats are in the content) Negotiate the ship stats, so people
+  can play with non-default ships.
+- Pre-fleet-setup setup
+  The values negotiated could include handicapping (different values for
+  each player)
+  - hide fleets (also handicapping here)
+  - maximum number of ships per side
+  - maximum ship cost per side
+  - ship properties
 
 
 Future improvements/optimisations:
@@ -70,7 +90,7 @@ Bugs:
   to keep sync on games with a different resolution.
 - Both sides need identical battle frame rates. This value is not
   negotiated.
-- When melee selection is aborted, the game crashes.
+- When melee selection is aborted, the remote player will be stuck.
 
 
 Final actions:
