@@ -29,14 +29,14 @@ game itself.
     in terms of responsiveness.
     Future versions may automatically decide on the best value to use.
 
-In SuperMelee, there is now an extra control method, "network control".
-If you change the control method to that, and press LEFT, UQM will start
-paying attention to incoming connections or try to establish an outgoing
-connection, depending on the specified parameters. Pressing RIGHT will
-cancel connection attempts or abort an already established connection.
-You'll get a message when a connection has been established. In the mean
-time you can already set up your own team.
-The game won't start until both parties have confirmed the current setup.
-If one player moves away from the 'Battle!' button, both parties need to
-reconfirm.
+In SuperMelee, there is now an extra button, "NET".  When you push it,
+UQM will start paying attention to incoming connections or try to
+establish an outgoing connection, depending on the specified
+parameters. Pressing SPACE at the connection screen will cancel
+connection attempts.  Once a connection has been established, the
+input will be listed as "NETWORK CONTROL".  To abort an already
+established connection, change the control scheme away from NETWORK
+CONTROL.  The game won't start until both parties have confirmed the
+current setup.  If one player moves away from the 'Battle!' button,
+both parties need to reconfirm.
 

@@ -2251,15 +2251,13 @@ Unconnected. Press LEFT to connect.
 
 
 #(Awaiting incoming connection...)
-Awaiting incoming connection...
-Press RIGHT to cancel.
+Awaiting incoming connection
 
 #(Attempting outgoing connection...)
-Attempting outgoing connection...
-Press RIGHT to cancel.
+Attempting outgoing connection
 
 #(Connected. Press RIGHT to disconnect.)
-Connected. Press RIGHT to disconnect.
+Connected. Change setting to disconnect.
 
 
 #(Confirmation cancelled. Press FIRE to reconfirm.)
@@ -2318,3 +2316,5 @@ Bottom player changed something -- need to reconfirm.
 Top player changed something -- need to reconfirm.
 
 
+#(Press SPACE to cancel)
+Press SPACE to cancel

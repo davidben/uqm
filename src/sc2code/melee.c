@@ -33,6 +33,7 @@
 #	include "netplay/netconnection.h"
 #	include "netplay/netmelee.h"
 #	include "netplay/notify.h"
+#	include "libs/graphics/widgets.h"
 #endif
 #include "options.h"
 #include "races.h"
@@ -60,11 +61,13 @@ static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip);
 static void StartMelee (PMELEE_STATE pMS);
 static ssize_t numPlayersReady (void);
 
-
 static int flash_selection_func (void *data);
 
 enum
 {
+#ifdef NETPLAY
+	NET_TOP,
+#endif
 	CONTROLS_TOP,
 	SAVE_TOP,
 	LOAD_TOP,
@@ -72,9 +75,18 @@ enum
 	LOAD_BOT,
 	SAVE_BOT,
 	CONTROLS_BOT,
+#ifdef NETPLAY
+	NET_BOT,
+#endif
 	QUIT_BOT,
 	EDIT_MELEE
 };
+
+#ifdef NETPLAY
+#define TOP_ENTRY NET_TOP
+#else
+#define TOP_ENTRY CONTROLS_TOP
+#endif
 
 #define MELEE_X_OFFS 2
 #define MELEE_Y_OFFS 21
@@ -374,6 +386,10 @@ RepairMeleeFrame (PRECT pRect)
 	BatchGraphics ();
 
 	DrawMeleeIcon (0);   /* Entire melee screen */
+#ifdef NETPLAY
+	DrawMeleeIcon (35);
+	DrawMeleeIcon (37);
+#endif
 	DrawMeleeIcon (26);  /* "Battle!" (highlighted) */
 	{
 		COUNT side;
@@ -693,6 +709,14 @@ Deselect (BYTE opt)
 		case SAVE_BOT:
 			DrawMeleeIcon (21);  /* "Save" (bottom; not highlighted) */
 			break;
+#ifdef NETPLAY
+		case NET_TOP:
+			DrawMeleeIcon (35);
+			break;
+		case NET_BOT:
+			DrawMeleeIcon (37);
+			break;
+#endif
 		case QUIT_BOT:
 			DrawMeleeIcon (29);
 			break;
@@ -744,6 +768,14 @@ Select (BYTE opt)
 		case SAVE_BOT:
 			DrawMeleeIcon (23);  /* "Save" (bottom; highlighted) */
 			break;
+#ifdef NETPLAY
+		case NET_TOP:
+			DrawMeleeIcon (36);  /* "Save" (top; highlighted) */
+			break;
+		case NET_BOT:
+			DrawMeleeIcon (38);  /* "Save" (bottom; highlighted) */
+			break;
+#endif
 		case QUIT_BOT:
 			DrawMeleeIcon (30);
 			break;
@@ -2161,6 +2193,176 @@ StartMeleeButtonPressed (PMELEE_STATE pMS)
 	pMS->InputFunc = DoConfirmSettings;
 }
 
+#ifdef NETPLAY
+
+static BOOLEAN
+DoConnectingDialog (PMELEE_STATE pMS)
+{
+	COUNT which_side = (pMS->MeleeOption == NET_TOP) ? 1 : 0;
+	NetConnection *conn;
+
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return (FALSE);
+
+	SetMenuSounds (0, 0);
+	if (!pMS->Initialized)
+	{
+		RECT r;
+		FONT oldfont = SetContextFont (StarConFont);
+		COLOR oldcolor = SetContextForeGroundColor (BLACK_COLOR);
+		COLOR dark, medium;
+		TEXT t;
+
+		if (pMS->flash_task)
+		{
+			ConcludeTask (pMS->flash_task);
+			pMS->flash_task = 0;
+		}
+
+		// Build a network connection.
+		if (netConnections[which_side] != NULL)
+			closePlayerNetworkConnection(which_side);
+
+		pMS->Initialized = TRUE;
+		conn = openPlayerNetworkConnection (which_side, (void *) pMS);
+		pMS->InputFunc = DoConnectingDialog;
+
+		/* Draw the dialog box here */
+		LockMutex (GraphicsLock);
+		BatchGraphics ();
+		r.extent.width = 200;
+		r.extent.height = 30;
+		r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
+		r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
+		dark = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F);
+		medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
+		DrawShadowedBox (&r, MENU_BACKGROUND_COLOR, dark, medium);
+
+		if (NetConnection_getPeerOptions (conn)->isServer)
+		{
+			t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 1);
+		}
+		else
+		{
+			t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 2);
+		}
+		t.baseline.y = r.corner.y + 10;
+		t.baseline.x = SCREEN_WIDTH >> 1;
+		t.align = ALIGN_CENTER;
+		t.CharCount = ~0;
+		font_DrawText (&t);
+
+		t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 18);
+			/* "Press SPACE to cancel" */
+		t.baseline.y += 16;
+		font_DrawText (&t);
+
+		// Restore original graphics
+		SetContextFont (oldfont);
+		SetContextForeGroundColor (oldcolor);
+		UnbatchGraphics ();
+		UnlockMutex (GraphicsLock);
+	}
+
+	netInput ();
+
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
+	{
+		// Terminate a network connection.
+		RECT r;
+		if (netConnections[which_side] != NULL) {
+			closePlayerNetworkConnection (which_side);
+			UpdateMeleeStatusMessage (which_side);
+		}
+		r.corner.x = 0;
+		r.corner.y = 0;
+		r.extent.width = SCREEN_WIDTH - (SAFE_X * 2);
+		r.extent.height = SCREEN_HEIGHT - (SAFE_Y * 2);
+		RepairMeleeFrame (&r);
+		pMS->InputFunc = DoMelee;
+
+		if (!pMS->flash_task)
+		{
+			pMS->flash_task = AssignTask (flash_selection_func, 2048,
+					"flash melee selection");
+		}
+
+		flushPacketQueues ();
+
+		return TRUE;
+	}
+
+	conn = netConnections[which_side];
+	if (conn != NULL)
+	{
+		NetState status = NetConnection_getState (conn);
+		if ((status == NetState_init) ||
+		    (status == NetState_inSetup))
+		{
+			RECT r;
+			/* Connection complete! */
+			PlayerControl[which_side] = NETWORK_CONTROL | STANDARD_RATING;
+			SetPlayerInput ();
+			DrawControls (which_side, TRUE);
+
+			r.corner.x = 0;
+			r.corner.y = 0;
+			r.extent.width = SCREEN_WIDTH - (SAFE_X * 2);
+			r.extent.height = SCREEN_HEIGHT - (SAFE_Y * 2);
+			RepairMeleeFrame (&r);
+
+			UpdateMeleeStatusMessage (which_side);
+			pMS->InputFunc = DoMelee;
+			Deselect (pMS->MeleeOption);
+			pMS->MeleeOption = START_MELEE;
+			if (!pMS->flash_task)
+			{
+				pMS->flash_task = AssignTask (flash_selection_func, 2048,
+						"flash melee selection");
+			}
+		}
+	}
+
+	flushPacketQueues ();
+
+	SleepThread (30);
+
+	return TRUE;
+}
+
+/* Check for disconnections, and revert to human control if so */
+static void
+check_for_disconnections (PMELEE_STATE pMS)
+{
+	COUNT player;
+	bool changed = FALSE;
+
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		NetConnection *conn;
+
+		if (!(PlayerControl[player] & NETWORK_CONTROL))
+			continue;
+
+		conn = netConnections[player];
+		if (conn == NULL || !NetConnection_isConnected (conn))
+		{
+			PlayerControl[player] = HUMAN_CONTROL & STANDARD_RATING;
+			DrawControls (player, FALSE);
+			log_add (log_User, "Player %d has disconnected; shifting controls\n");
+			changed = TRUE;
+		}
+	}
+
+	if (changed)
+	{
+		SetPlayerInput ();
+	}
+}
+
+#endif
+
+
 static BOOLEAN
 DoMelee (PMELEE_STATE pMS)
 {
@@ -2201,72 +2403,27 @@ DoMelee (PMELEE_STATE pMS)
 	if (PulsedInputState.menu[KEY_MENU_CANCEL] ||
 			PulsedInputState.menu[KEY_MENU_LEFT])
 	{
-#ifdef NETPLAY
-		bool leftHandled = false;
-				// Pressing the 'left' key has already been handled.
-			
-		if (PulsedInputState.menu[KEY_MENU_LEFT] &&
-			((pMS->MeleeOption == CONTROLS_TOP &&
-			(PlayerControl[1] & NETWORK_CONTROL)) ||
-			(pMS->MeleeOption == CONTROLS_BOT &&
-			(PlayerControl[0] & NETWORK_CONTROL))))
+		// Start editing the teams.
+		LockMutex (GraphicsLock);
+		InTime = GetTimeCounter ();
+		Deselect (pMS->MeleeOption);
+		UnlockMutex (GraphicsLock);
+		pMS->MeleeOption = EDIT_MELEE;
+		pMS->Initialized = FALSE;
+		if (PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
-			// Build a network connection.
-			COUNT which_side = (pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
-			NetConnection *conn;
-			
-			if (netConnections[which_side] != NULL)
-				closePlayerNetworkConnection(which_side);
-
-			conn = openPlayerNetworkConnection (which_side, (void *) pMS);
-
-			pMS->InputFunc = DoMelee;
-			leftHandled = true;
-			UpdateMeleeStatusMessage (which_side);
+			pMS->side = 0;
+			pMS->row = 0;
+			pMS->col = 0;
 		}
-
-		if (!leftHandled)
-#endif
+		else
 		{
-			// Start editing the teams.
-			LockMutex (GraphicsLock);
-			InTime = GetTimeCounter ();
-			Deselect (pMS->MeleeOption);
-			UnlockMutex (GraphicsLock);
-			pMS->MeleeOption = EDIT_MELEE;
-			pMS->Initialized = FALSE;
-			if (PulsedInputState.menu[KEY_MENU_CANCEL])
-			{
-				pMS->side = 0;
-				pMS->row = 0;
-				pMS->col = 0;
-			}
-			else
-			{
-				pMS->side = 0;
-				pMS->row = NUM_MELEE_ROWS - 1;
-				pMS->col = NUM_MELEE_COLUMNS - 1;
-			}
-			DoEdit (pMS);
+			pMS->side = 0;
+			pMS->row = NUM_MELEE_ROWS - 1;
+			pMS->col = NUM_MELEE_COLUMNS - 1;
 		}
+		DoEdit (pMS);
 	}
-#ifdef NETPLAY
-	else if (PulsedInputState.menu[KEY_MENU_RIGHT])
-	{
-		if ((pMS->MeleeOption == CONTROLS_TOP &&
-			(PlayerControl[1] & NETWORK_CONTROL)) ||
-			(pMS->MeleeOption == CONTROLS_BOT &&
-			(PlayerControl[0] & NETWORK_CONTROL)))
-		{
-			// Terminate a network connection.
-			COUNT which_side = (pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
-			if (netConnections[which_side] != NULL) {
-				closePlayerNetworkConnection (which_side);
-				UpdateMeleeStatusMessage (which_side);
-			}
-		}
-	}
-#endif
 	else
 	{
 		MELEE_OPTIONS NewMeleeOption;
@@ -2275,8 +2432,8 @@ DoMelee (PMELEE_STATE pMS)
 		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
 			InTime = GetTimeCounter ();
-			if (NewMeleeOption-- == CONTROLS_TOP)
-				NewMeleeOption = CONTROLS_TOP;
+			if (NewMeleeOption-- == TOP_ENTRY)
+				NewMeleeOption = TOP_ENTRY;
 		}
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
@@ -2343,6 +2500,13 @@ DoMelee (PMELEE_STATE pMS)
 	 			case QUIT_BOT:
 					GLOBAL (CurrentActivity) |= CHECK_ABORT;
 					break;
+#ifdef NETPLAY
+				case NET_TOP:
+				case NET_BOT:
+					pMS->Initialized = FALSE;
+					pMS->InputFunc = DoConnectingDialog;
+					break;
+#endif
 				case CONTROLS_TOP:
 				case CONTROLS_BOT:
 				{
@@ -2354,20 +2518,19 @@ DoMelee (PMELEE_STATE pMS)
 								COMPUTER_CONTROL | STANDARD_RATING;
 					else if (PlayerControl[which_side] & AWESOME_RATING)
 					{
-#ifdef NETPLAY
 						PlayerControl[which_side] =
-								NETWORK_CONTROL | STANDARD_RATING;
-						UpdateMeleeStatusMessage (which_side);
+								HUMAN_CONTROL | STANDARD_RATING;
 					}
+#ifdef NETPLAY
 					else if (PlayerControl[which_side] & NETWORK_CONTROL)
 					{
 						if (netConnections[which_side] != NULL)
 							closePlayerNetworkConnection (which_side);
 						UpdateMeleeStatusMessage (-1);
-#endif  /* NETPLAY */
 						PlayerControl[which_side] =
 								HUMAN_CONTROL | STANDARD_RATING;
 					}
+#endif  /* NETPLAY */
 					else
 						PlayerControl[which_side] = ((
 								PlayerControl[which_side]
@@ -2383,6 +2546,8 @@ DoMelee (PMELEE_STATE pMS)
 
 #ifdef NETPLAY
 	flushPacketQueues ();
+
+	check_for_disconnections (pMS);
 #endif
 
 	return (TRUE);
@@ -2727,13 +2892,11 @@ Melee (void)
 				MenuState.TeamImage[1] = MenuState.PreBuiltList[1];
 			}
 
-#ifndef NETPLAY
-			/* Do not allow netplay mode if it isn't compiled in. */
+			/* Do not allow netplay mode at the start. */
 			if (PlayerControl[0] & NETWORK_CONTROL)
 				PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
 			if (PlayerControl[1] & NETWORK_CONTROL)
 				PlayerControl[1] = HUMAN_CONTROL | STANDARD_RATING;
-#endif
 		}
 		SetPlayerInput ();
 		teamStringChanged (&MenuState, 0);
