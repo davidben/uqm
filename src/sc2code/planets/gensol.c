@@ -37,23 +37,18 @@ init_probe (void)
 
 	if (!GET_GAME_STATE (PROBE_MESSAGE_DELIVERED)
 			&& GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP)
-			&& (hStarShip = GetHeadLink (
-					&GLOBAL (npc_built_ship_q)
-					)))
+			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
 	{
 		SHIP_FRAGMENTPTR FragPtr;
 
 		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 		SET_GROUP_LOC (FragPtr, 2 + 1); /* orbitting earth */
 		SET_GROUP_DEST (FragPtr, 2 + 1); /* orbitting earth */
 		FragPtr->ShipInfo.loc.x = FragPtr->ShipInfo.loc.y = 0;
 		FragPtr->ShipInfo.group_counter = 0;
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		return 1;
 	}
@@ -204,7 +199,8 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = 457;
 				break;
 			case 2: /* EARTH */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = EARTH_ATMOSPHERE;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity =
+						EARTH_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 100;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 100;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 23;
@@ -225,7 +221,8 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -53;
 				break;
 			case 4: /* JUPITER */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity =
+						GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 24;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 1120;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 3;
@@ -233,10 +230,12 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 98;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -143;
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 520L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 520L / 100;
 				break;
 			case 5: /* SATURN */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity =
+						GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 13;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 945;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 27;
@@ -244,10 +243,12 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 102;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -197;
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 952L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 952L / 100;
 				break;
 			case 6: /* URANUS */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity =
+						GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 21;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 411;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 98;
@@ -255,10 +256,12 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 172;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -217;
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 1916L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 1916L / 100;
 				break;
 			case 7: /* NEPTUNE */
-				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = GAS_GIANT_ATMOSPHERE;
+				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity =
+						GAS_GIANT_ATMOSPHERE;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 28;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 396;
 				pSolarSysState->SysInfo.PlanetInfo.AxialTilt = 30;
@@ -266,7 +269,8 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 182;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -229;
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 2999L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 2999L / 100;
 				break;
 			case 8: /* PLUTO */
 				if (!GET_GAME_STATE (FOUND_PLUTO_SPATHI))
@@ -274,12 +278,10 @@ generate_orbital (void)
 					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
-							LoadGraphic (SPAPLUTO_MASK_PMAP_ANIM)
-							);
+							LoadGraphic (SPAPLUTO_MASK_PMAP_ANIM));
 					pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 							CaptureStringTable (
-									LoadStringTable (SPAPLUTO_STRTAB)
-									);
+							LoadStringTable (SPAPLUTO_STRTAB));
 				}
 
 				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 0;
@@ -290,7 +292,8 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 1533;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -235;
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 3937L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 3937L / 100;
 				break;
 		}
 
@@ -310,19 +313,18 @@ generate_orbital (void)
 		switch (i)
 		{
 			case 2: /* moons of EARTH */
-				pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
+				pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] =
+						rand_val;
 
 				if (!GET_GAME_STATE (MOONBASE_DESTROYED))
 				{
 					LoadStdLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
 					pSolarSysState->PlanetSideFrame[1] =
 							CaptureDrawable (
-							LoadGraphic (MOONBASE_MASK_PMAP_ANIM)
-							);
+							LoadGraphic (MOONBASE_MASK_PMAP_ANIM));
 					pSolarSysState->SysInfo.PlanetInfo.DiscoveryString =
 							CaptureStringTable (
-									LoadStringTable (MOONBASE_STRTAB)
-									);
+							LoadStringTable (MOONBASE_STRTAB));
 				}
 				pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 60;
 				pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 25;
@@ -332,31 +334,32 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -18;
 				break;
 			case 4: /* moons of JUPITER */
-				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 520L / 100;
+				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist =
+						EARTH_RADIUS * 520L / 100;
 				switch (pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc)
 				{
-					case 0:
+					case 0: /* Io */
 						pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 69;
 						pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 25;
 						pSolarSysState->SysInfo.PlanetInfo.Tectonics = 3;
 						pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 390;
 						pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -163;
 						break;
-					case 1:
+					case 1: /* Europa */
 						pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 54;
 						pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 25;
 						pSolarSysState->SysInfo.PlanetInfo.Tectonics = 1;
 						pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 840;
 						pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -161;
 						break;
-					case 2:
+					case 2: /* Ganymede */
 						pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 35;
 						pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 41;
 						pSolarSysState->SysInfo.PlanetInfo.Tectonics = 0;
 						pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 1728;
 						pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -164;
 						break;
-					case 3:
+					case 3: /* Callisto */
 						pSolarSysState->SysInfo.PlanetInfo.PlanetDensity = 35;
 						pSolarSysState->SysInfo.PlanetInfo.PlanetRadius = 38;
 						pSolarSysState->SysInfo.PlanetInfo.Tectonics = 1;
@@ -365,7 +368,7 @@ generate_orbital (void)
 						break;
 				}
 				break;
-			case 5: /* moons of SATURN */
+			case 5: /* moon of SATURN: Titan */
 				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 952L / 100;
 				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 160;
 				pSolarSysState->SysInfo.PlanetInfo.Weather = 2;
@@ -375,7 +378,7 @@ generate_orbital (void)
 				pSolarSysState->SysInfo.PlanetInfo.RotationPeriod = 3816;
 				pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature = -178;
 				break;
-			case 7: /* moons of NEPTUNE */
+			case 7: /* moon of NEPTUNE: Triton */
 				pSolarSysState->SysInfo.PlanetInfo.PlanetToSunDist = EARTH_RADIUS * 2999L / 100;
 				pSolarSysState->SysInfo.PlanetInfo.AtmoDensity = 10;
 				pSolarSysState->SysInfo.PlanetInfo.Weather = 1;
@@ -455,6 +458,7 @@ GenerateSOL (BYTE control)
 				{
 					COUNT angle;
 
+					/* Starbase: */
 					pSolarSysState->MoonDesc[0].data_index = (BYTE)~0;
 					pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS;
 					angle = HALF_CIRCLE + QUADRANT;
@@ -463,6 +467,7 @@ GenerateSOL (BYTE control)
 					pSolarSysState->MoonDesc[0].location.y =
 							SINE (angle, pSolarSysState->MoonDesc[0].radius);
 
+					/* Luna: */
 					pSolarSysState->MoonDesc[1].data_index = SELENIC_WORLD;
 					pSolarSysState->MoonDesc[1].radius = MIN_MOON_RADIUS
 							+ (MAX_MOONS - 1) * MOON_DELTA;
@@ -476,15 +481,21 @@ GenerateSOL (BYTE control)
 				}
 				case 4: /* moons of JUPITER */
 					pSolarSysState->MoonDesc[0].data_index = RADIOACTIVE_WORLD;
+							/* Io */
 					pSolarSysState->MoonDesc[1].data_index = HALIDE_WORLD;
+							/* Europa */
 					pSolarSysState->MoonDesc[2].data_index = CYANIC_WORLD;
+							/* Ganymede */
 					pSolarSysState->MoonDesc[3].data_index = PELLUCID_WORLD;
+							/* Callisto */
 					break;
 				case 5: /* moons of SATURN */
 					pSolarSysState->MoonDesc[0].data_index = ALKALI_WORLD;
+							/* Titan */
 					break;
 				case 7: /* moons of NEPTUNE */
 					pSolarSysState->MoonDesc[0].data_index = VINYLOGOUS_WORLD;
+							/* Triton */
 					break;
 			}
 			break;
