@@ -53,6 +53,8 @@ uio_DirHandle *configDir;
 uio_DirHandle *saveDir;
 uio_DirHandle *meleeDir;
 
+char baseContentPath[PATH_MAX];
+
 uio_DirList *availableAddons;
 
 extern uio_Repository *repository;
@@ -116,7 +118,6 @@ prepareContentDir (const char *contentDirName, const char **addons)
 {
 	const char *testFile = "version";
 	const char *loc;
-	char path[PATH_MAX];
 
 	if (contentDirName == NULL)
 	{
@@ -140,16 +141,16 @@ prepareContentDir (const char *contentDirName, const char **addons)
 		exit (EXIT_FAILURE);
 	}
 
-	if (expandPath (path, sizeof path, loc, EP_ALL_SYSTEM) == -1)
+	if (expandPath (baseContentPath, sizeof baseContentPath, loc, EP_ALL_SYSTEM) == -1)
 	{
 		log_add (log_Fatal, "Fatal error: Could not expand path to content "
 				"directory: %s", strerror (errno));
 		exit (EXIT_FAILURE);
 	}
 	
-	log_add (log_Debug, "Using '%s' as base content dir.", path);
+	log_add (log_Debug, "Using '%s' as base content dir.", baseContentPath);
 
-	mountContentDir (repository, path, addons);
+	mountContentDir (repository, baseContentPath, addons);
 }
 
 void

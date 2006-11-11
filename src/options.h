@@ -46,6 +46,7 @@ extern uio_DirHandle *contentDir;
 extern uio_DirHandle *configDir;
 extern uio_DirHandle *saveDir;
 extern uio_DirHandle *meleeDir;
+extern char baseContentPath[PATH_MAX];
 
 extern uio_DirList *availableAddons;
 

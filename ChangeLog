@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Better error message for 'Kernel failed to load' (#917) - Michael
 - Pushbutton for connecting to netplay, in anticipation of a full 
   configuration dialog later - Michael
 - Cleanup of comm.c - SvdB
