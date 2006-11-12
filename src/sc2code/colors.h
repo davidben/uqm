@@ -140,7 +140,16 @@
 // The text "MORE" when reviewing the conversation history.
 #define COMM_MORE_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x17, 0x00), 0x00)
-	
+
+// Default colors for System Dialog Boxes (DrawShadowedBox)
+#define SHADOWBOX_BACKGROUND_COLOR \
+		MENU_BACKGROUND_COLOR
+
+#define SHADOWBOX_MEDIUM_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19)
+
+#define SHADOWBOX_DARK_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F)
 
 #endif  /* _COLORS_H */
 

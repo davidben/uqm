@@ -38,21 +38,18 @@ static void
 DrawConfirmationWindow (BOOLEAN answer)
 {
 	COLOR oldfg = SetContextForeGroundColor (MENU_TEXT_COLOR);
-	COLOR dark, medium;
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	RECT r;
 	TEXT t;
-
-	dark = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F);
-	medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
 
 	BatchGraphics ();
 	r.corner.x = (SCREEN_WIDTH - CONFIRM_WIN_WIDTH) >> 1;
 	r.corner.y = (SCREEN_HEIGHT - CONFIRM_WIN_HEIGHT) >> 1;
 	r.extent.width = CONFIRM_WIN_WIDTH;
 	r.extent.height = CONFIRM_WIN_HEIGHT;
-	DrawShadowedBox (&r, MENU_BACKGROUND_COLOR, dark, medium);
+	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR, 
+			SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + 8;

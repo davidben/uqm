@@ -2208,9 +2208,8 @@ DoConnectingDialog (PMELEE_STATE pMS)
 	if (!pMS->Initialized)
 	{
 		RECT r;
-		FONT oldfont = SetContextFont (StarConFont);
-		COLOR oldcolor = SetContextForeGroundColor (BLACK_COLOR);
-		COLOR dark, medium;
+		FONT oldfont; 
+		COLOR oldcolor;
 		TEXT t;
 
 		if (pMS->flash_task)
@@ -2229,14 +2228,15 @@ DoConnectingDialog (PMELEE_STATE pMS)
 
 		/* Draw the dialog box here */
 		LockMutex (GraphicsLock);
+		oldfont = SetContextFont (StarConFont);
+		oldcolor = SetContextForeGroundColor (BLACK_COLOR);
 		BatchGraphics ();
 		r.extent.width = 200;
 		r.extent.height = 30;
 		r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
 		r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
-		dark = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F);
-		medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
-		DrawShadowedBox (&r, MENU_BACKGROUND_COLOR, dark, medium);
+		DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR, 
+				SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 		if (NetConnection_getPeerOptions (conn)->isServer)
 		{

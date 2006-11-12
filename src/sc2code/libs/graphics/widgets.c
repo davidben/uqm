@@ -1,5 +1,6 @@
 #include "graphics/gfx_common.h"
 #include "graphics/widgets.h"
+#include "colors.h"
 #include "strlib.h"
 #include "setup.h"
 #include "units.h"
@@ -63,15 +64,11 @@ void
 DrawLabelAsWindow(WIDGET_LABEL *label)
 {
 	COLOR oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
-	COLOR dark, medium;
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	RECT r;
 	TEXT t;
 	int i, win_w, win_h;
-
-	dark = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F);
-	medium = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19);
 
 	/* Compute the dimensions of the label */
 	win_h = label->height ((WIDGET *)label) + 16;
@@ -91,7 +88,8 @@ DrawLabelAsWindow(WIDGET_LABEL *label)
 	r.corner.y = (SCREEN_HEIGHT - win_h) >> 1;
 	r.extent.width = win_w;
 	r.extent.height = win_h;
-	DrawShadowedBox (&r, WIDGET_DIALOG_COLOR, dark, medium);
+	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR, 
+			SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + 16;
