@@ -3857,6 +3857,14 @@ SOURCE=..\sc2code\clock.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\cnctdlg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\cnctdlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\coderes.h
 # End Source File
 # Begin Source File

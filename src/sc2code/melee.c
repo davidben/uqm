@@ -2503,9 +2503,16 @@ DoMelee (PMELEE_STATE pMS)
 #ifdef NETPLAY
 				case NET_TOP:
 				case NET_BOT:
-					pMS->Initialized = FALSE;
-					pMS->InputFunc = DoConnectingDialog;
+				{
+					COUNT which_side;
+					which_side = pMS->MeleeOption == NET_TOP ? 1 : 0;
+					if (MeleeConnectDialog (which_side))
+					{
+						pMS->Initialized = FALSE;
+						pMS->InputFunc = DoConnectingDialog;
+					}
 					break;
+				}
 #endif
 				case CONTROLS_TOP:
 				case CONTROLS_BOT:
