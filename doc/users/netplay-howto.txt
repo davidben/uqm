@@ -1,42 +1,23 @@
-To use Netplay you need to pass some parameters to uqm. In future versions
-you should be able to set everything you need to set from within the
-game itself.
+In SuperMelee, there is now an extra button for each side, marked
+"NET".  When you push it, you will get the net configuration dialog.
+To have someone else connect to you, choose the first option.
+Otherwise, edit the host name and choose "connect".  Pressing SPACE on
+the resulting connection screen will cancel connection attempts.  Once
+a connection has been established, the input will be listed as
+"NETWORK CONTROL".  To abort an already established connection, change
+the control scheme away from NETWORK CONTROL.  The game won't start
+until both parties have confirmed the current setup.  If one player
+moves away from the 'Battle!' button, both parties need to reconfirm.
 
---netport1 specifies the port the bottom player will connect to or accept
-    incoming connections on. If this parameter is not specified, 21837 will
-    be used.
-    Your firewall needs to be set up to allow TCP connections from/to
-    the used port.
---nethost1 specifies the name or ip number of the host to connect to for
-    the bottom player. If this parameter is not specified, UQM will
-    instead accept incoming connections.
---netport2
-    As --netport1, but for the top player
---nethost2
-    As --nethost1, but for the top player
---netdelay
-    The desired input delay (in frames). A keypress or keyrelease
-    will only take effect after this many frames. The result is that while
-    higher values make your ship to seem to respond more sluggishly,
-    they give the keypress information more time to reach the remote party.
-    If the game stutters, this is because it is waiting for this
-    keypress information to arrive, which is an indication that the
-    input delay is too low.
-    As SuperMelee runs at 24 frames per second, each frame delayed will
-    delay the input by about 42ms.
-    The delay used is the maximum of the desired value for both parties.
-    The default is 0. Values lower than 4 will be hardly noticable
-    in terms of responsiveness.
-    Future versions may automatically decide on the best value to use.
-
-In SuperMelee, there is now an extra button, "NET".  When you push it,
-UQM will start paying attention to incoming connections or try to
-establish an outgoing connection, depending on the specified
-parameters. Pressing SPACE at the connection screen will cancel
-connection attempts.  Once a connection has been established, the
-input will be listed as "NETWORK CONTROL".  To abort an already
-established connection, change the control scheme away from NETWORK
-CONTROL.  The game won't start until both parties have confirmed the
-current setup.  If one player moves away from the 'Battle!' button,
-both parties need to reconfirm.
-
+In addition to setting the hostname, you can also configure the port
+and the input delay in frames. A keypress or keyrelease will only take
+effect after this many frames. The result is that while higher values
+make your ship to seem to respond more sluggishly, they give the
+keypress information more time to reach the remote party.  If the game
+stutters, this is because it is waiting for this keypress information
+to arrive, which is an indication that the input delay is too low.  As
+SuperMelee runs at 24 frames per second, each frame delayed will delay
+the input by about 42ms.  The delay used is the maximum of the desired
+value for both parties.  The default is 0. Values lower than 4 will be
+hardly noticable in terms of responsiveness.  Future versions may
+automatically decide on the best value to use.

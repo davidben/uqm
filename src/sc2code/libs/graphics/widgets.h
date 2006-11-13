@@ -43,7 +43,7 @@ typedef enum {
 	NUM_WIDGET_TYPES
 } WIDGET_TYPE;
 
-#define WIDGET_TEXTENTRY_WIDTH    30
+#define WIDGET_TEXTENTRY_WIDTH    50
 #define WIDGET_CONTROLENTRY_WIDTH 16
 
 typedef struct _widget {
@@ -212,5 +212,8 @@ void Widget_DrawTextEntry (WIDGET *_self, int x, int y);
 void Widget_DrawControlEntry (WIDGET *_self, int x, int y);
 
 void Widget_Slider_DrawValue (WIDGET_SLIDER *self, int x, int y);
+
+/* Other implementations will need these values */
+extern WIDGET *widget_focus;
 
 #endif /* _WIDGETS_H */
