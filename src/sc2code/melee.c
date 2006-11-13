@@ -34,6 +34,7 @@
 #	include "netplay/netmelee.h"
 #	include "netplay/notify.h"
 #	include "libs/graphics/widgets.h"
+#	include "cnctdlg.h"
 #endif
 #include "options.h"
 #include "races.h"
@@ -420,6 +421,18 @@ RepairMeleeFrame (PRECT pRect)
 	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
+}
+
+static void
+RedrawMeleeFrame (void)
+{
+	RECT r;
+
+	r.corner.x = r.corner.y = 0;
+	r.extent.width = SCREEN_WIDTH;
+	r.extent.height = SCREEN_HEIGHT;
+
+	RepairMeleeFrame (&r);
 }
 
 static BOOLEAN
@@ -856,7 +869,7 @@ InitMelee (PMELEE_STATE pMS)
 	SetContextClipRect (&r);
 
 	r.corner.x = r.corner.y = 0;
-	RepairMeleeFrame (&r);
+	RedrawMeleeFrame ();
 	
 	pMS->flash_task = AssignTask (flash_selection_func, 2048,
 			"flash melee selection");
@@ -2212,12 +2225,6 @@ DoConnectingDialog (PMELEE_STATE pMS)
 		COLOR oldcolor;
 		TEXT t;
 
-		if (pMS->flash_task)
-		{
-			ConcludeTask (pMS->flash_task);
-			pMS->flash_task = 0;
-		}
-
 		// Build a network connection.
 		if (netConnections[which_side] != NULL)
 			closePlayerNetworkConnection(which_side);
@@ -2269,18 +2276,12 @@ DoConnectingDialog (PMELEE_STATE pMS)
 	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
 		// Terminate a network connection.
-		RECT r;
 		if (netConnections[which_side] != NULL) {
 			closePlayerNetworkConnection (which_side);
 			UpdateMeleeStatusMessage (which_side);
 		}
-		r.corner.x = 0;
-		r.corner.y = 0;
-		r.extent.width = SCREEN_WIDTH - (SAFE_X * 2);
-		r.extent.height = SCREEN_HEIGHT - (SAFE_Y * 2);
-		RepairMeleeFrame (&r);
+		RedrawMeleeFrame ();
 		pMS->InputFunc = DoMelee;
-
 		if (!pMS->flash_task)
 		{
 			pMS->flash_task = AssignTask (flash_selection_func, 2048,
@@ -2305,11 +2306,7 @@ DoConnectingDialog (PMELEE_STATE pMS)
 			SetPlayerInput ();
 			DrawControls (which_side, TRUE);
 
-			r.corner.x = 0;
-			r.corner.y = 0;
-			r.extent.width = SCREEN_WIDTH - (SAFE_X * 2);
-			r.extent.height = SCREEN_HEIGHT - (SAFE_Y * 2);
-			RepairMeleeFrame (&r);
+			RedrawMeleeFrame ();
 
 			UpdateMeleeStatusMessage (which_side);
 			pMS->InputFunc = DoMelee;
@@ -2349,7 +2346,7 @@ check_for_disconnections (PMELEE_STATE pMS)
 		{
 			PlayerControl[player] = HUMAN_CONTROL & STANDARD_RATING;
 			DrawControls (player, FALSE);
-			log_add (log_User, "Player %d has disconnected; shifting controls\n");
+			log_add (log_User, "Player %d has disconnected; shifting controls\n", player);
 			changed = TRUE;
 		}
 	}
@@ -2505,12 +2502,31 @@ DoMelee (PMELEE_STATE pMS)
 				case NET_BOT:
 				{
 					COUNT which_side;
+					BOOLEAN confirmed;
+
+					if (pMS->flash_task)
+					{
+						ConcludeTask (pMS->flash_task);
+						pMS->flash_task = 0;
+					}
+
 					which_side = pMS->MeleeOption == NET_TOP ? 1 : 0;
-					if (MeleeConnectDialog (which_side))
+					confirmed = MeleeConnectDialog (which_side);
+					RedrawMeleeFrame ();
+					if (confirmed)
 					{
 						pMS->Initialized = FALSE;
 						pMS->InputFunc = DoConnectingDialog;
 					}
+					else
+					{
+						if (!pMS->flash_task)
+						{
+							pMS->flash_task = AssignTask (flash_selection_func, 2048,
+										      "flash melee selection");
+						}
+					}
+
 					break;
 				}
 #endif
