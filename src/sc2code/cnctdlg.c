@@ -22,11 +22,13 @@
 #include "controls.h"
 #include "colors.h"
 #include "setup.h"
+#include "resinst.h"
+#include "nameref.h"
 #include "libs/graphics/widgets.h"
 #include "netplay/netoptions.h"
 
 #define MCD_WIDTH 260
-#define MCD_HEIGHT 100
+#define MCD_HEIGHT 110
 
 #define MENU_FRAME_RATE (ONE_SECOND / 20)
 
@@ -65,6 +67,8 @@ static BOOLEAN done;
  * CONNECT_DIALOG_STATE, so we need a pointer to it */
 
 static PCONNECT_DIALOG_STATE current_state;
+
+static FONT PlayerFont;
 
 static int do_connect (WIDGET *self, int event);
 static int do_listen (WIDGET *self, int event);
@@ -125,7 +129,7 @@ MCD_DrawSlider (WIDGET *_self, int x, int y)
 	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
 	COLOR oldtext;
 	COLOR default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = SetContextFont (PlayerFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	RECT r;
@@ -175,7 +179,7 @@ MCD_DrawTextEntry (WIDGET *_self, int x, int y)
 	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = SetContextFont (PlayerFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	
@@ -289,7 +293,7 @@ MCD_DrawTextEntry (WIDGET *_self, int x, int y)
 		++r.corner.x;
 		++r.corner.y;
 		r.extent.height -= 2;
-		SetContextForeGroundColor (MENU_TEXT_COLOR);
+		SetContextForeGroundColor (MENU_CURSOR_COLOR);
 		DrawFilledRectangle (&r);
 
 		SetContextForeGroundColor (inactive);
@@ -596,6 +600,8 @@ MeleeConnectDialog (int side)
 {
 	CONNECT_DIALOG_STATE state;
 
+	PlayerFont = CaptureFont ((FONT_REF)LoadFont (PLAYER_FONT));
+
 	state.Initialized = FALSE;
 	state.which_side = side;
 	state.InputFunc = DoMeleeConnectDialog;
@@ -606,6 +612,8 @@ MeleeConnectDialog (int side)
 	DoInput ((PVOID)&state, TRUE);
 
 	current_state = NULL;
+
+	DestroyFont (ReleaseFont (PlayerFont));
 
 	return state.confirmed;
 }
