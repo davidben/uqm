@@ -12,6 +12,29 @@ Changes are broadly classified into the following categories:
   unlikely to be of interest to you unless you plan on coding
   extensions.
 
+			     Version 0.6
+			    -------------
+
+NEW FEATURES
+
+- Netplay!  You can now engage in Super Melee over the Internet.
+- Key configuration is now entirely in-game.
+- UQM now compiles and runs on 64-bit systems.
+
+BUGFIXES
+
+- The Quit button (F10) now works properly when used during the
+  introduction sequence.
+- Various small fixes to text and conversation logic.
+
+INTERNAL CHANGES
+
+- The setup menu now reads all its text from the content, easing
+  translation.
+- The MOD player for PC-style music can now be linked against an
+  external version of libmikmod.
+- Various code cleanups and memory optimizations.
+
 			     Version 0.5
 			    -------------
 
