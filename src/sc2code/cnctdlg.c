@@ -21,6 +21,7 @@
 #include "cnctdlg.h"
 #include "controls.h"
 #include "colors.h"
+#include "gamestr.h"
 #include "setup.h"
 #include "resinst.h"
 #include "nameref.h"
@@ -449,9 +450,9 @@ CreateWidgets (void)
 		buttons[i].height = Widget_HeightOneLine;
 		buttons[i].width = Widget_WidthFullScreen;
 	}
-	buttons[0].name = "Connect to remote host";
-	buttons[1].name = "Wait for incoming connection";
-	buttons[2].name = "Cancel";
+	buttons[0].name = GAME_STRING (NETMELEE_STRING_BASE + 19);
+	buttons[1].name = GAME_STRING (NETMELEE_STRING_BASE + 20);
+	buttons[2].name = GAME_STRING (NETMELEE_STRING_BASE + 21);
 
 	buttons[0].handleEvent = do_connect;
 	buttons[1].handleEvent = do_listen;
@@ -479,7 +480,7 @@ CreateWidgets (void)
 	slider.max = 9;
 	slider.step = 1;
 	slider.value = netplayOptions.inputDelay;
-	slider.category = "Net Delay";
+	slider.category = GAME_STRING (NETMELEE_STRING_BASE + 24);
 
 	for (i = 0; i < 2; i++)
 	{
@@ -496,8 +497,8 @@ CreateWidgets (void)
                 texts[i].cursor_pos = 0;
 	}
 
-	texts[0].category = "Host";
-	texts[1].category = "Port";
+	texts[0].category = GAME_STRING (NETMELEE_STRING_BASE + 22);
+	texts[1].category = GAME_STRING (NETMELEE_STRING_BASE + 23);
 
 	/* We sometimes assign to these internals; cannot strncpy over self! */
 	if (texts[0].value != netplayOptions.peer[current_state->which_side].host)

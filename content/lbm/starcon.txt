@@ -2318,3 +2318,21 @@ Top player changed something -- need to reconfirm.
 
 #(Press SPACE to cancel)
 Press SPACE to cancel
+
+#(Connect to remote host)
+Connect to remote host
+
+#(Wait for incoming connection)
+Wait for incoming connection
+
+#(Cancel)
+Cancel
+
+#(Host)
+Host
+
+#(Port)
+Port
+
+#(Net Delay)
+Net Delay
