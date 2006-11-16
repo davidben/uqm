@@ -288,15 +288,12 @@ SectionGroup "!UQM" SECGRP01
     File "uqm-pc.cfg"
     File "uqm-3do.cfg"
     
-    ; TODO: Check for other content files that don't need re-downloading
-    ; We can probably make this easier on us if we do this as a staged
-    ; upgrade, moving 0.4 content to 0.5, then 0.5 to 0.6.
-    IfFileExists "$INSTDIR\content\packages\uqm-0.4.0-voice.uqm" 0 DelOldContent
-      StrCpy $MD5SUM "52a084cfaa0bc7fcc63a295feb8cbd28"
-      md5dll::GetFileMD5 "$INSTDIR\content\packages\uqm-0.4.0-voice.uqm"
+    IfFileExists "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm" 0 DelOldContent
+      StrCpy $MD5SUM "a20cacc8e66f5ff1fdf5e1d3a3b93fd2"
+      md5dll::GetFileMD5 "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm"
       Pop $0
       StrCmp $MD5SUM $0 0 DelOldContent
-      CopyFiles "$INSTDIR\content\packages\uqm-0.4.0-voice.uqm" "$INSTDIR\content\packages\uqm-0.5.0-voice.uqm"
+      CopyFiles "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm" "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm"
 DelOldContent:
     Delete "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
     Delete "$INSTDIR\content\packages\uqm-0.3-voice.zip"
@@ -343,7 +340,6 @@ SectionGroup /e "3DO Content" SECGRP02
     SectionIn 1 4 6
     AddSize 18536
     StrCpy $MANDATORY 0
-    ; TODO: Update MD5SUM for 0.6
     StrCpy $MD5SUM "a20cacc8e66f5ff1fdf5e1d3a3b93fd2"
     Push "uqm-0.6.0-3domusic.uqm"
     Push "$INSTDIR\content\packages"
