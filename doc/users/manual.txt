@@ -47,98 +47,98 @@ the Windows install if you selected "Mimic PC" or "Mimic 3DO" as the
 install type.  You may pass various command line options to customize
 your experience:
 
-	-r 320x240       (or --res)
+	-r 320x240         (or --res)
 
 Sets the screen resolution.  Unless --opengl is set, the only valid
 values are 640x480 and 320x240.
 
-	-f               (or --fullscreen)
+	-f                 (or --fullscreen)
 
 Uses full screen mode.  Pretty straightforward.  Usually good to
 combine with -r 320x240 unless you're using a scaler.
 
-	-o               (or --opengl)
+	-o                 (or --opengl)
 
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
 faster as well -- but it also may not work on older cards.  It also
 permits use of any screen resolution.
 
-	-c               (or --scale=mode)
+	-c                 (or --scale=mode)
 
 Graphics scaling mode (bilinear, biadapt, biadv, triscan, hq or none).
 Default is none. Try these to get smoother graphics with cost on
 performance.
 
-	-b               (or --meleezoom=mode)
+	-b                 (or --meleezoom=mode)
 
 Melee zooming mode (pc or 3do); 'step' is an alias for 'pc' and 'smooth'
 is an alias for '3do'. Default is 3do. Slower machine owners can set it
 to 'pc' to get better performance in melee.
 
-	-s               (or --scanlines)
+	-s                 (or --scanlines)
 
 Simulates interlaced displays.
 
-	-g               (or --gamma)
+	-g                 (or --gamma)
 
 Sets gamma correction. 1.0 causes no change (unless your graphics card
 is originally set to a different value). Higher than 1.0 makes the
 image brighter, lower than 1.0 makes it darker.
 
-	-p               (or --fps)
+	-p                 (or --fps)
 
 Print fps information in the status window.
 
-	-C               (or --configdir)
+	-C                 (or --configdir)
 
 Set the directory where the game will store the config data.
 
-	-n               (or --contentdir)
+	-n                 (or --contentdir)
 
 Set the directory where the game will seek its data.
 
-	-l               (or --logfile)
+	-l                 (or --logfile)
 
 Set a file to receive the diagnostic information that would otherwise go 
 to the console.
 
-	-h               (or --help)
+	-h                 (or --help)
 
 Display a help message.
 
-	-M               (or --musicvol)
+	-M                 (or --musicvol)
 
 Set music volume (0-100).
 
-	-S               (or --sfxvol)
+	-S                 (or --sfxvol)
 
 Set sound effects volume (0-100).
 
-	-T               (or --speechvol)
+	-T                 (or --speechvol)
 
 Set speech volume (0-100). If set to 0, the game runs in 'no speech'
 mode and the oscilloscope reacts to the music.
 
-	-m 3do           (or --music 3do)
+	-m 3do             (or --music 3do)
 
 Use the 3DO remixed soundtrack for songs that were in fact remixed.
 The default.
 
-	-m pc            (or --music pc)
+	-m pc              (or --music pc)
 
 Use the .MOD based PC soundtrack everywhere.
 
-	-q               (or --audioquality)
+	-q                 (or --audioquality)
 
 Can be "high", "medium", or "low".  Specifies how nice the audio
 sounds.  Slower machines should lower the audio quality.
 
-	--addon <addon>  (no short version)
+	--addon <addon>    (no short version)
 
 Replace <addon> by the name of an add-on to enable in the game. See
 the section 'ADD-ONS' below for details.
 
-	--sound          (no short version)
+	--sound            (no short version)
 
 Can be "openal", "mixsdl" or "none". Specifies which driver/mixer
 to use. "openal" is only available when it has been compiled in.
@@ -148,12 +148,12 @@ well with some sound cards.
 Use "none" as a last resort if you cannot get other drivers to work,
 or if you have no soundcard.
 
-	--stereosfx      (no short version)
+	--stereosfx        (no short version)
 
 Enables positional sound effects in melee. Currently works only when
 using openal.
 
-	-u               (or --nosubtitles)
+	-u                 (or --nosubtitles)
 	
 Disables subtitles.
 
@@ -190,12 +190,12 @@ Default.
 	--scroll 3do
 Scroll voice-over/subtitles smoothly while holding down left/right arrow keys
 
-	-i 3do           (or --intro 3do)
+	-i 3do             (or --intro 3do)
 
 Use the 3DO intro and ending movies (if you have them).
 The default.
 
-	-i pc            (or --intro pc)
+	-i pc              (or --intro pc)
 
 Use the PC intro and ending sequences and slide shows. These will be also
 played if you do not have 3DO movies, regardless of -i option.
@@ -216,27 +216,29 @@ NOT OFFICIALLY SUPPORTED OPTIONS
 The following options may not exist in all builds and can change without
 notice at any time.
 
-	--accel          (no short version)
+	--accel            (no short version)
 
 Can be "none", "detect", "mmx", "3dnow", "sse" (also "altivec" if/when
 added; or other platforms). Specifies which platform accelerations
 to use for graphics and sound, if any. All specific platform code can
 only be used when compiled in.
 
-	--netport1       (no short version)
-	--nethost2       (no short version)
+	--netport1 <port>  (no short version)
+	--netport2 <port>  (no short version)
 
-Specifies the default port the bottom or top player respectively will
-connect to or accept incoming connections on. If this parameter is not
-specified, 21837 will be used.  Your firewall needs to be set up to
-allow TCP connections from/to the used port.  This is normally
-configured from the SuperMelee Net menu.
+Specifies the default port that the bottom or top player respectively
+will connect to or accept incoming connections on. If this parameter
+is not specified, 21837 will be used.  This value can be changed later
+in the SuperMelee Net menu. Your firewall needs to be set up to allow
+TCP connections from/to the used port.
 
-	--nethost1       (no short version)
-	--nethost2       (no short version)
+	--nethost1 <host>  (no short version)
+	--nethost2 <host>  (no short version)
 
 Specifies the default name or ip number of the host to connect to for
-the bottom or player.
+the bottom or player. If this parameter is not specified, UQM will
+not attempt an outgoing connection, but instead listen for an incoming
+connection.
 
 	--netdelay       (no short version)
 
