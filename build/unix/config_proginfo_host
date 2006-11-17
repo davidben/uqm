@@ -90,8 +90,8 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_image_LDFLAGS="-framework SDL_image"
 	;;
 	*)
-		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS -I/opt/SDL_image/include/SDL"
-		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -L/opt/SDL_image/lib -lSDL_image"
+		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
+		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
 		;;
 esac
 LIB_SDL_image_VERSION=""
