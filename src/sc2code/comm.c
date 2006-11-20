@@ -1781,6 +1781,9 @@ do_subtitles (UNICODE *pStr)
 	{
 		case READ_SUBTITLE:
 		{
+			/* Baseline may be updated by the ZFP */
+			SubtitleText.baseline = CommData.AlienTextBaseline;
+			SubtitleText.align = CommData.AlienTextAlign;
 			SubtitleText.pStr = pStr;
 			SubtitleText.CharCount = (COUNT)~0;
 			subtitle_state = WAIT_SUBTITLE;
