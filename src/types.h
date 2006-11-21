@@ -38,14 +38,17 @@
 #	include <inttypes.h>
 #endif
 
-#if defined(__MACOS__)
+#if defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
+	|| defined(_M_IA64) || defined(_M_AMD64)
+/* 64-bit platforms */
+#	define UQM_INT16   short
+#	define UQM_INT32   int
+#	define UQM_INT64   long
+
+#elif defined(__MACOS__)
 
 #	define UQM_INT16   short
 #	define UQM_INT32   long
-
-#elif defined (_WIN64) || defined(WIN64)
-
-#	error No Win64 support yet (see types.h)
 
 /* Add your OS support here */
 
@@ -58,12 +61,12 @@
 #endif
 
 /* Figure out how to support 64-bit datatypes */
-#if !defined(__STRICT_ANSI__)
-#if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C)
-#	define UQM_INT64    long long
-#elif defined(_MSC_VER) || defined(__BORLANDC__)
-#	define UQM_INT64    __int64
-#endif
+#if !defined(UQM_INT64) && !defined(__STRICT_ANSI__)
+#	if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C)
+#		define UQM_INT64    long long
+#	elif defined(_MSC_VER) || defined(__BORLANDC__)
+#		define UQM_INT64    __int64
+#	endif
 #endif /* !__STRICT_ANSI__ */
 
 /* The 64-bit type isn't available on EPOC/Symbian OS */
@@ -106,11 +109,6 @@ typedef struct
 	sint32 hi;
 	uint32 lo;
 } sint64;
-typedef struct
-{
-	int32  hi;
-	uint32 lo;
-} int64;
 
 #endif /* UQM_INT64 */
 
