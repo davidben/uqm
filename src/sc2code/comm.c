@@ -100,7 +100,6 @@ static int
 _count_lines (PTEXT pText)
 {
 	SIZE text_width;
-	COUNT maxchars = (COUNT)~0;
 	const unsigned char *pStr;
 	int numLines = 0;
 	BOOLEAN eol;
@@ -113,8 +112,8 @@ _count_lines (PTEXT pText)
 	{
 		++numLines;
 		pText->pStr = pStr;
-		eol = getLineWithinWidth(pText, &pStr, text_width, maxchars);
-	} while (!eol && maxchars);
+		eol = getLineWithinWidth(pText, &pStr, text_width, (COUNT)~0);
+	} while (!eol);
 	pText->pStr = pStr;
 
 	return numLines;
@@ -307,13 +306,15 @@ add_text (int status, PTEXT pTextIn)
 // past the newline, or if the entire string fits, to the end of the
 // string.
 // maxWidth is the maximum number of pixels that a line may be wide
+//   ASSUMPTION: there are no words in the text wider than maxWidth
 // maxChars is the maximum number of characters (not bytes) that are to
 // be fitted.
 // TRUE is returned if a complete line fitted
 // FALSE otherwise
 BOOLEAN
 getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
-		SIZE maxWidth, COUNT maxChars) {
+		SIZE maxWidth, COUNT maxChars)
+{
 	BOOLEAN eol;
 			// The end of the line of text has been reached.
 	BOOLEAN done;
@@ -925,7 +926,6 @@ static BOOLEAN
 DoConvSummary (PSUMMARY_STATE pSS)
 {
 #define DELTA_Y_SUMMARY 8
-#define SUMMARY_CHARS (SIS_SCREEN_WIDTH - 34) / 4
 #define MAX_SUMM_ROWS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT) \
 			/ DELTA_Y_SUMMARY) - 1
 
@@ -960,7 +960,6 @@ DoConvSummary (PSUMMARY_STATE pSS)
 	{	// print the next page
 		RECT r;
 		TEXT t;
-		UNICODE buffer[320]; // SUMMARY_CHARS * 6
 		int row;
 		FONT oldFont;
 
@@ -975,71 +974,48 @@ DoConvSummary (PSUMMARY_STATE pSS)
 
 		SetContextForeGroundColor (COMM_HISTORY_TEXT_COLOR);
 
-		t.baseline.x = SAFE_X + 2;
+		r.extent.width -= 2 + 2;
+		t.baseline.x = 2;
 		t.align = ALIGN_LEFT;
-		t.baseline.y = SAFE_Y + DELTA_Y_SUMMARY;
-		t.CharCount = (COUNT)~0;
+		t.baseline.y = DELTA_Y_SUMMARY;
 		oldFont = SetContextFont (TinyFont);
 
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
 				++row, pSS->NextSub = pSS->NextSub->next)
 		{
-			UNICODE *temp;
+			UNICODE *next;
 
 			if (pSS->LeftOver)
 			{	// some text left from last subtitle
-				temp = pSS->LeftOver;
+				t.pStr = pSS->LeftOver;
 				pSS->LeftOver = NULL;
 			}
 			else
 			{
-				temp = pSS->NextSub->text;
-				if (!temp)
+				t.pStr = pSS->NextSub->text;
+				if (!t.pStr)
 					continue;
 			}
-			
+
+			t.CharCount = (COUNT)~0;
 			for ( ; row < MAX_SUMM_ROWS &&
-					utf8StringCount (temp) > (unsigned) SUMMARY_CHARS;
+					!getLineWithinWidth(&t, &next, r.extent.width, (COUNT)~0);
 					++row)
 			{
-				UNICODE *pend = skipUTF8Chars (temp, SUMMARY_CHARS);
-				int space_index = pend - temp;
-				int i;
-
-				// find last space before it goes over the max chars per line
-				for (i = space_index; i > 0; i--)
-				{
-					if (temp[i] == ' ')
-					{
-						space_index = i;
-						break;
-					}
-				}
-				if ((unsigned)space_index >= sizeof (buffer))
-				{
-					UnlockMutex (GraphicsLock);
-					log_add (log_Fatal, "DoConvSummary() BUG: "
-							"buffer[%u] too small to fit %d bytes\n",
-							sizeof (buffer), space_index);
-					exit (EXIT_FAILURE);
-				}
-				strncpy (buffer, temp, space_index);
-				buffer[space_index] = '\0';
-				temp += space_index + 1;
-
-				t.pStr = buffer;
 				font_DrawText (&t);
 				t.baseline.y += DELTA_Y_SUMMARY;
+				t.pStr = next;
+				t.CharCount = (COUNT)~0;
 			}
 
 			if (row >= MAX_SUMM_ROWS)
 			{	// no more space on screen, but some text left over
 				// from the current subtitle
-				pSS->LeftOver = temp;
+				pSS->LeftOver = next;
 				break;
 			}
 		
-			t.pStr = temp;
+			// this subtitle fit completely
 			font_DrawText (&t);
 			t.baseline.y += DELTA_Y_SUMMARY;
 		}
@@ -1047,6 +1023,7 @@ DoConvSummary (PSUMMARY_STATE pSS)
 		if (row >= MAX_SUMM_ROWS && (pSS->NextSub || pSS->LeftOver))
 		{	// draw *MORE*
 			TEXT mt;
+			UNICODE buffer[80];
 
 			mt.baseline.x = SIS_SCREEN_WIDTH >> 1;
 			mt.baseline.y = t.baseline.y;
