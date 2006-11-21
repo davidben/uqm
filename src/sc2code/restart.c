@@ -106,11 +106,11 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	(void) OldState;  /* Satisfying compiler (unused parameter) */
 }
 
-DWORD InTime;
 
 static BOOLEAN
 DoRestart (PMENU_STATE pMS)
 {
+	static DWORD InTime;
 	static DWORD InactTimeOut;
 
 	/* Cancel any presses of the Pause key. */
@@ -240,14 +240,12 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		UnlockMutex (GraphicsLock);
 		MouseError ();
 		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);	
-		InTime = GetTimeCounter ();
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		DrawRestartMenuGraphic (pMS);
 		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
 		ScreenTransition (3, NULL);
 		UnbatchGraphics ();
-		return TRUE;
 	}
 
 	InTime = GetTimeCounter ();

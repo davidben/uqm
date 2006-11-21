@@ -187,7 +187,7 @@ FRAME PickMeleeFrame;
 static FRAME MeleeFrame;
 static FRAME BuildPickFrame;
 extern QUEUE master_q;
-extern DWORD InTime;
+DWORD InTime;
 PMELEE_STATE volatile pMeleeState;
 
 static BOOLEAN DoMelee (PMELEE_STATE pMS);
@@ -2862,7 +2862,7 @@ Melee (void)
 		MenuState.InputFunc = DoMelee;
 		MenuState.Initialized = FALSE;
 
-#ifdef NETMELE
+#ifdef NETPLAY
 		{
 			COUNT player;
 			for (player = 0; player < NUM_PLAYERS; player++)
