@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Conversation summary breaks lines based on actual chars/words
+  that fit (bug #916) - Alex
 - Netplay configuration dialog - Michael
 - Better error message for 'Kernel failed to load' (#917) - Michael
 - Pushbutton for connecting to netplay, in anticipation of a full 
