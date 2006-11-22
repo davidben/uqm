@@ -32,20 +32,37 @@
 // and is hard-coded to the original 24 fps
 #define CLOCK_BASE_FRAMERATE 24
 
-#define IsLeapYear(yi) (!((yi) & 3) && (((yi) % 100) || ((yi) % 400)))
-
 static int clock_task_func(void* data);
 
 static Mutex clock_mutex;
 
-static int clock_task_func(void* data)
+static BOOLEAN
+IsLeapYear (COUNT year)
 {
-	BOOLEAN LastPilot;
-	DWORD LastTime;
-	BYTE days_in_month[12] =
+	//     every 4th year      but not 100s          yet still 400s
+	return (year & 3) == 0 && ((year % 100) != 0 || (year % 400) == 0);
+}
+
+/* month is 1-based: 1=Jan, 2=Feb, etc. */
+static BYTE
+DaysInMonth (COUNT month, COUNT year)
+{
+	static const BYTE days_in_month[12] =
 	{
 		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
 	};
+
+	if (month == 2 && IsLeapYear (year))
+		return 29; /* February, leap year */
+
+	return days_in_month[month - 1];
+}
+
+static int
+clock_task_func(void* data)
+{
+	BOOLEAN LastPilot;
+	DWORD LastTime;
 	DWORD cycle_index, delay_count;
 	static const COLOR cycle_tab[] =
 	{
@@ -82,15 +99,10 @@ static int clock_task_func(void* data)
 		if (GLOBAL (GameClock).tick_count <= 0
 				&& (GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks) > 0)
 		{			
-			if (GLOBAL (GameClock).month_index == 2)
-			{
-				if (IsLeapYear (GLOBAL (GameClock).year_index))
-					days_in_month[1] = 29; /* leap year */
-				else
-					days_in_month[1] = 28;
-			}
-
-			if (++GLOBAL (GameClock).day_index > days_in_month[GLOBAL (GameClock).month_index - 1])
+			/* next day -- move the calendar */
+			if (++GLOBAL (GameClock).day_index > DaysInMonth (
+						GLOBAL (GameClock).month_index,
+						GLOBAL (GameClock).year_index))
 			{
 				GLOBAL (GameClock).day_index = 1;
 				if (++GLOBAL (GameClock).month_index > 12)
@@ -299,29 +311,18 @@ ValidateEvent (EVENT_TYPE type, PCOUNT pmonth_index, PCOUNT pday_index,
 	year_index = *pyear_index;
 	if (type == RELATIVE_EVENT)
 	{
-		BYTE days_in_month[12] =
-		{
-			31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
-		};
-
 		month_index += GLOBAL (GameClock.month_index) - 1;
 		year_index += GLOBAL (GameClock.year_index) + (month_index / 12);
 		month_index = (month_index % 12) + 1;
-		if (IsLeapYear (year_index))
-			days_in_month[1] = 29; /* leap year */
 
 		day_index += GLOBAL (GameClock.day_index);
-		while (day_index > days_in_month[month_index - 1])
+		while (day_index > DaysInMonth (month_index, year_index))
 		{
-			day_index -= days_in_month[month_index - 1];
+			day_index -= DaysInMonth (month_index, year_index);
 			if (++month_index > 12)
 			{
 				month_index = 1;
 				++year_index;
-				if (IsLeapYear (year_index))
-					days_in_month[1] = 29; /* leap year */
-				else
-					days_in_month[1] = 28;
 			}
 		}
 
