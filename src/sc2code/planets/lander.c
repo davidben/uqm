@@ -137,7 +137,7 @@ static BYTE lander_flags;
 static COLOR
 DamageColorCycle (COLOR c, COUNT i)
 {
-	COLOR damage_tab[DAMAGE_CYCLE + 1] =
+	static const COLOR damage_tab[DAMAGE_CYCLE + 1] =
 	{
 		WHITE_COLOR,
 		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),

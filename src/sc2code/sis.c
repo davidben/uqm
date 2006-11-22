@@ -1108,7 +1108,7 @@ GetCPodCapacity (PPOINT ppt)
 					GLOBAL_SIS (CrewEnlisted))
 			{
 				COUNT pod_remainder, which_row;
-				COLOR crew_rows[] =
+				static const COLOR crew_rows[] =
 				{
 					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E, 0x09), 0x65),
 					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E, 0x00), 0x65),
@@ -1164,7 +1164,7 @@ GetSBayCapacity (PPOINT ppt)
 					GLOBAL_SIS (TotalElementMass))
 			{
 				COUNT bay_remainder, which_row;
-				COLOR color_bars[] =
+				static const COLOR color_bars[] =
 				{
 					 BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F),
 					 BUILD_COLOR (MAKE_RGB15 (0x1C, 0x1C, 0x1C), 0x11),
@@ -1222,7 +1222,7 @@ GetFTankCapacity (PPOINT ppt)
 					GLOBAL_SIS (FuelOnBoard))
 			{
 				COUNT which_row;
-				COLOR fuel_colors[] =
+				static const COLOR fuel_colors[] =
 				{
 					BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 					BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),

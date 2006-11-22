@@ -340,7 +340,7 @@ DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
 	SIZE i;
 	DWORD TimeIn;
 	TEXT t1, t2;
-	COLOR fade_cycle[] =
+	static const COLOR fade_cycle[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D),
 		BUILD_COLOR (MAKE_RGB15 (0x09, 0x09, 0x09), 0x1E),
@@ -437,7 +437,7 @@ UninitEncounter (void)
 		UNICODE buf[80];
 		HSTARSHIP hStarShip;
 		SHIP_FRAGMENTPTR FragPtr;
-		COLOR fade_ship_cycle[] =
+		static const COLOR fade_ship_cycle[] =
 		{
 			BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x00), 0x2F),
 			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),

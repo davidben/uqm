@@ -422,7 +422,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 				i = (BYTE)(NUM_EXPLOSION_FRAMES * 3 - 1) - ShipPtr->life_span;
 				if (i <= 4)
 				{
-					COLOR flash_tab0[] =
+					static const COLOR flash_tab0[] =
 					{
 						BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
 						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24),
@@ -443,7 +443,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 					i -= 5;
 					if (i <= 14)
 					{
-						COLOR flash_tab1[] =
+						static const COLOR flash_tab1[] =
 						{
 							BUILD_COLOR (MAKE_RGB15 (0x1E, 0x1F, 0x12), 0x70),
 							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E),
@@ -525,7 +525,7 @@ PostProcessStatus (PELEMENT ShipPtr)
 							c = BLACK_COLOR;
 						else
 						{
-							COLOR flash_tab2[] =
+							static const COLOR flash_tab2[] =
 							{
 								BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 								BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),

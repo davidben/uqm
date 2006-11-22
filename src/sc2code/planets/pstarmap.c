@@ -364,7 +364,7 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	{
 		COUNT index;
 		HSTARSHIP hStarShip, hNextShip;
-		COLOR race_colors[] =
+		static const COLOR race_colors[] =
 		{
 			RACE_COLORS
 		};

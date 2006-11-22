@@ -47,7 +47,7 @@ static int clock_task_func(void* data)
 		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
 	};
 	DWORD cycle_index, delay_count;
-	COLOR cycle_tab[] =
+	static const COLOR cycle_tab[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x14, 0x18), 0x5B),
 		BUILD_COLOR (MAKE_RGB15 (0x06, 0x10, 0x16), 0x5C),

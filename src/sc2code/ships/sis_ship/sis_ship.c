@@ -328,7 +328,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 		HELEMENT hObject, hNextObject;
 		ELEMENTPTR ShipPtr;
 		COLOR LaserColor;
-		COLOR ColorRange[] =
+		static const COLOR ColorRange[] =
 		{
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),

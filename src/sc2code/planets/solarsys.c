@@ -216,7 +216,7 @@ LoadSolarSys (void)
 	PPLANET_DESC pCurDesc;
 	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
-	COLOR temp_color_array[NUM_TEMP_RANGES] =
+	static const COLOR temp_color_array[NUM_TEMP_RANGES] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x06, 0x08), 0x62),

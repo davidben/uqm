@@ -630,7 +630,7 @@ DrawCargo (COUNT redraw_state)
 	{
 		TEXT t;
 		UNICODE buf[40];
-		COLOR cargo_color[] =
+		static const COLOR cargo_color[] =
 		{
 			BUILD_COLOR (MAKE_RGB15 (0x02, 0x0E, 0x13), 0x00),
 			BUILD_COLOR (MAKE_RGB15 (0x19, 0x00, 0x00), 0x00),

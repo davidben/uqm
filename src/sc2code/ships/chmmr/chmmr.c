@@ -200,7 +200,7 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 	RECT r;
 	STARSHIPPTR StarShipPtr;
 	LASER_BLOCK LaserBlock;
-	COLOR cycle_array[] =
+	static const COLOR cycle_array[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
@@ -348,12 +348,13 @@ chmmr_postprocess (PELEMENT ElementPtr)
 					DISPLAY_TO_WORLD (8 + 9 + 11 + 14),
 					DISPLAY_TO_WORLD (8 + 9 + 11 + 14 + 18),
 				};
-					COLOR color_tab[] =
-					{ BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x53),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0C), 0x55),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56),
-					  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57),
+				static const COLOR color_tab[] =
+				{
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x53),
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0C), 0x55),
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56),
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57),
 				};
 							
 
