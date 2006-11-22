@@ -37,7 +37,7 @@ typedef struct _alist_map {
 /* ***** alist_entry operations ***** */
 
 /* Constructor and destructor */
-alist_entry *AlistEntry_New (const char *key, const char *value);
+alist_entry *AlistEntry_New (alist *m, const char *key, const char *value);
 void AlistEntry_Free (alist_entry *e);
 
 /* ***** alist operations ***** */

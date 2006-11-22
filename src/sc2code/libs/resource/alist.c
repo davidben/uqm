@@ -24,12 +24,12 @@
 #include "alist.h"
 
 alist_entry *
-AlistEntry_New (const char *key, const char *value)
+AlistEntry_New (alist *m, const char *key, const char *value)
 {
 	alist_entry *e;
 	e = malloc (sizeof(alist_entry));
-	e->key = key;
-	e->value = value;
+	e->key = StringBank_AddOrFindString(m->bank, key);
+	e->value = StringBank_AddOrFindString(m->bank, value);
 	e->next = NULL;
 	return e;
 }
@@ -84,11 +84,11 @@ Alist_PutString (alist *m, const char *key, const char *value)
 {
 	alist_entry *e = Alist_GetEntry (m, key);
 	if (e == NULL) {
-		e = AlistEntry_New(key, value);
+		e = AlistEntry_New(m, key, value);
 		e->next = m->first;
 		m->first = e;
 	} else {
-		e->value = value;
+		e->value = StringBank_AddOrFindString(m->bank, value);
 	}
 }
 
