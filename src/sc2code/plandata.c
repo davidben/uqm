@@ -24,7 +24,7 @@
 STAR_DESC starmap_array[] =
 {
 	//                           postfix name index (like 'Normae')
-    //                         prefix name index (like 'Alpha')   |
+	//                         prefix name index (like 'Alpha')   |
 	//                                        alien presence  |   |
 	//                                     owner (unused)  |  |   |
 	//   x,    y              star type   colour       |   |  |   |
