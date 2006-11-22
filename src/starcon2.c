@@ -360,65 +360,33 @@ main (int argc, char *argv[])
 		parseVolume (res_GetString ("config.speechvol"), 
 				&options.speechVolumeScale, "speech volume");
 	}		
-	if (res_HasKey ("config.keys.1.name"))
-	{
-		strncpy(input_templates[0].name, res_GetString ("config.keys.1.name"), 30);
-		input_templates[0].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[0].name, "Arrows");
-		res_PutString ("config.keys.1.name", input_templates[0].name);
-	}
-	if (res_HasKey ("config.keys.2.name"))
-	{
-		strncpy(input_templates[1].name, res_GetString ("config.keys.2.name"), 30);
-		input_templates[1].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[1].name, "WASD");
-		res_PutString ("config.keys.2.name", input_templates[1].name);
-	}
-	if (res_HasKey ("config.keys.3.name"))
-	{
-		strncpy(input_templates[2].name, res_GetString ("config.keys.3.name"), 30);
-		input_templates[2].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[2].name, "Arrows (2)");
-		res_PutString ("config.keys.3.name", input_templates[2].name);
-	}
-	if (res_HasKey ("config.keys.4.name"))
-	{
-		strncpy(input_templates[3].name, res_GetString ("config.keys.4.name"), 30);
-		input_templates[3].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[3].name, "ESDF");
-		res_PutString ("config.keys.4.name", input_templates[3].name);
-	}
-	if (res_HasKey ("config.keys.5.name"))
-	{
-		strncpy(input_templates[4].name, res_GetString ("config.keys.5.name"), 30);
-		input_templates[4].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[4].name, "Joystick 1");
-		res_PutString ("config.keys.5.name", input_templates[4].name);
-	}
-	if (res_HasKey ("config.keys.6.name"))
-	{
-		strncpy(input_templates[5].name, res_GetString ("config.keys.6.name"), 30);
-		input_templates[5].name[29] = 0;
-	}
-	else
-	{
-		strcpy (input_templates[5].name, "Joystick 2");
-		res_PutString ("config.keys.6.name", input_templates[5].name);
+
+	{	/* init control template names */
+		static const char* defaultNames[] =
+		{
+			"Arrows", "WASD", "Arrows (2)",
+			"ESDF", "Joystick 1", "Joystick 2"
+		};
+		int i;
+
+		for (i = 0; i < 6; ++i)
+		{
+			char cfgkey[64];
+
+			snprintf(cfgkey, sizeof(cfgkey), "config.keys.%d.name", i + 1);
+			cfgkey[sizeof(cfgkey) - 1] = '\0';
+
+			if (res_HasKey (cfgkey))
+			{
+				strncpy (input_templates[i].name, res_GetString (cfgkey), 30);
+				input_templates[i].name[29] = 0;
+			}
+			else
+			{
+				strcpy (input_templates[i].name, defaultNames[i]);
+				res_PutString (cfgkey, input_templates[i].name);
+			}
+		}
 	}
 
 	optionsResult = parseOptions (argc, argv, &options);
