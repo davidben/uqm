@@ -323,7 +323,8 @@ chmmr_postprocess (PELEMENT ElementPtr)
 		LockElement (ElementPtr->hTarget, &ShipElementPtr);
 		
 		ProcessSound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ShipElementPtr);
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+				ShipElementPtr);
 
 		UnlockElement (ElementPtr->hTarget);
 
@@ -340,7 +341,7 @@ chmmr_postprocess (PELEMENT ElementPtr)
 				SIZE i, dx, dy;
 				COUNT angle, magnitude;
 				STARSHIPPTR EnemyStarShipPtr;
-				SIZE shadow_offs[] =
+				static const SIZE shadow_offs[] =
 				{
 					DISPLAY_TO_WORLD (8),
 					DISPLAY_TO_WORLD (8 + 9),
@@ -356,8 +357,9 @@ chmmr_postprocess (PELEMENT ElementPtr)
 					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56),
 					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57),
 				};
-							
+				DWORD current_speed, max_speed;
 
+				// calculate tractor beam effect
 				angle = FACING_TO_ANGLE (StarShipPtr->ShipFacing);
 				dx = (ElementPtr->next.location.x
 						+ COSINE (angle, (LASER_RANGE / 3)
@@ -375,6 +377,23 @@ chmmr_postprocess (PELEMENT ElementPtr)
 				GetCurrentVelocityComponents (&ShipElementPtr->velocity,
 						&dx, &dy);
 				GetElementStarShip (ShipElementPtr, &EnemyStarShipPtr);
+
+#ifdef BUG_860_FIX
+				// set the effected ship's speed flags
+				current_speed = VelocitySquared (dx, dy);
+				max_speed = VelocitySquared (WORLD_TO_VELOCITY (
+						EnemyStarShipPtr->RaceDescPtr->characteristics.max_thrust),
+						0);
+				EnemyStarShipPtr->cur_status_flags &= ~(SHIP_AT_MAX_SPEED
+						| SHIP_BEYOND_MAX_SPEED);
+				if (current_speed > max_speed)
+					EnemyStarShipPtr->cur_status_flags |= (SHIP_AT_MAX_SPEED
+							| SHIP_BEYOND_MAX_SPEED);
+				else if (current_speed == max_speed)
+					EnemyStarShipPtr->cur_status_flags |= SHIP_AT_MAX_SPEED;
+#endif // BUG_860_FIX
+
+				// add tractor beam graphical effects
 				for (i = 0; i < NUM_SHADOWS; ++i)
 				{
 					HELEMENT hShadow;
