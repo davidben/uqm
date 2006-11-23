@@ -47,6 +47,12 @@ extern void SetVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE
 extern void DeltaVelocityComponents (VELOCITYPTR velocityptr, SIZE dx,
 		SIZE dy);
 
+static inline DWORD
+VelocitySquared (SIZE dx, SIZE dy)
+{
+	return (DWORD)((long)dx * dx + (long)dy * dy);
+}
+
 #define VELOCITY_SHIFT 5
 #define VELOCITY_SCALE (1<<VELOCITY_SHIFT)
 

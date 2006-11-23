@@ -42,9 +42,13 @@ animation_preprocess (PELEMENT ElementPtr)
 	}
 }
 
+
 UWORD
 inertial_thrust (ELEMENTPTR ElementPtr)
 {
+#define MAX_ALLOWED_SPEED     WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (18))
+#define MAX_ALLOWED_SPEED_SQR ((DWORD)MAX_ALLOWED_SPEED * MAX_ALLOWED_SPEED)
+
 	COUNT CurrentAngle, TravelAngle;
 	COUNT max_thrust, thrust_increment;
 	VELOCITYPTR VelocityPtr;
@@ -54,84 +58,79 @@ inertial_thrust (ELEMENTPTR ElementPtr)
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	CurrentAngle = FACING_TO_ANGLE (StarShipPtr->ShipFacing);
+	TravelAngle = GetVelocityTravelAngle (VelocityPtr);
 	thrust_increment = StarShipPtr->RaceDescPtr->characteristics.thrust_increment;
 	max_thrust = StarShipPtr->RaceDescPtr->characteristics.max_thrust;
 	if (thrust_increment == max_thrust)
-	{
+	{	// inertialess acceleration (Skiff)
 		SetVelocityVector (VelocityPtr,
 				max_thrust, StarShipPtr->ShipFacing);
 		return (SHIP_AT_MAX_SPEED);
 	}
-	else if ((TravelAngle =
-			GetVelocityTravelAngle (VelocityPtr)) == CurrentAngle
+	else if (TravelAngle == CurrentAngle
 			&& (StarShipPtr->cur_status_flags
-			& (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED))
+				& (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED))
 			&& !(StarShipPtr->cur_status_flags & SHIP_IN_GRAVITY_WELL))
+	{	// already maxed-out acceleration
 		return (StarShipPtr->cur_status_flags
 				& (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED));
+	}
 	else
 	{
 		SIZE delta_x, delta_y;
 		SIZE cur_delta_x, cur_delta_y;
 		DWORD desired_speed, max_speed;
+		DWORD current_speed;
 
 		thrust_increment = WORLD_TO_VELOCITY (thrust_increment);
 		GetCurrentVelocityComponents (VelocityPtr, &cur_delta_x, &cur_delta_y);
-		delta_x = cur_delta_x
-				+ COSINE (CurrentAngle, thrust_increment);
-		delta_y = cur_delta_y
-				+ SINE (CurrentAngle, thrust_increment);
-		desired_speed = (DWORD)((long)delta_x * delta_x)
-				+ (DWORD)((long)delta_y * delta_y);
-		max_speed = (DWORD)WORLD_TO_VELOCITY (max_thrust)
-				* WORLD_TO_VELOCITY (max_thrust);
+		current_speed = VelocitySquared (cur_delta_x, cur_delta_y);
+		delta_x = cur_delta_x + COSINE (CurrentAngle, thrust_increment);
+		delta_y = cur_delta_y + SINE (CurrentAngle, thrust_increment);
+		desired_speed = VelocitySquared (delta_x, delta_y);
+		max_speed = VelocitySquared (WORLD_TO_VELOCITY (max_thrust), 0);
+		
 		if (desired_speed <= max_speed)
+		{	// normal acceleration
 			SetVelocityComponents (VelocityPtr, delta_x, delta_y);
+		}
+		else if (((StarShipPtr->cur_status_flags & SHIP_IN_GRAVITY_WELL)
+				&& desired_speed <= MAX_ALLOWED_SPEED_SQR)
+				|| desired_speed < current_speed)
+		{	// acceleration in a gravity well within max allowed
+			// deceleration after gravity whip
+			SetVelocityComponents (VelocityPtr, delta_x, delta_y);
+			return (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
+		}
+		else if (TravelAngle == CurrentAngle)
+		{	// normal max acceleration, same vector
+			if (current_speed <= max_speed)
+				SetVelocityVector (VelocityPtr, max_thrust,
+						StarShipPtr->ShipFacing);
+			return (SHIP_AT_MAX_SPEED);
+		}
 		else
-		{
-#define MAX_ALLOWED_SPEED WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (18))
-			DWORD current_speed;
+		{	// maxed-out acceleration at an angle to current travel vector
+			// thrusting at an angle while at max velocity only changes
+			// the travel vector, but does not really change the velocity
 
-			if (((StarShipPtr->cur_status_flags & SHIP_IN_GRAVITY_WELL)
-					&& desired_speed <=
-					(DWORD)MAX_ALLOWED_SPEED * (DWORD)MAX_ALLOWED_SPEED)
-					|| (current_speed =
-					(DWORD)((long)cur_delta_x * (long)cur_delta_x)
-					+ (DWORD)((long)cur_delta_y * (long)cur_delta_y)) > desired_speed)
+			VELOCITY_DESC v = *VelocityPtr;
+
+			DeltaVelocityComponents (&v,
+					COSINE (CurrentAngle, thrust_increment >> 1)
+					- COSINE (TravelAngle, thrust_increment),
+					SINE (CurrentAngle, thrust_increment >> 1)
+					- SINE (TravelAngle, thrust_increment));
+			GetCurrentVelocityComponents (&v, &cur_delta_x, &cur_delta_y);
+			desired_speed = VelocitySquared (cur_delta_x, cur_delta_y);
+			if (desired_speed > max_speed)
 			{
-				SetVelocityComponents (VelocityPtr, delta_x, delta_y);
+				if (desired_speed < current_speed)
+					*VelocityPtr = v;
 				return (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
 			}
-			else if (TravelAngle == CurrentAngle)
-			{
-				if (current_speed <= max_speed)
-					SetVelocityVector (VelocityPtr,
-							max_thrust, StarShipPtr->ShipFacing);
-				return (SHIP_AT_MAX_SPEED);
-			}
-			else
-			{
-				VELOCITY_DESC v;
 
-				v = *VelocityPtr;
-
-				DeltaVelocityComponents (&v,
-						COSINE (CurrentAngle, thrust_increment >> 1)
-						- COSINE (TravelAngle, thrust_increment),
-						SINE (CurrentAngle, thrust_increment >> 1)
-						- SINE (TravelAngle, thrust_increment));
-				GetCurrentVelocityComponents (&v, &cur_delta_x, &cur_delta_y);
-				desired_speed = (long)cur_delta_x * (long)cur_delta_x
-						+ (long)cur_delta_y * (long)cur_delta_y;
-				if (desired_speed > max_speed)
-				{
-					if (desired_speed < current_speed)
-						*VelocityPtr = v;
-					return (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED);
-				}
-
-				*VelocityPtr = v;
-			}
+			*VelocityPtr = v;
 		}
 
 		return (0);
