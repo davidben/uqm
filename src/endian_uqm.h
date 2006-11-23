@@ -25,6 +25,23 @@
 #include "config.h"
 #include "types.h"
 
+#if defined (__APPLE__) && defined (__GNUC__)
+// When using the MacOS gcc compiler to build universal binaries,
+// each file will be compiled once for each platform.
+// This means that checking endianness beforehand from build.sh will not do,
+// but fortunately, gcc defines __BIG_ENDIAN__ or __LITTLE_ENDIAN__ on
+// this platform.
+#	if defined(__BIG_ENDIAN__)
+#		undef WORDS_BIGENDIAN
+#		define WORDS_BIGENDIAN
+#	elif defined(__LITTLE_ENDIAN__)
+#		undef WORDS_BIGENDIAN
+#	else
+		// Neither __BIG_ENDIAN__ nor __LITTLE_ENDIAN__ is defined.
+		// Fallback to using the build.sh defined value.
+#	endif
+#endif  /* __APPLE__ */
+
 #if defined(_MSC_VER) || defined(__BORLANDC__) || \
     defined(__DMC__) || defined(__SC__) || \
     defined(__WATCOMC__) || defined(__LCC__)

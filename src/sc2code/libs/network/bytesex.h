@@ -27,7 +27,7 @@
 
 #include "port.h"
 		// for inline
-#include "config.h"
+#include "endian_uqm.h"
 		// for WORDS_BIGENDIAN
 #include "types.h"
 
