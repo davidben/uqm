@@ -203,7 +203,7 @@ UseCaster (void)
 	}
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_INTERPLANETARY
-			|| pSolarSysState != NULL)
+			|| pSolarSysState == NULL)
 		return FALSE;
 
 	if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[1]
