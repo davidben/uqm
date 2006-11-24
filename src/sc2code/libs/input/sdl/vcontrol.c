@@ -749,12 +749,20 @@ VControl_RemoveAllBindings ()
 void
 VControl_ProcessKeyDown (SDLKey symbol)
 {
+	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+		log_add (log_Warning, "VControl: Got unknown key index %d", symbol);
+		return;
+	}
+	
 	activate (bindings[symbol]);
 }
 
 void
 VControl_ProcessKeyUp (SDLKey symbol)
 {
+	if ((symbol < 0) || (symbol >= SDLK_LAST))
+		return;
+
 	deactivate (bindings[symbol]);
 }
 
