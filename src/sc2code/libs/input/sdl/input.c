@@ -35,7 +35,8 @@
 static int kbdhead=0, kbdtail=0;
 static wchar_t kbdbuf[KBDBUFSIZE];
 static wchar_t lastchar;
-static int kbdstate[SDLK_LAST];
+static int kbdstate[SDLK_LAST + 1];
+		// +1 for tracking all yet unknown keys
 
 static BOOLEAN InputInitialized = FALSE;
 
@@ -315,24 +316,33 @@ ProcessInputEvent (const SDL_Event *Event)
 	ProcessMouseEvent (Event);
 	VControl_HandleEvent (Event);
 
+	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any
 		SDLKey k = Event->key.keysym.sym;
 		wchar_t map_key = Event->key.keysym.unicode;
 
+		if (k < 0 || k > SDLK_LAST)
+			k = SDLK_LAST; // for unknown keys
+
 		if (Event->type == SDL_KEYDOWN)
 		{
+			int newtail;
+
 			// dont care about the non-printable, non-char
 			if (!map_key)
 				return;
 
 			kbdstate[k]++;
-			ImmediateInputState.menu[KEY_MENU_ANY]++;
 			
-			lastchar = map_key;
-			kbdbuf[kbdtail] = map_key;
-			kbdtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
-			if (kbdtail == kbdhead)
-				kbdhead = (kbdhead + 1) & (KBDBUFSIZE - 1);
+			newtail = (kbdtail + 1) & (KBDBUFSIZE - 1);
+			// ignore the char if the buffer is full
+			if (newtail != kbdhead)
+			{
+				kbdbuf[kbdtail] = map_key;
+				kbdtail = newtail;
+				lastchar = map_key;
+				ImmediateInputState.menu[KEY_MENU_ANY]++;
+			}
 		}
 		else if (Event->type == SDL_KEYUP)
 		{
