@@ -378,7 +378,6 @@ chmmr_postprocess (PELEMENT ElementPtr)
 						&dx, &dy);
 				GetElementStarShip (ShipElementPtr, &EnemyStarShipPtr);
 
-#ifdef BUG_860_FIX
 				// set the effected ship's speed flags
 				current_speed = VelocitySquared (dx, dy);
 				max_speed = VelocitySquared (WORLD_TO_VELOCITY (
@@ -391,7 +390,6 @@ chmmr_postprocess (PELEMENT ElementPtr)
 							| SHIP_BEYOND_MAX_SPEED);
 				else if (current_speed == max_speed)
 					EnemyStarShipPtr->cur_status_flags |= SHIP_AT_MAX_SPEED;
-#endif // BUG_860_FIX
 
 				// add tractor beam graphical effects
 				for (i = 0; i < NUM_SHADOWS; ++i)
