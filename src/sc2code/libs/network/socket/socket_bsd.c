@@ -182,7 +182,7 @@ Socket_setNodelay(Socket *sock) {
 // IPTOS_RELIABILITY, or IPTOS_MINCOST.
 int
 Socket_setTOS(Socket *sock, int tos) {
-	if (setsockopt(sock->fd, SOL_IP, IP_TOS, &tos, sizeof tos) == -1) {
+	if (setsockopt(sock->fd, IPPROTO_IP, IP_TOS, &tos, sizeof tos) == -1) {
 #ifdef DEBUG
 		int savedErrno = errno;
 		log_add(log_Warning, "Setting socket type-of-service failed: %s.\n",
@@ -229,7 +229,7 @@ int
 Socket_setKeepAlive(Socket *sock) {
 	int flag = 1;
 
-	if (setsockopt(sock->fd, SOL_TCP, SO_KEEPALIVE, &flag, sizeof flag)
+	if (setsockopt(sock->fd, IPPROTO_TCP, SO_KEEPALIVE, &flag, sizeof flag)
 			== -1) {
 		int savedErrno = errno;
 		log_add(log_Error, "Setting keep-alive on socket failed: %s\n",
