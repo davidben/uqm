@@ -1,4 +1,7 @@
 Changes towards version 0.6:
+- Ships in battle can resume normal speed in all circumstances after
+  the enemy Avatar's tractor beam disengages (bug #860; this is a
+  netplay desynchronizing change) - Alex
 - Conversation summary breaks lines based on actual chars/words
   that fit (bug #916) - Alex
 - Netplay configuration dialog - Michael
