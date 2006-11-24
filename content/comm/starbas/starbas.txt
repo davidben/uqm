@@ -353,7 +353,7 @@ Their assistance may be crucial to our success.
 #(MUST_DEFEAT) starb062.ogg
 Captain, I wish I had an easy answer, but I don't.
 The only way I can see of liberating Earth, as well as the Alliance allies
-...is to destroy the Ur-Quan and their armada of battle thralls entirely.
+is to destroy the Ur-Quan and their armada of battle thralls entirely.
 
 #(DEFEAT_LIKE_SO) starb063.ogg
 To defeat our enemies, we will need awesome strength, both in your flagship and the fleet
@@ -834,7 +834,7 @@ For weeks now we have been scanning space in the direction of the Tucanae stars
 hoping to hear some word from our Zoq-Fot-Pik allies,
 with no success. We must assume that something grave has happened to them.
 We did receive an alien broadcast however -- it rang through space like an electronic howl.
-I think the best way to describe it would be...
+I think the best way to describe it would be
 `exultant'.
 
 #(STARBASE_BULLETIN_27) starb122.ogg

@@ -405,7 +405,7 @@ no... the Huge-glands, no, I remember, the Hunams!
 Hello, Hunam, what would you like to threaten me about today?
 
 #(INIT_FRIENDLY_HELLO_SPACE)	spath040.ogg
-Hello friend Hunam! How nice to see you again. Kill any one today?
+Hello friend Hunam! How nice to see you again. Kill anyone today?
 
 #(SUBSEQUENT_FRIENDLY_HELLO_SPACE)	spath041.ogg
 ...No! No! Weapons Officer, don't fire! It's the Hunam again, you idiot!

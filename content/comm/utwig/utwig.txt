@@ -289,7 +289,7 @@ Hmm, sounds like things were going pretty well. So what happened?
 Yes, things were perfect. What happened is, well, I... it is difficult to talk about.
 But I saw it happen. I witnessed the Chinz-Rahl celebration.
 I felt the Ultron fill the empty place that I did not know was there.
-I saw the Grand Proctor pass it to...
+I saw the Grand Proctor pass it to
 well, they say that the Chief Groo did not know that it was so heavy and slippery.
 Perhaps it was a combination of factors.
 Some who have reviewed the records claim it was actually a conspiracy!
@@ -705,14 +705,14 @@ Taunting us buys you nothing. Go now!
 
 #(OUT_TAKES)	utwig075.ogg
 Hello again, heroic humanoid!
-Ever since you returned the Ultron to us...
-...everything has been WONDERFUL... just perfect!
-Within just two days our factories will begin churning out...
-...appropriate facial appliances, and I have already picked out my first mask...
-...the Domino of Unrivaled Merriment!
-Yes, we are all ecstatic... even the High Proctor gambols...
-...as she performs the Exultant Caper of Revelation!
+Ever since you returned the Ultron to us
+everything has been WONDERFUL... just perfect!
+Within just two days our factories will begin churning out
+appropriate facial appliances, and I have already picked out my first mask
+the Domino of Unrivaled Merriment!
+Yes, we are all ecstatic... even the High Proctor gambols
+as she performs the Exultant Caper of Revelation!
 Look how she leaps with the Ultron held high!
-How she twirls, how she slips and tosses the Ultron into the air... OH NOOooooo!!!
+How she twists, how she twirls, how she slips and tosses the Ultron into the air... OH NOOooooo!!!
 (CRASH!!)
 

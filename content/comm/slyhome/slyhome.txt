@@ -362,7 +362,7 @@ Why did the Melnorme sell it to you?
 The Melnorme traded it to us for data on the life on Source.
 They said the information was unique, and was worth
 oh, I don't really understand their units of exchange
-somthing like 10,000 Gree-dots... or something like that.
+something like 10,000 Gree-dots... or something like that.
 Fortunately, that was EXACTLY the price of their catalog item 2418
 Remote Self-Replicating Robot Explorer Probe.
 
@@ -523,7 +523,7 @@ and Analyze Data at three. I told Joyous Lifting to set it a bit higher
 let me ask him what he set it to...
 Oh! My! That was a bit extreme, wasn't it?
 Joyous Lifting told me he changed it to nine hundred ninety-nine
-...the highest setting on the dial.
+the highest setting on the dial.
 
 #(enough_problem)
 Let's talk more about this later on.

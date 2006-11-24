@@ -121,7 +121,7 @@ No, Sub-Commander, this is impossible. It couldn't escape from our strongest con
 IT'S WHAT?!! Decks five and six?! Eleven Crewmen!!
 Sound the alarms, you fool! Where is it now?! Engineering, report!... Engineering?!
 Sub-Commander, seal Bulkhe-- Sub-Commander... are you listening to me? What are you staring at?
-PAY ATTENTION, SUB- COMMANDER! Give me a report on its posit-- WHAT ARE YOU STARING AT!...
+PAY ATTENTION, Sub-Commander! Give me a report on its posit-- WHAT ARE YOU STARING AT!...
 behind me?
 WH- Wh- what- wh- AIEEEEE!!!!!...
 
@@ -205,7 +205,7 @@ that has marred our two species' relationship up to this point.
 Admittedly, as THE acknowledged VUX military genius
 I would find it interesting to face your ONE powerful, alien starship
 with my huge personal fleet of Intruders, but oh! What a mistake it would be.
-...also... I think it only fair to warn you, Captain
+Also... I think it only fair to warn you, Captain
 that in my campaigns I collected many interesting items.
 Amongst these treasures is a Precursor artifact, a warp nullification field
 that prevents nearby ships from making emergency HyperSpace maneuvers... from running away.
@@ -514,8 +514,8 @@ We have no choice. You are too wretched. We shall eliminate you.
 #(OUT_TAKES) vux060.ogg
 Oh no! It's one of those ultra-gross humans again!
 Quick, hide your eye!
-AGGH! Look at the pulpy red thing in its mouth...
-...how it wriggles and writhes like a wet blood worm...
-...and plays over the hard white nubs that protrude from its headbone!
+AGGH! Look at the pulpy red thing in its mouth
+how it wriggles and writhes like a wet blood worm
+and plays over the hard white nubs that protrude from its headbone!
 I think I'm going to be sick.
 

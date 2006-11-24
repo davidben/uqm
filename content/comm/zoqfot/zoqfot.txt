@@ -929,8 +929,8 @@ The Empire of
 Thank you for playing The Ur-Quan Masters.
 
 #(OUT_TAKES1) zoqfo292.ogg
-This game has been brought to you by...
-...Frungy! The Sport of Kings!
+This game has been brought to you by
+Frungy! The Sport of Kings!
 
 #(OUT_TAKES2) zoqfo293.ogg
 No it wasn't!
@@ -940,8 +940,8 @@ Yes it was!
 
 #(OUT_TAKES4) zoqfo294.ogg
 Frungy had nothing to do with it!
-This game was about war, slavery, intolerance...
-...heroism, justice, and the inevitable triumph of Good over Evil!
+This game was about war, slavery, intolerance
+heroism, justice, and the inevitable triumph of Good over Evil!
 
 #(OUT_TAKES5) zoqfo291.ogg
 Are you crazy?! The developers got millions in Frungy endorsements!
