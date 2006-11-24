@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// See doc/devel/planettopo for details.
+
 #include "gfxlib.h"
 #include "mathlib.h"
 #include "planets.h"
