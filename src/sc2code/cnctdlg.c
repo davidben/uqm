@@ -163,8 +163,8 @@ MCD_DrawSlider (WIDGET *_self, int x, int y)
 	r.extent.width = 3;
 	r.extent.height = 8;
 	r.corner.y = t.baseline.y - 7;
-	r.corner.x = t.baseline.x + 3 * tick + (3 * tick * (self->value - self->min) /
-		(self->max - self->min)) - 1;
+	r.corner.x = t.baseline.x + 3 * tick + (3 * tick *
+			(self->value - self->min) / (self->max - self->min)) - 1;
 	DrawFilledRectangle (&r);
 
 	(*self->draw_value)(self, t.baseline.x + 7 * tick, t.baseline.y);
@@ -387,7 +387,7 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 
 /* Button response routines */
 
-static int 
+static int
 do_connect (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
@@ -405,7 +405,7 @@ do_connect (WIDGET *self, int event)
 	return FALSE;
 }
 
-static int 
+static int
 do_listen (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
@@ -421,7 +421,7 @@ do_listen (WIDGET *self, int event)
 	return FALSE;
 }
 
-static int 
+static int
 do_cancel (WIDGET *self, int event)
 {
 	if (event == WIDGET_EVENT_SELECT)
@@ -451,8 +451,11 @@ CreateWidgets (void)
 		buttons[i].width = Widget_WidthFullScreen;
 	}
 	buttons[0].name = GAME_STRING (NETMELEE_STRING_BASE + 19);
+			// "Connect to remote host"
 	buttons[1].name = GAME_STRING (NETMELEE_STRING_BASE + 20);
+			// "Wait for incoming connection"
 	buttons[2].name = GAME_STRING (NETMELEE_STRING_BASE + 21);
+			// "Cancel"
 
 	buttons[0].handleEvent = do_connect;
 	buttons[1].handleEvent = do_listen;
@@ -481,33 +484,40 @@ CreateWidgets (void)
 	slider.step = 1;
 	slider.value = netplayOptions.inputDelay;
 	slider.category = GAME_STRING (NETMELEE_STRING_BASE + 24);
+			// "Net Delay"
 
 	for (i = 0; i < 2; i++)
 	{
-                texts[i].tag = WIDGET_TYPE_TEXTENTRY;
-                texts[i].parent = NULL;
-                texts[i].handleEvent = Widget_HandleEventTextEntry;
-                texts[i].receiveFocus = Widget_ReceiveFocusSimple;
-                texts[i].draw = MCD_DrawTextEntry;
-                texts[i].height = Widget_HeightOneLine;
-                texts[i].width = Widget_WidthFullScreen;
-                texts[i].handleEventSelect = OnTextEntryEvent;
-                texts[i].maxlen = WIDGET_TEXTENTRY_WIDTH-1;
-                texts[i].state = WTE_NORMAL;
-                texts[i].cursor_pos = 0;
+		texts[i].tag = WIDGET_TYPE_TEXTENTRY;
+		texts[i].parent = NULL;
+		texts[i].handleEvent = Widget_HandleEventTextEntry;
+		texts[i].receiveFocus = Widget_ReceiveFocusSimple;
+		texts[i].draw = MCD_DrawTextEntry;
+		texts[i].height = Widget_HeightOneLine;
+		texts[i].width = Widget_WidthFullScreen;
+		texts[i].handleEventSelect = OnTextEntryEvent;
+		texts[i].maxlen = WIDGET_TEXTENTRY_WIDTH-1;
+		texts[i].state = WTE_NORMAL;
+		texts[i].cursor_pos = 0;
 	}
 
 	texts[0].category = GAME_STRING (NETMELEE_STRING_BASE + 22);
+			// "Host"
 	texts[1].category = GAME_STRING (NETMELEE_STRING_BASE + 23);
+			// "Port"
 
 	/* We sometimes assign to these internals; cannot strncpy over self! */
 	if (texts[0].value != netplayOptions.peer[current_state->which_side].host)
 	{
-		strncpy (texts[0].value, netplayOptions.peer[current_state->which_side].host, texts[0].maxlen);
+		strncpy (texts[0].value,
+				netplayOptions.peer[current_state->which_side].host,
+				texts[0].maxlen);
 	}
 	if (texts[1].value != netplayOptions.peer[current_state->which_side].port)
 	{
-		strncpy (texts[1].value, netplayOptions.peer[current_state->which_side].port, texts[1].maxlen);
+		strncpy (texts[1].value,
+				netplayOptions.peer[current_state->which_side].port,
+				texts[1].maxlen);
 	}
 	texts[0].value[texts[0].maxlen]=0;
 	texts[1].value[texts[1].maxlen]=0;
@@ -527,7 +537,7 @@ DrawConnectDialog (void)
 
 	LockMutex (GraphicsLock);
 
-	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR, 
+	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR,
 			SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 	menu.draw ((WIDGET *)&menu, r.corner.x + 10, r.corner.y + 10);
@@ -620,3 +630,4 @@ MeleeConnectDialog (int side)
 }
 
 #endif /* NETPLAY */
+
