@@ -363,7 +363,7 @@ have_program() {
 		TEMP_VERSION=`evalVar PROG_${PROG}_VERSION`
 		if [ -z "$TEMP_VERSION" ]; then
 			eval "PROG_${PROG}_PRESENT"=1
-			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
+			echo "Fatal: Could not determine the version of $TEMP_NAME" >&2
 			exit 1
 		fi
 		if not version_match "$2" "$TEMP_VERSION"; then
@@ -517,7 +517,7 @@ EOF
 		TEMP_VERSION=`evalVar LIB_${LIB}_VERSION`
 		if [ -z "$TEMP_VERSION" ]; then
 			eval "LIB_${LIB}_PRESENT"=1
-			echo "Fatal: Could not determine version of $TEMP_NAME" >&2
+			echo "Fatal: Could not determine the version of $TEMP_NAME" >&2
 			exit 1
 		fi
 		if not version_match "$2" "$TEMP_VERSION"; then
