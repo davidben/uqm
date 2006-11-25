@@ -60,7 +60,7 @@ useGccBuildTools() {
 	BUILDTOOL_LINK_COMMAND="\$PROG_gcc_FILE $EXTRA_PLATFORM_GCC_LINK_FLAGS"
 	BUILDTOOL_LINK_DEPEND='gcc'
 }
-case "$BUILD_SYSTEM" in
+case "$HOST_SYSTEM" in
 	Darwin)
 		EXTRA_PLATFORM_GCC_FLAGS_COMPILE_C='-arch ppc -arch i386'
 		EXTRA_PLATFORM_GCC_FLAGS_COMPILE_OBJC='-arch ppc -arch i386'
@@ -71,7 +71,7 @@ case "$BUILD_SYSTEM" in
 		useGccBuildTools
 		;;
 esac	
-case "$BUILD_SYSTEM" in
+case "$HOST_SYSTEM" in
 	Darwin)
 		BUILDTOOL_REZ_NAME="MacOS X resource compiler (Rez)"
 		BUILDTOOL_REZ_COMMAND='$PROG_Rez_FILE'
