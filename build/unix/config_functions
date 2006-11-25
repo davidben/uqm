@@ -15,8 +15,9 @@
 # along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-BUILDLOG=/dev/null
+BUILDLOG=/tmp/build.log
 TEMPFILE="/tmp/build.$$.tmp"
+#KEEPTEMPFILES=keeptempfiles
 
 
 # Description: perform a command, and set the exit status to the opposite.
@@ -74,29 +75,51 @@ $RESULT
 EOF
 }
 
+# Description: delete the files passed as arguments, unless
+#              $KEEPTEMPFILES is set.
+deleteTempFiles() {
+	if [ -n "$KEEPTEMPFILES" ]; then
+		return
+	fi
+
+	rm -f -- "$@"
+}
+
 # Description: read text from stdin to use as a c file to compile
 # Arguments:   $1 - CFLAGS to use for compilation (optional)
 #              $2 - LDFLAGS to use for linking (optional)
 # Returns:     0 - if compile successful
 #              something else - if compile failed
 try_compile_c() {
-	local SYSTEM_FLAGS
-	if [ -z "$COMPILE" ]; then
-		echo "Fatal: Program \$COMPILE is not defined!" >&2
+	local SYSTEM_FLAGS RESULT
+
+	if [ -z "$COMPILE_C" ]; then
+		echo "Fatal: Program \$COMPILE_C is not defined!" >&2
 		exit 1
 	fi
+
 	SYSTEM_FLAGS="$SYSTEM_BUILD_CFLAGS $SYSTEM_BUILD_LDFLAGS $SYSTEM_HOST_CFLAGS $SYSTEM_HOST_LDFLAGS"
 	cat > "$TEMPFILE.c"
-	echo_and_perform $COMPILE $SYSTEM_FLAGS $1 $2 "$TEMPFILE.c" \
-			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
+
+	echo_and_perform $COMPILE_C $SYSTEM_FLAGS $1 "$TEMPFILE.c" \
+			-o "$TEMPFILE.c.o" >> "$BUILDLOG" 2>&1
 	RESULT=$?
+	
+	if [ $RESULT -eq 0 ]; then
+		echo_and_perform $LINK $SYSTEM_FLAGS $2 "$TEMPFILE.c.o" \
+				-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
+		RESULT=$?
+	fi
+	
 	if [ $RESULT -ne 0 ]; then
 		echo "Failed program was:" >> "$BUILDLOG"
 		echo "+++ START $TEMPFILE.c" >> "$BUILDLOG"
 		cat "$TEMPFILE.c" >> "$BUILDLOG"
 		echo "+++ END $TEMPFILE.c" >> "$BUILDLOG"
 	fi
-	rm -f "$TEMPFILE.c" "$TEMPFILE.out"
+
+	deleteTempFiles "$TEMPFILE.c $TEMPFILE.c.o $TEMPFILE.out"
+
 	echo >> "$BUILDLOG"
 	return $RESULT
 }
@@ -104,25 +127,36 @@ try_compile_c() {
 # Description: read text from stdin to use as a c file to compile
 # Arguments:   $1 - CFLAGS to use for compilation (optional)
 #              $2 - LDFLAGS to use for linking (optional)
-# Returns:     -1 - if compile failed
+# Returns:     128 - if compiling or linking failed
 #              otherwise - exit status of the program
 try_compile_and_run_c() {
-	local SYSTEM_FLAGS
-	if [ -z "$COMPILE" ]; then
-		echo "Fatal: Program \$COMPILE is not defined!" >&2
+	local SYSTEM_FLAGS RESULT
+
+	if [ -z "$COMPILE_C" ]; then
+		echo "Fatal: Program \$COMPILE_C is not defined!" >&2
 		exit 1
 	fi
+
 	SYSTEM_FLAGS="$SYSTEM_BUILD_CFLAGS $SYSTEM_BUILD_LDFLAGS $SYSTEM_HOST_CFLAGS $SYSTEM_HOST_LDFLAGS"
 	cat > "$TEMPFILE.c"
-	echo_and_perform $COMPILE $SYSTEM_FLAGS $1 $2 "$TEMPFILE.c" \
-			-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
-	if [ $? -ne 0 ]; then
-		return -1
-	fi
-	rm -f -- "$TEMPFILE.c"
-	"$TEMPFILE.out"
+
+	echo_and_perform $COMPILE_C $SYSTEM_FLAGS $1 "$TEMPFILE.c" \
+			-o "$TEMPFILE.c.o" >> "$BUILDLOG" 2>&1
 	RESULT=$?
-	rm -f -- "$TEMPFILE.out"
+	
+	if [ $RESULT -eq 0 ]; then
+		echo_and_perform $LINK $SYSTEM_FLAGS $2 "$TEMPFILE.c.o" \
+				-o "$TEMPFILE.out" >> "$BUILDLOG" 2>&1
+		RESULT=$?
+	fi
+
+	if [ $RESULT -eq 0 ]; then
+		"$TEMPFILE.out"
+		RESULT=$?
+	fi
+
+	deleteTempFiles "$TEMPFILE.c $TEMPFILE.c.o $TEMPFILE.out"
+
 	echo >> "$BUILDLOG"
 	return $RESULT
 }
@@ -268,7 +302,8 @@ detect_dependencies_library() {
 }
 
 # Description: check if a program is present in the path
-# Arguments:   
+# Arguments:   $1 - The name of the program as used in config_proginfo after
+#                   "BIN_"
 have_program() {
 	local PROG TEMP_NAME TEMP_FILE TEMP_VERSION TEMP_PRESENT TEMP_DETECT
 	local TEMP_DEPEND_DETECT_PROG TEMP_DEPEND_DETECT_LIB
@@ -346,6 +381,64 @@ but version $2 is required!"
 	build_message "$TEMP_NAME found."
 	return 0
 }
+
+# Description: check if a build tool is present, and define the appropriate
+#              environment variable for it.
+# Arguments:   $1 - The type of compile tool. One of PREPROC_C, MKDEP_C,
+#                   COMPILE_C, PREPROC_OBJC, MKDEP_OBJC, COMPILE_OBJC,
+#                   and LINK.
+have_build_tool() {
+	local TOOL TEMP_NAME TEMP_PRESENT DEPENDS DEPEND SUCCESS COMMAND
+
+	TOOL=$1
+
+	TEMP_NAME=`evalVar BUILDTOOL_${TOOL}_NAME`
+	if [ -z "$TEMP_NAME" ]; then
+		echo "Fatal: Program '$TOOL' is not defined!" >&2
+		exit 1
+	fi
+
+	eval TEMP_PRESENT="\$BUILDTOOL_${TOOL}_PRESENT"
+	if [ -n "$TEMP_PRESENT" ]; then
+		return "$TEMP_PRESENT"
+	fi
+
+	SUCCESS=0
+	eval DEPENDS="\$BUILDTOOL_${TOOL}_DEPEND"
+	for DEPEND in $DEPENDS; do
+		if not have_program "$DEPEND"; then
+			SUCCESS=1
+		fi
+	done
+
+	eval "BUILDTOOL_${TOOL}_PRESENT"="\$SUCCESS"
+
+	eval COMMAND="\$BUILDTOOL_${TOOL}_COMMAND"
+	# Expand environment variables in $COMMAND:
+	eval COMMAND=\"$COMMAND\"
+	
+	if [ $SUCCESS -eq 0 ]; then
+		build_message "We have a $TEMP_NAME."
+		eval "${TOOL}"="\$COMMAND"
+	else
+		build_message "No $TEMP_NAME found."
+	fi
+
+	return $SUCCESS
+}
+	
+have_build_tools_language() {
+	local LANGUAGE
+
+	LANGUAGE=$1
+
+	have_build_tool "PREPROC_$LANGUAGE" || return 1
+	have_build_tool "MKDEP_$LANGUAGE" || return 1
+	have_build_tool "COMPILE_$LANGUAGE" || return 1
+
+	return 0
+}
+
 
 # Description: check if a library is present on the system
 # Arguments:   $1 - The name of the library as used in config_proginfo after
@@ -832,7 +925,7 @@ EOF
 				# The copy is done so that the file modes are equal.
 		$SED -f "${TEMPFILE}.sed" < "$SRC_PATH/$FILE".in > "$DST_PATH/$FILE"
 	done
-	rm -- "${TEMPFILE}.sed"
+	deleteTempFiles "${TEMPFILE}.sed"
 }
 
 # Define the build system type.

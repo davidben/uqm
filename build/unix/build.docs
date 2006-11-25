@@ -18,8 +18,9 @@ The files
 
 These are the files in the directory with the build script.
 Of these files only build.config should be modified for a specific build.
-For unknown dependencies, additions to config_proginfo might need to be
-made. The other files should not be modified.
+For unknown dependencies, additions to config_proginfo_build or
+config_proginfo_host might need to be made. The other files should not
+be modified.
 Only build.sh is to be called directly.
 
 ansi                   ansi colour definitions.
@@ -114,8 +115,8 @@ There are three types of menu items.
 
 
 
-Program info (from config_proginfo)
------------------------------------
+Program info (from config_proginfo_build)
+-----------------------------------------
 
 Information about programs used should be supplied in the following form:
   - PROG_${PROGRAM}_NAME
@@ -148,9 +149,26 @@ Information about programs used should be supplied in the following form:
     1 if the program has been verified to be not present
     <empty> if presence of the program hasn't been verified
 
+Information about build tools in general (say "a C compiler"), where you're
+not interested in what program is actually called, should be supplied in
+the following corm:
+  - BUILDTOOL_${TOOL}_NAME
+    A string describing the build tool.
+  - BUILDTOOL_${TOOL}_COMMAND
+    The command, with arguments, that is to be executed to run this tool.
+  - BUILDTOOL_${TOOL}_DEPEND
+    A whitespace separated list of programs (as described above)
+    that this tool depends on.
+  - BUILDTOOL_${TOOL}_PRESENT (set by the configuration program)
+    0 if the tool has been verified to be present
+    1 if the tool has been verified to be not present
+    <empty> if presence of the tool hasn't been verified
+Each tool described, once detected, will be available through the environment
+variable with the name as specified in $TOOL.
 
-Library info (from config_proginfo)
------------------------------------
+
+Library info (from config_proginfo_host)
+-----------------------------------------
 
 Information about libraries used should be supplied in the following form:
   - LIB_${LIB}_NAME

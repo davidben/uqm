@@ -18,11 +18,11 @@ endef
 endif
 
 define act_mkdep_c
-	$(MKDEPEND) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
+	$(MKDEP_C) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
 define act_mkdep_m
-	$(MKDEPEND) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
+	$(MKDEP_OBJC) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
 define act_windres
@@ -30,15 +30,15 @@ define act_windres
 endef
 
 define act_cc
-	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
+	$(COMPILE_C) -o "$@" $(CFLAGS) "$<"
 endef
 
 define act_objcc
-	$(COMPILE) -o "$@" -c $(CFLAGS) "$<"
+	$(COMPILE_OBJC) -o "$@" $(CFLAGS) "$<"
 endef
 
 define act_link
-	$(COMPILE) -o "$@" $^ $(LDFLAGS)
+	$(LINK) -o "$@" $^ $(LDFLAGS)
 endef
 
 

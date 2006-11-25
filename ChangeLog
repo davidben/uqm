@@ -1,4 +1,6 @@
-Changes towards version 0.6:
+- Unix build scripts improvements. - SvdB
+- Build fixes for MacOS X (with thanks to Nic) - SvdB
+=======
 - Ships in battle can resume normal speed in all circumstances after
   the enemy Avatar's tractor beam disengages (bug #860; this is a
   netplay desynchronizing change) - Alex
