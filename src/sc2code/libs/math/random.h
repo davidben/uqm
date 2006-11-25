@@ -28,27 +28,13 @@
 
 /* ----------------------------DEFINES------------------------------------ */
 
-#ifndef SLOW_N_STUPID
-#define TABLE_SIZE 1117 /* a "nice" prime number */
-#define _FAST_ fast_random()
-#else /* FAST_N_UGLY */
-#define TABLE_SIZE ( (1 << 10) - 1 )
-#define _FAST_ ( random_table[ fast_index++ & TABLE_SIZE ] )
-#endif
-
-
-#define FASTRAND(n) ( (int) ( (unsigned int)_FAST_ % (n) ) )
-#define SFASTRAND(n) ( (int)_FAST_ % (n) )
-#define AND_FASTRAND(n) ( (int)_FAST_ & (n) )
-
 #define RAND(n) ( (int) ( (unsigned int)TFB_Random() % (n) ) )
 #define SRAND(n) ( (int)TFB_Random() % (n) )
 #define AND_RAND(n) ( (int)TFB_Random() & (n) )
 
-#define INDEXED_RANDOM(x) (random_table[x])
 
 /* ----------------------------GLOBALS/EXTERNS---------------------------- */
 
-extern DWORD random_table[TABLE_SIZE];
-extern COUNT fast_index; /* fast random cycling index */
+DWORD TFB_SeedRandom (DWORD seed);
+DWORD TFB_Random (void);
 

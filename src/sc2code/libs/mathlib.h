@@ -20,9 +20,8 @@
 #define _MATHLIB_H
 
 #include "compiler.h"
+#include "math/random.h"
 
-extern DWORD TFB_SeedRandom (DWORD seed);
-extern DWORD TFB_Random (void);
 extern COUNT square_root (DWORD value);
 
 #endif /* _MATHLIB_H */
