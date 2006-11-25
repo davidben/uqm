@@ -74,12 +74,12 @@ esac
 case "$BUILD_SYSTEM" in
 	Darwin)
 		BUILDTOOL_REZ_NAME="MacOS X resource compiler (Rez)"
-		BUILDTOOL_REZ='$PROG_Rez_FILE'
+		BUILDTOOL_REZ_COMMAND='$PROG_Rez_FILE'
 		BUILDTOOL_REZ_DEPEND='Rez'
 		;;
 	MINGW32*|CYGWIN*)
 		BUILDTOOL_WINDRES_NAME="Windows resource linker (windres)"
-		BUILDTOOL_WINDRES='$PROG_windres_FILE'
+		BUILDTOOL_WINDRES_COMMAND='$PROG_windres_FILE'
 		BUILDTOOL_WINDRES_DEPEND='windres'
 		;;
 esac
