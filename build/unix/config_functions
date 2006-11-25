@@ -394,7 +394,7 @@ have_build_tool() {
 
 	TEMP_NAME=`evalVar BUILDTOOL_${TOOL}_NAME`
 	if [ -z "$TEMP_NAME" ]; then
-		echo "Fatal: Program '$TOOL' is not defined!" >&2
+		echo "Fatal: Build tool '$TOOL' is not defined!" >&2
 		exit 1
 	fi
 
