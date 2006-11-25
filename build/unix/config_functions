@@ -970,14 +970,17 @@ EOF
 
 }
 
-prepare_build_system() {
+set_system() {
 	set_build_system
+	set_host_system
+}
+
+prepare_build_system() {
 	# Include information about programs we can detect for the build system.
 	. build/unix/config_proginfo_build
 }
 
 prepare_host_system() {
-	set_host_system
 	# Include information about programs we can detect for the host system.
 	. build/unix/config_proginfo_host
 }

@@ -46,6 +46,7 @@ EOF
 # Start the configure program.
 # $1 = target
 build_config() {
+	set_system
 	prepare_build_system
 	config_requirements
 	prepare_host_system
