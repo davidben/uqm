@@ -949,19 +949,23 @@ set_host_system() {
 
 		# Use a single capitalization.
 		# What is used is whatever 'uname -s' would give on such a platform.
-		UHOST=`$TR "[:lower:]" "[:upper:]" << EOF
-$BUILD_HOST
-EOF
-`
-		case "$UHOST" in
-			LINUX)         HOST_SYSTEM="Linux" ;;
-			FREEBSD)       HOST_SYSTEM="FreeBSD" ;;
-			OPENBSD)       HOST_SYSTEM="OpenBSD" ;;
-			MINGW|MINGW32) HOST_SYSTEM="MINGW32" ;;
-			CYGWIN*)       HOST_SYSTEM="CYGWIN" ;;
-			DARWIN)        HOST_SYSTEM="Darwin" ;;
-			SUNOS)         HOST_SYSTEM="SunOS" ;;
-			QNX)           HOST_SYSTEM="QNX" ;;
+		case "$BUILD_HOST" in
+			[Ll][Ii][Nn][Uu][Xx])
+				HOST_SYSTEM="Linux" ;;
+			[Ff][Rr][Ee][Ee][Bb][Ss][Dd])
+				HOST_SYSTEM="FreeBSD" ;;
+			[Oo][Pp][Ee][Nn][Bb][Ss][Dd])
+				HOST_SYSTEM="OpenBSD" ;;
+			[Mm][Ii][Nn][Gg][Ww]|[Mm][Ii][Nn][Gg][Ww]32)
+				HOST_SYSTEM="MINGW32" ;;
+			[Cc][Yy][Gg][Ww][Ii][Nn]*)
+				HOST_SYSTEM="CYGWIN" ;;
+			[Dd][Aa][Rr][Ww][Ii][Nn])
+				HOST_SYSTEM="Darwin" ;;
+			[Ss][Uu][Nn][Oo][Ss])
+				HOST_SYSTEM="SunOS" ;;
+			[Qq][Nn][Xx])
+				HOST_SYSTEM="QNX" ;;
 			*)
 				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
 				;;
