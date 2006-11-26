@@ -152,7 +152,7 @@ getaddrinfoAsync(const char *node, const char *service,
 void
 Resolve_close(ResolveState *resolveState) {
 	if (resolveState->callbackID != CallbackID_invalid) {
-		Callback_removeCallback(resolveState->callbackID);
+		Callback_remove(resolveState->callbackID);
 		resolveState->callbackID = CallbackID_invalid;
 	}
 	resolveState->state = Resolve_closed;

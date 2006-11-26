@@ -99,7 +99,7 @@ CallbackLink_find(CallbackLink *link) {
 }
 
 bool
-Callback_removeCallback(CallbackID id) {
+Callback_remove(CallbackID id) {
 	CallbackLink *link = (CallbackLink *) id;
 	CallbackLink **linkPtr;
 

@@ -34,7 +34,7 @@ typedef void (*CallbackFunction)(CallbackArg arg);
 
 void Callback_init(void);
 CallbackID Callback_add(CallbackFunction callback, CallbackArg arg);
-bool Callback_removeCallback(CallbackID id);
+bool Callback_remove(CallbackID id);
 void Callback_process(void);
 
 #endif  /* _CALLBACK_H */
