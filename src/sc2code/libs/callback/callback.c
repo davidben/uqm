@@ -16,11 +16,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <sys/types.h>
-//#include <stdbool.h>
-#include "types.h"
-#include <stdlib.h>
 #include "port.h"
+#include "types.h"
+
+#include <assert.h>
+#include <stdlib.h>
+#include <sys/types.h>
 
 typedef struct CallbackLink CallbackLink;
 
@@ -34,9 +35,8 @@ struct CallbackLink {
 };
 
 static CallbackLink *callbacks;
-static CallbackLink *oldCallbacks;
-		// callback list currently being processed
 static CallbackLink **callbacksEnd;
+static CallbackLink *const *callbacksProcessEnd;
 
 static inline void
 CallbackList_lock(void) {
@@ -61,6 +61,7 @@ void
 Callback_init(void) {
 	callbacks = NULL;
 	callbacksEnd = &callbacks;
+	callbacksProcessEnd = &callbacks;
 }
 
 // Callbacks are guaranteed to be called in the order that they are queued.
@@ -78,12 +79,6 @@ Callback_add(CallbackFunction callback, CallbackArg arg) {
 	return (CallbackID) link;
 }
 
-
-// Pre: CallbackList is locked.
-static void
-CallbackLink_unlink(CallbackLink **linkPtr) {
-	*linkPtr = (*linkPtr)->next;
-}
 
 static void
 CallbackLink_delete(CallbackLink *link) {
@@ -116,10 +111,15 @@ Callback_removeCallback(CallbackID id) {
 		return false;
 	}
 
-	CallbackLink_unlink(linkPtr);
-	CallbackLink_delete(link);
-	
+	if (callbacksEnd == &(*linkPtr)->next)
+		callbacksEnd = linkPtr;
+	if (callbacksProcessEnd == &(*linkPtr)->next)
+		callbacksProcessEnd = linkPtr;
+	*linkPtr = (*linkPtr)->next;
+
 	CallbackList_unlock();
+
+	CallbackLink_delete(link);
 	return true;
 }
 
@@ -131,7 +131,7 @@ CallbackLink_doCallback(CallbackLink *link) {
 // Call all queued callbacks currently in the queue. Callbacks queued
 // from inside the called functions will not be processed until the next
 // call of Callback_process().
-// It is not allowed to remove callbacks from inside the called functions.
+// It is allowed to remove callbacks from inside the called functions.
 // NB: Callback_process() must never be called from more than one thread
 //     at the same time. It's the only sensible way to ensure that the
 //     callbacks are called in the order in which they were queued.
@@ -141,19 +141,29 @@ void
 Callback_process(void) {
 	CallbackLink *link;
 
-	// Create a new queue so that the old queue can be processed
-	// at once, without additional locking.
+	// We set 'callbacksProcessEnd' to callbacksEnd. Callbacks added
+	// from inside a callback function will be placed after
+	// callbacksProcessEnd, and will hence not be processed this
+	// call of Callback_process().
 	CallbackList_lock();
-	oldCallbacks = callbacks;
-	callbacks = NULL;
-	callbacksEnd = &callbacks;
+	callbacksProcessEnd = callbacksEnd;
 	CallbackList_unlock();
 
 	for (;;) {
-		link = oldCallbacks;
-		if (link == NULL)
+		CallbackList_lock();
+		if (callbacksProcessEnd == &callbacks) {
+			CallbackList_unlock();
 			break;
-		oldCallbacks = link->next;
+		}
+		assert(callbacks != NULL);
+				// If callbacks == NULL, then callbacksProcessEnd == &callbacks
+		link = callbacks;
+		callbacks = link->next;
+		if (callbacksEnd == &link->next)
+			callbacksEnd = &callbacks;
+		if (callbacksProcessEnd == &link->next)
+			callbacksProcessEnd = &callbacks;
+		CallbackList_unlock();
 
 		CallbackLink_doCallback(link);
 		CallbackLink_delete(link);
