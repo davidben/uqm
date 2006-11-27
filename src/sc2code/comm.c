@@ -112,7 +112,7 @@ _count_lines (PTEXT pText)
 	{
 		++numLines;
 		pText->pStr = pStr;
-		eol = getLineWithinWidth(pText, &pStr, text_width, (COUNT)~0);
+		eol = getLineWithinWidth (pText, &pStr, text_width, (COUNT)~0);
 	} while (!eol);
 	pText->pStr = pStr;
 
@@ -228,7 +228,7 @@ add_text (int status, PTEXT pTextIn)
 		pText->pStr = pStr;
 		pText->baseline.y += leading;
 
-		eol = getLineWithinWidth(pText, &pStr, text_width, maxchars);
+		eol = getLineWithinWidth (pText, &pStr, text_width, maxchars);
 
 		maxchars -= pText->CharCount;
 		if (maxchars != 0)
@@ -916,8 +916,8 @@ typedef struct summary_state
 	// extended state
 	BOOLEAN Initialized;
 	BOOLEAN PrintNext;
-	TFB_SoundChain *NextSub;
-	UNICODE *LeftOver;
+	const TFB_SoundChain *NextSub;
+	const UNICODE *LeftOver;
 
 } SUMMARY_STATE;
 typedef SUMMARY_STATE *PSUMMARY_STATE;
@@ -983,7 +983,7 @@ DoConvSummary (PSUMMARY_STATE pSS)
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
 				++row, pSS->NextSub = pSS->NextSub->next)
 		{
-			UNICODE *next;
+			const unsigned char *next;
 
 			if (pSS->LeftOver)
 			{	// some text left from last subtitle
@@ -999,7 +999,7 @@ DoConvSummary (PSUMMARY_STATE pSS)
 
 			t.CharCount = (COUNT)~0;
 			for ( ; row < MAX_SUMM_ROWS &&
-					!getLineWithinWidth(&t, &next, r.extent.width, (COUNT)~0);
+					!getLineWithinWidth (&t, &next, r.extent.width, (COUNT)~0);
 					++row)
 			{
 				font_DrawText (&t);
