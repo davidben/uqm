@@ -620,10 +620,6 @@ SOURCE=..\sc2code\libs\log\uqmlog.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\fastrand.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\math\mthintrn.h
 # End Source File
 # Begin Source File
