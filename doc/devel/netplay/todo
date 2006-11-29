@@ -5,7 +5,6 @@ Medium-priority:
 - Test disconnection at various points.
   Whenever there's a call to NetInput(), connections may get lost, and
   this needs to be checked.
-- Setup menu for network options.
 - Don't check PlayerControl in netmelee etc. Make it an invariant that
   (netConnections[player] != NULL) if
   ((PlayerControl[player] & NETWORK_CONTROL) == NETWORK_CONTROL)
@@ -28,10 +27,10 @@ Medium-priority:
   flushPacketQueues(), but should that really call cPNC()?
 - Assertion 'NetState_battleActive(NetConnection_getState(conn))' in
   Netplay_sendChecksum triggered. See #sc2 channel log.
+- Closing and destroying of NetConnections is a terrible mess.
 
 
 Low-priority:
-- Different coloured icons for unconnected/connecting/connected.
   Maybe also for confirmed/unconfirmed. A check mark perhaps.
 - Send error packets; at least when there's a protocol version mismatch.
 - Check whether the random seed and frame delay have been agreed before
@@ -83,6 +82,7 @@ Future improvements/optimisations:
   human-readable. Speed is not an issue.
 - move to UDP. Repeat past battleinput packets for each new packet that
   is sent until they are confirmed.
+- Once the protocol is stable: register the port number with IANA
 
 
 Bugs:
@@ -91,6 +91,10 @@ Bugs:
 - Both sides need identical battle frame rates. This value is not
   negotiated.
 - When melee selection is aborted, the remote player will be stuck.
+- If there are packets in the packet queue when a connection is closed,
+  the callback that clears the queue isn't called in time.
+- When the player returns from the SuperMelee menu to the main menu,
+  all open connections should be closed.
 
 
 Final actions:
