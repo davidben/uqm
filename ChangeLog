@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Correct top two lines of melebkgd.25.png - SvdB
 - Unix build scripts improvements. - SvdB
 - Build fixes for MacOS X (with thanks to Nic) - SvdB
 - Ships in battle can resume normal speed in all circumstances after
