@@ -945,6 +945,17 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 	UnlockMutex (GraphicsLock);
 }
 
+static void
+UpdateCurrentShip (PMELEE_STATE pMS)
+{
+	FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
+	if (pMS->row == NUM_MELEE_ROWS)
+		pMS->CurIndex = MELEE_NONE;
+	else
+		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
+	DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
+}
+
 // returns (COUNT) ~0 for an invalid ship.
 static COUNT
 GetShipValue (BYTE StarShip)
@@ -1505,6 +1516,7 @@ DoEdit (PMELEE_STATE pMS)
 		fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 		fleetShipChanged (pMS, pMS->side, fleetShipIndex);
 		AdvanceCursor (pMS);
+		UpdateCurrentShip(pMS);
 	}
 	else
 	{
@@ -1598,17 +1610,9 @@ DoEdit (PMELEE_STATE pMS)
 			pMS->side = side;
 			pMS->row = row;
 			pMS->col = col;
-			if (row == NUM_MELEE_ROWS)
-				pMS->CurIndex = MELEE_NONE;
-			else
-			{
-				FleetShipIndex fleetShipIndex = GetShipIndex (row, col);
-				pMS->CurIndex =
-						pMS->TeamImage[side].ShipList[fleetShipIndex];
-			}
 			UnlockMutex (GraphicsLock);
 
-			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
+			UpdateCurrentShip(pMS);
 		}
 	}
 
@@ -1696,8 +1700,7 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockMutex (GraphicsLock);
 		}
 
-		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[index];
-		DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
+		UpdateCurrentShip(pMS);
 
 		pMS->InputFunc = DoEdit;
 
