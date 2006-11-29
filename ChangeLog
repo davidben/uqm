@@ -2,6 +2,7 @@ Changes towards version 0.6:
 - Update the 'current selection' icon after deleting or inserting ships
   in a fleet in SuperMelee - SvdB
 - Correct top two lines of melebkgd.25.png - SvdB
+- Correct some background pixels in melebkgd.{25,26}.png - SvdB
 - Unix build scripts improvements. - SvdB
 - Build fixes for MacOS X (with thanks to Nic) - SvdB
 - Ships in battle can resume normal speed in all circumstances after
