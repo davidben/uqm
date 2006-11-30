@@ -109,6 +109,7 @@ void TFB_Abort (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
 void WaitForNoInput (SIZE Duration);
 BOOLEAN ConfirmExit (void);
+void DoPopupWindow(const char *msg);
 void DoInput (PVOID pInputState, BOOLEAN resetInput);
 
 BATTLE_INPUT_STATE p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr);

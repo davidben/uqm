@@ -27,8 +27,11 @@
 #include "libs/graphics/widgets.h"
 #include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"
+#include "libs/log.h"
+#include "libs/resource/stringbank.h"
 
 #include <ctype.h>
+#include <stdlib.h>
 
 
 #define CONFIRM_WIN_WIDTH 80
@@ -188,4 +191,83 @@ DoConfirmExit (void)
 	return (result);
 }
 
+typedef struct popup_state
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (struct popup_state *self);
+	COUNT MenuRepeatDelay;
+} POPUP_STATE;
 
+static BOOLEAN
+DoPopup (struct popup_state *self)
+{
+	(void)self;
+	SleepThread (ONE_SECOND / 20);
+	return !(PulsedInputState.menu[KEY_MENU_SELECT] || 
+			PulsedInputState.menu[KEY_MENU_CANCEL]);
+}
+
+void
+DoPopupWindow(const char *msg)
+{
+	stringbank *bank = StringBank_Create ();
+	const char *lines[30];
+	WIDGET_LABEL label;
+	RECT r;
+	STAMP s;
+	FRAME F;
+	CONTEXT oldContext;
+	RECT oldRect;
+	POPUP_STATE state;
+	MENU_SOUND_FLAGS s0, s1;
+	
+
+	if (!bank)
+	{
+		log_add (log_Fatal, "FATAL: Memory exhaustion when preparing popup window");
+		exit (EXIT_FAILURE);
+	}
+
+	label.tag = WIDGET_TYPE_LABEL;
+	label.parent = NULL;
+ 	label.handleEvent = Widget_HandleEventIgnoreAll;
+	label.receiveFocus = Widget_ReceiveFocusRefuseFocus;
+	label.draw = Widget_DrawLabel;
+	label.height = Widget_HeightLabel;
+	label.width = Widget_WidthFullScreen;
+	label.line_count = SplitString (msg, '\n', 30, lines, bank);
+	label.lines = lines;
+
+	LockMutex (GraphicsLock);
+
+	oldContext = SetContext (ScreenContext);
+	GetContextClipRect (&oldRect);
+	SetContextClipRect (NULL_PTR);
+
+	/* TODO: Better measure of dimensions than this */
+	r.extent.width = SCREEN_WIDTH;
+	r.extent.height = SCREEN_HEIGHT;
+	r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
+	r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
+	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
+
+	s.origin = r.corner;
+	s.frame = F;
+
+	DrawLabelAsWindow (&label);
+
+	GetMenuSounds (&s0, &s1);
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+
+	state.InputFunc = DoPopup;
+	DoInput (&state, TRUE);
+
+	DrawStamp (&s);
+	DestroyDrawable (ReleaseDrawable (s.frame));
+	FlushInput ();
+	SetContextClipRect (&oldRect);
+	SetContext (oldContext);
+	UnlockMutex (GraphicsLock);
+	SetMenuSounds (s0, s1);
+	StringBank_Free (bank);
+}
