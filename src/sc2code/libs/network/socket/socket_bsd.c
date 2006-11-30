@@ -31,6 +31,9 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netdb.h>
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
+#	include <netinet/in_systm.h>
+#endif
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <unistd.h>
