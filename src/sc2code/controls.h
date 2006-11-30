@@ -107,9 +107,9 @@ BOOLEAN PauseGame (void);
 BOOLEAN DoConfirmExit (void);
 void TFB_Abort (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
-extern void WaitForNoInput (SIZE Duration);
-extern BOOLEAN ConfirmExit (void);
-extern void DoInput (PVOID pInputState, BOOLEAN resetInput);
+void WaitForNoInput (SIZE Duration);
+BOOLEAN ConfirmExit (void);
+void DoInput (PVOID pInputState, BOOLEAN resetInput);
 
 BATTLE_INPUT_STATE p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr);
 BATTLE_INPUT_STATE p2_combat_summary (COUNT player, STARSHIPPTR StarShipPtr);
