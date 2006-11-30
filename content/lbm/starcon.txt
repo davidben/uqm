@@ -2245,6 +2245,11 @@ dispatch
 #(exit menu)
 exit menu
 
+#(mouse_err)
+Mouse input is not supported in UQM.
+Use the keyboard or joystick instead.
+
+Please press ENTER or SPACE to return.
 
 #(Unconnected. Press LEFT to connect.)
 Unconnected. Press LEFT to connect.

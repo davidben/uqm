@@ -1,5 +1,7 @@
 Changes towards version 0.6:
-- Generic DoPopupWindow() command for status messages of all sorts
+- Shifted the Mouse Error to a Popup Window, moved the message to
+  starcon.txt for translators - Michael
+- Generic DoPopupWindow() command for status messages - Michael
 - Update the 'current selection' icon after deleting or inserting ships
   in a fleet in SuperMelee - SvdB
 - Correct some background pixels in melebkgd.{25,26}.png - SvdB
