@@ -2220,7 +2220,7 @@ DoConnectingDialog (PMELEE_STATE pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
-	SetMenuSounds (0, 0);
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	if (!pMS->Initialized)
 	{
 		RECT r;

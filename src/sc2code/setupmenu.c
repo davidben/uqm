@@ -547,7 +547,7 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	tes.ChangeCallback = OnTextEntryChange;
 	tes.FrameCallback = OnTextEntryFrame;
 
-	SetMenuSounds (0, MENU_SOUND_SELECT);
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_SELECT);
 	if (!DoTextEntry (&tes))
 	{	// editing failed (canceled) -- revert the changes
 		utf8StringCopy (widget->value, widget->maxlen, revert_buf);
@@ -1013,7 +1013,7 @@ SetupMenu (void)
 
 	s.InputFunc = DoSetupMenu;
 	s.initialized = FALSE;
-	SetMenuSounds (0, MENU_SOUND_SELECT);
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	SetupTab = CaptureStringTable (LoadStringTable (SETUP_MENU_STRTAB));
 	if (SetupTab) 
 	{
