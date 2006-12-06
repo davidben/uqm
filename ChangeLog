@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Validate UQM version of either side of a Netplay game - SvdB
 - Better abort and disconnect handling for Netplay - SvdB
 - Menu sounds in Setup track rest of game (#922), from Nic - Michael
 - Shifted the Mouse Error to a Popup Window, moved the message to

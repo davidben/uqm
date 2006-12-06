@@ -57,6 +57,27 @@ testNetState(bool condition, PacketType type) {
 	return condition;
 }
 
+static int
+versionCompare(int major1, int minor1, int patch1,
+		int major2, int minor2, int patch2) {
+	if (major1 < major2)
+		return -1;
+	if (major1 > major2)
+		return 1;
+
+	if (minor1 < minor2)
+		return -1;
+	if (minor1 > minor2)
+		return 1;
+
+	if (patch1 < patch2)
+		return -1;
+	if (patch1 > patch2)
+		return 1;
+
+	return 0;
+}
+
 int
 PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 	if (conn->stateFlags.reset.localReset)
@@ -72,8 +93,25 @@ PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 	
 	if (packet->protoVersion.major != NETPLAY_PROTOCOL_VERSION_MAJOR ||
 			packet->protoVersion.minor != NETPLAY_PROTOCOL_VERSION_MINOR) {
+		sendAbort (conn, AbortReason_versionMismatch);
+		abortFeedback(conn->player, AbortReason_versionMismatch);
 		log_add(log_Error, "Protocol version %d.%d not supported.\n",
 				packet->protoVersion.major, packet->protoVersion.minor);
+		errno = ENOSYS;
+		return -1;
+	}
+
+	if (versionCompare(packet->uqmVersion.major, packet->uqmVersion.minor,
+			packet->uqmVersion.patch, NETPLAY_MIN_UQM_VERSION_MAJOR,
+			NETPLAY_MIN_UQM_VERSION_MINOR, NETPLAY_MIN_UQM_VERSION_PATCH)
+			< 0) {
+		sendAbort (conn, AbortReason_versionMismatch);
+		abortFeedback(conn->player, AbortReason_versionMismatch);
+		log_add(log_Error, "Remote side is running a version of UQM that "
+				"is too old (%d.%d.%d; %d.%d.%d is required).\n",
+				packet->uqmVersion.major, packet->uqmVersion.minor,
+				packet->uqmVersion.patch, NETPLAY_MIN_UQM_VERSION_MAJOR,
+				NETPLAY_MIN_UQM_VERSION_MINOR, NETPLAY_MIN_UQM_VERSION_PATCH);
 		errno = ENOSYS;
 		return -1;
 	}
