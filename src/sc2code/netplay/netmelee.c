@@ -267,7 +267,7 @@ networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
 	
 	for (;;) {
 		bool ok;
-
+		
 #if 0
 		// This is a useful debugging trick. By enabling this #if
 		// block, this side will always lag the maximum number of frames
@@ -300,6 +300,9 @@ networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
 				GLOBAL(CurrentActivity) |= CHECK_ABORT;
 				return (BATTLE_INPUT_STATE) 0;
 			}
+		
+			if (GLOBAL(CurrentActivity) & CHECK_ABORT)
+				return (BATTLE_INPUT_STATE) 0;
 
 #if 0
 			log_add(log_Warning, "NETPLAY: [%d] stalling for "

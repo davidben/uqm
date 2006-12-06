@@ -285,10 +285,12 @@ DoBattle (BATTLE_STATE *bs)
 				&& (battleFrameCount - delay) % NETPLAY_CHECKSUM_INTERVAL == 0)
 		{
 			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+			{
 				if (!verifyChecksums (battleFrameCount - delay)) {
 					GLOBAL(CurrentActivity) |= CHECK_ABORT;
-					resetConnections(ResetReason_syncLoss);
+					resetConnections (ResetReason_syncLoss);
 				}
+			}
 		}
 	}
 #endif
