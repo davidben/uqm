@@ -25,6 +25,7 @@
 #	include "netplay/netmisc.h"
 #	include "netplay/notify.h"
 #	include "netplay/proto/ready.h"
+#	include "netplay/packet.h"
 #	include "netplay/packetq.h"
 #endif
 #include "races.h"
@@ -180,7 +181,7 @@ readyForBattleEndPlayer (NetConnection *conn, void *arg)
 #endif
 
 static inline bool
-readyForBattleEnd (void)
+readyForBattleEnd (COUNT side)
 {
 #ifndef NETPLAY
 #if DEMO_MODE
@@ -194,8 +195,25 @@ readyForBattleEnd (void)
 	if (PLRPlaying ((MUSIC_REF)~0))
 		return false;
 
+	// We can only handle one dead ship at a time. So 'deadSide' is set
+	// to the side we're handling now. (COUNT)~0 means we're not handling
+	// any side yet.
+	if (currentDeadSide == (COUNT)~0)
+	{
+		// Not handling any side yet.
+		currentDeadSide = side;
+	}
+	else if (side != currentDeadSide)
+	{
+		// We're handing another side at the moment.
+		return false;
+	}
+
 	if (!forAllConnectedPlayers (readyForBattleEndPlayer, NULL))
 		return false;
+
+	currentDeadSide = (COUNT)~0;
+			// Another side may be handled.
 
 	return true;
 #endif  /* defined (NETPLAY) */
@@ -239,9 +257,9 @@ new_ship (PELEMENT DeadShipPtr)
 		DeadShipPtr->turn_wait = (BYTE)(
 				DeadShipPtr->state_flags & (GOOD_GUY | BAD_GUY));
 				// DeadShipPtr->turn_wait is abused to store which
-				// side this element is for, probably because this
-				// information will be lost from state_flags (why is this
-				// necessary?).
+				// side this element is for, because this information
+				// will be lost from state_flags when the element is
+				// set up for deletion below.
 		for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 		{
 			ELEMENTPTR ElementPtr;
@@ -250,14 +268,20 @@ new_ship (PELEMENT DeadShipPtr)
 			LockElement (hElement, &ElementPtr);
 			hSuccElement = GetSuccElement (ElementPtr);
 			GetElementStarShip (ElementPtr, &StarShipPtr);
+					// Get the STARSHIP that this ELEMENT belongs to.
+
 			if (StarShipPtr == DeadStarShipPtr)
 			{
+				// This element belongs to the dead ship; it may be the
+				// ship's own element.
 				SetElementStarShip (ElementPtr, 0);
 
 				if (!(ElementPtr->state_flags & CREW_OBJECT)
 						|| ElementPtr->preprocess_func != crew_preprocess)
 				{
-					SetPrimType (&DisplayArray[ElementPtr->PrimIndex], NO_PRIM);
+					// Set the element up for deletion.
+					SetPrimType (&DisplayArray[ElementPtr->PrimIndex],
+							NO_PRIM);
 					ElementPtr->life_span = 0;
 					ElementPtr->state_flags =
 							NONSOLID | DISAPPEARING | FINITE_LIFE;
@@ -271,6 +295,7 @@ new_ship (PELEMENT DeadShipPtr)
 			if (StarShipPtr
 					&& (StarShipPtr->cur_status_flags & PLAY_VICTORY_DITTY))
 			{
+				// StarShipPtr points to the surviving ship.
 				MusicStarted = TRUE;
 				PlayMusic ((MUSIC_REF)StarShipPtr->RaceDescPtr->
 						ship_data.victory_ditty, FALSE, 3);
@@ -287,7 +312,8 @@ new_ship (PELEMENT DeadShipPtr)
 		SetElementStarShip (DeadShipPtr, DeadStarShipPtr);
 	}
 
-	if (DeadShipPtr->life_span || !readyForBattleEnd ())
+	if (DeadShipPtr->life_span || !readyForBattleEnd (
+			WHICH_SIDE (DeadShipPtr->turn_wait)))
 	{
 		DeadShipPtr->state_flags &= ~DISAPPEARING;
 		++DeadShipPtr->life_span;
@@ -328,7 +354,7 @@ UnbatchGraphics ();
 #endif  /* NETPLAY */
 
 		if (GetNextStarShip (DeadStarShipPtr,
-				WHICH_SIDE (DeadShipPtr->turn_wait)) && RestartMusic)
+				WHICH_SIDE (DeadShipPtr->turn_wait)))
 		{
 #ifdef NETPLAY
 			{
@@ -343,11 +369,22 @@ UnbatchGraphics ();
 				}
 			}
 #endif
-			BattleSong (TRUE);
+			if (RestartMusic)
+				BattleSong (TRUE);
 		}
 		else if (LOBYTE (battle_counter) == 0
 				|| HIBYTE (battle_counter) == 0)
+		{
+			// One player is out of ships. The battle is over.
 			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+		}
+#ifdef NETPLAY
+		else
+		{
+			// Battle has been aborted.
+			GLOBAL (CurrentActivity) |= CHECK_ABORT;
+		}
+#endif
 
 #ifdef NETPLAY
 		// Turn_wait was abused to store the side this element was on.

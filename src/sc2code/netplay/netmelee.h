@@ -22,6 +22,7 @@
 #include "netplay.h"
 #include "netinput.h"
 #include "netconnection.h"
+#include "packetsenders.h"
 
 #include "../controls.h"
 		// for BATTLE_INPUT_STATE
@@ -44,6 +45,8 @@ void confirmConnections(void);
 void cancelConfirmations(void);
 void connectionsLocalReady(NetConnection_ReadyCallback callback, void *arg);
 
+bool allConnected(void);
+
 void sendBattleInputConnections(BATTLE_INPUT_STATE input);
 void sendChecksumConnections(uint32 frameNr, uint32 checksum);
 void initBattleStateDataConnections(void);
@@ -59,6 +62,8 @@ bool forAllConnectedPlayers(ForAllCallback callback, void *arg);
 bool setupInputDelay(size_t localInputDelay);
 bool sendInputDelayConnections(size_t delay);
 bool setStateConnections(NetState state);
+bool sendAbortConnections(NetplayAbortReason reason);
+bool resetConnections(NetplayResetReason reason);
 bool localReadyConnections(NetConnection_ReadyCallback readyCallback,
 		void *arg, bool notifyRemote);
 
@@ -66,6 +71,9 @@ bool negotiateReady(NetConnection *conn, bool notifyRemote,
 		NetState nextState);
 bool negotiateReadyConnections(bool notifyRemote, NetState nextState);
 bool waitReady(NetConnection *conn);
+
+bool waitReset(NetConnection *conn, NetState nextState);
+bool waitResetConnections(NetState nextState);
 
 #endif  /* _NETMELEE_H */
 

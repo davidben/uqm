@@ -39,10 +39,26 @@ typedef enum PacketType {
 	PACKET_BATTLEINPUT,
 	PACKET_FRAMECOUNT,
 	PACKET_CHECKSUM,
+	PACKET_ABORT,
+	PACKET_RESET,
 
 	PACKET_NUM, /* Number of packet types */
 } PacketType;
 
+// Sent before aborting the connection.
+typedef enum NetplayAbortReason {
+	AbortReason_unspecified,
+	AbortReason_versionMismatch,
+	AbortReason_protocolError,
+			// Network is in an inconsistent state.
+} NetplayAbortReason;
+
+// Sent before resetting the connection. A game in progress is terminated.
+typedef enum NetplayResetReason {
+	ResetReason_unspecified,
+	ResetReason_syncLoss,
+	ResetReason_manualReset,
+} NetplayResetReason;
 
 #ifndef PACKET_H_STANDALONE
 #include "netconnection.h"
@@ -227,6 +243,18 @@ typedef struct {
 	uint32 checksum;  /* Actually Checksum */
 } Packet_Checksum;
 
+typedef struct {
+	PacketHeader header;
+	uint16 reason;  /* Actually NetplayAbortReason */
+	uint16 padding0;
+} Packet_Abort;
+
+typedef struct {
+	PacketHeader header;
+	uint16 reason;  /* Actually NetplayResetReason */
+	uint16 padding0;
+} Packet_Reset;
+
 
 #ifndef PACKET_H_STANDALONE
 void Packet_delete(Packet *packet);
@@ -248,6 +276,8 @@ Packet_SelectShip *Packet_SelectShip_create(uint16 ship);
 Packet_BattleInput *Packet_BattleInput_create(uint8 state);
 Packet_FrameCount *Packet_FrameCount_create(uint32 frameCount);
 Packet_Checksum *Packet_Checksum_create(uint32 frameNr, uint32 checksum);
+Packet_Abort *Packet_Abort_create(uint16 reason);
+Packet_Reset *Packet_Reset_create(uint16 reason);
 #endif
 
 

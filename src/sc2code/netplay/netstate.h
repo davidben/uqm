@@ -24,6 +24,7 @@
 
 typedef struct NetConnectionStateData NetConnectionStateData;
 
+// State of a NetConnection.
 typedef enum {
 	NetState_unconnected,    /* No connection initiated */
 	NetState_connecting,     /* Connection being setup */

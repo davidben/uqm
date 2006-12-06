@@ -575,6 +575,7 @@ DrawPickIcon (COUNT iship, BYTE DrawErase)
 
 #ifdef NETPLAY
 // This function is generic. It should probably be moved to elsewhere.
+// The caller should hold the GraphicsLock.
 static void
 multiLineDrawText(TEXT *textIn, RECT *clipRect) {
 	RECT oldRect;
@@ -701,6 +702,7 @@ UpdateMeleeStatusMessage (ssize_t player)
 #endif  /* NETPLAY */
 
 // XXX: this function is called when the current selection is blinking off.
+// The caller should hold the GraphicsLock.
 static void
 Deselect (BYTE opt)
 {
@@ -760,6 +762,7 @@ Deselect (BYTE opt)
 }
 
 // XXX: this function is called when the current selection is blinking off.
+// The caller should hold the GraphicsLock.
 static void
 Select (BYTE opt)
 {
@@ -2303,7 +2306,6 @@ DoConnectingDialog (PMELEE_STATE pMS)
 		if ((status == NetState_init) ||
 		    (status == NetState_inSetup))
 		{
-			RECT r;
 			/* Connection complete! */
 			PlayerControl[which_side] = NETWORK_CONTROL | STANDARD_RATING;
 			SetPlayerInput ();
@@ -2349,7 +2351,8 @@ check_for_disconnections (PMELEE_STATE pMS)
 		{
 			PlayerControl[player] = HUMAN_CONTROL & STANDARD_RATING;
 			DrawControls (player, FALSE);
-			log_add (log_User, "Player %d has disconnected; shifting controls\n", player);
+			log_add (log_User, "Player %d has disconnected; shifting "
+					"controls\n", player);
 			changed = TRUE;
 		}
 	}
@@ -2358,6 +2361,8 @@ check_for_disconnections (PMELEE_STATE pMS)
 	{
 		SetPlayerInput ();
 	}
+
+	(void) pMS;
 }
 
 #endif
@@ -2852,6 +2857,88 @@ InitPreBuilt (PMELEE_STATE pMS)
 	}
 }
 
+int
+LoadMeleeConfig (PMELEE_STATE pMS)
+{
+	uio_Stream *load_fp;
+	int status;
+
+	load_fp = res_OpenResFile (configDir, "melee.cfg", "rb");
+	if (!load_fp)
+		goto err;
+
+	if (LengthResFile (load_fp) != (1 + sizeof (TEAM_IMAGE)) * 2)
+		goto err;
+
+	status = GetResFileChar (load_fp);
+	if (status == -1)
+		goto err;
+	PlayerControl[0] = (BYTE)status;
+
+	status = ReadTeamImage (&pMS->TeamImage[0], load_fp);
+	if (status == -1)
+		goto err;
+
+	status = GetResFileChar (load_fp);
+	if (status == -1)
+		goto err;
+	PlayerControl[1] = (BYTE)status;
+
+	status = ReadTeamImage (&pMS->TeamImage[1], load_fp);
+	if (status == -1)
+		goto err;
+	
+	res_CloseResFile (load_fp);
+
+	/* Do not allow netplay mode at the start. */
+	if (PlayerControl[0] & NETWORK_CONTROL)
+		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
+	if (PlayerControl[1] & NETWORK_CONTROL)
+		PlayerControl[1] = HUMAN_CONTROL | STANDARD_RATING;
+
+	return 0;
+
+err:
+	if (load_fp)
+		res_CloseResFile (load_fp);
+	return -1;
+}
+
+int
+WriteMeleeConfig (PMELEE_STATE pMS)
+{
+	uio_Stream *save_fp;
+
+	save_fp = res_OpenResFile (configDir, "melee.cfg", "wb");
+	if (!save_fp)
+		goto err;
+
+	if (PutResFileChar (PlayerControl[0], save_fp) == -1)
+		goto err;
+
+	if (WriteTeamImage (&pMS->TeamImage[0], save_fp) == 0)
+		goto err;
+
+	if (PutResFileChar (PlayerControl[1], save_fp) == -1)
+		goto err;
+
+	if (WriteTeamImage (&pMS->TeamImage[1], save_fp) == 0)
+		goto err;
+
+	if (!res_CloseResFile (save_fp))
+		goto err;
+
+	return 0;
+
+err:
+	if (save_fp)
+	{
+		res_CloseResFile (save_fp);
+		DeleteResFile (configDir, "melee.cfg");
+	}
+	return -1;
+}
+
 void
 Melee (void)
 {
@@ -2880,49 +2967,12 @@ Melee (void)
 
 		GameSounds = CaptureSound (LoadSound (GAME_SOUNDS));
 		LoadMeleeInfo (&MenuState);
+		if (LoadMeleeConfig (&MenuState) == -1)
 		{
-			uio_Stream *load_fp;
-
-			load_fp = res_OpenResFile (configDir, "melee.cfg", "rb");
-			if (load_fp)
-			{
-				int status;
-
-				if (LengthResFile (load_fp) != (1 + sizeof (TEAM_IMAGE)) * 2)
-					status = -1;
-				else if ((status = GetResFileChar (load_fp)) != -1)
-				{
-					PlayerControl[0] = (BYTE)status;
-					status = ReadTeamImage (&MenuState.TeamImage[0], load_fp);
-					if (status != -1)
-					{
-						status = GetResFileChar (load_fp);
-						if (status != -1)
-						{
-							PlayerControl[1] = (BYTE)status;
-							status = ReadTeamImage (
-									&MenuState.TeamImage[1], load_fp);
-						}
-					}
-				}
-				res_CloseResFile (load_fp);
-				if (status == -1)
-					load_fp = 0;
-			}
-
-			if (load_fp == 0)
-			{
-				PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-				MenuState.TeamImage[0] = MenuState.PreBuiltList[0];
-				PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
-				MenuState.TeamImage[1] = MenuState.PreBuiltList[1];
-			}
-
-			/* Do not allow netplay mode at the start. */
-			if (PlayerControl[0] & NETWORK_CONTROL)
-				PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-			if (PlayerControl[1] & NETWORK_CONTROL)
-				PlayerControl[1] = HUMAN_CONTROL | STANDARD_RATING;
+			PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
+			MenuState.TeamImage[0] = MenuState.PreBuiltList[0];
+			PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
+			MenuState.TeamImage[1] = MenuState.PreBuiltList[1];
 		}
 		SetPlayerInput ();
 		teamStringChanged (&MenuState, 0);
@@ -2939,35 +2989,7 @@ Melee (void)
 		StopMusic ();
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
-		{
-			uio_Stream *save_fp;
-			BOOLEAN err;
-
-			err = FALSE;
-			save_fp = res_OpenResFile (configDir, "melee.cfg", "wb");
-			if (save_fp)
-			{
-				if (PutResFileChar (PlayerControl[0], save_fp) == -1)
-					err = TRUE;
-				if (!err && WriteTeamImage (&MenuState.TeamImage[0],
-						save_fp) == 0)
-					err = TRUE;
-				if (!err && PutResFileChar (PlayerControl[1], save_fp) == -1)
-					err = TRUE;
-				if (!err && WriteTeamImage (&MenuState.TeamImage[1],
-						save_fp) == 0)
-					err = TRUE;
-				if (res_CloseResFile (save_fp) == 0)
-					err = TRUE;
-			}
-			else
-				err = TRUE;
-				
-			if (err)
-			{
-				DeleteResFile (configDir, "melee.cfg");
-			}
-		}
+		WriteMeleeConfig (&MenuState);
 		FreeMeleeInfo (&MenuState);
 		DestroySound (ReleaseSound (GameSounds));
 		GameSounds = 0;
@@ -3083,6 +3105,7 @@ updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
 	strncpy (pMS->TeamImage[side].TeamName, name, len);
 	pMS->TeamImage[side].TeamName[len] = '\0';
 	
+	LockMutex (GraphicsLock);
 #if 0  /* DTSHS_REPAIR does not combine with other options */
 	if (pMS->MeleeOption == EDIT_MELEE && pMS->side == side
 			&& pMS->row == NUM_MELEE_ROWS)
@@ -3090,6 +3113,7 @@ updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
 	else
 #endif
 		DrawTeamString (pMS, side, DTSHS_REPAIR);
+	UnlockMutex (GraphicsLock);
 }
 
 // Update a ship in a fleet as specified by a remote party.
@@ -3131,6 +3155,7 @@ updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship)
 			(pMS->side == side) && (index == selectedShipIndex);
 			// Ship to be updated is the currently selected one.
 
+	LockMutex (GraphicsLock);
 	if (ship == MELEE_NONE)
 	{
 		RECT r;
@@ -3148,12 +3173,14 @@ updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship)
 	// Reprint the team value:
 	//DrawTeamString (pMeleeState, side, DTSHS_NORMAL);
 	DrawTeamString (pMS, side, DTSHS_REPAIR);
+	UnlockMutex (GraphicsLock);
 
 	return true;
 }
 
 void
-updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed) {
+updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed)
+{
 	TFB_SeedRandom (seed);
 	(void) pMS;
 	(void) side;
@@ -3161,51 +3188,144 @@ updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed) {
 
 // The remote player has done something which invalidates our confirmation.
 void
-confirmationCancelled(PMELEE_STATE pMS, COUNT side) {
+confirmationCancelled(PMELEE_STATE pMS, COUNT side)
+{
+	LockMutex (GraphicsLock);
 	if (side == 0)
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 16));
 				// "Bottom player changed something -- need to reconfirm."
 	else
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 17));
 				// "Top player changed something -- need to reconfirm."
+	UnlockMutex (GraphicsLock);
+
 	if (pMS->InputFunc == DoConfirmSettings)
 		pMS->InputFunc = DoMelee;
 }
 
 void
 connectedFeedback (PMELEE_STATE pMS, COUNT side) {
+	LockMutex (GraphicsLock);
 	if (side == 0)
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 8));
 				// "Bottom player is connected."
 	else
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 9));
 				// "Top player is connected."
+	UnlockMutex (GraphicsLock);
 
 	PlayMenuSound (MENU_SOUND_INVOKED);
 	(void) pMS;
 }
 
+const char *
+abortReasonString (NetplayResetReason reason)
+{
+	switch (reason)
+	{
+		case AbortReason_unspecified:
+			return GAME_STRING (NETMELEE_STRING_BASE + 25);
+					// "Disconnect for an unspecified reason.'
+		case AbortReason_versionMismatch:
+			return GAME_STRING (NETMELEE_STRING_BASE + 26);
+					// "Connection aborted due to version mismatch."
+		case AbortReason_protocolError:
+			return GAME_STRING (NETMELEE_STRING_BASE + 27);
+					// "Connection aborted due to an internal protocol "
+					// "error."
+	}
+	
+	return NULL;
+			// Should not happen.
+}
+
 void
-errorFeedback (PMELEE_STATE pMS, COUNT side) {
+abortFeedback (COUNT side, NetplayAbortReason reason)
+{
+	const char *msg;
+
+	msg = abortReasonString (reason);
+	if (msg != NULL)
+	{
+		LockMutex (GraphicsLock);
+		DrawMeleeStatusMessage (msg);
+		UnlockMutex (GraphicsLock);
+	}
+
+	(void) side;
+}
+
+const char *
+resetReasonString (NetplayResetReason reason)
+{
+	switch (reason)
+	{
+		case ResetReason_unspecified:
+			return GAME_STRING (NETMELEE_STRING_BASE + 28);
+					// "Game aborted for an unspecified reason."
+		case ResetReason_syncLoss:
+			return GAME_STRING (NETMELEE_STRING_BASE + 29);
+					// "Game aborted due to loss of synchronisation."
+		case ResetReason_manualReset:
+			return GAME_STRING (NETMELEE_STRING_BASE + 30);
+					// "Game aborted by the remote player."
+	}
+
+	return NULL;
+			// Should not happen.
+}
+
+void
+resetFeedback (COUNT side, NetplayResetReason reason, bool byRemote)
+{
+	const char *msg;
+
+	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	
+	if (reason == ResetReason_manualReset && !byRemote) {
+		// No message needed, the player initiated the reset.
+		return;
+	}
+
+	msg = resetReasonString (reason);
+	if (msg != NULL)
+	{
+		LockMutex (GraphicsLock);
+		DrawMeleeStatusMessage (msg);
+		UnlockMutex (GraphicsLock);
+	}
+
+	(void) side;
+}
+
+void
+errorFeedback (PMELEE_STATE pMS, COUNT side)
+{
+	LockMutex (GraphicsLock);
 	if (side == 0)
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 10));
 				// "Bottom player: connection failed."
 	else
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 11));
 				// "Top player: connection failed."
+	UnlockMutex (GraphicsLock);
 	(void) pMS;
 }
 
 void
-closeFeedback (PMELEE_STATE pMS, COUNT side) {
+closeFeedback (PMELEE_STATE pMS, COUNT side)
+{
+	LockMutex (GraphicsLock);
 	if (side == 0)
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 12));
 				// "Bottom player: connection closed."
 	else
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 13));
 				// "Top player: connection closed."
+	UnlockMutex (GraphicsLock);
 	(void) pMS;
 }
+
 #endif  /* NETPLAY */
 
 

@@ -25,7 +25,7 @@
 
 #define DEFINE_NETSTATEDATA(stateName) \
 	{ \
-		/* .name = */  #stateName, \
+		/* .name = */    #stateName, \
 	}
 NetStateData netStateData[] = {
 	DEFINE_NETSTATEDATA(unconnected),

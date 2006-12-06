@@ -24,6 +24,8 @@
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
+#include "netplay/packet.h"
+		// for NetplayAbortREason and NetplayResetReason.
 
 typedef struct melee_state MELEE_STATE;
 
@@ -123,6 +125,8 @@ bool updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship);
 void updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed);
 void confirmationCancelled(PMELEE_STATE pMS, COUNT side);
 void connectedFeedback (PMELEE_STATE pMS, COUNT side);
+void abortFeedback (COUNT side, NetplayAbortReason reason);
+void resetFeedback (COUNT side, NetplayResetReason reason, bool byRemote);
 void errorFeedback (PMELEE_STATE pMS, COUNT side);
 void closeFeedback (PMELEE_STATE pMS, COUNT side);
 

@@ -54,6 +54,8 @@ PacketTypeData packetTypeData[PACKET_NUM] = {
 	DEFINE_PACKETDATA(BattleInput, false),
 	DEFINE_PACKETDATA(FrameCount, false),
 	DEFINE_PACKETDATA(Checksum, false),
+	DEFINE_PACKETDATA(Abort, false),
+	DEFINE_PACKETDATA(Reset, false),
 };
 
 static inline void *
@@ -250,6 +252,20 @@ Packet_Checksum_create(uint32 frameNr, uint32 checksum) {
 			(Packet_Checksum *) Packet_create(PACKET_CHECKSUM, 0);
 	packet->frameNr = hton32(frameNr);
 	packet->checksum = hton32(checksum);
+	return packet;
+}
+
+Packet_Abort *
+Packet_Abort_create(uint16 reason) {
+	Packet_Abort *packet = (Packet_Abort *) Packet_create(PACKET_ABORT, 0);
+	packet->reason = hton16(reason);
+	return packet;
+}
+
+Packet_Reset *
+Packet_Reset_create(uint16 reason) {
+	Packet_Reset *packet = (Packet_Reset *) Packet_create(PACKET_RESET, 0);
+	packet->reason = hton16(reason);
 	return packet;
 }
 

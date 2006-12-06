@@ -387,8 +387,8 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 	RDPtr->ship_info.var2 = (BYTE)StarShipPtr->ShipFacing;
 
 	StarShipPtr->ship_input_state = 0;
-	StarShipPtr->cur_status_flags =
-			StarShipPtr->old_status_flags = 0;
+	StarShipPtr->cur_status_flags = 0;
+	StarShipPtr->old_status_flags = 0;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
 			|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
@@ -420,6 +420,7 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 	StarShipPtr->hShip = hShip;
 	if (StarShipPtr->hShip != 0)
 	{
+		// Construct an ELEMENT for the STARSHIP
 		ELEMENTPTR ShipElementPtr;
 
 		LockElement (hShip, &ShipElementPtr);
@@ -437,6 +438,7 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 		if ((ShipElementPtr->state_flags & BAD_GUY)
 				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 		{
+			// This is the Sa-Matra
 			StarShipPtr->ShipFacing = 0;
 			ShipElementPtr->current.image.frame =
 					SetAbsFrameIndex (RDPtr->ship_data.ship[0],
@@ -452,7 +454,8 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 			{
 				COUNT facing;
 
-				if ((facing = LOWORD (GLOBAL (ShipStamp.frame))) > 0)
+				facing = LOWORD (GLOBAL (ShipStamp.frame));
+				if (facing > 0)
 					--facing;
 
 				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (

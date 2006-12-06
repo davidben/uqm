@@ -1,4 +1,5 @@
 Changes towards version 0.6:
+- Better abort and disconnect handling for Netplay - SvdB
 - Menu sounds in Setup track rest of game (#922), from Nic - Michael
 - Shifted the Mouse Error to a Popup Window, moved the message to
   starcon.txt for translators - Michael

@@ -1,4 +1,4 @@
-There are three types of negotiations used to synchronised the parties
+There are several types of negotiations used to synchronised the parties
 of a network connection.
 
 - Continue when we know the other is ready ("Ready")
@@ -11,7 +11,8 @@ of a network connection.
   This is used to end a state where both parties are modifying
   common data. Both parties have to agree with the data for either
   party to continue.
-
+- Reset a connection. This is used to abort a game in progress and return
+  to the fleet setup menu.
 
 ============================================================================
 
@@ -197,6 +198,13 @@ by send(CANCEL) should leave the party in the same state as when
 the send(CANCEL) preceded the recv(CONFIRM1)).
 I also check whether it is possible for packets to arrive that
 aren't expected.
+
+
+============================================================================
+
+"Reset" negotiation.
+
+See src/sc2code/netplay/proto.c
 
 
 ============================================================================

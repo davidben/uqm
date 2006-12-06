@@ -47,6 +47,12 @@ size_t battleInputOrder[NUM_SIDES];
 #ifdef NETPLAY
 BattleFrameCounter battleFrameCount;
 		// Used for synchronisation purposes during netplay.
+COUNT currentDeadSide;
+		// When a ship has been destroyed, each side of a network
+		// connection waits until the other side is ready.
+		// When two ships die at the same time, this is handled for one
+		// ship after the other. This variable indicate for which player
+		// we're currently doing this.
 #endif
 
 static BOOLEAN
@@ -158,7 +164,7 @@ ProcessInput (void)
 				JournalInput (InputState);
 #endif /* CREATE_JOURNAL */
 #ifdef NETPLAY
-				if (PlayerControl[cur_player] & HUMAN_CONTROL)
+				if (!(PlayerControl[cur_player] & NETWORK_CONTROL))
 				{
 					BattleInputBuffer *bib = getBattleInputBuffer(cur_player);
 					sendBattleInputConnections (InputState);
@@ -278,8 +284,11 @@ DoBattle (BATTLE_STATE *bs)
 		if (battleFrameCount >= delay
 				&& (battleFrameCount - delay) % NETPLAY_CHECKSUM_INTERVAL == 0)
 		{
-			if (!verifyChecksums (battleFrameCount - delay))
-				GLOBAL(CurrentActivity) |= CHECK_ABORT;
+			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+				if (!verifyChecksums (battleFrameCount - delay)) {
+					GLOBAL(CurrentActivity) |= CHECK_ABORT;
+					resetConnections(ResetReason_syncLoss);
+				}
 		}
 	}
 #endif
@@ -440,23 +449,31 @@ Battle (void)
 				CountLinks (&race_q[1])
 				);
 
-		if (!selectAllShips (num_ships))
-			goto AbortBattle;
-
-		BattleSong (TRUE);
-		bs.NextTime = 0;
 		setupBattleInputOrder ();
 #ifdef NETPLAY
 		initBattleInputBuffers ();
 #ifdef NETPLAY_CHECKSUM
 		initChecksumBuffers ();
-#endif
+#endif  /* NETPLAY_CHECKSUM */
 		battleFrameCount = 0;
+		currentDeadSide = (COUNT)~0;
+#endif  /* NETPLAY */
+
+		if (!selectAllShips (num_ships)) {
+			GLOBAL (CurrentActivity) |= CHECK_ABORT;
+			goto AbortBattle;
+		}
+
+		BattleSong (TRUE);
+		bs.NextTime = 0;
+#ifdef NETPLAY
 		initBattleStateDataConnections ();
 		{
 			bool allOk = negotiateReadyConnections (true, NetState_inBattle);
-			if (!allOk)
+			if (!allOk) {
+				GLOBAL (CurrentActivity) |= CHECK_ABORT;
 				goto AbortBattle;
+			}
 		}
 #endif  /* NETPLAY */
 		bs.InputFunc = DoBattle;
@@ -468,11 +485,26 @@ Battle (void)
 		LockMutex (GraphicsLock);
 
 AbortBattle:
+		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE &&
+				(GLOBAL (CurrentActivity) & CHECK_ABORT))
+		{
+			// Do not return to the main menu when a game is aborted,
+			// (just to the supermelee menu).
+			UnlockMutex (GraphicsLock);
+			waitResetConnections(NetState_inSetup);
+					// A connection may already be in inSetup (set from
+					// GetMeleeStarship). This is not a problem, although
+					// it will generate a warning in debug mode.
+			LockMutex (GraphicsLock);
+
+			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+		}
+
 #ifdef NETPLAY
 		uninitBattleInputBuffers();
 #ifdef NETPLAY_CHECKSUM
 		uninitChecksumBuffers ();
-#endif
+#endif  /* NETPLAY_CHECKSUM */
 #endif  /* NETPLAY */
 
 		StopMusic ();

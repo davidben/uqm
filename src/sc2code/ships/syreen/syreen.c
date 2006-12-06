@@ -142,7 +142,8 @@ spawn_crew (PELEMENT ElementPtr)
 	{
 		HELEMENT hCrew;
 
-		if ((hCrew = AllocElement ()) != 0)
+		hCrew = AllocElement ();
+		if (hCrew != 0)
 		{
 			ELEMENTPTR CrewPtr;
 
@@ -151,9 +152,7 @@ spawn_crew (PELEMENT ElementPtr)
 			CrewPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE
 					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
 			CrewPtr->life_span = 0;
-			{
-				CrewPtr->death_func = spawn_crew;
-			}
+			CrewPtr->death_func = spawn_crew;
 			CrewPtr->pParent = ElementPtr->pParent;
 			CrewPtr->hTarget = 0;
 			UnlockElement (hCrew);
@@ -181,12 +180,13 @@ spawn_crew (PELEMENT ElementPtr)
 				SIZE dx, dy;
 				DWORD d_squared;
 
-				if ((dx = ObjPtr->next.location.x
-						- ElementPtr->next.location.x) < 0)
+				dx = ObjPtr->next.location.x - ElementPtr->next.location.x;
+				if (dx < 0)
 					dx = -dx;
-				if ((dy = ObjPtr->next.location.y
-						- ElementPtr->next.location.y) < 0)
+				dy = ObjPtr->next.location.y - ElementPtr->next.location.y;
+				if (dy < 0)
 					dy = -dy;
+
 				dx = WORLD_TO_DISPLAY (dx);
 				dy = WORLD_TO_DISPLAY (dy);
 #define ABANDONER_RANGE 208 /* originally SPACE_HEIGHT */

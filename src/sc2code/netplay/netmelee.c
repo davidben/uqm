@@ -28,6 +28,7 @@
 #include "netplay/packetq.h"
 #include "netplay/proto/npconfirm.h"
 #include "netplay/proto/ready.h"
+#include "netplay/proto/reset.h"
 
 #include "build.h"
 		// for StarShipPlayer()
@@ -65,8 +66,12 @@ closeAllConnections(void) {
 	COUNT player;
 
 	for (player = 0; player < NUM_PLAYERS; player++)
-		if (netConnections[player] != NULL)
+	{
+		NetConnection *conn = netConnections[player];
+
+		if (conn != NULL && NetConnection_isConnected(conn))
 			closePlayerNetworkConnection(player);
+	}
 }
 
 size_t
@@ -100,6 +105,9 @@ netInputBlocking(uint32 timeoutMs) {
 		timeoutMs = nextAlarmMs;
 
 	NetManager_process(&timeoutMs);
+			// This may cause more packets to be queued, hence the
+			// flushPacketQueues().
+	flushPacketQueues();
 
 	Alarm_process();
 	Callback_process();
@@ -181,6 +189,22 @@ connectionsLocalReady(NetConnection_ReadyCallback callback, void *arg) {
 
 		Netplay_localReady(conn, callback, arg, true);
 	}
+}
+
+bool
+allConnected(void) {
+	COUNT player;
+
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		NetConnection *conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected(conn))
+			return false;
+	}
+	return true;
 }
 
 void
@@ -274,7 +298,7 @@ networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
 			{
 				// Connection aborted.
 				GLOBAL(CurrentActivity) |= CHECK_ABORT;
-				return(BATTLE_INPUT_STATE) 0;
+				return (BATTLE_INPUT_STATE) 0;
 			}
 
 #if 0
@@ -288,13 +312,18 @@ networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
 			{
 				// Connection aborted.
 				GLOBAL(CurrentActivity) |= CHECK_ABORT;
-				return(BATTLE_INPUT_STATE) 0;
+				return (BATTLE_INPUT_STATE) 0;
 			}
 		}
 	}
 
 	(void) StarShipPtr;
 	return result;
+}
+
+static void
+deleteConnectionCallback(NetConnection *conn) {
+	removeNetConnection(NetConnection_getPlayerNr(conn));
 }
 
 NetConnection *
@@ -305,7 +334,8 @@ openPlayerNetworkConnection(COUNT player, void *extra) {
 
 	conn = NetConnection_open(player,
 			&netplayOptions.peer[player], NetMelee_connectCallback,
-			NetMelee_closeCallback, NetMelee_errorCallback, extra);
+			NetMelee_closeCallback, NetMelee_errorCallback,
+			deleteConnectionCallback, extra);
 
 	addNetConnection(conn, player);
 	return conn;
@@ -321,7 +351,6 @@ closePlayerNetworkConnection(COUNT player) {
 	assert(netConnections[player] != NULL);
 
 	NetConnection_close(netConnections[player]);
-	removeNetConnection(player);
 }
 
 // If the callback function returns 'false', the function will immediately
@@ -392,6 +421,30 @@ setStateConnections(NetState state) {
 			(bool(*)(NetConnection *, void *)) setStateConnection, &state);
 }
 
+static bool
+sendAbortConnection(NetConnection *conn, const NetplayAbortReason *reason) {
+	sendAbort(conn, *reason);
+	return true;
+}
+
+bool
+sendAbortConnections(NetplayAbortReason reason) {
+	return forAllConnectedPlayers(
+			(bool(*)(NetConnection *, void *)) sendAbortConnection, &reason);
+}
+
+static bool
+resetConnection(NetConnection *conn, const NetplayResetReason *reason) {
+	Netplay_localReset(conn, *reason);
+	return true;
+}
+
+bool
+resetConnections(NetplayResetReason reason) {
+	return forAllConnectedPlayers(
+			(bool(*)(NetConnection *, void *)) resetConnection, &reason);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
@@ -422,6 +475,7 @@ localReadyConnections(NetConnection_ReadyCallback readyCallback,
 
 /////////////////////////////////////////////////////////////////////////////
 
+#define NETWORK_POLL_DELAY (ONE_SECOND / 24)
 
 typedef struct NegotiateReadyState NegotiateReadyState;
 struct NegotiateReadyState {
@@ -437,7 +491,6 @@ struct NegotiateReadyState {
 
 static BOOLEAN
 negotiateReadyInputFunc(NegotiateReadyState *state) {
-#define NETWORK_POLL_DELAY (ONE_SECOND / 24)
 	netInputBlocking(NETWORK_POLL_DELAY);
 	// The timing out is necessary so that immediate key presses get
 	// handled while we wait. If we could do without the timeout,
@@ -572,4 +625,108 @@ waitReady(NetConnection *conn) {
 
 ////////////////////////////////////////////////////////////////////////////
 
+typedef struct WaitResetState WaitResetState;
+struct WaitResetState {
+	// Common fields of INPUT_STATE_DESC, from which this structure
+	// "inherits".
+	BOOLEAN(*InputFunc)(PVOID pInputState);
+	COUNT MenuRepeatDelay;
+
+	NetConnection *conn;
+	NetState nextState;
+	bool done;
+};
+
+static BOOLEAN
+waitResetInputFunc(WaitResetState *state) {
+	netInputBlocking(NETWORK_POLL_DELAY);
+	// The timing out is necessary so that immediate key presses get
+	// handled while we wait. If we could do without the timeout,
+	// we wouldn't even need waitResetInputFunc() and the
+	// DoInput() call.
+	
+	// No need to call flushPacketQueues(); nothing needs to be sent
+	// right now.
+
+	if (!NetConnection_isConnected(state->conn))
+		return FALSE;
+
+	return !state->done;
+}
+
+// Called when both sides are reset.
+static void
+waitResetBothResetCallback(NetConnection *conn, void *arg) {
+	WaitResetState *state = (WaitResetState *) arg;
+
+	if (state->nextState != (NetState) -1) {
+		NetConnection_setState(conn, state->nextState);
+		// This has to be done immediately, as more packets in the
+		// receive queue may be handled by the netInput() call that
+		// triggered this callback.
+		// This is the reason for the nextState argument to
+		// waitReset(); setting the state after the call to
+		// waitReset() would be too late.
+	}
+	state->done = true;
+}
+
+bool
+waitReset(NetConnection *conn, NetState nextState) {
+	WaitResetState state;
+	state.InputFunc = (BOOLEAN(*)(void *)) waitResetInputFunc;
+	state.MenuRepeatDelay = 0;
+	state.conn = conn;
+	state.nextState = nextState;
+	state.done = false;
+
+	Netplay_setResetCallback(conn, waitResetBothResetCallback,
+			(void *) &state);
+	if (state.done)
+		goto out;
+		
+
+	if (!Netplay_isLocalReset(conn)) {
+		Netplay_localReset(conn, ResetReason_manualReset);
+		flushPacketQueue(conn);
+	}
+
+	if (!state.done)
+		DoInput(&state, FALSE);
+
+out:
+	return NetConnection_isConnected(conn);
+}
+
+// Wait until we have received a reset packet to all connections. If we
+// ourselves have not sent a reset packet, one is sent, with reason
+// 'manualReset'.
+// XXX: Right now all connections are handled one by one. Handling them all
+//      at once would be faster but would require more work, which is
+//      not worth it as the time is minimal and this function is not
+//      time critical.
+// Use '(NetState) -1' for nextState to keep the current state.
+bool
+waitResetConnections(NetState nextState) {
+	COUNT player;
+	size_t numDisconnected = 0;
+
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		NetConnection *conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected(conn)) {
+			numDisconnected++;
+			continue;
+		}
+
+		waitReset(conn, nextState);
+	}
+
+	return numDisconnected == 0;
+}
+
+////////////////////////////////////////////////////////////////////////////
 

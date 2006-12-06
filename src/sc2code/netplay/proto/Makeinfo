@@ -1,2 +1,2 @@
-uqm_CFILES="npconfirm.c ready.c"
+uqm_CFILES="npconfirm.c ready.c reset.c"
 

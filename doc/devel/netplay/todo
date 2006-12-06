@@ -117,9 +117,6 @@ To put in the announcement of Netplay:
 
 
 Bugs and todos unrelated to netplay.
-- When you insert a new ship, the cursor moves to the next square,
-  but the picture at the right doesn't change.
-- The "Battle!" icon is not positioned correctly.
 - other player being able to choose the next ship after 3 seconds
   of inactivity
 - DoRunAway() shouldn't be handled in ProcessInput()

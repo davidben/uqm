@@ -2604,6 +2604,14 @@ SOURCE=..\sc2code\netplay\proto\ready.c
 
 SOURCE=..\sc2code\netplay\proto\ready.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\reset.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\reset.h
+# End Source File
 # End Group
 
 # End Group

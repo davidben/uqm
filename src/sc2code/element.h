@@ -95,6 +95,7 @@ typedef struct state
 } STATE;
 typedef STATE *PSTATE;
 
+// Any physical object in the simulation.
 typedef struct element
 {
 	HELEMENT pred, succ;
@@ -116,6 +117,7 @@ typedef struct element
 	STATE current, next;
 
 	PVOID pParent;
+			// The ship this element belongs to.
 	HELEMENT hTarget;
 } ELEMENT;
 typedef ELEMENT *PELEMENT;

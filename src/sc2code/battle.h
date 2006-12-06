@@ -25,6 +25,7 @@ extern BOOLEAN instantVictory;
 #ifdef NETPLAY
 typedef DWORD BattleFrameCounter;
 extern BattleFrameCounter battleFrameCount;
+extern COUNT currentDeadSide;
 #endif
 
 extern BOOLEAN Battle (void);

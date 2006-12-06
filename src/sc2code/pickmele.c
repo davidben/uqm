@@ -153,7 +153,7 @@ DoGetMelee (GETMELEE_STATE *gms)
 		gms->remoteSelected = FALSE;
 #endif
 
-		// We determine upfront which ship would be chosen if the player
+		// We determine in advance which ship would be chosen if the player
 		// wants a random ship, to keep it simple to keep network parties
 		// synchronised.
 		gms->randomIndex = (COUNT)TFB_Random () % gms->ships_left;
@@ -165,8 +165,14 @@ DoGetMelee (GETMELEE_STATE *gms)
 	SleepThread (ONE_SECOND / 120);
 #ifdef NETPLAY
 	netInput ();
+
+	if (!allConnected())
+		goto aborted;
 #endif
 	
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		goto aborted;
+
 	if (PlayerInput[which_player] == ComputerInput)
 	{
 		/* TODO: Make this a frame-by-frame thing.  This code is currently
@@ -200,16 +206,7 @@ DoGetMelee (GETMELEE_STATE *gms)
 		select = PulsedInputState.key[template][KEY_WEAPON];
 	}
 
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-	{
-		gms->hBattleShip = 0;
-		GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-#ifdef NETPLAY
-		// TODO: send abort packet
-#endif
-		done = true;
-	}
-	else if (select)
+	if (select)
 	{
 		if (gms->col == NUM_MELEE_COLS_ORIG)
 		{
@@ -225,13 +222,9 @@ DoGetMelee (GETMELEE_STATE *gms)
 			}
 			else
 			{
-				// Exit
+				// Selected exit
 				if (ConfirmExit ())
-				{
-					gms->hBattleShip = 0;
-					GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
-					done = TRUE;
-				}
+					goto aborted;
 			}
 		}
 		else
@@ -294,6 +287,14 @@ DoGetMelee (GETMELEE_STATE *gms)
 #endif
 
 	return !done;
+
+aborted:
+#ifdef NETPLAY
+	flushPacketQueues ();
+#endif
+	gms->hBattleShip = 0;
+	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+	return FALSE;
 }
 
 #ifdef NETPLAY
@@ -495,7 +496,10 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	SetFlashRect (NULL_PTR, (FRAME)0);
 	
 	if (gmstate.hBattleShip == 0)
+	{
+		// Aborting.
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
+	}
 	else
 	{
 		StarShipPtr =
@@ -513,14 +517,12 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 #ifdef NETPLAY
 	{
 		NetConnection *conn = netConnections[which_player];
-		if (conn != NULL)
+		if (conn != NULL && NetConnection_isConnected(conn))
 		{
 			BattleStateData *battleStateData;
 			battleStateData = (BattleStateData *)
 					NetConnection_getStateData(conn);
 			battleStateData->getMeleeState = NULL;
-			if (gmstate.hBattleShip == 0)
-				NetConnection_setState(conn, NetState_inSetup);
 		}
 	}
 #endif

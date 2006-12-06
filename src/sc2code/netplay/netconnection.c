@@ -47,7 +47,8 @@ NetConnection *
 NetConnection_open(int player, const NetplayPeerOptions *options,
 		NetConnection_ConnectCallback connectCallback,
 		NetConnection_CloseCallback closeCallback,
-		NetConnection_ErrorCallback errorCallback, void *extra) {
+		NetConnection_ErrorCallback errorCallback,
+		NetConnection_DeleteCallback deleteCallback, void *extra) {
 	NetConnection *conn;
 
 	conn = malloc(sizeof (NetConnection));
@@ -62,8 +63,11 @@ NetConnection_open(int player, const NetplayPeerOptions *options,
 	conn->connectCallback = connectCallback;
 	conn->closeCallback = closeCallback;
 	conn->errorCallback = errorCallback;
+	conn->deleteCallback = deleteCallback;
 	conn->readyCallback = NULL;
 	conn->readyCallbackArg = NULL;
+	conn->resetCallback = NULL;
+	conn->resetCallbackArg = NULL;
 	
 	conn->readBuf = malloc(NETPLAY_READBUFSIZE);
 	conn->readEnd = conn->readBuf;
@@ -80,6 +84,8 @@ NetConnection_open(int player, const NetplayPeerOptions *options,
 	conn->stateFlags.handshake.canceling = false;
 	conn->stateFlags.ready.localReady = false;
 	conn->stateFlags.ready.remoteReady = false;
+	conn->stateFlags.reset.localReset = false;
+	conn->stateFlags.reset.remoteReset = false;
 	conn->stateFlags.agreement = Agreement_nothingAgreed;
 	conn->stateFlags.inputDelay = 0;
 #ifdef NETPLAY_CHECKSUM
@@ -106,7 +112,21 @@ NetConnection_open(int player, const NetplayPeerOptions *options,
 }
 
 static void
+NetConnection_doDeleteCallback(NetConnection *conn) {
+	if (conn->deleteCallback != NULL) {
+		//NetConnection_incRef(conn);
+		conn->deleteCallback(conn);
+		//NetConnection_decRef(conn);
+	}
+}
+
+static void
 NetConnection_delete(NetConnection *conn) {
+	NetConnection_doDeleteCallback(conn);
+	if (conn->stateData != NULL) {
+		NetConnectionStateData_release(conn->stateData);
+		conn->stateData = NULL;
+	}
 	free(conn->readBuf);
 	PacketQueue_uninit(&conn->queue);
 	free(conn);
@@ -133,10 +153,6 @@ NetConnection_doClose(NetConnection *conn) {
 	Netplay_doCloseCallback(conn);
 
 	NetConnection_setState(conn, NetState_unconnected);
-	if (conn->stateData != NULL) {
-		NetConnectionStateData_release(conn->stateData);
-		conn->stateData = NULL;
-	}
 }
 
 // Called when the NetDescriptor is shut down.
@@ -211,6 +227,23 @@ NetConnection_getReadyCallback(const NetConnection *conn) {
 void *
 NetConnection_getReadyCallbackArg(const NetConnection *conn) {
 	return conn->readyCallbackArg;
+}
+
+void
+NetConnection_setResetCallback(NetConnection *conn,
+		NetConnection_ResetCallback callback, void *arg) {
+	conn->resetCallback = callback;
+	conn->resetCallbackArg = arg;
+}
+
+NetConnection_ResetCallback
+NetConnection_getResetCallback(const NetConnection *conn) {
+	return conn->resetCallback;
+}
+
+void *
+NetConnection_getResetCallbackArg(const NetConnection *conn) {
+	return conn->resetCallbackArg;
 }
 
 void

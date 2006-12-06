@@ -36,11 +36,11 @@ Netplay_bothReady(NetConnection *conn) {
 	callback = conn->readyCallback;
 	readyArg = conn->readyCallbackArg;
 
-	conn->readyCallback = NULL;
+	NetConnection_setReadyCallback(conn, NULL, NULL);
 			// Clear the readyCallback field before performing the callback,
 			// so that it can be set again from inside the callback
 			// function.
-	conn->readyCallbackArg = NULL;
+
 	callback(conn, readyArg);
 }
 
@@ -94,12 +94,12 @@ Netplay_remoteReady(NetConnection *conn) {
 }
 
 bool
-Netplay_isLocalReady(NetConnection *conn) {
+Netplay_isLocalReady(const NetConnection *conn) {
 	return conn->stateFlags.ready.localReady;
 }
 
 bool
-Netplay_isRemoteReady(NetConnection *conn) {
+Netplay_isRemoteReady(const NetConnection *conn) {
 	return conn->stateFlags.ready.remoteReady;
 }
 

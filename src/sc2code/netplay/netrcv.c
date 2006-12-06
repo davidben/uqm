@@ -121,8 +121,6 @@ dataReceivedMulti(NetConnection *conn, const uint8 *data, size_t len) {
 	return processed;
 }
 
-// Returns -1 on error (setting errno), or 0 if everything went
-// ok, regardless of whether any packets were actually processed.
 void
 dataReadyCallback(NetDescriptor *nd) {
 	NetConnection *conn = (NetConnection *) NetDescriptor_getExtra(nd);

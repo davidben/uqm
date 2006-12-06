@@ -195,5 +195,21 @@ sendChecksum(NetConnection *conn, BattleFrameCounter frameNr,
 }
 #endif
 
+void
+sendAbort(NetConnection *conn, NetplayAbortReason reason) {
+	Packet_Abort *packet;
+	
+	packet = Packet_Abort_create((uint16) reason);
+	queuePacket(conn, (Packet *) packet, false);
+}
+
+void
+sendReset(NetConnection *conn, NetplayResetReason reason) {
+	Packet_Reset *packet;
+	
+	packet = Packet_Reset_create((uint16) reason);
+	queuePacket(conn, (Packet *) packet, false);
+}
+
 
 

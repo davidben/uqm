@@ -49,6 +49,8 @@ void sendSelectShip(NetConnection *conn, COUNT ship);
 void sendBattleInput(NetConnection *conn, BATTLE_INPUT_STATE input);
 void sendFrameCount(NetConnection *conn, uint32 frameCount);
 void sendChecksum(NetConnection *conn, uint32 frameNr, uint32 checksum);
+void sendAbort(NetConnection *conn, NetplayAbortReason reason);
+void sendReset(NetConnection *conn, NetplayResetReason reason);
 
 
 #endif  /* _PACKETSENDERS_H */

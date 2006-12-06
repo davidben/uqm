@@ -24,8 +24,8 @@
 bool Netplay_localReady(NetConnection *conn,
 		NetConnection_ReadyCallback callback, void *arg, bool notifyRemote);
 bool Netplay_remoteReady(NetConnection *conn);
-bool Netplay_isLocalReady(NetConnection *conn);
-bool Netplay_isRemoteReady(NetConnection *conn);
+bool Netplay_isLocalReady(const NetConnection *conn);
+bool Netplay_isRemoteReady(const NetConnection *conn);
 
 #endif  /* _READY_H */
 

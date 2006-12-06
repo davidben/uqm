@@ -2261,8 +2261,8 @@ Awaiting incoming connection
 #(Attempting outgoing connection...)
 Attempting outgoing connection
 
-#(Connected. Press RIGHT to disconnect.)
-Connected. Change setting to disconnect.
+#(Connected. Change the control method to disconnect.)
+Connected. Change the control method to disconnect.
 
 
 #(Confirmation cancelled. Press FIRE to reconfirm.)
@@ -2324,20 +2324,52 @@ Top player changed something -- need to reconfirm.
 #(Press SPACE to cancel)
 Press SPACE to cancel
 
+
 #(Connect to remote host)
 Connect to remote host
+
 
 #(Wait for incoming connection)
 Wait for incoming connection
 
+
 #(Cancel)
 Cancel
+
 
 #(Host)
 Host
 
+
 #(Port)
 Port
 
+
 #(Net Delay)
 Net Delay
+
+
+#(Disconnect for an unspecified reason.)
+Disconnect for an unspecified reason.
+
+
+#(Connection aborted due to version mismatch.)
+Connection aborted due to version mismatch.
+
+
+#(Connection aborted due to an internal protocol error.)
+Connection aborted due to an internal protocol error.
+
+
+#(Game aborted for an unspecified reason.)
+Game aborted for an unspecified reason.
+
+
+#(Game aborted due to loss of synchronisation.)
+Game aborted due to loss of synchronisation.
+
+
+#(Game aborted by the remote player.)
+Game aborted by the remote player.
+
+

@@ -33,8 +33,10 @@ typedef void (*NetConnection_ConnectCallback)(NetConnection *nd);
 typedef void (*NetConnection_CloseCallback)(NetConnection *nd);
 typedef void (*NetConnection_ErrorCallback)(NetConnection *nd,
 		const NetConnectionError *error);
+typedef void (*NetConnection_DeleteCallback)(NetConnection *nd);
 
 typedef void (*NetConnection_ReadyCallback)(NetConnection *conn, void *arg);
+typedef void (*NetConnection_ResetCallback)(NetConnection *conn, void *arg);
 
 #include "netstate.h"
 #include "netoptions.h"
@@ -80,6 +82,11 @@ typedef struct {
 	bool remoteReady : 1;
 } ReadyFlags;
 
+typedef struct {
+	bool localReset : 1;
+	bool remoteReset : 1;
+} ResetFlags;
+
 // Which parameters have we both sides of a connection reached agreement on?
 typedef struct {
 	bool randomSeed : 1;
@@ -108,6 +115,7 @@ typedef struct {
 			 * during a connection. Undefined while not connected. */
 	HandShakeFlags handshake;
 	ReadyFlags ready;
+	ResetFlags reset;
 	Agreement agreement;
 	size_t inputDelay;
 			/* Used during negotiation of the actual inputDelay. This
@@ -135,6 +143,13 @@ struct NetConnection {
 			// Extra argument for readyCallback().
 			// XXX: when is this cleaned up if a connection is broken?
 
+	NetConnection_ResetCallback resetCallback;
+			// Called when a reset has been signalled and confirmed.
+			// Set by Netplay_localReset().
+	void *resetCallbackArg;
+			// Extra argument for resetCallback().
+			// XXX: when is this cleaned up if a connection is broken?
+
 	const NetplayPeerOptions *options;
 	PacketQueue queue;
 #ifdef NETPLAY_STATISTICS
@@ -145,7 +160,10 @@ struct NetConnection {
 #endif
 	NetConnection_ConnectCallback connectCallback;
 	NetConnection_CloseCallback closeCallback;
+			// Called when the NetConnection becomes disconnected.
 	NetConnection_ErrorCallback errorCallback;
+	NetConnection_DeleteCallback deleteCallback;
+			// Called when the NetConnection is destroyed.
 	uint8 *readBuf;
 	uint8 *readEnd;
 	NetConnectionStateData *stateData;
@@ -170,7 +188,8 @@ NetConnection *NetConnection_open(int player,
 		const NetplayPeerOptions *options,
 		NetConnection_ConnectCallback connectCallback,
 		NetConnection_CloseCallback closeCallback,
-		NetConnection_ErrorCallback errorCallback, void *extra);
+		NetConnection_ErrorCallback errorCallback,
+		NetConnection_DeleteCallback deleteCallback, void *extra);
 void NetConnection_close(NetConnection *conn);
 bool NetConnection_isConnected(const NetConnection *conn);
 
@@ -202,6 +221,12 @@ void NetConnection_setReadyCallback(NetConnection *conn,
 NetConnection_ReadyCallback NetConnection_getReadyCallback(
 		const NetConnection *conn);
 void *NetConnection_getReadyCallbackArg(const NetConnection *conn);
+
+void NetConnection_setResetCallback(NetConnection *conn,
+		NetConnection_ResetCallback callback, void *arg);
+NetConnection_ResetCallback NetConnection_getResetCallback(
+		const NetConnection *conn);
+void *NetConnection_getResetCallbackArg(const NetConnection *conn);
 
 
 #endif  /* _NETCONNECTION_H */

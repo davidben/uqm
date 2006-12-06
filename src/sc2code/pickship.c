@@ -393,8 +393,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 					if (LastStarShipPtr->special_counter == 0)
 								/* died in the line of duty */
 						GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-					else if (GLOBAL_SIS (FuelOnBoard) >
-							RUN_AWAY_FUEL_COST)
+					else if (GLOBAL_SIS (FuelOnBoard) > RUN_AWAY_FUEL_COST)
 						GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
 					else
 						GLOBAL_SIS (FuelOnBoard) = 0;
