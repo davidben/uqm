@@ -3205,12 +3205,12 @@ confirmationCancelled(PMELEE_STATE pMS, COUNT side)
 }
 
 static void
-connectionFeedback (NetConnection *conn, const char *str) {
+connectionFeedback (NetConnection *conn, const char *str, bool forcePopup) {
 	struct battlestate_struct *bs = NetMelee_getBattleState (conn);
 
-	if (bs == NULL)
+	if (bs == NULL && !forcePopup)
 	{
-		// bs == NULL means the game has started.
+		// bs == NULL means the game has not started yet.
 		LockMutex (GraphicsLock);
 		DrawMeleeStatusMessage (str);
 		UnlockMutex (GraphicsLock);
@@ -3224,10 +3224,12 @@ connectionFeedback (NetConnection *conn, const char *str) {
 void
 connectedFeedback (NetConnection *conn) {
 	if (NetConnection_getPlayerNr(conn) == 0)
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 8));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 8),
+				false);
 				// "Bottom player is connected."
 	else
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 9));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 9),
+				false);
 				// "Top player is connected."
 
 	PlayMenuSound (MENU_SOUND_INVOKED);
@@ -3261,7 +3263,7 @@ abortFeedback (NetConnection *conn, NetplayAbortReason reason)
 
 	msg = abortReasonString (reason);
 	if (msg != NULL)
-		connectionFeedback (conn, msg);
+		connectionFeedback (conn, msg, true);
 }
 
 const char *
@@ -3305,17 +3307,19 @@ resetFeedback (NetConnection *conn, NetplayResetReason reason,
 
 	msg = resetReasonString (reason);
 	if (msg != NULL)
-		connectionFeedback (conn, msg);
+		connectionFeedback (conn, msg, false);
 }
 
 void
 errorFeedback (NetConnection *conn)
 {
 	if (NetConnection_getPlayerNr(conn) == 0)
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 10));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 10),
+				false);
 				// "Bottom player: connection failed."
 	else
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 11));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 11),
+				false);
 				// "Top player: connection failed."
 }
 
@@ -3323,10 +3327,12 @@ void
 closeFeedback (NetConnection *conn)
 {
 	if (NetConnection_getPlayerNr(conn) == 0)
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 12));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 12),
+				false);
 				// "Bottom player: connection closed."
 	else
-		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 13));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 13),
+				false);
 				// "Top player: connection closed."
 }
 

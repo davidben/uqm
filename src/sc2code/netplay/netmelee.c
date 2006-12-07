@@ -120,18 +120,28 @@ NetMelee_getBattleState(NetConnection *conn) {
 
 ////////////////////////////////////////////////////////////////////////////
 
+static inline
+void
+netInputAux(uint32 timeoutMs) {
+	NetManager_process(&timeoutMs);
+			// This may cause more packets to be queued, hence the
+			// flushPacketQueues().
+	Alarm_process();
+	Callback_process();
+	flushPacketQueues();
+			// During the flush, a disconnect may be noticed, which triggers
+			// another callback. It must be handled immediately, before
+			// another flushPacketQueue() can occur, which would not know
+			// that the socket is no longer valid.
+			// TODO: modify the close handling so this order isn't
+			//       necessary.
+	Callback_process();
+}
 
 // Check the network connections for input.
 void
 netInput(void) {
-	uint32 timeoutMs = 0;
-	NetManager_process(&timeoutMs);
-			// This may cause more packets to be queued, hence the
-			// flushPacketQueues().
-	flushPacketQueues();
-
-	Alarm_process();
-	Callback_process();
+	netInputAux(0);
 }
 
 void
@@ -142,13 +152,7 @@ netInputBlocking(uint32 timeoutMs) {
 	if (nextAlarmMs < timeoutMs)
 		timeoutMs = nextAlarmMs;
 
-	NetManager_process(&timeoutMs);
-			// This may cause more packets to be queued, hence the
-			// flushPacketQueues().
-	flushPacketQueues();
-
-	Alarm_process();
-	Callback_process();
+	netInputAux(timeoutMs);
 }
 
 

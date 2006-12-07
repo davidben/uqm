@@ -75,6 +75,14 @@ static void NetMelee_enterState_inSetup(NetConnection *conn, void *arg);
 // Called when a connection has been established.
 void
 NetMelee_connectCallback(NetConnection *conn) {
+	BattleStateData *battleStateData;
+	struct melee_state *meleeState;
+
+	meleeState = (struct melee_state *) NetConnection_getExtra(conn);
+	battleStateData = BattleStateData_new(meleeState, NULL, NULL);
+	NetConnection_setStateData(conn, (void *) battleStateData);
+	NetConnection_setExtra(conn, NULL);
+
 	sendInit(conn);
 	Netplay_localReady (conn, NetMelee_enterState_inSetup, NULL, false);
 }
@@ -102,12 +110,10 @@ NetMelee_enterState_inSetup(NetConnection *conn, void *arg) {
 	int player;
 
 	NetConnection_setState(conn, NetState_inSetup);
+		
+	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
+	meleeState = battleStateData->meleeState;
 	
-	meleeState = (struct melee_state *) NetConnection_getExtra(conn);
-	battleStateData = BattleStateData_new(meleeState, NULL, NULL);
-	NetConnection_setStateData(conn, (void *) battleStateData);
-	NetConnection_setExtra(conn, NULL);
-
 	player = NetConnection_getPlayerNr(conn);
 
 	connectedFeedback(conn);
