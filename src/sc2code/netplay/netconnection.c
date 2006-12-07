@@ -165,7 +165,7 @@ closeCallback(NetDescriptor *nd) {
 	NetConnection_doClose(conn);
 }
 
-// Close and release a NetDescriptor.
+// Close and release a NetConnection.
 void
 NetConnection_close(NetConnection *conn) {
 	if (conn->nd != NULL) {
@@ -176,7 +176,8 @@ NetConnection_close(NetConnection *conn) {
 				// This would queue the close callback.
 		conn->nd = NULL;
 	}
-	NetConnection_doClose(conn);
+	if (!conn->stateFlags.disconnected)
+		NetConnection_doClose(conn);
 	NetConnection_delete(conn);
 }
 

@@ -69,7 +69,20 @@ closeAllConnections(void) {
 	{
 		NetConnection *conn = netConnections[player];
 
-		if (conn != NULL && NetConnection_isConnected(conn))
+		if (conn != NULL)
+			closePlayerNetworkConnection(player);
+	}
+}
+
+void
+closeDisconnectedConnections(void) {
+	COUNT player;
+
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		NetConnection *conn = netConnections[player];
+
+		if (conn != NULL && !NetConnection_isConnected(conn))
 			closePlayerNetworkConnection(player);
 	}
 }

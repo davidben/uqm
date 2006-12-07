@@ -1838,6 +1838,7 @@ DoConfirmSettings (PMELEE_STATE pMS)
 		return FALSE;
 	return TRUE;
 #else
+	closeDisconnectedConnections ();
 	netInput ();
 	SleepThread (ONE_SECOND / 120);
 

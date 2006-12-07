@@ -34,7 +34,7 @@ extern struct NetConnection *netConnections[];
 void addNetConnection(NetConnection *conn, int playerNr);
 void removeNetConnection(int playerNr);
 void closeAllConnections(void);
-void closeAllConnections(void);
+void closeDisconnectedConnections(void);
 size_t getNumNetConnections(void);
 
 struct melee_state *NetMelee_getMeleeState(NetConnection *conn);
