@@ -94,7 +94,7 @@ PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 	if (packet->protoVersion.major != NETPLAY_PROTOCOL_VERSION_MAJOR ||
 			packet->protoVersion.minor != NETPLAY_PROTOCOL_VERSION_MINOR) {
 		sendAbort (conn, AbortReason_versionMismatch);
-		abortFeedback(conn->player, AbortReason_versionMismatch);
+		abortFeedback(conn, AbortReason_versionMismatch);
 		log_add(log_Error, "Protocol version %d.%d not supported.\n",
 				packet->protoVersion.major, packet->protoVersion.minor);
 		errno = ENOSYS;
@@ -106,7 +106,7 @@ PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 			NETPLAY_MIN_UQM_VERSION_MINOR, NETPLAY_MIN_UQM_VERSION_PATCH)
 			< 0) {
 		sendAbort (conn, AbortReason_versionMismatch);
-		abortFeedback(conn->player, AbortReason_versionMismatch);
+		abortFeedback(conn, AbortReason_versionMismatch);
 		log_add(log_Error, "Remote side is running a version of UQM that "
 				"is too old (%d.%d.%d; %d.%d.%d is required).\n",
 				packet->uqmVersion.major, packet->uqmVersion.minor,
@@ -662,7 +662,7 @@ PacketHandler_Checksum(NetConnection *conn, const Packet_Checksum *packet) {
 
 int
 PacketHandler_Abort(NetConnection *conn, const Packet_Abort *packet) {
-	abortFeedback(conn->player, packet->reason);
+	abortFeedback(conn, packet->reason);
 
 	return -1;
 			// Close connection.

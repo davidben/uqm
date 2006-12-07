@@ -19,6 +19,13 @@
 #include "libs/compiler.h"
 #include "displist.h"
 
+typedef struct battlestate_struct {
+	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
+	COUNT MenuRepeatDelay;
+	BOOLEAN first_time;
+	DWORD NextTime;
+} BATTLE_STATE;
+
 extern QUEUE disp_q;
 extern SIZE battle_counter;
 extern BOOLEAN instantVictory;

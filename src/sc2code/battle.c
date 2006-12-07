@@ -240,13 +240,6 @@ FreeBattleSong (void)
 	BattleRef = 0;
 }
 
-typedef struct battlestate_struct {
-	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
-	COUNT MenuRepeatDelay;
-	BOOLEAN first_time;
-	DWORD NextTime;
-} BATTLE_STATE;
-
 static BOOLEAN
 DoBattle (BATTLE_STATE *bs)
 {
@@ -459,6 +452,7 @@ Battle (void)
 #endif  /* NETPLAY_CHECKSUM */
 		battleFrameCount = 0;
 		currentDeadSide = (COUNT)~0;
+		setBattleStateConnections (&bs);
 #endif  /* NETPLAY */
 
 		if (!selectAllShips (num_ships)) {
@@ -492,12 +486,14 @@ AbortBattle:
 		{
 			// Do not return to the main menu when a game is aborted,
 			// (just to the supermelee menu).
+#ifdef NETPLAY
 			UnlockMutex (GraphicsLock);
 			waitResetConnections(NetState_inSetup);
 					// A connection may already be in inSetup (set from
 					// GetMeleeStarship). This is not a problem, although
 					// it will generate a warning in debug mode.
 			LockMutex (GraphicsLock);
+#endif
 
 			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 		}
@@ -507,6 +503,7 @@ AbortBattle:
 #ifdef NETPLAY_CHECKSUM
 		uninitChecksumBuffers ();
 #endif  /* NETPLAY_CHECKSUM */
+		setBattleStateConnections (NULL);
 #endif  /* NETPLAY */
 
 		StopMusic ();

@@ -33,6 +33,7 @@ static BattleStateData *BattleStateData_alloc(void);
 static void BattleStateData_free(BattleStateData *battleStateData);
 static inline BattleStateData *BattleStateData_new(
 		struct melee_state *meleeState,
+		struct battlestate_struct *battleState,
 		struct getmelee_struct *getMeleeState);
 static void BattleStateData_delete(BattleStateData *battleStateData);
 
@@ -49,11 +50,13 @@ BattleStateData_free(BattleStateData *battleStateData) {
 
 static inline BattleStateData *
 BattleStateData_new(struct melee_state *meleeState,
+		struct battlestate_struct *battleState,
 		struct getmelee_struct *getMeleeState) {
 	BattleStateData *battleStateData = BattleStateData_alloc();
 	battleStateData->releaseFunction =
 			(NetConnectionStateData_ReleaseFunction) BattleStateData_delete;
 	battleStateData->meleeState = meleeState;
+	battleStateData->battleState = battleState;
 	battleStateData->getMeleeState = getMeleeState;
 	return battleStateData;
 }
@@ -72,14 +75,6 @@ static void NetMelee_enterState_inSetup(NetConnection *conn, void *arg);
 // Called when a connection has been established.
 void
 NetMelee_connectCallback(NetConnection *conn) {
-	BattleStateData *battleStateData;
-	struct melee_state *meleeState;
-
-	meleeState = (struct melee_state *) NetConnection_getExtra(conn);
-	battleStateData = BattleStateData_new(meleeState, NULL);
-	NetConnection_setStateData(conn, (void *) battleStateData);
-	NetConnection_setExtra(conn, NULL);
-
 	sendInit(conn);
 	Netplay_localReady (conn, NetMelee_enterState_inSetup, NULL, false);
 }
@@ -87,28 +82,14 @@ NetMelee_connectCallback(NetConnection *conn) {
 // Called when a connection is closed.
 void
 NetMelee_closeCallback(NetConnection *conn) {
-	struct melee_state *meleeState;
-
-	if (NetConnection_getState(conn) > NetState_connecting) {
-		BattleStateData *battleStateData =
-				(BattleStateData *) NetConnection_getStateData(conn);
-		meleeState = battleStateData->meleeState;
-	} else {
-		meleeState = (struct melee_state *) NetConnection_getExtra(conn);
-	}
-	
-	closeFeedback(meleeState, NetConnection_getPlayerNr(conn));
+	closeFeedback(conn);
 }
 
 // Called when a network error occurs during connect.
 void
 NetMelee_errorCallback(NetConnection *conn,
 		const NetConnectionError *error) {
-	void *meleeState;
-
-	meleeState = NetConnection_getExtra(conn);
-	errorFeedback(meleeState, NetConnection_getPlayerNr(conn));
-
+	errorFeedback(conn);
 	(void) error;
 }
 
@@ -121,13 +102,15 @@ NetMelee_enterState_inSetup(NetConnection *conn, void *arg) {
 	int player;
 
 	NetConnection_setState(conn, NetState_inSetup);
-
-	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
-	meleeState = battleStateData->meleeState;
+	
+	meleeState = (struct melee_state *) NetConnection_getExtra(conn);
+	battleStateData = BattleStateData_new(meleeState, NULL, NULL);
+	NetConnection_setStateData(conn, (void *) battleStateData);
+	NetConnection_setExtra(conn, NULL);
 
 	player = NetConnection_getPlayerNr(conn);
 
-	connectedFeedback(meleeState, player);
+	connectedFeedback(conn);
 
 	entireFleetChanged(meleeState, player);
 	teamStringChanged(meleeState, player);

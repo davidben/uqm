@@ -3203,19 +3203,33 @@ confirmationCancelled(PMELEE_STATE pMS, COUNT side)
 		pMS->InputFunc = DoMelee;
 }
 
+static void
+connectionFeedback (NetConnection *conn, const char *str) {
+	struct battlestate_struct *bs = NetMelee_getBattleState (conn);
+
+	if (bs == NULL)
+	{
+		// bs == NULL means the game has started.
+		LockMutex (GraphicsLock);
+		DrawMeleeStatusMessage (str);
+		UnlockMutex (GraphicsLock);
+	}
+	else
+	{
+		DoPopupWindow (str);
+	}
+}
+
 void
-connectedFeedback (PMELEE_STATE pMS, COUNT side) {
-	LockMutex (GraphicsLock);
-	if (side == 0)
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 8));
+connectedFeedback (NetConnection *conn) {
+	if (NetConnection_getPlayerNr(conn) == 0)
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 8));
 				// "Bottom player is connected."
 	else
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 9));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 9));
 				// "Top player is connected."
-	UnlockMutex (GraphicsLock);
 
 	PlayMenuSound (MENU_SOUND_INVOKED);
-	(void) pMS;
 }
 
 const char *
@@ -3240,19 +3254,13 @@ abortReasonString (NetplayResetReason reason)
 }
 
 void
-abortFeedback (COUNT side, NetplayAbortReason reason)
+abortFeedback (NetConnection *conn, NetplayAbortReason reason)
 {
 	const char *msg;
 
 	msg = abortReasonString (reason);
 	if (msg != NULL)
-	{
-		LockMutex (GraphicsLock);
-		DrawMeleeStatusMessage (msg);
-		UnlockMutex (GraphicsLock);
-	}
-
-	(void) side;
+		connectionFeedback (conn, msg);
 }
 
 const char *
@@ -3276,11 +3284,18 @@ resetReasonString (NetplayResetReason reason)
 }
 
 void
-resetFeedback (COUNT side, NetplayResetReason reason, bool byRemote)
+resetFeedback (NetConnection *conn, NetplayResetReason reason,
+		bool byRemote)
 {
 	const char *msg;
 
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	flushPacketQueues ();
+			// If the local side queued a reset packet as a result of a
+			// remote reset, that packet will not have been sent yet.
+			// We flush the queue now, so that the remote side won't be
+			// waiting for the reset packet while this side is waiting
+			// for an acknowledgement of the feedback message.
 	
 	if (reason == ResetReason_manualReset && !byRemote) {
 		// No message needed, the player initiated the reset.
@@ -3289,41 +3304,29 @@ resetFeedback (COUNT side, NetplayResetReason reason, bool byRemote)
 
 	msg = resetReasonString (reason);
 	if (msg != NULL)
-	{
-		LockMutex (GraphicsLock);
-		DrawMeleeStatusMessage (msg);
-		UnlockMutex (GraphicsLock);
-	}
-
-	(void) side;
+		connectionFeedback (conn, msg);
 }
 
 void
-errorFeedback (PMELEE_STATE pMS, COUNT side)
+errorFeedback (NetConnection *conn)
 {
-	LockMutex (GraphicsLock);
-	if (side == 0)
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 10));
+	if (NetConnection_getPlayerNr(conn) == 0)
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 10));
 				// "Bottom player: connection failed."
 	else
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 11));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 11));
 				// "Top player: connection failed."
-	UnlockMutex (GraphicsLock);
-	(void) pMS;
 }
 
 void
-closeFeedback (PMELEE_STATE pMS, COUNT side)
+closeFeedback (NetConnection *conn)
 {
-	LockMutex (GraphicsLock);
-	if (side == 0)
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 12));
+	if (NetConnection_getPlayerNr(conn) == 0)
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 12));
 				// "Bottom player: connection closed."
 	else
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 13));
+		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 13));
 				// "Top player: connection closed."
-	UnlockMutex (GraphicsLock);
-	(void) pMS;
 }
 
 #endif  /* NETPLAY */

@@ -83,6 +83,31 @@ getNumNetConnections(void) {
 ////////////////////////////////////////////////////////////////////////////
 
 
+struct melee_state *
+NetMelee_getMeleeState(NetConnection *conn) {
+	if (NetConnection_getState(conn) > NetState_connecting) {
+		BattleStateData *battleStateData =
+				(BattleStateData *) NetConnection_getStateData(conn);
+		return battleStateData->meleeState;
+	} else {
+		return (struct melee_state *) NetConnection_getExtra(conn);
+	}
+}
+
+struct battlestate_struct *
+NetMelee_getBattleState(NetConnection *conn) {
+	if (NetConnection_getState(conn) > NetState_connecting) {
+		BattleStateData *battleStateData =
+				(BattleStateData *) NetConnection_getStateData(conn);
+		return battleStateData->battleState;
+	} else {
+		return NULL;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+
 // Check the network connections for input.
 void
 netInput(void) {
@@ -257,6 +282,23 @@ initBattleStateDataConnections(void) {
 		battleStateData =
 				(BattleStateData *) NetConnection_getStateData(conn);
 		battleStateData->endFrameCount = 0;
+	}
+}
+
+void
+setBattleStateConnections(struct battlestate_struct *bs) {
+	COUNT player;
+
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		BattleStateData *battleStateData;
+		NetConnection *conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		battleStateData =
+				(BattleStateData *) NetConnection_getStateData(conn);
+		battleStateData->battleState = bs;
 	}
 }
 

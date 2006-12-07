@@ -37,6 +37,9 @@ void closeAllConnections(void);
 void closeAllConnections(void);
 size_t getNumNetConnections(void);
 
+struct melee_state *NetMelee_getMeleeState(NetConnection *conn);
+struct battlestate_struct *NetMelee_getBattleState(NetConnection *conn);
+
 void netInput(void);
 void netInputBlocking(uint32 timeoutMs);
 void flushPacketQueues(void);
@@ -50,6 +53,7 @@ bool allConnected(void);
 void sendBattleInputConnections(BATTLE_INPUT_STATE input);
 void sendChecksumConnections(uint32 frameNr, uint32 checksum);
 void initBattleStateDataConnections(void);
+void setBattleStateConnections(struct battlestate_struct *bs);
 
 BATTLE_INPUT_STATE networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr);
 

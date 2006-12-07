@@ -124,11 +124,12 @@ void updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
 bool updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship);
 void updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed);
 void confirmationCancelled(PMELEE_STATE pMS, COUNT side);
-void connectedFeedback (PMELEE_STATE pMS, COUNT side);
-void abortFeedback (COUNT side, NetplayAbortReason reason);
-void resetFeedback (COUNT side, NetplayResetReason reason, bool byRemote);
-void errorFeedback (PMELEE_STATE pMS, COUNT side);
-void closeFeedback (PMELEE_STATE pMS, COUNT side);
+void connectedFeedback (NetConnection *conn);
+void abortFeedback (NetConnection *conn, NetplayAbortReason reason);
+void resetFeedback (NetConnection *conn, NetplayResetReason reason,
+		bool byRemote);
+void errorFeedback (NetConnection *conn);
+void closeFeedback (NetConnection *conn);
 
 #endif /* _MELEE_H */
 

@@ -50,7 +50,7 @@ typedef void (*NetConnectionStateData_ReleaseFunction)(
 		NetConnectionStateData *stateData);
 
 #define NETCONNECTION_STATE_DATA_COMMON \
-	NetConnectionStateData_ReleaseFunction releaseFunction;
+		NetConnectionStateData_ReleaseFunction releaseFunction;
 
 struct
 NetConnectionStateData {

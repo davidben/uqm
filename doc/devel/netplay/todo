@@ -90,11 +90,14 @@ Bugs:
   to keep sync on games with a different resolution.
 - Both sides need identical battle frame rates. This value is not
   negotiated.
-- When melee selection is aborted, the remote player will be stuck.
 - If there are packets in the packet queue when a connection is closed,
   the callback that clears the queue isn't called in time.
-- When the player returns from the SuperMelee menu to the main menu,
-  all open connections should be closed.
+- If one player closes the connection while the other player is selecting
+  a ship to put in his fleet, or loading a fleet, the "Network Control"
+  button won't be updated.
+- Per state data (in NetConnection.stateData) is unnecessarilly complicated.
+  Putting all fields directly in NetConnection simplifies things a lot.
+  It's not as generic, but this code won't be used elsewhere anyhow.
 
 
 Final actions:

@@ -83,7 +83,7 @@ Netplay_connectionReset(NetConnection *conn, NetplayResetReason reason,
 		case NetState_endingBattle:
 		case NetState_endingBattle2:
 		case NetState_endMelee:
-			resetFeedback(conn->player, reason, byRemote);
+			resetFeedback(conn, reason, byRemote);
 			break;
 	}
 }
@@ -147,9 +147,9 @@ Netplay_remoteReset(NetConnection *conn, NetplayResetReason reason) {
 
 	conn->stateFlags.reset.remoteReset = true;
 	if (!conn->stateFlags.reset.localReset) {
-		Netplay_connectionReset(conn, reason, true);
 		sendReset(conn, reason);
 		conn->stateFlags.reset.localReset = true;
+		Netplay_connectionReset(conn, reason, true);
 	}
 
 	Netplay_resetConditionTriggered(conn);

@@ -32,6 +32,7 @@ struct BattleStateData {
 	NETCONNECTION_STATE_DATA_COMMON
 
 	struct melee_state *meleeState;
+	struct battlestate_struct *battleState;
 	struct getmelee_struct *getMeleeState;
 	BattleFrameCounter endFrameCount;
 };
