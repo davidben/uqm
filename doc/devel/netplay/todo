@@ -12,6 +12,8 @@ Medium-priority:
 - make compilation of crc.c and checksum.c conditional.
 - negotiate checksum interval
 - Closing and destroying of NetConnections is a terrible mess.
+- Checks allConnected() shouldn't be needed if CHECK_ABORT is set
+  on disconnect.
 
 
 Low-priority:
@@ -44,8 +46,6 @@ Low-priority:
   - maximum number of ships per side
   - maximum ship cost per side
   - ship properties
-- Checks allConnected() shouldn't be needed if CHECK_ABORT is set
-  on disconnect.
 
 
 Future improvements/optimisations:
@@ -69,6 +69,9 @@ Future improvements/optimisations:
 - move to UDP. Repeat past battleinput packets for each new packet that
   is sent until they are confirmed.
 - Once the protocol is stable: register the port number with IANA
+- Per state data (in NetConnection.stateData) is unnecessarilly complicated.
+  Putting all fields directly in NetConnection simplifies things a lot.
+  It's not as generic, but this code won't be used elsewhere anyhow.
 
 
 Bugs:
@@ -79,9 +82,6 @@ Bugs:
 - If one player closes the connection while the other player is selecting
   a ship to put in his fleet, or loading a fleet, the "Network Control"
   button won't be updated.
-- Per state data (in NetConnection.stateData) is unnecessarilly complicated.
-  Putting all fields directly in NetConnection simplifies things a lot.
-  It's not as generic, but this code won't be used elsewhere anyhow.
 
 
 Final actions:
