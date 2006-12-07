@@ -377,7 +377,9 @@ acceptSingleConnection(ListenState *listenState, NetDescriptor *nd) {
 			case ENFILE:
 			case ENOBUFS:
 			case ENOMEM:
+#ifdef ENOSR
 			case ENOSR:
+#endif
 				// Serious problems, but future connections may still
 				// be possible.
 				log_add(log_Warning, "accept() reported '%s'\n",

@@ -33,6 +33,7 @@
 #include <netdb.h>
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 #	include <netinet/in_systm.h>
+#	include <netinet/in.h>
 #endif
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
