@@ -11,9 +11,6 @@ Medium-priority:
 - decent pause handling
 - make compilation of crc.c and checksum.c conditional.
 - negotiate checksum interval
-- disconnect during battle will trigger the setup disconnect notification.
-- Assertion 'NetState_battleActive(NetConnection_getState(conn))' in
-  Netplay_sendChecksum triggered. See #sc2 channel log.
 - Closing and destroying of NetConnections is a terrible mess.
 
 
@@ -47,6 +44,8 @@ Low-priority:
   - maximum number of ships per side
   - maximum ship cost per side
   - ship properties
+- Checks allConnected() shouldn't be needed if CHECK_ABORT is set
+  on disconnect.
 
 
 Future improvements/optimisations:

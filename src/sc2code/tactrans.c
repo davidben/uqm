@@ -124,7 +124,8 @@ readyForBattleEndPlayer (NetConnection *conn, void *arg)
 	BattleStateData *battleStateData;
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 
-	if (NetConnection_getState (conn) == NetState_interBattle)
+	if (NetConnection_getState (conn) == NetState_interBattle ||
+			NetConnection_getState (conn) == NetState_endMelee)
 	{
 		// This connection is already ready. The entire synchronisation
 		// protocol has already been done for this connection.
