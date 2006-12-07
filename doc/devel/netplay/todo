@@ -2,37 +2,24 @@ High priority items:
 
 
 Medium-priority:
-- Test disconnection at various points.
-  Whenever there's a call to NetInput(), connections may get lost, and
-  this needs to be checked.
-- Don't check PlayerControl in netmelee etc. Make it an invariant that
-  (netConnections[player] != NULL) if
-  ((PlayerControl[player] & NETWORK_CONTROL) == NETWORK_CONTROL)
 - For the battle ending synchronisation, set the end at at least
   getBattleInputDelay() + 1 frames in the future (instead of just 1),
   so that there will be no hickup during the end synchronisation.
   Also check this value for incoming packets.
-- Disconnect notification.
 - If a player only moves away from 'Battle!' there's no need for the other
   to have to reconfirm.
 - decent pause handling
 - make compilation of crc.c and checksum.c conditional.
 - negotiate checksum interval
 - disconnect during battle will trigger the setup disconnect notification.
-- The game crashed on 'NetConnection_isConnected(conn)' in
-  networkBattleInput because 'conn' had become NULL, which means that
-  netConnections[player] had become NULL. This should never happen,
-  but it probably did happen, because of a call to
-  closePlayerNetworkConnection(). The only place which calls that is
-  flushPacketQueues(), but should that really call cPNC()?
 - Assertion 'NetState_battleActive(NetConnection_getState(conn))' in
   Netplay_sendChecksum triggered. See #sc2 channel log.
 - Closing and destroying of NetConnections is a terrible mess.
 
 
 Low-priority:
-  Maybe also for confirmed/unconfirmed. A check mark perhaps.
-- Send error packets; at least when there's a protocol version mismatch.
+- Some difference in pictures to indicated confirmed/unconfirmed.
+  A check mark perhaps.
 - Check whether the random seed and frame delay have been agreed before
   continuing (in doConfirmSettings).
 - Replacement for TOS. It is IPv4 only.
@@ -75,7 +62,7 @@ Future improvements/optimisations:
 - Concurrent selection of ships. Note that if this is handled properly, it
   will also be easy to take care of the "Allow Shofixti to choose last" bug.
   Note that one party will still have to send his choice to the other side
-  first, which may be "eploited". Encryption would take care of this,
+  first, which may be "exploited". Encryption would take care of this,
   but at the least make sure the same player who gets to chose first
   every time.
 - meta-server. Use HTTP? Existing libs can be used, no problems with NAT,
@@ -90,8 +77,6 @@ Bugs:
   to keep sync on games with a different resolution.
 - Both sides need identical battle frame rates. This value is not
   negotiated.
-- If there are packets in the packet queue when a connection is closed,
-  the callback that clears the queue isn't called in time.
 - If one player closes the connection while the other player is selecting
   a ship to put in his fleet, or loading a fleet, the "Network Control"
   button won't be updated.
