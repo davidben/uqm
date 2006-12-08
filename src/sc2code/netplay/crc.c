@@ -84,7 +84,7 @@ crc_processBytes(crc_State *state, uint8 *buf, size_t bufLen) {
 		newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ *buf) & 0xff];
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "crc_processBytes(%08x, [%z bytes]) --> %08x.",
+	log_add(log_Debug, "crc_processBytes(%08x, [%zu bytes]) --> %08x.",
 			state->crc, bufLen, newCrc);
 #endif
 	state->crc = newCrc;
