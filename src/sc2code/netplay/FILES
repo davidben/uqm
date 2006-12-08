@@ -32,8 +32,9 @@ packetq.{c,h}         Manages the packet queue.
 packetsenders.{c,h}   Creates and sends/queues packets.
 
 In netplay/proto/:
-confirm.{c,h}         Functions for handing the 'confirmation' protocol.
+npconfirm.{c,h}       Functions for handing the 'confirmation' protocol.
 ready.{c,h}           Functions for handling the 'ready' protocol.
+reset.{c,h}           Functions for handling the 'reset' protocol.
 
 
 
@@ -42,6 +43,7 @@ ready.{c,h}           Functions for handling the 'ready' protocol.
 TODO:
 Division:
 - files that interface with sockets and knows nothing of the game
+  (these are in libs/network)
 - files that know of sockets and the game but don't directly interface
   with either
 - files that interface with the game and know nothing of sockets
