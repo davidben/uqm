@@ -2350,7 +2350,7 @@ check_for_disconnections (PMELEE_STATE pMS)
 		conn = netConnections[player];
 		if (conn == NULL || !NetConnection_isConnected (conn))
 		{
-			PlayerControl[player] = HUMAN_CONTROL & STANDARD_RATING;
+			PlayerControl[player] = HUMAN_CONTROL | STANDARD_RATING;
 			DrawControls (player, FALSE);
 			log_add (log_User, "Player %d has disconnected; shifting "
 					"controls\n", player);
