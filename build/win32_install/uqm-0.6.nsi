@@ -275,7 +275,9 @@ SectionGroup "!UQM" SECGRP01
     File "README.txt"
     File "SDL.dll"
     File "SDL_image.dll"
+    File "SDL_gfx.dll"
     File "uqm.exe"
+    File "keyjam.exe"
     File "vorbis.dll"
     File "vorbisfile.dll"
     File "WhatsNew.txt"
@@ -434,6 +436,8 @@ Section -ShortcutsAndIcons
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\WhatsNew.lnk" "$INSTDIR\WhatsNew.txt"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Key Configuration.lnk" "$WINDIR\notepad" "$UQMUSERDATA\keys.cfg"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Options Configuration.lnk" "$WINDIR\notepad" "$UQMUSERDATA\uqm.cfg"
+    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Keyboard Test.lnk" "$INSTDIR\keyjam.exe"
+    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Saved Games.lnk" "$UQMUSERDATA\save"
     IntCmp $MAKEICON 1 0 NoIcon NoIcon
     CreateShortCut "$DESKTOP\The Ur-Quan Masters.lnk" "$INSTDIR\uqm.exe" $UQMARGS
 NoIcon:
@@ -513,6 +517,8 @@ Section Uninstall
   Delete "$INSTDIR\vorbisfile.dll"
   Delete "$INSTDIR\vorbis.dll"
   Delete "$INSTDIR\uqm.exe"
+  Delete "$INSTDIR\keyjam.exe"
+  Delete "$INSTDIR\SDL_gfx.dll"
   Delete "$INSTDIR\SDL_image.dll"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\README.txt"
@@ -527,6 +533,8 @@ Section Uninstall
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Options Configuration.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Key Configuration.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Keyboard Test.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Saved Games.lnk"
   Delete "$DESKTOP\The Ur-Quan Masters.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\The Ur-Quan Masters.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Documentation\AUTHORS.lnk"
