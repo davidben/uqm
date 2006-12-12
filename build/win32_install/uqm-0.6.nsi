@@ -319,8 +319,8 @@ DelOldContent:
     SetOverwrite ifnewer
     AddSize 12261
     StrCpy $MANDATORY 1
-    ; TODO: Update MD5 sum for 0.6
-    StrCpy $MD5SUM "1d03864b141a2626a7284bc7cfdefb47"
+    ; TODO: Confirm MD5 sum for 0.6 if content changes after this point (12/12)
+    StrCpy $MD5SUM "e3568fb14e48815bada8c9b7263178c1"
     File "content\version"
     Push "uqm-0.6.0-content.uqm"
     Push "$INSTDIR\content\packages"
@@ -355,8 +355,7 @@ SectionGroup /e "3DO Content" SECGRP02
     SectionIn 1 4 6
     AddSize 112291
     StrCpy $MANDATORY 0
-    ; TODO: Update MD5 sum data for 0.6
-    StrCpy $MD5SUM "52a084cfaa0bc7fcc63a295feb8cbd28"
+    StrCpy $MD5SUM "d31577b896be935cc2238afd07299b8b"
     Push "uqm-0.6.0-voice.uqm"
     Push "$INSTDIR\content\packages"
     Call HandlePackage
