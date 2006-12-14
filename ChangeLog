@@ -1,4 +1,6 @@
 Changes towards version 0.6:
+- Take $CFLAGS and $LDFLAGS into account for dependency detection
+  (they were already used for the building itself) - SvdB
 - Validate UQM version of either side of a Netplay game - SvdB
 - Better abort and disconnect handling for Netplay - SvdB
 - Menu sounds in Setup track rest of game (#922), from Nic - Michael

@@ -492,7 +492,7 @@ have_library() {
 		TEMP_CFLAGS=`evalVar LIB_${LIB}_CFLAGS`
 		TEMP_LDFLAGS=`evalVar LIB_${LIB}_LDFLAGS`
 
-		try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF
+		try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF
 int main(int argc, char *argv[]) {
 	(void) argc;  /* Get rid of unused variable warning */
 	(void) argv;  /* Get rid of unused variable warning */
@@ -575,7 +575,7 @@ have_symbol_generic() {
 		CODE=$2
 	fi
 
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 #include <sys/types.h>
 $EXTRA
 
@@ -677,7 +677,7 @@ have_header() {
 	NAME=${HEADER%.h}
 	EXTRA=`evalVar HEADER_${NAME}_EXTRA`
 
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
 #include <$HEADER>
 int main() {
@@ -719,7 +719,7 @@ have_macro() {
 
 	EXTRA=`evalVar MACRO_${NAME}_EXTRA`
 
-	try_compile_c "$TEMP_CFLAGS" "$TEMP_LDFLAGS" << EOF > /dev/null 2>&1
+	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
 #ifndef $MACRO
 #	error
@@ -791,7 +791,7 @@ check_endianness() {
 		esac
 	else
 		# Detect endianness
-		try_compile_and_run_c << EOF
+		try_compile_and_run_c "$CFLAGS" "$LDFLAGS" << EOF
 int main() {
 	int i;
 
