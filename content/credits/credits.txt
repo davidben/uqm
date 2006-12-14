@@ -98,8 +98,8 @@ Robert McNamara
 Mike Melanson
 (ADPCM basis from MPlayer
   used for DUK audio)
-
-Mudry
+ 
+Mudrony Laszlo
 (PC/DOS content unpacking)
  
 Erol Otus
@@ -109,6 +109,9 @@ Brian Rogers
  
 Horatiu Romosan
 (v0.1 Win32 installer)
+ 
+Zarla Sheenaza
+(0.6 Win32 installer graphics)
  
 Joffrey Smith
 (setup graphics)
