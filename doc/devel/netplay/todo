@@ -77,6 +77,8 @@ Future improvements/optimisations:
 Bugs:
 - as positions are dependant on the screen resolution, you won't be able
   to keep sync on games with a different resolution.
+- collision detection is dependant on the images used. Using different
+  graphics packs will result in a desync.
 - Both sides need identical battle frame rates. This value is not
   negotiated.
 - If one player closes the connection while the other player is selecting
@@ -92,11 +94,6 @@ Final actions:
   - FILES, also note which part of the separation they are in
 - check coding style (search for '\>(')
 - compile with maximum warnings
-
-When done:
-- cvs diff
-- Update uqm version number
-- Update changelog
 
 
 To put in the announcement of Netplay:
