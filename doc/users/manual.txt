@@ -601,7 +601,7 @@ control.
 In order to connect, you must agree on a port (the default is 21837,
 which should not require any change) and set a net delay in frames.
 To compensate for network lag, a keypress or keyrelease will only take
-effect after this many frames. While higher values make your ship to
+effect after this many frames. While higher values make your ship
 seem to respond more sluggishly, they give the keypress information
 more time to reach the remote party.  If the game stutters, this is
 because it is waiting for this keypress information to arrive, which
