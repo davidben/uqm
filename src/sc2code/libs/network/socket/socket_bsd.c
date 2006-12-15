@@ -147,7 +147,7 @@ Socket_setNonBlocking(Socket *sock) {
 		return -1;
 	}
 
-	if (fcntl(sock->fd, F_SETFL, (long) (flags | O_NONBLOCK)) == -1) {
+	if (fcntl(sock->fd, F_SETFL, flags | O_NONBLOCK) == -1) {
 		int savedErrno = errno;
 		log_add(log_Error, "Setting non-blocking mode on socket failed: "
 				"%s.\n", strerror(errno));
