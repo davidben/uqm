@@ -187,7 +187,7 @@ main (int argc, char *argv[])
 	prepareConfigDir (options.configDir);
 
 	PlayerOne = CONTROL_TEMPLATE_KB_1;
-	PlayerTwo = CONTROL_TEMPLATE_KB_2;
+	PlayerTwo = CONTROL_TEMPLATE_JOY_1;
 
 	// Fill in the options struct based on uqm.cfg
 	res_LoadFilename (configDir, "uqm.cfg");
@@ -342,7 +342,7 @@ main (int argc, char *argv[])
 		if (PlayerTwo >= NUM_TEMPLATES)
 		{
 			log_add (log_Error, "Illegal control template '%d' for Player Two.", PlayerTwo);
-			PlayerTwo = CONTROL_TEMPLATE_KB_2;
+			PlayerTwo = CONTROL_TEMPLATE_JOY_1;
 		}
 	}
 	if (res_HasKey ("config.musicvol"))
