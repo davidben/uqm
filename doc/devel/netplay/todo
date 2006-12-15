@@ -46,6 +46,9 @@ Low-priority:
   - maximum number of ships per side
   - maximum ship cost per side
   - ship properties
+- Send taunts (prerecorded samples) at the touch of a button?
+  Use taunt add-on packages? Send the opponent's package before the start
+  of a game?
 
 
 Future improvements/optimisations:
@@ -84,6 +87,8 @@ Bugs:
 - If one player closes the connection while the other player is selecting
   a ship to put in his fleet, or loading a fleet, the "Network Control"
   button won't be updated.
+- If one side is computer-controlled, sync loss will occur, because the AI
+  uses the RNG. It needs its own RNG context.
 
 
 Final actions:
