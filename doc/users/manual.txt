@@ -608,7 +608,7 @@ because it is waiting for this keypress information to arrive, which
 is an indication that the input delay is too low.  Super Melee runs at
 24 frames per second, each frame delayed will delay the input by about
 42ms.  The delay used is the maximum of the desired value for both
-parties.  The default is 0. Values lower than 4 are typically
+parties.  The default is 2. Values lower than 4 are typically
 acceptable in terms of responsiveness.  Future versions may
 automatically decide on the best value to use.
 
