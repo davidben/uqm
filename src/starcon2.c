@@ -43,6 +43,7 @@
 #	include "libs/alarm.h"
 #	include "libs/net.h"
 #	include "netplay/netoptions.h"
+#	include "netplay/netplay.h"
 #endif
 #include "setup.h"
 #include "starcon.h"
@@ -167,6 +168,13 @@ main (int argc, char *argv[])
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
 			UQM_PATCH_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
+#ifdef NETPLAY
+	log_add (log_User, "Netplay protocol version %d.%d. Requiring remote "
+			"UQM version %d.%d.%d.",
+			NETPLAY_PROTOCOL_VERSION_MAJOR, NETPLAY_PROTOCOL_VERSION_MINOR,
+			NETPLAY_MIN_UQM_VERSION_MAJOR, NETPLAY_MIN_UQM_VERSION_MINOR,
+			NETPLAY_MIN_UQM_VERSION_PATCH);
+#endif
 
 	if (options.runMode == runMode_usage)
 	{
