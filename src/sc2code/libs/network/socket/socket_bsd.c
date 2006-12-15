@@ -29,7 +29,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <netdb.h>
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 #	include <netinet/in_systm.h>
@@ -38,6 +37,7 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 
 Socket *
@@ -136,15 +136,25 @@ Socket_recv(Socket *sock, void *buf, size_t len, int flags) {
 
 int
 Socket_setNonBlocking(Socket *sock) {
-	int flag = 1;
+	int flags;
 
-	if (ioctl(sock->fd, FIONBIO, &flag) == -1) {
+	flags = fcntl(sock->fd, F_GETFL);
+	if (flags == -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Setting non-block mode on socket failed: %s.\n",
-				strerror(errno));
+		log_add(log_Error, "Getting file descriptor flags of socket failed: "
+				"%s.\n", strerror(errno));
 		errno = savedErrno;
 		return -1;
 	}
+
+	if (fcntl(sock->fd, F_SETFL, (long) (flags | O_NONBLOCK)) == -1) {
+		int savedErrno = errno;
+		log_add(log_Error, "Setting non-blocking mode on socket failed: "
+				"%s.\n", strerror(errno));
+		errno = savedErrno;
+		return -1;
+	}
+
 	return 0;
 }
 
