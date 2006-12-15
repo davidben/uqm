@@ -2149,6 +2149,25 @@ StartMeleeButtonPressed (PMELEE_STATE pMS)
 		PlayMenuSound (MENU_SOUND_FAILURE);
 		return;
 	}
+	
+	if ((PlayerControl[0] & NETWORK_CONTROL) &&
+			(PlayerControl[1] & NETWORK_CONTROL))
+	{
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 31));
+				// "Only one side at a time can be network controlled."
+		return;
+	}
+
+	if (((PlayerControl[0] & NETWORK_CONTROL) &&
+			(PlayerControl[1] & COMPUTER_CONTROL)) ||
+			((PlayerControl[0] & COMPUTER_CONTROL) &&
+			(PlayerControl[1] & NETWORK_CONTROL)))
+	{
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 32));
+				// "Netplay with a computer-controlled side is currently
+				// not possible."
+		return;
+	}
 
 #ifdef NETPLAY
 	// Check whether all network parties are ready;

@@ -2373,3 +2373,10 @@ Game aborted due to loss of synchronisation.
 Game aborted by the remote player.
 
 
+#(Only one side at a time can be network controlled.)
+Only one side at a time can be network controlled.
+
+
+#(Netplay with a computer-controlled side is currently not possible.)
+Netplay with a computer-controlled side is currently not possible.
+

@@ -33,6 +33,7 @@
 #include "settings.h"
 #include "sounds.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/log.h"
 #include "libs/mathlib.h"
 
 
@@ -361,14 +362,14 @@ selectAllShips (SIZE num_ships)
 
 	if (num_ships != 2)
 	{
-		fprintf(stderr, "More than two players is not supported.\n");
+		log_add (log_Error, "More than two players is not supported.\n");
 		return FALSE;
 	}
 
 	if ((PlayerControl[0] & NETWORK_CONTROL) &&
 			(PlayerControl[1] & NETWORK_CONTROL))
 	{
-		fprintf(stderr, "Only one side at a time can be network "
+		log_add (log_Error, "Only one side at a time can be network "
 				"controlled.\n");
 		return FALSE;
 	}
