@@ -55,6 +55,9 @@ if [ $# -lt 1 ]; then
 	exit 1;
 fi
 
+# Load the configuration functions
+. build/unix/build.config
+
 case "$1" in
 	cleanall)
 		build_cleanall
@@ -86,9 +89,6 @@ export "${BUILD_PROJECT}_CFLAGS" "${BUILD_PROJECT}_LDFLAGS"
 # Add trailing / from objs dir
 eval ${BUILD_PROJECT}_OBJS=\${${BUILD_PROJECT}_OBJS%/}/
 export "${BUILD_PROJECT}_OBJS"
-
-# Load the configuration functions
-. build/unix/build.config
 
 if [ $# -lt 2 ]; then
 	build_check_config
