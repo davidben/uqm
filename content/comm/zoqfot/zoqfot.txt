@@ -8,11 +8,11 @@ We come in peace, and with good will.
 #(WE_ARE3)	zoqfo003.ogg
 But if you make one false move, you're vapor!
 #(WE_ARE4)	zoqfo004.ogg
-Don't worry, my companion is just a bit nervous
+Don't worry, my companion is just a bit nervous...
 #(WE_ARE5)	zoqfo005.ogg
 No, I'm not!
 #(WE_ARE6)	zoqfo006.ogg
-and argumentative.
+...and argumentative.
 #(WE_ARE7)	zoqfo007.ogg
 No, I'm not.
 
@@ -115,22 +115,22 @@ In our ancient past, four species evolved intelligence on our homeworld.
 #(YEARS_AGO1)	zoqfo039.ogg	
 Simultaneously.
 #(YEARS_AGO2)	zoqfo040.ogg
-They were the Zoq
+They were the Zoq...
 #(YEARS_AGO3)	zoqfo041.ogg
-the Fot
+...the Fot...
 #(YEARS_AGO4)	zoqfo042.ogg
-the Pik
+...the Pik...
 #(YEARS_AGO5)	zoqfo043.ogg
-and the Zebranky.
+...and the Zebranky.
 #(YEARS_AGO6)	zoqfo044.ogg
 We three, the Zoq, Fot, and Pik evolved in such a way
-as to acquire sustenance from many sources
+as to acquire sustenance from many sources...
 #(YEARS_AGO7)	zoqfo045.ogg
-from airborne zooplankton
+...from airborne zooplankton...
 #(YEARS_AGO8)	zoqfo046.ogg
-from solar and ambient energies
+...from solar and ambient energies...
 #(YEARS_AGO9)	zoqfo047.ogg
-and from rocky fungal clingers.
+...and from rocky fungal clingers.
 #(YEARS_AGO10)	zoqfo048.ogg
 Our favorite!
 #(YEARS_AGO11)	zoqfo049.ogg
@@ -141,9 +141,9 @@ and the Pik.
 #(YEARS_AGO12)	zoqfo050.ogg
 To survive the predations of the Zebranky
 we banded together
-annihilated the Zebranky
+annihilated the Zebranky...
 #(YEARS_AGO13)	zoqfo051.ogg
-and formed the cooperative union you now encounter.
+...and formed the cooperative union you now encounter.
 
 #(where_from)
 What do you seek from us?
@@ -175,23 +175,23 @@ We are being blown to bits.
 Fleets of alien ships appear out of nowhere
 then unleash terrible destructive energies.
 #(UNDER_ATTACK4)	zoqfo062.ogg
-Fortunately
+Fortunately...
 #(UNDER_ATTACK5)	zoqfo063.ogg
-they release these energies on each other.
+...they release these energies on each other.
 #(UNDER_ATTACK6)	zoqfo064.ogg
-Unfortunately
+Unfortunately...
 #(UNDER_ATTACK7)	zoqfo065.ogg
-they favor combat near strong gravity wells.
+...they favor combat near strong gravity wells.
 Their stray shots regularly strike the surface of our planets
 often with tragic results.
 #(UNDER_ATTACK8)	zoqfo066.ogg
-Fortunately
+Fortunately...
 #(UNDER_ATTACK9)	zoqfo067.ogg
-they have never found our homeworld, only our colony planets.
+...they have never found our homeworld, only our colony planets.
 #(UNDER_ATTACK10)	zoqfo068.ogg
-Unfortunately
+Unfortunately...
 #(UNDER_ATTACK11)	zoqfo069.ogg
-all of our colonies have perished as a consequence.
+...all of our colonies have perished as a consequence.
 
 #(tough_luck)
 Hey, space is a tough place where wimps eat flaming plasma death.
@@ -454,12 +454,12 @@ The black ship appeared in orbit several days ago
 and began raining down bolts of destructive energy
 on the surface of our planet!
 #(THANKS_FOR_RESCUE3)	zoqfo151.ogg
-Fortunately
+Fortunately...
 #(THANKS_FOR_RESCUE4)	zoqfo152.ogg
-We were able to focus our planetary shields
+...we were able to focus our planetary shields
 to deflect the energy blasts away from our cities.
 #(THANKS_FOR_RESCUE5)	zoqfo153.ogg
-Unfortunately
+Unfortunately...
 #(THANKS_FOR_RESCUE6)	zoqfo154.ogg
 Large sections of our planet's beautiful wilderness
 have been annihilated... entire ecosystems destroyed.
@@ -611,11 +611,11 @@ to the sinister Kohr-Ah.
 Actually, that's good news.
 #(UTWIG_DELAY8)	zoqfo200.ogg
 By focusing on the Kohr-Ah
-who have been winning their war up to this point
+who have been winning their war up to this point...
 #(UTWIG_DELAY9)	zoqfo201.ogg
 They've been plastering the Ur-Quan.
 #(UTWIG_DELAY10)	zoqfo202.ogg
-The balance of power has been equalized somewhat
+The balance of power has been equalized somewhat...
 #(UTWIG_DELAY11)	zoqfo203.ogg
 But the Kohr-Ah will STILL probably win!
 #(UTWIG_DELAY12)	zoqfo204.ogg
@@ -774,9 +774,9 @@ Which have actually been QUITE SUCCESSFUL at killing us.
 #(ABOUT_OTHERS6)	zoqfo255.ogg
 The only other starships we have encountered
 are strange tumbling red probes
-which profess to be on a peaceful mission
+which profess to be on a peaceful mission...
 #(ABOUT_OTHERS7)	zoqfo256.ogg
-But then attack like slavering Zebrankys.
+...but then attack like slavering Zebrankys.
 #(ABOUT_OTHERS8)	zoqfo257.ogg
 We believe that the probes are actually robotic scouts
 which have suffered some kind of malfunction
@@ -852,9 +852,9 @@ and kick back and enjoy ourselves
 knowing that a Zebranky wasn't gonna jump out of the bush and eat us!
 #(ABOUT_PAST4)	zoqfo275.ogg
 Well, we DID go back into the forest.
-We stayed there for about five thousand years and had a great time
+We stayed there for about five thousand years and had a great time...
 #(ABOUT_PAST5)	zoqfo276.ogg
-Then, one stormy day, a Zoq, a Fot, and a Pik were walking up a steep path
+...then, one stormy day, a Zoq, a Fot, and a Pik were walking up a steep path
 looking for something good to eat, when a bolt of lightning struck nearby.
 With a huge flash of light, the bolt of energy
 carved a strangely-shaped chunk of granite out of a cliff.
@@ -866,7 +866,7 @@ the grass caught on fire.
 #(ABOUT_PAST7)	zoqfo278.ogg
 When the rock finally got to the Zoq, the Fot, and the Pik
 they simultaneously discovered the Wheel, Fire, and Religion
-thus catapulting them on to the road of progress
+thus catapulting them on to the road of progress.
 #(ABOUT_PAST8)	zoqfo279.ogg
 Which has led us to this day, Captain.
 Oh! How did the flaming wheel give religion to our Culture, you ask?
