@@ -33,7 +33,7 @@ NetplayOptions netplayOptions = {
 			/* .port     = */ "21837"  /* 0x554d - "UM" */,
 		},
 	},
-	/* .inputDelay = */ 0,
+	/* .inputDelay = */ 2,
 };
 
 
