@@ -21,6 +21,10 @@ Var UQMUSERDATA
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\win-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "orzshofixti.bmp"
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP "ultron.bmp"
+!define MUI_HEADERIMAGE_RIGHT
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -267,8 +271,7 @@ SectionGroup "!UQM" SECGRP01
     SetOverwrite try
     File "AUTHORS.txt"
     File "COPYING.txt"
-    File "jpeg.dll"
-    File "libpng13.dll"
+    File "libpng12.dll"
     File "Manual.txt"
     File "ogg.dll"
     File "OpenAL32.dll"
@@ -319,8 +322,7 @@ DelOldContent:
     SetOverwrite ifnewer
     AddSize 12261
     StrCpy $MANDATORY 1
-    ; TODO: Confirm MD5 sum for 0.6 if content changes after this point (12/12)
-    StrCpy $MD5SUM "e3568fb14e48815bada8c9b7263178c1"
+    StrCpy $MD5SUM "7e8f0ed8490e24231431420ea2ba6a03"
     File "content\version"
     Push "uqm-0.6.0-content.uqm"
     Push "$INSTDIR\content\packages"
@@ -525,9 +527,10 @@ Section Uninstall
   Delete "$INSTDIR\ogg.dll"
   Delete "$INSTDIR\Manual.txt"
   Delete "$INSTDIR\libpng13.dll"
-  Delete "$INSTDIR\jpeg.dll"
+  Delete "$INSTDIR\libpng12.dll"
   Delete "$INSTDIR\COPYING.txt"
   Delete "$INSTDIR\AUTHORS.txt"
+  Delete "$INSTDIR\stderr.txt"
 
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Options Configuration.lnk"
