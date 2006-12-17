@@ -16,8 +16,8 @@ Primary-site:   ftp.sourceforge.net /pub/sourceforge/s/sc/sc2/
 		11580000 uqm-0.6.0-content.uqm
 		18980071 uqm-0.6.0-3domusic.uqm
 		114823409 uqm-0.6.0-voice.uqm
-                13369624 uqm-0.6.0-macosx.dmg
-                1567459 uqm-0.6.0-source.tar.gz
+                21994470 uqm-0.6.0-macosx.dmg
+                1567422 uqm-0.6.0-source.tgz
 Platforms:      Windows, Linux, FreeBSD, OpenBSD, MacOS X, BeOS
 Copying-policy: GPL for the C code, custom for the graphics and audio content
 End
