@@ -1686,7 +1686,6 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockStarShip (&master_q, hStarShip);
 
 			pMS->TeamImage[pMS->side].ShipList[index] = pMS->CurIndex;
-			fleetShipChanged (pMS, pMS->side, index);
 			LockMutex (GraphicsLock);
 			DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
 			DrawShipBoxCurrent (pMS, FALSE);
@@ -1703,6 +1702,7 @@ DoPickShip (PMELEE_STATE pMS)
 			UnlockMutex (GraphicsLock);
 		}
 
+		fleetShipChanged (pMS, pMS->side, index);
 		UpdateCurrentShip(pMS);
 
 		pMS->InputFunc = DoEdit;
