@@ -181,6 +181,7 @@ readyForBattleEndPlayer (NetConnection *conn, void *arg)
 }
 #endif
 
+// Returns true iff this side is ready to end the battle.
 static inline bool
 readyForBattleEnd (COUNT side)
 {
@@ -190,7 +191,7 @@ readyForBattleEnd (COUNT side)
 	// accuracy. PLRPlaying () isn't consistent enough.
 	return true;
 #else  /* !DEMO_MODE */
-	return PLRPlaying ((MUSIC_REF)~0);
+	return !PLRPlaying ((MUSIC_REF)~0);
 #endif  /* !DEMO_MODE */
 #else  /* defined (NETPLAY) */
 	if (PLRPlaying ((MUSIC_REF)~0))
