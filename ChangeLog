@@ -1,3 +1,6 @@
+Changes towards version 0.7:
+- None yet
+	
 Changes towards version 0.6:
 - Fixed a bug where an input delay was used for non-network games - SvdB
 - Fixed a bug where the victory ditty would end prematurely when UQM
@@ -82,7 +85,7 @@ Changes towards version 0.6:
   -Michael
 
 Changes towards version 0.5:
-- Innocent origiginal c&p bug fixed, from bpoint.
+- Innocent original c&p bug fixed, from bpoint.
 - Handle relative dirs in -C correctly, from Jan Lönnberg (part of bug #738).
 - Internationalization fixes: moved many hardcoded English strings
   into string resource file starcon.txt (bug #778), from Andrew Zabolotny
