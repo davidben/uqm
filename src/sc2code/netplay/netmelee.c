@@ -440,7 +440,9 @@ forAllConnectedPlayers(ForAllCallback callback, void *arg) {
 bool
 setupInputDelay(size_t localInputDelay) {
 	COUNT player;
-	size_t inputDelay = localInputDelay;
+	bool haveNetworkPlayer = false;
+			// We have at least one network controlled player.
+	size_t inputDelay = 0;
 	
 	for (player = 0; player < NUM_PLAYERS; player++)
 	{
@@ -451,9 +453,13 @@ setupInputDelay(size_t localInputDelay) {
 		if (!NetConnection_isConnected(conn))
 			continue;
 
+		haveNetworkPlayer = true;
 		if (NetConnection_getInputDelay(conn) > inputDelay)
 			inputDelay = NetConnection_getInputDelay(conn);
 	}
+
+	if (haveNetworkPlayer && inputDelay < localInputDelay)
+		inputDelay = localInputDelay;
 
 	setBattleInputDelay(inputDelay);
 	return true;
