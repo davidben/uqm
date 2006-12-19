@@ -1,4 +1,7 @@
 Changes towards version 0.6:
+- Fixed a bug where an input delay was used for non-network games - SvdB
+- Fixed a bug where the victory ditty would end prematurely when UQM
+  is compiled without Netplay support - SvdB
 - Take $CFLAGS and $LDFLAGS into account for dependency detection
   (they were already used for the building itself) - SvdB
 - Validate UQM version of either side of a Netplay game - SvdB
