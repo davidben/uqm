@@ -31,17 +31,21 @@
 #endif
 
 #define uio_Stream_BLOCK_SIZE 1024
-		// The alignment of file reads as well as the buffer size.
-#define uio_Stream_BLOCK_PAGE_START(offset) \
-		((offset) & ~(uio_Stream_BLOCK_SIZE - 1))
 
 static inline uio_Stream *uio_Stream_new(uio_Handle *handle, int openFlags);
 static inline void uio_Stream_delete(uio_Stream *stream);
 static inline uio_Stream *uio_Stream_alloc(void);
 static inline void uio_Stream_free(uio_Stream *stream);
+#ifdef NDEBUG
+#	define uio_assertReadSanity(stream)
+#	define uio_assertWriteSanity(stream)
+#else
+static void uio_assertReadSanity(uio_Stream *stream);
+static void uio_assertWriteSanity(uio_Stream *stream);
+#endif
 static int uio_Stream_fillReadBuffer(uio_Stream *stream);
-static int uio_Stream_alignReadBuffer(uio_Stream *stream);
 static int uio_Stream_flushWriteBuffer(uio_Stream *stream);
+static void uio_Stream_discardReadBuffer(uio_Stream *stream);
 
 
 uio_Stream *
@@ -108,18 +112,18 @@ uio_fopen(uio_DirHandle *dir, const char *path, const char *mode) {
 
 int
 uio_fclose(uio_Stream *stream) {
-	if (stream->writeStart != NULL)
+	if (stream->operation == uio_StreamOperation_write)
 		uio_Stream_flushWriteBuffer(stream);
 	uio_close(stream->handle);
 	uio_Stream_delete(stream);
 	return 0;
 }
 
-// If less than nmembs could be read, or an error occurs, the file pointer
-// is undefined. clearerr() followed by fseek() need to be called before
-// attempting to read or write again.
-// I don't have the C standard myself, but I suspect this is the
-// official behaviour for fread() and fwrite().
+// "The file position indicator for the stream (if defined) is advanced by
+// the number of characters successfully read. If an error occurs, the
+// resulting value of the file position indicator for the stream is
+// indeterminate. If a partial element is read, its value is
+// indeterminate." (from POSIX for fread()).
 size_t
 uio_fread(void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 	size_t bytesToRead;
@@ -128,21 +132,17 @@ uio_fread(void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 	bytesToRead = size * nmemb;
 	bytesRead = 0;
 
-	assert((stream->openFlags & O_ACCMODE) != O_WRONLY);
-	if (stream->writeStart != NULL) {
-		if (uio_Stream_flushWriteBuffer(stream) == -1) {
-			// errno is set
-			return -1;
-		}
-	}
-	if (stream->readEnd - stream->bufPtr > 0) {
+	uio_assertReadSanity(stream);
+	stream->operation = uio_StreamOperation_read;
+
+	if (stream->dataEnd > stream->dataStart) {
 		// First use what's in the buffer.
 		size_t numRead;
 
-		numRead = minu(stream->readEnd - stream->bufPtr, bytesToRead);
-		memcpy(buf, stream->bufPtr, numRead);
+		numRead = minu(stream->dataEnd - stream->dataStart, bytesToRead);
+		memcpy(buf, stream->dataStart, numRead);
 		buf = (void *) ((char *) buf + numRead);
-		stream->bufPtr += numRead;
+		stream->dataStart += numRead;
 		bytesToRead -= numRead;
 		bytesRead += numRead;
 	}
@@ -152,6 +152,7 @@ uio_fread(void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 	}
 
 	{
+		// Read the rest directly into the caller's buffer.
 		ssize_t numRead;
 		numRead = uio_read(stream->handle, buf, bytesToRead);
 		if (numRead == -1) {
@@ -159,13 +160,12 @@ uio_fread(void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 			goto out;
 		}
 		bytesRead += numRead;
-		stream->seekLow += numRead;
 		if ((size_t) numRead < bytesToRead) {
 			// End of file
 			stream->status = uio_Stream_STATUS_EOF;
+			stream->operation = uio_StreamOperation_none;
 			goto out;
 		}
-		uio_Stream_alignReadBuffer(stream);
 	}
 	
 out:
@@ -179,14 +179,8 @@ uio_fgets(char *s, int size, uio_Stream *stream) {
 	int orgSize;
 	char *buf;
 
-	assert((stream->openFlags & O_ACCMODE) != O_WRONLY);
-
-	if (stream->writeStart != NULL) {
-		if (uio_Stream_flushWriteBuffer(stream) == -1) {
-			// errno is set
-			return NULL;
-		}
-	}
+	uio_assertReadSanity(stream);
+	stream->operation = uio_StreamOperation_read;
 	
 	size--;
 	orgSize = size;
@@ -196,15 +190,16 @@ uio_fgets(char *s, int size, uio_Stream *stream) {
 		const char *newLinePos;
 
 		// Fill buffer if empty.
-		if (stream->bufPtr >= stream->readEnd) {
+		if (stream->dataStart == stream->dataEnd) {
 			if (uio_Stream_fillReadBuffer(stream) == -1) {
 				// errno is set
 				stream->status = uio_Stream_STATUS_ERROR;
 				return NULL;
 			}
-			if (stream->bufPtr == stream->readEnd) {
+			if (stream->dataStart == stream->dataEnd) {
 				// End-of-file
 				stream->status = uio_Stream_STATUS_EOF;
+				stream->operation = uio_StreamOperation_none;
 				if (size == orgSize) {
 					// Nothing was read.
 					return NULL;
@@ -212,22 +207,21 @@ uio_fgets(char *s, int size, uio_Stream *stream) {
 				break;
 			}
 		}
-		assert (stream->bufPtr < stream->readEnd);
 		
 		// Search in buffer
-		maxRead = minu(stream->readEnd - stream->bufPtr, size);
-		newLinePos = memchr(stream->bufPtr, '\n', maxRead);
+		maxRead = minu(stream->dataEnd - stream->dataStart, size);
+		newLinePos = memchr(stream->dataStart, '\n', maxRead);
 		if (newLinePos != NULL) {
 			// Newline found.
-			maxRead = newLinePos + 1 - stream->bufPtr;
-			memcpy(buf, stream->bufPtr, maxRead);
-			stream->bufPtr += maxRead;
+			maxRead = newLinePos + 1 - stream->dataStart;
+			memcpy(buf, stream->dataStart, maxRead);
+			stream->dataStart += maxRead;
 			buf[maxRead] = '\0';
 			return buf;
 		}
 		// No newline present.
-		memcpy(buf, stream->bufPtr, maxRead);
-		stream->bufPtr += maxRead;
+		memcpy(buf, stream->dataStart, maxRead);
+		stream->dataStart += maxRead;
 		buf += maxRead;
 		size -= maxRead;
 	}
@@ -240,30 +234,25 @@ int
 uio_fgetc(uio_Stream *stream) {
 	int result;
 
-	assert((stream->openFlags & O_ACCMODE) != O_WRONLY);
+	uio_assertReadSanity(stream);
+	stream->operation = uio_StreamOperation_read;
 
-	if (stream->writeStart != NULL) {
-		if (uio_Stream_flushWriteBuffer(stream) == -1) {
-			// errno is set
-			return -1;
-		}
-	}
-
-	if (stream->bufPtr >= stream->readEnd) {
+	if (stream->dataStart == stream->dataEnd) {
+		// Buffer is empty
 		if (uio_Stream_fillReadBuffer(stream) == -1) {
 			stream->status = uio_Stream_STATUS_ERROR;
 			return (int) EOF;
 		}
-		if (stream->bufPtr == stream->readEnd) {
+		if (stream->dataStart == stream->dataEnd) {
 			// End-of-file
 			stream->status = uio_Stream_STATUS_EOF;
+			stream->operation = uio_StreamOperation_none;
 			return (int) EOF;
 		}
 	}
-	assert(stream->bufPtr < stream->readEnd);
 
-	result = (int) *((unsigned char *) stream->bufPtr);
-	stream->bufPtr++;
+	result = (int) *((unsigned char *) stream->dataStart);
+	stream->dataStart++;
 	return result;
 }
 
@@ -283,18 +272,20 @@ uio_fputc(int c, uio_Stream *stream) {
 	assert((stream->openFlags & O_ACCMODE) != O_RDONLY);
 	assert(c >= 0 && c <= 255);
 
-	if (stream->writeStart == NULL)
-		stream->writeStart = stream->bufPtr;
-	if (stream->bufPtr == stream->bufEnd) {
+	uio_assertWriteSanity(stream);
+	stream->operation = uio_StreamOperation_write;
+
+	if (stream->dataEnd == stream->bufEnd) {
 		// The buffer is full. Flush it out.
 		if (uio_Stream_flushWriteBuffer(stream) == -1) {
 			// errno is set
+			// Error status (for ferror()) is set.
 			return EOF;
 		}
 	}
 
-	*(unsigned char *) stream->bufPtr = (unsigned char) c;
-	stream->bufPtr++;
+	*(unsigned char *) stream->dataEnd = (unsigned char) c;
+	stream->dataEnd++;
 	return c;
 }
 
@@ -312,78 +303,46 @@ int
 uio_fseek(uio_Stream *stream, long offset, int whence) {
 	int newPos;
 
-	if (stream->writeStart != NULL) {
+	if (stream->operation == uio_StreamOperation_read) {
+		uio_Stream_discardReadBuffer(stream);
+	} else if (stream->operation == uio_StreamOperation_write) {
 		if (uio_Stream_flushWriteBuffer(stream) == -1) {
 			// errno is set
 			return -1;
 		}
 	}
+	assert(stream->dataStart == stream->buf);
+	assert(stream->dataEnd == stream->buf);
+	stream->operation = uio_StreamOperation_none;
 
-	assert(whence == SEEK_SET || whence == SEEK_CUR || whence == SEEK_END);
-	switch(whence) {
-		case SEEK_SET:
-			break;
-		case SEEK_CUR:
-			offset += stream->seekLow - (stream->readEnd - stream->bufPtr);
-			break;
-		case SEEK_END: {
-			struct stat statBuf;
-			
-			if (uio_fstat(stream->handle, &statBuf) == -1) {
-				// errno is set
-				return -1;
-			}
-			offset += statBuf.st_size;
-			break;
-		}
-	}
-
-	// TODO: when implementing pushback: throw away pushback buffer.
-	
-	// Maybe the new location is still inside the read buffer.
-	// If not, we must throw the buffer away.
-	// If the buffer was polluted from calls to ungetc(),
-	// always throw away the buffer.
-	if (offset >= stream->seekLow - (stream->readEnd - stream->buf) &&
-			offset <= stream->seekLow) {
-		// The buffer can be reused.
-		stream->status = uio_Stream_STATUS_OK;
-		stream->bufPtr = stream->buf +
-				(stream->readEnd - stream->buf) +
-				(offset - stream->seekLow);
-		return 0;
-	}
-
-	// The read buffer is not reusable.
-	newPos = uio_lseek(stream->handle, offset, SEEK_SET);
+	newPos = uio_lseek(stream->handle, offset, whence);
 	if (newPos == -1) {
 		// errno is set
 		return -1;
 	}
-	stream->seekLow = newPos;
 	stream->status = uio_Stream_STATUS_OK;
 			// Clear error or end-of-file flag.
-	stream->bufPtr = stream->buf;
-	stream->readEnd = stream->buf;
-	
-	if ((stream->openFlags & O_ACCMODE) == O_RDONLY) {
-		// We're done if there's no writing involved.
-		return 0;
-	}
-
-	if (uio_Stream_alignReadBuffer(stream) == -1) {
-		// Even when the buffer can't be filled, it might be
-		// a suitable location for writing (for instance, at the end
-		// of the file).
-		return 0;
-	}
 	
 	return 0;
 }
 
 long
 uio_ftell(uio_Stream *stream) {
-	return (long) stream->seekLow - (stream->readEnd - stream->bufPtr);
+	off_t newPos;
+	
+	newPos = uio_lseek(stream->handle, 0, SEEK_CUR);
+	if (newPos == (off_t) -1) {
+		// errno is set
+		return (long) -1;
+	}
+	
+	if (stream->operation == uio_StreamOperation_write) {
+		newPos += stream->dataEnd - stream->dataStart;
+	} else if (stream->operation == uio_StreamOperation_read) {
+		newPos -= stream->dataEnd - stream->dataStart;
+	}
+
+	return (long) newPos;
 }
 
 // If less that nmemb elements could be written, or an error occurs, the
@@ -396,69 +355,45 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 	ssize_t bytesToWrite;
 	ssize_t bytesWritten;
 
-	assert((stream->openFlags & O_ACCMODE) != O_RDONLY);
+	uio_assertWriteSanity(stream);
+	
+	// NB. If a file is opened in append mode, the file position indicator
+	// is moved to the end of the file before writing.
+	// We leave that up to the physical layer.
 
 	bytesToWrite = size * nmemb;
-	if (stream->writeStart == NULL)
-		stream->writeStart = stream->bufPtr;
-	if (bytesToWrite < stream->bufEnd - stream->bufPtr) {
+	if (bytesToWrite < stream->bufEnd - stream->dataEnd) {
 		// There's enough space in the write buffer to store everything.
-		memcpy(stream->bufPtr, buf, bytesToWrite);
-		stream->bufPtr += bytesToWrite;
+		memcpy(stream->dataEnd, buf, bytesToWrite);
+		stream->dataEnd += bytesToWrite;
 		return nmemb;
 	}
 
 	// Not enough space in the write buffer to write everything.
-	// Flush what's left in the write buffer, and then directly write 'buf'.
+	// Flush what's left in the write buffer first.
 	if (uio_Stream_flushWriteBuffer(stream) == -1) {
 		// errno is set
+		// Error status (for ferror()) is set.
 		return 0;
 	}
-
-	if (stream->openFlags & O_APPEND) {
-		// If a file is opened in append mode, the file position indicator
-		// is moved to the end of the file before writing.
-		// We leave that up to the physical layer.
-	} else {
-		// TODO: It's possible that uio_Stream_flushWriteBuffer() just
-		//       seeked back from the end of the part written, to the end of
-		//       the part read. This seek will just undo that effect, so
-		//       there's room for optimisation here. (decouple
-		//       stream->seekLow from stream->readEnd by adding a seekHigh
-		//       var?)
-		if (uio_lseek(stream->handle, stream->seekLow -
-				(stream->readEnd - stream->bufPtr), SEEK_SET) == -1) {
-			// errno is set
-			return 0;
-		}
-		stream->seekLow -= (stream->readEnd - stream->bufPtr);
-	}
 	
+	if (bytesToWrite < stream->bufEnd - stream->dataEnd) {
+		// The now empty write buffer is large enough to store everything.
+		memcpy(stream->dataEnd, buf, bytesToWrite);
+		stream->dataEnd += bytesToWrite;
+		return nmemb;
+	}
+
+	// There is more data to write than fits in the (empty) write buffer.
+	// The data is written directly, in its entirety, without going
+	// through the write buffer.
 	bytesWritten = uio_write(stream->handle, buf, bytesToWrite);
 	if (bytesWritten != bytesToWrite) {
 		stream->status = uio_Stream_STATUS_ERROR;
 		if (bytesWritten == -1)
 			return 0;
 	}
-	if (stream->openFlags & O_APPEND) {
-		// Determine the new location in the file.
-		off_t newPos = uio_lseek(stream->handle, 0, SEEK_CUR);
-		if (newPos == -1) {
-			// errno is set
-			stream->status = uio_Stream_STATUS_ERROR;
-			return 0;
-					// XXX: is returning 0 the best thing to do? The data
-					//      has actually been successfully written.
-		}
-		stream->seekLow = newPos;
-	} else {
-		stream->seekLow += bytesWritten;
-	}
-	// TODO: readStart is no longer aligned on a block.
-	stream->readStart = stream->buf;
-	stream->bufPtr = stream->buf;
-	stream->readEnd = stream->buf;
-	stream->writeStart = NULL;
+
 	if (bytesWritten == bytesToWrite)
 		return nmemb;
 	return (size_t) bytesWritten / size;
@@ -469,8 +404,16 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 int
 uio_fflush(uio_Stream *stream) {
 	assert(stream != NULL);
-	assert((stream->openFlags & O_ACCMODE) != O_RDONLY);
-	return uio_Stream_flushWriteBuffer(stream);
+
+	if (stream->operation == uio_StreamOperation_write) {
+		if (uio_Stream_flushWriteBuffer(stream) == -1) {
+			// errno is set
+			return (int) EOF;
+		}
+		stream->operation = uio_StreamOperation_none;
+	}
+
+	return 0;
 }
 
 int
@@ -494,86 +437,86 @@ uio_streamHandle(uio_Stream *stream) {
 	return stream->handle;	
 }
 
+#ifndef NDEBUG
+static void
+uio_assertReadSanity(uio_Stream *stream) {
+	assert((stream->openFlags & O_ACCMODE) != O_WRONLY);
+	
+	if (stream->operation == uio_StreamOperation_write) {
+		// "[...] output shall not be directly followed by input without an
+		// intervening call to the fflush function or to a file positioning
+		// function (fseek, fsetpos, or rewind), and input shall not be
+		// directly followed by output without an intervening call to a file
+		// positioning function, unless the input operation encounters
+		// end-of-file." (POSIX, C)
+		fprintf(stderr, "Error: Reading on a file directly after writing, "
+				"without an intervening call to fflush() or a file "
+				"positioning function.\n");
+		abort();
+	}
+}
+#endif
+
+#ifndef NDEBUG
+static void
+uio_assertWriteSanity(uio_Stream *stream) {
+	assert((stream->openFlags & O_ACCMODE) != O_RDONLY);
+	
+	if (stream->operation == uio_StreamOperation_read) {
+		// "[...] output shall not be directly followed by input without an
+		// intervening call to the fflush function or to a file positioning
+		// function (fseek, fsetpos, or rewind), and input shall not be
+		// directly followed by output without an intervening call to a file
+		// positioning function, unless the input operation encounters
+		// end-of-file." (POSIX, C)
+		fprintf(stderr, "Error: Writing on a file directly after reading, "
+				"without an intervening call to a file positioning "
+				"function.\n");
+		abort();
+	}
+	assert(stream->dataStart == stream->buf);
+}
+#endif
+
 static int
 uio_Stream_flushWriteBuffer(uio_Stream *stream) {
 	ssize_t bytesWritten;
-	off_t newPos;
 
-	newPos = uio_lseek(stream->handle,
-			(off_t) (stream->seekLow - (stream->readEnd - stream->writeStart)),
-			SEEK_SET);
-	if (newPos == -1) {
-		// errno is set
-		return -1;
-	}
-	stream->seekLow = newPos;
-	
-	bytesWritten = uio_write(stream->handle, stream->writeStart,
-			stream->bufPtr - stream->writeStart);
-	if (bytesWritten != stream->bufPtr - stream->writeStart) {
+	assert(stream->operation == uio_StreamOperation_write);
+
+	bytesWritten = uio_write(stream->handle, stream->dataStart,
+			stream->dataEnd - stream->dataStart);
+	if (bytesWritten != stream->dataEnd - stream->dataStart) {
 		stream->status = uio_Stream_STATUS_ERROR;
-		if (bytesWritten != -1)
-			stream->seekLow += bytesWritten;
 		return -1;
 	}
-	stream->seekLow += bytesWritten;
-	stream->writeStart = NULL;
+	assert(stream->dataStart == stream->buf);
+	stream->dataEnd = stream->buf;
 
-	if (stream->bufPtr > stream->readEnd) {
-		stream->readEnd = stream->bufPtr;
-	} else {
-		newPos = uio_lseek(stream->handle,
-				(off_t) (stream->seekLow + (stream->readEnd - stream->bufPtr)),
-				SEEK_SET);
-		if (newPos == -1) {
-			// errno is set
-			// At least keep the internal state consistent so that
-			// a new uio_fseek() (after an uio_clearerr()) can succeed:
-			stream->readEnd = stream->bufPtr;
-			// SeekLow of the buffer is not aligned on a block.
-			return -1;
-		}
-		stream->seekLow = newPos;
-	}
 	return 0;
+}
+	
+static void
+uio_Stream_discardReadBuffer(uio_Stream *stream) {
+	assert(stream->operation == uio_StreamOperation_read);
+	stream->dataStart = stream->buf;
+	stream->dataEnd = stream->buf;
+	// TODO: when implementing pushback: throw away pushback buffer.
 }
 
 static int
 uio_Stream_fillReadBuffer(uio_Stream *stream) {
 	ssize_t numRead;
 
-	assert(stream->bufPtr == stream->readEnd);
+	assert(stream->operation == uio_StreamOperation_read);
 
 	numRead = uio_read(stream->handle, stream->buf,
 				uio_Stream_BLOCK_SIZE);
 	if (numRead == -1)
 		return -1;
-	stream->bufPtr = stream->buf;
-	stream->readEnd = stream->buf + numRead;
-	stream->seekLow += numRead;
+	stream->dataStart = stream->buf;
+	stream->dataEnd = stream->buf + numRead;
 	return 0;	
-}
-
-static int
-uio_Stream_alignReadBuffer(uio_Stream *stream) {
-	off_t endAlign;
-	ssize_t numRead;
-	
-	endAlign = uio_Stream_BLOCK_PAGE_START(stream->seekLow +
-			uio_Stream_BLOCK_SIZE - 1);
-	if (endAlign == stream->seekLow) {
-		// Nothing to do.
-		return 0;
-	}
-
-	numRead = uio_read(stream->handle, stream->buf,
-				endAlign - stream->seekLow);
-	if (numRead == -1)
-		return -1;
-	stream->bufPtr = stream->buf;
-	stream->readEnd = stream->buf + numRead;
-	stream->seekLow += numRead;
-	return 0;
 }
 
 static inline uio_Stream *
@@ -584,13 +527,11 @@ uio_Stream_new(uio_Handle *handle, int openFlags) {
 	result->handle = handle;
 	result->openFlags = openFlags;
 	result->status = uio_Stream_STATUS_OK;
+	result->operation = uio_StreamOperation_none;
 	result->buf = uio_malloc(uio_Stream_BLOCK_SIZE);
-	result->bufPtr = result->buf;
-	result->readStart = result->buf;
-	result->readEnd = result->buf;
-	result->writeStart = NULL;
+	result->dataStart = result->buf;
+	result->dataEnd = result->buf;
 	result->bufEnd = result->buf + uio_Stream_BLOCK_SIZE;
-	result->seekLow = 0;
 	return result;
 }
 

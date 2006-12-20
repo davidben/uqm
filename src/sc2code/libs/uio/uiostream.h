@@ -55,48 +55,32 @@ uio_Handle *uio_streamHandle(uio_Stream *stream);
 #include <fcntl.h>
 #include "iointrn.h"
 
-/*
- * Layout of buf:
- *
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * | | | | | | | |D|D|D|D|D|D|D|D| | | | | | | |X|X|X|X|X|X|X|X|X|X|X|X|X|X|
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * ^             ^               ^             ^                           ^
- * +-readStart   +-writeStart    +-bufPtr      +-readEnd            bufEnd-+
- *
- * buf - start of the buffer
- * readStart - start of the segment that was read
- * writeStart - start of the part which is written, or NULL if nothing
- *              written.
- * bufPtr - file pointer; here new reads or writes are done.
- * readEnd - end of the part of the file that is pre-read.
- * bufEnd - end of memory allocated for the buffer.
- * D - dirty, needs to be written to disk
- * X - invalid; reserved but not used memory
- *
- * Invariants:
- * buf <= bufPtr <= bufEnd
- * If writeStart != NULL: buf <= writeStart <= bufPtr <= bufEnd
- * buf <= readStart <= readEnd <= bufEnd
- * Note that writeStart and bufPtr may point past readEnd.
- *
- */
+typedef enum {
+	uio_StreamOperation_none,
+	uio_StreamOperation_read,
+	uio_StreamOperation_write
+} uio_StreamOperation;
+
 struct uio_Stream {
 	char *buf;
-	char *bufPtr;
-	char *readStart;
-			// Not really used atm.
-	char *writeStart;
-	char *readEnd;
+			// Start of the buffer.
+	char *dataStart;
+			// Start of the part of the buffer that is in use.
+	char *dataEnd;
+			// Start of the unused part of the buffer.
 	char *bufEnd;
-	off_t seekLow;
-			// Low(er) level file pointer. Always points to the position just
-			// past the part that's in the buffer as [readStart..readEnd].
+			// End of the buffer.
+	// INV: buf <= dataStart <= dataEnd <= bufEnd
+	// INV: if 'operation == uio_StreamOperation_write' then buf == dataStart
+
 	uio_Handle *handle;
 	int status;
 #define uio_Stream_STATUS_OK 0
 #define uio_Stream_STATUS_EOF 1
 #define uio_Stream_STATUS_ERROR 2
+	uio_StreamOperation operation;
+			// What was the last action (reading or writing). This
+			// determines whether the buffer is a read or write buffer.
 	int openFlags;
 			// Flags used for opening the file.
 };

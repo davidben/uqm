@@ -1,5 +1,5 @@
 Changes towards version 0.7:
-- None yet
+- Simplification of uio Stream functions. No more internal seeks. - SvdB
 	
 Changes towards version 0.6:
 - Fixed a bug where an input delay was used for non-network games - SvdB
