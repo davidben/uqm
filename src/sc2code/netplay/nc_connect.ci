@@ -243,7 +243,6 @@ NetConnection_connectedServerErrorCallback(ListenState *listenState,
 	NetConnection *conn =
 			(NetConnection *) ListenState_getExtra(listenState);
 	NetConnectionError error;
-
 	
 	conn->stateFlags.connected = false;
 	conn->stateFlags.disconnected = true;
