@@ -32,7 +32,6 @@ static void NetConnection_connectedServerCallback(ListenState *listenState,
 		const struct sockaddr *addr, SOCKLEN_T addrLen);
 static void NetConnection_connectedClientCallback(ConnectState *connectState,
 		NetDescriptor *newNd, const struct sockaddr *addr, SOCKLEN_T addrLen);
-static void NetConnection_connected(NetConnection *conn);
 static void NetConnection_connectedServerErrorCallback(
 		ListenState *listenState, const ListenError *listenError);
 static void NetConnection_connectedClientErrorCallback(
