@@ -117,6 +117,7 @@ NetConnection_serverGo(NetConnection *conn) {
 
 	NetConnection_setState(conn, NetState_connecting);
 
+	memset (&listenFlags, 0, sizeof listenFlags);
 	listenFlags.familyDemand =
 #if NETPLAY == NETPLAY_IPV4
 			PF_inet;
@@ -124,6 +125,7 @@ NetConnection_serverGo(NetConnection *conn) {
 			PF_unspec;
 #endif
 	listenFlags.familyPrefer = PF_unspec;
+	listenFlags.backlog = NETPLAY_LISTEN_BACKLOG;
 
 	result = listenPort(conn->options->port, IPProto_tcp, &listenFlags,
 			NetConnection_connectedServerCallback,
@@ -142,6 +144,7 @@ NetConnection_clientGo(NetConnection *conn) {
 
 	NetConnection_setState(conn, NetState_connecting);
 
+	memset (&connectFlags, 0, sizeof connectFlags);
 	connectFlags.familyDemand =
 #if NETPLAY == NETPLAY_IPV4
 			PF_inet;
