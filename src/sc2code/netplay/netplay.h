@@ -52,6 +52,8 @@
 #define NETPLAY_RETRYDELAY   2000
 		/* Time to wait after all addresses of a host have been tried
 		 * before starting retrying them all. In ms. */
+#define NETPLAY_LISTEN_BACKLOG 2
+		/* Second argument to listen(). */
 
 
 #endif  /* _NETPLAY_H */
