@@ -138,6 +138,15 @@ NetDescriptor_decRef(NetDescriptor *nd) {
 	return false;
 }
 
+// The socket will no longer be managed by the NetManager.
+void
+NetDescriptor_detach(NetDescriptor *nd) {
+	NetManager_removeDesc(nd);
+	nd->socket = Socket_noSocket;
+	nd->flags.closed = true;
+	NetDescriptor_decRef(nd);
+}
+
 Socket *
 NetDescriptor_getSocket(NetDescriptor *nd) {
 	return nd->socket;

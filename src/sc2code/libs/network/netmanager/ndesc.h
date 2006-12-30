@@ -63,6 +63,7 @@ NetDescriptor *NetDescriptor_new(Socket *socket, void *extra);
 void NetDescriptor_close(NetDescriptor *nd);
 void NetDescriptor_incRef(NetDescriptor *nd);
 bool NetDescriptor_decRef(NetDescriptor *nd);
+void NetDescriptor_detach(NetDescriptor *nd);
 Socket *NetDescriptor_getSocket(NetDescriptor *nd);
 void NetDescriptor_setExtra(NetDescriptor *nd, void *extra);
 void *NetDescriptor_getExtra(const NetDescriptor *nd);
