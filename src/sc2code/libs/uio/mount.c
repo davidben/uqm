@@ -32,7 +32,7 @@
 #endif
 
 static void uio_deleteRepository(uio_Repository *repository);
-static uio_Repository *uio_allocRepository(void);
+static uio_Repository *uio_Repository_alloc(void);
 static void uio_freeRepository(uio_Repository *repository);
 
 
@@ -119,10 +119,10 @@ uio_repositoryRemoveMount(uio_Repository *repository, uio_MountInfo *mountInfo) 
 
 // sets ref to 1
 uio_Repository *
-uio_newRepository(int flags) {
+uio_Repository_new(int flags) {
 	uio_Repository *result;
 
-	result = uio_allocRepository();
+	result = uio_Repository_alloc();
 	result->ref = 1;
 	result->flags = flags;
 	result->numMounts = 0;
@@ -141,7 +141,7 @@ uio_Repository_unref(uio_Repository *repository) {
 }
 
 static uio_Repository *
-uio_allocRepository(void) {
+uio_Repository_alloc(void) {
 	uio_Repository *result = uio_malloc(sizeof (uio_Repository));
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugAlloc(uio_Repository, (void *) result);

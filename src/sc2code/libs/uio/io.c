@@ -89,7 +89,7 @@ uio_unInit(void) {
 
 uio_Repository *
 uio_openRepository(int flags) {
-	return uio_newRepository(flags);
+	return uio_Repository_new(flags);
 }
 
 void
@@ -270,7 +270,7 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 		// InPath is a copy with the paths fixed.
 		uio_free(unixPath);
 #endif
-		mountInfo = uio_newMountInfo(fsType, NULL, endDirHandle, dirName,
+		mountInfo = uio_MountInfo_new(fsType, NULL, endDirHandle, dirName,
 				autoMount, NULL, flags);
 		uio_repositoryAddMount(destRep, mountInfo,
 				flags & uio_MOUNT_LOCATION_MASK, relativeInfo);
@@ -1015,11 +1015,11 @@ static uio_DirList *uio_getDirListMulti(uio_PDirHandle **pDirHandles,
 		int numPDirHandles, const char *pattern, match_MatchType matchType);
 static uio_DirList *uio_makeDirList(const char **newNames,
 		const char * const *names, int numNames);
-static uio_DirList *uio_newDirList(const char **names, int numNames,
+static uio_DirList *uio_DirList_new(const char **names, int numNames,
 		char *buffer);
 static void uio_collectDirEntries(uio_PDirHandle *pDirHandle,
 		uio_DirBufferLink **linkPtr, int *numEntries);
-static inline uio_DirList *uio_allocDirList(void);
+static inline uio_DirList *uio_DirList_alloc(void);
 static void uio_filterNames(const char * const *names, int numNames,
 		const char **newNames, int *numNewNames,
 		match_MatchContext *matchContext);
@@ -1054,7 +1054,7 @@ uio_getDirList(uio_DirHandle *dirHandle, const char *path, const char *pattern,
 	if (numPDirHandles == 0) {
 		assert(pDirHandles == NULL);
 				// nothing to free
-		return uio_newDirList(NULL, 0, NULL);
+		return uio_DirList_new(NULL, 0, NULL);
 	}
 	
 	result = uio_getDirListMulti(pDirHandles, numPDirHandles, pattern,
@@ -1210,7 +1210,7 @@ uio_makeDirList(const char **newNames, const char * const *names,
 	totLen += numNames;
 			// for the \0's
 
-	result = uio_newDirList(newNames, numNames, uio_malloc(totLen));
+	result = uio_DirList_new(newNames, numNames, uio_malloc(totLen));
 
 	bufPtr = result->buffer;
 	for (i = 0; i < numNames; i++) {
@@ -1373,10 +1373,10 @@ uio_freeDirBufferChain(uio_DirBufferLink *dirBufferLink) {
 }
 
 static uio_DirList *
-uio_newDirList(const char **names, int numNames, char *buffer) {
+uio_DirList_new(const char **names, int numNames, char *buffer) {
 	uio_DirList *result;
 	
-	result = uio_allocDirList();
+	result = uio_DirList_alloc();
 	result->names = names;
 	result->numNames = numNames;
 	result->buffer = buffer;
@@ -1384,7 +1384,7 @@ uio_newDirList(const char **names, int numNames, char *buffer) {
 }
 
 static uio_DirList *
-uio_allocDirList(void) {
+uio_DirList_alloc(void) {
 	return uio_malloc(sizeof (uio_DirList));
 }
 

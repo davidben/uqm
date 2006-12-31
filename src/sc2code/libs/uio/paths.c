@@ -174,7 +174,7 @@ joinPaths(const char *first, const char *second) {
 	return result;
 }
 
-// Combine two parts of a paths into a new path, 
+// Combine two parts of a paths into a new path.
 // The new path will always start with a '/'.
 // The first path may (but doesn't have to) end on a '/', or may be empty.
 // Pre: the second path doesn't start with a '/'
@@ -215,6 +215,11 @@ joinPathsAbsolute(const char *first, const char *second) {
 	return result;
 }
 
+// Returns 'false' if
+// - one of the path components is empty, or
+// - one of the path components is ".", or
+// - one of the path components is ".."
+// and 'true' otherwise.
 uio_bool
 validPathName(const char *path, size_t len) {
 	const char *pathEnd;

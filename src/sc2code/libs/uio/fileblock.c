@@ -24,9 +24,9 @@
 
 #include <errno.h>
 
-static uio_FileBlock *uio_newFileBlock(uio_Handle *handle, int flags,
+static uio_FileBlock *uio_FileBlock_new(uio_Handle *handle, int flags,
 		off_t offset, size_t blockSize, char *buffer, size_t bufSize);
-static inline uio_FileBlock *uio_allocFileBlock(void);
+static inline uio_FileBlock *uio_FileBlock_alloc(void);
 static void uio_freeFileBlock(uio_FileBlock *block);
 
 
@@ -44,7 +44,7 @@ uio_openFileBlock(uio_Handle *handle) {
 		return NULL;
 	}
 	uio_Handle_ref(handle);
-	return uio_newFileBlock(handle, 0, 0, statBuf.st_size, NULL, 0);
+	return uio_FileBlock_new(handle, 0, 0, statBuf.st_size, NULL, 0);
 }
 
 uio_FileBlock *
@@ -61,7 +61,7 @@ uio_openFileBlock2(uio_Handle *handle, off_t offset, size_t size) {
 	if (statBuf.st_size > 
 #endif
 	uio_Handle_ref(handle);
-	return uio_newFileBlock(handle, 0, offset, size, NULL, 0);
+	return uio_FileBlock_new(handle, 0, offset, size, NULL, 0);
 }
 
 // block remains usable until the next call to uio_accessFileBlock
@@ -157,11 +157,11 @@ uio_closeFileBlock(uio_FileBlock *block) {
 // caller should uio_refHandle(handle) (unless it doesn't need it's own
 // reference anymore).
 static uio_FileBlock *
-uio_newFileBlock(uio_Handle *handle, int flags, off_t offset,
+uio_FileBlock_new(uio_Handle *handle, int flags, off_t offset,
 		size_t blockSize, char *buffer, size_t bufSize) {
 	uio_FileBlock *result;
 	
-	result = uio_allocFileBlock();
+	result = uio_FileBlock_alloc();
 	result->handle = handle;
 	result->flags = flags;
 	result->offset = offset;
@@ -172,7 +172,7 @@ uio_newFileBlock(uio_Handle *handle, int flags, off_t offset,
 }
 
 static inline uio_FileBlock *
-uio_allocFileBlock(void) {
+uio_FileBlock_alloc(void) {
 	return uio_malloc(sizeof (uio_FileBlock));
 }
 

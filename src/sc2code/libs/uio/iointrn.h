@@ -53,7 +53,8 @@ struct uio_DirHandle {
 	int ref;
 	struct uio_Repository *repository;
 	char *path;
-			// does not contain any '.' or '..'
+			// does not contain any '.' or '..'; does not start or end
+			// with a /
 	char *rootEnd;
 			// points to the end of the part of path that is considered
 			// the root dir. (you can't use '..' to get above the root dir)

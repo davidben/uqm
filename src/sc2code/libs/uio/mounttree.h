@@ -194,8 +194,9 @@ void uio_findMountTree(uio_MountTree *top, const char *path,
 char *uio_mountTreeItemRestPath(const uio_MountTreeItem *item,
 		uio_PathComp *endComp, const char *path);
 int uio_mountTreeCountPLocs(const uio_MountTree *tree);
-uio_MountInfo *uio_newMountInfo(uio_FileSystemID fsID, uio_MountTree *mountTree,
-		uio_PDirHandle *pDirHandle, char *dirName, uio_AutoMount **autoMount,
+uio_MountInfo *uio_MountInfo_new(uio_FileSystemID fsID,
+		uio_MountTree *mountTree, uio_PDirHandle *pDirHandle,
+		char *dirName, uio_AutoMount **autoMount,
 		uio_MountHandle *mountHandle, int flags);
 void uio_deleteMountInfo(uio_MountInfo *mountInfo);
 void uio_printMountTree(FILE *outStream, const uio_MountTree *tree, int indent);

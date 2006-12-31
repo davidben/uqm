@@ -49,7 +49,7 @@ struct uio_Repository {
 #define lockRepository(repository, prot)
 #define unlockRepository(repository)
 
-uio_Repository *uio_newRepository(int flags);
+uio_Repository *uio_Repository_new(int flags);
 void uio_Repository_unref(uio_Repository *repository);
 void uio_repositoryAddMount(uio_Repository *repository,
 		uio_MountInfo *mountInfo, uio_MountLocation location,

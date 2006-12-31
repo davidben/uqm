@@ -32,11 +32,11 @@
 
 
 static uio_bool uio_validFileSystemHandler(uio_FileSystemHandler *handler);
-static uio_FileSystemInfo *uio_newFileSystemInfo(uio_FileSystemID id,
+static uio_FileSystemInfo *uio_FileSystemInfo_new(uio_FileSystemID id,
 		uio_FileSystemHandler *handler, char *name);
 static uio_FileSystemInfo **uio_getFileSystemInfoPtr(uio_FileSystemID id);
 
-static inline uio_FileSystemInfo *uio_allocFileSystemInfo(void);
+static inline uio_FileSystemInfo *uio_FileSystemInfo_alloc(void);
 
 static inline void uio_freeFileSystemInfo(uio_FileSystemInfo *fileSystemInfo);
 
@@ -142,7 +142,7 @@ uio_registerFileSystem(uio_FileSystemID wantedID, const char *name,
 	{
 		uio_FileSystemInfo *newInfo;
 
-		newInfo = uio_newFileSystemInfo(wantedID, handler, uio_strdup(name));
+		newInfo = uio_FileSystemInfo_new(wantedID, handler, uio_strdup(name));
 		newInfo->next = *ptr;
 		*ptr = newInfo;
 		return wantedID;
@@ -234,11 +234,11 @@ uio_getFileSystemInfoPtr(uio_FileSystemID id) {
 
 // sets ref to 1
 static uio_FileSystemInfo *
-uio_newFileSystemInfo(uio_FileSystemID id, uio_FileSystemHandler *handler,
+uio_FileSystemInfo_new(uio_FileSystemID id, uio_FileSystemHandler *handler,
 		char *name) {
 	uio_FileSystemInfo *result;
 
-	result = uio_allocFileSystemInfo();
+	result = uio_FileSystemInfo_alloc();
 	result->id = id;
 	result->handler = handler;
 	result->name = name;
@@ -249,7 +249,7 @@ uio_newFileSystemInfo(uio_FileSystemID id, uio_FileSystemHandler *handler,
 // *** Allocators ***
 
 static inline uio_FileSystemInfo *
-uio_allocFileSystemInfo(void) {
+uio_FileSystemInfo_alloc(void) {
 	uio_FileSystemInfo *result = uio_malloc(sizeof (uio_FileSystemInfo));
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugAlloc(uio_FileSystemInfo, (void *) result);

@@ -24,14 +24,12 @@ Documentation:
   The physical close function should delete its own data. It's called
   Will cleanup the general Handle.
   Analogous for mount/unmount with PRoot
-- (internal) arguments for uio_Bla_new are always copied as-is.
-  If they are ref-counted, the counter should be incremented by the caller,
-  if the caller does not need the reference itself.
-  The uio_Bla_delete function decrements the ref counter of the ref-counted
-  fields.
 - No need to store MountHandles. They will be automatically freed
   when the repository is closed.
 - You can use mount stuff from other repositories.
+- ".." works by nullifying one path component, not by following the ".." link
+  in the directory. "/a/../b" will always be functionally equivalent to
+  "/b", even when "/a" is a symlink.
 
 Bugs:
 - 'openDir(repository, "dir/")' will have the trailing '/'

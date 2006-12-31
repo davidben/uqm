@@ -37,7 +37,7 @@ static int copyError(int error,
  * Follow a path starting from a specified physical dir as long as possible.
  * When you can get no further, 'endPDirHandle' will be filled in with a
  * reference to the dir where you ended up, and 'pathRest' will point into
- * the original path. to the beginning of the part that was not matched.
+ * the original path to the beginning of the part that was not matched.
  * It is allowed to have endPDirHandle point to pDirHandle and/or restPath
  * point to path when calling this function. Just take care to keep a
  * reference to the original so you can decrement the ref counter.
@@ -725,7 +725,9 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 
 // Get the absolute path pointed to by 'path' relative to 'dirHandle'
 // The new path will be put in '*destPath', which will be newly allocated.
-// It will be \0-terminated, and the length will be returned.
+// It will be \0-terminated, and will not have a '/' as first or last
+// character.
+// The length of '*destPath' will be returned.
 // On error, -1 will be returned, and errno will be set.
 ssize_t
 uio_resolvePath(uio_DirHandle *dirHandle, const char *path, size_t pathLen,
@@ -828,7 +830,7 @@ uio_resolvePath(uio_DirHandle *dirHandle, const char *path, size_t pathLen,
 			endBufPtr--;
 			*endBufPtr = '/';
 		} else {
-			// We're already done. Might as well take advantage of
+			// We're already done. We might as well take advantage of
 			// the fact that we know that and exit immediatly:
 			*destPath = buffer;
 			return len;
@@ -853,7 +855,7 @@ uio_resolvePath(uio_DirHandle *dirHandle, const char *path, size_t pathLen,
 				endBufPtr--;
 				*endBufPtr = '/';
 			} else {
-				// We're already done. Might as well take advantage of
+				// We're already done. We might as well take advantage of
 				// the fact that we know that and exit immediatly:
 				break;
 			}

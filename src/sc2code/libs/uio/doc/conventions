@@ -5,16 +5,17 @@ This file describes the various conventions used in the source.
 
 uio_Thing *uio_Thing_new(args)
 	Allocates the structure, and initialises it from the arguments.
-	(was: uio_newThing())
+	Arguments are always used as-is; if they are reference-counted,
+	and the caller still needs a reference, it is up to the caller
+	to increment the reference counter.
 void uio_Thing_delete(uio_Thing *thing)
 	Frees the structure and all sub-structures.
-	Decrements references to shared structures.
+	Decrements reference counters to shared structures.
 uio_Thing *uio_Thing_alloc()
 	Allocates memory for a new structure.
 	Could be omited for standard allocators.
 	Particularly relevant when a non-standard allocation scheme is
 	used (for instance, allocation from a pool of pre-allocated strucures).
-	(was: uio_allocThing())
 void uio_Thing_free(Thing *thing)
 	Frees the memory allocated for thing (reverse of uio_Thing_alloc).
 	Could be omited for standard deallocators.
