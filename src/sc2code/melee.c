@@ -1005,7 +1005,31 @@ GetTeamValue (TEAM_IMAGE *pTI)
 static int
 ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp)
 {
-	return (ReadResFile (pTI, sizeof (*pTI), 1, load_fp) == 1 ? 0 : -1);
+	int status;
+	FleetShipIndex i;
+	
+	status = ReadResFile (pTI, sizeof (*pTI), 1, load_fp);
+	if (status != 1)
+		return -1;
+
+	// Sanity check on the entries.
+	for (i = 0; i < MELEE_FLEET_SIZE; i++)
+	{
+		BYTE StarShip = pTI->ShipList[i];
+
+		if (StarShip == MELEE_NONE)
+			continue;
+
+		if (StarShip >= NUM_MELEE_SHIPS)
+		{
+			log_add(log_Warning, "Invalid ship type in loaded team (index "
+					"%d, ship type is %d, max valid is %d).",
+					i, StarShip, NUM_MELEE_SHIPS - 1);
+			pTI->ShipList[i] = MELEE_NONE;
+		}
+	}
+
+	return 0;
 }
 
 static int
