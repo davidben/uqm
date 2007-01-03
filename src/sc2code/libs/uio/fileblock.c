@@ -27,7 +27,7 @@
 static uio_FileBlock *uio_FileBlock_new(uio_Handle *handle, int flags,
 		off_t offset, size_t blockSize, char *buffer, size_t bufSize);
 static inline uio_FileBlock *uio_FileBlock_alloc(void);
-static void uio_freeFileBlock(uio_FileBlock *block);
+static void uio_FileBlock_free(uio_FileBlock *block);
 
 
 uio_FileBlock *
@@ -150,11 +150,11 @@ uio_closeFileBlock(uio_FileBlock *block) {
 			uio_free(block->buffer);
 	}
 	uio_Handle_unref(block->handle);
-	uio_freeFileBlock(block);
+	uio_FileBlock_free(block);
 	return 0;
 }
 
-// caller should uio_refHandle(handle) (unless it doesn't need it's own
+// caller should uio_Handle_ref(handle) (unless it doesn't need it's own
 // reference anymore).
 static uio_FileBlock *
 uio_FileBlock_new(uio_Handle *handle, int flags, off_t offset,
@@ -177,7 +177,7 @@ uio_FileBlock_alloc(void) {
 }
 
 static void
-uio_freeFileBlock(uio_FileBlock *block) {
+uio_FileBlock_free(uio_FileBlock *block) {
 	uio_free(block);
 }
 

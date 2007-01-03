@@ -33,12 +33,12 @@ void uio_printMounts(FILE *outStream, const uio_Repository *repository);
 
 typedef struct uio_MountTreeItem uio_MountTreeItem;
 typedef struct uio_MountTree uio_MountTree;
-typedef struct uio_PathComp uio_PathComp;
 typedef struct uio_MountInfo uio_MountInfo;
 
 #include "physical.h"
 #include "types.h"
 #include "uioport.h"
+#include "paths.h"
 
 
 /*
@@ -67,19 +67,6 @@ struct uio_MountTreeItem {
 			// /bla in the specified root.
 	struct uio_MountTreeItem *next;
 			// The next MountTreeItem in a MountTree
-};
-
-struct uio_PathComp {
-	char *name;
-			// The name of this path component, 0-terminated
-	size_t nameLen;
-			// The length of the 'name' field, for fast lookups.
-	struct uio_PathComp *next;
-			// The next path component leading to a MountTree
-			// If this is NULL, then this was the last component
-			// until the MountTree that
-	struct uio_PathComp *up;
-			// Links to the directory
 };
 
 struct uio_MountTree {
@@ -183,7 +170,7 @@ struct uio_MountInfo {
  */
 
 uio_MountTree *uio_makeRootMountTree(void);
-void uio_deleteMountTree(uio_MountTree *tree);
+void uio_MountTree_delete(uio_MountTree *tree);
 uio_MountTree *uio_mountTreeAddMountInfo(uio_Repository *repository,
 		uio_MountTree *mountTree, uio_MountInfo *mountInfo, const char *path,
 		uio_MountLocation location, const uio_MountInfo *relative);
@@ -198,13 +185,12 @@ uio_MountInfo *uio_MountInfo_new(uio_FileSystemID fsID,
 		uio_MountTree *mountTree, uio_PDirHandle *pDirHandle,
 		char *dirName, uio_AutoMount **autoMount,
 		uio_MountHandle *mountHandle, int flags);
-void uio_deleteMountInfo(uio_MountInfo *mountInfo);
-void uio_printMountTree(FILE *outStream, const uio_MountTree *tree, int indent);
+void uio_MountInfo_delete(uio_MountInfo *mountInfo);
+void uio_printMountTree(FILE *outStream, const uio_MountTree *tree,
+		int indent);
 void uio_printMountTreeItem(FILE *outStream, const uio_MountTreeItem *item);
 void uio_printMountTreeItems(FILE *outStream, const uio_MountTreeItem *item);
 void uio_printPathToMountTree(FILE *outStream, const uio_MountTree *tree);
-void uio_printPathComp(FILE *outStream, const uio_PathComp *comp);
-void uio_printPathToComp(FILE *outStream, const uio_PathComp *comp);
 void uio_printMountInfo(FILE *outStream, const uio_MountInfo *mountInfo);
 
 static inline uio_bool

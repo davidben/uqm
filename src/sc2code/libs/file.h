@@ -49,15 +49,20 @@ int expandPath (char *dest, size_t len, const char *src, int what);
 		// Process ".." and "."
 #define EP_SLASHES   16
 		// Consider backslashes as path component separators.
-		// They will be replaced by slashes.
-#define EP_ALL (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS | EP_SLASHES)
+		// They will be replaced by slashes. Windows UNC paths will always
+		// start with "\\server\share", with backslashes.
+#define EP_SINGLESEP 32
+		// Replace multiple consecutive path separators by a single one.
+#define EP_ALL (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS | EP_SLASHES \
+		EP_SINGLESEP)
 		// Everything
 // Everything except Windows style backslashes on Unix Systems:
 #ifdef WIN32
 #	define EP_ALL_SYSTEM (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS | \
-		EP_SLASHES)
+		EP_SLASHES | EP_SINGLESEP)
 #else
-#	define EP_ALL_SYSTEM (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS)
+#	define EP_ALL_SYSTEM (EP_HOME | EP_ENVVARS | EP_ABSOLUTE | EP_DOTS | \
+		EP_SINGLESEP)
 #endif
 
 // from files.h
@@ -65,6 +70,9 @@ int copyFile (uio_DirHandle *srcDir, const char *srcName,
 		uio_DirHandle *dstDir, const char *newName);
 bool fileExists (const char *name);
 bool fileExists2(uio_DirHandle *dir, const char *fileName);
+#ifdef WIN32
+size_t skipUNCServerShare(const char *inPath);
+#endif
 
 #ifdef WIN32
 static inline int isDriveLetter(int c)

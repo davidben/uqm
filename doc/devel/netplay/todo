@@ -89,6 +89,9 @@ Bugs:
   button won't be updated.
 - If one side is computer-controlled, sync loss will occur, because the AI
   uses the RNG. It needs its own RNG context.
+- Pressing F10 to exit the supermelee setup when a connection is active
+  will cause an attempt to draw a NULL frame. (possibly the disconnect
+  feedback)
 
 
 Final actions:

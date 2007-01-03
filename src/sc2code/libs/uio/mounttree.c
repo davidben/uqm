@@ -63,10 +63,6 @@ static uio_MountTree * uio_splitMountTree(uio_MountTree **tree, uio_PathComp
 		*lastComp, int depth);
 static void uio_mountTreeRemoveMountInfoRec(uio_MountTree *mountTree,
 		uio_MountInfo *mountInfo);
-static int uio_countPathComps(const uio_PathComp *comp);
-static uio_PathComp *uio_lastPathComp(uio_PathComp *comp);
-static uio_PathComp *uio_makePathComps(const char *path,
-		uio_PathComp *upComp);
 static void uio_printMount(FILE *outStream, const uio_MountInfo *mountInfo);
 
 static inline uio_MountTree * uio_MountTree_new(uio_MountTree *subTrees,
@@ -74,21 +70,16 @@ static inline uio_MountTree * uio_MountTree_new(uio_MountTree *subTrees,
 		*comps, uio_PathComp *lastComp, uio_MountTree *next);
 static inline uio_MountTreeItem *uio_MountTree_newItem(
 		uio_MountInfo *mountInfo, int depth, uio_MountTreeItem *next);
-static inline uio_PathComp *uio_PathComp_new(char *name, size_t nameLen,
-		uio_PathComp *upComp);
 
-static inline void uio_deleteMountTreeItem(uio_MountTreeItem *item);
-static inline void uio_deletePathComp(uio_PathComp *pathComp);
+static inline void uio_MountTreeItem_delete(uio_MountTreeItem *item);
 
 static inline uio_MountTree *uio_MountTree_alloc(void);
 static inline uio_MountTreeItem *uio_MountTreeItem_alloc(void);
 static inline uio_MountInfo *uio_MountInfo_alloc(void);
-static inline uio_PathComp *uio_PathComp_alloc(void);
 
-static inline void uio_freeMountTree(uio_MountTree *mountTree);
-static inline void uio_freeMountTreeItem(uio_MountTreeItem *mountTreeItem);
-static inline void uio_freeMountInfo(uio_MountInfo *mountInfo);
-static inline void uio_freePathComp(uio_PathComp *pathComp);
+static inline void uio_MountTree_free(uio_MountTree *mountTree);
+static inline void uio_MountTreeItem_free(uio_MountTreeItem *mountTreeItem);
+static inline void uio_MountInfo_free(uio_MountInfo *mountInfo);
 
 
 // make the root mount Tree
@@ -409,7 +400,7 @@ uio_mountTreeRemoveMountInfo(uio_Repository *repository,
 	upTree = mountTree->upTree;
 	
 	// Remove the tree itself.
-	uio_deleteMountTree(mountTree);
+	uio_MountTree_delete(mountTree);
 
 	// The upTree itself could have become unnecessary now.
 	// This is the case when upTree now only has one subTree, and upTree
@@ -453,7 +444,7 @@ uio_mountTreeRemoveMountInfo(uio_Repository *repository,
 	// Now delete the tree itself
 	upTree->subTrees = NULL;
 	upTree->comps = NULL;
-	uio_deleteMountTree(upTree);	
+	uio_MountTree_delete(upTree);	
 }
 
 // pre: mountInfo exists in mountTree->pLocs (and hence in pLocs for
@@ -484,28 +475,7 @@ uio_mountTreeRemoveMountInfoRec(uio_MountTree *mountTree,
 
 	item = *itemPtr;
 	*itemPtr = item->next;
-	uio_deleteMountTreeItem(item);
-}
-
-// Count the number of path components that 'comp' leads to.
-static int
-uio_countPathComps(const uio_PathComp *comp) {
-	int count;
-	
-	count = 0;
-	for (; comp != NULL; comp = comp->next)
-		count++;
-	return count;
-}
-
-static uio_PathComp *
-uio_lastPathComp(uio_PathComp *comp) {
-	if (comp == NULL)
-		return NULL;
-
-	while (comp->next != NULL)
-		comp = comp->next;
-	return comp;
+	uio_MountTreeItem_delete(item);
 }
 
 // Count the number of pLocs in a tree that leads to.
@@ -518,30 +488,6 @@ uio_mountTreeCountPLocs(const uio_MountTree *tree) {
 	for (item = tree->pLocs; item != NULL; item = item->next)
 		count++;
 	return count;
-}
-
-// make a list of uio_PathComps from a path string
-static uio_PathComp *
-uio_makePathComps(const char *path, uio_PathComp *upComp) {
-	const char *start, *end;
-	char *str;
-	uio_PathComp *result;
-	uio_PathComp **compPtr;  // Where to put the next PathComp
-	
-	compPtr = &result;
-	getFirstPath0Component(path, &start, &end);
-	while (*start != '\0') {
-		str = uio_malloc(end - start + 1);
-		memcpy(str, start, end - start);
-		str[end - start] = '\0';
-		
-		*compPtr = uio_PathComp_new(str, end - start, upComp);
-		upComp = *compPtr;
-		compPtr = &(*compPtr)->next;
-		getNextPath0Component(&start, &end);
-	}
-	*compPtr = NULL;
-	return result;
 }
 
 // resTree may point to top
@@ -692,20 +638,6 @@ uio_printPathToMountTree(FILE *outStream, const uio_MountTree *tree) {
 }
 
 void
-uio_printPathComp(FILE *outStream, const uio_PathComp *comp) {
-	fprintf(outStream, "%s", comp->name);
-}
-
-void
-uio_printPathToComp(FILE *outStream, const uio_PathComp *comp) {
-	if (comp == NULL)
-		return;
-	uio_printPathToComp(outStream, comp->up);
-	fprintf(outStream, "/");
-	uio_printPathComp(outStream, comp);
-}
-
-void
 uio_printMountInfo(FILE *outStream, const uio_MountInfo *mountInfo) {
 	uio_FileSystemInfo *fsInfo;
 	
@@ -757,28 +689,28 @@ uio_MountTree_new(uio_MountTree *subTrees, uio_MountTreeItem *pLocs,
 }
 
 void
-uio_deleteMountTree(uio_MountTree *tree) {
+uio_MountTree_delete(uio_MountTree *tree) {
 	uio_MountTree *subTree, *nextTree;
 	uio_MountTreeItem *item, *nextItem;
 
 	subTree = tree->subTrees;
 	while (subTree != NULL) {
 		nextTree = subTree->next;
-		uio_deleteMountTree(subTree);
+		uio_MountTree_delete(subTree);
 		subTree = nextTree;
 	}
 
 	item = tree->pLocs;
 	while (item != NULL) {
 		nextItem = item->next;
-		uio_deleteMountTreeItem(item);
+		uio_MountTreeItem_delete(item);
 		item = nextItem;
 	}
 
 	if (tree->comps != NULL)
-		uio_deletePathComp(tree->comps);
+		uio_PathComp_delete(tree->comps);
 
-	uio_freeMountTree(tree);
+	uio_MountTree_free(tree);
 }
 
 static inline uio_MountTree *
@@ -791,7 +723,7 @@ uio_MountTree_alloc(void) {
 }
 
 static inline void
-uio_freeMountTree(uio_MountTree *mountTree) {
+uio_MountTree_free(uio_MountTree *mountTree) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugFree(uio_MountTree, (void *) mountTree);
 #endif
@@ -814,8 +746,8 @@ uio_MountTree_newItem(uio_MountInfo *mountInfo, int depth,
 }
 
 static inline void
-uio_deleteMountTreeItem(uio_MountTreeItem *item) {
-	uio_freeMountTreeItem(item);
+uio_MountTreeItem_delete(uio_MountTreeItem *item) {
+	uio_MountTreeItem_free(item);
 }
 
 static inline uio_MountTreeItem *
@@ -828,7 +760,7 @@ uio_MountTreeItem_alloc(void) {
 }
 
 static inline void
-uio_freeMountTreeItem(uio_MountTreeItem *mountTreeItem) {
+uio_MountTreeItem_free(uio_MountTreeItem *mountTreeItem) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugFree(uio_MountTreeItem, (void *) mountTreeItem);
 #endif
@@ -856,10 +788,10 @@ uio_MountInfo_new(uio_FileSystemID fsID, uio_MountTree *mountTree,
 }
 
 void
-uio_deleteMountInfo(uio_MountInfo *mountInfo) {
+uio_MountInfo_delete(uio_MountInfo *mountInfo) {
 	uio_free(mountInfo->dirName);
 	uio_PDirHandle_unref(mountInfo->pDirHandle);
-	uio_freeMountInfo(mountInfo);
+	uio_MountInfo_free(mountInfo);
 }
 
 static inline uio_MountInfo *
@@ -872,57 +804,11 @@ uio_MountInfo_alloc(void) {
 }
 
 static inline void
-uio_freeMountInfo(uio_MountInfo *mountInfo) {
+uio_MountInfo_free(uio_MountInfo *mountInfo) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugFree(uio_MountInfo, (void *) mountInfo);
 #endif
 	uio_free(mountInfo);
-}
-
-
-// *** uio_PathComp *** //
-
-// 'name' should be a null terminated string. It is stored in the PathComp,
-// no copy is made.
-// 'namelen' should be the length of 'name'
-static inline uio_PathComp *
-uio_PathComp_new(char *name, size_t nameLen, uio_PathComp *upComp) {
-	uio_PathComp *result;
-	
-	result = uio_PathComp_alloc();
-	result->name = name;
-	result->nameLen = nameLen;
-	result->up = upComp;
-	return result;
-}
-
-static inline void
-uio_deletePathComp(uio_PathComp *pathComp) {
-	uio_PathComp *next;
-
-	while (pathComp != NULL) {
-		next = pathComp->next;
-		uio_free(pathComp->name);
-		uio_freePathComp(pathComp);
-		pathComp = next;
-	}
-}
-
-static inline uio_PathComp *
-uio_PathComp_alloc(void) {
-	uio_PathComp *result = uio_malloc(sizeof (uio_PathComp));
-#ifdef uio_MEM_DEBUG
-	uio_MemDebug_debugAlloc(uio_PathComp, (void *) result);
-#endif
-	return result;
-}
-
-static inline void
-uio_freePathComp(uio_PathComp *pathComp) {
-#ifdef uio_MEM_DEBUG
-	uio_MemDebug_debugFree(uio_PathComp, (void *) pathComp);
-#endif
-	uio_free(pathComp);
 }
 
 

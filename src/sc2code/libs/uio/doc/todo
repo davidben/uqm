@@ -12,7 +12,7 @@ Documentation:
 - It would be (theoretically) possible to add HTTP and FTP support for
   remote file systems.
 - on adding extra file system types:
-- open, mkdir, rmdir, and unlink should themselves make sure that
+  open, mkdir, rmdir, and unlink should themselves make sure that
   the physical structure is kept up to date when an entry is
   removed or added.
 - stream stuff is not thread safe
@@ -36,7 +36,7 @@ Bugs:
   in the dirHandle, which will cause problems.
 - 'openDirRelative(repository, "/")' causes segfaults later on
 - uio_rename() doesn't work on directories
-  uio_getPhysicalAccess() needs to be changed so that it works the same on
+- uio_getPhysicalAccess() needs to be changed so that it works the same on
   dirs as on files. stat() can be cleaned up too then.
 - uio_getPhysicalAccess() will not return ENOENT when (only) the last
   component does not exist, even when O_RDONLY is used.

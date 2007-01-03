@@ -19,6 +19,26 @@
 #	endif
 #endif
 
+
+// Compilation related
+#ifdef _MSC_VER
+#	define inline __inline
+#else
+#	define inline __inline__
+#	ifdef __MINGW32__
+		// For when including Microsoft Windows header files.
+#		define _inline inline
+#	endif
+#endif
+
+// Compilation warnings:
+// UQM uses a lot of functions that can be used unsafely, but it uses them
+// in a safe way. The warnings about these functions however may drown out
+// serious warnings, so we turn them off.
+#ifdef _MSC_VER
+#	define _CRT_SECURE_NO_DEPRECATE
+#endif
+
 #ifdef _MSC_VER
 #	include <io.h>
 #else
@@ -38,18 +58,6 @@ char *strupr (char *str);
 #if !defined (_MSC_VER) && !defined (HAVE_READDIR_R)
 #	include <dirent.h>
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
-#endif
-
-
-// Compilation related
-#ifdef _MSC_VER
-#	define inline __inline
-#else
-#	define inline __inline__
-#	ifdef __MINGW32__
-		// For when including Microsoft Windows header files.
-#		define _inline inline
-#	endif
 #endif
 
 // Directories

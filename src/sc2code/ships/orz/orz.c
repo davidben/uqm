@@ -193,7 +193,8 @@ count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetPredElement (ElementPtr);
-		if (ElementPtr->current.image.farray == StarShipPtr->RaceDescPtr->ship_data.special
+		if (ElementPtr->current.image.farray ==
+				StarShipPtr->RaceDescPtr->ship_data.special
 				&& ElementPtr->life_span
 				&& !(ElementPtr->state_flags & (FINITE_LIFE | DISAPPEARING)))
 		{
@@ -222,7 +223,8 @@ count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
 }
 
 static void
-orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	ELEMENTPTR TurretPtr;
 	STARSHIPPTR StarShipPtr;
@@ -328,8 +330,7 @@ ion_preprocess (PELEMENT ElementPtr)
 	COLOR Color;
 
 	Color = COLOR_256 (GetPrimColor (&(GLOBAL (DisplayArray))[
-			ElementPtr->PrimIndex
-			]));
+			ElementPtr->PrimIndex]));
 	if (Color != 0x2D)
 	{
 		ElementPtr->life_span = ElementPtr->thrust_wait;
@@ -344,8 +345,7 @@ ion_preprocess (PELEMENT ElementPtr)
 		else /* color is between 0x7a and 0x7f */
 				color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
 		SetPrimColor (&(GLOBAL (DisplayArray))[
-				ElementPtr->PrimIndex
-				], color_tab[color_index]);
+				ElementPtr->PrimIndex], color_tab[color_index]);
 
 		ElementPtr->state_flags &= ~DISAPPEARING;
 		ElementPtr->state_flags |= CHANGING;
@@ -454,15 +454,13 @@ LeftShip:
 	{
 		ElementPtr->state_flags &= ~NONSOLID;
 		ElementPtr->state_flags |= CHANGING | CREW_OBJECT;
-		SetPrimType (&(GLOBAL (DisplayArray))[
-				ElementPtr->PrimIndex
-				], STAMP_PRIM);
+		SetPrimType (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
+				STAMP_PRIM);
 
 		ElementPtr->current.image.frame =
 				ElementPtr->next.image.frame =
 						SetAbsFrameIndex (
-						StarShipPtr->RaceDescPtr->ship_data.special[0], 21
-						);
+						StarShipPtr->RaceDescPtr->ship_data.special[0], 21);
 		ElementPtr->thrust_wait = 0;
 		ElementPtr->turn_wait =
 				MAKE_BYTE (0, NORMALIZE_FACING ((BYTE)TFB_Random ()));
@@ -523,9 +521,8 @@ PELEMENT ElementPtr;
 					pfacing = ANGLE_TO_FACING (ARCTAN (delta_x, delta_y));
 					delta_facing = NORMALIZE_FACING (
 							pfacing - ANGLE_TO_FACING (
-									GetVelocityTravelAngle (&ElementPtr->velocity)
-									) + ANGLE_TO_FACING (OCTANT)
-							);
+							GetVelocityTravelAngle (&ElementPtr->velocity))
+							+ ANGLE_TO_FACING (OCTANT));
 					if (delta_facing <= ANGLE_TO_FACING (QUADRANT))
 					{
 						hTarget = hObject;
@@ -589,18 +586,17 @@ PELEMENT ElementPtr;
 						(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
 						&& (ElementPtr->state_flags & IGNORE_SIMILAR))
 				{
-					ElementPtr->next.image.frame =
-							SetAbsFrameIndex (
-							StarShipPtr->RaceDescPtr->ship_data.special[0], 21
-							);
+					ElementPtr->next.image.frame = SetAbsFrameIndex (
+							StarShipPtr->RaceDescPtr->ship_data.special[0],
+							21);
 					ElementPtr->state_flags &= ~IGNORE_SIMILAR;
 					ElementPtr->state_flags |= CHANGING;
 				}
 
-				if ((num_frames = WORLD_TO_TURN (
+				num_frames = WORLD_TO_TURN (
 						square_root ((long)delta_x * delta_x
-						+ (long)delta_y * delta_y)
-						)) == 0)
+						+ (long)delta_y * delta_y));
+				if (num_frames == 0)
 					num_frames = 1;
 
 				ShipVelocity = ObjectPtr->velocity;
@@ -613,8 +609,7 @@ PELEMENT ElementPtr;
 						- ElementPtr->current.location.y;
 
 				delta_facing = NORMALIZE_FACING (
-						ANGLE_TO_FACING (ARCTAN (delta_x, delta_y)) - facing
-						);
+						ANGLE_TO_FACING (ARCTAN (delta_x, delta_y)) - facing);
 
 				if (delta_facing > 0)
 				{
@@ -644,7 +639,8 @@ PELEMENT ElementPtr;
 
 			OldFacing = StarShipPtr->ShipFacing;
 			OldStatus = StarShipPtr->cur_status_flags;
-			OldIncrement = StarShipPtr->RaceDescPtr->characteristics.thrust_increment;
+			OldIncrement = StarShipPtr->RaceDescPtr->characteristics.
+					thrust_increment;
 			OldThrust = StarShipPtr->RaceDescPtr->characteristics.max_thrust;
 
 			StarShipPtr->ShipFacing = facing;
@@ -655,7 +651,8 @@ PELEMENT ElementPtr;
 			thrust_status = inertial_thrust (ElementPtr);
 
 			StarShipPtr->RaceDescPtr->characteristics.max_thrust = OldThrust;
-			StarShipPtr->RaceDescPtr->characteristics.thrust_increment = OldIncrement;
+			StarShipPtr->RaceDescPtr->characteristics.thrust_increment =
+					OldIncrement;
 			StarShipPtr->cur_status_flags = OldStatus;
 			StarShipPtr->ShipFacing = OldFacing;
 
@@ -677,15 +674,16 @@ PELEMENT ElementPtr;
 
 					InsertElement (hIonElement, GetHeadElement ());
 					LockElement (hIonElement, &IonElementPtr);
-					IonElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
-					IonElementPtr->life_span = IonElementPtr->thrust_wait = ION_LIFE;
+					IonElementPtr->state_flags =
+							APPEARING | FINITE_LIFE | NONSOLID;
+					IonElementPtr->life_span =
+							IonElementPtr->thrust_wait = ION_LIFE;
 					SetPrimType (&(GLOBAL (DisplayArray))[
-							IonElementPtr->PrimIndex
-							], POINT_PRIM);
+							IonElementPtr->PrimIndex], POINT_PRIM);
 					SetPrimColor (&(GLOBAL (DisplayArray))[
-							IonElementPtr->PrimIndex
-							], START_ION_COLOR);
-					IonElementPtr->current.location = ElementPtr->current.location;
+							IonElementPtr->PrimIndex], START_ION_COLOR);
+					IonElementPtr->current.location =
+							ElementPtr->current.location;
 					IonElementPtr->current.location.x +=
 							(COORD)COSINE (angle, DISPLAY_TO_WORLD (2));
 					IonElementPtr->current.location.y +=
@@ -695,10 +693,10 @@ PELEMENT ElementPtr;
 					SetElementStarShip (IonElementPtr, StarShipPtr);
 
 					{
-							/* normally done during preprocess, but because
-							 * object is being inserted at head rather than
-							 * appended after tail it may never get preprocessed.
-							 */
+						/* normally done during preprocess, but because
+						 * object is being inserted at head rather than
+						 * appended after tail it may never get preprocessed.
+						 */
 						IonElementPtr->next = IonElementPtr->current;
 						--IonElementPtr->life_span;
 						IonElementPtr->state_flags |= PRE_PROCESS;
@@ -786,7 +784,8 @@ marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 				}
 
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr1);
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2),
+						ElementPtr1);
 			}
 
 			ElementPtr0->state_flags &= ~COLLISION;
@@ -819,8 +818,7 @@ turret_postprocess (PELEMENT ElementPtr)
 		STARSHIPPTR StarShipPtr;
 
 		SetPrimType (&(GLOBAL (DisplayArray))[
-				ElementPtr->PrimIndex
-				], NO_PRIM);
+				ElementPtr->PrimIndex], NO_PRIM);
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if (StarShipPtr->hShip)
@@ -866,8 +864,7 @@ turret_postprocess (PELEMENT ElementPtr)
 						<< (NORMALIZE_FACING (facing + ANGLE_TO_FACING (OCTANT))
 						/ ANGLE_TO_FACING (QUADRANT));
 				TurretPtr->current.image.frame = SetAbsFrameIndex (
-						TurretPtr->current.image.frame, facing
-						);
+						TurretPtr->current.image.frame, facing);
 				facing = FACING_TO_ANGLE (facing);
 				if (StarShipPtr->cur_status_flags & WEAPON)
 				{
@@ -876,14 +873,14 @@ turret_postprocess (PELEMENT ElementPtr)
 
 					LockElement (GetTailElement (), &TurretEffectPtr);
 					if ((PELEMENT)TurretEffectPtr != ElementPtr
-							&& (TurretEffectPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
+							&& (TurretEffectPtr->state_flags &
+							(GOOD_GUY | BAD_GUY)) ==
 							(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
 							&& (TurretEffectPtr->state_flags & APPEARING)
 							&& GetPrimType (&(GLOBAL (DisplayArray))[
 									TurretEffectPtr->PrimIndex
 									]) == STAMP_PRIM
-							&& (hTurretEffect = AllocElement ())
-							)
+							&& (hTurretEffect = AllocElement ()))
 					{
 						TurretPtr->current.location.x -=
 								COSINE (facing, DISPLAY_TO_WORLD (2));
@@ -891,9 +888,10 @@ turret_postprocess (PELEMENT ElementPtr)
 								SINE (facing, DISPLAY_TO_WORLD (2));
 
 						LockElement (hTurretEffect, &TurretEffectPtr);
-						TurretEffectPtr->state_flags =
-								FINITE_LIFE | NONSOLID | IGNORE_SIMILAR | APPEARING
-								| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+						TurretEffectPtr->state_flags = FINITE_LIFE
+								| NONSOLID | IGNORE_SIMILAR | APPEARING
+								| (ElementPtr->state_flags &
+								(GOOD_GUY | BAD_GUY));
 						TurretEffectPtr->life_span = 4;
 
 						TurretEffectPtr->current.location.x =
@@ -906,18 +904,17 @@ turret_postprocess (PELEMENT ElementPtr)
 								DISPLAY_TO_WORLD (TURRET_OFFSET));
 						TurretEffectPtr->current.image.farray =
 								StarShipPtr->RaceDescPtr->ship_data.special;
-						TurretEffectPtr->current.image.frame = SetAbsFrameIndex (
+						TurretEffectPtr->current.image.frame =
+								SetAbsFrameIndex (
 								StarShipPtr->RaceDescPtr->ship_data.special[0],
-								ANGLE_TO_FACING (FULL_CIRCLE)
-								);
+								ANGLE_TO_FACING (FULL_CIRCLE));
 
 						TurretEffectPtr->preprocess_func = animate;
 
 						SetElementStarShip (TurretEffectPtr, StarShipPtr);
 
 						SetPrimType (&(GLOBAL (DisplayArray))[
-								TurretEffectPtr->PrimIndex
-								], STAMP_PRIM);
+								TurretEffectPtr->PrimIndex], STAMP_PRIM);
 
 						UnlockElement (hTurretEffect);
 						PutElement (hTurretEffect);
@@ -927,20 +924,15 @@ turret_postprocess (PELEMENT ElementPtr)
 				TurretPtr->next = TurretPtr->current;
 
 				SetPrimType (&(GLOBAL (DisplayArray))[
-						TurretPtr->PrimIndex
-						],
+						TurretPtr->PrimIndex],
 						GetPrimType (&(GLOBAL (DisplayArray))[
-						ShipPtr->PrimIndex
-						]));
+						ShipPtr->PrimIndex]));
 				SetPrimColor (&(GLOBAL (DisplayArray))[
-						TurretPtr->PrimIndex
-						],
+						TurretPtr->PrimIndex],
 						GetPrimColor (&(GLOBAL (DisplayArray))[
-						ShipPtr->PrimIndex
-						]));
+						ShipPtr->PrimIndex]));
 
-				TurretPtr->postprocess_func =
-						ElementPtr->postprocess_func;
+				TurretPtr->postprocess_func = ElementPtr->postprocess_func;
 
 				SetElementStarShip (TurretPtr, StarShipPtr);
 
@@ -969,37 +961,33 @@ turret_postprocess (PELEMENT ElementPtr)
 				facing = FACING_TO_ANGLE (StarShipPtr->ShipFacing);
 				SpaceMarinePtr->current.location.x =
 						ShipPtr->current.location.x
-						- COSINE (facing,
-						DISPLAY_TO_WORLD (TURRET_OFFSET));
+						- COSINE (facing, DISPLAY_TO_WORLD (TURRET_OFFSET));
 				SpaceMarinePtr->current.location.y =
 						ShipPtr->current.location.y
-						- SINE (facing,
-						DISPLAY_TO_WORLD (TURRET_OFFSET));
+						- SINE (facing, DISPLAY_TO_WORLD (TURRET_OFFSET));
 				SpaceMarinePtr->current.image.farray =
 						StarShipPtr->RaceDescPtr->ship_data.special;
 				SpaceMarinePtr->current.image.frame = SetAbsFrameIndex (
-						StarShipPtr->RaceDescPtr->ship_data.special[0], 20
-						);
+						StarShipPtr->RaceDescPtr->ship_data.special[0], 20);
 
-				SpaceMarinePtr->turn_wait = MAKE_BYTE (0,
-						NORMALIZE_FACING (
-						ANGLE_TO_FACING (facing + HALF_CIRCLE)
-						));
+				SpaceMarinePtr->turn_wait =
+						MAKE_BYTE (0, NORMALIZE_FACING (
+						ANGLE_TO_FACING (facing + HALF_CIRCLE)));
 				SpaceMarinePtr->preprocess_func = marine_preprocess;
 				SpaceMarinePtr->collision_func = marine_collision;
 
 				SetElementStarShip (SpaceMarinePtr, StarShipPtr);
 
 				SetPrimType (&(GLOBAL (DisplayArray))[
-						SpaceMarinePtr->PrimIndex
-						], STAMP_PRIM);
+						SpaceMarinePtr->PrimIndex], STAMP_PRIM);
 
 				UnlockElement (hSpaceMarine);
 				PutElement (hSpaceMarine);
 
 				DeltaCrew (ShipPtr, -1);
 				ProcessSound (SetAbsSoundIndex (
-						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), SpaceMarinePtr);
+						StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+						SpaceMarinePtr);
 
 				StarShipPtr->special_counter =
 						StarShipPtr->RaceDescPtr->characteristics.special_wait;

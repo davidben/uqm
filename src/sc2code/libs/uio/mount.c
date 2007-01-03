@@ -31,9 +31,9 @@
 #	include "memdebug.h"
 #endif
 
-static void uio_deleteRepository(uio_Repository *repository);
+static void uio_Repository_delete(uio_Repository *repository);
 static uio_Repository *uio_Repository_alloc(void);
-static void uio_freeRepository(uio_Repository *repository);
+static void uio_Repository_free(uio_Repository *repository);
 
 
 void
@@ -137,7 +137,7 @@ uio_Repository_unref(uio_Repository *repository) {
 	assert(repository->ref > 0);
 	repository->ref--;
 	if (repository->ref == 0)
-		uio_deleteRepository(repository);
+		uio_Repository_delete(repository);
 }
 
 static uio_Repository *
@@ -150,15 +150,15 @@ uio_Repository_alloc(void) {
 }
 
 static void
-uio_deleteRepository(uio_Repository *repository) {
+uio_Repository_delete(uio_Repository *repository) {
 	assert(repository->numMounts == 0);
 	uio_free(repository->mounts);
-	uio_deleteMountTree(repository->mountTree);
-	uio_freeRepository(repository);
+	uio_MountTree_delete(repository->mountTree);
+	uio_Repository_free(repository);
 }
 
 static void
-uio_freeRepository(uio_Repository *repository) {
+uio_Repository_free(uio_Repository *repository) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugFree(uio_Repository, (void *) repository);
 #endif

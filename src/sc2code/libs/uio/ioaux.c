@@ -33,17 +33,30 @@ static int copyError(int error,
 		uio_FileSystemHandler *toHandler, uio_Handle *toHandle,
 		uio_PDirHandle *toDir, const char *toName, char *buf);
 
-/*
- * Follow a path starting from a specified physical dir as long as possible.
- * When you can get no further, 'endPDirHandle' will be filled in with a
- * reference to the dir where you ended up, and 'pathRest' will point into
- * the original path to the beginning of the part that was not matched.
- * It is allowed to have endPDirHandle point to pDirHandle and/or restPath
- * point to path when calling this function. Just take care to keep a
- * reference to the original so you can decrement the ref counter.
- * returns: 0 if the complete path was matched
- *          ENOENT if some component (the next one) didn't exists
- *          ENODIR if a component (the next one) exists but isn't a dir
+/**
+ * Follow a path starting from a specified physical dir for as long as
+ * possible.
+ *
+ * @param[in]  startPDirHandle The physical dir to start from.
+ * @param[in]  path            The path to follow, relative to
+ * 		'startPDirHandle'.
+ * @param[in]  pathLen         The string length of 'path'.
+ * @param[out] endPDirHandle   The physical dir where you end up after
+ * 		following 'path' for as long as possible. Unmodified if an error
+ * 		occurs.
+ * @param[out] pathRest        '*pathRest' will point into 'path' to the
+ * 		start the part that was not matched. Unmodified if an error occurs.
+ *
+ * @retval 0      if the complete path was matched
+ * @retval ENOENT if some component (the next one in '*pathRest') didn't
+ * 		exist.
+ * @retval ENODIR if a component (the next one in '*pathRest') did exist,
+ * 		but wasn't a dir.
+ *
+ * @note It is allowed to have 'endPDirHandle' point to pDirHandle, but
+ * 		care should be taken to keep a reference to the original so its
+ * 		reference counter can be decremented.
+ * @note It is allowed to have 'pathRest' point to 'path'.
  */
 int
 uio_walkPhysicalPath(uio_PDirHandle *startPDirHandle, const char *path,
@@ -61,7 +74,7 @@ uio_walkPhysicalPath(uio_PDirHandle *startPDirHandle, const char *path,
 	tempBuf = uio_alloca(strlen(path) + 1);
 	pathEnd = path + pathLen;
 	getFirstPathComponent(path, pathEnd, &partStart, &partEnd);
-	while (1) {
+	for (;;) {
 		if (partStart == pathEnd) {
 			retVal = 0;
 			break;
@@ -89,7 +102,19 @@ uio_walkPhysicalPath(uio_PDirHandle *startPDirHandle, const char *path,
 	return retVal;
 }
 
-// Make a all directory components of a path, inside a physical directory.
+/**
+ * Create a directory inside a physical directory. All non-existant
+ * parent directories will be created as well.
+ *
+ * @param[in]  pDirHandle The physical directory to which 'path' is relative
+ * @param[in]  path       The path to the directory to create, relative to
+ * 		'pDirHandle'
+ * @param[in]  pathLen    The string length of 'path'.
+ * @param[in]  mode       The access mode for the newly created directories.
+ *
+ * @returns the new (physical) directory, or NULL if an error occurs, in
+ * 		which case #errno will be set.
+ */
 uio_PDirHandle *
 uio_makePath(uio_PDirHandle *pDirHandle, const char *path, size_t pathLen,
 		mode_t mode) {
@@ -136,12 +161,23 @@ uio_makePath(uio_PDirHandle *pDirHandle, const char *path, size_t pathLen,
 	return pDirHandle;
 }
 
-/*
- * permissions should already have been checked
+
+/**
+ * Copy a file from one physical directory to another.
+ * The copy will have the same file permissions as the original.
  *
- * The new file will have the same permissions as the old.
- * If an error occurs during copying, an attempt will be made to
- * remove the copy.
+ * @param[in]  fromDir  The physical directory where the file to copy is
+ * 		located.
+ * @param[in]  fromName The name of the file to copy.
+ * @param[in]  toDir    The physical directory where to put the copy.
+ * @param[in]  toName   The name to use for the copy.
+ *
+ * @note It is up to the caller to make any relevant permissions checks.
+ *
+ * @note This function will fail if a file with the name in 'toName' already
+ * 		exists, leaving the original file intact. If an error occurs during
+ * 		copying, an attempt is made to remove the file that was to be the
+ * 		copy.
  */
 int
 uio_copyFilePhysical(uio_PDirHandle *fromDir, const char *fromName,
@@ -683,7 +719,7 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 		return 0;
 	}
 	
-	// try all the MountInfo structures in effect for this MountTree
+	// Try all the MountInfo structures in effect for this MountTree.
 	for (item = tree->pLocs; item != NULL; item = item->next) {
 		const char *pRootPath;
 		uio_PDirHandle *pDirHandle;
@@ -695,7 +731,7 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 		uio_PDirHandle_unref(pDirHandle);
 		switch (retVal) {
 			case 0:
-				// complete match. We're done.
+				// Complete match. We're done.
 				return 0;
 			case ENOTDIR:
 				// A component is matched, but not as a dir. Failed.
@@ -703,7 +739,7 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 				errno = ENOTDIR;
 				return -1;
 			case ENOENT:
-				// no match; try next pLoc
+				// No match; try the next pLoc.
 				continue;
 			default:
 				// Unknown error. Let's bail out just to be safe.
@@ -723,12 +759,21 @@ uio_verifyPath(uio_DirHandle *dirHandle, const char *path,
 	return -1;
 }
 
-// Get the absolute path pointed to by 'path' relative to 'dirHandle'
-// The new path will be put in '*destPath', which will be newly allocated.
-// It will be \0-terminated, and will not have a '/' as first or last
-// character.
-// The length of '*destPath' will be returned.
-// On error, -1 will be returned, and errno will be set.
+/**
+ * Determine the absolute path given a path relative to a given directory.
+ *
+ * @param[in]  dirHandle The directory to which 'path' is relative.
+ * @param[in]  path      The path, relative to 'dirHandle', to make
+ * 		absolute.
+ * @param[in]  pathLen   The string length of 'path'.
+ * @param[out] destPath  Filled with a newly allocated string containing
+ * 		the sought absolute path. It will not contain a '/' as the first
+ * 		or last character. It should be freed with uio_free().
+ * 		Unmodified if an error occurs.
+ *
+ * @returns the length of '*destPath', or -1 if an error occurs, in which
+ * 		case #errno will be set.
+ */
 ssize_t
 uio_resolvePath(uio_DirHandle *dirHandle, const char *path, size_t pathLen,
 		char **destPath) {

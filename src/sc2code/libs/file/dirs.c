@@ -42,8 +42,8 @@
 #define APPDATA_FALLBACK
 
 
-static char *expandPathAbsolute (char *dest, size_t destLen,
-		const char *src, int what);
+static char *expandPathAbsolute (char *dest, size_t destLen, const char *src,
+		size_t *skipSrc, int what);
 static char *strrchr2(const char *start, int c, const char *end);
 
 
@@ -73,19 +73,56 @@ mkdirhier (const char *path)
 	pathstart = path;
 
 #ifdef WIN32
-	// driveletter + semicolon on Windows.
 	if (isDriveLetter(pathstart[0]) && pathstart[1] == ':')
 	{
+		// Driveletter + semicolon on Windows.
+		// Copy as is; don't try to create directories for it.
 		*(ptr++) = *(pathstart++);
 		*(ptr++) = *(pathstart++);
+
+		ptr[0] = '/';
+		ptr[1] = '\0';
+		if (stat (buf, &statbuf) == -1)
+		{
+			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
+			return -1;
+		}
+	} else if (pathstart[0] == '\\' && pathstart[1] == '\\') {
+		// Windows UNC path. (\\server\share\...)
+		// Copy the server part as is; don't try to create directories for
+		// it, or stat it. Don't create a dir for the share either.
+		*(ptr++) = *(pathstart++);
+		*(ptr++) = *(pathstart++);
+
+		// Copy the server part
+		while (*pathstart != '\0' && *pathstart != '\\' && *pathstart != '/')
+			*(ptr++) = *(pathstart++);
+		
+		if (*pathstart == '\0')
+		{
+			log_add (log_Error, "Incomplete UNC path \"%s\"", pathstart);
+			return -1;
+		}
+
+		// Copy the path seperator.
+		*(ptr++) = *(pathstart++);
+	
+		// Copy the share part
+		while (*pathstart != '\0' && *pathstart != '\\' && *pathstart != '/')
+			*(ptr++) = *(pathstart++);
+
+		ptr[0] = '/';
+		ptr[1] = '\0';
+		if (stat (buf, &statbuf) == -1)
+		{
+			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
+			return -1;
+		}
 	}
 #endif
 
-	if (*pathstart == '/') {
-		*ptr = '/';
-		ptr++;
-		pathstart++;
-	}
+	if (*pathstart == '/')
+		*(ptr++) = *(pathstart++);
 
 	if (*pathstart == '\0') {
 		// path exists completely, nothing more to do
@@ -106,7 +143,7 @@ mkdirhier (const char *path)
 		{
 			if (errno != ENOENT)
 			{
-				log_add (log_Error, "Can't stat %s: %s", buf,
+				log_add (log_Error, "Can't stat \"%s\": %s", buf,
 						strerror (errno));
 				return -1;
 			}
@@ -194,6 +231,8 @@ getHomeDir (void)
 // EP_DOTS - Process ".." and "."
 // EP_SLASHES - Consider backslashes as path component separators.
 //              They will be replaced by slashes.
+// EP_SINGLESEP - Replace multiple consecutive path seperators (which POSIX
+//                considers equivalent to a single one) by a single one.
 // Additionally, there's EP_ALL, which indicates all of the above,
 // and EP_SYSTEM_ALL, which does the same as EP_ALL, with the exception
 // of EP_SLASHES, which will only be included if the operating system
@@ -396,13 +435,15 @@ expandPath (char *dest, size_t len, const char *src, int what)
 			homelen = strlen (home);
 		
 			if (what & EP_ABSOLUTE) {
+				size_t skip;
 				destptr = expandPathAbsolute (dest, destend - dest,
-						home, what);
+						home, &skip, what);
 				if (destptr == NULL)
 				{
 					// errno is set
 					return -1;
 				}
+				home += skip;
 				what &= ~EP_ABSOLUTE;
 						// The part after the '~' should not be seen
 						// as absolute.
@@ -417,13 +458,15 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	
 	if (what & EP_ABSOLUTE)
 	{
+		size_t skip;
 		destptr = expandPathAbsolute (destptr, destend - destptr, src,
-				what);
+				&skip, what);
 		if (destptr == NULL)
 		{
 			// errno is set
 			return -1;
 		}
+		src += skip;
 	}
 
 	CHECKLEN (dest, srcend - src);
@@ -435,6 +478,20 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	{
 		/* Replacing backslashes in path by slashes. */
 		destptr = dest;
+#ifdef WIN32
+		{
+			// A Windows UNC path should always start with two backslashes
+			// and have a backslash in between the server and share part.
+			size_t skip = skipUNCServerShare (destptr);
+			if (skip != 0)
+			{
+				char *slash = (char *) memchr (destptr + 2, '/', skip - 2);
+				if (slash)
+					*slash = '\\';
+				destptr += skip;
+			}
+		}
+#endif
 		while (*destptr != '\0')
 		{
 			if (*destptr == '\\')
@@ -456,8 +513,15 @@ expandPath (char *dest, size_t len, const char *src, int what)
 
 		pathStart = dest;
 #ifdef WIN32
-		if (isDriveLetter(src[0]) && (src[1] == ':'))
+		if (isDriveLetter(pathStart[0]) && (pathStart[1] == ':'))
+		{
 			pathStart += 2;
+		}
+		else
+		{
+			// Test for a UNC path.
+			pathStart += skipUNCServerShare(pathStart);
+		}
 #endif
 		if (pathStart[0] == '/')
 			pathStart++;
@@ -517,34 +581,113 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		*destptr = '\0';	
 	}
 	
+	if (what & EP_SINGLESEP)
+	{
+		char *srcptr;
+		srcptr = dest;
+		destptr = dest;
+		while (*srcptr != '\0')
+		{
+			char ch = *srcptr;
+			*(destptr++) = *(srcptr++);
+			if (ch == '/')
+			{
+				while (*srcptr == '/')
+					srcptr++;
+			}
+		}
+		*destptr = '\0';
+	}
+	
 	return 0;
 }
+
+#ifdef WIN32
+// letter is 0 based: 0 = A, 1 = B, ...
+bool
+driveLetterExists(int letter)
+{
+	unsigned long drives;
+
+	drives = _getdrives ();
+
+	return ((drives >> letter) & 1) != 0;
+}
+#endif
 
 // helper for expandPath, expanding an absolute path
 // returns a pointer to the end of the filled in part of dest.
 static char *
-expandPathAbsolute (char *dest, size_t destLen, const char *src, int what)
+expandPathAbsolute (char *dest, size_t destLen, const char *src,
+		size_t *skipSrc, int what)
 {
-	if (src[0] == '/' || ((what & EP_SLASHES) && src[0] == '\\')
-#ifdef WIN32
-			|| (isDriveLetter(src[0]) && (src[1] == ':'))
-#endif
-			) {
+	const char *orgSrc;
+
+	if (src[0] == '/' || ((what & EP_SLASHES) && src[0] == '\\'))
+	{
 		// Path is already absolute; nothing to do
+		*skipSrc = 0;
 		return dest;
 	}
 
-	// Path is not already absolute; we've got work to do.
-	if (getcwd (dest, destLen) == NULL)
+	orgSrc = src;
+#ifdef WIN32
+	if (isDriveLetter(src[0]) && (src[1] == ':'))
 	{
-		// errno is set
-		return NULL;
+		int letter;
+
+		if (src[2] == '/' || src[2] == '\\')
+		{
+			// Path is already absolute (of the form "d:/"); nothing to do
+			*skipSrc = 0;
+			return dest;
+		}
+
+		// Path is of the form "d:path", without a (back)slash after the
+		// semicolon.
+
+		letter = tolower(src[0]) - 'a';
+
+		// _getdcwd() should only be called on drives that exist.
+		// This is weird though, because it means a race condition
+		// in between the existance check and the call to _getdcwd()
+		// cannot be avoided, unless a drive still exists for Windows
+		// when the physical drive is removed.
+		if (!driveLetterExists(letter))
+		{
+			errno = ENOENT;
+			return NULL;
+		}
+
+		// Get the working directory for a specific drive.
+		if (_getdcwd (letter + 1, dest, destLen) == NULL)
+		{
+			// errno is set
+			return NULL;
+		}
+
+		src += 2;
+	}
+	else
+#endif
+	{
+		// Relative dir
+		if (getcwd (dest, destLen) == NULL)
+		{
+			// errno is set
+			return NULL;
+		}
 	}
 
 	{
 		size_t tempLen;
 		tempLen = strlen (dest);
-		assert (tempLen > 0);
+		if (tempLen == 0)
+		{
+			// getcwd() or _getdcwd() returned a 0-length string.
+			errno = ENOENT;
+			return NULL;
+		}
 		dest += tempLen;
 		destLen -= tempLen;
 	}
@@ -561,6 +704,8 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src, int what)
 		dest++;
 		destLen--;
 	}
+
+	*skipSrc = (size_t) (src - orgSrc);
 	return dest;
 }
 
@@ -575,5 +720,35 @@ strrchr2(const char *start, int c, const char *end) {
 			return (char *) end;
 	}
 }
+
+#ifdef WIN32
+// returns 0 if the path is not a valid UNC path.
+// Does not skip trailing slashes.
+size_t
+skipUNCServerShare(const char *inPath) {
+	const char *path = inPath;
+
+	// Skip the initial two backslashes.
+	if (path[0] != '\\' || path[1] != '\\')
+		return (size_t) 0;
+	path += 2;
+
+	// Skip the server part.
+	while (*path != '\\' && *path != '/') {
+		if (*path == '\0')
+			return (size_t) 0;
+		path++;
+	}
+
+	// Skip the seperator.
+	path++;
+
+	// Skip the share part.
+	while (*path != '\0' && *path != '\\' && *path != '/')
+		path++;
+	
+	return (size_t) (path - inPath);
+}
+#endif
 
 

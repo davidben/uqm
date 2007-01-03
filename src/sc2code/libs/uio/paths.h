@@ -19,10 +19,25 @@
  */
 
 #ifndef _PATHS_H
-#define PATHS_H
+#define _PATHS_H
+
+typedef struct uio_PathComp uio_PathComp;
 
 #include "types.h"
 #include "uioport.h"
+
+#include <stdio.h>
+
+struct uio_PathComp {
+	char *name;
+			// The name of this path component, 0-terminated
+	size_t nameLen;
+			// The length of the 'name' field, for fast lookups.
+	struct uio_PathComp *next;
+			// Next component in the path.
+	struct uio_PathComp *up;
+			// Previous component in the path.
+};
 
 void getFirstPathComponent(const char *dir, const char *dirEnd,
 		const char **startComp, const char **endComp);
@@ -42,6 +57,40 @@ char *joinPaths(const char *first, const char *second);
 char *joinPathsAbsolute(const char *first, const char *second);
 
 uio_bool validPathName(const char *path, size_t len);
+size_t uio_skipUNCServerShare(const char *inPath);
+size_t uio_getUNCServerShare(const char *inPath, char **outPath,
+		size_t *outLen);
 
-#endif  /* PATHS_H */
+#ifdef WIN32
+static inline int
+isDriveLetter(int c)
+{
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+#endif
+
+static inline int
+isPathDelimiter(int c)
+{
+#ifdef WIN32
+	return c == '/' || c == '\\';
+#else
+	return c == '/';
+#endif
+}
+
+int decomposePath(const char *path, uio_PathComp **pathComp,
+		uio_bool *isAbsolute);
+void composePath(const uio_PathComp *pathComp, uio_bool absolute,
+		char **path, size_t *pathLen);
+uio_PathComp *uio_PathComp_new(char *name, size_t nameLen,
+		uio_PathComp *upComp);
+void uio_PathComp_delete(uio_PathComp *pathComp);
+int uio_countPathComps(const uio_PathComp *comp);
+uio_PathComp *uio_lastPathComp(uio_PathComp *comp);
+uio_PathComp *uio_makePathComps(const char *path, uio_PathComp *upComp);
+void uio_printPathComp(FILE *outStream, const uio_PathComp *comp);
+void uio_printPathToComp(FILE *outStream, const uio_PathComp *comp);
+
+#endif  /* _PATHS_H */
 

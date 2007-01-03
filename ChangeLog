@@ -1,4 +1,10 @@
 Changes towards version 0.7:
+- uio cleanups, documentation - SvdB
+- uio path parsing fixes/improvements - SvdB
+  - Windows UNC path support (#907)
+  - Windows drive-relative paths ("D:path" without a path seperator)
+  - treat multiple consecutive path seperators as one (like POSIX)
+- config dir no longer needs trailing path seperator (bug #738)- SvdB
 - Simplification of uio Stream functions. No more internal seeks. - SvdB
 	
 Changes towards version 0.6:

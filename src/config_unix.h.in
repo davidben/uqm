@@ -20,10 +20,10 @@
 #define CONFIGDIR USERDIR
 
 /* Directory where supermelee teams will be stored */
-#define MELEEDIR "${UQM_CONFIG_DIR}teams/"
+#define MELEEDIR "${UQM_CONFIG_DIR}/teams/"
 
 /* Directory where save games will be stored */
-#define SAVEDIR "${UQM_CONFIG_DIR}save/"
+#define SAVEDIR "${UQM_CONFIG_DIR}/save/"
 
 /* Defined if words are stored with the most significant byte first */
 @WORDS_BIGENDIAN@

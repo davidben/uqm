@@ -401,6 +401,6 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 			}
 		}
 	}
-	uio_freeDirList (dirList);
+	uio_DirList_free (dirList);
 }
 

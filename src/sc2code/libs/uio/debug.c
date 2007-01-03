@@ -712,7 +712,7 @@ listOneDir(DebugContext *debugContext, const char *arg) {
 	}
 	for (i = 0; i < dirList->numNames; i++)
 		fprintf(debugContext->out, "%s\n", dirList->names[i]);
-	uio_freeDirList(dirList);
+	uio_DirList_free(dirList);
 	return 0;
 }
 

@@ -22,7 +22,7 @@
 
 #ifdef __svr4__
 #	define _POSIX_PTHREAD_SEMANTICS
-			// For the POSIX variant of r_readdir()
+			// For the POSIX variant of readdir_r()
 #endif
 
 #include "./stdio.h"
@@ -348,13 +348,23 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 
 #ifdef WIN32
 	if (pDirHandle->extra->extra->upDir == NULL) {
-		// Top dir. Contains only drive letters.
-		if (!isDriveLetter(name[0]) || name[1] != ':' || name[2] != '\0')
-			return NULL;
-		driveName[0] = tolower(name[0]);
-		driveName[1] = ':';
-		driveName[2] = '\0';
-		name = driveName;
+		// Top dir. Contains only drive letters and UNC \\server\share
+		// parts.
+		if (isDriveLetter(name[0]) && name[1] == ':' && name[2] == '\0') {
+			driveName[0] = tolower(name[0]);
+			driveName[1] = ':';
+			driveName[2] = '\0';
+			name = driveName;
+		} else {
+			size_t uncLen;
+
+			uncLen = uio_skipUNCServerShare(name);
+			if (name[uncLen] != '\0') {
+				// 'name' contains neither a drive letter, nor the
+				// first part of a UNC path.
+				return NULL;
+			}
+		}
 	}
 #endif
 	
@@ -363,8 +373,9 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 		return result;
 
 #ifdef WIN32
-	if (name == driveName) {
-		// Need to create a 'directory' for the drive letter.
+	if (pDirHandle->extra->extra->upDir == NULL) {
+		// Need to create a 'directory' for the drive letter or UNC
+		// "\\server\share" part.
 		// It's no problem if we happen to create a dir for a non-existing
 		// drive. It should just produce an empty dir.
 		uio_GPDir *gPDir;
@@ -703,7 +714,7 @@ stdio_getPath(uio_GPDir *gPDir) {
 	
 		if (gPDir->extra->upDir == NULL) {
 #ifdef WIN32
-			// Drive letter still needs to follow follow.
+			// Drive letter still needs to follow.
 			gPDir->extra->cachedPath = uio_malloc(1);
 			gPDir->extra->cachedPath[0] = '\0';
 #else

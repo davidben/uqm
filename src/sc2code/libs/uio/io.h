@@ -135,7 +135,7 @@ int uio_closeDir(uio_DirHandle *dirHandle);
 
 uio_DirList *uio_getDirList(uio_DirHandle *dirHandle, const char *path,
 		const char *pattern, match_MatchType matchType);
-void uio_freeDirList(uio_DirList *dirList);
+void uio_DirList_free(uio_DirList *dirList);
 
 // For debugging purposes
 void uio_DirHandle_print(const uio_DirHandle *dirHandle, FILE *out);

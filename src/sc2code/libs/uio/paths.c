@@ -18,13 +18,17 @@
  *
  */
 
-#include <stdlib.h>
 #include <assert.h>
+#include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "paths.h"
 #include "uioport.h"
 #include "mem.h"
+
+static inline uio_PathComp *uio_PathComp_alloc(void);
+static inline void uio_PathComp_free(uio_PathComp *pathComp);
 
 // gets the first dir component of a path
 // sets '*start' to the start of the first component
@@ -234,6 +238,359 @@ validPathName(const char *path, size_t len) {
 		getNextPathComponent(pathEnd, &start, &end);
 	}
 	return true;
+}
+
+// returns 0 if the path is not a valid UNC path.
+// Does not skip trailing slashes.
+size_t
+uio_skipUNCServerShare(const char *inPath) {
+	const char *path = inPath;
+
+	// Skip the initial two backslashes.
+	if (path[0] != '\\' || path[1] != '\\')
+		return (size_t) 0;
+	path += 2;
+
+	// Skip the server part.
+	while (*path != '\\' && *path != '/') {
+		if (*path == '\0')
+			return (size_t) 0;
+		path++;
+	}
+
+	// Skip the seperator.
+	path++;
+
+	// Skip the share part.
+	while (*path != '\0' && *path != '\\' && *path != '/')
+		path++;
+	
+	return (size_t) (path - inPath);
+}
+
+/**
+ * Find the server and share part of a Windows "Universal Naming Convention"
+ * path (a path of the form '\\server\share\path\file').
+ * The path must contain at least a server and share path to be valid.
+ * The initial two slashes must be backslashes, the other slashes may each
+ * be either a forward slash or a backslash.
+ *
+ * @param[in]  inPath   The path to parse.
+ * @param[out] outPath  Will contain a newly allocated string (to be
+ * 		freed using uio_free(), containing the server and share part
+ * 		of inPath, separated by a backslash, or NULL if 'inPath' was
+ * 		not a valid UNC path.
+ * @param[out] outLen   If not NULL on entry, it will contain the string
+ * 		length of '*outPath', or 0 if 'inPath' was not a valid UNC path.
+ *
+ * @returns The number of characters to add to 'inPath' to get to the first
+ * 		path component past the server and share part, or 0 if 'inPath'
+ * 		was not a valid UNC path.
+ */
+size_t
+uio_getUNCServerShare(const char *inPath, char **outPath, size_t *outLen) {
+	const char *ptr;
+	const char *server;
+	const char *serverEnd;
+	const char *share;
+	const char *shareEnd;
+	char *name;
+	char *nameEnd;
+	size_t nameLen;
+
+	ptr = inPath;
+
+	if (ptr[0] != '\\' || ptr[1] != '\\')
+		goto noMatch;
+
+	// Parse the server part.
+	server = ptr + 2;
+	serverEnd = server;
+	for (;;) {
+		if (*serverEnd == '\0')
+			goto noMatch;
+		if (isPathDelimiter(*serverEnd))
+			break;
+		serverEnd++;
+	}
+	if (serverEnd == server)
+		goto noMatch;
+
+	// Parse the share part.
+	share = serverEnd + 1;
+	shareEnd = share;
+	while (*shareEnd != '\0') {
+		if (isPathDelimiter(*shareEnd))
+			break;
+		serverEnd++;
+	}
+
+	// Skip any trailing path delimiters.
+	ptr = shareEnd;
+	while (isPathDelimiter(*ptr))
+		ptr++;
+
+	// Allocate a new string and fill it.
+	nameLen = (serverEnd - server) + (shareEnd - share) + 3;
+	name = uio_malloc(nameLen + 1);
+	nameEnd = name;
+	*(nameEnd++) = '\\';
+	*(nameEnd++) = '\\';
+	memcpy(nameEnd, server, serverEnd - server);
+	*(nameEnd++) = '\\';
+	memcpy(nameEnd, share, shareEnd - share);
+	*nameEnd = '\0';
+
+	*outPath = name;
+	if (outLen != NULL)
+		*outLen = nameLen;
+	return (size_t) (ptr - inPath);
+
+noMatch:
+	*outPath = NULL;
+	if (outLen != NULL)
+		*outLen = 0;
+	return (size_t) 0;
+}
+
+// Decomposes a path into its components.
+// If isAbsolute is not NULL, *isAbsolute will be set to true
+// iff the path is absolute.
+// As POSIX considers multiple consecutive slashes to be equivalent to
+// a single slash, so will uio (but not in the "\\MACHINE\share" part
+// of a Windows UNC path).
+int
+decomposePath(const char *path, uio_PathComp **pathComp,
+		uio_bool *isAbsolute) {
+	uio_PathComp *result;
+	uio_PathComp *last;
+	uio_PathComp **endResult = &result;
+	uio_bool absolute = false;
+	char *name;
+#ifdef WIN32
+	size_t nameLen;
+#endif
+
+	if (path[0] == '\0') {
+		errno = ENOENT;
+		return -1;
+	}
+
+	last = NULL;
+#ifdef WIN32
+	path += uio_getUNCServerShare(path, &name, &nameLen);
+	if (name != NULL) {
+		// UNC path
+		*endResult = uio_PathComp_new(name, nameLen, last);
+		last = *endResult;
+		endResult = &last->next;
+
+		absolute = true;
+	} else if (isDriveLetter(path[0]) && path[1] == ':') {
+		// DOS/Windows drive letter.
+		if (path[2] != '\0' && !isPathDelimiter(path[2])) {
+			errno = ENOENT;
+			return -1;
+		}
+		name = uio_memdup0(path, 2);
+		*endResult = uio_PathComp_new(name, 2, last);
+		last = *endResult;
+		endResult = &last->next;
+		absolute = true;
+	} else
+#endif
+	{
+		if (isPathDelimiter(*path)) {
+			absolute = true;
+			do {
+				path++;
+			} while (isPathDelimiter(*path));
+		}
+	}
+
+	while (*path != '\0') {
+		const char *start = path;
+		while (*path != '\0' && !isPathDelimiter(*path))
+			path++;
+		
+		name = uio_memdup0(path, path - start);
+		*endResult = uio_PathComp_new(name, path - start, last);
+		last = *endResult;
+		endResult = &last->next;
+
+		while (isPathDelimiter(*path))
+			path++;
+	}
+
+	*endResult = NULL;
+	*pathComp = result;
+	if (isAbsolute != NULL)
+		*isAbsolute = absolute;
+	return 0;
+}
+
+// Pre: pathComp forms a valid path for the platform.
+void
+composePath(const uio_PathComp *pathComp, uio_bool absolute,
+		char **path, size_t *pathLen) {
+	size_t len;
+	const uio_PathComp *ptr;
+	char *result;
+	char *pathPtr;
+
+	assert(pathComp != NULL);
+
+	// First determine how much space is required.
+	len = 0;
+	if (absolute)
+		len++;
+	ptr = pathComp;
+	while (ptr != NULL) {
+		len += ptr->nameLen;
+		ptr = ptr->next;
+	}
+
+	// Allocate the required space.
+	result = (char *) uio_malloc(len + 1);
+
+	// Fill the path.
+	pathPtr = result;
+	ptr = pathComp;
+	if (absolute) {
+#ifdef WIN32
+		if (ptr->name[0] == '\\') {
+			// UNC path
+			assert(ptr->name[1] == '\\');
+			// Nothing to do.
+		} else if (ptr->nameLen == 2 && ptr->name[1] == ':'
+				&& isDriveLetter(ptr->name[0])) {
+			// Nothing to do.
+		}
+		else
+#endif
+		{
+			*(pathPtr++) = '/';
+		}
+	}
+
+	for (;;) {
+		memcpy(pathPtr, ptr->name, ptr->nameLen);
+		pathPtr += ptr->nameLen;
+
+		ptr = ptr->next;
+		if (ptr == NULL)
+			break;
+		
+		*(pathPtr++) = '/';
+	}
+
+	*path = result;
+	*pathLen = len;
+}
+
+
+// *** uio_PathComp *** //
+
+static inline uio_PathComp *
+uio_PathComp_alloc(void) {
+	uio_PathComp *result = uio_malloc(sizeof (uio_PathComp));
+#ifdef uio_MEM_DEBUG
+	uio_MemDebug_debugAlloc(uio_PathComp, (void *) result);
+#endif
+	return result;
+}
+
+static inline void
+uio_PathComp_free(uio_PathComp *pathComp) {
+#ifdef uio_MEM_DEBUG
+	uio_MemDebug_debugFree(uio_PathComp, (void *) pathComp);
+#endif
+	uio_free(pathComp);
+}
+
+// 'name' should be a null terminated string. It is stored in the PathComp,
+// no copy is made.
+// 'namelen' should be the length of 'name'
+uio_PathComp *
+uio_PathComp_new(char *name, size_t nameLen, uio_PathComp *upComp) {
+	uio_PathComp *result;
+	
+	result = uio_PathComp_alloc();
+	result->name = name;
+	result->nameLen = nameLen;
+	result->up = upComp;
+	return result;
+}
+
+void
+uio_PathComp_delete(uio_PathComp *pathComp) {
+	uio_PathComp *next;
+
+	while (pathComp != NULL) {
+		next = pathComp->next;
+		uio_free(pathComp->name);
+		uio_PathComp_free(pathComp);
+		pathComp = next;
+	}
+}
+
+// Count the number of path components that 'comp' leads to.
+int
+uio_countPathComps(const uio_PathComp *comp) {
+	int count;
+	
+	count = 0;
+	for (; comp != NULL; comp = comp->next)
+		count++;
+	return count;
+}
+
+uio_PathComp *
+uio_lastPathComp(uio_PathComp *comp) {
+	if (comp == NULL)
+		return NULL;
+
+	while (comp->next != NULL)
+		comp = comp->next;
+	return comp;
+}
+
+// make a list of uio_PathComps from a path string
+uio_PathComp *
+uio_makePathComps(const char *path, uio_PathComp *upComp) {
+	const char *start, *end;
+	char *str;
+	uio_PathComp *result;
+	uio_PathComp **compPtr;  // Where to put the next PathComp
+	
+	compPtr = &result;
+	getFirstPath0Component(path, &start, &end);
+	while (*start != '\0') {
+		str = uio_malloc(end - start + 1);
+		memcpy(str, start, end - start);
+		str[end - start] = '\0';
+		
+		*compPtr = uio_PathComp_new(str, end - start, upComp);
+		upComp = *compPtr;
+		compPtr = &(*compPtr)->next;
+		getNextPath0Component(&start, &end);
+	}
+	*compPtr = NULL;
+	return result;
+}
+
+void
+uio_printPathComp(FILE *outStream, const uio_PathComp *comp) {
+	fprintf(outStream, "%s", comp->name);
+}
+
+void
+uio_printPathToComp(FILE *outStream, const uio_PathComp *comp) {
+	if (comp == NULL)
+		return;
+	uio_printPathToComp(outStream, comp->up);
+	fprintf(outStream, "/");
+	uio_printPathComp(outStream, comp);
 }
 
 

@@ -23,10 +23,18 @@
 
 #include "uioutils.h"
 #include "mem.h"
+#include "paths.h"
 #include "uioport.h"
 
-// concattenate two strings into a newly allocated buffer.
-// It's up to the caller to free it.
+/**
+ * Concatenate two strings into a newly allocated buffer.
+ *
+ * @param[in]  first   The first (left) string, '\0' terminated.
+ * @param[in]  second  The second (right) string, '\0' terminated.
+ *
+ * @returns A newly allocated string consisting of the concatenation of
+ * 		'first' and 'second', to be freed using uio_free().
+ */
 char *
 strcata(const char *first, const char *second) {
 	char *result, *resPtr;
@@ -144,7 +152,7 @@ dosToUnixTime(uio_uint16 date, uio_uint16 tm) {
 	static const int daysUntilMonth[] = {
 			0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
 			334, 334, 334, 334 };
-			// Last 4 entries are there so that there's no
+			// The last 4 entries are there so that there's no
 			// invalid memory access if the date is invalid.
 
 	year = date >> 9;
@@ -181,10 +189,30 @@ char *
 dosToUnixPath(const char *path) {
 	const char *srcPtr;
 	char *result, *dstPtr;
+	size_t skip;
 
 	result = uio_malloc(strlen(path) + 1);
 	srcPtr = path;
 	dstPtr = result;
+
+	// A UNC path will look like this: "\\server\share/..."; the first two
+	// characters will be backslashes, and the separator between the server
+	// and the share too. The rest will be slashes.
+	// The goal is that at every forward slash, the path should be
+	// stat()'able.
+	skip = uio_skipUNCServerShare(srcPtr);
+	if (skip != 0) {
+		char *slash;
+		memcpy(dstPtr, srcPtr, skip);
+
+		slash = memchr(srcPtr + 2, '/', skip - 2);
+		if (slash != NULL)
+			*slash = '\\';
+
+		srcPtr += skip;
+		dstPtr += skip;
+	}
+
 	while (*srcPtr != '\0') {
 		if (*srcPtr == '\\') {
 			*dstPtr = '/';

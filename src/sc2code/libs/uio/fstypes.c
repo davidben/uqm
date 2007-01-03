@@ -38,7 +38,8 @@ static uio_FileSystemInfo **uio_getFileSystemInfoPtr(uio_FileSystemID id);
 
 static inline uio_FileSystemInfo *uio_FileSystemInfo_alloc(void);
 
-static inline void uio_freeFileSystemInfo(uio_FileSystemInfo *fileSystemInfo);
+static inline void uio_FileSystemInfo_free(
+		uio_FileSystemInfo *fileSystemInfo);
 
 
 uio_FileSystemInfo *uio_fileSystems = NULL;
@@ -173,9 +174,9 @@ uio_unRegisterFileSystem(uio_FileSystemID id) {
 	temp = *ptr;
 	*ptr = (*ptr)->next;
 
-//	uio_unrefFileSystemHandler(temp->handler);
+//	uio_FileSystemHandler_unref(temp->handler);
 	uio_free(temp->name);
-	uio_freeFileSystemInfo(temp);
+	uio_FileSystemInfo_free(temp);
 	
 	return 0;	
 }
@@ -261,7 +262,7 @@ uio_FileSystemInfo_alloc(void) {
 // *** Deallocators ***
 
 static inline void
-uio_freeFileSystemInfo(uio_FileSystemInfo *fileSystemInfo) {
+uio_FileSystemInfo_free(uio_FileSystemInfo *fileSystemInfo) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugFree(uio_FileSystemInfo, (void *) fileSystemInfo);
 #endif

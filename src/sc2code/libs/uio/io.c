@@ -311,7 +311,7 @@ uio_unmountDir(uio_MountHandle *mountHandle) {
 	uio_repositoryRemoveMount(mountHandle->repository,
 			mountHandle->mountInfo);
 
-	uio_deleteMountInfo(mountHandle->mountInfo);
+	uio_MountInfo_delete(mountHandle->mountInfo);
 
 	uio_MountHandle_delete(mountHandle);
 	uio_PRoot_unrefMount(pRoot);
@@ -643,7 +643,7 @@ uio_open(uio_DirHandle *dir, const char *path, int flags, mode_t mode) {
 uio_DirHandle *
 uio_openDir(uio_Repository *repository, const char *path, int flags) {
 	uio_DirHandle *dirHandle;
-	const char * const rootStr = "/";
+	const char * const rootStr = "";
 
 	dirHandle = uio_DirHandle_new(repository,
 			unconst(rootStr), unconst(rootStr));
@@ -1009,8 +1009,8 @@ typedef struct uio_DirBufferLink {
 } uio_DirBufferLink;
 
 static int strPtrCmp(const char * const *ptr1, const char * const *ptr2);
-static void uio_freeDirBufferLink(uio_DirBufferLink *sdbl);
-static void uio_freeDirBufferChain(uio_DirBufferLink *dirBufferLink);
+static void uio_DirBufferLink_free(uio_DirBufferLink *sdbl);
+static void uio_DirBufferChain_free(uio_DirBufferLink *dirBufferLink);
 static uio_DirList *uio_getDirListMulti(uio_PDirHandle **pDirHandles,
 		int numPDirHandles, const char *pattern, match_MatchType matchType);
 static uio_DirList *uio_makeDirList(const char **newNames,
@@ -1037,7 +1037,7 @@ static inline void uio_EntriesContext_free(uio_EntriesContext
 
 // The caller may modify the elements of dirHandle->names, but
 // dirHandle->names itself, and the rest of the elements of dirHandle
-// should be left alone, so that they will be freed by uio_freeDirList().
+// should be left alone, so that they will be freed by uio_DirList_free().
 uio_DirList *
 uio_getDirList(uio_DirHandle *dirHandle, const char *path, const char *pattern,
 		match_MatchType matchType) {
@@ -1182,7 +1182,7 @@ uio_getDirListMulti(uio_PDirHandle **pDirHandles,
 
 	// free the old junk
 	for (pDirI = 0; pDirI < numPDirHandles; pDirI++)
-		uio_freeDirBufferChain(links[pDirI]);
+		uio_DirBufferChain_free(links[pDirI]);
 	uio_free(links);
 	uio_free(numNames);
 
@@ -1252,7 +1252,7 @@ uio_collectDirEntries(uio_PDirHandle *pDirHandle, uio_DirBufferLink **linkPtr,
 		if (numRead == 0) {
 			fprintf(stderr, "Warning: uio_DIR_BUFFER_SIZE is too small to "
 					"hold a certain large entry on its own!\n");
-			uio_freeDirBufferLink(*linkEndPtr);
+			uio_DirBufferLink_free(*linkEndPtr);
 			break;
 		}
 		totalEntries += numRead;
@@ -1356,18 +1356,18 @@ uio_EntriesContext_free(uio_EntriesContext *entriesContext) {
 }
 
 static void
-uio_freeDirBufferLink(uio_DirBufferLink *dirBufferLink) {
+uio_DirBufferLink_free(uio_DirBufferLink *dirBufferLink) {
 	uio_free(dirBufferLink->buffer);
 	uio_free(dirBufferLink);
 }
 
 static void
-uio_freeDirBufferChain(uio_DirBufferLink *dirBufferLink) {
+uio_DirBufferChain_free(uio_DirBufferLink *dirBufferLink) {
 	uio_DirBufferLink *next;
 	
 	while (dirBufferLink != NULL) {
 		next = dirBufferLink->next;
-		uio_freeDirBufferLink(dirBufferLink);
+		uio_DirBufferLink_free(dirBufferLink);
 		dirBufferLink = next;
 	}
 }
@@ -1389,7 +1389,7 @@ uio_DirList_alloc(void) {
 }
 
 void
-uio_freeDirList(uio_DirList *dirList) {
+uio_DirList_free(uio_DirList *dirList) {
 	if (dirList->buffer)
 		uio_free(dirList->buffer);
 	if (dirList->names)
