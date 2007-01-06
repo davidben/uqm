@@ -334,10 +334,13 @@ change_template (WIDGET_CHOICE *self, int oldval)
 static void
 rename_template (WIDGET_TEXTENTRY *self)
 {
-	strncpy (input_templates[choices[20].selected].name, self->value, WIDGET_TEXTENTRY_WIDTH);
-	/* TODO: This will have to change if the size of the input_templates name is changed */
-	input_templates[choices[20].selected].name[WIDGET_TEXTENTRY_WIDTH-1] = 0;
-	
+	/* TODO: This will have to change if the size of the
+	   input_templates name is changed.  It would probably be nice
+	   to track this symbolically or ensure that self->value's
+	   buffer is always at least this big; this will require some
+	   reworking of widgets */
+	strncpy (input_templates[choices[20].selected].name, self->value, 30);
+	input_templates[choices[20].selected].name[29] = 0;
 }
 
 #define NUM_STEPS 20
