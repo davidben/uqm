@@ -75,10 +75,11 @@ packages.
 
 4.1. Checkout the UQM source
 - Open the folder "C:\"
-- Right click on "Build", and select "CVS Checkout..."
-- In the "CVSROOT:" field input
-  	:pserver:anonymous@sc2.cvs.sourceforge.net/cvsroot/sc2
-- In the "module" field input "sc2"
+- Right click on "Build", and select "SVN Checkout..."
+- In the "URL of repository" field input
+  	https://sc2.svn.sourceforge.net/svnroot/sc2/trunk/sc2/
+- In the "Checkout directory" field input
+	C:\Build\sc2
 - Press ok and the checkout will begin. This may take a while.
   A folder "sc2" will be created in "C:\Build\".
 
