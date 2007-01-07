@@ -11,7 +11,7 @@ systems some will be slightly different.
 1. Install the Microsoft development environment
 
 1.1. Install Microsoft Visual C++ 2005 Express Edition:
-- Download the installer from http://www.tortoisecvs.org/download.shtml
+- Download the installer from http://msdn.microsoft.com/vstudio/express/visualc/
 - Run the installer, and follow the instructions. There's no need
   to register your copy of MSVC++ to use it for compiling UQM.
 
@@ -23,9 +23,9 @@ systems some will be slightly different.
 
 2. Install the tools needed to install all the requirements:
 
-2.1. Install TortoiseCVS, a CVS client which we will use to check out the most
+2.1. Install TortoiseSVN, a Subversion client which we will use to check out the most
 recent development version of the UQM source:
-- Download the installer from http://www.tortoisecvs.org/download.shtml
+- Download the installer from http://tortoisesvn.net/downloads
 - Run the installer, and follow the instructions
 
 2.2. Install WinZip, which we use to extract the compressed .zip files.
