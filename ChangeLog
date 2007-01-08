@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Do not overwrite GLOBAL_SIS (CrewEnlisted) when leaving Hyperspace 
+  (Bug #938) - Michael
 - Fixed a text entry width problem that was deleting control template 
   names (Bug #947) - Michael
 - uio cleanups, documentation - SvdB

@@ -881,9 +881,12 @@ init_sis (void)
 void
 uninit_sis (RACE_DESCPTR pRaceDesc)
 {
-	GLOBAL_SIS (CrewEnlisted) = pRaceDesc->ship_info.crew_level;
-	if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
-		GLOBAL_SIS (CrewEnlisted)--;
+	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	{
+		GLOBAL_SIS (CrewEnlisted) = pRaceDesc->ship_info.crew_level;
+		if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
+			GLOBAL_SIS (CrewEnlisted)--;
+	}
 }
 
 
