@@ -348,8 +348,8 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 			SDL_LockSurface (scaled_display);
 			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2,
 					updated.w * 2, updated.h * 2, GL_RGBA, GL_UNSIGNED_BYTE,
-					scaled_display->pixels +
-					(updated.y * 16 * ScreenWidth + updated.x * 8));
+					(Uint32*)scaled_display->pixels +
+					(updated.y * 4 * ScreenWidth + updated.x * 2));
 			SDL_UnlockSurface (scaled_display);
 		}
 		else
@@ -362,8 +362,8 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 			SDL_LockSurface (SDL_Screen);
 			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y,
 					updated.w, updated.h, GL_RGBA, GL_UNSIGNED_BYTE,
-					SDL_Screen->pixels +
-					(updated.y * 4 * ScreenWidth + updated.x * 4));
+					(Uint32*)SDL_Screen->pixels +
+					(updated.y * ScreenWidth + updated.x));
 			SDL_UnlockSurface (SDL_Screen);
 		}
 	}
