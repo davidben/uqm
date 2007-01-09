@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Do not rely on GL_UNPACK_SKIP_* arguments, which some OpenGL drivers 
+  mishandle (Bug #914) - Michael
 - Do not overwrite GLOBAL_SIS (CrewEnlisted) when leaving Hyperspace 
   (Bug #938) - Michael
 - Fixed a text entry width problem that was deleting control template 

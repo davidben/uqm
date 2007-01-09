@@ -341,23 +341,29 @@ TFB_GL_SwapBuffers (int force_full_redraw)
 			scaler (SDL_Screen, scaled_display, &updated);
 
 			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
-			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y * 2);
-			glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x * 2);
+			/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
+			   correctly */
+			glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+			glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
 			SDL_LockSurface (scaled_display);
 			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2,
 					updated.w * 2, updated.h * 2, GL_RGBA, GL_UNSIGNED_BYTE,
-					scaled_display->pixels);
+					scaled_display->pixels +
+					(updated.y * 16 * ScreenWidth + updated.x * 8));
 			SDL_UnlockSurface (scaled_display);
 		}
 		else
 		{
 			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
-			glPixelStorei (GL_UNPACK_SKIP_ROWS, updated.y);
-			glPixelStorei (GL_UNPACK_SKIP_PIXELS, updated.x);
+			/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
+			   correctly */
+			glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+			glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
 			SDL_LockSurface (SDL_Screen);
 			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y,
 					updated.w, updated.h, GL_RGBA, GL_UNSIGNED_BYTE,
-					SDL_Screen->pixels);
+					SDL_Screen->pixels +
+					(updated.y * 4 * ScreenWidth + updated.x * 4));
 			SDL_UnlockSurface (SDL_Screen);
 		}
 	}
