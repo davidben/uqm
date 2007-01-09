@@ -501,7 +501,14 @@ int
 isWideGraphChar(wchar_t ch)
 {	// this is not technically sufficient, but close enough for us
 	// we'll consider all non-control (CO and C1) chars in 'graph' class
-	return (ch > 0xa0) || (ch > 0x20 && ch < 0x7f);
+	// except for the "Private Use Area" (0xE000 - 0xF8FF)
+
+	// TODO: The private use area is really only glommed by OS X,
+	// and even there, not all of it.  (Delete and Backspace both
+	// end up producing characters there -- see bug #942 for the
+	// gory details.)
+	return (ch > 0xa0 && (ch < 0xE000 || ch > 0xF8FF)) ||
+			(ch > 0x20 && ch < 0x7f);
 }
 
 int
