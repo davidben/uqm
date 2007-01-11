@@ -356,6 +356,7 @@ uio_fwrite(const void *buf, size_t size, size_t nmemb, uio_Stream *stream) {
 	ssize_t bytesWritten;
 
 	uio_assertWriteSanity(stream);
+	stream->operation = uio_StreamOperation_write;
 	
 	// NB. If a file is opened in append mode, the file position indicator
 	// is moved to the end of the file before writing.
