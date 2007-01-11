@@ -1,5 +1,6 @@
 Changes towards version 0.7:
-- Flush write buffer when doing a uio_fclose() after a uio_fwrite() - SvdB
+- Flush write buffer when doing a uio_fclose() after doing only
+  uio_fwrite() operations. - SvdB
 - Major rewrite of the SwapBuffers commands -- screen compositing logic 
   has all been abstracted out into sdl_common.c instead of being 
   nearly-duplicated in opengl.c and pure.c - Michael
