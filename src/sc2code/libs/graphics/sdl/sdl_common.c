@@ -52,6 +52,8 @@ int GfxFlags = 0;
 
 static TFB_Palette palette[256];
 
+TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
+
 #define FPS_PERIOD 100
 int RenderedFrames = 0;
 
@@ -116,8 +118,14 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 int
 TFB_InitGraphics (int driver, int flags, int width, int height)
 {
-	int result;
+	int result, i;
 	char caption[200];
+
+	/* Null out screen pointers the first time */
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+	{
+		SDL_Screens[i] = NULL;
+	}
 
 	GfxFlags = flags;
 
@@ -209,14 +217,49 @@ TFB_ProcessEvents ()
 void
 TFB_SwapBuffers (int force_full_redraw)
 {
-#ifdef HAVE_OPENGL
-	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
-		TFB_GL_SwapBuffers (force_full_redraw);
-	else
-		TFB_Pure_SwapBuffers (force_full_redraw);
-#else
-	TFB_Pure_SwapBuffers (force_full_redraw);
-#endif
+	static int last_fade_amount = 255, last_transition_amount = 255;
+	static int fade_amount = 255, transition_amount = 255;
+
+	fade_amount = FadeAmount;
+	transition_amount = TransitionAmount;
+
+	if (!force_full_redraw && !TFB_BBox.valid &&
+			fade_amount == 255 && transition_amount == 255 &&
+			last_fade_amount == 255 && last_transition_amount == 255)
+		return;
+
+	if (fade_amount != 255 || transition_amount != 255 ||
+			last_fade_amount != 255 || last_transition_amount != 255)
+	{
+		force_full_redraw = 1;
+	}
+
+	last_fade_amount = fade_amount;
+	last_transition_amount = transition_amount;	
+
+	graphics_backend->preprocess (force_full_redraw, transition_amount, fade_amount);
+	graphics_backend->screen (TFB_SCREEN_MAIN, 255, NULL);
+
+	if (transition_amount != 255)
+	{
+		graphics_backend->screen (TFB_SCREEN_TRANSITION,
+				255 - transition_amount, &TransitionClipRect);
+	}
+
+	if (fade_amount != 255)
+	{
+		if (fade_amount < 255)
+		{
+			graphics_backend->color (0, 0, 0, 255 - fade_amount, NULL);
+		}
+		else
+		{
+			graphics_backend->color (255, 255, 255, 
+					fade_amount - 255, NULL);
+		}
+	}
+
+	graphics_backend->postprocess ();
 }
 
 /* Probably ought to clean this away at some point. */

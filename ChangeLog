@@ -1,4 +1,8 @@
 Changes towards version 0.7:
+- Major rewrite of the SwapBuffers commands -- screen compositing logic 
+  has all been abstracted out into sdl_common.c instead of being 
+  nearly-duplicated in opengl.c and pure.c - Michael
+- --- 0.6.1 maintenance release occurred at this point ---
 - The Unicode Private Use Area is no longer considered printable.  This 
   is a stopgap to handle unusual behavior with text entry under OS X.  
   See bug #942 for more details - Michael

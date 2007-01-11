@@ -22,12 +22,32 @@
 #include "scalers.h"
 #include "libs/log.h"
 
-static SDL_Surface *fade_black = NULL;
-static SDL_Surface *fade_white = NULL;
+static SDL_Surface *fade_color_surface = NULL;
 static SDL_Surface *fade_temp = NULL;
 static SDL_Surface *scaled_display = NULL;
 
 static TFB_ScaleFunc scaler = NULL;
+
+static Uint32 fade_color;
+
+static void TFB_Pure_Scaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount);
+static void TFB_Pure_Scaled_Postprocess (void);
+static void TFB_Pure_Unscaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount);
+static void TFB_Pure_Unscaled_Postprocess (void);
+static void TFB_Pure_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect);
+static void TFB_Pure_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect);
+
+static TFB_GRAPHICS_BACKEND pure_scaled_backend = {
+	TFB_Pure_Scaled_Preprocess,
+	TFB_Pure_Scaled_Postprocess,
+	TFB_Pure_ScreenLayer,
+	TFB_Pure_ColorLayer };
+
+static TFB_GRAPHICS_BACKEND pure_unscaled_backend = {
+	TFB_Pure_Unscaled_Preprocess,
+	TFB_Pure_Unscaled_Postprocess,
+	TFB_Pure_ScreenLayer,
+	TFB_Pure_ColorLayer };
 
 static SDL_Surface *
 Create_Screen (SDL_Surface *template, int w, int h)
@@ -68,12 +88,14 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 		videomode_flags = SDL_SWSURFACE;
 		ScreenWidthActual = 320;
 		ScreenHeightActual = 240;
+		graphics_backend = &pure_unscaled_backend;
 	}
 	else
 	{
 		videomode_flags = SDL_SWSURFACE;
 		ScreenWidthActual = 640;
 		ScreenHeightActual = 480;
+		graphics_backend = &pure_scaled_backend;
 
 		if (width != 640 || height != 480)
 			log_add (log_Error, "Screen resolution of %dx%d not supported "
@@ -142,17 +164,11 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
 
-	if (0 != ReInit_Screen (&fade_white, format_conv_surf,
+	if (0 != ReInit_Screen (&fade_color_surface, format_conv_surf,
 			ScreenWidth, ScreenHeight))
 		return -1;
-	SDL_FillRect (fade_white, NULL,
-			SDL_MapRGB (fade_white->format, 255, 255, 255));
-	
-	if (0 != ReInit_Screen (&fade_black, format_conv_surf,
-			ScreenWidth, ScreenHeight))
-		return -1;
-	SDL_FillRect (fade_black, NULL,
-			SDL_MapRGB (fade_black->format, 0, 0, 0));
+	fade_color = SDL_MapRGB (fade_color_surface->format, 0, 0, 0);
+	SDL_FillRect (fade_color_surface, NULL, fade_color);
 	
 	if (0 != ReInit_Screen (&fade_temp, format_conv_surf,
 			ScreenWidth, ScreenHeight))
@@ -233,17 +249,13 @@ ScanLines (SDL_Surface *dst, SDL_Rect *r)
 	}
 }
 
-void
-TFB_Pure_SwapBuffers (int force_full_redraw)
-{
-	static int last_fade_amount = 255, last_transition_amount = 255;
-	int fade_amount = FadeAmount;
-	int transition_amount = TransitionAmount;
-	SDL_Rect updated;
+static SDL_Surface *backbuffer = NULL, *scalebuffer = NULL;
+static SDL_Rect updated;
 
-	if (force_full_redraw ||
-		fade_amount != 255 || transition_amount != 255 ||
-		last_fade_amount != 255 || last_transition_amount != 255)
+static void
+TFB_Pure_Scaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount)
+{
+	if (force_full_redraw)
 	{
 		updated.x = updated.y = 0;
 		updated.w = ScreenWidth;
@@ -251,113 +263,100 @@ TFB_Pure_SwapBuffers (int force_full_redraw)
 	}
 	else
 	{
-		if (!TFB_BBox.valid)
-			return;
 		updated.x = TFB_BBox.region.corner.x;
 		updated.y = TFB_BBox.region.corner.y;
 		updated.w = TFB_BBox.region.extent.width;
 		updated.h = TFB_BBox.region.extent.height;
 	}
 
-	last_fade_amount = fade_amount;
-	last_transition_amount = transition_amount;	
-	
-	if (ScreenWidthActual == ScreenWidth * 2 &&
-			ScreenHeightActual == ScreenHeight * 2)
+	if (transition_amount == 255 && fade_amount == 255)
+		backbuffer = SDL_Screens[TFB_SCREEN_MAIN];
+	else
+		backbuffer = fade_temp;
+
+	// we can scale directly onto SDL_Video if video is compatible
+	if (SDL_Video->format->BitsPerPixel ==
+			SDL_Screen->format->BitsPerPixel)
+		scalebuffer = SDL_Video;
+	else
+		scalebuffer = scaled_display;
+
+}
+
+static void
+TFB_Pure_Unscaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount)
+{
+	if (force_full_redraw)
 	{
-		// scales 320x240 backbuffer to 640x480
-
-		SDL_Surface *backbuffer = SDL_Screen;
-		SDL_Surface *scalebuffer = scaled_display;
-
-		// we can scale directly onto SDL_Video if video is compatible
-		if (SDL_Video->format->BitsPerPixel ==
-				SDL_Screen->format->BitsPerPixel)
-			scalebuffer = SDL_Video;
-		
-		if (transition_amount != 255)
-		{
-			backbuffer = fade_temp;
-			SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
-
-			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA,
-					255 - transition_amount);
-			SDL_BlitSurface (TransitionScreen, &TransitionClipRect,
-					backbuffer, &TransitionClipRect);
-		}
-
-		if (fade_amount != 255)
-		{
-			if (transition_amount == 255)
-			{
-				backbuffer = fade_temp;
-				SDL_BlitSurface (SDL_Screen, NULL, backbuffer, NULL);
-			}
-
-			if (fade_amount < 255)
-			{
-				SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
-				SDL_BlitSurface (fade_black, NULL, backbuffer, NULL);
-			}
-			else
-			{
-				SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
-				SDL_BlitSurface (fade_white, NULL, backbuffer, NULL);
-			}
-		}
-
-		SDL_LockSurface (scalebuffer);
-		SDL_LockSurface (backbuffer);
-
-		if (scaler)
-			scaler (backbuffer, scalebuffer, &updated);
-
-		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-			ScanLines (scalebuffer, &updated);
-		
-		SDL_UnlockSurface (backbuffer);
-		SDL_UnlockSurface (scalebuffer);
-
-		updated.x *= 2;
-		updated.y *= 2;
-		updated.w *= 2;
-		updated.h *= 2;
-		if (scalebuffer != SDL_Video)
-			SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
-
-		SDL_UpdateRects (SDL_Video, 1, &updated);
+		updated.x = updated.y = 0;
+		updated.w = ScreenWidth;
+		updated.h = ScreenHeight;	
 	}
 	else
 	{
-		// resolution is 320x240 so we can blit directly
-
-		SDL_BlitSurface (SDL_Screen, &updated, SDL_Video, &updated);
-
-		if (transition_amount != 255)
-		{
-			SDL_SetAlpha (TransitionScreen, SDL_SRCALPHA,
-					255 - transition_amount);
-			SDL_BlitSurface (TransitionScreen, &TransitionClipRect,
-					SDL_Video, &TransitionClipRect);
-		}
-
-		if (fade_amount != 255)
-		{
-			if (fade_amount < 255)
-			{
-				SDL_SetAlpha (fade_black, SDL_SRCALPHA, 255 - fade_amount);
-				SDL_BlitSurface (fade_black, NULL, SDL_Video, NULL);
-			}
-			else
-			{
-				SDL_SetAlpha (fade_white, SDL_SRCALPHA, fade_amount - 255);
-				SDL_BlitSurface (fade_white, NULL, SDL_Video, NULL);
-			}
-		}
-
-		SDL_UpdateRect (SDL_Video, updated.x, updated.y,
-				updated.w, updated.h);
+		updated.x = TFB_BBox.region.corner.x;
+		updated.y = TFB_BBox.region.corner.y;
+		updated.w = TFB_BBox.region.extent.width;
+		updated.h = TFB_BBox.region.extent.height;
 	}
+
+	backbuffer = SDL_Video;
+	(void)transition_amount;
+	(void)fade_amount;
+}
+
+static void
+TFB_Pure_Scaled_Postprocess (void)
+{
+	SDL_LockSurface (scalebuffer);
+	SDL_LockSurface (backbuffer);
+
+	if (scaler)
+		scaler (backbuffer, scalebuffer, &updated);
+
+	if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
+		ScanLines (scalebuffer, &updated);
+		
+	SDL_UnlockSurface (backbuffer);
+	SDL_UnlockSurface (scalebuffer);
+
+	updated.x *= 2;
+	updated.y *= 2;
+	updated.w *= 2;
+	updated.h *= 2;
+	if (scalebuffer != SDL_Video)
+		SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
+
+	SDL_UpdateRects (SDL_Video, 1, &updated);
+}
+
+static void
+TFB_Pure_Unscaled_Postprocess (void)
+{
+	SDL_UpdateRect (SDL_Video, updated.x, updated.y,
+			updated.w, updated.h);
+}
+
+static void
+TFB_Pure_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
+{
+	if (SDL_Screens[screen] == backbuffer)
+		return;
+	SDL_SetAlpha (SDL_Screens[screen], SDL_SRCALPHA, a);
+	SDL_BlitSurface (SDL_Screens[screen], rect, backbuffer, rect);
+}	
+
+static void
+TFB_Pure_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect)
+{
+	Uint32 col = SDL_MapRGB (fade_color_surface->format, r, g, b);
+	if (col != fade_color)
+	{
+		fade_color = col;
+		SDL_FillRect (fade_color_surface, NULL, fade_color);
+	}
+	SDL_SetAlpha (fade_color_surface, SDL_SRCALPHA, a);
+	SDL_BlitSurface (fade_color_surface, rect, backbuffer, rect);
 }
 
 void

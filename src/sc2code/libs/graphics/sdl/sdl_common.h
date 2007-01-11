@@ -31,6 +31,16 @@
 #include "libs/input/sdl/input.h"
 #include "libs/threadlib.h"
 
+// The Graphics Backend vtable
+typedef struct _tfb_graphics_backend {
+	void (*preprocess) (int force_redraw, int transition_amount, int fade_amount);
+	void (*postprocess) (void);
+	void (*screen) (SCREEN screen, Uint8 alpha, SDL_Rect *rect);
+	void (*color) (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect);
+} TFB_GRAPHICS_BACKEND;
+
+extern TFB_GRAPHICS_BACKEND *graphics_backend;
+
 // constants for TFB_InitGraphics
 
 extern SDL_Surface *SDL_Video;

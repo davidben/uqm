@@ -23,15 +23,19 @@
 #include "scalers.h"
 #include "libs/log.h"
 
-static SDL_Surface *scaled_display = NULL;
-static SDL_Surface *scaled_transition = NULL;
+typedef struct _gl_screeninfo {
+	SDL_Surface *scaled;
+	GLuint texture;
+	BOOLEAN dirty, active;
+	SDL_Rect updated;
+} TFB_GL_SCREENINFO;
+
+static TFB_GL_SCREENINFO GL_Screens[TFB_GFX_NUMSCREENS];
 
 static int ScreenFilterMode;
-static GLuint DisplayTexture;
-static GLuint TransitionTexture;
-static BOOLEAN upload_transitiontexture = FALSE;
 
 static TFB_ScaleFunc scaler = NULL;
+static BOOLEAN first_init = TRUE;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define R_MASK 0xff000000
@@ -44,6 +48,24 @@ static TFB_ScaleFunc scaler = NULL;
 #define B_MASK 0x00ff0000
 #define A_MASK 0xff000000
 #endif
+
+static void TFB_GL_Preprocess (int force_full_redraw, int transition_amount, int fade_amount);
+static void TFB_GL_Postprocess (void);
+static void TFB_GL_Scaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect);
+static void TFB_GL_Unscaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect);
+static void TFB_GL_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect);
+
+static TFB_GRAPHICS_BACKEND opengl_scaled_backend = {
+	TFB_GL_Preprocess,
+	TFB_GL_Postprocess,
+	TFB_GL_Scaled_ScreenLayer,
+	TFB_GL_ColorLayer };
+
+static TFB_GRAPHICS_BACKEND opengl_unscaled_backend = {
+	TFB_GL_Preprocess,
+	TFB_GL_Postprocess,
+	TFB_GL_Unscaled_ScreenLayer,
+	TFB_GL_ColorLayer };
 
 
 static SDL_Surface *
@@ -173,20 +195,34 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
 
+	if (first_init)
+	{
+		for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		{
+			GL_Screens[i].scaled = NULL;
+			GL_Screens[i].dirty = TRUE;
+			GL_Screens[i].active = TRUE;
+		}
+		GL_Screens[1].active = FALSE;
+		first_init = FALSE;
+	}
+
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
 	{
-		if (0 != ReInit_Screen (&scaled_display, format_conv_surf,
-				ScreenWidth * 2, ScreenHeight * 2))
+		for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		{
+			if (!GL_Screens[i].active)
+				continue;
+			if (0 != ReInit_Screen (&GL_Screens[i].scaled, format_conv_surf,
+					ScreenWidth * 2, ScreenHeight * 2))
 			return -1;
-
-		if (0 != ReInit_Screen (&scaled_transition, format_conv_surf,
-				ScreenWidth * 2, ScreenHeight * 2))
-			return -1;
+		}
 
 		texture_width = 1024;
 		texture_height = 512;
 
 		scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
+		graphics_backend = &opengl_scaled_backend;
 	}
 	else
 	{
@@ -194,6 +230,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 		texture_height = 256;
 
 		scaler = NULL;
+		graphics_backend = &opengl_unscaled_backend;
 	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_ANY)
@@ -209,21 +246,18 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 	glDisable (GL_DITHER);
 	glDepthMask(GL_FALSE);
 
-	glGenTextures (1, &DisplayTexture);
-	glBindTexture (GL_TEXTURE_2D, DisplayTexture);
-	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height,
-			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-	glGenTextures (1, &TransitionTexture);
-	glBindTexture (GL_TEXTURE_2D, TransitionTexture);
-	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height,
-			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+	{
+		if (!GL_Screens[i].active)
+			continue;
+		glGenTextures (1, &GL_Screens[i].texture);
+		glBindTexture (GL_TEXTURE_2D, GL_Screens[i].texture);
+		glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height,
+				0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	}
 
 	return 0;
 }
@@ -258,7 +292,11 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 
 void TFB_GL_UploadTransitionScreen (void)
 {
-	upload_transitiontexture = TRUE;	
+	GL_Screens[TFB_SCREEN_TRANSITION].updated.x = 0;
+	GL_Screens[TFB_SCREEN_TRANSITION].updated.y = 0;
+	GL_Screens[TFB_SCREEN_TRANSITION].updated.w = ScreenWidth;
+	GL_Screens[TFB_SCREEN_TRANSITION].updated.h = ScreenHeight;
+	GL_Screens[TFB_SCREEN_TRANSITION].dirty = TRUE;
 }
 
 void
@@ -289,9 +327,22 @@ TFB_GL_ScanLines (void)
 	}
 }
 
-void
-TFB_GL_DrawQuad (void)
+static void
+TFB_GL_DrawQuad (SDL_Rect *r)
 {
+	if (r != NULL)
+	{
+		float scale_x = (ScreenWidthActual / (float)ScreenWidth);
+		float scale_y = (ScreenHeightActual / (float)ScreenHeight);
+
+		glScissor (
+			(GLint) (r->x * scale_x),
+			(GLint) ((ScreenHeight - (r->y + r->h)) * scale_y),
+			(GLsizei) (r->w * scale_x),
+			(GLsizei) (r->h * scale_y)
+		);		
+		glEnable (GL_SCISSOR_TEST);
+	}
 	glBegin (GL_TRIANGLE_FAN);
 	glTexCoord2f (0, 0);
 	glVertex2i (0, 0);
@@ -302,161 +353,157 @@ TFB_GL_DrawQuad (void)
 	glTexCoord2f (0, ScreenHeight / 256.0f);
 	glVertex2i (0, ScreenHeightActual);
 	glEnd ();
+	if (r != NULL)
+	{
+		glDisable (GL_SCISSOR_TEST);
+	}
 }
 
-void
-TFB_GL_SwapBuffers (int force_full_redraw)
+static void
+TFB_GL_Preprocess (int force_full_redraw, int transition_amount, int fade_amount)
 {
-	int fade_amount = FadeAmount;
-	int transition_amount = TransitionAmount;
-
-	if (!force_full_redraw && !TFB_BBox.valid &&
-		fade_amount == 255 && transition_amount == 255)
-		return;
-
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
 	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
 	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();		
-	glBindTexture (GL_TEXTURE_2D, DisplayTexture);
+	glLoadIdentity ();
+	(void) force_full_redraw;
+	(void) transition_amount;
+	(void) fade_amount;
+	if (TFB_BBox.valid)
+	{
+		GL_Screens[TFB_SCREEN_MAIN].updated.x = TFB_BBox.region.corner.x;
+		GL_Screens[TFB_SCREEN_MAIN].updated.y = TFB_BBox.region.corner.y;
+		GL_Screens[TFB_SCREEN_MAIN].updated.w = TFB_BBox.region.extent.width;
+		GL_Screens[TFB_SCREEN_MAIN].updated.h = TFB_BBox.region.extent.height;
+		GL_Screens[TFB_SCREEN_MAIN].dirty = TRUE;
+	}
+}
+
+static void
+TFB_GL_Unscaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
+{
+	glBindTexture (GL_TEXTURE_2D, GL_Screens[screen].texture);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	if (GL_Screens[screen].dirty)
+	{
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
+		/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
+		   correctly */
+		glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
+		SDL_LockSurface (SDL_Screens[screen]);
+		glTexSubImage2D (GL_TEXTURE_2D, 0, GL_Screens[screen].updated.x, 
+				GL_Screens[screen].updated.y,
+				GL_Screens[screen].updated.w, 
+				GL_Screens[screen].updated.h,
+				GL_RGBA, GL_UNSIGNED_BYTE,
+				(Uint32 *)SDL_Screens[screen]->pixels +
+					(GL_Screens[screen].updated.y * ScreenWidth + 
+					GL_Screens[screen].updated.x));
+		SDL_UnlockSurface (SDL_Screens[screen]);
+		GL_Screens[screen].dirty = FALSE;
+	}
+
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
 	glEnable (GL_TEXTURE_2D);
-	glDisable (GL_BLEND);
-	glColor4f (1, 1, 1, 1);
 
-	if (TFB_BBox.valid)
+	if (a == 255)
 	{
-		SDL_Rect updated;
-
-		updated.x = TFB_BBox.region.corner.x;
-		updated.y = TFB_BBox.region.corner.y;
-		updated.w = TFB_BBox.region.extent.width;
-		updated.h = TFB_BBox.region.extent.height;
-
-		if (scaler)
-		{
-			scaler (SDL_Screen, scaled_display, &updated);
-
-			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
-			/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
-			   correctly */
-			glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
-			glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
-			SDL_LockSurface (scaled_display);
-			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x * 2, updated.y * 2,
-					updated.w * 2, updated.h * 2, GL_RGBA, GL_UNSIGNED_BYTE,
-					(Uint32*)scaled_display->pixels +
-					(updated.y * 4 * ScreenWidth + updated.x * 2));
-			SDL_UnlockSurface (scaled_display);
-		}
-		else
-		{
-			glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
-			/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
-			   correctly */
-			glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
-			glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
-			SDL_LockSurface (SDL_Screen);
-			glTexSubImage2D (GL_TEXTURE_2D, 0, updated.x, updated.y,
-					updated.w, updated.h, GL_RGBA, GL_UNSIGNED_BYTE,
-					(Uint32*)SDL_Screen->pixels +
-					(updated.y * ScreenWidth + updated.x));
-			SDL_UnlockSurface (SDL_Screen);
-		}
+		glDisable (GL_BLEND);
+		glColor4f (1, 1, 1, 1);
 	}
-
-	TFB_GL_DrawQuad ();
-
-	if (transition_amount != 255)
+	else
 	{
-		float scale_x = (ScreenWidthActual / (float)ScreenWidth);
-		float scale_y = (ScreenHeightActual / (float)ScreenHeight);
-
-		glBindTexture(GL_TEXTURE_2D, TransitionTexture);
-		
-		if (upload_transitiontexture) 
-		{
-			if (scaler)
-			{
-				SDL_Rect r;
-				r.x = r.y = 0;
-				r.w = ScreenWidth;
-				r.h = ScreenHeight;
-				
-				scaler (TransitionScreen, scaled_transition, &r); 
-
-				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
-				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
-				glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
-				SDL_LockSurface (scaled_transition);
-				glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth * 2,
-						ScreenHeight * 2, GL_RGBA, GL_UNSIGNED_BYTE,
-						scaled_transition->pixels);
-				SDL_UnlockSurface (scaled_transition);
-			}
-			else
-			{
-				glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
-				glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
-				glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
-				SDL_LockSurface (TransitionScreen);
-				glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, ScreenWidth,
-						ScreenHeight, GL_RGBA, GL_UNSIGNED_BYTE,
-						TransitionScreen->pixels);
-				SDL_UnlockSurface (TransitionScreen);
-			}
-
-			upload_transitiontexture = FALSE;
-		}
-
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				ScreenFilterMode);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				ScreenFilterMode);
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f (1, 1, 1, (255 - transition_amount) / 255.0f);		
-		glScissor (
-			(GLint) (TransitionClipRect.x * scale_x),
-			(GLint) ((ScreenHeight - (TransitionClipRect.y +
-				TransitionClipRect.h)) * scale_y),
-			(GLsizei) (TransitionClipRect.w * scale_x),
-			(GLsizei) (TransitionClipRect.h * scale_y)
-		);		
-		glEnable (GL_SCISSOR_TEST);
-		TFB_GL_DrawQuad ();
-		glDisable (GL_SCISSOR_TEST);
-	}
-
-	if (fade_amount != 255)
-	{
-		float c;
-
-		if (fade_amount < 255)
-		{
-			c = (255 - fade_amount) / 255.0f;
-			glColor4f (0, 0, 0, c);
-		}
-		else
-		{
-			c = (fade_amount - 255) / 255.0f;
-			glColor4f (1, 1, 1, c);
-		}
-
-		glDisable (GL_TEXTURE_2D);
+		float a_f = a / 255.0f;
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable (GL_BLEND);
+		glColor4f (1, 1, 1, a_f);
+	}
+	
+	TFB_GL_DrawQuad (rect);
+}
 
-		TFB_GL_DrawQuad ();
+static void
+TFB_GL_Scaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
+{
+	glBindTexture (GL_TEXTURE_2D, GL_Screens[screen].texture);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	if (GL_Screens[screen].dirty)
+	{
+		scaler (SDL_Screens[screen], GL_Screens[screen].scaled, &GL_Screens[screen].updated);
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
+
+		 /* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
+		    correctly */
+		glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei (GL_UNPACK_SKIP_PIXELS, 0);
+		SDL_LockSurface (GL_Screens[screen].scaled);
+		glTexSubImage2D (GL_TEXTURE_2D, 0, GL_Screens[screen].updated.x * 2, 
+				GL_Screens[screen].updated.y * 2,
+				GL_Screens[screen].updated.w * 2, 
+				GL_Screens[screen].updated.h * 2,
+				GL_RGBA, GL_UNSIGNED_BYTE,
+				(Uint32 *)GL_Screens[screen].scaled->pixels +
+				(GL_Screens[screen].updated.y * 4 * ScreenWidth + 
+				GL_Screens[screen].updated.x * 2));
+		SDL_UnlockSurface (GL_Screens[screen].scaled);
+		GL_Screens[screen].dirty = FALSE;
 	}
 
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScreenFilterMode);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScreenFilterMode);
+	glEnable (GL_TEXTURE_2D);
+
+	if (a == 255)
+	{
+		glDisable (GL_BLEND);
+		glColor4f (1, 1, 1, 1);
+	}
+	else
+	{
+		float a_f = a / 255.0f;
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable (GL_BLEND);
+		glColor4f (1, 1, 1, a_f);
+	}
+	
+	TFB_GL_DrawQuad (rect);
+}
+
+static void
+TFB_GL_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect)
+{
+	float r_f = r / 255.0f;
+	float g_f = g / 255.0f;
+	float b_f = b / 255.0f;
+	float a_f = a / 255.0f;
+	glColor4f(r_f, g_f, b_f, a_f);
+
+	glDisable (GL_TEXTURE_2D);
+	if (a != 255)
+	{
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable (GL_BLEND);
+	}
+	else
+	{
+		glDisable (GL_BLEND);
+	}
+	
+	TFB_GL_DrawQuad (rect);
+}
+
+static void
+TFB_GL_Postprocess (void)
+{
 	if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
 		TFB_GL_ScanLines ();
 
 	SDL_GL_SwapBuffers ();
-}
+}	
 
 #endif

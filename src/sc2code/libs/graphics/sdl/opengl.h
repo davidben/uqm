@@ -24,8 +24,6 @@
 int TFB_GL_InitGraphics (int driver, int flags, int width, int height);
 int TFB_GL_ConfigureVideo (int driver, int flags, int width, int height);
 void TFB_GL_UploadTransitionScreen (void);
-void TFB_GL_SwapBuffers (int force_full_redraw);
-
 
 #ifdef HAVE_OPENGL
 #ifdef WIN32
