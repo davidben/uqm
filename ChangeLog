@@ -2,7 +2,8 @@ Changes towards version 0.7:
 - Major rewrite of the SwapBuffers commands -- screen compositing logic 
   has all been abstracted out into sdl_common.c instead of being 
   nearly-duplicated in opengl.c and pure.c - Michael
-- --- 0.6.1 maintenance release occurred at this point ---
+
+0.6.1 (maintenance release):
 - The Unicode Private Use Area is no longer considered printable.  This 
   is a stopgap to handle unusual behavior with text entry under OS X.  
   See bug #942 for more details - Michael
@@ -20,7 +21,7 @@ Changes towards version 0.7:
 - config dir no longer needs trailing path seperator (bug #738)- SvdB
 - Simplification of uio Stream functions. No more internal seeks. - SvdB
 	
-Changes towards version 0.6:
+0.6.0:
 - Fixed a bug where an input delay was used for non-network games - SvdB
 - Fixed a bug where the victory ditty would end prematurely when UQM
   is compiled without Netplay support - SvdB
@@ -103,7 +104,7 @@ Changes towards version 0.6:
 - RMPLIFIED PRECURSOR BOMB is now AMPLIFIED, from Vorn (bug #812) 
   -Michael
 
-Changes towards version 0.5:
+0.5:
 - Innocent original c&p bug fixed, from bpoint.
 - Handle relative dirs in -C correctly, from Jan Lönnberg (part of bug #738).
 - Internationalization fixes: moved many hardcoded English strings
@@ -241,7 +242,7 @@ Changes towards version 0.5:
   "./build.sh uqm depend" is only needed for checking for new source files.
 - handle "." and ".." in paths - SvdB
 
-Changes towards version 0.4:
+0.4:
 - Nicer title image during intro, from Nic
 - Installation routine for MacOS X, from Nic.
 - Lots and lots of dialog fixes, from Nic.
@@ -468,7 +469,7 @@ Changes towards version 0.4:
   (bugs #454, #465, #466); from chmmravatar
 - Obsolete "register" keywords removed -Michael
 
-Changes towards version 0.3:
+0.3:
 - Dirty hack to avoid a warning about the "ignored.key" hack - SvdB
 - Typo 'natually' fixed in Arilou speech - SvdB
 - uio: Fixed a bug which could cause spurious warnings when using .zip files
