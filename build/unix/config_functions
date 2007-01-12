@@ -636,7 +636,10 @@ EOF
 # Arguments:   $1 - the name of the symbol
 define_have_symbol() {
 	local NAME VALUE
-	NAME=`$TR "[:lower:]" "[:upper:]" << EOF
+
+	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+	NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
 $1
 EOF
 `
@@ -655,7 +658,10 @@ EOF
 # Arguments:   $1 - the name of the symbol
 define_have_type() {
 	local NAME VALUE
-	NAME=`$TR "[:lower:]" "[:upper:]" << EOF
+
+	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+	NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
 $1
 EOF
 `
@@ -698,7 +704,10 @@ EOF
 # Arguments:   $1 - the name of the header file
 define_have_header() {
 	local NAME VALUE
-	NAME=`$TR /.[:lower:] __[:upper:] << EOF
+	
+	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+	NAME=`$TR "/.abcdefghijklmnopqrstuvwxyz" "__ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
 $1
 EOF
 `
@@ -913,7 +922,7 @@ substitute_vars() {
 	for VAR in $VARS; do
 		# Escape all / in VAR so that we can use / as seperator char for sed
 		eval VALUE=\"\$$VAR\"
-		VALUE=$(echo "$VALUE" | $SED 's,\([\&/]\),\\\1,g')
+		VALUE=$(echo "$VALUE" | $SED -e 's,\([\&/]\),\\\1,g')
 		cat << EOF
 s/@${VAR}@/${VALUE}/g
 EOF

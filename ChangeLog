@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Unix build scripts now work under LC_CTYPE=tr_TR - SvdB
 - Flush write buffer when doing a uio_fclose() after doing only
   uio_fwrite() operations. - SvdB
 - Major rewrite of the SwapBuffers commands -- screen compositing logic 
