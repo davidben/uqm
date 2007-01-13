@@ -209,7 +209,7 @@ TFB_InitInput (int driver, int flags)
 
 	SDL_EnableUNICODE(1);
 	(void)SDL_GetKeyState (&num_keys);
-	kbdstate = (int *)HMalloc (sizeof (int) * num_keys);
+	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
 	
 
 #ifdef HAVE_JOYSTICK
@@ -327,8 +327,8 @@ ProcessInputEvent (const SDL_Event *Event)
 		SDLKey k = Event->key.keysym.sym;
 		wchar_t map_key = Event->key.keysym.unicode;
 
-		if (k < 0 || k > SDLK_LAST)
-			k = SDLK_LAST; // for unknown keys
+		if (k < 0 || k > num_keys)
+			k = num_keys; // for unknown keys
 
 		if (Event->type == SDL_KEYDOWN)
 		{
