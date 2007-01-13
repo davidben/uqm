@@ -67,7 +67,8 @@ static joystick *joysticks;
 #endif /* HAVE_JOYSTICK */
 
 static int joycount;
-static keybinding *bindings[SDLK_LAST];
+static int num_sdl_keys = 0;
+static keybinding **bindings = NULL;
 
 static keypool *pool;
 static VControl_NameBinding *nametable;
@@ -194,7 +195,9 @@ key_init (void)
 {
 	int i;
 	pool = allocate_key_chunk ();
-	for (i = 0; i < SDLK_LAST; i++)
+	(void)SDL_GetKeyState (&num_sdl_keys);
+	bindings = (keybinding **) vctrl_malloc (sizeof (keybinding *) * num_sdl_keys);
+	for (i = 0; i < num_sdl_keys; i++)
 		bindings[i] = NULL;
 
 #ifdef HAVE_JOYSTICK
@@ -227,8 +230,9 @@ key_uninit (void)
 {
 	int i;
 	free_key_pool (pool);
-	for (i = 0; i < SDLK_LAST; i++)
+	for (i = 0; i < num_sdl_keys; i++)
 		bindings[i] = NULL;
+	vctrl_free (bindings);
 	pool = NULL;
 
 #ifdef HAVE_JOYSTICK
@@ -516,7 +520,7 @@ VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target)
 int
 VControl_AddKeyBinding (SDLKey symbol, int *target)
 {
-	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+	if ((symbol < 0) || (symbol >= num_sdl_keys)) {
 		log_add (log_Warning, "VControl: Illegal key index %d", symbol);
 		return -1;
 	}
@@ -527,7 +531,7 @@ VControl_AddKeyBinding (SDLKey symbol, int *target)
 void
 VControl_RemoveKeyBinding (SDLKey symbol, int *target)
 {
-	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+	if ((symbol < 0) || (symbol >= num_sdl_keys)) {
 		log_add (log_Warning, "VControl: Illegal key index %d", symbol);
 		return;
 	}
@@ -765,7 +769,7 @@ VControl_RemoveAllBindings ()
 void
 VControl_ProcessKeyDown (SDLKey symbol)
 {
-	if ((symbol < 0) || (symbol >= SDLK_LAST)) {
+	if ((symbol < 0) || (symbol >= num_sdl_keys)) {
 		log_add (log_Warning, "VControl: Got unknown key index %d", symbol);
 		return;
 	}
@@ -776,7 +780,7 @@ VControl_ProcessKeyDown (SDLKey symbol)
 void
 VControl_ProcessKeyUp (SDLKey symbol)
 {
-	if ((symbol < 0) || (symbol >= SDLK_LAST))
+	if ((symbol < 0) || (symbol >= num_sdl_keys))
 		return;
 
 	deactivate (bindings[symbol]);
@@ -1005,7 +1009,7 @@ VControl_Dump (uio_Stream *out)
 	PutResFileNewline (out);
 
 	/* Print out keyboard bindings */
-	for (i = 0; i < SDLK_LAST; i++)
+	for (i = 0; i < num_sdl_keys; i++)
 	{
 		keybinding *kb = bindings[i];		
 		if (kb != NULL)
@@ -1118,7 +1122,7 @@ VControl_NextBinding (VCONTROL_GESTURE *gesture)
 				}
 				kb = kb->next;
 			}
-			if (++iter_index == SDLK_LAST)
+			if (++iter_index == num_sdl_keys)
 			{
 				iter_device = 0;
 				iter_index = 0;

@@ -24,6 +24,7 @@
 #include "libs/input/input_common.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
+#include "misc.h"
 #include "controls.h"
 #include "libs/file.h"
 #include "libs/log.h"
@@ -35,8 +36,9 @@
 static int kbdhead=0, kbdtail=0;
 static wchar_t kbdbuf[KBDBUFSIZE];
 static wchar_t lastchar;
-static int kbdstate[SDLK_LAST + 1];
-		// +1 for tracking all yet unknown keys
+static int num_keys = 0;
+static int *kbdstate = NULL;
+		// Holds all SDL keys +1 for holding invalid values
 
 static BOOLEAN InputInitialized = FALSE;
 
@@ -191,7 +193,7 @@ initKeyConfig (void)
 static void
 resetKeyboardState (void)
 {
-	memset (kbdstate, 0, sizeof (kbdstate));
+	memset (kbdstate, 0, sizeof (int) * num_keys);
 	ImmediateInputState.menu[KEY_MENU_ANY] = 0;
 }
 
@@ -206,6 +208,9 @@ TFB_InitInput (int driver, int flags)
 	GamePaused = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
+	(void)SDL_GetKeyState (&num_keys);
+	kbdstate = (int *)HMalloc (sizeof (int) * num_keys);
+	
 
 #ifdef HAVE_JOYSTICK
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
@@ -249,6 +254,7 @@ void
 TFB_UninitInput (void)
 {
 	VControl_Uninit ();
+	HFree (kbdstate);
 }
 
 // XXX: not currently used -- character mode is always on
