@@ -178,6 +178,7 @@ PauseGame (void)
 	s.origin = r.corner;
 	s.frame = ActivityFrame;
 	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
+	SetSystemRect (&r);
 	DrawStamp (&s);
 
 	// Releasing the lock lets the rotate_planet_task
@@ -201,6 +202,7 @@ PauseGame (void)
 	s.frame = F;
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
+	ClearSystemRect ();
 
 	SetContextClipRect (&OldRect);
 	SetFrameHot (Screen, OldHot);

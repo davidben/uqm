@@ -119,6 +119,8 @@ DoConfirmExit (void)
 		s.origin = r.corner;
 		F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
 
+		SetSystemRect (&r);
+
 		DrawConfirmationWindow (response);
 
 		// Releasing the lock lets the rotate_planet_task
@@ -159,6 +161,7 @@ DoConfirmExit (void)
 		s.frame = F;
 		DrawStamp (&s);
 		DestroyDrawable (ReleaseDrawable (s.frame));
+		ClearSystemRect ();
 		if (response)
 		{
 			result = TRUE;

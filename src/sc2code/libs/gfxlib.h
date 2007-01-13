@@ -275,6 +275,8 @@ extern void FlushColorXForms (void);
 #define GetColorMapAddress GetStringAddress
 #define GetColorMapContents GetStringContents
 
+void SetSystemRect (PRECT pRect);
+void ClearSystemRect (void);
 
 #endif /* _GFX_PROTOS */
 

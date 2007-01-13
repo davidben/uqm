@@ -214,6 +214,25 @@ TFB_ProcessEvents ()
 #endif  /* DEBUG */
 }
 
+static BOOLEAN system_box_active = 0;
+static SDL_Rect system_box;
+
+void
+SetSystemRect (PRECT r)
+{
+	system_box_active = TRUE;
+	system_box.x = r->corner.x;
+	system_box.y = r->corner.y;
+	system_box.w = r->extent.width;
+	system_box.h = r->extent.height;
+}
+
+void
+ClearSystemRect (void)
+{
+	system_box_active = FALSE;
+}
+
 void
 TFB_SwapBuffers (int force_full_redraw)
 {
@@ -257,6 +276,11 @@ TFB_SwapBuffers (int force_full_redraw)
 			graphics_backend->color (255, 255, 255, 
 					fade_amount - 255, NULL);
 		}
+	}
+
+	if (system_box_active)
+	{
+		graphics_backend->screen (TFB_SCREEN_MAIN, 255, &system_box);
 	}
 
 	graphics_backend->postprocess ();
