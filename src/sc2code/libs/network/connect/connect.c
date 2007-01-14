@@ -146,6 +146,9 @@ connectCallback(NetDescriptor *nd) {
 
 	if (connectState->state == Connect_closed) {
 		// The connection attempt has been aborted.
+#ifdef DEBUG
+		log_add(log_Debug, "Connection attempt was aborted.\n");
+#endif
 		ConnectState_decRef(connectState);
 		return;
 	}
@@ -256,10 +259,18 @@ tryConnectHostNext(ConnectState *connectState) {
 			return sock;
 	}
 
-	// Connection failed.
+	// Connection failed immediately. This is just for one of the addresses,
+	// so this does not have to be final.
+	// Note that as the socket is non-blocking, most failed connection
+	// errors will usually not be reported immediately.
 	{
 		int savedErrno = errno;
 		Socket_close(sock);
+#ifdef DEBUG
+		log_add(log_Debug, "connect() immediately failed for one address: "
+				"%s.\n", strerror(errno));
+				// TODO: add the address in the status message.
+#endif
 		errno = savedErrno;
 	}
 	return Socket_noSocket;

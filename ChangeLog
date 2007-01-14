@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- A bit more debug info for failed connects. - SvdB
 - Exit with failure if basic content cannot be found, ensuring proper
   error reporting under Windows - Michael
 - Popup windows for "Really Exit?" and Game Pause are immune to fades 
