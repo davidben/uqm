@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+
+0.6.2 (maintenance release):
 - A bit more debug info for failed connects. - SvdB
 - Exit with failure if basic content cannot be found, ensuring proper
   error reporting under Windows - Michael
@@ -6,7 +8,7 @@ Changes towards version 0.7:
   and crossfades (Bug #455) - Michael
 - No longer depend on SDLK_LAST statically; key input should now be safe 
   if compiled with a different version of SDL than the one running the 
-  program (Bug #936, possibly also #883) - Michael
+  program (Bug #936, possibly also #834 and #883) - Michael
 - Unix build scripts now work under LC_CTYPE=tr_TR - SvdB
 - Flush write buffer when doing a uio_fclose() after doing only
   uio_fwrite() operations. - SvdB
