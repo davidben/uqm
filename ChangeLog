@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Exit with failure if basic content cannot be found, ensuring proper
+  error reporting under Windows - Michael
 - Popup windows for "Really Exit?" and Game Pause are immune to fades 
   and crossfades (Bug #455) - Michael
 - No longer depend on SDLK_LAST statically; key input should now be safe 
