@@ -7,7 +7,7 @@ Var UQMUSERDATA
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "The Ur-Quan Masters"
-!define PRODUCT_VERSION "0.6.1"
+!define PRODUCT_VERSION "0.6.2"
 !define PRODUCT_WEB_SITE "http://sc2.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\uqm.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -74,7 +74,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "uqm-0.6.1-installer.exe"
+OutFile "uqm-0.6.2-installer.exe"
 InstallDir "$PROGRAMFILES\The Ur-Quan Masters\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
