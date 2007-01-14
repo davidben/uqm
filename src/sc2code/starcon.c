@@ -281,6 +281,7 @@ while (--ac > 0)
 		log_add (log_Fatal, "This file is typically called uqm-%d.%d.0.uqm.  UQM was expecting it", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
 		log_add (log_Fatal, "in the %s/packages directory.", baseContentPath);
 		log_add (log_Fatal, "Either your installation did not install the content pack at all, or it\ninstalled it in a different directory.\n\nFix your installation and rerun UQM.\n\n  *******************\n");
+		exit (EXIT_FAILURE);
 	}
 	FreeKernel ();
 
