@@ -1,8 +1,0 @@
-7
-http://easynews.dl.sourceforge.net/sourceforge/sc2
-http://unc.dl.sourceforge.net/sourceforge/sc2
-http://twtelecom.dl.sourceforge.net/sourceforge/sc2
-http://belnet.dl.sourceforge.net/sourceforge/sc2
-http://heanet.dl.sourceforge.net/sourceforge/sc2
-http://telia.dl.sourceforge.net/sourceforge/sc2
-http://cesnet.dl.sourceforge.net/sourceforge/sc2

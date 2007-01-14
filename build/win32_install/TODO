@@ -1,6 +1,0 @@
-Things still needing doing of the installer:
- - Check md5 sums on downloaded files
- - Read previous install directory from registry
- - Allow users to choose mirror
- - Only read mirror file once, if only 1 is used.
- - Use uqm icon for the installer
