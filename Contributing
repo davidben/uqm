@@ -107,6 +107,7 @@ Getting the patches committed:
       - Resource system
       - 3DO historical code
       - *nix build system
+      - Netplay
       - General issues (particularly on *nix)
     Mika Kolehmainen (mimakole at cc.jyu.fi), Gwl at #sc2
       - Graphics
@@ -116,6 +117,8 @@ Getting the patches committed:
       - Threading
       - Alien communications code
       - Graphics
+      - Input system
+      - In-game configuration
       - General issues
     Alex Volkov (codepro at usa.net), fOSSiL at #sc2
       - Graphics
