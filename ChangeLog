@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- OpenGL texture loading uses surface pitch instead of screen width.  
+  This should head off future bugs similar to Bug #740 (this issue was 
+  reported as Bug #956) - Michael
 
 0.6.2 (maintenance release):
 - A bit more debug info for failed connects. - SvdB

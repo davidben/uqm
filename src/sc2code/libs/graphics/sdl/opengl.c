@@ -388,7 +388,8 @@ TFB_GL_Unscaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 
 	if (GL_Screens[screen].dirty)
 	{
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth);
+		int PitchWords = SDL_Screens[screen]->pitch / 4;
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, PitchWords);
 		/* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
 		   correctly */
 		glPixelStorei (GL_UNPACK_SKIP_ROWS, 0);
@@ -400,7 +401,7 @@ TFB_GL_Unscaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 				GL_Screens[screen].updated.h,
 				GL_RGBA, GL_UNSIGNED_BYTE,
 				(Uint32 *)SDL_Screens[screen]->pixels +
-					(GL_Screens[screen].updated.y * ScreenWidth + 
+					(GL_Screens[screen].updated.y * PitchWords + 
 					GL_Screens[screen].updated.x));
 		SDL_UnlockSurface (SDL_Screens[screen]);
 		GL_Screens[screen].dirty = FALSE;
@@ -434,8 +435,9 @@ TFB_GL_Scaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 
 	if (GL_Screens[screen].dirty)
 	{
+		int PitchWords = GL_Screens[screen].scaled->pitch / 4;
 		scaler (SDL_Screens[screen], GL_Screens[screen].scaled, &GL_Screens[screen].updated);
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, ScreenWidth * 2);
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, PitchWords);
 
 		 /* Matrox OpenGL drivers do not handle GL_UNPACK_SKIP_*
 		    correctly */
@@ -448,7 +450,7 @@ TFB_GL_Scaled_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 				GL_Screens[screen].updated.h * 2,
 				GL_RGBA, GL_UNSIGNED_BYTE,
 				(Uint32 *)GL_Screens[screen].scaled->pixels +
-				(GL_Screens[screen].updated.y * 4 * ScreenWidth + 
+				(GL_Screens[screen].updated.y * 2 * PitchWords + 
 				GL_Screens[screen].updated.x * 2));
 		SDL_UnlockSurface (GL_Screens[screen].scaled);
 		GL_Screens[screen].dirty = FALSE;
