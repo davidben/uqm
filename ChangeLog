@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- DUCK videos now play correctly after a video mode change; bug #734 - Alex
 - Cancel key will now quit out of the Manifest Menu (Bug #838) - Michael
 - Added -w and -x commandline options, to counter -f and -o; used these 
   to implement "Safe Mode" links in the Win32 installer (Bug #946)

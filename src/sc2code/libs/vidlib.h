@@ -28,15 +28,10 @@ typedef enum
 	SOFTWARE_FMV
 } VIDEO_TYPE;
 
-#define MODES_UNDEFINED ((BYTE)~0)
-
 typedef DWORD VIDEO_REF;
 
-extern BOOLEAN InitVideo (BOOLEAN UseCDROM);
-extern void UninitVideo (void);
-
-extern BYTE SetVideoMode (BYTE new_mode);
-extern BYTE GetVideoMode (void);
+extern BOOLEAN InitVideoPlayer (BOOLEAN UseCDROM);
+extern void UninitVideoPlayer (void);
 
 extern VIDEO_REF LoadVideoFile (const char *pStr);
 extern BOOLEAN DestroyVideo (VIDEO_REF VideoRef);

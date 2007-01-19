@@ -96,7 +96,7 @@ LoadKernel (int argc, char *argv[])
 	if (!InitGraphics (argc, argv, MIN_K_REQUIRED))
 		return FALSE;
 	InitSound (argc, argv);
-	InitVideo (TRUE);
+	InitVideoPlayer (TRUE);
 
 	ScreenContext = CaptureContext (CreateContext ());
 	if (ScreenContext == NULL)

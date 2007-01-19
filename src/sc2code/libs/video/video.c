@@ -25,7 +25,7 @@
 static VIDEO_REF _cur_video = NULL_VIDEO_REF;
 
 BOOLEAN
-InitVideo (BOOLEAN useCDROM)
+InitVideoPlayer (BOOLEAN useCDROM)
 		//useCDROM doesn't really apply to us
 {
 	TFB_PixelFormat fmt;
@@ -41,7 +41,7 @@ InitVideo (BOOLEAN useCDROM)
 }
 
 void
-UninitVideo ()
+UninitVideoPlayer (void)
 {
 	TFB_UninitVideoPlayer ();
 	VideoDecoder_Uninit ();

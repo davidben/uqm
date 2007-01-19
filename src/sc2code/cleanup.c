@@ -53,7 +53,7 @@ FreeKernel (void)
 	DestroyDrawable (ReleaseDrawable (Screen));
 	DestroyContext (ReleaseContext (ScreenContext));
 
-	UninitVideo ();
+	UninitVideoPlayer ();
 	UninitSound ();
 	UninitGraphics ();
 }

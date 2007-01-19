@@ -1289,8 +1289,10 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	    (NewGfxFlags != GfxFlags)) 
 	{
 		FlushGraphics ();
+		UninitVideoPlayer ();
 		TFB_DrawScreen_ReinitVideo (NewDriver, NewGfxFlags, NewWidth, NewHeight);
 		FlushGraphics ();
+		InitVideoPlayer (TRUE);
 	}
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;
 	// optWhichMusic = (opts->music == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
