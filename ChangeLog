@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- (MacOS) Don't package up .svn dirs with 'build.sh uqm install' (bug #958),
+  from Nic.
 - No more extra newlines to log_add() calls for libs/network/ code - SvdB
 - DUCK videos now play correctly after a video mode change; bug #734 - Alex
 - Cancel key will now quit out of the Manifest Menu (Bug #838) - Michael
