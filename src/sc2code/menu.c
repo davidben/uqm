@@ -430,6 +430,16 @@ DoMenuChooser (PMENU_STATE pMS, BYTE BaseState)
 			}
 			return (FALSE);
 		}
+		else if ((optWhichMenu == OPT_PC) && PulsedInputState.menu[KEY_MENU_CANCEL] && 
+				(BaseState == PM_ALT_CARGO))
+		{
+			if (OrigBase == PM_SCAN)
+				DrawMenuStateStrings (PM_ALT_SCAN, PM_ALT_MANIFEST - PM_ALT_SCAN);
+			else
+				DrawMenuStateStrings (PM_ALT_STARMAP, PM_ALT_MANIFEST - PM_ALT_STARMAP);
+			pMS->CurState = ALT_MANIFEST;
+			return (TRUE);
+		}
 		else
 			return (FALSE);
 		DrawMenuStateStrings (BaseState, NewState);
