@@ -78,7 +78,7 @@ ConnectState_incRef(ConnectState *connectState) {
 	assert(connectState->refCount < REFCOUNT_MAX);
 	connectState->refCount++;
 #ifdef DEBUG_CONNECT_REF
-	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref++ (%d)\n",
+	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref++ (%d)",
 			(uintptr_t) connectState, connectState->refCount);
 #endif
 }
@@ -88,7 +88,7 @@ ConnectState_decRef(ConnectState *connectState) {
 	assert(connectState->refCount > 0);
 	connectState->refCount--;
 #ifdef DEBUG_CONNECT_REF
-	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref-- (%d)\n",
+	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref-- (%d)",
 			(uintptr_t) connectState, connectState->refCount);
 #endif
 	if (connectState->refCount == 0) {
@@ -147,20 +147,20 @@ connectCallback(NetDescriptor *nd) {
 	if (connectState->state == Connect_closed) {
 		// The connection attempt has been aborted.
 #ifdef DEBUG
-		log_add(log_Debug, "Connection attempt was aborted.\n");
+		log_add(log_Debug, "Connection attempt was aborted.");
 #endif
 		ConnectState_decRef(connectState);
 		return;
 	}
 
 	if (Socket_getError(NetDescriptor_getSocket(nd), &err) == -1) {
-		log_add(log_Fatal, "Socket_getError() failed: %s.\n",
+		log_add(log_Fatal, "Socket_getError() failed: %s.",
 				strerror(errno));
 		explode();
 	}
 	if (err != 0) {
 #ifdef DEBUG
-		log_add(log_Debug, "connect() failed: %s.\n", strerror(err));
+		log_add(log_Debug, "connect() failed: %s.", strerror(err));
 #endif
 		NetDescriptor_close(nd);
 		connectState->nd = NULL;
@@ -168,6 +168,10 @@ connectCallback(NetDescriptor *nd) {
 		connectHostNext(connectState);
 		return;
 	}
+
+#ifdef DEBUG
+	log_add(log_Debug, "Connection established.");
+#endif
 
 	// Notify the higher layer.
 	connectState->nd = NULL;
@@ -224,14 +228,14 @@ tryConnectHostNext(ConnectState *connectState) {
 			info->ai_protocol);
 	if (sock == Socket_noSocket) {
 		int savedErrno = errno;
-		log_add(log_Error, "socket() failed: %s.\n", strerror(errno));
+		log_add(log_Error, "socket() failed: %s.", strerror(errno));
 		errno = savedErrno;
 		return Socket_noSocket;
 	}
 	
 	if (Socket_setNonBlocking(sock) == -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Could not make socket non-blocking: %s.\n",
+		log_add(log_Error, "Could not make socket non-blocking: %s.",
 				strerror(errno));
 		errno = savedErrno;
 		return Socket_noSocket;
@@ -268,7 +272,7 @@ tryConnectHostNext(ConnectState *connectState) {
 		Socket_close(sock);
 #ifdef DEBUG
 		log_add(log_Debug, "connect() immediately failed for one address: "
-				"%s.\n", strerror(errno));
+				"%s.", strerror(errno));
 				// TODO: add the address in the status message.
 #endif
 		errno = savedErrno;
@@ -327,7 +331,7 @@ connectHostNext(ConnectState *connectState) {
 				ConnectError error;
 				int savedErrno = errno;
 
-				log_add(log_Error, "NetDescriptor_new() failed: %s.\n",
+				log_add(log_Error, "NetDescriptor_new() failed: %s.",
 						strerror(errno));
 				Socket_close(sock);
 				freeaddrinfo(connectState->info);
@@ -438,7 +442,7 @@ connectHostByName(const char *host, const char *service, Protocol proto,
 	connectState = ConnectState_alloc();
 	connectState->refCount = 1;
 #ifdef DEBUG_CONNECT_REF
-	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref=1 (%d)\n",
+	log_add(log_Debug, "ConnectState %08" PRIxPTR ": ref=1 (%d)",
 			(uintptr_t) connectState, connectState->refCount);
 #endif
 	connectState->state = Connect_resolving;

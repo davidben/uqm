@@ -51,7 +51,7 @@ NetDescriptor_new(Socket *socket, void *extra) {
 	nd = NetDescriptor_alloc();
 	nd->refCount = 1;
 #ifdef DEBUG_NETDESCRIPTOR_REF
-	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref=1 (%d)\n",
+	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref=1 (%d)",
 			(uintptr_t) nd, nd->refCount);
 #endif
 
@@ -117,7 +117,7 @@ NetDescriptor_incRef(NetDescriptor *nd) {
 	assert(nd->refCount < REFCOUNT_MAX);
 	nd->refCount++;
 #ifdef DEBUG_NETDESCRIPTOR_REF
-	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref++ (%d)\n",
+	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref++ (%d)",
 			(uintptr_t) nd, nd->refCount);
 #endif
 }
@@ -128,7 +128,7 @@ NetDescriptor_decRef(NetDescriptor *nd) {
 	assert(nd->refCount > 0);
 	nd->refCount--;
 #ifdef DEBUG_NETDESCRIPTOR_REF
-	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref-- (%d)\n",
+	log_add(log_Debug, "NetDescriptor %08" PRIxPTR ": ref-- (%d)",
 			(uintptr_t) nd, nd->refCount);
 #endif
 	if (nd->refCount == 0) {

@@ -74,7 +74,7 @@ ListenState_incRef(ListenState *listenState) {
 	assert(listenState->refCount < REFCOUNT_MAX);
 	listenState->refCount++;
 #ifdef DEBUG_LISTEN_REF
-	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref++ (%d)\n",
+	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref++ (%d)",
 			(uintptr_t) listenState, listenState->refCount);
 #endif
 }
@@ -84,7 +84,7 @@ ListenState_decRef(ListenState *listenState) {
 	assert(listenState->refCount > 0);
 	listenState->refCount--;
 #ifdef DEBUG_LISTEN_REF
-	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref-- (%d)\n",
+	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref-- (%d)",
 			(uintptr_t) listenState, listenState->refCount);
 #endif
 	if (listenState->refCount == 0) {
@@ -134,7 +134,7 @@ listenPortSingle(struct ListenState *listenState, struct addrinfo *info) {
 			info->ai_protocol);
 	if (sock == Socket_noSocket) {
 		int savedErrno = errno;
-		log_add(log_Error, "socket() failed: %s.\n", strerror(errno));
+		log_add(log_Error, "socket() failed: %s.", strerror(errno));
 		errno = savedErrno;
 		return NULL;
 	}
@@ -154,10 +154,10 @@ listenPortSingle(struct ListenState *listenState, struct addrinfo *info) {
 		int savedErrno = errno;
 		if (errno == EADDRINUSE) {
 #ifdef DEBUG
-			log_add(log_Warning, "bind() failed: %s.\n", strerror(errno));
+			log_add(log_Warning, "bind() failed: %s.", strerror(errno));
 #endif
 		} else
-			log_add(log_Error, "bind() failed: %s.\n", strerror(errno));
+			log_add(log_Error, "bind() failed: %s.", strerror(errno));
 		Socket_close(sock);
 		errno = savedErrno;
 		return NULL;
@@ -166,7 +166,7 @@ listenPortSingle(struct ListenState *listenState, struct addrinfo *info) {
 	listenResult = Socket_listen(sock, listenState->flags.backlog);
 	if (listenResult == -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "listen() failed: %s.\n", strerror(errno));
+		log_add(log_Error, "listen() failed: %s.", strerror(errno));
 		Socket_close(sock);
 		errno = savedErrno;
 		return NULL;
@@ -175,7 +175,7 @@ listenPortSingle(struct ListenState *listenState, struct addrinfo *info) {
 	nd = NetDescriptor_new(sock, (void *) listenState);
 	if (nd == NULL) {
 		int savedErrno = errno;
-		log_add(log_Error, "NetDescriptor_new() failed: %s.\n",
+		log_add(log_Error, "NetDescriptor_new() failed: %s.",
 				strerror(errno));
 		Socket_close(sock);
 		errno = savedErrno;
@@ -226,7 +226,7 @@ listenPortMulti(struct ListenState *listenState, struct addrinfo *info) {
 			// it's a real possibility.
 			if (errno == EADDRINUSE && addrOkCount == 0) {
 				log_add(log_Error, "Error while preparing a network socket "
-						"for incoming connections: %s\n", strerror(errno));
+						"for incoming connections: %s", strerror(errno));
 			}
 			continue;
 		}
@@ -312,7 +312,7 @@ listenPort(const char *service, Protocol proto, const ListenFlags *flags,
 	listenState = ListenState_alloc();
 	listenState->refCount = 1;
 #ifdef DEBUG_LISTEN_REF
-	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref=1 (%d)\n",
+	log_add(log_Debug, "ListenState %08" PRIxPTR ": ref=1 (%d)",
 			(uintptr_t) listenState, listenState->refCount);
 #endif
 	listenState->state = Listen_resolving;
@@ -382,13 +382,13 @@ acceptSingleConnection(ListenState *listenState, NetDescriptor *nd) {
 #endif
 				// Serious problems, but future connections may still
 				// be possible.
-				log_add(log_Warning, "accept() reported '%s'\n",
+				log_add(log_Warning, "accept() reported '%s'",
 						strerror(errno));
 				return;
 			default:
 				// Should not happen.
 				log_add(log_Fatal, "Internal error: accept() reported "
-						"'%s'\n", strerror(errno));
+						"'%s'", strerror(errno));
 				explode();
 		}
 	}
@@ -397,7 +397,7 @@ acceptSingleConnection(ListenState *listenState, NetDescriptor *nd) {
 			// Ignore errors; it's not a big deal.
 	if (Socket_setNonBlocking(acceptResult) == -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Could not make socket non-blocking: %s.\n",
+		log_add(log_Error, "Could not make socket non-blocking: %s.",
 				strerror(errno));
 		Socket_close(acceptResult);
 		errno = savedErrno;
@@ -418,11 +418,11 @@ acceptSingleConnection(ListenState *listenState, NetDescriptor *nd) {
 				hostname, sizeof hostname, NULL, 0, 0);
 		if (gniRes != 0) {
 			log_add(log_Error, "Error while performing hostname "
-					"lookup for incoming connection: %s\n",
+					"lookup for incoming connection: %s",
 					(gniRes == EAI_SYSTEM) ? strerror(errno) :
 					gai_strerror(gniRes));
 		} else {
-			log_add(log_Debug, "Accepted incoming connection from '%s'.\n",
+			log_add(log_Debug, "Accepted incoming connection from '%s'.",
 					hostname);
 		}
 	}
@@ -431,7 +431,7 @@ acceptSingleConnection(ListenState *listenState, NetDescriptor *nd) {
 	newNd = NetDescriptor_new(acceptResult, NULL);
 	if (newNd == NULL) {
 		int savedErrno = errno;
-		log_add(log_Error, "NetDescriptor_new() failed: %s.\n",
+		log_add(log_Error, "NetDescriptor_new() failed: %s.",
 				strerror(errno));
 		Socket_close(acceptResult);
 		errno = savedErrno;

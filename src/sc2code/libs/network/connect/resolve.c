@@ -51,7 +51,7 @@ ResolveState_incRef(ResolveState *resolveState) {
 	assert(resolveState->refCount < REFCOUNT_MAX);
 	resolveState->refCount++;
 #ifdef DEBUG_RESOLVE_REF
-	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref++ (%d)\n",
+	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref++ (%d)",
 			(uintptr_t) resolveState, resolveState->refCount);
 #endif
 }
@@ -61,7 +61,7 @@ ResolveState_decRef(ResolveState *resolveState) {
 	assert(resolveState->refCount > 0);
 	resolveState->refCount--;
 #ifdef DEBUG_RESOLVE_REF
-	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref-- (%d)\n",
+	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref-- (%d)",
 			(uintptr_t) resolveState, resolveState->refCount);
 #endif
 	if (resolveState->refCount == 0) {
@@ -129,7 +129,7 @@ getaddrinfoAsync(const char *node, const char *service,
 	resolveState = ResolveState_new();
 	resolveState->refCount = 1;
 #ifdef DEBUG_RESOLVE_REF
-	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref=1 (%d)\n",
+	log_add(log_Debug, "ResolveState %08" PRIxPTR ": ref=1 (%d)",
 			(uintptr_t) resolveState, resolveState->refCount);
 #endif
 	resolveState->state = Resolve_resolving;

@@ -178,7 +178,7 @@ Socket_setNonBlocking(Socket *sock) {
 
 	if (ioctlsocket(sock->sock, FIONBIO, &flag) == SOCKET_ERROR) {
 		int savedErrno = getWinsockErrno();
-		log_add(log_Error, "Setting non-block mode on socket failed: %s.\n",
+		log_add(log_Error, "Setting non-block mode on socket failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;
@@ -193,7 +193,7 @@ Socket_setReuseAddr(Socket *sock) {
 	if (setsockopt(sock->sock, SOL_SOCKET, SO_REUSEADDR,
 				(const char *) &flag, sizeof flag) == SOCKET_ERROR) {
 		int savedErrno = getWinsockErrno();
-		log_add(log_Error, "Setting socket reuse failed: %s.\n",
+		log_add(log_Error, "Setting socket reuse failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;
@@ -211,7 +211,7 @@ Socket_setNodelay(Socket *sock) {
 				(const char *) &flag, sizeof flag) == SOCKET_ERROR) {
 #ifdef DEBUG
 		int savedErrno = getWinsockErrno();
-		log_add(log_Warning, "Disabling Nagle algorithm failed: %s.\n",
+		log_add(log_Warning, "Disabling Nagle algorithm failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 #endif
@@ -245,7 +245,7 @@ Socket_setInlineOOB(Socket *sock) {
 	if (setsockopt(sock->sock, SOL_SOCKET, SO_OOBINLINE, (const char *) &flag,
 			sizeof flag) == SOCKET_ERROR) {
 		int savedErrno = getWinsockErrno();
-		log_add(log_Error, "Setting inline OOB on socket failed: %s\n",
+		log_add(log_Error, "Setting inline OOB on socket failed: %s",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;
@@ -260,7 +260,7 @@ Socket_setKeepAlive(Socket *sock) {
 	if (setsockopt(sock->sock, IPPROTO_TCP, SO_KEEPALIVE,
 			(const char *) &flag, sizeof flag) == SOCKET_ERROR) {
 		int savedErrno = getWinsockErrno();
-		log_add(log_Error, "Setting keep-alive on socket failed: %s\n",
+		log_add(log_Error, "Setting keep-alive on socket failed: %s",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;

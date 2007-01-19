@@ -35,23 +35,23 @@ Network_init(void) {
 	startupResult = WSAStartup(requestVersion, &data);
 	if (startupResult != 0) {
 		int savedErrno = winsockErrorToErrno(startupResult);
-		log_add(log_Fatal, "WSAStartup failed.\n");
+		log_add(log_Fatal, "WSAStartup failed.");
 		errno = savedErrno;
 		explode();
 	}
 
 #ifdef DEBUG
-	log_add(log_Debug, "Winsock version %d.%d found: \"%s\".\n",
+	log_add(log_Debug, "Winsock version %d.%d found: \"%s\".",
 			LOBYTE(data.wHighVersion), HIBYTE(data.wHighVersion),
 			data.szDescription);
 	log_add(log_Debug, "Requesting to use Winsock version %d.%d, got "
-			"version %d.%d.\n",
+			"version %d.%d.",
 			LOBYTE(requestVersion), HIBYTE(requestVersion),
 			LOBYTE(data.wVersion), HIBYTE(data.wVersion));
 #endif
 	if (data.wVersion != requestVersion) {
 		log_add(log_Fatal, "Winsock version %d.%d presented, requested "
-				"%d.%d.\n", LOBYTE(data.wVersion), HIBYTE(data.wVersion),
+				"%d.%d.", LOBYTE(data.wVersion), HIBYTE(data.wVersion),
 				LOBYTE(requestVersion), HIBYTE(requestVersion));
 		(void) WSACleanup();
 				// Ignoring errors; we're going to abort anyhow.
@@ -66,7 +66,7 @@ Network_uninit(void) {
 	cleanupResult = WSACleanup();
 	if (cleanupResult == SOCKET_ERROR) {
 		int savedErrno = getWinsockErrno();
-		log_add(log_Fatal, "WSACleanup failed.\n");
+		log_add(log_Fatal, "WSACleanup failed.");
 		errno = savedErrno;
 		explode();
 	}

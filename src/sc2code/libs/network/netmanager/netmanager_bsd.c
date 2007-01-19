@@ -154,7 +154,7 @@ NetManager_process(uint32 *timeoutMs) {
 	} while (selectResult == -1 && errno == EINTR);
 	if (selectResult == -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "select() failed: %s.\n", strerror(errno));
+		log_add(log_Error, "select() failed: %s.", strerror(errno));
 		errno = savedErrno;
 		*timeoutMs = (timeout.tv_sec * 1000) + (timeout.tv_usec / 1000);
 				// XXX: rounding microseconds down. Is that the correct

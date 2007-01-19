@@ -142,7 +142,7 @@ Socket_setNonBlocking(Socket *sock) {
 	if (flags == -1) {
 		int savedErrno = errno;
 		log_add(log_Error, "Getting file descriptor flags of socket failed: "
-				"%s.\n", strerror(errno));
+				"%s.", strerror(errno));
 		errno = savedErrno;
 		return -1;
 	}
@@ -150,7 +150,7 @@ Socket_setNonBlocking(Socket *sock) {
 	if (fcntl(sock->fd, F_SETFL, flags | O_NONBLOCK) == -1) {
 		int savedErrno = errno;
 		log_add(log_Error, "Setting non-blocking mode on socket failed: "
-				"%s.\n", strerror(errno));
+				"%s.", strerror(errno));
 		errno = savedErrno;
 		return -1;
 	}
@@ -165,7 +165,7 @@ Socket_setReuseAddr(Socket *sock) {
 	if (setsockopt(sock->fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag)
 			== -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Setting socket reuse failed: %s.\n",
+		log_add(log_Error, "Setting socket reuse failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;
@@ -183,7 +183,7 @@ Socket_setNodelay(Socket *sock) {
 			== -1) {
 #ifdef DEBUG
 		int savedErrno = errno;
-		log_add(log_Warning, "Disabling Nagle algorithm failed: %s.\n",
+		log_add(log_Warning, "Disabling Nagle algorithm failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 #endif
@@ -199,7 +199,7 @@ Socket_setTOS(Socket *sock, int tos) {
 	if (setsockopt(sock->fd, IPPROTO_IP, IP_TOS, &tos, sizeof tos) == -1) {
 #ifdef DEBUG
 		int savedErrno = errno;
-		log_add(log_Warning, "Setting socket type-of-service failed: %s.\n",
+		log_add(log_Warning, "Setting socket type-of-service failed: %s.",
 				strerror(errno));
 		errno = savedErrno;
 #endif
@@ -231,7 +231,7 @@ Socket_setInlineOOB(Socket *sock) {
 	if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &flag, sizeof flag)
 			== -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Setting inline OOB on socket failed: %s\n",
+		log_add(log_Error, "Setting inline OOB on socket failed: %s",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;
@@ -246,7 +246,7 @@ Socket_setKeepAlive(Socket *sock) {
 	if (setsockopt(sock->fd, IPPROTO_TCP, SO_KEEPALIVE, &flag, sizeof flag)
 			== -1) {
 		int savedErrno = errno;
-		log_add(log_Error, "Setting keep-alive on socket failed: %s\n",
+		log_add(log_Error, "Setting keep-alive on socket failed: %s",
 				strerror(errno));
 		errno = savedErrno;
 		return -1;

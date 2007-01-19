@@ -89,7 +89,7 @@ closeWSAEvent(WSAEVENT event) {
 		error = WSAGetLastError();
 		if (error != WSAEINPROGRESS) {
 			log_add(log_Error,
-					"WSACloseEvent() failed with error code %d.\n", error);
+					"WSACloseEvent() failed with error code %d.", error);
 			errno = winsockErrorToErrno(error);
 			return -1;
 		}
@@ -137,7 +137,7 @@ NetManager_addDesc(NetDescriptor *nd) {
 			int savedErrno = getWinsockErrno();
 			int closeStatus = closeWSAEvent(event);
 			if (closeStatus == -1) {
-				log_add(log_Fatal, "closeWSAEvent() failed: %s.\n",
+				log_add(log_Fatal, "closeWSAEvent() failed: %s.",
 						strerror(errno));
 				explode();
 			}
@@ -224,7 +224,7 @@ NetManager_updateEvent(NetDescriptor *nd) {
 		int savedErrno = getWinsockErrno();
 		int closeStatus = closeWSAEvent(events[nd->smd->index]);
 		if (closeStatus == -1) {
-			log_add(log_Fatal, "closeWSAEvent() failed: %s.\n",
+			log_add(log_Fatal, "closeWSAEvent() failed: %s.",
 					strerror(errno));
 			explode();
 		}
@@ -265,7 +265,7 @@ activateSomeCallback(NetDescriptor *nd, long eventMask) {
 	{
 		int status = NetManager_updateEvent(nd);
 		if (status == -1) {
-			log_add(log_Fatal, "NetManager_updateEvent() failed: %s.\n",
+			log_add(log_Fatal, "NetManager_updateEvent() failed: %s.",
 					strerror(errno));
 			explode();
 			// TODO: better error handling.
@@ -279,7 +279,7 @@ deactivateSomeCallback(NetDescriptor *nd, long eventMask) {
 	{
 		int status = NetManager_updateEvent(nd);
 		if (status == -1) {
-			log_add(log_Fatal, "NetManager_updateEvent() failed: %s.\n",
+			log_add(log_Fatal, "NetManager_updateEvent() failed: %s.",
 					strerror(errno));
 			explode();
 			// TODO: better error handling
