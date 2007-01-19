@@ -25,7 +25,7 @@ Changes towards version 0.7:
 0.6.1 (maintenance release):
 - The Unicode Private Use Area is no longer considered printable.  This 
   is a stopgap to handle unusual behavior with text entry under OS X.  
-  See bug #942 for more details - Michael
+  From Nic; see bug #942 for more details - Michael
 - Do not rely on GL_UNPACK_SKIP_* arguments, which some OpenGL drivers 
   mishandle (Bug #914) - Michael
 - Do not overwrite GLOBAL_SIS (CrewEnlisted) when leaving Hyperspace 
