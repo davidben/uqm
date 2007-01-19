@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- Added -w and -x commandline options, to counter -f and -o; used these 
+  to implement "Safe Mode" links in the Win32 installer (Bug #946)
+  - Michael
 - OpenGL texture loading uses surface pitch instead of screen width.  
   This should head off future bugs similar to Bug #740 (this issue was 
   reported as Bug #956) - Michael

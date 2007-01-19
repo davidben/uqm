@@ -498,7 +498,7 @@ enum
 #endif
 };
 
-static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:v";
+static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:vwx";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -521,6 +521,8 @@ static struct option longOptions[] =
 	{"logfile", 1, NULL, 'l'},
 	{"intro", 1, NULL, 'i'},
 	{"version", 0, NULL, 'v'},
+	{"windowed", 0, NULL, 'w'},
+	{"nogl", 0, NULL, 'x'},
 
 	//  options with no short equivalent:
 	{"cscan", 1, NULL, CSCAN_OPT},
@@ -624,8 +626,14 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 			case 'f':
 				options->gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
 				break;
+			case 'w':
+				options->gfxFlags &= ~TFB_GFXFLAGS_FULLSCREEN;
+				break;
 			case 'o':
 				options->gfxDriver = TFB_GFXDRIVER_SDL_OPENGL;
+				break;
+			case 'x':
+				options->gfxDriver = TFB_GFXDRIVER_SDL_PURE;
 				break;
 			case 'c':
 				// make sure whatever was set by saved config is cleared
@@ -969,7 +977,9 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
 			"works only with --opengl)");
 	log_add (log_User, "  -f, --fullscreen (default off)");
+	log_add (log_User, "  -w, --windowed (default on)");
 	log_add (log_User, "  -o, --opengl (default off)");
+	log_add (log_User, "  -x, --nogl (default on)");
 	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
 			"hq or none (default) )");
 	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "

@@ -438,6 +438,8 @@ Section -ShortcutsAndIcons
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\The Ur-Quan Masters.lnk" "$INSTDIR\uqm.exe" $UQMARGS
+    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\UQM (Safe Mode).lnk" "$INSTDIR\uqm.exe" "-wx -r 640x480 -c none --sound=none -g 1.0 -M 100 -S 100 -T 100 -q medium"
+    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\UQM (Safe OpenGL).lnk" "$INSTDIR\uqm.exe" "-wo -r 640x480 -c none --sound=none -g 1.0 -M 100 -S 100 -T 100 -q medium"
     CreateDirectory "$SMPROGRAMS\$ICONS_GROUP\Documentation"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\AUTHORS.lnk" "$INSTDIR\AUTHORS.txt"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\COPYING.lnk" "$INSTDIR\COPYING.txt"
@@ -548,6 +550,8 @@ Section Uninstall
   Delete "$SMPROGRAMS\$ICONS_GROUP\Saved Games.lnk"
   Delete "$DESKTOP\The Ur-Quan Masters.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\The Ur-Quan Masters.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\UQM (Safe Mode).lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\UQM (Safe OpenGL).lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Documentation\AUTHORS.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Documentation\COPYING.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Documentation\Manual.lnk"

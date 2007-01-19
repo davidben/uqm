@@ -57,11 +57,22 @@ values are 640x480 and 320x240.
 Uses full screen mode.  Pretty straightforward.  Usually good to
 combine with -r 320x240 unless you're using a scaler.
 
+	-w                 (or --windowed)
+
+Displays the game in a window.  The opposite of --fullscreen.
+
 	-o                 (or --opengl)
 
 Use OpenGL drivers.  This produces higher-quality graphics, and may be
 faster as well -- but it also may not work on older cards.  It also
 permits use of any screen resolution.
+
+	-x                 (or --nogl)
+
+Do not use OpenGL drivers.  This is more likely to run on systems with
+poor or no 3D acceleration, and is often faster, especially on older
+or less well supported cards.  Only the 320x240 and 640x480
+resolutions are available when not using OpenGL.
 
 	-c                 (or --scale=mode)
 
