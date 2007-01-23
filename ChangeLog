@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Typo fix in Starbase speech (bug #959) - Michael
 - (MacOS) Don't package up .svn dirs with 'build.sh uqm install' (bug #958),
   from Nic.
 - No more extra newlines to log_add() calls for libs/network/ code - SvdB
