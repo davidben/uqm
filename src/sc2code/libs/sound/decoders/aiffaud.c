@@ -244,8 +244,6 @@ read_be_32 (uio_Stream *fp, uint32 *v)
 static bool
 read_be_f80 (uio_Stream *fp, sint32 *v)
 {
-	double t1 = 1;
-	double t2 = 7500;
 	int sign, exp;
 	int shift;
 	uint16 se;
