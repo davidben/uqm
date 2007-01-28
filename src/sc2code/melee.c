@@ -1033,8 +1033,7 @@ ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp)
 }
 
 static int
-LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI,
-		UNICODE* pFilePath)
+LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI, UNICODE* pFilePath)
 {
 	UNICODE file[NAME_MAX];	// local buf if needed
 	UNICODE *pfile;
@@ -2174,6 +2173,7 @@ StartMeleeButtonPressed (PMELEE_STATE pMS)
 		return;
 	}
 	
+#ifdef NETPLAY
 	if ((PlayerControl[0] & NETWORK_CONTROL) &&
 			(PlayerControl[1] & NETWORK_CONTROL))
 	{
@@ -2193,7 +2193,6 @@ StartMeleeButtonPressed (PMELEE_STATE pMS)
 		return;
 	}
 
-#ifdef NETPLAY
 	// Check whether all network parties are ready;
 	{
 		COUNT player;

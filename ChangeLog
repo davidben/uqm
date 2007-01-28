@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fix compilation without Netplay support - SvdB
 - Added limited AIFF sound file decoder for playing 3DO originals;
   SDX2 decoder by SvdB - Alex
 - Typo fix in Starbase speech (bug #959) - Michael
