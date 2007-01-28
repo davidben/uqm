@@ -29,6 +29,7 @@
 #include "dukaud.h"
 #include "modaud.h"
 #include "oggaud.h"
+#include "aiffaud.h"
 
 
 #define MAX_REG_DECODERS 31
@@ -133,6 +134,7 @@ static TFB_RegSoundDecoder sd_decoders[MAX_REG_DECODERS + 1] =
 	{true,  true,  "mod", &moda_DecoderVtbl},
 	{true,  true,  "ogg", &ova_DecoderVtbl},
 	{true,  true,  "duk", &duka_DecoderVtbl},
+	{true,  true,  "aif", &aifa_DecoderVtbl},
 	{false, false,  NULL, NULL}, // null term
 };
 
