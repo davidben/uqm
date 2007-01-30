@@ -449,20 +449,20 @@ RemoveInputState (int template, int control, int index)
 void
 RebindInputState (int template, int control, int index)
 {
-	SDL_Event e;
+	VCONTROL_GESTURE g;
 
 	/* Remove the old binding on this spot */
 	RemoveInputState (template, control, index);
 
 	/* Wait for the next interesting bit of user input */
-	VControl_ClearEvent ();
-	while (!VControl_GetLastEvent (&e))
+	VControl_ClearGesture ();
+	while (!VControl_GetLastGesture (&g))
 	{
 		TaskSwitch ();
 	}
 
 	/* And now, add the new binding. */
-	VControl_AddBinding (&e, &ImmediateInputState.key[template][control]);
+	VControl_AddGestureBinding (&g, &ImmediateInputState.key[template][control]);
 }
 
 void

@@ -48,9 +48,6 @@ typedef struct {
 } VCONTROL_GESTURE;			
 
 /* Control of bindings */
-int  VControl_AddBinding (SDL_Event *e, int *target);
-void VControl_RemoveBinding (SDL_Event *e, int *target);
-
 int  VControl_AddGestureBinding (VCONTROL_GESTURE *g, int *target);
 void VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target);
 
@@ -116,10 +113,10 @@ void VControl_StartIter (int *target);
 void VControl_StartIterByName (char *targetname);
 int  VControl_NextBinding (VCONTROL_GESTURE *gesture);
 
-/* Tracking the "last interesting event."  Used to poll to find new
+/* Tracking the "last interesting gesture."  Used to poll to find new
    control keys. */
 
-void VControl_ClearEvent (void);
-int  VControl_GetLastEvent (SDL_Event *e);
+void VControl_ClearGesture (void);
+int  VControl_GetLastGesture (VCONTROL_GESTURE *g);
 
 #endif

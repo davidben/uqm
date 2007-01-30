@@ -233,6 +233,7 @@ key_uninit (void)
 	for (i = 0; i < num_sdl_keys; i++)
 		bindings[i] = NULL;
 	HFree (bindings);
+	bindings = NULL;
 	pool = NULL;
 
 #ifdef HAVE_JOYSTICK
@@ -402,59 +403,38 @@ deactivate (keybinding *i)
 	}
 }
 
-int
-VControl_AddBinding (SDL_Event *e, int *target)
-{
-	int result;
-	switch (e->type)
-	{
-	case SDL_KEYDOWN:
-		result = VControl_AddKeyBinding (e->key.keysym.sym, target);
-		break;
-
-#ifdef HAVE_JOYSTICK
-	case SDL_JOYAXISMOTION:
-		result = VControl_AddJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
-		break;
-	case SDL_JOYHATMOTION:
-		result = VControl_AddJoyHatBinding (e->jhat.which, e->jhat.hat, e->jhat.value, target);
-		break;
-	case SDL_JOYBUTTONDOWN:
-		result = VControl_AddJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
-		break;
-#endif /* HAVE_JOYSTICK */
-
-	default:
-		log_add (log_Warning, "VControl_AddBinding didn't understand argument event");
-		result = -1;
-		break;
-	}
-	return result;
-}
-
-void
-VControl_RemoveBinding (SDL_Event *e, int *target)
+static void
+event2gesture (SDL_Event *e, VCONTROL_GESTURE *g)
 {
 	switch (e->type)
 	{
 	case SDL_KEYDOWN:
-		VControl_RemoveKeyBinding (e->key.keysym.sym, target);
+		g->type = VCONTROL_KEY;
+		g->gesture.key = e->key.keysym.sym;
 		break;
 
 #ifdef HAVE_JOYSTICK
 	case SDL_JOYAXISMOTION:
-		VControl_RemoveJoyAxisBinding (e->jaxis.which, e->jaxis.axis, (e->jaxis.value < 0) ? -1 : 1, target);
+		g->type = VCONTROL_JOYAXIS;
+		g->gesture.axis.port = e->jaxis.which;
+		g->gesture.axis.index = e->jaxis.axis;
+		g->gesture.axis.polarity = (e->jaxis.value < 0) ? -1 : 1;
 		break;
 	case SDL_JOYHATMOTION:
-		VControl_RemoveJoyHatBinding (e->jhat.which, e->jhat.hat, e->jhat.value, target);
+		g->type = VCONTROL_JOYHAT;
+		g->gesture.hat.port = e->jhat.which;
+		g->gesture.hat.index = e->jhat.hat;
+		g->gesture.hat.dir = e->jhat.value;
 		break;
 	case SDL_JOYBUTTONDOWN:
-		VControl_RemoveJoyButtonBinding (e->jbutton.which, e->jbutton.button, target);
+		g->type = VCONTROL_JOYBUTTON;
+		g->gesture.button.port = e->jbutton.which;
+		g->gesture.button.index = e->jbutton.button;
 		break;
 #endif /* HAVE_JOYSTICK */
 
 	default:
-		log_add (log_Warning, "VControl_RemoveBinding didn't understand argument event");
+		g->type = VCONTROL_NONE;
 		break;
 	}
 }
@@ -515,7 +495,6 @@ VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target)
 		break;
 	}
 }
-
 
 int
 VControl_AddKeyBinding (SDLKey symbol, int *target)
@@ -1242,17 +1221,17 @@ VControl_NextBinding (VCONTROL_GESTURE *gesture)
 /* Tracking the last interesting event */
 
 void
-VControl_ClearEvent (void)
+VControl_ClearGesture (void)
 {
 	event_ready = 0;
 }
 
 int
-VControl_GetLastEvent (SDL_Event *e)
+VControl_GetLastGesture (VCONTROL_GESTURE *g)
 {
-	if (event_ready && e != NULL)
+	if (event_ready && g != NULL)
 	{
-		*e = last_interesting;
+		event2gesture(&last_interesting, g);
 	}
 	return event_ready;
 }		
