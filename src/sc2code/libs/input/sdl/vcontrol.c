@@ -20,7 +20,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "vcontrol.h"
-#include "vcontrol_malloc.h"
+#include "misc.h"
 #include "keynames.h"
 #include "libs/log.h"
 #include "libs/reslib.h"
@@ -89,7 +89,7 @@ static SDL_Event last_interesting;
 static keypool *
 allocate_key_chunk (void)
 {
-	keypool *x = vctrl_malloc (sizeof (keypool));
+	keypool *x = HMalloc (sizeof (keypool));
 	if (x)
 	{
 		int i;
@@ -111,7 +111,7 @@ free_key_pool (keypool *x)
 	if (x)
 	{
 		free_key_pool (x->next);
-		vctrl_free (x);
+		HFree (x);
 	}
 }
 
@@ -145,9 +145,9 @@ create_joystick (int index)
 		x->numaxes = axes;
 		x->numbuttons = buttons;
 		x->numhats = hats;
-		x->axes = vctrl_malloc (sizeof (axis_type) * axes);
-		x->buttons = vctrl_malloc (sizeof (keybinding *) * buttons);
-		x->hats = vctrl_malloc (sizeof (hat_type) * hats);
+		x->axes = HMalloc (sizeof (axis_type) * axes);
+		x->buttons = HMalloc (sizeof (keybinding *) * buttons);
+		x->hats = HMalloc (sizeof (hat_type) * hats);
 		for (j = 0; j < axes; j++)
 		{
 			x->axes[j].neg = x->axes[j].pos = NULL;
@@ -178,9 +178,9 @@ destroy_joystick (int index)
 	{
 		SDL_JoystickClose (stick);
 		joysticks[index].stick = NULL;
-		vctrl_free (joysticks[index].axes);
-		vctrl_free (joysticks[index].buttons);
-		vctrl_free (joysticks[index].hats);
+		HFree (joysticks[index].axes);
+		HFree (joysticks[index].buttons);
+		HFree (joysticks[index].hats);
 		joysticks[index].numaxes = joysticks[index].numbuttons = 0;
 		joysticks[index].axes = NULL;
 		joysticks[index].buttons = NULL;
@@ -196,7 +196,7 @@ key_init (void)
 	int i;
 	pool = allocate_key_chunk ();
 	(void)SDL_GetKeyState (&num_sdl_keys);
-	bindings = (keybinding **) vctrl_malloc (sizeof (keybinding *) * num_sdl_keys);
+	bindings = (keybinding **) HMalloc (sizeof (keybinding *) * num_sdl_keys);
 	for (i = 0; i < num_sdl_keys; i++)
 		bindings[i] = NULL;
 
@@ -207,7 +207,7 @@ key_init (void)
 	joycount = SDL_NumJoysticks ();
 	if (joycount)
 	{
-		joysticks = vctrl_malloc (sizeof (joystick) * joycount);
+		joysticks = HMalloc (sizeof (joystick) * joycount);
 		for (i = 0; i < joycount; i++)
 		{
 			joysticks[i].stick = NULL;	
@@ -232,13 +232,13 @@ key_uninit (void)
 	free_key_pool (pool);
 	for (i = 0; i < num_sdl_keys; i++)
 		bindings[i] = NULL;
-	vctrl_free (bindings);
+	HFree (bindings);
 	pool = NULL;
 
 #ifdef HAVE_JOYSTICK
 	for (i = 0; i < joycount; i++)
 		destroy_joystick (i);
-	vctrl_free (joysticks);
+	HFree (joysticks);
 #endif /* HAVE_JOYSTICK */
 }
 
