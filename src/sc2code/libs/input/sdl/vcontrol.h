@@ -29,6 +29,7 @@ void VControl_Uninit (void);
    iterators and used to construct bindings. */
 
 typedef enum {
+	VCONTROL_NONE,
 	VCONTROL_KEY,
 	VCONTROL_JOYAXIS,
 	VCONTROL_JOYBUTTON,
