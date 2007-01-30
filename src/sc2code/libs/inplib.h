@@ -55,5 +55,9 @@ void RebindInputState (int template, int control, int index);
 
 void SaveKeyConfiguration (uio_DirHandle *path, const char *fname);
 
+/* Separate inputs into frames for dealing with very fast inputs */
+
+void BeginInputFrame (void);
+
 #endif /* _INPLIB_H */
 

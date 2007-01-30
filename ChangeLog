@@ -1,5 +1,6 @@
 Changes towards version 0.7:
-- Remove the unnecessary VControl memory abstraction layer - Michael
+- Any input will register for at least one frame (Bug #864) - Michael
+- Many VControl cleanups - Michael
 - Fix compilation without Netplay support - SvdB
 - Added limited AIFF sound file decoder for playing 3DO originals;
   SDX2 decoder by SvdB - Alex

@@ -478,4 +478,10 @@ SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
 	}
 }
 
+void
+BeginInputFrame (void)
+{
+	VControl_BeginFrame ();
+}
+
 #endif

@@ -385,7 +385,7 @@ activate (keybinding *i)
 {
 	while (i != NULL)
 	{
-		*(i->target) = *(i->target)+1;
+		*(i->target) = (*(i->target)+1) | VCONTROL_STARTBIT;
 		i = i->next;
 	}
 }
@@ -395,9 +395,10 @@ deactivate (keybinding *i)
 {
 	while (i != NULL)
 	{
-		if (*(i->target) > 0)
+		int v = *(i->target) & VCONTROL_MASK;
+		if (v > 0)
 		{
-			*(i->target) = *(i->target)-1;
+			*(i->target) = (v-1) | (*(i->target) & VCONTROL_STARTBIT);
 		}
 		i = i->next;
 	}
@@ -739,7 +740,7 @@ VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target)
 }
 
 void
-VControl_RemoveAllBindings ()
+VControl_RemoveAllBindings (void)
 {
 	key_uninit ();
 	key_init ();
@@ -861,7 +862,7 @@ VControl_ProcessJoyHat (int port, int which, Uint8 value)
 }
 
 void
-VControl_ResetInput ()
+VControl_ResetInput (void)
 {
 	/* Step through every valid entry in the binding pool and zero
 	 * them out.  This will probably zero entries multiple times;
@@ -876,6 +877,28 @@ VControl_ResetInput ()
 			if(base->pool[i].target)
 			{
 				*(base->pool[i].target) = 0;
+			}
+		}
+		base = base->next;
+	}
+}
+
+void
+VControl_BeginFrame (void)
+{
+	/* Step through every valid entry in the binding pool and zero
+	 * out the frame-start bit.  This will probably zero entries
+	 * multiple times; oh well, no harm done. */
+
+	keypool *base = pool;
+	while (base != NULL)
+	{
+		int i;
+		for (i = 0; i < POOL_CHUNK_SIZE; i++)
+		{
+			if(base->pool[i].target)
+			{
+				*(base->pool[i].target) &= VCONTROL_MASK;
 			}
 		}
 		base = base->next;

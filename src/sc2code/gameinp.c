@@ -233,6 +233,7 @@ UpdateInputState (void)
 	CurrentInputState = ImmediateInputState;
 	OldInputState = CachedInputState;
 	CachedInputState = ImmediateInputState;
+	BeginInputFrame ();
 	NewTime = GetTimeCounter ();
 	if (_gestalt_keys)
 	{

@@ -63,6 +63,9 @@ void VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target);
 
 void VControl_RemoveAllBindings (void);
 
+/* Signal to VControl that a frame is about to begin. */
+void VControl_BeginFrame (void);
+
 /* The listener.  Routines besides HandleEvent may be used to 'fake' inputs without 
  * fabricating an SDL_Event. 
  */
@@ -118,5 +121,15 @@ int  VControl_NextBinding (VCONTROL_GESTURE *gesture);
 
 void VControl_ClearGesture (void);
 int  VControl_GetLastGesture (VCONTROL_GESTURE *g);
+
+/* Constants for handling the "Start bit."  If a gesture is made, and
+ * then ends, within a single frame, it will still, for one frame,
+ * have a nonzero value.  This is because Bit 16 will be on for the
+ * first frame a gesture is struck.  This bit is cleared when
+ * VControl_BeginFrame() is called.  These constants are used to mask
+ * out results if necessary. */
+
+#define VCONTROL_STARTBIT 0x10000
+#define VCONTROL_MASK     0x0FFFF
 
 #endif
