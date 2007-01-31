@@ -719,6 +719,14 @@ SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sc2code\libs\sound\decoders\aiffaud.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\sound\decoders\aiffaud.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\sound\decoders\decoder.c
 # End Source File
 # Begin Source File
@@ -1332,10 +1340,6 @@ SOURCE=..\sc2code\libs\mikmod\virtch_common.c
 # Begin Group "network"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\network\bytesex.h
-# End Source File
 # Begin Group "connect"
 
 # PROP Default_Filter ""
@@ -1364,7 +1368,6 @@ SOURCE=..\sc2code\libs\network\connect\resolve.c
 SOURCE=..\sc2code\libs\network\connect\resolve.h
 # End Source File
 # End Group
-
 # Begin Group "netmanager"
 
 # PROP Default_Filter ""
@@ -1382,11 +1385,11 @@ SOURCE=..\sc2code\libs\network\netmanager\ndindex.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager_common.ci
+SOURCE=..\sc2code\libs\network\netmanager\netmanager.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager.h
+SOURCE=..\sc2code\libs\network\netmanager\netmanager_common.ci
 # End Source File
 # Begin Source File
 
@@ -1397,23 +1400,6 @@ SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.c
 SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.h
 # End Source File
 # End Group
-
-# Begin Source File
-
-SOURCE=..\sc2code\libs\network\netport.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\network\netport.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\network\network_win.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\network\network.h
-# End Source File
 # Begin Group "socket"
 
 # PROP Default_Filter ""
@@ -1434,13 +1420,31 @@ SOURCE=..\sc2code\libs\network\socket\socket_win.c
 SOURCE=..\sc2code\libs\network\socket\socket_win.h
 # End Source File
 # End Group
+# Begin Source File
 
+SOURCE=..\sc2code\libs\network\bytesex.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netport.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\netport.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\network.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\network\network_win.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\network\wspiapiwrap.h
 # End Source File
 # End Group
-
 # Begin Source File
 
 SOURCE=..\sc2code\libs\alarm.h
@@ -2449,14 +2453,34 @@ SOURCE=..\sc2code\comm\commall.h
 # Begin Group "netplay"
 
 # PROP Default_Filter ""
+# Begin Group "proto"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checksum.c
+SOURCE=..\sc2code\netplay\proto\npconfirm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checksum.h
+SOURCE=..\sc2code\netplay\proto\npconfirm.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\ready.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\ready.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\reset.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\proto\reset.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\sc2code\netplay\checkbuf.c
@@ -2464,6 +2488,14 @@ SOURCE=..\sc2code\netplay\checkbuf.c
 # Begin Source File
 
 SOURCE=..\sc2code\netplay\checkbuf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checksum.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\checksum.h
 # End Source File
 # Begin Source File
 
@@ -2495,14 +2527,6 @@ SOURCE=..\sc2code\netplay\netinput.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netoptions.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\netoptions.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\netplay\netmelee.c
 # End Source File
 # Begin Source File
@@ -2516,6 +2540,14 @@ SOURCE=..\sc2code\netplay\netmisc.c
 # Begin Source File
 
 SOURCE=..\sc2code\netplay\netmisc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netoptions.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\netplay\netoptions.h
 # End Source File
 # Begin Source File
 
@@ -2571,49 +2603,20 @@ SOURCE=..\sc2code\netplay\packethandlers.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packetsenders.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\packetsenders.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\netplay\packetq.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\netplay\packetq.h
 # End Source File
-# Begin Group "proto"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\npconfirm.c
+SOURCE=..\sc2code\netplay\packetsenders.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\npconfirm.h
+SOURCE=..\sc2code\netplay\packetsenders.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\proto\ready.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\proto\ready.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\proto\reset.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\netplay\proto\reset.h
-# End Source File
-# End Group
-
 # End Group
 # Begin Group "planets"
 
