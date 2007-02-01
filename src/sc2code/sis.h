@@ -148,7 +148,7 @@ enum
 	BOMB_MODULE_4,
 	BOMB_MODULE_5,
 
-	NUM_MODULES = 20 /* must be last entry */
+	NUM_MODULES /* must be last entry */
 };
 
 #define EMPTY_SLOT NUM_MODULES
