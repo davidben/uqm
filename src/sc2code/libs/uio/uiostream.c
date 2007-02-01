@@ -24,8 +24,10 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "uioutils.h"
+#include "utils.h"
 #ifdef uio_MEM_DEBUG
 #	include "memdebug.h"
 #endif
@@ -265,6 +267,46 @@ uio_ungetc(int c, uio_Stream *stream) {
 	return (int) EOF;
 			// not implemented
 //	return c;
+}
+
+// NB. POSIX allows errno to be set for vsprintf(), but does not require it:
+// "The value of errno may be set to nonzero by a library function call
+// whether or not there is an error, provided the use of errno is not
+// documented in the description of the function in this International
+// Standard." The latter is the case for vsprintf().
+int
+uio_vfprintf(uio_Stream *stream, const char *format, va_list args) {
+	// This could be done faster, but going through snprintf() is easiest,
+	// and is fast enough for now.
+	char *buf;
+	int putResult;
+	int savedErrno;
+
+	buf = uio_vasprintf(format, args);
+	if (buf == NULL) {
+		// errno may or may not be set
+		return -1;
+	}
+
+	putResult = uio_fputs(buf, stream);
+	savedErrno = errno;
+
+	uio_free(buf);
+
+	errno = savedErrno;
+	return putResult;
+}
+
+int
+uio_fprintf(uio_Stream *stream, const char *format, ...) {
+	va_list args;
+	int result;
+
+	va_start(args, format);
+	result = uio_vfprintf(stream, format, args);
+	va_end(args);
+
+	return result;
 }
 
 int

@@ -21,6 +21,8 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
+#include <stdarg.h>
+
 #ifdef uio_INTERNAL
 typedef struct uio_StdioAccessHandle uio_StdioAccessHandle;
 #else
@@ -34,6 +36,8 @@ uio_StdioAccessHandle *uio_getStdioAccess(uio_DirHandle *dir,
 const char *uio_StdioAccessHandle_getPath(uio_StdioAccessHandle *handle);
 void uio_releaseStdioAccess(uio_StdioAccessHandle *handle);
 
+char *uio_vasprintf(const char *format, va_list args);
+char *uio_asprintf(const char *format, ...);
 
 #endif  /* _UTILS_H */
 

@@ -26,6 +26,8 @@ typedef struct uio_Stream uio_Stream;
 
 #include "io.h"
 
+#include <stdarg.h>
+
 
 uio_Stream *uio_fopen(uio_DirHandle *dir, const char *path, const char *mode);
 int uio_fclose(uio_Stream *stream);
@@ -34,6 +36,8 @@ char *uio_fgets(char *buf, int size, uio_Stream *stream);
 int uio_fgetc(uio_Stream *stream);
 #define uio_getc uio_fgetc
 int uio_ungetc(int c, uio_Stream *stream);
+int uio_vfprintf(uio_Stream *stream, const char *format, va_list args);
+int uio_fprintf(uio_Stream *stream, const char *format, ...);
 int uio_fputc(int c, uio_Stream *stream);
 #define uio_putc uio_fputc
 int uio_fputs(const char *s, uio_Stream *stream);

@@ -364,3 +364,98 @@ uio_StdioAccessHandle_free(uio_StdioAccessHandle *handle) {
 	uio_free(handle);
 }
 
+// The result should be freed using uio_free().
+// NB. POSIX allows errno to be set for vsprintf(), but does not require it:
+// "The value of errno may be set to nonzero by a library function call
+// whether or not there is an error, provided the use of errno is not
+// documented in the description of the function in this International
+// Standard." The latter is the case for vsprintf().
+char *
+uio_vasprintf(const char *format, va_list args) {
+	// TODO: If there is a system vasprintf, use that.
+	// XXX:  That would mean that the allocation would always go through
+	//       malloc() or so, instead of uio_malloc(),  which may not be
+	//       desirable.
+
+	char *buf;
+	size_t bufSize = 128;
+			// Start with enough for one screen line, and a power of 2,
+			// which might give faster result with allocations.
+
+	buf = uio_malloc(bufSize);
+	if (buf == NULL) {
+		// errno is set.
+		return NULL;
+	}
+
+	for (;;) {
+		int printResult = vsnprintf(buf, bufSize, format, args);
+		if (printResult < 0) {
+			// This means the buffer was not small enough, but vsnprintf()
+			// does not give us any clue on how large it should be.
+			// Note that this does not happen with a C'99 compliant
+			// vsnprintf(), but it will happen on MS Windows, and on
+			// glibc before version 2.1.
+			bufSize *= 2;
+		} else if ((unsigned int) printResult >= bufSize) {
+			// The buffer was too small, but printResult contains the size
+			// that the buffer needs to be (excluding the '\0' character).
+			bufSize = printResult + 1;
+		} else {
+			// Success.
+			if ((unsigned int) printResult + 1 != bufSize) {
+				// Shorten the resulting buffer to the size that was
+				// actually needed.
+				char *newBuf = uio_realloc(buf, printResult + 1);
+				if (newBuf == NULL) {
+					// We could have returned the (overly large) original
+					// buffer, but the unused memory might not be
+					// acceptable, and the program would be likely to run
+					// into problems sooner or later anyhow.
+					int savedErrno = errno;
+					uio_free(buf);
+					errno = savedErrno;
+					return NULL;
+				}
+				return newBuf;
+			}
+
+			return buf;
+		}
+
+		{
+			char *newBuf = uio_realloc(buf, bufSize);
+			if (newBuf == NULL)
+			{
+				int savedErrno = errno;
+				uio_free(buf);
+				errno = savedErrno;
+				return NULL;
+			}
+			buf = newBuf;
+		}
+	}
+}
+
+// As uio_vasprintf(), but with an argument list.
+char *
+uio_asprintf(const char *format, ...) {
+	// TODO: If there is a system asprintf, use that.
+	// XXX:  That would mean that the allocation would always go through
+	//       malloc() or so, instead of uio_malloc(),  which may not be
+	//       desirable.
+
+	va_list args;
+	char *result;
+	int savedErrno;
+
+	va_start(args, format);
+	result = uio_vasprintf(format, args);
+	savedErrno = errno;
+	va_end(args);
+
+	errno = savedErrno;
+	return result;
+}
+
+
