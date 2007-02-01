@@ -32,25 +32,24 @@
 #include "libs/mathlib.h"
 #include "libs/misc.h"
 
-
 ChecksumBuffer localChecksumBuffer;
 
 void
 crc_processEXTENT(crc_State *state, const EXTENT *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processEXTENT().");
+	crc_log("START crc_processEXTENT().");
 #endif
 	crc_processCOORD(state, val->width);
 	crc_processCOORD(state, val->height);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processEXTENT().");
+	crc_log("END   crc_processEXTENT().");
 #endif
 }
 
 void
 crc_processVELOCITY_DESC(crc_State *state, const VELOCITY_DESC *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processVELOCITY_DESC().");
+	crc_log("START crc_processVELOCITY_DESC().");
 #endif
 	crc_processCOUNT(state, val->TravelAngle);
 	crc_processEXTENT(state, &val->vector);
@@ -58,19 +57,19 @@ crc_processVELOCITY_DESC(crc_State *state, const VELOCITY_DESC *val) {
 	crc_processEXTENT(state, &val->error);
 	crc_processEXTENT(state, &val->incr);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processVELOCITY_DESC().");
+	crc_log("END   crc_processVELOCITY_DESC().");
 #endif
 }
 
 void
 crc_processPOINT(crc_State *state, const POINT *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processPOINT().");
+	crc_log("START crc_processPOINT().");
 #endif
 	crc_processCOORD(state, val->x);
 	crc_processCOORD(state, val->y);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processPOINT().");
+	crc_log("END   crc_processPOINT().");
 #endif
 }
 
@@ -78,24 +77,24 @@ crc_processPOINT(crc_State *state, const POINT *val) {
 void
 crc_processSTAMP(crc_State *state, const STAMP *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processSTAMP().");
+	crc_log("START crc_processSTAMP().");
 #endif
 	crc_processPOINT(state, val->origin);
 	crc_processFRAME(state, val->frame);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processSTAMP().");
+	crc_log("END   crc_processSTAMP().");
 #endif
 }
 
 void
 crc_processINTERSECT_CONTROL(crc_State *state, const INTERSECT_CONTROL *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processINTERSECT_CONTROL().");
+	crc_log("START crc_processINTERSECT_CONTROL().");
 #endif
 	crc_processTIME_VALUE(state, val->last_time_val);
 	crc_processPOINT(state, &val->EndPoint);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processINTERSECT_CONTROL().");
+	crc_log("END   crc_processINTERSECT_CONTROL().");
 #endif
 }
 #endif
@@ -108,7 +107,7 @@ crc_processSTATE(crc_State *state, const STATE *val) {
 void
 crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processELEMENT().");
+	crc_log("START crc_processELEMENT().");
 #endif
 	crc_processELEMENT_FLAGS(state, val->state_flags);
 	crc_processCOUNT(state, val->life_span);
@@ -133,7 +132,7 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 	crc_processSTATE(state, &val->current);
 	crc_processSTATE(state, &val->next);
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processELEMENT().");
+	crc_log("END   crc_processELEMENT().");
 #endif
 }
 
@@ -144,13 +143,13 @@ crc_processDispQueue(crc_State *state) {
 
 #ifdef DUMP_CRC_OPS
 	size_t i = 0;
-	log_add(log_Debug, "START crc_processDispQueue().");
+	crc_log("START crc_processDispQueue().");
 #endif
 	for (element = GetHeadElement(); element != 0; element = nextElement) {
 		ELEMENTPTR elementPtr;
 
 #ifdef DUMP_CRC_OPS
-		log_add(log_Debug, "===== disp_q[%d]:", i);
+		crc_log("===== disp_q[%d]:", i);
 #endif
 		LockElement(element, &elementPtr);
 
@@ -163,7 +162,7 @@ crc_processDispQueue(crc_State *state) {
 #endif
 	}
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processDispQueue().");
+	crc_log("END   crc_processDispQueue().");
 #endif
 }
 
@@ -172,7 +171,7 @@ crc_processRNG(crc_State *state) {
 	DWORD seed;
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "START crc_processRNG().");
+	crc_log("START crc_processRNG().");
 #endif
 
 	seed = TFB_SeedRandom(0);
@@ -182,14 +181,14 @@ crc_processRNG(crc_State *state) {
 			// Restore the old seed.
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processRNG().");
+	crc_log("END   crc_processRNG().");
 #endif
 }
 
 void
 crc_processState(crc_State *state) {
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "--------------------\n"
+	crc_log("--------------------\n"
 			"START crc_processState() (frame %u).", battleFrameCount);
 #endif
 
@@ -197,7 +196,7 @@ crc_processState(crc_State *state) {
 	crc_processDispQueue(state);
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "END   crc_processState() (frame %u).",
+	crc_log("END   crc_processState() (frame %u).",
 			battleFrameCount);
 #endif
 }

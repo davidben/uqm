@@ -43,6 +43,12 @@ typedef void (*NetConnection_ResetCallback)(NetConnection *conn, void *arg);
 #ifdef NETPLAY_CHECKSUM
 #	include "checkbuf.h"
 #endif
+#if defined(NETPLAY_STATISTICS) || defined(NETCONNECTION_INTERNAL)
+#	include "packet.h"
+#endif
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+#	include "libs/uio.h"
+#endif
 
 struct NetConnectionError {
 	NetState state;
@@ -54,8 +60,6 @@ struct NetConnectionError {
 };
 
 #ifdef NETPLAY_STATISTICS
-#include "packet.h"
-
 struct NetStatistics {
 	size_t packetsReceived;
 	size_t packetTypeReceived[PACKET_NUM];
@@ -63,6 +67,7 @@ struct NetStatistics {
 	size_t packetTypeSent[PACKET_NUM];
 };
 #endif
+
 
 #ifdef NETCONNECTION_INTERNAL
 #include "libs/net.h"
@@ -158,6 +163,10 @@ struct NetConnection {
 #ifdef NETPLAY_CHECKSUM
 	ChecksumBuffer checksumBuffer;
 #endif
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+	uio_Stream *debugFile;
+#endif
+
 	NetConnection_ConnectCallback connectCallback;
 	NetConnection_CloseCallback closeCallback;
 			// Called when the NetConnection becomes disconnected.
@@ -227,6 +236,11 @@ void NetConnection_setResetCallback(NetConnection *conn,
 NetConnection_ResetCallback NetConnection_getResetCallback(
 		const NetConnection *conn);
 void *NetConnection_getResetCallbackArg(const NetConnection *conn);
+
+
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+extern uio_Stream *netplayDebugFile;
+#endif
 
 
 #endif  /* _NETCONNECTION_H */

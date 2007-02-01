@@ -19,15 +19,12 @@
 #ifndef _CRC_H
 #define _CRC_H
 
+typedef struct crc_State crc_State;
+
 #include "types.h"
 
 #include <stddef.h>
 
-// If set, every CRC operation is logged. Very spammy.
-#undef DUMP_CRC_OPS
-
-
-typedef struct crc_State crc_State;
 struct crc_State {
 	uint32 crc;
 };
@@ -39,6 +36,18 @@ void crc_processUint16(crc_State *state, uint16 val);
 void crc_processUint32(crc_State *state, uint32 val);
 uint32 crc_finish(const crc_State *state);
 
+
+#ifdef DUMP_CRC_OPS
+#include "netconnection.h"
+		// for netplayDebugFile
+//#define crc_log(...)  log_add (logDebug, __VA_ARGS__)
+#define crc_log(...)  if (netplayDebugFile != NULL) \
+		{ \
+			uio_fprintf (netplayDebugFile, __VA_ARGS__); \
+			uio_putc ('\n', netplayDebugFile); \
+		} else \
+			(void) 0
+#endif
 
 #endif  /* _CRC_H */
 

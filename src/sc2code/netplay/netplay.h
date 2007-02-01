@@ -33,6 +33,9 @@
 
 #define NETPLAY_DEBUG
 		/* Extra debugging for netplay */
+//#define NETPLAY_DEBUG_FILE
+		/* Dump extra debugging information to file.
+		 * Implies NETPLAY_DEBUG.*/
 #define NETPLAY_STATISTICS
 		/* Keep some statistics */
 #define NETPLAY_CHECKSUM
@@ -54,6 +57,12 @@
 		 * before starting retrying them all. In ms. */
 #define NETPLAY_LISTEN_BACKLOG 2
 		/* Second argument to listen(). */
+
+
+#ifdef NETPLAY_DEBUG_FILE
+#	define NETPLAY_DEBUG
+#	define DUMP_CRC_OPS
+#endif
 
 
 #endif  /* _NETPLAY_H */

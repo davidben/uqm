@@ -25,9 +25,17 @@
 #if defined(DEBUG) || defined(NETPLAY_DEBUG)
 #	include "libs/log.h"
 #endif
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+#	include "options.h"
+			// for configDir
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+#	include <errno.h>
+#	include <time.h>
+#endif
 
 
 static void closeCallback(NetDescriptor *nd);
@@ -36,6 +44,9 @@ static void NetConnection_doClose(NetConnection *conn);
 
 #include "nc_connect.ci"
 
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+uio_Stream *netplayDebugFile;
+#endif
 
 // Used as initial value for Agreement structures, by structure assignment.
 const Agreement Agreement_nothingAgreed;
@@ -52,6 +63,49 @@ NetConnection_open(int player, const NetplayPeerOptions *options,
 	NetConnection *conn;
 
 	conn = malloc(sizeof (NetConnection));
+
+#if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
+	{
+		char dumpFileName[PATH_MAX];
+		time_t now;
+		struct tm *nowTm;
+		size_t strftimeResult;
+
+		now = time (NULL);
+		if (now == (time_t) -1) {
+			log_add (log_Fatal, "time() failed: %s.", strerror (errno));
+			abort ();
+		}
+
+		nowTm = localtime(&now);
+		// XXX: I would like to use localtime_r(), but it isn't very
+		// portable (yet), and adding a check for it to the build.sh script
+		// is not worth the effort for a debugging function right now.
+
+		strftimeResult = strftime (dumpFileName, sizeof dumpFileName,
+				"debug/netlog-%Y%m%d%H%M%S", nowTm);
+		if (strftimeResult == 0) {
+			log_add (log_Fatal, "strftime() failed: %s.", strerror (errno));
+			abort ();
+		}
+				
+		// The user needs to create the debug/ dir manually. If there
+		// is no debug/ dir, no log will be created.
+		conn->debugFile = uio_fopen (configDir, dumpFileName, "wt");
+		if (conn->debugFile == NULL) {
+			log_add (log_Debug, "Not creating a netplay debug log for "
+					"player %d.", player);
+		} else {
+			log_add (log_Debug, "Creating netplay debug log '%s' for "
+					"player %d.", dumpFileName, player);
+			if (netplayDebugFile == NULL) {
+				// Debug info relating to no specific network connection
+				// is sent to the first opened one.
+				netplayDebugFile = conn->debugFile;
+			}
+		}
+	}
+#endif
 
 	conn->nd = NULL;
 	conn->player = player;
@@ -129,6 +183,19 @@ NetConnection_delete(NetConnection *conn) {
 	}
 	free(conn->readBuf);
 	PacketQueue_uninit(&conn->queue);
+
+#ifdef NETPLAY_DEBUG_FILE
+	if (conn->debugFile != NULL) {
+		if (netplayDebugFile == conn->debugFile) {
+			// There may be other network connections, with an open
+			// debug file, but we don't know about that.
+			// The debugging person just has to work around that.
+			netplayDebugFile = NULL;
+		}
+		uio_fclose(conn->debugFile);
+	}
+#endif
+
 	free(conn);
 }
 
@@ -316,5 +383,4 @@ NetConnection_getStatistics(NetConnection *conn) {
 	return &conn->statistics;
 }
 #endif
-
 

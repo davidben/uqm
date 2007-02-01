@@ -16,6 +16,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "netplay.h"
+		// For DUMP_CRC_OPS
+
 #include "crc.h"
 
 #ifdef DUMP_CRC_OPS
@@ -84,7 +87,7 @@ crc_processBytes(crc_State *state, uint8 *buf, size_t bufLen) {
 		newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ *buf) & 0xff];
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "crc_processBytes(%08x, [%zu bytes]) --> %08x.",
+	crc_log("crc_processBytes(%08x, [%zu bytes]) --> %08x.",
 			state->crc, bufLen, newCrc);
 #endif
 	state->crc = newCrc;
@@ -96,7 +99,7 @@ crc_processUint8(crc_State *state, uint8 val) {
 
 	newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ val) & 0xff];
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "crc_processUint8(%08x, %02x) --> %08x.",
+	crc_log("crc_processUint8(%08x, %02x) --> %08x.",
 			state->crc, (int) val, newCrc);
 #endif
 	state->crc = newCrc;
@@ -109,7 +112,7 @@ crc_processUint16(crc_State *state, uint16 val) {
 	newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ (val & 0xff)) & 0xff];
 	newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ (val >> 8)  ) & 0xff];
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "crc_processUint16(%08x, %04x) --> %08x.",
+	crc_log("crc_processUint16(%08x, %04x) --> %08x.",
 			state->crc, (int) val, newCrc);
 #endif
 	state->crc = newCrc;
@@ -125,7 +128,7 @@ crc_processUint32(crc_State *state, uint32 val) {
 	newCrc = (newCrc >> 8) ^ crcTable[(newCrc ^ ((val >> 24)       )) & 0xff];
 
 #ifdef DUMP_CRC_OPS
-	log_add(log_Debug, "crc_processUint32(%08x, %08x) --> %08x.",
+	crc_log("crc_processUint32(%08x, %08x) --> %08x.",
 			state->crc, (int) val, newCrc);
 #endif
 	state->crc = newCrc;
