@@ -82,7 +82,14 @@ dataReceivedSingle(NetConnection *conn, const uint8 *data,
 		log_add(log_Debug, "NETPLAY: [%d] <== Received packet of type %s.\n",
 				NetConnection_getPlayerNr(conn), packetTypeData[type].name);
 	}
-#endif
+#ifdef NETPLAY_DEBUG_FILE
+	if (conn->debugFile != NULL) {
+		uio_fprintf(conn->debugFile,
+				"NETPLAY: [%d] <== Received packet of type %s.\n",
+				NetConnection_getPlayerNr(conn), packetTypeData[type].name);
+	}
+#endif  /* NETPLAY_DEBUG_FILE */
+#endif  /* NETPLAY_DEBUG */
 	
 	result = packetTypeData[type].handler(conn, data);
 	if (result == -1) {

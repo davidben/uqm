@@ -102,7 +102,15 @@ queuePacket(NetConnection *conn, Packet *packet, bool urgent) {
 				NetConnection_getPlayerNr(conn),
 				packetTypeData[packetType(packet)].name);
 	}
-#endif
+#ifdef NETPLAY_DEBUG_FILE
+	if (conn->debugFile != NULL) {
+		uio_fprintf(conn->debugFile,
+				"NETPLAY: [%d] ==> Queueing packet of type %s.\n",
+				NetConnection_getPlayerNr(conn),
+				packetTypeData[packetType(packet)].name);
+	}
+#endif  /* NETPLAY_DEBUG_FILE */
+#endif  /* NETPLAY_DEBUG */
 }
 
 // If an error occurs during sending, we leave the unsent packets in

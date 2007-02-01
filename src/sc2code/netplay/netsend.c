@@ -47,7 +47,14 @@ sendPacket(NetConnection *conn, Packet *packet) {
 	//	log_add(log_Debug, "NETPLAY: [%d] ==> Sending packet of type %s.\n",
 	//			conn->player, packetTypeData[packetType(packet)].name);
 	//}
-#endif
+#ifdef NETPLAY_DEBUG_FILE
+	if (conn->debugFile != NULL) {
+		uio_fprintf(conn->debugFile,
+				"NETPLAY: [%d] ==> Sending packet of type %s.\n",
+				conn->player, packetTypeData[packetType(packet)].name);
+	}
+#endif  /* NETPLAY_DEBUG_FILE */
+#endif  /* NETPLAY_DEBUG */
 
 	socket = NetDescriptor_getSocket(conn->nd);
 
