@@ -33,7 +33,7 @@
 
 #define NETPLAY_DEBUG
 		/* Extra debugging for netplay */
-//#define NETPLAY_DEBUG_FILE
+#define NETPLAY_DEBUG_FILE
 		/* Dump extra debugging information to file.
 		 * Implies NETPLAY_DEBUG.*/
 #define NETPLAY_STATISTICS
