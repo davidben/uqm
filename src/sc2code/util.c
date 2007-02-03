@@ -189,13 +189,22 @@ PauseGame (void)
 	//LockMutex (GraphicsLock);
 
 	while (ImmediateInputState.menu[KEY_PAUSE])
+	{
+		BeginInputFrame ();
 		TaskSwitch ();
+	}
 
 	while (!ImmediateInputState.menu[KEY_PAUSE])
+	{
+		BeginInputFrame ();
 		TaskSwitch ();
+	}
 
 	while (ImmediateInputState.menu[KEY_PAUSE])
+	{
+		BeginInputFrame ();
 		TaskSwitch ();
+	}
 
 	GamePaused = FALSE;
 
