@@ -97,10 +97,13 @@ void VControl_RegisterNameTable (VControl_NameBinding *table);
 int VControl_GetConfigFileVersion (void);
 void VControl_SetConfigFileVersion (int v);
 
+/* Translate between gestures and string representations thereof. */
+void VControl_ParseGesture (VCONTROL_GESTURE *g, const char *spec);
+int VControl_DumpGesture (char *buf, int n, VCONTROL_GESTURE *g);
+
 /* Dump a configuration file corresponding to the current bindings and names. */
 void VControl_Dump (uio_Stream *out);
 void VControl_SaveFilename (uio_DirHandle *path, const char *fname);
-
 
 /* Read a configuration file.  Returns number of errors encountered. */
 int VControl_ReadConfiguration (uio_Stream *in);

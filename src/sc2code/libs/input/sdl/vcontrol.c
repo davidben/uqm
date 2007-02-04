@@ -1511,7 +1511,7 @@ consume_dir (parse_state *state)
 }
 
 static void
-parse_joybinding (parse_state *state, int *target)
+parse_joybinding (parse_state *state, VCONTROL_GESTURE *gesture)
 {
 	int sticknum;
 	consume (state, "joystick");
@@ -1528,11 +1528,10 @@ parse_joybinding (parse_state *state, int *target)
 				int polarity = consume_polarity (state);
 				if (!state->error)
 				{
-					if (VControl_AddJoyAxisBinding (sticknum, axisnum, polarity, target))
-					{
-						// Don't count this as an error
-						// state->error = 1;
-					}
+					gesture->type = VCONTROL_JOYAXIS;
+					gesture->gesture.axis.port = sticknum;
+					gesture->gesture.axis.index = axisnum;
+					gesture->gesture.axis.polarity = polarity;
 				}
 			}
 		} 
@@ -1543,11 +1542,9 @@ parse_joybinding (parse_state *state, int *target)
 			buttonnum = consume_num (state);
 			if (!state->error)
 			{
-				if (VControl_AddJoyButtonBinding (sticknum, buttonnum, target))
-				{
-					// Don't count this as an error
-					// state->error = 1;
-				}
+				gesture->type = VCONTROL_JOYBUTTON;
+				gesture->gesture.button.port = sticknum;
+				gesture->gesture.button.index = buttonnum;
 			}
 		}
 		else if (!stricmp (state->token, "hat"))
@@ -1560,11 +1557,10 @@ parse_joybinding (parse_state *state, int *target)
 				Uint8 dir = consume_dir (state);
 				if (!state->error)
 				{
-					if (VControl_AddJoyHatBinding (sticknum, hatnum, dir, target))
-					{
-						// Don't count this as an error
-						// state->error = 1;
-					}
+					gesture->type = VCONTROL_JOYHAT;
+					gesture->gesture.hat.port = sticknum;
+					gesture->gesture.hat.index = hatnum;
+					gesture->gesture.hat.dir = dir;
 				}
 			}
 		}
@@ -1576,28 +1572,23 @@ parse_joybinding (parse_state *state, int *target)
 }
 
 static void
-parse_binding (parse_state *state)
+parse_gesture (parse_state *state, VCONTROL_GESTURE *gesture)
 {
-	int *target = consume_idname (state);
-	if (!state->error)
+	gesture->type = VCONTROL_NONE; /* Default to error */
+	if (!stricmp (state->token, "key"))
 	{
-		if (!stricmp (state->token, "key"))
+		/* Parse key binding */
+		int keysym;
+		consume (state, "key");
+		keysym = consume_keyname (state);
+		if (!state->error)
 		{
-			/* Parse key binding */
-			int keysym;
-			consume (state, "key");
-			keysym = consume_keyname (state);
-			if (!state->error)
-			{
-				if (VControl_AddKeyBinding (keysym, target))
-				{
-					state->error = 1;
-				}
-			}
+			gesture->type = VCONTROL_KEY;
+			gesture->gesture.key = keysym;
 		}
 		else if (!stricmp (state->token, "joystick"))
 		{
-			parse_joybinding (state, target);
+			parse_joybinding (state, gesture);
 		}
 		else
 		{
@@ -1605,6 +1596,59 @@ parse_binding (parse_state *state)
 		}
 	}
 }
+	
+static void
+parse_binding (parse_state *state)
+{
+	int *target = consume_idname (state);
+	if (!state->error)
+	{
+		VCONTROL_GESTURE g;
+		parse_gesture (state, &g);
+		if (g.type != VCONTROL_NONE)
+		{
+			VControl_AddGestureBinding (&g, target);
+		}
+	}
+}
+
+void
+VControl_ParseGesture (VCONTROL_GESTURE *g, const char *spec)
+{
+	parse_state ps;
+
+	strncpy (ps.line, spec, LINE_SIZE);
+	ps.line[LINE_SIZE] = '\0';
+	ps.index = ps.error = 0;
+	ps.linenum = -1;
+
+	next_token (&ps);
+	parse_gesture (&ps, g);
+}
+
+int
+VControl_DumpGesture (char *buf, int n, VCONTROL_GESTURE *g)
+{
+	switch (g->type) 
+	{
+	case VCONTROL_KEY:
+		return snprintf (buf, n, "key %s", VControl_code2name (g->gesture.key));
+	case VCONTROL_JOYAXIS:
+		return snprintf (buf, n, "joystick %d axis %d %s", g->gesture.axis.port, g->gesture.axis.index, 
+				(g->gesture.axis.polarity > 0) ? "positive" : "negative");
+	case VCONTROL_JOYBUTTON:
+		return snprintf (buf, n, "joystick %d button %d", g->gesture.button.port, g->gesture.button.index);
+	case VCONTROL_JOYHAT:
+		return snprintf (buf, n, "joystick %d hat %d %s", g->gesture.hat.port, g->gesture.hat.index, 
+				(g->gesture.hat.dir == SDL_HAT_UP) ? "up" :
+				((g->gesture.hat.dir == SDL_HAT_DOWN) ? "down" : 
+				((g->gesture.hat.dir == SDL_HAT_LEFT) ? "left" : "right")));
+	default:
+		buf[0] = '\0';
+		return 0;
+	}
+}
+	
 
 static void
 parse_config_line (parse_state *state)
