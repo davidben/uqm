@@ -59,7 +59,7 @@
 		/* Second argument to listen(). */
 
 
-#ifdef(_MSC_VER)
+#ifdef _MSC_VER
 #	if _MSC_VER < 1300
 		/* NETPLAY_DEBUG_FILE requires the __VA_ARGS__ macro, which is
 		 * not available on MSVC 6.0. */
