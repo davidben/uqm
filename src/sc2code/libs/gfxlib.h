@@ -21,9 +21,13 @@
 
 #include "memlib.h"
 
-#define CONTEXT PVOID
-#define FRAME PVOID
-#define FONT PVOID
+typedef struct context_desc CONTEXT_DESC;
+typedef struct frame_desc FRAME_DESC;
+typedef struct font_desc FONT_DESC;
+
+typedef CONTEXT_DESC *CONTEXT;
+typedef FRAME_DESC *FRAME;
+typedef FONT_DESC *FONT;
 
 typedef CONTEXT *PCONTEXT;
 typedef FRAME *PFRAME;
@@ -183,12 +187,6 @@ enum
 	FadeSomeToColor
 };
 
-#endif /* _GFXLIB_H */
-
-
-#ifndef _GFX_PROTOS
-#define _GFX_PROTOS
-
 extern BOOLEAN InitGraphics (int argc, char *argv[], COUNT
 		KbytesRequired);
 extern void UninitGraphics (void);
@@ -278,5 +276,4 @@ extern void FlushColorXForms (void);
 void SetSystemRect (PRECT pRect);
 void ClearSystemRect (void);
 
-#endif /* _GFX_PROTOS */
-
+#endif /* _GFXLIB_H */

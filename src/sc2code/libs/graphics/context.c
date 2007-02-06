@@ -20,18 +20,18 @@
 #include "gfxother.h"
 
 GRAPHICS_STATUS _GraphicsStatusFlags;
-CONTEXTPTR _pCurContext;
+CONTEXT _pCurContext;
 
 PRIMITIVE _locPrim;
 
-FONTPTR _CurFontPtr;
+FONT _CurFontPtr;
 
 CONTEXT
 SetContext (CONTEXT Context)
 {
 	CONTEXT LastContext;
 
-	LastContext = (CONTEXT)_pCurContext;
+	LastContext = _pCurContext;
 	if (Context != LastContext)
 	{
 		if (LastContext)
@@ -47,7 +47,7 @@ SetContext (CONTEXT Context)
 			DeactivateContext ();
 		}
 
-		_pCurContext = (CONTEXTPTR)Context;
+		_pCurContext = Context;
 		if (_pCurContext)
 		{
 			ActivateContext ();
@@ -57,8 +57,8 @@ SetContext (CONTEXT Context)
 
 			SetPrimColor (&_locPrim, _get_context_fg_color ());
 
-			_CurFramePtr = (FRAMEPTR)_get_context_fg_frame ();
-			_CurFontPtr = (FONTPTR)_get_context_font ();
+			_CurFramePtr = _get_context_fg_frame ();
+			_CurFontPtr = _get_context_font ();
 		}
 	}
 
@@ -103,21 +103,18 @@ DestroyContext (CONTEXT_REF ContextRef)
 CONTEXT
 CaptureContext (CONTEXT_REF ContextRef)
 {
-	CONTEXTPTR ContextPtr;
+	CONTEXT ContextPtr;
 
 	ContextPtr = LockContext (ContextRef);
 	if (ContextPtr)
 		ContextPtr->ContextRef = ContextRef;
 
-	return ((CONTEXT)ContextPtr);
+	return (ContextPtr);
 }
 
 CONTEXT_REF
-ReleaseContext (CONTEXT Context)
+ReleaseContext (CONTEXT ContextPtr)
 {
-	CONTEXTPTR ContextPtr;
-
-	ContextPtr = (CONTEXTPTR)Context;
 	if (ContextPtr)
 	{
 		CONTEXT_REF ContextRef;
@@ -261,7 +258,7 @@ FixContextFontEffect (void)
 	img = TFB_DrawImage_CreateForScreen (w, h, TRUE);
 	if (_get_context_fbk_flags () & FBK_IMAGE)
 	{	// image pattern backing
-		FRAMEPTR EffectFrame = (FRAMEPTR)_get_context_fonteff ();
+		FRAME EffectFrame = _get_context_fonteff ();
 		
 		TFB_DrawImage_Image (EffectFrame->image,
 				-EffectFrame->HotSpot.x, -EffectFrame->HotSpot.y,

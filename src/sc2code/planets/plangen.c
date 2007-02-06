@@ -50,7 +50,7 @@ extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
 extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
 		RECT *rdst, int num, int denom);
-extern void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
+extern void getpixelarray (void *map, int Bpp, FRAME FramePtr,
 		int width, int height);
 
 

@@ -23,7 +23,7 @@
 #include "libs/mathlib.h"
 #include "gfxother.h"
 
-FRAMEPTR _CurFramePtr;
+FRAME _CurFramePtr;
 
 FRAME
 SetContextFGFrame (FRAME Frame)
@@ -35,7 +35,7 @@ SetContextFGFrame (FRAME Frame)
 		if (LastFrame)
 			DeactivateDrawable ();
 
-		_CurFramePtr = (FRAMEPTR)Frame;
+		_CurFramePtr = Frame;
 		if (_CurFramePtr)
 			ActivateDrawable ();
 
@@ -61,7 +61,7 @@ CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth, PSIZE pheight)
 			GetDisplayWidth (), GetDisplayHeight ());
 	if (Drawable)
 	{
-		FRAMEPTR F;
+		FRAME F;
 
 		if ((F = CaptureDrawable (Drawable)) == 0)
 			DestroyDrawable (Drawable);
@@ -91,11 +91,11 @@ AllocDrawable (COUNT n)
 		DRAWABLEPTR DrawablePtr;
 		int i;
 		DrawablePtr = LockDrawable (Drawable);
-		DrawablePtr->Frame = (FRAMEPTR)HMalloc ((MEM_SIZE)(sizeof (FRAME_DESC) * n));
+		DrawablePtr->Frame = (FRAME)HMalloc ((MEM_SIZE)(sizeof (FRAME_DESC) * n));
 
 		/* Zero out the newly allocated frames, since HMalloc doesn't have MEM_ZEROINIT. */
 		for (i = 0; i < n; i++) {
-			FRAMEPTR F;
+			FRAME F;
 			F = &DrawablePtr->Frame[i];
 			F->parent = DrawablePtr;
 			F->Type = 0;
@@ -125,7 +125,7 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 			width, height);
 	if (Drawable)
 	{
-		FRAMEPTR F;
+		FRAME F;
 
 		F = CaptureDrawable (Drawable);
 		if (F)
@@ -160,7 +160,7 @@ DestroyDrawable (DRAWABLE Drawable)
 }
 
 BOOLEAN
-GetFrameRect (FRAMEPTR FramePtr, PRECT pRect)
+GetFrameRect (FRAME FramePtr, PRECT pRect)
 {
 	if (FramePtr)
 	{
@@ -176,7 +176,7 @@ GetFrameRect (FRAMEPTR FramePtr, PRECT pRect)
 }
 
 HOT_SPOT
-SetFrameHot (FRAMEPTR FramePtr, HOT_SPOT HotSpot)
+SetFrameHot (FRAME FramePtr, HOT_SPOT HotSpot)
 {
 	if (FramePtr)
 	{
@@ -192,7 +192,7 @@ SetFrameHot (FRAMEPTR FramePtr, HOT_SPOT HotSpot)
 }
 
 HOT_SPOT
-GetFrameHot (FRAMEPTR FramePtr)
+GetFrameHot (FRAME FramePtr)
 {
 	if (FramePtr)
 	{
@@ -203,10 +203,10 @@ GetFrameHot (FRAMEPTR FramePtr)
 }
 
 DRAWABLE
-RotateFrame (FRAMEPTR Frame, COUNT angle)
+RotateFrame (FRAME Frame, COUNT angle)
 {
 	DRAWABLE Drawable;
-	FRAMEPTR RotFramePtr;
+	FRAME RotFramePtr;
 	SIZE dx, dy;
 	SIZE d;
 	COUNT organg;
@@ -245,7 +245,7 @@ RotateFrame (FRAMEPTR Frame, COUNT angle)
 }
 
 void
-SetFrameTransparentColor (FRAMEPTR Frame, COLOR c32k)
+SetFrameTransparentColor (FRAME Frame, COLOR c32k)
 {
 	TFB_Palette color;
 	

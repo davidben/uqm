@@ -29,7 +29,7 @@ typedef struct
 	DRAWABLE (*alloc_image) (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			CREATE_FLAGS flags, SIZE width, SIZE height);
 
-	void (*read_display) (PRECT pRect, FRAMEPTR DstFramePtr);
+	void (*read_display) (PRECT pRect, FRAME DstFramePtr);
 
 } DISPLAY_INTERFACE;
 typedef DISPLAY_INTERFACE *PDISPLAY_INTERFACE;

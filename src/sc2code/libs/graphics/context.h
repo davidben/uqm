@@ -25,7 +25,7 @@ typedef UWORD FBK_FLAGS;
 #define FBK_DIRTY (1 << 0)
 #define FBK_IMAGE (1 << 1)
 
-typedef struct
+struct context_desc
 {
 	CONTEXT_REF ContextRef;
 	UWORD Flags;
@@ -40,21 +40,18 @@ typedef struct
 	TFB_Image *FontBacking;
 	FBK_FLAGS BackingFlags;
 
-} CONTEXT_DESC;
-typedef CONTEXT_DESC *PCONTEXT_DESC;
+};
 
 #define CONTEXT_PRIORITY DEFAULT_MEM_PRIORITY
-
-#define CONTEXTPTR PCONTEXT_DESC
 
 #define AllocContext() \
 		(CONTEXT_REF)mem_allocate ((MEM_SIZE)sizeof (CONTEXT_DESC), \
 		MEM_ZEROINIT | MEM_PRIMARY, CONTEXT_PRIORITY, MEM_SIMPLE)
-#define LockContext (CONTEXTPTR)mem_lock
+#define LockContext (CONTEXT)mem_lock
 #define UnlockContext mem_unlock
 #define FreeContext mem_release
 
-extern CONTEXTPTR _pCurContext;
+extern CONTEXT _pCurContext;
 extern PRIMITIVE _locPrim;
 
 #define _get_context_fg_color() (_pCurContext->ForeGroundColor)

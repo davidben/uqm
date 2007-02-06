@@ -29,14 +29,14 @@ CaptureDrawable (DRAWABLE Drawable)
 		COUNT FrameIndex;
 
 		FrameIndex = GetDrawableIndex (Drawable);
-		return ((FRAME)&DrawablePtr->Frame[FrameIndex]);
+		return &DrawablePtr->Frame[FrameIndex];
 	}
 
 	return (0);
 }
 
 DRAWABLE
-ReleaseDrawable (FRAMEPTR FramePtr)
+ReleaseDrawable (FRAME FramePtr)
 {
 	if (FramePtr != 0)
 	{
@@ -54,7 +54,7 @@ ReleaseDrawable (FRAMEPTR FramePtr)
 }
 
 MEM_HANDLE
-GetFrameHandle (FRAMEPTR FramePtr)
+GetFrameHandle (FRAME FramePtr)
 {
 	DRAWABLEPTR DrawablePtr;
 
@@ -66,7 +66,7 @@ GetFrameHandle (FRAMEPTR FramePtr)
 }
 
 COUNT
-GetFrameCount (FRAMEPTR FramePtr)
+GetFrameCount (FRAME FramePtr)
 {
 	DRAWABLEPTR DrawablePtr;
 
@@ -78,7 +78,7 @@ GetFrameCount (FRAMEPTR FramePtr)
 }
 
 COUNT
-GetFrameIndex (FRAMEPTR FramePtr)
+GetFrameIndex (FRAME FramePtr)
 {
 	if (FramePtr == 0)
 		return (0);
@@ -87,7 +87,7 @@ GetFrameIndex (FRAMEPTR FramePtr)
 }
 
 FRAME
-SetAbsFrameIndex (FRAMEPTR FramePtr, COUNT FrameIndex)
+SetAbsFrameIndex (FRAME FramePtr, COUNT FrameIndex)
 {
 	if (FramePtr != 0)
 	{
@@ -96,14 +96,14 @@ SetAbsFrameIndex (FRAMEPTR FramePtr, COUNT FrameIndex)
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 
 		FrameIndex = FrameIndex	% (DrawablePtr->MaxIndex + 1);
-		FramePtr = (FRAMEPTR)&DrawablePtr->Frame[FrameIndex];
+		FramePtr = &DrawablePtr->Frame[FrameIndex];
 	}
 
-	return ((FRAME)FramePtr);
+	return FramePtr;
 }
 
 FRAME
-SetRelFrameIndex (FRAMEPTR FramePtr, SIZE FrameOffs)
+SetRelFrameIndex (FRAME FramePtr, SIZE FrameOffs)
 {
 	if (FramePtr != 0)
 	{
@@ -119,14 +119,14 @@ SetRelFrameIndex (FRAMEPTR FramePtr, SIZE FrameOffs)
 		}
 
 		FrameOffs = ((SWORD)FramePtr->Index + FrameOffs) % num_frames;
-		FramePtr = (FRAMEPTR)&DrawablePtr->Frame[FrameOffs];
+		FramePtr = &DrawablePtr->Frame[FrameOffs];
 	}
 
-	return ((FRAME)FramePtr);
+	return FramePtr;
 }
 
 FRAME
-SetEquFrameIndex (FRAMEPTR DstFramePtr, FRAMEPTR SrcFramePtr)
+SetEquFrameIndex (FRAME DstFramePtr, FRAME SrcFramePtr)
 {
 	if (DstFramePtr && SrcFramePtr)
 		return ((FRAME)(
@@ -139,7 +139,7 @@ SetEquFrameIndex (FRAMEPTR DstFramePtr, FRAMEPTR SrcFramePtr)
 }
 
 FRAME
-IncFrameIndex (FRAMEPTR FramePtr)
+IncFrameIndex (FRAME FramePtr)
 {
 	DRAWABLEPTR DrawablePtr;
 
@@ -148,24 +148,24 @@ IncFrameIndex (FRAMEPTR FramePtr)
 
 	DrawablePtr = GetFrameParentDrawable (FramePtr);
 	if (FramePtr->Index < DrawablePtr->MaxIndex)
-		return ((FRAME)++FramePtr);
+		return ++FramePtr;
 	else
-		return ((FRAME)DrawablePtr->Frame);
+		return DrawablePtr->Frame;
 }
 
 FRAME
-DecFrameIndex (FRAMEPTR FramePtr)
+DecFrameIndex (FRAME FramePtr)
 {
 	if (FramePtr == 0)
 		return (0);
 
 	if (FramePtr->Index > 0)
-		return ((FRAME)--FramePtr);
+		return --FramePtr;
 	else
 	{
 		DRAWABLEPTR DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		return ((FRAME)&DrawablePtr->Frame[DrawablePtr->MaxIndex]);
+		return &DrawablePtr->Frame[DrawablePtr->MaxIndex];
 	}
 }

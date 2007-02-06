@@ -531,7 +531,7 @@ void random16xZoomSurfaceRGBA (SDL_Surface *src, SDL_Surface *dst)
 	blurSurface32 (dst);
 }
 
-FRAMEPTR scale16xRandomizeFrame (FRAMEPTR NewFrame, FRAMEPTR FramePtr)
+FRAME scale16xRandomizeFrame (FRAME NewFrame, FRAME FramePtr)
 {
 	TFB_Image *origImg, *newImg;
 	CREATE_FLAGS flags;

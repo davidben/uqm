@@ -24,7 +24,7 @@
 #include "libs/sound/trackplayer.h"
 
 
-static FRAMEPTR scope_frame;
+static FRAME scope_frame;
 static int scope_init = 0;
 static TFB_Image *scope_bg = NULL;
 static TFB_Image *scope_surf = NULL;

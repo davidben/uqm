@@ -938,7 +938,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 								// (smaller) zoom level image as mipmap,
 								// needed for trilinear scaling
 
-								PFRAME_DESC frame = 
+								FRAME frame = 
 									SetAbsFrameIndex (
 									ElementPtr->next.image.farray
 									[index + 1],
@@ -949,7 +949,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 									TFB_DrawCommand DC;
 									TFB_Image *mmimg = frame->image;
 									DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
-									DC.data.setmipmap.image = ((PFRAME_DESC)ElementPtr->next.image.frame)->image;
+									DC.data.setmipmap.image = (ElementPtr->next.image.frame)->image;
 									DC.data.setmipmap.hotx = frame->HotSpot.x;
 									DC.data.setmipmap.hoty = frame->HotSpot.y;
 									LockMutex (mmimg->mutex);

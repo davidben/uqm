@@ -118,12 +118,12 @@ void
 TFB_Prim_Stamp (PSTAMP stmp)
 {
 	int x, y;
-	PFRAME_DESC SrcFramePtr;
+	FRAME SrcFramePtr;
 	TFB_Image *img;
 	TFB_ColorMap *cmap = NULL;
 	int gscale;
 
-	SrcFramePtr = (PFRAME_DESC)stmp->frame;
+	SrcFramePtr = stmp->frame;
 	if (!SrcFramePtr)
 	{
 		log_add (log_Warning, "TFB_Prim_Stamp: Tried to draw a NULL frame"
@@ -167,12 +167,12 @@ void
 TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 {
 	int x, y;
-	PFRAME_DESC SrcFramePtr;
+	FRAME SrcFramePtr;
 	TFB_Image *img;
 	int r, g, b;
 	int gscale;
 
-	SrcFramePtr = (PFRAME_DESC)stmp->frame;
+	SrcFramePtr = stmp->frame;
 	if (!SrcFramePtr)
 	{
 		log_add (log_Warning, "TFB_Prim_StampFill: Tried to draw a NULL frame"

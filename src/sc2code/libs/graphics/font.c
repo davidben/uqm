@@ -33,8 +33,8 @@ SetContextFont (FONT Font)
 {
 	FONT LastFont;
 
-	LastFont = (FONT)_CurFontPtr;
-	_CurFontPtr = (FONTPTR)Font;
+	LastFont = _CurFontPtr;
+	_CurFontPtr = Font;
 	if (ContextActive ())
 		SwitchContextFont (Font);
 
@@ -56,21 +56,21 @@ DestroyFont (FONT_REF FontRef)
 FONT
 CaptureFont (FONT_REF FontRef)
 {
-	FONTPTR FontPtr;
+	FONT FontPtr;
 
 	FontPtr = LockFont (FontRef);
 	if (FontPtr)
 		FontPtr->FontRef = FontRef;
 
-	return ((FONT)FontPtr);
+	return FontPtr;
 }
 
 FONT_REF
 ReleaseFont (FONT Font)
 {
-	FONTPTR FontPtr;
+	FONT FontPtr;
 
-	FontPtr = (FONTPTR)Font;
+	FontPtr = Font;
 	if (FontPtr)
 	{
 		FONT_REF FontRef;
@@ -122,7 +122,7 @@ GetContextFontLeadingWidth (PSIZE pwidth)
 BOOLEAN
 TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 {
-	FONTPTR FontPtr;
+	FONT FontPtr;
 
 	FontPtr = _CurFontPtr;
 	if (FontPtr != 0 && lpText->CharCount != 0)
@@ -237,7 +237,7 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 void
 _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
 {
-	FONTPTR FontPtr;
+	FONT FontPtr;
 
 	COUNT num_chars;
 	wchar_t next_ch;

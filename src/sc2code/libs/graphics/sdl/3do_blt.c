@@ -37,7 +37,7 @@ GetGraphicScale ()
 }
 
 static void
-read_screen (PRECT lpRect, FRAMEPTR DstFramePtr)
+read_screen (PRECT lpRect, FRAME DstFramePtr)
 {
 	if (_CurFramePtr->Type != SCREEN_DRAWABLE
 			|| DstFramePtr->Type == SCREEN_DRAWABLE

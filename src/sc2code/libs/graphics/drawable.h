@@ -39,7 +39,7 @@ typedef UWORD DRAWABLE_TYPE;
 #define RAM_DRAWABLE 1
 #define SCREEN_DRAWABLE 2
 
-typedef struct frame_desc
+struct frame_desc
 {
 	DRAWABLE_TYPE Type;
 	UWORD Index;
@@ -47,8 +47,7 @@ typedef struct frame_desc
 	EXTENT Bounds;
 	TFB_Image *image;
 	struct drawable_desc *parent;
-} FRAME_DESC;
-typedef FRAME_DESC *PFRAME_DESC;
+};
 
 typedef struct drawable_desc
 {
@@ -60,16 +59,15 @@ typedef struct drawable_desc
 } DRAWABLE_DESC;
 typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
-#define GetFrameWidth(f) (((PFRAME_DESC)(f))->Bounds.width)
-#define GetFrameHeight(f) (((PFRAME_DESC)(f))->Bounds.height)
+#define GetFrameWidth(f) ((f)->Bounds.width)
+#define GetFrameHeight(f) ((f)->Bounds.height)
 #define SetFrameBounds(f,w,h) \
-		(((PFRAME_DESC)(f))->Bounds.width=(w), \
-		((PFRAME_DESC)(f))->Bounds.height=(h))
+		((f)->Bounds.width=(w), \
+		((f))->Bounds.height=(h))
 
 #define DRAWABLE_PRIORITY DEFAULT_MEM_PRIORITY
 
 #define DRAWABLEPTR PDRAWABLE_DESC
-#define FRAMEPTR PFRAME_DESC
 #define COUNTPTR PCOUNT
 
 extern DRAWABLE AllocDrawable (COUNT num_frames);
@@ -90,7 +88,7 @@ extern DRAWABLE AllocDrawable (COUNT num_frames);
 typedef struct
 {
 	RECT Box;
-	FRAMEPTR FramePtr;
+	FRAME FramePtr;
 } IMAGE_BOX;
 typedef IMAGE_BOX *PIMAGE_BOX;
 
@@ -109,7 +107,7 @@ typedef PSTAMP STAMPPTR;
 typedef PTEXT TEXTPTR;
 
 extern STAMP _save_stamp;
-extern FRAMEPTR _CurFramePtr;
+extern FRAME _CurFramePtr;
 
 extern void _rect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
 extern void _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);

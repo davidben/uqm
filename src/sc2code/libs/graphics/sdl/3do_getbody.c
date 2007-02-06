@@ -44,7 +44,7 @@ typedef struct anidata
 
 
 static void
-process_image (FRAMEPTR FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
+process_image (FRAME FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
 {
 	TFB_Image *tfbimg;
 	int hx, hy;
@@ -185,9 +185,9 @@ processFontChar (TFB_Char* CharPtr, SDL_Surface *surf)
 // create a new frame of size neww x newh, and blit a scaled version FramePtr
 // into it.
 // destroy the old frame if 'destroy' is 1
-FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
+FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy)
 {
-	FRAMEPTR NewFrame;
+	FRAME NewFrame;
 	CREATE_FLAGS flags;
 	TFB_Image *tfbImg;
 	TFB_Canvas src, dst;
@@ -209,7 +209,7 @@ FRAMEPTR stretch_frame (FRAMEPTR FramePtr, int neww, int newh, int destroy)
 	return (NewFrame);
 }
 
-void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
+void process_rgb_bmp (FRAME FramePtr, Uint32 *rgba, int maxx, int maxy)
 {
 	int x, y;
 	TFB_Image *tfbImg;
@@ -230,7 +230,7 @@ void process_rgb_bmp (FRAMEPTR FramePtr, Uint32 *rgba, int maxx, int maxy)
 	UnlockMutex (tfbImg->mutex);
 }
 
-void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0,
+void fill_frame_rgb (FRAME FramePtr, Uint32 color, int x0, int y0,
 		int x, int y)
 {
 	SDL_Surface *img;
@@ -255,7 +255,7 @@ void fill_frame_rgb (FRAMEPTR FramePtr, Uint32 color, int x0, int y0,
 	UnlockMutex (tfbImg->mutex);
 }
 
-void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame,
+void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
 		RECT *rdst, int num, int denom)
 {
 	TFB_Image *srcImg, *dstImg;
@@ -312,7 +312,7 @@ void arith_frame_blit (FRAMEPTR srcFrame, RECT *rsrc, FRAMEPTR dstFrame,
 //  bits 8-15  : blue
 //  bits 0-7   : alpha
 // The 8bpp pixel format is 1 index per pixel
-void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
+void getpixelarray (void *map, int Bpp, FRAME FramePtr,
 		int width, int height)
 {
 	Uint8 r,g,b,a;
@@ -367,7 +367,7 @@ void getpixelarray (void *map, int Bpp, FRAMEPTR FramePtr,
 
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
 // r,g,b,a values supplied
-Uint32 frame_mapRGBA (FRAMEPTR FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
+Uint32 frame_mapRGBA (FRAME FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 {
 	SDL_Surface *img= (SDL_Surface *)FramePtr->image->NormalImg;
 	return (SDL_MapRGBA (img->format, r, g, b, a));
@@ -450,7 +450,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 		}
 		else
 		{
-			FRAMEPTR FramePtr;
+			FRAME FramePtr;
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
 			DrawablePtr->Flags = WANT_PIXMAP;
@@ -475,7 +475,7 @@ _ReleaseCelData (MEM_HANDLE handle)
 {
 	DRAWABLEPTR DrawablePtr;
 	int cel_ct;
-	FRAMEPTR FramePtr = NULL;
+	FRAME FramePtr = NULL;
 
 	if ((DrawablePtr = LockDrawable (handle)) == 0)
 		return (FALSE);
@@ -530,7 +530,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	size_t numBCDs = 0;
 	int dirEntryI;
 	uio_DirHandle *fontDirHandle = NULL;
-	FONTPTR fontPtr;
+	FONT fontPtr;
 
 	if (_cur_resfile_name == 0)
 		goto err;
@@ -691,7 +691,7 @@ err:
 BOOLEAN
 _ReleaseFontData (MEM_HANDLE handle)
 {
-	FONTPTR font = LockFont (handle);
+	FONT font = LockFont (handle);
 	if (font == NULL)
 		return FALSE;
 
@@ -748,7 +748,7 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 		else
 		{
 			int imgw, imgh;
-			FRAMEPTR FramePtr;
+			FRAME FramePtr;
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
 			DrawablePtr->Flags = flags;

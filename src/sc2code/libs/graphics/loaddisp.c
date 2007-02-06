@@ -50,7 +50,7 @@ LoadDisplayPixmap (PRECT area, FRAME frame)
 		)
 	{
 		frame = CaptureDrawable (buffer);
-		ReadDisplay (area, (FRAMEPTR)frame);
+		ReadDisplay (area, frame);
 		ReleaseDrawable (frame);
 	}
 
