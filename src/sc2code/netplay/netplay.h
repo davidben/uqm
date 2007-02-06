@@ -59,6 +59,14 @@
 		/* Second argument to listen(). */
 
 
+#ifdef(_MSC_VER)
+#	if _MSC_VER < 1300
+		/* NETPLAY_DEBUG_FILE requires the __VA_ARGS__ macro, which is
+		 * not available on MSVC 6.0. */
+#		undef NETPLAY_DEBUG_FILE
+#	endif
+#endif
+
 #ifdef NETPLAY_DEBUG_FILE
 #	define NETPLAY_DEBUG
 #	define DUMP_CRC_OPS
