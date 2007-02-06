@@ -537,10 +537,6 @@ SoundDecoder_DecodeAll (TFB_SoundDecoder *decoder)
 	if (reqbufsize < 4096)
 		reqbufsize = 4096;
 
-	if (reqbufsize < 16384)
-		log_add (log_Debug, "SoundDecoder_DecodeAll(): WARNING, "
-				"called with a small buffer (%u)", reqbufsize);
-
 	for (decoded_bytes = 0, rc = 1; rc > 0; )
 	{	
 		if (decoded_bytes >= decoder->buffer_size)
