@@ -154,6 +154,13 @@ typedef unsigned short mode_t;
 #	include <alloca.h>
 #endif
 
+// String formatting
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+#endif
+
+
 #endif  /* _UIOPORT_H */
 
 
