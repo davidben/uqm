@@ -44,150 +44,145 @@ static BOOLEAN InputInitialized = FALSE;
 
 static BOOLEAN _in_character_mode = FALSE;
 
-#define VCONTROL_VERSION 4
+static const char *menu_res_names[] = {
+	"pause",
+	"exit",
+	"abort",
+	"debug",
+	"up",
+	"down",
+	"left",
+	"right",
+	"select",
+	"cancel",
+	"special",
+	"pageup",
+	"pagedown",
+	"home",
+	"end",
+	"zoomin",
+	"zoomout",
+	"delete",
+	"backspace",
+	"editcancel",
+	"search",
+	"next",
+	NULL
+};
 
-static VControl_NameBinding control_names[] = {
-	{ "Menu-Up", (int *)&ImmediateInputState.menu[KEY_MENU_UP] },
-	{ "Menu-Down", (int *)&ImmediateInputState.menu[KEY_MENU_DOWN] },
-	{ "Menu-Left", (int *)&ImmediateInputState.menu[KEY_MENU_LEFT] },
-	{ "Menu-Right", (int *)&ImmediateInputState.menu[KEY_MENU_RIGHT] },
-	{ "Menu-Select", (int *)&ImmediateInputState.menu[KEY_MENU_SELECT] },
-	{ "Menu-Cancel", (int *)&ImmediateInputState.menu[KEY_MENU_CANCEL] },
-	{ "Menu-Special", (int *)&ImmediateInputState.menu[KEY_MENU_SPECIAL] },
-	{ "Menu-Page-Up", (int *)&ImmediateInputState.menu[KEY_MENU_PAGE_UP] },
-	{ "Menu-Page-Down", (int *)&ImmediateInputState.menu[KEY_MENU_PAGE_DOWN] },
-	{ "Menu-Home", (int *)&ImmediateInputState.menu[KEY_MENU_HOME] },
-	{ "Menu-End", (int *)&ImmediateInputState.menu[KEY_MENU_END] },
-	{ "Menu-Zoom-In", (int *)&ImmediateInputState.menu[KEY_MENU_ZOOM_IN] },
-	{ "Menu-Zoom-Out", (int *)&ImmediateInputState.menu[KEY_MENU_ZOOM_OUT] },
-	{ "Menu-Delete", (int *)&ImmediateInputState.menu[KEY_MENU_DELETE] },
-	{ "Menu-Backspace", (int *)&ImmediateInputState.menu[KEY_MENU_BACKSPACE] },
-	{ "Menu-Edit-Cancel", (int *)&ImmediateInputState.menu[KEY_MENU_EDIT_CANCEL] },
-	{ "Menu-Search", (int *)&ImmediateInputState.menu[KEY_MENU_SEARCH] },
-	{ "Menu-Next", (int *)&ImmediateInputState.menu[KEY_MENU_NEXT] },
-	{ "Template-1-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_UP] },
-	{ "Template-1-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_DOWN] },
-	{ "Template-1-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_LEFT] },
-	{ "Template-1-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_RIGHT] },
-	{ "Template-1-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_WEAPON] },
-	{ "Template-1-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_SPECIAL] },
-	{ "Template-1-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_1][KEY_ESCAPE] },
-	{ "Template-2-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_UP] },
-	{ "Template-2-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_DOWN] },
-	{ "Template-2-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_LEFT] },
-	{ "Template-2-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_RIGHT] },
-	{ "Template-2-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_WEAPON] },
-	{ "Template-2-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_SPECIAL] },
-	{ "Template-2-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_2][KEY_ESCAPE] },
-	{ "Template-3-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_UP] },
-	{ "Template-3-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_DOWN] },
-	{ "Template-3-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_LEFT] },
-	{ "Template-3-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_RIGHT] },
-	{ "Template-3-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_WEAPON] },
-	{ "Template-3-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_SPECIAL] },
-	{ "Template-3-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_KB_3][KEY_ESCAPE] },
-	{ "Template-4-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_UP] },
-	{ "Template-4-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_DOWN] },
-	{ "Template-4-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_LEFT] },
-	{ "Template-4-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_RIGHT] },
-	{ "Template-4-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_WEAPON] },
-	{ "Template-4-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_SPECIAL] },
-	{ "Template-4-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_1][KEY_ESCAPE] },
-	{ "Template-5-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_UP] },
-	{ "Template-5-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_DOWN] },
-	{ "Template-5-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_LEFT] },
-	{ "Template-5-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_RIGHT] },
-	{ "Template-5-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_WEAPON] },
-	{ "Template-5-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_SPECIAL] },
-	{ "Template-5-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_2][KEY_ESCAPE] },
-	{ "Template-6-Up", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_UP] },
-	{ "Template-6-Down", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_DOWN] },
-	{ "Template-6-Left", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_LEFT] },
-	{ "Template-6-Right", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_RIGHT] },
-	{ "Template-6-Weapon", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_WEAPON] },
-	{ "Template-6-Special", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_SPECIAL] },
-	{ "Template-6-Escape", (int *)&ImmediateInputState.key[CONTROL_TEMPLATE_JOY_3][KEY_ESCAPE] },
-	{ "Pause", (int *)&ImmediateInputState.menu[KEY_PAUSE] },
-	{ "Exit", (int *)&ImmediateInputState.menu[KEY_EXIT] },
-	{ "Abort", (int *)&ImmediateInputState.menu[KEY_ABORT] },
-	{ "Debug", (int *)&ImmediateInputState.menu[KEY_DEBUG] },
-	{ "Illegal", NULL}};
+static const char *flight_res_names[] = {
+	"up",
+	"down",
+	"left",
+	"right",
+	"weapon",
+	"special",
+	"escape",
+	NULL
+};
 
+static void
+register_menu_controls (int index)
+{
+	int i;
+	char buf[40];
+	buf[39] = '\0';
+	
+	i = 1;
+	while (TRUE)
+	{
+		VCONTROL_GESTURE g;
+		snprintf (buf, 39, "menu.%s.%d", menu_res_names[index], i);
+		if (!res_HasKey (buf))
+			break;
+		VControl_ParseGesture (&g, res_GetString (buf));
+		VControl_AddGestureBinding (&g, (int *)&ImmediateInputState.menu[index]);
+		i++;
+	}
+}
+
+static VCONTROL_GESTURE controls[NUM_TEMPLATES][NUM_KEYS][2];
+
+static void
+register_flight_controls (void)
+{
+	int i, j, k;
+	char buf[40];
+
+	buf[39] = '\0';
+
+	for (i = 0; i < NUM_TEMPLATES; i++)
+	{
+		/* Copy in name */
+		snprintf (buf, 39, "keys.%d.name", i+1);
+		if (res_HasKey (buf))
+		{
+			strncpy (input_templates[i].name, res_GetString (buf), 29);
+			input_templates[i].name[29] = '\0';
+		}
+		else
+		{
+			input_templates[i].name[0] = '\0';
+		}
+		for (j = 0; j < NUM_KEYS; j++)
+		{
+			for (k = 0; k < 2; k++)
+			{
+				VCONTROL_GESTURE *g = &controls[i][j][k];
+				snprintf (buf, 39, "keys.%d.%s.%d", i+1, flight_res_names[j], k+1);
+				if (!res_HasKey (buf))
+				{
+					g->type = VCONTROL_NONE;
+					continue;
+				}
+				VControl_ParseGesture (g, res_GetString (buf));
+				VControl_AddGestureBinding (g, (int *)&ImmediateInputState.key[i][j]);
+			}
+		}
+	}
+}
 
 static void
 initKeyConfig (void)
 {
 	uio_Stream *fp;
-	int i, errors;
-	
-	for (i = 0; i < 2; ++i)
+	int i;
+
+	/* First, load in the menu keys */
+	res_LoadFilename (contentDir, "menu.key");
+	for (i = 0; i < NUM_MENU_KEYS; i++)
 	{
-		if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
+		if (!menu_res_names[i])
+			break;
+		register_menu_controls (i);
+	}
+	
+	fp = res_OpenResFile (configDir, "flight.cfg", "rt");
+	if (!fp)
+	{
+		if (copyFile (contentDir, "uqm.key",
+			configDir, "flight.cfg") == -1)
 		{
-			if (copyFile (contentDir, "starcon.key",
-				configDir, "keys.cfg") == -1)
-			{
-				log_add (log_Fatal, "Error: Could not copy default key config "
-					"to user config dir: %s.", strerror (errno));
-				exit (EXIT_FAILURE);
-			}
-			log_add (log_Info, "Copying default key config file to user "
-				"config dir.");
-			
-			if ((fp = res_OpenResFile (configDir, "keys.cfg", "rt")) == NULL)
-			{
-				log_add (log_Fatal, "Error: Could not open keys.cfg");
-				exit (EXIT_FAILURE);
-			}
-		}
-		
-		errors = VControl_ReadConfiguration (fp);
-		res_CloseResFile (fp);
-		
-		if (errors || (VControl_GetConfigFileVersion () != VCONTROL_VERSION))
-		{
-			bool do_rename = false;
-			if (errors)
-				log_add (log_Warning, "%d errors encountered in key configuration file.", errors);
-
-			if (VControl_GetValidCount () == 0)
-			{
-				log_add (log_Error, "\nI didn't understand a single line in your configuration file.");
-				log_add (log_Error, "This is likely because you're still using a 0.2 era or earlier keys.cfg.");
-				do_rename = true;
-			}
-			if (VControl_GetConfigFileVersion () != VCONTROL_VERSION)
-			{
-				log_add (log_Error, "\nThe control scheme for UQM has changed since you last updated keys.cfg.");
-				log_add (log_Error, "(I'm using control scheme version %d, while your config file appears to be\nfor version %d.)", VCONTROL_VERSION, VControl_GetConfigFileVersion ());
-				do_rename = true;
-			}
-
-			if (do_rename)
-			{
-				log_add (log_Error, "\nRenaming keys.cfg to keys.old and retrying.");
-
-				if (fileExists2 (configDir, "keys.old"))
-					uio_unlink (configDir, "keys.old");
-				if ((uio_rename (configDir, "keys.cfg", configDir, "keys.old")) == -1)
-				{
-					log_add (log_Fatal, "Error: Renaming failed!");
-					log_add (log_Fatal, "You must delete keys.cfg manually before you can run the game.");
-					exit (EXIT_FAILURE);
-				}
-				continue;
-			}
-			
-			log_add (log_Fatal, "\nRepair your keys.cfg file to continue.");
+			log_add (log_Fatal, "Error: Could not copy default key config "
+				"to user config dir: %s.", strerror (errno));
 			exit (EXIT_FAILURE);
 		}
+		log_add (log_Info, "Copying default key config file to user "
+			"config dir.");
 		
-		return;
+		if ((fp = res_OpenResFile (configDir, "flight.cfg", "rt")) == NULL)
+		{
+			log_add (log_Fatal, "Error: Could not open flight.cfg");
+			exit (EXIT_FAILURE);
+		}
 	}
+	
+	res_LoadFile (fp);
+	res_CloseResFile (fp);
 
-	log_add (log_Fatal, "Error: Something went wrong and we were looping again and again so aborting.");
-	log_add (log_Fatal, "Possible cause is your content dir not being up-to-date.");
-	exit (EXIT_FAILURE);
+	register_flight_controls ();
+
+	return;
 }
 
 static void
@@ -239,7 +234,6 @@ TFB_InitInput (int driver, int flags)
 
 	/* Prepare the Virtual Controller system. */
 	VControl_Init ();
-	VControl_RegisterNameTable (control_names);
 
 	initKeyConfig ();
 	
@@ -387,62 +381,45 @@ FlushInput (void)
 void
 InterrogateInputState (int template, int control, int index, char *buffer, int maxlen)
 {
-	int i;
-	VCONTROL_GESTURE g;
+	VCONTROL_GESTURE *g = &controls[template][control][index];
 
-	VControl_StartIter (&ImmediateInputState.key[template][control]);
-	i = 0;
-	while (VControl_NextBinding (&g))
+	switch (g->type)
 	{
-		if (i++ < index)
-		{
-			continue;
-		}
-		switch (g.type)
-		{
-		case VCONTROL_KEY:
-			snprintf (buffer, maxlen, "%s", VControl_code2name (g.gesture.key));
-			buffer[maxlen-1] = 0;
-			break;
-		case VCONTROL_JOYBUTTON:
-			snprintf (buffer, maxlen, "[J%d B%d]", g.gesture.button.port, g.gesture.button.index + 1);
-			buffer[maxlen-1] = 0;
-			break;
-		case VCONTROL_JOYAXIS:
-			snprintf (buffer, maxlen, "[J%d A%d %c]", g.gesture.axis.port, g.gesture.axis.index, g.gesture.axis.polarity > 0 ? '+' : '-');
-			break;
-		case VCONTROL_JOYHAT:
-			snprintf (buffer, maxlen, "[J%d H%d %d]", g.gesture.hat.port, g.gesture.hat.index, g.gesture.hat.dir);
-			break;
-		default:
-			/* Something we don't handle yet */
-			buffer[0] = 0;
-			break;
-		}
-		return;
+	case VCONTROL_KEY:
+		snprintf (buffer, maxlen, "%s", VControl_code2name (g->gesture.key));
+		buffer[maxlen-1] = 0;
+		break;
+	case VCONTROL_JOYBUTTON:
+		snprintf (buffer, maxlen, "[J%d B%d]", g->gesture.button.port, g->gesture.button.index + 1);
+		buffer[maxlen-1] = 0;
+		break;
+	case VCONTROL_JOYAXIS:
+		snprintf (buffer, maxlen, "[J%d A%d %c]", g->gesture.axis.port, g->gesture.axis.index, g->gesture.axis.polarity > 0 ? '+' : '-');
+		break;
+	case VCONTROL_JOYHAT:
+		snprintf (buffer, maxlen, "[J%d H%d %d]", g->gesture.hat.port, g->gesture.hat.index, g->gesture.hat.dir);
+		break;
+	default:
+		/* Something we don't handle yet */
+		buffer[0] = 0;
+		break;
 	}
-	/* There aren't that many bindings, so return blank string */
-	buffer[0] = 0;
+	return;
 }
 
 void
 RemoveInputState (int template, int control, int index)
 {
-	int i;
-	VCONTROL_GESTURE g;
+	VCONTROL_GESTURE *g = &controls[template][control][index];
+	char keybuf[40];
+	keybuf[39] = '\0';
 
-	VControl_StartIter (&ImmediateInputState.key[template][control]);
-	i = 0;
-	while (VControl_NextBinding (&g))
-	{
-		if (i++ < index)
-		{
-			continue;
-		}
-		VControl_RemoveGestureBinding (&g, &ImmediateInputState.key[template][control]);
-		return;
-	}
-	/* No such gesture! */
+	VControl_RemoveGestureBinding (g, (int *)&ImmediateInputState.key[template][control]);
+	g->type = VCONTROL_NONE;
+
+	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+	res_Remove (keybuf);
+
 	return;
 }
 
@@ -450,6 +427,8 @@ void
 RebindInputState (int template, int control, int index)
 {
 	VCONTROL_GESTURE g;
+	char keybuf[40], valbuf[40];
+	keybuf[39] = valbuf[39] = '\0';
 
 	/* Remove the old binding on this spot */
 	RemoveInputState (template, control, index);
@@ -462,7 +441,11 @@ RebindInputState (int template, int control, int index)
 	}
 
 	/* And now, add the new binding. */
-	VControl_AddGestureBinding (&g, &ImmediateInputState.key[template][control]);
+	VControl_AddGestureBinding (&g, (int *)&ImmediateInputState.key[template][control]);
+	controls[template][control][index] = g;
+	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+	VControl_DumpGesture (valbuf, 39, &g);
+	res_PutString (keybuf, valbuf);
 }
 
 void
@@ -473,9 +456,9 @@ SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
 	f = res_OpenResFile (path, fname, "wb");
 	if (f) 
 	{
-		VControl_Dump (f);
+		res_SaveFile (f, "keys.");
 		res_CloseResFile (f);
-	}
+	} 
 }
 
 void

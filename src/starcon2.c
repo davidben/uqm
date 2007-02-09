@@ -369,12 +369,7 @@ main (int argc, char *argv[])
 				&options.speechVolumeScale, "speech volume");
 	}		
 
-	{	/* init control template names */
-		static const char* defaultNames[] =
-		{
-			"Arrows", "WASD", "Arrows (2)",
-			"ESDF", "Joystick 1", "Joystick 2"
-		};
+	{	/* remove old control template names */
 		int i;
 
 		for (i = 0; i < 6; ++i)
@@ -384,16 +379,7 @@ main (int argc, char *argv[])
 			snprintf(cfgkey, sizeof(cfgkey), "config.keys.%d.name", i + 1);
 			cfgkey[sizeof(cfgkey) - 1] = '\0';
 
-			if (res_HasKey (cfgkey))
-			{
-				strncpy (input_templates[i].name, res_GetString (cfgkey), 30);
-				input_templates[i].name[29] = 0;
-			}
-			else
-			{
-				strcpy (input_templates[i].name, defaultNames[i]);
-				res_PutString (cfgkey, input_templates[i].name);
-			}
+			res_Remove (cfgkey);
 		}
 	}
 

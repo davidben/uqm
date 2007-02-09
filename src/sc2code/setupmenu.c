@@ -1360,13 +1360,13 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	SetMusicVolume (musicVolume);
 	SetSpeechVolume (speechVolumeScale);
 
-	res_PutString ("config.keys.1.name", input_templates[0].name);
-	res_PutString ("config.keys.2.name", input_templates[1].name);
-	res_PutString ("config.keys.3.name", input_templates[2].name);
-	res_PutString ("config.keys.4.name", input_templates[3].name);
-	res_PutString ("config.keys.5.name", input_templates[4].name);
-	res_PutString ("config.keys.6.name", input_templates[5].name);
+	res_PutString ("keys.1.name", input_templates[0].name);
+	res_PutString ("keys.2.name", input_templates[1].name);
+	res_PutString ("keys.3.name", input_templates[2].name);
+	res_PutString ("keys.4.name", input_templates[3].name);
+	res_PutString ("keys.5.name", input_templates[4].name);
+	res_PutString ("keys.6.name", input_templates[5].name);
 
 	res_SaveFilename (configDir, "uqm.cfg", "config.");
-	SaveKeyConfiguration (configDir, "keys.cfg");
+	SaveKeyConfiguration (configDir, "flight.cfg");
 }

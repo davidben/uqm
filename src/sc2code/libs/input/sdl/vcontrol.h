@@ -18,7 +18,6 @@
 #define _VCONTROL_H_
 
 #include "port.h"
-#include "libs/uio.h"
 #include SDL_INCLUDE(SDL.h)
 
 /* Initialization routines */
@@ -80,44 +79,9 @@ void VControl_ProcessJoyHat (int port, int which, Uint8 value);
 /* Force the input into the blank state.  For preventing "sticky" keys. */
 void VControl_ResetInput (void);
 
-/* Name control.  To provide a table of names and bindings, declare
- * a persistent, unchanging array of VControl_NameBinding and end it
- * with a {0, 0} entry.  Pass this array to VControl_RegisterNameTable.
- * Only one name table may be registered at a time; subsequent calls
- * replace the previous values. */
-
-typedef struct vcontrol_namebinding {
-	char *name;
-	int *target;
-} VControl_NameBinding;
-
-void VControl_RegisterNameTable (VControl_NameBinding *table);
-
-/* Version number control */
-int VControl_GetConfigFileVersion (void);
-void VControl_SetConfigFileVersion (int v);
-
 /* Translate between gestures and string representations thereof. */
 void VControl_ParseGesture (VCONTROL_GESTURE *g, const char *spec);
 int VControl_DumpGesture (char *buf, int n, VCONTROL_GESTURE *g);
-
-/* Dump a configuration file corresponding to the current bindings and names. */
-void VControl_Dump (uio_Stream *out);
-void VControl_SaveFilename (uio_DirHandle *path, const char *fname);
-
-/* Read a configuration file.  Returns number of errors encountered. */
-int VControl_ReadConfiguration (uio_Stream *in);
-int VControl_GetErrorCount (void);
-int VControl_GetValidCount (void);
-
-
-/* Iterator control.  Start an iteration with StartIter or
-   StartIterByName; then call NextBindingName until it returns 0.  
-   Produces gestures. */
-
-void VControl_StartIter (int *target);
-void VControl_StartIterByName (char *targetname);
-int  VControl_NextBinding (VCONTROL_GESTURE *gesture);
 
 /* Tracking the "last interesting gesture."  Used to poll to find new
    control keys. */

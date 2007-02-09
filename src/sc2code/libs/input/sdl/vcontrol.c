@@ -71,16 +71,6 @@ static int num_sdl_keys = 0;
 static keybinding **bindings = NULL;
 
 static keypool *pool;
-static VControl_NameBinding *nametable;
-
-/* Statistics variables - set by VControl_ReadConfiguration */
-
-static int version, errors, validlines;
-
-/* Iterator temp variables */
-
-static int *iter_target;
-static int iter_device, iter_index;
 
 /* Last interesting event */
 static int event_ready;
@@ -243,30 +233,16 @@ key_uninit (void)
 #endif /* HAVE_JOYSTICK */
 }
 
-static void
-name_init (void)
-{
-	nametable = NULL;
-}
-
-static void
-name_uninit (void)
-{
-	nametable = NULL;
-}
-
 void
 VControl_Init (void)
 {
 	key_init ();
-	name_init ();
 }
 
 void
 VControl_Uninit (void)
 {
 	key_uninit ();
-	name_uninit ();
 }
 
 int
@@ -413,8 +389,6 @@ event2gesture (SDL_Event *e, VCONTROL_GESTURE *g)
 		g->type = VCONTROL_KEY;
 		g->gesture.key = e->key.keysym.sym;
 		break;
-
-#ifdef HAVE_JOYSTICK
 	case SDL_JOYAXISMOTION:
 		g->type = VCONTROL_JOYAXIS;
 		g->gesture.axis.port = e->jaxis.which;
@@ -432,7 +406,6 @@ event2gesture (SDL_Event *e, VCONTROL_GESTURE *g)
 		g->gesture.button.port = e->jbutton.which;
 		g->gesture.button.index = e->jbutton.button;
 		break;
-#endif /* HAVE_JOYSTICK */
 
 	default:
 		g->type = VCONTROL_NONE;
@@ -450,17 +423,24 @@ VControl_AddGestureBinding (VCONTROL_GESTURE *g, int *target)
 		result = VControl_AddKeyBinding (g->gesture.key, target);
 		break;
 
-#ifdef HAVE_JOYSTICK
 	case VCONTROL_JOYAXIS:
+#ifdef HAVE_JOYSTICK
 		result = VControl_AddJoyAxisBinding (g->gesture.axis.port, g->gesture.axis.index, (g->gesture.axis.polarity < 0) ? -1 : 1, target);
 		break;
+#endif
 	case VCONTROL_JOYHAT:
+#ifdef HAVE_JOYSTICK
 		result = VControl_AddJoyHatBinding (g->gesture.hat.port, g->gesture.hat.index, g->gesture.hat.dir, target);
 		break;
+#endif
 	case VCONTROL_JOYBUTTON:
+#ifdef HAVE_JOYSTICK
 		result = VControl_AddJoyButtonBinding (g->gesture.button.port, g->gesture.button.index, target);
 		break;
 #endif /* HAVE_JOYSTICK */
+	case VCONTROL_NONE:
+		/* Do nothing */
+		break;
 
 	default:
 		log_add (log_Warning, "VControl_AddGestureBinding didn't understand argument gesture");
@@ -479,18 +459,23 @@ VControl_RemoveGestureBinding (VCONTROL_GESTURE *g, int *target)
 		VControl_RemoveKeyBinding (g->gesture.key, target);
 		break;
 
-#ifdef HAVE_JOYSTICK
 	case VCONTROL_JOYAXIS:
+#ifdef HAVE_JOYSTICK
 		VControl_RemoveJoyAxisBinding (g->gesture.axis.port, g->gesture.axis.index, (g->gesture.axis.polarity < 0) ? -1 : 1, target);
 		break;
+#endif /* HAVE_JOYSTICK */
 	case VCONTROL_JOYHAT:
+#ifdef HAVE_JOYSTICK
 		VControl_RemoveJoyHatBinding (g->gesture.hat.port, g->gesture.hat.index, g->gesture.hat.dir, target);
 		break;
+#endif /* HAVE_JOYSTICK */
 	case VCONTROL_JOYBUTTON:
+#ifdef HAVE_JOYSTICK
 		VControl_RemoveJoyButtonBinding (g->gesture.button.port, g->gesture.button.index, target);
 		break;
 #endif /* HAVE_JOYSTICK */
-
+	case VCONTROL_NONE:
+		break;
 	default:
 		log_add (log_Warning, "VControl_RemoveGestureBinding didn't understand argument gesture");
 		break;
@@ -948,299 +933,6 @@ VControl_HandleEvent (const SDL_Event *e)
 	}
 }
 
-void
-VControl_RegisterNameTable (VControl_NameBinding *table)
-{
-	nametable = table;
-}
-
-static char *
-target2name (int *target)
-{
-	VControl_NameBinding *b = nametable;
-	while (b->target)
-	{
-		if (target == b->target)
-		{
-			return b->name;
-		}
-		++b;
-	}
-	return NULL;
-}
-
-static int *
-name2target (char *name)
-{
-	VControl_NameBinding *b = nametable;
-	while (b->target)
-	{
-		if (!stricmp (name, b->name))
-		{
-			return b->target;
-		}
-		++b;
-	}
-	return NULL;
-}
-
-static void
-dump_keybindings (uio_Stream *out, keybinding *kb, char *name)
-{
-	while (kb != NULL)
-	{
-		char *targetname = target2name (kb->target);
-		WriteResFile (targetname, 1, strlen (targetname), out);
-		PutResFileChar (':', out);
-		PutResFileChar (' ', out);
-		WriteResFile (name, 1, strlen (name), out);
-		PutResFileNewline (out);
-
-		kb = kb->next;
-	}
-}
-
-void
-VControl_Dump (uio_Stream *out)
-{
-	int i;
-	char namebuffer[64];
-
-	sprintf (namebuffer, "version %d", version);
-	WriteResFile (namebuffer, 1, strlen (namebuffer), out);
-	PutResFileNewline (out);
-
-	/* Print out keyboard bindings */
-	for (i = 0; i < num_sdl_keys; i++)
-	{
-		keybinding *kb = bindings[i];		
-		if (kb != NULL)
-		{
-			sprintf (namebuffer, "key %s", VControl_code2name (i));
-			dump_keybindings (out, kb, namebuffer);
-		}
-	}
-
-#ifdef HAVE_JOYSTICK
-	/* Print out joystick bindings */
-	for (i = 0; i < joycount; i++)
-	{
-		if (joysticks[i].stick)
-		{
-			int j;
-
-			sprintf (namebuffer, "joystick %d threshold %d", i, joysticks[i].threshold);
-			WriteResFile (namebuffer, 1, strlen (namebuffer), out);
-			PutResFileNewline (out);
-			
-			for (j = 0; j < joysticks[i].numaxes; j++)
-			{
-				sprintf (namebuffer, "joystick %d axis %d negative", i, j);
-				dump_keybindings (out, joysticks[i].axes[j].neg, namebuffer);
-				sprintf (namebuffer, "joystick %d axis %d positive", i, j);
-				dump_keybindings (out, joysticks[i].axes[j].pos, namebuffer);
-			}
-			for (j = 0; j < joysticks[i].numbuttons; j++)
-			{
-				keybinding *kb = joysticks[i].buttons[j];
-				if (kb != NULL)
-				{
-					sprintf (namebuffer, "joystick %d button %d", i, j);
-					dump_keybindings (out, kb, namebuffer);
-				}
-			}
-			for (j = 0; j < joysticks[i].numhats; j++)
-			{
-				sprintf (namebuffer, "joystick %d hat %d left", i, j);
-				dump_keybindings (out, joysticks[i].hats[j].left, namebuffer);
-				sprintf (namebuffer, "joystick %d hat %d right", i, j);
-				dump_keybindings (out, joysticks[i].hats[j].right, namebuffer);
-				sprintf (namebuffer, "joystick %d hat %d up", i, j);
-				dump_keybindings (out, joysticks[i].hats[j].up, namebuffer);
-				sprintf (namebuffer, "joystick %d hat %d down", i, j);
-				dump_keybindings (out, joysticks[i].hats[j].down, namebuffer);
-			}
-		}
-	}
-#endif /* HAVE_JOYSTICK */
-
-#ifdef VCONTROL_DEBUG
-	/* Print out allocation data */
-	{
-		keypool bp = pool;
-		i = 0;
-		while (bp != NULL)
-		{
-			fprintf (out, "# Internal Debug: Chunk #%i: %d slots remaining.\n", i, bp->remaining);
-			i++;
-			bp = bp->next;
-		}
-		fprintf (out, "# Internal Debug: %d chunks allocated.\n", i);
-	}
-#endif
-}
-
-/* Iterator routines.  iter_target holds the target keybinding.
-   iter_device is -1 for the keyboard, otherwise it is joystick
-   #(iter_device/3).  (iter_device%3) gives whether we're checking the
-   joystick's axes (0), buttons (1), or hats (2). */
-
-static int *iter_target;
-static int iter_device, iter_index;
-
-void
-VControl_StartIter (int *target)
-{
-	iter_target = target;
-	iter_device = -1;
-	iter_index = 0;
-}
-
-void
-VControl_StartIterByName (char *targetname)
-{
-	VControl_StartIter (name2target (targetname));
-}
-
-int
-VControl_NextBinding (VCONTROL_GESTURE *gesture)
-{
-	if ((gesture == NULL) || (iter_target == NULL)
-			|| iter_device >= (joycount * 3))
-		return 0;
-	while (iter_device < (joycount * 3))
-	{
-		if (iter_device == -1) /* keyboard */
-		{
-			keybinding *kb = bindings[iter_index];
-			int done = 0;
-			while (kb != NULL) 
-			{
-				if (kb->target == iter_target)
-				{
-					gesture->type = VCONTROL_KEY;
-					gesture->gesture.key = iter_index;
-					done = 1;
-				}
-				kb = kb->next;
-			}
-			if (++iter_index == num_sdl_keys)
-			{
-				iter_device = 0;
-				iter_index = 0;
-			}
-			if (done) return 1;
-		}
-#ifdef HAVE_JOYSTICK
-		else
-		{
-			int i = iter_device / 3;
-			int t = iter_device % 3;
-			if (!joysticks[i].stick)  /* Joystick wasn't opened; this binding is dead */
-			{
-				iter_device++;
-				iter_index = 0;
-			}
-			else
-			{
-				int done = 0;
-				switch (t)
-				{
-				case 0: { /* Axes */
-					int axis = iter_index / 2;
-					int dir = iter_index % 2;
-					if (axis >= joysticks[i].numaxes)
-					{
-						iter_device++;
-						iter_index = 0;
-					}
-					else
-					{
-						keybinding *kb = (dir) ? joysticks[i].axes[axis].pos : joysticks[i].axes[axis].neg;
-						while (kb != NULL) 
-						{
-							if (kb->target == iter_target)
-							{
-								done = 1;
-								gesture->type = VCONTROL_JOYAXIS;
-								gesture->gesture.axis.port = i;
-								gesture->gesture.axis.index = axis;
-								gesture->gesture.axis.polarity = (dir) ? 1 : -1;
-							}
-							kb = kb->next;
-						}
-						iter_index++;
-					}
-					break;
-				}
-				case 1: { /* Buttons */
-					keybinding *kb = joysticks[i].buttons[iter_index];
-					if (iter_index >= joysticks[i].numbuttons)
-					{
-						iter_device++;
-						iter_index = 0;
-					}
-					else
-					{
-						while (kb != NULL) 
-						{
-							if (kb->target == iter_target)
-							{
-								gesture->type = VCONTROL_JOYBUTTON;
-								gesture->gesture.button.port = i;
-								gesture->gesture.button.index = iter_index;
-								done = 1;
-							}
-							kb = kb->next;
-						}
-						iter_index++;
-					}
-					break;
-				}
-				case 2: { /* Hats */
-					int hat = iter_index / 4;
-					int hatd = iter_index % 4;
-					if (hat >= joysticks[i].numhats)
-					{
-						iter_device++;
-						iter_index = 0;
-					}
-					else
-					{
-						keybinding *kb;
-						Uint8 targetdir;
-						switch (hatd) 
-						{
-						case 0: kb = joysticks[i].hats[hat].left; targetdir = SDL_HAT_LEFT; break;
-						case 1: kb = joysticks[i].hats[hat].right; targetdir = SDL_HAT_RIGHT; break;
-						case 2: kb = joysticks[i].hats[hat].up; targetdir = SDL_HAT_UP; break;
-						default: kb = joysticks[i].hats[hat].down; targetdir = SDL_HAT_DOWN; break;
-						}
-						while (kb != NULL) 
-						{
-							if (kb->target == iter_target)
-							{
-								done = 1;
-								gesture->type = VCONTROL_JOYHAT;
-								gesture->gesture.hat.port = i;
-								gesture->gesture.hat.index = hat;
-								gesture->gesture.hat.dir = targetdir;
-							}
-							kb = kb->next;
-						}
-						iter_index++;
-					}
-					break;
-				}
-				}
-				if (done) return 1;
-			}
-		}
-#endif /* HAVE_JOYSTICK */
-	}
-	return 0;
-}
-
 /* Tracking the last interesting event */
 
 void
@@ -1338,43 +1030,6 @@ next_token (parse_state *state)
 }
 
 static void
-next_line (parse_state *state, uio_Stream *in)
-{
-	int i, ch = 0;
-	state->linenum++;
-	for (i = 0; i < LINE_SIZE-1; i++)
-	{
-		if (uio_feof (in))
-		{
-			break;
-		}
-		ch = uio_fgetc (in);
-		if (ch == '#' || ch == '\n' || ch == EOF)
-		{
-			/* If this line is blank or all commented, include some
-			 * whitespace.  This lets us detect EOF as a completely
-			 * blank line. */
-			if (i==0) 
-			{
-				state->line[i] = '\n';
-				i++;
-			} 
-			break;
-		}
-		state->line[i] = ch;
-	}
-	state->line[i] = '\0';
-	/* Skip to end of line */
-	while (ch != '\n' && !uio_feof (in))
-	{
-		ch = uio_fgetc (in);
-	}
-	state->token[0] = 0;
-	state->index = 0;
-	state->error = 0;
-}
-
-static void
 expected_error (parse_state *state, char *expected)
 {
 	log_add (log_Warning, "VControl: Expected '%s' on config file line %d",
@@ -1404,45 +1059,6 @@ consume_keyname (parse_state *state)
 	}
 	next_token (state);
 	return keysym;
-}
-
-static int *
-consume_idname (parse_state *state)
-{
-	int *result = NULL;
-	int index = 0;
-	while (state->token[index]) 
-	{
-		index++;
-	}
-
-	if (index == 0)
-	{
-		log_add (log_Debug, "VControl: Can't happen: blank token to consume_idname (line %d)",
-				state->linenum);
-		state->error = 1;
-		return NULL;
-	}
-
-	index--;
-	if (state->token[index] != ':')
-	{
-		expected_error (state, ":");
-		return NULL;
-	}
-
-	state->token[index] = 0;  /* remove trailing colon */
-
-	result = name2target (state->token);
-
-	if (!result)
-	{
-		log_add (log_Warning, "VControl: Illegal command type '%s' on config file line %d",
-				state->token, state->linenum);
-		state->error = 1;
-	}
-	next_token (state);
-	return result;
 }
 
 static int
@@ -1484,7 +1100,6 @@ static Uint8
 consume_dir (parse_state *state)
 {
 	Uint8 result = 0;
-#ifdef HAVE_JOYSTICK
 	if (!stricmp (state->token, "left"))
 	{
 		result = SDL_HAT_LEFT;
@@ -1505,7 +1120,6 @@ consume_dir (parse_state *state)
 	{
 		expected_error (state, "left', 'right', 'up' or 'down");
 	}
-#endif /* HAVE_JOYSTICK */
 	next_token (state);
 	return result;
 }
@@ -1586,29 +1200,14 @@ parse_gesture (parse_state *state, VCONTROL_GESTURE *gesture)
 			gesture->type = VCONTROL_KEY;
 			gesture->gesture.key = keysym;
 		}
-		else if (!stricmp (state->token, "joystick"))
-		{
-			parse_joybinding (state, gesture);
-		}
-		else
-		{
-			expected_error (state, "key' or 'joystick");
-		}
 	}
-}
-	
-static void
-parse_binding (parse_state *state)
-{
-	int *target = consume_idname (state);
-	if (!state->error)
+	else if (!stricmp (state->token, "joystick"))
 	{
-		VCONTROL_GESTURE g;
-		parse_gesture (state, &g);
-		if (g.type != VCONTROL_NONE)
-		{
-			VControl_AddGestureBinding (&g, target);
-		}
+		parse_joybinding (state, gesture);
+	}
+	else
+	{
+		expected_error (state, "key' or 'joystick");
 	}
 }
 
@@ -1624,6 +1223,8 @@ VControl_ParseGesture (VCONTROL_GESTURE *g, const char *spec)
 
 	next_token (&ps);
 	parse_gesture (&ps, g);
+	if (ps.error)
+		printf ("Error parsing %s\n", spec);
 }
 
 int
@@ -1648,133 +1249,3 @@ VControl_DumpGesture (char *buf, int n, VCONTROL_GESTURE *g)
 		return 0;
 	}
 }
-	
-
-static void
-parse_config_line (parse_state *state)
-{
-	state->error = 0;
-	next_token (state);
-	if (!state->token[0])
-	{
-		/* Blank line, skip it */
-		return;
-	}
-	if (!stricmp (state->token, "joystick"))
-	{
-		int sticknum, threshold = 0;
-		consume (state, "joystick");
-		sticknum = consume_num (state);
-		if (!state->error) consume (state, "threshold");
-		if (!state->error) threshold = consume_num (state);
-		if (!state->error)
-		{
-			if (VControl_SetJoyThreshold (sticknum, threshold))
-			{
-				// Don't count this as an error
-				// state->error = 1;
-			}
-		}
-		if (!state->error)
-		{
-			validlines++;
-		}
-		return;
-	}
-	if (!stricmp (state->token, "version"))
-	{
-		consume (state, "version");
-		version = consume_num (state);
-		if (!state->error)
-		{
-			validlines++;
-		}
-		return;
-	}
-	/* Otherwise, it must be a binding */
-	parse_binding (state);
-	if (!state->error)
-	{
-		validlines++;
-	}
-}
-
-int
-VControl_ReadConfiguration (uio_Stream *in)
-{
-	parse_state ps;
-	if (!in)
-	{
-		log_add (log_Warning, "VControl: Invalid configuration file stream");
-		return 1;
-	}
-	ps.linenum = 0;
-	errors = version = validlines = 0;
-	while (1)
-	{
-		next_line (&ps, in);
-		if (!ps.line[0])
-			break;
-		parse_config_line (&ps);
-		if (ps.error)
-		{
-			errors++;
-		}
-	}
-	return errors;
-}
-
-int
-VControl_GetErrorCount (void)
-{
-	return errors;
-}
-
-int
-VControl_GetValidCount (void)
-{
-	return validlines;
-}
-
-int
-VControl_GetConfigFileVersion (void)
-{
-	return version;
-}
-
-void
-VControl_SetConfigFileVersion (int v)
-{
-	version = v;
-}
-
-#if 0
-/* This was kinda handy for proving (lack of) buffer overrun
- * vulnerabilities, but there's no real need for it otherwise. */
-void
-VControl_TokenizeFile (FILE *in)
-{
-	parse_state ps;
-	if (!in)
-	{
-		log_add (log_Warning, "VControl: Invalid configuration file stream");
-		return;
-	}
-	ps.linenum = 0;
-	while (1)
-	{
-		_next_line (&ps, in);
-		if (!ps.line[0])
-			break;
-		printf ("%3d:", ps.linenum);
-		while (1)
-		{
-			_next_token (&ps);
-			if (!ps.token[0])
-				break;
-			printf (" \"%s\"", ps.token);
-		}
-		printf ("\n");
-	}
-}
-#endif
