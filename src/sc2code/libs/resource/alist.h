@@ -59,6 +59,9 @@ const char *Alist_GetString (alist *m, const char *key);
 void Alist_PutString (alist *m, const char *key, const char *value);
 void Alist_PutAll (alist *dest, alist *src);
 
+/* Remove operation.  Returns the old value, or NULL if it didn't exist. */
+const char *Alist_RemoveString (alist *m, const char *key);
+
 /* Dump the alist to the specified stream in a form that could be
    read later by the Alist_New_From* routines.  Dump only keys
    that begin with the prefix; NULL means all keys. */

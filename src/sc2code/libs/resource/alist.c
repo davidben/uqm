@@ -104,6 +104,46 @@ Alist_PutAll (alist *dst, alist *src)
 	}
 }
 
+/* Remove operation.  Returns the old value, or NULL if it didn't exist. */
+
+/* NOTE: The actual strings representing the key and the value in the
+ * stringbank will still stay in the bank, since there's no way to
+ * ensure they aren't still in use somewhere.  In fact, that's the
+ * only reason returning the value is safe at all. */
+
+const char *
+Alist_RemoveString (alist *m, const char *key)
+{
+	alist_entry *todel = NULL;
+	if (!strcmp (m->first->key, key))
+	{
+		todel = m->first;
+		m->first = m->first->next;
+	}
+	else
+	{
+		alist_entry *x = m->first;
+		while (x->next != NULL) {
+			if (!strcmp (x->next->key, key))
+			{
+				todel = x->next;
+				x->next = x->next->next;
+				break;
+			}
+			x = x->next;
+		}
+	}
+	if (todel)
+	{
+		const char *result = todel->value;
+		todel->next = NULL;
+		AlistEntry_Free (todel);
+		return result;		
+	}
+	return NULL;
+}
+
+
 alist *
 Alist_New_FromFile (uio_Stream *f)
 {
