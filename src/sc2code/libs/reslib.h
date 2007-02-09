@@ -142,5 +142,7 @@ BOOLEAN res_IsBoolean (const char *key);
 BOOLEAN res_GetBoolean (const char *key);
 void res_PutBoolean (const char *key, BOOLEAN value);
 
+BOOLEAN res_Remove (const char *key);
+
 #endif /* _RESLIB_H */
 

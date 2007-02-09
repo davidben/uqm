@@ -42,6 +42,12 @@ res_ClearTables (void)
 	}
 }
 
+BOOLEAN
+res_Remove (const char *key)
+{
+	return (Alist_RemoveString (map, key) != NULL);
+}
+
 /* Type conversion routines. */
 static const char *
 bool2str (BOOLEAN b)
