@@ -149,14 +149,6 @@ DoGetMelee (GETMELEE_STATE *gms)
 		gms->Initialized = TRUE;
 		gms->row = 0;
 		gms->col = NUM_MELEE_COLS_ORIG;
-#ifdef NETPLAY
-		gms->remoteSelected = FALSE;
-#endif
-
-		// We determine in advance which ship would be chosen if the player
-		// wants a random ship, to keep it simple to keep network parties
-		// synchronised.
-		gms->randomIndex = (COUNT)TFB_Random () % gms->ships_left;
 
 		PickMelee_ChangedSelection (gms);
 		return TRUE;
@@ -472,8 +464,22 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 	gmstate.flash_rect.extent.width = (ICON_WIDTH + 2);
 	gmstate.flash_rect.extent.height = (ICON_HEIGHT + 2);
+
+	gmstate.InputFunc = DoGetMelee;
+	gmstate.Initialized = FALSE;
+	gmstate.ships_left = ships_left;
+	gmstate.which_player = which_player;
+	// We determine in advance which ship would be chosen if the player
+	// wants a random ship, to keep it simple to keep network parties
+	// synchronised.
+	gmstate.randomIndex = (COUNT)TFB_Random () % ships_left;
 #ifdef NETPLAY
+	gmstate.remoteSelected = FALSE;
 	{
+		// NB. gmstate.randomIndex and gmstate.remoteSelected must be
+		// initialised before negotiateReadyConnections is completed,
+		// to ensure that it is initialised when the SelectShip packet
+		// arrives.
 		bool allOk = negotiateReadyConnections (true, NetState_selectShip);
 		if (!allOk)
 		{
@@ -482,11 +488,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		}
 	}
 #endif
-	gmstate.InputFunc = DoGetMelee;
 	SetDefaultMenuRepeatDelay ();
-	gmstate.Initialized = FALSE;
-	gmstate.ships_left = ships_left;
-	gmstate.which_player = which_player;
 
 	UnlockMutex (GraphicsLock);
 	ResetKeyRepeat ();
