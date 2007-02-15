@@ -188,7 +188,7 @@ SetContextClipping (BOOLEAN ClipStatus)
 }
 
 BOOLEAN
-SetContextClipRect (PRECT lpRect)
+SetContextClipRect (RECT *lpRect)
 {
 	if (!ContextActive ())
 		return (FALSE);
@@ -202,7 +202,7 @@ SetContextClipRect (PRECT lpRect)
 }
 
 BOOLEAN
-GetContextClipRect (PRECT lpRect)
+GetContextClipRect (RECT *lpRect)
 {
 	if (!ContextActive ())
 		return (FALSE);

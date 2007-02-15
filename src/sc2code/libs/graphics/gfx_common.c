@@ -21,10 +21,9 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawcmd.h"
 
-PDISPLAY_INTERFACE _pCurDisplay; //Not a function. Probably has to be initialized...
+DISPLAY_INTERFACE *_pCurDisplay; //Not a function. Probably has to be initialized...
 
-void (*mask_func_array[])
-		(PRECT pClipRect, PRIMITIVEPTR PrimPtr)
+void (*mask_func_array[]) (RECT *pClipRect, PRIMITIVE *PrimPtr)
 		= { 0 };
 
 int ScreenWidth;
@@ -52,13 +51,13 @@ SetGraphicGrabOther (int grab_other)
 }
 
 void
-DrawFromExtraScreen (PRECT r)
+DrawFromExtraScreen (RECT *r)
 {
 	TFB_DrawScreen_Copy(r, TFB_SCREEN_EXTRA, TFB_SCREEN_MAIN);
 }
 
 void
-LoadIntoExtraScreen (PRECT r)
+LoadIntoExtraScreen (RECT *r)
 {
 	TFB_DrawScreen_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }

@@ -37,7 +37,7 @@
 typedef struct
 {
 	/* standard state required by DoInput */
-	BOOLEAN (*InputFunc) (PVOID pInputState);
+	BOOLEAN (*InputFunc) (void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	/* Presentation state */
@@ -66,10 +66,10 @@ typedef struct
 	COUNT LinesCount;
 	char Buffer[512];
 
-} PRESENTATION_INPUT_STATE, *PPRESENTATION_INPUT_STATE;
+} PRESENTATION_INPUT_STATE;
 
 
-static BOOLEAN DoPresentation (PVOID pIS);
+static BOOLEAN DoPresentation (void *pIS);
 
 
 BOOLEAN
@@ -204,7 +204,7 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 			WANT_PIXMAP, r.extent.width, r.extent.height, 1
 			));
 	SetContextFGFrame (SisFrame);
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 	SisBack = BUILD_COLOR (MAKE_RGB15 (0x01, 0x01, 0x01), 0x07);
 	SetContextBackGroundColor (SisBack);
 	ClearDrawable ();
@@ -274,7 +274,7 @@ ShowPresentationFile (const char *name)
 }
 
 static BOOLEAN
-DoPresentation (PVOID pIS)
+DoPresentation (void *pIS)
 {
 	PRESENTATION_INPUT_STATE* pPIS = (PRESENTATION_INPUT_STATE*) pIS;
 
@@ -353,7 +353,7 @@ DoPresentation (PVOID pIS)
 			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			if (pPIS->Frame)
 				DestroyDrawable (ReleaseDrawable (pPIS->Frame));
-			pPIS->Frame = CaptureDrawable (LoadCelFile (pPIS->Buffer));
+			pPIS->Frame = CaptureDrawable (LoadGraphicFile (pPIS->Buffer));
 		}
 		else if (strcmp (Opcode, "MUSIC") == 0)
 		{	/* set music */

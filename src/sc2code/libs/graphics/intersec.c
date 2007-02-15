@@ -22,8 +22,8 @@
 //#define DEBUG_INTERSEC
 
 static TIME_VALUE
-frame_intersect (PINTERSECT_CONTROL pControl0, PRECT pr0,
-		PINTERSECT_CONTROL pControl1, PRECT pr1, TIME_VALUE t0,
+frame_intersect (INTERSECT_CONTROL *pControl0, RECT *pr0,
+		INTERSECT_CONTROL *pControl1, RECT *pr1, TIME_VALUE t0,
 		TIME_VALUE t1)
 {
 	SIZE time_error0, time_error1;
@@ -201,8 +201,8 @@ frame_intersect (PINTERSECT_CONTROL pControl0, PRECT pr0,
 						 * separated by a pixel, the shapes wouldn't be touching
 						 * each other.
 						 */
-			BOOLEAN _image_intersect (PIMAGE_BOX pImageBox0, PIMAGE_BOX
-					pImageBox1, PRECT pIRect);
+			extern BOOLEAN _image_intersect (IMAGE_BOX *pImageBox0,
+					IMAGE_BOX *pImageBox1, RECT *pIRect);
 
 CheckFirstIntersection:
 			if (BoxIntersect (&IB0.Box, &IB1.Box, &r_intersect)
@@ -228,9 +228,8 @@ CheckFirstIntersection:
 }
 
 TIME_VALUE
-DrawablesIntersect (PINTERSECT_CONTROL pControl0,
-		PINTERSECT_CONTROL pControl1, TIME_VALUE
-		max_time_val)
+DrawablesIntersect (INTERSECT_CONTROL *pControl0,
+		INTERSECT_CONTROL *pControl1, TIME_VALUE max_time_val)
 {
 	SIZE dy;
 	SIZE time_y_0, time_y_1;

@@ -103,7 +103,7 @@ static RACE_DESC sis_desc =
 	{
 		0,
 		BLASTER_SPEED * BLASTER_LIFE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -112,22 +112,22 @@ static RACE_DESC sis_desc =
 	0,
 };
 
-static void InitModuleSlots (RACE_DESCPTR RaceDescPtr,
+static void InitModuleSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *ModuleSlots);
-static void InitDriveSlots (RACE_DESCPTR RaceDescPtr,
+static void InitDriveSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *DriveSlots);
-static void InitJetSlots (RACE_DESCPTR RaceDescPtr,
+static void InitJetSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *JetSlots);
-void uninit_sis (RACE_DESCPTR pRaceDesc);
+void uninit_sis (RACE_DESC *pRaceDesc);
 
 static BYTE num_trackers = 0;
 
 static void
-sis_hyper_preprocess (PELEMENT ElementPtr)
+sis_hyper_preprocess (ELEMENT *ElementPtr)
 {
 	SIZE udx, udy, dx, dy;
 	SIZE AccelerateDirection;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (ElementPtr->state_flags & APPEARING)
 		ElementPtr->velocity = GLOBAL (velocity);
@@ -276,9 +276,9 @@ LeaveAutoPilot:
 }
 
 static void
-sis_hyper_postprocess (PELEMENT ElementPtr)
+sis_hyper_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GLOBAL (velocity) = ElementPtr->velocity;
 
@@ -295,9 +295,9 @@ sis_hyper_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-spawn_point_defense (PELEMENT ElementPtr)
+spawn_point_defense (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (ElementPtr->state_flags & PLAYER_SHIP)
@@ -307,7 +307,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 		hDefense = AllocElement ();
 		if (hDefense)
 		{
-			ELEMENTPTR DefensePtr;
+			ELEMENT *DefensePtr;
 
 			LockElement (hDefense, &DefensePtr);
 			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
@@ -326,7 +326,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 	{
 		BOOLEAN PaidFor;
 		HELEMENT hObject, hNextObject;
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 		COLOR LaserColor;
 		static const COLOR ColorRange[] =
 		{
@@ -348,7 +348,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 		LockElement (StarShipPtr->hShip, &ShipPtr);
 		for (hObject = GetTailElement (); hObject; hObject = hNextObject)
 		{
-			ELEMENTPTR ObjectPtr;
+			ELEMENT *ObjectPtr;
 
 			LockElement (hObject, &ObjectPtr);
 			hNextObject = GetPredElement (ObjectPtr);
@@ -406,7 +406,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 					hPointDefense = initialize_laser (&LaserBlock);
 					if (hPointDefense)
 					{
-						ELEMENTPTR PDPtr;
+						ELEMENT *PDPtr;
 
 						LockElement (hPointDefense, &PDPtr);
 						PDPtr->mass_points =
@@ -426,9 +426,9 @@ spawn_point_defense (PELEMENT ElementPtr)
 }
 
 static void
-sis_battle_preprocess (PELEMENT ElementPtr)
+sis_battle_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->RaceDescPtr->characteristics.special_energy_cost == 0)
@@ -445,9 +445,9 @@ sis_battle_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-sis_battle_postprocess (PELEMENT ElementPtr)
+sis_battle_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -461,14 +461,15 @@ sis_battle_postprocess (PELEMENT ElementPtr)
 #define BLASTER_DAMAGE 2
 
 static void
-blaster_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+blaster_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	HELEMENT hBlastElement;
 
 	hBlastElement = weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 	if (hBlastElement)
 	{
-		ELEMENTPTR BlastElementPtr;
+		ELEMENT *BlastElementPtr;
 
 		LockElement (hBlastElement, &BlastElementPtr);
 		switch (ElementPtr0->mass_points)
@@ -477,7 +478,7 @@ blaster_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 				BlastElementPtr->life_span = 2;
 				BlastElementPtr->current.image.frame =
 						SetAbsFrameIndex (ElementPtr0->current.image.frame, 0);
-				BlastElementPtr->preprocess_func = NULL_PTR;
+				BlastElementPtr->preprocess_func = NULL;
 				break;
 			case BLASTER_DAMAGE * 2:
 				BlastElementPtr->life_span = 6;
@@ -495,7 +496,7 @@ blaster_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 }
 
 static void
-blaster_preprocess (PELEMENT ElementPtr)
+blaster_preprocess (ELEMENT *ElementPtr)
 {
 	BYTE wait;
 
@@ -536,7 +537,7 @@ blaster_preprocess (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
+initialize_blasters (ELEMENT *ShipPtr, HELEMENT BlasterArray[])
 {
 #define SIS_VERT_OFFSET 28
 #define SIS_HORZ_OFFSET 20
@@ -546,9 +547,9 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 
 	BYTE nt;
 	COUNT i;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock[6];
-	PMISSILE_BLOCK lpMB;
+	MISSILE_BLOCK *lpMB;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -628,7 +629,7 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 	{
 		if ((BlasterArray[i] = initialize_missile (lpMB)))
 		{
-			ELEMENTPTR BlasterPtr;
+			ELEMENT *BlasterPtr;
 
 			LockElement (BlasterArray[i], &BlasterPtr);
 			BlasterPtr->collision_func = blaster_collision;
@@ -641,11 +642,11 @@ initialize_blasters (PELEMENT ShipPtr, HELEMENT BlasterArray[])
 }
 
 static void
-sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+sis_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -657,12 +658,12 @@ sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 			if (StarShipPtr->special_counter == 0
 					&& ((lpEvalDesc->ObjectPtr
 					&& lpEvalDesc->which_turn <= 2)
-					|| (ObjectsOfConcern[ENEMY_SHIP_INDEX].ObjectPtr != NULL_PTR
+					|| (ObjectsOfConcern[ENEMY_SHIP_INDEX].ObjectPtr != NULL
 					&& ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn <= 4)))
 				StarShipPtr->ship_input_state |= SPECIAL;
 			else
 				StarShipPtr->ship_input_state &= ~SPECIAL;
-			lpEvalDesc->ObjectPtr = NULL_PTR;
+			lpEvalDesc->ObjectPtr = NULL;
 		}
 		else if (MANEUVERABILITY (&StarShipPtr->RaceDescPtr->cyborg_control)
 				< MEDIUM_SHIP
@@ -714,7 +715,8 @@ sis_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 }
 
 static void
-InitModuleSlots (RACE_DESCPTR RaceDescPtr, const BYTE *ModuleSlots) {
+InitModuleSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
+{
 	COUNT i;
 
 	RaceDescPtr->ship_info.max_crew = 0;
@@ -771,7 +773,8 @@ InitModuleSlots (RACE_DESCPTR RaceDescPtr, const BYTE *ModuleSlots) {
 }
 
 static void
-InitDriveSlots (RACE_DESCPTR RaceDescPtr, const BYTE *DriveSlots) {
+InitDriveSlots (RACE_DESC *RaceDescPtr, const BYTE *DriveSlots)
+{
 	COUNT i;
 
 	// NB. RaceDescPtr->characteristics.max_thrust is already initialised.
@@ -795,7 +798,8 @@ InitDriveSlots (RACE_DESCPTR RaceDescPtr, const BYTE *DriveSlots) {
 }
 
 static void
-InitJetSlots (RACE_DESCPTR RaceDescPtr, const BYTE *JetSlots) {
+InitJetSlots (RACE_DESC *RaceDescPtr, const BYTE *JetSlots)
+{
 	COUNT i;
 
 	for (i = 0; i < NUM_JET_SLOTS; ++i)
@@ -809,10 +813,10 @@ InitJetSlots (RACE_DESCPTR RaceDescPtr, const BYTE *JetSlots) {
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_sis (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	COUNT i;
 	static RACE_DESC new_sis_desc;
@@ -847,9 +851,7 @@ init_sis (void)
 		new_sis_desc.preprocess_func = sis_battle_preprocess;
 		new_sis_desc.postprocess_func = sis_battle_postprocess;
 		new_sis_desc.init_weapon_func = initialize_blasters;
-		new_sis_desc.cyborg_control.intelligence_func =
-				(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern,
-				COUNT ConcernCounter)) sis_intelligence;
+		new_sis_desc.cyborg_control.intelligence_func = sis_intelligence;
 
 		if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 3)
 			SET_GAME_STATE (BOMB_CARRIER, 1);
@@ -879,7 +881,7 @@ init_sis (void)
 }
 
 void
-uninit_sis (RACE_DESCPTR pRaceDesc)
+uninit_sis (RACE_DESC *pRaceDesc)
 {
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
 	{

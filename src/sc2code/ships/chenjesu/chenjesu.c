@@ -101,7 +101,7 @@ static RACE_DESC chenjesu_desc =
 	{
 		0,
 		LONG_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -115,13 +115,13 @@ static RACE_DESC chenjesu_desc =
 #define FRAGMENT_RANGE (FRAGMENT_LIFE * FRAGMENT_SPEED)
 
 static void
-crystal_postprocess (PELEMENT ElementPtr)
+crystal_postprocess (ELEMENT *ElementPtr)
 {
 #define FRAGMENT_HITS 1
 #define FRAGMENT_DAMAGE 2
 #define FRAGMENT_OFFSET 2
 #define NUM_FRAGMENTS 8
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -137,7 +137,7 @@ crystal_postprocess (PELEMENT ElementPtr)
 	MissileBlock.hit_points = FRAGMENT_HITS;
 	MissileBlock.damage = FRAGMENT_DAMAGE;
 	MissileBlock.life = FRAGMENT_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = FRAGMENT_OFFSET;
 
 	for (MissileBlock.face = 0;
@@ -150,7 +150,7 @@ crystal_postprocess (PELEMENT ElementPtr)
 		hFragment = initialize_missile (&MissileBlock);
 		if (hFragment)
 		{
-			ELEMENTPTR FragPtr;
+			ELEMENT *FragPtr;
 
 			LockElement (hFragment, &FragPtr);
 			SetElementStarShip (FragPtr, StarShipPtr);
@@ -165,9 +165,9 @@ crystal_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-crystal_preprocess (PELEMENT ElementPtr)
+crystal_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->cur_status_flags & WEAPON)
@@ -181,7 +181,7 @@ crystal_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-animate (PELEMENT ElementPtr)
+animate (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -196,7 +196,8 @@ animate (PELEMENT ElementPtr)
 }
 
 static void
-crystal_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+crystal_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	HELEMENT hBlastElement;
 
@@ -204,7 +205,7 @@ crystal_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 			weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 	if (hBlastElement)
 	{
-		ELEMENTPTR BlastElementPtr;
+		ELEMENT *BlastElementPtr;
 
 #define NUM_SPARKLES 8
 		LockElement (hBlastElement, &BlastElementPtr);
@@ -229,9 +230,9 @@ crystal_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 #define DOGGY_SPEED DISPLAY_TO_WORLD (8)
 
 static void
-doggy_preprocess (PELEMENT ElementPtr)
+doggy_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	++StarShipPtr->special_counter;
@@ -250,7 +251,7 @@ doggy_preprocess (PELEMENT ElementPtr)
 			facing = NORMALIZE_FACING (TFB_Random ());
 		else
 		{
-			ELEMENTPTR ShipPtr;
+			ELEMENT *ShipPtr;
 
 			LockElement (ElementPtr->hTarget, &ShipPtr);
 			facing = NORMALIZE_FACING (ANGLE_TO_FACING (
@@ -282,9 +283,9 @@ doggy_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-doggy_death (PELEMENT ElementPtr)
+doggy_death (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	ProcessSound (SetAbsSoundIndex (
@@ -297,15 +298,16 @@ doggy_death (PELEMENT ElementPtr)
 	{
 		ElementPtr->preprocess_func = animate;
 	}
-	ElementPtr->death_func = NULL_PTR;
-	ElementPtr->collision_func = NULL_PTR;
+	ElementPtr->death_func = NULL;
+	ElementPtr->collision_func = NULL;
 	ZeroVelocityComponents (&ElementPtr->velocity);
 
 	ElementPtr->turn_wait = ElementPtr->next_turn = 0;
 }
 
 static void
-doggy_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+doggy_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 #define ENERGY_DRAIN 10
 	collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
@@ -315,7 +317,7 @@ doggy_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 			(ElementPtr1->state_flags
 			& (GOOD_GUY | BAD_GUY)))
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr0, &StarShipPtr);
 		ProcessSound (SetAbsSoundIndex (
@@ -334,15 +336,15 @@ doggy_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 #define CHENJESU_OFFSET 16
 
 static void
-spawn_doggy (PELEMENT ElementPtr)
+spawn_doggy (ELEMENT *ElementPtr)
 {
 	HELEMENT hDoggyElement;
 
 	if ((hDoggyElement = AllocElement ()) != 0)
 	{
 		COUNT angle;
-		ELEMENTPTR DoggyElementPtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *DoggyElementPtr;
+		STARSHIP *StarShipPtr;
 
 		ElementPtr->state_flags |= DEFY_PHYSICS;
 
@@ -358,7 +360,7 @@ spawn_doggy (PELEMENT ElementPtr)
 				STAMP_PRIM);
 		{
 			DoggyElementPtr->preprocess_func = doggy_preprocess;
-			DoggyElementPtr->postprocess_func = NULL_PTR;
+			DoggyElementPtr->postprocess_func = NULL;
 			DoggyElementPtr->collision_func = doggy_collision;
 			DoggyElementPtr->death_func = doggy_death;
 		}
@@ -386,10 +388,11 @@ spawn_doggy (PELEMENT ElementPtr)
 }
 
 static void
-chenjesu_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+chenjesu_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	StarShipPtr->ship_input_state &= ~SPECIAL;
@@ -397,7 +400,7 @@ chenjesu_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	if (lpEvalDesc->ObjectPtr)
 	{
-		STARSHIPPTR EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
 		if ((lpEvalDesc->which_turn <= 16
@@ -427,7 +430,7 @@ chenjesu_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 	if (lpEvalDesc->ObjectPtr)
 	{
 		HELEMENT h, hNext;
-		ELEMENTPTR CrystalPtr;
+		ELEMENT *CrystalPtr;
 
 		h = (StarShipPtr->old_status_flags & WEAPON) ?
 				GetTailElement () : (HELEMENT)0;
@@ -493,12 +496,12 @@ chenjesu_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 }
 
 static COUNT
-initialize_crystal (PELEMENT ShipPtr, HELEMENT CrystalArray[])
+initialize_crystal (ELEMENT *ShipPtr, HELEMENT CrystalArray[])
 {
 #define MISSILE_HITS 10
 #define MISSILE_DAMAGE 6
 #define MISSILE_OFFSET 0
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -520,7 +523,7 @@ initialize_crystal (PELEMENT ShipPtr, HELEMENT CrystalArray[])
 
 	if (CrystalArray[0])
 	{
-		ELEMENTPTR CrystalPtr;
+		ELEMENT *CrystalPtr;
 
 		LockElement (CrystalArray[0], &CrystalPtr);
 		CrystalPtr->collision_func = crystal_collision;
@@ -531,9 +534,9 @@ initialize_crystal (PELEMENT ShipPtr, HELEMENT CrystalArray[])
 }
 
 static void
-chenjesu_postprocess (PELEMENT ElementPtr)
+chenjesu_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -549,9 +552,9 @@ chenjesu_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-chenjesu_preprocess (PELEMENT ElementPtr)
+chenjesu_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->special_counter > 1) /* only when STANDARD
@@ -564,17 +567,15 @@ chenjesu_preprocess (PELEMENT ElementPtr)
 		++StarShipPtr->weapon_counter;
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_chenjesu (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	chenjesu_desc.preprocess_func = chenjesu_preprocess;
 	chenjesu_desc.postprocess_func = chenjesu_postprocess;
 	chenjesu_desc.init_weapon_func = initialize_crystal;
-	chenjesu_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) chenjesu_intelligence;
+	chenjesu_desc.cyborg_control.intelligence_func = chenjesu_intelligence;
 
 	RaceDescPtr = &chenjesu_desc;
 

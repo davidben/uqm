@@ -63,43 +63,43 @@ cwrite_ptr (DECODE_REF fh)
 }
 
 static inline COUNT
-cwrite_a8 (DECODE_REF fh, PBYTE ar, COUNT count)
+cwrite_a8 (DECODE_REF fh, const BYTE *ar, COUNT count)
 {
 	return cwrite (ar, 1, count, fh) == count;
 }
 
 static inline COUNT
-write_8 (PVOID fp, BYTE v)
+write_8 (void *fp, BYTE v)
 {
 	return WriteResFile (&v, 1, 1, fp);
 }
 
 static inline COUNT
-write_16 (PVOID fp, UWORD v)
+write_16 (void *fp, UWORD v)
 {
 	return WriteResFile (&v, 2, 1, fp);
 }
 
 static inline COUNT
-write_32 (PVOID fp, DWORD v)
+write_32 (void *fp, DWORD v)
 {
 	return WriteResFile (&v, 4, 1, fp);
 }
 
 static inline COUNT
-write_ptr (PVOID fp)
+write_ptr (void *fp)
 {
 	return write_32 (fp, 0); /* ptrs are useless in saves */
 }
 
 static inline COUNT
-write_a8 (PVOID fp, PBYTE ar, COUNT count)
+write_a8 (void *fp, const BYTE *ar, COUNT count)
 {
 	return WriteResFile (ar, 1, count, fp) == count;
 }
 
 static inline COUNT
-write_a16 (PVOID fp, PUWORD ar, COUNT count)
+write_a16 (void *fp, const UWORD *ar, COUNT count)
 {
 	for ( ; count > 0; --count, ++ar)
 	{
@@ -110,7 +110,7 @@ write_a16 (PVOID fp, PUWORD ar, COUNT count)
 }
 
 static void
-SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
+SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 {
 	COUNT num_links;
 	HSTARSHIP hStarShip;
@@ -123,10 +123,10 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 	while (num_links--)
 	{
 		HSTARSHIP hNextShip;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 		COUNT Index;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		if (pQueue == &GLOBAL (avail_race_q))
@@ -161,8 +161,8 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 		{
 			// avail_race_q contains information not about specific ships,
 			// but about a race.
-			EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr =
-					(EXTENDED_SHIP_FRAGMENTPTR) FragPtr;
+			EXTENDED_SHIP_FRAGMENT *ExtFragPtr =
+					(EXTENDED_SHIP_FRAGMENT*) FragPtr;
 
 			cwrite_16 (fh, ExtFragPtr->ShipInfo.actual_strength);
 			cwrite_16 (fh, ExtFragPtr->ShipInfo.known_strength);
@@ -181,7 +181,7 @@ SaveShipQueue (DECODE_REF fh, PQUEUE pQueue)
 }
 
 static void
-SaveEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
+SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 {
 	COUNT i;
 
@@ -202,7 +202,7 @@ SaveEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
 	// Save each entry in the SHIP_INFO array:
 	for (i = 0; i < MAX_HYPER_SHIPS; i++)
 	{
-		SHIP_INFOPTR ShipInfo = &EncounterPtr->SD.ShipList[i];
+		const SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
 
 		cwrite_16  (fh, ShipInfo->ship_flags);
 		cwrite_8   (fh, ShipInfo->var1);
@@ -224,7 +224,7 @@ SaveEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
 }
 
 static void
-SaveEvent (EVENTPTR EventPtr, DECODE_REF fh)
+SaveEvent (const EVENT *EventPtr, DECODE_REF fh)
 {
 	cwrite_ptr (fh); /* useless ptr; HEVENT pred */
 	cwrite_ptr (fh); /* useless ptr; HEVENT succ */
@@ -237,7 +237,7 @@ SaveEvent (EVENTPTR EventPtr, DECODE_REF fh)
 }
 
 static void
-DummySaveQueue (PQUEUE QueuePtr, DECODE_REF fh)
+DummySaveQueue (const QUEUE *QueuePtr, DECODE_REF fh)
 {
 	/* QUEUE should never actually be saved since it contains
 	 * purely internal representation and the lists
@@ -247,7 +247,7 @@ DummySaveQueue (PQUEUE QueuePtr, DECODE_REF fh)
 	/* QUEUE format with QUEUE_TABLE defined -- UQM default */
 	cwrite_ptr (fh); /* HLINK head */
 	cwrite_ptr (fh); /* HLINK tail */
-	cwrite_ptr (fh); /* PBYTE pq_tab */
+	cwrite_ptr (fh); /* BYTE* pq_tab */
 	cwrite_ptr (fh); /* HLINK free_list */
 	cwrite_16  (fh, 0); /* MEM_HANDLE hq_tab */
 	cwrite_16  (fh, 0); /* COUNT object_size */
@@ -258,7 +258,7 @@ DummySaveQueue (PQUEUE QueuePtr, DECODE_REF fh)
 }
 
 static void
-SaveClockState (PCLOCK_STATE ClockPtr, DECODE_REF fh)
+SaveClockState (const CLOCK_STATE *ClockPtr, DECODE_REF fh)
 {
 	cwrite_8   (fh, ClockPtr->day_index);
 	cwrite_8   (fh, ClockPtr->month_index);
@@ -273,7 +273,7 @@ SaveClockState (PCLOCK_STATE ClockPtr, DECODE_REF fh)
 }
 
 static void
-SaveGameState (PGAME_STATE GSPtr, DECODE_REF fh)
+SaveGameState (const GAME_STATE *GSPtr, DECODE_REF fh)
 {
 	cwrite_8   (fh, 0); /* obsolete; BYTE cur_state */
 	cwrite_8   (fh, GSPtr->glob_flags);
@@ -281,7 +281,7 @@ SaveGameState (PGAME_STATE GSPtr, DECODE_REF fh)
 	cwrite_8   (fh, GSPtr->FuelCost);
 	cwrite_a8  (fh, GSPtr->ModuleCost, NUM_MODULES);
 	cwrite_a8  (fh, GSPtr->ElementWorth, NUM_ELEMENT_CATEGORIES);
-	cwrite_ptr (fh); /* useless ptr; PPRIMITIVE DisplayArray */
+	cwrite_ptr (fh); /* useless ptr; PRIMITIVE *DisplayArray */
 	cwrite_16  (fh, GSPtr->CurrentActivity);
 	
 	cwrite_16  (fh, 0); /* CLOCK_STATE alignment padding */
@@ -321,7 +321,7 @@ SaveGameState (PGAME_STATE GSPtr, DECODE_REF fh)
 }
 
 static BOOLEAN
-SaveSisState (PSIS_STATE SSPtr, PVOID fp)
+SaveSisState (const SIS_STATE *SSPtr, void *fp)
 {
 	if (
 			write_32  (fp, SSPtr->log_x) != 1 ||
@@ -349,7 +349,7 @@ SaveSisState (PSIS_STATE SSPtr, PVOID fp)
 }
 
 static BOOLEAN
-SaveSummary (SUMMARY_DESC *SummPtr, PVOID fp)
+SaveSummary (const SUMMARY_DESC *SummPtr, void *fp)
 {
 	if (!SaveSisState (&SummPtr->SS, fp))
 		return FALSE;
@@ -375,7 +375,7 @@ SaveSummary (SUMMARY_DESC *SummPtr, PVOID fp)
 }
 
 static void
-SaveStarDesc (STAR_DESCPTR SDPtr, DECODE_REF fh)
+SaveStarDesc (const STAR_DESC *SDPtr, DECODE_REF fh)
 {
 	cwrite_16 (fh, SDPtr->star_pt.x);
 	cwrite_16 (fh, SDPtr->star_pt.y);
@@ -413,11 +413,10 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 		for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)), SummPtr->NumShips = 0;
 				hStarShip; hStarShip = hNextShip, ++SummPtr->NumShips)
 		{
-			SHIP_FRAGMENTPTR StarShipPtr;
+			SHIP_FRAGMENT *StarShipPtr;
 
-			StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-					&GLOBAL (built_ship_q), hStarShip
-					);
+			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
+					&GLOBAL (built_ship_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
 			SummPtr->ShipList[SummPtr->NumShips] = GET_RACE_ID (StarShipPtr);
 			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
@@ -438,7 +437,7 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 }
 
 static void
-SaveProblemMessage (PSTAMP MsgStamp)
+SaveProblemMessage (STAMP *MsgStamp)
 {
 #define MAX_MSG_LINES 1
 	RECT r;
@@ -460,7 +459,7 @@ SaveProblemMessage (PSTAMP MsgStamp)
 		if (*t.pStr == '\0')
 			break;
 		t.CharCount = (COUNT)~0;
-		TextRect (&t, &tr, NULL_PTR);
+		TextRect (&t, &tr, NULL);
 		if (i == 0)
 			r = tr;
 		else
@@ -546,7 +545,7 @@ BOOLEAN
 SaveGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 {
 	BOOLEAN success, made_room;
-	PVOID out_fp;
+	void *out_fp;
 	MEM_HANDLE h;
 	DECODE_REF fh;
 
@@ -622,7 +621,7 @@ RetrySave:
 			while (num_links--)
 			{
 				HEVENT hNextEvent;
-				EVENTPTR EventPtr;
+				EVENT *EventPtr;
 
 				LockEvent (hEvent, &EventPtr);
 				hNextEvent = GetSuccEvent (EventPtr);
@@ -645,7 +644,7 @@ RetrySave:
 			while (num_links--)
 			{
 				HENCOUNTER hNextEncounter;
-				ENCOUNTERPTR EncounterPtr;
+				ENCOUNTER *EncounterPtr;
 
 				LockEncounter (hEncounter, &EncounterPtr);
 				hNextEncounter = GetSuccEncounter (EncounterPtr);

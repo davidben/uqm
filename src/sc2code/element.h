@@ -90,10 +90,12 @@ typedef struct state
 	struct
 	{
 		FRAME frame;
-		PFRAME farray;
+		FRAME *farray;
 	} image;
 } STATE;
-typedef STATE *PSTATE;
+
+typedef void (CollisionFunc) (struct element *ElementPtr0, POINT *pPt0,
+			struct element *ElementPtr1, POINT *pPt1);
 
 // Any physical object in the simulation.
 typedef struct element
@@ -102,8 +104,7 @@ typedef struct element
 
 	void (*preprocess_func) (struct element *ElementPtr);
 	void (*postprocess_func) (struct element *ElementPtr);
-	void (*collision_func) (struct element *ElementPtr0, PPOINT
-			pPt0, struct element *ElementPtr1, PPOINT pPt1);
+	CollisionFunc *collision_func;
 	void (*death_func) (struct element *ElementPtr);
 
 	ELEMENT_FLAGS state_flags;
@@ -116,11 +117,10 @@ typedef struct element
 	COUNT PrimIndex;
 	STATE current, next;
 
-	PVOID pParent;
+	void *pParent;
 			// The ship this element belongs to.
 	HELEMENT hTarget;
 } ELEMENT;
-typedef ELEMENT *PELEMENT;
 
 #define MAX_DISPLAY_PRIMS 280
 extern COUNT DisplayFreeList;
@@ -131,11 +131,8 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 #define FreeDisplayPrim(p) SetPrimLinks (&DisplayArray[p], END_OF_LIST, DisplayFreeList); \
 								DisplayFreeList = (p)
 
-#define STATEPTR PSTATE
-#define ELEMENTPTR PELEMENT
-
-#define GetElementStarShip(e,psd) *(psd) = (PVOID)(e)->pParent
-#define SetElementStarShip(e,psd) ((e)->pParent = (PVOID)(psd))
+#define GetElementStarShip(e,ppsd) do { *(ppsd) = (e)->pParent; } while (0)
+#define SetElementStarShip(e,psd)  do { (e)->pParent = psd; } while (0)
 
 #define blast_offset thrust_wait
 #define hit_points crew_level
@@ -159,58 +156,50 @@ extern void FreeElement (HELEMENT hElement);
 #define InsertElement(h,i) InsertQueue (&disp_q, h, i)
 #define GetHeadElement() GetHeadLink (&disp_q)
 #define GetTailElement() GetTailLink (&disp_q)
-#define LockElement(h,eptr) *(eptr) = (ELEMENTPTR)LockLink (&disp_q, h)
+#define LockElement(h,ppe) (*(ppe) = (ELEMENT*)LockLink (&disp_q, h))
 #define UnlockElement(h) UnlockLink (&disp_q, h)
 #define GetPredElement(l) _GetPredLink (l)
 #define GetSuccElement(l) _GetSuccLink (l)
 extern void RemoveElement (HLINK hLink);
 
 extern void RedrawQueue (BOOLEAN clear);
-extern BOOLEAN DeltaEnergy (ELEMENTPTR ElementPtr, SIZE
-		energy_delta);
-extern BOOLEAN DeltaCrew (ELEMENTPTR ElementPtr, SIZE
-		crew_delta);
+extern BOOLEAN DeltaEnergy (ELEMENT *ElementPtr, SIZE energy_delta);
+extern BOOLEAN DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta);
 
-extern void PreProcessStatus (PELEMENT ShipPtr);
-extern void PostProcessStatus (PELEMENT ShipPtr);
+extern void PreProcessStatus (ELEMENT *ShipPtr);
+extern void PostProcessStatus (ELEMENT *ShipPtr);
 
 extern void load_gravity_well (BYTE selector);
 extern void free_gravity_well (void);
 extern void spawn_planet (void);
-extern void spawn_asteroid (PELEMENT ElementPtr);
-extern void animation_preprocess (PELEMENT ElementPtr);
-extern void do_damage (ELEMENTPTR ElementPtr, SIZE
-		damage);
-extern void collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1);
-extern void crew_preprocess (PELEMENT ElementPtr);
-extern void crew_collision (PELEMENT ElementPtr0, PPOINT
-		pPt0, PELEMENT ElementPtr1, PPOINT pPt1);
-extern void AbandonShip (ELEMENTPTR ShipPtr, ELEMENTPTR
-		TargetPtr, COUNT crew_loss);
-extern BOOLEAN TimeSpaceMatterConflict (ELEMENTPTR
-		ElementPtr);
-extern COUNT PlotIntercept (ELEMENTPTR ElementPtr0,
-		ELEMENTPTR ElementPtr1, COUNT max_turns, COUNT
-		margin_of_error);
+extern void spawn_asteroid (ELEMENT *ElementPtr);
+extern void animation_preprocess (ELEMENT *ElementPtr);
+extern void do_damage (ELEMENT *ElementPtr, SIZE damage);
+extern void collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1);
+extern void crew_preprocess (ELEMENT *ElementPtr);
+extern void crew_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1);
+extern void AbandonShip (ELEMENT *ShipPtr, ELEMENT *TargetPtr,
+		COUNT crew_loss);
+extern BOOLEAN TimeSpaceMatterConflict (ELEMENT *ElementPtr);
+extern COUNT PlotIntercept (ELEMENT *ElementPtr0,
+		ELEMENT *ElementPtr1, COUNT max_turns, COUNT margin_of_error);
 extern BOOLEAN LoadKernel (int argc, char *argv[]);
 extern void FreeKernel (void);
 
 extern void InitDisplayList (void);
 
 extern void InitGalaxy (void);
-extern void MoveGalaxy (VIEW_STATE view_state, 
-		SIZE dx, SIZE dy);
-extern void ship_preprocess (PELEMENT ElementPtr);
-extern void ship_postprocess (PELEMENT
-		ElementPtr);
-extern void ship_death (PELEMENT ShipPtr);
-extern BOOLEAN hyper_transition (PELEMENT ElementPtr);
+extern void MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy);
+extern void ship_preprocess (ELEMENT *ElementPtr);
+extern void ship_postprocess (ELEMENT *ElementPtr);
+extern void ship_death (ELEMENT *ShipPtr);
+extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
 
-extern BOOLEAN CalculateGravity (PELEMENT ElementPtr);
-extern UWORD inertial_thrust (ELEMENTPTR ElementPtr);
-extern void SetUpElement (ELEMENTPTR
-		ElementPtr);
+extern BOOLEAN CalculateGravity (ELEMENT *ElementPtr);
+extern UWORD inertial_thrust (ELEMENT *ElementPtr);
+extern void SetUpElement (ELEMENT *ElementPtr);
 
 extern void BattleSong (BOOLEAN DoPlay);
 extern void FreeBattleSong (void);

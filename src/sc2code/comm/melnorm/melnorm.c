@@ -36,9 +36,9 @@ static NUMBER_SPEECH_DESC melnorme_numbers_english;
 
 static LOCDATA melnorme_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)MELNORME_PMAP_ANIM, /* AlienFrame */
 	(FONT)MELNORME_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -1501,8 +1501,7 @@ yack0_respond (void)
 					shared_phrase_buf,
 					we_are_from_alliance0,
 					buf,
-					(RESPONSE_REF)-1
-					);
+					(RESPONSE_REF)-1);
 			DoResponsePhrase (we_are_from_alliance0, DoFirstMeeting, shared_phrase_buf);
 			break;
 		}
@@ -1849,10 +1848,10 @@ post_melnorme_enc (void)
 	UnlockMutex (GraphicsLock);
 }
 
-LOCDATAPTR
+LOCDATA*
 init_melnorme_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	melnorme_desc.init_encounter_func = Intro;
 	melnorme_desc.post_encounter_func = post_melnorme_enc;

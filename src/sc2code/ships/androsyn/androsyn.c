@@ -94,7 +94,7 @@ static RACE_DESC androsynth_desc =
 	{
 		0,
 		LONG_RANGE_WEAPON >> 2,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,7 +107,8 @@ static RACE_DESC androsynth_desc =
 #define BLAZER_MASS 1
 
 static void
-blazer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+blazer_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 #define BLAZER_OFFSET 10
 	BYTE old_offs;
@@ -132,7 +133,7 @@ blazer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 #define MISSILE_SPEED DISPLAY_TO_WORLD (8)
 
 static void
-bubble_preprocess (PELEMENT ElementPtr)
+bubble_preprocess (ELEMENT *ElementPtr)
 {
 	BYTE thrust_wait, turn_wait;
 
@@ -157,8 +158,7 @@ bubble_preprocess (PELEMENT ElementPtr)
 		SIZE delta_facing;
 
 		facing = NORMALIZE_FACING (ANGLE_TO_FACING (
-				GetVelocityTravelAngle (&ElementPtr->velocity)
-				));
+				GetVelocityTravelAngle (&ElementPtr->velocity)));
 		if ((delta_facing = TrackShip (ElementPtr, &facing)) == -1)
 			facing = (COUNT)TFB_Random ();
 		else if (delta_facing <= ANGLE_TO_FACING (HALF_CIRCLE))
@@ -179,12 +179,12 @@ bubble_preprocess (PELEMENT ElementPtr)
 #define MISSILE_LIFE 200
 
 static COUNT
-initialize_bubble (PELEMENT ShipPtr, HELEMENT BubbleArray[])
+initialize_bubble (ELEMENT *ShipPtr, HELEMENT BubbleArray[])
 {
 #define ANDROSYNTH_OFFSET 14
 #define MISSILE_OFFSET 3
 #define MISSILE_HITS 3
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -206,7 +206,7 @@ initialize_bubble (PELEMENT ShipPtr, HELEMENT BubbleArray[])
 
 	if (BubbleArray[0])
 	{
-		ELEMENTPTR BubblePtr;
+		ELEMENT *BubblePtr;
 
 		LockElement (BubbleArray[0], &BubblePtr);
 		BubblePtr->turn_wait = 0;
@@ -217,10 +217,11 @@ initialize_bubble (PELEMENT ShipPtr, HELEMENT BubbleArray[])
 }
 
 static void
-androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+androsynth_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -242,7 +243,7 @@ androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUN
 	}
 	else
 	{
-		STARSHIPPTR pEnemyStarShip;
+		STARSHIP *pEnemyStarShip;
 
 		lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 		if (lpEvalDesc->ObjectPtr)
@@ -316,15 +317,14 @@ androsynth_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUN
 	}
 }
 
-static void (*ship_collision_func[2]) (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1);
+static CollisionFunc *ship_collision_func[2];
 
 #define BLAZER_TURN_WAIT 1
 
 static void
-androsynth_postprocess (PELEMENT ElementPtr)
+androsynth_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 			/* take care of blazer effect */
@@ -369,9 +369,9 @@ androsynth_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-androsynth_preprocess (PELEMENT ElementPtr)
+androsynth_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	ELEMENT_FLAGS cur_status_flags;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -455,17 +455,15 @@ androsynth_preprocess (PELEMENT ElementPtr)
 	StarShipPtr->cur_status_flags = cur_status_flags;
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_androsynth (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	androsynth_desc.preprocess_func = androsynth_preprocess;
 	androsynth_desc.postprocess_func = androsynth_postprocess;
 	androsynth_desc.init_weapon_func = initialize_bubble;
-	androsynth_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) androsynth_intelligence;
+	androsynth_desc.cyborg_control.intelligence_func = androsynth_intelligence;
 
 	RaceDescPtr = &androsynth_desc;
 

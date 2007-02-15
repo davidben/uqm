@@ -96,7 +96,7 @@ static RACE_DESC slylandro_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON << 1,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -105,11 +105,11 @@ static RACE_DESC slylandro_desc =
 	0,
 };
 
-static COUNT initialize_lightning (PELEMENT ElementPtr, HELEMENT
-		LaserArray[]);
+static COUNT initialize_lightning (ELEMENT *ElementPtr,
+		HELEMENT LaserArray[]);
 
 static void
-lightning_postprocess (PELEMENT ElementPtr)
+lightning_postprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait
 			&& !(ElementPtr->state_flags & COLLISION))
@@ -123,9 +123,10 @@ lightning_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-lightning_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+lightning_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr0, &StarShipPtr);
 	if (StarShipPtr->weapon_counter > WEAPON_WAIT >> 1)
@@ -138,7 +139,7 @@ lightning_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PP
 }
 
 static COUNT
-initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
+initialize_lightning (ELEMENT *ElementPtr, HELEMENT LaserArray[])
 {
 	LASER_BLOCK LaserBlock;
 
@@ -158,8 +159,8 @@ initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
 		SIZE delta;
 		COUNT angle, facing;
 		DWORD rand_val;
-		ELEMENTPTR LaserPtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *LaserPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 
@@ -246,10 +247,11 @@ initialize_lightning (PELEMENT ElementPtr, HELEMENT LaserArray[])
 }
 
 static void
-slylandro_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+slylandro_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER)
 			/* no dodging in role playing game */
@@ -286,7 +288,7 @@ slylandro_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT
 }
 
 static BOOLEAN
-harvest_space_junk (PELEMENT ElementPtr)
+harvest_space_junk (ELEMENT *ElementPtr)
 {
 	BOOLEAN retval;
 	HELEMENT hElement, hNextElement;
@@ -295,7 +297,7 @@ harvest_space_junk (PELEMENT ElementPtr)
 	for (hElement = GetHeadElement ();
 			hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ObjPtr;
+		ELEMENT *ObjPtr;
 
 		LockElement (hElement, &ObjPtr);
 		hNextElement = GetSuccElement (ObjPtr);
@@ -326,7 +328,7 @@ harvest_space_junk (PELEMENT ElementPtr)
 
 				if (!retval)
 				{
-					STARSHIPPTR StarShipPtr;
+					STARSHIP *StarShipPtr;
 
 					retval = TRUE;
 
@@ -345,9 +347,9 @@ harvest_space_junk (PELEMENT ElementPtr)
 }
 
 static void
-slylandro_postprocess (PELEMENT ElementPtr)
+slylandro_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->weapon_counter
@@ -370,11 +372,11 @@ slylandro_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-slylandro_preprocess (PELEMENT ElementPtr)
+slylandro_preprocess (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & (APPEARING | NONSOLID)))
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if ((StarShipPtr->cur_status_flags & THRUST)
@@ -410,17 +412,15 @@ slylandro_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_slylandro (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	slylandro_desc.preprocess_func = slylandro_preprocess;
 	slylandro_desc.postprocess_func = slylandro_postprocess;
 	slylandro_desc.init_weapon_func = initialize_lightning;
-	slylandro_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) slylandro_intelligence;
+	slylandro_desc.cyborg_control.intelligence_func = slylandro_intelligence;
 
 	RaceDescPtr = &slylandro_desc;
 

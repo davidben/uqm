@@ -125,7 +125,7 @@ sdluio_makeRWops (uio_Stream *stream) {
 	result->read = sdluio_read;
 	result->write = sdluio_write;
 	result->close = sdluio_close;
-	result->hidden.unknown.data1 = (void *) stream;
+	result->hidden.unknown.data1 = stream;
 	return result;
 }
 

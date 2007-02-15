@@ -27,7 +27,7 @@
 #include "nameref.h"
 
 
-extern int rotate_planet_task (PVOID data);
+extern int rotate_planet_task (void *data);
 
 
 void
@@ -38,7 +38,7 @@ DrawScannedObjects (BOOLEAN Reversed)
 	for (hElement = Reversed ? GetTailElement () : GetHeadElement ();
 			hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = Reversed ?
@@ -79,7 +79,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 		SetTransitionSource (NULL);
 
 		DrawSISFrame ();
-		DrawSISMessage (NULL_PTR);
+		DrawSISMessage (NULL);
 		DrawSISTitle (GLOBAL_SIS (PlanetName));
 		DrawStarBackGround (TRUE);
 	}
@@ -148,7 +148,7 @@ LoadPlanet (FRAME SurfDefFrame)
 		// The "rotate planets" task is not initialised yet.
 		// This means the call to LoadPlanet is made from a
 		// GENERATE_ORBITAL case of an IP generation function.
-		PPLANET_DESC pPlanetDesc;
+		PLANET_DESC *pPlanetDesc;
 
 		StopMusic ();
 

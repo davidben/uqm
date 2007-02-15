@@ -98,7 +98,7 @@ static RACE_DESC black_urquan_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -111,10 +111,10 @@ static RACE_DESC black_urquan_desc =
 #define MAX_SAWS 8
 
 static void
-spin_preprocess (PELEMENT ElementPtr)
+spin_preprocess (ELEMENT *ElementPtr)
 {
-	ELEMENTPTR ShipPtr;
-	STARSHIPPTR StarShipPtr;
+	ELEMENT *ShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	LockElement (StarShipPtr->hShip, &ShipPtr);
@@ -151,7 +151,7 @@ spin_preprocess (PELEMENT ElementPtr)
 #define TRACK_WAIT 4
 
 static void
-buzztrack_preprocess (PELEMENT ElementPtr)
+buzztrack_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->thrust_wait)
 		--ElementPtr->thrust_wait;
@@ -168,7 +168,7 @@ buzztrack_preprocess (PELEMENT ElementPtr)
 		{
 #define ACTIVATE_RANGE 224 /* Originally SPACE_WIDTH */
 			SIZE delta_x, delta_y;
-			ELEMENTPTR eptr;
+			ELEMENT *eptr;
 
 			LockElement (ElementPtr->hTarget, &eptr);
 			delta_x = eptr->current.location.x
@@ -209,7 +209,7 @@ buzztrack_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-decelerate_preprocess (PELEMENT ElementPtr)
+decelerate_preprocess (ELEMENT *ElementPtr)
 {
 	SIZE dx, dy;
 
@@ -226,7 +226,7 @@ decelerate_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-splinter_preprocess (PELEMENT ElementPtr)
+splinter_preprocess (ELEMENT *ElementPtr)
 {
 	ElementPtr->next.image.frame =
 			IncFrameIndex (ElementPtr->current.image.frame);
@@ -234,7 +234,8 @@ splinter_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-buzzsaw_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+buzzsaw_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 
@@ -251,9 +252,9 @@ buzzsaw_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 }
 
 static void
-buzzsaw_preprocess (PELEMENT ElementPtr)
+buzzsaw_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (!(StarShipPtr->cur_status_flags & WEAPON))
@@ -266,7 +267,7 @@ buzzsaw_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-buzzsaw_postprocess (PELEMENT ElementPtr)
+buzzsaw_postprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT hElement;
 
@@ -275,8 +276,8 @@ buzzsaw_postprocess (PELEMENT ElementPtr)
 	if (hElement)
 	{
 		COUNT primIndex;
-		ELEMENTPTR ListElementPtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *ListElementPtr;
+		STARSHIP *StarShipPtr;
 
 		LockElement (hElement, &ListElementPtr);
 		primIndex = ListElementPtr->PrimIndex;
@@ -302,13 +303,13 @@ buzzsaw_postprocess (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_buzzsaw (PELEMENT ShipPtr, HELEMENT SawArray[])
+initialize_buzzsaw (ELEMENT *ShipPtr, HELEMENT SawArray[])
 {
 #define MISSILE_HITS 10
 #define MISSILE_DAMAGE 4
 #define MISSILE_OFFSET 9
 #define KOHR_AH_OFFSET 28
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -330,7 +331,7 @@ initialize_buzzsaw (PELEMENT ShipPtr, HELEMENT SawArray[])
 
 	if (SawArray[0])
 	{
-		ELEMENTPTR SawPtr;
+		ELEMENT *SawPtr;
 
 		LockElement (SawArray[0], &SawPtr);
 		SawPtr->turn_wait = SAW_RATE;
@@ -344,10 +345,11 @@ initialize_buzzsaw (PELEMENT ShipPtr, HELEMENT SawArray[])
 }
 
 static void
-black_urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+black_urquan_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 	if (lpEvalDesc->ObjectPtr
@@ -375,7 +377,7 @@ black_urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, CO
 #define FRAGMENT_SPEED MISSILE_SPEED
 #define FRAGMENT_RANGE (FRAGMENT_LIFE * FRAGMENT_SPEED)
 		HELEMENT h, hNext;
-		ELEMENTPTR BuzzSawPtr;
+		ELEMENT *BuzzSawPtr;
 
 		h = (StarShipPtr->old_status_flags & WEAPON) ?
 				GetSuccElement (ShipPtr) : (HELEMENT)0;
@@ -429,7 +431,7 @@ black_urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, CO
 #define GAS_RATE 2
 
 static void
-gas_cloud_preprocess (PELEMENT ElementPtr)
+gas_cloud_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait)
 		--ElementPtr->turn_wait;
@@ -446,7 +448,8 @@ gas_cloud_preprocess (PELEMENT ElementPtr)
 #define GAS_DAMAGE 3
 
 static void
-gas_cloud_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+gas_cloud_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr1->state_flags & PLAYER_SHIP)
 		ElementPtr0->mass_points = GAS_DAMAGE;
@@ -457,14 +460,14 @@ gas_cloud_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PP
 }
 
 static void
-spawn_gas_cloud (PELEMENT ElementPtr)
+spawn_gas_cloud (ELEMENT *ElementPtr)
 {
 #define GAS_SPEED 16
 #define GAS_HITS 100
 #define GAS_OFFSET 2
 #define NUM_GAS_CLOUDS 16
 	SIZE dx, dy;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -495,7 +498,7 @@ spawn_gas_cloud (PELEMENT ElementPtr)
 		hGasCloud = initialize_missile (&MissileBlock);
 		if (hGasCloud)
 		{
-			ELEMENTPTR GasCloudPtr;
+			ELEMENT *GasCloudPtr;
 
 			LockElement (hGasCloud, &GasCloudPtr);
 			SetElementStarShip (GasCloudPtr, StarShipPtr);
@@ -510,9 +513,9 @@ spawn_gas_cloud (PELEMENT ElementPtr)
 }
 
 static void
-black_urquan_postprocess (PELEMENT ElementPtr)
+black_urquan_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -529,9 +532,9 @@ black_urquan_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-black_urquan_preprocess (PELEMENT ElementPtr)
+black_urquan_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 			/* no spinning disks */
@@ -542,17 +545,15 @@ black_urquan_preprocess (PELEMENT ElementPtr)
 		++StarShipPtr->weapon_counter;
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_black_urquan (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	black_urquan_desc.preprocess_func = black_urquan_preprocess;
 	black_urquan_desc.postprocess_func = black_urquan_postprocess;
 	black_urquan_desc.init_weapon_func = initialize_buzzsaw;
-	black_urquan_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) black_urquan_intelligence;
+	black_urquan_desc.cyborg_control.intelligence_func = black_urquan_intelligence;
 
 	RaceDescPtr = &black_urquan_desc;
 

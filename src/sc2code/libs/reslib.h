@@ -55,8 +55,8 @@ typedef BOOLEAN (ResourceFreeFun) (MEM_HANDLE handle);
 
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
-extern int ReadResFile (PVOID lpBuf, COUNT size, COUNT count, uio_Stream *fp);
-extern int WriteResFile (PCVOID lpBuf, COUNT size, COUNT count,
+extern int ReadResFile (void *lpBuf, COUNT size, COUNT count, uio_Stream *fp);
+extern int WriteResFile (const void *lpBuf, COUNT size, COUNT count,
 		uio_Stream *fp);
 extern int GetResFileChar (uio_Stream *fp);
 extern int PutResFileChar (char ch, uio_Stream *fp);
@@ -86,7 +86,6 @@ extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD length,
 		MEM_FLAGS mem_flags);
 
 #define RESOURCE_PRIORITY DEFAULT_MEM_PRIORITY
-#define RESOURCE_DATAPTR PBYTE
 
 #define AllocResourceData(s,mf) \
 	mem_allocate ((MEM_SIZE)(s), (mf), RESOURCE_PRIORITY, MEM_SIMPLE)
@@ -107,7 +106,7 @@ typedef STRINGPTR DIRENTRYPTR;
 
 extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 		const char *path, const char *pattern, match_MatchType matchType,
-		PCOUNT pnum_entries);
+		COUNT *pnum_entries);
 #define CaptureDirEntryTable CaptureStringTable
 #define ReleaseDirEntryTable ReleaseStringTable
 #define DestroyDirEntryTable DestroyStringTable

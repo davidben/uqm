@@ -25,9 +25,9 @@
 
 static LOCDATA ilwrath_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)ILWRATH_PMAP_ANIM, /* AlienFrame */
 	(FONT)ILWRATH_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -92,7 +92,7 @@ static LOCDATA ilwrath_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -615,10 +615,10 @@ post_ilwrath_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_ilwrath_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	ilwrath_desc.init_encounter_func = Intro;
 	ilwrath_desc.post_encounter_func = post_ilwrath_enc;

@@ -33,7 +33,7 @@
 #include "libs/inplib.h"
 
 
-PMENU_STATE pMenuState;
+MENU_STATE *pMenuState;
 
 static void
 DrawBaseStateStrings (STARBASE_STATE OldState, STARBASE_STATE NewState)
@@ -77,7 +77,7 @@ DrawBaseStateStrings (STARBASE_STATE OldState, STARBASE_STATE NewState)
 }
 
 void
-DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT which_slot,
+DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 		BOOLEAN DrawBluePrint)
 {
 	COLOR OldColor = 0;  // Initialisation is to keep the compiler silent.
@@ -287,7 +287,7 @@ rotate_starbase(void *data)
 }
 
 BOOLEAN
-DoStarBase (PMENU_STATE pMS)
+DoStarBase (MENU_STATE *pMS)
 {
 	if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 	{
@@ -304,7 +304,7 @@ DoStarBase (PMENU_STATE pMS)
 		pMS->InputFunc = DoStarBase;
 
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 
 		if (pMS->hMusic)
 		{
@@ -403,7 +403,7 @@ ExitStarBase:
 			}
 
 			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-			DoInput ((PVOID)pMS, TRUE);
+			DoInput (pMS, TRUE);
 
 			pMS->Initialized = FALSE;
 			pMS->CurState = OldState;
@@ -472,7 +472,7 @@ VisitStarBase (void)
 	else if (!GET_GAME_STATE (STARBASE_AVAILABLE))
 	{
 		HSTARSHIP hStarShip;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
 		pMenuState = 0;
 
@@ -481,17 +481,12 @@ VisitStarBase (void)
 				|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 			goto ExitStarBase;
 
-		hStarShip = CloneShipFragment (
-				ILWRATH_SHIP,
-				&GLOBAL (npc_built_ship_q), 7
-				);
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		hStarShip = CloneShipFragment (ILWRATH_SHIP,
+				&GLOBAL (npc_built_ship_q), 7);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		SET_RACE_ID (FragPtr, (BYTE)~0);
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		InitCommunication (ILWRATH_CONVERSATION);
 		if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
@@ -513,7 +508,7 @@ TimePassage:
 
 	pMenuState = &MenuState;
 
-	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
+	memset (&MenuState, 0, sizeof (MenuState));
 
 	MenuState.InputFunc = DoStarBase;
 	if (GET_GAME_STATE (MOONBASE_ON_SHIP)
@@ -524,7 +519,7 @@ TimePassage:
 	}
 
 	OldContext = SetContext (ScreenContext);
-	DoInput ((PVOID)pMenuState, TRUE);
+	DoInput (pMenuState, TRUE);
 	SetContext (OldContext);
 
 	pMenuState = 0;
@@ -585,7 +580,7 @@ WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE field_width)
 			while (*++pStr != ' ' && (COUNT)(pStr - tarray->pStr) < len)
 				;
 			tarray->CharCount = pStr - tarray->pStr;
-			TextRect (tarray, &r, NULL_PTR);
+			TextRect (tarray, &r, NULL);
 		} while (tarray->CharCount < len && r.extent.width < field_width);
 	
 		if (r.extent.width >= field_width)
@@ -595,7 +590,7 @@ WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE field_width)
 				do
 				{
 					++tarray->CharCount;
-					TextRect (tarray, &r, NULL_PTR);
+					TextRect (tarray, &r, NULL);
 				} while (r.extent.width < field_width);
 				--tarray->CharCount;
 			}

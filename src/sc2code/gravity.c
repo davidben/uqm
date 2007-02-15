@@ -24,7 +24,7 @@
 //#define DEBUG_GRAVITY
 
 BOOLEAN
-CalculateGravity (PELEMENT ElementPtr)
+CalculateGravity (ELEMENT *ElementPtr)
 {
 	BOOLEAN retval, HasGravity;
 	HELEMENT hTestElement, hSuccElement;
@@ -36,7 +36,7 @@ CalculateGravity (PELEMENT ElementPtr)
 			hTestElement != 0; hTestElement = hSuccElement)
 	{
 		BOOLEAN TestHasGravity;
-		ELEMENTPTR TestElementPtr;
+		ELEMENT *TestElementPtr;
 
 		LockElement (hTestElement, &TestElementPtr);
 		if (TestElementPtr != ElementPtr
@@ -130,7 +130,7 @@ CalculateGravity (PELEMENT ElementPtr)
 								SINE (angle, WORLD_TO_VELOCITY (1)));
 						if (TestElementPtr->state_flags & PLAYER_SHIP)
 						{
-							STARSHIPPTR StarShipPtr;
+							STARSHIP *StarShipPtr;
 
 							GetElementStarShip (TestElementPtr, &StarShipPtr);
 							StarShipPtr->cur_status_flags &= ~SHIP_AT_MAX_SPEED;
@@ -149,7 +149,7 @@ CalculateGravity (PELEMENT ElementPtr)
 }
 
 BOOLEAN
-TimeSpaceMatterConflict (ELEMENTPTR ElementPtr)
+TimeSpaceMatterConflict (ELEMENT *ElementPtr)
 {
 	HELEMENT hTestElement, hSuccElement;
 	INTERSECT_CONTROL ElementControl;
@@ -165,7 +165,7 @@ TimeSpaceMatterConflict (ELEMENTPTR ElementPtr)
 	for (hTestElement = GetHeadElement ();
 			hTestElement != 0; hTestElement = hSuccElement)
 	{
-		ELEMENTPTR TestElementPtr;
+		ELEMENT *TestElementPtr;
 
 		LockElement (hTestElement, &TestElementPtr);
 		hSuccElement = GetSuccElement (TestElementPtr);

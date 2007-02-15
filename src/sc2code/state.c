@@ -132,7 +132,7 @@ LengthStateFile (GAME_STATE_FILE *fp)
 }
 
 int
-ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp)
+ReadStateFile (void *lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp)
 {
 	DWORD bytes = size * count;
 
@@ -155,7 +155,7 @@ ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp)
 }
 
 int
-WriteStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp)
+WriteStateFile (const void *lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp)
 {
 	DWORD bytes = size * count;
 	
@@ -211,7 +211,7 @@ InitPlanetInfo (void)
 	fp = OpenStateFile (STARINFO_FILE, "wb");
 	if (fp)
 	{
-		STAR_DESCPTR pSD;
+		STAR_DESC *pSD;
 
 		// Set record offsets for all stars to 0 (not present)
 		pSD = &star_array[0];
@@ -238,7 +238,7 @@ UninitPlanetInfo (void)
 void
 GetPlanetInfo (void)
 {
-	PVOID fp;
+	void *fp;
 
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] = 0;
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] = 0;
@@ -286,7 +286,7 @@ GetPlanetInfo (void)
 void
 PutPlanetInfo (void)
 {
-	PVOID fp;
+	void *fp;
 
 	fp = OpenStateFile (STARINFO_FILE, "r+b");
 	if (fp)

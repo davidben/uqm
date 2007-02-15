@@ -24,7 +24,7 @@
 
 
 MEM_HANDLE
-load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
+load_ship (STARSHIP *StarShipPtr, BOOLEAN LoadBattleData)
 {
 	BOOLEAN retval;
 	MEM_HANDLE h;
@@ -36,7 +36,7 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 	{
 #define INITIAL_CODE_RES MAKE_RESOURCE (1, CODE, 0)
 		BYTE captains_name_index;
-		PVOID CodeRef;
+		void *CodeRef;
 		MEM_HANDLE hOldIndex;
 		COUNT which_player;
 
@@ -45,7 +45,7 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 		hOldIndex = SetResourceIndex (h);
 
 		CodeRef = CaptureCodeRes (LoadCodeRes (INITIAL_CODE_RES),
-				(PVOID)&GlobData, (PVOID)&StarShipPtr->RaceDescPtr);
+				&GlobData, &StarShipPtr->RaceDescPtr);
 		if (CodeRef == 0)
 			goto BadLoad;
 		StarShipPtr->RaceDescPtr->CodeRef = CodeRef;
@@ -76,7 +76,7 @@ load_ship (STARSHIPPTR StarShipPtr, BOOLEAN LoadBattleData)
 
 		if (LoadBattleData)
 		{
-			DATA_STUFFPTR RawPtr;
+			DATA_STUFF *RawPtr;
 
 			StarShipPtr->captains_name_index = captains_name_index;
 			StarShipPtr->RaceDescPtr->ship_info.ship_flags |= which_player;
@@ -146,9 +146,9 @@ BadLoad:
 }
 
 void
-free_ship (STARSHIPPTR StarShipPtr, BOOLEAN FreeBattleData)
+free_ship (STARSHIP *StarShipPtr, BOOLEAN FreeBattleData)
 {
-	RACE_DESCPTR raceDescPtr = StarShipPtr->RaceDescPtr;
+	RACE_DESC *raceDescPtr = StarShipPtr->RaceDescPtr;
 	SHIP_INFO *shipInfo = &raceDescPtr->ship_info;
 
 	if (FreeBattleData)

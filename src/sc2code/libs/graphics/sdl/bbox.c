@@ -105,7 +105,7 @@ TFB_BBox_RegisterPoint (int x, int y)
 }
 
 void
-TFB_BBox_RegisterRect (PRECT r)
+TFB_BBox_RegisterRect (RECT *r)
 {
 	TFB_BBox_RegisterPoint (r->corner.x, r->corner.y);
 	TFB_BBox_RegisterPoint (r->corner.x + r->extent.width, r->corner.y + r->extent.height);

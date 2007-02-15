@@ -23,10 +23,10 @@ MEM_HANDLE
 GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 {
 	MEM_HANDLE RData;
-	DECODE_REF fh;
+	DECODE_REF fh = 0;
 
 	if (length == ~(DWORD)0)
-		length = LengthResFile (fp), fh = 0;
+		length = LengthResFile (fp);
 	else if ((fh = copen (fp, FILE_STREAM, STREAM_READ)))
 		cfilelength (fh, &length);
 	else
@@ -35,10 +35,10 @@ GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 	RData = AllocResourceData (length, mem_flags);
 	if (RData)
 	{
-		RESOURCE_DATAPTR RDPtr;
+		BYTE *RDPtr;
 
 		LockResourceData (RData, &RDPtr);
-		if (RDPtr == NULL_PTR)
+		if (RDPtr == NULL)
 		{
 			FreeResourceData (RData);
 			RData = 0;
@@ -62,7 +62,7 @@ GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 					if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
 						break;
 				}
-				RDPtr = (RESOURCE_DATAPTR) ((BYTE *) RDPtr + num_read);
+				RDPtr += num_read;
 			} while (length -= num_read);
 
 			UnlockResourceData (RData);

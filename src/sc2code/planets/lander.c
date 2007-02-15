@@ -171,7 +171,7 @@ DamageColorCycle (COLOR c, COUNT i)
 #define MAGNIFICATION (1 << MAG_SHIFT)
 
 static BOOLEAN
-RepairTopography (ELEMENTPTR ElementPtr)
+RepairTopography (ELEMENT *ElementPtr)
 {
 	//BOOLEAN CursorIntersect;
 	SIZE delta;
@@ -213,10 +213,10 @@ RepairTopography (ELEMENTPTR ElementPtr)
 static HELEMENT AddGroundDisaster (COUNT which_disaster);
 
 void
-object_animation (PELEMENT ElementPtr)
+object_animation (ELEMENT *ElementPtr)
 {
 	COUNT frame_index, angle;
-	PPRIMITIVE pPrim;
+	PRIMITIVE *pPrim;
 
 	pPrim = &DisplayArray[ElementPtr->PrimIndex];
 	if (GetPrimType (pPrim) == STAMPFILL_PRIM
@@ -283,7 +283,7 @@ object_animation (PELEMENT ElementPtr)
 				hLavaElement = AddGroundDisaster (LAVASPOT_DISASTER);
 				if (hLavaElement)
 				{
-					ELEMENTPTR LavaElementPtr;
+					ELEMENT *LavaElementPtr;
 
 					angle = FACING_TO_ANGLE (ElementPtr->hit_points);
 					LockElement (hLavaElement, &LavaElementPtr);
@@ -479,7 +479,7 @@ DeltaLanderCrew (SIZE crew_delta, COUNT which_disaster)
 }
 
 static void
-FillLanderHold (PPLANETSIDE_DESC pPSD, COUNT scan, COUNT NumRetrieved)
+FillLanderHold (PLANETSIDE_DESC *pPSD, COUNT scan, COUNT NumRetrieved)
 {
 	COUNT start_count;
 	STAMP s;
@@ -532,8 +532,9 @@ CheckObjectCollision (COUNT index)
 {
 	INTERSECT_CONTROL LanderControl;
 	MEM_HANDLE LanderHandle;
-	PPRIMITIVE pPrim, pLanderPrim;
-	PPLANETSIDE_DESC pPSD;
+	PRIMITIVE *pPrim;
+	PRIMITIVE *pLanderPrim;
+	PLANETSIDE_DESC *pPSD;
 
 	if (index != END_OF_LIST)
 	{
@@ -550,7 +551,7 @@ CheckObjectCollision (COUNT index)
 		index = GetSuccLink (DisplayLinks);
 	}
 
-	pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
+	pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 	LanderControl.EndPoint = LanderControl.IntersectStamp.origin;
 	LanderHandle = GetFrameHandle (LanderControl.IntersectStamp.frame);
 
@@ -576,7 +577,7 @@ CheckObjectCollision (COUNT index)
 
 		for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (hElement, &ElementPtr);
 			hNextElement = GetSuccElement (ElementPtr);
@@ -864,9 +865,9 @@ CheckObjectCollision (COUNT index)
 }
 
 static void
-lightning_process (PELEMENT ElementPtr)
+lightning_process (ELEMENT *ElementPtr)
 {
-	PPRIMITIVE pPrim;
+	PRIMITIVE *pPrim;
 
 	pPrim = &DisplayArray[ElementPtr->PrimIndex];
 	if (LONIBBLE (ElementPtr->turn_wait))
@@ -893,7 +894,7 @@ lightning_process (PELEMENT ElementPtr)
 				if (HIBYTE (pMenuState->delta_item)
 						&& (BYTE)TFB_Random () < (256 / 10)
 						&& !(
-						(PPLANETSIDE_DESC)pMenuState->ModuleFrame
+						(PLANETSIDE_DESC*)pMenuState->ModuleFrame
 						)->InTransit)
 					lander_flags |= KILL_CREW;
 
@@ -922,7 +923,7 @@ AddLightning (void)
 	if (hLightningElement)
 	{
 		DWORD rand_val;
-		ELEMENTPTR LightningElementPtr;
+		ELEMENT *LightningElementPtr;
 
 		LockElement (hLightningElement, &LightningElementPtr);
 
@@ -971,8 +972,8 @@ AddGroundDisaster (COUNT which_disaster)
 	if (hGroundDisasterElement)
 	{
 		DWORD rand_val;
-		ELEMENTPTR GroundDisasterElementPtr;
-		PPRIMITIVE pPrim;
+		ELEMENT *GroundDisasterElementPtr;
+		PRIMITIVE *pPrim;
 
 		LockElement (hGroundDisasterElement, &GroundDisasterElementPtr);
 
@@ -1026,13 +1027,13 @@ BuildObjectList (void)
 	DWORD rand_val;
 	POINT org;
 	HELEMENT hElement, hNextElement;
-	PPLANETSIDE_DESC pPSD;
+	PLANETSIDE_DESC *pPSD;
 
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 	
 	lander_flags &= ~KILL_CREW;
 
-	pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
+	pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 	rand_val = TFB_Random ();
 	if (LOBYTE (HIWORD (rand_val)) < pPSD->FireChance)
 	{
@@ -1052,7 +1053,7 @@ BuildObjectList (void)
 			hElement; hElement = hNextElement)
 	{
 		SIZE dx, dy;
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 
@@ -1107,7 +1108,7 @@ BuildObjectList (void)
 		}
 
 		{
-			PPRIMITIVE pPrim;
+			PRIMITIVE *pPrim;
 
 			pPrim = &DisplayArray[ElementPtr->PrimIndex];
 			pPrim->Object.Stamp.origin.x =
@@ -1146,7 +1147,7 @@ RepairScan (void)
 	for (hElement = GetHeadElement ();
 			hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
@@ -1332,9 +1333,9 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		CheckObjectCollision (END_OF_LIST);
 
 	{
-		PPLANETSIDE_DESC pPSD;
+		PLANETSIDE_DESC *pPSD;
 
-		pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
+		pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 		if (pPSD->NumFrames)
 		{
 			--pPSD->NumFrames;
@@ -1586,7 +1587,7 @@ InitPlanetSide (void)
 }
 
 static BOOLEAN
-DoPlanetSide (PMENU_STATE pMS)
+DoPlanetSide (MENU_STATE *pMS)
 {
 #define NUM_LANDING_DELTAS 10
 #define SHUTTLE_TURN_WAIT 2
@@ -1627,7 +1628,7 @@ SetVelocityComponents (
 			|| (HIBYTE (pMS->delta_item) 
 			&& ((CurrentInputState.key[PlayerOne][KEY_ESCAPE] ||
 			     CurrentInputState.key[PlayerOne][KEY_SPECIAL])
-			|| ((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit)))
+			|| ((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit)))
 	{
 		if (pMS->delta_item || pMS->CurState > EXPLOSION_LIFE + 60)
 			return (FALSE);
@@ -1643,7 +1644,7 @@ SetVelocityComponents (
 				hExplosionElement = AllocElement ();
 				if (hExplosionElement)
 				{
-					ELEMENTPTR ExplosionElementPtr;
+					ELEMENT *ExplosionElementPtr;
 
 					LockElement (hExplosionElement, &ExplosionElementPtr);
 
@@ -1746,7 +1747,7 @@ SetVelocityComponents (
 				if (hWeaponElement)
 				{
 					SIZE wdx, wdy;
-					ELEMENTPTR WeaponElementPtr;
+					ELEMENT *WeaponElementPtr;
 
 					LockElement (hWeaponElement, &WeaponElementPtr);
 
@@ -1871,7 +1872,7 @@ SetPlanetMusic (BYTE planet_type)
 }
 
 static void
-ReturnToOrbit (PRECT pRect)
+ReturnToOrbit (RECT *pRect)
 {
 	CONTEXT OldContext;
 	
@@ -1896,7 +1897,7 @@ ReturnToOrbit (PRECT pRect)
 }
 
 void
-PlanetSide (PMENU_STATE pMS)
+PlanetSide (MENU_STATE *pMS)
 {
 	SIZE index;
 	DWORD TimeIn;
@@ -1905,7 +1906,7 @@ PlanetSide (PMENU_STATE pMS)
 	BYTE WeatherChanceTab[] = {0*3, 0*3, 1*3, 2*3, 3*3, 6*3, 12*3, 24*3};
 	BYTE FireChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 12*3, 24*3, 48*3};
 
-	memset ((PPLANETSIDE_DESC)&PSD, 0, sizeof (PSD));
+	memset (&PSD, 0, sizeof (PSD));
 	PSD.InTransit = TRUE;
 
 	PSD.TectonicsChance =
@@ -1930,7 +1931,7 @@ PlanetSide (PMENU_STATE pMS)
 	else
 		PSD.FireChance = FireChanceTab[7];
 
-	PSD.ElementLevel = GetSBayCapacity (NULL_PTR)
+	PSD.ElementLevel = GetSBayCapacity (NULL)
 			- GLOBAL_SIS (TotalElementMass);
 	PSD.MaxElementLevel = MAX_SCROUNGED;
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
@@ -1993,7 +1994,7 @@ PlanetSide (PMENU_STATE pMS)
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPlanetSide;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-	DoInput ((PVOID)pMS, FALSE);
+	DoInput (pMS, FALSE);
 
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
@@ -2081,7 +2082,7 @@ PlanetSide (PMENU_STATE pMS)
 		for (hElement = GetHeadElement ();
 				hElement; hElement = hNextElement)
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (hElement, &ElementPtr);
 			hNextElement = _GetSuccLink (ElementPtr);
@@ -2174,9 +2175,8 @@ InitLander (BYTE LanderFlags)
 			DrawStamp (&s);
 		}
 
-		if ((int)(free_space = GetSBayCapacity (NULL_PTR)
-				- GLOBAL_SIS (TotalElementMass)) <
-				(int)(MAX_SCROUNGED << capacity_shift))
+		free_space = GetSBayCapacity (NULL) - GLOBAL_SIS (TotalElementMass);
+		if ((int)free_space < (int)(MAX_SCROUNGED << capacity_shift))
 		{
 			r.corner.x = 1;
 			r.extent.width = 4;

@@ -97,7 +97,7 @@ static RACE_DESC pkunk_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON + 1,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,7 +107,7 @@ static RACE_DESC pkunk_desc =
 };
 
 static void
-animate (PELEMENT ElementPtr)
+animate (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -122,14 +122,14 @@ animate (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_bug_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
+initialize_bug_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 {
 #define PKUNK_OFFSET 15
 #define MISSILE_HITS 1
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 1
 	COUNT i;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -144,7 +144,7 @@ initialize_bug_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 
 	for (i = 0; i < 3; ++i)
@@ -159,7 +159,7 @@ initialize_bug_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 		if ((MissileArray[i] = initialize_missile (&MissileBlock)))
 		{
 			SIZE dx, dy;
-			ELEMENTPTR MissilePtr;
+			ELEMENT *MissilePtr;
 
 			LockElement (MissileArray[i], &MissilePtr);
 			GetCurrentVelocityComponents (&ShipPtr->velocity, &dx, &dy);
@@ -178,9 +178,10 @@ initialize_bug_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 static HELEMENT hPhoenix = 0;
 
 static void
-pkunk_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	if (hPhoenix && StarShipPtr->special_counter)
@@ -200,18 +201,18 @@ pkunk_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 }
 
-static void pkunk_preprocess (PELEMENT ElementPtr);
-static void pkunk_postprocess (PELEMENT ElementPtr);
+static void pkunk_preprocess (ELEMENT *ElementPtr);
+static void pkunk_postprocess (ELEMENT *ElementPtr);
 
 static void
-new_pkunk (PELEMENT ElementPtr)
+new_pkunk (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (!(ElementPtr->state_flags & PLAYER_SHIP))
 	{
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		LockElement (StarShipPtr->hShip, &ShipPtr);
 		ShipPtr->death_func = new_pkunk;
@@ -226,7 +227,7 @@ new_pkunk (PELEMENT ElementPtr)
 		ElementPtr->preprocess_func = StarShipPtr->RaceDescPtr->preprocess_func;
 		ElementPtr->postprocess_func = StarShipPtr->RaceDescPtr->postprocess_func;
 		ElementPtr->death_func =
-				(void (*) (PELEMENT ElementPtr))
+				(void (*) (ELEMENT *ElementPtr))
 						StarShipPtr->RaceDescPtr->init_weapon_func;
 		StarShipPtr->RaceDescPtr->preprocess_func = pkunk_preprocess;
 		StarShipPtr->RaceDescPtr->postprocess_func = pkunk_postprocess;
@@ -273,9 +274,9 @@ new_pkunk (PELEMENT ElementPtr)
 }
 
 static void
-intercept_pkunk_death (PELEMENT ElementPtr)
+intercept_pkunk_death (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	ElementPtr->state_flags &= ~DISAPPEARING;
 	ElementPtr->life_span = 1;
@@ -283,7 +284,7 @@ intercept_pkunk_death (PELEMENT ElementPtr)
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
 	{
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		LockElement (StarShipPtr->hShip, &ShipPtr);
 		if (GRAVITY_MASS (ShipPtr->mass_points + 1))
@@ -297,8 +298,7 @@ intercept_pkunk_death (PELEMENT ElementPtr)
 			StarShipPtr->RaceDescPtr->preprocess_func = ShipPtr->preprocess_func;
 			StarShipPtr->RaceDescPtr->postprocess_func = ShipPtr->postprocess_func;
 			StarShipPtr->RaceDescPtr->init_weapon_func =
-					(COUNT (*) (PELEMENT ElementPtr,
-							HELEMENT Weapon[]))
+					(COUNT (*) (ELEMENT *ElementPtr, HELEMENT Weapon[]))
 							ShipPtr->death_func;
 
 			ElementPtr->death_func = new_pkunk;
@@ -311,8 +311,7 @@ intercept_pkunk_death (PELEMENT ElementPtr)
 #define TRANSITION_LIFE 1
 
 void
-spawn_phoenix_trail (PELEMENT
-		ElementPtr)
+spawn_phoenix_trail (ELEMENT *ElementPtr)
 {
 	static const COLOR color_tab[] =
 	{
@@ -362,19 +361,18 @@ spawn_phoenix_trail (PELEMENT
 #define PHOENIX_LIFE 12
 
 void
-phoenix_transition (PELEMENT
-		ElementPtr)
+phoenix_transition (ELEMENT *ElementPtr)
 {
 	HELEMENT hShipImage;
-	ELEMENTPTR ShipImagePtr;
-	STARSHIPPTR StarShipPtr;
+	ELEMENT *ShipImagePtr;
+	STARSHIP *StarShipPtr;
 	
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	LockElement (StarShipPtr->hShip, &ShipImagePtr);
 
 	if (!(ShipImagePtr->state_flags & NONSOLID))
 	{
-		ElementPtr->preprocess_func = NULL_PTR;
+		ElementPtr->preprocess_func = NULL;
 	}
 	else if ((hShipImage = AllocElement ()))
 	{
@@ -402,7 +400,7 @@ phoenix_transition (PELEMENT
 					COSINE (angle, TRANSITION_SPEED);
 			ShipImagePtr->current.location.y +=
 					SINE (angle, TRANSITION_SPEED);
-			ElementPtr->preprocess_func = NULL_PTR;
+			ElementPtr->preprocess_func = NULL;
 		}
 		else
 		{
@@ -433,15 +431,14 @@ phoenix_transition (PELEMENT
 }
 
 static void
-pkunk_preprocess (ElementPtr)
-PELEMENT ElementPtr;
+pkunk_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (ElementPtr->state_flags & APPEARING)
 	{
-		ELEMENTPTR PhoenixPtr;
+		ELEMENT *PhoenixPtr;
 
 		if (((BYTE)TFB_Random () & 1)
 				&& (hPhoenix = AllocElement ()))
@@ -505,7 +502,7 @@ PELEMENT ElementPtr;
 			InitIntersectStartPoint (ElementPtr);
 			InitIntersectEndPoint (ElementPtr);
 			InitIntersectFrame (ElementPtr);
-			ZeroVelocityComponents (&((ELEMENTPTR)ElementPtr)->velocity);
+			ZeroVelocityComponents (&ElementPtr->velocity);
 			ElementPtr->state_flags &= ~(NONSOLID | FINITE_LIFE);
 			ElementPtr->state_flags |= CHANGING;
 
@@ -515,10 +512,9 @@ PELEMENT ElementPtr;
 }
 
 static void
-pkunk_postprocess (ElementPtr)
-PELEMENT ElementPtr;
+pkunk_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->RaceDescPtr->characteristics.special_wait)
@@ -547,21 +543,15 @@ PELEMENT ElementPtr;
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_pkunk (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	pkunk_desc.preprocess_func = pkunk_preprocess;
 	pkunk_desc.postprocess_func = pkunk_postprocess;
 	pkunk_desc.init_weapon_func = initialize_bug_missile;
-	pkunk_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr,
-					PVOID
-					ObjectsOfConcern,
-					COUNT
-					ConcernCounter))
-					pkunk_intelligence;
+	pkunk_desc.cyborg_control.intelligence_func = pkunk_intelligence;
 
 	RaceDescPtr = &pkunk_desc;
 

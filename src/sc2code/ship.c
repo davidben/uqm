@@ -28,7 +28,7 @@
 
 
 void
-animation_preprocess (PELEMENT ElementPtr)
+animation_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -44,15 +44,15 @@ animation_preprocess (PELEMENT ElementPtr)
 
 
 UWORD
-inertial_thrust (ELEMENTPTR ElementPtr)
+inertial_thrust (ELEMENT *ElementPtr)
 {
 #define MAX_ALLOWED_SPEED     WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (18))
 #define MAX_ALLOWED_SPEED_SQR ((DWORD)MAX_ALLOWED_SPEED * MAX_ALLOWED_SPEED)
 
 	COUNT CurrentAngle, TravelAngle;
 	COUNT max_thrust, thrust_increment;
-	VELOCITYPTR VelocityPtr;
-	STARSHIPPTR StarShipPtr;
+	VELOCITY_DESC *VelocityPtr;
+	STARSHIP *StarShipPtr;
 
 	VelocityPtr = &ElementPtr->velocity;
 
@@ -138,11 +138,11 @@ inertial_thrust (ELEMENTPTR ElementPtr)
 }
 
 void
-ship_preprocess (PELEMENT ElementPtr)
+ship_preprocess (ELEMENT *ElementPtr)
 {
 	ELEMENT_FLAGS cur_status_flags;
-	STARSHIPPTR StarShipPtr;
-	RACE_DESCPTR RDPtr;
+	STARSHIP *StarShipPtr;
+	RACE_DESC *RDPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	RDPtr = StarShipPtr->RaceDescPtr;
@@ -175,7 +175,7 @@ ship_preprocess (PELEMENT ElementPtr)
 		{
 			CONTEXT OldContext;
 
-			InitShipStatus (StarShipPtr, NULL_PTR);
+			InitShipStatus (StarShipPtr, NULL);
 			OldContext = SetContext (StatusContext);
 			DrawCaptainsWindow (StarShipPtr);
 			SetContext (OldContext);
@@ -184,14 +184,13 @@ ship_preprocess (PELEMENT ElementPtr)
 
 			if (ElementPtr->hTarget == 0)
 			{
-				extern void ship_transition (PELEMENT ElementPtr);
+				extern void ship_transition (ELEMENT *ElementPtr);
 
 				ship_transition (ElementPtr);
 			}
 			else
 			{
-				extern BOOLEAN OpponentAlive (STARSHIPPTR
-						TestStarShipPtr);
+				extern BOOLEAN OpponentAlive (STARSHIP *TestStarShipPtr);
 
 				ElementPtr->hTarget = 0;
 				if (!PLRPlaying ((MUSIC_REF)~0) && OpponentAlive (StarShipPtr))
@@ -222,7 +221,7 @@ ship_preprocess (PELEMENT ElementPtr)
 		--StarShipPtr->energy_counter;
 	else if (RDPtr->ship_info.energy_level < (BYTE)RDPtr->ship_info.max_energy
 			|| (SBYTE)RDPtr->characteristics.energy_regeneration < 0)
-		DeltaEnergy ((ELEMENTPTR)ElementPtr,
+		DeltaEnergy (ElementPtr,
 				(SBYTE)RDPtr->characteristics.energy_regeneration);
 
 	if (RDPtr->preprocess_func)
@@ -255,7 +254,7 @@ ship_preprocess (PELEMENT ElementPtr)
 	{
 		UWORD thrust_status;
 
-		thrust_status = inertial_thrust ((ELEMENTPTR)ElementPtr);
+		thrust_status = inertial_thrust (ElementPtr);
 		StarShipPtr->cur_status_flags &=
 				~(SHIP_AT_MAX_SPEED
 				| SHIP_BEYOND_MAX_SPEED
@@ -267,7 +266,7 @@ ship_preprocess (PELEMENT ElementPtr)
 		if (!OBJECT_CLOAKED (ElementPtr)
 				&& LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER)
 		{
-			extern void spawn_ion_trail (PELEMENT ElementPtr);
+			extern void spawn_ion_trail (ELEMENT *ElementPtr);
 
 			spawn_ion_trail (ElementPtr);
 		}
@@ -278,10 +277,10 @@ ship_preprocess (PELEMENT ElementPtr)
 }
 
 void
-ship_postprocess (PELEMENT ElementPtr)
+ship_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
-	RACE_DESCPTR RDPtr;
+	STARSHIP *StarShipPtr;
+	RACE_DESC *RDPtr;
 
 	if (ElementPtr->crew_level == 0)
 		return;
@@ -292,7 +291,7 @@ ship_postprocess (PELEMENT ElementPtr)
 	if (StarShipPtr->weapon_counter)
 		--StarShipPtr->weapon_counter;
 	else if ((StarShipPtr->cur_status_flags
-			& WEAPON) && DeltaEnergy ((ELEMENTPTR)ElementPtr,
+			& WEAPON) && DeltaEnergy (ElementPtr,
 			-RDPtr->characteristics.weapon_energy_cost))
 	{
 		COUNT num_weapons;
@@ -303,7 +302,7 @@ ship_postprocess (PELEMENT ElementPtr)
 		if (num_weapons)
 		{
 			HELEMENT *WeaponPtr;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 			BOOLEAN played_sfx = FALSE;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -314,7 +313,7 @@ ship_postprocess (PELEMENT ElementPtr)
 				w = *WeaponPtr++;
 				if (w)
 				{
-					ELEMENTPTR EPtr;
+					ELEMENT *EPtr;
 
 					LockElement (w, &EPtr);
 					SetElementStarShip (EPtr, StarShipPtr);
@@ -348,8 +347,8 @@ ship_postprocess (PELEMENT ElementPtr)
 }
 
 void
-collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1)
+collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (!(ElementPtr1->state_flags & FINITE_LIFE))
 	{
@@ -362,7 +361,7 @@ collision (PELEMENT ElementPtr0, PPOINT pPt0,
 			damage = ElementPtr0->hit_points >> 2;
 			if (damage == 0)
 				damage = 1;
-			do_damage ((ELEMENTPTR)ElementPtr0, damage);
+			do_damage (ElementPtr0, damage);
 
 			damage = TARGET_DAMAGED_FOR_1_PT + (damage >> 1);
 			if (damage > TARGET_DAMAGED_FOR_6_PLUS_PT)
@@ -375,10 +374,10 @@ collision (PELEMENT ElementPtr0, PPOINT pPt0,
 }
 
 static BOOLEAN
-spawn_ship (STARSHIPPTR StarShipPtr)
+spawn_ship (STARSHIP *StarShipPtr)
 {
 	HELEMENT hShip;
-	RACE_DESCPTR RDPtr;
+	RACE_DESC *RDPtr;
 
 	if (!load_ship (StarShipPtr, TRUE))
 		return (FALSE);
@@ -421,7 +420,7 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 	if (StarShipPtr->hShip != 0)
 	{
 		// Construct an ELEMENT for the STARSHIP
-		ELEMENTPTR ShipElementPtr;
+		ELEMENT *ShipElementPtr;
 
 		LockElement (hShip, &ShipElementPtr);
 
@@ -491,7 +490,7 @@ spawn_ship (STARSHIPPTR StarShipPtr)
 }
 
 BOOLEAN
-GetNextStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_side)
+GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 {
 	HSTARSHIP hBattleShip;
 
@@ -502,7 +501,7 @@ GetNextStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_side)
 	hBattleShip = GetEncounterStarShip (LastStarShipPtr, which_side);
 	if (hBattleShip)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (&race_q[which_side], hBattleShip);
 		if (LastStarShipPtr)

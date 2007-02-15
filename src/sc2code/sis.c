@@ -141,7 +141,7 @@ SetContextClipRect (&r);
 	font_DrawText (&t);
 	UnbatchGraphics ();
 
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 
 	SetContext (OldContext);
 }
@@ -228,7 +228,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 
 	if (flags & DSME_CLEARFR)
 	{
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 	}
 
 	if (CurPos < 0 && ExPos < 0)
@@ -243,7 +243,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 		int i;
 		RECT text_r;
 		BYTE char_deltas[MAX_DESC_CHARS];
-		PBYTE pchar_deltas;
+		BYTE *pchar_deltas;
 
 		t.baseline.x = 3;
 		t.align = ALIGN_LEFT;
@@ -254,7 +254,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 			// will not fit when displayed later
 			// disallow the change
 			UnbatchGraphics ();
-			SetContextClipRect (NULL_PTR);
+			SetContextClipRect (NULL);
 			SetContext (OldContext);
 			return (FALSE);
 		}
@@ -327,7 +327,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 
 	UnbatchGraphics ();
 
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 	SetContext (OldContext);
 
 	return (TRUE);
@@ -406,7 +406,7 @@ DrawStatusMessage (const UNICODE *pStr)
 	font_DrawText (&t);
 	UnbatchGraphics ();
 
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 
 	SetContext (OldContext);
 }
@@ -797,7 +797,7 @@ DrawStorageBays (BOOLEAN Refresh)
 }
 
 void
-GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect)
+GetGaugeRect (RECT *pRect, BOOLEAN IsCrewRect)
 {
 	pRect->extent.width = 24;
 	pRect->corner.x = (STATUS_WIDTH >> 1) - (pRect->extent.width >> 1);
@@ -933,7 +933,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 
 		{
 			HSTARSHIP hStarShip, hNextShip;
-			PPOINT pship_pos;
+			POINT *pship_pos;
 			POINT ship_pos[MAX_COMBAT_SHIPS] =
 			{
 				SUPPORT_SHIP_PTS
@@ -944,12 +944,10 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					pship_pos = ship_pos;
 					hStarShip; hStarShip = hNextShip, ++pship_pos)
 			{
-				SHIP_FRAGMENTPTR StarShipPtr;
+				SHIP_FRAGMENT *StarShipPtr;
 
-				StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (built_ship_q),
-						hStarShip
-						);
+				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
+						&GLOBAL (built_ship_q), hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
 
 				s.origin.x = pship_pos->x;
@@ -983,7 +981,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					&& GLOBAL_SIS (CrewEnlisted) <= (COUNT)-crew_delta)
 				GLOBAL_SIS (CrewEnlisted) = 0;
 			else if ((GLOBAL_SIS (CrewEnlisted) += crew_delta) >
-					(CrewCapacity = GetCPodCapacity (NULL_PTR)))
+					(CrewCapacity = GetCPodCapacity (NULL)))
 				GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
 		}
 
@@ -1015,7 +1013,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					&& GLOBAL_SIS (FuelOnBoard) <= (DWORD)-fuel_delta)
 				GLOBAL_SIS (FuelOnBoard) = 0;
 			else if ((GLOBAL_SIS (FuelOnBoard) += fuel_delta) >
-					(FuelCapacity = GetFTankCapacity (NULL_PTR)))
+					(FuelCapacity = GetFTankCapacity (NULL)))
 				GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
 		}
 
@@ -1075,7 +1073,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 					|| pMenuState->InputFunc == DoShipyard)))
 				DrawStatusMessage ((UNICODE *)~0);
 			else
-				DrawStatusMessage (NULL_PTR);
+				DrawStatusMessage (NULL);
 		}
 	}
 	UnbatchGraphics ();
@@ -1090,7 +1088,7 @@ GetCrewCount (void)
 }
 
 COUNT
-GetCPodCapacity (PPOINT ppt)
+GetCPodCapacity (POINT *ppt)
 {
 	COORD x;
 	COUNT slot, capacity;
@@ -1146,7 +1144,7 @@ GetCPodCapacity (PPOINT ppt)
 }
 
 COUNT
-GetSBayCapacity (PPOINT ppt)
+GetSBayCapacity (POINT *ppt)
 {
 	COORD x;
 	COUNT slot, capacity;
@@ -1198,7 +1196,7 @@ GetSBayCapacity (PPOINT ppt)
 }
 
 DWORD
-GetFTankCapacity (PPOINT ppt)
+GetFTankCapacity (POINT *ppt)
 {
 	COORD x;
 	COUNT slot;
@@ -1453,7 +1451,7 @@ flash_rect_func (void *data)
 			// flash changed_can't be modified while GraphicSem is held
 			if (! flash_changed)
 				DrawStamp (pStamp);
-			SetContextClipRect (NULL_PTR); // this will flush whatever
+			SetContextClipRect (NULL); // this will flush whatever
 			SetContext (OldContext);
 			UnlockMutex (GraphicsLock);
 		}
@@ -1480,7 +1478,7 @@ flash_rect_func (void *data)
 }
 
 void
-SetFlashRect (PRECT pRect, FRAME f)
+SetFlashRect (RECT *pRect, FRAME f)
 {
 	RECT clip_r, temp_r, flash_rect1, old_r;
 	CONTEXT OldContext;
@@ -1598,13 +1596,13 @@ SaveFlagshipState (void)
 		for (hElement = GetHeadElement ();
 				hElement != 0; hElement = hNextElement)
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (hElement, &ElementPtr);
 			hNextElement = GetSuccElement (ElementPtr);
 			if (ElementPtr->state_flags & PLAYER_SHIP)
 			{
-				STARSHIPPTR StarShipPtr;
+				STARSHIP *StarShipPtr;
 
 				GetElementStarShip (ElementPtr, &StarShipPtr);
 				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (

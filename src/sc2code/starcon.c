@@ -221,7 +221,7 @@ while (--ac > 0)
 							&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 					{
 						if (!(GLOBAL (CurrentActivity) & START_ENCOUNTER)
-								&& (CurStarDescPtr = FindStar (NULL_PTR,
+								&& (CurStarDescPtr = FindStar (NULL,
 								&GLOBAL (autopilot), 0, 0)))
 						{
 							GLOBAL (autopilot.x) = ~0;
@@ -249,7 +249,7 @@ while (--ac > 0)
 				}
 
 				LockMutex (GraphicsLock);
-				SetFlashRect (NULL_PTR, (FRAME)0);
+				SetFlashRect (NULL, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 
 				LastActivity = GLOBAL (CurrentActivity);

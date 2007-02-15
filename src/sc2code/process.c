@@ -75,7 +75,7 @@ AllocElement (void)
 	hElement = AllocLink (&disp_q);
 	if (hElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		memset (ElementPtr, 0, sizeof (*ElementPtr));
@@ -92,7 +92,7 @@ FreeElement (HELEMENT hElement)
 {
 	if (hElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		FreeDisplayPrim (ElementPtr->PrimIndex);
@@ -103,7 +103,7 @@ FreeElement (HELEMENT hElement)
 }
 
 void
-SetUpElement (ELEMENTPTR ElementPtr)
+SetUpElement (ELEMENT *ElementPtr)
 {
 	ElementPtr->next = ElementPtr->current;
 	if (CollidingElement (ElementPtr))
@@ -115,7 +115,7 @@ SetUpElement (ELEMENTPTR ElementPtr)
 }
 
 static void
-PreProcess (ELEMENTPTR ElementPtr)
+PreProcess (ELEMENT *ElementPtr)
 {
 	ELEMENT_FLAGS state_flags;
 
@@ -175,7 +175,7 @@ PreProcess (ELEMENTPTR ElementPtr)
 }
 
 static void
-PostProcess (ELEMENTPTR ElementPtr)
+PostProcess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->postprocess_func)
 		(*ElementPtr->postprocess_func) (ElementPtr);
@@ -270,8 +270,8 @@ CalcReduction (SIZE dx, SIZE dy)
 }
 
 static VIEW_STATE
-CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
-		PSIZE pdx, PSIZE pdy, COUNT ships_alive)
+CalcView (POINT *pNewScrollPt, SIZE next_reduction,
+		SIZE *pdx, SIZE *pdy, COUNT ships_alive)
 {
 	SIZE dx, dy;
 	VIEW_STATE view_state;
@@ -347,14 +347,14 @@ CalcView (PPOINT pNewScrollPt, SIZE next_reduction,
 
 
 static ELEMENT_FLAGS
-ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
+ProcessCollisions (HELEMENT hSuccElement, ELEMENT *ElementPtr,
 		TIME_VALUE min_time, ELEMENT_FLAGS process_flags)
 {
 	HELEMENT hTestElement;
 
 	while ((hTestElement = hSuccElement) != 0)
 	{
-		ELEMENTPTR TestElementPtr;
+		ELEMENT *TestElementPtr;
 
 		LockElement (hTestElement, &TestElementPtr);
 		if (!(TestElementPtr->state_flags & process_flags))
@@ -472,7 +472,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 							InitIntersectFrame (ElementPtr);
 							if (state_flags & PLAYER_SHIP)
 							{
-								STARSHIPPTR StarShipPtr;
+								STARSHIP *StarShipPtr;
 
 								GetElementStarShip (ElementPtr, &StarShipPtr);
 								StarShipPtr->ShipFacing =
@@ -485,7 +485,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 							InitIntersectFrame (TestElementPtr);
 							if (test_state_flags & PLAYER_SHIP)
 							{
-								STARSHIPPTR StarShipPtr;
+								STARSHIP *StarShipPtr;
 
 								GetElementStarShip (TestElementPtr, &StarShipPtr);
 								StarShipPtr->ShipFacing =
@@ -616,7 +616,7 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENTPTR ElementPtr,
 }
 
 static VIEW_STATE
-PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
+PreProcessQueue (SIZE *pscroll_x, SIZE *pscroll_y)
 {
 	SIZE min_reduction, max_reduction;
 	COUNT num_ships;
@@ -642,7 +642,7 @@ PreProcessQueue (PSIZE pscroll_x, PSIZE pscroll_y)
 	ships_alive = 0;
 	while (hElement != 0)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 		HELEMENT hNextElement;
 
 		LockElement (hElement, &ElementPtr);
@@ -804,7 +804,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 	while (hElement != 0)
 	{
 		ELEMENT_FLAGS state_flags;
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 		HELEMENT hNextElement;
 
 		LockElement (hElement, &ElementPtr);
@@ -835,7 +835,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 			hPostElement = hElement;
 			do
 			{
-				ELEMENTPTR PostElementPtr;
+				ELEMENT *PostElementPtr;
 
 				LockElement (hPostElement, &PostElementPtr);
 				if (!(PostElementPtr->state_flags & PRE_PROCESS))
@@ -1062,14 +1062,14 @@ RedrawQueue (BOOLEAN clear)
 }
 
 void
-Untarget (ELEMENTPTR ElementPtr)
+Untarget (ELEMENT *ElementPtr)
 {
 	HELEMENT hElement, hNextElement;
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
 		HELEMENT hTarget;
-		ELEMENTPTR ListPtr;
+		ELEMENT *ListPtr;
 
 		LockElement (hElement, &ListPtr);
 		hNextElement = GetSuccElement (ListPtr);
@@ -1077,7 +1077,7 @@ Untarget (ELEMENTPTR ElementPtr)
 		hTarget = ListPtr->hTarget;
 		if (hTarget)
 		{
-			ELEMENTPTR TargetElementPtr;
+			ELEMENT *TargetElementPtr;
 
 			LockElement (hTarget, &TargetElementPtr);
 			if (TargetElementPtr == ElementPtr)
@@ -1094,7 +1094,7 @@ RemoveElement (HLINK hLink)
 {
 	if (optStereoSFX)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hLink, &ElementPtr);
 		if (ElementPtr != NULL)

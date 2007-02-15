@@ -25,10 +25,10 @@ SOUND GameSounds;
 #define MAX_SOUNDS 8
 static BYTE num_sounds = 0;
 static SOUND sound_buf[MAX_SOUNDS];
-static ELEMENTPTR sound_posobj[MAX_SOUNDS];
+static ELEMENT *sound_posobj[MAX_SOUNDS];
 
 void
-PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
+PlaySound (SOUND S, SoundPosition Pos, ELEMENT *PositionalObject,
 		BYTE Priority)
 {
 	BYTE chan, c;
@@ -62,7 +62,7 @@ PlaySound (SOUND S, SoundPosition Pos, ELEMENTPTR PositionalObject,
 	{
 		if (lru_channel[c] == chan)
 		{
-			memmove ((PBYTE)&lru_channel[c], (PBYTE)&lru_channel[c + 1],
+			memmove (&lru_channel[c], &lru_channel[c + 1],
 					(NUM_FX_CHANNELS - 1) - c);
 			break;
 		}
@@ -81,7 +81,7 @@ PlayMenuSound (MENU_SOUND_EFFECT S)
 }
 
 void
-ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject)
+ProcessSound (SOUND Sound, ELEMENT *PositionalObject)
 {
 	if (Sound == (SOUND)~0)
 	{
@@ -97,7 +97,7 @@ ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject)
 }
 
 SoundPosition
-CalcSoundPosition (ELEMENTPTR ElementPtr)
+CalcSoundPosition (ELEMENT *ElementPtr)
 {
 	SoundPosition pos;
 
@@ -144,7 +144,7 @@ UpdateSoundPositions (void)
 
 	for (i = FIRST_SFX_CHANNEL; i <= LAST_SFX_CHANNEL; ++i)
 	{
-		ELEMENTPTR posobj;
+		ELEMENT *posobj;
 		if (!ChannelPlaying(i))
 			continue;
 
@@ -165,7 +165,7 @@ FlushSounds (void)
 	if (num_sounds > 0)
 	{
 		SOUND *pSound;
-		ELEMENTPTR *pSoundPosObj;
+		ELEMENT **pSoundPosObj;
 
 		pSound = sound_buf;
 		pSoundPosObj = sound_posobj;
@@ -179,7 +179,7 @@ FlushSounds (void)
 }
 
 void
-RemoveSoundsForObject (ELEMENTPTR PosObj)
+RemoveSoundsForObject (ELEMENT *PosObj)
 {
 	int i;
 

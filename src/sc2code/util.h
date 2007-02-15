@@ -20,7 +20,7 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
-extern void DrawStarConBox (PRECT pRect, SIZE BorderWidth,
+extern void DrawStarConBox (RECT *pRect, SIZE BorderWidth,
 		COLOR TopLeftColor, COLOR BottomRightColor, BOOLEAN FillInterior,
 		COLOR InteriorColor);
 extern DWORD SeedRandomNumbers (void);

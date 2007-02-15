@@ -50,7 +50,6 @@ struct SEQUENCE
 #endif
 
 typedef struct SEQUENCE SEQUENCE;
-typedef SEQUENCE *PSEQUENCE;
 
 void UpdateSpeechGraphics (BOOLEAN Initialize);
 Task StartCommAnimTask(void);

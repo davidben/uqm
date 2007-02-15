@@ -292,68 +292,68 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_race (RESOURCE comm_id)
 {
 	switch (comm_id)
 	{
 		case ARILOU_CONVERSATION:
-			return ((LOCDATAPTR)init_arilou_comm ());
+			return init_arilou_comm ();
 		case BLACKURQ_CONVERSATION:
-			return ((LOCDATAPTR)init_blackurq_comm ());
+			return init_blackurq_comm ();
 		case CHMMR_CONVERSATION:
-			return ((LOCDATAPTR)init_chmmr_comm ());
+			return init_chmmr_comm ();
 		case COMMANDER_CONVERSATION:
 			if (!GET_GAME_STATE (STARBASE_AVAILABLE))
-				return ((LOCDATAPTR)init_commander_comm ());
+				return init_commander_comm ();
 			else
-				return ((LOCDATAPTR)init_starbase_comm ());
+				return init_starbase_comm ();
 		case DRUUGE_CONVERSATION:
-			return ((LOCDATAPTR)init_druuge_comm ());
+			return init_druuge_comm ();
 		case ILWRATH_CONVERSATION:
-			return ((LOCDATAPTR)init_ilwrath_comm ());
+			return init_ilwrath_comm ();
 		case MELNORME_CONVERSATION:
-			return ((LOCDATAPTR)init_melnorme_comm ());
+			return init_melnorme_comm ();
 		case MYCON_CONVERSATION:
-			return ((LOCDATAPTR)init_mycon_comm ());
+			return init_mycon_comm ();
 		case ORZ_CONVERSATION:
-			return ((LOCDATAPTR)init_orz_comm ());
+			return init_orz_comm ();
 		case PKUNK_CONVERSATION:
-			return ((LOCDATAPTR)init_pkunk_comm ());
+			return init_pkunk_comm ();
 		case SHOFIXTI_CONVERSATION:
-			return ((LOCDATAPTR)init_shofixti_comm ());
+			return init_shofixti_comm ();
 		case SLYLANDRO_CONVERSATION:
-			return ((LOCDATAPTR)init_slyland_comm ());
+			return init_slyland_comm ();
 		case SLYLANDRO_HOME_CONVERSATION:
-			return ((LOCDATAPTR)init_slylandro_comm ());
+			return init_slylandro_comm ();
 		case SPATHI_CONVERSATION:
 			if (!(GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7)))
-				return ((LOCDATAPTR)init_spathi_comm ());
+				return init_spathi_comm ();
 			else
-				return ((LOCDATAPTR)init_spahome_comm ());
+				return init_spahome_comm ();
 		case SUPOX_CONVERSATION:
-			return ((LOCDATAPTR)init_supox_comm ());
+			return init_supox_comm ();
 		case SYREEN_CONVERSATION:
-			return ((LOCDATAPTR)init_syreen_comm ());
+			return init_syreen_comm ();
 		case TALKING_PET_CONVERSATION:
-			return ((LOCDATAPTR)init_talkpet_comm ());
+			return init_talkpet_comm ();
 		case THRADD_CONVERSATION:
-			return ((LOCDATAPTR)init_thradd_comm ());
+			return init_thradd_comm ();
 		case UMGAH_CONVERSATION:
-			return ((LOCDATAPTR)init_umgah_comm ());
+			return init_umgah_comm ();
 		case URQUAN_CONVERSATION:
-			return ((LOCDATAPTR)init_urquan_comm ());
+			return init_urquan_comm ();
 		case UTWIG_CONVERSATION:
-			return ((LOCDATAPTR)init_utwig_comm ());
+			return init_utwig_comm ();
 		case VUX_CONVERSATION:
-			return ((LOCDATAPTR)init_vux_comm ());
+			return init_vux_comm ();
 		case YEHAT_REBEL_CONVERSATION:
-			return ((LOCDATAPTR)init_rebel_yehat_comm ());
+			return init_rebel_yehat_comm ();
 		case YEHAT_CONVERSATION:
-			return ((LOCDATAPTR)init_yehat_comm ());
+			return init_yehat_comm ();
 		case ZOQFOTPIK_CONVERSATION:
-			return ((LOCDATAPTR)init_zoqfot_comm ());
+			return init_zoqfot_comm ();
 		default:
-			return ((LOCDATAPTR)init_chmmr_comm ());
+			return init_chmmr_comm ();
 	}
 }

@@ -110,7 +110,7 @@ DoConfirmExit (void)
 		in_confirm = TRUE;
 		oldContext = SetContext (ScreenContext);
 		GetContextClipRect (&oldRect);
-		SetContextClipRect (NULL_PTR);
+		SetContextClipRect (NULL);
 
 		r.extent.width = CONFIRM_WIN_WIDTH + 4;
 		r.extent.height = CONFIRM_WIN_HEIGHT + 4;
@@ -245,7 +245,7 @@ DoPopupWindow(const char *msg)
 
 	oldContext = SetContext (ScreenContext);
 	GetContextClipRect (&oldRect);
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 
 	/* TODO: Better measure of dimensions than this */
 	r.extent.width = SCREEN_WIDTH;

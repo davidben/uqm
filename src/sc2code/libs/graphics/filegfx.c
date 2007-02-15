@@ -22,7 +22,7 @@
 
 
 DWORD
-LoadCelFile (PVOID pStr)
+LoadGraphicFile (const char *pStr)
 {
 	uio_Stream *fp;
 
@@ -47,7 +47,7 @@ LoadCelFile (PVOID pStr)
 }
 
 DWORD
-LoadFontFile (PVOID pStr)
+LoadFontFile (const char *pStr)
 {
 	uio_Stream *fp;
 

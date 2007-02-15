@@ -33,7 +33,7 @@ spawn_planet (void)
 	hPlanetElement = AllocElement ();
 	if (hPlanetElement)
 	{
-		ELEMENTPTR PlanetElementPtr;
+		ELEMENT *PlanetElementPtr;
 		extern FRAME planet[];
 
 		LockElement (hPlanetElement, &PlanetElementPtr);
@@ -66,14 +66,14 @@ spawn_planet (void)
 extern FRAME asteroid[];
 
 static void
-spawn_rubble (PELEMENT AsteroidElementPtr)
+spawn_rubble (ELEMENT *AsteroidElementPtr)
 {
 	HELEMENT hRubbleElement;
 	
 	hRubbleElement = AllocElement ();
 	if (hRubbleElement)
 	{
-		ELEMENTPTR RubbleElementPtr;
+		ELEMENT *RubbleElementPtr;
 
 		PutElement (hRubbleElement);
 		LockElement (hRubbleElement, &RubbleElementPtr);
@@ -92,7 +92,7 @@ spawn_rubble (PELEMENT AsteroidElementPtr)
 }
 
 static void
-asteroid_preprocess (PELEMENT ElementPtr)
+asteroid_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -115,7 +115,7 @@ asteroid_preprocess (PELEMENT ElementPtr)
 }
 
 void
-spawn_asteroid (PELEMENT ElementPtr)
+spawn_asteroid (ELEMENT *ElementPtr)
 {
 	HELEMENT hAsteroidElement;
 
@@ -130,7 +130,7 @@ spawn_asteroid (PELEMENT ElementPtr)
 	}
 	else
 	{
-		ELEMENTPTR AsteroidElementPtr;
+		ELEMENT *AsteroidElementPtr;
 		COUNT val;
 
 		LockElement (hAsteroidElement, &AsteroidElementPtr);
@@ -187,7 +187,7 @@ spawn_asteroid (PELEMENT ElementPtr)
 }
 
 void
-do_damage (ELEMENTPTR ElementPtr, SIZE damage)
+do_damage (ELEMENT *ElementPtr, SIZE damage)
 {
 	if (ElementPtr->state_flags & PLAYER_SHIP)
 	{
@@ -211,7 +211,7 @@ do_damage (ELEMENTPTR ElementPtr, SIZE damage)
 }
 
 void
-crew_preprocess (PELEMENT ElementPtr)
+crew_preprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT hTarget;
 
@@ -222,7 +222,7 @@ crew_preprocess (PELEMENT ElementPtr)
 
 	if ((hTarget = ElementPtr->hTarget) == 0)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if (StarShipPtr && StarShipPtr->RaceDescPtr->ship_info.crew_level)
@@ -232,7 +232,7 @@ crew_preprocess (PELEMENT ElementPtr)
 			COUNT facing;
 
 			facing = 0;
-			TrackShip ((ELEMENTPTR)ElementPtr, &facing);
+			TrackShip (ElementPtr, &facing);
 		}
 	}
 
@@ -240,7 +240,7 @@ crew_preprocess (PELEMENT ElementPtr)
 	{
 #define CREW_DELTA SCALED_ONE
 		SIZE delta;
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		LockElement (hTarget, &ShipPtr);
 		delta = ShipPtr->current.location.x
@@ -263,20 +263,20 @@ crew_preprocess (PELEMENT ElementPtr)
 }
 
 void
-crew_collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1)
+crew_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if ((ElementPtr1->state_flags & PLAYER_SHIP)
 			&& ElementPtr1->life_span >= NORMAL_LIFE
 			&& ElementPtr0->hit_points > 0)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		if (!(StarShipPtr->RaceDescPtr->ship_info.ship_flags & CREW_IMMUNE))
 		{
 			ProcessSound (SetAbsSoundIndex (GameSounds, GRAB_CREW), ElementPtr1);
-			DeltaCrew ((ELEMENTPTR)ElementPtr1, 1);
+			DeltaCrew (ElementPtr1, 1);
 		}
 	}
 
@@ -288,13 +288,13 @@ crew_collision (PELEMENT ElementPtr0, PPOINT pPt0,
 }
 
 void
-AbandonShip (ELEMENTPTR ShipPtr, ELEMENTPTR TargetPtr,
+AbandonShip (ELEMENT *ShipPtr, ELEMENT *TargetPtr,
 		COUNT crew_loss)
 {
 	SIZE dx, dy;
 	COUNT direction;
 	RECT r;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	HELEMENT hCrew;
 	INTERSECT_CONTROL ShipIntersect;
 
@@ -319,7 +319,7 @@ AbandonShip (ELEMENTPTR ShipPtr, ELEMENTPTR TargetPtr,
 	while (crew_loss-- && (hCrew = AllocElement ()))
 	{
 #define CREW_LIFE 300
-		ELEMENTPTR CrewPtr;
+		ELEMENT *CrewPtr;
 
 		DeltaCrew (ShipPtr, -1);
 

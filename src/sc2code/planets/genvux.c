@@ -312,9 +312,9 @@ GenerateVUX (BYTE control)
 							& (1L << i))
 							&& !GET_GAME_STATE (VUX_BEAST))
 					{
-						PPLANETSIDE_DESC pPSD;
+						PLANETSIDE_DESC *pPSD;
 
-						pPSD = (PPLANETSIDE_DESC)pMenuState->ModuleFrame;
+						pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 						UnbatchGraphics ();
 						DoDiscoveryReport (MenuSounds);
 						BatchGraphics ();

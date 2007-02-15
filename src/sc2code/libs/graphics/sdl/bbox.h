@@ -37,7 +37,7 @@ typedef struct {
 extern TFB_BoundingBox TFB_BBox;
 
 void TFB_BBox_RegisterPoint (int x, int y);
-void TFB_BBox_RegisterRect (PRECT r);
+void TFB_BBox_RegisterRect (RECT *r);
 void TFB_BBox_RegisterCanvas (TFB_Canvas c, int x, int y);
 
 void TFB_BBox_Reset (void);

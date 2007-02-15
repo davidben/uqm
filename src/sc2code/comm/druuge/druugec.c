@@ -26,9 +26,9 @@
 
 static LOCDATA druuge_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)DRUUGE_PMAP_ANIM, /* AlienFrame */
 	(FONT)DRUUGE_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -149,7 +149,7 @@ static LOCDATA druuge_desc =
 		ONE_SECOND / 12, ONE_SECOND / 12, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static COUNT SlaveryCount = 0;
@@ -897,10 +897,10 @@ post_druuge_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_druuge_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	druuge_desc.init_encounter_func = Intro;
 	druuge_desc.post_encounter_func = post_druuge_enc;

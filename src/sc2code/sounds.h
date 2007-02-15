@@ -65,14 +65,14 @@ extern void GetMenuSounds (MENU_SOUND_FLAGS *sound_0,
 		MENU_SOUND_FLAGS *sound_1);
 
 extern void PlaySound (SOUND S, SoundPosition Pos,
-		ELEMENTPTR PositionalObject, BYTE Priority);
+		ELEMENT *PositionalObject, BYTE Priority);
 extern void PlayMenuSound (MENU_SOUND_EFFECT S);
-extern void ProcessSound (SOUND Sound, ELEMENTPTR PositionalObject);
-extern SoundPosition CalcSoundPosition (ELEMENTPTR ElementPtr);
+extern void ProcessSound (SOUND Sound, ELEMENT *PositionalObject);
+extern SoundPosition CalcSoundPosition (ELEMENT *ElementPtr);
 extern SoundPosition NotPositional (void);
 extern void UpdateSoundPositions (void);
 extern void FlushSounds (void);
-extern void RemoveSoundsForObject (ELEMENTPTR PosObj);
+extern void RemoveSoundsForObject (ELEMENT *PosObj);
 
 #endif /* _SOUNDS_H */
 

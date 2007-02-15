@@ -30,7 +30,6 @@ typedef struct FontPage
 	size_t numChars;
 	TFB_Char *charDesc;
 } FONT_PAGE;
-typedef FONT_PAGE *PFONT_PAGE;
 
 static inline FONT_PAGE *
 AllocFontPage (int numChars)
@@ -66,8 +65,6 @@ struct font_desc
 #define LockFont(h) (FONT)mem_lock (h)
 #define UnlockFont(h) mem_unlock (h)
 #define FreeFont _ReleaseFontData
-
-#define NULL_FONT (FONT)NULL_PTR
 
 extern FONT _CurFontPtr;
 

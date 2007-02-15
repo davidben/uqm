@@ -438,7 +438,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	Drawable = 0;
 	if (cel_ct && (Drawable = AllocDrawable (cel_ct)))
 	{
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
 		{
@@ -473,7 +473,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 BOOLEAN
 _ReleaseCelData (MEM_HANDLE handle)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 	int cel_ct;
 	FRAME FramePtr = NULL;
 
@@ -738,7 +738,7 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			);
 	if (Drawable)
 	{
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
 		{

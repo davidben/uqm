@@ -25,8 +25,7 @@
 #define VELOCITY_REMAINDER(v) ((v) & (VELOCITY_SCALE - 1))
 
 void
-GetCurrentVelocityComponents (VELOCITYPTR velocityptr, PSIZE pdx, PSIZE
-		pdy)
+GetCurrentVelocityComponents (VELOCITY_DESC *velocityptr, SIZE *pdx, SIZE *pdy)
 {
 	*pdx = WORLD_TO_VELOCITY (velocityptr->vector.width)
 			+ (velocityptr->fract.width - (SIZE)HIBYTE (velocityptr->incr.width));
@@ -35,7 +34,7 @@ GetCurrentVelocityComponents (VELOCITYPTR velocityptr, PSIZE pdx, PSIZE
 }
 
 void
-GetNextVelocityComponents (VELOCITYPTR velocityptr, PSIZE pdx, PSIZE pdy,
+GetNextVelocityComponents (VELOCITY_DESC *velocityptr, SIZE *pdx, SIZE *pdy,
 		COUNT num_frames)
 {
 	COUNT e;
@@ -56,8 +55,7 @@ GetNextVelocityComponents (VELOCITYPTR velocityptr, PSIZE pdx, PSIZE pdy,
 }
 
 void
-SetVelocityVector (VELOCITYPTR velocityptr, SIZE
-		magnitude, COUNT facing)
+SetVelocityVector (VELOCITY_DESC *velocityptr, SIZE magnitude, COUNT facing)
 {
 	COUNT angle;
 	SIZE dx, dy;
@@ -98,7 +96,7 @@ SetVelocityVector (VELOCITYPTR velocityptr, SIZE
 }
 
 void
-SetVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE dy)
+SetVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx, SIZE dy)
 {
 	COUNT angle;
 
@@ -142,7 +140,7 @@ SetVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE dy)
 }
 
 void
-DeltaVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE dy)
+DeltaVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx, SIZE dy)
 {
 
 	dx += WORLD_TO_VELOCITY (velocityptr->vector.width)

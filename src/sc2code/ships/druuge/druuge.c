@@ -94,7 +94,7 @@ static RACE_DESC druuge_desc =
 	{
 		0,
 		MISSILE_RANGE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,7 +107,8 @@ static RACE_DESC druuge_desc =
 #define MAX_RECOIL_VELOCITY (RECOIL_VELOCITY * 4)
 
 static void
-cannon_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+cannon_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 
@@ -117,7 +118,7 @@ cannon_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 	{
 		COUNT angle;
 		SIZE cur_delta_x, cur_delta_y;
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		StarShipPtr->cur_status_flags &=
@@ -144,13 +145,13 @@ cannon_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 }
 
 static COUNT
-initialize_cannon (PELEMENT ShipPtr, HELEMENT CannonArray[])
+initialize_cannon (ELEMENT *ShipPtr, HELEMENT CannonArray[])
 {
 #define DRUUGE_OFFSET 24
 #define MISSILE_OFFSET 6
 #define MISSILE_HITS 4
 #define MISSILE_DAMAGE 6
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -166,13 +167,13 @@ initialize_cannon (PELEMENT ShipPtr, HELEMENT CannonArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	CannonArray[0] = initialize_missile (&MissileBlock);
 
 	if (CannonArray[0])
 	{
-		ELEMENTPTR CannonPtr;
+		ELEMENT *CannonPtr;
 
 		LockElement (CannonArray[0], &CannonPtr);
 		CannonPtr->collision_func = cannon_collision;
@@ -183,11 +184,13 @@ initialize_cannon (PELEMENT ShipPtr, HELEMENT CannonArray[])
 }
 
 static void
-druuge_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+druuge_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	UWORD ship_flags;
-	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	STARSHIP *EnemyStarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -235,9 +238,9 @@ druuge_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Co
 }
 
 static void
-druuge_postprocess (PELEMENT ElementPtr)
+druuge_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 			/* if just fired cannon */
@@ -269,9 +272,9 @@ druuge_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-druuge_preprocess (PELEMENT ElementPtr)
+druuge_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->cur_status_flags & SPECIAL)
@@ -296,17 +299,15 @@ druuge_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_druuge (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	druuge_desc.preprocess_func = druuge_preprocess;
 	druuge_desc.postprocess_func = druuge_postprocess;
 	druuge_desc.init_weapon_func = initialize_cannon;
-	druuge_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) druuge_intelligence;
+	druuge_desc.cyborg_control.intelligence_func = druuge_intelligence;
 
 	RaceDescPtr = &druuge_desc;
 

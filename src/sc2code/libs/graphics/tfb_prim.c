@@ -29,7 +29,7 @@
 #include "libs/log.h"
 
 void
-TFB_Prim_Point (PPOINT p, TFB_Palette *color)
+TFB_Prim_Point (POINT *p, TFB_Palette *color)
 {
 	RECT r;
 
@@ -44,7 +44,7 @@ TFB_Prim_Point (PPOINT p, TFB_Palette *color)
 }
 
 void
-TFB_Prim_Rect (PRECT r, TFB_Palette *color)
+TFB_Prim_Rect (RECT *r, TFB_Palette *color)
 {
 	RECT arm;
 	int gscale;
@@ -69,7 +69,7 @@ TFB_Prim_Rect (PRECT r, TFB_Palette *color)
 }
 
 void
-TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
+TFB_Prim_FillRect (RECT *r, TFB_Palette *color)
 {
 	RECT rect;
 	int gscale;
@@ -99,7 +99,7 @@ TFB_Prim_FillRect (PRECT r, TFB_Palette *color)
 }
 
 void
-TFB_Prim_Line (PLINE line, TFB_Palette *color)
+TFB_Prim_Line (LINE *line, TFB_Palette *color)
 {
 	int x1, y1, x2, y2;
 
@@ -115,7 +115,7 @@ TFB_Prim_Line (PLINE line, TFB_Palette *color)
 }
 
 void
-TFB_Prim_Stamp (PSTAMP stmp)
+TFB_Prim_Stamp (STAMP *stmp)
 {
 	int x, y;
 	FRAME SrcFramePtr;
@@ -164,7 +164,7 @@ TFB_Prim_Stamp (PSTAMP stmp)
 }
 
 void
-TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
+TFB_Prim_StampFill (STAMP *stmp, TFB_Palette *color)
 {
 	int x, y;
 	FRAME SrcFramePtr;
@@ -213,7 +213,7 @@ TFB_Prim_StampFill (PSTAMP stmp, TFB_Palette *color)
 }
 
 void
-TFB_Prim_FontChar (PPOINT origin, TFB_Char *fontChar, TFB_Image *backing)
+TFB_Prim_FontChar (POINT *origin, TFB_Char *fontChar, TFB_Image *backing)
 {
 	int x, y;
 

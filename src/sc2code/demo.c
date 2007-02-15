@@ -39,7 +39,7 @@ INPUT_STATE
 demo_input (INPUT_REF InputRef, INPUT_STATE InputState)
 {
 	if (InputState || AnyButtonPress () || cread (
-			(PBYTE)&InputState, sizeof (InputState), 1, journal_fh
+			&InputState, sizeof (InputState), 1, journal_fh
 			) == 0)
 	{
 		cclose (journal_fh);
@@ -63,7 +63,7 @@ void
 JournalInput (INPUT_STATE InputState)
 {
 	if (ArrowInput != DemoInput && journal_fh)
-		cwrite ((PBYTE)&InputState, sizeof (InputState), 1, journal_fh);
+		cwrite (&InputState, sizeof (InputState), 1, journal_fh);
 }
 
 #endif /* CREATE_JOURNAL */
@@ -81,7 +81,7 @@ OpenJournal (void)
 		if (journal_fh = copen (journal_buf, MEMORY_STREAM, STREAM_WRITE))
 		{
 			start_seed = SeedRandomNumbers ();
-			cwrite ((PBYTE)&start_seed, sizeof (start_seed), 1, journal_fh);
+			cwrite (&start_seed, sizeof (start_seed), 1, journal_fh);
 		}
 	}
 	else
@@ -102,7 +102,7 @@ OpenJournal (void)
 
 				FlushInput ();
 
-				cread ((PBYTE)&start_seed, sizeof (start_seed), 1, journal_fh);
+				cread (&start_seed, sizeof (start_seed), 1, journal_fh);
 				TFB_SeedRandom (start_seed);
 			}
 		}

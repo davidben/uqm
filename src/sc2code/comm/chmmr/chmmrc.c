@@ -25,9 +25,9 @@
 
 static LOCDATA chmmr_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)CHMMR_PMAP_ANIM, /* AlienFrame */
 	(FONT)CHMMR_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -108,7 +108,7 @@ static LOCDATA chmmr_desc =
 		ONE_SECOND / 60, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -587,7 +587,7 @@ Intro (void)
 						i_am_captain1,
 						GLOBAL_SIS (ShipName),
 						i_am_captain2,
-						NULL_PTR);
+						(UNICODE*)NULL);
 				DoResponsePhrase (i_am_captain0, ChmmrFree, shared_phrase_buf);
 				Response (i_am_savior, ChmmrFree);
 				Response (i_am_silly, ChmmrFree);
@@ -611,10 +611,10 @@ post_chmmr_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_chmmr_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	chmmr_desc.init_encounter_func = Intro;
 	chmmr_desc.post_encounter_func = post_chmmr_enc;

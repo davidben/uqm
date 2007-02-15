@@ -47,11 +47,12 @@ static POINT log_star_array[NUM_STARS];
 
 typedef struct
 {
-	COUNT min_star_index, num_stars;
-	PPOINT star_array;
-	PPOINT pmin_star, plast_star;
+	COUNT min_star_index;
+	COUNT num_stars;
+	POINT *star_array;
+	POINT *pmin_star;
+	POINT *plast_star;
 } STAR_BLOCK;
-typedef STAR_BLOCK *PSTAR_BLOCK;
 
 STAR_BLOCK StarBlock[NUM_STAR_PLANES] =
 {
@@ -73,7 +74,7 @@ STAR_BLOCK StarBlock[NUM_STAR_PLANES] =
 };
 
 static void
-SortStarBlock (PSTAR_BLOCK pStarBlock)
+SortStarBlock (STAR_BLOCK *pStarBlock)
 {
 	COUNT i;
 
@@ -104,10 +105,10 @@ static void
 WrapStarBlock (SIZE plane, SIZE dx, SIZE dy)
 {
 	COUNT i;
-	PPOINT ppt;
+	POINT *ppt;
 	SIZE offs_y;
 	COUNT num_stars;
-	PSTAR_BLOCK pStarBlock;
+	STAR_BLOCK *pStarBlock;
 
 	pStarBlock = &StarBlock[plane];
 
@@ -235,7 +236,7 @@ void
 InitGalaxy (void)
 {
 	COUNT i, factor;
-	PPOINT ppt;
+	POINT *ppt;
 	PRIM_LINKS Links;
 
 	log_add (log_Debug, "InitGalaxy(): transition_width = %d, "
@@ -286,7 +287,7 @@ InitGalaxy (void)
 }
 
 static BOOLEAN
-CmpMovePoints (const PPOINT pt1, const PPOINT pt2, SIZE dx, SIZE dy,
+CmpMovePoints (const POINT *pt1, const POINT *pt2, SIZE dx, SIZE dy,
 			   SIZE reduction)
 {
 	if (optMeleeScale == TFB_SCALE_STEP)
@@ -304,7 +305,7 @@ CmpMovePoints (const PPOINT pt1, const PPOINT pt2, SIZE dx, SIZE dy,
 void
 MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 {
-	PPRIMITIVE pprim;
+	PRIMITIVE *pprim;
 	static const COUNT star_counts[] =
 	{
 		BIG_STAR_COUNT,
@@ -318,7 +319,7 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 		COUNT reduction;
 		COUNT i;
 		COUNT iss;
-		PPOINT ppt;
+		POINT *ppt;
 		int wrap_around;
 
 		reduction = zoom_out;

@@ -96,7 +96,7 @@ static RACE_DESC umgah_desc =
 	{
 		0,
 		(LONG_RANGE_WEAPON << 2),
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -106,9 +106,9 @@ static RACE_DESC umgah_desc =
 };
 
 static void
-cone_preprocess (PELEMENT ElementPtr)
+cone_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	StarShipPtr->RaceDescPtr->ship_data.special[0] =
@@ -119,7 +119,8 @@ cone_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-cone_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+cone_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	HELEMENT hBlastElement;
 
@@ -136,10 +137,12 @@ cone_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT 
 #define JUMP_DIST DISPLAY_TO_WORLD (40)
 
 static void
-umgah_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+umgah_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	STARSHIP *EnemyStarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
@@ -248,7 +251,7 @@ umgah_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 		StarShipPtr->RaceDescPtr->characteristics.special_wait = 0xFF;
 }
 static COUNT
-initialize_cone (PELEMENT ShipPtr, HELEMENT ConeArray[])
+initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 {
 #define UMGAH_OFFSET 0
 #define MISSILE_SPEED 0
@@ -256,7 +259,7 @@ initialize_cone (PELEMENT ShipPtr, HELEMENT ConeArray[])
 #define MISSILE_DAMAGE 1
 #define MISSILE_LIFE 1
 #define MISSILE_OFFSET 0
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -290,7 +293,7 @@ initialize_cone (PELEMENT ShipPtr, HELEMENT ConeArray[])
 
 	if (ConeArray[0])
 	{
-		ELEMENTPTR ConePtr;
+		ELEMENT *ConePtr;
 
 		LockElement (ConeArray[0], &ConePtr);
 		ConePtr->collision_func = cone_collision;
@@ -307,9 +310,9 @@ initialize_cone (PELEMENT ShipPtr, HELEMENT ConeArray[])
 }
 
 static void
-umgah_postprocess (PELEMENT ElementPtr)
+umgah_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->special_counter > 0)
@@ -321,13 +324,13 @@ umgah_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-umgah_preprocess (PELEMENT ElementPtr)
+umgah_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & APPEARING)
 		LastShipFrame[WHICH_SIDE(ElementPtr->state_flags)] = 0;
 	else
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if (ElementPtr->thrust_wait == 0
@@ -351,17 +354,15 @@ umgah_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_umgah (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	umgah_desc.preprocess_func = umgah_preprocess;
 	umgah_desc.postprocess_func = umgah_postprocess;
 	umgah_desc.init_weapon_func = initialize_cone;
-	umgah_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) umgah_intelligence;
+	umgah_desc.cyborg_control.intelligence_func = umgah_intelligence;
 
 	RaceDescPtr = &umgah_desc;
 

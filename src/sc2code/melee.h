@@ -109,21 +109,18 @@ struct melee_state
 
 	MUSIC_REF hMusic;
 };
-typedef MELEE_STATE *PMELEE_STATE;
-
-extern PMELEE_STATE volatile pMeleeState;
 
 extern void Melee (void);
 
-void teamStringChanged (PMELEE_STATE pMS, int player);
-void entireFleetChanged (PMELEE_STATE pMS, int player);
-void fleetShipChanged (PMELEE_STATE pMS, int player, size_t index);
+void teamStringChanged (MELEE_STATE *pMS, int player);
+void entireFleetChanged (MELEE_STATE *pMS, int player);
+void fleetShipChanged (MELEE_STATE *pMS, int player, size_t index);
 
-void updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
+void updateTeamName (MELEE_STATE *pMS, COUNT side, const char *name,
 		size_t len);
-bool updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship);
-void updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed);
-void confirmationCancelled(PMELEE_STATE pMS, COUNT side);
+bool updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship);
+void updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed);
+void confirmationCancelled(MELEE_STATE *pMS, COUNT side);
 void connectedFeedback (NetConnection *conn);
 void abortFeedback (NetConnection *conn, NetplayAbortReason reason);
 void resetFeedback (NetConnection *conn, NetplayResetReason reason,

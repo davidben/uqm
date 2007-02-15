@@ -222,7 +222,6 @@ typedef struct
 	UNICODE CommanderName[SIS_NAME_SIZE];
 	UNICODE PlanetName[SIS_NAME_SIZE];
 } SIS_STATE;
-typedef SIS_STATE *PSIS_STATE;
 
 #define MAX_EXCLUSIVE_DEVICES 16
 
@@ -248,14 +247,14 @@ extern void UninitSIS (void);
 extern void SeedUniverse (void);
 extern BOOLEAN LoadHyperspace (void);
 extern BOOLEAN FreeHyperspace (void);
-extern void MoveSIS (PSIZE pdx, PSIZE pdy);
+extern void MoveSIS (SIZE *pdx, SIZE *pdy);
 extern void RepairSISBorder (void);
 extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
-extern void SetFlashRect (PRECT pRect, FRAME f);
-#define SFR_MENU_3DO ((PRECT)~0L)
-#define SFR_MENU_ANY ((PRECT)~1L)
+extern void SetFlashRect (RECT *pRect, FRAME f);
+#define SFR_MENU_3DO ((RECT*)~0L)
+#define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
 extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
@@ -271,20 +270,20 @@ extern void DateToString (unsigned char *buf, size_t bufLen,
 extern void DrawStatusMessage (const UNICODE *pStr);
 extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);
-extern void GetGaugeRect (PRECT pRect, BOOLEAN IsCrewRect);
+extern void GetGaugeRect (RECT *pRect, BOOLEAN IsCrewRect);
 extern void DrawFlagshipStats (void);
 extern void SaveFlagshipState (void);
 
 extern void DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int
 		resunit_delta);
 extern COUNT GetCrewCount (void);
-extern COUNT GetCPodCapacity (PPOINT ppt);
-extern COUNT GetLBayCapacity (PPOINT ppt);
-extern COUNT GetSBayCapacity (PPOINT ppt);
-extern DWORD GetFTankCapacity (PPOINT ppt);
+extern COUNT GetCPodCapacity (POINT *ppt);
+extern COUNT GetLBayCapacity (POINT *ppt);
+extern COUNT GetSBayCapacity (POINT *ppt);
+extern DWORD GetFTankCapacity (POINT *ppt);
 extern COUNT CountSISPieces (BYTE piece_type);
 
-extern BOOLEAN DoMenuChooser (PMENU_STATE pMS, BYTE BaseState);
+extern BOOLEAN DoMenuChooser (MENU_STATE *pMS, BYTE BaseState);
 extern void DrawMenuStateStrings (BYTE beg_index, SWORD NewState);
 extern void DoMenuOptions (void);
 extern void DrawFlagshipName (BOOLEAN InStatusArea);

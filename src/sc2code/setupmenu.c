@@ -45,9 +45,7 @@ typedef struct setup_menu_state {
 	DWORD NextTime;
 } SETUP_MENU_STATE;
 
-typedef SETUP_MENU_STATE *PSETUP_MENU_STATE;
-
-static BOOLEAN DoSetupMenu (PSETUP_MENU_STATE pInputState);
+static BOOLEAN DoSetupMenu (SETUP_MENU_STATE *pInputState);
 static BOOLEAN done;
 static WIDGET *current, *next;
 
@@ -421,7 +419,7 @@ PropagateResults (void)
 }
 
 static BOOLEAN
-DoSetupMenu (PSETUP_MENU_STATE pInputState)
+DoSetupMenu (SETUP_MENU_STATE *pInputState)
 {
 	if (!pInputState->initialized) 
 	{
@@ -495,7 +493,7 @@ redraw_menu (void)
 }
 
 static BOOLEAN
-OnTextEntryChange (PTEXTENTRY_STATE pTES)
+OnTextEntryChange (TEXTENTRY_STATE *pTES)
 {
 	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
 
@@ -513,7 +511,7 @@ OnTextEntryChange (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-OnTextEntryFrame (PTEXTENTRY_STATE pTES)
+OnTextEntryFrame (TEXTENTRY_STATE *pTES)
 {
 	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
 
@@ -986,7 +984,7 @@ clean_up_widgets (void)
 	{
 		if (labels[i].lines)
 		{
-			HFree (labels[i].lines);
+			HFree ((void *)labels[i].lines);
 		}
 	}
 
@@ -1029,7 +1027,7 @@ SetupMenu (void)
 	}
 	done = FALSE;
 
-	DoInput ((PVOID)&s, TRUE);
+	DoInput (&s, TRUE);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	PropagateResults ();
 	if (SetupTab)

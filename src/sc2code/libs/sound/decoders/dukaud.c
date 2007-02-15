@@ -501,7 +501,7 @@ duka_Decode (THIS_PTR, void* buf, sint32 bufsize)
 	do
 	{
 		stuffed = duka_stuffBuffer (duka, buf, bufsize);
-		buf = (void *) ((uint8 *) buf + stuffed);
+		buf = (uint8*)buf + stuffed;
 		bufsize -= stuffed;
 		total += stuffed;
 	

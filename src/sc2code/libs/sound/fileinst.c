@@ -23,7 +23,7 @@
 
 
 SOUND_REF
-LoadSoundFile (PVOID pStr)
+LoadSoundFile (const char *pStr)
 {
 	uio_Stream *fp;
 
@@ -50,7 +50,7 @@ LoadSoundFile (PVOID pStr)
 }
 
 MUSIC_REF
-LoadMusicFile (PVOID pStr)
+LoadMusicFile (const char *pStr)
 {
 	uio_Stream *fp;
 	char filename[256];

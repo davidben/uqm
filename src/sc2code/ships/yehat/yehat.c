@@ -96,7 +96,7 @@ static RACE_DESC yehat_desc =
 	{
 		0,
 		MISSILE_SPEED * MISSILE_LIFE / 3,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -106,7 +106,7 @@ static RACE_DESC yehat_desc =
 };
 
 static COUNT
-initialize_standard_missiles (PELEMENT ShipPtr, HELEMENT MissileArray[])
+initialize_standard_missiles (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 {
 #define YEHAT_OFFSET 16
 #define LAUNCH_OFFS DISPLAY_TO_WORLD (8)
@@ -114,7 +114,7 @@ initialize_standard_missiles (PELEMENT ShipPtr, HELEMENT MissileArray[])
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 1
 	SIZE offs_x, offs_y;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -127,7 +127,7 @@ initialize_standard_missiles (PELEMENT ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 
 	offs_x = -SINE (FACING_TO_ANGLE (MissileBlock.face), LAUNCH_OFFS);
@@ -145,11 +145,12 @@ initialize_standard_missiles (PELEMENT ShipPtr, HELEMENT MissileArray[])
 }
 
 static void
-yehat_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+yehat_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	SIZE ShieldStatus;
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	ShieldStatus = -1;
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
@@ -202,7 +203,7 @@ yehat_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 
 	if ((lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX])->ObjectPtr)
 	{
-		STARSHIPPTR EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
 		if (!(EnemyStarShipPtr->RaceDescPtr->ship_info.ship_flags
@@ -217,11 +218,11 @@ yehat_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 }
 
 static void
-yehat_postprocess (PELEMENT ElementPtr)
+yehat_postprocess (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & NONSOLID))
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 				/* take care of shield effect */
@@ -256,7 +257,7 @@ yehat_postprocess (PELEMENT ElementPtr)
 
 			if (hShipElement = AllocElement ())
 			{
-				ELEMENTPTR ShipElementPtr;
+				ELEMENT *ShipElementPtr;
 
 				InsertElement (hShipElement, GetSuccElement (ElementPtr));
 				LockElement (hShipElement, &ShipElementPtr);
@@ -282,7 +283,7 @@ yehat_postprocess (PELEMENT ElementPtr)
 				ShipElementPtr->next = ShipElementPtr->current;
 				ShipElementPtr->preprocess_func =
 						ShipElementPtr->postprocess_func =
-						ShipElementPtr->death_func = NULL_PTR;
+						ShipElementPtr->death_func = NULL;
 				ZeroVelocityComponents (&ShipElementPtr->velocity);
 
 				UnlockElement (hShipElement);
@@ -293,11 +294,11 @@ yehat_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-yehat_preprocess (PELEMENT ElementPtr)
+yehat_preprocess (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & APPEARING))
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if ((ElementPtr->life_span > NORMAL_LIFE
@@ -344,17 +345,15 @@ yehat_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_yehat (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	yehat_desc.preprocess_func = yehat_preprocess;
 	yehat_desc.postprocess_func = yehat_postprocess;
 	yehat_desc.init_weapon_func = initialize_standard_missiles;
-	yehat_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) yehat_intelligence;
+	yehat_desc.cyborg_control.intelligence_func = yehat_intelligence;
 
 	RaceDescPtr = &yehat_desc;
 

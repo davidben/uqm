@@ -25,9 +25,9 @@
 
 static LOCDATA shofixti_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SHOFIXTI_PMAP_ANIM, /* AlienFrame */
 	(FONT)SHOFIXTI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -149,7 +149,7 @@ static LOCDATA shofixti_desc =
 		ONE_SECOND / 15, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static RESPONSE_REF shofixti_name;
@@ -353,8 +353,7 @@ RealizeMistake (RESPONSE_REF R)
 				i_am_captain2,
 				GLOBAL_SIS (ShipName),
 				i_am_captain3,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 	}
 	DoResponsePhrase (i_am_captain0, ExplainDefeat, shared_phrase_buf);
 	Response (i_am_nice, ExplainDefeat);
@@ -403,8 +402,7 @@ Hostile (RESPONSE_REF R)
 					shofixti_name,
 					"",
 					look1,
-					NULL_PTR
-					);
+					(UNICODE*)NULL);
 			DoResponsePhrase (look0, ExitConversation, shared_phrase_buf);
 			break;
 		}
@@ -477,8 +475,7 @@ Friendly (RESPONSE_REF R)
 				shofixti_name,
 				"",
 				report1,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 		Resp[0].pStr = report0;
 		Resp[0].c_buf = buf0;
 	}
@@ -493,8 +490,7 @@ Friendly (RESPONSE_REF R)
 					shofixti_name,
 					"",
 					why_here1,
-					NULL_PTR
-					);
+					(UNICODE*)NULL);
 			Resp[1].pStr = why_here0;
 			Resp[1].c_buf = buf1;
 			break;
@@ -535,8 +531,7 @@ Friendly (RESPONSE_REF R)
 			shofixti_name,
 			"",
 			bye1,
-			NULL_PTR
-			);
+			(UNICODE*)NULL);
 	DoResponsePhrase (bye0, ExitConversation, shared_phrase_buf);
 }
 
@@ -632,10 +627,10 @@ post_shofixti_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_shofixti_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	shofixti_desc.init_encounter_func = Intro;
 	shofixti_desc.post_encounter_func = post_shofixti_enc;

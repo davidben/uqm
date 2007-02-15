@@ -58,7 +58,7 @@ static void* vp_interthread_clip = NULL;
 typedef struct
 {
 	// standard state required by DoInput
-	BOOLEAN (*InputFunc) (PVOID pInputState);
+	BOOLEAN (*InputFunc) (void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	VIDEO_REF CurVideo;
@@ -398,7 +398,7 @@ TFB_VideoPlaying (VIDEO_REF VidRef)
 }
 
 static BOOLEAN
-TFB_DoVideoInput (PVOID pIS)
+TFB_DoVideoInput (void *pIS)
 {
 	VIDEO_INPUT_STATE* pVIS = (VIDEO_INPUT_STATE*) pIS;
 	TFB_VideoClip* vid = (TFB_VideoClip*) pVIS->CurVideo;

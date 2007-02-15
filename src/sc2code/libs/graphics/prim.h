@@ -38,7 +38,6 @@ typedef union
    TEXT Text;
    RECT Rect;
 } PRIM_DESC;
-typedef PRIM_DESC *PPRIM_DESC;
 
 typedef DWORD PRIM_LINKS;
 
@@ -49,7 +48,6 @@ typedef struct
 	COLOR Color;
 	PRIM_DESC Object;
 } PRIMITIVE;
-typedef PRIMITIVE *PPRIMITIVE;
 
 #define END_OF_LIST ((COUNT)0xFFFF)
 
@@ -64,14 +62,14 @@ typedef PRIMITIVE *PPRIMITIVE;
 #define GetPrimColor(pPrim) ((pPrim)->Color)
 
 static inline void
-SetPrimNextLink (PPRIMITIVE pPrim, COUNT Link)
+SetPrimNextLink (PRIMITIVE *pPrim, COUNT Link)
 {
 	SetPrimLinks (pPrim, END_OF_LIST, Link);
 }
 
 
 static inline COUNT
-GetPrimNextLink (PPRIMITIVE pPrim)
+GetPrimNextLink (PRIMITIVE *pPrim)
 {
 	return GetSuccLink (GetPrimLinks (pPrim));
 }

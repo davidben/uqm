@@ -68,7 +68,7 @@ MeleeShipByQueueIndex (const QUEUE *queue, COUNT index)
 	
 	for (hShip = GetHeadLink (queue); hShip != 0; hShip = hNextShip)
 	{
-		STARSHIPPTR StarShipPtr = LockStarShip (queue, hShip);
+		STARSHIP *StarShipPtr = LockStarShip (queue, hShip);
 		if (StarShipPtr->ShipFacing == index)
 		{
 			hNextShip = hShip;
@@ -93,7 +93,7 @@ MeleeShipByUsedIndex (const QUEUE *queue, COUNT index)
 	
 	for (hShip = GetHeadLink (queue); hShip != 0; hShip = hNextShip)
 	{
-		STARSHIPPTR StarShipPtr = LockStarShip (queue, hShip);
+		STARSHIP *StarShipPtr = LockStarShip (queue, hShip);
 		if (StarShipPtr->RaceResIndex && index-- == 0)
 		{
 			UnlockStarShip (queue, hShip);
@@ -111,7 +111,7 @@ static COUNT
 queueIndexFromShip (HSTARSHIP hShip)
 {
 	COUNT result;
-	STARSHIPPTR StarShipPtr = LockStarShip (queue, hShip);
+	STARSHIP *StarShipPtr = LockStarShip (queue, hShip);
 	result = StarShipPtr->ShipFacing;
 	UnlockStarShip (queue, hShip);
 }
@@ -299,7 +299,7 @@ endMeleeCallback (NetConnection *conn, void *arg)
 #endif
 
 HSTARSHIP
-GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
+GetMeleeStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
 	COUNT ships_left;
 	TEXT t;
@@ -307,7 +307,7 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	STAMP s;
 	CONTEXT OldContext;
 	GETMELEE_STATE gmstate;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	BOOLEAN firstTime;
 
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
@@ -492,10 +492,10 @@ GetMeleeStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 
 	UnlockMutex (GraphicsLock);
 	ResetKeyRepeat ();
-	DoInput ((PVOID)&gmstate, FALSE);
+	DoInput (&gmstate, FALSE);
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL_PTR, (FRAME)0);
+	SetFlashRect (NULL, (FRAME)0);
 	
 	if (gmstate.hBattleShip == 0)
 	{

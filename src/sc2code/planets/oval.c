@@ -25,7 +25,7 @@
 #define NUM_QUADS 4
 
 void
-DrawOval (PRECT pRect, BYTE num_off_pixels)
+DrawOval (RECT *pRect, BYTE num_off_pixels)
 {
 #define FIRST_QUAD (1 << 0)
 #define SECOND_QUAD (1 << 1)
@@ -216,7 +216,7 @@ DrawOval (PRECT pRect, BYTE num_off_pixels)
 }
 
 void
-DrawFilledOval (PRECT pRect)
+DrawFilledOval (RECT *pRect)
 {
 	COORD x, y;
 	SIZE A, B;

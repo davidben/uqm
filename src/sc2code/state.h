@@ -67,12 +67,12 @@ GAME_STATE_FILE* OpenStateFile (int stateFile, const char *mode);
 void CloseStateFile (GAME_STATE_FILE *fp);
 void DeleteStateFile (int stateFile);
 DWORD LengthStateFile (GAME_STATE_FILE *fp);
-int ReadStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
-int WriteStateFile (PVOID lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
+int ReadStateFile (void *lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
+int WriteStateFile (const void *lpBuf, COUNT size, COUNT count, GAME_STATE_FILE *fp);
 int SeekStateFile (GAME_STATE_FILE *fp, long offset, int whence);
 
 static inline COUNT
-sread_8 (PVOID fp, PBYTE v)
+sread_8 (void *fp, BYTE *v)
 {
 	BYTE t;
 	if (!v) /* read value ignored */
@@ -81,7 +81,7 @@ sread_8 (PVOID fp, PBYTE v)
 }
 
 static inline COUNT
-sread_16 (PVOID fp, PUWORD v)
+sread_16 (void *fp, UWORD *v)
 {
 	UWORD t;
 	if (!v) /* read value ignored */
@@ -90,7 +90,7 @@ sread_16 (PVOID fp, PUWORD v)
 }
 
 static inline COUNT
-sread_32 (PVOID fp, PDWORD v)
+sread_32 (void *fp, DWORD *v)
 {
 	DWORD t;
 	if (!v) /* read value ignored */
@@ -99,7 +99,7 @@ sread_32 (PVOID fp, PDWORD v)
 }
 
 static inline COUNT
-sread_a32 (PVOID fp, PDWORD ar, COUNT count)
+sread_a32 (void *fp, DWORD *ar, COUNT count)
 {
 	assert (ar != NULL);
 
@@ -112,25 +112,25 @@ sread_a32 (PVOID fp, PDWORD ar, COUNT count)
 }
 
 static inline COUNT
-swrite_8 (PVOID fp, BYTE v)
+swrite_8 (void *fp, BYTE v)
 {
 	return WriteStateFile (&v, 1, 1, fp);
 }
 
 static inline COUNT
-swrite_16 (PVOID fp, UWORD v)
+swrite_16 (void *fp, UWORD v)
 {
 	return WriteStateFile (&v, 2, 1, fp);
 }
 
 static inline COUNT
-swrite_32 (PVOID fp, DWORD v)
+swrite_32 (void *fp, DWORD v)
 {
 	return WriteStateFile (&v, 4, 1, fp);
 }
 
 static inline COUNT
-swrite_a32 (PVOID fp, PDWORD ar, COUNT count)
+swrite_a32 (void *fp, const DWORD *ar, COUNT count)
 {
 	for ( ; count > 0; --count, ++ar)
 	{

@@ -24,9 +24,9 @@
 
 
 static void
-dword_convert (PDWORD dword_array, COUNT num_dwords)
+dword_convert (DWORD *dword_array, COUNT num_dwords)
 {
-	PBYTE p = (PBYTE)dword_array;
+	BYTE *p = (BYTE*)dword_array;
 
 	do
 	{
@@ -243,7 +243,9 @@ _GetStringData (uio_Stream *fp, DWORD length)
 					+ (sizeof (DWORD) * ((n + 1) * num_data_sets))
 					+ StringOffs + ClipOffs + TSOffs)))
 			{
-				PDWORD lpStringOffs, lpClipOffs, lpTSOffs;
+				DWORD *lpStringOffs;
+				DWORD *lpClipOffs;
+				DWORD *lpTSOffs;
 				STRING_TABLEPTR lpST;
 
 				LockStringTable (hData, &lpST);
@@ -311,7 +313,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	{
 		COUNT StringCount;
 		DWORD StringOffs;
-		PDWORD lpStringOffs;
+		DWORD *lpStringOffs;
 		STRING_TABLEPTR lpST;
 
 		LockStringTable (hData, &lpST);

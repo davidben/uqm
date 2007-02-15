@@ -57,7 +57,7 @@
 			 (eptr)->next.image.frame); \
 }
 
-extern void collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1);
+extern void collide (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1);
 
 #endif /* _COLLIDE_H */
 

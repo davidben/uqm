@@ -25,9 +25,9 @@
 
 static LOCDATA supox_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SUPOX_PMAP_ANIM, /* AlienFrame */
 	(FONT)SUPOX_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -93,7 +93,7 @@ static LOCDATA supox_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */	
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -422,7 +422,7 @@ NeutralSupox (RESPONSE_REF R)
 					i_am0,
 					GLOBAL_SIS (CommanderName),
 					i_am1,
-					NULL_PTR);
+					(UNICODE*)NULL);
 			pStr[0] = i_am0;
 			pStr[1] = 0;
 			break;
@@ -431,7 +431,7 @@ NeutralSupox (RESPONSE_REF R)
 					my_ship0,
 					GLOBAL_SIS (ShipName),
 					my_ship1,
-					NULL_PTR);
+					(UNICODE*)NULL);
 			pStr[0] = my_ship0;
 			pStr[1] = 0;
 			break;
@@ -445,8 +445,7 @@ NeutralSupox (RESPONSE_REF R)
 						from_alliance0,
 						buf,
 						from_alliance1,
-						NULL_PTR
-						);
+						(UNICODE*)NULL);
 			}
 			pStr[0] = from_alliance0;
 			pStr[1] = 0;
@@ -677,10 +676,10 @@ post_supox_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_supox_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	supox_desc.init_encounter_func = Intro;
 	supox_desc.post_encounter_func = post_supox_enc;

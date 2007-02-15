@@ -37,11 +37,10 @@ check_scout (void)
 					)))
 	{
 		BYTE task;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		task = GET_GROUP_MISSION (FragPtr);
 
 		if (task & REFORM_GROUP)

@@ -37,7 +37,7 @@ ShowRemainingCapacity (void)
 	SetContextFont (TinyFont);
 
 	sprintf (rt_amount_buf, "%u",
-			GetSBayCapacity (NULL_PTR)
+			GetSBayCapacity (NULL)
 			- GLOBAL_SIS (TotalElementMass));
 	rt.baseline.x = 59;
 	rt.baseline.y = 113;
@@ -289,7 +289,7 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 }
 
 static BOOLEAN
-DoDiscardCargo (PMENU_STATE pMS)
+DoDiscardCargo (MENU_STATE *pMS)
 {
 	BYTE NewState;
 	BOOLEAN select, cancel, back, forward;
@@ -365,7 +365,7 @@ SelectCargo:
 }
 
 void
-Cargo (PMENU_STATE pMS)
+Cargo (MENU_STATE *pMS)
 {
 	pMS->InputFunc = DoDiscardCargo;
 	--pMS->Initialized;
@@ -376,7 +376,7 @@ Cargo (PMENU_STATE pMS)
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput ((PVOID)pMS, TRUE);
+	DoInput (pMS, TRUE);
 
 	pMS->InputFunc = DoFlagshipCommands;
 	pMS->CurState = CARGO + 1;

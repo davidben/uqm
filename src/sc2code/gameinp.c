@@ -35,10 +35,9 @@ battle_summary_func PlayerInput[NUM_PLAYERS];
 
 typedef struct
 {
-	BOOLEAN (*InputFunc) (PVOID pInputState);
+	BOOLEAN (*InputFunc) (void *pInputState);
 	COUNT MenuRepeatDelay;
 } INPUT_STATE_DESC;
-typedef INPUT_STATE_DESC *PINPUT_STATE_DESC;
 
 /* These static variables are the values that are set by the controllers. */
 
@@ -296,7 +295,7 @@ FlushInputState (void)
 }
 
 void
-DoInput (PVOID pInputState, BOOLEAN resetInput)
+DoInput (void *pInputState, BOOLEAN resetInput)
 {
 	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
@@ -354,8 +353,7 @@ DoInput (PVOID pInputState, BOOLEAN resetInput)
 
 			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
 		}
-	} while ((*((PINPUT_STATE_DESC)pInputState)->InputFunc)
-			(pInputState));
+	} while (((INPUT_STATE_DESC*)pInputState)->InputFunc (pInputState));
 	if (resetInput)
 	{
 		TFB_ResetControls ();
@@ -380,7 +378,7 @@ GetMenuSounds (MENU_SOUND_FLAGS *s0, MENU_SOUND_FLAGS *s1)
 /* These can really be refactored */
 
 BATTLE_INPUT_STATE
-p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr)
+p1_combat_summary (COUNT player, STARSHIP *StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState = 0;
 	if (CurrentInputState.key[PlayerOne][KEY_UP])
@@ -404,7 +402,7 @@ p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr)
 }
 
 BATTLE_INPUT_STATE
-p2_combat_summary (COUNT player, STARSHIPPTR StarShipPtr)
+p2_combat_summary (COUNT player, STARSHIP *StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState = 0;
 	if (CurrentInputState.key[PlayerTwo][KEY_UP])

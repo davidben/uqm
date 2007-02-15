@@ -210,35 +210,35 @@ InitSIS (void)
 			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref, 0, 0);
 			if (hStarShip)
 			{
-				SHIP_FRAGMENTPTR FragPtr;
-				EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr;
+				SHIP_FRAGMENT *FragPtr;
+				EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
 
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hStarShip);
 				if (i < num_ships - 1)
 				{
 					HSTARSHIP hMasterShip;
-					STARSHIPPTR MasterShipPtr;
+					STARSHIP *MasterShipPtr;
 					
 					hMasterShip = FindMasterShip (ship_ref);
 					MasterShipPtr = LockStarShip (&master_q, hMasterShip);
 					FragPtr->ShipInfo =
-							((SHIP_FRAGMENTPTR)MasterShipPtr)->ShipInfo;
+							((SHIP_FRAGMENT*)MasterShipPtr)->ShipInfo;
 					UnlockStarShip (&master_q, hMasterShip);
 				}
 				else
 				{
 					// Ur-Quan probe.
-					load_ship ((STARSHIPPTR)FragPtr, FALSE);
+					load_ship ((STARSHIP*)FragPtr, FALSE);
 					FragPtr->ShipInfo = FragPtr->RaceDescPtr->ship_info;
 					FragPtr->RaceDescPtr->ship_info.melee_icon = 0;
 					FragPtr->RaceDescPtr->ship_info.icons = 0;
 					FragPtr->RaceDescPtr->ship_info.race_strings = 0;
-					free_ship ((STARSHIPPTR)FragPtr, FALSE);
+					free_ship ((STARSHIP*)FragPtr, FALSE);
 				}
 
 				FragPtr->ShipInfo.ship_flags = BAD_GUY;
-				ExtFragPtr = (EXTENDED_SHIP_FRAGMENTPTR)FragPtr;
+				ExtFragPtr = (EXTENDED_SHIP_FRAGMENT*)FragPtr;
 				ExtFragPtr->ShipInfo.known_strength = 0;
 				ExtFragPtr->ShipInfo.known_loc = ExtFragPtr->ShipInfo.loc;
 				if (FragPtr->ShipInfo.var2 == (BYTE)~0)
@@ -252,7 +252,7 @@ InitSIS (void)
 				ExtFragPtr->ShipInfo.growth_err_term = 255 >> 1;
 				ExtFragPtr->ShipInfo.energy_level = 0;
 				ExtFragPtr->ShipInfo.days_left = 0;
-				FragPtr->RaceDescPtr = (RACE_DESCPTR)&ExtFragPtr->ShipInfo;
+				FragPtr->RaceDescPtr = (RACE_DESC*)&ExtFragPtr->ShipInfo;
 
 				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 			}
@@ -383,7 +383,7 @@ UninitSIS (void)
 	hStarShip = GetTailLink (&GLOBAL (avail_race_q));
 	if (hStarShip)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (&GLOBAL (avail_race_q), hStarShip);
 		DestroyDrawable (ReleaseDrawable (
@@ -408,7 +408,7 @@ InitGlobData (void)
 	COUNT i;
 
 	i = GLOBAL (glob_flags);
-	memset ((PBYTE)&GlobData, 0, sizeof (GlobData));
+	memset (&GlobData, 0, sizeof (GlobData));
 	GLOBAL (glob_flags) = (BYTE)i;
 
 	GLOBAL (DisplayArray) = DisplayArray;

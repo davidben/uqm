@@ -43,7 +43,7 @@ static BYTE fuel_ticks;
 static COUNT hyper_dx, hyper_dy, hyper_extra;
 
 void
-MoveSIS (PSIZE pdx, PSIZE pdy)
+MoveSIS (SIZE *pdx, SIZE *pdy)
 {
 	SIZE new_dx, new_dy;
 
@@ -81,7 +81,7 @@ MoveSIS (PSIZE pdx, PSIZE pdy)
 		for (hElement = GetTailElement ();
 				hElement != 0; hElement = hNextElement)
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (hElement, &ElementPtr);
 
@@ -156,12 +156,10 @@ check_hyperspace_encounter (void)
 			hStarShip = hNextShip, ++Type)
 	{
 		COUNT encounter_radius;
-		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q),
-				hStarShip
-				);
+		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (TemplatePtr);
 
 		encounter_radius = TemplatePtr->ShipInfo.actual_strength;
@@ -171,7 +169,7 @@ check_hyperspace_encounter (void)
 			SIZE dx, dy;
 			COUNT percent;
 			HENCOUNTER hEncounter;
-			ENCOUNTERPTR EncounterPtr;
+			ENCOUNTER *EncounterPtr;
 
 			encounter_flags = 0;
 			percent = EncounterPercent[Type];
@@ -322,7 +320,7 @@ LoadHyperspace (void)
 			RepairSISBorder ();
 		}
 	}
-	DrawSISMessage (NULL_PTR);
+	DrawSISMessage (NULL);
 
 	SetContext (RadarContext);
 	SetContextBackGroundColor (
@@ -370,7 +368,7 @@ FreeHyperspace (void)
 }
 
 static void
-ElementToUniverse (ELEMENTPTR ElementPtr, PPOINT pPt)
+ElementToUniverse (ELEMENT *ElementPtr, POINT *pPt)
 {
 	SDWORD log_x, log_y;
 
@@ -390,13 +388,13 @@ cleanup_hyperspace (void)
 	for (hEncounter = GetHeadEncounter ();
 			hEncounter != 0; hEncounter = hNextEncounter)
 	{
-		ENCOUNTERPTR EncounterPtr;
+		ENCOUNTER *EncounterPtr;
 
 		LockEncounter (hEncounter, &EncounterPtr);
 		hNextEncounter = GetSuccEncounter (EncounterPtr);
 		if (EncounterPtr->hElement)
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (EncounterPtr->hElement, &ElementPtr);
 
@@ -421,7 +419,7 @@ typedef enum
 } TRANSITION_TYPE;
 
 static void
-unhyper_transition (PELEMENT ElementPtr)
+unhyper_transition (ELEMENT *ElementPtr)
 {
 	COUNT frame_index;
 
@@ -459,7 +457,7 @@ unhyper_transition (PELEMENT ElementPtr)
 							GLOBAL (autopilot.y) = ~0;
 
 					ElementToUniverse (ElementPtr, &pt);
-					CurStarDescPtr = FindStar (NULL_PTR, &pt, 5, 5);
+					CurStarDescPtr = FindStar (NULL, &pt, 5, 5);
 					if (CurStarDescPtr->star_pt.x == ARILOU_HOME_X
 							&& CurStarDescPtr->star_pt.y == ARILOU_HOME_Y)
 					{
@@ -488,7 +486,7 @@ unhyper_transition (PELEMENT ElementPtr)
 						};
 
 						index = CurStarDescPtr
-								- ((STAR_DESCPTR)&star_array[NUM_SOLAR_SYSTEMS + 1]);
+								- &star_array[NUM_SOLAR_SYSTEMS + 1];
 						GLOBAL_SIS (log_x) =
 								UNIVERSE_TO_LOGX (portal_pt[index].x);
 						GLOBAL_SIS (log_y) =
@@ -548,11 +546,11 @@ unhyper_transition (PELEMENT ElementPtr)
 }
 
 static void
-init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1,
+init_transition (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1,
 		TRANSITION_TYPE which_transition)
 {
 	SIZE dx, dy, num_turns;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	dx = WORLD_TO_VELOCITY (ElementPtr0->next.location.x
 			- ElementPtr1->next.location.x);
@@ -561,7 +559,7 @@ init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1,
 
 	ElementPtr1->state_flags |= NONSOLID;
 	ElementPtr1->preprocess_func = unhyper_transition;
-	ElementPtr1->postprocess_func = NULL_PTR;
+	ElementPtr1->postprocess_func = NULL;
 	ElementPtr1->turn_wait = (BYTE) which_transition;
 
 	GetElementStarShip (ElementPtr1, &StarShipPtr);
@@ -576,7 +574,7 @@ init_transition (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1,
 }
 
 BOOLEAN
-hyper_transition (PELEMENT ElementPtr)
+hyper_transition (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & APPEARING)
 	{
@@ -596,7 +594,7 @@ hyper_transition (PELEMENT ElementPtr)
 			ElementPtr->preprocess_func =
 						(void (*) (struct element
 								*ElementPtr))hyper_transition;
-			ElementPtr->postprocess_func = NULL_PTR;
+			ElementPtr->postprocess_func = NULL;
 			ElementPtr->state_flags |= NONSOLID;
 			ElementPtr->next.image.frame =
 					SetAbsFrameIndex (ElementPtr->current.image.frame,
@@ -610,7 +608,7 @@ hyper_transition (PELEMENT ElementPtr)
 		frame_index = GetFrameIndex (ElementPtr->current.image.frame);
 		if (frame_index-- <= ANGLE_TO_FACING (FULL_CIRCLE))
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			if (frame_index == ANGLE_TO_FACING (FULL_CIRCLE) - 1)
 				frame_index = 0;
@@ -644,20 +642,20 @@ hyper_transition (PELEMENT ElementPtr)
 }
 
 static void
-hyper_collision (PELEMENT ElementPtr0, PPOINT
-		pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+hyper_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if ((ElementPtr1->state_flags & PLAYER_SHIP)
 			&& GET_GAME_STATE (PORTAL_COUNTER) == 0)
 	{
 		SIZE dx, dy;
 		POINT pt;
-		STAR_DESCPTR SDPtr;
-		STARSHIPPTR StarShipPtr;
+		STAR_DESC *SDPtr;
+		STARSHIP *StarShipPtr;
 
 		ElementToUniverse (ElementPtr0, &pt);
 
-		SDPtr = FindStar (NULL_PTR, &pt, 5, 5);
+		SDPtr = FindStar (NULL, &pt, 5, 5);
 
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		GetCurrentVelocityComponents (&ElementPtr1->velocity, &dx, &dy);
@@ -687,7 +685,7 @@ hyper_collision (PELEMENT ElementPtr0, PPOINT
 }
 
 static void
-hyper_death (PELEMENT ElementPtr)
+hyper_death (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & DEFY_PHYSICS)
 			&& (GLOBAL (CurrentActivity) & IN_BATTLE))
@@ -695,7 +693,7 @@ hyper_death (PELEMENT ElementPtr)
 }
 
 static void
-arilou_space_death (PELEMENT ElementPtr)
+arilou_space_death (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & DEFY_PHYSICS)
 			|| GET_GAME_STATE (ARILOU_SPACE_COUNTER) == 0)
@@ -712,9 +710,8 @@ arilou_space_death (PELEMENT ElementPtr)
 }
 
 static void
-arilou_space_collision (PELEMENT ElementPtr0,
-		PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
-		pPt1)
+arilou_space_collision (ELEMENT *ElementPtr0,
+		POINT *pPt0, ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	COUNT which_side;
 
@@ -740,14 +737,14 @@ arilou_space_collision (PELEMENT ElementPtr0,
 }
 
 static HELEMENT
-AllocHyperElement (STAR_DESCPTR SDPtr)
+AllocHyperElement (STAR_DESC *SDPtr)
 {
 	HELEMENT hHyperSpaceElement;
 
 	hHyperSpaceElement = AllocElement ();
 	if (hHyperSpaceElement)
 	{
-		ELEMENTPTR HyperSpaceElementPtr;
+		ELEMENT *HyperSpaceElementPtr;
 
 		LockElement (hHyperSpaceElement, &HyperSpaceElementPtr);
 		HyperSpaceElementPtr->state_flags = CHANGING | FINITE_LIFE;
@@ -788,7 +785,7 @@ AddAmbientElement (void)
 	{
 		SIZE dx, dy;
 		DWORD rand_val;
-		ELEMENTPTR HyperSpaceElementPtr;
+		ELEMENT *HyperSpaceElementPtr;
 
 		LockElement (hHyperSpaceElement, &HyperSpaceElementPtr);
 		HyperSpaceElementPtr->state_flags =
@@ -828,7 +825,7 @@ AddAmbientElement (void)
 #define VORTEX_WAIT 1
 
 static void
-encounter_transition (PELEMENT ElementPtr)
+encounter_transition (ELEMENT *ElementPtr)
 {
 	ElementPtr->state_flags &= ~DISAPPEARING;
 	ElementPtr->life_span = 1;
@@ -851,7 +848,7 @@ encounter_transition (PELEMENT ElementPtr)
 			if (f != ElementPtr->current.image.farray[0])
 				ElementPtr->next.image.frame = f;
 			else
-				ElementPtr->death_func = NULL_PTR;
+				ElementPtr->death_func = NULL;
 		}
 
 		ElementPtr->turn_wait = VORTEX_WAIT;
@@ -859,8 +856,8 @@ encounter_transition (PELEMENT ElementPtr)
 }
 
 static void
-encounter_collision (PELEMENT ElementPtr0, PPOINT
-		pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+encounter_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 
 	if ((ElementPtr1->state_flags & PLAYER_SHIP)
@@ -873,13 +870,13 @@ encounter_collision (PELEMENT ElementPtr0, PPOINT
 		for (hEncounter = GetHeadEncounter ();
 				hEncounter != 0; hEncounter = hNextEncounter)
 		{
-			ENCOUNTERPTR EncounterPtr;
+			ENCOUNTER *EncounterPtr;
 
 			LockEncounter (hEncounter, &EncounterPtr);
 			hNextEncounter = GetSuccEncounter (EncounterPtr);
 			if (EncounterPtr->hElement)
 			{
-				ELEMENTPTR ElementPtr;
+				ELEMENT *ElementPtr;
 
 				LockElement (EncounterPtr->hElement, &ElementPtr);
 
@@ -898,8 +895,7 @@ encounter_collision (PELEMENT ElementPtr0, PPOINT
 }
 
 static HELEMENT
-AddEncounterElement (ENCOUNTERPTR EncounterPtr,
-		PPOINT puniverse)
+AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 {
 	BOOLEAN NewEncounter;
 	HELEMENT hElement;
@@ -956,10 +952,10 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 		for (i = 0; i < NumShips; ++i)
 		{
 			HSTARSHIP hStarShip;
-			SHIP_FRAGMENTPTR TemplatePtr;
+			SHIP_FRAGMENT *TemplatePtr;
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), Type);
-			TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
+			TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (avail_race_q), hStarShip);
 			EncounterPtr->SD.ShipList[i] = TemplatePtr->ShipInfo;
 			EncounterPtr->SD.ShipList[i].var1 = Type;
@@ -999,8 +995,7 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 	if (hElement)
 	{
 		SIZE i;
-		ELEMENTPTR ElementPtr;
-
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		
@@ -1025,8 +1020,8 @@ AddEncounterElement (ENCOUNTERPTR EncounterPtr,
 		}
 
 		ElementPtr->turn_wait = VORTEX_WAIT;
-		ElementPtr->preprocess_func = NULL_PTR;
-		ElementPtr->postprocess_func = NULL_PTR;
+		ElementPtr->preprocess_func = NULL;
+		ElementPtr->postprocess_func = NULL;
 		ElementPtr->collision_func = encounter_collision;
 
 		SetUpElement (ElementPtr);
@@ -1098,8 +1093,7 @@ DrawHyperGrid (COORD ux, COORD uy, COORD ox,
 
 
 static void
-ProcessEncounters (PPOINT puniverse, COORD ox,
-		COORD oy)
+ProcessEncounters (POINT *puniverse, COORD ox, COORD oy)
 {
 	STAMP s;
 	HENCOUNTER hEncounter, hNextEncounter;
@@ -1109,7 +1103,7 @@ ProcessEncounters (PPOINT puniverse, COORD ox,
 			hEncounter; hEncounter = hNextEncounter)
 	{
 		COORD ex, ey;
-		ENCOUNTERPTR EncounterPtr;
+		ENCOUNTER *EncounterPtr;
 
 		LockEncounter (hEncounter, &EncounterPtr);
 		hNextEncounter = GetSuccEncounter (EncounterPtr);
@@ -1126,7 +1120,7 @@ DeleteEncounter:
 		}
 
 		{
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 
 			LockElement (EncounterPtr->hElement, &ElementPtr);
 
@@ -1142,7 +1136,7 @@ DeleteEncounter:
 					else if (EncounterPtr->transition_state ==
 							-NUM_VORTEX_TRANSITIONS)
 					{
-						ElementPtr->death_func = NULL_PTR;
+						ElementPtr->death_func = NULL;
 						UnlockElement (EncounterPtr->hElement);
 						goto DeleteEncounter;
 					}
@@ -1234,7 +1228,7 @@ DeleteEncounter:
 					}
 					else
 					{
-						ElementPtr->death_func = NULL_PTR;
+						ElementPtr->death_func = NULL;
 						UnlockElement (EncounterPtr->hElement);
 						goto DeleteEncounter;
 					}
@@ -1276,7 +1270,7 @@ DeleteEncounter:
 						|| ey - puniverse->y > YOFFS)
 				{
 					ElementPtr->life_span = 0;
-					ElementPtr->death_func = NULL_PTR;
+					ElementPtr->death_func = NULL;
 					UnlockElement (EncounterPtr->hElement);
 
 					goto DeleteEncounter;
@@ -1307,9 +1301,9 @@ SeedUniverse (void)
 	POINT universe;
 	FRAME blip_frame;
 	STAMP s;
-	STAR_DESCPTR SDPtr;
+	STAR_DESC *SDPtr;
 	HELEMENT hHyperSpaceElement;
-	ELEMENTPTR HyperSpaceElementPtr;
+	ELEMENT *HyperSpaceElementPtr;
 
 	ClockTick ();
 
@@ -1440,7 +1434,7 @@ SeedUniverse (void)
 				if (ex <= (XOFFS / NUM_RADAR_SCREENS)
 						&& ey <= (YOFFS / NUM_RADAR_SCREENS)
 						&& (hHyperSpaceElement =
-						AllocHyperElement ((STAR_DESCPTR)&SD[i])) != 0)
+						AllocHyperElement (&SD[i])) != 0)
 				{
 					LockElement (hHyperSpaceElement, &HyperSpaceElementPtr);
 					HyperSpaceElementPtr->current.image.frame = SetAbsFrameIndex (
@@ -1448,7 +1442,7 @@ SeedUniverse (void)
 							SD[i].Index
 							);
 					HyperSpaceElementPtr->preprocess_func =
-							HyperSpaceElementPtr->postprocess_func = NULL_PTR;
+							HyperSpaceElementPtr->postprocess_func = NULL;
 					HyperSpaceElementPtr->collision_func = arilou_space_collision;
 
 					SetUpElement (HyperSpaceElementPtr);
@@ -1457,7 +1451,7 @@ SeedUniverse (void)
 						HyperSpaceElementPtr->death_func = arilou_space_death;
 					else
 					{
-						HyperSpaceElementPtr->death_func = NULL_PTR;
+						HyperSpaceElementPtr->death_func = NULL;
 						HyperSpaceElementPtr->IntersectControl.IntersectStamp.frame =
 								DecFrameIndex (stars_in_space);
 					}
@@ -1496,7 +1490,7 @@ SeedUniverse (void)
 						+ STAR_COLOR (star_type)
 						);
 				HyperSpaceElementPtr->preprocess_func =
-						HyperSpaceElementPtr->postprocess_func = NULL_PTR;
+						HyperSpaceElementPtr->postprocess_func = NULL;
 				HyperSpaceElementPtr->collision_func = hyper_collision;
 
 				SetUpElement (HyperSpaceElementPtr);
@@ -1506,7 +1500,7 @@ SeedUniverse (void)
 					HyperSpaceElementPtr->death_func = hyper_death;
 				else
 				{
-					HyperSpaceElementPtr->death_func = NULL_PTR;
+					HyperSpaceElementPtr->death_func = NULL;
 					HyperSpaceElementPtr->IntersectControl.IntersectStamp.frame =
 							DecFrameIndex (stars_in_space);
 				}
@@ -1589,7 +1583,7 @@ UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 	SuspendGameClock ();
 
-	memset ((PMENU_STATE)&MenuState, 0, sizeof (MenuState));
+	memset (&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoFlagshipCommands;
 	MenuState.Initialized = 1;
 	MenuState.CurState = STARMAP + 1;
@@ -1600,10 +1594,10 @@ UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput ((PVOID)&MenuState, TRUE);
+	DoInput (&MenuState, TRUE);
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL_PTR, (FRAME)0);
+	SetFlashRect (NULL, (FRAME)0);
 
 	SetContext (SpaceContext);
 

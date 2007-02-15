@@ -59,7 +59,7 @@ GenerateShipVault (BYTE control)
 							&= ~(1L << 0);
 					if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
 					{
-						((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit = TRUE;
+						((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
 
 						SET_GAME_STATE (SHIP_VAULT_UNLOCKED, 1);
 						SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 0);

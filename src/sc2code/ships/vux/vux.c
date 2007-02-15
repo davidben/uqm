@@ -99,7 +99,7 @@ static RACE_DESC vux_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -111,7 +111,7 @@ static RACE_DESC vux_desc =
 #define LIMPET_SPEED 25
 
 static void
-limpet_preprocess (PELEMENT ElementPtr)
+limpet_preprocess (ELEMENT *ElementPtr)
 {
 	COUNT facing, orig_facing;
 	SIZE delta_facing;
@@ -132,14 +132,14 @@ limpet_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-limpet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
-		ElementPtr1, PPOINT pPt1)
+limpet_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr1->state_flags & PLAYER_SHIP)
 	{
 		STAMP s;
-		STARSHIPPTR StarShipPtr;
-		RACE_DESCPTR RDPtr;
+		STARSHIP *StarShipPtr;
+		RACE_DESC *RDPtr;
 
 		GetElementStarShip (ElementPtr1, &StarShipPtr);
 		RDPtr = StarShipPtr->RaceDescPtr;
@@ -185,14 +185,14 @@ limpet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 }
 
 static void
-spawn_limpets (PELEMENT ElementPtr)
+spawn_limpets (ELEMENT *ElementPtr)
 {
 #define LIMPET_OFFSET 8
 #define LIMPET_LIFE 80
 #define LIMPET_HITS 1
 #define LIMPET_DAMAGE 0
 	HELEMENT Limpet;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -214,7 +214,7 @@ spawn_limpets (PELEMENT ElementPtr)
 	Limpet = initialize_missile (&MissileBlock);
 	if (Limpet)
 	{
-		ELEMENTPTR LimpetPtr;
+		ELEMENT *LimpetPtr;
 
 		LockElement (Limpet, &LimpetPtr);
 		LimpetPtr->collision_func = limpet_collision;
@@ -226,9 +226,9 @@ spawn_limpets (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_horrific_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
+initialize_horrific_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	LASER_BLOCK LaserBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -247,11 +247,11 @@ initialize_horrific_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 }
 
 static void
-vux_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+vux_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	 lpEvalDesc->MoveState = PURSUE;
@@ -283,9 +283,9 @@ vux_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 }
 
 static void
-vux_postprocess (PELEMENT ElementPtr)
+vux_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -303,19 +303,19 @@ vux_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-vux_preprocess (PELEMENT ElementPtr)
+vux_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & APPEARING)
 	{
 		COUNT facing;
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		facing = StarShipPtr->ShipFacing;
 		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_ENCOUNTER
 				&& TrackShip (ElementPtr, &facing) >= 0)
 		{
-			ELEMENTPTR OtherShipPtr;
+			ELEMENT *OtherShipPtr;
 
 			LockElement (ElementPtr->hTarget, &OtherShipPtr);
 
@@ -370,17 +370,15 @@ vux_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_vux (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	vux_desc.preprocess_func = vux_preprocess;
 	vux_desc.postprocess_func = vux_postprocess;
 	vux_desc.init_weapon_func = initialize_horrific_laser;
-	vux_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) vux_intelligence;
+	vux_desc.cyborg_control.intelligence_func = vux_intelligence;
 
 	RaceDescPtr = &vux_desc;
 

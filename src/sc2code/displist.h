@@ -24,7 +24,7 @@
 #define QUEUE_TABLE
 
 #ifdef QUEUE_TABLE
-typedef PVOID QUEUE_HANDLE;
+typedef void* QUEUE_HANDLE;
 #else /* !QUEUE_TABLE */
 typedef MEM_HANDLE QUEUE_HANDLE;
 #endif /* QUEUE_TABLE */
@@ -37,15 +37,9 @@ typedef struct link
 	HLINK pred;
 	HLINK succ;
 } LINK;
-typedef LINK *PLINK;
-
-typedef PBYTE BYTEPTR;
-typedef PUWORD WORDPTR;
-typedef PVOID VOIDPTR;
-typedef PLINK LINKPTR;
 
 #ifdef QUEUE_TABLE
-#define LockLink(pq, h) (LINKPTR)(h)
+#define LockLink(pq, h) (LINK*)(h)
 #define UnlockLink(pq, h)
 #define GetFreeList(pq) (pq)->free_list
 #define SetFreeList(pq, h) (pq)->free_list = (h)
@@ -53,14 +47,14 @@ typedef PLINK LINKPTR;
 		((pq)->hq_tab = mem_allocate ((MEM_SIZE)((COUNT)(pq)->object_size * \
 		(COUNT)((pq)->num_objects = (BYTE)(n))), \
 		MEM_PRIMARY, DEFAULT_MEM_PRIORITY, MEM_SIMPLE))
-#define LockQueueTab(pq) ((pq)->pq_tab = (BYTEPTR)mem_lock ((pq)->hq_tab))
+#define LockQueueTab(pq) ((pq)->pq_tab = (BYTE*)mem_lock ((pq)->hq_tab))
 #define UnlockQueueTab(pq) mem_unlock ((pq)->hq_tab)
 #define FreeQueueTab(pq) mem_release ((pq)->hq_tab); (pq)->hq_tab = 0
 #define SizeQueueTab(pq) (COUNT)((pq)->num_objects)
 #define GetLinkAddr(pq,i) (HLINK)((pq)->pq_tab + ((pq)->object_size * ((i) - 1)))
 #else /* !QUEUE_TABLE */
 #define AllocLink(pq) (HLINK)mem_request ((pq)->object_size)
-#define LockLink(pq, h) (LINKPTR)mem_lock (h)
+#define LockLink(pq, h) (LINK*)mem_lock (h)
 #define UnlockLink(pq, h) mem_unlock (h)
 #define FreeLink(pq,h) mem_release (h)
 #endif /* QUEUE_TABLE */
@@ -70,19 +64,16 @@ typedef struct queue
 	HLINK head;
 	HLINK tail;
 #ifdef QUEUE_TABLE
-	BYTEPTR pq_tab;
+	BYTE  *pq_tab;
 	HLINK free_list;
 	MEM_HANDLE hq_tab;
 #endif
-//    BYTE object_size;
 	COUNT object_size;
 #ifdef QUEUE_TABLE
 	BYTE num_objects;
 #endif /* QUEUE_TABLE */
 } QUEUE;
-typedef QUEUE *PQUEUE;
 
-// #define SetLinkSize(pq,s) ((pq)->object_size = (BYTE)(s))
 #define SetLinkSize(pq,s) ((pq)->object_size = (COUNT)(s))
 #define GetLinkSize(pq) (COUNT)((pq)->object_size)
 #define GetHeadLink(pq) ((pq)->head)
@@ -94,17 +85,17 @@ typedef QUEUE *PQUEUE;
 #define _GetSuccLink(lpE) ((lpE)->succ)
 #define _SetSuccLink(lpE,h) ((lpE)->succ = (h))
 
-extern BOOLEAN InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size);
-extern BOOLEAN UninitQueue (PQUEUE pq);
-extern void ReinitQueue (PQUEUE pq);
-extern void PutQueue (PQUEUE pq, HLINK hLink);
-extern void InsertQueue (PQUEUE pq, HLINK hLink, HLINK hRefLink);
-extern void RemoveQueue (PQUEUE pq, HLINK hLink);
-extern COUNT CountLinks (PQUEUE pq);
-void ForAllLinks(PQUEUE pq, void (*callback)(LINKPTR, void *), void *arg);
+extern BOOLEAN InitQueue (QUEUE *pq, COUNT num_elements, OBJ_SIZE size);
+extern BOOLEAN UninitQueue (QUEUE *pq);
+extern void ReinitQueue (QUEUE *pq);
+extern void PutQueue (QUEUE *pq, HLINK hLink);
+extern void InsertQueue (QUEUE *pq, HLINK hLink, HLINK hRefLink);
+extern void RemoveQueue (QUEUE *pq, HLINK hLink);
+extern COUNT CountLinks (QUEUE *pq);
+void ForAllLinks(QUEUE *pq, void (*callback)(LINK *, void *), void *arg);
 #ifdef QUEUE_TABLE
-extern HLINK AllocLink (PQUEUE pq);
-extern void FreeLink (PQUEUE pq, HLINK hLink);
+extern HLINK AllocLink (QUEUE *pq);
+extern void FreeLink (QUEUE *pq, HLINK hLink);
 #endif /* QUEUE_TABLE */
 
 #endif /* _DISPLIST_H */

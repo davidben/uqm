@@ -27,7 +27,7 @@
 #include <string.h>
 
 static void
-CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, ELEMENT_FLAGS
+CaptainsWindow (CAPTAIN_STUFF *CSPtr, COORD y, ELEMENT_FLAGS
 		delta_status_flags, ELEMENT_FLAGS cur_status_flags,
 		COUNT Pass)
 {
@@ -114,7 +114,7 @@ CaptainsWindow (CAPTAIN_STUFFPTR CSPtr, COORD y, ELEMENT_FLAGS
 }
 
 void
-DrawBattleCrewAmount (STARSHIPPTR StarShipPtr)
+DrawBattleCrewAmount (STARSHIP *StarShipPtr)
 {
 #define MAX_CREW_DIGITS 3
 	RECT r;
@@ -147,13 +147,13 @@ DrawBattleCrewAmount (STARSHIPPTR StarShipPtr)
 }
 
 void
-DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
+DrawCaptainsWindow (STARSHIP *StarShipPtr)
 {
 	COORD y, y_offs;
 	RECT r;
 	STAMP s;
 	FRAME Frame;
-	RACE_DESCPTR RDPtr;
+	RACE_DESC *RDPtr;
 
 	RDPtr = StarShipPtr->RaceDescPtr;
 	Frame = RDPtr->ship_data.captain_control.background;
@@ -279,11 +279,11 @@ DrawCaptainsWindow (STARSHIPPTR StarShipPtr)
 }
 
 BOOLEAN
-DeltaEnergy (ELEMENTPTR ElementPtr, SIZE energy_delta)
+DeltaEnergy (ELEMENT *ElementPtr, SIZE energy_delta)
 {
 	BOOLEAN retval;
-	STARSHIPPTR StarShipPtr;
-	SHIP_INFOPTR ShipInfoPtr;
+	STARSHIP *StarShipPtr;
+	SHIP_INFO *ShipInfoPtr;
 
 	retval = TRUE;
 
@@ -319,10 +319,10 @@ DeltaEnergy (ELEMENTPTR ElementPtr, SIZE energy_delta)
 }
 
 BOOLEAN
-DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
+DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta)
 {
 	BOOLEAN retval;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE
 			&& (ElementPtr->state_flags & BAD_GUY))
@@ -332,9 +332,7 @@ DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (crew_delta > 0)
 	{
-		SHIP_INFOPTR ShipInfoPtr;
-
-		ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
+		SHIP_INFO *ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
 
 		ElementPtr->crew_level += crew_delta;
 		if (ElementPtr->crew_level > ShipInfoPtr->max_crew)
@@ -361,16 +359,16 @@ DeltaCrew (ELEMENTPTR ElementPtr, SIZE crew_delta)
 }
 
 void
-PreProcessStatus (PELEMENT ShipPtr)
+PreProcessStatus (ELEMENT *ShipPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	if (StarShipPtr->captains_name_index
 			|| (StarShipPtr->RaceDescPtr->ship_info.ship_flags & GOOD_GUY))
 	{
 		ELEMENT_FLAGS old_status_flags, cur_status_flags;
-		CAPTAIN_STUFFPTR CSPtr;
+		CAPTAIN_STUFF *CSPtr;
 
 		cur_status_flags = StarShipPtr->cur_status_flags;
 		old_status_flags = StarShipPtr->old_status_flags;
@@ -389,9 +387,9 @@ PreProcessStatus (PELEMENT ShipPtr)
 }
 
 void
-PostProcessStatus (PELEMENT ShipPtr)
+PostProcessStatus (ELEMENT *ShipPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	if (StarShipPtr->captains_name_index

@@ -214,7 +214,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	SetContextFont (fdef->font);
 	GetContextFontLeading (&leading);
 	// get left/right margin
-	TextRect (&t, &r, NULL_PTR);
+	TextRect (&t, &r, NULL);
 
 	// parse text column alignment
 	for (i = 0, scol = strtok (salign, ",");
@@ -627,7 +627,7 @@ OutTakes (void)
 typedef struct
 {
 	// standard state required by DoInput
-	BOOLEAN (*InputFunc) (PVOID pInputState);
+	BOOLEAN (*InputFunc) (void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	BOOLEAN AllowCancel;
@@ -638,7 +638,7 @@ typedef struct
 } CREDITS_INPUT_STATE;
 
 static BOOLEAN
-DoCreditsInput (PVOID pIS)
+DoCreditsInput (void *pIS)
 {
 	CREDITS_INPUT_STATE *pCIS = (CREDITS_INPUT_STATE *) pIS;
 
@@ -716,7 +716,7 @@ Credits (BOOLEAN WithOuttakes)
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 	SetContextBackGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 	ClearDrawable ();

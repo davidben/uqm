@@ -27,9 +27,9 @@
 
 static LOCDATA slylandro_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SLYLAND_PMAP_ANIM, /* AlienFrame */
 	(FONT)SLYLAND_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -110,7 +110,7 @@ static LOCDATA slylandro_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static RESPONSE_REF threat,
@@ -394,10 +394,10 @@ post_slyland_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_slyland_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	slylandro_desc.init_encounter_func = Intro;
 	slylandro_desc.post_encounter_func = post_slyland_enc;

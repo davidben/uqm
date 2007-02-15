@@ -24,9 +24,9 @@
 
 static LOCDATA commander_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
 	(FONT)COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -83,7 +83,7 @@ static LOCDATA commander_desc =
 		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -140,7 +140,7 @@ ByeBye (RESPONSE_REF R)
 				name_40,
 				GLOBAL_SIS (CommanderName),
 				name_41,
-				NULL_PTR);
+				(UNICODE*)NULL);
 
 		NPCPhrase (THIS_MAY_SEEM_SILLY);
 
@@ -194,7 +194,7 @@ NoRadioactives (RESPONSE_REF R)
 		NPCPhrase (ABOUT_TIME);
 
 		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
-			GiveRadios (NULL_PTR);
+			GiveRadios (0);
 		else
 		{
 			Response (i_lied, NoRadioactives);
@@ -255,7 +255,7 @@ NoRadioactives (RESPONSE_REF R)
 		}
 
 		if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
-			GiveRadios (NULL_PTR);
+			GiveRadios (0);
 		else
 		{
 			if (GLOBAL_SIS (NumLanders) == 0
@@ -559,7 +559,7 @@ RevealSelf (RESPONSE_REF R)
 						we_are_vindicator1,
 						GLOBAL_SIS (ShipName),
 						we_are_vindicator2,
-						NULL_PTR);
+						(UNICODE*)NULL);
 				DoResponsePhrase (we_are_vindicator0, RevealSelf, shared_phrase_buf);
 			}
 			else if (PHRASE_ENABLED (our_mission_was_secret))
@@ -596,7 +596,7 @@ GiveRadios (RESPONSE_REF R)
 
 		AlienTalkSegue ((COUNT)~0);
 
-		RevealSelf (NULL_PTR);
+		RevealSelf (0);
 	}
 	else
 	{
@@ -628,11 +628,11 @@ Intro (void)
 		{
 			if (GET_GAME_STATE (MOONBASE_DESTROYED) == 0)
 			{
-				TellMoonBase (NULL_PTR);
+				TellMoonBase (0);
 			}
 			else
 			{
-				BaseDestroyed (NULL_PTR);
+				BaseDestroyed (0);
 			}
 		}
 		else
@@ -642,9 +642,9 @@ Intro (void)
 			NPCPhrase (DO_YOU_HAVE_RADIO_THIS_TIME);
 
 			if (GLOBAL_SIS (ElementAmounts[RADIOACTIVE]))
-				GiveRadios (NULL_PTR);
+				GiveRadios (0);
 			else
-				AskAfterRadios (NULL_PTR);
+				AskAfterRadios (0);
 		}
 	}
 	else /* first visit */
@@ -660,8 +660,7 @@ Intro (void)
 				no_but_well_help0,
 				GLOBAL_SIS (ShipName),
 				no_but_well_help1,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 		DoResponsePhrase (no_but_well_help0, NoRadioactives, shared_phrase_buf);
 		Response (yes_this_is_supply_ship, NoRadioactives);
 		Response (what_slave_planet, NoRadioactives);
@@ -680,10 +679,10 @@ post_commander_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_commander_comm ()
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	commander_desc.init_encounter_func = Intro;
 	commander_desc.post_encounter_func = post_commander_enc;

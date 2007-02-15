@@ -57,7 +57,7 @@ enum
 };
 
 static void
-CalcSysInfo (SYSTEM_INFOPTR SysInfoPtr)
+CalcSysInfo (SYSTEM_INFO *SysInfoPtr)
 {
 	SysInfoPtr->StarSize = pSolarSysState->SunDesc[0].data_index;
 	switch (STAR_COLOR (CurStarDescPtr->Type))
@@ -100,8 +100,8 @@ CalcSysInfo (SYSTEM_INFOPTR SysInfoPtr)
 }
 
 static UWORD
-GeneratePlanetComposition (PLANET_INFOPTR PlanetInfoPtr, SIZE
-		SurfaceTemp, SIZE radius)
+GeneratePlanetComposition (PLANET_INFO *PlanetInfoPtr, SIZE SurfaceTemp,
+		SIZE radius)
 {
 	if (PLANSIZE (PlanetInfoPtr->PlanDataPtr->Type) == GAS_GIANT)
 	{
@@ -166,7 +166,7 @@ GeneratePlanetComposition (PLANET_INFOPTR PlanetInfoPtr, SIZE
 // (eg. Beta Corvi I). I don't know what the idea behind this is,
 // but the if statement must be there for a reason. -- SvdB
 static SIZE
-CalcTemp (SYSTEM_INFOPTR SysInfoPtr, SIZE radius)
+CalcTemp (SYSTEM_INFO *SysInfoPtr, SIZE radius)
 {
 #define GENERIC_ALBEDO 33 /* In %, 0=black, 100 is reflective */
 #define ADJUST_FOR_KELVIN 273
@@ -201,7 +201,7 @@ CalcTemp (SYSTEM_INFOPTR SysInfoPtr, SIZE radius)
 }
 
 static COUNT
-CalcRotation (PLANET_INFOPTR PlanetInfoPtr)
+CalcRotation (PLANET_INFO *PlanetInfoPtr)
 {
 	if (PLANSIZE (PlanetInfoPtr->PlanDataPtr->Type) == GAS_GIANT)
 		return ((COUNT)CalcFromBase (80, 80));
@@ -231,8 +231,7 @@ CalcTilt (void)
 
 // NB. Returns the RNG to the state it found it in.
 DWORD
-DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
-		pPlanetDesc)
+DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 {
 	DWORD old_seed;
 

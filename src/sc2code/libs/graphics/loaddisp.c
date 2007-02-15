@@ -34,7 +34,7 @@
 
 
 DRAWABLE
-LoadDisplayPixmap (PRECT area, FRAME frame)
+LoadDisplayPixmap (RECT *area, FRAME frame)
 {
 	DRAWABLE buffer;
 

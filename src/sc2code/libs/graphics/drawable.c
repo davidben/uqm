@@ -49,7 +49,7 @@ SetContextFGFrame (FRAME Frame)
 }
 
 DRAWABLE
-CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth, PSIZE pheight)
+CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 {
 	DRAWABLE Drawable;
 
@@ -88,7 +88,7 @@ AllocDrawable (COUNT n)
 			DRAWABLE_PRIORITY, MEM_SIMPLE);
 	if (Drawable)
 	{
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 		int i;
 		DrawablePtr = LockDrawable (Drawable);
 		DrawablePtr->Frame = (FRAME)HMalloc ((MEM_SIZE)(sizeof (FRAME_DESC) * n));
@@ -142,7 +142,7 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 BOOLEAN
 DestroyDrawable (DRAWABLE Drawable)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 
 	if (LOWORD (Drawable) == GetFrameHandle (_CurFramePtr))
 		SetContextFGFrame ((FRAME)0);
@@ -160,7 +160,7 @@ DestroyDrawable (DRAWABLE Drawable)
 }
 
 BOOLEAN
-GetFrameRect (FRAME FramePtr, PRECT pRect)
+GetFrameRect (FRAME FramePtr, RECT *pRect)
 {
 	if (FramePtr)
 	{

@@ -63,7 +63,7 @@ GenerateDruuge (BYTE control)
 
 						if (!GET_GAME_STATE (ROSY_SPHERE))
 						{
-							((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit = TRUE;
+							((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
 
 							SET_GAME_STATE (ROSY_SPHERE, 1);
 							SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);

@@ -37,7 +37,7 @@ CaptureStringTable (STRING_TABLE StringTable)
 		return (BUILD_STRING (StringTable, StringTableIndex));
 	}
 
-	return ((STRING)NULL_PTR);
+	return ((STRING)NULL);
 }
 
 STRING_TABLE

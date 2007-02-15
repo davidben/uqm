@@ -97,7 +97,7 @@ static RACE_DESC thraddash_desc =
 	{
 		0,
 		(MISSILE_SPEED * MISSILE_LIFE) >> 1,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,11 +107,12 @@ static RACE_DESC thraddash_desc =
 };
 
 static void
-thraddash_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+thraddash_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 	
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	if (lpEvalDesc->ObjectPtr)
@@ -198,7 +199,7 @@ thraddash_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT
 #define NAPALM_WAIT 1
 
 static void
-flame_napalm_preprocess (PELEMENT ElementPtr)
+flame_napalm_preprocess (ELEMENT *ElementPtr)
 {
 	ZeroVelocityComponents (&ElementPtr->velocity);
 
@@ -236,12 +237,12 @@ flame_napalm_preprocess (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_horn (PELEMENT ShipPtr, HELEMENT HornArray[])
+initialize_horn (ELEMENT *ShipPtr, HELEMENT HornArray[])
 {
 #define MISSILE_HITS 2
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 3
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -256,7 +257,7 @@ initialize_horn (PELEMENT ShipPtr, HELEMENT HornArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	HornArray[0] = initialize_missile (&MissileBlock);
 
@@ -264,9 +265,9 @@ initialize_horn (PELEMENT ShipPtr, HELEMENT HornArray[])
 }
 
 static void
-thraddash_preprocess (PELEMENT ElementPtr)
+thraddash_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (!(StarShipPtr->cur_status_flags & SPECIAL))
@@ -336,7 +337,7 @@ thraddash_preprocess (PELEMENT ElementPtr)
 			hTrailElement = initialize_missile (&MissileBlock);
 			if (hTrailElement)
 			{
-				ELEMENTPTR TrailElementPtr;
+				ELEMENT *TrailElementPtr;
 
 				LockElement (hTrailElement, &TrailElementPtr);
 				SetElementStarShip (TrailElementPtr, StarShipPtr);
@@ -366,16 +367,14 @@ thraddash_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_thraddash (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	thraddash_desc.preprocess_func = thraddash_preprocess;
 	thraddash_desc.init_weapon_func = initialize_horn;
-	thraddash_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) thraddash_intelligence;
+	thraddash_desc.cyborg_control.intelligence_func = thraddash_intelligence;
 
 	RaceDescPtr = &thraddash_desc;
 

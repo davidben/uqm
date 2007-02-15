@@ -38,11 +38,11 @@
 
 
 static void DrawFadeText (const UNICODE *str1, const UNICODE *str2,
-		BOOLEAN fade_in, PRECT pRect);
+		BOOLEAN fade_in, RECT *pRect);
 
 
 static BOOLEAN
-DoSelectAction (PMENU_STATE pMS)
+DoSelectAction (MENU_STATE *pMS)
 {
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -85,10 +85,10 @@ DoSelectAction (PMENU_STATE pMS)
 void
 BuildBattle (COUNT which_player)
 {
-	PQUEUE pQueue;
+	QUEUE *pQueue;
 	HSTARSHIP hStarShip, hNextShip;
 	HSTARSHIP hBuiltShip;
-	STARSHIPPTR BuiltShipPtr;
+	STARSHIP *BuiltShipPtr;
 
 	EncounterRace = -1;
 
@@ -123,9 +123,9 @@ BuildBattle (COUNT which_player)
 	for (hStarShip = GetHeadLink (pQueue);
 			hStarShip != 0; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		hBuiltShip = Build (&race_q[which_player],
@@ -143,7 +143,7 @@ BuildBattle (COUNT which_player)
 				BuiltShipPtr->special_counter = FragPtr->ShipInfo.crew_level;
 			else /* if infinite ships */
 				BuiltShipPtr->special_counter = FragPtr->ShipInfo.max_crew;
-			BuiltShipPtr->RaceDescPtr = (RACE_DESCPTR)&FragPtr->ShipInfo;
+			BuiltShipPtr->RaceDescPtr = (RACE_DESC*)&FragPtr->ShipInfo;
 
 			UnlockStarShip (&race_q[which_player], hBuiltShip);
 		}
@@ -271,7 +271,7 @@ InitEncounter (void)
 				hStarShip && i < 60; hStarShip = hNextShip, ++i)
 		{
 			RECT r;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			StarShipPtr = LockStarShip (&race_q[1], hStarShip);
 			if (StarShipPtr->RaceDescPtr->ship_info.crew_level !=
@@ -323,10 +323,10 @@ InitEncounter (void)
 		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 
-		DoInput ((PVOID)&MenuState, TRUE);
+		DoInput (&MenuState, TRUE);
 
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 
 		return (MenuState.CurState);
@@ -335,7 +335,7 @@ InitEncounter (void)
 
 static void
 DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
-		PRECT pRect)
+		RECT *pRect)
 {
 	SIZE i;
 	DWORD TimeIn;
@@ -436,7 +436,7 @@ UninitEncounter (void)
 		const UNICODE *str2 = NULL;
 		UNICODE buf[80];
 		HSTARSHIP hStarShip;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 		static const COLOR fade_ship_cycle[] =
 		{
 			BUILD_COLOR (MAKE_RGB15 (0x07, 0x00, 0x00), 0x2F),
@@ -467,7 +467,7 @@ UninitEncounter (void)
 				) ? 0 : 1;
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (&GLOBAL (npc_built_ship_q),
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (&GLOBAL (npc_built_ship_q),
 				hStarShip);
 		EncounterRace = GET_RACE_ID (FragPtr);
 		if (GetStarShipFromIndex (&GLOBAL (avail_race_q), EncounterRace) == 0)
@@ -480,7 +480,7 @@ UninitEncounter (void)
 		Sleepy = TRUE;
 		for (i = 0; i < NUM_SIDES; ++i)
 		{
-			PQUEUE pQueue;
+			QUEUE *pQueue;
 			HSTARSHIP hNextShip;
 
 			if (i == 0)
@@ -492,7 +492,7 @@ UninitEncounter (void)
 				else
 				{
 					DrawSISFrame ();
-					DrawSISMessage (NULL_PTR);
+					DrawSISMessage (NULL);
 					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 						DrawHyperCoords (GLOBAL (ShipStamp.origin));
 					else if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
@@ -512,7 +512,7 @@ UninitEncounter (void)
 			for (hStarShip = GetHeadLink (pQueue); hStarShip;
 					hStarShip = hNextShip)
 			{
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
+				FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 				hNextShip = _GetSuccLink (FragPtr);
 
 				if (FragPtr->ShipInfo.crew_level == 0
@@ -687,7 +687,7 @@ UninitEncounter (void)
 				}
 			}
 
-			DrawStatusMessage (NULL_PTR);
+			DrawStatusMessage (NULL);
 		}
 
 		if (ships_killed && EncounterRace == THRADDASH_SHIP

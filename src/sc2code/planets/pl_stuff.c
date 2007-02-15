@@ -48,8 +48,9 @@ extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
 // The speed to zoom in.
 #define PLANET_ZOOM_SPEED 2
 
-PRECT
-RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoomr)
+RECT*
+RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
+		RECT *zoomr)
 {
 	STAMP s;
 	FRAME pFrame[2];
@@ -88,7 +89,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from, PRECT zoo
 	// operation is moved before the RenderLevelMasks call, one of
 	// the two PauseRotate checks can be removed.
 
-	//if (((PSOLARSYS_STATE volatile)pSolarSysState)->PauseRotate !=1)
+	//if (((SOLARSYS_STATE *volatile)pSolarSysState)->PauseRotate !=1)
 	{
 		OldContext = SetContext (SpaceContext);
 		BatchGraphics ();

@@ -29,15 +29,13 @@ typedef struct
 	DRAWABLE (*alloc_image) (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			CREATE_FLAGS flags, SIZE width, SIZE height);
 
-	void (*read_display) (PRECT pRect, FRAME DstFramePtr);
+	void (*read_display) (RECT *pRect, FRAME DstFramePtr);
 
 } DISPLAY_INTERFACE;
-typedef DISPLAY_INTERFACE *PDISPLAY_INTERFACE;
 
-extern PDISPLAY_INTERFACE _pCurDisplay;
+extern DISPLAY_INTERFACE *_pCurDisplay;
 
-extern void (* mask_func_array[]) (PRECT pClipRect,
-		PRIMITIVEPTR PrimPtr);
+extern void (* mask_func_array[]) (RECT *pClipRect, PRIMITIVE *PrimPtr);
 
 #define AllocDrawableImage (*_pCurDisplay->alloc_image)
 #define ReadDisplay (*_pCurDisplay->read_display)

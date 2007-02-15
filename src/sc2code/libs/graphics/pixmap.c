@@ -21,7 +21,7 @@
 FRAME
 CaptureDrawable (DRAWABLE Drawable)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 
 	DrawablePtr = LockDrawable (Drawable);
 	if (DrawablePtr)
@@ -41,7 +41,7 @@ ReleaseDrawable (FRAME FramePtr)
 	if (FramePtr != 0)
 	{
 		DRAWABLE Drawable;
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 		Drawable = BUILD_DRAWABLE (DrawablePtr->hDrawable, FramePtr->Index);
@@ -56,7 +56,7 @@ ReleaseDrawable (FRAME FramePtr)
 MEM_HANDLE
 GetFrameHandle (FRAME FramePtr)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 
 	if (FramePtr == 0)
 		return (0);
@@ -68,7 +68,7 @@ GetFrameHandle (FRAME FramePtr)
 COUNT
 GetFrameCount (FRAME FramePtr)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 
 	if (FramePtr == 0)
 		return (0);
@@ -91,7 +91,7 @@ SetAbsFrameIndex (FRAME FramePtr, COUNT FrameIndex)
 {
 	if (FramePtr != 0)
 	{
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 
@@ -108,7 +108,7 @@ SetRelFrameIndex (FRAME FramePtr, SIZE FrameOffs)
 	if (FramePtr != 0)
 	{
 		COUNT num_frames;
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 		num_frames = DrawablePtr->MaxIndex + 1;
@@ -130,9 +130,9 @@ SetEquFrameIndex (FRAME DstFramePtr, FRAME SrcFramePtr)
 {
 	if (DstFramePtr && SrcFramePtr)
 		return ((FRAME)(
-				(PBYTE)((GetFrameParentDrawable (DstFramePtr))->Frame)
-				+ ((PBYTE)SrcFramePtr -
-				(PBYTE)((GetFrameParentDrawable (SrcFramePtr))->Frame))
+				(BYTE*)((GetFrameParentDrawable (DstFramePtr))->Frame)
+				+ ((BYTE*)SrcFramePtr -
+				(BYTE*)((GetFrameParentDrawable (SrcFramePtr))->Frame))
 				));
 
 	return (0);
@@ -141,7 +141,7 @@ SetEquFrameIndex (FRAME DstFramePtr, FRAME SrcFramePtr)
 FRAME
 IncFrameIndex (FRAME FramePtr)
 {
-	DRAWABLEPTR DrawablePtr;
+	DRAWABLE_DESC *DrawablePtr;
 
 	if (FramePtr == 0)
 		return (0);
@@ -163,7 +163,7 @@ DecFrameIndex (FRAME FramePtr)
 		return --FramePtr;
 	else
 	{
-		DRAWABLEPTR DrawablePtr;
+		DRAWABLE_DESC *DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
 		return &DrawablePtr->Frame[DrawablePtr->MaxIndex];

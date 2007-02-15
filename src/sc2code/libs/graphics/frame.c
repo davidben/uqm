@@ -32,6 +32,7 @@ MAKE_HOT_SPOT (COORD x, COORD y)
 	return hs;
 }
 
+// XXX: INTERNAL_PRIMITIVE and INTERNAL_PRIM_DESC are not used
 typedef union
 {
 	POINT Point;
@@ -40,9 +41,6 @@ typedef union
 	TEXT Text;
 	RECT Rect;
 } INTERNAL_PRIM_DESC;
-typedef INTERNAL_PRIM_DESC *PINTERNAL_PRIM_DESC;
-
-typedef PINTERNAL_PRIM_DESC INTERNAL_PRIM_DESCPTR;
 
 typedef struct
 {
@@ -51,12 +49,11 @@ typedef struct
 	COLOR Color;
 	INTERNAL_PRIM_DESC Object;
 } INTERNAL_PRIMITIVE;
-typedef INTERNAL_PRIMITIVE *PINTERNAL_PRIMITIVE;
 
 STAMP _save_stamp;
 
 static BOOLEAN
-GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
+GetFrameValidRect (RECT *pValidRect, HOT_SPOT *pOldHot)
 {
 	COORD hx, hy;
 	HOT_SPOT OldHot;
@@ -86,7 +83,7 @@ GetFrameValidRect (PRECT pValidRect, HOT_SPOT *pOldHot)
 }
 
 void
-ClearBackGround (PRECT pClipRect)
+ClearBackGround (RECT *pClipRect)
 {
 	TFB_Palette color;
 
@@ -95,7 +92,7 @@ ClearBackGround (PRECT pClipRect)
 }
 
 void
-DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks, 
+DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks, 
 		BATCH_FLAGS BatchFlags)
 {
 	RECT ValidRect;
@@ -105,7 +102,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 	{
 		COUNT CurIndex;
 		PRIM_LINKS OldLinks;
-		PPRIMITIVE lpPrim;
+		PRIMITIVE *lpPrim;
 
 		BatchFlags &= BATCH_SINGLE
 				| BATCH_BUILD_PAGE
@@ -138,7 +135,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 		for (; CurIndex != END_OF_LIST; CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
 		{
 			GRAPHICS_PRIM PrimType;
-			PPRIMITIVE lpWorkPrim;
+			PRIMITIVE *lpWorkPrim;
 			RECT ClipRect;
 			TFB_Palette color;
 
@@ -168,7 +165,7 @@ DrawBatch (PPRIMITIVE lpBasePrim, PRIM_LINKS PrimLinks,
 					break;
 				case TEXT_PRIM:
 					if (!TextRect (&lpWorkPrim->Object.Text,
-							&ClipRect, NULL_PTR))
+							&ClipRect, NULL))
 						continue;
 
 					_save_stamp.origin = ClipRect.corner;
@@ -215,7 +212,7 @@ ClearDrawable (void)
 }
 
 void
-DrawPoint (PPOINT lpPoint)
+DrawPoint (POINT *lpPoint)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;
@@ -231,7 +228,7 @@ DrawPoint (PPOINT lpPoint)
 }
 
 void
-DrawRectangle (PRECT lpRect)
+DrawRectangle (RECT *lpRect)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;
@@ -247,7 +244,7 @@ DrawRectangle (PRECT lpRect)
 }
 
 void
-DrawFilledRectangle (PRECT lpRect)
+DrawFilledRectangle (RECT *lpRect)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;
@@ -263,7 +260,7 @@ DrawFilledRectangle (PRECT lpRect)
 }
 
 void
-DrawLine (PLINE lpLine)
+DrawLine (LINE *lpLine)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;
@@ -279,7 +276,7 @@ DrawLine (PLINE lpLine)
 }
 
 void
-DrawStamp (PSTAMP stmp)
+DrawStamp (STAMP *stmp)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;
@@ -292,7 +289,7 @@ DrawStamp (PSTAMP stmp)
 }
 
 void
-DrawFilledStamp (PSTAMP stmp)
+DrawFilledStamp (STAMP *stmp)
 {
 	RECT ValidRect;
 	HOT_SPOT OldHot;

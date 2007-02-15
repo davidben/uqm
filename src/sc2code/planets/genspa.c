@@ -93,7 +93,7 @@ GenerateSpathi (BYTE control)
 			break;
 		case GENERATE_PLANETS:
 		{
-			PPLANET_DESC pMinPlanet;
+			PLANET_DESC *pMinPlanet;
 
 			pMinPlanet = &pSolarSysState->PlanetDesc[0];
 			FillOrbits (pSolarSysState,

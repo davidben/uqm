@@ -29,7 +29,7 @@
 SIZE cur_player;
 
 BATTLE_INPUT_STATE
-computer_intelligence (COUNT player, STARSHIPPTR StarShipPtr)
+computer_intelligence (COUNT player, STARSHIP *StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState;
 

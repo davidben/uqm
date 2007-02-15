@@ -28,7 +28,9 @@
 #include "lzh.h"
 
 static UWORD match_position, match_length;
-static PSWORD lson, rson, dad;
+static SWORD *lson;
+static SWORD *rson;
+static SWORD *dad;
 
 #define AllocEncodeArrays() \
 		mem_allocate ( \
@@ -36,7 +38,7 @@ static PSWORD lson, rson, dad;
 		* sizeof (lson[0]) + sizeof (MEM_HANDLE)), \
 		MEM_ZEROINIT, DEFAULT_MEM_PRIORITY, MEM_SIMPLE \
 		)
-#define LockCodeArrays (PSWORD)mem_lock
+#define LockCodeArrays (SWORD*)mem_lock
 #define UnlockCodeArrays mem_unlock
 #define FreeCodeArrays mem_release
 
@@ -56,7 +58,7 @@ InitTree (void)
 		SWORD i;
 
 		*(MEM_HANDLE *)lson = h;
-		lson = (PSWORD)((PBYTE)lson + sizeof (h));
+		lson = (SWORD*)((BYTE*)lson + sizeof (h));
 		rson = lson + (N + 1);
 		dad = rson + (N + 257);
 
@@ -73,7 +75,7 @@ static void
 InsertNode (SWORD r)
 {
 	SWORD p, cmp;
-	PBYTE lpBuf;
+	BYTE *lpBuf;
 
 	cmp = 1;
 	lpBuf = _lpCurCodeDesc->text_buf;
@@ -284,7 +286,7 @@ UninitTree (void)
 		++_lpCurCodeDesc->StreamIndex;
 	}
 
-	lson = (PSWORD)((PBYTE)lson - sizeof (h));
+	lson = (SWORD*)((BYTE*)lson - sizeof (h));
 	h = *(MEM_HANDLE *)lson;
 	UnlockCodeArrays (h);
 	FreeCodeArrays (h);
@@ -334,8 +336,7 @@ _encode_cleanup (void)
 					SeekResFile ((uio_Stream *)_Stream,
 							-(int)_lpCurCodeDesc->StreamIndex, SEEK_CUR);
 				else /* _lpCurCodeDesc->StreamType == MEMORY_STREAM */
-					_Stream = (PBYTE)((BYTE *)_Stream
-							- _lpCurCodeDesc->StreamIndex);
+					_Stream = (BYTE*)_Stream - _lpCurCodeDesc->StreamIndex;
 
 				loword = LOWORD (_lpCurCodeDesc->StreamLength);
 				lobyte = LOBYTE (loword);
@@ -371,11 +372,11 @@ _encode_cleanup (void)
 }
 
 COUNT
-cwrite (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
-		lpCodeDesc)
+cwrite (const void *buf, COUNT size, COUNT count, PLZHCODE_DESC lpCodeDesc)
 {
 	UWORD r, s, last_match_length;
-	PBYTE lpBuf, lpStr;
+	BYTE *lpBuf;
+	BYTE *lpStr;
 
 	if ((_lpCurCodeDesc = lpCodeDesc) == 0
 			|| (size *= count) == 0)
@@ -385,7 +386,7 @@ cwrite (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
 	_Stream = lpCodeDesc->Stream;
 	_workbuf = lpCodeDesc->workbuf;
 	_workbuflen = lpCodeDesc->workbuflen;
-	lpStr = (PBYTE)buf;
+	lpStr = (BYTE*)buf;
 	lpBuf = lpCodeDesc->text_buf;
 
 	r = lpCodeDesc->buf_index;

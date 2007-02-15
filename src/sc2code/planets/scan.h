@@ -25,25 +25,24 @@
 typedef struct
 {
 	POINT start;
-	COUNT start_dot,
-				num_dots,
-				dots_per_semi;
+	COUNT start_dot;
+	COUNT num_dots;
+	COUNT dots_per_semi;
 } SCAN_DESC;
-typedef SCAN_DESC *PSCAN_DESC;
 
 typedef struct
 {
-	PPOINT line_base;
-	COUNT num_scans, num_same_scans;
-	PSCAN_DESC scan_base;
+	POINT *line_base;
+	COUNT num_scans;
+	COUNT num_same_scans;
+	SCAN_DESC *scan_base;
 } SCAN_BLOCK;
-typedef SCAN_BLOCK *PSCAN_BLOCK;
 
 #define SAME_SCAN (1 << 16)
 #define SCALED_ROOT_TWO 92682L /* root 2 * (1 << 16) */
 #define SCALE_FACTOR 16
 
-extern void RepairBackRect (PRECT pRect);
+extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
 
 #endif /* _SCAN_H */

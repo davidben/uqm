@@ -62,7 +62,7 @@ typedef struct
 } GROUP_HEADER;
 
 static void
-ReadGroupHeader (PVOID fp, GROUP_HEADER* pGH)
+ReadGroupHeader (void *fp, GROUP_HEADER *pGH)
 {
 	sread_8   (fp, &pGH->NumGroups);
 	sread_8   (fp, &pGH->day_index);
@@ -74,7 +74,7 @@ ReadGroupHeader (PVOID fp, GROUP_HEADER* pGH)
 }
 
 static void
-WriteGroupHeader (PVOID fp, GROUP_HEADER* pGH)
+WriteGroupHeader (void *fp, const GROUP_HEADER *pGH)
 {
 	swrite_8   (fp, pGH->NumGroups);
 	swrite_8   (fp, pGH->day_index);
@@ -86,7 +86,7 @@ WriteGroupHeader (PVOID fp, GROUP_HEADER* pGH)
 }
 
 static void
-ReadShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
+ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 {
 	BYTE tmpb;
 
@@ -109,7 +109,7 @@ ReadShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
 }
 
 static void
-WriteShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
+WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
 {
 	// Write SHIP_FRAGMENT elements
 	swrite_16 (fp, FragPtr->s.Player);
@@ -130,7 +130,7 @@ WriteShipFragment (PVOID fp, SHIP_FRAGMENTPTR FragPtr)
 void
 InitGroupInfo (BOOLEAN FirstTime)
 {
-	PVOID fp;
+	void *fp;
 
 	fp = OpenStateFile (RANDGRPINFO_FILE, "wb");
 	if (fp)
@@ -212,9 +212,9 @@ BuildGroups (void)
 			hTemplate; hTemplate = hNextShip, ++Index)
 	{
 		COUNT i, encounter_radius;
-		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hTemplate);
 		hNextShip = _GetSuccLink (TemplatePtr);
 
@@ -329,11 +329,11 @@ FoundHome:
 }
 
 static void
-FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
+FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 {
 	BYTE RaceType, NumShips;
 	HSTARSHIP hStarShip;
-	SHIP_FRAGMENTPTR FragPtr;
+	SHIP_FRAGMENT *FragPtr;
 
 	if (which_group == GROUP_LIST)
 	{
@@ -351,7 +351,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 		{
 			COUNT crew_level;
 
-			FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+			FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 					&temp_q, hStarShip);
 			hNextShip = _GetSuccLink (FragPtr);
 			crew_level = FragPtr->ShipInfo.crew_level;
@@ -379,7 +379,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 		pGH->GroupOffset[which_group] = LengthStateFile (fp);
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		RaceType = GET_RACE_ID (FragPtr);
 		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
@@ -412,9 +412,8 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 	{
 		HSTARSHIP hNextShip;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		RaceType = GET_RACE_ID (FragPtr);
@@ -439,7 +438,7 @@ FlushGroupInfo (GROUP_HEADER *pGH, DWORD offset, BYTE which_group, PVOID fp)
 BOOLEAN
 GetGroupInfo (DWORD offset, BYTE which_group)
 {
-	PVOID fp;
+	void *fp;
 
 	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)
 		fp = OpenStateFile (DEFGRPINFO_FILE, "r+b");
@@ -451,7 +450,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		BYTE RaceType, NumShips;
 		GROUP_HEADER GH;
 		HSTARSHIP hStarShip;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
 		SeekStateFile (fp, offset, SEEK_SET);
 		ReadGroupHeader (fp, &GH);
@@ -510,7 +509,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 						hStarShip = CloneShipFragment (RaceType,
 								&GLOBAL (npc_built_ship_q), 0);
-						FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+						FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 								&GLOBAL (npc_built_ship_q), hStarShip);
 						OwnStarShip (FragPtr, BAD_GUY, 0);
 						SET_GROUP_ID (FragPtr, which_group);
@@ -630,7 +629,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				hStarShip = CloneShipFragment (RaceType,
 						&GLOBAL (npc_built_ship_q), 0);
 
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (npc_built_ship_q), hStarShip);
 				ReadShipFragment (fp, FragPtr);
 
@@ -689,7 +688,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 DWORD
 PutGroupInfo (DWORD offset, BYTE which_group)
 {
-	PVOID fp;
+	void *fp;
 
 	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)
 		fp = OpenStateFile (DEFGRPINFO_FILE, "r+b");

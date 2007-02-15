@@ -32,7 +32,7 @@
 
 
 HELEMENT
-initialize_laser (PLASER_BLOCK pLaserBlock)
+initialize_laser (LASER_BLOCK *pLaserBlock)
 {
 	HELEMENT hLaserElement;
 
@@ -40,7 +40,7 @@ initialize_laser (PLASER_BLOCK pLaserBlock)
 	if (hLaserElement)
 	{
 #define LASER_LIFE 1
-		ELEMENTPTR LaserElementPtr;
+		ELEMENT *LaserElementPtr;
 
 		LockElement (hLaserElement, &LaserElementPtr);
 		LaserElementPtr->hit_points = 1;
@@ -48,9 +48,7 @@ initialize_laser (PLASER_BLOCK pLaserBlock)
 		LaserElementPtr->state_flags =
 				APPEARING | FINITE_LIFE | pLaserBlock->sender;
 		LaserElementPtr->life_span = LASER_LIFE;
-		LaserElementPtr->collision_func =
-				(void (*) (struct element *ElementPtr0, PPOINT pPt0,
-				struct element *ElementPtr1, PPOINT pPt1)) weapon_collision;
+		LaserElementPtr->collision_func = (CollisionFunc*)weapon_collision;
 		LaserElementPtr->blast_offset = 1;
 
 		LaserElementPtr->current.location.x = pLaserBlock->cx
@@ -76,7 +74,7 @@ initialize_laser (PLASER_BLOCK pLaserBlock)
 }
 
 HELEMENT
-initialize_missile (PMISSILE_BLOCK pMissileBlock)
+initialize_missile (MISSILE_BLOCK *pMissileBlock)
 {
 	HELEMENT hMissileElement;
 
@@ -85,7 +83,7 @@ initialize_missile (PMISSILE_BLOCK pMissileBlock)
 	{
 		SIZE delta_x, delta_y;
 		COUNT angle;
-		ELEMENTPTR MissileElementPtr;
+		ELEMENT *MissileElementPtr;
 
 		LockElement (hMissileElement, &MissileElementPtr);
 		MissileElementPtr->hit_points = (BYTE)pMissileBlock->hit_points;
@@ -99,9 +97,7 @@ initialize_missile (PMISSILE_BLOCK pMissileBlock)
 				SetAbsFrameIndex (pMissileBlock->farray[0],
 				pMissileBlock->index);
 		MissileElementPtr->preprocess_func = pMissileBlock->preprocess_func;
-		MissileElementPtr->collision_func =
-				(void (*) (struct element *ElementPtr0, PPOINT pPt0,
-				struct element *ElementPtr1, PPOINT pPt1)) weapon_collision;
+		MissileElementPtr->collision_func = (CollisionFunc*)weapon_collision;
 		MissileElementPtr->blast_offset = (BYTE)pMissileBlock->blast_offs;
 
 		angle = FACING_TO_ANGLE (pMissileBlock->face);
@@ -124,8 +120,8 @@ initialize_missile (PMISSILE_BLOCK pMissileBlock)
 }
 
 HELEMENT
-weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
-		PELEMENT HitElementPtr, PPOINT pHPt)
+weapon_collision (ELEMENT *WeaponElementPtr, POINT *pWPt,
+		ELEMENT *HitElementPtr, POINT *pHPt)
 {
 	SIZE damage;
 	HELEMENT hBlastElement;
@@ -146,7 +142,7 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 			(WeaponElementPtr->state_flags & (GOOD_GUY | BAD_GUY))))
 #endif /* NEVER */
 	{
-		do_damage ((ELEMENTPTR)HitElementPtr, damage);
+		do_damage (HitElementPtr, damage);
 		if (HitElementPtr->hit_points)
 			WeaponElementPtr->state_flags |= COLLISION;
 	}
@@ -179,7 +175,7 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 			COUNT blast_index;
 			SIZE blast_offs;
 			COUNT angle, num_blast_frames;
-			ELEMENTPTR BlastElementPtr;
+			ELEMENT *BlastElementPtr;
 			extern FRAME blast[];
 
 			PutElement (hBlastElement);
@@ -239,13 +235,13 @@ weapon_collision (PELEMENT WeaponElementPtr, PPOINT pWPt,
 }
 
 FRAME
-ModifySilhouette (ELEMENTPTR ElementPtr, PSTAMP modify_stamp,
+ModifySilhouette (ELEMENT *ElementPtr, STAMP *modify_stamp,
 		BYTE modify_flags)
 {
 	FRAME f;
 	RECT r, or;
 	INTERSECT_CONTROL ShipIntersect, ObjectIntersect;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	CONTEXT OldContext;
 
 	f = 0;
@@ -308,11 +304,11 @@ ModifySilhouette (ELEMENTPTR ElementPtr, PSTAMP modify_stamp,
 // Cloaked ships won't be detected, except when the APPEARING flag is
 // set for the Tracker.
 SIZE
-TrackShip (ELEMENTPTR Tracker, PCOUNT pfacing)
+TrackShip (ELEMENT *Tracker, COUNT *pfacing)
 {
 	SIZE best_delta_facing, best_delta;
 	HELEMENT hShip, hNextShip;
-	ELEMENTPTR Trackee;
+	ELEMENT *Trackee;
 
 	best_delta = 0;
 	best_delta_facing = -1;
@@ -338,7 +334,7 @@ TrackShip (ELEMENTPTR Tracker, PCOUNT pfacing)
 				&& (Tracker->state_flags & APPEARING))
 				))
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 CheckTracking:
 			GetElementStarShip (Trackee, &StarShipPtr);

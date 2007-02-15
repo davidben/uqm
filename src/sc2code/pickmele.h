@@ -20,7 +20,7 @@
 #include "races.h"
 #include "libs/compiler.h"
 
-HSTARSHIP GetMeleeStarShip (STARSHIPPTR LastStarShipPtr,
+HSTARSHIP GetMeleeStarShip (STARSHIP *LastStarShipPtr,
 		COUNT which_player);
 
 typedef struct getmelee_struct GETMELEE_STATE;

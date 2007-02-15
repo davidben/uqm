@@ -43,7 +43,7 @@ void forwardToNextEvent (BOOLEAN skipHEE);
 // Generate a list of all events in the event queue.
 void dumpEvents (FILE *out);
 // Describe one event.
-void dumpEvent (FILE *out, EVENTPTR eventPtr);
+void dumpEvent (FILE *out, EVENT *eventPtr);
 // Get the name of one event.
 const char *eventName (BYTE func_index);
 
@@ -143,7 +143,7 @@ const char *depositQualityString (BYTE quality);
 
 
 // Find a player ship. Setting which to BAD_GUY is only meaningful in battle.
-STARSHIPPTR findPlayerShip(ELEMENT_FLAGS which);
+STARSHIP* findPlayerShip(ELEMENT_FLAGS which);
 
 // Resets the crew of the first player (the bottom one) to its maximum.
 void resetCrewBattle(void);

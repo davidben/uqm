@@ -69,63 +69,63 @@ extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 extern void construct_response (UNICODE *buf, int R /* promoted from
 		RESPONSE_REF */, ...);
 
-extern LOCDATAPTR init_race (RESOURCE comm_id);
+extern LOCDATA* init_race (RESOURCE comm_id);
 
-extern LOCDATAPTR init_arilou_comm (void);
+extern LOCDATA* init_arilou_comm (void);
 
-extern LOCDATAPTR init_blackurq_comm (void);
+extern LOCDATA* init_blackurq_comm (void);
 
-extern LOCDATAPTR init_chmmr_comm (void);
+extern LOCDATA* init_chmmr_comm (void);
 
-extern LOCDATAPTR init_commander_comm (void);
+extern LOCDATA* init_commander_comm (void);
 
-extern LOCDATAPTR init_druuge_comm (void);
+extern LOCDATA* init_druuge_comm (void);
 
-extern LOCDATAPTR init_ilwrath_comm (void);
+extern LOCDATA* init_ilwrath_comm (void);
 
-extern LOCDATAPTR init_melnorme_comm (void);
+extern LOCDATA* init_melnorme_comm (void);
 
-extern LOCDATAPTR init_mycon_comm (void);
+extern LOCDATA* init_mycon_comm (void);
 
-extern LOCDATAPTR init_orz_comm (void);
+extern LOCDATA* init_orz_comm (void);
 
-extern LOCDATAPTR init_pkunk_comm (void);
+extern LOCDATA* init_pkunk_comm (void);
 
-extern LOCDATAPTR init_rebel_yehat_comm (void);
+extern LOCDATA* init_rebel_yehat_comm (void);
 
-extern LOCDATAPTR init_shofixti_comm (void);
+extern LOCDATA* init_shofixti_comm (void);
 
-extern LOCDATAPTR init_slyland_comm (void);
+extern LOCDATA* init_slyland_comm (void);
 
-extern LOCDATAPTR init_slylandro_comm (void);
+extern LOCDATA* init_slylandro_comm (void);
 
-extern LOCDATAPTR init_spahome_comm (void);
+extern LOCDATA* init_spahome_comm (void);
 
-extern LOCDATAPTR init_spathi_comm (void);
+extern LOCDATA* init_spathi_comm (void);
 
-extern LOCDATAPTR init_starbase_comm (void);
+extern LOCDATA* init_starbase_comm (void);
 
-extern LOCDATAPTR init_supox_comm (void);
+extern LOCDATA* init_supox_comm (void);
 
-extern LOCDATAPTR init_syreen_comm (void);
+extern LOCDATA* init_syreen_comm (void);
 
-extern LOCDATAPTR init_talkpet_comm (void);
+extern LOCDATA* init_talkpet_comm (void);
 
-extern LOCDATAPTR init_thradd_comm (void);
+extern LOCDATA* init_thradd_comm (void);
 
-extern LOCDATAPTR init_umgah_comm (void);
+extern LOCDATA* init_umgah_comm (void);
 
-extern LOCDATAPTR init_urquan_comm (void);
+extern LOCDATA* init_urquan_comm (void);
 
-extern LOCDATAPTR init_utwig_comm (void);
+extern LOCDATA* init_utwig_comm (void);
 
-extern LOCDATAPTR init_vux_comm (void);
+extern LOCDATA* init_vux_comm (void);
 
-extern LOCDATAPTR init_yehat_comm (void);
+extern LOCDATA* init_yehat_comm (void);
 
-extern LOCDATAPTR init_zoqfot_comm (void);
+extern LOCDATA* init_zoqfot_comm (void);
 
-extern LOCDATAPTR init_umgah_comm (void);
+extern LOCDATA* init_umgah_comm (void);
 
 #endif /* _COMMGLUE_H */
 

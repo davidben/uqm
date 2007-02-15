@@ -55,7 +55,7 @@ TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Ca
 }
 
 void
-TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas target)
+TFB_DrawCanvas_Rect (RECT *rect, int r, int g, int b, TFB_Canvas target)
 {
 	SDL_Surface *dst = target;
 	SDL_PixelFormat *fmt = dst->format;
@@ -709,7 +709,7 @@ TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOL
 void
 TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
 		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
-		int scale, PEXTENT size, HOT_SPOT *hs)
+		int scale, EXTENT *size, HOT_SPOT *hs)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	
@@ -747,7 +747,7 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
 }
 
 void
-TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size)
+TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, EXTENT *size)
 {
 	SDL_Surface *src = (SDL_Surface *)canvas;
 
@@ -1338,7 +1338,7 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 }
 
 void
-TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src_canvas, int angle, PEXTENT size)
+TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src_canvas, int angle, EXTENT *size)
 {
 	int dstw, dsth;
 	SDL_Surface *src = (SDL_Surface *)src_canvas;

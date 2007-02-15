@@ -22,9 +22,9 @@
 
 static LOCDATA urquan_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)URQUAN_PMAP_ANIM, /* AlienFrame */
 	(FONT)URQUAN_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -113,7 +113,7 @@ static LOCDATA urquan_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -518,10 +518,10 @@ post_urquan_enc (void)
 	SET_GAME_STATE (PLAYER_HYPNOTIZED, 0);
 }
 
-LOCDATAPTR
+LOCDATA*
 init_urquan_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	DWORD GrpOffs;
 

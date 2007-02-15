@@ -59,7 +59,6 @@ typedef struct response_entry
 	TEXT response_text;
 	RESPONSE_FUNC response_func;
 } RESPONSE_ENTRY;
-typedef RESPONSE_ENTRY *PRESPONSE_ENTRY;
 
 typedef struct encounter_state
 {
@@ -75,9 +74,8 @@ typedef struct encounter_state
 	COUNT phrase_buf_index;
 	UNICODE phrase_buf[512];
 } ENCOUNTER_STATE;
-typedef ENCOUNTER_STATE *PENCOUNTER_STATE;
 
-static PENCOUNTER_STATE pCurInputState;
+static ENCOUNTER_STATE *pCurInputState;
 static SUBTITLE_STATE subtitle_state = DONE_SUBTITLE;
 static Mutex subtitle_mutex;
 
@@ -97,7 +95,7 @@ RECT CommWndRect = {
  * display given the line wrapping information
  */
 static int
-_count_lines (PTEXT pText)
+_count_lines (TEXT *pText)
 {
 	SIZE text_width;
 	const unsigned char *pStr;
@@ -124,11 +122,11 @@ _count_lines (PTEXT pText)
 // status == -4: use current context, and baseline from pTextIn
 // status ==  1:  draw alien speech; subtitle cache is used
 static COORD
-add_text (int status, PTEXT pTextIn)
+add_text (int status, TEXT *pTextIn)
 {
 	COUNT maxchars, numchars;
 	TEXT locText;
-	PTEXT pText;
+	TEXT *pText;
 	SIZE leading;
 	const unsigned char *pStr;
 	SIZE text_width;
@@ -357,7 +355,7 @@ getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 
 		oldCount = pText->CharCount;
 		pText->CharCount = charCount;
-		TextRect (pText, &rect, NULL_PTR);
+		TextRect (pText, &rect, NULL);
 		
 		if (rect.extent.width >= maxWidth)
 		{
@@ -422,7 +420,7 @@ DrawSISComWindow (void)
 			OldStrings = SetRelStringTableIndex (OldStrings, 1);
 			font_DrawText (&t);
 			SetContextForeGroundColor (WHITE_COLOR);
-			t.pStr = (PBYTE)GetStringAddress (CreditStrings);
+			t.pStr = (BYTE*)GetStringAddress (CreditStrings);
 			t.CharCount = GetStringLength (CreditStrings);
 			CreditStrings = SetRelStringTableIndex (CreditStrings, 1);
 			font_DrawText (&t);
@@ -443,11 +441,11 @@ DrawSISComWindow (void)
 }
 
 void
-DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq)
+DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq)
 {
 	COUNT i;
 	STAMP s;
-	ANIMATION_DESCPTR ADPtr;
+	ANIMATION_DESC *ADPtr;
 
 	s.origin.x = -SAFE_X;
 	s.origin.y = 0;
@@ -504,7 +502,7 @@ volatile BOOLEAN ClearSummary;
 static volatile BOOLEAN ClearSubtitle;
 
 static void
-RefreshResponses (PENCOUNTER_STATE pES)
+RefreshResponses (ENCOUNTER_STATE *pES)
 {
 	COORD y;
 	BYTE response;
@@ -827,7 +825,7 @@ AlienTalkSegue (COUNT wait_track)
 	if (!pCurInputState->Initialized)
 	{
 		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
-		DrawAlienFrame (CommData.AlienFrame, NULL_PTR);
+		DrawAlienFrame (CommData.AlienFrame, NULL);
 		UpdateSpeechGraphics (TRUE);
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE
@@ -920,10 +918,9 @@ typedef struct summary_state
 	const UNICODE *LeftOver;
 
 } SUMMARY_STATE;
-typedef SUMMARY_STATE *PSUMMARY_STATE;
 
 static BOOLEAN
-DoConvSummary (PSUMMARY_STATE pSS)
+DoConvSummary (SUMMARY_STATE *pSS)
 {
 #define DELTA_Y_SUMMARY 8
 #define MAX_SUMM_ROWS ((SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT) \
@@ -1051,10 +1048,10 @@ DoConvSummary (PSUMMARY_STATE pSS)
 
 // Called when the player presses the select button on a response.
 static void
-SelectResponse (PENCOUNTER_STATE pES)
+SelectResponse (ENCOUNTER_STATE *pES)
 {
 	const unsigned char *end;
-	PTEXT response_text =
+	TEXT *response_text =
 			&pES->response_list[pES->cur_response].response_text;
 	end = skipUTF8Chars(response_text->pStr, response_text->CharCount);
 	pES->phrase_buf_index = end - response_text->pStr;
@@ -1077,7 +1074,7 @@ SelectResponse (PENCOUNTER_STATE pES)
 
 // Called when the player presses the cancel button in comm.
 static void
-SelectConversationSummary (PENCOUNTER_STATE pES)
+SelectConversationSummary (ENCOUNTER_STATE *pES)
 {
 	SUMMARY_STATE SummaryState;
 	
@@ -1099,7 +1096,7 @@ SelectConversationSummary (PENCOUNTER_STATE pES)
 }
 
 static void
-PlayerResponseInput (PENCOUNTER_STATE pES)
+PlayerResponseInput (ENCOUNTER_STATE *pES)
 {
 	BYTE response;
 
@@ -1181,7 +1178,7 @@ PlayerResponseInput (PENCOUNTER_STATE pES)
 }
 
 static BOOLEAN
-DoCommunication (PENCOUNTER_STATE pES)
+DoCommunication (ENCOUNTER_STATE *pES)
 {
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 
@@ -1261,8 +1258,8 @@ void
 DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 		UNICODE *ConstructStr)
 {
-	PENCOUNTER_STATE pES = pCurInputState;
-	PRESPONSE_ENTRY pEntry;
+	ENCOUNTER_STATE *pES = pCurInputState;
+	RESPONSE_ENTRY *pEntry;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return;
@@ -1397,7 +1394,7 @@ HailAlien (void)
 				}
 				else
 				{
-					DrawSISMessage (NULL_PTR);
+					DrawSISMessage (NULL);
 					DrawSISTitle (GLOBAL_SIS (PlanetName));
 				}
 			}
@@ -1410,7 +1407,7 @@ HailAlien (void)
 
 	LastActivity |= CHECK_LOAD; /* prevent spurious input */
 	(*CommData.init_encounter_func) ();
-	DoInput ((PVOID)&ES, FALSE);
+	DoInput (&ES, FALSE);
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 		(*CommData.post_encounter_func) ();
 	(*CommData.uninit_encounter_func) ();
@@ -1439,7 +1436,7 @@ InitCommunication (RESOURCE which_comm)
 {
 	COUNT status;
 	MEM_HANDLE hOldIndex, hIndex;
-	LOCDATAPTR LocDataPtr;
+	LOCDATA *LocDataPtr;
 
 #ifdef DEBUG
 	if (disableInteractivity)
@@ -1464,7 +1461,7 @@ InitCommunication (RESOURCE which_comm)
 				ClearSISRect (DRAW_SIS_DISPLAY);
 				RepairSISBorder ();
 			}
-			DrawSISMessage (NULL_PTR);
+			DrawSISMessage (NULL);
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 				DrawHyperCoords (GLOBAL (ShipStamp.origin));
 			else if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
@@ -1518,7 +1515,7 @@ InitCommunication (RESOURCE which_comm)
 	{
 		SetResourceIndex (hIndex);
 
-		LocDataPtr = (LOCDATAPTR)init_race (
+		LocDataPtr = init_race (
 				status != YEHAT_REBEL_SHIP ? which_comm :
 				(RESOURCE)YEHAT_REBEL_CONVERSATION);
 		if (LocDataPtr)
@@ -1597,7 +1594,7 @@ RaceCommunication (void)
 {
 	COUNT i, status;
 	HSTARSHIP hStarShip;
-	SHIP_FRAGMENTPTR FragPtr;
+	SHIP_FRAGMENT *FragPtr;
 	RESOURCE RaceComm[] =
 	{
 		RACE_COMMUNICATION
@@ -1655,7 +1652,7 @@ RaceCommunication (void)
 		{
 			COUNT NumShips;
 			HENCOUNTER hEncounter;
-			ENCOUNTERPTR EncounterPtr;
+			ENCOUNTER *EncounterPtr;
 
 			hEncounter = GetHeadEncounter ();
 			LockEncounter (hEncounter, &EncounterPtr);
@@ -1667,13 +1664,13 @@ RaceCommunication (void)
 						&GLOBAL (npc_built_ship_q), 0);
 			}
 
-			CurStarDescPtr = (STAR_DESCPTR)&EncounterPtr->SD;
+			CurStarDescPtr = (STAR_DESC*)&EncounterPtr->SD;
 			UnlockEncounter (hEncounter);
 		}
 	}
 
 	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-	FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+	FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (npc_built_ship_q), hStarShip);
 	i = GET_RACE_ID (FragPtr);
 	UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
@@ -1694,9 +1691,9 @@ RaceCommunication (void)
 	}
 	else
 	{
-		PEXTENDED_STAR_DESC pESD;
+		EXTENDED_STAR_DESC *pESD;
 
-		pESD = (PEXTENDED_STAR_DESC)CurStarDescPtr;
+		pESD = (EXTENDED_STAR_DESC*)CurStarDescPtr;
 		if (pESD)
 		{
 			BYTE i, NumShips;
@@ -1710,11 +1707,11 @@ RaceCommunication (void)
 			for (i = 0; i < NumShips; ++i)
 			{
 				HSTARSHIP hStarShip;
-				SHIP_FRAGMENTPTR TemplatePtr;
+				SHIP_FRAGMENT *TemplatePtr;
 
 				hStarShip = GetStarShipFromIndex (
 						&GLOBAL (npc_built_ship_q), i);
-				TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
+				TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (npc_built_ship_q), hStarShip);
 				pESD->ShipList[i] = TemplatePtr->ShipInfo;
 				pESD->ShipList[i].var1 = GET_RACE_ID (TemplatePtr);

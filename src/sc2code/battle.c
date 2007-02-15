@@ -66,9 +66,9 @@ RunAwayAllowed (void)
 }
 
 static void
-DoRunAway (STARSHIPPTR StarShipPtr)
+DoRunAway (STARSHIP *StarShipPtr)
 {
-	ELEMENTPTR ElementPtr;
+	ELEMENT *ElementPtr;
 
 	LockElement (StarShipPtr->hShip, &ElementPtr);
 	if (GetPrimType (&DisplayArray[ElementPtr->PrimIndex]) == STAMP_PRIM
@@ -77,7 +77,7 @@ DoRunAway (STARSHIPPTR StarShipPtr)
 			&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
 			&& !(ElementPtr->state_flags & APPEARING))
 	{
-		extern void flee_preprocess (PELEMENT);
+		extern void flee_preprocess (ELEMENT *);
 
 		battle_counter -= MAKE_WORD (1, 0);
 
@@ -150,7 +150,7 @@ ProcessInput (void)
 				hBattleShip != 0; hBattleShip = hNextShip)
 		{
 			BATTLE_INPUT_STATE InputState;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			StarShipPtr = LockStarShip (&race_q[cur_player], hBattleShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
@@ -345,7 +345,7 @@ selectAllShips (SIZE num_ships)
 #ifndef NETPLAY
 	while (num_ships--)
 	{
-		if (!GetNextStarShip (NULL_PTR, num_ships == 1))
+		if (!GetNextStarShip (NULL, num_ships == 1))
 			return FALSE;
 	}
 	return TRUE;
@@ -357,7 +357,7 @@ selectAllShips (SIZE num_ships)
 
 	if (num_ships == 1) {
 		// HyperSpace in full game.
-		return GetNextStarShip (NULL_PTR, 0);
+		return GetNextStarShip (NULL, 0);
 	}
 
 	if (num_ships != 2)
@@ -395,7 +395,7 @@ selectAllShips (SIZE num_ships)
 		size_t i;
 		for (i = 0; i < 2; i++)
 		{
-			if (!GetNextStarShip (NULL_PTR, order[i]))
+			if (!GetNextStarShip (NULL, order[i]))
 				return FALSE;
 		}
 	}
@@ -478,7 +478,7 @@ Battle (void)
 				IN_HYPERSPACE);
 
 		UnlockMutex (GraphicsLock);
-		DoInput ((PVOID)&bs, FALSE);
+		DoInput (&bs, FALSE);
 		LockMutex (GraphicsLock);
 
 AbortBattle:

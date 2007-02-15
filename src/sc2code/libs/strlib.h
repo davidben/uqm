@@ -27,7 +27,7 @@
 
 typedef DWORD STRING_TABLE;
 typedef DWORD STRING;
-typedef PBYTE STRINGPTR;
+typedef BYTE* STRINGPTR;
 
 extern BOOLEAN InstallStringTableResType (COUNT string_type);
 extern STRING_TABLE LoadStringTableInstance (DWORD res);

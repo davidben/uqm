@@ -98,7 +98,7 @@ static RACE_DESC chmmr_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -108,7 +108,7 @@ static RACE_DESC chmmr_desc =
 };
 
 static void
-animate (PELEMENT ElementPtr)
+animate (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -123,9 +123,9 @@ animate (PELEMENT ElementPtr)
 }
 
 static void
-laser_death (ELEMENTPTR ElementPtr)
+laser_death (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	StarShipPtr->special_counter = ElementPtr->turn_wait;
@@ -135,7 +135,7 @@ laser_death (ELEMENTPTR ElementPtr)
 		SIZE dx, dy;
 		long dist;
 		HELEMENT hIonSpots;
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		LockElement (StarShipPtr->hShip, &ShipPtr);
 
@@ -150,7 +150,7 @@ laser_death (ELEMENTPTR ElementPtr)
 				&& (hIonSpots = AllocElement ()))
 		{
 			COUNT angle, magnitude;
-			ELEMENTPTR IonSpotsPtr;
+			ELEMENT *IonSpotsPtr;
 
 			LockElement (hIonSpots, &IonSpotsPtr);
 			IonSpotsPtr->state_flags =
@@ -194,11 +194,11 @@ laser_death (ELEMENTPTR ElementPtr)
 }
 
 static COUNT
-initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
+initialize_megawatt_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 {
 #define NUM_CYCLES 4
 	RECT r;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	LASER_BLOCK LaserBlock;
 	static const COLOR cycle_array[] =
 	{
@@ -227,7 +227,7 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 
 	if (LaserArray[0])
 	{
-		ELEMENTPTR LaserPtr;
+		ELEMENT *LaserPtr;
 
 		LockElement (LaserArray[0], &LaserPtr);
 
@@ -243,10 +243,11 @@ initialize_megawatt_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 }
 
 static void
-chmmr_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+chmmr_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 
@@ -266,19 +267,19 @@ chmmr_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 }
 
 static void
-chmmr_postprocess (PELEMENT ElementPtr)
+chmmr_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 
 	if (StarShipPtr->cur_status_flags & WEAPON)
 	{
 		HELEMENT hMuzzleFlash;
-		ELEMENTPTR MuzzleFlashPtr;
+		ELEMENT *MuzzleFlashPtr;
 
 		LockElement (GetTailElement (), &MuzzleFlashPtr);
-		if ((PELEMENT)MuzzleFlashPtr != ElementPtr
+		if (MuzzleFlashPtr != ElementPtr
 				&& (MuzzleFlashPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
 				(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
 				&& (MuzzleFlashPtr->state_flags & APPEARING)
@@ -318,7 +319,7 @@ chmmr_postprocess (PELEMENT ElementPtr)
 			&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 	{
 		COUNT facing;
-		ELEMENTPTR ShipElementPtr;
+		ELEMENT *ShipElementPtr;
 
 		LockElement (ElementPtr->hTarget, &ShipElementPtr);
 		
@@ -333,14 +334,14 @@ chmmr_postprocess (PELEMENT ElementPtr)
 		{
 #define NUM_SHADOWS 5
 					
-			ELEMENTPTR ShipElementPtr;
+			ELEMENT *ShipElementPtr;
 
 			LockElement (ElementPtr->hTarget, &ShipElementPtr);
 			if (!GRAVITY_MASS (ShipElementPtr->mass_points + 1))
 			{
 				SIZE i, dx, dy;
 				COUNT angle, magnitude;
-				STARSHIPPTR EnemyStarShipPtr;
+				STARSHIP *EnemyStarShipPtr;
 				static const SIZE shadow_offs[] =
 				{
 					DISPLAY_TO_WORLD (8),
@@ -399,7 +400,7 @@ chmmr_postprocess (PELEMENT ElementPtr)
 					hShadow = AllocElement ();
 					if (hShadow)
 					{
-						ELEMENTPTR ShadowElementPtr;
+						ELEMENT *ShadowElementPtr;
 
 						LockElement (hShadow, &ShadowElementPtr);
 
@@ -441,9 +442,9 @@ chmmr_postprocess (PELEMENT ElementPtr)
 #define SATELLITE_OFFSET DISPLAY_TO_WORLD (64)
 
 static void
-satellite_preprocess (PELEMENT ElementPtr)
+satellite_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	++ElementPtr->life_span;
 
@@ -460,7 +461,7 @@ satellite_preprocess (PELEMENT ElementPtr)
 	if (StarShipPtr->hShip)
 	{
 		SIZE dx, dy;
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		StarShipPtr->RaceDescPtr->ship_info.ship_flags |= POINT_DEFENSE;
 
@@ -494,15 +495,17 @@ satellite_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-spawn_point_defense (PELEMENT ElementPtr)
+spawn_point_defense (ELEMENT *ElementPtr)
 {
 #define DEFENSE_RANGE (UWORD)64
 #define DEFENSE_WAIT 2
 	BYTE weakest;
 	UWORD best_dist;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	HELEMENT hObject, hNextObject, hBestObject;
-	ELEMENTPTR ShipPtr, SattPtr, ObjectPtr;
+	ELEMENT *ShipPtr;
+	ELEMENT *SattPtr;
+	ELEMENT *ObjectPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	hBestObject = 0;
@@ -573,7 +576,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 		hPointDefense = initialize_laser (&LaserBlock);
 		if (hPointDefense)
 		{
-			ELEMENTPTR PDPtr;
+			ELEMENT *PDPtr;
 
 			LockElement (hPointDefense, &PDPtr);
 			SetElementStarShip (PDPtr, StarShipPtr);
@@ -593,9 +596,9 @@ spawn_point_defense (PELEMENT ElementPtr)
 }
 
 static void
-satellite_postprocess (PELEMENT ElementPtr)
+satellite_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (ElementPtr->thrust_wait || ElementPtr->life_span == 0)
 		--ElementPtr->thrust_wait;
@@ -606,7 +609,7 @@ satellite_postprocess (PELEMENT ElementPtr)
 		hDefense = AllocElement ();
 		if (hDefense)
 		{
-			ELEMENTPTR DefensePtr;
+			ELEMENT *DefensePtr;
 			
 			PutElement (hDefense);
 
@@ -615,7 +618,7 @@ satellite_postprocess (PELEMENT ElementPtr)
 					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
 
 			{
-				ELEMENTPTR SuccPtr;
+				ELEMENT *SuccPtr;
 
 				LockElement (GetSuccElement (ElementPtr), &SuccPtr);
 				DefensePtr->hTarget = GetPredElement (SuccPtr);
@@ -633,8 +636,8 @@ satellite_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-satellite_collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1)
+satellite_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	(void) ElementPtr0;  /* Satisfying compiler (unused parameter) */
 	(void) pPt0;  /* Satisfying compiler (unused parameter) */
@@ -643,9 +646,9 @@ satellite_collision (PELEMENT ElementPtr0, PPOINT pPt0,
 }
 
 static void
-satellite_death (PELEMENT ElementPtr)
+satellite_death (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	StarShipPtr->RaceDescPtr->ship_info.ship_flags &= ~POINT_DEFENSE;
@@ -659,17 +662,17 @@ satellite_death (PELEMENT ElementPtr)
 			SetAbsFrameIndex (ElementPtr->current.image.frame, 8);
 
 	ElementPtr->preprocess_func = animate;
-	ElementPtr->death_func = NULL_PTR;
-	ElementPtr->postprocess_func = NULL_PTR;
-	ElementPtr->collision_func = NULL_PTR;
+	ElementPtr->death_func = NULL;
+	ElementPtr->postprocess_func = NULL;
+	ElementPtr->collision_func = NULL;
 }
 
 static void
-spawn_satellites (PELEMENT ElementPtr)
+spawn_satellites (ELEMENT *ElementPtr)
 {
 #define NUM_SATELLITES 3
 	COUNT i;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->hShip)
@@ -683,7 +686,7 @@ spawn_satellites (PELEMENT ElementPtr)
 			if (hSatellite)
 			{
 				COUNT angle;
-				ELEMENTPTR SattPtr;
+				ELEMENT *SattPtr;
 
 				LockElement (hSatellite, &SattPtr);
 				SattPtr->state_flags =
@@ -727,17 +730,17 @@ spawn_satellites (PELEMENT ElementPtr)
 }
 
 static void
-chmmr_preprocess (PELEMENT ElementPtr)
+chmmr_preprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT hSatellite;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	hSatellite = AllocElement ();
 	if (hSatellite)
 	{
-		ELEMENTPTR SattPtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *SattPtr;
+		STARSHIP *StarShipPtr;
 
 		LockElement (hSatellite, &SattPtr);
 		SattPtr->state_flags =
@@ -761,17 +764,15 @@ chmmr_preprocess (PELEMENT ElementPtr)
 	StarShipPtr->RaceDescPtr->preprocess_func = 0;
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_chmmr (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	chmmr_desc.preprocess_func = chmmr_preprocess;
 	chmmr_desc.postprocess_func = chmmr_postprocess;
 	chmmr_desc.init_weapon_func = initialize_megawatt_laser;
-	chmmr_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) chmmr_intelligence;
+	chmmr_desc.cyborg_control.intelligence_func = chmmr_intelligence;
 
 	RaceDescPtr = &chmmr_desc;
 

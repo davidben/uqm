@@ -46,11 +46,10 @@ GenerateColony (BYTE control)
 			if (GLOBAL (BattleGroupRef)
 					&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
 			{
-				SHIP_FRAGMENTPTR FragPtr;
+				SHIP_FRAGMENT *FragPtr;
 
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip
-						);
+				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+						&GLOBAL (npc_built_ship_q), hStarShip);
 				SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 				SET_GROUP_LOC (FragPtr, 0 + 1); /* orbitting colony */
 				SET_GROUP_DEST (FragPtr, 0 + 1); /* orbitting colony */
@@ -65,7 +64,7 @@ GenerateColony (BYTE control)
 		case GENERATE_PLANETS:
 		{
 			COUNT angle;
-			PPLANET_DESC pMinPlanet;
+			PLANET_DESC *pMinPlanet;
 
 			pMinPlanet = &pSolarSysState->PlanetDesc[0];
 			FillOrbits (pSolarSysState, (BYTE)~0, pMinPlanet, FALSE);

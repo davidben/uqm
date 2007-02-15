@@ -46,10 +46,10 @@ volatile BOOLEAN PauseAnimTask = FALSE;
 
 
 static void
-SetUpSequence (PSEQUENCE pSeq)
+SetUpSequence (SEQUENCE *pSeq)
 {
 	COUNT i;
-	ANIMATION_DESCPTR ADPtr;
+	ANIMATION_DESC *ADPtr;
 
 	i = CommData.NumAnimations;
 	pSeq = &pSeq[i];
@@ -112,8 +112,8 @@ ambient_anim_task (void *data)
 	FRAME CommFrame;
 	SEQUENCE Sequencer[MAX_ANIMATIONS];
 	ANIMATION_DESC TalkBuffer = CommData.AlienTalkDesc;
-	PSEQUENCE pSeq;
-	ANIMATION_DESCPTR ADPtr;
+	SEQUENCE *pSeq;
+	ANIMATION_DESC *ADPtr;
 	DWORD ActiveMask;
 	DWORD LastOscillTime;
 	Task task = (Task) data;
@@ -127,7 +127,7 @@ ambient_anim_task (void *data)
 		TaskSwitch ();
 
 	LockMutex (GraphicsLock);
-	memset ((PSTR)&DisplayArray[0], 0, sizeof (DisplayArray));
+	memset (&DisplayArray[0], 0, sizeof (DisplayArray));
 	SetUpSequence (Sequencer);
 	UnlockMutex (GraphicsLock);
 

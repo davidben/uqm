@@ -28,11 +28,11 @@ const BYTE *Elements;
 const PlanetFrame *PlanData;
 
 static COUNT
-CalcMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, COUNT which_deposit)
+CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 {
 	BYTE j;
 	COUNT num_deposits;
-	ELEMENT_ENTRYPTR eptr;
+	const ELEMENT_ENTRY *eptr;
 
 	eptr = &SysInfoPtr->PlanetInfo.PlanDataPtr->UsefulElements[0];
 	num_deposits = 0;
@@ -96,8 +96,7 @@ ExitCalcMinerals:
 }
 
 DWORD
-GenerateMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, PCOUNT
-		pwhich_deposit)
+GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_deposit)
 {
 	DWORD old_rand;
 
@@ -107,7 +106,7 @@ GenerateMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, PCOUNT
 }
 
 static COUNT
-CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
+CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 {
 	COUNT num_life_forms;
 
@@ -251,7 +250,7 @@ CalcLifeForms (SYSTEM_INFOPTR SysInfoPtr, COUNT which_life)
 }
 
 DWORD
-GenerateLifeForms (SYSTEM_INFOPTR SysInfoPtr, PCOUNT pwhich_life)
+GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life)
 {
 	DWORD old_rand;
 

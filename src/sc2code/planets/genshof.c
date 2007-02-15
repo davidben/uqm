@@ -32,9 +32,9 @@ check_old_shofixti (void)
 			&& GET_GAME_STATE (SHOFIXTI_RECRUITED))
 	{
 		BYTE task;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		task = GET_GROUP_MISSION (FragPtr);
 
@@ -97,7 +97,7 @@ GenerateShofixti (BYTE control)
 		case GENERATE_PLANETS:
 		{
 			COUNT i;
-			PPLANET_DESC pCurDesc;
+			PLANET_DESC *pCurDesc;
 
 #define NUM_PLANETS 6
 			pSolarSysState->SunDesc[0].NumPlanets = NUM_PLANETS;

@@ -320,7 +320,7 @@ setBattleStateConnections(struct battlestate_struct *bs) {
 }
 
 BATTLE_INPUT_STATE
-networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr) {
+networkBattleInput(COUNT player, STARSHIP *StarShipPtr) {
 	BattleInputBuffer *bib = getBattleInputBuffer(player);
 	BATTLE_INPUT_STATE result;
 	
@@ -549,7 +549,7 @@ typedef struct NegotiateReadyState NegotiateReadyState;
 struct NegotiateReadyState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
-	BOOLEAN(*InputFunc)(PVOID pInputState);
+	BOOLEAN(*InputFunc)(void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;
@@ -638,7 +638,7 @@ typedef struct WaitReadyState WaitReadyState;
 struct WaitReadyState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
-	BOOLEAN(*InputFunc)(PVOID pInputState);
+	BOOLEAN(*InputFunc)(void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;
@@ -697,7 +697,7 @@ typedef struct WaitResetState WaitResetState;
 struct WaitResetState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
-	BOOLEAN(*InputFunc)(PVOID pInputState);
+	BOOLEAN(*InputFunc)(void *pInputState);
 	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;

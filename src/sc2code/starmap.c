@@ -23,16 +23,16 @@
 #include "libs/gfxlib.h"
 
 
-STAR_DESCPTR star_array;
-STAR_DESCPTR CurStarDescPtr = 0;
+STAR_DESC *star_array;
+STAR_DESC *CurStarDescPtr = 0;
 
-STAR_DESCPTR
-FindStar (STAR_DESCPTR LastSDPtr, PPOINT puniverse, SIZE xbounds, SIZE
-		ybounds)
+STAR_DESC*
+FindStar (STAR_DESC *LastSDPtr, POINT *puniverse, SIZE xbounds,
+		SIZE ybounds)
 {
 	COORD min_y, max_y;
 	SIZE lo, hi;
-	STAR_DESCPTR BaseSDPtr;
+	STAR_DESC *BaseSDPtr;
 
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 	{
@@ -46,12 +46,12 @@ FindStar (STAR_DESCPTR LastSDPtr, PPOINT puniverse, SIZE xbounds, SIZE
 		hi = (NUM_HYPER_VORTICES + 1) - 1;
 	}
 
-	if (LastSDPtr == NULL_PTR)
+	if (LastSDPtr == NULL)
 		lo = 0;
 	else if ((lo = LastSDPtr - BaseSDPtr + 1) > hi)
 		return (0);
 	else
-			hi = lo;
+		hi = lo;
 
 	if (ybounds <= 0)
 		min_y = max_y = puniverse->y;
@@ -100,7 +100,7 @@ FindStar (STAR_DESCPTR LastSDPtr, PPOINT puniverse, SIZE xbounds, SIZE
 }
 
 void
-GetClusterName (STAR_DESCPTR pSD, UNICODE buf[])
+GetClusterName (const STAR_DESC *pSD, UNICODE buf[])
 {
 	UNICODE *pBuf, *pStr;
 

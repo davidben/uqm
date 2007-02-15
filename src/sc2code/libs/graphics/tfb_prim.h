@@ -20,10 +20,10 @@
 #include "tfb_draw.h"
 
 
-void TFB_Prim_Line (PLINE line, TFB_Palette *color);
-void TFB_Prim_Point (PPOINT p, TFB_Palette *color);
-void TFB_Prim_Rect (PRECT r, TFB_Palette *color);
-void TFB_Prim_FillRect (PRECT r, TFB_Palette *color);
-void TFB_Prim_Stamp (PSTAMP stamp);
-void TFB_Prim_StampFill (PSTAMP stamp, TFB_Palette *color);
-void TFB_Prim_FontChar (PPOINT origin, TFB_Char *, TFB_Image *backing);
+void TFB_Prim_Line (LINE *line, TFB_Palette *color);
+void TFB_Prim_Point (POINT *p, TFB_Palette *color);
+void TFB_Prim_Rect (RECT *r, TFB_Palette *color);
+void TFB_Prim_FillRect (RECT *r, TFB_Palette *color);
+void TFB_Prim_Stamp (STAMP *stamp);
+void TFB_Prim_StampFill (STAMP *stamp, TFB_Palette *color);
+void TFB_Prim_FontChar (POINT *origin, TFB_Char *, TFB_Image *backing);

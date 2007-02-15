@@ -49,7 +49,7 @@ extern FRAME SpaceJunkFrame;
 CONTEXT ScanContext;
 
 void
-RepairBackRect (PRECT pRect)
+RepairBackRect (RECT *pRect)
 {
 	RECT new_r, old_r;
 
@@ -105,7 +105,7 @@ PrintScanTitlePC (TEXT *t, RECT *r, const char *txt, int xpos)
 	t->pStr = txt;
 	t->CharCount = (COUNT)~0;
 	font_DrawText (t);
-	TextRect (t, r, NULL_PTR);
+	TextRect (t, r, NULL);
 	t->baseline.x += r->extent.width;
 	SetContextForeGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x3B));
@@ -663,10 +663,10 @@ flash_planet_loc_func(void *data)
 	return(0);
 }
 
-static BOOLEAN DoScan (PMENU_STATE pMS);
+static BOOLEAN DoScan (MENU_STATE *pMS);
 
 static BOOLEAN
-PickPlanetSide (PMENU_STATE pMS)
+PickPlanetSide (MENU_STATE *pMS)
 {
 	BOOLEAN select, cancel;
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
@@ -705,7 +705,7 @@ PickPlanetSide (PMENU_STATE pMS)
 			r.extent.height = FLASH_HEIGHT;
 			LoadDisplayPixmap (&r, pMenuState->flash_frame0);
 
-			SetFlashRect (NULL_PTR, (FRAME)0);
+			SetFlashRect (NULL, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 
 			InitLander (0);
@@ -721,7 +721,7 @@ PickPlanetSide (PMENU_STATE pMS)
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL_PTR);
+		DrawStatusMessage (NULL);
 		UnlockMutex (GraphicsLock);
 
 		FlushInput ();
@@ -780,7 +780,7 @@ PickPlanetSide (PMENU_STATE pMS)
 				{
 					BYTE captains_name_index;
 					COUNT which_player;
-					STARSHIPPTR StarShipPtr;
+					STARSHIP *StarShipPtr;
 
 					StarShipPtr = LockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip
@@ -870,7 +870,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 		//COLOR OldColor;
 		SIZE dy;
 		
@@ -949,7 +949,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 }
 
 static BOOLEAN
-DoScan (PMENU_STATE pMS)
+DoScan (MENU_STATE *pMS)
 {
 	DWORD TimeIn, WaitTime;
 	BOOLEAN select, cancel;
@@ -1258,7 +1258,7 @@ ScanSystem (void)
 
 	pMenuState = &MenuState;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput ((PVOID)&MenuState, FALSE);
+	DoInput (&MenuState, FALSE);
 	pMenuState = 0;
 
 	if (ScanContext)
@@ -1298,7 +1298,7 @@ GeneratePlanetSide (void)
 		while (num_nodes--)
 		{
 			HELEMENT hNodeElement;
-			ELEMENTPTR NodeElementPtr;
+			ELEMENT *NodeElementPtr;
 
 			if (pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan]
 					& (1L << num_nodes))
@@ -1340,7 +1340,7 @@ GeneratePlanetSide (void)
 			}
 			else
 			{
-				extern void object_animation (PELEMENT ElementPtr);
+				extern void object_animation (ELEMENT *ElementPtr);
 
 				NodeElementPtr->current.image.frame = f;
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (

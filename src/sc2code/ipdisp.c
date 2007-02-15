@@ -32,9 +32,9 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 	for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENTPTR StarShipPtr;
+		SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
@@ -79,7 +79,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 }
 
 static void
-ip_group_preprocess (PELEMENT ElementPtr)
+ip_group_preprocess (ELEMENT *ElementPtr)
 {
 #define TRACK_WAIT 5
 	BYTE task;
@@ -87,10 +87,10 @@ ip_group_preprocess (PELEMENT ElementPtr)
 	SIZE radius;
 	POINT dest_pt;
 	SIZE vdx, vdy;
-	ELEMENTPTR EPtr;
-	SHIP_FRAGMENTPTR StarShipPtr;
+	ELEMENT *EPtr;
+	SHIP_FRAGMENT *StarShipPtr;
 
-	EPtr = (ELEMENTPTR)ElementPtr;
+	EPtr = ElementPtr;
 	EPtr->state_flags &=
 			~(DISAPPEARING | NONSOLID); /* "I'm not quite dead." */
 	++EPtr->life_span; /* so that it will 'die'
@@ -399,7 +399,7 @@ CheckGetAway:
 				ZeroVelocityComponents (&EPtr->velocity);
 				if (group_loc != 0)
 				{
-					PPLANET_DESC pCurDesc;
+					PLANET_DESC *pCurDesc;
 
 					pCurDesc = &pSolarSysState->PlanetDesc[group_loc - 1];
 					XFormIPLoc (
@@ -494,8 +494,8 @@ ExitIPProcess:
 }
 
 static void
-flag_ship_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
-		ElementPtr1, PPOINT pPt1)
+flag_ship_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if ((GLOBAL (CurrentActivity) & START_ENCOUNTER)
 			|| pSolarSysState->MenuState.CurState
@@ -514,10 +514,10 @@ flag_ship_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 }
 
 static void
-ip_group_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
-		ElementPtr1, PPOINT pPt1)
+ip_group_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	SHIP_FRAGMENTPTR StarShipPtr;
+	SHIP_FRAGMENT *StarShipPtr;
 
 	if ((GLOBAL (CurrentActivity) & START_ENCOUNTER)
 			|| pSolarSysState->MenuState.CurState
@@ -574,7 +574,7 @@ ip_group_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT
 }
 
 static void
-spawn_ip_group (SHIP_FRAGMENTPTR StarShipPtr)
+spawn_ip_group (SHIP_FRAGMENT *StarShipPtr)
 {
 	HELEMENT hIPSHIPElement;
 
@@ -582,7 +582,7 @@ spawn_ip_group (SHIP_FRAGMENTPTR StarShipPtr)
 	if (hIPSHIPElement)
 	{
 		BYTE task;
-		ELEMENTPTR IPSHIPElementPtr;
+		ELEMENT *IPSHIPElementPtr;
 
 		LockElement (hIPSHIPElement, &IPSHIPElementPtr);
 		IPSHIPElementPtr->turn_wait = GET_GROUP_ID (StarShipPtr);
@@ -660,7 +660,7 @@ spawn_ip_group (SHIP_FRAGMENTPTR StarShipPtr)
 #define FLIP_WAIT 42
 
 static void
-flag_ship_preprocess (PELEMENT ElementPtr)
+flag_ship_preprocess (ELEMENT *ElementPtr)
 {
 	if (--ElementPtr->thrust_wait == 0)
 		/* juggle list after flagship */
@@ -671,7 +671,7 @@ flag_ship_preprocess (PELEMENT ElementPtr)
 				&& hSuccElement != GetTailElement ())
 		{
 			HELEMENT hPredElement;
-			ELEMENTPTR TailPtr;
+			ELEMENT *TailPtr;
 
 			LockElement (GetTailElement (), &TailPtr);
 			hPredElement = _GetPredLink (TailPtr);
@@ -779,7 +779,7 @@ spawn_flag_ship (void)
 	hFlagShipElement = AllocElement ();
 	if (hFlagShipElement)
 	{
-		ELEMENTPTR FlagShipElementPtr;
+		ELEMENT *FlagShipElementPtr;
 
 		LockElement (hFlagShipElement, &FlagShipElementPtr);
 		FlagShipElementPtr->hit_points = 1;
@@ -834,9 +834,9 @@ DoMissions (void)
 	for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENTPTR StarShipPtr;
+		SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 

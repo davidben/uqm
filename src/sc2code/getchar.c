@@ -88,7 +88,7 @@ JoyCharFindIn (const joy_char_t *ch, const joy_char_t *set,
 }
 
 static int
-JoyCharIsLower (const joy_char_t *ch, PTEXTENTRY_STATE pTES)
+JoyCharIsLower (const joy_char_t *ch, TEXTENTRY_STATE *pTES)
 {
 	return 0 <= JoyCharFindIn (ch, pTES->JoyLower, pTES->JoyRegLength);
 }
@@ -104,7 +104,7 @@ JoyCharSwitchReg (joy_char_t *ch, const joy_char_t *from,
 
 static void
 JoyCharToUpper (joy_char_t *outch, const joy_char_t *ch,
-		PTEXTENTRY_STATE pTES)
+		TEXTENTRY_STATE *pTES)
 {
 	*outch = *ch;
 	JoyCharSwitchReg (outch, pTES->JoyLower, pTES->JoyUpper,
@@ -113,7 +113,7 @@ JoyCharToUpper (joy_char_t *outch, const joy_char_t *ch,
 
 static void
 JoyCharToLower (joy_char_t *outch, const joy_char_t *ch,
-		PTEXTENTRY_STATE pTES)
+		TEXTENTRY_STATE *pTES)
 {
 	*outch = *ch;
 	JoyCharSwitchReg (outch, pTES->JoyUpper, pTES->JoyLower,
@@ -121,7 +121,7 @@ JoyCharToLower (joy_char_t *outch, const joy_char_t *ch,
 }
 
 BOOLEAN
-DoTextEntry (PTEXTENTRY_STATE pTES)
+DoTextEntry (TEXTENTRY_STATE *pTES)
 {
 	wchar_t ch;
 	UNICODE *pStr;

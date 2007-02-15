@@ -25,9 +25,9 @@
 
 static LOCDATA arilou_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)ARILOU_PMAP_ANIM, /* AlienFrame */
 	(FONT)ARILOU_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -220,7 +220,7 @@ static LOCDATA arilou_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -822,10 +822,10 @@ post_arilou_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_arilou_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	arilou_desc.init_encounter_func = Intro;
 	arilou_desc.post_encounter_func = post_arilou_enc;

@@ -115,7 +115,7 @@ DrawCursor (COORD curs_x, COORD curs_y)
 }
 
 static void
-DrawAutoPilot (PPOINT pDstPt)
+DrawAutoPilot (POINT *pDstPt)
 {
 	SIZE dx, dy,
 				xincr, yincr,
@@ -181,8 +181,8 @@ DrawAutoPilot (PPOINT pDstPt)
 }
 
 static void
-GetSphereRect (EXTENDED_SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect, PRECT
-		pRepairRect)
+GetSphereRect (EXTENDED_SHIP_FRAGMENT *StarShipPtr, RECT *pRect,
+		RECT *pRepairRect)
 {
 	long diameter;
 
@@ -226,7 +226,7 @@ GetSphereRect (EXTENDED_SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect, PRECT
 				);
 		t.CharCount = GetStringLength (locString);
 		t.pStr = (UNICODE *)GetStringAddress (locString);
-		TextRect (&t, pRepairRect, NULL_PTR);
+		TextRect (&t, pRepairRect, NULL);
 		
 		if (pRepairRect->corner.x <= 0)
 			pRepairRect->corner.x = 1;
@@ -244,7 +244,7 @@ GetSphereRect (EXTENDED_SHIP_FRAGMENTPTR StarShipPtr, PRECT pRect, PRECT
 }
 
 static void
-DrawStarMap (COUNT race_update, PRECT pClipRect)
+DrawStarMap (COUNT race_update, RECT *pClipRect)
 {
 #define GRID_DELTA 500
 	SIZE i;
@@ -253,10 +253,10 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 	RECT r, old_r;
 	STAMP s;
 	FRAME star_frame;
-	STAR_DESCPTR SDPtr;
+	STAR_DESC *SDPtr;
 	BOOLEAN draw_cursor;
 
-	if (pClipRect == (PRECT)-1)
+	if (pClipRect == (RECT*)-1)
 	{
 		pClipRect = 0;
 		draw_cursor = FALSE;
@@ -373,12 +373,10 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 				hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 				hStarShip != 0; ++index, hStarShip = hNextShip)
 		{
-			EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+			EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-			StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-					&GLOBAL (avail_race_q),
-					hStarShip
-					);
+			StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
+					&GLOBAL (avail_race_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
 
 			if (StarShipPtr->ShipInfo.known_strength)
@@ -417,7 +415,7 @@ DrawStarMap (COUNT race_update, PRECT pClipRect)
 							);
 					t.CharCount = GetStringLength (locString);
 					t.pStr = (UNICODE *)GetStringAddress (locString);
-					TextRect (&t, &r, NULL_PTR);
+					TextRect (&t, &r, NULL);
 
 					if (r.corner.x <= 0)
 						t.baseline.x -= r.corner.x - 1;
@@ -588,7 +586,7 @@ ZoomStarMap (SIZE dir)
 			++pMenuState->delta_item;
 			pMenuState->flash_rect1.corner = pMenuState->first_item;
 
-			DrawStarMap (0, NULL_PTR);
+			DrawStarMap (0, NULL);
 			SleepThread (ONE_SECOND >> 3);
 		}
 	}
@@ -605,14 +603,14 @@ ZoomStarMap (SIZE dir)
 			}
 			--pMenuState->delta_item;
 
-			DrawStarMap (0, NULL_PTR);
+			DrawStarMap (0, NULL);
 			SleepThread (ONE_SECOND >> 3);
 		}
 	}
 }
 
 static void
-UpdateCursorLocation (PMENU_STATE pMS, int sx, int sy, const POINT *newpt)
+UpdateCursorLocation (MENU_STATE *pMS, int sx, int sy, const POINT *newpt)
 {
 	STAMP s;
 	POINT pt;
@@ -680,7 +678,7 @@ UpdateCursorLocation (PMENU_STATE pMS, int sx, int sy, const POINT *newpt)
 			|| s.origin.y >= SIS_SCREEN_HEIGHT)
 	{
 		pMS->flash_rect1.corner = pMS->first_item;
-		DrawStarMap (0, NULL_PTR);
+		DrawStarMap (0, NULL);
 
 		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
@@ -698,11 +696,12 @@ UpdateCursorLocation (PMENU_STATE pMS, int sx, int sy, const POINT *newpt)
 #define CURSOR_INFO_BUFSIZE 256
 
 static void
-UpdateCursorInfo (PMENU_STATE pMS, UNICODE *prevbuf)
+UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
 {
 	UNICODE buf[CURSOR_INFO_BUFSIZE] = "";
 	POINT pt;
-	STAR_DESCPTR SDPtr, BestSDPtr;
+	STAR_DESC *SDPtr;
+	STAR_DESC *BestSDPtr;
 
 	pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 	pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
@@ -758,7 +757,7 @@ UpdateCursorInfo (PMENU_STATE pMS, UNICODE *prevbuf)
 }
 
 static void
-UpdateFuelRequirement (PMENU_STATE pMS)
+UpdateFuelRequirement (MENU_STATE *pMS)
 {
 	UNICODE buf[80];
 	COUNT fuel_required;
@@ -795,7 +794,7 @@ UpdateFuelRequirement (PMENU_STATE pMS)
 
 typedef struct starsearch_state
 {
-	PMENU_STATE pMS;
+	MENU_STATE *pMS;
 	UNICODE Text[STAR_SEARCH_BUFSIZE];
 	UNICODE LastText[STAR_SEARCH_BUFSIZE];
 	DWORD LastChangeTime;
@@ -927,7 +926,7 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 
 	for (i = from; i < NUM_SOLAR_SYSTEMS; ++i)
 	{
-		STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[i]];
+		STAR_DESC *SDPtr = &star_array[pSS->SortedStars[i]];
 		UNICODE FullName[STAR_SEARCH_BUFSIZE];
 		UNICODE *ClusterName = GAME_STRING (SDPtr->Postfix);
 		const UNICODE *sptr;
@@ -1002,14 +1001,14 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 }
 
 static void
-DrawMatchedStarName (PTEXTENTRY_STATE pTES)
+DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	PMENU_STATE pMS = pSS->pMS;
+	MENU_STATE *pMS = pSS->pMS;
 	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
 	SIZE CurPos = -1;
-	STAR_DESCPTR SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
+	STAR_DESC *SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
 	COUNT flags;
 
 	if (pSS->SingleClust || pSS->SingleMatch)
@@ -1085,10 +1084,10 @@ MatchNextStar (STAR_SEARCH_STATE *pSS, BOOLEAN Reset)
 }
 
 static BOOLEAN
-OnStarNameChange (PTEXTENTRY_STATE pTES)
+OnStarNameChange (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	PMENU_STATE pMS = pSS->pMS;
+	MENU_STATE *pMS = pSS->pMS;
 	COUNT flags;
 	BOOLEAN ret = TRUE;
 
@@ -1116,7 +1115,7 @@ OnStarNameChange (PTEXTENTRY_STATE pTES)
 	}
 	else
 	{
-		STAR_DESCPTR SDPtr;
+		STAR_DESC *SDPtr;
 
 		// move the cursor to the found star
 		SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
@@ -1130,14 +1129,14 @@ OnStarNameChange (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-OnStarNameFrame (PTEXTENTRY_STATE pTES)
+OnStarNameFrame (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	PMENU_STATE pMS = pSS->pMS;
+	MENU_STATE *pMS = pSS->pMS;
 
 	if (PulsedInputState.menu[KEY_MENU_NEXT])
 	{	// search for next match
-		STAR_DESCPTR SDPtr;
+		STAR_DESC *SDPtr;
 
 		MatchNextStar (pSS, FALSE);
 
@@ -1160,7 +1159,7 @@ OnStarNameFrame (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-DoStarSearch (PMENU_STATE pMS)
+DoStarSearch (MENU_STATE *pMS)
 {
 	TEXTENTRY_STATE tes;
 	STAR_SEARCH_STATE *pss;
@@ -1204,7 +1203,7 @@ DoStarSearch (PMENU_STATE pMS)
 } 
 
 static BOOLEAN
-DoMoveCursor (PMENU_STATE pMS)
+DoMoveCursor (MENU_STATE *pMS)
 {
 #define MIN_ACCEL_DELAY (ONE_SECOND / 60)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
@@ -1269,7 +1268,7 @@ DoMoveCursor (PMENU_STATE pMS)
 			return (FALSE);
 		}
 #endif
-		DrawStarMap (0, NULL_PTR);
+		DrawStarMap (0, NULL);
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SEARCH])
 	{
@@ -1316,7 +1315,7 @@ DoMoveCursor (PMENU_STATE pMS)
 
 		if (sx != 0 || sy != 0)
 		{
-			UpdateCursorLocation (pMS, sx, sy, NULL_PTR);
+			UpdateCursorLocation (pMS, sx, sy, NULL);
 			UpdateCursorInfo (pMS, last_buf);
 			UpdateFuelRequirement (pMS);
 		}
@@ -1337,7 +1336,7 @@ DoMoveCursor (PMENU_STATE pMS)
 }
 
 static void
-RepairMap (COUNT update_race, PRECT pLastRect, PRECT pNextRect)
+RepairMap (COUNT update_race, RECT *pLastRect, RECT *pNextRect)
 {
 	RECT r;
 
@@ -1397,12 +1396,10 @@ UpdateMap (void)
 			hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; ++index, hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q),
-				hStarShip
-				);
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
 		if (ButtonState)
@@ -1456,7 +1453,7 @@ UpdateMap (void)
 
 				if (!MapDrawn)
 				{
-					DrawStarMap ((COUNT)~0, NULL_PTR);
+					DrawStarMap ((COUNT)~0, NULL);
 					MapDrawn = TRUE;
 				}
 
@@ -1519,7 +1516,7 @@ DoneSphereMove:
 			{
 				if (!MapDrawn)
 				{
-					DrawStarMap ((COUNT)~0, NULL_PTR);
+					DrawStarMap ((COUNT)~0, NULL);
 					MapDrawn = TRUE;
 				}
 
@@ -1622,7 +1619,7 @@ DoStarMap (void)
 
 	LockMutex (GraphicsLock);
 	
-	DrawStarMap (0, (PRECT)-1);
+	DrawStarMap (0, (RECT*)-1);
 	transition_pending = FALSE;
 	
 	BatchGraphics ();
@@ -1637,7 +1634,7 @@ DoStarMap (void)
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
-	DoInput ((PVOID)&MenuState, FALSE);
+	DoInput (&MenuState, FALSE);
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	pMenuState = 0;
@@ -1645,8 +1642,8 @@ DoStarMap (void)
 	LockMutex (GraphicsLock);
 
 	DrawHyperCoords (universe);
-	DrawSISMessage (NULL_PTR);
-	DrawStatusMessage (NULL_PTR);
+	DrawSISMessage (NULL);
+	DrawStatusMessage (NULL);
 
 	if (GLOBAL (autopilot.x) == universe.x
 			&& GLOBAL (autopilot.y) == universe.y)
@@ -1657,7 +1654,7 @@ DoStarMap (void)
 }
 
 BOOLEAN
-DoFlagshipCommands (PMENU_STATE pMS)
+DoFlagshipCommands (MENU_STATE *pMS)
 {
 	/* TODO: Make this carried cleanly by MENU_STATE structure */
 	// static DWORD NextTime;
@@ -1708,7 +1705,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect (NULL_PTR, (FRAME)0);
+						SetFlashRect (NULL, (FRAME)0);
 						UnlockMutex (GraphicsLock);
 					}
 
@@ -1826,7 +1823,7 @@ DoFlagshipCommands (PMENU_STATE pMS)
 					else
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect (NULL_PTR, (FRAME)0);
+						SetFlashRect (NULL, (FRAME)0);
 						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 					}

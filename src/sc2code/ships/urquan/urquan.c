@@ -98,7 +98,7 @@ static RACE_DESC urquan_desc =
 	{
 		0,
 		MISSILE_SPEED * MISSILE_LIFE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -108,13 +108,13 @@ static RACE_DESC urquan_desc =
 };
 
 static COUNT
-initialize_fusion (PELEMENT ShipPtr, HELEMENT FusionArray[])
+initialize_fusion (ELEMENT *ShipPtr, HELEMENT FusionArray[])
 {
 #define MISSILE_HITS 10
 #define MISSILE_DAMAGE 6
 #define MISSILE_OFFSET 8
 #define URQUAN_OFFSET 32
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -129,7 +129,7 @@ initialize_fusion (PELEMENT ShipPtr, HELEMENT FusionArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	FusionArray[0] = initialize_missile (&MissileBlock);
 
@@ -146,10 +146,10 @@ initialize_fusion (PELEMENT ShipPtr, HELEMENT FusionArray[])
 #define LASER_RANGE DISPLAY_TO_WORLD (40 + FIGHTER_OFFSET)
 
 static void
-fighter_postprocess (PELEMENT ElementPtr)
+fighter_postprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT Laser;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	LASER_BLOCK LaserBlock;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -165,7 +165,7 @@ fighter_postprocess (PELEMENT ElementPtr)
 	Laser = initialize_laser (&LaserBlock);
 	if (Laser)
 	{
-		ELEMENTPTR LaserPtr;
+		ELEMENT *LaserPtr;
 
 		LockElement (Laser, &LaserPtr);
 		SetElementStarShip (LaserPtr, StarShipPtr);
@@ -183,9 +183,9 @@ fighter_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-fighter_preprocess (PELEMENT ElementPtr)
+fighter_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 
@@ -196,7 +196,7 @@ fighter_preprocess (PELEMENT ElementPtr)
 		BOOLEAN Enroute;
 		COUNT orig_facing, facing;
 		SIZE delta_x, delta_y;
-		ELEMENTPTR eptr;
+		ELEMENT *eptr;
 
 		Enroute = TRUE;
 
@@ -297,9 +297,10 @@ fighter_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+fighter_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr0, &StarShipPtr);
 	if (GRAVITY_MASS (ElementPtr1->mass_points))
@@ -311,7 +312,7 @@ fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 		{
 			COUNT primIndex, travel_facing;
 			SIZE delta_facing;
-			ELEMENTPTR FighterElementPtr;
+			ELEMENT *FighterElementPtr;
 
 			LockElement (hFighterElement, &FighterElementPtr);
 			primIndex = FighterElementPtr->PrimIndex;
@@ -383,13 +384,13 @@ fighter_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOI
 }
 
 static void
-spawn_fighters (PELEMENT ElementPtr)
+spawn_fighters (ELEMENT *ElementPtr)
 {
 	SIZE i;
 	COUNT facing;
 	SIZE delta_x, delta_y;
 	HELEMENT hFighterElement;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	facing = StarShipPtr->ShipFacing + ANGLE_TO_FACING (HALF_CIRCLE);
@@ -401,7 +402,7 @@ spawn_fighters (PELEMENT ElementPtr)
 	{
 		SIZE sx, sy;
 		COUNT fighter_facing;
-		ELEMENTPTR FighterElementPtr;
+		ELEMENT *FighterElementPtr;
 
 		DeltaCrew (ElementPtr, -1);
 
@@ -420,7 +421,7 @@ spawn_fighters (PELEMENT ElementPtr)
 			FighterElementPtr->preprocess_func = fighter_preprocess;
 			FighterElementPtr->postprocess_func = 0;
 			FighterElementPtr->collision_func = fighter_collision;
-			FighterElementPtr->death_func = NULL_PTR;
+			FighterElementPtr->death_func = NULL;
 		}
 
 		FighterElementPtr->current.location = ElementPtr->next.location;
@@ -456,10 +457,11 @@ spawn_fighters (PELEMENT ElementPtr)
 }
 
 static void
-urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+urquan_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -480,7 +482,7 @@ urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Co
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	{
-		STARSHIPPTR EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		if (lpEvalDesc->ObjectPtr)
 			GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
@@ -508,9 +510,9 @@ urquan_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Co
 }
 
 static void
-urquan_postprocess (PELEMENT ElementPtr)
+urquan_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -527,16 +529,14 @@ urquan_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_urquan (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	urquan_desc.postprocess_func = urquan_postprocess;
 	urquan_desc.init_weapon_func = initialize_fusion;
-	urquan_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) urquan_intelligence;
+	urquan_desc.cyborg_control.intelligence_func = urquan_intelligence;
 
 	RaceDescPtr = &urquan_desc;
 

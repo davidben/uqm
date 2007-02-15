@@ -27,9 +27,9 @@
 
 static LOCDATA yehat_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)YEHAT_PMAP_ANIM, /* AlienFrame */
 	(FONT)YEHAT_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -184,7 +184,7 @@ static LOCDATA yehat_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -381,8 +381,7 @@ YehatHome (RESPONSE_REF R)
 				i_demand_you_ally_homeworld2,
 				GLOBAL_SIS (ShipName),
 				i_demand_you_ally_homeworld3,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 		DoResponsePhrase (i_demand_you_ally_homeworld0,
 				ExitConversation, shared_phrase_buf);
 	}
@@ -508,8 +507,7 @@ YehatSpace (RESPONSE_REF R)
 					i_demand_you_ally_space2,
 					buf,
 					i_demand_you_ally_space3,
-					NULL_PTR
-					);
+					(UNICODE*)NULL);
 			pStr[2] = i_demand_you_ally_space0;
 			break;
 		}
@@ -656,10 +654,10 @@ post_yehat_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_yehat_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	yehat_desc.init_encounter_func = Intro;
 	yehat_desc.post_encounter_func = post_yehat_enc;

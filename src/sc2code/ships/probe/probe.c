@@ -91,7 +91,7 @@ static RACE_DESC probe_desc =
 	{
 		0,
 		0,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -100,10 +100,10 @@ static RACE_DESC probe_desc =
 	0,
 };
 
-RACE_DESCPTR
+RACE_DESC*
 init_probe (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	RaceDescPtr = &probe_desc;
 

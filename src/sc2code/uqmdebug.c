@@ -35,7 +35,7 @@
 #include <errno.h>
 
 
-static void dumpEventCallback (const EVENTPTR eventPtr, void *arg);
+static void dumpEventCallback (const EVENT *eventPtr, void *arg);
 
 static void starRecurse (STAR_DESC *star, void *arg);
 static void planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
@@ -93,7 +93,7 @@ void
 forwardToNextEvent (BOOLEAN skipHEE)
 {
 	HEVENT hEvent;
-	EVENTPTR EventPtr;
+	EVENT *EventPtr;
 	COUNT year, month, day;
 			// time of next event
 	BOOLEAN done;
@@ -183,14 +183,14 @@ eventName (BYTE func_index)
 }
 
 static void
-dumpEventCallback (const EVENTPTR eventPtr, void *arg)
+dumpEventCallback (const EVENT *eventPtr, void *arg)
 {
 	FILE *out = (FILE *) arg;
 	dumpEvent (out, eventPtr);
 }
 
 void
-dumpEvent (FILE *out, EVENTPTR eventPtr)
+dumpEvent (FILE *out, EVENT *eventPtr)
 {
 	fprintf (out, "%4u/%02u/%02u: %s\n",
 			eventPtr->year_index,
@@ -335,7 +335,7 @@ static HELEMENT
 findFlagshipElement (void)
 {
 	HELEMENT hElement, hNextElement;
-	ELEMENTPTR ElementPtr;
+	ELEMENT *ElementPtr;
 
 	// Find the ship element.
 	for (hElement = GetTailElement (); hElement != 0;
@@ -399,9 +399,9 @@ showSpheres (void)
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip != NULL; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR) LockStarShip (
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
@@ -428,9 +428,9 @@ activateAllShips (void)
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip != NULL; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR) LockStarShip (
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
@@ -518,11 +518,11 @@ starRecurse (STAR_DESC *star, void *arg)
 	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
 
 	SOLARSYS_STATE SolarSysState;
-	PSOLARSYS_STATE oldPSolarSysState = pSolarSysState;
+	SOLARSYS_STATE *oldPSolarSysState = pSolarSysState;
 	DWORD oldSeed =
 			TFB_SeedRandom (MAKE_DWORD (star->star_pt.x, star->star_pt.y));
 
-	STAR_DESCPTR oldStarDescPtr = CurStarDescPtr;
+	STAR_DESC *oldStarDescPtr = CurStarDescPtr;
 	CurStarDescPtr = star;
 
 	memset (&SolarSysState, 0, sizeof (SolarSysState));
@@ -678,7 +678,7 @@ dumpSystem (FILE *out, const STAR_DESC *star, const SOLARSYS_STATE *system)
 	UNICODE name[256];
 	UNICODE buf[40];
 
-	GetClusterName ((STAR_DESCPTR) star, name);
+	GetClusterName (star, name);
 	snprintf (buf, sizeof buf, "%s %s",
 			bodyColorString (STAR_COLOR(star->Type)),
 			starTypeString (STAR_TYPE(star->Type)));
@@ -1080,7 +1080,7 @@ dumpPlanetType (FILE *out, int index, const PlanetFrame *planetType)
 			);
 	for (i = 0; i < NUM_USEFUL_ELEMENTS; i++)
 	{
-		const ElementEntry *entry;
+		const ELEMENT_ENTRY *entry;
 		entry = &planetType->UsefulElements[i];
 		if (entry->Density == 0)
 			continue;
@@ -1239,13 +1239,13 @@ depositQualityString (BYTE quality)
 ////////////////////////////////////////////////////////////////////////////
 
 // Which should be GOOD_GUY or BAD_GUY
-STARSHIPPTR
+STARSHIP*
 findPlayerShip(ELEMENT_FLAGS which) {
 	HELEMENT hElement, hNextElement;
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
@@ -1253,7 +1253,7 @@ findPlayerShip(ELEMENT_FLAGS which) {
 		if ((ElementPtr->state_flags & PLAYER_SHIP)	&&
 				(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY)) == which)
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 			UnlockElement (hElement);
 			return StarShipPtr;
@@ -1268,7 +1268,7 @@ findPlayerShip(ELEMENT_FLAGS which) {
 
 void
 resetCrewBattle(void) {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	COUNT delta;
 	CONTEXT OldContext;
 	
@@ -1290,7 +1290,7 @@ resetCrewBattle(void) {
 
 void
 resetEnergyBattle(void) {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	COUNT delta;
 	CONTEXT OldContext;
 	

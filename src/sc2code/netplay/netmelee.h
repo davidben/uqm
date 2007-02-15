@@ -55,7 +55,7 @@ void sendChecksumConnections(uint32 frameNr, uint32 checksum);
 void initBattleStateDataConnections(void);
 void setBattleStateConnections(struct battlestate_struct *bs);
 
-BATTLE_INPUT_STATE networkBattleInput(COUNT player, STARSHIPPTR StarShipPtr);
+BATTLE_INPUT_STATE networkBattleInput(COUNT player, STARSHIP *StarShipPtr);
 
 NetConnection *openPlayerNetworkConnection(COUNT player, void *extra);
 void closePlayerNetworkConnection(COUNT player);

@@ -35,28 +35,37 @@ FRAME explosion[NUM_VIEWS];
 
 
 BOOLEAN
-load_animation (PFRAME pixarray, DWORD big_res, DWORD med_res, DWORD
+load_animation (FRAME *pixarray, DWORD big_res, DWORD med_res, DWORD
 		sml_res)
 {
 	DRAWABLE d;
 
-	if ((d = LoadGraphic (big_res)) == (DRAWABLE)NULL_PTR)
-		return (FALSE);
+	d = LoadGraphic (big_res);
+	if (!d)
+		return FALSE;
 	pixarray[0] = CaptureDrawable (d);
 
-	if (med_res != 0L && (d = LoadGraphic (med_res)) == (DRAWABLE)NULL_PTR)
-		return (FALSE);
+	if (med_res != 0L)
+	{
+		d = LoadGraphic (med_res);
+		if (!d)
+			return FALSE;
+	}
 	pixarray[1] = CaptureDrawable (d);
 
-	if (sml_res != 0L && (d = LoadGraphic (sml_res)) == (DRAWABLE)NULL_PTR)
-		return (FALSE);
+	if (sml_res != 0L)
+	{
+		d = LoadGraphic (sml_res);
+		if (!d)
+			return FALSE;
+	}
 	pixarray[2] = CaptureDrawable (d);
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
-free_image (PFRAME pixarray)
+free_image (FRAME *pixarray)
 {
 	BOOLEAN retval;
 	COUNT i;
@@ -64,11 +73,11 @@ free_image (PFRAME pixarray)
 	retval = TRUE;
 	for (i = 0; i < NUM_VIEWS; ++i)
 	{
-		if (pixarray[i] != (FRAME)NULL_PTR)
+		if (pixarray[i] != NULL)
 		{
 			if (!DestroyDrawable (ReleaseDrawable (pixarray[i])))
 				retval = FALSE;
-			pixarray[i] = (FRAME)NULL_PTR;
+			pixarray[i] = NULL;
 		}
 	}
 
@@ -179,7 +188,7 @@ InitShips (void)
 		{
 #define NUM_ASTEROIDS 5
 			for (i = 0; i < NUM_ASTEROIDS; ++i)
-				spawn_asteroid (NULL_PTR);
+				spawn_asteroid (NULL);
 #define NUM_PLANETS 1
 			for (i = 0; i < NUM_PLANETS; ++i)
 				spawn_planet ();
@@ -197,7 +206,7 @@ UninitShips (void)
 	BYTE crew_retrieved;
 	SIZE i;
 	HELEMENT hElement, hNextElement;
-	STARSHIPPTR SPtr[NUM_PLAYERS];
+	STARSHIP *SPtr[NUM_PLAYERS];
 
 	StopSound ();
 
@@ -211,7 +220,7 @@ UninitShips (void)
 	for (hElement = GetHeadElement ();
 			hElement != 0; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
 		if (ElementPtr->state_flags & CREW_OBJECT)
@@ -222,15 +231,15 @@ UninitShips (void)
 	for (hElement = GetHeadElement ();
 			hElement != 0; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
-		extern void new_ship (PELEMENT ElementPtr);
+		ELEMENT *ElementPtr;
+		extern void new_ship (ELEMENT *ElementPtr);
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
 		if ((ElementPtr->state_flags & PLAYER_SHIP)
 				|| ElementPtr->death_func == new_ship)
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 

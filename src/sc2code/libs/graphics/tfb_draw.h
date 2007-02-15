@@ -93,13 +93,13 @@ typedef struct tfb_pixelformat
 // Drawing commands
 
 void TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b, SCREEN dest);
-void TFB_DrawScreen_Rect (PRECT rect, int r, int g, int b, SCREEN dest);
+void TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest);
 void TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale, TFB_ColorMap *cmap, SCREEN dest);
-void TFB_DrawScreen_Copy (PRECT r, SCREEN src, SCREEN dest);
+void TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest);
 void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, SCREEN dest);
 void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, SCREEN dest);
 
-void TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src);
+void TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
 void TFB_DrawScreen_DeleteData (void *);
 void TFB_DrawScreen_WaitForSignal (void);
@@ -113,7 +113,7 @@ void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Image *dest);
-void TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image);
+void TFB_DrawImage_Rect (RECT *rect, int r, int g, int b, TFB_Image *image);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale, TFB_ColorMap *cmap, TFB_Image *target);
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Image *target);
 void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, TFB_Image *target);
@@ -129,15 +129,15 @@ void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst, EXTENT size
 void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas dst, TFB_Canvas mipmap, EXTENT size);
 void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
 		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
-		int scale, PEXTENT size, HOT_SPOT *hs);
+		int scale, EXTENT *size, HOT_SPOT *hs);
 void TFB_DrawCanvas_Rotate (TFB_Canvas src, TFB_Canvas dst, int angle, EXTENT size);
-void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, PEXTENT size);
-void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, PEXTENT size);
+void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, EXTENT *size);
+void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, EXTENT *size);
 
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas dest);
-void TFB_DrawCanvas_Rect (PRECT rect, int r, int g, int b, TFB_Canvas image);
+void TFB_DrawCanvas_Rect (RECT *rect, int r, int g, int b, TFB_Canvas image);
 void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale, TFB_ColorMap *cmap, TFB_Canvas target);
 void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Canvas target);
 void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, TFB_Canvas target);

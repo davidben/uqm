@@ -47,21 +47,21 @@ LoadMasterShipList (void)
 		{
 			char built_buf[30];
 			HSTARSHIP hStarShip, hNextShip;
-			STARSHIPPTR BuiltShipPtr;
-			SHIP_INFOPTR ShipInfoPtr;
+			STARSHIP *BuiltShipPtr;
+			SHIP_INFO *ShipInfoPtr;
 
 			TaskSwitch ();
 					// XXX: what is this doing here?
 
 			BuiltShipPtr = LockStarShip (&master_q, hBuiltShip);
 			load_ship (BuiltShipPtr, FALSE);
-			ShipInfoPtr = &((SHIP_FRAGMENTPTR)BuiltShipPtr)->ShipInfo;
+			ShipInfoPtr = &((SHIP_FRAGMENT*)BuiltShipPtr)->ShipInfo;
 			*ShipInfoPtr = BuiltShipPtr->RaceDescPtr->ship_info;
 			BuiltShipPtr->RaceDescPtr->ship_info.melee_icon = 0;
 			BuiltShipPtr->RaceDescPtr->ship_info.icons = 0;
 			BuiltShipPtr->RaceDescPtr->ship_info.race_strings = 0;
 			free_ship (BuiltShipPtr, FALSE);
-			BuiltShipPtr->RaceDescPtr = (RACE_DESCPTR)ShipInfoPtr;
+			BuiltShipPtr->RaceDescPtr = (RACE_DESC*)ShipInfoPtr;
 
 			GetStringContents (SetAbsStringTableIndex (
 					BuiltShipPtr->RaceDescPtr->ship_info.race_strings, 2
@@ -76,7 +76,7 @@ LoadMasterShipList (void)
 					hStarShip; hStarShip = hNextShip)
 			{
 				char ship_buf[30];
-				STARSHIPPTR StarShipPtr;
+				STARSHIP *StarShipPtr;
 
 				StarShipPtr = LockStarShip (&master_q, hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
@@ -101,7 +101,7 @@ FreeMasterShipList (void)
 	for (hStarShip = GetHeadLink (&master_q);
 			hStarShip != 0; hStarShip = hNextShip)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (&master_q, hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
@@ -131,7 +131,7 @@ FindMasterShip (DWORD ship_ref)
 		{
 			DWORD ref;
 			HSTARSHIP hNextShip;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			StarShipPtr = LockStarShip (&master_q, hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);

@@ -25,9 +25,9 @@
 
 static LOCDATA spathi_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SPATHI_PMAP_ANIM, /* AlienFrame */
 	(FONT)SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -137,7 +137,7 @@ static LOCDATA spathi_desc =
 		0, /* BlockMask */
 	},
 #endif /* NEVER */
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -788,10 +788,10 @@ post_spathi_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_spathi_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	spathi_desc.init_encounter_func = Intro;
 	spathi_desc.post_encounter_func = post_spathi_enc;

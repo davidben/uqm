@@ -47,8 +47,6 @@ typedef struct connect_dialog_state
 
 static void DrawConnectDialog (void);
 
-typedef CONNECT_DIALOG_STATE *PCONNECT_DIALOG_STATE;
-
 static WIDGET_MENU_SCREEN menu;
 static WIDGET_BUTTON buttons[3];
 static WIDGET_SLIDER slider;
@@ -67,7 +65,7 @@ static BOOLEAN done;
 /* This kind of sucks, but the Button callbacks need access to the
  * CONNECT_DIALOG_STATE, so we need a pointer to it */
 
-static PCONNECT_DIALOG_STATE current_state;
+static CONNECT_DIALOG_STATE *current_state;
 
 static FONT PlayerFont;
 
@@ -232,7 +230,7 @@ MCD_DrawTextEntry (WIDGET *_self, int x, int y)
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[WIDGET_TEXTENTRY_WIDTH];
-		PBYTE pchar_deltas;
+		BYTE *pchar_deltas;
 		RECT r;
 		SIZE leading;
 
@@ -311,7 +309,7 @@ MCD_DrawTextEntry (WIDGET *_self, int x, int y)
  * refactoring, as redraw_menu () is the only real change. */
 
 static BOOLEAN
-OnTextEntryChange (PTEXTENTRY_STATE pTES)
+OnTextEntryChange (TEXTENTRY_STATE *pTES)
 {
 	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
 
@@ -329,7 +327,7 @@ OnTextEntryChange (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-OnTextEntryFrame (PTEXTENTRY_STATE pTES)
+OnTextEntryFrame (TEXTENTRY_STATE *pTES)
 {
 	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
 
@@ -546,7 +544,7 @@ DrawConnectDialog (void)
 }
 
 static BOOLEAN
-DoMeleeConnectDialog (PCONNECT_DIALOG_STATE state)
+DoMeleeConnectDialog (CONNECT_DIALOG_STATE *state)
 {
 	BOOLEAN changed;
 
@@ -620,7 +618,7 @@ MeleeConnectDialog (int side)
 
 	current_state = &state;
 
-	DoInput ((PVOID)&state, TRUE);
+	DoInput (&state, TRUE);
 
 	current_state = NULL;
 

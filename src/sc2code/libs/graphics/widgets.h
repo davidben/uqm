@@ -175,7 +175,7 @@ typedef struct _widget_controlentry {
 	char controlname[2][WIDGET_CONTROLENTRY_WIDTH];
 } WIDGET_CONTROLENTRY;
 
-void DrawShadowedBox (PRECT r, COLOR bg, COLOR dark, COLOR medium);
+void DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium);
 void DrawLabelAsWindow(WIDGET_LABEL *label);
 
 int Widget_Event (int event);

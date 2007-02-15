@@ -22,9 +22,9 @@
 
 static LOCDATA blackurq_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)BLACKURQ_PMAP_ANIM, /* AlienFrame */
 	(FONT)BLACKURQ_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -122,7 +122,7 @@ static LOCDATA blackurq_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -535,10 +535,10 @@ post_blackurq_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_blackurq_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	blackurq_desc.init_encounter_func = Intro;
 	blackurq_desc.post_encounter_func = post_blackurq_enc;

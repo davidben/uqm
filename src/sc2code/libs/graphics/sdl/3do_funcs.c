@@ -84,7 +84,7 @@ FlushGraphics ()
 }
 
 static void
-ExpandRect (PRECT rect, int expansion)
+ExpandRect (RECT *rect, int expansion)
 {
 	if (rect->corner.x - expansion >= 0)
 	{
@@ -120,7 +120,7 @@ ExpandRect (PRECT rect, int expansion)
 }
 
 void
-SetTransitionSource (PRECT pRect)
+SetTransitionSource (RECT *pRect)
 {
 	RECT ActualRect;
 
@@ -135,7 +135,7 @@ SetTransitionSource (PRECT pRect)
 
 // Status: Implemented
 void
-ScreenTransition (int TransType, PRECT pRect)
+ScreenTransition (int TransType, RECT *pRect)
 {
 	const float DURATION = (31.0f / 60.0f); // in seconds
 	Uint32 last_time = 0, current_time, delta_time, add_amount;
@@ -183,7 +183,7 @@ ScreenTransition (int TransType, PRECT pRect)
 }
 
 BOOLEAN
-_image_intersect (PIMAGE_BOX box1, PIMAGE_BOX box2, PRECT rect)
+_image_intersect (IMAGE_BOX *box1, IMAGE_BOX *box2, RECT *rect)
 {
 	BOOLEAN ret;
 	SDL_Surface *img1, *img2;

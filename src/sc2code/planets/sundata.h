@@ -39,14 +39,10 @@ typedef struct
 
 	PLANET_INFO PlanetInfo;
 } SYSTEM_INFO;
-typedef SYSTEM_INFO *PSYSTEM_INFO;
-
-#define SYSTEM_INFOPTR PSYSTEM_INFO
 		
-extern DWORD GenerateMineralDeposits (SYSTEM_INFOPTR SysInfoPtr, PCOUNT
-		pwhich_deposit);
-extern DWORD GenerateLifeForms (SYSTEM_INFOPTR SysInfoPtr, PCOUNT
-		pwhich_life);
+extern DWORD GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
+		COUNT *pwhich_deposit);
+extern DWORD GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life);
 
 #define DWARF_ELEMENT_DENSITY  1
 #define GIANT_ELEMENT_DENSITY 3
@@ -54,8 +50,8 @@ extern DWORD GenerateLifeForms (SYSTEM_INFOPTR SysInfoPtr, PCOUNT
 
 #define MAX_ELEMENT_DENSITY ((MAX_ELEMENT_UNITS * SUPERGIANT_ELEMENT_DENSITY) << 1)
 
-extern DWORD DoPlanetaryAnalysis (SYSTEM_INFOPTR SysInfoPtr, PPLANET_DESC
-		pPlanetDesc);
+extern DWORD DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
+		PLANET_DESC *pPlanetDesc);
 
 extern SYSTEM_INFO CurSysInfo;
 

@@ -36,9 +36,9 @@ static void SellMinerals (RESPONSE_REF R);
 
 static LOCDATA commander_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
 	(FONT)COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -151,7 +151,7 @@ static LOCDATA commander_desc =
 		ONE_SECOND * 7 / 60, ONE_SECOND / 12, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static DWORD CurBulletinMask;
@@ -935,8 +935,7 @@ TellStarBase (RESPONSE_REF R)
 					tell_me_about_modules0,
 					GLOBAL_SIS (ShipName),
 					tell_me_about_modules1,
-					NULL_PTR
-					);
+					(UNICODE*)NULL);
 			pstack[0] = tell_me_about_modules0;
 			break;
 		default:
@@ -951,8 +950,7 @@ TellStarBase (RESPONSE_REF R)
 					tell_me_about_fuel0,
 					GLOBAL_SIS (ShipName),
 					tell_me_about_fuel1,
-					NULL_PTR
-					);
+					(UNICODE*)NULL);
 			pstack[1] = tell_me_about_fuel0;
 			break;
 		default:
@@ -1155,7 +1153,7 @@ DiscussDevices (BOOLEAN TalkAbout)
 				if (GET_GAME_STATE (DATA_PLATE_1_ON_SHIP)
 						&& !GET_GAME_STATE (DISCUSSED_DATA_PLATE_1))
 				{
-					pStr = (PSTR)ABOUT_DATAPLATE_1;
+					pStr = ABOUT_DATAPLATE_1;
 					SET_GAME_STATE (DISCUSSED_DATA_PLATE_1, TalkAbout);
 				}
 				break;
@@ -1163,7 +1161,7 @@ DiscussDevices (BOOLEAN TalkAbout)
 				if (GET_GAME_STATE (DATA_PLATE_2_ON_SHIP)
 						&& !GET_GAME_STATE (DISCUSSED_DATA_PLATE_2))
 				{
-					pStr = (PSTR)ABOUT_DATAPLATE_2;
+					pStr = ABOUT_DATAPLATE_2;
 					SET_GAME_STATE (DISCUSSED_DATA_PLATE_2, TalkAbout);
 				}
 				break;
@@ -1171,7 +1169,7 @@ DiscussDevices (BOOLEAN TalkAbout)
 				if (GET_GAME_STATE (DATA_PLATE_3_ON_SHIP)
 						&& !GET_GAME_STATE (DISCUSSED_DATA_PLATE_3))
 				{
-					pStr = (PSTR)ABOUT_DATAPLATE_3;
+					pStr = ABOUT_DATAPLATE_3;
 					SET_GAME_STATE (DISCUSSED_DATA_PLATE_3, TalkAbout);
 				}
 				break;
@@ -1911,7 +1909,7 @@ SellMinerals (RESPONSE_REF R)
 static void
 Intro (void)
 {
-	NormalStarbase (NULL_PTR);
+	NormalStarbase (0);
 }
 
 static COUNT
@@ -1930,10 +1928,10 @@ post_starbase_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_starbase_comm ()
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	commander_desc.init_encounter_func = Intro;
 	commander_desc.post_encounter_func = post_starbase_enc;

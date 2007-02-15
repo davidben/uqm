@@ -101,7 +101,7 @@ static RACE_DESC samatra_desc =
 	{
 		0,
 		0,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -110,10 +110,10 @@ static RACE_DESC samatra_desc =
 	0,
 };
 
-static HELEMENT spawn_comet (PELEMENT ElementPtr);
+static HELEMENT spawn_comet (ELEMENT *ElementPtr);
 
 static void
-comet_preprocess (PELEMENT ElementPtr)
+comet_preprocess (ELEMENT *ElementPtr)
 {
 	COUNT frame_index;
 
@@ -123,7 +123,7 @@ comet_preprocess (PELEMENT ElementPtr)
 		if (frame_index == 25)
 		{
 			SIZE cur_delta_x, cur_delta_y;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 			++StarShipPtr->RaceDescPtr->characteristics.weapon_wait;
@@ -148,7 +148,8 @@ comet_preprocess (PELEMENT ElementPtr)
 #define COMET_DAMAGE 2
 
 static void
-comet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+comet_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr1->state_flags & GOOD_GUY)
 	{
@@ -179,7 +180,7 @@ comet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 
 		if (ElementPtr0->state_flags & DISAPPEARING)
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr0, &StarShipPtr);
 			--StarShipPtr->RaceDescPtr->characteristics.weapon_wait;
@@ -188,7 +189,7 @@ comet_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 }
 
 static HELEMENT
-spawn_comet (PELEMENT ElementPtr)
+spawn_comet (ELEMENT *ElementPtr)
 {
 #define COMET_OFFSET 0
 #define COMET_HITS 12
@@ -196,7 +197,7 @@ spawn_comet (PELEMENT ElementPtr)
 #define COMET_LIFE 2
 	MISSILE_BLOCK MissileBlock;
 	HELEMENT hComet;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	MissileBlock.cx = ElementPtr->next.location.x;
@@ -216,7 +217,7 @@ spawn_comet (PELEMENT ElementPtr)
 
 	if (hComet)
 	{
-		ELEMENTPTR CometPtr;
+		ELEMENT *CometPtr;
 
 		PutElement (hComet);
 
@@ -263,7 +264,7 @@ spawn_comet (PELEMENT ElementPtr)
 }
 
 static void
-turret_preprocess (PELEMENT ElementPtr)
+turret_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -283,11 +284,12 @@ turret_preprocess (PELEMENT ElementPtr)
 #define GATE_HITS 100
 
 static void
-gate_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+gate_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr1->state_flags & GOOD_GUY)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr0, &StarShipPtr);
 		if (StarShipPtr->RaceDescPtr->num_generators == 0)
@@ -328,9 +330,9 @@ gate_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT 
 }
 
 static void
-gate_preprocess (PELEMENT ElementPtr)
+gate_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->RaceDescPtr->num_generators == 0)
@@ -364,11 +366,11 @@ gate_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-generator_death (PELEMENT ElementPtr)
+generator_death (ELEMENT *ElementPtr)
 {
 	if (!(ElementPtr->state_flags & FINITE_LIFE))
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		--StarShipPtr->RaceDescPtr->num_generators;
@@ -405,7 +407,7 @@ generator_death (PELEMENT ElementPtr)
 #define GENERATOR_HITS 15
 
 static void
-generator_preprocess (PELEMENT ElementPtr)
+generator_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -421,8 +423,8 @@ generator_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-generator_collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1)
+generator_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (!(ElementPtr1->state_flags & FINITE_LIFE))
 	{
@@ -435,9 +437,9 @@ generator_collision (PELEMENT ElementPtr0, PPOINT pPt0,
 #define TRACK_WAIT 1
 
 static void
-sentinel_preprocess (PELEMENT ElementPtr)
+sentinel_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	++StarShipPtr->RaceDescPtr->characteristics.special_wait;
@@ -490,7 +492,8 @@ sentinel_preprocess (PELEMENT ElementPtr)
 		else
 		{
 			SIZE delta_x0, delta_y0, delta_x1, delta_y1;
-			ELEMENTPTR ShipPtr, EnemyShipPtr;
+			ELEMENT *ShipPtr;
+			ELEMENT *EnemyShipPtr;
 
 			LockElement (ElementPtr->hTarget, &EnemyShipPtr);
 
@@ -521,7 +524,7 @@ sentinel_preprocess (PELEMENT ElementPtr)
 		{
 			COUNT num_frames;
 			SIZE delta_x, delta_y;
-			ELEMENTPTR TargetPtr;
+			ELEMENT *TargetPtr;
 			VELOCITY_DESC TargetVelocity;
 
 			LockElement (hTarget, &TargetPtr);
@@ -576,10 +579,11 @@ sentinel_preprocess (PELEMENT ElementPtr)
 #define MAX_RECOIL_VELOCITY (RECOIL_VELOCITY * 4)
 
 static void
-sentinel_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+sentinel_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	COUNT angle;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (ElementPtr1->state_flags & BAD_GUY)
 	{
@@ -654,7 +658,7 @@ sentinel_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPO
 			--StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			if (hBlastElement)
 			{
-				ELEMENTPTR BlastElementPtr;
+				ELEMENT *BlastElementPtr;
 
 				LockElement (hBlastElement, &BlastElementPtr);
 				BlastElementPtr->life_span = 6;
@@ -669,7 +673,8 @@ sentinel_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPO
 }
 
 static void
-samatra_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+samatra_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 }
@@ -678,9 +683,9 @@ samatra_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT C
 #define MAX_SENTINELS 4
 
 static void
-samatra_postprocess (PELEMENT ElementPtr)
+samatra_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (StarShipPtr->RaceDescPtr->num_generators)
@@ -719,7 +724,7 @@ samatra_postprocess (PELEMENT ElementPtr)
 
 			if (hSentinel)
 			{
-				ELEMENTPTR SentinelPtr;
+				ELEMENT *SentinelPtr;
 
 				LockElement (hSentinel, &SentinelPtr);
 				SentinelPtr->collision_func = sentinel_collision;
@@ -736,9 +741,9 @@ samatra_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-samatra_preprocess (PELEMENT ElementPtr)
+samatra_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	StarShipPtr->RaceDescPtr->characteristics.weapon_wait = 0;
@@ -772,7 +777,7 @@ samatra_preprocess (PELEMENT ElementPtr)
 			hGenerator = AllocElement ();
 			if (hGenerator)
 			{
-				ELEMENTPTR GeneratorPtr;
+				ELEMENT *GeneratorPtr;
 
 				LockElement (hGenerator, &GeneratorPtr);
 				GeneratorPtr->hit_points = GENERATOR_HITS;
@@ -817,7 +822,7 @@ samatra_preprocess (PELEMENT ElementPtr)
 			hTurret = AllocElement ();
 			if (hTurret)
 			{
-				ELEMENTPTR TurretPtr;
+				ELEMENT *TurretPtr;
 
 				LockElement (hTurret, &TurretPtr);
 				TurretPtr->hit_points = 1;
@@ -852,7 +857,7 @@ samatra_preprocess (PELEMENT ElementPtr)
 			hGate = AllocElement ();
 			if (hGate)
 			{
-				ELEMENTPTR GatePtr;
+				ELEMENT *GatePtr;
 
 				LockElement (hGate, &GatePtr);
 				GatePtr->hit_points = GATE_HITS;
@@ -888,16 +893,14 @@ samatra_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_samatra (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	samatra_desc.preprocess_func = samatra_preprocess;
 	samatra_desc.postprocess_func = samatra_postprocess;
-	samatra_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) samatra_intelligence;
+	samatra_desc.cyborg_control.intelligence_func = samatra_intelligence;
 
 	RaceDescPtr = &samatra_desc;
 

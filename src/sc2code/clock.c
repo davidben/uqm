@@ -113,13 +113,13 @@ clock_task_func(void* data)
 			}
 
 			LockMutex (GraphicsLock);
-			DrawStatusMessage (NULL_PTR);
+			DrawStatusMessage (NULL);
 			{
 				HEVENT hEvent;
 
 				while ((hEvent = GetHeadEvent ()))
 				{
-					EVENTPTR EventPtr;
+					EVENT *EventPtr;
 
 					LockEvent (hEvent, &EventPtr);
 
@@ -153,7 +153,7 @@ clock_task_func(void* data)
 			num_ticks = GetTimeCounter () - LastTime;
 			if (!OnAutoPilot)
 			{
-				DrawSISMessage (NULL_PTR);
+				DrawSISMessage (NULL);
 				cycle_index = delay_count = 0;
 			}
 			else if (delay_count > num_ticks)
@@ -301,8 +301,8 @@ SetGameClockRate (COUNT seconds_per_day)
 }
 
 BOOLEAN
-ValidateEvent (EVENT_TYPE type, PCOUNT pmonth_index, PCOUNT pday_index,
-		PCOUNT pyear_index)
+ValidateEvent (EVENT_TYPE type, COUNT *pmonth_index, COUNT *pday_index,
+		COUNT *pyear_index)
 {
 	COUNT month_index, day_index, year_index;
 
@@ -353,7 +353,7 @@ AddEvent (EVENT_TYPE type, COUNT month_index, COUNT day_index, COUNT
 	else if (ValidateEvent (type, &month_index, &day_index, &year_index)
 			&& (hNewEvent = AllocEvent ()))
 	{
-		EVENTPTR EventPtr;
+		EVENT *EventPtr;
 
 		LockEvent (hNewEvent, &EventPtr);
 		EventPtr->day_index = (BYTE)day_index;

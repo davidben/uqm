@@ -106,7 +106,7 @@ typedef struct
 } POINT3;
 
 static void
-TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
+TransformTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 {
 	CONTEXT OldContext;
 	FRAME OldFrame;
@@ -132,16 +132,18 @@ TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 		BYTE AlgoType;
 		SIZE base, d;
 		POINT pt;
-		PLANDATAPTR PlanDataPtr;
+		const PlanetFrame *PlanDataPtr;
 		PRIMITIVE BatchArray[NUM_BATCH_POINTS];
-		PPRIMITIVE pBatch;
-		PBYTE pSrc, xlat_tab, cbase;
+		PRIMITIVE *pBatch;
+		BYTE *pSrc;
+		BYTE *xlat_tab;
+		BYTE *cbase;
 		HOT_SPOT OldHot;
 		RECT ClipRect;
 
 		OldHot = SetFrameHot (DstFrame, MAKE_HOT_SPOT (0, 0));
 		GetContextClipRect (&ClipRect);
-		SetContextClipRect (NULL_PTR);
+		SetContextClipRect (NULL);
 		SetContextClipping (FALSE);
 
 		pBatch = &BatchArray[0];
@@ -157,7 +159,7 @@ TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 				];
 		AlgoType = PLANALGO (PlanDataPtr->Type);
 		base = PlanDataPtr->base_elevation;
-		xlat_tab = (PBYTE)((XLAT_DESCPTR)pSolarSysState->XlatPtr)->xlat_tab;
+		xlat_tab = (BYTE*)((XLAT_DESC*)pSolarSysState->XlatPtr)->xlat_tab;
 		cbase = GetColorMapAddress (pSolarSysState->OrbitalCMap);
 
 		i = NUM_BATCH_POINTS;
@@ -167,7 +169,7 @@ TransformTopography (FRAME DstFrame, PBYTE pTopoData, int w, int h)
 		{
 			for (pt.x = 0; pt.x < w; ++pt.x, ++pSrc)
 			{
-				PBYTE ctab;
+				BYTE *ctab;
 
 				d = (SBYTE)*pSrc;
 				if (AlgoType == GAS_GIANT_ALGO)
@@ -881,10 +883,10 @@ RenderLevelMasks (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 #define RANGE_SHIFT 6
 
 static void
-DitherMap (PSBYTE DepthArray)
+DitherMap (SBYTE *DepthArray)
 {
 	COUNT i;
-	PSBYTE lpDst;
+	SBYTE *lpDst;
 
 	i = (MAP_WIDTH * MAP_HEIGHT) >> 2;
 	lpDst = DepthArray;
@@ -909,7 +911,7 @@ DitherMap (PSBYTE DepthArray)
 }
 
 static void
-MakeCrater (PRECT pRect, PSBYTE DepthArray, SIZE rim_delta, SIZE
+MakeCrater (RECT *pRect, SBYTE *DepthArray, SIZE rim_delta, SIZE
 		crater_delta, BOOLEAN SetDepth)
 {
 	COORD x, y, lf_x, rt_x;
@@ -947,10 +949,8 @@ MakeCrater (PRECT pRect, PSBYTE DepthArray, SIZE rim_delta, SIZE
 			rt_x = A + x;
 			if (SetDepth)
 			{
-				memset ((PSBYTE)&DepthArray[TopIndex + lf_x], 0,
-						rt_x - lf_x + 1);
-				memset ((PSBYTE)&DepthArray[BotIndex + lf_x], 0,
-						rt_x - lf_x + 1);
+				memset (&DepthArray[TopIndex + lf_x], 0, rt_x - lf_x + 1);
+				memset (&DepthArray[BotIndex + lf_x], 0, rt_x - lf_x + 1);
 			}
 			if (lf_x == rt_x)
 			{
@@ -1011,8 +1011,8 @@ MakeCrater (PRECT pRect, PSBYTE DepthArray, SIZE rim_delta, SIZE
 		rt_x = A + x;
 		if (SetDepth)
 		{
-			memset ((PSBYTE)&DepthArray[TopIndex + lf_x], 0, rt_x - lf_x + 1);
-			memset ((PSBYTE)&DepthArray[BotIndex + lf_x], 0, rt_x - lf_x + 1);
+			memset (&DepthArray[TopIndex + lf_x], 0, rt_x - lf_x + 1);
+			memset (&DepthArray[BotIndex + lf_x], 0, rt_x - lf_x + 1);
 		}
 		if (lf_x == rt_x)
 		{
@@ -1069,7 +1069,7 @@ MakeCrater (PRECT pRect, PSBYTE DepthArray, SIZE rim_delta, SIZE
 	lf_x = A - x;
 	rt_x = A + x;
 	if (SetDepth)
-		memset ((PSBYTE)&DepthArray[TopIndex + lf_x], 0, rt_x - lf_x + 1);
+		memset (&DepthArray[TopIndex + lf_x], 0, rt_x - lf_x + 1);
 	if (lf_x == rt_x)
 	{
 		DepthArray[TopIndex + lf_x] += rim_delta;
@@ -1103,12 +1103,12 @@ MakeCrater (PRECT pRect, PSBYTE DepthArray, SIZE rim_delta, SIZE
 #define NUM_BAND_COLORS 4
 
 static void
-MakeStorms (COUNT storm_count, PSBYTE DepthArray)
+MakeStorms (COUNT storm_count, SBYTE *DepthArray)
 {
 #define MAX_STORMS 8
 	COUNT i;
 	RECT storm_r[MAX_STORMS];
-	PRECT pstorm_r;
+	RECT *pstorm_r;
 
 	pstorm_r = &storm_r[i = storm_count];
 	while (i--)
@@ -1227,13 +1227,13 @@ MakeStorms (COUNT storm_count, PSBYTE DepthArray)
 }
 
 static void
-MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
+MakeGasGiant (COUNT num_bands, SBYTE *DepthArray, RECT *pRect, SIZE
 		depth_delta)
 {
 	COORD last_y, next_y;
 	SIZE band_error, band_bump, band_delta;
 	COUNT i, j, band_height;
-	PSBYTE lpDst;
+	SBYTE *lpDst;
 	UWORD loword, hiword;
 	DWORD rand_val;
 
@@ -1297,13 +1297,13 @@ MakeGasGiant (COUNT num_bands, PSBYTE DepthArray, PRECT pRect, SIZE
 }
 
 static void
-ValidateMap (PSBYTE DepthArray)
+ValidateMap (SBYTE *DepthArray)
 {
 	BYTE state;
 	BYTE pixel_count[2], lb[2];
 	SBYTE last_byte;
 	COUNT i;
-	PSBYTE lpDst;
+	SBYTE *lpDst;
 
 	i = MAP_WIDTH - 1;
 	lpDst = DepthArray;
@@ -1402,7 +1402,7 @@ TopoVarianceCalc (int factor)
 }
 
 static void
-TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
+TopoScale4x (BYTE *pDstTopo, BYTE *pSrcTopo, int num_faults, int fault_var)
 {
 		// Interpolate the topographical data by connecting the elevations
 		// to their nearest neighboors using straight lines (in random
@@ -1412,7 +1412,8 @@ TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
 	int x, y;
 	const int w = MAP_WIDTH, h = MAP_HEIGHT;
 	const int spitch = MAP_WIDTH, dpitch = MAP_WIDTH * 4;
-	PSBYTE pSrc, pDst;
+	SBYTE *pSrc;
+	SBYTE *pDst;
 	int* prevrow;
 	int* prow;
 	int elev[5][5];
@@ -1492,7 +1493,7 @@ TopoScale4x (PBYTE pDstTopo, PBYTE pSrcTopo, int num_faults, int fault_var)
 	for (y = 0; y < h; ++y, pDst += dpitch * 3)
 	{
 		int x2, y2;
-		PSBYTE p;
+		SBYTE *p;
 		int val, step, rndfact;
 		const struct line_def_t* pld;
 
@@ -1614,7 +1615,7 @@ typedef struct
 } elev_block_t;
 
 static inline void
-get_vblock_avg (elev_block_t *pblk, PSBYTE pTopo, int x, int y)
+get_vblock_avg (elev_block_t *pblk, SBYTE *pTopo, int x, int y)
 {
 	SBYTE *elev = pTopo;
 	int y0, y1, i;
@@ -1660,7 +1661,7 @@ get_vblock_avg (elev_block_t *pblk, PSBYTE pTopo, int x, int y)
 
 // See description above
 static void
-GenerateLightMap (PSBYTE pTopo, int w, int h)
+GenerateLightMap (SBYTE *pTopo, int w, int h)
 {
 #define LMAP_BLOCKS       (2 * LMAP_MAX_DIST + 1)
 	int x, y;
@@ -1778,16 +1779,16 @@ GenerateLightMap (PSBYTE pTopo, int w, int h)
 }
 
 void
-GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame)
+GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 {
 	RECT r;
 	DWORD old_seed;
-	PLANDATAPTR PlanDataPtr;
+	const PlanetFrame *PlanDataPtr;
 	COUNT i, y;
 	POINT loc;
 	CONTEXT OldContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
-	PBYTE pScaledTopo = 0;
+	BYTE *pScaledTopo = 0;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
@@ -2013,7 +2014,7 @@ rotate_planet_task (void *data)
 	SIZE spin_dir;
 	COORD init_x;
 	DWORD TimeIn;
-	PSOLARSYS_STATE pSS;
+	SOLARSYS_STATE *pSS;
 	BOOLEAN zooming;
 	RECT r, *repair = &r;
 	UBYTE zoom_from;
@@ -2084,7 +2085,7 @@ rotate_planet_task (void *data)
 			// to acquire the graphics lock
 			LockMutex (GraphicsLock);
 			if (*(volatile UBYTE *)&pSS->PauseRotate != 1
-//			if (((PSOLARSYS_STATE volatile)pSS)->MenuState.Initialized <= 3
+//			if (((SOLARSYS_STATE *volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
 				//PauseRotate == 2 is a single-step

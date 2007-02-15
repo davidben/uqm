@@ -60,8 +60,6 @@ typedef struct
 
 	DWORD BlockMask;
 } ANIMATION_DESC;
-typedef ANIMATION_DESC *PANIMATION_DESC;
-#define ANIMATION_DESCPTR PANIMATION_DESC
 
 #define MAX_ANIMATIONS 20
 
@@ -119,8 +117,6 @@ typedef struct
 	// 0-9, 10-19, ..20-90, ..100-900, etc.
 	SPEECH_DIGIT Digits[MAX_SPEECH_DIGITS];
 } NUMBER_SPEECH_DESC;
-typedef NUMBER_SPEECH_DESC *PNUMBER_SPEECH_DESC;
-#define NUMBER_SPEECH_DESCPTR PNUMBER_SPEECH_DESC
 typedef NUMBER_SPEECH_DESC *NUMBER_SPEECH;
 
 typedef DWORD LDAS_FLAGS;
@@ -158,8 +154,6 @@ typedef struct
 
 	NUMBER_SPEECH AlienNumberSpeech;
 } LOCDATA;
-typedef LOCDATA *PLOCDATA;
-#define LOCDATAPTR PLOCDATA
 
 enum
 {
@@ -936,7 +930,7 @@ typedef struct
 	BYTE ModuleCost[NUM_MODULES];
 	BYTE ElementWorth[NUM_ELEMENT_CATEGORIES];
 
-	PPRIMITIVE DisplayArray;
+	PRIMITIVE *DisplayArray;
 	ACTIVITY CurrentActivity;
 
 	CLOCK_STATE GameClock;
@@ -957,20 +951,16 @@ typedef struct
 
 	BYTE GameState[(NUM_GAME_STATE_BITS + 7) >> 3];
 } GAME_STATE;
-typedef GAME_STATE *PGAME_STATE;
 
 typedef struct
 {
 	SIS_STATE SIS_state;
 	GAME_STATE Game_state;
 } GLOBDATA;
-typedef GLOBDATA *PGLOBDATA;
 
 extern GLOBDATA GlobData;
 #define GLOBAL(f) GlobData.Game_state.f
 #define GLOBAL_SIS(f) GlobData.SIS_state.f
-
-#define GLOBDATAPTR PGLOBDATA
 
 
 //#define STATE_DEBUG
@@ -1010,7 +1000,7 @@ extern void setGameState32 (int startBit, DWORD val
 	
 extern CONTEXT RadarContext;
 
-extern void DiscardStarMap (PVOID CodeRef);
+extern void DiscardStarMap (void *CodeRef);
 extern void RetrieveStarMap (void);
 
 extern void FreeSC2Data (void);

@@ -38,7 +38,7 @@ WIDGET *widget_focus = NULL;
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
 
 void
-DrawShadowedBox(PRECT r, COLOR bg, COLOR dark, COLOR medium)
+DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
 {
 	RECT t;
 	COLOR oldcolor;
@@ -466,7 +466,7 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[WIDGET_TEXTENTRY_WIDTH];
-		PBYTE pchar_deltas;
+		BYTE *pchar_deltas;
 		RECT r;
 		SIZE leading;
 

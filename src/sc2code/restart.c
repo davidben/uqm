@@ -50,7 +50,7 @@ enum
 };
 
 static void
-DrawRestartMenuGraphic (PMENU_STATE pMS)
+DrawRestartMenuGraphic (MENU_STATE *pMS)
 {
 	RECT r;
 	STAMP s;
@@ -108,7 +108,7 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 
 
 static BOOLEAN
-DoRestart (PMENU_STATE pMS)
+DoRestart (MENU_STATE *pMS)
 {
 	static DWORD InTime;
 	static DWORD InactTimeOut;
@@ -183,7 +183,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				break;
 			case SETUP_GAME:
 				LockMutex (GraphicsLock);
-				SetFlashRect (NULL_PTR, (FRAME)0);
+				SetFlashRect (NULL, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 				SetupMenu ();
 				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
@@ -204,7 +204,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		}
 
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 
 		return (FALSE);
@@ -236,7 +236,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 	if (MouseButtonDown)
 	{
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 		UnlockMutex (GraphicsLock);
 		MouseError ();
 		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);	
@@ -253,7 +253,7 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 }
 
 static BOOLEAN
-RestartMenu (PMENU_STATE pMS)
+RestartMenu (MENU_STATE *pMS)
 {
 	DWORD TimeOut;
 	BYTE black_buf[1];
@@ -318,7 +318,7 @@ RestartMenu (PMENU_STATE pMS)
 	}
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL_PTR, (FRAME)0);
+	SetFlashRect (NULL, (FRAME)0);
 	UnlockMutex (GraphicsLock);
 	DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 

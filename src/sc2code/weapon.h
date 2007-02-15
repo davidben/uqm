@@ -30,7 +30,6 @@ typedef struct
 	COUNT face;
 	COLOR color;
 } LASER_BLOCK;
-typedef LASER_BLOCK *PLASER_BLOCK;
 
 typedef struct
 {
@@ -38,24 +37,23 @@ typedef struct
 	ELEMENT_FLAGS sender;
 	SIZE pixoffs, speed, hit_points, damage;
 	COUNT face, index, life;
-	PFRAME farray;
-	void (*preprocess_func) (PELEMENT ElementPtr);
+	FRAME *farray;
+	void (*preprocess_func) (ELEMENT *ElementPtr);
 	SIZE blast_offs;
 } MISSILE_BLOCK;
-typedef MISSILE_BLOCK *PMISSILE_BLOCK;
 
-extern HELEMENT initialize_laser (PLASER_BLOCK pLaserBlock);
-extern HELEMENT initialize_missile (PMISSILE_BLOCK pMissileBlock);
-extern HELEMENT weapon_collision (PELEMENT ElementPtr0, PPOINT pPt0,
-		PELEMENT ElementPtr1, PPOINT pPt1);
-extern SIZE TrackShip (ELEMENTPTR Tracker, PCOUNT pfacing);
-extern void Untarget (ELEMENTPTR ElementPtr);
+extern HELEMENT initialize_laser (LASER_BLOCK *pLaserBlock);
+extern HELEMENT initialize_missile (MISSILE_BLOCK *pMissileBlock);
+extern HELEMENT weapon_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1);
+extern SIZE TrackShip (ELEMENT *Tracker, COUNT *pfacing);
+extern void Untarget (ELEMENT *ElementPtr);
 
 #define MODIFY_IMAGE (1 << 0)
 #define MODIFY_SWAP (1 << 1)
 
-extern FRAME ModifySilhouette (ELEMENTPTR ElementPtr, PSTAMP
-		modify_stamp, BYTE modify_flags);
+extern FRAME ModifySilhouette (ELEMENT *ElementPtr, STAMP *modify_stamp,
+		BYTE modify_flags);
 
 #endif /* _WEAPON_H */
 

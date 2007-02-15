@@ -33,10 +33,10 @@ typedef BYTE STARBASE_STATE;
 
 extern void InstallBombAtEarth (void);
 extern void VisitStarBase (void);
-extern BOOLEAN DoStarBase (PMENU_STATE pMS);
-extern BOOLEAN DoOutfit (PMENU_STATE pMS);
-extern BOOLEAN DoShipyard (PMENU_STATE pMS);
-extern void DrawShipPiece (PMENU_STATE pMS, COUNT which_piece, COUNT
+extern BOOLEAN DoStarBase (MENU_STATE *pMS);
+extern BOOLEAN DoOutfit (MENU_STATE *pMS);
+extern BOOLEAN DoShipyard (MENU_STATE *pMS);
+extern void DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT
 		which_slot, BOOLEAN DrawBluePrint);
 
 extern COUNT WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE

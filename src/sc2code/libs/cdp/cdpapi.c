@@ -225,7 +225,7 @@ cdp_UninitApi (void)
 		{
 			itf->used = false;
 			if (itf->name)
-				HFree ((void*) itf->name);
+				HFree (itf->name);
 			itf->name = NULL;
 			itf->itfvtbl = NULL;
 			itf->module = NULL;
@@ -449,7 +449,7 @@ cdp_Host_UnregisterItf (cdp_ItfReg* itfreg)
 
 	if (!itfreg->builtin)
 	{
-		HFree ((void*) itfreg->name);
+		HFree (itfreg->name);
 	}
 	itfreg->module = NULL;
 	itfreg->name = NULL;
@@ -682,7 +682,7 @@ cdp_Host_UnregisterEvent (cdp_EventReg* evtreg)
 
 	if (!evtreg->builtin)
 	{
-		HFree ((void*) evtreg->name);
+		HFree (evtreg->name);
 	}
 	evtreg->module = NULL;
 	evtreg->name = NULL;

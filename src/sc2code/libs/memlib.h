@@ -122,20 +122,20 @@ extern MEM_HANDLE mem_reallocate (MEM_HANDLE handle, MEM_SIZE size,
 		MEM_FLAGS flags, MEM_PRIORITY priority, MEM_USAGE usage);
 #define mem_resize(h, size) \
 		mem_reallocate(h, (MEM_SIZE)size, SAME_MEM_FLAGS, SAME_MEM_PRIORITY, SAME_MEM_USAGE)
-extern MEM_HANDLE mem_static (PVOID pVoid, MEM_SIZE size, MEM_USAGE
+extern MEM_HANDLE mem_static (void *pVoid, MEM_SIZE size, MEM_USAGE
 		usage);
 extern MEM_HANDLE mem_dup (MEM_HANDLE handle, MEM_USAGE usage);
 
-extern PVOID mem_simple_access (MEM_HANDLE handle);
+extern void* mem_simple_access (MEM_HANDLE handle);
 extern MEM_BOOL mem_simple_unaccess (MEM_HANDLE handle);
 
 #define mem_lock mem_simple_access
 #define mem_unlock mem_simple_unaccess
 
-extern PVOID mem_complex_access (MEM_HANDLE handle, MEM_SIZE pos,
+extern void* mem_complex_access (MEM_HANDLE handle, MEM_SIZE pos,
 		PMEM_SIZE_REQUEST pSizeRequest, MEM_ACCESS_MODE access_mode);
 extern MEM_BOOL mem_complex_unaccess (MEM_HANDLE handle);
-extern PVOID mem_complex_seek (MEM_HANDLE handle, MEM_OFFS offset,
+extern void* mem_complex_seek (MEM_HANDLE handle, MEM_OFFS offset,
 		PMEM_SIZE_REQUEST pSizeRequest, MEM_SEEK_MODE seek_mode);
 
 extern MEM_SIZE mem_get_memavailable (MEM_SIZE size, MEM_PRIORITY

@@ -35,9 +35,9 @@ ZapToUrquanEncounter (void)
 	if ((hEncounter = AllocEncounter ()) || (hEncounter = GetHeadEncounter ()))
 	{
 		SIZE dx, dy;
-		ENCOUNTERPTR EncounterPtr;
+		ENCOUNTER *EncounterPtr;
 		HSTARSHIP hStarShip;
-		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
 		LockEncounter (hEncounter, &EncounterPtr);
 
@@ -48,16 +48,13 @@ ZapToUrquanEncounter (void)
 		InsertEncounter (hEncounter, GetHeadEncounter ());
 
 		hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), URQUAN_SHIP);
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (avail_race_q),
-				hStarShip
-				);
+		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
 		EncounterPtr->origin = TemplatePtr->ShipInfo.loc;
 		EncounterPtr->radius = TemplatePtr->ShipInfo.actual_strength;
 		EncounterPtr->SD.Type = URQUAN_SHIP;
 		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
-		EncounterPtr->SD.ShipList[0] =
-				((SHIP_FRAGMENTPTR)TemplatePtr)->ShipInfo;
+		EncounterPtr->SD.ShipList[0] = ((SHIP_FRAGMENT*)TemplatePtr)->ShipInfo;
 		EncounterPtr->SD.ShipList[0].var1 = URQUAN_SHIP;
 		EncounterPtr->SD.star_pt.x = 5288;
 		EncounterPtr->SD.star_pt.y = 4892;
@@ -102,7 +99,7 @@ ZapToUrquanEncounter (void)
 					- (SIZE)GLOBAL_SIS (FuelOnBoard);
 			DeltaSISGauges (0, dx, 0);
 		}
-		DrawSISMessage (NULL_PTR);
+		DrawSISMessage (NULL);
 		DrawHyperCoords (EncounterPtr->SD.star_pt);
 		UnlockMutex (GraphicsLock);
 

@@ -98,7 +98,7 @@ static RACE_DESC human_desc =
 	{
 		0,
 		LONG_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -112,7 +112,7 @@ static RACE_DESC human_desc =
 #define TRACK_WAIT 3
 
 static void
-nuke_preprocess (PELEMENT ElementPtr)
+nuke_preprocess (ELEMENT *ElementPtr)
 {
 	COUNT facing;
 
@@ -146,9 +146,9 @@ nuke_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-spawn_point_defense (PELEMENT ElementPtr)
+spawn_point_defense (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (ElementPtr->state_flags & PLAYER_SHIP)
@@ -158,7 +158,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 		hDefense = AllocElement ();
 		if (hDefense)
 		{
-			ELEMENTPTR DefensePtr;
+			ELEMENT *DefensePtr;
 
 			LockElement (hDefense, &DefensePtr);
 			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
@@ -177,14 +177,14 @@ spawn_point_defense (PELEMENT ElementPtr)
 	{
 		BOOLEAN PaidFor;
 		HELEMENT hObject, hNextObject;
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		PaidFor = FALSE;
 
 		LockElement (StarShipPtr->hShip, &ShipPtr);
 		for (hObject = GetTailElement (); hObject; hObject = hNextObject)
 		{
-			ELEMENTPTR ObjectPtr;
+			ELEMENT *ObjectPtr;
 
 			LockElement (hObject, &ObjectPtr);
 			hNextObject = GetPredElement (ObjectPtr);
@@ -240,7 +240,7 @@ spawn_point_defense (PELEMENT ElementPtr)
 					hPointDefense = initialize_laser (&LaserBlock);
 					if (hPointDefense)
 					{
-						ELEMENTPTR PDPtr;
+						ELEMENT *PDPtr;
 
 						LockElement (hPointDefense, &PDPtr);
 						SetElementStarShip (PDPtr, StarShipPtr);
@@ -258,13 +258,13 @@ spawn_point_defense (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_nuke (PELEMENT ShipPtr, HELEMENT NukeArray[])
+initialize_nuke (ELEMENT *ShipPtr, HELEMENT NukeArray[])
 {
 #define HUMAN_OFFSET 42
 #define MISSILE_DAMAGE 4
 #define MISSILE_HITS 1
 #define NUKE_OFFSET 8
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -284,7 +284,7 @@ initialize_nuke (PELEMENT ShipPtr, HELEMENT NukeArray[])
 
 	if (NukeArray[0])
 	{
-		ELEMENTPTR NukePtr;
+		ELEMENT *NukePtr;
 
 		LockElement (NukeArray[0], &NukePtr);
 		NukePtr->turn_wait = TRACK_WAIT;
@@ -295,20 +295,21 @@ initialize_nuke (PELEMENT ShipPtr, HELEMENT NukeArray[])
 }
 
 static void
-human_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+human_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	if (StarShipPtr->special_counter == 0
-			&& ((ObjectsOfConcern[ENEMY_WEAPON_INDEX].ObjectPtr != NULL_PTR
+			&& ((ObjectsOfConcern[ENEMY_WEAPON_INDEX].ObjectPtr != NULL
 			&& ObjectsOfConcern[ENEMY_WEAPON_INDEX].which_turn <= 2)
-			|| (ObjectsOfConcern[ENEMY_SHIP_INDEX].ObjectPtr != NULL_PTR
+			|| (ObjectsOfConcern[ENEMY_SHIP_INDEX].ObjectPtr != NULL
 			&& ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn <= 4)))
 		StarShipPtr->ship_input_state |= SPECIAL;
 	else
 		StarShipPtr->ship_input_state &= ~SPECIAL;
-	ObjectsOfConcern[ENEMY_WEAPON_INDEX].ObjectPtr = NULL_PTR;
+	ObjectsOfConcern[ENEMY_WEAPON_INDEX].ObjectPtr = NULL;
 
 	ship_intelligence (ShipPtr,
 			ObjectsOfConcern, ConcernCounter);
@@ -323,9 +324,9 @@ human_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 }
 
 static void
-human_postprocess (PELEMENT ElementPtr)
+human_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -335,16 +336,14 @@ human_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_human (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	human_desc.postprocess_func = human_postprocess;
 	human_desc.init_weapon_func = initialize_nuke;
-	human_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) human_intelligence;
+	human_desc.cyborg_control.intelligence_func = human_intelligence;
 
 	RaceDescPtr = &human_desc;
 

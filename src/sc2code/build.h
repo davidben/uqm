@@ -44,12 +44,12 @@
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)
 
-extern HSTARSHIP Build (PQUEUE pQueue, DWORD RaceResIndex, COUNT
+extern HSTARSHIP Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT
 		which_player, BYTE captains_name_index);
-extern HSTARSHIP CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue,
+extern HSTARSHIP CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
-extern HSTARSHIP GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index);
-extern BYTE NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr);
+extern HSTARSHIP GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
+extern BYTE NameCaptain (QUEUE *pQueue, STARSHIP *StarShipPtr);
 
 /* Possible values for the 'state' argument of
  * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
@@ -64,19 +64,19 @@ extern BYTE NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr);
 		/* Check for how many escort ships there's still space */
 
 extern COUNT ActivateStarShip (COUNT which_ship, SIZE state);
-extern COUNT GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip);
+extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HSTARSHIP hStarShip);
 
-extern MEM_HANDLE load_ship (STARSHIPPTR StarShipPtr, BOOLEAN
+extern MEM_HANDLE load_ship (STARSHIP *StarShipPtr, BOOLEAN
 		LoadBattleData);
-extern void free_ship (STARSHIPPTR StarShipPtr, BOOLEAN FreeBattleData);
+extern void free_ship (STARSHIP *StarShipPtr, BOOLEAN FreeBattleData);
 
 extern void DrawCrewFuelString (COORD y, SIZE state);
 extern void ClearShipStatus (COORD y);
 extern void OutlineShipStatus (COORD y);
-extern void InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect);
-extern void DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta,
+extern void InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect);
+extern void DeltaStatistics (STARSHIP *StarShipPtr, SIZE crew_delta,
 		SIZE energy_delta);
-extern void DrawBattleCrewAmount (STARSHIPPTR StarShipPtr);
+extern void DrawBattleCrewAmount (STARSHIP *StarShipPtr);
 
 #endif /* _BUILD_H */
 

@@ -24,9 +24,9 @@
 
 static LOCDATA orz_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)ORZ_PMAP_ANIM, /* AlienFrame */
 	(FONT)ORZ_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -163,7 +163,7 @@ static LOCDATA orz_desc =
 		ONE_SECOND / 12, ONE_SECOND * 3 / 8, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -540,7 +540,7 @@ OrzNeutral (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				NULL_PTR);
+				(UNICODE*)NULL);
 		pStr[1] = we_are_vindicator0;
 	}
 	else
@@ -867,10 +867,10 @@ post_orz_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_orz_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	orz_desc.init_encounter_func = Intro;
 	orz_desc.post_encounter_func = post_orz_enc;

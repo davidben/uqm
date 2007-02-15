@@ -20,7 +20,6 @@
 #define _LZH_H
 
 #include "reslib.h"
-#define _DEC_PROTOS
 #include "declib.h"
 
 /* LZSS Parameters */
@@ -40,7 +39,7 @@
 #define MAX_FREQ 0x8000
 										/* update when cumulative frequency */
 
-typedef struct
+struct _LZHCODE_DESC
 {
 	MEM_HANDLE fh;
 
@@ -60,12 +59,14 @@ typedef struct
 
 	STREAM_TYPE StreamType;
 
-	PVOID Stream;
+	void *Stream;
 	DWORD StreamIndex, StreamLength;
 
 	STREAM_MODE StreamMode;
 	PVOIDFUNC CleanupFunc;
-} LZHCODE_DESC;
+};
+
+typedef struct _LZHCODE_DESC LZHCODE_DESC;
 typedef LZHCODE_DESC *PLZHCODE_DESC;
 
 #define InChar() (_StreamType == FILE_STREAM ? \
@@ -86,14 +87,9 @@ typedef LZHCODE_DESC *PLZHCODE_DESC;
 extern void _update (COUNT c);
 extern void StartHuff (void);
 
-#undef DECODE_REF
-#define DECODE_REF PLZHCODE_DESC
-#undef _DEC_PROTOS
-#include "declib.h"
-
 extern PLZHCODE_DESC  _lpCurCodeDesc;
 extern STREAM_TYPE    _StreamType;
-extern PBYTE          _Stream;
+extern BYTE*          _Stream;
 extern UWORD          _workbuf;
 extern BYTE           _workbuflen;
 

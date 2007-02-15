@@ -470,13 +470,13 @@ YellowDistribution (BYTE which_world)
 #define SUPERGIANT_GASG_DIST SCALE_RADIUS (33)
 
 void
-FillOrbits (PSOLARSYS_STATE system,
-		BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN TypesDefined)
+FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
+		PLANET_DESC *pBaseDesc, BOOLEAN TypesDefined)
 { /* Generate Planets in orbit around star */
 	BYTE StarColor, PlanetCount, MaxPlanet;
 	BOOLEAN GeneratingMoons;
 	COUNT StarSize;
-	PPLANET_DESC pPD;
+	PLANET_DESC *pPD;
 	struct
 	{
 		COUNT MinRockyDist, MinGasGDist;
@@ -523,7 +523,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 		DWORD rand_val;
 		COUNT min_radius, angle;
 		SIZE delta_r;
-		PPLANET_DESC pLocPD;
+		PLANET_DESC *pLocPD;
 
 		do
 		{

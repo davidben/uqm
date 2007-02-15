@@ -96,7 +96,7 @@ static RACE_DESC ilwrath_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -106,7 +106,7 @@ static RACE_DESC ilwrath_desc =
 };
 
 static void
-flame_preprocess (PELEMENT ElementPtr)
+flame_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -121,7 +121,8 @@ flame_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-flame_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+flame_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 	ElementPtr0->state_flags &= ~DISAPPEARING;
@@ -129,10 +130,11 @@ flame_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 }
 
 static void
-ilwrath_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+ilwrath_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	 lpEvalDesc->MoveState = PURSUE;
@@ -168,14 +170,14 @@ ilwrath_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT C
 }
 
 static COUNT
-initialize_flame (PELEMENT ShipPtr, HELEMENT FlameArray[])
+initialize_flame (ELEMENT *ShipPtr, HELEMENT FlameArray[])
 {
 #define ILWRATH_OFFSET 29
 #define MISSILE_SPEED MAX_THRUST
 #define MISSILE_HITS 1
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 0
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -198,7 +200,7 @@ initialize_flame (PELEMENT ShipPtr, HELEMENT FlameArray[])
 	if (FlameArray[0])
 	{
 		SIZE dx, dy;
-		ELEMENTPTR FlamePtr;
+		ELEMENT *FlamePtr;
 
 		LockElement (FlameArray[0], &FlamePtr);
 		GetCurrentVelocityComponents (&ShipPtr->velocity, &dx, &dy);
@@ -215,11 +217,11 @@ initialize_flame (PELEMENT ShipPtr, HELEMENT FlameArray[])
 }
 
 static void
-ilwrath_preprocess (PELEMENT ElementPtr)
+ilwrath_preprocess (ELEMENT *ElementPtr)
 {
 	ELEMENT_FLAGS status_flags;
-	STARSHIPPTR StarShipPtr;
-	PPRIMITIVE lpPrim;
+	STARSHIP *StarShipPtr;
+	PRIMITIVE *lpPrim;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	status_flags = StarShipPtr->cur_status_flags;
@@ -261,7 +263,7 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 					if (TrackShip (ElementPtr, &facing) >= 0)
 					{
 #define LOOK_AHEAD 4
-						ELEMENTPTR eptr;
+						ELEMENT *eptr;
 						SIZE dx0, dy0, dx1, dy1;
 						VELOCITY_DESC v;
 
@@ -359,16 +361,14 @@ ilwrath_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_ilwrath (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	ilwrath_desc.preprocess_func = ilwrath_preprocess;
 	ilwrath_desc.init_weapon_func = initialize_flame;
-	ilwrath_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) ilwrath_intelligence;
+	ilwrath_desc.cyborg_control.intelligence_func = ilwrath_intelligence;
 
 	RaceDescPtr = &ilwrath_desc;
 

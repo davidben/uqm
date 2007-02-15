@@ -32,7 +32,6 @@ typedef struct bresenham_line
 	BOOLEAN end_points_exchanged;
 	INTERSECT_CODE intersect_code;
 } BRESENHAM_LINE;
-typedef BRESENHAM_LINE *PBRESENHAM_LINE;
 
 typedef UWORD DRAWABLE_TYPE;
 #define ROM_DRAWABLE 0
@@ -57,7 +56,6 @@ typedef struct drawable_desc
 	UWORD MaxIndex;
 	FRAME_DESC *Frame;
 } DRAWABLE_DESC;
-typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
 #define GetFrameWidth(f) ((f)->Bounds.width)
 #define GetFrameHeight(f) ((f)->Bounds.height)
@@ -67,18 +65,13 @@ typedef DRAWABLE_DESC *PDRAWABLE_DESC;
 
 #define DRAWABLE_PRIORITY DEFAULT_MEM_PRIORITY
 
-#define DRAWABLEPTR PDRAWABLE_DESC
-#define COUNTPTR PCOUNT
-
 extern DRAWABLE AllocDrawable (COUNT num_frames);
-#define LockDrawable(D) ((DRAWABLEPTR)mem_lock (GetDrawableHandle (D)))
+#define LockDrawable(D) ((DRAWABLE_DESC*)mem_lock (GetDrawableHandle (D)))
 #define UnlockDrawable(D) mem_unlock (GetDrawableHandle (D))
 #define FreeDrawable(D) _ReleaseCelData (GetDrawableHandle (D))
 #define GetDrawableHandle(D) ((MEM_HANDLE)LOWORD (D))
 #define GetDrawableIndex(D) ((COUNT)HIWORD (D))
 #define GetFrameParentDrawable(F) (F)->parent
-
-#define NULL_DRAWABLE (DRAWABLE)NULL_PTR
 
 #define TYPE_GET(f) ((f) & FTYPE_MASK)
 #define INDEX_GET(f) ((f) & FINDEX_MASK)
@@ -90,27 +83,19 @@ typedef struct
 	RECT Box;
 	FRAME FramePtr;
 } IMAGE_BOX;
-typedef IMAGE_BOX *PIMAGE_BOX;
 
 extern DRAWABLE _request_drawable (COUNT NumFrames, DRAWABLE_TYPE
 		DrawableType, CREATE_FLAGS flags, SIZE width, SIZE height);
-extern INTERSECT_CODE _clip_line (PRECT pClipRect, PBRESENHAM_LINE
-		pLine);
+extern INTERSECT_CODE _clip_line (RECT *pClipRect, BRESENHAM_LINE *pLine);
 
 extern MEM_HANDLE _GetCelData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseCelData (MEM_HANDLE handle);
 
-typedef PPRIMITIVE PRIMITIVEPTR;
-typedef PPOINT POINTPTR;
-typedef PRECT RECTPTR;
-typedef PSTAMP STAMPPTR;
-typedef PTEXT TEXTPTR;
-
 extern STAMP _save_stamp;
 extern FRAME _CurFramePtr;
 
-extern void _rect_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
-extern void _text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr);
+extern void _rect_blt (RECT *pClipRect, PRIMITIVE *PrimPtr);
+extern void _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr);
 
 #endif /* _DRAWABLE_H */
 

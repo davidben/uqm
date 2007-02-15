@@ -23,7 +23,7 @@
 #include "planets.h"
 
 void
-DeltaTopography (COUNT num_iterations, PSBYTE DepthArray, PRECT pRect,
+DeltaTopography (COUNT num_iterations, SBYTE *DepthArray, RECT *pRect,
 		SIZE depth_delta)
 {
 	SIZE width, height, delta_y;
@@ -41,7 +41,7 @@ DeltaTopography (COUNT num_iterations, PSBYTE DepthArray, PRECT pRect,
 		SIZE d;
 		COUNT h, w1, w2;
 		DWORD rand_val;
-		PSBYTE lpDst;
+		SBYTE *lpDst;
 
 		depth_delta = ((((SIZE)TFB_Random () & 1) << 1) - 1) * depth_delta;
 

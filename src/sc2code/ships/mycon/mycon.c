@@ -97,7 +97,7 @@ static RACE_DESC mycon_desc =
 	{
 		0,
 		DISPLAY_TO_WORLD (800),
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -111,7 +111,7 @@ static RACE_DESC mycon_desc =
 #define TRACK_WAIT 1
 
 static void
-plasma_preprocess (PELEMENT ElementPtr)
+plasma_preprocess (ELEMENT *ElementPtr)
 {
 	COUNT plasma_index;
 
@@ -149,7 +149,7 @@ plasma_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-plasma_blast_preprocess (PELEMENT ElementPtr)
+plasma_blast_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->life_span >= ElementPtr->thrust_wait)
 		ElementPtr->next.image.frame =
@@ -159,7 +159,7 @@ plasma_blast_preprocess (PELEMENT ElementPtr)
 				DecFrameIndex (ElementPtr->next.image.frame);
 	if (ElementPtr->hTarget)
 	{
-		ELEMENTPTR ShipPtr;
+		ELEMENT *ShipPtr;
 
 		LockElement (ElementPtr->hTarget, &ShipPtr);
 		ElementPtr->next.location = ShipPtr->next.location;
@@ -170,7 +170,8 @@ plasma_blast_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-plasma_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+plasma_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	SIZE old_mass;
 	HELEMENT hBlastElement;
@@ -182,7 +183,7 @@ plasma_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 			weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1)))
 	{
 		SIZE num_animations;
-		ELEMENTPTR BlastElementPtr;
+		ELEMENT *BlastElementPtr;
 
 		LockElement (hBlastElement, &BlastElementPtr);
 		BlastElementPtr->pParent = ElementPtr0->pParent;
@@ -190,7 +191,7 @@ plasma_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 			BlastElementPtr->hTarget = 0;
 		else
 		{
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr1, &StarShipPtr);
 			BlastElementPtr->hTarget = StarShipPtr->hShip;
@@ -218,10 +219,11 @@ plasma_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 }
 
 static void
-mycon_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+mycon_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 	if (lpEvalDesc->ObjectPtr && lpEvalDesc->MoveState == ENTICE)
@@ -287,11 +289,11 @@ mycon_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 }
 
 static COUNT
-initialize_plasma (PELEMENT ShipPtr, HELEMENT PlasmaArray[])
+initialize_plasma (ELEMENT *ShipPtr, HELEMENT PlasmaArray[])
 {
 #define MYCON_OFFSET 24
 #define MISSILE_OFFSET 0
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -312,7 +314,7 @@ initialize_plasma (PELEMENT ShipPtr, HELEMENT PlasmaArray[])
 
 	if (PlasmaArray[0])
 	{
-		ELEMENTPTR PlasmaPtr;
+		ELEMENT *PlasmaPtr;
 
 		LockElement (PlasmaArray[0], &PlasmaPtr);
 		PlasmaPtr->collision_func = plasma_collision;
@@ -324,9 +326,9 @@ initialize_plasma (PELEMENT ShipPtr, HELEMENT PlasmaArray[])
 }
 
 static void
-mycon_postprocess (PELEMENT ElementPtr)
+mycon_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -350,16 +352,14 @@ mycon_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_mycon (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	mycon_desc.postprocess_func = mycon_postprocess;
 	mycon_desc.init_weapon_func = initialize_plasma;
-	mycon_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) mycon_intelligence;
+	mycon_desc.cyborg_control.intelligence_func = mycon_intelligence;
 
 	RaceDescPtr = &mycon_desc;
 

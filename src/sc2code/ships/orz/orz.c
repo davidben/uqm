@@ -99,7 +99,7 @@ static RACE_DESC orz_desc =
 	{
 		0,
 		MISSILE_SPEED * MISSILE_LIFE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -109,7 +109,8 @@ static RACE_DESC orz_desc =
 };
 
 static void
-howitzer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+howitzer_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if ((ElementPtr0->state_flags & (GOOD_GUY | BAD_GUY))
 			!= (ElementPtr1->state_flags & (GOOD_GUY | BAD_GUY)))
@@ -120,13 +121,13 @@ howitzer_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPO
 #define TURRET_WAIT 3
 
 static COUNT
-initialize_turret_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
+initialize_turret_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 {
 #define MISSILE_HITS 2
 #define MISSILE_DAMAGE 3
 #define MISSILE_OFFSET 1
-	ELEMENTPTR TurretPtr;
-	STARSHIPPTR StarShipPtr;
+	ELEMENT *TurretPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -158,13 +159,13 @@ initialize_turret_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	MissileArray[0] = initialize_missile (&MissileBlock);
 
 	if (MissileArray[0])
 	{
-		ELEMENTPTR HowitzerPtr;
+		ELEMENT *HowitzerPtr;
 
 		LockElement (MissileArray[0], &HowitzerPtr);
 		HowitzerPtr->collision_func = howitzer_collision;
@@ -177,7 +178,7 @@ initialize_turret_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 #define MAX_MARINES 8
 
 static BYTE
-count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
+count_marines (STARSHIP *StarShipPtr, BOOLEAN FindSpot)
 {
 	BYTE num_marines, id_use[MAX_MARINES];
 	HELEMENT hElement, hNextElement;
@@ -189,7 +190,7 @@ count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
 	num_marines = 0;
 	for (hElement = GetTailElement (); hElement; hElement = hNextElement)
 	{
-		ELEMENTPTR ElementPtr;
+		ELEMENT *ElementPtr;
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetPredElement (ElementPtr);
@@ -223,12 +224,12 @@ count_marines (STARSHIPPTR StarShipPtr, BOOLEAN FindSpot)
 }
 
 static void
-orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+orz_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
-	ELEMENTPTR TurretPtr;
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	ELEMENT *TurretPtr;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	LockElement (GetSuccElement (ShipPtr), &TurretPtr);
 
@@ -242,7 +243,7 @@ orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 		StarShipPtr->ship_input_state &= ~SPECIAL;
 	else if (StarShipPtr->special_counter != 1)
 	{
-		STARSHIPPTR EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		if (ShipPtr->turn_wait == 0
 				&& lpEvalDesc->MoveState == ENTICE
@@ -307,7 +308,7 @@ orz_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 #define START_ION_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)
 
 void
-ion_preprocess (PELEMENT ElementPtr)
+ion_preprocess (ELEMENT *ElementPtr)
 {
 	static const COLOR color_tab[] =
 	{
@@ -352,16 +353,16 @@ ion_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-static void marine_preprocess (PELEMENT ElementPtr);
+static void marine_preprocess (ELEMENT *ElementPtr);
 
 #define MARINE_WAIT 12
 
 void
-intruder_preprocess (PELEMENT ElementPtr)
+intruder_preprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT hElement, hNextElement;
-	ELEMENTPTR ShipPtr;
-	STARSHIPPTR StarShipPtr;
+	ELEMENT *ShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	LockElement (StarShipPtr->hShip, &ShipPtr);
@@ -469,11 +470,10 @@ LeftShip:
 }
 
 static void
-marine_preprocess (ElementPtr)
-PELEMENT ElementPtr;
+marine_preprocess (ELEMENT *ElementPtr)
 {
-	ELEMENTPTR ShipPtr;
-	STARSHIPPTR StarShipPtr;
+	ELEMENT *ShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	LockElement (StarShipPtr->hShip, &ShipPtr);
@@ -495,7 +495,7 @@ PELEMENT ElementPtr;
 		COUNT facing, pfacing;
 		SIZE delta_x, delta_y, delta_facing;
 		HELEMENT hObject, hNextObject, hTarget;
-		ELEMENTPTR ObjectPtr;
+		ELEMENT *ObjectPtr;
 
 		ElementPtr->thrust_wait &= ~(SHIP_IN_GRAVITY_WELL >> 6);
 
@@ -633,7 +633,7 @@ PELEMENT ElementPtr;
 			COUNT OldFacing;
 			UWORD OldStatus;
 			COUNT OldIncrement, OldThrust;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 
@@ -668,7 +668,7 @@ PELEMENT ElementPtr;
 				{
 #define ION_LIFE 1
 					COUNT angle;
-					ELEMENTPTR IonElementPtr;
+					ELEMENT *IonElementPtr;
 
 					angle = FACING_TO_ANGLE (facing) + HALF_CIRCLE;
 
@@ -712,7 +712,8 @@ PELEMENT ElementPtr;
 }
 
 void
-marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+marine_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr0->life_span
 			&& !(ElementPtr0->state_flags & (NONSOLID | COLLISION))
@@ -757,7 +758,7 @@ marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 					)
 			{
 				STAMP s;
-				STARSHIPPTR StarShipPtr;
+				STARSHIP *StarShipPtr;
 
 				GetElementStarShip (ElementPtr0, &StarShipPtr);
 				if (!DeltaCrew (ElementPtr1, -1))
@@ -796,7 +797,7 @@ marine_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 }
 
 static void
-animate (PELEMENT ElementPtr)
+animate (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -811,11 +812,11 @@ animate (PELEMENT ElementPtr)
 }
 
 static void
-turret_postprocess (PELEMENT ElementPtr)
+turret_postprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->life_span == 0)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		SetPrimType (&(GLOBAL (DisplayArray))[
 				ElementPtr->PrimIndex], NO_PRIM);
@@ -825,13 +826,13 @@ turret_postprocess (PELEMENT ElementPtr)
 		{
 			COUNT facing;
 			HELEMENT hTurret, hSpaceMarine;
-			ELEMENTPTR ShipPtr;
+			ELEMENT *ShipPtr;
 
 			LockElement (StarShipPtr->hShip, &ShipPtr);
 			hTurret = AllocElement ();
 			if (hTurret)
 			{
-				ELEMENTPTR TurretPtr;
+				ELEMENT *TurretPtr;
 
 				LockElement (hTurret, &TurretPtr);
 				TurretPtr->state_flags =
@@ -869,10 +870,10 @@ turret_postprocess (PELEMENT ElementPtr)
 				if (StarShipPtr->cur_status_flags & WEAPON)
 				{
 					HELEMENT hTurretEffect;
-					ELEMENTPTR TurretEffectPtr;
+					ELEMENT *TurretEffectPtr;
 
 					LockElement (GetTailElement (), &TurretEffectPtr);
-					if ((PELEMENT)TurretEffectPtr != ElementPtr
+					if (TurretEffectPtr != ElementPtr
 							&& (TurretEffectPtr->state_flags &
 							(GOOD_GUY | BAD_GUY)) ==
 							(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
@@ -948,7 +949,7 @@ turret_postprocess (PELEMENT ElementPtr)
 					&& TrackShip (ShipPtr, &facing) >= 0
 					&& (hSpaceMarine = AllocElement ()))
 			{
-				ELEMENTPTR SpaceMarinePtr;
+				ELEMENT *SpaceMarinePtr;
 
 				LockElement (hSpaceMarine, &SpaceMarinePtr);
 				SpaceMarinePtr->state_flags =
@@ -999,9 +1000,9 @@ turret_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-orz_preprocess (PELEMENT ElementPtr)
+orz_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (!(ElementPtr->state_flags & APPEARING))
@@ -1028,7 +1029,7 @@ orz_preprocess (PELEMENT ElementPtr)
 		hTurret = AllocElement ();
 		if (hTurret)
 		{
-			ELEMENTPTR TurretPtr;
+			ELEMENT *TurretPtr;
 
 			LockElement (hTurret, &TurretPtr);
 			TurretPtr->state_flags =
@@ -1050,16 +1051,14 @@ orz_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_orz (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	orz_desc.preprocess_func = orz_preprocess;
 	orz_desc.init_weapon_func = initialize_turret_missile;
-	orz_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) orz_intelligence;
+	orz_desc.cyborg_control.intelligence_func = orz_intelligence;
 
 	RaceDescPtr = &orz_desc;
 

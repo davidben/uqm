@@ -97,7 +97,7 @@ static RACE_DESC syreen_desc =
 	{
 		0,
 		(MISSILE_SPEED * MISSILE_LIFE * 2 / 3),
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,13 +107,13 @@ static RACE_DESC syreen_desc =
 };
 
 static COUNT
-initialize_dagger (PELEMENT ShipPtr, HELEMENT DaggerArray[])
+initialize_dagger (ELEMENT *ShipPtr, HELEMENT DaggerArray[])
 {
 #define SYREEN_OFFSET 30
 #define MISSILE_HITS 1
 #define MISSILE_DAMAGE 2
 #define MISSILE_OFFSET 3
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -128,7 +128,7 @@ initialize_dagger (PELEMENT ShipPtr, HELEMENT DaggerArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	DaggerArray[0] = initialize_missile (&MissileBlock);
 
@@ -136,7 +136,7 @@ initialize_dagger (PELEMENT ShipPtr, HELEMENT DaggerArray[])
 }
 
 static void
-spawn_crew (PELEMENT ElementPtr)
+spawn_crew (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & PLAYER_SHIP)
 	{
@@ -145,7 +145,7 @@ spawn_crew (PELEMENT ElementPtr)
 		hCrew = AllocElement ();
 		if (hCrew != 0)
 		{
-			ELEMENTPTR CrewPtr;
+			ELEMENT *CrewPtr;
 
 			LockElement (hCrew, &CrewPtr);
 			CrewPtr->next.location = ElementPtr->next.location;
@@ -167,7 +167,7 @@ spawn_crew (PELEMENT ElementPtr)
 		for (hElement = GetHeadElement ();
 				hElement != 0; hElement = hNextElement)
 		{
-			ELEMENTPTR ObjPtr;
+			ELEMENT *ObjPtr;
 
 			LockElement (hElement, &ObjPtr);
 			hNextElement = GetSuccElement (ObjPtr);
@@ -214,17 +214,19 @@ spawn_crew (PELEMENT ElementPtr)
 }
 
 static void
-syreen_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+syreen_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	PEVALUATE_DESC lpEvalDesc;
+	EVALUATE_DESC *lpEvalDesc;
 
 	ship_intelligence (ShipPtr,
 			ObjectsOfConcern, ConcernCounter);
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
-	if (lpEvalDesc->ObjectPtr != NULL_PTR)
+	if (lpEvalDesc->ObjectPtr != NULL)
 	{
-		STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
+		STARSHIP *StarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		GetElementStarShip (ShipPtr, &StarShipPtr);
 		GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
@@ -239,9 +241,9 @@ syreen_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Co
 }
 
 static void
-syreen_postprocess (PELEMENT ElementPtr)
+syreen_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -258,16 +260,14 @@ syreen_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_syreen (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	syreen_desc.postprocess_func = syreen_postprocess;
 	syreen_desc.init_weapon_func = initialize_dagger;
-	syreen_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) syreen_intelligence;
+	syreen_desc.cyborg_control.intelligence_func = syreen_intelligence;
 
 	RaceDescPtr = &syreen_desc;
 

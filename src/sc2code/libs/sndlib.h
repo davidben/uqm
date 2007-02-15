@@ -47,8 +47,8 @@ typedef MEM_HANDLE MUSIC_REF;
 
 extern BOOLEAN InitSound (int argc, char *argv[]);
 extern void UninitSound (void);
-extern SOUND_REF LoadSoundFile (PVOID pStr);
-extern MUSIC_REF LoadMusicFile (PVOID pStr);
+extern SOUND_REF LoadSoundFile (const char *pStr);
+extern MUSIC_REF LoadMusicFile (const char *pStr);
 extern BOOLEAN InstallAudioResTypes (COUNT sound_type, COUNT
 		music_type);
 extern SOUND_REF LoadSoundInstance (DWORD res);
@@ -72,7 +72,7 @@ extern void PLRStop (MUSIC_REF MusicRef);
 extern BOOLEAN PLRPlaying (MUSIC_REF MusicRef);
 extern void PLRPause (MUSIC_REF MusicRef);
 extern void PLRResume (MUSIC_REF MusicRef);
-extern void PlayChannel (COUNT channel, PVOID sample, SoundPosition pos,
+extern void PlayChannel (COUNT channel, void *sample, SoundPosition pos,
 		void *positional_object, unsigned char priority);
 extern BOOLEAN ChannelPlaying (COUNT Channel);
 extern void * GetPositionalObject (COUNT channel);
@@ -90,13 +90,13 @@ extern BOOLEAN SoundPlaying (void);
 extern void WaitForSoundEnd (COUNT Channel);
 #define TFBSOUND_WAIT_ALL ((COUNT)~0)
 
-extern BOOLEAN AllocHardwareSample (PBYTE lpSnd, DWORD SampleRate, COUNT
+extern BOOLEAN AllocHardwareSample (BYTE *lpSnd, DWORD SampleRate, COUNT
 		SampleLength, COUNT LoopBegin, COUNT LoopLen);
-extern BOOLEAN FreeHardwareSample (PBYTE lpSnd, COUNT SampleLength);
+extern BOOLEAN FreeHardwareSample (BYTE *lpSnd, COUNT SampleLength);
 
 extern COUNT GetSampleRate (SOUND Sound);
 extern COUNT GetSampleLength (SOUND Sound);
-extern PBYTE GetSampleAddress (SOUND Sound);
+extern BYTE* GetSampleAddress (SOUND Sound);
 extern DWORD FadeMusic (BYTE end_vol, SIZE TimeInterval);
 
 #endif /* _SNDLIB_H */

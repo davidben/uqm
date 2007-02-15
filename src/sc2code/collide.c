@@ -27,7 +27,7 @@
 //#define DEBUG_COLLIDE
 
 void
-collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
+collide (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1)
 {
 	SIZE speed;
 	SIZE dx0, dy0, dx1, dy1, dx_rel, dy_rel;
@@ -103,7 +103,7 @@ collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
 		{
 			if (ElementPtr0->state_flags & PLAYER_SHIP)
 			{
-				STARSHIPPTR StarShipPtr;
+				STARSHIP *StarShipPtr;
 
 				GetElementStarShip (ElementPtr0, &StarShipPtr);
 				StarShipPtr->cur_status_flags &=
@@ -140,7 +140,7 @@ collide (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1)
 		{
 			if (ElementPtr1->state_flags & PLAYER_SHIP)
 			{
-				STARSHIPPTR StarShipPtr;
+				STARSHIP *StarShipPtr;
 
 				GetElementStarShip (ElementPtr1, &StarShipPtr);
 				StarShipPtr->cur_status_flags &=

@@ -27,7 +27,7 @@
  */
 
 BOOLEAN
-InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size)
+InitQueue (QUEUE *pq, COUNT num_elements, OBJ_SIZE size)
 {
 	SetHeadLink (pq, NULL_HANDLE);
 	SetTailLink (pq, NULL_HANDLE);
@@ -54,7 +54,7 @@ InitQueue (PQUEUE pq, COUNT num_elements, OBJ_SIZE size)
 }
 
 BOOLEAN
-UninitQueue (PQUEUE pq)
+UninitQueue (QUEUE *pq)
 {
 #ifdef QUEUE_TABLE
 	SetHeadLink (pq, NULL_HANDLE);
@@ -79,7 +79,7 @@ UninitQueue (PQUEUE pq)
 }
 
 void
-ReinitQueue (PQUEUE pq)
+ReinitQueue (QUEUE *pq)
 {
 	SetHeadLink (pq, NULL_HANDLE);
 	SetTailLink (pq, NULL_HANDLE);
@@ -102,14 +102,14 @@ ReinitQueue (PQUEUE pq)
 
 #ifdef QUEUE_TABLE
 HLINK
-AllocLink (PQUEUE pq)
+AllocLink (QUEUE *pq)
 {
 	HLINK hLink;
 
 	hLink = GetFreeList (pq);
 	if (hLink)
 	{
-		LINKPTR LinkPtr;
+		LINK *LinkPtr;
 
 		LinkPtr = LockLink (pq, hLink);
 		SetFreeList (pq, _GetSuccLink (LinkPtr));
@@ -122,9 +122,9 @@ AllocLink (PQUEUE pq)
 }
 
 void
-FreeLink (PQUEUE pq, HLINK hLink)
+FreeLink (QUEUE *pq, HLINK hLink)
 {
-	LINKPTR LinkPtr;
+	LINK *LinkPtr;
 
 	LinkPtr = LockLink (pq, hLink);
 	_SetSuccLink (LinkPtr, GetFreeList (pq));
@@ -135,16 +135,16 @@ FreeLink (PQUEUE pq, HLINK hLink)
 #endif /* QUEUE_TABLE */
 
 void
-PutQueue (PQUEUE pq, HLINK hLink)
+PutQueue (QUEUE *pq, HLINK hLink)
 {
-	LINKPTR LinkPtr;
+	LINK *LinkPtr;
 
 	if (GetHeadLink (pq) == 0)
 		SetHeadLink (pq, hLink);
 	else
 	{
 		HLINK hTail;
-		LINKPTR lpTail;
+		LINK *lpTail;
 
 		hTail = GetTailLink (pq);
 		lpTail = LockLink (pq, hTail);
@@ -161,13 +161,14 @@ PutQueue (PQUEUE pq, HLINK hLink)
 }
 
 void
-InsertQueue (PQUEUE pq, HLINK hLink, HLINK hRefLink)
+InsertQueue (QUEUE *pq, HLINK hLink, HLINK hRefLink)
 {
 	if (hRefLink == 0)
 		PutQueue (pq, hLink);
 	else
 	{
-		LINKPTR LinkPtr, RefLinkPtr;
+		LINK *LinkPtr;
+		LINK *RefLinkPtr;
 
 		LinkPtr = LockLink (pq, hLink);
 		RefLinkPtr = LockLink (pq, hRefLink);
@@ -180,7 +181,7 @@ InsertQueue (PQUEUE pq, HLINK hLink, HLINK hRefLink)
 		else
 		{
 			HLINK hPredLink;
-			LINKPTR PredLinkPtr;
+			LINK *PredLinkPtr;
 
 			hPredLink = _GetPredLink (LinkPtr);
 			PredLinkPtr = LockLink (pq, hPredLink);
@@ -193,9 +194,9 @@ InsertQueue (PQUEUE pq, HLINK hLink, HLINK hRefLink)
 }
 
 void
-RemoveQueue (PQUEUE pq, HLINK hLink)
+RemoveQueue (QUEUE *pq, HLINK hLink)
 {
-	LINKPTR LinkPtr;
+	LINK *LinkPtr;
 
 	LinkPtr = LockLink (pq, hLink);
 	if (GetHeadLink (pq) == hLink)
@@ -205,7 +206,7 @@ RemoveQueue (PQUEUE pq, HLINK hLink)
 	else
 	{
 		HLINK hPredLink;
-		LINKPTR PredLinkPtr;
+		LINK *PredLinkPtr;
 
 		hPredLink = _GetPredLink (LinkPtr);
 		PredLinkPtr = LockLink (pq, hPredLink);
@@ -219,7 +220,7 @@ RemoveQueue (PQUEUE pq, HLINK hLink)
 	else
 	{
 		HLINK hSuccLink, hPredLink;
-		LINKPTR SuccLinkPtr;
+		LINK *SuccLinkPtr;
 
 		hSuccLink = _GetSuccLink (LinkPtr);
 		SuccLinkPtr = LockLink (pq, hSuccLink);
@@ -231,7 +232,7 @@ RemoveQueue (PQUEUE pq, HLINK hLink)
 }
 
 COUNT
-CountLinks (PQUEUE pq)
+CountLinks (QUEUE *pq)
 {
 	COUNT LinkCount;
 	HLINK hLink, hNextLink;
@@ -239,7 +240,7 @@ CountLinks (PQUEUE pq)
 	LinkCount = 0;
 	for (hLink = GetHeadLink (pq); hLink; hLink = hNextLink)
 	{
-		LINKPTR LinkPtr;
+		LINK *LinkPtr;
 
 		++LinkCount;
 
@@ -252,13 +253,13 @@ CountLinks (PQUEUE pq)
 }
 
 void
-ForAllLinks (PQUEUE pq, void (*callback)(LINKPTR, void *), void *arg)
+ForAllLinks (QUEUE *pq, void (*callback)(LINK *, void *), void *arg)
 {
 	HLINK hLink, hNextLink;
 
 	for (hLink = GetHeadLink (pq); hLink; hLink = hNextLink)
 	{
-		LINKPTR LinkPtr;
+		LINK *LinkPtr;
 		LinkPtr = LockLink (pq, hLink);
 		hNextLink = _GetSuccLink (LinkPtr);
 		(*callback) (LinkPtr, arg);

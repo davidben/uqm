@@ -40,7 +40,7 @@
 //#define DEBUG_SOLARSYS
 
 
-PSOLARSYS_STATE pSolarSysState;
+SOLARSYS_STATE *pSolarSysState;
 FRAME SISIPFrame, SunFrame, OrbitalFrame, SpaceJunkFrame;
 COLORMAP OrbitalCMap;
 COLORMAP SunCMap;
@@ -65,10 +65,10 @@ BYTE draw_sys_flags = DRAW_STARS | DRAW_PLANETS | DRAW_ORBITS
 
 // NB. This function modifies the RNG state.
 static void
-GeneratePlanets (PSOLARSYS_STATE system)
+GeneratePlanets (SOLARSYS_STATE *system)
 {
 	COUNT i;
-	PPLANET_DESC planet;
+	PLANET_DESC *planet;
 
 	for (i = system->SunDesc[0].NumPlanets,
 			planet = &system->PlanetDesc[0]; i; --i, ++planet)
@@ -118,8 +118,8 @@ static void
 GenerateMoons (void)
 {
 	COUNT i, facing;
-	PPLANET_DESC pMoonDesc;
-	PPLANET_DESC pCurDesc;
+	PLANET_DESC *pMoonDesc;
+	PLANET_DESC *pCurDesc;
 	DWORD old_seed;
 
 	GLOBAL (ip_location.x) =
@@ -213,7 +213,7 @@ void
 LoadSolarSys (void)
 {
 	COUNT i;
-	PPLANET_DESC pCurDesc;
+	PLANET_DESC *pCurDesc;
 	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
 	static const COLOR temp_color_array[NUM_TEMP_RANGES] =
@@ -422,7 +422,7 @@ static void
 CheckIntersect (BOOLEAN just_checking)
 {
 	COUNT i;
-	PPLANET_DESC pCurDesc;
+	PLANET_DESC *pCurDesc;
 	INTERSECT_CONTROL ShipIntersect, PlanetIntersect;
 	COUNT NewWaitPlanet;
 	BYTE PlanetOffset, MoonOffset;
@@ -574,7 +574,7 @@ ShowPlanet:
 }
 
 static void
-GetOrbitRect (PRECT pRect, COORD cx, COORD cy, SIZE
+GetOrbitRect (RECT *pRect, COORD cx, COORD cy, SIZE
 		radius, COUNT xnumer, COUNT ynumer, COUNT denom)
 {
 #ifdef BVT_NOT
@@ -594,7 +594,7 @@ GetOrbitRect (PRECT pRect, COORD cx, COORD cy, SIZE
 }
 
 static void
-DrawOrbit (PPLANET_DESC pPlanetDesc, COUNT xnumer, COUNT ynumer0,
+DrawOrbit (PLANET_DESC *pPlanetDesc, COUNT xnumer, COUNT ynumer0,
 		COUNT ynumer1, COUNT denom)
 {
 	COUNT index;
@@ -754,7 +754,7 @@ flagship_inertial_thrust (COUNT CurrentAngle)
 	BYTE max_speed;
 	SIZE cur_delta_x, cur_delta_y;
 	COUNT TravelAngle;
-	VELOCITYPTR VelocityPtr;
+	VELOCITY_DESC *VelocityPtr;
 
 	max_speed = pSolarSysState->max_ship_speed;
 	VelocityPtr = &GLOBAL (velocity);
@@ -897,7 +897,7 @@ UndrawShip (void)
 		}
 		else
 		{
-			PPLANET_DESC pPlanetDesc;
+			PLANET_DESC *pPlanetDesc;
 
 			LeavingInnerSystem = TRUE;
 			pPlanetDesc = pSolarSysState->pBaseDesc->pPrevDesc;
@@ -1238,7 +1238,7 @@ IP_frame (void)
 		SuspendGameClock ();
 		
 		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL_PTR);
+		DrawStatusMessage (NULL);
 		if (LastActivity == CHECK_LOAD)
 			pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
 		else
@@ -1270,7 +1270,7 @@ ValidateOrbits (void)
 	BYTE i;
 	BOOLEAN InnerSystem;
 	POINT old_pts[2];
-	PPLANET_DESC pCurDesc;
+	PLANET_DESC *pCurDesc;
 
 	InnerSystem = (BOOLEAN)(
 			pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc);
@@ -1491,7 +1491,7 @@ InitSolarSys (void)
 
 		// Enabled graphics synchronization again, as in 3DO code originally.
 		// This should fix the 'entering star' lockup/messed graphics problems.
-		DrawSISMessage (NULL_PTR);
+		DrawSISMessage (NULL);
 		SetContext (SpaceContext);
 		SetContextFGFrame (Screen);
 		SetContextBackGroundColor (BLACK_COLOR);
@@ -1544,7 +1544,7 @@ UninitSolarSys (void)
 		{
 			BYTE i;
 			DWORD best_dist;
-			PPLANET_DESC pCurDesc;
+			PLANET_DESC *pCurDesc;
 
 			best_dist = ~0L;
 			for (i = 0, pCurDesc = pSolarSysState->PlanetDesc;
@@ -1664,7 +1664,8 @@ void
 DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 {
 	BYTE i;
-	PPLANET_DESC pCurDesc, pBaseDesc;
+	PLANET_DESC *pCurDesc;
+	PLANET_DESC *pBaseDesc;
 
 	BatchGraphics ();
 	if (draw_sys_flags & DRAW_STARS)
@@ -1873,7 +1874,7 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 }
 
 void
-XFormIPLoc (PPOINT pIn, PPOINT pOut, BOOLEAN ToDisplay)
+XFormIPLoc (POINT *pIn, POINT *pOut, BOOLEAN ToDisplay)
 {
 	if (ToDisplay)
 	{
@@ -1927,7 +1928,7 @@ ExploreSolarSys (void)
 
 	InitSolarSys ();
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput ((PVOID)&SolarSysState.MenuState, FALSE);
+	DoInput (&SolarSysState.MenuState, FALSE);
 	UninitSolarSys ();
 	pSolarSysState = 0;
 }

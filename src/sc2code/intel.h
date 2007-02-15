@@ -23,23 +23,6 @@
 #include "element.h"
 #include "races.h"
 
-typedef enum
-{
-	PURSUE = 0,
-	AVOID,
-	ENTICE,
-	NO_MOVEMENT
-} MOVEMENT_STATE;
-
-typedef struct
-{
-	PELEMENT ObjectPtr;
-	COUNT facing, which_turn;
-	MOVEMENT_STATE MoveState;
-} EVALUATE_DESC;
-typedef EVALUATE_DESC *PEVALUATE_DESC;
-#define EVALUATE_DESCPTR PEVALUATE_DESC
-
 #define MANEUVERABILITY(pi) ((pi)->ManeuverabilityIndex)
 #define WEAPON_RANGE(pi) ((pi)->WeaponRange)
 
@@ -60,23 +43,23 @@ enum
 	FIRST_EMPTY_INDEX
 };
 
-extern STARSHIPPTR CyborgDescPtr;
+extern STARSHIP *CyborgDescPtr;
 extern SIZE cur_player;
 
 extern BATTLE_INPUT_STATE computer_intelligence (COUNT player,
-		STARSHIPPTR StarShipPtr);
+		STARSHIP *StarShipPtr);
 extern BATTLE_INPUT_STATE tactical_intelligence (COUNT player,
-		STARSHIPPTR StarShipPtr);
-extern void ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR
-		ObjectsOfConcern, COUNT ConcernCounter);
-extern BOOLEAN ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr,
+		STARSHIP *StarShipPtr);
+extern void ship_intelligence (ELEMENT *ShipPtr,
+		EVALUATE_DESC *ObjectsOfConcern, COUNT ConcernCounter);
+extern BOOLEAN ship_weapons (ELEMENT *ShipPtr, ELEMENT *OtherPtr,
 		COUNT margin_of_error);
 
-extern void Pursue (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr);
-extern void Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr);
-extern void Avoid (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr);
-extern BOOLEAN TurnShip (ELEMENTPTR ShipPtr, COUNT angle);
-extern BOOLEAN ThrustShip (ELEMENTPTR ShipPtr, COUNT angle);
+extern void Pursue (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr);
+extern void Entice (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr);
+extern void Avoid (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr);
+extern BOOLEAN TurnShip (ELEMENT *ShipPtr, COUNT angle);
+extern BOOLEAN ThrustShip (ELEMENT *ShipPtr, COUNT angle);
 
 
 #define HUMAN_CONTROL (BYTE)(1 << 0)

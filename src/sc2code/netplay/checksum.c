@@ -118,7 +118,7 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 	// the side this ship is on. This must be excluded from the checksum
 	// as this does not have to be the same for both sides.
 	{
-		extern void new_ship(PELEMENT ElementPtr);
+		extern void new_ship(ELEMENT *ElementPtr);
 		BYTE turn_wait = val->turn_wait;
 		
 		if (val->preprocess_func == new_ship)
@@ -146,7 +146,7 @@ crc_processDispQueue(crc_State *state) {
 	crc_log("START crc_processDispQueue().");
 #endif
 	for (element = GetHeadElement(); element != 0; element = nextElement) {
-		ELEMENTPTR elementPtr;
+		ELEMENT *elementPtr;
 
 #ifdef DUMP_CRC_OPS
 		crc_log("===== disp_q[%d]:", i);

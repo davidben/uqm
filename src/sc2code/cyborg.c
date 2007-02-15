@@ -31,8 +31,8 @@
 //#define DEBUG_CYBORG
 
 COUNT
-PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
-		max_turns, COUNT margin_of_error)
+PlotIntercept (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1,
+		COUNT max_turns, COUNT margin_of_error)
 {
 	SIZE dy;
 	SIZE time_y_0, time_y_1;
@@ -289,10 +289,10 @@ PlotIntercept (ELEMENTPTR ElementPtr0, ELEMENTPTR ElementPtr1, COUNT
 	return (0);
 }
 
-STARSHIPPTR CyborgDescPtr;
+STARSHIP *CyborgDescPtr;
 
 static void
-InitCyborg (STARSHIPPTR StarShipPtr)
+InitCyborg (STARSHIP *StarShipPtr)
 {
 	COUNT Index, Divisor;
 
@@ -318,7 +318,7 @@ InitCyborg (STARSHIPPTR StarShipPtr)
 }
 
 static void
-ship_movement (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
+ship_movement (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
 	if (EvalDescPtr->which_turn == 0)
 		EvalDescPtr->which_turn = 1;
@@ -342,14 +342,13 @@ ship_movement (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 }
 
 BOOLEAN
-ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr, COUNT
-		margin_of_error)
+ship_weapons (ELEMENT *ShipPtr, ELEMENT *OtherPtr, COUNT margin_of_error)
 {
 	SIZE delta_x, delta_y;
 	COUNT n, num_weapons;
 	ELEMENT Ship;
 	HELEMENT Weapon[6];
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (OBJECT_CLOAKED (OtherPtr))
 		margin_of_error += DISPLAY_TO_WORLD (40);
@@ -370,8 +369,8 @@ ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr, COUNT
 	if ((n = num_weapons))
 	{
 		HELEMENT *WeaponPtr, w;
-		//STARSHIPPTR StarShipPtr;
-		ELEMENTPTR EPtr;
+		//STARSHIP *StarShipPtr;
+		ELEMENT *EPtr;
 
 		WeaponPtr = &Weapon[0];
 		do
@@ -416,12 +415,12 @@ ship_weapons (ELEMENTPTR ShipPtr, ELEMENTPTR OtherPtr, COUNT
 }
 
 void
-ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR ObjectsOfConcern,
+ship_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
 	BOOLEAN ShipMoved, ShipFired;
 	COUNT margin_of_error;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -455,7 +454,7 @@ ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR ObjectsOfConcern,
 			if (!ShipMoved
 					&& (ConcernCounter != ENEMY_WEAPON_INDEX
 					|| ObjectsOfConcern->MoveState == PURSUE
-|| (ObjectsOfConcern->ObjectPtr->state_flags & CREW_OBJECT)
+					|| (ObjectsOfConcern->ObjectPtr->state_flags & CREW_OBJECT)
 					|| MANEUVERABILITY (
 							&StarShipPtr->RaceDescPtr->cyborg_control
 							) >= MEDIUM_SHIP))
@@ -482,10 +481,10 @@ ship_intelligence (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR ObjectsOfConcern,
 }
 
 BOOLEAN
-TurnShip (ELEMENTPTR ShipPtr, COUNT angle)
+TurnShip (ELEMENT *ShipPtr, COUNT angle)
 {
 	COUNT f, ship_delta_facing;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	f = StarShipPtr->ShipFacing;
@@ -531,10 +530,10 @@ TurnShip (ELEMENTPTR ShipPtr, COUNT angle)
 }
 
 BOOLEAN
-ThrustShip (ELEMENTPTR ShipPtr, COUNT angle)
+ThrustShip (ELEMENT *ShipPtr, COUNT angle)
 {
 	BOOLEAN ShouldThrust;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	if (StarShipPtr->ship_input_state & THRUST)
@@ -571,14 +570,14 @@ ThrustShip (ELEMENTPTR ShipPtr, COUNT angle)
 }
 
 void
-Pursue (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
+Pursue (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
 	INPUT_STATE maneuver_state;
 	COUNT desired_thrust_angle, desired_turn_angle;
 	SIZE delta_x, delta_y;
 	SIZE ship_delta_x, ship_delta_y;
 	SIZE other_delta_x, other_delta_y;
-	ELEMENTPTR OtherObjPtr;
+	ELEMENT *OtherObjPtr;
 	VELOCITY_DESC ShipVelocity, OtherVelocity;
 
 	ShipVelocity = ShipPtr->velocity;
@@ -617,7 +616,8 @@ Pursue (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 	if ((OtherObjPtr->state_flags & PLAYER_SHIP)
 			&& OtherObjPtr->mass_points <= MAX_SHIP_MASS)
 	{
-		STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
+		STARSHIP *StarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		GetElementStarShip (ShipPtr, &StarShipPtr);
 		GetElementStarShip (OtherObjPtr, &EnemyStarShipPtr);
@@ -701,7 +701,7 @@ Pursue (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 }
 
 void
-Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
+Entice (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
 	INPUT_STATE maneuver_state;
 	COUNT desired_thrust_angle, desired_turn_angle;
@@ -709,10 +709,10 @@ Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 	SIZE delta_x, delta_y;
 	SIZE ship_delta_x, ship_delta_y;
 	SIZE other_delta_x, other_delta_y;
-	ELEMENTPTR OtherObjPtr;
+	ELEMENT *OtherObjPtr;
 	VELOCITY_DESC ShipVelocity, OtherVelocity;
-	STARSHIPPTR StarShipPtr;
-	RACE_DESCPTR RDPtr;
+	STARSHIP *StarShipPtr;
+	RACE_DESC *RDPtr;
 
 	ShipVelocity = ShipPtr->velocity;
 	GetNextVelocityComponents (&ShipVelocity,
@@ -722,7 +722,7 @@ Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 	ShipPtr->next.location.y =
 			ShipPtr->current.location.y + ship_delta_y;
 
-	OtherObjPtr = (ELEMENTPTR)EvalDescPtr->ObjectPtr;
+	OtherObjPtr = EvalDescPtr->ObjectPtr;
 	OtherVelocity = OtherObjPtr->velocity;
 	GetNextVelocityComponents (&OtherVelocity,
 			&other_delta_x, &other_delta_y, EvalDescPtr->which_turn);
@@ -840,7 +840,7 @@ Entice (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
 		{
 			UWORD fire_flags, ship_flags;
 			COUNT facing;
-			STARSHIPPTR EnemyStarShipPtr;
+			STARSHIP *EnemyStarShipPtr;
 
 			GetElementStarShip (OtherObjPtr, &EnemyStarShipPtr);
 			ship_flags = EnemyStarShipPtr->RaceDescPtr->ship_info.ship_flags;
@@ -1003,24 +1003,25 @@ DoManeuver:
 }
 
 void
-Avoid (ELEMENTPTR ShipPtr, EVALUATE_DESCPTR EvalDescPtr)
+Avoid (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
 	(void) ShipPtr;  /* Satisfying compiler (unused parameter) */
 	(void) EvalDescPtr;  /* Satisfying compiler (unused parameter) */
 }
 
 BATTLE_INPUT_STATE
-tactical_intelligence (COUNT player, STARSHIPPTR StarShipPtr)
+tactical_intelligence (COUNT player, STARSHIP *StarShipPtr)
 {
-	ELEMENTPTR ShipPtr;
+	ELEMENT *ShipPtr;
 	ELEMENT Ship;
 	COUNT ShipFacing;
 	HELEMENT hElement, hNextElement;
 	COUNT ConcernCounter;
 	EVALUATE_DESC ObjectsOfConcern[10];
 	BOOLEAN ShipMoved, UltraManeuverable;
-	STARSHIPPTR EnemyStarShipPtr;
-	RACE_DESCPTR RDPtr, EnemyRDPtr;
+	STARSHIP *EnemyStarShipPtr;
+	RACE_DESC *RDPtr;
+	RACE_DESC *EnemyRDPtr;
 
 	RDPtr = StarShipPtr->RaceDescPtr;
 
@@ -1313,8 +1314,8 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 		UnlockElement (hElement);
 	}
 
-	(*RDPtr->cyborg_control.intelligence_func)
-			(&Ship, ObjectsOfConcern, ConcernCounter);
+	RDPtr->cyborg_control.intelligence_func (&Ship, ObjectsOfConcern,
+			ConcernCounter);
 #ifdef DEBUG_CYBORG
 StarShipPtr->ship_input_state &= ~SPECIAL;
 #endif /* DEBUG_CYBORG */

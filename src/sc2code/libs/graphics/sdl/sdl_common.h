@@ -55,7 +55,7 @@ extern volatile int TransitionAmount;
 extern SDL_Rect TransitionClipRect;
 
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
-void LoadDisplay (PDISPLAY_INTERFACE *pDisplay);
+void LoadDisplay (DISPLAY_INTERFACE **pDisplay);
 
 void TFB_SwapBuffers (int force_full_redraw);
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);

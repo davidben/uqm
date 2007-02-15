@@ -109,7 +109,7 @@ static RACE_DESC mmrnmhrm_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -122,7 +122,7 @@ static RACE_DESC mmrnmhrm_desc =
 #define TRACK_WAIT 5
 
 static void
-missile_preprocess (PELEMENT ElementPtr)
+missile_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -147,11 +147,13 @@ missile_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-mmrnmhrm_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+mmrnmhrm_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	BOOLEAN CanTransform;
-	PEVALUATE_DESC lpEvalDesc;
-	STARSHIPPTR StarShipPtr, EnemyStarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	STARSHIP *EnemyStarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	CanTransform = (BOOLEAN)(StarShipPtr->special_counter == 0
@@ -237,7 +239,8 @@ mmrnmhrm_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 }
 
 static void
-twin_laser_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+twin_laser_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (!(ElementPtr1->state_flags & PLAYER_SHIP)
 			|| !(ElementPtr0->state_flags & ElementPtr1->state_flags
@@ -246,13 +249,13 @@ twin_laser_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, P
 }
 
 static COUNT
-initialize_dual_weapons (PELEMENT ShipPtr, HELEMENT WeaponArray[])
+initialize_dual_weapons (ELEMENT *ShipPtr, HELEMENT WeaponArray[])
 {
 #define CENTER_OFFS DISPLAY_TO_WORLD (4)
 	COORD cx, cy;
 	COUNT facing, angle;
 	SIZE offs_x, offs_y;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	facing = StarShipPtr->ShipFacing;
@@ -265,7 +268,7 @@ initialize_dual_weapons (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 #define WING_OFFS DISPLAY_TO_WORLD (10)
 		COORD ex, ey;
 		LASER_BLOCK LaserBlock;
-		ELEMENTPTR LaserPtr;
+		ELEMENT *LaserPtr;
 
 		LaserBlock.sender = ShipPtr->state_flags & (GOOD_GUY | BAD_GUY);
 		LaserBlock.pixoffs = 0;
@@ -307,7 +310,7 @@ initialize_dual_weapons (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 #define MISSILE_LIFE 40
 #define LAUNCH_OFFS DISPLAY_TO_WORLD (4)
 		MISSILE_BLOCK TorpBlock;
-		ELEMENTPTR TorpPtr;
+		ELEMENT *TorpPtr;
 
 		TorpBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 		TorpBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
@@ -349,9 +352,9 @@ initialize_dual_weapons (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 }
 
 static void
-mmrnmhrm_postprocess (PELEMENT ElementPtr)
+mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 			/* take care of transform effect */
@@ -400,7 +403,7 @@ mmrnmhrm_postprocess (PELEMENT ElementPtr)
 }
 
 static void
-mmrnmhrm_preprocess (PELEMENT ElementPtr)
+mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & APPEARING)
 	{
@@ -421,7 +424,7 @@ mmrnmhrm_preprocess (PELEMENT ElementPtr)
 	}
 	else
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -451,17 +454,15 @@ mmrnmhrm_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_mmrnmhrm (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	mmrnmhrm_desc.preprocess_func = mmrnmhrm_preprocess;
 	mmrnmhrm_desc.postprocess_func = mmrnmhrm_postprocess;
 	mmrnmhrm_desc.init_weapon_func = initialize_dual_weapons;
-	mmrnmhrm_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) mmrnmhrm_intelligence;
+	mmrnmhrm_desc.cyborg_control.intelligence_func = mmrnmhrm_intelligence;
 
 	RaceDescPtr = &mmrnmhrm_desc;
 

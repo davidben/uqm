@@ -29,21 +29,13 @@ typedef CONTEXT_DESC *CONTEXT;
 typedef FRAME_DESC *FRAME;
 typedef FONT_DESC *FONT;
 
-typedef CONTEXT *PCONTEXT;
-typedef FRAME *PFRAME;
-typedef FONT *PFONT;
-
 typedef UWORD TIME_VALUE;
-typedef TIME_VALUE *PTIME_VALUE;
 
 #define TIME_SHIFT 8
 #define MAX_TIME_VALUE ((1 << TIME_SHIFT) + 1)
 
 typedef SWORD COORD;
-typedef COORD *PCOORD;
-
 typedef DWORD COLOR;
-typedef COLOR *PCOLOR;
 
 #define BUILD_COLOR(c32k,c256) \
 	(COLOR)(((DWORD)(c32k)<<8)|(BYTE)(c256))
@@ -74,33 +66,28 @@ typedef struct extent
 {
 	COORD width, height;
 } EXTENT;
-typedef EXTENT *PEXTENT;
 
 typedef struct point
 {
 	COORD x, y;
 } POINT;
-typedef POINT *PPOINT;
 
 typedef struct stamp
 {
 	POINT origin;
 	FRAME frame;
 } STAMP;
-typedef STAMP *PSTAMP;
 
 typedef struct rect
 {
 	POINT corner;
 	EXTENT extent;
 } RECT;
-typedef RECT *PRECT;
 
 typedef struct line
 {
 	POINT first, second;
 } LINE;
-typedef LINE *PLINE;
 
 typedef enum
 {
@@ -123,7 +110,6 @@ typedef struct text
 	TEXT_ALIGN align;
 	COUNT CharCount;
 } TEXT;
-typedef TEXT *PTEXT;
 
 #include "strlib.h"
 
@@ -144,18 +130,13 @@ typedef struct
 	POINT EndPoint;
 	STAMP IntersectStamp;
 } INTERSECT_CONTROL;
-typedef INTERSECT_CONTROL *PINTERSECT_CONTROL;
 
 typedef MEM_HANDLE CONTEXT_REF;
-typedef CONTEXT_REF *PCONTEXT_REF;
 
 typedef DWORD DRAWABLE;
-typedef DRAWABLE *PDRAWABLE;
-
 #define BUILD_DRAWABLE(h,i) ((DRAWABLE)MAKE_DWORD(h,i))
 
 typedef MEM_HANDLE FONT_REF;
-typedef FONT_REF *PFONT_REF;
 
 typedef BYTE INTERSECT_CODE;
 
@@ -173,9 +154,8 @@ typedef POINT HOT_SPOT;
 
 extern HOT_SPOT MAKE_HOT_SPOT (COORD, COORD);
 
-extern INTERSECT_CODE BoxIntersect (PRECT pr1, PRECT pr2, PRECT
-		printer);
-extern void BoxUnion (PRECT pr1, PRECT pr2, PRECT punion);
+extern INTERSECT_CODE BoxIntersect (RECT *pr1, RECT *pr2, RECT *printer);
+extern void BoxUnion (RECT *pr1, RECT *pr2, RECT *punion);
 
 enum
 {
@@ -198,48 +178,48 @@ extern COLOR SetContextForeGroundColor (COLOR Color);
 extern COLOR SetContextBackGroundColor (COLOR Color);
 extern FRAME SetContextFGFrame (FRAME Frame);
 extern BOOLEAN SetContextClipping (BOOLEAN ClipStatus);
-extern BOOLEAN SetContextClipRect (PRECT pRect);
-extern BOOLEAN GetContextClipRect (PRECT pRect);
-extern TIME_VALUE DrawablesIntersect (PINTERSECT_CONTROL pControl0,
-		PINTERSECT_CONTROL pControl1, TIME_VALUE max_time_val);
-extern void DrawStamp (PSTAMP pStamp);
-extern void DrawFilledStamp (PSTAMP pStamp);
-extern void DrawPoint (PPOINT pPoint);
-extern void DrawRectangle (PRECT pRect);
-extern void DrawFilledRectangle (PRECT pRect);
-extern void DrawLine (PLINE pLine);
-extern void font_DrawText (PTEXT pText);
-extern void DrawBatch (PPRIMITIVE pBasePrim, PRIM_LINKS PrimLinks,
+extern BOOLEAN SetContextClipRect (RECT *pRect);
+extern BOOLEAN GetContextClipRect (RECT *pRect);
+extern TIME_VALUE DrawablesIntersect (INTERSECT_CONTROL *pControl0,
+		INTERSECT_CONTROL *pControl1, TIME_VALUE max_time_val);
+extern void DrawStamp (STAMP *pStamp);
+extern void DrawFilledStamp (STAMP *pStamp);
+extern void DrawPoint (POINT *pPoint);
+extern void DrawRectangle (RECT *pRect);
+extern void DrawFilledRectangle (RECT *pRect);
+extern void DrawLine (LINE *pLine);
+extern void font_DrawText (TEXT *pText);
+extern void DrawBatch (PRIMITIVE *pBasePrim, PRIM_LINKS PrimLinks,
 		BATCH_FLAGS BatchFlags);
 extern void BatchGraphics (void);
 extern void UnbatchGraphics (void);
 extern void FlushGraphics (void);
-extern void ClearBackGround (PRECT pClipRect);
+extern void ClearBackGround (RECT *pClipRect);
 extern void ClearDrawable (void);
 extern CONTEXT_REF CreateContext (void);
 extern BOOLEAN DestroyContext (CONTEXT_REF ContextRef);
-extern DRAWABLE CreateDisplay (CREATE_FLAGS CreateFlags, PSIZE pwidth,
-		PSIZE pheight);
+extern DRAWABLE CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth,
+		SIZE *pheight);
 extern DRAWABLE CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width,
 		SIZE height, COUNT num_frames);
 extern BOOLEAN DestroyDrawable (DRAWABLE Drawable);
-extern BOOLEAN GetFrameRect (FRAME Frame, PRECT pRect);
+extern BOOLEAN GetFrameRect (FRAME Frame, RECT *pRect);
 
 extern HOT_SPOT SetFrameHot (FRAME Frame, HOT_SPOT HotSpot);
 extern HOT_SPOT GetFrameHot (FRAME Frame);
 extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
-extern DWORD LoadCelFile (PVOID pStr);
-extern DWORD LoadFontFile (PVOID pStr);
+extern DWORD LoadGraphicFile (const char *pStr);
+extern DWORD LoadFontFile (const char *pStr);
 extern DWORD LoadGraphicInstance (DWORD res);
-extern DRAWABLE LoadDisplayPixmap (PRECT area, FRAME frame);
+extern DRAWABLE LoadDisplayPixmap (RECT *area, FRAME frame);
 extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT_REF FontRef);
 extern FONT CaptureFont (FONT_REF FontRef);
 extern FONT_REF ReleaseFont (FONT Font);
-extern BOOLEAN TextRect (PTEXT pText, PRECT pRect, PBYTE pdelta);
-extern BOOLEAN GetContextFontLeading (PSIZE pheight);
-extern BOOLEAN GetContextFontLeadingWidth (PSIZE pwidth);
+extern BOOLEAN TextRect (TEXT *pText, RECT *pRect, BYTE *pdelta);
+extern BOOLEAN GetContextFontLeading (SIZE *pheight);
+extern BOOLEAN GetContextFontLeadingWidth (SIZE *pwidth);
 extern COUNT GetFrameCount (FRAME Frame);
 extern COUNT GetFrameIndex (FRAME Frame);
 extern FRAME SetAbsFrameIndex (FRAME Frame, COUNT FrameIndex);
@@ -273,7 +253,7 @@ extern void FlushColorXForms (void);
 #define GetColorMapAddress GetStringAddress
 #define GetColorMapContents GetStringContents
 
-void SetSystemRect (PRECT pRect);
+void SetSystemRect (RECT *pRect);
 void ClearSystemRect (void);
 
 #endif /* _GFXLIB_H */

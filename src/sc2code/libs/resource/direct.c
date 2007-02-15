@@ -23,7 +23,7 @@
 
 DIRENTRY_REF
 LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
-		const char *pattern, match_MatchType matchType, PCOUNT pnum_entries)
+		const char *pattern, match_MatchType matchType, COUNT *pnum_entries)
 {
 	uio_DirList *dirList;
 	COUNT num_entries, length;
@@ -32,8 +32,8 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	uio_DirHandle *dir;
 	STRING_TABLE StringTable;
 	STRING_TABLEPTR lpST;
-	PSTR lpStr;
-	PDWORD lpLastOffs;
+	char *lpStr;
+	DWORD *lpLastOffs;
 
 	dir = uio_openDirRelative (dirHandle, path, 0);
 	assert(dir != NULL);
@@ -87,7 +87,7 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	lpST->StringCount = num_entries;
 	lpLastOffs = &lpST->StringOffsets[0];
 	*lpLastOffs = slen;
-	lpStr = (PSTR)lpST + slen;
+	lpStr = (BYTE*)lpST + slen;
 
 	for (i = 0; i < dirList->numNames; i++)
 	{

@@ -26,9 +26,9 @@
 
 static LOCDATA utwig_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)UTWIG_PMAP_ANIM, /* AlienFrame */
 	(FONT)UTWIG_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -190,7 +190,7 @@ static LOCDATA utwig_desc =
 		ONE_SECOND * 7 / 60, ONE_SECOND / 2, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -558,8 +558,7 @@ NeutralUtwig (RESPONSE_REF R)
 						we_are_vindicator1,
 						buf,
 						we_are_vindicator2,
-						NULL_PTR
-						);
+						(UNICODE*)NULL);
 			}
 			pStr[0] = we_are_vindicator0;
 			break;
@@ -955,10 +954,10 @@ post_utwig_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_utwig_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	utwig_desc.init_encounter_func = Intro;
 	utwig_desc.post_encounter_func = post_utwig_enc;

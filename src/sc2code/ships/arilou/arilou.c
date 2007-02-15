@@ -96,7 +96,7 @@ static RACE_DESC arilou_desc =
 	{
 		0,
 		LASER_RANGE >> 1,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -106,11 +106,11 @@ static RACE_DESC arilou_desc =
 };
 
 static COUNT
-initialize_autoaim_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
+initialize_autoaim_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 {
 	COUNT orig_facing;
 	SIZE delta_facing;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	LASER_BLOCK LaserBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -133,10 +133,10 @@ initialize_autoaim_laser (PELEMENT ShipPtr, HELEMENT LaserArray[])
 }
 
 static void
-arilou_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
+arilou_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	StarShipPtr->ship_input_state |= THRUST;
@@ -146,7 +146,7 @@ arilou_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 
 	if (StarShipPtr->special_counter == 0)
 	{
-		PEVALUATE_DESC lpEvalDesc;
+		EVALUATE_DESC *lpEvalDesc;
 
 		StarShipPtr->ship_input_state &= ~SPECIAL;
 
@@ -154,7 +154,7 @@ arilou_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 		if (lpEvalDesc->ObjectPtr && lpEvalDesc->which_turn <= 6)
 		{
 			BOOLEAN IsTrackingWeapon;
-			STARSHIPPTR EnemyStarShipPtr;
+			STARSHIP *EnemyStarShipPtr;
 
 			GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
 			if (((EnemyStarShipPtr->RaceDescPtr->ship_info.ship_flags
@@ -185,9 +185,9 @@ arilou_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern,
 }
 
 static void
-arilou_preprocess (PELEMENT ElementPtr)
+arilou_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (!(ElementPtr->state_flags & NONSOLID))
@@ -275,16 +275,14 @@ arilou_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_arilou (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	arilou_desc.preprocess_func = arilou_preprocess;
 	arilou_desc.init_weapon_func = initialize_autoaim_laser;
-	arilou_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) arilou_intelligence;
+	arilou_desc.cyborg_control.intelligence_func = arilou_intelligence;
 
 	RaceDescPtr = &arilou_desc;
 

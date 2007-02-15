@@ -42,7 +42,7 @@ TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
 }
 
 void
-TFB_DrawScreen_Rect (PRECT rect, int r, int g, int b, SCREEN dest)
+TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest)
 {
 	RECT locRect;
 	TFB_DrawCommand DC;
@@ -132,7 +132,7 @@ TFB_DrawScreen_FontChar (TFB_Char *fontChar, TFB_Image *backing,
 }
 
 void
-TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src)
+TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src)
 {
 	TFB_DrawCommand DC;
 
@@ -148,7 +148,7 @@ TFB_DrawScreen_CopyToImage (TFB_Image *img, PRECT lpRect, SCREEN src)
 }
 
 void
-TFB_DrawScreen_Copy (PRECT r, SCREEN src, SCREEN dest)
+TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest)
 {
 	RECT locRect;
 	TFB_DrawCommand DC;
@@ -239,7 +239,7 @@ TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
 }
 
 void
-TFB_DrawImage_Rect (PRECT rect, int r, int g, int b, TFB_Image *image)
+TFB_DrawImage_Rect (RECT *rect, int r, int g, int b, TFB_Image *image)
 {
 	LockMutex (image->mutex);
 	TFB_DrawCanvas_Rect (rect, r, g, b, image->NormalImg);

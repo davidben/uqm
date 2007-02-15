@@ -646,7 +646,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 						last_chain->track_num = tct - 1;
 						if (page_counter < num_pages)
 						{
-							last_chain->text = (void *)split_text[page_counter];
+							last_chain->text = split_text[page_counter];
 							last_ts_chain = last_chain;
 						}
 						last_chain->callback = cb;

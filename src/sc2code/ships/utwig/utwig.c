@@ -98,7 +98,7 @@ static RACE_DESC utwig_desc =
 	{
 		0,
 		CLOSE_RANGE_WEAPON,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -108,7 +108,7 @@ static RACE_DESC utwig_desc =
 };
 
 static COUNT
-initialize_lance (PELEMENT ShipPtr, HELEMENT WeaponArray[])
+initialize_lance (ELEMENT *ShipPtr, HELEMENT WeaponArray[])
 {
 #define LAUNCH_XOFFS0 DISPLAY_TO_WORLD (5)
 #define LAUNCH_YOFFS0 -DISPLAY_TO_WORLD (18)
@@ -120,7 +120,7 @@ initialize_lance (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 1
 	COUNT i;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -132,7 +132,7 @@ initialize_lance (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	MissileBlock.pixoffs = 0;
 
@@ -180,11 +180,12 @@ initialize_lance (PELEMENT ShipPtr, HELEMENT WeaponArray[])
 }
 
 static void
-utwig_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+utwig_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	SIZE ShieldStatus;
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
@@ -239,7 +240,7 @@ utwig_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 	if (StarShipPtr->RaceDescPtr->ship_info.energy_level
 			&& (lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX])->ObjectPtr)
 	{
-		STARSHIPPTR EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr;
 
 		GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);
 		if (!(EnemyStarShipPtr->RaceDescPtr->ship_info.ship_flags
@@ -250,7 +251,8 @@ utwig_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Con
 }
 
 static void
-utwig_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+utwig_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (ElementPtr0->life_span > NORMAL_LIFE
 			&& (ElementPtr1->state_flags & FINITE_LIFE)
@@ -261,10 +263,10 @@ utwig_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT
 }
 
 static void
-utwig_preprocess (PELEMENT ElementPtr)
+utwig_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
-	PPRIMITIVE lpPrim;
+	STARSHIP *StarShipPtr;
+	PRIMITIVE *lpPrim;
 
 	if (ElementPtr->state_flags & APPEARING)
 	{
@@ -354,16 +356,14 @@ utwig_preprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_utwig (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	utwig_desc.preprocess_func = utwig_preprocess;
 	utwig_desc.init_weapon_func = initialize_lance;
-	utwig_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) utwig_intelligence;
+	utwig_desc.cyborg_control.intelligence_func = utwig_intelligence;
 
 	RaceDescPtr = &utwig_desc;
 

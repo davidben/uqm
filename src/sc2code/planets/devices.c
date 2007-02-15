@@ -36,13 +36,13 @@
 //#define DEBUG_DEVICES
 
 static void
-DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
+DrawDevices (MENU_STATE *pMS, BYTE OldDevice, BYTE NewDevice)
 {
 #define MAX_VIS_DEVICES 5
 	COORD y, cy;
 	TEXT t;
 	RECT r;
-	PBYTE pDeviceMap;
+	BYTE *pDeviceMap;
 
 	LockMutex (GraphicsLock);
 
@@ -54,7 +54,7 @@ DrawDevices (PMENU_STATE pMS, BYTE OldDevice, BYTE NewDevice)
 	t.align = ALIGN_CENTER;
 	t.CharCount = 3;
 
-	pDeviceMap = (PBYTE)pMS->CurFrame;
+	pDeviceMap = (BYTE*)pMS->CurFrame;
 	if (OldDevice > NUM_DEVICES
 			|| (NewDevice < NUM_DEVICES
 			&& (NewDevice < (BYTE)pMS->first_item.y
@@ -235,9 +235,9 @@ UseCaster (void)
 				(hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
 		{
 			// Ilwrath ship is in the system.
-			SHIP_FRAGMENTPTR FragPtr;
+			SHIP_FRAGMENT *FragPtr;
 
-			FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+			FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (npc_built_ship_q), hStarShip);
 			FoundIlwrath = (BOOLEAN)(
 					GET_RACE_ID (FragPtr) == ILWRATH_SHIP);
@@ -441,7 +441,7 @@ DeviceFailed (BYTE which_device)
 }
 
 static BOOLEAN
-DoManipulateDevices (PMENU_STATE pMS)
+DoManipulateDevices (MENU_STATE *pMS)
 {
 	BYTE NewState;
 	BOOLEAN select, cancel, back, forward;
@@ -474,7 +474,7 @@ DoManipulateDevices (PMENU_STATE pMS)
 
 		LockMutex (GraphicsLock);
 		status = DeviceFailed (
-				((PBYTE)pMS->CurFrame)[pMS->CurState - 1]
+				((BYTE*)pMS->CurFrame)[pMS->CurState - 1]
 				);
 		NewState = LOBYTE (status);
 		if (NewState)
@@ -630,7 +630,7 @@ InventoryDevices (BYTE *pDeviceMap)
 }
 
 BOOLEAN
-Devices (PMENU_STATE pMS)
+Devices (MENU_STATE *pMS)
 {
 	BYTE DeviceMap[NUM_DEVICES];
 
@@ -646,7 +646,7 @@ Devices (PMENU_STATE pMS)
 		TFB_ResetControls ();
 		DoManipulateDevices (pMS); /* to make sure it's initialized */
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput ((PVOID)pMS, TRUE);
+		DoInput (pMS, TRUE);
 		pMS->CurFrame = 0;
 
 		pMS->InputFunc = DoFlagshipCommands;

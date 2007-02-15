@@ -25,14 +25,14 @@
 
 
 HSTARSHIP
-Build (PQUEUE pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
+Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
 		captains_name_index)
 {
 	HSTARSHIP hNewShip;
 
 	if ((hNewShip = AllocStarShip (pQueue)) != 0)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (pQueue, hNewShip);
 		memset (StarShipPtr, 0, GetLinkSize (pQueue));
@@ -48,14 +48,14 @@ Build (PQUEUE pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
 }
 
 HSTARSHIP
-GetStarShipFromIndex (PQUEUE pShipQ, COUNT Index)
+GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index)
 {
 	HSTARSHIP hStarShip, hNextShip;
 
 	for (hStarShip = GetHeadLink (pShipQ);
 			Index > 0 && hStarShip; hStarShip = hNextShip, --Index)
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (pShipQ, hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
@@ -113,9 +113,9 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 			case SPHERE_TRACKING:
 			case SPHERE_KNOWN:
 			{
-				EXTENDED_SHIP_FRAGMENTPTR StarShipPtr;
+				EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-				StarShipPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+				StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hStarShip);
 				if (state == SPHERE_KNOWN)
 					which_ship = StarShipPtr->ShipInfo.known_strength;
@@ -146,9 +146,9 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 				for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
 						hStarShip; hStarShip = hNextShip)
 				{
-					SHIP_FRAGMENTPTR StarShipPtr;
+					SHIP_FRAGMENT *StarShipPtr;
 
-					StarShipPtr = (SHIP_FRAGMENTPTR) LockStarShip (
+					StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 							&GLOBAL (built_ship_q), hStarShip);
 					hNextShip = _GetSuccLink (StarShipPtr);
 					total += ShipCost[GET_RACE_ID (StarShipPtr)];
@@ -162,9 +162,9 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 						hStarShip; hStarShip = hNextShip)
 				{
 					BYTE ship_type;
-					SHIP_FRAGMENTPTR StarShipPtr;
+					SHIP_FRAGMENT *StarShipPtr;
 
-					StarShipPtr = (SHIP_FRAGMENTPTR) LockStarShip (
+					StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 							&GLOBAL (built_ship_q), hStarShip);
 					hNextShip = _GetSuccLink (StarShipPtr);
 					ship_type = GET_RACE_ID (StarShipPtr);
@@ -180,13 +180,12 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 						- CountLinks (&GLOBAL (built_ship_q)));
 			default:
 			{
-				SHIP_FRAGMENTPTR StarShipPtr;
+				SHIP_FRAGMENT *StarShipPtr;
 
 				if (state <= 0)
 				{
-					StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-							&GLOBAL (avail_race_q), hStarShip
-							);
+					StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
+							&GLOBAL (avail_race_q), hStarShip);
 					if (state == CHECK_ALLIANCE)
 					{
 						state = StarShipPtr->ShipInfo.ship_flags
@@ -213,10 +212,10 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 										hStarShip; hStarShip = hNextShip)
 								{
 									BOOLEAN RemoveShip;
-									SHIP_FRAGMENTPTR StarShipPtr2;
+									SHIP_FRAGMENT *StarShipPtr2;
 
 									StarShipPtr2 =
-											(SHIP_FRAGMENTPTR)LockStarShip (
+											(SHIP_FRAGMENT*) LockStarShip (
 											&GLOBAL (built_ship_q), hStarShip);
 									hNextShip = _GetSuccLink (StarShipPtr2);
 									RemoveShip = (BOOLEAN) (
@@ -278,7 +277,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 						{
 							BYTE win_loc;
 
-							StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+							StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 									&GLOBAL (built_ship_q), hOldShip);
 							win_loc = GET_GROUP_LOC (StarShipPtr);
 							UnlockStarShip (&GLOBAL (built_ship_q),
@@ -287,7 +286,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 								break;
 						}
 
-						StarShipPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+						StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 								&GLOBAL (built_ship_q), hStarShip);
 						SET_GROUP_LOC (StarShipPtr, which_window - 1);
 						if (which_ship == SPATHI_SHIP
@@ -319,7 +318,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 }
 
 COUNT
-GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip)
+GetIndexFromStarShip (QUEUE *pShipQ, HSTARSHIP hStarShip)
 {
 	COUNT Index;
 
@@ -327,7 +326,7 @@ GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip)
 	while (hStarShip != GetHeadLink (pShipQ))
 	{
 		HSTARSHIP hNextShip;
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		StarShipPtr = LockStarShip (pShipQ, hStarShip);
 		hNextShip = _GetPredLink (StarShipPtr);
@@ -341,7 +340,7 @@ GetIndexFromStarShip (PQUEUE pShipQ, HSTARSHIP hStarShip)
 }
 
 BYTE
-NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
+NameCaptain (QUEUE *pQueue, STARSHIP *StarShipPtr)
 {
 	BYTE name_index;
 	HSTARSHIP hStarShip;
@@ -353,7 +352,7 @@ NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
 		name_index = PickCaptainName ();
 		for (hStarShip = GetHeadLink (pQueue); hStarShip; hStarShip = hNextShip)
 		{
-			STARSHIPPTR TestShipPtr;
+			STARSHIP *TestShipPtr;
 
 			TestShipPtr = LockStarShip (pQueue, hStarShip);
 			hNextShip = _GetSuccLink (TestShipPtr);
@@ -386,28 +385,28 @@ NameCaptain (PQUEUE pQueue, STARSHIPPTR StarShipPtr)
 // crew_level can be set to INFINITE_FLEET for a ship which is to
 // represent an infinite number of ships.
 HSTARSHIP
-CloneShipFragment (COUNT shipIndex, PQUEUE pDstQueue, COUNT crew_level)
+CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 {
 	HSTARSHIP hStarShip, hBuiltShip;
-	SHIP_FRAGMENTPTR TemplatePtr;
+	SHIP_FRAGMENT *TemplatePtr;
 
 	hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), shipIndex);
 	if (hStarShip == 0)
 		return 0;
 
-	TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
+	TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hStarShip);
 	hBuiltShip =
 			Build (pDstQueue,
 			TemplatePtr->RaceResIndex,
 			TemplatePtr->ShipInfo.ship_flags & (GOOD_GUY | BAD_GUY),
 			(BYTE)(shipIndex == SAMATRA_SHIP ?
-					0 : NameCaptain (pDstQueue, (STARSHIPPTR)TemplatePtr)));
+					0 : NameCaptain (pDstQueue, (STARSHIP*)TemplatePtr)));
 	if (hBuiltShip)
 	{
-		SHIP_FRAGMENTPTR ShipFragPtr;
+		SHIP_FRAGMENT *ShipFragPtr;
 
-		ShipFragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pDstQueue, hBuiltShip);
+		ShipFragPtr = (SHIP_FRAGMENT*) LockStarShip (pDstQueue, hBuiltShip);
 		ShipFragPtr->ShipInfo = TemplatePtr->ShipInfo;
 		if (crew_level)
 			ShipFragPtr->ShipInfo.crew_level = crew_level;

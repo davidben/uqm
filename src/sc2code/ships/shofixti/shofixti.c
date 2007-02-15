@@ -97,7 +97,7 @@ static RACE_DESC shofixti_desc =
 	{
 		0,
 		MISSILE_SPEED * MISSILE_LIFE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,13 +107,13 @@ static RACE_DESC shofixti_desc =
 };
 
 static COUNT
-initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
+initialize_standard_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 {
 #define SHOFIXTI_OFFSET 15
 #define MISSILE_HITS 1
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 1
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -128,7 +128,7 @@ initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	MissileArray[0] = initialize_missile (&MissileBlock);
 
@@ -136,10 +136,10 @@ initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 }
 
 static void
-destruct_preprocess (PELEMENT ElementPtr)
+destruct_preprocess (ELEMENT *ElementPtr)
 {
 #define DESTRUCT_SWITCH ((NUM_EXPLOSION_FRAMES * 3) - 3)
-	PPRIMITIVE lpPrim;
+	PRIMITIVE *lpPrim;
 
 	lpPrim = &(GLOBAL (DisplayArray))[ElementPtr->PrimIndex];
 	ElementPtr->state_flags |= CHANGING;
@@ -169,13 +169,13 @@ destruct_preprocess (PELEMENT ElementPtr)
 		HELEMENT hDestruct;
 
 		SetPrimType (lpPrim, NO_PRIM);
-		ElementPtr->preprocess_func = NULL_PTR;
+		ElementPtr->preprocess_func = NULL;
 
 		hDestruct = AllocElement ();
 		if (hDestruct)
 		{
-			ELEMENTPTR DestructPtr;
-			STARSHIPPTR StarShipPtr;
+			ELEMENT *DestructPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 
@@ -200,7 +200,7 @@ destruct_preprocess (PELEMENT ElementPtr)
 				DestructPtr->preprocess_func = destruct_preprocess;
 			}
 			DestructPtr->postprocess_func =
-					DestructPtr->death_func = NULL_PTR;
+					DestructPtr->death_func = NULL;
 			ZeroVelocityComponents (&DestructPtr->velocity);
 			UnlockElement (hDestruct);
 		}
@@ -209,15 +209,15 @@ destruct_preprocess (PELEMENT ElementPtr)
 
 /* In order to detect any Orz Marines that have boarded the ship
    when it self-destructs, we'll need to see these Orz functions */
-void intruder_preprocess (PELEMENT);
-void marine_collision (PELEMENT, PPOINT, PELEMENT, PPOINT);
+extern void intruder_preprocess (ELEMENT*);
+extern void marine_collision (ELEMENT*, POINT*, ELEMENT*, POINT*);
 #define ORZ_MARINE(ptr) (ptr->preprocess_func == intruder_preprocess && \
 		ptr->collision_func == marine_collision)
 
 static void
-self_destruct (PELEMENT ElementPtr)
+self_destruct (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (ElementPtr->state_flags & PLAYER_SHIP)
@@ -227,7 +227,7 @@ self_destruct (PELEMENT ElementPtr)
 		hDestruct = AllocElement ();
 		if (hDestruct)
 		{
-			ELEMENTPTR DestructPtr;
+			ELEMENT *DestructPtr;
 
 			LockElement (hDestruct, &DestructPtr);
 			DestructPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
@@ -256,7 +256,7 @@ self_destruct (PELEMENT ElementPtr)
 		for (hElement = GetHeadElement ();
 				hElement != 0; hElement = hNextElement)
 		{
-			ELEMENTPTR ObjPtr;
+			ELEMENT *ObjPtr;
 
 			LockElement (hElement, &ObjPtr);
 			hNextElement = GetSuccElement (ObjPtr);
@@ -311,9 +311,10 @@ self_destruct (PELEMENT ElementPtr)
 }
 
 static void
-shofixti_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+shofixti_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	ship_intelligence (ShipPtr,
 			ObjectsOfConcern, ConcernCounter);
@@ -325,16 +326,17 @@ shofixti_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 			StarShipPtr->ship_input_state &= ~SPECIAL;
 		else
 		{
-			PEVALUATE_DESC lpWeaponEvalDesc, lpShipEvalDesc;
+			EVALUATE_DESC *lpWeaponEvalDesc;
+			EVALUATE_DESC *lpShipEvalDesc;
 
 			lpWeaponEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 			lpShipEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 			if (StarShipPtr->RaceDescPtr->ship_data.special[0]
 					&& (GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.captain_control.special)
 					- GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.captain_control.special) > 5
-					|| (lpShipEvalDesc->ObjectPtr != NULL_PTR
+					|| (lpShipEvalDesc->ObjectPtr != NULL
 					&& lpShipEvalDesc->which_turn <= 4)
-					|| (lpWeaponEvalDesc->ObjectPtr != NULL_PTR
+					|| (lpWeaponEvalDesc->ObjectPtr != NULL
 								/* means IMMEDIATE WEAPON */
 					&& (((lpWeaponEvalDesc->ObjectPtr->state_flags & PLAYER_SHIP)
 					&& ShipPtr->crew_level == 1)
@@ -347,9 +349,9 @@ shofixti_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT 
 }
 
 static void
-shofixti_postprocess (PELEMENT ElementPtr)
+shofixti_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags
@@ -363,18 +365,16 @@ shofixti_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_shofixti (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	static RACE_DESC new_shofixti_desc;
 
 	shofixti_desc.postprocess_func = shofixti_postprocess;
 	shofixti_desc.init_weapon_func = initialize_standard_missile;
-	shofixti_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) shofixti_intelligence;
+	shofixti_desc.cyborg_control.intelligence_func = shofixti_intelligence;
 
 	new_shofixti_desc = shofixti_desc;
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER

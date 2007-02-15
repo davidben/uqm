@@ -106,11 +106,11 @@ EventHandler (BYTE selector)
 			else if (GET_GAME_STATE (ZOQFOT_DISTRESS))
 			{
 				HSTARSHIP hZoqFot;
-				EXTENDED_SHIP_FRAGMENTPTR ZoqFotPtr;
+				EXTENDED_SHIP_FRAGMENT *ZoqFotPtr;
 
 				hZoqFot = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 						ZOQFOTPIK_SHIP);
-				ZoqFotPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+				ZoqFotPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hZoqFot);
 				ZoqFotPtr->ShipInfo.actual_strength = 0;
 				ZoqFotPtr->ShipInfo.ship_flags &= ~(GOOD_GUY | BAD_GUY);
@@ -137,11 +137,11 @@ EventHandler (BYTE selector)
 			else
 			{
 				HSTARSHIP hSpathi;
-				EXTENDED_SHIP_FRAGMENTPTR SpathiPtr;
+				EXTENDED_SHIP_FRAGMENT *SpathiPtr;
 
 				hSpathi = GetStarShipFromIndex (
 						&GLOBAL (avail_race_q), SPATHI_SHIP);
-				SpathiPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+				SpathiPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hSpathi);
 
 				if (SpathiPtr->ShipInfo.actual_strength)
@@ -166,15 +166,16 @@ EventHandler (BYTE selector)
 		case YEHAT_REBEL_EVENT:
 		{
 			HSTARSHIP hRebel, hRoyalist;
-			EXTENDED_SHIP_FRAGMENTPTR RebelPtr, RoyalistPtr;
+			EXTENDED_SHIP_FRAGMENT *RebelPtr;
+			EXTENDED_SHIP_FRAGMENT *RoyalistPtr;
 
 			hRebel = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 					YEHAT_REBEL_SHIP);
-			RebelPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+			RebelPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (avail_race_q), hRebel);
 			hRoyalist = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 					YEHAT_SHIP);
-			RoyalistPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+			RoyalistPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (avail_race_q), hRoyalist);
 			RebelPtr->ShipInfo.actual_strength =
 					RoyalistPtr->ShipInfo.actual_strength =
@@ -217,10 +218,10 @@ SetRaceDest (BYTE which_race, COORD x, COORD y, BYTE days_left, BYTE
 		func_index)
 {
 	HSTARSHIP hStarShip;
-	EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+	EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
 	hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), which_race);
-	TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hStarShip);
 
 	TemplatePtr->ShipInfo.dest_loc.x = x;
@@ -263,9 +264,9 @@ check_race_growth (void)
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (TemplatePtr);
 
@@ -326,11 +327,11 @@ black_urquan_genocide (void)
 	SIZE best_dx, best_dy;
 	HSTARSHIP hStarShip, hNextShip;
 	HSTARSHIP hBlackUrquan;
-	EXTENDED_SHIP_FRAGMENTPTR BlackUrquanPtr;
+	EXTENDED_SHIP_FRAGMENT *BlackUrquanPtr;
 
 	hBlackUrquan = GetStarShipFromIndex (
 			&GLOBAL (avail_race_q), BLACK_URQUAN_SHIP);
-	BlackUrquanPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	BlackUrquanPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hBlackUrquan);
 
 	best_dist = -1;
@@ -339,9 +340,9 @@ black_urquan_genocide (void)
 	for (Index = 0, hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; ++Index, hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENTPTR TemplatePtr;
+		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (TemplatePtr);
 
@@ -420,10 +421,10 @@ static void
 pkunk_mission (void)
 {
 	HSTARSHIP hPkunk;
-	EXTENDED_SHIP_FRAGMENTPTR PkunkPtr;
+	EXTENDED_SHIP_FRAGMENT *PkunkPtr;
 
 	hPkunk = GetStarShipFromIndex (&GLOBAL (avail_race_q), PKUNK_SHIP);
-	PkunkPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	PkunkPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hPkunk);
 
 	if (PkunkPtr->ShipInfo.actual_strength)
@@ -486,10 +487,10 @@ thradd_mission (void)
 {
 	BYTE MissionState;
 	HSTARSHIP hThradd;
-	EXTENDED_SHIP_FRAGMENTPTR ThraddPtr;
+	EXTENDED_SHIP_FRAGMENT *ThraddPtr;
 
 	hThradd = GetStarShipFromIndex (&GLOBAL (avail_race_q), THRADDASH_SHIP);
-	ThraddPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	ThraddPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hThradd);
 
 	MissionState = GET_GAME_STATE (THRADD_MISSION);
@@ -545,13 +546,14 @@ ilwrath_mission (void)
 {
 	BYTE ThraddState;
 	HSTARSHIP hIlwrath, hThradd;
-	EXTENDED_SHIP_FRAGMENTPTR IlwrathPtr, ThraddPtr;
+	EXTENDED_SHIP_FRAGMENT *IlwrathPtr;
+	EXTENDED_SHIP_FRAGMENT *ThraddPtr;
 
 	hIlwrath = GetStarShipFromIndex (&GLOBAL (avail_race_q), ILWRATH_SHIP);
-	IlwrathPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	IlwrathPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hIlwrath);
 	hThradd = GetStarShipFromIndex (&GLOBAL (avail_race_q), THRADDASH_SHIP);
-	ThraddPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	ThraddPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hThradd);
 
 	if (IlwrathPtr->ShipInfo.loc.x == ((2500 + 2535) >> 1)
@@ -625,13 +627,14 @@ utwig_supox_mission (void)
 {
 	BYTE MissionState;
 	HSTARSHIP hUtwig, hSupox;
-	EXTENDED_SHIP_FRAGMENTPTR UtwigPtr, SupoxPtr;
+	EXTENDED_SHIP_FRAGMENT *UtwigPtr;
+	EXTENDED_SHIP_FRAGMENT *SupoxPtr;
 
 	hUtwig = GetStarShipFromIndex (&GLOBAL (avail_race_q), UTWIG_SHIP);
-	UtwigPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	UtwigPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hUtwig);
 	hSupox = GetStarShipFromIndex (&GLOBAL (avail_race_q), SUPOX_SHIP);
-	SupoxPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	SupoxPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hSupox);
 
 	MissionState = GET_GAME_STATE (UTWIG_SUPOX_MISSION);
@@ -716,10 +719,10 @@ static void
 mycon_mission (void)
 {
 	HSTARSHIP hMycon;
-	EXTENDED_SHIP_FRAGMENTPTR MyconPtr;
+	EXTENDED_SHIP_FRAGMENT *MyconPtr;
 
 	hMycon = GetStarShipFromIndex (&GLOBAL (avail_race_q), MYCON_SHIP);
-	MyconPtr = (EXTENDED_SHIP_FRAGMENTPTR)LockStarShip (
+	MyconPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hMycon);
 
 	if (MyconPtr->ShipInfo.actual_strength)

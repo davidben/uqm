@@ -97,7 +97,7 @@ static RACE_DESC zoqfotpik_desc =
 	{
 		0,
 		MISSILE_RANGE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -110,7 +110,7 @@ static RACE_DESC zoqfotpik_desc =
 #define SPIT_WAIT 2
 
 static void
-spit_preprocess (PELEMENT ElementPtr)
+spit_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -136,12 +136,12 @@ spit_preprocess (PELEMENT ElementPtr)
 }
 
 static COUNT
-initialize_spit (PELEMENT ShipPtr, HELEMENT SpitArray[])
+initialize_spit (ELEMENT *ShipPtr, HELEMENT SpitArray[])
 {
 #define MISSILE_DAMAGE 1
 #define MISSILE_HITS 1
 #define MISSILE_OFFSET 0
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -165,19 +165,20 @@ initialize_spit (PELEMENT ShipPtr, HELEMENT SpitArray[])
 	return (1);
 }
 
-static void spawn_tongue (PELEMENT ElementPtr);
+static void spawn_tongue (ELEMENT *ElementPtr);
 
 static void
-tongue_postprocess (PELEMENT ElementPtr)
+tongue_postprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait)
 		spawn_tongue (ElementPtr);
 }
 
 static void
-tongue_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOINT pPt1)
+tongue_collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr0, &StarShipPtr);
 	if (StarShipPtr->special_counter ==
@@ -190,14 +191,13 @@ tongue_collision (PELEMENT ElementPtr0, PPOINT pPt0, PELEMENT ElementPtr1, PPOIN
 }
 
 static void
-spawn_tongue (ElementPtr)
-PELEMENT ElementPtr;
+spawn_tongue (ELEMENT *ElementPtr)
 {
 #define TONGUE_SPEED 0
 #define TONGUE_HITS 1
 #define TONGUE_DAMAGE 12
 #define TONGUE_OFFSET 4
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK TongueBlock;
 	HELEMENT Tongue;
 
@@ -218,7 +218,7 @@ PELEMENT ElementPtr;
 	Tongue = initialize_missile (&TongueBlock);
 	if (Tongue)
 	{
-		ELEMENTPTR TonguePtr;
+		ELEMENT *TonguePtr;
 
 		LockElement (Tongue, &TonguePtr);
 		TonguePtr->postprocess_func = tongue_postprocess;
@@ -255,17 +255,18 @@ PELEMENT ElementPtr;
 }
 
 static void
-zoqfotpik_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+zoqfotpik_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
 	BOOLEAN GiveTongueJob;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
 	GiveTongueJob = FALSE;
 	if (StarShipPtr->special_counter == 0)
 	{
-			PEVALUATE_DESC lpEnemyEvalDesc;
+		EVALUATE_DESC *lpEnemyEvalDesc;
 
 		StarShipPtr->ship_input_state &= ~SPECIAL;
 
@@ -326,9 +327,9 @@ zoqfotpik_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT
 }
 
 static void
-zoqfotpik_postprocess (PELEMENT ElementPtr)
+zoqfotpik_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -347,16 +348,14 @@ zoqfotpik_postprocess (PELEMENT ElementPtr)
 		spawn_tongue (ElementPtr);
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_zoqfotpik (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	zoqfotpik_desc.postprocess_func = zoqfotpik_postprocess;
 	zoqfotpik_desc.init_weapon_func = initialize_spit;
-	zoqfotpik_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) zoqfotpik_intelligence;
+	zoqfotpik_desc.cyborg_control.intelligence_func = zoqfotpik_intelligence;
 
 	RaceDescPtr = &zoqfotpik_desc;
 

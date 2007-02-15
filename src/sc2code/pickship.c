@@ -41,7 +41,7 @@
 #define FLAGSHIP_HEIGHT 48
 
 static BOOLEAN
-DoPickBattleShip (PMENU_STATE pMS)
+DoPickBattleShip (MENU_STATE *pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -87,7 +87,7 @@ DoPickBattleShip (PMENU_STATE pMS)
 			COUNT crew_level, max_crew;
 			COUNT ship_index;
 			HSTARSHIP hBattleShip, hNextShip;
-			STARSHIPPTR StarShipPtr;
+			STARSHIP *StarShipPtr;
 
 			if (new_col < 0)
 				new_col = NUM_PICK_SHIP_COLUMNS;
@@ -189,7 +189,7 @@ ChangeSelection:
 					t.pStr = GLOBAL_SIS (CommanderName);
 					t.CharCount = (COUNT)~0;
 					crew_level = GLOBAL_SIS (CrewEnlisted);
-					max_crew = GetCPodCapacity (NULL_PTR);
+					max_crew = GetCPodCapacity (NULL);
 				}
 				else
 				{
@@ -232,7 +232,7 @@ ChangeSelection:
 				font_DrawText (&t);
 			}
 
-			SetFlashRect (NULL_PTR, (FRAME)0);
+			SetFlashRect (NULL, (FRAME)0);
 			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
@@ -273,11 +273,11 @@ OldContext = SetContext (SpaceContext);
 		UnlockMutex (GraphicsLock);
 		pMenuState = &MenuState;
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput ((PVOID)&MenuState, FALSE);
+		DoInput (&MenuState, FALSE);
 		pMenuState = 0;
 		LockMutex (GraphicsLock);
 
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 
 		hBattleShip = (HSTARSHIP)MenuState.CurFrame;
 	}
@@ -298,7 +298,7 @@ SetContext (OldContext);
 }
 
 HSTARSHIP
-GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
+GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
 	HSTARSHIP hBattleShip;
 
@@ -313,8 +313,8 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 	else
 	{
 		HSTARSHIP hStarShip;
-		STARSHIPPTR SPtr;
-		SHIP_FRAGMENTPTR FragPtr;
+		STARSHIP *SPtr;
+		SHIP_FRAGMENT *FragPtr;
 
 		if (LastStarShipPtr == 0)
 		{
@@ -326,7 +326,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				if (which_player == 1)
 				{
 					hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-					FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+					FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip);
 					if (FragPtr->ShipInfo.crew_level == INFINITE_FLEET)
 					{
@@ -339,7 +339,7 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 		}
 		else
 		{
-			PQUEUE pQueue;
+			QUEUE *pQueue;
 			HSTARSHIP hNextShip;
 
 			if (which_player == 0)
@@ -356,13 +356,13 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 				UnlockStarShip (&race_q[which_player], hBattleShip);
 				hBattleShip = hNextShip;
 
-				FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
+				FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 				if (SPtr == LastStarShipPtr)
 				{
 					if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
 					{
 						FragPtr->ShipInfo.crew_level = SPtr->special_counter;
-						SPtr->RaceDescPtr = (RACE_DESCPTR)&FragPtr->ShipInfo;
+						SPtr->RaceDescPtr = (RACE_DESC*)&FragPtr->ShipInfo;
 						if (GLOBAL (CurrentActivity) & IN_BATTLE)
 							SPtr->RaceResIndex = 0;
 					}
@@ -414,12 +414,12 @@ GetEncounterStarShip (STARSHIPPTR LastStarShipPtr, COUNT which_player)
 }
 
 void
-DrawArmadaPickShip (BOOLEAN draw_salvage_frame, PRECT pPickRect)
+DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 {
 #define PICK_NAME_HEIGHT 6
 	//COUNT i;
 	HSTARSHIP hBattleShip, hNextShip;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	RECT r, pick_r;
 	STAMP s;
 	TEXT t;

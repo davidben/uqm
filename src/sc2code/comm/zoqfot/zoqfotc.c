@@ -42,9 +42,9 @@
 
 static LOCDATA zoqfot_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)ZOQFOTPIK_PMAP_ANIM, /* AlienFrame */
 	(FONT)ZOQFOTPIK_FONT, /* AlienFont */
 	0, /* AlienTextFColor */
@@ -102,7 +102,7 @@ static LOCDATA zoqfot_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 enum
@@ -413,8 +413,7 @@ AquaintZoqFot (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 	}
 
 	if (PHRASE_ENABLED (which_fot))
@@ -932,10 +931,10 @@ post_zoqfot_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_zoqfot_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	zoqfot_desc.init_encounter_func = Intro;
 	zoqfot_desc.post_encounter_func = post_zoqfot_enc;

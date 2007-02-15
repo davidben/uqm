@@ -42,7 +42,7 @@ enum
 
 
 static void
-DrawModuleStrings (PMENU_STATE pMS, BYTE NewModule)
+DrawModuleStrings (MENU_STATE *pMS, BYTE NewModule)
 {
 	RECT r;
 	STAMP s;
@@ -139,7 +139,7 @@ RedistributeFuel (void)
 #define LANDER_WIDTH 15
 
 static void
-DisplayLanders (PMENU_STATE pMS)
+DisplayLanders (MENU_STATE *pMS)
 {
 	STAMP s;
 
@@ -172,7 +172,7 @@ DisplayLanders (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoInstallModule (PMENU_STATE pMS)
+DoInstallModule (MENU_STATE *pMS)
 {
 	BYTE NewState, new_slot_piece, old_slot_piece;
 	SIZE FirstItem, LastItem;
@@ -237,7 +237,7 @@ DoInstallModule (PMENU_STATE pMS)
 
 		SetContext (SpaceContext);
 		ClearSISRect (CLEAR_SIS_RADAR);
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 		goto InitFlash;
 	}
 	else if (select || cancel)
@@ -298,7 +298,7 @@ DoInstallModule (PMENU_STATE pMS)
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
-		SetFlashRect (NULL_PTR, (FRAME)0);
+		SetFlashRect (NULL, (FRAME)0);
 
 		if (select)
 		{
@@ -609,7 +609,7 @@ ChangeFuelQuantity (void)
 }
 
 BOOLEAN
-DoOutfit (PMENU_STATE pMS)
+DoOutfit (MENU_STATE *pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		goto ExitOutfit;
@@ -680,16 +680,16 @@ DoOutfit (PMENU_STATE pMS)
 				s.frame = SetAbsFrameIndex (pMS->ModuleFrame,
 						GetFrameCount (pMS->ModuleFrame) - 5);
 				if (ShieldFlags & (1 << EARTHQUAKE_DISASTER))
-					DrawStamp ((PSTAMP)&s);
+					DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
 				if (ShieldFlags & (1 << BIOLOGICAL_DISASTER))
-					DrawStamp ((PSTAMP)&s);
+					DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
 				if (ShieldFlags & (1 << LIGHTNING_DISASTER))
-					DrawStamp ((PSTAMP)&s);
+					DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
 				if (ShieldFlags & (1 << LAVASPOT_DISASTER))
-					DrawStamp ((PSTAMP)&s);
+					DrawStamp (&s);
 			}
 
 			UnlockMutex (GraphicsLock);

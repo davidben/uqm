@@ -26,9 +26,9 @@
 
 static LOCDATA spahome_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SPATHI_HOME_PMAP_ANIM, /* AlienFrame */
 	(FONT)SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -176,7 +176,7 @@ static LOCDATA spahome_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -883,7 +883,7 @@ SpathiPassword (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				NULL_PTR);
+				(UNICODE*)NULL);
 		DoResponsePhrase (we_are_vindicator0, ExitConversation, shared_phrase_buf);
 		Response (gort_merenga, ExitConversation);
 		Response (guph_florp, ExitConversation);
@@ -982,10 +982,10 @@ post_spahome_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_spahome_comm ()
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	spahome_desc.init_encounter_func = Intro;
 	spahome_desc.post_encounter_func = post_spahome_enc;

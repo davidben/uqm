@@ -38,7 +38,7 @@ typedef enum
 
 #include "commanim.h"
 
-void DrawAlienFrame (FRAME aframe, PSEQUENCE pSeq);
+void DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq);
 BOOLEAN SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state);
 
 extern LOCDATA CommData;

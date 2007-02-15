@@ -63,14 +63,14 @@ void TFB_ProcessEvents (void);
 
 #define GSCALE_IDENTITY 256
 
-void LoadIntoExtraScreen (PRECT r);
-void DrawFromExtraScreen (PRECT r);
+void LoadIntoExtraScreen (RECT *r);
+void DrawFromExtraScreen (RECT *r);
 void SetGraphicGrabOther (int grab_other);
 void SetGraphicScale (int scale);
 int  GetGraphicScale (void);
 void SetGraphicUseOtherExtra (int other);
-void SetTransitionSource (PRECT pRect);
-void ScreenTransition (int transition, PRECT pRect);
+void SetTransitionSource (RECT *pRect);
+void ScreenTransition (int transition, RECT *pRect);
 
 extern float FrameRate;
 extern int FrameRateTickBase;

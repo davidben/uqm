@@ -397,7 +397,7 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 }
 
 BOOLEAN
-DoMenuChooser (PMENU_STATE pMS, BYTE BaseState)
+DoMenuChooser (MENU_STATE *pMS, BYTE BaseState)
 {
 	{
 

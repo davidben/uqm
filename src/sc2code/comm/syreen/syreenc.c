@@ -26,9 +26,9 @@
 
 static LOCDATA syreen_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)SYREEN_PMAP_ANIM, /* AlienFrame */
 	(FONT)SYREEN_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -183,7 +183,7 @@ static LOCDATA syreen_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static void
@@ -791,7 +791,7 @@ Intro (void)
 					we_are_vindicator1,
 					GLOBAL_SIS (ShipName),
 					we_are_vindicator2,
-					NULL_PTR);
+					(UNICODE*)NULL);
 			Response (we_are_vice_squad, InitialSyreen);
 			Response (we_are_the_one_for_you_baby, InitialSyreen);
 			DoResponsePhrase (we_are_vindicator0, InitialSyreen, shared_phrase_buf);
@@ -846,10 +846,10 @@ post_syreen_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_syreen_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	syreen_desc.init_encounter_func = Intro;
 	syreen_desc.post_encounter_func = post_syreen_enc;

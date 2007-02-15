@@ -39,7 +39,7 @@ ACTIVITY NextActivity;
 
 // XXX: these should handle endian conversions later
 static inline COUNT
-cread_8 (DECODE_REF fh, PBYTE v)
+cread_8 (DECODE_REF fh, BYTE *v)
 {
 	BYTE t;
 	if (!v) /* read value ignored */
@@ -48,7 +48,7 @@ cread_8 (DECODE_REF fh, PBYTE v)
 }
 
 static inline COUNT
-cread_16 (DECODE_REF fh, PUWORD v)
+cread_16 (DECODE_REF fh, UWORD *v)
 {
 	UWORD t;
 	if (!v) /* read value ignored */
@@ -57,7 +57,7 @@ cread_16 (DECODE_REF fh, PUWORD v)
 }
 
 static inline COUNT
-cread_32 (DECODE_REF fh, PDWORD v)
+cread_32 (DECODE_REF fh, DWORD *v)
 {
 	DWORD t;
 	if (!v) /* read value ignored */
@@ -73,14 +73,14 @@ cread_ptr (DECODE_REF fh)
 }
 
 static inline COUNT
-cread_a8 (DECODE_REF fh, PBYTE ar, COUNT count)
+cread_a8 (DECODE_REF fh, BYTE *ar, COUNT count)
 {
 	assert (ar != NULL);
 	return cread (ar, 1, count, fh) == count;
 }
 
 static inline COUNT
-read_8 (PVOID fp, PBYTE v)
+read_8 (void *fp, BYTE *v)
 {
 	BYTE t;
 	if (!v) /* read value ignored */
@@ -89,7 +89,7 @@ read_8 (PVOID fp, PBYTE v)
 }
 
 static inline COUNT
-read_16 (PVOID fp, PUWORD v)
+read_16 (void *fp, UWORD *v)
 {
 	UWORD t;
 	if (!v) /* read value ignored */
@@ -98,7 +98,7 @@ read_16 (PVOID fp, PUWORD v)
 }
 
 static inline COUNT
-read_32 (PVOID fp, PDWORD v)
+read_32 (void *fp, DWORD *v)
 {
 	DWORD t;
 	if (!v) /* read value ignored */
@@ -107,21 +107,21 @@ read_32 (PVOID fp, PDWORD v)
 }
 
 static inline COUNT
-read_ptr (PVOID fp)
+read_ptr (void *fp)
 {
 	DWORD t;
 	return read_32 (fp, &t); /* ptrs are useless in saves */
 }
 
 static inline COUNT
-read_a8 (PVOID fp, PBYTE ar, COUNT count)
+read_a8 (void *fp, BYTE *ar, COUNT count)
 {
 	assert (ar != NULL);
 	return ReadResFile (ar, 1, count, fp) == count;
 }
 
 static inline COUNT
-read_a16 (PVOID fp, PUWORD ar, COUNT count)
+read_a16 (void *fp, UWORD *ar, COUNT count)
 {
 	assert (ar != NULL);
 
@@ -134,7 +134,7 @@ read_a16 (PVOID fp, PUWORD ar, COUNT count)
 }
 
 static void
-LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
+LoadShipQueue (DECODE_REF fh, QUEUE *pQueue, BOOLEAN MakeQ)
 {
 	COUNT num_links;
 
@@ -145,7 +145,7 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 	while (num_links--)
 	{
 		HSTARSHIP hStarShip;
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 		COUNT Index;
 		BYTE tmpb;
 
@@ -156,7 +156,7 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 		else
 			hStarShip = CloneShipFragment (Index, pQueue, 0);
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (pQueue, hStarShip);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 
 		if (pQueue != &GLOBAL (avail_race_q))
 		{	// queues other than avail_race_q save SHIP_FRAGMENT elements
@@ -182,8 +182,8 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 		{
 			// avail_race_q contains information not about specific ships,
 			// but about a race.
-			EXTENDED_SHIP_FRAGMENTPTR ExtFragPtr =
-					(EXTENDED_SHIP_FRAGMENTPTR) FragPtr;
+			EXTENDED_SHIP_FRAGMENT *ExtFragPtr =
+					(EXTENDED_SHIP_FRAGMENT*) FragPtr;
 
 			cread_16 (fh, &ExtFragPtr->ShipInfo.actual_strength);
 			cread_16 (fh, &ExtFragPtr->ShipInfo.known_strength);
@@ -201,7 +201,7 @@ LoadShipQueue (DECODE_REF fh, PQUEUE pQueue, BOOLEAN MakeQ)
 }
 
 static void
-LoadEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
+LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 {
 	COUNT i;
 
@@ -225,7 +225,7 @@ LoadEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
 	// Load each entry in the SHIP_INFO array:
 	for (i = 0; i < MAX_HYPER_SHIPS; i++)
 	{
-		SHIP_INFOPTR ShipInfo = &EncounterPtr->SD.ShipList[i];
+		SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
 		BYTE tmpb;
 
 		cread_16  (fh, &ShipInfo->ship_flags);
@@ -253,7 +253,7 @@ LoadEncounter (ENCOUNTERPTR EncounterPtr, DECODE_REF fh)
 }
 
 static void
-LoadEvent (EVENTPTR EventPtr, DECODE_REF fh)
+LoadEvent (EVENT *EventPtr, DECODE_REF fh)
 {
 	cread_ptr (fh); /* useless ptr; HEVENT pred */
 	EventPtr->pred = 0;
@@ -268,7 +268,7 @@ LoadEvent (EVENTPTR EventPtr, DECODE_REF fh)
 }
 
 static void
-DummyLoadQueue (PQUEUE QueuePtr, DECODE_REF fh)
+DummyLoadQueue (QUEUE *QueuePtr, DECODE_REF fh)
 {
 	/* QUEUE should never actually be loaded since it contains
 	 * purely internal representation and the lists
@@ -278,7 +278,7 @@ DummyLoadQueue (PQUEUE QueuePtr, DECODE_REF fh)
 	/* QUEUE format with QUEUE_TABLE defined -- UQM default */
 	cread_ptr (fh); /* HLINK head */
 	cread_ptr (fh); /* HLINK tail */
-	cread_ptr (fh); /* PBYTE pq_tab */
+	cread_ptr (fh); /* BYTE* pq_tab */
 	cread_ptr (fh); /* HLINK free_list */
 	cread_16  (fh, NULL); /* MEM_HANDLE hq_tab */
 	cread_16  (fh, NULL); /* COUNT object_size */
@@ -289,7 +289,7 @@ DummyLoadQueue (PQUEUE QueuePtr, DECODE_REF fh)
 }
 
 static void
-LoadClockState (PCLOCK_STATE ClockPtr, DECODE_REF fh)
+LoadClockState (CLOCK_STATE *ClockPtr, DECODE_REF fh)
 {
 	cread_8   (fh, &ClockPtr->day_index);
 	cread_8   (fh, &ClockPtr->month_index);
@@ -304,7 +304,7 @@ LoadClockState (PCLOCK_STATE ClockPtr, DECODE_REF fh)
 }
 
 static void
-LoadGameState (PGAME_STATE GSPtr, DECODE_REF fh)
+LoadGameState (GAME_STATE *GSPtr, DECODE_REF fh)
 {
 	DWORD tmpd;
 
@@ -314,7 +314,7 @@ LoadGameState (PGAME_STATE GSPtr, DECODE_REF fh)
 	cread_8   (fh, &GSPtr->FuelCost);
 	cread_a8  (fh, GSPtr->ModuleCost, NUM_MODULES);
 	cread_a8  (fh, GSPtr->ElementWorth, NUM_ELEMENT_CATEGORIES);
-	cread_ptr (fh); /* not loading ptr; PPRIMITIVE DisplayArray */
+	cread_ptr (fh); /* not loading ptr; PRIMITIVE *DisplayArray */
 	cread_16  (fh, &GSPtr->CurrentActivity);
 	
 	cread_16  (fh, NULL); /* CLOCK_STATE alignment padding */
@@ -356,7 +356,7 @@ LoadGameState (PGAME_STATE GSPtr, DECODE_REF fh)
 }
 
 static BOOLEAN
-LoadSisState (PSIS_STATE SSPtr, PVOID fp)
+LoadSisState (SIS_STATE *SSPtr, void *fp)
 {
 	if (
 			read_32  (fp, &SSPtr->log_x) != 1 ||
@@ -384,7 +384,7 @@ LoadSisState (PSIS_STATE SSPtr, PVOID fp)
 }
 
 static BOOLEAN
-LoadSummary (SUMMARY_DESC *SummPtr, PVOID fp)
+LoadSummary (SUMMARY_DESC *SummPtr, void *fp)
 {
 	if (!LoadSisState (&SummPtr->SS, fp))
 		return FALSE;
@@ -410,7 +410,7 @@ LoadSummary (SUMMARY_DESC *SummPtr, PVOID fp)
 }
 
 static void
-LoadStarDesc (STAR_DESCPTR SDPtr, DECODE_REF fh)
+LoadStarDesc (STAR_DESC *SDPtr, DECODE_REF fh)
 {
 	cread_16 (fh, &SDPtr->star_pt.x);
 	cread_16 (fh, &SDPtr->star_pt.y);
@@ -512,7 +512,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 		while (num_links--)
 		{
 			HEVENT hEvent;
-			EVENTPTR EventPtr;
+			EVENT *EventPtr;
 
 			hEvent = AllocEvent ();
 			LockEvent (hEvent, &EventPtr);
@@ -538,7 +538,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 		{
 			BYTE i, NumShips;
 			HENCOUNTER hEncounter;
-			ENCOUNTERPTR EncounterPtr;
+			ENCOUNTER *EncounterPtr;
 
 			hEncounter = AllocEncounter ();
 			LockEncounter (hEncounter, &EncounterPtr);
@@ -549,12 +549,12 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 			for (i = 0; i < NumShips; ++i)
 			{
 				HSTARSHIP hStarShip;
-				SHIP_FRAGMENTPTR TemplatePtr;
+				SHIP_FRAGMENT *TemplatePtr;
 
 				hStarShip = GetStarShipFromIndex (
 						&GLOBAL (avail_race_q),
 						EncounterPtr->SD.ShipList[i].var1);
-				TemplatePtr = (SHIP_FRAGMENTPTR)LockStarShip (
+				TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hStarShip);
 				EncounterPtr->SD.ShipList[i].race_strings =
 						TemplatePtr->ShipInfo.race_strings;

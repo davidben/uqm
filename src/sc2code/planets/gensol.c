@@ -39,9 +39,9 @@ init_probe (void)
 			&& GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP)
 			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
 	{
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (npc_built_ship_q), hStarShip);
 		SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 		SET_GROUP_LOC (FragPtr, 2 + 1); /* orbitting earth */
@@ -74,7 +74,7 @@ generate_energy_nodes (void)
 				SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 						&= ~(1L << 0);
-				((PPLANETSIDE_DESC)pMenuState->ModuleFrame)->InTransit = TRUE;
+				((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
 			}
 			else if (pSolarSysState->CurNode == (COUNT)~0)
 				pSolarSysState->CurNode = 1;
@@ -402,7 +402,7 @@ GenerateSOL (BYTE control)
 {
 	COUNT i;
 	DWORD rand_val;
-	PPLANET_DESC pCurDesc;
+	PLANET_DESC *pCurDesc;
 
 	switch (control)
 	{

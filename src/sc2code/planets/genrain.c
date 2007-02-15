@@ -53,7 +53,7 @@ GenerateRainbow (BYTE control)
 			{
 				BYTE which_rainbow;
 				UWORD rainbow_mask;
-				STAR_DESCPTR SDPtr;
+				STAR_DESC *SDPtr;
 
 				rainbow_mask = MAKE_WORD (
 						GET_GAME_STATE (RAINBOW_WORLD0),

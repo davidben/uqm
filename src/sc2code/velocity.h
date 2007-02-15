@@ -30,21 +30,19 @@ typedef struct velocity_desc
 	EXTENT error;
 	EXTENT incr;
 } VELOCITY_DESC;
-typedef VELOCITY_DESC *PVELOCITY;
-typedef PVELOCITY VELOCITYPTR;
 
 #define ZeroVelocityComponents(pv) memset(pv,0,sizeof (*(pv)))
 #define GetVelocityTravelAngle(pv) (pv)->TravelAngle
 
-extern void GetCurrentVelocityComponents (VELOCITYPTR velocityptr, PSIZE
-		pdx, PSIZE pdy);
-extern void GetNextVelocityComponents (VELOCITYPTR velocityptr, PSIZE
-		pdx, PSIZE pdy, COUNT num_frames);
-extern void SetVelocityVector (VELOCITYPTR velocityptr, SIZE magnitude,
+extern void GetCurrentVelocityComponents (VELOCITY_DESC *velocityptr,
+		SIZE *pdx, SIZE *pdy);
+extern void GetNextVelocityComponents (VELOCITY_DESC *velocityptr,
+		SIZE *pdx, SIZE *pdy, COUNT num_frames);
+extern void SetVelocityVector (VELOCITY_DESC *velocityptr, SIZE magnitude,
 		COUNT facing);
-extern void SetVelocityComponents (VELOCITYPTR velocityptr, SIZE dx, SIZE
-		dy);
-extern void DeltaVelocityComponents (VELOCITYPTR velocityptr, SIZE dx,
+extern void SetVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
+		SIZE dy);
+extern void DeltaVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
 		SIZE dy);
 
 static inline DWORD

@@ -32,7 +32,7 @@
 
 PLZHCODE_DESC _lpCurCodeDesc;
 STREAM_TYPE _StreamType;
-PBYTE _Stream;
+BYTE* _Stream;
 UWORD _workbuf;
 BYTE _workbuflen;
 
@@ -101,7 +101,7 @@ StartHuff (void)
 }
 
 DECODE_REF
-copen (PVOID InStream, STREAM_TYPE SType, STREAM_MODE SMode)
+copen (void *InStream, STREAM_TYPE SType, STREAM_MODE SMode)
 {
 	MEM_HANDLE h;
 	DWORD StreamLength;
@@ -148,7 +148,7 @@ copen (PVOID InStream, STREAM_TYPE SType, STREAM_MODE SMode)
 		_lpCurCodeDesc->StreamMode = SMode;
 		_lpCurCodeDesc->StreamLength = StreamLength;
 		_lpCurCodeDesc->buf_index = N - F;
-		memset ((PBYTE)&_lpCurCodeDesc->text_buf[0], ' ', N - F);
+		memset (&_lpCurCodeDesc->text_buf[0], ' ', N - F);
 
 		StartHuff ();
 	}
@@ -292,11 +292,10 @@ static const BYTE d_len[256] =
 }
 
 COUNT
-cread (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
-		lpCodeDesc)
+cread (void *buf, COUNT size, COUNT count, PLZHCODE_DESC lpCodeDesc)
 {
 	COUNT r, j, i;
-	PBYTE lpStr;
+	BYTE *lpStr;
 
 	if ((_lpCurCodeDesc = lpCodeDesc) == 0)
 		return (0);
@@ -314,7 +313,7 @@ cread (PVOID buf, COUNT size, COUNT count, PLZHCODE_DESC
 	if (size == 0)
 		return (0);
 
-	lpStr = (PBYTE)buf;
+	lpStr = (BYTE*)buf;
 	_StreamType = lpCodeDesc->StreamType;
 
 	_Stream = lpCodeDesc->Stream;

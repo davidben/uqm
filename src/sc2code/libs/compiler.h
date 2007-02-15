@@ -22,40 +22,23 @@
 #include "types.h"
 
 typedef uint8             BYTE;
-typedef BYTE            *PBYTE;
 typedef uint8             UBYTE;
-typedef UBYTE           *PUBYTE;
 typedef sint8             SBYTE;
-typedef SBYTE           *PSBYTE;
 typedef uint16            UWORD;
-typedef UWORD           *PUWORD;
 typedef sint16            SWORD;
-typedef SWORD           *PSWORD;
 typedef uint32            DWORD;
-typedef DWORD           *PDWORD;
 typedef sint32           SDWORD;
-typedef SDWORD          *PSDWORD;
-
-typedef SBYTE           *PSTR;
-
-typedef void            *PVOID;
-typedef const void     *PCVOID;
 
 typedef UWORD             COUNT;
-typedef COUNT           *PCOUNT;
 typedef SWORD              SIZE;
-typedef SIZE             *PSIZE;
 
 typedef unsigned char   UNICODE;
-
-#define NULL_PTR 0L
 
 typedef enum
 {
 	FALSE = 0,
 	TRUE
 } BOOLEAN;
-typedef BOOLEAN *PBOOLEAN;
 
 typedef void     (*PVOIDFUNC) (void);
 typedef BOOLEAN  (*PBOOLFUNC) (void);

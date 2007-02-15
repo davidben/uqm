@@ -45,10 +45,10 @@
 #define SUMMARY_SIDE_OFFS 7
 #define SAVES_PER_PAGE 5
 
-static BOOLEAN DoSettings (PMENU_STATE pMS);
-static BOOLEAN DoNaming (PMENU_STATE pMS);
+static BOOLEAN DoSettings (MENU_STATE *pMS);
+static BOOLEAN DoNaming (MENU_STATE *pMS);
 
-static PMENU_STATE pLocMenuState;
+static MENU_STATE *pLocMenuState;
 static BYTE prev_save; //keeps track of the last slot that was saved or loaded
 
 
@@ -75,7 +75,7 @@ ConfirmSaveLoad (STAMP *MsgStamp)
 		t.pStr = GAME_STRING (SAVEGAME_STRING_BASE + 0);
 	else
 		t.pStr = GAME_STRING (SAVEGAME_STRING_BASE + 1);
-	TextRect (&t, &r, NULL_PTR);
+	TextRect (&t, &r, NULL);
 	r.corner.x -= 4;
 	r.corner.y -= 4;
 	r.extent.width += 8;
@@ -106,7 +106,7 @@ enum
 	SETTINGS
 };
 
-static BOOLEAN DoGameOptions (PMENU_STATE pMS);
+static BOOLEAN DoGameOptions (MENU_STATE *pMS);
 
 enum
 {
@@ -215,7 +215,7 @@ FeedbackQuit (BYTE which_setting)
 #define DDSHS_BLOCKCUR 2
 
 static BOOLEAN
-DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
+DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
 {
 	COUNT rel_index;
 	RECT r;
@@ -297,7 +297,7 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[MAX_DESC_CHARS];
-		PBYTE pchar_deltas;
+		BYTE *pchar_deltas;
 
 		TextRect (&lf, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
@@ -353,9 +353,9 @@ DrawDescriptionString (PMENU_STATE pMS, COUNT which_string, COUNT state)
 }
 
 static BOOLEAN
-OnNameChange (PTEXTENTRY_STATE pTES)
+OnNameChange (TEXTENTRY_STATE *pTES)
 {
-	PMENU_STATE pMS = (PMENU_STATE) pTES->CbParam;
+	MENU_STATE *pMS = (MENU_STATE*) pTES->CbParam;
 	COUNT hl = DDSHS_EDIT;
 
 	pMS->first_item.x = pTES->CursorPos;
@@ -366,7 +366,7 @@ OnNameChange (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-DoNaming (PMENU_STATE pMS)
+DoNaming (MENU_STATE *pMS)
 {
 	GAME_DESC buf;
 	TEXTENTRY_STATE tes;
@@ -427,7 +427,7 @@ DoNaming (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoSettings (PMENU_STATE pMS)
+DoSettings (MENU_STATE *pMS)
 {
 	BYTE cur_speed;
 
@@ -448,7 +448,7 @@ DoSettings (PMENU_STATE pMS)
 			&& pMS->CurState == EXIT_MENU_SETTING))
 	{
 		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL_PTR);
+		DrawStatusMessage (NULL);
 		UnlockMutex (GraphicsLock);
 
 		pMS->CurState = SETTINGS;
@@ -500,7 +500,7 @@ DoSettings (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoQuitMenu (PMENU_STATE pMS)
+DoQuitMenu (MENU_STATE *pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -519,7 +519,7 @@ DoQuitMenu (PMENU_STATE pMS)
 			&& pMS->CurState == NO_QUIT_MENU))
 	{
 		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL_PTR);
+		DrawStatusMessage (NULL);
 		UnlockMutex (GraphicsLock);
 
 		pMS->CurState = QUIT_GAME;
@@ -845,11 +845,11 @@ ShowSummary (SUMMARY_DESC *pSD)
 			case IN_STARBASE:
 			{
 				BYTE QuasiState;
-				STAR_DESCPTR SDPtr;
+				STAR_DESC *SDPtr;
 				
 				QuasiState = GET_GAME_STATE (ARILOU_SPACE_SIDE);
 				SET_GAME_STATE (ARILOU_SPACE_SIDE, 0);
-				SDPtr = FindStar (NULL_PTR, &r.corner, 1, 1);
+				SDPtr = FindStar (NULL, &r.corner, 1, 1);
 				SET_GAME_STATE (ARILOU_SPACE_SIDE, QuasiState);
 				if (SDPtr)
 				{
@@ -910,7 +910,7 @@ LoadGameDescriptions (SUMMARY_DESC *pSD)
 }
 
 static BOOLEAN
-DoPickGame (PMENU_STATE pMS)
+DoPickGame (MENU_STATE *pMS)
 {
 	BYTE NewState;
 	SUMMARY_DESC *pSD;
@@ -992,7 +992,7 @@ Restart:
 				}
 				else
 				{
-					SetFlashRect (NULL_PTR, (FRAME)0);
+					SetFlashRect (NULL, (FRAME)0);
 					DrawStamp (&MsgStamp);
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 					UnlockMutex (GraphicsLock);
@@ -1021,10 +1021,10 @@ Restart:
 			else
 			{
 				ConfirmSaveLoad (0);
-				if (LoadGame ((COUNT)pMS->CurState, NULL_PTR))
+				if (LoadGame ((COUNT)pMS->CurState, NULL))
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
 			}
-			SetFlashRect (NULL_PTR, (FRAME)0);
+			SetFlashRect (NULL, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 
 			pMS->ModuleFrame = 0;
@@ -1182,7 +1182,7 @@ ChangeGameSelection:
 				}
 				UnbatchGraphics ();
 			}
-			SetFlashRect (NULL_PTR, (FRAME)0);
+			SetFlashRect (NULL, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
 	}
@@ -1191,7 +1191,7 @@ ChangeGameSelection:
 }
 
 static BOOLEAN
-PickGame (PMENU_STATE pMS)
+PickGame (MENU_STATE *pMS)
 {
 	BOOLEAN retval;
 	CONTEXT OldContext;
@@ -1286,7 +1286,7 @@ PickGame (PMENU_STATE pMS)
 }
 
 static BOOLEAN
-DoGameOptions (PMENU_STATE pMS)
+DoGameOptions (MENU_STATE *pMS)
 {
 	BOOLEAN force_select = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -1353,7 +1353,7 @@ GameOptions (void)
 	MenuState.InputFunc = DoGameOptions;
 	MenuState.CurState = SAVE_GAME;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput ((PVOID)&MenuState, TRUE);
+	DoInput (&MenuState, TRUE);
 
 	pLocMenuState = 0;
 

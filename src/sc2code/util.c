@@ -27,7 +27,7 @@
 
 
 void
-DrawStarConBox (PRECT pRect, SIZE BorderWidth, COLOR TopLeftColor, COLOR
+DrawStarConBox (RECT *pRect, SIZE BorderWidth, COLOR TopLeftColor, COLOR
 		BottomRightColor, BOOLEAN FillInterior, COLOR InteriorColor)
 {
 	RECT locRect;
@@ -170,7 +170,7 @@ PauseGame (void)
 	OldContext = SetContext (ScreenContext);
 	OldHot = SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 	GetContextClipRect (&OldRect);
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 
 	GetFrameRect (ActivityFrame, &r);
 	r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;

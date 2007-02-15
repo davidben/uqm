@@ -35,14 +35,14 @@
 
 
 BOOLEAN
-OpponentAlive (STARSHIPPTR TestStarShipPtr)
+OpponentAlive (STARSHIP *TestStarShipPtr)
 {
 	HELEMENT hElement, hSuccElement;
 
 	for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 	{
-		ELEMENTPTR ElementPtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *ElementPtr;
+		STARSHIP *StarShipPtr;
 
 		LockElement (hElement, &ElementPtr);
 		hSuccElement = GetSuccElement (ElementPtr);
@@ -222,9 +222,9 @@ readyForBattleEnd (COUNT side)
 }
 
 void
-new_ship (PELEMENT DeadShipPtr)
+new_ship (ELEMENT *DeadShipPtr)
 {
-	STARSHIPPTR DeadStarShipPtr;
+	STARSHIP *DeadStarShipPtr;
 
 	ProcessSound ((SOUND)~0, NULL);
 
@@ -264,8 +264,8 @@ new_ship (PELEMENT DeadShipPtr)
 				// set up for deletion below.
 		for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 		{
-			ELEMENTPTR ElementPtr;
-			STARSHIPPTR StarShipPtr;
+			ELEMENT *ElementPtr;
+			STARSHIP *StarShipPtr;
 
 			LockElement (hElement, &ElementPtr);
 			hSuccElement = GetSuccElement (ElementPtr);
@@ -403,7 +403,7 @@ BatchGraphics ();
 }
 
 void
-explosion_preprocess (PELEMENT ShipPtr)
+explosion_preprocess (ELEMENT *ShipPtr)
 {
 	BYTE i;
 
@@ -411,7 +411,7 @@ explosion_preprocess (PELEMENT ShipPtr)
 	switch (i)
 	{
 		case 25:
-			ShipPtr->preprocess_func = NULL_PTR;
+			ShipPtr->preprocess_func = NULL;
 		case 0:
 		case 1:
 		case 2:
@@ -446,7 +446,7 @@ explosion_preprocess (PELEMENT ShipPtr)
 		{
 			COUNT angle, dist;
 			DWORD rand_val;
-			ELEMENTPTR ElementPtr;
+			ELEMENT *ElementPtr;
 			extern FRAME explosion[];
 
 			PutElement (hElement);
@@ -478,11 +478,12 @@ explosion_preprocess (PELEMENT ShipPtr)
 }
 
 void
-ship_death (PELEMENT ShipPtr)
+ship_death (ELEMENT *ShipPtr)
 {
-	STARSHIPPTR StarShipPtr, VictoriousStarShipPtr;
+	STARSHIP *StarShipPtr;
+	STARSHIP *VictoriousStarShipPtr;
 	HELEMENT hElement, hNextElement;
-	ELEMENTPTR ElementPtr;
+	ELEMENT *ElementPtr;
 
 	StopMusic ();
 
@@ -499,7 +500,7 @@ ship_death (PELEMENT ShipPtr)
 	{
 		LockElement (hElement, &ElementPtr);
 		if ((ElementPtr->state_flags & PLAYER_SHIP)
-				&& ElementPtr != (ELEMENTPTR)ShipPtr
+				&& ElementPtr != ShipPtr
 						/* and not running away */
 				&& ElementPtr->mass_points <= MAX_SHIP_MASS)
 		{
@@ -519,7 +520,7 @@ ship_death (PELEMENT ShipPtr)
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	StarShipPtr->cur_status_flags &= ~PLAY_VICTORY_DITTY;
 
-	DeltaEnergy ((ELEMENTPTR)ShipPtr,
+	DeltaEnergy (ShipPtr,
 			-(SIZE)StarShipPtr->RaceDescPtr->ship_info.energy_level);
 
 	ShipPtr->life_span = NUM_EXPLOSION_FRAMES * 3;
@@ -528,7 +529,7 @@ ship_death (PELEMENT ShipPtr)
 	ShipPtr->postprocess_func = PostProcessStatus;
 	ShipPtr->death_func = new_ship;
 	ShipPtr->hTarget = 0;
-	ZeroVelocityComponents (&((ELEMENTPTR)ShipPtr)->velocity);
+	ZeroVelocityComponents (&ShipPtr->velocity);
 	if (ShipPtr->crew_level) /* only happens for shofixti self-destruct */
 	{
 
@@ -537,7 +538,7 @@ ship_death (PELEMENT ShipPtr)
 				CalcSoundPosition (ShipPtr), ShipPtr,
 				GAME_SOUND_PRIORITY + 1);
 
-		DeltaCrew ((ELEMENTPTR)ShipPtr, -(SIZE)ShipPtr->crew_level);
+		DeltaCrew (ShipPtr, -(SIZE)ShipPtr->crew_level);
 		if (VictoriousStarShipPtr == 0)
 			StarShipPtr->cur_status_flags |= PLAY_VICTORY_DITTY;
 	}
@@ -553,7 +554,7 @@ ship_death (PELEMENT ShipPtr)
 #define START_ION_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)
 
 void
-spawn_ion_trail (PELEMENT ElementPtr)
+spawn_ion_trail (ELEMENT *ElementPtr)
 {
 		  
 	if (ElementPtr->state_flags & PLAYER_SHIP)
@@ -566,8 +567,8 @@ spawn_ion_trail (PELEMENT ElementPtr)
 #define ION_LIFE 1
 			COUNT angle;
 			RECT r;
-			ELEMENTPTR IonElementPtr;
-			STARSHIPPTR StarShipPtr;
+			ELEMENT *IonElementPtr;
+			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 			angle = FACING_TO_ANGLE (StarShipPtr->ShipFacing) + HALF_CIRCLE;
@@ -653,7 +654,7 @@ spawn_ion_trail (PELEMENT ElementPtr)
 // Used when a new ship warps in, or a ship escapes by warping out, but not
 // when a Pkunk ship is reborn.
 void
-ship_transition (PELEMENT ElementPtr)
+ship_transition (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->state_flags & PLAYER_SHIP)
 	{
@@ -661,7 +662,7 @@ ship_transition (PELEMENT ElementPtr)
 		{
 			ElementPtr->life_span = HYPERJUMP_LIFE;
 			ElementPtr->preprocess_func = ship_transition;
-			ElementPtr->postprocess_func = NULL_PTR;
+			ElementPtr->postprocess_func = NULL;
 			SetPrimType (&DisplayArray[ElementPtr->PrimIndex], NO_PRIM);
 			ElementPtr->state_flags |= NONSOLID | FINITE_LIFE | CHANGING;
 		}
@@ -679,7 +680,7 @@ ship_transition (PELEMENT ElementPtr)
 				InitIntersectStartPoint (ElementPtr);
 				InitIntersectEndPoint (ElementPtr);
 				InitIntersectFrame (ElementPtr);
-				ZeroVelocityComponents (&((ELEMENTPTR)ElementPtr)->velocity);
+				ZeroVelocityComponents (&ElementPtr->velocity);
 				ElementPtr->state_flags &= ~(NONSOLID | FINITE_LIFE);
 				ElementPtr->state_flags |= CHANGING;
 
@@ -693,15 +694,15 @@ ship_transition (PELEMENT ElementPtr)
 
 	{
 		HELEMENT hShipImage;
-		ELEMENTPTR ShipImagePtr;
-		STARSHIPPTR StarShipPtr;
+		ELEMENT *ShipImagePtr;
+		STARSHIP *StarShipPtr;
 		
 		GetElementStarShip (ElementPtr, &StarShipPtr);
 		LockElement (StarShipPtr->hShip, &ShipImagePtr);
 
 		if (!(ShipImagePtr->state_flags & NONSOLID))
 		{
-			ElementPtr->preprocess_func = NULL_PTR;
+			ElementPtr->preprocess_func = NULL;
 		}
 		else if ((hShipImage = AllocElement ()))
 		{
@@ -729,7 +730,7 @@ ship_transition (PELEMENT ElementPtr)
 						COSINE (angle, TRANSITION_SPEED);
 				ShipImagePtr->current.location.y +=
 						SINE (angle, TRANSITION_SPEED);
-				ElementPtr->preprocess_func = NULL_PTR;
+				ElementPtr->preprocess_func = NULL;
 			}
 			else if (ElementPtr->crew_level)
 			{
@@ -757,9 +758,9 @@ ship_transition (PELEMENT ElementPtr)
 }
 
 void
-flee_preprocess (PELEMENT ElementPtr)
+flee_preprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (--ElementPtr->turn_wait == 0)
 	{
@@ -814,7 +815,7 @@ flee_preprocess (PELEMENT ElementPtr)
 
 			ElementPtr->life_span = HYPERJUMP_LIFE + 1;
 			ElementPtr->preprocess_func = ship_transition;
-			ElementPtr->postprocess_func = NULL_PTR;
+			ElementPtr->postprocess_func = NULL;
 			SetPrimType (&DisplayArray[ElementPtr->PrimIndex], NO_PRIM);
 			ElementPtr->state_flags |= NONSOLID | FINITE_LIFE | CHANGING;
 		}

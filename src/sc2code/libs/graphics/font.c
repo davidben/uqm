@@ -85,7 +85,7 @@ ReleaseFont (FONT Font)
 }
 
 void
-font_DrawText (PTEXT lpText)
+font_DrawText (TEXT *lpText)
 {
 	FixContextFontEffect ();
 	SetPrimType (&_locPrim, TEXT_PRIM);
@@ -94,7 +94,7 @@ font_DrawText (PTEXT lpText)
 }
 
 BOOLEAN
-GetContextFontLeading (PSIZE pheight)
+GetContextFontLeading (SIZE *pheight)
 {
 	if (_CurFontPtr != 0)
 	{
@@ -107,7 +107,7 @@ GetContextFontLeading (PSIZE pheight)
 }
 
 BOOLEAN
-GetContextFontLeadingWidth (PSIZE pwidth)
+GetContextFontLeadingWidth (SIZE *pwidth)
 {
 	if (_CurFontPtr != 0)
 	{
@@ -120,7 +120,7 @@ GetContextFontLeadingWidth (PSIZE pwidth)
 }
 
 BOOLEAN
-TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
+TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 {
 	FONT FontPtr;
 
@@ -235,14 +235,14 @@ TextRect (PTEXT lpText, PRECT pRect, PBYTE pdelta)
 }
 
 void
-_text_blt (PRECT pClipRect, PRIMITIVEPTR PrimPtr)
+_text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 {
 	FONT FontPtr;
 
 	COUNT num_chars;
 	wchar_t next_ch;
 	const unsigned char *pStr;
-	TEXTPTR TextPtr;
+	TEXT *TextPtr;
 	POINT origin;
 	TFB_Palette color;
 	TFB_Image *backing;

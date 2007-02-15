@@ -37,7 +37,6 @@ typedef struct
 	BYTE Type, Index;
 	SHIP_INFO ShipList[MAX_HYPER_SHIPS];
 } EXTENDED_STAR_DESC;
-typedef EXTENDED_STAR_DESC *PEXTENDED_STAR_DESC;
 
 typedef struct
 {
@@ -53,21 +52,18 @@ typedef struct
 
 	SDWORD log_x, log_y;
 } ENCOUNTER;
-typedef ENCOUNTER *PENCOUNTER;
 
 #define AllocEncounter() AllocLink (&GLOBAL (encounter_q))
 #define PutEncounter(h) PutQueue (&GLOBAL (encounter_q), h)
 #define InsertEncounter(h,i) InsertQueue (&GLOBAL (encounter_q), h, i)
 #define GetHeadEncounter() GetHeadLink (&GLOBAL (encounter_q))
 #define GetTailEncounter() GetTailLink (&GLOBAL (encounter_q))
-#define LockEncounter(h,eptr) *(eptr) = (ENCOUNTERPTR)LockLink (&GLOBAL (encounter_q), h)
+#define LockEncounter(h,ppe) (*(ppe) = (ENCOUNTER*)LockLink (&GLOBAL (encounter_q), h))
 #define UnlockEncounter(h) UnlockLink (&GLOBAL (encounter_q), h)
 #define RemoveEncounter(h) RemoveQueue (&GLOBAL (encounter_q), h)
 #define FreeEncounter(h) FreeLink (&GLOBAL (encounter_q), h)
 #define GetPredEncounter(l) _GetPredLink (l)
 #define GetSuccEncounter(l) _GetSuccLink (l)
-
-#define ENCOUNTERPTR PENCOUNTER
 
 enum
 {
@@ -126,15 +122,15 @@ enum
 #define TEXT_Y_OFFS 1
 #define SIS_TEXT_WIDTH (SIS_SCREEN_WIDTH - (TEXT_X_OFFS << 1))
 
-extern STAR_DESCPTR CurStarDescPtr;
-extern STAR_DESCPTR star_array;
+extern STAR_DESC *CurStarDescPtr;
+extern STAR_DESC *star_array;
 
 #define NUM_SOLAR_SYSTEMS 502
 
-extern STAR_DESCPTR FindStar (STAR_DESCPTR pLastStar, PPOINT puniverse,
+extern STAR_DESC* FindStar (STAR_DESC *pLastStar, POINT *puniverse,
 		SIZE xbounds, SIZE ybounds);
 
-extern void GetClusterName (STAR_DESCPTR pSD, UNICODE buf[]);
+extern void GetClusterName (const STAR_DESC *pSD, UNICODE buf[]);
 
 enum
 {

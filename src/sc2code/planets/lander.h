@@ -48,12 +48,11 @@ typedef struct
 
 	BYTE TectonicsChance, WeatherChance, FireChance;
 } PLANETSIDE_DESC;
-typedef PLANETSIDE_DESC *PPLANETSIDE_DESC;
 
 extern CONTEXT ScanContext;
 extern MUSIC_REF LanderMusic;
 
-extern void PlanetSide (PMENU_STATE pMS);
+extern void PlanetSide (MENU_STATE *pMS);
 extern void DoDiscoveryReport (SOUND ReadOutSounds);
 extern void SetPlanetMusic (BYTE planet_type);
 extern void LoadLanderData (void);

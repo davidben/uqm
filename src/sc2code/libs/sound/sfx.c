@@ -25,7 +25,7 @@ static void CheckFinishedChannels (void);
 
 
 void
-PlayChannel (COUNT channel, PVOID sample, SoundPosition pos,
+PlayChannel (COUNT channel, void *sample, SoundPosition pos,
 		void *positional_object, unsigned char priority)
 {
 	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;
@@ -144,11 +144,11 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 }
 
 // Status: Ignored
-PBYTE
+BYTE*
 GetSampleAddress (SOUND sound)
 		// I might be prototyping this wrong, type-wise.
 {
-	return ((PBYTE)GetSoundAddress (sound));
+	return ((BYTE*)GetSoundAddress (sound));
 }
 
 // Status: Ignored

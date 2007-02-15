@@ -58,8 +58,8 @@
 #include <errno.h>
 
 
-static void DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip);
-static void StartMelee (PMELEE_STATE pMS);
+static void DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip);
+static void StartMelee (MELEE_STATE *pMS);
 static ssize_t numPlayersReady (void);
 
 static int flash_selection_func (void *data);
@@ -188,12 +188,12 @@ static FRAME MeleeFrame;
 static FRAME BuildPickFrame;
 extern QUEUE master_q;
 DWORD InTime;
-PMELEE_STATE volatile pMeleeState;
+MELEE_STATE *pMeleeState;
 
-static BOOLEAN DoMelee (PMELEE_STATE pMS);
-static BOOLEAN DoEdit (PMELEE_STATE pMS);
-static BOOLEAN DoPickShip (PMELEE_STATE pMS);
-static BOOLEAN DoConfirmSettings (PMELEE_STATE pMS);
+static BOOLEAN DoMelee (MELEE_STATE *pMS);
+static BOOLEAN DoEdit (MELEE_STATE *pMS);
+static BOOLEAN DoPickShip (MELEE_STATE *pMS);
+static BOOLEAN DoConfirmSettings (MELEE_STATE *pMS);
 
 #define DTSHS_NORMAL   0
 #define DTSHS_EDIT     1
@@ -201,11 +201,11 @@ static BOOLEAN DoConfirmSettings (PMELEE_STATE pMS);
 #define DTSHS_REPAIR   4
 #define DTSHS_BLOCKCUR 8
 
-static BOOLEAN DrawTeamString (PMELEE_STATE pMS, COUNT side,
+static BOOLEAN DrawTeamString (MELEE_STATE *pMS, COUNT side,
 		COUNT HiLiteState);
 
-static BOOLEAN DoLoadTeam (PMELEE_STATE pMS);
-static void DrawFileStrings (PMELEE_STATE pMS, int HiLiteState);
+static BOOLEAN DoLoadTeam (MELEE_STATE *pMS);
+static void DrawFileStrings (MELEE_STATE *pMS, int HiLiteState);
 
 
 static void
@@ -219,7 +219,7 @@ DrawMeleeIcon (COUNT which_icon)
 }
 
 static void
-GetShipBox (PRECT pRect, COUNT side, COUNT row, COUNT col)
+GetShipBox (RECT *pRect, COUNT side, COUNT row, COUNT col)
 {
 	pRect->corner.x = MELEE_X_OFFS
 			+ (col * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE));
@@ -274,7 +274,7 @@ DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 	{
 		STAMP s;
 		HSTARSHIP hStarShip;
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 
 		hStarShip = GetStarShipFromIndex (&master_q, ship);
 		StarShipPtr = LockStarShip (&master_q, hStarShip);
@@ -289,7 +289,7 @@ DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 }
 
 static void
-DrawShipBoxCurrent (PMELEE_STATE pMS, BOOLEAN HiLite)
+DrawShipBoxCurrent (MELEE_STATE *pMS, BOOLEAN HiLite)
 {
 	FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
 	BYTE ship = pMS->TeamImage[pMS->side].ShipList[index];
@@ -335,7 +335,7 @@ DrawControls (COUNT which_side, BOOLEAN HiLite)
 }
 
 static void
-DrawPickFrame (PMELEE_STATE pMS)
+DrawPickFrame (MELEE_STATE *pMS)
 {
 	RECT r, r0, r1, ship_r;
 	STAMP s;
@@ -364,7 +364,7 @@ DrawPickFrame (PMELEE_STATE pMS)
 }
 
 static void
-RepairMeleeFrame (PRECT pRect)
+RepairMeleeFrame (RECT *pRect)
 {
 	RECT r;
 	CONTEXT OldContext;
@@ -436,7 +436,7 @@ RedrawMeleeFrame (void)
 }
 
 static BOOLEAN
-DrawTeamString (PMELEE_STATE pMS, COUNT side, COUNT HiLiteState)
+DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 {
 	RECT r;
 	TEXT lfText;
@@ -484,7 +484,7 @@ DrawTeamString (PMELEE_STATE pMS, COUNT side, COUNT HiLiteState)
 		COUNT i;
 		RECT text_r;
 		BYTE char_deltas[MAX_TEAM_CHARS];
-		PBYTE pchar_deltas;
+		BYTE *pchar_deltas;
 
 		// not drawing team bucks
 		r.extent.width -= 29;
@@ -548,7 +548,7 @@ DrawPickIcon (COUNT iship, BYTE DrawErase)
 {
 	STAMP s;
 	HSTARSHIP hStarShip;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	RECT r;
 
 	GetFrameRect (BuildPickFrame, &r);
@@ -826,6 +826,7 @@ flash_selection_func (void *data)
 {
 	DWORD TimeIn;
 	Task task = (Task) data;
+	volatile MELEE_STATE *pMS = pMeleeState;
 	
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
@@ -835,7 +836,7 @@ flash_selection_func (void *data)
 
 		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
-		Deselect (pMeleeState->MeleeOption);
+		Deselect (pMS->MeleeOption);
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + FLASH_RATE);
@@ -843,7 +844,7 @@ flash_selection_func (void *data)
 
 		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
-		Select (pMeleeState->MeleeOption);
+		Select (pMS->MeleeOption);
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
 		SleepThreadUntil (TimeIn + FLASH_RATE);
@@ -856,13 +857,13 @@ flash_selection_func (void *data)
 }
 
 static void
-InitMelee (PMELEE_STATE pMS)
+InitMelee (MELEE_STATE *pMS)
 {
 	RECT r;
 
 	SetContext (SpaceContext);
 	SetContextFGFrame (Screen);
-	SetContextClipRect (NULL_PTR);
+	SetContextClipRect (NULL);
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
 	r.corner.x = SAFE_X;
@@ -879,11 +880,11 @@ InitMelee (PMELEE_STATE pMS)
 }
 
 static void
-DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
+DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 {
 	RECT r, OldRect;
 	HSTARSHIP hStarShip;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	CONTEXT OldContext;
 
 	LockMutex (GraphicsLock);
@@ -936,7 +937,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 		hStarShip = GetStarShipFromIndex (&master_q, NewStarShip);
 		StarShipPtr = LockStarShip (&master_q, hStarShip);
 
-		InitShipStatus (StarShipPtr, NULL_PTR);
+		InitShipStatus (StarShipPtr, NULL);
 
 		UnlockStarShip (&master_q, hStarShip);
 	}
@@ -949,7 +950,7 @@ DrawMeleeShipStrings (PMELEE_STATE pMS, BYTE NewStarShip)
 }
 
 static void
-UpdateCurrentShip (PMELEE_STATE pMS)
+UpdateCurrentShip (MELEE_STATE *pMS)
 {
 	FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 	if (pMS->row == NUM_MELEE_ROWS)
@@ -973,7 +974,7 @@ GetShipValue (BYTE StarShip)
 		return (COUNT)~0;
 
 	{
-		STARSHIPPTR StarShipPtr;
+		STARSHIP *StarShipPtr;
 		COUNT val;
 
 		StarShipPtr = LockStarShip (&master_q, hStarShip);
@@ -1040,7 +1041,7 @@ LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI, UNICODE* pFilePath)
 	uio_Stream *load_fp;
 	int status;
 
-	pfile = pFilePath != NULL_PTR ? pFilePath : file;
+	pfile = pFilePath != NULL ? pFilePath : file;
 
 	GetDirEntryContents (DirEntry, (STRINGPTR)pfile, FALSE);
 	load_fp = res_OpenResFile (meleeDir, pfile, "rb");
@@ -1059,7 +1060,7 @@ LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI, UNICODE* pFilePath)
 }
 
 static void
-DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
+DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 {
 #define ENTRY_HEIGHT 32
 	COORD y;
@@ -1141,7 +1142,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					pMS->TeamDE = SetAbsDirEntryTableIndex (
 							pMS->TeamDE, bot - NUM_PREBUILT);
 					if (-1 == LoadTeamImage (pMS->TeamDE,
-							&pMS->FileList[bot - top], NULL_PTR))
+							&pMS->FileList[bot - top], NULL))
 					{
 						pMS->FileList[bot - top] = pMS->PreBuiltList[0];
 					}
@@ -1171,7 +1172,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 					if (StarShip != MELEE_NONE)
 					{
 						HSTARSHIP hStarShip;
-						STARSHIPPTR StarShipPtr;
+						STARSHIP *StarShipPtr;
 
 						hStarShip = GetStarShipFromIndex (&master_q, StarShip);
 						StarShipPtr = LockStarShip (&master_q, hStarShip);
@@ -1192,7 +1193,7 @@ DrawFileStrings (PMELEE_STATE pMS, int HiLiteState)
 }
 
 static BOOLEAN
-DoLoadTeam (PMELEE_STATE pMS)
+DoLoadTeam (MELEE_STATE *pMS)
 {
 	SIZE index;
 
@@ -1327,7 +1328,7 @@ WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp)
 }
 
 static void
-LoadTeamList (PMELEE_STATE pMS, UNICODE *pbuf)
+LoadTeamList (MELEE_STATE *pMS, UNICODE *pbuf)
 {
 	COUNT num_entries;
 	char file[NAME_MAX];
@@ -1373,7 +1374,7 @@ GetNewList:
 }
 
 static BOOLEAN
-DoSaveTeam (PMELEE_STATE pMS)
+DoSaveTeam (MELEE_STATE *pMS)
 {
 	STAMP MsgStamp;
 	char file[NAME_MAX];
@@ -1424,11 +1425,11 @@ DoSaveTeam (PMELEE_STATE pMS)
 }
 
 static void
-DeleteCurrentShip (PMELEE_STATE pMS)
+DeleteCurrentShip (MELEE_STATE *pMS)
 {
 	RECT r;
 	HSTARSHIP hStarShip;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	FleetShipIndex fleetShipIndex;
 	int CurIndex;
 
@@ -1454,7 +1455,7 @@ DeleteCurrentShip (PMELEE_STATE pMS)
 }
 
 static void
-AdvanceCursor (PMELEE_STATE pMS)
+AdvanceCursor (MELEE_STATE *pMS)
 {
 	if (++pMS->col == NUM_MELEE_COLUMNS)
 	{
@@ -1469,9 +1470,9 @@ AdvanceCursor (PMELEE_STATE pMS)
 }
 
 static BOOLEAN
-OnTeamNameChange (PTEXTENTRY_STATE pTES)
+OnTeamNameChange (TEXTENTRY_STATE *pTES)
 {
-	PMELEE_STATE pMS = (PMELEE_STATE) pTES->CbParam;
+	MELEE_STATE *pMS = (MELEE_STATE*) pTES->CbParam;
 	BOOLEAN ret;
 	COUNT hl = DTSHS_EDIT;
 
@@ -1487,7 +1488,7 @@ OnTeamNameChange (PTEXTENTRY_STATE pTES)
 }
 
 static BOOLEAN
-DoEdit (PMELEE_STATE pMS)
+DoEdit (MELEE_STATE *pMS)
 {
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -1651,9 +1652,9 @@ DoEdit (PMELEE_STATE pMS)
 
 // Handle the popup from which a ship to add to the fleet can be chosen.
 static BOOLEAN
-DoPickShip (PMELEE_STATE pMS)
+DoPickShip (MELEE_STATE *pMS)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -1823,7 +1824,7 @@ numPlayersReady (void)
 // When the other party changes something in the settings, the confirmation
 // is cancelled.
 static BOOLEAN
-DoConfirmSettings (PMELEE_STATE pMS)
+DoConfirmSettings (MELEE_STATE *pMS)
 {
 #ifdef NETPLAY
 	ssize_t numDone;
@@ -1937,7 +1938,7 @@ DoConfirmSettings (PMELEE_STATE pMS)
 }
 
 static void
-LoadMeleeInfo (PMELEE_STATE pMS)
+LoadMeleeInfo (MELEE_STATE *pMS)
 {
 	STAMP	s;
 	CONTEXT	OldContext;
@@ -1983,7 +1984,7 @@ LoadMeleeInfo (PMELEE_STATE pMS)
 }
 
 static void
-FreeMeleeInfo (PMELEE_STATE pMS)
+FreeMeleeInfo (MELEE_STATE *pMS)
 {
 	if (pMS->flash_task)
 	{
@@ -2012,7 +2013,7 @@ FreeMeleeInfo (PMELEE_STATE pMS)
 }
 
 static void
-BuildAndDrawShipList (PMELEE_STATE pMS)
+BuildAndDrawShipList (MELEE_STATE *pMS)
 {
 	COUNT i;
 	CONTEXT OldContext;
@@ -2078,7 +2079,8 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 				BYTE row, col;
 				BYTE ship_cost;
 				HSTARSHIP hStarShip, hBuiltShip;
-				STARSHIPPTR StarShipPtr, BuiltShipPtr;
+				STARSHIP *StarShipPtr;
+				STARSHIP *BuiltShipPtr;
 
 				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
 				StarShipPtr = LockStarShip (&master_q, hStarShip);
@@ -2110,7 +2112,7 @@ BuildAndDrawShipList (PMELEE_STATE pMS)
 }
 
 static void
-StartMelee (PMELEE_STATE pMS)
+StartMelee (MELEE_STATE *pMS)
 {
 	if (pMS->flash_task)
 	{
@@ -2165,7 +2167,7 @@ StartMelee (PMELEE_STATE pMS)
 }
 
 static void
-StartMeleeButtonPressed (PMELEE_STATE pMS)
+StartMeleeButtonPressed (MELEE_STATE *pMS)
 {
 	if (pMS->star_bucks[0] == 0 || pMS->star_bucks[1] == 0)
 	{
@@ -2258,7 +2260,7 @@ StartMeleeButtonPressed (PMELEE_STATE pMS)
 #ifdef NETPLAY
 
 static BOOLEAN
-DoConnectingDialog (PMELEE_STATE pMS)
+DoConnectingDialog (MELEE_STATE *pMS)
 {
 	COUNT which_side = (pMS->MeleeOption == NET_TOP) ? 1 : 0;
 	NetConnection *conn;
@@ -2279,7 +2281,7 @@ DoConnectingDialog (PMELEE_STATE pMS)
 			closePlayerNetworkConnection(which_side);
 
 		pMS->Initialized = TRUE;
-		conn = openPlayerNetworkConnection (which_side, (void *) pMS);
+		conn = openPlayerNetworkConnection (which_side, pMS);
 		pMS->InputFunc = DoConnectingDialog;
 
 		/* Draw the dialog box here */
@@ -2377,7 +2379,7 @@ DoConnectingDialog (PMELEE_STATE pMS)
 
 /* Check for disconnections, and revert to human control if so */
 static void
-check_for_disconnections (PMELEE_STATE pMS)
+check_for_disconnections (MELEE_STATE *pMS)
 {
 	COUNT player;
 	bool changed = FALSE;
@@ -2412,7 +2414,7 @@ check_for_disconnections (PMELEE_STATE pMS)
 
 
 static BOOLEAN
-DoMelee (PMELEE_STATE pMS)
+DoMelee (MELEE_STATE *pMS)
 {
 	BOOLEAN force_select = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -2628,7 +2630,7 @@ DoMelee (PMELEE_STATE pMS)
 }
 
 static void
-InitPreBuilt (PMELEE_STATE pMS)
+InitPreBuilt (MELEE_STATE *pMS)
 {
 	{
 		FleetShipIndex shipI = 0;
@@ -2901,7 +2903,7 @@ InitPreBuilt (PMELEE_STATE pMS)
 }
 
 int
-LoadMeleeConfig (PMELEE_STATE pMS)
+LoadMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *load_fp;
 	int status;
@@ -2948,7 +2950,7 @@ err:
 }
 
 int
-WriteMeleeConfig (PMELEE_STATE pMS)
+WriteMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *save_fp;
 
@@ -3027,7 +3029,7 @@ Melee (void)
 		MenuState.star_bucks[0] = GetTeamValue (&MenuState.TeamImage[0]);
 		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput ((PVOID)&MenuState, TRUE);
+		DoInput (&MenuState, TRUE);
 
 		StopMusic ();
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
@@ -3046,7 +3048,7 @@ Melee (void)
 
 // Notify the network connections of a team name change.
 void
-teamStringChanged (PMELEE_STATE pMS, int player)
+teamStringChanged (MELEE_STATE *pMS, int player)
 {
 #ifdef NETPLAY
 	const char *name;
@@ -3078,7 +3080,7 @@ teamStringChanged (PMELEE_STATE pMS, int player)
 
 // Notify the network connections of the configuration of a fleet.
 void
-entireFleetChanged (PMELEE_STATE pMS, int player)
+entireFleetChanged (MELEE_STATE *pMS, int player)
 {
 #ifdef NETPLAY
 	size_t playerI;
@@ -3105,7 +3107,7 @@ entireFleetChanged (PMELEE_STATE pMS, int player)
 
 // Notify the network of a change in the configuration of a fleet.
 void
-fleetShipChanged (PMELEE_STATE pMS, int player, size_t index)
+fleetShipChanged (MELEE_STATE *pMS, int player, size_t index)
 {
 #ifdef NETPLAY
 	size_t playerI;
@@ -3136,7 +3138,7 @@ fleetShipChanged (PMELEE_STATE pMS, int player, size_t index)
 // NB: 'len' does not include the terminating 0.
 //     'len' counts in bytes, not in characters.
 void
-updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
+updateTeamName (MELEE_STATE *pMS, COUNT side, const char *name,
 		size_t len)
 {
 	// NB: MAX_TEAM_CHARS is the maximum number of characters,
@@ -3161,7 +3163,7 @@ updateTeamName (PMELEE_STATE pMS, COUNT side, const char *name,
 
 // Update a ship in a fleet as specified by a remote party.
 bool
-updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship)
+updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship)
 {
 	BYTE row = GetShipRow (index);
 	BYTE col = GetShipColumn (index);
@@ -3222,7 +3224,7 @@ updateFleetShip (PMELEE_STATE pMS, COUNT side, COUNT index, BYTE ship)
 }
 
 void
-updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed)
+updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed)
 {
 	TFB_SeedRandom (seed);
 	(void) pMS;
@@ -3231,7 +3233,7 @@ updateRandomSeed (PMELEE_STATE pMS, COUNT side, DWORD seed)
 
 // The remote player has done something which invalidates our confirmation.
 void
-confirmationCancelled(PMELEE_STATE pMS, COUNT side)
+confirmationCancelled(MELEE_STATE *pMS, COUNT side)
 {
 	LockMutex (GraphicsLock);
 	if (side == 0)

@@ -37,7 +37,7 @@ GetGraphicScale ()
 }
 
 static void
-read_screen (PRECT lpRect, FRAME DstFramePtr)
+read_screen (RECT *lpRect, FRAME DstFramePtr)
 {
 	if (_CurFramePtr->Type != SCREEN_DRAWABLE
 			|| DstFramePtr->Type == SCREEN_DRAWABLE
@@ -78,7 +78,7 @@ static DISPLAY_INTERFACE DisplayInterface =
 };
 
 void
-LoadDisplay (PDISPLAY_INTERFACE *pDisplay)
+LoadDisplay (DISPLAY_INTERFACE **pDisplay)
 {
 	*pDisplay = &DisplayInterface;
 }

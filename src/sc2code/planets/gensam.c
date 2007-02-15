@@ -75,14 +75,13 @@ BuildUrquanGuard (void)
 			b0 < NUM_URQUAN_GUARDS0;
 			++b0, b1 += FULL_CIRCLE / (NUM_URQUAN_GUARDS0 + NUM_URQUAN_GUARDS1))
 	{
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
 		if (b1 % (FULL_CIRCLE / NUM_URQUAN_GUARDS1) == 0)
 			b1 += FULL_CIRCLE / (NUM_URQUAN_GUARDS0 + NUM_URQUAN_GUARDS1);
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
 		SET_GROUP_LOC (FragPtr, 0);
@@ -104,11 +103,10 @@ BuildUrquanGuard (void)
 			b0 < NUM_URQUAN_GUARDS1;
 			++b0, b1 += FULL_CIRCLE / NUM_URQUAN_GUARDS1)
 	{
-		SHIP_FRAGMENTPTR FragPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
 		SET_GROUP_LOC (FragPtr, 0);
@@ -153,11 +151,10 @@ GenerateSamatra (BYTE control)
 						hStarShip; hStarShip = hNextShip)
 				{
 					BYTE task;
-					SHIP_FRAGMENTPTR FragPtr;
+					SHIP_FRAGMENT *FragPtr;
 
-					FragPtr = (SHIP_FRAGMENTPTR)LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+							&GLOBAL (npc_built_ship_q), hStarShip);
 					hNextShip = _GetSuccLink (FragPtr);
 
 					task = GET_GROUP_MISSION (FragPtr);

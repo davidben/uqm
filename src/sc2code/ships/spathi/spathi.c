@@ -94,7 +94,7 @@ static RACE_DESC spathi_desc =
 	{
 		0,
 		MISSILE_RANGE,
-		NULL_PTR,
+		NULL,
 	},
 	(UNINIT_FUNC *) NULL,
 	(PREPROCESS_FUNC *) NULL,
@@ -107,7 +107,7 @@ static RACE_DESC spathi_desc =
 #define TRACK_WAIT 1
 
 static void
-butt_missile_preprocess (PELEMENT ElementPtr)
+butt_missile_preprocess (ELEMENT *ElementPtr)
 {
 	if (ElementPtr->turn_wait > 0)
 		--ElementPtr->turn_wait;
@@ -132,7 +132,7 @@ butt_missile_preprocess (PELEMENT ElementPtr)
 }
 
 static void
-spawn_butt_missile (PELEMENT ShipPtr)
+spawn_butt_missile (ELEMENT *ShipPtr)
 {
 #define SPATHI_REAR_OFFSET 20
 #define DISCRIMINATOR_LIFE 30
@@ -140,7 +140,7 @@ spawn_butt_missile (PELEMENT ShipPtr)
 #define DISCRIMINATOR_DAMAGE 2
 #define DISCRIMINATOR_OFFSET 4
 	HELEMENT ButtMissile;
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK ButtMissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -161,7 +161,7 @@ spawn_butt_missile (PELEMENT ShipPtr)
 	ButtMissile = initialize_missile (&ButtMissileBlock);
 	if (ButtMissile)
 	{
-		ELEMENTPTR ButtPtr;
+		ELEMENT *ButtPtr;
 
 		LockElement (ButtMissile, &ButtPtr);
 		ButtPtr->turn_wait = TRACK_WAIT;
@@ -177,10 +177,11 @@ spawn_butt_missile (PELEMENT ShipPtr)
 }
 
 static void
-spathi_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT ConcernCounter)
+spathi_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
+		COUNT ConcernCounter)
 {
-	STARSHIPPTR StarShipPtr;
-	PEVALUATE_DESC lpEvalDesc;
+	STARSHIP *StarShipPtr;
+	EVALUATE_DESC *lpEvalDesc;
 
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 
@@ -229,13 +230,13 @@ spathi_intelligence (PELEMENT ShipPtr, PEVALUATE_DESC ObjectsOfConcern, COUNT Co
 }
 
 static COUNT
-initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
+initialize_standard_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 {
 #define SPATHI_FORWARD_OFFSET 16
 #define MISSILE_HITS 1
 #define MISSILE_DAMAGE 1
 #define MISSILE_OFFSET 1
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -250,7 +251,7 @@ initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.hit_points = MISSILE_HITS;
 	MissileBlock.damage = MISSILE_DAMAGE;
 	MissileBlock.life = MISSILE_LIFE;
-	MissileBlock.preprocess_func = NULL_PTR;
+	MissileBlock.preprocess_func = NULL;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 	MissileArray[0] = initialize_missile (&MissileBlock);
 
@@ -258,9 +259,9 @@ initialize_standard_missile (PELEMENT ShipPtr, HELEMENT MissileArray[])
 }
 
 static void
-spathi_postprocess (PELEMENT ElementPtr)
+spathi_postprocess (ELEMENT *ElementPtr)
 {
-	STARSHIPPTR StarShipPtr;
+	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if ((StarShipPtr->cur_status_flags & SPECIAL)
@@ -274,16 +275,14 @@ spathi_postprocess (PELEMENT ElementPtr)
 	}
 }
 
-RACE_DESCPTR
+RACE_DESC*
 init_spathi (void)
 {
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 
 	spathi_desc.postprocess_func = spathi_postprocess;
 	spathi_desc.init_weapon_func = initialize_standard_missile;
-	spathi_desc.cyborg_control.intelligence_func =
-			(void (*) (PVOID ShipPtr, PVOID ObjectsOfConcern, COUNT
-					ConcernCounter)) spathi_intelligence;
+	spathi_desc.cyborg_control.intelligence_func = spathi_intelligence;
 
 	RaceDescPtr = &spathi_desc;
 

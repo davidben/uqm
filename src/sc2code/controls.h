@@ -20,7 +20,7 @@
 #define _CONTROLS_H_
 
 #include "races.h"
-		// For STARSHIPPTR
+		// For STARSHIP
 
 #include "libs/compiler.h"
 #include "libs/strlib.h"
@@ -89,7 +89,7 @@ typedef UBYTE BATTLE_INPUT_STATE;
 #define BATTLE_DOWN       ((BATTLE_INPUT_STATE)(1 << 6))
 
 typedef BATTLE_INPUT_STATE (*battle_summary_func) (COUNT player,
-		STARSHIPPTR StarShipPtr);
+		STARSHIP *StarShipPtr);
 extern battle_summary_func ComputerInput, HumanInput[], NetworkInput;
 extern battle_summary_func PlayerInput[];
 
@@ -110,10 +110,10 @@ BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
 void WaitForNoInput (SIZE Duration);
 BOOLEAN ConfirmExit (void);
 void DoPopupWindow(const char *msg);
-void DoInput (PVOID pInputState, BOOLEAN resetInput);
+void DoInput (void *pInputState, BOOLEAN resetInput);
 
-BATTLE_INPUT_STATE p1_combat_summary (COUNT player, STARSHIPPTR StarShipPtr);
-BATTLE_INPUT_STATE p2_combat_summary (COUNT player, STARSHIPPTR StarShipPtr);
+BATTLE_INPUT_STATE p1_combat_summary (COUNT player, STARSHIP *StarShipPtr);
+BATTLE_INPUT_STATE p2_combat_summary (COUNT player, STARSHIP *StarShipPtr);
 
 extern volatile BOOLEAN GamePaused, ExitRequested;
 
@@ -152,9 +152,8 @@ typedef struct textentry_state
 	void *CbParam;     // callback parameter, use as you like
 	
 } TEXTENTRY_STATE;
-typedef TEXTENTRY_STATE *PTEXTENTRY_STATE;
 
-BOOLEAN DoTextEntry (PTEXTENTRY_STATE pTES);
+BOOLEAN DoTextEntry (TEXTENTRY_STATE *pTES);
 
 #endif
 

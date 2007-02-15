@@ -133,13 +133,13 @@ OutlineShipStatus (COORD y)
 }
 
 void
-InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
+InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 {
 	RECT r;
 	COORD y, y_stat;
 	STAMP Stamp;
 	CONTEXT OldContext;
-	SHIP_INFOPTR SIPtr;
+	SHIP_INFO *SIPtr;
 
 	SIPtr = &StarShipPtr->RaceDescPtr->ship_info;
 	y_stat = (SIPtr->ship_flags & GOOD_GUY) ?
@@ -306,12 +306,11 @@ InitShipStatus (STARSHIPPTR StarShipPtr, PRECT pClipRect)
 // Pre: -crew_delta <= StarShipPtr->crew_level
 //      crew_delta <= StarShipPtr->max_crew - StarShipPtr->crew_level
 void
-DeltaStatistics (STARSHIPPTR StarShipPtr, SIZE crew_delta, SIZE
-		energy_delta)
+DeltaStatistics (STARSHIP *StarShipPtr, SIZE crew_delta, SIZE energy_delta)
 {
 	COORD x, y;
 	RECT r;
-	SHIP_INFOPTR ShipInfoPtr;
+	SHIP_INFO *ShipInfoPtr;
 
 	if (crew_delta == 0 && energy_delta == 0)
 		return;

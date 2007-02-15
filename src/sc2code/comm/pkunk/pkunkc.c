@@ -26,9 +26,9 @@
 
 static LOCDATA pkunk_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)PKUNK_PMAP_ANIM, /* AlienFrame */
 	(FONT)PKUNK_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -88,7 +88,7 @@ static LOCDATA pkunk_desc =
 		ONE_SECOND / 12, ONE_SECOND / 2, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 static BOOLEAN
@@ -306,8 +306,7 @@ DiscussConquer (RESPONSE_REF R)
 				shared_phrase_buf,
 				conquer_because_1,
 				buf,
-				(RESPONSE_REF)-1
-				);
+				(RESPONSE_REF)-1);
 		DoResponsePhrase (conquer_because_1, DiscussConquer, shared_phrase_buf);
 #endif
 		Response(conquer_because_1, DiscussConquer);
@@ -624,7 +623,7 @@ PkunkHome (RESPONSE_REF R)
 				we_are_vindicator1,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator2,
-				NULL_PTR);
+				(UNICODE*)NULL);
 		DoResponsePhrase (we_are_vindicator0, OfferAlliance, shared_phrase_buf);
 	}
 	if (PHRASE_ENABLED (what_about_you))
@@ -1113,10 +1112,10 @@ post_pkunk_enc (void)
 	}
 }
 
-LOCDATAPTR
+LOCDATA*
 init_pkunk_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	pkunk_desc.init_encounter_func = Intro;
 	pkunk_desc.post_encounter_func = post_pkunk_enc;

@@ -120,7 +120,6 @@ typedef struct planet_desc
 
 	struct planet_desc *pPrevDesc;
 } PLANET_DESC;
-typedef PLANET_DESC *PPLANET_DESC;
 
 typedef struct
 {
@@ -128,8 +127,6 @@ typedef struct
 	BYTE Type, Index;
 	BYTE Prefix, Postfix;
 } STAR_DESC;
-typedef STAR_DESC *PSTAR_DESC;
-#define STAR_DESCPTR PSTAR_DESC
 
 #define MAX_SUNS 1
 #define MAX_PLANETS 16
@@ -145,7 +142,7 @@ typedef struct planet_orbit
 {
 	FRAME TopoZoomFrame;
 			// 4x scaled topo image for planet-side
-	PBYTE lpTopoData;
+	BYTE  *lpTopoData;
 			// normal topo data; expressed in elevation levels
 			// data is signed for planets other than gas giants
 			// transformed to light variance map for 3d planet
@@ -181,8 +178,8 @@ typedef struct solarsys_state
 			// by pBaseDesc.
 			// Only defined after a call to GenFunc with GENERATE_MOONS
 			// as its argument, and overwritten by subsequent calls.
-	PPLANET_DESC pBaseDesc;
-	PPLANET_DESC pOrbitalDesc;
+	PLANET_DESC *pBaseDesc;
+	PLANET_DESC *pOrbitalDesc;
 	SIZE FirstPlanetIndex, LastPlanetIndex;
 			// The planets get sorted on their image.origin.y value.
 			// PlanetDesc[FirstPlanetIndex] is the planet with the lowest
@@ -211,9 +208,8 @@ typedef struct solarsys_state
 	FRAME TopoFrame;
 	PLANET_ORBIT Orbit;
 } SOLARSYS_STATE;
-typedef SOLARSYS_STATE *PSOLARSYS_STATE;
 
-extern PSOLARSYS_STATE pSolarSysState;
+extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 
 extern void LoadPlanet (FRAME SurfDefFrame);
@@ -224,18 +220,18 @@ extern void FreeLanderFont (PLANET_INFO *info);
 
 extern void ExploreSolarSys (void);
 extern void DrawStarBackGround (BOOLEAN ForPlanet);
-extern void XFormIPLoc (PPOINT pIn, PPOINT pOut, BOOLEAN ToDisplay);
+extern void XFormIPLoc (POINT *pIn, POINT *pOut, BOOLEAN ToDisplay);
 extern void GenerateRandomIP (BYTE control);
 extern PLAN_GEN_FUNC GenerateIP (BYTE Index);
 extern void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
-extern void DrawOval (PRECT pRect, BYTE num_off_pixels);
-extern void DrawFilledOval (PRECT pRect);
+extern void DrawOval (RECT *pRect, BYTE num_off_pixels);
+extern void DrawFilledOval (RECT *pRect);
 extern void DoMissions (void);
-extern void FillOrbits (PSOLARSYS_STATE system,
-		BYTE NumPlanets, PPLANET_DESC pBaseDesc, BOOLEAN TypesDefined);
+extern void FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
+		PLANET_DESC *pBaseDesc, BOOLEAN TypesDefined);
 extern void ScanSystem (void);
 extern void ChangeSolarSys (void);
-extern BOOLEAN DoFlagshipCommands (PMENU_STATE pMS);
+extern BOOLEAN DoFlagshipCommands (MENU_STATE *pMS);
 extern void ZoomSystem (void);
 extern void LoadSolarSys (void);
 extern void InitLander (BYTE LanderFlags);
@@ -243,13 +239,13 @@ extern BOOLEAN ValidateOrbits (void);
 extern void IP_reset (void);
 extern void IP_frame (void);
 
-extern PRECT RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
-		UBYTE zoom_from, PRECT r);
+extern RECT* RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
+		UBYTE zoom_from, RECT *r);
 extern void SetPlanetTilt (int da);
 extern void DrawScannedObjects (BOOLEAN Reversed);
-extern void GeneratePlanetMask (PPLANET_DESC pPlanetDesc, FRAME SurfDefFrame);
-extern void DeltaTopography (COUNT num_iterations, PSBYTE DepthArray,
-		PRECT pRect, SIZE depth_delta);
+extern void GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame);
+extern void DeltaTopography (COUNT num_iterations, SBYTE *DepthArray,
+		RECT *pRect, SIZE depth_delta);
 
 #endif /* _PLANETS_H */
 

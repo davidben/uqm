@@ -24,9 +24,9 @@
 
 static LOCDATA talkpet_desc =
 {
-	NULL_PTR, /* init_encounter_func */
-	NULL_PTR, /* post_encounter_func */
-	NULL_PTR, /* uninit_encounter_func */
+	NULL, /* init_encounter_func */
+	NULL, /* post_encounter_func */
+	NULL, /* uninit_encounter_func */
 	(FRAME)TALKING_PET_PMAP_ANIM, /* AlienFrame */
 	(FONT)TALKING_PET_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
@@ -190,7 +190,7 @@ static LOCDATA talkpet_desc =
 		ONE_SECOND / 12, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL_PTR, /* AlienNumberSpeech - none */
+	NULL, /* AlienNumberSpeech - none */
 };
 
 #define STROBE_RATE   15
@@ -520,8 +520,7 @@ CompelPlayer (RESPONSE_REF R)
 				we_are_vindicator0,
 				GLOBAL_SIS (ShipName),
 				we_are_vindicator1,
-				NULL_PTR
-				);
+				(UNICODE*)NULL);
 		pStr[2] = we_are_vindicator0;
 	}
 	else
@@ -792,10 +791,10 @@ post_talkpet_enc (void)
 	// nothing defined so far
 }
 
-LOCDATAPTR
+LOCDATA*
 init_talkpet_comm (void)
 {
-	LOCDATAPTR retval;
+	LOCDATA *retval;
 
 	talkpet_desc.init_encounter_func = Intro;
 	talkpet_desc.post_encounter_func = post_talkpet_enc;

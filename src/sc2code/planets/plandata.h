@@ -193,7 +193,6 @@ typedef struct
 	const SIZE level_tab[3];
 	const BYTE xlat_tab[256];
 } XLAT_DESC;
-typedef const XLAT_DESC *PXLAT_DESC;
 
 typedef struct
 {
@@ -204,7 +203,7 @@ typedef struct
 			 *           deposits), one of FEW, MODERATE, or NUMEROUS
 			 * bits 4-7: quality of the deposit, one of LOW, MEDIUM, or HEAVY
 			 */
-} ElementEntry;
+} ELEMENT_ENTRY;
 
 // PlanetFrame describes a type of planet. It is not used to describe
 // individual planets.
@@ -234,7 +233,7 @@ typedef struct
 			 *           (no define for this) super thick.
 			 */
 #define NUM_USEFUL_ELEMENTS 8
-	ElementEntry UsefulElements[NUM_USEFUL_ELEMENTS];
+	ELEMENT_ENTRY UsefulElements[NUM_USEFUL_ELEMENTS];
 			/* Minerals on the planet */
 
 	RESOURCE CMapInstance;
@@ -248,13 +247,6 @@ typedef struct
 	COUNT num_blemishes;
 	SIZE base_elevation;
 } PlanetFrame;
-typedef const PlanetFrame *PPLANDATA;
-
-typedef const ElementEntry *PELEMENT_ENTRY;
-
-#define XLAT_DESCPTR PXLAT_DESC
-#define PLANDATAPTR PPLANDATA
-#define ELEMENT_ENTRYPTR PELEMENT_ENTRY
 
 typedef struct
 {
@@ -270,7 +262,7 @@ typedef struct
 	SIZE LifeChance;
 	UWORD PlanetToSunDist;
 
-	PLANDATAPTR PlanDataPtr;
+	const PlanetFrame *PlanDataPtr;
 
 	DWORD ScanSeed[NUM_SCAN_TYPES];
 	DWORD ScanRetrieveMask[NUM_SCAN_TYPES];
@@ -300,7 +292,6 @@ typedef struct
 	FONT LanderFont;
 	FRAME LanderFontEff;
 } PLANET_INFO;
-typedef PLANET_INFO *PPLANET_INFO;
 
 enum
 {
@@ -314,8 +305,6 @@ enum
 
 #define CalcGravity(d,r) (UWORD)((DWORD)(d) * (r) / 100)
 #define CalcFromBase(b,v) ((UWORD)(b) + ((UWORD)TFB_Random () % (v)))
-
-#define PLANET_INFOPTR PPLANET_INFO
 
 #define EARTH_ATMOSPHERE 50
 

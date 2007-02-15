@@ -35,7 +35,7 @@ extern void FlushInput (void);
  * Not used right now
 extern BOOLEAN FindMouse (void);
 extern void MoveMouse (SWORD x, SWORD y);
-extern BYTE LocateMouse (PSWORD px, PSWORD py);
+extern BYTE LocateMouse (SWORD *px, SWORD *py);
 */
 
 extern volatile int MouseButtonDown;

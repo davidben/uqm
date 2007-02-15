@@ -19,9 +19,9 @@
 #ifndef _RACES_H
 #define _RACES_H
 
+#include "libs/compiler.h"
 #include "units.h"
 #include "element.h"
-#include "libs/compiler.h"
 #include "libs/sndlib.h"
 
 
@@ -69,11 +69,25 @@ typedef struct captain_stuff
 	FRAME weapon;
 	FRAME special;
 } CAPTAIN_STUFF;
-typedef CAPTAIN_STUFF *PCAPTAIN_STUFF;
-#define CAPTAIN_STUFFPTR PCAPTAIN_STUFF
 
-typedef void (IntelligenceFunc) (PVOID ShipPtr, PVOID ObjectsOfConcern,
-		COUNT ConcernCounter);
+typedef enum
+{
+	PURSUE = 0,
+	AVOID,
+	ENTICE,
+	NO_MOVEMENT
+} MOVEMENT_STATE;
+
+typedef struct
+{
+	ELEMENT *ObjectPtr;
+	COUNT facing;
+	COUNT which_turn;
+	MOVEMENT_STATE MoveState;
+} EVALUATE_DESC;
+
+typedef void (IntelligenceFunc) (ELEMENT *ShipPtr,
+		EVALUATE_DESC *ObjectsOfConcern, COUNT ConcernCounter);
 typedef struct
 {
 	COUNT ManeuverabilityIndex;
@@ -83,28 +97,30 @@ typedef struct
 
 typedef struct
 {
-	COUNT max_thrust,
-	      thrust_increment;
-	BYTE energy_regeneration,
-	     weapon_energy_cost,
-	     special_energy_cost,
-	     energy_wait,
-	     turn_wait,
-	     thrust_wait,
-	     weapon_wait,
-	     special_wait,
-	     ship_mass;
+	COUNT max_thrust;
+	COUNT thrust_increment;
+	BYTE energy_regeneration;
+	BYTE weapon_energy_cost;
+	BYTE special_energy_cost;
+	BYTE energy_wait;
+	BYTE turn_wait;
+	BYTE thrust_wait;
+	BYTE weapon_wait;
+	BYTE special_wait;
+	BYTE ship_mass;
 } CHARACTERISTIC_STUFF;
-typedef CHARACTERISTIC_STUFF *PCHARACTERISTIC_STUFF;
 
 typedef struct
 {
 	UWORD ship_flags;
-	BYTE var1, var2;
-	COUNT crew_level, max_crew;
+	BYTE var1;
+	BYTE var2;
+	COUNT crew_level;
 			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
 			 * crew_level indicates an infinite number of ships. */
-	BYTE energy_level, max_energy;
+	COUNT max_crew;
+	BYTE energy_level;
+	BYTE max_energy;
 	POINT loc;
 
 	/* The fields above this line are included in queues in savegames,
@@ -113,11 +129,10 @@ typedef struct
 	 */
 
 	STRING race_strings;
-	FRAME icons, melee_icon;
+	FRAME icons;
+	FRAME melee_icon;
 #define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_INFO;
-typedef SHIP_INFO *PSHIP_INFO;
-#define SHIP_INFOPTR PSHIP_INFO
 
 #define ship_cost var1
 #define group_counter ship_flags
@@ -160,16 +175,19 @@ typedef struct
 	BYTE days_left;
 			/* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
-	COUNT crew_level, max_crew;
+	COUNT crew_level;
 			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
 			 * crew_level indicates an infinite number of ships. */
-	BYTE energy_level, max_energy;
+	COUNT max_crew;
+	BYTE energy_level;
+	BYTE max_energy;
 	POINT loc;
 			/* Location of the fleet (center) */
 
 	STRING race_strings;
 			/* Race specific strings, see doc/devel/racestrings. */
-	FRAME icons, melee_icon;
+	FRAME icons;
+	FRAME melee_icon;
 
 	/*   -== The fields below this line are included in savegames. ==-   */
 
@@ -194,7 +212,6 @@ typedef struct
 	POINT dest_loc;
 			/* Location to which the fleet (center) is moving. */
 } EXTENDED_SHIP_INFO;
-typedef EXTENDED_SHIP_INFO *PEXTENDED_SHIP_INFO;
 
 typedef struct
 {
@@ -205,18 +222,14 @@ typedef struct
 	DWORD victory_ditty;
 	SOUND ship_sounds;
 } DATA_STUFF;
-typedef DATA_STUFF *PDATA_STUFF;
-#define DATA_STUFFPTR PDATA_STUFF
 
 
 typedef struct race_desc RACE_DESC;
-typedef RACE_DESC *PRACE_DESC;
-#define RACE_DESCPTR PRACE_DESC
 
-typedef void (PREPROCESS_FUNC) (PELEMENT ElementPtr);
-typedef void (POSTPROCESS_FUNC) (PELEMENT ElementPtr);
-typedef COUNT (INIT_WEAPON_FUNC) (PELEMENT ElementPtr, HELEMENT Weapon[]);
-typedef void (UNINIT_FUNC) (RACE_DESCPTR pRaceDesc);
+typedef void (PREPROCESS_FUNC) (ELEMENT *ElementPtr);
+typedef void (POSTPROCESS_FUNC) (ELEMENT *ElementPtr);
+typedef COUNT (INIT_WEAPON_FUNC) (ELEMENT *ElementPtr, HELEMENT Weapon[]);
+typedef void (UNINIT_FUNC) (RACE_DESC *pRaceDesc);
 
 struct race_desc
 {
@@ -234,7 +247,7 @@ struct race_desc
 	INIT_WEAPON_FUNC *init_weapon_func
 			_ALIGNED_ON(sizeof (INIT_WEAPON_FUNC *));
 
-	PVOID CodeRef _ALIGNED_ON(sizeof (PVOID));
+	void *CodeRef _ALIGNED_ON(sizeof (void *));
 };
 
 
@@ -254,7 +267,7 @@ typedef struct
 	 * the ship (accessed through StarShipCaptain()).
 	 * These values are set using OwnStarShip(). */
 	union {
-		RACE_DESCPTR RaceDescPtr;
+		RACE_DESC *RaceDescPtr;
 		struct {
 			COUNT Player;
 			BYTE Captain;
@@ -275,8 +288,6 @@ typedef struct
 	HELEMENT hShip _ALIGNED_ON(sizeof (HELEMENT));
 	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));
 } STARSHIP;
-typedef STARSHIP *PSTARSHIP;
-#define STARSHIPPTR PSTARSHIP
 
 typedef struct
 {
@@ -292,7 +303,7 @@ typedef struct
 	 * the ship (accessed through StarShipCaptain()).
 	 * These values are set using OwnStarShip(). */
 	union {
-		RACE_DESCPTR RaceDescPtr;
+		RACE_DESC *RaceDescPtr;
 		struct {
 			COUNT Player;
 			BYTE Captain;
@@ -301,8 +312,6 @@ typedef struct
 
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
-typedef SHIP_FRAGMENT *PSHIP_FRAGMENT;
-#define SHIP_FRAGMENTPTR PSHIP_FRAGMENT
 
 typedef struct
 {
@@ -310,14 +319,12 @@ typedef struct
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
-	RACE_DESCPTR RaceDescPtr;
+	RACE_DESC *RaceDescPtr;
 	EXTENDED_SHIP_INFO ShipInfo;
 } EXTENDED_SHIP_FRAGMENT;
-typedef EXTENDED_SHIP_FRAGMENT *PEXTENDED_SHIP_FRAGMENT;
-#define EXTENDED_SHIP_FRAGMENTPTR PEXTENDED_SHIP_FRAGMENT
 
 #define AllocStarShip(pq) AllocLink (pq)
-#define LockStarShip(pq,h) (STARSHIPPTR)LockLink (pq, h)
+#define LockStarShip(pq,h) (STARSHIP*)LockLink (pq, h)
 #define UnlockStarShip(pq,h) UnlockLink (pq, h)
 #define FreeStarShip(pq,h) FreeLink (pq, h)
 
@@ -586,20 +593,17 @@ enum
 
 extern BOOLEAN InitKernel (void);
 
-extern void DrawCaptainsWindow (STARSHIPPTR
-		StarShipPtr);
-extern BOOLEAN GetNextStarShip (STARSHIPPTR
-		LastStarShipPtr, COUNT which_side);
-extern HSTARSHIP GetEncounterStarShip (STARSHIPPTR
-		LastStarShipPtr, COUNT which_player);
-extern void DrawArmadaPickShip (BOOLEAN
-		draw_salvage_frame, PRECT pPickRect);
+extern void DrawCaptainsWindow (STARSHIP *StarShipPtr);
+extern BOOLEAN GetNextStarShip (STARSHIP *LastStarShipPtr,
+		COUNT which_side);
+extern HSTARSHIP GetEncounterStarShip (STARSHIP *LastStarShipPtr,
+		COUNT which_player);
+extern void DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect);
 
-extern BOOLEAN load_animation (PFRAME pixarray, DWORD
-		big_res, DWORD med_res, DWORD sml_res);
-extern BOOLEAN free_image (PFRAME pixarray);
-extern void NotifyOthers (COUNT which_race, BYTE
-		target_loc);
+extern BOOLEAN load_animation (FRAME *pixarray, DWORD big_res,
+		DWORD med_res, DWORD sml_res);
+extern BOOLEAN free_image (FRAME *pixarray);
+extern void NotifyOthers (COUNT which_race, BYTE target_loc);
 
 #endif /* _RACES_H */
 
