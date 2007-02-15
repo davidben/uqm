@@ -28,33 +28,36 @@
 #include "libs/log.h"
 #include "wav.h"
 
-#define RIFF 0x46464952 /* "RIFF" */
-#define WAVE 0x45564157 /* "WAVE" */
-#define FMT  0x20746D66 /* "fmt " */
-#define DATA 0x61746164 /* "data" */
+#define wave_MAKE_ID(x1, x2, x3, x4) \
+		(((x4) << 24) | ((x3) << 16) | ((x2) << 8) | (x1))
+
+#define wave_RiffID   wave_MAKE_ID('R', 'I', 'F', 'F')
+#define wave_WaveID   wave_MAKE_ID('W', 'A', 'V', 'E')
+#define wave_FmtID    wave_MAKE_ID('f', 'm', 't', ' ')
+#define wave_DataID   wave_MAKE_ID('d', 'a', 't', 'a')
 
 typedef struct
 {
-	uint32 Id;
-	sint32 Size;
-	uint32 Type;
-} WAVFileHdr_Struct;
+	uint32 id;
+	sint32 size;
+	uint32 type;
+} wave_FileHeader;
 
 typedef struct
 {
-	uint16 Format;
-	uint16 Channels;
-	uint32 SamplesPerSec;
-	uint32 BytesPerSec;
-	uint16 BlockAlign;
-	uint16 BitsPerSample;
-} WAVFmtHdr_Struct;
+	uint16 format;
+	uint16 channels;
+	uint32 samplesPerSec;
+	uint32 bytesPerSec;
+	uint16 blockAlign;
+	uint16 bitsPerSample;
+} wave_FormatHeader;
 
 typedef struct
 {
-	uint32 Id;
-	uint32 Size;
-} WAVChunkHdr_Struct;
+	uint32 id;
+	uint32 size;
+} wave_ChunkHeader;
 
 
 #define THIS_PTR TFB_SoundDecoder* This
@@ -96,7 +99,7 @@ typedef struct tfb_wavesounddecoder
 	// private
 	sint32 last_error;
 	uio_Stream *fp;
-	WAVFmtHdr_Struct FmtHdr;
+	wave_FormatHeader fmtHdr;
 	uint32 data_ofs;
 	uint32 data_size;
 	uint32 max_pcm;
@@ -159,53 +162,61 @@ wava_Term (THIS_PTR)
 }
 
 static bool
-wava_readFileHeader (TFB_WaveSoundDecoder* wava, WAVFileHdr_Struct* hdr)
+read_le_16 (uio_Stream *fp, uint16 *v)
 {
-	if (!uio_fread (&hdr->Id, 4, 1, wava->fp) ||
-			!uio_fread (&hdr->Size, 4, 1, wava->fp) ||
-			!uio_fread (&hdr->Type, 4, 1, wava->fp))
+	if (!uio_fread (v, sizeof(*v), 1, fp))
+		return false;
+	*v = UQM_SwapLE16 (*v);
+	return true;
+}
+
+static bool
+read_le_32 (uio_Stream *fp, uint32 *v)
+{
+	if (!uio_fread (v, sizeof(*v), 1, fp))
+		return false;
+	*v = UQM_SwapLE32 (*v);
+	return true;
+}
+
+static bool
+wava_readFileHeader (TFB_WaveSoundDecoder* wava, wave_FileHeader* hdr)
+{
+	if (!read_le_32 (wava->fp, &hdr->id) ||
+			!read_le_32 (wava->fp, &hdr->size) ||
+			!read_le_32 (wava->fp, &hdr->type))
 	{
 		wava->last_error = errno;
 		return false;
 	}
-	hdr->Id   = UQM_SwapLE32 (hdr->Id);
-	hdr->Size = UQM_SwapLE32 (hdr->Size);
-	hdr->Type = UQM_SwapLE32 (hdr->Type);
-
 	return true;
 }
 
 static bool
-wava_readChunkHeader (TFB_WaveSoundDecoder* wava, WAVChunkHdr_Struct* chunk)
+wava_readChunkHeader (TFB_WaveSoundDecoder* wava, wave_ChunkHeader* chunk)
 {
-	if (!uio_fread (&chunk->Id, 4, 1, wava->fp) ||
-			!uio_fread (&chunk->Size, 4, 1, wava->fp))
+	if (!read_le_32 (wava->fp, &chunk->id) ||
+			!read_le_32 (wava->fp, &chunk->size))
+	{
+		wava->last_error = errno;
 		return false;
-
-	chunk->Id   = UQM_SwapLE32 (chunk->Id);
-	chunk->Size = UQM_SwapLE32 (chunk->Size);
-
+	}
 	return true;
 }
 
 static bool
-wava_readFormatHeader (TFB_WaveSoundDecoder* wava, WAVFmtHdr_Struct* fmt)
+wava_readFormatHeader (TFB_WaveSoundDecoder* wava, wave_FormatHeader* fmt)
 {
-	if (!uio_fread (&fmt->Format, 2, 1, wava->fp) ||
-			!uio_fread (&fmt->Channels, 2, 1, wava->fp) ||
-			!uio_fread (&fmt->SamplesPerSec, 4, 1, wava->fp) ||
-			!uio_fread (&fmt->BytesPerSec, 4, 1, wava->fp) ||
-			!uio_fread (&fmt->BlockAlign, 2, 1, wava->fp) ||
-			!uio_fread (&fmt->BitsPerSample, 2, 1, wava->fp))
+	if (!read_le_16 (wava->fp, &fmt->format) ||
+			!read_le_16 (wava->fp, &fmt->channels) ||
+			!read_le_32 (wava->fp, &fmt->samplesPerSec) ||
+			!read_le_32 (wava->fp, &fmt->bytesPerSec) ||
+			!read_le_16 (wava->fp, &fmt->blockAlign) ||
+			!read_le_16 (wava->fp, &fmt->bitsPerSample))
+	{
+		wava->last_error = errno;
 		return false;
-
-	fmt->Format        = UQM_SwapLE16 (fmt->Format);
-	fmt->Channels      = UQM_SwapLE16 (fmt->Channels);
-	fmt->SamplesPerSec = UQM_SwapLE32 (fmt->SamplesPerSec);
-	fmt->BytesPerSec   = UQM_SwapLE32 (fmt->BytesPerSec);
-	fmt->BlockAlign    = UQM_SwapLE16 (fmt->BlockAlign);
-	fmt->BitsPerSample = UQM_SwapLE16 (fmt->BitsPerSample);
-
+	}
 	return true;
 }
 
@@ -213,8 +224,8 @@ static bool
 wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 {
 	TFB_WaveSoundDecoder* wava = (TFB_WaveSoundDecoder*) This;
-	WAVFileHdr_Struct FileHdr;
-	WAVChunkHdr_Struct ChunkHdr;
+	wave_FileHeader fileHdr;
+	wave_ChunkHeader chunkHdr;
 
 	wava->fp = uio_fopen (dir, filename, "rb");
 	if (!wava->fp)
@@ -227,52 +238,53 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	wava->data_ofs = 0;
 
 	// read wave header
-	if (!wava_readFileHeader (wava, &FileHdr))
+	if (!wava_readFileHeader (wava, &fileHdr))
 	{
 		wava->last_error = errno;
 		wava_Close (This);
 		return false;
 	}
-	if (FileHdr.Id != RIFF || FileHdr.Type != WAVE)
+	if (fileHdr.id != wave_RiffID || fileHdr.type != wave_WaveID)
 	{
 		log_add (log_Warning, "wava_Open(): "
 				"not a wave file, ID 0x%08x, Type 0x%08x",
-				FileHdr.Id, FileHdr.Type);
+				fileHdr.id, fileHdr.type);
 		wava_Close (This);
 		return false;
 	}
 
-	for (FileHdr.Size = ((FileHdr.Size + 1) & ~1) - 4; FileHdr.Size != 0;
-			FileHdr.Size -= (((ChunkHdr.Size + 1) & ~1) + 8))
+	for (fileHdr.size = ((fileHdr.size + 1) & ~1) - 4; fileHdr.size != 0;
+			fileHdr.size -= (((chunkHdr.size + 1) & ~1) + 8))
 	{
-		if (!wava_readChunkHeader (wava, &ChunkHdr))
+		if (!wava_readChunkHeader (wava, &chunkHdr))
 		{
-			wava->last_error = errno;
 			wava_Close (This);
 			return false;
 		}
 
-		if (ChunkHdr.Id == FMT)
+		if (chunkHdr.id == wave_FmtID)
 		{
-			if (!wava_readFormatHeader (wava, &wava->FmtHdr))
+			if (!wava_readFormatHeader (wava, &wava->fmtHdr))
 			{
-				wava->last_error = errno;
 				wava_Close (This);
 				return false;
 			}
-			uio_fseek (wava->fp, ChunkHdr.Size - 16, SEEK_CUR);
+			uio_fseek (wava->fp, chunkHdr.size - 16, SEEK_CUR);
 		}
 		else
 		{
-			if (ChunkHdr.Id == DATA)
+			if (chunkHdr.id == wave_DataID)
 			{
-				wava->data_size = ChunkHdr.Size;
+				wava->data_size = chunkHdr.size;
 				wava->data_ofs = uio_ftell (wava->fp);
 			}
-			uio_fseek (wava->fp, ChunkHdr.Size, SEEK_CUR);
+			uio_fseek (wava->fp, chunkHdr.size, SEEK_CUR);
 		}
 
-		uio_fseek (wava->fp, ChunkHdr.Size & 1, SEEK_CUR);
+		// 2-align the file ptr
+		// XXX: I do not think this is necessary in WAVE files;
+		//   possibly a remnant of ported AIFF reader
+		uio_fseek (wava->fp, chunkHdr.size & 1, SEEK_CUR);
 	}
 
 	if (!wava->data_size || !wava->data_ofs)
@@ -283,29 +295,34 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 		return false;
 	}
 
-	if (wava->FmtHdr.Format == 0x0001)
-	{
-		This->format = (wava->FmtHdr.Channels == 1 ?
-				(wava->FmtHdr.BitsPerSample == 8 ?
-					wava_formats->mono8 : wava_formats->mono16)
-				:
-				(wava->FmtHdr.BitsPerSample == 8 ?
-					wava_formats->stereo8 : wava_formats->stereo16)
-				);
-		This->frequency = wava->FmtHdr.SamplesPerSec;
-	} 
-	else
-	{
+	if (wava->fmtHdr.format != 0x0001)
+	{	// not a PCM format
 		log_add (log_Warning, "wava_Open(): unsupported format %x",
-				wava->FmtHdr.Format);
+				wava->fmtHdr.format);
+		wava_Close (This);
+		return false;
+	}
+	if (wava->fmtHdr.channels != 1 && wava->fmtHdr.channels != 2)
+	{
+		log_add (log_Warning, "wava_Open(): unsupported number of channels %u",
+				(unsigned)wava->fmtHdr.channels);
 		wava_Close (This);
 		return false;
 	}
 
+	This->format = (wava->fmtHdr.channels == 1 ?
+			(wava->fmtHdr.bitsPerSample == 8 ?
+				wava_formats->mono8 : wava_formats->mono16)
+			:
+			(wava->fmtHdr.bitsPerSample == 8 ?
+				wava_formats->stereo8 : wava_formats->stereo16)
+			);
+	This->frequency = wava->fmtHdr.samplesPerSec;
+
 	uio_fseek (wava->fp, wava->data_ofs, SEEK_SET);
-	wava->max_pcm = wava->data_size / wava->FmtHdr.BlockAlign;
+	wava->max_pcm = wava->data_size / wava->fmtHdr.blockAlign;
 	wava->cur_pcm = 0;
-	This->length = (float) wava->max_pcm / wava->FmtHdr.SamplesPerSec;
+	This->length = (float) wava->max_pcm / wava->fmtHdr.samplesPerSec;
 	wava->last_error = 0;
 
 	return true;
@@ -329,14 +346,14 @@ wava_Decode (THIS_PTR, void* buf, sint32 bufsize)
 	TFB_WaveSoundDecoder* wava = (TFB_WaveSoundDecoder*) This;
 	uint32 dec_pcm;
 
-	dec_pcm = bufsize / wava->FmtHdr.BlockAlign;
+	dec_pcm = bufsize / wava->fmtHdr.blockAlign;
 	if (dec_pcm > wava->max_pcm - wava->cur_pcm)
 		dec_pcm = wava->max_pcm - wava->cur_pcm;
 
-	dec_pcm = uio_fread (buf, wava->FmtHdr.BlockAlign, dec_pcm, wava->fp);
+	dec_pcm = uio_fread (buf, wava->fmtHdr.blockAlign, dec_pcm, wava->fp);
 	wava->cur_pcm += dec_pcm;
 	
-	return dec_pcm * wava->FmtHdr.BlockAlign;
+	return dec_pcm * wava->fmtHdr.blockAlign;
 }
 
 static uint32
@@ -348,7 +365,7 @@ wava_Seek (THIS_PTR, uint32 pcm_pos)
 		pcm_pos = wava->max_pcm;
 	wava->cur_pcm = pcm_pos;
 	uio_fseek (wava->fp,
-			wava->data_ofs + pcm_pos * wava->FmtHdr.BlockAlign,
+			wava->data_ofs + pcm_pos * wava->fmtHdr.blockAlign,
 			SEEK_SET);
 
 	return pcm_pos;
