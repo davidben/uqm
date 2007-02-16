@@ -190,7 +190,7 @@ dumpEventCallback (const EVENT *eventPtr, void *arg)
 }
 
 void
-dumpEvent (FILE *out, EVENT *eventPtr)
+dumpEvent (FILE *out, const EVENT *eventPtr)
 {
 	fprintf (out, "%4u/%02u/%02u: %s\n",
 			eventPtr->year_index,

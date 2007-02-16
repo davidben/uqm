@@ -43,7 +43,7 @@ void forwardToNextEvent (BOOLEAN skipHEE);
 // Generate a list of all events in the event queue.
 void dumpEvents (FILE *out);
 // Describe one event.
-void dumpEvent (FILE *out, EVENT *eventPtr);
+void dumpEvent (FILE *out, const EVENT *eventPtr);
 // Get the name of one event.
 const char *eventName (BYTE func_index);
 

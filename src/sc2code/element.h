@@ -94,11 +94,14 @@ typedef struct state
 	} image;
 } STATE;
 
-typedef void (CollisionFunc) (struct element *ElementPtr0, POINT *pPt0,
-			struct element *ElementPtr1, POINT *pPt1);
+
+typedef struct element ELEMENT;
+
+typedef void (CollisionFunc) (ELEMENT *ElementPtr0, POINT *pPt0,
+			ELEMENT *ElementPtr1, POINT *pPt1);
 
 // Any physical object in the simulation.
-typedef struct element
+struct element
 {
 	HELEMENT pred, succ;
 
@@ -120,7 +123,7 @@ typedef struct element
 	void *pParent;
 			// The ship this element belongs to.
 	HELEMENT hTarget;
-} ELEMENT;
+};
 
 #define MAX_DISPLAY_PRIMS 280
 extern COUNT DisplayFreeList;
