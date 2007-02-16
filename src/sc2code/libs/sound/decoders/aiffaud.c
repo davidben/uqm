@@ -268,7 +268,7 @@ read_be_f80 (uio_Stream *fp, sint32 *v)
 	else if (shift < 0)
 		mant >>= -shift;
 
-	*v = sign ? -(sint32)mant : mant;
+	*v = sign ? -(sint32)mant : (sint32)mant;
 
 	return true;
 }
