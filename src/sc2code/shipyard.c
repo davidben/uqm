@@ -36,6 +36,8 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
+static void BeginHangarAnim (MENU_STATE *pMS);
+static void EndHangarAnim (MENU_STATE *pMS);
 
 #ifdef USE_3DO_HANGAR
 // 3DO 4x3 hangar layout
@@ -65,10 +67,6 @@ static const COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 #define HANGAR_SHIPS      12
 #define HANGAR_ROWS       (HANGAR_SHIPS / HANGAR_SHIPS_ROW)
 #define HANGAR_ANIM_RATE  15 // fps
-
-/* This is a temporary stopgap to disable shipspin attempts here until
-   they actually work */
-#undef WANT_SHIP_SPINS
 
 enum
 {
@@ -149,7 +147,11 @@ SpinStarShip (HSTARSHIP hStarShip)
 	UnlockStarShip (&master_q, hStarShip);
 				
 	if (Index < NUM_MELEE_SHIPS)
+	{
+		UnlockMutex (GraphicsLock);
 		DoShipSpin (Index, pMenuState->hMusic);
+		LockMutex (GraphicsLock);
+	}
 }
 #endif
 
@@ -689,16 +691,44 @@ DoModifyShips (MENU_STATE *pMS)
 			{
 				HSTARSHIP hSpinShip;
 				
-				if ((hSpinShip = hStarShip)
-						|| (HINIBBLE (pMS->CurState) == 0
-						&& (hSpinShip = GetAvailableRaceFromIndex (
-								LOBYTE (pMS->delta_item)))))
+				if ((special && (((hStarShip == 0
+						   && HINIBBLE (pMS->CurState) == 0)
+						  && (pMS->delta_item & MODIFY_CREW_FLAG))
+						 || ((hStarShip != 0 &&
+						      HINIBBLE (pMS->CurState) == 0)
+						     && !(pMS->delta_item & MODIFY_CREW_FLAG))))
+				    && ((hSpinShip = hStarShip)
+					|| (HINIBBLE (pMS->CurState) == 0
+					    && (hSpinShip = GetAvailableRaceFromIndex (
+							LOBYTE (pMS->delta_item))))))
 				{
+					CONTEXT OldContext;
+					RECT OldClipRect;
+					RECT flash_r;
 					SetFlashRect (NULL, (FRAME)0);
+					EndHangarAnim (pMS);
+
+					OldContext = SetContext (ScreenContext);
+					GetContextClipRect (&OldClipRect);
+
 					SpinStarShip (hSpinShip);
+
+					SetContextClipRect (&OldClipRect);
+					SetContext (OldContext);
+
+					BeginHangarAnim (pMS);
+					SetContext (SpaceContext);
+
 					if (hStarShip)
 						goto ChangeFlashRect;
-					SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+
+					GetContextClipRect (&flash_r);
+					GetContextClipRect (&flash_r);
+					flash_r.corner.x = RADAR_X - flash_r.corner.x;
+					flash_r.corner.y = RADAR_Y - flash_r.corner.y;
+					flash_r.extent.width = RADAR_WIDTH;
+					flash_r.extent.height = RADAR_HEIGHT;
+					SetFlashRect (&flash_r, (FRAME)0);
 				}
 			}
 			else

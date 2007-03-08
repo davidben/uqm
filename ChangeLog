@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Support for 3do "ship spin" videos (TODO: Update with bug # and proper 
+  credits)
 - Major refactoring of input configuration to use the resource system 
   instead of custom files (bugs #961 and #949) - Michael
 - Added ability to remove entries from ALists - Michael
