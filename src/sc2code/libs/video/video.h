@@ -37,6 +37,7 @@ typedef struct tfb_videoclip
 	RECT dst_rect;     // destination screen rect
 	RECT src_rect;     // source rect
 	MUSIC_REF hAudio;
+	MUSIC_REF hAudio2;
 	Task play_task;
 	uint32 frame_time; // time when next frame should be rendered
 	TFB_Image* frame;  // frame preped and optimized for rendering

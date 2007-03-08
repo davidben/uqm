@@ -50,8 +50,8 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 
 	FreeHyperData ();
 	
-	sprintf (buf, "ship%02d", index);
-	DoFMV (buf, "spin", FALSE);
+	sprintf (buf, "slides/spins/ship%02d.duk", index);
+	DoFMV (buf, "slides/spins/spin.aif", FALSE);
 
 	GetContextClipRect (&old_r);
 	r.corner.x = r.corner.y = 0;

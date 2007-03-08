@@ -29,6 +29,29 @@ static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);
 static uint32 vp_GetTicks (TFB_VideoDecoder*);
 static bool vp_SetTimer (TFB_VideoDecoder*, uint32 msecs);
 
+void
+startAudioStream (MUSIC_REF aud, uint32 ss, BOOLEAN loop)
+{
+	TFB_SoundSample **pmus;
+
+	LockMusicData (aud, &pmus);
+	if (pmus)
+	{
+		LockMutex (soundSource[ss].stream_mutex);
+		PlayStream ((*pmus), ss, loop, false, true);
+		UnlockMutex (soundSource[ss].stream_mutex);
+	}
+}
+
+void
+stopAudioStream (MUSIC_REF aud, uint32 ss)
+{
+	LockMutex (soundSource[ss].stream_mutex);
+	StopStream (ss);
+	UnlockMutex (soundSource[ss].stream_mutex);
+	UnlockMusicData (aud);
+}
+
 TFB_VideoCallbacks vp_DecoderCBs =
 {
 	vp_GetCanvasLine,
@@ -123,7 +146,10 @@ as_video_play_task (void *data)
 
 	LockMutex (vid->guard);
 	want_frame = vid->want_frame;
-	PlayMusic (vid->hAudio, FALSE, 1);
+	if (vid->hAudio)
+		startAudioStream (vid->hAudio, SPEECH_SOURCE, FALSE);
+	if (vid->hAudio2)
+		startAudioStream (vid->hAudio2, MUSIC_SOURCE, TRUE);
 	UnlockMutex (vid->guard);
 
 	clagged = 0;
@@ -208,7 +234,10 @@ as_video_play_task (void *data)
 		
 		ret = VideoDecoder_Decode (vid->decoder);
 	}
-	StopMusic ();
+	if (vid->hAudio)
+		stopAudioStream (vid->hAudio, SPEECH_SOURCE);
+	if (vid->hAudio2)
+		stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
 	vid->playing = false;
 
 	FinishTask (task);
@@ -232,7 +261,11 @@ video_play_task (void *data)
 
 	LockMutex (vid->guard);
 	if (vid->hAudio)
-		PlayMusic (vid->hAudio, FALSE, 1);
+		startAudioStream (vid->hAudio, SPEECH_SOURCE, FALSE);
+
+	if (vid->hAudio2)
+		startAudioStream (vid->hAudio2, MUSIC_SOURCE, TRUE);
+
 	UnlockMutex (vid->guard);
 
 	// this works like so:
@@ -264,7 +297,9 @@ video_play_task (void *data)
 	}
 	vid->playing = false;
 	if (vid->hAudio)
-		StopMusic ();
+		stopAudioStream (vid->hAudio, SPEECH_SOURCE);
+	if (vid->hAudio2)
+		stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
 
 	FinishTask (task);
 
@@ -315,7 +350,9 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 	vid->cur_frame = -1;
 	vid->want_frame = -1;
 
-	vid->hAudio = LoadMusicFile (vid->decoder->filename);
+	if (vid->hAudio == 0)
+		vid->hAudio = LoadMusicFile (vid->decoder->filename);
+
 	StopMusic ();
 
 	if (vid->decoder->audio_synced)
@@ -375,9 +412,16 @@ TFB_StopVideo (VIDEO_REF VidRef)
 	
 	if (vid->hAudio)
 	{
-		StopMusic ();
-		DestroyMusic (vid->hAudio);
-		vid->hAudio = 0;
+		if (vid->hAudio) {
+			stopAudioStream (vid->hAudio, SPEECH_SOURCE);
+			DestroyMusic (vid->hAudio);
+			vid->hAudio = 0;
+		}
+		if (vid->hAudio2) {
+			stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
+			DestroyMusic (vid->hAudio2);
+			vid->hAudio2 = 0;
+		}
 	}
 	if (vid->frame) 
 	{

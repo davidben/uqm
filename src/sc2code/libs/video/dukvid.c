@@ -111,6 +111,8 @@ typedef struct tfb_duckvideodecoder
 #define DUCK_GENERAL_FPS     14.622f
 #define DUCK_MAX_FRAME_SIZE  0x8000U
 #define DUCK_END_OF_SEQUENCE 1
+/* Some ship spin animations contain extra frames that must be discarded. */
+#define VIDEO_SPIN_LOOP_FRAME 89
 
 static void
 dukv_DecodeFrame (uint8* src_p, uint32* dst_p, uint32 wb, uint32 hb,
@@ -529,7 +531,8 @@ dukv_RenderFrame (THIS_PTR)
 	default:
 		;
 	}
-
+	if (!This->audio_synced)
+	       This->callbacks.SetTimer (This, (uint32) (1000.0f / DUCK_GENERAL_FPS));
 }
 
 static const char*
@@ -701,6 +704,10 @@ dukv_DecodeNext (THIS_PTR)
 	dukv->iframe++;
 
 	dukv_RenderFrame (This);
+
+	if (dukv->decoder.looping
+			&& (dukv->decoder.cur_frame == VIDEO_SPIN_LOOP_FRAME))
+			VideoDecoder_SeekFrame (&dukv->decoder, 0);
 
 	return 1;
 }

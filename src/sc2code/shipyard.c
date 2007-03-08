@@ -66,6 +66,10 @@ static const COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 #define HANGAR_ROWS       (HANGAR_SHIPS / HANGAR_SHIPS_ROW)
 #define HANGAR_ANIM_RATE  15 // fps
 
+/* This is a temporary stopgap to disable shipspin attempts here until
+   they actually work */
+#undef WANT_SHIP_SPINS
+
 enum
 {
 	SHIPYARD_CREW,

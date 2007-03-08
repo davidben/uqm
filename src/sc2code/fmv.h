@@ -18,7 +18,7 @@
 #define _FMV_H
 
 #include "libs/compiler.h"
-
+#define WANT_SHIP_SPINS
 
 extern void Logo (void);
 extern void SplashScreen (void (* DoProcessing)(DWORD TimeOut));

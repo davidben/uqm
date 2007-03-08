@@ -1733,9 +1733,14 @@ DoPickShip (MELEE_STATE *pMS)
 
 		return (TRUE);
 	}
-	else if (PulsedInputState.menu[KEY_MENU_SPECIAL])
+	else if (PulsedInputState.menu[KEY_MENU_SPECIAL]
+			&& (pMeleeState->CurIndex != (BYTE)~0))
 	{
+		BOOLEAN (*InputFunc) (struct melee_state *pInputState);
+		InputFunc = pMS->InputFunc;
+		pMS->InputFunc = 0; /* disable ship flashing */
 		DoShipSpin (pMS->CurIndex, (MUSIC_REF)0);
+		pMS->InputFunc = InputFunc;
 	
 		return (TRUE);
 	}

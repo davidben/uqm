@@ -83,6 +83,12 @@ VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 	if (!vid)
 		return NO_FMV;
 
+	if (loopname != NULL) {
+		vid->hAudio2 = LoadMusicFile (loopname);
+		vid->decoder->audio_synced = FALSE;
+		vid->decoder->looping = TRUE;
+	}
+
 	if (_cur_video)
 		TFB_StopVideo (_cur_video);
 	_cur_video = NULL_VIDEO_REF;
@@ -105,7 +111,6 @@ VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 	UnlockMutex (GraphicsLock);
 
 	/* dodge compiler warnings */
-	(void) loopname;
 	(void) uninit;
 
 	return ret;
@@ -123,6 +128,9 @@ _init_video_file(const char *pStr)
 {
 	TFB_VideoClip* vid;
 	TFB_VideoDecoder* dec;
+	char* filename;
+	char* pext;
+	MUSIC_REF altsound;
 
 	dec = VideoDecoder_Load (contentDir, pStr);
 	if (!dec)
@@ -134,6 +142,21 @@ _init_video_file(const char *pStr)
 	vid->w = vid->decoder->w;
 	vid->h = vid->decoder->h;
 	vid->guard = CreateMutex ("video guard", SYNC_CLASS_VIDEO);
+
+	/* Override main sound with .wav if available. */
+	filename = HMalloc (strlen (pStr) + 5);
+	strcpy (filename, pStr);
+	pext = strrchr (filename, '.');
+	if (pext)
+		*pext = 0;
+	strcat (filename, ".wav");
+	altsound = LoadMusicFile (filename);
+	if (altsound != 0) {
+		DestroyMusic (vid->hAudio);
+		vid->hAudio = altsound;
+	} else
+		vid->hAudio = 0;
+	vid->hAudio2 = 0;
 
 	return (VIDEO_REF) vid;
 }
