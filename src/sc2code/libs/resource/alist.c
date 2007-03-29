@@ -115,6 +115,10 @@ const char *
 Alist_RemoveString (alist *m, const char *key)
 {
 	alist_entry *todel = NULL;
+	if (!m->first)
+	{
+		return NULL;
+	}
 	if (!strcmp (m->first->key, key))
 	{
 		todel = m->first;
