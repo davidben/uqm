@@ -1,6 +1,7 @@
 Changes towards version 0.7:
+- Added RNG functions that work on a supplied state - SvdB
 - Fixed a crash on startup if uqm.cfg did not exist, flagged and fixed 
-  by jdorje - MIchael
+  by jdorje - Michael
 - Support for 3do "ship spin" videos (Bug #733, patch by Jan Lönnberg) 
   -Michael
 - Major refactoring of input configuration to use the resource system 
