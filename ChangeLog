@@ -132,7 +132,7 @@ Changes towards version 0.7:
 - Removed unused and invalid lander font chars - Alex
 - Setup menu reads strings out of lbm/setupmenu.txt - Michael
 - More fixes towards working 64-bits binaries. - SvdB
-- Flashing outfit modules to build w/ PC menus too; bug #871 - Alex
+- Flashing outfit modules to build with PC menus too; bug #871 - Alex
 - Corrected caption Orbit: to Tilt: in planet scan; bug #847 - Alex
 - Added missing failure sounds in Outfit, Shipyard, Cargo and Roster;
   played when over/under capacity, not enough RUs, etc; bug #842 -Alex
@@ -177,7 +177,7 @@ Changes towards version 0.7:
 - Text input is now available in languages other than English
   (UCS/Unicode; SDL does not support Unicode input on Windows yet;
   you must have proper font chars installed -- see translations) - Alex
-- Re-added joystick text input (w/ Up/Down/PageUp/PageDown keys);
+- Re-added joystick text input (with Up/Down/PageUp/PageDown keys);
   joystick alphabet in content/lbm/joyalpha.txt (bug #495) - Alex
 - Text input refactoring: enabled key repeat, added support for
   Home, End and BackSpace keys; (bugs #671, #815) - Alex
@@ -337,7 +337,7 @@ Changes towards version 0.7:
 - Pkunk Spindle news items are now disabled until you befriend them
   (bug #315), from Paxtez
 - Melee captain names re-extracted and fixed (bug #188) -Alex
-- It is now possible to complete the game w/o ever allying with the
+- It is now possible to complete the game without ever allying with the
   Starbase at Earth; known as 'Beating the Game Differently' mode;
   (bug #592) -Alex
 - The direction flagship is facing is now preserved through an
@@ -384,7 +384,7 @@ Changes towards version 0.7:
 - Many options menu changes: left-justified categories, and the ability 
   to change driver/resolution/bpp/scaler in real time, and updates are
   less frequent so as to spare the DCQ  -McMartin
-- PC ending animation now draws the flagship w/ modules according to
+- PC ending animation now draws the flagship with modules according to
   the actual player's load; also the script structure changed
   allowing for an FPS improvement -Alex
 - Version number in the main menu does not blink anymore when the
