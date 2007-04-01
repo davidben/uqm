@@ -26,6 +26,9 @@
 * Copyright (c) 1989, Robert Leyland and Scott Anderson
 ****************************************************************************/
 
+#ifndef _RANDOM_H
+#define _RANDOM_H
+
 /* ----------------------------DEFINES------------------------------------ */
 
 #define RAND(n) ( (int) ( (unsigned int)TFB_Random() % (n) ) )
@@ -37,4 +40,23 @@
 
 DWORD TFB_SeedRandom (DWORD seed);
 DWORD TFB_Random (void);
+
+
+typedef struct RandomContext RandomContext;
+
+#ifdef RANDOM2_INTERNAL
+struct RandomContext {
+	DWORD seed;
+};
+#endif
+
+RandomContext *RandomContext_New (void);
+void RandomContext_Delete (RandomContext *context);
+RandomContext *RandomContext_Copy (const RandomContext *source);
+DWORD RandomContext_Random (RandomContext *context);
+DWORD RandomContext_SeedRandom (RandomContext *context, DWORD new_seed);
+
+
+#endif  /* _RANDOM_H */
+
 

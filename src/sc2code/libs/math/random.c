@@ -61,7 +61,8 @@ static DWORD seed = 12345L; /* random number seed */
 DWORD
 TFB_Random (void)
 {
-	if ((seed = A * (seed % Q) - R * (seed / Q)) > M)
+	seed = A * (seed % Q) - R * (seed / Q);
+	if (seed > M)
 		return (seed -= M);
 	else if (seed)
 		return (seed);

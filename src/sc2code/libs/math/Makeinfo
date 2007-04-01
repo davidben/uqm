@@ -1,1 +1,1 @@
-uqm_CFILES="random.c sqrt.c"
+uqm_CFILES="random.c random2.c sqrt.c"
