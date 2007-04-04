@@ -20,16 +20,18 @@
 #define _FILE_H
 
 #include "port.h"
+#include "libs/uio.h"
 
 // for bool
 #include "types.h"
 
+#if 0
 // from temp.h
-#include "libs/uio.h"
 void initTempDir (void);
 void unInitTempDir (void);
 char *tempFilePath (const char *filename);
 extern uio_DirHandle *tempDir;
+#endif
 
 
 // from dirs.h

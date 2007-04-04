@@ -262,10 +262,6 @@ SOURCE=..\sc2code\libs\file\files.c
 
 SOURCE=..\sc2code\libs\file\filintrn.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\file\temp.c
-# End Source File
 # End Group
 # Begin Group "graphics"
 
@@ -633,6 +629,18 @@ SOURCE=..\sc2code\libs\math\random.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\math\sqrt.c
+# End Source File
+# End Group
+# Begin Group "md5"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\md5\md5.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\md5\md5.h
 # End Source File
 # End Group
 # Begin Group "memory"
@@ -1488,6 +1496,10 @@ SOURCE=..\sc2code\libs\log.h
 # Begin Source File
 
 SOURCE=..\sc2code\libs\mathlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\md5.h
 # End Source File
 # Begin Source File
 
