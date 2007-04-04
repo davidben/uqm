@@ -1,6 +1,6 @@
 Changes towards version 0.7:
-- No longer creating and mounting a temporary directory. It is longer used,
-  but it might be again at some point, for loadable modules. - SvdB
+- No longer creating and mounting a temporary directory. It is no longer
+  used, but it might be again at some point, for loadable modules. - SvdB
 - Added RNG functions that work on a supplied state - SvdB
 - Fixed a crash on startup if uqm.cfg did not exist, flagged and fixed 
   by jdorje - Michael
