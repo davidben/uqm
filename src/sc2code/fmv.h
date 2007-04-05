@@ -28,8 +28,10 @@ extern void Victory (void);
 #include "libs/sndlib.h"
 extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 
-extern BOOLEAN DoFMV (const char *name, const char *loopname,
-		BOOLEAN uninit);
+extern BOOLEAN DoFMV (const char *name);
+extern BOOLEAN DoFMVEx (const char *name, const char *audname,
+		const char *speechname, DWORD loopframe);
+
 extern BOOLEAN ShowPresentation (STRING PresStr);
 extern BOOLEAN ShowPresentationFile (const char *name);
 

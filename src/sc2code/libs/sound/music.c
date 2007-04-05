@@ -22,6 +22,7 @@
 
 
 static MUSIC_REF curMusicRef;
+static MUSIC_REF curSpeechRef;
 
 void
 PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
@@ -93,6 +94,36 @@ PLRResume (MUSIC_REF MusicRef)
 		ResumeStream (MUSIC_SOURCE);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 	}
+}
+
+void
+PlaySpeech (MUSIC_REF SpeechRef)
+{
+	TFB_SoundSample **pmus;
+
+	LockMusicData (SpeechRef, &pmus);
+	if (pmus)
+	{
+		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		PlayStream (*pmus, SPEECH_SOURCE, false, false, true);
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		
+		curSpeechRef = SpeechRef;
+	}
+}
+
+void
+StopSpeech (void)
+{
+	if (!curSpeechRef)
+		return;
+	
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	StopStream (SPEECH_SOURCE);
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	UnlockMusicData (curSpeechRef);
+
+	curSpeechRef = 0;
 }
 
 BOOLEAN

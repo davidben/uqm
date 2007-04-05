@@ -23,6 +23,7 @@
 
 #define NULL_VIDEO_REF	(0)
 static VIDEO_REF _cur_video = NULL_VIDEO_REF;
+static MUSIC_REF _cur_speech = 0;
 
 BOOLEAN
 InitVideoPlayer (BOOLEAN useCDROM)
@@ -50,12 +51,14 @@ UninitVideoPlayer (void)
 void
 VidStop ()
 {
+	if (_cur_speech)
+		StopSpeech ();
 	if (_cur_video)
 	{
 		TFB_StopVideo (_cur_video);
 		TFB_FadeClearScreen ();
 	}
-
+	_cur_speech = 0;
 	_cur_video = NULL_VIDEO_REF;
 }
 
@@ -73,9 +76,8 @@ VidPlaying ()
 }
 
 VIDEO_TYPE
-VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
-		// uninit was used to uninit the game kernel
-		// before spawning duck exe
+VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
+		DWORD LoopFrame)
 {
 	VIDEO_TYPE ret;
 	TFB_VideoClip* vid = (TFB_VideoClip*) VidRef;
@@ -83,14 +85,22 @@ VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 	if (!vid)
 		return NO_FMV;
 
-	if (loopname != NULL) {
-		vid->hAudio2 = LoadMusicFile (loopname);
+	if (AudRef)
+	{
+		if (vid->hAudio)
+			DestroyMusic (vid->hAudio);
+		vid->hAudio = AudRef;
 		vid->decoder->audio_synced = FALSE;
-		vid->decoder->looping = TRUE;
 	}
 
+	vid->loop_frame = LoopFrame;
+	vid->loop_to = 0;
+
+	if (_cur_speech)
+		StopSpeech ();
 	if (_cur_video)
 		TFB_StopVideo (_cur_video);
+	_cur_speech = 0;
 	_cur_video = NULL_VIDEO_REF;
 
 	TFB_FadeClearScreen ();
@@ -103,6 +113,11 @@ VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 	{
 		_cur_video = VidRef;
 		ret = SOFTWARE_FMV;
+		if (SpeechRef)
+		{
+			PlaySpeech (SpeechRef);
+			_cur_speech = SpeechRef;
+		}
 	}
 	else
 	{
@@ -110,10 +125,13 @@ VidPlay (VIDEO_REF VidRef, const char *loopname, BOOLEAN uninit)
 	}
 	UnlockMutex (GraphicsLock);
 
-	/* dodge compiler warnings */
-	(void) uninit;
-
 	return ret;
+}
+
+VIDEO_TYPE
+VidPlay (VIDEO_REF VidRef)
+{
+	return VidPlayEx (VidRef, 0, 0, VID_NO_LOOP);
 }
 
 void
@@ -124,13 +142,10 @@ VidDoInput (void)
 }
 
 VIDEO_REF
-_init_video_file(const char *pStr)
+_init_video_file (const char *pStr)
 {
 	TFB_VideoClip* vid;
 	TFB_VideoDecoder* dec;
-	char* filename;
-	char* pext;
-	MUSIC_REF altsound;
 
 	dec = VideoDecoder_Load (contentDir, pStr);
 	if (!dec)
@@ -142,21 +157,6 @@ _init_video_file(const char *pStr)
 	vid->w = vid->decoder->w;
 	vid->h = vid->decoder->h;
 	vid->guard = CreateMutex ("video guard", SYNC_CLASS_VIDEO);
-
-	/* Override main sound with .wav if available. */
-	filename = HMalloc (strlen (pStr) + 5);
-	strcpy (filename, pStr);
-	pext = strrchr (filename, '.');
-	if (pext)
-		*pext = 0;
-	strcat (filename, ".wav");
-	altsound = LoadMusicFile (filename);
-	if (altsound != 0) {
-		DestroyMusic (vid->hAudio);
-		vid->hAudio = altsound;
-	} else
-		vid->hAudio = 0;
-	vid->hAudio2 = 0;
 
 	return (VIDEO_REF) vid;
 }

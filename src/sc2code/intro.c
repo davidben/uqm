@@ -27,7 +27,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"
-//#include "libs/vidlib.h"
+#include "libs/vidlib.h"
 #include "libs/inplib.h"
 #include "libs/log.h"
 
@@ -73,19 +73,38 @@ static BOOLEAN DoPresentation (void *pIS);
 
 
 BOOLEAN
-DoFMV (const char *name, const char *loopname, BOOLEAN uninit)
+DoFMVEx (const char *name, const char *audname, const char *speechname,
+		DWORD loopframe)
 {
 	VIDEO_REF VidRef;
+	MUSIC_REF AudRef = 0;
+	MUSIC_REF SpeechRef = 0;
 
 	VidRef = LoadVideoFile (name);
 	if (!VidRef)
 		return FALSE;
-	VidPlay (VidRef, loopname, uninit);
+	if (audname)
+		AudRef = LoadMusicFile (audname);
+	if (speechname)
+		SpeechRef = LoadMusicFile (speechname);
+
+	VidPlayEx (VidRef, AudRef, SpeechRef, loopframe);
 	VidDoInput ();
 	VidStop ();
-	DestroyVideo (VidRef);
 	
+	DestroyVideo (VidRef);
+	if (SpeechRef)
+		DestroyMusic (SpeechRef);
+	if (AudRef)
+		DestroyMusic (AudRef);
+
 	return TRUE;
+}
+
+BOOLEAN
+DoFMV (const char *name)
+{
+	return DoFMVEx (name, NULL, NULL, VID_NO_LOOP);
 }
 
 static BOOLEAN

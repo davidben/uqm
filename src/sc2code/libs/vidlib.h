@@ -19,7 +19,8 @@
 #ifndef _VIDLIB_H
 #define _VIDLIB_H
 
-#include "compiler.h"
+#include "libs/compiler.h"
+#include "libs/sndlib.h"
 
 typedef enum
 {
@@ -35,8 +36,10 @@ extern void UninitVideoPlayer (void);
 
 extern VIDEO_REF LoadVideoFile (const char *pStr);
 extern BOOLEAN DestroyVideo (VIDEO_REF VideoRef);
-extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef, const char *loopname,
-		BOOLEAN uninit);
+extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef);
+extern VIDEO_TYPE VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef,
+		MUSIC_REF SpeechRef, DWORD LoopFrame);
+#define VID_NO_LOOP (0U-1)
 extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
 extern void VidDoInput (void);

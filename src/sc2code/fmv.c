@@ -31,11 +31,15 @@
 #include "libs/inplib.h"
 
 
+/* Some ship spin animations contain extra frames that must be discarded. */
+#define SHIP_SPIN_LOOP_FRAME 89
+
 void
 DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {
 #ifdef WANT_SHIP_SPINS
-	char buf[30];
+	char vnbuf[32];
+	char snbuf[32];
 	BYTE clut_buf[1];
 	RECT old_r, r;
 
@@ -50,8 +54,9 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 
 	FreeHyperData ();
 	
-	sprintf (buf, "slides/spins/ship%02d.duk", index);
-	DoFMV (buf, "slides/spins/spin.aif", FALSE);
+	sprintf (vnbuf, "slides/spins/ship%02u.duk", (unsigned)index);
+	sprintf (snbuf, "slides/spins/ship%02u.aif", (unsigned)index);
+	DoFMVEx (vnbuf, "slides/spins/spin.aif", snbuf, SHIP_SPIN_LOOP_FRAME);
 
 	GetContextClipRect (&old_r);
 	r.corner.x = r.corner.y = 0;
@@ -138,8 +143,7 @@ Introduction (void)
 
 	/* by default we do 3DO cinematics; or PC slides when 3DO files are
 	 * not present */
-	if (optWhichIntro == OPT_PC ||
-			!DoFMV ("slides/intro/intro.duk", NULL, TRUE))
+	if (optWhichIntro == OPT_PC || !DoFMV ("slides/intro/intro.duk"))
 		ShowPresentation ( CaptureStringTable (
 				LoadStringTable (INTROPRES_STRTAB)));
 
@@ -157,8 +161,7 @@ Victory (void)
 
 	/* by default we do 3DO cinematics; or PC slides when 3DO files are
 	 * not present */
-	if (optWhichIntro == OPT_PC ||
-			!DoFMV ("slides/ending/victory.duk", NULL, TRUE))
+	if (optWhichIntro == OPT_PC || !DoFMV ("slides/ending/victory.duk"))
 		ShowPresentation ( CaptureStringTable (
 					LoadStringTable (FINALPRES_STRTAB)));
 		
@@ -169,7 +172,7 @@ Victory (void)
 void
 Logo (void)
 {
-	DoFMV ("logo", NULL, FALSE);
+	DoFMV ("logo");
 }
 
 

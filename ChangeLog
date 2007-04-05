@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Cleanup of 3DO ship spin support; spin speech works now - Alex
 - No longer creating and mounting a temporary directory. It is no longer
   used, but it might be again at some point, for loadable modules. - SvdB
 - Added RNG functions that work on a supplied state - SvdB

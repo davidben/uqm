@@ -147,9 +147,7 @@ as_video_play_task (void *data)
 	LockMutex (vid->guard);
 	want_frame = vid->want_frame;
 	if (vid->hAudio)
-		startAudioStream (vid->hAudio, SPEECH_SOURCE, FALSE);
-	if (vid->hAudio2)
-		startAudioStream (vid->hAudio2, MUSIC_SOURCE, TRUE);
+		PlayMusic (vid->hAudio, FALSE, 1);
 	UnlockMutex (vid->guard);
 
 	clagged = 0;
@@ -231,13 +229,11 @@ as_video_play_task (void *data)
 		// increase timeout with lag-count to allow audio to catch up
 		TimeOut = GetTimeCounter () + vid->decoder->max_frame_wait *
 				ONE_SECOND / 1000 + clagged * ONE_SECOND / 100;
-		
+
 		ret = VideoDecoder_Decode (vid->decoder);
 	}
 	if (vid->hAudio)
-		stopAudioStream (vid->hAudio, SPEECH_SOURCE);
-	if (vid->hAudio2)
-		stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
+		StopMusic ();
 	vid->playing = false;
 
 	FinishTask (task);
@@ -261,10 +257,7 @@ video_play_task (void *data)
 
 	LockMutex (vid->guard);
 	if (vid->hAudio)
-		startAudioStream (vid->hAudio, SPEECH_SOURCE, FALSE);
-
-	if (vid->hAudio2)
-		startAudioStream (vid->hAudio2, MUSIC_SOURCE, TRUE);
+		PlayMusic (vid->hAudio, (vid->loop_frame != VID_NO_LOOP), 1);
 
 	UnlockMutex (vid->guard);
 
@@ -293,13 +286,14 @@ video_play_task (void *data)
 		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates
 
+		if (vid->cur_frame == vid->loop_frame)
+			VideoDecoder_SeekFrame (vid->decoder, vid->loop_to);
+
 		ret = VideoDecoder_Decode (vid->decoder);
 	}
 	vid->playing = false;
 	if (vid->hAudio)
-		stopAudioStream (vid->hAudio, SPEECH_SOURCE);
-	if (vid->hAudio2)
-		stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
+		StopMusic ();
 
 	FinishTask (task);
 
@@ -350,8 +344,11 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 	vid->cur_frame = -1;
 	vid->want_frame = -1;
 
-	if (vid->hAudio == 0)
+	if (!vid->hAudio)
+	{
 		vid->hAudio = LoadMusicFile (vid->decoder->filename);
+		vid->own_audio = true;
+	}
 
 	StopMusic ();
 
@@ -412,15 +409,12 @@ TFB_StopVideo (VIDEO_REF VidRef)
 	
 	if (vid->hAudio)
 	{
-		if (vid->hAudio) {
-			stopAudioStream (vid->hAudio, SPEECH_SOURCE);
+		StopMusic ();
+		if (vid->own_audio)
+		{
 			DestroyMusic (vid->hAudio);
 			vid->hAudio = 0;
-		}
-		if (vid->hAudio2) {
-			stopAudioStream (vid->hAudio2, MUSIC_SOURCE);
-			DestroyMusic (vid->hAudio2);
-			vid->hAudio2 = 0;
+			vid->own_audio = false;
 		}
 	}
 	if (vid->frame) 

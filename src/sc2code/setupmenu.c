@@ -29,6 +29,7 @@
 #include "libs/strlib.h"
 #include "libs/reslib.h"
 #include "libs/inplib.h"
+#include "libs/vidlib.h"
 #include "libs/sound/sound.h"
 #include "libs/resource/stringbank.h"
 #include "libs/log.h"
