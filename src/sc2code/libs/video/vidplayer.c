@@ -29,28 +29,6 @@ static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);
 static uint32 vp_GetTicks (TFB_VideoDecoder*);
 static bool vp_SetTimer (TFB_VideoDecoder*, uint32 msecs);
 
-void
-startAudioStream (MUSIC_REF aud, uint32 ss, BOOLEAN loop)
-{
-	TFB_SoundSample **pmus;
-
-	LockMusicData (aud, &pmus);
-	if (pmus)
-	{
-		LockMutex (soundSource[ss].stream_mutex);
-		PlayStream ((*pmus), ss, loop, false, true);
-		UnlockMutex (soundSource[ss].stream_mutex);
-	}
-}
-
-void
-stopAudioStream (MUSIC_REF aud, uint32 ss)
-{
-	LockMutex (soundSource[ss].stream_mutex);
-	StopStream (ss);
-	UnlockMutex (soundSource[ss].stream_mutex);
-	UnlockMusicData (aud);
-}
 
 TFB_VideoCallbacks vp_DecoderCBs =
 {
