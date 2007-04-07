@@ -374,8 +374,7 @@ UnbatchGraphics ();
 			if (RestartMusic)
 				BattleSong (TRUE);
 		}
-		else if (LOBYTE (battle_counter) == 0
-				|| HIBYTE (battle_counter) == 0)
+		else if (battle_counter[0] == 0 || battle_counter[1] == 0)
 		{
 			// One player is out of ships. The battle is over.
 			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
@@ -489,10 +488,8 @@ ship_death (ELEMENT *ShipPtr)
 
 	if (ShipPtr->mass_points <= MAX_SHIP_MASS)
 	{
-		if (WHICH_SIDE (ShipPtr->state_flags))
-			battle_counter -= MAKE_WORD (0, 1);
-		else
-			battle_counter -= MAKE_WORD (1, 0);
+		COUNT side = ElementFlagsSide (ShipPtr->state_flags);
+		battle_counter[side]--;
 	}
 
 	VictoriousStarShipPtr = 0;

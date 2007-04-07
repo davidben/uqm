@@ -389,7 +389,7 @@ GetMeleeStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 
 	DrawStamp (&s);
 
-	if (LOBYTE (battle_counter) == 0 || HIBYTE (battle_counter) == 0)
+	if (battle_counter[0] == 0 || battle_counter[1] == 0)
 	{
 		// One side is out of ships. Game over.
 		DWORD TimeOut;
@@ -457,10 +457,7 @@ GetMeleeStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 		FlushColorXForms ();
 	}
 
-	if (which_player == 0)
-		ships_left = LOBYTE (battle_counter);
-	else
-		ships_left = HIBYTE (battle_counter);
+	ships_left = battle_counter[which_player];
 
 	gmstate.flash_rect.extent.width = (ICON_WIDTH + 2);
 	gmstate.flash_rect.extent.height = (ICON_HEIGHT + 2);

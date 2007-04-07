@@ -114,8 +114,10 @@ DoPickBattleShip (MENU_STATE *pMS)
 ChangeSelection:
 			if (pMS->first_item.x == (NUM_PICK_SHIP_COLUMNS >> 1))
 			{
-				pMS->flash_rect0.corner.x = pMS->flash_rect1.corner.x - 2 + FLAGSHIP_X_OFFS;
-				pMS->flash_rect0.corner.y = pMS->flash_rect1.corner.y - 2 + FLAGSHIP_Y_OFFS;
+				pMS->flash_rect0.corner.x =
+						pMS->flash_rect1.corner.x - 2 + FLAGSHIP_X_OFFS;
+				pMS->flash_rect0.corner.y =
+						pMS->flash_rect1.corner.y - 2 + FLAGSHIP_Y_OFFS;
 				pMS->flash_rect0.extent.width = FLAGSHIP_WIDTH + 4;
 				pMS->flash_rect0.extent.height = FLAGSHIP_HEIGHT + 4;
 
@@ -248,9 +250,10 @@ GetArmadaStarShip (void)
 	CONTEXT OldContext;
 	HSTARSHIP hBattleShip;
 	
-	if (HIBYTE (battle_counter) == 0)
+	if (battle_counter[1] == 0)
 	{
-		return (0);
+		// No opponents left.
+		return 0;
 	}
 	
 //    MenuSounds = CaptureSound (LoadSound (MENU_SOUNDS));
@@ -285,7 +288,7 @@ OldContext = SetContext (SpaceContext);
 	if (hBattleShip)
 	{
 		if (hBattleShip == GetTailLink (&race_q[0]))
-			battle_counter = MAKE_WORD (1, HIBYTE (battle_counter));
+			battle_counter[0] = 1;
 
 		WaitForSoundEnd (0);
 	}
@@ -312,14 +315,19 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 	}
 	else
 	{
+		// Full game.
 		HSTARSHIP hStarShip;
 		STARSHIP *SPtr;
 		SHIP_FRAGMENT *FragPtr;
 
 		if (LastStarShipPtr == 0)
 		{
-			if (which_player == 0 && LOBYTE (battle_counter) > 1)
+			// First time picking a ship.
+			if (which_player == 0 && battle_counter[0] > 1)
+			{
+				// The player in a full game, still having a ship left.
 				hBattleShip = GetArmadaStarShip ();
+			}
 			else
 			{
 				hBattleShip = GetHeadLink (&race_q[which_player]);
@@ -331,7 +339,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 					if (FragPtr->ShipInfo.crew_level == INFINITE_FLEET)
 					{
 						// Infinite number of ships.
-						battle_counter += MAKE_WORD (0, 1);
+						battle_counter[1]++;
 					}
 					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
@@ -373,7 +381,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 						SPtr->cur_status_flags = 1 << which_player;
 						SPtr->captains_name_index = PickCaptainName ();
 
-						battle_counter += MAKE_WORD (0, 1);
+						battle_counter[1]++;
 					}
 					UnlockStarShip (pQueue, hStarShip);
 					break;
@@ -384,19 +392,26 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 
 			if (which_player == 0)
 			{
-				if (LOBYTE (battle_counter))
+				// Player in a full game.
+				if (battle_counter[0])
 					hBattleShip = GetArmadaStarShip ();
 				else /* last ship was flagship */
 				{
 #define RUN_AWAY_FUEL_COST (5 * FUEL_TANK_SCALE)
 					hBattleShip = 0;
 					if (LastStarShipPtr->special_counter == 0)
-								/* died in the line of duty */
+					{
+						/* Died in the line of duty */
 						GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-					else if (GLOBAL_SIS (FuelOnBoard) > RUN_AWAY_FUEL_COST)
-						GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
+					}
 					else
-						GLOBAL_SIS (FuelOnBoard) = 0;
+					{
+						// Player ran away.
+						if (GLOBAL_SIS (FuelOnBoard) > RUN_AWAY_FUEL_COST)
+							GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
+						else
+							GLOBAL_SIS (FuelOnBoard) = 0;
+					}
 				}
 			}
 		}

@@ -202,6 +202,7 @@ arilou_preprocess (ELEMENT *ElementPtr)
 				&& StarShipPtr->special_counter == 0
 				&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 		{
+			/* Special key is pressed; start teleport */
 #define HYPER_LIFE 5
 			ZeroVelocityComponents (&ElementPtr->velocity);
 			StarShipPtr->cur_status_flags &=
@@ -239,6 +240,7 @@ arilou_preprocess (ELEMENT *ElementPtr)
 
 		if ((life_span = ElementPtr->life_span) == NORMAL_LIFE)
 		{
+			/* Ending teleport */
 			ElementPtr->state_flags &= ~(NONSOLID | FINITE_LIFE);
 			ElementPtr->state_flags |= APPEARING;
 			ElementPtr->current.image.farray =
@@ -252,6 +254,7 @@ arilou_preprocess (ELEMENT *ElementPtr)
 		}
 		else
 		{
+			/* Teleporting in progress */
 			--life_span;
 			if (life_span != 2)
 			{

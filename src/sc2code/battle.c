@@ -38,7 +38,9 @@
 
 
 QUEUE disp_q;
-SIZE battle_counter;
+BYTE battle_counter[NUM_SIDES];
+		// The number of ships still available for battle to each side.
+		// A ship that has warped out is no longer available.
 BOOLEAN instantVictory;
 size_t battleInputOrder[NUM_SIDES];
 		// Indices of the sides in the order their input is processed.
@@ -79,7 +81,7 @@ DoRunAway (STARSHIP *StarShipPtr)
 	{
 		extern void flee_preprocess (ELEMENT *);
 
-		battle_counter -= MAKE_WORD (1, 0);
+		battle_counter[0]--;
 
 		ElementPtr->turn_wait = 3;
 		ElementPtr->thrust_wait = MAKE_BYTE (4, 0);
@@ -353,7 +355,7 @@ selectAllShips (SIZE num_ships)
 	// On network play, what is the top player to one party may be
 	// the bottom player the other. To keep both sides synchronised
 	// the order is always the same.
-	SIZE order[2];
+	SIZE order[NUM_PLAYERS];
 
 	if (num_ships == 1) {
 		// HyperSpace in full game.
@@ -393,7 +395,7 @@ selectAllShips (SIZE num_ships)
 
 	{
 		size_t i;
-		for (i = 0; i < 2; i++)
+		for (i = 0; i < NUM_PLAYERS; i++)
 		{
 			if (!GetNextStarShip (NULL, order[i]))
 				return FALSE;
@@ -430,8 +432,9 @@ Battle (void)
 
 	if (instantVictory)
 	{
-		num_ships = 0;  // no ships were harmed in the making of this battle
-		battle_counter = 1;  // a winner is you!
+		num_ships = 0;
+		battle_counter[0] = 1;
+		battle_counter[1] = 0;
 		instantVictory = FALSE;
 	}
 	
@@ -440,10 +443,8 @@ Battle (void)
 		BATTLE_STATE bs;
 
 		GLOBAL (CurrentActivity) |= IN_BATTLE;
-		battle_counter = MAKE_WORD (
-				CountLinks (&race_q[0]),
-				CountLinks (&race_q[1])
-				);
+		battle_counter[0] = CountLinks (&race_q[0]);
+		battle_counter[1] = CountLinks (&race_q[1]);
 
 		setupBattleInputOrder ();
 #ifdef NETPLAY

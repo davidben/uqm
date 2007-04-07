@@ -462,7 +462,7 @@ UninitEncounter (void)
 		SET_GAME_STATE (BOMB_CARRIER, 0);
 
 		VictoryState = (
-				HIBYTE (battle_counter) || !LOBYTE (battle_counter)
+				battle_counter[1] || !battle_counter[0]
 				|| GET_GAME_STATE (URQUAN_PROTECTING_SAMATRA)
 				) ? 0 : 1;
 

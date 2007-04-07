@@ -47,6 +47,9 @@ typedef QUEUE_HANDLE HELEMENT;
 #define GOOD_GUY (1 << 0)
 #define BAD_GUY (1 << 1)
 #define PLAYER_SHIP (1 << 2)
+		// The ELEMENT is a player controlable ship, and not some bullet,
+		// crew, asteroid, fighter, etc. This does not mean that the ship
+		// is actually controlled by a human; it may be a computer.
 
 #define APPEARING (1 << 3)
 #define DISAPPEARING (1 << 4)
@@ -60,6 +63,7 @@ typedef QUEUE_HANDLE HELEMENT;
 #define FINITE_LIFE (1 << 10)
 
 #define PRE_PROCESS (1 << 11)
+		// PreProcess() is to be called for the ELEMENT.
 #define POST_PROCESS (1 << 12)
 
 #define IGNORE_VELOCITY (1 << 13)
@@ -146,7 +150,13 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 #define GRAVITY_MASS(m) ((m) > MAX_SHIP_MASS * 10)
 #define GRAVITY_THRESHOLD (COUNT)255
 
-#define WHICH_SIDE(f) (((f) & BAD_GUY) >> 1)
+static inline BYTE
+ElementFlagsSide (ELEMENT_FLAGS flags)
+{
+	return (BYTE) ((flags & BAD_GUY) >> 1);
+}
+#define WHICH_SIDE(flags) ElementFlagsSide (flags)
+
 #define OBJECT_CLOAKED(eptr) \
 		(GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) >= NUM_PRIMS \
 		|| (GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) == STAMPFILL_PRIM \

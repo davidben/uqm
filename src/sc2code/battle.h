@@ -18,6 +18,8 @@
 
 #include "libs/compiler.h"
 #include "displist.h"
+#include "init.h"
+		// For NUM_SIDES
 
 typedef struct battlestate_struct {
 	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
@@ -27,7 +29,7 @@ typedef struct battlestate_struct {
 } BATTLE_STATE;
 
 extern QUEUE disp_q;
-extern SIZE battle_counter;
+extern BYTE battle_counter[NUM_SIDES];
 extern BOOLEAN instantVictory;
 #ifdef NETPLAY
 typedef DWORD BattleFrameCounter;

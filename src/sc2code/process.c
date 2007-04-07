@@ -619,7 +619,7 @@ static VIEW_STATE
 PreProcessQueue (SIZE *pscroll_x, SIZE *pscroll_y)
 {
 	SIZE min_reduction, max_reduction;
-	COUNT num_ships;
+	COUNT sides_active;
 	POINT Origin;
 	HELEMENT hElement;
 	COUNT ships_alive;
@@ -627,8 +627,8 @@ PreProcessQueue (SIZE *pscroll_x, SIZE *pscroll_y)
 #ifdef KDEBUG
 	log_add (log_Debug, "PreProcess:");
 #endif
-	num_ships = (LOBYTE (battle_counter) ? 1 : 0)
-			+ (HIBYTE (battle_counter) ? 1 : 0);
+	sides_active = (battle_counter[0] ? 1 : 0)
+			+ (battle_counter[1] ? 1 : 0);
 
 	if (optMeleeScale == TFB_SCALE_STEP)
 		min_reduction = max_reduction = MAX_VIS_REDUCTION + 1;
@@ -673,7 +673,7 @@ PreProcessQueue (SIZE *pscroll_x, SIZE *pscroll_y)
 			dy = DISPLAY_ALIGN (ElementPtr->next.location.y) - Origin.y;
 			dy = WRAP_DELTA_Y (dy);
 
-			if (num_ships <= 2 || !(ElementPtr->state_flags & BAD_GUY))
+			if (sides_active <= 2 || !(ElementPtr->state_flags & BAD_GUY))
 			{
 				Origin.x = DISPLAY_ALIGN (Origin.x + (dx >> 1));
 				Origin.y = DISPLAY_ALIGN (Origin.y + (dy >> 1));
@@ -1061,6 +1061,8 @@ RedrawQueue (BOOLEAN clear)
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 }
 
+// Set the hTarget field to 0 for all elements in the display list that
+// have hTarget set to ElementPtr.
 void
 Untarget (ELEMENT *ElementPtr)
 {
