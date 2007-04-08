@@ -20,13 +20,25 @@ The resource type is a number. What kind of resource that actually is,
 is not specified in the package. The program registers functions for
 loading data of a specific type number, by calling InitResTypeVectors().
 
-In the original 3DO version the following types are used:
+In the original 3DO version, the following types are used:
 GFXRES    (1) - graphics data
 STRTAB    (2) - string table
 MUSICRES  (3) - music and sound data
 RES_INDEX (4) - a resource 'file'
 CODE      (5) - identifies code to use (the resouce file itself does not
                 contain any code)
+
+
+In the PC version of Star Control II, the following types are used
+(the names are taken from the other versions):
+KEY_CONFIG (1) - keyboard configuration
+GFXRES     (2) - graphics data
+SNDRES     (3) - waveform audio
+STRTAB     (4) - string table
+MUSICRES   (5) - mod audio
+CODE       (7) - actual PC code (used for ships as well as comm)
+           (8) - Deluxe Paint .ANM
+
 
 In the current Urquan Masters, the following types are used:
 KEY_CONFIG (1) - keyboard configuration (not used in the 3do packages)
