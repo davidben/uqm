@@ -7,10 +7,17 @@ mentioned below in square brackets.
 
 Everything is stored LSB first.
 
+This document talks about packaged files.
+Packaged files have multiple resources stored in one file. All the resources
+in one package are stored in a single file, whose name is specified in
+p.packmem. The name may be '\0', in which case the package file itself
+is used.
+Non-packaged files have one resource per file. The name is specified
+in each resource instance info field.
+
 Main header: (resinit.c, _GetResFileData())
 position   length  meaning
 0x00       2       Whether or not the file is packaged (res_flags)
-                       (has all files in the .pkg file itself)
                    bit 0: 0 - the .pkg file is not packaged
                           1 - the .pkg file is packaged
 0x02       4       offset from the beginning of the file where the list
@@ -18,7 +25,7 @@ position   length  meaning
 0x06       4       offset from the beginning of the file where the list
                        of pathnames is stored (path_list_offs)
 0x0a       4       offset from the beginning of the file where the list
-                       of filenames is stored (file_list_offs)
+                       of file names is stored (file_list_offs)
 0x0e       2       number of packages in the file (num_packages)
 0x10       2       number of types of packages present in the file (num_types)
 0x12       4       length of this header. (index_info.header_len)
@@ -29,8 +36,10 @@ position   length  meaning
            4       p.packmem_info
                    bits 0-7: number of resource types
                    bits 8-20: number of resource instances
-                   bits 21-31: index in file_list_offs of the file name for
-                       this resource (only for packaged files)
+                   bits 21-31:
+                       For packaged files: index in file_list_offs of the
+                       file name for this resource
+                       For non-packaged files: unused (0)
            4       p.flags_and_data_loc
                    MSB is flags, rest is data_loc,
                    if MSB == 0, then of the data_loc only the low 16 bits
@@ -67,9 +76,11 @@ packmem_list_offs (should be directly after the index info):
                          (as in p.packmem_info):
            2           if this is a packaged file: multiply by 4 to get
                            the length of this package.
-                       if this is a file that is not packaged: 
-                           [the same position is in memory used as a
-                           MEM_HANDLE to the actual data]
+                       if this is a file that is not packaged:
+                           index in file_list_offs of the file name for
+                           this resource.
+                       [the same position is in memory used as a MEM_HANDLE
+                       to the actual data]
 path_list_offs     (should be directly after the packmem list)
            ?       null terminated path strings, indexed from the file list
                        table
@@ -83,9 +94,12 @@ file_list_offs     (should be directly after the path list)
            13        file info:
            2         location relative to path_list_offs of the
                          the path to this file, or 0xffff if no path.
-           8         filename (8 chars or null-terminated)
+           8         file name (8 chars or null-terminated)
            3         extension (3 chars or null-terminated)
 
+The following section is present in the package only for packaged files.
+For non-packaged files, the fields below exist in the external file indicated
+by p.packmem_info.file_index.
 For each package p:
 p.data_loc         for each type p.t:
                      for each instance p.t.i:
@@ -99,6 +113,26 @@ p.data_loc         for each type p.t:
 Resources with type 'resource index' (type 4 in the 3DO sc2 starcon.pkg file)
 are files with the same format as this .pkg file itself.
 
+
+The information above is gathered from the resource library sources itself.
+The information below is induced from the packed files themselves.
+
+The format used in SC1 is somewhat different. The differences are listed
+here:
+0x02       4       offset from the beginning of the file where the list
+                       of pathnames is stored (path_list_offs)
+0x06       4       offset from the beginning of the file where the list
+                       of file names is stored (file_list_offs)
+0x0a       4       offset from the beginning of the file where the list
+                       of package information is stored (packmem_list_offs)
+0x0e       2       number of types of packages present in the file (num_types)
+0x10       2       ?
+0x12       2       number of packages in the file (num_packages)
+0x14       2       ?
+packmem_list_offs
+           4       as above
+           2       if this is a packaged file: multiply by 4 to get
+                       the length of this package.
 
 
 Initial version of this file 2002-10-10 by Serge van den Boom.
