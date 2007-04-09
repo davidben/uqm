@@ -114,8 +114,11 @@ Resources with type 'resource index' (type 4 in the 3DO sc2 starcon.pkg file)
 are files with the same format as this .pkg file itself.
 
 
-The information above is gathered from the resource library sources itself.
-The information below is induced from the packed files themselves.
+The information above, about the format used on the 3DO, is gathered from
+the resource library sources itself.
+The information below, about the format used on the PC, and for SC1,
+is induced from the packed files themselves.
+
 
 The format used in SC1 is somewhat different. The differences are listed
 here:
@@ -130,9 +133,23 @@ here:
 0x12       2       number of packages in the file (num_packages)
 0x14       2       ?
 packmem_list_offs
-           4       as above
-           2       if this is a packaged file: multiply by 4 to get
+           4       as for the 3DO
+           2       if this is a packaged file: the listed size is the actual
+                       size of the resource. No multiplication by 2 or 4 as
+                       on other platforms.
+
+
+The format used in SC2 is different yet again. The differences to the 3DO
+version are listed here:
+0x10       1       number of types of packages present in the file (num_types)
+0x11       1       unknown
+packmem_list_offs
+           4       as for the 3DO
+           2       if this is a packaged file: multiply by 2 to get
                        the length of this package.
+
+The part pointed to by file_list_offs is frequently followed by a bit of
+unused space, which may contain garbage.
 
 
 Initial version of this file 2002-10-10 by Serge van den Boom.
