@@ -151,7 +151,7 @@ packmem_list_offs
 [1]. The length of a packaged file, even with the multiplier, is overflowed
 for some resources.
 The actual size is a multiple of 0x10000 times the multiplier larger.
-This occurs in 8 packages in the PC version of Star Control II, in
+This occurs in 18 packages in the PC version of Star Control II, in
 1 packages of the Amiga version of Star Control 1, and in 2 packages of
 the PC version of The Horde. The PC version of Star Control 1, and the 3DO
 version of Star Control II don't have such overflows.
