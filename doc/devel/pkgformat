@@ -75,7 +75,7 @@ packmem_list_offs (should be directly after the index info):
                      for each of the resource instances for this package
                          (as in p.packmem_info):
            2           if this is a packaged file: multiply by 4 to get
-                           the length of this package.
+                           the length of this resource. [1]
                        if this is a file that is not packaged:
                            index in file_list_offs of the file name for
                            this resource.
@@ -134,19 +134,36 @@ here:
 0x14       2       ?
 packmem_list_offs
            4       as for the 3DO
-           2       if this is a packaged file: the listed size is the actual
-                       size of the resource. No multiplication by 2 or 4 as
-                       on other platforms.
+           2       if this is a packaged file: the length of this resource.
+                       No multiplication by 2 or 4 as on other platforms. [1]
 
 
-The format used in SC2 is different yet again. The differences to the 3DO
-version are listed here:
+The format used in the DOS version of SC2 is different yet again.
+The differences to the 3DO version are listed here:
 0x10       1       number of types of packages present in the file (num_types)
 0x11       1       unknown
 packmem_list_offs
            4       as for the 3DO
            2       if this is a packaged file: multiply by 2 to get
-                       the length of this package.
+                       the length of this resource. [1]
+
+
+[1]. The length of a packaged file, even with the multiplier, is overflowed
+for some resources.
+The actual size is a multiple of 0x10000 times the multiplier larger.
+This occurs in 8 packages in the PC version of Star Control II, in
+1 packages of the Amiga version of Star Control 1, and in 2 packages of
+the PC version of The Horde. The PC version of Star Control 1, and the 3DO
+version of Star Control II don't have such overflows.
+The actual size of a package can be determined by looking at the
+difference in offset between two subsequent packages.
+Where the package contains only one resource instance, the extra data can
+only belong to that instance. Where a package contains more than one
+resource instance, the extra data most likely belongs to the last resource,
+as an incorrect size results in an incorrect offset for all subsequent
+instances in the package, which would most likely have been noticed due to
+corruption in the game.
+
 
 The part pointed to by file_list_offs is frequently followed by a bit of
 unused space, which may contain garbage.
