@@ -36,7 +36,9 @@ GFXRES     (2) - graphics data
 SNDRES     (3) - waveform audio
 STRTAB     (4) - string table
 MUSICRES   (5) - mod audio
-CODE       (7) - actual PC code (used for ships as well as comm)
+RES_INDEX  (6) - a resource 'file'
+CODE       (7) - actual PC code (compressed; used for ships as well as comm;
+                 may include other resources)
            (8) - Deluxe Paint .ANM
 
 
