@@ -148,11 +148,12 @@ packmem_list_offs
                        the length of this resource. [1]
 
 
-[1]. The length of a packaged file, even with the multiplier, is overflowed
-for some resources.
-The actual size is a multiple of 0x10000 times the multiplier larger.
+[1]. In some of the packaged .pkg files used in the Toys For Bob games,
+the length field of a resource instance is overflowed for some resources,
+even though the use of a multiplier will have had the purpose of preventing
+this. The actual size is a multiple of 0x10000 times the multiplier larger.
 This occurs in 18 packages in the PC version of Star Control II, in
-1 packages of the Amiga version of Star Control 1, and in 2 packages of
+1 package of the Amiga version of Star Control 1, and in 2 packages of
 the PC version of The Horde. The PC version of Star Control 1, and the 3DO
 version of Star Control II don't have such overflows.
 The actual size of a package can be determined by looking at the
