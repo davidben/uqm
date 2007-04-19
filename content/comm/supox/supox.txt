@@ -321,7 +321,7 @@ During the battle, one of our ships intercepted a signal
 from an Ur-Quan vessel to a Kohr-Ah ship.
 The contents of the message was simple, `Sa-Matra'.
 Immediately after receiving the broadcast, the Kohr-Ah vessel disengaged from combat
-entered HyperSapce and sped off in the direction of the Crateris stars.
+entered HyperSpace and sped off in the direction of the Crateris stars.
 
 #(what_now_homeworld)
 So now what do we do?
