@@ -227,7 +227,7 @@ You lied, Admiral ZEX!!! There was no `warp nullification field'! Cheater!
 #(YUP_LIED)	vux021.ogg
 Yes, I lied.
 Surely, if a small falsehood can prevent hundreds of unnecessary deaths, this is acceptable.
-Unfortunately, you saw through my falsehood and do doubt lives were lost.
+Unfortunately, you saw through my falsehood and no doubt lives were lost.
 Let us cease this mindless aggression, before it is our undoing.
 
 #(kill_you)
