@@ -712,7 +712,7 @@ This time we shall not fail.
 
 #(RETURNING_FROM_YEHAT_1)	pkunk087.ogg
 We have consulted with our inner chickadees, and must hurry home.
-Farewell, somehwat-enlightened mammal.
+Farewell, somewhat-enlightened mammal.
 
 #(RETURNING_FROM_YEHAT_2)	pkunk088.ogg
 We must make haste, Captain!
