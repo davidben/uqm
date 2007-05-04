@@ -255,8 +255,8 @@ void fill_frame_rgb (FRAME FramePtr, Uint32 color, int x0, int y0,
 	UnlockMutex (tfbImg->mutex);
 }
 
-void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
-		RECT *rdst, int num, int denom)
+void arith_frame_blit (FRAME srcFrame, const RECT *rsrc, FRAME dstFrame,
+		const RECT *rdst, int num, int denom)
 {
 	TFB_Image *srcImg, *dstImg;
 	SDL_Surface *src, *dst;
@@ -296,7 +296,7 @@ void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
 			dstRect.y = -srcFrame->HotSpot.y;
 			dstRect.w = GetFrameWidth (srcFrame);
 			dstRect.h = GetFrameHeight (srcFrame);
-			drp =&dstRect;
+			drp = &dstRect;
 		}
 
 	}

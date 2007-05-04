@@ -20,6 +20,7 @@
 
 #include "build.h"
 #include "controls.h"
+#include "flash.h"
 #include "intel.h"
 #include "melee.h"
 #ifdef NETPLAY
@@ -32,6 +33,7 @@
 #include "setup.h"
 #include "sounds.h"
 #include "libs/inplib.h"
+#include "libs/log.h"
 #include "libs/mathlib.h"
 
 
@@ -44,13 +46,27 @@ struct getmelee_struct {
 	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);
 	COUNT MenuRepeatDelay;
 	BOOLEAN Initialized;
-	HSTARSHIP hBattleShip;
-	COUNT row, col, ships_left, which_player;
-	COUNT randomIndex;
+	
+	struct {
+		TimeCount timeIn;
+		HSTARSHIP hBattleShip;
+				// Chosen ship.
+		COUNT row;
+		COUNT col;
+		COUNT ships_left;
+				// Number of ships still available.
+		COUNT randomIndex;
+				// Pre-generated random number.
+		BOOLEAN selecting;
+				// Is this player selecting a ship?
+		BOOLEAN done;
+				// Has a selection been made for this player?
+		FlashContext *flashContext;
+				// Context for controlling the flash rectangle.
 #ifdef NETPLAY
-	BOOLEAN remoteSelected;
+		BOOLEAN remoteSelected;
 #endif
-	RECT flash_rect;
+	} player[NUM_PLAYERS];
 };
 
 #ifdef NETPLAY
@@ -117,59 +133,34 @@ queueIndexFromShip (HSTARSHIP hShip)
 }
 #endif
 
+// Pre: called does not hold the graphics lock
 static void
-PickMelee_ChangedSelection (GETMELEE_STATE *gms)
+PickMelee_ChangedSelection (GETMELEE_STATE *gms, COUNT playerI)
 {
-	LockMutex (GraphicsLock);
-	gms->flash_rect.corner.x = PICK_X_OFFS + ((ICON_WIDTH + 2) * gms->col);
-	gms->flash_rect.corner.y = PICK_Y_OFFS + ((ICON_HEIGHT + 2) * gms->row)
-			+ ((1 - gms->which_player) * PICK_SIDE_OFFS);
-	SetFlashRect (&gms->flash_rect, (FRAME)0);
-	UnlockMutex (GraphicsLock);
+	RECT r;
+	r.corner.x = PICK_X_OFFS + ((ICON_WIDTH + 2) * gms->player[playerI].col);
+	r.corner.y = PICK_Y_OFFS + ((ICON_HEIGHT + 2) * gms->player[playerI].row)
+			+ ((1 - playerI) * PICK_SIDE_OFFS);
+	r.extent.width = (ICON_WIDTH + 2);
+	r.extent.height = (ICON_HEIGHT + 2);
+	Flash_setRect (gms->player[playerI].flashContext, &r);
 }
 
-// Select a new ship from the fleet for battle.
-// Returns 'TRUE' if no choice has been made yet; this function is to be
-// called again later.
-// Returns 'FALSE' if a choice has been made. gms->hStarShip is set
-// to the chosen (or randomly selected) ship, or to 0 if 'exit' has
-// been chosen.
-/* TODO: Include player timeouts */
+// Auxiliary function to DoGetMelee for a single player
+// Returns FALSE if the player selected abort.
 static BOOLEAN
-DoGetMelee (GETMELEE_STATE *gms)
+DoGetMeleePlayer (GETMELEE_STATE *gms, COUNT which_player)
 {
 	BOOLEAN left, right, up, down, select;
-	COUNT which_player = gms->which_player;
-	BOOLEAN done = FALSE;
-
-	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-
-	if (!gms->Initialized)
-	{
-		gms->Initialized = TRUE;
-		gms->row = 0;
-		gms->col = NUM_MELEE_COLS_ORIG;
-
-		PickMelee_ChangedSelection (gms);
-		return TRUE;
-	}
-
-	SleepThread (ONE_SECOND / 120);
-#ifdef NETPLAY
-	netInput ();
-
-	if (!allConnected())
-		goto aborted;
-#endif
-	
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		goto aborted;
 
 	if (PlayerInput[which_player] == ComputerInput)
 	{
-		/* TODO: Make this a frame-by-frame thing.  This code is currently
-		 *       copied from intel.c's computer_intelligence */
-		SleepThread (ONE_SECOND >> 1);
+#define COMPUTER_SELECTION_DELAY (ONE_SECOND >> 1)
+		TimeCount now = GetTimeCounter ();
+		if (now < gms->player[which_player].timeIn +
+				COMPUTER_SELECTION_DELAY)
+			return TRUE;
+
 		left = right = up = down = FALSE;
 		select = TRUE;		
 	}
@@ -177,8 +168,10 @@ DoGetMelee (GETMELEE_STATE *gms)
 	else if (PlayerInput[which_player] == NetworkInput)
 	{
 		flushPacketQueues ();
-		if (gms->remoteSelected)
-			return FALSE;
+				// Sets gms->player[which_player].remoteSelected if input
+				// is received.
+		if (gms->player[which_player].remoteSelected)
+			gms->player[which_player].done = TRUE;
 		return TRUE;
 	}
 #endif
@@ -200,39 +193,47 @@ DoGetMelee (GETMELEE_STATE *gms)
 
 	if (select)
 	{
-		if (gms->col == NUM_MELEE_COLS_ORIG)
+		if (gms->player[which_player].col == NUM_MELEE_COLS_ORIG)
 		{
-			if (gms->row == 0)
+			// Selection is on a non-ship slot. (Random or exit).
+			if (gms->player[which_player].row == 0)
 			{
 				// Random ship
-				gms->hBattleShip = MeleeShipByUsedIndex (
-						&race_q[which_player], gms->randomIndex);
+				gms->player[which_player].hBattleShip =
+						MeleeShipByUsedIndex (&race_q[which_player],
+						gms->player[which_player].randomIndex);
+				PlayMenuSound (MENU_SOUND_SUCCESS);
 #ifdef NETPLAY
 				reportShipSelected (gms, (COUNT)~0);
 #endif
-				done = TRUE;
+				gms->player[which_player].done = TRUE;
 			}
 			else
 			{
 				// Selected exit
 				if (ConfirmExit ())
-					goto aborted;
+					return FALSE;
 			}
 		}
 		else
 		{
+			// Selection is on a ship slot.
 			COUNT ship_index;
+			HSTARSHIP ship;
 			
-			ship_index = (gms->row * NUM_MELEE_COLS_ORIG) + gms->col;
-			gms->hBattleShip = MeleeShipByQueueIndex (
-					&race_q[which_player], ship_index);
-			if (gms->hBattleShip != 0)
+			ship_index = (gms->player[which_player].row * NUM_MELEE_COLS_ORIG)
+					+ gms->player[which_player].col;
+			ship = MeleeShipByQueueIndex (&race_q[which_player], ship_index);
+			if (ship != 0)
 			{
 				// Selection contains a ship.
+				gms->player[which_player].hBattleShip = ship;
+				gms->player[which_player].done = true;
+				PlayMenuSound (MENU_SOUND_SUCCESS);
 #ifdef NETPLAY
 				reportShipSelected (gms, ship_index);
 #endif
-				done = TRUE;
+				return TRUE;
 			}
 		}
 	}
@@ -241,8 +242,8 @@ DoGetMelee (GETMELEE_STATE *gms)
 		// Process motion commands.
 		COUNT new_row, new_col;
 		
-		new_row = gms->row;
-		new_col = gms->col;
+		new_row = gms->player[which_player].row;
+		new_col = gms->player[which_player].col;
 		if (left)
 		{
 			if (new_col-- == 0)
@@ -264,27 +265,93 @@ DoGetMelee (GETMELEE_STATE *gms)
 				new_row = 0;
 		}
 		
-		if (new_row != gms->row || new_col != gms->col)
+		if (new_row != gms->player[which_player].row ||
+				new_col != gms->player[which_player].col)
 		{
-			gms->row = new_row;
-			gms->col = new_col;
+			gms->player[which_player].row = new_row;
+			gms->player[which_player].col = new_col;
 			
 			PlayMenuSound (MENU_SOUND_MOVE);
-			PickMelee_ChangedSelection (gms);
+			PickMelee_ChangedSelection (gms, which_player);
+		}
+	}
+
+	return TRUE;
+}
+
+// Select a new ship from the fleet for battle.
+// Returns 'TRUE' if no choice has been made yet; this function is to be
+// called again later.
+// Returns 'FALSE' if a choice has been made. gms->hStarShip is set
+// to the chosen (or randomly selected) ship, or to 0 if 'exit' has
+// been chosen.
+/* TODO: Include player timeouts */
+static BOOLEAN
+DoGetMelee (GETMELEE_STATE *gms)
+{
+	BOOLEAN done;
+	COUNT playerI;
+
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+
+	if (!gms->Initialized)
+	{
+		gms->Initialized = TRUE;
+		return TRUE;
+	}
+
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		if (!gms->player[playerI].selecting)
+			continue;
+
+		if (!gms->player[playerI].done)
+			Flash_process (gms->player[playerI].flashContext);
+	}
+
+	SleepThread (ONE_SECOND / 120);
+
+#ifdef NETPLAY
+	netInput ();
+
+	if (!allConnected ())
+		goto aborted;
+#endif
+	
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		goto aborted;
+
+	done = TRUE;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		if (!gms->player[playerI].selecting)
+			continue;
+
+		if (!gms->player[playerI].done) {
+			if (!DoGetMeleePlayer (gms, playerI))
+				goto aborted;
+
+			if (gms->player[playerI].done)
+			{
+				Flash_terminate (gms->player[playerI].flashContext);
+				gms->player[playerI].flashContext = NULL;
+			}
+			else
+				done = FALSE;
 		}
 	}
 
 #ifdef NETPLAY
 	flushPacketQueues ();
 #endif
-
 	return !done;
 
 aborted:
 #ifdef NETPLAY
 	flushPacketQueues ();
 #endif
-	gms->hBattleShip = 0;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		gms->player[playerI].hBattleShip = 0;
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	return FALSE;
 }
@@ -298,270 +365,422 @@ endMeleeCallback (NetConnection *conn, void *arg)
 }
 #endif
 
-HSTARSHIP
-GetMeleeStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
+static COUNT
+GetRaceQueueValue (const QUEUE *queue) {
+	COUNT result;
+	HSTARSHIP hBattleShip, hNextShip;
+
+	result = 0;
+	for (hBattleShip = GetHeadLink (queue);
+			hBattleShip != 0; hBattleShip = hNextShip)
+	{
+		STARSHIP *StarShipPtr = LockStarShip (queue, hBattleShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+		
+		if (StarShipPtr->RaceResIndex == 0)
+			continue;  // Not active any more.
+
+		result += StarShipPtr->special_counter;
+
+		UnlockStarShip (queue, hBattleShip);
+	}
+
+	return result;
+}
+
+// Cross out the icon for the dead ship.
+// 'frame' is the PickMeleeFrame for the player.
+// 'shipI' is the index in the ship list.
+// Pre: caller holds the graphics lock.
+static void
+CrossOutShip (FRAME frame, COUNT shipI)
 {
-	COUNT ships_left;
+	CONTEXT OldContext;
+	STAMP s;
+
+	OldContext = SetContext (OffScreenContext);
+	
+	SetContextFGFrame (frame);
+
+	s.origin.x = 3 + ((ICON_WIDTH + 2) * (shipI % NUM_MELEE_COLS_ORIG));
+	s.origin.y = 9 + ((ICON_HEIGHT + 2) * (shipI / NUM_MELEE_COLS_ORIG));
+	s.frame = SetAbsFrameIndex (StatusFrame, 3);
+			// Cross for through the ship image.
+	DrawStamp (&s);
+
+	SetContext (OldContext);
+}
+
+// Draw the value of the fleet in the top right of the PickMeleeFrame.
+// Pre: caller holds the graphics lock.
+static void
+UpdatePickMeleeFleetValue (FRAME frame, COUNT which_player)
+{
+	CONTEXT OldContext;
+	COUNT value;
+	RECT r;
 	TEXT t;
 	UNICODE buf[40];
-	STAMP s;
-	CONTEXT OldContext;
-	GETMELEE_STATE gmstate;
-	STARSHIP *StarShipPtr;
-	BOOLEAN firstTime;
+	
+	value = GetRaceQueueValue (&race_q[which_player]);
 
-	if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
-		return (0);
+	OldContext = SetContext (OffScreenContext);
+	SetContextFGFrame (frame);
+
+	// Erase the old value text.
+	GetFrameRect (frame, &r);
+	r.extent.width -= 4;
+	t.baseline.x = r.extent.width;
+	r.corner.x = r.extent.width - (6 * 3);
+	r.corner.y = 2;
+	r.extent.width = (6 * 3);
+	r.extent.height = 7 - 2;
+	SetContextForeGroundColor (PICK_BG_COLOR);
+	DrawFilledRectangle (&r);
+
+	// Draw the new value text.
+	sprintf (buf, "%d", value);
+	t.baseline.y = 7;
+	t.align = ALIGN_RIGHT;
+	t.pStr = buf;
+	t.CharCount = (COUNT)~0;
+	SetContextFont (TinyFont);
+	SetContextForeGroundColor (PICK_VALUE_COLOR);
+	font_DrawText (&t);
+	
+	SetContext (OldContext);
+}
+
+// Pre: caller holds the graphics lock.
+static void
+DrawPickMeleeFrame (COUNT which_player)
+{
+	CONTEXT oldContext;
+	STAMP s;
+
+	oldContext = SetContext (SpaceContext);
+	s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
+	s.origin.x = PICK_X_OFFS - 3;
+	s.origin.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
+	DrawStamp (&s);
+			// Draw the selection box to screen.
+	
+	SetContext (oldContext);
+}
+
+// Pre: caller holds the graphics lock.
+static void
+MeleeGameOver (void)
+{
+	COUNT playerI;
+	DWORD TimeOut;
+	BOOLEAN PressState, ButtonState;
+
+	// Show the battle result.
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		DrawPickMeleeFrame (playerI);
+
+	TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
+	UnlockMutex (GraphicsLock);
+
+	PressState = PulsedInputState.menu[KEY_MENU_SELECT] ||
+			PulsedInputState.menu[KEY_MENU_CANCEL];
+	do
+	{
+		UpdateInputState ();
+		ButtonState = PulsedInputState.menu[KEY_MENU_SELECT] ||
+				PulsedInputState.menu[KEY_MENU_CANCEL];
+		if (PressState)
+		{
+			PressState = ButtonState;
+			ButtonState = FALSE;
+		}
+
+		TaskSwitch ();
+	} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
+			&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
+			|| GetTimeCounter () < TimeOut)));
 
 #ifdef NETPLAY
+	setStateConnections (NetState_endMelee);
+	localReadyConnections (endMeleeCallback, NULL, true);
+#endif
+
+	LockMutex (GraphicsLock);
+}
+
+BOOLEAN
+MeleeShipDeath (STARSHIP *ship, COUNT which_player) {
+	FRAME frame;
+
+	// Deactivate fleet position.
+	ship->RaceResIndex = 0;
+
+	frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
+	CrossOutShip (frame, ship->ShipFacing);
+	UpdatePickMeleeFleetValue (frame, which_player);
+	
+	if (battle_counter[0] == 0 || battle_counter[1] == 0)
 	{
-		NetConnection *conn = netConnections[which_player];
+		// One side is out of ships. Game over.
+		MeleeGameOver ();
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static BOOLEAN
+GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
+{
+	COUNT playerI;
+	BOOLEAN ok;
+	GETMELEE_STATE gmstate;
+	TimeCount now;
+
+#ifdef NETPLAY
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		NetConnection *conn;
+
+		if ((playerMask & (1 << playerI)) == 0)
+			continue;
+
+		// XXX: This does not have to be done per connection.
+		conn = netConnections[playerI];
 		if (conn != NULL) {
 			BattleStateData *battleStateData;
 			battleStateData =
-					(BattleStateData *) NetConnection_getStateData(conn);
+					(BattleStateData *) NetConnection_getStateData (conn);
 			battleStateData->getMeleeState = &gmstate;
 		}
 	}
 #endif
 	
-	s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
+	ok = true;
 
-	OldContext = SetContext (OffScreenContext);
-	SetContextFGFrame (s.frame);
-	if (LastStarShipPtr == 0 || LastStarShipPtr->special_counter == 0)
-	{
-		COUNT cur_bucks;
-		HSTARSHIP hBattleShip, hNextShip;
-
-		cur_bucks = 0;
-		for (hBattleShip = GetHeadLink (&race_q[which_player]);
-				hBattleShip != 0; hBattleShip = hNextShip)
-		{
-			StarShipPtr = LockStarShip (&race_q[which_player], hBattleShip);
-			if (StarShipPtr == LastStarShipPtr)
-			{
-				LastStarShipPtr->RaceResIndex = 0;
-
-				gmstate.col = LastStarShipPtr->ShipFacing;
-				s.origin.x = 3
-					+ ((ICON_WIDTH + 2) * (gmstate.col % NUM_MELEE_COLS_ORIG));
-				s.origin.y = 9
-					+ ((ICON_HEIGHT + 2) * (gmstate.col / NUM_MELEE_COLS_ORIG));
-				s.frame = SetAbsFrameIndex (StatusFrame, 3);
-				DrawStamp (&s);
-				s.frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
-			}
-			else if (StarShipPtr->RaceResIndex)
-			{
-				cur_bucks += StarShipPtr->special_counter;
-			}
-			hNextShip = _GetSuccLink (StarShipPtr);
-			UnlockStarShip (&race_q[which_player], hBattleShip);
-		}
-
-		GetFrameRect (s.frame, &gmstate.flash_rect);
-		gmstate.flash_rect.extent.width -= 4;
-		t.baseline.x = gmstate.flash_rect.extent.width;
-		gmstate.flash_rect.corner.x =
-				gmstate.flash_rect.extent.width - (6 * 3);
-		gmstate.flash_rect.corner.y = 2;
-		gmstate.flash_rect.extent.width = (6 * 3);
-		gmstate.flash_rect.extent.height = 7 - 2;
-		SetContextForeGroundColor (PICK_BG_COLOR);
-		DrawFilledRectangle (&gmstate.flash_rect);
-
-		sprintf (buf, "%d", cur_bucks);
-		t.baseline.y = 7;
-		t.align = ALIGN_RIGHT;
-		t.pStr = buf;
-		t.CharCount = (COUNT)~0;
-		SetContextFont (TinyFont);
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-		font_DrawText (&t);
-	}
-
-	SetContext (SpaceContext);
-	
-	s.origin.x = PICK_X_OFFS - 3;
-	s.origin.y = PICK_Y_OFFS - 9 + ((1 - which_player) * PICK_SIDE_OFFS);
-
-	DrawStamp (&s);
-
-	if (battle_counter[0] == 0 || battle_counter[1] == 0)
-	{
-		// One side is out of ships. Game over.
-		DWORD TimeOut;
-		BOOLEAN PressState, ButtonState;
-
-		s.origin.y = PICK_Y_OFFS - 9 + (which_player * PICK_SIDE_OFFS);
-		s.frame = SetAbsFrameIndex (PickMeleeFrame,
-				(COUNT) (1 - which_player));
-		DrawStamp (&s);
-
-		TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
-
-		PressState = PulsedInputState.menu[KEY_MENU_SELECT] ||
-				PulsedInputState.menu[KEY_MENU_CANCEL];
-		do
-		{
-			UpdateInputState ();
-			ButtonState = PulsedInputState.menu[KEY_MENU_SELECT] ||
-					PulsedInputState.menu[KEY_MENU_CANCEL];
-			if (PressState)
-			{
-				PressState = ButtonState;
-				ButtonState = FALSE;
-			}
-
-			TaskSwitch ();
-		} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
-				&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				|| GetTimeCounter () < TimeOut)));
-
-#ifdef NETPLAY
-		setStateConnections (NetState_endMelee);
-		localReadyConnections (endMeleeCallback, NULL, true);
-#endif
-
-		LockMutex (GraphicsLock);
-
-		return (0);
-	}
-
-	// Fade in if we're not already faded in.
-#ifdef NETPLAY
-	// Hack. If one side is network controlled, the top player does not have
-	// to be the first player to get a chance to select his ship,
-	// As what is top locally doesn't have to be the same as what it is
-	// remotely.
-	// This check is not so nice as it replicates the code used to decide
-	// which party is first in selectAllShips.
-	firstTime = (LastStarShipPtr == 0) && ((which_player == 0) ==
-			(((PlayerControl[0] & NETWORK_CONTROL) &&
-			!NetConnection_getDiscriminant(netConnections[0])) ||
-			((PlayerControl[1] & NETWORK_CONTROL) &&
-			NetConnection_getDiscriminant(netConnections[1]))));
-#else
-	firstTime = LastStarShipPtr == 0 && which_player == 1;
-#endif
-	if (firstTime)
-	{
-		BYTE fade_buf[] = {FadeAllToColor};
-						
-		SleepThreadUntil (XFormColorMap
-				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + ONE_SECOND / 60);
-		FlushColorXForms ();
-	}
-
-	ships_left = battle_counter[which_player];
-
-	gmstate.flash_rect.extent.width = (ICON_WIDTH + 2);
-	gmstate.flash_rect.extent.height = (ICON_HEIGHT + 2);
-
+	now = GetTimeCounter ();
 	gmstate.InputFunc = DoGetMelee;
 	gmstate.Initialized = FALSE;
-	gmstate.ships_left = ships_left;
-	gmstate.which_player = which_player;
-	// We determine in advance which ship would be chosen if the player
-	// wants a random ship, to keep it simple to keep network parties
-	// synchronised.
-	gmstate.randomIndex = (COUNT)TFB_Random () % ships_left;
-#ifdef NETPLAY
-	gmstate.remoteSelected = FALSE;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 	{
-		// NB. gmstate.randomIndex and gmstate.remoteSelected must be
-		// initialised before negotiateReadyConnections is completed,
-		// to ensure that it is initialised when the SelectShip packet
+		gmstate.player[playerI].selecting =
+				(playerMask & (1 << playerI)) != 0;
+		gmstate.player[playerI].ships_left = battle_counter[playerI];
+
+		// We determine in advance which ship would be chosen if the player
+		// wants a random ship, to keep it simple to keep network parties
+		// synchronised.
+		gmstate.player[playerI].randomIndex =
+				(COUNT)TFB_Random () % gmstate.player[playerI].ships_left;
+		gmstate.player[playerI].done = FALSE;
+
+		if (!gmstate.player[playerI].selecting)
+			continue;
+
+		gmstate.player[playerI].timeIn = now;
+		gmstate.player[playerI].row = 0;
+		gmstate.player[playerI].col = NUM_MELEE_COLS_ORIG;
+#ifdef NETPLAY
+		gmstate.player[playerI].remoteSelected = FALSE;
+#endif
+
+		gmstate.player[playerI].flashContext =
+				Flash_createHighlight (ScreenContext, (FRAME) 0, NULL,
+				2, 3, 2);
+		Flash_setFrameTime (gmstate.player[playerI].flashContext,
+				ONE_SECOND / 16);
+#ifdef NETPLAY
+		if (PlayerInput[playerI] == NetworkInput)
+			Flash_setSpeed (gmstate.player[playerI].flashContext,
+					ONE_SECOND / 2, 0, ONE_SECOND / 2, 0);
+		else
+#endif
+		{
+			Flash_setSpeed (gmstate.player[playerI].flashContext,
+					0, ONE_SECOND / 16, 0, ONE_SECOND / 16);
+		}
+		PickMelee_ChangedSelection (&gmstate, playerI);
+		Flash_start (gmstate.player[playerI].flashContext);
+	}
+
+#ifdef NETPLAY
+	{
+		// NB. gmstate.player[].randomIndex and gmstate.player[].done must
+		// be initialised before negotiateReadyConnections is completed, to
+		// ensure that they are initialised when the SelectShip packet
 		// arrives.
 		bool allOk = negotiateReadyConnections (true, NetState_selectShip);
 		if (!allOk)
 		{
 			// Some network connection has been reset.
-			gmstate.hBattleShip = 0;
+			ok = false;
 		}
 	}
 #endif
 	SetDefaultMenuRepeatDelay ();
+	
+	SetContext (OffScreenContext);
 
 	UnlockMutex (GraphicsLock);
 	ResetKeyRepeat ();
 	DoInput (&gmstate, FALSE);
+	WaitForSoundEnd (0);
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL, (FRAME)0);
-	
-	if (gmstate.hBattleShip == 0)
+
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		if (!gmstate.player[playerI].selecting)
+			continue;
+		
+		if (gmstate.player[playerI].done)
+		{
+			// Flash rectangle is already terminated.
+			ships[playerI] = gmstate.player[playerI].hBattleShip;
+		}
+		else
+		{
+			Flash_terminate (gmstate.player[playerI].flashContext);
+			gmstate.player[playerI].flashContext = NULL;
+			ok = false;
+		}
+	}
+
+#ifdef NETPLAY
+	if (ok)
+	{
+		if (!negotiateReadyConnections (true, NetState_interBattle))
+			ok = false;
+	}
+#endif
+
+	if (!ok)
 	{
 		// Aborting.
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 	}
 	else
 	{
-		StarShipPtr =
-				LockStarShip (&race_q[which_player], gmstate.hBattleShip);
-		OwnStarShip (StarShipPtr,
-				1 << which_player, StarShipPtr->captains_name_index);
-		StarShipPtr->captains_name_index = 0;
-		UnlockStarShip (&race_q[which_player], gmstate.hBattleShip);
+		STARSHIP *StarShipPtr;
+		
+		for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		{
+			if (!gmstate.player[playerI].selecting)
+				continue;
 
-		PlayMenuSound (MENU_SOUND_SUCCESS);
-
-		WaitForSoundEnd (0);
+			StarShipPtr = LockStarShip (&race_q[playerI], ships[playerI]);
+			OwnStarShip (StarShipPtr, 1 << playerI,
+					StarShipPtr->captains_name_index);
+			StarShipPtr->captains_name_index = 0;
+			UnlockStarShip (&race_q[playerI], ships[playerI]);
+		}
 	}
 
 #ifdef NETPLAY
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 	{
-		NetConnection *conn = netConnections[which_player];
-		if (conn != NULL && NetConnection_isConnected(conn))
+		NetConnection *conn;
+
+		if ((playerMask & (1 << playerI)) == 0)
+			continue;
+
+		// XXX: This does not have to be done per connection.
+		conn = netConnections[playerI];
+		if (conn != NULL && NetConnection_isConnected (conn))
 		{
 			BattleStateData *battleStateData;
-			battleStateData = (BattleStateData *)
-					NetConnection_getStateData(conn);
+			battleStateData =
+					(BattleStateData *) NetConnection_getStateData (conn);
 			battleStateData->getMeleeState = NULL;
 		}
 	}
 #endif
 
-	return (gmstate.hBattleShip);
+	return ok;
+}
+
+BOOLEAN
+GetInitialMeleeStarShips (HSTARSHIP *result)
+{
+	COUNT playerI;
+	COUNT playerMask;
+
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	{
+		FRAME frame;
+		frame = SetAbsFrameIndex (PickMeleeFrame, playerI);
+		UpdatePickMeleeFleetValue (frame, playerI);
+		DrawPickMeleeFrame (playerI);
+	}
+
+	// Fade in
+	{
+		BYTE fade_buf[] = {FadeAllToColor};
+		SleepThreadUntil (XFormColorMap
+				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + ONE_SECOND / 60);
+		FlushColorXForms ();
+	}
+
+	playerMask = 0;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		playerMask |= (1 << playerI);
+
+	return GetMeleeStarShips (playerMask, result);
+}
+
+BOOLEAN
+GetNextMeleeStarShip (COUNT which_player, HSTARSHIP *result)
+{
+	COUNT playerMask;
+	HSTARSHIP ships[NUM_PLAYERS];
+	BOOLEAN ok;
+
+	DrawPickMeleeFrame (which_player);
+
+	playerMask = 1 << which_player;
+	ok = GetMeleeStarShips (playerMask, ships);
+	if (ok)
+		*result = ships[which_player];
+
+	return ok;
 }
 
 #ifdef NETPLAY
 // Called when a ship selection has arrived from a remote player.
 bool
-updateMeleeSelection (GETMELEE_STATE *gms, COUNT player, COUNT ship)
+updateMeleeSelection (GETMELEE_STATE *gms, COUNT playerI, COUNT ship)
 {
-	if (gms == NULL)
+	if (gms == NULL || !gms->player[playerI].selecting ||
+			gms->player[playerI].done)
 	{
 		// This happens when we get an update message from a connection
-		// for who we are not selecting a ship (yet?).
-		fprintf (stderr, "Unexpected ship selection packet received.\n");
+		// for who we are not selecting a ship.
+		log_add (log_Warning, "Unexpected ship selection packet "
+				"received.\n");
 		return false;
 	}
 
 	if (ship == (COUNT) ~0)
 	{
 		// Random selection.
-		gms->hBattleShip =
-				MeleeShipByUsedIndex (&race_q[player], gms->randomIndex);
-		gms->remoteSelected = TRUE;
-		NetConnection_setState (netConnections[player], NetState_interBattle);
+		gms->player[playerI].hBattleShip =
+				MeleeShipByUsedIndex (&race_q[playerI],
+				gms->player[playerI].randomIndex);
+		gms->player[playerI].remoteSelected = TRUE;
 		return true;
 	}
 	
-	gms->hBattleShip = MeleeShipByQueueIndex (&race_q[player], ship);
-	if (gms->hBattleShip == 0)
+	gms->player[playerI].hBattleShip =
+			MeleeShipByQueueIndex (&race_q[playerI], ship);
+	if (gms->player[playerI].hBattleShip == 0)
 	{
-		fprintf (stderr, "Invalid ship selection received from remote "
+		log_add (log_Warning, "Invalid ship selection received from remote "
 				"party.\n");
 		return false;
 	}
 
-	gms->remoteSelected = TRUE;
-	NetConnection_setState (netConnections[player], NetState_interBattle);
+	gms->player[playerI].remoteSelected = TRUE;
 	return true;
 }
 
@@ -580,7 +799,6 @@ reportShipSelected (GETMELEE_STATE *gms, COUNT index)
 			continue;
 
 		Netplay_selectShip (conn, index);
-		NetConnection_setState (conn, NetState_interBattle);
 	}
 	(void) gms;
 }

@@ -22,6 +22,7 @@
 #include "init.h"
 #include "libs/tasklib.h"
 #include "libs/gfxlib.h"
+#include "libs/mathlib.h"
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
 #include "netplay/packet.h"
@@ -71,7 +72,10 @@ enum
 
 extern FRAME PickMeleeFrame;
 
-#define PICK_BG_COLOR BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x0F), 0x01)
+#define PICK_BG_COLOR    BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x0F), 0x01)
+#define PICK_VALUE_COLOR BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C)
+		// Used for the current fleet value in the next ship selection
+		// in SuperMelee.
 
 #define MAX_TEAM_CHARS 30
 #define MAX_VIS_TEAMS 5
@@ -90,6 +94,12 @@ typedef struct
 			 * default name in starcon.txt is unknowingly mangled. */
 } TEAM_IMAGE;
 
+struct melee_side_state
+{
+	TEAM_IMAGE TeamImage;
+	COUNT star_bucks;
+};
+
 struct melee_state
 {
 	BOOLEAN (*InputFunc) (struct melee_state *pInputState);
@@ -100,12 +110,14 @@ struct melee_state
 	DIRENTRY TeamDE;
 	COUNT TopTeamIndex, BotTeamIndex;
 	COUNT side, row, col;
-	TEAM_IMAGE TeamImage[NUM_SIDES];
-	COUNT star_bucks[NUM_SIDES];
+	struct melee_side_state SideState[NUM_SIDES];
 	COUNT CurIndex;
 	Task flash_task;
 	TEAM_IMAGE FileList[MAX_VIS_TEAMS];
 	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
+	RandomContext *randomContext;
+			/* RNG state for all local random decisions, i.e. those
+			 * decisions that are not shared among network parties. */
 
 	MUSIC_REF hMusic;
 };

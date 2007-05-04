@@ -58,6 +58,7 @@ static inline bool
 readyFlagsMeaningful(NetState state) {
 	return state == NetState_init ||
 			state == NetState_preBattle ||
+			state == NetState_selectShip ||
 			state == NetState_interBattle ||
 			state == NetState_inBattle ||
 			state == NetState_endingBattle ||

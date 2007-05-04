@@ -278,6 +278,9 @@ typedef struct
 
 	BYTE weapon_counter;
 	BYTE special_counter;
+			// In the ship queue: Ship cost
+			// In between battles: crew left
+			// In battle: ship dependant
 	BYTE energy_counter;
 
 	BYTE ship_input_state;
@@ -596,6 +599,7 @@ extern BOOLEAN InitKernel (void);
 extern void DrawCaptainsWindow (STARSHIP *StarShipPtr);
 extern BOOLEAN GetNextStarShip (STARSHIP *LastStarShipPtr,
 		COUNT which_side);
+extern BOOLEAN GetInitialStarShips (void);
 extern HSTARSHIP GetEncounterStarShip (STARSHIP *LastStarShipPtr,
 		COUNT which_player);
 extern void DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect);

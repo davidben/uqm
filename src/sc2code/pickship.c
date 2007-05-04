@@ -311,7 +311,24 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 	else if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
 		// Let the player chose his own ship. (May be a computer player).
-		hBattleShip = GetMeleeStarShip (LastStarShipPtr, which_player);
+
+		if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
+		{
+			// XXX: This check should not be needed, but Uninitships()
+			//      calls this function after the battle is over for some
+			//      reason. Perhaps because one of the non-supermelee cases.
+			//      (Note that the reason isn't to display the battle
+			//      summary; that has already been done).
+			hBattleShip = 0;
+		}
+		else if (!MeleeShipDeath (LastStarShipPtr, which_player))
+			hBattleShip = 0;
+					// Game over.
+		else
+		{
+			if (!GetNextMeleeStarShip (which_player, &hBattleShip))
+				hBattleShip = 0;
+		}
 	}
 	else
 	{
@@ -333,6 +350,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 				hBattleShip = GetHeadLink (&race_q[which_player]);
 				if (which_player == 1)
 				{
+					// Select the next ship for the computer.
 					hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 					FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip);

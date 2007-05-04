@@ -21,6 +21,7 @@
 #include "colors.h"
 #include "globdata.h"
 #include "intel.h"
+#include "pickmele.h"
 #include "races.h"
 #include "setup.h"
 #include "sounds.h"
@@ -428,7 +429,8 @@ spawn_ship (STARSHIP *StarShipPtr)
 		ShipElementPtr->mass_points = RDPtr->characteristics.ship_mass;
 		ShipElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR
 				| (RDPtr->ship_info.ship_flags & (GOOD_GUY | BAD_GUY));
-		ShipElementPtr->turn_wait = ShipElementPtr->thrust_wait = 0;
+		ShipElementPtr->turn_wait = 0;
+		ShipElementPtr->thrust_wait = 0;
 		ShipElementPtr->life_span = NORMAL_LIFE;
 
 		SetPrimType (&DisplayArray[ShipElementPtr->PrimIndex], STAMP_PRIM);
@@ -507,7 +509,10 @@ GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 		if (LastStarShipPtr)
 		{
 			if (StarShipPtr == LastStarShipPtr)
+			{
+				// Ship has been recycled (on infinite ship worlds).
 				LastStarShipPtr = 0;
+			}
 			else
 				StarShipPtr->hShip = LastStarShipPtr->hShip;
 		}
@@ -524,5 +529,43 @@ GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 		LastStarShipPtr->hShip = 0;
 
 	return (hBattleShip != 0);
+}
+
+BOOLEAN
+GetInitialStarShips (void)
+{
+	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
+	{
+		HSTARSHIP ships[NUM_PLAYERS];
+		COUNT i;
+		
+		if (!GetInitialMeleeStarShips (ships))
+			return FALSE;
+
+		for (i = 0; i < NUM_PLAYERS; i++)
+		{
+			STARSHIP *StarShipPtr;
+			COUNT playerI = GetPlayerOrder (i);
+
+			StarShipPtr = LockStarShip (&race_q[playerI], ships[playerI]);
+			if (!spawn_ship (StarShipPtr))
+			{
+				UnlockStarShip (&race_q[which_side], ships[playerI]);
+				return FALSE;
+			}
+			UnlockStarShip (&race_q[which_side], ships[playerI]);
+		}
+		return TRUE;
+	}
+	else
+	{
+		COUNT num_ships = NUM_PLAYERS;
+		while (num_ships--)
+		{
+			if (!GetNextStarShip (NULL, num_ships == 1))
+				return FALSE;
+		}
+		return TRUE;
+	}
 }
 

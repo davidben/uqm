@@ -160,6 +160,9 @@ enum
 #define TEAM_NAME_EDIT_CURS_COLOR \
 		WHITE_COLOR
 
+#define LOAD_TEAM_NAME_TEXT_COLOR TEAM_NAME_TEXT_COLOR
+#define LOAD_TEAM_NAME_TEXT_COLOR_HILITE TEAM_NAME_EDIT_TEXT_COLOR
+
 #define PICKSHIP_TEAM_NAME_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
 #define PICKSHIP_TEAM_START_VALUE_COLOR \
@@ -185,7 +188,9 @@ enum
 
 FRAME PickMeleeFrame;
 static FRAME MeleeFrame;
+		// Loaded from melee/melebkgd.ani
 static FRAME BuildPickFrame;
+		// Constructed.
 extern QUEUE master_q;
 DWORD InTime;
 MELEE_STATE *pMeleeState;
@@ -208,12 +213,14 @@ static BOOLEAN DoLoadTeam (MELEE_STATE *pMS);
 static void DrawFileStrings (MELEE_STATE *pMS, int HiLiteState);
 
 
+// These icons come from melee/melebkgd.ani
 static void
 DrawMeleeIcon (COUNT which_icon)
 {
 	STAMP s;
 			
-	s.origin.x = s.origin.y = 0;
+	s.origin.x = 0;
+	s.origin.y = 0;
 	s.frame = SetAbsFrameIndex (MeleeFrame, which_icon);
 	DrawStamp (&s);
 }
@@ -292,7 +299,7 @@ static void
 DrawShipBoxCurrent (MELEE_STATE *pMS, BOOLEAN HiLite)
 {
 	FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
-	BYTE ship = pMS->TeamImage[pMS->side].ShipList[index];
+	BYTE ship = pMS->SideState[pMS->side].TeamImage.ShipList[index];
 	DrawShipBox (pMS->side, pMS->row, pMS->col, ship, HiLite);
 }
 
@@ -305,6 +312,7 @@ DrawControls (COUNT which_side, BOOLEAN HiLite)
 	if (PlayerControl[which_side] & NETWORK_CONTROL)
 	{
 		DrawMeleeIcon (31 + (HiLite ? 1 : 0) + 2 * (1 - which_side));
+				/* "Network Control" */
 		return;
 	}
 	
@@ -388,8 +396,8 @@ RepairMeleeFrame (RECT *pRect)
 
 	DrawMeleeIcon (0);   /* Entire melee screen */
 #ifdef NETPLAY
-	DrawMeleeIcon (35);
-	DrawMeleeIcon (37);
+	DrawMeleeIcon (35);  /* "Net..." (top, not highlighted) */
+	DrawMeleeIcon (37);  /* "Net..." (bottom, not highlighted) */
 #endif
 	DrawMeleeIcon (26);  /* "Battle!" (highlighted) */
 	{
@@ -405,7 +413,8 @@ RepairMeleeFrame (RECT *pRect)
 				for (col = 0; col < NUM_MELEE_COLUMNS; col++)
 				{
 					FleetShipIndex index = GetShipIndex (row, col);
-					BYTE ship = pMeleeState->TeamImage[side].ShipList[index];
+					BYTE ship = pMeleeState->SideState[side].TeamImage.
+							ShipList[index];
 					DrawShipBox (side, row, col, ship, FALSE);
 				}
 			}
@@ -454,7 +463,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 		
 	SetContextFont (MicroFont);
 
-	lfText.pStr = pMS->TeamImage[side].TeamName;
+	lfText.pStr = pMS->SideState[side].TeamImage.TeamName;
 	lfText.baseline.y = r.corner.y + r.extent.height - 3;
 
 	lfText.baseline.x = r.corner.x + 1;
@@ -467,7 +476,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 		TEXT rtText;
 		UNICODE buf[30];
 
-		sprintf (buf, "%d", pMS->star_bucks[side]);
+		sprintf (buf, "%d", pMS->SideState[side].star_bucks);
 		rtText.pStr = buf;
 		rtText.align = ALIGN_RIGHT;
 		rtText.CharCount = (COUNT)~0;
@@ -713,27 +722,30 @@ Deselect (BYTE opt)
 			break;
 		case LOAD_TOP:
 		case LOAD_BOT:
-			if (pMeleeState->InputFunc != DoLoadTeam)
+			if (pMeleeState->InputFunc != DoLoadTeam) {
 				DrawMeleeIcon (opt == LOAD_TOP ? 17 : 22);
+						/* 17: "Load" (top, not highlighted) */
+						/* 22: "Load" (bottom, not highlighted) */
+			}
 			else
 				DrawFileStrings (pMeleeState, 0);
 			break;
 		case SAVE_TOP:
-			DrawMeleeIcon (18);  /* "Save" (top; not highlighted) */
+			DrawMeleeIcon (18);  /* "Save" (top, not highlighted) */
 			break;
 		case SAVE_BOT:
-			DrawMeleeIcon (21);  /* "Save" (bottom; not highlighted) */
+			DrawMeleeIcon (21);  /* "Save" (bottom, not highlighted) */
 			break;
 #ifdef NETPLAY
 		case NET_TOP:
-			DrawMeleeIcon (35);
+			DrawMeleeIcon (35);  /* "Net..." (top, not highlighted) */
 			break;
 		case NET_BOT:
-			DrawMeleeIcon (37);
+			DrawMeleeIcon (37);  /* "Net..." (bottom, not highlighted) */
 			break;
 #endif
 		case QUIT_BOT:
-			DrawMeleeIcon (29);
+			DrawMeleeIcon (29);  /* "Quit" (not highlighted) */
 			break;
 		case CONTROLS_TOP:
 		case CONTROLS_BOT:
@@ -774,7 +786,11 @@ Select (BYTE opt)
 		case LOAD_TOP:
 		case LOAD_BOT:
 			if (pMeleeState->InputFunc != DoLoadTeam)
+			{
 				DrawMeleeIcon (opt == LOAD_TOP ? 19 : 24);
+						/* 19: "Load" (top, highlighted) */
+						/* 24: "Load" (bottom, highlighted) */
+			}
 			else
 				DrawFileStrings (pMeleeState, 1);
 			break;
@@ -786,14 +802,14 @@ Select (BYTE opt)
 			break;
 #ifdef NETPLAY
 		case NET_TOP:
-			DrawMeleeIcon (36);  /* "Save" (top; highlighted) */
+			DrawMeleeIcon (36);  /* "Net..." (top; highlighted) */
 			break;
 		case NET_BOT:
-			DrawMeleeIcon (38);  /* "Save" (bottom; highlighted) */
+			DrawMeleeIcon (38);  /* "Net..." (bottom; highlighted) */
 			break;
 #endif
 		case QUIT_BOT:
-			DrawMeleeIcon (30);
+			DrawMeleeIcon (30);  /* "Quit" (highlighted) */
 			break;
 		case CONTROLS_TOP:
 		case CONTROLS_BOT:
@@ -956,7 +972,8 @@ UpdateCurrentShip (MELEE_STATE *pMS)
 	if (pMS->row == NUM_MELEE_ROWS)
 		pMS->CurIndex = MELEE_NONE;
 	else
-		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
+		pMS->CurIndex =
+				pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
 	DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
 }
 
@@ -1109,8 +1126,8 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 		Text.pStr = pMS->FileList[bot].TeamName;
 		Text.CharCount = (COUNT)~0;
 		SetContextForeGroundColor (HiLiteState == 0 ?
-				BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00)
-				: BUILD_COLOR (MAKE_RGB15 (23, 24, 29), 0x00));
+				LOAD_TEAM_NAME_TEXT_COLOR :
+				LOAD_TEAM_NAME_TEXT_COLOR_HILITE);
 		font_DrawText (&Text);
 
 		rtText.baseline.y = Text.baseline.y;
@@ -1122,7 +1139,7 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 	{
 		COUNT teams_left;
 
-		DrawMeleeIcon (28);  /* Load team frame */
+		DrawMeleeIcon (28);  /* The load team frame */
 
 		Text.baseline.y = y;
 		teams_left = (COUNT)(
@@ -1151,8 +1168,7 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 				{
 					Text.pStr = pMS->FileList[bot - top].TeamName;
 					Text.CharCount = (COUNT)~0;
-					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (15, 16, 27), 0x00));
+					SetContextForeGroundColor (TEAM_NAME_TEXT_COLOR);
 					font_DrawText (&Text);
 
 					rtText.baseline.y = Text.baseline.y;
@@ -1228,10 +1244,10 @@ DoLoadTeam (MELEE_STATE *pMS)
 	{
 		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
-			pMS->TeamImage[pMS->side] =
+			pMS->SideState[pMS->side].TeamImage =
 					pMS->FileList[pMS->CurIndex - pMS->TopTeamIndex];
-			pMS->star_bucks[pMS->side] =
-					GetTeamValue (&pMS->TeamImage[pMS->side]);
+			pMS->SideState[pMS->side].star_bucks =
+					GetTeamValue (&pMS->SideState[pMS->side].TeamImage);
 			entireFleetChanged (pMS, pMS->side);
 			teamStringChanged (pMS, pMS->side);
 		}
@@ -1381,7 +1397,7 @@ DoSaveTeam (MELEE_STATE *pMS)
 	uio_Stream *save_fp;
 	CONTEXT OldContext;
 
-	sprintf (file, "%s.mle", pMS->TeamImage[pMS->side].TeamName);
+	sprintf (file, "%s.mle", pMS->SideState[pMS->side].TeamImage.TeamName);
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
@@ -1392,7 +1408,7 @@ DoSaveTeam (MELEE_STATE *pMS)
 		BOOLEAN err;
 
 		err = (BOOLEAN)(WriteTeamImage (
-				&pMS->TeamImage[pMS->side], save_fp) == 0);
+				&pMS->SideState[pMS->side].TeamImage, save_fp) == 0);
 		if (res_CloseResFile (save_fp) == 0)
 			err = TRUE;
 		if (err)
@@ -1434,16 +1450,17 @@ DeleteCurrentShip (MELEE_STATE *pMS)
 	int CurIndex;
 
 	fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-	CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
+	CurIndex = pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
 	hStarShip = GetStarShipFromIndex (&master_q, CurIndex);
 	StarShipPtr = LockStarShip (&master_q, hStarShip);
 	if (StarShipPtr)
 	{
-		pMS->star_bucks[pMS->side] -=
-			StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+		pMS->SideState[pMS->side].star_bucks -=
+				StarShipPtr->RaceDescPtr->ship_info.ship_cost;
 		UnlockStarShip (&master_q, hStarShip);
 	
-		pMS->TeamImage[pMS->side].ShipList[fleetShipIndex] = MELEE_NONE;
+		pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex] =
+				MELEE_NONE;
 	}
 	LockMutex (GraphicsLock);
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
@@ -1496,7 +1513,8 @@ DoEdit (MELEE_STATE *pMS)
 	if (!pMS->Initialized)
 	{
 		FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-		pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
+		pMS->CurIndex =
+				pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
 		DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
 
 		pMS->Initialized = TRUE;
@@ -1570,7 +1588,7 @@ DoEdit (MELEE_STATE *pMS)
 
 				tes.Initialized = FALSE;
 				tes.MenuRepeatDelay = 0;
-				tes.BaseStr = pMS->TeamImage[pMS->side].TeamName;
+				tes.BaseStr = pMS->SideState[pMS->side].TeamImage.TeamName;
 				tes.CursorPos = 0;
 				tes.MaxSize = MAX_TEAM_CHARS + 1;
 				tes.CbParam = pMS;
@@ -1666,9 +1684,7 @@ DoPickShip (MELEE_STATE *pMS)
 		if (pMS->CurIndex == (BYTE)~0 && pMS->Initialized == 0)
 			pMS->CurIndex = 0;
 		else if (pMS->CurIndex != (BYTE)~0)
-		{
 			DeleteCurrentShip (pMS);
-		}
 
 		if (pMS->Initialized == 0)
 		{
@@ -1686,7 +1702,8 @@ DoPickShip (MELEE_STATE *pMS)
 			Deselect (EDIT_MELEE);
 			pMS->Initialized = TRUE;
 			AdvanceCursor (pMS);
-			pMS->CurIndex = pMS->TeamImage[pMS->side].ShipList[fleetShipIndex];
+			pMS->CurIndex = pMS->SideState[pMS->side].TeamImage.ShipList[
+					fleetShipIndex];
 			UnlockMutex (GraphicsLock);
 
 			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
@@ -1705,11 +1722,12 @@ DoPickShip (MELEE_STATE *pMS)
 			
 			hStarShip = GetStarShipFromIndex (&master_q, pMS->CurIndex);
 			StarShipPtr = LockStarShip (&master_q, hStarShip);
-			pMS->star_bucks[pMS->side] +=
+			pMS->SideState[pMS->side].star_bucks +=
 					StarShipPtr->RaceDescPtr->ship_info.ship_cost;
 			UnlockStarShip (&master_q, hStarShip);
 
-			pMS->TeamImage[pMS->side].ShipList[index] = pMS->CurIndex;
+			pMS->SideState[pMS->side].TeamImage.ShipList[index] =
+					pMS->CurIndex;
 			LockMutex (GraphicsLock);
 			DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
 			DrawShipBoxCurrent (pMS, FALSE);
@@ -1972,12 +1990,14 @@ LoadMeleeInfo (MELEE_STATE *pMS)
 
 	// create team building ship selection box
 	s.frame = SetAbsFrameIndex (MeleeFrame, 27);
+			// 5x5 grid of ships to pick from
 	GetFrameRect (s.frame, &r);
 	BuildPickFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP, r.extent.width, r.extent.height, 1));
 	SetContextFGFrame (BuildPickFrame);
 	SetFrameHot (s.frame, MAKE_HOT_SPOT (0, 0));
 	DrawStamp (&s);
+
 	for (i = 0; i < NUM_PICK_COLS * NUM_PICK_ROWS; ++i)
 		DrawPickIcon (i, 1);
 
@@ -2056,14 +2076,14 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 
 		// Team name at the bottom of the frame:
 		t.align = ALIGN_CENTER;
-		t.pStr = pMS->TeamImage[i].TeamName;
+		t.pStr = pMS->SideState[i].TeamImage.TeamName;
 		t.CharCount = (COUNT)~0;
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (PICKSHIP_TEAM_NAME_TEXT_COLOR);
 		font_DrawText (&t);
 
 		// Total team value of the starting team:
-		sprintf (buf, "%d", pMS->star_bucks[i]);
+		sprintf (buf, "%d", pMS->SideState[i].star_bucks);
 		t.baseline.x = 4;
 		t.baseline.y = 7;
 		t.align = ALIGN_LEFT;
@@ -2076,7 +2096,7 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 		{
 			BYTE StarShip;
 
-			StarShip = pMS->TeamImage[i].ShipList[index];
+			StarShip = pMS->SideState[i].TeamImage.ShipList[index];
 			if (StarShip == MELEE_NONE)
 				continue;
 
@@ -2174,7 +2194,8 @@ StartMelee (MELEE_STATE *pMS)
 static void
 StartMeleeButtonPressed (MELEE_STATE *pMS)
 {
-	if (pMS->star_bucks[0] == 0 || pMS->star_bucks[1] == 0)
+	if (pMS->SideState[0].star_bucks == 0 ||
+			pMS->SideState[1].star_bucks == 0)
 	{
 		PlayMenuSound (MENU_SOUND_FAILURE);
 		return;
@@ -2184,7 +2205,7 @@ StartMeleeButtonPressed (MELEE_STATE *pMS)
 	if ((PlayerControl[0] & NETWORK_CONTROL) &&
 			(PlayerControl[1] & NETWORK_CONTROL))
 	{
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 31));
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 32));
 				// "Only one side at a time can be network controlled."
 		return;
 	}
@@ -2194,7 +2215,7 @@ StartMeleeButtonPressed (MELEE_STATE *pMS)
 			((PlayerControl[0] & COMPUTER_CONTROL) &&
 			(PlayerControl[1] & NETWORK_CONTROL)))
 	{
-		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 32));
+		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 33));
 				// "Netplay with a computer-controlled side is currently
 				// not possible."
 		return;
@@ -2277,7 +2298,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 	if (!pMS->Initialized)
 	{
 		RECT r;
-		FONT oldfont; 
+		FONT oldfont;
 		COLOR oldcolor;
 		TEXT t;
 
@@ -2304,10 +2325,12 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		if (NetConnection_getPeerOptions (conn)->isServer)
 		{
 			t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 1);
+					/* "Awaiting incoming connection */
 		}
 		else
 		{
 			t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 2);
+					/* "Awaiting outgoing connection */
 		}
 		t.baseline.y = r.corner.y + 10;
 		t.baseline.x = SCREEN_WIDTH >> 1;
@@ -2316,7 +2339,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		font_DrawText (&t);
 
 		t.pStr = GAME_STRING (NETMELEE_STRING_BASE + 18);
-			/* "Press SPACE to cancel" */
+				/* "Press SPACE to cancel" */
 		t.baseline.y += 16;
 		font_DrawText (&t);
 
@@ -2547,7 +2570,7 @@ DoMelee (MELEE_STATE *pMS)
 				case SAVE_TOP:
 				case SAVE_BOT:
 					pMS->side = pMS->MeleeOption == SAVE_TOP ? 0 : 1;
-					if (pMS->star_bucks[pMS->side])
+					if (pMS->SideState[pMS->side].star_bucks)
 						DoSaveTeam (pMS);
 					else
 						PlayMenuSound (MENU_SOUND_FAILURE);
@@ -2580,8 +2603,9 @@ DoMelee (MELEE_STATE *pMS)
 					{
 						if (!pMS->flash_task)
 						{
-							pMS->flash_task = AssignTask (flash_selection_func, 2048,
-										      "flash melee selection");
+							pMS->flash_task = AssignTask (
+									flash_selection_func, 2048,
+									"flash melee selection");
 						}
 					}
 
@@ -2912,40 +2936,32 @@ LoadMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *load_fp;
 	int status;
+	COUNT side;
 
 	load_fp = res_OpenResFile (configDir, "melee.cfg", "rb");
 	if (!load_fp)
 		goto err;
 
-	if (LengthResFile (load_fp) != (1 + sizeof (TEAM_IMAGE)) * 2)
+	if (LengthResFile (load_fp) != (1 + sizeof (TEAM_IMAGE)) * NUM_SIDES)
 		goto err;
 
-	status = GetResFileChar (load_fp);
-	if (status == -1)
-		goto err;
-	PlayerControl[0] = (BYTE)status;
+	for (side = 0; side < NUM_SIDES; side++)
+	{
+		status = GetResFileChar (load_fp);
+		if (status == -1)
+			goto err;
+		PlayerControl[side] = (BYTE)status;
 
-	status = ReadTeamImage (&pMS->TeamImage[0], load_fp);
-	if (status == -1)
-		goto err;
-
-	status = GetResFileChar (load_fp);
-	if (status == -1)
-		goto err;
-	PlayerControl[1] = (BYTE)status;
-
-	status = ReadTeamImage (&pMS->TeamImage[1], load_fp);
-	if (status == -1)
-		goto err;
+		status = ReadTeamImage (&pMS->SideState[side].TeamImage, load_fp);
+		if (status == -1)
+			goto err;
 	
+		/* Do not allow netplay mode at the start. */
+		if (PlayerControl[side] & NETWORK_CONTROL)
+			PlayerControl[side] = HUMAN_CONTROL | STANDARD_RATING;
+	}
+
 	res_CloseResFile (load_fp);
-
-	/* Do not allow netplay mode at the start. */
-	if (PlayerControl[0] & NETWORK_CONTROL)
-		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-	if (PlayerControl[1] & NETWORK_CONTROL)
-		PlayerControl[1] = HUMAN_CONTROL | STANDARD_RATING;
-
 	return 0;
 
 err:
@@ -2958,22 +2974,20 @@ int
 WriteMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *save_fp;
+	COUNT side;
 
 	save_fp = res_OpenResFile (configDir, "melee.cfg", "wb");
 	if (!save_fp)
 		goto err;
 
-	if (PutResFileChar (PlayerControl[0], save_fp) == -1)
-		goto err;
+	for (side = 0; side < NUM_SIDES; side++)
+	{
+		if (PutResFileChar (PlayerControl[side], save_fp) == -1)
+			goto err;
 
-	if (WriteTeamImage (&pMS->TeamImage[0], save_fp) == 0)
-		goto err;
-
-	if (PutResFileChar (PlayerControl[1], save_fp) == -1)
-		goto err;
-
-	if (WriteTeamImage (&pMS->TeamImage[1], save_fp) == 0)
-		goto err;
+		if (WriteTeamImage (&pMS->SideState[side].TeamImage, save_fp) == 0)
+			goto err;
+	}
 
 	if (!res_CloseResFile (save_fp))
 		goto err;
@@ -3002,6 +3016,12 @@ Melee (void)
 		MenuState.InputFunc = DoMelee;
 		MenuState.Initialized = FALSE;
 
+		MenuState.randomContext = RandomContext_New ();
+		RandomContext_SeedRandom (MenuState.randomContext,
+				GetTimeCounter ());
+				// Using the current time still leave the random state a bit
+				// predictable, but it is good enough.
+
 #ifdef NETPLAY
 		{
 			COUNT player;
@@ -3020,9 +3040,9 @@ Melee (void)
 		if (LoadMeleeConfig (&MenuState) == -1)
 		{
 			PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-			MenuState.TeamImage[0] = MenuState.PreBuiltList[0];
+			MenuState.SideState[0].TeamImage = MenuState.PreBuiltList[0];
 			PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
-			MenuState.TeamImage[1] = MenuState.PreBuiltList[1];
+			MenuState.SideState[1].TeamImage = MenuState.PreBuiltList[1];
 		}
 		SetPlayerInput ();
 		teamStringChanged (&MenuState, 0);
@@ -3031,8 +3051,10 @@ Melee (void)
 		entireFleetChanged (&MenuState, 1);
 
 		MenuState.side = 0;
-		MenuState.star_bucks[0] = GetTeamValue (&MenuState.TeamImage[0]);
-		MenuState.star_bucks[1] = GetTeamValue (&MenuState.TeamImage[1]);
+		MenuState.SideState[0].star_bucks =
+				GetTeamValue (&MenuState.SideState[0].TeamImage);
+		MenuState.SideState[1].star_bucks =
+				GetTeamValue (&MenuState.SideState[0].TeamImage);
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (&MenuState, TRUE);
 
@@ -3047,6 +3069,8 @@ Melee (void)
 		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
 		PickMeleeFrame = 0;
 
+		RandomContext_Delete (MenuState.randomContext);
+
 		FlushInput ();
 	}
 }
@@ -3060,7 +3084,7 @@ teamStringChanged (MELEE_STATE *pMS, int player)
 	size_t len;
 	size_t playerI;
 
-	name = pMS->TeamImage[player].TeamName;
+	name = pMS->SideState[player].TeamImage.TeamName;
 	len = strlen (name);
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 	{
@@ -3102,7 +3126,7 @@ entireFleetChanged (MELEE_STATE *pMS, int player)
 			continue;
 
 		Netplay_entireFleetChanged (conn, player,
-				pMS->TeamImage[player].ShipList, MELEE_FLEET_SIZE);
+				pMS->SideState[player].TeamImage.ShipList, MELEE_FLEET_SIZE);
 	}
 #else
 	(void) player;
@@ -3130,7 +3154,7 @@ fleetShipChanged (MELEE_STATE *pMS, int player, size_t index)
 			continue;
 
 		Netplay_fleetShipChanged (conn, player, index,
-				pMS->TeamImage[player].ShipList[index]);
+				pMS->SideState[player].TeamImage.ShipList[index]);
 	}
 #else
 	(void) player;
@@ -3152,8 +3176,8 @@ updateTeamName (MELEE_STATE *pMS, COUNT side, const char *name,
 		len = MAX_TEAM_CHARS;
 
 	// TeamName has space for at least MAX_TEAM_CHARS + 1 bytes.
-	strncpy (pMS->TeamImage[side].TeamName, name, len);
-	pMS->TeamImage[side].TeamName[len] = '\0';
+	strncpy (pMS->SideState[side].TeamImage.TeamName, name, len);
+	pMS->SideState[side].TeamImage.TeamName[len] = '\0';
 	
 	LockMutex (GraphicsLock);
 #if 0  /* DTSHS_REPAIR does not combine with other options */
@@ -3178,14 +3202,14 @@ updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship)
 	BOOLEAN isSelected;
 
 	if (ship >= NUM_MELEE_SHIPS && ship != MELEE_NONE) {
-		fprintf (stderr, "Invalid ship type number %d (max = %d).\n",
+		log_add (log_Warning, "Invalid ship type number %d (max = %d).\n",
 				ship, NUM_MELEE_SHIPS - 1);
 		return false;
 	}
 	
 	if (index >= MELEE_FLEET_SIZE)
 	{
-		fprintf (stderr, "Invalid ship position number %d (max = %d).\n",
+		log_add (log_Warning, "Invalid ship position number %d (max = %d).\n",
 				index, MELEE_FLEET_SIZE - 1);
 		return false;
 	}
@@ -3194,11 +3218,11 @@ updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship)
 	if (val == (COUNT) ~0)
 		return false;
 
-	pMS->star_bucks[side] -=
-			GetShipValue (pMS->TeamImage[side].ShipList[index]);
-	pMS->star_bucks[side] += val;
+	pMS->SideState[side].star_bucks -=
+			GetShipValue (pMS->SideState[side].TeamImage.ShipList[index]);
+	pMS->SideState[side].star_bucks += val;
 
-	pMS->TeamImage[side].ShipList[index] = ship;
+	pMS->SideState[side].TeamImage.ShipList[index] = ship;
 
 	selectedShipIndex = GetShipIndex (pMS->row, pMS->col);
 	isSelected = (pMS->MeleeOption == EDIT_MELEE) &&
@@ -3285,7 +3309,7 @@ connectedFeedback (NetConnection *conn) {
 }
 
 const char *
-abortReasonString (NetplayResetReason reason)
+abortReasonString (NetplayAbortReason reason)
 {
 	switch (reason)
 	{
@@ -3295,8 +3319,12 @@ abortReasonString (NetplayResetReason reason)
 		case AbortReason_versionMismatch:
 			return GAME_STRING (NETMELEE_STRING_BASE + 26);
 					// "Connection aborted due to version mismatch."
-		case AbortReason_protocolError:
+		case AbortReason_invalidHash:
 			return GAME_STRING (NETMELEE_STRING_BASE + 27);
+					// "Connection aborted because the remote side sent a "
+					// "fake signature."
+		case AbortReason_protocolError:
+			return GAME_STRING (NETMELEE_STRING_BASE + 28);
 					// "Connection aborted due to an internal protocol "
 					// "error."
 	}
@@ -3321,13 +3349,13 @@ resetReasonString (NetplayResetReason reason)
 	switch (reason)
 	{
 		case ResetReason_unspecified:
-			return GAME_STRING (NETMELEE_STRING_BASE + 28);
+			return GAME_STRING (NETMELEE_STRING_BASE + 29);
 					// "Game aborted for an unspecified reason."
 		case ResetReason_syncLoss:
-			return GAME_STRING (NETMELEE_STRING_BASE + 29);
+			return GAME_STRING (NETMELEE_STRING_BASE + 30);
 					// "Game aborted due to loss of synchronisation."
 		case ResetReason_manualReset:
-			return GAME_STRING (NETMELEE_STRING_BASE + 30);
+			return GAME_STRING (NETMELEE_STRING_BASE + 31);
 					// "Game aborted by the remote player."
 	}
 

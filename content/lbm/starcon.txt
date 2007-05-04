@@ -2361,6 +2361,10 @@ Connection aborted due to version mismatch.
 Connection aborted due to an internal protocol error.
 
 
+#(Connection aborted because the remote side sent a fake signature.)
+Connection aborted because the remote side sent a fake signature.
+
+
 #(Game aborted for an unspecified reason.)
 Game aborted for an unspecified reason.
 

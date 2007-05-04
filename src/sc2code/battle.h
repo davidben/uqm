@@ -35,6 +35,9 @@ extern BOOLEAN instantVictory;
 typedef DWORD BattleFrameCounter;
 extern BattleFrameCounter battleFrameCount;
 extern COUNT currentDeadSide;
+COUNT GetPlayerOrder (COUNT i);
+#else
+#	define GetPlayerOrder(i) (i)
 #endif
 
 extern BOOLEAN Battle (void);

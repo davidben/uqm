@@ -957,10 +957,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				DrawStamp (&s);
 				UnlockMutex (GraphicsLock);
 
-				UnlockStarShip (
-						&GLOBAL (built_ship_q),
-						hStarShip
-						);
+				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 			}
 			LockMutex (GraphicsLock);
 		}
@@ -1347,7 +1344,8 @@ flash_rect_func (void *data)
 			GetFrameRect (flash_screen_frame, &screen_rect);
 			cached_screen_frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
 					screen_rect.extent.width, screen_rect.extent.height, 1));
-			screen_rect.corner.x = screen_rect.corner.y = 0;
+			screen_rect.corner.x = 0;
+			screen_rect.corner.y = 0;
 			arith_frame_blit (flash_screen_frame, &screen_rect, 
 					cached_screen_frame, NULL, 0, 0);
 			UnlockMutex (flash_mutex);
@@ -1404,11 +1402,13 @@ flash_rect_func (void *data)
 
 						if (fstrength < 0)
 						{
+							// Subtractive blit.
 							num = -8;
 							denom = 8;
 						}
 						else
 						{
+							// Additive blit.
 							num = 8;
 							denom = -8;
 						}
@@ -1563,9 +1563,11 @@ SetFlashRect (RECT *pRect, FRAME f)
 	
 	if (flash_rect.extent.width)
 	{
+		// Copy the original contents of the rectangle from the screen.
 		if (flash_screen_frame)
 			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
-		flash_screen_frame = CaptureDrawable (LoadDisplayPixmap (&flash_rect, (FRAME)0));
+		flash_screen_frame =
+				CaptureDrawable (LoadDisplayPixmap (&flash_rect, (FRAME)0));
 	}
 	flash_changed = 1;
 	UnlockMutex (flash_mutex);

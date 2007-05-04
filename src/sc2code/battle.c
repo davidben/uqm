@@ -340,34 +340,34 @@ DoBattle (BATTLE_STATE *bs)
 	return TRUE;
 }
 
+#ifdef NETPLAY
+COUNT
+GetPlayerOrder (COUNT i)
+{
+	// Iff 'myTurn' is set on a connection, the local party will be
+	// processed first.
+	// If neither is network controlled, the top player (1) is handled
+	// first.
+	if (((PlayerControl[0] & NETWORK_CONTROL) &&
+			!NetConnection_getDiscriminant (netConnections[0])) ||
+			((PlayerControl[1] & NETWORK_CONTROL) &&
+			NetConnection_getDiscriminant (netConnections[1])))
+		return i;
+	else
+		return 1 - i;
+}
+#endif
+
 // Let each player pick his ship.
 static BOOLEAN
 selectAllShips (SIZE num_ships)
 {
-#ifndef NETPLAY
-	while (num_ships--)
-	{
-		if (!GetNextStarShip (NULL, num_ships == 1))
-			return FALSE;
-	}
-	return TRUE;
-#else
-	// On network play, what is the top player to one party may be
-	// the bottom player the other. To keep both sides synchronised
-	// the order is always the same.
-	SIZE order[NUM_PLAYERS];
-
 	if (num_ships == 1) {
 		// HyperSpace in full game.
 		return GetNextStarShip (NULL, 0);
 	}
-
-	if (num_ships != 2)
-	{
-		log_add (log_Error, "More than two players is not supported.\n");
-		return FALSE;
-	}
-
+	
+#ifdef NETPLAY
 	if ((PlayerControl[0] & NETWORK_CONTROL) &&
 			(PlayerControl[1] & NETWORK_CONTROL))
 	{
@@ -375,34 +375,9 @@ selectAllShips (SIZE num_ships)
 				"controlled.\n");
 		return FALSE;
 	}
+#endif
 
-	// Iff 'myTurn' is set on a connection, the local party will be
-	// processed first.
-	// If neither is network controlled, the top player (1) is handled first.
-	if (((PlayerControl[0] & NETWORK_CONTROL) &&
-			!NetConnection_getDiscriminant (netConnections[0])) ||
-			((PlayerControl[1] & NETWORK_CONTROL) &&
-			NetConnection_getDiscriminant (netConnections[1])))
-	{
-		order[0] = 0;
-		order[1] = 1;
-	}
-	else
-	{
-		order[0] = 1;
-		order[1] = 0;
-	}
-
-	{
-		size_t i;
-		for (i = 0; i < NUM_PLAYERS; i++)
-		{
-			if (!GetNextStarShip (NULL, order[i]))
-				return FALSE;
-		}
-	}
-	return TRUE;
-#endif	
+	return GetInitialStarShips ();
 }
 
 BOOLEAN

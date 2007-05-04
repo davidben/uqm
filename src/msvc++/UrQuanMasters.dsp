@@ -3972,6 +3972,14 @@ SOURCE=..\sc2code\encount.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\flash.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\flash.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\fmv.c
 # End Source File
 # Begin Source File

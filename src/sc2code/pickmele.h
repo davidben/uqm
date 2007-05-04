@@ -20,8 +20,9 @@
 #include "races.h"
 #include "libs/compiler.h"
 
-HSTARSHIP GetMeleeStarShip (STARSHIP *LastStarShipPtr,
-		COUNT which_player);
+BOOLEAN MeleeShipDeath (STARSHIP *ship, COUNT which_player);
+BOOLEAN GetInitialMeleeStarShips (HSTARSHIP *result);
+BOOLEAN GetNextMeleeStarShip (COUNT which_player, HSTARSHIP *result);
 
 typedef struct getmelee_struct GETMELEE_STATE;
 

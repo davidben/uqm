@@ -364,7 +364,6 @@ ProcessCollisions (HELEMENT hSuccElement, ELEMENT *ElementPtr,
 		if (TestElementPtr == ElementPtr)
 		{
 			UnlockElement (hTestElement);
-
 			continue;
 		}
 
@@ -938,10 +937,9 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 								// (smaller) zoom level image as mipmap,
 								// needed for trilinear scaling
 
-								FRAME frame = 
+								FRAME frame =
 									SetAbsFrameIndex (
-									ElementPtr->next.image.farray
-									[index + 1],
+									ElementPtr->next.image.farray[index + 1],
 									GetFrameIndex (ElementPtr->next.image.frame));
 
 								if (frame && frame->image)

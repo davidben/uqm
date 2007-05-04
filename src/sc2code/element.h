@@ -54,6 +54,7 @@ typedef QUEUE_HANDLE HELEMENT;
 #define APPEARING (1 << 3)
 #define DISAPPEARING (1 << 4)
 #define CHANGING (1 << 5)
+		// The element's graphical representation has changed.
 
 #define NONSOLID (1 << 6)
 #define COLLISION (1 << 7)

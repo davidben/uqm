@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Concurrent supermelee ship selection - SvdB
+- New generic, unthreaded flashing code - SvdB
 - Cleanup of 3DO ship spin support; spin speech works now - Alex
 - No longer creating and mounting a temporary directory. It is no longer
   used, but it might be again at some point, for loadable modules. - SvdB

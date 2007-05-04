@@ -146,7 +146,6 @@ InitShips (void)
 	InitDisplayList ();
 	InitGalaxy ();
 
-	num_ships = NUM_SIDES;
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
 		ReinitQueue (&race_q[0]);
@@ -156,7 +155,7 @@ InitShips (void)
 
 		LoadHyperspace ();
 
-		--num_ships;
+		num_ships = 1;
 	}
 	else
 	{
@@ -193,6 +192,8 @@ InitShips (void)
 			for (i = 0; i < NUM_PLANETS; ++i)
 				spawn_planet ();
 		}
+	
+		num_ships = NUM_SIDES;
 	}
 
 	// FlushInput ();
@@ -200,10 +201,34 @@ InitShips (void)
 	return (num_ships);
 }
 
+// Count the crew elements in the display list.
+static COUNT
+CountCrewElements (void)
+{
+	COUNT result;
+	HELEMENT hElement, hNextElement;
+
+	result = 0;
+	for (hElement = GetHeadElement ();
+			hElement != 0; hElement = hNextElement)
+	{
+		ELEMENT *ElementPtr;
+
+		LockElement (hElement, &ElementPtr);
+		hNextElement = GetSuccElement (ElementPtr);
+		if (ElementPtr->state_flags & CREW_OBJECT)
+			++result;
+
+		UnlockElement (hElement);
+	}
+
+	return result;
+}
+
 void
 UninitShips (void)
 {
-	BYTE crew_retrieved;
+	COUNT crew_retrieved;
 	SIZE i;
 	HELEMENT hElement, hNextElement;
 	STARSHIP *SPtr[NUM_PLAYERS];
@@ -216,17 +241,7 @@ UninitShips (void)
 		SPtr[i] = 0;
 
 	// Count the crew floating in space.
-	crew_retrieved = 0;
-	for (hElement = GetHeadElement ();
-			hElement != 0; hElement = hNextElement)
-	{
-		ELEMENT *ElementPtr;
-		LockElement (hElement, &ElementPtr);
-		hNextElement = GetSuccElement (ElementPtr);
-		if (ElementPtr->state_flags & CREW_OBJECT)
-			++crew_retrieved;
-		UnlockElement (hElement);
-	}
+	crew_retrieved = CountCrewElements();
 
 	for (hElement = GetHeadElement ();
 			hElement != 0; hElement = hNextElement)
@@ -278,6 +293,8 @@ UninitShips (void)
 	else if (LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER
 			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
+		// XXX: What is the reason for this? At least for SuperMelee,
+		//      it has no purpose (it will return immediately).
 		for (i = NUM_PLAYERS - 1; i >= 0; --i)
 		{
 			if (SPtr[i])
