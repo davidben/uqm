@@ -78,6 +78,7 @@ UninitQueue (QUEUE *pq)
 #endif /* QUEUE_TABLE */
 }
 
+// Empty the queue. The elements linked to in the queue are unchanged.
 void
 ReinitQueue (QUEUE *pq)
 {
