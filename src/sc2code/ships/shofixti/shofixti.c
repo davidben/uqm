@@ -316,35 +316,37 @@ shofixti_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 {
 	STARSHIP *StarShipPtr;
 
-	ship_intelligence (ShipPtr,
-			ObjectsOfConcern, ConcernCounter);
+	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	if (StarShipPtr->special_counter == 0)
-	{
-		if (StarShipPtr->ship_input_state & SPECIAL)
-			StarShipPtr->ship_input_state &= ~SPECIAL;
-		else
-		{
-			EVALUATE_DESC *lpWeaponEvalDesc;
-			EVALUATE_DESC *lpShipEvalDesc;
+	if (StarShipPtr->special_counter != 0)
+		return;
 
-			lpWeaponEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
-			lpShipEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
-			if (StarShipPtr->RaceDescPtr->ship_data.special[0]
-					&& (GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.captain_control.special)
-					- GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.captain_control.special) > 5
-					|| (lpShipEvalDesc->ObjectPtr != NULL
-					&& lpShipEvalDesc->which_turn <= 4)
-					|| (lpWeaponEvalDesc->ObjectPtr != NULL
-								/* means IMMEDIATE WEAPON */
-					&& (((lpWeaponEvalDesc->ObjectPtr->state_flags & PLAYER_SHIP)
-					&& ShipPtr->crew_level == 1)
-					|| (PlotIntercept (lpWeaponEvalDesc->ObjectPtr, ShipPtr, 2, 0)
-					&& lpWeaponEvalDesc->ObjectPtr->mass_points >= ShipPtr->crew_level
-					&& (TFB_Random () & 1))))))
-				StarShipPtr->ship_input_state |= SPECIAL;
-		}
+	if (StarShipPtr->ship_input_state & SPECIAL)
+		StarShipPtr->ship_input_state &= ~SPECIAL;
+	else
+	{
+		EVALUATE_DESC *lpWeaponEvalDesc;
+		EVALUATE_DESC *lpShipEvalDesc;
+
+		lpWeaponEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
+		lpShipEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
+		if (StarShipPtr->RaceDescPtr->ship_data.special[0]
+				&& (GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.
+				captain_control.special)
+				- GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.
+				captain_control.special) > 5
+				|| (lpShipEvalDesc->ObjectPtr != NULL
+				&& lpShipEvalDesc->which_turn <= 4)
+				|| (lpWeaponEvalDesc->ObjectPtr != NULL
+							/* means IMMEDIATE WEAPON */
+				&& (((lpWeaponEvalDesc->ObjectPtr->state_flags & PLAYER_SHIP)
+				&& ShipPtr->crew_level == 1)
+				|| (PlotIntercept (lpWeaponEvalDesc->ObjectPtr, ShipPtr, 2, 0)
+				&& lpWeaponEvalDesc->ObjectPtr->mass_points >=
+				ShipPtr->crew_level
+				&& (TFB_Random () & 1))))))
+			StarShipPtr->ship_input_state |= SPECIAL;
 	}
 }
 
@@ -358,9 +360,12 @@ shofixti_postprocess (ELEMENT *ElementPtr)
 			^ StarShipPtr->old_status_flags) & SPECIAL)
 	{
 		StarShipPtr->RaceDescPtr->ship_data.captain_control.special =
-				IncFrameIndex (StarShipPtr->RaceDescPtr->ship_data.captain_control.special);
-		if (GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.captain_control.special)
-				- GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.captain_control.special) == 3)
+				IncFrameIndex (StarShipPtr->RaceDescPtr->ship_data.
+				captain_control.special);
+		if (GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.
+				captain_control.special)
+				- GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.
+				captain_control.special) == 3)
 			self_destruct (ElementPtr);
 	}
 }
@@ -380,21 +385,23 @@ init_shofixti (void)
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
 			&& !GET_GAME_STATE (SHOFIXTI_RECRUITED))
 	{
+		// Tanaka/Katana flies in a damaged ship.
 #define NUM_LIMPETS 3
 		COUNT i;
 
 		new_shofixti_desc.ship_data.ship[0] = (FRAME)OLDSHOF_BIG_MASK_PMAP_ANIM;
 		new_shofixti_desc.ship_data.ship[1] = (FRAME)OLDSHOF_MED_MASK_PMAP_ANIM;
 		new_shofixti_desc.ship_data.ship[2] = (FRAME)OLDSHOF_SML_MASK_PMAP_ANIM;
-		new_shofixti_desc.ship_data.special[0] =
-				new_shofixti_desc.ship_data.special[1] =
-				new_shofixti_desc.ship_data.special[2] = (FRAME)0;
+		new_shofixti_desc.ship_data.special[0] = (FRAME)0;
+		new_shofixti_desc.ship_data.special[1] = (FRAME)0;
+		new_shofixti_desc.ship_data.special[2] = (FRAME)0;
 		new_shofixti_desc.ship_data.captain_control.background =
 				(FRAME)OLDSHOF_CAPTAIN_MASK_PMAP_ANIM;
 
-				/* weapon doesn't work as well */
+		/* Weapon doesn't work as well */
 		new_shofixti_desc.characteristics.weapon_wait = 10;
-				/* simulate VUX limpets */
+		
+		/* Simulate VUX limpets */
 		for (i = 0; i < NUM_LIMPETS; ++i)
 		{
 			if (++new_shofixti_desc.characteristics.turn_wait == 0)
@@ -402,7 +409,8 @@ init_shofixti (void)
 			if (++new_shofixti_desc.characteristics.thrust_wait == 0)
 				--new_shofixti_desc.characteristics.thrust_wait;
 #define MIN_THRUST_INCREMENT DISPLAY_TO_WORLD (1)
-			if (new_shofixti_desc.characteristics.thrust_increment <= MIN_THRUST_INCREMENT)
+			if (new_shofixti_desc.characteristics.thrust_increment <=
+					MIN_THRUST_INCREMENT)
 			{
 				new_shofixti_desc.characteristics.max_thrust =
 						new_shofixti_desc.characteristics.thrust_increment << 1;
@@ -415,7 +423,8 @@ init_shofixti (void)
 						new_shofixti_desc.characteristics.thrust_increment;
 				--new_shofixti_desc.characteristics.thrust_increment;
 				new_shofixti_desc.characteristics.max_thrust =
-						new_shofixti_desc.characteristics.thrust_increment * num_thrusts;
+						new_shofixti_desc.characteristics.thrust_increment *
+						num_thrusts;
 			}
 		}
 	}
