@@ -49,6 +49,7 @@ typedef enum PacketType {
 typedef enum NetplayAbortReason {
 	AbortReason_unspecified,
 	AbortReason_versionMismatch,
+	AbortReason_invalidHash,
 	AbortReason_protocolError,
 			// Network is in an inconsistent state.
 } NetplayAbortReason;
