@@ -21,6 +21,7 @@
 #include "libs/compiler.h"
 
 BOOLEAN MeleeShipDeath (STARSHIP *ship, COUNT which_player);
+void MeleeGameOver (void);
 BOOLEAN GetInitialMeleeStarShips (HSTARSHIP *result);
 BOOLEAN GetNextMeleeStarShip (COUNT which_player, HSTARSHIP *result);
 

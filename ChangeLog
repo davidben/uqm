@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Ending the battle with a simultaneous death no longer triggers an
+  assertion - SvdB
 - Concurrent supermelee ship selection - SvdB
 - New generic, unthreaded flashing code - SvdB
 - Cleanup of 3DO ship spin support; spin speech works now - Alex

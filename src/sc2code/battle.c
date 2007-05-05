@@ -458,21 +458,28 @@ Battle (void)
 		LockMutex (GraphicsLock);
 
 AbortBattle:
-		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE &&
-				(GLOBAL (CurrentActivity) & CHECK_ABORT))
+		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 		{
-			// Do not return to the main menu when a game is aborted,
-			// (just to the supermelee menu).
+			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+			{
+				// Do not return to the main menu when a game is aborted,
+				// (just to the supermelee menu).
 #ifdef NETPLAY
-			UnlockMutex (GraphicsLock);
-			waitResetConnections(NetState_inSetup);
-					// A connection may already be in inSetup (set from
-					// GetMeleeStarship). This is not a problem, although
-					// it will generate a warning in debug mode.
-			LockMutex (GraphicsLock);
+				UnlockMutex (GraphicsLock);
+				waitResetConnections(NetState_inSetup);
+						// A connection may already be in inSetup (set from
+						// GetMeleeStarship). This is not a problem, although
+						// it will generate a warning in debug mode.
+				LockMutex (GraphicsLock);
 #endif
 
-			GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+				GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
+			}
+			else
+			{
+				// Show the result of the battle.
+				MeleeGameOver ();
+			}
 		}
 
 #ifdef NETPLAY

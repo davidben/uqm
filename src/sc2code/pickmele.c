@@ -469,7 +469,7 @@ DrawPickMeleeFrame (COUNT which_player)
 }
 
 // Pre: caller holds the graphics lock.
-static void
+void
 MeleeGameOver (void)
 {
 	COUNT playerI;
@@ -523,13 +523,13 @@ MeleeShipDeath (STARSHIP *ship, COUNT which_player) {
 	if (battle_counter[0] == 0 || battle_counter[1] == 0)
 	{
 		// One side is out of ships. Game over.
-		MeleeGameOver ();
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
+// Post: the NetState for all players is NetState_interBattle
 static BOOLEAN
 GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 {
