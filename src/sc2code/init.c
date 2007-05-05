@@ -304,8 +304,9 @@ UninitShips (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_ENCOUNTER)
 	{
-		ReinitQueue (&race_q[0]);
-		ReinitQueue (&race_q[1]);
+		// Remove any ships left from the race queue.
+		for (i = 0; i < NUM_PLAYERS; i++)
+			ReinitQueue (&race_q[i]);
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 			FreeHyperspace ();

@@ -2062,12 +2062,14 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 		GetFrameRect (s.frame, &r);
 		t.baseline.x = r.extent.width >> 1;
 		t.baseline.y = r.extent.height - NAME_AREA_HEIGHT + 4;
+
 		r.corner.x += 2;
 		r.corner.y += 2;
 		r.extent.width -= (2 * 2) + (ICON_WIDTH + 2) + 1;
 		r.extent.height -= (2 * 2) + NAME_AREA_HEIGHT;
 		SetContextForeGroundColor (PICK_BG_COLOR);
 		DrawFilledRectangle (&r);
+
 		r.corner.x += 2;
 		r.extent.width += (ICON_WIDTH + 2) - (2 * 2);
 		r.corner.y += r.extent.height;
@@ -2092,6 +2094,8 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 		SetContextForeGroundColor (PICKSHIP_TEAM_START_VALUE_COLOR);
 		font_DrawText (&t);
 
+		assert (CountLinks(&race_q[side]) == 0);
+
 		for (index = 0; index < MELEE_FLEET_SIZE; index++)
 		{
 			BYTE StarShip;
@@ -2112,6 +2116,7 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				hBuiltShip = Build (&race_q[side], StarShipPtr->RaceResIndex,
 						1 << side, NameCaptain (&race_q[side], StarShipPtr));
 
+				// Draw the icon.
 				row = GetShipRow (index);
 				col = GetShipColumn (index);
 				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);

@@ -189,8 +189,10 @@ readyForBattleEnd (COUNT side)
 #if DEMO_MODE
 	// In Demo mode, the saved journal should be replayed with frame
 	// accuracy. PLRPlaying () isn't consistent enough.
+	(void) side;
 	return true;
 #else  /* !DEMO_MODE */
+	(void) side;
 	return !PLRPlaying ((MUSIC_REF)~0);
 #endif  /* !DEMO_MODE */
 #else  /* defined (NETPLAY) */

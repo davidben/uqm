@@ -24,6 +24,7 @@
 #include "libs/mathlib.h"
 
 
+// Allocate a new STARSHIP and put it in the queue.
 HSTARSHIP
 Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
 		captains_name_index)
