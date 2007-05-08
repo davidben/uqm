@@ -450,8 +450,9 @@ Flash_grabOriginal (FlashContext *context)
 	if (context->parent == 0)
 	{
 		// Grab from the entire screen
+		CONTEXT oldGfxContext;
 		LockMutex (GraphicsLock);
-		CONTEXT oldGfxContext = SetContext (context->gfxContext);
+		oldGfxContext = SetContext (context->gfxContext);
 		context->original = CaptureDrawable (LoadDisplayPixmap (
 				&context->rect, (FRAME) 0));
 		SetContext (oldGfxContext);
