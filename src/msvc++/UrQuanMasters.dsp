@@ -624,6 +624,10 @@ SOURCE=..\sc2code\libs\math\random.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\math\random2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\math\random.h
 # End Source File
 # Begin Source File
