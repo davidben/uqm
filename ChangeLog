@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Renamed PlaySpeeh/StopSpeech to work around name collisions
+  on OSX - Alex
 - Ending the battle with a simultaneous death no longer triggers an
   assertion - SvdB
 - Concurrent supermelee ship selection - SvdB

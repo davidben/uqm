@@ -97,7 +97,7 @@ PLRResume (MUSIC_REF MusicRef)
 }
 
 void
-PlaySpeech (MUSIC_REF SpeechRef)
+snd_PlaySpeech (MUSIC_REF SpeechRef)
 {
 	TFB_SoundSample **pmus;
 
@@ -113,7 +113,7 @@ PlaySpeech (MUSIC_REF SpeechRef)
 }
 
 void
-StopSpeech (void)
+snd_StopSpeech (void)
 {
 	if (!curSpeechRef)
 		return;

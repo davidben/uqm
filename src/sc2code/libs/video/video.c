@@ -52,7 +52,7 @@ void
 VidStop ()
 {
 	if (_cur_speech)
-		StopSpeech ();
+		snd_StopSpeech ();
 	if (_cur_video)
 	{
 		TFB_StopVideo (_cur_video);
@@ -97,7 +97,7 @@ VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 	vid->loop_to = 0;
 
 	if (_cur_speech)
-		StopSpeech ();
+		snd_StopSpeech ();
 	if (_cur_video)
 		TFB_StopVideo (_cur_video);
 	_cur_speech = 0;
@@ -115,7 +115,7 @@ VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 		ret = SOFTWARE_FMV;
 		if (SpeechRef)
 		{
-			PlaySpeech (SpeechRef);
+			snd_PlaySpeech (SpeechRef);
 			_cur_speech = SpeechRef;
 		}
 	}

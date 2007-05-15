@@ -72,8 +72,8 @@ extern void PLRStop (MUSIC_REF MusicRef);
 extern BOOLEAN PLRPlaying (MUSIC_REF MusicRef);
 extern void PLRPause (MUSIC_REF MusicRef);
 extern void PLRResume (MUSIC_REF MusicRef);
-extern void PlaySpeech (MUSIC_REF SpeechRef);
-extern void StopSpeech (void);
+extern void snd_PlaySpeech (MUSIC_REF SpeechRef);
+extern void snd_StopSpeech (void);
 extern void PlayChannel (COUNT channel, void *sample, SoundPosition pos,
 		void *positional_object, unsigned char priority);
 extern BOOLEAN ChannelPlaying (COUNT Channel);
