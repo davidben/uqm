@@ -143,8 +143,8 @@ We come in peace, and with good will.
 No doubt.
 
 #(KILLED_SPATHI)	spaho019.ogg
-No, you _arrived_ in peace.
-You _came_ in a somewhat more violent manner
+No, you ARRIVED in peace.
+You CAME in a somewhat more violent manner
 as indicated by this report from the Spathi patrol vessel you attacked.
 
 #(misunderstanding)
@@ -258,15 +258,15 @@ It mentions a sequence of 10 artificial `waste disposal sites' they built somewh
 I suspect that even garbage from the Precursors would be of incredible value.
 
 #(little_mistake)
-Uh... sorry about that little mistake... we _thought_ we had gotten all of those creatures.
+Uh... sorry about that little mistake... we thought we had gotten all of those creatures.
 
 #(BIG_MISTAKE)	spaho030.ogg
-That was not a _little_ mistake.
-A _little_ mistake is leaving the top off the eye cream or forgetting to clean your lid in the morning.
-Now on the other hand, a _big_ mistake might be, say
+That was not a LITTLE mistake.
+A LITTLE mistake is leaving the top off the eye cream or forgetting to clean your lid in the morning.
+Now on the other hand, a BIG mistake might be, say
 telling your friends that a certain place is safe when in fact it is crawling with hideous, hungry beasts
 who want nothing more than to feast on soft, Spathi flesh!
-That's a _big_ mistake.
+That's a BIG mistake.
 
 #(bye_before_party)
 We shall return after we have completed the quest.
@@ -314,7 +314,7 @@ We offer our hand in friendship. Join us and our many allies.
 We are too afraid of the Ur-Quan to consider such an alliance.
 They would most certainly punish us with extreme tortures.
 
-#(stronger)									  
+#(stronger)
 We're stronger than the Ur-Quan. You're better off with us.
 
 #(YOURE_NOT)	spaho038.ogg
