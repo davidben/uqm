@@ -376,12 +376,11 @@ Uint32 frame_mapRGBA (FRAME FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 MEM_HANDLE
 _GetCelData (uio_Stream *fp, DWORD length)
 {
-	int cel_ct, n;
+	int cel_total, cel_index, n;
 	DWORD opos;
 	char CurrentLine[1024], filename[1024];
-#define MAX_CELS 256
-	SDL_Surface *img[MAX_CELS];
-	AniData ani[MAX_CELS];
+	SDL_Surface **img;
+	AniData *ani;
 	DRAWABLE Drawable;
 	
 	opos = uio_ftell (fp);
@@ -402,15 +401,45 @@ _GetCelData (uio_Stream *fp, DWORD length)
 		}
 	}
 
-	cel_ct = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_ct < MAX_CELS)
+	cel_total = 0;
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp))
+	{
+		++cel_total;
+	}
+
+	img = HMalloc(sizeof (SDL_Surface *) * cel_total);
+	if (!img)
+	{
+		log_add (log_Warning, "Couldn't allocate space for '%s' images", _cur_resfile_name);
+
+		/* This isn't a very good way to return failure, but
+		 * it seems to be how it is normally done in this
+		 * routine. */
+		return (GetDrawableHandle (0));
+	}
+
+	ani = HMalloc (sizeof (AniData) * cel_total);
+	if (!ani)
+	{
+		HFree (img);
+		log_add (log_Warning, "Couldn't allocate space for '%s' anidata", _cur_resfile_name);
+
+		/* This isn't a very good way to return failure, but
+		 * it seems to be how it is normally done in this
+		 * routine. */
+		return (GetDrawableHandle (0));
+	}
+
+	cel_index = 0;
+	uio_fseek (fp, opos, SEEK_SET);
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_index < cel_total)
 	{
 		sscanf (CurrentLine, "%s %d %d %d %d", &filename[n], 
-			&ani[cel_ct].transparent_color, &ani[cel_ct].colormap_index, 
-			&ani[cel_ct].hotspot_x, &ani[cel_ct].hotspot_y);
+			&ani[cel_index].transparent_color, &ani[cel_index].colormap_index, 
+			&ani[cel_index].hotspot_x, &ani[cel_index].hotspot_y);
 	
-		img[cel_ct] = sdluio_loadImage (contentDir, filename);
-		if (img[cel_ct] == NULL)
+		img[cel_index] = sdluio_loadImage (contentDir, filename);
+		if (img[cel_index] == NULL)
 		{
 			const char *err;
 
@@ -418,17 +447,17 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			log_add (log_Warning, "_GetCelData: Unable to load image!");
 			if (err != NULL)
 				log_add (log_Warning, "SDL reports: %s", err);
-			SDL_FreeSurface (img[cel_ct]);
+			SDL_FreeSurface (img[cel_index]);
 		}
-		else if (img[cel_ct]->w < 0 || img[cel_ct]->h < 0 ||
-				img[cel_ct]->format->BitsPerPixel < 8)
+		else if (img[cel_index]->w < 0 || img[cel_index]->h < 0 ||
+				img[cel_index]->format->BitsPerPixel < 8)
 		{
 			log_add (log_Warning, "_GetCelData: Bad file!");
-			SDL_FreeSurface (img[cel_ct]);
+			SDL_FreeSurface (img[cel_index]);
 		}
 		else
 		{
-			++cel_ct;
+			++cel_index;
 		}
 
 		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
@@ -436,14 +465,14 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	}
 
 	Drawable = 0;
-	if (cel_ct && (Drawable = AllocDrawable (cel_ct)))
+	if (cel_index && (Drawable = AllocDrawable (cel_index)))
 	{
 		DRAWABLE_DESC *DrawablePtr;
 
 		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
 		{
-			while (cel_ct--)
-				SDL_FreeSurface (img[cel_ct]);
+			while (cel_index--)
+				SDL_FreeSurface (img[cel_index]);
 
 			mem_release ((MEM_HANDLE)Drawable);
 			Drawable = 0;
@@ -454,11 +483,11 @@ _GetCelData (uio_Stream *fp, DWORD length)
 
 			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
 			DrawablePtr->Flags = WANT_PIXMAP;
-			DrawablePtr->MaxIndex = cel_ct - 1;
+			DrawablePtr->MaxIndex = cel_index - 1;
 
-			FramePtr = &DrawablePtr->Frame[cel_ct];
-			while (--FramePtr, cel_ct--)
-				process_image (FramePtr, img, ani, cel_ct);
+			FramePtr = &DrawablePtr->Frame[cel_index];
+			while (--FramePtr, cel_index--)
+				process_image (FramePtr, img, ani, cel_index);
 
 			UnlockDrawable (Drawable);
 		}
@@ -467,6 +496,9 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	if (Drawable == 0)
 		log_add (log_Warning, "Couldn't get cel data for '%s'",
 				_cur_resfile_name);
+
+	HFree (img);
+	HFree (ani);
 	return (GetDrawableHandle (Drawable));
 }
 
