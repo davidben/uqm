@@ -310,7 +310,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		if (addons[0] != NULL)
 		{	// addons were specified, but there's no /packages dir,
 			// let alone a /packages/addons dir.
-			log_add (log_Error, "Warning: There's no 'packages/addons' "
+			log_add (log_Warning, "Warning: There's no 'packages/addons' "
 					"directory in the 'content' directory;\n\t'--addon' "
 					"options are ignored.");
 		}
@@ -325,7 +325,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	addonsDir = uio_openDirRelative (packagesDir, "addons", 0);
 	if (addonsDir == NULL)
 	{	// No addon dir found.
-		log_add (log_Error, "Warning: There's no 'packages/addons' "
+		log_add (log_Warning, "Warning: There's no 'packages/addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
 				"options are ignored.");
 		uio_closeDir (packagesDir);
@@ -364,7 +364,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
 		if (addonDir == NULL)
 		{
-			log_add (log_Error, "Warning: directory 'packages/addons/%s' "
+			log_add (log_Warning, "Warning: directory 'packages/addons/%s' "
 					"not found; addon skipped.", *addons);
 			continue;
 		}
@@ -396,7 +396,7 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
 					contentHandle) == NULL)
 			{
-				log_add (log_Error, "Warning: Could not mount '%s': %s.",
+				log_add (log_Warning, "Warning: Could not mount '%s': %s.",
 						dirList->names[i], strerror (errno));
 			}
 		}
