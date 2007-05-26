@@ -53,10 +53,28 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 		StopMusic ();
 
 	FreeHyperData ();
-	
+
 	sprintf (vnbuf, "slides/spins/ship%02u.duk", (unsigned)index);
 	sprintf (snbuf, "slides/spins/ship%02u.aif", (unsigned)index);
-	DoFMVEx (vnbuf, "slides/spins/spin.aif", snbuf, SHIP_SPIN_LOOP_FRAME);
+	if (optWhichIntro == OPT_PC || !DoFMVEx (vnbuf, "slides/spins/spin.aif", snbuf, SHIP_SPIN_LOOP_FRAME))
+	{
+		FRAME f;
+		sprintf (vnbuf, "slides/spins/ship%02u.ani", (unsigned)index);
+		f = CaptureDrawable (LoadGraphicFile (vnbuf));
+		if (f)
+		{
+			clut_buf[0] = FadeAllToColor;
+			XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 20);
+			FlushColorXForms ();
+
+			ShowShipAnim (f);
+
+			DestroyDrawable (ReleaseDrawable (f));
+		}
+		clut_buf[0] = FadeAllToBlack;
+		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+		FlushColorXForms ();
+	}
 
 	GetContextClipRect (&old_r);
 	r.corner.x = r.corner.y = 0;

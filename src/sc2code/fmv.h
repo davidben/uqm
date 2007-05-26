@@ -18,6 +18,8 @@
 #define _FMV_H
 
 #include "libs/compiler.h"
+#include "libs/sndlib.h"
+#include "libs/gfxlib.h"
 #define WANT_SHIP_SPINS
 
 extern void Logo (void);
@@ -25,7 +27,6 @@ extern void SplashScreen (void (* DoProcessing)(DWORD TimeOut));
 extern void Introduction (void);
 extern void Victory (void);
 
-#include "libs/sndlib.h"
 extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 
 extern BOOLEAN DoFMV (const char *name);
@@ -35,6 +36,7 @@ extern BOOLEAN DoFMVEx (const char *name, const char *audname,
 extern BOOLEAN ShowPresentation (STRING PresStr);
 extern BOOLEAN ShowPresentationFile (const char *name);
 
+extern BOOLEAN ShowShipAnim (FRAME anim);
 
 #endif  /* _FMV_H */
 

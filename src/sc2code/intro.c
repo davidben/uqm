@@ -68,9 +68,18 @@ typedef struct
 
 } PRESENTATION_INPUT_STATE;
 
+typedef struct {
+	/* standard state required by DoInput */
+	BOOLEAN (*InputFunc) (void *pInputState);
+	COUNT MenuRepeatDelay;
+
+	/* Spinanim state */
+	STAMP anim;
+	TimeCount last_time;
+} SPINANIM_INPUT_STATE;
 
 static BOOLEAN DoPresentation (void *pIS);
-
+static BOOLEAN DoSpinAnim (void *pIS);
 
 BOOLEAN
 DoFMVEx (const char *name, const char *audname, const char *speechname,
@@ -758,4 +767,49 @@ ShowPresentation (STRING PresStr)
 	return TRUE;
 }
 
+/* This needs expansion; in particular, it needs to handle pause
+ * frames and annotations */
 
+static BOOLEAN
+DoSpinAnim (void *pIS)
+{
+	SPINANIM_INPUT_STATE *pSIS = (SPINANIM_INPUT_STATE *)pIS;
+	STAMP *s = &pSIS->anim;
+
+	if (AnyButtonPress (FALSE)
+			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
+
+	{
+		return FALSE;
+	}
+
+	DrawStamp (s);
+	s->frame = SetRelFrameIndex (s->frame, 1);
+
+	if (GetFrameIndex(s->frame) == 0)
+	{
+		return FALSE;
+	}
+	
+	SleepThread (pSIS->last_time + ONE_SECOND / 30 - GetTimeCounter ());
+	pSIS->last_time = GetTimeCounter ();
+	return TRUE;
+} 
+
+BOOLEAN
+ShowShipAnim (FRAME anim)
+{
+	SPINANIM_INPUT_STATE is;
+
+	is.anim.origin.x = SCREEN_WIDTH >> 1;
+	is.anim.origin.y = SCREEN_HEIGHT >> 1;
+	is.anim.frame = anim;
+	is.last_time = GetTimeCounter ();
+
+	is.InputFunc = DoSpinAnim;
+	is.MenuRepeatDelay = 0;
+
+	DoInput (&is, TRUE);
+
+	return TRUE;
+}
