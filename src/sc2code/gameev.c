@@ -120,7 +120,7 @@ EventHandler (BYTE selector)
 			}
 			break;
 		case SHOFIXTI_RETURN_EVENT:
-			ActivateStarShip (SHOFIXTI_SHIP, 0);
+			ActivateStarShip (SHOFIXTI_SHIP, SET_ALLIED);
 			GLOBAL (CrewCost) -= 2;
 					/* crew is not an issue anymore */
 			SET_GAME_STATE (CREW_PURCHASED0, 0);
@@ -146,7 +146,7 @@ EventHandler (BYTE selector)
 
 				if (SpathiPtr->ShipInfo.actual_strength)
 				{
-					ActivateStarShip (SPATHI_SHIP, -1);
+					ActivateStarShip (SPATHI_SHIP, SET_NOT_ALLIED);
 					SET_GAME_STATE (SPATHI_SHIELDED_SELVES, 1);
 					SpathiPtr->ShipInfo.actual_strength = 0;
 				}
@@ -599,7 +599,7 @@ ilwrath_mission (void)
 
 				SET_GAME_STATE (THRADD_VISITS, 0);
 				if (ThraddPtr->ShipInfo.ship_flags & GOOD_GUY)
-					ActivateStarShip (THRADDASH_SHIP, -1);
+					ActivateStarShip (THRADDASH_SHIP, SET_NOT_ALLIED);
 			}
 
 			ThraddState = GET_GAME_STATE (THRADD_MISSION);

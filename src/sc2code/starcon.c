@@ -84,7 +84,7 @@ arilou_gate_task(void *data)
 static void
 BackgroundInitKernel (DWORD TimeOut)
 {
-	LoadMasterShipList ();
+	LoadMasterShipList (TaskSwitch);
 	TaskSwitch ();
 	InitGameKernel ();
 

@@ -20,8 +20,11 @@
 #include "races.h"
 #include "libs/compiler.h"
 
+extern QUEUE master_q;
+		/* List of all ships present in the game;
+		 * queue element is SHIP_FRAGMENT */
 
-extern void LoadMasterShipList (void);
+extern void LoadMasterShipList (void (* YieldProcessing)(void));
 extern void FreeMasterShipList (void);
 extern HSTARSHIP FindMasterShip (DWORD ship_ref);
 

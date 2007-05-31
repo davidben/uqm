@@ -113,14 +113,19 @@ typedef struct
 typedef struct
 {
 	UWORD ship_flags;
+			/* Also: group_counter */
 	BYTE var1;
+			/* Also: ship_cost, race_id */
 	BYTE var2;
+			/* Also: group loc and mission, ship's queue index */
 	COUNT crew_level;
 			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
 			 * crew_level indicates an infinite number of ships. */
 	COUNT max_crew;
 	BYTE energy_level;
+			/* Also: group destination and orbit loc, */
 	BYTE max_energy;
+			/* Also: group_id */
 	POINT loc;
 
 	/* The fields above this line are included in queues in savegames,
@@ -169,6 +174,7 @@ enum
 #define STATION_RADIUS 1600
 #define ORBIT_RADIUS 2400
 
+/* XXX: overloads SHIP_INFO */
 typedef struct
 {
 	UWORD ship_flags;
@@ -233,6 +239,8 @@ typedef void (UNINIT_FUNC) (RACE_DESC *pRaceDesc);
 
 struct race_desc
 {
+	/* XXX: SHIP_INFO *must* currently be the first field in the struct.
+	 * See why in comments of EXTENDED_SHIP_FRAGMENT. */
 	SHIP_INFO ship_info _ALIGNED_ANY;
 	CHARACTERISTIC_STUFF characteristics _ALIGNED_ANY;
 	DATA_STUFF ship_data _ALIGNED_ANY;
@@ -253,6 +261,12 @@ struct race_desc
 
 typedef QUEUE_HANDLE HSTARSHIP;
 
+/* XXX: STARSHIP, SHIP_FRAGMENT and EXTENDED_SHIP_FRAGMENT are inter-cast
+ * to each other in many places. Some of those are unsafe and potentially
+ * destructive if the code is changed later.
+ * Currently, the first 4 members of each struct MUST remain the same,
+ * the first 2 being the queue links.
+ */
 typedef struct
 {
 	HSTARSHIP pred;
@@ -316,13 +330,20 @@ typedef struct
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
 
+/* XXX: overloads SHIP_FRAGMENT */
 typedef struct
 {
 	HSTARSHIP pred;
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
+
+	/* This field is set to actually point to struct's own EXTENDED_SHIP_INFO
+	 * instead of a RACE_DESC when GLOBAL(avail_race_q) is initialized
+	 * [see InitSIS]. For this reason, RACE_DESC must maintain a SHIP_INFO
+	 * as the first member. */
 	RACE_DESC *RaceDescPtr;
+
 	EXTENDED_SHIP_INFO ShipInfo;
 } EXTENDED_SHIP_FRAGMENT;
 

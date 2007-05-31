@@ -39,6 +39,7 @@ typedef struct
 	DWORD TimeCounter;
 
 	QUEUE event_q;
+			/* Queue element is EVENT */
 } CLOCK_STATE;
 
 typedef QUEUE_HANDLE HEVENT;

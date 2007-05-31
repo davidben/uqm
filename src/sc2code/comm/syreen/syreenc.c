@@ -734,7 +734,7 @@ Intro (void)
 		{
 			case 0:
 				NPCPhrase (HELLO_AFTER_AMBUSH_1);
-				ActivateStarShip (SYREEN_SHIP, 0);
+				ActivateStarShip (SYREEN_SHIP, SET_ALLIED);
 				break;
 			case 1:
 				NPCPhrase (HELLO_AFTER_AMBUSH_2);

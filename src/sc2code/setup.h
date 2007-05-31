@@ -49,6 +49,8 @@ extern Mutex GraphicsLock;
 extern CondVar RenderingCond;
 
 extern QUEUE race_q[];
+		/* Array of lists of ships involved in a battle, one queue per side;
+		 * queue element is STARSHIP */
 
 extern ACTIVITY LastActivity;
 

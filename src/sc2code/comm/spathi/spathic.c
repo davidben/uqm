@@ -192,6 +192,9 @@ ExitConversation (RESPONSE_REF Response)
 
 			AlienTalkSegue ((COUNT)~0);
 			ActivateStarShip (SPATHI_SHIP, 1);
+			/* Make the Eluder escort captained by Fwiffo alone */
+			SetEscortCrewComplement (SPATHI_SHIP, 1,
+					NAME_OFFSET + NUM_CAPTAINS_NAMES);
 		}
 	}
 }

@@ -38,6 +38,7 @@
 #endif
 #include "options.h"
 #include "races.h"
+#include "master.h"
 #include "resinst.h"
 #include "save.h"
 #include "settings.h"
@@ -191,7 +192,6 @@ static FRAME MeleeFrame;
 		// Loaded from melee/melebkgd.ani
 static FRAME BuildPickFrame;
 		// Constructed.
-extern QUEUE master_q;
 DWORD InTime;
 MELEE_STATE *pMeleeState;
 

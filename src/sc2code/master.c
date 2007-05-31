@@ -27,7 +27,7 @@
 QUEUE master_q;
 
 void
-LoadMasterShipList (void)
+LoadMasterShipList (void (* YieldProcessing)(void))
 {
 	COUNT num_entries;
 	RES_TYPE rt;
@@ -37,7 +37,8 @@ LoadMasterShipList (void)
 	rt = GET_TYPE (ARILOU_SHIP_INDEX);
 	ri = GET_INSTANCE (ARILOU_SHIP_INDEX);
 	rp = GET_PACKAGE (ARILOU_SHIP_INDEX);
-	InitQueue (&master_q, num_entries = NUM_MELEE_SHIPS, sizeof (SHIP_FRAGMENT));
+	num_entries = NUM_MELEE_SHIPS;
+	InitQueue (&master_q, num_entries, sizeof (SHIP_FRAGMENT));
 	while (num_entries--)
 	{
 		HSTARSHIP hBuiltShip;
@@ -50,8 +51,10 @@ LoadMasterShipList (void)
 			STARSHIP *BuiltShipPtr;
 			SHIP_INFO *ShipInfoPtr;
 
-			TaskSwitch ();
-					// XXX: what is this doing here?
+			// Allow other things to run
+			//  supposedly, loading ship packages and data takes some time
+			if (YieldProcessing)
+				YieldProcessing ();
 
 			BuiltShipPtr = LockStarShip (&master_q, hBuiltShip);
 			load_ship (BuiltShipPtr, FALSE);

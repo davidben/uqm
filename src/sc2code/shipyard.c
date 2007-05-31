@@ -23,6 +23,7 @@
 #include "gameopt.h"
 #include "gamestr.h"
 #include "melee.h"
+#include "master.h"
 #include "options.h"
 #include "races.h"
 #include "nameref.h"
@@ -128,7 +129,6 @@ SpinStarShip (HSTARSHIP hStarShip)
 	COUNT Index;
 	HSTARSHIP hNextShip, hShip;
 	STARSHIP *StarShipPtr;
-	extern QUEUE master_q;
 
 	StarShipPtr = LockStarShip (&GLOBAL (built_ship_q), hStarShip);
 

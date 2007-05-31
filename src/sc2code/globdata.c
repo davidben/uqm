@@ -305,7 +305,7 @@ InitSIS (void)
 			MAX_BUILT_SHIPS, sizeof (SHIP_FRAGMENT));
 	InitQueue (&GLOBAL (npc_built_ship_q),
 			(MAX_BATTLE_GROUPS >> 1), sizeof (SHIP_FRAGMENT));
-	InitQueue (&GLOBAL (encounter_q), 16, sizeof (ENCOUNTER));
+	InitQueue (&GLOBAL (encounter_q), MAX_ENCOUNTERS, sizeof (ENCOUNTER));
 
 	GLOBAL (CurrentActivity) = IN_INTERPLANETARY | START_INTERPLANETARY;
 
@@ -329,7 +329,7 @@ InitSIS (void)
 			sizeof (GLOBAL_SIS (CommanderName)),
 			GAME_STRING (NAMING_STRING_BASE + 3));
 
-	ActivateStarShip (HUMAN_SHIP, 0);
+	ActivateStarShip (HUMAN_SHIP, SET_ALLIED);
 	CloneShipFragment (HUMAN_SHIP, &GLOBAL (built_ship_q), 0);
 
 	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);

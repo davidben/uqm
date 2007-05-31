@@ -55,16 +55,21 @@ extern BYTE NameCaptain (QUEUE *pQueue, STARSHIP *StarShipPtr);
  * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
  * See that function for more information.
  */
-#define CHECK_ALLIANCE -2
-#define ESCORT_WORTH 9995
-#define SPHERE_KNOWN 9996
-#define SPHERE_TRACKING 9997
-#define ESCORTING_FLAGSHIP 9998
-#define FEASIBILITY_STUDY 9999
+#define SET_ALLIED          0
+#define SET_NOT_ALLIED     -1
+#define CHECK_ALLIANCE     -2
+#define REMOVE_BUILT       -3
+#define ESCORT_WORTH       -4
+#define SPHERE_KNOWN       -5
+#define SPHERE_TRACKING    -6
+#define ESCORTING_FLAGSHIP -7
+#define FEASIBILITY_STUDY  -8
 		/* Check for how many escort ships there's still space */
 
 extern COUNT ActivateStarShip (COUNT which_ship, SIZE state);
 extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HSTARSHIP hStarShip);
+extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
+		BYTE captain);
 
 extern MEM_HANDLE load_ship (STARSHIP *StarShipPtr, BOOLEAN
 		LoadBattleData);

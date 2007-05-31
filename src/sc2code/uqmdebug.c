@@ -68,7 +68,9 @@ debugKeyPressed (void)
 	instantMove = !instantMove;
 	showSpheres ();
 	activateAllShips ();
-//	forwardToNextEvent (TRUE);		
+//	forwardToNextEvent (TRUE);
+//	SET_GAME_STATE (MELNORME_CREDIT1, 100);
+//	GLOBAL_SIS (ResUnits) = 100000;
 
 	// Tests
 //	Scale_PerfTest ();

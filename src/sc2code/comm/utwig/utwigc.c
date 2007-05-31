@@ -284,8 +284,8 @@ ExitConversation (RESPONSE_REF R)
 				SET_GAME_STATE (SUPOX_HOSTILE, 0);
 				SET_GAME_STATE (UTWIG_HOSTILE, 0);
 
-				ActivateStarShip (UTWIG_SHIP, 0);
-				ActivateStarShip (SUPOX_SHIP, 0);
+				ActivateStarShip (UTWIG_SHIP, SET_ALLIED);
+				ActivateStarShip (SUPOX_SHIP, SET_ALLIED);
 			}
 		}
 	}

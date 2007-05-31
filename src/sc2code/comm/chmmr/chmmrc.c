@@ -128,7 +128,7 @@ ExitConversation (RESPONSE_REF R)
 
 		NPCPhrase (TAKE_2_WEEKS);
 
-		ActivateStarShip (CHMMR_SHIP, 0);
+		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
 
 		SET_GAME_STATE (CHMMR_HOME_VISITS, 0);
 		SET_GAME_STATE (CHMMR_STACK, 0);
@@ -239,7 +239,7 @@ NotReady (RESPONSE_REF R)
 	{
 		NPCPhrase (USE_OUR_SHIPS_BEFORE);
 
-		ActivateStarShip (CHMMR_SHIP, 0);
+		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
 	}
 	else if (PLAYER_SAID (R, where_weapon))
 	{
@@ -292,7 +292,7 @@ ImproveBomb (RESPONSE_REF R)
 	{
 		NPCPhrase (USE_OUR_SHIPS_AFTER);
 
-		ActivateStarShip (CHMMR_SHIP, 0);
+		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
 	}
 
 	if (PHRASE_ENABLED (what_now))

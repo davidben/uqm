@@ -942,12 +942,20 @@ typedef struct
 
 	DWORD BattleGroupRef;
 	QUEUE avail_race_q;
+			/* List of all the races in the game with information
+			 * about their ships, and what player knows about their
+			 * fleet, center of SoI, status, etc.
+			 * queue element is EXTENDED_SHIP_FRAGMENT */
 	QUEUE npc_built_ship_q;
-			// Non-player-character list of ships (during encounter)
-			//   or list of groups present in solarsys (during IP)
+			/* Non-player-character list of ships (during encounter)
+			 *   or list of groups present in solarsys (during IP);
+			 * queue element is SHIP_FRAGMENT */
 	QUEUE encounter_q;
+			/* List of HyperSpace encounters (black globes);
+			 * queue element is ENCOUNTER */
 	QUEUE built_ship_q;
-			/* Queue of SIS escort ships */
+			/* List of SIS escort ships;
+			 * queue element is SHIP_FRAGMENT */
 
 	BYTE GameState[(NUM_GAME_STATE_BITS + 7) >> 3];
 } GAME_STATE;
@@ -962,6 +970,7 @@ extern GLOBDATA GlobData;
 #define GLOBAL(f) GlobData.Game_state.f
 #define GLOBAL_SIS(f) GlobData.SIS_state.f
 
+#define MAX_ENCOUNTERS  16
 
 //#define STATE_DEBUG
 	

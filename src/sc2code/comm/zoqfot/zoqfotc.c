@@ -206,7 +206,7 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase_cb (WE_ALLY4, &SelectAlienZOQ);
 		NPCPhrase_cb (WE_ALLY5, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-		ActivateStarShip (ZOQFOTPIK_SHIP, 0);
+		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
 	}
@@ -717,7 +717,7 @@ ZoqFotHome (RESPONSE_REF R)
 		NPCPhrase_cb (GOOD9, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
 
-		ActivateStarShip (ZOQFOTPIK_SHIP, 0);
+		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 	}
 	else if (PLAYER_SAID (R, enough_info))
