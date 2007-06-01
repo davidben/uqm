@@ -109,8 +109,8 @@ For every frame:
           1  if not zero, the file includes palettes
           1  transparant color
          16  (optional) (CGA?) palette (16 entries of 1 byte)
-         16  (optional) (EGA?) palette (16 entries of 1 byte)
-         16  (optional) (Tandy/MCGA?) palette (16 entries of 1 byte)
+         16  (optional) (EGA/Tandy?) palette (16 entries of 1 byte)
+         16  (optional) (MCGA/VGA?) palette (16 entries of 1 byte)
           ?  pixel data (indicees in palette)
 
 
