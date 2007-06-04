@@ -57,7 +57,7 @@ libogg and libvorbis
 	    For Windows:
 			SDK download: http://www.vorbis.com/files/1.0.1/windows/OggVorbis-win32sdk-1.0.1.zip
 	    For Linux:
-			http://www.vorbis.com/download_unix.psp
+			http://www.xiph.org/downloads/
 			download libogg and libvorbis.
 
 Tremor (alternative for libogg and libvorbis)
