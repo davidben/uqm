@@ -3059,7 +3059,7 @@ Melee (void)
 		MenuState.SideState[0].star_bucks =
 				GetTeamValue (&MenuState.SideState[0].TeamImage);
 		MenuState.SideState[1].star_bucks =
-				GetTeamValue (&MenuState.SideState[0].TeamImage);
+				GetTeamValue (&MenuState.SideState[1].TeamImage);
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (&MenuState, TRUE);
 
