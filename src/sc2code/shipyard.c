@@ -144,7 +144,7 @@ SpinStarShip (HSTARSHIP hStarShip)
 		UnlockStarShip (&master_q, hShip);
 	}
 
-	UnlockStarShip (&master_q, hStarShip);
+	UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 				
 	if (Index < NUM_MELEE_SHIPS)
 	{
