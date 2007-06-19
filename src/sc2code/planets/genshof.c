@@ -61,11 +61,22 @@ GenerateShofixti (BYTE control)
 			if (GLOBAL (BattleGroupRef) == 0
 					|| !GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 			{
+				HSTARSHIP hStarShip;
+
 				if (GLOBAL (BattleGroupRef) == 0)
 					GLOBAL (BattleGroupRef) = ~0L;
 
-				CloneShipFragment (SHOFIXTI_SHIP,
+				hStarShip = CloneShipFragment (SHOFIXTI_SHIP,
 						&GLOBAL (npc_built_ship_q), 1);
+				if (hStarShip)
+				{	/* Set old Shofixti name; his brother if Tanaka died */
+					SHIP_FRAGMENT *FragPtr = (SHIP_FRAGMENT *) LockStarShip (
+							&GLOBAL (npc_built_ship_q), hStarShip);
+					OwnStarShip (FragPtr, BAD_GUY, NAME_OFFSET +
+							NUM_CAPTAINS_NAMES +
+							(GET_GAME_STATE (SHOFIXTI_KIA) & 1));
+					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+				}
 
 				GLOBAL (BattleGroupRef) = PutGroupInfo (
 						GLOBAL (BattleGroupRef), 1);

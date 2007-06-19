@@ -651,20 +651,6 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 #ifdef DEBUG_GROUPS
 					log_add (log_Debug, "\n");
 #endif /* DEBUG_GROUPS */
-					if (RaceType == SHOFIXTI_SHIP
-							&& which_group != GROUP_LIST
-							&& !GET_GAME_STATE (SHOFIXTI_RECRUITED))
-					{
-						BYTE captains_name_index;
-
-						if (!GET_GAME_STATE (SHOFIXTI_KIA))
-							captains_name_index =
-									NAME_OFFSET + NUM_CAPTAINS_NAMES;
-						else
-							captains_name_index =
-									NAME_OFFSET + NUM_CAPTAINS_NAMES + 1;
-						OwnStarShip (FragPtr, BAD_GUY, captains_name_index);
-					}
 					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 				else
