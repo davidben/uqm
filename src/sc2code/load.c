@@ -134,13 +134,11 @@ read_a16 (void *fp, UWORD *ar, COUNT count)
 }
 
 static void
-LoadShipQueue (DECODE_REF fh, QUEUE *pQueue, BOOLEAN MakeQ)
+LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 {
 	COUNT num_links;
 
 	cread_16 (fh, &num_links);
-	if (num_links && MakeQ)
-		InitQueue (pQueue, num_links, sizeof (SHIP_FRAGMENT));
 
 	while (num_links--)
 	{
@@ -151,20 +149,13 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue, BOOLEAN MakeQ)
 
 		cread_16 (fh, &Index);
 
-		if (pQueue == &GLOBAL (avail_race_q))
-			hStarShip = GetStarShipFromIndex (pQueue, Index);
-		else
-			hStarShip = CloneShipFragment (Index, pQueue, 0);
-
+		hStarShip = CloneShipFragment (Index, pQueue, 0);
 		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 
-		if (pQueue != &GLOBAL (avail_race_q))
-		{	// queues other than avail_race_q save SHIP_FRAGMENT elements
-			// Read SHIP_FRAGMENT elements
-			cread_16 (fh, &FragPtr->s.Player);
-			cread_8  (fh, &FragPtr->s.Captain);
-			cread_8  (fh, NULL); /* padding */
-		}
+		// Read SHIP_FRAGMENT elements
+		cread_16 (fh, &FragPtr->s.Player);
+		cread_8  (fh, &FragPtr->s.Captain);
+		cread_8  (fh, NULL); /* padding */
 		// Read SHIP_INFO elements
 		cread_16 (fh, &FragPtr->ShipInfo.ship_flags);
 		cread_8  (fh, &FragPtr->ShipInfo.var1);
@@ -178,23 +169,51 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue, BOOLEAN MakeQ)
 		cread_16 (fh, &FragPtr->ShipInfo.loc.x);
 		cread_16 (fh, &FragPtr->ShipInfo.loc.y);
 
-		if (pQueue == &GLOBAL (avail_race_q))
-		{
-			// avail_race_q contains information not about specific ships,
-			// but about a race.
-			EXTENDED_SHIP_FRAGMENT *ExtFragPtr =
-					(EXTENDED_SHIP_FRAGMENT*) FragPtr;
+		UnlockStarShip (pQueue, hStarShip);
+	}
+}
 
-			cread_16 (fh, &ExtFragPtr->ShipInfo.actual_strength);
-			cread_16 (fh, &ExtFragPtr->ShipInfo.known_strength);
-			cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.x);
-			cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.y);
-			cread_8  (fh, &ExtFragPtr->ShipInfo.growth_err_term);
-			cread_8  (fh, &ExtFragPtr->ShipInfo.func_index);
-			cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.x);
-			cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.y);
-			cread_16 (fh, NULL); /* alignment padding */
-		}
+static void
+LoadRaceQueue (DECODE_REF fh, QUEUE *pQueue)
+{
+	COUNT num_links;
+
+	cread_16 (fh, &num_links);
+
+	while (num_links--)
+	{
+		HSTARSHIP hStarShip;
+		EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
+		COUNT Index;
+		BYTE tmpb;
+
+		cread_16 (fh, &Index);
+
+		hStarShip = GetStarShipFromIndex (pQueue, Index);
+		ExtFragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (pQueue, hStarShip);
+
+		// Read EXTENDED_SHIP_INFO elements
+		cread_16 (fh, &ExtFragPtr->ShipInfo.ship_flags);
+		cread_8  (fh, &ExtFragPtr->ShipInfo.days_left);
+		cread_8  (fh, &ExtFragPtr->ShipInfo.growth_fract);
+		cread_8  (fh, &tmpb);
+		ExtFragPtr->ShipInfo.crew_level = tmpb;
+		cread_8  (fh, &tmpb);
+		ExtFragPtr->ShipInfo.max_crew = tmpb;
+		cread_8  (fh, &ExtFragPtr->ShipInfo.energy_level);
+		cread_8  (fh, &ExtFragPtr->ShipInfo.max_energy);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.loc.x);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.loc.y);
+
+		cread_16 (fh, &ExtFragPtr->ShipInfo.actual_strength);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.known_strength);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.x);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.y);
+		cread_8  (fh, &ExtFragPtr->ShipInfo.growth_err_term);
+		cread_8  (fh, &ExtFragPtr->ShipInfo.func_index);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.x);
+		cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.y);
+		cread_16 (fh, NULL); /* alignment padding */
 
 		UnlockStarShip (pQueue, hStarShip);
 	}
@@ -498,10 +517,10 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 				"save, Savegame may be corrupt!\n");
 	GLOBAL (GameClock.TimeCounter) = 0;
 
-	LoadShipQueue (fh, &GLOBAL (avail_race_q), FALSE);
+	LoadRaceQueue (fh, &GLOBAL (avail_race_q));
 	if (!(NextActivity & START_INTERPLANETARY))
-		LoadShipQueue (fh, &GLOBAL (npc_built_ship_q), FALSE);
-	LoadShipQueue (fh, &GLOBAL (built_ship_q), FALSE);
+		LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
+	LoadShipQueue (fh, &GLOBAL (built_ship_q));
 
 	// Load the game events (compressed)
 	cread_16 (fh, &num_links);

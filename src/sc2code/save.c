@@ -129,23 +129,15 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
-		if (pQueue == &GLOBAL (avail_race_q))
-			Index = GetIndexFromStarShip (pQueue, hStarShip);
-					// The index is the position in the queue.
-		else
-			Index = GET_RACE_ID (FragPtr);
-
+		Index = GET_RACE_ID (FragPtr);
 		// Write the number identifying this ship type.
 		// See races.h; look for the enum containing NUM_AVAILABLE_RACES.
 		cwrite_16 (fh, Index);
 
-		if (pQueue != &GLOBAL (avail_race_q))
-		{	// queues other than avail_race_q save SHIP_FRAGMENT elements
-			// Write SHIP_FRAGMENT elements
-			cwrite_16 (fh, FragPtr->s.Player);
-			cwrite_8  (fh, FragPtr->s.Captain);
-			cwrite_8  (fh, 0); /* padding */
-		}
+		// Write SHIP_FRAGMENT elements
+		cwrite_16 (fh, FragPtr->s.Player);
+		cwrite_8  (fh, FragPtr->s.Captain);
+		cwrite_8  (fh, 0); /* padding */
 		// Write SHIP_INFO elements
 		cwrite_16 (fh, FragPtr->ShipInfo.ship_flags);
 		cwrite_8  (fh, FragPtr->ShipInfo.var1);
@@ -157,23 +149,55 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_16 (fh, FragPtr->ShipInfo.loc.x);
 		cwrite_16 (fh, FragPtr->ShipInfo.loc.y);
 
-		if (pQueue == &GLOBAL (avail_race_q))
-		{
-			// avail_race_q contains information not about specific ships,
-			// but about a race.
-			EXTENDED_SHIP_FRAGMENT *ExtFragPtr =
-					(EXTENDED_SHIP_FRAGMENT*) FragPtr;
+		UnlockStarShip (pQueue, hStarShip);
+		hStarShip = hNextShip;
+	}
+}
 
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.actual_strength);
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.known_strength);
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.x);
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.y);
-			cwrite_8  (fh, ExtFragPtr->ShipInfo.growth_err_term);
-			cwrite_8  (fh, ExtFragPtr->ShipInfo.func_index);
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.x);
-			cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.y);
-			cwrite_16 (fh, 0); /* alignment padding */
-		}
+static void
+SaveRaceQueue (DECODE_REF fh, QUEUE *pQueue)
+{
+	COUNT num_links;
+	HSTARSHIP hStarShip;
+
+	// Write the number of entries in the queue.
+	num_links = CountLinks (pQueue);
+	cwrite_16 (fh, num_links);
+
+	hStarShip = GetHeadLink (pQueue);
+	while (num_links--)
+	{
+		HSTARSHIP hNextShip;
+		EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
+		COUNT Index;
+
+		ExtFragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (pQueue, hStarShip);
+		hNextShip = _GetSuccLink (ExtFragPtr);
+
+		Index = GetIndexFromStarShip (pQueue, hStarShip);
+		// The index is the position in the queue.
+		cwrite_16 (fh, Index);
+
+		// Write EXTENDED_SHIP_INFO elements
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.ship_flags);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.days_left);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.growth_fract);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.crew_level);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.max_crew);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.energy_level);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.max_energy);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.loc.x);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.loc.y);
+
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.actual_strength);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_strength);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.x);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.y);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.growth_err_term);
+		cwrite_8  (fh, ExtFragPtr->ShipInfo.func_index);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.x);
+		cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.y);
+		cwrite_16 (fh, 0); /* alignment padding */
 
 		UnlockStarShip (pQueue, hStarShip);
 		hStarShip = hNextShip;
@@ -605,7 +629,7 @@ RetrySave:
 		// XXX: Restore: ShipStamp.frame is abused to store DWORD info
 		GLOBAL (ShipStamp.frame) = frame;
 
-		SaveShipQueue (fh, &GLOBAL (avail_race_q));
+		SaveRaceQueue (fh, &GLOBAL (avail_race_q));
 		if (!(GLOBAL (CurrentActivity) & START_INTERPLANETARY))
 			SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
 		SaveShipQueue (fh, &GLOBAL (built_ship_q));
