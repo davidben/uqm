@@ -380,11 +380,16 @@ spawn_ship (STARSHIP *StarShipPtr)
 	HELEMENT hShip;
 	RACE_DESC *RDPtr;
 
-	if (!load_ship (StarShipPtr, TRUE))
-		return (FALSE);
+	RDPtr = load_ship (StarShipPtr->RaceResIndex, TRUE);
+	if (!RDPtr)
+		return FALSE;
 
-	RDPtr = StarShipPtr->RaceDescPtr;
-	RDPtr->ship_info.var2 = (BYTE)StarShipPtr->ShipFacing;
+	// XXX: Ship captain and side are stored in RaceDescPtr, so
+	//    get them first
+	StarShipPtr->captains_name_index = StarShipCaptain (StarShipPtr);
+	RDPtr->ship_info.ship_flags |= StarShipPlayer (StarShipPtr);
+
+	StarShipPtr->RaceDescPtr = RDPtr;
 
 	StarShipPtr->ship_input_state = 0;
 	StarShipPtr->cur_status_flags = 0;
@@ -393,13 +398,13 @@ spawn_ship (STARSHIP *StarShipPtr)
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
 			|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{
-		if (StarShipPtr->special_counter == 0)
+		if (StarShipPtr->crew_level == 0)
 		{
 			// SIS, already handled from sis_ship.c.
 			// RDPtr->ship_info.crew_level = GLOBAL_SIS (CrewEnlisted);
 		}
 		else
-			RDPtr->ship_info.crew_level = StarShipPtr->special_counter;
+			RDPtr->ship_info.crew_level = StarShipPtr->crew_level;
 
 		if (RDPtr->ship_info.crew_level > RDPtr->ship_info.max_crew)
 			RDPtr->ship_info.crew_level = RDPtr->ship_info.max_crew;

@@ -241,11 +241,10 @@ new_ship (ELEMENT *DeadShipPtr)
 		BOOLEAN MusicStarted;
 		HELEMENT hElement, hSuccElement;
 
-		DeadStarShipPtr->ShipFacing =
-				DeadStarShipPtr->RaceDescPtr->ship_info.var2;
-		DeadStarShipPtr->special_counter =
+		/* Record crew left after the battle */
+		DeadStarShipPtr->crew_level =
 				DeadStarShipPtr->RaceDescPtr->ship_info.crew_level;
-		if (DeadStarShipPtr->special_counter)
+		if (DeadStarShipPtr->crew_level)
 		{
 			// We've just warped out. new_ship() will still be called
 			// a few times, to process the trace left behind (I assume).
@@ -336,7 +335,8 @@ new_ship (ELEMENT *DeadShipPtr)
 		if (DeadStarShipPtr->RaceDescPtr->uninit_func != NULL)
 			(*DeadStarShipPtr->RaceDescPtr->uninit_func) (
 					DeadStarShipPtr->RaceDescPtr);
-		free_ship (DeadStarShipPtr, TRUE);
+		free_ship (DeadStarShipPtr->RaceDescPtr, TRUE, TRUE);
+		DeadStarShipPtr->RaceDescPtr = 0;
 UnbatchGraphics ();
 
 #ifdef NETPLAY

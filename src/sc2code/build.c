@@ -31,7 +31,8 @@ Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
 {
 	HSTARSHIP hNewShip;
 
-	if ((hNewShip = AllocStarShip (pQueue)) != 0)
+	hNewShip = AllocStarShip (pQueue);
+	if (hNewShip != 0)
 	{
 		STARSHIP *StarShipPtr;
 
@@ -256,7 +257,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 				HSTARSHIP hOldShip;
 				SHIP_FRAGMENT *StarShipPtr;
 
-				hStarShip = CloneShipFragment ((COUNT) which_ship,
+				hStarShip = CloneShipFragment (which_ship,
 						&GLOBAL (built_ship_q), 0);
 				if (!hStarShip)
 					break;

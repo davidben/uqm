@@ -1037,6 +1037,7 @@ tactical_intelligence (COUNT player, STARSHIP *StarShipPtr)
 	}
 
 	ShipMoved = TRUE;
+	/* Disable ship's special completely for the Standard AI */
 	if (PlayerControl[player] & STANDARD_RATING)
 		++StarShipPtr->special_counter;
 

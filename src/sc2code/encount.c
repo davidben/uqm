@@ -82,6 +82,7 @@ DoSelectAction (MENU_STATE *pMS)
 	return (TRUE);
 }
 
+// Called by comm code to intialize battle fleets during encounter
 void
 BuildBattle (COUNT which_player)
 {
@@ -135,15 +136,19 @@ BuildBattle (COUNT which_player)
 		if (hBuiltShip)
 		{
 			BuiltShipPtr = LockStarShip (&race_q[which_player], hBuiltShip);
-			BuiltShipPtr->captains_name_index =
-					StarShipCaptain (BuiltShipPtr);
-			BuiltShipPtr->cur_status_flags =
-					StarShipPlayer (BuiltShipPtr);
+			BuiltShipPtr->captains_name_index = StarShipCaptain (BuiltShipPtr);
+			BuiltShipPtr->which_side = StarShipPlayer (BuiltShipPtr);
 			if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
-				BuiltShipPtr->special_counter = FragPtr->ShipInfo.crew_level;
+				BuiltShipPtr->crew_level = FragPtr->ShipInfo.crew_level;
 			else /* if infinite ships */
-				BuiltShipPtr->special_counter = FragPtr->ShipInfo.max_crew;
-			BuiltShipPtr->RaceDescPtr = (RACE_DESC*)&FragPtr->ShipInfo;
+				BuiltShipPtr->crew_level = FragPtr->ShipInfo.max_crew;
+			BuiltShipPtr->max_crew = FragPtr->ShipInfo.max_crew;
+			BuiltShipPtr->race_strings = FragPtr->ShipInfo.race_strings;
+			BuiltShipPtr->icons = FragPtr->ShipInfo.icons;
+			BuiltShipPtr->index = FragPtr->ShipInfo.var2;
+			/* This is not technically necessary, but still */
+			BuiltShipPtr->ship_cost = FragPtr->ShipInfo.ship_cost;
+			BuiltShipPtr->RaceDescPtr = 0;
 
 			UnlockStarShip (&race_q[which_player], hBuiltShip);
 		}
@@ -156,11 +161,17 @@ BuildBattle (COUNT which_player)
 	{
 		BuiltShipPtr = LockStarShip (&race_q[0], hBuiltShip);
 		BuiltShipPtr->captains_name_index = StarShipCaptain (BuiltShipPtr);
-		BuiltShipPtr->cur_status_flags = StarShipPlayer (BuiltShipPtr);
-		BuiltShipPtr->special_counter = 0;
+		BuiltShipPtr->which_side = StarShipPlayer (BuiltShipPtr);
+		BuiltShipPtr->crew_level = 0;
+		BuiltShipPtr->max_crew = 0;
 				// Crew will be copied directly from
 				// GLOBAL_SIS (CrewEnlisted) later.
+		BuiltShipPtr->race_strings = 0;
+		BuiltShipPtr->icons = 0;
+		BuiltShipPtr->index = -1;
+		BuiltShipPtr->ship_cost = 0;
 		BuiltShipPtr->energy_counter = MAX_ENERGY_SIZE;
+		BuiltShipPtr->RaceDescPtr = 0;
 		UnlockStarShip (&race_q[0], hBuiltShip);
 	}
 }
@@ -267,16 +278,16 @@ InitEncounter (void)
 			{-44, -27},
 		};
 
-		for (hStarShip = GetHeadLink (&race_q[1]), i = 0;
+		for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q)), i = 0;
 				hStarShip && i < 60; hStarShip = hNextShip, ++i)
 		{
 			RECT r;
-			STARSHIP *StarShipPtr;
+			SHIP_FRAGMENT *FragPtr;
 
-			StarShipPtr = LockStarShip (&race_q[1], hStarShip);
-			if (StarShipPtr->RaceDescPtr->ship_info.crew_level !=
-					INFINITE_FLEET)
-				hNextShip = _GetSuccLink (StarShipPtr);
+			FragPtr = (SHIP_FRAGMENT *) LockStarShip (
+					&GLOBAL (npc_built_ship_q), hStarShip);
+			if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
+				hNextShip = _GetSuccLink (FragPtr);
 			else /* if infinite ships */
 				hNextShip = hStarShip;
 
@@ -293,14 +304,13 @@ InitEncounter (void)
 				s.origin.x = COSINE (angle, radius);
 				s.origin.y = SINE (angle, radius);
 			}
-			s.frame = SetAbsFrameIndex (
-					StarShipPtr->RaceDescPtr->ship_info.icons, 0);
+			s.frame = SetAbsFrameIndex (FragPtr->ShipInfo.icons, 0);
 			GetFrameRect (s.frame, &r);
 			s.origin.x += (SIS_SCREEN_WIDTH >> 1) - (r.extent.width >> 1);
 			s.origin.y += (SIS_SCREEN_HEIGHT >> 1) - (r.extent.height >> 1);
 			DrawStamp (&s);
 
-			UnlockStarShip (&race_q[1], hStarShip);
+			UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		}
 	}
 

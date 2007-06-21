@@ -275,12 +275,12 @@ UninitShips (void)
 			if (StarShipPtr->RaceDescPtr->uninit_func != NULL)
 				(*StarShipPtr->RaceDescPtr->uninit_func) (
 						StarShipPtr->RaceDescPtr);
-			StarShipPtr->ShipFacing =
-					StarShipPtr->RaceDescPtr->ship_info.var2;
-			StarShipPtr->special_counter =
+			/* Record crew left after battle */
+			StarShipPtr->crew_level =
 					StarShipPtr->RaceDescPtr->ship_info.crew_level;
 			SPtr[WHICH_SIDE (ElementPtr->state_flags)] = StarShipPtr;
-			free_ship (StarShipPtr, TRUE);
+			free_ship (StarShipPtr->RaceDescPtr, TRUE, TRUE);
+			StarShipPtr->RaceDescPtr = 0;
 		}
 		UnlockElement (hElement);
 	}
@@ -293,8 +293,10 @@ UninitShips (void)
 	else if (LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER
 			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		// XXX: What is the reason for this? At least for SuperMelee,
-		//      it has no purpose (it will return immediately).
+		// XXX: This has no purpose for SuperMelee
+		//   In full-game, the sole purpose of this is to record the crew
+		//   left in the last ship standing. The crew left is first recorded
+		//   into STARSHIP.crew_level just a few lines above here.
 		for (i = NUM_PLAYERS - 1; i >= 0; --i)
 		{
 			if (SPtr[i])

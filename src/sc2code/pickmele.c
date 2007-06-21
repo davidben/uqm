@@ -85,7 +85,7 @@ MeleeShipByQueueIndex (const QUEUE *queue, COUNT index)
 	for (hShip = GetHeadLink (queue); hShip != 0; hShip = hNextShip)
 	{
 		STARSHIP *StarShipPtr = LockStarShip (queue, hShip);
-		if (StarShipPtr->ShipFacing == index)
+		if (StarShipPtr->index == index)
 		{
 			hNextShip = hShip;
 			if (StarShipPtr->RaceResIndex == 0)
@@ -128,7 +128,7 @@ queueIndexFromShip (HSTARSHIP hShip)
 {
 	COUNT result;
 	STARSHIP *StarShipPtr = LockStarShip (queue, hShip);
-	result = StarShipPtr->ShipFacing;
+	result = StarShipPtr->index;
 	UnlockStarShip (queue, hShip);
 }
 #endif
@@ -380,7 +380,7 @@ GetRaceQueueValue (const QUEUE *queue) {
 		if (StarShipPtr->RaceResIndex == 0)
 			continue;  // Not active any more.
 
-		result += StarShipPtr->special_counter;
+		result += StarShipPtr->ship_cost;
 
 		UnlockStarShip (queue, hBattleShip);
 	}
@@ -517,7 +517,7 @@ MeleeShipDeath (STARSHIP *ship, COUNT which_player) {
 	ship->RaceResIndex = 0;
 
 	frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
-	CrossOutShip (frame, ship->ShipFacing);
+	CrossOutShip (frame, ship->index);
 	UpdatePickMeleeFleetValue (frame, which_player);
 	
 	if (battle_counter[0] == 0 || battle_counter[1] == 0)

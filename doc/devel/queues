@@ -7,14 +7,14 @@ GlobData.Game_state.avail_race_q:
 	It contains information about the various races, not really about
 	specific ships.
 	Filled in InitSIS().
-	ShipInfo->RaceDescPtr is an actual pointer.
-	Several pointers point to within master_q (TODO: more info).
+	RaceDescPtr is an actual pointer, but to EXTENDED_SHIP_INFO
+		and not RACE_DESC
 	Partially included in savegames.
 
 GlobData.Game_state.built_ship_q:
 	The fleet accompanying the flagship.
 	Elements are of type SHIP_FRAGMENT.
-	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	RaceDescPtr is abused to store the captain's name index.
 	and the side that this ship is on (always GOOD_GUY here).
 	Partially included in savegames.
 
@@ -23,14 +23,14 @@ master_q:
 	Elements are of type SHIP_FRAGMENT.
 	Sorted on the (abbreviated) race name (see doc/racestrings).
 	Filled in LoadMasterShipList().
-	ShipInfo->RaceDescPtr is an actual pointer.
+	RaceDescPtr is an actual pointer, but to SHIP_INFO and not RACE_DESC
 
 GlobData.Game_state.npc_built_ship_q:
 	The npc ships in an encounter. Empty when not in an encounter.
 	Elements are of type SHIP_FRAGMENT.
 	For encounters with an infinite number of ships, the queue consists
 	of a single ship with ShipInfo.crew_level set to (BYTE)~0.
-	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	RaceDescPtr is abused to store the captain's name index.
 	and the side that this ship is on.
 	Partially included in savegames.
 
@@ -38,7 +38,9 @@ race_q[NUM_PLAYERS]:
 	Contains the ships participating in a battle for each player.
 	Elements are of type STARSHIP.
 	Filled in BuildBattle().
-	ShipInfo->RaceDescPtr is abused to store the captain's name index,
+	RaceDescPtr is abused to store the captain's name index,
+		until the ship is loaded in spawn_ship(), at which time
+		it becomes an actual pointer to RACE_DESC.
 	and the side that this ship is on.
 
 

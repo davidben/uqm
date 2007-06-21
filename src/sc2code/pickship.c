@@ -146,9 +146,8 @@ ChangeSelection:
 						hBattleShip = hNextShip)
 				{
 					StarShipPtr = LockStarShip (&race_q[0], hBattleShip);
-					if ((COUNT)LONIBBLE (
-							StarShipPtr->RaceDescPtr->ship_info.var2
-							) == ship_index && StarShipPtr->RaceResIndex)
+					if (StarShipPtr->index == ship_index
+							&& StarShipPtr->RaceResIndex)
 					{
 						UnlockStarShip (&race_q[0], hBattleShip);
 						break;
@@ -198,12 +197,12 @@ ChangeSelection:
 					STRING locString;
 
 					locString = SetAbsStringTableIndex (
-							StarShipPtr->RaceDescPtr->ship_info.race_strings,
+							StarShipPtr->race_strings,
 							StarShipPtr->captains_name_index);
 					t.pStr = (UNICODE *)GetStringAddress (locString);
 					t.CharCount = GetStringLength (locString);
-					crew_level = StarShipPtr->RaceDescPtr->ship_info.crew_level;
-					max_crew = StarShipPtr->RaceDescPtr->ship_info.max_crew;
+					crew_level = StarShipPtr->crew_level;
+					max_crew = StarShipPtr->max_crew;
 				}
 				UnlockStarShip (&race_q[0], hBattleShip);
 
@@ -314,11 +313,9 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 
 		if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		{
-			// XXX: This check should not be needed, but Uninitships()
-			//      calls this function after the battle is over for some
-			//      reason. Perhaps because one of the non-supermelee cases.
-			//      (Note that the reason isn't to display the battle
-			//      summary; that has already been done).
+			// XXX: This check is needed, because UninitShips() calls
+			//      this function after the battle is over to record
+			//      the crew left in the last ship standing.
 			hBattleShip = 0;
 		}
 		else if (!MeleeShipDeath (LastStarShipPtr, which_player))
@@ -387,16 +384,20 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 				{
 					if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
 					{
-						FragPtr->ShipInfo.crew_level = SPtr->special_counter;
-						SPtr->RaceDescPtr = (RACE_DESC*)&FragPtr->ShipInfo;
+						/* Record crew left after the battle */
+						FragPtr->ShipInfo.crew_level = SPtr->crew_level;
 						if (GLOBAL (CurrentActivity) & IN_BATTLE)
 							SPtr->RaceResIndex = 0;
+									// deactivates the ship
 					}
 					else /* if infinite ships */
 					{
 						hBattleShip = GetTailLink (&race_q[which_player]);
-						SPtr->special_counter = FragPtr->ShipInfo.max_crew;
-						SPtr->cur_status_flags = 1 << which_player;
+						/* XXX: Note that if Syreen had a homeworld you could
+						 * fight, all Syreen ships there would be crewed to
+						 * the maximum, instead of the normal level */
+						SPtr->crew_level = FragPtr->ShipInfo.max_crew;
+						SPtr->which_side = 1 << which_player;
 						SPtr->captains_name_index = PickCaptainName ();
 
 						battle_counter[1]++;
@@ -417,7 +418,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 				{
 #define RUN_AWAY_FUEL_COST (5 * FUEL_TANK_SCALE)
 					hBattleShip = 0;
-					if (LastStarShipPtr->special_counter == 0)
+					if (LastStarShipPtr->crew_level == 0)
 					{
 						/* Died in the line of duty */
 						GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
@@ -434,10 +435,11 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 			}
 		}
 
+		// XXX: STARSHIP refactor; this whole thing is not really needed anymore
 		if (hBattleShip)
 		{
 			SPtr = LockStarShip (&race_q[which_player], hBattleShip);
-			OwnStarShip (SPtr, SPtr->cur_status_flags,
+			OwnStarShip (SPtr, SPtr->which_side,
 					SPtr->captains_name_index);
 			UnlockStarShip (&race_q[which_player], hBattleShip);
 		}
@@ -513,11 +515,10 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 		StarShipPtr = LockStarShip (&race_q[0], hBattleShip);
 
 		if (StarShipPtr->captains_name_index)
-		{
+		{	// Escort ship, not SIS
 			COUNT ship_index;
 
-			ship_index = (COUNT)LONIBBLE (
-					StarShipPtr->RaceDescPtr->ship_info.var2);
+			ship_index = StarShipPtr->index;
 
 			s.origin.x = pick_r.corner.x
 					+ (5 + ((ICON_WIDTH + 4)
@@ -528,12 +529,11 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 			s.origin.y = pick_r.corner.y
 					+ (16 + ((ICON_HEIGHT + 4)
 					* (ship_index / NUM_PICK_SHIP_COLUMNS)));
-			s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+			s.frame = StarShipPtr->icons;
 			r.corner = s.origin;
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
-			if (StarShipPtr->RaceResIndex
-					|| StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
+			if (StarShipPtr->RaceResIndex || StarShipPtr->crew_level == 0)
 			{
 				DrawStamp (&s);
 				if (StarShipPtr->RaceResIndex == 0)

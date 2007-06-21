@@ -218,27 +218,30 @@ InitSIS (void)
 				if (i < num_ships - 1)
 				{
 					HSTARSHIP hMasterShip;
-					STARSHIP *MasterShipPtr;
+					SHIP_FRAGMENT *MasterShipPtr;
 					
 					hMasterShip = FindMasterShip (ship_ref);
-					MasterShipPtr = LockStarShip (&master_q, hMasterShip);
-					FragPtr->ShipInfo =
-							((SHIP_FRAGMENT*)MasterShipPtr)->ShipInfo;
+					MasterShipPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q,
+							hMasterShip);
+					// Grab a copy of loaded icons and strings (not owned)
+					FragPtr->ShipInfo = MasterShipPtr->ShipInfo;
 					UnlockStarShip (&master_q, hMasterShip);
 				}
 				else
 				{
 					// Ur-Quan probe.
-					load_ship ((STARSHIP*)FragPtr, FALSE);
-					FragPtr->ShipInfo = FragPtr->RaceDescPtr->ship_info;
-					FragPtr->RaceDescPtr->ship_info.melee_icon = 0;
-					FragPtr->RaceDescPtr->ship_info.icons = 0;
-					FragPtr->RaceDescPtr->ship_info.race_strings = 0;
-					free_ship ((STARSHIP*)FragPtr, FALSE);
+					RACE_DESC *RDPtr = load_ship (FragPtr->RaceResIndex,
+							FALSE);
+					if (RDPtr)
+					{	// Grab a copy of loaded icons and strings
+						// avail_race_q owns these resources now
+						FragPtr->ShipInfo = RDPtr->ship_info;
+						free_ship (RDPtr, FALSE, FALSE);
+					}
 				}
 
-				FragPtr->ShipInfo.ship_flags = BAD_GUY;
 				ExtFragPtr = (EXTENDED_SHIP_FRAGMENT*)FragPtr;
+				ExtFragPtr->ShipInfo.ship_flags = BAD_GUY;
 				ExtFragPtr->ShipInfo.known_strength = 0;
 				ExtFragPtr->ShipInfo.known_loc = ExtFragPtr->ShipInfo.loc;
 				if (FragPtr->ShipInfo.var2 == (BYTE)~0)
@@ -252,7 +255,7 @@ InitSIS (void)
 				ExtFragPtr->ShipInfo.growth_err_term = 255 >> 1;
 				ExtFragPtr->ShipInfo.energy_level = 0;
 				ExtFragPtr->ShipInfo.days_left = 0;
-				FragPtr->RaceDescPtr = (RACE_DESC*)&ExtFragPtr->ShipInfo;
+				ExtFragPtr->ExtShipInfoPtr = &ExtFragPtr->ShipInfo;
 
 				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 			}
@@ -380,6 +383,8 @@ UninitSIS (void)
 
 //    FreeSC2Data ();
 
+	// The only resources avail_race_q owns are the Ur-Quan probe's
+	// so free them now
 	hStarShip = GetTailLink (&GLOBAL (avail_race_q));
 	if (hStarShip)
 	{

@@ -2128,11 +2128,17 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				UnlockStarShip (&master_q, hStarShip);
 
 				BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
-				BuiltShipPtr->ShipFacing = index;
-				BuiltShipPtr->special_counter = ship_cost;
+				BuiltShipPtr->index = index;
+				BuiltShipPtr->ship_cost = ship_cost;
+				BuiltShipPtr->which_side = 1 << side;
 				BuiltShipPtr->captains_name_index =
 						StarShipCaptain (BuiltShipPtr);
-				BuiltShipPtr->RaceDescPtr = StarShipPtr->RaceDescPtr;
+				// The next ones are not used in Melee
+				BuiltShipPtr->crew_level = 0;
+				BuiltShipPtr->max_crew = 0;
+				BuiltShipPtr->race_strings = 0;
+				BuiltShipPtr->icons = 0;
+				BuiltShipPtr->RaceDescPtr = 0;
 				UnlockStarShip (&race_q[side], hBuiltShip);
 			}
 		}

@@ -251,7 +251,8 @@ ModifySilhouette (ELEMENT *ElementPtr, STAMP *modify_stamp,
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (modify_flags & MODIFY_IMAGE)
 	{
-		ShipIntersect.IntersectStamp.frame = StarShipPtr->silhouette;
+		ShipIntersect.IntersectStamp.frame = SetAbsFrameIndex (
+				StarShipPtr->RaceDescPtr->ship_info.icons, 1);
 		if (ShipIntersect.IntersectStamp.frame == 0)
 			return (0);
 

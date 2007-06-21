@@ -25,6 +25,7 @@
 #include "libs/sndlib.h"
 
 
+// TODO: remove RACES_PER_PLAYER remnant of SC1
 #define RACES_PER_PLAYER 7
 #define MAX_SHIPS_PER_SIDE 14
 
@@ -265,7 +266,8 @@ typedef QUEUE_HANDLE HSTARSHIP;
  * to each other in many places. Some of those are unsafe and potentially
  * destructive if the code is changed later.
  * Currently, the first 4 members of each struct MUST remain the same,
- * the first 2 being the queue links.
+ * the first 2 being the queue links. Functions Build() and CloneShipFragment()
+ * expect these 4 members to be there.
  */
 typedef struct
 {
@@ -288,20 +290,37 @@ typedef struct
 		} s;
 	};
 
+	// Ship information
 	BYTE captains_name_index;
+			// Also used in full-game to detect if a STARSHIP is an escort
+			// or the flagship (captains_name_index == 0)
 
+	BYTE crew_level;
+			// In full-game battles: crew left
+			// In SuperMelee: irrelevant
+	COUNT max_crew;
+	BYTE ship_cost;
+			// In Super Melee ship queue: ship cost
+			// In full-game: irrelevant
+	UWORD which_side;
+			// In race_q: side the ship is on
+	COUNT index;
+			// original queue index
+	STRING race_strings;
+	FRAME icons;
+
+	// Battle states
 	BYTE weapon_counter;
+			// In battle: frames left before primary weapon can be used
 	BYTE special_counter;
-			// In the ship queue: Ship cost
-			// In between battles: crew left
-			// In battle: ship dependant
+			// In battle: frames left before special can be used
 	BYTE energy_counter;
+			// In battle: frames left before energy regeneration
 
 	BYTE ship_input_state;
 	UWORD cur_status_flags _ALIGNED_ON(sizeof (UWORD));
 	UWORD old_status_flags _ALIGNED_ON(sizeof (UWORD));
 
-	FRAME silhouette _ALIGNED_ON(sizeof (FRAME));
 	HELEMENT hShip _ALIGNED_ON(sizeof (HELEMENT));
 	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));
 } STARSHIP;
@@ -320,7 +339,10 @@ typedef struct
 	 * the ship (accessed through StarShipCaptain()).
 	 * These values are set using OwnStarShip(). */
 	union {
+		// TODO: make RaceDescPtr inaccessible
 		RACE_DESC *RaceDescPtr;
+		SHIP_INFO *ShipInfoPtr;
+		EXTENDED_SHIP_INFO *ExtShipInfoPtr;
 		struct {
 			COUNT Player;
 			BYTE Captain;
@@ -342,7 +364,12 @@ typedef struct
 	 * instead of a RACE_DESC when GLOBAL(avail_race_q) is initialized
 	 * [see InitSIS]. For this reason, RACE_DESC must maintain a SHIP_INFO
 	 * as the first member. */
-	RACE_DESC *RaceDescPtr;
+	union {
+		// TODO: make RaceDescPtr inaccessible
+		RACE_DESC *RaceDescPtr;
+		SHIP_INFO *ShipInfoPtr;
+		EXTENDED_SHIP_INFO *ExtShipInfoPtr;
+	};
 
 	EXTENDED_SHIP_INFO ShipInfo;
 } EXTENDED_SHIP_FRAGMENT;

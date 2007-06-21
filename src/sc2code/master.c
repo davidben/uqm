@@ -42,57 +42,60 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 	while (num_entries--)
 	{
 		HSTARSHIP hBuiltShip;
+		char built_buf[30];
+		HSTARSHIP hStarShip, hNextShip;
+		SHIP_FRAGMENT *BuiltFragPtr;
+		RACE_DESC *RDPtr;
 
 		hBuiltShip = Build (&master_q, MAKE_RESOURCE (rp++, rt, ri++), 0, 0);
-		if (hBuiltShip)
+		if (!hBuiltShip)
+			continue;
+
+		// Allow other things to run
+		//  supposedly, loading ship packages and data takes some time
+		if (YieldProcessing)
+			YieldProcessing ();
+
+		BuiltFragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hBuiltShip);
+		RDPtr = load_ship (BuiltFragPtr->RaceResIndex, FALSE);
+		if (!RDPtr)
 		{
-			char built_buf[30];
-			HSTARSHIP hStarShip, hNextShip;
-			STARSHIP *BuiltShipPtr;
-			SHIP_INFO *ShipInfoPtr;
-
-			// Allow other things to run
-			//  supposedly, loading ship packages and data takes some time
-			if (YieldProcessing)
-				YieldProcessing ();
-
-			BuiltShipPtr = LockStarShip (&master_q, hBuiltShip);
-			load_ship (BuiltShipPtr, FALSE);
-			ShipInfoPtr = &((SHIP_FRAGMENT*)BuiltShipPtr)->ShipInfo;
-			*ShipInfoPtr = BuiltShipPtr->RaceDescPtr->ship_info;
-			BuiltShipPtr->RaceDescPtr->ship_info.melee_icon = 0;
-			BuiltShipPtr->RaceDescPtr->ship_info.icons = 0;
-			BuiltShipPtr->RaceDescPtr->ship_info.race_strings = 0;
-			free_ship (BuiltShipPtr, FALSE);
-			BuiltShipPtr->RaceDescPtr = (RACE_DESC*)ShipInfoPtr;
-
-			GetStringContents (SetAbsStringTableIndex (
-					BuiltShipPtr->RaceDescPtr->ship_info.race_strings, 2
-					), (STRINGPTR)built_buf, FALSE);
 			UnlockStarShip (&master_q, hBuiltShip);
-
 			RemoveQueue (&master_q, hBuiltShip);
-
-			// Insert the ship in the master queue in the right location
-			// to keep the list sorted on the name of the race.
-			for (hStarShip = GetHeadLink (&master_q);
-					hStarShip; hStarShip = hNextShip)
-			{
-				char ship_buf[30];
-				STARSHIP *StarShipPtr;
-
-				StarShipPtr = LockStarShip (&master_q, hStarShip);
-				hNextShip = _GetSuccLink (StarShipPtr);
-				GetStringContents (SetAbsStringTableIndex (
-						StarShipPtr->RaceDescPtr->ship_info.race_strings, 2
-						), (STRINGPTR)ship_buf, FALSE);
-				UnlockStarShip (&master_q, hStarShip);
-
-				if (strcmp (built_buf, ship_buf) < 0)
-					break;
-			}
-			InsertQueue (&master_q, hBuiltShip, hStarShip);
+			continue;
 		}
+
+		// Grab a copy of loaded icons and strings
+		BuiltFragPtr->ShipInfo = RDPtr->ship_info;
+		free_ship (RDPtr, FALSE, FALSE);
+		BuiltFragPtr->ShipInfoPtr = &BuiltFragPtr->ShipInfo;
+
+		GetStringContents (SetAbsStringTableIndex (
+				BuiltFragPtr->ShipInfo.race_strings, 2
+				), (STRINGPTR)built_buf, FALSE);
+		UnlockStarShip (&master_q, hBuiltShip);
+
+		RemoveQueue (&master_q, hBuiltShip);
+
+		// Insert the ship in the master queue in the right location
+		// to keep the list sorted on the name of the race.
+		for (hStarShip = GetHeadLink (&master_q);
+				hStarShip; hStarShip = hNextShip)
+		{
+			char ship_buf[30];
+			SHIP_FRAGMENT *FragPtr;
+
+			FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+			hNextShip = _GetSuccLink (FragPtr);
+			GetStringContents (SetAbsStringTableIndex (
+					FragPtr->ShipInfo.race_strings, 2
+					), (STRINGPTR)ship_buf, FALSE);
+			UnlockStarShip (&master_q, hStarShip);
+
+			if (strcmp (built_buf, ship_buf) < 0)
+				break;
+		}
+		InsertQueue (&master_q, hBuiltShip, hStarShip);
 	}
 }
 
@@ -104,17 +107,15 @@ FreeMasterShipList (void)
 	for (hStarShip = GetHeadLink (&master_q);
 			hStarShip != 0; hStarShip = hNextShip)
 	{
-		STARSHIP *StarShipPtr;
+		SHIP_FRAGMENT *FragPtr;
 
-		StarShipPtr = LockStarShip (&master_q, hStarShip);
-		hNextShip = _GetSuccLink (StarShipPtr);
+		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (FragPtr);
 
-		DestroyDrawable (ReleaseDrawable (
-				StarShipPtr->RaceDescPtr->ship_info.melee_icon));
-		DestroyDrawable (ReleaseDrawable (
-				StarShipPtr->RaceDescPtr->ship_info.icons));
+		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.melee_icon));
+		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.icons));
 		DestroyStringTable (ReleaseStringTable (
-				StarShipPtr->RaceDescPtr->ship_info.race_strings));
+				FragPtr->ShipInfo.race_strings));
 
 		UnlockStarShip (&master_q, hStarShip);
 	}
@@ -126,26 +127,20 @@ HSTARSHIP
 FindMasterShip (DWORD ship_ref)
 {
 	HSTARSHIP hStarShip;
+	HSTARSHIP hNextShip;
 	
-	hStarShip = GetHeadLink (&master_q);
-	if (hStarShip)
+	for (hStarShip = GetHeadLink (&master_q); hStarShip; hStarShip = hNextShip)
 	{
-		do
-		{
-			DWORD ref;
-			HSTARSHIP hNextShip;
-			STARSHIP *StarShipPtr;
+		DWORD ref;
+		SHIP_FRAGMENT *FragPtr;
 
-			StarShipPtr = LockStarShip (&master_q, hStarShip);
-			hNextShip = _GetSuccLink (StarShipPtr);
-			ref = StarShipPtr->RaceResIndex;
-			UnlockStarShip (&master_q, hStarShip);
+		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (FragPtr);
+		ref = FragPtr->RaceResIndex;
+		UnlockStarShip (&master_q, hStarShip);
 
-			if (ref == ship_ref)
-				break;
-
-			hStarShip = hNextShip;
-		} while (hStarShip);
+		if (ref == ship_ref)
+			break;
 	}
 
 	return (hStarShip);

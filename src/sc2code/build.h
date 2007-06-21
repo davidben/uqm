@@ -71,9 +71,9 @@ extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HSTARSHIP hStarShip);
 extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 		BYTE captain);
 
-extern MEM_HANDLE load_ship (STARSHIP *StarShipPtr, BOOLEAN
-		LoadBattleData);
-extern void free_ship (STARSHIP *StarShipPtr, BOOLEAN FreeBattleData);
+extern RACE_DESC *load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData);
+extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
+		BOOLEAN FreeBattleData);
 
 extern void DrawCrewFuelString (COORD y, SIZE state);
 extern void ClearShipStatus (COORD y);
