@@ -295,7 +295,7 @@ typedef struct
 			// Also used in full-game to detect if a STARSHIP is an escort
 			// or the flagship (captains_name_index == 0)
 
-	BYTE crew_level;
+	COUNT crew_level;
 			// In full-game battles: crew left
 			// In SuperMelee: irrelevant
 	COUNT max_crew;
