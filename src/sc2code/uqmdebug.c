@@ -465,7 +465,7 @@ forAllPlanets (STAR_DESC *star, SOLARSYS_STATE *system, void (*callback) (
 {
 	COUNT i;
 
-	assert(CurStarDescPtr = star);
+	assert(CurStarDescPtr == star);
 	assert(pSolarSysState == system);
 
 	for (i = 0; i < system->SunDesc[0].NumPlanets; i++)
@@ -563,7 +563,7 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 {
 	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
 	
-	assert(CurStarDescPtr = star);
+	assert(CurStarDescPtr == star);
 	assert(pSolarSysState == system);
 
 	system->pBaseDesc = planet;
@@ -600,7 +600,7 @@ moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 {
 	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
 	
-	assert(CurStarDescPtr = star);
+	assert(CurStarDescPtr == star);
 	assert(pSolarSysState == system);
 	assert(system->pBaseDesc == planet);
 	
