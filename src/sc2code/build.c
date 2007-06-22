@@ -274,9 +274,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 					StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 							&GLOBAL (built_ship_q), hOldShip);
-					// XXX: hack; escort window is not group loc,
-					//   should just use queue index (already var2)
-					win_loc = GET_GROUP_LOC (StarShipPtr);
+					win_loc = StarShipPtr->ShipInfo.var2;
 					UnlockStarShip (&GLOBAL (built_ship_q), hOldShip);
 					if (which_window <= win_loc)
 						break;
@@ -284,9 +282,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (built_ship_q), hStarShip);
-				// XXX: hack; escort window is not group loc,
-				//   should just use queue index (already var2)
-				SET_GROUP_LOC (StarShipPtr, which_window - 1);
+				StarShipPtr->ShipInfo.var2 = which_window - 1;
 				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 
 				InsertQueue (&GLOBAL (built_ship_q), hStarShip, hOldShip);

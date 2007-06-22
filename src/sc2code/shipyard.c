@@ -370,7 +370,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			{
 				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (built_ship_q), hStarShip);
-				if (GET_GROUP_LOC (StarShipPtr) > which_window)
+				if (StarShipPtr->ShipInfo.var2 > which_window)
 				{
 					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 					break;
@@ -385,9 +385,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			hStarShip = hTailShip;
 			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (built_ship_q), hStarShip);
-			// XXX: hack; escort window is not group loc,
-			//   should just use queue index (already var2)
-			SET_GROUP_LOC (StarShipPtr, which_window);
+			StarShipPtr->ShipInfo.var2 = which_window;
 			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 		}
 
@@ -656,9 +654,7 @@ DoModifyShips (MENU_STATE *pMS)
 				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (built_ship_q), hStarShip);
 
-				// XXX: hack; escort window is not group loc,
-				//   should just use queue index (already var2)
-				if (GET_GROUP_LOC (StarShipPtr) == pMS->CurState)
+				if (StarShipPtr->ShipInfo.var2 == pMS->CurState)
 				{
 					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 					break;
