@@ -32,9 +32,7 @@ check_scout (void)
 	HSTARSHIP hStarShip;
 
 	if (GLOBAL (BattleGroupRef)
-			&& (hStarShip = GetHeadLink (
-					&GLOBAL (npc_built_ship_q)
-					)))
+			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
 	{
 		BYTE task;
 		SHIP_FRAGMENT *FragPtr;

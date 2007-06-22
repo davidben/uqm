@@ -25,7 +25,7 @@
 #include "races.h"
 
 
-typedef QUEUE_HANDLE HENCOUNTER;
+typedef HLINK HENCOUNTER;
 
 #define MAX_HYPER_SHIPS 7
 #define ONE_SHOT_ENCOUNTER (1 << 7)
@@ -33,10 +33,12 @@ typedef QUEUE_HANDLE HENCOUNTER;
 
 typedef struct
 {
-	POINT star_pt;
-	BYTE Type, Index;
-	SHIP_INFO ShipList[MAX_HYPER_SHIPS];
-} EXTENDED_STAR_DESC;
+	BYTE race_id;
+	COUNT crew_level;
+	COUNT max_crew;
+	BYTE max_energy;
+
+} BRIEF_SHIP_INFO;
 
 typedef struct
 {
@@ -48,7 +50,8 @@ typedef struct
 	POINT origin;
 	COUNT radius;
 
-	EXTENDED_STAR_DESC SD;
+	STAR_DESC SD;
+	BRIEF_SHIP_INFO ShipList[MAX_HYPER_SHIPS];
 
 	SDWORD log_x, log_y;
 } ENCOUNTER;

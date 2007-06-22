@@ -759,6 +759,7 @@ PickPlanetSide (MENU_STATE *pMS)
 
 			if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 			{
+				/* Create Fwiffo group and go into comm with it */
 				HSTARSHIP hStarShip;
 
 				if (pMenuState->flash_task)
@@ -780,17 +781,17 @@ PickPlanetSide (MENU_STATE *pMS)
 				{
 					BYTE captains_name_index;
 					COUNT which_player;
-					STARSHIP *StarShipPtr;
+					SHIP_FRAGMENT *StarShipPtr;
 
-					StarShipPtr = LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					StarShipPtr = (SHIP_FRAGMENT *) LockStarShip (
+							&GLOBAL (npc_built_ship_q), hStarShip);
+					// XXX: GOOD_GUY/BAD_GUY was set by CloneShipFragment()
+					//   according to avail_race_q Spathi alliance state
 					which_player = StarShipPlayer (StarShipPtr);
 					captains_name_index = NAME_OFFSET + NUM_CAPTAINS_NAMES;
+					// XXX: STARSHIP refactor; only the captain is needed
 					OwnStarShip (StarShipPtr, which_player, captains_name_index);
-					UnlockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
 				SaveFlagshipState ();

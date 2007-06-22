@@ -42,7 +42,7 @@ typedef struct
 			/* Queue element is EVENT */
 } CLOCK_STATE;
 
-typedef QUEUE_HANDLE HEVENT;
+typedef HLINK HEVENT;
 
 typedef struct event
 {

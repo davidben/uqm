@@ -93,9 +93,7 @@ BuildUrquanGuard (void)
 				+ COSINE (b1, STATION_RADIUS);
 		FragPtr->ShipInfo.loc.y = org.y
 				+ SINE (b1, STATION_RADIUS);
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 
@@ -118,9 +116,7 @@ BuildUrquanGuard (void)
 				+ COSINE (b1, STATION_RADIUS);
 		FragPtr->ShipInfo.loc.y = org.y
 				+ SINE (b1, STATION_RADIUS);
-		UnlockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 }
@@ -173,9 +169,7 @@ GenerateSamatra (BYTE control)
 						GuardEngaged = TRUE;
 					}
 
-					UnlockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip
-							);
+					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
 				if (GuardEngaged)

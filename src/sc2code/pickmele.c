@@ -664,6 +664,8 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 	{
 		STARSHIP *StarShipPtr;
 		
+		// XXX: STARSHIP refactor; This whole thing is probably not needed
+		//   once captain/side are maintained permanently in STARSHIP
 		for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 		{
 			if (!gmstate.player[playerI].selecting)

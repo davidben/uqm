@@ -176,7 +176,8 @@ ship_preprocess (ELEMENT *ElementPtr)
 		{
 			CONTEXT OldContext;
 
-			InitShipStatus (StarShipPtr, NULL);
+			InitShipStatus (&RDPtr->ship_info,
+					StarShipPtr->captains_name_index, NULL);
 			OldContext = SetContext (StatusContext);
 			DrawCaptainsWindow (StarShipPtr);
 			SetContext (OldContext);

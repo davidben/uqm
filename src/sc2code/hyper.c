@@ -952,13 +952,17 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 		for (i = 0; i < NumShips; ++i)
 		{
 			HSTARSHIP hStarShip;
-			SHIP_FRAGMENT *TemplatePtr;
+			EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+			BRIEF_SHIP_INFO *BSIPtr = &EncounterPtr->ShipList[i];
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), Type);
-			TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
+			TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (avail_race_q), hStarShip);
-			EncounterPtr->SD.ShipList[i] = TemplatePtr->ShipInfo;
-			EncounterPtr->SD.ShipList[i].var1 = Type;
+			// XXX: SHIP_INFO struct copy
+			BSIPtr->race_id = Type;
+			BSIPtr->crew_level = TemplatePtr->ShipInfo.crew_level;
+			BSIPtr->max_crew = TemplatePtr->ShipInfo.max_crew;
+			BSIPtr->max_energy = TemplatePtr->ShipInfo.max_energy;
 			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 		}
 

@@ -27,6 +27,8 @@ extern QUEUE master_q;
 extern void LoadMasterShipList (void (* YieldProcessing)(void));
 extern void FreeMasterShipList (void);
 extern HSTARSHIP FindMasterShip (DWORD ship_ref);
+extern int FindMasterShipIndex (DWORD ship_ref);
+
 
 #endif  /* _MASTER_H */
 

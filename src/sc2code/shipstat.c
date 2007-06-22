@@ -133,15 +133,13 @@ OutlineShipStatus (COORD y)
 }
 
 void
-InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
+InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 {
 	RECT r;
 	COORD y, y_stat;
 	STAMP Stamp;
 	CONTEXT OldContext;
-	SHIP_INFO *SIPtr;
 
-	SIPtr = &StarShipPtr->RaceDescPtr->ship_info;
 	y_stat = (SIPtr->ship_flags & GOOD_GUY) ?
 			GOOD_GUY_YOFFS : BAD_GUY_YOFFS;
 
@@ -227,8 +225,7 @@ InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 		DrawFilledRectangle (&r);
 	}
 
-	if (StarShipPtr->captains_name_index
-			|| LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
+	if (captains_name_index)
 	{
 		STRING locString;
 
@@ -255,7 +252,7 @@ InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 			else
 			{
 				locString = SetAbsStringTableIndex (SIPtr->race_strings,
-						StarShipPtr->captains_name_index);
+						captains_name_index);
 				Text.pStr = (UNICODE *)GetStringAddress (locString);
 				Text.CharCount = GetStringLength (locString);
 			}
@@ -270,8 +267,8 @@ InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 			SetContextFont (OldFont);
 		}
 	}
-	else if (StarShipPtr->captains_name_index == 0)
-	{
+	else /* if (captains_name_index == 0) */
+	{	/* Only SIS or Sa-Matra */
 		if (SIPtr->ship_flags & GOOD_GUY)
 		{
 			DrawCrewFuelString (y, 0);
@@ -285,7 +282,7 @@ InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 		crew_delta = SIPtr->crew_level;
 		energy_delta = SIPtr->energy_level;
 		SIPtr->crew_level = SIPtr->energy_level = 0;
-		DeltaStatistics (StarShipPtr, crew_delta, energy_delta);
+		DeltaStatistics (SIPtr, crew_delta, energy_delta);
 	}
 
 	UnbatchGraphics ();
@@ -303,19 +300,16 @@ InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect)
 	SetContext (OldContext);
 }
 
-// Pre: -crew_delta <= StarShipPtr->crew_level
-//      crew_delta <= StarShipPtr->max_crew - StarShipPtr->crew_level
+// Pre: -crew_delta <= ShipInfoPtr->crew_level
+//      crew_delta <= ShipInfoPtr->max_crew - ShipInfoPtr->crew_level
 void
-DeltaStatistics (STARSHIP *StarShipPtr, SIZE crew_delta, SIZE energy_delta)
+DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta, SIZE energy_delta)
 {
 	COORD x, y;
 	RECT r;
-	SHIP_INFO *ShipInfoPtr;
 
 	if (crew_delta == 0 && energy_delta == 0)
 		return;
-
-	ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
 
 	x = 0;
 	y = GAUGE_YOFFS + ((ShipInfoPtr->ship_flags & GOOD_GUY) ?
@@ -394,7 +388,7 @@ DeltaStatistics (STARSHIP *StarShipPtr, SIZE crew_delta, SIZE energy_delta)
 		{
 			// All crew doesn't fit in the graphics; print a number.
 			// Always print a number for the SIS in the full game.
-			DrawBattleCrewAmount (StarShipPtr);
+			DrawBattleCrewAmount (ShipInfoPtr);
 		}
 	}
 

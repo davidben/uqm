@@ -234,36 +234,33 @@ LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 	cread_16  (fh, &EncounterPtr->origin.x);
 	cread_16  (fh, &EncounterPtr->origin.y);
 	cread_16  (fh, &EncounterPtr->radius);
-	// EXTENDED_STAR_DESC fields
+	// STAR_DESC fields
 	cread_16  (fh, &EncounterPtr->SD.star_pt.x);
 	cread_16  (fh, &EncounterPtr->SD.star_pt.y);
 	cread_8   (fh, &EncounterPtr->SD.Type);
 	cread_8   (fh, &EncounterPtr->SD.Index);
 	cread_16  (fh, NULL); /* alignment padding */
 
-	// Load each entry in the SHIP_INFO array:
+	// Load each entry in the BRIEF_SHIP_INFO array
 	for (i = 0; i < MAX_HYPER_SHIPS; i++)
 	{
-		SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
+		BRIEF_SHIP_INFO *ShipInfo = &EncounterPtr->ShipList[i];
 		BYTE tmpb;
 
-		cread_16  (fh, &ShipInfo->ship_flags);
-		cread_8   (fh, &ShipInfo->var1);
-		cread_8   (fh, &ShipInfo->var2);
+		cread_16  (fh, NULL); /* useless; was SHIP_INFO.ship_flags */
+		cread_8   (fh, &ShipInfo->race_id);
+		cread_8   (fh, NULL); /* useless; was SHIP_INFO.var2 */
 		cread_8   (fh, &tmpb);
 		ShipInfo->crew_level = tmpb;
 		cread_8   (fh, &tmpb);
 		ShipInfo->max_crew = tmpb;
-		cread_8   (fh, &ShipInfo->energy_level);
+		cread_8   (fh, NULL); /* useless; was SHIP_INFO.energy_level */
 		cread_8   (fh, &ShipInfo->max_energy);
-		cread_16  (fh, &ShipInfo->loc.x);
-		cread_16  (fh, &ShipInfo->loc.y);
+		cread_16  (fh, NULL); /* useless; was SHIP_INFO.loc.x */
+		cread_16  (fh, NULL); /* useless; was SHIP_INFO.loc.y */
 		cread_32  (fh, NULL); /* useless val; STRING race_strings */
-		ShipInfo->race_strings = 0;
 		cread_ptr (fh); /* useless ptr; FRAME icons */
-		ShipInfo->icons = 0;
 		cread_ptr (fh); /* useless ptr; FRAME melee_icon */
-		ShipInfo->melee_icon = 0;
 	}
 	
 	// Load the stuff after the SHIP_INFO array:
@@ -555,7 +552,6 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 	{
 		while (num_links--)
 		{
-			BYTE i, NumShips;
 			HENCOUNTER hEncounter;
 			ENCOUNTER *EncounterPtr;
 
@@ -563,26 +559,6 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 			LockEncounter (hEncounter, &EncounterPtr);
 
 			LoadEncounter (EncounterPtr, fh);
-
-			NumShips = LONIBBLE (EncounterPtr->SD.Index);
-			for (i = 0; i < NumShips; ++i)
-			{
-				HSTARSHIP hStarShip;
-				SHIP_FRAGMENT *TemplatePtr;
-
-				hStarShip = GetStarShipFromIndex (
-						&GLOBAL (avail_race_q),
-						EncounterPtr->SD.ShipList[i].var1);
-				TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (avail_race_q), hStarShip);
-				EncounterPtr->SD.ShipList[i].race_strings =
-						TemplatePtr->ShipInfo.race_strings;
-				EncounterPtr->SD.ShipList[i].icons =
-						TemplatePtr->ShipInfo.icons;
-				EncounterPtr->SD.ShipList[i].melee_icon =
-						TemplatePtr->ShipInfo.melee_icon;
-				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
-			}
 
 			UnlockEncounter (hEncounter);
 			PutEncounter (hEncounter);

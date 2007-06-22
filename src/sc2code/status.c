@@ -114,7 +114,7 @@ CaptainsWindow (CAPTAIN_STUFF *CSPtr, COORD y, ELEMENT_FLAGS
 }
 
 void
-DrawBattleCrewAmount (STARSHIP *StarShipPtr)
+DrawBattleCrewAmount (SHIP_INFO *ShipInfoPtr)
 {
 #define MAX_CREW_DIGITS 3
 	RECT r;
@@ -125,7 +125,7 @@ DrawBattleCrewAmount (STARSHIP *StarShipPtr)
 	if (optWhichMenu == OPT_PC)
 			t.baseline.x -= 8;
 	t.baseline.y = BATTLE_CREW_Y +
-			((StarShipPtr->RaceDescPtr->ship_info.ship_flags & GOOD_GUY) ?
+			((ShipInfoPtr->ship_flags & GOOD_GUY) ?
 			GOOD_GUY_YOFFS : BAD_GUY_YOFFS);
 	t.align = ALIGN_LEFT;
 	t.pStr = buf;
@@ -136,7 +136,7 @@ DrawBattleCrewAmount (STARSHIP *StarShipPtr)
 	r.extent.width = 6 * MAX_CREW_DIGITS + 6;
 	r.extent.height = 5;
 
-	sprintf (buf, "%u", StarShipPtr->RaceDescPtr->ship_info.crew_level);
+	sprintf (buf, "%u", ShipInfoPtr->crew_level);
 	SetContextFont (StarConFont);
 
 	SetContextForeGroundColor (
@@ -272,7 +272,7 @@ DrawCaptainsWindow (STARSHIP *StarShipPtr)
 	{
 		// All crew doesn't fit in the graphics; print a number.
 		// Always print a number for the SIS in the full game.
-		DrawBattleCrewAmount (StarShipPtr);
+		DrawBattleCrewAmount (&RDPtr->ship_info);
 	}
 
 	UnbatchGraphics ();
@@ -312,7 +312,7 @@ DeltaEnergy (ELEMENT *ElementPtr, SIZE energy_delta)
 		StarShipPtr->energy_counter =
 				StarShipPtr->RaceDescPtr->characteristics.energy_wait;
 
-		DeltaStatistics (StarShipPtr, 0, energy_delta);
+		DeltaStatistics (ShipInfoPtr, 0, energy_delta);
 	}
 
 	return (retval);
@@ -323,6 +323,7 @@ DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta)
 {
 	BOOLEAN retval;
 	STARSHIP *StarShipPtr;
+	SHIP_INFO *ShipInfoPtr;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE
 			&& (ElementPtr->state_flags & BAD_GUY))
@@ -330,10 +331,9 @@ DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta)
 
 	retval = TRUE;
 	GetElementStarShip (ElementPtr, &StarShipPtr);
+	ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
 	if (crew_delta > 0)
 	{
-		SHIP_INFO *ShipInfoPtr = &StarShipPtr->RaceDescPtr->ship_info;
-
 		ElementPtr->crew_level += crew_delta;
 		if (ElementPtr->crew_level > ShipInfoPtr->max_crew)
 		{
@@ -353,7 +353,7 @@ DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta)
 		}
 	}
 
-	DeltaStatistics (StarShipPtr, crew_delta, 0);
+	DeltaStatistics (ShipInfoPtr, crew_delta, 0);
 
 	return (retval);
 }

@@ -65,10 +65,9 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 			continue;
 		}
 
-		// Grab a copy of loaded icons and strings
+		// Grab a copy of loaded icons, strings and info
 		BuiltFragPtr->ShipInfo = RDPtr->ship_info;
 		free_ship (RDPtr, FALSE, FALSE);
-		BuiltFragPtr->ShipInfoPtr = &BuiltFragPtr->ShipInfo;
 
 		GetStringContents (SetAbsStringTableIndex (
 				BuiltFragPtr->ShipInfo.race_strings, 2
@@ -144,4 +143,29 @@ FindMasterShip (DWORD ship_ref)
 	}
 
 	return (hStarShip);
+}
+
+int
+FindMasterShipIndex (DWORD ship_ref)
+{
+	HSTARSHIP hStarShip;
+	HSTARSHIP hNextShip;
+	int index;
+	
+	for (index = 0, hStarShip = GetHeadLink (&master_q); hStarShip;
+			++index, hStarShip = hNextShip)
+	{
+		DWORD ref;
+		SHIP_FRAGMENT *FragPtr;
+
+		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (FragPtr);
+		ref = FragPtr->RaceResIndex;
+		UnlockStarShip (&master_q, hStarShip);
+
+		if (ref == ship_ref)
+			break;
+	}
+
+	return hStarShip ? index : -1;
 }

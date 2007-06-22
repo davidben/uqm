@@ -172,6 +172,23 @@ LoadSC2Data (void)
 	return TRUE;
 }
 
+static void
+copyFleetInfo (EXTENDED_SHIP_INFO *dst, SHIP_INFO *src, BYTE *fleet_strength)
+{
+	*fleet_strength = src->var2;
+	// other leading fields are irrelevant
+
+	dst->crew_level = src->crew_level;
+	dst->max_crew = src->max_crew;
+	dst->energy_level = src->energy_level;
+	dst->max_energy = src->max_energy;
+	dst->loc = src->loc;
+
+	dst->race_strings = src->race_strings;
+	dst->icons = src->icons;
+	dst->melee_icon = src->melee_icon;
+}
+
 BOOLEAN
 InitSIS (void)
 {
@@ -210,10 +227,10 @@ InitSIS (void)
 			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref, 0, 0);
 			if (hStarShip)
 			{
-				SHIP_FRAGMENT *FragPtr;
-				EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
+				EXTENDED_SHIP_FRAGMENT *FleetPtr;
+				BYTE fleet_strength = 0;
 
-				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
+				FleetPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (avail_race_q), hStarShip);
 				if (i < num_ships - 1)
 				{
@@ -224,38 +241,41 @@ InitSIS (void)
 					MasterShipPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q,
 							hMasterShip);
 					// Grab a copy of loaded icons and strings (not owned)
-					FragPtr->ShipInfo = MasterShipPtr->ShipInfo;
+					// XXX: SHIP_INFO struct copy
+					copyFleetInfo (&FleetPtr->ShipInfo, &MasterShipPtr->ShipInfo,
+							&fleet_strength);
 					UnlockStarShip (&master_q, hMasterShip);
 				}
 				else
 				{
 					// Ur-Quan probe.
-					RACE_DESC *RDPtr = load_ship (FragPtr->RaceResIndex,
+					RACE_DESC *RDPtr = load_ship (FleetPtr->RaceResIndex,
 							FALSE);
 					if (RDPtr)
 					{	// Grab a copy of loaded icons and strings
+						// XXX: SHIP_INFO struct copy
+						copyFleetInfo (&FleetPtr->ShipInfo, &RDPtr->ship_info,
+								&fleet_strength);
 						// avail_race_q owns these resources now
-						FragPtr->ShipInfo = RDPtr->ship_info;
 						free_ship (RDPtr, FALSE, FALSE);
 					}
 				}
 
-				ExtFragPtr = (EXTENDED_SHIP_FRAGMENT*)FragPtr;
-				ExtFragPtr->ShipInfo.ship_flags = BAD_GUY;
-				ExtFragPtr->ShipInfo.known_strength = 0;
-				ExtFragPtr->ShipInfo.known_loc = ExtFragPtr->ShipInfo.loc;
-				if (FragPtr->ShipInfo.var2 == (BYTE)~0)
-					ExtFragPtr->ShipInfo.actual_strength = (COUNT)~0;
+				FleetPtr->ShipInfo.ship_flags = BAD_GUY;
+				FleetPtr->ShipInfo.known_strength = 0;
+				FleetPtr->ShipInfo.known_loc = FleetPtr->ShipInfo.loc;
+				if (fleet_strength == (BYTE)~0)
+					FleetPtr->ShipInfo.actual_strength = (COUNT)~0;
 				else if (i == YEHAT_REBEL_SHIP)
-					ExtFragPtr->ShipInfo.actual_strength = 0;
+					FleetPtr->ShipInfo.actual_strength = 0;
 				else
-					ExtFragPtr->ShipInfo.actual_strength =
-							(COUNT)FragPtr->ShipInfo.var2 << 1;
-				ExtFragPtr->ShipInfo.growth_fract = 0;
-				ExtFragPtr->ShipInfo.growth_err_term = 255 >> 1;
-				ExtFragPtr->ShipInfo.energy_level = 0;
-				ExtFragPtr->ShipInfo.days_left = 0;
-				ExtFragPtr->ExtShipInfoPtr = &ExtFragPtr->ShipInfo;
+					FleetPtr->ShipInfo.actual_strength =
+							(COUNT)fleet_strength << 1;
+				FleetPtr->ShipInfo.growth_fract = 0;
+				FleetPtr->ShipInfo.growth_err_term = 255 >> 1;
+				FleetPtr->ShipInfo.energy_level = 0;
+				FleetPtr->ShipInfo.days_left = 0;
+				FleetPtr->ShipInfo.func_index = ~0;
 
 				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 			}
@@ -388,15 +408,14 @@ UninitSIS (void)
 	hStarShip = GetTailLink (&GLOBAL (avail_race_q));
 	if (hStarShip)
 	{
-		STARSHIP *StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *FragPtr;
 
-		StarShipPtr = LockStarShip (&GLOBAL (avail_race_q), hStarShip);
-		DestroyDrawable (ReleaseDrawable (
-				StarShipPtr->RaceDescPtr->ship_info.melee_icon));
-		DestroyDrawable (ReleaseDrawable (
-				StarShipPtr->RaceDescPtr->ship_info.icons));
+		FragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
+		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.melee_icon));
+		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.icons));
 		DestroyStringTable (ReleaseStringTable (
-				StarShipPtr->RaceDescPtr->ship_info.race_strings));
+				FragPtr->ShipInfo.race_strings));
 		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 	}
 

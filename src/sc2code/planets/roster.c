@@ -103,13 +103,13 @@ DeltaSupportCrew (SIZE crew_delta)
 	UNICODE buf[40];
 	HSTARSHIP hTemplate;
 	SHIP_FRAGMENT *StarShipPtr;
-	SHIP_FRAGMENT *TemplatePtr;
+	EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
 	StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (built_ship_q), (HSTARSHIP)pMenuState->CurFrame);
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 			GET_RACE_ID (StarShipPtr));
-	TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
+	TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hTemplate);
 
 	StarShipPtr->ShipInfo.crew_level += crew_delta;
@@ -117,18 +117,18 @@ DeltaSupportCrew (SIZE crew_delta)
 	if (StarShipPtr->ShipInfo.crew_level == 0)
 		StarShipPtr->ShipInfo.crew_level = 1;
 	else if (StarShipPtr->ShipInfo.crew_level >
-			TemplatePtr->RaceDescPtr->ship_info.crew_level &&
+			TemplatePtr->ShipInfo.crew_level &&
 			crew_delta > 0)
 		StarShipPtr->ShipInfo.crew_level -= crew_delta;
 	else
 	{
 		if (StarShipPtr->ShipInfo.crew_level >=
-				TemplatePtr->RaceDescPtr->ship_info.crew_level)
+				TemplatePtr->ShipInfo.crew_level)
 			sprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
 		else
 			sprintf (buf, "%u/%u",
 					StarShipPtr->ShipInfo.crew_level,
-					TemplatePtr->RaceDescPtr->ship_info.crew_level);
+					TemplatePtr->ShipInfo.crew_level);
 
 		DrawStatusMessage (buf);
 		DeltaSISGauges (-crew_delta, 0, 0);

@@ -38,6 +38,7 @@ ZapToUrquanEncounter (void)
 		ENCOUNTER *EncounterPtr;
 		HSTARSHIP hStarShip;
 		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+		BRIEF_SHIP_INFO *BSIPtr;
 
 		LockEncounter (hEncounter, &EncounterPtr);
 
@@ -54,18 +55,19 @@ ZapToUrquanEncounter (void)
 		EncounterPtr->radius = TemplatePtr->ShipInfo.actual_strength;
 		EncounterPtr->SD.Type = URQUAN_SHIP;
 		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
-		EncounterPtr->SD.ShipList[0] = ((SHIP_FRAGMENT*)TemplatePtr)->ShipInfo;
-		EncounterPtr->SD.ShipList[0].var1 = URQUAN_SHIP;
+		// XXX: SHIP_INFO struct copy
+		BSIPtr = &EncounterPtr->ShipList[0];
+		BSIPtr->race_id = URQUAN_SHIP;
+		BSIPtr->crew_level = TemplatePtr->ShipInfo.crew_level;
+		BSIPtr->max_crew = TemplatePtr->ShipInfo.max_crew;
+		BSIPtr->max_energy = TemplatePtr->ShipInfo.max_energy;
 		EncounterPtr->SD.star_pt.x = 5288;
 		EncounterPtr->SD.star_pt.y = 4892;
 		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->SD.star_pt.x);
 		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->SD.star_pt.y);
 		GLOBAL_SIS (log_x) = EncounterPtr->log_x;
 		GLOBAL_SIS (log_y) = EncounterPtr->log_y;
-		UnlockStarShip (
-				&GLOBAL (avail_race_q),
-				hStarShip
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 
 		{
 #define LOST_DAYS 15

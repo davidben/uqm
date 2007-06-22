@@ -448,9 +448,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 				}
 			}
 
-			UnlockStarShip (
-					&GLOBAL (avail_race_q), hStarShip
-					);
+			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 		}
 	}
 
@@ -1572,9 +1570,7 @@ DoneSphereGrowth:
 			}
 		}
 
-		UnlockStarShip (
-				&GLOBAL (avail_race_q), hStarShip
-				);
+		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 	}
 }
 

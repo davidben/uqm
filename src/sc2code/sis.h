@@ -109,6 +109,7 @@ enum
 #define FUEL_RESERVE FUEL_VOLUME_PER_ROW
 
 #define MAX_COMBAT_SHIPS 12
+// XXX: Only half of this number if actually used
 #define MAX_BATTLE_GROUPS 64
 
 #define IP_SHIP_THRUST_INCREMENT 8

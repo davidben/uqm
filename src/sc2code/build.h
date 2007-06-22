@@ -33,6 +33,7 @@
 #define NAME_OFFSET 5
 #define NUM_CAPTAINS_NAMES 16
 
+// XXX: STARSHIP refactor; These three alias STARSHIP and SHIP_FRAGMENT
 #define OwnStarShip(S,p,n) \
 		(S)->s.Player = (p); \
 		(S)->s.Captain = (n);
@@ -48,8 +49,8 @@ extern HSTARSHIP Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT
 		which_player, BYTE captains_name_index);
 extern HSTARSHIP CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
-extern HSTARSHIP GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
-extern BYTE NameCaptain (QUEUE *pQueue, STARSHIP *StarShipPtr);
+extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
+extern BYTE NameCaptain (QUEUE *pQueue, DWORD RaceResIndex);
 
 /* Possible values for the 'state' argument of
  * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
@@ -67,7 +68,7 @@ extern BYTE NameCaptain (QUEUE *pQueue, STARSHIP *StarShipPtr);
 		/* Check for how many escort ships there's still space */
 
 extern COUNT ActivateStarShip (COUNT which_ship, SIZE state);
-extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HSTARSHIP hStarShip);
+extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HLINK hStarShip);
 extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 		BYTE captain);
 
@@ -78,10 +79,11 @@ extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
 extern void DrawCrewFuelString (COORD y, SIZE state);
 extern void ClearShipStatus (COORD y);
 extern void OutlineShipStatus (COORD y);
-extern void InitShipStatus (STARSHIP *StarShipPtr, RECT *pClipRect);
-extern void DeltaStatistics (STARSHIP *StarShipPtr, SIZE crew_delta,
+extern void InitShipStatus (SHIP_INFO *ShipInfoPtr, BYTE captains_name_index,
+		RECT *pClipRect);
+extern void DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta,
 		SIZE energy_delta);
-extern void DrawBattleCrewAmount (STARSHIP *StarShipPtr);
+extern void DrawBattleCrewAmount (SHIP_INFO *ShipInfoPtr);
 
 #endif /* _BUILD_H */
 

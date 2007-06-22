@@ -216,27 +216,27 @@ SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 	cwrite_16  (fh, EncounterPtr->origin.x);
 	cwrite_16  (fh, EncounterPtr->origin.y);
 	cwrite_16  (fh, EncounterPtr->radius);
-	// EXTENDED_STAR_DESC fields
+	// STAR_DESC fields
 	cwrite_16  (fh, EncounterPtr->SD.star_pt.x);
 	cwrite_16  (fh, EncounterPtr->SD.star_pt.y);
 	cwrite_8   (fh, EncounterPtr->SD.Type);
 	cwrite_8   (fh, EncounterPtr->SD.Index);
 	cwrite_16  (fh, 0); /* alignment padding */
 
-	// Save each entry in the SHIP_INFO array:
+	// Save each entry in the BRIEF_SHIP_INFO array
 	for (i = 0; i < MAX_HYPER_SHIPS; i++)
 	{
-		const SHIP_INFO *ShipInfo = &EncounterPtr->SD.ShipList[i];
+		const BRIEF_SHIP_INFO *ShipInfo = &EncounterPtr->ShipList[i];
 
-		cwrite_16  (fh, ShipInfo->ship_flags);
-		cwrite_8   (fh, ShipInfo->var1);
-		cwrite_8   (fh, ShipInfo->var2);
+		cwrite_16  (fh, 0); /* useless; was SHIP_INFO.ship_flags */
+		cwrite_8   (fh, ShipInfo->race_id);
+		cwrite_8   (fh, 0); /* useless; was SHIP_INFO.var2 */
 		cwrite_8   (fh, ShipInfo->crew_level);
 		cwrite_8   (fh, ShipInfo->max_crew);
-		cwrite_8   (fh, ShipInfo->energy_level);
+		cwrite_8   (fh, 0); /* useless; was SHIP_INFO.energy_level */
 		cwrite_8   (fh, ShipInfo->max_energy);
-		cwrite_16  (fh, ShipInfo->loc.x);
-		cwrite_16  (fh, ShipInfo->loc.y);
+		cwrite_16  (fh, 0); /* useless; was SHIP_INFO.loc.x */
+		cwrite_16  (fh, 0); /* useless; was SHIP_INFO.loc.y */
 		cwrite_32  (fh, 0); /* useless val; STRING race_strings */
 		cwrite_ptr (fh); /* useless ptr; FRAME icons */
 		cwrite_ptr (fh); /* useless ptr; FRAME melee_icon */

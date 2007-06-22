@@ -1595,6 +1595,7 @@ RaceCommunication (void)
 	COUNT i, status;
 	HSTARSHIP hStarShip;
 	SHIP_FRAGMENT *FragPtr;
+	HENCOUNTER hEncounter = 0;
 	RESOURCE RaceComm[] =
 	{
 		RACE_COMMUNICATION
@@ -1650,8 +1651,8 @@ RaceCommunication (void)
 		}
 		else
 		{
+			/* Encounter with a black globe in HS, prepare enemy ship list */
 			COUNT NumShips;
-			HENCOUNTER hEncounter;
 			ENCOUNTER *EncounterPtr;
 
 			hEncounter = GetHeadEncounter ();
@@ -1660,11 +1661,15 @@ RaceCommunication (void)
 			NumShips = LONIBBLE (EncounterPtr->SD.Index);
 			for (i = 0; i < NumShips; ++i)
 			{
+				// XXX: Bug 996 lives here: crew is set to default (0)
+				//   None of ship info is actually used!
 				CloneShipFragment (EncounterPtr->SD.Type,
 						&GLOBAL (npc_built_ship_q), 0);
 			}
 
-			CurStarDescPtr = (STAR_DESC*)&EncounterPtr->SD;
+			// XXX: Bug: CurStarDescPtr was abused to point within
+			//    an ENCOUNTER struct, which is immediately unlocked
+			//CurStarDescPtr = (STAR_DESC*)&EncounterPtr->SD;
 			UnlockEncounter (hEncounter);
 		}
 	}
@@ -1689,38 +1694,42 @@ RaceCommunication (void)
 		if (i == SLYLANDRO_SHIP && status == 0)
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 	}
-	else
+	else if (hEncounter)
 	{
-		EXTENDED_STAR_DESC *pESD;
+		/* Update HSpace encounter info, ships lefts, etc. */
+		BYTE i, NumShips;
+		ENCOUNTER *EncounterPtr;
 
-		pESD = (EXTENDED_STAR_DESC*)CurStarDescPtr;
-		if (pESD)
+		LockEncounter (hEncounter, &EncounterPtr);
+
+		NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
+		EncounterPtr->SD.Index = MAKE_BYTE (NumShips,
+				HINIBBLE (EncounterPtr->SD.Index));
+		EncounterPtr->SD.Index |= ENCOUNTER_REFORMING;
+		if (status == 0)
+			EncounterPtr->SD.Index |= ONE_SHOT_ENCOUNTER;
+
+		for (i = 0; i < NumShips; ++i)
 		{
-			BYTE i, NumShips;
+			HSTARSHIP hStarShip;
+			SHIP_FRAGMENT *TemplatePtr;
+			BRIEF_SHIP_INFO *BSIPtr;
 
-			NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
-			pESD->Index = MAKE_BYTE (NumShips, HINIBBLE (pESD->Index));
-			pESD->Index |= ENCOUNTER_REFORMING;
-			if (status == 0)
-				pESD->Index |= ONE_SHOT_ENCOUNTER;
-
-			for (i = 0; i < NumShips; ++i)
-			{
-				HSTARSHIP hStarShip;
-				SHIP_FRAGMENT *TemplatePtr;
-
-				hStarShip = GetStarShipFromIndex (
-						&GLOBAL (npc_built_ship_q), i);
-				TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip);
-				pESD->ShipList[i] = TemplatePtr->ShipInfo;
-				pESD->ShipList[i].var1 = GET_RACE_ID (TemplatePtr);
-				UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
-			}
-
-			ReinitQueue (&GLOBAL (npc_built_ship_q));
-			CurStarDescPtr = 0;
+			hStarShip = GetStarShipFromIndex (
+					&GLOBAL (npc_built_ship_q), i);
+			TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
+					&GLOBAL (npc_built_ship_q), hStarShip);
+			// XXX: SHIP_INFO struct copy
+			BSIPtr = &EncounterPtr->ShipList[i];
+			BSIPtr->race_id = GET_RACE_ID (TemplatePtr);
+			BSIPtr->crew_level = TemplatePtr->ShipInfo.crew_level;
+			BSIPtr->max_crew = TemplatePtr->ShipInfo.max_crew;
+			BSIPtr->max_energy = TemplatePtr->ShipInfo.max_energy;
+			UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 		}
+		
+		UnlockEncounter (hEncounter);
+		ReinitQueue (&GLOBAL (npc_built_ship_q));
 	}
 }
 

@@ -435,7 +435,8 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 			}
 		}
 
-		// XXX: STARSHIP refactor; this whole thing is not really needed anymore
+		// XXX: STARSHIP refactor; this whole thing is not really needed
+		//   once STARSHIP maintains captain/side permanently
 		if (hBattleShip)
 		{
 			SPtr = LockStarShip (&race_q[which_player], hBattleShip);

@@ -41,7 +41,7 @@
 
 #define NORMAL_LIFE 1
 
-typedef QUEUE_HANDLE HELEMENT;
+typedef HLINK HELEMENT;
 
 // Bits for ELEMENT_FLAGS:
 #define GOOD_GUY (1 << 0)

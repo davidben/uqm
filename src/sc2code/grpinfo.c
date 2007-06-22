@@ -511,6 +511,9 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								&GLOBAL (npc_built_ship_q), 0);
 						FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 								&GLOBAL (npc_built_ship_q), hStarShip);
+						// XXX: STARSHIP refactor; this is probably needed
+						//   because SHIP_INFO.ship_flags is used for
+						//   group_counter
 						OwnStarShip (FragPtr, BAD_GUY, 0);
 						SET_GROUP_ID (FragPtr, which_group);
 

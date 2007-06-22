@@ -126,27 +126,15 @@ hangar_anim_func (void *data)
 static void
 SpinStarShip (HSTARSHIP hStarShip)
 {
-	COUNT Index;
-	HSTARSHIP hNextShip, hShip;
-	STARSHIP *StarShipPtr;
+	int Index;
+	SHIP_FRAGMENT *StarShipPtr;
 
-	StarShipPtr = LockStarShip (&GLOBAL (built_ship_q), hStarShip);
-
-	for (Index = 0, hShip = GetHeadLink (&master_q);
-			hShip; hShip = hNextShip, ++Index)
-	{
-		STARSHIP *SSPtr;
-
-		SSPtr = LockStarShip (&master_q, hShip);
-		if (StarShipPtr->RaceResIndex == SSPtr->RaceResIndex)
-			break;
-		hNextShip = _GetSuccLink (SSPtr);
-		UnlockStarShip (&master_q, hShip);
-	}
-
+	StarShipPtr = (SHIP_FRAGMENT *) LockStarShip (&GLOBAL (built_ship_q),
+			hStarShip);
+	Index = FindMasterShipIndex (StarShipPtr->RaceResIndex);
 	UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 				
-	if (Index < NUM_MELEE_SHIPS)
+	if (Index >= 0 && Index < NUM_MELEE_SHIPS)
 	{
 		UnlockMutex (GraphicsLock);
 		DoShipSpin (Index, pMenuState->hMusic);
@@ -166,9 +154,9 @@ GetAvailableRaceCount (void)
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENT *StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 				&GLOBAL (avail_race_q), hStarShip);
 		if (StarShipPtr->ShipInfo.ship_flags & GOOD_GUY)
 			++Index;
@@ -188,10 +176,10 @@ GetAvailableRaceFromIndex (BYTE Index)
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENT *StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (&GLOBAL (avail_race_q),
-				hStarShip);
+		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
 		if ((StarShipPtr->ShipInfo.ship_flags & GOOD_GUY) && Index-- == 0)
 		{
 			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
@@ -237,7 +225,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	{
 		TEXT t;
 		HSTARSHIP hStarShip;
-		STARSHIP *StarShipPtr;
+		EXTENDED_SHIP_FRAGMENT *FragPtr;
 		UNICODE buf[30];
 		COUNT ShipCost[] =
 		{
@@ -250,8 +238,9 @@ DrawRaceStrings (BYTE NewRaceItem)
 		s.frame = SetAbsFrameIndex (pMenuState->ModuleFrame,
 				3 + NewRaceItem);
 		DrawStamp (&s);
-		StarShipPtr = LockStarShip (&GLOBAL (avail_race_q), hStarShip);
-		s.frame = StarShipPtr->RaceDescPtr->ship_info.melee_icon;
+		FragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (
+				&GLOBAL (avail_race_q), hStarShip);
+		s.frame = FragPtr->ShipInfo.melee_icon;
 		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
 
 		t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
@@ -287,21 +276,21 @@ ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, RECT *pRect)
 	TEXT t;
 	UNICODE buf[80];
 	HSTARSHIP hTemplate;
-	SHIP_FRAGMENT *TemplatePtr;
+	EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 			GET_RACE_ID (StarShipPtr));
-	TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
+	TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
 			&GLOBAL (avail_race_q), hTemplate);
 	if (StarShipPtr->ShipInfo.crew_level >=
-			TemplatePtr->RaceDescPtr->ship_info.crew_level)
+			TemplatePtr->ShipInfo.crew_level)
 		sprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
 	else if (StarShipPtr->ShipInfo.crew_level == 0)
 		utf8StringCopy (buf, sizeof (buf), "SCRAP");
 	else
 		sprintf (buf, "%u/%u",
 				StarShipPtr->ShipInfo.crew_level,
-				TemplatePtr->RaceDescPtr->ship_info.crew_level);
+				TemplatePtr->ShipInfo.crew_level);
 	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
 
 	r = *pRect;
@@ -396,6 +385,8 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			hStarShip = hTailShip;
 			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 					&GLOBAL (built_ship_q), hStarShip);
+			// XXX: hack; escort window is not group loc,
+			//   should just use queue index (already var2)
 			SET_GROUP_LOC (StarShipPtr, which_window);
 			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 		}
@@ -665,6 +656,8 @@ DoModifyShips (MENU_STATE *pMS)
 				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
 						&GLOBAL (built_ship_q), hStarShip);
 
+				// XXX: hack; escort window is not group loc,
+				//   should just use queue index (already var2)
 				if (GET_GROUP_LOC (StarShipPtr) == pMS->CurState)
 				{
 					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
@@ -927,20 +920,20 @@ DoModifyShips (MENU_STATE *pMS)
 						else
 						{
 							HSTARSHIP hTemplate;
-							SHIP_FRAGMENT *TemplatePtr;
+							EXTENDED_SHIP_FRAGMENT *TemplatePtr;
 
 							hTemplate = GetStarShipFromIndex (
 									&GLOBAL (avail_race_q),
 									GET_RACE_ID (StarShipPtr));
-							TemplatePtr = (SHIP_FRAGMENT*) LockStarShip (
-									&GLOBAL (avail_race_q), hTemplate);
+							TemplatePtr = (EXTENDED_SHIP_FRAGMENT*)
+									LockStarShip (&GLOBAL (avail_race_q),
+									hTemplate);
 							if (GLOBAL_SIS (ResUnits) >=
 									(DWORD)GLOBAL (CrewCost)
 									&& StarShipPtr->ShipInfo.crew_level <
 									StarShipPtr->ShipInfo.max_crew &&
 									StarShipPtr->ShipInfo.crew_level <
-									TemplatePtr->RaceDescPtr->ship_info.
-									crew_level)
+									TemplatePtr->ShipInfo.crew_level)
 							{
 								if (StarShipPtr->ShipInfo.crew_level > 0)
 									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));

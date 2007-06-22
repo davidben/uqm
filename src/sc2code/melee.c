@@ -256,6 +256,60 @@ GetShipColumn (int index)
 	return index % NUM_MELEE_COLUMNS;
 }
 
+static COUNT
+GetShipCostFromIndex (unsigned Index)
+{
+	HSTARSHIP hStarShip;
+	SHIP_FRAGMENT *FragPtr;
+	COUNT val;
+
+	hStarShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hStarShip)
+		return 0;
+
+	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+	val = FragPtr->ShipInfo.ship_cost;
+	UnlockStarShip (&master_q, hStarShip);
+
+	return val;
+}
+
+static FRAME
+GetShipIconsFromIndex (unsigned Index)
+{
+	HSTARSHIP hStarShip;
+	SHIP_FRAGMENT *FragPtr;
+	FRAME val;
+
+	hStarShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hStarShip)
+		return 0;
+
+	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+	val = FragPtr->ShipInfo.icons;
+	UnlockStarShip (&master_q, hStarShip);
+
+	return val;
+}
+
+static FRAME
+GetShipMeleeIconsFromIndex (unsigned Index)
+{
+	HSTARSHIP hStarShip;
+	SHIP_FRAGMENT *FragPtr;
+	FRAME val;
+
+	hStarShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hStarShip)
+		return 0;
+
+	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+	val = FragPtr->ShipInfo.melee_icon;
+	UnlockStarShip (&master_q, hStarShip);
+
+	return val;
+}
+
 static void
 DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 {
@@ -280,17 +334,11 @@ DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 	if (ship != MELEE_NONE)
 	{
 		STAMP s;
-		HSTARSHIP hStarShip;
-		STARSHIP *StarShipPtr;
-
-		hStarShip = GetStarShipFromIndex (&master_q, ship);
-		StarShipPtr = LockStarShip (&master_q, hStarShip);
 		s.origin.x = r.corner.x + (r.extent.width >> 1);
 		s.origin.y = r.corner.y + (r.extent.height >> 1);
-		s.frame = StarShipPtr->RaceDescPtr->ship_info.melee_icon;
+		s.frame = GetShipMeleeIconsFromIndex (ship);
 
 		DrawStamp (&s);
-		UnlockStarShip (&master_q, hStarShip);
 	}
 	UnbatchGraphics ();
 }
@@ -556,17 +604,13 @@ static void
 DrawPickIcon (COUNT iship, BYTE DrawErase)
 {
 	STAMP s;
-	HSTARSHIP hStarShip;
-	STARSHIP *StarShipPtr;
 	RECT r;
 
 	GetFrameRect (BuildPickFrame, &r);
 
-	hStarShip = GetStarShipFromIndex (&master_q, iship);
-	StarShipPtr = LockStarShip (&master_q, hStarShip);
 	s.origin.x = r.corner.x + 20 + (iship % NUM_PICK_COLS) * 18;
 	s.origin.y = r.corner.y +  5 + (iship / NUM_PICK_COLS) * 18;
-	s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+	s.frame = GetShipIconsFromIndex (iship);
 	if (DrawErase)
 	{	// draw icon
 		DrawStamp (&s);
@@ -579,7 +623,6 @@ DrawPickIcon (COUNT iship, BYTE DrawErase)
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);
 	}
-	UnlockStarShip (&master_q, hStarShip);
 }
 
 #ifdef NETPLAY
@@ -899,8 +942,6 @@ static void
 DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 {
 	RECT r, OldRect;
-	HSTARSHIP hStarShip;
-	STARSHIP *StarShipPtr;
 	CONTEXT OldContext;
 
 	LockMutex (GraphicsLock);
@@ -950,10 +991,13 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 	}
 	else
 	{
-		hStarShip = GetStarShipFromIndex (&master_q, NewStarShip);
-		StarShipPtr = LockStarShip (&master_q, hStarShip);
+		HSTARSHIP hStarShip;
+		SHIP_FRAGMENT *FragPtr;
 
-		InitShipStatus (StarShipPtr, NULL);
+		hStarShip = GetStarShipFromIndex (&master_q, NewStarShip);
+		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+
+		InitShipStatus (&FragPtr->ShipInfo, ~0, NULL);
 
 		UnlockStarShip (&master_q, hStarShip);
 	}
@@ -981,24 +1025,16 @@ UpdateCurrentShip (MELEE_STATE *pMS)
 static COUNT
 GetShipValue (BYTE StarShip)
 {
-	HSTARSHIP hStarShip;
+	COUNT val;
 
 	if (StarShip == MELEE_NONE)
 		return 0;
 
-	hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-	if (hStarShip == 0)
-		return (COUNT)~0;
+	val = GetShipCostFromIndex (StarShip);
+	if (val == 0)
+		val = (COUNT)~0;
 
-	{
-		STARSHIP *StarShipPtr;
-		COUNT val;
-
-		StarShipPtr = LockStarShip (&master_q, hStarShip);
-		val = StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-		UnlockStarShip (&master_q, hStarShip);
-		return val;
-	}
+	return val;
 }
 
 static COUNT
@@ -1187,15 +1223,9 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 					StarShip = pMS->FileList[bot - top].ShipList[index];
 					if (StarShip != MELEE_NONE)
 					{
-						HSTARSHIP hStarShip;
-						STARSHIP *StarShipPtr;
-
-						hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-						StarShipPtr = LockStarShip (&master_q, hStarShip);
-						s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+						s.frame = GetShipIconsFromIndex (StarShip);
 						DrawStamp (&s);
 						s.origin.x += 17;
-						UnlockStarShip (&master_q, hStarShip);
 					}
 				}
 
@@ -1444,31 +1474,20 @@ static void
 DeleteCurrentShip (MELEE_STATE *pMS)
 {
 	RECT r;
-	HSTARSHIP hStarShip;
-	STARSHIP *StarShipPtr;
 	FleetShipIndex fleetShipIndex;
 	int CurIndex;
 
 	fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 	CurIndex = pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
-	hStarShip = GetStarShipFromIndex (&master_q, CurIndex);
-	StarShipPtr = LockStarShip (&master_q, hStarShip);
-	if (StarShipPtr)
-	{
-		pMS->SideState[pMS->side].star_bucks -=
-				StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-		UnlockStarShip (&master_q, hStarShip);
-	
-		pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex] =
-				MELEE_NONE;
-	}
+	pMS->SideState[pMS->side].star_bucks -= GetShipCostFromIndex (CurIndex);
+	pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex] = MELEE_NONE;
+
 	LockMutex (GraphicsLock);
 	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
 	RepairMeleeFrame (&r);
 
 	DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
 	UnlockMutex (GraphicsLock);
-
 }
 
 static void
@@ -1672,8 +1691,6 @@ DoEdit (MELEE_STATE *pMS)
 static BOOLEAN
 DoPickShip (MELEE_STATE *pMS)
 {
-	STARSHIP *StarShipPtr;
-
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
@@ -1718,14 +1735,8 @@ DoPickShip (MELEE_STATE *pMS)
 		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
 			// Add the currently selected ship to the fleet.
-			HSTARSHIP hStarShip;
-			
-			hStarShip = GetStarShipFromIndex (&master_q, pMS->CurIndex);
-			StarShipPtr = LockStarShip (&master_q, hStarShip);
 			pMS->SideState[pMS->side].star_bucks +=
-					StarShipPtr->RaceDescPtr->ship_info.ship_cost;
-			UnlockStarShip (&master_q, hStarShip);
-
+					GetShipCostFromIndex (pMS->CurIndex);
 			pMS->SideState[pMS->side].TeamImage.ShipList[index] =
 					pMS->CurIndex;
 			LockMutex (GraphicsLock);
@@ -2108,23 +2119,24 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				BYTE row, col;
 				BYTE ship_cost;
 				HSTARSHIP hStarShip, hBuiltShip;
-				STARSHIP *StarShipPtr;
+				SHIP_FRAGMENT *FragPtr;
 				STARSHIP *BuiltShipPtr;
 
 				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-				StarShipPtr = LockStarShip (&master_q, hStarShip);
-				hBuiltShip = Build (&race_q[side], StarShipPtr->RaceResIndex,
-						1 << side, NameCaptain (&race_q[side], StarShipPtr));
+				FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+				hBuiltShip = Build (&race_q[side], FragPtr->RaceResIndex,
+						1 << side,
+						NameCaptain (&race_q[side], FragPtr->RaceResIndex));
 
 				// Draw the icon.
 				row = GetShipRow (index);
 				col = GetShipColumn (index);
 				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);
 				s.origin.y = 10 + ((ICON_HEIGHT + 2) * row);
-				s.frame = StarShipPtr->RaceDescPtr->ship_info.icons;
+				s.frame = FragPtr->ShipInfo.icons;
 				DrawStamp (&s);
 
-				ship_cost = StarShipPtr->RaceDescPtr->ship_info.ship_cost;
+				ship_cost = FragPtr->ShipInfo.ship_cost;
 				UnlockStarShip (&master_q, hStarShip);
 
 				BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);

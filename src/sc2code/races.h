@@ -111,6 +111,8 @@ typedef struct
 	BYTE ship_mass;
 } CHARACTERISTIC_STUFF;
 
+// XXX: This struct is also used to store group info
+//   Groups should get an own struct
 typedef struct
 {
 	UWORD ship_flags;
@@ -118,7 +120,9 @@ typedef struct
 	BYTE var1;
 			/* Also: ship_cost, race_id */
 	BYTE var2;
-			/* Also: group loc and mission, ship's queue index */
+			/* Also: group loc and mission, ship's queue index,
+			 *    escort window number in built_ship_q,
+			 *    fleet strength in loaded ship descriptors */
 	COUNT crew_level;
 			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
 			 * crew_level indicates an infinite number of ships. */
@@ -175,7 +179,6 @@ enum
 #define STATION_RADIUS 1600
 #define ORBIT_RADIUS 2400
 
-/* XXX: overloads SHIP_INFO */
 typedef struct
 {
 	UWORD ship_flags;
@@ -183,8 +186,6 @@ typedef struct
 			/* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
 	COUNT crew_level;
-			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
-			 * crew_level indicates an infinite number of ships. */
 	COUNT max_crew;
 	BYTE energy_level;
 	BYTE max_energy;
@@ -260,10 +261,10 @@ struct race_desc
 };
 
 
-typedef QUEUE_HANDLE HSTARSHIP;
+typedef HLINK HSTARSHIP;
 
-/* XXX: STARSHIP, SHIP_FRAGMENT and EXTENDED_SHIP_FRAGMENT are inter-cast
- * to each other in many places. Some of those are unsafe and potentially
+/* XXX: STARSHIP and SHIP_FRAGMENT are inter-cast
+ * to each other in some places. Some of those are unsafe and potentially
  * destructive if the code is changed later.
  * Currently, the first 4 members of each struct MUST remain the same,
  * the first 2 being the queue links. Functions Build() and CloneShipFragment()
@@ -332,17 +333,16 @@ typedef struct
 
 	DWORD RaceResIndex;
 
-	/* This field is abused to store other data when the ship
-	 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
-	 * or race_q[], namely the side this ship is on (accessed
+	/* This field is used to store other data when the ship
+	 * is in GLOBAL(built_ship_q) or GLOBDATA(npc_built_ship_q),
+	 * namely the side this ship is on (accessed
 	 * through StarShipPlayer()), and the captains name for
 	 * the ship (accessed through StarShipCaptain()).
 	 * These values are set using OwnStarShip(). */
 	union {
-		// TODO: make RaceDescPtr inaccessible
-		RACE_DESC *RaceDescPtr;
-		SHIP_INFO *ShipInfoPtr;
-		EXTENDED_SHIP_INFO *ExtShipInfoPtr;
+		// XXX: only needed temporarily to maintain binary compat
+		//   with STARSHIP for Build()
+		void *__tmp;
 		struct {
 			COUNT Player;
 			BYTE Captain;
@@ -352,24 +352,12 @@ typedef struct
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
 
-/* XXX: overloads SHIP_FRAGMENT */
 typedef struct
 {
 	HSTARSHIP pred;
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
-
-	/* This field is set to actually point to struct's own EXTENDED_SHIP_INFO
-	 * instead of a RACE_DESC when GLOBAL(avail_race_q) is initialized
-	 * [see InitSIS]. For this reason, RACE_DESC must maintain a SHIP_INFO
-	 * as the first member. */
-	union {
-		// TODO: make RaceDescPtr inaccessible
-		RACE_DESC *RaceDescPtr;
-		SHIP_INFO *ShipInfoPtr;
-		EXTENDED_SHIP_INFO *ExtShipInfoPtr;
-	};
 
 	EXTENDED_SHIP_INFO ShipInfo;
 } EXTENDED_SHIP_FRAGMENT;
