@@ -72,11 +72,10 @@ GenerateShofixti (BYTE control)
 				{	/* Set old Shofixti name; his brother if Tanaka died */
 					SHIP_FRAGMENT *FragPtr = (SHIP_FRAGMENT *) LockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip);
-					// XXX: STARSHIP refactor; setting BAD_GUY here is redundant
-					//   only the captain is needed
-					OwnStarShip (FragPtr, BAD_GUY, NAME_OFFSET +
+					/* Name Tanaka or Katana (+1) */
+					FragPtr->captains_name_index = NAME_OFFSET +
 							NUM_CAPTAINS_NAMES +
-							(GET_GAME_STATE (SHOFIXTI_KIA) & 1));
+							(GET_GAME_STATE (SHOFIXTI_KIA) & 1);
 					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 

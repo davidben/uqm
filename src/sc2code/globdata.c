@@ -224,7 +224,7 @@ InitSIS (void)
 				ship_ref = YEHAT_SHIP_INDEX;
 			else  /* (i == num_ships - 1) */
 				ship_ref = PROBE_RES_INDEX;
-			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref, 0, 0);
+			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref);
 			if (hStarShip)
 			{
 				EXTENDED_SHIP_FRAGMENT *FleetPtr;

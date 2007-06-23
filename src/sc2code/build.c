@@ -26,29 +26,40 @@
 
 // Allocate a new STARSHIP and put it in the queue.
 HSTARSHIP
-Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT which_player, BYTE
-		captains_name_index)
+Build (QUEUE *pQueue, DWORD RaceResIndex)
 {
 	HSTARSHIP hNewShip;
+	void *LinkPtr;
 
 	hNewShip = AllocStarShip (pQueue);
-	if (hNewShip != 0)
+	if (!hNewShip)
+		return 0;
+
+	LinkPtr = LockStarShip (pQueue, hNewShip);
+	memset (LinkPtr, 0, GetLinkSize (pQueue));
+
+	if (GetLinkSize (pQueue) == sizeof (STARSHIP))
 	{
-		STARSHIP *StarShipPtr;
-
-		// XXX: STARSHIP refactor; The last remaining aliasing between
-		//   STARSHIP and SHIP_FRAGMENT structs
-		StarShipPtr = LockStarShip (pQueue, hNewShip);
-		memset (StarShipPtr, 0, GetLinkSize (pQueue));
-
+		STARSHIP *StarShipPtr = (STARSHIP *) LinkPtr;
 		StarShipPtr->RaceResIndex = RaceResIndex;
-		OwnStarShip (StarShipPtr, which_player, captains_name_index);
-
-		UnlockStarShip (pQueue, hNewShip);
-		PutQueue (pQueue, hNewShip);
 	}
+	else if (GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT))
+	{
+		SHIP_FRAGMENT *FragPtr = (SHIP_FRAGMENT *) LinkPtr;
+		FragPtr->RaceResIndex = RaceResIndex;
+	}
+	else if (GetLinkSize (pQueue) == sizeof (EXTENDED_SHIP_FRAGMENT))
+	{
+		EXTENDED_SHIP_FRAGMENT *FragPtr = (EXTENDED_SHIP_FRAGMENT *) LinkPtr;
+		FragPtr->RaceResIndex = RaceResIndex;
+	}
+	else
+		assert (0 && "Build(): unknown queue type!");
 
-	return (hNewShip);
+	UnlockStarShip (pQueue, hNewShip);
+	PutQueue (pQueue, hNewShip);
+
+	return hNewShip;
 }
 
 HLINK
@@ -325,39 +336,43 @@ BYTE
 NameCaptain (QUEUE *pQueue, DWORD RaceResIndex)
 {
 	BYTE name_index;
-	HSTARSHIP hStarShip;
+	HLINK hStarShip;
 
 	do
 	{
-		HSTARSHIP hNextShip;
+		HLINK hNextShip;
 
 		name_index = PickCaptainName ();
 		for (hStarShip = GetHeadLink (pQueue); hStarShip; hStarShip = hNextShip)
 		{
-			STARSHIP *TestShipPtr;
+			LINK *LinkPtr;
+			BYTE test_name_index;
 
-			TestShipPtr = LockStarShip (pQueue, hStarShip);
-			hNextShip = _GetSuccLink (TestShipPtr);
-			if (TestShipPtr->RaceResIndex == RaceResIndex)
+			LinkPtr = LockLink (pQueue, hStarShip);
+			hNextShip = _GetSuccLink (LinkPtr);
+			if (GetLinkSize (pQueue) == sizeof (STARSHIP))
 			{
-				BOOLEAN SameName;
-
-				// XXX: STARSHIP refactor; The last remaining aliasing between
-				//   STARSHIP and SHIP_FRAGMENT structs
-				// This hack will not be needed once
-				//   STARSHIP maintains captain/side permanently
-				if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
-					SameName = (name_index == TestShipPtr->captains_name_index);
-				else
-					SameName = (name_index == StarShipCaptain (TestShipPtr));
-
-				if (SameName)
-				{
-					UnlockStarShip (pQueue, hStarShip);
-					break;
-				}
+				STARSHIP *TestShipPtr = (STARSHIP *) LinkPtr;
+				if (TestShipPtr->RaceResIndex != RaceResIndex)
+					continue;
+				test_name_index = TestShipPtr->captains_name_index;
 			}
-			UnlockStarShip (pQueue, hStarShip);
+			else if (GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT))
+			{
+				SHIP_FRAGMENT *TestShipPtr = (SHIP_FRAGMENT *) LinkPtr;
+				if (TestShipPtr->RaceResIndex != RaceResIndex)
+					continue;
+				test_name_index = TestShipPtr->captains_name_index;
+			}
+			else
+				assert (0 && "NameCaptain(): unknown queue type!");
+			
+			if (name_index == test_name_index)
+			{
+				UnlockLink (pQueue, hStarShip);
+				break;
+			}
+			UnlockLink (pQueue, hStarShip);
 		}
 	} while (hStarShip);
 
@@ -371,6 +386,7 @@ CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 {
 	HSTARSHIP hStarShip, hBuiltShip;
 	EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+	BYTE captains_name_index;
 
 	hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), shipIndex);
 	if (hStarShip == 0)
@@ -378,15 +394,20 @@ CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 
 	TemplatePtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (
 			&GLOBAL (avail_race_q), hStarShip);
-	hBuiltShip = Build (pDstQueue, TemplatePtr->RaceResIndex,
-			TemplatePtr->ShipInfo.ship_flags & (GOOD_GUY | BAD_GUY),
-			(BYTE)(shipIndex == SAMATRA_SHIP ?
-					0 : NameCaptain (pDstQueue, TemplatePtr->RaceResIndex)));
+	if (shipIndex == SAMATRA_SHIP)
+		captains_name_index = 0;
+	else
+		captains_name_index = NameCaptain (pDstQueue,
+				TemplatePtr->RaceResIndex);
+	hBuiltShip = Build (pDstQueue, TemplatePtr->RaceResIndex);
 	if (hBuiltShip)
 	{
 		SHIP_FRAGMENT *ShipFragPtr;
 
 		ShipFragPtr = (SHIP_FRAGMENT*) LockStarShip (pDstQueue, hBuiltShip);
+		ShipFragPtr->which_side = TemplatePtr->ShipInfo.ship_flags &
+				(GOOD_GUY | BAD_GUY);
+		ShipFragPtr->captains_name_index = captains_name_index;
 		// XXX: SHIP_INFO struct copy
 		ShipFragPtr->ShipInfo.race_strings = TemplatePtr->ShipInfo.race_strings;
 		ShipFragPtr->ShipInfo.icons = TemplatePtr->ShipInfo.icons;
@@ -445,7 +466,7 @@ SetEscortCrewComplement (COUNT which_ship, COUNT crew_level, BYTE captain)
 	if (hStarShip)
 	{
 		StarShipPtr->ShipInfo.crew_level = crew_level;
-		OwnStarShip (StarShipPtr, StarShipPlayer (StarShipPtr), captain);
+		StarShipPtr->captains_name_index = captain;
 		UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
 	}
 	else

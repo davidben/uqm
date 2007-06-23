@@ -779,18 +779,13 @@ PickPlanetSide (MENU_STATE *pMS)
 						&GLOBAL (npc_built_ship_q), 1);
 				if (hStarShip)
 				{
-					BYTE captains_name_index;
-					COUNT which_player;
 					SHIP_FRAGMENT *StarShipPtr;
 
 					StarShipPtr = (SHIP_FRAGMENT *) LockStarShip (
 							&GLOBAL (npc_built_ship_q), hStarShip);
-					// XXX: GOOD_GUY/BAD_GUY was set by CloneShipFragment()
-					//   according to avail_race_q Spathi alliance state
-					which_player = StarShipPlayer (StarShipPtr);
-					captains_name_index = NAME_OFFSET + NUM_CAPTAINS_NAMES;
-					// XXX: STARSHIP refactor; only the captain is needed
-					OwnStarShip (StarShipPtr, which_player, captains_name_index);
+					// Name Fwiffo
+					StarShipPtr->captains_name_index = NAME_OFFSET +
+							NUM_CAPTAINS_NAMES;
 					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 

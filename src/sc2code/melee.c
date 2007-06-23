@@ -2121,12 +2121,13 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				HSTARSHIP hStarShip, hBuiltShip;
 				SHIP_FRAGMENT *FragPtr;
 				STARSHIP *BuiltShipPtr;
+				BYTE captains_name_index;
 
 				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
 				FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-				hBuiltShip = Build (&race_q[side], FragPtr->RaceResIndex,
-						1 << side,
-						NameCaptain (&race_q[side], FragPtr->RaceResIndex));
+				captains_name_index = NameCaptain (&race_q[side],
+						FragPtr->RaceResIndex);
+				hBuiltShip = Build (&race_q[side], FragPtr->RaceResIndex);
 
 				// Draw the icon.
 				row = GetShipRow (index);
@@ -2143,8 +2144,7 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				BuiltShipPtr->index = index;
 				BuiltShipPtr->ship_cost = ship_cost;
 				BuiltShipPtr->which_side = 1 << side;
-				BuiltShipPtr->captains_name_index =
-						StarShipCaptain (BuiltShipPtr);
+				BuiltShipPtr->captains_name_index = captains_name_index;
 				// The next ones are not used in Melee
 				BuiltShipPtr->crew_level = 0;
 				BuiltShipPtr->max_crew = 0;

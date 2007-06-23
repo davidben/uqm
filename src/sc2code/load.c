@@ -153,8 +153,8 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
 
 		// Read SHIP_FRAGMENT elements
-		cread_16 (fh, &FragPtr->s.Player);
-		cread_8  (fh, &FragPtr->s.Captain);
+		cread_16 (fh, &FragPtr->which_side);
+		cread_8  (fh, &FragPtr->captains_name_index);
 		cread_8  (fh, NULL); /* padding */
 		// Read SHIP_INFO elements
 		cread_16 (fh, &FragPtr->ShipInfo.ship_flags);

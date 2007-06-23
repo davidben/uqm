@@ -91,8 +91,8 @@ ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 	BYTE tmpb;
 
 	// Read SHIP_FRAGMENT elements
-	sread_16 (fp, &FragPtr->s.Player);
-	sread_8  (fp, &FragPtr->s.Captain);
+	sread_16 (fp, &FragPtr->which_side);
+	sread_8  (fp, &FragPtr->captains_name_index);
 	sread_8  (fp, NULL); /* padding */
 	// Read SHIP_INFO elements
 	sread_16 (fp, &FragPtr->ShipInfo.ship_flags);
@@ -112,8 +112,8 @@ static void
 WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
 {
 	// Write SHIP_FRAGMENT elements
-	swrite_16 (fp, FragPtr->s.Player);
-	swrite_8  (fp, FragPtr->s.Captain);
+	swrite_16 (fp, FragPtr->which_side);
+	swrite_8  (fp, FragPtr->captains_name_index);
 	swrite_8  (fp, 0); /* padding */
 	// Write SHIP_INFO elements
 	swrite_16 (fp, FragPtr->ShipInfo.ship_flags);
@@ -492,6 +492,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 			}
 			else
 			{
+				/* Read IP groups into npc_built_ship_q */
 				for (which_group = 1; which_group <= GH.NumGroups;
 						++which_group)
 				{
@@ -511,10 +512,13 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								&GLOBAL (npc_built_ship_q), 0);
 						FragPtr = (SHIP_FRAGMENT*) LockStarShip (
 								&GLOBAL (npc_built_ship_q), hStarShip);
-						// XXX: STARSHIP refactor; this is probably needed
-						//   because SHIP_INFO.ship_flags is used for
-						//   group_counter
-						OwnStarShip (FragPtr, BAD_GUY, 0);
+						// XXX: STARSHIP refactor; Cannot find what might be
+						//   using this info. Looks unused.
+						FragPtr->which_side = BAD_GUY;
+						FragPtr->captains_name_index = 0;
+						// XXX: CloneShipFragment() may set ship_flags in the
+						//   future, and it will collide with group_counter,
+						//   but it is reset a few lines below
 						SET_GROUP_ID (FragPtr, which_group);
 
 						rand_val = TFB_Random ();

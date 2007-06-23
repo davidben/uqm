@@ -241,8 +241,6 @@ typedef void (UNINIT_FUNC) (RACE_DESC *pRaceDesc);
 
 struct race_desc
 {
-	/* XXX: SHIP_INFO *must* currently be the first field in the struct.
-	 * See why in comments of EXTENDED_SHIP_FRAGMENT. */
 	SHIP_INFO ship_info _ALIGNED_ANY;
 	CHARACTERISTIC_STUFF characteristics _ALIGNED_ANY;
 	DATA_STUFF ship_data _ALIGNED_ANY;
@@ -263,39 +261,21 @@ struct race_desc
 
 typedef HLINK HSTARSHIP;
 
-/* XXX: STARSHIP and SHIP_FRAGMENT are inter-cast
- * to each other in some places. Some of those are unsafe and potentially
- * destructive if the code is changed later.
- * Currently, the first 4 members of each struct MUST remain the same,
- * the first 2 being the queue links. Functions Build() and CloneShipFragment()
- * expect these 4 members to be there.
- */
 typedef struct
 {
+	// LINK elements; must be first
 	HSTARSHIP pred;
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
-	
-	/* This field is abused to store other data when the ship
-	 * is in GLOBAL(built_ship_q), GLOBDATA(npc_built_ship_q),
-	 * or race_q[], namely the side this ship is on (accessed
-	 * through StarShipPlayer()), and the captains name for
-	 * the ship (accessed through StarShipCaptain()).
-	 * These values are set using OwnStarShip(). */
-	union {
-		RACE_DESC *RaceDescPtr;
-		struct {
-			COUNT Player;
-			BYTE Captain;
-		} s;
-	};
+	RACE_DESC *RaceDescPtr;
 
 	// Ship information
+	UWORD which_side;
+			// In race_q: side the ship is on
 	BYTE captains_name_index;
 			// Also used in full-game to detect if a STARSHIP is an escort
 			// or the flagship (captains_name_index == 0)
-
 	COUNT crew_level;
 			// In full-game battles: crew left
 			// In SuperMelee: irrelevant
@@ -303,8 +283,6 @@ typedef struct
 	BYTE ship_cost;
 			// In Super Melee ship queue: ship cost
 			// In full-game: irrelevant
-	UWORD which_side;
-			// In race_q: side the ship is on
 	COUNT index;
 			// original queue index
 	STRING race_strings;
@@ -328,32 +306,21 @@ typedef struct
 
 typedef struct
 {
+	// LINK elements; must be first
 	HSTARSHIP pred;
 	HSTARSHIP succ;
 
 	DWORD RaceResIndex;
 
-	/* This field is used to store other data when the ship
-	 * is in GLOBAL(built_ship_q) or GLOBDATA(npc_built_ship_q),
-	 * namely the side this ship is on (accessed
-	 * through StarShipPlayer()), and the captains name for
-	 * the ship (accessed through StarShipCaptain()).
-	 * These values are set using OwnStarShip(). */
-	union {
-		// XXX: only needed temporarily to maintain binary compat
-		//   with STARSHIP for Build()
-		void *__tmp;
-		struct {
-			COUNT Player;
-			BYTE Captain;
-		} s;
-	};
+	COUNT which_side;
+	BYTE captains_name_index;
 
 	SHIP_INFO ShipInfo;
 } SHIP_FRAGMENT;
 
 typedef struct
 {
+	// LINK elements; must be first
 	HSTARSHIP pred;
 	HSTARSHIP succ;
 

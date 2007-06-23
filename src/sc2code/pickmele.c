@@ -660,24 +660,6 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 		// Aborting.
 		GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 	}
-	else
-	{
-		STARSHIP *StarShipPtr;
-		
-		// XXX: STARSHIP refactor; This whole thing is probably not needed
-		//   once captain/side are maintained permanently in STARSHIP
-		for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
-		{
-			if (!gmstate.player[playerI].selecting)
-				continue;
-
-			StarShipPtr = LockStarShip (&race_q[playerI], ships[playerI]);
-			OwnStarShip (StarShipPtr, 1 << playerI,
-					StarShipPtr->captains_name_index);
-			StarShipPtr->captains_name_index = 0;
-			UnlockStarShip (&race_q[playerI], ships[playerI]);
-		}
-	}
 
 #ifdef NETPLAY
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)

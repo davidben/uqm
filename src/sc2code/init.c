@@ -133,6 +133,23 @@ UninitSpace (void)
 	}
 }
 
+HSTARSHIP
+BuildSIS (void)
+{
+	HSTARSHIP hStarShip;
+	STARSHIP *StarShipPtr;
+
+	hStarShip = Build (&race_q[0], SIS_RES_INDEX);
+	if (!hStarShip)
+		return 0;
+	StarShipPtr = LockStarShip (&race_q[0], hStarShip);
+	StarShipPtr->which_side = GOOD_GUY;
+	StarShipPtr->captains_name_index = 0;
+	UnlockStarShip (&race_q[0], hStarShip);
+
+	return hStarShip;
+}
+
 SIZE
 InitShips (void)
 {
@@ -151,8 +168,7 @@ InitShips (void)
 		ReinitQueue (&race_q[0]);
 		ReinitQueue (&race_q[1]);
 
-		Build (&race_q[0], SIS_RES_INDEX, GOOD_GUY, 0);
-
+		BuildSIS ();
 		LoadHyperspace ();
 
 		num_ships = 1;

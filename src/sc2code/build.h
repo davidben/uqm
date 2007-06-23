@@ -33,20 +33,11 @@
 #define NAME_OFFSET 5
 #define NUM_CAPTAINS_NAMES 16
 
-// XXX: STARSHIP refactor; These three alias STARSHIP and SHIP_FRAGMENT
-#define OwnStarShip(S,p,n) \
-		(S)->s.Player = (p); \
-		(S)->s.Captain = (n);
-#define StarShipCaptain(S) \
-		(S)->s.Captain
-#define StarShipPlayer(S) \
-		(S)->s.Player
 #define PickCaptainName() (((COUNT)TFB_Random () \
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)
 
-extern HSTARSHIP Build (QUEUE *pQueue, DWORD RaceResIndex, COUNT
-		which_player, BYTE captains_name_index);
+extern HSTARSHIP Build (QUEUE *pQueue, DWORD RaceResIndex);
 extern HSTARSHIP CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
 extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);

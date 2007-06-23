@@ -47,7 +47,7 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 		SHIP_FRAGMENT *BuiltFragPtr;
 		RACE_DESC *RDPtr;
 
-		hBuiltShip = Build (&master_q, MAKE_RESOURCE (rp++, rt, ri++), 0, 0);
+		hBuiltShip = Build (&master_q, MAKE_RESOURCE (rp++, rt, ri++));
 		if (!hBuiltShip)
 			continue;
 

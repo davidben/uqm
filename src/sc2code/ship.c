@@ -385,11 +385,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 	if (!RDPtr)
 		return FALSE;
 
-	// XXX: Ship captain and side are stored in RaceDescPtr, so
-	//    get them first
-	StarShipPtr->captains_name_index = StarShipCaptain (StarShipPtr);
-	RDPtr->ship_info.ship_flags |= StarShipPlayer (StarShipPtr);
-
+	RDPtr->ship_info.ship_flags |= StarShipPtr->which_side;
 	StarShipPtr->RaceDescPtr = RDPtr;
 
 	StarShipPtr->ship_input_state = 0;

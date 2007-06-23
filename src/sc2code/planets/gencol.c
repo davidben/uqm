@@ -53,11 +53,10 @@ GenerateColony (BYTE control)
 				SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 				SET_GROUP_LOC (FragPtr, 0 + 1); /* orbitting colony */
 				SET_GROUP_DEST (FragPtr, 0 + 1); /* orbitting colony */
-				FragPtr->ShipInfo.loc.x = FragPtr->ShipInfo.loc.y = 0;
+				FragPtr->ShipInfo.loc.x = 0;
+				FragPtr->ShipInfo.loc.y = 0;
 				FragPtr->ShipInfo.group_counter = 0;
-				UnlockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip
-						);
+				UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
 			}
 			break;
 		}

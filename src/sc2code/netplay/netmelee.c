@@ -30,8 +30,6 @@
 #include "netplay/proto/ready.h"
 #include "netplay/proto/reset.h"
 
-#include "build.h"
-		// for StarShipPlayer()
 #include "controls.h"
 		// for BATTLE_INPUT_STATE
 #include "init.h"
