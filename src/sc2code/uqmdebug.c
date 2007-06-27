@@ -396,27 +396,24 @@ doInstantMove (void)
 void
 showSpheres (void)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 	
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip != NULL; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+		FLEET_INFO *FleetPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		hNextShip = _GetSuccLink (StarShipPtr);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
 
-		if ((StarShipPtr->ShipInfo.actual_strength != (COUNT) ~0) &&
-				(StarShipPtr->ShipInfo.known_strength !=
-				StarShipPtr->ShipInfo.actual_strength))
+		if ((FleetPtr->actual_strength != (COUNT) ~0) &&
+				(FleetPtr->known_strength != FleetPtr->actual_strength))
 		{
-			StarShipPtr->ShipInfo.known_strength =
-					StarShipPtr->ShipInfo.actual_strength;
-			StarShipPtr->ShipInfo.known_loc = StarShipPtr->ShipInfo.loc;
+			FleetPtr->known_strength = FleetPtr->actual_strength;
+			FleetPtr->known_loc = FleetPtr->loc;
 		}
 
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 }
 
@@ -425,25 +422,24 @@ showSpheres (void)
 void
 activateAllShips (void)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 	
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip != NULL; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+		FLEET_INFO *FleetPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		hNextShip = _GetSuccLink (StarShipPtr);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
 
-		if (StarShipPtr->ShipInfo.icons != NULL)
+		if (FleetPtr->icons != NULL)
 				// Skip the Ur-Quan probe.
 		{
-			StarShipPtr->ShipInfo.ship_flags &= ~(GOOD_GUY | BAD_GUY);
-			StarShipPtr->ShipInfo.ship_flags |= GOOD_GUY;
+			FleetPtr->ship_flags &= ~(GOOD_GUY | BAD_GUY);
+			FleetPtr->ship_flags |= GOOD_GUY;
 		}
 
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 }
 

@@ -19,7 +19,9 @@
 #ifndef _DISPLIST_H
 #define _DISPLIST_H
 
-#include "memlib.h"
+#include <assert.h>
+#include "libs/memlib.h"
+#include "port.h"
 
 #define QUEUE_TABLE
 
@@ -34,13 +36,50 @@ typedef QUEUE_HANDLE HLINK;
 
 typedef struct link
 {
+	// Every queue element of any queue must have these
+	// two as the first members
 	HLINK pred;
 	HLINK succ;
 } LINK;
 
+typedef struct queue
+{
+	HLINK head;
+	HLINK tail;
 #ifdef QUEUE_TABLE
-#define LockLink(pq, h) (LINK*)(h)
-#define UnlockLink(pq, h)
+	BYTE  *pq_tab;
+	HLINK free_list;
+	MEM_HANDLE hq_tab;
+#endif
+	COUNT object_size;
+#ifdef QUEUE_TABLE
+	BYTE num_objects;
+#endif /* QUEUE_TABLE */
+} QUEUE;
+
+#ifdef QUEUE_TABLE
+
+static inline LINK *
+LockLink (const QUEUE *pq, HLINK h)
+{
+	if (h) // Apparently, h==0 is OK
+	{	// Make sure the link is actually in our queue!
+		assert (pq->pq_tab && (BYTE*)h >= pq->pq_tab &&
+				(BYTE*)h < pq->pq_tab + pq->object_size * pq->num_objects);
+	}
+	return (LINK*)h;
+}
+
+static inline void
+UnlockLink (const QUEUE *pq, HLINK h)
+{
+	if (h) // Apparently, h==0 is OK
+	{	// Make sure the link is actually in our queue!
+		assert (pq->pq_tab && (BYTE*)h >= pq->pq_tab &&
+				(BYTE*)h < pq->pq_tab + pq->object_size * pq->num_objects);
+	}
+}
+
 #define GetFreeList(pq) (pq)->free_list
 #define SetFreeList(pq, h) (pq)->free_list = (h)
 #define AllocQueueTab(pq,n) \
@@ -58,21 +97,6 @@ typedef struct link
 #define UnlockLink(pq, h) mem_unlock (h)
 #define FreeLink(pq,h) mem_release (h)
 #endif /* QUEUE_TABLE */
-
-typedef struct queue
-{
-	HLINK head;
-	HLINK tail;
-#ifdef QUEUE_TABLE
-	BYTE  *pq_tab;
-	HLINK free_list;
-	MEM_HANDLE hq_tab;
-#endif
-	COUNT object_size;
-#ifdef QUEUE_TABLE
-	BYTE num_objects;
-#endif /* QUEUE_TABLE */
-} QUEUE;
 
 #define SetLinkSize(pq,s) ((pq)->object_size = (COUNT)(s))
 #define GetLinkSize(pq) (COUNT)((pq)->object_size)

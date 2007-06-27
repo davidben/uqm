@@ -42,6 +42,7 @@ typedef struct
 
 typedef struct
 {
+	// LINK elements; must be first
 	HENCOUNTER pred, succ;
 
 	HELEMENT hElement;

@@ -760,7 +760,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 			{
 				/* Create Fwiffo group and go into comm with it */
-				HSTARSHIP hStarShip;
+				HSHIPFRAG hStarShip;
 
 				if (pMenuState->flash_task)
 				{
@@ -781,12 +781,12 @@ PickPlanetSide (MENU_STATE *pMS)
 				{
 					SHIP_FRAGMENT *StarShipPtr;
 
-					StarShipPtr = (SHIP_FRAGMENT *) LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip);
+					StarShipPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
+							hStarShip);
 					// Name Fwiffo
 					StarShipPtr->captains_name_index = NAME_OFFSET +
 							NUM_CAPTAINS_NAMES;
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
 				SaveFlagshipState ();

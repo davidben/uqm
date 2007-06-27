@@ -87,7 +87,7 @@ void
 BuildBattle (COUNT which_player)
 {
 	QUEUE *pQueue;
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 	HSTARSHIP hBuiltShip;
 	STARSHIP *BuiltShipPtr;
 
@@ -126,7 +126,7 @@ BuildBattle (COUNT which_player)
 	{
 		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
+		FragPtr = LockShipFrag (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		hBuiltShip = Build (&race_q[which_player],
@@ -137,22 +137,22 @@ BuildBattle (COUNT which_player)
 			BuiltShipPtr = LockStarShip (&race_q[which_player], hBuiltShip);
 			BuiltShipPtr->captains_name_index = FragPtr->captains_name_index;
 			BuiltShipPtr->which_side = 1 << which_player;
-			if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
-				BuiltShipPtr->crew_level = FragPtr->ShipInfo.crew_level;
+			if (FragPtr->crew_level != INFINITE_FLEET)
+				BuiltShipPtr->crew_level = FragPtr->crew_level;
 			else /* if infinite ships */
-				BuiltShipPtr->crew_level = FragPtr->ShipInfo.max_crew;
-			BuiltShipPtr->max_crew = FragPtr->ShipInfo.max_crew;
-			BuiltShipPtr->race_strings = FragPtr->ShipInfo.race_strings;
-			BuiltShipPtr->icons = FragPtr->ShipInfo.icons;
-			BuiltShipPtr->index = FragPtr->ShipInfo.var2;
+				BuiltShipPtr->crew_level = FragPtr->max_crew;
+			BuiltShipPtr->max_crew = FragPtr->max_crew;
+			BuiltShipPtr->race_strings = FragPtr->race_strings;
+			BuiltShipPtr->icons = FragPtr->icons;
+			BuiltShipPtr->index = FragPtr->var2;
 			/* This is not technically necessary, but still */
-			BuiltShipPtr->ship_cost = FragPtr->ShipInfo.ship_cost;
+			//BuiltShipPtr->ship_cost = FragPtr->ship_cost;
 			BuiltShipPtr->RaceDescPtr = 0;
 
 			UnlockStarShip (&race_q[which_player], hBuiltShip);
 		}
 
-		UnlockStarShip (pQueue, hStarShip);
+		UnlockShipFrag (pQueue, hStarShip);
 	}
 
 	if (which_player == 0
@@ -262,7 +262,7 @@ InitEncounter (void)
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_LAST_BATTLE)
 	{
 #define NUM_DISPLAY_PTS (sizeof (display_pt) / sizeof (display_pt[0]))
-		HSTARSHIP hStarShip, hNextShip;
+		HSHIPFRAG hStarShip, hNextShip;
 		POINT display_pt[] =
 		{
 			{ 10,  51},
@@ -283,9 +283,8 @@ InitEncounter (void)
 			RECT r;
 			SHIP_FRAGMENT *FragPtr;
 
-			FragPtr = (SHIP_FRAGMENT *) LockStarShip (
-					&GLOBAL (npc_built_ship_q), hStarShip);
-			if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
+			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			if (FragPtr->crew_level != INFINITE_FLEET)
 				hNextShip = _GetSuccLink (FragPtr);
 			else /* if infinite ships */
 				hNextShip = hStarShip;
@@ -303,13 +302,13 @@ InitEncounter (void)
 				s.origin.x = COSINE (angle, radius);
 				s.origin.y = SINE (angle, radius);
 			}
-			s.frame = SetAbsFrameIndex (FragPtr->ShipInfo.icons, 0);
+			s.frame = SetAbsFrameIndex (FragPtr->icons, 0);
 			GetFrameRect (s.frame, &r);
 			s.origin.x += (SIS_SCREEN_WIDTH >> 1) - (r.extent.width >> 1);
 			s.origin.y += (SIS_SCREEN_HEIGHT >> 1) - (r.extent.height >> 1);
 			DrawStamp (&s);
 
-			UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+			UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		}
 	}
 
@@ -444,7 +443,7 @@ UninitEncounter (void)
 		const UNICODE *str1 = NULL;
 		const UNICODE *str2 = NULL;
 		UNICODE buf[80];
-		HSTARSHIP hStarShip;
+		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 		static const COLOR fade_ship_cycle[] =
 		{
@@ -476,21 +475,21 @@ UninitEncounter (void)
 				) ? 0 : 1;
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (&GLOBAL (npc_built_ship_q),
-				hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		EncounterRace = GET_RACE_ID (FragPtr);
 		if (GetStarShipFromIndex (&GLOBAL (avail_race_q), EncounterRace) == 0)
 		{
+			/* Suppress the final tally and salvage info */
 			VictoryState = -1;
 			InitSISContexts ();
 		}
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		Sleepy = TRUE;
 		for (i = 0; i < NUM_SIDES; ++i)
 		{
 			QUEUE *pQueue;
-			HSTARSHIP hNextShip;
+			HSHIPFRAG hNextShip;
 
 			if (i == 0)
 				pQueue = &GLOBAL (built_ship_q);
@@ -521,10 +520,10 @@ UninitEncounter (void)
 			for (hStarShip = GetHeadLink (pQueue); hStarShip;
 					hStarShip = hNextShip)
 			{
-				FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
+				FragPtr = LockShipFrag (pQueue, hStarShip);
 				hNextShip = _GetSuccLink (FragPtr);
 
-				if (FragPtr->ShipInfo.crew_level == 0
+				if (FragPtr->crew_level == 0
 						|| (VictoryState && i == NUM_SIDES - 1))
 				{
 					if (i == NUM_SIDES - 1)
@@ -543,15 +542,13 @@ UninitEncounter (void)
 								
 								ship_s.origin.x = scavenge_r.corner.x + 32;
 								ship_s.origin.y = scavenge_r.corner.y + 56;
-								ship_s.frame = IncFrameIndex (
-										FragPtr->ShipInfo.icons);
+								ship_s.frame = IncFrameIndex (FragPtr->icons);
 								DrawStamp (&ship_s);
 								SetContextForeGroundColor (
 										BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 								SetContextFont (TinyFont);
 
-								GetStringContents (
-										FragPtr->ShipInfo.race_strings,
+								GetStringContents (FragPtr->race_strings,
 										(STRINGPTR)buf, FALSE);
 								// XXX: this will not work with UTF-8 strings
 								strupr (buf);
@@ -568,7 +565,7 @@ UninitEncounter (void)
 								t.CharCount = (COUNT)~0;
 								font_DrawText (&t);
 
-								ship_s.frame = FragPtr->ShipInfo.icons;
+								ship_s.frame = FragPtr->icons;
 
 								SetContextFont (MicroFont);
 								str1 = GAME_STRING (
@@ -639,14 +636,14 @@ UninitEncounter (void)
 						}
 					}
 
-					UnlockStarShip (pQueue, hStarShip);
+					UnlockShipFrag (pQueue, hStarShip);
 					RemoveQueue (pQueue, hStarShip);
-					FreeStarShip (pQueue, hStarShip);
+					FreeShipFrag (pQueue, hStarShip);
 
 					continue;
 				}
 
-				UnlockStarShip (pQueue, hStarShip);
+				UnlockShipFrag (pQueue, hStarShip);
 			}
 		}
 

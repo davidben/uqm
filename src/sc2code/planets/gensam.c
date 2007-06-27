@@ -32,7 +32,7 @@ BuildUrquanGuard (void)
 	BYTE ship1, ship2;
 	BYTE b0, b1;
 	POINT org;
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 
 	GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (SAMATRA_GRPOFFS0);
 
@@ -80,20 +80,17 @@ BuildUrquanGuard (void)
 		if (b1 % (FULL_CIRCLE / NUM_URQUAN_GUARDS1) == 0)
 			b1 += FULL_CIRCLE / (NUM_URQUAN_GUARDS0 + NUM_URQUAN_GUARDS1);
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
 		SET_GROUP_LOC (FragPtr, 0);
 		SET_GROUP_DEST (FragPtr, 4 + 1);
 		SET_ORBIT_LOC (FragPtr,
 				NORMALIZE_FACING (ANGLE_TO_FACING (b1)));
-		FragPtr->ShipInfo.group_counter = 0;
-		FragPtr->ShipInfo.loc.x = org.x
-				+ COSINE (b1, STATION_RADIUS);
-		FragPtr->ShipInfo.loc.y = org.y
-				+ SINE (b1, STATION_RADIUS);
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr->group_counter = 0;
+		FragPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
+		FragPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 
@@ -103,20 +100,17 @@ BuildUrquanGuard (void)
 	{
 		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
 		SET_GROUP_LOC (FragPtr, 0);
 		SET_GROUP_DEST (FragPtr, 4 + 1);
 		SET_ORBIT_LOC (FragPtr,
 				NORMALIZE_FACING (ANGLE_TO_FACING (b1)));
-		FragPtr->ShipInfo.group_counter = 0;
-		FragPtr->ShipInfo.loc.x = org.x
-				+ COSINE (b1, STATION_RADIUS);
-		FragPtr->ShipInfo.loc.y = org.y
-				+ SINE (b1, STATION_RADIUS);
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr->group_counter = 0;
+		FragPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
+		FragPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 }
@@ -140,7 +134,7 @@ GenerateSamatra (BYTE control)
 			EncounterRace = -1; // Do not want guards to chase the player
 			{
 				BOOLEAN GuardEngaged;
-				HSTARSHIP hStarShip, hNextShip;
+				HSHIPFRAG hStarShip, hNextShip;
 
 				GuardEngaged = FALSE;
 				for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
@@ -149,8 +143,8 @@ GenerateSamatra (BYTE control)
 					BYTE task;
 					SHIP_FRAGMENT *FragPtr;
 
-					FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip);
+					FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
+							hStarShip);
 					hNextShip = _GetSuccLink (FragPtr);
 
 					task = GET_GROUP_MISSION (FragPtr);
@@ -163,13 +157,13 @@ GenerateSamatra (BYTE control)
 					else if (task & REFORM_GROUP)
 					{
 						task &= ~REFORM_GROUP;
-						FragPtr->ShipInfo.group_counter = 0;
+						FragPtr->group_counter = 0;
 						SET_GROUP_MISSION (FragPtr, task);
 
 						GuardEngaged = TRUE;
 					}
 
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
 				if (GuardEngaged)

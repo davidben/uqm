@@ -20,13 +20,36 @@
 #include "races.h"
 #include "libs/compiler.h"
 
+typedef HLINK HMASTERSHIP;
+
+typedef struct
+{
+	// LINK elements; must be first
+	HMASTERSHIP pred;
+	HMASTERSHIP succ;
+
+	DWORD RaceResIndex;
+
+	SHIP_INFO ShipInfo;
+} MASTER_SHIP_INFO;
+
 extern QUEUE master_q;
-		/* List of all ships present in the game;
-		 * queue element is SHIP_FRAGMENT */
+		/* List of ships available in SuperMelee;
+		 * queue element is MASTER_SHIP_INFO */
+
+static inline MASTER_SHIP_INFO *
+LockMasterShip (const QUEUE *pq, HMASTERSHIP h)
+{
+	assert (GetLinkSize (pq) == sizeof (MASTER_SHIP_INFO));
+	return (MASTER_SHIP_INFO *) LockLink (pq, h);
+}
+
+#define UnlockMasterShip(pq, h) UnlockLink (pq, h)
+#define FreeMasterShip(pq, h) FreeLink (pq, h)
 
 extern void LoadMasterShipList (void (* YieldProcessing)(void));
 extern void FreeMasterShipList (void);
-extern HSTARSHIP FindMasterShip (DWORD ship_ref);
+extern HMASTERSHIP FindMasterShip (DWORD ship_ref);
 extern int FindMasterShipIndex (DWORD ship_ref);
 
 

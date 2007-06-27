@@ -133,17 +133,13 @@ typedef struct
 			/* Also: group_id */
 	POINT loc;
 
-	/* The fields above this line are included in queues in savegames,
-	 * All fields, including those below, are saved in ENCOUNTER structures
-	 * in savegames. The latter was probably not supposed to happen.
-	 */
-
 	STRING race_strings;
 	FRAME icons;
 	FRAME melee_icon;
 #define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_INFO;
 
+// XXX: TODO: remove these
 #define ship_cost var1
 #define group_counter ship_flags
 
@@ -159,67 +155,25 @@ enum
 };
 #define MAX_REVOLUTIONS 5
 
-#define GET_RACE_ID(s)          ((s)->ShipInfo.var1)
-#define SET_RACE_ID(s,v)        ((s)->ShipInfo.var1 = (v))
-#define GET_GROUP_LOC(s)        LONIBBLE ((s)->ShipInfo.var2)
-#define SET_GROUP_LOC(s,v)      ((s)->ShipInfo.var2 = \
-		MAKE_BYTE ((v), HINIBBLE ((s)->ShipInfo.var2)))
-#define GET_GROUP_MISSION(s)    HINIBBLE ((s)->ShipInfo.var2)
-#define SET_GROUP_MISSION(s,v)  ((s)->ShipInfo.var2 = \
-		MAKE_BYTE (LONIBBLE ((s)->ShipInfo.var2), (v)))
-#define GET_GROUP_DEST(s)       LONIBBLE ((s)->ShipInfo.energy_level)
-#define SET_GROUP_DEST(s,v)     ((s)->ShipInfo.energy_level = \
-		MAKE_BYTE ((v), HINIBBLE ((s)->ShipInfo.energy_level)))
-#define GET_ORBIT_LOC(s)        HINIBBLE ((s)->ShipInfo.energy_level)
-#define SET_ORBIT_LOC(s,v)      ((s)->ShipInfo.energy_level = \
-		MAKE_BYTE (LONIBBLE ((s)->ShipInfo.energy_level), (v)))
-#define GET_GROUP_ID(s)         ((s)->ShipInfo.max_energy)
-#define SET_GROUP_ID(s,v)       ((s)->ShipInfo.max_energy = (v))
+#define GET_RACE_ID(s)          ((s)->var1)
+#define SET_RACE_ID(s,v)        ((s)->var1 = (v))
+#define GET_GROUP_LOC(s)        LONIBBLE ((s)->var2)
+#define SET_GROUP_LOC(s,v)      ((s)->var2 = \
+		MAKE_BYTE ((v), HINIBBLE ((s)->var2)))
+#define GET_GROUP_MISSION(s)    HINIBBLE ((s)->var2)
+#define SET_GROUP_MISSION(s,v)  ((s)->var2 = \
+		MAKE_BYTE (LONIBBLE ((s)->var2), (v)))
+#define GET_GROUP_DEST(s)       LONIBBLE ((s)->energy_level)
+#define SET_GROUP_DEST(s,v)     ((s)->energy_level = \
+		MAKE_BYTE ((v), HINIBBLE ((s)->energy_level)))
+#define GET_ORBIT_LOC(s)        HINIBBLE ((s)->energy_level)
+#define SET_ORBIT_LOC(s,v)      ((s)->energy_level = \
+		MAKE_BYTE (LONIBBLE ((s)->energy_level), (v)))
+#define GET_GROUP_ID(s)         ((s)->max_energy)
+#define SET_GROUP_ID(s,v)       ((s)->max_energy = (v))
 
 #define STATION_RADIUS 1600
 #define ORBIT_RADIUS 2400
-
-typedef struct
-{
-	UWORD ship_flags;
-	BYTE days_left;
-			/* Days left before the fleet reachers 'dest_loc'. */
-	BYTE growth_fract;
-	COUNT crew_level;
-	COUNT max_crew;
-	BYTE energy_level;
-	BYTE max_energy;
-	POINT loc;
-			/* Location of the fleet (center) */
-
-	STRING race_strings;
-			/* Race specific strings, see doc/devel/racestrings. */
-	FRAME icons;
-	FRAME melee_icon;
-
-	/*   -== The fields below this line are included in savegames. ==-   */
-
-	COUNT actual_strength;
-			/* Measure for the size of the sphere of influence.
-			 * 0 if there is none and no ships will be generated.
-	         * '(COUNT) ~0' if there is none, and the ship generation
-			 * is handled separately. */
-	COUNT known_strength;
-			/* Measure for the size of the sphere of influence when last
-			 * checked the starmap.
-			 * 0 if the race's SoI is not known. */
-	POINT known_loc;
-			/* Location of the SoI (center) when last checked
-			 * the starmap. */
-
-	BYTE growth_err_term;
-	BYTE func_index;
-			/* Function index defined in clock.h (the same as in SetEvent())
-			 * for the function to call when the fleet reaches 'dest_loc'.
-			 * '(BYTE) ~0' means no function to call. */
-	POINT dest_loc;
-			/* Location to which the fleet (center) is moving. */
-} EXTENDED_SHIP_INFO;
 
 typedef struct
 {
@@ -304,35 +258,132 @@ typedef struct
 	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));
 } STARSHIP;
 
+static inline STARSHIP *
+LockStarShip (const QUEUE *pq, HSTARSHIP h)
+{
+	assert (GetLinkSize (pq) == sizeof (STARSHIP));
+	return (STARSHIP *) LockLink (pq, h);
+}
+
+#define UnlockStarShip(pq, h)  UnlockLink (pq, h)
+#define FreeStarShip(pq, h)    FreeLink (pq, h)
+
+
+typedef HLINK HSHIPFRAG;
+
 typedef struct
 {
 	// LINK elements; must be first
-	HSTARSHIP pred;
-	HSTARSHIP succ;
+	HSHIPFRAG pred;
+	HSHIPFRAG succ;
 
 	DWORD RaceResIndex;
 
 	COUNT which_side;
 	BYTE captains_name_index;
 
-	SHIP_INFO ShipInfo;
+#if 0	
+	// XXX: new fields to replace var1 and var2
+	// var1:
+	BYTE race_id;
+	BYTE ship_cost;
+	// var2: datatypes?
+	BYTE fleet_strength;
+	BYTE index;
+#endif
+
+	UWORD ship_flags;
+			/* Also: group_counter */
+	BYTE var1;
+			/* Also: ship_cost, race_id */
+	BYTE var2;
+			/* Also: group loc and mission, ship's queue index,
+			 *    escort window number in built_ship_q,
+			 *    fleet strength in loaded ship descriptors */
+	COUNT crew_level;
+			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
+			 * crew_level indicates an infinite number of ships. */
+	COUNT max_crew;
+	BYTE energy_level;
+			/* Also: group destination and orbit loc, */
+	BYTE max_energy;
+			/* Also: group_id */
+	POINT loc;
+
+	STRING race_strings;
+	FRAME icons;
+	FRAME melee_icon;
+
 } SHIP_FRAGMENT;
+
+static inline SHIP_FRAGMENT *
+LockShipFrag (const QUEUE *pq, HSHIPFRAG h)
+{
+	assert (GetLinkSize (pq) == sizeof (SHIP_FRAGMENT));
+	return (SHIP_FRAGMENT *) LockLink (pq, h);
+}
+
+#define UnlockShipFrag(pq, h)  UnlockLink (pq, h)
+#define FreeShipFrag(pq, h)    FreeLink (pq, h)
+
+
+typedef HLINK HFLEETINFO;
 
 typedef struct
 {
 	// LINK elements; must be first
-	HSTARSHIP pred;
-	HSTARSHIP succ;
+	HFLEETINFO pred;
+	HFLEETINFO succ;
 
 	DWORD RaceResIndex;
 
-	EXTENDED_SHIP_INFO ShipInfo;
-} EXTENDED_SHIP_FRAGMENT;
+	UWORD ship_flags;
+	BYTE days_left;
+			/* Days left before the fleet reachers 'dest_loc'. */
+	BYTE growth_fract;
+	COUNT crew_level;
+	COUNT max_crew;
+	BYTE energy_level;
+	BYTE max_energy;
+	POINT loc;
+			/* Location of the fleet (center) */
 
-#define AllocStarShip(pq) AllocLink (pq)
-#define LockStarShip(pq,h) (STARSHIP*)LockLink (pq, h)
-#define UnlockStarShip(pq,h) UnlockLink (pq, h)
-#define FreeStarShip(pq,h) FreeLink (pq, h)
+	STRING race_strings;
+			/* Race specific strings, see doc/devel/racestrings. */
+	FRAME icons;
+	FRAME melee_icon;
+
+	COUNT actual_strength;
+			/* Measure for the size of the sphere of influence.
+			 * 0 if there is none and no ships will be generated.
+	         * '(COUNT) ~0' if there is none, and the ship generation
+			 * is handled separately. */
+	COUNT known_strength;
+			/* Measure for the size of the sphere of influence when last
+			 * checked the starmap.
+			 * 0 if the race's SoI is not known. */
+	POINT known_loc;
+			/* Location of the SoI (center) when last checked
+			 * the starmap. */
+
+	BYTE growth_err_term;
+	BYTE func_index;
+			/* Function index defined in clock.h (the same as in SetEvent())
+			 * for the function to call when the fleet reaches 'dest_loc'.
+			 * '(BYTE) ~0' means no function to call. */
+	POINT dest_loc;
+			/* Location to which the fleet (center) is moving. */
+
+} FLEET_INFO;
+
+static inline FLEET_INFO *
+LockFleetInfo (const QUEUE *pq, HFLEETINFO h)
+{
+	assert (GetLinkSize (pq) == sizeof (FLEET_INFO));
+	return (FLEET_INFO *) LockLink (pq, h);
+}
+
+#define UnlockFleetInfo(pq, h) UnlockLink (pq, h)
 
 enum
 {

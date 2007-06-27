@@ -33,7 +33,7 @@
 static int
 init_probe (void)
 {
-	HSTARSHIP hStarShip;
+	HSHIPFRAG hStarShip;
 
 	if (!GET_GAME_STATE (PROBE_MESSAGE_DELIVERED)
 			&& GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP)
@@ -41,14 +41,14 @@ init_probe (void)
 	{
 		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 		SET_GROUP_LOC (FragPtr, 2 + 1); /* orbitting earth */
 		SET_GROUP_DEST (FragPtr, 2 + 1); /* orbitting earth */
-		FragPtr->ShipInfo.loc.x = FragPtr->ShipInfo.loc.y = 0;
-		FragPtr->ShipInfo.group_counter = 0;
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr->loc.x = 0;
+		FragPtr->loc.y = 0;
+		FragPtr->group_counter = 0;
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		return 1;
 	}

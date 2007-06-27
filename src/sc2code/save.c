@@ -110,10 +110,19 @@ write_a16 (void *fp, const UWORD *ar, COUNT count)
 }
 
 static void
+SaveEmptyQueue (DECODE_REF fh)
+{
+	COUNT num_links = 0;
+
+	// Write the number of entries in the queue.
+	cwrite_16 (fh, num_links);
+}
+
+static void
 SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 {
 	COUNT num_links;
-	HSTARSHIP hStarShip;
+	HSHIPFRAG hStarShip;
 
 	// Write the number of entries in the queue.
 	num_links = CountLinks (pQueue);
@@ -122,11 +131,11 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 	hStarShip = GetHeadLink (pQueue);
 	while (num_links--)
 	{
-		HSTARSHIP hNextShip;
+		HSHIPFRAG hNextShip;
 		SHIP_FRAGMENT *FragPtr;
 		COUNT Index;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
+		FragPtr = LockShipFrag (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		Index = GET_RACE_ID (FragPtr);
@@ -138,18 +147,18 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_16 (fh, FragPtr->which_side);
 		cwrite_8  (fh, FragPtr->captains_name_index);
 		cwrite_8  (fh, 0); /* padding */
-		// Write SHIP_INFO elements
-		cwrite_16 (fh, FragPtr->ShipInfo.ship_flags);
-		cwrite_8  (fh, FragPtr->ShipInfo.var1);
-		cwrite_8  (fh, FragPtr->ShipInfo.var2);
-		cwrite_8  (fh, FragPtr->ShipInfo.crew_level);
-		cwrite_8  (fh, FragPtr->ShipInfo.max_crew);
-		cwrite_8  (fh, FragPtr->ShipInfo.energy_level);
-		cwrite_8  (fh, FragPtr->ShipInfo.max_energy);
-		cwrite_16 (fh, FragPtr->ShipInfo.loc.x);
-		cwrite_16 (fh, FragPtr->ShipInfo.loc.y);
+		cwrite_16 (fh, FragPtr->ship_flags);
+		cwrite_8  (fh, FragPtr->var1);
+		cwrite_8  (fh, FragPtr->var2);
+		// XXX: writing crew as BYTE to maintain savegame compatibility
+		cwrite_8  (fh, FragPtr->crew_level);
+		cwrite_8  (fh, FragPtr->max_crew);
+		cwrite_8  (fh, FragPtr->energy_level);
+		cwrite_8  (fh, FragPtr->max_energy);
+		cwrite_16 (fh, FragPtr->loc.x);
+		cwrite_16 (fh, FragPtr->loc.y);
 
-		UnlockStarShip (pQueue, hStarShip);
+		UnlockShipFrag (pQueue, hStarShip);
 		hStarShip = hNextShip;
 	}
 }
@@ -158,49 +167,49 @@ static void
 SaveRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 {
 	COUNT num_links;
-	HSTARSHIP hStarShip;
+	HFLEETINFO hFleet;
 
 	// Write the number of entries in the queue.
 	num_links = CountLinks (pQueue);
 	cwrite_16 (fh, num_links);
 
-	hStarShip = GetHeadLink (pQueue);
+	hFleet = GetHeadLink (pQueue);
 	while (num_links--)
 	{
-		HSTARSHIP hNextShip;
-		EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
+		HFLEETINFO hNextFleet;
+		FLEET_INFO *FleetPtr;
 		COUNT Index;
 
-		ExtFragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (pQueue, hStarShip);
-		hNextShip = _GetSuccLink (ExtFragPtr);
+		FleetPtr = LockFleetInfo (pQueue, hFleet);
+		hNextFleet = _GetSuccLink (FleetPtr);
 
-		Index = GetIndexFromStarShip (pQueue, hStarShip);
+		Index = GetIndexFromStarShip (pQueue, hFleet);
 		// The index is the position in the queue.
 		cwrite_16 (fh, Index);
 
-		// Write EXTENDED_SHIP_INFO elements
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.ship_flags);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.days_left);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.growth_fract);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.crew_level);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.max_crew);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.energy_level);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.max_energy);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.loc.x);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.loc.y);
+		// Write FLEET_INFO elements
+		cwrite_16 (fh, FleetPtr->ship_flags);
+		cwrite_8  (fh, FleetPtr->days_left);
+		cwrite_8  (fh, FleetPtr->growth_fract);
+		cwrite_8  (fh, FleetPtr->crew_level);
+		cwrite_8  (fh, FleetPtr->max_crew);
+		cwrite_8  (fh, FleetPtr->energy_level);
+		cwrite_8  (fh, FleetPtr->max_energy);
+		cwrite_16 (fh, FleetPtr->loc.x);
+		cwrite_16 (fh, FleetPtr->loc.y);
 
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.actual_strength);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_strength);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.x);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.known_loc.y);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.growth_err_term);
-		cwrite_8  (fh, ExtFragPtr->ShipInfo.func_index);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.x);
-		cwrite_16 (fh, ExtFragPtr->ShipInfo.dest_loc.y);
+		cwrite_16 (fh, FleetPtr->actual_strength);
+		cwrite_16 (fh, FleetPtr->known_strength);
+		cwrite_16 (fh, FleetPtr->known_loc.x);
+		cwrite_16 (fh, FleetPtr->known_loc.y);
+		cwrite_8  (fh, FleetPtr->growth_err_term);
+		cwrite_8  (fh, FleetPtr->func_index);
+		cwrite_16 (fh, FleetPtr->dest_loc.x);
+		cwrite_16 (fh, FleetPtr->dest_loc.y);
 		cwrite_16 (fh, 0); /* alignment padding */
 
-		UnlockStarShip (pQueue, hStarShip);
-		hStarShip = hNextShip;
+		UnlockFleetInfo (pQueue, hFleet);
+		hFleet = hNextFleet;
 	}
 }
 
@@ -231,6 +240,7 @@ SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 		cwrite_16  (fh, 0); /* useless; was SHIP_INFO.ship_flags */
 		cwrite_8   (fh, ShipInfo->race_id);
 		cwrite_8   (fh, 0); /* useless; was SHIP_INFO.var2 */
+		// XXX: writing crew as BYTE to maintain savegame compatibility
 		cwrite_8   (fh, ShipInfo->crew_level);
 		cwrite_8   (fh, ShipInfo->max_crew);
 		cwrite_8   (fh, 0); /* useless; was SHIP_INFO.energy_level */
@@ -242,7 +252,7 @@ SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 		cwrite_ptr (fh); /* useless ptr; FRAME melee_icon */
 	}
 	
-	// Save the stuff after the SHIP_INFO array:
+	// Save the stuff after the BRIEF_SHIP_INFO array
 	cwrite_32  (fh, EncounterPtr->log_x);
 	cwrite_32  (fh, EncounterPtr->log_y);
 }
@@ -432,18 +442,17 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 	SummPtr->MCreditHi = GET_GAME_STATE (MELNORME_CREDIT1);
 
 	{
-		HSTARSHIP hStarShip, hNextShip;
+		HSHIPFRAG hStarShip, hNextShip;
 
 		for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)), SummPtr->NumShips = 0;
 				hStarShip; hStarShip = hNextShip, ++SummPtr->NumShips)
 		{
 			SHIP_FRAGMENT *StarShipPtr;
 
-			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (built_ship_q), hStarShip);
+			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
 			SummPtr->ShipList[SummPtr->NumShips] = GET_RACE_ID (StarShipPtr);
-			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 		}
 	}
 
@@ -630,8 +639,22 @@ RetrySave:
 		GLOBAL (ShipStamp.frame) = frame;
 
 		SaveRaceQueue (fh, &GLOBAL (avail_race_q));
+		// START_INTERPLANETARY is only set when saving from Homeworld
+		//   encounter screen. When the game is loaded, GENERATE_ORBITAL will
+		//   create the encounter anew and populate the npc queue.
 		if (!(GLOBAL (CurrentActivity) & START_INTERPLANETARY))
-			SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
+		{
+			if (GLOBAL (CurrentActivity) & START_ENCOUNTER)
+				// save npc queue
+				SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
+			else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
+				// save group queue
+				SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
+			else
+				// XXX: empty queue write-out is only needed to maintain
+				//   the savegame compatibility
+				SaveEmptyQueue (fh);
+		}
 		SaveShipQueue (fh, &GLOBAL (built_ship_q));
 
 		// Save the number of game events (compressed).

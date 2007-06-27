@@ -471,7 +471,7 @@ VisitStarBase (void)
 	}
 	else if (!GET_GAME_STATE (STARBASE_AVAILABLE))
 	{
-		HSTARSHIP hStarShip;
+		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 
 		pMenuState = 0;
@@ -483,10 +483,11 @@ VisitStarBase (void)
 
 		hStarShip = CloneShipFragment (ILWRATH_SHIP,
 				&GLOBAL (npc_built_ship_q), 7);
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+		/* Hack (sort of): Suppress the tally and salvage info
+		 * after the battle */
 		SET_RACE_ID (FragPtr, (BYTE)~0);
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		InitCommunication (ILWRATH_CONVERSATION);
 		if (GLOBAL_SIS (CrewEnlisted) == (COUNT)~0

@@ -36,8 +36,8 @@ ZapToUrquanEncounter (void)
 	{
 		SIZE dx, dy;
 		ENCOUNTER *EncounterPtr;
-		HSTARSHIP hStarShip;
-		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+		HFLEETINFO hStarShip;
+		FLEET_INFO *TemplatePtr;
 		BRIEF_SHIP_INFO *BSIPtr;
 
 		LockEncounter (hEncounter, &EncounterPtr);
@@ -49,25 +49,24 @@ ZapToUrquanEncounter (void)
 		InsertEncounter (hEncounter, GetHeadEncounter ());
 
 		hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), URQUAN_SHIP);
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		EncounterPtr->origin = TemplatePtr->ShipInfo.loc;
-		EncounterPtr->radius = TemplatePtr->ShipInfo.actual_strength;
+		TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		EncounterPtr->origin = TemplatePtr->loc;
+		EncounterPtr->radius = TemplatePtr->actual_strength;
 		EncounterPtr->SD.Type = URQUAN_SHIP;
 		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
 		// XXX: SHIP_INFO struct copy
 		BSIPtr = &EncounterPtr->ShipList[0];
 		BSIPtr->race_id = URQUAN_SHIP;
-		BSIPtr->crew_level = TemplatePtr->ShipInfo.crew_level;
-		BSIPtr->max_crew = TemplatePtr->ShipInfo.max_crew;
-		BSIPtr->max_energy = TemplatePtr->ShipInfo.max_energy;
+		BSIPtr->crew_level = TemplatePtr->crew_level;
+		BSIPtr->max_crew = TemplatePtr->max_crew;
+		BSIPtr->max_energy = TemplatePtr->max_energy;
 		EncounterPtr->SD.star_pt.x = 5288;
 		EncounterPtr->SD.star_pt.y = 4892;
 		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->SD.star_pt.x);
 		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->SD.star_pt.y);
 		GLOBAL_SIS (log_x) = EncounterPtr->log_x;
 		GLOBAL_SIS (log_y) = EncounterPtr->log_y;
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 
 		{
 #define LOST_DAYS 15

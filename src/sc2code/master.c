@@ -38,16 +38,16 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 	ri = GET_INSTANCE (ARILOU_SHIP_INDEX);
 	rp = GET_PACKAGE (ARILOU_SHIP_INDEX);
 	num_entries = NUM_MELEE_SHIPS;
-	InitQueue (&master_q, num_entries, sizeof (SHIP_FRAGMENT));
+	InitQueue (&master_q, num_entries, sizeof (MASTER_SHIP_INFO));
 	while (num_entries--)
 	{
-		HSTARSHIP hBuiltShip;
+		HMASTERSHIP hBuiltShip;
 		char built_buf[30];
-		HSTARSHIP hStarShip, hNextShip;
-		SHIP_FRAGMENT *BuiltFragPtr;
+		HMASTERSHIP hStarShip, hNextShip;
+		MASTER_SHIP_INFO *BuiltPtr;
 		RACE_DESC *RDPtr;
 
-		hBuiltShip = Build (&master_q, MAKE_RESOURCE (rp++, rt, ri++));
+		hBuiltShip = AllocLink (&master_q);
 		if (!hBuiltShip)
 			continue;
 
@@ -56,25 +56,24 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 		if (YieldProcessing)
 			YieldProcessing ();
 
-		BuiltFragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hBuiltShip);
-		RDPtr = load_ship (BuiltFragPtr->RaceResIndex, FALSE);
+		BuiltPtr = LockMasterShip (&master_q, hBuiltShip);
+		BuiltPtr->RaceResIndex = MAKE_RESOURCE (rp++, rt, ri++);
+		RDPtr = load_ship (BuiltPtr->RaceResIndex, FALSE);
 		if (!RDPtr)
 		{
-			UnlockStarShip (&master_q, hBuiltShip);
-			RemoveQueue (&master_q, hBuiltShip);
+			UnlockMasterShip (&master_q, hBuiltShip);
 			continue;
 		}
 
 		// Grab a copy of loaded icons, strings and info
-		BuiltFragPtr->ShipInfo = RDPtr->ship_info;
+		// XXX: SHIP_INFO implicitly referenced here
+		BuiltPtr->ShipInfo = RDPtr->ship_info;
 		free_ship (RDPtr, FALSE, FALSE);
 
 		GetStringContents (SetAbsStringTableIndex (
-				BuiltFragPtr->ShipInfo.race_strings, 2
+				BuiltPtr->ShipInfo.race_strings, 2
 				), (STRINGPTR)built_buf, FALSE);
-		UnlockStarShip (&master_q, hBuiltShip);
-
-		RemoveQueue (&master_q, hBuiltShip);
+		UnlockMasterShip (&master_q, hBuiltShip);
 
 		// Insert the ship in the master queue in the right location
 		// to keep the list sorted on the name of the race.
@@ -82,14 +81,14 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 				hStarShip; hStarShip = hNextShip)
 		{
 			char ship_buf[30];
-			SHIP_FRAGMENT *FragPtr;
+			MASTER_SHIP_INFO *MasterPtr;
 
-			FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-			hNextShip = _GetSuccLink (FragPtr);
+			MasterPtr = LockMasterShip (&master_q, hStarShip);
+			hNextShip = _GetSuccLink (MasterPtr);
 			GetStringContents (SetAbsStringTableIndex (
-					FragPtr->ShipInfo.race_strings, 2
+					MasterPtr->ShipInfo.race_strings, 2
 					), (STRINGPTR)ship_buf, FALSE);
-			UnlockStarShip (&master_q, hStarShip);
+			UnlockMasterShip (&master_q, hStarShip);
 
 			if (strcmp (built_buf, ship_buf) < 0)
 				break;
@@ -101,42 +100,41 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 void
 FreeMasterShipList (void)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HMASTERSHIP hStarShip, hNextShip;
 
 	for (hStarShip = GetHeadLink (&master_q);
 			hStarShip != 0; hStarShip = hNextShip)
 	{
-		SHIP_FRAGMENT *FragPtr;
+		MASTER_SHIP_INFO *MasterPtr;
 
-		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-		hNextShip = _GetSuccLink (FragPtr);
+		MasterPtr = LockMasterShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (MasterPtr);
 
-		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.melee_icon));
-		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.icons));
+		DestroyDrawable (ReleaseDrawable (MasterPtr->ShipInfo.melee_icon));
+		DestroyDrawable (ReleaseDrawable (MasterPtr->ShipInfo.icons));
 		DestroyStringTable (ReleaseStringTable (
-				FragPtr->ShipInfo.race_strings));
+				MasterPtr->ShipInfo.race_strings));
 
-		UnlockStarShip (&master_q, hStarShip);
+		UnlockMasterShip (&master_q, hStarShip);
 	}
 
 	UninitQueue (&master_q);
 }
 
-HSTARSHIP
+HMASTERSHIP
 FindMasterShip (DWORD ship_ref)
 {
-	HSTARSHIP hStarShip;
-	HSTARSHIP hNextShip;
+	HMASTERSHIP hStarShip, hNextShip;
 	
 	for (hStarShip = GetHeadLink (&master_q); hStarShip; hStarShip = hNextShip)
 	{
 		DWORD ref;
-		SHIP_FRAGMENT *FragPtr;
+		MASTER_SHIP_INFO *MasterPtr;
 
-		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-		hNextShip = _GetSuccLink (FragPtr);
-		ref = FragPtr->RaceResIndex;
-		UnlockStarShip (&master_q, hStarShip);
+		MasterPtr = LockMasterShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (MasterPtr);
+		ref = MasterPtr->RaceResIndex;
+		UnlockMasterShip (&master_q, hStarShip);
 
 		if (ref == ship_ref)
 			break;
@@ -148,20 +146,19 @@ FindMasterShip (DWORD ship_ref)
 int
 FindMasterShipIndex (DWORD ship_ref)
 {
-	HSTARSHIP hStarShip;
-	HSTARSHIP hNextShip;
+	HMASTERSHIP hStarShip, hNextShip;
 	int index;
 	
 	for (index = 0, hStarShip = GetHeadLink (&master_q); hStarShip;
 			++index, hStarShip = hNextShip)
 	{
 		DWORD ref;
-		SHIP_FRAGMENT *FragPtr;
+		MASTER_SHIP_INFO *MasterPtr;
 
-		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-		hNextShip = _GetSuccLink (FragPtr);
-		ref = FragPtr->RaceResIndex;
-		UnlockStarShip (&master_q, hStarShip);
+		MasterPtr = LockMasterShip (&master_q, hStarShip);
+		hNextShip = _GetSuccLink (MasterPtr);
+		ref = MasterPtr->RaceResIndex;
+		UnlockMasterShip (&master_q, hStarShip);
 
 		if (ref == ship_ref)
 			break;

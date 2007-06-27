@@ -29,7 +29,7 @@ GenerateColony (BYTE control)
 	{
 		case INIT_NPCS:
 		{
-			HSTARSHIP hStarShip;
+			HSHIPFRAG hStarShip;
 
 			GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (COLONY_GRPOFFS0);
 			if (GLOBAL (BattleGroupRef) == 0)
@@ -48,15 +48,14 @@ GenerateColony (BYTE control)
 			{
 				SHIP_FRAGMENT *FragPtr;
 
-				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip);
+				FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				SET_GROUP_MISSION (FragPtr, IN_ORBIT);
 				SET_GROUP_LOC (FragPtr, 0 + 1); /* orbitting colony */
 				SET_GROUP_DEST (FragPtr, 0 + 1); /* orbitting colony */
-				FragPtr->ShipInfo.loc.x = 0;
-				FragPtr->ShipInfo.loc.y = 0;
-				FragPtr->ShipInfo.group_counter = 0;
-				UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+				FragPtr->loc.x = 0;
+				FragPtr->loc.y = 0;
+				FragPtr->group_counter = 0;
+				UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 			}
 			break;
 		}

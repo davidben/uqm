@@ -94,18 +94,18 @@ ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 	sread_16 (fp, &FragPtr->which_side);
 	sread_8  (fp, &FragPtr->captains_name_index);
 	sread_8  (fp, NULL); /* padding */
-	// Read SHIP_INFO elements
-	sread_16 (fp, &FragPtr->ShipInfo.ship_flags);
-	sread_8  (fp, &FragPtr->ShipInfo.var1);
-	sread_8  (fp, &FragPtr->ShipInfo.var2);
+	sread_16 (fp, &FragPtr->ship_flags);
+	sread_8  (fp, &FragPtr->var1);
+	sread_8  (fp, &FragPtr->var2);
+	// XXX: reading crew as BYTE to maintain savegame compatibility
 	sread_8  (fp, &tmpb);
-	FragPtr->ShipInfo.crew_level = tmpb;
+	FragPtr->crew_level = tmpb;
 	sread_8  (fp, &tmpb);
-	FragPtr->ShipInfo.max_crew = tmpb;
-	sread_8  (fp, &FragPtr->ShipInfo.energy_level);
-	sread_8  (fp, &FragPtr->ShipInfo.max_energy);
-	sread_16 (fp, &FragPtr->ShipInfo.loc.x);
-	sread_16 (fp, &FragPtr->ShipInfo.loc.y);
+	FragPtr->max_crew = tmpb;
+	sread_8  (fp, &FragPtr->energy_level);
+	sread_8  (fp, &FragPtr->max_energy);
+	sread_16 (fp, &FragPtr->loc.x);
+	sread_16 (fp, &FragPtr->loc.y);
 }
 
 static void
@@ -115,16 +115,16 @@ WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
 	swrite_16 (fp, FragPtr->which_side);
 	swrite_8  (fp, FragPtr->captains_name_index);
 	swrite_8  (fp, 0); /* padding */
-	// Write SHIP_INFO elements
-	swrite_16 (fp, FragPtr->ShipInfo.ship_flags);
-	swrite_8  (fp, FragPtr->ShipInfo.var1);
-	swrite_8  (fp, FragPtr->ShipInfo.var2);
-	swrite_8  (fp, FragPtr->ShipInfo.crew_level);
-	swrite_8  (fp, FragPtr->ShipInfo.max_crew);
-	swrite_8  (fp, FragPtr->ShipInfo.energy_level);
-	swrite_8  (fp, FragPtr->ShipInfo.max_energy);
-	swrite_16 (fp, FragPtr->ShipInfo.loc.x);
-	swrite_16 (fp, FragPtr->ShipInfo.loc.y);
+	swrite_16 (fp, FragPtr->ship_flags);
+	swrite_8  (fp, FragPtr->var1);
+	swrite_8  (fp, FragPtr->var2);
+	// XXX: writing crew as BYTE to maintain savegame compatibility
+	swrite_8  (fp, FragPtr->crew_level);
+	swrite_8  (fp, FragPtr->max_crew);
+	swrite_8  (fp, FragPtr->energy_level);
+	swrite_8  (fp, FragPtr->max_energy);
+	swrite_16 (fp, FragPtr->loc.x);
+	swrite_16 (fp, FragPtr->loc.y);
 }
 
 void
@@ -168,7 +168,7 @@ BuildGroups (void)
 	BYTE Index, BestIndex;
 	COUNT BestPercent;
 	POINT universe;
-	HSTARSHIP hTemplate, hNextShip;
+	HFLEETINFO hFleet, hNextFleet;
 	BYTE HomeWorld[] =
 	{
 		0,                /* ARILOU_SHIP */
@@ -208,17 +208,16 @@ BuildGroups (void)
 
 	BestPercent = 0;
 	universe = CurStarDescPtr->star_pt;
-	for (hTemplate = GetHeadLink (&GLOBAL (avail_race_q)), Index = 0;
-			hTemplate; hTemplate = hNextShip, ++Index)
+	for (hFleet = GetHeadLink (&GLOBAL (avail_race_q)), Index = 0;
+			hFleet; hFleet = hNextFleet, ++Index)
 	{
 		COUNT i, encounter_radius;
-		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+		FLEET_INFO *FleetPtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hTemplate);
-		hNextShip = _GetSuccLink (TemplatePtr);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+		hNextFleet = _GetSuccLink (FleetPtr);
 
-		if ((encounter_radius = TemplatePtr->ShipInfo.actual_strength)
+		if ((encounter_radius = FleetPtr->actual_strength)
 				&& (i = EncounterPercent[Index]))
 		{
 			SIZE dx, dy;
@@ -229,19 +228,12 @@ BuildGroups (void)
 			if (race_enc && CurStarDescPtr->Index == race_enc)
 			{	// In general, there are always ships at the Homeworld for
 				// the races specified in HomeWorld[] array.
-				// XXX: This code is somewhat broken and the intent is not
-				// 100% clear. Finding a Homeworld does not break you out
-				// of the loop, so another race could override with its
-				// ships when another race's SoI covers the Homeworld.
-				// However, only a race later in the order can do that, so
-				// for example, there will *always* be Yehat Rebel ships
-				// at the Rebel Homeworld, but the same is not true for the
-				// regular Yehat.
 				BestIndex = Index;
 				BestPercent = 70;
 				if (race_enc == SPATHI_DEFINED || race_enc == SUPOX_DEFINED)
 					BestPercent = 2;
-				hNextShip = 0;
+				// Terminate the loop!
+				hNextFleet = 0;
 
 				goto FoundHome;
 			}
@@ -251,9 +243,11 @@ BuildGroups (void)
 			else
 				encounter_radius =
 						(encounter_radius * SPHERE_RADIUS_INCREMENT) >> 1;
-			if ((dx = universe.x - TemplatePtr->ShipInfo.loc.x) < 0)
+			dx = universe.x - FleetPtr->loc.x;
+			if (dx < 0)
 				dx = -dx;
-			if ((dy = universe.y - TemplatePtr->ShipInfo.loc.y) < 0)
+			dy = universe.y - FleetPtr->loc.y;
+			if (dy < 0)
 				dy = -dy;
 			if ((COUNT)dx < encounter_radius
 					&& (COUNT)dy < encounter_radius
@@ -265,7 +259,7 @@ BuildGroups (void)
 				// EncounterPercent is only used in practice for the Slylandro
 				// Probes, for the rest of races the chance of encounter is
 				// calced directly below from the distance to the Homeworld
-				if (TemplatePtr->ShipInfo.actual_strength != (COUNT)~0)
+				if (FleetPtr->actual_strength != (COUNT)~0)
 				{
 					i = 70 - (COUNT)((DWORD)square_root (d_squared)
 							* 60L / encounter_radius);
@@ -276,7 +270,7 @@ BuildGroups (void)
 						&& (BestPercent == 0
 						|| (HIWORD (rand_val) % (i + BestPercent)) < i))
 				{
-					if (TemplatePtr->ShipInfo.actual_strength == (COUNT)~0)
+					if (FleetPtr->actual_strength == (COUNT)~0)
 					{	// The prevailing encounter chance is hereby limitted
 						// to 4% for races with infinite SoI (currently, it
 						// is only the Slylandro Probes)
@@ -290,7 +284,7 @@ BuildGroups (void)
 		}
 
 FoundHome:
-		UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
 	}
 
 	if (BestPercent)
@@ -332,17 +326,18 @@ static void
 FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 {
 	BYTE RaceType, NumShips;
-	HSTARSHIP hStarShip;
+	HSHIPFRAG hStarShip;
 	SHIP_FRAGMENT *FragPtr;
 
 	if (which_group == GROUP_LIST)
 	{
 		QUEUE temp_q;
-		HSTARSHIP hNextShip;
+		HSHIPFRAG hNextShip;
 
 		if (pGH->GroupOffset[0] == 0)
 			pGH->GroupOffset[0] = LengthStateFile (fp);
 
+		/* Weed out the dead groups first */
 		temp_q = GLOBAL (npc_built_ship_q);
 		SetHeadLink (&GLOBAL (npc_built_ship_q), 0);
 		SetTailLink (&GLOBAL (npc_built_ship_q), 0);
@@ -351,22 +346,21 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 		{
 			COUNT crew_level;
 
-			FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-					&temp_q, hStarShip);
+			FragPtr = LockShipFrag (&temp_q, hStarShip);
 			hNextShip = _GetSuccLink (FragPtr);
-			crew_level = FragPtr->ShipInfo.crew_level;
+			crew_level = FragPtr->crew_level;
 			which_group = GET_GROUP_ID (FragPtr);
-			UnlockStarShip (&temp_q, hStarShip);
+			UnlockShipFrag (&temp_q, hStarShip);
 
 			if (crew_level == 0)
-			{
+			{	/* This group is dead -- remove it */
 				if (GLOBAL (BattleGroupRef))
 					PutGroupInfo (GLOBAL (BattleGroupRef), which_group);
 				else
 					FlushGroupInfo (pGH, GROUPS_RANDOM, which_group, fp);
 				pGH->GroupOffset[which_group] = 0;
 				RemoveQueue (&temp_q, hStarShip);
-				FreeStarShip (&temp_q, hStarShip);
+				FreeShipFrag (&temp_q, hStarShip);
 			}
 		}
 		GLOBAL (npc_built_ship_q) = temp_q;
@@ -374,17 +368,17 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 		which_group = GROUP_LIST;
 	}
 	else if (which_group > pGH->NumGroups)
-	{
+	{	/* Group not present yet -- add it */
 		pGH->NumGroups = which_group;
 		pGH->GroupOffset[which_group] = LengthStateFile (fp);
 
+		/* The first ship in a group defines the alien race */
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		RaceType = GET_RACE_ID (FragPtr);
 		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
 		swrite_8 (fp, RaceType);
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 	SeekStateFile (fp, offset, SEEK_SET);
 	WriteGroupHeader (fp, pGH);
@@ -397,7 +391,7 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 	NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
 
 	if (which_group != GROUP_LIST)
-	{	// skip RaceType
+	{	/* Do not change RaceType (skip it) */
 		SeekStateFile (fp, pGH->GroupOffset[which_group] + 1, SEEK_SET);
 	}
 	else
@@ -410,10 +404,9 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 	while (NumShips--)
 	{
-		HSTARSHIP hNextShip;
+		HSHIPFRAG hNextShip;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
 		RaceType = GET_RACE_ID (FragPtr);
@@ -424,13 +417,13 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 			log_add (log_Debug, "F) type %u, loc %u<%d, %d>, task 0x%02x:%u",
 					RaceType,
 					GET_GROUP_LOC (FragPtr),
-					FragPtr->ShipInfo.loc.x,
-					FragPtr->ShipInfo.loc.y,
+					FragPtr->loc.x,
+					FragPtr->loc.y,
 					GET_GROUP_MISSION (FragPtr),
 					GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
 		WriteShipFragment (fp, FragPtr);
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hStarShip = hNextShip;
 	}
 }
@@ -449,7 +442,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 	{
 		BYTE RaceType, NumShips;
 		GROUP_HEADER GH;
-		HSTARSHIP hStarShip;
+		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 
 		SeekStateFile (fp, offset, SEEK_SET);
@@ -510,8 +503,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 						hStarShip = CloneShipFragment (RaceType,
 								&GLOBAL (npc_built_ship_q), 0);
-						FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-								&GLOBAL (npc_built_ship_q), hStarShip);
+						FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
+								hStarShip);
 						// XXX: STARSHIP refactor; Cannot find what might be
 						//   using this info. Looks unused.
 						FragPtr->which_side = BAD_GUY;
@@ -538,17 +531,15 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 									) + 1);
 						SET_GROUP_DEST (FragPtr, group_loc);
 						rand_val = TFB_Random ();
-						FragPtr->ShipInfo.loc.x =
-								(LOWORD (rand_val) % 10000) - 5000;
-						FragPtr->ShipInfo.loc.y =
-								(HIWORD (rand_val) % 10000) - 5000;
+						FragPtr->loc.x = (LOWORD (rand_val) % 10000) - 5000;
+						FragPtr->loc.y = (HIWORD (rand_val) % 10000) - 5000;
 						if (task == EXPLORE)
-							FragPtr->ShipInfo.group_counter =
+							FragPtr->group_counter =
 									((COUNT)TFB_Random () % MAX_REVOLUTIONS)
 									<< FACING_SHIFT;
 						else
 						{
-							FragPtr->ShipInfo.group_counter = 0;
+							FragPtr->group_counter = 0;
 							if (task == ON_STATION)
 							{
 								COUNT angle;
@@ -559,9 +550,9 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 										FALSE);
 								angle = FACING_TO_ANGLE (GET_ORBIT_LOC (
 										FragPtr) + 1);
-								FragPtr->ShipInfo.loc.x = org.x
+								FragPtr->loc.x = org.x
 										+ COSINE (angle, STATION_RADIUS);
-								FragPtr->ShipInfo.loc.y = org.y
+								FragPtr->loc.y = org.y
 										+ SINE (angle, STATION_RADIUS);
 								group_loc = 0;
 							}
@@ -578,11 +569,11 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 								NumShips,
 								RaceType,
 								group_loc,
-								FragPtr->ShipInfo.loc.x,
-								FragPtr->ShipInfo.loc.y,
+								FragPtr->loc.x,
+								FragPtr->loc.y,
 								task);
 #endif /* DEBUG_GROUPS */
-						UnlockStarShip (&GLOBAL (npc_built_ship_q),
+						UnlockShipFrag (&GLOBAL (npc_built_ship_q),
 								hStarShip);
 					}
 				}
@@ -636,8 +627,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 				hStarShip = CloneShipFragment (RaceType,
 						&GLOBAL (npc_built_ship_q), 0);
 
-				FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (npc_built_ship_q), hStarShip);
+				FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				ReadShipFragment (fp, FragPtr);
 
 #ifdef DEBUG_GROUPS
@@ -646,8 +636,8 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 							"task 0x%02x:%u",
 							RaceType,
 							GET_GROUP_LOC (FragPtr),
-							FragPtr->ShipInfo.loc.x,
-							FragPtr->ShipInfo.loc.y,
+							FragPtr->loc.x,
+							FragPtr->loc.y,
 							GET_GROUP_MISSION (FragPtr),
 							GET_GROUP_DEST (FragPtr));
 #endif /* DEBUG_GROUPS */
@@ -658,16 +648,16 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 #ifdef DEBUG_GROUPS
 					log_add (log_Debug, "\n");
 #endif /* DEBUG_GROUPS */
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 				else
 				{
 #ifdef DEBUG_GROUPS
 					log_add (log_Debug, " -- REMOVING");
 #endif /* DEBUG_GROUPS */
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 					RemoveQueue (&GLOBAL (npc_built_ship_q), hStarShip);
-					FreeStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					FreeShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 			}
 		}

@@ -46,6 +46,7 @@ typedef HLINK HEVENT;
 
 typedef struct event
 {
+	// LINK elements; must be first
 	HEVENT pred, succ;
 
 	BYTE day_index, month_index;

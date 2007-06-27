@@ -143,7 +143,7 @@ check_hyperspace_encounter (void)
 {
 	BYTE Type;
 	POINT universe;
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 	COUNT EncounterPercent[] =
 	{
 		RACE_HYPERSPACE_PERCENT
@@ -156,13 +156,12 @@ check_hyperspace_encounter (void)
 			hStarShip = hNextShip, ++Type)
 	{
 		COUNT encounter_radius;
-		EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+		FLEET_INFO *FleetPtr;
 
-		TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		hNextShip = _GetSuccLink (TemplatePtr);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
 
-		encounter_radius = TemplatePtr->ShipInfo.actual_strength;
+		encounter_radius = FleetPtr->actual_strength;
 		if (encounter_radius)
 		{
 			BYTE encounter_flags;
@@ -222,9 +221,11 @@ check_hyperspace_encounter (void)
 				}
 			}
 
-			if ((dx = universe.x - TemplatePtr->ShipInfo.loc.x) < 0)
+			dx = universe.x - FleetPtr->loc.x;
+			if (dx < 0)
 				dx = -dx;
-			if ((dy = universe.y - TemplatePtr->ShipInfo.loc.y) < 0)
+			dy = universe.y - FleetPtr->loc.y;
+			if (dy < 0)
 				dy = -dy;
 			if ((COUNT)dx < encounter_radius
 					&& (COUNT)dy < encounter_radius
@@ -238,7 +239,7 @@ check_hyperspace_encounter (void)
 				{
 					LockEncounter (hEncounter, &EncounterPtr);
 					memset (EncounterPtr, 0, sizeof (*EncounterPtr));
-					EncounterPtr->origin = TemplatePtr->ShipInfo.loc;
+					EncounterPtr->origin = FleetPtr->loc;
 					EncounterPtr->radius = encounter_radius;
 					EncounterPtr->SD.Index = encounter_flags;
 					EncounterPtr->SD.Type = Type;
@@ -249,7 +250,7 @@ check_hyperspace_encounter (void)
 			}
 		}
 
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 
 	SET_GAME_STATE (USED_BROADCASTER, 0);
@@ -951,19 +952,18 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 				NumShips, HINIBBLE (EncounterPtr->SD.Index));
 		for (i = 0; i < NumShips; ++i)
 		{
-			HSTARSHIP hStarShip;
-			EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+			HFLEETINFO hStarShip;
+			FLEET_INFO *FleetPtr;
 			BRIEF_SHIP_INFO *BSIPtr = &EncounterPtr->ShipList[i];
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), Type);
-			TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (avail_race_q), hStarShip);
+			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 			// XXX: SHIP_INFO struct copy
 			BSIPtr->race_id = Type;
-			BSIPtr->crew_level = TemplatePtr->ShipInfo.crew_level;
-			BSIPtr->max_crew = TemplatePtr->ShipInfo.max_crew;
-			BSIPtr->max_energy = TemplatePtr->ShipInfo.max_energy;
-			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+			BSIPtr->crew_level = FleetPtr->crew_level;
+			BSIPtr->max_crew = FleetPtr->max_crew;
+			BSIPtr->max_energy = FleetPtr->max_energy;
+			UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		}
 
 

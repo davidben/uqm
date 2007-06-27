@@ -330,8 +330,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 	else
 	{
 		// Full game.
-		HSTARSHIP hStarShip;
-		STARSHIP *SPtr;
+		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 
 		if (LastStarShipPtr == 0)
@@ -349,21 +348,21 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 				{
 					// Select the next ship for the computer.
 					hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-					FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-							&GLOBAL (npc_built_ship_q), hStarShip);
-					if (FragPtr->ShipInfo.crew_level == INFINITE_FLEET)
+					FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
+							hStarShip);
+					if (FragPtr->crew_level == INFINITE_FLEET)
 					{
 						// Infinite number of ships.
 						battle_counter[1]++;
 					}
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 			}
 		}
 		else
 		{
 			QUEUE *pQueue;
-			HSTARSHIP hNextShip;
+			HSHIPFRAG hNextShip;
 
 			if (which_player == 0)
 				pQueue = &GLOBAL (built_ship_q);
@@ -374,18 +373,20 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 			for (hStarShip = GetHeadLink (pQueue);
 					hStarShip != 0; hStarShip = hNextShip)
 			{
+				STARSHIP *SPtr;
+
 				SPtr = LockStarShip (&race_q[which_player], hBattleShip);
 				hNextShip = _GetSuccLink (SPtr);
 				UnlockStarShip (&race_q[which_player], hBattleShip);
 				hBattleShip = hNextShip;
 
-				FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
+				FragPtr = LockShipFrag (pQueue, hStarShip);
 				if (SPtr == LastStarShipPtr)
 				{
-					if (FragPtr->ShipInfo.crew_level != INFINITE_FLEET)
+					if (FragPtr->crew_level != INFINITE_FLEET)
 					{
 						/* Record crew left after the battle */
-						FragPtr->ShipInfo.crew_level = SPtr->crew_level;
+						FragPtr->crew_level = SPtr->crew_level;
 						if (GLOBAL (CurrentActivity) & IN_BATTLE)
 							SPtr->RaceResIndex = 0;
 									// deactivates the ship
@@ -396,17 +397,17 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 						/* XXX: Note that if Syreen had a homeworld you could
 						 * fight, all Syreen ships there would be crewed to
 						 * the maximum, instead of the normal level */
-						SPtr->crew_level = FragPtr->ShipInfo.max_crew;
+						SPtr->crew_level = FragPtr->max_crew;
 						SPtr->which_side = 1 << which_player;
 						SPtr->captains_name_index = PickCaptainName ();
 
 						battle_counter[1]++;
 					}
-					UnlockStarShip (pQueue, hStarShip);
+					UnlockShipFrag (pQueue, hStarShip);
 					break;
 				}
 				hNextShip = _GetSuccLink (FragPtr);
-				UnlockStarShip (pQueue, hStarShip);
+				UnlockShipFrag (pQueue, hStarShip);
 			}
 
 			if (which_player == 0)

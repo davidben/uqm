@@ -124,15 +124,14 @@ hangar_anim_func (void *data)
 
 #ifdef WANT_SHIP_SPINS
 static void
-SpinStarShip (HSTARSHIP hStarShip)
+SpinStarShip (HSHIPFRAG hStarShip)
 {
 	int Index;
 	SHIP_FRAGMENT *StarShipPtr;
 
-	StarShipPtr = (SHIP_FRAGMENT *) LockStarShip (&GLOBAL (built_ship_q),
-			hStarShip);
+	StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 	Index = FindMasterShipIndex (StarShipPtr->RaceResIndex);
-	UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+	UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 				
 	if (Index >= 0 && Index < NUM_MELEE_SHIPS)
 	{
@@ -148,46 +147,44 @@ static COUNT
 GetAvailableRaceCount (void)
 {
 	COUNT Index;
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 
 	Index = 0;
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+		FLEET_INFO *FleetPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		if (StarShipPtr->ShipInfo.ship_flags & GOOD_GUY)
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		if (FleetPtr->ship_flags & GOOD_GUY)
 			++Index;
 
-		hNextShip = _GetSuccLink (StarShipPtr);
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 
 	return Index;
 }
 
-static HSTARSHIP
+static HFLEETINFO
 GetAvailableRaceFromIndex (BYTE Index)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 
 	for (hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+		FLEET_INFO *FleetPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		if ((StarShipPtr->ShipInfo.ship_flags & GOOD_GUY) && Index-- == 0)
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		if ((FleetPtr->ship_flags & GOOD_GUY) && Index-- == 0)
 		{
-			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+			UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 			return hStarShip;
 		}
 
-		hNextShip = _GetSuccLink (StarShipPtr);
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 
 	return 0;
@@ -224,8 +221,8 @@ DrawRaceStrings (BYTE NewRaceItem)
 	if (NewRaceItem != (BYTE)~0)
 	{
 		TEXT t;
-		HSTARSHIP hStarShip;
-		EXTENDED_SHIP_FRAGMENT *FragPtr;
+		HFLEETINFO hStarShip;
+		FLEET_INFO *FleetPtr;
 		UNICODE buf[30];
 		COUNT ShipCost[] =
 		{
@@ -238,10 +235,9 @@ DrawRaceStrings (BYTE NewRaceItem)
 		s.frame = SetAbsFrameIndex (pMenuState->ModuleFrame,
 				3 + NewRaceItem);
 		DrawStamp (&s);
-		FragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		s.frame = FragPtr->ShipInfo.melee_icon;
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		s.frame = FleetPtr->melee_icon;
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 
 		t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
 		t.baseline.y = s.origin.y + RADAR_HEIGHT - 2;
@@ -275,23 +271,22 @@ ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, RECT *pRect)
 	RECT r;
 	TEXT t;
 	UNICODE buf[80];
-	HSTARSHIP hTemplate;
-	EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+	HFLEETINFO hTemplate;
+	FLEET_INFO *TemplatePtr;
 
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 			GET_RACE_ID (StarShipPtr));
-	TemplatePtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-			&GLOBAL (avail_race_q), hTemplate);
-	if (StarShipPtr->ShipInfo.crew_level >=
-			TemplatePtr->ShipInfo.crew_level)
-		sprintf (buf, "%u", StarShipPtr->ShipInfo.crew_level);
-	else if (StarShipPtr->ShipInfo.crew_level == 0)
+	TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
+	if (StarShipPtr->crew_level >= TemplatePtr->crew_level)
+		sprintf (buf, "%u", StarShipPtr->crew_level);
+	else if (StarShipPtr->crew_level == 0)
+		// XXX: "SCRAP" needs to be moved to starcon.txt
 		utf8StringCopy (buf, sizeof (buf), "SCRAP");
 	else
 		sprintf (buf, "%u/%u",
-				StarShipPtr->ShipInfo.crew_level,
-				TemplatePtr->ShipInfo.crew_level);
-	UnlockStarShip (&GLOBAL (avail_race_q), hTemplate);
+				StarShipPtr->crew_level,
+				TemplatePtr->crew_level);
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
 
 	r = *pRect;
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -307,7 +302,7 @@ ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, RECT *pRect)
 		SetContextForeGroundColor (BLACK_COLOR);
 		DrawFilledRectangle (&r);
 	}
-	SetContextForeGroundColor ((StarShipPtr->ShipInfo.crew_level != 0) ?
+	SetContextForeGroundColor ((StarShipPtr->crew_level != 0) ?
 			(BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)):
 			(BUILD_COLOR (MAKE_RGB15 (0x12, 0x00, 0x00), 0x2B)));
 	font_DrawText (&t);
@@ -317,7 +312,7 @@ static void
 ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 {
 	COUNT i, num_ships;
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 	SHIP_FRAGMENT *StarShipPtr;
 	struct
 	{
@@ -343,8 +338,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 
 		pship_win_info->ship_s.origin.x = (SHIP_WIN_WIDTH >> 1) + 1;
 		pship_win_info->ship_s.origin.y = (SHIP_WIN_WIDTH >> 1);
-		pship_win_info->ship_s.frame =
-				YankedStarShipPtr->ShipInfo.melee_icon;
+		pship_win_info->ship_s.frame = YankedStarShipPtr->melee_icon;
 
 		pship_win_info->finished_s.x = hangar_x_coords[
 				which_window % HANGAR_SHIPS_ROW];
@@ -360,7 +354,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 		}
 		else
 		{
-			HSTARSHIP hTailShip;
+			HSHIPFRAG hTailShip;
 
 			hTailShip = GetTailLink (&GLOBAL (built_ship_q));
 			RemoveQueue (&GLOBAL (built_ship_q), hTailShip);
@@ -368,31 +362,28 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
 			while (hStarShip)
 			{
-				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (built_ship_q), hStarShip);
-				if (StarShipPtr->ShipInfo.var2 > which_window)
+				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+				if (StarShipPtr->var2 > which_window)
 				{
-					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					break;
 				}
 				hNextShip = _GetSuccLink (StarShipPtr);
-				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 				hStarShip = hNextShip;
 			}
 			InsertQueue (&GLOBAL (built_ship_q), hTailShip, hStarShip);
 
 			hStarShip = hTailShip;
-			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (built_ship_q), hStarShip);
-			StarShipPtr->ShipInfo.var2 = which_window;
-			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			StarShipPtr->var2 = which_window;
+			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 		}
 
 		for (i = 0; i < num_ships; ++i)
 		{
-			StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (built_ship_q), hStarShip);
+			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
 
 			pship_win_info->StarShipPtr = StarShipPtr;
@@ -408,8 +399,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 
 			pship_win_info->ship_s.origin.x = (SHIP_WIN_WIDTH >> 1) + 1;
 			pship_win_info->ship_s.origin.y = (SHIP_WIN_WIDTH >> 1);
-			pship_win_info->ship_s.frame =
-					StarShipPtr->ShipInfo.melee_icon;
+			pship_win_info->ship_s.frame = StarShipPtr->melee_icon;
 
 			which_window = GET_GROUP_LOC (StarShipPtr);
 			pship_win_info->finished_s.x = hangar_x_coords[
@@ -418,7 +408,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 					(which_window / HANGAR_SHIPS_ROW));
 			++pship_win_info;
 
-			UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			hStarShip = hNextShip;
 		}
 	}
@@ -564,7 +554,7 @@ DoModifyShips (MENU_STATE *pMS)
 {
 #define MODIFY_CREW_FLAG (1 << 8)
 	RECT r;
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 	SHIP_FRAGMENT *StarShipPtr;
 	BOOLEAN select, cancel;
 #ifdef WANT_SHIP_SPINS
@@ -651,17 +641,16 @@ DoModifyShips (MENU_STATE *pMS)
 			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
 					hStarShip; hStarShip = hNextShip)
 			{
-				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (built_ship_q), hStarShip);
+				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
-				if (StarShipPtr->ShipInfo.var2 == pMS->CurState)
+				if (StarShipPtr->var2 == pMS->CurState)
 				{
-					UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					break;
 				}
 
 				hNextShip = _GetSuccLink (StarShipPtr);
-				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			}
 			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip))
 			{
@@ -678,7 +667,7 @@ DoModifyShips (MENU_STATE *pMS)
 #ifdef WANT_SHIP_SPINS
 			if (special)
 			{
-				HSTARSHIP hSpinShip;
+				HSHIPFRAG hSpinShip;
 				
 				if ((special && (((hStarShip == 0
 						   && HINIBBLE (pMS->CurState) == 0)
@@ -695,11 +684,15 @@ DoModifyShips (MENU_STATE *pMS)
 					RECT OldClipRect;
 					RECT flash_r;
 					SetFlashRect (NULL, (FRAME)0);
+					// Do not call EndHangarAnim() with GraphicsLock held!
+					UnlockMutex (GraphicsLock);
 					EndHangarAnim (pMS);
+					LockMutex (GraphicsLock);
 
 					OldContext = SetContext (ScreenContext);
 					GetContextClipRect (&OldClipRect);
 
+					// XXX: this is broken; we pass an HSHIPFRAG or HFLEETINFO
 					SpinStarShip (hSpinShip);
 
 					SetContextClipRect (&OldClipRect);
@@ -821,19 +814,19 @@ DoModifyShips (MENU_STATE *pMS)
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
 							&& hStarShip != 0)
 					{
-						StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-								&GLOBAL (built_ship_q), hStarShip);
-						if (StarShipPtr->ShipInfo.crew_level == 0)
+						StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
+								hStarShip);
+						if (StarShipPtr->crew_level == 0)
 						{
 							SetFlashRect (NULL, (FRAME)0);
 							UnlockMutex (GraphicsLock);
 							ShowCombatShip ((COUNT)pMS->CurState,
 									StarShipPtr);
 							LockMutex (GraphicsLock);
-							UnlockStarShip (&GLOBAL (built_ship_q),
+							UnlockShipFrag (&GLOBAL (built_ship_q),
 									hStarShip);
 							RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
-							FreeStarShip (&GLOBAL (built_ship_q), hStarShip);
+							FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
 							// refresh SIS display
 							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 									UNDEFINED_DELTA);
@@ -847,7 +840,7 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 						else
 						{
-							UnlockStarShip (&GLOBAL (built_ship_q),
+							UnlockShipFrag (&GLOBAL (built_ship_q),
 									hStarShip);
 						}
 					}
@@ -883,8 +876,8 @@ DoModifyShips (MENU_STATE *pMS)
 					SIZE crew_delta, crew_bought;
 
 					if (hStarShip)
-						StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-								&GLOBAL (built_ship_q), hStarShip);
+						StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
+								hStarShip);
 					else
 						StarShipPtr = NULL;  // Keeping compiler quiet.
 
@@ -915,28 +908,27 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 						else
 						{
-							HSTARSHIP hTemplate;
-							EXTENDED_SHIP_FRAGMENT *TemplatePtr;
+							HFLEETINFO hTemplate;
+							FLEET_INFO *TemplatePtr;
 
 							hTemplate = GetStarShipFromIndex (
 									&GLOBAL (avail_race_q),
 									GET_RACE_ID (StarShipPtr));
-							TemplatePtr = (EXTENDED_SHIP_FRAGMENT*)
-									LockStarShip (&GLOBAL (avail_race_q),
-									hTemplate);
+							TemplatePtr = LockFleetInfo (
+									&GLOBAL (avail_race_q), hTemplate);
 							if (GLOBAL_SIS (ResUnits) >=
 									(DWORD)GLOBAL (CrewCost)
-									&& StarShipPtr->ShipInfo.crew_level <
-									StarShipPtr->ShipInfo.max_crew &&
-									StarShipPtr->ShipInfo.crew_level <
-									TemplatePtr->ShipInfo.crew_level)
+									&& StarShipPtr->crew_level <
+									StarShipPtr->max_crew &&
+									StarShipPtr->crew_level <
+									TemplatePtr->crew_level)
 							{
-								if (StarShipPtr->ShipInfo.crew_level > 0)
+								if (StarShipPtr->crew_level > 0)
 									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
 								else
 									DeltaSISGauges (0, 0, -(COUNT)ShipCost[
 											GET_RACE_ID (StarShipPtr) ]);
-								++StarShipPtr->ShipInfo.crew_level;
+								++StarShipPtr->crew_level;
 								crew_delta = 1;
 								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
 								r.corner.x = pMS->flash_rect0.corner.x;
@@ -951,7 +943,7 @@ DoModifyShips (MENU_STATE *pMS)
 							{	// at capacity or not enough RUs
 								PlayMenuSound (MENU_SOUND_FAILURE);
 							}
-							UnlockStarShip (&GLOBAL (avail_race_q),
+							UnlockFleetInfo (&GLOBAL (avail_race_q),
 									hTemplate);
 						}
 					}
@@ -985,9 +977,9 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 						else
 						{
-							if (StarShipPtr->ShipInfo.crew_level > 0)
+							if (StarShipPtr->crew_level > 0)
 							{
-								if (StarShipPtr->ShipInfo.crew_level > 1)
+								if (StarShipPtr->crew_level > 1)
 									DeltaSISGauges (0, 0, GLOBAL (CrewCost)
 											- (crew_bought ==
 											CREW_EXPENSE_THRESHOLD ? 2 : 0));
@@ -995,7 +987,7 @@ DoModifyShips (MENU_STATE *pMS)
 									DeltaSISGauges (0, 0, (COUNT)ShipCost[
 											GET_RACE_ID (StarShipPtr)]);
 								crew_delta = -1;
-								--StarShipPtr->ShipInfo.crew_level;
+								--StarShipPtr->crew_level;
 							}
 							else
 							{	// no crew to dismiss
@@ -1014,7 +1006,7 @@ DoModifyShips (MENU_STATE *pMS)
 
 					if (hStarShip)
 					{
-						UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 						
 						// clear out the bought ship index
 						// so that flash rects work correctly
@@ -1210,6 +1202,7 @@ BeginHangarAnim (MENU_STATE *pMS)
 #endif
 }
 
+// Pre: GraphicsLock is NOT held (or risk a deadlock)
 static void
 EndHangarAnim (MENU_STATE *pMS)
 {

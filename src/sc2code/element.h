@@ -108,6 +108,7 @@ typedef void (CollisionFunc) (ELEMENT *ElementPtr0, POINT *pPt0,
 // Any physical object in the simulation.
 struct element
 {
+	// LINK elements; must be first
 	HELEMENT pred, succ;
 
 	void (*preprocess_func) (struct element *ElementPtr);

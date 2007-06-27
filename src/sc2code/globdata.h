@@ -945,7 +945,7 @@ typedef struct
 			/* List of all the races in the game with information
 			 * about their ships, and what player knows about their
 			 * fleet, center of SoI, status, etc.
-			 * queue element is EXTENDED_SHIP_FRAGMENT */
+			 * queue element is FLEET_INFO */
 	QUEUE npc_built_ship_q;
 			/* Non-player-character list of ships (during encounter)
 			 *   or list of groups present in solarsys (during IP);

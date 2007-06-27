@@ -25,7 +25,7 @@
 static void
 check_old_shofixti (void)
 {
-	HSTARSHIP hStarShip;
+	HSHIPFRAG hStarShip;
 
 	if (GLOBAL (BattleGroupRef)
 			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q)))
@@ -34,15 +34,14 @@ check_old_shofixti (void)
 		BYTE task;
 		SHIP_FRAGMENT *FragPtr;
 
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		task = GET_GROUP_MISSION (FragPtr);
 
 		SET_GROUP_MISSION (FragPtr,
 				FLEE | IGNORE_FLAGSHIP | (task & REFORM_GROUP));
 		SET_GROUP_DEST (FragPtr, 0);
 
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 
@@ -61,7 +60,7 @@ GenerateShofixti (BYTE control)
 			if (GLOBAL (BattleGroupRef) == 0
 					|| !GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 			{
-				HSTARSHIP hStarShip;
+				HSHIPFRAG hStarShip;
 
 				if (GLOBAL (BattleGroupRef) == 0)
 					GLOBAL (BattleGroupRef) = ~0L;
@@ -70,13 +69,13 @@ GenerateShofixti (BYTE control)
 						&GLOBAL (npc_built_ship_q), 1);
 				if (hStarShip)
 				{	/* Set old Shofixti name; his brother if Tanaka died */
-					SHIP_FRAGMENT *FragPtr = (SHIP_FRAGMENT *) LockStarShip (
+					SHIP_FRAGMENT *FragPtr = LockShipFrag (
 							&GLOBAL (npc_built_ship_q), hStarShip);
 					/* Name Tanaka or Katana (+1) */
 					FragPtr->captains_name_index = NAME_OFFSET +
 							NUM_CAPTAINS_NAMES +
 							(GET_GAME_STATE (SHOFIXTI_KIA) & 1);
-					UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
 				GLOBAL (BattleGroupRef) = PutGroupInfo (

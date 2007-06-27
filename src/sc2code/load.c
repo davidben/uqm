@@ -32,6 +32,7 @@
 
 #include "libs/tasklib.h"
 #include "libs/log.h"
+#include "libs/misc.h"
 
 //#define DEBUG_LOAD
 
@@ -134,6 +135,21 @@ read_a16 (void *fp, UWORD *ar, COUNT count)
 }
 
 static void
+LoadEmptyQueue (DECODE_REF fh)
+{
+	COUNT num_links;
+
+	cread_16 (fh, &num_links);
+	if (num_links)
+	{
+		log_add (log_Error, "LoadEmptyQueue(): BUG: the queue is not empty!");
+#ifdef DEBUG
+		explode ();
+#endif
+	}
+}
+
+static void
 LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 {
 	COUNT num_links;
@@ -142,7 +158,7 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 
 	while (num_links--)
 	{
-		HSTARSHIP hStarShip;
+		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 		COUNT Index;
 		BYTE tmpb;
@@ -150,26 +166,26 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cread_16 (fh, &Index);
 
 		hStarShip = CloneShipFragment (Index, pQueue, 0);
-		FragPtr = (SHIP_FRAGMENT*) LockStarShip (pQueue, hStarShip);
+		FragPtr = LockShipFrag (pQueue, hStarShip);
 
 		// Read SHIP_FRAGMENT elements
 		cread_16 (fh, &FragPtr->which_side);
 		cread_8  (fh, &FragPtr->captains_name_index);
 		cread_8  (fh, NULL); /* padding */
-		// Read SHIP_INFO elements
-		cread_16 (fh, &FragPtr->ShipInfo.ship_flags);
-		cread_8  (fh, &FragPtr->ShipInfo.var1);
-		cread_8  (fh, &FragPtr->ShipInfo.var2);
+		cread_16 (fh, &FragPtr->ship_flags);
+		cread_8  (fh, &FragPtr->var1);
+		cread_8  (fh, &FragPtr->var2);
+		// XXX: reading crew as BYTE to maintain savegame compatibility
 		cread_8  (fh, &tmpb);
-		FragPtr->ShipInfo.crew_level = tmpb;
+		FragPtr->crew_level = tmpb;
 		cread_8  (fh, &tmpb);
-		FragPtr->ShipInfo.max_crew = tmpb;
-		cread_8  (fh, &FragPtr->ShipInfo.energy_level);
-		cread_8  (fh, &FragPtr->ShipInfo.max_energy);
-		cread_16 (fh, &FragPtr->ShipInfo.loc.x);
-		cread_16 (fh, &FragPtr->ShipInfo.loc.y);
+		FragPtr->max_crew = tmpb;
+		cread_8  (fh, &FragPtr->energy_level);
+		cread_8  (fh, &FragPtr->max_energy);
+		cread_16 (fh, &FragPtr->loc.x);
+		cread_16 (fh, &FragPtr->loc.y);
 
-		UnlockStarShip (pQueue, hStarShip);
+		UnlockShipFrag (pQueue, hStarShip);
 	}
 }
 
@@ -182,40 +198,40 @@ LoadRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 
 	while (num_links--)
 	{
-		HSTARSHIP hStarShip;
-		EXTENDED_SHIP_FRAGMENT *ExtFragPtr;
+		HFLEETINFO hStarShip;
+		FLEET_INFO *FleetPtr;
 		COUNT Index;
 		BYTE tmpb;
 
 		cread_16 (fh, &Index);
 
 		hStarShip = GetStarShipFromIndex (pQueue, Index);
-		ExtFragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (pQueue, hStarShip);
+		FleetPtr = LockFleetInfo (pQueue, hStarShip);
 
-		// Read EXTENDED_SHIP_INFO elements
-		cread_16 (fh, &ExtFragPtr->ShipInfo.ship_flags);
-		cread_8  (fh, &ExtFragPtr->ShipInfo.days_left);
-		cread_8  (fh, &ExtFragPtr->ShipInfo.growth_fract);
+		// Read FLEET_INFO elements
+		cread_16 (fh, &FleetPtr->ship_flags);
+		cread_8  (fh, &FleetPtr->days_left);
+		cread_8  (fh, &FleetPtr->growth_fract);
 		cread_8  (fh, &tmpb);
-		ExtFragPtr->ShipInfo.crew_level = tmpb;
+		FleetPtr->crew_level = tmpb;
 		cread_8  (fh, &tmpb);
-		ExtFragPtr->ShipInfo.max_crew = tmpb;
-		cread_8  (fh, &ExtFragPtr->ShipInfo.energy_level);
-		cread_8  (fh, &ExtFragPtr->ShipInfo.max_energy);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.loc.x);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.loc.y);
+		FleetPtr->max_crew = tmpb;
+		cread_8  (fh, &FleetPtr->energy_level);
+		cread_8  (fh, &FleetPtr->max_energy);
+		cread_16 (fh, &FleetPtr->loc.x);
+		cread_16 (fh, &FleetPtr->loc.y);
 
-		cread_16 (fh, &ExtFragPtr->ShipInfo.actual_strength);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.known_strength);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.x);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.known_loc.y);
-		cread_8  (fh, &ExtFragPtr->ShipInfo.growth_err_term);
-		cread_8  (fh, &ExtFragPtr->ShipInfo.func_index);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.x);
-		cread_16 (fh, &ExtFragPtr->ShipInfo.dest_loc.y);
+		cread_16 (fh, &FleetPtr->actual_strength);
+		cread_16 (fh, &FleetPtr->known_strength);
+		cread_16 (fh, &FleetPtr->known_loc.x);
+		cread_16 (fh, &FleetPtr->known_loc.y);
+		cread_8  (fh, &FleetPtr->growth_err_term);
+		cread_8  (fh, &FleetPtr->func_index);
+		cread_16 (fh, &FleetPtr->dest_loc.x);
+		cread_16 (fh, &FleetPtr->dest_loc.y);
 		cread_16 (fh, NULL); /* alignment padding */
 
-		UnlockStarShip (pQueue, hStarShip);
+		UnlockFleetInfo (pQueue, hStarShip);
 	}
 }
 
@@ -250,6 +266,7 @@ LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 		cread_16  (fh, NULL); /* useless; was SHIP_INFO.ship_flags */
 		cread_8   (fh, &ShipInfo->race_id);
 		cread_8   (fh, NULL); /* useless; was SHIP_INFO.var2 */
+		// XXX: reading crew as BYTE to maintain savegame compatibility
 		cread_8   (fh, &tmpb);
 		ShipInfo->crew_level = tmpb;
 		cread_8   (fh, &tmpb);
@@ -263,7 +280,7 @@ LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 		cread_ptr (fh); /* useless ptr; FRAME melee_icon */
 	}
 	
-	// Load the stuff after the SHIP_INFO array:
+	// Load the stuff after the BRIEF_SHIP_INFO array
 	cread_32  (fh, &EncounterPtr->log_x);
 	cread_32  (fh, &EncounterPtr->log_y);
 }
@@ -515,8 +532,22 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 	GLOBAL (GameClock.TimeCounter) = 0;
 
 	LoadRaceQueue (fh, &GLOBAL (avail_race_q));
+	// START_INTERPLANETARY is only set when saving from Homeworld
+	//   encounter screen. When the game is loaded, GENERATE_ORBITAL will
+	//   create the encounter anew and populate the npc queue.
 	if (!(NextActivity & START_INTERPLANETARY))
-		LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
+	{
+		if (NextActivity & START_ENCOUNTER)
+			// load npc queue
+			LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
+		else if (LOBYTE (NextActivity) == IN_INTERPLANETARY)
+			// load group queue
+			LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
+		else
+			// XXX: The empty queue read is only needed to maintain
+			//   the savegame compatibility
+			LoadEmptyQueue (fh);
+	}
 	LoadShipQueue (fh, &GLOBAL (built_ship_q));
 
 	// Load the game events (compressed)

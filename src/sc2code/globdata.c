@@ -173,11 +173,14 @@ LoadSC2Data (void)
 }
 
 static void
-copyFleetInfo (EXTENDED_SHIP_INFO *dst, SHIP_INFO *src, BYTE *fleet_strength)
+copyFleetInfo (FLEET_INFO *dst, SHIP_INFO *src)
 {
-	*fleet_strength = src->var2;
-	// other leading fields are irrelevant
+	if (src->var2 == (BYTE)~0)
+		dst->actual_strength = (COUNT)~0;
+	else
+		dst->actual_strength = (COUNT)src->var2 << 1;
 
+	// other leading fields are irrelevant
 	dst->crew_level = src->crew_level;
 	dst->max_crew = src->max_crew;
 	dst->energy_level = src->energy_level;
@@ -211,12 +214,12 @@ InitSIS (void)
 		num_ships = (GET_PACKAGE (BLACKURQ_SHIP_INDEX) - rp + 1)
 				+ 2; /* Yehat Rebels and Ur-Quan probe */
 
-		InitQueue (&GLOBAL (avail_race_q),
-				num_ships, sizeof (EXTENDED_SHIP_FRAGMENT));
+		InitQueue (&GLOBAL (avail_race_q), num_ships, sizeof (FLEET_INFO));
 		for (i = 0; i < num_ships; ++i)
 		{
 			DWORD ship_ref;
-			HSTARSHIP hStarShip;
+			HFLEETINFO hFleet;
+			FLEET_INFO *FleetPtr;
 
 			if (i < num_ships - 2)
 				ship_ref = MAKE_RESOURCE (rp++, rt, ri++);
@@ -224,61 +227,53 @@ InitSIS (void)
 				ship_ref = YEHAT_SHIP_INDEX;
 			else  /* (i == num_ships - 1) */
 				ship_ref = PROBE_RES_INDEX;
-			hStarShip = Build (&GLOBAL (avail_race_q), ship_ref);
-			if (hStarShip)
+			
+			hFleet = AllocLink (&GLOBAL (avail_race_q));
+			if (!hFleet)
+				continue;
+			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+			FleetPtr->RaceResIndex = ship_ref;
+
+			if (i < num_ships - 1)
 			{
-				EXTENDED_SHIP_FRAGMENT *FleetPtr;
-				BYTE fleet_strength = 0;
-
-				FleetPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (avail_race_q), hStarShip);
-				if (i < num_ships - 1)
-				{
-					HSTARSHIP hMasterShip;
-					SHIP_FRAGMENT *MasterShipPtr;
-					
-					hMasterShip = FindMasterShip (ship_ref);
-					MasterShipPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q,
-							hMasterShip);
-					// Grab a copy of loaded icons and strings (not owned)
-					// XXX: SHIP_INFO struct copy
-					copyFleetInfo (&FleetPtr->ShipInfo, &MasterShipPtr->ShipInfo,
-							&fleet_strength);
-					UnlockStarShip (&master_q, hMasterShip);
-				}
-				else
-				{
-					// Ur-Quan probe.
-					RACE_DESC *RDPtr = load_ship (FleetPtr->RaceResIndex,
-							FALSE);
-					if (RDPtr)
-					{	// Grab a copy of loaded icons and strings
-						// XXX: SHIP_INFO struct copy
-						copyFleetInfo (&FleetPtr->ShipInfo, &RDPtr->ship_info,
-								&fleet_strength);
-						// avail_race_q owns these resources now
-						free_ship (RDPtr, FALSE, FALSE);
-					}
-				}
-
-				FleetPtr->ShipInfo.ship_flags = BAD_GUY;
-				FleetPtr->ShipInfo.known_strength = 0;
-				FleetPtr->ShipInfo.known_loc = FleetPtr->ShipInfo.loc;
-				if (fleet_strength == (BYTE)~0)
-					FleetPtr->ShipInfo.actual_strength = (COUNT)~0;
-				else if (i == YEHAT_REBEL_SHIP)
-					FleetPtr->ShipInfo.actual_strength = 0;
-				else
-					FleetPtr->ShipInfo.actual_strength =
-							(COUNT)fleet_strength << 1;
-				FleetPtr->ShipInfo.growth_fract = 0;
-				FleetPtr->ShipInfo.growth_err_term = 255 >> 1;
-				FleetPtr->ShipInfo.energy_level = 0;
-				FleetPtr->ShipInfo.days_left = 0;
-				FleetPtr->ShipInfo.func_index = ~0;
-
-				UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+				HMASTERSHIP hMasterShip;
+				MASTER_SHIP_INFO *MasterShipPtr;
+				
+				hMasterShip = FindMasterShip (ship_ref);
+				MasterShipPtr = LockMasterShip (&master_q, hMasterShip);
+				// Grab a copy of loaded icons and strings (not owned)
+				// XXX: SHIP_INFO struct copy
+				copyFleetInfo (FleetPtr, &MasterShipPtr->ShipInfo);
+				UnlockMasterShip (&master_q, hMasterShip);
 			}
+			else
+			{
+				// Ur-Quan probe.
+				RACE_DESC *RDPtr = load_ship (FleetPtr->RaceResIndex,
+						FALSE);
+				if (RDPtr)
+				{	// Grab a copy of loaded icons and strings
+					// XXX: SHIP_INFO struct copy
+					copyFleetInfo (FleetPtr, &RDPtr->ship_info);
+					// avail_race_q owns these resources now
+					free_ship (RDPtr, FALSE, FALSE);
+				}
+			}
+
+			FleetPtr->ship_flags = BAD_GUY;
+			FleetPtr->known_strength = 0;
+			FleetPtr->known_loc = FleetPtr->loc;
+			// XXX: Rebel special case 
+			if (i == YEHAT_REBEL_SHIP)
+				FleetPtr->actual_strength = 0;
+			FleetPtr->growth_fract = 0;
+			FleetPtr->growth_err_term = 255 >> 1;
+			FleetPtr->energy_level = 0;
+			FleetPtr->days_left = 0;
+			FleetPtr->func_index = ~0;
+
+			UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+			PutQueue (&GLOBAL (avail_race_q), hFleet);
 		}
 	}
 
@@ -390,7 +385,7 @@ FreeSC2Data (void)
 void
 UninitSIS (void)
 {
-	HSTARSHIP hStarShip;
+	HFLEETINFO hStarShip;
 
 	if (!initedSIS)
 		return;
@@ -408,15 +403,13 @@ UninitSIS (void)
 	hStarShip = GetTailLink (&GLOBAL (avail_race_q));
 	if (hStarShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *FragPtr;
+		FLEET_INFO *FleetPtr;
 
-		FragPtr = (EXTENDED_SHIP_FRAGMENT *) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.melee_icon));
-		DestroyDrawable (ReleaseDrawable (FragPtr->ShipInfo.icons));
-		DestroyStringTable (ReleaseStringTable (
-				FragPtr->ShipInfo.race_strings));
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		DestroyDrawable (ReleaseDrawable (FleetPtr->melee_icon));
+		DestroyDrawable (ReleaseDrawable (FleetPtr->icons));
+		DestroyStringTable (ReleaseStringTable (FleetPtr->race_strings));
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 
 	UninitQueue (&GLOBAL (avail_race_q));

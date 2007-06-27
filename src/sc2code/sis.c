@@ -932,7 +932,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		}
 
 		{
-			HSTARSHIP hStarShip, hNextShip;
+			HSHIPFRAG hStarShip, hNextShip;
 			POINT *pship_pos;
 			POINT ship_pos[MAX_COMBAT_SHIPS] =
 			{
@@ -946,18 +946,17 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			{
 				SHIP_FRAGMENT *StarShipPtr;
 
-				StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-						&GLOBAL (built_ship_q), hStarShip);
+				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
 
 				s.origin.x = pship_pos->x;
 				s.origin.y = pship_pos->y;
-				s.frame = StarShipPtr->ShipInfo.icons;
+				s.frame = StarShipPtr->icons;
 				LockMutex (GraphicsLock);
 				DrawStamp (&s);
 				UnlockMutex (GraphicsLock);
 
-				UnlockStarShip (&GLOBAL (built_ship_q), hStarShip);
+				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			}
 			LockMutex (GraphicsLock);
 		}

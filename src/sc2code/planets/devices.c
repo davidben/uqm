@@ -226,7 +226,7 @@ UseCaster (void)
 
 	{
 		BOOLEAN FoundIlwrath;
-		HSTARSHIP hStarShip;
+		HSHIPFRAG hStarShip;
 
 		FoundIlwrath = (BOOLEAN)(CurStarDescPtr->Index == ILWRATH_DEFINED);
 				// In the Ilwrath home system?
@@ -237,11 +237,9 @@ UseCaster (void)
 			// Ilwrath ship is in the system.
 			SHIP_FRAGMENT *FragPtr;
 
-			FragPtr = (SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (npc_built_ship_q), hStarShip);
-			FoundIlwrath = (BOOLEAN)(
-					GET_RACE_ID (FragPtr) == ILWRATH_SHIP);
-			UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			FoundIlwrath = (GET_RACE_ID (FragPtr) == ILWRATH_SHIP);
+			UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		}
 
 		if (FoundIlwrath)

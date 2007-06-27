@@ -1,23 +1,24 @@
 The various ship queues used in the game:
 
 GlobData.Game_state.avail_race_q:
-	Contains all the ships from the enum from races.h that defines
-	NUM_AVAILABLE_RACES.
-	Elements are of type EXTENDED_SHIP_FRAGMENT (to become FLEET_INFO).
-	It contains information about the various races, not really about
-	specific ships.
+	Contains fleet information, ship template and other info about the
+	  alien races present in the game. All races are present that are
+	  defined by the enum in races.h that defines NUM_AVAILABLE_RACES,
+	  except for, technically, SAMATRA_SHIP. URQUAN_PROBE_SHIP is a
+	  very incomplete 'race'.
+	Elements are of type FLEET_INFO.
 	Filled in InitSIS().
 	Partially included in savegames.
 
 GlobData.Game_state.built_ship_q:
-	The fleet accompanying the flagship.
+	The fleet accompanying the flagship (escorts).
 	Elements are of type SHIP_FRAGMENT.
 	which_side is always GOOD_GUY here.
 	Partially included in savegames.
 
 master_q:
-	Queue of all the ships that exist in the game.
-	Elements are of type SHIP_FRAGMENT (to become MASTER_SHIP_INFO).
+	List of templates for all the ships that are available in SuperMelee.
+	Elements are of type MASTER_SHIP_INFO.
 	Sorted on the (abbreviated) race name (see doc/racestrings).
 	Filled in LoadMasterShipList().
 

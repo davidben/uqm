@@ -37,8 +37,8 @@
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)
 
-extern HSTARSHIP Build (QUEUE *pQueue, DWORD RaceResIndex);
-extern HSTARSHIP CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
+extern HLINK Build (QUEUE *pQueue, DWORD RaceResIndex);
+extern HSHIPFRAG CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
 extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
 extern BYTE NameCaptain (QUEUE *pQueue, DWORD RaceResIndex);

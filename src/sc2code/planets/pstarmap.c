@@ -181,15 +181,11 @@ DrawAutoPilot (POINT *pDstPt)
 }
 
 static void
-GetSphereRect (EXTENDED_SHIP_FRAGMENT *StarShipPtr, RECT *pRect,
-		RECT *pRepairRect)
+GetSphereRect (FLEET_INFO *FleetPtr, RECT *pRect, RECT *pRepairRect)
 {
 	long diameter;
 
-	diameter = (long)(
-			StarShipPtr->ShipInfo.known_strength
-			* SPHERE_RADIUS_INCREMENT
-			);
+	diameter = (long)(FleetPtr->known_strength * SPHERE_RADIUS_INCREMENT);
 	pRect->extent.width = UNIVERSE_TO_DISPX (diameter)
 			- UNIVERSE_TO_DISPX (0);
 	if (pRect->extent.width < 0)
@@ -203,12 +199,8 @@ GetSphereRect (EXTENDED_SHIP_FRAGMENT *StarShipPtr, RECT *pRect,
 	else if (pRect->extent.height == 0)
 		pRect->extent.height = 1;
 
-	pRect->corner.x = UNIVERSE_TO_DISPX (
-			StarShipPtr->ShipInfo.known_loc.x
-			);
-	pRect->corner.y = UNIVERSE_TO_DISPY (
-			StarShipPtr->ShipInfo.known_loc.y
-			);
+	pRect->corner.x = UNIVERSE_TO_DISPX (FleetPtr->known_loc.x);
+	pRect->corner.y = UNIVERSE_TO_DISPY (FleetPtr->known_loc.y);
 	pRect->corner.x -= pRect->extent.width >> 1;
 	pRect->corner.y -= pRect->extent.height >> 1;
 
@@ -221,9 +213,7 @@ GetSphereRect (EXTENDED_SHIP_FRAGMENT *StarShipPtr, RECT *pRect,
 		t.baseline.x = pRect->corner.x + (pRect->extent.width >> 1);
 		t.baseline.y = pRect->corner.y + (pRect->extent.height >> 1) - 1;
 		t.align = ALIGN_CENTER;
-		locString = SetAbsStringTableIndex (
-				StarShipPtr->ShipInfo.race_strings, 1
-				);
+		locString = SetAbsStringTableIndex (FleetPtr->race_strings, 1);
 		t.CharCount = GetStringLength (locString);
 		t.pStr = (UNICODE *)GetStringAddress (locString);
 		TextRect (&t, pRepairRect, NULL);
@@ -363,7 +353,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	if (which_space <= 1)
 	{
 		COUNT index;
-		HSTARSHIP hStarShip, hNextShip;
+		HFLEETINFO hStarShip, hNextShip;
 		static const COLOR race_colors[] =
 		{
 			RACE_COLORS
@@ -373,17 +363,16 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 				hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 				hStarShip != 0; ++index, hStarShip = hNextShip)
 		{
-			EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+			FLEET_INFO *FleetPtr;
 
-			StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-					&GLOBAL (avail_race_q), hStarShip);
-			hNextShip = _GetSuccLink (StarShipPtr);
+			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+			hNextShip = _GetSuccLink (FleetPtr);
 
-			if (StarShipPtr->ShipInfo.known_strength)
+			if (FleetPtr->known_strength)
 			{
 				RECT repair_r;
 
-				GetSphereRect (StarShipPtr, &r, &repair_r);
+				GetSphereRect (FleetPtr, &r, &repair_r);
 				if (r.corner.x < SIS_SCREEN_WIDTH
 						&& r.corner.y < SIS_SCREEN_HEIGHT
 						&& r.corner.x + r.extent.width > 0
@@ -411,8 +400,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 					t.baseline.y = r.corner.y + (r.extent.height >> 1) - 1;
 					t.align = ALIGN_CENTER;
 					locString = SetAbsStringTableIndex (
-							StarShipPtr->ShipInfo.race_strings, 1
-							);
+							FleetPtr->race_strings, 1);
 					t.CharCount = GetStringLength (locString);
 					t.pStr = (UNICODE *)GetStringAddress (locString);
 					TextRect (&t, &r, NULL);
@@ -448,7 +436,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 				}
 			}
 
-			UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+			UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		}
 	}
 
@@ -1384,7 +1372,7 @@ UpdateMap (void)
 	BYTE ButtonState, VisibleChange;
 	BOOLEAN MapDrawn, Interrupted;
 	COUNT index;
-	HSTARSHIP hStarShip, hNextShip;
+	HFLEETINFO hStarShip, hNextShip;
 
 	FlushInput ();
 	ButtonState = 1; /* assume a button down */
@@ -1394,11 +1382,10 @@ UpdateMap (void)
 			hStarShip = GetHeadLink (&GLOBAL (avail_race_q));
 			hStarShip; ++index, hStarShip = hNextShip)
 	{
-		EXTENDED_SHIP_FRAGMENT *StarShipPtr;
+		FLEET_INFO *FleetPtr;
 
-		StarShipPtr = (EXTENDED_SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (avail_race_q), hStarShip);
-		hNextShip = _GetSuccLink (StarShipPtr);
+		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+		hNextShip = _GetSuccLink (FleetPtr);
 
 		if (ButtonState)
 		{
@@ -1410,15 +1397,13 @@ UpdateMap (void)
 				)))
 			MapDrawn = TRUE;
 
-		if (StarShipPtr->ShipInfo.known_strength)
+		if (FleetPtr->known_strength)
 		{
 			SIZE dx, dy, delta;
 			RECT r, last_r, temp_r0, temp_r1;
 
-			dx = StarShipPtr->ShipInfo.loc.x
-					- StarShipPtr->ShipInfo.known_loc.x;
-			dy = StarShipPtr->ShipInfo.loc.y
-					- StarShipPtr->ShipInfo.known_loc.y;
+			dx = FleetPtr->loc.x - FleetPtr->known_loc.x;
+			dy = FleetPtr->loc.y - FleetPtr->known_loc.y;
 			if (dx || dy)
 			{
 				SIZE xincr, yincr,
@@ -1455,7 +1440,7 @@ UpdateMap (void)
 					MapDrawn = TRUE;
 				}
 
-				GetSphereRect (StarShipPtr, &temp_r0, &last_r);
+				GetSphereRect (FleetPtr, &temp_r0, &last_r);
 				++last_r.extent.width;
 				++last_r.extent.height;
 				VisibleChange = FALSE;
@@ -1465,15 +1450,15 @@ UpdateMap (void)
 					{
 						if ((xerror -= dx) <= 0)
 						{
-							StarShipPtr->ShipInfo.known_loc.x += xincr;
+							FleetPtr->known_loc.x += xincr;
 							xerror += cycle;
 						}
 						if ((yerror -= dy) <= 0)
 						{
-							StarShipPtr->ShipInfo.known_loc.y += yincr;
+							FleetPtr->known_loc.y += yincr;
 							yerror += cycle;
 						}
-						GetSphereRect (StarShipPtr, &temp_r1, &r);
+						GetSphereRect (FleetPtr, &temp_r1, &r);
 					} while (delta--
 							&& ((delta & 0x1F)
 							|| (temp_r0.corner.x == temp_r1.corner.x
@@ -1505,11 +1490,10 @@ UpdateMap (void)
 					RepairMap ((COUNT)~0, &last_r, &r);
 
 DoneSphereMove:
-				StarShipPtr->ShipInfo.known_loc = StarShipPtr->ShipInfo.loc;
+				FleetPtr->known_loc = FleetPtr->loc;
 			}
 
-			delta = StarShipPtr->ShipInfo.actual_strength
-					- StarShipPtr->ShipInfo.known_strength;
+			delta = FleetPtr->actual_strength - FleetPtr->known_strength;
 			if (delta)
 			{
 				if (!MapDrawn)
@@ -1527,7 +1511,7 @@ DoneSphereMove:
 				}
 				--delta;
 
-				GetSphereRect (StarShipPtr, &temp_r0, &last_r);
+				GetSphereRect (FleetPtr, &temp_r0, &last_r);
 				++last_r.extent.width;
 				++last_r.extent.height;
 				VisibleChange = FALSE;
@@ -1535,8 +1519,8 @@ DoneSphereMove:
 				{
 					do
 					{
-						StarShipPtr->ShipInfo.known_strength += dx;
-						GetSphereRect (StarShipPtr, &temp_r1, &r);
+						FleetPtr->known_strength += dx;
+						GetSphereRect (FleetPtr, &temp_r1, &r);
 					} while (delta--
 							&& ((delta & 0xF)
 							|| temp_r0.extent.height == temp_r1.extent.height));
@@ -1565,12 +1549,11 @@ DoneSphereMove:
 					RepairMap ((COUNT)~0, &last_r, &r);
 
 DoneSphereGrowth:
-				StarShipPtr->ShipInfo.known_strength =
-						StarShipPtr->ShipInfo.actual_strength;
+				FleetPtr->known_strength = FleetPtr->actual_strength;
 			}
 		}
 
-		UnlockStarShip (&GLOBAL (avail_race_q), hStarShip);
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 	}
 }
 

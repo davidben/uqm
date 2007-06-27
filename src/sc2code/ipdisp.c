@@ -27,15 +27,14 @@
 void
 NotifyOthers (COUNT which_race, BYTE target_loc)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 
 	for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 			hStarShip; hStarShip = hNextShip)
 	{
 		SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		StarShipPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
 		if (GET_RACE_ID (StarShipPtr) == which_race)
@@ -62,9 +61,9 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 				if (!(task & REFORM_GROUP))
 				{
 					if ((task & ~IGNORE_FLAGSHIP) != EXPLORE)
-						StarShipPtr->ShipInfo.group_counter = 0;
+						StarShipPtr->group_counter = 0;
 					else
-						StarShipPtr->ShipInfo.group_counter =
+						StarShipPtr->group_counter =
 								((COUNT) TFB_Random () % MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 				}
@@ -74,7 +73,7 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 			SET_GROUP_DEST (StarShipPtr, target_loc);
 		}
 
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 
@@ -99,7 +98,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 	GetElementStarShip (EPtr, &StarShipPtr);
 	group_loc = GET_GROUP_LOC (StarShipPtr);
 			/* save old location */
-	DisplayArray[EPtr->PrimIndex].Object.Point = StarShipPtr->ShipInfo.loc;
+	DisplayArray[EPtr->PrimIndex].Object.Point = StarShipPtr->loc;
 
 	if (group_loc != 0)
 		radius = MAX_ZOOM_RADIUS;
@@ -107,10 +106,10 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 		radius = pSolarSysState->SunDesc[0].radius;
 
 	dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-			+ (SIZE)((long)StarShipPtr->ShipInfo.loc.x
+			+ (SIZE)((long)StarShipPtr->loc.x
 			* (DISPLAY_FACTOR >> 1) / radius);
 	dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-			+ (SIZE)((long)StarShipPtr->ShipInfo.loc.y
+			+ (SIZE)((long)StarShipPtr->loc.y
 			* (DISPLAY_FACTOR >> 1) / radius);
 	EPtr->current.location.x = DISPLAY_TO_WORLD (dest_pt.x)
 			+ (COORD)(LOG_SPACE_WIDTH >> 1)
@@ -131,18 +130,15 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 	if (pSolarSysState->MenuState.CurState)
 		goto ExitIPProcess;
 
-	if ((task & REFORM_GROUP)
-			&& --StarShipPtr->ShipInfo.group_counter == 0)
+	if ((task & REFORM_GROUP) && --StarShipPtr->group_counter == 0)
 	{
 		task &= ~REFORM_GROUP;
 		SET_GROUP_MISSION (StarShipPtr, task);
 		if ((task & ~IGNORE_FLAGSHIP) != EXPLORE)
-			StarShipPtr->ShipInfo.group_counter = 0;
+			StarShipPtr->group_counter = 0;
 		else
-			StarShipPtr->ShipInfo.group_counter =
-					((COUNT)TFB_Random ()
-					% MAX_REVOLUTIONS)
-					<< FACING_SHIFT;
+			StarShipPtr->group_counter = ((COUNT)TFB_Random ()
+					% MAX_REVOLUTIONS) << FACING_SHIFT;
 	}
 
 	if (!(task & REFORM_GROUP))
@@ -185,10 +181,8 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 				if (GET_RACE_ID (StarShipPtr) == URQUAN_PROBE_SHIP)
 					detect_dist <<= 1;
 			}
-			vdx = GLOBAL (ip_location.x)
-					- StarShipPtr->ShipInfo.loc.x;
-			vdy = GLOBAL (ip_location.y)
-					- StarShipPtr->ShipInfo.loc.y;
+			vdx = GLOBAL (ip_location.x) - StarShipPtr->loc.x;
+			vdy = GLOBAL (ip_location.y) - StarShipPtr->loc.y;
 			if ((long)vdx * vdx
 					+ (long)vdy * vdy < (long)detect_dist * detect_dist)
 			{
@@ -220,8 +214,8 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 		Transition = FALSE;
 		if (task == FLEE)
 		{
-			dest_pt.x = StarShipPtr->ShipInfo.loc.x << 1;
-			dest_pt.y = StarShipPtr->ShipInfo.loc.y << 1;
+			dest_pt.x = StarShipPtr->loc.x << 1;
+			dest_pt.y = StarShipPtr->loc.y << 1;
 		}
 		else if (((task != ON_STATION || GET_GROUP_DEST (StarShipPtr) == 0)
 				&& group_loc == target_loc)
@@ -256,8 +250,8 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 				angle = FACING_TO_ANGLE (GET_ORBIT_LOC (StarShipPtr) + 1);
 				dest_pt.x = org.x + COSINE (angle, orbit_dist);
 				dest_pt.y = org.y + SINE (angle, orbit_dist);
-				if (StarShipPtr->ShipInfo.loc.x == dest_pt.x
-						&& StarShipPtr->ShipInfo.loc.y == dest_pt.y)
+				if (StarShipPtr->loc.x == dest_pt.x
+						&& StarShipPtr->loc.y == dest_pt.y)
 				{
 					BYTE next_loc;
 
@@ -268,8 +262,8 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 					dest_pt.y = org.y + SINE (angle, orbit_dist);
 
 					EPtr->thrust_wait = (BYTE)~0;
-					if (StarShipPtr->ShipInfo.group_counter)
-						--StarShipPtr->ShipInfo.group_counter;
+					if (StarShipPtr->group_counter)
+						--StarShipPtr->group_counter;
 					else if (task == EXPLORE
 							&& (next_loc = (BYTE)(((COUNT)TFB_Random ()
 							% pSolarSysState->SunDesc[0].NumPlanets)
@@ -294,12 +288,12 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 			if (task == ON_STATION)
 				target_loc = 0;
 
-			dest_pt.x = StarShipPtr->ShipInfo.loc.x << 1;
-			dest_pt.y = StarShipPtr->ShipInfo.loc.y << 1;
+			dest_pt.x = StarShipPtr->loc.x << 1;
+			dest_pt.y = StarShipPtr->loc.y << 1;
 		}
 
-		delta_x = dest_pt.x - StarShipPtr->ShipInfo.loc.x;
-		delta_y = dest_pt.y - StarShipPtr->ShipInfo.loc.y;
+		delta_x = dest_pt.x - StarShipPtr->loc.x;
+		delta_y = dest_pt.y - StarShipPtr->loc.y;
 		angle = ARCTAN (delta_x, delta_y);
 
 		if (EPtr->thrust_wait && EPtr->thrust_wait != (BYTE)~0)
@@ -346,7 +340,7 @@ PartialRevolution:
 				if ((long)((COUNT)(dx * dx) + (COUNT)(dy * dy))
 						>= (long)delta_x * delta_x + (long)delta_y * delta_y)
 				{
-					StarShipPtr->ShipInfo.loc = dest_pt;
+					StarShipPtr->loc = dest_pt;
 					vdx = vdy = 0;
 					ZeroVelocityComponents (&EPtr->velocity);
 				}
@@ -378,10 +372,10 @@ PartialRevolution:
 			{
 CheckGetAway:
 				dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-						+ (SIZE)((long)StarShipPtr->ShipInfo.loc.x
+						+ (SIZE)((long)StarShipPtr->loc.x
 						* (DISPLAY_FACTOR >> 1) / MAX_ZOOM_RADIUS);
 				dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-						+ (SIZE)((long)StarShipPtr->ShipInfo.loc.y
+						+ (SIZE)((long)StarShipPtr->loc.y
 						* (DISPLAY_FACTOR >> 1) / MAX_ZOOM_RADIUS);
 				if (dest_pt.x < 0
 						|| dest_pt.x >= SIS_SCREEN_WIDTH
@@ -402,18 +396,15 @@ CheckGetAway:
 					PLANET_DESC *pCurDesc;
 
 					pCurDesc = &pSolarSysState->PlanetDesc[group_loc - 1];
-					XFormIPLoc (
-							&pCurDesc->image.origin,
-							&StarShipPtr->ShipInfo.loc,
-							FALSE
-							);
+					XFormIPLoc (&pCurDesc->image.origin, &StarShipPtr->loc,
+							FALSE);
 					SET_GROUP_LOC (StarShipPtr, group_loc = 0);
 				}
 				else if (target_loc == 0)
 				{
 					EPtr->life_span = 0;
 					EPtr->state_flags |= DISAPPEARING | NONSOLID;
-					StarShipPtr->ShipInfo.crew_level = 0;
+					StarShipPtr->crew_level = 0;
 					return;
 				}
 				else
@@ -424,15 +415,15 @@ CheckGetAway:
 								NORMALIZE_FACING (
 								ANGLE_TO_FACING (angle + HALF_CIRCLE)
 								));
-						StarShipPtr->ShipInfo.group_counter =
+						StarShipPtr->group_counter =
 								((COUNT)TFB_Random () % MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 					}
 
-					StarShipPtr->ShipInfo.loc.x = -(SIZE)((long)COSINE (
+					StarShipPtr->loc.x = -(SIZE)((long)COSINE (
 							angle, SIS_SCREEN_WIDTH * 9 / 16
 							) * MAX_ZOOM_RADIUS / (DISPLAY_FACTOR >> 1));
-					StarShipPtr->ShipInfo.loc.y = -(SIZE)((long)SINE (
+					StarShipPtr->loc.y = -(SIZE)((long)SINE (
 							angle, SIS_SCREEN_WIDTH * 9 / 16
 							) * MAX_ZOOM_RADIUS / (DISPLAY_FACTOR >> 1));
 
@@ -458,14 +449,14 @@ CheckGetAway:
 			}
 		}
 	}
-	StarShipPtr->ShipInfo.loc.x += vdx;
-	StarShipPtr->ShipInfo.loc.y += vdy;
+	StarShipPtr->loc.x += vdx;
+	StarShipPtr->loc.y += vdy;
 
 	dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-			+ (SIZE)((long)StarShipPtr->ShipInfo.loc.x
+			+ (SIZE)((long)StarShipPtr->loc.x
 			* (DISPLAY_FACTOR >> 1) / radius);
 	dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-			+ (SIZE)((long)StarShipPtr->ShipInfo.loc.y
+			+ (SIZE)((long)StarShipPtr->loc.y
 			* (DISPLAY_FACTOR >> 1) / radius);
 
 ExitIPProcess:
@@ -478,7 +469,7 @@ ExitIPProcess:
 
 	if (group_loc != flagship_loc
 			|| ((task & REFORM_GROUP)
-			&& (StarShipPtr->ShipInfo.group_counter & 1)))
+			&& (StarShipPtr->group_counter & 1)))
 	{
 		SetPrimType (&DisplayArray[EPtr->PrimIndex], NO_PRIM);
 		EPtr->state_flags |= NONSOLID;
@@ -538,7 +529,7 @@ ip_group_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		{
 			ElementPtr1->state_flags |= COLLISION;
 
-			StarShipPtr->ShipInfo.loc =
+			StarShipPtr->loc =
 					DisplayArray[ElementPtr0->PrimIndex].Object.Point;
 			ElementPtr0->next.location = ElementPtr0->current.location;
 			InitIntersectEndPoint (ElementPtr0);
@@ -557,7 +548,7 @@ ip_group_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		{
 			SET_GROUP_MISSION (StarShipPtr,
 					GET_GROUP_MISSION (StarShipPtr) | REFORM_GROUP);
-			StarShipPtr->ShipInfo.group_counter = 100;
+			StarShipPtr->group_counter = 100;
 			NotifyOthers (GET_RACE_ID (StarShipPtr), (BYTE)~0);
 		}
 
@@ -606,10 +597,10 @@ spawn_ip_group (SHIP_FRAGMENT *StarShipPtr)
 		}
 
 		SetPrimType (&DisplayArray[IPSHIPElementPtr->PrimIndex], STAMP_PRIM);
-		IPSHIPElementPtr->current.image.farray =
-				&StarShipPtr->ShipInfo.melee_icon;
-		IPSHIPElementPtr->current.image.frame =
-				SetAbsFrameIndex (StarShipPtr->ShipInfo.melee_icon, 1);
+		// XXX: Hack: farray points to FRAME[3] and given FRAME
+		IPSHIPElementPtr->current.image.farray = &StarShipPtr->melee_icon;
+		IPSHIPElementPtr->current.image.frame = SetAbsFrameIndex (
+					StarShipPtr->melee_icon, 1);
 			/* preprocessing has a side effect
 			 * we wish to avoid.  So death_func
 			 * is used instead, but will achieve
@@ -629,10 +620,10 @@ spawn_ip_group (SHIP_FRAGMENT *StarShipPtr)
 				radius = pSolarSysState->SunDesc[0].radius;
 
 			pt.x = (SIS_SCREEN_WIDTH >> 1)
-					+ (SIZE)((long)StarShipPtr->ShipInfo.loc.x
+					+ (SIZE)((long)StarShipPtr->loc.x
 					* DISPLAY_FACTOR / radius);
 			pt.y = (SIS_SCREEN_HEIGHT >> 1)
-					+ (SIZE)((long)StarShipPtr->ShipInfo.loc.y
+					+ (SIZE)((long)StarShipPtr->loc.y
 					* (DISPLAY_FACTOR >> 1) / radius);
 
 			IPSHIPElementPtr->current.location.x =
@@ -821,7 +812,7 @@ spawn_flag_ship (void)
 void
 DoMissions (void)
 {
-	HSTARSHIP hStarShip, hNextShip;
+	HSHIPFRAG hStarShip, hNextShip;
 
 	spawn_flag_ship ();
 
@@ -836,14 +827,13 @@ DoMissions (void)
 	{
 		SHIP_FRAGMENT *StarShipPtr;
 
-		StarShipPtr = (SHIP_FRAGMENT*) LockStarShip (
-				&GLOBAL (npc_built_ship_q), hStarShip);
+		StarShipPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
 
-		if (StarShipPtr->ShipInfo.crew_level)
+		if (StarShipPtr->crew_level)
 			spawn_ip_group (StarShipPtr);
 
-		UnlockStarShip (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 }
 

@@ -256,56 +256,59 @@ GetShipColumn (int index)
 	return index % NUM_MELEE_COLUMNS;
 }
 
+// XXX: Perhaps move this to master.c
 static COUNT
 GetShipCostFromIndex (unsigned Index)
 {
-	HSTARSHIP hStarShip;
-	SHIP_FRAGMENT *FragPtr;
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
 	COUNT val;
 
-	hStarShip = GetStarShipFromIndex (&master_q, Index);
-	if (!hStarShip)
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
 		return 0;
 
-	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-	val = FragPtr->ShipInfo.ship_cost;
-	UnlockStarShip (&master_q, hStarShip);
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.ship_cost;
+	UnlockMasterShip (&master_q, hMasterShip);
 
 	return val;
 }
 
+// XXX: Perhaps move this to master.c
 static FRAME
 GetShipIconsFromIndex (unsigned Index)
 {
-	HSTARSHIP hStarShip;
-	SHIP_FRAGMENT *FragPtr;
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
 	FRAME val;
 
-	hStarShip = GetStarShipFromIndex (&master_q, Index);
-	if (!hStarShip)
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
 		return 0;
 
-	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-	val = FragPtr->ShipInfo.icons;
-	UnlockStarShip (&master_q, hStarShip);
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.icons;
+	UnlockMasterShip (&master_q, hMasterShip);
 
 	return val;
 }
 
+// XXX: Perhaps move this to master.c
 static FRAME
 GetShipMeleeIconsFromIndex (unsigned Index)
 {
-	HSTARSHIP hStarShip;
-	SHIP_FRAGMENT *FragPtr;
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
 	FRAME val;
 
-	hStarShip = GetStarShipFromIndex (&master_q, Index);
-	if (!hStarShip)
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
 		return 0;
 
-	FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
-	val = FragPtr->ShipInfo.melee_icon;
-	UnlockStarShip (&master_q, hStarShip);
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.melee_icon;
+	UnlockMasterShip (&master_q, hMasterShip);
 
 	return val;
 }
@@ -991,15 +994,15 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 	}
 	else
 	{
-		HSTARSHIP hStarShip;
-		SHIP_FRAGMENT *FragPtr;
+		HMASTERSHIP hMasterShip;
+		MASTER_SHIP_INFO *MasterPtr;
 
-		hStarShip = GetStarShipFromIndex (&master_q, NewStarShip);
-		FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+		hMasterShip = GetStarShipFromIndex (&master_q, NewStarShip);
+		MasterPtr = LockMasterShip (&master_q, hMasterShip);
 
-		InitShipStatus (&FragPtr->ShipInfo, ~0, NULL);
+		InitShipStatus (&MasterPtr->ShipInfo, ~0, NULL);
 
-		UnlockStarShip (&master_q, hStarShip);
+		UnlockMasterShip (&master_q, hMasterShip);
 	}
 
 	UnbatchGraphics ();
@@ -2118,27 +2121,29 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 			{
 				BYTE row, col;
 				BYTE ship_cost;
-				HSTARSHIP hStarShip, hBuiltShip;
-				SHIP_FRAGMENT *FragPtr;
+				HMASTERSHIP hMasterShip;
+				HSTARSHIP hBuiltShip;
+				MASTER_SHIP_INFO *MasterPtr;
 				STARSHIP *BuiltShipPtr;
 				BYTE captains_name_index;
 
-				hStarShip = GetStarShipFromIndex (&master_q, StarShip);
-				FragPtr = (SHIP_FRAGMENT *) LockStarShip (&master_q, hStarShip);
+				hMasterShip = GetStarShipFromIndex (&master_q, StarShip);
+				MasterPtr = LockMasterShip (&master_q, hMasterShip);
+
 				captains_name_index = NameCaptain (&race_q[side],
-						FragPtr->RaceResIndex);
-				hBuiltShip = Build (&race_q[side], FragPtr->RaceResIndex);
+						MasterPtr->RaceResIndex);
+				hBuiltShip = Build (&race_q[side], MasterPtr->RaceResIndex);
 
 				// Draw the icon.
 				row = GetShipRow (index);
 				col = GetShipColumn (index);
 				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);
 				s.origin.y = 10 + ((ICON_HEIGHT + 2) * row);
-				s.frame = FragPtr->ShipInfo.icons;
+				s.frame = MasterPtr->ShipInfo.icons;
 				DrawStamp (&s);
 
-				ship_cost = FragPtr->ShipInfo.ship_cost;
-				UnlockStarShip (&master_q, hStarShip);
+				ship_cost = MasterPtr->ShipInfo.ship_cost;
+				UnlockMasterShip (&master_q, hMasterShip);
 
 				BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
 				BuiltShipPtr->index = index;
