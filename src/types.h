@@ -36,11 +36,21 @@
 #	endif
 #else
 #	include <inttypes.h>
+#	ifndef PRIxPTR
+		/* SunOS (at least version 5.9) does not have PRIxPTR in inttypes.h */
+#		if defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
+				|| defined(_M_IA64) || defined(_M_AMD64)
+			/* 64-bit platforms */
+#			define PRIxPTR "lx"
+#		else
+#			define PRIxPTR "x"
+#		endif
+#	endif  /* defined(PRIxPTR) */
 #endif
 
 #if defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
-	|| defined(_M_IA64) || defined(_M_AMD64)
-/* 64-bit platforms */
+		|| defined(_M_IA64) || defined(_M_AMD64)
+	/* 64-bit platforms */
 #	define UQM_INT16   short
 #	define UQM_INT32   int
 #	define UQM_INT64   long
