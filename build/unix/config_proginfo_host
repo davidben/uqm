@@ -222,6 +222,17 @@ LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
 LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
 
 
+# Additional platform-specific libraries for networking.
+LIB_netlibs_NAME="Platform-specific network libraries"
+case "$HOST_SYSTEM" in
+	SunOS)
+		LIB_netlibs_CFLAGS=""
+		LIB_netlibs_LDFLAGS="-lsocket"
+		LIB_netlibs_VERSION=""
+		;;
+esac
+
+
 ##############################################################################
 # Describe the symbols (possibly) used:                                      #
 ##############################################################################
