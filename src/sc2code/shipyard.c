@@ -124,14 +124,14 @@ hangar_anim_func (void *data)
 
 #ifdef WANT_SHIP_SPINS
 static void
-SpinStarShip (HSHIPFRAG hStarShip)
+SpinStarShip (HFLEETINFO hStarShip)
 {
 	int Index;
-	SHIP_FRAGMENT *StarShipPtr;
+	FLEET_INFO *FleetPtr;
 
-	StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-	Index = FindMasterShipIndex (StarShipPtr->RaceResIndex);
-	UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
+	Index = FindMasterShipIndex (FleetPtr->RaceResIndex);
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 				
 	if (Index >= 0 && Index < NUM_MELEE_SHIPS)
 	{
@@ -667,7 +667,7 @@ DoModifyShips (MENU_STATE *pMS)
 #ifdef WANT_SHIP_SPINS
 			if (special)
 			{
-				HSHIPFRAG hSpinShip;
+				HFLEETINFO hSpinShip = 0;
 				
 				if ((special && (((hStarShip == 0
 						   && HINIBBLE (pMS->CurState) == 0)
@@ -675,7 +675,7 @@ DoModifyShips (MENU_STATE *pMS)
 						 || ((hStarShip != 0 &&
 						      HINIBBLE (pMS->CurState) == 0)
 						     && !(pMS->delta_item & MODIFY_CREW_FLAG))))
-				    && ((hSpinShip = hStarShip)
+				    && (hStarShip
 					|| (HINIBBLE (pMS->CurState) == 0
 					    && (hSpinShip = GetAvailableRaceFromIndex (
 							LOBYTE (pMS->delta_item))))))
@@ -683,6 +683,17 @@ DoModifyShips (MENU_STATE *pMS)
 					CONTEXT OldContext;
 					RECT OldClipRect;
 					RECT flash_r;
+
+					if (!hSpinShip)
+					{	/* Get fleet info from selected escort */
+						SHIP_FRAGMENT *FragPtr = LockShipFrag (
+								&GLOBAL (built_ship_q), hStarShip);
+						BYTE Index = GET_RACE_ID (FragPtr);
+						hSpinShip = GetStarShipFromIndex (
+								&GLOBAL (avail_race_q), Index);
+						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+					}
+					
 					SetFlashRect (NULL, (FRAME)0);
 					// Do not call EndHangarAnim() with GraphicsLock held!
 					UnlockMutex (GraphicsLock);
@@ -692,7 +703,6 @@ DoModifyShips (MENU_STATE *pMS)
 					OldContext = SetContext (ScreenContext);
 					GetContextClipRect (&OldClipRect);
 
-					// XXX: this is broken; we pass an HSHIPFRAG or HFLEETINFO
 					SpinStarShip (hSpinShip);
 
 					SetContextClipRect (&OldClipRect);
