@@ -42,7 +42,7 @@ typedef struct link
 	HLINK succ;
 } LINK;
 
-typedef struct queue
+typedef struct /* queue */
 {
 	HLINK head;
 	HLINK tail;
