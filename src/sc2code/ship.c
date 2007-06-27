@@ -552,10 +552,10 @@ GetInitialStarShips (void)
 			StarShipPtr = LockStarShip (&race_q[playerI], ships[playerI]);
 			if (!spawn_ship (StarShipPtr))
 			{
-				UnlockStarShip (&race_q[which_side], ships[playerI]);
+				UnlockStarShip (&race_q[playerI], ships[playerI]);
 				return FALSE;
 			}
-			UnlockStarShip (&race_q[which_side], ships[playerI]);
+			UnlockStarShip (&race_q[playerI], ships[playerI]);
 		}
 		return TRUE;
 	}
