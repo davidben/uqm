@@ -836,12 +836,14 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				break;
 			case NETDELAY_OPT:
 			{
-				if (parseIntOption (optarg, &netplayOptions.inputDelay,
-						"network input delay") == -1)
+				int temp;
+				if (parseIntOption (optarg, &temp, "network input delay")
+						== -1)
 				{
 					badArg = TRUE;
 					break;
 				}
+				netplayOptions.inputDelay = temp;
 
 				if (netplayOptions.inputDelay > 60 * BATTLE_FRAME_RATE)
 				{
