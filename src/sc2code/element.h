@@ -70,6 +70,11 @@ typedef HLINK HELEMENT;
 #define IGNORE_VELOCITY (1 << 13)
 #define CREW_OBJECT (1 << 14)
 #define BACKGROUND_OBJECT (1 << 15)
+		// The BACKGROUND_OBJECT flag existed originally but wasn't used.
+		// It can now be used for objects that never influence the state
+		// of other elements; elements that have this flag set are not
+		// included in the checksum used for netplay games.
+		// It can be used for graphical mods that don't impede netplay.
 
 
 #define HYPERJUMP_LIFE 15

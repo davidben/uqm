@@ -109,28 +109,36 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 #ifdef DUMP_CRC_OPS
 	crc_log("START crc_processELEMENT().");
 #endif
-	crc_processELEMENT_FLAGS(state, val->state_flags);
-	crc_processCOUNT(state, val->life_span);
-	crc_processCOUNT(state, val->crew_level);
-	crc_processBYTE(state, val->mass_points);
+	if (val->state_flags & BACKGROUND_OBJECT) {
+		// The element never influences the state of other elements,
+		// and is to be excluded from checksums.
+#ifdef DUMP_CRC_OPS
+		crc_log("      BACKGROUND_OBJECT element omited");
+#endif
+	} else {
+		crc_processELEMENT_FLAGS(state, val->state_flags);
+		crc_processCOUNT(state, val->life_span);
+		crc_processCOUNT(state, val->crew_level);
+		crc_processBYTE(state, val->mass_points);
 
-	// HACK: when a ship is being destroyed, turn_wait is abused to store
-	// the side this ship is on. This must be excluded from the checksum
-	// as this does not have to be the same for both sides.
-	{
-		extern void new_ship(ELEMENT *ElementPtr);
-		BYTE turn_wait = val->turn_wait;
-		
-		if (val->preprocess_func == new_ship)
-			turn_wait = 0;
+		// HACK: when a ship is being destroyed, turn_wait is abused to store
+		// the side this ship is on. This must be excluded from the checksum
+		// as this does not have to be the same for both sides.
+		{
+			extern void new_ship(ELEMENT *ElementPtr);
+			BYTE turn_wait = val->turn_wait;
+			
+			if (val->preprocess_func == new_ship)
+				turn_wait = 0;
 
-		crc_processBYTE(state, turn_wait);
+			crc_processBYTE(state, turn_wait);
+		}
+
+		crc_processBYTE(state, val->thrust_wait);
+		crc_processVELOCITY_DESC(state, &val->velocity);
+		crc_processSTATE(state, &val->current);
+		crc_processSTATE(state, &val->next);
 	}
-
-	crc_processBYTE(state, val->thrust_wait);
-	crc_processVELOCITY_DESC(state, &val->velocity);
-	crc_processSTATE(state, &val->current);
-	crc_processSTATE(state, &val->next);
 #ifdef DUMP_CRC_OPS
 	crc_log("END   crc_processELEMENT().");
 #endif
