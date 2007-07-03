@@ -403,7 +403,7 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	if (runTime > 0 && runTime / 1000.0 < decoder->length)
 		decoder->length = (float)(runTime / 1000.0);
 
-	decoder->start_sample = decoder->frequency * startTime / 1000;
+	decoder->start_sample = (uint32)(startTime / 1000.0f * decoder->frequency);
 	decoder->end_sample = decoder->start_sample + 
 			(unsigned long)(decoder->length * decoder->frequency);
 	if (decoder->start_sample != 0)
@@ -606,7 +606,7 @@ SoundDecoder_Seek (TFB_SoundDecoder *decoder, uint32 seekTime)
 		return;
 	}
 
-	pcm_pos = seekTime * decoder->frequency / 1000;
+	pcm_pos = (uint32) (seekTime / 1000.0f * decoder->frequency);
 	pcm_pos = decoder->funcs->Seek (decoder,
 			decoder->start_sample + pcm_pos);
 	decoder->pos = pcm_pos * decoder->bytes_per_samp;

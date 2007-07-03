@@ -825,6 +825,7 @@ FastForward_Page ()
 int
 GetSoundData (void *data) 
 {
+	// XXX: These two variants are begging to be merged
 	if (speechVolumeScale != 0.0f)
 	{
 		// speech is enabled
@@ -840,11 +841,17 @@ GetSoundData (void *data)
 				sample->decoder->frequency * 2.0f);
 			unsigned long pos;
 			int i;
+			int step;
 			UBYTE *scopedata = (UBYTE *) data;
 			UBYTE *sbuffer = soundSource[SPEECH_SOURCE].sbuffer;
 
-			assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency == 11025);
+			assert (soundSource[SPEECH_SOURCE].sample->decoder->frequency >= 11025);
 			assert (soundSource[SPEECH_SOURCE].sample->decoder->format == audio_FORMAT_MONO16);
+
+			// Using step of 1 sample at 11025Hz, because the human speech
+			// is mostly in the low frequencies
+			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency * 2 / 11025;
+			step = (step + 1) & ~1;
 
 			if (delta < 0)
 			{
@@ -892,7 +899,7 @@ GetSoundData (void *data)
 					s = RADAR_HEIGHT - 2;
 				scopedata[i] = (UBYTE) s;
 
-				pos += 2;
+				pos += step;
 			}
 
 			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -921,6 +928,7 @@ GetSoundData (void *data)
 			assert (soundSource[MUSIC_SOURCE].sample->decoder->frequency >= 11025);
 			assert (soundSource[MUSIC_SOURCE].sample->decoder->format == audio_FORMAT_STEREO16);
 
+			// Using step of 4 samples at 11025Hz for the music
 			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency / 11025 * 16;
 			if (step % 2 == 1)
 				step++;

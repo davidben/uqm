@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed speech looping with long tracks at high sampling rates;
+  scope supports higher rates for speech now; bug 999 - Alex
 - Basic support for .ani-based shipspin animations - Michael
 - Fixed some Melnorme history info timestamps - Alex
 - Fixed Ur-Quan story timestamps, from Vlad-Ceru Opran
