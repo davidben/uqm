@@ -481,12 +481,14 @@ VisitStarBase (void)
 				|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 			goto ExitStarBase;
 
+		/* Create an Ilwrath ship responding to the Ur-Quan
+		 * probe's broadcast */
 		hStarShip = CloneShipFragment (ILWRATH_SHIP,
 				&GLOBAL (npc_built_ship_q), 7);
 		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		/* Hack (sort of): Suppress the tally and salvage info
 		 * after the battle */
-		SET_RACE_ID (FragPtr, (BYTE)~0);
+		FragPtr->race_id = (BYTE)~0;
 		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		InitCommunication (ILWRATH_CONVERSATION);

@@ -41,18 +41,20 @@
 
 static RACE_DESC supox_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		16, /* Super Melee cost */
-		333 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			7468, 9246,
-		},
 		(STRING)SUPOX_RACE_STRINGS,
 		(FRAME)SUPOX_ICON_MASK_PMAP_ANIM,
 		(FRAME)SUPOX_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		333 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			7468, 9246,
+		},
 	},
 	{
 		MAX_THRUST,

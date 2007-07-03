@@ -39,18 +39,20 @@
 
 static RACE_DESC spathi_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | FIRES_AFT | SEEKING_SPECIAL | DONT_CHASE,
 		18, /* Super Melee cost */
-		1000 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			2549, 3600,
-		},
 		(STRING)SPATHI_RACE_STRINGS,
 		(FRAME)SPATHI_ICON_MASK_PMAP_ANIM,
 		(FRAME)SPATHI_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		1000 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			2549, 3600,
+		},
 	},
 	{
 		MAX_THRUST,

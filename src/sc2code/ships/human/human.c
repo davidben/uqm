@@ -43,18 +43,20 @@
 
 static RACE_DESC human_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SEEKING_WEAPON | POINT_DEFENSE,
 		11, /* Super Melee cost */
-		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			1752, 1450,
-		},
 		(STRING)HUMAN_RACE_STRINGS,
 		(FRAME)HUMAN_ICON_MASK_PMAP_ANIM,
 		(FRAME)HUMAN_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		0, /* Initial sphere of influence radius */
+		{ /* Known location (center of SoI) */
+			1752, 1450,
+		},
 	},
 	{
 		MAX_THRUST,

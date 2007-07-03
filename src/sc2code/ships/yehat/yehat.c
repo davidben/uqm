@@ -41,18 +41,20 @@
 
 static RACE_DESC yehat_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SHIELD_DEFENSE,
 		23, /* Super Melee cost */
-		750 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			4970, 40,
-		},
 		(STRING)YEHAT_RACE_STRINGS,
 		(FRAME)YEHAT_ICON_MASK_PMAP_ANIM,
 		(FRAME)YEHAT_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		750 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			4970, 40,
+		},
 	},
 	{
 		MAX_THRUST,

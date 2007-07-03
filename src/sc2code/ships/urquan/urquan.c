@@ -43,18 +43,20 @@
 
 static RACE_DESC urquan_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SEEKING_SPECIAL,
 		30, /* Super Melee cost */
-		2666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			5750, 6000,
-		},
 		(STRING)URQUAN_RACE_STRINGS,
 		(FRAME)URQUAN_ICON_MASK_PMAP_ANIM,
 		(FRAME)URQUAN_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		2666 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			5750, 6000,
+		},
 	},
 	{
 		MAX_THRUST,

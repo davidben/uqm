@@ -41,18 +41,20 @@
 
 static RACE_DESC ilwrath_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		10, /* Super Melee cost */
-		1410 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			48, 1700,
-		},
 		(STRING)ILWRATH_RACE_STRINGS,
 		(FRAME)ILWRATH_ICON_MASK_PMAP_ANIM,
 		(FRAME)ILWRATH_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		1410 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			48, 1700,
+		},
 	},
 	{
 		MAX_THRUST,

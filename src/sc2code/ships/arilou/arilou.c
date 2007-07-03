@@ -41,18 +41,20 @@
 
 static RACE_DESC arilou_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		/* FIRES_FORE | */ IMMEDIATE_WEAPON,
 		16, /* Super Melee cost */
-		250 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			438, 6372,
-		},
 		(STRING)ARILOU_RACE_STRINGS,
 		(FRAME)ARILOU_ICON_MASK_PMAP_ANIM,
 		(FRAME)ARILOU_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		250 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			438, 6372,
+		},
 	},
 	{
 		MAX_THRUST,

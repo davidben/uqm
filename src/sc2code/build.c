@@ -136,7 +136,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 					which_ship = 0;
 			}
 			else if (FleetPtr->known_strength == 0
-					&& FleetPtr->actual_strength != (COUNT)~0)
+					&& FleetPtr->actual_strength != INFINITE_RADIUS)
 			{
 				FleetPtr->known_strength = 1;
 				FleetPtr->known_loc = FleetPtr->loc;
@@ -160,7 +160,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
-				total += ShipCost[GET_RACE_ID (StarShipPtr)];
+				total += ShipCost[StarShipPtr->race_id];
 				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			}
 			return total;
@@ -177,7 +177,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
-				ship_type = GET_RACE_ID (StarShipPtr);
+				ship_type = StarShipPtr->race_id;
 				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 				if (ship_type == which_ship)
@@ -232,7 +232,7 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 				hNextShip = _GetSuccLink (StarShipPtr);
-				RemoveShip = (GET_RACE_ID (StarShipPtr) == which_ship);
+				RemoveShip = (StarShipPtr->race_id == which_ship);
 				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 				if (RemoveShip)
@@ -282,14 +282,14 @@ ActivateStarShip (COUNT which_ship, SIZE state)
 
 					StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
 							hOldShip);
-					win_loc = StarShipPtr->var2;
+					win_loc = StarShipPtr->index;
 					UnlockShipFrag (&GLOBAL (built_ship_q), hOldShip);
 					if (which_window <= win_loc)
 						break;
 				}
 
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				StarShipPtr->var2 = which_window - 1;
+				StarShipPtr->index = which_window - 1;
 				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 				InsertQueue (&GLOBAL (built_ship_q), hStarShip, hOldShip);
@@ -417,12 +417,8 @@ CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 		ShipFragPtr->max_crew = TemplatePtr->max_crew;
 		ShipFragPtr->energy_level = 0;
 		ShipFragPtr->max_energy = TemplatePtr->max_energy;
-		ShipFragPtr->ship_flags = 0;
-		ShipFragPtr->var1 = 0;
-		ShipFragPtr->var2 = 0;
-		ShipFragPtr->loc.x = 0;
-		ShipFragPtr->loc.y = 0;
-		SET_RACE_ID (ShipFragPtr, (BYTE)shipIndex);
+		ShipFragPtr->race_id = (BYTE)shipIndex;
+		ShipFragPtr->index = 0;
 		UnlockShipFrag (pDstQueue, hBuiltShip);
 	}
 	UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
@@ -452,7 +448,7 @@ SetEscortCrewComplement (COUNT which_ship, COUNT crew_level, BYTE captain)
 	{
 		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 		hNextShip = _GetSuccLink (StarShipPtr);
-		if (which_ship == GET_RACE_ID (StarShipPtr) &&
+		if (which_ship == StarShipPtr->race_id &&
 				StarShipPtr->crew_level == TemplatePtr->crew_level)
 			break; /* found one */
 		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);

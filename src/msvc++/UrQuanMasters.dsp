@@ -4048,6 +4048,10 @@ SOURCE=..\sc2code\grpinfo.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\grpinfo.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\hyper.c
 # End Source File
 # Begin Source File

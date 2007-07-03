@@ -29,6 +29,7 @@
 #include "options.h"
 #include "setup.h"
 #include "state.h"
+#include "grpinfo.h"
 
 #include "libs/tasklib.h"
 #include "libs/log.h"
@@ -172,9 +173,9 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cread_16 (fh, &FragPtr->which_side);
 		cread_8  (fh, &FragPtr->captains_name_index);
 		cread_8  (fh, NULL); /* padding */
-		cread_16 (fh, &FragPtr->ship_flags);
-		cread_8  (fh, &FragPtr->var1);
-		cread_8  (fh, &FragPtr->var2);
+		cread_16 (fh, NULL); /* unused: was ship_flags */
+		cread_8  (fh, &FragPtr->race_id);
+		cread_8  (fh, &FragPtr->index);
 		// XXX: reading crew as BYTE to maintain savegame compatibility
 		cread_8  (fh, &tmpb);
 		FragPtr->crew_level = tmpb;
@@ -182,8 +183,8 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		FragPtr->max_crew = tmpb;
 		cread_8  (fh, &FragPtr->energy_level);
 		cread_8  (fh, &FragPtr->max_energy);
-		cread_16 (fh, &FragPtr->loc.x);
-		cread_16 (fh, &FragPtr->loc.y);
+		cread_16 (fh, NULL); /* unused; was loc.x */
+		cread_16 (fh, NULL); /* unused; was loc.y */
 
 		UnlockShipFrag (pQueue, hStarShip);
 	}
@@ -216,7 +217,7 @@ LoadRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 		FleetPtr->crew_level = tmpb;
 		cread_8  (fh, &tmpb);
 		FleetPtr->max_crew = tmpb;
-		cread_8  (fh, &FleetPtr->energy_level);
+		cread_8  (fh, &FleetPtr->growth);
 		cread_8  (fh, &FleetPtr->max_energy);
 		cread_16 (fh, &FleetPtr->loc.x);
 		cread_16 (fh, &FleetPtr->loc.y);
@@ -232,6 +233,45 @@ LoadRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 		cread_16 (fh, NULL); /* alignment padding */
 
 		UnlockFleetInfo (pQueue, hStarShip);
+	}
+}
+
+static void
+LoadGroupQueue (DECODE_REF fh, QUEUE *pQueue)
+{
+	COUNT num_links;
+
+	cread_16 (fh, &num_links);
+
+	while (num_links--)
+	{
+		HIPGROUP hGroup;
+		IP_GROUP *GroupPtr;
+		BYTE tmpb;
+
+		cread_16 (fh, NULL); /* unused; was race_id */
+
+		hGroup = BuildGroup (pQueue, 0);
+		GroupPtr = LockIpGroup (pQueue, hGroup);
+
+		cread_16 (fh, NULL); /* unused; was which_side */
+		cread_8  (fh, NULL); /* unused; was captains_name_index */
+		cread_8  (fh, NULL); /* padding; for savegame compat */
+		cread_16 (fh, &GroupPtr->group_counter);
+		cread_8  (fh, &GroupPtr->race_id);
+		cread_8  (fh, &tmpb); /* was var2 */
+		GroupPtr->sys_loc = LONIBBLE (tmpb);
+		GroupPtr->task = HINIBBLE (tmpb);
+		cread_8  (fh, &GroupPtr->in_system); /* was crew_level */
+		cread_8  (fh, NULL); /* unused; was max_crew */
+		cread_8  (fh, &tmpb); /* was energy_level */
+		GroupPtr->dest_loc = LONIBBLE (tmpb);
+		GroupPtr->orbit_pos = HINIBBLE (tmpb);
+		cread_8  (fh, &GroupPtr->group_id); /* was max_energy */
+		cread_16 (fh, &GroupPtr->loc.x);
+		cread_16 (fh, &GroupPtr->loc.y);
+
+		UnlockIpGroup (pQueue, hGroup);
 	}
 }
 
@@ -379,6 +419,7 @@ LoadGameState (GAME_STATE *GSPtr, DECODE_REF fh)
 	
 	DummyLoadQueue (&GSPtr->avail_race_q, fh);
 	DummyLoadQueue (&GSPtr->npc_built_ship_q, fh);
+	// Not loading ip_group_q, was not there originally
 	DummyLoadQueue (&GSPtr->encounter_q, fh);
 	DummyLoadQueue (&GSPtr->built_ship_q, fh);
 
@@ -514,6 +555,7 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 
 	ReinitQueue (&GLOBAL (GameClock.event_q));
 	ReinitQueue (&GLOBAL (encounter_q));
+	ReinitQueue (&GLOBAL (ip_group_q));
 	ReinitQueue (&GLOBAL (npc_built_ship_q));
 	ReinitQueue (&GLOBAL (built_ship_q));
 
@@ -538,11 +580,13 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 	if (!(NextActivity & START_INTERPLANETARY))
 	{
 		if (NextActivity & START_ENCOUNTER)
-			// load npc queue
 			LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
 		else if (LOBYTE (NextActivity) == IN_INTERPLANETARY)
-			// load group queue
-			LoadShipQueue (fh, &GLOBAL (npc_built_ship_q));
+			// XXX: Technically, this queue does not need to be
+			//   saved/loaded at all. IP groups will be reloaded
+			//   from group state files. But the original code did,
+			//   and so will we until we can prove we do not need to.
+			LoadGroupQueue (fh, &GLOBAL (ip_group_q));
 		else
 			// XXX: The empty queue read is only needed to maintain
 			//   the savegame compatibility

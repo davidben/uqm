@@ -25,6 +25,7 @@
 #include "load.h"
 #include "setup.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "sounds.h"
 #include "util.h"
 #include "strlib.h"
@@ -217,7 +218,8 @@ UseCaster (void)
 
 		EncounterGroup = 0;
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-		ReinitQueue (&GLOBAL (npc_built_ship_q));
+		ReinitQueue (&GLOBAL (ip_group_q));
+		assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 		SaveFlagshipState ();
@@ -226,20 +228,20 @@ UseCaster (void)
 
 	{
 		BOOLEAN FoundIlwrath;
-		HSHIPFRAG hStarShip;
+		HIPGROUP hGroup;
 
 		FoundIlwrath = (BOOLEAN)(CurStarDescPtr->Index == ILWRATH_DEFINED);
 				// In the Ilwrath home system?
 
 		if (!FoundIlwrath &&
-				(hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
+				(hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
 		{
-			// Ilwrath ship is in the system.
-			SHIP_FRAGMENT *FragPtr;
+			// Is an Ilwrath ship in the system?
+			IP_GROUP *GroupPtr;
 
-			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-			FoundIlwrath = (GET_RACE_ID (FragPtr) == ILWRATH_SHIP);
-			UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+			FoundIlwrath = (GroupPtr->race_id == ILWRATH_SHIP);
+			UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 		}
 
 		if (FoundIlwrath)
@@ -249,7 +251,8 @@ UseCaster (void)
 
 			EncounterGroup = 0;
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-			ReinitQueue (&GLOBAL (npc_built_ship_q));
+			ReinitQueue (&GLOBAL (ip_group_q));
+			assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 			if (CurStarDescPtr->Index == ILWRATH_DEFINED)
 			{
@@ -321,7 +324,8 @@ DeviceFailed (BYTE which_device)
 					GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 					CloneShipFragment (CHMMR_SHIP,
 							&GLOBAL (npc_built_ship_q), 0);
@@ -359,12 +363,13 @@ DeviceFailed (BYTE which_device)
 			else
 			{
 				EncounterGroup = 0;
-				if (GetHeadLink (&GLOBAL (npc_built_ship_q)))
+				if (GetHeadLink (&GLOBAL (ip_group_q)))
 				{
 					SET_GAME_STATE (SHIP_TO_COMPEL, 1);
 
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 				}
 
 				if (CurStarDescPtr->Index == SAMATRA_DEFINED)

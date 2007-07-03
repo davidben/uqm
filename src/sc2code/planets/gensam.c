@@ -22,6 +22,7 @@
 #include "resinst.h"
 #include "races.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "planets/genall.h"
 #include "libs/mathlib.h"
 
@@ -32,7 +33,7 @@ BuildUrquanGuard (void)
 	BYTE ship1, ship2;
 	BYTE b0, b1;
 	POINT org;
-	HSHIPFRAG hStarShip, hNextShip;
+	HIPGROUP hGroup, hNextGroup;
 
 	GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (SAMATRA_GRPOFFS0);
 
@@ -40,6 +41,8 @@ BuildUrquanGuard (void)
 		ship1 = URQUAN_SHIP, ship2 = BLACK_URQUAN_SHIP;
 	else
 		ship1 = BLACK_URQUAN_SHIP, ship2 = URQUAN_SHIP;
+
+	assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 	for (b0 = 0; b0 < MAX_SHIPS_PER_SIDE; ++b0)
 		CloneShipFragment (ship1,
@@ -65,53 +68,48 @@ BuildUrquanGuard (void)
 
 	GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP);
 
-	XFormIPLoc (
-			&pSolarSysState->PlanetDesc[4].image.origin,
-			&org,
-			FALSE
-			);
-	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
+	XFormIPLoc (&pSolarSysState->PlanetDesc[4].image.origin,
+			&org, FALSE);
+	hGroup = GetHeadLink (&GLOBAL (ip_group_q));
 	for (b0 = 0, b1 = 0;
 			b0 < NUM_URQUAN_GUARDS0;
 			++b0, b1 += FULL_CIRCLE / (NUM_URQUAN_GUARDS0 + NUM_URQUAN_GUARDS1))
 	{
-		SHIP_FRAGMENT *FragPtr;
+		IP_GROUP *GroupPtr;
 
 		if (b1 % (FULL_CIRCLE / NUM_URQUAN_GUARDS1) == 0)
 			b1 += FULL_CIRCLE / (NUM_URQUAN_GUARDS0 + NUM_URQUAN_GUARDS1);
 
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		hNextShip = _GetSuccLink (FragPtr);
-		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
-		SET_GROUP_LOC (FragPtr, 0);
-		SET_GROUP_DEST (FragPtr, 4 + 1);
-		SET_ORBIT_LOC (FragPtr,
-				NORMALIZE_FACING (ANGLE_TO_FACING (b1)));
-		FragPtr->group_counter = 0;
-		FragPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
-		FragPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		hStarShip = hNextShip;
+		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		hNextGroup = _GetSuccLink (GroupPtr);
+		GroupPtr->task = ON_STATION | IGNORE_FLAGSHIP;
+		GroupPtr->sys_loc = 0;
+		GroupPtr->dest_loc = 4 + 1;
+		GroupPtr->orbit_pos = NORMALIZE_FACING (ANGLE_TO_FACING (b1));
+		GroupPtr->group_counter = 0;
+		GroupPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
+		GroupPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		hGroup = hNextGroup;
 	}
 
 	for (b0 = 0, b1 = 0;
 			b0 < NUM_URQUAN_GUARDS1;
 			++b0, b1 += FULL_CIRCLE / NUM_URQUAN_GUARDS1)
 	{
-		SHIP_FRAGMENT *FragPtr;
+		IP_GROUP *GroupPtr;
 
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		hNextShip = _GetSuccLink (FragPtr);
-		SET_GROUP_MISSION (FragPtr, ON_STATION | IGNORE_FLAGSHIP);
-		SET_GROUP_LOC (FragPtr, 0);
-		SET_GROUP_DEST (FragPtr, 4 + 1);
-		SET_ORBIT_LOC (FragPtr,
-				NORMALIZE_FACING (ANGLE_TO_FACING (b1)));
-		FragPtr->group_counter = 0;
-		FragPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
-		FragPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		hStarShip = hNextShip;
+		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		hNextGroup = _GetSuccLink (GroupPtr);
+		GroupPtr->task = ON_STATION | IGNORE_FLAGSHIP;
+		GroupPtr->sys_loc = 0;
+		GroupPtr->dest_loc = 4 + 1;
+		GroupPtr->orbit_pos = NORMALIZE_FACING (ANGLE_TO_FACING (b1));
+		GroupPtr->group_counter = 0;
+		GroupPtr->loc.x = org.x + COSINE (b1, STATION_RADIUS);
+		GroupPtr->loc.y = org.y + SINE (b1, STATION_RADIUS);
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		hGroup = hNextGroup;
 	}
 }
 
@@ -134,36 +132,32 @@ GenerateSamatra (BYTE control)
 			EncounterRace = -1; // Do not want guards to chase the player
 			{
 				BOOLEAN GuardEngaged;
-				HSHIPFRAG hStarShip, hNextShip;
+				HIPGROUP hGroup, hNextGroup;
 
 				GuardEngaged = FALSE;
-				for (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-						hStarShip; hStarShip = hNextShip)
+				for (hGroup = GetHeadLink (&GLOBAL (ip_group_q));
+						hGroup; hGroup = hNextGroup)
 				{
-					BYTE task;
-					SHIP_FRAGMENT *FragPtr;
+					IP_GROUP *GroupPtr;
 
-					FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
-							hStarShip);
-					hNextShip = _GetSuccLink (FragPtr);
+					GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+					hNextGroup = _GetSuccLink (GroupPtr);
 
-					task = GET_GROUP_MISSION (FragPtr);
 					if (GET_GAME_STATE (URQUAN_MESSED_UP))
 					{
-						SET_GROUP_MISSION (FragPtr,
-								FLEE | IGNORE_FLAGSHIP | (task & REFORM_GROUP));
-						SET_GROUP_DEST (FragPtr, 0);
+						GroupPtr->task &= REFORM_GROUP;
+						GroupPtr->task |= FLEE | IGNORE_FLAGSHIP;
+						GroupPtr->dest_loc = 0;
 					}
-					else if (task & REFORM_GROUP)
+					else if (GroupPtr->task & REFORM_GROUP)
 					{
-						task &= ~REFORM_GROUP;
-						FragPtr->group_counter = 0;
-						SET_GROUP_MISSION (FragPtr, task);
+						GroupPtr->task &= ~REFORM_GROUP;
+						GroupPtr->group_counter = 0;
 
 						GuardEngaged = TRUE;
 					}
 
-					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+					UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 				}
 
 				if (GuardEngaged)
@@ -173,22 +167,13 @@ GenerateSamatra (BYTE control)
 
 					XFormIPLoc (
 							&pSolarSysState->PlanetDesc[4].image.origin,
-							&org,
-							FALSE
-							);
-					angle = ARCTAN (
-							GLOBAL (ip_location.x) - org.x,
-							GLOBAL (ip_location.y) - org.y
-							);
-					GLOBAL (ip_location.x) = org.x
-							+ COSINE (angle, 3000);
-					GLOBAL (ip_location.y) = org.y
-							+ SINE (angle, 3000);
-					XFormIPLoc (
-							&GLOBAL (ip_location),
-							&GLOBAL (ShipStamp.origin),
-							TRUE
-							);
+							&org, FALSE);
+					angle = ARCTAN (GLOBAL (ip_location.x) - org.x,
+							GLOBAL (ip_location.y) - org.y);
+					GLOBAL (ip_location.x) = org.x + COSINE (angle, 3000);
+					GLOBAL (ip_location.y) = org.y + SINE (angle, 3000);
+					XFormIPLoc (&GLOBAL (ip_location),
+							&GLOBAL (ShipStamp.origin), TRUE);
 				}
 			}
 			break;
@@ -220,7 +205,8 @@ GenerateSamatra (BYTE control)
 					&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0])
 			{
 				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-				ReinitQueue (&GLOBAL (npc_built_ship_q));
+				ReinitQueue (&GLOBAL (ip_group_q));
+				assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 				if (!GET_GAME_STATE (URQUAN_MESSED_UP))
 					CloneShipFragment (!GET_GAME_STATE (KOHR_AH_FRENZY) ?

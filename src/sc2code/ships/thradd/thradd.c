@@ -42,18 +42,20 @@
 
 static RACE_DESC thraddash_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		10, /* Super Melee cost */
-		833 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			2535, 8358,
-		},
 		(STRING)THRADDASH_RACE_STRINGS,
 		(FRAME)THRADDASH_ICON_MASK_PMAP_ANIM,
 		(FRAME)THRADDASH_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		833 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			2535, 8358,
+		},
 	},
 	{
 		MAX_THRUST,

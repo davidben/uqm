@@ -948,8 +948,10 @@ typedef struct
 			 * queue element is FLEET_INFO */
 	QUEUE npc_built_ship_q;
 			/* Non-player-character list of ships (during encounter)
-			 *   or list of groups present in solarsys (during IP);
 			 * queue element is SHIP_FRAGMENT */
+	QUEUE ip_group_q;
+			/* List of groups present in solarsys (during IP);
+			 * queue element is IP_GROUP */
 	QUEUE encounter_q;
 			/* List of HyperSpace encounters (black globes);
 			 * queue element is ENCOUNTER */

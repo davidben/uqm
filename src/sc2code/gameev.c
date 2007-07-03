@@ -265,11 +265,11 @@ check_race_growth (void)
 		hNextShip = _GetSuccLink (FleetPtr);
 
 		if (FleetPtr->actual_strength
-				&& FleetPtr->actual_strength != (COUNT)~0)
+				&& FleetPtr->actual_strength != INFINITE_RADIUS)
 		{
 			SIZE delta_strength;
 
-			delta_strength = (SBYTE)FleetPtr->energy_level;
+			delta_strength = (SBYTE)FleetPtr->growth;
 			if (FleetPtr->growth_err_term <= FleetPtr->growth_fract)
 			{
 				if (delta_strength <= 0)
@@ -333,7 +333,7 @@ black_urquan_genocide (void)
 
 		if (Index != BLACK_URQUAN_SHIP
 				&& Index != URQUAN_SHIP
-				&& FleetPtr->actual_strength != (COUNT)~0)
+				&& FleetPtr->actual_strength != INFINITE_RADIUS)
 		{
 			SIZE dx, dy;
 
@@ -497,7 +497,7 @@ thradd_mission (void)
 			SIZE strength_loss;
 
 			strength_loss = (SIZE)(ThraddPtr->actual_strength >> 1);
-			ThraddPtr->energy_level = (BYTE)(-strength_loss / 14);
+			ThraddPtr->growth = (BYTE)(-strength_loss / 14);
 			ThraddPtr->growth_fract = (BYTE)(((strength_loss % 14) << 8) / 14);
 			ThraddPtr->growth_err_term = 255 >> 1;
 		}
@@ -505,7 +505,7 @@ thradd_mission (void)
 		{
 			if (MissionState != 0)
 			{	/* stop losses */
-				ThraddPtr->energy_level = 0;
+				ThraddPtr->growth = 0;
 				ThraddPtr->growth_fract = 0;
 			}
 		}
@@ -562,8 +562,7 @@ ilwrath_mission (void)
 				SET_GAME_STATE (ILWRATH_FIGHT_THRADDASH, 1);
 				SET_GAME_STATE (HELIX_UNPROTECTED, 1);
 				strength_loss = (SIZE)IlwrathPtr->actual_strength;
-				IlwrathPtr->energy_level =
-						(BYTE)(-strength_loss / MADD_LENGTH);
+				IlwrathPtr->growth = (BYTE)(-strength_loss / MADD_LENGTH);
 				IlwrathPtr->growth_fract =
 						(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
 				SetRaceDest (ILWRATH_SHIP,
@@ -571,8 +570,7 @@ ilwrath_mission (void)
 						MADD_LENGTH - 1, ADVANCE_ILWRATH_MISSION);
 
 				strength_loss = (SIZE)ThraddPtr->actual_strength;
-				ThraddPtr->energy_level =
-						(BYTE)(-strength_loss / MADD_LENGTH);
+				ThraddPtr->growth = (BYTE)(-strength_loss / MADD_LENGTH);
 				ThraddPtr->growth_fract =
 						(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
 
@@ -625,7 +623,7 @@ utwig_supox_mission (void)
 					ADVANCE_UTWIG_SUPOX_MISSION);
 
 			strength_loss = (SIZE)(UtwigPtr->actual_strength >> 1);
-			UtwigPtr->energy_level = (BYTE)(-strength_loss / 160);
+			UtwigPtr->growth = (BYTE)(-strength_loss / 160);
 			UtwigPtr->growth_fract =
 					(BYTE)(((strength_loss % 160) << 8) / 160);
 			UtwigPtr->growth_err_term = 255 >> 1;
@@ -633,7 +631,7 @@ utwig_supox_mission (void)
 			strength_loss = (SIZE)(SupoxPtr->actual_strength >> 1);
 			if (strength_loss)
 			{
-				SupoxPtr->energy_level = (BYTE)(-strength_loss / 160);
+				SupoxPtr->growth = (BYTE)(-strength_loss / 160);
 				SupoxPtr->growth_fract =
 						(BYTE)(((strength_loss % 160) << 8) / 160);
 				SupoxPtr->growth_err_term = 255 >> 1;
@@ -668,9 +666,9 @@ utwig_supox_mission (void)
 				sx = 7468;
 				sy = 9246;
 
-				UtwigPtr->energy_level = 0;
+				UtwigPtr->growth = 0;
 				UtwigPtr->growth_fract = 0;
-				SupoxPtr->energy_level = 0;
+				SupoxPtr->growth = 0;
 				SupoxPtr->growth_fract = 0;
 
 				SET_GAME_STATE (UTWIG_WAR_NEWS, 0);
@@ -701,13 +699,13 @@ mycon_mission (void)
 
 	if (MyconPtr->actual_strength)
 	{
-		if (MyconPtr->energy_level)
+		if (MyconPtr->growth)
 		{
 			// Head back.
 			SET_GAME_STATE (MYCON_KNOW_AMBUSH, 1);
 			SetRaceDest (MYCON_SHIP, 6392, 2200, 30, (BYTE)~0);
 
-			MyconPtr->energy_level = 0;
+			MyconPtr->growth = 0;
 			MyconPtr->growth_fract = 0;
 		}
 		else if (MyconPtr->loc.x != 6858 || MyconPtr->loc.y != 577)
@@ -720,7 +718,7 @@ mycon_mission (void)
 
 			AddEvent (RELATIVE_EVENT, 0, 14, 0, ADVANCE_MYCON_MISSION);
 			strength_loss = (SIZE)(MyconPtr->actual_strength >> 1);
-			MyconPtr->energy_level = (BYTE)(-strength_loss / 14);
+			MyconPtr->growth = (BYTE)(-strength_loss / 14);
 			MyconPtr->growth_fract = (BYTE)(((strength_loss % 14) << 8) / 14);
 			MyconPtr->growth_err_term = 255 >> 1;
 		}

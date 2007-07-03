@@ -22,6 +22,7 @@
 #include "nameref.h"
 #include "resinst.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "planets/genall.h"
 #include "libs/mathlib.h"
 
@@ -29,25 +30,22 @@
 static void
 check_scout (void)
 {
-	HSHIPFRAG hStarShip;
+	HIPGROUP hGroup;
 
 	if (GLOBAL (BattleGroupRef)
-			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
+			&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
 	{
-		BYTE task;
-		SHIP_FRAGMENT *FragPtr;
+		IP_GROUP *GroupPtr;
 
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		task = GET_GROUP_MISSION (FragPtr);
+		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
 
-		if (task & REFORM_GROUP)
+		if (GroupPtr->task & REFORM_GROUP)
 		{
-			SET_GROUP_MISSION (FragPtr,
-					FLEE | IGNORE_FLAGSHIP | REFORM_GROUP);
-			SET_GROUP_DEST (FragPtr, 0);
+			GroupPtr->task = FLEE | IGNORE_FLAGSHIP | REFORM_GROUP;
+			GroupPtr->dest_loc = 0;
 		}
 
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 	}
 }
 
@@ -154,7 +152,8 @@ GenerateZoqFotPik (BYTE control)
 				if (ActivateStarShip (ZOQFOTPIK_SHIP, SPHERE_TRACKING))
 				{
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 					if (GET_GAME_STATE (ZOQFOT_DISTRESS))
 					{

@@ -130,7 +130,7 @@ BuildBattle (COUNT which_player)
 		hNextShip = _GetSuccLink (FragPtr);
 
 		hBuiltShip = Build (&race_q[which_player],
-				GET_RACE_ID (FragPtr) == SAMATRA_SHIP ?
+				FragPtr->race_id == SAMATRA_SHIP ?
 					SAMATRA_RES_INDEX : FragPtr->RaceResIndex);
 		if (hBuiltShip)
 		{
@@ -144,9 +144,8 @@ BuildBattle (COUNT which_player)
 			BuiltShipPtr->max_crew = FragPtr->max_crew;
 			BuiltShipPtr->race_strings = FragPtr->race_strings;
 			BuiltShipPtr->icons = FragPtr->icons;
-			BuiltShipPtr->index = FragPtr->var2;
-			/* This is not technically necessary, but still */
-			//BuiltShipPtr->ship_cost = FragPtr->ship_cost;
+			BuiltShipPtr->index = FragPtr->index;
+			BuiltShipPtr->ship_cost = 0;
 			BuiltShipPtr->RaceDescPtr = 0;
 
 			UnlockStarShip (&race_q[which_player], hBuiltShip);
@@ -476,7 +475,7 @@ UninitEncounter (void)
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		EncounterRace = GET_RACE_ID (FragPtr);
+		EncounterRace = FragPtr->race_id;
 		if (GetStarShipFromIndex (&GLOBAL (avail_race_q), EncounterRace) == 0)
 		{
 			/* Suppress the final tally and salvage info */

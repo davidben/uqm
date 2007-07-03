@@ -111,69 +111,28 @@ typedef struct
 	BYTE ship_mass;
 } CHARACTERISTIC_STUFF;
 
-// XXX: This struct is also used to store group info
-//   Groups should get an own struct
 typedef struct
 {
 	UWORD ship_flags;
-			/* Also: group_counter */
-	BYTE var1;
-			/* Also: ship_cost, race_id */
-	BYTE var2;
-			/* Also: group loc and mission, ship's queue index,
-			 *    escort window number in built_ship_q,
-			 *    fleet strength in loaded ship descriptors */
+	BYTE ship_cost;
+	
 	COUNT crew_level;
-			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
-			 * crew_level indicates an infinite number of ships. */
 	COUNT max_crew;
 	BYTE energy_level;
-			/* Also: group destination and orbit loc, */
 	BYTE max_energy;
-			/* Also: group_id */
-	POINT loc;
 
 	STRING race_strings;
 	FRAME icons;
 	FRAME melee_icon;
-#define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_INFO;
 
-// XXX: TODO: remove these
-#define ship_cost var1
-#define group_counter ship_flags
-
-enum
+typedef struct
 {
-	IN_ORBIT = 0,
-	EXPLORE,
-	FLEE,
-	ON_STATION,
+	COUNT strength;
+	POINT known_loc;
 
-	IGNORE_FLAGSHIP = 1 << 2,
-	REFORM_GROUP = 1 << 3
-};
-#define MAX_REVOLUTIONS 5
-
-#define GET_RACE_ID(s)          ((s)->var1)
-#define SET_RACE_ID(s,v)        ((s)->var1 = (v))
-#define GET_GROUP_LOC(s)        LONIBBLE ((s)->var2)
-#define SET_GROUP_LOC(s,v)      ((s)->var2 = \
-		MAKE_BYTE ((v), HINIBBLE ((s)->var2)))
-#define GET_GROUP_MISSION(s)    HINIBBLE ((s)->var2)
-#define SET_GROUP_MISSION(s,v)  ((s)->var2 = \
-		MAKE_BYTE (LONIBBLE ((s)->var2), (v)))
-#define GET_GROUP_DEST(s)       LONIBBLE ((s)->energy_level)
-#define SET_GROUP_DEST(s,v)     ((s)->energy_level = \
-		MAKE_BYTE ((v), HINIBBLE ((s)->energy_level)))
-#define GET_ORBIT_LOC(s)        HINIBBLE ((s)->energy_level)
-#define SET_ORBIT_LOC(s,v)      ((s)->energy_level = \
-		MAKE_BYTE (LONIBBLE ((s)->energy_level), (v)))
-#define GET_GROUP_ID(s)         ((s)->max_energy)
-#define SET_GROUP_ID(s,v)       ((s)->max_energy = (v))
-
-#define STATION_RADIUS 1600
-#define ORBIT_RADIUS 2400
+#define INFINITE_RADIUS ((COUNT) ~0)
+} FLEET_STUFF;
 
 typedef struct
 {
@@ -196,6 +155,7 @@ typedef void (UNINIT_FUNC) (RACE_DESC *pRaceDesc);
 struct race_desc
 {
 	SHIP_INFO ship_info _ALIGNED_ANY;
+	FLEET_STUFF fleet _ALIGNED_ANY;
 	CHARACTERISTIC_STUFF characteristics _ALIGNED_ANY;
 	DATA_STUFF ship_data _ALIGNED_ANY;
 	INTEL_STUFF cyborg_control _ALIGNED_ANY;
@@ -282,38 +242,23 @@ typedef struct
 	COUNT which_side;
 	BYTE captains_name_index;
 
-#if 0	
-	// XXX: new fields to replace var1 and var2
-	// var1:
 	BYTE race_id;
-	BYTE ship_cost;
-	// var2: datatypes?
-	BYTE fleet_strength;
 	BYTE index;
-#endif
-
-	UWORD ship_flags;
-			/* Also: group_counter */
-	BYTE var1;
-			/* Also: ship_cost, race_id */
-	BYTE var2;
-			/* Also: group loc and mission, ship's queue index,
-			 *    escort window number in built_ship_q,
-			 *    fleet strength in loaded ship descriptors */
 	COUNT crew_level;
 			/* For ships in npc_built_ship_q, the value INFINITE_FLEET for
 			 * crew_level indicates an infinite number of ships. */
 	COUNT max_crew;
+	
 	BYTE energy_level;
-			/* Also: group destination and orbit loc, */
 	BYTE max_energy;
-			/* Also: group_id */
-	POINT loc;
+			// XXX: energy_level and max_energy are unused. We save and load
+			//   them, but otherwise nothing needs them atm.
 
 	STRING race_strings;
 	FRAME icons;
-	FRAME melee_icon;
+	FRAME melee_icon;  /* Only used by Shipyard */
 
+#define INFINITE_FLEET ((COUNT) ~0)
 } SHIP_FRAGMENT;
 
 static inline SHIP_FRAGMENT *
@@ -337,16 +282,14 @@ typedef struct
 
 	DWORD RaceResIndex;
 
-	UWORD ship_flags;
-	BYTE days_left;
-			/* Days left before the fleet reachers 'dest_loc'. */
+	UWORD ship_flags; /* 0, GOOD_GUY, or BAD_GUY */
+	BYTE days_left;   /* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
 	COUNT crew_level;
 	COUNT max_crew;
-	BYTE energy_level;
+	BYTE growth;
 	BYTE max_energy;
-	POINT loc;
-			/* Location of the fleet (center) */
+	POINT loc;        /* Location of the fleet (center) */
 
 	STRING race_strings;
 			/* Race specific strings, see doc/devel/racestrings. */

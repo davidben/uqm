@@ -42,18 +42,20 @@
 
 static RACE_DESC zoqfotpik_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		6, /* Super Melee cost */
-		320 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			3761, 5333,
-		},
 		(STRING)ZOQFOTPIK_RACE_STRINGS,
 		(FRAME)ZOQFOTPIK_ICON_MASK_PMAP_ANIM,
 		(FRAME)ZOQFOTPIK_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		320 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			3761, 5333,
+		},
 	},
 	{
 		MAX_THRUST,

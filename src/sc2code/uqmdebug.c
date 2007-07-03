@@ -406,7 +406,7 @@ showSpheres (void)
 		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		hNextShip = _GetSuccLink (FleetPtr);
 
-		if ((FleetPtr->actual_strength != (COUNT) ~0) &&
+		if ((FleetPtr->actual_strength != INFINITE_RADIUS) &&
 				(FleetPtr->known_strength != FleetPtr->actual_strength))
 		{
 			FleetPtr->known_strength = FleetPtr->actual_strength;

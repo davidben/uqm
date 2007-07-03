@@ -1460,6 +1460,7 @@ InitSolarSys (void)
 		EncounterRace = -1;
 		EncounterGroup = 0;
 		GLOBAL (BattleGroupRef) = 0;
+		ReinitQueue (&GLOBAL (ip_group_q));
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		(*pSolarSysState->GenFunc) (INIT_NPCS);
 	}
@@ -1590,6 +1591,7 @@ GenerateRandomIP (BYTE control)
 		case UNINIT_NPCS:
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
+			ReinitQueue (&GLOBAL (ip_group_q));
 			break;
 		case GENERATE_MINERAL:
 			GenerateMineralDeposits (&pSolarSysState->SysInfo,

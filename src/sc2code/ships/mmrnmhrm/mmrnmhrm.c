@@ -54,18 +54,20 @@ static CHARACTERISTIC_STUFF otherwing_desc[NUM_SIDES];
 
 static RACE_DESC mmrnmhrm_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | IMMEDIATE_WEAPON,
 		19, /* Super Melee cost */
-		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			0, 0,
-		},
 		(STRING)MMRNMHRM_RACE_STRINGS,
 		(FRAME)MMRNMHRM_ICON_MASK_PMAP_ANIM,
 		(FRAME)MMRNMHRM_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		0, /* Initial sphere of influence radius */
+		{ /* Known location (center of SoI) */
+			0, 0,
+		},
 	},
 	{
 		MAX_THRUST,

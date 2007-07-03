@@ -31,6 +31,9 @@ typedef struct
 	DWORD RaceResIndex;
 
 	SHIP_INFO ShipInfo;
+	FLEET_STUFF Fleet;
+			// FLEET_STUFF is only necessary here because avail_race_q
+			// is initialized in part from master_q (kinda hacky)
 } MASTER_SHIP_INFO;
 
 extern QUEUE master_q;

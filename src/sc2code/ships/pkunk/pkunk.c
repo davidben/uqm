@@ -42,18 +42,20 @@
 
 static RACE_DESC pkunk_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | FIRES_LEFT | FIRES_RIGHT,
 		20, /* Super Melee cost */
-		666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			502, 401,
-		},
 		(STRING)PKUNK_RACE_STRINGS,
 		(FRAME)PKUNK_ICON_MASK_PMAP_ANIM,
 		(FRAME)PKUNK_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		666 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			502, 401,
+		},
 	},
 	{
 		MAX_THRUST,

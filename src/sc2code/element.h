@@ -125,7 +125,10 @@ struct element
 	COUNT life_span;
 	COUNT crew_level;
 	BYTE mass_points;
-	BYTE turn_wait, thrust_wait;
+			/* Also: system loc for IP flagship */
+	BYTE turn_wait;
+			/* Also: group_id for IP groups */
+	BYTE thrust_wait;
 	VELOCITY_DESC velocity;
 	INTERSECT_CONTROL IntersectControl;
 	COUNT PrimIndex;
@@ -148,9 +151,12 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 #define GetElementStarShip(e,ppsd) do { *(ppsd) = (e)->pParent; } while (0)
 #define SetElementStarShip(e,psd)  do { (e)->pParent = psd; } while (0)
 
+// XXX: Would be nice to clean these up!
+//   Should make them into a union for now.
 #define blast_offset thrust_wait
 #define hit_points crew_level
 #define next_turn thrust_wait
+
 #define MAX_CREW_SIZE 42
 #define MAX_ENERGY_SIZE 42
 #define MAX_SHIP_MASS 10

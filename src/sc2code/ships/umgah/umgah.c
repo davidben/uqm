@@ -41,18 +41,20 @@ static FRAME LastShipFrame[2];
 
 static RACE_DESC umgah_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | IMMEDIATE_WEAPON,
 		7, /* Super Melee cost */
-		833 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			1798, 6000,
-		},
 		(STRING)UMGAH_RACE_STRINGS,
 		(FRAME)UMGAH_ICON_MASK_PMAP_ANIM,
 		(FRAME)UMGAH_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		833 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			1798, 6000,
+		},
 	},
 	{
 		MAX_THRUST,

@@ -19,6 +19,7 @@
 #include "build.h"
 #include "globdata.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "planets/genall.h"
 
 
@@ -29,7 +30,7 @@ GenerateColony (BYTE control)
 	{
 		case INIT_NPCS:
 		{
-			HSHIPFRAG hStarShip;
+			HIPGROUP hGroup;
 
 			GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (COLONY_GRPOFFS0);
 			if (GLOBAL (BattleGroupRef) == 0)
@@ -44,18 +45,18 @@ GenerateColony (BYTE control)
 			GenerateRandomIP (INIT_NPCS);
 
 			if (GLOBAL (BattleGroupRef)
-					&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
+					&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
 			{
-				SHIP_FRAGMENT *FragPtr;
+				IP_GROUP *GroupPtr;
 
-				FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-				SET_GROUP_MISSION (FragPtr, IN_ORBIT);
-				SET_GROUP_LOC (FragPtr, 0 + 1); /* orbitting colony */
-				SET_GROUP_DEST (FragPtr, 0 + 1); /* orbitting colony */
-				FragPtr->loc.x = 0;
-				FragPtr->loc.y = 0;
-				FragPtr->group_counter = 0;
-				UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+				GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+				GroupPtr->task = IN_ORBIT;
+				GroupPtr->sys_loc = 0 + 1; /* orbitting colony */
+				GroupPtr->dest_loc = 0 + 1; /* orbitting colony */
+				GroupPtr->loc.x = 0;
+				GroupPtr->loc.y = 0;
+				GroupPtr->group_counter = 0;
+				UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 			}
 			break;
 		}

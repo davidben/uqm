@@ -26,6 +26,7 @@
 #include "nameref.h"
 #include "build.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "gamestr.h"
 
 #include <stdlib.h>
@@ -173,23 +174,19 @@ LoadSC2Data (void)
 }
 
 static void
-copyFleetInfo (FLEET_INFO *dst, SHIP_INFO *src)
+copyFleetInfo (FLEET_INFO *dst, SHIP_INFO *src, FLEET_STUFF *fleet)
 {
-	if (src->var2 == (BYTE)~0)
-		dst->actual_strength = (COUNT)~0;
-	else
-		dst->actual_strength = (COUNT)src->var2 << 1;
-
 	// other leading fields are irrelevant
 	dst->crew_level = src->crew_level;
 	dst->max_crew = src->max_crew;
-	dst->energy_level = src->energy_level;
 	dst->max_energy = src->max_energy;
-	dst->loc = src->loc;
 
 	dst->race_strings = src->race_strings;
 	dst->icons = src->icons;
 	dst->melee_icon = src->melee_icon;
+
+	dst->actual_strength = fleet->strength;
+	dst->known_loc = fleet->known_loc;
 }
 
 BOOLEAN
@@ -237,13 +234,14 @@ InitSIS (void)
 			if (i < num_ships - 1)
 			{
 				HMASTERSHIP hMasterShip;
-				MASTER_SHIP_INFO *MasterShipPtr;
+				MASTER_SHIP_INFO *MasterPtr;
 				
 				hMasterShip = FindMasterShip (ship_ref);
-				MasterShipPtr = LockMasterShip (&master_q, hMasterShip);
+				MasterPtr = LockMasterShip (&master_q, hMasterShip);
 				// Grab a copy of loaded icons and strings (not owned)
 				// XXX: SHIP_INFO struct copy
-				copyFleetInfo (FleetPtr, &MasterShipPtr->ShipInfo);
+				copyFleetInfo (FleetPtr, &MasterPtr->ShipInfo,
+						&MasterPtr->Fleet);
 				UnlockMasterShip (&master_q, hMasterShip);
 			}
 			else
@@ -254,7 +252,8 @@ InitSIS (void)
 				if (RDPtr)
 				{	// Grab a copy of loaded icons and strings
 					// XXX: SHIP_INFO struct copy
-					copyFleetInfo (FleetPtr, &RDPtr->ship_info);
+					copyFleetInfo (FleetPtr, &RDPtr->ship_info,
+							&RDPtr->fleet);
 					// avail_race_q owns these resources now
 					free_ship (RDPtr, FALSE, FALSE);
 				}
@@ -262,13 +261,13 @@ InitSIS (void)
 
 			FleetPtr->ship_flags = BAD_GUY;
 			FleetPtr->known_strength = 0;
-			FleetPtr->known_loc = FleetPtr->loc;
-			// XXX: Rebel special case 
+			FleetPtr->loc = FleetPtr->known_loc;
+			// XXX: Hack: Rebel special case 
 			if (i == YEHAT_REBEL_SHIP)
 				FleetPtr->actual_strength = 0;
+			FleetPtr->growth = 0;
 			FleetPtr->growth_fract = 0;
 			FleetPtr->growth_err_term = 255 >> 1;
-			FleetPtr->energy_level = 0;
 			FleetPtr->days_left = 0;
 			FleetPtr->func_index = ~0;
 
@@ -321,8 +320,10 @@ InitSIS (void)
 
 	InitQueue (&GLOBAL (built_ship_q),
 			MAX_BUILT_SHIPS, sizeof (SHIP_FRAGMENT));
-	InitQueue (&GLOBAL (npc_built_ship_q),
-			(MAX_BATTLE_GROUPS >> 1), sizeof (SHIP_FRAGMENT));
+	InitQueue (&GLOBAL (npc_built_ship_q), MAX_SHIPS_PER_SIDE,
+			sizeof (SHIP_FRAGMENT));
+	InitQueue (&GLOBAL (ip_group_q), MAX_BATTLE_GROUPS,
+			sizeof (IP_GROUP));
 	InitQueue (&GLOBAL (encounter_q), MAX_ENCOUNTERS, sizeof (ENCOUNTER));
 
 	GLOBAL (CurrentActivity) = IN_INTERPLANETARY | START_INTERPLANETARY;
@@ -391,6 +392,7 @@ UninitSIS (void)
 		return;
 
 	UninitQueue (&GLOBAL (encounter_q));
+	UninitQueue (&GLOBAL (ip_group_q));
 	UninitQueue (&GLOBAL (npc_built_ship_q));
 	UninitQueue (&GLOBAL (built_ship_q));
 	UninitGroupInfo ();

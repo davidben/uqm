@@ -42,18 +42,20 @@
 
 static RACE_DESC mycon_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SEEKING_WEAPON,
 		21, /* Super Melee cost */
-		1070 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			6392, 2200,
-		},
 		(STRING)MYCON_RACE_STRINGS,
 		(FRAME)MYCON_ICON_MASK_PMAP_ANIM,
 		(FRAME)MYCON_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		1070 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			6392, 2200,
+		},
 	},
 	{
 		MAX_THRUST,

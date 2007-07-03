@@ -25,6 +25,7 @@
 #include "races.h"
 #include "resinst.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "encount.h"
 #include "planets/genall.h"
 #include "libs/mathlib.h"
@@ -33,22 +34,22 @@
 static int
 init_probe (void)
 {
-	HSHIPFRAG hStarShip;
+	HIPGROUP hGroup;
 
 	if (!GET_GAME_STATE (PROBE_MESSAGE_DELIVERED)
 			&& GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP)
-			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q))))
+			&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
 	{
-		SHIP_FRAGMENT *FragPtr;
+		IP_GROUP *GroupPtr;
 
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		SET_GROUP_MISSION (FragPtr, IN_ORBIT);
-		SET_GROUP_LOC (FragPtr, 2 + 1); /* orbitting earth */
-		SET_GROUP_DEST (FragPtr, 2 + 1); /* orbitting earth */
-		FragPtr->loc.x = 0;
-		FragPtr->loc.y = 0;
-		FragPtr->group_counter = 0;
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		GroupPtr->task = IN_ORBIT;
+		GroupPtr->sys_loc = 2 + 1; /* orbitting earth */
+		GroupPtr->dest_loc = 2 + 1; /* orbitting earth */
+		GroupPtr->loc.x = 0;
+		GroupPtr->loc.y = 0;
+		GroupPtr->group_counter = 0;
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 
 		return 1;
 	}
@@ -154,7 +155,8 @@ generate_orbital (void)
 			&& pSolarSysState->pOrbitalDesc == &pSolarSysState->MoonDesc[0])
 	{
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-		ReinitQueue (&GLOBAL (npc_built_ship_q));
+		ReinitQueue (&GLOBAL (ip_group_q));
+		assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 		EncounterGroup = 0;
 		GLOBAL (CurrentActivity) |= START_ENCOUNTER;
@@ -427,7 +429,8 @@ GenerateSOL (BYTE control)
 			else
 			{
 				GLOBAL (BattleGroupRef) = 0;
-				ReinitQueue (&GLOBAL (npc_built_ship_q));
+				ReinitQueue (&GLOBAL (ip_group_q));
+				assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 			}
 			break;
 		case GENERATE_ENERGY:

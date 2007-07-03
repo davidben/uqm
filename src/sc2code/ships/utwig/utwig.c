@@ -43,18 +43,20 @@
 
 static RACE_DESC utwig_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | POINT_DEFENSE | SHIELD_DEFENSE,
 		22, /* Super Melee cost */
-		666 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY >> 1, MAX_ENERGY,
-		{
-			8534, 8797,
-		},
 		(STRING)UTWIG_RACE_STRINGS,
 		(FRAME)UTWIG_ICON_MASK_PMAP_ANIM,
 		(FRAME)UTWIG_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		666 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			8534, 8797,
+		},
 	},
 	{
 		MAX_THRUST,

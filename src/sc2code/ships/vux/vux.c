@@ -44,18 +44,20 @@
 
 static RACE_DESC vux_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SEEKING_SPECIAL | IMMEDIATE_WEAPON,
 		12, /* Super Melee cost */
-		900 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			4412, 1558,
-		},
 		(STRING)VUX_RACE_STRINGS,
 		(FRAME)VUX_ICON_MASK_PMAP_ANIM,
 		(FRAME)VUX_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		900 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			4412, 1558,
+		},
 	},
 	{
 		MAX_THRUST,

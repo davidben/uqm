@@ -172,10 +172,13 @@ check_hyperspace_encounter (void)
 
 			encounter_flags = 0;
 			percent = EncounterPercent[Type];
-			if (encounter_radius != (COUNT)~0)
+			
+			if (encounter_radius != INFINITE_RADIUS)
+			{
 				encounter_radius =
 						(encounter_radius * SPHERE_RADIUS_INCREMENT) >> 1;
-			else
+			}
+			else /* encounter_radius == infinity */
 			{
 				HENCOUNTER hNextEncounter;
 

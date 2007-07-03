@@ -19,29 +19,28 @@
 #include "build.h"
 #include "globdata.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "planets/genall.h"
 
 
 static void
 check_old_shofixti (void)
 {
-	HSHIPFRAG hStarShip;
+	HIPGROUP hGroup;
 
 	if (GLOBAL (BattleGroupRef)
-			&& (hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q)))
+			&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q)))
 			&& GET_GAME_STATE (SHOFIXTI_RECRUITED))
 	{
-		BYTE task;
-		SHIP_FRAGMENT *FragPtr;
+		IP_GROUP *GroupPtr;
 
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		task = GET_GROUP_MISSION (FragPtr);
+		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
 
-		SET_GROUP_MISSION (FragPtr,
-				FLEE | IGNORE_FLAGSHIP | (task & REFORM_GROUP));
-		SET_GROUP_DEST (FragPtr, 0);
+		GroupPtr->task &= REFORM_GROUP;
+		GroupPtr->task |= FLEE | IGNORE_FLAGSHIP;
+		GroupPtr->dest_loc = 0;
 
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 	}
 }
 
@@ -91,7 +90,7 @@ GenerateShofixti (BYTE control)
 		case UNINIT_NPCS:
 			if (GLOBAL (BattleGroupRef)
 					&& !GET_GAME_STATE (SHOFIXTI_RECRUITED)
-					&& GetHeadLink (&GLOBAL (npc_built_ship_q)) == 0)
+					&& GetHeadLink (&GLOBAL (ip_group_q)) == 0)
 			{
 				if (!GET_GAME_STATE (SHOFIXTI_KIA))
 				{

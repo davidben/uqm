@@ -34,7 +34,10 @@ GenerateUtwig (BYTE control)
 		case INIT_NPCS:
 			if (CurStarDescPtr->Index == BOMB_DEFINED
 					&& !GET_GAME_STATE (UTWIG_BOMB))
-				ReinitQueue (&GLOBAL (npc_built_ship_q));
+			{
+				ReinitQueue (&GLOBAL (ip_group_q));
+				assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
+			}
 			else
 				GenerateRandomIP (INIT_NPCS);
 			break;
@@ -147,7 +150,8 @@ GenerateUtwig (BYTE control)
 				{
 					NotifyOthers (UTWIG_SHIP, (BYTE)~0);
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 					CloneShipFragment (UTWIG_SHIP,
 							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
@@ -180,7 +184,8 @@ GenerateUtwig (BYTE control)
 					COUNT i;
 
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 					for (i = 0; i < 5; ++i)
 						CloneShipFragment (DRUUGE_SHIP,

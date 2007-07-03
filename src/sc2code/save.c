@@ -32,6 +32,7 @@
 #include "shipcont.h"
 #include "setup.h"
 #include "state.h"
+#include "grpinfo.h"
 #include "util.h"
 #include "libs/inplib.h"
 #include "libs/log.h"
@@ -138,7 +139,7 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		FragPtr = LockShipFrag (pQueue, hStarShip);
 		hNextShip = _GetSuccLink (FragPtr);
 
-		Index = GET_RACE_ID (FragPtr);
+		Index = FragPtr->race_id;
 		// Write the number identifying this ship type.
 		// See races.h; look for the enum containing NUM_AVAILABLE_RACES.
 		cwrite_16 (fh, Index);
@@ -147,16 +148,16 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_16 (fh, FragPtr->which_side);
 		cwrite_8  (fh, FragPtr->captains_name_index);
 		cwrite_8  (fh, 0); /* padding */
-		cwrite_16 (fh, FragPtr->ship_flags);
-		cwrite_8  (fh, FragPtr->var1);
-		cwrite_8  (fh, FragPtr->var2);
+		cwrite_16 (fh, 0); /* unused: was ship_flags */
+		cwrite_8  (fh, FragPtr->race_id);
+		cwrite_8  (fh, FragPtr->index);
 		// XXX: writing crew as BYTE to maintain savegame compatibility
 		cwrite_8  (fh, FragPtr->crew_level);
 		cwrite_8  (fh, FragPtr->max_crew);
 		cwrite_8  (fh, FragPtr->energy_level);
 		cwrite_8  (fh, FragPtr->max_energy);
-		cwrite_16 (fh, FragPtr->loc.x);
-		cwrite_16 (fh, FragPtr->loc.y);
+		cwrite_16 (fh, 0); /* unused; was loc.x */
+		cwrite_16 (fh, 0); /* unused; was loc.y */
 
 		UnlockShipFrag (pQueue, hStarShip);
 		hStarShip = hNextShip;
@@ -193,7 +194,7 @@ SaveRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_8  (fh, FleetPtr->growth_fract);
 		cwrite_8  (fh, FleetPtr->crew_level);
 		cwrite_8  (fh, FleetPtr->max_crew);
-		cwrite_8  (fh, FleetPtr->energy_level);
+		cwrite_8  (fh, FleetPtr->growth);
 		cwrite_8  (fh, FleetPtr->max_energy);
 		cwrite_16 (fh, FleetPtr->loc.x);
 		cwrite_16 (fh, FleetPtr->loc.y);
@@ -210,6 +211,44 @@ SaveRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 
 		UnlockFleetInfo (pQueue, hFleet);
 		hFleet = hNextFleet;
+	}
+}
+
+static void
+SaveGroupQueue (DECODE_REF fh, QUEUE *pQueue)
+{
+	HIPGROUP hGroup, hNextGroup;
+
+	// Write the number of entries in the queue.
+	cwrite_16 (fh, CountLinks (pQueue));
+
+	for (hGroup = GetHeadLink (pQueue); hGroup; hGroup = hNextGroup)
+	{
+		IP_GROUP *GroupPtr;
+
+		GroupPtr = LockIpGroup (pQueue, hGroup);
+		hNextGroup = _GetSuccLink (GroupPtr);
+
+		cwrite_16 (fh, GroupPtr->race_id); /* unused; for old versions */
+
+		cwrite_16 (fh, 0); /* unused; was which_side */
+		cwrite_8  (fh, 0); /* unused; was captains_name_index */
+		cwrite_8  (fh, 0); /* padding; for savegame compat */
+		cwrite_16 (fh, GroupPtr->group_counter);
+		cwrite_8  (fh, GroupPtr->race_id);
+		assert (GroupPtr->sys_loc < 0x10 && GroupPtr->task < 0x10);
+		cwrite_8  (fh, MAKE_BYTE (GroupPtr->sys_loc, GroupPtr->task));
+				/* was var2 */
+		cwrite_8  (fh, GroupPtr->in_system); /* was crew_level */
+		cwrite_8  (fh, 0); /* unused; was max_crew */
+		assert (GroupPtr->dest_loc < 0x10 && GroupPtr->orbit_pos < 0x10);
+		cwrite_8  (fh, MAKE_BYTE (GroupPtr->dest_loc, GroupPtr->orbit_pos));
+				/* was energy_level */
+		cwrite_8  (fh, GroupPtr->group_id); /* was max_energy */
+		cwrite_16 (fh, GroupPtr->loc.x);
+		cwrite_16 (fh, GroupPtr->loc.y);
+
+		UnlockIpGroup (pQueue, hGroup);
 	}
 }
 
@@ -345,6 +384,7 @@ SaveGameState (const GAME_STATE *GSPtr, DECODE_REF fh)
 	
 	DummySaveQueue (&GSPtr->avail_race_q, fh);
 	DummySaveQueue (&GSPtr->npc_built_ship_q, fh);
+	// Not saving ip_group_q, was not there originally
 	DummySaveQueue (&GSPtr->encounter_q, fh);
 	DummySaveQueue (&GSPtr->built_ship_q, fh);
 
@@ -451,7 +491,7 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 
 			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 			hNextShip = _GetSuccLink (StarShipPtr);
-			SummPtr->ShipList[SummPtr->NumShips] = GET_RACE_ID (StarShipPtr);
+			SummPtr->ShipList[SummPtr->NumShips] = StarShipPtr->race_id;
 			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 		}
 	}
@@ -645,11 +685,14 @@ RetrySave:
 		if (!(GLOBAL (CurrentActivity) & START_INTERPLANETARY))
 		{
 			if (GLOBAL (CurrentActivity) & START_ENCOUNTER)
-				// save npc queue
 				SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
 			else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
-				// save group queue
-				SaveShipQueue (fh, &GLOBAL (npc_built_ship_q));
+				// XXX: Technically, this queue does not need to be
+				//   saved/loaded at all. IP groups will be reloaded
+				//   from group state files. But the original code did,
+				//   and so will we until we can prove we do not need to.
+				SaveGroupQueue (fh, &GLOBAL (ip_group_q));
+				//SaveEmptyQueue (fh);
 			else
 				// XXX: empty queue write-out is only needed to maintain
 				//   the savegame compatibility

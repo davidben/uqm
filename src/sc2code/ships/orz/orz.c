@@ -44,18 +44,20 @@
 
 static RACE_DESC orz_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE | SEEKING_SPECIAL,
 		23, /* Super Melee cost */
-		333 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			3608, 2637,
-		},
 		(STRING)ORZ_RACE_STRINGS,
 		(FRAME)ORZ_ICON_MASK_PMAP_ANIM,
 		(FRAME)ORZ_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		333 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			3608, 2637,
+		},
 	},
 	{
 		MAX_THRUST,

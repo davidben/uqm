@@ -42,18 +42,20 @@
 
 static RACE_DESC melnorme_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		18, /* Super Melee cost */
-		~0, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			MAX_X_UNIVERSE >> 1, MAX_Y_UNIVERSE >> 1,
-		},
 		(STRING)MELNORME_RACE_STRINGS,
 		(FRAME)MELNORME_ICON_MASK_PMAP_ANIM,
 		(FRAME)MELNORME_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		INFINITE_RADIUS, /* Initial sphere of influence radius */
+		{ /* Known location (center of SoI) */
+			MAX_X_UNIVERSE >> 1, MAX_Y_UNIVERSE >> 1,
+		},
 	},
 	{
 		MAX_THRUST,

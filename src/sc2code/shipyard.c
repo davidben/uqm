@@ -275,7 +275,7 @@ ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, RECT *pRect)
 	FLEET_INFO *TemplatePtr;
 
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
-			GET_RACE_ID (StarShipPtr));
+			StarShipPtr->race_id);
 	TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
 	if (StarShipPtr->crew_level >= TemplatePtr->crew_level)
 		sprintf (buf, "%u", StarShipPtr->crew_level);
@@ -363,7 +363,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			while (hStarShip)
 			{
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				if (StarShipPtr->var2 > which_window)
+				if (StarShipPtr->index > which_window)
 				{
 					UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					break;
@@ -377,7 +377,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 
 			hStarShip = hTailShip;
 			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-			StarShipPtr->var2 = which_window;
+			StarShipPtr->index = which_window;
 			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 		}
 
@@ -401,7 +401,7 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			pship_win_info->ship_s.origin.y = (SHIP_WIN_WIDTH >> 1);
 			pship_win_info->ship_s.frame = StarShipPtr->melee_icon;
 
-			which_window = GET_GROUP_LOC (StarShipPtr);
+			which_window = StarShipPtr->index;
 			pship_win_info->finished_s.x = hangar_x_coords[
 					which_window % HANGAR_SHIPS_ROW];
 			pship_win_info->finished_s.y = HANGAR_Y + (HANGAR_DY *
@@ -643,7 +643,7 @@ DoModifyShips (MENU_STATE *pMS)
 			{
 				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
-				if (StarShipPtr->var2 == pMS->CurState)
+				if (StarShipPtr->index == pMS->CurState)
 				{
 					UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					break;
@@ -688,9 +688,8 @@ DoModifyShips (MENU_STATE *pMS)
 					{	/* Get fleet info from selected escort */
 						SHIP_FRAGMENT *FragPtr = LockShipFrag (
 								&GLOBAL (built_ship_q), hStarShip);
-						BYTE Index = GET_RACE_ID (FragPtr);
 						hSpinShip = GetStarShipFromIndex (
-								&GLOBAL (avail_race_q), Index);
+								&GLOBAL (avail_race_q), FragPtr->race_id);
 						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					}
 					
@@ -923,7 +922,7 @@ DoModifyShips (MENU_STATE *pMS)
 
 							hTemplate = GetStarShipFromIndex (
 									&GLOBAL (avail_race_q),
-									GET_RACE_ID (StarShipPtr));
+									StarShipPtr->race_id);
 							TemplatePtr = LockFleetInfo (
 									&GLOBAL (avail_race_q), hTemplate);
 							if (GLOBAL_SIS (ResUnits) >=
@@ -937,7 +936,7 @@ DoModifyShips (MENU_STATE *pMS)
 									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
 								else
 									DeltaSISGauges (0, 0, -(COUNT)ShipCost[
-											GET_RACE_ID (StarShipPtr) ]);
+											StarShipPtr->race_id]);
 								++StarShipPtr->crew_level;
 								crew_delta = 1;
 								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
@@ -995,7 +994,7 @@ DoModifyShips (MENU_STATE *pMS)
 											CREW_EXPENSE_THRESHOLD ? 2 : 0));
 								else
 									DeltaSISGauges (0, 0, (COUNT)ShipCost[
-											GET_RACE_ID (StarShipPtr)]);
+											StarShipPtr->race_id]);
 								crew_delta = -1;
 								--StarShipPtr->crew_level;
 							}

@@ -1678,7 +1678,7 @@ RaceCommunication (void)
 	// the player will be talking to
 	hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
 	FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-	i = GET_RACE_ID (FragPtr);
+	i = FragPtr->race_id;
 	UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 	status = InitCommunication (RaceComm[i]);
@@ -1713,17 +1713,17 @@ RaceCommunication (void)
 		for (i = 0; i < NumShips; ++i)
 		{
 			HSHIPFRAG hStarShip;
-			SHIP_FRAGMENT *TemplatePtr;
+			SHIP_FRAGMENT *FragPtr;
 			BRIEF_SHIP_INFO *BSIPtr;
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (npc_built_ship_q), i);
-			TemplatePtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 			// XXX: SHIP_INFO struct copy
 			BSIPtr = &EncounterPtr->ShipList[i];
-			BSIPtr->race_id = GET_RACE_ID (TemplatePtr);
-			BSIPtr->crew_level = TemplatePtr->crew_level;
-			BSIPtr->max_crew = TemplatePtr->max_crew;
-			BSIPtr->max_energy = TemplatePtr->max_energy;
+			BSIPtr->race_id = FragPtr->race_id;
+			BSIPtr->crew_level = FragPtr->crew_level;
+			BSIPtr->max_crew = FragPtr->max_crew;
+			BSIPtr->max_energy = FragPtr->max_energy;
 			UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 		}
 		

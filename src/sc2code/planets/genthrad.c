@@ -146,7 +146,8 @@ GenerateThradd (BYTE control)
 				{
 					NotifyOthers (THRADDASH_SHIP, (BYTE)~0);
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-					ReinitQueue (&GLOBAL (npc_built_ship_q));
+					ReinitQueue (&GLOBAL (ip_group_q));
+					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
 					CloneShipFragment (THRADDASH_SHIP,
 							&GLOBAL (npc_built_ship_q), INFINITE_FLEET);

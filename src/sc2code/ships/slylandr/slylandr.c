@@ -41,18 +41,20 @@
 
 static RACE_DESC slylandro_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		SEEKING_WEAPON | CREW_IMMUNE,
 		17, /* Super Melee cost */
-		~0, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			333, 9812,
-		},
 		(STRING)SLYLANDRO_RACE_STRINGS,
 		(FRAME)SLYLANDRO_ICON_MASK_PMAP_ANIM,
 		(FRAME)SLYLANDRO_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		INFINITE_RADIUS, /* Initial sphere of influence radius */
+		{ /* Known location (center of SoI) */
+			333, 9812,
+		},
 	},
 	{
 		MAX_THRUST,

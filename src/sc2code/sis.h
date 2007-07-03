@@ -109,8 +109,10 @@ enum
 #define FUEL_RESERVE FUEL_VOLUME_PER_ROW
 
 #define MAX_COMBAT_SHIPS 12
-// XXX: Only half of this number if actually used
-#define MAX_BATTLE_GROUPS 64
+#define MAX_BATTLE_GROUPS 32
+
+// XXX: Needed to maintain savegame compatibility
+#define NUM_SAVED_BATTLE_GROUPS 64
 
 #define IP_SHIP_THRUST_INCREMENT 8
 #define IP_SHIP_TURN_WAIT 17

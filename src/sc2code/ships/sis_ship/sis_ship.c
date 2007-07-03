@@ -48,18 +48,20 @@
 
 static RACE_DESC sis_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		0,
 		16, /* Super Melee cost */
-		0 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			0, 0,
-		},
 		0,
 		(FRAME)SIS_ICON_MASK_PMAP_ANIM,
 		0,
+	},
+	{ /* FLEET_STUFF */
+		0, /* Initial sphere of influence radius */
+		{ /* Known location (center of SoI) */
+			0, 0,
+		},
 	},
 	{
 		MAX_THRUST,

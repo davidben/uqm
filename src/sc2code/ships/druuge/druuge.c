@@ -39,18 +39,20 @@
 
 static RACE_DESC druuge_desc =
 {
-	{
+	{ /* SHIP_INFO */
 		FIRES_FORE,
 		17, /* Super Melee cost */
-		1400 / SPHERE_RADIUS_INCREMENT, /* Initial sphere of influence radius */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		{
-			9500, 2792,
-		},
 		(STRING)DRUUGE_RACE_STRINGS,
 		(FRAME)DRUUGE_ICON_MASK_PMAP_ANIM,
 		(FRAME)DRUUGE_MICON_MASK_PMAP_ANIM,
+	},
+	{ /* FLEET_STUFF */
+		1400 / SPHERE_RADIUS_INCREMENT * 2, /* Initial SoI radius */
+		{ /* Known location (center of SoI) */
+			9500, 2792,
+		},
 	},
 	{
 		MAX_THRUST,

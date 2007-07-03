@@ -107,7 +107,7 @@ DeltaSupportCrew (SIZE crew_delta)
 	StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
 			(HSHIPFRAG)pMenuState->CurFrame);
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
-			GET_RACE_ID (StarShipPtr));
+			StarShipPtr->race_id);
 	TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
 
 	StarShipPtr->crew_level += crew_delta;
