@@ -146,10 +146,6 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 
-	/* You can't try to quit during a fade to black, because if
-	 * you try, the confirmation window will fade to black too.
-	 * Fixing this will require a rewrite of our whole rendering
-	 * engine. -- Michael */
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
 }
