@@ -1353,8 +1353,9 @@ StartGroups:
 						UnbatchGraphics ();
 					}
 					LockMutex (GraphicsLock);
-					while (pSolarSysState->SunDesc[0].radius ==
-							(MAX_ZOOM_RADIUS << 1))
+					while ((pSolarSysState->SunDesc[0].radius ==
+							(MAX_ZOOM_RADIUS << 1)) &&
+							!(GLOBAL(CurrentActivity) & CHECK_ABORT))
 					{
 						UnlockMutex (GraphicsLock);
 						IP_frame ();
