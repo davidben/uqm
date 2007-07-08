@@ -76,6 +76,7 @@ typedef struct {
 	/* Spinanim state */
 	STAMP anim;
 	TimeCount last_time;
+	int debounce;
 } SPINANIM_INPUT_STATE;
 
 static BOOLEAN DoPresentation (void *pIS);
@@ -775,18 +776,43 @@ DoSpinAnim (void *pIS)
 {
 	SPINANIM_INPUT_STATE *pSIS = (SPINANIM_INPUT_STATE *)pIS;
 	STAMP *s = &pSIS->anim;
+	int f = GetFrameIndex (s->frame);
 
-	if (AnyButtonPress (FALSE)
-			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
-
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		return FALSE;
 	}
 
-	DrawStamp (s);
-	s->frame = SetRelFrameIndex (s->frame, 1);
+	if (AnyButtonPress (FALSE) && !pSIS->debounce)
+	{
+		pSIS->debounce = 15;
+		if (f < 299)
+		{
+			f = 299;
+			s->frame = SetAbsFrameIndex (s->frame, 299);
+		}
+		else if (f == 299)
+		{
+			f = 300;
+			s->frame = SetAbsFrameIndex (s->frame, 300);
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	else
+	{
+		if (pSIS->debounce) --pSIS->debounce;
+	}
 
-	if (GetFrameIndex(s->frame) == 0)
+	DrawStamp (s);
+	if (f != 299) 
+	{
+		s->frame = SetRelFrameIndex (s->frame, 1);
+	}
+
+	if (GetFrameIndex (s->frame) == 0)
 	{
 		return FALSE;
 	}
@@ -805,6 +831,7 @@ ShowShipAnim (FRAME anim)
 	is.anim.origin.y = SCREEN_HEIGHT >> 1;
 	is.anim.frame = anim;
 	is.last_time = GetTimeCounter ();
+	is.debounce = 15;
 
 	is.InputFunc = DoSpinAnim;
 	is.MenuRepeatDelay = 0;
