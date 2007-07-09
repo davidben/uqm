@@ -172,24 +172,32 @@ struct race_desc
 	void *CodeRef _ALIGNED_ON(sizeof (void *));
 };
 
+#define SHIP_BASE_COMMON \
+	/* LINK elements; must be first */ \
+	HLINK pred; \
+	HLINK succ; \
+	\
+	DWORD RaceResIndex; \
+	BYTE captains_name_index \
+			/* Also used in full-game to detect if a STARSHIP is an escort
+			 * or the flagship (captains_name_index == 0) */
+
+typedef struct
+{
+	SHIP_BASE_COMMON;
+} SHIP_BASE;
 
 typedef HLINK HSTARSHIP;
 
 typedef struct
 {
-	// LINK elements; must be first
-	HSTARSHIP pred;
-	HSTARSHIP succ;
-
-	DWORD RaceResIndex;
+	SHIP_BASE_COMMON;
+	
 	RACE_DESC *RaceDescPtr;
 
 	// Ship information
 	UWORD which_side;
 			// In race_q: side the ship is on
-	BYTE captains_name_index;
-			// Also used in full-game to detect if a STARSHIP is an escort
-			// or the flagship (captains_name_index == 0)
 	COUNT crew_level;
 			// In full-game battles: crew left
 			// In SuperMelee: irrelevant
@@ -233,14 +241,9 @@ typedef HLINK HSHIPFRAG;
 
 typedef struct
 {
-	// LINK elements; must be first
-	HSHIPFRAG pred;
-	HSHIPFRAG succ;
-
-	DWORD RaceResIndex;
+	SHIP_BASE_COMMON;
 
 	COUNT which_side;
-	BYTE captains_name_index;
 
 	BYTE race_id;
 	BYTE index;

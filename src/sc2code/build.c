@@ -25,32 +25,23 @@
 #include "libs/mathlib.h"
 
 
-// Allocate a new STARSHIP and put it in the queue.
+// Allocate a new STARSHIP or SHIP_FRAGMENT and put it in the queue
 HLINK
 Build (QUEUE *pQueue, DWORD RaceResIndex)
 {
 	HLINK hNewShip;
-	void *LinkPtr;
+	SHIP_BASE *ShipPtr;
+
+	assert (GetLinkSize (pQueue) == sizeof (STARSHIP) ||
+			GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT));
 
 	hNewShip = AllocLink (pQueue);
 	if (!hNewShip)
 		return 0;
 
-	LinkPtr = LockLink (pQueue, hNewShip);
-	memset (LinkPtr, 0, GetLinkSize (pQueue));
-
-	if (GetLinkSize (pQueue) == sizeof (STARSHIP))
-	{
-		STARSHIP *StarShipPtr = (STARSHIP *) LinkPtr;
-		StarShipPtr->RaceResIndex = RaceResIndex;
-	}
-	else if (GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT))
-	{
-		SHIP_FRAGMENT *FragPtr = (SHIP_FRAGMENT *) LinkPtr;
-		FragPtr->RaceResIndex = RaceResIndex;
-	}
-	else
-		assert (0 && "Build(): unknown queue type!");
+	ShipPtr = (SHIP_BASE *) LockLink (pQueue, hNewShip);
+	memset (ShipPtr, 0, GetLinkSize (pQueue));
+	ShipPtr->RaceResIndex = RaceResIndex;
 
 	UnlockLink (pQueue, hNewShip);
 	PutQueue (pQueue, hNewShip);
@@ -334,43 +325,30 @@ NameCaptain (QUEUE *pQueue, DWORD RaceResIndex)
 	BYTE name_index;
 	HLINK hStarShip;
 
+	assert (GetLinkSize (pQueue) == sizeof (STARSHIP) ||
+			GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT));
+
 	do
 	{
 		HLINK hNextShip;
 
 		name_index = PickCaptainName ();
-		for (hStarShip = GetHeadLink (pQueue); hStarShip; hStarShip = hNextShip)
+		for (hStarShip = GetHeadLink (pQueue); hStarShip;
+				hStarShip = hNextShip)
 		{
-			LINK *LinkPtr;
-			BYTE test_name_index;
+			SHIP_BASE *ShipPtr;
+			BYTE test_name_index = -1;
 
-			LinkPtr = LockLink (pQueue, hStarShip);
-			hNextShip = _GetSuccLink (LinkPtr);
-			if (GetLinkSize (pQueue) == sizeof (STARSHIP))
-			{
-				STARSHIP *TestShipPtr = (STARSHIP *) LinkPtr;
-				if (TestShipPtr->RaceResIndex != RaceResIndex)
-					continue;
-				test_name_index = TestShipPtr->captains_name_index;
-			}
-			else if (GetLinkSize (pQueue) == sizeof (SHIP_FRAGMENT))
-			{
-				SHIP_FRAGMENT *TestShipPtr = (SHIP_FRAGMENT *) LinkPtr;
-				if (TestShipPtr->RaceResIndex != RaceResIndex)
-					continue;
-				test_name_index = TestShipPtr->captains_name_index;
-			}
-			else
-				assert (0 && "NameCaptain(): unknown queue type!");
+			ShipPtr = (SHIP_BASE *) LockLink (pQueue, hStarShip);
+			hNextShip = _GetSuccLink (ShipPtr);
+			if (ShipPtr->RaceResIndex == RaceResIndex)
+				test_name_index = ShipPtr->captains_name_index;
+			UnlockLink (pQueue, hStarShip);
 			
 			if (name_index == test_name_index)
-			{
-				UnlockLink (pQueue, hStarShip);
 				break;
-			}
-			UnlockLink (pQueue, hStarShip);
 		}
-	} while (hStarShip);
+	} while (hStarShip /* name matched another ship */);
 
 	return name_index;
 }
