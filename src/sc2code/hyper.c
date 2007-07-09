@@ -961,7 +961,6 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (avail_race_q), Type);
 			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
-			// XXX: SHIP_INFO struct copy
 			BSIPtr->race_id = Type;
 			BSIPtr->crew_level = FleetPtr->crew_level;
 			BSIPtr->max_crew = FleetPtr->max_crew;

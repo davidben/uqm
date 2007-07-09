@@ -582,7 +582,7 @@ spawn_ip_group (IP_GROUP *GroupPtr)
 
 		LockElement (hIPSHIPElement, &IPSHIPElementPtr);
 		// XXX: turn_wait hack is not actually used anywhere
-		IPSHIPElementPtr->turn_wait = GroupPtr->group_id;
+		//IPSHIPElementPtr->turn_wait = GroupPtr->group_id;
 		IPSHIPElementPtr->mass_points = 1;
 		IPSHIPElementPtr->hit_points = 1;
 		IPSHIPElementPtr->state_flags =

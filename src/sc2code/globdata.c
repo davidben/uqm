@@ -239,7 +239,6 @@ InitSIS (void)
 				hMasterShip = FindMasterShip (ship_ref);
 				MasterPtr = LockMasterShip (&master_q, hMasterShip);
 				// Grab a copy of loaded icons and strings (not owned)
-				// XXX: SHIP_INFO struct copy
 				copyFleetInfo (FleetPtr, &MasterPtr->ShipInfo,
 						&MasterPtr->Fleet);
 				UnlockMasterShip (&master_q, hMasterShip);
@@ -251,7 +250,6 @@ InitSIS (void)
 						FALSE);
 				if (RDPtr)
 				{	// Grab a copy of loaded icons and strings
-					// XXX: SHIP_INFO struct copy
 					copyFleetInfo (FleetPtr, &RDPtr->ship_info,
 							&RDPtr->fleet);
 					// avail_race_q owns these resources now

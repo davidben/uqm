@@ -384,7 +384,6 @@ CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 		ShipFragPtr->which_side = TemplatePtr->ship_flags &
 				(GOOD_GUY | BAD_GUY);
 		ShipFragPtr->captains_name_index = captains_name_index;
-		// XXX: SHIP_INFO struct copy
 		ShipFragPtr->race_strings = TemplatePtr->race_strings;
 		ShipFragPtr->icons = TemplatePtr->icons;
 		ShipFragPtr->melee_icon = TemplatePtr->melee_icon;

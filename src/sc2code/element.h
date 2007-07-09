@@ -127,7 +127,6 @@ struct element
 	BYTE mass_points;
 			/* Also: system loc for IP flagship */
 	BYTE turn_wait;
-			/* Also: group_id for IP groups */
 	BYTE thrust_wait;
 	VELOCITY_DESC velocity;
 	INTERSECT_CONTROL IntersectControl;

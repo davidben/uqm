@@ -1718,7 +1718,6 @@ RaceCommunication (void)
 
 			hStarShip = GetStarShipFromIndex (&GLOBAL (npc_built_ship_q), i);
 			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-			// XXX: SHIP_INFO struct copy
 			BSIPtr = &EncounterPtr->ShipList[i];
 			BSIPtr->race_id = FragPtr->race_id;
 			BSIPtr->crew_level = FragPtr->crew_level;

@@ -54,7 +54,6 @@ ZapToUrquanEncounter (void)
 		EncounterPtr->radius = TemplatePtr->actual_strength;
 		EncounterPtr->SD.Type = URQUAN_SHIP;
 		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
-		// XXX: SHIP_INFO struct copy
 		BSIPtr = &EncounterPtr->ShipList[0];
 		BSIPtr->race_id = URQUAN_SHIP;
 		BSIPtr->crew_level = TemplatePtr->crew_level;

@@ -23,6 +23,12 @@
 #include "libs/memlib.h"
 #include "port.h"
 
+// Note that we MUST use the QUEUE_TABLE variant at this time, because
+// certain gameplay elements depend on it. Namely, the maximum number
+// of HyperSpace encounter globes chasing the player is defined by the
+// allocated size of the encounter_q. If switched to non-table variant,
+// the max number of encounters will be virtually unlimited the way the
+// code works now.
 #define QUEUE_TABLE
 
 #ifdef QUEUE_TABLE
