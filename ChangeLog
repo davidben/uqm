@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Internal ship structures and queues refactoring and cleanup - Alex
 - Fix quitting out of IP before the IP is fully set (bug #987) - Michael
 - Fixed speech looping with long tracks at high sampling rates;
   scope supports higher rates for speech now; bug 999 - Alex
