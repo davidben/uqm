@@ -254,6 +254,7 @@ object_animation (ELEMENT *ElementPtr)
 				IncFrameIndex (pPrim->Object.Stamp.frame);
 		if (ElementPtr->state_flags & FINITE_LIFE)
 		{
+			/* A natural disaster */
 			if (ElementPtr->mass_points == DEATH_EXPLOSION)
 			{
 				if (++pMenuState->CurState >= EXPLOSION_LIFE)
@@ -268,6 +269,7 @@ object_animation (ELEMENT *ElementPtr)
 					s = 0;
 				else
 					s = (14 - frame_index) >> 1;
+				// XXX: Was 0x8000 the background flag on 3DO?
 				SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 				if (frame_index == 13)
 					PlaySound (SetAbsSoundIndex (LanderSounds, EARTHQUAKE_DISASTER),
@@ -280,12 +282,13 @@ object_animation (ELEMENT *ElementPtr)
 			{
 				HELEMENT hLavaElement;
 
+				/* Change lava-spot direction of travel */
 				hLavaElement = AddGroundDisaster (LAVASPOT_DISASTER);
 				if (hLavaElement)
 				{
 					ELEMENT *LavaElementPtr;
 
-					angle = FACING_TO_ANGLE (ElementPtr->hit_points);
+					angle = FACING_TO_ANGLE (ElementPtr->facing);
 					LockElement (hLavaElement, &LavaElementPtr);
 					LavaElementPtr->next.location = ElementPtr->next.location;
 					LavaElementPtr->next.location.x += COSINE (angle, 4);
@@ -298,9 +301,8 @@ object_animation (ELEMENT *ElementPtr)
 						LavaElementPtr->next.location.x += MAP_WIDTH << MAG_SHIFT;
 					else
 						LavaElementPtr->next.location.x %= MAP_WIDTH << MAG_SHIFT;
-					LavaElementPtr->hit_points = NORMALIZE_FACING (
-							ElementPtr->hit_points + ((COUNT)TFB_Random () % 3) - 1
-							);
+					LavaElementPtr->facing = NORMALIZE_FACING (
+							ElementPtr->facing + ((COUNT)TFB_Random () % 3) - 1);
 					UnlockElement (hLavaElement);
 				}
 			}
@@ -600,9 +602,10 @@ CheckObjectCollision (COUNT index)
 				COUNT scan, NumRetrieved;
 				SIZE which_node;
 
-				scan = LOBYTE (ElementPtr->life_span);
+				scan = LOBYTE (ElementPtr->scan_node);
 				if (pLanderPrim == 0)
 				{
+					/* Collision of lander with another object */
 					if (HIBYTE (pMenuState->delta_item) == 0
 							|| pPSD->InTransit)
 						break;
@@ -685,9 +688,9 @@ CheckObjectCollision (COUNT index)
 
 					NumRetrieved = ElementPtr->mass_points;
 				}
-					/* if a natural disaster */
 				else if (ElementPtr->state_flags & FINITE_LIFE)
 				{
+					/* Collision of a stun bolt with a natural disaster */
 					UnlockElement (hElement);
 					continue;
 				}
@@ -697,6 +700,7 @@ CheckObjectCollision (COUNT index)
 
 					if (scan == ENERGY_SCAN)
 					{
+						/* Collision of a stun bolt with an energy node */
 						UnlockElement (hElement);
 						break;
 					}
@@ -706,6 +710,7 @@ CheckObjectCollision (COUNT index)
 							& ~CREATURE_AWARE
 							].ValueAndHitPoints)))
 					{
+						/* Collision of a stun bolt with a viable creature */
 						if (ElementPtr->hit_points)
 						{
 							if (--ElementPtr->hit_points == 0)
@@ -836,7 +841,7 @@ CheckObjectCollision (COUNT index)
 					}
 				}
 
-				which_node = HIBYTE (ElementPtr->life_span) - 1;
+				which_node = HIBYTE (ElementPtr->scan_node) - 1;
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
 						(1L << which_node);
 				pSolarSysState->CurNode = (COUNT)~0;
@@ -878,19 +883,28 @@ lightning_process (ELEMENT *ElementPtr)
 
 		num_frames = GetFrameCount (pPrim->Object.Stamp.frame) - 7;
 		if (GetFrameIndex (pPrim->Object.Stamp.frame) >= num_frames)
+		{
+			/* Advance to the next surface strike effect frame */
+			// XXX: This is unused, we never get here
 			pPrim->Object.Stamp.frame =
 					IncFrameIndex (pPrim->Object.Stamp.frame);
+		}
 		else
 		{
 			SIZE s;
 			
-			s = 7 - ((SIZE)ElementPtr->crew_level - (SIZE)ElementPtr->life_span);
+			// XXX: Color cycling is largely unused, because the color
+			//   never actually changes RGB values (see MAKE_RGB15 below).
+			//   This did, however, work in DOS SC2 version (fade effect).
+			s = 7 - ((SIZE)ElementPtr->cycle - (SIZE)ElementPtr->life_span);
 			if (s < 0)
 				s = 0;
+			// XXX: Was 0x8000 the background flag on 3DO?
 			SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 
 			if (ElementPtr->mass_points == LIGHTNING_DISASTER)
 			{
+				/* This one always strikes the lander and can hurt */
 				if (HIBYTE (pMenuState->delta_item)
 						&& (BYTE)TFB_Random () < (256 / 10)
 						&& !(
@@ -930,7 +944,7 @@ AddLightning (void)
 		LightningElementPtr->state_flags = FINITE_LIFE | BAD_GUY;
 		LightningElementPtr->preprocess_func = lightning_process;
 		if ((BYTE)TFB_Random () >= (256 >> 2))
-			LightningElementPtr->mass_points = 0;
+			LightningElementPtr->mass_points = 0; /* harmless */
 		else
 			LightningElementPtr->mass_points = LIGHTNING_DISASTER;
 
@@ -947,7 +961,7 @@ AddLightning (void)
 				+ (HIBYTE (rand_val) % (SURFACE_HEIGHT - 12))
 				) % (MAP_HEIGHT << MAG_SHIFT);
 
-		LightningElementPtr->crew_level = LightningElementPtr->life_span;
+		LightningElementPtr->cycle = LightningElementPtr->life_span;
 		
 		SetPrimType (&DisplayArray[LightningElementPtr->PrimIndex], STAMPFILL_PRIM);
 		SetPrimColor (&DisplayArray[LightningElementPtr->PrimIndex], WHITE_COLOR);
@@ -1001,10 +1015,10 @@ AddGroundDisaster (COUNT which_disaster)
 			pPrim->Object.Stamp.frame = LanderFrame[1];
 			GroundDisasterElementPtr->turn_wait = MAKE_BYTE (2, 2);
 		}
-		else
+		else /* if (which_disaster == LAVASPOT_DISASTER) */
 		{
 			SetPrimType (pPrim, STAMP_PRIM);
-			GroundDisasterElementPtr->hit_points =
+			GroundDisasterElementPtr->facing =
 					NORMALIZE_FACING (TFB_Random ());
 			pPrim->Object.Stamp.frame = LanderFrame[3];
 			GroundDisasterElementPtr->turn_wait = MAKE_BYTE (0, 0);

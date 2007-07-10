@@ -583,7 +583,7 @@ spawn_ip_group (IP_GROUP *GroupPtr)
 		LockElement (hIPSHIPElement, &IPSHIPElementPtr);
 		// XXX: turn_wait hack is not actually used anywhere
 		//IPSHIPElementPtr->turn_wait = GroupPtr->group_id;
-		IPSHIPElementPtr->mass_points = 1;
+		IPSHIPElementPtr->sys_loc = 1;
 		IPSHIPElementPtr->hit_points = 1;
 		IPSHIPElementPtr->state_flags =
 				CHANGING | FINITE_LIFE | IGNORE_VELOCITY;
@@ -745,7 +745,7 @@ flag_ship_preprocess (ELEMENT *ElementPtr)
 		GLOBAL (ShipStamp.origin) = pt;
 		ElementPtr->next.image.frame = GLOBAL (ShipStamp.frame);
 
-		if (ElementPtr->mass_points == flagship_loc)
+		if (ElementPtr->sys_loc == flagship_loc)
 		{
 			if (ElementPtr->state_flags & NONSOLID)
 				ElementPtr->state_flags &= ~NONSOLID;
@@ -753,7 +753,7 @@ flag_ship_preprocess (ELEMENT *ElementPtr)
 		else /* no collisions during transition */
 		{
 			ElementPtr->state_flags |= NONSOLID;
-			ElementPtr->mass_points = flagship_loc;
+			ElementPtr->sys_loc = flagship_loc;
 		}
 
 		if ((ec = GET_GAME_STATE (ESCAPE_COUNTER))
@@ -782,9 +782,9 @@ spawn_flag_ship (void)
 		LockElement (hFlagShipElement, &FlagShipElementPtr);
 		FlagShipElementPtr->hit_points = 1;
 		if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
-			FlagShipElementPtr->mass_points = 1;
+			FlagShipElementPtr->sys_loc = 1;
 		else
-			FlagShipElementPtr->mass_points =
+			FlagShipElementPtr->sys_loc =
 					(BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
 					- pSolarSysState->PlanetDesc + 2);
 		FlagShipElementPtr->state_flags =

@@ -122,12 +122,31 @@ struct element
 	void (*death_func) (struct element *ElementPtr);
 
 	ELEMENT_FLAGS state_flags;
-	COUNT life_span;
-	COUNT crew_level;
-	BYTE mass_points;
-			/* Also: system loc for IP flagship */
+	union
+	{
+		COUNT life_span;
+		COUNT scan_node; /* Planetside: scan type and node id */
+	};
+	union
+	{
+		COUNT crew_level;
+		COUNT hit_points;
+		COUNT facing; /* Planetside: lava-spot direction of travel */
+		COUNT cycle;  /* Planetside: lightning cycle length */
+	};
+	union
+	{
+		BYTE mass_points;
+		BYTE sys_loc; /* IP: location in system */
+	};
 	BYTE turn_wait;
-	BYTE thrust_wait;
+	union
+	{
+		BYTE thrust_wait;
+		BYTE blast_offset;
+		BYTE next_turn; /* Battle: animation interframe for some elements */
+	};
+
 	VELOCITY_DESC velocity;
 	INTERSECT_CONTROL IntersectControl;
 	COUNT PrimIndex;
@@ -149,12 +168,6 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 
 #define GetElementStarShip(e,ppsd) do { *(ppsd) = (e)->pParent; } while (0)
 #define SetElementStarShip(e,psd)  do { (e)->pParent = psd; } while (0)
-
-// XXX: Would be nice to clean these up!
-//   Should make them into a union for now.
-#define blast_offset thrust_wait
-#define hit_points crew_level
-#define next_turn thrust_wait
 
 #define MAX_CREW_SIZE 42
 #define MAX_ENERGY_SIZE 42

@@ -875,7 +875,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 		hNextElement = GetSuccElement (ElementPtr);
 
 		dy = y - ElementPtr->current.location.y;
-		if (LOBYTE (ElementPtr->life_span) == CurState
+		if (LOBYTE (ElementPtr->scan_node) == CurState
 				&& dy >= 0)// && dy <= 3)
 		{
 			COUNT i;
@@ -1310,7 +1310,7 @@ GeneratePlanetSide (void)
 			pSolarSysState->CurNode = num_nodes;
 			(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
 
-			NodeElementPtr->life_span = MAKE_WORD (scan, num_nodes + 1);
+			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
 			NodeElementPtr->state_flags = BAD_GUY;
 			NodeElementPtr->current.location.x =
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.x;
