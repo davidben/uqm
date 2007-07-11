@@ -66,6 +66,8 @@ BuildUrquanGuard (void)
 	for (b0 = 1; b0 <= NUM_URQUAN_GUARDS1; ++b0)
 		PutGroupInfo (GLOBAL (BattleGroupRef), (BYTE)(NUM_URQUAN_GUARDS0 + b0));
 
+	ReinitQueue (&GLOBAL (npc_built_ship_q));
+
 	GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP);
 
 	XFormIPLoc (&pSolarSysState->PlanetDesc[4].image.origin,

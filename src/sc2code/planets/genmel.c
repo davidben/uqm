@@ -102,6 +102,7 @@ GenerateMelnorme (BYTE control)
 				CloneShipFragment (MELNORME_SHIP,
 						&GLOBAL (npc_built_ship_q), 0);
 				GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
+				ReinitQueue (&GLOBAL (npc_built_ship_q));
 				SetMelnormeRef (GLOBAL (BattleGroupRef));
 			}
 			GenerateRandomIP (INIT_NPCS);
