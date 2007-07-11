@@ -892,23 +892,15 @@ lightning_process (ELEMENT *ElementPtr)
 		else
 		{
 			SIZE s;
-#define NUM_CYCLES 8
-			static const COLOR color_tab[] =
-			{
-				BUILD_COLOR (MAKE_RGB15 (0x11, 0x11, 0x11), 0x18),
-				BUILD_COLOR (MAKE_RGB15 (0x13, 0x13, 0x13), 0x17),
-				BUILD_COLOR (MAKE_RGB15 (0x15, 0x15, 0x15), 0x15),
-				BUILD_COLOR (MAKE_RGB15 (0x17, 0x17, 0x17), 0x14),
-				BUILD_COLOR (MAKE_RGB15 (0x19, 0x19, 0x19), 0x13),
-				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x1B, 0x1B), 0x12),
-				BUILD_COLOR (MAKE_RGB15 (0x1D, 0x1D, 0x1D), 0x10),
-				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0f),
-			};
 			
-			s = ElementPtr->life_span;
-			if (s > NUM_CYCLES - 1)
-				s = NUM_CYCLES - 1;
-			SetPrimColor (pPrim, color_tab[s]);
+			// XXX: Color cycling is largely unused, because the color
+			//   never actually changes RGB values (see MAKE_RGB15 below).
+			//   This did, however, work in DOS SC2 version (fade effect).
+			s = 7 - ((SIZE)ElementPtr->cycle - (SIZE)ElementPtr->life_span);
+			if (s < 0)
+				s = 0;
+			// XXX: Was 0x8000 the background flag on 3DO?
+			SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 
 			if (ElementPtr->mass_points == LIGHTNING_DISASTER)
 			{
