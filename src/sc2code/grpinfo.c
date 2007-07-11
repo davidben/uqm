@@ -57,6 +57,7 @@ typedef struct
 	DWORD GroupOffset[NUM_SAVED_BATTLE_GROUPS + 1];
 			// Absolute offsets of group definitions in a state file
 			// Group 0 is a list of groups present in solarsys
+			//    (RANDGRPINFO_FILE only)
 			// Groups 1..max are definitions of actual battle groups
 			//    containing ship makeup and status
 
@@ -407,44 +408,47 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 {
 	if (which_group == GROUP_LIST)
 	{
-		QUEUE temp_q;
 		HIPGROUP hGroup, hNextGroup;
 
 		/* If the group list was never written before, add it */
 		if (pGH->GroupOffset[0] == 0)
 			pGH->GroupOffset[0] = LengthStateFile (fp);
 
+		// XXX: npc_built_ship_q must be empty because the wipe-out
+		//   procedure is actually the writing of the npc_built_ship_q
+		//   out as the group in question
+		assert (!GetHeadLink (&GLOBAL (npc_built_ship_q)));
+
 		/* Weed out the groups that left the system first */
-		// XXX: QUEUE struct copy!
-		temp_q = GLOBAL (ip_group_q);
-		SetHeadLink (&GLOBAL (ip_group_q), 0);
-		SetTailLink (&GLOBAL (ip_group_q), 0);
-		for (hGroup = GetHeadLink (&temp_q);
+		for (hGroup = GetHeadLink (&GLOBAL (ip_group_q));
 				hGroup; hGroup = hNextGroup)
 		{
 			BYTE in_system;
 			BYTE group_id;
 			IP_GROUP *GroupPtr;
 
-			GroupPtr = LockIpGroup (&temp_q, hGroup);
+			GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
 			hNextGroup = _GetSuccLink (GroupPtr);
 			in_system = GroupPtr->in_system;
 			group_id = GroupPtr->group_id;
-			UnlockIpGroup (&temp_q, hGroup);
+			UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 
 			if (!in_system)
 			{
+				// The following 'if' is needed because GROUP_LIST is only
+				// ever flushed to RANDGRPINFO_FILE, but the current group
+				// may need to be updated in the DEFGRPINFO_FILE as well.
+				// In that case, PutGroupInfo() will update the correct file.
 				if (GLOBAL (BattleGroupRef))
 					PutGroupInfo (GLOBAL (BattleGroupRef), group_id);
 				else
 					FlushGroupInfo (pGH, GROUPS_RANDOM, group_id, fp);
+				// This will also wipe the group out in the RANDGRPINFO_FILE
 				pGH->GroupOffset[group_id] = 0;
-				RemoveQueue (&temp_q, hGroup);
-				FreeIpGroup (&temp_q, hGroup);
+				RemoveQueue (&GLOBAL (ip_group_q), hGroup);
+				FreeIpGroup (&GLOBAL (ip_group_q), hGroup);
 			}
 		}
-		// XXX: QUEUE struct copy!
-		GLOBAL (ip_group_q) = temp_q;
 	}
 	else if (which_group > pGH->NumGroups)
 	{	/* Group not present yet -- add it */
@@ -709,6 +713,10 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 		if (LastEncGroup)
 		{
+			// The following 'if' is needed because GROUP_LIST is only
+			// ever read from RANDGRPINFO_FILE, but the LastEncGroup
+			// may need to be updated in the DEFGRPINFO_FILE as well.
+			// In that case, PutGroupInfo() will update the correct file.
 			if (GLOBAL (BattleGroupRef))
 				PutGroupInfo (GLOBAL (BattleGroupRef), LastEncGroup);
 			else
@@ -774,6 +782,11 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 		//   harder in the future, as special care will have to be taken
 		//   when loading a game into an encounter.
 		LastEncGroup = which_group;
+		// The following 'if' is needed because GROUP_LIST is only
+		// ever written to RANDGRPINFO_FILE, but the group we are reading
+		// may be in the DEFGRPINFO_FILE as well.
+		// In that case, PutGroupInfo() will update the correct file.
+		// Always calling PutGroupInfo() here would also be acceptable now.
 		if (offset != GROUPS_RANDOM)
 			PutGroupInfo (GROUPS_RANDOM, GROUP_LIST);
 		else
@@ -829,6 +842,11 @@ PutGroupInfo (DWORD offset, BYTE which_group)
 		WriteGroupHeader (fp, &GH);
 	}
 
+	// XXX: This is a bit dangerous. The assumption here is that we are
+	//   only called to write GROUP_LIST in the GROUPS_RANDOM context,
+	//   which is true right now and in which case we would seek to 0 anyway.
+	//   The latter also makes guarding the seek with
+	//   'if (which_group != GROUP_LIST)' moot.
 	if (which_group != GROUP_LIST)
 	{
 		SeekStateFile (fp, offset, SEEK_SET);

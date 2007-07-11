@@ -36,8 +36,14 @@ extern DWORD PutGroupInfo (DWORD offset, BYTE which_group);
 #define GROUPS_ADD_NEW ((DWORD)(~0L))
 #define GROUP_LIST     ((BYTE)0)
 #define GROUP_INIT_IP  ((BYTE)~0)
+		// Initialize IP group list (ip_group_q) from the actual groups
+		// (not GROUP_LIST) in one of the state files
 #define GROUP_LOAD_IP  GROUP_LIST
+		// Read IP group list into ip_group_q from the list entry
+		// (GROUP_LIST) in one of the state files
 #define GROUP_SAVE_IP  ((BYTE)~0)
+		// Write IP group list from ip_group_q to the list entry
+		// (GROUP_LIST) in one of the state files
 extern void BuildGroups (void);
 
 #define MAX_DESC_CHARS 60
