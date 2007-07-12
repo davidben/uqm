@@ -452,18 +452,8 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 	}
 	else if (which_group > pGH->NumGroups)
 	{	/* Group not present yet -- add it */
-		HSHIPFRAG hStarShip;
-		SHIP_FRAGMENT *FragPtr;
-
 		pGH->NumGroups = which_group;
 		pGH->GroupOffset[which_group] = LengthStateFile (fp);
-
-		/* The first ship in a group defines the alien race */
-		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-		FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
-		swrite_8 (fp, FragPtr->race_id);
-		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 	}
 	
 	SeekStateFile (fp, offset, SEEK_SET);
@@ -479,7 +469,6 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 	{
 		/* Write out ip_group_q as group 0 */
 		HIPGROUP hGroup, hNextGroup;
-		// XXX: will use ip_group_q here
 		BYTE NumGroups = CountLinks (&GLOBAL (ip_group_q));
 
 		SeekStateFile (fp, pGH->GroupOffset[0], SEEK_SET);
@@ -516,12 +505,23 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 		/* Write out npc_built_ship_q as 'which_group' group */
 		HSHIPFRAG hStarShip, hNextShip;
 		BYTE NumShips = CountLinks (&GLOBAL (npc_built_ship_q));
-
-		/* Do not change RaceType of the group (skip it) */
-		SeekStateFile (fp, pGH->GroupOffset[which_group] + 1, SEEK_SET);
-		swrite_8 (fp, NumShips);
+		BYTE RaceType = 0;
 
 		hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
+		if (NumShips > 0)
+		{
+			SHIP_FRAGMENT *FragPtr;
+
+			/* The first ship in a group defines the alien race */
+			FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			RaceType = FragPtr->race_id;
+			UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+		}
+
+		SeekStateFile (fp, pGH->GroupOffset[which_group], SEEK_SET);
+		swrite_8 (fp, RaceType);
+		swrite_8 (fp, NumShips);
+
 		for ( ; NumShips; --NumShips, hStarShip = hNextShip)
 		{
 			SHIP_FRAGMENT *FragPtr;
