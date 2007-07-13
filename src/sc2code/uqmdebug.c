@@ -365,8 +365,19 @@ void
 doInstantMove (void)
 {
 	// Move to the new location:
-	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX((GLOBAL (autopilot)).x);
-	GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY((GLOBAL (autopilot)).y);
+	if ((GLOBAL (autopilot)).x == ~0 || (GLOBAL (autopilot)).y == ~0)
+	{
+		// If no destination has been selected, use the current location
+		// as the destination.
+		(GLOBAL (autopilot)).x = LOGX_TO_UNIVERSE(GLOBAL_SIS (log_x));
+		(GLOBAL (autopilot)).y = LOGY_TO_UNIVERSE(GLOBAL_SIS (log_y));
+	}
+	else
+	{
+		// A new destination has been selected.
+		GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX((GLOBAL (autopilot)).x);
+		GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY((GLOBAL (autopilot)).y);
+	}
 
 	// Check for a solar systems at the destination.
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
