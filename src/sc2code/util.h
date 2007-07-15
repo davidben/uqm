@@ -25,7 +25,5 @@ extern void DrawStarConBox (RECT *pRect, SIZE BorderWidth,
 		COLOR InteriorColor);
 extern DWORD SeedRandomNumbers (void);
 
-extern void MouseError (void);
-
 #endif  /* _UTIL_H */
 

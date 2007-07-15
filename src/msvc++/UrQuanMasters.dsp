@@ -4144,10 +4144,6 @@ SOURCE=..\sc2code\misc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\mouse_err.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\nameref.h
 # End Source File
 # Begin Source File

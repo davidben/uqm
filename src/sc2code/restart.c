@@ -23,6 +23,7 @@
 #include "credits.h"
 #include "encount.h"
 #include "fmv.h"
+#include "gamestr.h"
 #include "globdata.h"
 #include "intel.h"
 #include "melee.h"
@@ -238,7 +239,8 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 		LockMutex (GraphicsLock);
 		SetFlashRect (NULL, (FRAME)0);
 		UnlockMutex (GraphicsLock);
-		MouseError ();
+		DoPopupWindow (GAME_STRING (MAINMENU_STRING_BASE + 56));
+				// Mouse not supported message
 		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);	
 		SetTransitionSource (NULL);
 		BatchGraphics ();
