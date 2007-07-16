@@ -29,19 +29,7 @@
 #define RACES_PER_PLAYER 7
 #define MAX_SHIPS_PER_SIDE 14
 
-/* heat of battle specific flags */
-#define LEFT                   (1 << 0)
-#define RIGHT                  (1 << 1)
-#define THRUST                 (1 << 2)
-#define WEAPON                 (1 << 3)
-#define SPECIAL                (1 << 4)
-#define LOW_ON_ENERGY          (1 << 5)
-#define SHIP_BEYOND_MAX_SPEED  (1 << 6)
-#define SHIP_AT_MAX_SPEED      (1 << 7)
-#define SHIP_IN_GRAVITY_WELL   (1 << 8)
-#define PLAY_VICTORY_DITTY     (1 << 9)
-
-/* ship specific flags */
+/* SHIP_INFO.ship_flags - ship specific flags */
 /*
 #define GOOD_GUY  (1 << 0)
 #define BAD_GUY   (1 << 1)
@@ -187,6 +175,7 @@ typedef struct
 	SHIP_BASE_COMMON;
 } SHIP_BASE;
 
+
 typedef HLINK HSTARSHIP;
 
 typedef struct
@@ -219,8 +208,8 @@ typedef struct
 			// In battle: frames left before energy regeneration
 
 	BYTE ship_input_state;
-	UWORD cur_status_flags _ALIGNED_ON(sizeof (UWORD));
-	UWORD old_status_flags _ALIGNED_ON(sizeof (UWORD));
+	STATUS_FLAGS cur_status_flags _ALIGNED_ON(sizeof (STATUS_FLAGS));
+	STATUS_FLAGS old_status_flags _ALIGNED_ON(sizeof (STATUS_FLAGS));
 
 	HELEMENT hShip _ALIGNED_ON(sizeof (HELEMENT));
 	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));

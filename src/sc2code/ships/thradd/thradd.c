@@ -283,7 +283,7 @@ thraddash_preprocess (ELEMENT *ElementPtr)
 #define SPECIAL_THRUST_INCREMENT 12
 #define SPECIAL_MAX_THRUST 72
 		COUNT max_thrust, thrust_increment;
-		UWORD thrust_status;
+		STATUS_FLAGS thrust_status;
 		HELEMENT hTrailElement;
 
 		if (!(StarShipPtr->old_status_flags & SPECIAL))

@@ -375,7 +375,7 @@ static void
 androsynth_preprocess (ELEMENT *ElementPtr)
 {
 	STARSHIP *StarShipPtr;
-	ELEMENT_FLAGS cur_status_flags;
+	STATUS_FLAGS cur_status_flags;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 

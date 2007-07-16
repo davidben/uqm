@@ -27,8 +27,8 @@
 #include <string.h>
 
 static void
-CaptainsWindow (CAPTAIN_STUFF *CSPtr, COORD y, ELEMENT_FLAGS
-		delta_status_flags, ELEMENT_FLAGS cur_status_flags,
+CaptainsWindow (CAPTAIN_STUFF *CSPtr, COORD y,
+		STATUS_FLAGS delta_status_flags, STATUS_FLAGS cur_status_flags,
 		COUNT Pass)
 {
 	STAMP Stamp;
@@ -367,7 +367,7 @@ PreProcessStatus (ELEMENT *ShipPtr)
 	if (StarShipPtr->captains_name_index
 			|| (StarShipPtr->RaceDescPtr->ship_info.ship_flags & GOOD_GUY))
 	{
-		ELEMENT_FLAGS old_status_flags, cur_status_flags;
+		STATUS_FLAGS old_status_flags, cur_status_flags;
 		CAPTAIN_STUFF *CSPtr;
 
 		cur_status_flags = StarShipPtr->cur_status_flags;
@@ -396,8 +396,7 @@ PostProcessStatus (ELEMENT *ShipPtr)
 			|| (StarShipPtr->RaceDescPtr->ship_info.ship_flags & GOOD_GUY))
 	{
 		COORD y;
-		ELEMENT_FLAGS cur_status_flags, old_status_flags;
-
+		STATUS_FLAGS cur_status_flags, old_status_flags;
 
 		cur_status_flags = StarShipPtr->cur_status_flags;
 

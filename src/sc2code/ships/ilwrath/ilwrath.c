@@ -221,7 +221,7 @@ initialize_flame (ELEMENT *ShipPtr, HELEMENT FlameArray[])
 static void
 ilwrath_preprocess (ELEMENT *ElementPtr)
 {
-	ELEMENT_FLAGS status_flags;
+	STATUS_FLAGS status_flags;
 	STARSHIP *StarShipPtr;
 	PRIMITIVE *lpPrim;
 

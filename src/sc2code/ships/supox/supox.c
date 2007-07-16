@@ -246,7 +246,7 @@ supox_preprocess (ELEMENT *ElementPtr)
 		if (add_facing)
 		{
 			COUNT facing;
-			UWORD thrust_status;
+			STATUS_FLAGS thrust_status;
 
 			facing = StarShipPtr->ShipFacing;
 			StarShipPtr->ShipFacing = NORMALIZE_FACING (

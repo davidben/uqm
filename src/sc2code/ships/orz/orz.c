@@ -499,6 +499,8 @@ marine_preprocess (ELEMENT *ElementPtr)
 		HELEMENT hObject, hNextObject, hTarget;
 		ELEMENT *ObjectPtr;
 
+		// XXX: thrust_wait is abused to store marine speed and
+		//   gravity well flags
 		ElementPtr->thrust_wait &= ~(SHIP_IN_GRAVITY_WELL >> 6);
 
 		hTarget = 0;
@@ -631,14 +633,16 @@ marine_preprocess (ELEMENT *ElementPtr)
 				 || ((ElementPtr->thrust_wait & (SHIP_BEYOND_MAX_SPEED >> 6))
 				 && !(ElementPtr->thrust_wait & (SHIP_IN_GRAVITY_WELL >> 6))))
 		{
-			UWORD thrust_status;
+			STATUS_FLAGS thrust_status;
 			COUNT OldFacing;
-			UWORD OldStatus;
+			STATUS_FLAGS OldStatus;
 			COUNT OldIncrement, OldThrust;
 			STARSHIP *StarShipPtr;
 
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 
+			// XXX: Hack: abusing the primary STARSHIP struct in order
+			//   to call inertial_thrust() for a marine
 			OldFacing = StarShipPtr->ShipFacing;
 			OldStatus = StarShipPtr->cur_status_flags;
 			OldIncrement = StarShipPtr->RaceDescPtr->characteristics.
@@ -646,6 +650,8 @@ marine_preprocess (ELEMENT *ElementPtr)
 			OldThrust = StarShipPtr->RaceDescPtr->characteristics.max_thrust;
 
 			StarShipPtr->ShipFacing = facing;
+			// XXX: thrust_wait is abused to store marine speed and
+			//   gravity well flags
 			StarShipPtr->cur_status_flags = ElementPtr->thrust_wait << 6;
 			StarShipPtr->RaceDescPtr->characteristics.thrust_increment = 8;
 			StarShipPtr->RaceDescPtr->characteristics.max_thrust = 32;
@@ -708,6 +714,8 @@ marine_preprocess (ELEMENT *ElementPtr)
 				}
 			}
 
+			// XXX: thrust_wait is abused to store marine speed and
+			//   gravity well flags
 			ElementPtr->thrust_wait = (BYTE)(thrust_status >> 6);
 		}
 	}

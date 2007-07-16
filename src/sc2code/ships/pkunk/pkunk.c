@@ -244,13 +244,14 @@ new_pkunk (ELEMENT *ElementPtr)
 		StarShipPtr->RaceDescPtr->characteristics.special_wait = 0;
 
 		StarShipPtr->ship_input_state = 0;
-		StarShipPtr->cur_status_flags =
-				StarShipPtr->old_status_flags = 0;
-		StarShipPtr->energy_counter =
-				StarShipPtr->weapon_counter =
-				StarShipPtr->special_counter = 0;
-		ElementPtr->crew_level =
-				ElementPtr->turn_wait = ElementPtr->thrust_wait = 0;
+		StarShipPtr->cur_status_flags = 0;
+		StarShipPtr->old_status_flags = 0;
+		StarShipPtr->energy_counter = 0;
+		StarShipPtr->weapon_counter = 0;
+		StarShipPtr->special_counter = 0;
+		ElementPtr->crew_level = 0;
+		ElementPtr->turn_wait = 0;
+		ElementPtr->thrust_wait = 0;
 		ElementPtr->life_span = NORMAL_LIFE;
 
 		StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());

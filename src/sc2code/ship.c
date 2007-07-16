@@ -44,7 +44,7 @@ animation_preprocess (ELEMENT *ElementPtr)
 }
 
 
-UWORD
+STATUS_FLAGS
 inertial_thrust (ELEMENT *ElementPtr)
 {
 #define MAX_ALLOWED_SPEED     WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (18))
@@ -141,7 +141,7 @@ inertial_thrust (ELEMENT *ElementPtr)
 void
 ship_preprocess (ELEMENT *ElementPtr)
 {
-	ELEMENT_FLAGS cur_status_flags;
+	STATUS_FLAGS cur_status_flags;
 	STARSHIP *StarShipPtr;
 	RACE_DESC *RDPtr;
 
@@ -254,7 +254,7 @@ ship_preprocess (ELEMENT *ElementPtr)
 		--ElementPtr->thrust_wait;
 	else if (cur_status_flags & THRUST)
 	{
-		UWORD thrust_status;
+		STATUS_FLAGS thrust_status;
 
 		thrust_status = inertial_thrust (ElementPtr);
 		StarShipPtr->cur_status_flags &=

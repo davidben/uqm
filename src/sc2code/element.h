@@ -236,13 +236,30 @@ extern void ship_death (ELEMENT *ShipPtr);
 extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
 
 extern BOOLEAN CalculateGravity (ELEMENT *ElementPtr);
-extern UWORD inertial_thrust (ELEMENT *ElementPtr);
 extern void SetUpElement (ELEMENT *ElementPtr);
 
 extern void BattleSong (BOOLEAN DoPlay);
 extern void FreeBattleSong (void);
 
 extern void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
+
+
+typedef UWORD STATUS_FLAGS;
+
+/* STATUS_FLAGS - heat of battle specific flags */
+#define LEFT                   (1 << 0)
+#define RIGHT                  (1 << 1)
+#define THRUST                 (1 << 2)
+#define WEAPON                 (1 << 3)
+#define SPECIAL                (1 << 4)
+#define LOW_ON_ENERGY          (1 << 5)
+#define SHIP_BEYOND_MAX_SPEED  (1 << 6)
+#define SHIP_AT_MAX_SPEED      (1 << 7)
+#define SHIP_IN_GRAVITY_WELL   (1 << 8)
+#define PLAY_VICTORY_DITTY     (1 << 9)
+
+extern STATUS_FLAGS inertial_thrust (ELEMENT *ElementPtr);
+
 
 #endif /* _ELEMENT_H */
 
