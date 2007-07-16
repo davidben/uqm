@@ -26,7 +26,7 @@
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
 #include "netplay/packet.h"
-		// for NetplayAbortREason and NetplayResetReason.
+		// for NetplayAbortReason and NetplayResetReason.
 
 typedef struct melee_state MELEE_STATE;
 
