@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed enemy ships getting recrewed between ecnounters in HyperSpace
+  (bug #996) - Alex
 - Removed mouse_err.c since DoPopupWindow() is used now - SvdB
 - (debugging) Fixed instant-move towards the current location - SvdB
 - Fixed wrong Sa-Matra guards icons after Kohr-Ah win (bug #1001) - Alex
