@@ -1664,7 +1664,8 @@ RaceCommunication (void)
 				// XXX: Bug 996 lives here: crew is set to default (0)
 				//   None of ship info is actually used!
 				CloneShipFragment (EncounterPtr->SD.Type,
-						&GLOBAL (npc_built_ship_q), 0);
+						&GLOBAL (npc_built_ship_q),
+						EncounterPtr->ShipList[i].crew_level);
 			}
 
 			// XXX: Bug: CurStarDescPtr was abused to point within

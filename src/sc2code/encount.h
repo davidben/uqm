@@ -33,6 +33,7 @@ typedef HLINK HENCOUNTER;
 
 typedef struct
 {
+	// The only field actually used right now is crew_level
 	BYTE race_id;
 	COUNT crew_level;
 	COUNT max_crew;
