@@ -1115,25 +1115,76 @@ LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE* pTI, UNICODE* pFilePath)
 	return status;
 }
 
+// Auxiliary function for DrawFileStrings
+// If drawShips is set the ships themselves are drawn, in addition to the
+// fleet name and value; if not, only the fleet name and value are drawn.
+// If highlite is set the text is drawn in the color used for highlighting.
+static void
+DrawFileListFleet(TEAM_IMAGE *pTI, POINT *origin, BOOLEAN drawShips,
+		BOOLEAN highlite) {
+	SetContextForeGroundColor (highlite ?
+			LOAD_TEAM_NAME_TEXT_COLOR_HILITE : LOAD_TEAM_NAME_TEXT_COLOR);
+
+	// Print the name of the fleet
+	{
+		TEXT Text;
+
+		Text.baseline = *origin;
+		Text.align = ALIGN_LEFT;
+		Text.pStr = pTI->TeamName;
+		Text.CharCount = (COUNT)~0;
+		font_DrawText (&Text);
+	}
+
+	// Print the value of the fleet
+	{
+		TEXT Text;
+		UNICODE buf[60];
+
+		sprintf (buf, "%d", GetTeamValue (pTI));
+		Text.baseline = *origin;
+		Text.baseline.x +=
+				NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE) - 1;
+		Text.align = ALIGN_RIGHT;
+		Text.pStr = buf;
+		Text.CharCount = (COUNT)~0;
+		font_DrawText (&Text);
+	}
+
+	// Draw the ships for the fleet
+	if (drawShips)
+	{
+		STAMP s;
+		FleetShipIndex index;
+
+		s.origin.x = origin->x + 1;
+		s.origin.y = origin->y + 4;
+		for (index = 0; index < MELEE_FLEET_SIZE; index++)
+		{
+			BYTE StarShip;
+				
+			StarShip = pTI->ShipList[index];
+			if (StarShip != MELEE_NONE)
+			{
+				s.frame = GetShipIconsFromIndex (StarShip);
+				DrawStamp (&s);
+				s.origin.x += 17;
+			}
+		}
+	}
+}
+
 static void
 DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 {
 #define ENTRY_HEIGHT 32
-	COORD y;
+	POINT origin;
 	COUNT top, bot;
-	TEXT Text, rtText;
 	CONTEXT OldContext;
-	UNICODE buf[60];
 
-	Text.baseline.x = 5;
-	y = 34;
-	Text.align = ALIGN_LEFT;
-
-	rtText.pStr = buf;
-	rtText.align = ALIGN_RIGHT;
-	rtText.baseline.x = Text.baseline.x + NUM_MELEE_COLUMNS
-			* (MELEE_BOX_WIDTH + MELEE_BOX_SPACE) - 1;
-				
+	origin.x = 5;
+	origin.y = 34;
+		
 	top = pMS->TopTeamIndex;
 
 	if (HiLiteState == 1)
@@ -1161,18 +1212,10 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 	if (HiLiteState != -1)
 	{
 		bot = pMS->CurIndex - top;
-		Text.baseline.y = y + bot * ENTRY_HEIGHT;
-		Text.pStr = pMS->FileList[bot].TeamName;
-		Text.CharCount = (COUNT)~0;
-		SetContextForeGroundColor (HiLiteState == 0 ?
-				LOAD_TEAM_NAME_TEXT_COLOR :
-				LOAD_TEAM_NAME_TEXT_COLOR_HILITE);
-		font_DrawText (&Text);
 
-		rtText.baseline.y = Text.baseline.y;
-		sprintf (buf, "%d", GetTeamValue (&pMS->FileList[bot]));
-		rtText.CharCount = (COUNT)~0;
-		font_DrawText (&rtText);
+		origin.y += bot * ENTRY_HEIGHT;
+		DrawFileListFleet(&pMS->FileList[bot], &origin, FALSE,
+				HiLiteState == 1);
 	}
 	else
 	{
@@ -1180,7 +1223,6 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 
 		DrawMeleeIcon (28);  /* The load team frame */
 
-		Text.baseline.y = y;
 		teams_left = (COUNT)(
 				GetDirEntryTableCount (pMS->TeamDE) + NUM_PREBUILT - top);
 		if (teams_left)
@@ -1188,9 +1230,6 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 			bot = top - 1;
 			do
 			{
-				FleetShipIndex index;
-				STAMP s;
-
 				if (++bot < NUM_PREBUILT)
 					pMS->FileList[bot - top] = pMS->PreBuiltList[bot];
 				else
@@ -1199,40 +1238,13 @@ DrawFileStrings (MELEE_STATE *pMS, int HiLiteState)
 							pMS->TeamDE, bot - NUM_PREBUILT);
 					if (-1 == LoadTeamImage (pMS->TeamDE,
 							&pMS->FileList[bot - top], NULL))
-					{
 						pMS->FileList[bot - top] = pMS->PreBuiltList[0];
-					}
 				}
 
-				{
-					Text.pStr = pMS->FileList[bot - top].TeamName;
-					Text.CharCount = (COUNT)~0;
-					SetContextForeGroundColor (TEAM_NAME_TEXT_COLOR);
-					font_DrawText (&Text);
+				DrawFileListFleet(&pMS->FileList[bot - top], &origin,
+						TRUE, FALSE);
 
-					rtText.baseline.y = Text.baseline.y;
-					sprintf (buf, "%d",
-							GetTeamValue (&pMS->FileList[bot - top]));
-					rtText.CharCount = (COUNT)~0;
-					font_DrawText (&rtText);
-				}
-
-				s.origin.x = Text.baseline.x + 1;
-				s.origin.y = Text.baseline.y + 4;
-				for (index = 0; index < MELEE_FLEET_SIZE; index++)
-				{
-					BYTE StarShip;
-						
-					StarShip = pMS->FileList[bot - top].ShipList[index];
-					if (StarShip != MELEE_NONE)
-					{
-						s.frame = GetShipIconsFromIndex (StarShip);
-						DrawStamp (&s);
-						s.origin.x += 17;
-					}
-				}
-
-				Text.baseline.y += ENTRY_HEIGHT;
+				origin.y += ENTRY_HEIGHT;
 			} while (--teams_left && bot - top < MAX_VIS_TEAMS - 1);
 			pMS->BotTeamIndex = bot;
 		}
@@ -1272,7 +1284,7 @@ DoLoadTeam (MELEE_STATE *pMS)
 		pMS->InputFunc = DoLoadTeam;
 		UnlockMutex (GraphicsLock);
 	}
-	else if (PulsedInputState.menu[KEY_MENU_SELECT] |
+	else if (PulsedInputState.menu[KEY_MENU_SELECT] ||
 			PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
 		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
@@ -1382,7 +1394,6 @@ LoadTeamList (MELEE_STATE *pMS, UNICODE *pbuf)
 	COUNT num_entries;
 	char file[NAME_MAX];
 
-GetNewList:
 	DestroyDirEntryTable (ReleaseDirEntryTable (pMS->TeamDE));
 	pMS->TeamDE = CaptureDirEntryTable (
 			LoadDirEntryTable (meleeDir, "", ".mle", match_MATCH_SUFFIX,
@@ -1395,21 +1406,15 @@ GetNewList:
 		TEAM_IMAGE TI;
 
 		status = LoadTeamImage (pMS->TeamDE, &TI, file);
-
 		if (status == -1)
 		{
-			BOOLEAN deleteStatus;
-
-			log_add (log_Error, "Could not load '%s', deleting", file);
-
-			deleteStatus = DeleteResFile (meleeDir, file);
-			if (deleteStatus == FALSE)
-			{
-				// XXX: see bug #823
-				log_add (log_Fatal, "FATAL: Could not delete '%s'", file);
-				exit (EXIT_FAILURE);
-			}
-			goto GetNewList;
+			// It isn't possible to delete entries from a STRING_TABLE,
+			// so we just overwrite the string itself by a '\0' char.
+			STRINGPTR str = GetDirEntryAddress(pMS->TeamDE);
+			log_add(log_Warning, "Warning: File '%s' is not a valid "
+					"SuperMelee team.", str);
+			*str = '\0';
+			goto next;
 		}
 
 		if (pbuf && stricmp (file, pbuf) == 0)
@@ -1417,6 +1422,8 @@ GetNewList:
 			pMS->CurIndex = GetDirEntryTableIndex (pMS->TeamDE) + NUM_PREBUILT;
 			pbuf = 0;
 		}
+
+next:
 		pMS->TeamDE = SetRelDirEntryTableIndex (pMS->TeamDE, 1);
 	}
 	pMS->TeamDE = SetAbsDirEntryTableIndex (pMS->TeamDE, 0);
