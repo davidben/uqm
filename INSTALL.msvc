@@ -66,9 +66,9 @@ packages.
 3.6 Install OpenAL
 - Download http://developer.creative.com/articles/article.asp?aid=45&file=OpenAL11CoreSDK.exe
 - Run the installer and follow the instructions
-- Create a directory AL in "C:\Program Files\OpenAL 1.1 SDK\include"
+- Create a directory "AL" in "C:\Program Files\OpenAL 1.1 SDK\include"
 - Move all the .h files from "C:\Program Files\OpenAL 1.1 SDK\include"
-  into the "AL" directory.
+  into the newly created "AL" directory.
 
 
 4. Install the UQM files
