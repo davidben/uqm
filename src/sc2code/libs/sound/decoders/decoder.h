@@ -25,9 +25,11 @@
 #include "types.h"
 #include "uio.h"
 
-#ifdef _MSC_VER
-#	pragma comment (lib, "vorbisfile.lib")
-#endif
+#ifndef OVCODEC_NONE
+#	ifdef _MSC_VER
+#		pragma comment (lib, "vorbisfile.lib")
+#	endif  /* _MSC_VER */
+#endif  /* OVCODEC_NONE */
 
 typedef struct tfb_decoderformats
 {
