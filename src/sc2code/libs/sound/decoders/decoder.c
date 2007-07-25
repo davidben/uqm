@@ -27,7 +27,9 @@
 #include "decoder.h"
 #include "wav.h"
 #include "dukaud.h"
-#include "modaud.h"
+#ifndef OGGVORBIS_NONE
+#	include "modaud.h"
+#endif  /* OGGVORBIS_NONE */
 #include "oggaud.h"
 #include "aiffaud.h"
 
@@ -132,7 +134,9 @@ static TFB_RegSoundDecoder sd_decoders[MAX_REG_DECODERS + 1] =
 {
 	{true,  true,  "wav", &wava_DecoderVtbl},
 	{true,  true,  "mod", &moda_DecoderVtbl},
+#ifndef OVCODEC_NONE
 	{true,  true,  "ogg", &ova_DecoderVtbl},
+#endif  /* OGGVORBIS_NONE */
 	{true,  true,  "duk", &duka_DecoderVtbl},
 	{true,  true,  "aif", &aifa_DecoderVtbl},
 	{false, false,  NULL, NULL}, // null term
