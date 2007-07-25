@@ -568,9 +568,10 @@ _GetFontData (uio_Stream *fp, DWORD length)
 		goto err;
 
 	fontDir = CaptureDirEntryTable (LoadDirEntryTable (contentDir,
-			_cur_resfile_name, ".", match_MATCH_SUBSTRING, &numDirEntries));
+			_cur_resfile_name, ".", match_MATCH_SUBSTRING));
 	if (fontDir == 0)
 		goto err;
+	numDirEntries = GetDirEntryTableCount (fontDir);
 
 	fontDirHandle = uio_openDirRelative (contentDir, _cur_resfile_name, 0);
 	if (fontDirHandle == NULL)

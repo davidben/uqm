@@ -54,7 +54,9 @@ extern void LoadMasterShipList (void (* YieldProcessing)(void));
 extern void FreeMasterShipList (void);
 extern HMASTERSHIP FindMasterShip (DWORD ship_ref);
 extern int FindMasterShipIndex (DWORD ship_ref);
-
+COUNT GetShipCostFromIndex (unsigned Index);
+FRAME GetShipIconsFromIndex (unsigned Index);
+FRAME GetShipMeleeIconsFromIndex (unsigned Index);
 
 #endif  /* _MASTER_H */
 

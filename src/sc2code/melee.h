@@ -78,8 +78,6 @@ extern FRAME PickMeleeFrame;
 		// in SuperMelee.
 
 #define MAX_TEAM_CHARS 30
-#define MAX_VIS_TEAMS 5
-#define NUM_PREBUILT 15
 #define NUM_PICK_COLS 5
 #define NUM_PICK_ROWS 5
 
@@ -94,6 +92,8 @@ typedef struct
 			 * default name in starcon.txt is unknowingly mangled. */
 } TEAM_IMAGE;
 
+#include "loadmele.h"
+
 struct melee_side_state
 {
 	TEAM_IMAGE TeamImage;
@@ -107,14 +107,11 @@ struct melee_state
 
 	BOOLEAN Initialized;
 	MELEE_OPTIONS MeleeOption;
-	DIRENTRY TeamDE;
-	COUNT TopTeamIndex, BotTeamIndex;
 	COUNT side, row, col;
 	struct melee_side_state SideState[NUM_SIDES];
+	struct melee_load_state load;
 	COUNT CurIndex;
 	Task flash_task;
-	TEAM_IMAGE FileList[MAX_VIS_TEAMS];
-	TEAM_IMAGE PreBuiltList[NUM_PREBUILT];
 	RandomContext *randomContext;
 			/* RNG state for all local random decisions, i.e. those
 			 * decisions that are not shared among network parties. */
@@ -123,6 +120,13 @@ struct melee_state
 };
 
 extern void Melee (void);
+
+// Some prototypes for use by loadmele.c:
+BOOLEAN DoMelee (MELEE_STATE *pMS);
+void DrawMeleeIcon (COUNT which_icon);
+COUNT GetTeamValue (TEAM_IMAGE *pTI);
+void RepairMeleeFrame (RECT *pRect);
+extern FRAME MeleeFrame;
 
 void teamStringChanged (MELEE_STATE *pMS, int player);
 void entireFleetChanged (MELEE_STATE *pMS, int player);

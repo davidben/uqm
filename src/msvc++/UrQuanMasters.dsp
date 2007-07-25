@@ -4112,6 +4112,14 @@ SOURCE=..\sc2code\load.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\loadmele.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\loadmele.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\loadship.c
 # End Source File
 # Begin Source File

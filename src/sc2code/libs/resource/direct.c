@@ -23,7 +23,7 @@
 
 DIRENTRY_REF
 LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
-		const char *pattern, match_MatchType matchType, COUNT *pnum_entries)
+		const char *pattern, match_MatchType matchType)
 {
 	uio_DirList *dirList;
 	COUNT num_entries, length;
@@ -69,7 +69,6 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 
 	if (num_entries == 0) {
 		uio_DirList_free(dirList);
-		*pnum_entries = 0;
 		return ((DIRENTRY_REF) 0);
 	}
 
@@ -81,7 +80,6 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	{
 		FreeStringTable (StringTable);
 		uio_DirList_free(dirList);
-		*pnum_entries = 0;
 		return ((DIRENTRY_REF) 0);
 	}
 	lpST->StringCount = num_entries;
@@ -102,7 +100,6 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	}
 	
 	uio_DirList_free(dirList);
-	*pnum_entries = num_entries;
 	UnlockStringTable (StringTable);
 	return ((DIRENTRY_REF) StringTable);
 }	

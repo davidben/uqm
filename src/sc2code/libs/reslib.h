@@ -105,8 +105,7 @@ typedef STRINGPTR DIRENTRYPTR;
 
 
 extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
-		const char *path, const char *pattern, match_MatchType matchType,
-		COUNT *pnum_entries);
+		const char *path, const char *pattern, match_MatchType matchType);
 #define CaptureDirEntryTable CaptureStringTable
 #define ReleaseDirEntryTable ReleaseStringTable
 #define DestroyDirEntryTable DestroyStringTable

@@ -167,3 +167,59 @@ FindMasterShipIndex (DWORD ship_ref)
 
 	return hStarShip ? index : -1;
 }
+
+COUNT
+GetShipCostFromIndex (unsigned Index)
+{
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
+	COUNT val;
+
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
+		return 0;
+
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.ship_cost;
+	UnlockMasterShip (&master_q, hMasterShip);
+
+	return val;
+}
+
+FRAME
+GetShipIconsFromIndex (unsigned Index)
+{
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
+	FRAME val;
+
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
+		return 0;
+
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.icons;
+	UnlockMasterShip (&master_q, hMasterShip);
+
+	return val;
+}
+
+FRAME
+GetShipMeleeIconsFromIndex (unsigned Index)
+{
+	HMASTERSHIP hMasterShip;
+	MASTER_SHIP_INFO *MasterPtr;
+	FRAME val;
+
+	hMasterShip = GetStarShipFromIndex (&master_q, Index);
+	if (!hMasterShip)
+		return 0;
+
+	MasterPtr = LockMasterShip (&master_q, hMasterShip);
+	val = MasterPtr->ShipInfo.melee_icon;
+	UnlockMasterShip (&master_q, hMasterShip);
+
+	return val;
+}
+
+
