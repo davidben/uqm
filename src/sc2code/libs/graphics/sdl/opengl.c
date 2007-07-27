@@ -160,7 +160,7 @@ AttemptColorDepth (int flags, int width, int height, int bpp)
 }
 
 int
-TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
+TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen)
 {
 	int i, texture_width, texture_height;
 	GraphicsDriver = driver;
@@ -172,56 +172,62 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 		log_add (log_Error, "Couldn't set any OpenGL %ix%i video mode!",
 			 width, height);
 		return -1;
-	}		
-
-	if (format_conv_surf)
-		SDL_FreeSurface (format_conv_surf);
-	format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
-		R_MASK, G_MASK, B_MASK, A_MASK);
-	if (format_conv_surf == NULL)
-	{
-		log_add (log_Error, "Couldn't create format_conv_surf: %s",
-				SDL_GetError());
-		return -1;
 	}
 
-	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+	if (!togglefullscreen)
 	{
-		if (0 != ReInit_Screen (&SDL_Screens[i], format_conv_surf,
-				ScreenWidth, ScreenHeight))
+		if (format_conv_surf)
+			SDL_FreeSurface (format_conv_surf);
+		format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
+			R_MASK, G_MASK, B_MASK, A_MASK);
+		if (format_conv_surf == NULL)
+		{
+			log_add (log_Error, "Couldn't create format_conv_surf: %s",
+					SDL_GetError());
 			return -1;
-	}
+		}
 
-	SDL_Screen = SDL_Screens[0];
-	TransitionScreen = SDL_Screens[2];
-
-	if (first_init)
-	{
 		for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 		{
-			GL_Screens[i].scaled = NULL;
-			GL_Screens[i].dirty = TRUE;
-			GL_Screens[i].active = TRUE;
+			if (0 != ReInit_Screen (&SDL_Screens[i], format_conv_surf,
+					ScreenWidth, ScreenHeight))
+				return -1;
 		}
-		GL_Screens[1].active = FALSE;
-		first_init = FALSE;
+
+		SDL_Screen = SDL_Screens[0];
+		TransitionScreen = SDL_Screens[2];
+
+		if (first_init)
+		{
+			for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+			{
+				GL_Screens[i].scaled = NULL;
+				GL_Screens[i].dirty = TRUE;
+				GL_Screens[i].active = TRUE;
+			}
+			GL_Screens[1].active = FALSE;
+			first_init = FALSE;
+		}
 	}
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_SOFT_ONLY)
 	{
-		for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		if (!togglefullscreen)
 		{
-			if (!GL_Screens[i].active)
-				continue;
-			if (0 != ReInit_Screen (&GL_Screens[i].scaled, format_conv_surf,
-					ScreenWidth * 2, ScreenHeight * 2))
-			return -1;
+			for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+			{
+				if (!GL_Screens[i].active)
+					continue;
+				if (0 != ReInit_Screen (&GL_Screens[i].scaled, format_conv_surf,
+						ScreenWidth * 2, ScreenHeight * 2))
+				return -1;
+			}
+			scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
 		}
 
 		texture_width = 1024;
 		texture_height = 512;
 
-		scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
 		graphics_backend = &opengl_scaled_backend;
 	}
 	else
@@ -232,6 +238,7 @@ TFB_GL_ConfigureVideo (int driver, int flags, int width, int height)
 		scaler = NULL;
 		graphics_backend = &opengl_unscaled_backend;
 	}
+
 
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_ANY)
 		ScreenFilterMode = GL_LINEAR;
@@ -277,7 +284,7 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	if (TFB_GL_ConfigureVideo (driver, flags, width, height))
+	if (TFB_GL_ConfigureVideo (driver, flags, width, height, 0))
 	{
 		log_add (log_Fatal, "Could not initialize video: "
 				"no fallback at start of program!");
@@ -367,10 +374,18 @@ TFB_GL_Preprocess (int force_full_redraw, int transition_amount, int fade_amount
 	glOrtho (0,ScreenWidthActual,ScreenHeightActual, 0, -1, 1);
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	(void) force_full_redraw;
 	(void) transition_amount;
 	(void) fade_amount;
-	if (TFB_BBox.valid)
+
+	if (force_full_redraw == TFB_REDRAW_YES)
+	{
+		GL_Screens[TFB_SCREEN_MAIN].updated.x = 0;
+		GL_Screens[TFB_SCREEN_MAIN].updated.y = 0;
+		GL_Screens[TFB_SCREEN_MAIN].updated.w = ScreenWidth;
+		GL_Screens[TFB_SCREEN_MAIN].updated.h = ScreenHeight;
+		GL_Screens[TFB_SCREEN_MAIN].dirty = TRUE;
+	}
+	else if (TFB_BBox.valid)
 	{
 		GL_Screens[TFB_SCREEN_MAIN].updated.x = TFB_BBox.region.corner.x;
 		GL_Screens[TFB_SCREEN_MAIN].updated.y = TFB_BBox.region.corner.y;

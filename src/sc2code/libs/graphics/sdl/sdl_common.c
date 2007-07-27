@@ -32,6 +32,7 @@
 #include "libs/uio.h"
 #include "libs/log.h"
 #include "controls.h"
+#include "vidlib.h"
 		// XXX: Should not be included from here.
 #include "uqmdebug.h"
 #include SDL_INCLUDE(SDL_thread.h)
@@ -82,14 +83,21 @@ int
 TFB_ReInitGraphics (int driver, int flags, int width, int height)
 {
 	int result;
+	int togglefullscreen = 0;
 	char caption[200];
+
+	if (GfxFlags == (flags ^ TFB_GFXFLAGS_FULLSCREEN) && driver == GraphicsDriver &&
+			width == ScreenWidthActual && height == ScreenHeightActual)
+	{
+		togglefullscreen = 1;
+	}
 
 	GfxFlags = flags;
 
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
-		result = TFB_GL_ConfigureVideo (driver, flags, width, height);
+		result = TFB_GL_ConfigureVideo (driver, flags, width, height, togglefullscreen);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
 		log_add (log_Warning, "OpenGL support not compiled in,"
@@ -99,7 +107,7 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 	}
 	else
 	{
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, togglefullscreen);
 	}
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s",
@@ -194,17 +202,27 @@ TFB_ProcessEvents ()
 				// TODO
 				break;
 			case SDL_VIDEOEXPOSE:    /* Screen needs to be redrawn */
-				TFB_SwapBuffers (1);
+				TFB_SwapBuffers (TFB_REDRAW_EXPOSE);
 				break;
 			default:
 				break;
 		}
 	}
+
 	if (ImmediateInputState.menu[KEY_ABORT] || abortFlag)
 	{
 		log_showBox (false, false);
 		exit (EXIT_SUCCESS);
 	}
+	
+	if (ImmediateInputState.menu[KEY_FULLSCREEN])
+	{
+		int flags = GfxFlags ^ TFB_GFXFLAGS_FULLSCREEN;
+		FlushInput ();
+		TFB_ReInitGraphics (GraphicsDriver, flags, ScreenWidthActual, ScreenHeightActual);
+		TFB_SwapBuffers (TFB_REDRAW_YES);
+	}
+
 #if defined(DEBUG) || defined(USE_DEBUG_KEY)
 	if (ImmediateInputState.menu[KEY_DEBUG])
 	{
@@ -242,15 +260,15 @@ TFB_SwapBuffers (int force_full_redraw)
 	fade_amount = FadeAmount;
 	transition_amount = TransitionAmount;
 
-	if (!force_full_redraw && !TFB_BBox.valid &&
+	if (force_full_redraw == TFB_REDRAW_NO && !TFB_BBox.valid &&
 			fade_amount == 255 && transition_amount == 255 &&
 			last_fade_amount == 255 && last_transition_amount == 255)
 		return;
 
-	if (fade_amount != 255 || transition_amount != 255 ||
-			last_fade_amount != 255 || last_transition_amount != 255)
+	if (force_full_redraw == TFB_REDRAW_NO && (fade_amount != 255 || transition_amount != 255 ||
+			last_fade_amount != 255 || last_transition_amount != 255))
 	{
-		force_full_redraw = 1;
+		force_full_redraw = TFB_REDRAW_FADING;
 	}
 
 	last_fade_amount = fade_amount;
@@ -605,7 +623,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 			(current_fade == 255 && last_fade != 255) ||
 			(current_transition == 255 && last_transition != 255))
 		{
-			TFB_SwapBuffers (1); // if fading, redraw every frame
+			TFB_SwapBuffers (TFB_REDRAW_FADING); // if fading, redraw every frame
 		}
 		else
 		{
@@ -888,7 +906,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 		Unlock_DCQ ();
 	}
 
-	TFB_SwapBuffers (0);
+	TFB_SwapBuffers (TFB_REDRAW_NO);
 	RenderedFrames++;
 	BroadcastCondVar (RenderingCond);
 }

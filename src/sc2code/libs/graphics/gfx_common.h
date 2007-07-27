@@ -32,6 +32,15 @@ enum
 	TFB_GFXDRIVER_SDL_PURE,
 };
 
+// forced redraw
+enum
+{
+	TFB_REDRAW_NO = 0,
+	TFB_REDRAW_FADING,
+	TFB_REDRAW_EXPOSE,
+	TFB_REDRAW_YES
+};
+
 // flags for TFB_InitGraphics
 #define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
 #define TFB_GFXFLAGS_SHOWFPS            (1<<1)

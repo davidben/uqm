@@ -74,7 +74,7 @@ ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
 }
 
 int
-TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
+TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen)
 {
 	int i, videomode_flags;
 	SDL_Surface *temp_surf;
@@ -124,6 +124,9 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height)
 			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
 			SDL_GetVideoSurface()->format->BitsPerPixel);
 		ScreenColorDepth = SDL_GetVideoSurface()->format->BitsPerPixel;
+		
+		if (togglefullscreen)
+			return 0;
 	}
 
 	// Create a 32bpp surface in a compatible format which will supply
@@ -210,7 +213,7 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 	ScreenWidth = 320;
 	ScreenHeight = 240;
 
-	if (TFB_Pure_ConfigureVideo (driver, flags, width, height))
+	if (TFB_Pure_ConfigureVideo (driver, flags, width, height, 0))
 	{
 		log_add (log_Fatal, "Could not initialize video: "
 				"no fallback at start of program!");
@@ -286,7 +289,7 @@ TFB_Pure_Scaled_Preprocess (int force_full_redraw, int transition_amount, int fa
 static void
 TFB_Pure_Unscaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount)
 {
-	if (force_full_redraw)
+	if (force_full_redraw != TFB_REDRAW_NO)
 	{
 		updated.x = updated.y = 0;
 		updated.w = ScreenWidth;

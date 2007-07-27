@@ -49,6 +49,7 @@ static const char *menu_res_names[] = {
 	"exit",
 	"abort",
 	"debug",
+	"fullscreen",
 	"up",
 	"down",
 	"left",

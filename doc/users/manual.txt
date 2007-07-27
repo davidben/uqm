@@ -656,6 +656,7 @@ the QUIT button in the lower right.
 
 F1 or PAUSE                  Pause game
 F10                          Exit game
+F11                          Toggle between fullscreen and windowed mode
 
 			   FULL GAME CONTROLS SUMMARY
 
