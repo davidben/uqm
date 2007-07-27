@@ -102,7 +102,7 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 		driver = TFB_GFXDRIVER_SDL_PURE;
 		log_add (log_Warning, "OpenGL support not compiled in,"
 				" so using pure SDL driver");
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, togglefullscreen);
 #endif
 	}
 	else
