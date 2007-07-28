@@ -97,7 +97,10 @@ getTempDir (char *buf, size_t buflen) {
 	
 	if (tryTempDir (buf, buflen, getenv("TMP")) &&
 			tryTempDir (buf, buflen, getenv("TEMP")) &&
+#if !defined(WIN32) || defined (__CYGWIN__)
 			tryTempDir (buf, buflen, "/tmp/") &&
+			tryTempDir (buf, buflen, "/var/tmp/") &&
+#endif
 			tryTempDir (buf, buflen, getcwd (cwd, sizeof cwd)))
 	{
 		log_add (log_Fatal, "Fatal Error: Cannot find a suitable location "

@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Add /var/tmp as possible location for temporary files. Don't try
+  /tmp and /var/tmp at all on MS Windows (Cygwin excepted) - SvdB
 - Added fullscreen/windowed toggle key F11 - Mika
 - Allow building without ogg vorbis support (bug #852) - SvdB
 - Reworked SuperMelee fleet loading (fixes bug #823) - SvdB
