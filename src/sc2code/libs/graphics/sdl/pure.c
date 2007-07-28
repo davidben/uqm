@@ -258,7 +258,7 @@ static SDL_Rect updated;
 static void
 TFB_Pure_Scaled_Preprocess (int force_full_redraw, int transition_amount, int fade_amount)
 {
-	if (force_full_redraw)
+	if (force_full_redraw != TFB_REDRAW_NO)
 	{
 		updated.x = updated.y = 0;
 		updated.w = ScreenWidth;
