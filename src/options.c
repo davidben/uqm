@@ -48,6 +48,7 @@ int optMeleeScale;
 
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
+BOOLEAN optKeepAspectRatio;
 uio_DirHandle *contentDir;
 uio_DirHandle *configDir;
 uio_DirHandle *saveDir;

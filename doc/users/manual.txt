@@ -74,6 +74,10 @@ poor or no 3D acceleration, and is often faster, especially on older
 or less well supported cards.  Only the 320x240 and 640x480
 resolutions are available when not using OpenGL.
 
+	-k                 (or --keepaspectratio)
+
+Keep 4:3 aspect ratio when using custom resolutions.
+
 	-c                 (or --scale=mode)
 
 Graphics scaling mode (bilinear, biadapt, biadv, triscan, hq or none).

@@ -41,6 +41,7 @@ extern int optMeleeScale;
 
 extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
+extern BOOLEAN optKeepAspectRatio;
 
 extern uio_DirHandle *contentDir;
 extern uio_DirHandle *configDir;

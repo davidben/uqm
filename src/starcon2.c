@@ -67,6 +67,7 @@ struct options_struct {
 	int soundFlags;
 	int width;
 	int height;
+	BOOLEAN keepAspectRatio;
 	const char *configDir;
 	const char *contentDir;
 	const char **addons;
@@ -115,6 +116,7 @@ main (int argc, char *argv[])
 		/* .soundFlags = */         audio_QUALITY_MEDIUM,
 		/* .width = */              640,
 		/* .height = */             480,
+		/* .keepAspectRatio = */    FALSE,
 		/* .configDir = */          NULL,
 		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
@@ -206,6 +208,10 @@ main (int argc, char *argv[])
 	if (res_HasKey ("config.resheight"))
 	{
 		options.height = res_GetInteger ("config.resheight");
+	}
+	if (res_HasKey("config.keepaspectratio"))
+	{
+		options.keepAspectRatio = res_GetBoolean ("config.keepaspectratio");
 	}
 	if (res_HasKey ("config.alwaysgl"))
 	{
@@ -408,6 +414,7 @@ main (int argc, char *argv[])
 	optWhichShield = options.whichShield;
 	optSmoothScroll = options.smoothScroll;
 	optMeleeScale = options.meleeScale;
+	optKeepAspectRatio = options.keepAspectRatio;
 	optSubtitles = options.subTitles;
 	optStereoSFX = options.stereoSFX;
 	musicVolumeScale = options.musicVolumeScale;
@@ -488,7 +495,7 @@ enum
 #endif
 };
 
-static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:vwx";
+static const char *optString = "+r:d:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:vwxk";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -513,6 +520,7 @@ static struct option longOptions[] =
 	{"version", 0, NULL, 'v'},
 	{"windowed", 0, NULL, 'w'},
 	{"nogl", 0, NULL, 'x'},
+	{"keepaspectratio", 0, NULL, 'k'},
 
 	//  options with no short equivalent:
 	{"cscan", 1, NULL, CSCAN_OPT},
@@ -624,6 +632,9 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				break;
 			case 'x':
 				options->gfxDriver = TFB_GFXDRIVER_SDL_PURE;
+				break;
+			case 'k':
+				options->keepAspectRatio = TRUE;
 				break;
 			case 'c':
 				// make sure whatever was set by saved config is cleared
@@ -972,6 +983,7 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "  -w, --windowed (default on)");
 	log_add (log_User, "  -o, --opengl (default off)");
 	log_add (log_User, "  -x, --nogl (default on)");
+	log_add (log_User, "  -k, --keepaspectratio (default off)");
 	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
 			"hq or none (default) )");
 	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
