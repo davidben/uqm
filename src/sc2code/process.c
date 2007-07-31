@@ -324,10 +324,12 @@ CalcView (POINT *pNewScrollPt, SIZE next_reduction,
 					&& zoom_out - next_reduction > ZOOM_JUMP)
 				next_reduction = zoom_out - ZOOM_JUMP;
 				
-			SpaceOrg.x = (int)(LOG_SPACE_WIDTH >> 1)
-					- (LOG_SPACE_WIDTH * next_reduction / (MAX_ZOOM_OUT << 2));
-			SpaceOrg.y = (int)(LOG_SPACE_HEIGHT >> 1)
-					- (LOG_SPACE_HEIGHT * next_reduction / (MAX_ZOOM_OUT << 2));
+			// Always align the origin on a whole pixel to reduce the
+			// amount of object positioning jitter
+			SpaceOrg.x = DISPLAY_ALIGN((int)(LOG_SPACE_WIDTH >> 1) -
+					(LOG_SPACE_WIDTH * next_reduction / (MAX_ZOOM_OUT << 2)));
+			SpaceOrg.y = DISPLAY_ALIGN((int)(LOG_SPACE_HEIGHT >> 1) -
+					(LOG_SPACE_HEIGHT * next_reduction / (MAX_ZOOM_OUT << 2)));
 		}
 		zoom_out = next_reduction;
 		view_state = VIEW_CHANGE;
