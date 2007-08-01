@@ -1077,8 +1077,8 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->shield = (optWhichShield == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->fps = (GfxFlags & TFB_GFXFLAGS_SHOWFPS) ? 
 			OPTVAL_ENABLED : OPTVAL_DISABLED;
-	opts->meleezoom = (optMeleeScale == TFB_SCALE_TRILINEAR) ? 
-			OPTVAL_3DO : OPTVAL_PC;
+	opts->meleezoom = (optMeleeScale == TFB_SCALE_STEP) ? 
+			OPTVAL_PC : OPTVAL_3DO;
 	opts->stereo = optStereoSFX ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	/* These values are read in, but won't change during a run. */
 	opts->music = (optWhichMusic == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;

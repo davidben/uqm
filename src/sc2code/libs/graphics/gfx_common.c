@@ -34,6 +34,9 @@ int ScreenColorDepth;
 int GraphicsDriver;
 int TFB_DEBUG_HALT = 0;
 
+static int gscale = GSCALE_IDENTITY;
+static int gscale_mode = TFB_SCALE_NEAREST;
+
 // Status: Ignored (only used in fmv.c)
 void
 SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
@@ -62,3 +65,31 @@ LoadIntoExtraScreen (RECT *r)
 	TFB_DrawScreen_Copy(r, TFB_SCREEN_MAIN, TFB_SCREEN_EXTRA);
 }
 
+int
+SetGraphicScale (int scale)
+{
+	int old_scale = gscale;
+	gscale = (scale ? scale : GSCALE_IDENTITY);
+	return old_scale;
+}
+
+int
+GetGraphicScale (void)
+{
+	return gscale;
+}
+
+int
+SetGraphicScaleMode (int mode)
+{
+	int old_mode = gscale_mode;
+	assert (mode >= TFB_SCALE_NEAREST && mode <= TFB_SCALE_TRILINEAR);
+	gscale_mode = mode;
+	return old_mode;
+}
+
+int
+GetGraphicScaleMode (void)
+{
+	return gscale_mode;
+}

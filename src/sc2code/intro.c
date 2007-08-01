@@ -585,20 +585,23 @@ DoPresentation (void *pIS)
 			int cargs;
 			int draw_what;
 			int index, x, y, scale, angle;
+			int scale_mode;
 			char ImgName[16];
-			int OldScale;
+			int old_scale, old_mode;
 			STAMP s;
 
 			if (1 == sscanf (pStr, "%15s", ImgName)
 					&& strcmp (strupr (ImgName), "SIS") == 0)
 			{
 				draw_what = PRES_DRAW_SIS;
+				scale_mode = TFB_SCALE_NEAREST;
 				cargs = sscanf (pStr, "%*s %d %d %d %d",
 							&x, &y, &scale, &angle) + 1;
 			}
 			else
 			{
 				draw_what = PRES_DRAW_INDEX;
+				scale_mode = TFB_SCALE_BILINEAR;
 				cargs = sscanf (pStr, "%d %d %d %d %d",
 							&index, &x, &y, &scale, &angle);
 			}
@@ -646,11 +649,12 @@ DoPresentation (void *pIS)
 			s.origin.y = y;
 			if (!pPIS->Batched)
 				LockMutex (GraphicsLock);
-			OldScale = GetGraphicScale ();
-			SetGraphicScale (scale);
+			old_mode = SetGraphicScaleMode (scale_mode);
+			old_scale = SetGraphicScale (scale);
 			SetContextClipping (TRUE);
 			DrawStamp (&s);
-			SetGraphicScale (OldScale);
+			SetGraphicScale (old_scale);
+			SetGraphicScaleMode (old_mode);
 			if (!pPIS->Batched)
 				UnlockMutex (GraphicsLock);
 		}

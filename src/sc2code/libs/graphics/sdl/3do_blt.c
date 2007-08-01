@@ -22,20 +22,6 @@
 #include "graphics/tfb_draw.h"
 #include "libs/log.h"
 
-static int gscale = GSCALE_IDENTITY;
-
-void
-SetGraphicScale (int scale)
-{
-	gscale = (scale ? scale : GSCALE_IDENTITY);
-}
-
-int
-GetGraphicScale ()
-{
-	return gscale;
-}
-
 static void
 read_screen (RECT *lpRect, FRAME DstFramePtr)
 {

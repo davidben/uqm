@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- Scaling images with respect to their hotspots: stabilizes compound
+  Melee objects; re-added bilinear Melee scaler; zooming planet uses
+  bilinear; fixes bug #685 - Alex
 - Added --keepaspectratio to keep correct aspect ratio when using
   custom resolutions in OpenGL mode - Mika
 - Add /var/tmp as possible location for temporary files. Don't try

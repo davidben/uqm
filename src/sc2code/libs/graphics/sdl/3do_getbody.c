@@ -191,7 +191,6 @@ FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy)
 	CREATE_FLAGS flags;
 	TFB_Image *tfbImg;
 	TFB_Canvas src, dst;
-	EXTENT ext;
 
 	flags = GetFrameParentDrawable (FramePtr)->Flags;
 	NewFrame = CaptureDrawable (
@@ -200,9 +199,7 @@ FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy)
 	LockMutex (tfbImg->mutex);
 	src = tfbImg->NormalImg;
 	dst = NewFrame->image->NormalImg;
-	ext.width = neww;
-	ext.height = newh;
-	TFB_DrawCanvas_Rescale_Nearest (src, dst, ext);
+	TFB_DrawCanvas_Rescale_Nearest (src, dst, -1, NULL, NULL, NULL);
 	UnlockMutex (tfbImg->mutex);
 	if (destroy)
 		DestroyDrawable (ReleaseDrawable (FramePtr));

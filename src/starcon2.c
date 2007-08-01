@@ -396,7 +396,6 @@ main (int argc, char *argv[])
 		return optionsResult;
 	}
 
-
 	/* TODO: Once threading is gone, these become local variables
 	   again.  In the meantime, they must be global so that
 	   initAudio (in StarCon2Main) can see them.  initAudio needed
@@ -660,6 +659,8 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 					options->meleeScale = TFB_SCALE_TRILINEAR;
 				else if (!strcmp (optarg, "step") || !strcmp (optarg, "pc"))
 					options->meleeScale = TFB_SCALE_STEP;
+				else if (!strcmp (optarg, "bilinear"))
+					options->meleeScale = TFB_SCALE_BILINEAR;
 				else
 				{
 					InvalidArgument (optarg, "--meleezoom or -b");

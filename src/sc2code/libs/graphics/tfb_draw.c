@@ -292,6 +292,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->MipmapHs = NullHs;
 	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
+	img->last_scale = 0;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
 	img->Palette = TFB_DrawCanvas_ExtractPalette (canvas);
@@ -322,6 +323,7 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->MipmapHs = NullHs;
 	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
+	img->last_scale = 0;
 	img->Palette = NULL;
 	img->extent.width = w;
 	img->extent.height = h;
@@ -389,28 +391,29 @@ TFB_DrawImage_Delete (TFB_Image *image)
 void
 TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 {
-	EXTENT old = image->extent;
-	HOT_SPOT oldhs = image->last_scale_hs;
-	TFB_DrawCanvas_GetScaledExtent (image->NormalImg, image->NormalHs,
-			image->MipmapImg, image->MipmapHs, target,
-			&image->extent, &image->last_scale_hs);
-
-	if ((old.width != image->extent.width) ||
-			(old.height != image->extent.height) || image->dirty ||
-			!image->ScaledImg || type != image->last_scale_type ||
-			(oldhs.x != image->last_scale_hs.x) ||
-			(oldhs.y != image->last_scale_hs.y))
+	if (image->dirty || !image->ScaledImg ||
+			target != image->last_scale ||
+			type != image->last_scale_type)
 	{
 		image->dirty = FALSE;
 		image->ScaledImg = TFB_DrawCanvas_New_ScaleTarget (image->NormalImg,
 			image->ScaledImg, type, image->last_scale_type);
-		image->last_scale_type = type;
 		
 		if (type == TFB_SCALE_NEAREST)
 			TFB_DrawCanvas_Rescale_Nearest (image->NormalImg,
-					image->ScaledImg, image->extent);
+					image->ScaledImg, target, &image->NormalHs,
+					&image->extent, &image->last_scale_hs);
+		else if (type == TFB_SCALE_BILINEAR)
+			TFB_DrawCanvas_Rescale_Bilinear (image->NormalImg,
+					image->ScaledImg, target, &image->NormalHs,
+					&image->extent, &image->last_scale_hs);
 		else
 			TFB_DrawCanvas_Rescale_Trilinear (image->NormalImg,
-					image->ScaledImg, image->MipmapImg, image->extent);
+					image->MipmapImg, image->ScaledImg, target,
+					&image->NormalHs, &image->MipmapHs,
+					&image->extent, &image->last_scale_hs);
+
+		image->last_scale_type = type;
+		image->last_scale = target;
 	}
 }

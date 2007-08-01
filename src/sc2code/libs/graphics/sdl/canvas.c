@@ -105,18 +105,18 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
-		int type;
-		if (optMeleeScale == TFB_SCALE_TRILINEAR && img->MipmapImg)
+		int type = GetGraphicScaleMode ();
+
+		if (type == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
-			type = TFB_SCALE_TRILINEAR;
 			// only set the new palette if it changed
 			if (((SDL_Surface *)img->MipmapImg)->format->palette
 					&& cmap && img->colormap_version != cmap->version)
 				SDL_SetColors (img->MipmapImg, (SDL_Color*)palette, 0, 256);
 		}
-		else
+		else if (type == TFB_SCALE_TRILINEAR && !img->MipmapImg)
 		{
-			type = TFB_SCALE_NEAREST;
+			type = TFB_SCALE_BILINEAR;
 		}
 
 		TFB_DrawImage_FixScaling (img, scale, type);
@@ -244,8 +244,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
 	int i;
-	SDL_Color pal[256];
-	EXTENT prevextent = img->extent;
+	bool force_fill = false;
 
 	if (img == 0)
 	{
@@ -257,7 +256,16 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
-		TFB_DrawImage_FixScaling (img, scale, TFB_SCALE_NEAREST);
+		int type = GetGraphicScaleMode ();
+
+		if (type == TFB_SCALE_TRILINEAR)
+			type = TFB_SCALE_BILINEAR;
+					// no point in trilinear for filled images
+
+		if (scale != img->last_scale || type != img->last_scale_type)
+			force_fill = true;
+
+		TFB_DrawImage_FixScaling (img, scale, type);
 		surf = img->ScaledImg;
 		srcRect.x = 0;
 		srcRect.y = 0;
@@ -270,6 +278,14 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	}
 	else
 	{
+		if (img->last_scale != 0)
+		{
+			// Make sure we remember that the last fill was from
+			// an unscaled image
+			force_fill = true;
+			img->last_scale = 0;
+		}
+
 		surf = img->NormalImg;
 		pSrcRect = NULL;
 		
@@ -279,6 +295,14 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 	if (surf->format->palette)
 	{	// set palette for fill-stamp
+		// Calling SDL_SetColors() results in an expensive src -> dst
+		// color-mapping operation for an SDL blit, following the call.
+		// We want to avoid that as much as possible.
+		
+		// TODO: generate a 32bpp filled image?
+
+		SDL_Color pal[256];
+
 		for (i = 0; i < 256; i++)
 		{
 			pal[i].r = r;
@@ -293,40 +317,43 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	{	// fill the non-transparent parts of the image with fillcolor
 		SDL_Surface *src = img->NormalImg;
 		SDL_Surface *newfill = img->FilledImg;
-		BOOLEAN force = FALSE;
+
+		if (newfill && (newfill->w < surf->w || newfill->h < surf->h))
+		{
+			TFB_DrawCanvas_Delete (newfill);
+			newfill = NULL;
+		}
 
 		// prepare the filled image
 		if (!newfill)
 		{
 			newfill = SDL_CreateRGBSurface (SDL_SWSURFACE,
-						src->w, src->h,
+						surf->w, surf->h,
 						surf->format->BitsPerPixel,
 						surf->format->Rmask,
 						surf->format->Gmask,
 						surf->format->Bmask,
 						surf->format->Amask);
-			force = TRUE;
+			force_fill = true;
 		}
 
-		if (force ||
-				prevextent.height != img->extent.height ||
-				prevextent.width != img->extent.width ||
+		if (force_fill ||
 				img->last_fill.r != r ||
 				img->last_fill.g != g ||
 				img->last_fill.b != b)
 		{	// image or fillcolor changed - regenerate
-			TFB_DrawCanvas_Fill (surf, img->extent.width, img->extent.height,
+			TFB_DrawCanvas_Fill (surf, surf->w, surf->h,
 					SDL_MapRGBA (newfill->format, r, g, b, 0), newfill);
 					// important to keep alpha=0 in fillcolor
 					// -- we process alpha ourselves
+
+			// cache filled image if possible
+			img->last_fill.r = r;
+			img->last_fill.g = g;
+			img->last_fill.b = b;
 		}
 
-		// cache filled image if possible
-		img->last_fill.r = r;
-		img->last_fill.g = g;
-		img->last_fill.b = b;
 		img->FilledImg = newfill;
-
 		surf = newfill;
 	}
 
@@ -486,48 +513,41 @@ TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanvas, int typ
 {
 	SDL_Surface *src = (SDL_Surface *)canvas;
 	SDL_Surface *old = (SDL_Surface *)oldcanvas;
-	SDL_Surface *newsurf = old;
+	SDL_Surface *newsurf = NULL;
+
+	// For the purposes of this function, bilinear == trilinear
+	if (type == TFB_SCALE_TRILINEAR)
+		type = TFB_SCALE_BILINEAR;
+	if (last_type == TFB_SCALE_TRILINEAR)
+		last_type = TFB_SCALE_BILINEAR;
+
+	if (old && type != last_type)
+	{
+		TFB_DrawCanvas_Delete (old);
+		old = NULL;
+	}
+	if (old)
+		return old; /* can just reuse the old one */
 
 	if (type == TFB_SCALE_NEAREST)
 	{
-		if (old && type != last_type)
-		{
-			TFB_DrawCanvas_Delete (old);
-			old = NULL;
-		}
-		if (!old)
-		{
-			newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w,
-						src->h,
-						src->format->BitsPerPixel,
-						src->format->Rmask,
-						src->format->Gmask,
-						src->format->Bmask,
-						src->format->Amask);
-			if (src->format->palette)
-				TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
-			else
-			{
-				int r, g, b;
-				if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
-					TFB_DrawCanvas_SetTransparentColor (newsurf, r, g, b, FALSE);
-			}
-		}
+		newsurf = SDL_CreateRGBSurface (SDL_SWSURFACE, src->w,
+					src->h,
+					src->format->BitsPerPixel,
+					src->format->Rmask,
+					src->format->Gmask,
+					src->format->Bmask,
+					src->format->Amask);
+		TFB_DrawCanvas_CopyTransparencyInfo (src, newsurf);
 	}
 	else
 	{
-		if (old && type != last_type)
-		{
-			TFB_DrawCanvas_Delete (old);
-			old = NULL;
-		}
-		if (!old)
-		{
-			if (SDL_Screen->format->BitsPerPixel == 32)
-				newsurf = TFB_DrawCanvas_New_ForScreen (src->w, src->h, TRUE);
-			else
-				newsurf = TFB_DrawCanvas_New_TrueColor (src->w, src->h, TRUE);
-		}
+		// The scaled image may in fact be larger by 1 pixel than the source
+		// because of hotspot alignment and fractional edge pixels
+		if (SDL_Screen->format->BitsPerPixel == 32)
+			newsurf = TFB_DrawCanvas_New_ForScreen (src->w + 1, src->h + 1, TRUE);
+		else
+			newsurf = TFB_DrawCanvas_New_TrueColor (src->w + 1, src->h + 1, TRUE);
 	}
 		
 	return newsurf;
@@ -556,14 +576,7 @@ TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src_canvas, int angle)
 				SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
-	if (src->format->palette)
-		TFB_DrawCanvas_SetTransparentIndex (newsurf, TFB_DrawCanvas_GetTransparentIndex (src), FALSE);
-	else
-	{
-		int r, g, b;
-		if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
-			TFB_DrawCanvas_SetTransparentColor (newsurf, r, g, b, FALSE);
-	}
+	TFB_DrawCanvas_CopyTransparencyInfo (src, newsurf);
 	
 	return newsurf;
 }
@@ -672,6 +685,25 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleacc
 	}		
 }
 
+void
+TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src_canvas, TFB_Canvas dst_canvas)
+{
+	SDL_Surface* src = (SDL_Surface*)src_canvas;
+
+	if (src->format->palette)
+	{
+		int index;
+		index = TFB_DrawCanvas_GetTransparentIndex (src_canvas);
+		TFB_DrawCanvas_SetTransparentIndex (dst_canvas, index, FALSE);
+	}
+	else
+	{
+		int r, g, b;
+		if (TFB_DrawCanvas_GetTransparentColor (src_canvas, &r, &g, &b))
+			TFB_DrawCanvas_SetTransparentColor (dst_canvas, r, g, b, FALSE);
+	}
+}
+
 BOOLEAN
 TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
 {
@@ -707,39 +739,68 @@ TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOL
 }
 
 void
-TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
-		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
-		int scale, EXTENT *size, HOT_SPOT *hs)
+TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT* src_hs,
+		TFB_Canvas src_mipmap, HOT_SPOT* mm_hs,
+		int scale, int type, EXTENT *size, HOT_SPOT *hs)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	sint32 x, y, w, h;
+	int frac;
 	
 	if (!src_mipmap)
 	{
-		size->width  = src->w * scale / GSCALE_IDENTITY;
-		size->height = src->h * scale / GSCALE_IDENTITY;
-
-		hs->x = src_hs.x * scale / GSCALE_IDENTITY;
-		hs->y = src_hs.y * scale / GSCALE_IDENTITY;
+		w = src->w * scale;
+		h = src->h * scale;
+		x = src_hs->x * scale;
+		y = src_hs->y * scale;
 	}
 	else
 	{
 		// interpolates extents between src and mipmap to get smoother
 		// transition when surface changes
 		SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
+		int ratio = scale * 2 - GSCALE_IDENTITY;
 
-		float ratio = (scale / (float)GSCALE_IDENTITY) * 2.0f - 1.0f;
-		if (ratio < 0.0f)
-			ratio = 0.0f;
-		else if (ratio > 1.0f)
-			ratio = 1.0f;
+		assert (scale >= GSCALE_IDENTITY / 2);
 
-		size->width = (int)((src->w - mipmap->w) * ratio + mipmap->w + 0.5);
-		size->height = (int)((src->h - mipmap->h) * ratio + mipmap->h + 0.5);
+		w = mipmap->w * GSCALE_IDENTITY + (src->w - mipmap->w) * ratio;
+		h = mipmap->h * GSCALE_IDENTITY + (src->h - mipmap->h) * ratio;
 
-		hs->x = (int)((src_hs.x - mm_hs.x) * ratio + mm_hs.x + 0.5);
-		hs->y = (int)((src_hs.y - mm_hs.y) * ratio + mm_hs.y + 0.5);
+		// Seems it is better to use mipmap hotspot because some
+		// source and mipmap images have the same dimensions!
+		x = mm_hs->x * GSCALE_IDENTITY + (src_hs->x - mm_hs->x) * ratio;
+		y = mm_hs->y * GSCALE_IDENTITY + (src_hs->y - mm_hs->y) * ratio;
 	}
-		
+
+	if (type != TFB_SCALE_NEAREST)
+	{
+		// align hotspot on an whole pixel
+		if (x & (GSCALE_IDENTITY - 1))
+		{
+			frac = GSCALE_IDENTITY - (x & (GSCALE_IDENTITY - 1));
+			x += frac;
+			w += frac;
+		}
+		if (y & (GSCALE_IDENTITY - 1))
+		{
+			frac = GSCALE_IDENTITY - (y & (GSCALE_IDENTITY - 1));
+			y += frac;
+			h += frac;
+		}
+		// pad the extent to accomodate fractional edge pixels
+		w += (GSCALE_IDENTITY - 1);
+		h += (GSCALE_IDENTITY - 1);
+	}
+
+	size->width = w / GSCALE_IDENTITY;
+	size->height = h / GSCALE_IDENTITY;
+	hs->x = x / GSCALE_IDENTITY;
+	hs->y = y / GSCALE_IDENTITY;
+
+	// Scaled image can be larger than the source by 1 pixel
+	// because of hotspot alignment and fractional edge pixels
+	assert (size->width <= src->w + 1 && size->height <= src->h + 1);
+
 	if (!size->width && src->w)
 		size->width = 1;
 	if (!size->height && src->h)
@@ -756,57 +817,48 @@ TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, EXTENT *size)
 }
 
 void
-TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, EXTENT size)
+TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
+		int scale, HOT_SPOT* src_hs, EXTENT* size, HOT_SPOT* dst_hs)
 {
-#define NNS_MAX_DIMS 600	
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
-	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
-	int x, y, sx, sy, *csax, *csay, csx, csy;
-	int saspace[NNS_MAX_DIMS];
-	int *sax, *say;
+	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
+	int x, y;
+	int fsx = 0, fsy = 0; // source fractional dx and dy increments
+	int ssx = 0, ssy = 0; // source fractional x and y starting points
+	int w, h;
 
-	if (size.width + size.height > NNS_MAX_DIMS)
+	if (scale > 0)
 	{
-		log_add (log_Warning, "TFB_DrawCanvas_Scale: Tried to zoom"
-				" an image to unreasonable size! Failing.");
-		return;
+		TFB_DrawCanvas_GetScaledExtent (src, src_hs, NULL, NULL, scale,
+				TFB_SCALE_NEAREST, size, dst_hs);
+
+		w = size->width;
+		h = size->height;
 	}
-	if (size.width > dst->w || size.height > dst->h) 
+	else
 	{
-		log_add (log_Warning, "TFB_DrawCanvas_Scale: Tried to scale"
+		// Just go with the dst surface dimensions
+		w = dst->w;
+		h = dst->h;
+	}
+
+	if (w > dst->w || h > dst->h) 
+	{
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Nearest: Tried to scale"
 				" image to size %d %d when dest_canvas has only"
 				" dimensions of %d %d! Failing.",
-				size.width, size.height, dst->w, dst->h);
+				w, h, dst->w, dst->h);
 		return;
 	}
 
-	sx = sy = 0;
-	if (size.width  > 1)
-		sx = ((src->w - 1) << 16) / (size.width  - 1);
-	if (size.height > 1)
-		sy = ((src->h - 1) << 16) / (size.height - 1);
-
-	sax = saspace;
-	say = saspace + size.width;
-	/*
-	 * Precalculate row increments 
-	 * We start with a value in 0..0.5 range to shift the bigger
-	 * jumps towards the center of the image
-	 */
-	csax = sax;
-	for (x = 0, csx = 0x6000; x < size.width; x++) {
-		*csax = csx >> 16;
-		csax++;
-		csx &= 0xffff;
-		csx += sx;
-	}
-	csay = say;
-	for (y = 0, csy = 0x6000; y < size.height; y++) {
-		*csay = csy >> 16;
-		csay++;
-		csy &= 0xffff;
-		csy += sy;
-	}
+	if (w > 1)
+		fsx = ((src->w - 1) << 16) / (w - 1);
+	if (h > 1)
+		fsy = ((src->h - 1) << 16) / (h - 1);
+	// We start with a value in 0..0.5 range to shift the bigger
+	// jumps towards the center of the image
+	ssx = 0x6000;
+	ssy = 0x6000;
 
 	SDL_LockSurface (src);
 	SDL_LockSurface (dst);
@@ -814,29 +866,33 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 	if (src->format->BytesPerPixel == 1 && dst->format->BytesPerPixel == 1)
 	{
 		Uint8 *sp, *csp, *dp, *cdp;
+		int sx, sy; // source fractional x and y positions
 
 		sp = csp = (Uint8 *) src->pixels;
 		dp = cdp = (Uint8 *) dst->pixels;
 
-		csay = say;
-		for (y = 0; y < size.height; ++y) {
-			csp += (*csay) * src->pitch;
+		for (y = 0, sy = ssy; y < h; ++y)
+		{
+			csp += (sy >> 16) * src->pitch;
 			sp = csp;
 			dp = cdp;
-			csax = sax;
-			for (x = 0; x < size.width; ++x) {
-				sp += *csax;
+			for (x = 0, sx = ssx; x < w; ++x)
+			{
+				sp += (sx >> 16);
 				*dp = *sp;
-				++csax;
+				sx &= 0xffff;
+				sx += fsx;
 				++dp;
 			}
-			++csay;
+			sy &= 0xffff;
+			sy += fsy;
 			cdp += dst->pitch;
 		}
 	}	
 	else if (src->format->BytesPerPixel == 4 && dst->format->BytesPerPixel == 4)
 	{
 		Uint32 *sp, *csp, *dp, *cdp;
+		int sx, sy; // source fractional x and y positions
 		int sgap, dgap;
 
 		sgap = src->pitch >> 2;
@@ -845,19 +901,21 @@ TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src_canvas, TFB_Canvas dest_canvas, E
 		sp = csp = (Uint32 *) src->pixels;
 		dp = cdp = (Uint32 *) dst->pixels;
 
-		csay = say;
-		for (y = 0; y < size.height; ++y) {
-			csp += (*csay) * sgap;
+		for (y = 0, sy = ssy; y < h; ++y)
+		{
+			csp += (sy >> 16) * sgap;
 			sp = csp;
 			dp = cdp;
-			csax = sax;
-			for (x = 0; x < size.width; ++x) {
-				sp += *csax;
+			for (x = 0, sx = ssx; x < w; ++x)
+			{
+				sp += (sx >> 16);
 				*dp = *sp;
-				++csax;
+				sx &= 0xffff;
+				sx += fsx;
 				++dp;
 			}
-			++csay;
+			sy &= 0xffff;
+			sy += fsy;
 			cdp += dgap;
 		}
 	}
@@ -913,7 +971,7 @@ blend_ratio_2 (Uint8 c1, Uint8 c2, int ratio)
 }
 
 static inline Uint32
-tri_get_pixel (void* ppix, SDL_PixelFormat *fmt, SDL_Color *pal,
+scale_read_pixel (void* ppix, SDL_PixelFormat *fmt, SDL_Color *pal,
 				Uint32 mask, Uint32 key)
 {
 	pixel_t p;
@@ -956,29 +1014,41 @@ tri_get_pixel (void* ppix, SDL_PixelFormat *fmt, SDL_Color *pal,
 	return p.value;
 }
 
+static inline Uint32
+scale_get_pixel (SDL_Surface *src, Uint32 mask, Uint32 key, int x, int y)
+{
+	SDL_Color *pal = src->format->palette? src->format->palette->colors : 0;
+
+	if (x < 0 || x >= src->w || y < 0 || y >= src->h)
+		return 0;
+
+	return scale_read_pixel ((Uint8*)src->pixels + y * src->pitch +
+			x * src->format->BytesPerPixel, src->format, pal, mask, key);
+}
+
 void
-TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
-		TFB_Canvas dest_canvas, TFB_Canvas src_mipmap, EXTENT size)
+TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
+		TFB_Canvas dst_canvas, int scale, HOT_SPOT* src_hs, HOT_SPOT* mm_hs,
+		EXTENT* size, HOT_SPOT* dst_hs)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
-	SDL_Surface *dst = (SDL_Surface *)dest_canvas;
-	SDL_Surface *mipmap = (SDL_Surface *)src_mipmap;
+	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
+	SDL_Surface *mm = (SDL_Surface *)src_mipmap;
 	SDL_PixelFormat *srcfmt = src->format;
-	SDL_PixelFormat *mmfmt = mipmap->format;
+	SDL_PixelFormat *mmfmt = mm->format;
 	SDL_PixelFormat *dstfmt = dst->format;
 	SDL_Color *srcpal = srcfmt->palette? srcfmt->palette->colors : 0;
 	SDL_Color *mmpal = mmfmt->palette ? mmfmt->palette->colors : 0;
 	const int sbpp = srcfmt->BytesPerPixel;
 	const int mmbpp = mmfmt->BytesPerPixel;
 	const int slen = src->pitch;
-	const int mmlen = mipmap->pitch;
+	const int mmlen = mm->pitch;
 	const int dst_has_alpha = (dstfmt->Amask != 0);
 	const int transparent = (dst->flags & SDL_SRCCOLORKEY) ?
 			dstfmt->colorkey : 0;
-	const int w = size.width, h = size.height;
 	const int alpha_threshold = dst_has_alpha ? 0 : 127;
 	// src v. mipmap importance factor
-	int ratio;
+	int ratio = scale * 2 - GSCALE_IDENTITY;
 	// source masks and keys
 	Uint32 mk0 = 0, ck0 = ~0, mk1 = 0, ck1 = ~0;
 	// source fractional x and y positions
@@ -987,36 +1057,67 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 	int fsx0 = 0, fsy0 = 0, fsx1 = 0, fsy1 = 0;
 	// source fractional x and y starting points
 	int ssx0 = 0, ssy0 = 0, ssx1 = 0, ssy1 = 0;
-	int x, y;
+	int x, y, w, h;
 
-	fsx0 = (src->w << 16) / w;
-	fsy0 = (src->h << 16) / h;
+	if (scale > 0)
+	{
+		int fw, fh;
 
-	if (w > 1)
-		fsx1 = ((mipmap->w - 1) << 16) / (w - 1);
-	if (h > 1)
-		fsy1 = ((mipmap->h - 1) << 16) / (h - 1);
+		// Use (scale / GSCALE_IDENTITY) sizing factor
+		TFB_DrawCanvas_GetScaledExtent (src, src_hs, mm, mm_hs, scale,
+				TFB_SCALE_TRILINEAR, size, dst_hs);
 
-	// give equal importance to both edges
-	ssx0 = (((src->w - 1) << 16) - fsx0 * (w - 1)) >> 1;
-	ssy0 = (((src->h - 1) << 16) - fsy0 * (h - 1)) >> 1;
+		w = size->width;
+		h = size->height;
 
-	ssx1 = (((mipmap->w - 1) << 16) - fsx1 * (w - 1)) >> 1;
-	ssy1 = (((mipmap->h - 1) << 16) - fsy1 * (h - 1)) >> 1;
+		fw = mm->w * GSCALE_IDENTITY + (src->w - mm->w) * ratio;
+		fh = mm->h * GSCALE_IDENTITY + (src->h - mm->h) * ratio;
 
-	// src v. mipmap importance factor
-	ratio = (w << 9) / src->w - 256;
-	if (ratio < 0)
-		ratio = 0;
-	if (ratio > 256)
-		ratio = 256;
+		// This limits the effective source dimensions to 2048x2048,
+		// and we also lose 4 bits of precision out of 16 (no problem)
+		fsx0 = (src->w << 20) / fw;
+		fsx0 <<= 4;
+		fsy0 = (src->h << 20) / fh;
+		fsy0 <<= 4;
 
-	if (size.width > dst->w || size.height > dst->h) 
+		fsx1 = (mm->w << 20) / fw;
+		fsx1 <<= 4;
+		fsy1 = (mm->h << 20) / fh;
+		fsy1 <<= 4;
+
+		// position the hotspots directly over each other
+		ssx0 = (src_hs->x << 16) - fsx0 * dst_hs->x;
+		ssy0 = (src_hs->y << 16) - fsy0 * dst_hs->y;
+
+		ssx1 = (mm_hs->x << 16) - fsx1 * dst_hs->x;
+		ssy1 = (mm_hs->y << 16) - fsy1 * dst_hs->y;
+	}
+	else
+	{
+		// Just go with the dst surface dimensions
+		w = dst->w;
+		h = dst->h;
+
+		fsx0 = (src->w << 16) / w;
+		fsy0 = (src->h << 16) / h;
+
+		fsx1 = (mm->w << 16) / w;
+		fsy1 = (mm->h << 16) / h;
+
+		// give equal importance to both edges
+		ssx0 = (((src->w - 1) << 16) - fsx0 * (w - 1)) >> 1;
+		ssy0 = (((src->h - 1) << 16) - fsy0 * (h - 1)) >> 1;
+
+		ssx1 = (((mm->w - 1) << 16) - fsx1 * (w - 1)) >> 1;
+		ssy1 = (((mm->h - 1) << 16) - fsy1 * (h - 1)) >> 1;
+	}
+
+	if (w > dst->w || h > dst->h) 
 	{
 		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Trilinear: "
 				"Tried to scale image to size %d %d when dest_canvas"
 				" has only dimensions of %d %d! Failing.",
-				size.width, size.height, dst->w, dst->h);
+				w, h, dst->w, dst->h);
 		return;
 	}
 
@@ -1048,7 +1149,7 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 		mk1 = mmfmt->Amask;
 		ck1 = 0;
 	}
-	else if (mipmap->flags & SDL_SRCCOLORKEY)
+	else if (mm->flags & SDL_SRCCOLORKEY)
 	{	// colorkey transparency
 		mk1 = ~mmfmt->Amask;
 		ck1 = mmfmt->colorkey & mk1;
@@ -1056,15 +1157,17 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 
 	SDL_LockSurface(src);
 	SDL_LockSurface(dst);
-	SDL_LockSurface(mipmap);
+	SDL_LockSurface(mm);
 	
 	for (y = 0, sy0 = ssy0, sy1 = ssy1;
 			y < h;
 			++y, sy0 += fsy0, sy1 += fsy1)
 	{
 		Uint32 *dst_p = (Uint32 *) ((Uint8*)dst->pixels + y * dst->pitch);
-		Uint8 *src_a0 = (Uint8*)src->pixels + (sy0 >> 16) * slen;
-		Uint8 *src_a1 = (Uint8*)mipmap->pixels + (sy1 >> 16) * mmlen;
+		const int py0 = (sy0 >> 16);
+		const int py1 = (sy1 >> 16);
+		Uint8 *src_a0 = (Uint8*)src->pixels + py0 * slen;
+		Uint8 *src_a1 = (Uint8*)mm->pixels + py1 * mmlen;
 		// retrieve the fractional portions of y
 		const Uint8 v0 = (sy0 >> 8) & 0xff;
 		const Uint8 v1 = (sy1 >> 8) & 0xff;
@@ -1074,8 +1177,10 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 				x < w;
 				++x, ++dst_p, sx0 += fsx0, sx1 += fsx1)
 		{
-			Uint8 *src_p0 = src_a0 + (sx0 >> 16) * sbpp;
-			Uint8 *src_p1 = src_a1 + (sx1 >> 16) * mmbpp;
+			const int px0 = (sx0 >> 16);
+			const int px1 = (sx1 >> 16);
+			Uint8 *src_p0 = src_a0 + px0 * sbpp;
+			Uint8 *src_p1 = src_a1 + px1 * mmbpp;
 			// retrieve the fractional portions of x
 			const Uint8 u0 = (sx0 >> 8) & 0xff;
 			const Uint8 u1 = (sx1 >> 8) & 0xff;
@@ -1092,81 +1197,58 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 			w0[1] = btable[u0][255 - v0];
 			w0[2] = btable[255 - u0][v0];
 			w0[3] = btable[u0][v0];
+			
 			w1[0] = btable[255 - u1][255 - v1];
 			w1[1] = btable[u1][255 - v1];
 			w1[2] = btable[255 - u1][v1];
 			w1[3] = btable[u1][v1];
 
-			// collect interesting pixels from src image
-			p0[0].value = tri_get_pixel (src_p0, srcfmt, srcpal, mk0, ck0);
+			// Collect interesting pixels from src image
+			// Optimization: speed is criticial on larger images;
+			// most pixel reads fall completely inside the image
+			if (px0 >= 0 && px0 + 1 < src->w && py0 >= 0 && py0 + 1 < src->h)
+			{
+				Uint8 *src_p = src_a0 + px0 * sbpp;
 
-			if ((sx0 >> 16) <= src->w - 2)
-			{						
-				p0[1].value = tri_get_pixel (src_p0 + sbpp,
-						srcfmt, srcpal, mk0, ck0);
-				
-				if ((sy0 >> 16) <= src->h - 2)
-				{
-					p0[2].value = tri_get_pixel (src_p0 + slen,
-							srcfmt, srcpal, mk0, ck0);
-					p0[3].value = tri_get_pixel (src_p0 + slen + sbpp,
-							srcfmt, srcpal, mk0, ck0);
-				}
-				else
-				{
-					p0[2].value = p0[0].value;
-					p0[3].value = p0[1].value;
-				}
+				p0[0].value = scale_read_pixel (src_p, srcfmt,
+						srcpal, mk0, ck0);
+				p0[1].value = scale_read_pixel (src_p + sbpp, srcfmt,
+						srcpal, mk0, ck0);
+				p0[2].value = scale_read_pixel (src_p + slen, srcfmt,
+						srcpal, mk0, ck0);
+				p0[3].value = scale_read_pixel (src_p + sbpp + slen, srcfmt,
+						srcpal, mk0, ck0);
 			}
 			else
 			{
-				p0[1].value = p0[0].value;
-				if ((sy0 >> 16) <= src->h - 2)
-				{
-					p0[2].value = tri_get_pixel (src_p0 + slen,
-							srcfmt, srcpal, mk0, ck0);
-				}
-				else
-				{
-					p0[2].value = p0[0].value;
-				}
-				p0[3].value = p0[2].value;
+				p0[0].value = scale_get_pixel (src, mk0, ck0, px0, py0);
+				p0[1].value = scale_get_pixel (src, mk0, ck0, px0 + 1, py0);
+				p0[2].value = scale_get_pixel (src, mk0, ck0, px0, py0 + 1);
+				p0[3].value = scale_get_pixel (src, mk0, ck0,
+						px0 + 1, py0 + 1);
 			}
 
-			// collect interesting pixels from mipmap image
-			p1[0].value = tri_get_pixel (src_p1, mmfmt, mmpal, mk1, ck1);
+			// Collect interesting pixels from mipmap image
+			if (px1 >= 0 && px1 + 1 < mm->w && py1 >= 0 && py1 + 1 < mm->h)
+			{
+				Uint8 *mm_p = src_a1 + px1 * mmbpp;
 
-			if ((sx1 >> 16) <= mipmap->w - 2)
-			{						
-				p1[1].value = tri_get_pixel (src_p1 + mmbpp,
-						mmfmt, mmpal, mk1, ck1);
-
-				if ((sy1 >> 16) <= mipmap->h - 2)
-				{
-					p1[2].value = tri_get_pixel (src_p1 + mmlen,
-							mmfmt, mmpal, mk1, ck1);
-					p1[3].value = tri_get_pixel (src_p1 + mmlen + mmbpp,
-							mmfmt, mmpal, mk1, ck1);
-				}
-				else
-				{
-					p1[2].value = p1[0].value;
-					p1[3].value = p1[1].value;
-				}
+				p1[0].value = scale_read_pixel (mm_p, mmfmt,
+						mmpal, mk1, ck1);
+				p1[1].value = scale_read_pixel (mm_p + mmbpp, mmfmt,
+						mmpal, mk1, ck1);
+				p1[2].value = scale_read_pixel (mm_p + mmlen, mmfmt,
+						mmpal, mk1, ck1);
+				p1[3].value = scale_read_pixel (mm_p + mmbpp + mmlen, mmfmt,
+						mmpal, mk1, ck1);
 			}
 			else
 			{
-				p1[1].value = p1[0].value;
-				if ((sy1 >> 16) <= mipmap->h - 2)
-				{
-					p1[2].value = tri_get_pixel (src_p1 + mmlen,
-							mmfmt, mmpal, mk1, ck1);
-				}
-				else
-				{
-					p1[2].value = p1[0].value;
-				}
-				p1[3].value = p1[2].value;
+				p1[0].value = scale_get_pixel (mm, mk1, ck1, px1, py1);
+				p1[1].value = scale_get_pixel (mm, mk1, ck1, px1 + 1, py1);
+				p1[2].value = scale_get_pixel (mm, mk1, ck1, px1, py1 + 1);
+				p1[3].value = scale_get_pixel (mm, mk1, ck1,
+						px1 + 1, py1 + 1);
 			}
 
 			p0[4].c.a = dot_product_8_4 (p0, 3, w0);
@@ -1191,6 +1273,9 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 				p0[4].c.r = blend_ratio_2 (p0[4].c.r, p1[4].c.r, ratio);
 				p0[4].c.g = blend_ratio_2 (p0[4].c.g, p1[4].c.g, ratio);
 				p0[4].c.b = blend_ratio_2 (p0[4].c.b, p1[4].c.b, ratio);
+
+				// TODO: we should handle alpha-blending here, but we do
+				//   not know the destination color for blending!
 
 				*dst_p =
 					(p0[4].c.r << dstfmt->Rshift) |
@@ -1251,7 +1336,196 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas,
 		}
 	}
 
-	SDL_UnlockSurface(mipmap);
+	SDL_UnlockSurface(mm);
+	SDL_UnlockSurface(dst);
+	SDL_UnlockSurface(src);
+}
+
+void
+TFB_DrawCanvas_Rescale_Bilinear (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
+		int scale, HOT_SPOT* src_hs, EXTENT* size, HOT_SPOT* dst_hs)
+{
+	SDL_Surface *src = (SDL_Surface *)src_canvas;
+	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
+	SDL_PixelFormat *srcfmt = src->format;
+	SDL_PixelFormat *dstfmt = dst->format;
+	SDL_Color *srcpal = srcfmt->palette? srcfmt->palette->colors : 0;
+	const int sbpp = srcfmt->BytesPerPixel;
+	const int slen = src->pitch;
+	const int dst_has_alpha = (dstfmt->Amask != 0);
+	const int transparent = (dst->flags & SDL_SRCCOLORKEY) ?
+			dstfmt->colorkey : 0;
+	const int alpha_threshold = dst_has_alpha ? 0 : 127;
+	// source masks and keys
+	Uint32 mk = 0, ck = ~0;
+	// source fractional x and y positions
+	int sx, sy;
+	// source fractional dx and dy increments
+	int fsx = 0, fsy = 0;
+	// source fractional x and y starting points
+	int ssx = 0, ssy = 0;
+	int x, y, w, h;
+
+	if (scale > 0)
+	{
+		// Use (scale / GSCALE_IDENTITY) sizing factor
+		TFB_DrawCanvas_GetScaledExtent (src, src_hs, NULL, NULL, scale,
+				TFB_SCALE_BILINEAR, size, dst_hs);
+
+		w = size->width;
+		h = size->height;
+		fsx = (GSCALE_IDENTITY << 16) / scale;
+		fsy = (GSCALE_IDENTITY << 16) / scale;
+
+		// position the hotspots directly over each other
+		ssx = (src_hs->x << 16) - fsx * dst_hs->x;
+		ssy = (src_hs->y << 16) - fsy * dst_hs->y;
+	}
+	else
+	{
+		// Just go with the dst surface dimensions
+		w = dst->w;
+		h = dst->h;
+		fsx = (src->w << 16) / w;
+		fsy = (src->h << 16) / h;
+
+		// give equal importance to both edges
+		ssx = (((src->w - 1) << 16) - fsx * (w - 1)) >> 1;
+		ssy = (((src->h - 1) << 16) - fsy * (h - 1)) >> 1;
+	}
+
+	if (w > dst->w || h > dst->h) 
+	{
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Bilinear: "
+				"Tried to scale image to size %d %d when dest_canvas"
+				" has only dimensions of %d %d! Failing.",
+				w, h, dst->w, dst->h);
+		return;
+	}
+
+	if ((srcfmt->BytesPerPixel != 1 && srcfmt->BytesPerPixel != 4) ||
+		(dst->format->BytesPerPixel != 4))
+	{
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Bilinear: "
+				"Tried to deal with unknown BPP: %d -> %d",
+				srcfmt->BitsPerPixel, dst->format->BitsPerPixel);
+		return;
+	}
+
+	// use colorkeys where appropriate
+	if (srcfmt->Amask)
+	{	// alpha transparency
+		mk = srcfmt->Amask;
+		ck = 0;
+	}
+	else if (src->flags & SDL_SRCCOLORKEY)
+	{	// colorkey transparency
+		mk = ~srcfmt->Amask;
+		ck = srcfmt->colorkey & mk;
+	}
+
+	SDL_LockSurface(src);
+	SDL_LockSurface(dst);
+	
+	for (y = 0, sy = ssy; y < h; ++y, sy += fsy)
+	{
+		Uint32 *dst_p = (Uint32 *) ((Uint8*)dst->pixels + y * dst->pitch);
+		const int py = (sy >> 16);
+		Uint8 *src_a = (Uint8*)src->pixels + py * slen;
+		// retrieve the fractional portions of y
+		const Uint8 v = (sy >> 8) & 0xff;
+		Uint8 weight[4]; // pixel weight vectors
+
+		for (x = 0, sx = ssx; x < w; ++x, ++dst_p, sx += fsx)
+		{
+			const int px = (sx >> 16);
+			// retrieve the fractional portions of x
+			const Uint8 u = (sx >> 8) & 0xff;
+			// pixels are examined and numbered in pattern
+			//  0  1
+			//  2  3
+			// the ideal pixel (4) is somewhere between these four
+			// and is calculated from these using weight vector (weight)
+			// with a dot product
+			pixel_t p[5];
+			
+			weight[0] = btable[255 - u][255 - v];
+			weight[1] = btable[u][255 - v];
+			weight[2] = btable[255 - u][v];
+			weight[3] = btable[u][v];
+
+			// Collect interesting pixels from src image
+			// Optimization: speed is criticial on larger images;
+			// most pixel reads fall completely inside the image
+			if (px >= 0 && px + 1 < src->w && py >= 0 && py + 1 < src->h)
+			{
+				Uint8 *src_p = src_a + px * sbpp;
+
+				p[0].value = scale_read_pixel (src_p, srcfmt, srcpal, mk, ck);
+				p[1].value = scale_read_pixel (src_p + sbpp, srcfmt,
+						srcpal, mk, ck);
+				p[2].value = scale_read_pixel (src_p + slen, srcfmt,
+						srcpal, mk, ck);
+				p[3].value = scale_read_pixel (src_p + sbpp + slen, srcfmt,
+						srcpal, mk, ck);
+			}
+			else
+			{
+				p[0].value = scale_get_pixel (src, mk, ck, px, py);
+				p[1].value = scale_get_pixel (src, mk, ck, px + 1, py);
+				p[2].value = scale_get_pixel (src, mk, ck, px, py + 1);
+				p[3].value = scale_get_pixel (src, mk, ck, px + 1, py + 1);
+			}
+
+			p[4].c.a = dot_product_8_4 (p, 3, weight);
+			
+			if (p[4].c.a <= alpha_threshold)
+			{
+				*dst_p = transparent;
+			}
+			else if (!dst_has_alpha)
+			{	// RGB surface handling
+				p[4].c.r = dot_product_8_4 (p, 0, weight);
+				p[4].c.g = dot_product_8_4 (p, 1, weight);
+				p[4].c.b = dot_product_8_4 (p, 2, weight);
+
+				// TODO: we should handle alpha-blending here, but we do
+				//   not know the destination color for blending!
+
+				*dst_p =
+					(p[4].c.r << dstfmt->Rshift) |
+					(p[4].c.g << dstfmt->Gshift) |
+					(p[4].c.b << dstfmt->Bshift);
+			}
+			else
+			{	// RGBA surface handling
+
+				// we do not want to blend with non-present pixels
+				// (pixels that have alpha == 0) as these will
+				// skew the result and make resulting alpha useless
+				int i;
+				for (i = 0; i < 4; ++i)
+					if (p[i].c.a == 0)
+						weight[i] = 0;
+
+				p[4].c.r = weight_product_8_4 (p, 0, weight);
+				p[4].c.g = weight_product_8_4 (p, 1, weight);
+				p[4].c.b = weight_product_8_4 (p, 2, weight);
+
+				// error-correct alpha to fully opaque to remove
+				// the often unwanted and unnecessary blending
+				if (p[4].c.a > 0xf8)
+					p[4].c.a = 0xff;
+
+				*dst_p =
+					(p[4].c.r << dstfmt->Rshift) |
+					(p[4].c.g << dstfmt->Gshift) |
+					(p[4].c.b << dstfmt->Bshift) |
+					(p[4].c.a << dstfmt->Ashift);
+			}
+		}
+	}
+
 	SDL_UnlockSurface(dst);
 	SDL_UnlockSurface(src);
 }

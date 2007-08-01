@@ -32,12 +32,6 @@ typedef enum {
 	TFB_GFX_NUMSCREENS
 } SCREEN;
 
-typedef enum {
-	TFB_SCALE_STEP, /* not really a scaler */
-	TFB_SCALE_NEAREST,
-	TFB_SCALE_TRILINEAR
-} SCALE;
-
 typedef struct tfb_palette
 {
 	UBYTE r;
@@ -61,6 +55,7 @@ typedef struct tfb_image
 	HOT_SPOT NormalHs;
 	HOT_SPOT MipmapHs;
 	HOT_SPOT last_scale_hs;
+	int last_scale;
 	int last_scale_type;
 	TFB_Palette last_fill;
 	EXTENT extent;
@@ -125,11 +120,16 @@ TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas, TFB_Canvas oldcanv
 TFB_Canvas TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src, int angle);
 TFB_Canvas TFB_DrawCanvas_ToScreenFormat (TFB_Canvas canvas);
 BOOLEAN TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas);
-void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst, EXTENT size);
-void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas dst, TFB_Canvas mipmap, EXTENT size);
-void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT src_hs,
-		TFB_Canvas src_mipmap, HOT_SPOT mm_hs,
-		int scale, EXTENT *size, HOT_SPOT *hs);
+void TFB_DrawCanvas_Rescale_Nearest (TFB_Canvas src, TFB_Canvas dst,
+		int scale, HOT_SPOT* src_hs, EXTENT* size, HOT_SPOT* dst_hs);
+void TFB_DrawCanvas_Rescale_Bilinear (TFB_Canvas src, TFB_Canvas dst,
+		int scale, HOT_SPOT* src_hs, EXTENT* size, HOT_SPOT* dst_hs);
+void TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src, TFB_Canvas mipmap,
+		TFB_Canvas dst, int scale, HOT_SPOT* src_hs, HOT_SPOT* mm_hs,
+		EXTENT* size, HOT_SPOT* dst_hs);
+void TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT* src_hs,
+		TFB_Canvas src_mipmap, HOT_SPOT* mm_hs,
+		int scale, int type, EXTENT *size, HOT_SPOT *hs);
 void TFB_DrawCanvas_Rotate (TFB_Canvas src, TFB_Canvas dst, int angle, EXTENT size);
 void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, EXTENT *size);
 void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, EXTENT *size);
@@ -148,6 +148,7 @@ int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i, BOOLEAN rleaccel);
 BOOLEAN TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b);
 void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel);
+void TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src, TFB_Canvas dst);
 void TFB_DrawCanvas_Initialize (void);
 void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
 void* TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);

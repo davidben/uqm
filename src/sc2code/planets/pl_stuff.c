@@ -54,7 +54,8 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
 {
 	STAMP s;
 	FRAME pFrame[2];
-	COUNT i, num_frames, old_scale;
+	COUNT i, num_frames;
+	int old_scale, old_mode;
 	RECT *rp = NULL;
 	CONTEXT OldContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
@@ -97,14 +98,15 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
 			RepairBackRect (rp);
 		s.origin.x = dx;
 		s.origin.y = dy;
-		old_scale = GetGraphicScale ();
-		SetGraphicScale (scale_amt);
+		old_mode = SetGraphicScaleMode (TFB_SCALE_BILINEAR);
+		old_scale = SetGraphicScale (scale_amt);
 		for (i = 0; i < num_frames; i++)
 		{
 			s.frame = pFrame[i];
 			DrawStamp (&s);
 		}
 		SetGraphicScale (old_scale);
+		SetGraphicScaleMode (old_mode);
 		UnbatchGraphics ();
 		SetContext (OldContext);
 	}

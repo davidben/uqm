@@ -67,15 +67,22 @@ int TFB_InitGraphics (int driver, int flags, int width, int height);
 void TFB_UninitGraphics (void);
 void TFB_ProcessEvents (void);
 
-// 3DO Graphics Stuff
-
 #define GSCALE_IDENTITY 256
+
+typedef enum {
+	TFB_SCALE_STEP, /* not really a scaler */
+	TFB_SCALE_NEAREST,
+	TFB_SCALE_BILINEAR,
+	TFB_SCALE_TRILINEAR
+} SCALE;
 
 void LoadIntoExtraScreen (RECT *r);
 void DrawFromExtraScreen (RECT *r);
 void SetGraphicGrabOther (int grab_other);
-void SetGraphicScale (int scale);
-int  GetGraphicScale (void);
+int SetGraphicScale (int scale);
+int GetGraphicScale (void);
+int SetGraphicScaleMode (int mode /* enum SCALE */);
+int GetGraphicScaleMode (void);
 void SetGraphicUseOtherExtra (int other);
 void SetTransitionSource (RECT *pRect);
 void ScreenTransition (int transition, RECT *pRect);

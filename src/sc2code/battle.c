@@ -19,6 +19,7 @@
 #include "battle.h"
 
 #include "controls.h"
+#include "options.h"
 #include "init.h"
 #include "intel.h"
 #ifdef NETPLAY
@@ -421,6 +422,9 @@ Battle (void)
 		GLOBAL (CurrentActivity) |= IN_BATTLE;
 		battle_counter[0] = CountLinks (&race_q[0]);
 		battle_counter[1] = CountLinks (&race_q[1]);
+
+		if (optMeleeScale != TFB_SCALE_STEP)
+			SetGraphicScaleMode (optMeleeScale);
 
 		setupBattleInputOrder ();
 #ifdef NETPLAY
