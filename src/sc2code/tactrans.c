@@ -298,7 +298,7 @@ new_ship (ELEMENT *DeadShipPtr)
 			if (StarShipPtr
 					&& (StarShipPtr->cur_status_flags & PLAY_VICTORY_DITTY))
 			{
-				// StarShipPtr points to the surviving ship.
+				// StarShipPtr points to the remaining ship.
 				MusicStarted = TRUE;
 				PlayMusic ((MUSIC_REF)StarShipPtr->RaceDescPtr->
 						ship_data.victory_ditty, FALSE, 3);

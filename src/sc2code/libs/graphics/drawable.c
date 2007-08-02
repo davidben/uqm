@@ -101,8 +101,10 @@ AllocDrawable (COUNT n)
 			F->Type = 0;
 			F->Index = 0;
 			F->image = 0;
-			F->Bounds.width = F->Bounds.height = 0;
-			F->HotSpot.x = F->HotSpot.y = 0;
+			F->Bounds.width = 0;
+			F->Bounds.height = 0;
+			F->HotSpot.x = 0;
+			F->HotSpot.y = 0;
 		}
 		
 		UnlockDrawable (Drawable);

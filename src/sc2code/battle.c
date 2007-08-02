@@ -185,7 +185,6 @@ ProcessInput (void)
 				CyborgDescPtr->ship_input_state = 0;
 				if (CyborgDescPtr->RaceDescPtr->ship_info.crew_level)
 				{
-					
 					if (InputState & BATTLE_LEFT)
 						CyborgDescPtr->ship_input_state |= LEFT;
 					else if (InputState & BATTLE_RIGHT)
