@@ -96,15 +96,13 @@ BackgroundInitKernel (DWORD TimeOut)
 	}
 }
 
-#define DEBUG_PSYTRON 0
-
 /* TODO: Remove these declarations once threading is gone. */
 extern int snddriver, soundflags;
 
 int
 Starcon2Main (void *threadArg)
 {
-#if DEBUG_PSYTRON || CREATE_JOURNAL
+#if CREATE_JOURNAL
 {
 int ac = argc;
 char **av = argv;
@@ -116,15 +114,6 @@ while (--ac > 0)
 	{
 		switch ((*av)[1])
 		{
-#ifdef DEBUG_PSYTRON
-			case 'd':
-			{
-				extern BYTE debug_psytron;
-
-				debug_psytron = atoi (&(*av)[2]);
-				break;
-			}
-#endif //DEBUG_PSYTRON
 #if CREATE_JOURNAL
 			case 'j':
 				++create_journal;
@@ -134,7 +123,7 @@ while (--ac > 0)
 	}
 }
 }
-#endif //DEBUG_PSYTRON || CREATE_JOURNAL
+#endif // CREATE_JOURNAL
 
 	/* TODO: Put initAudio back in main where it belongs once threading
 	 *       is gone.
