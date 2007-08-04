@@ -74,7 +74,7 @@ TFB_PreInit (void)
 			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
-		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError());
+		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError ());
 		exit (EXIT_FAILURE);
 	}
 }
@@ -86,7 +86,8 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 	int togglefullscreen = 0;
 	char caption[200];
 
-	if (GfxFlags == (flags ^ TFB_GFXFLAGS_FULLSCREEN) && driver == GraphicsDriver &&
+	if (GfxFlags == (flags ^ TFB_GFXFLAGS_FULLSCREEN) &&
+			driver == GraphicsDriver &&
 			width == ScreenWidthActual && height == ScreenHeightActual)
 	{
 		togglefullscreen = 1;
@@ -97,17 +98,20 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
 	{
 #ifdef HAVE_OPENGL
-		result = TFB_GL_ConfigureVideo (driver, flags, width, height, togglefullscreen);
+		result = TFB_GL_ConfigureVideo (driver, flags, width, height,
+				togglefullscreen);
 #else
 		driver = TFB_GFXDRIVER_SDL_PURE;
 		log_add (log_Warning, "OpenGL support not compiled in,"
 				" so using pure SDL driver");
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, togglefullscreen);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height,
+				togglefullscreen);
 #endif
 	}
 	else
 	{
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height, togglefullscreen);
+		result = TFB_Pure_ConfigureVideo (driver, flags, width, height,
+				togglefullscreen);
 	}
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s",
@@ -219,7 +223,8 @@ TFB_ProcessEvents ()
 	{
 		int flags = GfxFlags ^ TFB_GFXFLAGS_FULLSCREEN;
 		FlushInput ();
-		TFB_ReInitGraphics (GraphicsDriver, flags, ScreenWidthActual, ScreenHeightActual);
+		TFB_ReInitGraphics (GraphicsDriver, flags, ScreenWidthActual,
+				ScreenHeightActual);
 		TFB_SwapBuffers (TFB_REDRAW_YES);
 	}
 
@@ -265,16 +270,16 @@ TFB_SwapBuffers (int force_full_redraw)
 			last_fade_amount == 255 && last_transition_amount == 255)
 		return;
 
-	if (force_full_redraw == TFB_REDRAW_NO && (fade_amount != 255 || transition_amount != 255 ||
+	if (force_full_redraw == TFB_REDRAW_NO &&
+			(fade_amount != 255 || transition_amount != 255 ||
 			last_fade_amount != 255 || last_transition_amount != 255))
-	{
 		force_full_redraw = TFB_REDRAW_FADING;
-	}
 
 	last_fade_amount = fade_amount;
 	last_transition_amount = transition_amount;	
 
-	graphics_backend->preprocess (force_full_redraw, transition_amount, fade_amount);
+	graphics_backend->preprocess (force_full_redraw, transition_amount,
+			fade_amount);
 	graphics_backend->screen (TFB_SCREEN_MAIN, 255, NULL);
 
 	if (transition_amount != 255)
@@ -305,7 +310,7 @@ TFB_SwapBuffers (int force_full_redraw)
 }
 
 /* Probably ought to clean this away at some point. */
-SDL_Surface* 
+SDL_Surface *
 TFB_DisplayFormatAlpha (SDL_Surface *surface)
 {
 	SDL_Surface* newsurf;
@@ -318,7 +323,7 @@ TFB_DisplayFormatAlpha (SDL_Surface *surface)
 	else
 		dstfmt = SDL_Screen->format;
 
-	if (srcfmt->BytesPerPixel == dstfmt->BytesPerPixel && 
+	if (srcfmt->BytesPerPixel == dstfmt->BytesPerPixel &&
 			srcfmt->Rmask == dstfmt->Rmask &&
 			srcfmt->Gmask == dstfmt->Gmask &&
 			srcfmt->Bmask == dstfmt->Bmask &&
@@ -373,32 +378,32 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 
 		srcx = srcrect->x;
 		w = srcrect->w;
-		if(srcx < 0) 
+		if (srcx < 0) 
 		{
 			w += srcx;
 			dstrect->x -= srcx;
 			srcx = 0;
 		}
 		maxw = src->w - srcx;
-		if(maxw < w)
+		if (maxw < w)
 			w = maxw;
 
 		srcy = srcrect->y;
 		h = srcrect->h;
-		if(srcy < 0) 
+		if (srcy < 0) 
 		{
 			h += srcy;
 			dstrect->y -= srcy;
 			srcy = 0;
 		}
 		maxh = src->h - srcy;
-		if(maxh < h)
+		if (maxh < h)
 			h = maxh;
-
-	} 
-	else 
+	}
+	else
 	{
-		srcx = srcy = 0;
+		srcx = 0;
+		srcy = 0;
 		w = src->w;
 		h = src->h;
 	}
@@ -409,25 +414,25 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 		int dx, dy;
 
 		dx = clip->x - dstrect->x;
-		if(dx > 0) 
+		if (dx > 0)
 		{
 			w -= dx;
 			dstrect->x += dx;
 			srcx += dx;
 		}
 		dx = dstrect->x + w - clip->x - clip->w;
-		if(dx > 0)
+		if (dx > 0)
 			w -= dx;
 
 		dy = clip->y - dstrect->y;
-		if(dy > 0) 
+		if (dy > 0)
 		{
 			h -= dy;
 			dstrect->y += dy;
 			srcy += dy;
 		}
 		dy = dstrect->y + h - clip->y - clip->h;
-		if(dy > 0)
+		if (dy > 0)
 			h -= dy;
 	}
 
@@ -623,7 +628,8 @@ TFB_FlushGraphics () // Only call from main thread!!
 			(current_fade == 255 && last_fade != 255) ||
 			(current_transition == 255 && last_transition != 255))
 		{
-			TFB_SwapBuffers (TFB_REDRAW_FADING); // if fading, redraw every frame
+			TFB_SwapBuffers (TFB_REDRAW_FADING);
+					// if fading, redraw every frame
 		}
 		else
 		{
@@ -812,11 +818,11 @@ TFB_FlushGraphics () // Only call from main thread!!
 				r.y = TFB_BBox.clip.corner.y = DC.data.scissor.y;
 				r.w = TFB_BBox.clip.extent.width = DC.data.scissor.w;
 				r.h = TFB_BBox.clip.extent.height = DC.data.scissor.h;
-				SDL_SetClipRect(SDL_Screens[0], &r);
+				SDL_SetClipRect (SDL_Screens[0], &r);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
-			SDL_SetClipRect(SDL_Screens[0], NULL);
+			SDL_SetClipRect (SDL_Screens[0], NULL);
 			TFB_BBox.clip.corner.x = 0;
 			TFB_BBox.clip.corner.y = 0;
 			TFB_BBox.clip.extent.width = ScreenWidth;
@@ -842,7 +848,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 
 				dest.x = 0;
 				dest.y = 0;
-				SDL_BlitSurface(SDL_Screens[DC.data.copytoimage.srcBuffer],
+				SDL_BlitSurface (SDL_Screens[DC.data.copytoimage.srcBuffer],
 						&src, DC_image->NormalImg, &dest);
 				UnlockMutex (DC_image->mutex);
 				break;
@@ -861,14 +867,14 @@ TFB_FlushGraphics () // Only call from main thread!!
 					TFB_BBox_RegisterPoint (src.x + src.w, src.y + src.h);
 				}
 
-				SDL_BlitSurface(SDL_Screens[DC.data.copy.srcBuffer], &src,
+				SDL_BlitSurface (SDL_Screens[DC.data.copy.srcBuffer], &src,
 						SDL_Screens[DC.data.copy.destBuffer], &dest);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
 			{
 				TFB_Image *DC_image = (TFB_Image *)DC.data.deleteimage.image;
-				TFB_DrawImage_Delete(DC_image);
+				TFB_DrawImage_Delete (DC_image);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_DELETEDATA:
@@ -883,16 +889,20 @@ TFB_FlushGraphics () // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
 			{
 				int oldDriver = GraphicsDriver;
-				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver, DC.data.reinitvideo.flags, 
-							DC.data.reinitvideo.width, DC.data.reinitvideo.height))
+				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver,
+						DC.data.reinitvideo.flags,
+						DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 				{
 					log_add (log_Error, "Could not provide requested mode: "
 							"reverting to last known driver.");
-					if (TFB_ReInitGraphics (oldDriver, DC.data.reinitvideo.flags,
-								DC.data.reinitvideo.width, DC.data.reinitvideo.height))
+					if (TFB_ReInitGraphics (oldDriver,
+							DC.data.reinitvideo.flags,
+							DC.data.reinitvideo.width,
+							DC.data.reinitvideo.height))
 					{
-						log_add (log_Fatal, "Couldn't reinit at that point either."
-								" Your video has been somehow tied in knots.");
+						log_add (log_Fatal,
+								"Couldn't reinit at that point either. "
+								"Your video has been somehow tied in knots.");
 						exit (EXIT_FAILURE);
 					}
 				}
@@ -902,9 +912,7 @@ TFB_FlushGraphics () // Only call from main thread!!
 	}
 	
 	if (livelock_deterrence)
-	{
 		Unlock_DCQ ();
-	}
 
 	TFB_SwapBuffers (TFB_REDRAW_NO);
 	RenderedFrames++;
